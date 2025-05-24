@@ -85,10 +85,7 @@ public class GetTitleTest extends AwParameterizedTest {
         }
     }
 
-    /**
-     * When the data has title info, the page title is set to it.
-     * @throws Throwable
-     */
+    /** When the data has title info, the page title is set to it. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Main"})
@@ -97,10 +94,7 @@ public class GetTitleTest extends AwParameterizedTest {
         Assert.assertEquals("Title should be " + TITLE, TITLE, title);
     }
 
-    /**
-     * When the data has empty title, the page title is set to the loaded content.
-     * @throws Throwable
-     */
+    /** When the data has empty title, the page title is set to the loaded content. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -112,10 +106,7 @@ public class GetTitleTest extends AwParameterizedTest {
                 "Title should be set to the loaded data:text/html content", expectedTitle, title);
     }
 
-    /**
-     * When the data has no title, the page title is set to the loaded content.
-     * @throws Throwable
-     */
+    /** When the data has no title, the page title is set to the loaded content. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -127,10 +118,7 @@ public class GetTitleTest extends AwParameterizedTest {
                 "Title should be set to the data:text/html content", expectedTitle, title);
     }
 
-    /**
-     * When url-file has the title info, the page title is set to it.
-     * @throws Throwable
-     */
+    /** When url-file has the title info, the page title is set to it. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
@@ -140,9 +128,8 @@ public class GetTitleTest extends AwParameterizedTest {
     }
 
     /**
-     * When the loaded file has empty title, the page title is set to the url it loads from.
-     * It also contains: hostName, portNumber information if it's part of the loaded URL.
-     * @throws Throwable
+     * When the loaded file has empty title, the page title is set to the url it loads from. It also
+     * contains: hostName, portNumber information if it's part of the loaded URL.
      */
     @Test
     @SmallTest
@@ -153,9 +140,8 @@ public class GetTitleTest extends AwParameterizedTest {
     }
 
     /**
-     * When the loaded file has no title, the page title is set to the urk it loads from.
-     * It also contains: hostName, portNumber information if it's part of the loaded URL.
-     * @throws Throwable
+     * When the loaded file has no title, the page title is set to the urk it loads from. It also
+     * contains: hostName, portNumber information if it's part of the loaded URL.
      */
     @Test
     @SmallTest

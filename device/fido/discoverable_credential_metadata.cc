@@ -4,17 +4,23 @@
 
 #include "device/fido/discoverable_credential_metadata.h"
 
+#include <optional>
+
 namespace device {
 
 DiscoverableCredentialMetadata::DiscoverableCredentialMetadata(
     AuthenticatorType source_in,
     std::string rp_id_in,
     std::vector<uint8_t> cred_id_in,
-    PublicKeyCredentialUserEntity user_in)
+    PublicKeyCredentialUserEntity user_in,
+    std::optional<std::string> provider_name_in,
+    std::optional<base::Time> last_used_time_in)
     : source(source_in),
       rp_id(std::move(rp_id_in)),
       cred_id(std::move(cred_id_in)),
-      user(std::move(user_in)) {}
+      user(std::move(user_in)),
+      provider_name(std::move(provider_name_in)),
+      last_used_time(last_used_time_in) {}
 
 DiscoverableCredentialMetadata::DiscoverableCredentialMetadata() = default;
 DiscoverableCredentialMetadata::DiscoverableCredentialMetadata(

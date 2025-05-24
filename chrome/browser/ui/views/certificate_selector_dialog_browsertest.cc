@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/certificate_selector.h"
-
 #include <memory>
 #include <string>
 
@@ -11,6 +9,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/certificate_selector.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_test.h"
 #include "net/cert/x509_certificate.h"
@@ -20,31 +19,31 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 
-class TestCertificateSelector : public chrome::CertificateSelector {
+class TestCertificateSelector : public CertificateSelector {
  public:
   TestCertificateSelector(net::ClientCertIdentityList identities,
                           content::WebContents* web_contents)
-      : chrome::CertificateSelector(std::move(identities), web_contents) {
+      : CertificateSelector(std::move(identities), web_contents) {
     std::unique_ptr<views::Label> label =
         std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
             IDS_CLIENT_CERT_DIALOG_TEXT, u"example.com"));
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label->SizeToFit(chrome::CertificateSelector::kTableViewWidth);
+    label->SizeToFit(CertificateSelector::kTableViewWidth);
     InitWithText(std::move(label));
   }
 
   TestCertificateSelector(const TestCertificateSelector&) = delete;
   TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
 
-  // chrome::CertificateSelector:
+  // CertificateSelector:
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override {}
 };
 
 class CertificateSelectorDialogTest : public DialogBrowserTest {
  public:
-  CertificateSelectorDialogTest() {}
+  CertificateSelectorDialogTest() = default;
 
   CertificateSelectorDialogTest(const CertificateSelectorDialogTest&) = delete;
   CertificateSelectorDialogTest& operator=(

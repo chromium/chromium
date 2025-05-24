@@ -15,11 +15,7 @@
 #endif  // defined(GFX_IPC_BUFFER_TYPES_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(GFX_IPC_BUFFER_TYPES_IMPLEMENTATION)
 #define GFX_IPC_BUFFER_TYPES_EXPORT __attribute__((visibility("default")))
-#else
-#define GFX_IPC_BUFFER_TYPES_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

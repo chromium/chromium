@@ -4,10 +4,10 @@
 
 import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import '//resources/polymer/v3_0/iron-media-query/iron-media-query.js';
-import './components/common_styles/oobe_dialog_host_styles.css.js';
-import './components/dialogs/oobe_adaptive_dialog.js';
-import './components/oobe_icons.html.js';
-import './components/common_styles/oobe_common_styles.css.js';
+import '/components/common_styles/oobe_dialog_host_styles.css.js';
+import '/components/dialogs/oobe_adaptive_dialog.js';
+import '/components/oobe_icons.html.js';
+import '/components/common_styles/oobe_common_styles.css.js';
 import './icons.html.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';

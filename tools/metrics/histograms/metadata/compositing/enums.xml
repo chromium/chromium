@@ -196,6 +196,13 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="No, mask candidate rejected by DRM"/>
 </enum>
 
+<enum name="PropertyMutation">
+  <int value="0" label="Transform"/>
+  <int value="1" label="Opacity"/>
+  <int value="2" label="Filter"/>
+  <int value="3" label="Backdrop Filter"/>
+</enum>
+
 <enum name="RenderPassDamage">
   <int value="0" label="Output rect">
     Clipping at the root does not make the damage smaller than the output rect.

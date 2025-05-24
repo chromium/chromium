@@ -166,13 +166,14 @@ bool DoCanonicalizeFileURL(const URLComponentSource<CHAR>& source,
   // should probably handle validity checking of UNC hosts differently than
   // for regular IP hosts.
   bool success =
-      CanonicalizeHost(source.host, host_range, output, &new_parsed->host);
+      CanonicalizeFileHost(source.host, host_range, *output, new_parsed->host);
   success &= DoFileCanonicalizePath<CHAR, UCHAR>(source.path, parsed.path,
                                     output, &new_parsed->path);
 
-  CanonicalizeQuery(source.query, parsed.query, query_converter,
-                    output, &new_parsed->query);
-  CanonicalizeRef(source.ref, parsed.ref, output, &new_parsed->ref);
+  CanonicalizeQuery(parsed.query.maybe_as_string_view_on(source.query),
+                    query_converter, output, &new_parsed->query);
+  CanonicalizeRef(parsed.ref.maybe_as_string_view_on(source.ref), output,
+                  &new_parsed->ref);
 
   return success;
 }

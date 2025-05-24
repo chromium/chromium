@@ -32,6 +32,6 @@
 [
     LegacyNoInterfaceObject
 ] interface Metadata {
-    [CallWith=ScriptState, Measure] readonly attribute object modificationTime;
+    [CallWith=ScriptState, Measure] readonly attribute object? modificationTime;
     readonly attribute unsigned long long size;
 };

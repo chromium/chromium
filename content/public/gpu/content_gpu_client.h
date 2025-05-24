@@ -7,8 +7,10 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/buildflag.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_client.h"
+#include "gpu/command_buffer/service/shared_context_state.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace gpu {
@@ -49,12 +51,16 @@ class CONTENT_EXPORT ContentGpuClient {
   virtual void PostCompositorThreadCreated(
       base::SingleThreadTaskRunner* task_runner) {}
 
+#if BUILDFLAG(IS_ANDROID)
   // Allows client to supply these object instances instead of having content
   // internally create one.
   virtual gpu::SyncPointManager* GetSyncPointManager();
   virtual gpu::SharedImageManager* GetSharedImageManager();
   virtual gpu::Scheduler* GetScheduler();
   virtual viz::VizCompositorThreadRunner* GetVizCompositorThreadRunner();
+  virtual const gpu::SharedContextState::GrContextOptionsProvider*
+  GetGrContextOptionsProvider();
+#endif
 };
 
 }  // namespace content

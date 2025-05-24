@@ -1,5 +1,11 @@
 include_rules = [
   "+chrome/browser/tabpersistence",
+  "+components/cached_flags/android",
   "+components/payments/content/android",
   "+net/android",
 ]
+specific_include_rules = {
+  'ShoppingPersistedTabData.java': [
+    "+components/commerce/core/android/java/src/org/chromium/components/commerce/core/ShoppingService.java",
+  ],
+}

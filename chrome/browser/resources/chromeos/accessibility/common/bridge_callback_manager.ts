@@ -7,7 +7,8 @@
  *     them with BridgeCallbackIds.
  */
 
-import {ActionType, BridgeHelper, TargetType} from './bridge_helper.js';
+import type {ActionType, TargetType} from './bridge_helper.js';
+import {BridgeHelper} from './bridge_helper.js';
 
 type MaybeFunction = Function | null;
 

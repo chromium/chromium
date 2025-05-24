@@ -1,7 +1,6 @@
 {
   "description": "Rate limit records deactivated for source destination limit still counted for other rate limits",
   "api_config": {
-    "needs_source_destination_limit": true,
     "max_destinations_per_source_site_reporting_site": "2",
     "max_destinations_per_rate_limit_window_reporting_site": "2",
     "rate_limit_max_reporting_origins_per_source_reporting_site": "2"

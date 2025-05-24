@@ -4,13 +4,13 @@
 
 #include "device/bluetooth/floss/floss_lescan_client.h"
 
+#include <algorithm>
 #include <map>
 #include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -224,8 +224,8 @@ class FlossLEScanClientTest : public testing::Test,
     EXPECT_EQ(fake_scan_result_.periodic_adv_int, kTestPeriodicAdvInt);
     EXPECT_EQ(fake_scan_result_.flags, kTestFlags);
     EXPECT_EQ(fake_scan_result_.service_uuids.size(), 1UL);
-    EXPECT_EQ(base::ranges::count(fake_scan_result_.service_uuids,
-                                  device::BluetoothUUID(kTestUuidStr)),
+    EXPECT_EQ(std::ranges::count(fake_scan_result_.service_uuids,
+                                 device::BluetoothUUID(kTestUuidStr)),
               1);
     EXPECT_EQ(fake_scan_result_.service_data.size(), 1UL);
     EXPECT_EQ(fake_scan_result_.service_data[kTestUuidStr], kTestAdvData);

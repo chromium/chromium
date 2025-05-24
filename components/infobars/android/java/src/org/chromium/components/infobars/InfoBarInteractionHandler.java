@@ -4,7 +4,10 @@
 
 package org.chromium.components.infobars;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Functions needed to display an InfoBar UI. */
+@NullMarked
 public interface InfoBarInteractionHandler {
     /** Handles click on the infobar. It is invoked before one of the following functions. */
     public void onClick();

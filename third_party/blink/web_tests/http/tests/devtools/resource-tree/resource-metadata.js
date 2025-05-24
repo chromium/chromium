@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import {TestRunner} from 'test_runner';
-import {NetworkTestRunner} from 'network_test_runner';
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 
 (async function() {
   TestRunner.addResult(`Verify that dynamically added resource has metadata.\n`);
@@ -19,7 +20,7 @@ import {NetworkTestRunner} from 'network_test_runner';
     })();
   `);
 
-  var resource = TestRunner.resourceTreeModel.resourceForURL(url);
+  var resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL(url);
   if (!resource) {
     TestRunner.addResult('ERROR: Failed to find resource.');
     TestRunner.completeTest();

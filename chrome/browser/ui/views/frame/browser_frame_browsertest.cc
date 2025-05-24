@@ -11,7 +11,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/browser/themes/theme_syncable_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
@@ -57,14 +56,15 @@ ui::mojom::BrowserColorVariant GetColorVariant(
 
 class BrowserFrameBoundsChecker : public ChromeViewsDelegate {
  public:
-  BrowserFrameBoundsChecker() {}
+  BrowserFrameBoundsChecker() = default;
 
   void OnBeforeWidgetInit(
       views::Widget::InitParams* params,
       views::internal::NativeWidgetDelegate* delegate) override {
     ChromeViewsDelegate::OnBeforeWidgetInit(params, delegate);
-    if (params->name == "BrowserFrame")
+    if (params->name == "BrowserFrame") {
       EXPECT_FALSE(params->bounds.IsEmpty());
+    }
   }
 };
 
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, DevToolsHasBoundsOnOpen) {
 // Verifies that the web app is loaded with initial bounds.
 IN_PROC_BROWSER_TEST_F(BrowserFrameTest, WebAppsHasBoundsOnOpen) {
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("http://example.org/"));
+      GURL("https://example.org/"));
   webapps::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
                                                        std::move(web_app_info));
 
@@ -178,7 +178,7 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest {
 
     // Set the default browser pref to follow system color mode.
     profile()->GetPrefs()->SetInteger(
-        GetThemePrefNameInMigration(ThemePrefInMigration::kBrowserColorScheme),
+        prefs::kBrowserColorScheme,
         static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
   }
 

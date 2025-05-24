@@ -10,9 +10,12 @@ include_rules = [
   "+components/discardable_memory/service",
   "+components/download/database",
   "+components/download/public/common",
+  "+components/embedder_support/switches.h",
+  "+components/embedder_support/user_agent_utils.h",
   "+components/file_access",
   "+components/filename_generation",
   "+components/grit",
+  "+components/language_detection/content/common",
   "+components/power_monitor",
   "+components/services/font",
   "+components/services/font_data",
@@ -36,6 +39,7 @@ include_rules = [
   "+components/system_media_controls",
   "+components/tracing",
   "+components/ukm",
+  "+components/unexportable_keys/features.h",
   "+components/url_formatter",
   "+components/viz",
   "+components/web_package",
@@ -82,7 +86,6 @@ include_rules = [
   "+services/cert_verifier/public/cpp",
   "+services/cert_verifier/public/mojom",
   "+services/screen_ai/buildflags",
-  "+services/screen_ai/public/cpp",
   "+services/video_effects/public/cpp/buildflags.h",
 
   # In general, //content shouldn't depend on //device.
@@ -153,14 +156,22 @@ specific_include_rules = {
   "browsing_data_(filter_builder|remover)_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",
   ],
+  "cookie_readiness_list_parser_fuzztest\.cc": [
+    "+third_party/fuzztest"
+  ],
   "gpu_data_manager_visual_proxy_ozone_linux\.(cc|h)": [
     "+ui/ozone/public/ozone_platform.h",
     "+ui/ozone/public/platform_gl_egl_utility.h",
   ],
   "navigation_url_loader_impl_unittest\.cc": [
+    "+services/network/cookie_settings.h",
     "+services/network/resource_scheduler/resource_scheduler_client.h",
+    "+services/network/shared_resource_checker.h",
     "+services/network/url_loader.h",
     "+services/network/url_request_context_owner.h",
+  ],
+  "network_service_browsertest\.cc": [
+    "+services/network/network_service.h",
   ],
   "network_service_instance_impl\.cc": [
     # Used to instantiate a CertVerifierServiceFactory in the browser process.
@@ -180,9 +191,6 @@ specific_include_rules = {
     "+content/browser/renderer_host/render_process_host_impl.h",
     "+content/browser/renderer_host/agent_scheduling_group_host.h",
   ],
-  "stable_video_decoder_factory\.cc" : [
-    "+ui/ozone/public/ozone_switches.h",
-  ],
   "storage_partition_impl_unittest\.cc": [
     "+services/network/cookie_manager.h",
     "+third_party/leveldatabase",
@@ -196,10 +204,25 @@ specific_include_rules = {
   "utility_sandbox_delegate_win\.cc": [
     "+content/utility/sandbox_delegate_data.mojom.h"
   ],
+  "utility_process_host\.cc": [
+    "+ui/ozone/public/ozone_switches.h",
+  ],
   "web_app_system_media_controls_manager.cc": [
     "+components/remote_cocoa/browser"
   ],
   "render_widget_host_view_aura.cc": [
     "+components/stylus_handwriting/win/features.h"
-  ]
+  ],
+  "web_contents_impl.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_callback_sink_win.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_controller_win.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
+  "stylus_handwriting_controller_win_browsertest.cc": [
+    "+components/stylus_handwriting/win/features.h"
+  ],
 }

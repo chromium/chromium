@@ -29,6 +29,8 @@
 
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_channel_count_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_channel_interpretation.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -75,7 +77,7 @@ void AudioNode::Dispose() {
   // the handler still needs to be added in case the context is resumed.
   DCHECK(context());
   if (context()->IsPullingAudioGraph() ||
-      context()->ContextState() == BaseAudioContext::kSuspended) {
+      context()->ContextState() == V8AudioContextState::Enum::kSuspended) {
     context()->GetDeferredTaskHandler().AddRenderingOrphanHandler(
         std::move(handler_));
   }
@@ -187,7 +189,8 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   // ScriptProcessorNodes with 0 output channels can't be connected to any
   // destination.  If there are no output channels, what would the destination
   // receive?  Just disallow this.
-  if (Handler().GetNodeType() == AudioHandler::kNodeTypeScriptProcessor &&
+  if (Handler().GetNodeType() ==
+          AudioHandler::NodeType::kNodeTypeScriptProcessor &&
       Handler().NumberOfOutputChannels() == 0) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "cannot connect a ScriptProcessorNode "
@@ -205,11 +208,16 @@ AudioNode* AudioNode::connect(AudioNode* destination,
                     destination->Handler().NodeTypeName().Utf8().c_str(),
                     reinterpret_cast<uintptr_t>(&destination->Handler())));
 
+  // Once the destination node is connected, the source node (e.g.,
+  // MediaElementAudioSourceNode) can eventually disable the MediaElement's
+  // audio output to the device.
+  ConnectToDestinationReady();
+
   AudioNodeWiring::Connect(Handler().Output(output_index),
                            destination->Handler().Input(input_index));
   if (!connected_nodes_[output_index]) {
     connected_nodes_[output_index] =
-        MakeGarbageCollected<HeapHashSet<Member<AudioNode>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<AudioNode>>>();
   }
   connected_nodes_[output_index]->insert(destination);
 
@@ -251,10 +259,15 @@ void AudioNode::connect(AudioParam* param,
     return;
   }
 
+  // Once the destination node is connected, the source node (e.g.,
+  // MediaElementAudioSourceNode) can eventually disable the MediaElement's
+  // audio output to the device.
+  ConnectToDestinationReady();
+
   AudioNodeWiring::Connect(Handler().Output(output_index), param->Handler());
   if (!connected_params_[output_index]) {
     connected_params_[output_index] =
-        MakeGarbageCollected<HeapHashSet<Member<AudioParam>>>();
+        MakeGarbageCollected<GCedHeapHashSet<Member<AudioParam>>>();
   }
   connected_params_[output_index]->insert(param);
 
@@ -571,22 +584,23 @@ void AudioNode::setChannelCount(unsigned count,
   Handler().SetChannelCount(count, exception_state);
 }
 
-String AudioNode::channelCountMode() const {
-  return Handler().GetChannelCountMode();
+V8ChannelCountMode AudioNode::channelCountMode() const {
+  return V8ChannelCountMode(Handler().GetChannelCountMode());
 }
 
-void AudioNode::setChannelCountMode(const String& mode,
+void AudioNode::setChannelCountMode(const V8ChannelCountMode& mode,
                                     ExceptionState& exception_state) {
-  Handler().SetChannelCountMode(mode, exception_state);
+  Handler().SetChannelCountMode(mode.AsEnum(), exception_state);
 }
 
-String AudioNode::channelInterpretation() const {
-  return Handler().ChannelInterpretation();
+V8ChannelInterpretation AudioNode::channelInterpretation() const {
+  return V8ChannelInterpretation(Handler().ChannelInterpretation());
 }
 
-void AudioNode::setChannelInterpretation(const String& interpretation,
-                                         ExceptionState& exception_state) {
-  Handler().SetChannelInterpretation(interpretation, exception_state);
+void AudioNode::setChannelInterpretation(
+    const V8ChannelInterpretation& interpretation,
+    ExceptionState& exception_state) {
+  Handler().SetChannelInterpretation(interpretation.AsEnum(), exception_state);
 }
 
 const AtomicString& AudioNode::InterfaceName() const {

@@ -1,0 +1,64 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module signout_confirmation.mojom;
+
+// Factory ensures that the Page and Handler interfaces
+// are always created together without requiring an initialization call from the
+// WebUI to the handler.
+interface PageHandlerFactory {
+  // Creates both the `page `and `handler` to be used for communication between
+  // the Browser and the Renderer.
+  CreateSignoutConfirmationHandler(pending_remote<Page> page,
+                           pending_receiver<PageHandler> handler);
+};
+
+// Represents an extension associated with a user's account.
+struct ExtensionInfo {
+  // The name of the extension.
+  string name;
+
+  // The url to the extension's icon.
+  string icon_url;
+};
+
+struct SignoutConfirmationData {
+  string dialog_title;
+  string dialog_subtitle;
+  string accept_button_label;
+  string cancel_button_label;
+  array<ExtensionInfo> account_extensions;
+
+  // If the user has unsynced data that is pending sync at the time the signout
+  // confirmation dialog was opened.
+  bool has_unsynced_data;
+};
+
+// Called from TS side of chrome://signout-confirmation (Renderer -> Browser)
+interface PageHandler {
+  // Updates the native view of the dialog based on the current `height` of the
+  // web content view measured in pixels. Height of the content view is variable
+  // based on its contents.
+  UpdateViewHeight(uint32 height);
+
+  // The user has accepted the dialog through clicking a button.
+  // If accepting the dialog will sign the user out, their account extensions
+  // will be uninstalled if `uninstall_account_extensions` is true.
+  Accept(bool uninstall_account_extensions);
+
+  // The user has cancelled the dialog through clicking a button.
+  // If cancelling the dialog will sign the user out, their account extensions
+  // will be uninstalled if `uninstall_account_extensions` is true.
+  Cancel(bool uninstall_account_extensions);
+
+  // The user has explicitly dismissed the dialog, e.g. via the escape key.
+  Close();
+};
+
+// Called from C++ side of chrome://signout-confirmation. (Browser -> Renderer)
+interface Page {
+  // When the handler is initialized, sends the signout confirmation data to the
+  // UI.
+  SendSignoutConfirmationData(SignoutConfirmationData data);
+};

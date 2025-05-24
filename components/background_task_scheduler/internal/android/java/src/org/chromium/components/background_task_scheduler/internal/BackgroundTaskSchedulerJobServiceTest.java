@@ -31,7 +31,7 @@ public class BackgroundTaskSchedulerJobServiceTest {
     private static final long END_TIME_WITH_DEADLINE_MS =
             TIME_200_MIN_TO_MS + BackgroundTaskSchedulerJobService.DEADLINE_DELTA_MS;
 
-    private BackgroundTaskSchedulerJobService.Clock mClock = () -> CLOCK_TIME_MS;
+    private final BackgroundTaskSchedulerJobService.Clock mClock = () -> CLOCK_TIME_MS;
 
     @Before
     public void setUp() {

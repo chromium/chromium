@@ -8,7 +8,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A bridge to language metrics functions that require access to native code. */
+@NullMarked
 public class AndroidLanguageMetricsBridge {
     @VisibleForTesting
     public static final String OVERRIDE_LANGUAGE_HISTOGRAM =

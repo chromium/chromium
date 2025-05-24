@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -63,17 +64,20 @@ bool HistoryClustersSidePanelCoordinator::IsSupported(Profile* profile) {
 void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
   global_registry->Register(std::make_unique<SidePanelEntry>(
-      SidePanelEntry::Id::kHistoryClusters,
+      SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView,
           base::Unretained(this)),
       base::BindRepeating(
           &HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL,
-          base::Unretained(this))));
+          base::Unretained(this)),
+      /*more_info_callback=*/base::NullCallback(),
+      SidePanelEntry::kSidePanelDefaultContentWidth));
 }
 
 std::unique_ptr<views::View>
-HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
+HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView(
+    SidePanelEntryScope& scope) {
   // Construct our URL including our initial query. Other ways of passing the
   // initial query to the WebUI interface are mostly all racy.
   std::string query_string = base::StringPrintf(
@@ -95,7 +99,7 @@ HistoryClustersSidePanelCoordinator::CreateHistoryClustersWebView() {
 
   auto side_panel_ui =
       std::make_unique<SidePanelWebUIViewT<HistoryClustersSidePanelUI>>(
-          base::RepeatingClosure(), base::RepeatingClosure(),
+          scope, base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<HistoryClustersSidePanelUI>>(
               url, GetBrowser().profile(), IDS_HISTORY_TITLE,
               /*esc_closes_ui=*/false));
@@ -146,8 +150,9 @@ bool HistoryClustersSidePanelCoordinator::Show(const std::string& query) {
 
 GURL HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL() const {
   std::string query;
-  if (history_clusters_ui_)
+  if (history_clusters_ui_) {
     query = history_clusters_ui_->GetLastQueryIssued();
+  }
 
   return query.empty() ? GURL(history_clusters::GetChromeUIHistoryClustersURL())
                        : history_clusters::GetFullJourneysUrlForQuery(query);

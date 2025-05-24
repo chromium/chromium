@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
@@ -32,7 +34,11 @@ std::vector<uint8_t> ReadTestData(const base::FilePath::StringType& pdf_name) {
 TestDocumentLoader::TestDocumentLoader(
     Client* client,
     const base::FilePath::StringType& pdf_name)
-    : client_(client), pdf_data_(ReadTestData(pdf_name)) {}
+    : TestDocumentLoader(client, ReadTestData(pdf_name)) {}
+
+TestDocumentLoader::TestDocumentLoader(Client* client,
+                                       std::vector<uint8_t> pdf_data)
+    : client_(client), pdf_data_(std::move(pdf_data)) {}
 
 TestDocumentLoader::~TestDocumentLoader() = default;
 
@@ -83,9 +89,8 @@ bool TestDocumentLoader::GetBlock(uint32_t position,
     return false;
 
   // TODO(crbug.com/40284755): spanify function signature to fix the errors.
-  auto dest_span =
-      UNSAFE_TODO(base::make_span(static_cast<uint8_t*>(buf), size));
-  dest_span.copy_from(base::make_span(pdf_data_).subspan(position, size));
+  auto dest_span = UNSAFE_TODO(base::span(static_cast<uint8_t*>(buf), size));
+  dest_span.copy_from(base::span(pdf_data_).subspan(position, size));
   return true;
 }
 

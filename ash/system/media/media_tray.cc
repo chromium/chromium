@@ -6,7 +6,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -41,6 +41,7 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/image_view.h"
@@ -218,6 +219,8 @@ MediaTray::MediaTray(Shelf* shelf)
       IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
   icon_ = tray_container()->AddChildView(std::move(icon));
   UpdateTrayItemColor(is_active());
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT));
 }
 
 MediaTray::~MediaTray() {
@@ -242,11 +245,6 @@ void MediaTray::OnNotificationListViewSizeChanged() {
   }
 
   GetBubbleView()->UpdateBubble();
-}
-
-std::u16string MediaTray::GetAccessibleNameForTray() {
-  return l10n_util::GetStringUTF16(
-      IDS_ASH_GLOBAL_MEDIA_CONTROLS_BUTTON_TOOLTIP_TEXT);
 }
 
 void MediaTray::HideBubble(const TrayBubbleView* bubble_view) {

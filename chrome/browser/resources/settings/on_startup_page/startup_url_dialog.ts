@@ -79,12 +79,12 @@ export class SettingsStartupUrlDialogElement extends PolymerElement {
     };
   }
 
-  private error_: UrlInputError;
-  private url_: string;
-  private urlLimit_: number;
-  model: StartupPageInfo|null;
-  private dialogTitle_: string;
-  private actionButtonText_: string;
+  declare private error_: UrlInputError;
+  declare private url_: string;
+  declare private urlLimit_: number;
+  declare model: StartupPageInfo|null;
+  declare private dialogTitle_: string;
+  declare private actionButtonText_: string;
   private browserProxy_: StartupUrlsPageBrowserProxy =
       StartupUrlsPageBrowserProxyImpl.getInstance();
 

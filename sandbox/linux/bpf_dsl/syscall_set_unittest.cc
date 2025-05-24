@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/bpf_dsl/syscall_set.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 
 #include "sandbox/linux/bpf_dsl/linux_syscall_ranges.h"
 #include "sandbox/linux/tests/unit_tests.h"
@@ -71,22 +67,22 @@ SANDBOX_TEST(SyscallSet, ValidSyscallRanges) {
 }
 
 SANDBOX_TEST(SyscallSet, InvalidSyscalls) {
-  static const uint32_t kExpected[] = {
+  static const auto kExpected = std::to_array<uint32_t>({
 #if defined(__mips__)
-    0,
-    MIN_SYSCALL - 1,
+      0,
+      MIN_SYSCALL - 1,
 #endif
-    MAX_PUBLIC_SYSCALL + 1,
+      MAX_PUBLIC_SYSCALL + 1,
 #if defined(__arm__)
-    MIN_PRIVATE_SYSCALL - 1,
-    MAX_PRIVATE_SYSCALL + 1,
-    MIN_GHOST_SYSCALL - 1,
-    MAX_SYSCALL + 1,
+      MIN_PRIVATE_SYSCALL - 1,
+      MAX_PRIVATE_SYSCALL + 1,
+      MIN_GHOST_SYSCALL - 1,
+      MAX_SYSCALL + 1,
 #endif
-    0x7FFFFFFFu,
-    0x80000000u,
-    0xFFFFFFFFu,
-  };
+      0x7FFFFFFFu,
+      0x80000000u,
+      0xFFFFFFFFu,
+  });
 
   for (const SyscallSet& set : kSyscallSets) {
     size_t i = 0;

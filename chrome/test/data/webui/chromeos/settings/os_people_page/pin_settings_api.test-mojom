@@ -66,4 +66,7 @@ interface PinSettingsApi {
 
   // Try to enable pin autosubmit, but fail because the provided PIN is too long.
   EnablePinAutosubmitTooLong(string long_pin) => ();
+
+  // Checks whether the more button is disabled.
+  AssertMoreButtonDisabled(bool disabled) => ();
 };

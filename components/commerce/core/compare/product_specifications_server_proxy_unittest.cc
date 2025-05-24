@@ -26,6 +26,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+using endpoint_fetcher::MockEndpointFetcher;
+
 namespace commerce {
 namespace {
 
@@ -53,12 +55,14 @@ const std::string kSimpleResponse = R"(
                     "url": "http://example.com/circle/",
                     "title": "Circles",
                     "faviconUrl": "http://example.com/favicon.png",
-                    "thumbnailImageUrl": "http://example.com/thumbnail.png"
+                    "thumbnailImageUrl": "http://example.com/thumbnail.png",
+                    "text": "Summary of page content"
                   }
                 ]
               }
             ],
             "imageUrl": "http://example.com/image.png",
+            "buyingOptionsUrl": "http://example.com/jackpot",
             "productSpecificationValues": [
               {
                 "key": "100000",
@@ -106,7 +110,7 @@ class MockProductSpecificationsServerProxy
   MockProductSpecificationsServerProxy operator=(
       const MockProductSpecificationsServerProxy&) = delete;
   ~MockProductSpecificationsServerProxy() override = default;
-  MOCK_METHOD(std::unique_ptr<EndpointFetcher>,
+  MOCK_METHOD(std::unique_ptr<endpoint_fetcher::EndpointFetcher>,
               CreateEndpointFetcher,
               (const GURL& url,
                const std::string& http_method,
@@ -131,7 +135,7 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
     ON_CALL(*account_checker_, IsSyncTypeEnabled)
         .WillByDefault(testing::Return(true));
 
-    RegisterCommercePrefs(prefs_->registry());
+    MockAccountChecker::RegisterCommercePrefs(prefs_->registry());
     SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
     account_checker_->SetPrefs(prefs_.get());
 
@@ -176,6 +180,8 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
             ASSERT_EQ("Circle", spec->products[0].title);
             ASSERT_EQ("http://example.com/image.png",
                       spec->products[0].image_url.spec());
+            ASSERT_EQ("http://example.com/jackpot",
+                      spec->products[0].buying_options_url.spec());
             ASSERT_EQ("Circle is round", spec->products[0].summary[0].text);
             ASSERT_EQ("http://example.com/circle/",
                       spec->products[0].summary[0].urls[0].url.spec());
@@ -190,6 +196,8 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
                           .urls[0]
                           .thumbnail_url.value()
                           .spec());
+            ASSERT_EQ("Summary of page content",
+                      spec->products[0].summary[0].urls[0].previewText.value());
             ASSERT_EQ(u"Circles", spec->products[0].summary[0].urls[0].title);
 
             const ProductSpecifications::Description& color_desc =
@@ -237,6 +245,8 @@ TEST_F(ProductSpecificationsServerProxyTest,
                      ASSERT_EQ("Circle", spec->products[0].title);
                      ASSERT_EQ("http://example.com/image.png",
                                spec->products[0].image_url.spec());
+                     ASSERT_EQ("http://example.com/jackpot",
+                               spec->products[0].buying_options_url.spec());
                      ASSERT_EQ("Circle is round",
                                spec->products[0].summary[0].text);
                      ASSERT_EQ("http://example.com/circle/",

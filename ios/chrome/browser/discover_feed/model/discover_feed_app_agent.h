@@ -7,11 +7,10 @@
 
 #import "ios/chrome/app/application_delegate/observing_app_state_agent.h"
 
-// The agent that manages the Feed service creation. This service allows the App
-// and users to perform Feed related operations e.g. Creating a Feed, Following
-// a Website, etc. This also manages feed background refresh.
-// TODO(crbug.com/326035952): Update for multuple browser states.
+// This agent manages refreshing the Discover feed when the app switch to
+// background.
 @interface DiscoverFeedAppAgent : SceneObservingAppAgent
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DISCOVER_FEED_MODEL_DISCOVER_FEED_APP_AGENT_H_

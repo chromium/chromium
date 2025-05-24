@@ -68,7 +68,9 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   AffineTransform LocalToSVGParentTransform() const override;
 
   // LayoutBox override:
-  LayoutPoint LocationInternal() const override;
+  PhysicalOffset PhysicalLocation(
+      const LayoutBox* location_container = nullptr) const override;
+  DeprecatedLayoutPoint DeprecatedLocationInternal() const override;
   PaintLayerType LayerTypeRequired() const override;
   bool CreatesNewFormattingContext() const override;
 
@@ -79,10 +81,10 @@ class LayoutSVGForeignObject final : public LayoutSVGBlock {
   // 'transform' has been applied but without zoom-adjustment).
   gfx::RectF viewport_;
 
-  // Override of LayoutBox::frame_rect_.location_.
+  // Override of LayoutBox::frame_location_.
   // A physical fragment for <foreignObject> doesn't have the owner
   // PhysicalFragmentLink.
-  LayoutPoint overridden_location_;
+  PhysicalOffset overridden_location_;
 };
 
 template <>

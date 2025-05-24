@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -21,7 +20,7 @@
 #include "content/public/test/test_navigation_observer.h"
 
 namespace {
-const char kExampleUrl[] = "http://example.com/";
+const char kExampleUrl[] = "https://example.com/";
 }  // namespace
 
 // Tests ShoppingUiHandlerDelegate.
@@ -62,7 +61,7 @@ class ShoppingUiHandlerDelegateBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestGetCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
@@ -73,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestGetBookmarkForCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
@@ -90,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestAddBookmarkForCurrentUrl) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
 
@@ -106,7 +105,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_SwitchToExistingTab) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url_1 = GURL(kExampleUrl);
   NavigateToURL(url_1);
   const auto* web_contents_1 = web_contents();
@@ -126,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_OpenNewTab) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL url = GURL(kExampleUrl);
   NavigateToURL(url);
   const GURL url_2 = GURL("https://www.google.com");
@@ -145,7 +144,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestSwitchToOrOpenTab_InvalidUrls) {
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   const GURL invalid_url_1 = GURL("chrome://newtab");
   NavigateToURL(invalid_url_1);
   const GURL invalid_url_2 = GURL("file://foo");
@@ -172,9 +171,8 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   EXPECT_EQ(valid_url, web_contents()->GetLastCommittedURL());
 }
 
-// The feedback dialog on CrOS & LaCrOS happens at the system level,
-// which cannot be easily tested here. LaCrOS has a separate feedback
-// browser test which gives us some coverage.
+// The feedback dialog on CrOS happens at the system level, which cannot be
+// easily tested here.
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
                        TestShowFeedbackForProductSpecifications) {
@@ -182,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   ASSERT_EQ(nullptr, FeedbackDialog::GetInstanceForTest());
 
   auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
+      std::make_unique<commerce::ShoppingUiHandlerDelegate>(profile_);
   delegate->ShowFeedbackForProductSpecifications(log_id);
 
   // Feedback dialog should be non-null with correct meta data.
@@ -199,66 +197,3 @@ IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
   ASSERT_EQ(*ai_meta_data->FindString("log_id"), log_id);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
-                       TestShowProductSpecificationsDisclosureDialog) {
-  std::vector<GURL> urls = {GURL(kExampleUrl)};
-  std::string name = "test_name";
-  auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
-  delegate->ShowProductSpecificationsDisclosureDialog(urls, name);
-
-  auto* dialog = commerce::ProductSpecificationsDisclosureDialog::
-      current_instance_for_testing();
-  ASSERT_TRUE(dialog);
-
-  // Check dialog args.
-  auto dict = base::JSONReader::ReadDict(dialog->GetDialogArgs());
-  ASSERT_TRUE(dict.has_value());
-  auto* set_name = dict->FindString(commerce::kDialogArgsName);
-  ASSERT_TRUE(set_name);
-  ASSERT_EQ(name, *set_name);
-  auto* url_list = dict->FindList(commerce::kDialogArgsUrls);
-  ASSERT_TRUE(url_list);
-  ASSERT_EQ(1u, url_list->size());
-  ASSERT_EQ(urls[0].spec(), (*url_list)[0].GetString());
-  auto new_tab = dict->FindBool(commerce::kDialogArgsInNewTab);
-  ASSERT_TRUE(new_tab.has_value());
-  ASSERT_FALSE(new_tab.value());
-}
-
-IN_PROC_BROWSER_TEST_F(ShoppingUiHandlerDelegateBrowserTest,
-                       TestShowProductSpecificationsSetForUuid) {
-  const base::Uuid uuid = base::Uuid::GenerateRandomV4();
-  auto delegate =
-      std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr, profile_);
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  content::TestNavigationObserver observer_one(
-      commerce::GetProductSpecsTabUrlForID(uuid));
-  observer_one.WatchExistingWebContents();
-
-  delegate->ShowProductSpecificationsSetForUuid(uuid, false);
-
-  observer_one.Wait();
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-  ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL());
-
-  content::TestNavigationObserver observer_two(
-      commerce::GetProductSpecsTabUrlForID(uuid));
-  observer_two.StartWatchingNewWebContents();
-
-  delegate->ShowProductSpecificationsSetForUuid(uuid, true);
-
-  observer_two.WaitForNavigationFinished();
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-  ASSERT_EQ(commerce::GetProductSpecsTabUrlForID(uuid),
-            browser()
-                ->tab_strip_model()
-                ->GetActiveWebContents()
-                ->GetLastCommittedURL());
-}

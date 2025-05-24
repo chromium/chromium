@@ -18,6 +18,7 @@
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
+#include "services/network/public/mojom/sri_message_signature.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
@@ -114,6 +115,13 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
               (const std::string& devtool_request_id,
                const GURL& url,
                network::mojom::SharedDictionaryError error),
+              (override));
+
+  MOCK_METHOD(void,
+              OnSRIMessageSignatureIssue,
+              (const std::string& devtool_request_id,
+               const GURL& url,
+               std::vector<network::mojom::SRIMessageSignatureIssuePtr> issues),
               (override));
 
   void OnCorsError(const std::optional<std::string>& devtool_request_id,

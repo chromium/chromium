@@ -19,23 +19,19 @@ using base::android::ScopedJavaLocalRef;
 namespace chrome {
 namespace android {
 
-ScopedJavaLocalRef<jstring> JNI_SystemInfoFeedbackSource_GetCpuArchitecture(
-    JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env,
-                                 base::SysInfo::OperatingSystemArchitecture());
+std::string JNI_SystemInfoFeedbackSource_GetCpuArchitecture(JNIEnv* env) {
+  return base::SysInfo::OperatingSystemArchitecture();
 }
 
-ScopedJavaLocalRef<jstring> JNI_SystemInfoFeedbackSource_GetGpuVendor(
-    JNIEnv* env) {
+std::string JNI_SystemInfoFeedbackSource_GetGpuVendor(JNIEnv* env) {
   gpu::GPUInfo info = content::GpuDataManager::GetInstance()->GetGPUInfo();
 
-  return ConvertUTF8ToJavaString(env, info.active_gpu().vendor_string);
+  return info.active_gpu().vendor_string;
 }
 
-ScopedJavaLocalRef<jstring> JNI_SystemInfoFeedbackSource_GetGpuModel(
-    JNIEnv* env) {
+std::string JNI_SystemInfoFeedbackSource_GetGpuModel(JNIEnv* env) {
   gpu::GPUInfo info = content::GpuDataManager::GetInstance()->GetGPUInfo();
-  return ConvertUTF8ToJavaString(env, info.active_gpu().device_string);
+  return info.active_gpu().device_string;
 }
 
 int JNI_SystemInfoFeedbackSource_GetAvailableMemoryMB(JNIEnv* env) {

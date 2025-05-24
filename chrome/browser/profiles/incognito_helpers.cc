@@ -6,8 +6,6 @@
 
 #include "chrome/browser/profiles/profile.h"
 
-namespace chrome {
-
 content::BrowserContext* GetBrowserContextRedirectedInIncognito(
     content::BrowserContext* context) {
   return Profile::FromBrowserContext(context)->GetOriginalProfile();
@@ -24,5 +22,3 @@ content::BrowserContext* GetBrowserContextOwnInstanceInIncognito(
     content::BrowserContext* context) {
   return context;
 }
-
-}  // namespace chrome

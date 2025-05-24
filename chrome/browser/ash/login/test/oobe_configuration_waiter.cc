@@ -6,7 +6,7 @@
 
 namespace ash {
 
-OOBEConfigurationWaiter::OOBEConfigurationWaiter() {}
+OOBEConfigurationWaiter::OOBEConfigurationWaiter() = default;
 
 OOBEConfigurationWaiter::~OOBEConfigurationWaiter() {
   if (callback_) {

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_UNIVARIATE_STATS_H_
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_OBSERVERS_AD_METRICS_UNIVARIATE_STATS_H_
 
+#include <array>
+
 namespace page_load_metrics {
 
 // Tracks a variable to be able to calculate its first four moments of
@@ -32,7 +34,7 @@ class UnivariateStats {
   DistributionMoments CalculateStats() const;
 
  private:
-  double sum_x_[4] = {};
+  std::array<double, 4> sum_x_ = {};
   double total_weight_ = 0;
 };
 

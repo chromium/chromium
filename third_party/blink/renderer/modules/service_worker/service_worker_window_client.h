@@ -15,6 +15,7 @@
 namespace blink {
 
 class ScriptState;
+class V8VisibilityState;
 
 class MODULES_EXPORT ServiceWorkerWindowClient final
     : public ServiceWorkerClient {
@@ -32,7 +33,7 @@ class MODULES_EXPORT ServiceWorkerWindowClient final
   ~ServiceWorkerWindowClient() override;
 
   // WindowClient.idl
-  String visibilityState() const;
+  V8VisibilityState visibilityState() const;
   bool focused() const { return is_focused_; }
   ScriptPromise<ServiceWorkerWindowClient> focus(ScriptState*);
   ScriptPromise<IDLNullable<ServiceWorkerWindowClient>> navigate(

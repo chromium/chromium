@@ -111,6 +111,19 @@ const SEGMENTATION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 20;
 // segmentation state.
 const SEGMENTATION_TRANSITION_DURATION = 750;
 
+// SEARCHBOX STATE CONSTANTS: These are the values that are only applied when
+// the shimmer is focusing on a searchbox. In the searchbox state,
+// these values are in relation to the searchbox bounding box smallest size,
+// rather than the entire viewport.
+const SEARCHBOX_STATE_RADIUS_PERCENT = 45;
+const SEARCHBOX_STATE_CIRCLE_BLUR = 2;
+const SEARCHBOX_STATE_RADIUS_AMPLITUDE_PERCENT = 5;
+const SEARCHBOX_STATE_CENTER_X_AMPLITUDE_PERCENT = 40;
+const SEARCHBOX_STATE_CENTER_Y_AMPLITUDE_PERCENT = 40;
+// The time it takes in MS to transition from a different state to the
+// searchbox state.
+const SEARCHBOX_TRANSITION_DURATION = 750;
+
 // The opacity of the sparkles. The sparkles opacity also is dictated by the
 // circle pixel opacity below it. Meaning, the true opacity value is
 // SPARKLES_OPACITY * CIRCLE_OPACITY.
@@ -133,6 +146,8 @@ enum ShimmerState {
   TRANSITION_FADE_OUT_TO_SEGMENTATION = 12,
   TRANSITION_FADE_OUT_TO_TRANSLATE = 13,
   TRANSLATE = 14,
+  TRANSITION_FADE_IN_TO_SEARCHBOX = 15,
+  SEARCHBOX = 16,
 }
 
 // An interface representing the current values of a circle on the canvas.
@@ -259,13 +274,13 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
 
 
   // Canvas height property for setting the pixel height of the canvas element.
-  private canvasHeight: number;
+  declare private canvasHeight: number;
   // Canvas width property for setting the pixel width of the canvas element.
-  private canvasWidth: number;
+  declare private canvasWidth: number;
   // Shader rgba colors.
-  private shaderLayerRgbaColors: string[];
+  declare private shaderLayerRgbaColors: string[];
   // The overlay theme.
-  private theme: OverlayTheme;
+  declare private theme: OverlayTheme;
 
   // The properties of circles currently being rendered.
   private circles: ShimmerCircle[] = [];
@@ -462,8 +477,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     const centerX = e.detail.left + e.detail.width / 2;
     const centerY = e.detail.top + e.detail.height / 2;
 
-    // Ignore invalid regions if not translate mode.
+    // Ignore invalid regions if not translate mode or searchbox.
     if (e.detail.requester !== ShimmerControlRequester.TRANSLATE &&
+        e.detail.requester !== ShimmerControlRequester.SEARCHBOX &&
         (centerX <= 0 || centerY <= 0)) {
       return;
     }
@@ -478,6 +494,11 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         this.shimmerControllerStack.sort();
       }
       this.previousPostSelection = e.detail;
+    }
+
+    // Save the cursor position in case we need to move the shimmer back to it.
+    if (e.detail.requester === ShimmerControlRequester.CURSOR) {
+      this.cursorCenter = {x: centerX * 100, y: centerY * 100};
     }
 
     this.focusRegion(
@@ -512,19 +533,33 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
           centerX, centerY, this.previousPostSelection.width,
           this.previousPostSelection.height,
           this.previousPostSelection.requester);
+    } else if (newCurrentController === ShimmerControlRequester.CURSOR) {
+      // Target the shimmer back to the cursor.
+      this.focusRegion(
+          this.cursorCenter.x / 100, this.cursorCenter.y / 100, 0, 0,
+          newCurrentController);
     } else if (newCurrentController === ShimmerControlRequester.NONE) {
-      if (this.areResultsShowing) {
-        // Hide shimmer if user focusing on results.
-        this.context.globalAlpha = 0;
-      } else {
-        this.setTransitionState(ShimmerState.TRANSITION_TO_STEADY_STATE);
+      if (controllerBeforeUnfocus === ShimmerControlRequester.SEARCHBOX) {
+        // The shimmer should never face back to the steady state. This can
+        // happen if the searchbox is unfocused prior to a cursor focus event
+        // being received. In this case, manually fade out the cursor to 0,0
+        // so the shimmer does not transition to the steady state.
+        // TODO(crbug.com/402183580): This is a bandaid fix for an LE arm. Not
+        // transitioning to the steady state has become a requirement that this
+        // shimmer controller was not originally designed for. This controller
+        // should be redesigned in the future to support this and other more
+        // complex use cases.
+        this.setTransitionState(ShimmerState.TRANSITION_FADE_OUT_TO_CURSOR);
+        this.focusRegion(0, 0, 0, 0, ShimmerControlRequester.CURSOR);
+        return;
       }
+      this.setTransitionState(ShimmerState.TRANSITION_TO_STEADY_STATE);
     }
   }
 
   // Focuses the shimmer on a specific region of the screen. The inputted values
   // should be percentage values between 0-1 representing the region to focus.
-  private async focusRegion(
+  private focusRegion(
       centerX: number, centerY: number, width: number, height: number,
       requester: ShimmerControlRequester) {
     const currentShimmerController = this.getCurrentShimmerController();
@@ -603,6 +638,12 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         break;
       case ShimmerControlRequester.TRANSLATE:
         this.setTransitionState(ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE);
+        break;
+      case ShimmerControlRequester.SEARCHBOX:
+        this.regionCenter = {x: centerX * 100, y: centerY * 100};
+        this.regionWidth = width;
+        this.regionHeight = height;
+        this.setTransitionState(ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX);
         break;
       default:
         assertNotReached();
@@ -690,7 +731,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     }
 
     // Update the sparkles position to use across the circles.
-    this.sparklesPattern!.setTransform(new DOMMatrixReadOnly().translate(
+    this.sparklesPattern.setTransform(new DOMMatrixReadOnly().translate(
         this.sparklesOffset, this.sparklesOffset));
 
     this.context.save();
@@ -778,7 +819,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       } else if (
           this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_REGION ||
           this.shimmerState ===
-              ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION) {
+              ShimmerState.TRANSITION_FADE_IN_TO_SEGMENTATION ||
+          this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX) {
         const smallestLength = Math.min(this.regionHeight, this.regionWidth);
         endCenter = structuredClone(this.regionCenter);
         endCenterXAmpPrecent = endCenterXAmpPrecent * this.regionWidth;
@@ -960,6 +1002,18 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       keyframe.radius = SEGMENTATION_STATE_RADIUS_PERCENT;
       keyframe.radiusAmpPercent = SEGMENTATION_STATE_RADIUS_AMPLITUDE_PERCENT;
       keyframe.opacity = SEGMENTATION_STATE_OPACITY_PERCENT;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX) {
+      // The centerX and centerY can change in between key frames, so we use an
+      // instance member of this component to track that end.
+      keyframe.blur = SEARCHBOX_STATE_CIRCLE_BLUR;
+      keyframe.centerXAmpPercent = SEARCHBOX_STATE_CENTER_X_AMPLITUDE_PERCENT;
+      keyframe.centerYAmpPercent = SEARCHBOX_STATE_CENTER_Y_AMPLITUDE_PERCENT;
+      // This radius is dependent on a instance member of this component because
+      // it can change quickly in between key frames.
+      keyframe.radius = SEARCHBOX_STATE_RADIUS_PERCENT;
+      keyframe.radiusAmpPercent = SEARCHBOX_STATE_RADIUS_AMPLITUDE_PERCENT;
+      keyframe.opacity = INTERACTION_STATE_OPACITY_PERCENT;
     }
     return keyframe;
   }
@@ -973,7 +1027,8 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_REGION ||
         this.shimmerState ===
         ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION ||
-        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE;
+        this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE ||
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX;
   }
 
   private setCurrentAnimationStartTimeIfNeeded(currentTimeMs: number) {
@@ -1079,6 +1134,11 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
       }));
       this.didLastTransitionFinish = true;
       this.shimmerState = ShimmerState.TRANSLATE;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX &&
+        elapsed >= SEARCHBOX_TRANSITION_DURATION) {
+      this.didLastTransitionFinish = true;
+      this.shimmerState = ShimmerState.SEARCHBOX;
     }
   }
 
@@ -1101,6 +1161,9 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
             ShimmerState.TRANSITION_FADE_OUT_TO_SEGMENTATION ||
         this.shimmerState === ShimmerState.TRANSITION_FADE_OUT_TO_TRANSLATE) {
       return FADE_OUT_TRANSITION_DURATION;
+    } else if (
+        this.shimmerState === ShimmerState.TRANSITION_FADE_IN_TO_SEARCHBOX) {
+      return SEARCHBOX_TRANSITION_DURATION;
     }
     return 0;
   }

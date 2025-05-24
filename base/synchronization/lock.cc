@@ -17,7 +17,9 @@
 
 #if DCHECK_IS_ON()
 #include <array>
+#include <memory>
 
+#include "base/functional/function_ref.h"
 #include "base/synchronization/lock_subtle.h"
 #include "base/threading/platform_thread.h"
 
@@ -34,7 +36,7 @@ namespace {
 // therefore considered sufficient to track all locks held by a thread. A
 // dynamic-size array (e.g. owned by a `ThreadLocalOwnedPointer`) would require
 // handling reentrancy issues with allocator shims that use `base::Lock`.
-constexpr int kHeldLocksCapacity = 10;
+constexpr size_t kHeldLocksCapacity = 10;
 thread_local std::array<uintptr_t, kHeldLocksCapacity>
     g_tracked_locks_held_by_thread;
 
@@ -42,6 +44,12 @@ thread_local std::array<uintptr_t, kHeldLocksCapacity>
 thread_local size_t g_num_tracked_locks_held_by_thread = 0;
 
 }  // namespace
+
+Lock::Lock() = default;
+
+Lock::Lock(FunctionRef<void()> check_invariants)
+    : check_invariants_(
+          std::make_unique<FunctionRef<void()>>(check_invariants)) {}
 
 Lock::~Lock() {
   DCHECK(owning_thread_ref_.is_null());
@@ -84,24 +92,28 @@ void Lock::AssertNotHeld() const {
 
 void Lock::CheckHeldAndUnmark() {
   DCHECK_EQ(owning_thread_ref_, PlatformThread::CurrentRef());
+  if (check_invariants_) {
+    (*check_invariants_)();
+  }
   owning_thread_ref_ = PlatformThreadRef();
 }
 
 void Lock::CheckUnheldAndMark() {
   DCHECK(owning_thread_ref_.is_null());
   owning_thread_ref_ = PlatformThread::CurrentRef();
+  if (check_invariants_) {
+    (*check_invariants_)();
+  }
 }
 
 void Lock::AddToLocksHeldOnCurrentThread() {
   CHECK(!in_tracked_locks_held_by_current_thread_);
 
   // Check if capacity is exceeded.
-  if (g_num_tracked_locks_held_by_thread >= kHeldLocksCapacity) {
-    CHECK(false)
-        << "This thread holds more than " << kHeldLocksCapacity
-        << " tracked locks simultaneously. Reach out to //base OWNERS to "
-           "determine whether `kHeldLocksCapacity` should be increased.";
-  }
+  CHECK_LT(g_num_tracked_locks_held_by_thread, kHeldLocksCapacity)
+      << "This thread holds more than " << kHeldLocksCapacity
+      << " tracked locks simultaneously. Reach out to //base OWNERS to "
+         "determine whether `kHeldLocksCapacity` should be increased.";
 
   // Add to the list of held locks.
   g_tracked_locks_held_by_thread[g_num_tracked_locks_held_by_thread] =

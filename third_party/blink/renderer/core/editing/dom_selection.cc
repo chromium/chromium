@@ -175,22 +175,6 @@ bool DOMSelection::isCollapsed() const {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  if (!RuntimeEnabledFeatures::SelectionIsCollapsedShadowDOMSupportEnabled()) {
-    Node* node =
-        Selection().ComputeVisibleSelectionInDOMTree().Anchor().AnchorNode();
-    if (node && node->IsInShadowTree() &&
-        DomWindow()->document()->AncestorInThisScope(node)) {
-      // Count if range is not collapsed, but we are returning true because
-      // feature is disabled and anchor node is in shadow tree.
-      TemporaryRange temp_range(this, PrimaryRangeOrNull());
-      if (temp_range.GetRange() && !temp_range.GetRange()->collapsed()) {
-        UseCounter::Count(DomWindow(),
-                          WebFeature::kSelectionIsCollapsedBehaviorChange);
-      }
-      return true;
-    }
-  }
-
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
   if (temp_range.GetRange()) {
     return temp_range.GetRange()->collapsed();
@@ -605,21 +589,24 @@ const StaticRangeVector DOMSelection::getComposedRanges(
     return ranges;
   }
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
-  Range* range = temp_range.GetRange();
-  if (!range) {
+  if (!temp_range.GetRange()) {
     return ranges;
   }
+
+  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
   // 2. Otherwise, let startNode be start node of the range associated with
   // this, and let startOffset be start offset of the range.
-  Node* startNode = range->composedStartContainer();
-  unsigned startOffset = range->composedStartOffset();
+  const Position& start = selection.ComputeStartPosition();
+  Node* startNode = start.ComputeContainerNode();
+  unsigned startOffset = start.ComputeOffsetInContainerNode();
   // 3. Rescope startNode and startOffset with listed shadow roots.
   Rescope(startNode, startOffset, options->shadowRoots(), /*isEnd=*/false);
 
   // 4. Let endNode be end node of the range associated with this, and let
   // endOffset be end offset of the range.
-  Node* endNode = range->composedEndContainer();
-  unsigned endOffset = range->composedEndOffset();
+  const Position& end = selection.ComputeEndPosition();
+  Node* endNode = end.ComputeContainerNode();
+  unsigned endOffset = end.ComputeOffsetInContainerNode();
   // 5. Rescope endNode and endOffset with listed shadow roots.
   Rescope(endNode, endOffset, options->shadowRoots(), /*isEnd=*/true);
 
@@ -768,19 +755,26 @@ void DOMSelection::deleteFromDocument() {
   DomWindow()->document()->UpdateStyleAndLayout(
       DocumentUpdateReason::kSelection);
 
-  // The following code is necessary for
-  // editing/selection/deleteFromDocument-crash.html, which assumes
-  // deleteFromDocument() for text selection in a TEXTAREA deletes the TEXTAREA
-  // value.
-
-  if (Selection().ComputeVisibleSelectionInDOMTree().IsNone())
-    return;
+  if (!RuntimeEnabledFeatures::
+          SelectionDeleteFromDocumentUaShadowFixEnabled()) {
+    // The following code is necessary for
+    // editing/selection/deleteFromDocument-crash.html, which assumes
+    // deleteFromDocument() for text selection in a TEXTAREA deletes the
+    // TEXTAREA value.
+    if (Selection().ComputeVisibleSelectionInDOMTree().IsNone()) {
+      return;
+    }
+  }
 
   Range* selected_range = CreateRange(Selection()
                                           .ComputeVisibleSelectionInDOMTree()
                                           .ToNormalizedEphemeralRange());
   if (!selected_range)
     return;
+  if (RuntimeEnabledFeatures::SelectionDeleteFromDocumentUaShadowFixEnabled() &&
+      selected_range->startContainer()->IsInUserAgentShadowRoot()) {
+    return;
+  }
 
   // |selectedRange| may point nodes in a different root.
   selected_range->deleteContents(ASSERT_NO_EXCEPTION);

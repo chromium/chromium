@@ -16,7 +16,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
-#include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
@@ -31,8 +30,9 @@ namespace {
 
 constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
 
-unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
+constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
+constexpr size_t kMaxRetriesToSignAssertionToken = 3;
 
 base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
     const std::string& header_and_payload,
@@ -53,18 +53,15 @@ base::expected<std::string, TokenBindingHelper::Error> CreateAssertionToken(
 }
 
 // A helper to record a histogram value before running `callback`.
-// Also reorders callback parameters for chaining with `CreateAssertionToken()`.
 void RunCallbackAndRecordMetrics(
     TokenBindingHelper::GenerateAssertionCallback callback,
-    std::optional<HybridEncryptionKey> ephemeral_key,
     base::expected<std::string, TokenBindingHelper::Error>
         assertion_token_or_error) {
   base::UmaHistogramEnumeration("Signin.TokenBinding.GenerateAssertionResult",
                                 assertion_token_or_error.error_or(
                                     TokenBindingHelper::kNoErrorForMetrics));
   std::move(callback).Run(
-      std::move(assertion_token_or_error).value_or(std::string()),
-      std::move(ephemeral_key));
+      std::move(assertion_token_or_error).value_or(std::string()));
 }
 
 }  // namespace
@@ -100,12 +97,13 @@ void TokenBindingHelper::ClearAllKeys() {
 void TokenBindingHelper::GenerateBindingKeyAssertion(
     const CoreAccountId& account_id,
     std::string_view challenge,
+    std::string_view ephemeral_public_key,
     const GURL& destination_url,
     GenerateAssertionCallback callback) {
   CHECK(callback);
   auto it = binding_keys_.find(account_id);
   if (it == binding_keys_.end()) {
-    RunCallbackAndRecordMetrics(std::move(callback), std::nullopt,
+    RunCallbackAndRecordMetrics(std::move(callback),
                                 base::unexpected(Error::kKeyNotFound));
     return;
   }
@@ -122,7 +120,8 @@ void TokenBindingHelper::GenerateBindingKeyAssertion(
   // `UnexportableKeyLoader`.
   binding_key_data.key_loader->InvokeCallbackAfterKeyLoaded(base::BindOnce(
       &TokenBindingHelper::SignAssertionToken, base::Unretained(this),
-      std::string(challenge), destination_url, std::move(callback)));
+      std::string(challenge), std::string(ephemeral_public_key),
+      destination_url, std::move(callback)));
 }
 
 std::vector<uint8_t> TokenBindingHelper::GetWrappedBindingKey(
@@ -133,6 +132,17 @@ std::vector<uint8_t> TokenBindingHelper::GetWrappedBindingKey(
   }
 
   return it->second.wrapped_key;
+}
+
+size_t TokenBindingHelper::GetBoundTokenCount() const {
+  return binding_keys_.size();
+}
+
+bool TokenBindingHelper::AreAllBindingKeysSame() const {
+  return std::ranges::all_of(binding_keys_, [this](const auto& kv_pair) {
+    return kv_pair.second.wrapped_key ==
+           binding_keys_.begin()->second.wrapped_key;
+  });
 }
 
 TokenBindingHelper::BindingKeyData::BindingKeyData(
@@ -146,17 +156,17 @@ TokenBindingHelper::BindingKeyData::~BindingKeyData() = default;
 
 void TokenBindingHelper::SignAssertionToken(
     std::string_view challenge,
+    std::string_view ephemeral_public_key,
     const GURL& destination_url,
     GenerateAssertionCallback callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         binding_key) {
   if (!binding_key.has_value()) {
-    RunCallbackAndRecordMetrics(std::move(callback), std::nullopt,
+    RunCallbackAndRecordMetrics(std::move(callback),
                                 base::unexpected(Error::kLoadKeyFailure));
     return;
   }
 
-  HybridEncryptionKey ephemeral_key;
   crypto::SignatureVerifier::SignatureAlgorithm algorithm =
       *unexportable_key_service_->GetAlgorithm(*binding_key);
   std::optional<std::string> header_and_payload =
@@ -164,19 +174,18 @@ void TokenBindingHelper::SignAssertionToken(
           algorithm,
           *unexportable_key_service_->GetSubjectPublicKeyInfo(*binding_key),
           GaiaUrls::GetInstance()->oauth2_chrome_client_id(), challenge,
-          destination_url, kTokenBindingNamespace, &ephemeral_key);
+          destination_url, kTokenBindingNamespace, ephemeral_public_key);
 
   if (!header_and_payload.has_value()) {
     RunCallbackAndRecordMetrics(
-        std::move(callback), std::nullopt,
-        base::unexpected(Error::kCreateAssertionFaiure));
+        std::move(callback), base::unexpected(Error::kCreateAssertionFaiure));
     return;
   }
 
   unexportable_key_service_->SignSlowlyAsync(
-      *binding_key, base::as_bytes(base::make_span(*header_and_payload)),
-      kTokenBindingPriority,
+      *binding_key, base::as_byte_span(*header_and_payload),
+      kTokenBindingPriority, kMaxRetriesToSignAssertionToken,
       base::BindOnce(&CreateAssertionToken, *header_and_payload, algorithm)
           .Then(base::BindOnce(&RunCallbackAndRecordMetrics,
-                               std::move(callback), std::move(ephemeral_key))));
+                               std::move(callback))));
 }

@@ -15,7 +15,7 @@ import './ax_annotations_section.js';
 import './bluetooth_braille_display_ui.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -24,12 +24,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {assertExhaustive} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {Route, Router, routes} from '../router.js';
+import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './chromevox_subpage.html.js';
-import {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
+import type {ChromeVoxSubpageBrowserProxy} from './chromevox_subpage_browser_proxy.js';
+import {ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
 
 export {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 
@@ -62,12 +64,14 @@ type EventStreamFiltersPrefValue = Record<string, boolean>;
 
 /**
  * Represents a voice as sent from the TTS Handler class.
- * |name| is the user-facing voice name.
+ * |name| is the internal voice name.
+ * |displayName| is the user-facing voice name.
  * |remote| is whether the TTS voice is online (versus on-device).
  * |extensionId| is the Chrome Extension ID for the TTS voice.
  */
 interface TtsHandlerVoice {
   name: string;
+  displayName: string;
   remote: boolean;
   extensionId: string;
 }
@@ -358,6 +362,17 @@ export class SettingsChromeVoxSubpageElement extends
   private virtualBrailleDisplayStyleOptions_: DropdownMenuOptionList;
   private chromeVoxBrowserProxy_: ChromeVoxSubpageBrowserProxy;
   private brailleTables_: BrailleTable[];
+  private developerOptionsExpanded_: boolean;
+  private readonly eventStreamFilters_: string[];
+  private readonly mainNodeAnnotationsFeatureEnabled_: boolean;
+
+  // Regular expressions that will match against a voice name if it contains a
+  // speaker ID in it.
+  private omitLocalSpeakerName_: RegExp = /-x-.*-local/;
+  private omitNetworkSpeakerName_: RegExp = /-x-.*-network/;
+  // Replacements that are used if the above regular expressions match.
+  private localSpeakerNameReplacement_ = '-x-local';
+  private networkSpeakerNameReplacement_ = '-x-network';
 
   // TODO(270619855): Add tests to verify these controls change their prefs.
   constructor() {
@@ -427,13 +442,30 @@ export class SettingsChromeVoxSubpageElement extends
         'settings.a11y.chromevox.capital_strategy', capitalStrategyBackup);
   }
 
+  populateVoiceListForTesting(voices: TtsHandlerVoice[]): void {
+    this.populateVoiceList_(voices);
+  }
+
   /**
    * Populates the list of voices for the UI to use in display.
    */
   private populateVoiceList_(voices: TtsHandlerVoice[]): void {
     // TODO(b/271422242): voiceName can actually be omitted in the TTS engine.
     // We should generate a name in that case.
-    voices.forEach(voice => voice.name = voice.name || '');
+    voices.forEach(voice => {
+      voice.name = voice.name || '';
+      voice.displayName = voice.displayName || voice.name;
+
+      if (this.omitLocalSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitLocalSpeakerName_, this.localSpeakerNameReplacement_);
+      } else if (this.omitNetworkSpeakerName_.test(voice.displayName)) {
+        // Remove the speaker name, if it's present.
+        voice.displayName = voice.displayName.replace(
+            this.omitNetworkSpeakerName_, this.networkSpeakerNameReplacement_);
+      }
+    });
     voices.sort((a, b) => {
       function score(voice: TtsHandlerVoice): number {
         // Prefer Google tts voices over all others.
@@ -460,7 +492,10 @@ export class SettingsChromeVoxSubpageElement extends
         value: SYSTEM_VOICE,
         name: this.i18n('chromeVoxSystemVoice'),
       },
-      ...voices.map(({name}) => ({value: name, name})),
+      // `name` is what is displayed in the UI, `value` is used to set the
+      // associated pref value.
+      ...voices.map(
+          ({name, displayName}) => ({name: displayName, value: name})),
     ];
   }
 
@@ -528,11 +563,11 @@ export class SettingsChromeVoxSubpageElement extends
     }
     if (table.grade && !table.variant) {
       return this.i18n(
-          'chromeVoxBrailleTableNameWithGrade', baseName, table.grade!);
+          'chromeVoxBrailleTableNameWithGrade', baseName, table.grade);
     }
     if (!table.grade && table.variant) {
       return this.i18n(
-          'chromeVoxBrailleTableNameWithVariant', baseName, table.variant!);
+          'chromeVoxBrailleTableNameWithVariant', baseName, table.variant);
     }
 
     return this.i18n(

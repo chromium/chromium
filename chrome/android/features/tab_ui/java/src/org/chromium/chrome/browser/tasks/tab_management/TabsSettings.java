@@ -5,17 +5,21 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchConfigManager;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
+import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -26,17 +30,16 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.text.ChromeClickableSpan;
+import org.chromium.ui.text.SpanApplier;
 
 /** Fragment for tab related configurations to Chrome. */
+@NullMarked
 public class TabsSettings extends ChromeBaseSettingsFragment {
     // Must match key in tabs_settings.xml
     @VisibleForTesting
     static final String PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH =
             "auto_open_synced_tab_groups_switch";
-
-    @VisibleForTesting
-    static final String PREF_SHOW_TAB_GROUP_CREATION_DIALOG_SWITCH =
-            "show_tab_group_creation_dialog_switch";
 
     @VisibleForTesting
     static final String PREF_TAB_ARCHIVE_SETTINGS = "archive_settings_entrypoint";
@@ -49,15 +52,17 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     static final String PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE =
             "share_titles_and_urls_with_os_learn_more";
 
+    @VisibleForTesting
+    static final String LEARN_MORE_URL = "https://support.google.com/chrome/?p=share_titles_urls";
+
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tabs_settings);
         mPageTitle.set(getString(R.string.tabs_settings_title));
 
         configureAutoOpenSyncedTabGroupsSwitch();
-        configureShowCreationDialogSwitch();
         configureShareTitlesAndUrlsWithOsSwitch();
     }
 
@@ -97,35 +102,8 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                 });
     }
 
-    private void configureShowCreationDialogSwitch() {
-        ChromeSwitchPreference showTabGroupCreationDialogSwitch =
-                (ChromeSwitchPreference) findPreference(PREF_SHOW_TAB_GROUP_CREATION_DIALOG_SWITCH);
-        if (!TabUiFeatureUtilities.isTabGroupCreationDialogShowConfigurable()) {
-            showTabGroupCreationDialogSwitch.setVisible(false);
-            return;
-        }
-
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        boolean isEnabled =
-                prefsManager.readBoolean(ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, true);
-        showTabGroupCreationDialogSwitch.setChecked(isEnabled);
-        showTabGroupCreationDialogSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
-                    boolean enabled = (boolean) newValue;
-                    prefsManager.writeBoolean(
-                            ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, enabled);
-                    RecordHistogram.recordBooleanHistogram(
-                            "TabGroups.ShowTabGroupCreationDialogSwitch.ToggledToState", enabled);
-                    return true;
-                });
-    }
-
     private void configureTabArchiveSettings() {
         Preference tabArchiveSettingsPref = findPreference(PREF_TAB_ARCHIVE_SETTINGS);
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_TAB_DECLUTTER)) {
-            tabArchiveSettingsPref.setVisible(false);
-            return;
-        }
 
         TabArchiveSettings archiveSettings =
                 new TabArchiveSettings(ChromeSharedPreferences.getInstance());
@@ -151,7 +129,40 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                 (TextMessagePreference)
                         findPreference(PREF_SHARE_TITLES_AND_URLS_WITH_OS_LEARN_MORE);
 
-        shareTitlesAndUrlsWithOsSwitch.setVisible(false);
-        learnMoreTextMessagePreference.setVisible(false);
+        if (!AuxiliarySearchControllerFactory.getInstance().isEnabledAndDeviceCompatible()) {
+            shareTitlesAndUrlsWithOsSwitch.setVisible(false);
+            learnMoreTextMessagePreference.setVisible(false);
+            return;
+        }
+
+        boolean isEnabled = AuxiliarySearchUtils.isShareTabsWithOsEnabled();
+        shareTitlesAndUrlsWithOsSwitch.setChecked(isEnabled);
+        shareTitlesAndUrlsWithOsSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    boolean enabled = (boolean) newValue;
+                    AuxiliarySearchConfigManager.getInstance().notifyShareTabsStateChanged(enabled);
+                    return true;
+                });
+
+        learnMoreTextMessagePreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string
+                                                .share_titles_and_urls_with_os_learn_more_setting_text),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
+    }
+
+    @VisibleForTesting
+    void onLearnMoreClicked(View view) {
+        getCustomTabLauncher().openUrlInCct(getContext(), LEARN_MORE_URL);
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

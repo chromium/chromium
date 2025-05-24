@@ -4,13 +4,14 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {HotspotConfigDialogElement, Router, routes, WiFiSecurityType} from 'chrome://os-settings/os_settings.js';
+import type {HotspotConfigDialogElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes, WiFiSecurityType} from 'chrome://os-settings/os_settings.js';
 import {setHotspotConfigForTesting} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.js';
 import {HotspotAllowStatus, HotspotState, SetHotspotConfigResult, WiFiBand, WiFiSecurityMode} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
-import {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
-import {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
-import {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
+import type {NetworkConfigInputElement} from 'chrome://resources/ash/common/network/network_config_input.js';
+import type {NetworkConfigSelectElement} from 'chrome://resources/ash/common/network/network_config_select.js';
+import type {NetworkPasswordInputElement} from 'chrome://resources/ash/common/network/network_password_input.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

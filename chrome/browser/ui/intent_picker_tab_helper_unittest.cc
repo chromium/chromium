@@ -18,8 +18,15 @@
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #endif  // #if BUILDFLAG(IS_CHROMEOS)
 
-class IntentPickerTabHelperTest : public ChromeRenderViewHostTestHarness {
+class IntentPickerTabHelperTest : public ChromeRenderViewHostTestHarness,
+                                  public testing::WithParamInterface<
+                                      apps::test::LinkCapturingFeatureVersion> {
  public:
+  IntentPickerTabHelperTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+  }
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -36,21 +43,10 @@ class IntentPickerTabHelperTest : public ChromeRenderViewHostTestHarness {
 
  private:
   raw_ptr<IntentPickerTabHelper, DanglingUntriaged> helper_;
-};
-
-class IntentPickerTabHelperPlatformAgnosticTest
-    : public IntentPickerTabHelperTest {
- public:
-  IntentPickerTabHelperPlatformAgnosticTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(), {});
-  }
-
- private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(IntentPickerTabHelperPlatformAgnosticTest, ShowOrHideIcon) {
+TEST_P(IntentPickerTabHelperTest, ShowOrHideIcon) {
   IntentPickerTabHelper::ShowOrHideIcon(web_contents(),
                                         /*should_show_icon=*/true);
 
@@ -62,15 +58,14 @@ TEST_F(IntentPickerTabHelperPlatformAgnosticTest, ShowOrHideIcon) {
   ASSERT_FALSE(helper()->should_show_icon());
 }
 
-TEST_F(IntentPickerTabHelperPlatformAgnosticTest, ShowIconForApps) {
+TEST_P(IntentPickerTabHelperTest, ShowIconForApps) {
   NavigateAndCommit(GURL("https://www.google.com"));
   helper()->MaybeShowIconForApps(CreateTestAppList());
 
   ASSERT_TRUE(helper()->should_show_icon());
 }
 
-TEST_F(IntentPickerTabHelperPlatformAgnosticTest,
-       ShowIconForApps_ExpandedChip) {
+TEST_P(IntentPickerTabHelperTest, ShowIconForApps_ExpandedChip) {
   const GURL kTestUrl = GURL("https://www.google.com");
 
   NavigateAndCommit(kTestUrl);
@@ -79,8 +74,7 @@ TEST_F(IntentPickerTabHelperPlatformAgnosticTest,
   ASSERT_TRUE(helper()->ShouldShowExpandedChip());
 }
 
-TEST_F(IntentPickerTabHelperPlatformAgnosticTest,
-       ShowIconForApps_CollapsedChip) {
+TEST_P(IntentPickerTabHelperTest, ShowIconForApps_CollapsedChip) {
   const GURL kTestUrl = GURL("https://www.google.com");
 
   // Simulate having seen the chip for this URL several times before, so that it
@@ -97,8 +91,7 @@ TEST_F(IntentPickerTabHelperPlatformAgnosticTest,
   ASSERT_FALSE(helper()->ShouldShowExpandedChip());
 }
 
-TEST_F(IntentPickerTabHelperPlatformAgnosticTest,
-       ShowIntentIcon_ResetsExpandedState) {
+TEST_P(IntentPickerTabHelperTest, ShowIntentIcon_ResetsExpandedState) {
   const GURL kTestUrl = GURL("https://www.google.com");
 
   NavigateAndCommit(kTestUrl);
@@ -114,7 +107,7 @@ TEST_F(IntentPickerTabHelperPlatformAgnosticTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
+TEST_P(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
   base::HistogramTester histogram_tester;
 
   NavigateAndCommit(GURL("https://www.google.com"));
@@ -238,7 +231,7 @@ TEST_F(IntentPickerTabHelperTest, LinkCapturing_EntryPointShown) {
       apps::IntentHandlingMetrics::LinkCapturingEvent::kEntryPointShown, 4);
 }
 #else
-TEST_F(IntentPickerTabHelperTest, IconShownMetricsTriggered) {
+TEST_P(IntentPickerTabHelperTest, IconShownMetricsTriggered) {
   base::HistogramTester histogram_tester;
 
   NavigateAndCommit(GURL("https://www.google.com"));
@@ -250,3 +243,16 @@ TEST_F(IntentPickerTabHelperTest, IconShownMetricsTriggered) {
       apps::IntentPickerIconEvent::kIconShown, 0);
 }
 #endif  // #if BUILDFLAG(IS_CHROMEOS)
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IntentPickerTabHelperTest,
+#if BUILDFLAG(IS_CHROMEOS)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
+#else
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+        ,
+    apps::test::LinkCapturingVersionToString);

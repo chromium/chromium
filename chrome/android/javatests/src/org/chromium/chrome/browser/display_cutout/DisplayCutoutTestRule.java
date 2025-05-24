@@ -176,13 +176,9 @@ public class DisplayCutoutTestRule<T extends ChromeActivity> extends ChromeActiv
 
     @Override
     protected void after() {
-        super.after();
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    if (!getActivity().isActivityFinishingOrDestroyed()) {
-                        getActivity().getFullscreenManager().removeObserver(mListener);
-                    }
-                });
+                () -> getActivity().getFullscreenManager().removeObserver(mListener));
+        super.after();
     }
 
     protected String getTestURL() {

@@ -1,0 +1,52 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  padding: 8px 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+#action-panel {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+}
+
+#status-container {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  font-weight: bold;
+  color: var(--google-grey-700);
+}
+
+.status-circle {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.status-idle .status-circle {
+  background-color: var(--google-green-700);
+}
+
+.status-tracing .status-circle {
+  background-color: var(--google-red-700);
+}
+
+.status-stopping .status-circle {
+  background-color: var(--google-orange-700);
+}

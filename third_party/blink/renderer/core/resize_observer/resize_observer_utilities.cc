@@ -53,7 +53,7 @@ gfx::SizeF ResizeObserverUtilities::ComputeZoomAdjustedBox(
       return ComputeSnappedDevicePixelContentBox(box_size, layout_box, style);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -5,13 +5,16 @@
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 
 #include <sys/types.h>
+
 #include <utility>
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "ui/gfx/android/achoreographer_compat.h"
 #include "ui/gl/gl_features.h"
 
@@ -138,12 +141,14 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::FrameCallback64(
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
     const AChoreographerFrameCallbackData* callback_data,
     void* data) {
-  TRACE_EVENT0("toplevel", "Extend_VSync");
   auto* self = static_cast<base::WeakPtr<AChoreographerImpl>*>(data);
   if (!(*self)) {
     delete self;
     return;
   }
+
+  TRACE_EVENT_BEGIN("toplevel,graphics.pipeline", "Extend_VSync");
+
   DCHECK(gfx::AChoreographerCompat33::Get().supported);
   int64_t frame_time_nanos =
       gfx::AChoreographerCompat33::Get()
@@ -176,7 +181,24 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::VsyncCallback(
         base::Nanoseconds(present_time - frame_time_nanos));
   }
 
-  (*self)->OnVSync(frame_time_nanos, std::move(possible_deadlines), self);
+  (*self)->OnVSync(frame_time_nanos, possible_deadlines, self);
+
+  TRACE_EVENT_END("toplevel,graphics.pipeline", [&](perfetto::EventContext
+                                                        ctx) {
+    auto* data = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                     ->set_android_choreographer_frame_callback_data();
+    auto frame_time_us = base::TimeTicks::FromJavaNanoTime(frame_time_nanos)
+                             .since_origin()
+                             .InMicroseconds();
+    data->set_frame_time_us(frame_time_us);
+    for (const auto& deadline : possible_deadlines.deadlines) {
+      auto* timeline = data->add_frame_timeline();
+      timeline->set_vsync_id(deadline.vsync_id);
+      timeline->set_latch_delta_us(deadline.latch_delta.InMicroseconds());
+      timeline->set_present_delta_us(deadline.present_delta.InMicroseconds());
+    }
+    data->set_preferred_frame_timeline_index(preferred_index);
+  });
 }
 
 // static

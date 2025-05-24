@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.input;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.view.View;
@@ -13,12 +15,15 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 /**
  * A factory class for {@link ThreadedInputConnection}. The class also includes triggering
  * mechanism (hack) to run our InputConnection on non-UI thread.
  */
+@NullMarked
 public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnection.Factory {
     private static final String TAG = "Ime";
     private static final boolean DEBUG_LOGS = false;
@@ -32,9 +37,9 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
     private static final int CHECK_REGISTER_RETRY = 1;
 
     private final InputMethodManagerWrapper mInputMethodManagerWrapper;
-    private ThreadedInputConnectionProxyView mProxyView;
-    private ThreadedInputConnection mThreadedInputConnection;
-    private CheckInvalidator mCheckInvalidator;
+    private @Nullable ThreadedInputConnectionProxyView mProxyView;
+    private @Nullable ThreadedInputConnection mThreadedInputConnection;
+    private @Nullable CheckInvalidator mCheckInvalidator;
     private boolean mReentrantTriggering;
     private boolean mTriggerDelayedOnCreateInputConnection;
 
@@ -116,7 +121,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
     }
 
     @Override
-    public ThreadedInputConnection initializeAndGet(
+    public @Nullable ThreadedInputConnection initializeAndGet(
             View view,
             ImeAdapterImpl imeAdapter,
             int inputType,
@@ -192,6 +197,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
                 new Runnable() {
                     @Override
                     public void run() {
+                        assumeNonNull(mProxyView);
                         // This is a hack to make InputMethodManager believe that the proxy view
                         // now has a focus. As a result, InputMethodManager will think that
                         // mProxyView is focused, and will call getHandler() of the view when
@@ -217,7 +223,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
                                             public void run() {
                                                 postCheckRegisterResultOnUiThread(
                                                         view,
-                                                        mCheckInvalidator,
+                                                        assumeNonNull(mCheckInvalidator),
                                                         CHECK_REGISTER_RETRY);
                                             }
                                         });
@@ -244,13 +250,13 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
             postDelayed(view, r, 1000);
             mFocusState = FocusState.NOT_APPLICABLE;
         } else {
-            view.getHandler().post(r);
+            assumeNonNull(view.getHandler()).post(r);
         }
     }
 
     @VisibleForTesting
     protected void postDelayed(View view, Runnable r, long delayMs) {
-        view.getHandler().postDelayed(r, delayMs);
+        assumeNonNull(view.getHandler()).postDelayed(r, delayMs);
     }
 
     // Note that this function is called both from IME thread and UI thread.

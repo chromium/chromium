@@ -12,7 +12,7 @@
 namespace views {
 class Button;
 class View;
-}
+}  // namespace views
 
 class Browser;
 
@@ -31,8 +31,9 @@ struct AnchorConfiguration {
 
 // Returns the anchor configuration for bubbles that are aligned to the page
 // info bubble.
-AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
-                                                   Anchor = kLocationBar);
+AnchorConfiguration GetPageInfoAnchorConfiguration(
+    Browser* browser,
+    Anchor = Anchor::kLocationBar);
 
 // Returns the anchor configuration for the permission bubble.
 AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(

@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.omnibox;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.TimingMetric;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -20,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Optional;
 
 /** This class collects a variety of different Omnibox related metrics. */
+@NullMarked
 public class OmniboxMetrics {
     /**
      * Maximum number of suggest tile types we want to record. Anything beyond this will be reported
@@ -52,6 +53,9 @@ public class OmniboxMetrics {
     @VisibleForTesting
     public static final String HISTOGRAM_OMNIBOX_ACTION_VALID =
             "Android.Omnibox.OmniboxAction.Valid";
+
+    public static final String HISTOGRAM_FOCUS_TO_IME_ANIMATION_START =
+            "Android.Omnibox.SuggestionList.FocusToImeAnimationStart";
 
     /**
      * The amount of time it takes to process a touch down event. A touch down event can send a
@@ -213,7 +217,7 @@ public class OmniboxMetrics {
      * Record the length of time between when omnibox gets focused and when a omnibox match is open.
      */
     public static void recordFocusToOpenTime(long focusToOpenTimeInMillis) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Omnibox.FocusToOpenTimeAnyPopupState3", focusToOpenTimeInMillis);
     }
 
@@ -370,8 +374,7 @@ public class OmniboxMetrics {
      *     value is null if no prefetches have been started in the current omnibox session.
      */
     public static void recordTouchDownPrefetchResult(
-            @NonNull AutocompleteMatch navSuggestion,
-            @NonNull Optional<AutocompleteMatch> prefetchSuggestion) {
+            AutocompleteMatch navSuggestion, Optional<AutocompleteMatch> prefetchSuggestion) {
         @PrefetchResult
         int result =
                 prefetchSuggestion
@@ -389,13 +392,21 @@ public class OmniboxMetrics {
     }
 
     /**
+     * Records the wall time elapsed between focusing the omnibox and the onPrepare event of the IME
+     * WindowInsets animation.
+     */
+    public static TimingMetric recordTimeFromFocusToImeAnimation() {
+        return TimingMetric.shortUptime(HISTOGRAM_FOCUS_TO_IME_ANIMATION_START);
+    }
+
+    /**
      * Translate the pageClass to a histogram suffix.
      *
-     * @param histogram Histogram prefix.
+     * @param prefix Histogram prefix.
      * @param pageClass Page classification to translate.
      * @return Metric name.
      */
-    private static String histogramName(@NonNull String prefix, int pageClass) {
+    private static String histogramName(String prefix, int pageClass) {
         String suffix = "Other";
 
         switch (pageClass) {
@@ -421,6 +432,10 @@ public class OmniboxMetrics {
             case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
             case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
                 suffix = "Widget";
+                break;
+
+            case PageClassification.ANDROID_HUB_VALUE:
+                suffix = "HUB";
                 break;
 
             case PageClassification.BLANK_VALUE:

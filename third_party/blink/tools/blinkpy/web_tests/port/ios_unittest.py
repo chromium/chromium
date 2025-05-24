@@ -32,10 +32,10 @@ class IOSPortTest(port_testcase.PortTestCase):
     def test_get_platform_tags(self):
         port = self.make_port()
         self.assertEqual(port.get_platform_tags(),
-                         {'ios', 'ios17-simulator', 'x86', 'release'})
+                         {'ios', 'ios18-simulator', 'x86', 'release'})
 
     def test_versions(self):
-        self.assert_name('ios', 'ios17', 'ios-ios17-simulator')
+        self.assert_name('ios', 'ios18', 'ios-ios18-simulator')
 
     def test_driver_name_option(self):
         self.assertTrue(
@@ -54,7 +54,7 @@ class IOSPortTest(port_testcase.PortTestCase):
         cmd_line = port.driver_cmd_line()
         self.assertEqual(cmd_line[0], '/mock-checkout/out/Release/iossim')
         self.assertTrue('-d' in cmd_line)
-        self.assertEqual(cmd_line[cmd_line.index('-d') + 1], 'iPhone 13')
+        self.assertEqual(cmd_line[cmd_line.index('-d') + 1], 'iPhone 16')
 
         # The iOS port adds additional flags to the '-c' option. So we check if
         # '--foo=bar|baz' are in the option.

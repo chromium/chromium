@@ -8,12 +8,12 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/bookmarks/ui_bundled/editor/bookmarks_editor_mutator.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class AuthenticationService;
 @protocol BookmarksEditorConsumer;
 @protocol BookmarksEditorMediatorDelegate;
 class PrefService;
+class ProfileIOS;
 @protocol SnackbarCommands;
 
 namespace bookmarks {

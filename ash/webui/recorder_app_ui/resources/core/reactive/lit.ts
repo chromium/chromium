@@ -198,3 +198,25 @@ export class ScopedAsyncComputed<T> implements ReactiveController {
 // eslint-disable-next-line @typescript-eslint/naming-convention
 export const ScopedAsyncEffect = ScopedAsyncComputed<void>;
 export type ScopedAsyncEffect = ScopedAsyncComputed<void>;
+
+export class ScopedEffect implements ReactiveController {
+  private dispose: Dispose|null = null;
+
+  constructor(
+    host: ReactiveControllerHost,
+    private readonly callback: () => void,
+  ) {
+    host.addController(this);
+  }
+
+  hostConnected(): void {
+    if (this.dispose === null) {
+      this.dispose = effect(this.callback);
+    }
+  }
+
+  hostDisconnected(): void {
+    this.dispose?.();
+    this.dispose = null;
+  }
+}

@@ -79,11 +79,11 @@
 #include "services/network/public/cpp/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"  // nogncheck
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 using content::NavigationController;
@@ -245,7 +245,7 @@ class TestFailProvisionalLoadObserver : public content::WebContentsObserver {
   TestFailProvisionalLoadObserver& operator=(
       const TestFailProvisionalLoadObserver&) = delete;
 
-  ~TestFailProvisionalLoadObserver() override {}
+  ~TestFailProvisionalLoadObserver() override = default;
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
@@ -488,9 +488,7 @@ IN_PROC_BROWSER_TEST_F(DNSErrorPageTest, MAYBE_IFrameDNSError_GoBack) {
 // This test fails regularly on win_rel trybots. See crbug.com/121540
 //
 // This fails on linux_aura bringup: http://crbug.com/163931
-#if BUILDFLAG(IS_WIN) ||                                       \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-     defined(USE_AURA))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(USE_AURA))
 #define MAYBE_IFrameDNSError_GoBackAndForward DISABLED_IFrameDNSError_GoBackAndForward
 #else
 #define MAYBE_IFrameDNSError_GoBackAndForward IFrameDNSError_GoBackAndForward
@@ -1072,7 +1070,7 @@ IN_PROC_BROWSER_TEST_F(ErrorPageSniffTest,
   ExpectDisplayingErrorPage(browser(), net::ERR_INVALID_RESPONSE);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // For ChromeOS, launches appropriate diagnostics app.
 void ClickDiagnosticsLink(Browser* browser) {
   DCHECK(IsDisplayingDiagnosticsLink(browser));
@@ -1082,9 +1080,7 @@ void ClickDiagnosticsLink(Browser* browser) {
 }
 
 // On ChromeOS "Running Connectivity Diagnostics" link on error page should
-// launch chrome://diagnostics/?connectivity app by default. Not running test on
-// LaCROS due to errors on Wayland initialization and to keep test to ChromeOS
-// devices.
+// launch chrome://diagnostics/?connectivity app by default.
 using ErrorPageOfflineAppLaunchTest = ash::SystemWebAppBrowserTestBase;
 
 IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
@@ -1107,6 +1103,6 @@ IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
       ::chrome::FindLastActive()->tab_strip_model()->GetActiveWebContents();
   EXPECT_EQ(expected_url, contents->GetVisibleURL());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

@@ -16,11 +16,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {getTemplate} from './startup_settings_card.html.js';
 
@@ -44,22 +44,6 @@ export class StartupSettingsCardElement extends StartupSettingsCardElementBase {
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this element's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kRestoreAppsAndPages]),
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
-      /**
        * List of options for the on startup dropdown menu.
        */
       onStartupDropdownOptions_: {
@@ -77,7 +61,12 @@ export class StartupSettingsCardElement extends StartupSettingsCardElementBase {
   }
 
   prefs: PrefsState;
-  private readonly isRevampWayfindingEnabled_: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kRestoreAppsAndPages,
+  ]);
+
   private readonly onStartupDropdownOptions_:
       Array<{value: number, name: string}>;
 

@@ -87,7 +87,7 @@ class CONTENT_EXPORT BrowserChildProcessHost : public IPC::Sender {
   // call this method so that the process is associated with this object.
   virtual void SetProcess(base::Process process) = 0;
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
   // Returns a PortProvider used to get the task port for child processes.
   static base::PortProvider* GetPortProvider();
 #endif

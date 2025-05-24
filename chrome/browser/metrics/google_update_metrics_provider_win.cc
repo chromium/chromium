@@ -54,17 +54,11 @@ uint32_t GetHashedCohortId() {
 #endif
 }
 
-uint32_t GetHashedCohortName() {
-  return base::HashMetricName(base::WideToUTF8(
-      install_static::InstallDetails::Get().update_cohort_name()));
-}
-
 }  // namespace
 
-GoogleUpdateMetricsProviderWin::GoogleUpdateMetricsProviderWin() {}
+GoogleUpdateMetricsProviderWin::GoogleUpdateMetricsProviderWin() = default;
 
-GoogleUpdateMetricsProviderWin::~GoogleUpdateMetricsProviderWin() {
-}
+GoogleUpdateMetricsProviderWin::~GoogleUpdateMetricsProviderWin() = default;
 
 void GoogleUpdateMetricsProviderWin::AsyncInit(
     base::OnceClosure done_callback) {
@@ -89,8 +83,6 @@ void GoogleUpdateMetricsProviderWin::ProvideSystemProfileMetrics(
   // Do nothing for chromium builds.
   if (!IsGoogleChromeBuild())
     return;
-  base::UmaHistogramSparse("GoogleUpdate.InstallDetails.UpdateCohort",
-                           GetHashedCohortName());
   base::UmaHistogramSparse("GoogleUpdate.InstallDetails.UpdateCohortId",
                            GetHashedCohortId());
   metrics::SystemProfileProto::GoogleUpdate* google_update =
@@ -124,8 +116,8 @@ GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics::GoogleUpdateMetrics()
     : is_system_install(false) {
 }
 
-GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics::~GoogleUpdateMetrics() {
-}
+GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics::~GoogleUpdateMetrics() =
+    default;
 
 // static
 GoogleUpdateMetricsProviderWin::GoogleUpdateMetrics

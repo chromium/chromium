@@ -24,12 +24,15 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.ui.widget.Toast;
 
 import java.util.List;
 
 /** Contains utilities for Web Apps and homescreen shortcuts. */
+@NullMarked
 public class WebappsUtils {
     private static final String TAG = "WebappsUtils";
 
@@ -191,7 +194,7 @@ public class WebappsUtils {
      * there are no matches.
      */
     @CalledByNative
-    private static String queryFirstWebApkPackage(String url) {
+    private static @Nullable String queryFirstWebApkPackage(String url) {
         return WebApkValidator.queryFirstWebApkPackage(ContextUtils.getApplicationContext(), url);
     }
 

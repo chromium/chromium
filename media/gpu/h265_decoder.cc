@@ -10,7 +10,10 @@
 #include "media/gpu/h265_decoder.h"
 
 #include <algorithm>
+#include <array>
+#include <variant>
 
+#include "base/functional/overloaded.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "media/base/limits.h"
@@ -52,7 +55,7 @@ bool IsValidBitDepth(uint8_t bit_depth, VideoCodecProfile profile) {
     // Spec A.3.5
     case HEVCPROFILE_REXT:
       return bit_depth == 8u || bit_depth == 10u || bit_depth == 12u ||
-             bit_depth == 14u || bit_depth == 16u;
+             bit_depth == 16u;
     // Spec A.3.6
     case HEVCPROFILE_HIGH_THROUGHPUT:
       return bit_depth == 8u || bit_depth == 10u || bit_depth == 14u ||
@@ -149,8 +152,9 @@ H265Decoder::~H265Decoder() = default;
   } while (0)
 
 void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
-  const uint8_t* ptr = decoder_buffer.data();
-  const size_t size = decoder_buffer.size();
+  auto decoder_buffer_span = base::span(decoder_buffer);
+  const uint8_t* ptr = decoder_buffer_span.data();
+  const size_t size = decoder_buffer_span.size();
   const DecryptConfig* decrypt_config = decoder_buffer.decrypt_config();
 
   DCHECK(ptr);
@@ -168,8 +172,7 @@ void H265Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     parser_.SetStream(ptr, size);
     current_decrypt_config_ = nullptr;
   }
-  if (decoder_buffer.has_side_data() &&
-      decoder_buffer.side_data()->secure_handle) {
+  if (decoder_buffer.side_data() && decoder_buffer.side_data()->secure_handle) {
     secure_handle_ = decoder_buffer.side_data()->secure_handle;
   } else {
     secure_handle_ = 0;
@@ -517,31 +520,31 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         H265SEI sei;
         if (parser_.ParseSEI(&sei) != H265Parser::kOk)
           break;
-        for (auto& sei_msg : sei.msgs) {
-          switch (sei_msg.type) {
-            case H265SEIMessage::kSEIContentLightLevelInfo:
-              // HEVC HDR metadata may appears in the below places:
-              // 1. Container.
-              // 2. Bitstream.
-              // 3. Both container and bitstream.
-              // Thus we should also extract HDR metadata here in case we
-              // miss the information.
-              if (!hdr_metadata_.has_value()) {
-                hdr_metadata_.emplace();
-              }
-              hdr_metadata_->cta_861_3 =
-                  sei_msg.content_light_level_info.ToGfx();
-              break;
-            case H265SEIMessage::kSEIMasteringDisplayInfo:
-              if (!hdr_metadata_.has_value()) {
-                hdr_metadata_.emplace();
-              }
-              hdr_metadata_->smpte_st_2086 =
-                  sei_msg.mastering_display_info.ToGfx();
-              break;
-            default:
-              break;
-          }
+        for (const auto& sei_msg : sei.msgs) {
+          std::visit(base::Overloaded{
+                         [](const H265SEIAlphaChannelInfo& info) {},
+                         [this](const H265SEIContentLightLevelInfo& info) {
+                           // HEVC HDR metadata may appears in the below
+                           // places:
+                           // 1. Container.
+                           // 2. Bitstream.
+                           // 3. Both container and bitstream.
+                           // Thus we should also extract HDR metadata here in
+                           // case we miss the information.
+                           if (!hdr_metadata_.has_value()) {
+                             hdr_metadata_.emplace();
+                           }
+                           hdr_metadata_->cta_861_3 = info.ToGfx();
+                         },
+                         [this](const H265SEIMasteringDisplayInfo& info) {
+                           if (!hdr_metadata_.has_value()) {
+                             hdr_metadata_.emplace();
+                           }
+                           hdr_metadata_->smpte_st_2086 = info.ToGfx();
+                         },
+                         [](std::monostate) {},
+                     },
+                     sei_msg);
         }
         break;
       }
@@ -887,8 +890,8 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
   ref_pic_set_st_curr_after_.resize(kMaxDpbSize);
   ref_pic_set_st_curr_before_.clear();
   ref_pic_set_st_curr_before_.resize(kMaxDpbSize);
-  scoped_refptr<H265Picture> ref_pic_set_lt_foll[kMaxDpbSize];
-  scoped_refptr<H265Picture> ref_pic_set_st_foll[kMaxDpbSize];
+  std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_set_lt_foll;
+  std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_set_st_foll;
 
   // Mark everything in the DPB as unused for reference now. When we determine
   // the pics in the ref list, then we will mark them appropriately.
@@ -967,7 +970,7 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
     int num_rps_curr_temp_list0 =
         std::max(slice_hdr->num_ref_idx_l0_active_minus1 + 1,
                  slice_hdr->num_pic_total_curr);
-    scoped_refptr<H265Picture> ref_pic_list_temp0[kMaxDpbSize];
+    std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_list_temp0;
 
     // Equation 8-8.
     int r_idx = 0;
@@ -1002,7 +1005,7 @@ bool H265Decoder::BuildRefPicLists(const H265SPS* sps,
       int num_rps_curr_temp_list1 =
           std::max(slice_hdr->num_ref_idx_l1_active_minus1 + 1,
                    slice_hdr->num_pic_total_curr);
-      scoped_refptr<H265Picture> ref_pic_list_temp1[kMaxDpbSize];
+      std::array<scoped_refptr<H265Picture>, kMaxDpbSize> ref_pic_list_temp1;
 
       // Equation 8-10.
       r_idx = 0;

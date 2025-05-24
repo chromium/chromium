@@ -23,7 +23,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -49,7 +48,6 @@ public class NavigationObserverUnitTest {
     private static final GURL CHROME_HISTORY_URL = new GURL("chrome://history");
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Tab mTab;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncUtilsJni mTabGroupSyncUtilsJni;
@@ -63,7 +61,7 @@ public class NavigationObserverUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(TabGroupSyncUtilsJni.TEST_HOOKS, mTabGroupSyncUtilsJni);
+        TabGroupSyncUtilsJni.setInstanceForTesting(mTabGroupSyncUtilsJni);
         mTabModels = new ArrayList<>();
         doReturn(mTabModels).when(mTabModelSelector).getModels();
 
@@ -81,7 +79,7 @@ public class NavigationObserverUnitTest {
             boolean isGrouped) {
         when(mTab.isIncognito()).thenReturn(isIncognito);
         when(mTab.getId()).thenReturn(tabId);
-        when((mTab.getTabGroupId())).thenReturn(tabGroupId);
+        when(mTab.getTabGroupId()).thenReturn(tabGroupId);
         when(mTab.getTitle()).thenReturn(title);
         when(mTab.getUrl()).thenReturn(url);
     }
@@ -123,7 +121,7 @@ public class NavigationObserverUnitTest {
                         eq(mTestUrl),
                         eq(-1));
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
     }
 
     @Test
@@ -145,7 +143,7 @@ public class NavigationObserverUnitTest {
                         eq(mTestUrl),
                         eq(-1));
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
 
         mockTab(
                 TAB_ID_2,
@@ -159,7 +157,7 @@ public class NavigationObserverUnitTest {
         verify(mTabGroupSyncService)
                 .updateTab(eq(id2), eq(TAB_ID_2), eq(mTestTitle), eq(mTestUrl2), eq(-1));
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(id2), eq(TAB_ID_2), anyLong());
+                .onDidFinishNavigation(any(), eq(id2), eq(TAB_ID_2), anyLong());
     }
 
     @Test
@@ -175,7 +173,7 @@ public class NavigationObserverUnitTest {
         simulateNavigation(PageTransition.LINK);
         verifyNoInteractions(mTabGroupSyncService);
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
     }
 
     @Test
@@ -212,7 +210,7 @@ public class NavigationObserverUnitTest {
                         eq(TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE),
                         eq(-1));
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
     }
 
     @Test
@@ -234,7 +232,7 @@ public class NavigationObserverUnitTest {
                         eq(TabGroupSyncUtils.UNSAVEABLE_URL_OVERRIDE),
                         eq(-1));
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
     }
 
     @Test
@@ -256,7 +254,7 @@ public class NavigationObserverUnitTest {
                         eq(TabGroupSyncUtils.NTP_URL),
                         eq(-1));
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
     }
 
     @Test
@@ -284,7 +282,7 @@ public class NavigationObserverUnitTest {
 
         verifyNoInteractions(mTabGroupSyncService);
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
     }
 
     @Test
@@ -300,6 +298,6 @@ public class NavigationObserverUnitTest {
         simulateNavigation(PageTransition.LINK, false);
         verifyNoInteractions(mTabGroupSyncService);
         verify(mTabGroupSyncUtilsJni)
-                .updateTabRedirectChain(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
+                .onDidFinishNavigation(any(), eq(LOCAL_TAB_GROUP_ID_1), eq(TAB_ID_1), anyLong());
     }
 }

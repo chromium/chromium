@@ -4,11 +4,11 @@
 
 import 'chrome://chrome-signin/inline_login_app.js';
 
-import {InlineLoginAppElement, View} from 'chrome://chrome-signin/inline_login_app.js';
+import type {InlineLoginAppElement} from 'chrome://chrome-signin/inline_login_app.js';
+import {View} from 'chrome://chrome-signin/inline_login_app.js';
 import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_browser_proxy.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
@@ -91,17 +91,7 @@ suite('InlineLoginTest', () => {
     const completeLoginResult =
         await testBrowserProxy.whenCalled('completeLogin');
     assertTrue(inlineLoginComponent.$.spinner.active);
-
-    if (isChromeOS &&
-        loadTimeData.getBoolean('isArcAccountRestrictionsEnabled')) {
-      const expectedCredentials = {
-        email: 'example@gmail.com',
-        isAvailableInArc: false,
-      };
-      assertDeepEquals(expectedCredentials, completeLoginResult);
-    } else {
-      assertEquals(fakeCredentials, completeLoginResult);
-    }
+    assertEquals(fakeCredentials, completeLoginResult);
 
     testAuthenticator.dispatchEvent(new Event('showIncognito'));
     assertEquals(1, testBrowserProxy.getCallCount('showIncognito'));

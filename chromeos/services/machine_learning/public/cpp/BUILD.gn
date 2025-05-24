@@ -2,12 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
 source_set("cpp") {
   sources = [
+    "../../cpp/ash/handwriting_model_loader.cc",
+    "../../cpp/ash/handwriting_model_loader.h",
+    "../../cpp/ash/service_connection_ash.cc",
     "ml_switches.cc",
     "ml_switches.h",
     "service_connection.cc",
@@ -15,30 +16,13 @@ source_set("cpp") {
   ]
   defines = [ "IS_CHROMEOS_MLSERVICE_IMPL" ]
   deps = [
+    "//ash/constants",
     "//base",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/mojom",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "../../cpp/ash/handwriting_model_loader.cc",
-      "../../cpp/ash/handwriting_model_loader.h",
-      "../../cpp/ash/service_connection_ash.cc",
-    ]
-    deps += [
-      "//ash/constants:constants",
-      "//chromeos/ash/components/dbus/dlcservice",
-      "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
-      "//chromeos/dbus/machine_learning",
-    ]
-  } else if (is_chromeos_lacros) {
-    sources += [ "../../cpp/lacros/service_connection_lacros.cc" ]
-    deps += [
-      "//chromeos/lacros",
-      "//mojo/public/cpp/bindings",
-      "//skia",
-    ]
-  }
 }
 
 component("stub") {
@@ -50,7 +34,6 @@ component("stub") {
   deps = [
     "//base",
     "//chromeos/services/machine_learning/public/mojom",
-    "//components/ml/mojom",
     "//mojo/public/cpp/bindings",
   ]
   public_deps = [ ":cpp" ]
@@ -65,24 +48,21 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/mojom",
-    "//components/ml/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 }
 
-if (is_chromeos_ash) {
-  source_set("ash_unit_tests") {
-    sources = [ "../../cpp/ash/handwriting_model_loader_unittest.cc" ]
-    testonly = true
-    deps = [
-      ":cpp",
-      "//ash/constants:constants",
-      "//base/test:test_support",
-      "//chromeos/ash/components/dbus/dlcservice",
-      "//chromeos/services/machine_learning/public/cpp:stub",
-      "//testing/gtest",
-    ]
-  }
+source_set("ash_unit_tests") {
+  sources = [ "../../cpp/ash/handwriting_model_loader_unittest.cc" ]
+  testonly = true
+  deps = [
+    ":cpp",
+    "//ash/constants:constants",
+    "//base/test:test_support",
+    "//chromeos/ash/components/dbus/dlcservice",
+    "//chromeos/services/machine_learning/public/cpp:stub",
+    "//testing/gtest",
+  ]
 }

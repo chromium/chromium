@@ -9,12 +9,12 @@
 namespace metrics {
 
 TEST(MachineIdProviderWinTest, GetId) {
-  EXPECT_TRUE(MachineIdProvider::HasId());
+  EXPECT_TRUE(MachineIdProvider().HasId());
 
-  const std::string id1 = MachineIdProvider::GetMachineId();
+  const std::string id1 = MachineIdProvider().GetMachineId();
   EXPECT_NE(std::string(), id1);
 
-  const std::string id2 = MachineIdProvider::GetMachineId();
+  const std::string id2 = MachineIdProvider().GetMachineId();
   EXPECT_EQ(id1, id2);
 }
 

@@ -43,8 +43,8 @@ bool ConvertToUTF16WithSubstitutions(std::string_view text,
 
 // Converts |str| to uppercase using the default locale, and writes it to
 // |output|. On failure returns false and |output| is cleared.
-NET_EXPORT_PRIVATE bool ToUpper(std::u16string_view str,
-                                std::u16string* output);
+NET_EXPORT_PRIVATE bool ToUpperUsingLocale(std::u16string_view str,
+                                           std::u16string* output);
 
 }  // namespace net
 

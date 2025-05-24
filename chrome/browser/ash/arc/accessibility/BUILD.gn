@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("accessibility") {
   sources = [
@@ -26,15 +26,14 @@ static_library("accessibility") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/public/cpp",
-    "//ash/public/cpp/external_arc",
     "//base",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/input_method_manager",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc",
     "//components/exo",
     "//components/prefs",
     "//extensions/browser",
@@ -61,13 +60,12 @@ source_set("unit_tests") {
   deps = [
     ":accessibility",
     "//ash:test_support",
-    "//ash/components/arc",
     "//ash/public/cpp",
-    "//ash/public/cpp/external_arc",
-    "//ash/public/cpp/external_arc:test_support",
     "//base",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/exo",
     "//components/exo:test_support",
     "//components/prefs",
@@ -93,13 +91,13 @@ source_set("browser_tests") {
   deps = [
     ":accessibility",
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/shelf/app_service",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/exo",
     "//components/exo:test_support",
     "//content/test:test_support",

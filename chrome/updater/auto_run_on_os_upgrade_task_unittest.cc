@@ -47,9 +47,6 @@ constexpr char kLastOSVersion[] = "last_os_version";
 
 class AutoRunOnOsUpgradeTaskTest : public testing::Test {
  protected:
-  AutoRunOnOsUpgradeTaskTest() = default;
-  ~AutoRunOnOsUpgradeTaskTest() override = default;
-
   void SetUp() override {
     pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     update_client::RegisterPrefs(pref_service_->registry());
@@ -102,7 +99,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
       base::StrCat({cmd_exe_command_line_.GetCommandLineString(), L" ",
                     kCmdLineCreateHardcodedFile}));
 
-  ASSERT_EQ(os_upgrade_task->RunOnOsUpgradeForApp(base::WideToASCII(kAppId)),
+  ASSERT_EQ(os_upgrade_task->RunOnOsUpgradeForApp(base::WideToUTF8(kAppId)),
             2U);
 
   const std::wstring os_upgrade_string = [&] {
@@ -113,7 +110,7 @@ TEST_F(AutoRunOnOsUpgradeTaskTest, RunOnOsUpgradeForApp) {
           version.dwBuildNumber, version.wServicePackMajor,
           version.wServicePackMinor, versions.empty() ? "-" : "");
     }
-    return base::ASCIIToWide(versions);
+    return base::UTF8ToWide(versions);
   }();
 
   base::FilePath current_directory;

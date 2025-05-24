@@ -49,46 +49,4 @@ TEST_F(LimitedEntropySyntheticTrialTest,
   EXPECT_EQ(kLimitedEntropySyntheticTrialEnabled, group_name);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-TEST_F(LimitedEntropySyntheticTrialTest, TestSetSeedFromAsh) {
-  LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u);
-  LimitedEntropySyntheticTrial trial(&local_state_,
-                                     version_info::Channel::BETA);
-
-  EXPECT_EQ(42u, trial.GetRandomizationSeed(&local_state_));
-  histogram_tester_.ExpectUniqueSample(
-      kIsLimitedEntropySyntheticTrialSeedValidHistogram, true, 1);
-}
-
-TEST_F(LimitedEntropySyntheticTrialTest,
-       TestSetSeedFromAsh_ExpectCheckIFailureIfRandomizedBeforeSyncingSeed) {
-  LimitedEntropySyntheticTrial trial(&local_state_,
-                                     version_info::Channel::BETA);
-  EXPECT_CHECK_DEATH(
-      LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u));
-}
-
-TEST_F(
-    LimitedEntropySyntheticTrialTest,
-    TestSetSeedFromAsh_ExpectCheckIFailureIfSettingSeedAgainAfterRandomization) {
-  LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 42u);
-  LimitedEntropySyntheticTrial trial(&local_state_,
-                                     version_info::Channel::BETA);
-  EXPECT_CHECK_DEATH(
-      LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 62u));
-  histogram_tester_.ExpectUniqueSample(
-      kIsLimitedEntropySyntheticTrialSeedValidHistogram, true, 1);
-}
-
-TEST_F(LimitedEntropySyntheticTrialTest,
-       TestSetSeedFromAsh_SyncingInvalidSeed) {
-  LimitedEntropySyntheticTrial::SetSeedFromAsh(&local_state_, 999u);
-  LimitedEntropySyntheticTrial trial(&local_state_,
-                                     version_info::Channel::BETA);
-  EXPECT_NE(999u, trial.GetRandomizationSeed(&local_state_));
-  histogram_tester_.ExpectUniqueSample(
-      kIsLimitedEntropySyntheticTrialSeedValidHistogram, false, 1);
-}
-
-#endif
 }  // namespace variations

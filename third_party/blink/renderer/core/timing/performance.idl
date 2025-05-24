@@ -41,7 +41,6 @@ interface Performance : EventTarget {
     // Performance Timeline
     // https://w3c.github.io/performance-timeline/#the-performance-interface
     [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntries();
-    [MeasureAs=PerformanceTimeline, CallWith=ScriptState, RuntimeEnabled=CrossFramePerformanceTimeline] PerformanceEntryList getEntries(PerformanceEntryFilterOptions options);
     [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByType(DOMString entryType);
     [MeasureAs=PerformanceTimeline] PerformanceEntryList getEntriesByName(DOMString name, optional DOMString entryType);
 
@@ -77,6 +76,8 @@ interface Performance : EventTarget {
 
     // TODO(https://crbug.com/1457049): remove this once visited links are partitioned.
     [RuntimeEnabled=SoftNavigationHeuristicsExposeFPAndFCP] readonly attribute boolean softNavPaintMetricsSupported;
+
+    [Exposed=Window, RuntimeEnabled=UserDefinedEntryPointTiming] Function bind(Function innerFunction, optional any thisArg, any... args);
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

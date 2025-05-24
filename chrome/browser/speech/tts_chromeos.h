@@ -47,7 +47,6 @@ class TtsPlatformImplChromeOs : public content::TtsPlatform {
       content::TtsUtterance* utterance,
       const content::VoiceData& voice_data) override {}
   void Shutdown() override {}
-  content::ExternalPlatformDelegate* GetExternalPlatformDelegate() override;
 
   // Get the single instance of this class.
   static TtsPlatformImplChromeOs* GetInstance();

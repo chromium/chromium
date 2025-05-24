@@ -9,6 +9,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/sequenced_task_runner.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_log.h"
 #include "media/base/video_frame.h"
 
@@ -49,16 +50,16 @@ FakeVideoEncodeAccelerator::GetSupportedProfiles() {
   return profiles;
 }
 
-bool FakeVideoEncodeAccelerator::Initialize(
+EncoderStatus FakeVideoEncodeAccelerator::Initialize(
     const Config& config,
     Client* client,
     std::unique_ptr<MediaLog> media_log) {
   if (!will_initialization_succeed_) {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
   if (config.output_profile == VIDEO_CODEC_PROFILE_UNKNOWN ||
       config.output_profile > VIDEO_CODEC_PROFILE_MAX) {
-    return false;
+    return {EncoderStatus::Codes::kEncoderInitializationError};
   }
   client_ = client;
   task_runner_->PostTask(
@@ -68,7 +69,7 @@ bool FakeVideoEncodeAccelerator::Initialize(
                      config.input_visible_size, kMinimumOutputBufferSize));
   encoder_info_.supports_frame_size_change = true;
   NotifyEncoderInfoChange(encoder_info_);
-  return true;
+  return {EncoderStatus::Codes::kOk};
 }
 
 void FakeVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
@@ -140,6 +141,11 @@ void FakeVideoEncodeAccelerator::SetSupportFrameSizeChange(
   DCHECK_NE(encoder_info_.supports_frame_size_change,
             support_frame_size_change);
   encoder_info_.supports_frame_size_change = support_frame_size_change;
+  NotifyEncoderInfoChange(encoder_info_);
+}
+
+void FakeVideoEncodeAccelerator::SetFrameDelay(int frame_delay) {
+  encoder_info_.frame_delay = frame_delay;
   NotifyEncoderInfoChange(encoder_info_);
 }
 

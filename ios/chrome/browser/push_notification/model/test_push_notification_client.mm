@@ -7,9 +7,14 @@
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
 TestPushNotificationClient::TestPushNotificationClient(size_t client_id)
-    : PushNotificationClient(static_cast<PushNotificationClientId>(client_id)) {
-}
+    : PushNotificationClient(static_cast<PushNotificationClientId>(client_id),
+                             PushNotificationClientScope::kPerProfile) {}
 TestPushNotificationClient::~TestPushNotificationClient() = default;
+
+bool TestPushNotificationClient::CanHandleNotification(
+    UNNotification* notification) {
+  return can_handle_notification_;
+}
 
 bool TestPushNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* notification) {
@@ -44,4 +49,9 @@ void TestPushNotificationClient::OnSceneActiveForegroundBrowserReady() {
 
 bool TestPushNotificationClient::IsBrowserReady() {
   return is_browser_ready_;
+}
+
+void TestPushNotificationClient::SetCanHandleNotification(
+    bool can_handle_notification) {
+  can_handle_notification_ = can_handle_notification;
 }

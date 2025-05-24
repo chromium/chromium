@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/kcer/key_permissions.pb.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/kcer/key_permissions.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
@@ -44,8 +44,6 @@ namespace {
 using ::chromeos::platform_keys::KeyAttributeType;
 using ::chromeos::platform_keys::Status;
 using ::chromeos::platform_keys::TokenId;
-using MigrationStatus =
-    KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::MigrationStatus;
 
 bool g_one_time_migration_enabled_for_testing = true;
 
@@ -53,6 +51,24 @@ bool g_one_time_migration_enabled_for_testing = true;
 KeyPermissionsManager* g_system_token_key_permissions_manager = nullptr;
 
 KeyPermissionsManager* g_system_token_kpm_for_testing = nullptr;
+
+// The name of the histogram that counts the number of times the migration
+// started as well as the number of times it succeeded and failed.
+const char kMigrationStatusHistogramName[] =
+    "ChromeOS.KeyPermissionsManager.Migration";
+
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// MigrationStatus in src/tools/metrics/histograms/enums.xml.
+enum class MigrationStatus {
+  kStarted = 0,
+  kSucceeded = 1,
+  kFailed = 2,
+  // Necessary key permission migrations are the ones that migrates permissions
+  // from prefs to Chaps for at least one key.
+  kNecessary = 3,
+  kMaxValue = kNecessary,
+};
 
 chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed,
                                            bool arc_usage_allowed) {
@@ -62,27 +78,14 @@ chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed,
   return key_permissions;
 }
 
-// Parses `permissions_from_chaps` as a KeyPermissions proto message and
-// returns true if it contains the flag that the corporate usage is allowed.
-bool IsCorporateUsageAllowedByChaps(
-    const std::optional<std::vector<uint8_t>>& permissions_from_chaps) {
-  if (!permissions_from_chaps.has_value()) {
-    return false;
-  }
-  chaps::KeyPermissions key_permissions;
-  if (!key_permissions.ParseFromArray(permissions_from_chaps->data(),
-                                      permissions_from_chaps->size())) {
-    LOG(WARNING) << "Failed to parse KeyPermissions";
-    return false;
-  }
-  return (key_permissions.has_key_usages() &&
-          key_permissions.key_usages().corporate());
-}
-
-void OnArcKeyPermissionsInChapsUpdated(bool /*migration_was_necessary*/,
+void OnArcKeyPermissionsInChapsUpdated(size_t keys_updated,
                                        Status update_status) {
-  if (update_status != Status::kSuccess) {
-    LOG(ERROR) << "Updating arc key permissions in chaps failed.";
+  if (update_status == Status::kSuccess) {
+    LOG(WARNING) << "Updating arc key permissions in chaps succeeded, "
+                 << keys_updated << " key(s) updated.";
+  } else {
+    LOG(ERROR) << "Updating arc key permissions in chaps failed, "
+               << keys_updated << " key(s) updated.";
   }
 }
 
@@ -98,14 +101,6 @@ KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
 
 KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
     ~KeyPermissionsInChapsUpdater() = default;
-
-bool KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
-    IsCorporateUsageAllowedByPrefs(
-        const std::vector<uint8_t>& public_key_spki_der) const {
-  return (key_permissions_manager_->token_id_ == TokenId::kSystem) ||
-         internal::IsUserKeyMarkedCorporateInPref(
-             public_key_spki_der, key_permissions_manager_->pref_service_);
-}
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::Update(
     UpdateCallback callback) {
@@ -126,51 +121,29 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
     Status keys_retrieval_status) {
   DCHECK(public_key_spki_der_queue_.empty());
 
-  for (std::vector<uint8_t>& public_key : public_key_spki_der_list) {
-    // For the keys that are not on the system token or don't have a record in
-    // the preferences there's nothing to migrate, filter them out.
-    if (IsCorporateUsageAllowedByPrefs(public_key)) {
-      public_key_spki_der_queue_.emplace(std::move(public_key));
-    }
+  if (!public_key_spki_der_list.empty() &&
+      mode_ == Mode::kMigratePermissionsFromPrefs) {
+    base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
+                                  MigrationStatus::kNecessary);
+  }
+
+  for (auto& public_key : public_key_spki_der_list) {
+    public_key_spki_der_queue_.emplace(public_key.begin(), public_key.end());
   }
 
   UpdateNextKey();
 }
 
-// This will be called repeatedly until `public_key_spki_der_queue_` is empty.
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateNextKey() {
   if (public_key_spki_der_queue_.empty()) {
-    std::move(callback_).Run(migration_was_necessary_, Status::kSuccess);
+    std::move(callback_).Run(keys_updated_, Status::kSuccess);
     return;
   }
 
-  std::vector<uint8_t> public_key =
-      std::move(public_key_spki_der_queue_.front());
+  auto public_key = std::move(public_key_spki_der_queue_.front());
   public_key_spki_der_queue_.pop();
 
-  auto attributes_callback = base::BindOnce(
-      &KeyPermissionsInChapsUpdater::UpdateNextKeyWithExistingPermissions,
-      weak_ptr_factory_.GetWeakPtr(), public_key);
-
-  key_permissions_manager_->platform_keys_service_->GetAttributeForKey(
-      key_permissions_manager_->token_id_, std::move(public_key),
-      chromeos::platform_keys::KeyAttributeType::kKeyPermissions,
-      std::move(attributes_callback));
-}
-
-void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
-    UpdateNextKeyWithExistingPermissions(
-        std::vector<uint8_t> public_key,
-        std::optional<std::vector<uint8_t>> permissions,
-        Status permissions_retrieval_status) {
-  if (IsCorporateUsageAllowedByChaps(permissions)) {
-    // Chaps already knowns about the permissions for the current key, nothing
-    // to do, continue to the next key.
-    return UpdateNextKey();
-  }
-
-  migration_was_necessary_ = true;
-  return UpdatePermissionsForKey(public_key);
+  UpdatePermissionsForKey(public_key);
 }
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
@@ -178,7 +151,10 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
   switch (mode_) {
     case Mode::kMigratePermissionsFromPrefs: {
       bool corporate_usage_allowed =
-          IsCorporateUsageAllowedByPrefs(public_key_spki_der);
+          key_permissions_manager_->token_id_ == TokenId::kSystem ||
+          internal::IsUserKeyMarkedCorporateInPref(
+              public_key_spki_der, key_permissions_manager_->pref_service_);
+
       UpdatePermissionsForKeyWithCorporateFlag(
           std::move(public_key_spki_der), corporate_usage_allowed,
           /*corporate_usage_retrieval_status=*/Status::kSuccess);
@@ -203,8 +179,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
         Status corporate_usage_retrieval_status) {
   if (corporate_usage_retrieval_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't retrieve corporate usage flag for a key.";
-    std::move(callback_).Run(migration_was_necessary_,
-                             corporate_usage_retrieval_status);
+    std::move(callback_).Run(keys_updated_, corporate_usage_retrieval_status);
     return;
   }
 
@@ -237,11 +212,10 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
   } else if (permissions_update_status != Status::kSuccess) {
     LOG(ERROR) << "Couldn't update permissions for a key: "
                << StatusToString(permissions_update_status);
-    base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
-                                  MigrationStatus::kFailedToUpdatePermissions);
-    std::move(callback_).Run(migration_was_necessary_,
-                             permissions_update_status);
+    std::move(callback_).Run(keys_updated_, permissions_update_status);
     return;
+  } else {
+    keys_updated_++;
   }
 
   UpdateNextKey();
@@ -503,7 +477,7 @@ void KeyPermissionsManagerImpl::StartOneTimeMigration() {
 }
 
 void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
-    bool migration_was_necessary,
+    size_t keys_udpated,
     Status migration_status) {
   if (migration_status != Status::kSuccess) {
     VLOG(0) << "One-time key permissions migration failed for token: "
@@ -514,13 +488,10 @@ void KeyPermissionsManagerImpl::OnOneTimeMigrationDone(
   }
 
   VLOG(0) << "One-time key permissions migration succeeded for token: "
-          << static_cast<int>(token_id_) << ".";
+          << static_cast<int>(token_id_) << ", keys updated: " << keys_udpated
+          << ".";
   base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
                                 MigrationStatus::kSucceeded);
-  if (migration_was_necessary) {
-    base::UmaHistogramEnumeration(kMigrationStatusHistogramName,
-                                  MigrationStatus::kNecessary);
-  }
 
   pref_service_->SetBoolean(prefs::kKeyPermissionsOneTimeMigrationDone, true);
 

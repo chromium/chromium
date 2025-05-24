@@ -21,15 +21,15 @@
   // TODO(crbug.com/40273482): Remove this short-circuiting once noise and
   // report delays are independently configurable.
 
-  session.evaluate(`
+  session.evaluateAsync(`
     fetch('/inspector-protocol/attribution-reporting/resources/register-source-localhost.php',
-          {attributionReporting: {eventSourceEligible: true, triggerEligible: false}});
+          {attributionReporting: {eventSourceEligible: true, triggerEligible: false}})
   `);
 
   await dp.Storage.onceAttributionReportingSourceRegistered();
 
-  session.evaluate(`
-    fetch('/inspector-protocol/attribution-reporting/resources/register-event-trigger.php');
+  session.evaluateAsync(`
+    fetch('/inspector-protocol/attribution-reporting/resources/register-event-trigger.php')
   `);
 
   const {params} = await dp.Storage.onceAttributionReportingTriggerRegistered();
@@ -40,7 +40,11 @@
     return;
   }
 
+  const report = dp.Storage.onceAttributionReportingReportSent();
+
   const {result} = await dp.Storage.sendPendingAttributionReports();
   testRunner.log(result);
+
+  testRunner.log((await report).params, '', ['report_id', 'scheduled_report_time']);
   testRunner.completeTest();
 })

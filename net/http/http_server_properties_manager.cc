@@ -148,7 +148,7 @@ static constexpr std::string_view
 std::string_view PrivacyModeToPathString(PrivacyMode privacy_mode) {
   switch (privacy_mode) {
     case PRIVACY_MODE_DISABLED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case PRIVACY_MODE_ENABLED:
       return kPrivacyModeEnabledPath;
     case PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS:
@@ -592,7 +592,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
         advertised_versions.push_back(version);
       }
     }
-    alternative_service_info->set_advertised_versions(advertised_versions);
+    alternative_service_info->SetAdvertisedVersions(advertised_versions);
   }
 
   return true;

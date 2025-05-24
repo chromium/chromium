@@ -199,7 +199,7 @@ component("web_engine_core") {
     "//components/cdm/renderer",
     "//components/client_hints/browser:in_memory",
     "//components/embedder_support",
-    "//components/embedder_support:browser_util",
+    "//components/embedder_support:user_agent",
     "//components/embedder_support/origin_trials",
     "//components/favicon/content",
     "//components/favicon/core",
@@ -438,8 +438,8 @@ executable("web_engine_exe") {
 }
 
 source_set("webui_resources") {
-  data = [ "$root_gen_dir/ui/resources/webui_resources.pak" ]
-  deps = [ "//ui/resources" ]
+  data = [ "$root_gen_dir/ui/webui/resources/webui_resources.pak" ]
+  deps = [ "//ui/webui/resources:resources_grit" ]
 }
 
 _web_engine_excluded_files = [

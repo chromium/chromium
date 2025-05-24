@@ -2,6 +2,11 @@ dtrainor@chromium.org
 mmoskvitin@google.com
 nyquist@chromium.org
 qinmin@chromium.org
+ritikagup@google.com
 rushans@google.com
 shaktisahu@chromium.org
 ssid@chromium.org
+
+# For horizontal changes, usually related to the WebUI toolchain. For any
+# changes that have to do with business logic direct to the owners above.
+file://ui/webui/PLATFORM_OWNERS

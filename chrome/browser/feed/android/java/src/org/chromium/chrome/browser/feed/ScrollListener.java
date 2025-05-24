@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.feed;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface to listen to the scroll events from the scrollable container of NTP. */
+@NullMarked
 public interface ScrollListener {
     /**
      * Constant used to denote that a scroll was performed but scroll delta could not be

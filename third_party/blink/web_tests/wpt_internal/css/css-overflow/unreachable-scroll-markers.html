@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>CSS Test: scroll tracking for ::scroll-markers whose orignatin elements cannot be scroll-aligned </title>
+  <link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll">
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+  <script src="/css/css-transitions/support/helper.js"></script>
+  <script src="/dom/events/scrolling/scroll_support.js"></script>
+  <script src="/css/css-overflow/support/scroll-marker-support.js"></script>
+</head>
+
+<body>
+  <style>
+    .wrapper {
+      display: grid;
+      justify-content: center;
+    }
+
+    .carousel {
+      display: grid;
+      grid-auto-flow: column;
+      width: 1600px;
+      height: 512px;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      list-style-type: none;
+      scroll-behavior: smooth;
+      border: solid 2px grey;
+      padding-top: 10%;
+      text-align: center;
+      counter-set: markeridx;
+
+      &>.item {
+        scroll-snap-align: center;
+        height: 80%;
+        width: 318px;
+        border: 1px solid;
+        place-content: center;
+
+        &::scroll-marker {
+          content: counter(markeridx);
+          counter-increment: markeridx;
+          align-content: center;
+          text-align: center;
+          width: 35px;
+          height: 35px;
+          border: 3px solid gray;
+          border-radius: 50%;
+          margin: 3px;
+          background-color: red;
+        }
+
+        &::scroll-marker:target-current {
+          background-color: green;
+        }
+      }
+
+      scroll-marker-group: after;
+
+      &::scroll-marker-group {
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: solid 1px black;
+        border-radius: 30px;
+      }
+    }
+  </style>
+   <div class="wrapper">
+    <div class="carousel" id="carousel">
+      <div class="item" tabindex=0>1</div>
+      <div class="item" tabindex=0>2</div>
+      <div class="item" tabindex=0>3</div>
+      <div class="item" tabindex=0>4</div>
+      <div class="item" tabindex=0>5</div>
+      <div class="item" tabindex=0>6</div>
+      <div class="item" tabindex=0>7</div>
+      <div class="item" tabindex=0>8</div>
+      <div class="item" tabindex=0>9</div>
+      <div class="item" tabindex=0>10</div>
+      <div class="item" tabindex=0>11</div>
+      <div class="item" tabindex=0>12</div>
+      <div class="item" tabindex=0>13</div>
+      <div class="item" tabindex=0>14</div>
+      <div class="item" tabindex=0>15</div>
+      <div class="item" tabindex=0>16</div>
+    </div>
+  </div>
+  <script>
+    const carousel = document.getElementById("carousel");
+    const items = carousel.querySelectorAll(".item");
+
+    const unreachable_reserve_ratio = 1 / 8;
+    const reserved_scroll_length = unreachable_reserve_ratio *
+      carousel.clientWidth;
+
+    function getAlignedPositions() {
+      const carouselOffset = carousel.offsetLeft;
+      const halfCarouselWidth = carousel.offsetWidth / 2;
+      const maxScrollOffset = carousel.scrollWidth - carousel.clientWidth;
+      let positions = [];
+      for (const item of items) {
+        const aligned_pos = item.offsetLeft - carouselOffset +
+          item.offsetWidth / 2 - halfCarouselWidth;
+        positions.push(aligned_pos);
+      }
+
+      return positions;
+    }
+
+    RED = "rgb(255, 0, 0)";
+    GREEN = "rgb(0, 128, 0)";
+
+    async function test_unreachable(idx, dragAmount, targetLower, targetUpper) {
+      const scroll_promise = new Promise((resolve) => {
+        carousel.addEventListener("scroll", () => {
+          if (carousel.scrollLeft > targetLower &&
+              carousel.scrollLeft < targetUpper) {
+            // Continue the test as soon as the container is within the range
+            // that corresponds to scroll-marker 1 (the 2nd unreachable
+            // scroll-marker).
+            resolve();
+          }
+        });
+      });
+
+      const actions = new test_driver.Actions()
+        .addPointer('TestPointer', 'touch');
+      let actions_promise = actions
+        .pointerMove(0, 0, { origin: carousel }) // 0, 0 is center of carousel.
+        .pointerDown()
+        .addTick()
+        .pointerMove(dragAmount, 0, { origin: carousel })
+        .addTick()
+        .send();
+
+      await Promise.all([actions_promise, scroll_promise]);
+
+      assert_greater_than_equal(carousel.scrollLeft, targetLower,
+        `scrolled within region reserved for unreachable ${idx}.`);
+      assert_less_than_equal(carousel.scrollLeft, targetUpper,
+        `scrolled within region reserved for unreachable ${idx}.`);
+
+      verifySelectedMarker(idx, items, GREEN, RED);
+
+      // Complete the scroll gesture.
+      actions_promise = actions.pointerUp().send();
+
+      await actions_promise;
+    }
+
+    promise_test(async (t) => {
+      await waitForCompositorCommit();
+
+      const aligned_positions = getAlignedPositions();
+      const lastIdxWithinReserved = aligned_positions.findIndex((pos) => {
+          return pos > reserved_scroll_length;
+        }) - 1;
+
+      const num_distribution_receipients = lastIdxWithinReserved + 1;
+      const allocation_per_target_within_reserved =
+        reserved_scroll_length / num_distribution_receipients;
+      assert_greater_than(allocation_per_target_within_reserved, 0);
+
+      // Drag by one and a half |allocation_per_target_within_reserved|.
+      // From the scrollLeft=0, this corresponds to the second scroll marker
+      // going rightward (index 1).
+      // From the scrollLeft=max, this corresponds to the penultimate
+      // scroll-marker going leftward (index 14).
+      const delta_x = Math.round(allocation_per_target_within_reserved * 3 / 2);
+
+      await test_unreachable(1, -delta_x,
+        allocation_per_target_within_reserved,
+        2 * allocation_per_target_within_reserved);
+
+      // Scroll all the way to the right.
+      const maxScrollOffset = carousel.scrollWidth - carousel.clientWidth;
+      let scrollend_promise = waitForScrollendEventNoTimeout(carousel);
+      carousel.scrollLeft = maxScrollOffset;
+      await scrollend_promise;
+      verifySelectedMarker(15, items, GREEN, RED);
+
+      await test_unreachable(14, delta_x,
+        maxScrollOffset - 2 * allocation_per_target_within_reserved,
+        maxScrollOffset - allocation_per_target_within_reserved);
+
+      scrollend_promise = waitForScrollendEventNoTimeout(carousel);
+      carousel.scrollLeft = 0;
+      await scrollend_promise;
+      verifySelectedMarker(0, items, GREEN, RED);
+    }, "scroll-marker whose originating element cannot be scroll-aligned is " +
+  "selected when scrolling within 1/8 of the scroll port.");
+  </script>
+</body>
+
+</html>

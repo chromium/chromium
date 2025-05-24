@@ -14,6 +14,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -72,10 +73,6 @@ bool operator==(const Status& a, const Status& b) {
     return true;
   return a.error_type() == b.error_type() &&
          a.error_details() == b.error_details();
-}
-
-bool operator!=(const Status& a, const Status& b) {
-  return !(a == b);
 }
 
 static std::string ErrorTypeToString(blink::WebCryptoErrorType type) {
@@ -578,8 +575,7 @@ blink::WebCryptoNamedCurve CurveNameToCurve(std::string_view name) {
   if (name == "P-521")
     return blink::kWebCryptoNamedCurveP521;
 
-  CHECK(false) << "Invalid curve name in test data: " << name;
-  return blink::kWebCryptoNamedCurveP384;
+  NOTREACHED() << "Invalid curve name in test data: " << name;
 }
 
 blink::WebCryptoAlgorithm CreateHmacImportAlgorithm(

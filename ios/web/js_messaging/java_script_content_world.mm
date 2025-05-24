@@ -42,8 +42,7 @@ WKUserScriptInjectionTime InjectionTimeToWKUserScriptInjectionTime(
     case JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd:
       return WKUserScriptInjectionTimeAtDocumentEnd;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WKUserScriptInjectionTimeAtDocumentStart;
+  NOTREACHED();
 }
 
 // Returns the WKUserContentController associated with `browser_state`.

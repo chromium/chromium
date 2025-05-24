@@ -13,12 +13,13 @@ namespace blink {
 
 const CSSValue* CSSInterpolationEnvironment::Resolve(
     const PropertyHandle& property,
-    const CSSValue* value) const {
+    const CSSValue* value,
+    const TreeScope* tree_scope) const {
   DCHECK(cascade_);
   DCHECK(cascade_resolver_);
   if (!value)
     return value;
-  return cascade_->Resolve(property.GetCSSPropertyName(), *value,
+  return cascade_->Resolve(property.GetCSSPropertyName(), *value, tree_scope,
                            CascadeOrigin::kAnimation, *cascade_resolver_);
 }
 

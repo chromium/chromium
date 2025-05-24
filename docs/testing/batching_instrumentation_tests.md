@@ -22,6 +22,53 @@ All on-device tests would ideally be annotated with one of:
 Tests that are not annotated are treated as `@DoNotBatch` and are assumed to
 have not yet been assessed.
 
+## Is the Activity kept between test cases?
+
+* The browser process is always kept.
+* The Android Activities are finished between test cases in
+  **Activity-restarted** batched tests.
+* The Android Activities are kept between test cases in **Activity-reused**
+  batched tests.
+  * This means the developer needs to get the app state back to where the next
+    test in the batch assumes it starts.
+
+### How to tell Activity-restarted from Activity-reused batched tests
+
+A batched test is **Activity-restarted** if the `ActivityTestRule` is a
+non-static `@Rule`. It is the `ActivityTestRule` which stops activities after
+each test case.
+
+Activity-restarted Public Transit tests use the `FreshCtaTransitRule`.
+
+A batched test is **Activity-reused** if either:
+  * The `ActivityTestRule` is a static `@ClassRule`
+  * `setFinishActivity(false)` is called on the non-static `ActivityTestRule`.
+    `BlankCTATabInitialStateRule` does this.
+
+In either batched test type, `@ClassRule`s are applied only once per batch,
+while `@Rule`s are applied once per test case. `@BeforeClass` and `@AfterClass`
+are the same. This contrasts with non-batched tests, where both `@ClassRule`s
+and `@Rule`s are applied for each test case, and both `@BeforeClass` and
+`@Before` are run for each test case (same for `@AfterClass` / `@After`).
+
+Activity-reused Public Transit tests use the `ReusedCtaTransitRule` or the
+`AutoResetCtaTransitRule`.
+
+### Performance
+
+In terms of performance:
+
+```
+Activity-reused batched tests > Activity-restarted batched tests > non-batched
+tests
+```
+
+Activity-restarted batched tests are faster than non-batched tests. This
+different is huge in Debug (>50%) and significant in Release (~25%).
+
+Activity-reused batched tests are even faster than Activity-restarted batched
+tests. This difference is significant in Debug and huge in Release.
+
 ## How to Batch a Test
 
 Add the `@Batch` annotation to the test class, and ensure that each test within
@@ -105,17 +152,16 @@ Run all tests in a custom batch:
 
 ## Things worth noting
 
-* Activities won’t be automatically finished for you, if your test requires
-that. Other common state like SharedPreferences
-[issue 1086663](https://crbug.com/1086663) also won’t be automatically reset.
-* @ClassRule and @BeforeClass/@AfterClass run during test listing, so don’t do
-any heavy work in them (and will run twice for parameterized tests). See
-[issue 1090043](https://crbug.com/1090043).
+* Important for Activity-reused tests: @ClassRule and @BeforeClass/@AfterClass
+  run during test listing, so don’t do any heavy work in them (and will run
+  twice for parameterized tests). See
+  [issue 1090043](https://crbug.com/1090043).
 * Sometimes it can be very difficult to figure out which test in a batch is
-causing another test to fail. A good first step is to minimize [_TEST_BATCH_MAX_GROUP_SIZE](https://source.chromium.org/chromium/chromium/src/+/main:build/android/pylib/local/device/local_device_instrumentation_test_run.py;drc=3ab9a142091516aa57f10feebc46dee649ae4589;l=109)
-to minimize the number of tests within the batch while still reproducing the
-failure. Then, you can use multiple gtest filter patterns to control which tests
-run together. Ex:
+  causing another test to fail. A good first step is to minimize
+  [_TEST_BATCH_MAX_GROUP_SIZE](https://source.chromium.org/chromium/chromium/src/+/main:build/android/pylib/local/device/local_device_instrumentation_test_run.py;drc=3ab9a142091516aa57f10feebc46dee649ae4589;l=109)
+  to minimize the number of tests within the batch while still reproducing the
+  failure. Then, you can use multiple gtest filter patterns to control which
+  tests run together. Ex:
   ```shell
   ./tools/autotest.py -C out/Debug ExternalNavigationHandlerTest \
   --gtest_filter="*#testOrdinaryIncognitoUri:*#testChromeReferrer"

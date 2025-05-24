@@ -191,7 +191,8 @@ class DomainReliabilityUploaderTest : public testing::Test {
         uploader_(
             DomainReliabilityUploader::Create(&time_,
                                               url_request_context_.get())) {
-    expected_isolation_info_ = net::IsolationInfo::CreateTransient();
+    expected_isolation_info_ =
+        net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
     auto interceptor =
         std::make_unique<UploadInterceptor>(expected_isolation_info_);

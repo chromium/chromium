@@ -21,6 +21,7 @@ source_set("impl") {
 
   deps = [
     ":tab_contents",
+    "//chrome/browser/ui/bookmarks",
     "//ui/base",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

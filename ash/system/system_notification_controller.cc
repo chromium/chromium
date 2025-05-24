@@ -47,11 +47,8 @@ SystemNotificationController::SystemNotificationController()
       tracing_(std::make_unique<TracingNotificationController>()),
       update_(std::make_unique<UpdateNotificationController>()),
       wifi_toggle_(std::make_unique<WifiToggleNotificationController>()) {
-  // Privacy indicator is only enabled when Video Conference is disabled.
-  if (!features::IsVideoConferenceEnabled()) {
-    privacy_indicators_controller_ =
-        std::make_unique<PrivacyIndicatorsController>();
-  }
+  privacy_indicators_controller_ =
+      std::make_unique<PrivacyIndicatorsController>();
 }
 
 SystemNotificationController::~SystemNotificationController() = default;

@@ -97,9 +97,6 @@ NSString* const kExpandedManualFillChromeLogoID =
 NSString* const kExpandedManualFillAutofillFormButtonID =
     @"ExpandedManualFillAutofillFormButtonID";
 
-NSString* const kExpandedManualFillOverflowMenuID =
-    @"ExpandedManualFillOverflowMenuID";
-
 NSString* const kAccessoryKeyboardAccessibilityIdentifier =
     @"ManualFillAccessoryKeyboardAccessibilityIdentifier";
 
@@ -115,7 +112,6 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
       return manual_fill::ManualFillDataType::kAddress;
     case autofill::FillingProduct::kCreditCard:
     case autofill::FillingProduct::kIban:
-    case autofill::FillingProduct::kStandaloneCvc:
       return manual_fill::ManualFillDataType::kPaymentMethod;
     case autofill::FillingProduct::kPassword:
       return manual_fill::ManualFillDataType::kPassword;
@@ -123,11 +119,18 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kCompose:
-    case autofill::FillingProduct::kPredictionImprovements:
+    case autofill::FillingProduct::kAutofillAi:
     case autofill::FillingProduct::kMerchantPromoCode:
+    case autofill::FillingProduct::kLoyaltyCard:
+    case autofill::FillingProduct::kIdentityCredential:
       // These cases are currently not available on iOS.
       NOTREACHED();
   }
+}
+
++ (NSString*)expandedManualFillOverflowMenuID:(NSInteger)cellIndex {
+  return [NSString stringWithFormat:@"ExpandedManualFillOverflowMenuID_%ld",
+                                    (long)cellIndex];
 }
 
 @end

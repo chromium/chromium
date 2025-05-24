@@ -66,7 +66,7 @@ class SafeBrowsingPageActivationThrottle final
   // throttle will not be able to adjust activation decisions made by the
   // throttle.
   SafeBrowsingPageActivationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       Delegate* delegate,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager);

@@ -18,13 +18,9 @@ using ParseResponseFuture =
     base::test::TestFuture<base::expected<proto::Any, ResponseParsingError>>;
 
 TEST(AqaResponseParserTest, Valid) {
-  proto::OnDeviceModelExecutionOutputConfig cfg;
-  cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
-
   ParseResponseFuture response_future;
-  parser->ParseAsync(
-      "ID:0001,0003 has the answer. The answer is The fox jumps over the dog",
+  AqaResponseParser().ParseAsync(
+      "0001,0003 has the answer. The answer is The fox jumps over the dog",
       response_future.GetCallback());
   auto maybe_response = response_future.Get();
 
@@ -37,12 +33,9 @@ TEST(AqaResponseParserTest, Valid) {
 }
 
 TEST(AqaResponseParserTest, Unanswerable) {
-  proto::OnDeviceModelExecutionOutputConfig cfg;
-  cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
-
   ParseResponseFuture response_future;
-  parser->ParseAsync("unanswerable.", response_future.GetCallback());
+  AqaResponseParser().ParseAsync("unanswerable.",
+                                 response_future.GetCallback());
   auto maybe_response = response_future.Get();
 
   ASSERT_TRUE(maybe_response.has_value());
@@ -52,13 +45,9 @@ TEST(AqaResponseParserTest, Unanswerable) {
 }
 
 TEST(AqaResponseParserTest, RecursiveAnswer) {
-  proto::OnDeviceModelExecutionOutputConfig cfg;
-  cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
-
   ParseResponseFuture response_future;
-  parser->ParseAsync(
-      "ID:0001,0003 has the answer. The answer is ID:0002 has the answer. The "
+  AqaResponseParser().ParseAsync(
+      "0001,0003 has the answer. The answer is ID:0002 has the answer. The "
       "answer is the fox jumps over the dog.",
       response_future.GetCallback());
   auto maybe_response = response_future.Get();
@@ -68,19 +57,20 @@ TEST(AqaResponseParserTest, RecursiveAnswer) {
 }
 
 TEST(AqaResponseParserTest, RecursiveUnanswerable) {
-  proto::OnDeviceModelExecutionOutputConfig cfg;
-  cfg.set_proto_type("optimization_guide.proto.HistoryAnswerResponse");
-  auto parser = AqaResponseParserFactory().CreateParser(cfg);
-
   ParseResponseFuture response_future;
-  parser->ParseAsync("ID:0001,0003 has the answer. The answer is unanswerable.",
-                     response_future.GetCallback());
+  AqaResponseParser().ParseAsync(
+      "0001,0003 has the answer. The answer is unanswerable.",
+      response_future.GetCallback());
   auto maybe_response = response_future.Get();
 
   ASSERT_TRUE(maybe_response.has_value());
   auto response =
       ParsedAnyMetadata<proto::HistoryAnswerResponse>(*maybe_response);
   EXPECT_TRUE(response->is_unanswerable());
+}
+
+TEST(AqaResponseParserTest, SuppressParsingIncompleteResponseAlwaysTrue) {
+  EXPECT_TRUE(AqaResponseParser().SuppressParsingIncompleteResponse());
 }
 
 }  // namespace optimization_guide

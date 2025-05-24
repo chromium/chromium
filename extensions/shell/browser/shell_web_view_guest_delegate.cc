@@ -4,6 +4,8 @@
 
 #include "extensions/shell/browser/shell_web_view_guest_delegate.h"
 
+#include <optional>
+
 namespace extensions {
 
 ShellWebViewGuestDelegate::ShellWebViewGuestDelegate() = default;
@@ -17,5 +19,16 @@ bool ShellWebViewGuestDelegate::HandleContextMenu(
 }
 
 void ShellWebViewGuestDelegate::OnShowContextMenu(int request_id) {}
+
+bool ShellWebViewGuestDelegate::NavigateToURLShouldBlock(const GURL& url) {
+  return false;
+}
+
+std::optional<blink::UserAgentOverride>
+ShellWebViewGuestDelegate::GetDefaultUserAgentOverride() {
+  return std::nullopt;
+}
+
+void ShellWebViewGuestDelegate::SetClientHintsEnabled(bool enable) {}
 
 }  // namespace extensions

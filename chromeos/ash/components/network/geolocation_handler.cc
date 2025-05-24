@@ -31,7 +31,7 @@ std::string HexToDecimal(std::string hex_str) {
 }
 
 std::string FindStringOrEmpty(const base::Value::Dict& dict,
-                              const std::string_view key) {
+                              std::string_view key) {
   const std::string* val = dict.FindString(key);
   return val ? *val : std::string();
 }

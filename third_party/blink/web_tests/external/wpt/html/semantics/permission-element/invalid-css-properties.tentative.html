@@ -13,12 +13,15 @@
     clip-path: circle(10px);
     filter: blur(10px);
     mask: url('test-url');
-    padding-left: 10px;
+    padding-left: 10px; /* this is not allowed because width is not set to 'auto' */
+    width: 200px;
     transform: rotate(10);
+    border: 0px;
+    cursor: none;
   }
 </style>
 
-<permission id="id1" type="geolocation">
+<permission id="id1" type="geolocation"></permission>
 
 <script>
   test(function(){
@@ -30,6 +33,7 @@
     assert_equals(getComputedStyle(el_with_negatives).mask, "none", "mask");
     assert_equals(getComputedStyle(el_with_negatives).paddingLeft, "0px", "padding-left");
     assert_equals(getComputedStyle(el_with_negatives).transform, "none", "transform");
+    assert_equals(getComputedStyle(el_with_negatives).cursor, "pointer", "cursor");
   }, "None of the listed properties should be applied");
 </script>
 </body>

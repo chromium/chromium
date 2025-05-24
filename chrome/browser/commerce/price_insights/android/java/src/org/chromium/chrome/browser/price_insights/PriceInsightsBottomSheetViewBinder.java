@@ -28,19 +28,20 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 import androidx.core.widget.TextViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
 
 /** ViewBinder for the price insights bottom sheet */
+@NullMarked
 public class PriceInsightsBottomSheetViewBinder {
 
     private static final int PRICE_HISTORY_CHART_ID = View.generateViewId();
 
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        ButtonCompat priceTrackingButton =
-                (ButtonCompat) view.findViewById(R.id.price_tracking_button);
-        TextView openUrlButton = (TextView) view.findViewById(R.id.open_jackpot_url_button);
+        ButtonCompat priceTrackingButton = view.findViewById(R.id.price_tracking_button);
+        TextView openUrlButton = view.findViewById(R.id.open_jackpot_url_button);
         if (PRICE_TRACKING_TITLE == propertyKey) {
             ((TextView) view.findViewById(R.id.price_tracking_title))
                     .setText(model.get(PRICE_TRACKING_TITLE));
@@ -70,7 +71,6 @@ public class PriceInsightsBottomSheetViewBinder {
                     AccessibilityActionCompat.ACTION_CLICK,
                     priceTrackingButton
                             .getContext()
-                            .getResources()
                             .getString(
                                     R.string
                                             .price_insights_content_price_tracking_button_action_description),
@@ -84,19 +84,19 @@ public class PriceInsightsBottomSheetViewBinder {
             ((TextView) view.findViewById(R.id.price_history_description))
                     .setText(model.get(PRICE_HISTORY_DESCRIPTION));
         } else if (PRICE_HISTORY_CHART == propertyKey) {
-            LinearLayout priceHistoryLayout =
-                    (LinearLayout) view.findViewById(R.id.price_history_layout);
+            LinearLayout priceHistoryLayout = view.findViewById(R.id.price_history_layout);
             View previousChart = priceHistoryLayout.findViewById(PRICE_HISTORY_CHART_ID);
             if (previousChart != null) {
                 priceHistoryLayout.removeView(previousChart);
             }
             View priceHistoryChart = model.get(PRICE_HISTORY_CHART);
             priceHistoryChart.setId(PRICE_HISTORY_CHART_ID);
-            int chartHeight =
-                    priceHistoryChart
-                            .getContext()
-                            .getResources()
-                            .getDimensionPixelSize(R.dimen.price_history_chart_height);
+            Resources resources = priceHistoryChart.getContext().getResources();
+            priceHistoryChart.setContentDescription(
+                    resources.getString(
+                            R.string.price_history_chart_content_description,
+                            model.get(PRICE_TRACKING_TITLE)));
+            int chartHeight = resources.getDimensionPixelSize(R.dimen.price_history_chart_height);
             priceHistoryChart.setLayoutParams(
                     new LayoutParams(LayoutParams.MATCH_PARENT, chartHeight));
             priceHistoryLayout.addView(priceHistoryChart);

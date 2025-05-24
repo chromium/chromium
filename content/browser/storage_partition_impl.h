@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <set>
@@ -27,6 +28,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
+#include "content/browser/locks/lock_manager.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -43,6 +45,7 @@
 #include "net/cookies/cookie_setting_override.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_context_client.mojom.h"
 #include "storage/browser/blob/blob_url_registry.h"
@@ -64,6 +67,7 @@ class IsolationInfo;
 namespace network {
 namespace mojom {
 class SharedDictionaryAccessObserver;
+class DeviceBoundSessionAccessObserver;
 }  // namespace mojom
 }  // namespace network
 
@@ -91,7 +95,6 @@ class CacheStorageControlWrapper;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 class CdmStorageDataModel;
 class CdmStorageManager;
-class MediaLicenseManager;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 class CookieDeprecationLabelManagerImpl;
 class CookieStoreManager;
@@ -102,7 +105,6 @@ class FontAccessManager;
 class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
 class InterestGroupManagerImpl;
-class LockManager;
 class NavigationStateKeepAlive;
 class PaymentAppContextImpl;
 class PrivateAggregationDataModel;
@@ -112,7 +114,7 @@ class PushMessagingContext;
 class QuotaContext;
 class ReconnectableURLLoaderFactoryForIOThreadWrapper;
 class SharedStorageHeaderObserver;
-class SharedStorageWorkletHostManager;
+class SharedStorageRuntimeManager;
 class SharedWorkerServiceImpl;
 class SubresourceProxyingURLLoaderService;
 class NavigationOrDocumentHandle;
@@ -147,9 +149,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
-  void OverrideSharedStorageWorkletHostManagerForTesting(
-      std::unique_ptr<SharedStorageWorkletHostManager>
-          shared_storage_worklet_host_manager);
+  void OverrideSharedStorageRuntimeManagerForTesting(
+      std::unique_ptr<SharedStorageRuntimeManager>
+          shared_storage_runtime_manager);
   void OverrideSharedStorageHeaderObserverForTesting(
       std::unique_ptr<SharedStorageHeaderObserver>
           shared_storage_header_observer);
@@ -160,6 +162,9 @@ class CONTENT_EXPORT StoragePartitionImpl
   void OverridePrivateAggregationManagerForTesting(
       std::unique_ptr<PrivateAggregationManagerImpl>
           private_aggregation_manager);
+  void OverrideDeviceBoundSessionManagerForTesting(
+      std::unique_ptr<network::mojom::DeviceBoundSessionManager>
+          device_bound_session_manager);
 
   // StoragePartition interface.
   const StoragePartitionConfig& GetConfig() const override;
@@ -185,15 +190,14 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::QuotaManager* GetQuotaManager() override;
   BackgroundSyncContextImpl* GetBackgroundSyncContext() override;
   storage::FileSystemContext* GetFileSystemContext() override;
-  storage::DatabaseTracker* GetDatabaseTracker() override;
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
-  LockManager* GetLockManager();  // override; TODO: Add to interface
+  LockManager<storage::BucketId>*
+  GetLockManager();  // override; TODO: Add to interface
   // TODO(crbug.com/40185706): Add this method to the StoragePartition
-  // interface, which would also require making SharedStorageWorkletHostManager
+  // interface, which would also require making SharedStorageRuntimeManager
   // an interface accessible in //content/public/.
-  SharedStorageWorkletHostManager*
-  GetSharedStorageWorkletHostManager();  // override;
+  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();  // override;
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
@@ -218,7 +222,10 @@ class CONTENT_EXPORT StoragePartitionImpl
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   CdmStorageDataModel* GetCdmStorageDataModel() override;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  void DeleteStaleSessionOnlyCookiesAfterDelay() override;
+  network::mojom::DeviceBoundSessionManager* GetDeviceBoundSessionManager()
+      override;
+
+  void DeleteStaleSessionData() override;
 
   void SetProtoDatabaseProvider(
       std::unique_ptr<leveldb_proto::ProtoDatabaseProvider> proto_db_provider)
@@ -291,9 +298,6 @@ class CONTENT_EXPORT StoragePartitionImpl
   const std::string& GetPartitionDomain() const;
   AggregationService* GetAggregationService();
   FontAccessManager* GetFontAccessManager();
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  MediaLicenseManager* GetMediaLicenseManager();
-#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
   storage::SharedStorageManager* GetSharedStorageManager() override;
   PrivateAggregationManager* GetPrivateAggregationManager();
@@ -333,9 +337,6 @@ class CONTENT_EXPORT StoragePartitionImpl
       const std::string& spn,
       OnGenerateHttpNegotiateAuthTokenCallback callback) override;
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-  void OnTrustAnchorUsed() override;
-#endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void OnCanSendSCTAuditingReport(
       OnCanSendSCTAuditingReportCallback callback) override;
@@ -358,6 +359,11 @@ class CONTENT_EXPORT StoragePartitionImpl
           listener) override;
   void OnWebSocketConnectedToPrivateNetwork(
       network::mojom::IPAddressSpace ip_address_space) override;
+  void OnUrlLoaderConnectedToPrivateNetwork(
+      const GURL& request_url,
+      network::mojom::IPAddressSpace response_address_space,
+      network::mojom::IPAddressSpace client_address_space,
+      network::mojom::IPAddressSpace target_address_space) override;
   void OnAuthRequired(
       const std::optional<base::UnguessableToken>& window_id,
       int32_t request_id,
@@ -373,6 +379,8 @@ class CONTENT_EXPORT StoragePartitionImpl
       const std::optional<std::string>& private_network_device_id,
       const std::optional<std::string>& private_network_device_name,
       OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
+  void OnLocalNetworkAccessPermissionRequired(
+      OnLocalNetworkAccessPermissionRequiredCallback callback) override;
   void OnClearSiteData(
       const GURL& url,
       const std::string& header_value,
@@ -387,12 +395,21 @@ class CONTENT_EXPORT StoragePartitionImpl
                        int64_t sent_bytes) override;
   void OnSharedStorageHeaderReceived(
       const url::Origin& request_origin,
-      std::vector<network::mojom::SharedStorageOperationPtr> operations,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      const std::optional<std::string>& with_lock,
       OnSharedStorageHeaderReceivedCallback callback) override;
+  void OnAdAuctionEventRecordHeaderReceived(
+      network::AdAuctionEventRecord event_record,
+      const std::optional<url::Origin>& top_frame_origin) override;
 
   SharedStorageHeaderObserver* shared_storage_header_observer() {
     return shared_storage_header_observer_.get();
   }
+
+#if BUILDFLAG(IS_MAC)
+  bool IsStorageServiceRemoteValid() const;
+#endif  // BUILDFLAG(IS_MAC)
 
   // Can return nullptr while `this` is being destroyed.
   BrowserContext* browser_context() const;
@@ -451,6 +468,7 @@ class CONTENT_EXPORT StoragePartitionImpl
       int process_id,
       int routing_id,
       net::CookieSettingOverrides cookie_setting_overrides,
+      net::CookieSettingOverrides devtools_cookie_setting_overrides,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver,
       mojo::PendingRemote<network::mojom::CookieAccessObserver>
           cookie_observer);
@@ -466,6 +484,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
   CreateAuthCertObserverForServiceWorker(int process_id);
+
+  mojo::PendingRemote<network::mojom::DeviceBoundSessionAccessObserver>
+  CreateDeviceBoundSessionObserverForServiceWorker();
 
   std::vector<std::string> GetCorsExemptHeaderList();
 
@@ -540,6 +561,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   class ServiceWorkerCookieAccessObserver;
   class ServiceWorkerTrustTokenAccessObserver;
   class ServiceWorkerSharedDictionaryAccessObserver;
+  class ServiceWorkerDeviceBoundSessionAccessObserver;
   struct NetworkContextOwner;
 
   friend class BackgroundSyncManagerTest;
@@ -714,7 +736,7 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   GlobalRenderFrameHostId GetRenderFrameHostIdFromNetworkContext();
 
-  void DeleteStaleSessionOnlyCookiesAfterDelayCallback();
+  void DeleteStaleSessionOnlyCookiesAfterDelay();
 
   void ClearNoncesInNetworkContextAfterDelayCallback(
       const std::vector<base::UnguessableToken>& nonces);
@@ -739,9 +761,8 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<QuotaContext> quota_context_;
   scoped_refptr<storage::QuotaManager> quota_manager_;
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
-  scoped_refptr<storage::DatabaseTracker> database_tracker_;
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;
-  std::unique_ptr<LockManager> lock_manager_;
+  std::unique_ptr<LockManager<storage::BucketId>> lock_manager_;
   std::unique_ptr<indexed_db::IndexedDBControlWrapper>
       indexed_db_control_wrapper_;
   std::unique_ptr<CacheStorageControlWrapper> cache_storage_control_wrapper_;
@@ -780,21 +801,18 @@ class CONTENT_EXPORT StoragePartitionImpl
   std::unique_ptr<AggregationService> aggregation_service_;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   std::unique_ptr<CdmStorageManager> cdm_storage_manager_;
-
-  // TODO(crbug.com/40272342): Remove MediaLicenseManager once migration has
-  // been completed.
-  std::unique_ptr<MediaLicenseManager> media_license_manager_;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  mojo::Remote<network::mojom::DeviceBoundSessionManager>
+      device_bound_session_manager_;
 
   // Owning pointer to the SharedStorageManager for this partition.
   std::unique_ptr<storage::SharedStorageManager> shared_storage_manager_;
 
   // This needs to be declared after `shared_storage_manager_` because
   // `shared_storage_worklet_host` (managed by
-  // `shared_storage_worklet_host_manager_`) ultimately stores a raw pointer on
+  // `shared_storage_runtime_manager_`) ultimately stores a raw pointer on
   // it.
-  std::unique_ptr<SharedStorageWorkletHostManager>
-      shared_storage_worklet_host_manager_;
+  std::unique_ptr<SharedStorageRuntimeManager> shared_storage_runtime_manager_;
 
   // Owning pointer to the `SharedStorageHeaderObserver` for this partition.
   std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;
@@ -867,6 +885,12 @@ class CONTENT_EXPORT StoragePartitionImpl
   // about shared dictionary accesses made by a service worker in this process.
   mojo::UniqueReceiverSet<network::mojom::SharedDictionaryAccessObserver>
       service_worker_shared_dictionary_observers_;
+
+  // A set of connections to the network service used to notify the
+  // browser process about device bound session accesses made by a
+  // service worker in this process.
+  mojo::UniqueReceiverSet<network::mojom::DeviceBoundSessionAccessObserver>
+      service_worker_device_bound_session_observers_;
 
   mojo::ReceiverSet<network::mojom::URLLoaderNetworkServiceObserver,
                     URLLoaderNetworkContext>

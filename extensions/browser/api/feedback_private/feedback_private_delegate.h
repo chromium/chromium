@@ -40,7 +40,7 @@ class FeedbackPrivateDelegate {
 
   // Returns a dictionary of localized strings for the feedback component
   // extension.
-  // Set |from_crash| to customize strings when the feedback UI was initiated
+  // Set `from_crash` to customize strings when the feedback UI was initiated
   // from a "sad tab" crash.
   virtual base::Value::Dict GetStrings(content::BrowserContext* browser_context,
                                        bool from_crash) const = 0;
@@ -49,7 +49,7 @@ class FeedbackPrivateDelegate {
       content::BrowserContext* context,
       system_logs::SysLogsFetcherCallback callback) const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Creates a SystemLogsSource for the given type of log file.
   virtual std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const = 0;
@@ -57,7 +57,7 @@ class FeedbackPrivateDelegate {
   // Gets logs that aren't passed to the sendFeedback function, but should be
   // included in the feedback report. These currently consist of the Intel Wi-Fi
   // debug logs (if they exist).
-  // Modifies |feedback_data| and passes it on to |callback|.
+  // Modifies `feedback_data` and passes it on to `callback`.
   virtual void FetchExtraLogs(
       scoped_refptr<feedback::FeedbackData> feedback_data,
       FetchExtraLogsCallback callback) const = 0;
@@ -66,11 +66,6 @@ class FeedbackPrivateDelegate {
   // report is successfully sent.
   virtual api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const = 0;
-
-  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
-  // Gets Lacros histograms in zip compressed format which will be attached
-  // as a file in unified feedback report.
-  virtual void GetLacrosHistograms(GetHistogramsCallback callback) = 0;
 #endif
 
   // Returns the normalized email address of the signed-in user associated with
@@ -81,7 +76,7 @@ class FeedbackPrivateDelegate {
   // Called if sending the feedback report was delayed.
   virtual void NotifyFeedbackDelayed() const = 0;
 
-  // Returns the uploader associated with |context| which is used to upload
+  // Returns the uploader associated with `context` which is used to upload
   // feedback reports to the feedback server.
   virtual feedback::FeedbackUploader* GetFeedbackUploaderForContext(
       content::BrowserContext* context) const = 0;

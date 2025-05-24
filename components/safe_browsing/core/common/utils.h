@@ -8,6 +8,7 @@
 #define COMPONENTS_SAFE_BROWSING_CORE_COMMON_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -109,6 +110,14 @@ bool ErrorIsRetriable(int net_error, int http_error);
 // We populate a parallel set of metrics to differentiate some threat sources.
 std::string GetExtraMetricsSuffix(
     security_interstitials::UnsafeResource unsafe_resource);
+
+// We populate a parallel set of metrics to differentiate some threat subtypes.
+std::string GetExtraExtraMetricsSuffix(
+    security_interstitials::UnsafeResource unsafe_resource);
+
+// Return the threat_type string for unsafe site visits.
+std::string GetThreatTypeStringForInterstitial(
+    safe_browsing::SBThreatType threat_type);
 
 }  // namespace safe_browsing
 

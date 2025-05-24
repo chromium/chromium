@@ -56,12 +56,6 @@ extern const char kCorpHostTypeHint[];
 extern const char kCloudHostTypeHint[];
 extern const char kMe2MeHostTypeHint[];
 
-// The API_KEY used for Cloud API service requests. Note that this is only used
-// for billing and quota purposes and is does not provide authn/authz. Using an
-// API_KEY for a different project than where the request originates from will
-// result in the request being rejected.
-extern const char kCloudApiKeyPath[];
-
 // Deprecated keys. These keys were used in pre-M120 host versions and are being
 // kept around for backward compatibility. We should consider rewriting the
 // config file at some point so we no longer need to support them.

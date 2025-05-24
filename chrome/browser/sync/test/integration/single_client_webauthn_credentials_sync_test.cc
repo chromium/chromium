@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
+
 #include "base/containers/span.h"
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -19,12 +19,14 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_matchers.h"
 #include "components/version_info/version_info.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -42,7 +44,10 @@ using testing::IsEmpty;
 using testing::Optional;
 using testing::UnorderedElementsAre;
 
+using webauthn_credentials_helper::EntityHasCurrentHiddenTime;
 using webauthn_credentials_helper::EntityHasDisplayName;
+using webauthn_credentials_helper::EntityHasHidden;
+using webauthn_credentials_helper::EntityHasLastUsedTime;
 using webauthn_credentials_helper::EntityHasSyncId;
 using webauthn_credentials_helper::EntityHasUsername;
 using webauthn_credentials_helper::kTestRpId;
@@ -65,6 +70,8 @@ constexpr char kUsername1[] = "anya";
 constexpr char kDisplayName1[] = "Anya Forger";
 constexpr char kUsername2[] = "yor";
 constexpr char kDisplayName2[] = "Yor Forger";
+constexpr int64_t kLastUsedTime1 = 10;
+constexpr int64_t kLastUsedTime2 = 20;
 
 static const webauthn::PasskeyModel::UserEntity kTestUser(
     std::vector<uint8_t>{1, 2, 3},
@@ -85,11 +92,11 @@ bool PublicKeyForPasskeyEquals(
   CHECK(webauthn::passkey_model_utils::DecryptWebauthnCredentialSpecificsData(
       trusted_vault_key, passkey, &encrypted_data));
   auto ec_key = crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-      base::as_bytes(base::make_span(encrypted_data.private_key())));
+      base::as_byte_span(encrypted_data.private_key()));
   CHECK(ec_key);
   std::vector<uint8_t> ec_key_pub;
   CHECK(ec_key->ExportPublicKey(&ec_key_pub));
-  return base::ranges::equal(ec_key_pub, expected_spki);
+  return std::ranges::equal(ec_key_pub, expected_spki);
 }
 
 std::unique_ptr<syncer::PersistentUniqueClientEntity>
@@ -103,7 +110,8 @@ CreateEntityWithCustomClientTagHash(
                                              client_tag_hash),
       syncer::WEBAUTHN_CREDENTIAL, /*version=*/0,
       /*non_unique_name=*/"", client_tag_hash, entity, /*creation_time=*/0,
-      /*last_modified_time=*/0, /*collaboration_id=*/"");
+      /*last_modified_time=*/0,
+      /*collaboration_metadata=*/sync_pb::SyncEntity::CollaborationMetadata());
 }
 
 class PasskeyModelReadyChecker : public StatusChangeChecker,
@@ -127,6 +135,8 @@ class PasskeyModelReadyChecker : public StatusChangeChecker,
   }
 
   void OnPasskeyModelShuttingDown() override {}
+
+  void OnPasskeyModelIsReady(bool is_ready) override {}
 
  private:
   const raw_ptr<webauthn::PasskeyModel> model_;
@@ -168,9 +178,6 @@ class SingleClientWebAuthnCredentialsSyncTest : public SyncTest {
                                                    client_tag_hash),
             client_tag_hash));
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      syncer::kSyncWebauthnCredentials};
 
   webauthn::PasskeySyncBridge& GetModel() {
     return webauthn_credentials_helper::GetModel(kSingleProfile);
@@ -471,8 +478,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   auto metadata_change_list =
       std::make_unique<syncer::InMemoryMetadataChangeList>();
   syncer::EntityChangeList entity_changes;
-  entity_changes.emplace_back(
-      syncer::EntityChange::CreateDelete("unknown-sync-id"));
+  entity_changes.emplace_back(syncer::EntityChange::CreateDelete(
+      "unknown-sync-id", syncer::EntityData()));
   ASSERT_NO_FATAL_FAILURE(GetModel().ApplyIncrementalSyncChanges(
       std::move(metadata_change_list), std::move(entity_changes)));
 }
@@ -684,6 +691,34 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
   EXPECT_TRUE(GetModel().GetAllPasskeys().empty());
 }
 
+IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
+                       SetPasskeyHidden) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  // Add a passkey. It should not be hidden.
+  sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
+  GetModel().AddNewPasskeyForTesting(passkey);
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(testing::AllOf(EntityHasHidden(false))))
+                  .Wait());
+
+  // Hide the passkey.
+  PasskeyChangeObservationChecker change_checker(
+      kSingleProfile,
+      {{webauthn::PasskeyModelChange::ChangeType::UPDATE, passkey.sync_id()}});
+  EXPECT_TRUE(GetModel().SetPasskeyHidden(passkey.credential_id(), true));
+  EXPECT_TRUE(ServerPasskeysMatchChecker(
+                  UnorderedElementsAre(testing::AllOf(
+                      EntityHasHidden(true), EntityHasCurrentHiddenTime())))
+                  .Wait());
+  EXPECT_TRUE(GetModel().GetAllPasskeys().at(0).hidden());
+
+  // `hidden_time` should have been updated with the current timestamp.
+  base::Time hidden_time = base::Time::FromMillisecondsSinceUnixEpoch(
+      GetModel().GetAllPasskeys().at(0).hidden_time());
+  EXPECT_LE(base::Time::Now() - hidden_time, base::Seconds(5));
+}
+
 // Tests updating a passkey.
 IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
@@ -691,11 +726,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
   sync_pb::WebauthnCredentialSpecifics passkey = NewPasskey();
   passkey.set_user_name(kUsername1);
   passkey.set_user_display_name(kDisplayName1);
+  passkey.set_last_used_time_windows_epoch_micros(kLastUsedTime1);
   GetModel().AddNewPasskeyForTesting(passkey);
   EXPECT_TRUE(
       ServerPasskeysMatchChecker(UnorderedElementsAre(testing::AllOf(
                                      EntityHasUsername(kUsername1),
-                                     EntityHasDisplayName(kDisplayName1))))
+                                     EntityHasDisplayName(kDisplayName1),
+                                     EntityHasLastUsedTime(kLastUsedTime1))))
           .Wait());
 
   PasskeyChangeObservationChecker change_checker(
@@ -707,10 +744,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest, UpdatePasskey) {
                                            .user_display_name = kDisplayName2,
                                        },
                                        /*updated_by_user=*/false));
+  base::Time last_used_time2 = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(kLastUsedTime2));
+  EXPECT_TRUE(GetModel().UpdatePasskeyTimestamp(passkey.credential_id(),
+                                                last_used_time2));
   EXPECT_TRUE(
       ServerPasskeysMatchChecker(UnorderedElementsAre(testing::AllOf(
                                      EntityHasUsername(kUsername2),
-                                     EntityHasDisplayName(kDisplayName2))))
+                                     EntityHasDisplayName(kDisplayName2),
+                                     EntityHasLastUsedTime(kLastUsedTime2))))
           .Wait());
   EXPECT_TRUE(change_checker.Wait());
   EXPECT_FALSE(GetModel().GetAllPasskeys().at(0).edited_by_user());
@@ -844,7 +886,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     expected_sync_ids.push_back(specifics2.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics2.sync_id()))),
+            base::as_byte_span(specifics2.sync_id())),
         specifics2));
   }
 
@@ -854,8 +896,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics3 = NewPasskey();
     expected_sync_ids.push_back(specifics3.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
-        /*client_tag_hash=*/base::ToLowerASCII(base::HexEncode(
-            base::as_bytes(base::make_span(specifics3.sync_id())))),
+        /*client_tag_hash=*/base::ToLowerASCII(
+            base::HexEncode(base::as_byte_span(specifics3.sync_id()))),
         specifics3));
   }
 
@@ -873,7 +915,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics6 = NewPasskey();
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics6.sync_id()))),
+            base::as_byte_span(specifics6.sync_id())),
         specifics5));
   }
 
@@ -910,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     expected_sync_ids.push_back(specifics2.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics2.sync_id()))),
+            base::as_byte_span(specifics2.sync_id())),
         specifics2));
   }
 
@@ -920,8 +962,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics3 = NewPasskey();
     expected_sync_ids.push_back(specifics3.sync_id());
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
-        /*client_tag_hash=*/base::ToLowerASCII(base::HexEncode(
-            base::as_bytes(base::make_span(specifics3.sync_id())))),
+        /*client_tag_hash=*/base::ToLowerASCII(
+            base::HexEncode(base::as_byte_span(specifics3.sync_id()))),
         specifics3));
   }
 
@@ -939,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
     sync_pb::WebauthnCredentialSpecifics specifics6 = NewPasskey();
     fake_server_->InjectEntity(CreateEntityWithCustomClientTagHash(
         /*client_tag_hash=*/base::HexEncode(
-            base::as_bytes(base::make_span(specifics6.sync_id()))),
+            base::as_byte_span(specifics6.sync_id())),
         specifics5));
   }
 
@@ -1006,7 +1048,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAuthnCredentialsSyncTest,
 }
 
 // The unconsented primary account isn't supported on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 class SingleClientWebAuthnCredentialsSyncTestExplicitParamTest
     : public SingleClientWebAuthnCredentialsSyncTest,
@@ -1015,10 +1057,6 @@ class SingleClientWebAuthnCredentialsSyncTestExplicitParamTest
   SingleClientWebAuthnCredentialsSyncTestExplicitParamTest() = default;
 
   bool is_explicit_signin() const { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 // Tests that passkeys sync on transport mode only if the user has consented to
@@ -1045,8 +1083,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
 
     // Let the user opt in to transport mode and wait for passkeys to start
     // syncing.
-    password_manager::features_util::OptInToAccountStorage(
-        GetProfile(0)->GetPrefs(), GetSyncService(0));
+    GetSyncService(0)->GetUserSettings()->SetSelectedType(
+        syncer::UserSelectableType::kPasswords, true);
   }
   PasskeySyncActiveChecker(GetSyncService(0)).Wait();
   EXPECT_TRUE(
@@ -1055,8 +1093,8 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTestExplicitParamTest,
           .Wait());
 
   // Opt out. The passkey should be removed.
-  password_manager::features_util::OptOutOfAccountStorageAndClearSettings(
-      GetProfile(0)->GetPrefs(), GetSyncService(0));
+  GetSyncService(0)->GetUserSettings()->SetSelectedType(
+      syncer::UserSelectableType::kPasswords, false);
   EXPECT_TRUE(LocalPasskeysMatchChecker(kSingleProfile, IsEmpty()).Wait());
 }
 
@@ -1067,6 +1105,6 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<bool>& info) {
       return info.param ? "Explicit" : "Implicit";
     });
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

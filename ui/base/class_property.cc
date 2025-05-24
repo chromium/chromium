@@ -4,19 +4,21 @@
 
 #include "ui/base/class_property.h"
 
+#include <stdint.h>
+
 #include <algorithm>
-#include <utility>
+#include <iterator>
+#include <map>
+#include <set>
 
 #include "base/notreached.h"
-
-// common class properties.
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(UI_BASE), bool)
 
 namespace ui {
 
 PropertyHandler::PropertyHandler() = default;
 
-PropertyHandler::PropertyHandler(PropertyHandler&& other) = default;
+PropertyHandler::PropertyHandler(PropertyHandler&&) = default;
+PropertyHandler& PropertyHandler::operator=(PropertyHandler&&) = default;
 
 PropertyHandler::~PropertyHandler() {
   ClearProperties();
@@ -24,39 +26,17 @@ PropertyHandler::~PropertyHandler() {
 
 void PropertyHandler::AcquireAllPropertiesFrom(PropertyHandler&& other) {
   for (auto& prop_pair : other.prop_map_) {
-    prop_map_[prop_pair.first] = std::move(prop_pair.second);
+    prop_map_.insert_or_assign(std::move(prop_pair.first),
+                               std::move(prop_pair.second));
   }
   other.prop_map_.clear();
 }
 
-int64_t PropertyHandler::SetPropertyInternal(const void* key,
-                                             const char* name,
-                                             PropertyDeallocator deallocator,
-                                             int64_t value,
-                                             int64_t default_value) {
-  int64_t old = GetPropertyInternal(key, default_value, false);
-  if (value == default_value) {
-    prop_map_.erase(key);
-  } else {
-    Value prop_value;
-    prop_value.name = name;
-    prop_value.value = value;
-    prop_value.deallocator = deallocator;
-    prop_map_[key] = prop_value;
-  }
-  AfterPropertyChange(key, old);
-  return old;
-}
-
-void PropertyHandler::ClearProperties() {
-  // Clear properties.
-  for (std::map<const void*, Value>::const_iterator iter = prop_map_.begin();
-       iter != prop_map_.end();
-       ++iter) {
-    if (iter->second.deallocator)
-      (*iter->second.deallocator)(iter->second.value);
-  }
-  prop_map_.clear();
+std::set<const void*> PropertyHandler::GetAllPropertyKeys() const {
+  std::set<const void*> keys;
+  std::ranges::transform(prop_map_, std::inserter(keys, keys.end()),
+                         &PropMap::value_type::first);
+  return keys;
 }
 
 PropertyHandler* PropertyHandler::GetParentHandler() const {
@@ -67,28 +47,49 @@ PropertyHandler* PropertyHandler::GetParentHandler() const {
   NOTREACHED();
 }
 
+void PropertyHandler::ClearProperties() {
+  static constexpr auto dealloc = [](Value& v) {
+    if (v.deallocator) {
+      (*v.deallocator)(v.value);
+    }
+  };
+  std::ranges::for_each(prop_map_, dealloc, &PropMap::value_type::second);
+  prop_map_.clear();
+}
+
+int64_t PropertyHandler::SetPropertyInternal(const void* key,
+                                             const char* name,
+                                             PropertyDeallocator deallocator,
+                                             int64_t value,
+                                             int64_t default_value) {
+  const auto it = prop_map_.find(key);
+  int64_t old = default_value;
+  if (it != prop_map_.end()) {
+    old = it->second.value;
+    if (value == default_value) {
+      prop_map_.erase(it);
+    } else {
+      it->second = {.name = name, .value = value, .deallocator = deallocator};
+    }
+  } else if (value != default_value) {
+    prop_map_.emplace(
+        key, Value{.name = name, .value = value, .deallocator = deallocator});
+  }
+  AfterPropertyChange(key, old);
+  return old;
+}
+
 int64_t PropertyHandler::GetPropertyInternal(const void* key,
                                              int64_t default_value,
                                              bool search_parent) const {
-  const PropertyHandler* handler = this;
-  while (handler) {
-    auto iter = handler->prop_map_.find(key);
-    if (iter == handler->prop_map_.end()) {
-      if (!search_parent)
-        break;
-      handler = handler->GetParentHandler();
-      continue;
+  for (const PropertyHandler* handler = this; handler;
+       handler = search_parent ? handler->GetParentHandler() : nullptr) {
+    if (const auto it = handler->prop_map_.find(key);
+        it != handler->prop_map_.end()) {
+      return it->second.value;
     }
-    return iter->second.value;
   }
   return default_value;
-}
-
-std::set<const void*> PropertyHandler::GetAllPropertyKeys() const {
-  std::set<const void*> keys;
-  for (auto& pair : prop_map_)
-    keys.insert(pair.first);
-  return keys;
 }
 
 }  // namespace ui

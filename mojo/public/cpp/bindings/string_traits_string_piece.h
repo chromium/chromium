@@ -30,7 +30,7 @@ struct StringTraits<std::string_view> {
   static std::string_view GetUTF8(std::string_view input) { return input; }
 
   static bool Read(StringDataView input, std::string_view* output) {
-    *output = std::string_view(input.storage(), input.size());
+    *output = input.value();
     return true;
   }
 };

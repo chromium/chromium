@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -73,7 +74,7 @@ constexpr base::TimeDelta kDownloadCertRequestMaxDelay = base::Hours(8);
 const net::BackoffEntry::Policy kDownloadCertBackoffPolicy{
     /*num_errors_to_ignore=*/0,
     /*initial_delay_ms=*/
-    base::checked_cast<int>(kDownloadCertRequestInitialDelay.InMilliseconds()),
+    kDownloadCertRequestInitialDelay.InMilliseconds(),
     /*multiply_factor=*/4,
     /*jitter_factor=*/0.10,
     /*maximum_backoff_ms=*/kDownloadCertRequestMaxDelay.InMilliseconds(),
@@ -84,7 +85,7 @@ const net::BackoffEntry::Policy kDownloadCertBackoffPolicy{
 const net::BackoffEntry::Policy kBackoffPolicy{
     /*num_errors_to_ignore=*/0,
     /*initial_delay_ms=*/
-    base::checked_cast<int>(base::Seconds(30).InMilliseconds()),
+    base::Seconds(30).InMilliseconds(),
     /*multiply_factor=*/2.0,
     /*jitter_factor=*/0.15,
     /*maximum_backoff_ms=*/base::Hours(12).InMilliseconds(),
@@ -152,7 +153,7 @@ int GetStateOrderedIndex(CertProvisioningWorkerState state) {
     case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
     case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
       // These states are not used in the "static" flow.
-      CHECK(false);
+      NOTREACHED();
   }
   return res;
 }
@@ -231,6 +232,12 @@ bool CertProvisioningWorkerStatic::IsWorkerMarkedForReset() const {
   return is_schedueled_for_reset_;
 }
 
+const std::string& CertProvisioningWorkerStatic::GetProcessId() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return process_id_;
+}
+
 const CertProfile& CertProvisioningWorkerStatic::GetCertProfile() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -265,7 +272,7 @@ CertProvisioningWorkerStatic::GetLastBackendServerError() const {
   return last_backend_server_error_;
 }
 
-std::string CertProvisioningWorkerStatic::GetFailureMessage() const {
+std::string CertProvisioningWorkerStatic::GetFailureMessageWithPii() const {
   return failure_message_ui_.value_or(failure_message_);
 }
 
@@ -326,10 +333,9 @@ void CertProvisioningWorkerStatic::DoStep() {
     case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
     case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
       // These states are not used in the "static" flow.
-      CHECK(false);
-      return;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << " " << static_cast<uint>(state_);
+  NOTREACHED() << " " << static_cast<uint>(state_);
 }
 
 void CertProvisioningWorkerStatic::MarkWorkerForReset() {
@@ -412,17 +418,13 @@ void CertProvisioningWorkerStatic::GenerateKeyForVa() {
       /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
       GetKeyName(cert_profile_.profile_id), profile_,
       base::BindOnce(&CertProvisioningWorkerStatic::OnGenerateKeyForVaDone,
-                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()),
+                     weak_factory_.GetWeakPtr()),
       /*signals=*/std::nullopt);
 }
 
 void CertProvisioningWorkerStatic::OnGenerateKeyForVaDone(
-    base::TimeTicks start_time,
     const attestation::TpmChallengeKeyResult& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordKeypairGenerationTime(cert_profile_.protocol_version, cert_scope_,
-                              base::TimeTicks::Now() - start_time);
 
   if (result.result_code ==
       attestation::TpmChallengeKeyResultCode::kGetCertificateFailedError) {
@@ -513,16 +515,12 @@ void CertProvisioningWorkerStatic::BuildVaChallengeResponse() {
       va_challenge_,
       base::BindOnce(
           &CertProvisioningWorkerStatic::OnBuildVaChallengeResponseDone,
-          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+          weak_factory_.GetWeakPtr()));
 }
 
 void CertProvisioningWorkerStatic::OnBuildVaChallengeResponseDone(
-    base::TimeTicks start_time,
     const attestation::TpmChallengeKeyResult& challenge_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordVerifiedAccessTime(cert_profile_.protocol_version, cert_scope_,
-                           base::TimeTicks::Now() - start_time);
 
   if (!challenge_result.IsSuccess()) {
     failure_message_ = base::StrCat(
@@ -635,25 +633,20 @@ void CertProvisioningWorkerStatic::SignCsr() {
     platform_keys_service_->SignRSAPKCS1Raw(
         GetPlatformKeysTokenId(cert_scope_), StrToBytes(csr_), public_key_,
         base::BindRepeating(&CertProvisioningWorkerStatic::OnSignCsrDone,
-                            weak_factory_.GetWeakPtr(),
-                            base::TimeTicks::Now()));
+                            weak_factory_.GetWeakPtr()));
     return;
   }
   platform_keys_service_->SignRsaPkcs1(
       GetPlatformKeysTokenId(cert_scope_), StrToBytes(csr_), public_key_,
       hashing_algorithm_.value(),
       base::BindRepeating(&CertProvisioningWorkerStatic::OnSignCsrDone,
-                          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
+                          weak_factory_.GetWeakPtr()));
 }
 
 void CertProvisioningWorkerStatic::OnSignCsrDone(
-    base::TimeTicks start_time,
     std::vector<uint8_t> signature,
     chromeos::platform_keys::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  RecordDataSignTime(cert_profile_.protocol_version, cert_scope_,
-                     base::TimeTicks::Now() - start_time);
 
   if (status != chromeos::platform_keys::Status::kSuccess) {
     failure_message_ = base::StrCat(
@@ -1055,8 +1048,7 @@ void CertProvisioningWorkerStatic::HandleSerialization() {
     case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
     case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
       // These states are not used in the "static" flow.
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 }
 

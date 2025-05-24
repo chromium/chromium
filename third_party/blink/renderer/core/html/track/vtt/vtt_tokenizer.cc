@@ -97,7 +97,7 @@ VTTTokenizer::VTTTokenizer(const String& input)
     : input_(input), input_stream_preprocessor_(this) {
   // Append a EOF marker and close the input "stream".
   DCHECK(!input_.IsClosed());
-  input_.Append(SegmentedString(String(&kEndOfFileMarker, 1)));
+  input_.Append(SegmentedString(String(base::span_from_ref(kEndOfFileMarker))));
   input_.Close();
 }
 
@@ -256,8 +256,7 @@ bool VTTTokenizer::NextToken(VTTToken& token) {
     END_STATE()
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace blink

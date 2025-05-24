@@ -28,22 +28,21 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
 import android.view.ContextThemeWrapper;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
@@ -72,8 +71,10 @@ public class TileGroupUnitTest {
     private static final int TILE_TITLE_LINES = 1;
     private static final String[] URLS = {"https://www.google.com/", "https://tellmedadjokes.com/"};
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TileGroup.Observer mTileGroupObserver;
     @Mock private TileGroup.Delegate mTileGroupDelegate;
+    @Mock private TileGroup.TileDragDelegate mTileDragDelegate;
     @Mock private SuggestionsUiDelegate mSuggestionsUiDelegate;
     @Mock private ContextMenuManager mContextMenuManager;
     @Mock private OfflinePageBridge mOfflinePageBridge;
@@ -88,7 +89,6 @@ public class TileGroupUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mContext =
                 new ContextThemeWrapper(
@@ -107,13 +107,10 @@ public class TileGroupUnitTest {
                 .when(mTileGroupDelegate)
                 .setMostVisitedSitesObserver(any(MostVisitedSites.Observer.class), anyInt());
 
-        FeatureList.TestValues testValues = new TestValues();
-        // testValues is set to avoid the FeatureListJni assertion check in tests.
-        testValues.addFieldTrialParamOverride(
+        FeatureOverrides.overrideParam(
                 ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2,
                 "prerender_new_tab_page_on_touch_trigger",
-                "0");
-        FeatureList.setTestValues(testValues);
+                0);
     }
 
     @Test
@@ -129,6 +126,7 @@ public class TileGroupUnitTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -155,6 +153,7 @@ public class TileGroupUnitTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -263,6 +262,7 @@ public class TileGroupUnitTest {
                         uiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -285,6 +285,7 @@ public class TileGroupUnitTest {
                         uiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -335,6 +336,7 @@ public class TileGroupUnitTest {
                         uiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -349,6 +351,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(((SuggestionsTileView) layout.getChildAt(0)).getUrl().getSpec(), is(URLS[0]));
         assertThat(((SuggestionsTileView) layout.getChildAt(1)).getUrl().getSpec(), is(URLS[1]));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     /** Check for https://crbug.com/703628: don't crash on duplicated URLs. */
@@ -364,6 +368,7 @@ public class TileGroupUnitTest {
                         uiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -373,6 +378,8 @@ public class TileGroupUnitTest {
         mMostVisitedSites.setTileSuggestions(URLS[0], URLS[1], URLS[0]);
 
         // Render them to the layout. The duplicated URL should not trigger an exception.
+        refreshData(tileGroup, layout);
+        // Rerun to test SuggestionsTileView caching.
         refreshData(tileGroup, layout);
     }
 
@@ -389,6 +396,7 @@ public class TileGroupUnitTest {
                         uiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -407,6 +415,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.indexOfChild(view1), is(-1));
         assertThat(layout.indexOfChild(view2), is(-1));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     @Test
@@ -421,6 +431,7 @@ public class TileGroupUnitTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -440,6 +451,8 @@ public class TileGroupUnitTest {
         assertThat(layout.getChildCount(), is(2));
         assertThat(layout.getChildAt(0), CoreMatchers.is(view1));
         assertThat(layout.getChildAt(1), CoreMatchers.is(view2));
+        // Rerun to test SuggestionsTileView caching.
+        refreshData(tileGroup, layout);
     }
 
     @Test
@@ -469,7 +482,7 @@ public class TileGroupUnitTest {
         TileGroup tileGroup = initialiseTileGroup();
         Tile tile = new Tile(createSiteSuggestion("title", URLS[0]), 0);
 
-        ViewGroup layout = new FrameLayout(mContext, null);
+        TilesLinearLayout layout = new TilesLinearLayout(mContext, null);
         mTileRenderer.buildTileView(tile, layout, tileGroup.getTileSetupDelegate());
 
         // Ensure we run the callback for the new tile.
@@ -550,7 +563,7 @@ public class TileGroupUnitTest {
         refreshData(tileGroup, layout);
     }
 
-    private void refreshData(TileGroup tileGroup, ViewGroup tilesLayout) {
+    private void refreshData(TileGroup tileGroup, TilesLinearLayout tilesLayout) {
         assert tileGroup.getTileSections().size() == 1;
         List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
         assert tiles != null;
@@ -581,6 +594,7 @@ public class TileGroupUnitTest {
                         mSuggestionsUiDelegate,
                         mContextMenuManager,
                         mTileGroupDelegate,
+                        mTileDragDelegate,
                         mTileGroupObserver,
                         mOfflinePageBridge);
         tileGroup.startObserving(MAX_TILES_TO_FETCH);
@@ -591,7 +605,7 @@ public class TileGroupUnitTest {
         return tileGroup;
     }
 
-    private class FakeImageFetcher extends ImageFetcher {
+    private static class FakeImageFetcher extends ImageFetcher {
         private final List<LargeIconCallback> mCallbackList = new ArrayList<>();
 
         public FakeImageFetcher() {

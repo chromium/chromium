@@ -69,6 +69,9 @@ class CONTENT_EXPORT SpeechRecognizerImpl
 
   // SpeechRecognizer methods.
   void StartRecognition(const std::string& device_id) override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
   void AbortRecognition() override;
   void StopAudioCapture() override;
   bool IsActive() const override;
@@ -102,6 +105,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   FSMState AbortWithError(const FSMEventArgs& event_args) override;
   FSMState Abort(const media::mojom::SpeechRecognitionError& error) override;
   FSMState DetectEndOfSpeech(const FSMEventArgs& event_args) override;
+  FSMState UpdateRecognitionContext(const FSMEventArgs& event_args) override;
   FSMState DoNothing(const FSMEventArgs& event_args) const override;
   FSMState NotFeasible(const FSMEventArgs& event_args) override;
 
@@ -119,8 +123,7 @@ class CONTENT_EXPORT SpeechRecognizerImpl
   void Capture(const media::AudioBus* audio_bus,
                base::TimeTicks audio_capture_time,
                const media::AudioGlitchInfo& glitch_info,
-               double volume,
-               bool key_pressed) final;
+               double volume) final;
   void OnCaptureError(media::AudioCapturerSource::ErrorCode code,
                       const std::string& message) final;
   void OnCaptureMuted(bool is_muted) final {}

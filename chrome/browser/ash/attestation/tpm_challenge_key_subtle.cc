@@ -152,8 +152,7 @@ std::string GetDefaultKeyName(VerifiedAccessFlow flow_type,
           return std::string(kEnterpriseUserKey) + "-ecdsa";
       }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -279,8 +278,7 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
       PrepareDeviceTrustConnectorFlow();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -389,8 +387,7 @@ std::string TpmChallengeKeySubtleImpl::GetEmail() const {
     case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
       return GetAccountId().GetUserEmail();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -406,8 +403,7 @@ AttestationCertificateProfile TpmChallengeKeySubtleImpl::GetCertificateProfile()
     case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
       return PROFILE_DEVICE_TRUST_USER_CERTIFICATE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 
@@ -479,9 +475,7 @@ bool TpmChallengeKeySubtleImpl::ShouldIncludeCustomerId() const {
     case VerifiedAccessFlow::DEVICE_TRUST_CONNECTOR:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported Verified Access flow type: " << flow_type_;
-      return false;
+      NOTREACHED() << "Unsupported Verified Access flow type: " << flow_type_;
   }
 }
 
@@ -756,7 +750,7 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
           GetSystemTokenKeyPermissionsManager();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   DCHECK(!public_key_.empty());

@@ -186,8 +186,8 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
 class MockUpdateScheduler : public UpdateScheduler {
  public:
   MOCK_METHOD4(Schedule,
-               void(const base::TimeDelta& initial_delay,
-                    const base::TimeDelta& delay,
+               void(base::TimeDelta initial_delay,
+                    base::TimeDelta delay,
                     const UserTask& user_task,
                     const OnStopTaskCallback& on_stop));
   MOCK_METHOD0(Stop, void());
@@ -215,8 +215,8 @@ class ComponentInstallerTest : public testing::Test {
 
  private:
   void UnpackComplete(const update_client::Unpacker::Result& result);
-  void Schedule(const base::TimeDelta& initial_delay,
-                const base::TimeDelta& delay,
+  void Schedule(base::TimeDelta initial_delay,
+                base::TimeDelta delay,
                 const UpdateScheduler::UserTask& user_task,
                 const UpdateScheduler::OnStopTaskCallback& on_stop);
 
@@ -277,8 +277,8 @@ void ComponentInstallerTest::UnpackComplete(
 }
 
 void ComponentInstallerTest::Schedule(
-    const base::TimeDelta& initial_delay,
-    const base::TimeDelta& delay,
+    base::TimeDelta initial_delay,
+    base::TimeDelta delay,
     const UpdateScheduler::UserTask& user_task,
     const UpdateScheduler::OnStopTaskCallback& on_stop) {
   user_task.Run(base::DoNothing());
@@ -416,7 +416,7 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
         base::DoNothing(),
         base::BindLambdaForTesting(
             [&run_loop](const update_client::CrxInstaller::Result& result) {
-              ASSERT_EQ(result.result.category_,
+              ASSERT_EQ(result.result.category,
                         update_client::ErrorCategory::kNone);
               run_loop.QuitClosure().Run();
             }));
@@ -424,9 +424,9 @@ TEST_F(ComponentInstallerTest, InstallerRegister_CheckSequence) {
   }
 
   base::RunLoop run_loop;
-  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce(Invoke([&run_loop] {
+  EXPECT_CALL(update_client(), DoUpdate(_, _)).WillOnce([&run_loop] {
     run_loop.QuitClosure().Run();
-  }));
+  });
 
   // Set up expectations for uninteresting calls on the mocks due to component
   // updater waking up after the component is registered.
@@ -478,7 +478,7 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallSuccess) {
   installer->Install(
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
-        EXPECT_EQ(result.result.category_, update_client::ErrorCategory::kNone);
+        EXPECT_EQ(result.result.category, update_client::ErrorCategory::kNone);
       }));
 
   task_environment_.RunUntilIdle();
@@ -508,9 +508,9 @@ TEST_F(ComponentInstallerTest, UnpackPathInstallError) {
   installer->Install(
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindOnce([](const update_client::CrxInstaller::Result& result) {
-        EXPECT_EQ(result.result.category_,
+        EXPECT_EQ(result.result.category,
                   update_client::ErrorCategory::kInstall);
-        EXPECT_EQ(result.result.code_,
+        EXPECT_EQ(result.result.code,
                   static_cast<int>(
                       update_client::InstallError::NO_DIR_COMPONENT_USER));
       }));
@@ -543,7 +543,7 @@ TEST_F(ComponentInstallerTest, GetInstalledFile) {
       unpack_path, update_client::jebg_public_key, nullptr, base::DoNothing(),
       base::BindLambdaForTesting(
           [&](const update_client::CrxInstaller::Result& result) {
-            EXPECT_EQ(result.result.category_,
+            EXPECT_EQ(result.result.category,
                       update_client::ErrorCategory::kNone);
             runloop.Quit();
           }));
@@ -566,7 +566,7 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
   base_dir = base_dir.AppendASCII("select_component_version_test");
 
-  for (const auto* n : {"1", "2", "3", "4", "5", "6", "7"}) {
+  for (const auto& n : {"1", "2", "3", "4", "5", "6", "7"}) {
     CreateComponentDirectory(base_dir, "test_component",
                              base::StrCat({n, ".0.0.0"}), "0.0.1");
   }
@@ -669,7 +669,7 @@ TEST_F(ComponentInstallerTest, Uninstall) {
             base::DoNothing(),
             base::BindLambdaForTesting(
                 [&](const update_client::CrxInstaller::Result& result) {
-                  EXPECT_EQ(result.result.category_,
+                  EXPECT_EQ(result.result.category,
                             update_client::ErrorCategory::kNone);
                   installer->Uninstall();
                 }));

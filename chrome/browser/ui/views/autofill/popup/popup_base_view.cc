@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/autofill/popup/custom_cursor_suppressor.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
@@ -75,9 +76,10 @@ constexpr int kMaxPopupWebContentsTopYOverflow = 8;
 // Creates a border for a popup.
 std::unique_ptr<views::Border> CreateBorder() {
   auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      ui::kColorDropdownBackground);
-  border->SetCornerRadius(PopupBaseView::GetCornerRadius());
+      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
+  border->SetColor(ui::kColorDropdownBackground);
+  border->set_rounded_corners(
+      gfx::RoundedCornersF(PopupBaseView::GetCornerRadius()));
   border->set_md_shadow_elevation(
       ChromeLayoutProvider::Get()->GetShadowElevationMetric(
           base::FeatureList::IsEnabled(features::kAutofillMoreProminentPopup)
@@ -310,8 +312,8 @@ void PopupBaseView::DoHide() {
     // navigates into the menu, otherwise some screen readers will ignore
     // any focus events outside of the menu, including a focus event on
     // the form control itself.
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupEnd, true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuEnd, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupEnd, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuEnd, true);
     GetViewAccessibility().EndPopupFocusOverride();
 
     // Also fire an accessible focus event on what currently has focus,
@@ -349,8 +351,8 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
     // readers that the focus is only changing temporarily, and the screen
     // reader will restore the focus back to the appropriate textfield when the
     // menu closes.
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuStart, true);
-    NotifyAccessibilityEvent(ax::mojom::Event::kMenuPopupStart, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuStart, true);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kMenuPopupStart, true);
 
     is_ax_menu_start_event_fired_ = true;
   }
@@ -360,13 +362,12 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",
-       "PopupRowContentView", "MdTextButton",
-       "PopupRowPredictionImprovementsFeedbackView",
-       "PopupRowPredictionImprovementsDetailsView"});
+       "PopupRowWithButtonView", "PopupRowContentView", "MdTextButton"});
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "
-         "chrome/browser/resources/chromeos/accessibility/chromevox/background/"
+         "chrome/browser/resources/chromeos/accessibility/chromevox/mv2/"
+         "background/"
          "event/desktop_automation_handler.js to ensure that ChromeVox "
          "announces the item when selected. Missing class: "
       << selected_view.GetClassName();
@@ -558,7 +559,16 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
 }
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
-  if (GetWidget() && GetWidget()->GetNativeView() != focused_now) {
+  // TODO(crbug.com/330303918): The focus change is triggered sometimes
+  // (reproduced on a Linux release build, on a debug one - no) with
+  // `focused_now` == `nullptr` during activatable popup opening, no other
+  // widget gets focus then and this widget remains active.
+  // The `!GetWidget()->IsActive()` piece handles this case and prevents
+  // immediate popup closing.
+  // Investigate the reason and either fix it on the appropriate side or make
+  // this TODO a regular comment if it works as intended.
+  if (GetWidget() && GetWidget()->GetNativeView() != focused_now &&
+      !GetWidget()->IsActive()) {
     HideController(SuggestionHidingReason::kFocusChanged);
   }
 }

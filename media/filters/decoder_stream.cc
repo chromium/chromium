@@ -251,11 +251,6 @@ void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
     return;
   }
 
-  // Finalize any in progress decoder selection. We'll rerun selection during
-  // a subsequent Initialize(), so this just ensures we don't try to
-  // Initialize() the same decoder type multiple times.
-  decoder_selector_.FinalizeDecoderSelection();
-
   // |decrypting_demuxer_stream_| will fire all of its read requests when
   // it resets. |reset_cb_| will be fired in OnDecoderReset(), after the
   // decrypting demuxer stream finishes its reset.
@@ -549,10 +544,16 @@ void DecoderStream<StreamType>::DecodeInternal(
   traits_->OnDecode(*buffer);
 
   const bool is_eos = buffer->end_of_stream();
-  if (is_eos)
+  if (is_eos) {
     decoding_eos_ = true;
-  else if (buffer->duration() != kNoTimestamp)
-    duration_tracker_.AddSample(buffer->duration());
+  } else {
+    if (buffer->duration() != kNoTimestamp) {
+      duration_tracker_.AddSample(buffer->duration());
+    } else if (last_buffer_timestamp_ != kNoTimestamp) {
+      duration_tracker_.AddSample(buffer->timestamp() - last_buffer_timestamp_);
+    }
+    last_buffer_timestamp_ = buffer->timestamp();
+  }
 
   ++pending_decode_requests_;
 
@@ -584,7 +585,9 @@ void DecoderStream<StreamType>::OnDecodeDone(
   if (end_of_stream) {
     DCHECK(!pending_decode_requests_);
     decoding_eos_ = false;
-    if (status.is_ok()) {
+    if (status.is_ok() ||
+        status.code() ==
+            DecoderStatus::Codes::kElidedEndOfStreamForConfigChange) {
       // Even if no frames were decoded, completing a flush counts as
       // successfully selecting a decoder. This allows back-to-back config
       // changes to select from all decoders.
@@ -631,6 +634,16 @@ void DecoderStream<StreamType>::OnDecodeDone(
 
       if (state_ == State::kStateFlushingDecoder && !pending_decode_requests_) {
         ReinitializeDecoder();
+      }
+      return;
+
+    case DecoderStatus::Codes::kElidedEndOfStreamForConfigChange:
+      DCHECK(end_of_stream);
+      DCHECK(!pending_decode_requests_);
+      DCHECK_EQ(state_, State::kStateFlushingDecoder);
+      state_ = State::kStateNormal;
+      if (CanDecodeMore()) {
+        ReadFromDemuxerStream();
       }
       return;
 
@@ -943,6 +956,10 @@ void DecoderStream<StreamType>::ReinitializeDecoder() {
 
   state_ = State::kStateReinitializingDecoder;
 
+  // Clear any remaining decoders in the selector; BeginDecoderSelection() will
+  // create a whole new decoder list.
+  decoder_selector_.FinalizeDecoderSelection();
+
   // Note: Some VideoDecoder implementations (e.g., MediaCodecVideoDecoder) are
   // relying on the fact that the existing VideoDecoder instance is given first
   // dibs to handle any configuration changes. Take care when changing this.
@@ -1027,6 +1044,7 @@ void DecoderStream<StreamType>::OnDecoderReset() {
   fallback_buffers_.clear();
   pending_buffers_.clear();
   fallback_buffers_being_decoded_ = 0;
+  last_buffer_timestamp_ = kNoTimestamp;
 
   if (state_ != State::kStateFlushingDecoder) {
     state_ = State::kStateNormal;

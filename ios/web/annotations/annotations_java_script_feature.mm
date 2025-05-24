@@ -18,24 +18,17 @@
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 
 namespace {
-const char kLegacyScriptName[] = "annotations";
 const char kScriptName[] = "text_main";
 const char kScriptHandlerName[] = "annotations";
 }  // namespace
 
 namespace web {
 
-const char* GetScriptName() {
-  return base::FeatureList::IsEnabled(features::kEnableViewportIntents)
-             ? kScriptName
-             : kLegacyScriptName;
-}
-
 AnnotationsJavaScriptFeature::AnnotationsJavaScriptFeature()
     : JavaScriptFeature(
           ContentWorld::kIsolatedWorld,
           {FeatureScript::CreateWithFilename(
-              GetScriptName(),
+              kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kMainFrame,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)}) {}
@@ -58,13 +51,7 @@ void AnnotationsJavaScriptFeature::ExtractText(WebState* web_state,
   }
 
   base::Value::List parameters;
-  if (base::FeatureList::IsEnabled(features::kEnableViewportIntents)) {
-    CallJavaScriptFunction(frame, "annotations.start", parameters);
-  } else {
-    parameters.Append(maximum_text_length);
-    parameters.Append(seq_id);
-    CallJavaScriptFunction(frame, "annotations.extractText", parameters);
-  }
+  CallJavaScriptFunction(frame, "annotations.start", parameters);
 }
 
 void AnnotationsJavaScriptFeature::DecorateAnnotations(WebState* web_state,

@@ -21,7 +21,7 @@ import org.chromium.base.test.util.CallbackHelper;
  * service should write the seed.
  */
 public class MockVariationsSeedServer extends VariationsSeedServer {
-    private static CallbackHelper sOnSeedRequested = new CallbackHelper();
+    private static final CallbackHelper sOnSeedRequested = new CallbackHelper();
     private static Bundle sMetricsBundle;
 
     public static CallbackHelper getRequestHelper() {

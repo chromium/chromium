@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/android/window_android.h"
 
 namespace {
 
@@ -24,7 +23,7 @@ class MockJniDelegate : public JniDelegate {
   MockJniDelegate() = default;
   ~MockJniDelegate() override = default;
 
-  MOCK_METHOD((void), Create, (ui::WindowAndroid*), (override));
+  MOCK_METHOD((void), Create, (ui::WindowAndroid&), (override));
   MOCK_METHOD((void), Show, (const std::string&), (override));
   MOCK_METHOD((void), Dismiss, (), (override));
 };
@@ -47,7 +46,7 @@ class NoPasskeysBottomSheetBridgeTest : public testing::Test {
     return *no_passkeys_bridge_;
   }
 
-  void destroyNoPassleysBridge() { no_passkeys_bridge_.reset(); }
+  void destroyNoPasskeysBridge() { no_passkeys_bridge_.reset(); }
 
  private:
   raw_ptr<MockJniDelegate> mock_jni_delegate_;
@@ -90,7 +89,7 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, IgnoreRedundantDismissCalls) {
           [this]() { no_passkeys_bridge().OnDismissed(/*env=*/nullptr); }));
   no_passkeys_bridge().Dismiss();
   no_passkeys_bridge().Dismiss();  // This should not trigger a second call!
-  destroyNoPassleysBridge();  // This also should not trigger a second call!
+  destroyNoPasskeysBridge();  // This also should not trigger a second call!
 }
 
 TEST_F(NoPasskeysBottomSheetBridgeTest, RunCallbackForOnClickUseAnotherDevice) {
@@ -116,5 +115,5 @@ TEST_F(NoPasskeysBottomSheetBridgeTest, DismissesOnDestruction) {
       /*on_click_use_another_device_callback=*/base::DoNothing());
 
   EXPECT_CALL(mock_jni_delegate(), Dismiss);
-  destroyNoPassleysBridge();
+  destroyNoPasskeysBridge();
 }

@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
@@ -30,6 +31,12 @@
 #include "sandbox/win/src/internal_types.h"
 #include "sandbox/win/src/nt_internals.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
+
+// Prototype for ProcessPrng.
+// See: https://learn.microsoft.com/en-us/windows/win32/seccng/processprng
+extern "C" {
+BOOL WINAPI ProcessPrng(PBYTE pbData, SIZE_T cbData);
+}
 
 namespace {
 
@@ -69,6 +76,18 @@ std::unique_ptr<std::vector<uint8_t>> QueryObjectInformation(
   if (!NT_SUCCESS(ret))
     return nullptr;
   return data;
+}
+
+// Import bcryptprimitives!ProcessPrng rather than cryptbase!RtlGenRandom to
+// avoid opening a handle to \\Device\KsecDD in the renderer.
+decltype(&ProcessPrng) GetProcessPrng() {
+  HMODULE hmod = LoadLibraryW(L"bcryptprimitives.dll");
+  CHECK(hmod);
+  decltype(&ProcessPrng) process_prng_fn =
+      reinterpret_cast<decltype(&ProcessPrng)>(
+          GetProcAddress(hmod, "ProcessPrng"));
+  CHECK(process_prng_fn);
+  return process_prng_fn;
 }
 
 }  // namespace
@@ -181,6 +200,15 @@ void* GetProcessBaseAddress(HANDLE process) {
 bool ContainsNulCharacter(std::wstring_view str) {
   wchar_t nul = '\0';
   return str.find_first_of(nul) != std::wstring::npos;
+}
+
+void WarmupRandomnessInfrastructure() {
+  BYTE data[1];
+  // TODO(crbug.com/40088338) Call a warmup function exposed by boringssl.
+  static decltype(&ProcessPrng) process_prng_fn = GetProcessPrng();
+  BOOL success = process_prng_fn(data, sizeof(data));
+  // ProcessPrng is documented to always return TRUE.
+  CHECK(success);
 }
 
 }  // namespace sandbox

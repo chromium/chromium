@@ -158,8 +158,6 @@ void PopulateTestConfig(LoadingPredictorConfig* config, bool small_db) {
     config->max_origins_per_entry = 5;
     config->max_consecutive_misses = 2;
     config->max_redirect_consecutive_misses = 2;
-    config->lcpp_histogram_sliding_window_size = 5;
-    config->max_lcpp_histogram_buckets = 2;
   }
   config->flush_data_to_disk_delay_seconds = 0;
 }

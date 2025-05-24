@@ -1,48 +1,16 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "default_for_enterprise_users=disabled",
-        "policies": {},
-        "prefs": {
-          "ash.focus_mode.sounds_enabled": {
-            "value": "disabled"
-          }
-        }
-      },
-      {
-        "policies": {
-          "FocusModeSoundsEnabled": "enabled"
-        },
-        "prefs": {
-          "ash.focus_mode.sounds_enabled": {
-            "value": "enabled"
-          }
-        }
-      },
-      {
-        "policies": {
-          "FocusModeSoundsEnabled": "focus-sounds"
-        },
-        "prefs": {
-          "ash.focus_mode.sounds_enabled": {
-            "value": "focus-sounds"
-          }
-        }
-      },
-      {
-        "policies": {
-          "FocusModeSoundsEnabled": "disabled"
-        },
-        "prefs": {
-          "ash.focus_mode.sounds_enabled": {
-            "value": "disabled"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.focus_mode.sounds_enabled",
+      "default_for_enterprise_users": "disabled",
+      "values_to_test": [
+        "enabled",
+        "focus-sounds",
+        "disabled"
+      ]
+    }
   }
 ]

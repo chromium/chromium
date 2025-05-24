@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol BrowseDriveFilePickerCoordinatorDelegate;
-struct DriveListQuery;
+@class DriveFilePickerMetricsHelper;
 @protocol SystemIdentity;
 
 namespace web {
@@ -31,13 +31,20 @@ class WebState;
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
-                                   query:(DriveListQuery)query
+                           imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                              imageCache:
+                                  (NSCache<NSString*, UIImage*>*)imageCache
+                          collectionType:
+                              (DriveFilePickerCollectionType)collectionType
+                        folderIdentifier:(NSString*)folderIdentifier
                                   filter:(DriveFilePickerFilter)filter
                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
                         sortingDirection:
                             (DriveItemsSortingOrder)sortingDirection
                                 identity:(id<SystemIdentity>)identity
+                           metricsHelper:
+                               (DriveFilePickerMetricsHelper*)metricsHelper
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;

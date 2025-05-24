@@ -10,7 +10,8 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/utility_process_host.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
+#include "content/browser/service_host/utility_process_host.h"
 #include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -114,7 +115,7 @@ class PowerMonitorTest : public ContentBrowserTest {
         base::NullCallback());
   }
 
-  void BindForRenderer(int render_process_id,
+  void BindForRenderer(ChildProcessId render_process_id,
                        mojo::GenericPendingReceiver* receiver) {
     auto r = receiver->As<device::mojom::PowerMonitor>();
     if (!r)
@@ -123,7 +124,8 @@ class PowerMonitorTest : public ContentBrowserTest {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&PowerMonitorTest::BindForRendererOnMainThread,
-                       base::Unretained(this), std::move(r)));
+                       base::Unretained(this), std::move(r),
+                       render_process_id));
   }
 
   void BindForNonRenderer(BrowserChildProcessHost* process_host,
@@ -145,13 +147,13 @@ class PowerMonitorTest : public ContentBrowserTest {
       base::OnceClosure utility_bound_closure) {
     utility_bound_closure_ = std::move(utility_bound_closure);
 
-    UtilityProcessHost* host = new UtilityProcessHost();
-    host->SetMetricsName("test_process");
-    host->SetName(u"TestProcess");
-    EXPECT_TRUE(host->Start());
-
-    host->GetChildProcess()->BindReceiver(
-        power_monitor_test->BindNewPipeAndPassReceiver());
+    UtilityProcessHost::Start(
+        UtilityProcessHost::Options()
+            .WithMetricsName("test_process")
+            .WithName(u"TestProcess")
+            .WithBoundReceiverOnChildProcessForTesting(
+                power_monitor_test->BindNewPipeAndPassReceiver())
+            .Pass());
   }
 
   void set_renderer_bound_closure(base::OnceClosure closure) {
@@ -173,15 +175,19 @@ class PowerMonitorTest : public ContentBrowserTest {
 
  private:
   void BindForRendererOnMainThread(
-      mojo::PendingReceiver<device::mojom::PowerMonitor> receiver) {
-    // We can receiver binding requests for the spare RenderProcessHost -- this
+      mojo::PendingReceiver<device::mojom::PowerMonitor> receiver,
+      ChildProcessId render_process_id) {
+    // We can receive binding requests for the spare RenderProcessHost -- this
     // might happen before the test has provided the |renderer_bound_closure_|.
-    if (renderer_bound_closure_) {
-      ++request_count_from_renderer_;
-      std::move(renderer_bound_closure_).Run();
-    } else {
-      DCHECK(RenderProcessHostImpl::GetSpareRenderProcessHostForTesting());
+    auto* render_process_host =
+        content::RenderProcessHost::FromID(render_process_id);
+    if (!render_process_host || render_process_host->IsSpare()) {
+      return;
     }
+
+    ASSERT_TRUE(renderer_bound_closure_);
+    ++request_count_from_renderer_;
+    std::move(renderer_bound_closure_).Run();
 
     power_monitor_message_broadcaster_.Bind(std::move(receiver));
   }

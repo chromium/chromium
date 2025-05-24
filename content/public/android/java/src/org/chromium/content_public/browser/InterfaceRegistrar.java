@@ -4,6 +4,8 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.services.service_manager.InterfaceRegistry;
 
 import java.util.ArrayList;
@@ -15,17 +17,18 @@ import java.util.List;
  * @param <ParamType> the type of parameter to pass to the InterfaceRegistrar when adding its
  *     interfaces to an InterfaceRegistry
  */
+@NullMarked
 public interface InterfaceRegistrar<ParamType> {
     /** Invoked to register interfaces on |registry|, parametrized by |paramValue|. */
-    public void registerInterfaces(InterfaceRegistry registry, ParamType paramValue);
+    public void registerInterfaces(InterfaceRegistry registry, @Nullable ParamType paramValue);
 
     /** A registry of InterfaceRegistrars. */
     public static class Registry<ParamType> {
-        private static Registry<Void> sSingletonRegistry;
-        private static Registry<WebContents> sWebContentsRegistry;
-        private static Registry<RenderFrameHost> sRenderFrameHostRegistry;
+        private static @Nullable Registry<Void> sSingletonRegistry;
+        private static @Nullable Registry<WebContents> sWebContentsRegistry;
+        private static @Nullable Registry<RenderFrameHost> sRenderFrameHostRegistry;
 
-        private List<InterfaceRegistrar<ParamType>> mRegistrars =
+        private final List<InterfaceRegistrar<ParamType>> mRegistrars =
                 new ArrayList<InterfaceRegistrar<ParamType>>();
 
         public static void applySingletonRegistrars(InterfaceRegistry interfaceRegistry) {
@@ -79,7 +82,8 @@ public interface InterfaceRegistrar<ParamType> {
             mRegistrars.add(registrar);
         }
 
-        private void applyRegistrars(InterfaceRegistry interfaceRegistry, ParamType param) {
+        private void applyRegistrars(
+                InterfaceRegistry interfaceRegistry, @Nullable ParamType param) {
             for (InterfaceRegistrar<ParamType> registrar : mRegistrars) {
                 registrar.registerInterfaces(interfaceRegistry, param);
             }

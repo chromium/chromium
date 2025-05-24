@@ -6,11 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_
 
 #include "base/time/time.h"
+#include "chrome/browser/privacy_sandbox/notice/notice.mojom-forward.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/ui/webui/privacy_sandbox/base_dialog_ui.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -22,26 +24,46 @@ class WebView;
 
 // Implements the PrivacySandboxDialog as a View. The view contains a WebView
 // into which is loaded a WebUI page which renders the actual dialog content.
-class PrivacySandboxDialogView : public views::View {
+class PrivacySandboxDialogView : public views::View,
+                                 public privacy_sandbox::BaseDialogUIDelegate {
   METADATA_HEADER(PrivacySandboxDialogView, views::View)
 
  public:
-  PrivacySandboxDialogView(Browser* browser,
-                           PrivacySandboxService::PromptType dialog_type);
+  static std::unique_ptr<PrivacySandboxDialogView>
+  CreateDialogViewForPromptType(BrowserWindowInterface* browser,
+                                PrivacySandboxService::PromptType prompt_type);
+  static std::unique_ptr<PrivacySandboxDialogView>
+  CreateDialogViewForPrivacySandboxNotice(
+      BrowserWindowInterface* browser,
+      privacy_sandbox::notice::mojom::PrivacySandboxNotice notice);
 
-  void Close();
-
- private:
-  void ResizeNativeView(int height);
-  void ShowNativeView();
-  void OpenPrivacySandboxSettings();
-  void OpenPrivacySandboxAdMeasurementSettings();
-  friend class PrivacySandboxDialogViewBrowserTest;
   content::WebContents* GetWebContentsForTesting();
 
+  // privacy_sandbox::BaseDialogUIDelegate
+  void CloseNativeView() override;
+  void ResizeNativeView(int height) override;
+  void ShowNativeView() override;
+  privacy_sandbox::notice::mojom::PrivacySandboxNotice GetPrivacySandboxNotice()
+      override;
+  void SetPrivacySandboxNotice(
+      privacy_sandbox::notice::mojom::PrivacySandboxNotice notice) override;
+
+ private:
+  friend class PrivacySandboxQueueTestNotice;
+
+  explicit PrivacySandboxDialogView(BrowserWindowInterface* browser);
+  void InitializeDialogUIForPromptType(
+      PrivacySandboxService::PromptType prompt_type);
+  void InitializeDialogUIForPrivacySandboxNotice(
+      privacy_sandbox::notice::mojom::PrivacySandboxNotice notice);
+  void AdsDialogNoArgsCallback(
+      PrivacySandboxService::AdsDialogCallbackNoArgsEvents event);
+  void OpenPrivacySandboxSettings();
+  void OpenPrivacySandboxAdMeasurementSettings();
+
   raw_ptr<views::WebView> web_view_;
-  raw_ptr<Browser> browser_;
-  base::TimeTicks dialog_created_time_;
+  raw_ptr<BrowserWindowInterface> browser_;
+  privacy_sandbox::notice::mojom::PrivacySandboxNotice notice_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_DIALOG_VIEW_H_

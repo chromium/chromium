@@ -20,6 +20,26 @@ class ExtensionsToolbarContainerViewController final
   static constexpr int kFlexOrderRequestAccessButton = 2;
   static constexpr int kFlexOrderActionView = 3;
 
+  // Returns a scope object to block launching the Extensions Zero State
+  // Promo IPH.
+  //
+  // In a live environment, the Extensions Zero State Promo IPH will only open
+  // after at least 10 minutes into the browsing session.
+  //
+  // When running InProcessBrowserTest, the IPH can trigger as soon as the
+  // browser is constructed. When the IPH is shown, it takes focus away from
+  // the browser, and causes tests to time out, as
+  // InProcessBrowserTest::PreRunTestOnMainThread waits for the browser to
+  // come to focus.
+  //
+  // This global variable allows the In Process Browser Tests that trigger
+  // the IPH to avoid this race condition, by suppressing the IPH until the
+  // browser initialization and set up steps are done.
+  //
+  // TODO(crbug.com/417543907) Move the Zero State Promo IPH trigger to a more
+  // appropriate location to avoid this race condition.
+  static base::AutoReset<bool> BlockZeroStatePromoForTesting();
+
   ExtensionsToolbarContainerViewController(
       Browser* browser,
       ExtensionsToolbarContainer* extensions_container);
@@ -69,14 +89,14 @@ class ExtensionsToolbarContainerViewController final
   void OnShowAccessRequestsInToolbarChanged(
       const extensions::ExtensionId& extension_id,
       bool can_show_requests) override;
-  void OnSiteAccessRequestAdded(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestAdded(const extensions::ExtensionId& extension_id,
                                 int tab_id) override;
-  void OnSiteAccessRequestUpdated(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestUpdated(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
-  void OnSiteAccessRequestRemoved(const extensions::ExtensionId& extension_id,
+  void OnHostAccessRequestRemoved(const extensions::ExtensionId& extension_id,
                                   int tab_id) override;
-  void OnSiteAccessRequestsCleared(int tab_id) override;
-  void OnSiteAccessRequestDismissedByUser(
+  void OnHostAccessRequestsCleared(int tab_id) override;
+  void OnHostAccessRequestDismissedByUser(
       const extensions::ExtensionId& extension_id,
       const url::Origin& origin) override;
 

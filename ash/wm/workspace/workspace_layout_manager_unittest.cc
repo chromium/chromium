@@ -63,6 +63,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/audio/sounds.h"
 #include "ui/aura/client/aura_constants.h"
@@ -95,29 +96,6 @@ namespace {
 
 using ::chromeos::WindowStateType;
 const char kTestAppId[] = "test-app-id";
-
-class MaximizeDelegateView : public views::WidgetDelegateView {
- public:
-  explicit MaximizeDelegateView(const gfx::Rect& initial_bounds)
-      : initial_bounds_(initial_bounds) {}
-
-  MaximizeDelegateView(const MaximizeDelegateView&) = delete;
-  MaximizeDelegateView& operator=(const MaximizeDelegateView&) = delete;
-
-  ~MaximizeDelegateView() override = default;
-
-  bool GetSavedWindowPlacement(
-      const views::Widget* widget,
-      gfx::Rect* bounds,
-      ui::mojom::WindowShowState* show_state) const override {
-    *bounds = initial_bounds_;
-    *show_state = ui::mojom::WindowShowState::kMaximized;
-    return true;
-  }
-
- private:
-  const gfx::Rect initial_bounds_;
-};
 
 class TestShellObserver : public ShellObserver {
  public:
@@ -183,6 +161,29 @@ class ScopedStickyKeyboardEnabler {
 };
 
 }  // namespace
+
+class MaximizeDelegateView : public views::WidgetDelegateView {
+ public:
+  explicit MaximizeDelegateView(const gfx::Rect& initial_bounds)
+      : initial_bounds_(initial_bounds) {}
+
+  MaximizeDelegateView(const MaximizeDelegateView&) = delete;
+  MaximizeDelegateView& operator=(const MaximizeDelegateView&) = delete;
+
+  ~MaximizeDelegateView() override = default;
+
+  bool GetSavedWindowPlacement(
+      const views::Widget* widget,
+      gfx::Rect* bounds,
+      ui::mojom::WindowShowState* show_state) const override {
+    *bounds = initial_bounds_;
+    *show_state = ui::mojom::WindowShowState::kMaximized;
+    return true;
+  }
+
+ private:
+  const gfx::Rect initial_bounds_;
+};
 
 using WorkspaceLayoutManagerTest = AshTestBase;
 

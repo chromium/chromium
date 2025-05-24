@@ -4,13 +4,17 @@
 
 #include "gpu/command_buffer/service/skia_utils.h"
 
+#include <inttypes.h>
+
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/graphite_image_provider.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -147,11 +151,14 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
     options.fInternalMultisampleCount = 1;
   }
 
-  // Disable use of cached text uploads in Recordings to improve performance.
-  // NOTE: Currently Recordings are played back in the order they were
-  // created so use of this option is safe. Once Recordings are replayed or
-  // are played out of sequence this option should no longer be used.
-  options.fDisableCachedGlyphUploads = true;
+  // State that Recordings will be played in-order. If Graphite can assume
+  // this, then optimizations can be taken that will improve performance.
+  // NOTE: Currently as Recordings *are* played back in the order they were
+  // created, use of this option is safe. Once Recordings are replayed or
+  // are played out of sequence this option should no longer be used as it
+  // will lead to playback of out-of-order Recordings being skipped and an
+  // error flagged.
+  options.fRequireOrderedRecordings = true;
 
   // Always emit labels in Skia. For Dawn, we have a toggle that controls
   // whether labels are emitted to the underlying backend, which is currently
@@ -163,22 +170,30 @@ skgpu::graphite::ContextOptions GetDefaultGraphiteContextOptions(
 }
 
 void DumpBackgroundGraphiteMemoryStatistics(
-    const skgpu::graphite::Context* context,
+    const GraphiteSharedContext* graphite_shared_context,
     const skgpu::graphite::Recorder* recorder,
     base::trace_event::ProcessMemoryDump* pmd) {
   using base::trace_event::MemoryAllocatorDump;
   static constexpr char kNamePurgeableSize[] = "purgeable_size";
 
-  std::string context_dump_name =
-      base::StringPrintf("skia/gpu_resources/graphite_context_0x%" PRIXPTR,
-                         reinterpret_cast<uintptr_t>(context));
-  MemoryAllocatorDump* context_dump =
-      pmd->CreateAllocatorDump(context_dump_name);
-  context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
-                          MemoryAllocatorDump::kUnitsBytes,
-                          context->currentBudgetedBytes());
-  context_dump->AddScalar(kNamePurgeableSize, MemoryAllocatorDump::kUnitsBytes,
-                          context->currentPurgeableBytes());
+  std::string context_dump_name = base::StringPrintf(
+      "skia/gpu_resources/graphite_shared_context_0x%" PRIXPTR,
+      reinterpret_cast<uintptr_t>(graphite_shared_context));
+
+  // Skip the second graphite context memory dump if both
+  // SharedContextStates share the same GraphiteSharedContext when DrDC is
+  // enabled. ProcessMemoryDump::AddAllocatorDumpInternal() will CHECK for a
+  // duplicate name |context_dump_name| .
+  MemoryAllocatorDump* context_dump = pmd->GetAllocatorDump(context_dump_name);
+  if (!context_dump) {
+    context_dump = pmd->CreateAllocatorDump(context_dump_name);
+    context_dump->AddScalar(MemoryAllocatorDump::kNameSize,
+                            MemoryAllocatorDump::kUnitsBytes,
+                            graphite_shared_context->currentBudgetedBytes());
+    context_dump->AddScalar(kNamePurgeableSize,
+                            MemoryAllocatorDump::kUnitsBytes,
+                            graphite_shared_context->currentPurgeableBytes());
+  }
 
   std::string recorder_dump_name = base::StringPrintf(
       "skia/gpu_resources/gpu_main_graphite_recorder_0x%" PRIXPTR,

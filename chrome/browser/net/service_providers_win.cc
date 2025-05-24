@@ -34,8 +34,7 @@ void GetWinsockNamespaceProviders(
   DWORD size = 0;
   if (WSAEnumNameSpaceProviders(&size, nullptr) != SOCKET_ERROR ||
       GetLastError() != WSAEFAULT) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   auto namespace_provider_bytes = base::HeapArray<uint8_t>::WithSize(size);
@@ -45,8 +44,7 @@ void GetWinsockNamespaceProviders(
   int num_namespace_providers = WSAEnumNameSpaceProviders(&size,
                                                           namespace_providers);
   if (num_namespace_providers == SOCKET_ERROR) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   for (int i = 0; i < num_namespace_providers; ++i) {
@@ -69,8 +67,7 @@ void GetWinsockLayeredServiceProviders(
   int error;
   if (SOCKET_ERROR != WSCEnumProtocols(nullptr, nullptr, &size, &error) ||
       error != WSAENOBUFS) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   auto service_provider_bytes = base::HeapArray<uint8_t>::WithSize(size);
@@ -80,8 +77,7 @@ void GetWinsockLayeredServiceProviders(
   int num_service_providers =
       WSCEnumProtocols(nullptr, service_providers, &size, &error);
   if (num_service_providers == SOCKET_ERROR) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   for (int i = 0; i < num_service_providers; ++i) {

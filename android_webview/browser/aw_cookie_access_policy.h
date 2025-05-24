@@ -38,14 +38,10 @@ class AwCookieAccessPolicy {
   void SetShouldAcceptCookies(bool allow);
 
   // Can we read/write third party cookies?
-  // `frame_tree_node_id` or `global_frame_token` must be valid.
-  // Navigation requests are not associated with a renderer process. In this
-  // case, `frame_tree_node_id` must be valid instead. Can only be called from
-  // the IO thread.
+  // `global_frame_token` must be valid. Can only be called from the IO thread.
   bool GetShouldAcceptThirdPartyCookies(
       base::optional_ref<const content::GlobalRenderFrameHostToken>
-          global_frame_token,
-      content::FrameTreeNodeId frame_tree_node_id);
+          global_frame_token);
 
   // Whether or not to allow cookies for requests with these parameters.
   net::NetworkDelegate::PrivacySetting AllowCookies(

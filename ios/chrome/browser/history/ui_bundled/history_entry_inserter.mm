@@ -7,10 +7,10 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/history/ui_bundled/history_entry_item_interface.h"
 #import "ios/chrome/browser/history/ui_bundled/history_util.h"
+#import "ios/chrome/browser/shared/ui/list_model/list_model.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "url/gurl.h"
 
 @interface HistoryEntryInserter () {
@@ -50,14 +50,17 @@
         base::apple::ObjCCastStrict<ListItem<HistoryEntryItemInterface>>(obj1);
     ListItem<HistoryEntryItemInterface>* secondObject =
         base::apple::ObjCCastStrict<ListItem<HistoryEntryItemInterface>>(obj2);
-    if ([firstObject isEqual:secondObject])
+    if ([firstObject isEqual:secondObject]) {
       return NSOrderedSame;
+    }
 
     // History entries are ordered from most to least recent.
-    if (firstObject.timestamp > secondObject.timestamp)
+    if (firstObject.timestamp > secondObject.timestamp) {
       return NSOrderedAscending;
-    if (firstObject.timestamp < secondObject.timestamp)
+    }
+    if (firstObject.timestamp < secondObject.timestamp) {
       return NSOrderedDescending;
+    }
     return firstObject.URL < secondObject.URL ? NSOrderedAscending
                                               : NSOrderedDescending;
   };
@@ -82,8 +85,8 @@
     NSInteger section =
         [_listModel sectionForSectionIdentifier:sectionIdentifier];
     NSInteger tableViewRow = [_listModel numberOfItemsInSection:section];
-    NSIndexPath* tableIndexPath =
-        [NSIndexPath indexPathForRow:tableViewRow inSection:section];
+    NSIndexPath* tableIndexPath = [NSIndexPath indexPathForRow:tableViewRow
+                                                     inSection:section];
 
     [_listModel insertItem:item
         inSectionWithIdentifier:sectionIdentifier
@@ -124,11 +127,11 @@
   [_listModel insertSectionWithIdentifier:sectionIdentifier
                                   atIndex:insertionIndex];
 
-    TableViewTextHeaderFooterItem* header =
-        [[TableViewTextHeaderFooterItem alloc] initWithType:kItemTypeEnumZero];
-    header.text =
-        base::SysUTF16ToNSString(history::GetRelativeDateLocalized(timestamp));
-    [_listModel setHeader:header forSectionWithIdentifier:sectionIdentifier];
+  TableViewTextHeaderFooterItem* header =
+      [[TableViewTextHeaderFooterItem alloc] initWithType:kItemTypeEnumZero];
+  header.text =
+      base::SysUTF16ToNSString(history::GetRelativeDateLocalized(timestamp));
+  [_listModel setHeader:header forSectionWithIdentifier:sectionIdentifier];
 
   [self.delegate historyEntryInserter:self
               didInsertSectionAtIndex:insertionIndex];

@@ -10,14 +10,9 @@
 #include "base/command_line.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 #include "chrome/browser/diagnostics/diagnostics_test.h"
 #include "chrome/browser/diagnostics/diagnostics_writer.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#endif
 
 namespace diagnostics {
 
@@ -27,7 +22,7 @@ DiagnosticsController* DiagnosticsController::GetInstance() {
 
 DiagnosticsController::DiagnosticsController() : writer_(nullptr) {}
 
-DiagnosticsController::~DiagnosticsController() {}
+DiagnosticsController::~DiagnosticsController() = default;
 
 const DiagnosticsModel& DiagnosticsController::GetResults() const {
   return *model_;

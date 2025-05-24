@@ -133,16 +133,11 @@ class LayerTreeHostReadbackPixelTest
 
   SkBitmap CopyMailboxToBitmap(const gfx::Size& size,
                                const gpu::Mailbox& mailbox,
-                               const gpu::SyncToken& sync_token,
                                const gfx::ColorSpace& color_space) {
     DCHECK(context_provider_);
     viz::RasterContextProvider::ScopedRasterContextLock lock(
         context_provider_.get());
     auto* ri = context_provider_->RasterInterface();
-
-    if (sync_token.HasData()) {
-      ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
-    }
 
     SkBitmap bitmap;
     bitmap.allocPixels(SkImageInfo::MakeN32Premul(
@@ -170,8 +165,7 @@ class LayerTreeHostReadbackPixelTest
         result->TakeTextureOwnership();
     EXPECT_EQ(1u, release_callbacks.size());
 
-    SkBitmap bitmap = CopyMailboxToBitmap(result->size(), mailbox,
-                                          gpu::SyncToken(), color_space);
+    SkBitmap bitmap = CopyMailboxToBitmap(result->size(), mailbox, color_space);
     std::move(release_callbacks[0]).Run(gpu::SyncToken(), false);
 
     ReadbackResultAsBitmap(std::make_unique<viz::CopyOutputSkBitmapResult>(

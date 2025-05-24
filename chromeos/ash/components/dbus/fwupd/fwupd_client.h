@@ -12,12 +12,17 @@
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
+#include "base/values.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_device.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties_dbus.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_update.h"
 #include "chromeos/dbus/common/dbus_client.h"
+
+namespace base {
+class FilePath;
+}
 
 // Enum from ash/webui/firmware_update_ui/firmware_update.mojom mirrored here
 // to avoid an illegal include from ash/webui.
@@ -62,6 +67,15 @@ enum class FwupdDbusResult {
 
 using FirmwareInstallOptions = std::map<std::string, bool>;
 using FwupdStringToRequestIdMap = std::map<std::string, DeviceRequestId>;
+
+// Gets an update path from an update response dict.
+//
+// Returns a path in URL format. The path will either be a local
+// "file://" path or an "https://" path on the CrOS LVFS mirror.
+//
+// If any error occurs, returns an empty path.
+COMPONENT_EXPORT(ASH_DBUS_FWUPD)
+base::FilePath GetUpdatePathFromDict(const base::Value::Dict& dict);
 
 class FakeFwupdClient;
 

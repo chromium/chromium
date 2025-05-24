@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_item_segment.h"
 
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
@@ -117,8 +112,8 @@ unsigned InlineItemSegments::OffsetForSegment(
 #if DCHECK_IS_ON()
 void InlineItemSegments::CheckOffset(unsigned offset,
                                      const InlineItemSegment* segment) const {
-  DCHECK(segment >= segments_.data() &&
-         segment < segments_.data() + segments_.size());
+  DCHECK_GE(segment, segments_.data());
+  DCHECK_LT(segment, base::to_address(segments_.end()));
   DCHECK_GE(offset, OffsetForSegment(*segment));
   DCHECK_LT(offset, segment->EndOffset());
 }
@@ -144,8 +139,9 @@ InlineItemSegments::Iterator InlineItemSegments::Ranges(
   unsigned segment_index = items_to_segments_[item_index];
   const InlineItemSegment* segment = &segments_[segment_index];
   DCHECK_GE(start_offset, OffsetForSegment(*segment));
+  base::span<const InlineItemSegment> span = base::span(segments_);
   if (start_offset < segment->EndOffset())
-    return Iterator(start_offset, end_offset, segment);
+    return Iterator(start_offset, end_offset, span, segment_index);
 
   // The item has multiple segments. Find the segments for |start_offset|.
   unsigned end_segment_index = item_index + 1 < items_to_segments_.size()
@@ -153,13 +149,14 @@ InlineItemSegments::Iterator InlineItemSegments::Ranges(
                                    : segments_.size();
   CHECK_GT(end_segment_index, segment_index);
   CHECK_LE(end_segment_index, segments_.size());
-  segment = std::upper_bound(
-      segment, segment + (end_segment_index - segment_index), start_offset,
-      [](unsigned offset, const InlineItemSegment& segment) {
-        return offset < segment.EndOffset();
-      });
-  CheckOffset(start_offset, segment);
-  return Iterator(start_offset, end_offset, segment);
+  auto iter = std::ranges::upper_bound(
+      span.subspan(segment_index, end_segment_index - segment_index),
+      start_offset,
+      [](unsigned offset, unsigned end_offset) { return offset < end_offset; },
+      &InlineItemSegment::EndOffset);
+  CheckOffset(start_offset, base::to_address(iter));
+  return Iterator(start_offset, end_offset, span,
+                  std::distance(segments_.data(), base::to_address(iter)));
 }
 
 void InlineItemSegments::ComputeSegments(
@@ -177,9 +174,9 @@ unsigned InlineItemSegments::AppendMixedFontOrientation(
     unsigned end_offset,
     unsigned segment_index) {
   DCHECK_LT(start_offset, end_offset);
-  OrientationIterator iterator(text_content.Characters16() + start_offset,
-                               end_offset - start_offset,
-                               FontOrientation::kVerticalMixed);
+  OrientationIterator iterator(
+      text_content.Span16().subspan(start_offset, end_offset - start_offset),
+      FontOrientation::kVerticalMixed);
   unsigned original_start_offset = start_offset;
   OrientationIterator::RenderOrientation orientation;
   for (; iterator.Consume(&end_offset, &orientation);
@@ -234,17 +231,16 @@ void InlineItemSegments::Split(unsigned index, unsigned offset) {
                    InlineItemSegment(end_offset, segment.segment_data_));
 }
 
-void InlineItemSegments::ComputeItemIndex(const HeapVector<InlineItem>& items) {
-  DCHECK_EQ(items.back().EndOffset(), EndOffset());
+void InlineItemSegments::ComputeItemIndex(const InlineItems& items) {
+  DCHECK_EQ(items.back()->EndOffset(), EndOffset());
   unsigned segment_index = 0;
-  const InlineItemSegment* segment = segments_.data();
   unsigned item_index = 0;
   items_to_segments_.resize(items.size());
-  for (const InlineItem& item : items) {
+  for (const Member<InlineItem>& item_ptr : items) {
+    const InlineItem& item = *item_ptr;
     while (segment_index < segments_.size() &&
-           item.StartOffset() >= segment->EndOffset()) {
+           item.StartOffset() >= segments_[segment_index].EndOffset()) {
       ++segment_index;
-      ++segment;
     }
     items_to_segments_[item_index++] = segment_index;
   }

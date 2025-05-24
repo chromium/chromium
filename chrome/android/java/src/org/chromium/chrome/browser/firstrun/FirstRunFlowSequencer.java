@@ -17,10 +17,12 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -28,23 +30,22 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.chrome.browser.signin.AppRestrictionSupplier;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
- * A helper to determine what should be the sequence of First Run Experience screens, and whether
- * it should be run.
+ * A helper to determine what should be the sequence of First Run Experience screens, and whether it
+ * should be run.
  *
- * Usage:
- * new FirstRunFlowSequencer(activity, launcherProvidedProperties) {
- *     override onFlowIsKnown
- * }.start();
+ * <p>Usage: new FirstRunFlowSequencer(activity, launcherProvidedProperties) { override
+ * onFlowIsKnown }.start();
  */
 public abstract class FirstRunFlowSequencer {
     private static final String TAG = "firstrun";
@@ -59,24 +60,6 @@ public abstract class FirstRunFlowSequencer {
 
         public FirstRunFlowSequencerDelegate(OneshotSupplier<ProfileProvider> profileSupplier) {
             mProfileSupplier = profileSupplier;
-        }
-
-        /** Returns true if the sync consent promo page should be shown. */
-        boolean shouldShowSyncConsentPage(boolean isChild) {
-            if (isChild) {
-                // Always show the sync consent page for child account.
-                return true;
-            }
-            assert mProfileSupplier.get() != null;
-            Profile profile = mProfileSupplier.get().getOriginalProfile();
-            final IdentityManager identityManager =
-                    IdentityServicesProvider.get().getIdentityManager(profile);
-            if (identityManager.getPrimaryAccountInfo(ConsentLevel.SYNC) != null) {
-                // No need to show the sync consent page if users already consented to sync.
-                return false;
-            }
-            // Show the sync consent page only to the signed-in users.
-            return identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
         boolean shouldShowHistorySyncOptIn(boolean isChild) {
@@ -113,12 +96,11 @@ public abstract class FirstRunFlowSequencer {
                 OneshotSupplier<ProfileProvider> profileSupplier);
     }
 
-
     /**
      * The delegate to be used by the Sequencer. By default, it's an instance of
      * {@link FirstRunFlowSequencerDelegate}, unless it's overridden by {@code sDelegateForTesting}.
      */
-    private FirstRunFlowSequencerDelegate mDelegate;
+    private final FirstRunFlowSequencerDelegate mDelegate;
 
     /** If not null, creates {@code mDelegate} for this object during tests. */
     private static DelegateFactoryForTesting sDelegateFactoryForTesting;
@@ -128,12 +110,12 @@ public abstract class FirstRunFlowSequencer {
     private Boolean mIsChild;
 
     /**
-     * Callback that is called once the flow is determined.
-     * If the properties is null, the First Run experience needs to finish and
-     * restart the original intent if necessary.
-     * @param freProperties Properties to be used in the First Run activity, or null.
+     * Callback that is called once the flow is determined. If the properties is null, the First Run
+     * experience needs to finish and restart the original intent if necessary.
+     *
+     * @param isChild A boolean value indicating child status.
      */
-    public abstract void onFlowIsKnown(Bundle freProperties);
+    public abstract void onFlowIsKnown(boolean isChild);
 
     public FirstRunFlowSequencer(
             OneshotSupplier<ProfileProvider> profileSupplier,
@@ -155,12 +137,12 @@ public abstract class FirstRunFlowSequencer {
      */
     void start() {
         AccountManagerFacadeProvider.getInstance()
-                .getCoreAccountInfos()
+                .getAccounts()
                 .then(
-                        coreAccountInfos -> {
+                        accounts -> {
                             RecordHistogram.recordCount1MHistogram(
                                     "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
-                                    Math.min(coreAccountInfos.size(), 2));
+                                    Math.min(accounts.size(), 2));
 
                             assert !mAccountsAvailable;
                             mAccountsAvailable = true;
@@ -171,10 +153,6 @@ public abstract class FirstRunFlowSequencer {
     @VisibleForTesting
     protected boolean shouldShowSearchEnginePage() {
         return mDelegate.shouldShowSearchEnginePage();
-    }
-
-    private boolean shouldShowSyncConsentPage() {
-        return mDelegate.shouldShowSyncConsentPage(mIsChild);
     }
 
     private boolean shouldShowHistorySyncOptIn() {
@@ -193,11 +171,7 @@ public abstract class FirstRunFlowSequencer {
 
         if (mIsFlowKnown) return;
         mIsFlowKnown = true;
-
-        Bundle freProperties = new Bundle();
-        freProperties.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, mIsChild);
-
-        onFlowIsKnown(freProperties);
+        onFlowIsKnown(mIsChild);
     }
 
     /**
@@ -206,18 +180,9 @@ public abstract class FirstRunFlowSequencer {
      * @param freProperties Resulting FRE properties bundle.
      */
     public void updateFirstRunProperties(Bundle freProperties) {
-        boolean isHistorySyncEnabled =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-        if (isHistorySyncEnabled) {
-            freProperties.putBoolean(FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, false);
-            freProperties.putBoolean(
-                    FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, shouldShowHistorySyncOptIn());
-        } else {
-            freProperties.putBoolean(
-                    FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
-            freProperties.putBoolean(FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, false);
-        }
+        assert freProperties != null;
+        freProperties.putBoolean(
+                FirstRunActivity.SHOW_HISTORY_SYNC_PAGE, shouldShowHistorySyncOptIn());
 
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
@@ -233,10 +198,13 @@ public abstract class FirstRunFlowSequencer {
 
         // Mark the FRE flow as complete.
         FirstRunStatus.setFirstRunFlowComplete(true);
+        SigninPreferencesManager.getInstance()
+                .setCctMismatchNoticeSuppressionPeriodStart(TimeUtils.currentTimeMillis());
     }
 
     /**
      * Checks if the First Run Experience needs to be launched.
+     *
      * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
      * @param fromIntent Intent used to launch the caller.
      * @return Whether the First Run Experience needs to be launched.
@@ -282,15 +250,38 @@ public abstract class FirstRunFlowSequencer {
     }
 
     /**
-     * Tries to launch the First Run Experience.  If the Activity was launched with the wrong Intent
-     * flags, we first relaunch it to make sure it runs in its own task, then trigger First Run.
-     *
-     * @param caller               Activity instance that is checking if first run is necessary.
-     * @param fromIntent           Intent used to launch the caller.
-     * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
-     * @return Whether startup must be blocked (e.g. via Activity#finish or dropping the Intent).
+     * @see {@link launch(Context, Intent, boolean, boolean)}
+     */
+    public static boolean launch(Context caller, Intent fromIntent) {
+        boolean preferLightweightFre = false;
+        if (!checkIfFirstRunIsNecessary(preferLightweightFre, fromIntent)) return false;
+
+        boolean isAuthTab = AuthTabIntentDataProvider.isAuthTabIntent(fromIntent);
+        boolean isCustomTab = LaunchIntentDispatcher.isCustomTabIntent(fromIntent);
+        boolean cctFreInSameTask = ChromeFeatureList.sCctFreInSameTask.isEnabled();
+        boolean inSameTask = isAuthTab || (cctFreInSameTask && isCustomTab);
+        return launch(caller, fromIntent, preferLightweightFre, inSameTask);
+    }
+
+    /**
+     * @see {@link launch(Context, Intent, boolean, boolean)}
      */
     public static boolean launch(Context caller, Intent fromIntent, boolean preferLightweightFre) {
+        return launch(caller, fromIntent, preferLightweightFre, /* inSameTask= */ false);
+    }
+
+    /**
+     * Tries to launch the First Run Experience. If the Activity was launched with the wrong Intent
+     * flags, we first relaunch it to make sure it runs in its own task, then trigger First Run.
+     *
+     * @param caller Activity instance that is checking if first run is necessary.
+     * @param fromIntent Intent used to launch the caller.
+     * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
+     * @param inSameTask Whether or not FRE will be launched in the same task as its caller.
+     * @return Whether startup must be blocked (e.g. via Activity#finish or dropping the Intent).
+     */
+    public static boolean launch(
+            Context caller, Intent fromIntent, boolean preferLightweightFre, boolean inSameTask) {
         // Check if the user needs to go through First Run at all.
         if (!checkIfFirstRunIsNecessary(preferLightweightFre, fromIntent)) return false;
 
@@ -308,11 +299,26 @@ public abstract class FirstRunFlowSequencer {
         CrashKeys.getInstance().set(CrashKeyIndex.FIRST_RUN, "yes");
 
         // Launch the async restriction checking as soon as we know we'll be running FRE.
-        FirstRunAppRestrictionInfo.startInitializationHint();
+        AppRestrictionSupplier.startInitializationHint();
+
+        if (inSameTask) {
+            FreIntentCreator intentCreator = new FreIntentCreator();
+            Intent freIntent =
+                    intentCreator.create(
+                            caller,
+                            fromIntent,
+                            preferLightweightFre,
+                            /* usePendingIntent= */ false);
+            freIntent.addFlags(Intent.FLAG_ACTIVITY_FORWARD_RESULT);
+            IntentUtils.safeStartActivity(caller, freIntent);
+            return true;
+        }
 
         if ((fromIntent.getFlags() & Intent.FLAG_ACTIVITY_NEW_TASK) != 0) {
             FreIntentCreator intentCreator = new FreIntentCreator();
-            Intent freIntent = intentCreator.create(caller, fromIntent, preferLightweightFre);
+            Intent freIntent =
+                    intentCreator.create(
+                            caller, fromIntent, preferLightweightFre, /* usePendingIntent= */ true);
 
             // Although the FRE tries to run in the same task now, this is still needed for
             // non-activity entry points like the search widget to launch at all. This flag does not

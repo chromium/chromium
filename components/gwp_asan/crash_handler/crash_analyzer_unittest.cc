@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/gwp_asan/crash_handler/crash_analyzer.h"
 
 #include <cstdint>
@@ -216,7 +221,7 @@ TEST_F(CrashAnalyzerTest, DISABLED_StackTraceCollection) {
     if (trace[0] == __builtin_return_address(0))
       break;
 
-    trace = trace.subspan(1);
+    trace = trace.subspan<1>();
   }
 
   ASSERT_GT(proto.allocation().stack_trace_size(),

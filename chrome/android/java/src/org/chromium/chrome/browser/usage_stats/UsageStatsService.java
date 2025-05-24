@@ -34,19 +34,19 @@ import java.util.List;
 public class UsageStatsService implements Destroyable {
     private static final String TAG = "UsageStatsService";
 
-    private static ProfileKeyedMap<UsageStatsService> sProfileMap =
+    private static final ProfileKeyedMap<UsageStatsService> sProfileMap =
             ProfileKeyedMap.createMapOfDestroyables(
                     ProfileKeyedMap.ProfileSelection.REDIRECTED_TO_ORIGINAL);
 
-    private Profile mProfile;
-    private EventTracker mEventTracker;
-    private SuspensionTracker mSuspensionTracker;
-    private TokenTracker mTokenTracker;
-    private UsageStatsBridge mBridge;
+    private final Profile mProfile;
+    private final EventTracker mEventTracker;
+    private final SuspensionTracker mSuspensionTracker;
+    private final TokenTracker mTokenTracker;
+    private final UsageStatsBridge mBridge;
     // PageViewObservers are scoped to a given ChromeTabbedActivity, but UsageStatsService isn't. To
     // allow for GC of the observer to happen when the activity goes away, we only hold weak
     // references here.
-    private List<WeakReference<PageViewObserver>> mPageViewObservers;
+    private final List<WeakReference<PageViewObserver>> mPageViewObservers;
 
     private DigitalWellbeingClient mClient;
     private boolean mOptInState;
@@ -301,13 +301,9 @@ public class UsageStatsService implements Destroyable {
         return "1";
     }
 
-    public void stopTrackingToken(String token) {
-        return;
-    }
+    public void stopTrackingToken(String token) {}
 
-    public void setWebsitesSuspended(List<String> fqdns, boolean suspended) {
-        return;
-    }
+    public void setWebsitesSuspended(List<String> fqdns, boolean suspended) {}
 
     public List<String> getAllSuspendedWebsites() {
         return new ArrayList<>();

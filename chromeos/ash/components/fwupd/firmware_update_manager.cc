@@ -21,8 +21,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -35,6 +36,7 @@
 #include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
@@ -90,7 +92,7 @@ const char kLVFSMirrorBaseURL[] =
 constexpr std::string_view kMirrorJcatFileName = "firmware.xml.xz.jcat";
 constexpr std::string_view kMirrorZipFileName = "firmware.xml.gz";
 const char kLocalFirmwareBasePath[] = "/var/lib/fwupd/metadata/";
-const char kLocalMetadataFileName[] = "metadata.xml.zst";
+const char kLocalMetadataFileName[] = "firmware.xml.zst";
 
 FirmwareUpdateManager* g_instance = nullptr;
 
@@ -194,11 +196,12 @@ bool CreateDirIfNotExists(const base::FilePath& path) {
 
 firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
     const FwupdUpdate& update_details,
-    const std::string& device_id,
-    const std::string& device_name) {
+    const FwupdDevice& device) {
   auto update = firmware_update::mojom::FirmwareUpdate::New();
-  update->device_id = device_id;
-  update->device_name = base::UTF8ToUTF16(device_name);
+  update->device_id = device.id;
+  update->device_name = base::UTF8ToUTF16(device.device_name);
+  update->needs_reboot =
+      device.needs_reboot && features::IsFlexFirmwareUpdateEnabled();
   update->device_version = update_details.version;
   update->device_description = base::UTF8ToUTF16(update_details.description);
   update->priority =
@@ -296,7 +299,8 @@ firmware_update::mojom::DeviceRequestPtr GetDeviceRequest(
       static_cast<firmware_update::mojom::DeviceRequestKind>(request.kind));
 }
 
-bool GetMetadataFileInfo(base::FilePath filepath, base::File::Info* info) {
+bool GetMetadataFileInfo(const base::FilePath& filepath,
+                         base::File::Info* info) {
   if (!base::PathExists(filepath)) {
     FIRMWARE_LOG(DEBUG) << "Local firmware file not found at: " << filepath;
     return false;
@@ -313,25 +317,25 @@ bool GetMetadataFileInfo(base::FilePath filepath, base::File::Info* info) {
   return true;
 }
 
-std::string GetFirmwareFileNameFromJsonString(std::string json_content) {
+std::string GetFirmwareFileNameFromJsonString(const std::string& json_content) {
   if (json_content == "") {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json for empty string";
     return "";
   }
 
-  std::string error;
-  JSONStringValueDeserializer messages_deserializer(json_content);
-  std::unique_ptr<base::Value> value =
-      messages_deserializer.Deserialize(/*error_code=*/nullptr, &error);
-  if (error != "") {
+  base::JSONReader::Result value =
+      base::JSONReader::ReadAndReturnValueWithError(json_content);
+  if (!value.has_value()) {
     FIRMWARE_LOG(ERROR) << "Failed to deserialize json string with error: "
-                        << error;
+                        << value.error().ToString();
     return "";
   }
-  DCHECK(value);
-  auto dictionary =
-      std::make_unique<base::Value::Dict>(std::move(*value).TakeDict());
-  base::Value::List* items = dictionary->FindList("Items");
+  base::Value::Dict* dict = value->GetIfDict();
+  if (!dict) {
+    FIRMWARE_LOG(ERROR) << "Parsed JSON is not a dictionary";
+    return "";
+  }
+  base::Value::List* items = dict->FindList("Items");
   if (items == nullptr || items->empty()) {
     FIRMWARE_LOG(ERROR) << "Couldn't find 'Items' key in checksum json file";
     return "";
@@ -341,10 +345,10 @@ std::string GetFirmwareFileNameFromJsonString(std::string json_content) {
     FIRMWARE_LOG(ERROR) << "Couldn't find 'Id' key in checksum json file";
     return "";
   }
-  return *filename;
+  return std::move(*filename);
 }
 
-bool CreateAndClearFile(base::FilePath filepath) {
+bool CreateAndClearFile(const base::FilePath& filepath) {
   // TODO(michaelcheco): Verify that creating the empty file is
   // necessary.
   return base::WriteFile(filepath, /*data=*/"");
@@ -358,9 +362,9 @@ device_event_log::LogLevel LogLevelForFileErrors() {
              : device_event_log::LOG_LEVEL_DEBUG;
 }
 
-void CleanUpTempFiles(base::FilePath checksum_filepath,
+void CleanUpTempFiles(const base::FilePath& checksum_filepath,
                       base::File checksum_file,
-                      base::FilePath firmware_filepath,
+                      const base::FilePath& firmware_filepath,
                       base::File firmware_file) {
   if (!checksum_filepath.empty()) {
     base::DeleteFile(checksum_filepath);
@@ -383,7 +387,7 @@ std::string ReadFileToString(const base::FilePath& filename) {
   return file_contents;
 }
 
-std::string UncompressFileAndGetFilename(std::string file_contents) {
+std::string UncompressFileAndGetFilename(const std::string& file_contents) {
   // Log an EVENT here in case b/339310876 comes up again.
   FIRMWARE_LOG(EVENT) << "GzipUncompress: " << file_contents.size();
   std::string content;
@@ -878,8 +882,11 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
   // If there are updates, then choose the first one.
   if (!updates->empty()) {
     auto device_name = devices_pending_update_[device_id].device_name;
+    auto needs_reboot = devices_pending_update_[device_id].needs_reboot &&
+                        features::IsFlexFirmwareUpdateEnabled();
     // Create a complete FirmwareUpdate and add to updates_.
-    updates_.push_back(CreateUpdate(updates->front(), device_id, device_name));
+    updates_.push_back(CreateUpdate(
+        updates->front(), FwupdDevice(device_id, device_name, needs_reboot)));
   }
 
   // Remove the pending device.
@@ -1172,7 +1179,8 @@ void FirmwareUpdateManager::GetFirmwareFilename(
   FIRMWARE_LOG(DEBUG) << "GetFirmwareFilename: " << checksum_filepath_
                       << ", Uncompressing and parsing checksum file.";
   task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&UncompressFileAndGetFilename, file_contents),
+      FROM_HERE,
+      base::BindOnce(&UncompressFileAndGetFilename, std::move(file_contents)),
       base::BindOnce(&FirmwareUpdateManager::TriggerDownloadOfFirmwareFile,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -1255,6 +1263,24 @@ void FirmwareUpdateManager::AddUpdateProgressObserver(
         observer) {
   update_progress_observer_.reset();
   update_progress_observer_.Bind(std::move(observer));
+}
+
+void FirmwareUpdateManager::Restart() {
+  chromeos::PowerManagerClient::Get()->RequestRestart(
+      power_manager::REQUEST_RESTART_FOR_USER,
+      "Restarting after user installed UEFI firmware update.");
+}
+
+void FirmwareUpdateManager::BindInterface(
+    mojo::PendingReceiver<firmware_update::mojom::SystemUtils>
+        pending_receiver) {
+  // Clear any bound receiver, since this service is a singleton and is bound
+  // to the firmware updater UI it's possible that the app can be closed and
+  // reopened multiple times resulting in multiple attempts to bind to this
+  // receiver.
+  system_utils_receiver_.reset();
+
+  system_utils_receiver_.Bind(std::move(pending_receiver));
 }
 
 }  // namespace ash

@@ -13,14 +13,17 @@ TextToSpeechPlaybackController::TextToSpeechPlaybackController()
 
 void TextToSpeechPlaybackController::SetWebStateList(
     WebStateList* web_state_list) {
-  if (web_state_list_ == web_state_list)
+  if (web_state_list_ == web_state_list) {
     return;
+  }
 
-  if (web_state_list_)
+  if (web_state_list_) {
     web_state_list_->RemoveObserver(this);
+  }
   web_state_list_ = web_state_list;
-  if (web_state_list_)
+  if (web_state_list_) {
     web_state_list_->AddObserver(this);
+  }
 
   SetWebState(web_state_list_ ? web_state_list_->GetActiveWebState() : nullptr);
 }
@@ -36,16 +39,18 @@ void TextToSpeechPlaybackController::SetEnabled(bool enabled) {
 #pragma mark Private
 
 void TextToSpeechPlaybackController::SetWebState(web::WebState* web_state) {
-  if (web_state_ == web_state)
+  if (web_state_ == web_state) {
     return;
+  }
 
   if (web_state_) {
     web_state_->RemoveObserver(this);
     [notification_helper_ cancelPlayback];
   }
   web_state_ = web_state;
-  if (web_state_)
+  if (web_state_) {
     web_state_->AddObserver(this);
+  }
 }
 
 #pragma mark KeyedService

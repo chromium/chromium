@@ -22,8 +22,6 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
   void SetUp() override {
     ViewsTestBase::SetUp();
 
-    scoped_feature_list_.InitAndEnableFeature(features::kUiaProvider);
-
     widget_ = std::make_unique<Widget>();
 
     Widget::InitParams params =
@@ -34,7 +32,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
 
     textfield_ = new Textfield();
     textfield_->SetBounds(10, 20, 30, 40);
-    widget_->GetContentsView()->AddChildView(textfield_.get());
+    widget_->GetContentsView()->AddChildViewRaw(textfield_.get());
 
     delegate_ = static_cast<ViewAXPlatformNodeDelegate*>(
         &textfield_->GetViewAccessibility());
@@ -67,7 +65,7 @@ class AtomicViewAXTreeManagerTest : public ViewsTestBase {
     EXPECT_EQ(expected.relative_bounds, actual.relative_bounds);
   }
 
-  ui::AXNodeData delegate_data() { return delegate_->data(); }
+  const ui::AXNodeData& delegate_data() const { return delegate_->data(); }
 
  protected:
   raw_ptr<Textfield> textfield_ = nullptr;  // Owned by views hierarchy.
@@ -95,15 +93,13 @@ TEST_F(AtomicViewAXTreeManagerTest, GetRootAsAXNode) {
       delegate_->GetAtomicViewAXTreeManagerForTesting()->GetRoot()->data());
 }
 
-TEST_F(AtomicViewAXTreeManagerTest, GetNodeFromTree) {
+TEST_F(AtomicViewAXTreeManagerTest, GetNode) {
   CompareNodeData(
       delegate_data(),
       delegate_->GetAtomicViewAXTreeManagerForTesting()
-          ->GetNodeFromTree(
-              delegate_->GetAtomicViewAXTreeManagerForTesting()->GetTreeID(),
-              delegate_->GetAtomicViewAXTreeManagerForTesting()
-                  ->GetRoot()
-                  ->id())
+          ->GetNode(delegate_->GetAtomicViewAXTreeManagerForTesting()
+                        ->GetRoot()
+                        ->id())
           ->data());
 }
 

@@ -5,14 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
-#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_url_loader.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 
-@class BubblePresenter;
 @protocol BrowserCoordinatorCommands;
 @protocol EditViewAnimatee;
+@protocol FakeboxButtonsSnapshotProvider;
 @protocol LocationBarAnimatee;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol OmniboxFocusDelegate;
@@ -31,9 +30,6 @@
 
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     popupPresenterDelegate;
-
-// Bubble presenter for displaying IPH bubbles relating to the toolbars.
-@property(nonatomic, strong) BubblePresenter* bubblePresenter;
 
 // Initializes this Coordinator with its `browser` and a nil base view
 // controller.
@@ -62,6 +58,14 @@
 
 // Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
+
+// Sets an object to provide a snapshot of the fakebox buttons to be used during
+// focus and defocus transitions.
+- (void)setFakeboxButtonsSnapshotProvider:
+    (id<FakeboxButtonsSnapshotProvider>)provider;
+
+// Sets whether Lens overlay is currently visible.
+- (void)setLensOverlayVisible:(BOOL)lensOverlayVisible;
 
 @end
 

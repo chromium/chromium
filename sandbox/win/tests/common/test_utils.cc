@@ -9,6 +9,7 @@
 #include <stddef.h>
 #include <winioctl.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace sandbox {
@@ -42,15 +43,17 @@ typedef struct _REPARSE_DATA_BUFFER {
 // Sets a reparse point. |source| will now point to |target|. Returns true if
 // the call succeeds, false otherwise.
 bool SetReparsePoint(HANDLE source, const wchar_t* target) {
-  USHORT size_target = static_cast<USHORT>(wcslen(target)) * sizeof(target[0]);
+  USHORT size_target =
+      static_cast<USHORT>(UNSAFE_TODO(wcslen(target))) * sizeof(target[0]);
 
-  char buffer[2000] = {0};
+  char buffer[2000] = {};
   DWORD returned;
 
   REPARSE_DATA_BUFFER* data = reinterpret_cast<REPARSE_DATA_BUFFER*>(buffer);
 
   data->ReparseTag = IO_REPARSE_TAG_MOUNT_POINT;
-  memcpy(data->MountPointReparseBuffer.PathBuffer, target, size_target + 2);
+  UNSAFE_TODO(memcpy(data->MountPointReparseBuffer.PathBuffer, target,
+                     size_target + 2));
   data->MountPointReparseBuffer.SubstituteNameLength = size_target;
   data->MountPointReparseBuffer.PrintNameOffset = size_target + 2;
   data->ReparseDataLength = size_target + 4 + 8;
@@ -83,7 +86,8 @@ bool IsSidInDacl(const base::win::AccessControlList& dacl,
                  std::optional<ACCESS_MASK> mask,
                  const base::win::Sid& sid) {
   DWORD ace_type = allowed ? ACCESS_ALLOWED_ACE_TYPE : ACCESS_DENIED_ACE_TYPE;
-  PACL pacl = dacl.get();
+  auto acl = dacl.Clone();
+  PACL pacl = acl.get();
   for (unsigned int i = 0; i < pacl->AceCount; ++i) {
     // Allowed and deny ACEs have the same structure.
     PACCESS_ALLOWED_ACE ace;

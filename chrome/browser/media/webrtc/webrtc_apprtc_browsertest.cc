@@ -46,7 +46,7 @@ const char kIsApprtcCallUpJavascript[] =
 // TODO(b/246519185) - Py3 incompatible, decide if to keep test.
 class WebRtcApprtcBrowserTest : public WebRtcTestBase {
  public:
-  WebRtcApprtcBrowserTest() {}
+  WebRtcApprtcBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EXPECT_FALSE(command_line->HasSwitch(switches::kUseFakeUIForMediaStream));

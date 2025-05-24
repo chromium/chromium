@@ -11,6 +11,7 @@ Navigating to a different URL
     [0] : [
         [0] : cpu
         [1] : critical
+        [2] : 0.2
     ]
 ]
 

@@ -33,7 +33,7 @@ public final class DownloadNotificationUmaHelper {
         int NUM_ENTRIES = 3;
     }
 
-    private static List<String> sInteractions =
+    private static final List<String> sInteractions =
             Arrays.asList(
                     ACTION_NOTIFICATION_CLICKED, // Opening a download where
                     // LegacyHelpers.isLegacyDownload.

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/function_ref.h"
@@ -17,7 +18,6 @@
 #include "content/browser/attribution_reporting/process_aggregatable_debug_report_result.mojom-forward.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom-forward.h"
 
 class GURL;
@@ -131,7 +131,7 @@ struct SendAggregatableDebugReportResult {
 
   struct AssemblyFailed {};
 
-  using Result = absl::variant<Sent, AssemblyFailed>;
+  using Result = std::variant<Sent, AssemblyFailed>;
 
   Result result;
 };

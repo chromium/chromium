@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "sandbox/linux/services/proc_util.h"
 
 #include <dirent.h>
@@ -10,6 +15,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include <memory>
 
@@ -94,7 +100,19 @@ bool ProcUtil::HasOpenDirectory(int proc_fd) {
 
     struct stat s;
     // It's OK to use proc_self_fd here, fstatat won't modify it.
-    PCHECK(fstatat(proc_self_fd, de->d_name, &s, 0) == 0);
+    int stat_res = fstatat(proc_self_fd, de->d_name, &s, 0);
+    // Check for stale symlinks and skip them if they meet certain criteria.
+    // See crbug.com/362595425
+    char filename[PATH_MAX] = {};  // Initialize for robustness
+    if (stat_res == -1 && errno == ESTALE && de->d_type == DT_LNK &&
+        readlinkat(proc_self_fd, de->d_name, filename, sizeof(filename)) !=
+            -1) {
+      static constexpr std::string_view kStalePrefix = "/google/cog/";
+      if (strncmp(filename, kStalePrefix.data(), kStalePrefix.size()) == 0) {
+        continue;
+      }
+    }
+    PCHECK(stat_res == 0);
     if (S_ISDIR(s.st_mode)) {
       return true;
     }

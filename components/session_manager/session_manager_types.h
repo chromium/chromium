@@ -45,16 +45,10 @@ enum class SessionState {
 // A type for session id.
 using SessionId = int;
 
-// Info about a user session.
-struct Session {
-  SessionId id;
-  AccountId user_account_id;
-};
-
 // Limits the number of logged in users to 5. User-switcher UI was not designed
 // around a large number of users. This also helps on memory-constrained
 // devices. See b/64593342 for some additional context.
-constexpr int kMaximumNumberOfUserSessions = 5;
+inline constexpr int kMaximumNumberOfUserSessions = 5;
 
 // Type of unlock method used.
 enum class UnlockType {

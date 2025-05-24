@@ -6,13 +6,13 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -21,7 +21,7 @@ EnumHistogramChecker::EnumHistogramChecker(const std::string& histogram,
                                            base::HistogramSamples* base)
     : histogram_(histogram), expect_(count), base_(base) {}
 
-EnumHistogramChecker::~EnumHistogramChecker() {}
+EnumHistogramChecker::~EnumHistogramChecker() = default;
 
 EnumHistogramChecker* EnumHistogramChecker::Expect(int key, int value) {
   expect_[key] = value;
@@ -30,7 +30,7 @@ EnumHistogramChecker* EnumHistogramChecker::Expect(int key, int value) {
 
 bool EnumHistogramChecker::Check() {
   bool empty = false;
-  size_t num_zeroes = static_cast<size_t>(base::ranges::count(expect_, 0));
+  size_t num_zeroes = static_cast<size_t>(std::ranges::count(expect_, 0));
   if (num_zeroes == expect_.size())
     empty = true;
   base::HistogramBase* histogram =

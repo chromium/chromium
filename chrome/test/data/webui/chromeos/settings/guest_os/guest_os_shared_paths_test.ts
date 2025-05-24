@@ -4,8 +4,9 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {GuestOsBrowserProxyImpl, SettingsGuestOsSharedPathsElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, CrDialogElement} from 'chrome://os-settings/os_settings.js';
+import type {SettingsGuestOsSharedPathsElement} from 'chrome://os-settings/lazy_load.js';
+import {GuestOsBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrDialogElement} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

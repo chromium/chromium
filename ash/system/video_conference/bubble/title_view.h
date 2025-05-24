@@ -40,6 +40,9 @@ class MicTestButtonContainer : public views::Button {
   MicTestButtonContainer& operator=(const MicTestButtonContainer&) = delete;
   ~MicTestButtonContainer() override;
 
+  // views::View
+  void OnThemeChanged() override;
+
  private:
   raw_ptr<views::ImageView> sidetone_icon_;
   raw_ptr<MicIndicator> mic_indicator_;
@@ -59,10 +62,12 @@ class MicTestButton : public views::View {
   void OnMicTestButtonClicked(const ui::Event& event);
   void CloseSidetoneBubble();
   void ShowSidetoneBubble(const bool supported);
+
   // views::View
   void OnThemeChanged() override;
 
   raw_ptr<views::View> background_view_ = nullptr;
+  raw_ptr<MicTestButtonContainer> button_container_ = nullptr;
 };
 
 }  // namespace ash::video_conference

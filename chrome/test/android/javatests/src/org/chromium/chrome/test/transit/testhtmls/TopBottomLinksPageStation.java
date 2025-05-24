@@ -7,7 +7,6 @@ package org.chromium.chrome.test.transit.testhtmls;
 import android.util.Pair;
 import android.view.View;
 
-import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.Facility;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -49,8 +48,8 @@ public class TopBottomLinksPageStation extends WebPageStation {
     /** Scrolls down the page using a drag gesture to dismiss browser controls. */
     private Transition.Trigger gestureScrollToBottomTrigger() {
         return () -> {
-            assertSuppliersCanBeUsed();
-            View contentView = mActivityTabSupplier.get().getView();
+            assertInPhase(Phase.ACTIVE);
+            View contentView = activityTabElement.get().getView();
             float width = contentView.getWidth();
             float height = contentView.getHeight();
             // Start the scroll with some height to avoid touching the nav bar region.
@@ -62,26 +61,24 @@ public class TopBottomLinksPageStation extends WebPageStation {
                     width / 2,
                     fromY,
                     toY,
-                    /* steps= */ 50,
+                    /* stepCount= */ 50,
                     /* duration= */ 500);
         };
     }
 
     /** The page is scrolled to the top, and the top link is displayed. */
     public static class TopFacility extends Facility<TopBottomLinksPageStation> {
-        protected HtmlElement mTopElement;
+        public HtmlElement topElement;
 
         @Override
-        public void declareElements(Elements.Builder elements) {
-            mTopElement =
-                    elements.declareElement(
-                            new HtmlElement(TOP_LINK, mHostStation.mWebContentsSupplier));
+        public void declareExtraElements() {
+            topElement = declareElement(new HtmlElement(TOP_LINK, mHostStation.webContentsElement));
         }
 
         /** Open context menu on the top link. */
         public LinkContextMenuFacility openContextMenuOnTopLink() {
             return mHostStation.enterFacilitySync(
-                    new LinkContextMenuFacility(), mTopElement::longPress);
+                    new LinkContextMenuFacility(), topElement.getLongPressTrigger());
         }
 
         /** Scroll to the bottom of the page. */
@@ -93,21 +90,19 @@ public class TopBottomLinksPageStation extends WebPageStation {
 
     /** The page is scrolled to the bottom, and the bottom link is displayed. */
     public static class BottomFacility extends Facility<TopBottomLinksPageStation> {
-        protected HtmlElement mBottomElement;
+        public HtmlElement bottomElement;
 
         @Override
-        public void declareElements(Elements.Builder elements) {
-            mBottomElement =
-                    elements.declareElement(
-                            new HtmlElement(BOTTOM_LINK, mHostStation.mWebContentsSupplier));
-            elements.declareEnterCondition(
-                    new ScrollToBottomCondition(mHostStation.mWebContentsSupplier));
+        public void declareExtraElements() {
+            bottomElement =
+                    declareElement(new HtmlElement(BOTTOM_LINK, mHostStation.webContentsElement));
+            declareEnterCondition(new ScrollToBottomCondition(mHostStation.webContentsElement));
         }
 
         /** Open context menu on the bottom link. */
         public LinkContextMenuFacility openContextMenuOnBottomLink() {
             return mHostStation.enterFacilitySync(
-                    new LinkContextMenuFacility(), mBottomElement::longPress);
+                    new LinkContextMenuFacility(), bottomElement.getLongPressTrigger());
         }
     }
 }

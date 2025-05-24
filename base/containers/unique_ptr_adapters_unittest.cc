@@ -4,11 +4,11 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -110,39 +110,44 @@ TEST(UniquePtrMatcherTest, Basic) {
   raw_ptr<Foo, DisableDanglingPtrDetection> dangling_foo3 = foo3;
 
   {
-    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo>(foo1));
+    auto iter = std::ranges::find_if(v, UniquePtrMatcher<Foo>(foo1));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo1, iter->get());
-    EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo>(raw_foo1)) == iter);
-    EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo>(dangling_foo1)) ==
+    EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo>(raw_foo1)) ==
+                iter);
+    EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo>(dangling_foo1)) ==
                 iter);
   }
 
   {
-    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo>(foo2));
+    auto iter = std::ranges::find_if(v, UniquePtrMatcher<Foo>(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
-    EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo>(raw_foo2)) == iter);
-    EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo>(dangling_foo2)) ==
+    EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo>(raw_foo2)) ==
+                iter);
+    EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo>(dangling_foo2)) ==
                 iter);
   }
 
   {
-    auto iter = ranges::find_if(v, MatchesUniquePtr(foo2));
+    auto iter = std::ranges::find_if(v, MatchesUniquePtr(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
-    EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr(raw_foo2)) == iter);
-    EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr(dangling_foo2)) == iter);
+    EXPECT_TRUE(std::ranges::find_if(v, MatchesUniquePtr(raw_foo2)) == iter);
+    EXPECT_TRUE(std::ranges::find_if(v, MatchesUniquePtr(dangling_foo2)) ==
+                iter);
   }
 
-  EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo>(foo3)) == v.end());
-  EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo>(raw_foo3)) == v.end());
-  EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo>(dangling_foo3)) ==
+  EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo>(foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo>(raw_foo3)) ==
+              v.end());
+  EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo>(dangling_foo3)) ==
               v.end());
 
-  EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr(foo3)) == v.end());
-  EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr(raw_foo3)) == v.end());
-  EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr(dangling_foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(v, MatchesUniquePtr(foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(v, MatchesUniquePtr(raw_foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(v, MatchesUniquePtr(dangling_foo3)) ==
+              v.end());
 
   raw_foo1 = nullptr;
   raw_foo2 = nullptr;
@@ -176,48 +181,51 @@ TEST(UniquePtrMatcherTest, Deleter) {
   raw_ptr<Foo, DisableDanglingPtrDetection> dangling_foo3 = foo3;
 
   {
-    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(foo1));
+    auto iter =
+        std::ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(foo1));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo1, iter->get());
-    EXPECT_TRUE(ranges::find_if(
+    EXPECT_TRUE(std::ranges::find_if(
                     v, UniquePtrMatcher<Foo, TestDeleter>(raw_foo1)) == iter);
-    EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(
-                                       dangling_foo1)) == iter);
+    EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(
+                                            dangling_foo1)) == iter);
   }
 
   {
-    auto iter = ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(foo2));
+    auto iter =
+        std::ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
-    EXPECT_TRUE(ranges::find_if(
+    EXPECT_TRUE(std::ranges::find_if(
                     v, UniquePtrMatcher<Foo, TestDeleter>(raw_foo2)) == iter);
-    EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(
-                                       dangling_foo2)) == iter);
+    EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(
+                                            dangling_foo2)) == iter);
   }
 
   {
-    auto iter = ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(foo2));
+    auto iter =
+        std::ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(foo2));
     ASSERT_TRUE(iter != v.end());
     EXPECT_EQ(foo2, iter->get());
-    EXPECT_TRUE(ranges::find_if(
+    EXPECT_TRUE(std::ranges::find_if(
                     v, MatchesUniquePtr<Foo, TestDeleter>(raw_foo2)) == iter);
-    EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(
-                                       dangling_foo2)) == iter);
+    EXPECT_TRUE(std::ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(
+                                            dangling_foo2)) == iter);
   }
 
-  EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(foo3)) ==
-              v.end());
-  EXPECT_TRUE(ranges::find_if(
+  EXPECT_TRUE(std::ranges::find_if(
+                  v, UniquePtrMatcher<Foo, TestDeleter>(foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(
                   v, UniquePtrMatcher<Foo, TestDeleter>(raw_foo3)) == v.end());
-  EXPECT_TRUE(ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(
-                                     dangling_foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(v, UniquePtrMatcher<Foo, TestDeleter>(
+                                          dangling_foo3)) == v.end());
 
-  EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(foo3)) ==
-              v.end());
-  EXPECT_TRUE(ranges::find_if(
+  EXPECT_TRUE(std::ranges::find_if(
+                  v, MatchesUniquePtr<Foo, TestDeleter>(foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(
                   v, MatchesUniquePtr<Foo, TestDeleter>(raw_foo3)) == v.end());
-  EXPECT_TRUE(ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(
-                                     dangling_foo3)) == v.end());
+  EXPECT_TRUE(std::ranges::find_if(v, MatchesUniquePtr<Foo, TestDeleter>(
+                                          dangling_foo3)) == v.end());
 
   raw_foo1 = nullptr;
   raw_foo2 = nullptr;

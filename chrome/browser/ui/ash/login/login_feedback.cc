@@ -21,7 +21,7 @@ namespace ash {
 LoginFeedback::LoginFeedback(Profile* signin_profile)
     : profile_(signin_profile) {}
 
-LoginFeedback::~LoginFeedback() {}
+LoginFeedback::~LoginFeedback() = default;
 
 void LoginFeedback::Request(const std::string& description) {
   Request(description, base::NullCallback());

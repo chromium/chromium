@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/notifications/notifications_api.h"
 
 #include <stddef.h>
+#include <string.h>
 
 #include <utility>
 
@@ -37,9 +33,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
-#include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_system_provider.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -57,6 +50,12 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#include "extensions/browser/app_window/native_app_window.h"
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 using message_center::NotifierId;
 
@@ -128,12 +127,13 @@ bool NotificationBitmapToGfxImage(
     return false;
 
   // Ensure we have rgba data.
-  const std::optional<std::vector<uint8_t>>& rgba_data =
-      notification_bitmap.data;
-  if (!rgba_data)
+  if (!notification_bitmap.data) {
     return false;
+  }
 
-  const size_t rgba_data_length = rgba_data->size();
+  const std::vector<uint8_t>& rgba_data = *notification_bitmap.data;
+
+  const size_t rgba_data_length = rgba_data.size();
   const size_t rgba_area = width * height;
 
   if (rgba_data_length != rgba_area * kBytesPerPixel)
@@ -141,29 +141,37 @@ bool NotificationBitmapToGfxImage(
 
   SkBitmap bitmap;
   // Allocate the actual backing store with the sanitized dimensions.
-  if (!bitmap.tryAllocN32Pixels(width, height))
-    return false;
+  std::vector<uint32_t> pixels(rgba_area);
+  SkImageInfo info = SkImageInfo::MakeN32Premul(width, height);
+  bitmap.setInfo(info, width * kBytesPerPixel);
+  bitmap.setPixels(&pixels[0]);
 
   // Ensure that our bitmap and our data now refer to the same number of pixels.
   if (rgba_data_length != bitmap.computeByteSize())
     return false;
 
-  uint32_t* pixels = bitmap.getAddr32(0, 0);
-  const uint8_t* c_rgba_data = rgba_data->data();
-
   for (size_t t = 0; t < rgba_area; ++t) {
-    // |c_rgba_data| is RGBA, pixels is ARGB.
+    // `rgba_data` is RGBA, pixels is ARGB.
     size_t rgba_index = t * kBytesPerPixel;
-    pixels[t] =
-        SkPreMultiplyColor(((c_rgba_data[rgba_index + 3] & 0xFF) << 24) |
-                           ((c_rgba_data[rgba_index + 0] & 0xFF) << 16) |
-                           ((c_rgba_data[rgba_index + 1] & 0xFF) << 8) |
-                           ((c_rgba_data[rgba_index + 2] & 0xFF) << 0));
+    pixels[t] = SkPreMultiplyColor(((rgba_data[rgba_index + 3] & 0xFF) << 24) |
+                                   ((rgba_data[rgba_index + 0] & 0xFF) << 16) |
+                                   ((rgba_data[rgba_index + 1] & 0xFF) << 8) |
+                                   ((rgba_data[rgba_index + 2] & 0xFF) << 0));
   }
+
+  // Make a copy, since the current bitmap is using a local std::vector for
+  // storage.
+  SkBitmap copy;
+  if (!copy.tryAllocPixels(bitmap.info())) {
+    return false;
+  }
+
+  // Copy the bitmap.
+  bitmap.readPixels(copy.pixmap());
 
   // TODO(dewittj): Handle HiDPI images with more than one scale factor
   // representation.
-  gfx::ImageSkia skia = gfx::ImageSkia::CreateFromBitmap(bitmap, 1.0f);
+  gfx::ImageSkia skia = gfx::ImageSkia::CreateFromBitmap(copy, 1.0f);
   *return_image = gfx::Image(skia);
   return true;
 }
@@ -173,6 +181,7 @@ bool NotificationBitmapToGfxImage(
 // returns false.
 bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
                                            const GURL& origin) {
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   DCHECK(profile);
   ExtensionId extension_id =
       ExtensionNotificationHandler::GetExtensionId(origin);
@@ -183,6 +192,7 @@ bool ShouldShowOverCurrentFullscreenWindow(Profile* profile,
     if (window->IsFullscreen() && window->GetBaseWindow()->IsActive())
       return true;
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
   return false;
 }
 
@@ -195,11 +205,9 @@ bool NotificationsApiFunction::IsNotificationsApiAvailable() {
   return extension()->is_platform_app() || extension()->is_extension();
 }
 
-NotificationsApiFunction::NotificationsApiFunction() {
-}
+NotificationsApiFunction::NotificationsApiFunction() = default;
 
-NotificationsApiFunction::~NotificationsApiFunction() {
-}
+NotificationsApiFunction::~NotificationsApiFunction() = default;
 
 bool NotificationsApiFunction::CreateNotification(
     const std::string& id,
@@ -565,11 +573,9 @@ NotificationsApiFunction::MapApiTemplateTypeToType(
   }
 }
 
-NotificationsCreateFunction::NotificationsCreateFunction() {
-}
+NotificationsCreateFunction::NotificationsCreateFunction() = default;
 
-NotificationsCreateFunction::~NotificationsCreateFunction() {
-}
+NotificationsCreateFunction::~NotificationsCreateFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsCreateFunction::RunNotificationsApi() {
@@ -592,18 +598,16 @@ NotificationsCreateFunction::RunNotificationsApi() {
   // TODO(dewittj): Add more human-readable error strings if this fails.
   std::string error;
   if (!CreateNotification(notification_id, &params_->options, &error)) {
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         api::notifications::Create::Results::Create(notification_id), error));
   }
 
   return RespondNow(WithArguments(notification_id));
 }
 
-NotificationsUpdateFunction::NotificationsUpdateFunction() {
-}
+NotificationsUpdateFunction::NotificationsUpdateFunction() = default;
 
-NotificationsUpdateFunction::~NotificationsUpdateFunction() {
-}
+NotificationsUpdateFunction::~NotificationsUpdateFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsUpdateFunction::RunNotificationsApi() {
@@ -631,7 +635,7 @@ NotificationsUpdateFunction::RunNotificationsApi() {
   bool could_update_notification = UpdateNotification(
       params_->notification_id, &params_->options, &notification, &error);
   if (!could_update_notification) {
-    return RespondNow(ErrorWithArguments(
+    return RespondNow(ErrorWithArgumentsDoNotUse(
         api::notifications::Update::Results::Create(false), error));
   }
 
@@ -640,11 +644,9 @@ NotificationsUpdateFunction::RunNotificationsApi() {
   return RespondNow(WithArguments(true));
 }
 
-NotificationsClearFunction::NotificationsClearFunction() {
-}
+NotificationsClearFunction::NotificationsClearFunction() = default;
 
-NotificationsClearFunction::~NotificationsClearFunction() {
-}
+NotificationsClearFunction::~NotificationsClearFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsClearFunction::RunNotificationsApi() {
@@ -657,9 +659,9 @@ NotificationsClearFunction::RunNotificationsApi() {
   return RespondNow(WithArguments(cancel_result));
 }
 
-NotificationsGetAllFunction::NotificationsGetAllFunction() {}
+NotificationsGetAllFunction::NotificationsGetAllFunction() = default;
 
-NotificationsGetAllFunction::~NotificationsGetAllFunction() {}
+NotificationsGetAllFunction::~NotificationsGetAllFunction() = default;
 
 ExtensionFunction::ResponseAction
 NotificationsGetAllFunction::RunNotificationsApi() {
@@ -676,10 +678,10 @@ NotificationsGetAllFunction::RunNotificationsApi() {
 }
 
 NotificationsGetPermissionLevelFunction::
-NotificationsGetPermissionLevelFunction() {}
+    NotificationsGetPermissionLevelFunction() = default;
 
 NotificationsGetPermissionLevelFunction::
-~NotificationsGetPermissionLevelFunction() {}
+    ~NotificationsGetPermissionLevelFunction() = default;
 
 bool NotificationsGetPermissionLevelFunction::CanRunWhileDisabled() const {
   return true;

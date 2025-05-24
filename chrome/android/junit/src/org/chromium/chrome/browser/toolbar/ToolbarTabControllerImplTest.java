@@ -6,32 +6,38 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
+import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.feature_engagement.Tracker;
@@ -43,8 +49,8 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ToolbarTabControllerImplTest {
-    private class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
-        LoadUrlParams mLoadUrlParams;
+    private static class LoadUrlParamsMatcher implements ArgumentMatcher<LoadUrlParams> {
+        final LoadUrlParams mLoadUrlParams;
 
         public LoadUrlParamsMatcher(LoadUrlParams loadUrlParams) {
             mLoadUrlParams = loadUrlParams;
@@ -57,6 +63,7 @@ public class ToolbarTabControllerImplTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Supplier<Tab> mTabSupplier;
     @Mock private Tab mTab;
     @Mock private Tab mTab2;
@@ -68,16 +75,21 @@ public class ToolbarTabControllerImplTest {
     @Mock private Profile mProfile;
     @Mock private NativePage mNativePage;
     @Mock private Supplier<Tab> mActivityTabProvider;
+    @Mock private TabCreatorManager mTabCreatorManager;
+    @Mock private TabCreator mTabCreator;
+    @Mock private MultiInstanceManager mMultiInstanceManager;
 
+    private final GURL mGURL = new GURL("https://example.com");
     private ToolbarTabControllerImpl mToolbarTabController;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mTab).when(mTabSupplier).get();
         doReturn(mTab).when(mActivityTabProvider).get();
         doReturn(mProfile).when(mTab).getProfile();
         doReturn(mNativePage).when(mTab).getNativePage();
+        doReturn(mTabCreator).when(mTabCreatorManager).getTabCreator(anyBoolean());
+        doReturn(mGURL).when(mTab).getUrl();
         TrackerFactory.setTrackerForTests(mTracker);
         initToolbarTabController();
     }
@@ -164,25 +176,7 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
-    @DisableFeatures({
-        ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER
-    })
-    public void
-            testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOff_usesRegularTabSupplier() {
-        // Should only use regular tab supplier when back press refactor is disabled and
-        // control with activity tab provider is also disabled.
-        setUpUsingCorrectTabSupplier();
-
-        Assert.assertTrue(mToolbarTabController.back());
-        Assert.assertTrue(mToolbarTabController.canGoBack());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER)
-    public void
-            testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOff_doesNotUseRegularTabSupplier() {
+    public void testUsingCorrectTabSupplier_doesNotUseRegularTabSupplier() {
         setUpUsingCorrectTabSupplier();
 
         Assert.assertFalse(mToolbarTabController.back());
@@ -190,27 +184,119 @@ public class ToolbarTabControllerImplTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER)
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void
-            testUsingCorrectTabSupplier_refactorOff_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
-        setUpUsingCorrectTabSupplier();
+    public void testBackInForegroundTab() {
+        // Set up.
+        doReturn(true).when(mTab).canGoBack();
+        doReturn(mTab2)
+                .when(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
 
-        Assert.assertFalse(mToolbarTabController.back());
-        Assert.assertFalse(mToolbarTabController.canGoBack());
+        // Call backInNewTab with foregroundNewTab = true.
+        mToolbarTabController.backInNewTab(/* foregroundNewTab= */ true);
+
+        // Verify correctness.
+        inOrder.verify(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND);
+        inOrder.verify(mTab2).goBack();
+        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER,
-        ChromeFeatureList.BACK_GESTURE_ACTIVITY_TAB_PROVIDER
-    })
-    public void
-            testUsingCorrectTabSupplier_refactorOn_controlWithActivityTabProviderOn_doesNotUseRegularTabSupplier() {
-        setUpUsingCorrectTabSupplier();
+    public void testBackInBackgroundTab() {
+        // Set up.
+        doReturn(true).when(mTab).canGoBack();
+        doReturn(mTab2)
+                .when(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
 
-        Assert.assertFalse(mToolbarTabController.back());
-        Assert.assertFalse(mToolbarTabController.canGoBack());
+        // Call backInNewTab with foregroundNewTab = false.
+        mToolbarTabController.backInNewTab(/* foregroundNewTab= */ false);
+
+        // Verify correctness.
+        inOrder.verify(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        inOrder.verify(mTab2).goBack();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testBackInNewWindow() {
+        // Set up.
+        doReturn(true).when(mTab).canGoBack();
+        doReturn(mTab2)
+                .when(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+
+        // Call backInNewWindow.
+        mToolbarTabController.backInNewWindow();
+
+        // Verify correctness.
+        inOrder.verify(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        inOrder.verify(mTab2).goBack();
+        inOrder.verify(mMultiInstanceManager).moveTabToNewWindow(mTab2);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testForwardInForegroundTab() {
+        // Set up.
+        doReturn(true).when(mTab).canGoForward();
+        doReturn(mTab2)
+                .when(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+
+        // Call forwardInNewTab with foregroundNewTab = true.
+        mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ true);
+
+        // Verify correctness.
+        inOrder.verify(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND);
+        inOrder.verify(mTab2).goForward();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testForwardInBackgroundTab() {
+        // Set up.
+        doReturn(true).when(mTab).canGoForward();
+        doReturn(mTab2)
+                .when(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+
+        // Call forwardInNewTab with foregroundNewTab = false.
+        mToolbarTabController.forwardInNewTab(/* foregroundNewTab= */ false);
+
+        // Verify correctness.
+        inOrder.verify(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        inOrder.verify(mTab2).goForward();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testForwardInNewWindow() {
+        // Set up.
+        doReturn(true).when(mTab).canGoForward();
+        doReturn(mTab2)
+                .when(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        InOrder inOrder = inOrder(mTabCreator, mTab2, mMultiInstanceManager);
+
+        // Call forwardInNewWindow.
+        mToolbarTabController.forwardInNewWindow();
+
+        // Verify correctness.
+        inOrder.verify(mTabCreator)
+                .createTabWithHistory(mTab, TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND);
+        inOrder.verify(mTab2).goForward();
+        inOrder.verify(mMultiInstanceManager).moveTabToNewWindow(mTab2);
+        inOrder.verifyNoMoreInteractions();
     }
 
     private void initToolbarTabController() {
@@ -221,7 +307,9 @@ public class ToolbarTabControllerImplTest {
                         mBottomControlsCoordinatorSupplier,
                         ToolbarManager::homepageUrl,
                         mRunnable,
-                        mActivityTabProvider);
+                        mActivityTabProvider,
+                        mTabCreatorManager,
+                        mMultiInstanceManager);
     }
 
     private void setUpUsingCorrectTabSupplier() {

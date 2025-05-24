@@ -55,8 +55,6 @@ class DownloadItemData : public base::SupportsUserData::Data {
   DownloadItemData(const DownloadItemData&) = delete;
   DownloadItemData& operator=(const DownloadItemData&) = delete;
 
-  ~DownloadItemData() override {}
-
   // Sets the ClientDownloadRequest for a given DownloadItem.
   static void SetRequestForDownload(
       download::DownloadItem* item,

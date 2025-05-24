@@ -14,10 +14,6 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace gfx {
-class Size;
-}  // namespace gfx
-
 namespace ui {
 class DialogModelLabel;
 class ImageModel;
@@ -60,9 +56,6 @@ class IsolatedWebAppInstallerViewImpl : public IsolatedWebAppInstallerView {
 
   views::Widget* ShowDialog(
       const IsolatedWebAppInstallerModel::Dialog& dialog) override;
-
-  // `views::View`:
-  gfx::Size GetMaximumSize() const override;
 
  private:
   template <class T, class... Args>

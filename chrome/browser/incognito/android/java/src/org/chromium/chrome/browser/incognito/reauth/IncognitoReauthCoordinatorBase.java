@@ -10,13 +10,13 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -24,24 +24,25 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * An abstract base class responsible for setting up the mediator, property model and the re-auth
  * view.
  */
+@NullMarked
 abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordinator {
-    /** The context to use to inflate the re-auth view and access other resources.*/
-    protected final @NonNull Context mContext;
+    /** The context to use to inflate the re-auth view and access other resources. */
+    protected final Context mContext;
 
-    /** The mediator which is responsible for handling the interaction done within the view.*/
+    /** The mediator which is responsible for handling the interaction done within the view. */
     private final IncognitoReauthMediator mIncognitoReauthMediator;
 
     /**
      * The model change processor for the re-auth view which triggers the binded method associated
      * with the {@link PropertyModel} which got changed.
      */
-    private PropertyModelChangeProcessor mModelChangeProcessor;
+    private @Nullable PropertyModelChangeProcessor mModelChangeProcessor;
 
     /** The property model container for {@link IncognitoReauthProperties}. */
-    private PropertyModel mPropertyModel;
+    private @Nullable PropertyModel mPropertyModel;
 
-    /** The actual underlying re-auth view.*/
-    private View mIncognitoReauthView;
+    /** The actual underlying re-auth view. */
+    private @Nullable View mIncognitoReauthView;
 
     /**
      * Test-only method to ignore the assertion on null checks, and use the respective view, model
@@ -51,18 +52,18 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
 
     /**
      * @param context The {@link Context} to use for inflating the re-auth view.
-     * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be
-     *                              used to initiate re-authentication.
+     * @param incognitoReauthManager The {@link IncognitoReauthManager} instance which would be used
+     *     to initiate re-authentication.
      * @param incognitoReauthCallback The {@link IncognitoReauthCallback} which would be executed
-     *                               after an authentication attempt.
-     * @param seeOtherTabsRunnable A {@link Runnable} which is run when the user clicks on
-     *                            "See other tabs" option.
+     *     after an authentication attempt.
+     * @param seeOtherTabsRunnable A {@link Runnable} which is run when the user clicks on "See
+     *     other tabs" option.
      */
     public IncognitoReauthCoordinatorBase(
-            @NonNull Context context,
-            @NonNull IncognitoReauthManager incognitoReauthManager,
-            @NonNull IncognitoReauthCallback incognitoReauthCallback,
-            @NonNull Runnable seeOtherTabsRunnable) {
+            Context context,
+            IncognitoReauthManager incognitoReauthManager,
+            IncognitoReauthCallback incognitoReauthCallback,
+            Runnable seeOtherTabsRunnable) {
         mContext = context;
         mIncognitoReauthMediator =
                 new IncognitoReauthMediator(
@@ -79,13 +80,13 @@ abstract class IncognitoReauthCoordinatorBase implements IncognitoReauthCoordina
     /**
      * A method to responsible for setting up the environment to show before the re-auth view.
      *
-     * @param menuButtonDelegate The {@link ListMenuButtonDelegate} for the 3 dots menu. Non-null
-     *     for full-screen coordinator.
+     * @param menuButtonDelegate The {@link ListMenuDelegate} for the 3 dots menu. Non-null for
+     *     full-screen coordinator.
      * @param fullscreen A boolean indicating whether the incognito re-auth view needs to be shown
      *     fullscreen style or tab-switcher style.
      */
     protected void prepareToShow(
-            @Nullable ListMenuButtonDelegate menuButtonDelegate, boolean fullscreen) {
+            @Nullable ListMenuDelegate menuButtonDelegate, boolean fullscreen) {
         assert !fullscreen || menuButtonDelegate != null
                 : "Full screen should provide a valid menu" + " button delegate.";
 

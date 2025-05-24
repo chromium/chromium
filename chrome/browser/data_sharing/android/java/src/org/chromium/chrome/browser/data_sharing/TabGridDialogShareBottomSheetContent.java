@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
+import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet content to provide data sharing service to TabGridDialog. */
+@NullMarked
 public class TabGridDialogShareBottomSheetContent implements BottomSheetContent {
-    private View mContentView;
+    private final View mContentView;
 
     public TabGridDialogShareBottomSheetContent(View view) {
         mContentView = view;
@@ -23,9 +27,8 @@ public class TabGridDialogShareBottomSheetContent implements BottomSheetContent 
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -48,35 +51,30 @@ public class TabGridDialogShareBottomSheetContent implements BottomSheetContent 
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         return BottomSheetContent.HeightMode.WRAP_CONTENT;
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
+    public String getSheetContentDescription(Context context) {
+        // TODO(haileywang): Add strings for the sheet.
+        return context.getString(R.string.undo_bar_close_all_message);
+    }
+
+    @Override
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         // TODO(haileywang): Add strings for the sheet.
         return R.string.undo_bar_close_all_message;
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         // TODO(haileywang): Add strings for the sheet.
         return R.string.undo_bar_close_all_message;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(haileywang): Add strings for the sheet.
-        return R.string.undo_bar_close_all_message;
-    }
-
-    @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         // TODO(haileywang): Add strings for the sheet.
         return R.string.undo_bar_close_all_message;
     }

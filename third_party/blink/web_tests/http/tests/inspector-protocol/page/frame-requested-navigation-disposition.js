@@ -3,13 +3,15 @@
 
   await dp.Page.enable();
 
+  // The `buttons` values below match the expectations in the PointerEvents
+  // spec: https://w3c.github.io/pointerevents/#the-buttons-property
   testRunner.log('New window');
   const [{params: newWindow}] = await Promise.all([
     dp.Page.onceFrameRequestedNavigation(),
     dp.Input.dispatchMouseEvent({
       type: 'mousePressed',
       button: 'left',
-      buttons: 1,
+      buttons: 0,
       clickCount: 1,
       modifiers: 8,
       x: 5,
@@ -33,7 +35,7 @@
     dp.Input.dispatchMouseEvent({
       type: 'mousePressed',
       button: 'middle',
-      buttons: 2,
+      buttons: 0,
       clickCount: 1,
       x: 5,
       y: 5,
@@ -41,7 +43,7 @@
     dp.Input.dispatchMouseEvent({
       type: 'mouseReleased',
       button: 'middle',
-      buttons: 2,
+      buttons: 4,
       clickCount: 1,
       x: 5,
       y: 5,
@@ -55,7 +57,7 @@
     dp.Input.dispatchMouseEvent({
       type: 'mousePressed',
       button: 'left',
-      buttons: 1,
+      buttons: 0,
       clickCount: 1,
       x: 5,
       y: 5,

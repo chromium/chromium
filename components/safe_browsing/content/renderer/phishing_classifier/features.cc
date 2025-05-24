@@ -12,8 +12,8 @@ namespace safe_browsing {
 
 const size_t FeatureMap::kMaxFeatureMapSize = 10000;
 
-FeatureMap::FeatureMap() {}
-FeatureMap::~FeatureMap() {}
+FeatureMap::FeatureMap() = default;
+FeatureMap::~FeatureMap() = default;
 
 bool FeatureMap::AddBooleanFeature(const std::string& name) {
   return AddRealFeature(name, 1.0);
@@ -40,10 +40,6 @@ bool FeatureMap::AddRealFeature(const std::string& name, double value) {
 void FeatureMap::Clear() {
   features_.clear();
 }
-
-BASE_FEATURE(kConditionalImageResize,
-             "ConditionalImageResize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kClientSideDetectionRetryLimit,
              "ClientSideDetectionRetryLimit",

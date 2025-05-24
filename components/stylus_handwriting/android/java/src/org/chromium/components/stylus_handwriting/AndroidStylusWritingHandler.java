@@ -10,18 +10,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.inputmethod.EditorBoundsInfo;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodManager;
 
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.StylusWritingHandler;
 import org.chromium.content_public.browser.WebContents;
 
@@ -29,6 +28,7 @@ import java.util.List;
 
 /** Allows stylus handwriting using the Android stylus writing APIs introduced in Android T. */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@NullMarked
 public class AndroidStylusWritingHandler implements StylusWritingHandler, StylusApiOption {
     private static final String TAG = "AndroidStylus";
 
@@ -40,14 +40,19 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
 
         int value = -1;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            value =
-                    Settings.Secure.getInt(
-                            context.getContentResolver(), "stylus_handwriting_enabled", 1);
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            value = StylusWritingSettingsState.getInstance().getStylusHandWritingSetting();
         } else {
-            value =
-                    Settings.Global.getInt(
-                            context.getContentResolver(), "stylus_handwriting_enabled", -1);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                value =
+                        Settings.Secure.getInt(
+                                context.getContentResolver(), "stylus_handwriting_enabled", 1);
+            } else {
+                value =
+                        Settings.Global.getInt(
+                                context.getContentResolver(), "stylus_handwriting_enabled", -1);
+            }
         }
 
         if (value != 1) {
@@ -57,9 +62,15 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
 
         InputMethodManager inputMethodManager = context.getSystemService(InputMethodManager.class);
         List<InputMethodInfo> inputMethods = inputMethodManager.getInputMethodList();
-        String defaultIme =
-                Settings.Secure.getString(
-                        context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        String defaultIme;
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            defaultIme = StylusWritingSettingsState.getInstance().getDefaultInputMethod();
+        } else {
+            defaultIme =
+                    Settings.Secure.getString(
+                            context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        }
 
         if (defaultIme == null) {
             Log.d(
@@ -116,7 +127,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
     }
 
     @Override
-    public EditorBoundsInfo onEditElementFocusedForStylusWriting(
+    public void onEditElementFocusedForStylusWriting(
             Rect focusedEditBounds,
             Point cursorPosition,
             float scaleFactor,
@@ -127,30 +138,6 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         // Start stylus writing after edit element is focused so that InputConnection is current
         // focused element.
         mInputMethodManager.startStylusHandwriting(view);
-        RectF bounds =
-                new RectF(
-                        focusedEditBounds.left / scaleFactor,
-                        focusedEditBounds.top / scaleFactor,
-                        focusedEditBounds.right / scaleFactor,
-                        focusedEditBounds.bottom / scaleFactor);
-        return new EditorBoundsInfo.Builder()
-                .setEditorBounds(bounds)
-                .setHandwritingBounds(bounds)
-                .build();
-    }
-
-    @Override
-    public EditorBoundsInfo onFocusedNodeChanged(
-            Rect editableBoundsOnScreenDip,
-            boolean isEditable,
-            View currentView,
-            float scaleFactor,
-            int contentOffsetY) {
-        RectF bounds = new RectF(editableBoundsOnScreenDip);
-        return new EditorBoundsInfo.Builder()
-                .setEditorBounds(bounds)
-                .setHandwritingBounds(bounds)
-                .build();
     }
 
     @Override

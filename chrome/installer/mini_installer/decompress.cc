@@ -223,7 +223,7 @@ bool InitializeFdi() {
         L"C:\\Windows\\system32\\cabinet.dll",
     };
 
-    wchar_t path[MAX_PATH] = {0};
+    wchar_t path[MAX_PATH] = {};
     for (size_t i = 0; i < _countof(candidate_paths); ++i) {
       path[0] = L'\0';
       DWORD result =

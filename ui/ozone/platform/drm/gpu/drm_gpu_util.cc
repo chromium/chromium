@@ -13,6 +13,8 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+#include <utility>
+
 #include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
@@ -228,7 +230,7 @@ bool ParseLutBlob(const void* data, size_t size, display::GammaCurve& result) {
     lut[i].g = entries[i].green;
     lut[i].b = entries[i].blue;
   }
-  result = display::GammaCurve(lut);
+  result = display::GammaCurve(std::move(lut));
   return true;
 }
 

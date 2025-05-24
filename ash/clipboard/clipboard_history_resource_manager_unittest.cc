@@ -23,7 +23,6 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -369,11 +368,8 @@ class ClipboardHistoryResourceManagerUrlTitlesTest
  public:
   ClipboardHistoryResourceManagerUrlTitlesTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{chromeos::features::kClipboardHistoryRefresh,
-          IsClipboardHistoryUrlTitlesEnabled()},
-         {features::kClipboardHistoryUrlTitles,
-          IsClipboardHistoryUrlTitlesEnabled()},
-         {chromeos::features::kJelly, IsClipboardHistoryUrlTitlesEnabled()}});
+        {{features::kClipboardHistoryUrlTitles,
+          IsClipboardHistoryUrlTitlesEnabled()}});
   }
 
   // ClipboardHistoryResourceManagerTest:

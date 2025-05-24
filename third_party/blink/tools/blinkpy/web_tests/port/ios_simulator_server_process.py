@@ -53,7 +53,7 @@ class IOSSimulatorServerProcess(ServerProcess):
         proc = self._host.executive.popen(self._cmd,
                                           stdin=self._host.executive.PIPE,
                                           stdout=self._host.executive.PIPE,
-                                          stderr=self._host.executive.PIPE,
+                                          stderr=self._host.executive.STDOUT,
                                           env=self._env)
 
         # Wait for incoming connection from the iOS content_shell.
@@ -70,13 +70,17 @@ class IOSSimulatorServerProcess(ServerProcess):
             # launching the content shell occasionally fails. To resolve the
             # issue, consider repeatedly attempting to launch the content shell
             # until it successfully launches.
-            proc = self._host.executive.popen(self._cmd,
-                                              stdin=self._host.executive.PIPE,
-                                              stdout=self._host.executive.PIPE,
-                                              stderr=self._host.executive.PIPE,
-                                              env=self._env)
+            proc = self._host.executive.popen(
+                self._cmd,
+                stdin=self._host.executive.PIPE,
+                stdout=self._host.executive.PIPE,
+                stderr=self._host.executive.STDOUT,
+                env=self._env)
             read_fds, _, _ = select.select([fd], [], [], CONN_WAITING_TIMEOUT)
 
+        # Python's interfaces for sockets and pipes are different. To masquerade
+        # the socket as a pipe dup() the file descriptor and pass it to
+        # os.fdopen().
         stdio_socket, _ = listen_socket.accept()
         fd = stdio_socket.fileno()  # pylint: disable=no-member
         stdin_pipe = os.fdopen(os.dup(fd), 'wb', 0)
@@ -84,6 +88,12 @@ class IOSSimulatorServerProcess(ServerProcess):
         stdio_socket.close()
 
         proc.stdin = stdin_pipe
+
+        # stdout from `proc` is the merged stdout/stderr produced by the
+        # popen() invocation above, which contains only stderr since we run
+        # stdout through the socket above.
+        merged_stdout_stderr = proc.stdout
         proc.stdout = stdout_pipe
+        proc.stderr = merged_stdout_stderr
 
         self._set_proc(proc)

@@ -29,15 +29,20 @@ struct RendererColorIdTable {
   ColorId color_id;
 };
 constexpr RendererColorIdTable kRendererColorIdMap[] = {
+    {RendererColorId::kColorCssSystemActiveText, kColorCssSystemActiveText},
     {RendererColorId::kColorCssSystemBtnFace, kColorCssSystemBtnFace},
     {RendererColorId::kColorCssSystemBtnText, kColorCssSystemBtnText},
+    {RendererColorId::kColorCssSystemField, kColorCssSystemField},
+    {RendererColorId::kColorCssSystemFieldText, kColorCssSystemFieldText},
     {RendererColorId::kColorCssSystemGrayText, kColorCssSystemGrayText},
     {RendererColorId::kColorCssSystemHighlight, kColorCssSystemHighlight},
     {RendererColorId::kColorCssSystemHighlightText,
      kColorCssSystemHighlightText},
     {RendererColorId::kColorCssSystemHotlight, kColorCssSystemHotlight},
+    {RendererColorId::kColorCssSystemLinkText, kColorCssSystemLinkText},
     {RendererColorId::kColorCssSystemMenuHilight, kColorCssSystemMenuHilight},
     {RendererColorId::kColorCssSystemScrollbar, kColorCssSystemScrollbar},
+    {RendererColorId::kColorCssSystemVisitedText, kColorCssSystemVisitedText},
     {RendererColorId::kColorCssSystemWindow, kColorCssSystemWindow},
     {RendererColorId::kColorCssSystemWindowText, kColorCssSystemWindowText},
     {RendererColorId::kColorMenuBackground, kColorMenuBackground},
@@ -174,10 +179,12 @@ std::string_view ForcedColorsName(
       return "kDusk";
     case ColorProviderKey::ForcedColors::kDesert:
       return "kDesert";
-    case ColorProviderKey::ForcedColors::kBlack:
-      return "kBlack";
+    case ColorProviderKey::ForcedColors::kNightSky:
+      return "kNightSky";
     case ColorProviderKey::ForcedColors::kWhite:
       return "kWhite";
+    case ColorProviderKey::ForcedColors::kAquatic:
+      return "kAquatic";
     default:
       return "<invalid>";
   }
@@ -204,12 +211,14 @@ std::string ColorIdName(ColorId color_id) {
   static constexpr const auto color_id_map =
       base::MakeFixedFlatMap<ColorId, const char*>({COLOR_IDS});
   auto i = color_id_map.find(color_id);
-  if (i != color_id_map.cend())
+  if (i != color_id_map.cend()) {
     return {i->second};
+  }
   std::string_view color_name;
   if (g_color_provider_utils_callbacks &&
-      g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name))
+      g_color_provider_utils_callbacks->ColorIdName(color_id, &color_name)) {
     return std::string(color_name.data(), color_name.length());
+  }
   return base::StringPrintf("ColorId(%d)", color_id);
 }
 
@@ -328,8 +337,9 @@ std::string SkColorName(SkColor color) {
   color = SkColorSetA(color, color_alpha != 0 ? SK_AlphaOPAQUE : color_alpha);
   auto i = color_name_map.find(color);
   if (i != color_name_map.cend()) {
-    if (SkColorGetA(color_with_alpha) == SkColorGetA(color))
+    if (SkColorGetA(color_with_alpha) == SkColorGetA(color)) {
       return i->second;
+    }
     return base::StringPrintf("rgba(%s, %f)", i->second, 1.0 / color_alpha);
   }
   return color_utils::SkColorToRgbaString(color);
@@ -339,8 +349,9 @@ std::string ConvertColorProviderColorIdToCSSColorId(std::string color_id_name) {
   color_id_name.replace(color_id_name.begin(), color_id_name.begin() + 1, "-");
   std::string css_color_id_name;
   for (char i : color_id_name) {
-    if (base::IsAsciiUpper(i))
+    if (base::IsAsciiUpper(i)) {
       css_color_id_name += std::string("-");
+    }
     css_color_id_name += base::ToLowerASCII(i);
   }
   return css_color_id_name;
@@ -367,8 +378,9 @@ std::unique_ptr<ColorProvider> CreateColorProviderFromRendererColorMap(
       std::make_unique<ColorProvider>();
   ui::ColorMixer& mixer = color_provider->AddMixer();
 
-  for (const auto& table : kRendererColorIdMap)
+  for (const auto& table : kRendererColorIdMap) {
     mixer[table.color_id] = {renderer_color_map.at(table.renderer_color_id)};
+  }
 
   return color_provider;
 }
@@ -395,6 +407,11 @@ void AddEmulatedForcedColorsToMixer(ColorMixer& mixer, bool dark_mode) {
   mixer[kColorCssSystemWindow] = {dark_mode ? SK_ColorBLACK : SK_ColorWHITE};
   mixer[kColorCssSystemWindowText] = {dark_mode ? SK_ColorWHITE
                                                 : SK_ColorBLACK};
+  mixer[kColorCssSystemField] = {kColorCssSystemWindow};
+  mixer[kColorCssSystemFieldText] = {kColorCssSystemWindowText};
+  mixer[kColorCssSystemActiveText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemLinkText] = {kColorCssSystemHotlight};
+  mixer[kColorCssSystemVisitedText] = {kColorCssSystemHotlight};
 }
 
 std::unique_ptr<ColorProvider> CreateEmulatedForcedColorsColorProvider(
@@ -721,12 +738,17 @@ void CompleteControlsForcedColorsDefinition(ui::ColorMixer& mixer) {
 
 void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
                                              bool dark_mode) {
+  mixer[kColorCssSystemActiveText] = {SkColorSetRGB(0xFF, 0x00, 0x00)};
   mixer[kColorCssSystemGrayText] = {SkColorSetRGB(0x80, 0x80, 0x80)};
   mixer[kColorCssSystemHighlight] = {SkColorSetRGB(0x19, 0x67, 0xD2)};
   mixer[kColorCssSystemHighlightText] = {SK_ColorWHITE};
+  mixer[kColorCssSystemLinkText] = {SkColorSetRGB(0x00, 0x00, 0xEE)};
+  mixer[kColorCssSystemVisitedText] = {SkColorSetRGB(0x55, 0x1A, 0x8B)};
   if (dark_mode) {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0x6B, 0x6B, 0x6B)};
     mixer[kColorCssSystemBtnText] = {SK_ColorWHITE};
+    mixer[kColorCssSystemField] = {SkColorSetRGB(0x3B, 0x3B, 0x3B)};
+    mixer[kColorCssSystemFieldText] = {SK_ColorWHITE};
     mixer[kColorCssSystemMenuHilight] = {SkColorSetRGB(0x80, 0x00, 0x80)};
     mixer[kColorCssSystemScrollbar] = {SkColorSetRGB(0x12, 0x12, 0x12)};
     mixer[kColorCssSystemWindow] = {SkColorSetRGB(0x12, 0x12, 0x12)};
@@ -735,6 +757,8 @@ void CompleteDefaultCssSystemColorDefinition(ui::ColorMixer& mixer,
   } else {
     mixer[kColorCssSystemBtnFace] = {SkColorSetRGB(0xEF, 0xEF, 0xEF)};
     mixer[kColorCssSystemBtnText] = {SK_ColorBLACK};
+    mixer[kColorCssSystemField] = {SK_ColorWHITE};
+    mixer[kColorCssSystemFieldText] = {SK_ColorBLACK};
     mixer[kColorCssSystemMenuHilight] = {SK_ColorBLACK};
     mixer[kColorCssSystemScrollbar] = {SK_ColorWHITE};
     mixer[kColorCssSystemWindow] = {SK_ColorWHITE};

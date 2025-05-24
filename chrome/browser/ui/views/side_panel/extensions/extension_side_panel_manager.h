@@ -20,7 +20,10 @@ class SidePanelRegistry;
 
 namespace content {
 class BrowserContext;
-class WebContents;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace extensions {
@@ -36,7 +39,7 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
  public:
   ExtensionSidePanelManager(Browser* browser, SidePanelRegistry* registry);
   ExtensionSidePanelManager(Profile* profile,
-                            content::WebContents* web_contents,
+                            tabs::TabInterface* tab_interface,
                             SidePanelRegistry* tab_registry);
 
   ExtensionSidePanelManager(const ExtensionSidePanelManager&) = delete;
@@ -60,9 +63,6 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // Called when the tab is about to be discarded.
-  void WillDiscard();
-
  private:
   // Creates an ExtensionSidePanelCoordinator for `extension` and adds it to
   // `coordinators_` if the extension is capable of hosting side panel content.
@@ -84,15 +84,10 @@ class ExtensionSidePanelManager : public ExtensionRegistryObserver {
   // The profile associated with either `browser_` or `web_contents_`.
   raw_ptr<Profile> profile_;
 
-  // The browser that this class is associated with, through its user data. An
-  // instance of this class can only be associated with/in the user data of a
-  // single browser or WebContents, not both at once. Only one of `browser_` or
-  // `web_contents_` should be defined.
+  // The browser or tab that this class is associated with. Only one of
+  // `browser_` or `tab_interface_` should be defined.
   raw_ptr<Browser> browser_;
-
-  // The tab-based WebContents that this class is associated with, through its
-  // user data.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<tabs::TabInterface> tab_interface_;
 
   // The SidePanelRegistry that lives in the same user data that an instance of
   // this class lives in. Owns all extension entries managed by `coordinators_`.

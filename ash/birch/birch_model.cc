@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_icon_cache.h"
@@ -16,12 +17,14 @@
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_ranker.h"
 #include "ash/birch/birch_weather_provider.h"
+#include "ash/birch/coral_item_remover.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -66,12 +69,12 @@ BirchModel::BirchModel()
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
       weather_data_(prefs::kBirchUseWeather, "Weather"),
       coral_data_(prefs::kBirchUseCoral, "Coral"),
-      icon_cache_(std::make_unique<BirchIconCache>()) {
-  if (features::IsBirchWeatherEnabled()) {
-    weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
-  }
-  if (features::IsBirchCoralEnabled()) {
-    coral_provider_ = std::make_unique<BirchCoralProvider>(this);
+      icon_cache_(std::make_unique<BirchIconCache>()),
+      weather_provider_(std::make_unique<BirchWeatherProvider>(this)) {
+  if (features::IsCoralFeatureEnabled()) {
+    auto coral_provider = std::make_unique<BirchCoralProvider>();
+    coral_provider->AddObserver(this);
+    coral_provider_ = std::move(coral_provider);
   }
   Shell::Get()->session_controller()->AddObserver(this);
   SimpleGeolocationProvider::GetInstance()->AddObserver(this);
@@ -98,7 +101,7 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseLostMedia, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
-  // TODO(yulunwu): Change this to false once there is a way to opt-in.
+  // TODO(zxdan): Change this to false once there is a way to opt-in.
   registry->RegisterBooleanPref(prefs::kBirchUseCoral, true);
   // NOTE: If you add a pref here, also update birch_browsertest.cc and
   // birch_model_unittest.cc which have code that disables all prefs.
@@ -298,6 +301,11 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
   MaybeRespondToDataFetchRequest();
 }
 
+CoralItemRemover* BirchModel::GetCoralItemRemoverForTest() {
+  return static_cast<BirchCoralProvider*>(coral_provider_.get())
+      ->GetCoralItemRemoverForTest();
+}
+
 std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   if (!IsItemRemoverInitialized()) {
     // With no initialized item remover, return an empty list of items to avoid
@@ -465,7 +473,8 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
           std::make_unique<BirchReleaseNotesItem>(release_notes_item));
     }
   }
-  if (prefs->GetBoolean(prefs::kBirchUseCoral)) {
+
+  if (prefs->GetBoolean(prefs::kBirchUseCoral) && coral_data_.is_fresh) {
     for (auto& coral_item : coral_data_.items) {
       all_items.push_back(std::make_unique<BirchCoralItem>(coral_item));
     }
@@ -531,6 +540,12 @@ void BirchModel::RemoveItem(BirchItem* item) {
       birch_client_->RemoveFileItemFromLauncher(file_item->file_path());
     }
   }
+
+  // Coral items must be filtered in `BirchCoralProvider`.
+  if (item->GetType() == BirchItemType::kCoral) {
+    BirchCoralProvider::Get()->RemoveGroup(
+        static_cast<BirchCoralItem*>(item)->group_id());
+  }
 }
 
 void BirchModel::SetLostMediaDataChangedCallback(
@@ -582,6 +597,23 @@ void BirchModel::OnGeolocationPermissionChanged(bool enabled) {
   if (!enabled) {
     weather_data_.items.clear();
     weather_data_.is_fresh = false;
+  }
+}
+
+void BirchModel::OnCoralGroupRemoved(const base::Token& group_id) {
+  std::erase_if(coral_data_.items, [&group_id](const BirchCoralItem& item) {
+    return item.group_id() == group_id;
+  });
+}
+
+void BirchModel::OnCoralGroupTitleUpdated(const base::Token& group_id,
+                                          const std::string& title) {
+  auto it = std::find_if(coral_data_.items.begin(), coral_data_.items.end(),
+                         [&group_id](const BirchCoralItem& item) {
+                           return item.group_id() == group_id;
+                         });
+  if (it != coral_data_.items.end() && !title.empty()) {
+    it->set_title(base::UTF8ToUTF16(title));
   }
 }
 

@@ -23,7 +23,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -55,8 +55,8 @@ sk_sp<PaintFilter> FETile::CreateImageFilter() {
                                      std::move(input));
 }
 
-WTF::TextStream& FETile::ExternalRepresentation(WTF::TextStream& ts,
-                                                int indent) const {
+StringBuilder& FETile::ExternalRepresentation(StringBuilder& ts,
+                                              wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feTile";
   FilterEffect::ExternalRepresentation(ts);

@@ -16,7 +16,7 @@ namespace {
 
 class DummySharedURLLoaderFactory : public network::SharedURLLoaderFactory {
  public:
-  DummySharedURLLoaderFactory() {}
+  DummySharedURLLoaderFactory() = default;
 
   // network::URLLoaderFactory implementation:
   void CreateLoaderAndStart(
@@ -34,13 +34,12 @@ class DummySharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // network::PendingSharedURLLoaderFactory implementation
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
  private:
@@ -61,7 +60,7 @@ TestBlocklistStateFetcher::TestBlocklistStateFetcher(
   fetcher_->url_loader_factory_ = url_loader_factory_.get();
 }
 
-TestBlocklistStateFetcher::~TestBlocklistStateFetcher() {}
+TestBlocklistStateFetcher::~TestBlocklistStateFetcher() = default;
 
 void TestBlocklistStateFetcher::SetBlocklistVerdict(
     const std::string& id,

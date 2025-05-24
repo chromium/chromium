@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.autofill;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.AddressNormalizer;
 
 /** Provides access to AddressNormalizer with the necessary //chrome dependencies. */
+@NullMarked
 @JNINamespace("autofill")
 public class AddressNormalizerFactory {
     private AddressNormalizerFactory() {}

@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 
 #include "base/notreached.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_device_orientation_permission_state.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -89,8 +89,8 @@ void DeviceOrientationController::DidAddEventListener(
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
-            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
-             mojom::blink::PermissionsPolicyFeature::kGyroscope})) {
+            {network::mojom::PermissionsPolicyFeature::kAccelerometer,
+             network::mojom::PermissionsPolicyFeature::kGyroscope})) {
       LogToConsolePolicyFeaturesDisabled(*GetWindow().GetFrame(),
                                          EventTypeName());
       return;
@@ -180,8 +180,8 @@ void DeviceOrientationController::RegisterWithOrientationEventPump(
   orientation_event_pump_->SetController(this);
 }
 
-ScriptPromise<V8DeviceOrientationPermissionState>
-DeviceOrientationController::RequestPermission(ScriptState* script_state) {
+ScriptPromise<V8PermissionState> DeviceOrientationController::RequestPermission(
+    ScriptState* script_state) {
   ExecutionContext* context = GetSupplementable();
   DCHECK_EQ(context, ExecutionContext::From(script_state));
 
@@ -193,29 +193,27 @@ DeviceOrientationController::RequestPermission(ScriptState* script_state) {
                                    context->GetTaskRunner(TaskType::kSensor)));
   }
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<V8DeviceOrientationPermissionState>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8PermissionState>>(
+          script_state);
   auto promise = resolver->Promise();
 
   permission_service_->HasPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolver<V8DeviceOrientationPermissionState>*
-                 resolver,
-             mojom::blink::PermissionStatus status) {
+      resolver->WrapCallbackInScriptScope(
+          WTF::BindOnce([](ScriptPromiseResolver<V8PermissionState>* resolver,
+                           mojom::blink::PermissionStatus status) {
             switch (status) {
               case mojom::blink::PermissionStatus::GRANTED:
               case mojom::blink::PermissionStatus::DENIED:
-                resolver->Resolve(*V8DeviceOrientationPermissionState::Create(
-                    PermissionStatusToString(status)));
+                resolver->Resolve(ToV8PermissionState(status));
                 break;
               case mojom::blink::PermissionStatus::ASK:
                 // At the moment, this state is not reachable because there
                 // is no "ask" or "prompt" state in the Chromium
                 // permissions UI for sensors, so HasPermissionStatus() will
                 // always return GRANTED or DENIED.
-                NOTREACHED_IN_MIGRATION();
-                break;
+                NOTREACHED();
             }
           })));
 

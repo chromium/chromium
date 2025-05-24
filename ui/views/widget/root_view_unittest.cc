@@ -18,10 +18,13 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
@@ -31,6 +34,8 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "base/test/scoped_feature_list.h"
+#include "ui/accessibility/accessibility_features.h"
 #endif
 
 namespace views::test {
@@ -47,8 +52,9 @@ class RootViewTestState {
                              RootViewTestStateInit init = {}) {
     Widget::InitParams init_params = delegate->CreateParams(
         Widget::InitParams::CLIENT_OWNS_WIDGET, init.type);
-    if (init.bounds != gfx::Rect())
+    if (init.bounds != gfx::Rect()) {
       init_params.bounds = init.bounds;
+    }
     widget_.Init(std::move(init_params));
     widget_.Show();
     widget_.SetContentsView(std::make_unique<View>());
@@ -136,18 +142,21 @@ class TestContextMenuController : public ContextMenuController {
 
   int show_context_menu_calls() const { return show_context_menu_calls_; }
   View* menu_source_view() const { return menu_source_view_; }
-  ui::MenuSourceType menu_source_type() const { return menu_source_type_; }
+  ui::mojom::MenuSourceType menu_source_type() const {
+    return menu_source_type_;
+  }
 
   void Reset() {
     show_context_menu_calls_ = 0;
     menu_source_view_ = nullptr;
-    menu_source_type_ = ui::MENU_SOURCE_NONE;
+    menu_source_type_ = ui::mojom::MenuSourceType::kNone;
   }
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
     show_context_menu_calls_++;
     menu_source_view_ = source;
     menu_source_type_ = source_type;
@@ -156,7 +165,8 @@ class TestContextMenuController : public ContextMenuController {
  private:
   int show_context_menu_calls_ = 0;
   raw_ptr<View> menu_source_view_ = nullptr;
-  ui::MenuSourceType menu_source_type_ = ui::MENU_SOURCE_NONE;
+  ui::mojom::MenuSourceType menu_source_type_ =
+      ui::mojom::MenuSourceType::kNone;
 };
 
 // Tests that context menus are shown for certain key events (Shift+F10
@@ -182,7 +192,7 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   EXPECT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(0, controller.show_context_menu_calls());
   EXPECT_EQ(nullptr, controller.menu_source_view());
-  EXPECT_EQ(ui::MENU_SOURCE_NONE, controller.menu_source_type());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kNone, controller.menu_source_type());
   controller.Reset();
 
   // A context menu should be shown for a keypress of Shift+F10.
@@ -193,7 +203,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   EXPECT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, controller.show_context_menu_calls());
   EXPECT_EQ(focused_view, controller.menu_source_view());
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, controller.menu_source_type());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            controller.menu_source_type());
   controller.Reset();
 
   // A context menu should be shown for a keypress of VKEY_APPS.
@@ -204,7 +215,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   EXPECT_FALSE(details.dispatcher_destroyed);
   EXPECT_EQ(1, controller.show_context_menu_calls());
   EXPECT_EQ(focused_view, controller.menu_source_view());
-  EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, controller.menu_source_type());
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
+            controller.menu_source_type());
   controller.Reset();
 #endif
 }
@@ -252,10 +264,12 @@ TEST_F(RootViewTest, EventHandlersResetWhenDeleted) {
   View* event_handler = state.AddChildView(std::make_unique<View>());
   root_view->SetMouseAndGestureHandler(event_handler);
   ASSERT_EQ(event_handler, root_view->gesture_handler_for_testing());
+  ASSERT_EQ(event_handler, root_view->mouse_pressed_handler_for_testing());
 
   // Delete the child and expect that there is no longer a mouse handler.
   root_view->GetContentsView()->RemoveChildViewT(event_handler);
   EXPECT_EQ(nullptr, root_view->gesture_handler_for_testing());
+  EXPECT_EQ(nullptr, root_view->mouse_pressed_handler_for_testing());
 }
 
 TEST_F(RootViewTest, EventHandlersNotResetWhenReparented) {
@@ -270,7 +284,7 @@ TEST_F(RootViewTest, EventHandlersNotResetWhenReparented) {
   // Reparent the child within the hierarchy and expect that it's still the
   // mouse handler.
   View* other_parent = state.AddChildView(std::make_unique<View>());
-  other_parent->AddChildView(event_handler);
+  other_parent->AddChildViewRaw(event_handler);
   EXPECT_EQ(event_handler, root_view->gesture_handler_for_testing());
 }
 
@@ -345,11 +359,11 @@ TEST_F(RootViewTest, ContextMenuFromLongPress) {
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));
-  parent_view->AddChildView(gesture_handling_child_view);
+  parent_view->AddChildViewRaw(gesture_handling_child_view);
 
   View* other_child_view = new View;
   other_child_view->SetBoundsRect(gfx::Rect(20, 0, 10, 10));
-  parent_view->AddChildView(other_child_view);
+  parent_view->AddChildViewRaw(other_child_view);
 
   // |parent_view| should not show a context menu as a result of a long press on
   // |gesture_handling_child_view|.
@@ -415,11 +429,11 @@ TEST_F(RootViewTest, ContextMenuFromLongPressOnDisabledView) {
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));
-  parent_view->AddChildView(gesture_handling_child_view);
+  parent_view->AddChildViewRaw(gesture_handling_child_view);
 
   View* other_child_view = new View;
   other_child_view->SetBoundsRect(gfx::Rect(20, 0, 10, 10));
-  parent_view->AddChildView(other_child_view);
+  parent_view->AddChildViewRaw(other_child_view);
 
   // |parent_view| should not show a context menu as a result of a long press on
   // |gesture_handling_child_view|.
@@ -486,8 +500,9 @@ class DeleteViewOnEvent : public View {
   ~DeleteViewOnEvent() override { *was_destroyed_ = true; }
 
   void OnEvent(ui::Event* event) override {
-    if (event->type() == delete_event_type_)
+    if (event->type() == delete_event_type_) {
       delete this;
+    }
   }
 
  private:
@@ -514,8 +529,9 @@ class RemoveViewOnEvent : public View {
   RemoveViewOnEvent& operator=(const RemoveViewOnEvent&) = delete;
 
   void OnEvent(ui::Event* event) override {
-    if (event->type() == remove_event_type_)
+    if (event->type() == remove_event_type_) {
       parent()->RemoveChildView(this);
+    }
   }
 
  private:
@@ -634,7 +650,7 @@ TEST_F(RootViewTest, RemoveViewOnMouseEnterDispatch) {
   // to prevent test memory leak.
   RemoveViewOnEvent child(ui::EventType::kMouseEntered);
 
-  content->AddChildView(&child);
+  content->AddChildViewRaw(&child);
 
   // Make |child| smaller than the containing Widget and RootView.
   child.SetBounds(100, 100, 100, 100);
@@ -850,7 +866,6 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatchFromChild) {
   EXPECT_FALSE(widget_deletion_observer.IsWidgetAlive());
 }
 
-namespace {
 class RootViewTestDialogDelegate : public DialogDelegateView {
  public:
   RootViewTestDialogDelegate() {
@@ -883,14 +898,13 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
 
   int layout_count_ = 0;
 };
-}  // namespace
 
 // Ensure only one layout happens during Widget initialization, and ensure it
 // happens at the ContentView's preferred size.
 TEST_F(RootViewTest, SingleLayoutDuringInit) {
   RootViewTestDialogDelegate* delegate = new RootViewTestDialogDelegate();
-  Widget* widget =
-      DialogDelegate::CreateDialogWidget(delegate, GetContext(), nullptr);
+  Widget* widget = DialogDelegate::CreateDialogWidget(delegate, GetContext(),
+                                                      gfx::NativeView());
   EXPECT_EQ(1, delegate->layout_count());
   widget->CloseNow();
 }
@@ -900,10 +914,22 @@ using RootViewDesktopNativeWidgetTest = ViewsTestWithDesktopNativeWidget;
 // Also test Aura desktop Widget codepaths.
 TEST_F(RootViewDesktopNativeWidgetTest, SingleLayoutDuringInit) {
   RootViewTestDialogDelegate* delegate = new RootViewTestDialogDelegate();
-  Widget* widget =
-      DialogDelegate::CreateDialogWidget(delegate, GetContext(), nullptr);
+  Widget* widget = DialogDelegate::CreateDialogWidget(delegate, GetContext(),
+                                                      gfx::NativeView());
   EXPECT_EQ(1, delegate->layout_count());
   widget->CloseNow();
+}
+
+TEST_F(RootViewTest, UpdateAccessibleURL) {
+  RootViewTestState state(this, {.bounds = {100, 100, 100, 100}});
+  internal::RootView* root_view = state.GetRootView();
+  const GURL test_url("https://example.com");
+  root_view->UpdateAccessibleURL(test_url);
+
+  ui::AXNodeData node_data;
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetStringAttribute(ax::mojom::StringAttribute::kUrl),
+            test_url);
 }
 
 #if !BUILDFLAG(IS_MAC)
@@ -934,6 +960,7 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
 #else
   EXPECT_EQ(node_data.role, ax::mojom::Role::kAlert);
 #endif
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
 
   const std::u16string kPoliteText = u"Something polite";
   root_view->AnnounceTextAs(kPoliteText,
@@ -943,11 +970,11 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
   EXPECT_EQ(kPoliteText,
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   hidden_polite_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  ASSERT_TRUE(node_data.HasStringAttribute(
+  EXPECT_TRUE(node_data.HasStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveStatus));
   const std::string& val = node_data.GetStringAttribute(
       ax::mojom::StringAttribute::kContainerLiveStatus);
-  ASSERT_EQ("polite", val);
+  EXPECT_EQ("polite", val);
 
 #if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(node_data.role, ax::mojom::Role::kStaticText);
@@ -956,6 +983,16 @@ TEST_F(RootViewTest, AnnounceTextAsTest) {
 #else
   EXPECT_EQ(node_data.role, ax::mojom::Role::kStatus);
 #endif
+
+  EXPECT_TRUE(
+      node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kLiveAtomic));
+  EXPECT_EQ("polite", node_data.GetStringAttribute(
+                          ax::mojom::StringAttribute::kLiveStatus));
+  EXPECT_EQ("additions text", node_data.GetStringAttribute(
+                                  ax::mojom::StringAttribute::kLiveRelevant));
+  EXPECT_EQ("additions text",
+            node_data.GetStringAttribute(
+                ax::mojom::StringAttribute::kContainerLiveRelevant));
 }
 
 #endif  // !BUILDFLAG(IS_MAC)
@@ -977,9 +1014,9 @@ TEST_F(RootViewTest, MouseEventDispatchedToClosestEnabledView) {
   v2->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
   v3->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
 
-  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
-  v2->set_handle_mode(EventCountView::CONSUME_EVENTS);
-  v3->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
+  v2->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
+  v3->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
 
   ui::MouseEvent pressed_event(ui::EventType::kMousePressed, gfx::Point(5, 5),
                                gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
@@ -1028,19 +1065,19 @@ TEST_F(RootViewTest, DoubleClickHandledIffFirstClickHandled) {
                                 gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
 
   // First click handled, second click unhandled.
-  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kConsumeEvents);
   pressed_event.SetClickCount(1);
   released_event.SetClickCount(1);
   EXPECT_TRUE(root_view->OnMousePressed(pressed_event));
   root_view->OnMouseReleased(released_event);
-  v1->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kPropagateEvents);
   pressed_event.SetClickCount(2);
   released_event.SetClickCount(2);
   EXPECT_TRUE(root_view->OnMousePressed(pressed_event));
   root_view->OnMouseReleased(released_event);
 
   // Both clicks unhandled.
-  v1->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  v1->set_handle_mode(EventCountView::HandleMode::kPropagateEvents);
   pressed_event.SetClickCount(1);
   released_event.SetClickCount(1);
   EXPECT_FALSE(root_view->OnMousePressed(pressed_event));
@@ -1058,6 +1095,72 @@ TEST_F(RootViewTest, AccessibleProperties) {
   ui::AXNodeData data;
   root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+}
+
+TEST_F(RootViewTest, AccessibleName) {
+  RootViewTestState state(this);
+  internal::RootView* root_view = state.GetRootView();
+
+  ui::AXNodeData data;
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            state.widget()->widget_delegate()->GetAccessibleWindowTitle());
+
+  state.widget()->widget_delegate()->SetTitle(u"Sample Title");
+
+  data = ui::AXNodeData();
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            state.widget()->widget_delegate()->GetAccessibleWindowTitle());
+
+  state.widget()->widget_delegate()->SetAccessibleTitle(
+      u"Sample Accessible Title");
+
+  data = ui::AXNodeData();
+  root_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            state.widget()->widget_delegate()->GetAccessibleWindowTitle());
+}
+
+TEST_F(RootViewTest, AccessibleNameChangeEvent) {
+  RootViewTestState state(this);
+  internal::RootView* root_view = state.GetRootView();
+
+  // TODO (crbug.com/380927771). Once VoiceOver has incorporated the name
+  // change event, remove all Mac specific code.
+
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList feature_list{
+      ::features::kBlockRootWindowAccessibleNameChangeEvent};
+#endif
+
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+
+  state.widget()->widget_delegate()->SetTitle(u"Sample Title");
+#if BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(::features::IsBlockRootWindowAccessibleNameChangeEventEnabled());
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  base::test::ScopedFeatureList disable_feature_list;
+  disable_feature_list.InitWithFeatures(
+      {}, {::features::kBlockRootWindowAccessibleNameChangeEvent});
+#endif
+
+  state.widget()->widget_delegate()->SetAccessibleTitle(
+      u"Sample Accessible Title");
+
+#if BUILDFLAG(IS_MAC)
+  EXPECT_FALSE(::features::IsBlockRootWindowAccessibleNameChangeEventEnabled());
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(2, counter.GetCount(ax::mojom::Event::kTextChanged, root_view));
+#endif
 }
 
 }  // namespace views::test

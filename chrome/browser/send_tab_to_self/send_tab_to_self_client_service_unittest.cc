@@ -22,7 +22,7 @@ namespace {
 class TestReceivingUiHandler : public ReceivingUiHandler {
  public:
   TestReceivingUiHandler() = default;
-  ~TestReceivingUiHandler() override {}
+  ~TestReceivingUiHandler() override = default;
 
   void DisplayNewEntries(
       const std::vector<const SendTabToSelfEntry*>& new_entries) override {
@@ -33,56 +33,18 @@ class TestReceivingUiHandler : public ReceivingUiHandler {
 
   size_t number_displayed_entries() const { return number_displayed_entries_; }
 
-  const Profile* profile() const override { return nullptr; }
-
  private:
   size_t number_displayed_entries_ = 0;
-};
-
-// A test SendTabToSelfClientService that exposes the TestReceivingUiHandler.
-class TestSendTabToSelfClientService : public SendTabToSelfClientService {
- public:
-  explicit TestSendTabToSelfClientService(SendTabToSelfModel* model)
-      : SendTabToSelfClientService(nullptr, model) {}
-
-  ~TestSendTabToSelfClientService() override = default;
-
-  void SetupHandlerRegistry(Profile* profile) override {}
-
-  TestReceivingUiHandler* SetupTestHandler() {
-    test_handlers_.clear();
-    std::unique_ptr<TestReceivingUiHandler> handler =
-        std::make_unique<TestReceivingUiHandler>();
-    TestReceivingUiHandler* handler_ptr = handler.get();
-    test_handlers_.push_back(std::move(handler));
-    return handler_ptr;
-  }
-
-  // This copies the SendTabToSelfClientService implementation without a cast to
-  // DesktopNotificationHandler on desktop platforms. See notes in that file.
-  void EntriesAddedRemotely(
-      const std::vector<const SendTabToSelfEntry*>& new_entries) override {
-    for (const std::unique_ptr<ReceivingUiHandler>& handler : GetHandlers()) {
-      handler->DisplayNewEntries(new_entries);
-    }
-  }
-
-  const std::vector<std::unique_ptr<ReceivingUiHandler>>& GetHandlers()
-      const override {
-    return test_handlers_;
-  }
-
- protected:
-  std::vector<std::unique_ptr<ReceivingUiHandler>> test_handlers_;
 };
 
 // Tests that the UI handlers gets notified of each entries that were added
 // remotely.
 TEST(SendTabToSelfClientServiceTest, MultipleEntriesAdded) {
   // Set up the test objects.
-  TestSendTabToSelfModel test_model_;
-  TestSendTabToSelfClientService client_service(&test_model_);
-  TestReceivingUiHandler* test_handler = client_service.SetupTestHandler();
+  TestSendTabToSelfModel test_model;
+  TestReceivingUiHandler* test_handler = new TestReceivingUiHandler();
+  SendTabToSelfClientService client_service(
+      std::unique_ptr<TestReceivingUiHandler>(test_handler), &test_model);
 
   // Create 2 entries and simulated that they were both added remotely.
   SendTabToSelfEntry entry1("a", GURL("http://www.example-a.com"), "a site",

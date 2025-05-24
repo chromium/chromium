@@ -306,9 +306,9 @@ MetricsPrivateGetHistogramFunction::GetHistogram(const std::string& name) {
 
   for (std::unique_ptr<base::SampleCountIterator> it = samples->Iterator();
        !it->Done(); it->Next()) {
-    base::HistogramBase::Sample min = 0;
+    base::HistogramBase::Sample32 min = 0;
     int64_t max = 0;
-    base::HistogramBase::Count count = 0;
+    base::HistogramBase::Count32 count = 0;
     it->Get(&min, &max, &count);
 
     api::metrics_private::HistogramBucket bucket;

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -245,8 +245,9 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
                        std::move(callback)));
   }
 
-  void ApplyDeferredUpdate(bool shutdown_after_update,
-                           base::OnceClosure failure_callback) override {
+  void ApplyDeferredUpdateAdvanced(
+      bool shutdown_after_update,
+      base::OnceClosure failure_callback) override {
     update_engine::ApplyUpdateConfig config;
     config.set_done_action(shutdown_after_update
                                ? update_engine::UpdateDoneAction::SHUTDOWN
@@ -265,7 +266,7 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
 
     update_engine_proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&UpdateEngineClientImpl::OnApplyDeferredUpdate,
+        base::BindOnce(&UpdateEngineClientImpl::OnApplyDeferredUpdateAdvanced,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(failure_callback)));
   }
@@ -547,11 +548,12 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     std::move(callback).Run(success);
   }
 
-  // Called when a response for `ApplyDeferredUpdate()` is received.
-  void OnApplyDeferredUpdate(base::OnceClosure failure_callback,
-                             dbus::Response* response) {
+  // Called when a response for `ApplyDeferredUpdateAdvanced()` is received.
+  void OnApplyDeferredUpdateAdvanced(base::OnceClosure failure_callback,
+                                     dbus::Response* response) {
     if (!response) {
-      LOG(ERROR) << update_engine::kApplyDeferredUpdate << " call failed.";
+      LOG(ERROR) << update_engine::kApplyDeferredUpdateAdvanced
+                 << " call failed.";
       std::move(failure_callback).Run();
       return;
     }
@@ -705,9 +707,10 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
     std::move(callback).Run(std::nullopt);
   }
 
-  void ApplyDeferredUpdate(bool shutdown_after_update,
-                           base::OnceClosure failure_callback) override {
-    VLOG(1) << "Applying deferred update and "
+  void ApplyDeferredUpdateAdvanced(
+      bool shutdown_after_update,
+      base::OnceClosure failure_callback) override {
+    VLOG(1) << "Applying deferred update advanced and "
             << (shutdown_after_update ? "shutdown." : "reboot.");
   }
 
@@ -751,7 +754,7 @@ class UpdateEngineClientDesktopFake : public UpdateEngineClient {
         next_operation = update_engine::Operation::UPDATED_NEED_REBOOT;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     last_status_.set_current_operation(next_operation);
     for (auto& observer : observers_)

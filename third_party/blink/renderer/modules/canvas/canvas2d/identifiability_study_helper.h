@@ -53,7 +53,7 @@ enum class CanvasOps {
   kRect,
   // Path2D operations.
   kAddPath,
-  // BaseRenderingContext2D methods.
+  // Canvas2DRecorderContext methods.
   kSetStrokeStyle,
   kSetFillStyle,
   kSetLineWidth,
@@ -222,7 +222,7 @@ class IdentifiabilityStudyHelper final {
   bool encountered_partially_digested_image_ = false;
 
   std::array<int64_t, 8> partial_;
-  int position_ = 0;
+  wtf_size_t position_ = 0;
   uint64_t chaining_value_ = IdentifiableTokenBuilder::kChainingValueSeed;
 };
 

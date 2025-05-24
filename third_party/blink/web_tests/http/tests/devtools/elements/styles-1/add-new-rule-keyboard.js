@@ -18,7 +18,7 @@ import * as UIModule from 'devtools/ui/legacy/legacy.js';
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', next);
 
   async function next() {
-    await ElementsModule.StylesSidebarPane.StylesSidebarPane.instance().createNewRuleInViaInspectorStyleSheet();
+    await ElementsModule.ElementsPanel.ElementsPanel.instance().stylesWidget.createNewRuleInViaInspectorStyleSheet();
     eventSender.keyDown('Tab');
     await TestRunner.addSnifferPromise(ElementsModule.StylePropertiesSection.StylePropertiesSection.prototype, 'editingSelectorCommittedForTest');
 

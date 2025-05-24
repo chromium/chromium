@@ -69,7 +69,7 @@ class PrefWatcher : public KeyedService,
   mojo::RemoteSet<blink::mojom::RendererPreferenceWatcher>
       renderer_preference_watchers_;
 
-    base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
+  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
 };
 

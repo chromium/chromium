@@ -1,0 +1,12 @@
+<html>
+  <body>
+  </body>
+  <script src="prerender-test-setup.js"></script>
+  <script>
+    navigator.sendBeacon("/beacon");
+
+    document.addEventListener('prerenderingchange', () => {
+      navigator.sendBeacon('/beacon-prerenderingchange');
+    });
+  </script>
+</html>

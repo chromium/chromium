@@ -63,8 +63,8 @@ suite('NewTabPageDoodleShareDialogTest', () => {
       doodleShareDialog.url = {url: 'https://bar.com'};
 
       // Act.
-      doodleShareDialog.shadowRoot!.querySelector<HTMLElement>(
-                                       `#${buttonId}`)!.click();
+      doodleShareDialog.shadowRoot.querySelector<HTMLElement>(
+                                      `#${buttonId}`)!.click();
 
       // Assert.
       const openedUrl = await windowProxy.whenCalled('open');
@@ -87,7 +87,7 @@ suite('NewTabPageDoodleShareDialogTest', () => {
         `mailto:?subject=foo&body=${encodeURIComponent('https://bar.com')}`);
   });
 
-  test('clicking done closes dialog', async () => {
+  test('clicking done closes dialog', () => {
     // Act.
     doodleShareDialog.$.doneButton.click();
 

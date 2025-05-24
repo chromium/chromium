@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("sharesheet") {
   sources = [
@@ -15,10 +15,10 @@ static_library("sharesheet") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
     "//content/public/browser",
   ]
@@ -31,10 +31,10 @@ source_set("unit_tests") {
 
   deps = [
     ":sharesheet",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

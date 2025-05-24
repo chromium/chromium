@@ -41,24 +41,3 @@ component("init") {
     deps += [ "//gpu/vulkan/mac" ]
   }
 }
-
-component("skia") {
-  output_name = "vulkan_init_skia"
-
-  sources = [
-    "skia_vk_memory_allocator_impl.cc",
-    "skia_vk_memory_allocator_impl.h",
-  ]
-
-  defines = [ "IS_VULKAN_INIT_IMPL" ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  public_deps = [
-    "//base",
-    "//gpu/vulkan",
-    "//skia",
-  ]
-
-  deps = [ "//third_party/vulkan_memory_allocator" ]
-}

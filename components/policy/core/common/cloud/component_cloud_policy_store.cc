@@ -126,7 +126,7 @@ const std::string& ComponentCloudPolicyStore::GetCachedHash(
 }
 
 void ComponentCloudPolicyStore::SetCredentials(const std::string& username,
-                                               const std::string& gaia_id,
+                                               const GaiaId& gaia_id,
                                                const std::string& dm_token,
                                                const std::string& device_id,
                                                const std::string& public_key,

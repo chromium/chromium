@@ -12,13 +12,13 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/service_provider_config.h"
 #include "components/url_matcher/url_matcher.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/browser/browser_context.h"
 #endif
 
@@ -28,7 +28,7 @@ class FileSystemURL;
 
 namespace enterprise_connectors {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class SourceDestinationMatcherAsh;
 #endif
 
@@ -47,7 +47,7 @@ class AnalysisServiceSettings {
       const GURL& url,
       DataRegion data_region) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<AnalysisSettings> GetAnalysisSettings(
       content::BrowserContext* context,
       const storage::FileSystemURL& source_url,
@@ -113,7 +113,7 @@ class AnalysisServiceSettings {
                              bool enabled,
                              base::MatcherStringPattern::ID* id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Updates the states of `source_destination_matcher_`,
   // `enabled_patterns_settings_` and/or `disabled_patterns_settings_` from a
   // policy value.
@@ -121,7 +121,7 @@ class AnalysisServiceSettings {
       const base::Value::Dict& source_destination_settings_value,
       bool enabled,
       base::MatcherStringPattern::ID* id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Return tags found in |enabled_patterns_settings| corresponding to the
   // matches while excluding the ones in |disable_patterns_settings|.
@@ -139,11 +139,11 @@ class AnalysisServiceSettings {
   // obtain URL-specific settings.
   std::unique_ptr<url_matcher::URLMatcher> matcher_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // A matcher to identify matching pairs of sources and destinations.
   // Set for ChromeOS' OnFileTransferEnterpriseConnector.
   std::unique_ptr<SourceDestinationMatcherAsh> source_destination_matcher_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // These members map URL patterns to corresponding settings.  If an entry in
   // the "enabled" or "disabled" lists contains more than one pattern in its

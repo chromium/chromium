@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] navigator.credentials.get() consumes user activation.
+  assert_false: User activation should be consumed after navigator.credentials.get(). expected false got true
+[FAIL] navigator.credentials.create() calling the API without user activation should reject with NotAllowedError.
+  assert_false: User activation should not be active expected false got true
+[FAIL] navigator.credentials.create() consumes user activation.
+  assert_false: User activation should be consumed after navigator.credentials.create(). expected false got true
+Harness: the test ran to completion.
+

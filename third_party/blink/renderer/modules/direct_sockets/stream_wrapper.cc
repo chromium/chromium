@@ -32,21 +32,20 @@ class ForwardingUnderlyingSource : public UnderlyingSourceBase {
       : UnderlyingSourceBase(readable_stream_wrapper->GetScriptState()),
         readable_stream_wrapper_(readable_stream_wrapper) {}
 
-  ScriptPromiseUntyped Start(ScriptState* script_state,
-                             ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
     readable_stream_wrapper_->SetController(Controller());
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState&) override {
     readable_stream_wrapper_->Pull();
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  ScriptPromiseUntyped Cancel(ScriptState* script_state,
-                              ScriptValue reason,
-                              ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel(ScriptState* script_state,
+                                     ScriptValue reason,
+                                     ExceptionState&) override {
     readable_stream_wrapper_->CloseStream();
     return ToResolvedUndefinedPromise(script_state);
   }
@@ -73,14 +72,13 @@ class ForwardingUnderlyingByteSource : public UnderlyingByteSourceBase {
     return ToResolvedUndefinedPromise(GetScriptState());
   }
 
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel() override {
     readable_stream_wrapper_->CloseStream();
     return ToResolvedUndefinedPromise(GetScriptState());
   }
 
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState& exception_state) override {
-    return Cancel(exception_state);
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
+    return Cancel();
   }
 
   ScriptState* GetScriptState() override {

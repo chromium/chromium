@@ -7,12 +7,12 @@
 #include <algorithm>
 #include <utility>
 
-#include "ash/components/arc/mojom/tts.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chromeos/ash/experiences/arc/mojom/tts.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tts_platform.h"
 
@@ -178,11 +178,6 @@ void TtsPlatformImplChromeOs::RefreshVoices() {
     return;
 
   tts->RefreshVoices();
-}
-
-content::ExternalPlatformDelegate*
-TtsPlatformImplChromeOs::GetExternalPlatformDelegate() {
-  return nullptr;
 }
 
 // static

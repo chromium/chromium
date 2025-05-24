@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {DragWrapper} from 'chrome://resources/js/drag_wrapper.js';
@@ -13,9 +13,7 @@ import {DragAndDropHandler} from './drag_and_drop_handler.js';
 import {getCss} from './drop_overlay.css.js';
 import {getHtml} from './drop_overlay.html.js';
 
-// TODO (rbpotter): Rename back to ExtensionsDropOverlayElement when .html.ts
-// files are checked in.
-export class DropOverlayElement extends CrLitElement {
+export class ExtensionsDropOverlayElement extends CrLitElement {
   static get is() {
     return 'extensions-drop-overlay';
   }
@@ -34,9 +32,8 @@ export class DropOverlayElement extends CrLitElement {
     };
   }
 
-  dragEnabled: boolean = false;
+  accessor dragEnabled: boolean = false;
   private dragWrapperHandler_: DragAndDropHandler;
-  private dragWrapper_: DragWrapper;
 
   constructor() {
     super();
@@ -57,7 +54,7 @@ export class DropOverlayElement extends CrLitElement {
       this.dispatchEvent(new CustomEvent(
           'load-error', {bubbles: true, composed: true, detail: e.detail}));
     });
-    this.dragWrapper_ = new DragWrapper(dragTarget, this.dragWrapperHandler_);
+    new DragWrapper(dragTarget, this.dragWrapperHandler_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -69,4 +66,5 @@ export class DropOverlayElement extends CrLitElement {
   }
 }
 
-customElements.define(DropOverlayElement.is, DropOverlayElement);
+customElements.define(
+    ExtensionsDropOverlayElement.is, ExtensionsDropOverlayElement);

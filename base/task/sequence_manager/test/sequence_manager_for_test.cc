@@ -6,8 +6,7 @@
 
 #include "base/task/sequence_manager/thread_controller_impl.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 namespace {
 
@@ -22,14 +21,16 @@ class ThreadControllerForTest : public internal::ThreadControllerImpl {
                              time_source) {}
 
   void AddNestingObserver(RunLoop::NestingObserver* observer) override {
-    if (!funneled_sequence_manager_)
+    if (!funneled_sequence_manager_) {
       return;
+    }
     ThreadControllerImpl::AddNestingObserver(observer);
   }
 
   void RemoveNestingObserver(RunLoop::NestingObserver* observer) override {
-    if (!funneled_sequence_manager_)
+    if (!funneled_sequence_manager_) {
       return;
+    }
     ThreadControllerImpl::RemoveNestingObserver(observer);
   }
 
@@ -98,5 +99,4 @@ size_t SequenceManagerForTest::QueuesToDeleteCount() const {
   return main_thread_only().queues_to_delete.size();
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

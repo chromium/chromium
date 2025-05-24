@@ -12,6 +12,8 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include <array>
+
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,7 +27,7 @@ static const uint16_t kGreenMask = 0x07E0;
 static const uint16_t kBlueMask = 0x001F;
 
 // Color palette in 565 format.
-static const uint16_t kPalette[] = {
+static const auto kPalette = std::to_array<uint16_t>({
     kGreenMask | kBlueMask,  // Cyan.
     kBlueMask | kRedMask,    // Magenta.
     kRedMask | kGreenMask,   // Yellow.
@@ -34,9 +36,11 @@ static const uint16_t kPalette[] = {
     kGreenMask,              // Green.
     kBlueMask,               // Blue.
     0xFFFF,                  // White.
-};
+});
 static const unsigned kBlockSize = 4;
-static const unsigned kPaletteSize = sizeof(kPalette) / sizeof(kPalette[0]);
+static const unsigned kPaletteSize =
+    (kPalette.size() * sizeof(decltype(kPalette)::value_type)) /
+    sizeof(kPalette[0]);
 static const unsigned kTextureWidth = kBlockSize * kPaletteSize;
 static const unsigned kTextureHeight = kBlockSize;
 
@@ -50,9 +54,8 @@ static const char* extension(GLenum format) {
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
       return "GL_ANGLE_texture_compression_dxt5";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 // Index that chooses the given colors (color_0 and color_1),
@@ -188,9 +191,8 @@ class CompressedTextureTest : public ::testing::TestWithParam<GLenum> {
       case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: return LoadTextureDXT3();
       case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: return LoadTextureDXT5();
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return 0;
   }
 
  private:

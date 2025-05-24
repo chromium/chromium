@@ -4,6 +4,7 @@
 
 #include "ash/multi_user/user_switch_animator.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "ash/multi_user/multi_user_window_manager_impl.h"
@@ -17,7 +18,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
@@ -79,7 +79,7 @@ class MaximizedWindowAnimationWatcher : public ui::ImplicitAnimationObserver {
 void PutMruWindowLast(
     std::vector<raw_ptr<aura::Window, VectorExperimental>>* window_list) {
   DCHECK(window_list);
-  auto it = base::ranges::find_if(*window_list, &wm::IsActiveWindow);
+  auto it = std::ranges::find_if(*window_list, &wm::IsActiveWindow);
   if (it == window_list->end())
     return;
   // Move the active window to the end of the list.

@@ -153,6 +153,25 @@ class CONTENT_EXPORT SiteInfo {
   static WebExposedIsolationLevel ComputeWebExposedIsolationLevelForEmptySite(
       const WebExposedIsolationInfo& web_exposed_isolation_info);
 
+  // A helper to determine whether a site requires a dedicated process, based on
+  // fields from SiteInfo. This takes the relevant bits individually so it's not
+  // necessary to create a SiteInfo first.
+  static bool RequiresDedicatedProcessInternal(
+      const GURL& site_url,
+      const IsolationContext& isolation_context,
+      BrowserContext* browser_context,
+      bool does_site_request_dedicated_process_for_coop,
+      bool requires_origin_keyed_process,
+      bool is_error_page,
+      bool is_sandboxed,
+      bool is_pdf);
+
+  // Exposes functionality of `GetSiteForURLInternal so tests can do effective
+  // URL translation.
+  static GURL GetSiteForURLForTest(const IsolationContext& isolation_context,
+                                   const UrlInfo& url_info,
+                                   bool should_use_effective_urls);
+
   // Initializes |storage_partition_config_| with a value appropriate for
   // |browser_context|.
   explicit SiteInfo(BrowserContext* browser_context);
@@ -316,13 +335,12 @@ class CONTENT_EXPORT SiteInfo {
 
   // Note: equality operators are defined in terms of IsSamePrincipalWith().
   bool operator==(const SiteInfo& other) const;
-  bool operator!=(const SiteInfo& other) const;
 
   // Defined to allow this object to act as a key for std::map and std::set.
   // Note that the key is determined based on what distinguishes one security
   // principal from another (see IsSamePrincipalWith) and does not necessarily
   // include all the fields in SiteInfo.
-  bool operator<(const SiteInfo& other) const;
+  std::weak_ordering operator<=>(const SiteInfo& other) const;
 
   // Returns a string representation of this SiteInfo principal.
   std::string GetDebugString() const;

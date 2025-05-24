@@ -113,39 +113,31 @@ component("service") {
       "image_transport_surface_overlay_mac.h",
       "image_transport_surface_overlay_mac.mm",
     ]
-  }
-  if (is_mac) {
-    sources += [
-      "built_in_shader_cache_loader.cc",
-      "built_in_shader_cache_loader.h",
-      "built_in_shader_cache_writer.cc",
-      "built_in_shader_cache_writer.h",
-      "image_transport_surface_mac.mm",
-    ]
-    deps += [
-      "//ui/accelerated_widget_mac",
-      "//ui/display:display",
-      "//ui/display/types:types",
-    ]
-    lib_dirs = [ "$mac_sdk_path/usr/lib" ]
-    frameworks = [
-      "CoreGraphics.framework",
-      "IOSurface.framework",
-      "OpenGL.framework",
-      "QuartzCore.framework",
-    ]
-    defines += [ "GL_SILENCE_DEPRECATION" ]
-  }
-  if (is_ios) {
-    sources += [ "image_transport_surface_ios.mm" ]
     deps += [ "//ui/accelerated_widget_mac" ]
+    if (skia_use_metal) {
+      deps += [ "//components/viz/common:metal_context_provider" ]
+    }
+    if (is_mac) {
+      sources += [ "image_transport_surface_mac.mm" ]
+      deps += [
+        "//ui/display:display",
+        "//ui/display/types:types",
+      ]
+      lib_dirs = [ "$mac_sdk_path/usr/lib" ]
+      frameworks = [
+        "CoreGraphics.framework",
+        "IOSurface.framework",
+        "OpenGL.framework",
+        "QuartzCore.framework",
+      ]
+      defines += [ "GL_SILENCE_DEPRECATION" ]
+    }
+    if (is_ios) {
+      sources += [ "image_transport_surface_ios.mm" ]
+    }
   }
   if (is_android) {
-    sources += [
-      "image_transport_surface_android.cc",
-      "stream_texture_android.cc",
-      "stream_texture_android.h",
-    ]
+    sources += [ "image_transport_surface_android.cc" ]
     libs += [ "android" ]
   }
   if (is_linux || is_chromeos) {

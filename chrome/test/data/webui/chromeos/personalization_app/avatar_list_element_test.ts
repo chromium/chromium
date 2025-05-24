@@ -10,8 +10,8 @@ import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/ch
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestUserProvider} from './test_user_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestUserProvider} from './test_user_interface_provider.js';
 
 suite('AvatarListElementTest', function() {
   let avatarListElement: AvatarListElement|null;
@@ -54,10 +54,9 @@ suite('AvatarListElementTest', function() {
         testUserProvider.defaultUserImages;
     avatarListElement = initElement(AvatarListElement);
 
-    const image =
-        avatarListElement.shadowRoot!.querySelector(
-            `div[data-id="${testUserProvider.defaultUserImages[0]!.index}"]`) as
-        HTMLDivElement;
+    const image = avatarListElement.shadowRoot!.querySelector<HTMLElement>(
+        `div[data-id="${testUserProvider.defaultUserImages[0]!.index}"]`);
+    assertTrue(!!image);
 
     image.click();
     const index = await testUserProvider.whenCalled('selectDefaultImage');
@@ -110,7 +109,7 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertEquals(
-        null, avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        null, avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button does not exist');
 
     testPersonalizationStore.data.user.isCameraPresent = true;
@@ -118,7 +117,7 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        !!avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button exists');
   });
 
@@ -133,7 +132,7 @@ suite('AvatarListElementTest', function() {
         'avatar-camera element should not be open');
 
     const openCameraButton =
-        avatarListElement!.shadowRoot!.getElementById('openCamera')!;
+        avatarListElement.shadowRoot!.getElementById('openCamera')!;
     openCameraButton.click();
 
     await waitAfterNextRender(avatarListElement);
@@ -177,16 +176,16 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        !!avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button exists');
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openVideo'),
+        !!avatarListElement.shadowRoot!.getElementById('openVideo'),
         'open video button exists');
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('openFolder'),
+        !!avatarListElement.shadowRoot!.getElementById('openFolder'),
         'open folder button exists');
     assertTrue(
-        !!avatarListElement!.shadowRoot!.getElementById('profileImage'),
+        !!avatarListElement.shadowRoot!.getElementById('profileImage'),
         'select profile image button exists');
   });
 
@@ -201,16 +200,16 @@ suite('AvatarListElementTest', function() {
     await waitAfterNextRender(avatarListElement);
 
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('openCamera'),
+        !avatarListElement.shadowRoot!.getElementById('openCamera'),
         'open camera button does not exist');
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('openVideo'),
+        !avatarListElement.shadowRoot!.getElementById('openVideo'),
         'open video button does not exist');
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('openFolder'),
+        !avatarListElement.shadowRoot!.getElementById('openFolder'),
         'open folder button does not exist');
     assertTrue(
-        !avatarListElement!.shadowRoot!.getElementById('profileImage'),
+        !avatarListElement.shadowRoot!.getElementById('profileImage'),
         'select profile button does not exist');
   });
 });

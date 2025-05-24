@@ -25,8 +25,9 @@ class TestInterstitialPage : public IOSSecurityInterstitialPage {
         destroyed_tracker_(destroyed_tracker) {}
 
   ~TestInterstitialPage() override {
-    if (destroyed_tracker_)
+    if (destroyed_tracker_) {
       *destroyed_tracker_ = true;
+    }
   }
 
  private:

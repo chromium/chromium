@@ -38,8 +38,7 @@ int ResourceMapper::MapToJavaDrawableId(int resource_id) {
   }
 
   // The resource couldn't be found.
-  NOTREACHED_IN_MIGRATION();
-  return kMissingId;
+  NOTREACHED();
 }
 
 void ResourceMapper::ConstructMap() {

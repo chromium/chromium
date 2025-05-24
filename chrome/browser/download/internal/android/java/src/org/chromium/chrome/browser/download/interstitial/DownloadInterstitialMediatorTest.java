@@ -70,7 +70,7 @@ public class DownloadInterstitialMediatorTest {
     private final TestOfflineContentProvider mProvider = new TestOfflineContentProvider();
     private FakeModalDialogManager mModalDialogManager;
     private DownloadInterstitialMediator mMediator;
-    private UmaTestingHelper mUmaTestingHelper = new UmaTestingHelper();
+    private final UmaTestingHelper mUmaTestingHelper = new UmaTestingHelper();
     private PropertyModel mModel;
     private OfflineItem mItem0;
 
@@ -334,7 +334,7 @@ public class DownloadInterstitialMediatorTest {
      * logs to test how many metrics of each type were logged during the test.
      */
     private static class UmaTestingHelper {
-        private Map<Integer, Integer> mValues;
+        private final Map<Integer, Integer> mValues;
 
         UmaTestingHelper() {
             mValues = new HashMap<Integer, Integer>();

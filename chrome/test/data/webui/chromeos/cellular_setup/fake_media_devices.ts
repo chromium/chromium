@@ -259,8 +259,8 @@ export class FakeMediaDevices implements MediaDevices {
         'getUserMedia was not called');
 
     if (this.shouldUserMediaRequestFail_ && this.stream_) {
-      this.getMediaDevicesRejectResolver_!
-          ('Failed to create stream, a stream currently exist');
+      this.getMediaDevicesRejectResolver_(
+          'Failed to create stream, a stream currently exist');
     }
 
     const track = new FakeMediaTrack();

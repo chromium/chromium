@@ -52,8 +52,7 @@ void MediaInspectorContextImpl::Trace(Visitor* visitor) const {
 }
 
 Vector<WebString> MediaInspectorContextImpl::AllPlayerIdsAndMarkSent() {
-  Vector<WebString> existing_players;
-  WTF::CopyKeysToVector(players_, existing_players);
+  Vector<WebString> existing_players(players_.Keys());
   unsent_players_.clear();
   return existing_players;
 }
@@ -200,7 +199,7 @@ void MediaInspectorContextImpl::SetPlayerProperties(
   if (player != players_.end()) {
     for (const auto& property : props)
       player->value->properties.Set(property.name, property);
-    WTF::CopyValuesToVector(player->value->properties, properties);
+    properties.assign(player->value->properties.Values());
   }
   probe::PlayerPropertiesChanged(GetSupplementable(), playerId, properties);
 }

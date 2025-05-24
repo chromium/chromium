@@ -1,0 +1,15 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN focusable actions='{DEFAULT}' value='1'
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN focusable selected label='1' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden focusable label='2' actions='{DEFAULT}'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='<newline>  '
+++++++++UNKNOWN focusable actions='{DEFAULT}' value='1'
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN focusable selected label='1' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden focusable label='2' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='<newline>'

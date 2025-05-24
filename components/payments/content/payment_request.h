@@ -78,7 +78,7 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
     virtual void OnCompleteCalled() {}
 
    protected:
-    virtual ~ObserverForTest() {}
+    virtual ~ObserverForTest() = default;
   };
 
   PaymentRequest(std::unique_ptr<ContentPaymentRequestDelegate> delegate,

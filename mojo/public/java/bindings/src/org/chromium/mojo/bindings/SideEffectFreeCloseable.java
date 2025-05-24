@@ -4,9 +4,12 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.Closeable;
 
 /** An implementation of closeable that doesn't do anything. */
+@NullMarked
 public class SideEffectFreeCloseable implements Closeable {
 
     /**

@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("dlc_installer") {
+  sources = [
+    "arc_dlc_install_notification_delegate_impl.cc",
+    "arc_dlc_install_notification_delegate_impl.h",
+    "arc_dlc_notification_manager_factory_impl.cc",
+    "arc_dlc_notification_manager_factory_impl.h",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    "//base",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/arc",
+    "//components/account_id",
+    "//ui/message_center",
+  ]
+}

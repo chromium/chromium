@@ -10,15 +10,15 @@
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view.h"
+#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view_controller.h"
 #import "ios/chrome/browser/find_in_page/model/constants.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/ui/util/image/image_util.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_constants.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view.h"
-#import "ios/chrome/browser/find_bar/ui_bundled/find_bar_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -53,17 +53,17 @@ const NSTimeInterval kSearchShortDelay = 0.100;
 // Typing delay timer.
 @property(nonatomic, strong) NSTimer* delayTimer;
 // Yes if incognito.
-@property(nonatomic, assign) BOOL isIncognito;
+@property(nonatomic, assign) BOOL incognito;
 @end
 
 @implementation FindBarControllerIOS
 
 #pragma mark - Lifecycle
 
-- (instancetype)initWithIncognito:(BOOL)isIncognito {
+- (instancetype)initWithIncognito:(BOOL)incognito {
   self = [super init];
   if (self) {
-    _isIncognito = isIncognito;
+    _incognito = incognito;
   }
   return self;
 }
@@ -75,7 +75,7 @@ const NSTimeInterval kSearchShortDelay = 0.100;
     return _findBarViewController;
   }
   _findBarViewController =
-      [[FindBarViewController alloc] initWithDarkAppearance:self.isIncognito];
+      [[FindBarViewController alloc] initWithDarkAppearance:self.incognito];
   _findBarViewController.delegate = self;
 
   _findBarViewController.findBarView.inputField.delegate = self;

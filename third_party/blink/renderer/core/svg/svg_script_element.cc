@@ -49,15 +49,34 @@ void SVGScriptElement::ParseAttribute(
         JSEventHandlerForContentAttribute::Create(
             GetExecutionContext(), params.name, params.new_value,
             JSEventHandler::HandlerType::kOnErrorEventHandler));
+  } else if (params.name == svg_names::kAsyncAttr &&
+             RuntimeEnabledFeatures::SvgScriptElementAsyncAttributeEnabled()) {
+    // https://html.spec.whatwg.org/C/#non-blocking
+    // "In addition, whenever a script element whose |non-blocking|
+    // flag is set has an async content attribute added, the element's
+    // |non-blocking| flag must be unset."
+    loader_->HandleAsyncAttribute();
   } else {
     SVGElement::ParseAttribute(params);
   }
 }
 
+void SVGScriptElement::setAsync(bool async) {
+  CHECK(RuntimeEnabledFeatures::SvgScriptElementAsyncAttributeEnabled());
+
+  SetBooleanAttribute(svg_names::kAsyncAttr, async);
+  loader_->HandleAsyncAttribute();
+}
+
+bool SVGScriptElement::async() const {
+  CHECK(RuntimeEnabledFeatures::SvgScriptElementAsyncAttributeEnabled());
+
+  return FastHasAttribute(svg_names::kAsyncAttr) || loader_->IsForceAsync();
+}
+
 void SVGScriptElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   if (SVGURIReference::IsKnownAttribute(params.name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     loader_->HandleSourceAttribute(LegacyHrefString(*this));
     return;
   }
@@ -109,6 +128,21 @@ void SVGScriptElement::FinishParsingChildren() {
 
 bool SVGScriptElement::HaveLoadedRequiredResources() {
   return have_fired_load_;
+}
+
+String SVGScriptElement::IntegrityAttributeValue() const {
+  return FastGetAttribute(html_names::kIntegrityAttr);
+}
+
+String SVGScriptElement::SignatureAttributeValue() const {
+  return FastGetAttribute(html_names::kSignatureAttr);
+}
+
+bool SVGScriptElement::AsyncAttributeValue() const {
+  if (RuntimeEnabledFeatures::SvgScriptElementAsyncAttributeEnabled()) {
+    return FastHasAttribute(svg_names::kAsyncAttr);
+  }
+  return false;
 }
 
 String SVGScriptElement::SourceAttributeValue() const {

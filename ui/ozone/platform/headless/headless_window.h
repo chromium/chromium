@@ -31,16 +31,6 @@ class HeadlessWindow : public PlatformWindow {
 
   ~HeadlessWindow() override;
 
- protected:
-  PlatformWindowDelegate* delegate() { return delegate_; }
-
- private:
-  enum class ActivationState {
-    kUnknown,
-    kActive,
-    kInactive,
-  };
-
   // PlatformWindow:
   void Show(bool inactive) override;
   void Hide() override;
@@ -77,6 +67,18 @@ class HeadlessWindow : public PlatformWindow {
   void RestoreWindowBounds();
   void UpdateBounds(const gfx::Rect& bounds);
   void UpdateWindowState(PlatformWindowState new_window_state);
+
+  gfx::AcceleratedWidget widget() const { return widget_; }
+
+ protected:
+  PlatformWindowDelegate* delegate() { return delegate_; }
+
+ private:
+  enum class ActivationState {
+    kUnknown,
+    kActive,
+    kInactive,
+  };
 
   raw_ptr<PlatformWindowDelegate> delegate_ = nullptr;
   raw_ptr<HeadlessWindowManager> manager_;

@@ -45,7 +45,6 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/crash/core/app/crashpad.h"
-#include "content/public/common/content_features.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/features.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
@@ -96,27 +95,16 @@
 
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
   // This is an undocumented attribute that's set when VoiceOver is turned
-  // on/off or Text To Speech is triggered. In addition, some apps use it to
-  // request accessibility activation.
+  // on/off. We track VoiceOver state changes using KVO, but monitor this
+  // attribute in case other ATs use it to request accessibility activation.
   if ([attribute isEqualToString:@"AXEnhancedUserInterface"]) {
-    // `sonomaAccessibilityRefinementsAreActive` has the same purpose with
-    // BrowserCrApplication. See chrome_browser_application_mac.mm to learn
-    // more.
-    BOOL sonomaAccessibilityRefinementsAreActive =
-        base::mac::MacOSVersion() >= 14'00'00 &&
-        base::FeatureList::IsEnabled(
-            features::kSonomaAccessibilityActivationRefinements);
-    // When there are ATs that want to access this PWA app's accessibility, we
-    // need to notify browser proces to enable accessibility. When ATs no
-    // longer need access to this PWA app's accessibility, we don't want it to
+    // When there are ATs that want to access this PWA's accessibility, we
+    // need to notify the browser process to enable accessibility. When ATs no
+    // longer need access to this PWA's accessibility, we don't want it to
     // affect the browser in case other PWA apps or the browser itself still
     // need to use accessbility.
-    if (sonomaAccessibilityRefinementsAreActive) {
-      [self enableScreenReaderCompleteModeAfterDelay:[value boolValue]];
-    } else {
-      if ([value boolValue]) {
-        [self enableScreenReaderCompleteMode];
-      }
+    if ([value boolValue]) {
+      [self enableScreenReaderCompleteModeAfterDelay:YES];
     }
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
@@ -203,7 +191,33 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
         preferred_localization = base::SysNSStringToUTF8(language);
         break;
       }
-      // Check for language support without the region component.
+
+      // For Chinese and Serbian, the preferred and supported languages don't
+      // match due to script components and causes us to fall back to the next
+      // matched language. e.g. Simplified Chinese is presented as 'zh_CN' in
+      // supported_languages, but as 'zh_Hans_CN' in preferred_languages.
+      // Instead of falling back, adjust those 3 language codes to match
+      // language codes provided in supported_languages.
+      if ([language hasPrefix:@"zh_Hans"]) {
+        language = @"zh_CN";
+      } else if ([language hasPrefix:@"zh_Hant"]) {
+        language = @"zh_TW";
+      } else if ([language hasPrefix:@"sr_Latn"]) {
+        language = @"sr_Latn_RS";
+      } else {
+        // Check for language support without the region component.
+        language = [language componentsSeparatedByString:@"_"][0];
+      }
+
+      if ([supported_languages containsObject:language]) {
+        preferred_localization = base::SysNSStringToUTF8(language);
+        break;
+      }
+
+      // Avoid defaulting to English or another unintended language when no
+      // clear match is found. e.g. if there is no specific match for
+      // "sr_Latn_RS" in supported_languages, it can at least fall back to a
+      // generic Serbian language code ("sr").
       language = [language componentsSeparatedByString:@"_"][0];
       if ([supported_languages containsObject:language]) {
         preferred_localization = base::SysNSStringToUTF8(language);

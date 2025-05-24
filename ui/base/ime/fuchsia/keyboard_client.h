@@ -11,6 +11,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 
@@ -56,7 +57,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_FUCHSIA) KeyboardClient
 
   // Dispatches events into Chromium once they have been converted to
   // ui::KeyEvents.
-  InputEventSink* const event_sink_;
+  const raw_ptr<InputEventSink> event_sink_;
 };
 
 }  // namespace ui

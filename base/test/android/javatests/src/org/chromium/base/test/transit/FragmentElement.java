@@ -8,6 +8,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /**
@@ -16,10 +18,11 @@ import java.util.List;
  * @param <FragmentT> the exact type of fragment expected.
  * @param <ActivityT> the {@link ActivityElement} corresponding to the owning activity.
  */
+@NullMarked
 public class FragmentElement<FragmentT extends Fragment, ActivityT extends FragmentActivity>
         extends Element<FragmentT> {
-    private ActivityElement<ActivityT> mActivityElement;
-    private Class<FragmentT> mFragmentClass;
+    private final ActivityElement<ActivityT> mActivityElement;
+    private final Class<FragmentT> mFragmentClass;
 
     /**
      * Constructor.
@@ -35,7 +38,7 @@ public class FragmentElement<FragmentT extends Fragment, ActivityT extends Fragm
     }
 
     @Override
-    public ConditionWithResult<FragmentT> createEnterCondition() {
+    public @Nullable ConditionWithResult<FragmentT> createEnterCondition() {
         return new FragmentExistsCondition();
     }
 
@@ -48,6 +51,7 @@ public class FragmentElement<FragmentT extends Fragment, ActivityT extends Fragm
     private class FragmentExistsCondition extends ConditionWithResult<FragmentT> {
         public FragmentExistsCondition() {
             super(/* isRunOnUiThread= */ false);
+            dependOnSupplier(mActivityElement, "Activity");
         }
 
         @Override
@@ -58,7 +62,6 @@ public class FragmentElement<FragmentT extends Fragment, ActivityT extends Fragm
         @Override
         protected ConditionStatusWithResult<FragmentT> resolveWithSuppliers() throws Exception {
             ActivityT activity = mActivityElement.get();
-            if (activity == null) return awaiting("No activity found").withoutResult();
             List<Fragment> fragments = activity.getSupportFragmentManager().getFragments();
             FragmentT candidate = null;
             for (Fragment fragment : fragments) {

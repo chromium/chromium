@@ -6,6 +6,7 @@
 #define UI_VIEWS_COREWM_TOOLTIP_VIEW_AURA_H_
 
 #include <memory>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/render_text.h"
@@ -41,9 +42,9 @@ class VIEWS_EXPORT TooltipViewAura : public views::View {
   gfx::Size CalculatePreferredSize(
       const SizeBounds& /*available_size*/) const override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
+  void UpdateAccessibleName();
   void ResetDisplayRect();
 
   std::unique_ptr<gfx::RenderText> render_text_;

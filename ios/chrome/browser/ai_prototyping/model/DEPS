@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/intelligence/proto_wrappers",
+  "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/optimization_guide/mojom",
+]

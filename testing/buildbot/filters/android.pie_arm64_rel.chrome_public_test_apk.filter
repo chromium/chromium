@@ -21,9 +21,6 @@
 -org.chromium.chrome.browser.ntp.NewTabPageTest.testRemoveMostVisitedItem
 -org.chromium.chrome.browser.ntp.RecentTabsPageTest.testRecentlyClosedTabs
 
-# crbug.com/1040088
--org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
-
 # crbug.com/707528
 -org.chromium.chrome.browser.push_messaging.PushMessagingTest.testPushAndShowNotification
 
@@ -57,8 +54,6 @@
 -org.chromium.chrome.browser.reengagement.ReengagementNotificationControllerIntegrationTest.testEngagementTracked
 -org.chromium.chrome.browser.reengagement.ReengagementNotificationControllerIntegrationTest.testReengagementActivity
 
-# crbug.com/1128488
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogInitialShowFromStrip
 # crbug.com/1473281
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testRenderDialog_3Tabs_Landscape_NewAspectRatio
 

@@ -1,6 +1,9 @@
 caption: Required device-wide Client Certificates
-desc: Specifies device-wide client certificates that should be enrolled using the
+desc: |-
+  Specifies device-wide client certificates that should be enrolled using the
   device management protocol.
+
+  The <ph name="EC_KEY_ALGORITHM_VALUE_NAME">EC</ph> key algorithm option is supported since <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph> version 132.
 device_only: true
 example_value:
 - cert_profile_id: cert_profile_id_1
@@ -29,9 +32,10 @@ schema:
           (optional, default: True).'
         type: boolean
       key_algorithm:
-        description: The algorithm for key pair generation.
+        description: The algorithm for key pair generation. The EC option is supported since version 132.
         enum:
         - rsa
+        - ec
         type: string
       name:
         description: The name of the certificate profile.

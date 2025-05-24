@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/privacy_sandbox_notice_eea_dropdown_v3"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/privacy_sandbox_m1_notice_row_dropdown_title_1_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/privacy_sandbox_m1_notice_row_dropdown_title_1_v3"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_row_dropdown_description_1_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_dropdown_description_1_v3"
+        app:leading="@dimen/text_size_small_leading"
+        style="@style/TextAppearance.TextSmall.Secondary" />
+
+   <LinearLayout
+       android:id="@+id/privacy_sandbox_notice_row_dropdown_description_cards_1"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:layout_marginBottom="16dp"
+       android:gravity="center_vertical"
+       android:orientation="vertical">
+
+       <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+           style="@style/MaterialCardStyle"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="@dimen/privacy_sandbox_margin_between_cards"
+           android:id="@+id/description_card_1">
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/description_card_1_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/privacy_sandbox_card_padding"
+                android:orientation="vertical">
+
+                <ImageView
+                     android:id="@+id/description_card_1_image"
+                     android:layout_height="@dimen/privacy_sandbox_card_logo_height"
+                     android:layout_width="@dimen/privacy_sandbox_card_logo_width"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:srcCompat="@drawable/ic_interests_24dp"
+                     android:layout_marginTop="2dp"
+                     android:importantForAccessibility="no" />
+
+                 <org.chromium.ui.widget.TextViewWithLeading
+                     android:id="@+id/description_card_1_text"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:layout_constraintStart_toEndOf="@id/description_card_1_image"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="@dimen/privacy_sandbox_card_text_start_margin"
+                     app:leading="@dimen/text_size_medium_leading"
+                     android:text="@string/privacy_sandbox_m1_notice_row_dropdown_card_description_1_v3"
+                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+       </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+       <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+           style="@style/MaterialCardStyle"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="@dimen/privacy_sandbox_margin_between_cards"
+           android:id="@+id/description_card_2">
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/description_card_2_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/privacy_sandbox_card_padding"
+                android:orientation="vertical">
+
+                <ImageView
+                     android:id="@+id/description_card_2_image"
+                     android:layout_height="@dimen/privacy_sandbox_card_logo_height"
+                     android:layout_width="@dimen/privacy_sandbox_card_logo_width"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:srcCompat="@drawable/ic_delete_history_24dp"
+                     android:layout_marginTop="2dp"
+                     android:importantForAccessibility="no" />
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/description_card_2_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/description_card_2_image"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/privacy_sandbox_card_text_start_margin"
+                    app:leading="@dimen/text_size_medium_leading"
+                    android:text="@string/privacy_sandbox_m1_notice_row_dropdown_card_description_2_v3"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+       </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/privacy_sandbox_m1_notice_row_dropdown_title_2_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/privacy_sandbox_m1_notice_row_dropdown_title_2_v3"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_row_dropdown_description_2_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_dropdown_description_2_v3"
+        app:leading="@dimen/text_size_small_leading"
+        style="@style/TextAppearance.TextSmall.Secondary" />
+
+   <LinearLayout
+       android:id="@+id/privacy_sandbox_notice_row_dropdown_description_cards_2"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:layout_marginBottom="16dp"
+       android:gravity="center_vertical"
+       android:orientation="vertical">
+
+       <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+           style="@style/MaterialCardStyle"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="@dimen/privacy_sandbox_margin_between_cards"
+           android:id="@+id/description_card_3">
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/description_card_3_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/privacy_sandbox_card_padding"
+                android:orientation="vertical">
+
+                <ImageView
+                     android:id="@+id/description_card_3_image"
+                     android:layout_height="@dimen/privacy_sandbox_card_logo_height"
+                     android:layout_width="@dimen/privacy_sandbox_card_logo_width"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:srcCompat="@drawable/ic_web_traffic_24dp"
+                     android:layout_marginTop="2dp"
+                     android:importantForAccessibility="no" />
+
+                 <org.chromium.ui.widget.TextViewWithLeading
+                     android:id="@+id/description_card_3_text"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:layout_constraintStart_toEndOf="@id/description_card_3_image"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="@dimen/privacy_sandbox_card_text_start_margin"
+                     app:leading="@dimen/text_size_medium_leading"
+                     android:text="@string/privacy_sandbox_m1_notice_row_dropdown_card_description_3_v3"
+                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+       </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+       <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+           style="@style/MaterialCardStyle"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="@dimen/privacy_sandbox_margin_between_cards"
+           android:id="@+id/description_card_4">
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/description_card_4_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/privacy_sandbox_card_padding"
+                android:orientation="vertical">
+
+                <ImageView
+                     android:id="@+id/description_card_4_image"
+                     android:layout_height="@dimen/privacy_sandbox_card_logo_height"
+                     android:layout_width="@dimen/privacy_sandbox_card_logo_width"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:srcCompat="@drawable/ic_delete_history_24dp"
+                     android:layout_marginTop="2dp"
+                     android:importantForAccessibility="no" />
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/description_card_4_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/description_card_4_image"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/privacy_sandbox_card_text_start_margin"
+                    app:leading="@dimen/text_size_medium_leading"
+                    android:text="@string/privacy_sandbox_m1_notice_row_dropdown_card_description_4_v3"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+       </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/privacy_sandbox_m1_notice_row_dropdown_title_3_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:accessibilityHeading="true"
+        android:text="@string/privacy_sandbox_m1_notice_row_dropdown_title_3_v3"
+        style="@style/TextAppearance.TextMedium.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_row_dropdown_description_3_part_1_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_dropdown_description_3_part_1_v3"
+        app:leading="@dimen/text_size_small_leading"
+        style="@style/TextAppearance.TextSmall.Secondary" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/privacy_sandbox_m1_notice_row_dropdown_description_3_part_2_v3"
+        android:layout_marginBottom="@dimen/promo_between_text_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/privacy_sandbox_m1_notice_row_dropdown_description_3_part_2_v3"
+        app:leading="@dimen/text_size_small_leading"
+        style="@style/TextAppearance.TextSmall.Secondary" />
+
+   <LinearLayout
+       android:id="@+id/privacy_sandbox_notice_row_dropdown_description_cards_5"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+       android:layout_marginBottom="16dp"
+       android:gravity="center_vertical"
+       android:orientation="vertical">
+
+       <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+           style="@style/MaterialCardStyle"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="@dimen/privacy_sandbox_margin_between_cards"
+           android:id="@+id/description_card_5">
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/description_card_5_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/privacy_sandbox_card_padding"
+                android:orientation="vertical">
+
+                <ImageView
+                     android:id="@+id/description_card_5_image"
+                     android:layout_height="@dimen/privacy_sandbox_card_logo_height"
+                     android:layout_width="@dimen/privacy_sandbox_card_logo_width"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:srcCompat="@drawable/ic_table_chart_view_24dp"
+                     android:layout_marginTop="2dp"
+                     android:importantForAccessibility="no" />
+
+                 <org.chromium.ui.widget.TextViewWithLeading
+                     android:id="@+id/description_card_5_text"
+                     app:layout_constraintEnd_toEndOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:layout_constraintStart_toEndOf="@id/description_card_5_image"
+                     android:layout_width="0dp"
+                     android:layout_height="wrap_content"
+                     android:layout_marginStart="@dimen/privacy_sandbox_card_text_start_margin"
+                     app:leading="@dimen/text_size_medium_leading"
+                     android:text="@string/privacy_sandbox_m1_notice_row_dropdown_card_description_5_v3"
+                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+       </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+
+       <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+           style="@style/MaterialCardStyle"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:layout_marginTop="@dimen/privacy_sandbox_margin_between_cards"
+           android:id="@+id/description_card_6">
+
+           <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/description_card_6_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/privacy_sandbox_card_padding"
+                android:orientation="vertical">
+
+                <ImageView
+                     android:id="@+id/description_card_6_image"
+                     android:layout_height="@dimen/privacy_sandbox_card_logo_height"
+                     android:layout_width="@dimen/privacy_sandbox_card_logo_width"
+                     app:layout_constraintStart_toStartOf="parent"
+                     app:layout_constraintTop_toTopOf="parent"
+                     app:srcCompat="@drawable/ic_database_off_24dp"
+                     android:layout_marginTop="2dp"
+                     android:importantForAccessibility="no" />
+
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/description_card_6_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/description_card_6_image"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/privacy_sandbox_card_text_start_margin"
+                    app:leading="@dimen/text_size_medium_leading"
+                    android:text="@string/privacy_sandbox_m1_notice_row_dropdown_card_description_6_v3"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+       </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
+    </LinearLayout>
+
+   <com.google.android.material.card.MaterialCardView
+       style="@style/MaterialCardStyle"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="8dp"
+       app:cardElevation="0dp"
+       android:id="@+id/notice_row_dropdown_privacy_policy_card">
+
+       <LinearLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:paddingVertical="12dp"
+           android:paddingHorizontal="16dp">
+
+           <org.chromium.ui.widget.TextViewWithLeading
+               android:id="@+id/privacy_policy_text"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               app:leading="@dimen/text_size_medium_leading"
+               android:text="@string/privacy_sandbox_m1_privacy_policy_text_v3"
+               android:textAppearance="@style/TextAppearance.TextMedium.Primary"/>
+        </LinearLayout>
+   </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>
+

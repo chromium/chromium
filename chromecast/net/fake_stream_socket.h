@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/ip_endpoint.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"
@@ -64,7 +65,7 @@ class FakeStreamSocket : public net::StreamSocket {
 
   const net::IPEndPoint local_address_;
   const std::unique_ptr<SocketBuffer> buffer_;
-  FakeStreamSocket* peer_;
+  raw_ptr<FakeStreamSocket> peer_;
   net::NetLogWithSource net_log_;
   bool bad_sender_mode_ = false;
 };

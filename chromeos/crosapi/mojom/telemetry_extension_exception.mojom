@@ -20,7 +20,6 @@ module crosapi.mojom;
 // is set to |debug_message|.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryExtensionException {
   // A specific reason for clients to handle exceptions (e.g. showing a
   // specific message to UI). Use this instead of parsing |debug_message|.
@@ -29,7 +28,7 @@ struct TelemetryExtensionException {
   // kFailedToCallFooService, to make it specific.
   // When we raise Exception through a mojo disconnection, this will be the
   // mojo error code.
-  [Stable, Extensible]
+  [Extensible]
   enum Reason {
     // This is required for backwards compatibility. Don't raise this.
     // Set to 1 because 0 is reserved for kMojoDisconnectWithoutReason.
@@ -60,7 +59,7 @@ struct TelemetryExtensionException {
 // The result type of support status check of the Telemetry Event API.
 //
 // NextMinVersion: 1
-[Stable, Extensible]
+[Extensible]
 union TelemetryExtensionSupportStatus {
   // This is required for backwards compatibility. Don't use this.
   [Default] int8 unmapped_union_field;
@@ -76,13 +75,11 @@ union TelemetryExtensionSupportStatus {
 // Empty struct for future extensibility.
 //
 // NextMinVersion: 1, NextIndex: 0
-[Stable]
 struct TelemetryExtensionSupported {};
 
 // Details about the unsupported reason.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryExtensionUnsupported {
   // A human readable message for debugging. If a client want to handle a
   // specific exception, use |reason|. Don't rely on the content because it
@@ -97,7 +94,7 @@ struct TelemetryExtensionUnsupported {
 // `PolicyEnum disabled_by_this_policy;`.
 //
 // NextMinVersion: 1
-[Stable, Extensible]
+[Extensible]
 union TelemetryExtensionUnsupportedReason {
   // This is required for backwards compatibility. Don't use this.
   [Default] int8 unmapped_union_field;

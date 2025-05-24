@@ -12,24 +12,57 @@
 namespace signin {
 
 // Container for a response to get the accounts in the cookie jar.
-struct AccountsInCookieJarInfo {
+class AccountsInCookieJarInfo {
+ public:
+  AccountsInCookieJarInfo();
+  AccountsInCookieJarInfo(bool accounts_are_fresh,
+                          const std::vector<gaia::ListedAccount>& accounts);
+  AccountsInCookieJarInfo(const AccountsInCookieJarInfo& other);
+  AccountsInCookieJarInfo& operator=(const AccountsInCookieJarInfo& other);
+  ~AccountsInCookieJarInfo();
+
   // True if the accounts info from cookie is fresh and does not need to be
   // updated.
-  bool accounts_are_fresh = true;
+  bool AreAccountsFresh() const;
 
-  // The current list of signed in accounts from the cookie jar.
-  std::vector<gaia::ListedAccount> signed_in_accounts;
+  // The current list of all accounts in the cookie jar, regardless of their
+  // validity or signed in/signed out status.
+  const std::vector<gaia::ListedAccount>& GetAllAccounts() const;
+
+  // The current list of signed in accounts from the cookie jar that are also
+  // valid. When the account refresh token gets revoked remotely, the account
+  // becomes invalid, so prefer this method over
+  // GetPotentiallyInvalidSignedInAccounts unless your feature actually needs
+  // invalid accounts as well.
+  const std::vector<gaia::ListedAccount>& GetValidSignedInAccounts() const;
+
+  // The current list of signed in accounts from the cookie jar. Please note
+  // that accounts returned by this method can have be in an invalid state (for
+  // example, if the token for that account was revoked remotely). Unless your
+  // feature needs invalid accounts, consider using `GetValidSignedInAccounts`
+  // instead.
+  //
+  // TODO(crbug.com/370769493): Audit callers and migrate them to
+  //     `GetValidSignedInAccounts`.
+  const std::vector<gaia::ListedAccount>&
+  GetPotentiallyInvalidSignedInAccounts() const;
+
+  // DEPRECATED: This method is being removed, do not use.
+  // TODO(crbug.com/324462717): Remove after migrating internal usage.
+  const std::vector<gaia::ListedAccount>& GetSignedInAccounts() const;
 
   // The current list of signed out accounts from the cookie jar.
-  std::vector<gaia::ListedAccount> signed_out_accounts;
+  const std::vector<gaia::ListedAccount>& GetSignedOutAccounts() const;
 
-  AccountsInCookieJarInfo();
-  AccountsInCookieJarInfo(
-      bool accounts_are_fresh_param,
-      const std::vector<gaia::ListedAccount>& signed_in_accounts_param,
-      const std::vector<gaia::ListedAccount>& signed_out_accounts_param);
-  AccountsInCookieJarInfo(const AccountsInCookieJarInfo& other);
-  ~AccountsInCookieJarInfo();
+  friend bool operator==(const AccountsInCookieJarInfo& lhs,
+                         const AccountsInCookieJarInfo& rhs) = default;
+
+ private:
+  bool accounts_are_fresh_ = true;
+  std::vector<gaia::ListedAccount> all_accounts_;
+  std::vector<gaia::ListedAccount> valid_signed_in_accounts_;
+  std::vector<gaia::ListedAccount> potentially_invalid_signed_in_accounts_;
+  std::vector<gaia::ListedAccount> signed_out_accounts_;
 };
 
 }  // namespace signin

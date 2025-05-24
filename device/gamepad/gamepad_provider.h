@@ -38,7 +38,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadChangeClient {
   virtual void OnGamepadConnectionChange(bool connected,
                                          uint32_t index,
                                          const Gamepad& pad) = 0;
-  virtual void OnGamepadChange(mojom::GamepadChangesPtr changes) = 0;
 };
 
 class DEVICE_GAMEPAD_EXPORT GamepadProvider
@@ -108,8 +107,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadProvider
   // Method for polling a GamepadDataFetcher. Runs on the polling_thread_.
   void DoPoll();
   void ScheduleDoPoll();
-
-  void SendChangeEvents(mojom::GamepadChangesPtr changes);
 
   void OnGamepadConnectionChange(bool connected,
                                  uint32_t index,

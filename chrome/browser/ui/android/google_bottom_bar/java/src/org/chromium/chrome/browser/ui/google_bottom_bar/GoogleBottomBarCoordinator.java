@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +25,7 @@ import java.util.Set;
 /**
  * Coordinator for GoogleBottomBar module. Provides the view, and initializes various components.
  */
+@NullMarked
 public class GoogleBottomBarCoordinator {
 
     private static final String TAG = "GBBCoordinator";

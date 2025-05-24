@@ -18,7 +18,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.IntentHandler.IncognitoCCTCallerId;
+import org.chromium.chrome.browser.IntentHandler.IncognitoCctCallerId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
@@ -34,7 +34,7 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class CustomTabActivityIncognitoMetricTest {
-    private static final String UMA_KEY = "CustomTabs.IncognitoCCTCallerId";
+    private static final String UMA_KEY = "CustomTabs.IncognitoCctCallerId";
     private static final String IS_TRUSTED_UMA_KEY = "CustomTabs.IncognitoCCTCallerIsTrusted";
     private static final String FIRST_PARTY_UMA_KEY = "CustomTabs.ClientAppId.Incognito";
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
@@ -63,7 +63,7 @@ public class CustomTabActivityIncognitoMetricTest {
     public void recordsHistogram_1P() {
         try (var ignored =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(UMA_KEY, IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS)
+                        .expectIntRecord(UMA_KEY, IntentHandler.IncognitoCctCallerId.GOOGLE_APPS)
                         .expectBooleanRecord(IS_TRUSTED_UMA_KEY, true)
                         .build()) {
             Intent intent = createMinimalIncognitoCustomTabIntent();
@@ -76,13 +76,13 @@ public class CustomTabActivityIncognitoMetricTest {
     public void recordsHistogram_ReaderMode_WithExtra() {
         try (var ignored =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(UMA_KEY, IncognitoCCTCallerId.READER_MODE)
+                        .expectIntRecord(UMA_KEY, IncognitoCctCallerId.READER_MODE)
                         .expectBooleanRecord(IS_TRUSTED_UMA_KEY, true)
                         .build()) {
             Intent intent = createMinimalIncognitoCustomTabIntent();
-            CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
+            CustomTabIntentDataProvider.addReaderModeUiExtras(intent);
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                    intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
+                    intent, IntentHandler.IncognitoCctCallerId.READER_MODE);
 
             mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         }
@@ -94,7 +94,7 @@ public class CustomTabActivityIncognitoMetricTest {
     public void recordsHistogram_Other() {
         try (var ignored =
                 HistogramWatcher.newBuilder()
-                        .expectIntRecord(UMA_KEY, IncognitoCCTCallerId.OTHER_APPS)
+                        .expectIntRecord(UMA_KEY, IncognitoCctCallerId.OTHER_APPS)
                         .expectNoRecords(IS_TRUSTED_UMA_KEY)
                         .build()) {
             Intent intent = createMinimalIncognitoCustomTabIntent();

@@ -33,7 +33,7 @@ class TabModalConfirmDialog : public TabModalConfirmDialogCloseDelegate {
   void CloseDialog() override = 0;
 
  protected:
-  ~TabModalConfirmDialog() override {}
+  ~TabModalConfirmDialog() override = default;
 };
 
 #endif  // CHROME_BROWSER_UI_TAB_MODAL_CONFIRM_DIALOG_H_

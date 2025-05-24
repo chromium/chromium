@@ -30,7 +30,6 @@ class BoolPrefBackupSerializer extends PrefBackupSerializer {
                 SyncPrefNames.SYNC_PRODUCT_COMPARISON,
                 SyncPrefNames.SYNC_READING_LIST,
                 SyncPrefNames.SYNC_SAVED_TAB_GROUPS,
-                SyncPrefNames.SYNC_SHARED_TAB_GROUP_DATA,
                 SyncPrefNames.SYNC_TABS);
     }
 

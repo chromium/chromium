@@ -14,6 +14,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -38,13 +39,13 @@
 #include "components/viz/service/frame_sinks/video_capture/frame_sink_video_capturer_manager.h"
 #include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/limits.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_util.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
-#include "media/video/fake_gpu_memory_buffer.h"
 #include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -212,7 +213,8 @@ class MockFrameSinkManager : public FrameSinkVideoCapturerManager {
 
 class MockConsumer : public mojom::FrameSinkVideoConsumer {
  public:
-  MockConsumer() {}
+  MockConsumer()
+      : test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
 
   MOCK_METHOD0(OnFrameCapturedMock, void());
   MOCK_METHOD1(OnNewSubCaptureTargetVersion, void(uint32_t));
@@ -279,17 +281,27 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
                          std::move(mapping)));
     } else if (data->is_gpu_memory_buffer_handle()) {
       // kNativeTexture + NV12 / RGBA
-      // Create a fake GpuMemoryBuffer as these test don't run the code to
+      // Create a test GpuMemoryBuffer as these test don't run the code to
       // produce GPU frames. The mailbox values aren't important since
       // IsLetterboxedFrame does no verification for GMB VideoFrames.
-      auto gmb_dummy = std::make_unique<media::FakeGpuMemoryBuffer>(
-          GetBufferSizeInPixelsForVideoPixelFormat(info->pixel_format,
-                                                   info->coded_size),
-          VideoPixelFormatToGfxBufferFormat(info->pixel_format).value());
+      test_sii_->UseTestGMBInSharedImageCreationWithBufferUsage();
 
+      // Setting some default usage in order to get a mappable shared image.
+      const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+      const auto si_format = GetSharedImageFormat(
+          VideoPixelFormatToGfxBufferFormat(info->pixel_format).value());
+      const auto si_size = GetBufferSizeInPixelsForVideoPixelFormat(
+          info->pixel_format, info->coded_size);
+      // Create a mappable shared image.
+      auto shared_image = test_sii_->CreateSharedImage(
+          {si_format, si_size, gfx::ColorSpace(),
+           gpu::SharedImageUsageSet(si_usage), "FrameSinkVideoCapturerTest"},
+          gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ);
       // The frame is only gonna tell Letterbox to skip the test.
-      frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
-          info->visible_rect, info->visible_rect.size(), std::move(gmb_dummy),
+      frame = VideoFrame::WrapMappableSharedImage(
+          std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+          base::NullCallback(), info->visible_rect, info->visible_rect.size(),
           info->timestamp);
       ASSERT_TRUE(frame);
     } else {
@@ -314,6 +326,7 @@ class MockConsumer : public mojom::FrameSinkVideoConsumer {
   mojo::Receiver<mojom::FrameSinkVideoConsumer> receiver_{this};
   std::vector<scoped_refptr<VideoFrame>> frames_;
   std::vector<base::OnceClosure> done_callbacks_;
+  scoped_refptr<gpu::TestSharedImageInterface> test_sii_;
 };
 
 class FakeGpuCopyResult : public CopyOutputResult {
@@ -323,7 +336,6 @@ class FakeGpuCopyResult : public CopyOutputResult {
                          CopyOutputResult::Destination::kNativeTextures,
                          rect,
                          false),
-        format_(format),
         result_(TextureResult(
             gpu::Mailbox{},
             GetColorSpaceForPixelFormat(
@@ -332,7 +344,6 @@ class FakeGpuCopyResult : public CopyOutputResult {
   const TextureResult* GetTextureResult() const final { return &result_; }
 
  private:
-  Format format_;
   TextureResult result_;
 };
 
@@ -367,30 +378,31 @@ class SolidColorI420Result : public CopyOutputResult {
                          false),
         color_(color) {}
 
-  bool ReadI420Planes(uint8_t* y_out,
+  bool ReadI420Planes(base::span<uint8_t> y_out,
                       int y_out_stride,
-                      uint8_t* u_out,
+                      base::span<uint8_t> u_out,
                       int u_out_stride,
-                      uint8_t* v_out,
+                      base::span<uint8_t> v_out,
                       int v_out_stride) const final {
-    CHECK(y_out);
-    CHECK(y_out_stride >= size().width());
-    CHECK(u_out);
+    CHECK_GE(y_out_stride, size().width());
+    // TODO(crbug.com/384959115): Add a helper to compute plane sizes in
+    // CopyOutputResult.
     const int chroma_width = (size().width() + 1) / 2;
-    CHECK(u_out_stride >= chroma_width);
-    CHECK(v_out);
-    CHECK(v_out_stride >= chroma_width);
-
-    for (int i = 0; i < size().height(); ++i, y_out += y_out_stride) {
-      memset(y_out, color_.y, size().width());
-    }
+    CHECK_GE(u_out_stride, chroma_width);
+    CHECK_GE(v_out_stride, chroma_width);
     const int chroma_height = (size().height() + 1) / 2;
-    for (int i = 0; i < chroma_height; ++i, u_out += u_out_stride) {
-      memset(u_out, color_.u, chroma_width);
-    }
-    for (int i = 0; i < chroma_height; ++i, v_out += v_out_stride) {
-      memset(v_out, color_.v, chroma_width);
-    }
+
+    auto fill_fn = [](base::span<uint8_t> buffer, size_t stride_bytes,
+                      size_t width_bytes, size_t height, uint8_t color) {
+      for (size_t i = 0; i < height; ++i) {
+        std::ranges::fill(buffer.subspan(i * stride_bytes, width_bytes), color);
+      }
+    };
+
+    fill_fn(y_out, y_out_stride, size().width(), size().height(), color_.y);
+    fill_fn(u_out, u_out_stride, chroma_width, chroma_height, color_.u);
+    fill_fn(v_out, v_out_stride, chroma_width, chroma_height, color_.v);
+
     return true;
   }
 
@@ -444,14 +456,14 @@ class FakeCapturableFrameSink : public CapturableFrameSink {
       out.render_pass_subrect = gfx::Rect(out.root_render_pass_size);
     } else if (IsRegionCapture(sub_target)) {
       current_capture_id_ = SubtreeCaptureId();
-      current_crop_id_ = absl::get<RegionCaptureCropId>(sub_target);
+      current_crop_id_ = std::get<RegionCaptureCropId>(sub_target);
       if (current_crop_id_.is_zero() || crop_bounds_.IsEmpty()) {
         return {};
       }
 
       out.render_pass_subrect = crop_bounds_;
     } else if (IsSubtreeCapture(sub_target)) {
-      current_capture_id_ = absl::get<SubtreeCaptureId>(sub_target);
+      current_capture_id_ = std::get<SubtreeCaptureId>(sub_target);
       current_crop_id_ = RegionCaptureCropId();
       if (!current_capture_id_.is_valid() || capture_bounds_.IsEmpty()) {
         return {};
@@ -763,54 +775,30 @@ class TestGmbVideoFramePoolContext
       : context_provider_(TestContextProvider::Create()) {}
   ~TestGmbVideoFramePoolContext() override = default;
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) override {
-    return std::make_unique<media::FakeGpuMemoryBuffer>(size, format);
-  }
-
-  scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-      gfx::GpuMemoryBuffer* gpu_memory_buffer,
-      const SharedImageFormat& si_format,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      gpu::SyncToken& sync_token) override {
-    return context_provider_->SharedImageInterface()->CreateSharedImage(
-        {si_format, gpu_memory_buffer->GetSize(), color_space, surface_origin,
-         alpha_type, usage, "FrameSinkVideoCapturerImplUnittest"},
-        gpu_memory_buffer->CloneHandle());
-  }
-
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gfx::Size& size,
       gfx::BufferUsage buffer_usage,
       const SharedImageFormat& si_format,
       const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       gpu::SyncToken& sync_token) override {
     context_provider_->SharedImageInterface()
         ->UseTestGMBInSharedImageCreationWithBufferUsage();
     return context_provider_->SharedImageInterface()->CreateSharedImage(
-        {si_format, size, color_space, surface_origin, alpha_type, usage,
+        {si_format, size, color_space, usage,
          "FrameSinkVideoCapturerImplUnittest"},
         gpu::kNullSurfaceHandle, buffer_usage);
   }
 
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          scoped_refptr<gpu::ClientSharedImage> shared_image,
-                          const bool is_mappable_si_enabled) override {
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     CHECK(shared_image);
-    if (is_mappable_si_enabled) {
-      shared_image->UpdateDestructionSyncToken(sync_token);
-    } else {
-      context_provider_->SharedImageInterface()->DestroySharedImage(
-          sync_token, std::move(shared_image));
-    }
+    shared_image->UpdateDestructionSyncToken(sync_token);
+  }
+
+  const gpu::SharedImageCapabilities& GetCapabilities() override {
+    return context_provider_->SharedImageInterface()->GetCapabilities();
   }
 
  private:

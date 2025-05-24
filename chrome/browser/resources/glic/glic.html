@@ -1,0 +1,107 @@
+<!DOCTYPE HTML>
+<html style="overflow: hidden">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="glic.css">
+  <script type="module" src="main.js"></script>
+</head>
+<body id="panelContainer">
+  <section hidden class="dialog panel" id="offlinePanel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button" iron-icon="cr:close"
+            aria-label="$i18n{closeButtonLabel}">
+        </cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:offline"></cr-icon></div>
+        <p class="headline">$i18n{offlineNoticeHeader}</p>
+        <p>$i18n{offlineNoticeAction}</p>
+        <cr-button class="tonal-button" id="retry"
+          role="button">$i18n{offlineNoticeActionButton}</cr-button>
+      </div>
+    </div>
+  </section>
+  <section hidden class="dialog panel" id="loadingPanel">
+    <div class="container">
+      <div class="header">
+        <div class="placeholder p1"></div>
+        <cr-icon-button class="close-button" iron-icon="cr:close"
+            aria-label="$i18n{closeButtonLabel}">
+        </cr-icon-button>
+      </div>
+      <div class="secondline">
+        <div class="placeholder p2"></div>
+        <div class="placeholder p3"></div>
+      </div>
+    </div>
+  </section>
+  <section hidden class="dialog panel" id="errorPanel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button" iron-icon="cr:close"
+            aria-label="$i18n{closeButtonLabel}">
+        </cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:error"></cr-icon></div>
+        <p class="headline">$i18n{errorNoticeHeader}</p>
+        <p>$i18n{errorNotice}</p>
+        <cr-button class="tonal-button" id="reload"
+          role="button">$i18n{errorNoticeActionButton}</cr-button>
+      </div>
+    </div>
+  </section>
+  <section hidden class="dialog panel" id="unavailablePanel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button" iron-icon="cr:close"
+            aria-label="$i18n{closeButtonLabel}">
+        </cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:error"></cr-icon></div>
+        <p class="headline">$i18n{errorNoticeHeader}</p>
+      </div>
+    </div>
+  </section>
+  <section hidden class="dialog panel" id="signInPanel">
+    <div class="container">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button" iron-icon="cr:close"
+            aria-label="$i18n{closeButtonLabel}">
+        </cr-icon-button>
+      </div>
+      <div class="notice">
+        <div class="icon"><cr-icon icon="glic:person-alert"></cr-icon></div>
+        <p class="headline">$i18n{signInNoticeHeader}</p>
+        <p>$i18n{signInNotice}</p>
+        <cr-button class="tonal-button" id="signInButton"
+          role="button">$i18n{signInNoticeActionButton}</cr-button>
+      </div>
+    </div>
+  </section>
+  <section hidden class="panel" id="guestPanel">
+    <div id="webviewContainer"></div>
+    <div class="outerheader" id="webviewHeader">
+      <div class="header">
+        <img class="logo" src="glic_logo.svg">
+        <cr-icon-button class="close-button" iron-icon="cr:close"
+            aria-label="$i18n{closeButtonLabel}">
+        </cr-icon-button>
+      </div>
+    </div>
+  </section>
+  <section class="hidden overlay" id="unresponsiveOverlay">
+    <div class="container">
+      <div class="message">
+        <cr-icon icon="cr:sync"></cr-icon> $i18n{unresponsiveMessage}
+      </div>
+    </div>
+  </section>
+</body>
+</html>

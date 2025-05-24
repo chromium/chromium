@@ -28,11 +28,10 @@ void WrongHWIDScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
   builder->Add("wrongHWIDScreenHeader", IDS_WRONG_HWID_SCREEN_HEADER);
   builder->Add("wrongHWIDMessageFirstPart",
-                IDS_WRONG_HWID_SCREEN_MESSAGE_FIRST_PART);
+               IDS_WRONG_HWID_SCREEN_MESSAGE_FIRST_PART);
   builder->Add("wrongHWIDMessageSecondPart",
-                IDS_WRONG_HWID_SCREEN_MESSAGE_SECOND_PART);
-  builder->Add("wrongHWIDScreenSkipLink",
-                IDS_WRONG_HWID_SCREEN_SKIP_LINK);
+               IDS_WRONG_HWID_SCREEN_MESSAGE_SECOND_PART);
+  builder->Add("wrongHWIDScreenSkipLink", IDS_WRONG_HWID_SCREEN_SKIP_LINK);
 }
 
 }  // namespace ash

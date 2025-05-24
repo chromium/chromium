@@ -23,24 +23,22 @@ This script is tested and works fine with the following video sites:
   * http://crosvideo.appspot.com
 """
 
+import dataclasses
 import logging
 import os
 import posixpath
 import sys
 import time
-from typing import Any, List, Optional
+from typing import Any
 import unittest
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+import py_utils
 
+import gpu_path_util
 from gpu_tests import common_browser_args as cba
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import ipg_utils
-
-import gpu_path_util
-
-import py_utils
 
 # Waits for [x] seconds after browser launch before measuring power to
 # avoid startup tasks affecting results.
@@ -218,18 +216,18 @@ class _PowerMeasurementTestArguments():
   test_func: str
   repeat: int
   bypass_ipg: bool
-  underlay: Optional[bool] = None
-  fullscreen: Optional[bool] = None
-  outliers: Optional[int] = None
-  ipg_logdir: Optional[str] = None
-  ipg_duration: Optional[int] = None
-  ipg_delay: Optional[int] = None
-  ipg_resolution: Optional[int] = None
+  underlay: bool | None = None
+  fullscreen: bool | None = None
+  outliers: int | None = None
+  ipg_logdir: str | None = None
+  ipg_duration: int | None = None
+  ipg_delay: int | None = None
+  ipg_resolution: int | None = None
 
 
 class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
-  _url_mode: Optional[bool] = None
+  _url_mode: bool | None = None
 
   @classmethod
   def Name(cls) -> str:
@@ -378,11 +376,11 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   def RunActualGpuTest(self, test_path: str, args: ct.TestArgs) -> None:
     test_params = args[0]
     assert test_params is not None
-    prefixed_test_func_name = '_RunTest_%s' % test_params.test_func
+    prefixed_test_func_name = f'_RunTest_{test_params.test_func}'
     getattr(self, prefixed_test_func_name)(test_path, test_params)
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -536,7 +534,7 @@ class PowerMeasurementIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       logging.info('Summary: %s', str(summary))
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',

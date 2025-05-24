@@ -1,5 +1,5 @@
 [
-    Exposed=(Window,Worker)
+    Exposed=(Window,Worker,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface CompressionStream {
     [CallWith=ScriptState, RaisesException, MeasureAs=CompressionStreamConstructor] constructor(DOMString format);
     readonly attribute ReadableStream readable;

@@ -8,6 +8,8 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -15,6 +17,7 @@ import java.lang.annotation.RetentionPolicy;
  * Tasks for posting a Android notification. Use this with {@link ThrottlingNotificationScheduler}
  * to schedule a task that can send a notification to the NotificationManager.
  */
+@NullMarked
 public class PendingNotificationTask {
     @IntDef({Priority.HIGH, Priority.LOW})
     @Retention(RetentionPolicy.SOURCE)

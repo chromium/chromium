@@ -113,9 +113,10 @@ void FakeCupsPrintersManager::SetPrinterSetupResult(
 
 void FakeCupsPrintersManager::QueryPrinterForAutoConf(
     const Printer& printer,
-    base::OnceCallback<void(bool)> callback) {
+    base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)> callback) {
   std::move(callback).Run(
-      !printers_marked_as_not_autoconf_.contains(printer.id()));
+      !printers_marked_as_not_autoconf_.contains(printer.id()),
+      chromeos::IppPrinterInfo{});
 }
 
 void FakeCupsPrintersManager::TriggerLocalPrintersObserver() {

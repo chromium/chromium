@@ -7,17 +7,11 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/components/language/AndroidLanguageMetricsBridge.java",
-    "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
-  ]
+  sources = [ "java/src/org/chromium/components/language/AndroidLanguageMetricsBridge.java" ]
 }
 
 source_set("language_bridge") {
-  sources = [
-    "android_language_metrics_bridge.cc",
-    "geo_language_provider_bridge.cc",
-  ]
+  sources = [ "android_language_metrics_bridge.cc" ]
   deps = [
     ":jni_headers",
     "//base",
@@ -29,11 +23,9 @@ android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/language/AndroidLanguageMetricsBridge.java",
-    "java/src/org/chromium/components/language/GeoLanguageProviderBridge.java",
     "java/src/org/chromium/components/language/LanguageProfileController.java",
     "java/src/org/chromium/components/language/LanguageProfileDelegate.java",
     "java/src/org/chromium/components/language/LanguageProfileMetricsLogger.java",
-    "java/src/org/chromium/components/language/LocaleManagerDelegate.java",
   ]
 
   deps = [
@@ -43,11 +35,6 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
-}
-
-# TODO(agrieve): Delete once unused internally.
-java_group("ulp_delegate_java") {
-  public_deps = [ ":java" ]
 }
 
 robolectric_library("junit") {

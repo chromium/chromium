@@ -44,6 +44,7 @@ class FilePropertyBag;
 class FileMetadata;
 class FormControlState;
 class ExecutionContext;
+class ScriptObject;
 
 class CORE_EXPORT File final : public Blob {
   DEFINE_WRAPPERTYPEINFO();
@@ -101,6 +102,7 @@ class CORE_EXPORT File final : public Blob {
 
   static File* CreateWithRelativePath(ExecutionContext* context,
                                       const String& path,
+                                      const String& name,
                                       const String& relative_path);
 
   // If filesystem files live in the remote filesystem, the port might pass the
@@ -230,7 +232,7 @@ class CORE_EXPORT File final : public Blob {
   // http://www.w3.org/TR/FileAPI/#dfn-lastModifiedDate
   // This method calls CaptureSnapshotIfNeeded, and thus can involve synchronous
   // IPC and file operations.
-  ScriptValue lastModifiedDate(ScriptState* script_state) const;
+  ScriptObject lastModifiedDate(ScriptState* script_state) const;
 
   // Returns File's last modified time.
   // If the modification time isn't known, the current time is returned.

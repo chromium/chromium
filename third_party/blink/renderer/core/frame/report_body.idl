@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/reporting/blob/master/EXPLAINER.md#reportingobserver---observing-reports-from-javascript
+// https://w3c.github.io/reporting/#reportbody
 
 [
-    LegacyNoInterfaceObject
+    Exposed=(Window, Worker)
 ] interface ReportBody {
     [CallWith=ScriptState] object toJSON();
 };

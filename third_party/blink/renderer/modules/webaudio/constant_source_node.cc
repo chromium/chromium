@@ -22,7 +22,7 @@ ConstantSourceNode::ConstantSourceNode(BaseAudioContext& context)
       offset_(AudioParam::Create(
           context,
           Uuid(),
-          AudioParamHandler::kParamTypeConstantSourceOffset,
+          AudioParamHandler::AudioParamType::kParamTypeConstantSourceOffset,
           kDefaultOffsetValue,
           AudioParamHandler::AutomationRate::kAudio,
           AudioParamHandler::AutomationRateMode::kVariable)) {

@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
@@ -137,7 +138,8 @@ TEST_F(InMemoryURLIndexTypesTest, StaticFunctions) {
   // Test MatchTermInString
   TermMatches matches_g =
       MatchTermInString(u"x", u"axbxcxdxex fxgx/hxixjx.kx", 123);
-  const size_t expected_offsets[] = {1, 3, 5, 7, 9, 12, 14, 17, 19, 21, 24};
+  const auto expected_offsets =
+      std::to_array<size_t>({1, 3, 5, 7, 9, 12, 14, 17, 19, 21, 24});
   ASSERT_EQ(std::size(expected_offsets), matches_g.size());
   for (size_t i = 0; i < std::size(expected_offsets); ++i)
     EXPECT_EQ(expected_offsets[i], matches_g[i].offset);
@@ -152,7 +154,8 @@ TEST_F(InMemoryURLIndexTypesTest, OffsetsAndTermMatches) {
   matches_a.push_back(TermMatch(3, 10, 1));
   matches_a.push_back(TermMatch(4, 14, 5));
   std::vector<size_t> offsets = OffsetsFromTermMatches(matches_a);
-  const size_t expected_offsets_a[] = {1, 3, 4, 7, 9, 10, 10, 11, 14, 19};
+  const auto expected_offsets_a =
+      std::to_array<size_t>({1, 3, 4, 7, 9, 10, 10, 11, 14, 19});
   ASSERT_EQ(offsets.size(), std::size(expected_offsets_a));
   for (size_t i = 0; i < offsets.size(); ++i)
     EXPECT_EQ(expected_offsets_a[i], offsets[i]);
@@ -160,7 +163,7 @@ TEST_F(InMemoryURLIndexTypesTest, OffsetsAndTermMatches) {
   // Test ReplaceOffsetsInTermMatches
   offsets[4] = std::u16string::npos;  // offset of third term
   TermMatches matches_b = ReplaceOffsetsInTermMatches(matches_a, offsets);
-  const size_t expected_offsets_b[] = {1, 4, 10, 14};
+  const auto expected_offsets_b = std::to_array<size_t>({1, 4, 10, 14});
   ASSERT_EQ(std::size(expected_offsets_b), matches_b.size());
   for (size_t i = 0; i < matches_b.size(); ++i)
     EXPECT_EQ(expected_offsets_b[i], matches_b[i].offset);

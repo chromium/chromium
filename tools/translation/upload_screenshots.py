@@ -34,12 +34,21 @@ import helper.git_helper as git_helper
 here = os.path.dirname(os.path.realpath(__file__))
 src_path = os.path.normpath(os.path.join(here, '..', '..'))
 
+# To keep cog workspaces clean by not creatiing .pyc files
+if (
+    here.startswith('/google/cog/cloud')
+    and not os.environ.get('PYTHONPYCACHEPREFIX')
+  ):
+  os.environ.setdefault('PYTHONDONTWRITEBYTECODE', '1')
+
+
 depot_tools_path = os.path.normpath(
     os.path.join(src_path, 'third_party', 'depot_tools'))
 sys.path.insert(0, depot_tools_path)
 
 import upload_to_google_storage
 import download_from_google_storage
+import gclient_utils
 
 sys.path.remove(depot_tools_path)
 
@@ -92,11 +101,13 @@ def query_yes_no(question, default='no'):
     print("Please respond with 'yes' or 'no' (or 'y' or 'n').")
 
 
-def find_screenshots(repo_root, translation_expectations):
+def find_screenshots(repo_root, translation_expectations, is_cog):
   """Returns a list of translation related .png files in the repository."""
+  all_grds = []
+  if not is_cog:
+    all_grds = git_helper.list_grds_in_repository(repo_root)
   translatable_grds = translation_helper.get_translatable_grds(
-      repo_root, git_helper.list_grds_in_repository(repo_root),
-      translation_expectations)
+      repo_root, all_grds, translation_expectations, is_cog)
 
   # Add the paths of grds and any files they include. This includes grdp files
   # and files included via <structure> elements.
@@ -160,14 +171,17 @@ def main():
       action='store_true',
       help='Upload screenshots for strings in the downstream clank directory')
   args = parser.parse_args()
+  is_cog = gclient_utils.IsEnvCog()
   if args.clank_internal:
     screenshots = find_screenshots(
         os.path.join(src_path, "clank"),
-        os.path.join(src_path, INTERNAL_TRANSLATION_EXPECTATIONS_PATH))
+        os.path.join(src_path, INTERNAL_TRANSLATION_EXPECTATIONS_PATH),
+        is_cog)
 
   else:
     screenshots = find_screenshots(
-        src_path, os.path.join(src_path, TRANSLATION_EXPECTATIONS_PATH))
+        src_path, os.path.join(src_path, TRANSLATION_EXPECTATIONS_PATH),
+        is_cog)
   if not screenshots:
     print ("No screenshots found.\n\n"
            "- Screenshots must be located in the correct directory.\n"

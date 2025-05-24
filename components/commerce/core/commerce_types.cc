@@ -62,12 +62,14 @@ DiscountInfo::~DiscountInfo() = default;
 UrlInfo::UrlInfo() = default;
 UrlInfo::UrlInfo(const GURL& url,
                  const std::u16string& title,
-                 const std::optional<GURL> favicon_url,
-                 const std::optional<GURL> thumbnail_url)
+                 std::optional<GURL> favicon_url,
+                 std::optional<GURL> thumbnail_url,
+                 std::optional<std::string> previewText)
     : url(url),
       title(title),
-      favicon_url(favicon_url),
-      thumbnail_url(thumbnail_url) {}
+      favicon_url(std::move(favicon_url)),
+      thumbnail_url(std::move(thumbnail_url)),
+      previewText(std::move(previewText)) {}
 UrlInfo::UrlInfo(const UrlInfo&) = default;
 UrlInfo& UrlInfo::operator=(const UrlInfo& other) = default;
 UrlInfo::~UrlInfo() = default;
@@ -81,22 +83,5 @@ EntryPointInfo::EntryPointInfo(
 EntryPointInfo::~EntryPointInfo() = default;
 EntryPointInfo::EntryPointInfo(const EntryPointInfo&) = default;
 EntryPointInfo& EntryPointInfo::operator=(const EntryPointInfo&) = default;
-
-ParcelTrackingStatus::ParcelTrackingStatus() = default;
-ParcelTrackingStatus::ParcelTrackingStatus(const ParcelTrackingStatus&) =
-    default;
-ParcelTrackingStatus& ParcelTrackingStatus::operator=(
-    const ParcelTrackingStatus&) = default;
-ParcelTrackingStatus::~ParcelTrackingStatus() = default;
-ParcelTrackingStatus::ParcelTrackingStatus(const ParcelStatus& parcel_status) {
-  carrier = parcel_status.parcel_identifier().carrier();
-  tracking_id = parcel_status.parcel_identifier().tracking_id();
-  state = parcel_status.parcel_state();
-  tracking_url = GURL(parcel_status.tracking_url());
-  if (parcel_status.estimated_delivery_time_usec() != 0) {
-    estimated_delivery_time = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(parcel_status.estimated_delivery_time_usec()));
-  }
-}
 
 }  // namespace commerce

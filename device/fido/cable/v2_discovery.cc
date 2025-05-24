@@ -71,7 +71,7 @@ Discovery::Discovery(
       invalidated_pairing_callback_(std::move(invalidated_pairing_callback)),
       event_callback_(std::move(event_callback)),
       must_support_ctap_(must_support_ctap) {
-  static_assert(EXTENT(*qr_generator_key) == kQRSecretSize + kQRSeedSize, "");
+  static_assert(kQRKeySize == kQRSecretSize + kQRSeedSize);
   advert_stream_->Connect(
       base::BindRepeating(&Discovery::OnBLEAdvertSeen, base::Unretained(this)));
 
@@ -209,19 +209,18 @@ void Discovery::PairingIsInvalid(std::unique_ptr<Pairing> pairing) {
 
 // static
 std::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
-    const std::optional<base::span<const uint8_t, kQRKeySize>>
-        qr_generator_key) {
+    std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key) {
   if (!qr_generator_key) {
     return std::nullopt;
   }
 
   UnpairedKeys ret;
-  static_assert(EXTENT(*qr_generator_key) == kQRSeedSize + kQRSecretSize, "");
+  static_assert(kQRKeySize == kQRSeedSize + kQRSecretSize);
   ret.local_identity_seed = fido_parsing_utils::Materialize(
       qr_generator_key->subspan<0, kQRSeedSize>());
   ret.qr_secret = fido_parsing_utils::Materialize(
       qr_generator_key->subspan<kQRSeedSize, kQRSecretSize>());
-  ret.eid_key = Derive<EXTENT(ret.eid_key)>(
+  ret.eid_key = Derive<ret.eid_key.size()>(
       ret.qr_secret, base::span<const uint8_t>(), DerivedValueType::kEIDKey);
   return ret;
 }
@@ -244,10 +243,9 @@ std::vector<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
       continue;
     }
 
-    std::optional<Discovery::UnpairedKeys> keys =
-        KeysFromQRGeneratorKey(sized_server_link_data_span.value());
-    if (keys.has_value()) {
-      ret.emplace_back(std::move(keys.value()));
+    if (std::optional<Discovery::UnpairedKeys> keys =
+            KeysFromQRGeneratorKey(sized_server_link_data_span.value())) {
+      ret.emplace_back(*std::move(keys));
     }
   }
 

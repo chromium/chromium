@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/notifier_metadata.h"
 #include "ash/public/cpp/notifier_settings_controller.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -37,6 +38,12 @@ class NotifierSettingsViewTest : public AshTestBase {
     ash_test_helper()->notifier_settings_controller()->set_no_notifiers(
         no_notifiers);
   }
+
+  std::vector<NotifierMetadata> GetNotifiersMetadata() {
+    return ash_test_helper()
+        ->notifier_settings_controller()
+        ->GetTestNotifiersMetadata();
+  }
 };
 
 NotifierSettingsViewTest::NotifierSettingsViewTest() = default;
@@ -57,6 +64,39 @@ TEST_F(NotifierSettingsViewTest, TestEmptyNotifierView) {
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(notifier_settings_view->no_notifiers_view_->GetVisible());
   EXPECT_FALSE(notifier_settings_view->top_label_->GetVisible());
+}
+
+TEST_F(NotifierSettingsViewTest, NotifierButtonsAccessibleProperties) {
+  SetNoNotifiers(false);
+  auto notifier_settings_view = std::make_unique<NotifierSettingsView>();
+  std::vector<NotifierMetadata> notifiers = GetNotifiersMetadata();
+  // Wait for mojo.
+  base::RunLoop().RunUntilIdle();
+
+  size_t index = 0;
+  ASSERT_EQ(notifiers.size(), notifier_settings_view->buttons_.size());
+  for (auto button : notifier_settings_view->buttons_) {
+    ui::AXNodeData data;
+    ui::AXNodeData checkbox_data;
+    button->checkbox_->GetViewAccessibility().GetAccessibleNodeData(
+        &checkbox_data);
+    button->GetViewAccessibility().GetAccessibleNodeData(&data);
+    EXPECT_EQ(data.role, ax::mojom::Role::kCheckBox);
+    EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              notifiers[index].name);
+    ax::mojom::CheckedState checked = notifiers[index].enabled
+                                          ? ax::mojom::CheckedState::kTrue
+                                          : ax::mojom::CheckedState::kFalse;
+    EXPECT_EQ(data.GetCheckedState(), checked);
+    EXPECT_EQ(data.GetRestriction(), checkbox_data.GetRestriction());
+    EXPECT_EQ(data.HasState(ax::mojom::State::kHovered),
+              checkbox_data.HasState(ax::mojom::State::kHovered));
+    EXPECT_EQ(data.HasState(ax::mojom::State::kDefault),
+              checkbox_data.HasState(ax::mojom::State::kDefault));
+    EXPECT_EQ(data.GetDefaultActionVerb(),
+              checkbox_data.GetDefaultActionVerb());
+    ++index;
+  }
 }
 
 TEST_F(NotifierSettingsViewTest, AccessibleProperties) {

@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_node.h"
@@ -21,6 +22,11 @@
 namespace ui {
 
 namespace {
+
+AXNode* GetNodeFromTree(AXTreeID tree_id, AXNodeID node_id) {
+  CHECK(AXTreeManagerBase::GetManager(tree_id) != nullptr) << "Invalid Tree ID";
+  return AXTreeManagerBase::GetManager(tree_id)->GetNode(node_id);
+}
 
 class AXTreeManagerBaseTest : public ::testing::Test {
  public:
@@ -149,9 +155,15 @@ class TestAXTreeObserver final : public AXTreeObserver {
   TestAXTreeObserver(const TestAXTreeObserver&) = delete;
   TestAXTreeObserver& operator=(const TestAXTreeObserver&) = delete;
 
+  void Observe(AXTree* tree) {
+    ASSERT_FALSE(observation_.IsObserving());
+    observation_.Observe(tree);
+  }
+
   void OnTreeManagerWillBeRemoved(AXTreeID previous_tree_id) override {
     ++manager_remove_count_;
     previous_tree_id_ = previous_tree_id;
+    observation_.Reset();
   }
 
   int manager_remove_count() const { return manager_remove_count_; }
@@ -161,6 +173,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
  private:
   int manager_remove_count_ = 0;
   AXTreeID previous_tree_id_;
+  base::ScopedObservation<AXTree, AXTreeObserver> observation_{this};
 };
 
 }  // namespace
@@ -244,16 +257,14 @@ TEST_F(AXTreeManagerBaseTest, ReleaseTree) {
 }
 
 TEST_F(AXTreeManagerBaseTest, GetNode) {
-  EXPECT_EQ(simple_manager_.GetRoot(), AXTreeManagerBase::GetNodeFromTree(
-                                           simple_tree_id_, /* AXNodeID */ 1));
-  EXPECT_EQ(
-      complex_manager_.GetRoot(),
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, /* AXNodeID */ 1));
+  EXPECT_EQ(simple_manager_.GetRoot(),
+            GetNodeFromTree(simple_tree_id_, /* AXNodeID */ 1));
+  EXPECT_EQ(complex_manager_.GetRoot(),
+            GetNodeFromTree(complex_tree_id_, /* AXNodeID */ 1));
   EXPECT_EQ(simple_manager_.GetRoot(),
             simple_manager_.GetNode(/* AXNodeID */ 1));
 
-  AXNode* iframe =
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, kIframeID);
+  AXNode* iframe = GetNodeFromTree(complex_tree_id_, kIframeID);
   ASSERT_NE(nullptr, iframe);
   EXPECT_EQ(kIframeID, iframe->id());
 }
@@ -262,8 +273,7 @@ TEST_F(AXTreeManagerBaseTest, ParentChildTreeRelationship) {
   EXPECT_EQ(nullptr, empty_manager_.GetRoot());
   EXPECT_EQ(nullptr, empty_manager_.GetHostNode());
 
-  AXNode* iframe =
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, kIframeID);
+  AXNode* iframe = GetNodeFromTree(complex_tree_id_, kIframeID);
   ASSERT_NE(nullptr, iframe);
   const AXNode* simple_manager_root = simple_manager_.GetTree()->root();
   ASSERT_NE(nullptr, simple_manager_root);
@@ -279,8 +289,7 @@ TEST_F(AXTreeManagerBaseTest, ParentChildTreeRelationship) {
 }
 
 TEST_F(AXTreeManagerBaseTest, AttachingAndDetachingChildTrees) {
-  AXNode* iframe =
-      AXTreeManagerBase::GetNodeFromTree(complex_tree_id_, kIframeID);
+  AXNode* iframe = GetNodeFromTree(complex_tree_id_, kIframeID);
   ASSERT_NE(nullptr, iframe);
   AXNode* root = complex_manager_.GetTree()->root();
   ASSERT_NE(nullptr, root);
@@ -328,7 +337,7 @@ TEST_F(AXTreeManagerBaseTest, AttachingAndDetachingChildTrees) {
 
 TEST_F(AXTreeManagerBaseTest, Observers) {
   TestAXTreeObserver observer;
-  simple_manager_.GetTree()->AddObserver(&observer);
+  observer.Observe(simple_manager_.GetTree());
   EXPECT_TRUE(simple_manager_.GetTree()->HasObserver(&observer));
   EXPECT_FALSE(complex_manager_.GetTree()->HasObserver(&observer));
 
@@ -341,7 +350,7 @@ TEST_F(AXTreeManagerBaseTest, Observers) {
   EXPECT_EQ(1, observer.manager_remove_count());
   EXPECT_EQ(simple_tree_id_, observer.previous_tree_id());
 
-  simple_manager_.GetTree()->AddObserver(&observer);
+  observer.Observe(simple_manager_.GetTree());
   simple_manager_.ReleaseTree();
   EXPECT_EQ(2, observer.manager_remove_count());
   EXPECT_EQ(new_tree_id, observer.previous_tree_id());

@@ -4,14 +4,14 @@
 
 #include "ios/chrome/browser/overlays/model/public/overlay_response_support.h"
 
-#include "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
+#include "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #include "testing/platform_test.h"
 
 namespace {
 // Fake response info types for use in tests.
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(FirstInfo);
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(SecondInfo);
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(ThirdInfo);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(FirstInfo);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(SecondInfo);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(ThirdInfo);
 }  // namespace
 
 using OverlayResponseSupportTest = PlatformTest;

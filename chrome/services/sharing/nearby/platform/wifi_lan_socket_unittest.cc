@@ -16,8 +16,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class WifiLanSocketTest : public ::testing::Test {
  public:
@@ -126,5 +125,4 @@ TEST_F(WifiLanSocketTest, Disconnect) {
   EXPECT_TRUE(wifi_lan_socket_->IsClosed());
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

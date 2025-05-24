@@ -2,7 +2,7 @@ Name: Parcelize Runtime
 Short Name: kotlin-parcelize-runtime
 URL: https://kotlinlang.org/
 Version: 1.9.22
-License: Apache Version 2.0
+License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

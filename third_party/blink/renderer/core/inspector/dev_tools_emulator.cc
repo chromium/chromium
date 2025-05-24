@@ -244,7 +244,7 @@ void DevToolsEmulator::SetDoubleTapToZoomEnabled(bool enabled) {
 }
 
 bool DevToolsEmulator::DoubleTapToZoomEnabled() const {
-  return touch_event_emulation_enabled_ ? true : double_tap_to_zoom_enabled_;
+  return touch_event_emulation_enabled_ || double_tap_to_zoom_enabled_;
 }
 
 void DevToolsEmulator::SetMainFrameResizesAreOrientationChanges(bool value) {
@@ -553,7 +553,7 @@ void DevToolsEmulator::SetScriptExecutionDisabled(
     bool script_execution_disabled) {
   script_execution_disabled_ = script_execution_disabled;
   web_view_->GetPage()->GetSettings().SetScriptEnabled(
-      script_execution_disabled_ ? false : embedder_script_enabled_);
+      !script_execution_disabled_ && embedder_script_enabled_);
 }
 
 void DevToolsEmulator::SetScrollbarsHidden(bool hidden) {
@@ -561,7 +561,7 @@ void DevToolsEmulator::SetScrollbarsHidden(bool hidden) {
     return;
   scrollbars_hidden_ = hidden;
   web_view_->GetPage()->GetSettings().SetHideScrollbars(
-      scrollbars_hidden_ ? true : embedder_hide_scrollbars_);
+      scrollbars_hidden_ || embedder_hide_scrollbars_);
 }
 
 void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
@@ -569,7 +569,7 @@ void DevToolsEmulator::SetDocumentCookieDisabled(bool disabled) {
     return;
   document_cookie_disabled_ = disabled;
   web_view_->GetPage()->GetSettings().SetCookieEnabled(
-      document_cookie_disabled_ ? false : embedder_cookie_enabled_);
+      !document_cookie_disabled_ && embedder_cookie_enabled_);
 }
 
 void DevToolsEmulator::SetAutoDarkModeOverride(bool enabled) {

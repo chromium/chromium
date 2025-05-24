@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/core/clipboard/clipboard_utilities.h"
 
+#include <string>
+
 #include "base/containers/span.h"
-#include "mojo/public/cpp/base/big_buffer.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -41,15 +43,14 @@ TEST(ClipboardUtilitiesTest, URLToImageMarkupEmbeddedNull) {
   const char kTitleWithNull[] = "\0";
   const char kExpectedOutputWithNull[] =
       "<img src=\"http://test.example/%00.png\" alt=\"\0\"/>";
-  EXPECT_EQ(
-      String(kExpectedOutputWithNull, sizeof(kExpectedOutputWithNull) - 1),
-      URLToImageMarkup(
-          KURL(NullURL(), String(kURLWithNull, sizeof(kURLWithNull) - 1)),
-          String(kTitleWithNull, sizeof(kTitleWithNull) - 1)));
+  EXPECT_EQ(String(base::span_from_cstring(kExpectedOutputWithNull)),
+            URLToImageMarkup(
+                KURL(NullURL(), String(base::span_from_cstring(kURLWithNull))),
+                String(base::span_from_cstring(kTitleWithNull))));
 }
 
 TEST(ClipboardUtilitiesTest, PNGToImageMarkupEmpty) {
-  EXPECT_TRUE(PNGToImageMarkup(mojo_base::BigBuffer()).IsNull());
+  EXPECT_TRUE(PNGToImageMarkup({}).IsNull());
 }
 
 TEST(ClipboardUtilitiesTest, PNGToImageMarkup) {
@@ -66,10 +67,16 @@ TEST(ClipboardUtilitiesTest, PNGToImageMarkup) {
   Vector<uint8_t> png_data;
   EXPECT_TRUE(ImageEncoder::Encode(&png_data, pixmap, options));
 
-  mojo_base::BigBuffer png = base::as_bytes(base::make_span(png_data));
-  EXPECT_EQ(
-      R"HTML(<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAFCAYAAAB8ZH1oAAAADElEQVQYGWNgGEYAAADNAAGVVebMAAAAAElFTkSuQmCC" alt=""/>)HTML",
-      PNGToImageMarkup(png));
+  std::string markup = PNGToImageMarkup(png_data).Utf8();
+
+  // The first 16 of a PNG file are always the same, so the
+  // `StartsWith`/`EndsWith`-based assertions below are expected to succeed
+  // regardless of the exact encoding settings or the encoding library used.
+  EXPECT_THAT(
+      markup,
+      testing::StartsWith(
+          R"HTML(<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhE)HTML"));
+  EXPECT_THAT(markup, testing::EndsWith(R"HTML(" alt=""/>)HTML"));
 }
 
 }  // namespace blink

@@ -269,8 +269,7 @@ base::WeakPtr<BluetoothAdapter> BluetoothAdapterWin::GetWeakPtr() {
 
 // BluetoothAdapterWin should override SetPowered() instead.
 bool BluetoothAdapterWin::SetPoweredImpl(bool powered) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void BluetoothAdapterWin::UpdateFilter(

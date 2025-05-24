@@ -5,17 +5,24 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_CONFIG_UTILS_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_PREINSTALLED_WEB_APP_CONFIG_UTILS_H_
 
+#include <optional>
+
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
-#include "build/chromeos_buildflags.h"
 
 class Profile;
 
 namespace web_app {
+namespace test {
 
-const base::FilePath* GetPreinstalledWebAppConfigDirForTesting();
-void SetPreinstalledWebAppConfigDirForTesting(const base::FilePath* config_dir);
+std::optional<base::FilePath> GetPreinstalledWebAppConfigDirForTesting();
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+using ConfigDirAutoReset = base::AutoReset<std::optional<base::FilePath>>;
+ConfigDirAutoReset SetPreinstalledWebAppConfigDirForTesting(
+    const base::FilePath& config_dir);
+
+}  // namespace test
+
 // The directory where default web app configs are stored.
 // Empty if not applicable.
 base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile);
@@ -25,7 +32,6 @@ base::FilePath GetPreinstalledWebAppConfigDirFromCommandLine(Profile* profile);
 // devices. Empty if not applicable.
 base::FilePath GetPreinstalledWebAppExtraConfigDirFromCommandLine(
     Profile* profile);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // The directory where default web app configs are stored.
 // Empty if not applicable.

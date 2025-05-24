@@ -11,8 +11,13 @@ from json import JSONEncoder
 from grit import constants
 from grit.node import message
 
-def Format(root, lang='en', output_dir='.'):
+
+def Format(root, lang='en', gender=None, output_dir='.'):
   """Format the messages as JSON."""
+
+  assert gender is None, "chrome_message_json doesn't support gender " \
+      f"translations, yet Format() was called with gender {gender}"
+
   yield '{'
 
   encoder = JSONEncoder(ensure_ascii=False)
@@ -25,15 +30,17 @@ def Format(root, lang='en', output_dir='.'):
       if id.startswith('IDR_') or id.startswith('IDS_'):
         id = id[4:]
 
-      translation_missing = child.GetCliques()[0].clique.get(lang) is None;
+      translation_missing = not child.GetCliques()[0].HasTranslation(
+          lang, constants.DEFAULT_GENDER)
       if (child.ShouldFallbackToEnglish() and translation_missing
           and lang not in constants.PSEUDOLOCALES):
         # Skip the string if it's not translated. Chrome will fallback
         # to English automatically.
         continue
 
-      loc_message = encoder.encode(child.ws_at_start + child.Translate(lang) +
-                                   child.ws_at_end)
+      loc_message = encoder.encode(
+          child.ws_at_start + child.Translate(lang, constants.DEFAULT_GENDER) +
+          child.ws_at_end)
 
       # Replace $n place-holders with $n$ and add an appropriate "placeholders"
       # entry. Note that chrome.i18n.getMessage only supports 9 placeholders:

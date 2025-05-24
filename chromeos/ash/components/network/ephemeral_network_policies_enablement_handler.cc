@@ -41,11 +41,6 @@ void EphemeralNetworkPoliciesEnablementHandler::SetDevicePrefs(
     return;
   }
 
-  if (!features::CanEphemeralNetworkPoliciesBeEnabledByPolicy()) {
-    // The policy should not be respected.
-    return;
-  }
-
   ephemeral_network_policies_enabled_pref_ =
       std::make_unique<BooleanPrefMember>();
   ephemeral_network_policies_enabled_pref_->Init(
@@ -59,8 +54,6 @@ void EphemeralNetworkPoliciesEnablementHandler::SetDevicePrefs(
 }
 
 void EphemeralNetworkPoliciesEnablementHandler::EvaluatePolicyValue() {
-  // Only observing if the policy should be respected.
-  DCHECK(features::CanEphemeralNetworkPoliciesBeEnabledByPolicy());
 
   // Don't do anything if ephemeral network policies are already enabled - can
   // only be disabled again by restarting ash-chrome.

@@ -50,6 +50,10 @@ class BookmarkNode;
 - (void)willChangeBookmarkNode:(const bookmarks::BookmarkNode*)bookmarkNode;
 // Called when the model is being deleted.
 - (void)bookmarkModelBeingDeleted;
+// Invoked before an extensive set of model changes is about to begin.
+- (void)extensiveBookmarkChangesBeginning;
+// Called after an extensive set of model changes has ended.
+- (void)extensiveBookmarkChangesEnded;
 @end
 
 // A bridge that translates BookmarkModelObserver C++ callbacks into ObjC
@@ -89,6 +93,8 @@ class BookmarkModelBridge : public bookmarks::BookmarkModelObserver {
   void OnWillRemoveAllUserBookmarks(const base::Location& location) override;
   void BookmarkAllUserNodesRemoved(const std::set<GURL>& removed_urls,
                                    const base::Location& location) override;
+  void ExtensiveBookmarkChangesBeginning() override;
+  void ExtensiveBookmarkChangesEnded() override;
 
   __weak id<BookmarkModelBridgeObserver> observer_;
 

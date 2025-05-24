@@ -14,7 +14,7 @@ import '../../components/common_styles/oobe_dialog_host_styles.css.js';
 import '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import type {String16} from '//resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeUiState} from '../../components/display_manager_types.js';
@@ -166,7 +166,7 @@ export class EncryptionMigration extends EncryptionMigrationBase {
         this.setSpaceInfoInString.bind(this));
   }
 
-  // eslint-disable-next-line @typescript-eslint/naming-convention
+
   override get UI_STEPS() {
     return EncryptionMigrationUiState;
   }

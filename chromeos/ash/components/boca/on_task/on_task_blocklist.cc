@@ -15,9 +15,14 @@
 #include "base/values.h"
 #include "components/google/core/common/google_util.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
+
+using ::boca::LockedNavigationOptions;
+
 constexpr char kAllTrafficWildcard[] = "*";
 
 const std::string& GetCommonUrlPrefix() {
@@ -53,8 +58,7 @@ base::Value::List GetDomainLevelTrafficFilter(const GURL& url) {
 
 base::Value::List GetLimitedTrafficFilter(const GURL& url) {
   base::Value::List allowed_traffic;
-  std::string domain_traffic_filter = "." + url.spec();
-  allowed_traffic.Append(domain_traffic_filter);
+  allowed_traffic.Append("." + url.spec());
   return allowed_traffic;
 }
 }  // namespace
@@ -67,47 +71,56 @@ OnTaskBlocklist::~OnTaskBlocklist() {
   CleanupBlocklist();
 }
 
+// static
+bool OnTaskBlocklist::IsURLInDomain(const GURL& url, const GURL& domain_url) {
+  base::Value::List domain_level_traffic_filter =
+      GetDomainLevelTrafficFilter(domain_url);
+  url_matcher::URLMatcher url_matcher;
+  url_matcher::util::AddAllowFiltersWithLimit(&url_matcher,
+                                              domain_level_traffic_filter);
+  return !url_matcher.MatchURL(url).empty();
+}
+
 policy::URLBlocklist::URLBlocklistState OnTaskBlocklist::GetURLBlocklistState(
     const GURL& url) const {
   if (current_page_restriction_level_ ==
-      OnTaskBlocklist::RestrictionLevel::kNoRestrictions) {
+      LockedNavigationOptions::OPEN_NAVIGATION) {
     return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
   }
 
-  // Enable google domain urls to be allowed to navigated to as long as we were
-  // on a google domain. This is especially to allow users to be able to
-  // navigate to other areas of google classroom or google drive files. This is
-  // only for chromeos specific use case with the OnTask app. The primary use
-  // case for the OnTask app is for managed chromebooks under the Edu licenses
-  // where they are expected to be Google Workspace users. We should allow
-  // traversing various google workspace domains so that the intended integrated
-  // workflow for Google Workspace is effective. All other use cases outside
-  // of the primary use case will not go through this code path since they have
-  // requirements for specific navigation rules set.
-  if (google_util::IsGoogleDomainUrl(previous_url_,
-                                     google_util::ALLOW_SUBDOMAIN,
-                                     google_util::ALLOW_NON_STANDARD_PORTS)) {
+  // Only allow users to navigate within Google domain URLs if the nav
+  // restriction is set to `WORKSPACE_NAVIGATION`.
+  if (current_page_restriction_level_ ==
+      LockedNavigationOptions::WORKSPACE_NAVIGATION) {
     if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
-                                       google_util::ALLOW_NON_STANDARD_PORTS) &&
-        !google_util::HasGoogleSearchQueryParam(url.query_piece())) {
+                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
       return policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST;
     }
+    return policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
+  }
+
+  if (previous_url_.is_valid() &&
+      current_page_restriction_level_ ==
+          LockedNavigationOptions::BLOCK_NAVIGATION) {
+    return previous_url_ == url
+               ? policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST
+               : policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
   }
   return url_blocklist_manager_->GetURLBlocklistState(url);
 }
 
 bool OnTaskBlocklist::IsCurrentRestrictionOneLevelDeep() {
-  return (
-      current_page_restriction_level_ ==
-          OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation ||
-      current_page_restriction_level_ ==
-          OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+  return (current_page_restriction_level_ ==
+              LockedNavigationOptions::LIMITED_NAVIGATION ||
+          current_page_restriction_level_ ==
+              LockedNavigationOptions::
+                  SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION);
 }
 
 bool OnTaskBlocklist::MaybeSetURLRestrictionLevel(
     content::WebContents* tab,
     const GURL& url,
-    OnTaskBlocklist::RestrictionLevel restriction_level) {
+    LockedNavigationOptions::NavigationType restriction_level) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
   if (!tab_id.is_valid()) {
     return false;
@@ -120,10 +133,10 @@ bool OnTaskBlocklist::MaybeSetURLRestrictionLevel(
   } else {
     child_tab_to_nav_filters_[tab_id] = restriction_level;
   }
-  if (restriction_level ==
-          OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation ||
+  if (restriction_level == LockedNavigationOptions::LIMITED_NAVIGATION ||
       restriction_level ==
-          OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation) {
+          LockedNavigationOptions::
+              SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION) {
     one_level_deep_original_url_[tab_id] = url;
   }
   return true;
@@ -132,16 +145,16 @@ bool OnTaskBlocklist::MaybeSetURLRestrictionLevel(
 void OnTaskBlocklist::SetParentURLRestrictionLevel(
     content::WebContents* tab,
     const GURL& url,
-    OnTaskBlocklist::RestrictionLevel restriction_level) {
+    LockedNavigationOptions::NavigationType restriction_level) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
   if (!tab_id.is_valid()) {
     return;
   }
   parent_tab_to_nav_filters_[tab_id] = restriction_level;
-  if (restriction_level ==
-          OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation ||
+  if (restriction_level == LockedNavigationOptions::LIMITED_NAVIGATION ||
       restriction_level ==
-          OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation) {
+          LockedNavigationOptions::
+              SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION) {
     one_level_deep_original_url_[tab_id] = url;
   }
 }
@@ -156,13 +169,13 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
   // `previous_tab_` should only be not valid when we first navigate to the
   // first tab when the OnTask SWA is first launched. Every other instance
   // should have a valid `previous_tab_`.
-  if (previous_tab_ && previous_tab_ == tab && previous_url_.is_valid() &&
+  if (previous_tab() && previous_tab() == tab && previous_url_.is_valid() &&
       previous_url_ == url) {
     return;
   }
 
   std::unique_ptr<OnTaskBlocklistSource> blocklist_source;
-  OnTaskBlocklist::RestrictionLevel restriction_level;
+  LockedNavigationOptions::NavigationType restriction_level;
   // Updates the blocklist given the active tab's url. This function does a
   // series of checks to determine what restriction levels apply. It starts at
   // closest match starting from the child maps and continues outwards to least
@@ -184,19 +197,19 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
   } else {
     // Should only happen if a url redirect opens in a new tab.
     if (current_page_restriction_level_ ==
-        OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation) {
+        LockedNavigationOptions::LIMITED_NAVIGATION) {
       blocklist_source = std::make_unique<OnTaskBlocklistSource>(
-          url, OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+          url, LockedNavigationOptions::BLOCK_NAVIGATION);
       current_page_restriction_level_ =
-          OnTaskBlocklist::RestrictionLevel::kLimitedNavigation;
+          LockedNavigationOptions::BLOCK_NAVIGATION;
     } else if (current_page_restriction_level_ ==
-               OnTaskBlocklist::RestrictionLevel::
-                   kDomainAndOneLevelDeepNavigation) {
-      if (!url.DomainIs(previous_url_.GetWithEmptyPath().GetContentPiece())) {
+               LockedNavigationOptions::
+                   SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION) {
+      if (!IsURLInDomain(url, previous_url_)) {
         blocklist_source = std::make_unique<OnTaskBlocklistSource>(
-            url, OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+            url, LockedNavigationOptions::DOMAIN_NAVIGATION);
         current_page_restriction_level_ =
-            OnTaskBlocklist::RestrictionLevel::kLimitedNavigation;
+            LockedNavigationOptions::BLOCK_NAVIGATION;
       }
     } else {
       blocklist_source = std::make_unique<OnTaskBlocklistSource>(
@@ -205,9 +218,16 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
   }
 
   previous_url_ = url;
-  previous_tab_ = tab;
+  previous_tab_ = tab->GetWeakPtr();
   url_blocklist_manager_->SetOverrideBlockListSource(
       std::move(blocklist_source));
+}
+
+void OnTaskBlocklist::RemoveParentFilter(content::WebContents* tab) {
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+  if (tab_id.is_valid() && base::Contains(parent_tab_to_nav_filters_, tab_id)) {
+    parent_tab_to_nav_filters_.erase(tab_id);
+  }
 }
 
 void OnTaskBlocklist::RemoveChildFilter(content::WebContents* tab) {
@@ -226,10 +246,27 @@ bool OnTaskBlocklist::CanPerformOneLevelNavigation(content::WebContents* tab) {
     return false;
   }
 
+  // For one level deep (1LD) navigation restriction, we check if the last
+  // committed URL is the same as the original URL being tracked. This helps us
+  // determine if we have already navigated 1LD.
+  //
+  // For same domain + 1LD navigation restriction, we check if the last
+  // committed URL is in the same domain as the original URL that was being
+  // tracked. This helps us determine if we have already navigated 1LD.
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
   if (tab_id.is_valid() &&
       base::Contains(one_level_deep_original_url_, tab_id)) {
-    return one_level_deep_original_url_[tab_id] == tab->GetLastCommittedURL();
+    const GURL one_level_deep_original_url =
+        one_level_deep_original_url_[tab_id];
+    const GURL last_committed_url = tab->GetLastCommittedURL();
+    if (current_page_restriction_level_ ==
+        LockedNavigationOptions::LIMITED_NAVIGATION) {
+      return one_level_deep_original_url == last_committed_url;
+    }
+
+    // Same domain + 1LD navigation restriction.
+    return last_committed_url.is_valid() &&
+           IsURLInDomain(last_committed_url, one_level_deep_original_url);
   }
   return true;
 }
@@ -247,12 +284,12 @@ const policy::URLBlocklistManager* OnTaskBlocklist::url_blocklist_manager() {
   return url_blocklist_manager_.get();
 }
 
-std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
+std::map<SessionID, LockedNavigationOptions::NavigationType>
 OnTaskBlocklist::parent_tab_to_nav_filters() {
   return parent_tab_to_nav_filters_;
 }
 
-std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
+std::map<SessionID, LockedNavigationOptions::NavigationType>
 OnTaskBlocklist::child_tab_to_nav_filters() {
   return child_tab_to_nav_filters_;
 }
@@ -261,13 +298,16 @@ std::map<SessionID, GURL> OnTaskBlocklist::one_level_deep_original_url() {
   return one_level_deep_original_url_;
 }
 
-OnTaskBlocklist::RestrictionLevel
+LockedNavigationOptions::NavigationType
 OnTaskBlocklist::current_page_restriction_level() {
   return current_page_restriction_level_;
 }
 
 content::WebContents* OnTaskBlocklist::previous_tab() {
-  return previous_tab_;
+  if (!previous_tab_) {
+    return nullptr;
+  }
+  return previous_tab_.get();
 }
 
 void OnTaskBlocklist::CleanupBlocklist() {
@@ -281,18 +321,24 @@ void OnTaskBlocklist::CleanupBlocklist() {
 // OnTaskBlock::BlocklistSource Implementation
 OnTaskBlocklist::OnTaskBlocklistSource::OnTaskBlocklistSource(
     const GURL& url,
-    OnTaskBlocklist::RestrictionLevel restriction_type) {
+    LockedNavigationOptions::NavigationType restriction_type) {
   switch (restriction_type) {
-    case OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation:
-    case OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation:
-    case OnTaskBlocklist::RestrictionLevel::kNoRestrictions:
+    case LockedNavigationOptions::
+        SAME_DOMAIN_OPEN_OTHER_DOMAIN_LIMITED_NAVIGATION:
+    case LockedNavigationOptions::LIMITED_NAVIGATION:
+    case LockedNavigationOptions::OPEN_NAVIGATION:
       allowlist_ = GetAllTrafficFilter();
       return;
-    case OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation:
+    case LockedNavigationOptions::DOMAIN_NAVIGATION:
       blocklist_ = GetAllTrafficFilter();
       allowlist_ = GetDomainLevelTrafficFilter(url);
       return;
-    case OnTaskBlocklist::RestrictionLevel::kLimitedNavigation:
+    case LockedNavigationOptions::NAVIGATION_TYPE_UNKNOWN:
+    case LockedNavigationOptions::BLOCK_NAVIGATION:
+      blocklist_ = GetAllTrafficFilter();
+      allowlist_ = GetLimitedTrafficFilter(url);
+      return;
+    default:
       blocklist_ = GetAllTrafficFilter();
       allowlist_ = GetLimitedTrafficFilter(url);
       return;

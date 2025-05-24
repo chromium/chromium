@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 
 namespace media_session {
 
@@ -78,15 +79,11 @@ bool MediaPosition::operator==(const MediaPosition& other) const {
   return GetPositionAtTime(now) == other.GetPositionAtTime(now);
 }
 
-bool MediaPosition::operator!=(const MediaPosition& other) const {
-  return !(*this == other);
-}
-
 std::string MediaPosition::ToString() const {
   return base::StringPrintf(
       "playback_rate=%f duration=%f current_time=%f end_of_media=%s",
       playback_rate_, duration_.InSecondsF(), position_.InSecondsF(),
-      end_of_media_ ? "true" : "false");
+      base::ToString(end_of_media_));
 }
 
 }  // namespace media_session

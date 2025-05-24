@@ -12,12 +12,12 @@ source_set("coordinators") {
   deps = [
     ":mediators",
     "//base",
+    "//ios/chrome/browser/infobars/ui_bundled/modals",
+    "//ios/chrome/browser/infobars/ui_bundled/presentation",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled:util",
-    "//ios/chrome/browser/ui/infobars/modals",
-    "//ios/chrome/browser/ui/infobars/presentation",
   ]
 }
 
@@ -30,11 +30,11 @@ source_set("mediators") {
   deps = [
     "//base",
     "//components/infobars/core",
+    "//ios/chrome/browser/infobars/ui_bundled/modals",
+    "//ios/chrome/browser/infobars/ui_bundled/modals:public",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/infobar_modal",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
-    "//ios/chrome/browser/ui/infobars/modals",
-    "//ios/chrome/browser/ui/infobars/modals:public",
   ]
 }
 

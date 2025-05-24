@@ -13,9 +13,13 @@ class GURL;
 @protocol LensOmniboxClientDelegate
 
 /// Omnibox did accept a suggestion with `text` and `destinationURL`.
+/// `textClobbered`: Whether the omnibox text was cleared during the edit.
 - (void)omniboxDidAcceptText:(const std::u16string&)text
               destinationURL:(const GURL&)destinationURL
-            thumbnailRemoved:(BOOL)thumbnailRemoved;
+               textClobbered:(BOOL)textClobbered;
+
+/// Omnibox did remove the thumbnail.
+- (void)omniboxDidRemoveThumbnail;
 
 @end
 

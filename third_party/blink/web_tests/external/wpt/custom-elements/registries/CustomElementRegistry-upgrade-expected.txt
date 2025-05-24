@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] upgrade is a no-op when called on a shadow root with no association
+  assert_equals: expected "HTMLElement" but got "GlobalABElement"
+[FAIL] upgrade should upgrade a candidate element when called on a shadow root with an association
+  assert_equals: expected "ABElement" but got "GlobalABElement"
+[FAIL] upgrade should not upgrade a candidate element not associated with the registry
+  assert_equals: expected "ScopedABElement" but got "GlobalABElement"
+Harness: the test ran to completion.
+

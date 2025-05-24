@@ -14,10 +14,12 @@ import org.chromium.net.ICronetEngineBuilder;
 import java.util.Arrays;
 
 /**
- * Implementation of {@link CronetProvider} that creates {@link CronetEngine.Builder}
- * for building the Java-based implementation of {@link CronetEngine}.
+ * Implementation of {@link CronetProvider} that creates {@link CronetEngine.Builder} for building
+ * the Java-based implementation of {@link CronetEngine}.
  */
 public class JavaCronetProvider extends CronetProvider {
+    public static final String FORCE_HTTPENGINE_FLAG = "Cronet_ForceHttpEngineInFallback";
+
     /**
      * Constructor.
      *
@@ -27,10 +29,21 @@ public class JavaCronetProvider extends CronetProvider {
         super(context);
     }
 
+    private boolean shouldUseHttpEngine() {
+        if (!HttpEngineNativeProvider.isHttpEngineAvailable()) return false;
+        var shouldForceHttpEngine =
+                HttpFlagsForImpl.getHttpFlags(mContext).flags().get(FORCE_HTTPENGINE_FLAG);
+        return shouldForceHttpEngine != null && shouldForceHttpEngine.getBoolValue();
+    }
+
     @Override
     public CronetEngine.Builder createBuilder() {
-        ICronetEngineBuilder impl = new JavaCronetEngineBuilderImpl(mContext);
-        return new ExperimentalCronetEngine.Builder(impl);
+        if (shouldUseHttpEngine()) {
+            return new HttpEngineNativeProvider(mContext).createBuilder();
+        } else {
+            ICronetEngineBuilder impl = new JavaCronetEngineBuilderImpl(mContext);
+            return new ExperimentalCronetEngine.Builder(impl);
+        }
     }
 
     @Override

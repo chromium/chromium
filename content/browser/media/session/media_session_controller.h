@@ -17,6 +17,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_content_type.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "services/media_session/public/cpp/media_position.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
@@ -82,6 +83,10 @@ class CONTENT_EXPORT MediaSessionController
   std::string GetAudioOutputSinkId(int player_id) const override;
   bool SupportsAudioOutputDeviceSwitching(int player_id) const override;
   media::MediaContentType GetMediaContentType() const override;
+  void OnAutoPictureInPictureInfoChanged(
+      int player_id,
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override;
 
   // Test helpers.
   int get_player_id_for_testing() const { return player_id_; }

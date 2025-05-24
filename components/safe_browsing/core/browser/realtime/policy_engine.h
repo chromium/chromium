@@ -49,6 +49,10 @@ class RealTimePolicyEngine {
       ClientConfiguredForTokenFetchesCallback client_callback,
       variations::VariationsService* variations_service);
 
+  // Return true if the user has opted in to ESB or MBB.
+  static bool HasPrefPermissionsToPerformFullURLLookup(
+      PrefService* pref_service);
+
   static bool CanPerformEnterpriseFullURLLookup(const PrefService* pref_service,
                                                 bool has_valid_dm_token,
                                                 bool is_off_the_record,

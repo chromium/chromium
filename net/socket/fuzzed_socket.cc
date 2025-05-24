@@ -6,11 +6,12 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/log/net_log_source_type.h"
@@ -69,7 +70,7 @@ int FuzzedSocket::Read(IOBuffer* buf,
     result = data.size();
 
     if (!data.empty()) {
-      base::ranges::copy(data, buf->data());
+      std::ranges::copy(data, buf->data());
     } else {
       result = ConsumeReadWriteErrorFromData();
       net_error_ = result;
@@ -154,8 +155,7 @@ int FuzzedSocket::SetSendBufferSize(int32_t size) {
 }
 
 int FuzzedSocket::Bind(const net::IPEndPoint& local_addr) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int FuzzedSocket::Connect(CompletionOnceCallback callback) {
@@ -233,7 +233,7 @@ bool FuzzedSocket::WasEverUsed() const {
 }
 
 NextProto FuzzedSocket::GetNegotiatedProtocol() const {
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool FuzzedSocket::GetSSLInfo(SSLInfo* ssl_info) {

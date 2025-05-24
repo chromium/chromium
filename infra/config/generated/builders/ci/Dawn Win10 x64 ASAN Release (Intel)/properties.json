@@ -77,7 +77,8 @@
           "builder": "dawn-try-win10-x64-intel-asan",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Win10 x64 ASAN Release (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -88,11 +89,6 @@
     ]
   },
   "builder_group": "chromium.dawn",
-  "gardener_rotations": [
-    "dawn"
-  ],
-  "recipe": "chromium",
-  "sheriff_rotations": [
-    "dawn"
-  ]
+  "dawn_ref": "refs/heads/main",
+  "recipe": "chromium"
 }

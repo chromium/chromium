@@ -4,10 +4,13 @@
 
 package org.chromium.android_webview;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Simple class that provides access to the array of uncompressed pak locales. See
  * //android_webview/BUILD.gn for more details.
  */
+@NullMarked
 public final class AwLocaleConfig {
     private AwLocaleConfig() {}
 

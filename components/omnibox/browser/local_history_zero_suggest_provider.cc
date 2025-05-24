@@ -26,6 +26,7 @@
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/url_database.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
@@ -35,6 +36,7 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
@@ -80,8 +82,9 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
   if (base::FeatureList::IsEnabled(
           omnibox::kLocalHistoryZeroSuggestBeyondNTP)) {
     // Allow local history zero-suggest where remote zero-suggest is eligible.
-    return ZeroSuggestProvider::ResultTypeToRun(input) !=
-           ZeroSuggestProvider::ResultType::kNone;
+    const auto [result_type, _] =
+        ZeroSuggestProvider::GetResultTypeAndEligibility(client, input);
+    return result_type != ZeroSuggestProvider::ResultType::kNone;
   }
 
   // Allow local history query suggestions only when the omnibox is empty and is
@@ -103,8 +106,7 @@ LocalHistoryZeroSuggestProvider* LocalHistoryZeroSuggestProvider::Create(
 void LocalHistoryZeroSuggestProvider::Start(const AutocompleteInput& input,
                                             bool minimal_changes) {
   TRACE_EVENT0("omnibox", "LocalHistoryZeroSuggestProvider::Start");
-  Stop(true, false);
-
+  Stop(AutocompleteStopReason::kClobbered);
   if (!AllowLocalHistoryZeroSuggestSuggestions(client_, input)) {
     return;
   }
@@ -173,7 +175,7 @@ LocalHistoryZeroSuggestProvider::LocalHistoryZeroSuggestProvider(
   AddListener(listener);
 }
 
-LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() {}
+LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() = default;
 
 void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     const AutocompleteInput& input) {
@@ -210,8 +212,7 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
       "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTimeV2",
       db_query_timer.Elapsed());
 
-  int relevance =
-      OmniboxFieldTrial::kLocalHistoryZeroSuggestRelevanceScore.Get();
+  int relevance = omnibox::kLocalHistoryZeroSuggestRelevance;
   for (const auto& result : results) {
     SearchSuggestionParser::SuggestResult suggestion(
         /*suggestion=*/result->normalized_term,

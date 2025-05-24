@@ -305,7 +305,8 @@ void DeferredTaskHandler::UpdateChangedChannelInterpretation() {
 
 DeferredTaskHandler::DeferredTaskHandler(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)), audio_thread_(0) {}
+    : task_runner_(std::move(task_runner)),
+      audio_thread_(base::kInvalidThreadId) {}
 
 scoped_refptr<DeferredTaskHandler> DeferredTaskHandler::Create(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {

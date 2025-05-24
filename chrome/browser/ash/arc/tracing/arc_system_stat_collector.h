@@ -106,11 +106,11 @@ class ArcSystemStatCollector {
 
     base::TimeTicks timestamp;
     // read, written sectors and total time in milliseconds.
-    int64_t zram_stat[std::size(kZramStatColumns) - 1] = {0};
+    int64_t zram_stat[std::size(kZramStatColumns) - 1] = {};
     // total, available.
-    int64_t mem_info[std::size(kMemInfoColumns) - 1] = {0};
+    int64_t mem_info[std::size(kMemInfoColumns) - 1] = {};
     // objects, used bytes.
-    int64_t gem_info[std::size(kGemInfoColumns) - 1] = {0};
+    int64_t gem_info[std::size(kGemInfoColumns) - 1] = {};
     // Temperature of CPU, either the package or Core 0.
     int64_t cpu_temperature = std::numeric_limits<int>::min();
     // CPU Frequency.

@@ -31,7 +31,7 @@ class AddressViewControllerTest : public LegacyChromeTableViewControllerTest,
  public:
   AddressViewControllerTest()
       : base::test::WithFeatureOverride(
-            plus_addresses::features::kPlusAddressIOSManualFallbackEnabled) {}
+            plus_addresses::features::kPlusAddressesEnabled) {}
 
  protected:
   void SetUp() override {
@@ -68,12 +68,8 @@ class AddressViewControllerTest : public LegacyChromeTableViewControllerTest,
 // 3. "No address items present" message is removed once there are address items
 // to be shown in the view.
 TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // TODO(crbug.com/327838014): Fails on iPad.
-    return;
-  }
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgrade);
+  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
 
   AddressViewController* address_view_controller =
       base::apple::ObjCCastStrict<AddressViewController>(controller());
@@ -88,8 +84,7 @@ TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
   [address_view_controller presentActions:@[ action_item ]];
 
   BOOL plusAddressEnabled = base::FeatureList::IsEnabled(
-      plus_addresses::features::kPlusAddressIOSManualFallbackEnabled);
-
+      plus_addresses::features::kPlusAddressesEnabled);
   if (plusAddressEnabled) {
     [address_view_controller presentPlusAddresses:@[]];
   }
@@ -108,7 +103,8 @@ TEST_P(AddressViewControllerTest, CheckNoDataItemsMessageRemoved) {
         [[ManualFillPlusAddressItem alloc] initWithPlusAddress:nil
                                                contentInjector:nil
                                                    menuActions:@[]
-                                   cellIndexAccessibilityLabel:nil];
+                                   cellIndexAccessibilityLabel:nil
+                                     isAddressManualFallbackUI:YES];
     [address_view_controller presentPlusAddresses:@[ item ]];
     // Override the type for the test.
     item.type = kItemTypeSampleTwo;

@@ -7,6 +7,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
+#include "components/bookmarks/common/user_folder_load_stats.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,6 +19,17 @@ const BookmarkNode* FindNodeByUuid(const UuidIndex& index,
                                    const base::Uuid& uuid) {
   auto it = index.find(uuid);
   return it == index.end() ? nullptr : *it;
+}
+
+BookmarkNode* AddFolder(int64_t id, BookmarkNode* parent) {
+  return parent->Add(std::make_unique<BookmarkNode>(
+      id, base::Uuid::GenerateRandomV4(), GURL()));
+}
+
+BookmarkNode* AddUrl(int64_t id, BookmarkNode* parent, const GURL& url) {
+  CHECK(!url.is_empty());
+  return parent->Add(
+      std::make_unique<BookmarkNode>(id, base::Uuid::GenerateRandomV4(), url));
 }
 
 TEST(BookmarkLoadDetails, CreateEmpty) {
@@ -202,6 +214,44 @@ TEST(BookmarkLoadDetailsTest, CreateIndicesWithAccountNodes) {
   // Besides the nodes listed above, there should be nothing else.
   EXPECT_EQ(8u, local_or_syncable_uuid_index.size());
   EXPECT_EQ(7u, account_uuid_index.size());
+}
+
+TEST(BookmarkLoadDetailsTest, ComputeUserFolderStats) {
+  BookmarkLoadDetails details;
+  details.AddAccountPermanentNodes(
+      BookmarkPermanentNode::CreateBookmarkBar(/*id=*/100),
+      BookmarkPermanentNode::CreateOtherBookmarks(/*id=*/200),
+      BookmarkPermanentNode::CreateMobileBookmarks(/*id=*/300));
+
+  ASSERT_NE(nullptr, details.bb_node());
+  ASSERT_NE(nullptr, details.other_folder_node());
+  ASSERT_NE(nullptr, details.mobile_folder_node());
+  ASSERT_NE(nullptr, details.account_bb_node());
+  ASSERT_NE(nullptr, details.account_other_folder_node());
+  ASSERT_NE(nullptr, details.account_mobile_folder_node());
+
+  UserFolderLoadStats before_stats = details.ComputeUserFolderStats();
+  EXPECT_EQ(0, before_stats.total_top_level_folders);
+  EXPECT_EQ(0, before_stats.total_folders);
+
+  AddFolder(/*id=*/400, details.bb_node());
+  AddFolder(/*id=*/500, details.other_folder_node());
+  BookmarkNode* folder_600 =
+      AddFolder(/*id=*/600, details.mobile_folder_node());
+  AddFolder(/*id=*/601, folder_600);
+  BookmarkNode* folder_602 = AddFolder(/*id=*/602, folder_600);
+  AddUrl(/*id=*/603, folder_602, GURL("https://www.foo.com"));
+  AddFolder(/*id=*/700, details.mobile_folder_node());
+
+  AddFolder(/*id=*/800, details.account_bb_node());
+  AddFolder(/*id=*/900, details.account_other_folder_node());
+  BookmarkNode* folder_1000 =
+      AddFolder(/*id=*/1000, details.account_mobile_folder_node());
+  AddFolder(/*id=*/1100, folder_1000);
+
+  UserFolderLoadStats stats = details.ComputeUserFolderStats();
+  EXPECT_EQ(7, stats.total_top_level_folders);
+  EXPECT_EQ(10, stats.total_folders);
 }
 
 }  // namespace

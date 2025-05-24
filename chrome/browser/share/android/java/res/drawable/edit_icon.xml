@@ -12,7 +12,7 @@ found in the LICENSE file.
   <group>
        <clip-path android:pathData="m20.41,4.94 l-1.35,-1.35c-0.78,-0.78 -2.05,-0.78 -2.83,0l-2.83,2.82 -10.4,10.41v4.18h4.18l10.46,-10.46 2.77,-2.77c0.79,-0.78 0.79,-2.05 0,-2.83zM6.41,19.06 L5,19v-1.36l9.82,-9.82 1.41,1.41z"/>
        <path
-         android:fillColor="@color/modern_grey_800"
+         android:fillColor="@color/baseline_neutral_20"
          android:fillType="evenOdd"
          android:pathData="m0,0h24v24h-24z"/>
    </group>

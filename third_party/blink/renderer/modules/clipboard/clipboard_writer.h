@@ -19,8 +19,8 @@ namespace blink {
 class FileReaderLoader;
 class SystemClipboard;
 
-// Interface for writing an individual Clipboard API format as a Blob to the
-// System Clipboard, safely and asynchronously.
+// Interface for writing an individual Clipboard API format as a Blob or
+// String to the System Clipboard, safely and asynchronously.
 //
 // ClipboardWriter takes as input a ClipboardPromise, which manages writing
 // multiple formats and passes in unsanitized clipboard payloads.
@@ -60,8 +60,9 @@ class ClipboardWriter : public GarbageCollected<ClipboardWriter>,
 
   ~ClipboardWriter() override;
 
-  // Begins the sequence of writing the Blob to the system clipbaord.
-  void WriteToSystem(Blob* blob);
+  // Begins the sequence of writing the ClipboardItemData to the system
+  // clipboard.
+  void WriteToSystem(V8UnionBlobOrString* clipboard_item_data);
 
   // FileReaderClient.
   void DidFinishLoading(FileReaderData) override;

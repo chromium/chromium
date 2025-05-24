@@ -16,16 +16,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.R;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -40,6 +43,12 @@ public class ArchivedTabsCardViewBinderUnitTest {
 
     private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
+
     private Activity mActivity;
     private View mArchivedTabsCardView;
     private PropertyModel mModel;
@@ -47,8 +56,7 @@ public class ArchivedTabsCardViewBinderUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mArchivedTabsCardView =
                 LayoutInflater.from(mActivity)
                         .inflate(R.layout.archived_tabs_message_card_view, /* root= */ null);
@@ -75,19 +83,19 @@ public class ArchivedTabsCardViewBinderUnitTest {
         mModel.set(ARCHIVE_TIME_DELTA_DAYS, 1);
 
         TextView titleView = mArchivedTabsCardView.findViewById(R.id.title);
-        assertEquals(titleView.getText(), "Inactive tab (1)");
+        assertEquals("Inactive tab (1)", titleView.getText());
 
         TextView subtitleView = mArchivedTabsCardView.findViewById(R.id.subtitle);
-        assertEquals(subtitleView.getText(), "Not used for 1 day or more");
+        assertEquals("Not used for 1 day or more", subtitleView.getText());
     }
 
     @Test
     public void testPlural() throws TimeoutException {
         TextView titleView = mArchivedTabsCardView.findViewById(R.id.title);
-        assertEquals(titleView.getText(), "Inactive tabs (10)");
+        assertEquals("Inactive tabs (10)", titleView.getText());
 
         TextView subtitleView = mArchivedTabsCardView.findViewById(R.id.subtitle);
-        assertEquals(subtitleView.getText(), "Not used for 14 days or more");
+        assertEquals("Not used for 14 days or more", subtitleView.getText());
 
         mArchivedTabsCardView.callOnClick();
         mCallbackHelper.waitForOnly();

@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -24,7 +23,6 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "components/history/core/browser/top_sites.h"
-#include "components/image_fetcher/core/features.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/ntp_tiles/icon_cacher_impl.h"
 #include "components/ntp_tiles/metrics.h"
@@ -37,9 +35,27 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/preinstalled_app_install_features.h"
 #endif
+
+namespace {
+
+bool ShouldCreateCustomLinksManager() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(
+      chrome::android::kMostVisitedTilesCustomization);
+#else
+  return true;
+#endif
+}
+
+}  // namespace
 
 // static
 std::unique_ptr<ntp_tiles::MostVisitedSites>
@@ -51,17 +67,17 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 
   std::unique_ptr<data_decoder::DataDecoder> data_decoder;
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          image_fetcher::features::kBatchImageDecoding)) {
-    data_decoder = std::make_unique<data_decoder::DataDecoder>();
-  }
+  data_decoder = std::make_unique<data_decoder::DataDecoder>();
 #endif
 
   bool is_default_chrome_app_migrated;
+  bool is_custom_links_mixable;
 #if BUILDFLAG(IS_ANDROID)
   is_default_chrome_app_migrated = false;
+  is_custom_links_mixable = true;
 #else
   is_default_chrome_app_migrated = true;
+  is_custom_links_mixable = false;
 #endif
 
   auto most_visited_sites = std::make_unique<ntp_tiles::MostVisitedSites>(
@@ -73,11 +89,9 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
 #else
       nullptr,
 #endif
-#if !BUILDFLAG(IS_ANDROID)
-      ChromeCustomLinksManagerFactory::NewForProfile(profile),
-#else
-      nullptr,
-#endif
+      ShouldCreateCustomLinksManager()
+          ? ChromeCustomLinksManagerFactory::NewForProfile(profile)
+          : nullptr,
       std::make_unique<ntp_tiles::IconCacherImpl>(
           FaviconServiceFactory::GetForProfile(
               profile, ServiceAccessType::IMPLICIT_ACCESS),
@@ -87,6 +101,6 @@ ChromeMostVisitedSitesFactory::NewForProfile(Profile* profile) {
               profile->GetDefaultStoragePartition()
                   ->GetURLLoaderFactoryForBrowserProcess()),
           std::move(data_decoder)),
-      is_default_chrome_app_migrated);
+      is_default_chrome_app_migrated, is_custom_links_mixable);
   return most_visited_sites;
 }

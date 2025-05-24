@@ -124,6 +124,10 @@ export class LocalStorage {
   }
 
   private static migrateFromLocalStorage_(): void {
+    if (!globalThis.localStorage) {
+      return;
+    }
+
     // Save the keys, because otherwise the values are shifting under us as we
     // iterate.
     const keys: string[] = [];

@@ -32,6 +32,8 @@ import org.chromium.chrome.test.pagecontroller.utils.UiLocatorHelper;
 /** Smoke Test for Chrome bundles. */
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
+// Do not disable this test unless you are confident you can re-enable it quickly.
+// This is the main test that prevents crash-on-launch bugs.
 public class ChromeBundleSmokeTest {
     private static final String TARGET_ACTIVITY =
             "org.chromium.chrome.browser.test_dummy.TestDummyActivity";

@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
+
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 declare type FormControlElement =
     HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
@@ -35,6 +37,10 @@ const MAX_STRING_LENGTH = 1024;
  */
 const MAX_EXTRACTABLE_FIELDS = 200;
 
+// The maximum number of frames we are willing to extract, due to computational
+// costs.
+const MAX_EXTRACTABLE_FRAMES = 20;
+
 /**
  * A value for the "presentation" role.
  *
@@ -58,14 +64,23 @@ const UNIQUE_ID_ATTRIBUTE = '__gChrome_uniqueID';
  */
 const ID_SYMBOL = window.Symbol.for(UNIQUE_ID_ATTRIBUTE);
 
+/**
+ Name of the html attribute used for storing the remote frame token assigned to
+ a child frame. Stored as an attribute of the iframe html element hosting the
+ child frame.
+ */
+const CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE = '__gChrome_childFrameRemoteToken';
+
 export {
+  CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE,
   FormControlElement,
   MAX_DATA_LENGTH,
   MAX_STRING_LENGTH,
   MAX_EXTRACTABLE_FIELDS,
+  MAX_EXTRACTABLE_FRAMES,
   ROLE_ATTRIBUTE_PRESENTATION,
   RENDERER_ID_NOT_SET,
   UNIQUE_ID_ATTRIBUTE,
 };
 
-gCrWeb.fill.ID_SYMBOL = ID_SYMBOL;
+gCrWebLegacy.fill.ID_SYMBOL = ID_SYMBOL;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 
 #include <limits.h>
+
 #include <string>
 #include <utility>
 #include <vector>
@@ -16,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -31,6 +31,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -93,9 +94,8 @@ void InlineLoginHandler::HandleInitializeMessage(
     // present and its value is zero, this means we don't want to keep the
     // the data.
     std::string value;
-    if (!net::GetValueForKeyInQuery(current_url,
-                                    signin::kSignInPromoQueryKeyForceKeepData,
-                                    &value) ||
+    if (!net::GetValueForKeyInQuery(
+            current_url, signin::kSignInPromoQueryKeyForceKeepData, &value) ||
         value == "0") {
       partition->ClearData(
           content::StoragePartition::REMOVE_DATA_MASK_ALL,
@@ -141,11 +141,13 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
     default_email = profile->GetPrefs()->GetString(
         prefs::kGoogleServicesLastSyncingUsername);
   } else {
-    if (!net::GetValueForKeyInQuery(current_url, "email", &default_email))
+    if (!net::GetValueForKeyInQuery(current_url, "email", &default_email)) {
       default_email.clear();
+    }
   }
-  if (!default_email.empty())
+  if (!default_email.empty()) {
     params.Set("email", default_email);
+  }
 
   // The legacy full-tab Chrome sign-in page is no longer used as it was relying
   // on exchanging cookies for refresh tokens and that endpoint is no longer
@@ -188,11 +190,12 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
   CompleteLoginParams params;
   params.email = CHECK_DEREF(dict.FindString("email"));
   params.password = CHECK_DEREF(dict.FindString("password"));
-  params.gaia_id = CHECK_DEREF(dict.FindString("gaiaId"));
+  params.gaia_id = GaiaId(CHECK_DEREF(dict.FindString("gaiaId")));
 
   for (const auto& cookie_with_access_result : cookies) {
-    if (cookie_with_access_result.cookie.Name() == "oauth_code")
+    if (cookie_with_access_result.cookie.Name() == "oauth_code") {
       params.auth_code = cookie_with_access_result.cookie.Value();
+    }
   }
 
   params.skip_for_now = dict.FindBool("skipForNow").value_or(false);
@@ -238,13 +241,12 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
 }
 
 void InlineLoginHandler::HandleDialogClose(const base::Value::List& args) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Does nothing if profile picker is not showing.
-  ProfilePicker::HideDialog();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+  // TODO(crbug.com/381231566): This is now dead code, it should be removed in
+  // upcoming changes along with associated code.
 }
 
 void InlineLoginHandler::CloseDialogFromJavascript() {
-  if (IsJavascriptAllowed())
+  if (IsJavascriptAllowed()) {
     FireWebUIListener("close-dialog");
+  }
 }

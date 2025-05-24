@@ -28,7 +28,7 @@ class FindNotificationDetails {
         active_match_ordinal_(-1),
         final_update_(false) {}
 
-  ~FindNotificationDetails() {}
+  ~FindNotificationDetails() = default;
 
   int request_id() const { return request_id_; }
 

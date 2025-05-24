@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/timer/timer.h"
+#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/host/it2me_desktop_environment.h"

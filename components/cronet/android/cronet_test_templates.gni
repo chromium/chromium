@@ -20,7 +20,14 @@ template("cronet_renamed_jar") {
       "*/*GEN_JNI.class",
       "META-INF/*",
     ]
-    renaming_rules = [ "org.jni_zero.**->internal.org.jni_zero" ]
+    renaming_rules = [
+      "org.jni_zero.**->internal.org.jni_zero",
+      # Note that this renaming_rule is different from the one declared
+      # in repackage_jars template in android/BUILD.gn this is because if
+      # we jarjar the `org.chromium.build` for tests then we'll start jarjaring
+      # the test runner which is org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner.
+      # this will result in the tests failing immediately / not even listed.
+    ]
   }
 }
 

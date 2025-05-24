@@ -4,9 +4,10 @@
 
 #include "ash/wallpaper/wallpaper_utils/wallpaper_online_variant_utils.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/wallpaper/online_wallpaper_variant.h"
 #include "ash/wallpaper/wallpaper_constants.h"
-#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -59,7 +60,7 @@ const OnlineWallpaperVariant* FirstValidVariant(
     ScheduleCheckpoint checkpoint) {
   // Attempt to find the exact 1:1 match for |variant| and |checkpoint|.
   auto iter =
-      base::ranges::find_if(variants, [checkpoint](const auto& variant) {
+      std::ranges::find_if(variants, [checkpoint](const auto& variant) {
         return IsSuitableOnlineWallpaperVariantInternal(
             variant, checkpoint,
             /*match_subtype=*/false);
@@ -68,7 +69,7 @@ const OnlineWallpaperVariant* FirstValidVariant(
     return &(*iter);
   }
   // Attempt to find a subtype |variant| for |checkpoint|.
-  iter = base::ranges::find_if(variants, [checkpoint](const auto& variant) {
+  iter = std::ranges::find_if(variants, [checkpoint](const auto& variant) {
     return IsSuitableOnlineWallpaperVariantInternal(variant, checkpoint,
                                                     /*match_subtype=*/true);
   });

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sharesheet/sharesheet_test_util.h"
 
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"

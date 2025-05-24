@@ -10,9 +10,11 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -20,28 +22,41 @@
 
 namespace optimization_guide {
 
-FakeBaseModelAsset::FakeBaseModelAsset() {
+FakeBaseModelAsset::FakeBaseModelAsset()
+    : FakeBaseModelAsset(FakeBaseModelAsset::Content{}) {}
+FakeBaseModelAsset::FakeBaseModelAsset(Content&& content)
+    : version_(content.version) {
   CHECK(temp_dir_.CreateUniqueTempDir());
+  Write(std::move(content));
 }
+FakeBaseModelAsset::FakeBaseModelAsset(
+    proto::OnDeviceModelValidationConfig&& validation_config)
+    : FakeBaseModelAsset({
+          .config = ExecutionConfigWithValidation(std::move(validation_config)),
+      }) {}
 FakeBaseModelAsset::~FakeBaseModelAsset() = default;
 
-void FakeBaseModelAsset::Write(
-    std::optional<proto::OnDeviceModelExecutionFeatureConfig> config,
-    std::optional<proto::OnDeviceModelExecutionFeatureConfig> config2,
-    std::optional<proto::OnDeviceModelValidationConfig> validation_config) {
-  proto::OnDeviceModelExecutionConfig execution_config;
-  if (config) {
-    *execution_config.add_feature_configs() = *config;
-  }
-  if (config2) {
-    *execution_config.add_feature_configs() = *config2;
-  }
-  if (validation_config) {
-    *execution_config.mutable_validation_config() = *validation_config;
+void FakeBaseModelAsset::Write(Content&& content) {
+  CHECK(base::WriteFile(temp_dir_.GetPath().Append(kWeightsFile),
+                        base::NumberToString(content.weight)));
+  if (content.cache_weight) {
+    CHECK(base::WriteFile(temp_dir_.GetPath().Append(kExperimentalCacheFile),
+                          base::NumberToString(content.cache_weight)));
   }
   CHECK(base::WriteFile(
       temp_dir_.GetPath().Append(kOnDeviceModelExecutionConfigFile),
-      execution_config.SerializeAsString()));
+      content.config.SerializeAsString()));
+}
+
+base::Value::Dict FakeBaseModelAsset::Manifest() const {
+  return base::Value::Dict().Set(
+      "BaseModelSpec",
+      base::Value::Dict().Set("version", "0.0.1").Set("name", "Test"));
+}
+
+void FakeBaseModelAsset::SetReadyIn(
+    OnDeviceModelComponentStateManager& manager) const {
+  manager.SetReady(base::Version(version()), path(), Manifest());
 }
 
 FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
@@ -60,6 +75,11 @@ FakeAdaptationAsset::FakeAdaptationAsset(FakeAdaptationAsset::Content&& content)
           std::move(content.config)));
 }
 FakeAdaptationAsset::~FakeAdaptationAsset() = default;
+
+void FakeAdaptationAsset::SendTo(
+    OnDeviceModelServiceController& controller) const {
+  controller.MaybeUpdateModelAdaptation(feature(), metadata());
+}
 
 FakeLanguageModelAsset::FakeLanguageModelAsset() {
   CHECK(temp_dir_.CreateUniqueTempDir());
@@ -84,13 +104,10 @@ FakeSafetyModelAsset::FakeSafetyModelAsset(
   auto model_path = temp_dir_.GetPath().Append(kTsSpModelFile);
   CHECK(base::WriteFile(data_path, on_device_model::FakeTsData()));
   CHECK(base::WriteFile(model_path, on_device_model::FakeTsSpModel()));
-  proto::Any any;
-  any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-  content.metadata.SerializeToString(any.mutable_value());
   model_info_ = TestModelInfoBuilder()
+                    .SetVersion(content.model_info_version)
                     .SetAdditionalFiles({data_path, model_path})
-                    .SetModelMetadata(any)
+                    .SetModelMetadata(AnyWrapProto(content.metadata))
                     .Build();
 }
 

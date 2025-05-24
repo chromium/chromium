@@ -15,10 +15,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
@@ -49,6 +51,7 @@ public class ContextualSearchTranslationImplTest {
         ENGLISH_LIST = langs;
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TranslateBridgeWrapper mTranslateBridgeWrapperMock;
     @Mock private ContextualSearchRequest mRequest;
     @Mock private ContextualSearchPolicy mPolicy;
@@ -57,7 +60,6 @@ public class ContextualSearchTranslationImplTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         mImpl = new ContextualSearchTranslationImpl(mTranslateBridgeWrapperMock);
     }
 

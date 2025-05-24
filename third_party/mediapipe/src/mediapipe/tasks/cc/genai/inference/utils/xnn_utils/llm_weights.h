@@ -28,9 +28,9 @@
 #include "absl/status/statusor.h"
 #include "absl/strings/string_view.h"
 #include "mediapipe/tasks/cc/genai/inference/proto/llm_params.pb.h"
-#include "mediapipe/tasks/cc/genai/inference/utils/xnn_utils/graph_builder.h"
 #include "mediapipe/tasks/cc/genai/inference/utils/xnn_utils/pack_weights_cache.h"
 #include "mediapipe/tasks/cc/genai/inference/utils/xnn_utils/xnn_tensor.h"
+#include "tensorflow/lite/model_builder.h"
 
 namespace mediapipe::tasks::genai::xnn_utils {
 
@@ -85,6 +85,7 @@ struct LlmParams {
     NO_NORM = 1,
     RMS_NORM = 2,
     LAYER_NORM = 3,
+    RMS_NORM_NO_SCALE = 4,
   };
 
   enum class AttentionScaleType {
@@ -94,6 +95,8 @@ struct LlmParams {
     PER_DIM_SCALE = 1,
     // Query is scaled by 1/sqrt(head_dim).
     INV_SQRT_HEAD_DIM = 2,
+    // Query is scaled by rescale_factor / head_dim.
+    RESCALE_FACTOR_INV_HEAD_DIM = 3,
   };
 
   // If false, add absolute positional embeddings.
@@ -108,6 +111,10 @@ struct LlmParams {
     // If greater than 0, CapTanh will be applied. Otherwise, no cap will be
     // applied.
     float soft_cap_value = 0.0f;
+
+    // If `true`, apply a scaled RMS normalization to the projected queries and
+    // keys.
+    bool qk_norm = false;
 
     // Attention scale type to be applied within the transformer.
     AttentionScaleType attention_scale_type;
@@ -171,6 +178,9 @@ struct LlmWeights {
     std::shared_ptr<Tensor> post_proj_weight;
     std::shared_ptr<Tensor> post_proj_bias;
 
+    std::optional<NormWeights> q_norm_weight;
+    std::optional<NormWeights> k_norm_weight;
+
     std::optional<NormWeights> post_norm_weight;
   };
 
@@ -191,6 +201,7 @@ struct LlmWeights {
   std::optional<NormWeights> final_norm_weight;
   std::shared_ptr<Tensor> softmax_linear;
   std::shared_ptr<Tensor> softmax_bias;
+  std::optional<NormWeights> embedding_norm_weight;
 
   // Usually same as softmax_linear, but some models use different
   // softmax_linear v.s. embedding table.
@@ -201,6 +212,17 @@ struct LlmWeights {
   // store in this map. The builder can then access these custom weights.
   absl::flat_hash_map<std::string, std::shared_ptr<Tensor>> custom_weights;
 };
+
+absl::StatusOr<std::optional<LlmWeights::NormWeights>> LoadNormWeights(
+    LlmParams::Norm norm_type, std::vector<size_t> dims,
+    absl::string_view basename, WeightAccessor& weight_accessor);
+
+inline absl::StatusOr<std::optional<LlmWeights::NormWeights>> LoadNormWeights(
+    LlmParams::Norm norm_type, const LlmParams& params,
+    absl::string_view basename, WeightAccessor& weight_accessor) {
+  return LoadNormWeights(norm_type, std::vector<size_t>{params.model_dim_D},
+                         basename, weight_accessor);
+}
 
 class LlmWeightsLoader {
  public:
@@ -223,15 +245,11 @@ class LlmWeightsLoader {
   LlmParams& llm_params() { return params_; }
   const LlmParams& llm_params() const { return params_; }
 
-  // Returns the XnnWeightsCache that could work with weights loader, if any.
-  virtual std::shared_ptr<XnnWeightsCache> GetXnnWeightsCache() {
-    return nullptr;
-  }
-
  protected:
-  absl::StatusOr<LlmWeights::SelfAttentionWeights> LoadSelfAttention(
+  virtual absl::StatusOr<LlmWeights::SelfAttentionWeights> LoadSelfAttention(
       int layer_id);
-  absl::StatusOr<LlmWeights::FeedForwardWeights> LoadFeedForward(int layer_id);
+  virtual absl::StatusOr<LlmWeights::FeedForwardWeights> LoadFeedForward(
+      int layer_id);
 
   // is_query: indicating whether the weight is for query projection or not.
   // Note that the key/value projection weights are handled differently between
@@ -246,12 +264,13 @@ class LlmWeightsLoader {
 
 class DefaultLlmWeightsLoader : public LlmWeightsLoader {
  public:
-  DefaultLlmWeightsLoader(absl::string_view weight_path,
-                          const LlmParams& params);
-
-  std::shared_ptr<XnnWeightsCache> GetXnnWeightsCache() override {
-    return xnn_weights_cache_;
-  }
+  DefaultLlmWeightsLoader(std::unique_ptr<WeightAccessor> weight_accessor,
+                          const LlmParams& params)
+      : LlmWeightsLoader(std::move(weight_accessor), params) {}
+  DefaultLlmWeightsLoader(
+      absl::string_view weight_path, const LlmParams& params,
+      std::shared_ptr<tflite::FlatBufferModel> flat_buffer_model = nullptr,
+      std::shared_ptr<ScopedFile> scoped_cache_file = nullptr);
 
  private:
   std::shared_ptr<PackWeightsCache> xnn_weights_cache_;

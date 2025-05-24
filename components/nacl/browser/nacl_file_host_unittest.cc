@@ -19,7 +19,7 @@ using nacl_file_host::PnaclCanOpenFile;
 
 class FileHostTestNaClBrowserDelegate : public TestNaClBrowserDelegate {
  public:
-  FileHostTestNaClBrowserDelegate() {}
+  FileHostTestNaClBrowserDelegate() = default;
 
   bool GetPnaclDirectory(base::FilePath* pnacl_dir) override {
     *pnacl_dir = pnacl_path_;

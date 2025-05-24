@@ -1,0 +1,1766 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+import("//chrome/android/feed/feed_java_sources.gni")
+import("//components/offline_pages/buildflags/features.gni")
+import("//printing/buildflags/buildflags.gni")
+
+testonly = true
+
+# Contain all source code that is used by tests in a different package.
+android_library("chrome_test_java_helper") {
+  sources = [
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherSearchTestUtils.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/FeedV2TestHelper.java",
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/v2/TestFeedServer.java",
+    "src/org/chromium/chrome/browser/MockSafeBrowsingApiHandler.java",
+
+    # TODO: This is a test file that's used by another test file
+    # CustomTabActivityTest.java which is in a different package.
+    # We should try to remove this dependency if possible.
+    "src/org/chromium/chrome/browser/TabsOpenedFromExternalAppTest.java",
+    "src/org/chromium/chrome/browser/ViewportTestUtils.java",
+
+    # TODO: This is a test file that's used by another test file
+    # BookmarkEditTest.java which is in a different package.
+    # We should try to remove this dependency if possible.
+    "//chrome/browser/bookmarks/android/javatests/src/org/chromium/chrome/browser/bookmarks/BookmarkModelTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityTestUtil.java",
+    "src/org/chromium/chrome/browser/compositor/layouts/MockLayoutHost.java",
+    "src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabActivityTestRule.java",
+    "src/org/chromium/chrome/browser/download/DownloadTestRule.java",
+    "src/org/chromium/chrome/browser/firstrun/DisableFirstRun.java",
+    "src/org/chromium/chrome/browser/fullscreen/FullscreenManagerTestUtils.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoDataTestUtils.java",
+    "src/org/chromium/chrome/browser/multiwindow/MultiWindowTestHelper.java",
+    "src/org/chromium/chrome/browser/notifications/NotificationTestRule.java",
+    "src/org/chromium/chrome/browser/ntp/HomeSurfaceTestUtils.java",
+
+    # TODO: This is a test file that's used by another test file
+    # StartupLoadingMetricsTest.java which is in a different package.
+    # We should try to remove this dependency if possible.
+    "src/org/chromium/chrome/browser/page_load_metrics/PageLoadMetricsTest.java",
+    "src/org/chromium/chrome/browser/partnercustomizations/BasePartnerBrowserCustomizationIntegrationTestRule.java",
+    "src/org/chromium/chrome/browser/permissions/PermissionTestRule.java",
+    "src/org/chromium/chrome/browser/permissions/RuntimePermissionTestUtils.java",
+    "src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelperUtils.java",
+    "src/org/chromium/chrome/browser/site_settings/SiteSettingsTestUtils.java",
+    "src/org/chromium/chrome/browser/sync/SyncTestRule.java",
+    "src/org/chromium/chrome/browser/test/CommandLineInitRule.java",
+    "src/org/chromium/chrome/browser/test/ScreenShooter.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkActivityTestRule.java",
+  ]
+
+  public_deps = [
+    "$google_play_services_package:google_play_services_base_java",
+    "$google_play_services_package:google_play_services_basement_java",
+    "$google_play_services_package:google_play_services_cast_framework_java",
+    "$google_play_services_package:google_play_services_cast_java",
+    "$google_play_services_package:google_play_services_gcm_java",
+    "$google_play_services_package:google_play_services_iid_java",
+    "$google_play_services_package:google_play_services_tasks_java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
+    "//base:content_uri_utils_java",
+    "//base:service_loader_java",
+    "//base/test:public_transit_java",
+    "//base/test:test_support_java",
+    "//base/version_info/android:version_constants_java",
+    "//build/android:build_java",
+    "//cc:cc_java",
+    "//chrome/android:base_module_java",
+    "//chrome/android:browser_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_test_util_java",
+    "//chrome/android:delegate_public_impl_java",
+    "//chrome/android/features/tab_ui:java_resources",
+    "//chrome/android/features/tab_ui:test_support_javalib",
+    "//chrome/android/features/tab_ui/public:java",
+    "//chrome/android/webapk/libs/client:client_java",
+    "//chrome/android/webapk/libs/common:common_java",
+    "//chrome/android/webapk/libs/runtime_library:webapk_service_aidl_java",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/android/browserservices/verification:java",
+    "//chrome/browser/android/common:java",
+    "//chrome/browser/android/content:java",
+    "//chrome/browser/android/cookies:java",
+    "//chrome/browser/android/crypto:java",
+    "//chrome/browser/android/customtabs/branding:java",
+    "//chrome/browser/android/intents:java",
+    "//chrome/browser/android/lifecycle:java",
+    "//chrome/browser/android/metrics:java",
+    "//chrome/browser/android/metrics:ukm_java_test_support",
+    "//chrome/browser/autofill/android:java_resources",
+    "//chrome/browser/autofill/test:test_support_java",
+    "//chrome/browser/back_press/android:java",
+    "//chrome/browser/bookmarks/android:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/browsing_data/android:java",
+    "//chrome/browser/collaboration:factory_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/merchant_viewer/android:java",
+    "//chrome/browser/commerce/price_insights/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
+    "//chrome/browser/contextmenu:java",
+    "//chrome/browser/data_sharing:data_sharing_public_java",
+    "//chrome/browser/device:java",
+    "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/download/android:file_provider_java",
+    "//chrome/browser/download/android:java",
+    "//chrome/browser/enterprise/util:java",
+    "//chrome/browser/enterprise/util:test_support_java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/feed/android:java",
+    "//chrome/browser/feedback/android:factory_java",
+    "//chrome/browser/feedback/android:java",
+    "//chrome/browser/first_run/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/fullscreen/android:java",
+    "//chrome/browser/gesturenav/android:java",
+    "//chrome/browser/history_clusters:java",
+    "//chrome/browser/hub:factory_java",
+    "//chrome/browser/hub:java",
+    "//chrome/browser/incognito:java",
+    "//chrome/browser/keyboard_accessory/android/java",
+    "//chrome/browser/language/android:base_module_java",
+    "//chrome/browser/language/android:java",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/locale:java",
+    "//chrome/browser/magic_stack/android:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/notifications:test_support_java",
+    "//chrome/browser/omaha/android:java",
+    "//chrome/browser/optimization_guide/android:java",
+    "//chrome/browser/page_load_metrics:java",
+    "//chrome/browser/paint_preview/android:java",
+    "//chrome/browser/paint_preview/android:javatests",
+    "//chrome/browser/partnerbookmarks:java",
+    "//chrome/browser/partnercustomizations:delegate_java",
+    "//chrome/browser/partnercustomizations:java",
+    "//chrome/browser/partnercustomizations:test_support_java",
+    "//chrome/browser/password_check:public_java",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/password_manager/android:settings_interface_java",
+    "//chrome/browser/password_manager/android:test_support_java",
+    "//chrome/browser/password_manager/android:utils_java",
+    "//chrome/browser/password_manager/android/access_loss:enums_java",
+    "//chrome/browser/password_manager/android/access_loss:utils_java",
+    "//chrome/browser/password_manager/android/account_storage_toggle:java",
+    "//chrome/browser/password_manager/android/pwd_check_wrapper:test_support_java",
+    "//chrome/browser/password_manager/android/pwd_migration:java",
+    "//chrome/browser/policy/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/preferences:pref_service_java",
+    "//chrome/browser/prefetch/android:java",
+    "//chrome/browser/preloading/android:java",
+    "//chrome/browser/privacy_guide/android:java",
+    "//chrome/browser/privacy_sandbox/android:java",
+    "//chrome/browser/privacy_sandbox/android:java_resources",
+    "//chrome/browser/privacy_sandbox/android:test_support_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/quick_delete:java",
+    "//chrome/browser/readaloud/android:java",
+    "//chrome/browser/regional_capabilities/android:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/safety_check/android:java",
+    "//chrome/browser/safety_hub/android:java",
+    "//chrome/browser/screenshot_monitor:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/share/android:java_resources",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/single_tab/android:java",
+    "//chrome/browser/ssl/android:java",
+    "//chrome/browser/supervised_user:test_support_java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/sync/android:ui_java",
+    "//chrome/browser/sync/test/android:test_support_java",
+    "//chrome/browser/tab:critical_persisted_tab_data_proto_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tab_group_sync:factory_java",
+    "//chrome/browser/tab_group_sync:features_java",
+    "//chrome/browser/tab_group_sync:java",
+    "//chrome/browser/tab_ui/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabmodel/internal:java",
+    "//chrome/browser/tabpersistence:flatbuffer_java",
+    "//chrome/browser/tabpersistence:java",
+    "//chrome/browser/tabwindow:java",
+    "//chrome/browser/task_manager/internal/android:java_resources",
+    "//chrome/browser/thumbnail:java",
+    "//chrome/browser/touch_to_fill/autofill/android/internal:java_resources",
+    "//chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android:java_resources",
+    "//chrome/browser/translate/android:java",
+    "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/appmenu/test:test_support_java",
+    "//chrome/browser/ui/android/default_browser_promo:java",
+    "//chrome/browser/ui/android/desktop_windowing:java",
+    "//chrome/browser/ui/android/device_lock:java",
+    "//chrome/browser/ui/android/device_lock:java_resources",
+    "//chrome/browser/ui/android/edge_to_edge:java",
+    "//chrome/browser/ui/android/edge_to_edge/internal:java",
+    "//chrome/browser/ui/android/ephemeraltab:java",
+    "//chrome/browser/ui/android/favicon:java",
+    "//chrome/browser/ui/android/hats:java",
+    "//chrome/browser/ui/android/hats/test:test_support_java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/test:java",
+    "//chrome/browser/ui/android/logo:java",
+    "//chrome/browser/ui/android/multiwindow:java",
+    "//chrome/browser/ui/android/native_page:java",
+    "//chrome/browser/ui/android/night_mode:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/browser/ui/android/page_info:java",
+    "//chrome/browser/ui/android/pdf:java",
+    "//chrome/browser/ui/android/quickactionsearchwidget:java",
+    "//chrome/browser/ui/android/searchactivityutils:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/android/web_app_header:java",
+    "//chrome/browser/ui/android/web_app_header:java_resources",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/uid/android:java",
+    "//chrome/browser/util:java",
+    "//chrome/browser/webid:java",
+    "//chrome/test:sync_integration_test_support_java",
+    "//chrome/test:test_support_java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_test_pagecontroller",
+    "//chrome/test/android:chrome_java_transit",
+    "//chrome/test/android/test_trusted_web_activity:test_trusted_web_activity_java",
+    "//components/autofill/android:autofill_features_java",
+    "//components/autofill/android:autofill_java",
+    "//components/autofill/android:payments_interfaces_java",
+    "//components/background_task_scheduler:background_task_scheduler_java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//components/browser_ui/accessibility/android:lib_java",
+    "//components/browser_ui/accessibility/android:page_zoom_utils_java",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/browser_ui/desktop_windowing/android:java",
+    "//components/browser_ui/device_lock/android:java",
+    "//components/browser_ui/display_cutout/android:java",
+    "//components/browser_ui/edge_to_edge/android:java",
+    "//components/browser_ui/media/android:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/modaldialog/android:java_resources",
+    "//components/browser_ui/modaldialog/android:java_test_resources",
+    "//components/browser_ui/modaldialog/android:test_support_java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/notifications/android:test_support_java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/settings/android:test_support_java",
+    "//components/browser_ui/share/android:java",
+    "//components/browser_ui/site_settings/android:constants_java",
+    "//components/browser_ui/site_settings/android:java",
+    "//components/browser_ui/site_settings/android:java_resources",
+    "//components/browser_ui/sms/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/util/android:test_support_java",
+    "//components/browser_ui/widget/android:java",
+    "//components/browser_ui/widget/android:test_support_java",
+    "//components/browsing_data/content/android:java",
+    "//components/browsing_data/core:java",
+    "//components/collaboration/public:core_java",
+    "//components/collaboration/public:java",
+    "//components/commerce/core:proto_java",
+    "//components/commerce/core/android:core_java",
+    "//components/content_relationship_verification:java",
+    "//components/content_settings/android:content_settings_enums_java",
+    "//components/content_settings/android:java",
+    "//components/crash/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
+    "//components/digital_goods/mojom:mojom_java",
+    "//components/dom_distiller/core/android:dom_distiller_core_java",
+    "//components/dom_distiller/core/mojom:mojom_java",
+    "//components/download/internal/background_service:internal_java",
+    "//components/download/internal/common:internal_java",
+    "//components/download/network:network_java",
+    "//components/download/public/common:public_java",
+    "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:context_menu_java",
+    "//components/embedder_support/android:simple_factory_key_java",
+    "//components/embedder_support/android:util_java",
+    "//components/embedder_support/android:web_contents_delegate_java",
+    "//components/enterprise/connectors/core:connectors_java_enums",
+    "//components/external_intents/android:java",
+    "//components/external_intents/android:test_support_java",
+    "//components/externalauth/android:java",
+    "//components/favicon/android:java",
+    "//components/feature_engagement:feature_engagement_java",
+    "//components/feed/core/v2:feedv2_common_core_java",
+    "//components/feed/core/v2:feedv2_core_java",
+    "//components/find_in_page/android:java",
+    "//components/gcm_driver/android:gcm_driver_java",
+    "//components/gcm_driver/instance_id/android:instance_id_driver_java",
+    "//components/gcm_driver/instance_id/android:instance_id_driver_test_support_java",
+    "//components/image_fetcher:java",
+    "//components/image_fetcher:test_support_java",
+    "//components/infobars/android:java",
+    "//components/infobars/core:infobar_enums_java",
+    "//components/javascript_dialogs/android:java",
+    "//components/language/android:java",
+    "//components/location/android:location_java",
+    "//components/media_router/browser/android:java",
+    "//components/media_router/browser/android:test_support_java",
+    "//components/messages/android:java",
+    "//components/messages/android/internal:java",
+    "//components/messages/android/internal:java_resources",
+    "//components/messages/android/test:test_support_java",
+    "//components/metrics:metrics_java",
+    "//components/minidump_uploader:minidump_uploader_java",
+    "//components/minidump_uploader:minidump_uploader_java_test_support",
+    "//components/navigation_interception/android:navigation_interception_java",
+    "//components/offline_items_collection/core:core_java",
+    "//components/omnibox/browser:browser_java",
+    "//components/omnibox/browser:junit_test_support",
+    "//components/omnibox/common:features_java",
+    "//components/optimization_guide/proto:optimization_guide_proto_java",
+    "//components/page_info/android:java",
+    "//components/page_info/android:page_info_action_enum_java",
+    "//components/page_info/core:proto_java",
+    "//components/paint_preview/player/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/payments/content/android:java",
+    "//components/payments/content/android:service_java",
+    "//components/payments/content/android:test_support_java",
+    "//components/payments/content/android/ui:java",
+    "//components/payments/content/android/ui:payments_java_test_support",
+    "//components/payments/mojom:mojom_java",
+    "//components/permissions/android:content_settings_enums_java",
+    "//components/permissions/android:core_java",
+    "//components/permissions/android:java",
+    "//components/policy/android:policy_java",
+    "//components/policy/android:policy_java_test_support",
+    "//components/power_bookmarks/core:proto_java",
+    "//components/prefs/android:java",
+    "//components/privacy_sandbox/android:java",
+    "//components/profile_metrics:browser_profile_type_enum_java",
+    "//components/regional_capabilities/android:java",
+    "//components/safe_browsing/android:safe_browsing_java",
+    "//components/saved_tab_groups/public:java",
+    "//components/schema_org/common:mojom_java",
+    "//components/search_engines/android:java",
+    "//components/search_engines/android:test_utils_java",
+    "//components/security_interstitials/content/android:java",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
+    "//components/send_tab_to_self:send_tab_to_self_java",
+    "//components/sensitive_content:java",
+    "//components/sensitive_content:sensitive_content_features_java",
+    "//components/signin/core/browser:signin_enums_java",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//components/signin/public/android:signin_test_resources",
+    "//components/site_engagement/content/android:java",
+    "//components/sync/android:sync_java",
+    "//components/sync/protocol:protocol_java",
+    "//components/sync_device_info:sync_device_info_java",
+    "//components/tab_groups:tab_groups_java",
+    "//components/ukm/android:java",
+    "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
+    "//components/webapk:proto_java",
+    "//components/webapk/android/libs/client:java",
+    "//components/webapk/android/libs/common:java",
+    "//components/webapps/browser/android:java",
+    "//components/webauthn/android:java",
+    "//components/webauthn/android:test_support_java",
+    "//content/public/android:content_java",
+    "//content/public/common:common_java",
+    "//content/public/test/android:content_java_test_support",
+    "//content/public/test/android:content_transit_java",
+    "//google_apis/gaia/android:java",
+    "//media/base/android:media_java",
+    "//mojo/public/java:bindings_java",
+    "//mojo/public/java:system_java",
+    "//mojo/public/mojom/base:base_java",
+    "//net/android:net_java",
+    "//net/android:net_java_test_support",
+    "//services/device/public/java:device_feature_list_java",
+    "//services/device/public/java:geolocation_java",
+    "//services/device/public/java:geolocation_java_test_support",
+    "//services/device/public/mojom:mojom_java",
+    "//services/media_session/public/mojom:mojom_java",
+    "//services/network/public/mojom:mojom_java",
+    "//services/network/public/mojom:mojom_proxy_config_java",
+    "//services/network/public/mojom:url_loader_base_java",
+    "//services/service_manager/public/java:service_manager_java",
+    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/android_sdk:android_test_mock_java",
+    "//third_party/androidx:androidx_activity_activity_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_collection_collection_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//third_party/androidx:androidx_viewpager2_viewpager2_java",
+    "//third_party/androidx:androidx_viewpager_viewpager_java",
+    "//third_party/blink/public:blink_headers_java",
+    "//third_party/blink/public/common:common_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
+    "//third_party/blink/public/mojom:mojom_core_java",
+    "//third_party/blink/public/mojom:mojom_mhtml_load_result_java",
+    "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",
+    "//third_party/flatbuffers:flatbuffers_java",
+    "//third_party/google-truth:google_truth_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/metrics_proto:metrics_proto_java",
+    "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ax_base_java",
+    "//ui/accessibility:keyboard_focus_java",
+    "//ui/android:clipboard_java_test_support",
+    "//ui/android:ui_android_features_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/base/ime/mojom:mojom_java",
+    "//ui/base/mojom:mojom_java",
+    "//url:android_test_helper_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+    "//url/mojom:url_mojom_gurl_java",
+    "//url/mojom:url_mojom_origin_java",
+  ]
+  if (enable_printing) {
+    public_deps += [ "//printing:printing_java" ]
+  }
+}
+
+# Partition tests into one target per-package to keep incremental build times down.
+android_library("chrome_test_java_org.chromium.chrome.browser") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/ActivityTabProviderTest.java",
+    "src/org/chromium/chrome/browser/AutofillOptionsLauncherTest.java",
+    "src/org/chromium/chrome/browser/ChromeActionModeHandlerTest.java",
+    "src/org/chromium/chrome/browser/ChromeTabbedActivityTest.java",
+    "src/org/chromium/chrome/browser/ContentViewFocusTest.java",
+    "src/org/chromium/chrome/browser/ContentWebFeatureUsageUtilsIntegrationTest.java",
+    "src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java",
+    "src/org/chromium/chrome/browser/ExampleFreshCtaTest.java",
+    "src/org/chromium/chrome/browser/ExampleReusedCtaTest.java",
+    "src/org/chromium/chrome/browser/ExampleUiCaptureTest.java",
+    "src/org/chromium/chrome/browser/FeaturesAnnotationsTest.java",
+    "src/org/chromium/chrome/browser/FocusedEditableTextFieldZoomTest.java",
+    "src/org/chromium/chrome/browser/HTTPSTabsOpenedFromExternalAppTest.java",
+    "src/org/chromium/chrome/browser/ImageFetcherIntegrationTest.java",
+    "src/org/chromium/chrome/browser/InputHintCheckerTest.java",
+    "src/org/chromium/chrome/browser/InstalledAppTest.java",
+    "src/org/chromium/chrome/browser/IntentHandlerBrowserTest.java",
+    "src/org/chromium/chrome/browser/JavaScriptEvalChromeTest.java",
+    "src/org/chromium/chrome/browser/KeyboardShortcutsTest.java",
+    "src/org/chromium/chrome/browser/LauncherShortcutTest.java",
+    "src/org/chromium/chrome/browser/MainActivityWithURLTest.java",
+    "src/org/chromium/chrome/browser/NavigateTest.java",
+    "src/org/chromium/chrome/browser/OmahaServiceStartDelayerIntegrationTest.java",
+    "src/org/chromium/chrome/browser/PopularUrlsTest.java",
+    "src/org/chromium/chrome/browser/PopupMultiwindowPTTest.java",
+    "src/org/chromium/chrome/browser/PopupPTTest.java",
+    "src/org/chromium/chrome/browser/SafeBrowsingTest.java",
+    "src/org/chromium/chrome/browser/SelectFileDialogTest.java",
+    "src/org/chromium/chrome/browser/ServicificationBackgroundServiceTest.java",
+    "src/org/chromium/chrome/browser/ShareIntentTest.java",
+    "src/org/chromium/chrome/browser/SmartClipProviderTest.java",
+    "src/org/chromium/chrome/browser/TabCountLabelTest.java",
+    "src/org/chromium/chrome/browser/TabObserverTest.java",
+    "src/org/chromium/chrome/browser/TabTest.java",
+    "src/org/chromium/chrome/browser/TabThemeTest.java",
+    "src/org/chromium/chrome/browser/TabsTest.java",
+    "src/org/chromium/chrome/browser/ToolbarSwipeTest.java",
+    "src/org/chromium/chrome/browser/UrlSchemeTest.java",
+    "src/org/chromium/chrome/browser/VideoFullscreenOrientationLockChromeTest.java",
+    "src/org/chromium/chrome/browser/ViewTransitionPixelTest.java",
+    "src/org/chromium/chrome/browser/VirtualKeyboardResizeTest.java",
+    "src/org/chromium/chrome/browser/WarmupManagerTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.app") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "//chrome/android/java/src/org/chromium/chrome/browser/app/feed/NavigationRecorderTest.java",
+    "src/org/chromium/chrome/browser/app/ContextMenuDragTest.java",
+    "src/org/chromium/chrome/browser/app/appmenu/MultiWindowAppMenuTest.java",
+    "src/org/chromium/chrome/browser/app/appmenu/OverviewAppMenuTest.java",
+    "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuPTTest.java",
+    "src/org/chromium/chrome/browser/app/appmenu/TabbedAppMenuTest.java",
+    "src/org/chromium/chrome/browser/app/bookmarks/BookmarkEditTest.java",
+    "src/org/chromium/chrome/browser/app/bookmarks/BookmarkFolderPickerActivityTest.java",
+    "src/org/chromium/chrome/browser/app/bookmarks/BookmarkTabletTest.java",
+    "src/org/chromium/chrome/browser/app/bookmarks/BookmarkTest.java",
+    "src/org/chromium/chrome/browser/app/bookmarks/PartnerBookmarkTest.java",
+    "src/org/chromium/chrome/browser/app/bookmarks/ReadingListTest.java",
+    "src/org/chromium/chrome/browser/app/edge_to_edge/EdgeToEdgeInstrumentationTest.java",
+    "src/org/chromium/chrome/browser/app/edge_to_edge/EdgeToEdgePTTest.java",
+    "src/org/chromium/chrome/browser/app/edge_to_edge/EdgeToEdgeStartupTest.java",
+    "src/org/chromium/chrome/browser/app/flags/ChromeCachedFlagsTest.java",
+    "src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetricsTest.java",
+    "src/org/chromium/chrome/browser/app/tab_activity_glue/TabletPhoneLayoutChangeTest.java",
+    "src/org/chromium/chrome/browser/app/tabmodel/AllTabObserverTest.java",
+    "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestratorTest.java",
+    "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabsTest.java",
+    "src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplierTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.appearance") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "src/org/chromium/chrome/browser/appearance/settings/AppearanceSettingsFragmentTest.java" ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/autofill/AutofillSnackbarControllerTest.java",
+    "src/org/chromium/chrome/browser/autofill/AutofillUpstreamTest.java",
+    "src/org/chromium/chrome/browser/autofill/SaveUpdateAddressProfilePromptRenderTest.java",
+    "src/org/chromium/chrome/browser/autofill/TouchToFillCreditCardTest.java",
+    "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetRenderTest.java",
+    "src/org/chromium/chrome/browser/autofill/save_card/AutofillSaveCardBottomSheetViewBinderTest.java",
+    "src/org/chromium/chrome/browser/autofill/settings/AutofillCardBenefitsFragmentTest.java",
+    "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentCardBenefitsTest.java",
+    "src/org/chromium/chrome/browser/autofill/settings/AutofillPaymentMethodsFragmentTest.java",
+    "src/org/chromium/chrome/browser/autofill/settings/AutofillProfilesFragmentTest.java",
+    "src/org/chromium/chrome/browser/autofill/settings/AutofillTestRule.java",
+    "src/org/chromium/chrome/browser/autofill/settings/FinancialAccountsManagementFragmentTest.java",
+    "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetRenderTest.java",
+    "src/org/chromium/chrome/browser/autofill/vcn/AutofillVcnEnrollBottomSheetViewBinderTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library(
+    "chrome_test_java_org.chromium.chrome.browser.browserservices") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/browserservices/ManageTrustedWebActivityDataActivityTest.java",
+    "src/org/chromium/chrome/browser/browserservices/RunningInChromeTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientLocationDelegationTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityClientTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityOrientationTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityShareTargetTest.java",
+    "src/org/chromium/chrome/browser/browserservices/TrustedWebActivityTest.java",
+    "src/org/chromium/chrome/browser/browserservices/digitalgoods/DigitalGoodsTest.java",
+    "src/org/chromium/chrome/browser/browserservices/digitalgoods/FakeDigitalGoods.java",
+    "src/org/chromium/chrome/browser/browserservices/permissiondelegation/TrustedWebActivityLocationDelegationTest.java",
+    "src/org/chromium/chrome/browser/browserservices/permissiondelegation/TrustedWebActivityPermissionsTest.java",
+    "src/org/chromium/chrome/browser/browserservices/permissiondelegation/TrustedWebActivityPreferencesUiTest.java",
+    "src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TrustedWebActivityCurrentPageVerifierTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.browsing_data") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/browsing_data/BrowsingDataBridgeTest.java",
+    "src/org/chromium/chrome/browser/browsing_data/BrowsingDataRemoverIntegrationTest.java",
+    "src/org/chromium/chrome/browser/browsing_data/BrowsingDataTest.java",
+    "src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFragmentTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.compositor") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/compositor/CompositorVisibilityTest.java",
+    "src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerTest.java",
+    "src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManagerTest.java",
+    "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripGroupContextMenuTest.java",
+    "src/org/chromium/chrome/browser/compositor/overlays/strip/TabStripTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library(
+    "chrome_test_java_org.chromium.chrome.browser.contextualsearch") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchCriticalTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchFakeServer.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchHistogramTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInstrumentationBase.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInstrumentationTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInternalStateControllerWrapper.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManagerTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchObserverTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicyTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchRelatedSearchesTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchRequestTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchSettingsFragmentTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchSystemTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchTriggerTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/ContextualSearchUnbatchedTest.java",
+    "src/org/chromium/chrome/browser/contextualsearch/MockContextualSearchPolicy.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.customtabs") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/customtabs/AuthTabTest.java",
+    "src/org/chromium/chrome/browser/customtabs/BlankAuthTabLauncherTestActivity.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityAppMenuTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityEphemeralTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoMetricTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityIncognitoTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityRenderTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivitySecurityIndicatorTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabActivityTypeTestUtils.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabAutoplayUnmutedTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabDeferredStartupTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabExternalNavigationTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabFromChromeExternalNavigationTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabModalDialogTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabPostMessageTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabPrivacySandboxDialogTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabTabPersistenceIntegrationTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabTabPersistencePolicyTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabTaskDescriptionHelperTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabsFeatureUsageTest.java",
+    "src/org/chromium/chrome/browser/customtabs/DetachedResourceRequestTest.java",
+    "src/org/chromium/chrome/browser/customtabs/IncognitoCustomTabActivityRenderTest.java",
+    "src/org/chromium/chrome/browser/customtabs/MismatchNotificationControllerTest.java",
+    "src/org/chromium/chrome/browser/customtabs/TabReparentingTest.java",
+    "src/org/chromium/chrome/browser/customtabs/TrustedCdnPublisherUrlTest.java",
+    "src/org/chromium/chrome/browser/customtabs/content/TabObserverRegistrarTest.java",
+    "src/org/chromium/chrome/browser/customtabs/features/branding/CustomTabBrandingTest.java",
+    "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCustomTabsIntegrationTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.device_dialog") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/device_dialog/BluetoothChooserDialogTest.java",
+    "src/org/chromium/chrome/browser/device_dialog/BluetoothScanningPermissionDialogTest.java",
+    "src/org/chromium/chrome/browser/device_dialog/ItemChooserDialogTest.java",
+    "src/org/chromium/chrome/browser/device_dialog/SerialChooserDialogTest.java",
+    "src/org/chromium/chrome/browser/device_dialog/UsbChooserDialogTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.display_cutout") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTest.java",
+    "src/org/chromium/chrome/browser/display_cutout/DisplayCutoutTestRule.java",
+    "src/org/chromium/chrome/browser/display_cutout/WebappDisplayCutoutTest.java",
+    "src/org/chromium/chrome/browser/display_cutout/WebappDisplayCutoutTestRule.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.dom_distiller") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/dom_distiller/DistillabilityServiceTest.java",
+    "src/org/chromium/chrome/browser/dom_distiller/DistilledPagePrefsTest.java",
+    "src/org/chromium/chrome/browser/dom_distiller/ReaderModeTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.download") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/download/AutoDownloadsTest.java",
+    "src/org/chromium/chrome/browser/download/ChromeDownloadDelegateTest.java",
+    "src/org/chromium/chrome/browser/download/DownloadLocationChangeEnd2EndTest.java",
+    "src/org/chromium/chrome/browser/download/DownloadManagerServiceTest.java",
+    "src/org/chromium/chrome/browser/download/DownloadSettingsTest.java",
+    "src/org/chromium/chrome/browser/download/DownloadTest.java",
+    "src/org/chromium/chrome/browser/download/OMADownloadHandlerTest.java",
+    "src/org/chromium/chrome/browser/download/ServicificationDownloadTest.java",
+    "src/org/chromium/chrome/browser/download/dialogs/DownloadDialogIncognitoTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.feedback") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/feedback/ChromeFeedbackCollectorTest.java",
+    "src/org/chromium/chrome/browser/feedback/ConnectivityCheckerTest.java",
+    "src/org/chromium/chrome/browser/feedback/ConnectivityCheckerTestRule.java",
+    "src/org/chromium/chrome/browser/feedback/ConnectivityTaskTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.firstrun") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/firstrun/FirstRunActivitySigninAndSyncTest.java",
+    "src/org/chromium/chrome/browser/firstrun/FirstRunActivityTestObserver.java",
+    "src/org/chromium/chrome/browser/firstrun/FirstRunIntegrationTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.gesturenav") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/gesturenav/GestureNavigationTestUtils.java",
+    "src/org/chromium/chrome/browser/gesturenav/NavigationHandlerTest.java",
+    "src/org/chromium/chrome/browser/gesturenav/NavigationSheetTest.java",
+    "src/org/chromium/chrome/browser/gesturenav/NavigationTransitionsTest.java",
+    "src/org/chromium/chrome/browser/gesturenav/RtlGestureNavIphTest.java",
+    "src/org/chromium/chrome/browser/gesturenav/ScreenshotCaptureTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library(
+    "chrome_test_java_org.chromium.chrome.browser.hardware_acceleration") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/hardware_acceleration/ChromeTabbedActivityHWATest.java",
+    "src/org/chromium/chrome/browser/hardware_acceleration/CustomTabActivityHWATest.java",
+    "src/org/chromium/chrome/browser/hardware_acceleration/ManifestHWATest.java",
+    "src/org/chromium/chrome/browser/hardware_acceleration/ToastHWATest.java",
+    "src/org/chromium/chrome/browser/hardware_acceleration/Utils.java",
+    "src/org/chromium/chrome/browser/hardware_acceleration/WebappActivityHWATest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.incognito") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/incognito/IncognitoCookieLeakageTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoDownloadLeakageTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoHistoryLeakageTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoNotificationServiceTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoPermissionLeakageTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoProfileDestroyerIntegrationTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoStorageLeakageTest.java",
+    "src/org/chromium/chrome/browser/incognito/IncognitoTabLauncherTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.media") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/media/MediaLauncherActivityTest.java",
+    "src/org/chromium/chrome/browser/media/MediaViewerUtilsTest.java",
+    "src/org/chromium/chrome/browser/media/PictureInPictureActivityTest.java",
+    "src/org/chromium/chrome/browser/media/ui/AutoplayMutedNotificationTest.java",
+    "src/org/chromium/chrome/browser/media/ui/FullscreenVideoPictureInPictureControllerTest.java",
+    "src/org/chromium/chrome/browser/media/ui/MediaSessionTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/metrics/BackgroundMetricsTest.java",
+    "src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetricsIntegrationTest.java",
+    "src/org/chromium/chrome/browser/metrics/SessionMetricsTest.java",
+    "src/org/chromium/chrome/browser/metrics/StartupLoadingMetricsTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.notifications") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeIntentTest.java",
+    "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeTest.java",
+    "src/org/chromium/chrome/browser/notifications/channels/SiteChannelsManagerTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.ntp") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "//chrome/android/feed/core/javatests/src/org/chromium/chrome/browser/feed/FeedV2NewTabPageTest.java",
+    "src/org/chromium/chrome/browser/ntp/FakeRecentlyClosedTabManager.java",
+    "src/org/chromium/chrome/browser/ntp/IncognitoNewTabPageTest.java",
+    "src/org/chromium/chrome/browser/ntp/MostVisitedTilesPTTest.java",
+    "src/org/chromium/chrome/browser/ntp/NewTabPageColorWithFeedV2Test.java",
+    "src/org/chromium/chrome/browser/ntp/NewTabPageCreationTest.java",
+    "src/org/chromium/chrome/browser/ntp/NewTabPageLoadTest.java",
+    "src/org/chromium/chrome/browser/ntp/NewTabPageNavigationTest.java",
+    "src/org/chromium/chrome/browser/ntp/NewTabPageTest.java",
+    "src/org/chromium/chrome/browser/ntp/RecentTabsPageTest.java",
+    "src/org/chromium/chrome/browser/ntp/RecentlyClosedBridgeTest.java",
+    "src/org/chromium/chrome/browser/ntp/ShowNtpAtStartupTest.java",
+  ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/android/feed:chrome_feed_java_resources",
+  ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.offlinepages") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/offlinepages/MHTMLPageTest.java",
+    "src/org/chromium/chrome/browser/offlinepages/OfflinePageArchivePublisherBridgeTest.java",
+    "src/org/chromium/chrome/browser/offlinepages/OfflinePageAutoFetchTest.java",
+    "src/org/chromium/chrome/browser/offlinepages/OfflinePageBridgeTest.java",
+    "src/org/chromium/chrome/browser/offlinepages/OfflinePageRequestTest.java",
+    "src/org/chromium/chrome/browser/offlinepages/OfflinePageUtilsTest.java",
+    "src/org/chromium/chrome/browser/offlinepages/RecentTabsTest.java",
+    "src/org/chromium/chrome/browser/offlinepages/RequestCoordinatorBridgeTest.java",
+  ]
+
+  if (enable_offline_pages_harness) {
+    sources += [ "src/org/chromium/chrome/browser/offlinepages/OfflinePageSavePageLaterEvaluationTest.java" ]
+  }
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.omnibox") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/omnibox/LocationBarLayoutTest.java",
+    "src/org/chromium/chrome/browser/omnibox/LocationBarTest.java",
+    "src/org/chromium/chrome/browser/omnibox/OmniboxPTTest.java",
+    "src/org/chromium/chrome/browser/omnibox/OmniboxTest.java",
+    "src/org/chromium/chrome/browser/omnibox/OmniboxUrlEmphasizerTest.java",
+    "src/org/chromium/chrome/browser/omnibox/UrlBarTest.java",
+    "src/org/chromium/chrome/browser/omnibox/geo/GeolocationHeaderTest.java",
+    "src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxActionsTest.java",
+    "src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxPedalsRenderTest.java",
+    "src/org/chromium/chrome/browser/omnibox/suggestions/OmniboxPedalsTest.java",
+    "src/org/chromium/chrome/browser/omnibox/suggestions/SwitchToTabTest.java",
+    "src/org/chromium/chrome/browser/omnibox/suggestions/mostvisited/MostVisitedTilesTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.page_info") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/page_info/ConnectionInfoViewTest.java",
+    "src/org/chromium/chrome/browser/page_info/PageInfoAboutThisSiteTest.java",
+    "src/org/chromium/chrome/browser/page_info/PageInfoDiscoverabilityTest.java",
+    "src/org/chromium/chrome/browser/page_info/PageInfoViewDarkModeTest.java",
+    "src/org/chromium/chrome/browser/page_info/PageInfoViewTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library(
+    "chrome_test_java_org.chromium.chrome.browser.partnercustomizations") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/partnercustomizations/PartnerDisableIncognitoModeIntegrationTest.java",
+    "src/org/chromium/chrome/browser/partnercustomizations/PartnerHomepageIntegrationTest.java",
+    "src/org/chromium/chrome/browser/partnercustomizations/PartnerHomepageUnitTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library(
+    "chrome_test_java_org.chromium.chrome.browser.password_manager") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/password_manager/EnterpriseReportingIntegrationTest.java",
+    "src/org/chromium/chrome/browser/password_manager/PasswordCheckupIntegrationTest.java",
+    "src/org/chromium/chrome/browser/password_manager/PasswordManagerDialogTest.java",
+    "src/org/chromium/chrome/browser/password_manager/PasswordSavingIntegrationTest.java",
+    "src/org/chromium/chrome/browser/password_manager/TouchToFillMainFlowIntegrationTest.java",
+    "src/org/chromium/chrome/browser/password_manager/VirtualViewStructureInstrumentationTest.java",
+    "src/org/chromium/chrome/browser/password_manager/settings/CredentialManagerIntegrationTest.java",
+    "src/org/chromium/chrome/browser/password_manager/settings/PasswordSettingsSearchTest.java",
+    "src/org/chromium/chrome/browser/password_manager/settings/PasswordSettingsTest.java",
+    "src/org/chromium/chrome/browser/password_manager/settings/PasswordSettingsTestHelper.java",
+    "src/org/chromium/chrome/browser/password_manager/settings/PasswordViewingTypeTest.java",
+    "src/org/chromium/chrome/browser/password_manager/settings/PasswordsPreferenceAccessLossTest.java",
+    "src/org/chromium/chrome/browser/password_manager/settings/PasswordsPreferenceTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinderTest.java",
+    "src/org/chromium/chrome/browser/payments/AndroidPaymentAppFinderUnitTest.java",
+    "src/org/chromium/chrome/browser/payments/ExpandablePaymentHandlerTest.java",
+    "src/org/chromium/chrome/browser/payments/IsReadyToPayServiceHelperTest.java",
+    "src/org/chromium/chrome/browser/payments/MockPaymentApp.java",
+    "src/org/chromium/chrome/browser/payments/PaymentDetailsUpdateServiceHelperTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentManifestDownloaderTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentManifestParserTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentManifestVerifierTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestBlobUrlTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestCanMakePaymentMetricsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestCanMakePaymentQueryNoCardTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestCanMakePaymentQueryTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestContactDetailsAndFreeShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestContactDetailsSectionUnitTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestContactDetailsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestDataUrlTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestDynamicShippingMultipleAddressesTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestDynamicShippingSingleAddressTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestEmailAndFreeShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestEmailAndPhoneTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestEmailTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestEmptyUpdateTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestExtraShippingOptionsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestFreeShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestIncompleteContactDetailsAndFreeShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestIncompleteContactDetailsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestIncompleteEmailTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestIncompletePhoneTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestInputProtectionTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestJourneyLoggerTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestLongIdTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestMetricsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestMultipleContactDetailsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestNameAndFreeShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestNameTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestNoShippingOptionsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestNoShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestNoUpdateWithTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPayerDetailChangeTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppCanMakePaymentQueryTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppUiSkipPreloadTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppUiSkipTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPaymentAppsSortingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPhoneAndFreeShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestPhoneTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestRetryTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestServiceWorkerPaymentAppTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShippingAddressAndOptionTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShippingAddressChangeTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseDigitalGoodsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseEmptyListsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseEmptyTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseInvalidDetailsTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseRejectTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseSingleOptionShippingDelayTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseSingleOptionShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseSingleOptionShippingWithUpdateTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseUSOnlyShippingTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowPromiseUnsupportedTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestShowTwiceTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestTabTest.java",
+    "src/org/chromium/chrome/browser/payments/PaymentRequestUpdateWithTest.java",
+    "src/org/chromium/chrome/browser/payments/WebPaymentIntentHelperTest.java",
+  ]
+
+  # This test can be broken by R8 and isn't testing functionality.
+  if (is_java_debug) {
+    sources += [
+      "src/org/chromium/chrome/browser/payments/PaymentErrorStringsTest.java",
+    ]
+  }
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/permissions/AutomaticEmbargoTest.java",
+    "src/org/chromium/chrome/browser/permissions/EmbeddedPermissionPromptTest.java",
+    "src/org/chromium/chrome/browser/permissions/GeolocationTest.java",
+    "src/org/chromium/chrome/browser/permissions/MIDITest.java",
+    "src/org/chromium/chrome/browser/permissions/MediaTest.java",
+    "src/org/chromium/chrome/browser/permissions/NotificationTest.java",
+    "src/org/chromium/chrome/browser/permissions/PermissionNavigationTest.java",
+    "src/org/chromium/chrome/browser/permissions/PermissionPromptRenderTest.java",
+    "src/org/chromium/chrome/browser/permissions/PermissionUpdateMessageTest.java",
+    "src/org/chromium/chrome/browser/permissions/RuntimePermissionTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.privacy") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/privacy/settings/HttpsFirstModeLegacySettingTest.java",
+    "src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManagerImplNativeTest.java",
+    "src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsFragmentTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.profiles") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/profiles/OtrProfileIdTest.java",
+    "src/org/chromium/chrome/browser/profiles/ProfileResolverTest.java",
+    "src/org/chromium/chrome/browser/profiles/ProfileTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.provider") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/provider/ProviderBookmarksUriTest.java",
+    "src/org/chromium/chrome/browser/provider/ProviderSearchesUriTest.java",
+    "src/org/chromium/chrome/browser/provider/ProviderTestRule.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.search_engines") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogHelperTest.java",
+    "src/org/chromium/chrome/browser/search_engines/DefaultSearchEngineDialogTest.java",
+    "src/org/chromium/chrome/browser/search_engines/TemplateUrlServiceTest.java",
+    "src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettingsTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.settings") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/settings/MainSettingsFragmentTest.java",
+    "src/org/chromium/chrome/browser/settings/SettingsActivityTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.share") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/SaveBitmapDelegateTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/clipboard/ClipboardImageFileProviderTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsMediatorTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/BitmapGeneratorTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/scroll_capture/ScrollCaptureCallbackRenderTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfBottomSheetRenderTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfCoordinatorTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetTest.java",
+    "src/org/chromium/chrome/browser/share/ShareButtonControllerTest.java",
+    "src/org/chromium/chrome/browser/share/ShareDelegateImplIntegrationTest.java",
+    "src/org/chromium/chrome/browser/share/ShareDelegateImplTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.signin") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/signin/AccountManagedStatusFinderIntegrationTest.java",
+    "src/org/chromium/chrome/browser/signin/AccountsReloadingTest.java",
+    "src/org/chromium/chrome/browser/signin/BottomSheetSigninAndHistorySyncIntegrationTest.java",
+    "src/org/chromium/chrome/browser/signin/FullscreenSigninAndHistorySyncIntegrationTest.java",
+    "src/org/chromium/chrome/browser/signin/SigninCheckerTest.java",
+    "src/org/chromium/chrome/browser/signin/SigninFirstRunFragmentRenderTest.java",
+    "src/org/chromium/chrome/browser/signin/SigninFirstRunFragmentTest.java",
+    "src/org/chromium/chrome/browser/signin/SigninHeaderTest.java",
+    "src/org/chromium/chrome/browser/signin/SigninManagerIntegrationTest.java",
+    "src/org/chromium/chrome/browser/signin/SigninSignoutIntegrationTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.site_settings") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/site_settings/AllSiteSettingsTest.java",
+    "src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegateTest.java",
+    "src/org/chromium/chrome/browser/site_settings/CookieControlsBridgeTest.java",
+    "src/org/chromium/chrome/browser/site_settings/CookieControlsServiceBridgeTest.java",
+    "src/org/chromium/chrome/browser/site_settings/CookieSettingsTest.java",
+    "src/org/chromium/chrome/browser/site_settings/FakeRwsPrivacySandboxBridge.java",
+    "src/org/chromium/chrome/browser/site_settings/FamilyLinkControlsTest.java",
+    "src/org/chromium/chrome/browser/site_settings/ManageSpaceActivityTest.java",
+    "src/org/chromium/chrome/browser/site_settings/PermissionInfoTest.java",
+    "src/org/chromium/chrome/browser/site_settings/SingleWebsiteSettingsTest.java",
+    "src/org/chromium/chrome/browser/site_settings/SiteSettingsTest.java",
+    "src/org/chromium/chrome/browser/site_settings/WebsitePermissionsFetcherTest.java",
+    "src/org/chromium/chrome/browser/site_settings/WebsitePreferenceBridgeTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.suggestions") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesMetadataUtilsTest.java",
+    "src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesLayoutTest.java",
+    "src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesViewBinderUnitTest.java",
+    "src/org/chromium/chrome/browser/suggestions/tile/TileGroupTest.java",
+    "src/org/chromium/chrome/browser/suggestions/tile/TileGroupUnitTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.swiperefresh") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "src/org/chromium/chrome/browser/SwipeRefreshHandlerTest.java" ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//third_party/android_swipe_refresh:android_swipe_refresh_java",
+  ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.sync") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/sync/AutofillTest.java",
+    "src/org/chromium/chrome/browser/sync/BookmarksTest.java",
+    "src/org/chromium/chrome/browser/sync/ExplicitPassphrasePlatformClientTest.java",
+    "src/org/chromium/chrome/browser/sync/OpenTabsTest.java",
+    "src/org/chromium/chrome/browser/sync/SyncTest.java",
+    "src/org/chromium/chrome/browser/sync/UkmTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/AccountManagementFragmentTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/GoogleServicesSettingsTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/IdentityErrorCardPreferenceTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/ManageSyncSettingsTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/ManageSyncSettingsWithFakeSyncServiceImplTest.java",
+    "src/org/chromium/chrome/browser/sync/settings/PersonalizeGoogleServicesSettingsTest.java",
+    "src/org/chromium/chrome/browser/sync/ui/PassphraseActivityTest.java",
+    "src/org/chromium/chrome/browser/sync/ui/PassphraseTypeDialogFragmentTest.java",
+    "src/org/chromium/chrome/browser/sync/ui/SyncErrorMessageTest.java",
+  ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/user_education:java",
+  ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.tab") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/tab/InterceptNavigationDelegateTest.java",
+    "src/org/chromium/chrome/browser/tab/RepostFormWarningTest.java",
+    "src/org/chromium/chrome/browser/tab/RequestDesktopSiteTest.java",
+    "src/org/chromium/chrome/browser/tab/SadTabTest.java",
+    "src/org/chromium/chrome/browser/tab/TabArchiverTest.java",
+    "src/org/chromium/chrome/browser/tab/TabContextMenuItemDelegateTest.java",
+    "src/org/chromium/chrome/browser/tab/TabImplPWATest.java",
+    "src/org/chromium/chrome/browser/tab/TabImplTest.java",
+    "src/org/chromium/chrome/browser/tab/TabStateTest.java",
+    "src/org/chromium/chrome/browser/tab/TabUmaTest.java",
+    "src/org/chromium/chrome/browser/tab/TabViewManagerTest.java",
+    "src/org/chromium/chrome/browser/tab/UndoIntegrationTest.java",
+    "src/org/chromium/chrome/browser/tab/state/ArchivePersistedTabDataTest.java",
+    "src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorageTest.java",
+    "src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorageFactoryTest.java",
+    "src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorageTest.java",
+    "src/org/chromium/chrome/browser/tab/state/LoadCallbackHelper.java",
+    "src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataDeferredStartupTest.java",
+    "src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataNativeTest.java",
+    "src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataServiceTest.java",
+    "src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTest.java",
+    "src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabDataTestUtils.java",
+    "src/org/chromium/chrome/browser/tab/state/TabStateFlatBufferTest.java",
+    "src/org/chromium/chrome/browser/tab/tab_restore/HistoricalTabSaverImplTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.tab_group_sync") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "//chrome/browser/tab_group_sync/android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncIntegrationTestHelper.java",
+    "//chrome/browser/tab_group_sync/android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalToRemoteTest.java",
+    "//chrome/browser/tab_group_sync/android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteToLocalTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.collaboration") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [ "//chrome/browser/collaboration/android/java/src/org/chromium/chrome/browser/collaboration/CollaborationIntegrationTest.java" ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/android:chrome_all_java",
+    "//chrome/browser/data_sharing:factory_java",
+    "//chrome/browser/data_sharing:internal_library_java",
+    "//components/data_sharing/internal:internal_java",
+    "//components/data_sharing/internal:native_test_helper_java",
+    "//components/data_sharing/public:public_java",
+  ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.tabmodel") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/tabmodel/ArchivedTabCreatorTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/ChromeTabCreatorTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/ContextMenuLoadUrlParamsTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/MultiInstanceMigrationTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabGroupsTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabModelImplTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabModelMergingTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorObserverTestRule.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserverTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabPersistentStoreTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/TabbedModeTabPersistencePolicyTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/UndoTabModelTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.tasks") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabCardLabelViewRenderTest.java",
+    "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabCardLabelViewTest.java",
+    "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupListRenderTest.java",
+    "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupRowViewRenderTest.java",
+    "//chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherPanePublicTransitTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsCardRenderTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/ArchivedTabsDialogCoordinatorTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/ClosableTabListEditorTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/CloseAllTabsDialogTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/IncognitoReauthPromoCardRenderTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/RecyclerViewMatcherUtils.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/SelectableTabListEditorTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridAccessibilityHelperTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridDialogTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridIncognitoReauthPromoTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGridIphTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupColorPickerTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupDialogPTTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupListBottomSheetTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabGroupUiTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabListContainerViewBinderTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorMenuTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabListEditorTestingRobot.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherLayoutPTTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherLayoutTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherListEditorPTTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherMultiWindowTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherSearchRenderTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherSearchTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherTabletTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabSwitcherThumbnailTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TabThumbnailViewRenderTest.java",
+    "//chrome/android/features/tab_ui/javatests/src/org/chromium/chrome/browser/tasks/tab_management/TestRecyclerViewSimpleViewBinder.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.toolbar") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/toolbar/LocationBarModelTest.java",
+    "src/org/chromium/chrome/browser/toolbar/TabSwitcherDrawableRenderTest.java",
+    "src/org/chromium/chrome/browser/toolbar/ToolbarDataProviderTest.java",
+    "src/org/chromium/chrome/browser/toolbar/ToolbarProgressBarIntegrationTest.java",
+    "src/org/chromium/chrome/browser/toolbar/ToolbarTest.java",
+    "src/org/chromium/chrome/browser/toolbar/VoiceToolbarButtonControllerTest.java",
+    "src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveButtonActionMenuRenderTest.java",
+    "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerPhoneTest.java",
+    "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerTabletTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/BrandColorTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/NavigationPopupTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuBatchedPTTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuPTTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuRenderTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/ToolbarButtonIphTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/ToolbarPhoneTest.java",
+    "src/org/chromium/chrome/browser/toolbar/top/ToolbarTabletTest.java",
+  ]
+
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/user_education:java",
+  ]
+}
+
+android_library("chrome_test_java_org.chromium.chrome.browser.webapps") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "src/org/chromium/chrome/browser/webapps/AddToHomescreenAddShortcutTest.java",
+    "src/org/chromium/chrome/browser/webapps/AddToHomescreenCurrentPageVerifierTest.java",
+    "src/org/chromium/chrome/browser/webapps/AddToHomescreenInstallTest.java",
+    "src/org/chromium/chrome/browser/webapps/PwaRestoreBottomSheetIntegrationTest.java",
+    "src/org/chromium/chrome/browser/webapps/PwaUniversalInstallBottomSheetIntegrationTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkActivityTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkCurrentPageVerifierTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkInitializationTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkIntegrationTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkUpdateDataFetcherTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkUpdateIntegrationTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebApkUpdateManagerTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappActionsNotificationTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappDefaultOfflineTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappDefaultOfflineTwaTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappDisplayModeTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappModeTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappNavigationTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappSplashScreenBackgroundColorTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappSplashScreenHomescreenIconTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappSplashScreenIconTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappSplashScreenTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappSplashScreenThemeColorTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+# This target contains test files in packages which has <= 2 test files.
+android_library("chrome_test_java_various") {
+  resources_package = "org.chromium.chrome.test"
+
+  sources = [
+    "//chrome/android/java/src/org/chromium/chrome/browser/hub/HubLayoutPublicTransitTest.java",
+    "//chrome/browser/commerce/merchant_viewer/android/javatests/src/org/chromium/chrome/browser/merchant_viewer/PageInfoStoreInfoViewTest.java",
+    "//chrome/browser/commerce/price_tracking/android/javatests/src/org/chromium/chrome/browser/price_tracking/PriceDropNotificationManagerTest.java",
+    "//chrome/browser/commerce/price_tracking/android/javatests/src/org/chromium/chrome/browser/price_tracking/PriceTrackingFeaturesTest.java",
+    "src/org/chromium/chrome/browser/automotive/BackButtonToolbarTest.java",
+    "src/org/chromium/chrome/browser/background_sync/BackgroundSyncTest.java",
+    "src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncTest.java",
+    "src/org/chromium/chrome/browser/backup/RestoreHistogramTest.java",
+    "src/org/chromium/chrome/browser/contacts_picker/ContactsPickerLauncherTest.java",
+    "src/org/chromium/chrome/browser/content_settings/ContentSettingsObserverTest.java",
+    "src/org/chromium/chrome/browser/contextmenu/ContextMenuTabPTTest.java",
+    "src/org/chromium/chrome/browser/contextmenu/ContextMenuTest.java",
+    "src/org/chromium/chrome/browser/desktop_windowing/AppHeaderCoordinatorBrowserTest.java",
+    "src/org/chromium/chrome/browser/device_lock/DeviceLockActivityLauncherImplTest.java",
+    "src/org/chromium/chrome/browser/device_lock/DeviceLockActivityTest.java",
+    "src/org/chromium/chrome/browser/document/LauncherActivityTest.java",
+    "src/org/chromium/chrome/browser/dragdrop/DragAndDropLauncherActivityTest.java",
+    "src/org/chromium/chrome/browser/externalnav/UrlOverridingTest.java",
+    "src/org/chromium/chrome/browser/findinpage/FindTest.java",
+    "src/org/chromium/chrome/browser/fullscreen/FullscreenManagerTest.java",
+    "src/org/chromium/chrome/browser/history/HistoryPaneTest.java",
+    "src/org/chromium/chrome/browser/history/HistoryTest.java",
+    "src/org/chromium/chrome/browser/homepage/HomepagePolicyIntegrationTest.java",
+    "src/org/chromium/chrome/browser/identity_disc/IdentityDiscControllerTest.java",
+    "src/org/chromium/chrome/browser/infobar/InfoBarContainerTest.java",
+    "src/org/chromium/chrome/browser/init/ChromeBrowserInitializerTest.java",
+    "src/org/chromium/chrome/browser/init/LaunchFailedActivityTest.java",
+    "src/org/chromium/chrome/browser/input/InputOnVizTest.java",
+    "src/org/chromium/chrome/browser/input/SelectPopupOtherContentViewTest.java",
+    "src/org/chromium/chrome/browser/interstitials/LookalikeInterstitialTest.java",
+    "src/org/chromium/chrome/browser/javascript/CloseWatcherTest.java",
+    "src/org/chromium/chrome/browser/jsdialog/JavascriptAppModalDialogTest.java",
+    "src/org/chromium/chrome/browser/jsdialog/JavascriptTabModalDialogTest.java",
+    "src/org/chromium/chrome/browser/latency_injection/StartupLatencyInjectorTest.java",
+    "src/org/chromium/chrome/browser/locale/LocaleManagerReferralTest.java",
+    "src/org/chromium/chrome/browser/locale/LocaleManagerTest.java",
+    "src/org/chromium/chrome/browser/login/ChromeHttpAuthHandlerTest.java",
+    "src/org/chromium/chrome/browser/messages/MessageTest.java",
+    "src/org/chromium/chrome/browser/modaldialog/ChromeTabModalPresenterTest.java",
+    "src/org/chromium/chrome/browser/modaldialog/ModalDialogViewRenderTest.java",
+    "src/org/chromium/chrome/browser/multiwindow/MultiWindowIntegrationTest.java",
+    "src/org/chromium/chrome/browser/multiwindow/MultiWindowUtilsTest.java",
+    "src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetectorDelegateStub.java",
+    "src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetectorTest.java",
+    "src/org/chromium/chrome/browser/omaha/UpdateMenuItemHelperTest.java",
+    "src/org/chromium/chrome/browser/paint_preview/StartupPaintPreviewHelperTest.java",
+    "src/org/chromium/chrome/browser/policy/CombinedPolicyProviderTest.java",
+    "src/org/chromium/chrome/browser/policy/PolicyAuditorBridgeTest.java",
+    "src/org/chromium/chrome/browser/previewtab/PreviewTabTest.java",
+    "src/org/chromium/chrome/browser/printing/PrintingControllerTest.java",
+    "src/org/chromium/chrome/browser/privacy_sandbox/ChromeTrackingProtectionDelegateTest.java",
+    "src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyControllerIntegrationTest.java",
+    "src/org/chromium/chrome/browser/privacy_sandbox/TrackingProtectionSettingsTest.java",
+    "src/org/chromium/chrome/browser/push_messaging/PushMessagingTest.java",
+    "src/org/chromium/chrome/browser/read_later/ReadLaterContextMenuTest.java",
+    "src/org/chromium/chrome/browser/reengagement/ReengagementNotificationControllerIntegrationTest.java",
+    "src/org/chromium/chrome/browser/screenshot_monitor/ScreenshotTabObserverTest.java",
+    "src/org/chromium/chrome/browser/searchwidget/SearchActivityTest.java",
+    "src/org/chromium/chrome/browser/searchwidget/SearchWidgetProviderTest.java",
+    "src/org/chromium/chrome/browser/segmentation_platform/ContextualPageActionControllerTest.java",
+    "src/org/chromium/chrome/browser/sensitive_content/SensitiveContentTest.java",
+    "src/org/chromium/chrome/browser/shape_detection/ShapeDetectionTest.java",
+    "src/org/chromium/chrome/browser/sms/WebOTPServiceInfoBarTest.java",
+    "src/org/chromium/chrome/browser/ssl/CaptivePortalTest.java",
+    "src/org/chromium/chrome/browser/status_indicator/StatusIndicatorTest.java",
+    "src/org/chromium/chrome/browser/storage/BlobUrlStoreTest.java",
+    "src/org/chromium/chrome/browser/survey/ChromeStartupSurveyIntegrationTest.java",
+    "src/org/chromium/chrome/browser/tabbed_mode/KeyboardFocusRowManagerTest.java",
+    "src/org/chromium/chrome/browser/tabbed_mode/TabbedNavigationBarColorControllerTest.java",
+    "src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinatorTest.java",
+    "src/org/chromium/chrome/browser/tracing/settings/TracingSettingsTest.java",
+    "src/org/chromium/chrome/browser/ui/MediaCaptureOverlayControllerTest.java",
+    "src/org/chromium/chrome/browser/ui/WebAppHeaderLayoutBrowserTest.java",
+    "src/org/chromium/chrome/browser/ui/system/StatusBarColorControllerTest.java",
+    "src/org/chromium/chrome/browser/undo_tab_close_snackbar/UndoBarControllerTest.java",
+    "src/org/chromium/chrome/browser/usage_stats/TabSuspensionTest.java",
+    "src/org/chromium/chrome/browser/video/FullscreenVideoTest.java",
+    "src/org/chromium/chrome/browser/video/VideoTest.java",
+    "src/org/chromium/chrome/browser/webauth/AuthenticatorTest.java",
+    "src/org/chromium/chrome/browser/webauth/Fido2CredentialRequestTest.java",
+    "src/org/chromium/chrome/browser/webid/DigitalCredentialProviderTest.java",
+    "src/org/chromium/chrome/browser/webshare/WebShareTest.java",
+    "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetControllerTest.java",
+    "src/org/chromium/chrome/browser/widget/bottomsheet/BottomSheetTest.java",
+    "src/org/chromium/chrome/test/crash/IntentionalCrashTest.java",
+  ]
+
+  deps = [ ":chrome_test_java_helper" ]
+}
+
+java_group("common_unit_test_deps_java") {
+  deps = [
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:base_module_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/android:chrome_unit_test_java_resources",
+    "//chrome/android:chrome_unit_test_util_java",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/android/browserservices/verification:java",
+    "//chrome/browser/android/cookies:java",
+    "//chrome/browser/android/crypto:java",
+    "//chrome/browser/android/intents:java",
+    "//chrome/browser/bookmarks/android:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_tracking/android:java",
+    "//chrome/browser/commerce/subscriptions/android:subscriptions_java",
+    "//chrome/browser/contextmenu:java",
+    "//chrome/browser/download/android:file_provider_java",
+    "//chrome/browser/download/android:java",
+    "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/first_run/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/incognito:java",
+    "//chrome/browser/lens:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/preferences:pref_service_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/regional_capabilities/android:java",
+    "//chrome/browser/screenshot_monitor:java",
+    "//chrome/browser/search_engines/android:java",
+    "//chrome/browser/settings:factory_java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/browser/share:java",
+    "//chrome/browser/share/android:java_resources",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/tabpersistence:java",
+    "//chrome/browser/tabwindow:java",
+    "//chrome/browser/ui/android/ephemeraltab:java",
+    "//chrome/browser/ui/android/multiwindow:java",
+    "//chrome/browser/ui/android/omnibox:java",
+    "//chrome/browser/ui/android/pdf:java",
+    "//chrome/browser/ui/android/theme:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/user_education:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/autofill/android:main_autofill_java",
+    "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
+    "//components/background_task_scheduler:public_java",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/desktop_windowing/android:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/notifications/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/share/android:java",
+    "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/crash/android:java",
+    "//components/dom_distiller/core/android:dom_distiller_core_java",
+    "//components/embedder_support/android:context_menu_java",
+    "//components/embedder_support/android:util_java",
+    "//components/external_intents/android:java",
+    "//components/externalauth/android:java",
+    "//components/favicon/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//components/image_fetcher:java",
+    "//components/minidump_uploader:minidump_uploader_java",
+    "//components/minidump_uploader:minidump_uploader_java_test_support",
+    "//components/offline_items_collection/core:core_java",
+    "//components/payments/content/android:full_java",
+    "//components/payments/content/android/ui:java",
+    "//components/power_bookmarks/core:proto_java",
+    "//components/prefs/android:java",
+    "//components/regional_capabilities/android:java",
+    "//components/search_engines/android:java",
+    "//components/search_engines/android:test_utils_java",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//components/url_formatter/android:url_formatter_java",
+    "//components/user_prefs/android:java",
+    "//components/webapps/browser/android:java",
+    "//content/public/android:content_full_java",
+    "//content/public/android:content_java",
+    "//content/public/android:content_main_dex_java",
+    "//content/public/common:common_java",
+    "//content/public/test/android:content_java_test_support",
+    "//net/android:net_java",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:material_design_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
+    "//third_party/android_sdk:android_test_mock_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_coordinatorlayout_coordinatorlayout_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_rules_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/androidx:androidx_viewpager_viewpager_java",
+    "//third_party/blink/public:blink_headers_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/base/mojom:ui_base_types_java",
+    "//url:android_test_helper_java",
+    "//url:gurl_java",
+    "//url:gurl_junit_test_support",
+  ]
+}
+
+# Partition tests into one target per-package to keep incremental build times down.
+android_library(
+    "chrome_unit_test_java_org.chromium.chrome.browser.compositor") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelBaseTest.java",
+    "src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelEventFilterTest.java",
+    "src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelManagerTest.java",
+    "src/org/chromium/chrome/browser/compositor/layouts/phone/NewBackgroundTabFakeTabSwitcherButtonRenderTest.java",
+  ]
+
+  deps = [ ":common_unit_test_deps_java" ]
+}
+
+android_library(
+    "chrome_unit_test_java_org.chromium.chrome.browser.contextmenu") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulatorTest.java",
+    "src/org/chromium/chrome/browser/contextmenu/ContextMenuChipControllerTest.java",
+    "src/org/chromium/chrome/browser/contextmenu/ContextMenuHeaderViewTest.java",
+    "src/org/chromium/chrome/browser/contextmenu/ContextMenuItemViewTest.java",
+    "src/org/chromium/chrome/browser/contextmenu/ContextMenuRenderTest.java",
+  ]
+
+  deps = [ ":common_unit_test_deps_java" ]
+}
+
+android_library(
+    "chrome_unit_test_java_org.chromium.chrome.browser.customtabs") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarViewUnitTest.java",
+    "src/org/chromium/chrome/browser/customtabs/CustomTabLaunchCauseMetricsTest.java",
+    "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardCoordinatorTest.java",
+    "src/org/chromium/chrome/browser/customtabs/features/minimizedcustomtab/MinimizedCardViewBinderTest.java",
+  ]
+
+  deps = [ ":common_unit_test_deps_java" ]
+}
+
+android_library("chrome_unit_test_java_org.chromium.chrome.browser.download") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/download/DownloadForegroundServiceManagerTest.java",
+    "src/org/chromium/chrome/browser/download/DownloadForegroundServiceTest.java",
+    "src/org/chromium/chrome/browser/download/DownloadNotificationServiceTest.java",
+    "src/org/chromium/chrome/browser/download/DownloadUserInitiatedTaskManagerTest.java",
+    "src/org/chromium/chrome/browser/download/SystemDownloadNotifierTest.java",
+    "src/org/chromium/chrome/browser/download/dialogs/DownloadLocationDialogTest.java",
+  ]
+
+  deps = [ ":common_unit_test_deps_java" ]
+}
+
+android_library("chrome_unit_test_java_org.chromium.chrome.browser.share") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/qrcode/QrCodeDialogTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetViewTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetBottomSheetContentTest.java",
+    "//chrome/browser/share/android/javatests/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilderTest.java",
+  ]
+
+  deps = [ ":common_unit_test_deps_java" ]
+}
+
+android_library("chrome_unit_test_java_various") {
+  resources_package = "org.chromium.chrome"
+
+  sources = [
+    "src/org/chromium/chrome/browser/ExampleOnDeviceUnitTest.java",
+    "src/org/chromium/chrome/browser/IntentFilterUnitTest.java",
+    "src/org/chromium/chrome/browser/IntentHandlerNativeTest.java",
+    "src/org/chromium/chrome/browser/autofill/AutofillUnitTest.java",
+    "src/org/chromium/chrome/browser/crash/LogcatExtractionRunnableTest.java",
+    "src/org/chromium/chrome/browser/crash/MinidumpUploadServiceTest.java",
+    "src/org/chromium/chrome/browser/crypto/CipherFactoryTest.java",
+    "src/org/chromium/chrome/browser/externalnav/ExternalNavigationDelegateImplTest.java",
+    "src/org/chromium/chrome/browser/externalnav/IntentWithRequestMetadataHandlerTest.java",
+    "src/org/chromium/chrome/browser/notifications/NotificationPlatformBridgeUnitTest.java",
+    "src/org/chromium/chrome/browser/ntp/IncognitoDescriptionViewRenderTest.java",
+    "src/org/chromium/chrome/browser/ntp/TitleUtilTest.java",
+    "src/org/chromium/chrome/browser/payments/ui/CurrencyFormatterTest.java",
+    "src/org/chromium/chrome/browser/screenshot_monitor/ScreenshotMonitorTest.java",
+    "src/org/chromium/chrome/browser/search_engines/settings/SearchEngineSettingsRenderTest.java",
+    "src/org/chromium/chrome/browser/share/ShareUrlTest.java",
+    "src/org/chromium/chrome/browser/status_indicator/StatusIndicatorViewBinderTest.java",
+    "src/org/chromium/chrome/browser/tab/WebContentsStateBridgeTest.java",
+    "src/org/chromium/chrome/browser/tab/state/PersistedTabDataTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/AsyncTabCreationParamsManagerTest.java",
+    "src/org/chromium/chrome/browser/tabmodel/RestoreMigrateTest.java",
+    "src/org/chromium/chrome/browser/toolbar/HomeButtonTest.java",
+    "src/org/chromium/chrome/browser/toolbar/ToolbarSecurityIconTest.java",
+    "src/org/chromium/chrome/browser/webapps/WebappLaunchCauseMetricsTest.java",
+  ]
+
+  deps = [ ":common_unit_test_deps_java" ]
+}

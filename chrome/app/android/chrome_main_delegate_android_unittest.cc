@@ -15,8 +15,8 @@
 
 class ChromeMainDelegateAndroidTest : public testing::Test {
  protected:
-  ChromeMainDelegateAndroidTest() {}
-  ~ChromeMainDelegateAndroidTest() override {}
+  ChromeMainDelegateAndroidTest() = default;
+  ~ChromeMainDelegateAndroidTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(mock_data_dir_.CreateUniqueTempDir());

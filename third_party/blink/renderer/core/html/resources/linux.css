@@ -44,3 +44,15 @@ select:not(:-internal-list-box) {
 input[type=range i] {
     color: #9d968E;
 }
+
+@supports blink-feature(CustomizableSelect) {
+  select:not(:-internal-list-box):not([multiple]):not(:-internal-list-box):not([multiple]) {
+    background-color: -internal-auto-base(ButtonFace, transparent);
+  }
+  select:not(:-internal-list-box):not([multiple]):enabled:hover {
+    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 10%, transparent));
+  }
+  select:not(:-internal-list-box):not([multiple]):enabled:active {
+    background-color: -internal-auto-base(ButtonFace, color-mix(in lab, currentColor 20%, transparent));
+  }
+}

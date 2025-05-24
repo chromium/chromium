@@ -78,8 +78,8 @@ public class ClientHintsTest extends AwParameterizedTest {
                     + " Chrome/(\\d+)\\.0\\.0\\.0( Mobile)? Safari/537\\.36";
 
     private static class ClientHintsTestResult {
-        public Map<String, String> mHttpHeaderClientHints;
-        public JSONObject mJsClientHints;
+        public final Map<String, String> mHttpHeaderClientHints;
+        public final JSONObject mJsClientHints;
 
         public ClientHintsTestResult(
                 Map<String, String> httpHeaderClientHints, JSONObject jsClientHints) {
@@ -810,8 +810,7 @@ public class ClientHintsTest extends AwParameterizedTest {
                 "fake_platform",
                 customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.PLATFORM));
         Assert.assertEquals(
-                new Boolean(true),
-                customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.WOW64));
+                true, customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.WOW64));
         Assert.assertEquals(
                 Arrays.deepToString(overrideBrands),
                 Arrays.deepToString(
@@ -835,8 +834,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         Assert.assertEquals(
                 "Android", customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.PLATFORM));
         Assert.assertEquals(
-                new Boolean(false),
-                customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.WOW64));
+                false, customUserAgentMetadata.get(AwUserAgentMetadata.MetadataKeys.WOW64));
 
         String[][] actualOverrideBrands =
                 (String[][])

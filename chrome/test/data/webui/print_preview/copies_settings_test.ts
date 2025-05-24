@@ -5,7 +5,7 @@
 import type {PrintPreviewCopiesSettingsElement, PrintPreviewModelElement} from 'chrome://print/print_preview.js';
 import {DEFAULT_MAX_COPIES} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {triggerInputEvent} from './print_preview_test_utils.js';
 
@@ -18,13 +18,12 @@ suite('CopiesSettingsTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     model = document.createElement('print-preview-model');
     document.body.appendChild(model);
-    model.set('settings.collate.available', true);
+    model.setSettingAvailableForTesting('collate', true);
 
     copiesSection = document.createElement('print-preview-copies-settings');
-    copiesSection.settings = model.settings;
     copiesSection.disabled = false;
-    fakeDataBind(model, copiesSection, 'settings');
     document.body.appendChild(copiesSection);
+    return microtasksFinished();
   });
 
   /**
@@ -33,7 +32,7 @@ suite('CopiesSettingsTest', function() {
    */
   async function checkCopiesMax(max: number) {
     const input =
-        copiesSection.shadowRoot!
+        copiesSection.shadowRoot
             .querySelector('print-preview-number-settings-section')!.getInput();
 
     // Check that |max| copies is valid.
@@ -49,7 +48,7 @@ suite('CopiesSettingsTest', function() {
   // supported.
   test('set copies max', async () => {
     const copiesInput =
-        copiesSection.shadowRoot!
+        copiesSection.shadowRoot
             .querySelector('print-preview-number-settings-section')!.getInput();
     assertEquals('1', copiesInput.value);
     assertFalse(copiesSection.getSetting('copies').setFromUi);
@@ -64,20 +63,24 @@ suite('CopiesSettingsTest', function() {
 
   test('collate visibility', async () => {
     const collateSection =
-        copiesSection.shadowRoot!.querySelector<HTMLElement>('.checkbox')!;
+        copiesSection.shadowRoot.querySelector<HTMLElement>('.checkbox')!;
     assertTrue(collateSection.hidden);
 
     copiesSection.setSetting('copies', 2);
+    await microtasksFinished();
     assertFalse(collateSection.hidden);
 
-    model.set('settings.collate.available', false);
+    model.setSettingAvailableForTesting('collate', false);
+    await microtasksFinished();
     assertTrue(collateSection.hidden);
-    model.set('settings.collate.available', true);
+
+    model.setSettingAvailableForTesting('collate', true);
+    await microtasksFinished();
     assertFalse(collateSection.hidden);
 
     // Set copies empty.
     const copiesInput =
-        copiesSection.shadowRoot!
+        copiesSection.shadowRoot
             .querySelector('print-preview-number-settings-section')!.getInput();
     await triggerInputEvent(copiesInput, '', copiesSection);
     assertTrue(collateSection.hidden);
@@ -95,7 +98,7 @@ suite('CopiesSettingsTest', function() {
   // correctly.
   test('set copies', async () => {
     const copiesInput =
-        copiesSection.shadowRoot!
+        copiesSection.shadowRoot
             .querySelector('print-preview-number-settings-section')!.getInput();
     assertEquals('1', copiesInput.value);
     assertFalse(copiesSection.getSetting('copies').setFromUi);
@@ -133,18 +136,20 @@ suite('CopiesSettingsTest', function() {
   });
 
   // Verifies that the inputs update when the value is updated.
-  test('update from settings', function() {
+  test('update from settings', async function() {
     const copiesInput =
-        copiesSection.shadowRoot!
+        copiesSection.shadowRoot
             .querySelector('print-preview-number-settings-section')!.getInput();
     const collateCheckbox = copiesSection.$.collate;
 
     assertEquals('1', copiesInput.value);
     copiesSection.setSetting('copies', 3);
+    await microtasksFinished();
     assertEquals('3', copiesInput.value);
 
     assertTrue(collateCheckbox.checked);
     copiesSection.setSetting('collate', false);
+    await microtasksFinished();
     assertFalse(collateCheckbox.checked);
   });
 });

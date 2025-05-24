@@ -23,6 +23,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"

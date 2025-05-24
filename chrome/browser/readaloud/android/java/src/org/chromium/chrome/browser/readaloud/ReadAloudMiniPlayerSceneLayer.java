@@ -7,12 +7,13 @@ package org.chromium.chrome.browser.readaloud;
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
@@ -28,6 +29,7 @@ import java.util.List;
  * a solid-color rectangle that acts as a placeholder for the mini player UI while transitioning
  * between hidden and shown states.
  */
+@NullMarked
 @JNINamespace("android")
 public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements SceneOverlay {
     /** Handle to the native side of this class. */
@@ -37,7 +39,6 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private boolean mIsVisible;
-    private int mWidth;
     private int mHeight;
     private @ColorInt int mColorArgb;
 
@@ -48,7 +49,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
      *     controls offsets.
      */
     public ReadAloudMiniPlayerSceneLayer(
-            @NonNull BrowserControlsStateProvider browserControlsStateProvider) {
+            BrowserControlsStateProvider browserControlsStateProvider) {
         mBrowserControlsStateProvider = browserControlsStateProvider;
     }
 
@@ -67,7 +68,6 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
      * @param height Height in pixels.
      */
     public void setSize(int width, int height) {
-        mWidth = width;
         mHeight = height;
     }
 
@@ -127,7 +127,7 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     }
 
     @Override
-    public EventFilter getEventFilter() {
+    public @Nullable EventFilter getEventFilter() {
         return null;
     }
 

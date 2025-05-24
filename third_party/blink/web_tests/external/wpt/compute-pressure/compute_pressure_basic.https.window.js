@@ -27,17 +27,38 @@ pressure_test(async (t) => {
     await remove_virtual_pressure_source('cpu');
   });
 
-  const changes = await new Promise(async (resolve) => {
+  const changes = await new Promise((resolve, reject) => {
     const observer = new PressureObserver(resolve);
     t.add_cleanup(() => observer.disconnect());
-    await update_virtual_pressure_source('cpu', 'critical');
-    await observer.observe('cpu');
+    observer.observe('cpu').catch(reject);
+    update_virtual_pressure_source('cpu', 'critical', 0.5).catch(reject);
   });
   assert_equals(1, changes.length);
   assert_equals(changes[0].state, 'critical');
   assert_equals(changes[0].source, 'cpu');
   assert_equals(typeof changes[0].time, 'number');
+  assert_equals(typeof changes[0].ownContributionEstimate, 'number');
+  assert_equals(changes[0].ownContributionEstimate, 0.5);
 }, 'Basic functionality test');
+
+pressure_test(async (t) => {
+  await create_virtual_pressure_source('cpu');
+  t.add_cleanup(async () => {
+    await remove_virtual_pressure_source('cpu');
+  });
+
+  const changes = await new Promise((resolve, reject) => {
+    const observer = new PressureObserver(resolve);
+    t.add_cleanup(() => observer.disconnect());
+    observer.observe('cpu').catch(reject);
+    update_virtual_pressure_source('cpu', 'critical').catch(reject);
+  });
+  assert_equals(1, changes.length);
+  assert_equals(changes[0].state, 'critical');
+  assert_equals(changes[0].source, 'cpu');
+  assert_equals(typeof changes[0].time, 'number');
+  assert_equals(changes[0].ownContributionEstimate, null);
+}, 'Basic functionality test with no ownContributionEstimate');
 
 pressure_test(async (t) => {
   await create_virtual_pressure_source('cpu');
@@ -84,32 +105,25 @@ pressure_test(async (t) => {
     await remove_virtual_pressure_source('cpu');
   });
 
-  const observer1_changes = [];
-  await new Promise(async (resolve) => {
-    const observer1 = new PressureObserver(changes => {
-      observer1_changes.push(changes);
-      resolve();
-    });
-    t.add_cleanup(() => observer1.disconnect());
-    await update_virtual_pressure_source('cpu', 'critical');
-    await observer1.observe('cpu');
+  const observer1_promise = new Promise((resolve, reject) => {
+    const observer = new PressureObserver(resolve);
+    t.add_cleanup(() => observer.disconnect());
+    observer.observe('cpu').catch(reject);
   });
+  await update_virtual_pressure_source('cpu', 'critical');
+  const observer1_changes = await observer1_promise;
   assert_equals(1, observer1_changes.length);
-  assert_equals(observer1_changes[0][0].source, 'cpu');
-  assert_equals(observer1_changes[0][0].state, 'critical');
+  assert_equals(observer1_changes[0].source, 'cpu');
+  assert_equals(observer1_changes[0].state, 'critical');
 
-  const observer2_changes = [];
-  await new Promise(resolve => {
-    const observer2 = new PressureObserver(changes => {
-      observer2_changes.push(changes);
-      resolve();
-    });
-    t.add_cleanup(() => observer2.disconnect());
-    observer2.observe('cpu');
+  const observer2_changes = await new Promise((resolve, reject) => {
+    const observer = new PressureObserver(resolve);
+    t.add_cleanup(() => observer.disconnect());
+    observer.observe('cpu').catch(reject);
   });
   assert_equals(1, observer2_changes.length);
-  assert_equals(observer2_changes[0][0].source, 'cpu');
-  assert_equals(observer2_changes[0][0].state, 'critical');
+  assert_equals(observer2_changes[0].source, 'cpu');
+  assert_equals(observer2_changes[0].state, 'critical');
 }, 'Starting a new observer after an observer has started works');
 
 mark_as_done();

@@ -44,7 +44,7 @@ export class ExceptionEditDialogElement extends
     };
   }
 
-  private ruleToEdit: string;
+  declare private ruleToEdit: string;
 
   private onCancelClick_() {
     this.$.dialog.cancel();

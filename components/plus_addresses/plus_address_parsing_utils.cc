@@ -10,11 +10,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_types.h"
-#include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace plus_addresses {
@@ -127,14 +128,39 @@ std::optional<PlusProfile> ParsePlusProfileFromV1Create(
   }
 
   // Use iterators to avoid looking up by JSON keys.
+  base::Value::List* existing_profiles = nullptr;
   for (std::pair<const std::string&, base::Value&> first_level_entry :
        response->GetDict()) {
     auto [first_key, first_val] = first_level_entry;
     if (base::MatchPattern(first_key, "*Profile") && first_val.is_dict()) {
       return ParsePlusProfileFromV1Dict(std::move(first_val.GetDict()));
     }
+    if (base::MatchPattern(first_key, "existing*Profiles") &&
+        first_val.is_list()) {
+      existing_profiles = first_val.GetIfList();
+    }
   }
-  return std::nullopt;
+  if (!existing_profiles || existing_profiles->empty() ||
+      !base::FeatureList::IsEnabled(
+          features::kPlusAddressParseExistingProfilesFromCreateResponse)) {
+    return std::nullopt;
+  }
+
+  // If kPlusAddressParseExistingProfilesFromCreateResponse is enabled, there is
+  // no entry for a newly created profile, but there is an entry for existing
+  // profiles, then we return the first existing profile. This scenario can
+  // occur if the client tries to create a plus profile on a domain for which
+  // the server already has affiliated profiles. In theory, there could even be
+  // multiple such profiles (due to changing affiliations over time), but to
+  // save complexity, we currently just pick the first profile and return it.
+  // At a later point, we may choose to add logic that picks one out of multiple
+  // profiles further downstream - in that case, we would need to change the
+  // signature of this function.
+  base::Value::Dict* first_existing_profile =
+      (*existing_profiles)[0].GetIfDict();
+  return first_existing_profile
+             ? ParsePlusProfileFromV1Dict(std::move(*first_existing_profile))
+             : std::nullopt;
 }
 
 std::optional<std::vector<PreallocatedPlusAddress>>

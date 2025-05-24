@@ -17,11 +17,13 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
@@ -38,6 +40,7 @@ import org.chromium.base.test.util.Feature;
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
 public class OmahaServiceStartDelayerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
 
     @Spy private Runnable mRunnable;
@@ -47,7 +50,6 @@ public class OmahaServiceStartDelayerTest {
     @Before
     public void setUp() throws Exception {
         Context appContext = ApplicationProvider.getApplicationContext();
-        MockitoAnnotations.initMocks(this);
         mShadowPowerManager =
                 Shadows.shadowOf((PowerManager) appContext.getSystemService(Context.POWER_SERVICE));
         mOmahaServiceStartDelayer = new OmahaServiceStartDelayer();

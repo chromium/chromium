@@ -21,7 +21,6 @@
 
 #include "snapshot/system_snapshot.h"
 #include "util/ios/ios_intermediate_dump_map.h"
-#include "util/ios/ios_system_data_collector.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 namespace crashpad {
@@ -44,7 +43,6 @@ class SystemSnapshotIOSIntermediateDump final : public SystemSnapshot {
   //!
   //! \param[in] system_data An intermediate dump map containing various system
   //!     data points.
-  //! \return `true` if the snapshot could be created.
   void Initialize(const IOSIntermediateDumpMap* system_data);
 
   // SystemSnapshot:

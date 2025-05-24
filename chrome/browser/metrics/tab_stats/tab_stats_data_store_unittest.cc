@@ -73,14 +73,16 @@ TEST_F(TabStatsDataStoreTest, DiscardsFromLocalState) {
   // This test updates the discard/reload counts to a data store instance and
   // then reinitialize it. The data store instance should restore the discard
   // and reload counts from the pref service.
-  constexpr size_t kExpectedDiscardsExternal = 3;
-  constexpr size_t kExpectedDiscardsUrgent = 5;
-  constexpr size_t kExpectedDiscardsProactive = 6;
-  constexpr size_t kExpectedDiscardsSuggested = 7;
-  constexpr size_t kExpectedReloadsExternal = 8;
-  constexpr size_t kExpectedReloadsUrgent = 13;
-  constexpr size_t kExpectedReloadsProactive = 4;
+  constexpr size_t kExpectedDiscardsExternal = 1;
+  constexpr size_t kExpectedDiscardsUrgent = 2;
+  constexpr size_t kExpectedDiscardsProactive = 3;
+  constexpr size_t kExpectedDiscardsSuggested = 4;
+  constexpr size_t kExpectedDiscardsFrozenWithGrowingMemory = 5;
+  constexpr size_t kExpectedReloadsExternal = 6;
+  constexpr size_t kExpectedReloadsUrgent = 7;
+  constexpr size_t kExpectedReloadsProactive = 8;
   constexpr size_t kExpectedReloadsSuggested = 9;
+  constexpr size_t kExpectedReloadsFrozenWithGrowingMemory = 10;
   for (size_t i = 0; i < kExpectedDiscardsExternal; ++i) {
     data_store_->OnTabDiscardStateChange(LifecycleUnitDiscardReason::EXTERNAL,
                                          /*is_discarded=*/true);
@@ -96,6 +98,11 @@ TEST_F(TabStatsDataStoreTest, DiscardsFromLocalState) {
   for (size_t i = 0; i < kExpectedDiscardsSuggested; ++i) {
     data_store_->OnTabDiscardStateChange(LifecycleUnitDiscardReason::SUGGESTED,
                                          /*is_discarded=*/true);
+  }
+  for (size_t i = 0; i < kExpectedDiscardsFrozenWithGrowingMemory; ++i) {
+    data_store_->OnTabDiscardStateChange(
+        LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
+        /*is_discarded=*/true);
   }
   for (size_t i = 0; i < kExpectedReloadsExternal; ++i) {
     data_store_->OnTabDiscardStateChange(LifecycleUnitDiscardReason::EXTERNAL,
@@ -113,6 +120,11 @@ TEST_F(TabStatsDataStoreTest, DiscardsFromLocalState) {
     data_store_->OnTabDiscardStateChange(LifecycleUnitDiscardReason::SUGGESTED,
                                          /*is_discarded=*/false);
   }
+  for (size_t i = 0; i < kExpectedReloadsFrozenWithGrowingMemory; ++i) {
+    data_store_->OnTabDiscardStateChange(
+        LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
+        /*is_discarded=*/false);
+  }
 
   const size_t external =
       static_cast<size_t>(LifecycleUnitDiscardReason::EXTERNAL);
@@ -121,15 +133,21 @@ TEST_F(TabStatsDataStoreTest, DiscardsFromLocalState) {
       static_cast<size_t>(LifecycleUnitDiscardReason::PROACTIVE);
   const size_t suggested =
       static_cast<size_t>(LifecycleUnitDiscardReason::SUGGESTED);
+  const size_t frozen_with_growing_memory = static_cast<size_t>(
+      LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY);
   TabsStats stats = data_store_->tab_stats();
   EXPECT_EQ(kExpectedDiscardsExternal, stats.tab_discard_counts[external]);
   EXPECT_EQ(kExpectedDiscardsUrgent, stats.tab_discard_counts[urgent]);
   EXPECT_EQ(kExpectedDiscardsProactive, stats.tab_discard_counts[proactive]);
   EXPECT_EQ(kExpectedDiscardsSuggested, stats.tab_discard_counts[suggested]);
+  EXPECT_EQ(kExpectedDiscardsFrozenWithGrowingMemory,
+            stats.tab_discard_counts[frozen_with_growing_memory]);
   EXPECT_EQ(kExpectedReloadsExternal, stats.tab_reload_counts[external]);
   EXPECT_EQ(kExpectedReloadsUrgent, stats.tab_reload_counts[urgent]);
   EXPECT_EQ(kExpectedReloadsProactive, stats.tab_reload_counts[proactive]);
   EXPECT_EQ(kExpectedReloadsSuggested, stats.tab_reload_counts[suggested]);
+  EXPECT_EQ(kExpectedReloadsFrozenWithGrowingMemory,
+            stats.tab_reload_counts[frozen_with_growing_memory]);
 
   // Resets the |data_store_| and checks discard/reload counters are restored.
   data_store_ = std::make_unique<TabStatsDataStore>(&pref_service_);
@@ -139,10 +157,14 @@ TEST_F(TabStatsDataStoreTest, DiscardsFromLocalState) {
   EXPECT_EQ(kExpectedDiscardsUrgent, stats2.tab_discard_counts[urgent]);
   EXPECT_EQ(kExpectedDiscardsProactive, stats2.tab_discard_counts[proactive]);
   EXPECT_EQ(kExpectedDiscardsSuggested, stats2.tab_discard_counts[suggested]);
+  EXPECT_EQ(kExpectedDiscardsFrozenWithGrowingMemory,
+            stats2.tab_discard_counts[frozen_with_growing_memory]);
   EXPECT_EQ(kExpectedReloadsExternal, stats2.tab_reload_counts[external]);
   EXPECT_EQ(kExpectedReloadsUrgent, stats2.tab_reload_counts[urgent]);
   EXPECT_EQ(kExpectedReloadsProactive, stats2.tab_reload_counts[proactive]);
   EXPECT_EQ(kExpectedReloadsSuggested, stats2.tab_reload_counts[suggested]);
+  EXPECT_EQ(kExpectedReloadsFrozenWithGrowingMemory,
+            stats2.tab_reload_counts[frozen_with_growing_memory]);
 }
 
 }  // namespace metrics

@@ -127,7 +127,10 @@ source_set("client_gmb_manager_sources") {
   # External code should depend on this via //gpu/client_gmb_manager above
   # rather than depending on this directly or the component build will break.
   visibility = [ "//gpu/*" ]
-  sources = [ "gpu_memory_buffer_manager.h" ]
+  sources = [
+    "gpu_memory_buffer_manager.cc",
+    "gpu_memory_buffer_manager.h",
+  ]
   configs += [ "//gpu:gpu_implementation" ]
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
   deps = [

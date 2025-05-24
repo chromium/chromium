@@ -9,8 +9,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Interface used to listen for a recent app click.
 class RecentAppClickObserver : public base::CheckedObserver {
@@ -23,7 +22,6 @@ class RecentAppClickObserver : public base::CheckedObserver {
       eche_app::mojom::AppStreamLaunchEntryPoint entrypoint) = 0;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_RECENT_APP_CLICK_OBSERVER_H_

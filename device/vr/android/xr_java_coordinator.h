@@ -77,6 +77,11 @@ class XrJavaCoordinator {
       SurfaceTouchCallback touch_callback,
       JavaShutdownCallback destroyed_callback,
       XrSessionButtonTouchedCallback button_touched_callback) = 0;
+
+  // `shutdown_callback` may optionally be provided to override the previously
+  // supplied `destroyed_callback`. Default constructed callbacks are considered
+  // null, so this is not wrapped in std::optional.
+  virtual void EndSession(JavaShutdownCallback shutdown_callback) = 0;
   virtual void EndSession() = 0;
 };
 

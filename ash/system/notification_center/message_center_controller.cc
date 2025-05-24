@@ -121,9 +121,7 @@ MessageCenterController::MessageCenterController() {
   message_center::MessageCenter::Get()->SetSystemNotificationAppName(
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME));
 
-  if (features::IsNotificationImageDragEnabled()) {
-    drag_controller_ = std::make_unique<AshNotificationDragController>();
-  }
+  drag_controller_ = std::make_unique<AshNotificationDragController>();
 }
 
 MessageCenterController::~MessageCenterController() {

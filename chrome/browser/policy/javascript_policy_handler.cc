@@ -15,9 +15,9 @@
 
 namespace policy {
 
-JavascriptPolicyHandler::JavascriptPolicyHandler() {}
+JavascriptPolicyHandler::JavascriptPolicyHandler() = default;
 
-JavascriptPolicyHandler::~JavascriptPolicyHandler() {}
+JavascriptPolicyHandler::~JavascriptPolicyHandler() = default;
 
 bool JavascriptPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                   PolicyErrorMap* errors) {

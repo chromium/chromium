@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "sandbox/linux/services/credentials.h"
 
 #include <errno.h>
@@ -161,8 +166,10 @@ SANDBOX_TEST(Credentials, CanDetectRoot) {
 
 // Disabled on ASAN because of crbug.com/451603.
 // Disabled on MSAN due to crbug.com/1180105
-SANDBOX_TEST_ALLOW_NOISE(Credentials,
-                         DISABLE_ON_SANITIZERS(DropFileSystemAccessIsSafe)) {
+SANDBOX_TEST_ALLOW_NOISE(
+    Credentials,
+    // TODO(crbug.com/370792794): Re-enable this test
+    DISABLE_ON_SANITIZERS(DISABLED_DropFileSystemAccessIsSafe)) {
   CHECK(Credentials::HasFileSystemAccess());
   CHECK(Credentials::DropAllCapabilities());
   // Probably missing kernel support.

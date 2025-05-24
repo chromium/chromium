@@ -92,8 +92,9 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
     // Always save the URLs, that way the UI can remain consistent even if the
     // user changes the startup type pref.
     base::Value::List url_pref_list;
-    for (GURL url : pref.urls)
+    for (const GURL& url : pref.urls) {
       url_pref_list.Append(url.spec());
+    }
     prefs->SetList(prefs::kURLsToRestoreOnStartup, std::move(url_pref_list));
   }
 }

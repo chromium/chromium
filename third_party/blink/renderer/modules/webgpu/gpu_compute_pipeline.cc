@@ -5,14 +5,12 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_compute_pipeline.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_programmable_stage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_pipeline_layout.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_programmable_stage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_shader_module.h"
-#include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 
 namespace blink {
 
@@ -56,17 +54,6 @@ GPUComputePipeline* GPUComputePipeline::Create(
   OwnedProgrammableStage computeStage;
   wgpu::ComputePipelineDescriptor dawn_desc =
       AsDawnType(device, webgpu_desc, &label, &computeStage);
-
-  // If ChromiumExperimentalSubgroups feature is enabled, chain the
-  // full subgroups options after compute pipeline descriptor.
-  // TODO(crbug.com/349125474): Remove deprecated ChromiumExperimentalSubgroups.
-  wgpu::DawnComputePipelineFullSubgroups fullSubgroupsOptions = {};
-  if (device->features()->has(
-          V8GPUFeatureName::Enum::kChromiumExperimentalSubgroups)) {
-    fullSubgroupsOptions.requiresFullSubgroups =
-        webgpu_desc->getRequiresFullSubgroupsOr(false);
-    dawn_desc.nextInChain = &fullSubgroupsOptions;
-  }
 
   GPUComputePipeline* pipeline = MakeGarbageCollected<GPUComputePipeline>(
       device, device->GetHandle().CreateComputePipeline(&dawn_desc),

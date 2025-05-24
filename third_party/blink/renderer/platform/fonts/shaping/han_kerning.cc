@@ -135,9 +135,9 @@ void HanKerning::ResetFeatures() {
   DCHECK(features_);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   for (wtf_size_t i = num_features_before_; i < features_->size(); ++i) {
-    const hb_feature_t& feature = (*features_)[i];
-    DCHECK(feature.tag == HB_TAG('h', 'a', 'l', 't') ||
-           feature.tag == HB_TAG('v', 'h', 'a', 'l'));
+    const FontFeatureRange& feature = (*features_)[i];
+    DCHECK((feature.tag == FontFeatureTag{'h', 'a', 'l', 't'} ||
+            feature.tag == FontFeatureTag{'v', 'h', 'a', 'l'}));
   }
 #endif
   features_->Shrink(num_features_before_);
@@ -216,7 +216,7 @@ void HanKerning::Compute(const String& text,
       [[unlikely]] {
     return;
   }
-  for (const hb_feature_t& feature : *features) {
+  for (const FontFeatureRange& feature : *features) {
     if (feature.value && IsExclusiveFeature(feature.tag)) {
       return;
     }
@@ -242,7 +242,7 @@ void HanKerning::Compute(const String& text,
   }
 
   if (font_data.has_contextual_spacing) {
-    // The `chws` feature can handle charcters in a run.
+    // The `chws` feature can handle characters in a run.
     // Compute the end edge if there are following runs.
     if (options.apply_end) [[unlikely]] {
       indices.push_back(end - 1);
@@ -291,9 +291,9 @@ void HanKerning::Compute(const String& text,
                                              : HB_TAG('v', 'h', 'a', 'l');
   features_ = features;
   num_features_before_ = features->size();
-  features->Reserve(features->size() + indices.size());
+  features->reserve(features->size() + indices.size());
   for (const wtf_size_t i : indices) {
-    features->Append({tag, 1, i, i + 1});
+    features->push_back(FontFeatureRange{{tag, 1}, i, i + 1});
   }
 }
 
@@ -348,7 +348,7 @@ HanKerning::FontData::FontData(const SimpleFontData& font,
   // OpenType features such as `calt`. In vertical flow, some glyphs change,
   // which is done by OpenType features such as `vert`. Shaping is needed to
   // apply these features.
-  HarfBuzzShaper shaper(String(kChars, std::size(kChars)));
+  HarfBuzzShaper shaper{String(base::span(kChars))};
   HarfBuzzShaper::GlyphDataList glyph_data_list;
   shaper.GetGlyphData(font, locale, locale.GetScriptForHan(), is_horizontal,
                       glyph_data_list);

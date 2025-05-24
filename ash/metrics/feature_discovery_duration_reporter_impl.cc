@@ -61,8 +61,8 @@ void ReportFeatureDiscoveryDuration(const char* histogram,
 const feature_discovery::TrackableFeatureInfo& FindMappedFeatureInfo(
     feature_discovery::TrackableFeature feature) {
   auto iter =
-      base::ranges::find(feature_discovery::kTrackableFeatureArray, feature,
-                         &feature_discovery::TrackableFeatureInfo::feature);
+      std::ranges::find(feature_discovery::kTrackableFeatureArray, feature,
+                        &feature_discovery::TrackableFeatureInfo::feature);
   DCHECK(feature_discovery::kTrackableFeatureArray.cend() != iter);
   return *iter;
 }
@@ -275,6 +275,7 @@ void FeatureDiscoveryDurationReporterImpl::Activate() {
 
 void FeatureDiscoveryDurationReporterImpl::Deactivate() {
   if (!active_time_recordings_.empty()) {
+    CHECK(active_pref_service_);
     ScopedDictPrefUpdate update(active_pref_service_, kObservedFeatures);
     base::Value::Dict& mutable_observed_features_dict = update.Get();
 

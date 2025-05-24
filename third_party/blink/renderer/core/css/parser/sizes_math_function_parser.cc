@@ -299,8 +299,7 @@ bool SizesMathFunctionParser::ConsumeBlockContent(
       case kEOFToken:
         break;
       case kCommentToken:
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
+        NOTREACHED();
       case kCDOToken:
       case kCDCToken:
       case kAtKeywordToken:

@@ -13,8 +13,8 @@
 #import "ios/chrome/app/spotlight/searchable_item_factory.h"
 #import "ios/chrome/app/spotlight/spotlight_interface.h"
 #import "ios/chrome/app/spotlight/spotlight_logger.h"
-#import "ios/chrome/browser/ui/lens/lens_availability.h"
-#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -79,27 +79,31 @@ BOOL SetStartupParametersForSpotlightAction(
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_NEW_INCOGNITO_TAB_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
-    [startupParams setApplicationMode:ApplicationModeForTabOpening::INCOGNITO];
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::INCOGNITO
+                 forceApplicationMode:NO];
   } else if ([action isEqualToString:base::SysUTF8ToNSString(
                                          kSpotlightActionVoiceSearch)]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_VOICE_SEARCH_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
-    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL
+                 forceApplicationMode:NO];
     [startupParams setPostOpeningAction:START_VOICE_SEARCH];
   } else if ([action isEqualToString:base::SysUTF8ToNSString(
                                          kSpotlightActionQRScanner)]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_QR_CODE_SCANNER_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
-    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL
+                 forceApplicationMode:NO];
     [startupParams setPostOpeningAction:START_QR_CODE_SCANNER];
   } else if ([action isEqualToString:base::SysUTF8ToNSString(
                                          kSpotlightActionNewTab)]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_NEW_TAB_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
-    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL
+                 forceApplicationMode:NO];
   } else if ([action isEqualToString:base::SysUTF8ToNSString(
                                          kSpotlightActionSetDefaultBrowser)]) {
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
@@ -115,7 +119,8 @@ BOOL SetStartupParametersForSpotlightAction(
     UMA_HISTOGRAM_ENUMERATION(kSpotlightActionsHistogram,
                               SPOTLIGHT_ACTION_LENS_PRESSED,
                               SPOTLIGHT_ACTION_COUNT);
-    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL];
+    [startupParams setApplicationMode:ApplicationModeForTabOpening::NORMAL
+                 forceApplicationMode:NO];
     [startupParams setPostOpeningAction:START_LENS_FROM_SPOTLIGHT];
   } else {
     return NO;

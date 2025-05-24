@@ -205,7 +205,7 @@ But this is also incorrect depending on which codepoints are highlighted.
 Similar to the previous example, if the range is only part of one codepoint
 within the grapheme, this will break!
 
-It is impossible to know what color to use for that glyph because it's range
+It is impossible to know what color to use for that glyph because its range
 does not encompass the entire grapheme.
 
 ## **Recommendations:**

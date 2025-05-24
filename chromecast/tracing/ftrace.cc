@@ -8,11 +8,11 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "chromecast/tracing/system_tracing_common.h"
@@ -71,27 +71,27 @@ const char* const kWorkqEvents[] = {
 void AddCategoryEvents(const std::string& category,
                        std::vector<std::string>* events) {
   if (category == "gfx") {
-    base::ranges::copy(kGfxEvents, std::back_inserter(*events));
+    std::ranges::copy(kGfxEvents, std::back_inserter(*events));
     return;
   }
   if (category == "input") {
-    base::ranges::copy(kInputEvents, std::back_inserter(*events));
+    std::ranges::copy(kInputEvents, std::back_inserter(*events));
     return;
   }
   if (category == TRACE_DISABLED_BY_DEFAULT("irq")) {
-    base::ranges::copy(kIrqEvents, std::back_inserter(*events));
+    std::ranges::copy(kIrqEvents, std::back_inserter(*events));
     return;
   }
   if (category == "power") {
-    base::ranges::copy(kPowerEvents, std::back_inserter(*events));
+    std::ranges::copy(kPowerEvents, std::back_inserter(*events));
     return;
   }
   if (category == "sched") {
-    base::ranges::copy(kSchedEvents, std::back_inserter(*events));
+    std::ranges::copy(kSchedEvents, std::back_inserter(*events));
     return;
   }
   if (category == "workq") {
-    base::ranges::copy(kWorkqEvents, std::back_inserter(*events));
+    std::ranges::copy(kWorkqEvents, std::back_inserter(*events));
     return;
   }
 

@@ -35,18 +35,19 @@ from blinkpy.common.net.rpc import Build, BuildStatus
 from blinkpy.web_tests.layout_package import json_results_generator
 from blinkpy.web_tests.models.test_failures import FailureImage
 from blinkpy.web_tests.models.typ_types import ResultType
-from blinkpy.web_tests.port.base import Port
 
 
 class Artifact(NamedTuple):
     url: str
     digest: Optional[str] = None
 
+# All of the non-reftest baseline extensions we use.
+BASELINE_EXTENSIONS = ('.wav', '.txt', '.png')
 
 # For CLI compatibility, we would like a list of baseline extensions without
 # the leading dot.
 # TODO: Investigate changing the CLI.
-BaselineSuffix = Literal[tuple(ext[1:] for ext in Port.BASELINE_EXTENSIONS)]
+BaselineSuffix = Literal[tuple(ext[1:] for ext in BASELINE_EXTENSIONS)]
 
 
 class WebTestResult:
@@ -78,6 +79,27 @@ class WebTestResult:
     def test_name(self):
         return self._test_name
 
+    def merge_actual_result(self, other):
+        """Merge actual result from another WebTestResult to the current.
+
+        This won't touch any property associated the expectation or baselines,
+        assuming that should not change for the same platform.
+        """
+
+        assert self._test_name == other._test_name, 'Can not merge result from different test.'
+        self._result_dict['actual'] = (self._result_dict['actual'] + ' ' +
+                                       other._result_dict['actual'])
+        self._result_dict['is_unexpected'] = (
+            self._result_dict['is_unexpected']
+            or other._result_dict['is_unexpected'])
+
+        # merge all the actifacts except those started with 'expected_'
+        for key, artifacts in other.artifacts.items():
+            if key.startswith('expected_'):
+                continue
+            self.artifacts.setdefault(key, []).extend(other.artifacts[key])
+
+
     @property
     def bugs(self) -> Set[str]:
         bugs = self._result_dict.get('bugs')
@@ -101,7 +123,6 @@ class WebTestResult:
     def is_missing_audio(self):
         return self._result_dict.get('is_missing_audio', False)
 
-    @memoized
     def actual_results(self):
         return self._result_dict['actual'].split()
 
@@ -126,7 +147,6 @@ class WebTestResult:
         return (self.is_missing_image() or self.is_missing_text()
                 or self.is_missing_audio())
 
-    @property
     def attempts(self) -> int:
         return len(self.actual_results())
 
@@ -163,8 +183,8 @@ class IncompleteResultsReason(NamedTuple):
         return 'results are incomplete for an unknown reason'
 
 
-# FIXME: This should be unified with ResultsSummary or other NRWT web tests code
-# in the web_tests package.
+# TODO(crbug.com/406299273): This should be unified with ResultsSummary or other
+# NRWT web tests code in the web_tests package.
 # This doesn't belong in common.net, but we don't have a better place for it yet.
 class WebTestResults:
     @classmethod
@@ -244,6 +264,14 @@ class WebTestResults:
         self._step_name = step_name
         self.incomplete_reason = incomplete_reason
         self.build = build
+
+    def merge_results(self, other):
+        """Merge web test results from another WebTestResults object to the current."""
+        for test_name, result in other._results_by_name.items():
+            if test_name in self._results_by_name:
+                self._results_by_name[test_name].merge_actual_result(result)
+            else:
+                self._results_by_name[test_name] = result
 
     def __iter__(self):
         yield from self._results_by_name.values()

@@ -65,7 +65,7 @@ void ExecuteCallback(const double threshold,
     LogPowerMLSmartDimModelResult(SmartDimModelResult::kSuccess);
   }
 
-  std::move(decision_callback).Run(prediction);
+  std::move(decision_callback).Run(std::make_optional(prediction));
 }
 
 // Populates |example| using |features|. Returns true if no error occurred.
@@ -266,7 +266,7 @@ void SmartDimMlAgent::RequestDimDecision(
     const UserActivityEvent::Features& features,
     DimDecisionCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dim_decision_callback_.Reset(std::move(callback));
+  cancelable_dim_decision_callback_.Reset(std::move(callback));
 
   auto* worker = GetWorker();
 
@@ -279,7 +279,7 @@ void SmartDimMlAgent::RequestDimDecision(
                                            features, &vectorized_features);
   if (preprocess_result != SmartDimModelResult::kSuccess) {
     LogPowerMLSmartDimModelResult(preprocess_result);
-    dim_decision_callback_.callback().Run(prediction);
+    cancelable_dim_decision_callback_.callback().Run(prediction);
     return;
   }
 
@@ -287,7 +287,7 @@ void SmartDimMlAgent::RequestDimDecision(
     DVLOG(1) << "Smart Dim vectorized features not of correct size.";
     LogPowerMLSmartDimModelResult(
         SmartDimModelResult::kMismatchedFeatureSizeError);
-    dim_decision_callback_.callback().Run(prediction);
+    cancelable_dim_decision_callback_.callback().Run(prediction);
     return;
   }
 
@@ -318,12 +318,19 @@ void SmartDimMlAgent::RequestDimDecision(
   worker->GetExecutor()->Execute(
       std::move(inputs), std::move(outputs),
       base::BindOnce(&ExecuteCallback, dim_threshold,
-                     dim_decision_callback_.callback()));
+                     cancelable_dim_decision_callback_.callback()));
 }
 
 void SmartDimMlAgent::CancelPreviousRequest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  dim_decision_callback_.Cancel();
+  auto decision_callback{cancelable_dim_decision_callback_.callback()};
+  // If the callback has not already been run, invoke it with an empty model
+  // prediction.
+  if (!decision_callback.is_null()) {
+    std::move(decision_callback)
+        .Run(std::optional<UserActivityEvent::ModelPrediction>());
+  }
+  cancelable_dim_decision_callback_.Cancel();
 }
 
 void SmartDimMlAgent::ResetForTesting() {

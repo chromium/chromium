@@ -11,7 +11,7 @@ class Profile;
 
 namespace web_app {
 
-constexpr inline std::string_view kIwaDevModeNotEnabledMessage =
+inline constexpr std::string_view kIwaDevModeNotEnabledMessage =
     "Isolated Web Apps are not enabled, or Isolated Web App Developer Mode is "
     "not enabled or blocked by policy.";
 

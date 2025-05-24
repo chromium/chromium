@@ -6,14 +6,15 @@
 #define CHROME_UTILITY_IMPORTER_IMPORTER_CREATOR_H_
 
 #include "base/memory/ref_counted.h"
-#include "chrome/common/importer/importer_type.h"
+#include "components/user_data_importer/common/importer_type.h"
 
 class Importer;
 
 namespace importer {
 
 // Creates an Importer of the specified |type|.
-scoped_refptr<Importer> CreateImporterByType(ImporterType type);
+scoped_refptr<Importer> CreateImporterByType(
+    user_data_importer::ImporterType type);
 
 }  // namespace importer
 

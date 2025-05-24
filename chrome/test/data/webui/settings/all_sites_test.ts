@@ -20,7 +20,7 @@ import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 // clang-format on
 
-suite('DisableRelatedWebsiteSets', function() {
+suite('WithoutRelatedWebsiteSetsData', function() {
   /**
    * An example eTLD+1 Object with multiple origins grouped under it.
    */
@@ -55,10 +55,6 @@ suite('DisableRelatedWebsiteSets', function() {
 
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
-
-    loadTimeData.overrideValues({
-      firstPartySetsUIEnabled: false,
-    });
   });
 
   suiteTeardown(function() {
@@ -66,7 +62,7 @@ suite('DisableRelatedWebsiteSets', function() {
   });
 
   // Initialize a site-list before each test.
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     prefsVarious = createSiteSettingsPrefs([], [
@@ -892,7 +888,7 @@ suite('DisableRelatedWebsiteSets', function() {
     cancelDialog();
   });
 
-  test('dynamic strings', async function() {
+  test('dynamic strings', function() {
     // Single origin, no apps.
     const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
     testElement.siteGroupMap.set(
@@ -1098,12 +1094,14 @@ suite('EnableRelatedWebsiteSets', function() {
 
   let metricsBrowserProxy: TestMetricsBrowserProxy;
 
+  function createPage() {
+    testElement = document.createElement('all-sites');
+    assertTrue(!!testElement);
+    document.body.appendChild(testElement);
+  }
+
   suiteSetup(function() {
     CrSettingsPrefs.setInitialized();
-
-    loadTimeData.overrideValues({
-      firstPartySetsUIEnabled: true,
-    });
   });
 
   suiteTeardown(function() {
@@ -1112,16 +1110,14 @@ suite('EnableRelatedWebsiteSets', function() {
 
 
   // Initialize a site-list before each test.
-  setup(async function() {
+  setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     browserProxy = new TestSiteSettingsPrefsBrowserProxy();
     SiteSettingsPrefsBrowserProxyImpl.setInstance(browserProxy);
     metricsBrowserProxy = new TestMetricsBrowserProxy();
     MetricsBrowserProxyImpl.setInstance(metricsBrowserProxy);
-    testElement = document.createElement('all-sites');
-    assertTrue(!!testElement);
-    document.body.appendChild(testElement);
+    createPage();
   });
 
   teardown(function() {
@@ -1199,15 +1195,14 @@ suite('EnableRelatedWebsiteSets', function() {
         await metricsBrowserProxy.whenCalled('recordDeleteBrowsingDataAction'));
   });
 
-  test(
-      'cancelling the confirm dialog on removing site works', async function() {
-        const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
-        siteGroup.rwsOwner = 'google.com';
-        testElement.siteGroupMap.set(
-            siteGroup.groupingKey, structuredClone(siteGroup));
-        testElement.forceListUpdateForTesting();
-        removeSiteViaOverflowMenu('cancel-button');
-      });
+  test('cancelling the confirm dialog on removing site works', function() {
+    const siteGroup = structuredClone(TEST_MULTIPLE_SITE_GROUP);
+    siteGroup.rwsOwner = 'google.com';
+    testElement.siteGroupMap.set(
+        siteGroup.groupingKey, structuredClone(siteGroup));
+    testElement.forceListUpdateForTesting();
+    removeSiteViaOverflowMenu('cancel-button');
+  });
 
   test('click and remove site entry with remove button', async function() {
     testElement.siteGroupMap.set(
@@ -1224,8 +1219,7 @@ suite('EnableRelatedWebsiteSets', function() {
   });
 
   test(
-      'click and cancel dialog site entry with remove button',
-      async function() {
+      'click and cancel dialog site entry with remove button', function() {
         testElement.siteGroupMap.set(
             TEST_MULTIPLE_SITE_GROUP.groupingKey,
             structuredClone(TEST_MULTIPLE_SITE_GROUP));
@@ -1235,7 +1229,7 @@ suite('EnableRelatedWebsiteSets', function() {
         cancelDialog();
       });
 
-  test('filter sites by related website set owner', async function() {
+  test('filter sites by related website set owner', function() {
     TEST_SITE_GROUPS.forEach(siteGroup => {
       testElement.siteGroupMap.set(
           siteGroup.groupingKey, structuredClone(siteGroup));
@@ -1261,7 +1255,10 @@ suite('EnableRelatedWebsiteSets', function() {
         overflowMenu.querySelectorAll<HTMLElement>('.dropdown-item');
     assertEquals('', testElement.filter);
     // Click show related sites.
-    menuItems[0]!.click();
+    assertTrue(!!menuItems[0]);
+    assertEquals(loadTimeData.getString('allSitesShowRwsButton'),
+        menuItems[0].innerText.trim());
+    menuItems[0].click();
     // Check the overflow menu is now closed.
     assertFalse(overflowMenu.open);
     // Verify filter is applied in search query.
@@ -1291,7 +1288,150 @@ suite('EnableRelatedWebsiteSets', function() {
 
   test(
       'site entry related website set information updated on site deletion',
+      function() {
+        TEST_RWS_SITE_GROUPS.forEach(siteGroup => {
+          testElement.siteGroupMap.set(
+              siteGroup.groupingKey, structuredClone(siteGroup));
+        });
+        testElement.forceListUpdateForTesting();
+        flush();
+        let siteEntries =
+            testElement.$.listContainer.querySelectorAll('site-entry');
+        assertEquals(testElement.$.allSitesList.items!.length, 2);
+        assertEquals(
+            '· ' + loadTimeData.getString('allSitesRwsMembershipLabel'),
+            siteEntries[1]!.$.rwsMembership.innerText.trim());
+
+        // Remove first site group.
+        removeSiteViaOverflowMenu('action-button');
+        siteEntries =
+            testElement.$.listContainer.querySelectorAll('site-entry');
+        assertEquals(testElement.$.allSitesList.items!.length, 1);
+        assertEquals(
+            '· ' + loadTimeData.getString('allSitesRwsMembershipLabel'),
+            siteEntries[1]!.$.rwsMembership.innerText.trim());
+      });
+
+  test(
+      'show RWS decription, delete button and data usage when filtering by RWS',
+      function() {
+        TEST_SITE_GROUPS.forEach(siteGroup => {
+          testElement.siteGroupMap.set(
+              siteGroup.groupingKey, structuredClone(siteGroup));
+        });
+        testElement.forceListUpdateForTesting();
+        flush();
+
+        let relatedWebsiteSetsDescription =
+            testElement.shadowRoot!.querySelector<HTMLElement>(
+                '#relatedWebsiteSetsDescription');
+        assertTrue(relatedWebsiteSetsDescription!.hidden);
+
+        testElement.filter = 'related:foo.com';
+        flush();
+
+        relatedWebsiteSetsDescription =
+            testElement.shadowRoot!.querySelector<HTMLElement>(
+                '#relatedWebsiteSetsDescription');
+        let sortComponent =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#sort');
+        let clearAllButton = testElement.$.clearAllButton;
+        let clearLabel = testElement.$.clearLabel;
+        const allSitesRwsFilterViewDescription =
+            loadTimeData.getString('allSitesRwsFilterViewDescription')
+                .replace(/<[^>]*>/g, '')  // Remove HTML tags
+                .trim();
+        assertFalse(relatedWebsiteSetsDescription!.hidden);
+        assertEquals(
+            allSitesRwsFilterViewDescription,
+            relatedWebsiteSetsDescription!.innerText.trim());
+        assertTrue(sortComponent!.hidden);
+        assertEquals(
+            loadTimeData.getString('allSitesRwsDeleteDataButtonLabel'),
+            clearAllButton.innerText.trim());
+        assertEquals(
+            loadTimeData.substituteString(
+                testElement.i18n('allSitesRwsFilterViewStorageDescription'),
+                '0 B'),
+            clearLabel.innerText.trim());
+
+        testElement.filter = 'related:bar.com';
+        flush();
+
+        relatedWebsiteSetsDescription =
+            testElement.shadowRoot!.querySelector<HTMLElement>(
+                '#relatedWebsiteSetsDescription');
+        sortComponent =
+            testElement.shadowRoot!.querySelector<HTMLElement>('#sort');
+        clearAllButton = testElement.$.clearAllButton;
+        clearLabel = testElement.$.clearLabel;
+        assertTrue(relatedWebsiteSetsDescription!.hidden);
+        assertFalse(sortComponent!.hidden);
+        assertFalse(isVisible(clearAllButton));
+        assertEquals(
+            loadTimeData.substituteString(
+                testElement.i18n(
+                    'siteSettingsClearDisplayedStorageDescription'),
+                '0 B'),
+            clearLabel.innerText.trim());
+      });
+
+  test('verify RWS delete all data dialog', function() {
+    TEST_SITE_GROUPS.forEach(siteGroup => {
+      testElement.siteGroupMap.set(
+          siteGroup.groupingKey, structuredClone(siteGroup));
+    });
+    testElement.forceListUpdateForTesting();
+    testElement.filter = 'related:foo.com';
+    flush();
+
+    const clearAllButton =
+        testElement.$.clearAllButton.querySelector('cr-button')!;
+    const confirmClearAllData = testElement.$.confirmClearAllData.get();
+    clearAllButton.click();
+    assertTrue(confirmClearAllData.open, 'open dialog');
+
+    for (const appInstalled of [true, false]) {
+      testElement.siteGroupMap.get(groupingKey('foo.com'))!.hasInstalledPWA =
+          appInstalled;
+      testElement.forceListUpdateForTesting();
+      flush();
+
+      const confirmationTitle =
+          confirmClearAllData.querySelector<HTMLElement>(
+                                 '[slot=title]')!.innerText.trim();
+      const confirmationDescription =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogDescription')!.innerText.trim();
+      const confirmationSignOutLabel =
+          confirmClearAllData
+              .querySelector<HTMLElement>(
+                  '#clearAllStorageDialogSignOutLabel')!.innerText.trim();
+
+      assertEquals(
+          loadTimeData.getString('allSitesRwsDeleteDataDialogTitle'),
+          confirmationTitle);
+      const messageId = appInstalled ?
+          'siteSettingsDeleteRwsStorageConfirmationInstalled' :
+          'siteSettingsDeleteRwsStorageConfirmation';
+      assertEquals(
+          loadTimeData.getStringF(messageId, '0 B', 'foo.com'),
+          confirmationDescription);
+      assertEquals(
+          loadTimeData.getString('siteSettingsClearRwsStorageSignOut'),
+          confirmationSignOutLabel);
+    }
+  });
+
+  // TODO(crbug.com/396463421): Remove once RelatedWebsiteSetsUi launched.
+  test(
+      'site entry RWS label updated on site deletion when RWS UI V2 disabled',
       async function() {
+        loadTimeData.overrideValues({
+          isRelatedWebsiteSetsV2UiEnabled: false,
+        });
+        await createPage();
         TEST_RWS_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
               siteGroup.groupingKey, structuredClone(siteGroup));
@@ -1320,6 +1460,9 @@ suite('EnableRelatedWebsiteSets', function() {
   test(
       'site entry related website set constant member count on origin deletion',
       async function() {
+        loadTimeData.overrideValues({
+          isRelatedWebsiteSetsV2UiEnabled: false,
+        });
         TEST_RWS_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
               siteGroup.groupingKey, structuredClone(siteGroup));
@@ -1386,6 +1529,9 @@ suite('EnableRelatedWebsiteSets', function() {
   test(
       'show learn more about related website sets link when filtering by rws owner',
       function() {
+        loadTimeData.overrideValues({
+          isRelatedWebsiteSetsV2UiEnabled: false,
+        });
         TEST_SITE_GROUPS.forEach(siteGroup => {
           testElement.siteGroupMap.set(
               siteGroup.groupingKey, structuredClone(siteGroup));

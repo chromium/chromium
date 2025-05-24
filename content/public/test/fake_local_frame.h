@@ -53,6 +53,8 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
   void NotifyUserActivation(
       blink::mojom::UserActivationNotificationType notification_type) override;
   void NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) override;
+  void NotifyContextMenuInsetsObservers(const gfx::Rect&) override;
+  void ShowInterestInElement(int) override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message,
                            bool discard_duplicates) override;
@@ -182,6 +184,7 @@ class FakeLocalFrame : public blink::mojom::LocalFrame {
       const ::network::URLLoaderCompletionStatus& completion_status) override;
   void UpdatePrerenderURL(const ::GURL& matched_url,
                           UpdatePrerenderURLCallback callback) override;
+  void GetScrollPosition(GetScrollPositionCallback callback) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

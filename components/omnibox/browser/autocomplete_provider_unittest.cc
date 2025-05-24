@@ -36,12 +36,12 @@
 #include "components/omnibox/browser/autocomplete_provider_listener.h"
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/mock_autocomplete_provider_client.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_triggered_feature_service.h"
 #include "components/omnibox/browser/search_provider.h"
 #include "components/omnibox/browser/suggestion_group_util.h"
 #include "components/omnibox/browser/zero_suggest_provider.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #include "components/prefs/testing_pref_service.h"
@@ -657,7 +657,7 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
     // Prepare the input.
     AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
                             TestingSchemeClassifier());
-    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+    input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
     controller_->input_ = input;
   }
 
@@ -678,7 +678,8 @@ void AutocompleteProviderTest::RunSearchboxStatsTest(
   }
   result_.Reset();
   result_.AppendMatches(matches);
-  result_.MergeSuggestionGroupsMap(omnibox::BuildDefaultGroups());
+  result_.MergeSuggestionGroupsMap(
+      omnibox::BuildDefaultGroupsForInput(AutocompleteInput()));
   result_.set_zero_prefix_enabled_in_session(input_is_zero_suggest);
 
   // Update Searchbox stats.
@@ -928,16 +929,6 @@ TEST_F(AutocompleteProviderTest, SuggestionGroups) {
     // AutocompleteResult::GetHeaderForSuggestionGroup() returns an empty string
     // for unknown suggestion group IDs.
     EXPECT_EQ(u"", result_.GetHeaderForSuggestionGroup(kBadGroupId));
-
-    // AutocompleteResult::IsSuggestionGroupHidden() returns false for unknown
-    // suggestion group IDs.
-    EXPECT_FALSE(result_.IsSuggestionGroupHidden(GetPrefs(), kBadGroupId));
-
-    // AutocompleteResult::SetSuggestionGroupHidden() does nothing for unknown
-    // suggestion group IDs.
-    result_.SetSuggestionGroupHidden(GetPrefs(), kBadGroupId,
-                                     /*hidden=*/true);
-    EXPECT_FALSE(result_.IsSuggestionGroupHidden(GetPrefs(), kBadGroupId));
 
     // AutocompleteResult::GetSectionForSuggestionGroup() returns
     // omnibox::SECTION_DEFAULT for unknown suggestion group IDs.
@@ -1814,19 +1805,19 @@ TEST_F(AutocompleteProviderTest, ResizeMatches) {
   // The first `max_matches` matches should keep their relevance score and have
   // `culled_by_provider` set to false.
   ACMatches provider_matches = provider->get_matches();
-  base::ranges::for_each(provider_matches.begin(),
-                         std::next(provider_matches.begin(), kMaxMatches),
-                         [&](auto match) {
-                           EXPECT_NE(match.relevance, 0);
-                           EXPECT_FALSE(match.culled_by_provider);
-                         });
+  std::ranges::for_each(provider_matches.begin(),
+                        std::next(provider_matches.begin(), kMaxMatches),
+                        [&](auto match) {
+                          EXPECT_NE(match.relevance, 0);
+                          EXPECT_FALSE(match.culled_by_provider);
+                        });
   // Any match beyond that should have their relevance score zeroed and
   // `culled_by_provider` set.
-  base::ranges::for_each(std::next(provider_matches.begin(), kMaxMatches),
-                         provider_matches.end(), [&](auto match) {
-                           EXPECT_EQ(match.relevance, 0);
-                           EXPECT_TRUE(match.culled_by_provider);
-                         });
+  std::ranges::for_each(std::next(provider_matches.begin(), kMaxMatches),
+                        provider_matches.end(), [&](auto match) {
+                          EXPECT_EQ(match.relevance, 0);
+                          EXPECT_TRUE(match.culled_by_provider);
+                        });
 
   // Now disable the flag. With ML Scoring disabled, `matches_` should actually
   // be resized and `relevance` and `culled_by_provider` should be untouched.
@@ -1835,7 +1826,7 @@ TEST_F(AutocompleteProviderTest, ResizeMatches) {
 
   provider->ResizeMatches(kMaxMatches, false);
   EXPECT_EQ(provider->get_matches().size(), kMaxMatches);
-  base::ranges::for_each(provider->get_matches(), [&](auto match) {
+  std::ranges::for_each(provider->get_matches(), [&](auto match) {
     EXPECT_NE(match.relevance, 0);
     EXPECT_FALSE(match.culled_by_provider);
   });
@@ -1893,6 +1884,12 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_NonPrefetch) {
 
 TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
   // Add a test provider that supports prefetch requests.
+
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+      /*disabled_features=*/{});
+
   TestProvider* provider = new TestProvider(kResultsPerProvider, u"http://a",
                                             kTestTemplateURLKeyword, client_);
   provider->set_supports_prefetch(true);
@@ -1907,7 +1904,7 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
           &AutocompleteProviderTest::CopyResults, base::Unretained(this))));
   provider->AddListener(provider_listener_.get());
 
-  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
                           TestingSchemeClassifier());
   controller_->StartPrefetch(input);
   // Wait for StartPrefetch() to be called on the provider.
@@ -1929,6 +1926,10 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_Prefetch) {
 }
 
 TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+      /*disabled_features=*/{});
   // Add a test provider that supports prefetch requests.
   TestProvider* provider = new TestProvider(kResultsPerProvider, u"http://a",
                                             kTestTemplateURLKeyword, client_);
@@ -1944,7 +1945,7 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
           &AutocompleteProviderTest::CopyResults, base::Unretained(this))));
   provider->AddListener(provider_listener_.get());
 
-  AutocompleteInput input(u"bar", metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"bar", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
                           TestingSchemeClassifier());
   controller_->Start(input);
 
@@ -1976,6 +1977,10 @@ TEST_F(AutocompleteProviderPrefetchTest, SupportedProvider_OngoingNonPrefetch) {
 }
 
 TEST_F(AutocompleteProviderPrefetchTest, UnsupportedProvider_Prefetch) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{omnibox::kZeroSuggestPrefetching},
+      /*disabled_features=*/{});
   // Add a test provider that does not support prefetch requests.
   TestProvider* provider = new TestProvider(kResultsPerProvider, u"http://a",
                                             kTestTemplateURLKeyword, client_);
@@ -1984,7 +1989,7 @@ TEST_F(AutocompleteProviderPrefetchTest, UnsupportedProvider_Prefetch) {
   base::RunLoop provider_run_loop;
   provider->set_closure(provider_run_loop.QuitClosure());
 
-  AutocompleteInput input(u"", metrics::OmniboxEventProto::OTHER,
+  AutocompleteInput input(u"", metrics::OmniboxEventProto::NTP_ZPS_PREFETCH,
                           TestingSchemeClassifier());
   controller_->StartPrefetch(input);
 

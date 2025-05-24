@@ -56,8 +56,8 @@ void VcEffectsDelegate::AddEffect(std::unique_ptr<VcHostedEffect> effect) {
 
 void VcEffectsDelegate::RemoveEffect(VcEffectId effect_id) {
   if (features::IsVcDlcUiEnabled()) {
-    // Propagate effect removal to ensure dependant `VcUiTileController`'s are
-    // reset, and DLC downloads are canceled if they are in progress.
+    // Propagate effect removal to ensure dependant `VcUiTileController`'s
+    // are reset, and DLC downloads are canceled if they are in progress.
     on_effect_will_be_removed_callback_.Run(this);
   }
 
@@ -75,7 +75,21 @@ const VcHostedEffect* VcEffectsDelegate::GetEffectById(VcEffectId effect_id) {
   return nullptr;
 }
 
-std::vector<VcHostedEffect*> VcEffectsDelegate::GetEffects(VcEffectType type) {
+std::vector<VcHostedEffect*> VcEffectsDelegate::GetAllEffects(
+    VcEffectType type) {
+  std::vector<VcHostedEffect*> effects_of_type;
+
+  for (const auto& [effect_id, effect] : effects_) {
+    if (effect->type() == type) {
+      effects_of_type.push_back(effect.get());
+    }
+  }
+
+  return effects_of_type;
+}
+
+std::vector<VcHostedEffect*> VcEffectsDelegate::GetAvailableEffects(
+    VcEffectType type) {
   std::vector<VcHostedEffect*> effects_of_type;
 
   for (const auto& [effect_id, effect] : effects_) {

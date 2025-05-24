@@ -300,11 +300,15 @@ class _Generator(object):
                                     'as_%s' % choice.unix_name,
                                     is_optional=True))
     else:
-      for prop in type_.properties.values():
-        c.Concat(
-            self._GenerateCloneItem(prop.type_,
-                                    prop.type_.unix_name,
-                                    is_optional=prop.optional))
+      if type_.additional_properties is not None:
+        if type_.additional_properties.property_type == PropertyType.ANY:
+          c.Append('out.additional_properties = additional_properties.Clone();')
+      else:
+        for prop in type_.properties.values():
+          c.Concat(
+              self._GenerateCloneItem(prop.type_,
+                                      prop.type_.unix_name,
+                                      is_optional=prop.optional))
 
     (c.Append('return out;') \
       .Eblock('}') \

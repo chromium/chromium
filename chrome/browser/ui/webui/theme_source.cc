@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/theme_source.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -17,7 +17,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/timer/elapsed_timer.h"
 #include "build/branding_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resources_util.h"
 #include "chrome/browser/search/instant_service.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
+#include "chrome/browser/ui/webui/current_channel_logo.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #include "chrome/common/channel_info.h"
@@ -50,10 +50,10 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/grit/cros_styles_resources.h"  // nogncheck crbug.com/1113869
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -66,15 +66,6 @@ bool IsNewTabCssPath(const std::string& path) {
   static const char kNewTabThemeCssPath[] = "css/new_tab_theme.css";
   static const char kIncognitoTabThemeCssPath[] = "css/incognito_tab_theme.css";
   return path == kNewTabThemeCssPath || path == kIncognitoTabThemeCssPath;
-}
-
-void ProcessImageOnUiThread(const gfx::ImageSkia& image,
-                            float scale,
-                            scoped_refptr<base::RefCountedBytes> data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const gfx::ImageSkiaRep& rep = image.GetRepresentation(scale);
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      rep.GetBitmap(), false /* discard transparency */, &data->as_vector());
 }
 
 }  // namespace
@@ -126,7 +117,7 @@ void ThemeSource::StartDataRequest(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   constexpr char kTypographyCssPath[] = "typography.css";
   if (parsed_path == kTypographyCssPath) {
     SendTypographyCss(std::move(callback));
@@ -136,32 +127,7 @@ void ThemeSource::StartDataRequest(
 
   int resource_id = -1;
   if (parsed_path == "current-channel-logo") {
-    switch (chrome::GetChannel()) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      case version_info::Channel::CANARY:
-        resource_id = IDR_PRODUCT_LOGO_32_CANARY;
-        break;
-      case version_info::Channel::DEV:
-        resource_id = IDR_PRODUCT_LOGO_32_DEV;
-        break;
-      case version_info::Channel::BETA:
-        resource_id = IDR_PRODUCT_LOGO_32_BETA;
-        break;
-      case version_info::Channel::STABLE:
-        resource_id = IDR_PRODUCT_LOGO_32;
-        break;
-#else
-      case version_info::Channel::CANARY:
-      case version_info::Channel::DEV:
-      case version_info::Channel::BETA:
-      case version_info::Channel::STABLE:
-        NOTREACHED_IN_MIGRATION();
-        [[fallthrough]];
-#endif
-      case version_info::Channel::UNKNOWN:
-        resource_id = IDR_PRODUCT_LOGO_32;
-        break;
-    }
+    resource_id = webui::CurrentChannelLogoResourceId();
   } else {
     resource_id = ResourcesUtil::GetThemeResourceId(parsed_path);
   }
@@ -244,17 +210,27 @@ void ThemeSource::SendThemeImage(
     int resource_id,
     float scale) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
+
+  gfx::ImageSkia* image;
   if (BrowserThemePack::IsPersistentImageID(resource_id)) {
     const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
         profile_->GetOriginalProfile());
-    ProcessImageOnUiThread(*tp.GetImageSkiaNamed(resource_id), scale, data);
+    image = tp.GetImageSkiaNamed(resource_id);
   } else {
-    ProcessImageOnUiThread(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id),
-        scale, data);
+    image =
+        ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   }
-  std::move(callback).Run(data.get());
+
+  const gfx::ImageSkiaRep& rep = image->GetRepresentation(scale);
+  std::optional<std::vector<uint8_t>> result =
+      gfx::PNGCodec::EncodeBGRASkBitmap(rep.GetBitmap(),
+                                        /*discard_transparency=*/false);
+  if (result) {
+    std::move(callback).Run(
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(result.value())));
+  } else {
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>());
+  }
 }
 
 void ThemeSource::SendColorsCss(
@@ -290,37 +266,36 @@ void ThemeSource::SendColorsCss(
                                          base::SPLIT_WANT_ALL);
 
   using ColorIdCSSCallback = base::RepeatingCallback<std::string(ui::ColorId)>;
-  auto generate_color_mapping = [&color_id_sets, &color_provider,
-                                 &generate_rgb_vars](
-                                    std::string set_name, ui::ColorId start,
-                                    ui::ColorId end,
-                                    ColorIdCSSCallback color_css_name) {
-    // Only return these mappings if specified in the query parameter.
-    auto it = base::ranges::find(color_id_sets, set_name);
-    if (it == color_id_sets.end()) {
-      return std::string();
-    }
-    color_id_sets.erase(it);
-    std::string css_string;
-    for (ui::ColorId id = start; id < end; ++id) {
-      const SkColor color = color_provider.GetColor(id);
-      std::string css_id_to_color_mapping =
-          base::StringPrintf("%s:%s;", color_css_name.Run(id).c_str(),
-                             ui::ConvertSkColorToCSSColor(color).c_str());
-      base::StrAppend(&css_string, {css_id_to_color_mapping});
-      if (generate_rgb_vars) {
-        // Also generate a r,g,b string for each color so apps can construct
-        // colors with their own opacities in css.
-        const std::string css_rgb_color_str =
-            color_utils::SkColorToRgbString(color);
-        const std::string css_id_to_rgb_color_mapping =
-            base::StringPrintf("%s-rgb:%s;", color_css_name.Run(id).c_str(),
-                               css_rgb_color_str.c_str());
-        base::StrAppend(&css_string, {css_id_to_rgb_color_mapping});
-      }
-    }
-    return css_string;
-  };
+  auto generate_color_mapping =
+      [&color_id_sets, &color_provider, &generate_rgb_vars](
+          std::string set_name, ui::ColorId start, ui::ColorId end,
+          ColorIdCSSCallback color_css_name) {
+        // Only return these mappings if specified in the query parameter.
+        auto it = std::ranges::find(color_id_sets, set_name);
+        if (it == color_id_sets.end()) {
+          return std::string();
+        }
+        color_id_sets.erase(it);
+        std::string css_string;
+        for (ui::ColorId id = start; id < end; ++id) {
+          const SkColor color = color_provider.GetColor(id);
+          std::string css_id_to_color_mapping =
+              base::StringPrintf("%s:%s;", color_css_name.Run(id).c_str(),
+                                 ui::ConvertSkColorToCSSColor(color).c_str());
+          base::StrAppend(&css_string, {css_id_to_color_mapping});
+          if (generate_rgb_vars) {
+            // Also generate a r,g,b string for each color so apps can construct
+            // colors with their own opacities in css.
+            const std::string css_rgb_color_str =
+                color_utils::SkColorToRgbString(color);
+            const std::string css_id_to_rgb_color_mapping =
+                base::StringPrintf("%s-rgb:%s;", color_css_name.Run(id).c_str(),
+                                   css_rgb_color_str.c_str());
+            base::StrAppend(&css_string, {css_id_to_rgb_color_mapping});
+          }
+        }
+        return css_string;
+      };
 
   // Convenience lambda for wrapping
   // |ConvertColorProviderColorIdToCSSColorId|.
@@ -362,7 +337,7 @@ void ThemeSource::SendColorsCss(
                                        ui::kUiColorsEnd, ui::ColorIdName),
        generate_color_provider_mapping("chrome", kChromeColorsStart,
                                        kChromeColorsEnd, &ChromeColorIdName),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
        generate_color_mapping("ref", cros_tokens::kCrosRefColorsStart,
                               cros_tokens::kCrosRefColorsEnd,
                               base::BindRepeating(cros_tokens::ColorIdName)),
@@ -372,7 +347,7 @@ void ThemeSource::SendColorsCss(
        generate_color_mapping("legacy", cros_tokens::kLegacySemanticColorsStart,
                               cros_tokens::kLegacySemanticColorsEnd,
                               base::BindRepeating(cros_tokens::ColorIdName)),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
        "}"});
   if (!color_id_sets.empty()) {
     LOG(ERROR)
@@ -402,7 +377,7 @@ std::string ThemeSource::GetAccessControlAllowOriginForOrigin(
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ThemeSource::SendTypographyCss(
     content::URLDataSource::GotDataCallback callback) {
   const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();

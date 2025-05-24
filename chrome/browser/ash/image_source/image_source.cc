@@ -48,8 +48,7 @@ ImageSource::ImageSource() {
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
-ImageSource::~ImageSource() {
-}
+ImageSource::~ImageSource() = default;
 
 std::string ImageSource::GetSource() {
   return chrome::kChromeOSAssetHost;
@@ -91,9 +90,8 @@ void ImageSource::StartDataRequestAfterPathExists(
 
 std::string ImageSource::GetMimeType(const GURL& url) {
   std::string mime_type;
-  std::string ext = base::FilePath(url.path_piece()).Extension();
-  if (!ext.empty())
-    net::GetWellKnownMimeTypeFromExtension(ext.substr(1), &mime_type);
+  net::GetWellKnownMimeTypeFromFile(base::FilePath(url.path_piece()),
+                                    &mime_type);
   return mime_type;
 }
 

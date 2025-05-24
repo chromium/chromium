@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions.groupseparator;
 import android.content.Context;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 
 /** View spacing out adjacent, headerless vertical suggestion groups. */
+@NullMarked
 public class GroupSeparatorView extends View {
     public GroupSeparatorView(Context context) {
         super(context, null);

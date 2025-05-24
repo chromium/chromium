@@ -8,12 +8,12 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
-#include "third_party/skia/include/core/SkPath.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 // GoogleTest macros trigger a bug in IWYU:
@@ -75,10 +75,10 @@ TEST_F(CanvasPathTest, LineBoundingRect) {
   path->lineTo(end.x(), end.y());
   EXPECT_TRUE(path->IsLine());
 
-  SkPath sk_path;
-  sk_path.moveTo(gfx::PointFToSkPoint(start));
-  sk_path.lineTo(gfx::PointFToSkPoint(end));
-  Path path_from_sk_path(sk_path);
+  PathBuilder path_builder;
+  path_builder.MoveTo(start);
+  path_builder.LineTo(end);
+  Path path_from_sk_path(path_builder.Finalize());
 
   EXPECT_EQ(path->BoundingRect(), path_from_sk_path.BoundingRect());
 }
@@ -91,9 +91,10 @@ TEST_F(CanvasPathTest, LineEquality) {
   path->lineTo(end.x(), end.y());
   EXPECT_TRUE(path->IsLine());
 
-  Path path2;
-  path2.MoveTo(start);
-  path2.AddLineTo(end);
+  const Path path2 = PathBuilder()
+      .MoveTo(start)
+      .LineTo(end)
+      .Finalize();
 
   EXPECT_EQ(path->GetPath(), path2);
 }
@@ -102,17 +103,18 @@ TEST_F(CanvasPathTest, LineEquality2) {
   CanvasPath* path = MakeGarbageCollected<TestCanvasPath>(context_);
   const gfx::PointF start(0, 1);
   path->moveTo(start.x(), start.y());
-  Path path2;
+
+  PathBuilder path2;
   path2.MoveTo(start);
-  EXPECT_EQ(path->GetPath(), path2);
+  EXPECT_EQ(path->GetPath(), path2.CurrentPath());
 
   const gfx::PointF end(2, 3);
   path->lineTo(end.x(), end.y());
   EXPECT_TRUE(path->IsLine());
 
-  path2.AddLineTo(end);
+  path2.LineTo(end);
 
-  EXPECT_EQ(path->GetPath(), path2);
+  EXPECT_EQ(path->GetPath(), path2.Finalize());
 }
 
 TEST_F(CanvasPathTest, MultipleMoveTos) {
@@ -122,10 +124,10 @@ TEST_F(CanvasPathTest, MultipleMoveTos) {
   const gfx::PointF next(2, 3);
   path->moveTo(next.x(), next.y());
 
-  SkPath sk_path;
-  sk_path.moveTo(gfx::PointFToSkPoint(start));
-  sk_path.moveTo(gfx::PointFToSkPoint(next));
-  Path path_from_sk_path(sk_path);
+  PathBuilder path_builder;
+  path_builder.MoveTo(start);
+  path_builder.MoveTo(next);
+  Path path_from_sk_path(path_builder.Finalize());
 
   EXPECT_EQ(path->GetPath(), path_from_sk_path);
 }
@@ -140,11 +142,11 @@ TEST_F(CanvasPathTest, RectMoveToLineTo) {
   canvas_path->lineTo(end.x(), end.y());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
+  PathBuilder path;
   path.AddRect(rect);
   path.MoveTo(start);
-  path.AddLineTo(end);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  path.LineTo(end);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 TEST_F(CanvasPathTest, MoveToLineToRect) {
@@ -157,11 +159,11 @@ TEST_F(CanvasPathTest, MoveToLineToRect) {
   canvas_path->rect(rect.x(), rect.y(), rect.width(), rect.height());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
+  PathBuilder path;
   path.MoveTo(start);
-  path.AddLineTo(end);
+  path.LineTo(end);
   path.AddRect(rect);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 TEST_F(CanvasPathTest, OnlyLineTo) {
@@ -171,10 +173,10 @@ TEST_F(CanvasPathTest, OnlyLineTo) {
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_TRUE(canvas_path->IsLine());
   // CanvasPath::lineTo() when empty implicitly does a moveto.
-  Path path;
+  PathBuilder path;
   path.MoveTo(end);
-  path.AddLineTo(end);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  path.LineTo(end);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 TEST_F(CanvasPathTest, LineToLineTo) {
@@ -186,10 +188,11 @@ TEST_F(CanvasPathTest, LineToLineTo) {
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
   // CanvasPath::lineTo() when empty implicitly does a moveto.
-  Path path;
-  path.MoveTo(start);
-  path.AddLineTo(start);
-  path.AddLineTo(end);
+  const Path path = PathBuilder()
+      .MoveTo(start)
+      .LineTo(start)
+      .LineTo(end)
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 
@@ -203,10 +206,12 @@ TEST_F(CanvasPathTest, MoveToLineToMoveTo) {
   canvas_path->moveTo(p3.x(), p3.y());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
-  path.MoveTo(p1);
-  path.AddLineTo(p2);
-  path.MoveTo(p3);
+
+  const Path path = PathBuilder()
+      .MoveTo(p1)
+      .LineTo(p2)
+      .MoveTo(p3)
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 
@@ -220,10 +225,12 @@ TEST_F(CanvasPathTest, MoveToMoveToLineTo) {
   canvas_path->lineTo(p3.x(), p3.y());
   EXPECT_FALSE(canvas_path->IsEmpty());
   EXPECT_FALSE(canvas_path->IsLine());
-  Path path;
-  path.MoveTo(p1);
-  path.MoveTo(p2);
-  path.AddLineTo(p3);
+
+  const Path path = PathBuilder()
+      .MoveTo(p1)
+      .MoveTo(p2)
+      .LineTo(p3)
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 
@@ -238,10 +245,11 @@ TEST_F(CanvasPathTest, MoveToLineClosePath) {
   // closePath() cancels the line.
   EXPECT_FALSE(canvas_path->IsLine());
 
-  Path path;
-  path.MoveTo(p1);
-  path.AddLineTo(p2);
-  path.CloseSubpath();
+  const Path path = PathBuilder()
+      .MoveTo(p1)
+      .LineTo(p2)
+      .Close()
+      .Finalize();
   EXPECT_EQ(canvas_path->GetPath(), path);
 }
 
@@ -251,14 +259,15 @@ TEST_F(CanvasPathTest, Arc) {
   canvas_path->arc(0, 1, 5, 2, 3, false, exception_state);
   EXPECT_TRUE(canvas_path->IsArc());
 
-  Path path;
-  path.AddArc(gfx::PointF(0, 1), 5, 2, 3);
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  PathBuilder path;
+  path.AddEllipse(gfx::PointF(0, 1), 5, 5, 2, 3);
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
   EXPECT_TRUE(canvas_path->IsArc());
 
+  PathBuilder path2 = PathBuilder(canvas_path->GetPath());
   canvas_path->closePath();
-  path.CloseSubpath();
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  path2.Close();
+  EXPECT_EQ(canvas_path->GetPath(), path2.Finalize());
   EXPECT_TRUE(canvas_path->IsArc());
 }
 
@@ -271,10 +280,10 @@ TEST_F(CanvasPathTest, ArcThenLine) {
   EXPECT_FALSE(canvas_path->IsArc());
   EXPECT_FALSE(canvas_path->IsLine());
 
-  Path path;
-  path.AddArc(gfx::PointF(0, 1), 5, 2, 3);
-  path.AddLineTo(gfx::PointF(8, 9));
-  EXPECT_EQ(canvas_path->GetPath(), path);
+  PathBuilder path;
+  path.AddEllipse(gfx::PointF(0, 1), 5, 5, 2, 3);
+  path.LineTo(gfx::PointF(8, 9));
+  EXPECT_EQ(canvas_path->GetPath(), path.Finalize());
 }
 
 }  // namespace blink

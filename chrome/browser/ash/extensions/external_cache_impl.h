@@ -28,7 +28,6 @@ class BrowserContext;
 }
 
 namespace extensions {
-class CrxInstaller;
 class ExtensionDownloader;
 }
 
@@ -142,7 +141,7 @@ class ExternalCacheImpl : public ExternalCache,
   // by a call to UpdateExtensionLoader().
   void RemoveCachedExtension(const extensions::ExtensionId& id);
   void OnCrxInstallFailure(content::BrowserContext* context,
-                           const extensions::CrxInstaller& installer);
+                           const base::FilePath& source_file);
 
   std::unique_ptr<AnyInstallFailureObserver> any_install_failure_observer_;
 

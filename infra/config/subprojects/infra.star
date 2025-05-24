@@ -4,7 +4,10 @@
 """Definitions of builders in the infra bucket."""
 
 load("//lib/builders.star", "builders", "cpu", "os")
+load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
+load("//lib/html.star", "linkify_builder")
+load("//lib/try.star", "try_")
 
 consoles.console_view(
     name = "infra",
@@ -18,6 +21,8 @@ builders.defaults.set(
     os = os.LINUX_DEFAULT,
     cpu = cpu.X86_64,
     build_numbers = True,
+    shadow_pool = ci.DEFAULT_SHADOW_POOL,
+    shadow_service_account = ci.DEFAULT_SHADOW_SERVICE_ACCOUNT,
 )
 
 luci.bucket(
@@ -49,6 +54,22 @@ luci.bucket(
     ],
 )
 
+luci.bucket(
+    name = "infra.shadow",
+    shadows = "infra",
+    constraints = luci.bucket_constraints(
+        pools = [ci.DEFAULT_SHADOW_POOL],
+        service_accounts = [ci.DEFAULT_SHADOW_SERVICE_ACCOUNT],
+    ),
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.creator",
+            groups = "mdb/chrome-troopers",
+        ),
+    ],
+    dynamic = True,
+)
+
 builders.builder(
     name = "autosharder",
     bucket = "infra",
@@ -66,9 +87,37 @@ builders.builder(
     notifies = [
         luci.notifier(
             name = "chromium-autosharder-notifier",
-            notify_emails = ["chrome-browser-infra-team@google.com"],
+            notify_emails = ["chrome-dev-infra-auto+alerts@google.com"],
             on_occurrence = ["FAILURE", "INFRA_FAILURE"],
         ),
     ],
+    properties = {
+        "exclude_builders": [
+            "mac-rel",
+            "mac14-arm64-rel",
+            "ios-simulator",
+            "ios-simulator-full-configs",
+            "android-arm64-rel",
+        ],
+        "exclude_suites": [
+            "chrome_all_tast_tests",
+        ],
+        "target_runtime": 15.0,
+    },
     service_account = "chromium-autosharder@chops-service-accounts.iam.gserviceaccount.com",
+)
+
+try_.builder(
+    name = "autosharder_test",
+    bucket = "infra",
+    description_html = "Tests shard exceptions produced by " + linkify_builder("infra", "autosharder"),
+    executable = "recipe:chromium/autosharder_test",
+    pool = "luci.chromium.try",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        console_view = "infra",
+        category = "autosharder",
+        short_name = "auto-tst",
+    ),
+    contact_team_email = "chrome-dev-infra-team@google.com",
 )

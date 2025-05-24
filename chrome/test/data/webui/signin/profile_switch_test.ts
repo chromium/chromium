@@ -38,7 +38,7 @@ suite('ProfileSwitchTest', function() {
 
     assertFalse(profileSwitchElement.$.switchButton.disabled);
     assertEquals(
-        profileSwitchElement.shadowRoot!
+        profileSwitchElement.shadowRoot
             .querySelector<HTMLImageElement>('img.profile-avatar')!.src
             .split('/')
             .pop(),

@@ -1,0 +1,56 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("debugger") {
+  sources = [
+    "autocomplete_controller_observer_bridge.h",
+    "autocomplete_controller_observer_bridge.mm",
+    "autocomplete_match_group.h",
+    "autocomplete_match_group.mm",
+    "omnibox_autocomplete_event.h",
+    "omnibox_autocomplete_event.mm",
+    "omnibox_debugger_consumer.h",
+    "omnibox_debugger_mediator.h",
+    "omnibox_debugger_mediator.mm",
+    "omnibox_event.h",
+    "omnibox_remote_suggestion_event.h",
+    "omnibox_remote_suggestion_event.mm",
+    "remote_suggestions_service_observer_bridge.h",
+    "remote_suggestions_service_observer_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/omnibox/browser",
+    "//components/variations",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common:string_conversions",
+  ]
+}
+
+source_set("ui") {
+  sources = [
+    "autocomplete_match_cell.h",
+    "autocomplete_match_cell.mm",
+    "omnibox_autocomplete_event_view_controller.h",
+    "omnibox_autocomplete_event_view_controller.mm",
+    "omnibox_debugger_view_controller.h",
+    "omnibox_debugger_view_controller.mm",
+    "omnibox_remote_suggestion_event_view_controller.h",
+    "omnibox_remote_suggestion_event_view_controller.mm",
+  ]
+  deps = [
+    ":debugger",
+    "//base",
+    "//components/omnibox/browser",
+    "//components/variations",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/util",
+    "//services/network/public/cpp:cpp_base",
+  ]
+}

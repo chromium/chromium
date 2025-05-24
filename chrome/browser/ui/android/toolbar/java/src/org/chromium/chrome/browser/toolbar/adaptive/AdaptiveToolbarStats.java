@@ -9,12 +9,14 @@ import android.content.Context;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor.UiState;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Utility methods related to metrics collection for adaptive toolbar button. */
+@NullMarked
 public class AdaptiveToolbarStats {
     // Please treat this list as append only and keep it in sync with
     // AdaptiveToolbarRadioButtonState in enums.xml.
@@ -34,6 +36,8 @@ public class AdaptiveToolbarStats {
         AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD,
         AdaptiveToolbarRadioButtonState.PAGE_SUMMARY,
         AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY,
+        AdaptiveToolbarRadioButtonState.OPEN_IN_BROWSER,
+        AdaptiveToolbarRadioButtonState.AUTO_WITH_OPEN_IN_BROWSER,
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface AdaptiveToolbarRadioButtonState {
@@ -52,27 +56,26 @@ public class AdaptiveToolbarStats {
         int AUTO_WITH_READ_ALOUD = 12;
         int PAGE_SUMMARY = 13;
         int AUTO_WITH_PAGE_SUMMARY = 14;
-        int NUM_ENTRIES = 15;
+        int OPEN_IN_BROWSER = 15;
+        int AUTO_WITH_OPEN_IN_BROWSER = 16;
+        int NUM_ENTRIES = 17;
     }
 
     /**
      * Called to record the selected radio button on the adaptive toolbar preference page.
      *
+     * @param uiState {@link UiState} describing the current UI state.
      * @param onStartup Whether this is called on startup.
      */
-    public static void recordRadioButtonStateAsync(
-            AdaptiveToolbarStatePredictor adaptiveToolbarStatePredictor, boolean onStartup) {
+    public static void recordRadioButtonStateAsync(UiState uiState, boolean onStartup) {
         String histogramName =
                 onStartup
                         ? "Android.AdaptiveToolbarButton.Settings.Startup"
                         : "Android.AdaptiveToolbarButton.Settings.Changed";
-        adaptiveToolbarStatePredictor.recomputeUiState(
-                uiState -> {
-                    RecordHistogram.recordEnumeratedHistogram(
-                            histogramName,
-                            getRadioButtonStateForMetrics(uiState),
-                            AdaptiveToolbarRadioButtonState.NUM_ENTRIES);
-                });
+        RecordHistogram.recordEnumeratedHistogram(
+                histogramName,
+                getRadioButtonStateForMetrics(uiState),
+                AdaptiveToolbarRadioButtonState.NUM_ENTRIES);
     }
 
     /**
@@ -95,8 +98,8 @@ public class AdaptiveToolbarStats {
                 result -> {
                     RecordHistogram.recordEnumeratedHistogram(
                             "SegmentationPlatform.AdaptiveToolbar.SegmentSelected.Startup",
-                            AdaptiveToolbarFeatures.getTopSegmentationResult(context, result),
-                            AdaptiveToolbarButtonVariant.MAX_VALUE + 1);
+                            adaptiveToolbarStatePredictor.filterSegmentationResults(result),
+                            AdaptiveToolbarButtonVariant.MAX_VALUE);
                 });
     }
 
@@ -117,6 +120,8 @@ public class AdaptiveToolbarStats {
                 return AdaptiveToolbarRadioButtonState.READ_ALOUD;
             case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
                 return AdaptiveToolbarRadioButtonState.PAGE_SUMMARY;
+            case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
+                return AdaptiveToolbarRadioButtonState.OPEN_IN_BROWSER;
             case AdaptiveToolbarButtonVariant.AUTO:
                 switch (uiState.autoButtonCaption) {
                     case AdaptiveToolbarButtonVariant.NEW_TAB:
@@ -133,6 +138,8 @@ public class AdaptiveToolbarStats {
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_READ_ALOUD;
                     case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
                         return AdaptiveToolbarRadioButtonState.AUTO_WITH_PAGE_SUMMARY;
+                    case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
+                        return AdaptiveToolbarRadioButtonState.AUTO_WITH_OPEN_IN_BROWSER;
                 }
         }
         assert false : "Invalid radio button state";

@@ -37,7 +37,7 @@ export class RecordTime {
   /**
    * Maximal recording time in milliseconds.
    */
-  private maxTimeMs: number = Infinity;
+  private maxTimeMs = Infinity;
 
   constructor(private readonly onMaxTimeout: () => void) {}
 
@@ -64,7 +64,7 @@ export class RecordTime {
   /**
    * Starts to count and show the elapsed recording time.
    */
-  start(maxTimeMs: number = Infinity): void {
+  start(maxTimeMs = Infinity): void {
     this.totalDuration = 0;
     this.maxTimeMs = maxTimeMs;
     this.resume();

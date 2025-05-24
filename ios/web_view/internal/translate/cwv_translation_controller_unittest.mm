@@ -16,12 +16,14 @@
 #import "components/translate/core/browser/mock_translate_ranker.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "components/translate/core/common/language_detection_details.h"
 #import "components/translate/core/language_detection/language_detection_model.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
+#import "ios/web_view/internal/translate/cwv_translation_language_detection_details_internal.h"
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -72,6 +74,11 @@ class TestLanguageModel : public language::LanguageModel {
 };
 
 class CWVTranslationControllerTest : public TestWithLocaleAndResources {
+ public:
+  void OnLanguageDetermined(translate::LanguageDetectionDetails& details) {
+    translate_client_->OnLanguageDetermined(details);
+  }
+
  protected:
   CWVTranslationControllerTest()
       : language_detection_model_(
@@ -292,6 +299,36 @@ TEST_F(CWVTranslationControllerTest, RequestTranslationOffer) {
   EXPECT_CALL(*translate_client_, RequestTranslationOffer)
       .WillOnce(Return(true));
   EXPECT_TRUE([translation_controller_ requestTranslationOffer]);
+}
+
+// Tests the CWVTranslationController invokes the
+// didDeterminePageLanguageDetectionDetails delegate method.
+TEST_F(CWVTranslationControllerTest, OnLanguageDetermined) {
+  std::string language_code =
+      std::string(base::SysNSStringToUTF8(kTestFromLangCode));
+
+  translate::LanguageDetectionDetails details;
+  details.has_notranslate = NO;
+  details.content_language = language_code;
+  details.model_detected_language = language_code;
+  details.is_model_reliable = YES;
+  details.html_root_language = language_code;
+  details.adopted_language = language_code;
+
+  CWVTranslationLanguageDetectionDetails* language_detection_details =
+      [CWVTranslationLanguageDetectionDetails
+          languageDetectionDetailsFrom:details];
+
+  id delegate = OCMProtocolMock(@protocol(CWVTranslationControllerDelegate));
+  translation_controller_.delegate = delegate;
+  OCMExpect([delegate translationController:translation_controller_
+      didDeterminePageLanguageDetectionDetails:language_detection_details]);
+
+  OnLanguageDetermined(details);
+
+  EXPECT_OCMOCK_VERIFY(delegate);
+  EXPECT_TRUE([translation_controller_.languageDetectionDetails
+      isEqual:language_detection_details]);
 }
 
 }  // namespace ios_web_view

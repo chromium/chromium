@@ -293,6 +293,7 @@ goog.editor.plugins.TableEditor.prototype.execCommandInternal = function(
  * @param {Node} element The element in question.
  * @return {boolean} Whether the element is a table editable by the user.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.TableEditor.prototype.isUserEditableTable_ = function(
     element) {
@@ -331,6 +332,7 @@ goog.editor.plugins.TableEditor.prototype.addIsTableEditableFunction = function(
  *     finds the user-editable table from a given element.
  * @constructor
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.TableEditor.CellSelection_ = function(
     range, getParentTableFunction) {
@@ -468,6 +470,7 @@ goog.editor.plugins.TableEditor.CellSelection_.prototype.getCells = function() {
  * Returns a boolean value indicating whether or not the cells in this
  * selection form a rectangle.
  * @return {boolean} Whether the selection forms a rectangle.
+ * @suppress {missingProperties} missing endRow, endCol prop definitions
  */
 goog.editor.plugins.TableEditor.CellSelection_.prototype.isRectangle =
     function() {

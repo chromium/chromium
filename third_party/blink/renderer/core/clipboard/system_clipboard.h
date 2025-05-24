@@ -10,7 +10,9 @@
 
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/platform_event_dispatcher.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -31,13 +33,22 @@ class ScopedSystemClipboardSnapshot;
 //
 // All calls to write functions must be followed by a call to CommitWrite().
 class CORE_EXPORT SystemClipboard final
-    : public GarbageCollected<SystemClipboard> {
+    : public GarbageCollected<SystemClipboard>,
+      public PlatformEventDispatcher,
+      public mojom::blink::ClipboardListener {
  public:
   enum SmartReplaceOption { kCanSmartReplace, kCannotSmartReplace };
 
   explicit SystemClipboard(LocalFrame* frame);
   SystemClipboard(const SystemClipboard&) = delete;
   SystemClipboard& operator=(const SystemClipboard&) = delete;
+
+  // Inherited from PlatformEventDispatcher.
+  void StartListening(LocalDOMWindow*) override;
+  void StopListening() override;
+
+  // Inherited from ClipboardListener.
+  void OnClipboardDataChanged() override;
 
   ClipboardSequenceNumberToken SequenceNumber();
   bool IsSelectionMode() const;
@@ -99,7 +110,7 @@ class CORE_EXPORT SystemClipboard final
   void WriteUnsanitizedCustomFormat(const String& type,
                                     mojo_base::BigBuffer data);
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
  private:
   friend class ScopedSystemClipboardSnapshot;
@@ -193,7 +204,14 @@ class CORE_EXPORT SystemClipboard final
   void TakeSnapshot();
   void DropSnapshot();
 
+  // Resets the clipboard snapshot if a write operation occurs
+  // while the snapshot is active.
+  void ResetSnapshot();
+
   HeapMojoRemote<mojom::blink::ClipboardHost> clipboard_;
+  HeapMojoReceiver<mojom::blink::ClipboardListener, SystemClipboard>
+      clipboard_listener_receiver_;
+
   // In some Linux environments, |buffer_| may equal ClipboardBuffer::kStandard
   // or kSelection.  In other platforms |buffer_| always equals
   // ClipboardBuffer::kStandard.

@@ -64,6 +64,12 @@
   position.speed = location.speed;
   position.heading = location.course;
 
+  // Records the accuracy value (in meters) of a valid Geoposition.
+  // Values above 10000 meters are considered very inaccurate and are
+  // categorized into the overflow bucket. This cap prioritizes accuracy
+  // resolution in the lower range.
+  base::UmaHistogramCounts10000("Geolocation.CoreLocationProvider.Accuracy",
+                                static_cast<int>(position.accuracy));
   _manager->PositionUpdated(position);
 }
 

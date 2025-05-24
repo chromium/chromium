@@ -3,6 +3,8 @@ include_rules = [
   # details.
   "-chrome",
 
+  "+chromeos/ash/experiences/system_web_apps/types",
+
   # This directory is in //chrome, which violates the rule above. Allow this
   # directory to #include its own files.
   "+chrome/browser/chromeos/app_mode",
@@ -18,7 +20,6 @@ include_rules = [
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
   "+chrome/browser/ash/system_web_apps/test_support",
-  "+chrome/browser/ash/system_web_apps/types",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_service.h",
   "+chrome/browser/extensions/extension_service_test_base.h",
@@ -28,6 +29,7 @@ include_rules = [
   "+chrome/browser/extensions/install_observer.h",
   "+chrome/browser/extensions/install_tracker_factory.h",
   "+chrome/browser/extensions/install_tracker.h",
+  "+chrome/browser/extensions/pending_extension_manager.h",
   "+chrome/browser/extensions/updater",
   "+chrome/browser/lacros/app_mode",
   "+chrome/browser/lifetime",
@@ -77,9 +79,6 @@ specific_include_rules = {
     "+chrome/browser/ash/system_web_apps/system_web_app_manager.h",
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h",
     "+chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h",
-    "+chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h",
-  ],
-  "kiosk_browser_window_handler.cc": [
-    "+chrome/browser/ash/crosapi/browser_util.h",
+    "+chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h",
   ],
 }

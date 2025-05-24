@@ -94,10 +94,19 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchAccessToken(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     base::OnceCallback<void(const std::string&)> callback) {
-  DCHECK(callback);
-  DCHECK(!account_id.empty());
-  DCHECK(identity_manager->HasAccountWithRefreshToken(account_id));
-  DCHECK(!access_token_fetcher_);
+  CHECK(callback);
+  CHECK(!account_id.empty());
+#if BUILDFLAG(IS_IOS)
+  CHECK(identity_manager->HasAccountWithRefreshTokenOnDevice(account_id));
+  identity_manager->GetRefreshTokenFromDevice(
+      account_id, /*scopes=*/
+      {GaiaConstants::kSecureConnectOAuth2Scope},
+      base::BindOnce(
+          &UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult,
+          base::Unretained(this), std::move(callback)));
+#else
+  CHECK(identity_manager->HasAccountWithRefreshToken(account_id));
+  CHECK(!access_token_fetcher_);
 
   // base::Unretained is safe here because `access_token_fetcher_` is owned by
   // `this`.
@@ -108,6 +117,7 @@ void UserCloudSigninRestrictionPolicyFetcher::FetchAccessToken(
           &UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult,
           base::Unretained(this), std::move(callback)),
       signin::AccessTokenFetcher::Mode::kImmediate);
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void UserCloudSigninRestrictionPolicyFetcher::OnFetchAccessTokenResult(

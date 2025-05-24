@@ -1,9 +1,0 @@
-# Copyright 2022 The Chromium Authors
-# Use of this source code is governed by a BSD-style license that can be
-# found in the LICENSE file.
-
-source_set("modals") {
-  testonly = true
-  sources = [ "test_modals.mm" ]
-  deps = [ "//ios/public/provider/chrome/browser/modals:modals_api" ]
-}

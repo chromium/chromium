@@ -1,9 +1,11 @@
 include_rules = [
+  "+ash/constants/ash_features.h",
   "+chrome/services/speech",
   "+chromeos/services/machine_learning/public/cpp",
   "+chromeos/services/machine_learning/public/mojom",
   "+components/soda",
   "+components/speech",
+  "+content/browser/speech",
   "+content/public/browser",
   "+google_apis",
   "+media",

@@ -38,35 +38,15 @@ gfx::Rect NativeFrameView::GetWindowBoundsForClientBounds(
   // Enforce minimum size (1, 1) in case that |client_bounds| is passed with
   // empty size.
   gfx::Rect window_bounds = client_bounds;
-  if (window_bounds.IsEmpty())
+  if (window_bounds.IsEmpty()) {
     window_bounds.set_size(gfx::Size(1, 1));
+  }
   return window_bounds;
 #endif
 }
 
 int NativeFrameView::NonClientHitTest(const gfx::Point& point) {
   return frame_->client_view()->NonClientHitTest(point);
-}
-
-void NativeFrameView::GetWindowMask(const gfx::Size& size,
-                                    SkPath* window_mask) {
-  // Nothing to do, we use the default window mask.
-}
-
-void NativeFrameView::ResetWindowControls() {
-  // Nothing to do.
-}
-
-void NativeFrameView::UpdateWindowIcon() {
-  // Nothing to do.
-}
-
-void NativeFrameView::UpdateWindowTitle() {
-  // Nothing to do.
-}
-
-void NativeFrameView::SizeConstraintsChanged() {
-  // Nothing to do.
 }
 
 gfx::Size NativeFrameView::CalculatePreferredSize(

@@ -10,16 +10,12 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --ntp-logo-height: 200px;
+  --ntp-logo-height: 168px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   justify-content: flex-end;
   min-height: var(--ntp-logo-height);
-}
-
-:host([reduced-logo-space-enabled_]) {
-  --ntp-logo-height: 168px;
 }
 
 :host([doodle-boxed_]) {
@@ -75,10 +71,6 @@
 }
 
 :host([doodle-boxed_]) #image {
-  max-height: 160px;
-}
-
-:host([doodle-boxed_][reduced-logo-space-enabled_]) #image {
   max-height: 128px;
 }
 

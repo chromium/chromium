@@ -4,9 +4,9 @@
 
 import 'chrome://history/history.js';
 
-import {ensureLazyLoaded, ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
-import type {CrButtonElement, CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
-import {ShoppingPageCallbackRouter} from 'chrome://history/history.js';
+import {ensureLazyLoaded, ProductSpecificationsBrowserProxyImpl, ShoppingServiceBrowserProxyImpl} from 'chrome://history/history.js';
+import type {CrButtonElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
+import {ProductSpecificationsCallbackRouter} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -15,10 +15,13 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 
 suite('ProductSpecificationsListTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const productSpecificationsProxy =
+      TestMock.fromClass(ProductSpecificationsBrowserProxyImpl);
   let productSpecificationsList: ProductSpecificationsListsElement;
 
-  const callbackRouter = new ShoppingPageCallbackRouter();
+  const callbackRouter = new ProductSpecificationsCallbackRouter();
   const callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
   function createProductSpecsList(): ProductSpecificationsListsElement {
@@ -71,8 +74,11 @@ suite('ProductSpecificationsListTest', () => {
 
   setup(function() {
     shoppingServiceApi.reset();
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
-    ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
+    productSpecificationsProxy.setResultFor(
+        'getCallbackRouter', callbackRouter);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
+    ProductSpecificationsBrowserProxyImpl.setInstance(
+        productSpecificationsProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     initProductSets();
     initProductSpecsState();
@@ -83,7 +89,7 @@ suite('ProductSpecificationsListTest', () => {
     });
   });
 
-  test('load', async () => {
+  test('load', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(4, items.length);
@@ -114,7 +120,7 @@ suite('ProductSpecificationsListTest', () => {
         items[3]!.item);
   });
 
-  test('displays correct header', async () => {
+  test('displays correct header', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(4, items.length);
@@ -122,7 +128,7 @@ suite('ProductSpecificationsListTest', () => {
     const cardTitleHeader = productSpecificationsList.shadowRoot!.querySelector(
         '#card-title-header');
     assertTrue(!!cardTitleHeader);
-    const heading = cardTitleHeader!.textContent;
+    const heading = cardTitleHeader.textContent;
     assertTrue(!!heading);
     assertEquals('Comparison tables', heading.trim());
   });
@@ -136,7 +142,7 @@ suite('ProductSpecificationsListTest', () => {
         assertDeepEquals(new Set(), productSpecificationsList.selectedItems);
 
         const secondItem = items[1]!;
-        const checkbox = secondItem.$.checkbox as CrCheckboxElement;
+        const checkbox = secondItem.$.checkbox;
         checkbox.click();
 
         await checkbox.updateComplete;
@@ -163,7 +169,7 @@ suite('ProductSpecificationsListTest', () => {
 
     const button = menu.querySelector('button');
     assertTrue(!!button);
-    const buttonText = button!.textContent;
+    const buttonText = button.textContent;
     assertTrue(!!buttonText);
     assertEquals('Remove from tables', buttonText.trim());
   });
@@ -226,10 +232,10 @@ suite('ProductSpecificationsListTest', () => {
 
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
-    const checkbox0 = items[0]!.$.checkbox as CrCheckboxElement;
+    const checkbox0 = items[0]!.$.checkbox;
     checkbox0.click();
     await checkbox0.updateComplete;
-    const checkbox1 = items[1]!.$.checkbox as CrCheckboxElement;
+    const checkbox1 = items[1]!.$.checkbox;
     checkbox1.click();
     await checkbox1.updateComplete;
     assertDeepEquals(
@@ -251,7 +257,7 @@ suite('ProductSpecificationsListTest', () => {
         shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[1]);
   });
 
-  test('focus with arrow keys', async () => {
+  test('focus with arrow keys', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
 
@@ -297,6 +303,7 @@ suite('ProductSpecificationsListTest', () => {
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(4, items.length);
+
     assertDeepEquals(
         {
           name: 'example1',
@@ -368,7 +375,7 @@ suite('ProductSpecificationsListTest', () => {
     const newItems = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
 
-    assertEquals(1, newItems!.length);
+    assertEquals(1, newItems.length);
     assertDeepEquals('example2', newItems[0]!.item.name);
   });
 
@@ -409,7 +416,6 @@ suite('ProductSpecificationsListTest', () => {
         }));
     shoppingServiceApi.setResultFor(
         'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
 
     productSpecificationsList =
         document.createElement('product-specifications-lists');
@@ -431,7 +437,7 @@ suite('ProductSpecificationsListTest', () => {
     assertTrue(!!syncButton);
 
     syncButton.click();
-    shoppingServiceApi.whenCalled('showSyncSetupFlow');
+    productSpecificationsProxy.whenCalled('showSyncSetupFlow');
   });
 
   test('error message displays', async function() {
@@ -450,7 +456,6 @@ suite('ProductSpecificationsListTest', () => {
         }));
     shoppingServiceApi.setResultFor(
         'getAllProductSpecificationsSets', Promise.resolve({sets: []}));
-    shoppingServiceApi.setResultFor('getCallbackRouter', callbackRouter);
 
     productSpecificationsList =
         document.createElement('product-specifications-lists');
@@ -472,5 +477,41 @@ suite('ProductSpecificationsListTest', () => {
             '#error-message');
     assertTrue(!!errorMessage);
     assertFalse(errorMessage.hidden);
+  });
+
+  test('window focus uses new state', async function() {
+    const displayList =
+        productSpecificationsList.shadowRoot!.querySelector<HTMLElement>(
+            '#product-list-padding-container');
+
+    assertTrue(!!displayList);
+    assertFalse(displayList.hidden);
+
+    await shoppingServiceApi.setResultFor(
+        'getProductSpecificationsFeatureState', Promise.resolve({
+          state: {
+            isSyncingTabCompare: false,
+            canLoadFullPageUi: true,
+            canManageSets: false,
+            canFetchData: false,
+            isAllowedForEnterprise: false,
+            isSignedIn: false,
+          },
+        }));
+    window.dispatchEvent(new Event('focus'));
+    await flushTasks();
+
+    assertTrue(!!displayList);
+    assertTrue(displayList.hidden);
+  });
+
+  test('all items are deselected when a set is removed', async function() {
+    productSpecificationsList.selectOrUnselectAll();
+    assertTrue(productSpecificationsList.getSelectedItemCount() > 0);
+
+    callbackRouterRemote.onProductSpecificationsSetRemoved({value: 'ex2'});
+    await flushTasks();
+
+    assertTrue(productSpecificationsList.getSelectedItemCount() === 0);
   });
 });

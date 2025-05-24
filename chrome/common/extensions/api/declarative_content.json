@@ -12,8 +12,7 @@
         "type": "binary",
         "isInstanceOf": "ImageData",
         "additionalProperties": { "type": "any" },
-        "description": "See <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/ImageData\">https://developer.mozilla.org/en-US/docs/Web/API/ImageData</a>.",
-        "inline_doc": true
+        "description": "See <a href=\"https://developer.mozilla.org/en-US/docs/Web/API/ImageData\">https://developer.mozilla.org/en-US/docs/Web/API/ImageData</a>."
       },
       {
         "id": "PageStateMatcherInstanceType",

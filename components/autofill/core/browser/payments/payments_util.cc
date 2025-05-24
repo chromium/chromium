@@ -4,39 +4,36 @@
 
 #include "components/autofill/core/browser/payments/payments_util.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/common/credit_card_number_validation.h"
 
-namespace autofill {
-namespace payments {
+namespace autofill::payments {
 
 namespace {
 constexpr int kCustomerHasNoBillingCustomerNumber = 0;
 }
 
-int64_t GetBillingCustomerId(const PaymentsDataManager* payments_data_manager) {
-  DCHECK(payments_data_manager);
-
+int64_t GetBillingCustomerId(const PaymentsDataManager& payments_data_manager) {
   // Get billing customer ID from the synced PaymentsCustomerData.
-  PaymentsCustomerData* customer_data =
-      payments_data_manager->GetPaymentsCustomerData();
+  const PaymentsCustomerData* const customer_data =
+      payments_data_manager.GetPaymentsCustomerData();
   if (customer_data && !customer_data->customer_id.empty()) {
     int64_t billing_customer_id = 0;
-    if (base::StringToInt64(std::string_view(customer_data->customer_id),
-                            &billing_customer_id)) {
+    if (base::StringToInt64(customer_data->customer_id, &billing_customer_id)) {
       return billing_customer_id;
     }
   }
   return kCustomerHasNoBillingCustomerNumber;
 }
 
-bool HasGooglePaymentsAccount(PaymentsDataManager* payments_data_manager) {
+bool HasGooglePaymentsAccount(
+    const PaymentsDataManager& payments_data_manager) {
   return GetBillingCustomerId(payments_data_manager) !=
          kCustomerHasNoBillingCustomerNumber;
 }
@@ -60,5 +57,4 @@ bool IsCreditCardNumberSupported(
   });
 }
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments

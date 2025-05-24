@@ -129,7 +129,7 @@ TEST_F(CaptureServiceReceiverTest, SendRequest) {
                           const net::NetworkTrafficAnnotationTag&) {
         EXPECT_EQ(buf_len, static_cast<int>(sizeof(HandshakePacket)));
         auto data = base::as_bytes(buf->span());
-        uint16_t size = base::numerics::U16FromBigEndian(data.first<2u>());
+        uint16_t size = base::U16FromBigEndian(data.first<2u>());
         EXPECT_EQ(size, sizeof(HandshakePacket) - sizeof(size));
         HandshakePacket packet;
         base::byte_span_from_ref(packet).copy_from(
@@ -207,7 +207,7 @@ TEST_F(CaptureServiceReceiverTest, ReceiveMetadataMessage) {
         auto [write_size, write_message] = base::as_writable_bytes(buf->span())
                                                .first<total_size>()
                                                .split_at<sizeof(uint16_t)>();
-        write_size.copy_from(base::numerics::U16ToBigEndian(message_size));
+        write_size.copy_from(base::U16ToBigEndian(message_size));
         write_message[0u] = static_cast<uint8_t>(MessageType::kMetadata);
         // No need to fill valid metadata.
         std::ranges::fill(write_message.subspan(1u), uint8_t{0});

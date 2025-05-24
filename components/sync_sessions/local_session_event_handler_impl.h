@@ -73,6 +73,7 @@ class LocalSessionEventHandlerImpl : public LocalSessionEventHandler {
   // LocalSessionEventHandler implementation.
   void OnSessionRestoreComplete() override;
   void OnLocalTabModified(SyncedTabDelegate* modified_tab) override;
+  void OnLocalTabClosed() override;
 
   // Returns tab specifics from |tab_delegate|. Exposed publicly for testing.
   sync_pb::SessionTab GetTabSpecificsFromDelegateForTest(

@@ -6,6 +6,7 @@ include_rules = [
   "+components/embedder_support/android/metrics/java",
   "+components/minidump_uploader/android/java",
   "+components/minidump_uploader/android/javatests",
+  "+components/payments/content/android",
   "+components/policy/android/java",
   "+components/policy/android/javatests",
   "+components/safe_browsing/android/java",

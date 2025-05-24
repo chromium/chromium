@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "ui/events/ozone/device/udev/device_manager_udev.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -28,10 +29,10 @@ namespace ui {
 
 namespace {
 
-const char* const kSubsystems[] = {
-  "input",
-  "drm",
-};
+constexpr auto kSubsystems = std::to_array<const char*>({
+    "input",
+    "drm",
+});
 
 // Start monitoring input device changes.
 device::ScopedUdevMonitorPtr UdevCreateMonitor(struct udev* udev) {
@@ -118,33 +119,33 @@ void DeviceManagerUdev::OnFileCanReadWithoutBlocking(int fd) {
     return;
 
   std::unique_ptr<DeviceEvent> event = ProcessMessage(device.get());
-  if (event)
-    for (DeviceEventObserver& observer : observers_)
-      observer.OnDeviceEvent(*event.get());
+  if (event) {
+    observers_.Notify(&DeviceEventObserver::OnDeviceEvent, *event.get());
+  }
 }
 
 void DeviceManagerUdev::OnFileCanWriteWithoutBlocking(int fd) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<DeviceEvent> DeviceManagerUdev::ProcessMessage(
     udev_device* device) {
-  const char* path = device::udev_device_get_devnode(device);
+  const char* path_cstr = device::udev_device_get_devnode(device);
   const char* subsystem =
       device::udev_device_get_property_value(device, "SUBSYSTEM");
-  if (!path || !subsystem)
+  if (!path_cstr || !subsystem) {
     return nullptr;
+  }
 
+  std::string_view path(path_cstr);
   DeviceEvent::DeviceType device_type;
-  if (!strcmp(subsystem, "input") &&
-      base::StartsWith(path, "/dev/input/event", base::CompareCase::SENSITIVE))
+  if (!strcmp(subsystem, "input") && path.starts_with("/dev/input/event")) {
     device_type = DeviceEvent::INPUT;
-  else if (!strcmp(subsystem, "drm") &&
-           base::StartsWith(path, "/dev/dri/card",
-                            base::CompareCase::SENSITIVE))
+  } else if (!strcmp(subsystem, "drm") && path.starts_with("/dev/dri/card")) {
     device_type = DeviceEvent::DISPLAY;
-  else
+  } else {
     return nullptr;
+  }
 
   const char* action = device::udev_device_get_action(device);
   DeviceEvent::ActionType action_type;

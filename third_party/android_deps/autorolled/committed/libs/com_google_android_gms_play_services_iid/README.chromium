@@ -1,0 +1,15 @@
+Name: play-services-iid
+Short Name: play-services-iid
+URL: https://developers.google.com/android/guides/setup
+Version: 17.0.0
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Iid library for gmscore / Google Play Services.
+
+Local Modifications:
+No modifications.

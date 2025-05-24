@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
+
+#include "base/containers/span.h"
+
 
 #include "chrome/browser/media_galleries/fileapi/native_media_file_util.h"
 
@@ -66,7 +66,7 @@ struct FilteringTestCase {
   const char* content;
 };
 
-const FilteringTestCase kFilteringTestCases[] = {
+const auto kFilteringTestCases = std::to_array<FilteringTestCase>({
     // Directory should always be visible.
     {FPL("hoge"), true, true, false, nullptr},
     {FPL("fuga.jpg"), true, true, false, nullptr},
@@ -84,7 +84,7 @@ const FilteringTestCase kFilteringTestCases[] = {
     {FPL("baz.txt"), false, false, false, "abc"},
     // Unsupported media file.
     {FPL("foobar.cod"), false, false, false, "abc"},
-};
+});
 
 void ExpectEqHelper(const std::string& test_name,
                     base::File::Error expected,
@@ -113,9 +113,10 @@ void DidReadDirectory(std::set<base::FilePath::StringType>* content,
     EXPECT_TRUE(content->insert(entry.name.value()).second);
 }
 
-void PopulateDirectoryWithTestCases(const base::FilePath& dir,
-                                    const FilteringTestCase* test_cases,
-                                    size_t n) {
+void PopulateDirectoryWithTestCases(
+    const base::FilePath& dir,
+    base::span<const FilteringTestCase> test_cases,
+    size_t n) {
   for (size_t i = 0; i < n; ++i) {
     base::FilePath path = dir.Append(test_cases[i].path);
     if (test_cases[i].is_directory) {

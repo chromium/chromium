@@ -1,2 +1,2 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++View text:"This test is for aria-role = timer" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="timer", roleDescription="timer"]
+++View text:"This test is for aria-role = timer" liveRegion:1 actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="timer", roleDescription="timer"]

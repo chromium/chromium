@@ -23,6 +23,12 @@ inline constexpr std::array<float, 1> kZeroDefaultValue{0};
       MetadataWriter::UMAFeature::FromValueHistogram(      \
           uma_name, days, proto::Aggregation::COUNT))
 
+#define DEFINE_UMA_FEATURE_ENUM_COUNT(var_name, uma_name, enum_id, enum_size, \
+                                      days)                                   \
+  FeatureQuery var_name = FeatureQuery::FromUMAFeature(                       \
+      MetadataWriter::UMAFeature::FromEnumHistogram(uma_name, days, enum_id,  \
+                                                    enum_size))
+
 #define DEFINE_UMA_FEATURE_SUM(var_name, uma_name, days)             \
   FeatureQuery var_name = FeatureQuery::FromUMAFeature(              \
       MetadataWriter::UMAFeature::FromValueHistogram(uma_name, days, \
@@ -60,6 +66,15 @@ struct FeatureQuery {
   const std::optional<MetadataWriter::SqlFeature> sql_feature;
   const std::optional<MetadataWriter::CustomInput> custom_input;
 };
+
+// Helper function to create a `FeatureQuery` from a custom input name.
+constexpr FeatureQuery CreateFeatureQueryFromCustomInputName(
+    const char* input_name) {
+  return FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+      .tensor_length = 1,
+      .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+      .name = input_name});
+}
 
 }  // namespace segmentation_platform
 

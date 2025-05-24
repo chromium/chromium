@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
+#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -168,7 +169,7 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
 
 + (void)setUserCloudPolicyDataWithDomain:(NSString*)domain {
   policy::UserCloudPolicyManager* manager =
-      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+      chrome_test_util::GetOriginalProfile()->GetUserCloudPolicyManager();
   DCHECK(manager);
 
   policy::CloudPolicyStore* store = manager->core()->store();
@@ -230,9 +231,9 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
       });
 }
 
-+ (BOOL)hasUserPolicyDataInCurrentBrowserState {
++ (BOOL)hasUserPolicyDataInCurrentProfile {
   policy::UserCloudPolicyManager* manager =
-      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+      chrome_test_util::GetOriginalProfile()->GetUserCloudPolicyManager();
   DCHECK(manager);
 
   policy::CloudPolicyStore* store = manager->core()->store();
@@ -241,10 +242,10 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
   return store->has_policy() && store->is_managed();
 }
 
-+ (BOOL)hasUserPolicyInCurrentBrowserState:(NSString*)policyName
-                          withIntegerValue:(int)expectedValue {
++ (BOOL)hasUserPolicyInCurrentProfile:(NSString*)policyName
+                     withIntegerValue:(int)expectedValue {
   policy::UserCloudPolicyManager* manager =
-      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+      chrome_test_util::GetOriginalProfile()->GetUserCloudPolicyManager();
   DCHECK(manager);
 
   policy::CloudPolicyStore* store = manager->core()->store();

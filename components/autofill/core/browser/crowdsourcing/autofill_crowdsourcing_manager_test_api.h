@@ -21,9 +21,7 @@ class AutofillCrowdsourcingManagerTestApi {
   static std::unique_ptr<AutofillCrowdsourcingManager> CreateManagerForApiKey(
       AutofillClient* client,
       const std::string& api_key) {
-    return base::WrapUnique(
-        new AutofillCrowdsourcingManager(client, api_key,
-                                         /*log_manager=*/nullptr));
+    return base::WrapUnique(new AutofillCrowdsourcingManager(client, api_key));
   }
 
   explicit AutofillCrowdsourcingManagerTestApi(

@@ -4,6 +4,7 @@
 
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -15,7 +16,9 @@
 #include "base/unguessable_token.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/request_destination.h"
+#include "services/network/shared_dictionary/shared_dictionary_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
 #include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 
@@ -484,7 +487,15 @@ SharedDictionaryManagerOnDisk::SharedDictionaryManagerOnDisk(
                       /*background_task_runner=*/
                       base::ThreadPool::CreateSequencedTaskRunner(
                           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
-                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {
+                           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
+      cleanup_task_disabled_for_testing_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kDisableSharedDictionaryStorageCleanupForTesting)) {
+  dictionary_cache_ = base::MakeRefCounted<SharedDictionaryCache>();
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE,
+      base::BindRepeating(&SharedDictionaryManagerOnDisk::OnMemoryPressure,
+                          weak_factory_.GetWeakPtr()));
   disk_cache_.Initialize(cache_directory_path,
 #if BUILDFLAG(IS_ANDROID)
                          app_status_listener_getter,
@@ -505,7 +516,8 @@ SharedDictionaryManagerOnDisk::CreateStorage(
       weak_factory_.GetWeakPtr(), isolation_key,
       base::ScopedClosureRunner(
           base::BindOnce(&SharedDictionaryManager::OnStorageDeleted,
-                         GetWeakPtr(), isolation_key)));
+                         GetWeakPtr(), isolation_key)),
+      dictionary_cache_);
 }
 
 void SharedDictionaryManagerOnDisk::SetCacheMaxSize(uint64_t cache_max_size) {
@@ -720,6 +732,9 @@ void SharedDictionaryManagerOnDisk::ClearDataForIsolationKey(
 
 void SharedDictionaryManagerOnDisk::PostSerializedTask(
     std::unique_ptr<SerializedTaskInfo> task_info) {
+  if (cleanup_task_disabled_for_testing_) {
+    return;
+  }
   pending_serialized_task_info_.push_back(std::move(task_info));
   MaybeStartSerializedTask();
 }
@@ -796,6 +811,13 @@ void SharedDictionaryManagerOnDisk::MaybePostExpiredDictionaryDeletionTask() {
             }
           },
           weak_factory_.GetWeakPtr())));
+}
+
+void SharedDictionaryManagerOnDisk::OnMemoryPressure(
+    base::MemoryPressureListener::MemoryPressureLevel level) {
+  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+    dictionary_cache_->Clear();
+  }
 }
 
 }  // namespace network

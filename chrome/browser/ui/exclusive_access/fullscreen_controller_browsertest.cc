@@ -9,7 +9,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -34,14 +33,18 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
+#endif
+
 using content::WebContents;
 using ui::PAGE_TRANSITION_TYPED;
 using FullscreenControllerTest = ExclusiveAccessTest;
 
 namespace {
 
-// In some environments (Lacros, Linux, Mac) the operation is finished
-// asynchronously and we have to wait until the state change has occurred.
+// In some environments (Linux and Mac) the operation is finished asynchronously
+// and we have to wait until the state change has occurred.
 void WaitForDisplayed(Browser* browser) {
   base::RunLoop outer_loop;
   auto wait_for_state = base::BindRepeating(
@@ -180,16 +183,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
                   ->IsKeyboardLockActive());
 }
 
-// Disabled for flaky SEGFAULTs on Lacros: crbug.com/1340114
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode \
-  DISABLED_KeyboardLockNotLockedInExtensionFullscreenMode
-#else
-#define MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode \
-  KeyboardLockNotLockedInExtensionFullscreenMode
-#endif  // IS_CHROMEOS_LACROS
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
-                       MAYBE_KeyboardLockNotLockedInExtensionFullscreenMode) {
+                       KeyboardLockNotLockedInExtensionFullscreenMode) {
   EnterExtensionInitiatedFullscreen();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_FALSE(GetExclusiveAccessManager()
@@ -227,12 +222,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest,
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastKeyboardLockUnlockRelock) {
   EnterActiveTabFullscreen();
-  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
-
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   // Shorter than `ExclusiveAccessBubble::kShowTime`.
-  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime / 2);
+  Wait(ExclusiveAccessBubble::kShowTime / 2);
   CancelKeyboardLock();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -244,12 +236,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, FastKeyboardLockUnlockRelock) {
 
 IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, SlowKeyboardLockUnlockRelock) {
   EnterActiveTabFullscreen();
-  auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-  base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner.get());
-
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   // Longer than `ExclusiveAccessBubble::kShowTime`.
-  task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
+  Wait(ExclusiveAccessBubble::kShowTime * 2);
   CancelKeyboardLock();
   ASSERT_TRUE(RequestKeyboardLock(/*esc_key_locked=*/true));
   ASSERT_TRUE(GetExclusiveAccessManager()
@@ -474,7 +463,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
   // Test Normal state <--> Browser fullscreen mode <--> Tab fullscreen mode.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   EXPECT_TRUE(context->IsFullscreen());
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   bool should_show_top_ui = true;
 #else
   bool should_show_top_ui = false;
@@ -483,7 +472,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerTest, DISABLED_TopViewStatusChange) {
 
   EnterActiveTabFullscreen();
   EXPECT_TRUE(context->IsFullscreen());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_TRUE(browser()->window()->IsToolbarVisible());
 #else
   EXPECT_FALSE(browser()->window()->IsToolbarVisible());
@@ -567,6 +556,35 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                                /*tab_fullscreen=*/false);
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
+                       NotExitBrowserLockedFullscreenOnPressEsc) {
+  // Enter browser locked fullscreen.
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
+
+  // Short-press Esc key won't exit browser locked fullscreen.
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+  SendEscapeToExclusiveAccessManager(/*is_key_down=*/false);
+  EXPECT_TRUE(IsFullscreenForBrowser());
+}
+
+IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
+                       NotExitBrowserLockedFullscreenOnPressAndHoldEsc) {
+  // Enter browser locked fullscreen.
+  PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
+  ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
+
+  // Press-and-hold Esc will not exit browser locked fullscreen.
+  {
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner());
+    SendEscapeToExclusiveAccessManager(/*is_key_down=*/true);
+    task_runner()->FastForwardBy(base::Seconds(2));
+  }
+  EXPECT_TRUE(IsFullscreenForBrowser());
+}
+#endif
+
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        ExitBrowserFullscreenOnMultipleEscKeyDown) {
   // Enter browser fullscreen.
@@ -592,7 +610,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
 IN_PROC_BROWSER_TEST_F(FullscreenControllerPressAndHoldEscTest,
                        ExitBrowserAndTabFullscreenOnPressAndHoldEsc) {
   // Enter tab fullscreen and browser fullscreen.
-  GetFullscreenController()->ToggleBrowserFullscreenMode();
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/false);
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()
           ->tab_strip_model()
@@ -623,7 +642,8 @@ IN_PROC_BROWSER_TEST_F(
     ExitBrowserFullscreenAndUnlockKeyboardOnPressAndHoldEsc) {
   // Enter tab fullscreen and browser fullscreen. Then request keyboard lock
   // with Esc locked.
-  GetFullscreenController()->ToggleBrowserFullscreenMode();
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/false);
   GetFullscreenController()->EnterFullscreenModeForTab(
       browser()
           ->tab_strip_model()

@@ -14,7 +14,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
-                "config": "x86_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -22,7 +22,8 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -45,7 +46,7 @@
               "builder_group": "chromium.android",
               "execution_mode": "TEST",
               "legacy_android_config": {
-                "config": "x86_builder"
+                "config": "base_config"
               },
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -53,7 +54,8 @@
                   "mb"
                 ],
                 "build_config": "Debug",
-                "config": "android",
+                "config": "main_builder",
+                "target_arch": "intel",
                 "target_bits": 32,
                 "target_platform": "android"
               },
@@ -85,6 +87,8 @@
           "group": "tryserver.chromium.android"
         }
       ],
+      "retry_failed_shards": true,
+      "retry_invalid_shards": true,
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x86-dbg-nougat-tests/targets"
     }
   },
@@ -96,5 +100,11 @@
     ]
   },
   "builder_group": "chromium.android",
-  "recipe": "chromium"
+  "gardener_rotations": [
+    "cronet"
+  ],
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "cronet"
+  ]
 }

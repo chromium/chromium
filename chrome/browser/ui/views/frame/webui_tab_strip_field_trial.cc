@@ -7,16 +7,15 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/ui/ui_features.h"
 
 // Platform-specific headers for detecting tablet devices.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/tablet_mode.h"
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -54,23 +53,26 @@ void WebUITabStripFieldTrial::RegisterFieldTrialIfNecessary() {
 }
 
 WebUITabStripFieldTrial::WebUITabStripFieldTrial() {
-  if (!DeviceIsTabletModeCapable())
+  if (!DeviceIsTabletModeCapable()) {
     return;
+  }
 
   base::FeatureList* const feature_list = base::FeatureList::GetInstance();
 
   if (feature_list->IsFeatureOverriddenFromCommandLine(
-          features::kWebUITabStrip.name))
+          features::kWebUITabStrip.name)) {
     return;
+  }
 
   const char* group_name;
 
-  if (!feature_list->IsFeatureOverridden(features::kWebUITabStrip.name))
+  if (!feature_list->IsFeatureOverridden(features::kWebUITabStrip.name)) {
     group_name = "Default";
-  else if (base::FeatureList::IsEnabled(features::kWebUITabStrip))
+  } else if (base::FeatureList::IsEnabled(features::kWebUITabStrip)) {
     group_name = "Enabled";
-  else
+  } else {
     group_name = "Disabled";
+  }
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "WebUITabStripOnTablets", group_name);
@@ -78,7 +80,7 @@ WebUITabStripFieldTrial::WebUITabStripFieldTrial() {
 
 // static
 bool WebUITabStripFieldTrial::DeviceIsTabletModeCapable() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
 #elif BUILDFLAG(IS_WIN)
   return HasBuiltInTouchScreen();
@@ -88,5 +90,5 @@ bool WebUITabStripFieldTrial::DeviceIsTabletModeCapable() {
   // devices, it'll do no better than the existing field trial. So,
   // return false and don't record this synthetic field trial.
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }

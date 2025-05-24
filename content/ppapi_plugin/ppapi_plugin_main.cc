@@ -134,8 +134,6 @@ int PpapiPluginMain(MainFunctionParams parameters) {
   base::PlatformThread::SetName("CrPPAPIMain");
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_PPAPI_PLUGIN);
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventPpapiProcessSortIndex);
 
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();

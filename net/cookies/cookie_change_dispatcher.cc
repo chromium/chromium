@@ -22,6 +22,8 @@ const char* CookieChangeCauseToString(CookieChangeCause cause) {
       return "evicted";
     case CookieChangeCause::EXPIRED_OVERWRITE:
       return "expired_overwrite";
+    case CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
+      return "inserted_no_change_overwrite";
   }
 }
 
@@ -41,7 +43,19 @@ CookieChangeInfo::CookieChangeInfo(const CanonicalCookie& cookie,
 CookieChangeInfo::~CookieChangeInfo() = default;
 
 bool CookieChangeCauseIsDeletion(CookieChangeCause cause) {
-  return cause != CookieChangeCause::INSERTED;
+  switch (cause) {
+    case CookieChangeCause::INSERTED:
+    case CookieChangeCause::INSERTED_NO_CHANGE_OVERWRITE:
+      return false;
+    case CookieChangeCause::EXPIRED:
+    case CookieChangeCause::EXPIRED_OVERWRITE:
+    case CookieChangeCause::EXPLICIT:
+    case CookieChangeCause::EVICTED:
+    case CookieChangeCause::OVERWRITE:
+    case CookieChangeCause::UNKNOWN_DELETION:
+      return true;
+  }
+  NOTREACHED();
 }
 
 }  // namespace net

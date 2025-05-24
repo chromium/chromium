@@ -12,18 +12,23 @@ found in the LICENSE file.
             <menu>
               <item android:id="@+id/forward_menu_id"
                 android:title="@string/accessibility_menu_forward"
+                android:titleCondensed="@string/menu_forward"
                 android:icon="@drawable/btn_forward"/>
               <item android:id="@+id/bookmark_this_page_id"
                 android:title="@string/accessibility_menu_bookmark"
+                android:titleCondensed="@string/menu_bookmark"
                 android:icon="@drawable/star_outline_24dp"/>
               <item android:id="@+id/offline_page_id"
                 android:title="@string/download_page"
+                android:titleCondensed="@string/menu_download"
                 android:icon="@drawable/ic_file_download_white_24dp"/>
               <item android:id="@+id/info_menu_id"
                 android:title="@string/accessibility_menu_info"
+                android:titleCondensed="@string/menu_page_info"
                 android:icon="@drawable/btn_info" />
               <item android:id="@+id/reload_menu_id"
                 android:title="@string/accessibility_btn_refresh"
+                android:titleCondensed="@string/refresh"
                 android:icon="@drawable/btn_reload_stop"/>
             </menu>
         </item>
@@ -55,6 +60,16 @@ found in the LICENSE file.
             android:icon="@drawable/reader_mode_prefs_icon"
             android:visible="false"
             android:orderInCategory="2" />
+        <item android:id="@+id/enable_price_tracking_menu_id"
+            android:title="@string/enable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_disabled" />
+        <item android:id="@+id/disable_price_tracking_menu_id"
+            android:title="@string/disable_price_tracking_menu_item"
+            android:icon="@drawable/price_tracking_enabled_filled" />
+        <item android:id="@+id/price_insights_menu_id"
+            android:title="@string/price_insights_title"
+            android:icon="@drawable/ic_trending_down_24dp"
+            android:visible="false" />
         <item android:id="@+id/universal_install"
             android:title="@string/menu_add_to_homescreen"
             android:orderInCategory="2" />
@@ -75,6 +90,9 @@ found in the LICENSE file.
         <item android:id="@+id/translate_id"
           android:title="@string/menu_translate"
           android:orderInCategory="2"/>
+        <item android:id="@+id/open_with_id"
+          android:title="@string/menu_open_with"
+          android:orderInCategory="2" />
         <!-- Title is intentionally left blank in xml and will be set in java. -->
         <item android:id="@+id/open_in_browser_id"
             android:title=""

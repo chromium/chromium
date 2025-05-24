@@ -6,9 +6,10 @@
 
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/payments/payments_service_url.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/grit/components_scaled_resources.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_util.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -18,8 +19,6 @@
 #import "ios/chrome/common/ui/util/text_view_util.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
-
-static NSString* kDetailIconCellIdentifier = @"DetailIconCell";
 
 namespace {
 
@@ -185,12 +184,9 @@ CGFloat const kCreditCardCellHeight = 64;
       [[UIImageView alloc] initWithImage:[self googlePayBadgeImage]];
   logoImageTitleView.contentMode = UIViewContentModeCenter;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    logoImageTitleView.isAccessibilityElement = YES;
-    logoImageTitleView.accessibilityLabel =
-        l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
-  }
+  logoImageTitleView.isAccessibilityElement = YES;
+  logoImageTitleView.accessibilityLabel =
+      l10n_util::GetNSString(IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
 #endif
   return logoImageTitleView;
 }
@@ -297,56 +293,16 @@ CGFloat const kCreditCardCellHeight = 64;
 // Adds a text view for the given legal message to the under title view.
 - (void)addLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)messages {
   for (SaveCardMessageWithLinks* message in messages) {
-    UITextView* textView = CreateUITextViewWithTextKit1();
-    textView.scrollEnabled = NO;
-    textView.editable = NO;
+    UITextView* textView =
+        [AutofillCreditCardUtil createTextViewForLegalMessage:message];
     textView.delegate = self;
-    textView.translatesAutoresizingMaskIntoConstraints = NO;
-    textView.textContainerInset = UIEdgeInsetsZero;
-    textView.linkTextAttributes =
-        @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor]};
-    textView.backgroundColor = UIColor.clearColor;
-    textView.attributedText = [VirtualCardEnrollmentBottomSheetViewController
-        attributedTextForText:message.messageText
-                     linkUrls:message.linkURLs
-                   linkRanges:message.linkRanges];
     [_customUnderTitleView addArrangedSubview:textView];
   }
 }
 
-+ (NSAttributedString*)attributedTextForText:(NSString*)text
-                                    linkUrls:(std::vector<GURL>)linkURLs
-                                  linkRanges:(NSArray*)linkRanges {
-  NSMutableParagraphStyle* centeredTextStyle =
-      [[NSMutableParagraphStyle alloc] init];
-  centeredTextStyle.alignment = NSTextAlignmentCenter;
-  NSDictionary* textAttributes = @{
-    NSFontAttributeName :
-        [UIFont preferredFontForTextStyle:UIFontTextStyleCaption2],
-    NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
-    NSParagraphStyleAttributeName : centeredTextStyle,
-  };
-
-  NSMutableAttributedString* attributedText =
-      [[NSMutableAttributedString alloc] initWithString:text
-                                             attributes:textAttributes];
-  if (linkRanges) {
-    [linkRanges enumerateObjectsUsingBlock:^(NSValue* rangeValue, NSUInteger i,
-                                             BOOL* stop) {
-      CrURL* crurl = [[CrURL alloc] initWithGURL:linkURLs[i]];
-      if (!crurl || !crurl.gurl.is_valid()) {
-        return;
-      }
-      [attributedText addAttribute:NSLinkAttributeName
-                             value:crurl.nsurl
-                             range:rangeValue.rangeValue];
-    }];
-  }
-  return attributedText;
-}
-
 #pragma mark - UITextViewDelegate
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (BOOL)textView:(UITextView*)textView
     shouldInteractWithURL:(NSURL*)URL
                   inRange:(NSRange)characterRange
@@ -367,6 +323,7 @@ CGFloat const kCreditCardCellHeight = 64;
     return NO;
   }
 }
+#endif
 
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem

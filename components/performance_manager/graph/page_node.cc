@@ -9,17 +9,6 @@
 namespace performance_manager {
 
 // static
-const char* PageNode::ToString(PageNode::EmbeddingType embedding_type) {
-  switch (embedding_type) {
-    case PageNode::EmbeddingType::kInvalid:
-      return "kInvalid";
-    case PageNode::EmbeddingType::kGuestView:
-      return "kGuestView";
-  }
-  NOTREACHED_IN_MIGRATION();
-}
-
-// static
 const char* PageNode::ToString(PageType type) {
   switch (type) {
     case PageType::kTab:
@@ -29,7 +18,7 @@ const char* PageNode::ToString(PageType type) {
     case PageType::kUnknown:
       return "kUnknown";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // static
@@ -46,7 +35,7 @@ const char* PageNode::ToString(PageNode::LoadingState loading_state) {
     case LoadingState::kLoadedIdle:
       return "kLoadedIdle";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 PageNode::PageNode() = default;
@@ -54,15 +43,5 @@ PageNode::~PageNode() = default;
 
 PageNodeObserver::PageNodeObserver() = default;
 PageNodeObserver::~PageNodeObserver() = default;
-
-PageNode::ObserverDefaultImpl::ObserverDefaultImpl() = default;
-PageNode::ObserverDefaultImpl::~ObserverDefaultImpl() = default;
-
-std::ostream& operator<<(
-    std::ostream& os,
-    performance_manager::PageNode::EmbeddingType embedding_type) {
-  os << performance_manager::PageNode::ToString(embedding_type);
-  return os;
-}
 
 }  // namespace performance_manager

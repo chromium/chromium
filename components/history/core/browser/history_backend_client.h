@@ -19,12 +19,12 @@ struct URLAndTitle {
 
 class HistoryBackendClient {
  public:
-  HistoryBackendClient() {}
+  HistoryBackendClient() = default;
 
   HistoryBackendClient(const HistoryBackendClient&) = delete;
   HistoryBackendClient& operator=(const HistoryBackendClient&) = delete;
 
-  virtual ~HistoryBackendClient() {}
+  virtual ~HistoryBackendClient() = default;
 
   // Returns true if the specified URL is pinned due to being bookmarked or used
   // by the password manager.

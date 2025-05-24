@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/account_extension_tracker.h"
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 #include "chrome/browser/extensions/api/developer_private/inspectable_views_finder.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -28,13 +29,16 @@
 #include "chrome/browser/extensions/extension_action_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/extensions/permissions/permissions_test_util.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/signin_test_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_extensions_delegate_impl.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
@@ -44,10 +48,15 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
+#include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/common/features.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -120,7 +129,7 @@ std::string SiteControlsToString(
 
 class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
  public:
-  ExtensionInfoGeneratorUnitTest() {}
+  ExtensionInfoGeneratorUnitTest() = default;
 
   ExtensionInfoGeneratorUnitTest(const ExtensionInfoGeneratorUnitTest&) =
       delete;
@@ -216,7 +225,7 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
             .SetID(kId)
             .Build();
 
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     PermissionsUpdater updater(profile());
     updater.InitializePermissions(extension.get());
     updater.GrantActivePermissions(extension.get());
@@ -315,7 +324,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
           .SetPath(data_dir())
           .SetID(id)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
@@ -412,7 +421,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, BasicInfoTest) {
                   .SetLocation(ManifestLocation::kExternalPref)
                   .SetID(id)
                   .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   info = GenerateExtensionInfo(extension->id());
   EXPECT_EQ(developer::Location::kThirdParty, info->location);
   EXPECT_FALSE(info->path);
@@ -438,7 +447,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByDefault) {
           .SetID(crx_file::id_util::GenerateId("alpha"))
           .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -466,7 +475,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionInfoInstalledByOem) {
           .AddFlags(Extension::WAS_INSTALLED_BY_DEFAULT |
                     Extension::WAS_INSTALLED_BY_OEM)
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       GenerateExtensionInfo(extension->id());
@@ -529,7 +538,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
             "behllobkkfkfnphdnhnkndlbkcpglgmj.json"));
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Test Extension2
   extension_path = data_dir()
                        .AppendASCII("good")
@@ -932,7 +941,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
           .SetManifestVersion(3)
           .AddOptionalAPIPermission("notifications")
           .Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
@@ -984,7 +993,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest,
   // The permissions info should still show the set of granted API permissions
   // which should include the notifications permission.
   EXPECT_EQ(messages.size(), info->permissions.simple_permissions.size() - 1);
-  EXPECT_TRUE(base::ranges::any_of(
+  EXPECT_TRUE(std::ranges::any_of(
       info->permissions.simple_permissions,
       [](api::developer_private::Permission& permission) {
         return permission.message == "Display notifications";
@@ -1008,7 +1017,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, RevokedOptionalHostPermissionsInfoTest) {
                base::Value::List().Append("http://*.c.com/*"));
   scoped_refptr<const Extension> extension =
       ExtensionBuilder().SetManifest(std::move(manifest)).Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
@@ -1149,7 +1158,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
                                                     std::move(command_dict)))
             .SetManifestVersion(test_case.manifest_version)
             .Build();
-    service()->AddExtension(extension.get());
+    registrar()->AddExtension(extension.get());
     auto info = GenerateExtensionInfo(extension->id());
     ASSERT_TRUE(info);
     ASSERT_EQ(1u, info->commands.size());
@@ -1214,10 +1223,93 @@ TEST_F(ExtensionInfoGeneratorUnitTest, IsPinnedToToolbar) {
 
   // Disable the extension. Since disabled extensions have no action, the
   // `pinned_to_toolbar` field should not exist.
-  service()->DisableExtension(extension->id(),
-                              disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(extension->id(),
+                                {disable_reason::DISABLE_USER_ACTION});
   info = GenerateExtensionInfo(extension->id());
   EXPECT_FALSE(info->pinned_to_toolbar.has_value());
+}
+
+// Test that extensions cannot be uploaded to the user's account if they are
+// signed out or signed in with full sync consent (automatically syncs all data
+// types including extensions).
+TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_FullSync) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      switches::kEnableExtensionsExplicitBrowserSignin);
+
+  // Create two extensions: one syncable and one non-syncable.
+  const scoped_refptr<const Extension> syncable_extension = CreateExtension(
+      "test1", base::Value::List(), ManifestLocation::kInternal);
+  EXPECT_TRUE(sync_util::ShouldSync(profile(), syncable_extension.get()));
+
+  const scoped_refptr<const Extension> unsyncable_extension = CreateExtension(
+      "test2", base::Value::List(), ManifestLocation::kUnpacked);
+  EXPECT_FALSE(sync_util::ShouldSync(profile(), unsyncable_extension.get()));
+
+  // Neither extension can be uploaded to the user's account since there is no
+  // signed in user to upload to.
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(syncable_extension->id());
+  EXPECT_FALSE(info->can_upload_as_account_extension);
+
+  info = GenerateExtensionInfo(unsyncable_extension->id());
+  EXPECT_FALSE(info->can_upload_as_account_extension);
+
+  // Now sign in with full sync.
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  identity_test_env_profile_adaptor->identity_test_env()
+      ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                    signin::ConsentLevel::kSync);
+
+  // Since extensions should be automatically synced with sync enabled for the
+  // user's account, they can't be manually uploaded.
+  info = GenerateExtensionInfo(syncable_extension->id());
+  EXPECT_FALSE(info->can_upload_as_account_extension);
+
+  info = GenerateExtensionInfo(unsyncable_extension->id());
+  EXPECT_FALSE(info->can_upload_as_account_extension);
+}
+
+// Same test as above, except test that extensions CAN be uploaded if the user
+// is signed into transport mode with extensions sync enabled.
+TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_TransportMode) {
+  // Allow extensions to sync in transport mode.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {switches::kEnableExtensionsExplicitBrowserSignin},
+      /*disabled_features=*/{});
+
+  // Sign the user in without full sync with an explicit signin.
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  signin_test_util::SimulateExplicitSignIn(
+      profile(), identity_test_env_profile_adaptor->identity_test_env());
+
+  // Create two extensions: one syncable and one non-syncable.
+  const scoped_refptr<const Extension> syncable_extension = CreateExtension(
+      "test1", base::Value::List(), ManifestLocation::kInternal);
+  EXPECT_TRUE(sync_util::ShouldSync(profile(), syncable_extension.get()));
+
+  const scoped_refptr<const Extension> unsyncable_extension = CreateExtension(
+      "test2", base::Value::List(), ManifestLocation::kUnpacked);
+  EXPECT_FALSE(sync_util::ShouldSync(profile(), unsyncable_extension.get()));
+
+  // Only the `syncable_extension` can be uploaded.
+  std::unique_ptr<developer::ExtensionInfo> info =
+      GenerateExtensionInfo(syncable_extension->id());
+  EXPECT_TRUE(info->can_upload_as_account_extension);
+
+  info = GenerateExtensionInfo(unsyncable_extension->id());
+  EXPECT_FALSE(info->can_upload_as_account_extension);
+
+  // Pretend the `syncable_extension` is already associated with the user's
+  // account. It cannot be uploaded anymore.
+  AccountExtensionTracker::Get(profile())->SetAccountExtensionTypeForTesting(
+      syncable_extension->id(),
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn);
+  info = GenerateExtensionInfo(syncable_extension->id());
+  EXPECT_FALSE(info->can_upload_as_account_extension);
 }
 
 class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
@@ -1235,23 +1327,33 @@ class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
             extensions_features::kExtensionManifestV2DeprecationWarning);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kDisableWithReEnable:
         enabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
             extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kNone:
         disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
             extensions_features::kExtensionManifestV2Disabled);
         disabled_features.push_back(
-            extensions_features::kExtensionManifestV2DeprecationWarning);
+            extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
-        // TODO(https://crbug.com/367395349): Add tests for the kUnsupported
-        // experiment stage.
-        NOTREACHED();
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        break;
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -1272,7 +1374,20 @@ INSTANTIATE_TEST_SUITE_P(
     ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
     testing::Values(MV2ExperimentStage::kNone,
                     MV2ExperimentStage::kWarning,
-                    MV2ExperimentStage::kDisableWithReEnable));
+                    MV2ExperimentStage::kDisableWithReEnable,
+                    MV2ExperimentStage::kUnsupported),
+    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
+      switch (info.param) {
+        case MV2ExperimentStage::kNone:
+          return "NoneExperiment";
+        case MV2ExperimentStage::kWarning:
+          return "WarningExperiment";
+        case MV2ExperimentStage::kDisableWithReEnable:
+          return "DisableExperiment";
+        case MV2ExperimentStage::kUnsupported:
+          return "UnsupportedExperiment";
+      }
+    });
 
 // Tests that acknowledging the MV2 deprecation notice updates the extension
 // info when the experiment stage is different than 'kNone'.
@@ -1280,7 +1395,7 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
        DidAcknowledgeMv2DeprecationNotice) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("ext").SetManifestVersion(2).Build();
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension.get());
 
   ManifestV2ExperimentManager* experiment_manager =
       ManifestV2ExperimentManager::Get(browser_context());
@@ -1305,8 +1420,10 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
   {
     std::unique_ptr<developer::ExtensionInfo> info =
         GenerateExtensionInfo(extension->id());
-    if (experiment_stage() == MV2ExperimentStage::kNone) {
-      // Cannot acknowledge a notice that doesn't exist.
+    if (experiment_stage() == MV2ExperimentStage::kNone ||
+        experiment_stage() == MV2ExperimentStage::kUnsupported) {
+      // Cannot acknowledge a notice that doesn't exist (none stage) or cannot
+      // be dismissed (unsupported stage).
       EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_notice);
     } else {
       EXPECT_TRUE(info->did_acknowledge_mv2_deprecation_notice);
@@ -1316,27 +1433,10 @@ TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-// Whether parental controls apply to extensions.
-enum class ExtensionsParentalControlState : int { kEnabled = 0, kDisabled = 1 };
-
-// Whether the parental controls on Extensions are managed by the preference
-// `SkipParentApprovalToInstallExtensions`, which corresponds to the
-// "Allow to add extensions without asking permission" Family Link switch
-// or by the preference `kSupervisedUserExtensionsMayRequestPermissions`
-// which corresponds to the "Permissions for Sites, Apps and Extensions"
-// Family Link switch.
-enum class ExtensionManagementFamilyLinkSwitch : int {
-  kManagedByExtensionsSwitch = 0,
-  kManagedByPermissionsSwitch = 1
-};
-
 // Tests for supervised users (child accounts). Supervised users are not allowed
 // to install apps or extensions unless their parent approves.
 class ExtensionInfoGeneratorUnitTestSupervised
-    : public ExtensionInfoGeneratorUnitTest,
-      public testing::WithParamInterface<
-          std::tuple<ExtensionsParentalControlState,
-                     ExtensionManagementFamilyLinkSwitch>> {
+    : public ExtensionInfoGeneratorUnitTest {
  public:
   ExtensionInfoGeneratorUnitTestSupervised() = default;
   ~ExtensionInfoGeneratorUnitTestSupervised() override = default;
@@ -1354,61 +1454,17 @@ class ExtensionInfoGeneratorUnitTestSupervised
 
     // Set up custodians (parents) for the child.
     supervised_user_test_util::AddCustodians(profile());
-
-    // Set the pref to allow the child to request extension install.
-    supervised_user_test_util::
-        SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), true);
-
   }
 
   void TearDown() override {
     ExtensionInfoGeneratorUnitTest::TearDown();
   }
-
-  bool ApplyParentalControlsOnExtensions() {
-    return std::get<0>(GetParam()) == ExtensionsParentalControlState::kEnabled;
-  }
-
-  ExtensionManagementFamilyLinkSwitch GetExtensionManagementFamilyLinkSwitch() {
-    return std::get<1>(GetParam());
-  }
 };
 
-// Tests that when an extension:
-// 1) is disabled pending permission updates and
-// 2) the parent has turned off the "Permissions for sites, apps and extensions"
-// toggle on Family Link and
-// 3) the extension parental controls are managed by the Family link
-// "Permissions for sites, apps and extensions" (legacy flow), instead of the
-// "Allow to add extensions without asking permission" Family Link switch (new
-// flow)" then supervised users will see a kite error icon with a tooltip.
-TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
-       ParentDisabledPermissionsForSupervisedUsers) {
-  // Extension permissions for supervised users is already enabled on ChromeOS.
-  base::test::ScopedFeatureList feature_list;
-  std::vector<base::test::FeatureRef> enabled_features;
-  std::vector<base::test::FeatureRef> disabled_features;
-
-  if (ApplyParentalControlsOnExtensions()) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
-    if (GetExtensionManagementFamilyLinkSwitch() ==
-        ExtensionManagementFamilyLinkSwitch::kManagedByExtensionsSwitch) {
-      enabled_features.push_back(
-          supervised_user::
-              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-
-    } else {
-      disabled_features.push_back(
-          supervised_user::
-              kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-    }
-  }
-  feature_list.InitWithFeatures(enabled_features, disabled_features);
-
+// Tests that when a supervised user is never blocked from
+// updating the permissions of an extension after a permissions' increase.
+TEST_F(ExtensionInfoGeneratorUnitTestSupervised,
+       AlwaysAllowPermissionUpdatesForSupervisedUsers) {
   ASSERT_TRUE(profile()->IsChild());
 
   std::unique_ptr<SupervisedUserExtensionsDelegate>
@@ -1418,33 +1474,22 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
   base::FilePath pem_path = base_path.AppendASCII("permissions.pem");
   base::FilePath path = base_path.AppendASCII("v1");
 
-  // When extension parental controls apply, on the default behaviour
-  // the extensions will be installed but disabled until custodian approvals are
-  // performed. When extension parental controls do not apply, the extensions
-  // will be installed and enabled.
-  InstallState install_state =
-      ApplyParentalControlsOnExtensions() ? INSTALL_WITHOUT_LOAD : INSTALL_NEW;
+  // The extensions will be installed but disabled until custodian approvals are
+  // performed.
+  InstallState install_state = INSTALL_WITHOUT_LOAD;
   const Extension* extension = PackAndInstallCRX(path, pem_path, install_state);
   ASSERT_TRUE(extension);
-  if (ApplyParentalControlsOnExtensions()) {
     EXPECT_TRUE(registry()->disabled_extensions().Contains(extension->id()));
-  } else {
-    EXPECT_TRUE(registry()->enabled_extensions().Contains(extension->id()));
-  }
 
   // Save the id, as |extension| will be destroyed during updating.
   ExtensionId extension_id = extension->id();
 
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  if (ApplyParentalControlsOnExtensions()) {
     EXPECT_TRUE(prefs->HasDisableReason(
         extension_id, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED));
 
     // Simulate parent approval for the extension installation.
     supervised_user_extensions_delegate->AddExtensionApproval(*extension);
-  } else {
-    EXPECT_FALSE(prefs->IsExtensionDisabled(extension_id));
-  }
 
   // The extension should be enabled.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id));
@@ -1459,52 +1504,119 @@ TEST_P(ExtensionInfoGeneratorUnitTestSupervised,
   // Due to a permission increase, prefs will contain escalation information.
   EXPECT_TRUE(prefs->DidExtensionEscalatePermissions(extension_id));
 
-  // Simulate the parent disallowing the child from approving permission
-  // updates. If extensions parental controls don't apply, or the extensions
-  // are managed by the `SkipParentApprovalToInstallExtensions` preference
-  // then this has no effect.
+  // Disable the supervised user preferences relating to permissions and
+  // extensions.
   supervised_user_test_util::
       SetSupervisedUserExtensionsMayRequestPermissionsPref(profile(), false);
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false); /* Default value. */
 
-  // The extension should be disabled only if the extension parental controls
-  // are enabled and the extensions are governed by the
-  // `kSupervisedUserExtensionsMayRequestPermissions` preference.
+  // The supervised user is never blocked from updating the permissions of an
+  // extension.
   std::unique_ptr<api::developer_private::ExtensionInfo> info =
       GenerateExtensionInfo(extension_id);
-  bool is_extension_disabled =
-      ApplyParentalControlsOnExtensions() &&
-      GetExtensionManagementFamilyLinkSwitch() ==
-          ExtensionManagementFamilyLinkSwitch::kManagedByPermissionsSwitch;
-  EXPECT_EQ(info->disable_reasons.parent_disabled_permissions,
-            is_extension_disabled);
+  EXPECT_FALSE(info->disable_reasons.parent_disabled_permissions);
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    ExtensionsForSupervisedUsers,
-    ExtensionInfoGeneratorUnitTestSupervised,
-    testing::Combine(
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-        testing::Values(ExtensionsParentalControlState::kEnabled,
-                        ExtensionsParentalControlState::kDisabled),
-#else
-        // For ChromeOS the extension parental controls are on by default.
-        testing::Values(ExtensionsParentalControlState::kEnabled),
-#endif
-        testing::Values(
-            ExtensionManagementFamilyLinkSwitch::kManagedByPermissionsSwitch,
-            ExtensionManagementFamilyLinkSwitch::kManagedByExtensionsSwitch)),
-    [](const auto& info) {
-      return std::string(std::get<0>(info.param) ==
-                                 ExtensionsParentalControlState::kEnabled
-                             ? "WithExtensionParentalControls"
-                             : "WithoutExtensionParentalControls") +
-             std::string(std::get<1>(info.param) ==
-                                 ExtensionManagementFamilyLinkSwitch::
-                                     kManagedByExtensionsSwitch
-                             ? "ManagedByExtensionsFamilyLinkSwitch"
-                             : "ManagedByPermissionsFamilyLinkSwitch");
-    });
 
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+
+enum PendingSettingType { kAllowIncognito, kAllowOnFileUrls };
+
+class ExtensionInfoGeneratorSettingPendingUnitTest
+    : public ExtensionInfoGeneratorUnitTest,
+      public testing::WithParamInterface<std::tuple<PendingSettingType, bool>> {
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    SettingPending,
+    ExtensionInfoGeneratorSettingPendingUnitTest,
+    ::testing::Combine(::testing::Values(PendingSettingType::kAllowIncognito,
+                                         PendingSettingType::kAllowOnFileUrls),
+                       ::testing::Bool()));
+
+TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
+       GenerateExtensionInfoWithPendingSettings) {
+  scoped_refptr<const Extension> extension = ExtensionBuilder("alpha").Build();
+  registrar()->AddExtension(extension.get());
+
+  auto [setting, initial_setting_value] = GetParam();
+  bool pending_setting_value = !initial_setting_value;
+  auto* prefs = ExtensionPrefs::Get(profile());
+
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      prefs->SetIsIncognitoEnabled(extension->id(), initial_setting_value);
+      prefs->SetIsIncognitoEnabledDelayed(extension->id(),
+                                          pending_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      prefs->SetAllowFileAccess(extension->id(), initial_setting_value);
+      prefs->SetAllowFileAccessDelayed(extension->id(), pending_setting_value);
+      break;
+    default:
+      break;
+  }
+
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  ASSERT_TRUE(info);
+
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      ASSERT_TRUE(info->incognito_access_pending_change);
+      ASSERT_FALSE(info->file_access_pending_change);
+      ASSERT_EQ(info->incognito_access.is_active, pending_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      ASSERT_TRUE(info->file_access_pending_change);
+      ASSERT_FALSE(info->incognito_access_pending_change);
+      ASSERT_EQ(info->file_access.is_active, pending_setting_value);
+      break;
+    default:
+      break;
+  }
+}
+
+TEST_P(ExtensionInfoGeneratorSettingPendingUnitTest,
+       GenerateExtensionInfoWithNoPendingSettings) {
+  scoped_refptr<const Extension> extension = ExtensionBuilder("alpha").Build();
+  registrar()->AddExtension(extension.get());
+
+  auto [setting, initial_setting_value] = GetParam();
+  auto* prefs = ExtensionPrefs::Get(profile());
+
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      prefs->SetIsIncognitoEnabled(extension->id(), initial_setting_value);
+      prefs->SetIsIncognitoEnabledDelayed(extension->id(),
+                                          initial_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      prefs->SetAllowFileAccess(extension->id(), initial_setting_value);
+      prefs->SetAllowFileAccessDelayed(extension->id(), initial_setting_value);
+      break;
+    default:
+      break;
+  }
+
+  std::unique_ptr<api::developer_private::ExtensionInfo> info =
+      GenerateExtensionInfo(extension->id());
+  ASSERT_TRUE(info);
+
+  ASSERT_FALSE(info->incognito_access_pending_change);
+  ASSERT_FALSE(info->file_access_pending_change);
+  switch (setting) {
+    case PendingSettingType::kAllowIncognito:
+      ASSERT_EQ(info->incognito_access.is_active, initial_setting_value);
+      break;
+    case PendingSettingType::kAllowOnFileUrls:
+      ASSERT_EQ(info->file_access.is_active, initial_setting_value);
+      break;
+    default:
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace extensions

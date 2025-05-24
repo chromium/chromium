@@ -13,6 +13,7 @@ import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.payments.AutofillContact;
 import org.chromium.chrome.browser.payments.ContactEditor;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.components.payments.JourneyLogger;
 import org.chromium.components.payments.Section;
 
@@ -31,10 +32,10 @@ public class ContactDetailsSection extends SectionInformation {
     /**
      * Builds a Contact section from a list of AutofillProfile.
      *
-     * @param context               Context
-     * @param unmodifiableProfiles  The list of profiles to build from.
-     * @param contactEditor         The Contact Editor associated with this flow.
-     * @param journeyLogger         The JourneyLogger for the current Payment Request.
+     * @param context Context
+     * @param unmodifiableProfiles The list of profiles to build from.
+     * @param contactEditor The Contact Editor associated with this flow.
+     * @param journeyLogger The JourneyLogger for the current Payment Request.
      */
     public ContactDetailsSection(
             Context context,
@@ -42,7 +43,7 @@ public class ContactDetailsSection extends SectionInformation {
             ContactEditor contactEditor,
             JourneyLogger journeyLogger) {
         // Initially no items are selected, but they are updated later in the constructor.
-        super(PaymentRequestUI.DataType.CONTACT_DETAILS, null);
+        super(PaymentRequestUi.DataType.CONTACT_DETAILS, null);
 
         mContext = context;
         mContactEditor = contactEditor;
@@ -164,16 +165,18 @@ public class ContactDetailsSection extends SectionInformation {
         boolean requestPayerPhone = mContactEditor.getRequestPayerPhone();
         boolean requestPayerEmail = mContactEditor.getRequestPayerEmail();
         String name =
-                requestPayerName && !TextUtils.isEmpty(profile.getFullName())
-                        ? profile.getFullName()
+                requestPayerName && !TextUtils.isEmpty(profile.getInfo(FieldType.NAME_FULL))
+                        ? profile.getInfo(FieldType.NAME_FULL)
                         : null;
         String phone =
-                requestPayerPhone && !TextUtils.isEmpty(profile.getPhoneNumber())
-                        ? profile.getPhoneNumber()
+                requestPayerPhone
+                                && !TextUtils.isEmpty(
+                                        profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER))
+                        ? profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER)
                         : null;
         String email =
-                requestPayerEmail && !TextUtils.isEmpty(profile.getEmailAddress())
-                        ? profile.getEmailAddress()
+                requestPayerEmail && !TextUtils.isEmpty(profile.getInfo(FieldType.EMAIL_ADDRESS))
+                        ? profile.getInfo(FieldType.EMAIL_ADDRESS)
                         : null;
 
         if (name != null || phone != null || email != null) {

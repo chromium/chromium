@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "dbus/mock_bus.h"
@@ -110,8 +111,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
     method_call->SetSerial(123);
     method_call->SetReplySerial(456);
 
-    if (method_call->GetMember() ==
-        DbusMemoryPressureEvaluatorLinux::kMethodNameHasOwner) {
+    if (method_call->GetMember() == "NameHasOwner") {
       dbus::MessageReader reader(method_call);
       std::string service;
       CHECK(reader.PopString(&service));
@@ -122,8 +122,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
       writer.AppendBool(base::Contains(running_services_, service));
 
       std::move(*response_callback).Run(response.get());
-    } else if (method_call->GetMember() ==
-               DbusMemoryPressureEvaluatorLinux::kMethodListActivatableNames) {
+    } else if (method_call->GetMember() == "ListActivatableNames") {
       std::unique_ptr<dbus::Response> response =
           dbus::Response::FromMethodCall(method_call);
       dbus::MessageWriter writer(response.get());
@@ -131,7 +130,7 @@ class DbusMemoryPressureEvaluatorLinuxTest : public testing::Test {
 
       std::move(*response_callback).Run(response.get());
     } else {
-      CHECK(false) << method_call->GetMember();
+      NOTREACHED() << method_call->GetMember();
     }
   }
 

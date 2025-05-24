@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/canonical_cookie.h"
 
 namespace signin_metrics {
@@ -51,7 +52,7 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
 
     std::string email;
     std::string password;
-    std::string gaia_id;
+    GaiaId gaia_id;
     std::string auth_code;
     bool skip_for_now = false;
     bool trusted_value = false;

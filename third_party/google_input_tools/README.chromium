@@ -3,7 +3,7 @@ Short Name: google_input_tools
 URL: https://github.com/googlei18n/google-input-tools.git
 Version: 1.0.4.6
 Revision: 4801be41532a02b42f30e0e57bd54914132ea7cd
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
@@ -36,3 +36,12 @@ the proprietary fonts that do not exist on Chrome OS anymore.
 Modified chrome/os/inputview/common.css to fix language codes and update fonts.
 
 Modified chrome/os/inputview/controller.js to remove expired histograms.
+
+Removed unused i18n.input.common.dom.isEditable in chrome/os/inputview/dom.js.
+
+Removed iframe handling in chrome/os/inputview/hwt_util.js.
+
+Removed unused i18n.input.common.dom.getSameDomainDocuments and
+getSameDomainFrameDoc in chrome/os/inputview/dom.js.
+
+Removed unused third_party/closure_library/closure/goog/uri/utils.js

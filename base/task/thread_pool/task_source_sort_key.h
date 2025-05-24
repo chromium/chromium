@@ -9,16 +9,18 @@
 #include "base/task/task_traits.h"
 #include "base/time/time.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 // An immutable but assignable representation of the priority of a Sequence.
 class BASE_EXPORT TaskSourceSortKey final {
  public:
-  TaskSourceSortKey() = default;
-  TaskSourceSortKey(TaskPriority priority,
-                    TimeTicks ready_time,
-                    uint8_t worker_count = 0);
+  constexpr TaskSourceSortKey() = default;
+  constexpr TaskSourceSortKey(TaskPriority priority,
+                              TimeTicks ready_time,
+                              uint8_t worker_count = 0)
+      : priority_(priority),
+        worker_count_(worker_count),
+        ready_time_(ready_time) {}
 
   TaskPriority priority() const { return priority_; }
   uint8_t worker_count() const { return worker_count_; }
@@ -27,14 +29,8 @@ class BASE_EXPORT TaskSourceSortKey final {
   // Used for a max-heap.
   bool operator<(const TaskSourceSortKey& other) const;
 
-  bool operator==(const TaskSourceSortKey& other) const {
-    return priority_ == other.priority_ &&
-           worker_count_ == other.worker_count_ &&
-           ready_time_ == other.ready_time_;
-  }
-  bool operator!=(const TaskSourceSortKey& other) const {
-    return !(other == *this);
-  }
+  friend bool operator==(const TaskSourceSortKey&,
+                         const TaskSourceSortKey&) = default;
 
  private:
   // The private section allows this class to keep its immutable property while
@@ -53,7 +49,6 @@ class BASE_EXPORT TaskSourceSortKey final {
   TimeTicks ready_time_;
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal
 
 #endif  // BASE_TASK_THREAD_POOL_TASK_SOURCE_SORT_KEY_H_

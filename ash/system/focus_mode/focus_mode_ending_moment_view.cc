@@ -48,7 +48,7 @@ std::unique_ptr<views::Label> CreateTextLabel(
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(alignment);
   TypographyProvider::Get()->StyleLabel(token, *label);
-  label->SetEnabledColorId(color_id);
+  label->SetEnabledColor(color_id);
   label->SetText(text);
   label->SetMultiLine(allow_multiline);
   label->SetMaxLines(allow_multiline ? 2 : 1);
@@ -109,7 +109,7 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
 
   // Show the tooltip for the truncated title.
   if (title_label->IsDisplayTextTruncated()) {
-    title_label->SetTooltipText(title_label->GetText());
+    title_label->SetCustomTooltipText(title_label->GetText());
   }
 
   emoji_label_ = title_and_emoji_box->AddChildView(CreateTextLabel(
@@ -129,7 +129,8 @@ FocusModeEndingMomentView::FocusModeEndingMomentView() {
   auto* spacer_view = AddChildView(std::make_unique<views::View>());
   spacer_view->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
   // Add the vertical box layout for the button container that holds the "Done"

@@ -11,9 +11,12 @@
 @protocol HistoryCoordinatorDelegate
 
 // Called when the history should be dismissed.
-// `Completion` is called after the dismissal but before the coordinator
-// is stopped.
+// The completion handler block is called after the view controller has been
+// dismissed.
 - (void)closeHistoryWithCompletion:(ProceduralBlock)completion;
+
+// Called when the history should be dismissed.
+- (void)closeHistory;
 
 @end
 

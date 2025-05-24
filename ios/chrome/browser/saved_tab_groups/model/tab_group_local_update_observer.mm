@@ -9,9 +9,9 @@
 
 #import "base/check.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
-#import "components/saved_tab_groups/types.h"
-#import "components/saved_tab_groups/utils.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/types.h"
+#import "components/saved_tab_groups/public/utils.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/model/session_restoration_service_factory.h"
@@ -33,8 +33,7 @@ namespace tab_groups {
 TabGroupLocalUpdateObserver::TabGroupLocalUpdateObserver(
     BrowserList* browser_list,
     TabGroupSyncService* sync_service)
-    : sync_service_(sync_service),
-      browser_list_(browser_list) {
+    : sync_service_(sync_service), browser_list_(browser_list) {
   browser_list_observation_.Observe(browser_list);
   CHECK(browser_list_->BrowsersOfType(BrowserList::BrowserType::kRegular)
             .empty());
@@ -177,11 +176,12 @@ void TabGroupLocalUpdateObserver::WebStateListDidChange(
   if (status.active_web_state_change() && web_state) {
     const TabGroup* tab_group =
         web_state_list->GetGroupOfWebStateAt(web_state_list->active_index());
-    if (tab_group) {
-      sync_service_->OnTabSelected(
-          tab_group->tab_group_id(),
-          web_state->GetUniqueIdentifier().identifier());
-    }
+    std::optional<LocalTabGroupID> local_tab_group_id =
+        tab_group ? std::make_optional<>(tab_group->tab_group_id())
+                  : std::nullopt;
+    sync_service_->OnTabSelected(local_tab_group_id,
+                                 web_state->GetUniqueIdentifier().identifier(),
+                                 web_state->GetTitle());
   }
 }
 
@@ -303,12 +303,9 @@ void TabGroupLocalUpdateObserver::UpdateLocalWebStateInSyncedGroup(
     title = GetDefaultUrlAndTitle().second;
   }
 
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetURL(url);
-  tab_builder.SetTitle(title);
-  sync_service_->UpdateTab(tab_info.tab_group->tab_group_id(),
-                           web_state->GetUniqueIdentifier().identifier(),
-                           std::move(tab_builder));
+  sync_service_->NavigateTab(tab_info.tab_group->tab_group_id(),
+                             web_state->GetUniqueIdentifier().identifier(), url,
+                             title);
 }
 
 void TabGroupLocalUpdateObserver::AddLocalWebStateToSyncedGroup(

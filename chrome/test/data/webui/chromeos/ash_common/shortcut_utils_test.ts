@@ -5,7 +5,8 @@
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
-import {createInputKeyParts, KeyInputState, MetaKey, Modifier, ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {createInputKeyParts, KeyInputState, MetaKey, Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';

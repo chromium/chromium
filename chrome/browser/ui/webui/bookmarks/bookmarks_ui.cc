@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_message_handler.h"
@@ -22,7 +18,6 @@
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/page_not_available_for_guest/page_not_available_for_guest_ui.h"
 #include "chrome/browser/ui/webui/plural_string_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/bookmarks_resources.h"
 #include "chrome/grit/bookmarks_resources_map.h"
@@ -37,6 +32,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -51,9 +47,8 @@ void AddLocalizedString(content::WebUIDataSource* source,
 content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIBookmarksHost);
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kBookmarksResources, kBookmarksResourcesSize),
-      IDR_BOOKMARKS_BOOKMARKS_HTML);
+  webui::SetupWebUIDataSource(source, kBookmarksResources,
+                              IDR_BOOKMARKS_BOOKMARKS_HTML);
 
   // Build an Accelerator to describe undo shortcut
   // NOTE: the undo shortcut is also defined in bookmarks/command_manager.js
@@ -63,13 +58,20 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
   source->AddString("undoDescription", l10n_util::GetStringFUTF16(
                                            IDS_UNDO_DESCRIPTION,
                                            undo_accelerator.GetShortcutText()));
+  source->AddBoolean("splitViewEnabled",
+                     base::FeatureList::IsEnabled(features::kSideBySide));
 
   // Localized strings (alphabetical order).
   static constexpr webui::LocalizedString kStrings[] = {
       {"addBookmarkTitle", IDS_BOOKMARK_MANAGER_ADD_BOOKMARK_TITLE},
       {"addFolderTitle", IDS_BOOKMARK_MANAGER_ADD_FOLDER_TITLE},
+      {"accountBookmarksTitle", IDS_BOOKMARKS_ACCOUNT_BOOKMARKS},
+#if !BUILDFLAG(IS_CHROMEOS)
+      {"bookmarkPromoCardTitle", IDS_BATCH_UPLOAD_PROMO_TITLE},
+#endif
       {"cancel", IDS_CANCEL},
       {"clearSearch", IDS_BOOKMARK_MANAGER_CLEAR_SEARCH},
+      {"close", IDS_CLOSE},
       {"delete", IDS_DELETE},
       {"editBookmarkTitle", IDS_BOOKMARK_EDITOR_TITLE},
       {"editDialogInvalidUrl", IDS_BOOKMARK_MANAGER_INVALID_URL},
@@ -83,6 +85,7 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"itemsSelected", IDS_BOOKMARK_MANAGER_ITEMS_SELECTED},
       {"itemsUnselected", IDS_BOOKMARK_MANAGER_ITEMS_UNSELECTED},
       {"listAxLabel", IDS_BOOKMARK_MANAGER_LIST_AX_LABEL},
+      {"localBookmarksTitle", IDS_BOOKMARKS_DEVICE_BOOKMARKS},
       {"menu", IDS_MENU},
       {"menuAddBookmark", IDS_BOOKMARK_MANAGER_MENU_ADD_BOOKMARK},
       {"menuAddFolder", IDS_BOOKMARK_MANAGER_MENU_ADD_FOLDER},
@@ -103,12 +106,19 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"menuOpenAllIncognito", IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO},
       {"menuOpenAllIncognitoWithCount",
        IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT},
+      {"menuOpenAllNewTabGroup",
+       IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_TAB_GROUP},
+      {"menuOpenAllNewTabGroupWithCount",
+       IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_TAB_GROUP_WITH_COUNT},
       {"menuOpenNewTab", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB},
+      {"menuOpenNewTabGroup", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB_GROUP},
       {"menuOpenNewWindow", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_WINDOW},
       {"menuOpenIncognito", IDS_BOOKMARK_MANAGER_MENU_OPEN_INCOGNITO},
+      {"menuOpenSplitView", IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_SPLIT_VIEW},
       {"menuRename", IDS_BOOKMARK_MANAGER_MENU_RENAME},
       {"menuShowInFolder", IDS_BOOKMARK_MANAGER_MENU_SHOW_IN_FOLDER},
       {"menuSort", IDS_BOOKMARK_MANAGER_MENU_SORT},
+      {"uploadBookmarkButtonTitle", IDS_BOOKMARK_MOVE_TO_ACCOUNT_ICON_TOOLTIP},
       {"moreActionsButtonTitle", IDS_BOOKMARK_MANAGER_MORE_ACTIONS},
       {"moreActionsButtonAxLabel", IDS_BOOKMARK_MANAGER_MORE_ACTIONS_AX_LABEL},
       {"moreActionsMultiButtonAxLabel",
@@ -119,6 +129,9 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"openDialogTitle", IDS_BOOKMARK_MANAGER_OPEN_DIALOG_TITLE},
       {"organizeButtonTitle", IDS_BOOKMARK_MANAGER_ORGANIZE_MENU},
       {"renameFolderTitle", IDS_BOOKMARK_MANAGER_FOLDER_RENAME_TITLE},
+#if !BUILDFLAG(IS_CHROMEOS)
+      {"saveToAccount", IDS_BATCH_UPLOAD_PROMO_TITLE_OK_BUTTON_LABEL},
+#endif
       {"searchPrompt", IDS_BOOKMARK_MANAGER_SEARCH_BUTTON},
       {"sidebarAxLabel", IDS_BOOKMARK_MANAGER_SIDEBAR_AX_LABEL},
       {"searchCleared", IDS_SEARCH_CLEARED},
@@ -130,8 +143,16 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       {"toastItemDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
       {"undo", IDS_BOOKMARK_BAR_UNDO},
   };
-  for (const auto& str : kStrings)
+  for (const auto& str : kStrings) {
     AddLocalizedString(source, str.name, str.id);
+  }
+
+  source->AddResourcePath(
+      "images/batch_upload_bookmarks_promo.svg",
+      IDR_BOOKMARKS_IMAGES_BATCH_UPLOAD_BOOKMARKS_PROMO_SVG);
+  source->AddResourcePath(
+      "images/batch_upload_bookmarks_promo_dark.svg",
+      IDR_BOOKMARKS_IMAGES_BATCH_UPLOAD_BOOKMARKS_PROMO_DARK_SVG);
 
   return source;
 }

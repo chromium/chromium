@@ -10,7 +10,7 @@ namespace blink {
 namespace scheduler {
 
 // static
-const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
+perfetto::StaticString TaskTypeNames::TaskTypeToString(TaskType task_type) {
   // These names are used in finch trials and should not be changed.
   switch (task_type) {
     case TaskType::kDeprecatedNone:
@@ -167,10 +167,11 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WebGPU";
     case TaskType::kInternalPostMessageForwarding:
       return "InternalPostMessageForwarding";
+    case TaskType::kInternalAutofill:
+      return "InternalAutofill";
   }
   // FrameSchedulerImpl should not call this for invalid TaskTypes.
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace scheduler

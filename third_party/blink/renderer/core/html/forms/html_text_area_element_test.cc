@@ -7,6 +7,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/core/testing/mock_clipboard_host.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -15,12 +17,29 @@ class HTMLTextAreaElementTest : public RenderingTest {
  public:
   HTMLTextAreaElementTest() = default;
 
+  void SetUp() override {
+    RenderingTest::SetUp();
+    clipboard_provider_ =
+        std::make_unique<PageTestBase::MockClipboardHostProvider>(
+            GetFrame().GetBrowserInterfaceBroker());
+  }
+  void TearDown() override {
+    clipboard_provider_.reset();
+    RenderingTest::TearDown();
+  }
+
  protected:
   HTMLTextAreaElement& TestElement() {
     Element* element = GetDocument().getElementById(AtomicString("test"));
     DCHECK(element);
     return To<HTMLTextAreaElement>(*element);
   }
+
+  mojom::blink::ClipboardHost* ClipboardHost() {
+    return clipboard_provider_->clipboard_host();
+  }
+
+  std::unique_ptr<PageTestBase::MockClipboardHostProvider> clipboard_provider_;
 };
 
 TEST_F(HTMLTextAreaElementTest, SanitizeUserInputValue) {
@@ -78,7 +97,11 @@ TEST_F(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   inner_editor->appendChild(Text::Create(doc, "90"));
   inner_editor->appendChild(doc.CreateRawElement(html_names::kBrTag));
   RunDocumentLifecycle();
-  EXPECT_EQ("1234\n5678\n90", textarea.ValueWithHardLineBreaks());
+  if (RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled()) {
+    EXPECT_EQ("1234\n5678\n90\n", textarea.ValueWithHardLineBreaks());
+  } else {
+    EXPECT_EQ("1234\n5678\n90", textarea.ValueWithHardLineBreaks());
+  }
 }
 
 TEST_F(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
@@ -122,6 +145,32 @@ TEST_F(HTMLTextAreaElementTest, DefaultToolTip) {
   textarea.removeAttribute(html_names::kNovalidateAttr);
   textarea.SetValue("1234567890\n");
   EXPECT_EQ(String(), textarea.DefaultToolTip());
+}
+
+TEST_F(HTMLTextAreaElementTest, PlaceholderBreakAfterUndo) {
+  Document& doc = GetDocument();
+  SetBodyContent("<textarea id=test>foo\n</textarea>");
+  HTMLTextAreaElement& textarea = TestElement();
+  textarea.Focus();
+
+  // Setup for clipboard commands.
+  GetFrame().GetSettings()->SetJavaScriptCanAccessClipboard(true);
+  GetFrame().GetSettings()->SetDOMPasteAllowed(true);
+  GetFrame().SetHadUserInteraction(true);
+
+  // Cut all.
+  // Unlike the initial empty value, this leaves the placeholder break element.
+  doc.execCommand("selectall", false, "", ASSERT_NO_EXCEPTION);
+  ASSERT_TRUE(doc.execCommand("cut", false, "", ASSERT_NO_EXCEPTION));
+
+  // Paste text with the trailing \n.  It removes the placeholder break element.
+  ClipboardHost()->WriteText("foo\n");
+  ASSERT_TRUE(doc.execCommand("paste", false, "", ASSERT_NO_EXCEPTION));
+
+  // The undo command re-add the placeholder break element.
+  doc.execCommand("undo", false, "", ASSERT_NO_EXCEPTION);
+  // The test passes if no DCHECK failure.
+  GetFrame().SetHadUserInteraction(false);
 }
 
 }  // namespace blink

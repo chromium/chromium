@@ -9,10 +9,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
-#include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 
 namespace metrics {
@@ -34,34 +34,17 @@ bool IsValidUploadState(syncer::UploadState upload_state) {
 
 bool CanUploadDemographicsToGoogle(syncer::SyncService* sync_service) {
   CHECK(sync_service);
-
   // PRIORITY_PREFERENCES is the sync datatype used to propagate demographics
   // information to the client. In its absence, demographics info is unavailable
   // thus cannot be uploaded.
-  if (!IsValidUploadState(syncer::GetUploadToGoogleState(
-          sync_service, syncer::PRIORITY_PREFERENCES))) {
-    return false;
-  }
-
-  // Even if GetUploadToGoogleState() reports to be active, the user may be in
-  // transport mode or full-sync (aka sync-the-feature enabled) mode.
-  // If `kReplaceSyncPromosWithSignInPromos` is enabled, then
-  // PRIORITY_PREFERENCES being enabled (which implies the user is signed in) is
-  // enough, and the sync mode doesn't matter.
-  if (base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    return true;
-  }
-
-  // If `kReplaceSyncPromosWithSignInPromos` is NOT enabled, then demographics
-  // may only be uploaded for users who have opted in to Sync.
-  // TODO(crbug.com/40066949): Simplify once IsSyncFeatureEnabled() is deleted
-  // from the codebase.
-  if (sync_service->IsSyncFeatureEnabled()) {
-    return true;
-  }
-
-  return false;
+  return IsValidUploadState(syncer::GetUploadToGoogleState(
+             sync_service, syncer::PRIORITY_PREFERENCES)) &&
+         // With `kSyncSupportAlwaysSyncingPriorityPreferences` feature enabled,
+         // PRIORITY_PREFERENCES will always be active (decoupled from sync user
+         // toggle). Thus, the preferences user toggle should be checked
+         // separately.
+         sync_service->GetUserSettings()->GetSelectedTypes().Has(
+             syncer::UserSelectableType::kPreferences);
 }
 
 }  // namespace
@@ -79,7 +62,7 @@ DemographicMetricsProvider::DemographicMetricsProvider(
   DCHECK(profile_client_);
 }
 
-DemographicMetricsProvider::~DemographicMetricsProvider() {}
+DemographicMetricsProvider::~DemographicMetricsProvider() = default;
 
 std::optional<UserDemographics>
 DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
@@ -87,7 +70,7 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   if (!base::FeatureList::IsEnabled(kDemographicMetricsReporting))
     return std::nullopt;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Skip if not exactly one Profile on disk. Having more than one Profile that
   // is using the browser can make demographics less relevant. This approach
   // cannot determine if there is more than 1 distinct user using the Profile.
@@ -95,15 +78,12 @@ DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
   // ChromeOS almost always has more than one profile on disk, so this check
   // doesn't work. We have a profile selection strategy for ChromeOS, so skip
   // this check for ChromeOS.
-  // TODO(crbug.com/40729596): LaCros will behave similarly to desktop Chrome
-  // and reduce the number of profiles on disk to one, so remove these #if
-  // guards after LaCros release.
   if (profile_client_->GetNumberOfProfilesOnDisk() != 1) {
     LogUserDemographicsStatusInHistogram(
         UserDemographicsStatus::kMoreThanOneProfile);
     return std::nullopt;
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   syncer::SyncService* sync_service = profile_client_->GetSyncService();
   // Skip if no sync service.
@@ -158,8 +138,11 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
     case MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS:
       // Structured Metrics doesn't have demographic metrics.
       return;
+    case MetricsLogUploader::MetricServiceType::DWA:
+      // DWA doesn't have demographic metrics.
+      return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace metrics

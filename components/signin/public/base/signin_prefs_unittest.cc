@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/testing_pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class SigninPrefsTest : public ::testing::Test {
@@ -21,7 +22,7 @@ class SigninPrefsTest : public ::testing::Test {
 
   PrefChangeRegistrar& pref_change_registrar() { return pref_registrar_; }
 
-  bool HasAccountPrefs(const std::string& gaia_id) const {
+  bool HasAccountPrefs(const GaiaId& gaia_id) const {
     return signin_prefs_.HasAccountPrefs(gaia_id);
   }
 
@@ -32,7 +33,7 @@ class SigninPrefsTest : public ::testing::Test {
 };
 
 TEST_F(SigninPrefsTest, AccountPrefsInitialization) {
-  const std::string gaia_id = "gaia_id";
+  const GaiaId gaia_id("gaia_id");
   ASSERT_FALSE(HasAccountPrefs(gaia_id));
 
   // Reading a value from a pref dict that do not exist yet should return a
@@ -46,9 +47,9 @@ TEST_F(SigninPrefsTest, AccountPrefsInitialization) {
 }
 
 TEST_F(SigninPrefsTest, RemovingAccountPrefs) {
-  const std::string gaia_id1 = "gaia_id1";
-  const std::string gaia_id2 = "gaia_id2";
-  const std::string gaia_id3 = "gaia_id3";
+  const GaiaId gaia_id1("gaia_id1");
+  const GaiaId gaia_id2("gaia_id2");
+  const GaiaId gaia_id3("gaia_id3");
 
   // Setting any value should create the dict entry for the given gaia id.
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id1);
@@ -75,9 +76,9 @@ TEST_F(SigninPrefsTest, RemovingAccountPrefs) {
 }
 
 TEST_F(SigninPrefsTest, RemovingAllAccountPrefs) {
-  const std::string gaia_id1 = "gaia_id1";
-  const std::string gaia_id2 = "gaia_id2";
-  const std::string gaia_id3 = "gaia_id3";
+  const GaiaId gaia_id1("gaia_id1");
+  const GaiaId gaia_id2("gaia_id2");
+  const GaiaId gaia_id3("gaia_id3");
 
   // Setting any value should create the dict entry for the given gaia id.
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id1);
@@ -95,7 +96,7 @@ TEST_F(SigninPrefsTest, RemovingAllAccountPrefs) {
 }
 
 TEST_F(SigninPrefsTest, ObservingSigninPrefChanges) {
-  const std::string gaia_id1 = "gaia_id1";
+  const GaiaId gaia_id1("gaia_id1");
 
   base::MockCallback<base::RepeatingClosure> mock_callback;
   signin_prefs().ObserveSigninPrefsChanges(pref_change_registrar(),
@@ -114,7 +115,7 @@ TEST_F(SigninPrefsTest, ObservingSigninPrefChanges) {
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
 
   // Doing any pref change should call an update, even on a different id.
-  const std::string gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   EXPECT_CALL(mock_callback, Run()).Times(1);
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id2);
   testing::Mock::VerifyAndClearExpectations(&mock_callback);
@@ -136,7 +137,7 @@ TEST_F(SigninPrefsTest, ObservingSigninPrefChanges) {
 }
 
 TEST_F(SigninPrefsTest, ChromeSigninInterceptionDismissCount) {
-  const std::string gaia_id = "gaia_id";
+  const GaiaId gaia_id("gaia_id");
 
   ASSERT_FALSE(HasAccountPrefs(gaia_id));
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionDismissCount(gaia_id), 0);
@@ -147,7 +148,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionDismissCount) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - 0.
-  const std::string gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().SetChromeSigninInterceptionUserChoice(
       gaia_id2, ChromeSigninUserChoice::kSignin);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
@@ -156,7 +157,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionDismissCount) {
 }
 
 TEST_F(SigninPrefsTest, ChromeSigninInterceptionUserChoice) {
-  const std::string gaia_id = "gaia_id";
+  const GaiaId gaia_id("gaia_id");
 
   ASSERT_FALSE(HasAccountPrefs(gaia_id));
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id),
@@ -170,7 +171,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionUserChoice) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - ChromeSigninUserChoice::kNoChoice.
-  const std::string gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().IncrementChromeSigninInterceptionDismissCount(gaia_id2);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
   EXPECT_EQ(signin_prefs().GetChromeSigninInterceptionUserChoice(gaia_id2),
@@ -178,7 +179,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionUserChoice) {
 }
 
 TEST_F(SigninPrefsTest, ChromeSigninInterceptionLastBubbleDeclineTime) {
-  const std::string gaia_id = "gaia_id";
+  const GaiaId gaia_id("gaia_id");
 
   ASSERT_FALSE(HasAccountPrefs(gaia_id));
   EXPECT_FALSE(signin_prefs()
@@ -202,7 +203,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionLastBubbleDeclineTime) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - no time.
-  const std::string gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().SetChromeSigninInterceptionUserChoice(
       gaia_id2, ChromeSigninUserChoice::kSignin);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
@@ -212,7 +213,7 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionLastBubbleDeclineTime) {
 }
 
 TEST_F(SigninPrefsTest, ChromeSigninInterceptionRepromptCount) {
-  const std::string gaia_id = "gaia_id";
+  const GaiaId gaia_id("gaia_id");
 
   ASSERT_FALSE(HasAccountPrefs(gaia_id));
   EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id), 0);
@@ -226,9 +227,77 @@ TEST_F(SigninPrefsTest, ChromeSigninInterceptionRepromptCount) {
 
   // Creating the main dict through setting a different pref should still return
   // the default value - 0.
-  const std::string gaia_id2 = "gaia_id2";
+  const GaiaId gaia_id2("gaia_id2");
   signin_prefs().SetChromeSigninInterceptionUserChoice(
       gaia_id2, ChromeSigninUserChoice::kSignin);
   ASSERT_TRUE(HasAccountPrefs(gaia_id2));
   EXPECT_EQ(signin_prefs().GetChromeSigninBubbleRepromptCount(gaia_id2), 0);
+}
+
+TEST_F(SigninPrefsTest, SyncPromoIdentityPillShownCount) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_1), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_1), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_1), 2);
+
+  const GaiaId gaia_id_2("gaia_id_2");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_2), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_2), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillShownCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillShownCount(gaia_id_2), 2);
+}
+
+TEST_F(SigninPrefsTest, SyncPromoIdentityPillUsedCount) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_1), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_1), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_1);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_1), 2);
+
+  const GaiaId gaia_id_2("gaia_id_2");
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_2), 0);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_2), 1);
+  signin_prefs().IncrementSyncPromoIdentityPillUsedCount(gaia_id_2);
+  EXPECT_EQ(signin_prefs().GetSyncPromoIdentityPillUsedCount(gaia_id_2), 2);
+}
+
+TEST_F(SigninPrefsTest, BookmarkBatchUploadPromo) {
+  const GaiaId gaia_id_1("gaia_id_1");
+  auto initial_bookmark_batch_upload_info1 =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_1);
+  EXPECT_EQ(initial_bookmark_batch_upload_info1.first, 0);
+  EXPECT_FALSE(initial_bookmark_batch_upload_info1.second.has_value());
+
+  base::Time reference = base::Time::Now();
+  signin_prefs().IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
+      gaia_id_1);
+  auto bookmark_batch_upload_info =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_1);
+  EXPECT_EQ(bookmark_batch_upload_info.first, 1);
+  ASSERT_TRUE(bookmark_batch_upload_info.second.has_value());
+  EXPECT_GT(bookmark_batch_upload_info.second.value(), reference);
+
+  const GaiaId gaia_id_2("gaia_id_2");
+  auto initial_bookmark_batch_upload_info2 =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_2);
+  EXPECT_EQ(initial_bookmark_batch_upload_info2.first, 0);
+  EXPECT_FALSE(initial_bookmark_batch_upload_info2.second.has_value());
+
+  base::Time reference2 = base::Time::Now();
+  signin_prefs().IncrementBookmarkBatchUploadPromoDismissCountWithLastTime(
+      gaia_id_2);
+  auto bookmark_batch_upload_info2 =
+      signin_prefs().GetBookmarkBatchUploadPromoDismissCountWithLastTime(
+          gaia_id_2);
+  EXPECT_EQ(bookmark_batch_upload_info2.first, 1);
+  ASSERT_TRUE(bookmark_batch_upload_info2.second.has_value());
+  EXPECT_GT(bookmark_batch_upload_info2.second.value(), reference2);
 }

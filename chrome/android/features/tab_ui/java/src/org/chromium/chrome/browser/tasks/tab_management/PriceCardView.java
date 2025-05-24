@@ -12,12 +12,14 @@ import android.view.LayoutInflater;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.tab_ui.R;
 
 /**
- * Contains pricing information relating to a shopping offer website.  Currently only
- * supports displaying the old and new price of the offer when a price drop is detected.
+ * Contains pricing information relating to a shopping offer website. Currently only supports
+ * displaying the old and new price of the offer when a price drop is detected.
  */
+@NullMarked
 public class PriceCardView extends FrameLayout {
     private TextView mPriceInfoBox;
     private TextView mPreviousPriceInfoBox;

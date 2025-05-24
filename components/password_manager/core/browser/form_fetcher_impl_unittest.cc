@@ -28,6 +28,7 @@
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/signin/public/base/gaia_id_hash.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -107,6 +108,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
  public:
   FakeNetworkContext() = default;
   void IsHSTSActiveForHost(const std::string& host,
+                           bool is_top_level_nav,
                            IsHSTSActiveForHostCallback callback) override {
     std::move(callback).Run(false);
   }
@@ -1152,10 +1154,8 @@ class MultiStoreFormFetcherTest : public FormFetcherImplTestBase {
 TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherClonesState) {
   Fetch();
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
 
   // Create and push a blocked account store entry to complete the fetch.
   PasswordForm blocked = CreateBlocked();
@@ -1176,10 +1176,8 @@ TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherClonesState) {
 TEST_F(MultiStoreFormFetcherTest, CloningMultiStoreFetcherResumesFetch) {
   Fetch();
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
 
   // A cloned multi-store fetcher must be a multi-store fetcher itself and
   // continue the fetching.
@@ -1255,29 +1253,14 @@ TEST_F(MultiStoreFormFetcherTest, BlockedEntryInTheAccountStore) {
   DeliverPasswordStoreResults(std::move(results), {});
 
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
 
-  // Simulate a user in the profile mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
-  EXPECT_FALSE(form_fetcher_->IsBlocklisted());
-
-  // Now simulate a user who isn't opted in for the account storage. In this
-  // case, the blocked entry in the account store shouldn't matter,
-  // independent of the mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  // Now simulate a user with account storage disabled. In this case, the
+  // blocked entry in the account store shouldn't matter.
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(false));
-
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
-  EXPECT_FALSE(form_fetcher_->IsBlocklisted());
-
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 }
 
@@ -1291,36 +1274,22 @@ TEST_F(MultiStoreFormFetcherTest, BlockedEntryInTheProfileStore) {
   DeliverPasswordStoreResults(std::move(results), {});
 
   // Simulate a user in the account mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(true));
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
   EXPECT_FALSE(form_fetcher_->IsBlocklisted());
 
-  // Simulate a user in the profile mode.
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
-  EXPECT_TRUE(form_fetcher_->IsBlocklisted());
-
-  // Now simulate a user who isn't opted in for the account storage. In this
-  // case, the blocked entry in the profile store should take effect, whatever
-  // the mode is.
-  ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage())
+  // Now simulate a user with account storage disabled. In this case, the
+  // blocked entry in the profile store should take effect.
+  ON_CALL(*client()->GetPasswordFeatureManager(), IsAccountStorageEnabled())
       .WillByDefault(Return(false));
-
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kAccountStore));
-  EXPECT_TRUE(form_fetcher_->IsBlocklisted());
-
-  ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore())
-      .WillByDefault(Return(PasswordForm::Store::kProfileStore));
   EXPECT_TRUE(form_fetcher_->IsBlocklisted());
 }
 
 TEST_F(MultiStoreFormFetcherTest, MovingToAccountStoreIsBlocked) {
   Fetch();
-  const GaiaIdHash kUser = GaiaIdHash::FromGaiaId("user");
-  const GaiaIdHash kAnotherUser = GaiaIdHash::FromGaiaId("another_user");
+  const GaiaIdHash kUser = GaiaIdHash::FromGaiaId(GaiaId("user"));
+  const GaiaIdHash kAnotherUser =
+      GaiaIdHash::FromGaiaId(GaiaId("another_user"));
 
   // Form that's blocked for |kUser| for "username1".
   PasswordForm blocked_form =

@@ -4,14 +4,12 @@
 
 package org.chromium.base.supplier;
 
-import android.os.Handler;
-
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
 
@@ -30,12 +28,12 @@ import java.util.Objects;
  *
  * @param <E> The type of the wrapped object.
  */
-public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
+@NullMarked
+public class ObservableSupplierImpl<E extends @Nullable Object> implements ObservableSupplier<E> {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
-    private final Handler mHandler = new Handler();
 
-    private E mObject;
-    private final ObserverList<Callback<E>> mObservers = new ObserverList<>();
+    private @Nullable E mObject;
+    protected final ObserverList<Callback<E>> mObservers = new ObserverList<>();
 
     public ObservableSupplierImpl() {
         // Guard against creation on Instrumentation thread, since this is basically always a bug.
@@ -47,17 +45,25 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
     }
 
     @Override
-    public E addObserver(Callback<E> obs) {
+    @SuppressWarnings("NullAway") // Cannot specify that mObject is @Nullable only when E is.
+    public @Nullable E addObserver(Callback<E> obs, @NotifyBehavior int behavior) {
         // ObserverList has its own ThreadChecker.
         mObservers.addObserver(obs);
 
-        if (mObject != null) {
-            final E currentObject = mObject;
-            mHandler.post(
-                    () -> {
-                        if (mObject != currentObject || !mObservers.hasObserver(obs)) return;
-                        obs.onResult(mObject);
-                    });
+        boolean notify = shouldNotifyOnAdd(behavior) && mObject != null;
+        if (notify) {
+            E currentObject = mObject;
+            if (shouldPostOnAdd(behavior)) {
+                ThreadUtils.assertOnUiThread();
+                ThreadUtils.postOnUiThread(
+                        () -> {
+                            if (mObject == currentObject && mObservers.hasObserver(obs)) {
+                                obs.onResult(currentObject);
+                            }
+                        });
+            } else {
+                obs.onResult(currentObject);
+            }
         }
 
         return mObject;
@@ -85,11 +91,12 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
         mObject = object;
 
         for (Callback<E> observer : mObservers) {
-            observer.onResult(mObject);
+            observer.onResult(object);
         }
     }
 
     @Override
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
     public @Nullable E get() {
         // Allow instrumentation thread access since tests often access variables for asserts.
         // https://crbug.com/1173814
@@ -101,5 +108,15 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
     public boolean hasObservers() {
         // ObserverList has its own ThreadChecker.
         return !mObservers.isEmpty();
+    }
+
+    /** Returns whether the observer should be notified on being added. */
+    private static boolean shouldNotifyOnAdd(@NotifyBehavior int behavior) {
+        return (NotifyBehavior.NOTIFY_ON_ADD & behavior) != 0;
+    }
+
+    /** Returns whether the observer should be notified asynchronously on being added. */
+    private static boolean shouldPostOnAdd(int behavior) {
+        return (NotifyBehavior.POST_ON_ADD & behavior) != 0;
     }
 }

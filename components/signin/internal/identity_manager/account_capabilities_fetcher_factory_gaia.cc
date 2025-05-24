@@ -5,15 +5,18 @@
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_factory_gaia.h"
 
 #include <memory>
+#include <optional>
 
 #include "components/signin/internal/identity_manager/account_capabilities_fetcher_gaia.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "google_apis/credentials_mode.h"
 #include "google_apis/gaia/gaia_urls.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 AccountCapabilitiesFetcherFactoryGaia::AccountCapabilitiesFetcherFactoryGaia(
@@ -43,5 +46,7 @@ void AccountCapabilitiesFetcherFactoryGaia::
       /*num_streams=*/1, GaiaUrls::GetInstance()->account_capabilities_url(),
       google_apis::GetOmitCredentialsModeForGaiaRequests(),
       net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(
-          GaiaUrls::GetInstance()->account_capabilities_url())));
+          GaiaUrls::GetInstance()->account_capabilities_url())),
+      net::MutableNetworkTrafficAnnotationTag(),
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }

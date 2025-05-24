@@ -1,5 +1,5 @@
 // META: title=test WebNN API resample2d operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -547,7 +547,7 @@ const resample2dTests = [
 if (navigator.ml) {
   resample2dTests.forEach((test) => {
     webnn_conformance_test(
-        buildGraphAndCompute, getResample2dPrecisionTolerance, test);
+        buildAndExecuteGraph, getResample2dPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

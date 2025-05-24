@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+
+#include <array>
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -124,8 +121,7 @@ class FakeOptimizationGuideDecider
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata)
       override {
-    NOTREACHED_IN_MIGRATION();
-    return optimization_guide::OptimizationGuideDecision::kFalse;
+    NOTREACHED();
   }
 
  private:
@@ -357,7 +353,7 @@ TEST_F(PageContentAnnotationsServiceTest, OlderVisitsDropped) {
   // First 2 visits are always processed, then the next 4 are queued and the
   // most recent 2 are annotated.
   constexpr base::Time kTestTime = base::Time() + base::Days(1000);
-  constexpr base::Time kTimestamps[6] = {
+  constexpr std::array<base::Time, 6> kTimestamps = {
       // Queue not full, gets annotated.
       kTestTime + base::Days(12),
       kTestTime,

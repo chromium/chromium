@@ -1,0 +1,13 @@
+/* Copyright 2022 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #import=./other1.css.js
+ * #import=./other2.css.js
+ * #include=other1 other2
+ * #css_wrapper_metadata_end */
+
+/* Purposefully empty since this style is generated at build time from the
+ * equivalent Lit version. */

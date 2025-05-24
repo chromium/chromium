@@ -45,27 +45,6 @@ enum class UserKeyPairState {
   kMaxValue = kYesV1KeyYesV2KeyDisagree
 };
 
-UserKeyPairState GetUserKeyPairState(const std::string& public_key_v1,
-                                     const std::string& private_key_v1,
-                                     const CryptAuthKey* key_v2) {
-  bool v1_key_exists = !public_key_v1.empty() && !private_key_v1.empty();
-
-  if (v1_key_exists && key_v2) {
-    if (public_key_v1 == key_v2->public_key() &&
-        private_key_v1 == key_v2->private_key()) {
-      return UserKeyPairState::kYesV1KeyYesV2KeyAgree;
-    } else {
-      return UserKeyPairState::kYesV1KeyYesV2KeyDisagree;
-    }
-  } else if (v1_key_exists && !key_v2) {
-    return UserKeyPairState::kYesV1KeyNoV2Key;
-  } else if (!v1_key_exists && key_v2) {
-    return UserKeyPairState::kNoV1KeyYesV2Key;
-  } else {
-    return UserKeyPairState::kNoV1KeyNoV2Key;
-  }
-}
-
 cryptauthv2::ClientMetadata::InvocationReason ConvertInvocationReasonV1ToV2(
     cryptauth::InvocationReason invocation_reason_v1) {
   switch (invocation_reason_v1) {
@@ -151,12 +130,6 @@ void CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterStringPref(
       prefs::kCryptAuthLastEnrolledClientAppMetadataHash, std::string());
-
-  // TODO(nohle): Remove when v1 Enrollment is deprecated.
-  registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPublicKey,
-                               std::string());
-  registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPrivateKey,
-                               std::string());
 }
 
 CryptAuthV2EnrollmentManagerImpl::CryptAuthV2EnrollmentManagerImpl(
@@ -174,9 +147,6 @@ CryptAuthV2EnrollmentManagerImpl::CryptAuthV2EnrollmentManagerImpl(
       scheduler_(scheduler),
       pref_service_(pref_service),
       clock_(clock) {
-  // TODO(nohle): Remove when v1 Enrollment is deprecated.
-  AddV1UserKeyPairToRegistryIfNecessary();
-
   gcm_manager_->AddObserver(this);
 }
 
@@ -266,12 +236,6 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetUserPublicKey() const {
   const CryptAuthKey* user_key_pair =
       key_registry_->GetActiveKey(CryptAuthKeyBundle::Name::kUserKeyPair);
 
-  // If a v1 key exists, it should have been added to the v2 registry already by
-  // AddV1UserKeyPairToRegistryIfNecessary().
-  DCHECK(
-      GetV1UserPublicKey().empty() ||
-      (user_key_pair && user_key_pair->public_key() == GetV1UserPublicKey()));
-
   if (!user_key_pair)
     return std::string();
 
@@ -281,13 +245,6 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetUserPublicKey() const {
 std::string CryptAuthV2EnrollmentManagerImpl::GetUserPrivateKey() const {
   const CryptAuthKey* user_key_pair =
       key_registry_->GetActiveKey(CryptAuthKeyBundle::Name::kUserKeyPair);
-  std::string private_key_v1 = GetV1UserPrivateKey();
-
-  // If a v1 key exists, it should have been added to the v2 registry already by
-  // AddV1UserKeyPairToRegistryIfNecessary().
-  DCHECK(
-      GetV1UserPrivateKey().empty() ||
-      (user_key_pair && user_key_pair->private_key() == GetV1UserPrivateKey()));
 
   if (!user_key_pair)
     return std::string();
@@ -385,60 +342,6 @@ std::string CryptAuthV2EnrollmentManagerImpl::GetClientAppMetadataHash() const {
   // fail if they are not.
   return base::NumberToString(
       base::PersistentHash(client_app_metadata_.SerializeAsString()));
-}
-
-std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPublicKey() const {
-  std::optional<std::string> public_key = util::DecodeFromValueString(
-      &pref_service_->GetValue(prefs::kCryptAuthEnrollmentUserPublicKey));
-  if (!public_key) {
-    PA_LOG(ERROR) << "Invalid public key stored in user prefs.";
-    return std::string();
-  }
-
-  return *public_key;
-}
-
-std::string CryptAuthV2EnrollmentManagerImpl::GetV1UserPrivateKey() const {
-  std::optional<std::string> private_key = util::DecodeFromValueString(
-      &pref_service_->GetValue(prefs::kCryptAuthEnrollmentUserPrivateKey));
-  if (!private_key) {
-    PA_LOG(ERROR) << "Invalid private key stored in user prefs.";
-    return std::string();
-  }
-
-  return *private_key;
-}
-
-void CryptAuthV2EnrollmentManagerImpl::AddV1UserKeyPairToRegistryIfNecessary() {
-  std::string public_key_v1 = GetV1UserPublicKey();
-  std::string private_key_v1 = GetV1UserPrivateKey();
-  const CryptAuthKey* key_v2 =
-      key_registry_->GetActiveKey(CryptAuthKeyBundle::Name::kUserKeyPair);
-  UserKeyPairState user_key_pair_state =
-      GetUserKeyPairState(public_key_v1, private_key_v1, key_v2);
-
-  base::UmaHistogramEnumeration("CryptAuth.EnrollmentV2.UserKeyPairState",
-                                user_key_pair_state);
-
-  initial_v1_and_v2_user_key_pairs_disagree_ =
-      user_key_pair_state == UserKeyPairState::kYesV1KeyYesV2KeyDisagree;
-
-  switch (user_key_pair_state) {
-    case (UserKeyPairState::kNoV1KeyNoV2Key):
-      [[fallthrough]];
-    case (UserKeyPairState::kNoV1KeyYesV2Key):
-      [[fallthrough]];
-    case (UserKeyPairState::kYesV1KeyYesV2KeyAgree):
-      return;
-    case (UserKeyPairState::kYesV1KeyNoV2Key):
-      [[fallthrough]];
-    case (UserKeyPairState::kYesV1KeyYesV2KeyDisagree):
-      key_registry_->AddKey(CryptAuthKeyBundle::Name::kUserKeyPair,
-                            CryptAuthKey(public_key_v1, private_key_v1,
-                                         CryptAuthKey::Status::kActive,
-                                         cryptauthv2::KeyType::P256,
-                                         kCryptAuthFixedUserKeyPairHandle));
-  };
 }
 
 }  // namespace device_sync

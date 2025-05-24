@@ -43,10 +43,6 @@ BookmarkClientImpl::BookmarkClientImpl(
 
 BookmarkClientImpl::~BookmarkClientImpl() {}
 
-void BookmarkClientImpl::SetIsSyncFeatureEnabledIncludingBookmarksForTest() {
-  is_sync_feature_enabled_including_bookmarks_for_test_ = true;
-}
-
 void BookmarkClientImpl::Init(bookmarks::BookmarkModel* model) {
   if (managed_bookmark_service_) {
     managed_bookmark_service_->BookmarkModelCreated(model);
@@ -109,18 +105,8 @@ BookmarkClientImpl::GetLoadManagedNodeCallback() {
 }
 
 bool BookmarkClientImpl::IsSyncFeatureEnabledIncludingBookmarks() {
-  if (is_sync_feature_enabled_including_bookmarks_for_test_) {
-    CHECK_IS_TEST();
-    return true;
-  }
-
-  // `kMigrateSyncingUserToSignedIn` is only used as an extra safeguard to avoid
-  // behavioral changes. If this feature is enabled, sync-the-feature can be
-  // safely considered disabled, as the remaining cases where
-  // `IsTrackingMetadata()` below returns true should be very rare, usually
-  // error cases.
-  return local_or_syncable_bookmark_sync_service_->IsTrackingMetadata() &&
-         !base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn);
+  // Sync-the-feature is gone on iOS.
+  return false;
 }
 
 bool BookmarkClientImpl::CanSetPermanentNodeTitle(
@@ -155,13 +141,18 @@ void BookmarkClientImpl::DecodeLocalOrSyncableBookmarkSyncMetadata(
           sync_bookmarks::BookmarkModelViewUsingLocalOrSyncableNodes>(model_));
 }
 
-void BookmarkClientImpl::DecodeAccountBookmarkSyncMetadata(
+BookmarkClientImpl::DecodeAccountBookmarkSyncMetadataResult
+BookmarkClientImpl::DecodeAccountBookmarkSyncMetadata(
     const std::string& metadata_str,
     const base::RepeatingClosure& schedule_save_closure) {
   account_bookmark_sync_service_->DecodeBookmarkSyncMetadata(
       metadata_str, schedule_save_closure,
       std::make_unique<sync_bookmarks::BookmarkModelViewUsingAccountNodes>(
           model_));
+  return account_bookmark_sync_service_->IsTrackingMetadata()
+             ? DecodeAccountBookmarkSyncMetadataResult::kSuccess
+             : DecodeAccountBookmarkSyncMetadataResult::
+                   kMustRemoveAccountPermanentFolders;
 }
 
 void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(
@@ -170,4 +161,9 @@ void BookmarkClientImpl::OnBookmarkNodeRemovedUndoable(
     std::unique_ptr<bookmarks::BookmarkNode> node) {
   bookmark_undo_service_->AddUndoEntryForRemovedNode(parent, index,
                                                      std::move(node));
+}
+
+void BookmarkClientImpl::SchedulePersistentTimerForDailyMetrics(
+    base::RepeatingClosure metrics_callback) {
+  // Nothing to record on iOS.
 }

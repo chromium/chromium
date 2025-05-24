@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 // A simple Ash shelf context menu for an Isolated Web App installer instance.
 // Currently only supports "Close".

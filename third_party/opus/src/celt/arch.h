@@ -56,7 +56,7 @@
 
 #define CELT_SIG_SCALE 32768.f
 
-#define CELT_FATAL(str) celt_fatal(str, __FILE__, __LINE__);
+#define CELT_FATAL(str) celt_fatal(str, __FILE__, __LINE__)
 
 #if defined(ENABLE_ASSERTIONS) || defined(ENABLE_HARDENING)
 #ifdef __GNUC__
@@ -74,9 +74,9 @@ void celt_fatal(const char *str, const char *file, int line)
 {
 #if !defined(CHROMIUM_NO_LOGGING)
    fprintf (stderr, "Fatal (internal) error in %s, line %d: %s\n", file, line, str);
-#endif
 #if defined(_MSC_VER)
    _set_abort_behavior( 0, _WRITE_ABORT_MSG);
+#endif
 #endif
    abort();
 }
@@ -107,6 +107,16 @@ void celt_fatal(const char *str, const char *file, int line)
 #define IMAX(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum int value.   */
 #define UADD32(a,b) ((a)+(b))
 #define USUB32(a,b) ((a)-(b))
+#define MAXG(a,b) MAX32(a, b)
+#define MING(a,b) MIN32(a, b)
+
+/* Throughout the code, we use the following scaling for signals:
+   FLOAT: used for float API, normalized to +/-1.
+   INT16: used for 16-bit API, normalized to +/- 32768
+   RES: internal Opus resolution, defined as +/-1. in float builds, or either 16-bit or 24-bit int for fixed-point builds
+   SIG: internal CELT resolution: defined as +/- 32768. in float builds, or Q27 in fixed-point builds (int16 shifted by 12)
+*/
+
 
 /* Set this if opus_int64 is a native type of the CPU. */
 /* Assume that all LP64 architectures have fast 64-bit types; also x86_64
@@ -115,6 +125,12 @@ void celt_fatal(const char *str, const char *file, int line)
 #define OPUS_FAST_INT64 1
 #else
 #define OPUS_FAST_INT64 0
+#endif
+
+#ifdef FIXED_POINT
+#define ARG_FIXED(arg) , arg
+#else
+#define ARG_FIXED(arg)
 #endif
 
 #define PRINT_MIPS(file)
@@ -128,27 +144,85 @@ typedef opus_int64 opus_val64;
 typedef opus_val32 celt_sig;
 typedef opus_val16 celt_norm;
 typedef opus_val32 celt_ener;
+typedef opus_val32 celt_glog;
+
+#ifdef ENABLE_RES24
+typedef opus_val32 opus_res;
+#define RES_SHIFT 8
+#define SIG2RES(a)      PSHR32(a, SIG_SHIFT-RES_SHIFT)
+#define RES2INT16(a)    SAT16(PSHR32(a, RES_SHIFT))
+#define RES2INT24(a)    (a)
+#define RES2FLOAT(a)    ((1.f/32768.f/256.)*(a))
+#define INT16TORES(a)   SHL32(EXTEND32(a), RES_SHIFT)
+#define INT24TORES(a)   (a)
+#define ADD_RES(a, b)   ADD32(a, b)
+#define FLOAT2RES(a)    float2int(32768.f*256.f*(a))
+#define RES2SIG(a)      SHL32((a), SIG_SHIFT-RES_SHIFT)
+#define MULT16_RES_Q15(a,b) MULT16_32_Q15(a,b)
+#define MAX_ENCODING_DEPTH 24
+#else
+typedef opus_val16 opus_res;
+#define RES_SHIFT 0
+#define SIG2RES(a)      SIG2WORD16(a)
+#define RES2INT16(a)    (a)
+#define RES2INT24(a)    SHL32(EXTEND32(a), 8)
+#define RES2FLOAT(a)    ((1.f/32768.f)*(a))
+#define INT16TORES(a)   (a)
+#define INT24TORES(a)   SAT16(PSHR32(a, 8))
+#define ADD_RES(a, b)   SAT16(ADD32((a), (b)));
+#define FLOAT2RES(a)    FLOAT2INT16(a)
+#define RES2SIG(a)      SHL32(EXTEND32(a), SIG_SHIFT)
+#define MULT16_RES_Q15(a,b) MULT16_16_Q15(a,b)
+#define MAX_ENCODING_DEPTH 16
+#endif
+
+#define RES2VAL16(a)    RES2INT16(a)
+#define FLOAT2SIG(a)    float2int(((opus_int32)32768<<SIG_SHIFT)*(a))
+#define INT16TOSIG(a)   SHL32(EXTEND32(a), SIG_SHIFT)
+#define INT24TOSIG(a)   SHL32(a, SIG_SHIFT-8)
+
+#ifdef ENABLE_QEXT
+typedef opus_val32 celt_coef;
+#define COEF_ONE Q31ONE
+#define MULT_COEF_32(a, b) MULT32_32_Q31(a,b)
+#define MAC_COEF_32_ARM(c, a, b) ADD32((c), MULT32_32_Q32(a,b))
+#define MULT_COEF(a, b) MULT32_32_Q31(a,b)
+#define MULT_COEF_TAPS(a, b) SHL32(MULT16_16(a,b), 1)
+#define COEF2VAL16(x) EXTRACT16(SHR32(x, 16))
+#else
+typedef opus_val16 celt_coef;
+#define COEF_ONE Q15ONE
+#define MULT_COEF_32(a, b) MULT16_32_Q15(a,b)
+#define MAC_COEF_32_ARM(a, b, c) MAC16_32_Q16(a,b,c)
+#define MULT_COEF(a, b) MULT16_16_Q15(a,b)
+#define MULT_COEF_TAPS(a, b) MULT16_16_P15(a,b)
+#define COEF2VAL16(x) (x)
+#endif
 
 #define celt_isnan(x) 0
 
 #define Q15ONE 32767
+#define Q31ONE 2147483647
 
 #define SIG_SHIFT 12
-/* Safe saturation value for 32-bit signals. Should be less than
-   2^31*(1-0.85) to avoid blowing up on DC at deemphasis.*/
-#define SIG_SAT (300000000)
+/* Safe saturation value for 32-bit signals. We need to make sure that we can
+   add two sig values and that the first stages of the MDCT don't cause an overflow.
+   The most constraining is the ARM_ASM comb filter where we shift left by one
+   and then add two values. Because of that, we use 2^29-1. SIG_SAT must be large
+   enough to fit a full-scale high-freq tone through the prefilter and comb filter,
+   meaning 1.85*1.75*2^(15+SIG_SHIFT) =  434529895.
+   so the limit should be about 2^31*sqrt(.5). */
+#define SIG_SAT (536870911)
 
 #define NORM_SCALING 16384
 
-#define DB_SHIFT 10
+#define DB_SHIFT 24
 
 #define EPSILON 1
 #define VERY_SMALL 0
 #define VERY_LARGE16 ((opus_val16)32767)
 #define Q15_ONE ((opus_val16)32767)
 
-#define SCALEIN(a)      (a)
-#define SCALEOUT(a)     (a)
 
 #define ABS16(x) ((x) < 0 ? (-(x)) : (x))
 #define ABS32(x) ((x) < 0 ? (-(x)) : (x))
@@ -188,6 +262,10 @@ typedef float opus_val64;
 typedef float celt_sig;
 typedef float celt_norm;
 typedef float celt_ener;
+typedef float celt_glog;
+
+typedef float opus_res;
+typedef float celt_coef;
 
 #ifdef FLOAT_APPROX
 /* This code should reliably detect NaN/inf even when -ffast-math is used.
@@ -206,6 +284,9 @@ static OPUS_INLINE int celt_isnan(float x)
 #endif
 
 #define Q15ONE 1.0f
+#define Q31ONE 1.0f
+#define COEF_ONE 1.0f
+#define COEF2VAL16(x) (x)
 
 #define NORM_SCALING 1.f
 
@@ -220,6 +301,7 @@ static OPUS_INLINE int celt_isnan(float x)
 
 #define QCONST16(x,bits) (x)
 #define QCONST32(x,bits) (x)
+#define GCONST(x) (x)
 
 #define NEG16(x) (-(x))
 #define NEG32(x) (-(x))
@@ -261,6 +343,7 @@ static OPUS_INLINE int celt_isnan(float x)
 
 #define MAC16_32_Q15(c,a,b)     ((c)+(a)*(b))
 #define MAC16_32_Q16(c,a,b)     ((c)+(a)*(b))
+#define MAC_COEF_32_ARM(c,a,b)     ((c)+(a)*(b))
 
 #define MULT16_16_Q11_32(a,b)     ((a)*(b))
 #define MULT16_16_Q11(a,b)     ((a)*(b))
@@ -272,13 +355,29 @@ static OPUS_INLINE int celt_isnan(float x)
 #define MULT16_16_P14(a,b)     ((a)*(b))
 #define MULT16_32_P16(a,b)     ((a)*(b))
 
+#define MULT_COEF_32(a, b)      ((a)*(b))
+#define MULT_COEF(a, b)   ((a)*(b))
+#define MULT_COEF_TAPS(a, b)   ((a)*(b))
+
 #define DIV32_16(a,b)     (((opus_val32)(a))/(opus_val16)(b))
 #define DIV32(a,b)     (((opus_val32)(a))/(opus_val32)(b))
 
-#define SCALEIN(a)      ((a)*CELT_SIG_SCALE)
-#define SCALEOUT(a)     ((a)*(1/CELT_SIG_SCALE))
+#define SIG2RES(a)      ((1/CELT_SIG_SCALE)*(a))
+#define RES2INT16(a)    FLOAT2INT16(a)
+#define RES2INT24(a)    float2int(32768.f*256.f*(a))
+#define RES2FLOAT(a)    (a)
+#define INT16TORES(a)   ((a)*(1/CELT_SIG_SCALE))
+#define INT24TORES(a)   ((1.f/32768.f/256.)*(a))
+#define ADD_RES(a, b)   ADD32(a, b)
+#define FLOAT2RES(a)    (a)
+#define RES2SIG(a)      (CELT_SIG_SCALE*(a))
+#define MULT16_RES_Q15(a,b) MULT16_16_Q15(a,b)
 
-#define SIG2WORD16(x) (x)
+#define RES2VAL16(a)    (a)
+#define FLOAT2SIG(a)    ((a)*CELT_SIG_SCALE)
+#define INT16TOSIG(a)   ((float)(a))
+#define INT24TOSIG(a)   ((float)(a)*(1.f/256.f))
+#define MAX_ENCODING_DEPTH 24
 
 #endif /* !FIXED_POINT */
 

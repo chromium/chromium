@@ -67,7 +67,7 @@
       registrationWithCellClass:[HomeCustomizationLinkCell class]
            configurationHandler:^(HomeCustomizationLinkCell* cell,
                                   NSIndexPath* indexPath,
-                                  NSNumber* itemIdentifier) {
+                                  NSString* itemIdentifier) {
              CustomizationLinkType linkType =
                  (CustomizationLinkType)[itemIdentifier integerValue];
              [cell configureCellWithType:linkType];
@@ -85,9 +85,9 @@
 }
 
 // Creates a data snapshot representing the content of the collection view.
-- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>*)
+- (NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>*)
     dataSnapshot {
-  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
 
   // Create links section and add items to it.
@@ -120,7 +120,7 @@
 }
 
 - (UICollectionViewCell*)configuredCellForIndexPath:(NSIndexPath*)indexPath
-                                     itemIdentifier:(NSNumber*)itemIdentifier {
+                                     itemIdentifier:(NSString*)itemIdentifier {
   return [_collectionView
       dequeueConfiguredReusableCellWithRegistration:_linkCellRegistration
                                        forIndexPath:indexPath
@@ -142,7 +142,7 @@
 
   // Recreate the snapshot with the new items to take into account all the
   // changes of items presence (add/remove).
-  NSDiffableDataSourceSnapshot<CustomizationSection*, NSNumber*>* snapshot =
+  NSDiffableDataSourceSnapshot<CustomizationSection*, NSString*>* snapshot =
       [self dataSnapshot];
 
   // Reconfigure all present items to ensure that they are updated in case
@@ -157,12 +157,12 @@
 
 // Returns an array of identifiers for a vector of link types, which can be
 // used by the snapshot.
-- (NSMutableArray<NSNumber*>*)identifiersForLinksVector:
+- (NSMutableArray<NSString*>*)identifiersForLinksVector:
     (std::vector<CustomizationLinkType>)types {
-  NSMutableArray<NSNumber*>* linkDataIdentifiers =
+  NSMutableArray<NSString*>* linkDataIdentifiers =
       [[NSMutableArray alloc] init];
   for (auto const& type : types) {
-    [linkDataIdentifiers addObject:@((int)type)];
+    [linkDataIdentifiers addObject:[@((int)type) stringValue]];
   }
   return linkDataIdentifiers;
 }

@@ -30,11 +30,11 @@ class ResizeAndSaveWallpaperTest : public ::testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir()); }
 
-  base::FilePath CreateFilePath(base::FilePath::StringPieceType file_name) {
+  base::FilePath CreateFilePath(base::FilePath::StringViewType file_name) {
     return scoped_temp_dir_.GetPath().Append(file_name);
   }
 
-  gfx::ImageSkia DecodeImageFile(base::FilePath::StringPieceType file_name) {
+  gfx::ImageSkia DecodeImageFile(base::FilePath::StringViewType file_name) {
     base::RunLoop run_loop;
     gfx::ImageSkia image_out;
     image_util::DecodeImageFile(
@@ -115,10 +115,13 @@ TEST_F(ResizeAndSaveWallpaperTest, TileLayout) {
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, CenterLayout) {
-  EXPECT_FALSE(ResizeAndSaveWallpaper(gfx::test::CreateImageSkia(400, 200),
-                                      CreateFilePath("cached_wallpaper"),
-                                      WALLPAPER_LAYOUT_CENTER, {400, 200}));
-  EXPECT_FALSE(base::PathExists(CreateFilePath("cached_wallpaper")));
+  const gfx::ImageSkia image_skia = gfx::test::CreateImageSkia(400, 200);
+  ASSERT_TRUE(ResizeAndSaveWallpaper(image_skia,
+                                     CreateFilePath("cached_wallpaper"),
+                                     WALLPAPER_LAYOUT_CENTER, {400, 200}));
+  EXPECT_TRUE(
+      gfx::test::AreImagesClose(gfx::Image(DecodeImageFile("cached_wallpaper")),
+                                gfx::Image(image_skia), kPixelMaxDeviation));
 }
 
 TEST_F(ResizeAndSaveWallpaperTest, DifferentWallpapers) {

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_SCROLL_MEDIA_PREVIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_SCROLL_MEDIA_PREVIEW_H_
 
+#include <stddef.h>
+
 #include <optional>
 
 namespace views {

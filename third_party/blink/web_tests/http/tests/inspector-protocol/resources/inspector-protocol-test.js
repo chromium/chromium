@@ -51,7 +51,8 @@ var TestRunner = class {
       'requestId',
       'openerFrameId',
       'issueId',
-      'initiatingFrameId'
+      'initiatingFrameId',
+      'pipelineId'
     ];
   }
 
@@ -61,6 +62,10 @@ var TestRunner = class {
       ...extended
     ]
   };
+
+  setAllowUnsafeOperations(enabled) {
+    DevToolsAPI.setAllowUnsafeOperations(enabled);
+  }
 
   startDumpingProtocolMessages() {
     this._dumpInspectorProtocolMessages = true;
@@ -391,7 +396,7 @@ TestRunner.Page = class {
     var session = await this.createSession();
     await session.protocol.Runtime.evaluate({
       awaitPromise: true,
-      expression: `
+      expression: `(function() {
       document.write('${html}');
 
       // wait for all scripts to load
@@ -405,7 +410,8 @@ TestRunner.Page = class {
         window._loadHTMLResolve();
 
       document.close();
-      promise;
+      return promise;
+      })()
     `});
     await session.disconnect();
   }
@@ -660,6 +666,14 @@ DevToolsAPI.dispatchMessage = function(messageOrObject) {
     DevToolsAPI._die(`Exception when dispatching message\n${JSON.stringify(messageObject)}`, e);
   }
 };
+
+DevToolsAPI.setAllowUnsafeOperations = function (enabled) {
+  const embedderMessage = {
+    method: 'setAllowUnsafeOperations',
+    params: [enabled],
+  };
+  DevToolsHost.sendMessageToEmbedder(JSON.stringify(embedderMessage));
+}
 
 DevToolsAPI._sendCommand = function(sessionId, method, params, timeout = 0) {
   var requestId = ++DevToolsAPI._requestId;

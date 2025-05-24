@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_management_internal.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
@@ -103,7 +104,7 @@ class MV2DeprecationImpactCheckerUnitTest
 
     // Sets the current level of the MV2 admin policy.
     sync_preferences::TestingPrefServiceSyncable* pref_service =
-        testing_profile()->GetTestingPrefService();
+        testing_pref_service();
     std::optional<internal::GlobalSettings::ManifestV2Setting> pref_value;
     switch (mv2_policy_level_) {
       case MV2PolicyLevel::kUnset:
@@ -194,7 +195,7 @@ class MV2DeprecationImpactCheckerUnitTest
             .Build();
 
     sync_preferences::TestingPrefServiceSyncable* pref_service =
-        testing_profile()->GetTestingPrefService();
+        testing_pref_service();
     const base::Value* existing_value =
         pref_service->GetManagedPref(pref_names::kExtensionManagement);
     base::Value::Dict new_value;

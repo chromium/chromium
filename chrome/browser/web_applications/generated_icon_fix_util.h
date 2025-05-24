@@ -24,39 +24,44 @@ class ScopedRegistryUpdate;
 namespace generated_icon_fix_util {
 
 // Must have window start time, attempt count and a known source.
-bool IsValid(const GeneratedIconFix& generated_icon_fix);
+bool IsValid(const proto::GeneratedIconFix& generated_icon_fix);
 
-base::Value ToDebugValue(const GeneratedIconFix* generated_icon_fix);
+base::Value ToDebugValue(const proto::GeneratedIconFix* generated_icon_fix);
 
 void SetNowForTesting(base::Time now);
 
 bool HasRemainingAttempts(const WebApp& app);
 
-// Checks if the current time is within the GeneratedIconFix time window for
-// `app`. If retroactive fixes are enabled then the absence of a time window
+// Checks if the current time is within the proto::GeneratedIconFix time window
+// for `app`. If retroactive fixes are enabled then the absence of a time window
 // implies it can retroactively start now.
 bool IsWithinFixTimeWindow(const WebApp& app);
 
 void EnsureFixTimeWindowStarted(WithAppResources& resources,
                                 ScopedRegistryUpdate& update,
                                 const webapps::AppId& app_id,
-                                GeneratedIconFixSource source);
+                                proto::GeneratedIconFixSource source);
 
-GeneratedIconFix CreateInitialTimeWindow(GeneratedIconFixSource source);
+proto::GeneratedIconFix CreateInitialTimeWindow(
+    proto::GeneratedIconFixSource source);
 
 base::TimeDelta GetThrottleDuration(const WebApp& app);
 
 void RecordFixAttempt(WithAppResources& resources,
                       ScopedRegistryUpdate& update,
                       const webapps::AppId& app_id,
-                      GeneratedIconFixSource source);
+                      proto::GeneratedIconFixSource source);
 
 }  // namespace generated_icon_fix_util
+
+namespace proto {
 
 bool operator==(const GeneratedIconFix& a, const GeneratedIconFix& b);
 
 std::ostream& operator<<(std::ostream& out,
                          const GeneratedIconFixSource& source);
+
+}  // namespace proto
 
 }  // namespace web_app
 

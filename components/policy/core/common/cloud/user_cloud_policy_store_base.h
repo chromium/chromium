@@ -45,8 +45,6 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
   // Sets |policy_fetch_response|, |policy_data| and |payload| as the active
   // policy, and sets |policy_signature_public_key| as the active public key.
   void InstallPolicy(
-      std::unique_ptr<enterprise_management::PolicyFetchResponse>
-          policy_fetch_response,
       std::unique_ptr<enterprise_management::PolicyData> policy_data,
       std::unique_ptr<enterprise_management::CloudPolicySettings> payload,
       const std::string& policy_signature_public_key);

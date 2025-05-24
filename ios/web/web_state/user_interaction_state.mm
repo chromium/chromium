@@ -10,7 +10,7 @@ namespace {
 // The duration of the period following a screen touch during which the user is
 // still considered to be interacting with the page.
 constexpr base::TimeDelta kMaximumDelayForUserInteraction = base::Seconds(2);
-}
+}  // namespace
 
 namespace web {
 
@@ -76,12 +76,15 @@ bool UserInteractionState::HasUserTappedRecently(WKWebView* web_view) const {
   // Scrolling generates a pair of touch on/off event which causes
   // last_user_interaction_ to register that there was user interaction. Checks
   // for scrolling first to override time-based tap heuristics.
-  if (web_view.scrollView.dragging || web_view.scrollView.decelerating)
+  if (web_view.scrollView.dragging || web_view.scrollView.decelerating) {
     return NO;
-  if (!last_user_interaction_)
+  }
+  if (!last_user_interaction_) {
     return NO;
-  if (tap_in_progress_)
+  }
+  if (tap_in_progress_) {
     return YES;
+  }
   return (base::TimeTicks::Now() - last_user_interaction_->time) <
          kMaximumDelayForUserInteraction;
 }

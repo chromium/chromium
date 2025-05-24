@@ -31,16 +31,13 @@ def main(argv):
   time.sleep(5)
 
   try:
-    driver.find_element(By.XPATH,
-                        "//div[@aria-label='Blocked by admin']").click()
-    app.top_window() \
-       .child_window(title_re='.*Your admin has blocked',
-                      control_type="TitleBar") \
-       .print_control_identifiers()
+    driver.find_element(
+        By.XPATH, "//div[contains(., 'Your admin has blocked this item')]")
+    print("blocked")
   except NoSuchElementException:
-    print("Not blocked")
+    print("Ok")
   except ElementNotFoundError:
-    print("Not blocked")
+    print("Ok")
   finally:
     driver.quit()
 

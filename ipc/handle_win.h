@@ -33,7 +33,7 @@ class IPC_MESSAGE_SUPPORT_EXPORT HandleWin {
   explicit HandleWin(const HANDLE& handle);
 
   HANDLE get_handle() const { return handle_; }
-  void set_handle(HANDLE handle) { handle_ = handle; }
+  void set_handle(HANDLE handle);
 
  private:
   HANDLE handle_;

@@ -8,14 +8,18 @@ import android.content.res.Configuration;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Observes and keeps a record of the system night mode state (i.e. the night mode from the
  * application).
  */
+@NullMarked
 public class SystemNightModeMonitor {
-    private static SystemNightModeMonitor sInstance;
+    private static @Nullable SystemNightModeMonitor sInstance;
 
     /** Interface for callback when system night mode is changed. */
     public interface Observer {
@@ -36,6 +40,12 @@ public class SystemNightModeMonitor {
             sInstance = new SystemNightModeMonitor();
         }
         return sInstance;
+    }
+
+    public static void setInstanceForTesting(SystemNightModeMonitor instance) {
+        var oldValue = sInstance;
+        sInstance = instance;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     private SystemNightModeMonitor() {

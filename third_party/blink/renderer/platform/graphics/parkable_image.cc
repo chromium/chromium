@@ -6,6 +6,7 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
+#include "base/memory/asan_interface.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -73,7 +74,8 @@ void AsanPoisonBuffer(RWBuffer* rw_buffer) {
   auto ro_buffer = rw_buffer->MakeROBufferSnapshot();
   ROBuffer::Iter iter(ro_buffer);
   do {
-    ASAN_POISON_MEMORY_REGION(iter.data(), iter.size());
+    auto data = *iter;
+    ASAN_POISON_MEMORY_REGION(data.data(), data.size());
   } while (iter.Next());
 #endif
 }
@@ -86,7 +88,8 @@ void AsanUnpoisonBuffer(RWBuffer* rw_buffer) {
   auto ro_buffer = rw_buffer->MakeROBufferSnapshot();
   ROBuffer::Iter iter(ro_buffer);
   do {
-    ASAN_UNPOISON_MEMORY_REGION(iter.data(), iter.size());
+    auto data = *iter;
+    ASAN_UNPOISON_MEMORY_REGION(data.data(), data.size());
   } while (iter.Next());
 #endif
 }
@@ -106,7 +109,7 @@ class ParkableImageSegmentReader : public SegmentReader {
  public:
   explicit ParkableImageSegmentReader(scoped_refptr<ParkableImage> image);
   size_t size() const override;
-  size_t GetSomeData(const char*& data, size_t position) const override;
+  base::span<const uint8_t> GetSomeData(size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
   void LockData() override;
   void UnlockData() override;
@@ -125,10 +128,10 @@ size_t ParkableImageSegmentReader::size() const {
   return available_;
 }
 
-size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
-                                               size_t position) const {
+base::span<const uint8_t> ParkableImageSegmentReader::GetSomeData(
+    size_t position) const {
   if (!parkable_image_) {
-    return 0;
+    return {};
   }
 
   base::AutoLock lock(parkable_image_->impl_->lock_);
@@ -136,8 +139,7 @@ size_t ParkableImageSegmentReader::GetSomeData(const char*& data,
 
   RWBuffer::ROIter iter(parkable_image_->impl_->rw_buffer_.get(), available_);
   size_t position_of_block = 0;
-
-  return RWBufferGetSomeData(iter, position_of_block, data, position);
+  return RWBufferGetSomeData(iter, position_of_block, position);
 }
 
 sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
@@ -157,8 +159,9 @@ sk_sp<SkData> ParkableImageSegmentReader::GetAsSkData() const {
     // longer limetime than the SkData.
     parkable_image_->AddRef();
     parkable_image_->LockData();
+    auto data = *iter;
     return SkData::MakeWithProc(
-        iter.data(), available_,
+        data.data(), data.size(),
         [](const void* ptr, void* context) -> void {
           auto* parkable_image = static_cast<ParkableImage*>(context);
           {
@@ -191,10 +194,6 @@ void ParkableImageSegmentReader::UnlockData() {
   parkable_image_->UnlockData();
 }
 
-BASE_FEATURE(kUseParkableImageSegmentReader,
-             "UseParkableImageSegmentReader",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 constexpr base::TimeDelta ParkableImageImpl::kParkingDelay;
 
 void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
@@ -207,7 +206,7 @@ void ParkableImageImpl::Append(WTF::SharedBuffer* buffer, size_t offset) {
   for (auto it = buffer->GetIteratorAt(offset); it != buffer->cend(); ++it) {
     DCHECK_GE(buffer->size(), rw_buffer_->size() + it->size());
     const size_t remaining = buffer->size() - rw_buffer_->size() - it->size();
-    rw_buffer_->Append(it->data(), it->size(), remaining);
+    rw_buffer_->Append(base::as_byte_span(*it), remaining);
   }
   size_ = rw_buffer_->size();
 }
@@ -221,24 +220,10 @@ scoped_refptr<SharedBuffer> ParkableImageImpl::Data() {
   scoped_refptr<SharedBuffer> shared_buffer = SharedBuffer::Create();
   ROBuffer::Iter it(ro_buffer.get());
   do {
-    shared_buffer->Append(static_cast<const char*>(it.data()), it.size());
+    shared_buffer->Append(*it);
   } while (it.Next());
 
   return shared_buffer;
-}
-
-scoped_refptr<SegmentReader> ParkableImageImpl::GetROBufferSegmentReader() {
-  base::AutoLock lock(lock_);
-  Unpark();
-  DCHECK(rw_buffer_);
-  // The locking and unlocking here is only needed to make sure ASAN unpoisons
-  // things correctly here.
-  LockData();
-  scoped_refptr<ROBuffer> ro_buffer(rw_buffer_->MakeROBufferSnapshot());
-  scoped_refptr<SegmentReader> segment_reader =
-      SegmentReader::CreateFromROBuffer(std::move(ro_buffer));
-  UnlockData();
-  return segment_reader;
 }
 
 bool ParkableImageImpl::CanParkNow() const {
@@ -335,8 +320,7 @@ void ParkableImageImpl::WriteToDiskInBackground(
       base::checked_cast<wtf_size_t>(parkable_image->size()));
 
   do {
-    vector.Append(reinterpret_cast<const char*>(it.data()),
-                  base::checked_cast<wtf_size_t>(it.size()));
+    vector.AppendSpan(*it);
   } while (it.Next());
 
   auto reserved_chunk = std::move(parkable_image->reserved_chunk_);
@@ -346,7 +330,7 @@ void ParkableImageImpl::WriteToDiskInBackground(
 
   base::ElapsedTimer timer;
   auto metadata = ParkableImageManager::Instance().data_allocator().Write(
-      std::move(reserved_chunk), vector.data());
+      std::move(reserved_chunk), base::as_byte_span(vector));
   base::TimeDelta elapsed = timer.Elapsed();
 
   // Acquire the lock again after writing.
@@ -458,10 +442,9 @@ bool ParkableImageImpl::MaybePark(
 // static
 size_t ParkableImageImpl::ReadFromDiskIntoBuffer(
     DiskDataMetadata* on_disk_metadata,
-    void* buffer,
-    size_t capacity) {
+    base::span<uint8_t> buffer) {
   size_t size = on_disk_metadata->size();
-  DCHECK(size <= capacity);
+  DCHECK_LE(size, buffer.size());
   ParkableImageManager::Instance().data_allocator().Read(*on_disk_metadata,
                                                          buffer);
   return size;
@@ -541,12 +524,7 @@ bool ParkableImage::is_on_disk() const {
 scoped_refptr<SegmentReader> ParkableImage::MakeROSnapshot() {
   DCHECK(impl_);
   DCHECK_CALLED_ON_VALID_THREAD(impl_->thread_checker_);
-
-  if (base::FeatureList::IsEnabled(kUseParkableImageSegmentReader)) {
-    return CreateSegmentReader();
-  } else {
-    return impl_->GetROBufferSegmentReader();
-  }
+  return CreateSegmentReader();
 }
 
 void ParkableImage::Freeze() {

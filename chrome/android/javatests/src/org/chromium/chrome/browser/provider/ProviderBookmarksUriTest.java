@@ -40,25 +40,6 @@ public class ProviderBookmarksUriTest {
                 ChromeBrowserProviderImpl.getBookmarksApiUri(ContextUtils.getApplicationContext());
     }
 
-    private Uri addBookmark(
-            String url,
-            String title,
-            long lastVisitTime,
-            long created,
-            int visits,
-            byte[] icon,
-            int isBookmark) {
-        ContentValues values = new ContentValues();
-        values.put(BookmarkColumns.BOOKMARK, isBookmark);
-        values.put(BookmarkColumns.DATE, lastVisitTime);
-        values.put(BookmarkColumns.CREATED, created);
-        values.put(BookmarkColumns.FAVICON, icon);
-        values.put(BookmarkColumns.URL, url);
-        values.put(BookmarkColumns.VISITS, visits);
-        values.put(BookmarkColumns.TITLE, title);
-        return mProviderTestRule.getContentResolver().insert(mBookmarksUri, values);
-    }
-
     @Test
     @SmallTest
     @Feature({"Android-ContentProvider"})

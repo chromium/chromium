@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
+
 import type {PrintPreviewModelElement, PrintPreviewScalingSettingsElement} from 'chrome://print/print_preview.js';
 import {ScalingType} from 'chrome://print/print_preview.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {selectOption, triggerInputEvent} from './print_preview_test_utils.js';
 
@@ -20,40 +22,46 @@ suite('ScalingSettingsTest', function() {
     document.body.appendChild(model);
 
     scalingSection = document.createElement('print-preview-scaling-settings');
-    scalingSection.settings = model.settings;
     scalingSection.disabled = false;
     setDocumentPdf(false);
-    fakeDataBind(model, scalingSection, 'settings');
     document.body.appendChild(scalingSection);
   });
 
-  test(
-      'ShowCorrectDropdownOptions', function() {
-        // Not a PDF document -> No fit to page or fit to paper options.
-        const fitToPageOption =
-            scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.FIT_TO_PAGE}"]`)!;
-        const fitToPaperOption =
-            scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.FIT_TO_PAPER}"]`)!;
-        const defaultOption =
-            scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.DEFAULT}"]`)!;
-        const customOption =
-            scalingSection.shadowRoot!.querySelector<HTMLOptionElement>(
-                `[value="${ScalingType.CUSTOM}"]`)!;
-        assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
-        assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
-        assertFalse(defaultOption.hidden && !defaultOption.disabled);
-        assertFalse(customOption.hidden && !customOption.disabled);
+  test('ShowCorrectDropdownOptions', function() {
+    const select = scalingSection.shadowRoot.querySelector('select');
+    assertTrue(!!select);
 
-        // Fit to page and paper available -> All 4 options.
-        setDocumentPdf(true);
-        assertFalse(fitToPageOption.hidden && !fitToPageOption.disabled);
-        assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
-        assertFalse(defaultOption.hidden && !defaultOption.disabled);
-        assertFalse(customOption.hidden && !customOption.disabled);
-      });
+    // Not a PDF document -> No fit to page or fit to paper options.
+    const fitToPageOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.FIT_TO_PAGE}"]`)!;
+    const fitToPaperOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.FIT_TO_PAPER}"]`)!;
+    const defaultOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.DEFAULT}"]`)!;
+    const customOption = select.querySelector<HTMLOptionElement>(
+        `[value="${ScalingType.CUSTOM}"]`)!;
+    assertTrue(fitToPageOption.hidden && fitToPageOption.disabled);
+    assertTrue(fitToPaperOption.hidden && fitToPaperOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
+    assertFalse(customOption.hidden && !customOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingType'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+
+    // Fit to page and paper available -> All 4 options.
+    setDocumentPdf(true);
+    assertFalse(fitToPageOption.hidden && !fitToPageOption.disabled);
+    assertFalse(fitToPaperOption.hidden && !fitToPaperOption.disabled);
+    assertFalse(defaultOption.hidden && !defaultOption.disabled);
+    assertFalse(customOption.hidden && !customOption.disabled);
+
+    // Check selected option.
+    assertEquals(ScalingType.DEFAULT, model.getSettingValue('scalingTypePdf'));
+    assertEquals(ScalingType.DEFAULT.toString(), select.value);
+    assertTrue(defaultOption.selected);
+  });
 
   /**
    * @param expectedScaling The expected scaling value.
@@ -75,14 +83,14 @@ suite('ScalingSettingsTest', function() {
 
     // Validate UI values that are set by JS.
     const scalingInput =
-        scalingSection.shadowRoot!
+        scalingSection.shadowRoot
             .querySelector('print-preview-number-settings-section')!.getInput();
     const expectedCollapseOpened =
         (scalingSection.getSettingValue('scalingType') ===
          ScalingType.CUSTOM) ||
         (scalingSection.getSettingValue('scalingTypePdf') ===
          ScalingType.CUSTOM);
-    const collapse = scalingSection.shadowRoot!.querySelector('cr-collapse')!;
+    const collapse = scalingSection.shadowRoot.querySelector('cr-collapse')!;
     assertEquals(!valid, scalingInput.invalid);
     assertEquals(scalingDisplayValue, scalingInput.value);
     assertEquals(expectedCollapseOpened, collapse.opened);
@@ -92,8 +100,8 @@ suite('ScalingSettingsTest', function() {
    * @param isPdf Whether the document is a PDF
    */
   function setDocumentPdf(isPdf: boolean) {
-    model.set('settings.scalingType.available', !isPdf);
-    model.set('settings.scalingTypePdf.available', isPdf);
+    model.setSettingAvailableForTesting('scalingType', !isPdf);
+    model.setSettingAvailableForTesting('scalingTypePdf', isPdf);
     scalingSection.isPdf = isPdf;
   }
 
@@ -102,7 +110,7 @@ suite('ScalingSettingsTest', function() {
   test('SetScaling', async () => {
     // Default is 100
     const scalingCrInput =
-        scalingSection.shadowRoot!
+        scalingSection.shadowRoot
             .querySelector(
                 'print-preview-number-settings-section')!.$.userValue;
     const scalingInput = scalingCrInput.inputElement;
@@ -110,7 +118,7 @@ suite('ScalingSettingsTest', function() {
     setDocumentPdf(true);
 
     // Default is 100
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState('100', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '100');
     assertFalse(scalingSection.getSetting('scaling').setFromUi);
     assertFalse(scalingSection.getSetting('scalingType').setFromUi);
@@ -147,7 +155,7 @@ suite('ScalingSettingsTest', function() {
 
     // Select fit to page. Should clear the invalid value.
     await selectOption(scalingSection, ScalingType.FIT_TO_PAGE.toString());
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState(
         '105', true, ScalingType.CUSTOM, ScalingType.FIT_TO_PAGE, '105');
 
@@ -162,7 +170,7 @@ suite('ScalingSettingsTest', function() {
 
     // Pick default scaling. This should clear the error.
     await selectOption(scalingSection, ScalingType.DEFAULT.toString());
-    await scalingCrInput.updateComplete;
+    await microtasksFinished();
     validateState('105', true, ScalingType.DEFAULT, ScalingType.DEFAULT, '105');
 
     // Custom scaling should set to last valid.
@@ -179,44 +187,43 @@ suite('ScalingSettingsTest', function() {
 
   // Verifies that the input is never disabled when the validity of the
   // setting changes.
-  test(
-      'InputNotDisabledOnValidityChange', async () => {
-        const numberSection = scalingSection.shadowRoot!.querySelector(
-            'print-preview-number-settings-section')!;
-        const input = numberSection.getInput();
+  test('InputNotDisabledOnValidityChange', async () => {
+    const numberSection = scalingSection.shadowRoot.querySelector(
+        'print-preview-number-settings-section')!;
+    const input = numberSection.getInput();
 
-        // In the real UI, the print preview app listens for this event from
-        // this section and others and sets disabled to true if any change from
-        // true to false is detected. Imitate this here. Since we are only
-        // interacting with the scaling input, at no point should the input be
-        // disabled, as it will lose focus.
-        model.addEventListener('setting-valid-changed', function() {
-          assertFalse(input.disabled);
-        });
+    // In the real UI, the print preview app listens for this event from
+    // this section and others and sets disabled to true if any change from
+    // true to false is detected. Imitate this here. Since we are only
+    // interacting with the scaling input, at no point should the input be
+    // disabled, as it will lose focus.
+    model.addEventListener('setting-valid-changed', function() {
+      assertFalse(input.disabled);
+    });
 
-        await selectOption(scalingSection, ScalingType.CUSTOM.toString());
-        await input.updateComplete;
-        await triggerInputEvent(input, '90', scalingSection);
-        validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
+    await selectOption(scalingSection, ScalingType.CUSTOM.toString());
+    await input.updateComplete;
+    await triggerInputEvent(input, '90', scalingSection);
+    validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
 
-        // Set invalid input
-        await triggerInputEvent(input, '9', scalingSection);
-        validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
+    // Set invalid input
+    await triggerInputEvent(input, '9', scalingSection);
+    validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
 
-        // Restore valid input
-        await triggerInputEvent(input, '90', scalingSection);
-        validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
+    // Restore valid input
+    await triggerInputEvent(input, '90', scalingSection);
+    validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '90');
 
-        // Invalid input again
-        await triggerInputEvent(input, '9', scalingSection);
-        validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
+    // Invalid input again
+    await triggerInputEvent(input, '9', scalingSection);
+    validateState('90', false, ScalingType.CUSTOM, ScalingType.CUSTOM, '9');
 
-        // Clear input
-        await triggerInputEvent(input, '', scalingSection);
-        validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '');
+    // Clear input
+    await triggerInputEvent(input, '', scalingSection);
+    validateState('90', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '');
 
-        // Set valid input
-        await triggerInputEvent(input, '50', scalingSection);
-        validateState('50', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '50');
-      });
+    // Set valid input
+    await triggerInputEvent(input, '50', scalingSection);
+    validateState('50', true, ScalingType.CUSTOM, ScalingType.CUSTOM, '50');
+  });
 });

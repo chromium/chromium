@@ -60,11 +60,10 @@ extern const char kGsuiteNonSyncPasswordAlertHistogram[];
 
 extern const char kPasswordOnFocusRequestWithTokenHistogram[];
 extern const char kAnyPasswordEntryRequestWithTokenHistogram[];
+extern const char kReusedPasswordAccountTypeHistogram[];
 
 using ReusedPasswordAccountType =
     LoginReputationClientRequest::PasswordReuseEvent::ReusedPasswordAccountType;
-using SyncAccountType =
-    LoginReputationClientRequest::PasswordReuseEvent::SyncAccountType;
 using VerdictType = LoginReputationClientResponse::VerdictType;
 
 // The outcome of the request. These values are used for UMA.
@@ -153,6 +152,27 @@ enum class WarningUIType {
   INTERSTITIAL = 3,
 };
 
+// Enum values indicate the account type and syncing state for the reused
+// password. These values are used for UMA.
+// DO NOT CHANGE THE ORDERING OF THESE VALUES.
+enum class AccountTypeWithSyncState {
+  UNKNOWN = 0,
+  // Gaia-Enterprise account.
+  GSUITE = 1,
+  // Gaia-Consumer account.
+  GMAIL = 2,
+  // Non-Gaia-Enterprise account.
+  NON_GAIA_ENTERPRISE = 3,
+  // Arbitrary account the Password Manager knows about.
+  SAVED_PASSWORD = 4,
+  // Gaia-Enterprise account with syncing enabled.
+  GSUITE_SYNCING = 5,
+  // Gaia-Consumer account with syncing enabled.
+  GMAIL_SYNCING = 6,
+
+  kMaxValue = GMAIL_SYNCING,
+};
+
 // Logs whether an access_token was sent or not, for the appropriate
 // |trigger_type| metric.
 void LogPasswordProtectionRequestTokenHistogram(
@@ -160,7 +180,7 @@ void LogPasswordProtectionRequestTokenHistogram(
     bool has_access_token);
 
 // Logs the |outcome| to several UMA metrics, depending on the value
-// of |password_type| and |sync_account_type|.
+// of |password_account_type|.
 void LogPasswordEntryRequestOutcome(
     RequestOutcome outcome,
     ReusedPasswordAccountType password_account_type);
@@ -173,8 +193,8 @@ void LogPasswordAlertModeOutcome(
     RequestOutcome outcome,
     ReusedPasswordAccountType password_account_type);
 
-// Logs password protection verdict based on |trigger_type|, |password_type|,
-// and |sync_account_type|.
+// Logs password protection verdict based on |trigger_type|
+// and |password_account_type|.
 void LogPasswordProtectionVerdict(
     LoginReputationClientRequest::TriggerType trigger_type,
     ReusedPasswordAccountType password_account_type,
@@ -184,9 +204,6 @@ void LogPasswordProtectionVerdict(
 void LogNoPingingReason(LoginReputationClientRequest::TriggerType trigger_type,
                         RequestOutcome reason,
                         ReusedPasswordAccountType password_account_type);
-
-// Logs the type of sync account.
-void LogSyncAccountType(SyncAccountType sync_account_type);
 
 // Logs the network response and duration of a password protection ping.
 void LogPasswordProtectionNetworkResponseAndDuration(
@@ -214,6 +231,10 @@ void LogReferrerChainSize(
 // is destructed.
 void LogModalWarningDialogLifetime(
     base::TimeTicks modal_construction_start_time);
+
+// Logs the account type and syncing state for the reused password.
+void LogReusedPasswordAccountType(
+    ReusedPasswordAccountType password_account_type);
 
 }  // namespace safe_browsing
 

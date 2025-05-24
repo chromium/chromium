@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
@@ -66,21 +68,19 @@ class OmniboxPopupViewViews : public views::View,
   void ProvideButtonFocusHint(size_t line) override;
   void OnMatchIconUpdated(size_t match_index) override;
   void OnDragCanceled() override;
-  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
-  void AddPopupAccessibleNodeData(ui::AXNodeData* node_data) override;
-  std::u16string GetAccessibleButtonTextForResult(size_t line) override;
-  void SetSuggestionGroupVisibility(size_t match_index,
-                                    bool suggestion_group_hidden) override;
+  void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
+  std::u16string_view GetAccessibleButtonTextForResult(
+      size_t line) const override;
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // views::WidgetObserver:
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& new_bounds) override;
   void OnWidgetVisibilityChanged(views::Widget* widget, bool visible) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
   void FireAXEventsForNewActiveDescendant(View* descendant_view);
 
@@ -88,6 +88,8 @@ class OmniboxPopupViewViews : public views::View,
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, ClickOmnibox);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, DeleteSuggestion);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewViewsTest, SpaceEntersKeywordMode);
+  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupSuggestionGroupHeadersTest,
+                           ShowSuggestionGroupHeadersByPageContext);
   friend class OmniboxPopupViewViewsTest;
   friend class OmniboxSuggestionButtonRowBrowserTest;
   class AutocompletePopupWidget;
@@ -101,6 +103,7 @@ class OmniboxPopupViewViews : public views::View,
 
   // Gets the OmniboxResultView for match |i|.
   OmniboxResultView* result_view_at(size_t i);
+  const OmniboxResultView* result_view_at(size_t i) const;
 
   // Returns true if the model has a match at the specified index.
   bool HasMatchAt(size_t index) const;
@@ -111,10 +114,12 @@ class OmniboxPopupViewViews : public views::View,
   // Find the index of the match under the given |point|, specified in window
   // coordinates. Returns OmniboxPopupSelection::kNoMatch if there isn't a match
   // at the specified point.
-  size_t GetIndexForPoint(const gfx::Point& point);
+  size_t GetIndexForPoint(const gfx::Point& point) const;
 
  private:
-  void UpdateExpandedCollapsedAccessibleState() const;
+  void UpdateAccessibleStates() const;
+
+  void UpdateAccessibleControlIds();
 
   void UpdateAccessibleActiveDescendantForInvokingView();
 
@@ -122,6 +127,7 @@ class OmniboxPopupViewViews : public views::View,
   // when its window is destroyed.  This is a WeakPtr because it's possible for
   // the OS to destroy the window and thus delete this object before we're
   // deleted, or without our knowledge.
+  // TODO(crbug.com/40232479): Migrate this to CLIENT_OWNS_WIDGET.
   base::WeakPtr<AutocompletePopupWidget> popup_;
 
   // Timestamp for when the current omnibox popup creation started.

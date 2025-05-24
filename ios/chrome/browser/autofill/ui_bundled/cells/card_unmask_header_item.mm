@@ -20,13 +20,10 @@ namespace {
 // Spacing between elements.
 const CGFloat kUISpacing = 5;
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Height of the Google pay badge.
 const CGFloat kGooglePayBadgeHeight = 16;
-
-BOOL VirtualCardFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableVirtualCards);
-}
+#endif
 
 }  // namespace
 
@@ -80,81 +77,51 @@ BOOL VirtualCardFeatureEnabled() {
     CGFloat badgeAspectRatio = _googlePayBadgeImageView.image.size.width /
                                _googlePayBadgeImageView.image.size.height;
 
-    // If the virtual card feature is enabled, show the updated layout.
-    if (VirtualCardFeatureEnabled()) {
-      _titleLabel = [self createTitleLabel];
-      [self.contentView addSubview:_titleLabel];
+    _titleLabel = [self createTitleLabel];
+    [self.contentView addSubview:_titleLabel];
 
-      [NSLayoutConstraint activateConstraints:@[
-        // Google Pay Badge
-        [_googlePayBadgeImageView.topAnchor
-            constraintEqualToAnchor:self.contentView.topAnchor
-                           constant:kTableViewImagePadding],
-        [_googlePayBadgeImageView.centerXAnchor
-            constraintEqualToAnchor:self.contentView.centerXAnchor],
-        [_googlePayBadgeImageView.heightAnchor
-            constraintEqualToConstant:kTableViewIconImageSize],
-        [_googlePayBadgeImageView.widthAnchor
-            constraintEqualToAnchor:_googlePayBadgeImageView.heightAnchor
-                         multiplier:badgeAspectRatio],
+    [NSLayoutConstraint activateConstraints:@[
+      // Google Pay Badge
+      [_googlePayBadgeImageView.topAnchor
+          constraintEqualToAnchor:self.contentView.topAnchor
+                         constant:kTableViewImagePadding],
+      [_googlePayBadgeImageView.centerXAnchor
+          constraintEqualToAnchor:self.contentView.centerXAnchor],
+      [_googlePayBadgeImageView.heightAnchor
+          constraintEqualToConstant:kTableViewIconImageSize],
+      [_googlePayBadgeImageView.widthAnchor
+          constraintEqualToAnchor:_googlePayBadgeImageView.heightAnchor
+                       multiplier:badgeAspectRatio],
 
-        // Title label
-        [_titleLabel.topAnchor
-            constraintEqualToAnchor:_googlePayBadgeImageView.bottomAnchor
-                           constant:kTableViewImagePadding],
-        [_titleLabel.leadingAnchor
-            constraintEqualToAnchor:self.contentView.leadingAnchor
-                           constant:HorizontalPadding()],
-        [_titleLabel.trailingAnchor
-            constraintEqualToAnchor:self.contentView.trailingAnchor
-                           constant:-HorizontalPadding()],
+      // Title label
+      [_titleLabel.topAnchor
+          constraintEqualToAnchor:_googlePayBadgeImageView.bottomAnchor
+                         constant:kTableViewImagePadding],
+      [_titleLabel.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:HorizontalPadding()],
+      [_titleLabel.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:-HorizontalPadding()],
 
-        // Instructions label
-        [_instructionsLabel.topAnchor
-            constraintEqualToAnchor:_titleLabel.bottomAnchor
-                           constant:kUISpacing],
-        [_instructionsLabel.leadingAnchor
-            constraintEqualToAnchor:self.contentView.leadingAnchor
-                           constant:HorizontalPadding()],
-        [_instructionsLabel.trailingAnchor
-            constraintEqualToAnchor:self.contentView.trailingAnchor
-                           constant:-HorizontalPadding()],
-        [_instructionsLabel.bottomAnchor
-            constraintEqualToAnchor:self.contentView.bottomAnchor
-                           constant:-kTableViewLargeVerticalSpacing],
-      ]];
-    } else {
-      [NSLayoutConstraint activateConstraints:@[
-        // Instructions label
-        [_instructionsLabel.topAnchor
-            constraintEqualToAnchor:self.contentView.topAnchor
-                           constant:kTableViewVerticalSpacing],
-        [_instructionsLabel.leadingAnchor
-            constraintEqualToAnchor:self.contentView.leadingAnchor
-                           constant:HorizontalPadding()],
-        [_instructionsLabel.trailingAnchor
-            constraintEqualToAnchor:self.contentView.trailingAnchor
-                           constant:-HorizontalPadding()],
+      // Instructions label
+      [_instructionsLabel.topAnchor
+          constraintEqualToAnchor:_titleLabel.bottomAnchor
+                         constant:kUISpacing],
+      [_instructionsLabel.leadingAnchor
+          constraintEqualToAnchor:self.contentView.leadingAnchor
+                         constant:HorizontalPadding()],
+      [_instructionsLabel.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:-HorizontalPadding()],
+      [_instructionsLabel.bottomAnchor
+          constraintEqualToAnchor:self.contentView.bottomAnchor
+                         constant:-kTableViewLargeVerticalSpacing],
+    ]];
 
-        // Google Pay Badge
-        [_googlePayBadgeImageView.topAnchor
-            constraintEqualToAnchor:_instructionsLabel.bottomAnchor
-                           constant:kUISpacing],
-        [_googlePayBadgeImageView.leadingAnchor
-            constraintEqualToAnchor:_instructionsLabel.leadingAnchor],
-        [_googlePayBadgeImageView.heightAnchor
-            constraintEqualToConstant:kGooglePayBadgeHeight],
-        [_googlePayBadgeImageView.widthAnchor
-            constraintEqualToAnchor:_googlePayBadgeImageView.heightAnchor
-                         multiplier:badgeAspectRatio],
-        [_googlePayBadgeImageView.bottomAnchor
-            constraintEqualToAnchor:self.contentView.bottomAnchor
-                           constant:-kTableViewVerticalSpacing],
-      ]];
-    }
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                        UITraitUserInterfaceStyle.self)
+                                        @[ UITraitUserInterfaceStyle.class ])
                          withAction:@selector(userInterfaceStyleDidChange)];
     }
   }

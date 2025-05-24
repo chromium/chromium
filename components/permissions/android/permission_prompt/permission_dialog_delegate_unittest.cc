@@ -35,18 +35,15 @@ TEST_F(PermissionDialogDelegateTest, DismissDialogWhenPrimaryPageChanges) {
   auto mock_permission_dialog_java_delegate =
       std::make_unique<testing::NiceMock<MockPermissionDialogJavaDelegate>>();
   EXPECT_CALL(*mock_permission_dialog_java_delegate, DismissDialog())
-      .Times(Exactly(1));
+      .Times(testing::AtLeast(1));
 
-  PermissionDialogDelegate* dialog = PermissionDialogDelegate::CreateForTesting(
+  auto dialog = PermissionDialogDelegate::CreateForTesting(
       web_contents(), nullptr, std::move(mock_permission_dialog_java_delegate));
 
   // Use NavigationSimulator to simulate a navigation from the browser to make
   // sure that PermissionDialogDelegate::PrimaryPageChanged gets called.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(url::kAboutBlankURL));
-
-  // Free PermissionDialogDelegate pointer.
-  dialog->Destroy(nullptr, nullptr);
 }
 
 }  // namespace test

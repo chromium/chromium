@@ -57,7 +57,7 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     const focusMovedFromOutside = e.relatedTarget === null ||
         !this.contains(e.relatedTarget as HTMLElement);
     if (focusMovedWithKeyboard && focusMovedFromOutside) {
-      this.getAllFocusableItems_()[0]!.focus();
+      this.getAllFocusableItems_()[0].focus();
     }
   }
 
@@ -82,12 +82,12 @@ export class CrMenuSelector extends CrMenuSelectorBase {
           // If pressing Shift+Tab, immediately focus the first element so that
           // when the event is finished processing, the browser automatically
           // focuses the previous focusable element outside of the menu.
-          items[0]!.focus();
+          items[0].focus();
         } else {
           // If pressing Tab, immediately focus the last element so that when
           // the event is finished processing, the browser automatically focuses
           // the next focusable element outside of the menu.
-          items[items.length - 1]!.focus({preventScroll: true});
+          items[items.length - 1].focus({preventScroll: true});
         }
         return;
       case 'ArrowDown':
@@ -110,7 +110,7 @@ export class CrMenuSelector extends CrMenuSelectorBase {
     }
 
     event.preventDefault();
-    items[newFocusedIndex]!.focus();
+    items[newFocusedIndex].focus();
   }
 }
 

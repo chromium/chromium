@@ -1,0 +1,18 @@
+../resources/menuitem-element.dat:
+14
+
+Test 14 of 20 in ../resources/menuitem-element.dat failed. Input:
+<!DOCTYPE html><select><menuitem></select>
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <menuitem>
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|   <body>
+|     <select>

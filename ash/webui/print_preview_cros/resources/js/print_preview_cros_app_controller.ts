@@ -7,7 +7,7 @@ import {DestinationManager} from './data/destination_manager.js';
 import {PreviewTicketManager} from './data/preview_ticket_manager.js';
 import {PrintTicketManager} from './data/print_ticket_manager.js';
 import {getPrintPreviewPageHandler} from './utils/mojo_data_providers.js';
-import {SessionContext} from './utils/print_preview_cros_app_types.js';
+import type {SessionContext} from './utils/print_preview_cros_app_types.js';
 
 /**
  * @fileoverview

@@ -26,7 +26,7 @@ suite('#overflow-menu', function() {
     document.body.appendChild(app);
     return Promise
         .all([
-          testService.whenCalled('queryHistory'),
+          testService.handler.whenCalled('queryHistory'),
           ensureLazyLoaded(),
         ])
         .then(function() {

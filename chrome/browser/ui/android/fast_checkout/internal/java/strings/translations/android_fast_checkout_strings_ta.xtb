@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ta">
+<translation id="1122068467107743258">பணிச் சுயவிவரம்</translation>
 <translation id="1275718070701477396">தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="138513070655895675">இந்த மெனு விருப்பத்தின் கீழ் வேறு பேமெண்ட் முறையை மாற்றலாம்.</translation>
 <translation id="2129442648318919291">முகவரிகளை நிர்வகிக்கலாம்.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">ஷிப்பிங் முகவரி</translation>
 <translation id="8873105120914375071">விரைவாக செக் அவுட் செய்ய வேண்டுமா?</translation>
 <translation id="9032876013752408138">எனது தகவலைத் தானாக நிரப்பு</translation>
+<translation id="932327136139879170">முகப்பு</translation>
 <translation id="984275831282074731">பேமெண்ட் முறைகள்</translation>
 </translationbundle>

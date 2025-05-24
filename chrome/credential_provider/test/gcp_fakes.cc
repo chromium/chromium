@@ -14,7 +14,6 @@
 #include <atlcomcli.h>
 #include <atlconv.h>
 #include <lm.h>
-#include <ntsecapi.h>
 #include <ntstatus.h>
 #include <process.h>
 #include <sddl.h>
@@ -29,6 +28,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "base/win/ntsecapi_shim.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/scoped_process_information.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
@@ -37,6 +37,7 @@
 #include "chrome/credential_provider/gaiacp/logging.h"
 #include "chrome/credential_provider/gaiacp/mdm_utils.h"
 #include "chrome/credential_provider/gaiacp/reg_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace credential_provider {
@@ -444,11 +445,11 @@ FakeOSUserManager::UserInfo::UserInfo(const wchar_t* domain,
       comment(comment),
       sid(sid) {}
 
-FakeOSUserManager::UserInfo::UserInfo() {}
+FakeOSUserManager::UserInfo::UserInfo() = default;
 
 FakeOSUserManager::UserInfo::UserInfo(const UserInfo& other) = default;
 
-FakeOSUserManager::UserInfo::~UserInfo() {}
+FakeOSUserManager::UserInfo::~UserInfo() = default;
 
 bool FakeOSUserManager::UserInfo::operator==(const UserInfo& other) const {
   return domain == other.domain && password == other.password &&
@@ -471,7 +472,7 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
                                             const std::wstring& password,
                                             const std::wstring& fullname,
                                             const std::wstring& comment,
-                                            const std::wstring& gaia_id,
+                                            const GaiaId& gaia_id,
                                             const std::wstring& email,
                                             BSTR* sid) {
   return CreateTestOSUser(username, password, fullname, comment, gaia_id, email,
@@ -482,7 +483,7 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
                                             const std::wstring& password,
                                             const std::wstring& fullname,
                                             const std::wstring& comment,
-                                            const std::wstring& gaia_id,
+                                            const GaiaId& gaia_id,
                                             const std::wstring& email,
                                             const std::wstring& domain,
                                             BSTR* sid) {
@@ -494,7 +495,8 @@ HRESULT FakeOSUserManager::CreateTestOSUser(const std::wstring& username,
   }
 
   if (!gaia_id.empty()) {
-    hr = SetUserProperty(OLE2CW(*sid), kUserId, gaia_id);
+    hr = SetUserProperty(OLE2CW(*sid), kUserId,
+                         base::UTF8ToWide(gaia_id.ToString()));
     if (FAILED(hr)) {
       return hr;
     }
@@ -554,7 +556,7 @@ FakeScopedLsaPolicy::FakeScopedLsaPolicy(FakeScopedLsaPolicyFactory* factory)
   // running elevated.  That's OK, everything is faked out anyway.
 }
 
-FakeScopedLsaPolicy::~FakeScopedLsaPolicy() {}
+FakeScopedLsaPolicy::~FakeScopedLsaPolicy() = default;
 
 HRESULT FakeScopedLsaPolicy::StorePrivateData(const wchar_t* key,
                                               const wchar_t* value) {
@@ -635,7 +637,7 @@ FakeScopedUserProfile::FakeScopedUserProfile(const std::wstring& sid,
                   domain.c_str(), username.c_str(), password.c_str()) == S_OK;
 }
 
-FakeScopedUserProfile::~FakeScopedUserProfile() {}
+FakeScopedUserProfile::~FakeScopedUserProfile() = default;
 
 HRESULT FakeScopedUserProfile::SaveAccountInfo(
     const base::Value::Dict& properties) {
@@ -677,7 +679,7 @@ FakeWinHttpUrlFetcherFactory::RequestData::RequestData(const RequestData& rhs)
 
 FakeWinHttpUrlFetcherFactory::RequestData::~RequestData() = default;
 
-FakeWinHttpUrlFetcherFactory::Response::Response() {}
+FakeWinHttpUrlFetcherFactory::Response::Response() = default;
 
 FakeWinHttpUrlFetcherFactory::Response::Response(const Response& rhs)
     : headers(rhs.headers),
@@ -792,7 +794,7 @@ std::unique_ptr<WinHttpUrlFetcher> FakeWinHttpUrlFetcherFactory::Create(
 FakeWinHttpUrlFetcher::FakeWinHttpUrlFetcher(const GURL& url)
     : WinHttpUrlFetcher() {}
 
-FakeWinHttpUrlFetcher::~FakeWinHttpUrlFetcher() {}
+FakeWinHttpUrlFetcher::~FakeWinHttpUrlFetcher() = default;
 
 bool FakeWinHttpUrlFetcher::IsValid() const {
   return true;

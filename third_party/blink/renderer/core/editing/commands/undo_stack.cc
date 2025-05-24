@@ -29,6 +29,7 @@
 #include "base/auto_reset.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/editing/commands/undo_step.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -137,6 +138,25 @@ void UndoStack::ElementRemoved(Element* element) {
       redo_stack_.end());
 
   element->SetHasUndoStack(false);
+}
+
+String UndoStack::ToString() const {
+  StringBuilder builder;
+  builder.Append("UndoStack {undo_stack:[");
+  const char* delimiter = "\n  ";
+  for (const auto& step : UndoSteps()) {
+    builder.Append(delimiter);
+    builder.Append(step->ToString());
+  }
+  builder.Append("], redo_stack:[");
+  delimiter = "\n  ";
+  for (const auto& step : RedoSteps()) {
+    builder.Append(delimiter);
+    builder.Append(step->ToString());
+    delimiter = ",\n  ";
+  }
+  builder.Append("]}");
+  return builder.ReleaseString();
 }
 
 }  // namespace blink

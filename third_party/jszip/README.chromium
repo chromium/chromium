@@ -7,7 +7,7 @@ License: MIT
 License File: LICENSE
 Shipped: yes
 Security Critical: yes
-CPEPrefix: cpe:/a:jszip_project:jszip:3.1.0::
+CPEPrefix: cpe:/a:jszip_project:jszip:3.10.1::
 
 Description:
 Library for handling .zip files in JavaScript.

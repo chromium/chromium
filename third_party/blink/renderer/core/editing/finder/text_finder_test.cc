@@ -107,7 +107,7 @@ TEST_F(TextFinderTest, FindTextSimple) {
   Node* text_node = GetDocument().body()->firstChild();
 
   int identifier = 0;
-  WebString search_text(String("FindMe"));
+  String search_text("FindMe");
   auto find_options =
       mojom::blink::FindOptions::New();  // Default + add testing flag.
   bool wrap_within_frame = true;
@@ -223,7 +223,7 @@ TEST_F(TextFinderTest, FindTextNotFound) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
-  WebString search_text(String("Boo"));
+  String search_text("Boo");
   auto find_options =
       mojom::blink::FindOptions::New();  // Default + add testing flag.
   bool wrap_within_frame = true;
@@ -244,7 +244,7 @@ TEST_F(TextFinderTest, FindTextInShadowDOM) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
-  WebString search_text(String("foo"));
+  String search_text("foo");
   auto find_options =
       mojom::blink::FindOptions::New();  // Default + add testing flag.
   bool wrap_within_frame = true;
@@ -352,7 +352,7 @@ TEST_F(TextFinderTest, ScopeTextMatchesSimple) {
                                             *find_options);
 
   EXPECT_EQ(2, GetTextFinder().TotalMatchCount());
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(2u, match_rects.size());
   EXPECT_EQ(FindInPageRect(text_node, 4, text_node, 10), match_rects[0]);
   EXPECT_EQ(FindInPageRect(text_node, 14, text_node, 20), match_rects[1]);
@@ -390,7 +390,7 @@ TEST_F(TextFinderTest, ScopeTextMatchesRepeated) {
 
   // Only searchText2 should be highlighted.
   EXPECT_EQ(2, GetTextFinder().TotalMatchCount());
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(2u, match_rects.size());
   EXPECT_EQ(FindInPageRect(text_node, 4, text_node, 10), match_rects[0]);
   EXPECT_EQ(FindInPageRect(text_node, 14, text_node, 20), match_rects[1]);
@@ -420,7 +420,7 @@ TEST_F(TextFinderTest, ScopeTextMatchesWithShadowDOM) {
   // so in this case the matches will be returned in the order of
   // <i> -> <u> -> <b>.
   EXPECT_EQ(3, GetTextFinder().TotalMatchCount());
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(3u, match_rects.size());
   EXPECT_EQ(FindInPageRect(text_in_i_element, 0, text_in_i_element, 3),
             match_rects[0]);
@@ -447,7 +447,7 @@ TEST_F(TextFinderTest, ScopeRepeatPatternTextMatches) {
                                             *find_options);
 
   EXPECT_EQ(2, GetTextFinder().TotalMatchCount());
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(2u, match_rects.size());
   EXPECT_EQ(FindInPageRect(text_node, 0, text_node, 5), match_rects[0]);
   EXPECT_EQ(FindInPageRect(text_node, 6, text_node, 11), match_rects[1]);
@@ -471,7 +471,7 @@ TEST_F(TextFinderTest, OverlappingMatches) {
 
   // We shouldn't find overlapped matches.
   EXPECT_EQ(1, GetTextFinder().TotalMatchCount());
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(1u, match_rects.size());
   EXPECT_EQ(FindInPageRect(text_node, 1, text_node, 4), match_rects[0]);
 }
@@ -493,7 +493,7 @@ TEST_F(TextFinderTest, SequentialMatches) {
                                             *find_options);
 
   EXPECT_EQ(3, GetTextFinder().TotalMatchCount());
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(3u, match_rects.size());
   EXPECT_EQ(FindInPageRect(text_node, 0, text_node, 2), match_rects[0]);
   EXPECT_EQ(FindInPageRect(text_node, 2, text_node, 4), match_rects[1]);
@@ -505,7 +505,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOM) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
-  WebString search_text(String("FindMe"));
+  String search_text("FindMe");
   auto find_options =
       mojom::blink::FindOptions::New();  // Default + add testing flag.
   find_options->run_synchronously_for_testing = true;
@@ -547,7 +547,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOM) {
 
   EXPECT_EQ(2, GetTextFinder().TotalMatchCount());
 
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(2u, match_rects.size());
   Node* text_in_b_element = GetDocument().body()->firstChild()->firstChild();
   Node* text_in_i_element = GetDocument().body()->lastChild()->firstChild();
@@ -601,7 +601,7 @@ TEST_F(TextFinderTest, FindTextJavaScriptUpdatesDOMAfterNoMatches) {
 
   EXPECT_EQ(1, GetTextFinder().TotalMatchCount());
 
-  WebVector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
+  Vector<gfx::RectF> match_rects = GetTextFinder().FindMatchRects();
   ASSERT_EQ(1u, match_rects.size());
   Node* text_in_i_element = GetDocument().body()->lastChild()->firstChild();
   EXPECT_EQ(FindInPageRect(text_in_i_element, 2, text_in_i_element, 8),
@@ -671,8 +671,8 @@ TEST_F(TextFinderTest, BeforeMatchEvent) {
 
   auto find_options = mojom::blink::FindOptions::New();
   find_options->run_synchronously_for_testing = true;
-  GetTextFinder().Find(/*identifier=*/0, WebString(String("bar")),
-                       *find_options, /*wrap_within_frame=*/false);
+  GetTextFinder().Find(/*identifier=*/0, "bar", *find_options,
+                       /*wrap_within_frame=*/false);
 
   v8::Local<v8::Value> beforematch_fired_on_foo =
       EvalJs("window.beforematchFiredOnFoo");
@@ -719,8 +719,8 @@ TEST_F(TextFinderTest, BeforeMatchEventRemoveElement) {
 
   auto find_options = mojom::blink::FindOptions::New();
   find_options->run_synchronously_for_testing = true;
-  GetTextFinder().Find(/*identifier=*/0, WebString(String("foo")),
-                       *find_options, /*wrap_within_frame=*/false);
+  GetTextFinder().Find(/*identifier=*/0, "foo", *find_options,
+                       /*wrap_within_frame=*/false);
 
   v8::Local<v8::Value> beforematch_fired_on_foo =
       EvalJs("window.beforematchFiredOnFoo");
@@ -745,7 +745,7 @@ TEST_F(TextFinderSimTest, BeforeMatchEventAsyncExpandHighlight) {
   )HTML");
   Compositor().BeginFrame();
 
-  GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),
+  GetTextFinder().Find(/*identifier=*/0, "hidden",
                        *mojom::blink::FindOptions::New(),
                        /*wrap_within_frame=*/false);
 
@@ -771,7 +771,7 @@ TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUkm) {
   Compositor().BeginFrame();
   EXPECT_EQ(recorder.entries_count(), 0u);
 
-  GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),
+  GetTextFinder().Find(/*identifier=*/0, "hidden",
                        *mojom::blink::FindOptions::New(),
                        /*wrap_within_frame=*/false);
 
@@ -799,7 +799,7 @@ TEST_F(TextFinderSimTest, BeforeMatchExpandedHiddenMatchableUseCounter) {
   )HTML");
   Compositor().BeginFrame();
 
-  GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),
+  GetTextFinder().Find(/*identifier=*/0, "hidden",
                        *mojom::blink::FindOptions::New(),
                        /*wrap_within_frame=*/false);
 
@@ -819,7 +819,7 @@ TEST_F(TextFinderSimTest,
   )HTML");
   Compositor().BeginFrame();
 
-  GetTextFinder().Find(/*identifier=*/0, WebString(String("hidden")),
+  GetTextFinder().Find(/*identifier=*/0, "hidden",
                        *mojom::blink::FindOptions::New(),
                        /*wrap_within_frame=*/false);
 
@@ -835,7 +835,7 @@ TEST_F(TextFinderTest, FindTextAcrossCommentNode) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   int identifier = 0;
-  WebString search_text(String("abcdef"));
+  String search_text("abcdef");
   auto find_options = mojom::blink::FindOptions::New();
   find_options->run_synchronously_for_testing = true;
   bool wrap_within_frame = true;

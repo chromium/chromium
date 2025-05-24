@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -17,10 +18,6 @@ proto_library("key_pinning_proto") {
     "key_pinning.proto",
     "kp_timestamp.proto",
   ]
-}
-
-proto_library("server_certificate_database_proto") {
-  sources = [ "server_certificate_database.proto" ]
 }
 
 if (is_android) {

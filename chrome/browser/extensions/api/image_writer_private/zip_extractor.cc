@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/image_writer_private/zip_extractor.h"
 
 #include <algorithm>
@@ -24,7 +19,7 @@ namespace image_writer {
 namespace {
 
 // https://pkware.cachefly.net/webdocs/casestudies/APPNOTE.TXT
-constexpr char kExpectedMagic[4] = {'P', 'K', 0x03, 0x04};
+constexpr unsigned char kExpectedMagic[4] = {'P', 'K', 0x03, 0x04};
 
 }  // namespace
 
@@ -37,12 +32,13 @@ bool ZipExtractor::IsZipFile(const base::FilePath& image_path) {
     return false;
 
   constexpr size_t kExpectedSize = sizeof(kExpectedMagic);
-  char actual_magic[kExpectedSize] = {};
-  if (infile.ReadAtCurrentPos(actual_magic, kExpectedSize) != kExpectedSize)
+  std::array<unsigned char, kExpectedSize> actual_magic = {};
+  if (infile.ReadAtCurrentPos(actual_magic).value_or(0) != kExpectedSize) {
     return false;
+  }
 
-  return std::equal(kExpectedMagic, kExpectedMagic + kExpectedSize,
-                    actual_magic);
+  return std::equal(std::begin(kExpectedMagic), std::end(kExpectedMagic),
+                    actual_magic.begin());
 }
 
 // static

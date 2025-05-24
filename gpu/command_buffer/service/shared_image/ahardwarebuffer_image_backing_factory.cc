@@ -22,11 +22,14 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/ahardwarebuffer_utils.h"
@@ -40,12 +43,15 @@
 #include "gpu/command_buffer/service/shared_image/gl_texture_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_passthrough_android_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_vk_android_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_finch_features.h"
+#include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_image.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkBackendSurface.h"
 #include "third_party/skia/include/private/chromium/GrPromiseImageTexture.h"
@@ -138,10 +144,58 @@ GLuint CreateAndBindTexture(EGLImage image, GLenum target) {
   return service_id;
 }
 
-constexpr viz::SharedImageFormat kSupportedFormats[6]{
-    viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kRGB_565,
-    viz::SinglePlaneFormat::kBGR_565,   viz::SinglePlaneFormat::kRGBA_F16,
-    viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kRGBA_1010102};
+std::optional<uint64_t> GetRecommendedAHBUsage(VkPhysicalDevice device,
+                                               viz::SharedImageFormat format) {
+  // TODO(crbug.com/40836080): Share this logic with VulkanImage
+  VkPhysicalDeviceExternalImageFormatInfo external_image_format_info = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_EXTERNAL_IMAGE_FORMAT_INFO,
+      .handleType =
+          VK_EXTERNAL_MEMORY_HANDLE_TYPE_ANDROID_HARDWARE_BUFFER_BIT_ANDROID,
+  };
+
+  VkPhysicalDeviceImageFormatInfo2 image_format_info = {
+      .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2,
+      .pNext = &external_image_format_info,
+      .format = ToVkFormat(format, /*plane_index=*/0),
+      .type = VK_IMAGE_TYPE_2D,
+      .tiling = VK_IMAGE_TILING_OPTIMAL,
+      // This corresponds to AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+      // AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT that we always pass to create
+      // AHB and should match what VulkanImage will pass to vkCreateImageInfo.
+      .usage =
+          VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+          VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT |
+          VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT,
+      .flags = 0,
+  };
+
+  VkAndroidHardwareBufferUsageANDROID ahb_usage = {
+      .sType = VK_STRUCTURE_TYPE_ANDROID_HARDWARE_BUFFER_USAGE_ANDROID,
+  };
+
+  VkImageFormatProperties2 image_format_properties = {
+      .sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2,
+      .pNext = &ahb_usage,
+  };
+
+  VkResult res = vkGetPhysicalDeviceImageFormatProperties2(
+      device, &image_format_info, &image_format_properties);
+  if (res != VK_SUCCESS) {
+    if (res != VK_ERROR_OUT_OF_HOST_MEMORY &&
+        res != VK_ERROR_OUT_OF_DEVICE_MEMORY) {
+      SCOPED_CRASH_KEY_STRING32("vulkan format properties", "error",
+                                base::NumberToString(res));
+      base::debug::DumpWithoutCrashing();
+    }
+    return std::nullopt;
+  }
+  return ahb_usage.androidHardwareBufferUsage;
+}
+
+constexpr viz::SharedImageFormat kSupportedFormats[5]{
+    viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGR_565,
+    viz::SinglePlaneFormat::kRGBA_F16, viz::SinglePlaneFormat::kRGBX_8888,
+    viz::SinglePlaneFormat::kRGBA_1010102};
 
 // Returns whether the format is supported by AHardwareBuffer.
 // TODO(vikassoni): In future we will need to expose the set of formats and
@@ -162,8 +216,6 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
 
   if (format == viz::SinglePlaneFormat::kRGBA_8888) {
     return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
-  } else if (format == viz::SinglePlaneFormat::kRGB_565) {
-    return AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM;
   } else if (format == viz::SinglePlaneFormat::kBGR_565) {
     return AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
@@ -174,8 +226,7 @@ unsigned int AHardwareBufferFormat(viz::SharedImageFormat format) {
     return AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  NOTREACHED();
 }
 
 constexpr SharedImageUsageSet kSupportedUsage =
@@ -482,12 +533,11 @@ AHardwareBufferImageBacking::ProduceSkiaGraphite(
   // NOTE: AHardwareBufferImageBacking doesn't support multiplanar formats,
   // so there is no need to specify the `is_yuv_plane` or
   // `legacy_plane_index` optional parameters.
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -557,8 +607,16 @@ AHardwareBufferImageBacking::ProduceDawn(
   // backing.
   DCHECK(hardware_buffer_handle_.is_valid());
 
+  bool has_required_wgpu_ahb_features =
+      device.HasFeature(
+          wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer) &&
+      device.HasFeature(wgpu::FeatureName::SharedFenceSyncFD);
+
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  if (backend_type == wgpu::BackendType::OpenGLES) {
+  // Some old GL devices do not have SyncFD support, fall back to the
+  // EGLimage-based backing.
+  if (backend_type == wgpu::BackendType::OpenGLES &&
+      !has_required_wgpu_ahb_features) {
     std::unique_ptr<GLTextureImageRepresentationBase> gl_representation;
     if (use_passthrough_) {
       gl_representation = ProduceGLTexturePassthrough(manager, tracker);
@@ -571,20 +629,21 @@ AHardwareBufferImageBacking::ProduceDawn(
 
     auto result = std::make_unique<DawnEGLImageRepresentation>(
         std::move(gl_representation), std::move(egl_image), manager, this,
-        tracker, device);
+        tracker, device, std::move(view_formats));
     return result;
   }
 #endif
 
-  DCHECK_EQ(backend_type, wgpu::BackendType::Vulkan);
   wgpu::TextureFormat webgpu_format = ToDawnFormat(format());
   if (webgpu_format == wgpu::TextureFormat::Undefined) {
     LOG(ERROR) << "Unable to fine a suitable WebGPU format.";
     return nullptr;
   }
 
+  DCHECK(has_required_wgpu_ahb_features);
+
   return std::make_unique<DawnAHardwareBufferImageRepresentation>(
-      manager, this, tracker, wgpu::Device(device), webgpu_format,
+      manager, this, tracker, wgpu::Device(device), backend_type, webgpu_format,
       std::move(view_formats), hardware_buffer_handle_.get());
 #else
   return nullptr;
@@ -687,10 +746,11 @@ AHardwareBufferImageBackingFactory::FormatInfoForSupportedFormat(
 
 AHardwareBufferImageBackingFactory::AHardwareBufferImageBackingFactory(
     const gles2::FeatureInfo* feature_info,
-    const GpuPreferences& gpu_preferences)
+    const GpuPreferences& gpu_preferences,
+    const scoped_refptr<viz::VulkanContextProvider>& vulkan_context_provider)
     : SharedImageBackingFactory(kSupportedUsage),
-      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
-                       gl::PassthroughCommandDecoderSupported()),
+      vulkan_context_provider_(vulkan_context_provider),
+      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
       gl_format_caps_(GLFormatCaps(feature_info)) {
   DCHECK(base::AndroidHardwareBufferCompat::IsSupportAvailable());
 
@@ -781,13 +841,49 @@ AHardwareBufferImageBackingFactory::MakeBacking(
   hwb_desc.height = size.height();
   hwb_desc.format = format_info.ahb_format;
 
-  // Set usage so that gpu can both read as a texture/write as a framebuffer
-  // attachment. TODO(vikassoni): Find out if we need to set some more usage
-  // flags based on the usage params in the current function call.
-  hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
-                   AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
-  if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-    hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
+  if (base::FeatureList::IsEnabled(
+          features::kUseHardwareBufferUsageFlagsFromVulkan)) {
+    hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+                     AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+      hwb_desc.usage |= AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
+    }
+
+    if (!usage.Has(SHARED_IMAGE_USAGE_SCANOUT) ||
+        base::FeatureList::IsEnabled(
+            features::kAllowHardwareBufferUsageFlagsFromVulkanForScanout)) {
+      if (vulkan_context_provider_) {
+        std::optional<uint64_t> ahb_usage =
+            GetRecommendedAHBUsage(vulkan_context_provider_->GetDeviceQueue()
+                                       ->GetVulkanPhysicalDevice(),
+                                   format);
+        if (!ahb_usage.has_value()) {
+          return nullptr;
+        }
+        hwb_desc.usage |= ahb_usage.value();
+      } else {
+        // For GL we use flags from SurfaceControl::RequiredUsage.
+        // TODO(crbug.com/40836080): Add support for Dawn
+        if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+          hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
+        }
+      }
+    } else {
+      // Fallback to old behaviour if we're adding
+      // AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY and
+      // kAllowHardwareBufferUsageFlagsFromVulkanForScanout is off.
+      if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+        hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
+      }
+    }
+  } else {
+    // Set usage so that gpu can both read as a texture/write as a framebuffer
+    // attachment.
+    hwb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
+                     AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
+    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
+      hwb_desc.usage |= gfx::SurfaceControl::RequiredUsage();
+    }
   }
 
   // Add WRITE usage as we'll it need to upload data
@@ -958,6 +1054,7 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   CHECK_EQ(handle.type, gfx::ANDROID_HARDWARE_BUFFER);
   if (!ValidateUsage(usage, size, format)) {
@@ -973,8 +1070,8 @@ AHardwareBufferImageBackingFactory::CreateSharedImage(
   auto backing = std::make_unique<AHardwareBufferImageBacking>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       std::move(debug_label), std::move(handle.android_hardware_buffer),
-      estimated_size.value(), false, base::ScopedFD(), use_passthrough_,
-      gl_format_caps_);
+      estimated_size.value(), is_thread_safe, base::ScopedFD(),
+      use_passthrough_, gl_format_caps_);
 
   backing->SetCleared();
   return backing;

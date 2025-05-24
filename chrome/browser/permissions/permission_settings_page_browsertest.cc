@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -15,7 +16,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -30,33 +30,50 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(
     kWebContentsInteractionTestUtilCustomEventId);
 
 const WebContentsInteractionTestUtil::DeepQuery kAskButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-radio-button"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-radio-button"};
 
 const WebContentsInteractionTestUtil::DeepQuery kQuietButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-quiet"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-quiet"};
 
 const WebContentsInteractionTestUtil::DeepQuery kCpssButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-cpss"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-cpss"};
 
 const WebContentsInteractionTestUtil::DeepQuery kLoudButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-ask-loud"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-ask-loud"};
 
 const WebContentsInteractionTestUtil::DeepQuery kBlockButton{
-    "settings-ui", "settings-main", "settings-basic-page",
-    "settings-privacy-page", "#notification-block"};
+    "settings-ui",
+    "settings-main",
+    "settings-basic-page",
+    "settings-privacy-page",
+    "settings-notifications-page",
+    "#notification-block"};
 
 }  // namespace
 
 class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
  public:
-  PredictionSettingsPageBrowserTest() {
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{permissions::features::kPermissionDedicatedCpssSetting, {}}}, {});
-  }
+  PredictionSettingsPageBrowserTest() = default;
 
   ~PredictionSettingsPageBrowserTest() override = default;
 
@@ -82,6 +99,10 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
 
   GURL GetNotificationSettingsUrl() {
     return GURL("chrome://settings/content/notifications");
+  }
+
+  GURL GetGeolocationSettingsUrl() {
+    return GURL("chrome://settings/content/location");
   }
 
   auto WaitFor(const WebContentsInteractionTestUtil::DeepQuery& element,
@@ -186,8 +207,12 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
 
               const WebContentsInteractionTestUtil::DeepQuery kAskQuiet{
-                  "settings-ui", "settings-main", "settings-basic-page",
-                  "settings-privacy-page", "#notification-ask-quiet"};
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-quiet"};
               util->EvaluateAt(kAskQuiet, "kAskQuiet => kAskQuiet.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -207,8 +232,128 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
                   pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
 
               const WebContentsInteractionTestUtil::DeepQuery kAskCpss{
-                  "settings-ui", "settings-main", "settings-basic-page",
-                  "settings-privacy-page", "#notification-ask-cpss"};
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-cpss"};
+              util->EvaluateAt(kAskCpss, "kAskCpss => kAskCpss.click()");
+              EXPECT_EQ(CONTENT_SETTING_ASK,
+                        settings_map->GetDefaultContentSetting(
+                            ContentSettingsType::NOTIFICATIONS, nullptr));
+              EXPECT_FALSE(pref_service->GetBoolean(
+                  prefs::kEnableQuietNotificationPermissionUi));
+              EXPECT_TRUE(
+                  pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
+            }))
+        .Build();
+  }
+
+  auto TestClickLoud() {
+    return ui::InteractionSequence::StepBuilder()
+        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                 kWebContentsInteractionTestUtilCustomEventId)
+        .SetElementID(kWebContentsElementId)
+        .SetStartCallback(
+            base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
+                                           ui::TrackedElement* element) {
+              auto util =
+                  WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+                      browser(), kWebContentsElementId);
+
+              util->EvaluateAt(kAskButton, "askButton => askButton.click()");
+              auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
+                  browser()->profile());
+              EXPECT_EQ(CONTENT_SETTING_ASK,
+                        settings_map->GetDefaultContentSetting(
+                            ContentSettingsType::NOTIFICATIONS, nullptr));
+              auto* pref_service = browser()->profile()->GetPrefs();
+              EXPECT_FALSE(pref_service->GetBoolean(
+                  prefs::kEnableQuietNotificationPermissionUi));
+
+              util->EvaluateAt(kLoudButton, "loudButton => loudButton.click()");
+              EXPECT_EQ(CONTENT_SETTING_ASK,
+                        settings_map->GetDefaultContentSetting(
+                            ContentSettingsType::NOTIFICATIONS, nullptr));
+              EXPECT_FALSE(pref_service->GetBoolean(
+                  prefs::kEnableQuietNotificationPermissionUi));
+              EXPECT_FALSE(
+                  pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
+            }))
+        .Build();
+  }
+
+  auto TestClickQuiet() {
+    return ui::InteractionSequence::StepBuilder()
+        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                 kWebContentsInteractionTestUtilCustomEventId)
+        .SetElementID(kWebContentsElementId)
+        .SetStartCallback(
+            base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
+                                           ui::TrackedElement* element) {
+              auto util =
+                  WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+                      browser(), kWebContentsElementId);
+
+              util->EvaluateAt(kAskButton, "askButton => askButton.click()");
+              auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
+                  browser()->profile());
+              EXPECT_EQ(CONTENT_SETTING_ASK,
+                        settings_map->GetDefaultContentSetting(
+                            ContentSettingsType::NOTIFICATIONS, nullptr));
+              auto* pref_service = browser()->profile()->GetPrefs();
+              EXPECT_FALSE(pref_service->GetBoolean(
+                  prefs::kEnableQuietNotificationPermissionUi));
+
+              const WebContentsInteractionTestUtil::DeepQuery kAskQuiet{
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-quiet"};
+              util->EvaluateAt(kAskQuiet, "kAskQuiet => kAskQuiet.click()");
+              EXPECT_EQ(CONTENT_SETTING_ASK,
+                        settings_map->GetDefaultContentSetting(
+                            ContentSettingsType::NOTIFICATIONS, nullptr));
+              EXPECT_TRUE(pref_service->GetBoolean(
+                  prefs::kEnableQuietNotificationPermissionUi));
+              EXPECT_FALSE(
+                  pref_service->GetBoolean(prefs::kEnableNotificationCPSS));
+            }))
+        .Build();
+  }
+
+  auto TestClickCPSS() {
+    return ui::InteractionSequence::StepBuilder()
+        .SetType(ui::InteractionSequence::StepType::kCustomEvent,
+                 kWebContentsInteractionTestUtilCustomEventId)
+        .SetElementID(kWebContentsElementId)
+        .SetStartCallback(
+            base::BindLambdaForTesting([&](ui::InteractionSequence* sequence,
+                                           ui::TrackedElement* element) {
+              auto util =
+                  WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+                      browser(), kWebContentsElementId);
+
+              util->EvaluateAt(kAskButton, "askButton => askButton.click()");
+              auto* settings_map = HostContentSettingsMapFactory::GetForProfile(
+                  browser()->profile());
+              EXPECT_EQ(CONTENT_SETTING_ASK,
+                        settings_map->GetDefaultContentSetting(
+                            ContentSettingsType::NOTIFICATIONS, nullptr));
+              auto* pref_service = browser()->profile()->GetPrefs();
+              EXPECT_FALSE(pref_service->GetBoolean(
+                  prefs::kEnableQuietNotificationPermissionUi));
+
+              const WebContentsInteractionTestUtil::DeepQuery kAskCpss{
+                  "settings-ui",
+                  "settings-main",
+                  "settings-basic-page",
+                  "settings-privacy-page",
+                  "settings-notifications-page",
+                  "#notification-ask-cpss"};
               util->EvaluateAt(kAskCpss, "kAskCpss => kAskCpss.click()");
               EXPECT_EQ(CONTENT_SETTING_ASK,
                         settings_map->GetDefaultContentSetting(
@@ -288,9 +433,6 @@ class PredictionSettingsPageBrowserTest : public InteractiveBrowserTest {
             }))
         .Build();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
@@ -355,4 +497,44 @@ IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
       NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
       WaitFor(kBlockButton),
       TestRadioGroupState(false, false, false, false, false));
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
+                       TestNotificationLoudRadioGroupStateForMetrics) {
+  base::HistogramTester histogram_tester;
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
+      WaitFor(kLoudButton), TestClickLoud(), Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "Permissions.CPSS.SiteSettingsChanged.Loud",
+            ContentSettingsType::NOTIFICATIONS, 1);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
+                       TestNotificationQuietRadioGroupStateForMetrics) {
+  base::HistogramTester histogram_tester;
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
+      WaitFor(kQuietButton), TestClickQuiet(), Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "Permissions.CPSS.SiteSettingsChanged.Quiet",
+            ContentSettingsType::NOTIFICATIONS, 1);
+      }));
+}
+
+IN_PROC_BROWSER_TEST_F(PredictionSettingsPageBrowserTest,
+                       TestNotificationCPSSRadioGroupStateForMetrics) {
+  base::HistogramTester histogram_tester;
+  RunTestSequenceInContext(
+      context(), InstrumentTab(kWebContentsElementId),
+      SetPrefs(true, false, false),
+      NavigateWebContents(kWebContentsElementId, GetNotificationSettingsUrl()),
+      WaitFor(kCpssButton), TestClickCPSS(), Do([&]() {
+        histogram_tester.ExpectBucketCount(
+            "Permissions.CPSS.SiteSettingsChanged.CPSS",
+            ContentSettingsType::NOTIFICATIONS, 1);
+      }));
 }

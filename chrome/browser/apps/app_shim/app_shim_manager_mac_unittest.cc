@@ -54,7 +54,7 @@ using ::testing::WithArgs;
 
 class MockDelegate : public AppShimManager::Delegate {
  public:
-  ~MockDelegate() override {}
+  ~MockDelegate() override = default;
 
   MOCK_METHOD2(ShowAppWindows, bool(Profile*, const std::string&));
   MOCK_METHOD2(CloseAppWindows, void(Profile*, const std::string&));
@@ -343,7 +343,7 @@ class TestHost : public AppShimHost {
         test_weak_factory_(this) {}
   TestHost(const TestHost&) = delete;
   TestHost& operator=(const TestHost&) = delete;
-  ~TestHost() override {}
+  ~TestHost() override = default;
 
   chrome::mojom::AppShim* GetAppShim() const override {
     return test_app_shim_.get();
@@ -379,10 +379,10 @@ class TestHost : public AppShimHost {
 
 class AppShimManagerTest : public testing::Test {
  protected:
-  AppShimManagerTest() {}
+  AppShimManagerTest() = default;
   AppShimManagerTest(const AppShimManagerTest&) = delete;
   AppShimManagerTest& operator=(const AppShimManagerTest&) = delete;
-  ~AppShimManagerTest() override {}
+  ~AppShimManagerTest() override = default;
 
   void SetUp() override {
     profile_path_a_ = profile_a_.GetPath();

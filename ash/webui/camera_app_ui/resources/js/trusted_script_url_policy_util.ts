@@ -18,6 +18,7 @@ const ALLOWED_SCRIPT_URLS = new Set([
 const trustedScriptUrlPolicy =
     assertExists(window.trustedTypes)
         .createPolicy('camera-app-trusted-script', {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
           createScriptURL: (url: string) => {
             if (!ALLOWED_SCRIPT_URLS.has(url)) {
               throw new Error('Script URL not allowed: ' + url);

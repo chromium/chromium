@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
@@ -21,12 +22,20 @@ namespace test {
 class BitstreamProcessor {
  public:
   struct BitstreamRef : public base::RefCountedThreadSafe<BitstreamRef> {
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     static scoped_refptr<BitstreamRef> Create(
         scoped_refptr<DecoderBuffer> buffer,
         const BitstreamBufferMetadata& metadata,
         int32_t id,
         base::TimeTicks source_timestamp,
         base::OnceClosure release_cb);
+    BitstreamRef(base::PassKey<BitstreamRef>,
+                 scoped_refptr<DecoderBuffer> buffer,
+                 const BitstreamBufferMetadata& metadata,
+                 int32_t id,
+                 base::TimeTicks source_timestamp,
+                 base::OnceClosure release_cb);
     BitstreamRef() = delete;
     BitstreamRef(const BitstreamRef&) = delete;
     BitstreamRef& operator=(const BitstreamRef&) = delete;
@@ -40,11 +49,6 @@ class BitstreamProcessor {
 
    private:
     friend class base::RefCountedThreadSafe<BitstreamRef>;
-    BitstreamRef(scoped_refptr<DecoderBuffer> buffer,
-                 const BitstreamBufferMetadata& metadata,
-                 int32_t id,
-                 base::TimeTicks source_timestamp,
-                 base::OnceClosure release_cb);
     ~BitstreamRef();
 
     base::OnceClosure release_cb;

@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Vlera hyrëse për çelësin privat duhet të jetë një shteg i vlefshëm.</translation>
 <translation id="388442998277590542">Faqja e opsioneve <ph name="OPTIONS_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="3984413272403535372">Gabim gjatë nënshkrimit të shtesës.</translation>
-<translation id="4115165561519362854">Administratori i kësaj pajisjeje kërkon që <ph name="EXTENSION_NAME" /> të ketë një version minimal të <ph name="EXTENSION_VERSION" />. Nuk mund të aktivizohet derisa të jetë përditësuar në atë version (ose më të lartë).</translation>
 <translation id="4233778200880751280">Faqja informuese <ph name="ABOUT_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="471800408830181311">Dështoi të nxjerrë çelësin privat.</translation>
 <translation id="4811956658694082538">Nuk mundi të instalonte paketën sepse një vegël pësoi ndërprerje aksidentale. Provo rifillimin e Chrome dhe provo sërish.</translation>
@@ -50,12 +49,14 @@
 <translation id="7068383018033524534">Skedari i manifestit është i pavlefshëm</translation>
 <translation id="7217838517480956708">Administratori i kësaj pajisjeje kërkon instalimin e <ph name="EXTENSION_NAME" />. Ajo nuk mund të hiqet apo modifikohet.</translation>
 <translation id="7612608473764576263">Vlera hyrëse për çelësin privat duhet të jetë në një format të vlefshëm (çelësi RSA me enkodim PEM me formatin PKCS#8).</translation>
+<translation id="7876803335449432072">Skedari "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes nuk mund të ngarkohej. Fletët e stilizuara të skripteve të përmbajtjes mund të ngarkohen vetëm nga skedarë të mbështetur të fletëve të stilizuara, si p.sh. skedarët .css.</translation>
 <translation id="7939686037314084444">Shtesa nuk u ngarkua siç duhet. Mund të mos jetë në gjendje të interceptojë kërkesat e rrjetit.</translation>
 <translation id="7972881773422714442">Opsionet: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Drejtuar për nga përdoruesi</translation>
 <translation id="8047248493720652249">Kjo shtesë nuk arriti ta emërtonte shkarkimin "<ph name="ATTEMPTED_FILENAME" />" sepse një shtesë tjetër (<ph name="EXTENSION_NAME" />) përcaktoi një emër tjetër të skedarit "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> nga <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">Skedari i manifestit mungon ose është i palexueshëm</translation>
+<translation id="8621383749470166852">Skedari "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes nuk mund të ngarkohej. Skriptet e përmbajtjes mund të ngarkohen vetëm nga skedarë të mbështetur JavaScript, si p.sh. skedarët .js.</translation>
 <translation id="8636666366616799973">Paketa është e pavlefshme. Detajet: <ph name="ERROR_MESSAGE" />.</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" po kërkon qasje te një nga pajisjet e tua:</translation>
 <translation id="8885905466771744233">Ekziston tashmë një çelës privat për shtesën e specifikuar. Ripërdore atë çelës ose fshije në fillim.</translation>

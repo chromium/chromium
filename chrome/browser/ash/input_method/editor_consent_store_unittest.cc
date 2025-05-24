@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -64,7 +65,8 @@ TEST_F(EditorConsentStoreTest,
 
   store.ProcessConsentAction(ConsentAction::kDecline);
 
-  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kDeclined);
+  EXPECT_EQ(store.GetConsentStatus(),
+            chromeos::editor_menu::EditorConsentStatus::kDeclined);
 }
 
 TEST_F(EditorConsentStoreTest,
@@ -80,7 +82,8 @@ TEST_F(EditorConsentStoreTest,
 
   store.ProcessConsentAction(ConsentAction::kApprove);
 
-  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kApproved);
+  EXPECT_EQ(store.GetConsentStatus(),
+            chromeos::editor_menu::EditorConsentStatus::kApproved);
 }
 
 TEST_F(EditorConsentStoreTest,
@@ -98,7 +101,8 @@ TEST_F(EditorConsentStoreTest,
   // Simulate a user action to switch on the orca toggle.
   profile_.GetPrefs()->SetBoolean(prefs::kOrcaEnabled, true);
 
-  EXPECT_EQ(store.GetConsentStatus(), ConsentStatus::kUnset);
+  EXPECT_EQ(store.GetConsentStatus(),
+            chromeos::editor_menu::EditorConsentStatus::kUnset);
 }
 
 TEST_F(EditorConsentStoreTest,

@@ -4,7 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -114,7 +114,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
   gfx::ImageSkia app_icon =
       app_browser->app_controller()->GetWindowAppIcon().Rasterize(nullptr);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   gfx::ImageSkia image_skia =
       app_service_test().LoadAppIconBlocking(app_id, kWebAppIconSmall);
   EXPECT_TRUE(app_service_test().AreIconImageEqual(image_skia, app_icon));

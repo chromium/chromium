@@ -41,6 +41,14 @@
 extern "C" {
 
 // 1) Re-define malloc_hook weak symbols.
+
+// This ".h" file is not a header, but a source file meant to be included only
+// once, exclusively from allocator_shim.cc. See the top-level check.
+//
+// A possible alternative: rename this file to .inc, at the expense of losing
+// syntax highlighting in text editors.
+//
+// NOLINTNEXTLINE(google-build-namespaces)
 namespace {
 
 void* GlibcMallocHook(size_t size, const void* caller) {

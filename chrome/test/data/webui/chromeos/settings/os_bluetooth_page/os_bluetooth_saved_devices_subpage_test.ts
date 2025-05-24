@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsBluetoothSavedDevicesSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsBluetoothSavedDevicesSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {FastPairSavedDevicesOptInStatus, OsBluetoothDevicesSubpageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';

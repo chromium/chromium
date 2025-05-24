@@ -17,8 +17,14 @@ class OpenXrDepthSensor {
   virtual XrResult Initialize() = 0;
   virtual mojom::XRDepthConfigPtr GetDepthConfig() = 0;
 
+  // Set the state of the depth sensor, note that changes may not take effect
+  // immediately. Will no-op if the depth sensor is already in the requested
+  // state.
+  virtual void SetDepthActive(bool depth_active) = 0;
+
   // Updates the passed in `views` with the appropriate `XRDepthData` depending
-  // on the state of the world.
+  // on the state of the world. If depth has been disabled by the caller
+  // previously, this will not append depth data.
   virtual void PopulateDepthData(
       XrTime frame_time,
       const std::vector<mojom::XRViewPtr>& views) = 0;

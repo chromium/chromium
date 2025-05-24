@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/barrier_closure.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,7 +20,7 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/smhasher/src/MurmurHash2.h"
+#include "third_party/smhasher/src/src/MurmurHash2.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace webapps {
@@ -82,6 +83,7 @@ WebApkSingleIconHasher::WebApkSingleIconHasher(
       request_initiator, net::SiteForCookies());
   resource_request->request_initiator = request_initiator;
   resource_request->url = icon_->url();
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request),
       TRAFFIC_ANNOTATION_WITHOUT_PROTO("webapk icon hasher"));
@@ -170,10 +172,13 @@ void WebApkSingleIconHasher::SetIconDataAndHashFromSkBitmap(
   if (bitmap.drawsNothing()) {
     return;
   }
-  std::vector<unsigned char> png_bytes;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes);
-
-  icon->SetData(std::string(png_bytes.begin(), png_bytes.end()));
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false);
+  if (png_bytes) {
+    icon->SetData(std::string(base::as_string_view(png_bytes.value())));
+  } else {
+    icon->SetData(std::string());
+  }
   icon->set_hash(
       ComputeMurmur2Hash(response_body ? *response_body : icon->unsafe_data()));
 }

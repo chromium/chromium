@@ -12,7 +12,6 @@ features:
   dynamic_refresh: true
   per_profile: true
 owners:
-- emaxx@chromium.org
 - file://chrome/browser/extensions/api/enterprise_platform_keys/OWNERS
 schema:
   items:

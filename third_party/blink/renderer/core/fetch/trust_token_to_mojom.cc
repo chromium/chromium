@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/fetch/trust_token_to_mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_private_token.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -19,9 +20,9 @@ using network::mojom::blink::TrustTokenOperationType;
 PSTFeatures GetPSTFeatures(const ExecutionContext& execution_context) {
   PSTFeatures features;
   features.issuance_enabled = execution_context.IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kPrivateStateTokenIssuance);
+      network::mojom::PermissionsPolicyFeature::kPrivateStateTokenIssuance);
   features.redemption_enabled = execution_context.IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kTrustTokenRedemption);
+      network::mojom::PermissionsPolicyFeature::kTrustTokenRedemption);
   return features;
 }
 
@@ -160,6 +161,9 @@ DOMException* TrustTokenErrorToDOMException(TrustTokenOperationStatus error) {
                     DOMExceptionCode::kOperationError);
     case TrustTokenOperationStatus::kResourceLimited:
       return create("Quota hit for Private State Tokens operation",
+                    DOMExceptionCode::kOperationError);
+    case TrustTokenOperationStatus::kSiteIssuerLimit:
+      return create("Limit hit for Private State Tokens issuers per site",
                     DOMExceptionCode::kOperationError);
     case TrustTokenOperationStatus::kUnauthorized:
       return create(

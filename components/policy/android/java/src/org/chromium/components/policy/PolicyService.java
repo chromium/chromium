@@ -11,6 +11,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Wrapper of the native PolicyService class in the Java layer.
@@ -25,10 +26,11 @@ import org.chromium.base.ObserverList;
  * functions will be added once needed.
  */
 @JNINamespace("policy::android")
+@NullMarked
 public class PolicyService {
     private static final String TAG = "PolicyService";
 
-    private long mNativePolicyService;
+    private final long mNativePolicyService;
     private final ObserverList<Observer> mObservers = new ObserverList<Observer>();
 
     /**

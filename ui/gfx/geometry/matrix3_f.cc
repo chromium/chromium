@@ -91,7 +91,8 @@ Matrix3F Matrix3F::FromOuterProduct(const Vector3dF& a, const Vector3dF& bt) {
 }
 
 bool Matrix3F::IsEqual(const Matrix3F& rhs) const {
-  return 0 == memcmp(data_, rhs.data_, sizeof(data_));
+  return 0 == memcmp(data_.data(), rhs.data_.data(),
+                     (data_.size() * sizeof(decltype(data_)::value_type)));
 }
 
 bool Matrix3F::IsNear(const Matrix3F& rhs, float precision) const {
@@ -119,7 +120,7 @@ Matrix3F Matrix3F::Subtract(const Matrix3F& rhs) const {
 
 Matrix3F Matrix3F::Inverse() const {
   Matrix3F inverse = Matrix3F::Zeros();
-  double determinant = Determinant3x3(data_);
+  double determinant = Determinant3x3(data_.data());
   if (std::numeric_limits<float>::epsilon() > std::abs(determinant))
     return inverse;  // Singular matrix. Return Zeros().
 
@@ -153,7 +154,7 @@ Matrix3F Matrix3F::Transpose() const {
 }
 
 float Matrix3F::Determinant() const {
-  return static_cast<float>(Determinant3x3(data_));
+  return static_cast<float>(Determinant3x3(data_.data()));
 }
 
 Matrix3F MatrixProduct(const Matrix3F& lhs, const Matrix3F& rhs) {

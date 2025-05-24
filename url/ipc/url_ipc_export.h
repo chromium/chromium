@@ -15,11 +15,7 @@
 #endif  // defined(URL_IPC_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(URL_IPC_IMPLEMENTATION)
 #define URL_IPC_EXPORT __attribute__((visibility("default")))
-#else
-#define URL_IPC_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

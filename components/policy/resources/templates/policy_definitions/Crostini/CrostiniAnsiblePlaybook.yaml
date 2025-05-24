@@ -28,7 +28,8 @@ schema:
       description: The URL from which the Ansible playbook can be downloaded.
       type: string
   type: object
+deprecated: true
 supported_on:
-- chrome_os:80-
+- chrome_os:80-122
 tags: []
 type: external

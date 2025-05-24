@@ -136,6 +136,9 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
   // `BackForwardCache`.
   void DidEnterBackForwardCache();
 
+  // Dispatched after the page is activated from BFCache.
+  void ActivatedOrEvictedFromBackForwardCache();
+
   void DidNavigate();
 
   void ForceNewSurfaceForTesting();

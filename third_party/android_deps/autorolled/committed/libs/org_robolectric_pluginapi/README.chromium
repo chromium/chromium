@@ -1,0 +1,15 @@
+Name: pluginapi
+Short Name: pluginapi
+URL: http://robolectric.org
+Version: 4.14.1
+License: Apache-2.0, MIT
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+An alternative Android testing framework.
+
+Local Modifications:
+No modifications.

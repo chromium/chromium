@@ -329,6 +329,11 @@ var availableTests = [
     update('');
     await chrome.test.sendMessage('Confirm empty text');
     chrome.test.succeed();
+  },
+
+  async function testEnableLiveCaption() {
+    await chrome.accessibilityPrivate.enableLiveCaption(true);
+    chrome.test.notifyPass();
   }
 ];
 

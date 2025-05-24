@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_win || is_mac || is_linux)
+
+generate_grd("build_bindings_grdp") {
+  grd_prefix = "tts_engine"
+  resource_path_prefix = "tts_engine"
+  out_grd = "$target_gen_dir/bindings_resources.grdp"
+  input_files_base_dir = rebase_path("//third_party/wasm_tts_engine/src", "//")
+  input_files = [ "bindings_main.js" ]
+}
+
+build_webui("build") {
+  grd_prefix = "tts_engine"
+  grd_resource_path_prefix = "tts_engine"
+  ts_files = [ "background.ts" ]
+  extra_grdp_files = [ "$target_gen_dir/bindings_resources.grdp" ]
+  extra_grdp_deps = [ ":build_bindings_grdp" ]
+}

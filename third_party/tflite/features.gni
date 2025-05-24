@@ -4,17 +4,19 @@
 
 import("//build/config/chrome_build.gni")
 import("//chromeos/components/libsegmentation/buildflags.gni")
+import("//services/on_device_model/on_device_model.gni")
 
 declare_args() {
-  # This enables building TFLite with XNNPACK. Currently only available for
-  # Linux, macOS and Windows arm64/x64/x86 targets and ChromeOS non-ARM targets.
-  build_tflite_with_xnnpack =
-      (is_win || is_mac || is_linux || (is_chromeos && overlay_include_cbx)) &&
-      (current_cpu == "arm64" || current_cpu == "x64" || current_cpu == "x86")
+  # This enables building TFLite with XNNPACK.
+  build_tflite_with_xnnpack = current_cpu != "arm" && !is_fuchsia
 
   # Turns on TFLITE_WITH_RUY, using ruy as the gemm backend instead of gemmlowp.
   build_tflite_with_ruy = true
 
   # This enables building TFLite's NNAPI delegate, currently experimental.
   build_tflite_with_nnapi = false
+
+  # This enables building TFLite's GPU delegate with OpenCL, currently
+  # experimental.
+  build_tflite_with_opencl = !enable_ml_internal && (is_linux || is_chromeos)
 }

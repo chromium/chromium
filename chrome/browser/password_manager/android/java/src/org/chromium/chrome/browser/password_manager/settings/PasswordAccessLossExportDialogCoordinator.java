@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * flow, namely: 1) Serializes user passwords and saves them to the file on disk. 2) Removes all
  * password from the profile store (it the previous step was successful).
  */
+@NullMarked
 public class PasswordAccessLossExportDialogCoordinator {
     public interface Observer {
         void onPasswordsDeletionFinished();
@@ -50,12 +52,7 @@ public class PasswordAccessLossExportDialogCoordinator {
                         mFragment,
                         new PasswordStoreBridge(profile),
                         exportDialogObserver);
-        initialize(dialogView);
-    }
-
-    private void initialize(View dialogView) {
-        mFragment.setView(dialogView);
-        mFragment.setDelegate(mMediator);
+        mFragment.initialize(/* dialogView= */ dialogView, /* delegate= */ mMediator);
         bindDialogView(dialogView);
     }
 

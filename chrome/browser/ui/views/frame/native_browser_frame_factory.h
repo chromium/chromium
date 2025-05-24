@@ -29,8 +29,8 @@ class NativeBrowserFrameFactory {
                                      BrowserView* browser_view);
 
  protected:
-  NativeBrowserFrameFactory() {}
-  virtual ~NativeBrowserFrameFactory() {}
+  NativeBrowserFrameFactory() = default;
+  virtual ~NativeBrowserFrameFactory() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_NATIVE_BROWSER_FRAME_FACTORY_H_

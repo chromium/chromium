@@ -7,14 +7,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 TEST(CSSRelativeColorValueTest, Equals) {
-  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
-      true);
-
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
@@ -33,9 +31,6 @@ TEST(CSSRelativeColorValueTest, Equals) {
 }
 
 TEST(CSSRelativeColorValueTest, CustomCSSText) {
-  ScopedCSSRelativeColorSupportsCurrentcolorForTest scoped_feature_for_test(
-      true);
-
   const CSSParserContext* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 

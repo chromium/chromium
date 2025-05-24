@@ -4,19 +4,23 @@
 
 package org.chromium.chrome.browser.educational_tip.cards;
 
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet content of the default browser promo card. */
+@NullMarked
 public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent {
-    private View mContentView;
+    private final View mContentView;
 
-    public DefaultBrowserPromoBottomSheetContent(@NonNull View view) {
+    public DefaultBrowserPromoBottomSheetContent(View view) {
         mContentView = view;
     }
 
@@ -25,9 +29,8 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -50,32 +53,29 @@ public class DefaultBrowserPromoBottomSheetContent implements BottomSheetContent
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         return BottomSheetContent.HeightMode.WRAP_CONTENT;
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(
+                R.string.educational_tip_default_browser_bottom_sheet_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        assert false : "This method will not be called.";
+        return Resources.ID_NULL;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
+        return R.string.educational_tip_default_browser_bottom_sheet_accessibility_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
-        return R.string.educational_tip_default_browser_title;
+    public @StringRes int getSheetClosedAccessibilityStringId() {
+        return R.string.educational_tip_default_browser_bottom_sheet_accessibility_closed;
     }
 }

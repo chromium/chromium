@@ -27,7 +27,7 @@ bool ChromeMetricsExtensionsHelper::IsExtensionProcess(
   auto* process_map =
       extensions::ProcessMap::Get(render_process_host->GetBrowserContext());
   CHECK(process_map);
-  return process_map->Contains(render_process_host->GetID());
+  return process_map->Contains(render_process_host->GetDeprecatedID());
 #else
   return false;
 #endif

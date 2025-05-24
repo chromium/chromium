@@ -1,0 +1,155 @@
+<style include="cr-shared-style settings-shared settings-columned-section
+    passwords-shared">
+  .flex {
+    flex: 1;
+  }
+
+  .list-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .start {
+    overflow: hidden;
+  }
+
+  #entries {
+    margin-block-end: 0;
+    margin-block-start: 0;
+  }
+</style>
+<div id="topSection">
+  <settings-toggle-button
+      id="prefToggle" on-settings-boolean-control-change="onOptInToggleChange_"
+      disabled="[[ineligibleUser]]" pref="{{optedIn_}}"
+      no-extension-indicator label="$i18n{autofillAiPageTitle}"
+      sub-label="$i18n{autofillAiToggleSubLabel}">
+  </settings-toggle-button>
+
+  <div class="settings-columned-section">
+    <div class="column">
+      <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:sync-saved-locally" aria-hidden="true">
+          </cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiWhenOnSavedInfo}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:text-analysis" aria-hidden="true"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiWhenOnUseToFill}
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h3 class="description-header">
+        $i18n{columnHeadingConsider}
+      </h3>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataUsage}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
+          <div class="cr-secondary-text">
+            $i18n{autofillAiToConsiderDataStorage}
+          </div>
+        </li>
+        <template is="dom-if" if="[[showLoggingInfoBullet_(
+            prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed.value)]]" restamp>
+          <settings-ai-logging-info-bullet
+              id="enterpriseInfoBullet"
+              pref=
+                  "[[prefs.optimization_guide.model_execution.autofill_prediction_improvements_enterprise_policy_allowed]]"
+              logging-managed-disabled-custom-label=
+                  "$i18n{autofillAiSubpageSublabelLoggingManagedDisabled}">
+          </settings-ai-logging-info-bullet>
+        </template>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div id="entriesHeader" class="cr-row">
+  <h2 class="flex">
+    $i18n{autofillAiEntityInstancesHeader}
+  </h2>
+  <!-- Disabled: If the user is not eligible for Autofill with Ai or if the
+       user opted out by switching the toggle, the user should not be able to
+       add entity instances. -->
+  <cr-button id="addEntityInstance" class="header-aligned-button"
+      disabled$="[[!optedIn_.value]]" on-click="onAddButtonClick_">
+    $i18n{add}
+    <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
+  </cr-button>
+</div>
+<ul id="entries" class="list-frame vertical-list">
+  <template is="dom-repeat" items="[[entityInstances_]]">
+    <li class="list-item">
+      <div class="start">
+        <div class="ellipses">
+          [[item.entityInstanceLabel]]
+        </div>
+        <div class="ellipses cr-secondary-text">
+          [[item.entityInstanceSubLabel]]
+        </div>
+      </div>
+      <cr-icon-button id="moreButton" class="icon-more-vert"
+          on-click="onMoreButtonClick_"
+          title="[[i18n('autofillAiMoreActionsForEntityInstance',
+              item.entityInstanceLabel, item.entityInstanceSubLabel)]]">
+      </cr-icon-button>
+    </li>
+  </template>
+  <li id="entriesNone" class="list-item" hidden="[[entityInstances_.length]]">
+    $i18n{autofillAiEntityInstancesNone}
+  </li>
+</ul>
+
+<cr-lazy-render id="addMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <template is="dom-repeat" items="[[completeEntityTypesList_]]">
+        <button id="addSpecificEntityType" class="dropdown-item"
+            on-click="onAddEntityInstanceFromDropdownClick_">
+          [[item.typeNameAsString]]
+        </button>
+      </template>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="menuEditEntityInstance" class="dropdown-item"
+          on-click="onMenuEditEntityInstanceClick_">$i18n{edit}</button>
+      <button id="menuRemoveEntityInstance" class="dropdown-item"
+          on-click="onMenuRemoveEntityInstanceClick_">$i18n{delete}</button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+
+<template is="dom-if" if="[[showAddOrEditEntityInstanceDialog_]]" restamp>
+  <settings-autofill-ai-add-or-edit-dialog id="addOrEditEntityInstanceDialog"
+      entity-instance="[[activeEntityInstance_]]"
+      dialog-title="[[addOrEditEntityInstanceDialogTitle_]]"
+      on-autofill-ai-add-or-edit-done="onAutofillAiAddOrEditDone_"
+      on-close="onAddOrEditEntityInstanceDialogClose_">
+  </settings-autofill-ai-add-or-edit-dialog>
+</template>
+<template is="dom-if" if="[[showRemoveEntityInstanceDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="removeEntityInstanceDialog"
+      title-text="[[activeEntityInstance_.type.deleteEntityTypeString]]"
+      body-text="$i18n{autofillAiDeleteEntityInstanceDialogText}"
+      confirm-text="$i18n{delete}"
+      on-close="onRemoveEntityInstanceDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>

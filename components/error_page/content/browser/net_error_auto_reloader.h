@@ -24,7 +24,7 @@
 
 namespace content {
 class NavigationHandle;
-class NavigationThrottle;
+class NavigationThrottleRegistry;
 class WebContents;
 }  // namespace content
 
@@ -35,8 +35,8 @@ namespace error_page {
 // excludes errors that aren't connectivity related since a reload doesn't
 // generally fix them (e.g. SSL errors or when the client blocked the request).
 // To use this behavior as a Content embedder, simply call the static
-// `MaybeCreateNavigationThrottle()` method from within your implementation of
-// ContentBrowserClient::CreateThrottlesForNavigation.
+// `MaybeCreateAndAddNavigationThrottle()` method from within your
+// implementation of ContentBrowserClient::CreateThrottlesForNavigation.
 class NetErrorAutoReloader
     : public content::WebContentsObserver,
       public content::WebContentsUserData<NetErrorAutoReloader>,
@@ -51,8 +51,8 @@ class NetErrorAutoReloader
   // embedders wanting to use NetErrorAutoReload's behavior, it's sufficient to
   // call this from ContentBrowserClient::CreateThrottlesForNavigation for each
   // navigation processed.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAddNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
 
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* handle) override;
@@ -89,8 +89,8 @@ class NetErrorAutoReloader
   void ResumeAutoReloadIfPaused();
   void ScheduleNextAutoReload();
   void ReloadMainFrame();
-  std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottle(
-      content::NavigationHandle* handle);
+  void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry);
   bool ShouldSuppressErrorPage(content::NavigationHandle* handle);
 
   struct ErrorPageInfo {

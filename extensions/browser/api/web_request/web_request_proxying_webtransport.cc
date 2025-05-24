@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -293,7 +292,7 @@ void StartWebRequestProxyingWebTransport(
   request.url = url;
   request.request_initiator = initiator_origin;
 
-  const int process_id = render_process_host.GetID();
+  const int process_id = render_process_host.GetDeprecatedID();
 
   WebRequestInfoInitParams params =
       WebRequestInfoInitParams(request_id, process_id, frame_routing_id,

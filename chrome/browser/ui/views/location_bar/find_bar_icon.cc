@@ -28,13 +28,14 @@ FindBarIcon::FindBarIcon(
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND));
 }
 
-FindBarIcon::~FindBarIcon() {}
+FindBarIcon::~FindBarIcon() = default;
 
 void FindBarIcon::SetActive(bool activate, bool should_animate) {
   if (activate ==
       (views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
-       views::InkDropState::ACTIVATED))
+       views::InkDropState::ACTIVATED)) {
     return;
+  }
   if (activate) {
     if (should_animate) {
       views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
@@ -61,8 +62,9 @@ const gfx::VectorIcon& FindBarIcon::GetVectorIcon() const {
 void FindBarIcon::UpdateImpl() {
   // |browser_->window()| may return nullptr because Update() is called while
   // BrowserWindow is being constructed.
-  if (!browser_->window() || !browser_->HasFindBarController())
+  if (!browser_->window() || !browser_->HasFindBarController()) {
     return;
+  }
 
   const bool was_visible = GetVisible();
   SetVisible(browser_->GetFindBarController()->find_bar()->IsFindBarVisible());

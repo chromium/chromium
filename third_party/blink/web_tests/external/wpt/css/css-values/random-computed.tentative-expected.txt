@@ -1,0 +1,136 @@
+This is a testharness.js-based test.
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property scale value 'random(1, 11)'
+  assert_true: 'random(1, 11)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(--foo, 2, 12)'
+  assert_true: 'random(--foo, 2, 12)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(--foo element-shared, 3, 13)'
+  assert_true: 'random(--foo element-shared, 3, 13)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(element-shared --foo, 4, 14)'
+  assert_true: 'random(element-shared --foo, 4, 14)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(0, 10, 5)'
+  assert_true: 'random(0, 10, 5)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(--foo, 10, 20, 5)'
+  assert_true: 'random(--foo, 10, 20, 5)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(--foo element-shared, 20, 30, 5)'
+  assert_true: 'random(--foo element-shared, 20, 30, 5)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(element-shared --foo, 30, 40, 5)'
+  assert_true: 'random(element-shared --foo, 30, 40, 5)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(100, 10)'
+  assert_true: 'random(100, 10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(-10, -100)'
+  assert_true: 'random(-10, -100)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(-100, -10)'
+  assert_true: 'random(-100, -10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(40, 50, -5)'
+  assert_true: 'random(40, 50, -5)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(5 * 1, 30 / 2)'
+  assert_true: 'random(5 * 1, 30 / 2)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(2 * random(6, 16))'
+  assert_true: 'calc(2 * random(6, 16))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(NaN, 100)'
+  assert_true: 'random(NaN, 100)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, NaN)'
+  assert_true: 'random(10, NaN)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(NaN, NaN)'
+  assert_true: 'random(NaN, NaN)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(NaN, 100, 10)'
+  assert_true: 'random(NaN, 100, 10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, NaN, 10)'
+  assert_true: 'random(10, NaN, 10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(NaN, NaN, 10)'
+  assert_true: 'random(NaN, NaN, 10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(NaN, 100, NaN)'
+  assert_true: 'random(NaN, 100, NaN)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, NaN, NaN)'
+  assert_true: 'random(10, NaN, NaN)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(NaN, NaN, NaN)'
+  assert_true: 'random(NaN, NaN, NaN)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, 100, NaN)'
+  assert_true: 'random(10, 100, NaN)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(NaN, 100))'
+  assert_true: 'calc(10 + random(NaN, 100))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, NaN))'
+  assert_true: 'calc(10 + random(10, NaN))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(NaN, NaN))'
+  assert_true: 'calc(10 + random(NaN, NaN))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(NaN, 100, 10))'
+  assert_true: 'calc(10 + random(NaN, 100, 10))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, NaN, 10))'
+  assert_true: 'calc(10 + random(10, NaN, 10))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(NaN, NaN, 10))'
+  assert_true: 'calc(10 + random(NaN, NaN, 10))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(NaN, 100, NaN))'
+  assert_true: 'calc(10 + random(NaN, 100, NaN))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, NaN, NaN))'
+  assert_true: 'calc(10 + random(10, NaN, NaN))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(NaN, NaN, NaN))'
+  assert_true: 'calc(10 + random(NaN, NaN, NaN))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, 100, NaN))'
+  assert_true: 'calc(10 + random(10, 100, NaN))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(infinity, 100)'
+  assert_true: 'random(infinity, 100)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(infinity, infinity)'
+  assert_true: 'random(infinity, infinity)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(infinity, 100, 10)'
+  assert_true: 'random(infinity, 100, 10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(infinity, infinity, 10)'
+  assert_true: 'random(infinity, infinity, 10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(infinity, 100, infinity)'
+  assert_true: 'random(infinity, 100, infinity)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(infinity, infinity, infinity)'
+  assert_true: 'random(infinity, infinity, infinity)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(infinity, 100))'
+  assert_true: 'calc(10 + random(infinity, 100))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(infinity, infinity))'
+  assert_true: 'calc(10 + random(infinity, infinity))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(infinity, infinity, 10))'
+  assert_true: 'calc(10 + random(infinity, infinity, 10))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(infinity, 100, infinity))'
+  assert_true: 'calc(10 + random(infinity, 100, infinity))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(infinity, infinity, infinity))'
+  assert_true: 'calc(10 + random(infinity, infinity, infinity))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(infinity, 100, 10))'
+  assert_true: 'calc(10 + random(infinity, 100, 10))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, infinity)'
+  assert_true: 'random(10, infinity)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, infinity, 10)'
+  assert_true: 'random(10, infinity, 10)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, infinity, infinity)'
+  assert_true: 'random(10, infinity, infinity)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, infinity))'
+  assert_true: 'calc(10 + random(10, infinity))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, infinity, 10))'
+  assert_true: 'calc(10 + random(10, infinity, 10))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, infinity, infinity))'
+  assert_true: 'calc(10 + random(10, infinity, infinity))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, 100, infinity)'
+  assert_true: 'random(10, 100, infinity)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, 100, infinity))'
+  assert_true: 'calc(10 + random(10, 100, infinity))' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'random(10, 100, -infinity)'
+  assert_true: 'random(10, 100, -infinity)' is a supported value for scale. expected true got false
+[FAIL] Property scale value 'calc(10 + random(10, 100, -infinity))'
+  assert_true: 'calc(10 + random(10, 100, -infinity))' is a supported value for scale. expected true got false
+[FAIL] Property scale value on pseudo element '::before' 'random(7, 17)'
+  assert_greater_than_equal: random(7, 17) expected a number greater than or equal to 7 but got NaN
+[FAIL] Property scale value on pseudo element '::before' 'random(--bar, 8, 18)'
+  assert_greater_than_equal: random(--bar, 8, 18) expected a number greater than or equal to 8 but got NaN
+[FAIL] Property scale value on pseudo element '::before' 'random(element-shared, 9, 19)'
+  assert_greater_than_equal: random(element-shared, 9, 19) expected a number greater than or equal to 9 but got NaN
+[FAIL] Property scale value on pseudo element '::before' 'random(element-shared --foo, 10, 20)'
+  assert_greater_than_equal: random(element-shared --foo, 10, 20) expected a number greater than or equal to 10 but got NaN
+[FAIL] Property translate value 'random(10%, 100%)'
+  assert_true: 'random(10%, 100%)' is a supported value for translate. expected true got false
+[FAIL] Maximum random: 'random(a, b)'
+  assert_false: expected false got true
+[FAIL] Maximum random - shorthand: random(a, b))
+  assert_false: expected false got true
+[FAIL] Shared by name within an element: 'random(--identifier, a, b)'
+  assert_equals: expected "0px" but got "784px"
+[FAIL] Shared globally: random(--identifier element-shared, a, b)
+  assert_equals: expected "0px" but got "784px"
+[FAIL] Fixed: random(fixed <number>, a, b)
+  assert_equals: expected "55px" but got "784px"
+Harness: the test ran to completion.
+

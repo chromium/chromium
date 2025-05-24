@@ -10,11 +10,14 @@
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
 
 using MenuItemCallback = base::RepeatingCallback<void(NSMenuItem*)>;
@@ -23,7 +26,10 @@ namespace {
 
 void UpdateItemForWebContents(NSMenuItem* item,
                               content::WebContents* web_contents) {
-  TabUIHelper* tab_ui_helper = TabUIHelper::FromWebContents(web_contents);
+  tabs::TabInterface* const tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  TabUIHelper* const tab_ui_helper =
+      tab_interface->GetTabFeatures()->tab_ui_helper();
 
   auto* audio_helper = RecentlyAudibleHelper::FromWebContents(web_contents);
   if (audio_helper && audio_helper->WasRecentlyAudible()) {
@@ -94,8 +100,9 @@ TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
 }
 
 TabMenuBridge::~TabMenuBridge() {
-  if (model_)
+  if (model_) {
     model_->RemoveObserver(this);
+  }
   RemoveMenuItems(DynamicMenuItems());
 }
 
@@ -151,8 +158,9 @@ void TabMenuBridge::AddDynamicItemsFromModel() {
 }
 
 void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
-  if (!model_)
+  if (!model_) {
     return;
+  }
 
   DCHECK_EQ(item.target, menu_listener_);
   int index = [menu_item_.submenu indexOfItem:item] - dynamic_items_start_;
@@ -174,7 +182,7 @@ void TabMenuBridge::OnTabStripModelChanged(
     const TabStripModelChange::Replace* replace = change.GetReplace();
     int menu_index = replace->index + dynamic_items_start_;
     UpdateItemForWebContents([menu_item_.submenu itemAtIndex:menu_index],
-                             replace->new_contents);
+                             replace -> new_contents);
     return;
   }
 
@@ -188,8 +196,9 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
 
   // Ignore loading state changes - they happen very often during page load and
   // are used to drive the load spinner, which is not interesting to this menu.
-  if (change_type == TabChangeType::kLoadingOnly)
+  if (change_type == TabChangeType::kLoadingOnly) {
     return;
+  }
 
   int menu_index = index + dynamic_items_start_;
 
@@ -205,8 +214,9 @@ void TabMenuBridge::TabChangedAt(content::WebContents* contents,
   // As such, this code early-outs instead of DCHECKing. The newly-added
   // WebContents will be picked up later anyway when this object does get
   // notified of the addition.
-  if (menu_index < 0 || menu_index >= menu_item_.submenu.numberOfItems)
+  if (menu_index < 0 || menu_index >= menu_item_.submenu.numberOfItems) {
     return;
+  }
 
   NSMenuItem* item = [menu_item_.submenu itemAtIndex:menu_index];
   UpdateItemForWebContents(item, contents);

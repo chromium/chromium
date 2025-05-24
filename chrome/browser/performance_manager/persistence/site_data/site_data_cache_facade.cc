@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/run_loop.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -36,16 +35,15 @@ SiteDataCacheFacade::SiteDataCacheFacade(
   std::optional<std::string> parent_context_id;
   if (browser_context->IsOffTheRecord()) {
     content::BrowserContext* parent_context =
-        chrome::GetBrowserContextRedirectedInIncognito(browser_context);
+        GetBrowserContextRedirectedInIncognito(browser_context);
     parent_context_id = parent_context->UniqueId();
   }
 
   // Creates the real cache on the SiteDataCache's sequence.
   SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
-      ->AsyncCall(&SiteDataCacheFactory::OnBrowserContextCreated)
-      .WithArgs(browser_context->UniqueId(), browser_context->GetPath(),
-                parent_context_id);
+      ->OnBrowserContextCreated(browser_context->UniqueId(),
+                                browser_context->GetPath(), parent_context_id);
 
   history::HistoryService* history =
       HistoryServiceFactory::GetForProfileWithoutCreating(
@@ -58,45 +56,31 @@ SiteDataCacheFacade::~SiteDataCacheFacade() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
-      ->AsyncCall(&SiteDataCacheFactory::OnBrowserContextDestroyed)
-      .WithArgs(browser_context_->UniqueId());
+      ->OnBrowserContextDestroyed(browser_context_->UniqueId());
   SiteDataCacheFacadeFactory::GetInstance()->OnFacadeDestroyed(PassKey());
 }
 
-void SiteDataCacheFacade::IsDataCacheRecordingForTesting(
-    base::OnceCallback<void(bool)> cb) {
+bool SiteDataCacheFacade::IsDataCacheRecordingForTesting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  SiteDataCacheFacadeFactory::GetInstance()
+  return SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
-      ->PostTaskWithThisObject(base::BindOnce(
-          [](base::OnceCallback<void(bool)> cb,
-             const std::string& browser_context_id,
-             SiteDataCacheFactory* cache_factory) {
-            std::move(cb).Run(
-                cache_factory->IsDataCacheRecordingForTesting(  // IN-TEST
-                    browser_context_id));
-          },
-          std::move(cb), browser_context_->UniqueId()));
+      ->IsDataCacheRecordingForTesting(  // IN-TEST
+          browser_context_->UniqueId());
 }
 
 void SiteDataCacheFacade::WaitUntilCacheInitializedForTesting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   base::RunLoop run_loop;
-  SiteDataCacheFacadeFactory::GetInstance()
-      ->cache_factory()
-      ->PostTaskWithThisObject(base::BindOnce(
-          [](base::OnceClosure quit_closure,
-             const std::string& browser_context_id,
-             SiteDataCacheFactory* cache_factory) {
-            auto* cache = cache_factory->GetDataCacheForBrowserContext(
-                browser_context_id);
-            if (cache->IsRecording()) {
-              static_cast<SiteDataCacheImpl*>(cache)
-                  ->SetInitializationCallbackForTesting(  // IN-TEST
-                      std::move(quit_closure));
-            }
-          },
-          run_loop.QuitClosure(), browser_context_->UniqueId()));
+
+  auto* cache =
+      SiteDataCacheFacadeFactory::GetInstance()
+          ->cache_factory()
+          ->GetDataCacheForBrowserContext(browser_context_->UniqueId());
+  if (cache->IsRecording()) {
+    static_cast<SiteDataCacheImpl*>(cache)
+        ->SetInitializationCallbackForTesting(  // IN-TEST
+            run_loop.QuitClosure());
+  }
   run_loop.Run();
 }
 
@@ -105,10 +89,6 @@ void SiteDataCacheFacade::OnHistoryDeletions(
     const history::DeletionInfo& deletion_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (deletion_info.IsAllHistory()) {
-    if (!browser_context_->IsOffTheRecord()) {
-      base::UmaHistogramBoolean(
-          "PerformanceManager.SiteDB.WriteScheduled.ClearAllSiteData", true);
-    }
     ClearAllSiteData();
     return;
   }
@@ -130,26 +110,14 @@ void SiteDataCacheFacade::OnHistoryDeletions(
     return;
   }
 
-  if (!browser_context_->IsOffTheRecord()) {
-    base::UmaHistogramBoolean(
-        "PerformanceManager.SiteDB.WriteScheduled.ClearSiteDataForOrigins",
-        true);
+  auto* cache =
+      SiteDataCacheFacadeFactory::GetInstance()
+          ->cache_factory()
+          ->GetDataCacheForBrowserContext(browser_context_->UniqueId());
+  if (cache->IsRecording()) {
+    static_cast<SiteDataCacheImpl*>(cache)->ClearSiteDataForOrigins(
+        origins_to_remove);
   }
-  auto clear_site_data_cb = base::BindOnce(
-      [](const std::string& browser_context_id,
-         const std::vector<url::Origin>& origins_to_remove,
-         SiteDataCacheFactory* cache_factory) {
-        auto* cache =
-            cache_factory->GetDataCacheForBrowserContext(browser_context_id);
-        if (cache->IsRecording()) {
-          static_cast<SiteDataCacheImpl*>(cache)->ClearSiteDataForOrigins(
-              origins_to_remove);
-        }
-      },
-      browser_context_->UniqueId(), std::move(origins_to_remove));
-  SiteDataCacheFacadeFactory::GetInstance()
-      ->cache_factory()
-      ->PostTaskWithThisObject(std::move(clear_site_data_cb));
 }
 
 void SiteDataCacheFacade::HistoryServiceBeingDeleted(
@@ -161,19 +129,14 @@ void SiteDataCacheFacade::HistoryServiceBeingDeleted(
 
 void SiteDataCacheFacade::ClearAllSiteData() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  auto clear_all_site_data_cb = base::BindOnce(
-      [](const std::string& browser_context_id,
-         SiteDataCacheFactory* cache_factory) {
-        auto* cache =
-            cache_factory->GetDataCacheForBrowserContext(browser_context_id);
-        if (cache->IsRecording()) {
-          static_cast<SiteDataCacheImpl*>(cache)->ClearAllSiteData();
-        }
-      },
-      browser_context_->UniqueId());
-  SiteDataCacheFacadeFactory::GetInstance()
-      ->cache_factory()
-      ->PostTaskWithThisObject(std::move(clear_all_site_data_cb));
+
+  auto* cache =
+      SiteDataCacheFacadeFactory::GetInstance()
+          ->cache_factory()
+          ->GetDataCacheForBrowserContext(browser_context_->UniqueId());
+  if (cache->IsRecording()) {
+    static_cast<SiteDataCacheImpl*>(cache)->ClearAllSiteData();
+  }
 }
 
 }  // namespace performance_manager

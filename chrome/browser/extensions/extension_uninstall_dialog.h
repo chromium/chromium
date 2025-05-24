@@ -19,9 +19,9 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
-#include "url/gurl.h"
 
 namespace views {
 class NativeWindowTracker;
@@ -34,6 +34,9 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
                                  public ExtensionRegistryObserver,
                                  public ProfileObserver {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonElementId);
+
   // The type of action the dialog took at close.
   // Do not reorder this enum as it is used in UMA histograms.
   enum CloseAction {
@@ -48,14 +51,14 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
   class Delegate {
    public:
     // Called when the dialog closes.
-    // |did_start_uninstall| indicates whether the uninstall process for the
-    // extension started. If this is false, |error| will contain the reason.
+    // `did_start_uninstall` indicates whether the uninstall process for the
+    // extension started. If this is false, `error` will contain the reason.
     virtual void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
                                                   const std::u16string& error) {
     }
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   // Creates the Views implementation of ExtensionUninstallDialog. The dialog
@@ -111,7 +114,7 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
   gfx::NativeWindow parent() { return parent_; }
 
  private:
-  // Uninstalls the extension. Returns true on success, and populates |error| on
+  // Uninstalls the extension. Returns true on success, and populates `error` on
   // failure.
   bool Uninstall(std::u16string* error);
 
@@ -155,7 +158,7 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
 
   std::unique_ptr<ChromeAppIcon> icon_;
 
-  // Tracks whether |parent_| got destroyed.
+  // Tracks whether `parent_` got destroyed.
   std::unique_ptr<views::NativeWindowTracker> parent_window_tracker_;
 
   // Indicates that dialog was shown.

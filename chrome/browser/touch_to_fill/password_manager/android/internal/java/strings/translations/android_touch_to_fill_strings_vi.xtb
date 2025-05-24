@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Danh sách các thông tin xác thực mà bạn có thể chạm để điền đã được mở ở toàn độ cao.</translation>
 <translation id="5591247451101092906">Sử dụng mật khẩu hoặc khoá đăng nhập đã lưu?</translation>
 <translation id="5624120631404540903">Quản lý mật khẩu</translation>
+<translation id="592182999816790476">Đã lưu mật khẩu cho <ph name="USERNAME" /> trên <ph name="WEBSITE" /></translation>
 <translation id="6560306912274274630">Khoá truy cập cho <ph name="USERNAME" />, dùng phương thức khoá màn hình</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Mật khẩu mới cho trang web này}other{Các mật khẩu mới cho trang web này}}</translation>
 <translation id="7286867818472074330">Chọn khoá truy cập</translation>

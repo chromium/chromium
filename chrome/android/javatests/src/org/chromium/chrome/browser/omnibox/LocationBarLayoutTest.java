@@ -16,6 +16,8 @@ import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 
+import static org.chromium.base.test.util.Batch.PER_CLASS;
+
 import android.app.Activity;
 import android.view.View;
 import android.view.View.MeasureSpec;
@@ -38,11 +40,12 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -51,16 +54,19 @@ import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.ClickUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.Callable;
 
 /** Unit tests for {@link LocationBarLayout}. */
+@Batch(PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LocationBarLayoutTest {
@@ -68,11 +74,13 @@ public class LocationBarLayoutTest {
     private static final String SEARCH_TERMS_URL = "testing.com";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock AndroidPermissionDelegate mAndroidPermissionDelegate;
+    private WebPageStation mStartingPage;
 
     private OmniboxTestUtils mOmnibox;
 
@@ -91,7 +99,7 @@ public class LocationBarLayoutTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mStartingPage = mActivityTestRule.startOnBlankPage();
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
         doReturn(true).when(mAndroidPermissionDelegate).hasPermission(anyString());
@@ -124,10 +132,6 @@ public class LocationBarLayoutTest {
         return mActivityTestRule.getActivity().findViewById(R.id.delete_button);
     }
 
-    private ImageButton getMicButton() {
-        return mActivityTestRule.getActivity().findViewById(R.id.mic_button);
-    }
-
     private View getStatusIconView() {
         return mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon_frame);
     }
@@ -152,7 +156,7 @@ public class LocationBarLayoutTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testNotShowingVoiceSearchButtonIfUrlBarContainsText() {
         // When there is text, the delete button should be visible.
         setUrlBarTextAndFocus("testing");
@@ -163,7 +167,7 @@ public class LocationBarLayoutTest {
 
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testShowingVoiceSearchButtonIfUrlBarIsEmpty() {
         // When there's no text, the mic button should be visible.
         setUrlBarTextAndFocus("");
@@ -302,15 +306,15 @@ public class LocationBarLayoutTest {
                             MeasureSpec.makeMeasureSpec(constrainedWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.INVISIBLE);
+                            View.INVISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
 
                     locationBar.measure(
                             MeasureSpec.makeMeasureSpec(originalWidth, MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.VISIBLE);
+                            View.VISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
 
                     locationBar.measure(
                             MeasureSpec.makeMeasureSpec(
@@ -318,19 +322,19 @@ public class LocationBarLayoutTest {
                                     MeasureSpec.EXACTLY),
                             MeasureSpec.makeMeasureSpec(200, MeasureSpec.EXACTLY));
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.INVISIBLE);
+                            View.INVISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
 
                     locationBar.setUrlActionContainerVisibility(VISIBLE);
                     Assert.assertEquals(
-                            locationBar.findViewById(R.id.url_action_container).getVisibility(),
-                            View.INVISIBLE);
+                            View.INVISIBLE,
+                            locationBar.findViewById(R.id.url_action_container).getVisibility());
                 });
     }
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({DeviceFormFactor.TABLET})
     public void testTabletUrlBarTranslation_revampEnabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -377,7 +381,7 @@ public class LocationBarLayoutTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AVOID_RELAYOUT_DURING_FOCUS_ANIMATION)
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({DeviceFormFactor.TABLET})
     public void testTabletUrlBarTranslation_revampEnabled_avoidRelayoutDisabled() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -399,7 +403,7 @@ public class LocationBarLayoutTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testPhoneUrlBarAndStatusViewTranslation() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

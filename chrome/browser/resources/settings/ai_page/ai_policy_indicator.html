@@ -1,0 +1,18 @@
+<style include="settings-shared">
+  .cr-row {
+    --cr-section-min-height: 0;
+    padding-top: 2px;
+    padding-bottom: 16px;
+  }
+
+  cr-policy-pref-indicator {
+    margin-inline-end: var(--cr-icon-button-margin-start);
+  }
+</style>
+
+<template is="dom-if" if="[[isFeatureDisabledByPolicy_(pref)]]" restamp>
+  <div class="cr-row first" id="aiPolicyIndicator">
+    <cr-policy-pref-indicator pref="[[pref]]"></cr-policy-pref-indicator>
+    $i18n{aiSubpageFeatureManagedDisabledLabel}
+  </div>
+</template>

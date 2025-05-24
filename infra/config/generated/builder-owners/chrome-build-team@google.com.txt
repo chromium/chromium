@@ -15,13 +15,16 @@ build/linux-chromeos-build-perf-siso
 build/mac-build-perf-developer
 build/mac-build-perf-ninja
 build/mac-build-perf-siso
+build/win-build-perf-ci-siso
 build/win-build-perf-developer
 build/win-build-perf-ninja
 build/win-build-perf-siso
 ci/Deterministic Linux
 ci/Deterministic Linux (dbg)
+ci/linux-modules-compile-fyi-rel
 ci/linux-win-cross-rel
 try/ios-simulator-exp
 try/linux-full-remote-rel
 try/linux-full-remote-rel-compilator
+try/linux-modules-compile-fyi-rel
 try/linux-win-cross-rel

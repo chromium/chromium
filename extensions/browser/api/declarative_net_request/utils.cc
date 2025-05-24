@@ -4,17 +4,18 @@
 
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -228,8 +229,7 @@ dnr_api::ResourceType GetDNRResourceType(WebRequestResourceType resource_type) {
     case WebRequestResourceType::WEBBUNDLE:
       return dnr_api::ResourceType::kWebbundle;
   }
-  NOTREACHED_IN_MIGRATION();
-  return dnr_api::ResourceType::kOther;
+  NOTREACHED();
 }
 
 // Maps dnr_api::ResourceType to WebRequestResourceType.
@@ -267,11 +267,9 @@ WebRequestResourceType GetWebRequestResourceType(
     case dnr_api::ResourceType::kWebbundle:
       return WebRequestResourceType::WEBBUNDLE;
     case dnr_api::ResourceType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return WebRequestResourceType::OTHER;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebRequestResourceType::OTHER;
+  NOTREACHED();
 }
 
 dnr_api::RequestDetails CreateRequestDetails(const WebRequestInfo& request) {
@@ -339,8 +337,7 @@ flat::ActionType ConvertToFlatActionType(dnr_api::RuleActionType action_type) {
     case dnr_api::RuleActionType::kNone:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return flat::ActionType_block;
+  NOTREACHED();
 }
 
 std::string GetPublicRulesetID(const Extension& extension,
@@ -720,8 +717,7 @@ std::string GetParseError(ParseResult error_reason, int rule_id) {
           kErrorResponseHeaderRuleCannotModifyRequestHeaders,
           base::NumberToString(rule_id));
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
@@ -757,8 +753,7 @@ flat_rule::ElementType GetElementType(WebRequestResourceType web_request_type) {
     case WebRequestResourceType::WEB_TRANSPORT:
       return flat_rule::ElementType_WEBTRANSPORT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return flat_rule::ElementType_OTHER;
+  NOTREACHED();
 }
 
 flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
@@ -796,8 +791,7 @@ flat_rule::ElementType GetElementType(dnr_api::ResourceType resource_type) {
     case dnr_api::ResourceType::kOther:
       return flat_rule::ElementType_OTHER;
   }
-  NOTREACHED_IN_MIGRATION();
-  return flat_rule::ElementType_NONE;
+  NOTREACHED();
 }
 
 // Maps an HTTP request method string to flat_rule::RequestMethod.
@@ -825,8 +819,8 @@ flat_rule::RequestMethod GetRequestMethod(bool http_or_https,
            {HttpRequestHeaders::kConnectMethod,
             flat_rule::RequestMethod_CONNECT}});
 
-  DCHECK(base::ranges::all_of(*kRequestMethods, [](const auto& key_value) {
-    return base::ranges::none_of(key_value.first, base::IsAsciiLower<char>);
+  DCHECK(std::ranges::all_of(*kRequestMethods, [](const auto& key_value) {
+    return std::ranges::none_of(key_value.first, base::IsAsciiLower<char>);
   }));
 
   std::string normalized_method = base::ToUpperASCII(method);
@@ -841,8 +835,7 @@ flat_rule::RequestMethod GetRequestMethod(
     dnr_api::RequestMethod request_method) {
   switch (request_method) {
     case dnr_api::RequestMethod::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return flat_rule::RequestMethod_NONE;
+      NOTREACHED();
     case dnr_api::RequestMethod::kConnect:
       return flat_rule::RequestMethod_CONNECT;
     case dnr_api::RequestMethod::kDelete:
@@ -862,8 +855,7 @@ flat_rule::RequestMethod GetRequestMethod(
     case dnr_api::RequestMethod::kPut:
       return flat_rule::RequestMethod_PUT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return flat_rule::RequestMethod_NONE;
+  NOTREACHED();
 }
 
 flat_rule::RequestMethod GetRequestMethod(

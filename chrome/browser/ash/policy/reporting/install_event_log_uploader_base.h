@@ -56,7 +56,6 @@ class InstallEventLogUploaderBase : public CloudPolicyClient::Observer {
   virtual void CheckDelegateSet() = 0;
 
   // CloudPolicyClient::Observer:
-  void OnPolicyFetched(CloudPolicyClient* client) override {}
   // Uploads are only possible while the client is registered with the server.
   // If an upload is requested while the client is not registered, the request
   // is stored until the client registers. If the client loses its registration
@@ -65,7 +64,6 @@ class InstallEventLogUploaderBase : public CloudPolicyClient::Observer {
   // request when the client registers, by asking the delegate to serialize logs
   // and with the exponential backoff reset to its minimum.
   void OnRegistrationStateChanged(CloudPolicyClient* client) override;
-  void OnClientError(CloudPolicyClient* client) override {}
 
   // Asks the delegate to serialize the current logs into a protobuf and pass it
   // a callback.

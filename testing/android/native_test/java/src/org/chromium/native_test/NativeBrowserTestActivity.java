@@ -14,7 +14,7 @@ import java.io.File;
 public abstract class NativeBrowserTestActivity extends FragmentActivity {
     private static final String TAG = "NativeTest";
 
-    private NativeTest mTest = new NativeTest();
+    private final NativeTest mTest = new NativeTest();
     private boolean mStarted;
 
     @Override

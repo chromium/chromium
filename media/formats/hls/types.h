@@ -256,6 +256,7 @@ struct MEDIA_EXPORT DecimalResolution {
   types::DecimalInteger height;
 
   types::DecimalInteger Area() const { return width * height; }
+  types::DecimalInteger Szudzik() const;
 };
 
 // This is similar to `ByteRangeExpression`, but with a stronger contract:

@@ -8,7 +8,6 @@
 #define BASE_BASE_SWITCHES_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace switches {
 
@@ -39,6 +38,7 @@ extern const char kWaitForDebugger[];
 #if BUILDFLAG(IS_WIN)
 extern const char kDisableHighResTimer[];
 extern const char kDisableUsbKeyboardDetect[];
+extern const char kForceHighResTimeTicks[];
 #endif
 
 #if BUILDFLAG(IS_LINUX)
@@ -50,9 +50,9 @@ extern const char kEnableCrashReporterForTesting[];
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+extern const char kAndroidSkipChildServiceInitForTesting[];
 extern const char kDefaultCountryCodeAtInstall[];
 extern const char kEnableIdleTracing[];
-extern const char kForceFieldTrialParams[];
 extern const char kHostPackageName[];
 extern const char kHostPackageLabel[];
 extern const char kHostVersionCode[];

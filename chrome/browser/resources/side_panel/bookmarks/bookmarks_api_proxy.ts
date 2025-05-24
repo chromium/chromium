@@ -6,92 +6,108 @@ import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import type {ClickModifiers} from 'chrome://resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 
 import type {ActionSource, SortOrder, ViewType} from './bookmarks.mojom-webui.js';
-import {BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
+import {BookmarksPageCallbackRouter, BookmarksPageHandlerFactory, BookmarksPageHandlerRemote} from './bookmarks.mojom-webui.js';
+import type {BookmarksTreeNode} from './bookmarks.mojom-webui.js';
 
 let instance: BookmarksApiProxy|null = null;
 
 export interface BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
+  pageCallbackRouter: BookmarksPageCallbackRouter;
+
+  // Side Panel Activation and basic bookmark information retrieval.
+  showUi(): void;
+  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}>;
+  getActiveUrl(): Promise<string|undefined>;
+  isActiveTabInSplit(): Promise<boolean>;
+
+  // Side Panel display choices.
+  setSortOrder(sortOrder: SortOrder): void;
+  setViewType(viewType: ViewType): void;
+
+  // Side Panel operations.
   bookmarkCurrentTabInFolder(folderId: string): void;
-  cutBookmark(id: string): void;
+  createFolder(parentId: string, title: string): Promise<{newFolderId: string}>;
+  deleteBookmarks(ids: string[]): Promise<void>;
+  dropBookmarks(parentId: string): Promise<void>;
+  editBookmarks(
+      ids: string[], newTitle: string|undefined, newUrl: string|undefined,
+      newParentId: string|undefined): void;
+  undo(): void;
+  renameBookmark(id: string, title: string): void;
+  openBookmark(
+      id: string, depth: number, clickModifiers: ClickModifiers,
+      source: ActionSource): void;
+
+  // Context menu.
+  showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource): void;
   contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource): void;
   contextMenuOpenBookmarkInIncognitoWindow(ids: string[], source: ActionSource):
       void;
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource):
       void;
+  contextMenuOpenBookmarkInSplitView(ids: string[], source: ActionSource): void;
+  contextMenuEdit(ids: string[], source: ActionSource): void;
+  contextMenuMove(ids: string[], source: ActionSource): void;
   contextMenuAddToBookmarksBar(id: string, source: ActionSource): void;
   contextMenuRemoveFromBookmarksBar(id: string, source: ActionSource): void;
   contextMenuDelete(ids: string[], source: ActionSource): void;
-  copyBookmark(id: string): Promise<void>;
-  createFolder(parentId: string, title: string):
-      Promise<chrome.bookmarks.BookmarkTreeNode>;
-  editBookmarks(
-      ids: string[], newTitle: string|undefined, newUrl: string|undefined,
-      newParentId: string|undefined): void;
-  deleteBookmarks(ids: string[]): Promise<void>;
-  getActiveUrl(): Promise<string|undefined>;
-  getFolders(): Promise<chrome.bookmarks.BookmarkTreeNode[]>;
-  openBookmark(
-      id: string, depth: number, clickModifiers: ClickModifiers,
-      source: ActionSource): void;
-  pasteToBookmark(parentId: string, destinationId?: string): Promise<void>;
-  renameBookmark(id: string, title: string): void;
-  setSortOrder(sortOrder: SortOrder): void;
-  setViewType(viewType: ViewType): void;
-  showContextMenu(id: string, x: number, y: number, source: ActionSource): void;
-  showUi(): void;
-  undo(): void;
 }
 
 export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   callbackRouter: {[key: string]: ChromeEvent<Function>};
+
+  pageCallbackRouter: BookmarksPageCallbackRouter;
   handler: BookmarksPageHandlerRemote;
 
   constructor() {
     this.callbackRouter = {
-      onChanged: chrome.bookmarks.onChanged,
-      onChildrenReordered: chrome.bookmarks.onChildrenReordered,
-      onCreated: chrome.bookmarks.onCreated,
-      onMoved: chrome.bookmarks.onMoved,
-      onRemoved: chrome.bookmarks.onRemoved,
       onTabActivated: chrome.tabs.onActivated,
       onTabUpdated: chrome.tabs.onUpdated,
     };
 
+    this.pageCallbackRouter = new BookmarksPageCallbackRouter();
     this.handler = new BookmarksPageHandlerRemote();
 
     const factory = BookmarksPageHandlerFactory.getRemote();
     factory.createBookmarksPageHandler(
+        this.pageCallbackRouter.$.bindNewPipeAndPassRemote(),
         this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   bookmarkCurrentTabInFolder(folderId: string) {
-    this.handler.bookmarkCurrentTabInFolder(BigInt(folderId));
-  }
-
-  cutBookmark(id: string) {
-    chrome.bookmarkManagerPrivate.cut([id]);
+    this.handler.bookmarkCurrentTabInFolder(folderId);
   }
 
   contextMenuOpenBookmarkInNewTab(ids: string[], source: ActionSource) {
-    this.handler.executeOpenInNewTabCommand(ids.map(id => BigInt(id)), source);
+    this.handler.executeOpenInNewTabCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInNewWindow(ids: string[], source: ActionSource) {
-    this.handler.executeOpenInNewWindowCommand(
-        ids.map(id => BigInt(id)), source);
+    this.handler.executeOpenInNewWindowCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInIncognitoWindow(
       ids: string[], source: ActionSource) {
-    this.handler.executeOpenInIncognitoWindowCommand(
-        ids.map(id => BigInt(id)), source);
+    this.handler.executeOpenInIncognitoWindowCommand(ids, source);
   }
 
   contextMenuOpenBookmarkInNewTabGroup(ids: string[], source: ActionSource) {
-    this.handler.executeOpenInNewTabGroupCommand(
+    this.handler.executeOpenInNewTabGroupCommand(ids, source);
+  }
+
+  contextMenuOpenBookmarkInSplitView(ids: string[], source: ActionSource) {
+    this.handler.executeOpenInSplitViewCommand(
         ids.map(id => BigInt(id)), source);
+  }
+
+  contextMenuEdit(ids: string[], source: ActionSource) {
+    this.handler.executeEditCommand(ids.map(id => BigInt(id)), source);
+  }
+
+  contextMenuMove(ids: string[], source: ActionSource) {
+    this.handler.executeMoveCommand(ids.map(id => BigInt(id)), source);
   }
 
   contextMenuAddToBookmarksBar(id: string, source: ActionSource) {
@@ -106,13 +122,16 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     this.handler.executeDeleteCommand(ids.map(id => BigInt(id)), source);
   }
 
-  copyBookmark(id: string) {
-    return chrome.bookmarkManagerPrivate.copy([id]);
+  createFolder(parentId: string, title: string) {
+    return this.handler.createFolder(parentId, title);
   }
 
-  createFolder(parentId: string, title: string) {
-    return chrome.bookmarks.create(
-        {parentId: parentId, title: title, index: 0});
+  deleteBookmarks(ids: string[]) {
+    return this.handler.removeBookmarks(ids.map(id => BigInt(id)));
+  }
+
+  dropBookmarks(parentId: string) {
+    return this.handler.dropBookmarks(parentId);
   }
 
   editBookmarks(
@@ -122,18 +141,17 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     // provided without the other.
     if (newTitle !== undefined && newUrl !== undefined) {
       ids.forEach(id => {
+        // TODO(crbug.com/408181043): Keeping this extensions call as an
+        // exception since this dialog will not be used anymore after Butter for
+        // Bookmarks will be launched.
         chrome.bookmarks.update(id, {title: newTitle, url: newUrl});
       });
     }
     if (newParentId) {
       ids.forEach(id => {
-        chrome.bookmarks.move(id, {parentId: newParentId});
+        this.handler.moveBookmark(BigInt(id), newParentId);
       });
     }
-  }
-
-  deleteBookmarks(ids: string[]) {
-    return chrome.bookmarkManagerPrivate.removeTrees(ids);
   }
 
   getActiveUrl() {
@@ -145,13 +163,10 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     });
   }
 
-  getFolders() {
-    return chrome.bookmarks.getTree().then(results => {
-      if (results[0] && results[0].children) {
-        return results[0].children;
-      }
-      return [];
-    });
+  // TODO(crbug.com/406794014): Use the extensions API for this once
+  // implemented.
+  isActiveTabInSplit() {
+    return chrome.bookmarkManagerPrivate.isActiveTabInSplit();
   }
 
   openBookmark(
@@ -160,13 +175,8 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
     this.handler.openBookmark(BigInt(id), depth, clickModifiers, source);
   }
 
-  pasteToBookmark(parentId: string, destinationId?: string) {
-    const destination = destinationId ? [destinationId] : [];
-    return chrome.bookmarkManagerPrivate.paste(parentId, destination);
-  }
-
   renameBookmark(id: string, title: string) {
-    chrome.bookmarks.update(id, {title: title});
+    this.handler.renameBookmark(BigInt(id), title);
   }
 
   setSortOrder(sortOrder: SortOrder) {
@@ -186,7 +196,12 @@ export class BookmarksApiProxyImpl implements BookmarksApiProxy {
   }
 
   undo() {
-    chrome.bookmarkManagerPrivate.undo();
+    this.handler.undo();
+  }
+
+  // Asynchronously gets the list of non empty permanent bookmark nodes.
+  getAllBookmarks(): Promise<{nodes: BookmarksTreeNode[]}> {
+    return this.handler.getAllBookmarks();
   }
 
   static getInstance(): BookmarksApiProxy {

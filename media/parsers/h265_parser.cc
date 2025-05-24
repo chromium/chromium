@@ -147,9 +147,7 @@ void FillInDefaultScalingListData(H265ScalingListData* scaling_list_data,
 
 }  // namespace
 
-H265ScalingListData::H265ScalingListData() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265ScalingListData::H265ScalingListData() = default;
 
 uint8_t H265ScalingListData::GetScalingList4x4EntryInRasterOrder(
     size_t matrix_id,
@@ -203,45 +201,27 @@ uint8_t H265ScalingListData::GetScalingList32x32EntryInRasterOrder(
   return scaling_list_32x32[matrix_id][up_right_diag_idx];
 }
 
-H265StRefPicSet::H265StRefPicSet() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265SPS::H265SPS() = default;
 
-H265SPS::H265SPS() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265SPS::H265SPS(H265SPS&&) noexcept = default;
 
-H265ProfileTierLevel::H265ProfileTierLevel() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265ProfileTierLevel::H265ProfileTierLevel() = default;
 
-H265VUIParameters::H265VUIParameters() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265VUIParameters::H265VUIParameters() = default;
 
-H265PPS::H265PPS() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265VUIParameters::H265VUIParameters(H265VUIParameters&&) noexcept = default;
 
-H265VPS::H265VPS() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265PPS::H265PPS() = default;
 
-H265RefPicListsModifications::H265RefPicListsModifications() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265PPS::H265PPS(H265PPS&&) noexcept = default;
 
-H265PredWeightTable::H265PredWeightTable() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265VPS::H265VPS() = default;
 
-H265SliceHeader::H265SliceHeader() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265VPS::H265VPS(H265VPS&&) noexcept = default;
 
-H265SEIMessage::H265SEIMessage() {
-  memset(reinterpret_cast<void*>(this), 0, sizeof(*this));
-}
+H265PredWeightTable::H265PredWeightTable() = default;
+
+H265SliceHeader::H265SliceHeader() = default;
 
 H265SEI::H265SEI() = default;
 
@@ -534,18 +514,18 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
     }
     bool splitting_flag;
     READ_BOOL_OR_RETURN(&splitting_flag);
-    bool scalability_mask_flag[16] = {false};
+    bool scalability_mask_flag[16] = {};
     int num_scalability_types = 0;
     for (int i = 0; i < 16; ++i) {
       READ_BOOL_OR_RETURN(&scalability_mask_flag[i]);
       num_scalability_types += scalability_mask_flag[i];
     }
-    int dimension_id_len_minus1[16] = {0};
+    int dimension_id_len_minus1[16] = {};
     for (int j = 0; j < (num_scalability_types - splitting_flag); ++j) {
       READ_BITS_OR_RETURN(3, &dimension_id_len_minus1[j]);
     }
 
-    int dim_bit_offset[17] = {0};
+    int dim_bit_offset[17] = {};
     if (splitting_flag) {
       // Equation F-2
       for (int j = 1; j <= num_scalability_types - 1; ++j) {
@@ -572,7 +552,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
       if (vps_nuh_layer_id_present_flag) {
         READ_BITS_OR_RETURN(6, &layer_id_in_nuh_i);
       }
-      int dimension_id_i[16] = {0};
+      int dimension_id_i[16] = {};
       if (!splitting_flag) {
         for (int j = 0; j < num_scalability_types; ++j) {
           READ_BITS_OR_RETURN(dimension_id_len_minus1[j] + 1,
@@ -589,7 +569,7 @@ H265Parser::Result H265Parser::ParseVPS(int* vps_id) {
 
       // F.7.4.3.1.1 dimension_id
       // We can skip layer zero because all dimension_id[0][j] == 0.
-      int scalability_id_i[16] = {0};
+      int scalability_id_i[16] = {};
       for (int sm_idx = 0, j = 0; sm_idx < 16; ++sm_idx) {
         if (scalability_mask_flag[sm_idx]) {
           scalability_id_i[sm_idx] = dimension_id_i[j++];
@@ -1164,6 +1144,11 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
   sps = GetSPS(pps->pps_seq_parameter_set_id);
   DCHECK(sps);  // We already validated this when we parsed the PPS.
 
+  // Workaround for crbug.com/369963046; Apple encoder produces L1T2 streams
+  // with sps_max_sub_layers_minus1 = 0.
+  int clamped_temporal_id =
+      std::min(shdr->temporal_id, sps->sps_max_sub_layers_minus1);
+
   if (!shdr->first_slice_segment_in_pic_flag) {
     if (pps->dependent_slice_segments_enabled_flag)
       READ_BOOL_OR_RETURN(&shdr->dependent_slice_segment_flag);
@@ -1187,7 +1172,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     // We also need to validate the fields that have conditions that depend on
     // anything unique in this slice (i.e. anything already parsed).
     if ((shdr->irap_pic ||
-         sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] == 0) &&
+         sps->sps_max_dec_pic_buffering_minus1[clamped_temporal_id] == 0) &&
         nalu.nuh_layer_id == 0) {
       TRUE_OR_RETURN(shdr->slice_type == 2);
     }
@@ -1211,7 +1196,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     SKIP_BITS_OR_RETURN(pps->num_extra_slice_header_bits);
     READ_UE_OR_RETURN(&shdr->slice_type);
     if ((shdr->irap_pic ||
-         sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] == 0) &&
+         sps->sps_max_dec_pic_buffering_minus1[clamped_temporal_id] == 0) &&
         nalu.nuh_layer_id == 0) {
       TRUE_OR_RETURN(shdr->slice_type == 2);
     }
@@ -1261,7 +1246,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
         if (nalu.nuh_layer_id == 0) {
           TRUE_OR_RETURN(
               shdr->num_long_term_pics <=
-              (sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] -
+              (sps->sps_max_dec_pic_buffering_minus1[clamped_temporal_id] -
                shdr->GetStRefPicSet(sps).num_negative_pics -
                shdr->GetStRefPicSet(sps).num_positive_pics -
                shdr->num_long_term_sps));
@@ -2051,9 +2036,8 @@ H265Parser::Result H265Parser::ParsePredWeightTable(
         pred_weight_table->luma_log2_weight_denom;
     IN_RANGE_OR_RETURN(pred_weight_table->chroma_log2_weight_denom, 0, 7);
   }
-  bool luma_weight_flag[kMaxRefIdxActive];
-  bool chroma_weight_flag[kMaxRefIdxActive];
-  memset(chroma_weight_flag, 0, sizeof(chroma_weight_flag));
+  bool luma_weight_flag[kMaxRefIdxActive] = {};
+  bool chroma_weight_flag[kMaxRefIdxActive] = {};
   for (int i = 0; i <= shdr.num_ref_idx_l0_active_minus1; ++i) {
     READ_BOOL_OR_RETURN(&luma_weight_flag[i]);
   }
@@ -2142,95 +2126,95 @@ H265Parser::Result H265Parser::ParseSEI(H265SEI* sei) {
   // the parsed SEI messages, so we have to set a limit here.
   constexpr int kMaxParsedSEIMessages = 64;
   do {
+    int type = 0;
+    READ_BITS_OR_RETURN(8, &byte);
+    while (byte == 0xff) {
+      type += 255;
+      READ_BITS_OR_RETURN(8, &byte);
+    }
+    type += byte;
+
+    int payload_size = 0;
+    READ_BITS_OR_RETURN(8, &byte);
+    while (byte == 0xff) {
+      payload_size += 255;
+      READ_BITS_OR_RETURN(8, &byte);
+    }
+    payload_size += byte;
+    int num_bits_remain = payload_size * 8;
+
+    DVLOG(4) << "Found SEI message type: " << type
+             << " payload size: " << payload_size;
+
+    enum SEIType {
+      kSEIMasteringDisplayInfo = 137,
+      kSEIContentLightLevelInfo = 144,
+      kSEIAlphaChannelInfo = 165,
+    };
+
     H265SEIMessage sei_msg;
-    sei_msg.type = 0;
-    READ_BITS_OR_RETURN(8, &byte);
-    while (byte == 0xff) {
-      sei_msg.type += 255;
-      READ_BITS_OR_RETURN(8, &byte);
-    }
-    sei_msg.type += byte;
-
-    sei_msg.payload_size = 0;
-    READ_BITS_OR_RETURN(8, &byte);
-    while (byte == 0xff) {
-      sei_msg.payload_size += 255;
-      READ_BITS_OR_RETURN(8, &byte);
-    }
-    sei_msg.payload_size += byte;
-    int num_bits_remain = sei_msg.payload_size * 8;
-
-    DVLOG(4) << "Found SEI message type: " << sei_msg.type
-             << " payload size: " << sei_msg.payload_size;
-
-    switch (sei_msg.type) {
-      case H265SEIMessage::kSEIAlphaChannelInfo:
-        READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-            &sei_msg.alpha_channel_info.alpha_channel_cancel_flag,
-            &num_bits_remain);
-        if (!sei_msg.alpha_channel_info.alpha_channel_cancel_flag) {
+    switch (type) {
+      case kSEIAlphaChannelInfo: {
+        auto& info = sei_msg.emplace<H265SEIAlphaChannelInfo>();
+        READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(&info.alpha_channel_cancel_flag,
+                                                &num_bits_remain);
+        if (!info.alpha_channel_cancel_flag) {
           READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-              3, &sei_msg.alpha_channel_info.alpha_channel_use_idc,
-              &num_bits_remain);
+              3, &info.alpha_channel_use_idc, &num_bits_remain);
           READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-              3, &sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8,
-              &num_bits_remain);
+              3, &info.alpha_channel_bit_depth_minus8, &num_bits_remain);
           READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-              sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
-              &sei_msg.alpha_channel_info.alpha_transparent_value,
-              &num_bits_remain);
+              info.alpha_channel_bit_depth_minus8 + 9,
+              &info.alpha_transparent_value, &num_bits_remain);
           READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-              sei_msg.alpha_channel_info.alpha_channel_bit_depth_minus8 + 9,
-              &sei_msg.alpha_channel_info.alpha_opaque_value, &num_bits_remain);
-          READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-              &sei_msg.alpha_channel_info.alpha_channel_incr_flag,
+              info.alpha_channel_bit_depth_minus8 + 9, &info.alpha_opaque_value,
               &num_bits_remain);
-          READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-              &sei_msg.alpha_channel_info.alpha_channel_clip_flag,
-              &num_bits_remain);
-          if (sei_msg.alpha_channel_info.alpha_channel_clip_flag) {
+          READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(&info.alpha_channel_incr_flag,
+                                                  &num_bits_remain);
+          READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(&info.alpha_channel_clip_flag,
+                                                  &num_bits_remain);
+          if (info.alpha_channel_clip_flag) {
             READ_BOOL_AND_MINUS_BITS_READ_OR_RETURN(
-                &sei_msg.alpha_channel_info.alpha_channel_clip_type_flag,
-                &num_bits_remain);
+                &info.alpha_channel_clip_type_flag, &num_bits_remain);
           }
         }
         break;
-      case H265SEIMessage::kSEIContentLightLevelInfo:
+      }
+      case kSEIContentLightLevelInfo: {
+        auto& info = sei_msg.emplace<H265SEIContentLightLevelInfo>();
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.content_light_level_info.max_content_light_level,
-            &num_bits_remain);
+            16, &info.max_content_light_level, &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16,
-            &sei_msg.content_light_level_info.max_picture_average_light_level,
-            &num_bits_remain);
+            16, &info.max_picture_average_light_level, &num_bits_remain);
         break;
-      case H265SEIMessage::kSEIMasteringDisplayInfo:
-        for (auto& primary : sei_msg.mastering_display_info.display_primaries) {
+      }
+      case kSEIMasteringDisplayInfo: {
+        auto& info = sei_msg.emplace<H265SEIMasteringDisplayInfo>();
+        for (auto& primary : info.display_primaries) {
           for (auto& component : primary) {
             READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &component,
                                                     &num_bits_remain);
           }
         }
-        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.mastering_display_info.white_points[0],
-            &num_bits_remain);
-        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(
-            16, &sei_msg.mastering_display_info.white_points[1],
-            &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &info.white_points[0],
+                                                &num_bits_remain);
+        READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(16, &info.white_points[1],
+                                                &num_bits_remain);
         uint32_t luminace_high_31bits, luminance_low_1bit;
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
                                                 &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
                                                 &num_bits_remain);
-        sei_msg.mastering_display_info.max_luminance =
+        info.max_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(31, &luminace_high_31bits,
                                                 &num_bits_remain);
         READ_BITS_AND_MINUS_BITS_READ_OR_RETURN(1, &luminance_low_1bit,
                                                 &num_bits_remain);
-        sei_msg.mastering_display_info.min_luminance =
+        info.min_luminance =
             (luminace_high_31bits << 1) + (luminance_low_1bit & 0x1);
         break;
+      }
       default:
         DVLOG(4) << "Unsupported SEI message";
         break;
@@ -2240,8 +2224,9 @@ H265Parser::Result H265Parser::ParseSEI(H265SEI* sei) {
     if (num_bits_remain > 0)
       SKIP_BITS_OR_RETURN(num_bits_remain);
     // Only add parsed SEI messages.
-    if (num_bits_remain < sei_msg.payload_size * 8)
+    if (num_bits_remain < payload_size * 8) {
       sei->msgs.push_back(sei_msg);
+    }
     // In case the loop endless.
     if (++num_parsed_sei_msg > kMaxParsedSEIMessages)
       return kInvalidStream;

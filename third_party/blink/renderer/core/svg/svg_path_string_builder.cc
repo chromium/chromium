@@ -125,7 +125,7 @@ void SVGPathStringBuilder::EmitSegment(const PathSegmentData& segment) {
       AppendPoint(string_builder_, segment.target_point);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   string_builder_.Append(' ');
 }

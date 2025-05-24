@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/common/content_export.h"
@@ -47,6 +48,7 @@ struct CONTENT_EXPORT PendingConnection {
   mojo::Remote<storage::mojom::IndexedDBClientStateChecker>
       client_state_checker;
   base::UnguessableToken client_token;
+  base::WeakPtrFactory<PendingConnection> weak_factory{this};
 };
 
 }  // namespace content::indexed_db

@@ -4,8 +4,10 @@
 
 package org.chromium.ui.modelutil;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A model change processor (MCP), i.e. an implementation of {@link RecyclerViewAdapter.Delegate},
@@ -17,10 +19,11 @@ import androidx.recyclerview.widget.RecyclerView;
  * @param <P> The payload type for partial updates. If the model change processor doesn't support
  *     partial updates, use the {@link SimpleRecyclerViewMcp} subclass.
  */
+@NullMarked
 public class SimpleRecyclerViewMcpBase<T, VH, P> extends ForwardingListObservable<P>
         implements RecyclerViewAdapter.Delegate<VH, P> {
     private final SimpleList<T> mModel;
-    private final ItemViewTypeCallback<T> mItemViewTypeCallback;
+    private final @Nullable ItemViewTypeCallback<T> mItemViewTypeCallback;
     private final ViewBinder<T, VH, P> mViewBinder;
 
     public SimpleRecyclerViewMcpBase(

@@ -22,12 +22,11 @@ CacheCounter::CacheResult::CacheResult(const CacheCounter* source,
       cache_size_(cache_size),
       is_upper_limit_(is_upper_limit) {}
 
-CacheCounter::CacheResult::~CacheResult() {}
+CacheCounter::CacheResult::~CacheResult() = default;
 
 CacheCounter::CacheCounter(Profile* profile) : profile_(profile) {}
 
-CacheCounter::~CacheCounter() {
-}
+CacheCounter::~CacheCounter() = default;
 
 const char* CacheCounter::GetPrefName() const {
   return GetTab() == browsing_data::ClearBrowsingDataTab::BASIC

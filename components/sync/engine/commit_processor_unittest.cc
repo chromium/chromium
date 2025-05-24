@@ -137,7 +137,7 @@ TEST_F(CommitProcessorTest, ShouldGatherRegularUserTypes) {
   EXPECT_CALL(nigori_contributor_, GetContribution(kMaxEntries));
   EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries));
 
-  // Return |kNumReturnedBookmarks| bookmarks.
+  // Return `kNumReturnedBookmarks` bookmarks.
   EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries))
       .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks));
 
@@ -165,7 +165,7 @@ TEST_F(CommitProcessorTest, ShouldGatherLowPriorityUserTypes) {
   EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries));
   EXPECT_CALL(preference_contributor_, GetContribution(kMaxEntries));
 
-  // Return |kNumReturnedHistory| history entries.
+  // Return `kNumReturnedHistory` history entries.
   EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries))
       .WillOnce(ReturnContributionWithEntries(kNumReturnedHistory));
 
@@ -179,7 +179,7 @@ TEST_F(CommitProcessorTest, ShouldGatherMultipleRegularUserTypes) {
   const int kNumReturnedPreferences = 8;
   static_assert(kNumReturnedBookmarks + kNumReturnedPreferences < kMaxEntries);
 
-  // Return |kNumReturnedBookmarks| bookmarks and |kNumReturnedPreferences|
+  // Return `kNumReturnedBookmarks` bookmarks and `kNumReturnedPreferences`
   // preferences.
   EXPECT_CALL(bookmark_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks));
@@ -199,7 +199,7 @@ TEST_F(CommitProcessorTest, ShouldGatherMultipleRegularUserTypes) {
 TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
   const int kNumReturnedSharingMessages = 3;
 
-  // First, return |kMaxEntries| sharing messages.
+  // First, return `kMaxEntries` sharing messages.
   EXPECT_CALL(sharing_message_contributor_, GetContribution(kMaxEntries))
       .WillOnce(ReturnContributionWithEntries(kMaxEntries));
 
@@ -212,7 +212,7 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
       processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
       UnorderedElementsAre(Pair(SHARING_MESSAGE, HasNumEntries(kMaxEntries))));
 
-  // Now, return only |kNumReturnedSharingMessages| sharing messages (all that's
+  // Now, return only `kNumReturnedSharingMessages` sharing messages (all that's
   // left).
   EXPECT_CALL(sharing_message_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedSharingMessages));
@@ -241,7 +241,7 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringHighPriorityContributions) {
 TEST_F(CommitProcessorTest, ShouldContinueGatheringRegularContributions) {
   const int kNumReturnedBookmarks = 7;
 
-  // First, return |kMaxEntries| bookmarks.
+  // First, return `kMaxEntries` bookmarks.
   EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries))
       .WillOnce(ReturnContributionWithEntries(kMaxEntries));
 
@@ -249,7 +249,7 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringRegularContributions) {
       processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
       UnorderedElementsAre(Pair(BOOKMARKS, HasNumEntries(kMaxEntries))));
 
-  // Now, return only |kNumReturnedBookmarks| bookmarks (all that's left).
+  // Now, return only `kNumReturnedBookmarks` bookmarks (all that's left).
   EXPECT_CALL(bookmark_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedBookmarks));
 
@@ -268,14 +268,14 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringRegularContributions) {
 TEST_F(CommitProcessorTest, ShouldContinueGatheringLowPriorityContributions) {
   const int kNumReturnedHistory = 7;
 
-  // First, return |kMaxEntries| history entries.
+  // First, return `kMaxEntries` history entries.
   EXPECT_CALL(history_contributor_, GetContribution(kMaxEntries))
       .WillOnce(ReturnContributionWithEntries(kMaxEntries));
 
   EXPECT_THAT(processor_.GatherCommitContributions(/*max_entries=*/kMaxEntries),
               UnorderedElementsAre(Pair(HISTORY, HasNumEntries(kMaxEntries))));
 
-  // Now, return only |kNumReturnedHistory| entries (all that's left).
+  // Now, return only `kNumReturnedHistory` entries (all that's left).
   EXPECT_CALL(history_contributor_, GetContribution)
       .WillOnce(ReturnContributionWithEntries(kNumReturnedHistory));
 
@@ -293,7 +293,7 @@ TEST_F(CommitProcessorTest, ShouldContinueGatheringLowPriorityContributions) {
 
 TEST_F(CommitProcessorTest,
        ShouldContinueGatheringRegularContributionsIfMatchingMaxEntries) {
-  // Return |kMaxEntries| bookmarks.
+  // Return `kMaxEntries` bookmarks.
   EXPECT_CALL(bookmark_contributor_, GetContribution(kMaxEntries))
       .WillOnce(ReturnContributionWithEntries(kMaxEntries));
 
@@ -302,7 +302,7 @@ TEST_F(CommitProcessorTest,
       UnorderedElementsAre(Pair(BOOKMARKS, HasNumEntries(kMaxEntries))));
 
   // There are no contributions left, do not return any further.
-  // GetContribution() should however get called since |processor| cannot tell
+  // GetContribution() should however get called since `processor` cannot tell
   // that there are no left.
   EXPECT_CALL(bookmark_contributor_, GetContribution);
 

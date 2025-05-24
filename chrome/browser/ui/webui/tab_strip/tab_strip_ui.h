@@ -6,10 +6,14 @@
 #define CHROME_BROWSER_UI_WEBUI_TAB_STRIP_TAB_STRIP_UI_H_
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/thumbnail_tracker.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -25,10 +29,19 @@ class TabStripPageHandler;
 class TabStripUIEmbedder;
 
 // These data types must be in all lowercase.
-constexpr char16_t kWebUITabIdDataType[] = u"application/vnd.chromium.tab";
-constexpr char16_t kWebUITabGroupIdDataType[] =
+inline constexpr char16_t kWebUITabIdDataType[] =
+    u"application/vnd.chromium.tab";
+inline constexpr char16_t kWebUITabGroupIdDataType[] =
     u"application/vnd.chromium.tabgroup";
 
+class TabStripUI;
+
+class TabStripUIConfig : public content::DefaultWebUIConfig<TabStripUI> {
+ public:
+  TabStripUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUITabStripHost) {}
+};
 
 // The WebUI version of the tab strip in the browser. It is currently only
 // supported on ChromeOS in tablet mode.
@@ -52,6 +65,11 @@ class TabStripUI : public ui::MojoWebUIController,
   void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
+
+  // Instantiates the implementor of the mojom::TabStripService mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripService> receiver);
 
   // Initialize TabStripUI with its embedder and the Browser it's running in.
   // Must be called exactly once. The WebUI won't work until this is called.

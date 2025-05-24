@@ -111,7 +111,7 @@ class MetadataWriterTest(tf.test.TestCase, parameterized.TestCase):
     displayer = metadata.MetadataDisplayer.with_model_buffer(
         test_utils.load_file(_EXPECTED_DUMMY_MODEL))
     expected_metadata_dict = json.loads(displayer.get_metadata_json())
-    self.assertDictContainsSubset(metadata_dict, expected_metadata_dict)
+    self.assertEqual(expected_metadata_dict, {**expected_metadata_dict, **metadata_dict})
 
   def _validate_metadata(self, writer, expected_json_file):
     metadata_json = writer.get_metadata_json()

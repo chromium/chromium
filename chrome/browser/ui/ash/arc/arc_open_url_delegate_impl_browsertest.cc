@@ -4,15 +4,18 @@
 
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
@@ -26,7 +29,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/arc/intent_helper/intent_constants.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -40,11 +43,11 @@ using arc::mojom::ChromePage;
 
 // Return the number of windows that hosts OS Settings.
 size_t GetNumberOfSettingsWindows() {
-  return base::ranges::count_if(*BrowserList::GetInstance(),
-                                [](Browser* browser) {
-                                  return ash::IsBrowserForSystemWebApp(
-                                      browser, ash::SystemWebAppType::SETTINGS);
-                                });
+  return std::ranges::count_if(*BrowserList::GetInstance(),
+                               [](Browser* browser) {
+                                 return ash::IsBrowserForSystemWebApp(
+                                     browser, ash::SystemWebAppType::SETTINGS);
+                               });
 }
 
 // Give the underlying function a clearer name.
@@ -54,11 +57,25 @@ Browser* GetLastActiveBrowser() {
 
 using ArcOpenUrlDelegateImplBrowserTest = InProcessBrowserTest;
 
-using ArcOpenUrlDelegateImplWebAppBrowserTest =
-    web_app::WebAppNavigationBrowserTest;
+class ArcOpenUrlDelegateImplWebAppBrowserTest
+    : public web_app::WebAppNavigationBrowserTest,
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
+ public:
+  ArcOpenUrlDelegateImplWebAppBrowserTest() {
+    features_list_.InitWithFeaturesAndParameters(
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
+  }
 
-IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
+ private:
+  base::test::ScopedFeatureList features_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
   InstallTestWebApp();
+  // Enabling link capturing to ensure it doesn't interfere.
+  ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), test_web_app_id()),
+            base::ok());
   const GURL app_url = https_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
   const char* key =
       arc::ArcWebContentsData::ArcWebContentsData::kArcTransitionFlag;
@@ -95,56 +112,7 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest, OpenWebApp) {
   }
 }
 
-void TestOpenSettingFromArc(Browser* browser,
-                            ChromePage page,
-                            const GURL& expected_url,
-                            bool expected_setting_window) {
-  // Install the Settings App.
-  ash::SystemWebAppManager::GetForTest(browser->profile())
-      ->InstallSystemAppsForTesting();
-
-  ui_test_utils::BrowserChangeObserver browser_opened(
-      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
-  ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
-  if (expected_setting_window)
-    browser_opened.Wait();
-
-  EXPECT_EQ(expected_setting_window ? 1ul : 0ul, GetNumberOfSettingsWindows());
-
-  // The right settings are loaded (not just the settings main page).
-  content::WebContents* contents =
-      GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(expected_url, contents->GetVisibleURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest,
-                       OpenOSSettingsAppFromArc) {
-  // Opening a browser setting should not open the OS setting window.
-  TestOpenSettingFromArc(
-      browser(), ChromePage::AUTOFILL,
-      GURL("chrome://settings/").Resolve(chrome::kAutofillSubPage),
-      /*expected_setting_window=*/false);
-
-  // But opening an OS setting should open the OS setting window.
-  TestOpenSettingFromArc(
-      browser(), ChromePage::POWER,
-      GURL("chrome://os-settings/")
-          .Resolve(chromeos::settings::mojom::kPowerSubpagePath),
-      /*expected_setting_window=*/true);
-}
-
-IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest, OpenAboutChromePage) {
-  // Opening an about: chrome page opens a new tab, and not the Settings window.
-  ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(
-      ChromePage::ABOUTHISTORY);
-  EXPECT_EQ(0u, GetNumberOfSettingsWindows());
-
-  content::WebContents* contents =
-      GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(GURL(chrome::kChromeUIHistoryURL), contents->GetVisibleURL());
-}
-
-IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest,
+IN_PROC_BROWSER_TEST_P(ArcOpenUrlDelegateImplWebAppBrowserTest,
                        OpenAppWithIntent) {
   ASSERT_TRUE(https_server().Start());
   const GURL app_url = https_server().GetURL(GetAppUrlHost(), GetAppUrlPath());
@@ -164,6 +132,8 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest,
   web_app_info->share_target = share_target;
   std::string id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  // Enabling link capturing to ensure it doesn't interfere.
+  ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), id), base::ok());
 
   const char* arc_transition_key =
       arc::ArcWebContentsData::ArcWebContentsData::kArcTransitionFlag;
@@ -234,6 +204,65 @@ IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplWebAppBrowserTest,
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ArcOpenUrlDelegateImplWebAppBrowserTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::
+                        kV2DefaultOffCaptureExistingFrames),
+    apps::test::LinkCapturingVersionToString);
+
+void TestOpenSettingFromArc(Browser* browser,
+                            ChromePage page,
+                            const GURL& expected_url,
+                            bool expected_setting_window) {
+  // Install the Settings App.
+  ash::SystemWebAppManager::GetForTest(browser->profile())
+      ->InstallSystemAppsForTesting();
+
+  ui_test_utils::BrowserChangeObserver browser_opened(
+      nullptr, ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
+  if (expected_setting_window) {
+    browser_opened.Wait();
+  }
+
+  EXPECT_EQ(expected_setting_window ? 1ul : 0ul, GetNumberOfSettingsWindows());
+
+  // The right settings are loaded (not just the settings main page).
+  content::WebContents* contents =
+      GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(expected_url, contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest,
+                       OpenOSSettingsAppFromArc) {
+  // Opening a browser setting should not open the OS setting window.
+  TestOpenSettingFromArc(
+      browser(), ChromePage::AUTOFILL,
+      GURL("chrome://settings/").Resolve(chrome::kAutofillSubPage),
+      /*expected_setting_window=*/false);
+
+  // But opening an OS setting should open the OS setting window.
+  TestOpenSettingFromArc(
+      browser(), ChromePage::POWER,
+      GURL("chrome://os-settings/")
+          .Resolve(chromeos::settings::mojom::kPowerSubpagePath),
+      /*expected_setting_window=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest, OpenAboutChromePage) {
+  // Opening an about: chrome page opens a new tab, and not the Settings window.
+  ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(
+      ChromePage::ABOUTHISTORY);
+  EXPECT_EQ(0u, GetNumberOfSettingsWindows());
+
+  content::WebContents* contents =
+      GetLastActiveBrowser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(GURL(chrome::kChromeUIHistoryURL), contents->GetVisibleURL());
+}
+
 void TestOpenChromePage(ChromePage page, const GURL& expected_url) {
   // Note: It is impossible currently to 'wait until done' for this method, as
   // it doesn't guarantee a new browser, web contents, or even navigation.
@@ -289,7 +318,8 @@ void TestAllOSSettingPages(const GURL& base_url) {
           chromeos::settings::mojom::kBluetoothDevicesSubpagePath));
   TestOpenOSSettingsChromePage(
       ChromePage::DATETIME,
-      base_url.Resolve(chromeos::settings::mojom::kDateAndTimeSectionPath));
+      base_url.Resolve(
+          chromeos::settings::mojom::kSystemPreferencesSectionPath));
   TestOpenOSSettingsChromePage(
       ChromePage::DISPLAY,
       base_url.Resolve(chromeos::settings::mojom::kDisplaySubpagePath));
@@ -362,6 +392,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
   TestOpenOSSettingsChromePage(
       ChromePage::GRAPHICSTABLET,
       base_url.Resolve(chromeos::settings::mojom::kGraphicsTabletSubpagePath));
+  TestOpenOSSettingsChromePage(
+      ChromePage::NETWORKS,
+      base_url.Resolve(chromeos::settings::mojom::kNetworkSectionPath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

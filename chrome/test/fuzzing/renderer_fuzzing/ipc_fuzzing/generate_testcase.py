@@ -218,15 +218,20 @@ def filter_data(data):
   Args:
       data: the JSON data.
   """
-  data_filter = lambda x : x['type'] != 'AssociatedRemote'
-  data['context_interfaces'] = list(filter(data_filter,
+  is_not_associated = lambda x : x['type'] != 'AssociatedRemote'
+  is_associated = lambda x : x['type'] == 'AssociatedRemote'
+  data['associated_interfaces'] = list(filter(is_associated,
+                                              data['context_interfaces']))
+  data['context_interfaces'] = list(filter(is_not_associated,
                                            data['context_interfaces']))
-  data['process_interfaces'] = list(filter(data_filter,
+  data['process_interfaces'] = list(filter(is_not_associated,
                                            data['process_interfaces']))
   ctx_interfaces = [s['qualified_name'] for s in data['context_interfaces']]
   data_filter = lambda x: x['qualified_name'] not in ctx_interfaces
   data['process_interfaces'] = list(filter(data_filter,
                                            data['process_interfaces']))
+  data['associated_interfaces'] = list(filter(data_filter,
+                                              data['associated_interfaces']))
 
 
 def run_ipc_dumper(dumper_path: str, out_file: str):
@@ -253,8 +258,6 @@ def run_ipc_dumper(dumper_path: str, out_file: str):
       os.path.abspath(dumper_path),
       '--single-process-tests',
   ]
-  # TODO(349980051): crbug.com/349980051: when ubsan is enabled by default in
-  # ASAN enabled builds, we had timeout issues running this binary.
   try:
     subprocess.run(args, capture_output=True, env=env, check=True)
   except subprocess.CalledProcessError as e:
@@ -283,13 +286,17 @@ def generate_interfaces(ipc_interfaces_dumper: str,
   for interface in interfaces:
     with open(interface, 'r', encoding="utf-8") as f:
       parsed_interfaces.append(mojom_parser.Parse(f.read(), interface))
-  output = {"context_interfaces": [], "process_interfaces": []}
+  output = {'context_interfaces': [],
+            'process_interfaces': [],
+            'associated_interfaces': []}
   with tempfile.NamedTemporaryFile() as input_file:
     run_ipc_dumper(ipc_interfaces_dumper, input_file.name)
     with open(input_file.name, 'r') as in_f:
       data = json.load(in_f)
       filter_data(data)
-      all_interfaces = data['context_interfaces'] + data['process_interfaces']
+      all_interfaces = data['context_interfaces'] +\
+                       data['process_interfaces'] +\
+                       data['associated_interfaces']
       qualified_names = [e['qualified_name'] for e in all_interfaces]
       ensure_interface_deps_complete(qualified_names,
                                      parsed_interfaces,
@@ -302,12 +309,18 @@ def generate_interfaces(ipc_interfaces_dumper: str,
                         parsed_interfaces,
                         SOURCE_DIR,
                         output['process_interfaces'])
+      handle_interfaces(data['associated_interfaces'],
+                        parsed_interfaces,
+                        SOURCE_DIR,
+                        output['associated_interfaces'])
 
   # MojoLPMGenerator expects a particular format for generating MojoLPM
   # boilerplate. This part will generate the expected format and rebase the
   # mojom module paths in order for MojoLPMGenerator to be able to find them.
   output['interfaces'] = []
-  for interface in output['context_interfaces'] + output['process_interfaces']:
+  for interface in output['context_interfaces'] +\
+                   output['process_interfaces'] +\
+                   output['associated_interfaces']:
     path = interface[0]
     path = os.path.join(gen_dir, path.lstrip('/')) + '-module'
     output['interfaces'].append([
@@ -403,12 +416,14 @@ def generate_testcase(interfaces_f: str,
     data = json.load(f)
     context = [c[1] for c in data['context_interfaces']]
     process = [p[1] for p in data['process_interfaces']]
+    associated = [a[1] for a in data['associated_interfaces']]
     context = {
       "filename": testcase_f,
       "mojolpm_generator_filepath": f"{fuzzer_path}.h",
       "mojolpm_generator_classname": mojolpm_classname,
       "process_interfaces": [split_interface_name(p) for p in process],
       "context_interfaces": [split_interface_name(c) for c in context],
+      "associated_interfaces": [split_interface_name(c) for c in associated],
     }
     with action_helpers.atomic_output(testcase_f, mode="w") as f:
       f.write(template.render(context))

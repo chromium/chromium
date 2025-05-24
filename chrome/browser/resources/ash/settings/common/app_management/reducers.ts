@@ -9,11 +9,11 @@
  * calls.
  */
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 
-import {AddAppAction, AppManagementActions, ChangeAppAction, RemoveAppAction} from './actions.js';
-import {AppManagementPageState, AppMap} from './store.js';
+import type {AddAppAction, AppManagementActions, ChangeAppAction, RemoveAppAction} from './actions.js';
+import type {AppManagementPageState, AppMap} from './store.js';
 
 function addApp(apps: AppMap, action: AddAppAction): AppMap {
   if (apps[action.app.id]) {
@@ -50,11 +50,11 @@ function removeApp(apps: AppMap, action: RemoveAppAction): AppMap {
 export function updateApps(apps: AppMap, action: AppManagementActions): AppMap {
   switch (action.name) {
     case 'add-app':
-      return addApp(apps, action as AddAppAction);
+      return addApp(apps, action);
     case 'change-app':
-      return changeApp(apps, action as ChangeAppAction);
+      return changeApp(apps, action);
     case 'remove-app':
-      return removeApp(apps, action as RemoveAppAction);
+      return removeApp(apps, action);
     default:
       return apps;
   }

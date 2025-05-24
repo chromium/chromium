@@ -216,8 +216,7 @@ void BluetoothDeviceFloss::SetConnectionLatency(
       max_connection_interval = kMaxConnectionIntervalHigh;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   BLUETOOTH_LOG(EVENT) << "Setting LE connection parameters: min="
@@ -248,13 +247,6 @@ void BluetoothDeviceFloss::OnSetConnectionLatency(base::OnceClosure callback,
         pending_set_connection_latency_.value();
     std::move(pending_error_cb).Run();
     pending_set_connection_latency_ = std::nullopt;
-  }
-
-  // If there is no active connection, UpdateConnectionParameters succeeds
-  // silently and won't generates any callbacks. Run callback right here.
-  if (!IsConnected()) {
-    std::move(callback).Run();
-    return;
   }
 
   pending_set_connection_latency_ =
@@ -593,8 +585,7 @@ void BluetoothDeviceFloss::SetBondState(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -725,7 +716,9 @@ BluetoothDeviceFloss::BluetoothDeviceFloss(
 }
 
 BluetoothDeviceFloss::~BluetoothDeviceFloss() {
-  FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
+  if (floss::FlossDBusManager::IsInitialized()) {
+    FlossDBusManager::Get()->GetGattManagerClient()->RemoveObserver(this);
+  }
 }
 
 bool BluetoothDeviceFloss::IsBondedImpl() const {
@@ -874,6 +867,21 @@ void BluetoothDeviceFloss::OnConnectAllEnabledProfiles(
   if (is_acl_connected_) {
     UpdateConnectingState(ConnectingState::kProfilesConnected, std::nullopt);
   }
+}
+
+void BluetoothDeviceFloss::OnDeviceConnectionFailed(
+    FlossDBusClient::BtifStatus status) {
+  if (status == FlossDBusClient::BtifStatus::kTimeout) {
+    // If the connection failed due to timeout, avoid updating the connecting
+    // state, as the upper layers might retry the connection. Instead, wait for
+    // the connection to succeed, in which case we will record the success, or
+    // fail again, in which case the `connection_incomplete_timer_` will fire
+    // and record the same timeout failure anyway.
+    return;
+  }
+
+  UpdateConnectingState(ConnectingState::kIdle,
+                        FlossDBusClient::BtifStatusToConnectErrorCode(status));
 }
 
 void BluetoothDeviceFloss::UpdateConnectingState(

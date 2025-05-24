@@ -42,8 +42,9 @@ bool MediaRemotingDialogCoordinatorViews::Show(
     std::move(permission_callback).Run(false);
     return false;
   }
-  views::View* const icon_view =
-      BrowserView::GetBrowserViewForBrowser(browser)->toolbar()->cast_button();
+  views::View* const icon_view = BrowserView::GetBrowserViewForBrowser(browser)
+                                     ->toolbar()
+                                     ->GetCastButton();
   Profile* const profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   PrefService* const pref_service = profile->GetPrefs();
@@ -60,8 +61,9 @@ bool MediaRemotingDialogCoordinatorViews::Show(
 }
 
 void MediaRemotingDialogCoordinatorViews::Hide() {
-  if (IsShowing())
+  if (IsShowing()) {
     tracker_.view()->GetWidget()->Close();
+  }
 }
 
 bool MediaRemotingDialogCoordinatorViews::IsShowing() const {
@@ -111,11 +113,11 @@ void MediaRemotingDialogView::Init() {
       views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_PRIMARY);
   body_text->SetMultiLine(true);
   body_text->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(body_text);
+  AddChildViewRaw(body_text);
 
   remember_choice_checkbox_ = new views::Checkbox(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_REMOTING_DIALOG_CHECKBOX));
-  AddChildView(remember_choice_checkbox_.get());
+  AddChildViewRaw(remember_choice_checkbox_.get());
 }
 
 void MediaRemotingDialogView::ReportPermission(bool allowed) {

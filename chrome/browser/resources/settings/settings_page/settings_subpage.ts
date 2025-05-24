@@ -10,9 +10,8 @@
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_search_field/cr_search_field.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
-import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 
@@ -86,21 +85,6 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
         value: '',
       },
 
-      /** If true shows an active spinner at the end of the subpage header. */
-      showSpinner: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Title (i.e., tooltip) to be displayed on the spinner. If |showSpinner|
-       * is false, this field has no effect.
-       */
-      spinnerTitle: {
-        type: String,
-        value: '',
-      },
-
       /**
        * Whether we should hide the "close" button to get to the previous page.
        */
@@ -135,18 +119,16 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
     };
   }
 
-  pageTitle: string;
-  titleIcon: string;
-  faviconSiteUrl: string;
-  learnMoreUrl: string;
-  searchLabel: string;
-  searchTerm: string;
-  showSpinner: boolean;
-  spinnerTitle: string;
-  hideCloseButton: boolean;
-  associatedControl: HTMLElement|null;
-  preserveSearchTerm: boolean;
-  private active_: boolean;
+  declare pageTitle: string;
+  declare titleIcon: string;
+  declare faviconSiteUrl: string;
+  declare learnMoreUrl: string;
+  declare searchLabel: string;
+  declare searchTerm: string;
+  declare hideCloseButton: boolean;
+  declare associatedControl: HTMLElement|null;
+  declare preserveSearchTerm: boolean;
+  declare private active_: boolean;
   private lastActiveValue_: boolean = false;
   private eventTracker_: EventTracker|null = null;
 
@@ -311,7 +293,7 @@ export class SettingsSubpageElement extends SettingsSubpageElementBase {
   // Override FindShortcutMixin methods.
   override searchInputHasFocus() {
     const field = this.shadowRoot!.querySelector('cr-search-field')!;
-    return field.getSearchInput() === field.shadowRoot!.activeElement;
+    return field.getSearchInput() === field.shadowRoot.activeElement;
   }
 
   static get template() {

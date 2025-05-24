@@ -76,11 +76,6 @@ AccessibilityProvider::AccessibilityProvider(
 AccessibilityProvider::~AccessibilityProvider() = default;
 
 void AccessibilityProvider::TrackView(AshWebView* view) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEcheSWAProcessAndroidAccessibilityTree)) {
-    // Don't track views if a11y tree is not enabled.
-    return;
-  }
   tree_source_ = std::make_unique<ax::android::AXTreeSourceAndroid>(
       this, std::make_unique<SerializationDelegate>(device_bounds_),
       view->GetNativeView() /*window*/);
@@ -105,11 +100,6 @@ void AccessibilityProvider::HandleStreamClosed() {
 
 void AccessibilityProvider::HandleAccessibilityEventReceived(
     const std::vector<uint8_t>& serialized_proto) {
-  if (!base::FeatureList::IsEnabled(
-          features::kEcheSWAProcessAndroidAccessibilityTree)) {
-    return;
-  }
-
   if (serialized_proto.empty()) {
     return;
   }

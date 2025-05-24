@@ -93,10 +93,20 @@ class RebootNotificationsScheduler::RequestQueue {
 
   // The very last method to call after which the queue is invalid.
   [[nodiscard]] RebootButtonCallback TakeCallback() {
-    DCHECK(current_request());
-    const Requester current_requester = current_request()->requester;
-    DCHECK(requests_[current_requester].reboot_button_callback);
-    return std::move(requests_[current_requester].reboot_button_callback);
+    const std::optional<RequsterAndRebootTime> current = current_request();
+
+    if (!current.has_value()) {
+      return base::DoNothing();
+    }
+
+    auto reboot_callback =
+        std::move(requests_[current->requester].reboot_button_callback);
+
+    if (!reboot_callback) {
+      return base::DoNothing();
+    }
+
+    return reboot_callback;
   }
 
   // Returns true if the new request takes place. Returns false if the current
@@ -162,14 +172,6 @@ RebootNotificationsScheduler* RebootNotificationsScheduler::Get() {
 void RebootNotificationsScheduler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ash::prefs::kShowPostRebootNotification, false);
-}
-
-// static
-bool RebootNotificationsScheduler::ShouldShowPostRebootNotification(
-    Profile* profile) {
-  DCHECK(profile);
-  PrefService* prefs = user_prefs::UserPrefs::Get(profile);
-  return IsPostRebootPrefSet(prefs);
 }
 
 void RebootNotificationsScheduler::SchedulePendingRebootNotifications(

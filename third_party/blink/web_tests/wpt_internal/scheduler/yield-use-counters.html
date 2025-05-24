@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <script type=module>
+    import {WebFeature} from '/gen/third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.m.js';
+
+    function clearUseCounters() {
+      internals.clearUseCounter(
+          document, WebFeature.kSchedulerYieldNonTrivialInherit);
+      internals.clearUseCounter(
+          document, WebFeature.kSchedulerYieldNonTrivialInheritCrossFrameIgnored);
+    }
+
+    function checkUseCounters(expected) {
+      assert_equals(
+          internals.isUseCounted(
+              document, WebFeature.kSchedulerYieldNonTrivialInherit),
+          expected.inherit,
+          'Unexpected value for kSchedulerYieldNonTrivialInherit');
+      assert_equals(
+          internals.isUseCounted(
+              document,
+              WebFeature.kSchedulerYieldNonTrivialInheritCrossFrameIgnored),
+          expected.crossFrame,
+          'Unexpected value for kSchedulerYieldNonTrivialInheritCrossFrameIgnored');
+    }
+
+    promise_test(async () => {
+      clearUseCounters();
+      await new Promise(resolve => {
+        setTimeout(async () => {
+          await scheduler.yield();
+          resolve();
+        });
+      });
+      checkUseCounters({inherit: false, crossFrame: false});
+    }, 'Test yield without inheritance does not trigger UseCounters');
+
+    promise_test(async () => {
+      clearUseCounters();
+      await scheduler.postTask(async () => {
+        await scheduler.yield();
+      });
+      checkUseCounters({inherit: false, crossFrame: false});
+    }, 'Test yield with trivial inheritance is ignored');
+
+    promise_test(async () => {
+      clearUseCounters();
+      const controller = new TaskController();
+      await scheduler.postTask(async () => {
+        await scheduler.yield();
+      }, {signal: controller.signal});
+      checkUseCounters({inherit: true, crossFrame: false});
+    }, 'Test yield with non-trivial inheritance');
+
+    promise_test(async () => {
+      clearUseCounters();
+      const iframe = document.createElement('iframe');
+      const p = new Promise(resolve => iframe.onload = resolve);
+      document.body.appendChild(iframe);
+      await p;
+
+      await iframe.contentWindow.scheduler.postTask(async () => {
+        await scheduler.yield();
+      }, {priority: 'background'});
+      checkUseCounters({inherit: false, crossFrame: true});
+    }, 'Test yield across frames');
+  </script>
+</body>

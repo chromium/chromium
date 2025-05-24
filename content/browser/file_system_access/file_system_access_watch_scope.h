@@ -76,9 +76,9 @@ class CONTENT_EXPORT FileSystemAccessWatchScope {
     }
   }
 
-  bool operator==(const FileSystemAccessWatchScope& other) const {
-    return root_url_ == other.root_url_ && watch_type_ == other.watch_type_;
-  }
+  bool operator==(const FileSystemAccessWatchScope& other) const = default;
+
+  auto operator<=>(const FileSystemAccessWatchScope& other) const = default;
 
  private:
   FileSystemAccessWatchScope(storage::FileSystemURL root_url,

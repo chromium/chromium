@@ -43,7 +43,15 @@ CreateMarkupOptions::Builder::SetIsForMarkupSanitization(
 CreateMarkupOptions::Builder&
 CreateMarkupOptions::Builder::SetIgnoresCSSTextTransformsForRenderedText(
     bool ignores_text_transforms) {
-  data_.ignores_css_text_transforms_for_rendered_text = ignores_text_transforms;
+  data_.ignores_css_text_transforms_for_rendered_text_ =
+      ignores_text_transforms;
+  return *this;
+}
+
+CreateMarkupOptions::Builder&
+CreateMarkupOptions::Builder::SetShouldSkipUnselectableContent(
+    bool skip_unselectable_content) {
+  data_.should_skip_unselectable_content_ = skip_unselectable_content;
   return *this;
 }
 

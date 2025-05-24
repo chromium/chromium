@@ -28,7 +28,7 @@ void AddCommonData(ExecutionContext* execution_context,
     dict.Add("workerId", IdentifiersFactory::IdFromToken(
                              scope->GetThread()->GetDevToolsWorkerToken()));
   } else {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "WebSocket is available only in Window and WorkerGlobalScope";
   }
 }

@@ -523,15 +523,9 @@ testSuite({
   testEnterDocument() {
     control.render(sandbox);
     assertTrue('Control must be in the document', control.isInDocument());
-    if (userAgent.IE && !userAgent.isVersionOrHigher(9)) {
-      assertEquals(
-          'Control must have 6 mouse & 3 key event listeners on IE8', 9,
-          getListenerCount(control));
-    } else {
-      assertEquals(
-          'Control must have 5 mouse and 3 key event listeners', 8,
-          getListenerCount(control));
-    }
+    assertEquals(
+        'Control must have 5 mouse and 3 key event listeners', 8,
+        getListenerCount(control));
     assertEquals(
         'Control\'s key event handler must be attached to its ' +
             'key event target',
@@ -565,15 +559,9 @@ testSuite({
     control.setSupportedState(Component.State.FOCUSED, false);
     control.render(sandbox);
     assertTrue('Control must be in the document', control.isInDocument());
-    if (userAgent.IE && !userAgent.isVersionOrHigher(9)) {
-      assertEquals(
-          'Control must have 6 mouse event listeners on IE8', 6,
-          getListenerCount(control));
-    } else {
-      assertEquals(
-          'Control must have 5 mouse event listeners', 5,
-          getListenerCount(control));
-    }
+    assertEquals(
+        'Control must have 5 mouse event listeners', 5,
+        getListenerCount(control));
     assertUndefined(
         'Control must not have a key event handler', control.keyHandler_);
   },
@@ -605,15 +593,9 @@ testSuite({
   testExitDocument() {
     control.render(sandbox);
     assertTrue('Control must be in the document', control.isInDocument());
-    if (userAgent.IE && !userAgent.isVersionOrHigher(9)) {
-      assertEquals(
-          'Control must have 6 mouse & 3 key event listeners on IE8', 9,
-          getListenerCount(control));
-    } else {
-      assertEquals(
-          'Control must have 5 mouse and 3 key event listeners', 8,
-          getListenerCount(control));
-    }
+    assertEquals(
+        'Control must have 5 mouse and 3 key event listeners', 8,
+        getListenerCount(control));
     assertEquals(
         'Control\'s key event handler must be attached to its ' +
             'key event target',
@@ -2510,20 +2492,11 @@ testSuite({
     assertClickSequenceFires(
         'ACTION event expected after a second consecutive click sequence');
     if (userAgent.IE) {
-      // For some reason in IE8 and perhaps earlier, isolated clicks do not
-      // result a detectable dispatch of an ACTION event, so we'll only assert
-      // the desired handling of isolated clicks in IE9 and higher.
-      if (userAgent.isVersionOrHigher(9)) {
-        assertIsolatedClickFires(
-            'ACTION event expected after an isolated click immediately ' +
-            'following a click sequence');
-        assertIsolatedClickFires(
-            'ACTION event expected after second consecutive isolated click');
-      } else {
-        // For IE8-and-lower, fire an isolated click event in preparation for
-        // our final assertion.
-        testingEvents.fireClickEvent(control.getKeyEventTarget());
-      }
+      assertIsolatedClickFires(
+          'ACTION event expected after an isolated click immediately ' +
+          'following a click sequence');
+      assertIsolatedClickFires(
+          'ACTION event expected after second consecutive isolated click');
     } else {
       assertIsolatedClickDoesNotFire(
           'No ACTION event expected after an isolated click immediately ' +
@@ -2544,17 +2517,11 @@ testSuite({
       // For some reason in IE8 and perhaps earlier, isolated clicks do not
       // result a detectable dispatch of an ACTION event, so we'll only assert
       // the desired handling of isolated clicks in IE9 and higher.
-      if (userAgent.isVersionOrHigher(9)) {
-        assertIsolatedClickFires(
-            'ACTION event expected after an isolated click immediately ' +
-            'following a click sequence');
-        assertIsolatedClickFires(
-            'ACTION event expected after second consecutive isolated click');
-      } else {
-        // For IE8-and-lower, fire an isolated click event in preparation for
-        // our final assertion.
-        testingEvents.fireClickEvent(control.getKeyEventTarget());
-      }
+      assertIsolatedClickFires(
+          'ACTION event expected after an isolated click immediately ' +
+          'following a click sequence');
+      assertIsolatedClickFires(
+          'ACTION event expected after second consecutive isolated click');
     } else {
       assertIsolatedClickDoesNotFire(
           'No ACTION event expected after an isolated click immediately ' +

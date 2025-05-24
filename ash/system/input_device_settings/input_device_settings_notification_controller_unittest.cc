@@ -122,6 +122,8 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
 
   ~InputDeviceSettingsNotificationControllerTest() override = default;
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
   message_center::FakeMessageCenter* message_center() {
     return message_center_.get();
   }
@@ -166,10 +168,6 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
     AshTestBase::SetUp();
     message_center_ = std::make_unique<TestMessageCenter>();
     controller_ = std::make_unique<InputDeviceSettingsNotificationController>(
@@ -182,12 +180,10 @@ class InputDeviceSettingsNotificationControllerTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
- protected:
-  MockNewWindowDelegate& new_window_delegate() { return *new_window_delegate_; }
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
+ private:
+  MockNewWindowDelegate new_window_delegate_;
   std::unique_ptr<TestMessageCenter> message_center_;
   std::unique_ptr<InputDeviceSettingsNotificationController> controller_;
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 TEST_F(InputDeviceSettingsNotificationControllerTest,
@@ -959,6 +955,23 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   mojom_mouse->is_external = true;
   NotifyMouseFirstTimeConnected(*mojom_mouse);
   EXPECT_EQ(1u, message_center()->NotificationCount());
+}
+
+// Verifies that notifications are not shown for the Logi Bolt receiver when
+// it's first plugged in. This is because the Bolt receiver VID/PID identifies
+// the receiver itself, not the connected mouse or keyboard, and the Bolt may
+// not yet be connected to a mouse or keyboard.
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       NotificationBlockedForLogiBoltReceiver) {
+  mojom::MousePtr mojom_mouse = mojom::Mouse::New();
+  const char kLogiBoltReceiverKey[] = "046d:c548";
+  mojom_mouse->device_key = kLogiBoltReceiverKey;
+  mojom_mouse->id = 1;
+  mojom_mouse->is_external = false;
+  mojom_mouse->settings = mojom::MouseSettings::New();
+
+  NotifyMouseFirstTimeConnected(*mojom_mouse);
+  EXPECT_EQ(0u, message_center()->NotificationCount());
 }
 
 }  // namespace ash

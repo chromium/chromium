@@ -1,5 +1,7 @@
 include_rules = [
+  "+chromeos/components/mojo_bootstrap",
   "+chromeos/ash/components/disks",
+  "+mojo/core",
 ]
 
 specific_include_rules = {

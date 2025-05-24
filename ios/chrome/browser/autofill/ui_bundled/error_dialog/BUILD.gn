@@ -11,7 +11,7 @@ source_set("error_dialog") {
     "autofill_error_dialog_mediator_delegate.h",
   ]
   deps = [
-    "//base:base",
+    "//base",
     "//components/autofill/core/browser",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

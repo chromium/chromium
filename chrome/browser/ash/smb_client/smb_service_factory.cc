@@ -47,7 +47,7 @@ SmbServiceFactory* SmbServiceFactory::GetInstance() {
   return instance.get();
 }
 
-bool SmbServiceFactory::IsSmbServiceCrated(void* context) {
+bool SmbServiceFactory::IsSmbServiceCreated(void* context) {
   return IsServiceCreated(context);
 }
 

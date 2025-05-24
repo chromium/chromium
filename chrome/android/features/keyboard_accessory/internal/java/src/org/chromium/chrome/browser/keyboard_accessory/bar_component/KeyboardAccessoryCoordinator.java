@@ -5,10 +5,12 @@
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.SKIP_CLOSING_ANIMATION;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.VISIBLE;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
@@ -16,10 +18,11 @@ import androidx.annotation.VisibleForTesting;
 import androidx.viewpager.widget.ViewPager;
 
 import org.chromium.base.TraceEvent;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
+import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BarItem;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryViewBinder.BarItemViewHolder;
@@ -31,6 +34,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.ImageSize;
+import org.chromium.components.autofill.SuggestionType;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
@@ -46,7 +51,7 @@ import java.util.List;
  * the controller but will mainly forward events (like adding a tab, or showing the accessory) to
  * the {@link KeyboardAccessoryMediator}.
  */
-public class KeyboardAccessoryCoordinator {
+public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStateProvider {
     private final KeyboardAccessoryMediator mMediator;
     private final KeyboardAccessoryButtonGroupCoordinator mButtonGroup;
     private final PropertyModel mModel;
@@ -162,7 +167,8 @@ public class KeyboardAccessoryCoordinator {
                         barVisibilityDelegate,
                         sheetVisibilityDelegate,
                         mButtonGroup.getTabSwitchingDelegate(),
-                        mButtonGroup.getSheetOpenerCallbacks());
+                        mButtonGroup.getSheetOpenerCallbacks(),
+                        () -> SemanticColorUtils.getDefaultBgColor(context));
         viewProvider.whenLoaded(
                 view -> {
                     mView = view;
@@ -172,7 +178,7 @@ public class KeyboardAccessoryCoordinator {
                                     mView,
                                     createUiConfiguration(
                                             context,
-                                            PersonalDataManagerFactory.getForProfile(profile))));
+                                            AutofillImageFetcherFactory.getForProfile(profile))));
                     mView.setFeatureEngagementTracker(TrackerFactory.getTrackerForProfile(profile));
                 });
 
@@ -184,19 +190,30 @@ public class KeyboardAccessoryCoordinator {
 
     @VisibleForTesting
     static KeyboardAccessoryViewBinder.UiConfiguration createUiConfiguration(
-            Context context, PersonalDataManager personalDataManager) {
+            Context context, AutofillImageFetcher imageFetcher) {
         KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
                 new KeyboardAccessoryViewBinder.UiConfiguration();
         uiConfiguration.suggestionDrawableFunction =
-                (suggestion) ->
-                        getCardIcon(
-                                context,
-                                personalDataManager,
-                                suggestion.getCustomIconUrl(),
-                                suggestion.getIconId(),
-                                ImageSize.SMALL,
-                                /* showCustomIcon= */ true);
+                (suggestion) -> getSuggestionIcon(context, imageFetcher, suggestion);
+
         return uiConfiguration;
+    }
+
+    private static @Nullable Drawable getSuggestionIcon(
+            Context context, AutofillImageFetcher imageFetcher, AutofillSuggestion suggestion) {
+        if (suggestion.getSuggestionType() == SuggestionType.LOYALTY_CARD_ENTRY) {
+            return getValuableIcon(
+                    context, imageFetcher, suggestion.getCustomIconUrl(), ImageSize.SMALL);
+        }
+        // TODO: crbug.com/404437211 - Figure out all suggestion types that have icons on Android
+        // and return icons in a switch.
+        return getCardIcon(
+                context,
+                imageFetcher,
+                suggestion.getCustomIconUrl(),
+                suggestion.getIconId(),
+                ImageSize.SMALL,
+                /* showCustomIcon= */ true);
     }
 
     /**
@@ -329,5 +346,17 @@ public class KeyboardAccessoryCoordinator {
 
     public KeyboardAccessoryMediator getMediatorForTesting() {
         return mMediator;
+    }
+
+    // KeyboardAccessoryVisualStateProvider
+
+    @Override
+    public void addObserver(KeyboardAccessoryVisualStateProvider.Observer observer) {
+        mMediator.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(KeyboardAccessoryVisualStateProvider.Observer observer) {
+        mMediator.removeObserver(observer);
     }
 }

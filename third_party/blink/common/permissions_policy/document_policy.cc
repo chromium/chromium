@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "net/http/structured_headers.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace blink {
 
@@ -44,9 +43,7 @@ net::structured_headers::Item PolicyValueToItem(const PolicyValue& value) {
     case mojom::PolicyValueType::kDecDouble:
       return net::structured_headers::Item{value.DoubleValue()};
     default:
-      NOTREACHED_IN_MIGRATION();
-      return net::structured_headers::Item{
-          nullptr, net::structured_headers::Item::ItemType::kNullType};
+      NOTREACHED();
   }
 }
 

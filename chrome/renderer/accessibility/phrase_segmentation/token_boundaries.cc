@@ -47,7 +47,7 @@ TokenBoundaries::~TokenBoundaries() = default;
 // tokens to become stranded.
 void TokenBoundaries::InitializeBoundaryWeightsFromTree(
     const DependencyTree& tree) {
-  for (auto token : tree.dep_head_array()) {
+  for (const auto& token : tree.dep_head_array()) {
     int weight = abs(token.dependency_head - token.absolute_index);
     if (weight == 0) {
       continue;

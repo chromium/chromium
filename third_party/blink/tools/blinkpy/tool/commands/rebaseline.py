@@ -73,6 +73,14 @@ from blinkpy.web_tests.port.base import Port
 _log = logging.getLogger(__name__)
 
 
+def parse_suffixes(option, opt_str, value, parser):
+    suffixes = set(value.split(','))
+    if invalid_suffixes := suffixes - set(get_args(BaselineSuffix)):
+        raise optparse.OptionValueError('invalid suffixes: ' +
+                                        ', '.join(sorted(invalid_suffixes)))
+    parser.values.suffixes = sorted(suffixes)
+
+
 class AbstractRebaseliningCommand(Command):
     """Base class for rebaseline-related commands."""
     # pylint: disable=abstract-method; not overriding `execute()`
@@ -104,8 +112,10 @@ class AbstractRebaseliningCommand(Command):
         help='Local results directory to use.')
     suffixes_option = optparse.make_option(
         '--suffixes',
-        default=','.join(get_args(BaselineSuffix)),
-        action='store',
+        action='callback',
+        callback=parse_suffixes,
+        type='string',
+        default=get_args(BaselineSuffix),
         help='Comma-separated-list of file types to rebaseline.')
     builder_option = optparse.make_option(
         '--builder',
@@ -163,28 +173,6 @@ class AbstractRebaseliningCommand(Command):
         # output_filename takes extensions starting with '.'.
         return self._host_port.output_filename(
             test_name, test_failures.FILENAME_SUFFIX_EXPECTED, '.' + suffix)
-
-    def _test_can_have_suffix(self, test_name: str,
-                              suffix: BaselineSuffix) -> bool:
-        wpt_type = self._get_wpt_type(test_name)
-        # Only legacy reftests can dump text output, not WPT reftests.
-        if wpt_type in {'testharness', 'wdspec'} and suffix == 'txt':
-            return True
-        # Some manual tests are run as pixel tests (crbug.com/1114920), so
-        # `png` is allowed in that case.
-        elif wpt_type == 'manual' and suffix == 'png':
-            return True
-        elif self._host_port.reference_files(test_name) and suffix == 'png':
-            return False
-        # No other WPT-suffix combinations are allowed.
-        return not wpt_type
-
-    def _get_wpt_type(self, test_name: str) -> Optional[str]:
-        wpt_dir, url_from_wpt_dir = self._host_port.split_wpt_dir(test_name)
-        if not wpt_dir:
-            return None  # Not a WPT.
-        manifest = self._host_port.wpt_manifest(wpt_dir)
-        return manifest.get_test_type(url_from_wpt_dir)
 
 
 class ChangeSet(object):
@@ -431,9 +419,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         for base_test in sorted(groups):
             group = groups[base_test]
             for suffix in self._suffixes_for_group(group):
-                if self._test_can_have_suffix(base_test, suffix):
-                    commands.append(
-                        ('copy_baselines', base_test, suffix, group))
+                commands.append(('copy_baselines', base_test, suffix, group))
         self._run_in_message_pool(self._worker_factory, commands)
 
     def _group_tests_by_base(
@@ -560,6 +546,8 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
         This allows this class to conform to the `message_pool.MessageHandler`
         interface.
         """
+        if not args:
+            return
         if name == 'report_baseline_cache_stats':
             (stats, ) = args
             self.baseline_cache_stats += stats
@@ -1014,10 +1002,11 @@ class Worker:
         }
 
     def start(self):
-        self._copier = BaselineCopier(self._connection.host)
         self._host = self._connection.host
         self._default_port = self._host.port_factory.get()
         self._default_port.set_option_default('manifest_update', False)
+        self._copier = BaselineCopier(self._connection.host,
+                                      self._default_port)
         self._fs = self._connection.host.filesystem
         self._baseline_loader = BaselineLoader(self._host, self._default_port)
 
@@ -1036,6 +1025,11 @@ class Worker:
 
     def _copy_baselines(self, test_name: str, suffix: BaselineSuffix,
                         group: TestBaselineSet):
+        # `suffix` is derived from test result artifacts. Check for cases where
+        # the artifact is not actually something to rebaseline (e.g., reftest
+        # PNG).
+        if suffix not in self._default_port.allowed_suffixes(test_name):
+            return
         copies = list(
             self._copier.find_baselines_to_copy(test_name, suffix, group))
         copies.sort(key=lambda copy: copy[1])

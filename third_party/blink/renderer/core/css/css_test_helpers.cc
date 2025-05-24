@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
@@ -160,7 +155,7 @@ void DeclareProperty(Document& document,
 
   // inherits:
   builder.Append("inherits:");
-  builder.Append(is_inherited ? "true" : "false");
+  builder.Append(String::Boolean(is_inherited));
   builder.Append(";");
 
   builder.Append(" }");
@@ -182,8 +177,9 @@ void DeclareProperty(Document& document,
 
 CSSVariableData* CreateVariableData(String s) {
   bool is_animation_tainted = false;
+  bool is_attr_tainted = false;
   bool needs_variable_resolution = false;
-  return CSSVariableData::Create(s, is_animation_tainted,
+  return CSSVariableData::Create(s, is_animation_tainted, is_attr_tainted,
                                  needs_variable_resolution);
 }
 
@@ -215,11 +211,19 @@ const CSSPropertyValueSet* ParseDeclarationBlock(const String& block_text,
 }
 
 StyleRuleBase* ParseRule(Document& document, String text) {
+  return ParseNestedRule(document, text, CSSNestingType::kNone,
+                         /*parent_rule_for_nesting=*/nullptr);
+}
+
+StyleRuleBase* ParseNestedRule(Document& document,
+                               String text,
+                               CSSNestingType nesting_type,
+                               StyleRule* parent_rule_for_nesting) {
   auto* sheet = CSSStyleSheet::CreateInline(
       document, NullURL(), TextPosition::MinimumPosition(), UTF8Encoding());
   const auto* context = MakeGarbageCollected<CSSParserContext>(document);
-  return CSSParser::ParseRule(context, sheet->Contents(), CSSNestingType::kNone,
-                              /*parent_rule_for_nesting=*/nullptr, text);
+  return CSSParser::ParseRule(context, sheet->Contents(), nesting_type,
+                              parent_rule_for_nesting, text);
 }
 
 const CSSValue* ParseValue(Document& document, String syntax, String value) {
@@ -234,21 +238,19 @@ const CSSValue* ParseValue(Document& document, String syntax, String value) {
 
 CSSSelectorList* ParseSelectorList(const String& string) {
   return ParseSelectorList(string, CSSNestingType::kNone,
-                           /*parent_rule_for_nesting=*/nullptr,
-                           /*is_within_scope=*/false);
+                           /*parent_rule_for_nesting=*/nullptr);
 }
 
 CSSSelectorList* ParseSelectorList(const String& string,
                                    CSSNestingType nesting_type,
-                                   const StyleRule* parent_rule_for_nesting,
-                                   bool is_within_scope) {
+                                   const StyleRule* parent_rule_for_nesting) {
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
   CSSParserTokenStream stream(string);
   HeapVector<CSSSelector> arena;
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
-      stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
+      stream, context, nesting_type, parent_rule_for_nesting,
       /* semicolon_aborts_nested_selector */ false, sheet, arena);
   return CSSSelectorList::AdoptSelectorVector(vector);
 }

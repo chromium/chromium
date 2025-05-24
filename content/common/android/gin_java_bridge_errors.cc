@@ -29,8 +29,7 @@ const char* GinJavaBridgeErrorToString(mojom::GinJavaBridgeError error) {
     case mojom::GinJavaBridgeError::kGinJavaBridgeRenderFrameDeleted:
       return "RenderFrame has been deleted";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown error";
+  NOTREACHED();
 }
 
 }  // namespace content

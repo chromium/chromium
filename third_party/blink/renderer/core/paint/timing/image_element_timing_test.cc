@@ -20,7 +20,8 @@
 namespace blink {
 
 namespace internal {
-extern bool IsExplicitlyRegisteredForTiming(const LayoutObject& layout_object);
+extern bool IsExplicitlyRegisteredForElementTiming(
+    const LayoutObject& layout_object);
 }
 
 class ImageElementTimingTest : public testing::Test,
@@ -111,7 +112,7 @@ class ImageElementTimingTest : public testing::Test,
 
 INSTANTIATE_PAINT_TEST_SUITE_P(ImageElementTimingTest);
 
-TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForTiming) {
+TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
   frame_test_helpers::LoadHTMLString(
       web_view_helper_.GetWebView()->MainFrameImpl(), R"HTML(
     <img id="missing-attribute" style='width: 100px; height: 100px;'/>
@@ -125,25 +126,28 @@ TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForTiming) {
       base_url_);
 
   LayoutObject* without_attribute = GetLayoutObjectById("missing-attribute");
-  bool actual = internal::IsExplicitlyRegisteredForTiming(*without_attribute);
+  bool actual =
+      internal::IsExplicitlyRegisteredForElementTiming(*without_attribute);
   EXPECT_FALSE(actual) << "Nodes without an 'elementtiming' attribute should "
                           "not be explicitly registered.";
 
   LayoutObject* with_undefined_attribute =
       GetLayoutObjectById("unset-attribute");
-  actual = internal::IsExplicitlyRegisteredForTiming(*with_undefined_attribute);
+  actual = internal::IsExplicitlyRegisteredForElementTiming(
+      *with_undefined_attribute);
   EXPECT_TRUE(actual) << "Nodes with undefined 'elementtiming' attribute "
                          "should be explicitly registered.";
 
   LayoutObject* with_empty_attribute = GetLayoutObjectById("empty-attribute");
-  actual = internal::IsExplicitlyRegisteredForTiming(*with_empty_attribute);
+  actual =
+      internal::IsExplicitlyRegisteredForElementTiming(*with_empty_attribute);
   EXPECT_TRUE(actual) << "Nodes with an empty 'elementtiming' attribute "
                          "should be explicitly registered.";
 
   LayoutObject* with_explicit_element_timing =
       GetLayoutObjectById("valid-attribute");
-  actual =
-      internal::IsExplicitlyRegisteredForTiming(*with_explicit_element_timing);
+  actual = internal::IsExplicitlyRegisteredForElementTiming(
+      *with_explicit_element_timing);
   EXPECT_TRUE(actual) << "Nodes with a non-empty 'elementtiming' attribute "
                          "should be explicitly registered.";
 }

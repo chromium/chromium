@@ -5,27 +5,15 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_ECHO_PRIVATE_ECHO_PRIVATE_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_ECHO_PRIVATE_ECHO_PRIVATE_API_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/types/expected.h"
-#include "base/values.h"
+#include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "extensions/browser/extension_function.h"
 
-class PrefRegistrySimple;
-
-namespace chromeos {
-
-namespace echo_offer {
-
-// Registers the EchoCheckedOffers field in Local State.
-void RegisterPrefs(PrefRegistrySimple* registry);
-
-// Removes nested empty dictionaries from |dict|.
-void RemoveEmptyValueDicts(base::Value::Dict& dict);
-
-}  // namespace echo_offer
-
-}  // namespace chromeos
+namespace aura {
+class Window;
+}
 
 class EchoPrivateGetRegistrationCodeFunction : public ExtensionFunction {
  public:
@@ -36,7 +24,6 @@ class EchoPrivateGetRegistrationCodeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void RespondWithResult(const std::string& result);
   DECLARE_EXTENSION_FUNCTION("echoPrivate.getRegistrationCode",
                              ECHOPRIVATE_GETREGISTRATIONCODE)
 };
@@ -50,8 +37,6 @@ class EchoPrivateGetOobeTimestampFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void RespondWithResult(std::optional<base::Time> timestamp);
-
   DECLARE_EXTENSION_FUNCTION("echoPrivate.getOobeTimestamp",
                              ECHOPRIVATE_GETOOBETIMESTAMP)
 };
@@ -87,7 +72,8 @@ class EchoPrivateGetOfferInfoFunction : public ExtensionFunction {
 // either asks user's consent to verify the device's eligibility for the offer,
 // or informs the user that the offers redeeming is disabled.
 // It returns whether the user consent was given.
-class EchoPrivateGetUserConsentFunction : public ExtensionFunction {
+class EchoPrivateGetUserConsentFunction : public ExtensionFunction,
+                                          public ash::EchoDialogListener {
  public:
   EchoPrivateGetUserConsentFunction();
 
@@ -96,6 +82,15 @@ class EchoPrivateGetUserConsentFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
+  void DidPrepareTrustedValues(aura::Window* window,
+                               std::string_view service_name,
+                               std::string_view origin);
+
+  // chromeos::EchoDialogListener:
+  void OnAccept() override;
+  void OnCancel() override;
+  void OnMoreInfoLinkClicked() override;
+
   // Sets result and calls SendResponse.
   void Finalize(bool consent);
 

@@ -1,7 +1,7 @@
 # Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Methods for managing deps based on build_config.json files."""
+"""Methods for managing deps based on .params.json files."""
 
 from __future__ import annotations
 import collections
@@ -124,18 +124,21 @@ class ClassLookupIndex:
     """Create the class to target index."""
     logging.debug('Running list_java_targets.py...')
     list_java_targets_command = [
-        'build/android/list_java_targets.py', '--gn-labels',
-        '--print-build-config-paths',
+        'build/android/list_java_targets.py', '--print-params-paths',
         f'--output-directory={self._abs_build_output_dir}'
     ]
     if self._should_build:
       list_java_targets_command += ['--build']
 
-    list_java_targets_run = subprocess.run(list_java_targets_command,
-                                           cwd=_SRC_PATH,
-                                           capture_output=True,
-                                           text=True,
-                                           check=True)
+    try:
+      list_java_targets_run = subprocess.run(list_java_targets_command,
+                                             cwd=_SRC_PATH,
+                                             capture_output=True,
+                                             text=True,
+                                             check=True)
+    except subprocess.CalledProcessError as e:
+      sys.stderr.write('Command output:\n' + e.stdout + e.stderr)
+      raise
     logging.debug('... done.')
 
     # Parse output of list_java_targets.py into BuildConfig objects.
@@ -148,29 +151,29 @@ class ClassLookupIndex:
 
       target_line_parts = target_line.split(': ')
       assert len(target_line_parts) == 2, target_line_parts
-      target_name, build_config_path = target_line_parts
+      _, params_path = target_line_parts
 
-      if not os.path.exists(build_config_path):
+      if not os.path.exists(params_path):
         assert not self._should_build
         continue
 
-      with open(build_config_path) as build_config_contents:
-        build_config_json: Dict = json.load(build_config_contents)
-      deps_info = build_config_json['deps_info']
+      with open(params_path) as data:
+        params_json: Dict = json.load(data)
 
       # Checking the library type here instead of in list_java_targets.py avoids
       # reading each .build_config file twice.
-      if deps_info['type'] not in ('java_library', 'group'):
+      if params_json['type'] not in ('java_library', 'group'):
         continue
 
-      relpath = os.path.relpath(build_config_path, self._abs_build_output_dir)
-      preferred_dep = bool(deps_info.get('preferred_dep'))
-      is_group = bool(deps_info.get('type') == 'group')
-      dependent_config_paths = deps_info.get('deps_configs', [])
+      relpath = os.path.relpath(params_path, self._abs_build_output_dir)
+      preferred_dep = bool(params_json.get('preferred_dep'))
+      is_group = bool(params_json['type'] == 'group')
+      dependent_config_paths = (params_json.get('deps_configs', []) +
+                                params_json.get('public_deps_configs', []))
       full_class_names = self._compute_full_class_names_for_build_config(
-          deps_info)
+          params_json)
       build_config = BuildConfig(relpath=relpath,
-                                 target_name=target_name,
+                                 target_name=params_json['gn_target'],
                                  is_group=is_group,
                                  preferred_dep=preferred_dep,
                                  dependent_config_paths=dependent_config_paths,
@@ -200,13 +203,12 @@ class ClassLookupIndex:
     return class_index
 
   def _compute_full_class_names_for_build_config(self,
-                                                 deps_info: Dict) -> Set[str]:
+                                                 params_json: Dict) -> Set[str]:
     """Returns set of fully qualified class names for build config."""
-
     full_class_names = set()
 
     # Read the location of the target_sources_file from the build_config
-    sources_path = deps_info.get('target_sources_file')
+    sources_path = params_json.get('target_sources_file')
     if sources_path:
       # Read the target_sources_file, indexing the classes found
       with open(self._abs_build_output_dir / sources_path) as sources_contents:
@@ -220,7 +222,7 @@ class ClassLookupIndex:
     # android_aar_prebuilt())
     # |unprocessed_jar_path| might be set but not exist if not all targets have
     # been built.
-    unprocessed_jar_path = deps_info.get('unprocessed_jar_path')
+    unprocessed_jar_path = params_json.get('unprocessed_jar_path')
     if unprocessed_jar_path:
       abs_unprocessed_jar_path = (self._abs_build_output_dir /
                                   unprocessed_jar_path)

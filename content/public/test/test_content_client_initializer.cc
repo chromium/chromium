@@ -30,6 +30,9 @@ TestContentClientInitializer::TestContentClientInitializer() {
   content::SetBrowserClientForTesting(content_browser_client_.get());
 
   browser_accessibility_state_ = BrowserAccessibilityStateImpl::Create();
+  // Prevent accessibility from being turned on by the platform so that the
+  // tests can run undisturbed.
+  browser_accessibility_state_->SetActivationFromPlatformEnabled(false);
 }
 
 TestContentClientInitializer::~TestContentClientInitializer() {

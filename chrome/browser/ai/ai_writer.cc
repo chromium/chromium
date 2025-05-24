@@ -6,58 +6,139 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/optimization_guide/proto/features/compose.pb.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
+namespace {
+
+optimization_guide::proto::WritingAssistanceApiOutputTone ToProtoTone(
+    blink::mojom::AIWriterTone type) {
+  switch (type) {
+    case blink::mojom::AIWriterTone::kFormal:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_TONE_FORMAL;
+    case blink::mojom::AIWriterTone::kNeutral:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_TONE_NEUTRAL;
+    case blink::mojom::AIWriterTone::kCasual:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_TONE_CASUAL;
+  }
+}
+
+optimization_guide::proto::WritingAssistanceApiOutputFormat ToProtoFormat(
+    blink::mojom::AIWriterFormat format) {
+  switch (format) {
+    case blink::mojom::AIWriterFormat::kPlainText:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_FORMAT_PLAIN_TEXT;
+    case blink::mojom::AIWriterFormat::kMarkdown:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_FORMAT_MARKDOWN;
+  }
+}
+
+optimization_guide::proto::WritingAssistanceApiOutputLength ToProtoLength(
+    blink::mojom::AIWriterLength length) {
+  switch (length) {
+    case blink::mojom::AIWriterLength::kShort:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_LENGTH_SHORT;
+    case blink::mojom::AIWriterLength::kMedium:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_LENGTH_MEDIUM;
+    case blink::mojom::AIWriterLength::kLong:
+      return optimization_guide::proto::
+          WRITING_ASSISTANCE_API_OUTPUT_LENGTH_LONG;
+  }
+}
+
+}  // namespace
+
 AIWriter::AIWriter(
+    AIContextBoundObjectSet& context_bound_object_set,
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         session,
     blink::mojom::AIWriterCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AIWriter> receiver)
-    : session_(std::move(session)),
+    : AIContextBoundObject(context_bound_object_set),
+      session_wrapper_(std::move(session)),
       options_(std::move(options)),
-      receiver_(this, std::move(receiver)) {}
+      receiver_(this, std::move(receiver)) {
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &AIContextBoundObject::RemoveFromSet, base::Unretained(this)));
+}
 
 AIWriter::~AIWriter() {
   for (auto& responder : responder_set_) {
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
 }
 
-void AIWriter::SetDeletionCallback(base::OnceClosure deletion_callback) {
-  receiver_.set_disconnect_handler(std::move(deletion_callback));
+// static
+std::unique_ptr<optimization_guide::proto::WritingAssistanceApiOptions>
+AIWriter::ToProtoOptions(
+    const blink::mojom::AIWriterCreateOptionsPtr& options) {
+  auto proto_options = std::make_unique<
+      optimization_guide::proto::WritingAssistanceApiOptions>();
+  proto_options->set_output_tone(ToProtoTone(options->tone));
+  proto_options->set_output_format(ToProtoFormat(options->format));
+  proto_options->set_output_length(ToProtoLength(options->length));
+  return proto_options;
 }
 
 void AIWriter::Write(const std::string& input,
                      const std::optional<std::string>& context,
                      mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                          pending_responder) {
-  optimization_guide::proto::ComposePageMetadata page_metadata;
-  std::string context_string = base::JoinString(
-      {options_->shared_context.value_or(""), context.value_or("")}, "\n");
-  base::TrimString(context_string, "\n", &context_string);
-  page_metadata.set_trimmed_page_inner_text(
-      context_string.substr(0, AIUtils::kTrimmedInnerTextMaxChars));
-  page_metadata.set_page_inner_text(context_string);
+  auto request = BuildRequest(input, context.value_or(std::string()));
+  mojo::RemoteSetElementId responder_id =
+      responder_set_.Add(std::move(pending_responder));
 
-  optimization_guide::proto::ComposeRequest context_request;
-  *context_request.mutable_page_metadata() = std::move(page_metadata);
+  session_wrapper_.session()->GetExecutionInputSizeInTokens(
+      optimization_guide::MultimodalMessageReadView(request),
+      base::BindOnce(&AIWriter::DidGetExecutionInputSizeForWrite,
+                     weak_ptr_factory_.GetWeakPtr(), responder_id, request));
+}
 
-  session_->AddContext(context_request);
+void AIWriter::DidGetExecutionInputSizeForWrite(
+    mojo::RemoteSetElementId responder_id,
+    const optimization_guide::proto::WritingAssistanceApiRequest& request,
+    std::optional<uint32_t> result) {
+  blink::mojom::ModelStreamingResponder* responder =
+      responder_set_.Get(responder_id);
+  if (!responder) {
+    // It might be possible for the responder mojo connection to be closed
+    // before this callback is invoked, in this case, we can't do anything.
+    return;
+  }
 
-  optimization_guide::proto::ComposeRequest execute_request;
-  execute_request.mutable_generate_params()->set_user_input(input);
+  if (!session_wrapper_.session()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
+    return;
+  }
 
-  session_->ExecuteModel(
-      execute_request,
+  if (!result.has_value()) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorGenericFailure);
+    return;
+  }
+
+  if (result.value() > blink::mojom::kWritingAssistanceMaxInputTokenSize) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge);
+    return;
+  }
+
+  session_wrapper_.ExecuteModelOrQueue(
+      optimization_guide::MultimodalMessage(request),
       base::BindRepeating(&AIWriter::ModelExecutionCallback,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          responder_set_.Add(std::move(pending_responder))));
+                          weak_ptr_factory_.GetWeakPtr(), responder_id));
 }
 
 void AIWriter::ModelExecutionCallback(
@@ -69,23 +150,64 @@ void AIWriter::ModelExecutionCallback(
     return;
   }
   if (!result.response.has_value()) {
-    responder->OnResponse(
-        AIUtils::ConvertModelExecutionError(result.response.error().error()),
-        /*text=*/std::nullopt, /*current_tokens=*/std::nullopt);
+    responder->OnError(
+        AIUtils::ConvertModelExecutionError(result.response.error().error()));
     return;
   }
 
-  auto compose_response = optimization_guide::ParsedAnyMetadata<
-      optimization_guide::proto::ComposeResponse>(result.response->response);
-  if (compose_response) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                          compose_response->output(),
-                          /*current_tokens=*/std::nullopt);
+  auto response = optimization_guide::ParsedAnyMetadata<
+      optimization_guide::proto::WritingAssistanceApiResponse>(
+      result.response->response);
+  if (response) {
+    responder->OnStreaming(response->output());
   }
   if (result.response->is_complete) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                          /*text=*/std::nullopt,
-                          /*current_tokens=*/std::nullopt);
+    responder->OnCompletion(/*context_info=*/nullptr);
     responder_set_.Remove(responder_id);
   }
+}
+
+void AIWriter::MeasureUsage(const std::string& input,
+                            const std::string& context,
+                            MeasureUsageCallback callback) {
+  auto* session = session_wrapper_.session();
+  if (!session) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  auto request = BuildRequest(input, context);
+  session->GetExecutionInputSizeInTokens(
+      optimization_guide::MultimodalMessageReadView(request),
+      base::BindOnce(&AIWriter::DidGetExecutionInputSizeInTokensForMeasure,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void AIWriter::SetPriority(on_device_model::mojom::Priority priority) {
+  auto* session = session_wrapper_.session();
+  if (session) {
+    session->SetPriority(priority);
+  }
+}
+
+void AIWriter::DidGetExecutionInputSizeInTokensForMeasure(
+    MeasureUsageCallback callback,
+    std::optional<uint32_t> result) {
+  if (!result.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(result.value());
+}
+
+optimization_guide::proto::WritingAssistanceApiRequest AIWriter::BuildRequest(
+    const std::string& input,
+    const std::string& context) {
+  optimization_guide::proto::WritingAssistanceApiRequest request;
+  request.set_context(context);
+  request.set_allocated_options(ToProtoOptions(options_).release());
+  request.set_instructions(input);
+  // TODO(crbug.com/390006887): Pass shared context with session creation.
+  request.set_shared_context(options_->shared_context.value_or(std::string()));
+  return request;
 }

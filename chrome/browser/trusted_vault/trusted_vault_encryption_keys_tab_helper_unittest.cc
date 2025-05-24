@@ -11,7 +11,6 @@
 #include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/site_isolation/features.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -33,22 +32,21 @@ class TrustedVaultEncryptionKeysTabHelperTest
     : public ChromeRenderViewHostTestHarness {
  public:
   TrustedVaultEncryptionKeysTabHelperTest() {
+#if BUILDFLAG(IS_ANDROID)
     // Avoid the disabling of site isolation due to memory constraints, required
     // on Android so that ApplyGlobalIsolatedOrigins() takes effect regardless
     // of available memory when running the test (otherwise low-memory bots may
     // run into test failures).
-    // TODO(crbug.com/362466866): Instead of disabling the
-    // `kSafetyHubAbusiveNotificationRevocation` feature, find a stable
-    // fix such that the tests still pass when the feature is enabled.
     feature_list_.InitWithFeaturesAndParameters(
-        {{site_isolation::features::kSiteIsolationMemoryThresholds,
+        {{site_isolation::features::kSiteIsolationMemoryThresholdsAndroid,
           {{site_isolation::features::
                 kStrictSiteIsolationMemoryThresholdParamName,
             "0"},
            {site_isolation::features::
                 kPartialSiteIsolationMemoryThresholdParamName,
             "0"}}}},
-        {safe_browsing::kSafetyHubAbusiveNotificationRevocation});
+        {});
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   ~TrustedVaultEncryptionKeysTabHelperTest() override = default;
@@ -112,9 +110,8 @@ TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
-// TODO(crbug.com/40881433): flaky on android bots.
 TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
-       DISABLED_ShouldNotExposeMojoApiIfNavigatedAway) {
+       ShouldNotExposeMojoApiIfNavigatedAway) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_TRUE(HasEncryptionKeysApiInMainFrame());
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));

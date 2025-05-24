@@ -13,15 +13,11 @@ URLRequestContextOwner::URLRequestContextOwner() = default;
 
 URLRequestContextOwner::URLRequestContextOwner(
     std::unique_ptr<PrefService> pref_service_in,
-    std::unique_ptr<net::URLRequestContext> url_request_context_in,
-    std::unique_ptr<ip_protection::IpProtectionControlMojo>
-        ip_protection_control_mojo)
+    std::unique_ptr<net::URLRequestContext> url_request_context_in)
     : pref_service(std::move(pref_service_in)),
-      url_request_context(std::move(url_request_context_in)),
-      ip_protection_control_mojo(std::move(ip_protection_control_mojo)) {}
+      url_request_context(std::move(url_request_context_in)) {}
 
-URLRequestContextOwner::~URLRequestContextOwner() {
-}
+URLRequestContextOwner::~URLRequestContextOwner() = default;
 
 URLRequestContextOwner::URLRequestContextOwner(URLRequestContextOwner&&) =
     default;

@@ -34,6 +34,27 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Mixed"/>
 </enum>
 
+<!-- LINT.IfChange(FrontEndHeapDebugOptionsOutcome) -->
+
+<enum name="FrontEndHeapDebugOptionsOutcome">
+  <int value="0" label="Cannot open the registry key"/>
+  <int value="1" label="Cannot read the value in the registry key"/>
+  <int value="2"
+      label="Success - value is reported to
+             PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsValue"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/performance_manager/metrics/metrics_provider_desktop.cc:FrontEndHeapDebugOptionsOutcome) -->
+
+<enum name="InputScenarioUpdateReason">
+  <int value="0" label="Key Event"/>
+  <int value="1" label="Tap Event"/>
+  <int value="2" label="Scroll Start Event"/>
+  <int value="3" label="Scroll End Event"/>
+  <int value="4" label="Timeout"/>
+  <int value="5" label="Node Removed"/>
+</enum>
+
 <enum name="LocalSiteCharacteristicsDBInitStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Corruption"/>

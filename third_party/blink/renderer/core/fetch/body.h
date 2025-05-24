@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -38,6 +39,7 @@ class CORE_EXPORT Body : public ExecutionContextClient {
 
   ScriptPromise<DOMArrayBuffer> arrayBuffer(ScriptState*, ExceptionState&);
   ScriptPromise<Blob> blob(ScriptState*, ExceptionState&);
+  ScriptPromise<NotShared<DOMUint8Array>> bytes(ScriptState*, ExceptionState&);
   ScriptPromise<FormData> formData(ScriptState*, ExceptionState&);
   ScriptPromise<IDLAny> json(ScriptState*, ExceptionState&);
   ScriptPromise<IDLUSVString> text(ScriptState*, ExceptionState&);

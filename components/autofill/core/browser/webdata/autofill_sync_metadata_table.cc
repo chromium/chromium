@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 
+#include "base/logging.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/metadata_batch.h"
@@ -53,6 +54,7 @@ bool AutofillSyncMetadataTable::SupportsMetadataForDataType(
     syncer::DataType data_type) {
   return data_type == syncer::AUTOFILL ||
          data_type == syncer::AUTOFILL_PROFILE ||
+         data_type == syncer::AUTOFILL_VALUABLE ||
          data_type == syncer::AUTOFILL_WALLET_CREDENTIAL ||
          data_type == syncer::AUTOFILL_WALLET_DATA ||
          data_type == syncer::AUTOFILL_WALLET_METADATA ||
@@ -183,7 +185,7 @@ bool AutofillSyncMetadataTable::GetAllSyncEntityMetadata(
 
   while (s.Step()) {
     std::string storage_key = s.ColumnString(0);
-    std::string serialized_metadata = s.ColumnString(1);
+    std::string_view serialized_metadata = s.ColumnStringView(1);
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
     if (entity_metadata->ParseFromString(serialized_metadata)) {
       metadata_batch->AddMetadata(storage_key, std::move(entity_metadata));
@@ -211,7 +213,7 @@ bool AutofillSyncMetadataTable::GetDataTypeState(
     return true;
   }
 
-  std::string serialized_state = s.ColumnString(0);
+  std::string_view serialized_state = s.ColumnStringView(0);
   return state->ParseFromString(serialized_state);
 }
 

@@ -35,6 +35,8 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/base/mime_sniffer.h"
 #include "net/base/mime_util.h"
+#include "skia/ext/codec_utils.h"
+#include "skia/ext/skia_utils_base.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -42,8 +44,6 @@
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkStream.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace extensions {
@@ -65,15 +65,13 @@ std::string ConvertAndEncode(const SkBitmap& bitmap) {
     DLOG(WARNING) << "Got an invalid bitmap";
     return std::string();
   }
-  SkDynamicMemoryWStream stream;
-  if (!SkPngEncoder::Encode(&stream, bitmap.pixmap(), {}) ||
-      !stream.bytesWritten()) {
+  sk_sp<SkData> png_data = skia::EncodePngAsSkData(bitmap.pixmap());
+  if (!png_data) {
     DLOG(WARNING) << "Thumbnail encoding error";
     return std::string();
   }
-  sk_sp<SkData> png_data = stream.detachAsData();
-  return MakeThumbnailDataUrlOnThreadPool(
-      kMimeTypeImagePng, base::make_span(png_data->bytes(), png_data->size()));
+  return MakeThumbnailDataUrlOnThreadPool(kMimeTypeImagePng,
+                                          skia::as_byte_span(*png_data));
 }
 
 // The maximum size of the input PDF file for which thumbnails are generated.
@@ -82,13 +80,14 @@ constexpr uint32_t kMaxPdfSizeInBytes = 1024u * 1024u;
 // A function that performs IO operations to read and render PDF thumbnail
 // Must be run by a blocking task runner.
 std::string ReadLocalPdf(const base::FilePath& pdf_file_path) {
-  int64_t file_size;
-  if (!base::GetFileSize(pdf_file_path, &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(pdf_file_path);
+  if (!file_size.has_value()) {
     DLOG(ERROR) << "Failed to get file size of " << pdf_file_path;
     return std::string();
   }
-  if (file_size > kMaxPdfSizeInBytes) {
-    DLOG(ERROR) << "File " << pdf_file_path << " is too large " << file_size;
+  if (file_size.value() > kMaxPdfSizeInBytes) {
+    DLOG(ERROR) << "File " << pdf_file_path << " is too large "
+                << file_size.value();
     return std::string();
   }
   std::string contents;

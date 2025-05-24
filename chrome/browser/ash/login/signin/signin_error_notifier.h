@@ -12,7 +12,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
+#include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -99,8 +99,12 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
   // A non-owning pointer.
   const raw_ptr<account_manager::AccountManager> account_manager_;
 
-  const std::unique_ptr<TokenHandleUtil> token_handle_util_;
-  const std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;
+  // A non-owning pointer to the global `TokenHandleStore` instance.
+  // Instances of this class are guaranteed to outlive the global
+  // `TokenHandleStore` instance which is created early, prior to profile
+  // loading, and never destroyed.
+  raw_ptr<TokenHandleStore> token_handle_store_;
+  std::unique_ptr<LegacyTokenHandleFetcher> token_handle_fetcher_;
 
   // Used to keep track of the message center notifications.
   std::string device_account_notification_id_;

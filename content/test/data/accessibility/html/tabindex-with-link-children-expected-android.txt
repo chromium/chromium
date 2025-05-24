@@ -1,0 +1,12 @@
+android.webkit.WebView focusable focused
+++android.view.View focusable interesting
+++++android.widget.TextView interesting name='All of the following '
+++++android.view.View role_description='link' clickable focusable link interesting name='links'
+++++++android.widget.TextView name='links'
+++++android.widget.TextView interesting name=' are included '
+++++android.view.View role_description='link' clickable focusable link interesting name='within'
+++++++android.widget.TextView name='within'
+++++android.widget.TextView interesting name=' one '
+++++android.view.View role_description='link' clickable focusable link interesting name='span'
+++++++android.widget.TextView name='span'
+++++android.widget.TextView interesting name='.'

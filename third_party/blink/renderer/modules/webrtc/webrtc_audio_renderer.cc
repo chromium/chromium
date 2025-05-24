@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_renderer.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -43,9 +43,9 @@
 namespace WTF {
 
 template <typename T>
-struct CrossThreadCopier<rtc::scoped_refptr<T>> {
+struct CrossThreadCopier<webrtc::scoped_refptr<T>> {
   STATIC_ONLY(CrossThreadCopier);
-  using Type = rtc::scoped_refptr<T>;
+  using Type = webrtc::scoped_refptr<T>;
   static Type Copy(Type pointer) { return pointer; }
 };
 
@@ -708,7 +708,8 @@ void WebRtcAudioRenderer::UpdateSourceVolume(
         *signaling_thread_, FROM_HERE,
         CrossThreadBindOnce(
             &webrtc::AudioSourceInterface::SetVolume,
-            rtc::scoped_refptr<webrtc::AudioSourceInterface>(source), volume));
+            webrtc::scoped_refptr<webrtc::AudioSourceInterface>(source),
+            volume));
   } else {
     source->SetVolume(volume);
   }
@@ -740,7 +741,7 @@ bool WebRtcAudioRenderer::RemovePlayingState(
     return false;
 
   PlayingStates& array = found->second;
-  auto state_it = base::ranges::find(array, state);
+  auto state_it = std::ranges::find(array, state);
   if (state_it == array.end())
     return false;
 

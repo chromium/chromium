@@ -100,13 +100,16 @@ TESTOPUSDECODE_OBJS := $(patsubst %.c,%$(OBJSUFFIX),$(TESTOPUSDECODE_SRCS_C))
 TESTOPUSENCODE_SRCS_C = tests/test_opus_encode.c tests/opus_encode_regressions.c
 TESTOPUSENCODE_OBJS := $(patsubst %.c,%$(OBJSUFFIX),$(TESTOPUSENCODE_SRCS_C))
 
+TESTOPUSEXTENSIONS_SRCS_C = tests/test_opus_extensions.c
+TESTOPUSEXTENSIONS_OBJS := $(patsubst %.c,%$(OBJSUFFIX),$(TESTOPUSEXTENSIONS_SRCS_C))
+
 TESTOPUSPADDING_SRCS_C = tests/test_opus_padding.c
 TESTOPUSPADDING_OBJS := $(patsubst %.c,%$(OBJSUFFIX),$(TESTOPUSPADDING_SRCS_C))
 
 OPUSCOMPARE_SRCS_C = src/opus_compare.c
 OPUSCOMPARE_OBJS := $(patsubst %.c,%$(OBJSUFFIX),$(OPUSCOMPARE_SRCS_C))
 
-TESTS := test_opus_api test_opus_decode test_opus_encode test_opus_padding
+TESTS := test_opus_api test_opus_decode test_opus_encode test_opus_extensions test_opus_padding
 
 # Rules
 all: lib opus_demo opus_compare $(TESTS)
@@ -131,6 +134,9 @@ test_opus_decode$(EXESUFFIX): $(TESTOPUSDECODE_OBJS) $(TARGET)
 test_opus_encode$(EXESUFFIX): $(TESTOPUSENCODE_OBJS) $(TARGET)
 	$(LINK.o.cmdline)
 
+test_opus_extensions$(EXESUFFIX): $(TESTOPUSEXTENSIONS_OBJS) $(TARGET)
+	$(LINK.o.cmdline)
+
 test_opus_padding$(EXESUFFIX): $(TESTOPUSPADDING_OBJS) $(TARGET)
 	$(LINK.o.cmdline)
 
@@ -152,8 +158,10 @@ force:
 clean:
 	rm -f opus_demo$(EXESUFFIX) opus_compare$(EXESUFFIX) $(TARGET) \
                 test_opus_api$(EXESUFFIX) test_opus_decode$(EXESUFFIX) \
-                test_opus_encode$(EXESUFFIX) test_opus_padding$(EXESUFFIX) \
+                test_opus_encode$(EXESUFFIX) test_opus_extensions$(EXESUFFIX) \
+                test_opus_padding$(EXESUFFIX)
 		$(OBJS) $(OPUSDEMO_OBJS) $(OPUSCOMPARE_OBJS) $(TESTOPUSAPI_OBJS) \
-                $(TESTOPUSDECODE_OBJS) $(TESTOPUSENCODE_OBJS) $(TESTOPUSPADDING_OBJS)
+                $(TESTOPUSDECODE_OBJS) $(TESTOPUSENCODE_OBJS) \
+                $(TESTOPUSEXTENSIONS_OBJS) $(TESTOPUSPADDING_OBJS)
 
 .PHONY: all lib clean force check

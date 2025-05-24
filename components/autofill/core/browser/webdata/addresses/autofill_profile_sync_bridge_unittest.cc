@@ -22,9 +22,9 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -71,21 +71,12 @@ using testing::Return;
 using testing::UnorderedElementsAre;
 
 // Some guids for testing.
-const char kGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
-const char kGuidB[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
-const char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
-const char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
-const char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
-const int kValidityStateBitfield = 1984;
-const char kLocaleString[] = "en-US";
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
-
-AutofillProfile CreateAutofillProfile(
-    const AutofillProfileSpecifics& specifics) {
-  // As more copying does not hurt in tests, we prefer to use AutofillProfile
-  // instead of std::unique_ptr<AutofillProfile> because of code brevity.
-  return *CreateAutofillProfileFromSpecifics(specifics);
-}
+constexpr char kGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
+constexpr char kGuidB[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
+constexpr char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
+constexpr char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
+constexpr char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
+constexpr char kLocaleString[] = "en-US";
 
 AutofillProfileSpecifics CreateAutofillProfileSpecifics(
     const AutofillProfile& entry) {
@@ -103,14 +94,19 @@ AutofillProfileSpecifics CreateAutofillProfileSpecifics(
   // Make it consistent with the constructor of AutofillProfile constructor (the
   // clock value is overrided by TestAutofillClock in the test fixture).
   specifics.set_use_count(1);
-  specifics.set_use_date(kJune2017.ToTimeT());
+  specifics.set_use_date(test::kJune2017.ToTimeT());
   return specifics;
 }
 
 MATCHER_P(HasSpecifics, expected, "") {
-  AutofillProfile arg_profile =
-      CreateAutofillProfile(arg->specifics.autofill_profile());
-  AutofillProfile expected_profile = CreateAutofillProfile(expected);
+  if (!IsAutofillProfileSpecificsValid(arg->specifics.autofill_profile())) {
+    *result_listener << "actual AutofillProfileSpecifics is not valid";
+    return false;
+  }
+  AutofillProfile arg_profile = CreateAutofillProfileFromValidSpecifics(
+      arg->specifics.autofill_profile());
+  AutofillProfile expected_profile =
+      CreateAutofillProfileFromValidSpecifics(expected);
   if (!test_api(arg_profile).EqualsIncludingUsageStats(expected_profile)) {
     *result_listener << "entry\n[" << arg_profile << "]\n"
                      << "did not match expected\n[" << expected_profile << "]";
@@ -134,8 +130,8 @@ void ExtractAutofillProfilesFromDataBatch(
     std::vector<AutofillProfile>* output) {
   while (batch->HasNext()) {
     const KeyAndData& data_pair = batch->Next();
-    output->push_back(
-        CreateAutofillProfile(data_pair.second->specifics.autofill_profile()));
+    output->push_back(CreateAutofillProfileFromValidSpecifics(
+        data_pair.second->specifics.autofill_profile()));
   }
 }
 
@@ -145,8 +141,8 @@ AutofillProfile ConstructCompleteProfile() {
   AutofillProfile profile(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                           AddressCountryCode("ES"));
 
-  profile.set_use_count(7);
-  profile.set_use_date(base::Time::FromTimeT(1423182152));
+  profile.usage_history().set_use_count(7);
+  profile.usage_history().set_use_date(base::Time::FromTimeT(1423182152));
 
   profile.SetRawInfo(NAME_FULL, u"John K. Doe, Jr.");
   profile.SetRawInfo(NAME_FIRST, u"John");
@@ -239,7 +235,6 @@ AutofillProfileSpecifics ConstructCompleteSpecifics() {
   specifics.set_address_home_thoroughfare_number("House Number");
   specifics.set_address_home_subpremise_name("Subpremise");
 
-  specifics.set_validity_state_bitfield(kValidityStateBitfield);
   return specifics;
 }
 
@@ -255,7 +250,7 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kJune2017);
+    task_environment_.AdvanceClock(test::kJune2017 - base::Time::Now());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.AddTable(&sync_metadata_table_);
@@ -355,9 +350,9 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AddressAutofillTable table_;
   AutofillSyncMetadataTable sync_metadata_table_;
@@ -406,25 +401,6 @@ TEST_F(AutofillProfileSyncBridgeTest,
   bridge()->AutofillProfileChanged(change);
 }
 
-// Validity state bitfield in autofill profiles should be synced to the server.
-TEST_F(AutofillProfileSyncBridgeTest,
-       AutofillProfileChanged_Added_LocalValidityBitfieldPropagates) {
-  StartSyncing({});
-
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AutofillProfileChange change(AutofillProfileChange::ADD, kGuidA, local);
-
-  EXPECT_CALL(
-      mock_processor(),
-      Put(kGuidA, HasSpecifics(CreateAutofillProfileSpecifics(local)), _));
-  // The bridge does not need to commit when reacting to a notification about a
-  // local change.
-  EXPECT_CALL(*backend(), CommitChanges()).Times(0);
-
-  bridge()->AutofillProfileChanged(change);
-}
-
 // Local updates should be properly propagated to the server.
 TEST_F(AutofillProfileSyncBridgeTest, AutofillProfileChanged_Updated) {
   StartSyncing({});
@@ -455,14 +431,15 @@ TEST_F(AutofillProfileSyncBridgeTest,
 
   StartSyncing({remote});
   EXPECT_THAT(GetAllLocalData(),
-              ElementsAre(WithUsageStats(CreateAutofillProfile(remote))));
+              ElementsAre(WithUsageStats(
+                  CreateAutofillProfileFromValidSpecifics(remote))));
 
   // Update to the usage stats for that profile.
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
-  local.set_use_count(10U);
-  local.set_use_date(base::Time::FromTimeT(30));
+  local.usage_history().set_use_count(10U);
+  local.usage_history().set_use_date(base::Time::FromTimeT(30));
   AutofillProfileChange change(AutofillProfileChange::UPDATE, kGuidA, local);
 
   EXPECT_CALL(
@@ -574,9 +551,10 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData) {
   // incorporated into the local profile which is mostly a replace operation.
   EXPECT_THAT(
       GetAllLocalData(),
-      UnorderedElementsAre(local1, CreateAutofillProfile(remote1_specifics),
-                           CreateAutofillProfile(remote2_specifics),
-                           CreateAutofillProfile(remote3_specifics)));
+      UnorderedElementsAre(
+          local1, CreateAutofillProfileFromValidSpecifics(remote1_specifics),
+          CreateAutofillProfileFromValidSpecifics(remote2_specifics),
+          CreateAutofillProfileFromValidSpecifics(remote3_specifics)));
 }
 
 // Tests the profile migration that is performed after specifics are converted
@@ -692,8 +670,9 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_IdenticalProfiles) {
   StartSyncing({remote1_specifics, remote2_specifics});
 
   EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(CreateAutofillProfile(remote1_specifics),
-                                   CreateAutofillProfile(remote2_specifics)));
+              UnorderedElementsAre(
+                  CreateAutofillProfileFromValidSpecifics(remote1_specifics),
+                  CreateAutofillProfileFromValidSpecifics(remote2_specifics)));
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_NonSimilarProfiles) {
@@ -727,7 +706,8 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_NonSimilarProfiles) {
   StartSyncing({remote});
 
   EXPECT_THAT(GetAllLocalData(),
-              UnorderedElementsAre(local, CreateAutofillProfile(remote)));
+              UnorderedElementsAre(
+                  local, CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
@@ -736,7 +716,7 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
   local.SetRawInfo(NAME_FIRST, u"John");
   local.SetRawInfo(ADDRESS_HOME_STREET_ADDRESS, u"1 1st st");
   local.FinalizeAfterImport();
-  local.set_use_count(27);
+  local.usage_history().set_use_count(27);
   AddAutofillProfilesToTable({local});
 
   // The synced profiles are identical to the local ones, except that the guids
@@ -744,7 +724,7 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
   // name which makes them not be identical.
   AutofillProfile remote = local;
   remote.set_guid(kGuidB);
-  remote.set_use_count(13);
+  remote.usage_history().set_use_count(13);
   remote.SetRawInfo(COMPANY_NAME, u"Frobbers, Inc.");
   // Note, this populates the full name for structured profiles.
   remote.FinalizeAfterImport();
@@ -763,9 +743,9 @@ TEST_F(AutofillProfileSyncBridgeTest, MergeFullSyncData_SimilarProfiles) {
 
   StartSyncing({remote_specifics});
 
-  EXPECT_THAT(
-      GetAllLocalData(),
-      UnorderedElementsAre(WithUsageStats(CreateAutofillProfile(merged))));
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(WithUsageStats(
+                  CreateAutofillProfileFromValidSpecifics(merged))));
 }
 
 // Tests that MergeSimilarProfiles keeps the most recent use date of the two
@@ -776,7 +756,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
-  local.set_use_date(base::Time::FromTimeT(30));
+  local.usage_history().set_use_date(base::Time::FromTimeT(30));
   AddAutofillProfilesToTable({local});
 
   AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidB);
@@ -801,7 +781,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
-  local.set_use_date(base::Time::FromTimeT(30));
+  local.usage_history().set_use_date(base::Time::FromTimeT(30));
   AddAutofillProfilesToTable({local});
 
   AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidB);
@@ -825,7 +805,7 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"650234567");
-  local.set_use_count(12);
+  local.usage_history().set_use_count(12);
   AddAutofillProfilesToTable({local});
 
   AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidB);
@@ -839,6 +819,22 @@ TEST_F(AutofillProfileSyncBridgeTest,
   EXPECT_CALL(*backend(), CommitChanges());
 
   StartSyncing({remote});
+}
+
+// Ensure that validation returns true if the specifics is valid.
+TEST_F(AutofillProfileSyncBridgeTest, IsEntityDataValidValidSpecifics) {
+  AutofillProfileSpecifics remote_valid =
+      CreateAutofillProfileSpecifics(kGuidA);
+
+  EXPECT_TRUE(bridge()->IsEntityDataValid(SpecificsToEntity(remote_valid)));
+}
+
+// Ensure that validation returns false if the specifics is invalid.
+TEST_F(AutofillProfileSyncBridgeTest, IsEntityDataValidInvalidSpecifics) {
+  AutofillProfileSpecifics remote_invalid =
+      CreateAutofillProfileSpecifics(kGuidInvalid);
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(SpecificsToEntity(remote_invalid)));
 }
 
 TEST_F(AutofillProfileSyncBridgeTest, ApplyIncrementalSyncChanges) {
@@ -862,36 +858,14 @@ TEST_F(AutofillProfileSyncBridgeTest, ApplyIncrementalSyncChanges) {
   EXPECT_CALL(*backend(), CommitChanges());
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete(kGuidA));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete(kGuidA, syncer::EntityData()));
   entity_change_list.push_back(
       EntityChange::CreateAdd(kGuidB, SpecificsToEntity(remote)));
   ApplyIncrementalSyncChanges(std::move(entity_change_list));
 
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
-}
-
-// Ensure that entries with invalid specifics are ignored.
-TEST_F(AutofillProfileSyncBridgeTest,
-       ApplyIncrementalSyncChanges_OmitsInvalidSpecifics) {
-  StartSyncing({});
-
-  AutofillProfileSpecifics remote_valid =
-      CreateAutofillProfileSpecifics(kGuidA);
-  AutofillProfileSpecifics remote_invalid =
-      CreateAutofillProfileSpecifics(kGuidInvalid);
-
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-
-  syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(
-      EntityChange::CreateAdd(kGuidA, SpecificsToEntity(remote_valid)));
-  entity_change_list.push_back(
-      EntityChange::CreateAdd(kGuidInvalid, SpecificsToEntity(remote_invalid)));
-  ApplyIncrementalSyncChanges(std::move(entity_change_list));
-
   EXPECT_THAT(GetAllLocalData(),
-              ElementsAre(CreateAutofillProfile(remote_valid)));
+              ElementsAre(CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 // Verifies that setting the street address field also sets the (deprecated)
@@ -1022,7 +996,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
+  EXPECT_THAT(GetAllLocalData(),
+              ElementsAre(CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 // Local language code should be overwritten by remote one.
@@ -1041,7 +1016,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
+  EXPECT_THAT(GetAllLocalData(),
+              ElementsAre(CreateAutofillProfileFromValidSpecifics(remote)));
 }
 
 // Sync data without language code should not overwrite existing language code
@@ -1070,88 +1046,6 @@ TEST_F(AutofillProfileSyncBridgeTest,
   merged.FinalizeAfterImport();
 
   // No update to sync, remote language code overwrites the local one.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(merged));
-}
-
-// Missing validity state bitifield should not generate sync events.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_DefaultValueNoSync) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data does not have a validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  ASSERT_FALSE(remote.has_validity_state_bitfield());
-  ASSERT_FALSE(remote.is_client_validity_states_updated());
-
-  // No update to sync, no change in local data.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(local));
-}
-
-// Default validity state bitfield should be overwritten by sync.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverMissingLocal) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data has a non default validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  remote.set_validity_state_bitfield(kValidityStateBitfield);
-  ASSERT_TRUE(remote.has_validity_state_bitfield());
-
-  // No update to sync, the validity bitfield should be stored to local.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
-}
-
-// Local validity state bitfield should be overwritten by sync.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_ExistingRemoteWinsOverExistingLocal) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data has a non default validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  remote.set_validity_state_bitfield(kValidityStateBitfield);
-  ASSERT_TRUE(remote.has_validity_state_bitfield());
-
-  // No update to sync, the remote validity bitfield should overwrite local.
-  EXPECT_CALL(mock_processor(), Put).Times(0);
-  EXPECT_CALL(*backend(), CommitChanges());
-  StartSyncing({remote});
-  EXPECT_THAT(GetAllLocalData(), ElementsAre(CreateAutofillProfile(remote)));
-}
-
-// Sync data without a default validity state bitfield should not overwrite
-// an existing validity state bitfield in local autofill profile.
-TEST_F(AutofillProfileSyncBridgeTest,
-       RemoteWithSameGuid_ValidityState_ExistingLocalWinsOverMissingRemote) {
-  AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
-                        i18n_model_definition::kLegacyHierarchyCountryCode);
-  AddAutofillProfilesToTable({local});
-
-  // Remote data has a non default validity state bitfield value.
-  AutofillProfileSpecifics remote = CreateAutofillProfileSpecifics(kGuidA);
-  remote.add_name_first("John");
-  ASSERT_FALSE(remote.has_validity_state_bitfield());
-
-  // Expect local autofill profile to still have the validity state after.
-  AutofillProfile merged(local);
-  merged.SetRawInfo(NAME_FIRST, u"John");
-  merged.FinalizeAfterImport();
-
-  // No update to sync, the local validity bitfield should stay untouched.
   EXPECT_CALL(mock_processor(), Put).Times(0);
   EXPECT_CALL(*backend(), CommitChanges());
   StartSyncing({remote});
@@ -1244,8 +1138,8 @@ TEST_F(AutofillProfileSyncBridgeTest,
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
-  local.set_use_count(0);
-  local.set_use_date(base::Time());
+  local.usage_history().set_use_count(0);
+  local.usage_history().set_use_date(base::Time());
   AddAutofillProfilesToTable({local});
 
   // Remote data does not have use_count/use_date.
@@ -1291,10 +1185,10 @@ TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {
   AutofillProfile local(kGuidA, AutofillProfile::RecordType::kLocalOrSyncable,
                         i18n_model_definition::kLegacyHierarchyCountryCode);
   local.set_language_code("en");
-  local.set_use_count(test_case.local_use_count);
-  local.set_use_date(test_case.local_use_date);
-  ASSERT_EQ(test_case.local_use_count, local.use_count());
-  ASSERT_EQ(test_case.local_use_date, local.use_date());
+  local.usage_history().set_use_count(test_case.local_use_count);
+  local.usage_history().set_use_date(test_case.local_use_date);
+  ASSERT_EQ(test_case.local_use_count, local.usage_history().use_count());
+  ASSERT_EQ(test_case.local_use_date, local.usage_history().use_date());
   AddAutofillProfilesToTable({local});
 
   // Remote data has usage stats.
@@ -1307,8 +1201,8 @@ TEST_P(AutofillProfileSyncBridgeUpdatesUsageStatsTest, UpdatesUsageStats) {
 
   // Expect the local autofill profile to have usage stats after sync.
   AutofillProfile merged(local);
-  merged.set_use_count(test_case.merged_use_count);
-  merged.set_use_date(test_case.merged_use_date);
+  merged.usage_history().set_use_count(test_case.merged_use_count);
+  merged.usage_history().set_use_date(test_case.merged_use_date);
 
   // Expect no changes to remote data.
   EXPECT_CALL(mock_processor(), Put).Times(0);

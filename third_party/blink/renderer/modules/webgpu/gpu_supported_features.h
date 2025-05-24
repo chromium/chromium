@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_sync_iterator_gpu_supported_features.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -20,23 +21,26 @@ class GPUSupportedFeatures : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  static std::optional<V8GPUFeatureName::Enum> ToV8FeatureNameEnum(
+      wgpu::FeatureName f);
+
   GPUSupportedFeatures();
-  explicit GPUSupportedFeatures(const Vector<V8GPUFeatureName>& feature_names);
+  explicit GPUSupportedFeatures(
+      const wgpu::SupportedFeatures& supported_features);
 
   void AddFeatureName(const V8GPUFeatureName feature_name);
 
-  bool has(const String& feature) const;
+  const HashSet<String>& FeatureNameSet() const { return features_; }
+  // Fast path, it allows to avoid hash computation from string for
+  // checking features.
+  bool Has(const V8GPUFeatureName::Enum feature) const;
+
+  // gpu_supported_features.idl {{{
   bool hasForBinding(ScriptState* script_state,
                      const String& feature,
                      ExceptionState& exception_state) const;
-
-  // Fast path, it allows to avoid hash computation from string for
-  // checking features.
-  bool has(const V8GPUFeatureName::Enum feature) const;
-
   unsigned size() const { return features_.size(); }
-
-  const HashSet<String>& FeatureNameSet() const { return features_; }
+  // }}} End of WebIDL binding implementation.
 
  private:
   HashSet<String> features_;

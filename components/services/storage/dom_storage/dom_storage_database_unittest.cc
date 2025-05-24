@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -45,11 +46,6 @@ std::ostream& operator<<(std::ostream& os,
 
 namespace {
 
-// Helper for tests to create a |uint8_t| span from a std::string_view.
-base::span<const uint8_t> MakeBytes(std::string_view s) {
-  return base::as_bytes(base::make_span(s));
-}
-
 DomStorageDatabase::KeyValuePair MakeKeyValuePair(std::string_view key,
                                                   std::string_view value) {
   return {DomStorageDatabase::Key(key.begin(), key.end()),
@@ -57,7 +53,7 @@ DomStorageDatabase::KeyValuePair MakeKeyValuePair(std::string_view key,
 }
 
 std::string MakePrefixedKey(std::string_view prefix, std::string_view key) {
-  return std::string(prefix) + std::string(key);
+  return base::StrCat({prefix, key});
 }
 
 class StorageServiceDomStorageDatabaseTest : public testing::Test {
@@ -163,10 +159,11 @@ TEST_F(StorageServiceDomStorageDatabaseTest, BasicOperations) {
   const char kTestKey[] = "test_key";
   const char kTestValue[] = "test_value";
   DoSync(database, [&](const DomStorageDatabase& db) {
-    EXPECT_STATUS_OK(db.Put(MakeBytes(kTestKey), MakeBytes(kTestValue)));
+    EXPECT_STATUS_OK(db.Put(base::byte_span_from_cstring(kTestKey),
+                            base::byte_span_from_cstring(kTestValue)));
 
     DomStorageDatabase::Value value;
-    EXPECT_STATUS_OK(db.Get(MakeBytes(kTestKey), &value));
+    EXPECT_STATUS_OK(db.Get(base::byte_span_from_cstring(kTestKey), &value));
     EXPECT_VALUE_EQ(kTestValue, value);
   });
 }
@@ -186,7 +183,8 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
       OpenDirectorySync(temp_dir.GetPath(), kTestDbName);
   ASSERT_TRUE(database);
   DoSync(database, [&](const DomStorageDatabase& db) {
-    EXPECT_STATUS_OK(db.Put(MakeBytes(kTestKey), MakeBytes(kTestValue)));
+    EXPECT_STATUS_OK(db.Put(base::byte_span_from_cstring(kTestKey),
+                            base::byte_span_from_cstring(kTestValue)));
   });
   database.Reset();
 
@@ -195,7 +193,7 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   ASSERT_TRUE(database);
   DoSync(database, [&](const DomStorageDatabase& db) {
     DomStorageDatabase::Value value;
-    EXPECT_STATUS_OK(db.Get(MakeBytes(kTestKey), &value));
+    EXPECT_STATUS_OK(db.Get(base::byte_span_from_cstring(kTestKey), &value));
     EXPECT_VALUE_EQ(kTestValue, value);
   });
   database.Reset();
@@ -215,7 +213,8 @@ TEST_F(StorageServiceDomStorageDatabaseTest, Reopen) {
   ASSERT_TRUE(database);
   DoSync(database, [&](const DomStorageDatabase& db) {
     DomStorageDatabase::Value value;
-    EXPECT_TRUE(db.Get(MakeBytes(kTestKey), &value).IsNotFound());
+    EXPECT_TRUE(
+        db.Get(base::byte_span_from_cstring(kTestKey), &value).IsNotFound());
   });
 
   // Because the database owns filesystem artifacts in the temp directory, block
@@ -231,67 +230,76 @@ TEST_F(StorageServiceDomStorageDatabaseTest, GetPrefixed) {
       OpenInMemorySync("test_db");
   ASSERT_TRUE(database);
 
-  const char kTestPrefix1[] = "prefix";
-  const char kTestPrefix2[] = "something_completely_different";
-  const char kTestUnprefixedKey[] = "moot!";
-  const char kTestKeyBase1[] = "key1";
-  const char kTestKeyBase2[] = "key2";
-  auto kTestPrefix1Key1 = MakePrefixedKey(kTestPrefix1, kTestKeyBase1);
-  auto kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
-  auto kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
-  auto kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
+  static constexpr char kTestPrefix1[] = "prefix";
+  static constexpr char kTestPrefix2[] = "something_completely_different";
+  static constexpr char kTestUnprefixedKey[] = "moot!";
+  static constexpr char kTestKeyBase1[] = "key1";
+  static constexpr char kTestKeyBase2[] = "key2";
+  std::string kTestPrefix1Key1 = MakePrefixedKey(kTestPrefix1, kTestKeyBase1);
+  std::string kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
+  std::string kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
+  std::string kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
   DoSync(database, [&](const DomStorageDatabase& db) {
     std::vector<DomStorageDatabase::KeyValuePair> entries;
 
     // No keys, so GetPrefixed should return nothing.
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix1), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix1), &entries));
     EXPECT_TRUE(entries.empty());
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix2), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
     EXPECT_TRUE(entries.empty());
 
     // Insert a key which matches neither test prefix. GetPrefixed should still
     // return nothing.
-    EXPECT_STATUS_OK(db.Put(MakeBytes(kTestUnprefixedKey), MakeBytes("meh")));
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix1), &entries));
+    EXPECT_STATUS_OK(db.Put(base::byte_span_from_cstring(kTestUnprefixedKey),
+                            base::byte_span_from_cstring("meh")));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix1), &entries));
     EXPECT_TRUE(entries.empty());
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix2), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
     EXPECT_TRUE(entries.empty());
 
     // Insert a single prefixed key. GetPrefixed should return it when called
     // with kTestPrefix1.
-    const char kTestValue1[] = "beep beep";
+    static constexpr char kTestValue1[] = "beep beep";
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix1Key1),
+                            base::byte_span_from_cstring(kTestValue1)));
     EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix1Key1), MakeBytes(kTestValue1)));
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix1), &entries));
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix1), &entries));
     EXPECT_THAT(entries, UnorderedElementsAreArray({MakeKeyValuePair(
                              kTestPrefix1Key1, kTestValue1)}));
 
     // But not when called with kTestPrefix2.
     entries.clear();
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix2), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
     EXPECT_TRUE(entries.empty());
 
     // Insert a second prefixed key with kTestPrefix1, and also insert some
     // keys with kTestPrefix2.
-    const char kTestValue2[] = "beep bop boop";
-    const char kTestValue3[] = "vroom vroom";
-    const char kTestValue4[] = "this data is lit fam";
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix1Key2), MakeBytes(kTestValue2)));
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix2Key1), MakeBytes(kTestValue3)));
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix2Key2), MakeBytes(kTestValue4)));
+    static constexpr char kTestValue2[] = "beep bop boop";
+    static constexpr char kTestValue3[] = "vroom vroom";
+    static constexpr char kTestValue4[] = "this data is lit fam";
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix1Key2),
+                            base::byte_span_from_cstring(kTestValue2)));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix2Key1),
+                            base::byte_span_from_cstring(kTestValue3)));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix2Key2),
+                            base::byte_span_from_cstring(kTestValue4)));
 
     // Verify that getting each prefix yields only the expected results.
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix1), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix1), &entries));
     EXPECT_THAT(entries,
                 UnorderedElementsAreArray(
                     {MakeKeyValuePair(kTestPrefix1Key1, kTestValue1),
                      MakeKeyValuePair(kTestPrefix1Key2, kTestValue2)}));
     entries.clear();
 
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix2), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
     EXPECT_THAT(entries,
                 UnorderedElementsAreArray(
                     {MakeKeyValuePair(kTestPrefix2Key1, kTestValue3),
@@ -306,38 +314,43 @@ TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
       OpenInMemorySync("test_db");
   ASSERT_TRUE(database);
 
-  const char kTestPrefix1[] = "prefix";
-  const char kTestPrefix2[] = "something_completely_different";
-  const char kTestUnprefixedKey[] = "moot!";
-  const char kTestKeyBase1[] = "key1";
-  const char kTestKeyBase2[] = "key2";
-  auto kTestPrefix1Key1 = MakePrefixedKey(kTestPrefix1, kTestKeyBase1);
-  auto kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
-  auto kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
-  auto kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
+  static constexpr char kTestPrefix1[] = "prefix";
+  static constexpr char kTestPrefix2[] = "something_completely_different";
+  static constexpr char kTestUnprefixedKey[] = "moot!";
+  static constexpr char kTestKeyBase1[] = "key1";
+  static constexpr char kTestKeyBase2[] = "key2";
+  std::string kTestPrefix1Key1 = MakePrefixedKey(kTestPrefix1, kTestKeyBase1);
+  std::string kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
+  std::string kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
+  std::string kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
   DoSync(database, [&](const DomStorageDatabase& db) {
     // Insert a bunch of entries. One unprefixed, two with one prefix, and two
     // with another prefix.
-    const char kTestValue1[] = "meh";
-    const char kTestValue2[] = "bah";
-    const char kTestValue3[] = "doh";
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestUnprefixedKey), MakeBytes(kTestValue1)));
-    EXPECT_STATUS_OK(db.Put(MakeBytes(kTestPrefix1Key1), MakeBytes("x")));
-    EXPECT_STATUS_OK(db.Put(MakeBytes(kTestPrefix1Key2), MakeBytes("x")));
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix2Key1), MakeBytes(kTestValue2)));
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix2Key2), MakeBytes(kTestValue3)));
+    static constexpr char kTestValue1[] = "meh";
+    static constexpr char kTestValue2[] = "bah";
+    static constexpr char kTestValue3[] = "doh";
+    EXPECT_STATUS_OK(db.Put(base::byte_span_from_cstring(kTestUnprefixedKey),
+                            base::byte_span_from_cstring(kTestValue1)));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix1Key1),
+                            base::byte_span_from_cstring("x")));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix1Key2),
+                            base::byte_span_from_cstring("x")));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix2Key1),
+                            base::byte_span_from_cstring(kTestValue2)));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix2Key2),
+                            base::byte_span_from_cstring(kTestValue3)));
 
     // Wipe out the first prefix. We should still see the second prefix.
     std::vector<DomStorageDatabase::KeyValuePair> entries;
     leveldb::WriteBatch batch;
-    EXPECT_STATUS_OK(db.DeletePrefixed(MakeBytes(kTestPrefix1), &batch));
+    EXPECT_STATUS_OK(
+        db.DeletePrefixed(base::byte_span_from_cstring(kTestPrefix1), &batch));
     EXPECT_STATUS_OK(db.Commit(&batch));
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix1), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix1), &entries));
     EXPECT_TRUE(entries.empty());
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix2), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
     EXPECT_THAT(entries,
                 UnorderedElementsAreArray(
                     {MakeKeyValuePair(kTestPrefix2Key1, kTestValue2),
@@ -345,13 +358,16 @@ TEST_F(StorageServiceDomStorageDatabaseTest, DeletePrefixed) {
 
     // Wipe out the second prefix.
     batch.Clear();
-    EXPECT_STATUS_OK(db.DeletePrefixed(MakeBytes(kTestPrefix2), &batch));
+    EXPECT_STATUS_OK(
+        db.DeletePrefixed(base::byte_span_from_cstring(kTestPrefix2), &batch));
     EXPECT_STATUS_OK(db.Commit(&batch));
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix2), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
 
     // The lone unprefixed value should still exist.
     DomStorageDatabase::Value value;
-    EXPECT_STATUS_OK(db.Get(MakeBytes(kTestUnprefixedKey), &value));
+    EXPECT_STATUS_OK(
+        db.Get(base::byte_span_from_cstring(kTestUnprefixedKey), &value));
     EXPECT_VALUE_EQ(kTestValue1, value);
   });
 }
@@ -363,38 +379,40 @@ TEST_F(StorageServiceDomStorageDatabaseTest, CopyPrefixed) {
       OpenInMemorySync("test_db");
   ASSERT_TRUE(database);
 
-  const char kTestUnprefixedKey[] = "moot!";
-  const char kTestPrefix1[] = "prefix";
-  const char kTestPrefix2[] = "something_completely_different";
-  const char kTestKeyBase1[] = "key1";
-  const char kTestKeyBase2[] = "key2";
-  auto kTestPrefix1Key1 = MakePrefixedKey(kTestPrefix1, kTestKeyBase1);
-  auto kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
-  auto kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
-  auto kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
-  const char kTestValue1[] = "a value";
-  const char kTestValue2[] = "another value";
-  const char kTestValue3[] = "the only other value in the world";
+  static constexpr char kTestUnprefixedKey[] = "moot!";
+  static constexpr char kTestPrefix1[] = "prefix";
+  static constexpr char kTestPrefix2[] = "something_completely_different";
+  static constexpr char kTestKeyBase1[] = "key1";
+  static constexpr char kTestKeyBase2[] = "key2";
+  std::string kTestPrefix1Key1 = MakePrefixedKey(kTestPrefix1, kTestKeyBase1);
+  std::string kTestPrefix1Key2 = MakePrefixedKey(kTestPrefix1, kTestKeyBase2);
+  std::string kTestPrefix2Key1 = MakePrefixedKey(kTestPrefix2, kTestKeyBase1);
+  std::string kTestPrefix2Key2 = MakePrefixedKey(kTestPrefix2, kTestKeyBase2);
+  static constexpr char kTestValue1[] = "a value";
+  static constexpr char kTestValue2[] = "another value";
+  static constexpr char kTestValue3[] = "the only other value in the world";
 
   DoSync(database, [&](const DomStorageDatabase& db) {
     // Populate the database with one unprefixed entry, and two values with
     // a key prefix of |kTestPrefix1|.
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestUnprefixedKey), MakeBytes(kTestValue1)));
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix1Key1), MakeBytes(kTestValue2)));
-    EXPECT_STATUS_OK(
-        db.Put(MakeBytes(kTestPrefix1Key2), MakeBytes(kTestValue3)));
+    EXPECT_STATUS_OK(db.Put(base::byte_span_from_cstring(kTestUnprefixedKey),
+                            base::byte_span_from_cstring(kTestValue1)));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix1Key1),
+                            base::byte_span_from_cstring(kTestValue2)));
+    EXPECT_STATUS_OK(db.Put(base::as_byte_span(kTestPrefix1Key2),
+                            base::byte_span_from_cstring(kTestValue3)));
 
     // Copy the prefixed entries to |kTestPrefix2| and verify that we have the
     // expected entries.
     leveldb::WriteBatch batch;
-    EXPECT_STATUS_OK(db.CopyPrefixed(MakeBytes(kTestPrefix1),
-                                     MakeBytes(kTestPrefix2), &batch));
+    EXPECT_STATUS_OK(db.CopyPrefixed(base::byte_span_from_cstring(kTestPrefix1),
+                                     base::byte_span_from_cstring(kTestPrefix2),
+                                     &batch));
     EXPECT_STATUS_OK(db.Commit(&batch));
 
     std::vector<DomStorageDatabase::KeyValuePair> entries;
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix2), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix2), &entries));
     EXPECT_THAT(entries,
                 UnorderedElementsAreArray(
                     {MakeKeyValuePair(kTestPrefix2Key1, kTestValue2),
@@ -402,7 +420,8 @@ TEST_F(StorageServiceDomStorageDatabaseTest, CopyPrefixed) {
 
     // The original prefixed values should still be there too.
     entries.clear();
-    EXPECT_STATUS_OK(db.GetPrefixed(MakeBytes(kTestPrefix1), &entries));
+    EXPECT_STATUS_OK(
+        db.GetPrefixed(base::byte_span_from_cstring(kTestPrefix1), &entries));
     EXPECT_THAT(entries,
                 UnorderedElementsAreArray(
                     {MakeKeyValuePair(kTestPrefix1Key1, kTestValue2),

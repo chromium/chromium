@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("hid") {
+  sources = [
+    "hid_chooser_context.h",
+    "hid_chooser_context_factory.h",
+    "web_hid_histograms.h",
+    "web_view_chooser_context.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/chooser_controller",
+    "//chrome/browser/profiles:profile",
+    "//components/permissions",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//url",
+  ]
+}

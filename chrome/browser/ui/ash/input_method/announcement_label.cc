@@ -37,8 +37,8 @@ void AnnouncementLabel::DoAnnouncement(const std::u16string text) {
 
   UpdateAccessibleDescription();
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kLiveRegionChanged,
-                           /*send_native_event=*/false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kLiveRegionChanged,
+                                     /*send_native_event=*/false);
 }
 
 void AnnouncementLabel::UpdateAccessibleDescription() {

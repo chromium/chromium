@@ -30,13 +30,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.blink.mojom.ContactIconBlob;
 import org.chromium.components.browser_ui.contacts_picker.test.R;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
@@ -49,6 +49,7 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.payments.mojom.PaymentAddress;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -58,12 +59,12 @@ import org.chromium.ui.test.util.RenderTestRule;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /** Tests for the ContactsPickerDialog class. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL)
 public class ContactsPickerDialogTest
         implements ContactsPickerListener, SelectionObserver<ContactDetails> {
     @ClassRule
@@ -74,6 +75,7 @@ public class ContactsPickerDialogTest
     private WindowAndroid mWindowAndroid;
 
     @Mock private WebContents mWebContents;
+    @Mock private InsetObserver mInsetObserver;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -142,16 +144,15 @@ public class ContactsPickerDialogTest
                             return new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(mActivity));
+                                    IntentRequestTracker.createFromActivity(mActivity),
+                                    mInsetObserver,
+                                    /* trackOcclusion= */ true);
                         });
         mWebContents = Mockito.mock(WebContents.class);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
 
-        FeatureList.setTestFeatures(
-                Collections.singletonMap(
-                        ContactsPickerFeatureList.CONTACTS_PICKER_SELECT_ALL, true));
         mIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(mIcon);
         canvas.drawColor(Color.BLUE);
@@ -195,7 +196,7 @@ public class ContactsPickerDialogTest
     }
 
     private RecyclerView getRecyclerView() {
-        return (RecyclerView) mDialog.findViewById(R.id.selectable_list_recycler_view);
+        return mDialog.findViewById(R.id.selectable_list_recycler_view);
     }
 
     /**
@@ -254,7 +255,9 @@ public class ContactsPickerDialogTest
                                                 tels,
                                                 addresses,
                                                 icons,
-                                                formattedOrigin);
+                                                formattedOrigin,
+                                                /* shouldPadForContent= */ false);
+
                                 mDialog.show();
                                 return true;
                             });
@@ -331,9 +334,8 @@ public class ContactsPickerDialogTest
 
         mLastActionRecorded = ContactsPickerAction.NUM_ENTRIES;
 
-        ContactsPickerToolbar toolbar =
-                (ContactsPickerToolbar) mDialog.findViewById(R.id.action_bar);
-        Button done = (Button) toolbar.findViewById(R.id.done);
+        ContactsPickerToolbar toolbar = mDialog.findViewById(R.id.action_bar);
+        Button done = toolbar.findViewById(R.id.done);
         int callCount = onActionCallback.getCallCount();
         TestTouchUtils.performClickOnMainSync(InstrumentationRegistry.getInstrumentation(), done);
         onActionCallback.waitForCallback(callCount, 1);
@@ -385,8 +387,7 @@ public class ContactsPickerDialogTest
     }
 
     private void clickSearchButton() {
-        ContactsPickerToolbar toolbar =
-                (ContactsPickerToolbar) mDialog.findViewById(R.id.action_bar);
+        ContactsPickerToolbar toolbar = mDialog.findViewById(R.id.action_bar);
         View search = toolbar.findViewById(R.id.search);
         TestTouchUtils.performClickOnMainSync(InstrumentationRegistry.getInstrumentation(), search);
     }
@@ -516,11 +517,11 @@ public class ContactsPickerDialogTest
         TopView topView = getTopView();
         Assert.assertNotNull(topView);
 
-        TextView explanation = (TextView) topView.findViewById(R.id.explanation);
+        TextView explanation = topView.findViewById(R.id.explanation);
         Assert.assertNotNull(explanation);
         Assert.assertEquals(
-                explanation.getText().toString(),
-                "The contacts you select will be shared with example.com.");
+                "The contacts you select will be shared with example.com.",
+                explanation.getText().toString());
 
         dismissDialog();
     }
@@ -554,11 +555,11 @@ public class ContactsPickerDialogTest
 
         // Per configuration given in the createDialog() call, the names and telephone filters
         // should be visible, but the e-mail and address filter should be gone.
-        Assert.assertEquals(namesFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(emailFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(telFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(addrFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(iconFilter.getVisibility(), View.VISIBLE);
+        Assert.assertEquals(View.VISIBLE, namesFilter.getVisibility());
+        Assert.assertEquals(View.GONE, emailFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, telFilter.getVisibility());
+        Assert.assertEquals(View.GONE, addrFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, iconFilter.getVisibility());
     }
 
     @Test
@@ -590,11 +591,11 @@ public class ContactsPickerDialogTest
 
         // Per configuration given in the createDialog() call, the names and telephone filters
         // should be hidden, but the e-mail and address filter should be visible.
-        Assert.assertEquals(namesFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(emailFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(telFilter.getVisibility(), View.GONE);
-        Assert.assertEquals(addrFilter.getVisibility(), View.VISIBLE);
-        Assert.assertEquals(iconFilter.getVisibility(), View.GONE);
+        Assert.assertEquals(View.GONE, namesFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, emailFilter.getVisibility());
+        Assert.assertEquals(View.GONE, telFilter.getVisibility());
+        Assert.assertEquals(View.VISIBLE, addrFilter.getVisibility());
+        Assert.assertEquals(View.GONE, iconFilter.getVisibility());
     }
 
     @Test

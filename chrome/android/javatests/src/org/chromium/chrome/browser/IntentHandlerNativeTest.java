@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.provider.Browser;
 
 import androidx.browser.customtabs.CustomTabsService;
-import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
@@ -32,6 +31,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
@@ -178,11 +178,10 @@ public class IntentHandlerNativeTest {
         headers.putString("redirect-url", "https://www.google.com");
         headersIntent.putExtra(Browser.EXTRA_HEADERS, headers);
 
-        CustomTabsSessionToken token =
-                CustomTabsSessionToken.getSessionTokenFromIntent(headersIntent);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(headersIntent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(token, "app1");
+        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.overridePackageNameForSessionForTesting(sessionHolder, "app1");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(
@@ -212,11 +211,10 @@ public class IntentHandlerNativeTest {
         headers.putString("redirect-url", "https://www.google.com");
         headersIntent.putExtra(Browser.EXTRA_HEADERS, headers);
 
-        CustomTabsSessionToken token =
-                CustomTabsSessionToken.getSessionTokenFromIntent(headersIntent);
+        var sessionHolder = SessionHolder.getSessionHolderFromIntent(headersIntent);
         CustomTabsConnection connection = CustomTabsConnection.getInstance();
-        connection.newSession(token);
-        connection.overridePackageNameForSessionForTesting(token, "app1");
+        connection.newSession(sessionHolder.getSessionAsCustomTab());
+        connection.overridePackageNameForSessionForTesting(sessionHolder, "app1");
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         ChromeOriginVerifier.addVerificationOverride(

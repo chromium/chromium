@@ -62,7 +62,7 @@ class ManagementAPIDelegate {
   using InstallOrLaunchWebAppCallback =
       base::OnceCallback<void(InstallOrLaunchWebAppResult)>;
 
-  // Launches the app |extension|. Returns `false` if the launch was blocked due
+  // Launches the app `extension`. Returns `false` if the launch was blocked due
   // to chrome apps deprecation, and `true` if it succeeded.
   virtual bool LaunchAppFunctionDelegate(
       const Extension* extension,
@@ -83,11 +83,11 @@ class ManagementAPIDelegate {
       const Extension* extension,
       base::OnceCallback<void(bool)> callback) const = 0;
 
-  // Enables the extension identified by |extension_id|.
+  // Enables the extension identified by `extension_id`.
   virtual void EnableExtension(content::BrowserContext* context,
                                const ExtensionId& extension_id) const = 0;
 
-  // Disables the extension identified by |extension_id|. |source_extension| (if
+  // Disables the extension identified by `extension_id`. `source_extension` (if
   // specified) is the extension that originated the request.
   virtual void DisableExtension(
       content::BrowserContext* context,
@@ -95,7 +95,7 @@ class ManagementAPIDelegate {
       const ExtensionId& extension_id,
       disable_reason::DisableReason disable_reason) const = 0;
 
-  // Used to show a confirmation dialog when uninstalling |target_extension|.
+  // Used to show a confirmation dialog when uninstalling `target_extension`.
   virtual std::unique_ptr<UninstallDialogDelegate> UninstallFunctionDelegate(
       ManagementUninstallFunctionBase* function,
       const Extension* target_extension,
@@ -118,7 +118,7 @@ class ManagementAPIDelegate {
                              const ExtensionId& extension_id,
                              LaunchType launch_type) const = 0;
 
-  // Creates a bookmark app for |launch_url|.
+  // Creates a bookmark app for `launch_url`.
   virtual std::unique_ptr<AppForLinkDelegate>
   GenerateAppForLinkFunctionDelegate(
       ManagementGenerateAppForLinkFunction* function,
@@ -130,7 +130,7 @@ class ManagementAPIDelegate {
   virtual bool CanContextInstallWebApps(
       content::BrowserContext* context) const = 0;
 
-  // Installs a web app for |web_app_url| or launches if already installed.
+  // Installs a web app for `web_app_url` or launches if already installed.
   virtual void InstallOrLaunchReplacementWebApp(
       content::BrowserContext* context,
       const GURL& web_app_url,

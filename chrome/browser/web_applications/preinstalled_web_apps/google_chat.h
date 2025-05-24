@@ -9,7 +9,8 @@
 
 namespace web_app {
 
-ExternalInstallOptions GetConfigForGoogleChat();
+ExternalInstallOptions GetConfigForGoogleChat(bool is_standalone,
+                                              bool only_for_new_users);
 
 }  // namespace web_app
 

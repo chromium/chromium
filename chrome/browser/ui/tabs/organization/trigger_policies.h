@@ -5,13 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_POLICIES_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TRIGGER_POLICIES_H_
 
-#include "chrome/browser/ui/tabs/organization/trigger.h"
-
 #include <memory>
 
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
+#include "chrome/browser/ui/tabs/organization/trigger.h"
 
 namespace content {
 class BrowserContext;

@@ -123,6 +123,20 @@ VkQueue QueryVkQueueFromANGLE() {
   return reinterpret_cast<VkQueue>(queue);
 }
 
+GL_EXPORT void* QueryDisplayFromANGLE() {
+  return gl::GLSurfaceEGL::GetGLDisplayEGL()->GetDisplay();
+}
+
+void LockVkQueueInANGLE(void* display) {
+  DCHECK(display != EGL_NO_DISPLAY);
+  eglLockVulkanQueueANGLE(display);
+}
+
+void UnlockVkQueueInANGLE(void* display) {
+  DCHECK(display != EGL_NO_DISPLAY);
+  eglUnlockVulkanQueueANGLE(display);
+}
+
 int QueryVkQueueFramiliyIndexFromANGLE() {
   EGLDeviceEXT egl_device = GetEGLDeviceFromANGLE();
   if (!egl_device)

@@ -4,11 +4,11 @@
 
 #include "components/history/core/browser/visit_annotations_database.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "components/history/core/browser/history_types.h"
@@ -482,16 +482,16 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
   out_content_annotations->model_annotations.visibility_score =
       static_cast<float>(statement.ColumnDouble(1));
   out_content_annotations->model_annotations.categories =
-      GetCategoriesFromStringColumn(statement.ColumnString(2));
+      GetCategoriesFromStringColumn(statement.ColumnStringView(2));
   out_content_annotations->model_annotations.page_topics_model_version =
       statement.ColumnInt64(3);
   out_content_annotations->annotation_flags = statement.ColumnInt64(4);
   out_content_annotations->model_annotations.entities =
-      GetCategoriesFromStringColumn(statement.ColumnString(5));
+      GetCategoriesFromStringColumn(statement.ColumnStringView(5));
   out_content_annotations->related_searches =
-      DeserializeFromStringColumn(statement.ColumnString(6));
+      DeserializeFromStringColumn(statement.ColumnStringView(6));
   out_content_annotations->search_normalized_url =
-      GURL(statement.ColumnString(7));
+      GURL(statement.ColumnStringView(7));
   out_content_annotations->search_terms = statement.ColumnString16(8);
   out_content_annotations->alternative_title = statement.ColumnString(9);
   out_content_annotations->page_language = statement.ColumnString(10);
@@ -596,7 +596,7 @@ void VisitAnnotationsDatabase::AddClusters(
     DCHECK_GT(cluster_id, 0);
 
     // Insert each visit into 'clusters_and_visits'.
-    base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
+    std::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
       const auto visit_id = cluster_visit.annotated_visit.visit_row.visit_id;
       DCHECK_GT(visit_id, 0);
       clusters_and_visits_statement.Reset(true);
@@ -687,7 +687,7 @@ void VisitAnnotationsDatabase::AddVisitsToCluster(
                                  "VALUES(?,?,?,?,?,?,?,?)"));
 
   // Insert each visit into 'clusters_and_visits'.
-  base::ranges::for_each(visits, [&](const auto& visit) {
+  std::ranges::for_each(visits, [&](const auto& visit) {
     DCHECK_GT(visit.annotated_visit.visit_row.visit_id, 0);
     clusters_and_visits_statement.Reset(true);
     clusters_and_visits_statement.BindInt64(0, cluster_id);
@@ -741,7 +741,7 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
       "(visit_id,duplicate_visit_id)"
       "VALUES(?,?)"));
 
-  base::ranges::for_each(clusters, [&](const auto& cluster) {
+  std::ranges::for_each(clusters, [&](const auto& cluster) {
     DCHECK_GT(cluster.cluster_id, 0);
 
     // Update cluster visibility.
@@ -782,7 +782,7 @@ void VisitAnnotationsDatabase::UpdateClusterTriggerability(
       }
     }
 
-    base::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
+    std::ranges::for_each(cluster.visits, [&](const auto& cluster_visit) {
       const auto visit_id = cluster_visit.annotated_visit.visit_row.visit_id;
       DCHECK_GT(visit_id, 0);
       update_cluster_visit_scores_statement.Reset(true);
@@ -941,8 +941,8 @@ ClusterVisit VisitAnnotationsDatabase::GetClusterVisit(VisitID visit_id) {
   cluster_visit.score = static_cast<float>(statement.ColumnDouble(2));
   cluster_visit.engagement_score =
       static_cast<float>(statement.ColumnDouble(3));
-  cluster_visit.url_for_deduping = GURL(statement.ColumnString(4));
-  cluster_visit.normalized_url = GURL(statement.ColumnString(5));
+  cluster_visit.url_for_deduping = GURL(statement.ColumnStringView(4));
+  cluster_visit.normalized_url = GURL(statement.ColumnStringView(5));
   cluster_visit.url_for_display = statement.ColumnString16(6);
   cluster_visit.interaction_state =
       InteractionStateFromInt(statement.ColumnInt(7));
@@ -1123,348 +1123,9 @@ void VisitAnnotationsDatabase::UpdateVisitsInteractionState(
   }
 }
 
-bool VisitAnnotationsDatabase::MigrateFlocAllowedToAnnotationsTable() {
-  if (!GetDB().DoesTableExist("content_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " content_annotations table should exist before migration";
-    return false;
-  }
-
-  // Not all version 43 history has the content_annotations table. So at this
-  // point the content_annotations table may already have been initialized with
-  // the latest version with an annotation_flags column.
-  if (!GetDB().DoesColumnExist("content_annotations", "annotation_flags")) {
-    // Add an annotation_flags column to the content_annotations table.
-    if (!GetDB().Execute("ALTER TABLE content_annotations ADD COLUMN "
-                         "annotation_flags INTEGER DEFAULT 0 NOT NULL")) {
-      return false;
-    }
-  }
-
-  // If there's a matching visit entry in the content_annotations table, migrate
-  // the publicly_routable field from the visit entry to the
-  // annotation_flags field of the annotation entry.
-  if (!GetDB().Execute("UPDATE content_annotations "
-                       "SET annotation_flags=1 "
-                       "FROM visits "
-                       "WHERE visits.id=content_annotations.visit_id AND "
-                       "visits.publicly_routable")) {
-    return false;
-  }
-
-  // Migrate all publicly_routable visit entries that don't have a matching
-  // entry in the content_annotations table. The rest of the fields are set to
-  // their default value.
-  if (!GetDB().Execute("INSERT OR IGNORE INTO content_annotations"
-                       "(visit_id,floc_protected_score,categories,"
-                       "page_topics_model_version,annotation_flags)"
-                       "SELECT id,-1,'',-1,1 FROM visits "
-                       "WHERE visits.publicly_routable")) {
-    return false;
-  }
-
-  return true;
-}
-
-bool VisitAnnotationsDatabase::MigrateReplaceClusterVisitsTable() {
-  // We don't need to actually copy values from the previous table; it was only
-  // rolled out behind a flag.
-  return !GetDB().DoesTableExist("cluster_visits") ||
-         GetDB().Execute("DROP TABLE cluster_visits");
-}
-
-bool VisitAnnotationsDatabase::
-    MigrateContentAnnotationsWithoutEntitiesColumn() {
-  if (!GetDB().DoesTableExist("content_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Content annotations table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("content_annotations", "entities"))
-    return true;
-
-  // Old versions don't have the entities column, we modify the table to add
-  // that field.
-  return GetDB().Execute(
-      "ALTER TABLE content_annotations "
-      "ADD COLUMN entities VARCHAR");
-}
-
-bool VisitAnnotationsDatabase::
-    MigrateContentAnnotationsAddRelatedSearchesColumn() {
-  if (!GetDB().DoesTableExist("content_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Content annotations table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("content_annotations", "related_searches"))
-    return true;
-
-  // Add the `related_searches` column to the older versions of the table.
-  return GetDB().Execute(
-      "ALTER TABLE content_annotations "
-      "ADD COLUMN related_searches VARCHAR");
-}
-
-bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddVisibilityScore() {
-  if (!GetDB().DoesTableExist("content_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Content annotations table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("content_annotations", "visibility_score"))
-    return true;
-  return GetDB().Execute(
-      "ALTER TABLE content_annotations "
-      "ADD COLUMN visibility_score NUMERIC DEFAULT -1");
-}
-
-bool VisitAnnotationsDatabase::
-    MigrateContextAnnotationsAddTotalForegroundDuration() {
-  if (!GetDB().DoesTableExist("context_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Context annotations table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("context_annotations",
-                              "total_foreground_duration"))
-    return true;
-  // 1000000us = 1s which is the default duration for this DB.
-  return GetDB().Execute(
-      "ALTER TABLE context_annotations "
-      "ADD COLUMN total_foreground_duration NUMERIC DEFAULT -1000000");
-}
-
-bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddSearchMetadata() {
-  if (!GetDB().DoesTableExist("content_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Content annotations table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("content_annotations", "search_normalized_url") &&
-      GetDB().DoesColumnExist("content_annotations", "search_terms")) {
-    return true;
-  }
-
-  // Add the `search_normalized_url` and `search_terms` columns to the older
-  // versions of the table.
-  return GetDB().Execute(
-      "ALTER TABLE content_annotations "
-      "ADD COLUMN search_normalized_url; \n"
-      "ALTER TABLE content_annotations ADD COLUMN search_terms LONGVARCHAR");
-}
-
-bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddAlternativeTitle() {
-  if (!GetDB().DoesTableExist("content_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << "Content annotations table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("content_annotations", "alternative_title"))
-    return true;
-
-  // Add the `alternative_title`column to the older versions of the table.
-  return GetDB().Execute(
-      "ALTER TABLE content_annotations "
-      "ADD COLUMN alternative_title");
-}
-
-bool VisitAnnotationsDatabase::MigrateClustersAddColumns() {
-  // Don't need to actually copy values from the previous table; it was never
-  // populated
-  return (!GetDB().DoesTableExist("clusters") ||
-          GetDB().Execute("DROP TABLE clusters")) &&
-         (!GetDB().DoesTableExist("clusters_and_visits") ||
-          GetDB().Execute("DROP TABLE clusters_and_visits")) &&
-         CreateClustersTable() && CreateClustersAndVisitsTableAndIndex();
-}
-
-bool VisitAnnotationsDatabase::MigrateAnnotationsAddColumnsForSync() {
-  if (!GetDB().DoesTableExist("context_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Context annotations table should exist before migration";
-    return false;
-  }
-
-  // Context annotation columns:
-
-  if (!GetDB().DoesColumnExist("context_annotations", "browser_type")) {
-    if (!GetDB().Execute(
-            "ALTER TABLE context_annotations "
-            "ADD COLUMN browser_type INTEGER DEFAULT 0 NOT NULL")) {
-      return false;
-    }
-  }
-
-  if (!GetDB().DoesColumnExist("context_annotations", "window_id")) {
-    if (!GetDB().Execute("ALTER TABLE context_annotations "
-                         "ADD COLUMN window_id INTEGER DEFAULT -1 NOT NULL")) {
-      return false;
-    }
-  }
-
-  if (!GetDB().DoesColumnExist("context_annotations", "tab_id")) {
-    if (!GetDB().Execute("ALTER TABLE context_annotations "
-                         "ADD COLUMN tab_id INTEGER DEFAULT -1 NOT NULL")) {
-      return false;
-    }
-  }
-
-  if (!GetDB().DoesColumnExist("context_annotations", "task_id")) {
-    if (!GetDB().Execute("ALTER TABLE context_annotations "
-                         "ADD COLUMN task_id INTEGER DEFAULT -1 NOT NULL")) {
-      return false;
-    }
-  }
-
-  if (!GetDB().DoesColumnExist("context_annotations", "root_task_id")) {
-    if (!GetDB().Execute(
-            "ALTER TABLE context_annotations "
-            "ADD COLUMN root_task_id INTEGER DEFAULT -1 NOT NULL")) {
-      return false;
-    }
-  }
-
-  if (!GetDB().DoesColumnExist("context_annotations", "parent_task_id")) {
-    if (!GetDB().Execute(
-            "ALTER TABLE context_annotations "
-            "ADD COLUMN parent_task_id INTEGER DEFAULT -1 NOT NULL")) {
-      return false;
-    }
-  }
-
-  if (!GetDB().DoesColumnExist("context_annotations", "response_code")) {
-    if (!GetDB().Execute(
-            "ALTER TABLE context_annotations "
-            "ADD COLUMN response_code INTEGER DEFAULT 0 NOT NULL")) {
-      return false;
-    }
-  }
-
-  // Content annotation columns:
-
-  if (!GetDB().DoesColumnExist("content_annotations", "page_language")) {
-    if (!GetDB().Execute("ALTER TABLE content_annotations "
-                         "ADD COLUMN page_language VARCHAR")) {
-      return false;
-    }
-  }
-
-  if (!GetDB().DoesColumnExist("content_annotations", "password_state")) {
-    if (!GetDB().Execute(
-            "ALTER TABLE content_annotations "
-            "ADD COLUMN password_state INTEGER DEFAULT 0 NOT NULL")) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool VisitAnnotationsDatabase::MigrateClustersAddTriggerabilityCalculated() {
-  if (!GetDB().DoesTableExist("clusters")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Clusters table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("clusters", "triggerability_calculated")) {
-    return true;
-  }
-  // Set default to true, as clusters added to this table prior to this column
-  // getting added are the fully formed clusters rather than just the basic
-  // ones.
-  return GetDB().Execute(
-      "ALTER TABLE clusters "
-      "ADD COLUMN triggerability_calculated BOOL DEFAULT TRUE");
-}
-
-bool VisitAnnotationsDatabase::
-    MigrateClustersAutoincrementIdAndAddOriginatorColumns() {
-  if (!GetDB().DoesTableExist("clusters")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Clusters table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("clusters", "originator_cache_guid") &&
-      GetDB().DoesColumnExist("clusters", "originator_cluster_id") &&
-      ClustersTableContainsAutoincrement()) {
-    return true;
-  }
-
-  sql::Transaction transaction(&GetDB());
-  return transaction.Begin() &&
-         GetDB().Execute(
-             "CREATE TABLE clusters_tmp("
-             "cluster_id INTEGER PRIMARY KEY AUTOINCREMENT,"
-             "should_show_on_prominent_ui_surfaces BOOLEAN NOT NULL,"
-             "label VARCHAR NOT NULL,"
-             "raw_label VARCHAR NOT NULL,"
-             "triggerability_calculated BOOLEAN NOT NULL,"
-             "originator_cache_guid TEXT DEFAULT \"\" NOT NULL,"
-             "originator_cluster_id INTEGER DEFAULT 0 NOT NULL)") &&
-         GetDB().Execute(
-             "INSERT INTO clusters_tmp("
-             "cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label,"
-             "triggerability_calculated)"
-             "SELECT "
-             "cluster_id,should_show_on_prominent_ui_surfaces,label,raw_label,"
-             "triggerability_calculated FROM clusters") &&
-         GetDB().Execute("DROP TABLE clusters") &&
-         GetDB().Execute("ALTER TABLE clusters_tmp RENAME TO clusters") &&
-         transaction.Commit();
-}
-
-bool VisitAnnotationsDatabase::ClustersTableContainsAutoincrement() {
-  // sqlite_schema has columns:
-  //   type - "index" or "table".
-  //   name - name of created element.
-  //   tbl_name - name of element, or target table in case of index.
-  //   rootpage - root page of the element in database file.
-  //   sql - SQL to create the element.
-  sql::Statement statement(
-      GetDB().GetUniqueStatement("SELECT sql FROM sqlite_schema WHERE type = "
-                                 "'table' AND name = 'clusters'"));
-
-  // clusters table does not exist.
-  if (!statement.Step()) {
-    return false;
-  }
-
-  std::string clusters_schema = statement.ColumnString(0);
-  // We check if the whole schema contains "AUTOINCREMENT", since
-  // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
-  // other columns could contain "AUTOINCREMENT".
-  return clusters_schema.find("AUTOINCREMENT") != std::string::npos;
-}
-
-bool VisitAnnotationsDatabase::MigrateContentAnnotationsAddHasUrlKeyedImage() {
-  if (!GetDB().DoesTableExist("content_annotations")) {
-    NOTREACHED_IN_MIGRATION()
-        << " Content annotations table should exist before migration";
-    return false;
-  }
-
-  if (GetDB().DoesColumnExist("content_annotations", "has_url_keyed_image")) {
-    return true;
-  }
-  return GetDB().Execute(
-      "ALTER TABLE content_annotations "
-      "ADD COLUMN has_url_keyed_image BOOLEAN DEFAULT false NOT NULL");
-}
-
 bool VisitAnnotationsDatabase::MigrateClustersAndVisitsAddInteractionState() {
   if (!GetDB().DoesTableExist("clusters_and_visits")) {
-    NOTREACHED_IN_MIGRATION()
-        << "clusters_and_visits table should exist before migration";
-    return false;
+    NOTREACHED() << "clusters_and_visits table should exist before migration";
   }
 
   if (GetDB().DoesColumnExist("clusters_and_visits", "interaction_state")) {
@@ -1528,7 +1189,7 @@ std::string VisitAnnotationsDatabase::ConvertCategoriesToStringColumn(
 // functions should not be changed.
 std::vector<VisitContentModelAnnotations::Category>
 VisitAnnotationsDatabase::GetCategoriesFromStringColumn(
-    const std::string& column_value) {
+    std::string_view column_value) {
   std::vector<VisitContentModelAnnotations::Category> categories;
 
   std::vector<std::string> category_strings = base::SplitString(
@@ -1560,7 +1221,7 @@ std::string VisitAnnotationsDatabase::SerializeToStringColumn(
 // format is already being synced, the implementation of these functions
 // should not be changed.
 std::vector<std::string> VisitAnnotationsDatabase::DeserializeFromStringColumn(
-    const std::string& column_value) {
+    std::string_view column_value) {
   using std::string_literals::operator""s;
   return base::SplitString(column_value, "\0"s, base::TRIM_WHITESPACE,
                            base::SPLIT_WANT_NONEMPTY);

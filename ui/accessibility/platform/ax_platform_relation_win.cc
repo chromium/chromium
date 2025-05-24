@@ -11,23 +11,11 @@
 
 #include <wrl/client.h>
 
-#include <algorithm>
 #include <vector>
 
-#include "base/lazy_instance.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/win/enum_variant.h"
-#include "base/win/scoped_variant.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
-#include "third_party/skia/include/core/SkColor.h"
-#include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_mode_observer.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_role_properties.h"
-#include "ui/accessibility/ax_text_utils.h"
-#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/win/atl_module.h"
@@ -119,9 +107,9 @@ int AXPlatformRelationWin::EnumerateRelationships(
   // GetIA2ReverseRelationFrom{Int|IntList}Attr on every possible attribute
   // simplifies the work needed to support an additional relation
   // attribute in the future.
-  static std::vector<ax::mojom::IntAttribute>
+  static base::NoDestructor<std::vector<ax::mojom::IntAttribute>>
       int_attributes_with_reverse_relations;
-  static std::vector<ax::mojom::IntListAttribute>
+  static base::NoDestructor<std::vector<ax::mojom::IntListAttribute>>
       intlist_attributes_with_reverse_relations;
   static bool first_time = true;
   if (first_time) {
@@ -131,7 +119,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
          ++attr_index) {
       auto attr = static_cast<ax::mojom::IntAttribute>(attr_index);
       if (!GetIA2ReverseRelationFromIntAttr(attr).empty())
-        int_attributes_with_reverse_relations.push_back(attr);
+        int_attributes_with_reverse_relations->push_back(attr);
     }
     for (int32_t attr_index =
              static_cast<int32_t>(ax::mojom::IntListAttribute::kNone);
@@ -140,7 +128,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
          ++attr_index) {
       auto attr = static_cast<ax::mojom::IntListAttribute>(attr_index);
       if (!GetIA2ReverseRelationFromIntListAttr(attr).empty())
-        intlist_attributes_with_reverse_relations.push_back(attr);
+        intlist_attributes_with_reverse_relations->push_back(attr);
     }
     first_time = false;
   }
@@ -176,7 +164,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
   // Iterate over all of the int attributes that have reverse relations
   // in IAccessible2, and query AXTree to see if the reverse relation exists.
   for (ax::mojom::IntAttribute int_attribute :
-       int_attributes_with_reverse_relations) {
+       *int_attributes_with_reverse_relations) {
     std::wstring relation = GetIA2ReverseRelationFromIntAttr(int_attribute);
     std::vector<AXPlatformNode*> targets =
         delegate->GetSourceNodesForReverseRelations(int_attribute);
@@ -214,7 +202,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
   // Iterate over all of the intlist attributes that have reverse relations
   // in IAccessible2, and query AXTree to see if the reverse relation exists.
   for (ax::mojom::IntListAttribute intlist_attribute :
-       intlist_attributes_with_reverse_relations) {
+       *intlist_attributes_with_reverse_relations) {
     std::wstring relation =
         GetIA2ReverseRelationFromIntListAttr(intlist_attribute);
     std::vector<AXPlatformNode*> targets =

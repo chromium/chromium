@@ -12,36 +12,32 @@ import sys
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('mapping_file',
-                        help='Path to .mapping file within out/Release/apks.')
+    parser.add_argument('output_file',
+                        help='Path to .dex.jar or .mapping file within out/')
     parser.add_argument('--build',
                         action='store_true',
-                        help='Whether to try compiling the mapping file first.')
+                        help='Whether to try compile first.')
     args = parser.parse_args()
 
-    if not args.mapping_file.endswith('.mapping'):
-        sys.stderr.write('Expected argument to end with .mapping')
-        sys.exit(1)
-
     # Find directory with "build.ninja" in it.
-    build_dir = os.path.dirname(args.mapping_file) or '.'
+    build_dir = os.path.dirname(args.output_file) or '.'
     for _ in range(50):  # Prevent infinite loop.
         if os.path.exists(os.path.join(build_dir, 'build.ninja')):
             break
         build_dir = os.path.dirname(build_dir) or '.'
 
-    mapping_file = os.path.relpath(args.mapping_file, build_dir)
+    output_file = os.path.relpath(args.output_file, build_dir)
 
     if args.build:
         # autoninja so it builds under RBE
-        build_cmd = ['autoninja', '-C', build_dir, mapping_file]
+        build_cmd = ['autoninja', '-C', build_dir, output_file]
         print('Running:', ' '.join(build_cmd))
         subprocess.run(build_cmd)
 
     command = subprocess.check_output(
-        ['ninja', '-C', build_dir, '-t', 'commands', '-s', mapping_file],
+        ['ninja', '-C', build_dir, '-t', 'commands', '-s', output_file],
         encoding='utf8').rstrip()
-    if 'proguard.py' not in command:
+    if 'proguard.py' not in command and 'dex.py' not in command:
         sys.stderr.write('Unexpected: {command}\n')
         sys.exit(1)
 

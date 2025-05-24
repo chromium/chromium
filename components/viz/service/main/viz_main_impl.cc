@@ -80,9 +80,9 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
   // Null hypothesis finch testing. This code has no functional purpose.
   // See: crbug.com/354724066
   if (base::FeatureList::IsEnabled(features::kVizNullHypothesis)) {
-    LOG(WARNING) << "VizNullHypothesis is enabled (not a warning)";
+    VLOG(1) << "VizNullHypothesis is enabled (not a warning)";
   } else {
-    LOG(WARNING) << "VizNullHypothesis is disabled (not a warning)";
+    VLOG(1) << "VizNullHypothesis is disabled (not a warning)";
   }
   // TODO(crbug.com/41252481): Remove this when Mus Window Server and GPU are
   // split into separate processes. Until then this is necessary to be able to
@@ -95,9 +95,12 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
   if (!dependencies_.io_thread_task_runner)
     io_thread_ = CreateAndStartIOThread();
 
-  if (dependencies_.viz_compositor_thread_runner) {
-    viz_compositor_thread_runner_ = dependencies_.viz_compositor_thread_runner;
-  } else {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the compositor thread runner may be created externally and
+  // passed in (in particular, for WebView).
+  viz_compositor_thread_runner_ = dependencies_.viz_compositor_thread_runner;
+#endif
+  if (!viz_compositor_thread_runner_) {
     viz_compositor_thread_runner_impl_ =
         std::make_unique<VizCompositorThreadRunnerImpl>();
     viz_compositor_thread_runner_ = viz_compositor_thread_runner_impl_.get();
@@ -121,8 +124,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
 #if BUILDFLAG(SKIA_USE_DAWN)
   init_params.dawn_context_provider = gpu_init_->TakeDawnContextProvider();
 #endif
-  init_params.exit_callback =
-      base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this));
 
   init_params.vulkan_implementation = gpu_init_->vulkan_implementation();
   gpu_service_ = std::make_unique<GpuServiceImpl>(
@@ -168,7 +169,8 @@ void VizMainImpl::CreateGpuService(
     mojo::PendingRemote<
         discardable_memory::mojom::DiscardableSharedMemoryManager>
         discardable_memory_manager,
-    base::UnsafeSharedMemoryRegion use_shader_cache_shm_region) {
+    base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
+    mojom::GpuServiceCreationParamsPtr params) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
 
   mojo::Remote<mojom::GpuHost> gpu_host(std::move(pending_gpu_host));
@@ -197,12 +199,22 @@ void VizMainImpl::CreateGpuService(
         discardable_shared_memory_manager_.get());
   }
 
+#if BUILDFLAG(IS_ANDROID)
   gpu_service_->InitializeWithHost(
       gpu_host.Unbind(),
       gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
-      gpu_init_->TakeDefaultOffscreenSurface(),
+      gpu_init_->TakeDefaultOffscreenSurface(), std::move(params),
       dependencies_.sync_point_manager, dependencies_.shared_image_manager,
-      dependencies_.scheduler, dependencies_.shutdown_event);
+      dependencies_.scheduler, dependencies_.shutdown_event,
+      dependencies_.gr_context_options_provider);
+#else
+  gpu_service_->InitializeWithHost(
+      gpu_host.Unbind(),
+      gpu::GpuProcessShmCount(std::move(use_shader_cache_shm_region)),
+      gpu_init_->TakeDefaultOffscreenSurface(), std::move(params),
+      dependencies_.shutdown_event);
+#endif
+
   gpu_service_->Bind(std::move(pending_receiver));
 
   {
@@ -210,8 +222,15 @@ void VizMainImpl::CreateGpuService(
     // These are the viz threads that are on the critical path of all frames.
     base::flat_set<base::PlatformThreadId> gpu_process_thread_ids;
 
-    // Add the current (GPU Main) thread and Compositor GPU thread IDs.
-    gpu_process_thread_ids.insert(base::PlatformThread::CurrentId());
+    // Add the current (GPU Main, or in-process GPU) thread and Compositor GPU
+    // thread IDs.
+    base::PlatformThreadId main_thread_id = base::PlatformThread::CurrentId();
+    gpu_process_thread_ids.insert(main_thread_id);
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(::features::kWebViewEnableADPFGpuMain)) {
+      viz_compositor_thread_runner_->SetGpuMainThreadId(main_thread_id);
+    }
+#endif
 
     CompositorGpuThread* compositor_gpu_thread =
         gpu_service_->compositor_gpu_thread();

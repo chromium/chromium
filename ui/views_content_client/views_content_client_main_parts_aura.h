@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/views_content_client/views_content_client_main_parts.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 namespace wm {
 class WMState;
 }
@@ -35,7 +34,7 @@ class ViewsContentClientMainPartsAura : public ViewsContentClientMainParts {
   void PostMainMessageLoopRun() override;
 
  private:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<::wm::WMState> wm_state_;
 #endif
 };

@@ -75,11 +75,12 @@ class LineWrapperTest(unittest.TestCase):
 
     def testWrapWithIndent(self):
         lw = mojofmt.LineWrapper(base_indent=2)
-        data = ('array<blink.mojom.ParsedPermissionsPolicyDeclaration> ' +
+        data = ('array<network.mojom.ParsedPermissionsPolicyDeclaration> ' +
                 'permissions_policy_header;')
         lw.write(data)
-        expected = ('  array<blink.mojom.ParsedPermissionsPolicyDeclaration>' +
-                    '\n      permissions_policy_header;')
+        expected = (
+            '  array<network.mojom.ParsedPermissionsPolicyDeclaration>' +
+            '\n      permissions_policy_header;')
         self.assertEqual(expected, lw.finish())
 
     def testAlreadyIndented(self):

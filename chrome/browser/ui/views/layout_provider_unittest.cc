@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/chrome_typography_provider.h"
@@ -40,6 +36,10 @@
 #include "ui/gfx/system_fonts_win.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/ash_typography.h"
+#endif
+
 namespace {
 
 // The default system font name.
@@ -53,7 +53,7 @@ constexpr int kHarmonyTitleSize = 15;
 
 class LayoutProviderTest : public testing::Test {
  public:
-  LayoutProviderTest() {}
+  LayoutProviderTest() = default;
 
   LayoutProviderTest(const LayoutProviderTest&) = delete;
   LayoutProviderTest& operator=(const LayoutProviderTest&) = delete;
@@ -317,10 +317,6 @@ TEST_F(LayoutProviderTest, FontSizeRelativeToBase) {
             typography_provider.GetFont(views::style::CONTEXT_BUTTON, kStyle)
                 .GetFontSize());
 
-  // E.g. Headline should give a 20pt font.
-  EXPECT_EQ(
-      twelve + 8,
-      typography_provider.GetFont(CONTEXT_HEADLINE, kStyle).GetFontSize());
   // Titles should be 15pt. Etc.
   EXPECT_EQ(twelve + 3, typography_provider
                             .GetFont(views::style::CONTEXT_DIALOG_TITLE, kStyle)
@@ -342,15 +338,20 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
   std::unique_ptr<views::LayoutProvider> layout_provider =
       ChromeLayoutProvider::CreateLayoutProvider();
 
-  constexpr struct {
+  struct Increases {
     int context;
     int min;
     int max;
-  } kExpectedIncreases[] = {{CONTEXT_HEADLINE, 4, 8},
-                            {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
-                            {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
-                            {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
-                            {views::style::CONTEXT_BUTTON_MD, -2, 1}};
+  };
+
+  static constexpr auto kExpectedIncreases =
+      std::to_array<Increases>({{views::style::CONTEXT_DIALOG_TITLE, 1, 4},
+                                {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
+                                {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
+#if BUILDFLAG(IS_CHROMEOS)
+                                {ash::CONTEXT_HEADLINE, 4, 8},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+                                {views::style::CONTEXT_BUTTON_MD, -2, 1}});
 
   const auto& typography_provider = views::TypographyProvider::Get();
   for (size_t i = 0; i < std::size(kExpectedIncreases); ++i) {
@@ -381,15 +382,19 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
   }
 
   // Line heights from the Harmony spec.
-  constexpr int kBodyLineHeight = 20;
-  constexpr struct {
+  struct HarmonyHeight {
     int context;
     int line_height;
-  } kHarmonyHeights[] = {
-      {CONTEXT_HEADLINE, 32},
-      {views::style::CONTEXT_DIALOG_TITLE, 22},
-      {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
-      {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}};
+  };
+
+  constexpr int kBodyLineHeight = 20;
+  static constexpr auto kHarmonyHeights = std::to_array<HarmonyHeight>(
+      {{views::style::CONTEXT_DIALOG_TITLE, 22},
+       {views::style::CONTEXT_DIALOG_BODY_TEXT, kBodyLineHeight},
+#if BUILDFLAG(IS_CHROMEOS)
+       {ash::CONTEXT_HEADLINE, 32},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+       {CONTEXT_DIALOG_BODY_TEXT_SMALL, kBodyLineHeight}});
 
   for (size_t i = 0; i < std::size(kHarmonyHeights); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);
@@ -427,7 +432,7 @@ TEST_F(LayoutProviderTest, ExplicitTypographyLineHeight) {
 // versions, but on ChromeOS, there is only one OS version, so we can rely on
 // consistent behavior. Also ChromeOS is the only place where
 // IDS_UI_FONT_FAMILY_CROS works, which this test uses to control results.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Ensure the omnibox font is always 14pt, even in Hebrew. On ChromeOS, Hebrew
 // has a larger default font size applied from the resource bundle, but the
@@ -461,8 +466,9 @@ TEST_F(LayoutProviderTest, OmniboxFontAlways14) {
   for (; latin_height_threshold > 0; --latin_height_threshold) {
     if (kOmniboxDesiredSize - base_font_size !=
         GetFontSizeDeltaBoundedByAvailableHeight(latin_height_threshold,
-                                                 kOmniboxDesiredSize))
+                                                 kOmniboxDesiredSize)) {
       break;
+    }
   }
   // The threshold should always be the same, but the value depends on font
   // metrics. Check for some sane value. This should only change if Roboto
@@ -483,4 +489,4 @@ TEST_F(LayoutProviderTest, OmniboxFontAlways14) {
                                                      kDecorationRequestedSize));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

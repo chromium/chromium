@@ -37,8 +37,7 @@ class SVGResource;
 
 class CORE_EXPORT CSSImageValue : public CSSValue {
  public:
-  CSSImageValue(CSSUrlData url_data,
-                StyleImage* image = nullptr);
+  CSSImageValue(const CSSUrlData& url_data, StyleImage* image = nullptr);
   ~CSSImageValue();
 
   bool IsCachePending() const { return !cached_image_; }
@@ -55,9 +54,10 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
       CrossOriginAttributeValue = kCrossOriginAttributeNotSet,
       const float override_image_resolution = 0.0f);
 
-  const String& RelativeUrl() const { return url_data_.UnresolvedUrl(); }
+  const String& RelativeUrl() const { return UrlData().UnresolvedUrl(); }
   bool IsLocal(const Document&) const;
   AtomicString NormalizedFragmentIdentifier() const;
+  const CSSUrlData& UrlData() const { return *url_data_; }
 
   void ReResolveURL(const Document&) const;
 
@@ -68,13 +68,12 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   bool Equals(const CSSImageValue&) const;
 
   CSSImageValue* ComputedCSSValue() const {
-    return MakeGarbageCollected<CSSImageValue>(url_data_.MakeAbsolute(),
+    return MakeGarbageCollected<CSSImageValue>(*UrlData().MakeComputed(),
                                                cached_image_.Get());
   }
-  CSSImageValue* ComputedCSSValueMaybeLocal() const;
 
   CSSImageValue* Clone() const {
-    return MakeGarbageCollected<CSSImageValue>(url_data_.MakeWithoutReferrer(),
+    return MakeGarbageCollected<CSSImageValue>(*UrlData().MakeWithoutReferrer(),
                                                cached_image_.Get());
   }
 
@@ -85,8 +84,8 @@ class CORE_EXPORT CSSImageValue : public CSSValue {
   SVGResource* EnsureSVGResource() const;
 
  private:
-  CSSUrlData url_data_;
   AtomicString initiator_name_;
+  const Member<const CSSUrlData> url_data_;
 
   // Cached image data.
   mutable Member<StyleImage> cached_image_;

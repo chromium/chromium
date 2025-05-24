@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVPassword;
 
 // Protocol to receive change notifications from CWVAutofillDataManager.
-@protocol CWVAutofillDataManagerObserver<NSObject>
+@protocol CWVAutofillDataManagerObserver <NSObject>
 
 // Called whenever CWVAutofillDataManager's autofill profiles or credit cards
 // have been loaded for the first time, added, deleted, or updated.

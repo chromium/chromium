@@ -94,7 +94,6 @@ class IPAddressBytes {
   }
 
   bool operator<(const IPAddressBytes& other) const;
-  bool operator!=(const IPAddressBytes& other) const;
   bool operator==(const IPAddressBytes& other) const;
 
   size_t EstimateMemoryUsage() const;
@@ -219,8 +218,7 @@ class IPAddress {
   // Returns an IPAddress instance representing the :: address.
   static IPAddress IPv6AllZeros();
 
-  bool operator==(const IPAddress& that) const;
-  bool operator!=(const IPAddress& that) const;
+  friend bool operator==(const IPAddress&, const IPAddress&) = default;
   bool operator<(const IPAddress& that) const;
 
   // Must be a valid address (per IsValid()).

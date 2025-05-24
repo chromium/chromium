@@ -9,7 +9,7 @@ import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/c
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {AppInfo, ClickEvent} from './app_home.mojom-webui.js';
-import {RunOnOsLoginMode} from './app_home.mojom-webui.js';
+import {AppType, RunOnOsLoginMode} from './app_home.mojom-webui.js';
 import {AppHomeUserAction, recordUserAction} from './app_home_utils.js';
 import {getCss} from './app_item.css.js';
 import {getHtml} from './app_item.html.js';
@@ -42,7 +42,8 @@ export class AppItemElement extends CrLitElement {
     };
   }
 
-  appInfo: AppInfo = {
+  accessor appInfo: AppInfo = {
+    appType: AppType.kWebApp,
     id: '',
     startUrl: {url: ''},
     name: '',
@@ -53,7 +54,6 @@ export class AppItemElement extends CrLitElement {
     isLocallyInstalled: false,
     openInWindow: false,
     mayUninstall: false,
-    isDeprecatedApp: false,
     storePageUrl: {url: ''},
   };
 
@@ -88,9 +88,8 @@ export class AppItemElement extends CrLitElement {
   }
 
   private isValidPosition(position: any) {
-    const rect =
-        this.shadowRoot!.getElementById(
-                            'objectContainer')!.getBoundingClientRect();
+    const rect = this.shadowRoot.getElementById(
+                                    'objectContainer')!.getBoundingClientRect();
     if (!rect) {
       return false;
     }
@@ -107,9 +106,8 @@ export class AppItemElement extends CrLitElement {
       // Events other than a MouseEvent do not have locations specified, so
       // automatically default to the middle of the icon for the context menu to
       // show up.
-      const rect =
-          this.shadowRoot!.getElementById(
-                              'iconContainer')!.getBoundingClientRect();
+      const rect = this.shadowRoot.getElementById(
+                                      'iconContainer')!.getBoundingClientRect();
       if (rect) {
         return {
           top: rect.top + (rect.height / 2),
@@ -137,7 +135,7 @@ export class AppItemElement extends CrLitElement {
       shiftKey: e.shiftKey,
     };
 
-    if (this.appInfo.isDeprecatedApp) {
+    if (this.appInfo.appType === AppType.kDeprecatedChromeApp) {
       recordUserAction(AppHomeUserAction.LAUNCH_DEPRECATED_APP);
     } else {
       recordUserAction(AppHomeUserAction.LAUNCH_WEB_APP);
@@ -179,7 +177,9 @@ export class AppItemElement extends CrLitElement {
   }
 
   protected isOpenInWindowHidden_() {
-    return !this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+    return !this.appInfo.isLocallyInstalled ||
+        this.appInfo.appType === AppType.kDeprecatedChromeApp ||
+        this.appInfo.appType === AppType.kIsolatedWebApp;
   }
 
   protected isLaunchOnStartupDisabled_() {
@@ -188,15 +188,17 @@ export class AppItemElement extends CrLitElement {
 
   protected isLaunchOnStartupHidden_() {
     return !this.appInfo.mayShowRunOnOsLoginMode ||
-        this.appInfo.isDeprecatedApp;
+        this.appInfo.appType === AppType.kDeprecatedChromeApp;
   }
 
   protected isCreateShortcutHidden_() {
-    return !this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+    return !this.appInfo.isLocallyInstalled ||
+        this.appInfo.appType === AppType.kDeprecatedChromeApp;
   }
 
   protected isInstallLocallyHidden_() {
-    return this.appInfo.isLocallyInstalled || this.appInfo.isDeprecatedApp;
+    return this.appInfo.isLocallyInstalled ||
+        this.appInfo.appType === AppType.kDeprecatedChromeApp;
   }
 
   protected isUninstallHidden_() {

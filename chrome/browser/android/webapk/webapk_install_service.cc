@@ -29,7 +29,7 @@ WebApkInstallService::WebApkInstallService(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {}
 
-WebApkInstallService::~WebApkInstallService() {}
+WebApkInstallService::~WebApkInstallService() = default;
 
 bool WebApkInstallService::IsInstallInProgress(const GURL& web_manifest_id) {
   return install_ids_.count(web_manifest_id);
@@ -171,9 +171,7 @@ void WebApkInstallService::HandleFinishInstallNotifications(
                                   result);
   } else {
     JNIEnv* env = base::android::AttachCurrentThread();
-    base::android::ScopedJavaLocalRef<jstring> java_notification_id =
-        base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
-    Java_WebApkInstallService_cancelNotification(env, java_notification_id);
+    Java_WebApkInstallService_cancelNotification(env, notification_id.spec());
   }
 }
 
@@ -185,17 +183,11 @@ void WebApkInstallService::ShowInstallInProgressNotification(
     const SkBitmap& primary_icon,
     bool is_primary_icon_maskable) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> java_notification_id =
-      base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
-  base::android::ScopedJavaLocalRef<jstring> java_short_name =
-      base::android::ConvertUTF16ToJavaString(env, short_name);
-  base::android::ScopedJavaLocalRef<jstring> java_url =
-      base::android::ConvertUTF8ToJavaString(env, url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
       !primary_icon.isNull() ? gfx::ConvertToJavaBitmap(primary_icon) : nullptr;
 
   Java_WebApkInstallService_showInstallInProgressNotification(
-      env, java_notification_id, java_short_name, java_url, java_primary_icon,
+      env, notification_id.spec(), short_name, url.spec(), java_primary_icon,
       is_primary_icon_maskable);
 }
 
@@ -208,19 +200,11 @@ void WebApkInstallService::ShowInstalledNotification(
     bool is_primary_icon_maskable,
     const std::string& webapk_package_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> java_webapk_package =
-      base::android::ConvertUTF8ToJavaString(env, webapk_package_name);
-  base::android::ScopedJavaLocalRef<jstring> java_notification_id =
-      base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
-  base::android::ScopedJavaLocalRef<jstring> java_short_name =
-      base::android::ConvertUTF16ToJavaString(env, short_name);
-  base::android::ScopedJavaLocalRef<jstring> java_url =
-      base::android::ConvertUTF8ToJavaString(env, url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
       !primary_icon.isNull() ? gfx::ConvertToJavaBitmap(primary_icon) : nullptr;
 
   Java_WebApkInstallService_showInstalledNotification(
-      env, java_webapk_package, java_notification_id, java_short_name, java_url,
+      env, webapk_package_name, notification_id.spec(), short_name, url.spec(),
       java_primary_icon, is_primary_icon_maskable);
 }
 
@@ -233,16 +217,10 @@ void WebApkInstallService::ShowInstallFailedNotification(
     bool is_primary_icon_maskable,
     webapps::WebApkInstallResult result) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> java_notification_id =
-      base::android::ConvertUTF8ToJavaString(env, notification_id.spec());
-  base::android::ScopedJavaLocalRef<jstring> java_short_name =
-      base::android::ConvertUTF16ToJavaString(env, short_name);
-  base::android::ScopedJavaLocalRef<jstring> java_url =
-      base::android::ConvertUTF8ToJavaString(env, url.spec());
   base::android::ScopedJavaLocalRef<jobject> java_primary_icon =
       !primary_icon.isNull() ? gfx::ConvertToJavaBitmap(primary_icon) : nullptr;
 
   Java_WebApkInstallService_showInstallFailedNotification(
-      env, java_notification_id, java_short_name, java_url, java_primary_icon,
+      env, notification_id.spec(), short_name, url.spec(), java_primary_icon,
       is_primary_icon_maskable, static_cast<int>(result));
 }

@@ -39,6 +39,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -174,7 +175,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
                   const std::vector<std::string>& cookies) {
     GURL url = test_server()->GetURL(host, "/");
     for (const std::string& cookie : cookies) {
-      content::SetCookie(browser()->profile(), url, cookie);
+      ASSERT_TRUE(content::SetCookie(browser()->profile(), url, cookie));
     }
   }
 

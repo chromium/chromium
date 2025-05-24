@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 
@@ -16,8 +12,9 @@ ContentSettingImageModelStates::~ContentSettingImageModelStates() = default;
 // static
 ContentSettingImageModelStates* ContentSettingImageModelStates::Get(
     content::WebContents* contents) {
-  if (auto* state = FromWebContents(contents))
+  if (auto* state = FromWebContents(contents)) {
     return state;
+  }
   CreateForWebContents(contents);
   return FromWebContents(contents);
 }

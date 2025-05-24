@@ -48,6 +48,10 @@ IN_PROC_BROWSER_TEST_F(InstanceIDApiTest, GetCreationTime) {
   ASSERT_TRUE(RunExtensionTest("instance_id/get_creation_time"));
 }
 
+IN_PROC_BROWSER_TEST_F(InstanceIDApiTest, GetCreationTimeFormat) {
+  ASSERT_TRUE(RunExtensionTest("instance_id/get_creation_time_format"));
+}
+
 IN_PROC_BROWSER_TEST_F(InstanceIDApiTest, DeleteID) {
   ASSERT_TRUE(RunExtensionTest("instance_id/delete_id"));
 }

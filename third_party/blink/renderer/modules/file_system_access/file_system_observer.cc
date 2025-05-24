@@ -5,16 +5,17 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observer.h"
 
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-blink.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_observer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_change_record.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_observer_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_observer_observe_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_error.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_access_manager.h"
-#include "third_party/blink/renderer/modules/file_system_access/file_system_change_record.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_observation_collection.h"
 #include "third_party/blink/renderer/modules/file_system_access/storage_manager_file_system_access.h"
@@ -24,6 +25,70 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+constexpr V8FileSystemChangeType::Enum ToChangeTypeEnum(
+    mojom::blink::FileSystemAccessChangeType::Tag tag) {
+  // This assertion protects against the IDL enum changing without updating the
+  // corresponding mojom interface, while the lack of a default case in the
+  // switch statement below ensures the opposite.
+  static_assert(
+      V8FileSystemChangeType::kEnumSize == 6u,
+      "the number of fields in the FileSystemAccessChangeType mojom union "
+      "must match the number of fields in the FileSystemChangeType blink enum");
+
+  switch (tag) {
+    case mojom::blink::FileSystemAccessChangeType::Data_::
+        FileSystemAccessChangeType_Tag::kAppeared:
+      return V8FileSystemChangeType::Enum::kAppeared;
+    case mojom::blink::FileSystemAccessChangeType::Data_::
+        FileSystemAccessChangeType_Tag::kDisappeared:
+      return V8FileSystemChangeType::Enum::kDisappeared;
+    case mojom::blink::FileSystemAccessChangeType::Data_::
+        FileSystemAccessChangeType_Tag::kErrored:
+      return V8FileSystemChangeType::Enum::kErrored;
+    case mojom::blink::FileSystemAccessChangeType::Data_::
+        FileSystemAccessChangeType_Tag::kModified:
+      return V8FileSystemChangeType::Enum::kModified;
+    case mojom::blink::FileSystemAccessChangeType::Data_::
+        FileSystemAccessChangeType_Tag::kMoved:
+      return V8FileSystemChangeType::Enum::kMoved;
+    case mojom::blink::FileSystemAccessChangeType::Data_::
+        FileSystemAccessChangeType_Tag::kUnknown:
+      return V8FileSystemChangeType::Enum::kUnknown;
+  }
+}
+
+FileSystemChangeRecord* ToChangeRecord(
+    mojom::blink::FileSystemAccessChangePtr& mojo_change,
+    Member<ExecutionContext>& execution_context) {
+  mojom::blink::FileSystemAccessChangeMetadata& metadata =
+      *mojo_change->metadata.get();
+  mojom::blink::FileSystemAccessChangeType& type = *mojo_change->type.get();
+
+  auto* record = FileSystemChangeRecord::Create();
+
+  record->setRoot(FileSystemHandle::CreateFromMojoEntry(
+      std::move(metadata.root), execution_context));
+  record->setRelativePathComponents(std::move(metadata.relative_path));
+  record->setType(ToChangeTypeEnum(type.which()));
+  record->setRelativePathMovedFrom(
+      type.is_moved() ? std::move(type.get_moved()->former_relative_path)
+                      : std::nullopt);
+
+  bool omit_changed_handle =
+      type.is_disappeared() || type.is_errored() || type.is_unknown();
+  record->setChangedHandle(
+      omit_changed_handle
+          ? nullptr
+          : FileSystemHandle::CreateFromMojoEntry(
+                std::move(metadata.changed_entry), execution_context));
+
+  return record;
+}
+
+}  // namespace
 
 // static
 FileSystemObserver* FileSystemObserver::Create(
@@ -64,9 +129,7 @@ FileSystemObserver::FileSystemObserver(
     ExecutionContext* context,
     V8FileSystemObserverCallback* callback,
     mojo::PendingRemote<mojom::blink::FileSystemAccessObserverHost> host_remote)
-    : execution_context_(context),
-      callback_(callback),
-      host_remote_(context) {
+    : execution_context_(context), callback_(callback), host_remote_(context) {
   host_remote_.Bind(std::move(host_remote),
                     execution_context_->GetTaskRunner(TaskType::kStorage));
 }
@@ -188,18 +251,7 @@ void FileSystemObserver::OnFileChanges(
 
   HeapVector<Member<FileSystemChangeRecord>> records;
   for (auto& mojo_change : mojo_changes) {
-    FileSystemHandle* root_handle = FileSystemHandle::CreateFromMojoEntry(
-        std::move(mojo_change->metadata->root), execution_context_);
-    FileSystemHandle* changed_file_handle =
-        FileSystemHandle::CreateFromMojoEntry(
-            std::move(mojo_change->metadata->changed_entry),
-            execution_context_);
-
-    auto* record = MakeGarbageCollected<FileSystemChangeRecord>(
-        root_handle, changed_file_handle,
-        std::move(mojo_change->metadata->relative_path),
-        std::move(mojo_change->type));
-    records.push_back(record);
+    records.push_back(ToChangeRecord(mojo_change, execution_context_));
   }
 
   callback_->InvokeAndReportException(this, std::move(records), this);

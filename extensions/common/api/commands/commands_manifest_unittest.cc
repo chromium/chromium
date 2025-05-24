@@ -12,6 +12,7 @@
 #include "extensions/common/manifest_test.h"
 #include "extensions/common/warnings_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/command.h"
 
 namespace extensions {
 
@@ -48,11 +49,12 @@ TEST_F(CommandsManifestTest, CommandManifestParseCommandsBrowserAction) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  const ui::CommandMap* commands =
+      CommandsInfo::GetNamedCommands(extension.get());
   ASSERT_TRUE(commands);
   EXPECT_EQ(1u, commands->size());
   auto iter = commands->begin();
-  const Command* named_command = &(*iter).second;
+  const ui::Command* named_command = &(*iter).second;
   EXPECT_EQ("feature1", named_command->command_name());
   EXPECT_EQ(u"desc", named_command->description());
   const ui::Accelerator ctrl_shift_f =
@@ -96,11 +98,12 @@ TEST_F(CommandsManifestTest, CommandManifestParseCommandsPageAction) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  const ui::CommandMap* commands =
+      CommandsInfo::GetNamedCommands(extension.get());
   ASSERT_TRUE(commands);
   EXPECT_EQ(1u, commands->size());
   auto iter = commands->begin();
-  const Command* named_command = &(*iter).second;
+  const ui::Command* named_command = &(*iter).second;
   EXPECT_EQ("feature1", named_command->command_name());
   EXPECT_EQ(u"desc", named_command->description());
 
@@ -140,11 +143,12 @@ TEST_F(CommandsManifestTest, CommandManifestParseCommandsAction) {
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  const ui::CommandMap* commands =
+      CommandsInfo::GetNamedCommands(extension.get());
   ASSERT_TRUE(commands);
   EXPECT_EQ(1u, commands->size());
   auto iter = commands->begin();
-  const Command* named_command = &(*iter).second;
+  const ui::Command* named_command = &(*iter).second;
   EXPECT_EQ("feature1", named_command->command_name());
   EXPECT_EQ(u"desc", named_command->description());
 
@@ -182,11 +186,12 @@ TEST_F(CommandsManifestTest,
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  const ui::CommandMap* commands =
+      CommandsInfo::GetNamedCommands(extension.get());
   ASSERT_TRUE(commands);
   EXPECT_EQ(1u, commands->size());
   auto iter = commands->begin();
-  const Command* named_command = &(*iter).second;
+  const ui::Command* named_command = &(*iter).second;
   EXPECT_EQ("feature1", named_command->command_name());
   EXPECT_EQ(u"desc", named_command->description());
 
@@ -223,11 +228,12 @@ TEST_F(CommandsManifestTest,
       LoadAndExpectSuccess(ManifestData::FromJSON(kManifest));
   ASSERT_TRUE(extension.get());
 
-  const CommandMap* commands = CommandsInfo::GetNamedCommands(extension.get());
+  const ui::CommandMap* commands =
+      CommandsInfo::GetNamedCommands(extension.get());
   ASSERT_TRUE(commands);
   EXPECT_EQ(1u, commands->size());
   auto iter = commands->begin();
-  const Command* named_command = &(*iter).second;
+  const ui::Command* named_command = &(*iter).second;
   EXPECT_EQ("feature1", named_command->command_name());
   EXPECT_EQ(u"desc", named_command->description());
 

@@ -69,7 +69,8 @@
           "builder": "gpu-fyi-try-linux-intel-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux FYI Release (Intel UHD 630)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

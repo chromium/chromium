@@ -83,6 +83,7 @@ class FakePageLoadMetricsObserverDelegate
   bool IsFirstNavigationInWebContents() const override;
   bool IsOriginVisit() const override;
   bool IsTerminalVisit() const override;
+  bool ShouldObserveScheme(std::string_view scheme) const override;
   int64_t GetNavigationId() const override;
 
   // Helpers to add a BackForwardCacheRestore to this fake.

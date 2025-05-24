@@ -53,26 +53,34 @@ cr-button:focus-visible {
   font-weight: 500;
 }
 
+:host([disabled]) #buttonContent,
+:host([disabled]) #heading {
+  color: var(--color-tab-search-disabled);
+}
+
 #iconTextRow {
   align-items: center;
   display: flex;
   flex-direction: row;
   font-size: 13px;
   font-weight: 400;
-  gap: 8px;
+  gap: 12px;
   line-height: 20px;
 }
 
 #prefixIcon {
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
   align-items: center;
-  background: linear-gradient(
-      135deg,
-      var(--color-loading-gradient-middle) 0%,
-      var(--color-loading-gradient-end) 100%);
-  color: var(--color-tab-search-selected);
+  background-color: var(--color-tab-search-button-icon-background);
+  color: var(--color-tab-search-button-icon);
   border-radius: 8px;
   display: flex;
-  height: 32px;
+  height: 40px;
   justify-content: center;
-  width: 32px;
+  width: 40px;
+}
+
+:host([disabled]) #prefixIcon {
+  color: var(--color-tab-search-disabled);
 }

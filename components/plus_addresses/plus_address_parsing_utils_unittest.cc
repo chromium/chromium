@@ -7,7 +7,9 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
+#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -170,6 +172,71 @@ TEST(PlusAddressParsing, FromV1Create_FailsIfPlusProfileIsNotDict) {
         "plusProfile": "not a dict"
       }
     )");
+  ASSERT_TRUE(json.has_value());
+  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
+  EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);
+}
+
+// Tests that parsing the create response returns the first existing profile if
+// there is no newly created profile.
+TEST(PlusAddressParsing, FromV1Create_ParseExistingPlusProfiles) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressParseExistingProfilesFromCreateResponse};
+
+  const std::string kProfileId1 = "123";
+  const std::string kProfileId2 = "123";
+  const affiliations::FacetURI kFacet =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(
+          "https://www.apple.com");
+  const std::string kPlusAddress1 = "fubar@plus.com";
+  const std::string kPlusAddress2 = "fubar2@plus.com";
+
+  std::optional<base::Value> json =
+      base::JSONReader::Read(base::ReplaceStringPlaceholders(
+          R"(
+    {
+      "existingPlusProfiles": [
+        {
+          "ProfileId": "$1",
+          "facet": "$2",
+          "plusEmail": {
+            "plusAddress": "$3",
+            "plusMode": "validMode"
+          }
+        },
+        {
+          "ProfileId": "$4",
+          "facet": "$5",
+          "plusEmail": {
+            "plusAddress": "$6",
+            "plusMode": "validMode"
+          }
+        }
+      ]
+    })",
+          {kProfileId1, kFacet.canonical_spec(), kPlusAddress1, kProfileId2,
+           kFacet.canonical_spec(), kPlusAddress2},
+          /*offsets=*/nullptr));
+  ASSERT_TRUE(json.has_value());
+  data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
+  std::optional<PlusProfile> profile =
+      ParsePlusProfileFromV1Create(std::move(value));
+  EXPECT_EQ(profile,
+            PlusProfile(kProfileId1, kFacet, PlusAddress(kPlusAddress1),
+                        /*is_confirmed=*/true));
+}
+
+// Tests that parsing the create response returns `std::nullopt` if there are no
+// newly created or existing profiles.
+TEST(PlusAddressParsing, FromV1Create_ParseEmptyExistingPlusProfiles) {
+  base::test::ScopedFeatureList feature_list{
+      features::kPlusAddressParseExistingProfilesFromCreateResponse};
+
+  std::optional<base::Value> json = base::JSONReader::Read(
+      R"(
+    {
+      "existingPlusProfiles": []
+    })");
   ASSERT_TRUE(json.has_value());
   data_decoder::DataDecoder::ValueOrError value = std::move(json.value());
   EXPECT_EQ(ParsePlusProfileFromV1Create(std::move(value)), std::nullopt);

@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] linebreak only ﾉｺﾘ２４
+  assert_equals: expected 84 but got 91
+[FAIL] spaces linebreak ﾉｺﾘ２４
+  assert_equals: expected 84 but got 91
+[FAIL] linebreak spaces ﾉｺﾘ２４
+  assert_equals: expected 84 but got 91
+[FAIL] spaces linebreak spaces ﾉｺﾘ２４
+  assert_equals: expected 84 but got 91
+[FAIL] multiple linebreaks ﾉｺﾘ２４
+  assert_equals: expected 84 but got 91
+[FAIL] multiple linebreaks + spaces ﾉｺﾘ２４
+  assert_equals: expected 84 but got 91
+[FAIL] linebreak only ２４ｺ
+  assert_equals: expected 60 but got 67
+[FAIL] spaces linebreak ２４ｺ
+  assert_equals: expected 60 but got 67
+[FAIL] linebreak spaces ２４ｺ
+  assert_equals: expected 60 but got 67
+[FAIL] spaces linebreak spaces ２４ｺ
+  assert_equals: expected 60 but got 67
+[FAIL] multiple linebreaks ２４ｺ
+  assert_equals: expected 60 but got 67
+[FAIL] multiple linebreaks + spaces ２４ｺ
+  assert_equals: expected 60 but got 67
+Harness: the test ran to completion.
+

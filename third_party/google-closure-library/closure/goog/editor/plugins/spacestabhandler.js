@@ -38,7 +38,10 @@ goog.editor.plugins.SpacesTabHandler.prototype.getTrogClassId = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.editor.plugins.SpacesTabHandler.prototype.handleTabKey = function(e) {
   'use strict';
   var dh = this.getFieldDomHelper();

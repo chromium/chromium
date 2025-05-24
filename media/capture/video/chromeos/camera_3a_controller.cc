@@ -638,7 +638,7 @@ void Camera3AController::Set3AMode(cros::mojom::CameraMetadataTag tag,
       awb_mode_set_ = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid 3A mode: " << tag;
+      NOTREACHED() << "Invalid 3A mode: " << tag;
   }
 }
 
@@ -700,7 +700,7 @@ void Camera3AController::SetCaptureMetadata(cros::mojom::CameraMetadataTag tag,
                                             const std::vector<T>& value) {
   capture_metadata_dispatcher_->SetCaptureMetadata(
       tag, entry_type_of<T>::value, value.size(),
-      SerializeMetadataValueFromSpan(base::make_span(value)));
+      SerializeMetadataValueFromSpan(base::span(value)));
 }
 
 template <typename T>
@@ -717,7 +717,7 @@ void Camera3AController::SetRepeatingCaptureMetadata(
   repeating_metadata_tags_.insert(tag);
   capture_metadata_dispatcher_->SetRepeatingCaptureMetadata(
       tag, entry_type_of<T>::value, value.size(),
-      SerializeMetadataValueFromSpan(base::make_span(value)));
+      SerializeMetadataValueFromSpan(base::span(value)));
 }
 
 void Camera3AController::ClearRepeatingCaptureMetadata() {

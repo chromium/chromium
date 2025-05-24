@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 
 declare_args() {
   # Controls the product part of the user agent calculated in sync_util.cc.
@@ -20,8 +20,11 @@ source_set("features") {
 
 static_library("base") {
   sources = [
+    "account_pref_utils.cc",
+    "account_pref_utils.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
+    "collaboration_id.h",
     "command_line_switches.cc",
     "command_line_switches.h",
     "data_type.cc",
@@ -41,6 +44,7 @@ static_library("base") {
     "passphrase_enums.cc",
     "passphrase_enums.h",
     "pref_names.h",
+    "previously_syncing_gaia_id_info_for_metrics.h",
     "progress_marker_map.cc",
     "progress_marker_map.h",
     "report_unrecoverable_error.cc",
@@ -74,7 +78,6 @@ static_library("base") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/signin/public/base",
@@ -87,4 +90,9 @@ static_library("base") {
   ]
 
   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
+}
+
+fuzzer_test("unique_position_fuzzer") {
+  sources = [ "unique_position_fuzzer.cc" ]
+  deps = [ ":base" ]
 }

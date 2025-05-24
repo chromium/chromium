@@ -44,10 +44,6 @@ from mojom.generate import template_expander
 from mojom.generate import translate
 from mojom.generate.generator import WriteFile
 
-sys.path.append(
-    os.path.join(_GetDirAbove("mojo"), "tools", "diagnosis"))
-import crbug_1001171
-
 
 _BUILTIN_GENERATORS = {
     "c++": "mojom_cpp_generator",
@@ -410,11 +406,10 @@ def main():
 
 
 if __name__ == "__main__":
-  with crbug_1001171.DumpStateOnLookupError():
-    ret = main()
-    # Exit without running GC, which can save multiple seconds due to the large
-    # number of object created. But flush is necessary as os._exit doesn't do
-    # that.
-    sys.stdout.flush()
-    sys.stderr.flush()
-    os._exit(ret)
+  ret = main()
+  # Exit without running GC, which can save multiple seconds due to the large
+  # number of object created. But flush is necessary as os._exit doesn't do
+  # that.
+  sys.stdout.flush()
+  sys.stderr.flush()
+  os._exit(ret)

@@ -37,8 +37,12 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "ui/gfx/native_widget_types.h"
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
+#endif
 
 #if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 #include "base/android/application_status_listener.h"
@@ -199,8 +203,8 @@ class CONTENT_EXPORT VideoCaptureManager
       const std::string& device_id);
 
   // If there is a capture session associated with |session_id|, and the
-  // captured entity a tab, return the GlobalRenderFrameHostId of
-  // the captured tab.
+  // captured entity is a tab, return the GlobalRenderFrameHostId of the
+  // captured tab.
   // Otherwise, returns an empty GlobalRenderFrameHostId.
   GlobalRenderFrameHostId GetGlobalRenderFrameHostId(
       const base::UnguessableToken& session_id) const;
@@ -308,7 +312,7 @@ class CONTENT_EXPORT VideoCaptureManager
   // Finds a VideoCaptureController for the indicated |capture_session_id|,
   // creating a fresh one if necessary. Returns nullptr if said
   // |capture_session_id| is invalid.
-  VideoCaptureController* GetOrCreateController(
+  scoped_refptr<VideoCaptureController> GetOrCreateController(
       const media::VideoCaptureSessionId& capture_session_id,
       const media::VideoCaptureParams& params);
 
@@ -320,10 +324,14 @@ class CONTENT_EXPORT VideoCaptureManager
   // another request pending start.
   void QueueStartDevice(
       const media::VideoCaptureSessionId& session_id,
-      VideoCaptureController* controller,
+      scoped_refptr<VideoCaptureController> controller,
       const media::VideoCaptureParams& params,
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
       mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor);
+          video_effects_processor,
+#endif
+      mojo::PendingRemote<media::mojom::ReadonlyVideoEffectsManager>
+          readonly_video_effects_manager);
   void DoStopDevice(VideoCaptureController* controller);
   void ProcessDeviceStartRequestQueue();
 

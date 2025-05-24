@@ -6,7 +6,9 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -23,7 +25,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/features.h"
+#include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -38,6 +42,7 @@ using testing::Combine;
 using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
+using testing::ValuesIn;
 
 constexpr std::string_view kUrl = "https://www.test.com";
 constexpr std::string_view kPslMatchUrl = "https://m.test.com";
@@ -103,42 +108,45 @@ PasswordFormToIncomingSharingInvitation(const PasswordForm& form) {
 
 }  // namespace
 
-// See GetEnableAccountStoreTestParam() for the meaning of the parameters.
+// See ShouldCreateAccountStoreParam() for the meaning of the parameters.
 class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
  public:
-  PasswordReceiverServiceImplTest() {
-    // Initialize `AffiliatedMatchHelper` for the password store that will be
-    // used for syncing.
-    auto profile_store_match_helper =
-        std::make_unique<MockAffiliatedMatchHelper>(&affiliation_service_);
-    mock_affiliated_match_helper_ = profile_store_match_helper.get();
-    std::unique_ptr<MockAffiliatedMatchHelper> account_store_match_helper;
+  void SetUp() override {
 #if BUILDFLAG(IS_ANDROID)
-    if (GetEnableAccountStoreTestParam()) {
-      account_store_match_helper.swap(profile_store_match_helper);
+    if (base::FeatureList::IsEnabled(features::kLoginDbDeprecationAndroid) &&
+        !ShouldCreateAccountStoreParam()) {
+      GTEST_SKIP() << "With kLoginDbDeprecationAndroid, the account store is "
+                      "always created";
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
     profile_password_store_ = base::MakeRefCounted<TestPasswordStore>();
+    affiliated_match_helper_profile_store_ =
+        new MockAffiliatedMatchHelper(&affiliation_service_);
     profile_password_store_->Init(
         /*prefs=*/nullptr,
-        /*affiliated_match_helper=*/std::move(profile_store_match_helper));
+        base::WrapUnique(affiliated_match_helper_profile_store_.get()));
 
-    if (GetEnableAccountStoreTestParam()) {
-      account_password_store_ = base::MakeRefCounted<TestPasswordStore>();
-      account_password_store_->Init(
-          /*prefs=*/nullptr,
-          /*affiliated_match_helper=*/std::move(account_store_match_helper));
-    }
 #if BUILDFLAG(IS_ANDROID)
-    const auto upm_pref_value =
-        GetEnableAccountStoreTestParam()
-            ? password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOn
-            : password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff;
     pref_service_.registry()->RegisterIntegerPref(
         prefs::kPasswordsUseUPMLocalAndSeparateStores,
-        static_cast<int>(upm_pref_value));
+        static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOff));
 #endif  // BUILDFLAG(IS_ANDROID)
+    if (ShouldCreateAccountStoreParam()) {
+#if BUILDFLAG(IS_ANDROID)
+      pref_service_.SetInteger(
+          prefs::kPasswordsUseUPMLocalAndSeparateStores,
+          static_cast<int>(prefs::UseUpmLocalAndSeparateStoresState::kOn));
+#endif
+      account_password_store_ = base::MakeRefCounted<TestPasswordStore>();
+      affiliated_match_helper_account_store_ =
+          new MockAffiliatedMatchHelper(&affiliation_service_);
+      account_password_store_->Init(
+          /*prefs=*/nullptr,
+          base::WrapUnique(affiliated_match_helper_account_store_.get()));
+    }
+
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
 
     password_receiver_service_ = std::make_unique<PasswordReceiverServiceImpl>(
         &pref_service_,
@@ -147,18 +155,15 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
     password_receiver_service_->OnSyncServiceInitialized(&sync_service_);
   }
 
-  void SetUp() override {
-    testing::Test::SetUp();
-    // Set the user to be syncing passwords.
-    sync_service_.SetSignedIn(signin::ConsentLevel::kSync);
-  }
-
   void TearDown() override {
-    mock_affiliated_match_helper_ = nullptr;
+    affiliated_match_helper_profile_store_ = nullptr;
+    affiliated_match_helper_account_store_ = nullptr;
     if (account_password_store_) {
       account_password_store_->ShutdownOnUIThread();
     }
-    profile_password_store_->ShutdownOnUIThread();
+    if (profile_password_store_) {
+      profile_password_store_->ShutdownOnUIThread();
+    }
     testing::Test::TearDown();
   }
 
@@ -193,11 +198,15 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
     return password_receiver_service_.get();
   }
 
-  // The PasswordStore where syncing users should store shared passwords.
+  // The PasswordStore where sync-the-feature users should store shared
+  // passwords. This depends only on the platform and feature flags. It isn't
+  // affected by whether the user under test is currently syncing or not.
   TestPasswordStore& expected_password_store_for_syncing() {
 #if BUILDFLAG(IS_ANDROID)
-    return GetEnableAccountStoreTestParam() ? account_password_store()
-                                            : profile_password_store();
+    // Android is different from other platforms, syncing users use the
+    // account store whenever it's present.
+    return ShouldCreateAccountStoreParam() ? account_password_store()
+                                           : profile_password_store();
 #else
     return profile_password_store();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -205,7 +214,7 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
 
   // The PasswordStore where syncing users should NOT store shared passwords.
   TestPasswordStore& unexpected_password_store_for_syncing() {
-    EXPECT_TRUE(GetEnableAccountStoreTestParam())
+    EXPECT_TRUE(ShouldCreateAccountStoreParam())
         << "unexpected_password_store_for_syncing() must only be called if "
            "there are 2 PasswordStores";
 #if BUILDFLAG(IS_ANDROID)
@@ -223,15 +232,20 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
     return *account_password_store_;
   }
 
-  MockAffiliatedMatchHelper& affiliated_match_helper() {
-    return *mock_affiliated_match_helper_;
+  // The AffiliatedMatchHelper corresponding to
+  // `expected_password_store_for_syncing`, see that method's doc.
+  MockAffiliatedMatchHelper& expected_affiliated_match_helper_for_syncing() {
+    return &expected_password_store_for_syncing() ==
+                   account_password_store_.get()
+               ? *affiliated_match_helper_account_store_
+               : *affiliated_match_helper_profile_store_;
   }
 
   TestingPrefServiceSimple& pref_service() { return pref_service_; }
   syncer::TestSyncService& sync_service() { return sync_service_; }
 
-  // Whether the test should enable the account-scoped PasswordStore.
-  bool GetEnableAccountStoreTestParam() { return GetParam(); }
+  // Whether the test should instantiate the account-scoped PasswordStore.
+  bool ShouldCreateAccountStoreParam() { return GetParam(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -244,12 +258,15 @@ class PasswordReceiverServiceImplTest : public testing::TestWithParam<bool> {
   scoped_refptr<TestPasswordStore> account_password_store_;
   std::unique_ptr<PasswordReceiverServiceImpl> password_receiver_service_;
   affiliations::FakeAffiliationService affiliation_service_;
-  raw_ptr<MockAffiliatedMatchHelper> mock_affiliated_match_helper_;
+  raw_ptr<MockAffiliatedMatchHelper> affiliated_match_helper_profile_store_ =
+      nullptr;
+  raw_ptr<MockAffiliatedMatchHelper> affiliated_match_helper_account_store_ =
+      nullptr;
 };
 
 TEST_P(PasswordReceiverServiceImplTest,
        ShouldAcceptIncomingInvitationWhenStoreIsEmpty) {
-  if (!GetEnableAccountStoreTestParam()) {
+  if (!ShouldCreateAccountStoreParam()) {
     return;
   }
 
@@ -351,8 +368,8 @@ TEST_P(PasswordReceiverServiceImplTest,
 }
 
 TEST_P(PasswordReceiverServiceImplTest,
-       ShouldAcceptInvitationForNonSyncingUserOptedInToAccountStore) {
-  if (!GetEnableAccountStoreTestParam()) {
+       ShouldAcceptInvitationForNonSyncingUserWithAccountStorageEnabled) {
+  if (!ShouldCreateAccountStoreParam()) {
     return;
   }
 
@@ -361,17 +378,9 @@ TEST_P(PasswordReceiverServiceImplTest,
 
   // Set up an account store user (a non-syncing one, but that doesn't really
   // matter).
-  base::test::ScopedFeatureList feature_list(
-      syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  pref_service().registry()->RegisterDictionaryPref(
-      password_manager::prefs::kAccountStoragePerAccountSettings);
-  features_util::OptInToAccountStorage(&pref_service(), &sync_service());
-#else
-  sync_service().GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPasswords, true);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  ASSERT_TRUE(
+      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());
@@ -383,26 +392,21 @@ TEST_P(PasswordReceiverServiceImplTest,
 }
 
 TEST_P(PasswordReceiverServiceImplTest,
-       ShouldNotAcceptInvitationForNonSyncingUserOptedOutOfAccountStore) {
+       ShouldNotAcceptInvitationForNonSyncingUserWithAccountStorageDisabled) {
   base::HistogramTester histogram_tester;
-  if (!GetEnableAccountStoreTestParam()) {
+  if (!ShouldCreateAccountStoreParam()) {
     return;
   }
 
   ASSERT_TRUE(profile_password_store().stored_passwords().empty());
   ASSERT_TRUE(account_password_store().stored_passwords().empty());
 
-  // Setup a signed-in user that opted-out from using the account store:
+  // Setup a signed-in user that disabled account storage:
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  pref_service().registry()->RegisterDictionaryPref(
-      password_manager::prefs::kAccountStoragePerAccountSettings);
-  features_util::OptOutOfAccountStorageAndClearSettings(&pref_service(),
-                                                        &sync_service());
-#else
   sync_service().GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPasswords, false);
-#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+  ASSERT_FALSE(
+      features_util::IsAccountStorageEnabled(&pref_service(), &sync_service()));
 
   password_receiver_service()->ProcessIncomingSharingInvitation(
       CreateIncomingSharingInvitation());
@@ -702,8 +706,9 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreGroupedCredentials) {
 
   PasswordForm shared_form = CreatePasswordForm();
   PasswordFormDigest digest = PasswordFormDigest(shared_form);
-  affiliated_match_helper().ExpectCallToGetAffiliatedAndGrouped(
-      digest, {std::string(kUrl)}, {std::string(kGroupedMatchUrl)});
+  expected_affiliated_match_helper_for_syncing()
+      .ExpectCallToGetAffiliatedAndGrouped(digest, {std::string(kUrl)},
+                                           {std::string(kGroupedMatchUrl)});
   // Simulate an incoming invitation for the same stored passwords.
   sync_pb::IncomingPasswordSharingInvitationSpecifics invitation =
       PasswordFormToIncomingSharingInvitation(shared_form);
@@ -723,6 +728,15 @@ TEST_P(PasswordReceiverServiceImplTest, ShouldIgnoreGroupedCredentials) {
       1);
 }
 
-INSTANTIATE_TEST_SUITE_P(, PasswordReceiverServiceImplTest, Bool());
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordReceiverServiceImplTest,
+    ValuesIn({
+#if BUILDFLAG(IS_ANDROID)
+        // Android is the only platform where the account store might not be
+        // created, if kLoginDbDeprecationAndroid is disabled.
+        false,
+#endif
+        true}));
 
 }  // namespace password_manager

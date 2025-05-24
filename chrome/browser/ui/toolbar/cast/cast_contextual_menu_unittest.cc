@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/toolbar/cast/cast_contextual_menu.h"
+
 #include <memory>
 #include <utility>
 
@@ -16,8 +18,8 @@
 #include "chrome/browser/ui/media_router/media_router_ui_service.h"
 #include "chrome/browser/ui/media_router/media_router_ui_service_factory.h"
 #include "chrome/browser/ui/toolbar/cast/cast_toolbar_button_controller.h"
-#include "chrome/browser/ui/toolbar/cast/cast_contextual_menu.h"
 #include "chrome/browser/ui/toolbar/cast/mock_cast_toolbar_button_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -39,8 +41,9 @@ constexpr bool kShownByUser = false;
 
 bool HasCommandId(ui::MenuModel* menu_model, int command_id) {
   for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    if (menu_model->GetCommandIdAt(i) == command_id)
+    if (menu_model->GetCommandIdAt(i) == command_id) {
       return true;
+    }
   }
   return false;
 }
@@ -53,8 +56,7 @@ std::unique_ptr<KeyedService> BuildUIService(content::BrowserContext* context) {
       profile, std::move(controller));
 }
 
-class MockCastContextualMenuObserver
-    : public CastContextualMenu::Observer {
+class MockCastContextualMenuObserver : public CastContextualMenu::Observer {
  public:
   MOCK_METHOD(void, OnContextMenuShown, ());
   MOCK_METHOD(void, OnContextMenuHidden, ());
@@ -64,11 +66,13 @@ class MockCastContextualMenuObserver
 
 class CastContextualMenuUnitTest : public BrowserWithTestWindowTest {
  public:
-  CastContextualMenuUnitTest() = default;
-  CastContextualMenuUnitTest(const CastContextualMenuUnitTest&) =
+  CastContextualMenuUnitTest() {
+    // These tests are replaced by the tests in CastContextualMenuBrowserTest.
+    scoped_feature_list_.InitAndDisableFeature(features::kPinnedCastButton);
+  }
+  CastContextualMenuUnitTest(const CastContextualMenuUnitTest&) = delete;
+  CastContextualMenuUnitTest& operator=(const CastContextualMenuUnitTest&) =
       delete;
-  CastContextualMenuUnitTest& operator=(
-      const CastContextualMenuUnitTest&) = delete;
   ~CastContextualMenuUnitTest() override = default;
 
   void SetUp() override {
@@ -115,6 +119,7 @@ class CastContextualMenuUnitTest : public BrowserWithTestWindowTest {
 
   raw_ptr<ToolbarActionsModel> toolbar_actions_model_ = nullptr;
   MockCastContextualMenuObserver observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the basic state of the contextual menu.
@@ -171,8 +176,8 @@ TEST_F(CastContextualMenuUnitTest, EnableAndDisableReportIssue) {
       CreateBrowser(profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
                     Browser::TYPE_NORMAL, false, window.get()));
 
-  CastContextualMenu incognito_menu(incognito_browser.get(),
-                                           kShownByPolicy, &observer_);
+  CastContextualMenu incognito_menu(incognito_browser.get(), kShownByPolicy,
+                                    &observer_);
   EXPECT_TRUE(
       incognito_menu.CreateMenuModel()
           ->GetIndexOfCommandId(IDC_MEDIA_TOOLBAR_CONTEXT_REPORT_CAST_ISSUE)
@@ -234,8 +239,8 @@ TEST_F(CastContextualMenuUnitTest, ActionShownByPolicy) {
 
 TEST_F(CastContextualMenuUnitTest, NotifyActionController) {
   EXPECT_CALL(observer_, OnContextMenuShown());
-  auto menu = std::make_unique<CastContextualMenu>(
-      browser(), kShownByUser, &observer_);
+  auto menu =
+      std::make_unique<CastContextualMenu>(browser(), kShownByUser, &observer_);
   std::unique_ptr<ui::SimpleMenuModel> model = menu->CreateMenuModel();
   menu->OnMenuWillShow(model.get());
 

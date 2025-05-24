@@ -73,7 +73,7 @@ BookmarkCounter::BookmarkCounter(bookmarks::BookmarkModel* bookmark_model)
   DCHECK(bookmark_model);
 }
 
-BookmarkCounter::~BookmarkCounter() {}
+BookmarkCounter::~BookmarkCounter() = default;
 
 void BookmarkCounter::OnInitialized() {}
 

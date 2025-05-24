@@ -10,15 +10,18 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorShareAction.TabListEditorShareActionState;
 
 /** Metrics helper class for the Tab UI module. */
+@NullMarked
 public class TabUiMetricsHelper {
     /**
      * The last time the Tab Selection Editor was shown across all instances, null if never shown
      * before within an activity lifespan.
      */
-    private static Long sLastShownTimestampMillis;
+    private static @Nullable Long sLastShownTimestampMillis;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.

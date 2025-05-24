@@ -5,59 +5,78 @@ this patch file. This patch is safe because it reverts the random number
 generation behavior before a recent libxml upstream patch.
 
 diff --git a/dict.c b/dict.c
-index c843bb7b..96435d52 100644
+index 1ef18701..bf2298b2 100644
 --- a/dict.c
 +++ b/dict.c
-@@ -909,17 +909,12 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
+@@ -932,16 +932,8 @@ xmlDictQLookup(xmlDictPtr dict, const xmlChar *prefix, const xmlChar *name) {
  #ifdef _WIN32
    #define WIN32_LEAN_AND_MEAN
    #include <windows.h>
 -  #include <bcrypt.h>
- #elif defined(HAVE_GETENTROPY)
-   #ifdef HAVE_UNISTD_H
-     #include <unistd.h>
-   #endif
--  #ifdef HAVE_SYS_RANDOM_H
+-#else
+-  #if HAVE_DECL_GETENTROPY
+-    /* POSIX 2024 */
+-    #include <unistd.h>
+-    /* Older platforms */
 -    #include <sys/random.h>
 -  #endif
--#else
 -  #include <time.h>
  #endif
 +#include <time.h>
  
  static xmlMutex xmlRngMutex;
  
-@@ -931,29 +926,6 @@ xmlInitRandom(void) {
+@@ -958,49 +950,8 @@ xmlInitRandom(void) {
      xmlInitMutex(&xmlRngMutex);
  
      {
 -#ifdef _WIN32
 -        NTSTATUS status;
 -
+-        /*
+-         * You can find many (recent as of 2025) discussions how
+-         * to get a pseudo-random seed on Windows in projects like
+-         * Golang, Rust, Chromium and Firefox.
+-         *
+-         * TODO: Support ProcessPrng available since Windows 10.
+-         */
 -        status = BCryptGenRandom(NULL, (unsigned char *) globalRngState,
 -                                 sizeof(globalRngState),
 -                                 BCRYPT_USE_SYSTEM_PREFERRED_RNG);
--        if (!BCRYPT_SUCCESS(status)) {
--            fprintf(stderr, "libxml2: BCryptGenRandom failed with "
--                    "error code %lu\n", GetLastError());
--            abort();
--        }
--#elif defined(HAVE_GETENTROPY)
--        while (1) {
--            if (getentropy(globalRngState, sizeof(globalRngState)) == 0)
--                break;
--
--            if (errno != EINTR) {
--                fprintf(stderr, "libxml2: getentropy failed with "
--                        "error code %d\n", errno);
--                abort();
--            }
--        }
+-        if (!BCRYPT_SUCCESS(status))
+-            xmlAbort("libxml2: BCryptGenRandom failed with error code %lu\n",
+-                     GetLastError());
 -#else
          int var;
  
-         globalRngState[0] =
-@@ -962,7 +934,6 @@ xmlInitRandom(void) {
+-#if HAVE_DECL_GETENTROPY
+-        while (1) {
+-            if (getentropy(globalRngState, sizeof(globalRngState)) == 0)
+-                return;
+-
+-            /*
+-             * This most likely means that libxml2 was compiled on
+-             * a system supporting certain system calls and is running
+-             * on a system that doesn't support these calls, as can
+-             * be the case on Linux.
+-             */
+-            if (errno == ENOSYS)
+-                break;
+-
+-            /*
+-             * We really don't want to fallback to the unsafe PRNG
+-             * for possibly accidental reasons, so we abort on any
+-             * unknown error.
+-             */
+-            if (errno != EINTR)
+-                xmlAbort("libxml2: getentropy failed with error code %d\n",
+-                         errno);
+-        }
+-#endif
+ 
+         /*
+          * TODO: Fallback to /dev/urandom for older POSIX systems.
+@@ -1011,7 +962,6 @@ xmlInitRandom(void) {
          globalRngState[1] =
                  HASH_ROL((unsigned) ((size_t) &xmlRngMutex & 0xFFFFFFFF), 16) ^
                  HASH_ROL((unsigned) ((size_t) &var & 0xFFFFFFFF), 24);

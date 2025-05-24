@@ -55,7 +55,7 @@ class ContentVerifierHashTest
   ContentVerifierHashTest(const ContentVerifierHashTest&) = delete;
   ContentVerifierHashTest& operator=(const ContentVerifierHashTest&) = delete;
 
-  ~ContentVerifierHashTest() override {}
+  ~ContentVerifierHashTest() override = default;
 
   enum TamperResourceType {
     kTamperRequestedResource,
@@ -66,8 +66,8 @@ class ContentVerifierHashTest
   bool ShouldEnableContentVerification() override { return true; }
 
   void SetUp() override {
-    // Override content verification mode before ExtensionSystemImpl initializes
-    // ChromeContentVerifierDelegate.
+    // Override content verification mode before ChromeExtensionSystem
+    // initializes ChromeContentVerifierDelegate.
     ChromeContentVerifierDelegate::SetDefaultModeForTesting(
         uses_enforce_strict_mode()
             ? ChromeContentVerifierDelegate::VerifyInfo::Mode::ENFORCE_STRICT
@@ -232,8 +232,7 @@ class ContentVerifierHashTest
     ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
     // Make sure the extension got disabled due to corruption (and only due to
     // corruption).
-    int reasons = prefs->GetDisableReasons(id());
-    return reasons == disable_reason::DISABLE_CORRUPTED;
+    return prefs->HasOnlyDisableReason(id(), disable_reason::DISABLE_CORRUPTED);
   }
 
   bool ExtensionIsEnabled() {

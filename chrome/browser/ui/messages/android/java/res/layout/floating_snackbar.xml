@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@id/snackbar"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom|start"
+    android:layout_marginTop="@dimen/snackbar_margin"
+    android:layout_marginBottom="@dimen/snackbar_margin"
+    android:layout_marginStart="@dimen/snackbar_margin"
+    android:layout_marginEnd="@dimen/snackbar_margin"
+    android:elevation="@dimen/snackbar_elevation"
+    android:minHeight="@dimen/snackbar_min_height"
+    android:orientation="horizontal" >
+
+  <ImageView android:id="@+id/snackbar_profile_image"
+      android:layout_width="@dimen/snackbar_profile_image_width"
+      android:layout_height="@dimen/snackbar_profile_image_height"
+      android:layout_gravity="center_vertical"
+      android:layout_marginStart="@dimen/snackbar_profile_image_margin_start"
+      android:layout_marginEnd="@dimen/snackbar_profile_image_margin_end"
+      android:scaleType="fitCenter"
+      android:visibility="visible"
+      tools:ignore="ContentDescription"/>
+
+  <org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView
+      android:id="@+id/snackbar_message"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_gravity="start|center_vertical"
+      android:layout_marginStart="@dimen/snackbar_text_view_margin"
+      android:layout_marginTop="@dimen/snackbar_message_margin"
+      android:layout_marginBottom="@dimen/snackbar_message_margin"
+      android:layout_weight="1"
+      android:textAlignment="viewStart"
+      android:textAppearance="@style/TextAppearance.TextMedium.Primary.Baseline.Light" />
+
+  <org.chromium.ui.widget.ButtonCompat
+      android:id="@+id/snackbar_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_vertical"
+      android:paddingEnd="@dimen/snackbar_button_padding"
+      android:paddingStart="@dimen/snackbar_button_padding"
+      style="@style/TextButton" />
+</LinearLayout>
+

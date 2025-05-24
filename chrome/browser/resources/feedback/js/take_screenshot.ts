@@ -54,7 +54,7 @@ export function takeScreenshot(): Promise<HTMLCanvasElement|null> {
             }
           },
           function(err) {
-            console.error(
+            console.warn(
                 'takeScreenshot failed: ' + err.name + '; ' + err.message +
                 '; ' + err.constraintName);
             resolver.resolve(null);

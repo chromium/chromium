@@ -504,7 +504,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDefaultTest) {
 
   // The saved state nudge is enabled by default.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // The proactive nudge is disabled by default.
   EXPECT_FALSE(compose_enabling_
@@ -526,7 +526,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupDisabledTest) {
   std::string autocomplete_attribute;
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
@@ -542,7 +542,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
   SetLanguage("eo");
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   EXPECT_FALSE(compose_enabling_
                    ->ShouldTriggerNoStatePopup(
@@ -557,7 +557,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
   SetLanguage("en");
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   EXPECT_TRUE(compose_enabling_
                   ->ShouldTriggerNoStatePopup(
@@ -572,7 +572,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupLanguageTests) {
   SetLanguage("und");
 
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   EXPECT_TRUE(compose_enabling_
                   ->ShouldTriggerNoStatePopup(
@@ -595,7 +595,7 @@ TEST_F(ComposeEnablingTest, ShouldNotTriggerProactivePopupAutocompleteOffTest) {
 
   // The autocomplete attribute is ignored with saved state.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // The autocomplete attribute is checked for the proactive nudge.
   auto should_trigger = compose_enabling_->ShouldTriggerNoStatePopup(
@@ -654,7 +654,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupWithSavedStateTest) {
     EXPECT_EQ(
         saved_state_nudge,
         compose_enabling_->ShouldTriggerSavedStatePopup(
-            autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+            autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
     EXPECT_EQ(proactive_nudge,
               compose_enabling_
@@ -702,7 +702,7 @@ TEST_F(ComposeEnablingTest,
 
   // Nudge still works, even if Saved State Notification is disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // Saved state notification is disabled.
   EXPECT_FALSE(compose_enabling_->ShouldTriggerSavedStatePopup(
@@ -730,7 +730,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerPopupIncorrectSchemeTest) {
 
   // Use URL with incorrect scheme is not checked when there is previous state.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 }
 
 TEST_F(ComposeEnablingTest, ShouldTriggerPopupCrossOrigin) {
@@ -894,7 +894,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerDisableComposeByPolicyTest) {
 
   // The saved state is not disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // Verify the metrics reflect the decision not to show the page.
   histogram_tester.ExpectUniqueSample(
@@ -940,7 +940,7 @@ TEST_F(ComposeEnablingTest, ShouldTriggerDisableNudgeByPolicy) {
 
   // The saved state nudge is not disabled.
   EXPECT_TRUE(compose_enabling_->ShouldTriggerSavedStatePopup(
-      autofill::AutofillSuggestionTriggerSource::kTextFieldDidChange));
+      autofill::AutofillSuggestionTriggerSource::kTextFieldValueChanged));
 
   // Check that the proactive nudge is disabled.
   EXPECT_FALSE(compose_enabling_
@@ -1027,37 +1027,122 @@ TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledSitesPreferenceTest) {
                 kProactiveNudgeDisabledForSiteByUserPreference);
 }
 
-TEST_F(ComposeEnablingTest, ClientCountryNotInFinchCountryList) {
+TEST_F(ComposeEnablingTest, ClientCountryNotInFinchCountryListForCompose) {
   // Sets a country list via Finch that does not include "us".
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       compose::features::kEnableCompose, {{"enabled_countries", "a, b, c"}});
   compose::ResetConfigForTesting();
-
   EXPECT_THAT(compose_enabling_->IsEnabled(),
               ErrorIs(compose::ComposeShowStatus::kComposeNotEnabledInCountry));
 }
 
-TEST_F(ComposeEnablingTest, ClientCountryUndefined) {
+TEST_F(ComposeEnablingTest, ClientCountryUndefinedForCompose) {
   // Replace the client country override with an undefined country.
   scoped_country_override_.reset();
   scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
-
   EXPECT_THAT(compose_enabling_->IsEnabled(),
               ErrorIs(compose::ComposeShowStatus::kUndefinedCountry));
 }
 
-TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowed) {
-  // Replace the client country override with an undefined country.
+TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowedForCompose) {
+  // Set the country list to the wildcard element.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       compose::features::kEnableCompose, {{"enabled_countries", "*"}});
+  compose::ResetConfigForTesting();
 
-  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
+  // If the country check passes the signed out check will fail next.
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kSignedOut));
+
+  // Check that country other than "us" is also accepted.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("aa");
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kSignedOut));
 
   scoped_country_override_.reset();
-  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
-
   scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
-  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kSignedOut));
+}
+
+TEST_F(ComposeEnablingTest,
+       ClientCountryNotInFinchCountryListForProactiveNudge) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{compose::features::kEnableComposeProactiveNudge,
+        // Sets a country list for the proactive nudge that does not include
+        // "us".
+        {{"proactive_nudge_countries", "a, b, c"}}},
+       {compose::features::kEnableCompose, {{"enabled_countries", "*"}}}},
+      {});
+  compose::ResetConfigForTesting();
+
+  std::string autocomplete_attribute;
+  auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status,
+              ErrorIs(compose::ComposeShowStatus::kComposeNotEnabledInCountry));
+}
+
+TEST_F(ComposeEnablingTest, ClientCountryUndefinedForProactiveNudge) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableCompose, {{"enabled_countries", "*"}});
+  compose::ResetConfigForTesting();
+
+  // Replace the client country override with an undefined country.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
+
+  std::string autocomplete_attribute;
+  auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status,
+              ErrorIs(compose::ComposeShowStatus::kUndefinedCountry));
+}
+
+TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowedForProactiveNudge) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{compose::features::kEnableComposeProactiveNudge,
+        // Set both client country lists to the wildcard element.
+        {{"proactive_nudge_countries", "*"}}},
+       {compose::features::kEnableCompose, {{"enabled_countries", "*"}}}},
+      {});
+  compose::ResetConfigForTesting();
+
+  std::string autocomplete_attribute;
+  auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  // If the country check passes the signed out check will fail next.
+  EXPECT_THAT(no_state_status, ErrorIs(compose::ComposeShowStatus::kSignedOut));
+
+  // Check that country other than "us" is also accepted.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("aa");
+
+  no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status, ErrorIs(compose::ComposeShowStatus::kSignedOut));
+
+  // Replace the client country override with an undefined country.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
+
+  no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status, ErrorIs(compose::ComposeShowStatus::kSignedOut));
 }

@@ -8,7 +8,6 @@
 #include <stddef.h>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
@@ -121,7 +120,7 @@ constexpr int kNotificationBorderThickness = 1;
 constexpr int kMarginBetweenItemsInList = 8;
 
 // Horizontal & vertical space around & between popup notifications.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr int kMarginBetweenPopups = 8;
 #else
 constexpr int kMarginBetweenPopups = 10;
@@ -136,7 +135,7 @@ constexpr int kNotificationResizeAnimationDurationMs = 200;
 
 // Returns the width of the notification.
 inline int GetNotificationWidth() {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return chromeos::features::IsNotificationWidthIncreaseEnabled()
              ? kChromeOSNotificationWidth
              : kNotificationWidth;

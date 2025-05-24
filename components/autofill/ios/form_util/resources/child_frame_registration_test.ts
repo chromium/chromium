@@ -4,10 +4,10 @@
 
 /**
  * @fileoverview Test access into the Child Frame Registration lib.
+ * Requires functions in child_frame_registration_lib.ts.
  */
 
-import {processChildFrameMessage, registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 /**
  * Calls registerChildFrame on each frame in the document. This is a convenience
@@ -17,14 +17,13 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 function registerAllChildFrames(): string[] {
   const ids: string[] = [];
   for (const frame of document.getElementsByTagName('iframe')) {
-    ids.push(registerChildFrame((frame as HTMLIFrameElement)));
+    ids.push(gCrWebLegacy.remoteFrameRegistration.registerChildFrame(
+        (frame as HTMLIFrameElement)));
   }
   return ids;
 }
 
-window.addEventListener('message', processChildFrameMessage);
+window.addEventListener(
+    'message', gCrWebLegacy.remoteFrameRegistration.processChildFrameMessage);
 
-gCrWeb.childFrameRegistrationTesting = {
-  registerChildFrame,
-  registerAllChildFrames,
-};
+gCrWebLegacy.remoteFrameRegistration.registerAllChildFrames = registerAllChildFrames;

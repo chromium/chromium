@@ -6,6 +6,7 @@
 #define BASE_TASK_SEQUENCE_MANAGER_FENCE_H_
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/task_order.h"
 
@@ -38,7 +39,7 @@ class BASE_EXPORT Fence {
   // all tasks.
   static Fence BlockingFence();
 
-  const TaskOrder& task_order() const { return task_order_; }
+  const TaskOrder& task_order() const LIFETIME_BOUND { return task_order_; }
 
   // Returns true iff this is a blocking fence.
   bool IsBlockingFence() const {

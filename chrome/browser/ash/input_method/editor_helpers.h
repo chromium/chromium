@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "ui/gfx/range/range.h"
-
 namespace ash::input_method {
 
 std::string GetSystemLocale();

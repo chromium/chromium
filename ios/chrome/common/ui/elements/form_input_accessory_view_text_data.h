@@ -19,6 +19,8 @@
                         (NSString*)nextButtonAccessibilityLabel
                 previousButtonAccessibilityLabel:
                     (NSString*)previousButtonAccessibilityLabel
+                           manualFillButtonTitle:
+                               (NSString*)manualFillButtonTitle
               manualFillButtonAccessibilityLabel:
                   (NSString*)manualFillButtonAccessibilityLabel
       passwordManualFillButtonAccessibilityLabel:
@@ -40,6 +42,8 @@
 @property(nonatomic, readonly) NSString* nextButtonAccessibilityLabel;
 // Accessibility label for keyboard accessory previous button.
 @property(nonatomic, readonly) NSString* previousButtonAccessibilityLabel;
+// Title of the manual fill keyboard accessory button.
+@property(nonatomic, readonly) NSString* manualFillButtonTitle;
 // Accessibility label for the manual fill keyboard accessory buttons.
 // Must be provided if the keyboard accessory has the ability to show
 // password and/or autofill suggestions. Can be nil otherwise.

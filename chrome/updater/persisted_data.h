@@ -87,6 +87,10 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   std::string GetAPKey(const std::string& id) const;
   void SetAPKey(const std::string& id, const std::string& value);
 
+  // These functions access the `lang` for the specified id.
+  std::string GetLang(const std::string& id);
+  void SetLang(const std::string& id, const std::string& lang);
+
   // This function sets any non-empty field in the registration request object
   // into the persistent data store.
   void RegisterApp(const RegistrationRequest& rq);
@@ -121,13 +125,13 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   // for updating all applications works end to end, including communicating
   // with the backend.
   base::Time GetLastChecked() const;
-  void SetLastChecked(const base::Time& time);
+  void SetLastChecked(base::Time time);
 
   // LastStarted is set when `UpdateService::RunPeriodicTasks` is called. This
   // indicates that the mechanism to initiate automated update checks is
   // working.
   base::Time GetLastStarted() const;
-  void SetLastStarted(const base::Time& time);
+  void SetLastStarted(base::Time time);
 
 #if BUILDFLAG(IS_WIN)
   // Retrieves the previously stored OS version.
@@ -167,11 +171,14 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
                        base::OnceClosure callback) override;
   int GetInstallDate(const std::string& id) const override;
   void SetInstallDate(const std::string& id, int install_date) override;
+  std::string GetInstallId(const std::string& app_id) const override;
+  void SetInstallId(const std::string& app_id,
+                    const std::string& install_id) override;
   void GetActiveBits(const std::vector<std::string>& ids,
                      base::OnceCallback<void(const std::set<std::string>&)>
                          callback) const override;
   base::Time GetThrottleUpdatesUntil() const override;
-  void SetThrottleUpdatesUntil(const base::Time& time) override;
+  void SetThrottleUpdatesUntil(base::Time time) override;
   void SetLastUpdateCheckError(
       const update_client::CategorizedError& error) override;
 

@@ -4,16 +4,21 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
 
 import java.util.concurrent.TimeUnit;
@@ -25,6 +30,7 @@ import java.util.concurrent.TimeUnit;
  * subscriptions and notifications. Some logic here like observing Android activity lifecycle can be
  * moved to ShoppingServiceFactory.
  */
+@NullMarked
 public class CommerceSubscriptionsService implements Destroyable {
     @VisibleForTesting
     public static final String CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP =
@@ -32,10 +38,9 @@ public class CommerceSubscriptionsService implements Destroyable {
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
-    private ImplicitPriceDropSubscriptionsManager mImplicitPriceDropSubscriptionsManager;
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
-    private ShoppingService mShoppingService;
+    private @Nullable ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    private @Nullable PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
+    private final ShoppingService mShoppingService;
 
     /** Creates a new instance. */
     CommerceSubscriptionsService(
@@ -62,12 +67,6 @@ public class CommerceSubscriptionsService implements Destroyable {
                     public void onPauseWithNative() {}
                 };
         mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
-
-        if (CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()
-                && mImplicitPriceDropSubscriptionsManager == null) {
-            mImplicitPriceDropSubscriptionsManager =
-                    new ImplicitPriceDropSubscriptionsManager(tabModelSelector, mShoppingService);
-        }
     }
 
     /**
@@ -76,11 +75,8 @@ public class CommerceSubscriptionsService implements Destroyable {
     @Override
     public void destroy() {
         if (mActivityLifecycleDispatcher != null) {
+            assumeNonNull(mPauseResumeWithNativeObserver);
             mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
-        }
-        if (mImplicitPriceDropSubscriptionsManager != null) {
-            mImplicitPriceDropSubscriptionsManager.destroy();
-            mImplicitPriceDropSubscriptionsManager = null;
         }
     }
 
@@ -94,20 +90,13 @@ public class CommerceSubscriptionsService implements Destroyable {
         }
         mSharedPreferencesManager.writeLong(
                 CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
-        if (!mShoppingService.isShoppingListEligible()) return;
+        if (!CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) return;
         recordMetricsForEligibleAccount();
-        if (mImplicitPriceDropSubscriptionsManager != null) {
-            mImplicitPriceDropSubscriptionsManager.initializeSubscriptions();
-        }
     }
 
     private void recordMetricsForEligibleAccount() {
         // Record notification opt-in metrics.
-        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
+        mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded((canPost) -> {});
         mPriceDropNotificationManager.recordMetricsForNotificationCounts();
-    }
-
-    void setImplicitSubscriptionsManagerForTesting(ImplicitPriceDropSubscriptionsManager manager) {
-        mImplicitPriceDropSubscriptionsManager = manager;
     }
 }

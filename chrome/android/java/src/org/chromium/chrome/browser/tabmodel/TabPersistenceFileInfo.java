@@ -6,17 +6,20 @@ package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 /** Contains representations of stored Tab data, sufficient to identify said Tab data in storage. */
+@NullMarked
 public class TabPersistenceFileInfo {
     // List of identifiers for TabState files.
-    private List<TabStateFileInfo> mTabStateFileInfos = new LinkedList<>();
+    private final List<TabStateFileInfo> mTabStateFileInfos = new LinkedList<>();
 
     // List of metadata files.
-    private List<String> mMetadataFiles = new LinkedList<>();
+    private final List<String> mMetadataFiles = new LinkedList<>();
 
     public void addTabStateFileInfo(int tabId, boolean isEncrypted) {
         mTabStateFileInfos.add(new TabStateFileInfo(tabId, isEncrypted));

@@ -66,10 +66,6 @@ class AddressFieldParserNG : public FormFieldParser {
  private:
   explicit AddressFieldParserNG(AddressCountryCode country_code);
 
-  // Wrapper for ::autofill::GetMatchPatterns which considers the current
-  // page language and pattern source from the `context_`.
-  base::span<const MatchPatternRef> GetMatchPatterns(std::string_view name);
-
   // Returns the score of the best matching rule that assigns `field_type` to
   // the field at the current cursor position. If no rule matches, std::nullopt
   // is returned.

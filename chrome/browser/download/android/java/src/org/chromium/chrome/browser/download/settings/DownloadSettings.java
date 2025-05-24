@@ -6,12 +6,14 @@ package org.chromium.chrome.browser.download.settings;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
+import org.chromium.chrome.browser.download.DownloadDirectoryProvider;
 import org.chromium.chrome.browser.download.DownloadPromptStatus;
 import org.chromium.chrome.browser.download.MimeUtils;
 import org.chromium.chrome.browser.download.R;
@@ -25,6 +27,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.user_prefs.UserPrefs;
 
 /** Fragment containing Download settings. */
+@NullMarked
 public class DownloadSettings extends ChromeBaseSettingsFragment
         implements Preference.OnPreferenceChangeListener {
     public static final String PREF_LOCATION_CHANGE = "location_change";
@@ -38,13 +41,12 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(@Nullable Bundle savedInstanceState, String s) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String s) {
         mPageTitle.set(getString(R.string.menu_downloads));
         SettingsUtils.addPreferencesFromResource(this, R.xml.download_preferences);
 
         mLocationPromptEnabledPref =
                 (ChromeSwitchPreference) findPreference(PREF_LOCATION_PROMPT_ENABLED);
-        mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
         mLocationPromptEnabledPrefDelegate =
                 new ChromeManagedPreferenceDelegate(getProfile()) {
                     @Override
@@ -53,6 +55,13 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
                     }
                 };
         mLocationPromptEnabledPref.setManagedPreferenceDelegate(mLocationPromptEnabledPrefDelegate);
+        if (PdfUtils.shouldOpenPdfInline(getProfile().isOffTheRecord())
+                && DownloadDirectoryProvider.getSecondaryStorageDownloadDirectories().isEmpty()) {
+            mLocationPromptEnabledPref.setVisible(false);
+        } else {
+            mLocationPromptEnabledPref.setOnPreferenceChangeListener(this);
+        }
+
         mLocationChangePref = (DownloadLocationPreference) findPreference(PREF_LOCATION_CHANGE);
         mLocationChangePref.setDownloadLocationHelper(new DownloadLocationHelperImpl(getProfile()));
 
@@ -85,15 +94,15 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
                     DownloadLocationPreferenceDialog.newInstance(
                             (DownloadLocationPreference) preference);
             dialogFragment.setTargetFragment(this, 0);
-            dialogFragment.show(getFragmentManager(), DownloadLocationPreferenceDialog.TAG);
+            dialogFragment.show(getParentFragmentManager(), DownloadLocationPreferenceDialog.TAG);
         } else {
             super.onDisplayPreferenceDialog(preference);
         }
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         updateDownloadSettings();
     }
 
@@ -142,5 +151,10 @@ public class DownloadSettings extends ChromeBaseSettingsFragment
 
     public ManagedPreferenceDelegate getLocationPromptEnabledPrefDelegateForTesting() {
         return mLocationPromptEnabledPrefDelegate;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

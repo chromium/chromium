@@ -42,15 +42,14 @@ class AppFirewallHoleManagerFactory : public BrowserContextKeyedServiceFactory {
 
  private:
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       BrowserContext* context) const override {
-    return new AppFirewallHoleManager(context);
+    return std::make_unique<AppFirewallHoleManager>(context);
   }
 
   BrowserContext* GetBrowserContextToUse(
       BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
+    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
   }
 };
 
@@ -87,15 +86,13 @@ AppFirewallHole::AppFirewallHole(
 
 void AppFirewallHole::SetVisible(bool app_visible) {
   app_visible_ = app_visible;
-  if (app_visible_) {
-    if (!firewall_hole_) {
-      chromeos::FirewallHole::Open(
-          type_, port_, "" /*all interfaces*/,
-          base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
-                         weak_factory_.GetWeakPtr()));
-    }
-  } else {
+  if (!app_visible_) {
     firewall_hole_.reset();
+  } else if (!firewall_hole_) {
+    chromeos::FirewallHole::Open(
+        type_, port_, /*all interfaces=*/"",
+        base::BindOnce(&AppFirewallHole::OnFirewallHoleOpened,
+                       weak_factory_.GetWeakPtr()));
   }
 }
 
@@ -139,7 +136,7 @@ void AppFirewallHoleManager::Close(AppFirewallHole* hole) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AppFirewallHoleManager::OnAppWindowRemoved(AppWindow* app_window) {

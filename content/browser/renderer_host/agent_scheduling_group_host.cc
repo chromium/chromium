@@ -9,6 +9,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/state_transitions.h"
 #include "base/supports_user_data.h"
@@ -376,8 +377,8 @@ void AgentSchedulingGroupHost::DidUnloadRenderFrame(
     const blink::LocalFrameToken& frame_token) {
   // |frame_host| could be null if we decided to remove the RenderFrameHostImpl
   // because the Unload request took too long.
-  if (auto* frame_host =
-          RenderFrameHostImpl::FromFrameToken(process_->GetID(), frame_token)) {
+  if (auto* frame_host = RenderFrameHostImpl::FromFrameToken(
+          process_->GetDeprecatedID(), frame_token)) {
     frame_host->OnUnloadACK();
   }
 }

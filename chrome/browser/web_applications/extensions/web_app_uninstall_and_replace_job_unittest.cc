@@ -92,9 +92,6 @@ class WebAppUninstallAndReplaceJobTest : public WebAppTest {
   }
 };
 
-// `WebAppUninstallAndReplaceJob` uses `AppServiceProxy` to do uninstall, app
-// service only lives on chromeos ash not lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Regression test for crbug.com/1182030
 TEST_F(WebAppUninstallAndReplaceJobTest,
        WebAppMigrationPreservesShortcutStates) {
@@ -106,7 +103,7 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   // Install a new app to migrate the old one to.
   webapps::AppId new_app_id = test::InstallDummyWebApp(
       profile(), "new_app", GURL("https://new.app.com"));
-  std::optional<proto::WebAppOsIntegrationState> os_state =
+  std::optional<proto::os_state::WebAppOsIntegration> os_state =
       provider()->registrar_unsafe().GetAppCurrentOsIntegrationState(
           new_app_id);
   ASSERT_TRUE(os_state.has_value());
@@ -133,7 +130,7 @@ TEST_F(WebAppUninstallAndReplaceJobTest,
   ASSERT_TRUE(os_state.has_value());
   EXPECT_TRUE(os_state->has_shortcut());
   EXPECT_EQ(os_state->run_on_os_login().run_on_os_login_mode(),
-            proto::RunOnOsLoginMode::WINDOWED);
+            proto::os_state::RunOnOsLogin::MODE_WINDOWED);
 }
 
 TEST_F(WebAppUninstallAndReplaceJobTest, DoubleMigration) {
@@ -159,6 +156,5 @@ TEST_F(WebAppUninstallAndReplaceJobTest, DoubleMigration) {
                                  future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

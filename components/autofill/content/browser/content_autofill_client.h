@@ -8,14 +8,19 @@
 #include "base/types/pass_key.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/common/mojom/autofill_agent.mojom.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
+namespace credential_management {
+class ContentCredentialManager;
+}
 namespace autofill {
 
 // Common base class for those AutofillClients that have the //content layer.
+//
+// There must be at most one instance per content::WebContents.
 class ContentAutofillClient
     : public AutofillClient,
       public content::WebContentsUserData<ContentAutofillClient> {
@@ -34,6 +39,11 @@ class ContentAutofillClient
   virtual std::unique_ptr<AutofillManager> CreateManager(
       base::PassKey<ContentAutofillDriver> pass_key,
       ContentAutofillDriver& driver) = 0;
+
+  // Returns the ContentCredentialManager for the WebContents that handles
+  // navigator.credentials requests.
+  virtual credential_management::ContentCredentialManager*
+  GetContentCredentialManager() = 0;
 
  private:
   friend class content::WebContentsUserData<ContentAutofillClient>;

@@ -11,9 +11,9 @@
 #import "content/public/browser/devtools_manager_delegate.h"
 #import "content/public/browser/web_contents_view_delegate.h"
 #import "content/public/common/url_constants.h"
-#import "content/public/common/user_agent.h"
 #import "ios/web/content/init/ios_browser_main_parts.h"
 #import "ios/web/content/ui/web_contents_view_delegate_impl.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace web {
 
@@ -75,11 +75,11 @@ blink::UserAgentMetadata IOSContentBrowserClient::GetUserAgentMetadata() {
       std::string(version_info::GetVersionNumber()));
   metadata.full_version = std::string(version_info::GetVersionNumber());
   metadata.platform = "Unknown";
-  metadata.architecture = content::GetCpuArchitecture();
-  metadata.model = content::BuildModelInfo();
+  metadata.architecture = embedder_support::GetCpuArchitecture();
+  metadata.model = embedder_support::BuildModelInfo();
 
-  metadata.bitness = content::GetCpuBitness();
-  metadata.wow64 = content::IsWoW64();
+  metadata.bitness = embedder_support::GetCpuBitness();
+  metadata.wow64 = embedder_support::IsWoW64();
 
   return metadata;
 }

@@ -34,6 +34,10 @@
 @synthesize subject;
 @synthesize sharedItem = _sharedItem;
 
+- (NSString*)menuItemTitle {
+  return @"Test";
+}
+
 - (void)performWithItems:(NSArray*)items {
   self.sharedItem = items.firstObject;
 }
@@ -50,6 +54,10 @@ MockSharingService* MakeMockSharingService() {
              }];
 }
 }  // namespace
+
+@interface ShareMenuController (ExposedForTesting)
+- (NSMenuItem*)menuItemForService:(NSSharingService*)service;
+@end
 
 class ShareMenuControllerTest : public InProcessBrowserTest {
  public:
@@ -71,21 +79,10 @@ class ShareMenuControllerTest : public InProcessBrowserTest {
   // the target/action of real menu items created by
   // |controller_|
   void PerformShare(NSSharingService* service) {
-    NSMenu* menu = [[NSMenu alloc] initWithTitle:@"Share"];
-
-    [controller_ menuNeedsUpdate:menu];
-
-    NSMenuItem* mock_menu_item = [[NSMenuItem alloc] initWithTitle:@"test"
-                                                            action:nil
-                                                     keyEquivalent:@""];
-    mock_menu_item.representedObject = service;
-
-    NSMenuItem* first_menu_item = [menu itemAtIndex:0];
-    id target = first_menu_item.target;
-    SEL action = first_menu_item.action;
+    NSMenuItem* menu_item = [controller_ menuItemForService:service];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-performSelector-leaks"
-    [target performSelector:action withObject:mock_menu_item];
+    [menu_item.target performSelector:menu_item.action withObject:menu_item];
 #pragma clang diagnostic pop
   }
   GURL url_;
@@ -108,12 +105,19 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, PopulatesMenu) {
 
   NSSharingService* reading_list_service = [NSSharingService
       sharingServiceNamed:NSSharingServiceNameAddToSafariReadingList];
+  NSSharingService* email_service =
+      [NSSharingService sharingServiceNamed:NSSharingServiceNameComposeEmail];
 
-  NSUInteger i = 0;
+  // The email menu item doesn't use the share system.
+  NSUInteger i = 1;
   // Ensure there's a menu item for each service besides reading list.
   for (NSSharingService* service in sharing_services_for_url) {
-    if ([service isEqual:reading_list_service])
+    if ([service isEqual:reading_list_service]) {
       continue;
+    }
+    if ([service isEqual:email_service]) {
+      continue;
+    }
     NSMenuItem* menu_item = [menu itemAtIndex:i];
     EXPECT_NSEQ(menu_item.representedObject, service);
     EXPECT_EQ(menu_item.target, static_cast<id>(controller_));
@@ -198,10 +202,11 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, Histograms) {
   tester.ExpectBucketCount(histogram_name, true, 2);
   tester.ExpectTotalCount(histogram_name, 2);
 
-  [controller_
-           sharingService:service
-      didFailToShareItems:@[]
-                    error:[NSError errorWithDomain:@"" code:0 userInfo:nil]];
+  [controller_ sharingService:service
+          didFailToShareItems:@[]
+                        error:[NSError errorWithDomain:@""
+                                                  code:0
+                                              userInfo:nil]];
   tester.ExpectTotalCount(histogram_name, 3);
   tester.ExpectBucketCount(histogram_name, false, 1);
 }

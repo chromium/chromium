@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.ui.autofill.data;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.CardUnmaskChallengeOptionType;
 
 /**
  * Represents an authenticator option to be displayed in the {@link AuthenticatorSelectionDialog}.
  */
+@NullMarked
 public class AuthenticatorOption {
     private final String mTitle;
     private final String mIdentifier;
@@ -62,9 +65,9 @@ public class AuthenticatorOption {
 
     /** Builder for {@link AuthenticatorOption}. */
     public static final class Builder {
-        private String mTitle;
-        private String mIdentifier;
-        private String mDescription;
+        private @Nullable String mTitle;
+        private @Nullable String mIdentifier;
+        private @Nullable String mDescription;
         private int mIconResId;
         private @CardUnmaskChallengeOptionType int mType;
 

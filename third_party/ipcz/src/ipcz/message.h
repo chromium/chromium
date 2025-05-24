@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef IPCZ_SRC_IPCZ_MESSAGE_H_
 #define IPCZ_SRC_IPCZ_MESSAGE_H_
 
@@ -399,6 +404,10 @@ class IPCZ_ALIGN(8) Message {
   // Message.
   ReceivedDataBuffer TakeReceivedData() &&;
 
+  void SetEnvelope(DriverObject envelope);
+
+  DriverObject TakeEnvelope();
+
  protected:
   // Returns `x` aligned above to the nearest 8-byte boundary.
   constexpr size_t Align(size_t x) { return (x + 7) & ~7; }
@@ -495,6 +504,8 @@ class IPCZ_ALIGN(8) Message {
   // transmissible handles, there is generally NOT a 1:1 correpsondence between
   // this list and `driver_objects_`.
   absl::InlinedVector<IpczDriverHandle, 2> transmissible_driver_handles_;
+
+  DriverObject envelope_;
 };
 
 // Template helper to wrap the Message type for a specific macro-generated

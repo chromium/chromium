@@ -21,7 +21,6 @@
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
-#include "components/payments/core/pre_purchase_query.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/payment_app_provider_util.h"
 #include "content/public/browser/web_contents.h"
@@ -140,8 +139,6 @@ void ServiceWorkerPaymentApp::ValidateCanMakePayment(
   if (!payment_app_provider)
     return;
 
-  base::UmaHistogramEnumeration("PaymentRequest.PrePurchaseQuery",
-                                PrePurchaseQuery::kServiceWorkerEvent);
   payment_app_provider->CanMakePayment(
       stored_payment_app_info_->registration_id,
       url::Origin::Create(stored_payment_app_info_->scope),
@@ -211,8 +208,6 @@ void ServiceWorkerPaymentApp::OnCanMakePaymentEventResponded(
   // |can_make_payment| is true as long as there is a matching payment handler.
   can_make_payment_result_ = true;
   has_enrolled_instrument_result_ = response->can_make_payment;
-  base::UmaHistogramBoolean("PaymentRequest.EventResponse.CanMakePayment",
-                            response->can_make_payment);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -398,8 +393,7 @@ bool ServiceWorkerPaymentApp::CanPreselect() const {
 }
 
 std::u16string ServiceWorkerPaymentApp::GetMissingInfoLabel() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 bool ServiceWorkerPaymentApp::HasEnrolledInstrument() const {
@@ -407,10 +401,6 @@ bool ServiceWorkerPaymentApp::HasEnrolledInstrument() const {
   // interface should not be invoked.
   DCHECK(can_make_payment_result_);
   return has_enrolled_instrument_result_;
-}
-
-void ServiceWorkerPaymentApp::RecordUse() {
-  NOTIMPLEMENTED();
 }
 
 bool ServiceWorkerPaymentApp::NeedsInstallation() const {

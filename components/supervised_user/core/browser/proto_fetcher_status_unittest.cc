@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
 
 #include "net/base/net_errors.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,6 +60,18 @@ TEST_F(ProtoFetcherStatusTest, CreateHttpStatusOrNetError) {
             ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
   EXPECT_EQ(error_status.http_status_or_net_error().value(),
             net::ERR_IO_PENDING);
+}
+
+TEST_F(ProtoFetcherStatusTest, CreateHttpAuthError) {
+  ProtoFetcherStatus error_status =
+      ProtoFetcherStatus::HttpStatusOrNetError(net::HTTP_UNAUTHORIZED);
+  EXPECT_FALSE(error_status.IsOk());
+  EXPECT_FALSE(error_status.IsTransientError());
+  EXPECT_TRUE(error_status.IsPersistentError());
+  EXPECT_EQ(error_status.state(),
+            ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+  EXPECT_EQ(error_status.http_status_or_net_error().value(),
+            net::HTTP_UNAUTHORIZED);
 }
 
 TEST_F(ProtoFetcherStatusTest, CreateInvalidResponse) {

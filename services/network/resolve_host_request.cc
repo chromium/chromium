@@ -4,13 +4,13 @@
 
 #include "services/network/resolve_host_request.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "net/base/host_port_pair.h"
@@ -179,7 +179,7 @@ ResolveHostRequest::GetEndpointResultsWithMetadata() const {
   // addresses(non-protocol endpoints), and this information is passed as
   // another parameter at least in OnComplete method, so drop that here to avoid
   // providing redundant information.
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       *endpoint_results, std::back_inserter(endpoint_results_with_metadata),
       [](const auto& result) {
         return !result.metadata.supported_protocol_alpns.empty();

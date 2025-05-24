@@ -29,15 +29,12 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace gfx {
 class Point;
 class PointF;
-class Rect;
 class RectF;
-class Size;
-class SizeF;
 }  // namespace gfx
 
 namespace blink {
@@ -48,7 +45,7 @@ class Element;
 class LocalFrame;
 class LayoutBlockFlow;
 class LayoutObject;
-class LayoutPoint;
+struct PhysicalRect;
 
 enum LayoutAsTextBehaviorFlags {
   kLayoutAsTextBehaviorNormal = 0,
@@ -81,38 +78,18 @@ ExternalRepresentation(LocalFrame*,
 CORE_EXPORT String
 ExternalRepresentation(Element*,
                        LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
-void Write(WTF::TextStream&,
-           const LayoutObject&,
-           int indent = 0,
-           LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
-
-class LayoutTreeAsText {
-  STATIC_ONLY(LayoutTreeAsText);
-  // FIXME: This is a cheesy hack to allow easy access to ComputedStyle colors.
-  // It won't be needed if we convert it to use visitedDependentColor instead.
-  // (This just involves rebaselining many results though, so for now it's
-  // not being done).
- public:
-  static void WriteLayoutObject(WTF::TextStream&,
-                                const LayoutObject&,
-                                LayoutAsTextBehavior);
-  static void WriteLayers(WTF::TextStream&,
-                          PaintLayer*,
-                          int indent = 0,
-                          LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal,
-                          const PaintLayer* marked_layer = nullptr);
-};
 
 // Helper function shared with SVGLayoutTreeAsText (so they are not exported).
+void Write(StringBuilder&,
+           const LayoutObject&,
+           wtf_size_t indent = 0,
+           LayoutAsTextBehavior = kLayoutAsTextBehaviorNormal);
 String QuoteAndEscapeNonPrintables(const String&);
-WTF::TextStream& operator<<(WTF::TextStream&, const Color&);
-WTF::TextStream& operator<<(WTF::TextStream& ts, const LayoutPoint&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Point&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Size&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::Rect&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::SizeF&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::PointF&);
-WTF::TextStream& operator<<(WTF::TextStream&, const gfx::RectF&);
+StringBuilder& operator<<(StringBuilder&, const Color&);
+StringBuilder& operator<<(StringBuilder& ts, const PhysicalRect& r);
+StringBuilder& operator<<(StringBuilder&, const gfx::Point&);
+StringBuilder& operator<<(StringBuilder&, const gfx::PointF&);
+StringBuilder& operator<<(StringBuilder&, const gfx::RectF&);
 
 CORE_EXPORT String CounterValueForElement(Element*);
 

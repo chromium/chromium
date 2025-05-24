@@ -49,6 +49,7 @@ void (*const SILK_BIQUAD_ALT_STRIDE2_IMPL[OPUS_ARCHMASK + 1])(
       silk_biquad_alt_stride2_c,    /* EDSP */
       silk_biquad_alt_stride2_c,    /* Media */
       silk_biquad_alt_stride2_neon, /* Neon */
+      silk_biquad_alt_stride2_neon, /* dotprod */
 };
 
 opus_int32 (*const SILK_LPC_INVERSE_PRED_GAIN_IMPL[OPUS_ARCHMASK + 1])( /* O   Returns inverse prediction gain in energy domain, Q30        */
@@ -59,6 +60,7 @@ opus_int32 (*const SILK_LPC_INVERSE_PRED_GAIN_IMPL[OPUS_ARCHMASK + 1])( /* O   R
       silk_LPC_inverse_pred_gain_c,    /* EDSP */
       silk_LPC_inverse_pred_gain_c,    /* Media */
       silk_LPC_inverse_pred_gain_neon, /* Neon */
+      silk_LPC_inverse_pred_gain_neon, /* dotprod */
 };
 
 void  (*const SILK_NSQ_DEL_DEC_IMPL[OPUS_ARCHMASK + 1])(
@@ -67,7 +69,7 @@ void  (*const SILK_NSQ_DEL_DEC_IMPL[OPUS_ARCHMASK + 1])(
         SideInfoIndices             *psIndices,                                 /* I/O  Quantization Indices            */
         const opus_int16            x16[],                                      /* I    Input                           */
         opus_int8                   pulses[],                                   /* O    Quantized pulse signal          */
-        const opus_int16            PredCoef_Q12[ 2 * MAX_LPC_ORDER ],          /* I    Short term prediction coefs     */
+        const opus_int16            *PredCoef_Q12,                              /* I    Short term prediction coefs     */
         const opus_int16            LTPCoef_Q14[ LTP_ORDER * MAX_NB_SUBFR ],    /* I    Long term prediction coefs      */
         const opus_int16            AR_Q13[ MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER ], /* I Noise shaping coefs              */
         const opus_int              HarmShapeGain_Q14[ MAX_NB_SUBFR ],          /* I    Long term shaping coefs         */
@@ -82,6 +84,7 @@ void  (*const SILK_NSQ_DEL_DEC_IMPL[OPUS_ARCHMASK + 1])(
       silk_NSQ_del_dec_c,    /* EDSP */
       silk_NSQ_del_dec_c,    /* Media */
       silk_NSQ_del_dec_neon, /* Neon */
+      silk_NSQ_del_dec_neon, /* dotprod */
 };
 
 /*There is no table for silk_noise_shape_quantizer_short_prediction because the
@@ -97,6 +100,7 @@ opus_int32
   silk_NSQ_noise_shape_feedback_loop_c,    /* EDSP */
   silk_NSQ_noise_shape_feedback_loop_c,    /* Media */
   silk_NSQ_noise_shape_feedback_loop_neon, /* NEON */
+  silk_NSQ_noise_shape_feedback_loop_neon, /* dotprod */
 };
 
 # endif
@@ -116,6 +120,7 @@ void (*const SILK_WARPED_AUTOCORRELATION_FIX_IMPL[OPUS_ARCHMASK + 1])(
       silk_warped_autocorrelation_FIX_c,    /* EDSP */
       silk_warped_autocorrelation_FIX_c,    /* Media */
       silk_warped_autocorrelation_FIX_neon, /* Neon */
+      silk_warped_autocorrelation_FIX_neon, /* dotprod */
 };
 
 # endif

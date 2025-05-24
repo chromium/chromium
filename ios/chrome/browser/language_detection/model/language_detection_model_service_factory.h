@@ -8,28 +8,20 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace language_detection {
 class LanguageDetectionModelService;
 }
 
+// Owns all LanguageDetectionModelService instances and associte them to
+// profiles.
 class LanguageDetectionModelServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static language_detection::LanguageDetectionModelService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static language_detection::LanguageDetectionModelService* GetForProfile(
       ProfileIOS* profile);
   static LanguageDetectionModelServiceFactory* GetInstance();
-
-  LanguageDetectionModelServiceFactory(
-      const LanguageDetectionModelServiceFactory&) = delete;
-  LanguageDetectionModelServiceFactory& operator=(
-      const LanguageDetectionModelServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<LanguageDetectionModelServiceFactory>;
@@ -39,8 +31,6 @@ class LanguageDetectionModelServiceFactory
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

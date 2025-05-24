@@ -56,15 +56,6 @@ using PostRequestCompleteCallback =
 using DownloadToFileCompleteCallback =
     update_client::NetworkFetcher::DownloadToFileCompleteCallback;
 
-namespace {
-
-base::span<const uint8_t> AsByteSpan(NSData* data) {
-  return base::span<const uint8_t>(static_cast<const uint8_t*>(data.bytes),
-                                   data.length);
-}
-
-}  // namespace
-
 @interface CRUUpdaterNetworkController : NSObject <NSURLSessionDelegate>
 - (instancetype)initWithResponseStartedCallback:
                     (ResponseStartedCallback)responseStartedCallback
@@ -185,6 +176,13 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
   if ([headers objectForKey:headerXCupServerProof]) {
     cupServerProof = [headers objectForKey:headerXCupServerProof];
   }
+  NSString* headerCookie =
+      base::SysUTF8ToNSString(update_client::NetworkFetcher::kHeaderCookie);
+  NSString* cookie = @"";
+  if ([headers objectForKey:headerCookie]) {
+    cookie = [headers objectForKey:headerCookie];
+  }
+
   int64_t retryAfterResult = -1;
   NSString* xRetryAfter = [headers
       objectForKey:base::SysUTF8ToNSString(
@@ -195,13 +193,13 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
 
   _callbackRunner->PostTask(
       FROM_HERE,
-      base::BindOnce(std::move(_postRequestCompleteCallback),
-                     std::make_unique<std::string>(
-                         reinterpret_cast<const char*>([_downloadedData bytes]),
-                         [_downloadedData length]),
-                     error.code, base::SysNSStringToUTF8(etag),
-                     base::SysNSStringToUTF8(cupServerProof),
-                     retryAfterResult));
+      base::BindOnce(
+          std::move(_postRequestCompleteCallback),
+          std::string(reinterpret_cast<const char*>([_downloadedData bytes]),
+                      [_downloadedData length]),
+          error.code, base::SysNSStringToUTF8(etag),
+          base::SysNSStringToUTF8(cupServerProof),
+          base::SysNSStringToUTF8(cookie), retryAfterResult));
 }
 
 @end
@@ -338,7 +336,7 @@ base::span<const uint8_t> AsByteSpan(NSData* data) {
 - (void)URLSession:(NSURLSession*)session
           dataTask:(NSURLSessionDataTask*)dataTask
     didReceiveData:(NSData*)data {
-  if (_output.WriteAtCurrentPosAndCheck(AsByteSpan(data))) {
+  if (_output.WriteAtCurrentPosAndCheck(base::apple::NSDataToSpan(data))) {
     _callbackRunner->PostTask(
         FROM_HERE, base::BindOnce(_progressCallback, _output.GetLength()));
     [dataTask resume];
@@ -525,7 +523,6 @@ class OutOfProcessNetworkFetcher : public update_client::NetworkFetcher {
   OutOfProcessNetworkFetcher& operator=(const OutOfProcessNetworkFetcher&) =
       delete;
   OutOfProcessNetworkFetcher(const NetworkFetcher&) = delete;
-  ~OutOfProcessNetworkFetcher() override = default;
 
   // NetworkFetcher overrides.
   void PostRequest(
@@ -649,7 +646,7 @@ void OutOfProcessNetworkFetcher::PostRequest(
   if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
     LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
     std::move(post_request_complete_callback)
-        .Run(nullptr, dial_result, {}, {}, -1);
+        .Run(nullptr, dial_result, {}, {}, {}, -1);
     return;
   }
 

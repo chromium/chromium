@@ -36,17 +36,17 @@ class VerifiedContents {
   ~VerifiedContents();
 
   // Returns verified contents after successfully parsing verified_contents.json
-  // file at |path| and validating the enclosed signature. Returns nullptr on
+  // file at `path` and validating the enclosed signature. Returns nullptr on
   // failure.
-  // Note: |public_key| must remain valid for the lifetime of the returned
+  // Note: `public_key` must remain valid for the lifetime of the returned
   // object.
   static std::unique_ptr<VerifiedContents> CreateFromFile(
       base::span<const uint8_t> public_key,
       const base::FilePath& path);
 
-  // Returns verified contents after successfully parsing |contents| and
+  // Returns verified contents after successfully parsing `contents` and
   // validating the enclosed signature. Returns nullptr on failure. Note:
-  // |public_key| must remain valid for the lifetime of the returned object.
+  // `public_key` must remain valid for the lifetime of the returned object.
   static std::unique_ptr<VerifiedContents> Create(
       base::span<const uint8_t> public_key,
       std::string_view contents);
@@ -72,12 +72,12 @@ class VerifiedContents {
   // Note: the public_key must remain valid for the lifetime of this object.
   explicit VerifiedContents(base::span<const uint8_t> public_key);
 
-  // Returns the base64url-decoded "payload" field from the |contents|, if
+  // Returns the base64url-decoded "payload" field from the `contents`, if
   // the signature was valid.
   bool GetPayload(std::string_view contents, std::string* payload);
 
-  // The |protected_value| and |payload| arguments should be base64url encoded
-  // strings, and |signature_bytes| should be a byte array. See comments in the
+  // The `protected_value` and `payload` arguments should be base64url encoded
+  // strings, and `signature_bytes` should be a byte array. See comments in the
   // .cc file on GetPayload for where these come from in the overall input
   // file.
   bool VerifySignature(const std::string& protected_value,

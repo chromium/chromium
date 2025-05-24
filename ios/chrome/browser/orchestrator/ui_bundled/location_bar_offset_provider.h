@@ -8,7 +8,7 @@
 #import <Foundation/Foundation.h>
 
 // Protocol for vending an x offset for a string.
-@protocol LocationBarOffsetProvider<NSObject>
+@protocol LocationBarOffsetProvider <NSObject>
 
 // Provides an offset for a given string in the callee's coordinates, if any.
 // Returns a default value (based on callee's font) if the `string` is not a

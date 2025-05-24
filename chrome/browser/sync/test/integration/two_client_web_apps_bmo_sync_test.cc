@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
@@ -76,17 +75,6 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     if (!result) {
       return result;
     }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings.
-    // Enable the Apps toggle for both clients.
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    }
-#endif
-
     for (Profile* profile : GetAllProfiles()) {
       web_app::test::WaitUntilWebAppProviderAndSubsystemsReady(
           WebAppProvider::GetForTest(profile));
@@ -243,6 +231,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        MAYBE_SyncDoubleInstallationDifferentUserDisplayMode) {
   ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 
@@ -259,8 +248,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   webapps::AppId app_id2 = InstallApp(std::move(info), GetProfile(1));
 
   EXPECT_EQ(app_id, app_id2);
-
-  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 
@@ -320,6 +307,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        MAYBE_DoubleInstallWithUninstall) {
   ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -328,8 +316,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   webapps::AppId app_id = InstallAppAsUserInitiated(GetProfile(0));
   webapps::AppId app_id2 = InstallAppAsUserInitiated(GetProfile(1));
   EXPECT_EQ(app_id, app_id2);
-
-  ASSERT_TRUE(SetupSync());
 
   // Uninstall the app from one of the profiles.
   test::UninstallWebApp(GetProfile(0), app_id);
@@ -358,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSynced) {
   // profile 1.
   EXPECT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               Not(ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1)))));
-  EXPECT_FALSE(GetRegistrar(GetProfile(1)).IsInstalled(app_id));
+  EXPECT_FALSE(GetRegistrar(GetProfile(1)).IsInRegistrar(app_id));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {
@@ -515,8 +501,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 }
 
 // Flaky on Linux TSan (crbug.com/1108172).
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    defined(THREAD_SANITIZER)
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 #define MAYBE_UninstallSynced DISABLED_UninstallSynced
 #else
 #define MAYBE_UninstallSynced UninstallSynced
@@ -648,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NoShortcutsCreatedOnSync) {
     base::RunLoop loop;
     base::RepeatingCallback<void(const webapps::AppId&)> on_installed_closure;
     base::RepeatingCallback<void(const webapps::AppId&)> on_hooks_closure;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     on_installed_closure = base::DoNothing();
     on_hooks_closure = base::BindLambdaForTesting(
         [&](const webapps::AppId& installed_app_id) { loop.Quit(); });

@@ -20,6 +20,7 @@
  *   openReportingPrivacy: function(),
  *   openWhitepaper: function(),
  *   reportPhishingError: function(),
+ *   openAndroidAdvancedProtectionSettings: function(),
  * }}
  */
 // eslint-disable-next-line no-var
@@ -47,6 +48,7 @@ export const SecurityInterstitialCommandId = {
   CMD_REPORT_PHISHING_ERROR: 12,
   // Open enhanced protection settings.
   CMD_OPEN_ENHANCED_PROTECTION_SETTINGS: 13,
+  CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS: 16,
 };
 
 export const HIDDEN_CLASS = 'hidden';
@@ -99,6 +101,10 @@ export function sendCommand(cmd) {
         break;
       case SecurityInterstitialCommandId.CMD_OPEN_ENHANCED_PROTECTION_SETTINGS:
         certificateErrorPageController.openEnhancedProtectionSettings();
+        break;
+      case SecurityInterstitialCommandId
+          .CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
+        certificateErrorPageController.openAndroidAdvancedProtectionSettings();
         break;
     }
     return;

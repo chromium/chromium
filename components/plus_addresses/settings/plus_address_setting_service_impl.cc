@@ -12,7 +12,6 @@
 #include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/data_type_store.h"
@@ -36,35 +35,30 @@ PlusAddressSettingServiceImpl::PlusAddressSettingServiceImpl(
 PlusAddressSettingServiceImpl::~PlusAddressSettingServiceImpl() = default;
 
 bool PlusAddressSettingServiceImpl::GetIsPlusAddressesEnabled() const {
-  return GetBoolean(kPlusAddressEnabledSetting);
+  return GetBoolean(kPlusAddressEnabledSetting, /*default_value=*/true);
 }
 
 bool PlusAddressSettingServiceImpl::GetHasAcceptedNotice() const {
-  return GetBoolean(kAcceptedNoticeSetting);
+  return GetBoolean(kAcceptedNoticeSetting, /*default_value=*/false);
 }
 
 void PlusAddressSettingServiceImpl::SetHasAcceptedNotice() {
-  if (base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    sync_bridge_->WriteSetting(
-        CreateSettingSpecifics(kAcceptedNoticeSetting, true));
-  }
+  sync_bridge_->WriteSetting(
+      CreateSettingSpecifics(kAcceptedNoticeSetting, true));
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>
 PlusAddressSettingServiceImpl::GetSyncControllerDelegate() {
-  CHECK(base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting));
   return std::make_unique<syncer::ForwardingDataTypeControllerDelegate>(
       sync_bridge_->change_processor()->GetControllerDelegate().get());
 }
 
-bool PlusAddressSettingServiceImpl::GetBoolean(std::string_view name) const {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    return false;
-  }
+bool PlusAddressSettingServiceImpl::GetBoolean(std::string_view name,
+                                               bool default_value) const {
   auto setting = sync_bridge_->GetSetting(name);
   DCHECK(!setting || setting->has_bool_value());
   if (!setting || !setting->has_bool_value()) {
-    return false;
+    return default_value;
   }
   return setting->bool_value();
 }

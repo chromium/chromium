@@ -94,15 +94,6 @@ public class PartialCustomTabSideSheetStrategyTest {
     }
 
     private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
-            @Px int widthPx, int position) {
-        return createPcctSideSheetStrategy(
-                widthPx,
-                position,
-                ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
-                ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
-    }
-
-    private PartialCustomTabSideSheetStrategy createPcctSideSheetStrategy(
             @Px int widthPx, int position, int decorationType, int roundedCornersPosition) {
         BrowserServicesIntentDataProvider intentData = mPCCTTestRule.mIntentData;
         when(intentData.getInitialActivityWidth()).thenReturn(widthPx);
@@ -329,7 +320,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
 
         assertTabIsAtFullLandscapeHeight();
         assertNotEquals("Drag bar not rounded", 0, mPCCTTestRule.mDragBarLayoutParams.height);
@@ -347,7 +341,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                 createLeftPcctSideSheetStrategy(
                         2000, ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
 
         assertTabIsAtFullLandscapeHeight();
         assertNotEquals("Drag bar not rounded", 0, mPCCTTestRule.mDragBarLayoutParams.height);
@@ -361,7 +358,10 @@ public class PartialCustomTabSideSheetStrategyTest {
         var strategy = createPcctSideSheetStrategy(2000);
 
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
 
         assertTabIsAtFullLandscapeHeight();
         assertEquals("Drag bar rounded", 0, mPCCTTestRule.mDragBarLayoutParams.height);
@@ -412,7 +412,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         mPCCTTestRule.verifyWindowFlagsSet();
 
         assertTrue(strategy.shouldDrawDividerLine());
@@ -442,7 +445,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         mPCCTTestRule.verifyWindowFlagsSet();
 
         assertTrue(strategy.shouldDrawDividerLine());
@@ -469,7 +475,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_NONE,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         mPCCTTestRule.verifyWindowFlagsSet();
 
         assertFalse(strategy.shouldDrawDividerLine());
@@ -499,7 +508,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
                 .onActivityLayout(
                         anyInt(),
@@ -563,7 +575,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_DIVIDER,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
                 .onActivityLayout(
                         anyInt(),
@@ -676,7 +691,7 @@ public class PartialCustomTabSideSheetStrategyTest {
 
         int height = getWindowAttributes().height;
         int width = getWindowAttributes().width;
-        strategy.toggleMaximize(/* animation= */ false);
+        strategy.toggleMaximize(/* animate= */ false);
         verify(mPCCTTestRule.mOnResizedCallback).onResized(eq(FULL_HEIGHT), eq(DEVICE_WIDTH));
         clearInvocations(mPCCTTestRule.mOnResizedCallback);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
@@ -688,7 +703,7 @@ public class PartialCustomTabSideSheetStrategyTest {
                         eq(ACTIVITY_LAYOUT_STATE_SIDE_SHEET_MAXIMIZED));
         clearInvocations(mPCCTTestRule.mOnActivityLayoutCallback);
 
-        strategy.toggleMaximize(/* animation= */ false);
+        strategy.toggleMaximize(/* animate= */ false);
         // Even without animation, we still need to wait for task to be idle, since we post
         // the task for size init in |onMaximizeEnd|.
         PartialCustomTabTestRule.waitForAnimationToFinish();
@@ -719,7 +734,10 @@ public class PartialCustomTabSideSheetStrategyTest {
                         ACTIVITY_SIDE_SHEET_DECORATION_TYPE_SHADOW,
                         ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_TOP);
         strategy.onToolbarInitialized(
-                mPCCTTestRule.mToolbarCoordinator, mPCCTTestRule.mToolbarView, 5);
+                mPCCTTestRule.mToolbarCoordinator,
+                mPCCTTestRule.mToolbarView,
+                5,
+                mPCCTTestRule.mToolbarButtonsCoordinator);
         assertNotEquals("Corner not rounded", 0, mPCCTTestRule.mLayoutParams.topMargin);
         verify(mPCCTTestRule.mOnActivityLayoutCallback)
                 .onActivityLayout(

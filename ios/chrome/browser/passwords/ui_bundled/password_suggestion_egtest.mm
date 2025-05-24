@@ -10,14 +10,14 @@
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/passwords/model/password_manager_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_ui_features.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -80,7 +80,6 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
 
   // Sign in to a chrome account.
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Also reset the dismiss count pref to 0 to make sure the bottom sheet is
   // enabled by default.
@@ -92,12 +91,12 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   [PasswordSettingsAppInterface clearPasswordStores];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearUserPrefWithName:
                       prefs::kIosPasswordGenerationBottomSheetDismissCount];
   // The test may leave stored crendentials behind so clear them.
   [PasswordSettingsAppInterface clearPasswordStores];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -241,7 +240,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
   // Re-enable proactive password generation bottom sheet by using the
   // suggested password from the keyboard accessory.
   id<GREYMatcher> suggest_password_chip =
-      grey_accessibilityLabel(@"Suggest Strong Password");
+      grey_accessibilityLabel(@"Suggest strong password");
 
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:suggest_password_chip];
 
@@ -343,7 +342,7 @@ id<GREYMatcher> ProactivePasswordGenerationUseKeyboardButton() {
       performAction:chrome_test_util::TapWebElementWithId(kNewPasswordFieldID)];
   [ChromeEarlGrey waitForKeyboardToAppear];
   id<GREYMatcher> suggest_password_chip =
-      grey_accessibilityLabel(@"Suggest Strong Password");
+      grey_accessibilityLabel(@"Suggest strong password");
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:suggest_password_chip];
 }
 

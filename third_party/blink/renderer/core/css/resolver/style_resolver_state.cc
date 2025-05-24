@@ -24,14 +24,13 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
-#include "third_party/blink/renderer/core/core_probes_inl.h"
-#include "third_party/blink/renderer/core/css/container_query_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_light_dark_value_pair.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/css_uri_value.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
-#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
 namespace blink {
@@ -59,7 +58,9 @@ StyleResolverState::StyleResolverState(
     const StyleRecalcContext* style_recalc_context,
     const StyleRequest& style_request)
     : element_context_(element),
+      style_recalc_context_(style_recalc_context),
       document_(&document),
+      css_to_length_conversion_data_(&element),
       parent_style_(style_request.parent_override),
       layout_parent_style_(style_request.layout_parent_override),
       old_style_(style_recalc_context ? style_recalc_context->old_style
@@ -70,24 +71,11 @@ StyleResolverState::StyleResolverState(
       element_style_resources_(
           GetStyledElement() ? *GetStyledElement() : GetElement(),
           document.DevicePixelRatio()),
-      element_type_(style_request.IsPseudoStyleRequest()
-                        ? ElementType::kPseudoElement
-                        : ElementType::kElement),
-      container_unit_context_(
-          style_recalc_context
-              ? style_recalc_context->container
-              : ContainerQueryEvaluator::ParentContainerCandidateElement(
-                    element)),
-      anchor_evaluator_(style_recalc_context
-                            ? style_recalc_context->anchor_evaluator
-                            : nullptr),
+      pseudo_id_(style_request.pseudo_id),
       originating_element_style_(style_request.originating_element_style),
       is_for_highlight_(IsHighlightPseudoElement(style_request.pseudo_id)),
       uses_highlight_pseudo_inheritance_(
           ::blink::UsesHighlightPseudoInheritance(style_request.pseudo_id)),
-      is_outside_flat_tree_(style_recalc_context
-                                ? style_recalc_context->is_outside_flat_tree
-                                : false),
       can_trigger_animations_(style_request.can_trigger_animations) {
   DCHECK(!!parent_style_ == !!layout_parent_style_);
 
@@ -129,16 +117,8 @@ EInsideLink StyleResolverState::InsideLink() const {
   } else {
     inside_link_ = EInsideLink::kNotInsideLink;
   }
-  if (element_type_ != ElementType::kPseudoElement && GetElement().IsLink()) {
+  if (!IsForPseudoElement() && GetElement().IsLink()) {
     inside_link_ = ElementLinkState();
-    if (inside_link_ != EInsideLink::kNotInsideLink) {
-      bool force_visited = false;
-      probe::ForcePseudoState(&GetElement(), CSSSelector::kPseudoVisited,
-                              &force_visited);
-      if (force_visited) {
-        inside_link_ = EInsideLink::kInsideVisitedLink;
-      }
-    }
   } else if (uses_highlight_pseudo_inheritance_) {
     // Highlight pseudo-elements acquire the link status of the originating
     // element. Note that highlight pseudo-elements do not *inherit* from
@@ -163,11 +143,11 @@ void StyleResolverState::UpdateLengthConversionData() {
   css_to_length_conversion_data_ = CSSToLengthConversionData(
       *style_builder_, ParentStyle(), RootElementStyle(),
       GetDocument().GetStyleEngine().GetViewportSize(),
-      CSSToLengthConversionData::ContainerSizes(container_unit_context_),
+      CSSToLengthConversionData::ContainerSizes(ContainerUnitContext()),
       CSSToLengthConversionData::AnchorData(
-          anchor_evaluator_, StyleBuilder().PositionAnchor(),
+          GetAnchorEvaluator(), StyleBuilder().PositionAnchor(),
           StyleBuilder().PositionAreaOffsets()),
-      StyleBuilder().EffectiveZoom(), length_conversion_flags_);
+      StyleBuilder().EffectiveZoom(), length_conversion_flags_, &GetElement());
   element_style_resources_.UpdateLengthConversionData(
       &css_to_length_conversion_data_);
 }
@@ -184,13 +164,14 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData(
   CSSToLengthConversionData::ViewportSize viewport_size(
       GetDocument().GetLayoutView());
   CSSToLengthConversionData::ContainerSizes container_sizes(
-      container_unit_context_);
+      ContainerUnitContext());
   CSSToLengthConversionData::AnchorData anchor_data(
-      anchor_evaluator_, StyleBuilder().PositionAnchor(),
+      GetAnchorEvaluator(), StyleBuilder().PositionAnchor(),
       StyleBuilder().PositionAreaOffsets());
-  return CSSToLengthConversionData(
-      StyleBuilder().GetWritingMode(), font_sizes, line_height_size,
-      viewport_size, container_sizes, anchor_data, 1, length_conversion_flags_);
+  return CSSToLengthConversionData(StyleBuilder().GetWritingMode(), font_sizes,
+                                   line_height_size, viewport_size,
+                                   container_sizes, anchor_data, 1,
+                                   length_conversion_flags_, &GetElement());
 }
 
 CSSToLengthConversionData StyleResolverState::FontSizeConversionData() {
@@ -201,11 +182,30 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
   return UnzoomedLengthConversionData(style_builder_->GetFontSizeStyle());
 }
 
+Element* StyleResolverState::ContainerUnitContext() const {
+  // TODO(crbug.com/396016391): Always provide a StyleRecalcContext.
+  return style_recalc_context_ ? style_recalc_context_->container
+                               : FlatTreeTraversal::ParentElement(GetElement());
+}
+
+AnchorEvaluator* StyleResolverState::GetAnchorEvaluator() const {
+  // TODO(crbug.com/396016391): Always provide a StyleRecalcContext.
+  return style_recalc_context_ ? style_recalc_context_->anchor_evaluator
+                               : nullptr;
+}
+
 void StyleResolverState::SetParentStyle(const ComputedStyle* parent_style) {
   parent_style_ = std::move(parent_style);
   if (style_builder_) {
     // Need to update conversion data for 'lh' units.
     UpdateLengthConversionData();
+  }
+}
+
+void StyleResolverState::EnsureParentStyle() {
+  if (!ParentStyle()) {
+    SetParentStyle(StyleResolver(GetDocument()).InitialStyleForElement());
+    SetLayoutParentStyle(ParentStyle());
   }
 }
 
@@ -220,8 +220,9 @@ void StyleResolverState::LoadPendingResources() {
       StyleBuilder().IsEnsuredOutsideFlatTree()) {
     return;
   }
-  if (StyleBuilder().Display() == EDisplay::kNone &&
-      !GetElement().LayoutObjectIsNeeded(style_builder_->GetDisplayStyle())) {
+  if (StyleBuilder().Display() == EDisplay::kNone && GetStyledElement() &&
+      !GetStyledElement()->LayoutObjectIsNeeded(
+          style_builder_->GetDisplayStyle())) {
     // Don't load resources for display:none elements unless we are animating
     // display. If we are animating display, we might otherwise have ended up
     // caching a base style with pending images.
@@ -239,7 +240,19 @@ void StyleResolverState::LoadPendingResources() {
     return;
   }
 
-  element_style_resources_.LoadPendingResources(StyleBuilder());
+  element_style_resources_.LoadPendingResources(StyleBuilder(),
+                                                css_to_length_conversion_data_);
+}
+
+SVGResource* StyleResolverState::GetSVGResource(
+    CSSPropertyID property_id,
+    const cssvalue::CSSURIValue& value) {
+  SVGResource* resource =
+      element_style_resources_.GetSVGResourceFromValue(property_id, value);
+  if (resource && value.IsLocal(GetDocument())) {
+    SetHasTreeScopedReference();
+  }
+  return resource;
 }
 
 const FontDescription& StyleResolverState::ParentFontDescription() const {
@@ -291,12 +304,10 @@ void StyleResolverState::SetTextSizeAdjust(
   }
 
   StyleBuilder().SetTextSizeAdjust(new_text_size_adjust);
-  // When `TextSizeAdjustImprovements` is enabled, text-size-adjust affects
-  // font-size during style building.
-  if (RuntimeEnabledFeatures::TextSizeAdjustImprovementsEnabled()) {
-    UpdateLengthConversionData();
-    font_builder_.DidChangeTextSizeAdjust();
-  }
+
+  // text-size-adjust affects font-size during style building.
+  UpdateLengthConversionData();
+  font_builder_.DidChangeTextSizeAdjust();
 }
 
 void StyleResolverState::SetTextOrientation(ETextOrientation text_orientation) {
@@ -311,7 +322,7 @@ void StyleResolverState::SetPositionAnchor(ScopedCSSName* position_anchor) {
     StyleBuilder().SetPositionAnchor(position_anchor);
     css_to_length_conversion_data_.SetAnchorData(
         CSSToLengthConversionData::AnchorData(
-            anchor_evaluator_, position_anchor,
+            GetAnchorEvaluator(), position_anchor,
             StyleBuilder().PositionAreaOffsets()));
   }
 }
@@ -321,7 +332,7 @@ void StyleResolverState::SetPositionAreaOffsets(
   if (StyleBuilder().PositionAreaOffsets() != position_area_offsets) {
     StyleBuilder().SetPositionAreaOffsets(position_area_offsets);
     css_to_length_conversion_data_.SetAnchorData(
-        CSSToLengthConversionData::AnchorData(anchor_evaluator_,
+        CSSToLengthConversionData::AnchorData(GetAnchorEvaluator(),
                                               StyleBuilder().PositionAnchor(),
                                               position_area_offsets));
   }
@@ -370,6 +381,30 @@ void StyleResolverState::UpdateLineHeight() {
 bool StyleResolverState::CanAffectAnimations() const {
   return conditionally_affects_animations_ ||
          StyleBuilder().CanAffectAnimations();
+}
+
+void StyleResolverState::SetComputedStyleFlagsFromAuthorFlags(
+    CSSProperty::Flags author_flags) {
+  // These three flags are only used if HasAppearance() is set
+  // (they are used for knowing whether appearance: auto is to be overridden),
+  // but we compute them nevertheless, to avoid suddenly having to compute them
+  // after-the-fact if inline style is updated incrementally.
+  if (author_flags & CSSProperty::kBackground) {
+    StyleBuilder().SetHasAuthorBackground();
+  }
+  if (author_flags & CSSProperty::kBorder) {
+    StyleBuilder().SetHasAuthorBorder();
+  }
+  if (author_flags & CSSProperty::kBorderRadius) {
+    StyleBuilder().SetHasAuthorBorderRadius();
+  }
+
+  if ((InsideLink() != EInsideLink::kInsideVisitedLink &&
+       (author_flags & CSSProperty::kHighlightColors)) ||
+      (InsideLink() == EInsideLink::kInsideVisitedLink &&
+       (author_flags & CSSProperty::kVisitedHighlightColors))) {
+    StyleBuilder().SetHasAuthorHighlightColors();
+  }
 }
 
 }  // namespace blink

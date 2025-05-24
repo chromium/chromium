@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/graphite_utils.h"
 
 #include "base/check.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "third_party/skia/include/core/SkSurface.h"
@@ -30,7 +31,7 @@ void OnReadPixelsDone(
 
 // Synchronously read pixels from a graphite image.
 template <typename T>
-bool GraphiteReadPixelsSyncImpl(skgpu::graphite::Context* context,
+bool GraphiteReadPixelsSyncImpl(GraphiteSharedContext* context,
                                 skgpu::graphite::Recorder* recorder,
                                 T* imageOrSurface,
                                 const SkImageInfo& dst_info,
@@ -46,7 +47,8 @@ bool GraphiteReadPixelsSyncImpl(skgpu::graphite::Context* context,
 
   context->asyncRescaleAndReadPixels(
       imageOrSurface, dst_info, src_rect, SkImage::RescaleGamma::kSrc,
-      SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &read_context);
+      SkImage::RescaleMode::kRepeatedLinear, base::BindOnce(&OnReadPixelsDone),
+      &read_context);
 
   context->submit(skgpu::graphite::SyncToCpu::kYes);
   CHECK(read_context.finished);
@@ -62,7 +64,7 @@ bool GraphiteReadPixelsSyncImpl(skgpu::graphite::Context* context,
 
 }  // namespace
 
-void GraphiteFlush(skgpu::graphite::Context* context,
+void GraphiteFlush(GraphiteSharedContext* context,
                    skgpu::graphite::Recorder* recorder) {
   auto recording = recorder->snap();
   if (recording) {
@@ -70,13 +72,13 @@ void GraphiteFlush(skgpu::graphite::Context* context,
   }
 }
 
-void GraphiteFlushAndSubmit(skgpu::graphite::Context* context,
+void GraphiteFlushAndSubmit(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder) {
   GraphiteFlush(context, recorder);
   context->submit();
 }
 
-bool GraphiteReadPixelsSync(skgpu::graphite::Context* context,
+bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder,
                             SkImage* image,
                             const SkImageInfo& dst_info,
@@ -89,7 +91,7 @@ bool GraphiteReadPixelsSync(skgpu::graphite::Context* context,
                                     src_y);
 }
 
-bool GraphiteReadPixelsSync(skgpu::graphite::Context* context,
+bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder,
                             SkSurface* surface,
                             const SkImageInfo& dst_info,

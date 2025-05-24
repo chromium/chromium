@@ -11,7 +11,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom.h"
+#include "chrome/browser/new_tab_page/modules/file_suggestion/microsoft_files.mojom.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
+#include "chrome/browser/new_tab_page/modules/v2/authentication/microsoft_auth.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/google_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom.h"
 #include "chrome/browser/new_tab_page/modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption.mojom.h"
@@ -26,8 +29,7 @@
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
-#include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/customize_buttons/customize_buttons.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
@@ -45,7 +47,6 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
 #include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
-#include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
 
 namespace base {
 class RefCountedMemory;
@@ -65,13 +66,16 @@ class ColorChangeHandler;
 }  // namespace ui
 
 class BrowserCommandHandler;
-class FileSuggestionHandler;
+class CustomizeButtonsHandler;
+class DriveSuggestionHandler;
 #if !defined(OFFICIAL_BUILD)
 class FooHandler;
 #endif
 class GoogleCalendarPageHandler;
 class OutlookCalendarPageHandler;
 class GURL;
+class MicrosoftAuthPageHandler;
+class MicrosoftFilesPageHandler;
 class MostRelevantTabResumptionPageHandler;
 class MostVisitedHandler;
 class NewTabPageHandler;
@@ -87,14 +91,17 @@ class NewTabPageUIConfig : public content::DefaultWebUIConfig<NewTabPageUI> {
   NewTabPageUIConfig()
       : DefaultWebUIConfig(content::kChromeUIScheme,
                            chrome::kChromeUINewTabPageHost) {}
-
   // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 class NewTabPageUI
     : public ui::MojoWebUIController,
       public new_tab_page::mojom::PageHandlerFactory,
+      public customize_buttons::mojom::CustomizeButtonsHandlerFactory,
       public most_visited::mojom::MostVisitedPageHandlerFactory,
       public browser_command::mojom::CommandHandlerFactory,
       public help_bubble::mojom::HelpBubbleHandlerFactory,
@@ -133,17 +140,19 @@ class NewTabPageUI
   void BindInterface(mojo::PendingReceiver<searchbox::mojom::PageHandler>
                          pending_page_handler);
 
-  // Instantiates the implementor of metrics_reporter::mojom::PageMetricsHost
-  // mojo interface passing the pending receiver that will be internally bound.
-  void BindInterface(
-      mojo::PendingReceiver<metrics_reporter::mojom::PageMetricsHost> receiver);
-
   // Instantiates the implementor of the
   // browser_command::mojom::CommandHandlerFactory mojo interface passing
   // the pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<browser_command::mojom::CommandHandlerFactory>
           pending_receiver);
+
+  // Instantiates the implementor of the
+  // customize_buttons::mojom::CustomizeButtonsHandlerFactory mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(mojo::PendingReceiver<
+                     customize_buttons::mojom::CustomizeButtonsHandlerFactory>
+                         pending_receiver);
 
   // Instantiates the implementor of the
   // most_visited::mojom::MostVisitedPageHandlerFactory mojo interface passing
@@ -153,10 +162,10 @@ class NewTabPageUI
           pending_receiver);
 
   // Instantiates the implementor of
-  // file_suggestion::mojom::FileSuggestionHandler mojo interface passing the
+  // file_suggestion::mojom::DriveSuggestionHandler mojo interface passing the
   // pending receiver that will be internally bound.
   void BindInterface(
-      mojo::PendingReceiver<file_suggestion::mojom::FileSuggestionHandler>
+      mojo::PendingReceiver<file_suggestion::mojom::DriveSuggestionHandler>
           pending_receiver);
 
   // Instantiates the implementor of
@@ -171,6 +180,20 @@ class NewTabPageUI
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<ntp::calendar::mojom::OutlookCalendarPageHandler>
+          pending_receiver);
+
+  // Instantiates the implementor of
+  // npt::authentication::mojom::MicrosoftAuthPageHandler mojo
+  // interface passing the pending receiver that will be internally bound.
+  void BindInterface(mojo::PendingReceiver<
+                     ntp::authentication::mojom::MicrosoftAuthPageHandler>
+                         pending_receiver);
+
+  // Instantiates the implementor of
+  // file_suggestion::mojom::MicrosoftFilesPageHandler mojo interface
+  // passing the pending receiver that will be internally bound.
+  void BindInterface(
+      mojo::PendingReceiver<file_suggestion::mojom::MicrosoftFilesPageHandler>
           pending_receiver);
 
 #if !defined(OFFICIAL_BUILD)
@@ -192,6 +215,10 @@ class NewTabPageUI
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
           pending_receiver);
 
+  void ConnectToParentDocument(
+      mojo::PendingRemote<new_tab_page::mojom::MicrosoftAuthUntrustedDocument>
+          child_page);
+
   static base::RefCountedMemory* GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
@@ -206,6 +233,13 @@ class NewTabPageUI
   void CreateBrowserCommandHandler(
       mojo::PendingReceiver<browser_command::mojom::CommandHandler>
           pending_handler) override;
+
+  // customize_buttons::mojom::CustomizeButtonsHandlerFactory:
+  void CreateCustomizeButtonsHandler(
+      mojo::PendingRemote<customize_buttons::mojom::CustomizeButtonsDocument>
+          pending_page,
+      mojo::PendingReceiver<customize_buttons::mojom::CustomizeButtonsHandler>
+          pending_page_handler) override;
 
   // most_visited::mojom::MostVisitedPageHandlerFactory:
   void CreatePageHandler(
@@ -238,14 +272,13 @@ class NewTabPageUI
   // Called when the NTP (re)loads. Sets mutable load time data.
   void OnLoad();
 
-  // Called when the tab will be detached.
-  void TabWillDetach(tabs::TabInterface* tab,
-                     tabs::TabInterface::DetachReason reason);
-
   std::unique_ptr<NewTabPageHandler> page_handler_;
   mojo::Receiver<new_tab_page::mojom::PageHandlerFactory>
       page_factory_receiver_;
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+  std::unique_ptr<CustomizeButtonsHandler> customize_buttons_handler_;
+  mojo::Receiver<customize_buttons::mojom::CustomizeButtonsHandlerFactory>
+      customize_buttons_factory_receiver_;
   std::unique_ptr<MostVisitedHandler> most_visited_page_handler_;
   mojo::Receiver<most_visited::mojom::MostVisitedPageHandlerFactory>
       most_visited_page_factory_receiver_;
@@ -256,7 +289,6 @@ class NewTabPageUI
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>
       help_bubble_handler_factory_receiver_{this};
-  MetricsReporter metrics_reporter_;
 #if !defined(OFFICIAL_BUILD)
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
@@ -265,7 +297,6 @@ class NewTabPageUI
   std::unique_ptr<page_image_service::ImageServiceHandler>
       image_service_handler_;
   raw_ptr<Profile> profile_;
-  raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<ThemeService> theme_service_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   base::ScopedObservation<NtpCustomBackgroundService,
@@ -274,16 +305,15 @@ class NewTabPageUI
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
   base::Time navigation_start_time_;
-  const std::vector<std::pair<const std::string, int>> module_id_names_;
+  const std::vector<ntp::ModuleIdDetail> module_id_details_;
 
   // Mojo implementations for modules:
+  std::unique_ptr<DriveSuggestionHandler> drive_handler_;
   std::unique_ptr<GoogleCalendarPageHandler> google_calendar_handler_;
-  std::unique_ptr<FileSuggestionHandler> file_handler_;
+  std::unique_ptr<MicrosoftAuthPageHandler> microsoft_auth_handler_;
+  std::unique_ptr<MicrosoftFilesPageHandler> microsoft_files_handler_;
   std::unique_ptr<OutlookCalendarPageHandler> outlook_calendar_handler_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  // Holds subscriptions for TabInterface callbacks.
-  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   base::WeakPtrFactory<NewTabPageUI> weak_ptr_factory_{this};
 

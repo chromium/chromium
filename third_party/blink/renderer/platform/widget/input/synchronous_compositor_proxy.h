@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "components/viz/common/frame_timing_details_map.h"
+#include "components/viz/common/performance_hint_utils.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -48,7 +49,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
           host,
       mojo::PendingAssociatedReceiver<mojom::blink::SynchronousCompositor>
           compositor_request);
-  void SetThreadIds(const Vector<base::PlatformThreadId>& thread_ids);
+  void SetThreads(const Vector<viz::Thread>& threads);
 
   // blink::SynchronousInputHandler overrides.
   void UpdateRootLayerState(const gfx::PointF& total_scroll_offset,
@@ -133,7 +134,7 @@ class SynchronousCompositorProxy : public blink::SynchronousInputHandler,
   const bool viz_frame_submission_enabled_;
 
   bool needs_begin_frames_ = false;
-  Vector<base::PlatformThreadId> thread_ids_;
+  Vector<viz::Thread> threads_;
 
   // From browser.
   std::unique_ptr<SharedMemoryWithSize> software_draw_shm_;

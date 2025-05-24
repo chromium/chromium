@@ -27,18 +27,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController.FeedLauncher;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -76,7 +75,7 @@ public final class WebFeedFollowIntroControllerTest {
     private static final SharedPreferencesManager sChromeSharedPreferences =
             ChromeSharedPreferences.getInstance();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
@@ -101,7 +100,6 @@ public final class WebFeedFollowIntroControllerTest {
     private EmptyTabObserver mEmptyTabObserver;
     private FakeClock mClock;
     private WebFeedFollowIntroController mWebFeedFollowIntroController;
-    private FeatureList.TestValues mBaseTestValues;
     private UserDataHost mTestUserDataHost;
 
     @Before
@@ -109,9 +107,8 @@ public final class WebFeedFollowIntroControllerTest {
         // Print logs to stdout.
         ShadowLog.stream = System.out;
 
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebFeedBridge.getTestHooksForTesting(), mWebFeedBridgeJniMock);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
 
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         Mockito.when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -119,9 +116,9 @@ public final class WebFeedFollowIntroControllerTest {
         // Required for resolving an attribute used in AppMenuItemText.
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mClock = new FakeClock();
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUiWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
         doAnswer(
                         invocation -> {
@@ -216,7 +213,7 @@ public final class WebFeedFollowIntroControllerTest {
 
     @Test
     @SmallTest
-    public void meetsShowingRequirements_showsIntro_IPH() {
+    public void meetsShowingRequirements_showsIntro_Iph() {
         resetWebFeedFollowIntroController();
 
         setWebFeedIntroLastShownTimeMsPref(0);
@@ -415,9 +412,9 @@ public final class WebFeedFollowIntroControllerTest {
         setWebFeedIntroWebFeedIdShownTimeMsPref(0);
         setVisitCounts(3, 3);
         invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /* isRecommended= */ true);
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(false);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+        when(mTracker.shouldTriggerHelpUiWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(new TriggerDetails(false, false));
         advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
 

@@ -4,10 +4,13 @@
 
 package org.chromium.base.jank_tracker;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class is a container for jank metrics, which are processed FrameMetrics ready to be uploaded
  * to UMA.
  */
+@NullMarked
 class JankMetrics {
     public final long[] timestampsNs;
     public final long[] durationsNs;

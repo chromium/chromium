@@ -21,7 +21,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
@@ -75,7 +74,8 @@ void GiveItSomeTime() {
 // deep scans of data.
 class TestWebContentsViewDelegate : public WebContentsViewDelegate {
  public:
-  TestWebContentsViewDelegate(bool allow_drop) : allow_drop_(allow_drop) {}
+  explicit TestWebContentsViewDelegate(bool allow_drop)
+      : allow_drop_(allow_drop) {}
 
   void OnPerformingDrop(const DropData& drop_data,
                         DropCompletionCallback callback) override {
@@ -93,6 +93,12 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
     if (drop_callback_) {
       std::move(drop_callback_).Run();
     }
+  }
+
+  void DelayedFinishOnPerformingDrop() {
+    ASSERT_TRUE(drop_callback_);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, std::move(drop_callback_), TestTimeouts::tiny_timeout());
   }
 
   bool IsRendererToldToForceDefaultAction() {
@@ -157,6 +163,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
     drag_dest_delegate_.Reset();
     view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+    view->drag_in_progress_ = true;
 
     auto delegate = std::make_unique<TestWebContentsViewDelegate>(
         /*allow_drop=*/delegate_allows_drop);
@@ -195,6 +202,12 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     // Cache the data for verification.
     drop_target_widget_ = target_rwh;
     std::move(async_drop_closure_).Run();
+  }
+
+  void EndDrag() {
+    ASSERT_FALSE(async_drop_closure_);
+    ASSERT_TRUE(async_end_drag_closure_);
+    std::move(async_end_drag_closure_).Run();
   }
 
   void TestOverscrollNavigation(bool touch_handler) {
@@ -298,7 +311,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
   }
 
   void WaitAFrame() {
-    while (!GetRenderWidgetHost()->RequestRepaintForTesting()) {
+    while (!GetRenderWidgetHost()->RequestRepaintOnNewSurface()) {
       GiveItSomeTime();
     }
     frame_observer_->WaitForAnyFrameSubmission();
@@ -340,6 +353,8 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
   // A closure indicating that async drop operation has completed.
   base::OnceClosure async_drop_closure_;
+
+  base::OnceClosure async_end_drag_closure_;
 
   MockWebDragDestDelegate drag_dest_delegate_;
 
@@ -397,7 +412,8 @@ class SpuriousMouseMoveEventObserver
     host_->RemoveInputEventObserver(this);
   }
 
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     EXPECT_NE(blink::WebInputEvent::Type::kMouseMove, event.GetType())
         << "Unexpected mouse move event.";
   }
@@ -479,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // Disabled because the test always fails the first time it runs on the Win Aura
 // bots, and usually but not always passes second-try (See crbug.com/179532).
 // Flaky on CrOS, Linux, and Fuchsia as well: https://crbug.com/856079
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_QuickOverscrollDirectionChange \
   DISABLED_QuickOverscrollDirectionChange
@@ -681,6 +697,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
                        Drop_NoDropZone_DelegateAllows) {
   StartTestWithPage("/simple_page.html");
+  WebContentsViewAura* view = GetWebContentsViewAura();
 
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
@@ -692,6 +709,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
   run_loop.Run();
 
+  ASSERT_FALSE(view->drag_in_progress_);
   EXPECT_TRUE(delegate->IsRendererToldToForceDefaultAction());
   EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
@@ -703,6 +721,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
                        Drop_NoDropZone_DelegateBlocks) {
   StartTestWithPage("/simple_page.html");
+  WebContentsViewAura* view = GetWebContentsViewAura();
 
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
@@ -714,6 +733,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 
   run_loop.Run();
 
+  ASSERT_FALSE(view->drag_in_progress_);
   EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
@@ -723,6 +743,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // leave".
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DropZone_DelegateAllow) {
   StartTestWithPage("/accept-drop.html");
+  WebContentsViewAura* view = GetWebContentsViewAura();
 
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
@@ -734,6 +755,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DropZone_DelegateAllow) {
 
   run_loop.Run();
 
+  ASSERT_FALSE(view->drag_in_progress_);
   EXPECT_FALSE(delegate->IsRendererToldToForceDefaultAction());
   EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
@@ -744,6 +766,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DropZone_DelegateAllow) {
 // "drop".
 IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DropZone_DelegateBlocks) {
   StartTestWithPage("/accept-drop.html");
+  WebContentsViewAura* view = GetWebContentsViewAura();
 
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
@@ -755,6 +778,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, Drop_DropZone_DelegateBlocks) {
 
   run_loop.Run();
 
+  ASSERT_FALSE(view->drag_in_progress_);
   EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
@@ -895,9 +919,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // tests. http://crbug.com/305722
 // TODO(tdresser): Re-enable this once eager GR is back on. See
 // crbug.com/410280.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_OverscrollNavigationTouchThrottling \
   DISABLED_OverscrollNavigationTouchThrottling
 #else
@@ -1019,6 +1041,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
   WebContentsViewAura* view = GetWebContentsViewAura();
 
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+  view->drag_in_progress_ = true;
 
   std::unique_ptr<ui::OSExchangeData> data =
       std::make_unique<ui::OSExchangeData>();
@@ -1040,6 +1063,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
 
   run_loop.Run();
 
+  ASSERT_FALSE(view->drag_in_progress_);
   EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_FALSE(drag_dest_delegate_.GetOnDragLeaveCalled());
   EXPECT_EQ(drop_target_widget_,
@@ -1056,6 +1080,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
   WebContentsViewAura* view = GetWebContentsViewAura();
 
   view->SetDragDestDelegateForTesting(&drag_dest_delegate_);
+  view->drag_in_progress_ = true;
 
   std::unique_ptr<ui::OSExchangeData> data =
       std::make_unique<ui::OSExchangeData>();
@@ -1071,6 +1096,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
   ASSERT_TRUE(drop_cb);
   drop_cb.Reset();
 
+  ASSERT_FALSE(view->drag_in_progress_);
   EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
   EXPECT_TRUE(drag_dest_delegate_.GetOnDragLeaveCalled());
 }
@@ -1087,6 +1113,75 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, IgnoreInputs_Focus) {
   EXPECT_FALSE(view->CanFocus());
   ignore_inputs.reset();
   EXPECT_TRUE(view->CanFocus());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
+                       DragInProgressFinishesAfterDrop) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents = GetWebContentsImpl();
+  WebContentsViewAura* view = GetWebContentsViewAura();
+
+  base::RunLoop async_drop_run_loop;
+  async_drop_closure_ = async_drop_run_loop.QuitClosure();
+
+  base::RunLoop end_drag_run_loop;
+  async_end_drag_closure_ = end_drag_run_loop.QuitClosure();
+  view->end_drag_runner_.ReplaceClosure(base::BindOnce(
+      &WebContentsViewAuraTest::EndDrag, base::Unretained(this)));
+
+  TestWebContentsViewDelegate* delegate =
+      PrepareWebContentsViewForDropTest(/*delegate_allows_drop=*/true);
+  SimulateDragEnterAndDrop(/*document_is_handling_drag=*/true);
+  // `drag_in_progress_` should still be true before `CompleteDrop()` is called.
+  ASSERT_TRUE(view->drag_in_progress_);
+
+  delegate->DelayedFinishOnPerformingDrop();
+  async_drop_run_loop.Run();
+  EXPECT_EQ(1, drag_dest_delegate_.GetOnDropCalledCount());
+  ASSERT_FALSE(view->drag_in_progress_);
+  end_drag_run_loop.Run();
+
+  EXPECT_EQ(drop_target_widget_,
+            RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                           .root()
+                                           ->current_frame_host()
+                                           ->GetRenderWidgetHost()));
+}
+
+// This test is the same as `DragInProgressFinishesAfterDrop`, but it tests the
+// scenario where drag_in_progress_ should still be flipped even when drop is
+// blocked.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
+                       DragInProgressFinishesAfterNoDrop) {
+  StartTestWithPage("/simple_page.html");
+  WebContentsImpl* contents = GetWebContentsImpl();
+  WebContentsViewAura* view = GetWebContentsViewAura();
+
+  base::RunLoop async_drop_run_loop;
+  async_drop_closure_ = async_drop_run_loop.QuitClosure();
+
+  base::RunLoop end_drag_run_loop;
+  async_end_drag_closure_ = end_drag_run_loop.QuitClosure();
+  view->end_drag_runner_.ReplaceClosure(base::BindOnce(
+      &WebContentsViewAuraTest::EndDrag, base::Unretained(this)));
+
+  TestWebContentsViewDelegate* delegate =
+      PrepareWebContentsViewForDropTest(/*delegate_allows_drop=*/false);
+  SimulateDragEnterAndDrop(/*document_is_handling_drag=*/true);
+  // `drag_in_progress_` should still be true before `CompleteDrop()` is called.
+  ASSERT_TRUE(view->drag_in_progress_);
+
+  delegate->DelayedFinishOnPerformingDrop();
+  async_drop_run_loop.Run();
+  EXPECT_EQ(0, drag_dest_delegate_.GetOnDropCalledCount());
+  ASSERT_FALSE(view->drag_in_progress_);
+  end_drag_run_loop.Run();
+
+  EXPECT_EQ(drop_target_widget_,
+            RenderWidgetHostImpl::From(contents->GetPrimaryFrameTree()
+                                           .root()
+                                           ->current_frame_host()
+                                           ->GetRenderWidgetHost()));
 }
 
 }  // namespace content

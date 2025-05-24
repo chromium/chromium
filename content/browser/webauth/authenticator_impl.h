@@ -50,8 +50,8 @@ class CONTENT_EXPORT AuthenticatorImpl
   void MakeCredential(
       blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
       MakeCredentialCallback callback) override;
-  void GetAssertion(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
-                    GetAssertionCallback callback) override;
+  void GetCredential(blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
+                     GetCredentialCallback callback) override;
   void GetClientCapabilities(GetClientCapabilitiesCallback callback) override;
   void Report(blink::mojom::PublicKeyCredentialReportOptionsPtr options,
               ReportCallback callback) override;

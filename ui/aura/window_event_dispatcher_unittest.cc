@@ -714,11 +714,9 @@ std::string EventTypeToString(ui::EventType type) {
 
     default:
       // We should explicitly require each event type.
-      NOTREACHED_IN_MIGRATION()
-          << "Received unexpected event: " << base::to_underlying(type);
-      break;
+      NOTREACHED() << "Received unexpected event: "
+                   << base::to_underlying(type);
   }
-  return "";
 }
 
 std::string EventTypesToString(const EventFilterRecorder::Events& events) {

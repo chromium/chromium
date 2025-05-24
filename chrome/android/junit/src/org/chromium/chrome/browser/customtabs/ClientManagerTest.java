@@ -31,7 +31,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
@@ -43,10 +44,11 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.browserservices.PostMessageHandler;
+import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
-import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifierJni;
+import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -81,14 +83,17 @@ public class ClientManagerTest {
     private static final String URL = "https://www.android.com";
     private static final String PACKAGE_NAME = "org.chromium.chrome";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private ClientManager mClientManager;
-    private CustomTabsSessionToken mSession =
-            CustomTabsSessionToken.createMockSessionTokenForTesting();
-    private int mUid = Process.myUid();
+    private final SessionHolder<?> mSession =
+            new SessionHolder<>(CustomTabsSessionToken.createMockSessionTokenForTesting());
+    private final int mUid = Process.myUid();
+
+    private EngagementSignalsHandler mEngagementSignalsHandler;
+    private PostMessageServiceConnection mPostMessageServiceConnection;
+    private PostMessageHandler mPostMessageHandler;
 
     @Mock private ClientManager.InstalledAppProviderWrapper mInstalledAppProviderWrapper;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private OriginVerifier.Natives mMockOriginVerifierJni;
 
@@ -100,11 +105,10 @@ public class ClientManagerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(OriginVerifierJni.TEST_HOOKS, mMockOriginVerifierJni);
+        OriginVerifierJni.setInstanceForTesting(mMockOriginVerifierJni);
 
-        mJniMocker.mock(ChromeOriginVerifierJni.TEST_HOOKS, mMockChromeOriginVerifierJni);
+        ChromeOriginVerifierJni.setInstanceForTesting(mMockChromeOriginVerifierJni);
         Mockito.doAnswer(
                         args -> {
                             return 100L;
@@ -120,6 +124,7 @@ public class ClientManagerTest {
                 .when(mChromeBrowserInitializer)
                 .runNowOrAfterFullBrowserStarted(Mockito.any());
 
+        ChromeBrowserInitializer.setForTesting(mChromeBrowserInitializer);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
 
         RequestThrottler.purgeAllEntriesForTesting();
@@ -129,11 +134,7 @@ public class ClientManagerTest {
                 PACKAGE_NAME,
                 mUid);
 
-        mClientManager =
-                new ClientManager(
-                        new ChromeOriginVerifierFactoryImpl(),
-                        mInstalledAppProviderWrapper,
-                        mChromeBrowserInitializer);
+        mClientManager = new ClientManager(mInstalledAppProviderWrapper);
 
         ChromeOriginVerifier.clearCachedVerificationsForTesting();
         UmaRecorderHolder.resetForTesting();
@@ -152,6 +153,11 @@ public class ClientManagerTest {
                         return url1.equals(url2);
                     }
                 });
+
+        mPostMessageServiceConnection =
+                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
+        mPostMessageHandler = new PostMessageHandler(mPostMessageServiceConnection);
+        mEngagementSignalsHandler = new EngagementSignalsHandler(mSession.getSessionAsCustomTab());
     }
 
     @Test
@@ -190,7 +196,13 @@ public class ClientManagerTest {
     @Test
     @SmallTest
     public void testValidSessionNoWarmup() {
-        mClientManager.newSession(mSession, mUid, null, null, null, null);
+        mClientManager.newSession(
+                mSession,
+                mUid,
+                null,
+                mPostMessageHandler,
+                mPostMessageServiceConnection,
+                mEngagementSignalsHandler);
         Assert.assertEquals(
                 ClientManager.CalledWarmup.SESSION_NO_WARMUP_NOT_CALLED,
                 mClientManager.getWarmupState(mSession));
@@ -200,7 +212,13 @@ public class ClientManagerTest {
     @SmallTest
     public void testValidSessionOtherWarmup() {
         mClientManager.recordUidHasCalledWarmup(mUid + 1);
-        mClientManager.newSession(mSession, mUid, null, null, null, null);
+        mClientManager.newSession(
+                mSession,
+                mUid,
+                null,
+                mPostMessageHandler,
+                mPostMessageServiceConnection,
+                mEngagementSignalsHandler);
         Assert.assertEquals(
                 ClientManager.CalledWarmup.SESSION_NO_WARMUP_ALREADY_CALLED,
                 mClientManager.getWarmupState(mSession));
@@ -210,7 +228,13 @@ public class ClientManagerTest {
     @SmallTest
     public void testValidSessionWarmup() {
         mClientManager.recordUidHasCalledWarmup(mUid);
-        mClientManager.newSession(mSession, mUid, null, null, null, null);
+        mClientManager.newSession(
+                mSession,
+                mUid,
+                null,
+                mPostMessageHandler,
+                mPostMessageServiceConnection,
+                mEngagementSignalsHandler);
         Assert.assertEquals(
                 ClientManager.CalledWarmup.SESSION_WARMUP, mClientManager.getWarmupState(mSession));
     }
@@ -219,20 +243,41 @@ public class ClientManagerTest {
     @SmallTest
     public void testValidSessionWarmupSeveralCalls() {
         mClientManager.recordUidHasCalledWarmup(mUid);
-        mClientManager.newSession(mSession, mUid, null, null, null, null);
+        mClientManager.newSession(
+                mSession,
+                mUid,
+                null,
+                mPostMessageHandler,
+                mPostMessageServiceConnection,
+                mEngagementSignalsHandler);
         Assert.assertEquals(
                 ClientManager.CalledWarmup.SESSION_WARMUP, mClientManager.getWarmupState(mSession));
 
-        CustomTabsSessionToken token = CustomTabsSessionToken.createMockSessionTokenForTesting();
-        mClientManager.newSession(token, mUid, null, null, null, null);
+        SessionHolder<?> sessionHolder =
+                new SessionHolder<>(CustomTabsSessionToken.createMockSessionTokenForTesting());
+        mClientManager.newSession(
+                sessionHolder,
+                mUid,
+                null,
+                mPostMessageHandler,
+                mPostMessageServiceConnection,
+                mEngagementSignalsHandler);
         Assert.assertEquals(
-                ClientManager.CalledWarmup.SESSION_WARMUP, mClientManager.getWarmupState(token));
+                ClientManager.CalledWarmup.SESSION_WARMUP,
+                mClientManager.getWarmupState(sessionHolder));
     }
 
     @Test
     @SmallTest
     public void testPredictionOutcomeSuccess() {
-        Assert.assertTrue(mClientManager.newSession(mSession, mUid, null, null, null, null));
+        Assert.assertTrue(
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         Assert.assertTrue(
                 mClientManager.updateStatsAndReturnWhetherAllowed(mSession, mUid, URL, false));
         Assert.assertEquals(
@@ -243,7 +288,14 @@ public class ClientManagerTest {
     @Test
     @SmallTest
     public void testPredictionOutcomeNoPrediction() {
-        Assert.assertTrue(mClientManager.newSession(mSession, mUid, null, null, null, null));
+        Assert.assertTrue(
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.recordUidHasCalledWarmup(mUid);
         Assert.assertEquals(
                 ClientManager.PredictionStatus.NONE,
@@ -253,7 +305,14 @@ public class ClientManagerTest {
     @Test
     @SmallTest
     public void testPredictionOutcomeBadPrediction() {
-        Assert.assertTrue(mClientManager.newSession(mSession, mUid, null, null, null, null));
+        Assert.assertTrue(
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         Assert.assertTrue(
                 mClientManager.updateStatsAndReturnWhetherAllowed(mSession, mUid, URL, false));
         Assert.assertEquals(
@@ -264,7 +323,14 @@ public class ClientManagerTest {
     @Test
     @SmallTest
     public void testPredictionOutcomeIgnoreFragment() {
-        Assert.assertTrue(mClientManager.newSession(mSession, mUid, null, null, null, null));
+        Assert.assertTrue(
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         Assert.assertTrue(
                 mClientManager.updateStatsAndReturnWhetherAllowed(mSession, mUid, URL, false));
         mClientManager.setIgnoreFragmentsForSession(mSession, true);
@@ -281,7 +347,7 @@ public class ClientManagerTest {
         // TODO(peconn): Get rid of this anonymous class once PostMessageServiceConnection is made
         // non-abstract. Same with the other occurrences below.
         PostMessageServiceConnection serviceConnection =
-                new PostMessageServiceConnection(mSession) {};
+                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
         Assert.assertTrue(
                 cm.newSession(
                         mSession,
@@ -289,7 +355,7 @@ public class ClientManagerTest {
                         null,
                         MockPostMessageHandler.create(),
                         serviceConnection,
-                        null));
+                        mEngagementSignalsHandler));
         // Should always start with no origin.
         Assert.assertNull(cm.getPostMessageOriginForSessionForTesting(mSession));
 
@@ -322,7 +388,7 @@ public class ClientManagerTest {
     public void testPostMessageOriginDifferentRelations() {
         final ClientManager cm = mClientManager;
         PostMessageServiceConnection serviceConnection =
-                new PostMessageServiceConnection(mSession) {};
+                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
         Assert.assertTrue(
                 cm.newSession(
                         mSession,
@@ -330,7 +396,7 @@ public class ClientManagerTest {
                         null,
                         MockPostMessageHandler.create(),
                         serviceConnection,
-                        null));
+                        mEngagementSignalsHandler));
 
         Origin origin = Origin.create(URL);
         when(mInstalledAppProviderWrapper.isAppInstalledAndAssociatedWithOrigin(any(), eq(origin)))
@@ -365,7 +431,14 @@ public class ClientManagerTest {
     @Test
     @SmallTest
     public void testFirstLowConfidencePredictionIsNotThrottled() {
-        Assert.assertTrue(mClientManager.newSession(mSession, mUid, null, null, null, null));
+        Assert.assertTrue(
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
 
         // Two low confidence in a row is OK.
         Assert.assertTrue(
@@ -395,7 +468,14 @@ public class ClientManagerTest {
     @SmallTest
     public void testMayLaunchUrlAccounting() {
         String name = "CustomTabs.MayLaunchUrlType";
-        Assert.assertTrue(mClientManager.newSession(mSession, mUid, null, null, null, null));
+        Assert.assertTrue(
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
 
         // No prediction;
         mClientManager.registerLaunch(mSession, URL);
@@ -454,7 +534,7 @@ public class ClientManagerTest {
         final ClientManager cm = mClientManager;
 
         PostMessageServiceConnection serviceConnection =
-                new PostMessageServiceConnection(mSession) {};
+                new PostMessageServiceConnection(mSession.getSessionAsCustomTab()) {};
         Assert.assertTrue(
                 cm.newSession(
                         mSession,
@@ -462,7 +542,7 @@ public class ClientManagerTest {
                         null,
                         MockPostMessageHandler.create(),
                         serviceConnection,
-                        null));
+                        mEngagementSignalsHandler));
         // Should always start with no origin.
         Assert.assertNull(cm.getPostMessageOriginForSessionForTesting(mSession));
         Assert.assertNull(cm.getPostMessageTargetOriginForSessionForTesting(mSession));
@@ -494,7 +574,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, true);
         mClientManager.dontKeepAliveForSession(mSession);
 
@@ -521,7 +607,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, true);
         mClientManager.keepAliveForSession(mSession, intent);
 
@@ -543,7 +635,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, false);
         mClientManager.dontKeepAliveForSession(mSession);
 
@@ -570,7 +668,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, false);
         mClientManager.keepAliveForSession(mSession, intent);
 
@@ -592,7 +696,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, true);
         mClientManager.dontKeepAliveForSession(mSession);
 
@@ -620,7 +730,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, true);
         mClientManager.keepAliveForSession(mSession, intent);
 
@@ -642,7 +758,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, false);
         mClientManager.dontKeepAliveForSession(mSession);
 
@@ -670,7 +792,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, false);
         mClientManager.keepAliveForSession(mSession, intent);
 
@@ -692,7 +820,13 @@ public class ClientManagerTest {
 
         Assert.assertTrue(
                 "A new session should have been created.",
-                mClientManager.newSession(mSession, mUid, null, null, null, null));
+                mClientManager.newSession(
+                        mSession,
+                        mUid,
+                        null,
+                        mPostMessageHandler,
+                        mPostMessageServiceConnection,
+                        mEngagementSignalsHandler));
         mClientManager.setCustomTabIsInForeground(mSession, true);
         mClientManager.dontKeepAliveForSession(mSession);
 

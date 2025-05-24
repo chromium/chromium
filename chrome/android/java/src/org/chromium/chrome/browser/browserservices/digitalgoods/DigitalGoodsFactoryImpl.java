@@ -8,7 +8,6 @@ import android.app.Activity;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.ActivityUtils;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.payments.MethodStrings;
@@ -28,7 +27,6 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
 
     private final RenderFrameHost mRenderFrameHost;
     private final DigitalGoodsImpl.Delegate mDigitalGoodsDelegate;
-    private final DigitalGoodsAdapter mAdapter;
 
     public static void setDigitalGoodsForTesting(DigitalGoods impl) {
         sImplForTesting = impl;
@@ -38,9 +36,6 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
     public DigitalGoodsFactoryImpl(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
         mDigitalGoodsDelegate = mRenderFrameHost::getLastCommittedURL;
-        mAdapter =
-                new DigitalGoodsAdapter(
-                        ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient());
     }
 
     private int getResponseCode(String paymentMethod) {
@@ -85,7 +80,7 @@ public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
         int code = getResponseCode(paymentMethod);
         CreateDigitalGoodsResponseCode.validate(code);
         if (code == CreateDigitalGoodsResponseCode.OK) {
-            callback.call(code, new DigitalGoodsImpl(mAdapter, mDigitalGoodsDelegate));
+            callback.call(code, new DigitalGoodsImpl(mDigitalGoodsDelegate));
         } else {
             callback.call(code, null);
         }

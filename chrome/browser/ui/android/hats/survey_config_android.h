@@ -12,18 +12,22 @@
 
 using base::android::JavaParamRef;
 
+class Profile;
+
 namespace hats {
 
 class SurveyConfigHolder {
  public:
-  SurveyConfigHolder(JNIEnv* env, const JavaParamRef<jobject>& obj);
+  SurveyConfigHolder(JNIEnv* env,
+                     const JavaParamRef<jobject>& obj,
+                     Profile* profile);
   ~SurveyConfigHolder();
 
   void Destroy(JNIEnv* env);
 
  private:
   // Initialize Java holders
-  void InitJavaHolder();
+  void InitJavaHolder(Profile* profile);
 
   SurveyConfigs survey_configs_by_triggers_;
   base::android::ScopedJavaGlobalRef<jobject> jobj_;

@@ -69,7 +69,7 @@ void UrlFetcherDownloader::StartURLFetch(const GURL& url) {
     return;
   }
 
-  file_path_ = download_dir_.AppendASCII(url.ExtractFileName());
+  file_path_ = download_dir_.AppendUTF8(url.ExtractFileName());
   network_fetcher_ = network_fetcher_factory_->Create();
   cancel_callback_ = network_fetcher_->DownloadToFile(
       url, file_path_,

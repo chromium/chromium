@@ -14,12 +14,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/types/optional_ref.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/download_source.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "url/gurl.h"
@@ -276,6 +278,12 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
     update_first_party_url_on_redirect_ = update_first_party_url_on_redirect;
   }
 
+  void set_permissions_policy(
+      const base::optional_ref<const network::PermissionsPolicy>
+          permissions_policy) {
+    permissions_policy_ = permissions_policy.CopyAsOptional();
+  }
+
   OnStartedCallback& callback() { return callback_; }
   bool content_initiated() const { return content_initiated_; }
   const std::string& last_modified() const { return last_modified_; }
@@ -332,6 +340,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   bool update_first_party_url_on_redirect() const {
     return update_first_party_url_on_redirect_;
   }
+  std::optional<network::PermissionsPolicy> permissions_policy() const {
+    return permissions_policy_;
+  }
 
   // STATE CHANGING: All save_info_ sub-objects will be in an indeterminate
   // state following this call.
@@ -380,6 +391,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadUrlParameters {
   std::optional<net::IsolationInfo> isolation_info_;
   bool has_user_gesture_;
   bool update_first_party_url_on_redirect_;
+  std::optional<network::PermissionsPolicy> permissions_policy_;
 };
 
 }  // namespace download

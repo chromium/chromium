@@ -4,10 +4,10 @@
 
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/common/privacy_budget/field_trial_param_conversions.h"
 #include "chrome/common/privacy_budget/privacy_budget_features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"

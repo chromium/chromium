@@ -123,6 +123,11 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Managed Pref"/>
 </enum>
 
+<enum name="BooleanRepeatVisit">
+  <int value="0" label="Never visited before"/>
+  <int value="1" label="Visited before"/>
+</enum>
+
 <enum name="BooleanSafeBrowsingApiUnknownException">
   <int value="0" label="Known exception"/>
   <int value="1" label="Unknown exception"/>
@@ -133,9 +138,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Same URL"/>
 </enum>
 
-<enum name="BooleanSentOrReceived">
-  <int value="0" label="Sent"/>
-  <int value="1" label="Received"/>
+<enum name="BooleanSubsequentResponse">
+  <int value="0" label="Initial Response"/>
+  <int value="1" label="Subsequent Response"/>
 </enum>
 
 <enum name="BooleanTransferred">
@@ -166,6 +171,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="EMPTY_REPORT"/>
 </enum>
 
+<!-- LINT.IfChange(ClientSafeBrowsingReportType) -->
+
 <enum name="ClientSafeBrowsingReportType">
   <int value="0" label="Unknown"/>
   <int value="1" label="URL phishing"/>
@@ -190,6 +197,15 @@ chromium-metrics-reviews@google.com.
   <int value="24" label="Abusive notification permission accepted"/>
   <int value="25" label="dangerous download auto deleted"/>
   <int value="26" label="dangerous download canceled on profile closure"/>
+  <int value="27" label="URL real-time and hash real-time discrepancy"/>
+  <int value="28" label="External app redirect"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/proto/csd.proto:ClientSafeBrowsingReportType) -->
+
+<enum name="DisplayPersistentNotificationEvents">
+  <int value="0" label="Request to display persistent notification"/>
+  <int value="1" label="Finished displaying persistent notification"/>
 </enum>
 
 <enum name="SafeBrowsingAllowlistAsyncMatch">
@@ -388,6 +404,8 @@ chromium-metrics-reviews@google.com.
 <enum name="SafeBrowsingRTLookupResponseVerdictType">
   <int value="0" label="VERDICT_TYPE_UNSPECIFIED"/>
   <int value="1" label="SAFE"/>
+  <int value="50" label="SUSPICIOUS"/>
+  <int value="75" label="WARN"/>
   <int value="100" label="DANGEROUS"/>
 </enum>
 
@@ -557,6 +575,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="UNABLE_TO_RENAME_FAILURE"/>
 </enum>
 
+<!-- LINT.IfChange(SafeBrowsingV4UpdateType) -->
+
+<enum name="SafeBrowsingV4UpdateType">
+  <int value="0" label="Invalid update"/>
+  <int value="1" label="Full update"/>
+  <int value="2" label="Partial update"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/v4_store.h:ApplyUpdateType) -->
+
 <enum name="SafetyCheckWarningReason">
   <int value="1" label="Unpublished"/>
   <int value="2" label="Policy"/>
@@ -658,6 +686,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="SITE_ENGAGEMENT_SCORE_EXISTS"/>
   <int value="8" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
   <int value="9" label="GLOBAL_ALLOWLIST_NOT_READY"/>
+  <int value="10" label="FAMILIAR_LIKELY_PREVIOUSLY_UNFAMILIAR"/>
 </enum>
 
 <enum name="SiteFamiliarityHistoryHeuristicName">
@@ -665,6 +694,18 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="VISITED_MORE_THAN_A_DAY_AGO"/>
   <int value="2" label="VISITED_MORE_THAN_FOUR_HOURS_AGO"/>
   <int value="3" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
+  <int value="4" label="VISITED_MORE_THAN_A_DAY_AGO_PREVIOUSLY_UNFAMILIAR"/>
+</enum>
+
+<enum name="SuspiciousNotificationWarningInteractions">
+  <int value="0" label="WARNING_SHOWN"/>
+  <int value="1" label="SHOW_ORIGINAL_NOTIFICATION"/>
+  <int value="2" label="UNSUBSCRIBE"/>
+  <int value="3" label="ALWAYS_ALLOW"/>
+  <int value="4" label="DISMISS"/>
+  <int value="5" label="REPORT_AS_SAFE"/>
+  <int value="6" label="REPORT_WARNED_NOTIFICATION_AS_SPAM"/>
+  <int value="7" label="REPORT_UNWARNED_NOTIFICATION_AS_SPAM"/>
 </enum>
 
 <enum name="SuspiciousSiteTriggerEvent">
@@ -696,6 +737,39 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="A report has started"/>
   <int value="4" label="The trigger is in monitoring mode"/>
 </enum>
+
+<!-- LINT.IfChange(SyncedEsbOutcome) -->
+
+<enum name="SyncedEsbOutcome">
+  <int value="0" label="Shown"/>
+  <int value="1" label="AcceptedOk"/>
+  <int value="2" label="AcceptedTurnOn"/>
+  <int value="3" label="Dismissed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/safe_browsing/tailored_security/consented_message_android.cc:SyncedEsbOutcome) -->
+
+<enum name="URTAndBackgroundHPRTResult">
+  <int value="0" label="UrtSafeAndHprtUnfinished"/>
+  <int value="1" label="UrtUnsafeAndHprtUnfinished"/>
+  <int value="2" label="UrtSafeAndHprtSafe"/>
+  <int value="3" label="UrtSafeAndHprtUnsafe"/>
+  <int value="4" label="UrtUnsafeAndHprtSafe"/>
+  <int value="5" label="UrtUnsafeAndHprtUnsafe"/>
+</enum>
+
+<!-- LINT.IfChange(V4HashPrefixMapWriteError) -->
+
+<enum name="V4HashPrefixMapWriteError">
+  <int value="0" label="Error writing file to disk"/>
+  <int value="1" label="File size not a multiple of prefix size"/>
+  <int value="2" label="File not found"/>
+  <int value="3" label="File size does not match metadata"/>
+  <int value="4" label="Failed to memory map file"/>
+  <int value="5" label="Memory mapped region has wrong size"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/db/hash_prefix_map.cc:WriteError) -->
 
 </enums>
 

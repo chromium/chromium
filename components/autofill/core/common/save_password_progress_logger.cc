@@ -130,8 +130,8 @@ std::string SavePasswordProgressLogger::GetFormFieldDataLogString(
       "%s: signature=%s, type=%s, renderer_id=%s, %s, %s%s",
       ScrubElementID(field.name()).c_str(),
       base::NumberToString(*CalculateFieldSignatureForField(field)).c_str(),
-      ScrubElementID(std::string(autofill::FormControlTypeToString(
-                         field.form_control_type())))
+      ScrubElementID(
+          std::string(FormControlTypeToString(field.form_control_type())))
           .c_str(),
       base::NumberToString(*field.renderer_id()).c_str(), is_visible, is_empty,
       autocomplete.c_str());
@@ -445,8 +445,6 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "PasswordManager::DidNavigateMainFrame";
     case STRING_NAVIGATION_NTP:
       return "Navigation to New Tab page";
-    case STRING_SERVER_PREDICTIONS:
-      return "Server predictions";
     case STRING_USERNAME_FIRST_FLOW_VOTE:
       return "Username first flow vote";
     case STRING_POSSIBLE_USERNAME_USED:
@@ -457,13 +455,29 @@ std::string SavePasswordProgressLogger::GetStringFromID(
       return "Saving on this domain is explicitly blocklisted";
     case STRING_SAVING_BLOCKLISTED_BY_SMART_BUBBLE:
       return "Saving on this domain is blocklisted by the smart bubble";
+    case STRING_PASSWORD_CHANGE_STARTED:
+      return "Password Change started";
+    case STRING_PASSWORD_CHANGE_FINISHED:
+      return "Password Change finished with result";
+    case STRING_PASSWORD_CHANGE_STATE_CHANGED:
+      return "Password Change internal state changed to";
+    case STRING_RESOURCE_FAILED_LOADING_NO_SUBMITTED_MANAGER:
+      return "POST error with 400-403 status is detected, ignoring since there "
+             "is no submitted form";
+    case STRING_RESOURCE_FAILED_LOADING_FOR_WRONG_FRAME:
+      return "POST error with 400-403 status is detected, ignoring since it is "
+             "for a different frame";
+    case STRING_RESOURCE_FAILED_LOADING_FOR_WRONG_ORIGIN:
+      return "POST error with 400-403 status is detected, ignoring since it is "
+             "for a different origin";
+    case STRING_RESOURCE_FAILED_LOADING_LOGIN_FAILED:
+      return "POST error with 400-403 status is detected, considering "
+             "current submission failed";
     case SavePasswordProgressLogger::STRING_INVALID:
       return "INVALID";
       // Intentionally no default: clause here -- all IDs need to get covered.
   }
-  NOTREACHED_IN_MIGRATION();  // Win compilers don't believe this is
-                              // unreachable.
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace autofill

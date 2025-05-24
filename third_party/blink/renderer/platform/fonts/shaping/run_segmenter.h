@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
 #include "third_party/blink/renderer/platform/fonts/orientation_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
@@ -38,7 +39,7 @@ class PLATFORM_EXPORT RunSegmenter {
   };
 
   // Initialize a RunSegmenter.
-  RunSegmenter(const UChar* buffer, unsigned buffer_size, FontOrientation);
+  RunSegmenter(base::span<const UChar> buffer, FontOrientation);
   RunSegmenter(const RunSegmenter&) = delete;
   RunSegmenter& operator=(const RunSegmenter&) = delete;
 

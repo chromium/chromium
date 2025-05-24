@@ -1,6 +1,8 @@
 {%- macro generate_return_type(method) %}
 {%-   if method.response_parameters != None %}
 {%-     if method.response_parameters|length == 0 %}Promise<void>
+{%-     elif method.result_response != None -%}
+        Promise<{{method.result_response.success_kind|ts_type}}>
 {%-     else %}Promise<{
 {%-       for response_parameter in method.response_parameters %}
         {{response_parameter.name}}: {{response_parameter.kind|ts_type_maybe_nullable}},
@@ -59,14 +61,14 @@ export class {{interface.name}}Remote implements {{interface.name}}Interface {
 {%- for param in method.parameters %}
       {{param.name}}: {{param.kind|ts_type_maybe_nullable}}{%- if not loop.last %},{% endif %}
 {%- endfor -%}): {{generate_return_type(method)}} {
-{%- if method.response_parameters != None %}
+{%- if method.response_parameters != None or method.result_response != None %}
     return this.proxy.sendMessage(
 {%- else %}
     this.proxy.sendMessage(
 {%- endif %}
         {{method.ordinal}},
         {{interface_message_id}}_ParamsSpec.$,
-{%-   if method.response_parameters != None %}
+{%-   if method.response_parameters != None or method.result_response != None %}
         {{interface_message_id}}_ResponseParamsSpec.$,
 {%-   else %}
         null,
@@ -75,7 +77,8 @@ export class {{interface.name}}Remote implements {{interface.name}}Interface {
 {%- for param in method.parameters %}
           {{param.name}}{%- if not loop.last %},{% endif %}
 {%- endfor %}
-        ]);
+        ],
+        {{'true' if method.result_response != None else 'false'}});
   }
 {%-  endfor %}
 };
@@ -108,12 +111,13 @@ export class {{interface.name}}Receiver {
     this.helper_internal_.registerHandler(
         {{method.ordinal}},
         {{interface_message_id}}_ParamsSpec.$,
-{%-   if method.response_parameters != None %}
+{%-   if method.response_parameters != None or method.result_response != None %}
         {{interface_message_id}}_ResponseParamsSpec.$,
 {%-   else %}
         null,
 {%-   endif %}
-        impl.{{method.name}}.bind(impl));
+        impl.{{method.name}}.bind(impl),
+        {{'true' if method.result_response != None else 'false'}});
 {%- endfor %}
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();
   }
@@ -178,10 +182,12 @@ export class {{interface.name}}CallbackRouter {
         {{interface_message_id}}_ParamsSpec.$,
 {%-   if method.response_parameters != None %}
         {{interface_message_id}}_ResponseParamsSpec.$,
-        this.{{method.name}}.createReceiverHandler(true /* expectsResponse */));
+        this.{{method.name}}.createReceiverHandler(true /* expectsResponse */),
+        {{'true' if method.result_response != None else 'false'}});
 {%-   else %}
         null,
-        this.{{method.name}}.createReceiverHandler(false /* expectsResponse */));
+        this.{{method.name}}.createReceiverHandler(false /* expectsResponse */),
+        false);
 {%-   endif %}
 {%- endfor %}
     this.onConnectionError = this.helper_internal_.getConnectionErrorEventRouter();

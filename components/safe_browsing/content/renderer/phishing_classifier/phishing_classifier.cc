@@ -76,10 +76,6 @@ void PhishingClassifier::BeginClassification(
                                     this);
   DCHECK(is_ready());
 
-  // The RenderView should have called CancelPendingClassification() before
-  // starting a new classification, so DCHECK this.
-  DCHECK(done_callback_.is_null());
-  DCHECK(!page_text_);
   // However, in an opt build, we will go ahead and clean up the pending
   // classification so that we can start in a known state.
   CancelPendingClassification();

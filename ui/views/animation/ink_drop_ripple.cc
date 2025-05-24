@@ -51,10 +51,11 @@ void InkDropRipple::AnimateToState(InkDropState ink_drop_state) {
 
 void InkDropRipple::SnapToState(InkDropState ink_drop_state) {
   AbortAllAnimations();
-  if (ink_drop_state == InkDropState::ACTIVATED)
+  if (ink_drop_state == InkDropState::ACTIVATED) {
     SetStateToActivated();
-  else if (ink_drop_state == InkDropState::HIDDEN)
+  } else if (ink_drop_state == InkDropState::HIDDEN) {
     SetStateToHidden();
+  }
   target_ink_drop_state_ = ink_drop_state;
   animation_observer_ = CreateAnimationObserver(ink_drop_state);
   animation_observer_->SetActive();
@@ -89,20 +90,23 @@ InkDropHost* InkDropRipple::GetInkDropHost() const {
 void InkDropRipple::AnimationStartedCallback(
     InkDropState ink_drop_state,
     const ui::CallbackLayerAnimationObserver& observer) {
-  if (observer_)
+  if (observer_) {
     observer_->AnimationStarted(ink_drop_state);
+  }
 }
 
 bool InkDropRipple::AnimationEndedCallback(
     InkDropState ink_drop_state,
     const ui::CallbackLayerAnimationObserver& observer) {
-  if (ink_drop_state == InkDropState::HIDDEN)
+  if (ink_drop_state == InkDropState::HIDDEN) {
     SetStateToHidden();
-  if (observer_)
+  }
+  if (observer_) {
     observer_->AnimationEnded(ink_drop_state,
                               observer.aborted_count()
                                   ? InkDropAnimationEndedReason::PRE_EMPTED
                                   : InkDropAnimationEndedReason::SUCCESS);
+  }
   // |this| may be deleted!
   return false;
 }

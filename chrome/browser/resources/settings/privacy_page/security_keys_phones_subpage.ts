@@ -31,11 +31,21 @@ export class SecurityKeysPhonesSubpageElement extends PolymerElement {
     return getTemplate();
   }
 
-  private syncedPhones_: SecurityKeysPhone[];
-  private linkedPhones_: SecurityKeysPhone[];
-  private showDialog_: boolean;
-  private dialogName_: string;
-  private dialogPublicKey_: string;
+  static get properties() {
+    return {
+      syncedPhones_: Array,
+      linkedPhones_: Array,
+      showDialog_: Boolean,
+      dialogName_: String,
+      dialogPublicKey_: String,
+    };
+  }
+
+  declare private syncedPhones_: SecurityKeysPhone[];
+  declare private linkedPhones_: SecurityKeysPhone[];
+  declare private showDialog_: boolean;
+  declare private dialogName_: string;
+  declare private dialogPublicKey_: string;
   private browserProxy_: SecurityKeysPhonesBrowserProxy =
       SecurityKeysPhonesBrowserProxyImpl.getInstance();
 

@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_EXTENSIONS_PERMISSIONS_SITE_PERMISSIONS_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "extensions/browser/permissions_manager.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -49,9 +51,13 @@ class SitePermissionsHelper {
                                      content::WebContents* web_contents) const;
 
   // Updates the site access pointed to by `web_contents` to `new_access` for
-  // `extension`. If relevant, this will run any pending extension actions on
-  // that site.
+  // `extension` or `extensions`. If relevant, this will run any pending
+  // extension actions on that site and/or show a reload dialog for new site
+  // access to take effect.
   void UpdateSiteAccess(const Extension& extension,
+                        content::WebContents* web_contents,
+                        PermissionsManager::UserSiteAccess new_access);
+  void UpdateSiteAccess(const std::vector<const Extension*>& extensions,
                         content::WebContents* web_contents,
                         PermissionsManager::UserSiteAccess new_access);
 

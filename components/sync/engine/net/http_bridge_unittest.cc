@@ -114,7 +114,7 @@ class MAYBE_SyncHttpBridgeTest : public testing::Test {
 // responsible for the MakeAsynchronousPost bit.
 class ShuntedHttpBridge : public HttpBridge {
  public:
-  // If |never_finishes| is true, the simulated request never actually
+  // If `never_finishes` is true, the simulated request never actually
   // returns.
   ShuntedHttpBridge(MAYBE_SyncHttpBridgeTest* test, bool never_finishes)
       : HttpBridge(kUserAgent,

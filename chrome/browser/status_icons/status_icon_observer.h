@@ -26,7 +26,7 @@ class StatusIconObserver {
 #endif
 
  protected:
-  virtual ~StatusIconObserver() {}
+  virtual ~StatusIconObserver() = default;
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_OBSERVER_H_

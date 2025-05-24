@@ -191,8 +191,8 @@ void CapturingLambdaOrFunctor() {
     void operator()() const {}
     int x;
   };
-  BindOnce([&]() { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
-  BindRepeating([&]() { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  BindOnce([&] { j = i; });        // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
+  BindRepeating([&] { j = i; });   // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
   BindRepeating(S());                // expected-error@*:* {{Capturing lambdas and stateful functors are intentionally not supported.}}
 }
 

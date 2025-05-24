@@ -133,6 +133,7 @@ _CLASSES_REGEX = re.compile(
 def _parse_java_classes(contents):
   package = _parse_package(contents).replace('.', '/')
   outer_class = None
+  null_marked = False
   nested_classes = []
   for m in _CLASSES_REGEX.finditer(contents):
     preamble, class_name = m.groups()
@@ -141,33 +142,34 @@ def _parse_java_classes(contents):
       continue
     if outer_class is None:
       outer_class = java_types.JavaClass(f'{package}/{class_name}')
+      null_marked = contents.find('@NullMarked', 0, m.start(2)) != -1
     else:
       nested_classes.append(outer_class.make_nested(class_name))
 
   if outer_class is None:
     raise ParseError('No classes found.')
 
-  return outer_class, nested_classes
+  return outer_class, nested_classes, null_marked
 
 
 _ANNOTATION_REGEX = re.compile(
-    r'@(?P<annotation_name>[\w.]+)(?P<annotation_args>\(\s*(?:[^)]+)\s*\))?\s*')
+    r'@(?P<annotation_name>[\w.]+)(?P<annotation_args>\([^)]+\))?\s*')
 # Only supports ("foo")
 _ANNOTATION_ARGS_REGEX = re.compile(
     r'\(\s*"(?P<annotation_value>[^"]*?)"\s*\)\s*')
 
 def _parse_annotations(value):
   annotations = {}
-  last_idx = 0
   for m in _ANNOTATION_REGEX.finditer(value):
     string_value = ''
     if match_args := m.group('annotation_args'):
       if match_arg_value := _ANNOTATION_ARGS_REGEX.match(match_args):
         string_value = match_arg_value.group('annotation_value')
     annotations[m.group('annotation_name')] = string_value
-    last_idx = m.end()
 
-  return annotations, value[last_idx:]
+  # Use replace rather than tracking end index to handle:
+  # "OuterClass.@Nullable InnerClass"
+  return annotations, _ANNOTATION_REGEX.sub('', value)
 
 
 def _parse_type(type_resolver, value):
@@ -199,7 +201,12 @@ def _parse_type(type_resolver, value):
       raise ParseError('Found non-templatized @JniType("std::vector") on '
                        'non-array, non-List type: ' + value)
 
-  nullable = annotations.get('NonNull', True)
+  if primitive_name and array_dimensions == 0:
+    nullable = False
+  elif type_resolver.null_marked:
+    nullable = annotations.get('Nullable') is not None
+  else:
+    nullable = annotations.get('NonNull') is None
 
   return java_types.JavaType(array_dimensions=array_dimensions,
                              primitive_name=primitive_name,
@@ -291,13 +298,13 @@ _NON_PROXY_NATIVES_REGEX = re.compile(
     r'\(\"(?P<native_class_name>\S*?)\"\)\s+)?'
     r'(?P<qualifiers>\w+\s\w+|\w+|\s+)\s*native\s+'
     r'(?P<return_type>\S*)\s+'
-    r'(?P<name>native\w+)\((?P<params>.*?)\);', re.DOTALL)
+    r'native(?P<name>\w+)\((?P<params>.*?)\);', re.DOTALL)
 
 
 def _parse_non_proxy_natives(type_resolver, contents):
   ret = []
   for match in _NON_PROXY_NATIVES_REGEX.finditer(contents):
-    name = match.group('name').replace('native', '')
+    name = match.group('name')
     return_type = _parse_type(type_resolver, match.group('return_type'))
     params = _parse_param_list(type_resolver, match.group('params'))
     signature = java_types.JavaSignature.from_params(return_type, params)
@@ -319,7 +326,7 @@ _CALLED_BY_NATIVE_REGEX = re.compile(
     r'(?P<method_annotations>(?:\s*@\w+(?:\(.*?\))?)+)?'
     r'\s+(?P<modifiers>' + _MODIFIER_KEYWORDS + r')' +
     r'(?P<return_type_annotations>(?:\s*@\w+(?:\(.*?\))?)+)?'
-    r'\s*(?P<return_type>\S*?)'
+    r'\s*(?P<return_type>[\S ]*?)'
     r'\s*(?P<name>\w+)'
     r'\s*\(\s*(?P<params>[^{;]*)\)'
     r'\s*(?:throws\s+[^{;]+)?'
@@ -403,7 +410,7 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter):
   contents = _remove_comments(contents)
   contents = _remove_generics(contents)
 
-  outer_class, nested_classes = _parse_java_classes(contents)
+  outer_class, nested_classes, null_marked = _parse_java_classes(contents)
 
   expected_name = os.path.splitext(os.path.basename(filename))[0]
   if outer_class.name != expected_name:
@@ -415,7 +422,7 @@ def _do_parse(filename, *, package_prefix, package_prefix_filter):
     outer_class = outer_class.make_prefixed(package_prefix)
     nested_classes = [c.make_prefixed(package_prefix) for c in nested_classes]
 
-  type_resolver = java_types.TypeResolver(outer_class)
+  type_resolver = java_types.TypeResolver(outer_class, null_marked=null_marked)
   for java_class in _parse_imports(contents):
     type_resolver.add_import(java_class)
   for java_class in nested_classes:

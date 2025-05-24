@@ -46,7 +46,7 @@ class AccessorySheetMediator implements PropertyObservable.PropertyObserver<Prop
             };
     private final SheetVisibilityDelegate mSheetVisibilityDelegate;
     private final Context mContext;
-    private ObserverList<AccessorySheetVisualStateProvider.Observer> mVisualObservers =
+    private final ObserverList<AccessorySheetVisualStateProvider.Observer> mVisualObservers =
             new ObserverList<>();
 
     AccessorySheetMediator(

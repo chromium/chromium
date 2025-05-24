@@ -8,27 +8,25 @@
 
 WebContentsCloseHandler::WebContentsCloseHandler(
     WebContentsCloseHandlerDelegate* delegate)
-    : delegate_(delegate),
-      in_close_(false),
-      tab_changed_after_clone_(false) {
-}
+    : delegate_(delegate), in_close_(false), tab_changed_after_clone_(false) {}
 
-WebContentsCloseHandler::~WebContentsCloseHandler() {
-}
+WebContentsCloseHandler::~WebContentsCloseHandler() = default;
 
 void WebContentsCloseHandler::TabInserted() {
   // Tests may end up reviving a TabStrip that is empty.
-  if (!in_close_)
+  if (!in_close_) {
     return;
+  }
   in_close_ = false;
   delegate_->DestroyClonedLayer();
 }
 
 void WebContentsCloseHandler::ActiveTabChanged() {
-  if (in_close_)
+  if (in_close_) {
     tab_changed_after_clone_ = true;
-  else
+  } else {
     delegate_->DestroyClonedLayer();
+  }
 }
 
 void WebContentsCloseHandler::WillCloseAllTabs() {

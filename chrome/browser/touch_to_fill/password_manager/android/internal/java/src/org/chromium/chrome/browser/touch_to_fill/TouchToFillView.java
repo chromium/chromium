@@ -9,7 +9,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.RelativeLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.touch_to_fill.TouchToFillProperties.ItemType;
@@ -83,22 +85,22 @@ class TouchToFillView extends TouchToFillViewBase {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.touch_to_fill_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.touch_to_fill_content_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.touch_to_fill_sheet_half_height;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.touch_to_fill_sheet_full_height;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.touch_to_fill_sheet_closed;
     }
 

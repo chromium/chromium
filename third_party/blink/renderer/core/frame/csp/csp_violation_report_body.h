@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_VIOLATION_REPORT_BODY_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_disposition.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_security_policy_violation_event_init.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/location_report_body.h"
@@ -39,7 +40,9 @@ class CORE_EXPORT CSPViolationReportBody : public LocationReportBody {
   const String& effectiveDirective() const { return effective_directive_; }
   const String& originalPolicy() const { return original_policy_; }
   const String& sample() const { return sample_; }
-  const String& disposition() const { return disposition_; }
+  const V8SecurityPolicyViolationEventDisposition& disposition() const {
+    return disposition_;
+  }
   uint16_t statusCode() const { return status_code_; }
 
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
@@ -51,7 +54,7 @@ class CORE_EXPORT CSPViolationReportBody : public LocationReportBody {
   const String effective_directive_;
   const String original_policy_;
   const String sample_;
-  const String disposition_;
+  const V8SecurityPolicyViolationEventDisposition disposition_;
   const uint16_t status_code_;
 };
 

@@ -2,24 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "android_webview/browser/gfx/aw_vulkan_context_provider.h"
 
+#include <algorithm>
 #include <utility>
 
+#include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/native_library.h"
-#include "base/ranges/algorithm.h"
 #include "gpu/config/skia_limits.h"
-#include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/init/vulkan_factory.h"
+#include "gpu/vulkan/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
+#include "third_party/skia/include/gpu/ganesh/GrContextOptions.h"
 #include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
@@ -156,7 +163,11 @@ bool AwVulkanContextProvider::Globals::Initialize(
           gpu::CreateSkiaVulkanMemoryAllocator(device_queue.get()),
       .fGetProc = get_proc,
   };
-  gr_context = GrDirectContexts::MakeVulkan(backend_context);
+  GrContextOptions options;
+  std::unique_ptr<AwGrContextOptionsProvider> options_provider =
+      std::make_unique<AwGrContextOptionsProvider>();
+  options_provider->SetCustomGrContextOptions(options);
+  gr_context = GrDirectContexts::MakeVulkan(backend_context, options);
   if (!gr_context) {
     LOG(ERROR) << "Unable to initialize GrContext.";
     return false;
@@ -206,7 +217,7 @@ void AwVulkanContextProvider::EnqueueSecondaryCBSemaphores(
     std::vector<VkSemaphore> semaphores) {
   post_submit_semaphores_.reserve(post_submit_semaphores_.size() +
                                   semaphores.size());
-  base::ranges::copy(semaphores, std::back_inserter(post_submit_semaphores_));
+  std::ranges::copy(semaphores, std::back_inserter(post_submit_semaphores_));
 }
 
 void AwVulkanContextProvider::EnqueueSecondaryCBPostSubmitTask(

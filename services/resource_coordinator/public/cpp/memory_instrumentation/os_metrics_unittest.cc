@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <sys/mman.h>
+#include <sys/utsname.h>
 #endif
 
 namespace memory_instrumentation {
@@ -132,15 +133,39 @@ void CreateTempFileWithContents(const char* contents, base::ScopedFILE* file) {
   ASSERT_TRUE(base::WriteFileDescriptor(fileno(file->get()), contents));
 }
 
+// SmapsRollup was added in Linux 4.14.
+bool IsSmapsRollupSupported() {
+  struct utsname info;
+  if (uname(&info) < 0) {
+    NOTREACHED();
+  }
+
+  int major, minor, patch;
+  if (sscanf(info.release, "%d.%d.%d", &major, &minor, &patch) < 3) {
+    NOTREACHED();
+  }
+
+  if (major > 4) {
+    return true;
+  }
+
+  if (major < 4 || minor < 14) {
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
 TEST(OSMetricsTest, GivesNonZeroResults) {
-  base::ProcessId pid = base::kNullProcessId;
+  base::ProcessHandle handle = base::kNullProcessHandle;
   mojom::RawOSMemDump dump;
   dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
-  EXPECT_TRUE(OSMetrics::FillOSMemoryDump(pid, &dump));
+  OSMetrics::MemDumpFlagSet flags = OSMetrics::MemDumpFlagSet::All();
+  EXPECT_TRUE(OSMetrics::FillOSMemoryDump(handle, flags, &dump));
   EXPECT_TRUE(dump.platform_private_footprint);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_FUCHSIA)
@@ -162,14 +187,14 @@ TEST(OSMetricsTest, ParseProcSmaps) {
   base::ScopedFILE empty_file(OpenFile(base::FilePath("/dev/null"), "r"));
   ASSERT_TRUE(empty_file.get());
   OSMetrics::SetProcSmapsForTesting(empty_file.get());
-  auto no_maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
+  auto no_maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
   ASSERT_TRUE(no_maps.empty());
 
   // Parse the 1st smaps file.
   base::ScopedFILE temp_file1;
   CreateTempFileWithContents(kTestSmaps1, &temp_file1);
   OSMetrics::SetProcSmapsForTesting(temp_file1.get());
-  auto maps_1 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
+  auto maps_1 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
   ASSERT_EQ(2UL, maps_1.size());
 
   EXPECT_EQ(0x00400000UL, maps_1[0]->start_address);
@@ -200,7 +225,7 @@ TEST(OSMetricsTest, ParseProcSmaps) {
   base::ScopedFILE temp_file2;
   CreateTempFileWithContents(kTestSmaps2, &temp_file2);
   OSMetrics::SetProcSmapsForTesting(temp_file2.get());
-  auto maps_2 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
+  auto maps_2 = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
   ASSERT_EQ(1UL, maps_2.size());
   EXPECT_EQ(0x7fe7ce79c000UL, maps_2[0]->start_address);
   EXPECT_EQ(0x7fe7ce7a8000UL - 0x7fe7ce79c000UL, maps_2[0]->size_in_bytes);
@@ -259,6 +284,71 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
   EXPECT_EQ(pages == accessed_pages_set, true);
 }
 
+TEST(OSMetricsTest, CountMappings) {
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  OSMetrics::MemDumpFlagSet flags = {
+      mojom::MemDumpFlags::MEM_DUMP_COUNT_MAPPINGS};
+  ASSERT_TRUE(
+      OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, flags, &dump));
+  uint32_t mappings_count = dump.mappings_count;
+  EXPECT_GT(dump.mappings_count, 0u);
+
+  // Map a large-ish area (100 pages) R/W, then create a lot of isolated single
+  // page inaccessible regions in the middle of it. This forces VMAs to split,
+  // increasing the total count. We cannot assert on the exact value, as it may
+  // be influenced by external factors, but at least we check that there is an
+  // increase.
+  constexpr size_t kPageCount = 100;
+  size_t page_size = base::GetPageSize();
+  void* addr = mmap(nullptr, kPageCount * page_size, PROT_READ | PROT_WRITE,
+                    MAP_ANONYMOUS | MAP_PRIVATE, -1, 0);
+  ASSERT_NE(addr, MAP_FAILED);
+  for (size_t index = 1; index < kPageCount; index += 2) {
+    uintptr_t start = reinterpret_cast<uintptr_t>(addr) + index * page_size;
+    ASSERT_EQ(0,
+              mprotect(reinterpret_cast<void*>(start), page_size, PROT_NONE));
+  }
+
+  ASSERT_TRUE(
+      OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, flags, &dump));
+  EXPECT_GT(dump.mappings_count, mappings_count);
+
+  munmap(addr, kPageCount * page_size);
+}
+
+TEST(OSMetricsTest, CountMappingsDisabled) {
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, {}, &dump));
+  EXPECT_EQ(dump.mappings_count, 0u);
+}
+
+TEST(OSMetricsTest, Pss) {
+  // Some older Android devices may not support this, so skip the test in those
+  // cases.
+  if (!IsSmapsRollupSupported()) {
+    GTEST_SKIP() << "smaps_rollup not supported";
+  }
+
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(
+      base::kNullProcessHandle, {mojom::MemDumpFlags::MEM_DUMP_PSS}, &dump));
+  uint32_t pss = dump.pss_kb;
+
+  // We don't know the exact value here, but it should be greater than 0.
+  EXPECT_GT(pss, 0u);
+}
+
+TEST(OSMetricsTest, PssDisabled) {
+  mojom::RawOSMemDump dump;
+  dump.platform_private_footprint = mojom::PlatformPrivateFootprint::New();
+  ASSERT_TRUE(OSMetrics::FillOSMemoryDump(base::kNullProcessHandle, {}, &dump));
+  EXPECT_EQ(dump.pss_kb, 0u);
+  EXPECT_EQ(dump.swap_pss_kb, 0u);
+}
+
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
@@ -266,7 +356,7 @@ TEST(OSMetricsTest, GetMappedAndResidentPages) {
 void DummyFunction() {}
 
 TEST(OSMetricsTest, TestWinModuleReading) {
-  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
+  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
 
   wchar_t module_name[MAX_PATH];
   DWORD result = GetModuleFileName(nullptr, module_name, MAX_PATH);
@@ -350,9 +440,9 @@ void CheckMachORegions(const std::vector<mojom::VmRegionPtr>& maps) {
 
 // Test failing on Mac ASan 64: https://crbug.com/852690
 TEST(OSMetricsTest, DISABLED_TestMachOReading) {
-  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessId);
+  auto maps = OSMetrics::GetProcessMemoryMaps(base::kNullProcessHandle);
   CheckMachORegions(maps);
-  maps = OSMetrics::GetProcessModules(base::kNullProcessId);
+  maps = OSMetrics::GetProcessModules(base::kNullProcessHandle);
   CheckMachORegions(maps);
 }
 #endif  // BUILDFLAG(IS_MAC)

@@ -32,15 +32,14 @@ Then, from the Java code, check the value of the flag by calling
 Note that this call requires native to be initialized. If native might not be
 initialized when the check is run, there are two ways of proceeding:
 
-1.  Use a cached value of the flag from the previous run by calling
-    [`ChromeFeatureList.sMyFeature.isEnabled()`](https://cs.chromium.org/chromium/src/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlag.java).
-    This caching is only done for a subset of the flags. To register your flag,
-    create a CachedFlag object in ChromeFeatureList and add it to
-    [`ChromeCachedFlags.cacheNativeFlags()`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java)
-2.  Check
-    [`FeatureList.isInitialized()`](https://cs.chromium.org/chromium/src/base/android/java/src/org/chromium/base/FeatureList.java)
-    before calling `ChromeFeatureList.isEnabled()`, and handle the case where
-    native is not initialized.
+1.  Declare a
+    [CachedFlag](https://source.chromium.org/chromium/chromium/src/+/main:components/cached_flags/android/java/src/org/chromium/components/cached_flags/CachedFlag.java)
+    in ChromeFeatureList, which returns a value cached from the previous run,
+    and add it to `ChromeFeatureList.sFlagsCachedFullBrowser`.
+2.  Declare a
+    [MutableFlagWithSafeDefault](https://source.chromium.org/chromium/chromium/src/+/main:base/android/java/src/org/chromium/base/MutableFlagWithSafeDefault.java)
+    in ChromeFeatureList, which returns a default value when native is not
+    loaded.
 
 ## Switches
 
@@ -83,19 +82,17 @@ In Java,
 offers the same API with
 `ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.MY_FEATURE,
 "MyParameter", 0)`. As with `isEnabled()`, this call requires native to be
-started. If that is not guaranteed, the same options are available:
+started. If that is not guaranteed, options analogous to feature flags are
+available:
 
-1.  Use a cached value of the parameter from the previous run. To do so, declare
-    a
-    [`static final IntCachedFieldTrialParameter`](https://cs.chromium.org/chromium/src/chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/IntCachedFieldTrialParameter.java)
-    MY_CACHED_PARAM object and call `MY_CACHED_PARAM.getValue()`. Again, this
-    caching is only done for a subset of the parameters. To register yours, add
-    it to
-    [`ChromeCachedFlags.cacheNativeFlags()`](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/app/flags/ChromeCachedFlags.java)
-2.  Check
-    [`FeatureList.isInitialized()`](https://cs.chromium.org/chromium/src/base/android/java/src/org/chromium/base/FeatureList.java)before
-    calling `ChromeFeatureList.getFieldTrialParamByFeatureAsInt()`, and handle
-    the case where native is not initialized.
+1.  Declare an
+    [IntCachedFeatureParam](https://source.chromium.org/chromium/chromium/src/+/main:components/cached_flags/android/java/src/org/chromium/components/cached_flags/IntCachedFeatureParam.java)
+    in ChromeFeatureList, which returns a value cached from the previous run,
+    and add it to `ChromeFeatureList.sParamsCached`.
+2.  Declare a
+    [MutableIntParamWithSafeDefault](https://source.chromium.org/chromium/chromium/src/+/main:base/android/java/src/org/chromium/base/MutableIntParamWithSafeDefault.java)
+    in ChromeFeatureList, which returns a default value when native is not
+    loaded.
 
 `Int` used as an example, but parameters can also be of the types `String`,
 `Double` and `Boolean`.

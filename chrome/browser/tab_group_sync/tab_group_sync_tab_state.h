@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_TAB_GROUP_SYNC_TAB_GROUP_SYNC_TAB_STATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 // This class is used to store information about a tab inside a saved tab group.

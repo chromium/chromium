@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_ASH_APP_MODE_KIOSK_APP_UPDATE_INSTALL_GATE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/install_gate.h"
+#include "extensions/browser/install_gate.h"
 
 namespace extensions {
 class Extension;

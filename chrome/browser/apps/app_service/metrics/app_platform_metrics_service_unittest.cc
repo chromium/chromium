@@ -29,14 +29,12 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
-#include "chrome/browser/apps/app_service/extension_apps_utils.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_service_test_base.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -46,7 +44,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -89,8 +86,6 @@ namespace apps {
 
 namespace {
 
-constexpr char kChromeAppId[] = "plfjlfohfjjpmmifkbcmalnmcebkklkh";
-constexpr char kExtensionId[] = "mhjfbmdgcfjbbpaeojofohoefgiehjai";
 constexpr char kAndroidAppId[] = "a";
 constexpr char kSystemWebAppId[] = "system_web_app_id";
 constexpr char kWebAppId1[] = "web_app_id_1";
@@ -317,26 +312,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
                  InstallSource::kSystem)});
 
     pre_installed_apps_.insert(
-        {app_constants::kLacrosAppId,
-         TestApp(app_constants::kLacrosAppId, AppType::kStandaloneBrowser,
-                 "Lacros", Readiness::kReady, InstallReason::kSystem,
-                 InstallSource::kSystem)});
-
-    pre_installed_apps_.insert(
-        {kChromeAppId,
-         TestApp(kChromeAppId, AppType::kStandaloneBrowserChromeApp, "Vine",
-                 Readiness::kReady, InstallReason::kUser,
-                 InstallSource::kChromeWebStore,
-                 /*should_notify_initialized=*/true,
-                 /*is_platform_app=*/true)});
-
-    pre_installed_apps_.insert(
-        {kExtensionId,
-         TestApp(kExtensionId, AppType::kStandaloneBrowserExtension,
-                 "PDF Viewer", Readiness::kReady, InstallReason::kUser,
-                 InstallSource::kChromeWebStore)});
-
-    pre_installed_apps_.insert(
         {"u", TestApp("u", AppType::kUnknown, "", Readiness::kReady,
                       InstallReason::kUnknown, InstallSource::kUnknown,
                       /*should_notify_initialized=*/false)});
@@ -369,14 +344,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kArc, apps::InstallReason::kUser),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kBuiltIn),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kBuiltIn, apps::InstallReason::kSystem),
         /*count=*/1);
 
     // Should be 4 Borealis apps: The installer + launcher created by the
@@ -428,32 +395,6 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
             AppTypeName::kPluginVm, apps::InstallReason::kUser),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kStandaloneBrowser),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kStandaloneBrowser, apps::InstallReason::kSystem),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserChromeApp),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserChromeApp,
-            apps::InstallReason::kUser),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserChromeApp),
-        /*count=*/1);
-    histogram_tester().ExpectTotalCount(
-        AppPlatformMetrics::GetAppsCountPerInstallReasonHistogramNameForTest(
-            AppTypeName::kStandaloneBrowserChromeApp,
-            apps::InstallReason::kUser),
         /*count=*/1);
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsCountHistogramNameForTest(
@@ -530,13 +471,13 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
     return AppPlatformMetrics::GetURLForApp(profile(), app_id);
   }
 
-  void VerifyAppLaunchPerAppTypeHistogram(base::HistogramBase::Count count,
+  void VerifyAppLaunchPerAppTypeHistogram(base::HistogramBase::Count32 count,
                                           AppTypeName app_type_name) {
     histogram_tester().ExpectBucketCount(kAppLaunchPerAppTypeHistogramName,
                                          app_type_name, count);
   }
 
-  void VerifyAppLaunchPerAppTypeV2Histogram(base::HistogramBase::Count count,
+  void VerifyAppLaunchPerAppTypeV2Histogram(base::HistogramBase::Count32 count,
                                             AppTypeNameV2 app_type_name_v2) {
     histogram_tester().ExpectBucketCount(kAppLaunchPerAppTypeV2HistogramName,
                                          app_type_name_v2, count);
@@ -560,7 +501,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppRunningDurationCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
@@ -570,7 +511,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
   void VerifyAppRunningDurationHistogram(
       base::TimeDelta time_delta,
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsRunningDurationHistogramNameForTest(
@@ -579,7 +520,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppRunningPercentageCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
@@ -589,7 +530,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
 
   void VerifyAppRunningPercentageHistogram(
       int count,
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectBucketCount(
         AppPlatformMetrics::GetAppsRunningPercentageHistogramNameForTest(
@@ -613,7 +554,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppActivatedCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
@@ -622,7 +563,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppActivatedHistogram(int count,
-                                   base::HistogramBase::Count expected_count,
+                                   base::HistogramBase::Count32 expected_count,
                                    AppTypeName app_type_name) {
     histogram_tester().ExpectBucketCount(
         AppPlatformMetrics::GetAppsActivatedCountHistogramNameForTest(
@@ -631,7 +572,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeName app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -639,7 +580,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeCountHistogram(
-      base::HistogramBase::Count expected_count,
+      base::HistogramBase::Count32 expected_count,
       AppTypeNameV2 app_type_name) {
     histogram_tester().ExpectTotalCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -647,7 +588,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
-                                   base::HistogramBase::Count expected_count,
+                                   base::HistogramBase::Count32 expected_count,
                                    AppTypeName app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -655,7 +596,7 @@ class AppPlatformMetricsServiceTest : public AppPlatformMetricsServiceTestBase {
   }
 
   void VerifyAppUsageTimeHistogram(base::TimeDelta time_delta,
-                                   base::HistogramBase::Count expected_count,
+                                   base::HistogramBase::Count32 expected_count,
                                    AppTypeNameV2 app_type_name) {
     histogram_tester().ExpectTimeBucketCount(
         AppPlatformMetrics::GetAppsUsageTimeHistogramNameForTest(app_type_name),
@@ -1569,43 +1510,6 @@ TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForMultipleWebAppOpenInTab) {
                         AppTypeName::kChromeBrowser);
 }
 
-TEST_F(AppPlatformMetricsServiceTest, UsageTimeUkmForStandaloneBrowserApps) {
-  // Create a StandaloneBrowser window, and set it as activated for
-  // `kLacrosAppId`.
-  auto window1 = std::make_unique<aura::Window>(nullptr);
-  window1->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(app_constants::kLacrosAppId, window1.get(),
-                 kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(5));
-
-  // Create a Chrome app window, and set it as activated for `kChromeAppId`.
-  auto window2 = std::make_unique<aura::Window>(nullptr);
-  window2->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(app_constants::kLacrosAppId, window1.get(),
-                 kInactiveInstanceState);
-  ModifyInstance(kChromeAppId, window2.get(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(4));
-
-  // Create a Extension window, and set it as activated for `kExtensionId`.
-  auto window3 = std::make_unique<aura::Window>(nullptr);
-  window3->Init(ui::LAYER_NOT_DRAWN);
-  ModifyInstance(kChromeAppId, window2.get(), kInactiveInstanceState);
-  ModifyInstance(kExtensionId, window3.get(), kActiveInstanceState);
-  task_environment_.FastForwardBy(base::Minutes(3));
-
-  // Set the Extension window as inactived.
-  ModifyInstance(kExtensionId, window3.get(), kInactiveInstanceState);
-
-  // Set time passed 2 hours to record the usage time AppKM.
-  task_environment_.FastForwardBy(base::Minutes(108));
-  VerifyAppUsageTimeUkm(app_constants::kLacrosAppId, base::Minutes(5),
-                        AppTypeName::kStandaloneBrowser);
-  VerifyAppUsageTimeUkm(kChromeAppId, base::Minutes(4),
-                        AppTypeName::kStandaloneBrowserChromeApp);
-  VerifyAppUsageTimeUkm(kExtensionId, base::Minutes(3),
-                        AppTypeName::kStandaloneBrowserExtension);
-}
-
 TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
   for (const auto& [_, pre_installed_app] : pre_installed_apps()) {
     if (!pre_installed_app.publisher_id.empty()) {
@@ -1624,31 +1528,6 @@ TEST_F(AppPlatformMetricsServiceTest, InstalledAppsUkm) {
 
   // Verify the ARC app installed during the running time.
   VerifyInstalledAppsUkm(arc_app, InstallTime::kRunning);
-
-  // Install Chrome apps (hosted apps) during the running time.
-  TestApp chrome_app1{"bb",
-                      AppType::kStandaloneBrowserChromeApp,
-                      "BB",
-                      Readiness::kReady,
-                      InstallReason::kUser,
-                      InstallSource::kChromeWebStore,
-                      /*should_notify_initialized=*/true,
-                      /*is_platform_app=*/false,
-                      WindowMode::kBrowser};
-  TestApp chrome_app2{"cc",
-                      AppType::kStandaloneBrowserChromeApp,
-                      "CC",
-                      Readiness::kReady,
-                      InstallReason::kUser,
-                      InstallSource::kChromeWebStore,
-                      /*should_notify_initialized=*/true,
-                      /*is_platform_app=*/false,
-                      WindowMode::kWindow};
-  InstallOneApp(chrome_app1);
-  InstallOneApp(chrome_app2);
-
-  VerifyInstalledAppsUkm(chrome_app1, InstallTime::kRunning);
-  VerifyInstalledAppsUkm(chrome_app2, InstallTime::kRunning);
 }
 
 TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
@@ -1659,11 +1538,6 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   proxy->RegisterPublishersForTesting();
   FakePublisher fake_arc_apps(proxy, AppType::kArc);
   FakePublisher fake_borealis_apps(proxy, AppType::kBorealis);
-  FakePublisher fake_standalone_browser(proxy, AppType::kStandaloneBrowser);
-  FakePublisher fake_standalone_browser_chrome_app(
-      proxy, AppType::kStandaloneBrowserChromeApp);
-  FakePublisher fake_standalone_browser_extension(
-      proxy, AppType::kStandaloneBrowserExtension);
 
   EXPECT_CALL(fake_borealis_apps,
               Launch(/*app_id=*/borealis::kClientAppId, ui::EF_NONE,
@@ -1709,93 +1583,6 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
   VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kArc);
   VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kArc);
 
-  EXPECT_CALL(fake_standalone_browser,
-              Launch(/*app_id=*/app_constants::kLacrosAppId, ui::EF_NONE,
-                     LaunchSource::kFromChromeInternal, _))
-      .Times(1);
-  proxy->Launch(
-      /*app_id=*/app_constants::kLacrosAppId, ui::EF_NONE,
-      LaunchSource::kFromChromeInternal, nullptr);
-  VerifyAppsLaunchUkm("app://" + std::string(app_constants::kLacrosAppId),
-                      AppTypeName::kStandaloneBrowser,
-                      LaunchSource::kFromChromeInternal);
-  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kStandaloneBrowser);
-  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kStandaloneBrowser);
-
-  EXPECT_CALL(fake_standalone_browser_chrome_app,
-              Launch(/*app_id=*/kChromeAppId, ui::EF_NONE,
-                     LaunchSource::kFromChromeInternal, _))
-      .Times(1);
-  proxy->Launch(
-      /*app_id=*/kChromeAppId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
-      nullptr);
-  VerifyAppsLaunchUkm("app://" + std::string(kChromeAppId),
-                      AppTypeName::kStandaloneBrowserChromeApp,
-                      LaunchSource::kFromChromeInternal);
-  VerifyAppLaunchPerAppTypeHistogram(1,
-                                     AppTypeName::kStandaloneBrowserChromeApp);
-  VerifyAppLaunchPerAppTypeV2Histogram(
-      1, AppTypeNameV2::kStandaloneBrowserChromeAppWindow);
-
-  // Install Chrome apps (hosted apps) during the running time.
-  std::string kChromeAppId1 = "bb";
-  std::string kChromeAppId2 = "cc";
-  InstallOneApp(kChromeAppId1, AppType::kStandaloneBrowserChromeApp, "BB",
-                Readiness::kReady, InstallSource::kChromeWebStore,
-                /*is_platform_app=*/false, WindowMode::kBrowser);
-  InstallOneApp(kChromeAppId2, AppType::kStandaloneBrowserChromeApp, "CC",
-                Readiness::kReady, InstallSource::kChromeWebStore,
-                /*is_platform_app=*/false, WindowMode::kWindow);
-
-  // Launch `kChromeAppId1`.
-  EXPECT_CALL(fake_standalone_browser_chrome_app,
-              Launch(/*app_id=*/kChromeAppId1, ui::EF_NONE,
-                     LaunchSource::kFromChromeInternal, _))
-      .Times(1);
-  proxy->Launch(
-      /*app_id=*/kChromeAppId1, ui::EF_NONE, LaunchSource::kFromChromeInternal,
-      nullptr);
-  // Verify `kChromeAppId1` launching as kStandaloneBrowser.
-  VerifyAppsLaunchUkm("app://" + kChromeAppId1, AppTypeName::kStandaloneBrowser,
-                      LaunchSource::kFromChromeInternal);
-  VerifyAppLaunchPerAppTypeHistogram(2 /*launch kLacrosAppId + kChromeAppId1*/,
-                                     AppTypeName::kStandaloneBrowser);
-  VerifyAppLaunchPerAppTypeV2Histogram(
-      1, AppTypeNameV2::kStandaloneBrowserChromeAppTab);
-
-  // Launch `kChromeAppId2` in a Lacros window tab.
-  EXPECT_CALL(fake_standalone_browser_chrome_app,
-              Launch(/*app_id=*/kChromeAppId2, ui::EF_NONE,
-                     LaunchSource::kFromChromeInternal, _))
-      .Times(1);
-  proxy->Launch(
-      /*app_id=*/kChromeAppId2, ui::EF_NONE, LaunchSource::kFromChromeInternal,
-      nullptr);
-  // Verify `kChromeAppId2` launching as kStandaloneBrowserChromeApp.
-  VerifyAppsLaunchUkm("app://" + kChromeAppId2,
-                      AppTypeName::kStandaloneBrowserChromeApp,
-                      LaunchSource::kFromChromeInternal);
-  VerifyAppLaunchPerAppTypeHistogram(2 /*Launch kChromeAppId + kChromeAppId2*/,
-                                     AppTypeName::kStandaloneBrowserChromeApp);
-  VerifyAppLaunchPerAppTypeV2Histogram(
-      2 /*Launch kChromeAppId + kChromeAppId2*/,
-      AppTypeNameV2::kStandaloneBrowserChromeAppWindow);
-
-  EXPECT_CALL(fake_standalone_browser_extension,
-              Launch(/*app_id=*/kExtensionId, ui::EF_NONE,
-                     LaunchSource::kFromChromeInternal, _))
-      .Times(1);
-  proxy->Launch(
-      /*app_id=*/kExtensionId, ui::EF_NONE, LaunchSource::kFromChromeInternal,
-      nullptr);
-  VerifyAppsLaunchUkm("app://" + std::string(kExtensionId),
-                      AppTypeName::kStandaloneBrowserExtension,
-                      LaunchSource::kFromChromeInternal);
-  VerifyAppLaunchPerAppTypeHistogram(1,
-                                     AppTypeName::kStandaloneBrowserExtension);
-  VerifyAppLaunchPerAppTypeV2Histogram(
-      1, AppTypeNameV2::kStandaloneBrowserExtension);
-
   proxy->LaunchAppWithUrl(
       /*app_id=*/kWebAppId1, ui::EF_NONE, GURL("https://boo.com/a"),
       LaunchSource::kFromFileManager, nullptr);
@@ -1810,18 +1597,18 @@ TEST_F(AppPlatformMetricsServiceTest, LaunchApps) {
       kWebAppId2, LaunchContainer::kLaunchContainerTab,
       WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
 
-    VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
-                        LaunchSource::kFromTest);
-    VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
-    VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
+  VerifyAppsLaunchUkm("https://foo2.com", AppTypeName::kChromeBrowser,
+                      LaunchSource::kFromTest);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kChromeBrowser);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kWebTab);
 
-    proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
-        kSystemWebAppId, LaunchContainer::kLaunchContainerTab,
-        WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
-    VerifyAppsLaunchUkm("app://" + std::string(kSystemWebAppId),
-                        AppTypeName::kSystemWeb, LaunchSource::kFromTest);
-    VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);
-    VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kSystemWeb);
+  proxy->BrowserAppLauncher()->LaunchAppWithParamsForTesting(AppLaunchParams(
+      kSystemWebAppId, LaunchContainer::kLaunchContainerTab,
+      WindowOpenDisposition::NEW_FOREGROUND_TAB, LaunchSource::kFromTest));
+  VerifyAppsLaunchUkm("app://" + std::string(kSystemWebAppId),
+                      AppTypeName::kSystemWeb, LaunchSource::kFromTest);
+  VerifyAppLaunchPerAppTypeHistogram(1, AppTypeName::kSystemWeb);
+  VerifyAppLaunchPerAppTypeV2Histogram(1, AppTypeNameV2::kSystemWeb);
 }
 
 TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
@@ -1829,25 +1616,9 @@ TEST_F(AppPlatformMetricsServiceTest, UninstallAppUkm) {
   proxy->SetAppPlatformMetricsServiceForTesting(GetAppPlatformMetricsService());
 
   FakePublisher fake_arc_apps(proxy, AppType::kArc);
-  FakePublisher fake_standalone_browser_chrome_app(
-      proxy, AppType::kStandaloneBrowserChromeApp);
-  FakePublisher fake_standalone_browser_extension(
-      proxy, AppType::kStandaloneBrowserExtension);
 
   proxy->UninstallSilently(kAndroidAppId, UninstallSource::kAppList);
   VerifyAppsUninstallUkm("app://com.google.A", AppTypeName::kArc,
-                         UninstallSource::kAppList);
-
-  proxy->UninstallSilently(
-      /*app_id=*/kChromeAppId, UninstallSource::kAppList);
-  VerifyAppsUninstallUkm("app://" + std::string(kChromeAppId),
-                         AppTypeName::kStandaloneBrowserChromeApp,
-                         UninstallSource::kAppList);
-
-  proxy->UninstallSilently(
-      /*app_id=*/kExtensionId, UninstallSource::kAppList);
-  VerifyAppsUninstallUkm("app://" + std::string(kExtensionId),
-                         AppTypeName::kStandaloneBrowserExtension,
                          UninstallSource::kAppList);
 }
 
@@ -2406,33 +2177,6 @@ TEST_F(AppPlatformInputMetricsTest, InputEventsUkmReportAfterReboot) {
   // Verify no more input events UKM recorded.
   entries = test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
   ASSERT_EQ(3U, entries.size());
-}
-
-TEST_F(AppPlatformInputMetricsTest, LacrosWindow) {
-  ModifyInstance(app_constants::kLacrosAppId, window(), kActiveInstanceState);
-  CreateInputEvent(InputEventSource::kStylus);
-  app_platform_input_metrics()->OnTwoHours();
-  VerifyUkm("app://" + std::string(app_constants::kLacrosAppId),
-            AppTypeName::kStandaloneBrowser, /*event_count=*/1,
-            InputEventSource::kStylus);
-}
-
-TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserChromeApp) {
-  ModifyInstance(kChromeAppId, window(), kActiveInstanceState);
-  CreateInputEvent(InputEventSource::kKeyboard);
-  app_platform_input_metrics()->OnTwoHours();
-  VerifyUkm("app://" + std::string(kChromeAppId),
-            AppTypeName::kStandaloneBrowserChromeApp, /*event_count=*/1,
-            InputEventSource::kKeyboard);
-}
-
-TEST_F(AppPlatformInputMetricsTest, StandaloneBrowserExtension) {
-  ModifyInstance(kExtensionId, window(), kActiveInstanceState);
-  CreateInputEvent(InputEventSource::kMouse);
-  app_platform_input_metrics()->OnTwoHours();
-  VerifyUkm("app://" + std::string(kExtensionId),
-            AppTypeName::kStandaloneBrowserExtension, /*event_count=*/1,
-            InputEventSource::kMouse);
 }
 
 // Tests for app platform metrics observers.
@@ -3260,7 +3004,7 @@ TEST_F(ManagedGuestSessionAppMetricsTest,
     } else {
       // All install reasons should be covered by either
       // `kAllowedInstallReasonsInMgs` or `kBlockedInstallReasonsInMgs`.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }

@@ -68,6 +68,11 @@ void OnGotInnerText(base::TimeTicks start_time,
 void GetInnerText(content::RenderFrameHost& host,
                   std::optional<int> node_id,
                   InnerTextCallback callback) {
+  if (!host.IsRenderFrameLive()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
   const base::TimeTicks start_time = base::TimeTicks::Now();
   mojo::Remote<blink::mojom::InnerTextAgent> agent;
   host.GetRemoteInterfaces()->GetInterface(agent.BindNewPipeAndPassReceiver());

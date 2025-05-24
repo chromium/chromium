@@ -14,6 +14,7 @@
 #include "net/http/structured_headers.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace network {
 
@@ -405,6 +406,233 @@ TEST(AttributionRequestHeadersTest, Greases_Support) {
                                       test_case.support, test_case.options));
   }
 }
+
+TEST(AttributionRequestHeadersTest, AdAuctionRegistrationEligibleHeader) {
+  const struct {
+    AttributionReportingEligibility eligibility;
+    const char* expected;
+  } kTestCases[] = {
+      {AttributionReportingEligibility::kEmpty, ""},
+      {AttributionReportingEligibility::kEventSource, "view"},
+      {AttributionReportingEligibility::kNavigationSource, "click"},
+      {AttributionReportingEligibility::kTrigger, ""},
+      {AttributionReportingEligibility::kEventSourceOrTrigger, "view"},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(
+        test_case.expected,
+        SerializeAdAuctionRegistrationEligibleHeader(
+            test_case.eligibility, AttributionReportingHeaderGreaseOptions()));
+  }
+}
+
+TEST(AttributionRequestHeadersTest, Greases_AdAuctionRegistrationEligible) {
+  const struct {
+    AttributionReportingEligibility eligibility;
+    AttributionReportingHeaderGreaseOptions options;
+    const char* expected;
+  } kTestCases[] = {
+      // reverse with vectors of varying lengths
+      {
+          AttributionReportingEligibility::kEmpty,
+          {.reverse = true},
+          "",
+      },
+      {
+          AttributionReportingEligibility::kEventSource,
+          {.reverse = true},
+          "view",
+      },
+      {
+          AttributionReportingEligibility::kEventSourceOrTrigger,
+          {.reverse = true},
+          "view",
+      },
+      // grease 1
+      {
+          AttributionReportingEligibility::kEmpty,
+          {.context1 = GreaseContext::kKey},
+          "not-view",
+      },
+      {
+          AttributionReportingEligibility::kEmpty,
+          {.context1 = GreaseContext::kValue},
+          "",
+      },
+      {
+          AttributionReportingEligibility::kEmpty,
+          {.context1 = GreaseContext::kParamName},
+          "",
+      },
+      {
+          AttributionReportingEligibility::kEventSource,
+          {.context1 = GreaseContext::kKey},
+          "view, not-click",
+      },
+      {
+          AttributionReportingEligibility::kEventSource,
+          {.context1 = GreaseContext::kValue},
+          "view=click",
+      },
+      {
+          AttributionReportingEligibility::kEventSource,
+          {.context1 = GreaseContext::kParamName},
+          "view;click",
+      },
+      {
+          AttributionReportingEligibility::kNavigationSource,
+          {.context1 = GreaseContext::kKey},
+          "click, not-view",
+      },
+      {
+          AttributionReportingEligibility::kTrigger,
+          {.context1 = GreaseContext::kKey},
+          "not-view",
+      },
+      {
+          AttributionReportingEligibility::kEventSourceOrTrigger,
+          {.context1 = GreaseContext::kKey},
+          "view, not-click",
+      },
+      // grease 2
+      {
+          AttributionReportingEligibility::kEmpty,
+          {.context2 = GreaseContext::kKey},
+          "not-click",
+      },
+      {
+          AttributionReportingEligibility::kEmpty,
+          {.context2 = GreaseContext::kValue},
+          "",
+      },
+      {
+          AttributionReportingEligibility::kEmpty,
+          {.context2 = GreaseContext::kParamName},
+          "",
+      },
+      {
+          AttributionReportingEligibility::kEventSource,
+          {.context2 = GreaseContext::kKey},
+          "view, not-view",
+      },
+      {
+          AttributionReportingEligibility::kEventSource,
+          {.context2 = GreaseContext::kValue},
+          "view=view",
+      },
+      {
+          AttributionReportingEligibility::kEventSource,
+          {.context2 = GreaseContext::kParamName},
+          "view;view",
+      },
+      {
+          AttributionReportingEligibility::kNavigationSource,
+          {.context2 = GreaseContext::kKey},
+          "click, not-click",
+      },
+      {
+          AttributionReportingEligibility::kTrigger,
+          {.context2 = GreaseContext::kKey},
+          "not-click",
+      },
+      {
+          AttributionReportingEligibility::kEventSourceOrTrigger,
+          {.context2 = GreaseContext::kKey},
+          "view, not-view",
+      },
+      // swap greases
+      {
+          AttributionReportingEligibility::kEmpty,
+          {
+              .swap_greases = true,
+              .context1 = GreaseContext::kKey,
+          },
+          "not-click",
+      },
+      {
+          AttributionReportingEligibility::kEventSourceOrTrigger,
+          {
+              .swap_greases = true,
+              .context1 = GreaseContext::kKey,
+          },
+          "view, not-view",
+      },
+      // use_front
+      {
+          AttributionReportingEligibility::kEventSourceOrTrigger,
+          {
+              .context1 = GreaseContext::kValue,
+              .use_front1 = false,
+          },
+          "view=click",
+      },
+      {
+          AttributionReportingEligibility::kEventSourceOrTrigger,
+          {
+              .context1 = GreaseContext::kValue,
+              .use_front1 = true,
+          },
+          "view=click",
+      },
+  };
+
+  int i = 0;
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(i++);
+    EXPECT_EQ(test_case.expected,
+              SerializeAdAuctionRegistrationEligibleHeader(
+                  test_case.eligibility, test_case.options));
+  }
+}
+
+// Ensure that any support and any grease bits combine to produce a valid
+// structured header dictionary.
+void IsSupportValid(const mojom::AttributionSupport support,
+                    const uint8_t grease_bits) {
+  const auto grease_options =
+      AttributionReportingHeaderGreaseOptions::FromBits(grease_bits);
+
+  const std::string actual =
+      GetAttributionSupportHeader(support, grease_options);
+
+  auto dict = net::structured_headers::ParseDictionary(actual);
+  EXPECT_TRUE(dict.has_value());
+}
+
+FUZZ_TEST(GetAttributionSupportHeader, IsSupportValid)
+    .WithDomains(fuzztest::ElementOf<mojom::AttributionSupport>({
+                     mojom::AttributionSupport::kWeb,
+                     mojom::AttributionSupport::kWebAndOs,
+                     mojom::AttributionSupport::kOs,
+                     mojom::AttributionSupport::kNone,
+                 }),
+                 fuzztest::Arbitrary<uint8_t>());
+
+// Ensure that any eligibility and any grease bits combine to produce a valid
+// structured header dictionary.
+void IsEligibleValid(const mojom::AttributionReportingEligibility eligibility,
+                     const uint8_t grease_bits) {
+  const auto grease_options =
+      AttributionReportingHeaderGreaseOptions::FromBits(grease_bits);
+
+  const std::string actual =
+      SerializeAttributionReportingEligibleHeader(eligibility, grease_options);
+
+  auto dict = net::structured_headers::ParseDictionary(actual);
+  EXPECT_TRUE(dict.has_value());
+}
+
+FUZZ_TEST(SerializeAttributionReportingEligibleHeader, IsEligibleValid)
+    .WithDomains(
+        fuzztest::ElementOf<mojom::AttributionReportingEligibility>({
+            mojom::AttributionReportingEligibility::kEmpty,
+            mojom::AttributionReportingEligibility::kEventSource,
+            mojom::AttributionReportingEligibility::kNavigationSource,
+            mojom::AttributionReportingEligibility::kTrigger,
+            mojom::AttributionReportingEligibility::kEventSourceOrTrigger,
+        }),
+        fuzztest::Arbitrary<uint8_t>());
 
 }  // namespace
 }  // namespace network

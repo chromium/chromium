@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_REPORTING_DELEGATE_FACTORY_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_REPORTING_REPORTING_DELEGATE_FACTORY_IOS_H_
 
-#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
-
 #include <memory>
 
 #include "components/enterprise/browser/reporting/browser_report_generator.h"
@@ -15,6 +13,7 @@
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
+#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 
 namespace enterprise_reporting {
 

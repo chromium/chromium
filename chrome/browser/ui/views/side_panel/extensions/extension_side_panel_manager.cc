@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
@@ -34,7 +35,7 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
     SidePanelRegistry* registry)
     : profile_(browser->profile()),
       browser_(browser),
-      web_contents_(nullptr),
+      tab_interface_(nullptr),
       registry_(registry),
       for_tab_(false) {
   InitializeActions();
@@ -43,11 +44,11 @@ ExtensionSidePanelManager::ExtensionSidePanelManager(
 
 ExtensionSidePanelManager::ExtensionSidePanelManager(
     Profile* profile,
-    content::WebContents* web_contents,
+    tabs::TabInterface* tab_interface,
     SidePanelRegistry* tab_registry)
     : profile_(profile),
       browser_(nullptr),
-      web_contents_(web_contents),
+      tab_interface_(tab_interface),
       registry_(tab_registry),
       for_tab_(true) {
   InitializeActions();
@@ -115,7 +116,9 @@ void ExtensionSidePanelManager::MaybeCreateActionItemForExtension(
               browser_))
           .SetText(base::UTF8ToUTF16(extension->short_name()))
           .SetActionId(extension_action_id)
-          .SetProperty(actions::kActionItemPinnableKey, true)
+          .SetProperty(actions::kActionItemPinnableKey,
+                       std::underlying_type_t<actions::ActionPinnableState>(
+                           actions::ActionPinnableState::kPinnable))
           .Build());
 }
 
@@ -159,20 +162,14 @@ void ExtensionSidePanelManager::OnExtensionUnloaded(
   MaybeRemoveActionItemForExtension(extension);
 }
 
-void ExtensionSidePanelManager::WillDiscard() {
-  for (auto& it : coordinators_) {
-    it.second->DeregisterEntry();
-  }
-}
-
 void ExtensionSidePanelManager::MaybeCreateExtensionSidePanelCoordinator(
     const Extension* extension) {
   if (extension->permissions_data()->HasAPIPermission(
           mojom::APIPermissionID::kSidePanel)) {
-    coordinators_.emplace(
-        extension->id(),
-        std::make_unique<ExtensionSidePanelCoordinator>(
-            profile_, browser_, web_contents_, extension, registry_, for_tab_));
+    coordinators_.emplace(extension->id(),
+                          std::make_unique<ExtensionSidePanelCoordinator>(
+                              profile_, browser_, tab_interface_, extension,
+                              registry_, for_tab_));
   }
 }
 

@@ -19,13 +19,13 @@ class Time;
 namespace downgrade {
 
 // The suffix of pending deleted directory.
-extern const base::FilePath::StringPieceType kDowngradeDeleteSuffix;
+extern const base::FilePath::StringViewType kDowngradeDeleteSuffix;
 
 // The name of "Last Version" file.
-extern const base::FilePath::StringPieceType kDowngradeLastVersionFile;
+extern const base::FilePath::StringViewType kDowngradeLastVersionFile;
 
 // The name of the Snapshot directory.
-extern const base::FilePath::StringPieceType kSnapshotsDir;
+extern const base::FilePath::StringViewType kSnapshotsDir;
 
 // Returns the path to the "Last Version" file in |user_data_dir|.
 base::FilePath GetLastVersionFile(const base::FilePath& user_data_dir);

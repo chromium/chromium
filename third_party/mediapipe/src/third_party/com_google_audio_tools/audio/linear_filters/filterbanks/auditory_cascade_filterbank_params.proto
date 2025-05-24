@@ -1,0 +1,67 @@
+/*
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+syntax = "proto2";
+
+package linear_filters;
+
+message ChannelSelectionOptions {
+  // When true, all other fields in this message are ignored.
+  optional bool use_all_channels = 1 [default = true];
+
+  // Selects which channels to use. Note that the channel with index 0 has the
+  // highest center frequency. All filterbank channels are still computed (this
+  // is necessary to get proper filter shapes due to the cascade structure), but
+  // only channel indices, m, will be visible through the public interface of
+  // the AuditoryCascadeFilterbank.
+  // m = first_channel + skip_every_n * k, for all k giving an m < max_channels.
+  optional int32 first_channel = 2 [default = 0];
+
+  // A value of 2 skips every other channel.
+  optional int32 skip_every_n = 3 [default = 2];
+
+  optional int32 max_channels = 4 [default = 40];
+}
+
+// TODO: Add an option for loudness scaling.
+message AuditoryCascadeFilterbankParams {
+  // The pole of the first stage of the filterbank. To prevent violating the
+  // Nyquist sampling criterion, we compute the highest frequency as follows:
+  //   highest pole =
+  //       min(params.highest_pole_frequency();
+  //           params.max_pole_nyquist_fraction() * sample_rate / 2);
+  optional float highest_pole_frequency = 1 [default = 16000.0];
+  optional float max_pole_nyquist_fraction = 2 [default = 0.85];
+
+  // Determines the distance between adjacent peak frequencies.
+  // ERB is equivalent rectangular bandwidth.
+  optional float step_erbs = 3 [default = 0.5];
+
+  // Before any filter in the filterbank, a decimation by 2 will occur if the
+  // pole frequency has a longer period than max_samples_per_cycle and if the
+  // sample rate after decimation will be greater than min_sample_rate.
+  optional float max_samples_per_cycle = 4 [default = 12.0];
+  optional float min_sample_rate = 5 [default = 600.0];
+
+  // The damping of each resonator.
+  optional float pole_zeta = 6 [default = 0.15];
+
+  // The minimum pole frequency that is allowed for any of the resonator stages.
+  optional float min_pole_frequency = 7 [default = 30.0];
+
+  // Options for selecting a subset of all channels.
+  optional ChannelSelectionOptions channel_selection_options = 8;
+}

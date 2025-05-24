@@ -103,6 +103,13 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API)
   //      tearing down the underlying async callbacks.
   AMediaCodec* codec() { return media_codec_.get(); }
 
+  // Safe wrapper around AMediaCodec_getInputBuffer().
+  base::span<uint8_t> GetInputBuffer(size_t idx);
+
+  // Safe wrapper around AMediaCodec_getOutputBuffer(). The buffer still needs
+  // to be manually released by calling AMediaCodec_releaseOutputBuffer().
+  base::span<uint8_t> GetOutputBuffer(const OutputInfo& info);
+
  private:
   friend class NdkMediaCodecWrapperTest;
 

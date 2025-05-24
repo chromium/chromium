@@ -11,10 +11,8 @@
 
 <settings-card header-text="$i18n{onStartupSettingsCardTitle}">
   <div class="settings-box first two-line">
-    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-      <iron-icon id="restoreIcon" icon="os-settings:restore-revamp">
-      </iron-icon>
-    </template>
+    <iron-icon id="restoreIcon" icon="os-settings:restore">
+    </iron-icon>
     <div id="textContainer" class="start settings-box-text" aria-hidden="true">
       $i18n{onStartupTitle}
       <div class="secondary">$i18n{onStartupDescription}</div>

@@ -804,8 +804,19 @@ class AXPlatformNodeTextRangeProviderTest : public AXPlatformNodeWinTest {
 
     AXNodeData paragraph4_text_data;
     paragraph4_text_data.id = 17;
-    paragraph4_text_data.role = ax::mojom::Role::kStaticText;
-    paragraph4_text_data.SetName("Paragraph 4");
+    paragraph4_text_data.role = ax::mojom::Role::kInlineTextBox;
+    paragraph4_text_data.SetName("Paraaagraph 4");
+    // Marking `Paraaagraph` as a misspelled word modeled as a CSS highlight.
+    paragraph4_data.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerTypes,
+        {(int)ax::mojom::MarkerType::kHighlight});
+    paragraph4_data.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kHighlightTypes,
+        {(int)ax::mojom::HighlightType::kSpellingError});
+    paragraph4_data.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerStarts, {0});
+    paragraph4_data.AddIntListAttribute(
+        ax::mojom::IntListAttribute::kMarkerEnds, {11});
     paragraph4_data.child_ids = {paragraph4_text_data.id};
 
     AXNodeData root_data;
@@ -1486,7 +1497,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_UIA_TEXTRANGE_EQ(
       text_range_provider,
       L"Text with formatting\nStandalone line with no formatting\nbold "
-      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParagraph 4");
+      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParaaagraph 4");
 
   // https://docs.microsoft.com/en-us/windows/win32/api/uiautomationclient/nf-uiautomationclient-iuiautomationtextrange-expandtoenclosingunit
   // Consider two consecutive text units A and B.
@@ -2078,7 +2089,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
       /*count*/ 0,
       /*expected_text*/
       L"Text with formatting\nStandalone line with no formatting\nbold "
-      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParagraph 4",
+      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParaaagraph 4",
       /*expected_count*/ 0);
 
   // Move forward.
@@ -2096,20 +2107,24 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
                   /*expected_count*/ 1);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
-                  /*expected_text*/ L"Paragraph 4",
+                  /*expected_text*/ L"Paraaagraph",
+                  /*expected_count*/ 1);
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" 4",
                   /*expected_count*/ 1);
 
   // Trying to move past the last format should have no effect.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 1,
-                  /*expected_text*/ L"Paragraph 4",
+                  /*expected_text*/ L" 4",
                   /*expected_count*/ 0);
 
   // Move backward.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
-                  /*count*/ -3,
+                  /*count*/ -4,
                   /*expected_text*/ L"bold text",
-                  /*expected_count*/ -3);
+                  /*expected_count*/ -4);
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ -1,
                   /*expected_text*/ L"\nStandalone line with no formatting\n",
@@ -2142,8 +2157,12 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
   // Test degenerate range creation at the end of the document.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 5,
-                  /*expected_text*/ L"Paragraph 4",
+                  /*expected_text*/ L"Paraaagraph",
                   /*expected_count*/ 5);
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/ L" 4",
+                  /*expected_count*/ 1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Format,
       /*count*/ 1,
@@ -2152,7 +2171,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Format,
       /*count*/ -1,
-      /*expected_text*/ L"Paragraph 4",
+      /*expected_text*/ L" 4",
       /*expected_count*/ -1);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Format,
@@ -2162,14 +2181,14 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_Start, TextUnit_Format,
       /*count*/ -1,
-      /*expected_text*/ L"Paragraph 4",
+      /*expected_text*/ L" 4",
       /*expected_count*/ -1);
 
   // Degenerate range moves.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
-                  /*count*/ -5,
+                  /*count*/ -6,
                   /*expected_text*/ L"Text with formatting",
-                  /*expected_count*/ -5);
+                  /*expected_count*/ -6);
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
@@ -2182,7 +2201,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderMoveFormat) {
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
                   /*count*/ 70,
                   /*expected_text*/ L"",
-                  /*expected_count*/ 3);
+                  /*expected_count*/ 4);
 
   // Trying to move past the last format should have no effect.
   EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
@@ -3232,20 +3251,38 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   EXPECT_UIA_TEXTRANGE_EQ(
       text_range_provider,
       L"Text with formatting\nStandalone line with no formatting\nbold "
-      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParagraph 4");
+      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParaaagraph 4");
+
+  // `Paraaagraph 4` should be broken into two separate `format` units based on
+  // the spelling error (modeled as CSS highlight) in corresponding AXNode.
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
-      /*count*/ -2,
+      /*count*/ -1,
       /*expected_text*/
       L"Text with formatting\nStandalone line with no formatting\nbold "
-      L"text\nParagraph 1",
-      /*expected_count*/ -2);
+      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParaaagraph",
+      /*expected_count*/ -1);
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -1,
+      /*expected_text*/
+      L"Text with formatting\nStandalone line with no formatting\nbold "
+      L"text\nParagraph 1\nParagraph 2\nParagraph 3\n",
+      /*expected_count*/ -1);
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -1,
       /*expected_text*/
-      L"Text with formatting\nStandalone line with no formatting\nbold text",
+      L"Text with formatting\nStandalone line with no formatting\nbold "
+      L"text\nParagraph 1\n",
+      /*expected_count*/ -1);
+
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -1,
+      /*expected_text*/
+      L"Text with formatting\nStandalone line with no formatting\nbold text\n",
       /*expected_count*/ -1);
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
@@ -3269,17 +3306,17 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
-      /*count*/ 7,
+      /*count*/ 8,
       /*expected_text*/
       L"Text with formatting\nStandalone line with no formatting\nbold "
-      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParagraph 4",
-      /*expected_count*/ 6);
+      L"text\nParagraph 1\nParagraph 2\nParagraph 3\nParaaagraph 4",
+      /*expected_count*/ 7);
 
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
       text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
       /*count*/ -8,
       /*expected_text*/ L"",
-      /*expected_count*/ -6);
+      /*expected_count*/ -7);
 }
 
 TEST_F(AXPlatformNodeTextRangeProviderTest, TestITextRangeProviderCompare) {
@@ -4477,10 +4514,18 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     // |text_node| has a grammar error on "some text", a highlight for the
     // first word, a spelling error for the second word, a "spelling-error"
     // highlight for the fourth word, and a "grammar-error" highlight for the
-    // fifth word. So the range has mixed annotations.
+    // fifth word. So the range has mixed attributes.
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(text_range_provider->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
+
+    EXPECT_UIA_TEXTRANGE_EQ(text_range_provider,
+                            L"some text and some other text");
     EXPECT_UIA_TEXTATTRIBUTE_MIXED(text_range_provider,
                                    UIA_AnnotationTypesAttributeId);
+  }
 
+  {
     // Testing annotations in range [5,9)
     // start: TextPosition, anchor_id=2, text_offset=5,
     //        annotated_text=some <t>ext and some other text
@@ -4588,10 +4633,18 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   {
     // |heading_text_node| has a a spelling error for one word, and no
-    // annotations for the remaining text, so the range has mixed annotations.
+    // annotations for the remaining text, so the entire range has mixed
+    // annotations.
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(heading_text_range_provider->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
+
+    EXPECT_UIA_TEXTRANGE_EQ(heading_text_range_provider, L"more text");
     EXPECT_UIA_TEXTATTRIBUTE_MIXED(heading_text_range_provider,
                                    UIA_AnnotationTypesAttributeId);
+  }
 
+  {
     // start: TextPosition, anchor_id=4, text_offset=5,
     //        annotated_text=more <t>ext
     // end  : TextPosition, anchor_id=4, text_offset=9,
@@ -4613,6 +4666,33 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
     std::vector<int> expected_annotations = {AnnotationType_SpellingError};
     EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
                             expected_annotations);
+  }
+
+  {
+    // |heading_text_node| = "more text" (without quotes)
+    // In this, 'text' is annotated with a spelling error.
+    //
+    // We want to test for mixed annotation in 'text' selection for spelling
+    // error text combined with character(s) from adjacent anchor(s) which do
+    // not have any such annotations.
+    //
+    // start: TextPosition, anchor_id=4, text_offset=5,
+    //        annotated_text=more <t>ext marked text
+    // end  : TextPosition, anchor_id=6, text_offset=9,
+    //        annotated_text=more text m<a>rked text
+    AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+        AXPlatformNodeFromNode(heading_text_node));
+    ComPtr<AXPlatformNodeTextRangeProviderWin> mixed_text_range_provider;
+    CreateTextRangeProviderWin(
+        mixed_text_range_provider, owner,
+        /*start_anchor=*/heading_text_node, /*start_offset=*/5,
+        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+        /*end_anchor=*/mark_text_node, /*end_offset=*/4,
+        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+    EXPECT_UIA_TEXTRANGE_EQ(mixed_text_range_provider, L"textmark");
+    EXPECT_UIA_TEXTATTRIBUTE_MIXED(mixed_text_range_provider,
+                                   UIA_AnnotationTypesAttributeId);
   }
 
   {
@@ -5020,7 +5100,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:2 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire subtree, and not only AXID:3 for example.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 2)));
+      AXPlatformNodeFromNode(tree->GetFromId(2)));
 
   // start: TextPosition, anchor_id=4, text_offset=0, annotated_text=<s>ome text
   // end  : TextPosition, anchor_id=5, text_offset=8,
@@ -5229,9 +5309,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   AXTree* tree = Init(update);
 
-  AXNode* text_field = GetNodeFromTree(tree->GetAXTreeID(), 2);
-  AXNode* static_text = GetNodeFromTree(tree->GetAXTreeID(), 3);
-  AXNode* inline_text_box = GetNodeFromTree(tree->GetAXTreeID(), 4);
+  AXNode* text_field = tree->GetFromId(2);
+  AXNode* static_text = tree->GetFromId(3);
+  AXNode* inline_text_box = tree->GetFromId(4);
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, text_field);
@@ -5520,14 +5600,13 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes[4].SetName("Hello World");
 
   AXTree* tree = Init(update);
-
-  AXNode* input_node = GetNodeFromTree(tree->GetAXTreeID(), 2);
+  AXNode* input_node = tree->GetFromId(2);
 
   AXPlatformNodeWin* input_platform_node =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(input_node));
 
   AXPlatformNodeWin* root = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   input_platform_node->SetFocus();
 
@@ -5629,9 +5708,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes = {root_1, generic_container_2, paragraph_3, static_text_4,
                   inline_box_5};
 
-  Init(update);
-
-  AXNode* div_node = GetNodeFromTree(tree_data.tree_id, generic_container_2.id);
+  AXTree* tree = Init(update);
+  AXNode* div_node = tree->GetFromId(generic_container_2.id);
 
   AXPlatformNodeWin* owner =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(div_node));
@@ -6242,26 +6320,18 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   )HTML"));
 
   AXTreeID tree_id = update.tree_data.tree_id;
-  Init(update);
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 1),
-                           GetNodeFromTree(tree_id, 1));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 3),
-                           GetNodeFromTree(tree_id, 3));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 4),
-                           GetNodeFromTree(tree_id, 4));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 5),
-                           GetNodeFromTree(tree_id, 5));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 11),
-                           GetNodeFromTree(tree_id, 11));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 13),
-                           GetNodeFromTree(tree_id, 13));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 14),
-                           GetNodeFromTree(tree_id, 14));
+  AXTree* tree = Init(update);
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(1), tree->GetFromId(1));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(3), tree->GetFromId(3));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(4), tree->GetFromId(4));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(5), tree->GetFromId(5));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(11), tree->GetFromId(11));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(13), tree->GetFromId(13));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(14), tree->GetFromId(14));
 
   // Test movement and GetText()
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetNodeFromTree(tree_id, 1));
+  GetTextRangeProviderFromTextNode(text_range_provider, tree->GetFromId(1));
 
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->ExpandToEnclosingUnit(TextUnit_Character));
@@ -6307,11 +6377,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   initial_state.nodes[2].role = ax::mojom::Role::kInlineTextBox;
   initial_state.nodes[2].SetName("aaa");
 
-  Init(initial_state);
+  AXTree* tree = Init(initial_state);
 
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetNodeFromTree(tree_id, 3));
+  GetTextRangeProviderFromTextNode(text_range_provider, tree->GetFromId(3));
 
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"aaa");
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
@@ -6379,11 +6448,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   initial_state.nodes[3].AddState(ax::mojom::State::kIgnored);
   initial_state.nodes[3].SetName("ignored");
 
-  Init(initial_state);
+  AXTree* tree = Init(initial_state);
 
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetNodeFromTree(tree_id, 3));
+  GetTextRangeProviderFromTextNode(text_range_provider, tree->GetFromId(3));
 
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"aaa");
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
@@ -6456,7 +6524,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=3, text_offset=1, annotated_text=i<g>nored
   // end  : TextPosition, anchor_id=3, text_offset=6, annotated_text=ignore<d>
@@ -6529,7 +6597,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Original range before NormalizeTextRange()
   // |before<>||ignored1||ignored2||<a>fter|
@@ -6594,7 +6662,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   const AXNode* inline_box_7_node = tree->GetFromId(7);
 
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=3, text_offset=1, annotated_text=/xFFFC<>
   // end  : TextPosition, anchor_id=7, text_offset=0, annotated_text=<p>i
@@ -6664,7 +6732,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestValidateStartAndEnd) {
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=1, text_offset=0, annotated_text=<s>ome text
   // end  : TextPosition, anchor_id=3, text_offset=9, annotated_text=more text<>
@@ -6818,7 +6886,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=3, text_offset=0, annotated_text=<s>ome text
   // end  : TextPosition, anchor_id=5, text_offset=9, annotated_text=more text<>
@@ -6978,7 +7046,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Create a range that spans " two three" located on the leaf nodes.
 
@@ -7110,7 +7178,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Create a range that spans " two three" located on the leaf nodes.
 
@@ -7238,7 +7306,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Create a range that spans " two three" located on the leaf nodes.
 
@@ -7411,7 +7479,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
@@ -7486,7 +7554,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, CaretAtEndOfTextFieldReadOnly) {
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   base::win::ScopedVariant expected_variant;
@@ -7563,7 +7631,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   base::win::ScopedVariant expected_variant;
 
@@ -7637,7 +7705,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   base::win::ScopedVariant expected_variant;
@@ -8016,6 +8084,88 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   BOOL are_same;
   original->Compare(after_deletion_expected.Get(), &are_same);
   EXPECT_TRUE(are_same);
+}
+
+// This test validates that the move-by-format operation does not include the
+// trailing newline characters. This is important because Narrator's heading
+// navigation, built using this move-by-format operation, expects the range to
+// be fully contained within the anchor. When a trailing newline character is
+// included, it often indicates that the end endpoint is at the start of the
+// next anchor instead of being at the end of the current anchor.
+TEST_F(AXPlatformNodeTextRangeProviderTest,
+       MoveByFormatDoesNotIncludeTrailingNewlines) {
+  AXNodeData static_text_1;
+  static_text_1.id = 2;
+  static_text_1.role = ax::mojom::Role::kStaticText;
+  static_text_1.SetName("before");
+  static_text_1.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData heading_data;
+  heading_data.id = 3;
+  heading_data.role = ax::mojom::Role::kHeading;
+  heading_data.SetName("Heading");
+  heading_data.AddBoolAttribute(ax::mojom::BoolAttribute::kIsLineBreakingObject,
+                                true);
+
+  AXNodeData static_text_2;
+  static_text_2.id = 4;
+  static_text_2.role = ax::mojom::Role::kStaticText;
+  static_text_2.SetName("Heading");
+  heading_data.child_ids = {static_text_2.id};
+
+  AXNodeData paragraph_data;
+  paragraph_data.id = 5;
+  paragraph_data.role = ax::mojom::Role::kParagraph;
+  paragraph_data.AddBoolAttribute(
+      ax::mojom::BoolAttribute::kIsLineBreakingObject, true);
+
+  AXNodeData static_text_3;
+  static_text_3.id = 6;
+  static_text_3.role = ax::mojom::Role::kStaticText;
+  static_text_3.SetName("after");
+  paragraph_data.child_ids = {static_text_3.id};
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+  root_data.child_ids = {static_text_1.id, heading_data.id, paragraph_data.id};
+
+  AXTreeUpdate update;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data,     static_text_1,  heading_data,
+                  static_text_2, paragraph_data, static_text_3};
+  update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
+
+  Init(update);
+
+  AXNode* root_node = GetRoot();
+  ComPtr<ITextRangeProvider> text_range_provider;
+  GetTextRangeProviderFromTextNode(text_range_provider, root_node);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 0,
+                  /*expected_text*/
+                  L"before\nHeading\nafter",
+                  /*expected_count*/ 0);
+
+  // Here, we expect the newline character because we're using the
+  // MoveEndpointByUnit function, which moves only one endpoint to unit
+  // boundary. It should expand to the enclosing unit like Move does when moving
+  // both endpoints.
+  EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
+      text_range_provider, TextPatternRangeEndpoint_End, TextUnit_Format,
+      /*count*/ -2,
+      /*expected_text*/
+      L"before\n",
+      /*expected_count*/ -2);
+
+  EXPECT_UIA_MOVE(text_range_provider, TextUnit_Format,
+                  /*count*/ 1,
+                  /*expected_text*/
+                  L"Heading",
+                  /*expected_count*/ 1);
 }
 
 }  // namespace ui

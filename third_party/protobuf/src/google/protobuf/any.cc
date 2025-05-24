@@ -1,68 +1,50 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
-#include <google/protobuf/any.h>
+#include "google/protobuf/any.h"
 
-#include <google/protobuf/arenastring.h>
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/generated_message_util.h>
-#include <google/protobuf/message.h>
+#include "absl/strings/cord.h"
+#include "absl/strings/string_view.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/generated_message_util.h"
+#include "google/protobuf/message.h"
 
 // Must be included last.
-#include <google/protobuf/port_def.inc>
+#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
 namespace internal {
 
-bool AnyMetadata::PackFrom(Arena* arena, const Message& message) {
-  return PackFrom(arena, message, kTypeGoogleApisComPrefix);
+using UrlType = std::string;
+using ValueType = std::string;
+
+bool InternalPackFrom(const Message& message, UrlType* PROTOBUF_NONNULL dst_url,
+                      ValueType* PROTOBUF_NONNULL dst_value) {
+  return InternalPackFromLite(message, kTypeGoogleApisComPrefix,
+                              message.GetTypeName(), dst_url, dst_value);
 }
 
-bool AnyMetadata::PackFrom(Arena* arena, const Message& message,
-                           StringPiece type_url_prefix) {
-  type_url_->Set(
-      GetTypeUrl(message.GetDescriptor()->full_name(), type_url_prefix), arena);
-  return message.SerializeToString(value_->Mutable(arena));
+bool InternalPackFrom(const Message& message, absl::string_view type_url_prefix,
+                      UrlType* PROTOBUF_NONNULL dst_url,
+                      ValueType* PROTOBUF_NONNULL dst_value) {
+  return InternalPackFromLite(message, type_url_prefix, message.GetTypeName(),
+                              dst_url, dst_value);
 }
 
-bool AnyMetadata::UnpackTo(Message* message) const {
-  if (!InternalIs(message->GetDescriptor()->full_name())) {
-    return false;
-  }
-  return message->ParseFromString(value_->Get());
+bool InternalUnpackTo(absl::string_view type_url, const ValueType& value,
+                      Message* PROTOBUF_NONNULL message) {
+  return InternalUnpackToLite(message->GetTypeName(), type_url, value, message);
 }
 
-bool GetAnyFieldDescriptors(const Message& message,
-                            const FieldDescriptor** type_url_field,
-                            const FieldDescriptor** value_field) {
+bool GetAnyFieldDescriptors(
+    const Message& message,
+    const FieldDescriptor* PROTOBUF_NULLABLE* PROTOBUF_NONNULL type_url_field,
+    const FieldDescriptor* PROTOBUF_NULLABLE* PROTOBUF_NONNULL value_field) {
   const Descriptor* descriptor = message.GetDescriptor();
   if (descriptor->full_name() != kAnyFullTypeName) {
     return false;
@@ -79,4 +61,4 @@ bool GetAnyFieldDescriptors(const Message& message,
 }  // namespace protobuf
 }  // namespace google
 
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

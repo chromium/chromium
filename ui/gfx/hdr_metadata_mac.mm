@@ -87,4 +87,27 @@ base::apple::ScopedCFTypeRef<CFDataRef> GenerateMasteringDisplayColorVolume(
       CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 24));
 }
 
+base::apple::ScopedCFTypeRef<CFDataRef> GenerateAmbientViewingEnvironment() {
+  // The AMVE box is documented in Technical Note 3145.
+  // https://developer.apple.com/documentation/technotes/tn3145-hdr-video-metadata
+  struct AmveSEI {
+    uint32_t ambient_illuminance;
+    uint16_t ambient_light_x;
+    uint16_t ambient_light_y;
+  } __attribute__((packed, aligned(2)));
+  static_assert(sizeof(AmveSEI) == 8, "Must be 8 bytes");
+
+  // The actual values specified in the AMVE box have no effect on rendering. In
+  // fact, the full box does not even need to be specified (just an single byte
+  // set to 0 will have the same effect). Use the default values set by iPhone
+  // HDR videos (314 nits, just to be safe.
+  AmveSEI sei;
+  sei.ambient_illuminance = __builtin_bswap32(0x2fe9a0);  // 314 nits
+  sei.ambient_light_x = __builtin_bswap16(0x3d13);        // 0.3127
+  sei.ambient_light_y = __builtin_bswap16(0x4042);        // 0.329
+
+  return base::apple::ScopedCFTypeRef<CFDataRef>(
+      CFDataCreate(nullptr, reinterpret_cast<const UInt8*>(&sei), 24));
+}
+
 }  // namespace gfx

@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.magic_stack;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** An interface to check module's configuration. */
+@NullMarked
 public interface ModuleConfigChecker {
     /**
      * Returns whether the module can be built due to special restrictions, like location. This

@@ -4,7 +4,7 @@
 
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
 
-#include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service.h"
 #include "chrome/browser/login_detection/login_detection_keyed_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
@@ -29,7 +29,7 @@ PrefService* GetPrefs(content::WebContents* web_contents) {
 }
 
 void RecordLoginDetectionMetrics(LoginDetectionType type) {
-  LOCAL_HISTOGRAM_ENUMERATION("Login.PageLoad.DetectionType", type);
+  base::UmaHistogramEnumeration("Login.PageLoad.DetectionType", type);
 }
 
 }  // namespace
@@ -100,6 +100,11 @@ void LoginDetectionTabHelper::DidOpenRequestedURL(
     bool renderer_initiated) {
   if (disposition != WindowOpenDisposition::NEW_POPUP)
     return;
+  // DidOpenRequestedURL may be called before `new_contents` has been added to
+  // the tab strip, and as such tab helpers may not yet have been initialized.
+  // Explicitly instantiate the login detector for the `new_contents` here to
+  // ensure the popup is registered correctly.
+  LoginDetectionTabHelper::CreateForWebContents(new_contents);
   if (auto* new_tab_helper =
           LoginDetectionTabHelper::FromWebContents(new_contents)) {
     new_tab_helper->DidOpenAsPopUp(web_contents()->GetLastCommittedURL());

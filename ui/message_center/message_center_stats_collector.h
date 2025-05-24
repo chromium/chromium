@@ -5,6 +5,7 @@
 #ifndef UI_MESSAGE_CENTER_MESSAGE_CENTER_STATS_COLLECTOR_H_
 #define UI_MESSAGE_CENTER_MESSAGE_CENTER_STATS_COLLECTOR_H_
 
+#include <array>
 #include <set>
 #include <string>
 
@@ -64,7 +65,7 @@ class MessageCenterStatsCollector : public MessageCenterObserver {
 
    private:
     std::string id_;
-    bool actions_[NOTIFICATION_ACTION_COUNT];
+    std::array<bool, NOTIFICATION_ACTION_COUNT> actions_;
   };
 
   // Sends notifier type to UMA. Called when a notification is added.

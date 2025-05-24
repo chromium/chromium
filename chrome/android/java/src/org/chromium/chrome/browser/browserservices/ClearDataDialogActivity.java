@@ -15,7 +15,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,19 +64,16 @@ public class ClearDataDialogActivity extends AppCompatActivity {
                         .setPositiveButton(
                                 R.string.settings,
                                 (ignored1, ignored2) -> {
-                                    recordDecision(true);
                                     openSettings();
                                     finish();
                                 })
                         .setNegativeButton(
                                 R.string.twa_clear_data_dialog_keep_data,
                                 (ignored1, ignored2) -> {
-                                    recordDecision(false);
                                     finish();
                                 })
                         .setOnCancelListener(
                                 (ignored) -> {
-                                    recordDecision(false);
                                     finish();
                                 });
 
@@ -91,14 +87,7 @@ public class ClearDataDialogActivity extends AppCompatActivity {
             assert false : "Invalid extras for ClearDataDialogActivity";
             return;
         }
-        TrustedWebActivitySettingsLauncher.launch(this, origins, domains);
-    }
-
-    private void recordDecision(boolean accepted) {
-        boolean appUninstalled = getIsAppUninstalledFromIntent(getIntent());
-        ChromeApplicationImpl.getComponent()
-                .resolveClearDataDialogResultRecorder()
-                .handleDialogResult(accepted, appUninstalled);
+        TrustedWebActivitySettingsNavigation.launch(this, origins, domains);
     }
 
     @VisibleForTesting

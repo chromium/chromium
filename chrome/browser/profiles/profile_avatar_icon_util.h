@@ -51,12 +51,9 @@ struct PlaceholderAvatarIconParams {
 // the Windows taskbar icon is 32x32 and the avatar icon overlay is 16x16. So to
 // get the shortcut avatar badge and the avatar icon overlay to match up, we
 // need to preserve those ratios when creating the shortcut icon.
-const int kShortcutIconSizeWin = 48;
-const int kProfileAvatarBadgeSizeWin = kShortcutIconSizeWin / 2;
+inline constexpr int kShortcutIconSizeWin = 48;
+inline constexpr int kProfileAvatarBadgeSizeWin = kShortcutIconSizeWin / 2;
 #endif  // BUILDFLAG(IS_WIN)
-
-// Size of the small identity images for list of profiles to switch to.
-constexpr int kMenuAvatarIconSize = 20;
 
 // Avatar access.
 extern const base::FilePath::CharType kGAIAPictureFileName[];
@@ -87,7 +84,26 @@ gfx::Image GetSizedAvatarIcon(const gfx::Image& image,
                               int height,
                               AvatarShape shape);
 
+// Returns a square-shaped avatar icon.
 gfx::Image GetSizedAvatarIcon(const gfx::Image& image, int width, int height);
+
+// Resizes and crops `image` into a circle of diameter `size`.
+// Similar to `GetSizedAvatarIcon()` but supports vector icons (e.g. the default
+// silhouette).
+// Note: The returned image is square-shaped, and not cropped into a circle. To
+// crop it, rasterize the result and pass it to `GetSizedAvatarIcon()` with
+// `AvatarShape::SHAPE_CIRCLE`.
+ui::ImageModel GetSizedAvatarImageModel(const ui::ImageModel& image, int size);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Returns a circular avatar with some padding and a dotted ring.
+// The returned image is square-shaped, and not cropped into a circle.
+gfx::ImageSkia GetAvatarWithDottedRing(const ui::ImageModel& image,
+                                       int size,
+                                       bool has_padding,
+                                       bool has_background,
+                                       ui::ColorProvider* color_provider);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns a version of |image| suitable for use in WebUI.
 gfx::Image GetAvatarIconForWebUI(const gfx::Image& image);
@@ -127,15 +143,13 @@ int GetPlaceholderAvatarIconResourceID();
 std::string GetPlaceholderAvatarIconUrl();
 
 // Returns the outline silhouette colored generic avatar, either visible against
-// a dark or a light theme background. This function is currently under
-// experiment and only used when `kOutlineSilhouetteIcon` is enabled.
+// a dark or a light theme background.
 gfx::Image GetPlaceholderAvatarIconVisibleAgainstBackground(
     SkColor profile_color_seed,
     int size,
     AvatarVisibilityAgainstBackground visibility);
 
-// Returns a filled person icon if `kOutlineSilhouetteIcon` is disabled, and the
-// outline silhouette colored generic avatar if it is enabled. Depending on the
+// Returns the outline silhouette colored generic avatar. Depending on the
 // `icon_params`, the outline silhouette avatar will have a background/padding
 // or not.
 //
@@ -226,6 +240,11 @@ SkBitmap GetWin2xAvatarIconAsSquare(const SkBitmap& source_bitmap);
 SkBitmap GetBadgedWinIconBitmapForAvatar(const SkBitmap& app_icon_bitmap,
                                          const SkBitmap& avatar_bitmap);
 #endif  // BUILDFLAG(IS_WIN)
+
+// Adds a background color to an image. Only useful if the image is partially
+// transparent.
+gfx::ImageSkia AddBackgroundToImage(const gfx::ImageSkia& image,
+                                    SkColor background_color);
 
 }  // namespace profiles
 

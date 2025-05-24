@@ -16,11 +16,13 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/network/certificate_helper.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
 #include "chromeos/ash/components/network/system_token_cert_db_storage.h"
 #include "chromeos/components/onc/certificate_scope.h"
+#include "components/server_certificate_database/server_certificate_database_service.h"
 #include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -246,6 +248,10 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
     for (auto& cert : cert_list) {
       NetworkCertType type = GetNetworkCertType(cert.get());
       if (type == NetworkCertType::kAuthorityCertificate) {
+        // TODO(crbug.com/390333881): the authority certs stored here won't be
+        // used if the ServerCertDbCache is being used. Remove the NSS
+        // `authority_certs_` once ServerCertificateDatabaseService fully
+        // launches and NSS isn't used for authority certs anymore.
         authority_certs_.push_back(
             NetworkCert(std::move(cert), /*available_for_network_auth=*/false,
                         is_slot_device_wide_));
@@ -296,6 +302,167 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<CertCache> weak_factory_{this};
+};
+
+class NetworkCertLoader::ServerCertDbCache {
+ public:
+  enum class State {
+    // The ServerCertDbCache is not initialized and not expected to be
+    // initialized soon.
+    kNotInitialized,
+    // The ServerCertDbCache is expected to be initialized soon.
+    kMarkedWillBeInitialized,
+    // The ServerCertDbCache initialization has started, the initial load of
+    // certificates is in progress.
+    kInitialLoadInProgress,
+    // The ServerCertDbCache is initialized and currently not re-loading
+    // certificates.
+    kInitializedAndIdle,
+    // The ServerCertDbCache is initialized and currently re-loading
+    // certificates.
+    kInitializedAndReloading
+  };
+
+  explicit ServerCertDbCache(
+      base::RepeatingClosure certificates_updated_callback)
+      : certificates_updated_callback_(certificates_updated_callback) {}
+
+  ServerCertDbCache(const ServerCertDbCache&) = delete;
+  ServerCertDbCache& operator=(const ServerCertDbCache&) = delete;
+
+  const NetworkCertList& authority_certs() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return authority_certs_;
+  }
+
+  bool is_initialized() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return !!cert_db_service_;
+  }
+
+  bool is_or_will_be_initialized() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return state_ != State::kNotInitialized;
+  }
+
+  bool initial_load_running() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return state_ == State::kInitialLoadInProgress;
+  }
+
+  bool certificates_update_running() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return state_ == State::kInitialLoadInProgress ||
+           state_ == State::kInitializedAndReloading;
+  }
+
+  bool initial_load_finished() const {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    return state_ == State::kInitializedAndIdle ||
+           state_ == State::kInitializedAndReloading;
+  }
+
+  void MarkWillBeInitialized() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    state_ = State::kMarkedWillBeInitialized;
+  }
+
+  void SetUserServerCertDatabaseService(
+      net::ServerCertificateDatabaseService* user_cert_db) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    cert_db_service_ = user_cert_db;
+    if (cert_db_service_) {
+      cert_db_observer_subscription_ =
+          cert_db_service_->AddObserver(base::BindRepeating(
+              &ServerCertDbCache::OnCertDbUpdate, base::Unretained(this)));
+
+      // Trigger initial load.
+      LoadCertificates(/*initial_load=*/true);
+    } else {
+      cert_db_observer_subscription_ = {};
+    }
+  }
+
+ private:
+  // Trigger a certificate load. If a certificate loading task is already in
+  // progress, will start a reload once the current task is finished.
+  void LoadCertificates(bool initial_load) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    if (!cert_db_service_) {
+      // Normally this shouldn't happen since on ChromeOS the primary profile
+      // stays loaded for the lifetime of the browser process. However, it can
+      // happen during shutdown or in tests.
+      return;
+    }
+    if (certificates_update_running()) {
+      certificates_update_required_ = true;
+      return;
+    }
+
+    state_ = initial_load ? State::kInitialLoadInProgress
+                          : State::kInitializedAndReloading;
+    certificates_update_required_ = false;
+
+    cert_db_service_->GetAllCertificates(base::BindOnce(
+        &ServerCertDbCache::UpdateCertificates, weak_factory_.GetWeakPtr()));
+  }
+
+  // Called if a certificate load task is finished.
+  void UpdateCertificates(
+      std::vector<net::ServerCertificateDatabase::CertInformation> cert_infos) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    DCHECK(certificates_update_running());
+    VLOG(1) << "UpdateCertificates: " << cert_infos.size();
+
+    for (const auto& cert_info : cert_infos) {
+      // TODO(crbug.com/390333881): This includes all certificates from the DB
+      // (trusted, untrusted "hint" certificates, and distrusted certs). This
+      // matches the pre-migration behavior that was used for loading NSS certs
+      // in CertCache. It seems weird to ignore the trust value, at the very
+      // least it feels like distrusted certs should be excluded.
+      net::ScopedCERTCertificate cert =
+          net::x509_util::CreateCERTCertificateFromBytes(cert_info.der_cert);
+      if (cert) {
+        authority_certs_.emplace_back(std::move(cert),
+                                      /*available_for_network_auth=*/false,
+                                      /*device_wide=*/false);
+      }
+    }
+    state_ = State::kInitializedAndIdle;
+    certificates_updated_callback_.Run();
+
+    if (certificates_update_required_) {
+      LoadCertificates(/*initial_load=*/false);
+    }
+  }
+
+  void OnCertDbUpdate() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    LoadCertificates(/*initial_load=*/false);
+  }
+
+  // To be called when certificates have been updated.
+  base::RepeatingClosure certificates_updated_callback_;
+
+  // The state of this ServerCertDbCache.
+  State state_ = State::kNotInitialized;
+
+  // This is true if a notification about certificate DB changes arrived while
+  // loading certificates and means that we will have to trigger another
+  // certificates load after that.
+  bool certificates_update_required_ = false;
+
+  // The certificate database from which the certificates should be loaded. May
+  // be nullptr if not initialized yet or during shutdown.
+  raw_ptr<net::ServerCertificateDatabaseService> cert_db_service_;
+  base::CallbackListSubscription cert_db_observer_subscription_;
+
+  // Authority Certificates loaded from the database.
+  NetworkCertList authority_certs_;
+
+  THREAD_CHECKER(thread_checker_);
+
+  base::WeakPtrFactory<ServerCertDbCache> weak_factory_{this};
 };
 
 NetworkCertLoader::NetworkCert::NetworkCert(net::ScopedCERTCertificate cert,
@@ -354,6 +521,9 @@ NetworkCertLoader::NetworkCertLoader() {
   user_public_slot_cert_cache_ =
       std::make_unique<CertCache>(base::BindRepeating(
           &NetworkCertLoader::OnCertCacheUpdated, base::Unretained(this)));
+  user_server_cert_db_cache_ =
+      std::make_unique<ServerCertDbCache>(base::BindRepeating(
+          &NetworkCertLoader::OnCertCacheUpdated, base::Unretained(this)));
 
   auto* system_token_cert_db_storage = SystemTokenCertDbStorage::Get();
   DCHECK(system_token_cert_db_storage);
@@ -383,6 +553,10 @@ void NetworkCertLoader::MarkUserNSSDBWillBeInitialized() {
   user_public_slot_cert_cache_->MarkWillBeInitialized(true);
 }
 
+void NetworkCertLoader::MarkUserServerCertDatabaseWillBeInitialized() {
+  user_server_cert_db_cache_->MarkWillBeInitialized();
+}
+
 void NetworkCertLoader::SetUserNSSDB(net::NSSCertDatabase* user_database) {
   // The private slot can be absent.
   crypto::ScopedPK11Slot private_slot = user_database->GetPrivateSlot();
@@ -396,6 +570,11 @@ void NetworkCertLoader::SetUserNSSDB(net::NSSCertDatabase* user_database) {
   user_public_slot_cert_cache_->SetNSSDBAndSlot(
       user_database, user_database->GetPublicSlot(),
       false /* is_slot_device_wide */);
+}
+
+void NetworkCertLoader::SetUserServerCertDatabaseService(
+    net::ServerCertificateDatabaseService* user_cert_db) {
+  user_server_cert_db_cache_->SetUserServerCertDatabaseService(user_cert_db);
 }
 
 void NetworkCertLoader::SetDevicePolicyCertificateProvider(
@@ -431,7 +610,8 @@ void NetworkCertLoader::RemoveObserver(NetworkCertLoader::Observer* observer) {
 bool NetworkCertLoader::initial_load_of_any_database_running() const {
   return system_slot_cert_cache_->initial_load_running() ||
          user_private_slot_cert_cache_->initial_load_running() ||
-         user_public_slot_cert_cache_->initial_load_running();
+         user_public_slot_cert_cache_->initial_load_running() ||
+         user_server_cert_db_cache_->initial_load_running();
 }
 
 bool NetworkCertLoader::initial_load_finished() const {
@@ -440,17 +620,26 @@ bool NetworkCertLoader::initial_load_finished() const {
 }
 
 bool NetworkCertLoader::user_cert_database_load_finished() const {
-  if (!user_public_slot_cert_cache_->is_initialized())
+  if (user_server_cert_db_cache_->is_or_will_be_initialized() &&
+      (!user_server_cert_db_cache_->is_initialized() ||
+       !user_server_cert_db_cache_->initial_load_finished())) {
     return false;
+  }
+
+  if (!user_public_slot_cert_cache_->is_initialized() ||
+      !user_public_slot_cert_cache_->initial_load_finished()) {
+    return false;
+  }
 
   // The private slot is optional, so it's possible that the private slot cert
   // cache is not initialized. In this case, only care about the public slot
   // cert cache's state.
-  if (!user_private_slot_cert_cache_->is_initialized())
-    return user_public_slot_cert_cache_->initial_load_finished();
+  if (user_private_slot_cert_cache_->is_initialized() &&
+      !user_public_slot_cert_cache_->initial_load_finished()) {
+    return false;
+  }
 
-  return user_private_slot_cert_cache_->initial_load_finished() &&
-         user_public_slot_cert_cache_->initial_load_finished();
+  return true;
 }
 
 bool NetworkCertLoader::can_have_client_certificates() const {
@@ -540,7 +729,8 @@ void NetworkCertLoader::OnCertCacheUpdated() {
 
   if (system_slot_cert_cache_->certificates_update_running() ||
       user_private_slot_cert_cache_->certificates_update_running() ||
-      user_public_slot_cert_cache_->certificates_update_running()) {
+      user_public_slot_cert_cache_->certificates_update_running() ||
+      user_server_cert_db_cache_->certificates_update_running()) {
     // Don't spam the observers - wait for the pending updates to be triggered.
     return;
   }
@@ -569,11 +759,25 @@ void NetworkCertLoader::UpdateCertificates() {
       user_policy_certificate_provider_, false /* device_wide */);
   NetworkCertList device_policy_authorities = GetPolicyProvidedAuthorities(
       device_policy_certificate_provider_, true /* device_wide */);
-  all_authority_certs_ = CombineNetworkCertLists(
-      {&system_slot_cert_cache_->authority_certs(),
-       &user_public_slot_cert_cache_->authority_certs(),
-       &user_private_slot_cert_cache_->authority_certs(),
-       &user_policy_authorities, &device_policy_authorities});
+  if (user_server_cert_db_cache_->is_or_will_be_initialized()) {
+    // TODO(crbug.com/390333881): is there any reason to include the NSS system
+    // slot in all_authority_certs_? I don't think there is any way for anyone
+    // to have imported authority certs into the system slot so including
+    // system_slot_cert_cache_ here should be unnecessary. Unless I missed
+    // something?
+    all_authority_certs_ = CombineNetworkCertLists(
+        {&system_slot_cert_cache_->authority_certs(),
+         &user_server_cert_db_cache_->authority_certs(),
+         &user_policy_authorities, &device_policy_authorities});
+  } else {
+    // TODO(crbug.com/390333881): remove once ServerCertificateDatabaseService
+    // is fully launched.
+    all_authority_certs_ = CombineNetworkCertLists(
+        {&system_slot_cert_cache_->authority_certs(),
+         &user_public_slot_cert_cache_->authority_certs(),
+         &user_private_slot_cert_cache_->authority_certs(),
+         &user_policy_authorities, &device_policy_authorities});
+  }
 
   all_client_certs_ =
       CombineNetworkCertLists({&system_slot_cert_cache_->client_certs(),

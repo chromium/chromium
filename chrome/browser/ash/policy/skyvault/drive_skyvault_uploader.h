@@ -36,12 +36,17 @@ class DriveSkyvaultUploader
       drivefs::DriveFsHost::Observer,
       drive::DriveIntegrationService::Observer {
  public:
+  // Called when the upload finishes. Parameters:
+  //   error: The upload error, if any.
+  //   upload_root_path: Path to the upload root, or empty on early failure.
   using UploadCallback =
-      base::OnceCallback<void(std::optional<MigrationUploadError> error)>;
+      base::OnceCallback<void(std::optional<MigrationUploadError>,
+                              base::FilePath)>;
 
   DriveSkyvaultUploader(Profile* profile,
                         const base::FilePath& file_path,
-                        const base::FilePath& target_path,
+                        const base::FilePath& relative_source_path,
+                        const std::string& upload_root,
                         UploadCallback callback);
   ~DriveSkyvaultUploader() override;
 
@@ -51,8 +56,10 @@ class DriveSkyvaultUploader
   // - Remove the source file in case of a move operation. Move mode of the
   //   `CopyOrMoveIOTask` is not used because the source file should only be
   //   deleted at the end of the sync operation.
-  // Initiated by the `Upload` static method.
   void Run();
+
+  // Cancels the upload, if possible.
+  void Cancel();
 
   DriveSkyvaultUploader(const DriveSkyvaultUploader&) = delete;
   DriveSkyvaultUploader& operator=(const DriveSkyvaultUploader&) = delete;
@@ -91,6 +98,9 @@ class DriveSkyvaultUploader
   // the source file. Calls `OnEndUpload` once the delete is finished.
   void OnDeleteStatus(const file_manager::io_task::ProgressStatus& status);
 
+  // Translates the status error into a MigrationUploadError.
+  void ProcessCopyError(const file_manager::io_task::ProgressStatus& status);
+
   // DriveFsHost::Observer implementation.
   void OnUnmounted() override;
   void OnSyncingStatusUpdate(
@@ -101,6 +111,9 @@ class DriveSkyvaultUploader
   void OnDriveConnectionStatusChanged(
       drive::util::ConnectionStatus status) override;
 
+  // Called when waiting for connection times out.
+  void OnReconnectionTimeout();
+
   // Test-only: Simulates a delete failure if true. Actual result of the
   // DeleteIO task is ignored.
   bool fail_delete_for_testing_ = false;
@@ -110,9 +123,17 @@ class DriveSkyvaultUploader
   const raw_ptr<drive::DriveIntegrationService> drive_integration_service_;
 
   // Upload details:
-  const storage::FileSystemURL source_url_;  // Source file URL
-  const base::FilePath target_path_;         // Target folder path on Drive
-  UploadCallback callback_;                  // Invoked on completion
+  // Source file URL
+  const storage::FileSystemURL source_url_;
+  // Part of the source path relative to MyFiles
+  const base::FilePath relative_source_path_;
+  // The name of the device-unique upload root folder on Drive
+  const std::string upload_root_;
+  // Absolute path to the device's upload root folder on Drive. This is
+  // populated when the upload is about to start.
+  base::FilePath upload_root_path_;
+  // Invoked on completion
+  UploadCallback callback_;
 
   // Tracks upload progress:
   std::optional<file_manager::io_task::IOTaskId> observed_copy_task_id_ =
@@ -124,6 +145,18 @@ class DriveSkyvaultUploader
 
   // Whether `EndCopy()` was called.
   bool copy_ended_ = false;
+
+  // Set to `true` if upload is explicitly cancelled by owner. Forces every step
+  // to exit early.
+  bool cancelled_ = false;
+
+  // Indicates whether there was no connection on starting the task.
+  bool waiting_for_connection_ = false;
+  // Time at which we started waiting for connection. Used for UMA.
+  std::optional<base::Time> connection_wait_start_time_;
+
+  // Ensures that we don't wait for connection indefinitely
+  base::OneShotTimer reconnection_timer_;
 
   // Stores the first encountered error, if any.
   std::optional<MigrationUploadError> error_;

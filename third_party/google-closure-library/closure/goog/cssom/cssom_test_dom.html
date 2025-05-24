@@ -5,7 +5,7 @@ Use of this source code is governed by the Apache License, Version 2.0.
 See the COPYING file for details.
 -->
 <link href="cssom_test_link_1.css" rel="stylesheet" type="text/css">
- <style>
+ <style nonce="top-level-nonce">
   /* This will import css_test_import_1 and css_test_import_2 */
     @import "cssom_test_import_1.css?cachebust=1";
 
@@ -20,5 +20,6 @@ See the COPYING file for details.
     }
  </style>
  <body>
+ <iframe srcdoc="&lt;html&gt;&lt;head&gt;&lt;style nonce=&quot;iframe-nonce&quot;&gt;&lt;/style&gt;&lt;/head&gt;&lt;/html&gt;" id="frame">
  </body>
 </link>

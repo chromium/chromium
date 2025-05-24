@@ -67,17 +67,11 @@ class COMPONENT_EXPORT(RESOURCE_COORDINATOR_PUBLIC_MEMORY_INSTRUMENTATION)
 
   // mojom::ClientProcess implementation. The Coordinator calls this.
   void RequestOSMemoryDump(mojom::MemoryMapOption mmap_option,
+                           const std::vector<mojom::MemDumpFlags>& flags,
                            const std::vector<base::ProcessId>& ids,
                            RequestOSMemoryDumpCallback callback) override;
 
-  struct OSMemoryDumpArgs {
-    OSMemoryDumpArgs();
-    OSMemoryDumpArgs(OSMemoryDumpArgs&&);
-    ~OSMemoryDumpArgs();
-    mojom::MemoryMapOption mmap_option;
-    std::vector<base::ProcessId> pids;
-    RequestOSMemoryDumpCallback callback;
-  };
+  struct OSMemoryDumpArgs;
   void PerformOSMemoryDump(OSMemoryDumpArgs args);
 
   // Map containing pending chrome memory callbacks indexed by dump guid.

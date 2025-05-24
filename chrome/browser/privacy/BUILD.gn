@@ -10,6 +10,8 @@ if (is_android) {
     visibility = [
       ":*",
       "//chrome/android:*",
+      "//chrome/android/javatests:*",
+      "//chrome/android/junit:*",
       "//chrome/browser/feed/android:*",
       "//chrome/browser/ui/android/omnibox:*",
       "//chrome/browser/ui/android/signin:*",
@@ -54,6 +56,7 @@ if (is_android) {
     visibility = [
       ":*",
       "//chrome/android:*",
+      "//chrome/android/junit:*",
       "//chrome/browser/feed/android:*",
       "//chrome/browser/ui/android/hats:*",
       "//chrome/browser/ui/android/hats/*:*",
@@ -67,6 +70,10 @@ if (is_android) {
       "//components/minidump_uploader:minidump_uploader_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
+  }
+
+  android_library("privacy_settings_java") {
+    sources = [ "settings/java/src/org/chromium/chrome/browser/privacy/settings/PrivacySettingsNavigation.java" ]
   }
 
   android_resources("java_resources") {
@@ -112,6 +119,7 @@ if (is_win || is_linux || is_android || is_chromeos) {
     visibility = [
       ":traffic_annotation_proto",
       ":traffic_annotation_proto_gen",
+      ":traffic_annotation_proto_input_group",
     ]
     sources = [ "$root_gen_dir" +
                 "/chrome/browser/privacy/proto/chrome_settings.proto" ]
@@ -120,6 +128,8 @@ if (is_win || is_linux || is_android || is_chromeos) {
     import_dirs = [ "//components/policy/proto" ]
 
     proto_deps = [ ":policy_code_generate" ]
+    deps =
+        [ "//components/policy/proto:policy_common_definitions_compile_proto" ]
     proto_out_dir = "chrome/browser/privacy"
     generate_cc = false
     generate_library = false
@@ -129,6 +139,7 @@ if (is_win || is_linux || is_android || is_chromeos) {
     visibility = [
       ":traffic_annotation_proto",
       ":traffic_annotation_proto_gen",
+      ":traffic_annotation_proto_input_group",
     ]
     sources = [
       "//components/policy/proto/chrome_device_policy.proto",
@@ -141,7 +152,7 @@ if (is_win || is_linux || is_android || is_chromeos) {
 
   proto_library("traffic_annotation_proto") {
     sources = [ "traffic_annotation.proto" ]
-    proto_deps = [
+    deps = [
       ":chrome_settings",
       ":device_policy_and_policy_common_definitions",
     ]

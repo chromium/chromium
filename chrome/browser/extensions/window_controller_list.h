@@ -11,6 +11,9 @@
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/window_controller.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionFunction;
 
@@ -46,21 +49,23 @@ class WindowControllerList {
   WindowController* get(size_t index) const { return windows_[index]; }
 
   // Returns a window matching the context the function was invoked in
-  // using |filter|.
+  // using `filter`.
   WindowController* FindWindowForFunctionByIdWithFilter(
       const ExtensionFunction* function,
       int id,
       WindowController::TypeFilter filter) const;
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns the focused or last added window matching the context the function
   // was invoked in.
   WindowController* CurrentWindowForFunction(ExtensionFunction* function) const;
 
   // Returns the focused or last added window matching the context the function
-  // was invoked in using |filter|.
+  // was invoked in using `filter`.
   WindowController* CurrentWindowForFunctionWithFilter(
       ExtensionFunction* function,
       WindowController::TypeFilter filter) const;
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   static WindowControllerList* GetInstance();
 

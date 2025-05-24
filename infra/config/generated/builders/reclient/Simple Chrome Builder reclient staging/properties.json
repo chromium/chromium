@@ -48,7 +48,8 @@
           "builder": "Simple Chrome Builder reclient staging",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/reclient/Simple Chrome Builder reclient staging/targets"
     }
   },
   "$build/reclient": {

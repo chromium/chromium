@@ -10,9 +10,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.core.app.NotificationCompat;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
@@ -45,10 +45,10 @@ public class WebApkInstallService {
     @CalledByNative
     @VisibleForTesting
     static void showInstalledNotification(
-            String webApkPackage,
-            String notificationId,
-            String shortName,
-            String url,
+            @JniType("std::string") String webApkPackage,
+            @JniType("std::string") String notificationId,
+            @JniType("std::u16string") String shortName,
+            @JniType("std::string") String url,
             Bitmap icon,
             boolean isIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
@@ -60,7 +60,7 @@ public class WebApkInstallService {
                 PendingIntentProvider.getActivity(
                         context, /* requestCode= */ 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+        if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
 
@@ -70,7 +70,7 @@ public class WebApkInstallService {
                 shortName,
                 url,
                 icon,
-                context.getResources().getString(R.string.notification_webapk_installed),
+                context.getString(R.string.notification_webapk_installed),
                 clickPendingIntent);
     }
 
@@ -78,16 +78,15 @@ public class WebApkInstallService {
     @CalledByNative
     @VisibleForTesting
     static void showInstallInProgressNotification(
-            String notificationId,
-            String shortName,
-            String url,
+            @JniType("std::string") String notificationId,
+            @JniType("std::u16string") String shortName,
+            @JniType("std::string") String url,
             Bitmap icon,
             boolean isIconMaskable) {
         String message =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_webapk_install_in_progress, shortName);
-        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+        if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
         showNotification(
@@ -105,16 +104,15 @@ public class WebApkInstallService {
     @CalledByNative
     @VisibleForTesting
     static void showInstallFailedNotification(
-            String notificationId,
-            String shortName,
-            String url,
+            @JniType("std::string") String notificationId,
+            @JniType("std::u16string") String shortName,
+            @JniType("std::string") String url,
             Bitmap icon,
             boolean isIconMaskable,
             @WebApkInstallResult int resultCode) {
         Context context = ContextUtils.getApplicationContext();
         String titleMessage =
-                context.getResources()
-                        .getString(R.string.notification_webapk_install_failed, shortName);
+                context.getString(R.string.notification_webapk_install_failed, shortName);
         String contentMessage = getInstallErrorMessage(resultCode);
 
         PendingIntentProvider openUrlIntent =
@@ -123,7 +121,7 @@ public class WebApkInstallService {
                         notificationId,
                         url,
                         WebApkInstallBroadcastReceiver.ACTION_OPEN_IN_BROWSER);
-        if (isIconMaskable && WebappsIconUtils.doesAndroidSupportMaskableIcons()) {
+        if (isIconMaskable) {
             icon = WebappsIconUtils.generateAdaptiveIconBitmap(icon);
         }
         showNotification(
@@ -147,13 +145,10 @@ public class WebApkInstallService {
         Context context = ContextUtils.getApplicationContext();
 
         String channelId;
-        int preOPriority;
         if (type == SystemNotificationType.WEBAPK_INSTALL_IN_PROGRESS) {
             channelId = ChromeChannelDefinitions.ChannelId.BROWSER;
-            preOPriority = NotificationCompat.PRIORITY_DEFAULT;
         } else {
             channelId = ChromeChannelDefinitions.ChannelId.WEBAPPS;
-            preOPriority = NotificationCompat.PRIORITY_HIGH;
         }
 
         NotificationMetadata metadata =
@@ -169,7 +164,6 @@ public class WebApkInstallService {
                 .setLargeIcon(icon)
                 .setSmallIcon(R.drawable.ic_chrome)
                 .setContentIntent(clickPendingIntent)
-                .setPriorityBeforeO(preOPriority)
                 .setWhen(System.currentTimeMillis())
                 .setSubText(
                         UrlFormatter.formatUrlForSecurityDisplay(
@@ -179,21 +173,21 @@ public class WebApkInstallService {
         if (type == SystemNotificationType.WEBAPK_INSTALL_FAILED) {
             notificationBuilder.addAction(
                     0 /* no icon */,
-                    context.getResources().getString(R.string.webapk_install_failed_action_open),
+                    context.getString(R.string.webapk_install_failed_action_open),
                     clickPendingIntent,
                     NotificationUmaTracker.ActionType.WEB_APK_ACTION_BACK_TO_SITE);
         }
 
         NotificationWrapper notification = notificationBuilder.buildNotificationWrapper();
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(type, notification.getNotification());
     }
 
     /** Cancels any ongoing notification for the WebAPK. */
     @CalledByNative
-    static void cancelNotification(String notificationId) {
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+    static void cancelNotification(@JniType("std::string") String notificationId) {
+        BaseNotificationManagerProxyFactory.create()
                 .cancel(getInstallNotificationTag(notificationId), PLATFORM_ID);
     }
 
@@ -202,12 +196,10 @@ public class WebApkInstallService {
         if (resultCode == WebApkInstallResult.NOT_ENOUGH_SPACE) {
             message =
                     ContextUtils.getApplicationContext()
-                            .getResources()
                             .getString(R.string.notification_webapk_install_failed_space);
         } else {
             message =
                     ContextUtils.getApplicationContext()
-                            .getResources()
                             .getString(
                                     R.string.notification_webapk_install_failed_contents_general);
         }

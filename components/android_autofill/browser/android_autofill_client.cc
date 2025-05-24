@@ -17,12 +17,13 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/credential_management/android/third_party_credential_manager_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/user_prefs/user_prefs.h"
@@ -46,10 +47,22 @@ void AndroidAutofillClient::CreateForWebContents(
 }
 
 AndroidAutofillClient::AndroidAutofillClient(content::WebContents* web_contents)
-    : autofill::ContentAutofillClient(web_contents) {}
+    : autofill::ContentAutofillClient(web_contents),
+      content_credential_manager_(
+          std::make_unique<
+              credential_management::ThirdPartyCredentialManagerImpl>(
+              web_contents->GetPrimaryMainFrame())) {}
 
 AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
+}
+
+base::WeakPtr<autofill::AutofillClient> AndroidAutofillClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+const std::string& AndroidAutofillClient::GetAppLocale() const {
+  NOTREACHED();
 }
 
 bool AndroidAutofillClient::IsOffTheRecord() const {
@@ -65,23 +78,37 @@ AndroidAutofillClient::GetURLLoaderFactory() {
       ->GetURLLoaderFactoryForBrowserProcess();
 }
 
-autofill::AutofillCrowdsourcingManager*
+autofill::AutofillCrowdsourcingManager&
 AndroidAutofillClient::GetCrowdsourcingManager() {
-  if (autofill::AutofillProvider::
-          is_crowdsourcing_manager_disabled_for_testing()) {
-    return nullptr;
-  }
   if (!crowdsourcing_manager_) {
     // Lazy initialization to avoid virtual function calls in the constructor.
     crowdsourcing_manager_ =
-        std::make_unique<autofill::AutofillCrowdsourcingManager>(
-            this, GetChannel(), GetLogManager());
+        std::make_unique<autofill::AutofillCrowdsourcingManager>(this,
+                                                                 GetChannel());
   }
-  return crowdsourcing_manager_.get();
+  return *crowdsourcing_manager_;
 }
 
-autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
+autofill::VotesUploader& AndroidAutofillClient::GetVotesUploader() {
+  return votes_uploader_;
+}
+
+autofill::PersonalDataManager& AndroidAutofillClient::GetPersonalDataManager() {
+  NOTREACHED();
+}
+
+autofill::ValuablesDataManager*
+AndroidAutofillClient::GetValuablesDataManager() {
   return nullptr;
+}
+
+autofill::EntityDataManager* AndroidAutofillClient::GetEntityDataManager() {
+  return nullptr;
+}
+
+autofill::SingleFieldFillRouter&
+AndroidAutofillClient::GetSingleFieldFillRouter() {
+  NOTREACHED();
 }
 
 autofill::AutocompleteHistoryManager*
@@ -106,6 +133,11 @@ signin::IdentityManager* AndroidAutofillClient::GetIdentityManager() {
   return nullptr;
 }
 
+const signin::IdentityManager* AndroidAutofillClient::GetIdentityManager()
+    const {
+  return nullptr;
+}
+
 autofill::FormDataImporter* AndroidAutofillClient::GetFormDataImporter() {
   return nullptr;
 }
@@ -116,12 +148,6 @@ autofill::StrikeDatabase* AndroidAutofillClient::GetStrikeDatabase() {
 
 ukm::UkmRecorder* AndroidAutofillClient::GetUkmRecorder() {
   return nullptr;
-}
-
-ukm::SourceId AndroidAutofillClient::GetUkmSourceId() {
-  // TODO(crbug.com/321677608): Consider UKM recording via delegate (non-WebView
-  // only).
-  return ukm::kInvalidSourceId;
 }
 
 autofill::AddressNormalizer* AndroidAutofillClient::GetAddressNormalizer() {
@@ -163,18 +189,6 @@ void AndroidAutofillClient::ShowAutofillSettings(
   NOTIMPLEMENTED();
 }
 
-void AndroidAutofillClient::ShowEditAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
-void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
-    const autofill::AutofillProfile& profile,
-    AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
     const autofill::AutofillProfile& profile,
     const autofill::AutofillProfile* original_profile,
@@ -198,28 +212,35 @@ void AndroidAutofillClient::UpdateAutofillDataListValues(
   // APIs.
 }
 
-void AndroidAutofillClient::PinAutofillSuggestions() {
-  NOTIMPLEMENTED();
-}
-
 void AndroidAutofillClient::HideAutofillSuggestions(
     autofill::SuggestionHidingReason reason) {
   // TODO(321950502): Analyze hiding the datalist popup here.
+}
+
+bool AndroidAutofillClient::IsAutofillEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsAutofillProfileEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsAutofillPaymentMethodsEnabled() const {
+  NOTREACHED();
 }
 
 bool AndroidAutofillClient::IsAutocompleteEnabled() const {
   return false;
 }
 
-bool AndroidAutofillClient::IsPasswordManagerEnabled() {
+bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   // Android 3P mode and WebView rely on the AndroidAutofillManager which
   // doesn't call this function. If it ever does, the function needs to
   // be implemented in a meaningful way.
   NOTREACHED();
 }
 
-void AndroidAutofillClient::DidFillOrPreviewForm(
-    autofill::mojom::ActionPersistence action_persistence,
+void AndroidAutofillClient::DidFillForm(
     autofill::AutofillTriggerSource trigger_source,
     bool is_refill) {}
 
@@ -253,6 +274,11 @@ AndroidAutofillClient::GetCurrentFormInteractionsFlowId() {
   return {};
 }
 
+autofill::autofill_metrics::FormInteractionsUkmLogger&
+AndroidAutofillClient::GetFormInteractionsUkmLogger() {
+  return form_interactions_ukm_logger_;
+}
+
 content::WebContents& AndroidAutofillClient::GetWebContents() const {
   // While a const_cast is not ideal. The Autofill API uses const in various
   // spots and the content public API doesn't have const accessors. So the const
@@ -265,6 +291,11 @@ std::unique_ptr<autofill::AutofillManager> AndroidAutofillClient::CreateManager(
     base::PassKey<autofill::ContentAutofillDriver> pass_key,
     autofill::ContentAutofillDriver& driver) {
   return base::WrapUnique(new autofill::AndroidAutofillManager(&driver));
+}
+
+credential_management::ContentCredentialManager*
+AndroidAutofillClient::GetContentCredentialManager() {
+  return &content_credential_manager_;
 }
 
 }  // namespace android_autofill

@@ -175,8 +175,7 @@ bool UIControlsSystemInputInjector::SendMouseEventsNotifyWhenDone(
       changed_button_flag = ui::EF_RIGHT_MOUSE_BUTTON;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   const bool has_press = button_state & ui_controls::DOWN;

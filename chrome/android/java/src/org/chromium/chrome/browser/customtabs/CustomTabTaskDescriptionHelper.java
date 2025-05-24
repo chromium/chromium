@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
@@ -33,15 +32,11 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
-import javax.inject.Inject;
-
 /**
  * Helper that updates the Android task description given the state of the current tab.
  *
- * <p>
- * The task description is what is shown in Android's Overview/Recents screen for each entry.
+ * <p>The task description is what is shown in Android's Overview/Recents screen for each entry.
  */
-@ActivityScope
 public class CustomTabTaskDescriptionHelper implements NativeInitObserver, DestroyObserver {
     private final Activity mActivity;
     private final CustomTabActivityTabProvider mTabProvider;
@@ -54,7 +49,6 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
     @Nullable private CustomTabTabObserver mTabObserver;
     @Nullable private CustomTabTabObserver mIconTabObserver;
-    @Nullable private CustomTabActivityTabProvider.Observer mActivityTabObserver;
 
     private int mDefaultThemeColor;
     @Nullable private String mForceTitle;
@@ -63,21 +57,20 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
     @Nullable private Bitmap mLargestFavicon;
 
-    @Inject
     public CustomTabTaskDescriptionHelper(
             Activity activity,
-            CustomTabActivityTabProvider tabProvider,
+            CustomTabActivityTabProvider customTabActivityTabProvider,
             TabObserverRegistrar tabObserverRegistrar,
             BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
-        mTabProvider = tabProvider;
+        mTabProvider = customTabActivityTabProvider;
         mTabObserverRegistrar = tabObserverRegistrar;
         mIntentDataProvider = intentDataProvider;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
 
-        activityLifecycleDispatcher.register(this);
+        lifecycleDispatcher.register(this);
     }
 
     @Override

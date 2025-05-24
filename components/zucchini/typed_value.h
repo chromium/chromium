@@ -30,12 +30,7 @@ class TypedValue {
   explicit operator T() const { return value_; }
   const T value() const { return value_; }
 
-  friend bool operator==(const TypedValue& a, const TypedValue& b) {
-    return a.value_ == b.value_;
-  }
-  friend bool operator!=(const TypedValue& a, const TypedValue& b) {
-    return !(a == b);
-  }
+  friend bool operator==(const TypedValue&, const TypedValue&) = default;
   friend bool operator<(const TypedValue& a, const TypedValue& b) {
     return a.value_ < b.value_;
   }

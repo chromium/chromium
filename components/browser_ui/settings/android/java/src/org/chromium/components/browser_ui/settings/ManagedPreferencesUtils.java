@@ -15,11 +15,12 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.widget.Toast;
@@ -27,6 +28,7 @@ import org.chromium.ui.widget.Toast;
 import java.util.Locale;
 
 /** Utilities and common methods to handle settings managed by policies. */
+@NullMarked
 public class ManagedPreferencesUtils {
     private static Toast showToastWithResourceId(Context context, @StringRes int resId) {
         Toast toast = Toast.makeText(context, context.getString(resId), Toast.LENGTH_LONG);
@@ -81,7 +83,7 @@ public class ManagedPreferencesUtils {
      * @return The appropriate Drawable based on whether the preference is controlled by a policy or
      *         a custodian.
      */
-    public static Drawable getManagedIconDrawable(
+    public static @Nullable Drawable getManagedIconDrawable(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         int resId = getManagedIconResId(delegate, preference);
         return resId == 0
@@ -190,8 +192,8 @@ public class ManagedPreferencesUtils {
         if (view.findViewById(R.id.managed_disclaimer_text) != null
                 && delegate.isPreferenceControlledByPolicy(preference)) {
             // Hide the icon since it will be shown on the highlighted managed disclaimer.
-            hideManagedIcon(preference, view);
-            setSummaryWithHighlightedManagedInfo(preference.getContext(), descriptionText, view);
+            hideManagedIcon(view);
+            setSummaryWithHighlightedManagedInfo(descriptionText, view);
         } else {
             CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
             setSummaryWithManagedInfo(descriptionText, managedDisclaimerText, view);
@@ -227,10 +229,7 @@ public class ManagedPreferencesUtils {
         button.setImageDrawable(getManagedIconDrawable(delegate, preference));
         if (delegate.isPreferenceControlledByPolicy(preference)) {
             button.setContentDescription(
-                    preference
-                            .getContext()
-                            .getResources()
-                            .getString(R.string.managed_by_your_organization));
+                    preference.getContext().getString(R.string.managed_by_your_organization));
         }
         button.setOnClickListener(
                 (View v) -> {
@@ -280,7 +279,7 @@ public class ManagedPreferencesUtils {
      * @param attrs The attributes of the XML tag that is inflating the view.
      * @return Whether a custom layout was defined.
      */
-    public static boolean isCustomLayoutApplied(Context context, AttributeSet attrs) {
+    public static boolean isCustomLayoutApplied(Context context, @Nullable AttributeSet attrs) {
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.Preference);
 
         // Take the custom layout defined via either {@code Preference_layout} or
@@ -320,12 +319,11 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * @param context The context for a given preference.
      * @param descriptionText A description or a state for a given preference.
      * @param view The view corresponding to a given preference.
      */
     private static void setSummaryWithHighlightedManagedInfo(
-            Context context, @Nullable CharSequence descriptionText, View view) {
+            @Nullable CharSequence descriptionText, View view) {
         if (TextUtils.isEmpty(descriptionText)) {
             hideSummaryView(view);
         } else {
@@ -338,12 +336,11 @@ public class ManagedPreferencesUtils {
     /**
      * Hide the managed icon, to be used when the preference defines a custom layout and is managed
      * by policy. In that case, the icon will be shown on the managed disclaimer view.
-     * @param preference The {@link Preference} that is being show to the user for a given
-     *         preference.
+     *
      * @param view The view corresponding to a given preference.
      */
-    private static void hideManagedIcon(Preference preference, View view) {
-        final ImageView imageView = (ImageView) view.findViewById(android.R.id.icon);
+    private static void hideManagedIcon(View view) {
+        final ImageView imageView = view.findViewById(android.R.id.icon);
         if (imageView != null) {
             imageView.setVisibility(View.GONE);
         }

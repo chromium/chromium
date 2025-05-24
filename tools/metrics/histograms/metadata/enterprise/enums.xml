@@ -34,6 +34,7 @@ chromium-metrics-reviews@google.com.
 <enum name="CertificatePrivateKeySource">
   <int value="0" label="Unexportable"/>
   <int value="1" label="Software"/>
+  <int value="2" label="OsSoftware"/>
 </enum>
 
 <enum name="CertificateProvisioningError">
@@ -119,6 +120,8 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="File System Info"/>
   <int value="3" label="System Settings"/>
   <int value="4" label="Agent"/>
+  <int value="5" label="OS Signals"/>
+  <int value="6" label="Browser Context Signals"/>
 </enum>
 
 <enum name="DeviceSignalsUserPermission">
@@ -362,16 +365,6 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Use Another Account button clicked"/>
 </enum>
 
-<enum name="EnrollmentRecoveryOnBootAction">
-  <summary>
-    The action taken on boot when enrollment recovery is marked in the local
-    state.
-  </summary>
-  <int value="0" label="Proceed with recovery"/>
-  <int value="1" label="False flag, the device policy is good"/>
-  <int value="2" label="Device without serial number, skip recovery"/>
-</enum>
-
 <enum name="EnterpriseAccountStatus">
   <summary>Account status fetched before enrollment process starts.</summary>
   <int value="0" label="Unknown account"/>
@@ -419,13 +412,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Timeout on a consumer device"/>
 </enum>
 
-<enum name="EnterpriseBrowserSigninPolicy">
-  <summary>Value for BrowserSignin policy</summary>
-  <int value="0" label="Disable browser sign-in"/>
-  <int value="1" label="Enable browser sign-in"/>
-  <int value="2" label="Force users to sign-in to use the browser"/>
-</enum>
-
 <enum name="EnterpriseCloudExtensionRequestListUpdate">
   <summary>Extension request pending list update event.</summary>
   <int value="0" label="New request added"/>
@@ -446,13 +432,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="DDS concurrency error"/>
   <int value="4" label="Request too large error"/>
   <int value="5" label="Other error"/>
-</enum>
-
-<enum name="EnterpriseCloudUserAffiliationStatus">
-  <summary>Cloud user affiliation status.</summary>
-  <int value="0" label="Only user managed"/>
-  <int value="1" label="Device and user managed and unaffiliated"/>
-  <int value="2" label="Device and user managed and affiliated"/>
 </enum>
 
 <enum name="EnterpriseCrdSessionResultCode">
@@ -489,6 +468,11 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="FAILURE_UNKNOWN_ERROR"/>
   <int value="30" label="FAILURE_REAUTHZ_POLICY_CHECK_FAILED"/>
   <int value="31" label="FAILURE_NO_COMMON_AUTH_METHOD"/>
+  <int value="32" label="FAILURE_SESSION_POLICIES_CHANGED"/>
+  <int value="33" label="FAILURE_UNEXPECTED_AUTHENTICATOR_ERROR"/>
+  <int value="34" label="FAILURE_INVALID_STATE"/>
+  <int value="35" label="FAILURE_INVALID_ARGUMENT"/>
+  <int value="36" label="FAILURE_NETWORK_FAILURE"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">
@@ -850,6 +834,21 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseEventBasedLogUploadResult) -->
+
+<enum name="EnterpriseEventBasedLogUploadResult">
+  <summary>
+    The result of event based log upload on managed device. The values are
+    defined in
+    chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h.
+  </summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed"/>
+  <int value="2" label="Declined"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h:EventBasedUploadStatus) -->
+
 <enum name="EnterpriseFetchSupportPacketFailureType">
   <int value="0" label="kNoFailure"/>
   <int value="1" label="kFailedOnWrongCommandPayload"/>
@@ -890,6 +889,15 @@ chromium-metrics-reviews@google.com.
   <int value="5"
       label="DEP Enrollment (automatically grants UAMDM status / full
              management capabilities)"/>
+</enum>
+
+<enum name="EnterpriseObfuscationError">
+  <int value="0" label="Success"/>
+  <int value="1" label="Obfuscation process failed"/>
+  <int value="2" label="Deobfuscation process failed"/>
+  <int value="3" label="Error during file read/write operations"/>
+  <int value="4" label="Obfuscation/deobfuscation is not enabled"/>
+  <int value="5" label="Error with obfuscation scheme"/>
 </enum>
 
 <enum name="EnterprisePolicies">
@@ -1804,7 +1812,6 @@ chromium-metrics-reviews@google.com.
   <int value="931" label="OnPrintEnterpriseConnector"/>
   <int value="932" label="UserAgentReduction"/>
   <int value="933" label="OriginAgentClusterDefaultEnabled"/>
-  <int value="934" label="DeviceLoginScreenWebUILazyLoading"/>
   <int value="935" label="ProjectorEnabled"/>
   <int value="936" label="PhoneHubCameraRollAllowed"/>
   <int value="937" label="EcheAllowed"/>
@@ -1882,7 +1889,7 @@ chromium-metrics-reviews@google.com.
   <int value="1009" label="BatterySaverModeAvailability"/>
   <int value="1010" label="TabDiscardingExceptions"/>
   <int value="1011" label="AssistantWebEnabled"/>
-  <int value="1012" label="LacrosDataBackwardMigrationMode"/>
+  <int value="1012" label="(Obsolete) LacrosDataBackwardMigrationMode"/>
   <int value="1013" label="StrictMimetypeCheckForWorkerScriptsEnabled"/>
   <int value="1014" label="RecoveryFactorBehavior"/>
   <int value="1015" label="CalendarIntegrationEnabled"/>
@@ -2123,7 +2130,7 @@ chromium-metrics-reviews@google.com.
   <int value="1256" label="PdfViewerOutOfProcessIframeEnabled"/>
   <int value="1257" label="LockScreenAutoStartOnlineReauth"/>
   <int value="1258" label="KeyboardFocusableScrollersEnabled"/>
-  <int value="1259" label="ExtensibleEnterpriseSSOEnabled"/>
+  <int value="1259" label="ExtensibleEnterpriseSSOBlocklist"/>
   <int value="1260" label="CSSCustomStateDeprecatedSyntaxEnabled"/>
   <int value="1261" label="MemorySaverModeSavings"/>
   <int value="1262" label="KioskVisionTelemetryEnabled"/>
@@ -2157,11 +2164,77 @@ chromium-metrics-reviews@google.com.
   <int value="1291" label="TabCompareSettings"/>
   <int value="1292" label="AdHocCodeSigningForPWAsEnabled"/>
   <int value="1293" label="KioskWebAppOfflineEnabled"/>
-  <int value="1294" label="GraduationEnablementStatus"/>
+  <int value="1294" label="ContentTransferEnablementStatus"/>
   <int value="1295" label="HelpMeReadSettings"/>
   <int value="1296" label="GenAiDefaultSettings"/>
   <int value="1297" label="KioskActiveWiFiCredentialsScopeChangeEnabled"/>
   <int value="1298" label="DataURLWhitespacePreservationEnabled"/>
+  <int value="1299" label="AllowExcludeDisplayInMirrorMode"/>
+  <int value="1300" label="AutofillPredictionSettings"/>
+  <int value="1301" label="ArcOpenLinksInBrowserByDefault"/>
+  <int value="1302" label="EnterpriseProfileBadgeToolbarSettings"/>
+  <int value="1303" label="DefaultDirectSocketsPrivateNetworkAccessSetting"/>
+  <int value="1304" label="DirectSocketsPrivateNetworkAccessAllowedForUrls"/>
+  <int value="1305" label="DirectSocketsPrivateNetworkAccessBlockedForUrls"/>
+  <int value="1306" label="SelectParserRelaxationEnabled"/>
+  <int value="1307" label="ClassManagementEnabled"/>
+  <int value="1308" label="EnterpriseSearchAggregatorSettings"/>
+  <int value="1309" label="TranslatorAPIAllowed"/>
+  <int value="1310" label="WebAudioOutputBufferingEnabled"/>
+  <int value="1311" label="NTPOutlookCardVisible"/>
+  <int value="1312" label="NTPSharepointCardVisible"/>
+  <int value="1313" label="SharedWorkerBlobURLFixEnabled"/>
+  <int value="1314" label="DeviceNativeClientForceAllowed"/>
+  <int value="1315" label="GenAiLensOverlaySettings"/>
+  <int value="1316" label="PasswordManagerPasskeysEnabled"/>
+  <int value="1317" label="FilePickerChooseFromDriveSettings"/>
+  <int value="1318" label="LiveTranslateEnabled"/>
+  <int value="1319" label="DevicePowerBatteryChargingOptimization"/>
+  <int value="1320" label="SmartCardConnectAllowedForUrls"/>
+  <int value="1321" label="SmartCardConnectBlockedForUrls"/>
+  <int value="1322" label="DeviceFlexArcPreloadEnabled"/>
+  <int value="1323" label="AllowedInputMethodsForceEnabled"/>
+  <int value="1324" label="WebRtcIPHandlingUrl"/>
+  <int value="1325" label="GenAIPhotoEditingSettings"/>
+  <int value="1326" label="PartitionedBlobUrlUsage"/>
+  <int value="1328" label="DefaultControlledFrameSetting"/>
+  <int value="1329" label="ControlledFrameAllowedForUrls"/>
+  <int value="1330" label="ControlledFrameBlockedForUrls"/>
+  <int value="1331" label="ExternalStorageAllowlist"/>
+  <int value="1332" label="WebAuthenticationRemoteDesktopAllowedOrigins"/>
+  <int value="1333" label="ServiceWorkerToControlSrcdocIframeEnabled"/>
+  <int value="1334" label="ProvisionManagedClientCertificateForBrowser"/>
+  <int value="1335" label="GeminiSettings"/>
+  <int value="1336" label="GenAISmartGroupingSettings"/>
+  <int value="1337" label="GenAiChromeOsSmartActionsSettings"/>
+  <int value="1338" label="RelaunchFastIfOutdated"/>
+  <int value="1339" label="ClassManagementCaptionsEnabled"/>
+  <int value="1340" label="ClassManagementClassroomIntegrationEnabled"/>
+  <int value="1341" label="ClassManagementNetworkRestrictionEnabled"/>
+  <int value="1343" label="ClassManagementViewScreenEnabled"/>
+  <int value="1344" label="KioskChromeAppsForceAllowed"/>
+  <int value="1345" label="ReduceAcceptLanguageEnabled"/>
+  <int value="1346" label="GenAIInlineImageSettings"/>
+  <int value="1347" label="UserSecuritySignalsReporting"/>
+  <int value="1348" label="UserSecurityAuthenticatedReporting"/>
+  <int value="1349" label="HappyEyeballsV3Enabled"/>
+  <int value="1350" label="FaceGazeEnabled"/>
+  <int value="1351" label="ProvisionalNotificationsAllowed"/>
+  <int value="1352" label="DeviceLoginScreenFaceGazeEnabled"/>
+  <int value="1353" label="EnterpriseLogoUrlForBrowser"/>
+  <int value="1354" label="EnterpriseCustomLabelForBrowser"/>
+  <int value="1355" label="DefaultSmartCardConnectSetting"/>
+  <int value="1356" label="DeviceUserInitiatedFirmwareUpdate"/>
+  <int value="1357" label="BuiltInAIAPIsEnabled"/>
+  <int value="1358" label="TabGroupSharingSettings"/>
+  <int value="1359" label="NTPFootermanagementNoticeEnabled"/>
+  <int value="1360" label="NTPFooterExtensionAttributionEnabled"/>
+  <int value="1361" label="ClearWindowNameForNewBrowsingContextGroup"/>
+  <int value="1362" label="PasswordManagerBlocklist"/>
+  <int value="1363" label="TLS13EarlyDataEnabled"/>
+  <int value="1364" label="LocalNetworkAccessRestrictionsEnabled"/>
+  <int value="1365" label="PrefetchWithServiceWorkerEnabled"/>
+  <int value="1366" label="AIModeSearchSuggestSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2302,6 +2375,66 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Extension telemetry event"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationDialogAction) -->
+
+<enum name="EnterpriseSkyVaultMigrationDialogAction">
+  <int value="0" label="'Upload now' button clicked"/>
+  <int value="1"
+      label="No action (timeout expired) 'Upload in ...' button clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:DialogAction) -->
+
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationState) -->
+
+<enum name="EnterpriseSkyVaultMigrationState">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Pending"/>
+  <int value="2" label="InProgress"/>
+  <int value="3" label="Cleanup"/>
+  <int value="4" label="Completed"/>
+  <int value="5" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:State) -->
+
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationStateErrorContext) -->
+
+<enum name="EnterpriseSkyVaultMigrationStateErrorContext">
+  <int value="0" label="Show dialog"/>
+  <int value="1" label="On dialog click"/>
+  <int value="2" label="On timeout skip"/>
+  <int value="3" label="On timeout"/>
+  <int value="4" label="List files"/>
+  <int value="5" label="Migration start"/>
+  <int value="6" label="Migration done"/>
+  <int value="7" label="Cleanup start"/>
+  <int value="8" label="Cleanup done"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:StateErrorContext) -->
+
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationUploadError) -->
+
+<enum name="EnterpriseSkyVaultMigrationUploadError">
+  <int value="0" label="Unexpected error"/>
+  <int value="1" label="Service unavailable"/>
+  <int value="2" label="Google Drive create folder failed"/>
+  <int value="3" label="Google Drive sync failed"/>
+  <int value="4" label="Cloud quota full"/>
+  <int value="5" label="File not found"/>
+  <int value="6" label="OneDrive invalid URL"/>
+  <int value="7" label="Generic copy failed error"/>
+  <int value="8" label="Delete failed"/>
+  <int value="9" label="OneDrive authentication required"/>
+  <int value="10" label="Generic move failed error"/>
+  <int value="11" label="Cancelled"/>
+  <int value="12" label="NetworkError"/>
+  <int value="13" label="ReconnectTimeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:MigrationUploadError) -->
+
 <enum name="EnterpriseUserInfoFetchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failed with a network error"/>
@@ -2401,6 +2534,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unified consent dialog rejected"/>
   <int value="4" label="OIDC profile registration failure"/>
   <int value="5" label="Can't start enrollment from Guest or OTR profile"/>
+  <int value="6" label="OIDC profile registration timeout"/>
+  <int value="7" label="No enrollment due to browser sign in being disabled"/>
 </enum>
 
 <enum name="OidcProfileCreationFunnelStep">
@@ -2436,14 +2571,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="ownership taken"/>
 </enum>
 
-<enum name="PrintScanningContext">
-  <int value="0" label="System print: Before system dialog"/>
-  <int value="1" label="Normal print: Before preview dialog"/>
-  <int value="2" label="System print: Before print document"/>
-  <int value="3" label="Normal print: Before print document"/>
-  <int value="4" label="System print: Before print job"/>
-  <int value="5" label="Normal print: Before print job"/>
-  <int value="6" label="Normal print: Open PDF in Preview"/>
+<enum name="PromotionBannerAction">
+  <int value="0" label="Promotion banner dismissed">
+    The promotion banner was dismissed by the user.
+  </int>
+  <int value="1" label="Promotion banner redirected">
+    The promotion banner was redirected to a different page.
+  </int>
 </enum>
 
 <enum name="PsmResult">
@@ -2511,6 +2645,9 @@ chromium-metrics-reviews@google.com.
     (Obsolete) A new extension request is added and uploaded with ERP.
   </int>
   <int value="6" label="kTriggerManual">User upload report manually</int>
+  <int value="7" label="kTriggerSecurity">
+    Triggered by a security reporting trigger
+  </int>
 </enum>
 
 <enum name="SecondaryGoogleAccountUsagePolicyFetchStatus">
@@ -2522,6 +2659,21 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="UnsupportedAccountTypeError"/>
   <int value="6" label="GetTokenError"/>
   <int value="7" label="GetUserInfoError"/>
+</enum>
+
+<enum name="SecurityReportTrigger">
+  <int value="0" label="Signals-only report triggered by timer"/>
+  <int value="1" label="Signals-only report triggered by cookie change"/>
+</enum>
+
+<enum name="SecuritySignalsMode">
+  <int value="0"
+      label="No security signals is uploaded, this state is erroneous"/>
+  <int value="1"
+      label="Security signals are uploaded alongside with a status report"/>
+  <int value="2"
+      label="Security signals are uploaded exclusively, in a signals-only
+             report"/>
 </enum>
 
 <enum name="StateDeterminationStatus">

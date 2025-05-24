@@ -4,10 +4,16 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
+
 import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -24,14 +30,25 @@ import org.chromium.ui.modelutil.PropertyModel;
  * been saved to the file on disk. It is displayed only if the user has up to date GMS Core
  * installed. If user accepts, it redirects the user to Google Password Manager (GMS Core).
  */
+@NullMarked
 public class PasswordAccessLossImportDialogCoordinator {
     private class ModalDialogController implements ModalDialogProperties.Controller {
 
         @Override
         public void onClick(PropertyModel model, int buttonType) {
             if (buttonType == ButtonType.POSITIVE) {
+                // If password import is accepted, the GMS Core UI will be opened and the export
+                // flow in Chrome ends here.
+                logExportFlowLastStepMetric(
+                        PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
+                        PasswordAccessLossWarningExportStep.PASSWORD_IMPORT);
                 launchCredentialManager();
                 mChromeShutDownRunnable.run();
+            } else {
+                // If password import is rejected, then the export flow ends at this step.
+                logExportFlowLastStepMetric(
+                        PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
+                        PasswordAccessLossWarningExportStep.IMPORT_CANCELED);
             }
             mModalDialogManagerSupplier
                     .get()
@@ -50,14 +67,14 @@ public class PasswordAccessLossImportDialogCoordinator {
     }
 
     private final Context mContext;
-    private final SyncService mSyncService;
+    private final @Nullable SyncService mSyncService;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final PasswordManagerHelper mPasswordManagerHelper;
     private final Runnable mChromeShutDownRunnable;
 
     public PasswordAccessLossImportDialogCoordinator(
             Context context,
-            SyncService syncService,
+            @Nullable SyncService syncService,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             PasswordManagerHelper passwordManagerHelper,
             Runnable chromeShutDownRunnable) {

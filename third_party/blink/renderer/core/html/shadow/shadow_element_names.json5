@@ -42,6 +42,10 @@
       Symbol: "kIdEditingViewPort",
     },
     {
+      name: "textarea-placeholder-break",
+      Symbol: "kIdPlaceholderBreak",
+    },
+    {
       name: "picker",
       Symbol: "kIdPickerIndicator",
     },
@@ -72,10 +76,6 @@
     {
       name: "file-upload-button",
       Symbol: "kIdFileUploadButton",
-    },
-    {
-      name: "optgroup-label",
-      Symbol: "kIdOptGroupLabel",
     },
     {
       name: "select-options",
@@ -163,8 +163,24 @@
       Symbol: "kPseudoInternalDatetimeContainer",
     },
     {
+      name: "-internal-permission-fallback-slot",
+      Symbol: "kPseudoInternalPermissionFallbackSlot",
+    },
+    {
       name: "-internal-permission-text",
       Symbol: "kPseudoInternalPermissionTextSpan",
+    },
+    {
+      name: "-internal-optgroup-label",
+      Symbol: "kIdOptGroupLabel",
+    },
+    {
+      name: "-internal-option-label-container",
+      Symbol: "kOptionLabelContainer",
+    },
+    {
+      name: "-internal-option-slot",
+      Symbol: "kOptionSlot",
     },
   ],
 }

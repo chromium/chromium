@@ -44,12 +44,12 @@ public class EnterpriseInfoImplTest {
         getEnterpriseInfoImpl().setSkipAsyncCheckForTesting(true);
 
         MockitoAnnotations.initMocks(this);
-        EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(mNatives);
+        EnterpriseInfoJni.setInstanceForTesting(mNatives);
     }
 
     @After
     public void tearDown() {
-        EnterpriseInfoJni.TEST_HOOKS.setInstanceForTesting(null);
+        EnterpriseInfoJni.setInstanceForTesting(null);
     }
 
     private EnterpriseInfoImpl getEnterpriseInfoImpl() {
@@ -111,6 +111,29 @@ public class EnterpriseInfoImplTest {
         instance.getDeviceEnterpriseInfo(callback2);
         Assert.assertEquals(
                 "Callback doesn't match the expected cached result.", callback2.result, stateIn);
+    }
+
+    /**
+     * Test that if getDeviceEnterpriseInfoSync returns correct result with or without cached value.
+     */
+    @Test
+    @SmallTest
+    public void testGetDeviceEnterpriseInfoSync() {
+        EnterpriseInfoImpl instance = getEnterpriseInfoImpl();
+
+        EnterpriseInfo.OwnedState stateIn = new EnterpriseInfo.OwnedState(false, true);
+
+        Assert.assertNull(
+                "The return value should be null when there is no cached result.",
+                instance.getDeviceEnterpriseInfoSync());
+
+        instance.setCacheResult(stateIn);
+        instance.onEnterpriseInfoResultAvailable();
+
+        Assert.assertEquals(
+                "The return value should match the expected cached result.",
+                stateIn,
+                instance.getDeviceEnterpriseInfoSync());
     }
 
     /** Test that if multiple callbacks get queued up that they're all serviced. */

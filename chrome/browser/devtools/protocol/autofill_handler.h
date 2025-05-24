@@ -10,16 +10,14 @@
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "content/public/browser/web_contents.h"
 
-using protocol::Maybe;
 using protocol::String;
 
 namespace autofill {
 class AutofillClient;
-class AutofillProfile;
 class ContentAutofillDriver;
 class CreditCard;
 }
@@ -41,7 +39,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
   protocol::Response Disable() override;
   protocol::Response Trigger(
       int field_id,
-      Maybe<String> frame_id,
+      std::optional<String> frame_id,
       std::unique_ptr<protocol::Autofill::CreditCard> card) override;
   // Sets a list of addresses inside `AutofillManager`, used to provide
   // developers addresses from different countries so that they can be used for
@@ -64,9 +62,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
       autofill::FormGlobalId form,
       autofill::mojom::ActionPersistence action_persistence,
       base::span<const autofill::FormFieldData* const> filled_fields,
-      absl::variant<const autofill::AutofillProfile*,
-                    const autofill::CreditCard*> profile_or_credit_card)
-      override;
+      const autofill::FillingPayload& filling_payload) override;
 
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(

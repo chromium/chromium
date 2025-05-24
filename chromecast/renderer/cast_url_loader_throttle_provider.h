@@ -27,7 +27,7 @@ class CastURLLoaderThrottleProvider : public blink::URLLoaderThrottleProvider {
 
   // blink::URLLoaderThrottleProvider implementation:
   std::unique_ptr<blink::URLLoaderThrottleProvider> Clone() override;
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> CreateThrottles(
       base::optional_ref<const blink::LocalFrameToken> local_frame_token,
       const network::ResourceRequest& request) override;
   void SetOnline(bool is_online) override;

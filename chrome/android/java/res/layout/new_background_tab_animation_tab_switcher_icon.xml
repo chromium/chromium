@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabFakeTabSwitcherButton
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/new_background_tab_fake_tab_switcher_button"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/new_tab_indicator_inner_container"
+        android:layout_width="@dimen/toolbar_button_width"
+        android:layout_height="@dimen/toolbar_height_no_shadow"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+
+        <ImageView
+            android:id="@+id/fake_tab_switcher_button"
+            android:importantForAccessibility="no"
+            android:layout_width="@dimen/toolbar_button_width"
+            android:layout_height="@dimen/toolbar_height_no_shadow"
+            android:layout_gravity="center"
+            android:scaleType="center"/>
+    </FrameLayout>
+</org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabFakeTabSwitcherButton>

@@ -17,6 +17,7 @@
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/version_info/version_info.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -24,7 +25,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 #import "ios/chrome/common/channel_info.h"
@@ -77,7 +77,7 @@ IOSChromeSafetyCheckManager::IOSChromeSafetyCheckManager(
   // refactored to use `IOSChromeSafetyCheckManager`. For now
   // `GetLastSafetyCheckRunTimeAcrossAllEntrypoints()` returns the last run
   // time, across both entry points.
-  if (IsSafetyCheckNotificationsEnabled()) {
+  if (IsSafetyCheckAutorunByManagerEnabled()) {
     if (CanAutomaticallyRunSafetyCheck(
             GetLatestSafetyCheckRunTimeAcrossAllEntrypoints(
                 local_pref_service))) {
@@ -287,6 +287,16 @@ void IOSChromeSafetyCheckManager::ManagerWillShutdown(
   password_check_manager_ = nullptr;
 }
 
+void IOSChromeSafetyCheckManager::OnServiceStarted(
+    OmahaService* omaha_service) {
+  CHECK(IsOmahaServiceRefactorEnabled());
+
+  if (omaha_check_queued_) {
+    omaha_check_queued_ = false;
+    StartOmahaCheck();
+  }
+}
+
 void IOSChromeSafetyCheckManager::UpgradeRecommendedDetailsChanged(
     UpgradeRecommendedDetails details) {
   CHECK(IsOmahaServiceRefactorEnabled());
@@ -444,7 +454,8 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
        state == PasswordSafetyCheckState::kSafe);
 
   if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
+                                pref_service_);
     base::UmaHistogramEnumeration(
         "IOS.SafetyCheck.FreshnessTrigger",
         IOSSafetyCheckFreshnessTrigger::kPasswordCheckStateChanged);
@@ -504,7 +515,8 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
        state == UpdateChromeSafetyCheckState::kUpToDate);
 
   if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck);
+    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
+                                pref_service_);
     base::UmaHistogramEnumeration(
         "IOS.SafetyCheck.FreshnessTrigger",
         IOSSafetyCheckFreshnessTrigger::kUpdateChromeCheckStateChanged);
@@ -551,6 +563,17 @@ void IOSChromeSafetyCheckManager::UpdateSafeBrowsingCheckState() {
 
 // TODO(crbug.com/40922030): Add UMA logs related to the Update Chrome check.
 void IOSChromeSafetyCheckManager::StartOmahaCheck() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (IsOmahaServiceRefactorEnabled() && !OmahaService::HasStarted()) {
+    omaha_check_queued_ = true;
+    return;
+  }
+
+  StartOmahaCheckInternal();
+}
+
+void IOSChromeSafetyCheckManager::StartOmahaCheckInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kRunning);
@@ -674,7 +697,12 @@ void IOSChromeSafetyCheckManager::RemoveObserver(
 
 void IOSChromeSafetyCheckManager::StartOmahaCheckForTesting() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  StartOmahaCheck();
+  StartOmahaCheckInternal();
+}
+
+bool IOSChromeSafetyCheckManager::IsOmahaCheckQueuedForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return omaha_check_queued_;
 }
 
 RunningSafetyCheckState

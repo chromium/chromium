@@ -1,0 +1,7 @@
+specific_include_rules = {
+  "caption_bubble_browsertest.cc": [
+    "+chrome/browser/ui",
+    "+chrome/test",
+    "+content/public",
+  ]
+}

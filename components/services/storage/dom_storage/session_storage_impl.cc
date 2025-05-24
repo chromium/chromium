@@ -82,8 +82,7 @@ void RecordSessionStorageCachePurgedHistogram(
           purged_size_kib);
       break;
     case SessionStorageCachePurgeReason::kNotNeeded:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -245,7 +244,7 @@ void SessionStorageImpl::CloneNamespace(
                                                  namespace_entry, &save_tasks);
         if (database_) {
           database_->RunBatchDatabaseTasks(
-              std::move(save_tasks),
+              RunBatchTasksContext::kCloneNamespace, std::move(save_tasks),
               base::BindOnce(&SessionStorageImpl::OnCommitResult,
                              weak_ptr_factory_.GetWeakPtr()));
         }
@@ -254,7 +253,7 @@ void SessionStorageImpl::CloneNamespace(
       // namespace.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   namespaces_.emplace(
       std::piecewise_construct, std::forward_as_tuple(clone_to_namespace_id),
@@ -349,7 +348,7 @@ void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
     metadata_.DeleteArea(namespace_id, storage_key, &tasks);
     if (database_) {
       database_->RunBatchDatabaseTasks(
-          std::move(tasks),
+          RunBatchTasksContext::kDeleteStorage, std::move(tasks),
           base::BindOnce(&SessionStorageImpl::OnCommitResultWithCallback,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
     } else {
@@ -495,7 +494,7 @@ void SessionStorageImpl::ScavengeUnusedNamespaces(
 
   if (database_) {
     database_->RunBatchDatabaseTasks(
-        std::move(save_tasks),
+        RunBatchTasksContext::kScavengeUnusedNamespaces, std::move(save_tasks),
         base::BindOnce(&SessionStorageImpl::OnCommitResult,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -577,7 +576,7 @@ SessionStorageImpl::RegisterNewAreaMap(
 
   if (database_) {
     database_->RunBatchDatabaseTasks(
-        std::move(save_tasks),
+        RunBatchTasksContext::kRegisterNewAreaMap, std::move(save_tasks),
         base::BindOnce(&SessionStorageImpl::OnCommitResult,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -666,6 +665,7 @@ void SessionStorageImpl::RegisterShallowClonedNamespace(
                                            namespace_entry, &save_tasks);
   if (database_) {
     database_->RunBatchDatabaseTasks(
+        RunBatchTasksContext::kRegisterShallowClonedNamespace,
         std::move(save_tasks),
         base::BindOnce(&SessionStorageImpl::OnCommitResult,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -702,8 +702,9 @@ void SessionStorageImpl::DoDatabaseDelete(const std::string& namespace_id) {
   metadata_.DeleteNamespace(namespace_id, &tasks);
   if (database_) {
     database_->RunBatchDatabaseTasks(
-        std::move(tasks), base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                                         weak_ptr_factory_.GetWeakPtr()));
+        RunBatchTasksContext::kDoDatabaseDelete, std::move(tasks),
+        base::BindOnce(&SessionStorageImpl::OnCommitResult,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -721,13 +722,12 @@ void SessionStorageImpl::RunWhenConnected(base::OnceClosure callback) {
       on_database_opened_callbacks_.push_back(std::move(callback));
       return;
     case CONNECTION_SHUTDOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case CONNECTION_FINISHED:
       std::move(callback).Run();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SessionStorageImpl::InitiateConnection(bool in_memory_only) {
@@ -804,18 +804,18 @@ void SessionStorageImpl::OnDatabaseOpened(leveldb::Status status) {
   database_->RunDatabaseTask(
       base::BindOnce([](const DomStorageDatabase& db) {
         ValueAndStatus version;
-        version.status = db.Get(
-            base::make_span(SessionStorageMetadata::kDatabaseVersionBytes),
-            &version.value);
+        version.status =
+            db.Get(base::span(SessionStorageMetadata::kDatabaseVersionBytes),
+                   &version.value);
 
         KeyValuePairsAndStatus namespaces;
         namespaces.status = db.GetPrefixed(
-            base::make_span(SessionStorageMetadata::kNamespacePrefixBytes),
+            base::span(SessionStorageMetadata::kNamespacePrefixBytes),
             &namespaces.key_value_pairs);
 
         ValueAndStatus next_map_id;
         next_map_id.status =
-            db.Get(base::make_span(SessionStorageMetadata::kNextMapIdKeyBytes),
+            db.Get(base::span(SessionStorageMetadata::kNextMapIdKeyBytes),
                    &next_map_id.value);
 
         return std::make_tuple(std::move(version), std::move(namespaces),
@@ -922,7 +922,7 @@ SessionStorageImpl::MetadataParseResult SessionStorageImpl::ParseNamespaces(
     // initialized. There's no harm in deferring in other situations, so we just
     // always defer here.
     database_->RunBatchDatabaseTasks(
-        std::move(migration_tasks),
+        RunBatchTasksContext::kParseNamespaces, std::move(migration_tasks),
         base::BindOnce(
             [](base::OnceCallback<void(leveldb::Status)> callback,
                scoped_refptr<base::SequencedTaskRunner> callback_task_runner,

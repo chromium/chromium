@@ -2,8 +2,8 @@
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.android.webview"
-    platformBuildVersionCode="35"
-    platformBuildVersionName="15"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16"
     android:isolatedSplits="true"
     android:versionCode="OFFSET=1"
     android:versionName="#.#.#.#">
@@ -511,5 +511,6 @@
     </service>  # DIFF-ANCHOR: e2f3bbbd
     <uses-library android:name="android.ext.adservices" android:required="false"/>
     <uses-library android:name="androidx.window.extensions" android:required="false"/>
+    <uses-library android:name="com.android.extensions.xr" android:required="false"/>
   </application>
 </manifest>

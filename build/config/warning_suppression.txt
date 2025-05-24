@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Project. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is used to suppress warnings based on the file they originate from,
+# as opposed to disabling warnings via -Wno flags which apply to all the files
+# involved in each compilation. For more information, see
+# https://clang.llvm.org/docs/WarningSuppressionMappings.html
+# For background information on their use in chromium, see crbug.com/404297941
+
+# Warning Suppression Policy: updates to this file should be tightly controlled,
+# for reasons discussed in crbug.com/404297941. In particular:
+#
+# 1. This file should never grow (as measured by the number of files suppressed)
+#    except when a new warning is enabled.
+# 2. This file should only be used to opt out whole directories, never
+#    individual files.
+# 3. This file should be used as a last resort; if it's possible to fix the warning or suppress
+#    it without using the file, do so.
+#    1. For first-party code, just fix it directly, or use `#pragma GCC diagnostic ignored`.
+#    2. For third-party code, first attempt to fix it upstream.
+#    3. If that's not possible, attempt to suppress the warning using `-Wno` flags in a gn file.
+# 4. All entries should have a path to eventually be removed.
+#
+# In practice, rules (3) and (4) mean that the only accepted use case for this file is to
+# speed up rolls or enable a warning slightly sooner, for cases where an upstream fix has been
+# proposed but is likely to take a long time to get merged and rolled into chromium.
+#
+# We may make an exception to the policy for extremely high-value warnings that backslide a lot
+# (such as unsafe buffers), but this is expected to be rare.
+
+# Formatting note: Don't put comments on the same line as a glob pattern! Clang
+# will get confused and the warning won't be suppressed.
+
+[unnecessary-virtual-specifier]
+# Can be removed when https://github.com/google/nearby/pull/3392 is merged and rolled
+src:*/third_party/nearby/*

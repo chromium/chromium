@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/version.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
@@ -398,6 +399,26 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
     case AXEventGenerator::Event::TEXT_SELECTION_CHANGED:
     case AXEventGenerator::Event::WIN_IACCESSIBLE_STATE_CHANGED:
       break;
+  }
+}
+
+void BrowserAccessibilityManagerAuraLinux::FireAriaNotificationEvent(
+    BrowserAccessibility* node,
+    const std::string& announcement,
+    ax::mojom::AriaNotificationPriority priority_property,
+    ax::mojom::AriaNotificationInterrupt interrupt_property,
+    const std::string& type) {
+  DCHECK(node);
+
+  // Only newer Atk versions support the notification signal type.
+  if (base::Version(atk_get_version()).CompareTo(base::Version("2.50.0")) >= 0) {
+    ToBrowserAccessibilityAuraLinux(node)->GetNode()->OnAriaNotificationPosted(
+        announcement, priority_property);
+  } else {
+    ToBrowserAccessibilityAuraLinux(node)
+        ->GetExtraAnnouncementNode(priority_property)
+        ->GetNode()
+        ->OnAriaNotificationPosted(announcement, priority_property);
   }
 }
 

@@ -1,0 +1,8 @@
+Tests Target.createTarget() window positioning.
+Window bounds: {
+    height : 300
+    left : 10
+    top : 20
+    width : 400
+    windowState : normal
+}

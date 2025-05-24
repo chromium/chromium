@@ -30,13 +30,13 @@
 namespace blink {
 
 IDBVersionChangeEvent::IDBVersionChangeEvent()
-    : data_loss_(mojom::IDBDataLoss::None) {}
+    : data_loss_(mojom::blink::IDBDataLoss::None) {}
 
 IDBVersionChangeEvent::IDBVersionChangeEvent(
     const AtomicString& event_type,
     uint64_t old_version,
     const std::optional<uint64_t>& new_version,
-    mojom::IDBDataLoss data_loss,
+    mojom::blink::IDBDataLoss data_loss,
     const String& data_loss_message)
     : Event(event_type, Bubbles::kNo, Cancelable::kNo),
       old_version_(old_version),
@@ -49,17 +49,19 @@ IDBVersionChangeEvent::IDBVersionChangeEvent(
     const IDBVersionChangeEventInit* initializer)
     : Event(event_type, Bubbles::kNo, Cancelable::kNo),
       old_version_(initializer->oldVersion()),
-      data_loss_(mojom::IDBDataLoss::None) {
+      data_loss_(mojom::blink::IDBDataLoss::None) {
   if (initializer->hasNewVersion())
     new_version_ = initializer->newVersion();
-  if (initializer->dataLoss() == "total")
-    data_loss_ = mojom::IDBDataLoss::Total;
+  if (initializer->dataLoss() == "total") {
+    data_loss_ = mojom::blink::IDBDataLoss::Total;
+  }
 }
 
-const AtomicString& IDBVersionChangeEvent::dataLoss() const {
-  if (data_loss_ == mojom::IDBDataLoss::Total)
-    return indexed_db_names::kTotal;
-  return indexed_db_names::kNone;
+V8IDBDataLossAmount IDBVersionChangeEvent::dataLoss() const {
+  if (data_loss_ == mojom::blink::IDBDataLoss::Total) {
+    return V8IDBDataLossAmount(V8IDBDataLossAmount::Enum::kTotal);
+  }
+  return V8IDBDataLossAmount(V8IDBDataLossAmount::Enum::kNone);
 }
 
 const AtomicString& IDBVersionChangeEvent::InterfaceName() const {

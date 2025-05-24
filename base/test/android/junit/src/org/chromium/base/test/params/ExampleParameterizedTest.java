@@ -24,14 +24,14 @@ import java.util.List;
 @UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
 public class ExampleParameterizedTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
                     new ParameterSet().value("hello", "world").name("HelloWorld"),
                     new ParameterSet().value("Xxxx", "Yyyy").name("XxxxYyyy"),
                     new ParameterSet().value("aa", "yy").name("AaYy"));
 
     public static class MethodParamsA implements ParameterProvider {
-        private static List<ParameterSet> sMethodParamA =
+        private static final List<ParameterSet> sMethodParamA =
                 Arrays.asList(
                         new ParameterSet().value(1, 2).name("OneTwo"),
                         new ParameterSet().value(2, 3).name("TwoThree"),
@@ -44,7 +44,7 @@ public class ExampleParameterizedTest {
     }
 
     public static class MethodParamsB implements ParameterProvider {
-        private static List<ParameterSet> sMethodParamB =
+        private static final List<ParameterSet> sMethodParamB =
                 Arrays.asList(
                         new ParameterSet().value("a", "b").name("Ab"),
                         new ParameterSet().value("b", "c").name("Bc"),
@@ -57,8 +57,8 @@ public class ExampleParameterizedTest {
         }
     }
 
-    private String mStringA;
-    private String mStringB;
+    private final String mStringA;
+    private final String mStringB;
 
     public ExampleParameterizedTest(String a, String b) {
         mStringA = a;

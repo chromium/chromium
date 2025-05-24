@@ -23,9 +23,7 @@ DOMException* PushError::CreateException(mojom::PushErrorType error,
       return MakeGarbageCollected<DOMException>(DOMExceptionCode::kNetworkError,
                                                 message);
     case mojom::PushErrorType::NONE:
-      NOTREACHED_IN_MIGRATION();
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
-                                                message);
+      NOTREACHED();
     case mojom::PushErrorType::NOT_ALLOWED:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotAllowedError, message);
@@ -36,8 +34,7 @@ DOMException* PushError::CreateException(mojom::PushErrorType error,
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kNotSupportedError, message);
   }
-  NOTREACHED_IN_MIGRATION();
-  return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError);
+  NOTREACHED();
 }
 
 }  // namespace blink

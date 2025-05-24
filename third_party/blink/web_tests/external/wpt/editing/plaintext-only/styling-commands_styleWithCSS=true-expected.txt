@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] execCommand("removeFormat", false, undefined) when a<b>[b]</b>c: the command should be disabled
+  assert_false: expected false got true
+[FAIL] execCommand("removeFormat", false, undefined) when a<b>[b]</b>c should return false
+  assert_false: expected false got true
+Harness: the test ran to completion.
+

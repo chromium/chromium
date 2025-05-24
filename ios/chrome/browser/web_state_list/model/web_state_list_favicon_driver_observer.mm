@@ -4,9 +4,8 @@
 
 #import "ios/chrome/browser/web_state_list/model/web_state_list_favicon_driver_observer.h"
 
-#import "components/favicon/ios/web_favicon_driver.h"
-
 #import "base/check.h"
+#import "components/favicon/ios/web_favicon_driver.h"
 
 WebStateListFaviconDriverObserver::WebStateListFaviconDriverObserver(
     WebStateList* web_state_list,

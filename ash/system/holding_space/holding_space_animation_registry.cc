@@ -4,6 +4,7 @@
 
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -21,7 +22,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace ash {
@@ -85,7 +85,7 @@ class HoldingSpaceAnimationRegistry::ProgressIndicatorAnimationDelegate
       const std::vector<const HoldingSpaceItem*>& items) override {
     // The removal of `items` can be safely ignored if none were in progress.
     const bool removed_in_progress_item =
-        base::ranges::any_of(items, [](const HoldingSpaceItem* item) {
+        std::ranges::any_of(items, [](const HoldingSpaceItem* item) {
           return item->IsInitialized() && !item->progress().IsComplete();
         });
     if (removed_in_progress_item)

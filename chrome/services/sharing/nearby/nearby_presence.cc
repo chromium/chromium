@@ -279,7 +279,7 @@ void NearbyPresence::GetLocalSharedCredentials(
            }});
 }
 
-NearbyPresence::ScanSessionImpl::ScanSessionImpl() {}
-NearbyPresence::ScanSessionImpl::~ScanSessionImpl() {}
+NearbyPresence::ScanSessionImpl::ScanSessionImpl() = default;
+NearbyPresence::ScanSessionImpl::~ScanSessionImpl() = default;
 
 }  // namespace ash::nearby::presence

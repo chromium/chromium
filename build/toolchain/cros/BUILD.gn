@@ -29,8 +29,18 @@ template("cros_toolchain") {
       # host wrapper (used in the ebuild) and Chrome's clang (used in Simple
       # Chrome), prepend rewrapper like normal.
       if (use_reclient && invoker.needs_rewrapper_path_arg) {
+        # crbug.com/417677693: if cppflags exist, give them space.
+        if (extra_cppflags != "") {
+          extra_cppflags += " "
+        }
         extra_cppflags += "--rewrapper-path $reclient_cros_cc_wrapper --rewrapper-cfg ${reclient_cc_cfg_file}"
       }
+
+      # crbug.com/397463803: Add these so the compiler wrapper doesn't error
+      # out. Should be removable around Q4 2025.
+      extra_asmflags = "-D_CROSTC_IS_AWARE_OF_THIS_USECASE"
+      extra_cppflags += " -D_CROSTC_IS_AWARE_OF_THIS_USECASE"
+      extra_ldflags += " -D_CROSTC_IS_AWARE_OF_THIS_USECASE"
 
       # Relativize path if compiler is specified such that not to lookup from
       # $PATH and cc/cxx does not contain additional flags.
@@ -79,7 +89,7 @@ cros_toolchain("target") {
     extra_cxxflags = cros_target_extra_cxxflags
     extra_ldflags = cros_target_extra_ldflags
 
-    needs_rewrapper_path_arg = true
+    needs_rewrapper_path_arg = cros_needs_rewrapper_path_arg
   }
 }
 
@@ -116,7 +126,7 @@ cros_toolchain("nacl_bootstrap") {
     extra_cxxflags = cros_nacl_bootstrap_extra_cxxflags
     extra_ldflags = cros_nacl_bootstrap_extra_ldflags
 
-    needs_rewrapper_path_arg = true
+    needs_rewrapper_path_arg = cros_needs_rewrapper_path_arg
   }
 
   # We build for ARM32, even when the rest of the build targets ARM64.
@@ -161,7 +171,7 @@ cros_toolchain("nacl_helper_arm32") {
   extra_ldflags = ""
 
   if (!lacros_use_chromium_toolchain) {
-    needs_rewrapper_path_arg = true
+    needs_rewrapper_path_arg = cros_needs_rewrapper_path_arg
   }
 }
 
@@ -225,82 +235,5 @@ cros_toolchain("v8_snapshot") {
     extra_ldflags = cros_v8_snapshot_extra_ldflags
 
     needs_rewrapper_path_arg = false
-  }
-}
-
-# This toolchain is used when we want to build Lacros using alternate toolchain.
-# To use this, you need to set gn arg 'also_build_lacros_chrome_for_architecture'.
-# See build/config/chromeos/ui_mode.gni
-if (also_build_lacros_chrome_for_architecture != "") {
-  cros_toolchain("lacros_clang") {
-    if (also_build_lacros_chrome_for_architecture == "amd64") {
-      lacros_args =
-          read_file("//build/args/chromeos/amd64-generic-crostoolchain.gni",
-                    "scope")
-    } else if (also_build_lacros_chrome_for_architecture == "arm") {
-      lacros_args =
-          read_file("//build/args/chromeos/arm-generic-crostoolchain.gni",
-                    "scope")
-    } else if (also_build_lacros_chrome_for_architecture == "arm64") {
-      lacros_args =
-          read_file("//build/args/chromeos/arm64-generic-crostoolchain.gni",
-                    "scope")
-    } else {
-      assert(false,
-             "also_build_lacros_chrome_for_architecture is not " +
-                 "one of the supported architectures.")
-    }
-
-    toolchain_args = {
-      forward_variables_from(lacros_args, "*")
-
-      # TODO(crbug.com/40823173) Change to a better way to set gn args.
-      # The following gn args are present in ash config like
-      # //build/args/chromeos/atlas.gni but not in
-      # //build/args/chromeos/amd64-generic-crostoolchain.gni.
-      # So we need to reset them to the default value where Lacros needs.
-      # Starts from here.
-      ozone_auto_platforms = true
-      ozone_platform = ""
-      ozone_platform_gbm = -1
-      ozone_platform_headless = false
-
-      # Ends here.
-
-      current_os = "chromeos"
-      target_os = "chromeos"
-      current_cpu = current_cpu
-      also_build_lacros_chrome_for_architecture = ""
-      chromeos_is_browser_only = true
-      use_clang_coverage = false
-
-      # Do not propagate AFDO settings from Ash build to Lacros build.
-      # Specifically, Lacros uses PGO by default, so this would
-      # conflict.
-      clang_use_default_sample_profile = false
-      clang_sample_profile_path = ""
-    }
-    if (!lacros_use_chromium_toolchain) {
-      # These are args for the template.
-      ar = lacros_args.cros_target_ar
-      cc = lacros_args.cros_target_cc
-      cxx = lacros_args.cros_target_cxx
-      ld = lacros_args.cros_target_ld
-
-      if (defined(lacros_args.cros_target_nm) &&
-          lacros_args.cros_target_nm != "") {
-        nm = lacros_args.cros_target_nm
-      }
-      if (defined(lacros_args.cros_target_readelf) &&
-          lacros_args.cros_target_readelf != "") {
-        readelf = lacros_args.cros_target_readelf
-      }
-      extra_cflags = lacros_args.cros_target_extra_cflags
-      extra_cppflags = lacros_args.cros_target_extra_cppflags
-      extra_cxxflags = lacros_args.cros_target_extra_cxxflags
-      extra_ldflags = lacros_args.cros_target_extra_ldflags
-
-      needs_rewrapper_path_arg = true
-    }
   }
 }

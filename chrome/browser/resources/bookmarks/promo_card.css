@@ -1,0 +1,60 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+}
+
+#promoCard {
+  column-gap: 8px;
+  display: flex;
+  flex-direction: row;
+  padding: 12px 16px;
+  width: 100%;
+}
+
+#image {
+  content: url(images/batch_upload_bookmarks_promo.svg);
+  margin: auto;
+}
+
+#title {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0px;
+}
+
+#description {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+#promoContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  row-gap: 4px;
+}
+
+#actionButton {
+  margin-bottom: 4px;
+  margin-top: 8px;
+  width: fit-content;
+}
+
+@media (prefers-color-scheme: dark) {
+  #image {
+    content: url(images/batch_upload_bookmarks_promo_dark.svg);
+  }
+}

@@ -26,6 +26,7 @@ void DelegatedFrameHostClientAndroid::DidSubmitCompositorFrame() {
 }
 
 void DelegatedFrameHostClientAndroid::OnInputEvent(
+    const RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   if (event.GetType() == blink::WebInputEvent::Type::kGestureScrollBegin) {
     frames_submitted_this_scroll_ = 0;

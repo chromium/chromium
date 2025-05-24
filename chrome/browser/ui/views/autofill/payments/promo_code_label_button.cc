@@ -26,11 +26,11 @@ constexpr int kHorizontalPaddingPx = 10;
 PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
                                            const std::u16string& text)
     : views::LabelButton(std::move(callback), text) {
-  SetTextColorId(ButtonState::STATE_NORMAL, kColorPaymentsPromoCodeForeground);
-  SetTextColorId(ButtonState::STATE_HOVERED,
-                 kColorPaymentsPromoCodeForegroundHovered);
-  SetTextColorId(ButtonState::STATE_PRESSED,
-                 kColorPaymentsPromoCodeForegroundPressed);
+  SetTextColor(ButtonState::STATE_NORMAL, kColorPaymentsPromoCodeForeground);
+  SetTextColor(ButtonState::STATE_HOVERED,
+               kColorPaymentsPromoCodeForegroundHovered);
+  SetTextColor(ButtonState::STATE_PRESSED,
+               kColorPaymentsPromoCodeForegroundPressed);
   SetImageModel(ButtonState::STATE_NORMAL,
                 ui::ImageModel::FromVectorIcon(
                     vector_icons::kContentCopyIcon,
@@ -45,7 +45,7 @@ PromoCodeLabelButton::PromoCodeLabelButton(PressedCallback callback,
       ui::ImageModel::FromVectorIcon(vector_icons::kContentCopyIcon,
                                      kColorPaymentsPromoCodeForegroundPressed,
                                      kContentCopyIconSizePx));
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       kColorPaymentsPromoCodeBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kMedium)));

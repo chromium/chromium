@@ -7,12 +7,10 @@
 #include <algorithm>
 #include <memory>
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
-#endif
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -102,14 +100,12 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
 
   ~VideoConferenceMediaListenerBrowserTest() override = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(
         ash::features::kFeatureManagementVideoConference);
 
     InProcessBrowserTest::SetUp();
   }
-#endif
 
   // Adds a fake media device with the specified `MediaStreamType` and starts
   // the capturing.
@@ -163,21 +159,30 @@ class VideoConferenceMediaListenerBrowserTest : public InProcessBrowserTest {
     blink::mojom::StreamDevices fake_devices;
     blink::MediaStreamDevice device(stream_type, "fake_device", "fake_device");
 
+    if (stream_type ==
+            blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE ||
+        stream_type ==
+            blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE) {
+      device.display_media_info = media::mojom::DisplayMediaInformation::New(
+          media::mojom::DisplayCaptureSurfaceType::WINDOW,
+          /*logical_surface=*/true, media::mojom::CursorCaptureType::NEVER,
+          /*capture_handle=*/nullptr,
+          /*initial_zoom_level=*/100);
+    }
+
     if (blink::IsAudioInputMediaType(stream_type)) {
       fake_devices.audio_device = device;
     } else if (blink::IsVideoInputMediaType(stream_type)) {
       fake_devices.video_device = device;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return fake_devices;
   }
 
   int tab_count_{0};
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif
 };
 
 // Tests video capturing is correctly detected by VideoConferenceMediaListener.
@@ -295,10 +300,6 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
   }
 }
 
-// These tests call methods on `VideoConferenceManagerAsh` that are not part of
-// the crosapi interface. As a result these tests are run on ash-chrome only.
-// TODO(b/274368285): Add lacros support for these tests.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Tests request-on-mute functionality appropriately updates tray controller.
 IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest, RequestOnMute) {
   ash::FakeVideoConferenceTrayController* controller =
@@ -382,6 +383,5 @@ IN_PROC_BROWSER_TEST_F(VideoConferenceMediaListenerBrowserTest,
       content::WebContentsUserData<VideoConferenceWebApp>::FromWebContents(
           web_contents));
 }
-#endif
 
 }  // namespace video_conference

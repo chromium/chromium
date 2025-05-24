@@ -1,0 +1,6 @@
+include_rules = [
+  "+mojo/core/embedder",
+  "+net",
+  "+remoting/protocol",
+  "+services/network",
+]

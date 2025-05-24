@@ -11,11 +11,13 @@ import static org.mockito.Mockito.verify;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
@@ -67,6 +69,7 @@ public class TabReparentingControllerTest {
         }
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ReparentingTask mTask;
     @Mock Profile mProfile;
     @Mock Profile mIncognitoProfile;
@@ -82,7 +85,6 @@ public class TabReparentingControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Mockito.when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);
 
         mTabModel = new MockTabModel(mProfile, null);

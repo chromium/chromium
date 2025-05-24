@@ -97,13 +97,9 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   // Return true if this block establishes a fragmentation context root (e.g. a
   // multicol container).
-  //
-  // Implementation detail: At some point in the future there should be no flow
-  // threads. Callers that only want to know if this is a fragmentation context
-  // root (and don't depend on flow threads) should call this method.
   bool IsFragmentationContextRoot() const override {
     NOT_DESTROYED();
-    return MultiColumnFlowThread();
+    return IsMulticolContainer();
   }
 
   bool IsInitialLetterBox() const override;
@@ -123,23 +119,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   bool ShouldMoveCaretToHorizontalBoundaryWhenPastTopOrBottom() const;
-
-  // If this is an inline formatting context root, this flag is set if the
-  // inline formatting context *may* (false positives are okay) be
-  // non-contiguous. Sometimes an inline formatting context may start in some
-  // fragmentainer, then skip one or more fragmentainers, and then resume
-  // again. This may happen for instance if a culled inline is preceded by a
-  // tall float that's pushed after (due to size/breaking restrictions) the
-  // contents of the culled inline.
-  void SetMayBeNonContiguousIfc(bool b) {
-    NOT_DESTROYED();
-    may_be_non_contiguous_ifc_ = b;
-  }
-  bool MayBeNonContiguousIfc() const {
-    NOT_DESTROYED();
-    DCHECK(HasFragmentItems());
-    return may_be_non_contiguous_ifc_;
-  }
 
   // Returns the associated `InlineNodeData`, or `nullptr` if `this` doesn't
   // have one (i.e., not an NG inline formatting context.)
@@ -190,8 +169,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void DirtyLinesFromChangedChild(LayoutObject* child) final;
 
  private:
-  void CreateOrDestroyMultiColumnFlowThreadIfNeeded(
-      const ComputedStyle* old_style);
+  void UpdateForMulticol(const ComputedStyle* old_style);
 
   // Merge children of |sibling_that_may_be_deleted| into this object if
   // possible, and delete |sibling_that_may_be_deleted|. Returns true if we

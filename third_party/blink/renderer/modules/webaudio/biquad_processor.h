@@ -31,16 +31,18 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
-#include "third_party/blink/renderer/platform/audio/audio_dsp_kernel.h"
-#include "third_party/blink/renderer/platform/audio/audio_dsp_kernel_processor.h"
 #include "third_party/blink/renderer/platform/audio/biquad.h"
 
 namespace blink {
 
-// BiquadProcessor is an AudioDSPKernelProcessor which uses Biquad objects to
-// implement several common filters.
+// BiquadProcessor processes one input -> one output (N channels each). It uses
+// one AudioDSPKernel object per channel to do the processing, thus there is no
+// cross-channel processing.  It uses Biquad objects to implement several common
+// filters.
 
-class BiquadProcessor final : public AudioDSPKernelProcessor {
+class BiquadDSPKernel;
+
+class BiquadProcessor final {
  public:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -63,16 +65,30 @@ class BiquadProcessor final : public AudioDSPKernelProcessor {
                   AudioParamHandler& q,
                   AudioParamHandler& gain,
                   AudioParamHandler& detune);
-  ~BiquadProcessor() override;
+  ~BiquadProcessor();
 
-  std::unique_ptr<AudioDSPKernel> CreateKernel() override;
+  std::unique_ptr<BiquadDSPKernel> CreateKernel();
 
-  void Initialize() override;
+  void Initialize();
+  void Uninitialize();
   void Process(const AudioBus* source,
                AudioBus* destination,
-               uint32_t frames_to_process) override;
-  void ProcessOnlyAudioParams(uint32_t frames_to_process) override;
-  void Reset() override;
+               uint32_t frames_to_process);
+  void ProcessOnlyAudioParams(uint32_t frames_to_process);
+  void Reset();
+
+  bool IsInitialized() const { return initialized_; }
+
+  float SampleRate() const { return sample_rate_; }
+
+  unsigned RenderQuantumFrames() const { return render_quantum_frames_; }
+
+  double TailTime() const;
+  double LatencyTime() const;
+  bool RequiresTailProcessing() const;
+
+  void SetNumberOfChannels(unsigned);
+  unsigned NumberOfChannels() const { return number_of_channels_; }
 
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.
@@ -120,6 +136,14 @@ class BiquadProcessor final : public AudioDSPKernelProcessor {
   float previous_parameter2_ = std::numeric_limits<float>::quiet_NaN();
   float previous_parameter3_ = std::numeric_limits<float>::quiet_NaN();
   float previous_parameter4_ = std::numeric_limits<float>::quiet_NaN();
+
+  bool initialized_ = false;
+  unsigned number_of_channels_;
+  float sample_rate_;
+  unsigned render_quantum_frames_;
+
+  Vector<std::unique_ptr<BiquadDSPKernel>> kernels_ GUARDED_BY(process_lock_);
+  mutable base::Lock process_lock_;
 };
 
 }  // namespace blink

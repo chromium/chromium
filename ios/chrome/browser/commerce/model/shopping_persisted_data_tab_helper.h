@@ -125,8 +125,6 @@ class ShoppingPersistedDataTabHelper
   // Most recently seen price drop for the web::WebState, if any.
   std::unique_ptr<PriceDrop> price_drop_;
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   base::WeakPtrFactory<ShoppingPersistedDataTabHelper> weak_factory_{this};
 };
 

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -45,15 +44,15 @@ class PaletteInterpolationTest : public FontTestBase {
   void SetUp() override {
     FontDescription::VariantLigatures ligatures;
 
-    Font color_palette_font = blink::test::CreateTestFont(
+    Font* color_palette_font = blink::test::CreateTestFont(
         AtomicString("Ahem"), pathToColorPalettesTestFont(), 16, &ligatures);
     color_palette_typeface_ =
-        sk_ref_sp(color_palette_font.PrimaryFont()->PlatformData().Typeface());
+        sk_ref_sp(color_palette_font->PrimaryFont()->PlatformData().Typeface());
 
-    Font non_color_font = blink::test::CreateTestFont(
+    Font* non_color_font = blink::test::CreateTestFont(
         AtomicString("Ahem"), pathToNonColorTestFont(), 16, &ligatures);
     non_color_ahem_typeface_ =
-        sk_ref_sp(non_color_font.PrimaryFont()->PlatformData().Typeface());
+        sk_ref_sp(non_color_font->PrimaryFont()->PlatformData().Typeface());
   }
 
   void ExpectColorsEqualInSRGB(

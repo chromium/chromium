@@ -8,7 +8,10 @@ import android.app.Activity;
 import android.view.Gravity;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.Toast.ToastPriority;
@@ -19,6 +22,7 @@ import java.util.function.BooleanSupplier;
  * Interface for fullscreen notification toast that allows experimenting different
  * implementations, based on Android Toast widget and a custom view.
  */
+@NullMarked
 interface FullscreenToast {
     // Fullscreen is entered. System UI starts being hidden. Actual fullscreen layout is
     // completed at |onFullscreenLayout|.
@@ -44,7 +48,7 @@ interface FullscreenToast {
         private final Activity mActivity;
         private final BooleanSupplier mIsPersistentFullscreenMode;
 
-        private Toast mNotificationToast;
+        private @Nullable Toast mNotificationToast;
 
         AndroidToast(Activity activity, BooleanSupplier isPersistentFullscreenMode) {
             mActivity = activity;
@@ -91,8 +95,14 @@ interface FullscreenToast {
                     UiUtils.isGestureNavigationMode(mActivity.getWindow())
                             ? R.string.immersive_fullscreen_gesture_navigation_mode_api_notification
                             : R.string.immersive_fullscreen_api_notification;
+            if (BuildInfo.getInstance().isDesktop) {
+                if (ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)) {
+                    toastTextId = R.string.immersive_fullscreen_api_notification_desktop;
+                }
+            }
             if (BuildInfo.getInstance().isAutomotive) {
-                toastTextId = R.string.immersive_fullscreen_api_notification_automotive;
+                toastTextId = R.string.immersive_fullscreen_automotive_toolbar_improvements;
             }
             mNotificationToast =
                     Toast.makeTextWithPriority(

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1122068467107743258">Werk</translation>
 <translation id="1275718070701477396">Gekies</translation>
 <translation id="138513070655895675">Verander na ander betaalmetode onder hierdie kieslysitem.</translation>
 <translation id="2129442648318919291">Bestuur adresse.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Versendingsadres</translation>
 <translation id="8873105120914375071">Betaal vinniger?</translation>
 <translation id="9032876013752408138">Vul my inligting outomaties in</translation>
+<translation id="932327136139879170">Tuis</translation>
 <translation id="984275831282074731">Betaalmetodes</translation>
 </translationbundle>

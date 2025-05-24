@@ -26,7 +26,7 @@
 @interface TableViewTextHeaderFooterItem : TableViewHeaderFooterItem
 
 // The text that represents the section's headline.
-@property(nonatomic, readwrite, strong) NSString* text;
+@property(nonatomic, readwrite, copy) NSString* text;
 
 // The list of URLs used to open when text with a link attribute is tapped.
 // Asserts that the number of urls given corresponds to the link attributes in

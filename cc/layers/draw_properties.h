@@ -21,7 +21,7 @@ struct CC_EXPORT DrawProperties {
   ~DrawProperties();
 
   // Transforms objects from content space to target surface space, where
-  // this layer would be drawn.
+  // this layer would be drawn. Also known as draw transform.
   gfx::Transform target_space_transform;
 
   // Transforms objects from content space to screen space (viewport space).

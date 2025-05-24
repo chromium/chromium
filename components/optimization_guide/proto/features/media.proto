@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package optimization_guide.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Identifies the content type of some Media field.
+enum MediaType {
+  MEDIA_TYPE_UNKNOWN = 0;
+}
+
+// Data for images/audio/video.
+message Media {
+  MediaType media_type = 1;
+  bytes content = 2;
+}

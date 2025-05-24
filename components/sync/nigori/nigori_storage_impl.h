@@ -13,7 +13,7 @@ namespace syncer {
 
 class NigoriStorageImpl : public NigoriStorage {
  public:
-  // |encryptor| must be not null and must outlive this object.
+  // `encryptor` must be not null and must outlive this object.
   explicit NigoriStorageImpl(const base::FilePath& path);
 
   NigoriStorageImpl(const NigoriStorageImpl&) = delete;
@@ -22,7 +22,7 @@ class NigoriStorageImpl : public NigoriStorage {
   ~NigoriStorageImpl() override;
 
   // NigoriStorage implementation.
-  // Encrypts |data| and atomically stores it in binary file.
+  // Encrypts `data` and atomically stores it in binary file.
   void StoreData(const sync_pb::NigoriLocalData& data) override;
   std::optional<sync_pb::NigoriLocalData> RestoreData() override;
   void ClearData() override;

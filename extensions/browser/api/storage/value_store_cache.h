@@ -39,17 +39,17 @@ class ValueStoreCache {
   // the Profile is already gone.
   virtual void ShutdownOnUI();
 
-  // Requests the cache to invoke |callback| with the appropriate ValueStore
-  // for the given |extension|. |callback| should be invoked with a NULL
+  // Requests the cache to invoke `callback` with the appropriate ValueStore
+  // for the given `extension`. `callback` should be invoked with a NULL
   // ValueStore in case of errors.
-  // |extension| is passed in a scoped_refptr<> because this method is
+  // `extension` is passed in a scoped_refptr<> because this method is
   // asynchronously posted as a task to the loop returned by GetMessageLoop(),
   // and this guarantees the Extension is still valid when the method executes.
   virtual void RunWithValueStoreForExtension(
       StorageCallback callback,
       scoped_refptr<const Extension> extension) = 0;
 
-  // Requests the cache to delete any storage used by |extension_id|.
+  // Requests the cache to delete any storage used by `extension_id`.
   virtual void DeleteStorageSoon(const ExtensionId& extension_id) = 0;
 };
 

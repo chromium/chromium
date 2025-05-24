@@ -20,11 +20,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/http/http_cache_writers.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -77,10 +79,6 @@ std::string MockDiskEntry::GetKey() const {
 }
 
 base::Time MockDiskEntry::GetLastUsed() const {
-  return base::Time::Now();
-}
-
-base::Time MockDiskEntry::GetLastModified() const {
   return base::Time::Now();
 }
 
@@ -340,7 +338,7 @@ Error MockDiskEntry::ReadyForSparseIO(CompletionOnceCallback callback) {
 }
 
 void MockDiskEntry::SetLastUsedTimeForTest(base::Time time) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // If |value| is true, don't deliver any completion callbacks until called
@@ -529,7 +527,7 @@ disk_cache::EntryResult MockDiskCache::CreateEntry(
   if (it != entries_.end()) {
     if (!it->second->is_doomed()) {
       if (double_create_check_) {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       } else {
         return EntryResult::MakeError(ERR_CACHE_CREATE_FAILURE);
       }
@@ -694,7 +692,7 @@ scoped_refptr<MockDiskEntry> MockDiskCache::GetDiskEntryRef(
   if (it == entries_.end()) {
     return nullptr;
   }
-  return it->second;
+  return it->second.get();
 }
 
 const std::vector<std::string>& MockDiskCache::GetExternalCacheHits() const {
@@ -715,9 +713,11 @@ MockHttpCache::MockHttpCache()
     : MockHttpCache(std::make_unique<MockBackendFactory>()) {}
 
 MockHttpCache::MockHttpCache(
-    std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory)
+    std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory,
+    std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations)
     : http_cache_(std::make_unique<MockNetworkLayer>(),
-                  std::move(disk_cache_factory)) {}
+                  std::move(disk_cache_factory),
+                  std::move(file_operations)) {}
 
 disk_cache::Backend* MockHttpCache::backend() {
   TestGetBackendCompletionCallback cb;
@@ -730,8 +730,8 @@ MockDiskCache* MockHttpCache::disk_cache() {
   return static_cast<MockDiskCache*>(backend());
 }
 
-int MockHttpCache::CreateTransaction(std::unique_ptr<HttpTransaction>* trans) {
-  return http_cache_.CreateTransaction(DEFAULT_PRIORITY, trans);
+std::unique_ptr<HttpTransaction> MockHttpCache::CreateTransaction() {
+  return http_cache_.CreateTransaction(DEFAULT_PRIORITY);
 }
 
 void MockHttpCache::SimulateCacheLockTimeout() {
@@ -765,16 +765,14 @@ bool MockHttpCache::WriteResponseInfo(disk_cache::Entry* disk_entry,
                                       const HttpResponseInfo* response_info,
                                       bool skip_transient_headers,
                                       bool response_truncated) {
-  base::Pickle pickle;
-  response_info->Persist(&pickle, skip_transient_headers, response_truncated);
+  auto data = base::MakeRefCounted<PickledIOBuffer>(
+      response_info->MakePickle(skip_transient_headers, response_truncated));
 
   TestCompletionCallback cb;
-  int len = static_cast<int>(pickle.size());
-  auto data = base::MakeRefCounted<WrappedIOBuffer>(pickle);
-
-  int rv = disk_entry->WriteData(0, 0, data.get(), len, cb.callback(), true);
+  int rv = disk_entry->WriteData(0, 0, data.get(), data->size(), cb.callback(),
+                                 true);
   rv = cb.GetResult(rv);
-  return (rv == len);
+  return rv == data->size();
 }
 
 bool MockHttpCache::OpenBackendEntry(const std::string& key,

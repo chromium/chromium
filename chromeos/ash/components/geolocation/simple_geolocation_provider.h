@@ -11,6 +11,7 @@
 #include "ash/constants/geolocation_access_level.h"
 #include "base/check_is_test.h"
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -42,6 +43,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnGeolocationPermissionChanged(bool enabled) = 0;
+  };
+
+  enum class ClientId {
+    kGeolocationController = 0,
+    kWizardController = 1,
+    kTimezoneResolver = 2,
+    kForTesting = 3,
+    kMaxValue = kForTesting,
   };
 
   SimpleGeolocationProvider(const SimpleGeolocationProvider&) = delete;
@@ -78,7 +87,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   void RequestGeolocation(base::TimeDelta timeout,
                           bool send_wifi_access_points,
                           bool send_cell_towers,
-                          SimpleGeolocationRequest::ResponseCallback callback);
+                          SimpleGeolocationRequest::ResponseCallback callback,
+                          ClientId client_id);
 
   network::SharedURLLoaderFactory* GetSharedURLLoaderFactoryForTesting() {
     return shared_url_loader_factory_.get();
@@ -119,6 +129,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
 
   void NotifyObservers();
 
+  // Records UMA metrics related to geolocation requests, including the
+  // distribution of requests per ClientId. This function tracks the frequency
+  // of requests by measuring the time intervals between consecutive requests
+  // and categorizing them into hourly buckets.
+  void RecordClientIdUma(ClientId client_id);
+
   // Source of truth for the current geolocation access level.
   // Takes into consideration geolocation policies, log-in and in-session
   // geolocation prefs and is being updated on relevant events.
@@ -137,6 +153,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GEOLOCATION)
   raw_ptr<GeolocationHandler> geolocation_handler_ = nullptr;
 
   std::string url_for_testing_;
+
+  // Stores the time of the last geolocation request for each client ID. This is
+  // used to calculate the time gap between requests for metrics reporting.
+  base::flat_map<ClientId, base::TimeTicks> last_request_times_;
 
   // Creation and destruction should happen on the same thread.
   THREAD_CHECKER(thread_checker_);

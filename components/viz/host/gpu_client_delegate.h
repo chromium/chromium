@@ -14,7 +14,7 @@ class GpuHostImpl;
 // GpuClient's task runner.
 class GpuClientDelegate {
  public:
-  virtual ~GpuClientDelegate() {}
+  virtual ~GpuClientDelegate() = default;
 
   // Returns the current instance of GpuHostImpl. If GPU service is not running,
   // tries to launch it. If the launch is unsuccessful, returns nullptr.

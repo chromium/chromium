@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProp
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.UI_ACTION_HANDLER;
 import static org.chromium.chrome.browser.password_entry_edit.CredentialEditProperties.URL_OR_APP;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase.ComponentStateDelegate;
 import org.chromium.chrome.browser.password_manager.ConfirmationDialogHelper;
@@ -18,6 +20,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Creates the credential edit UI and is responsible for managing it. */
+@NullMarked
 class CredentialEditCoordinator implements ComponentStateDelegate {
     private final Profile mProfile;
     private final CredentialEntryFragmentViewBase mFragmentView;
@@ -61,6 +64,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         mFragmentView.setComponentStateDelegate(this);
     }
 
+    @Initializer
     void setCredential(
             String displayUrlOrAppName,
             String username,
@@ -76,6 +80,7 @@ class CredentialEditCoordinator implements ComponentStateDelegate {
         mMediator.setCredential(username, password, isInsecureCredential);
     }
 
+    @Initializer
     void setExistingUsernames(String[] existingUsernames) {
         mMediator.setExistingUsernames(existingUsernames);
     }

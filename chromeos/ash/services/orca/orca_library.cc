@@ -87,19 +87,18 @@ base::expected<void, OrcaLibrary::BindError> OrcaLibrary::BindReceiver(
     });
   }
 
-  auto* bind_function = reinterpret_cast<decltype(OrcaBindService)*>(
-      library_.GetFunctionPointer("OrcaBindService"));
+  auto* bind_function = reinterpret_cast<decltype(OrcaBindServiceV2)*>(
+      library_.GetFunctionPointer("OrcaBindServiceV2"));
   if (!bind_function) {
     return base::unexpected(
         BindError{.code = BindErrorCode::kGetFunctionPointerFailed});
   }
 
   const MojoSystemThunks2* mojo_thunks = MojoEmbedderGetSystemThunks2();
-  const MojoSystemThunks* mojo_thunks_legacy = MojoEmbedderGetSystemThunks32();
   const MojoHandle receiver_handle = receiver.PassPipe().release().value();
 
-  if (OrcaBindServiceStatus code = bind_function(
-          mojo_thunks, mojo_thunks_legacy, receiver_handle, orca_logger_.get());
+  if (OrcaBindServiceStatus code =
+          bind_function(mojo_thunks, receiver_handle, orca_logger_.get());
       code != OrcaBindServiceStatus::ORCA_BIND_SERVICE_STATUS_OK) {
     return base::unexpected(BindError{.code = BindErrorCode::kBindFailed});
   }

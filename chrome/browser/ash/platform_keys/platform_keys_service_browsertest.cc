@@ -475,9 +475,9 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       kSignatureAlgorithm,
-      base::as_bytes(base::make_span(sign_waiter.Get<std::vector<uint8_t>>())),
-      base::as_bytes(base::make_span(public_key_spki_der))));
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(kDataToSign)));
+      base::as_byte_span(sign_waiter.Get<std::vector<uint8_t>>()),
+      base::as_byte_span(public_key_spki_der)));
+  signature_verifier.VerifyUpdate(base::as_byte_span(kDataToSign));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
@@ -555,8 +555,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       kSignatureAlgorithm,
-      base::as_bytes(base::make_span(sign_waiter.Get<std::vector<uint8_t>>())),
-      base::as_bytes(base::make_span(public_key_spki_der))));
+      base::as_byte_span(sign_waiter.Get<std::vector<uint8_t>>()),
+      base::as_byte_span(public_key_spki_der)));
   signature_verifier.VerifyUpdate(kDataToSign);
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
@@ -711,8 +711,8 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   const std::vector<uint8_t> public_key_2 = GenerateKeyPair(token_id);
   ASSERT_FALSE(public_key_2.empty());
 
-  auto public_key_bytes_1 = base::as_bytes(base::make_span(public_key_1));
-  auto public_key_bytes_2 = base::as_bytes(base::make_span(public_key_2));
+  auto public_key_bytes_1 = base::as_byte_span(public_key_1);
+  auto public_key_bytes_2 = base::as_byte_span(public_key_2);
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes_1));
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes_2));
 
@@ -751,7 +751,7 @@ IN_PROC_BROWSER_TEST_P(PlatformKeysServicePerTokenBrowserTest,
   ASSERT_TRUE(get_certificates_waiter_2.Wait());
   ASSERT_EQ(get_certificates_waiter_2.matches().size(), 1U);
 
-  auto public_key_bytes = base::as_bytes(base::make_span(public_key));
+  auto public_key_bytes = base::as_byte_span(public_key);
   EXPECT_TRUE(crypto::FindNSSKeyFromPublicKeyInfo(public_key_bytes));
 
   // Try Removing the key pair.

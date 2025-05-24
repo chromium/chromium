@@ -49,7 +49,6 @@ RUNNING TEST: extension_testAPI
             PerformSearch : "performSearch"
             PreviousSearchResult : "previousSearchResult"
         }
-        applyStyleSheet : <function>
         create : <function>
         elements : {
             createSidebarPane : <function>

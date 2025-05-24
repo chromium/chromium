@@ -20,8 +20,11 @@ import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
+import org.chromium.chrome.browser.keyboard_accessory.KeyboardAccessoryVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.BarVisibilityDelegate;
@@ -46,8 +49,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.StreamSupport;
 
 /**
  * This is the second part of the controller of the keyboard accessory component. It is responsible
@@ -64,18 +65,23 @@ class KeyboardAccessoryMediator
     private final BarVisibilityDelegate mBarVisibilityDelegate;
     private final AccessorySheetCoordinator.SheetVisibilityDelegate mSheetVisibilityDelegate;
     private final TabSwitchingDelegate mTabSwitcher;
+    private final Supplier<Integer> mBackgroundColorSupplier;
     private Optional<Boolean> mHasFilteredTouchEvent = Optional.empty();
+    private final ObserverList<KeyboardAccessoryVisualStateProvider.Observer> mVisualObservers =
+            new ObserverList<>();
 
     KeyboardAccessoryMediator(
             PropertyModel model,
             BarVisibilityDelegate barVisibilityDelegate,
             AccessorySheetCoordinator.SheetVisibilityDelegate sheetVisibilityDelegate,
             TabSwitchingDelegate tabSwitcher,
-            KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks) {
+            KeyboardAccessoryButtonGroupCoordinator.SheetOpenerCallbacks sheetOpenerCallbacks,
+            Supplier<Integer> backgroundColorSupplier) {
         mModel = model;
         mBarVisibilityDelegate = barVisibilityDelegate;
         mSheetVisibilityDelegate = sheetVisibilityDelegate;
         mTabSwitcher = tabSwitcher;
+        mBackgroundColorSupplier = backgroundColorSupplier;
 
         // Add mediator as observer so it can use model changes as signal for accessory visibility.
         mModel.set(OBFUSCATED_CHILD_AT_CALLBACK, this::onSuggestionObfuscatedAt);
@@ -159,11 +165,11 @@ class KeyboardAccessoryMediator
             case SuggestionType.UNDO_OR_CLEAR:
             case SuggestionType.ALL_SAVED_PASSWORDS_ENTRY:
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
-            case SuggestionType.SHOW_ACCOUNT_CARDS:
             case SuggestionType.MANAGE_ADDRESS:
             case SuggestionType.MANAGE_CREDIT_CARD:
             case SuggestionType.MANAGE_IBAN:
             case SuggestionType.MANAGE_PLUS_ADDRESS:
+            case SuggestionType.MANAGE_LOYALTY_CARD:
                 return false;
             case SuggestionType.AUTOCOMPLETE_ENTRY:
             case SuggestionType.PASSWORD_ENTRY:
@@ -196,7 +202,7 @@ class KeyboardAccessoryMediator
                 skippedFirstPasswordItem = true;
                 continue;
             }
-            barItem.setFeatureForIPH(getFeatureBySuggestionId(barItem.getSuggestion()));
+            barItem.setFeatureForIph(getFeatureBySuggestionId(barItem.getSuggestion()));
             break; // Only set IPH for one suggestions in the bar.
         }
 
@@ -271,8 +277,12 @@ class KeyboardAccessoryMediator
             // When the accessory just (dis)appeared, there should be no active tab.
             mTabSwitcher.closeActiveTab();
             if (!mModel.get(VISIBLE)) {
-                // TODO(fhorschig|ioanap): Maybe the generation bridge should take care of that.
+                // TODO: crbug.com/398065928 - The generation controller should control the timing..
                 onItemAvailable(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC, new Action[0]);
+            }
+            for (KeyboardAccessoryVisualStateProvider.Observer observer : mVisualObservers) {
+                observer.onKeyboardAccessoryVisualStateChanged(
+                        mModel.get(VISIBLE), mBackgroundColorSupplier.get());
             }
             return;
         }
@@ -347,8 +357,8 @@ class KeyboardAccessoryMediator
     private static String getFeatureBySuggestionId(AutofillSuggestion suggestion) {
         // If the suggestion has an explicit IPH feature defined, prefer that over the default IPH
         // features.
-        if (suggestion.getFeatureForIPH() != null && !suggestion.getFeatureForIPH().isEmpty()) {
-            return suggestion.getFeatureForIPH();
+        if (suggestion.getFeatureForIph() != null && !suggestion.getFeatureForIph().isEmpty()) {
+            return suggestion.getFeatureForIph();
         }
         if (containsPasswordInfo(suggestion)) {
             return FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE;
@@ -396,14 +406,23 @@ class KeyboardAccessoryMediator
     }
 
     private @StringRes int getCaptionIdForCredManEntry() {
-        Predicate<BarItem> hasWebAuthnCredential =
-                barItem ->
-                        barItem.getViewType() == BarItem.Type.SUGGESTION
-                                && ((AutofillBarItem) barItem).getSuggestion().getSuggestionType()
-                                        == SuggestionType.WEBAUTHN_CREDENTIAL;
-        return StreamSupport.stream(mModel.get(BAR_ITEMS).spliterator(), true)
-                        .anyMatch(hasWebAuthnCredential)
-                ? R.string.more_passkeys
-                : R.string.select_passkey;
+        for (var barItem : mModel.get(BAR_ITEMS)) {
+            if (barItem.getViewType() == BarItem.Type.SUGGESTION
+                    && ((AutofillBarItem) barItem).getSuggestion().getSuggestionType()
+                            == SuggestionType.WEBAUTHN_CREDENTIAL) {
+                return R.string.more_passkeys;
+            }
+        }
+        return R.string.select_passkey;
+    }
+
+    void addObserver(KeyboardAccessoryVisualStateProvider.Observer observer) {
+        mVisualObservers.addObserver(observer);
+        observer.onKeyboardAccessoryVisualStateChanged(
+                mModel.get(VISIBLE), mBackgroundColorSupplier.get());
+    }
+
+    void removeObserver(KeyboardAccessoryVisualStateProvider.Observer observer) {
+        mVisualObservers.removeObserver(observer);
     }
 }

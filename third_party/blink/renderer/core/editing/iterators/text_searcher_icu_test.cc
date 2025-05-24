@@ -112,7 +112,7 @@ TEST(TextSearcherICUTest, IgnoreNull) {
   const String pattern = MakeUTF16("substr");
   searcher.SetPattern(pattern, FindOptions());
 
-  const String text(u" sub\0\0string ", 13u);
+  const String text(base::span_from_cstring(u" sub\0\0string "));
   searcher.SetText(text.Span16());
 
   std::optional<MatchResultICU> result = searcher.NextMatchResult();
@@ -121,18 +121,43 @@ TEST(TextSearcherICUTest, IgnoreNull) {
   EXPECT_EQ(8u, result->length);  // Longer than "substr".
 }
 
+TEST(TextSearcherICUTest, NullInKanaLetters) {
+  {
+    TextSearcherICU searcher;
+    // ha ha
+    const String pattern(u"\u306F\u306F");
+    searcher.SetPattern(pattern, FindOptions().SetCaseInsensitive(true));
+    // ba NUL ba
+    const String text(base::span_from_cstring(u"\u3070\0\u3070"));
+    searcher.SetText(text.Span16());
+
+    std::optional<MatchResultICU> result = searcher.NextMatchResult();
+    EXPECT_FALSE(result.has_value());
+  }
+  {
+    TextSearcherICU searcher;
+    // ba ba
+    const String pattern(u"\u3070\u3070");
+    searcher.SetPattern(pattern, FindOptions().SetCaseInsensitive(true));
+
+    // ba NUL ba
+    const String text(base::span_from_cstring(u"\u3070\0\u3070"));
+    searcher.SetText(text.Span16());
+
+    std::optional<MatchResultICU> result = searcher.NextMatchResult();
+    EXPECT_TRUE(result.has_value());
+  }
+}
+
 // For http://crbug.com/1138877
 TEST(TextSearcherICUTest, BrokenSurrogate) {
   TextSearcherICU searcher;
-  UChar one[1];
-  one[0] = 0xDB00;
-  const String pattern(one, 1u);
+  UChar one = 0xDB00;
+  const String pattern(base::span_from_ref(one));
   searcher.SetPattern(pattern, FindOptions().SetWholeWord(true));
 
-  UChar two[2];
-  two[0] = 0x0022;
-  two[1] = 0xDB00;
-  const String text(two, 2u);
+  UChar two[] = {0x0022, 0xDB00};
+  const String text{base::span(two)};
   searcher.SetText(text.Span16());
 
   // Note: Because even if ICU find U+DB00 but ICU doesn't think U+DB00 as

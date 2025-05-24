@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/site_engagement/content/site_engagement_score.h"
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <utility>
 
@@ -32,15 +28,15 @@ namespace site_engagement {
 namespace {
 
 // Delta within which to consider scores equal.
-const double kScoreDelta = 0.001;
+constexpr double kScoreDelta = 0.001;
 
 // Delta within which to consider internal time values equal. Internal time
 // values are in microseconds, so this delta comes out at one second.
-const double kTimeDelta = 1000000;
+constexpr double kTimeDelta = 1000000;
 
 // Number of days after the last launch of an origin from an installed shortcut
 // for which WEB_APP_INSTALLED_POINTS will be added to the engagement score.
-const int kMaxDaysSinceShortcutLaunch = 10;
+constexpr int kMaxDaysSinceShortcutLaunch = 10;
 
 bool DoublesConsideredDifferent(double value1, double value2, double delta) {
   double abs_difference = fabs(value1 - value2);
@@ -193,7 +189,7 @@ void SiteEngagementScore::SetParamValuesForTesting() {
 }
 // static
 void SiteEngagementScore::UpdateFromVariations(const char* param_name) {
-  double param_vals[MAX_VARIATION];
+  std::array<double, MAX_VARIATION> param_vals;
 
   for (int i = 0; i < MAX_VARIATION; ++i) {
     std::string param_string =
@@ -226,7 +222,7 @@ SiteEngagementScore::SiteEngagementScore(base::Clock* clock,
 
 SiteEngagementScore::SiteEngagementScore(SiteEngagementScore&& other) = default;
 
-SiteEngagementScore::~SiteEngagementScore() {}
+SiteEngagementScore::~SiteEngagementScore() = default;
 
 SiteEngagementScore& SiteEngagementScore::operator=(
     SiteEngagementScore&& other) = default;

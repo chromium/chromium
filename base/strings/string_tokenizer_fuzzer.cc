@@ -7,13 +7,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/strings/string_tokenizer.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
 #include <tuple>
-
-#include "base/strings/string_tokenizer.h"
 
 void GetAllTokens(base::StringTokenizer& t) {
   while (t.GetNext()) {
@@ -45,10 +45,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   for (bool return_delims : {false, true}) {
     for (bool return_empty_strings : {false, true}) {
       int options = 0;
-      if (return_delims)
+      if (return_delims) {
         options |= base::StringTokenizer::RETURN_DELIMS;
-      if (return_empty_strings)
+      }
+      if (return_empty_strings) {
         options |= base::StringTokenizer::RETURN_EMPTY_TOKENS;
+      }
 
       base::StringTokenizer t(input, pattern);
       t.set_options(options);

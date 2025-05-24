@@ -9,8 +9,6 @@ import android.speech.tts.TextToSpeech;
 import android.speech.tts.UtteranceProgressListener;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -21,6 +19,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,6 +38,7 @@ import java.util.Map;
  * use PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, ...)  when calling back to C++.
  */
 @JNINamespace("content")
+@NullMarked
 class TtsPlatformImpl {
     private static class TtsVoice {
         private final String mName;
@@ -50,14 +51,14 @@ class TtsPlatformImpl {
     }
 
     private static class PendingUtterance {
-        TtsPlatformImpl mImpl;
-        int mUtteranceId;
-        String mText;
-        String mLang;
-        String mEngineId;
-        float mRate;
-        float mPitch;
-        float mVolume;
+        final TtsPlatformImpl mImpl;
+        final int mUtteranceId;
+        final String mText;
+        final String mLang;
+        final String mEngineId;
+        final float mRate;
+        final float mPitch;
+        final float mVolume;
 
         private PendingUtterance(
                 TtsPlatformImpl impl,
@@ -84,7 +85,7 @@ class TtsPlatformImpl {
     }
 
     private static class TtsEngine {
-        private TextToSpeech mTextToSpeech;
+        private final TextToSpeech mTextToSpeech;
         private @Nullable List<TtsVoice> mVoices;
         private boolean mInitialized;
         private @Nullable String mCurrentLanguage;
@@ -230,6 +231,7 @@ class TtsPlatformImpl {
         }
 
         private List<TtsVoice> getVoices() {
+            assert mVoices != null;
             return mVoices;
         }
     }

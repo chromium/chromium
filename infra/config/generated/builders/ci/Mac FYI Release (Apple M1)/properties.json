@@ -71,7 +71,8 @@
           "builder": "gpu-fyi-try-mac-arm64-apple-m1-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac FYI Release (Apple M1)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
+
 #include <string_view>
 #include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
-#include "components/autofill/core/browser/metrics/payments/offers_metrics.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +52,7 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {
 
   base::HistogramTester histogram_tester;
 
-  autofill_metrics::LogStoredOfferMetrics(offers);
+  LogStoredOfferMetrics(offers);
 
   auto SamplesOf = [&histogram_tester](std::string_view metric) {
     return histogram_tester.GetAllSamples(metric);
@@ -77,8 +78,7 @@ TEST_F(OffersMetricsTest, LogStoredOfferMetrics) {
 TEST_F(OffersMetricsTest, LogStoredOfferMetrics_NoOffers) {
   base::HistogramTester histogram_tester;
 
-  autofill_metrics::LogStoredOfferMetrics(
-      std::vector<std::unique_ptr<AutofillOfferData>>());
+  LogStoredOfferMetrics(std::vector<std::unique_ptr<AutofillOfferData>>());
 
   auto SamplesOf = [&histogram_tester](std::string_view metric) {
     return histogram_tester.GetAllSamples(metric);

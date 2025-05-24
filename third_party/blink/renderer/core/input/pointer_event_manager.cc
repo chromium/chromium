@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/input/pointer_event_manager.h"
 
-#include "base/auto_reset.h"
+#include "base/compiler_specific.h"
 #include "base/metrics/field_trial_params.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -21,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/mouse_event_manager.h"
@@ -74,8 +69,7 @@ const AtomicString& MouseEventNameForPointerEventInputType(
     case WebInputEvent::Type::kPointerMove:
       return event_type_names::kMousemove;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 
@@ -114,14 +108,13 @@ void PointerEventManager::Clear() {
   original_element_under_pointer_removed_.clear();
   pointer_capture_target_.clear();
   pending_pointer_capture_target_.clear();
-  dispatching_pointer_id_ = 0;
   resize_scrollable_area_.Clear();
   offset_from_resize_corner_ = {};
+  resize_position_to_size_transform_ = {};
   skip_touch_filter_discrete_ = false;
   skip_touch_filter_all_ = false;
   discarded_event_.target = kInvalidDOMNodeId;
   discarded_event_.time = base::TimeTicks();
-  SetDocument(frame_->GetDocument());
 }
 
 void PointerEventManager::Trace(Visitor* visitor) const {
@@ -133,7 +126,6 @@ void PointerEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(mouse_event_manager_);
   visitor->Trace(captured_scrollbar_);
   visitor->Trace(resize_scrollable_area_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 PointerEventManager::PointerEventBoundaryEventDispatcher::
@@ -166,15 +158,14 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   if (!target)
     return WebInputEventResult::kNotHandled;
 
-  const PointerId pointer_id = pointer_event->pointerId();
   const AtomicString& event_type = pointer_event->type();
   bool should_filter = ShouldFilterEvent(pointer_event);
   // We are about to dispatch this event. It has to be trusted at this point.
   pointer_event->SetTrusted(true);
-  std::unique_ptr<EventTiming> event_timing;
+  std::optional<EventTiming> event_timing;
   if (frame_ && frame_->DomWindow()) {
     event_timing =
-        EventTiming::Create(frame_->DomWindow(), *pointer_event, target);
+        EventTiming::TryCreate(frame_->DomWindow(), *pointer_event, target);
   }
 
   if (event_type == event_type_names::kPointerdown ||
@@ -190,7 +181,11 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   if (Node* target_node = target->ToNode()) {
     if (event_type == event_type_names::kPointerdown ||
         event_type == event_type_names::kPointerup) {
+      // Per spec, run the popover light dismiss actions first, which will take
+      // care of light dismissing popovers, including nested popovers. Then run
+      // dialog light dismiss.
       HTMLElement::HandlePopoverLightDismiss(*pointer_event, *target_node);
+      HTMLDialogElement::HandleDialogLightDismiss(*pointer_event, *target_node);
     }
   }
 
@@ -208,18 +203,8 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
 
   bool listeners_exist =
       !check_for_listener || target->HasEventListeners(event_type);
-  if (listeners_exist) {
-    UseCounter::Count(frame_->GetDocument(), WebFeature::kPointerEventDispatch);
-    if (event_type == event_type_names::kPointerdown) {
-      UseCounter::Count(frame_->GetDocument(),
-                        WebFeature::kPointerEventDispatchPointerDown);
-    }
-  }
 
   if (!should_filter || listeners_exist) {
-    DCHECK(!dispatching_pointer_id_);
-    base::AutoReset<PointerId> dispatch_holder(&dispatching_pointer_id_,
-                                               pointer_id);
     DispatchEventResult dispatch_result = target->DispatchEvent(*pointer_event);
     return event_handling_util::ToWebInputEventResult(dispatch_result);
   }
@@ -254,8 +239,8 @@ void PointerEventManager::SendMouseAndPointerBoundaryEvents(
   // compatibility mouse event and we do not need to change pointer event
   // behavior regarding preventMouseEvent state in that case.
   if (dummy_pointer_event->buttons() == 0 && dummy_pointer_event->isPrimary()) {
-    prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-        mouse_event.pointer_type)] = false;
+    UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+        mouse_event.pointer_type)]) = false;
   }
 
   ProcessCaptureAndPositionOfPointerEvent(dummy_pointer_event, entered_element,
@@ -393,12 +378,10 @@ bool PointerEventManager::ShouldAdjustPointerEvent(
 
 bool PointerEventManager::ShouldAdjustStylusPointerEvent(
     const WebPointerEvent& pointer_event) const {
-  return base::FeatureList::IsEnabled(
-             blink::features::kStylusPointerAdjustment) &&
-         (pointer_event.pointer_type ==
-              WebPointerProperties::PointerType::kPen ||
-          pointer_event.pointer_type ==
-              WebPointerProperties::PointerType::kEraser);
+  return pointer_event.pointer_type ==
+             WebPointerProperties::PointerType::kPen ||
+         pointer_event.pointer_type ==
+             WebPointerProperties::PointerType::kEraser;
 }
 
 void PointerEventManager::AdjustPointerEvent(WebPointerEvent& pointer_event) {
@@ -590,8 +573,7 @@ WebInputEventResult PointerEventManager::SendTouchPointerEvent(
 
   // Setting the implicit capture for touch
   if (pointer_event->type() == event_type_names::kPointerdown) {
-    SetPointerCapture(pointer_event->pointerId(), target,
-                      /* explicit_capture */ false);
+    SetPointerCapture(pointer_event->pointerId(), target);
   }
 
   WebInputEventResult result = DispatchPointerEvent(
@@ -791,7 +773,8 @@ bool PointerEventManager::HandleScrollbarTouchDrag(const WebPointerEvent& event,
                                                    Scrollbar* scrollbar) {
   if (!scrollbar ||
       (event.pointer_type != WebPointerProperties::PointerType::kTouch &&
-       event.pointer_type != WebPointerProperties::PointerType::kPen)) {
+       event.pointer_type != WebPointerProperties::PointerType::kPen &&
+       event.pointer_type != WebPointerProperties::PointerType::kEraser)) {
     return false;
   }
 
@@ -834,6 +817,8 @@ bool PointerEventManager::HandleResizerDrag(
         resize_scrollable_area_->SetInResizeMode(true);
         frame_->GetPage()->GetChromeClient().SetTouchAction(frame_,
                                                             TouchAction::kNone);
+        resize_position_to_size_transform_ =
+            resize_scrollable_area_->InitializeResizeTransform(p);
         offset_from_resize_corner_ =
             resize_scrollable_area_->OffsetFromResizeCorner(p);
         return true;
@@ -845,7 +830,8 @@ bool PointerEventManager::HandleResizerDrag(
           resize_scrollable_area_->Layer()->GetLayoutBox() &&
           resize_scrollable_area_->InResizeMode()) {
         gfx::Point pos = gfx::ToRoundedPoint(event.PositionInWidget());
-        resize_scrollable_area_->Resize(pos, offset_from_resize_corner_);
+        resize_scrollable_area_->Resize(pos, offset_from_resize_corner_,
+                                        resize_position_to_size_transform_);
         return true;
       }
       break;
@@ -855,6 +841,7 @@ bool PointerEventManager::HandleResizerDrag(
         resize_scrollable_area_->SetInResizeMode(false);
         resize_scrollable_area_.Clear();
         offset_from_resize_corner_ = {};
+        resize_position_to_size_transform_ = {};
         return true;
       }
       break;
@@ -1044,8 +1031,8 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
     ProcessPendingPointerCapture(pointer_event);
 
     if (pointer_event->isPrimary()) {
-      prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-          web_pointer_event.pointer_type)] = false;
+      UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          web_pointer_event.pointer_type)]) = false;
     }
   }
 
@@ -1079,14 +1066,14 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
   if (result != WebInputEventResult::kNotHandled &&
       pointer_event->type() == event_type_names::kPointerdown &&
       pointer_event->isPrimary()) {
-    prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-        mouse_event.pointer_type)] = true;
+    UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+        mouse_event.pointer_type)]) = true;
   }
 
   bool send_compat_mouse =
       pointer_event->isPrimary() &&
-      !prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-          mouse_event.pointer_type)];
+      UNSAFE_TODO(!prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          mouse_event.pointer_type)]);
   bool consider_click_dispatch = !skip_click_dispatch &&
                                  pointer_event->isPrimary() &&
                                  event_type == WebInputEvent::Type::kPointerUp;
@@ -1110,57 +1097,81 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
             mouse_event, &last_mouse_position, nullptr));
   }
 
-  // Dispatch the click event if applicable.
   if (!mouse_target) {
     consider_click_dispatch = false;
   }
+
+  Element* captured_click_target = nullptr;
   if (consider_click_dispatch) {
-    Element* captured_click_target =
+    // Remember the capture target for the click dispatch later, if applicable.
+    captured_click_target =
         GetEffectiveTargetForPointerEvent(nullptr, pointer_event->pointerId());
-    mouse_event_manager_->DispatchMouseClickIfNeeded(
-        mouse_target, captured_click_target, mouse_event,
-        pointer_event->pointerId(), pointer_event->pointerType());
+    // Dispatch the click event only when the flag is disabled.
+    if (!RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
+      mouse_event_manager_->DispatchMouseClickIfNeeded(
+          mouse_target, captured_click_target, mouse_event,
+          pointer_event->pointerId(), pointer_event->pointerType());
+    }
   }
 
   if (pointer_event->type() == event_type_names::kPointerup ||
       pointer_event->type() == event_type_names::kPointercancel) {
     ReleasePointerCapture(pointer_event->pointerId());
 
-    // Send got/lostpointercapture rightaway if necessary.
-    if (pointer_event->type() == event_type_names::kPointerup) {
-      // We also send boundary events here rightaway.  To find the new position
-      // under the pointer, we perform a hit-test again if a pointer-capture is
-      // going to be released now; otherwise we use the original hit-test target
-      // (or its ancestor in the event-path if it has been removed from DOM).
-      if (pointer_capture_target_.find(pointer_event->pointerId()) !=
-          pointer_capture_target_.end()) {
-        HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
-        HitTestRequest request(hit_type);
-        MouseEventWithHitTestResults mev =
-            event_handling_util::PerformMouseEventHitTest(frame_, request,
-                                                          mouse_event);
-        target = mev.InnerElement();
-      } else if (RuntimeEnabledFeatures::
-                     BoundaryEventDispatchTracksNodeRemovalEnabled()) {
-        target = NonDeletedElementTarget(target, pointer_event);
-      }
-      ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
-                                              &mouse_event);
-    } else {
-      // Don't send boundary events in this case as it is a little tricky.
-      // This case happens for the drag operation and currently we don't
-      // let the page know that the pointer left the page while dragging.
-      ProcessPendingPointerCapture(pointer_event);
-    }
-
     if (pointer_event->isPrimary()) {
-      prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-          mouse_event.pointer_type)] = false;
+      UNSAFE_TODO(prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          mouse_event.pointer_type)]) = false;
     }
   }
 
+  // Update `target` before processing pending pointer capture below.
+  //
+  // To find the new position under the pointer, we perform a hit-test again if
+  // a pointer-capture is going to be released now; otherwise we use the
+  // original hit-test target (or its ancestor in the event-path if it has been
+  // removed from DOM).
+  if (pointer_event->type() == event_type_names::kPointerup) {
+    if (pointer_capture_target_.find(pointer_event->pointerId()) !=
+        pointer_capture_target_.end()) {
+      HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kRelease;
+      HitTestRequest request(hit_type);
+      MouseEventWithHitTestResults mev =
+          event_handling_util::PerformMouseEventHitTest(frame_, request,
+                                                        mouse_event);
+      target = mev.InnerElement();
+    } else if (RuntimeEnabledFeatures::
+                   BoundaryEventDispatchTracksNodeRemovalEnabled()) {
+      target = NonDeletedElementTarget(target, pointer_event);
+    }
+  }
+
+  // Dispatch the click event if applicable, when the flag is enabled.
+  if (consider_click_dispatch &&
+      RuntimeEnabledFeatures::ClickToCapturedPointerEnabled()) {
+    ProcessPendingPointerCapture(pointer_event);
+    mouse_event_manager_->DispatchMouseClickIfNeeded(
+        mouse_target, captured_click_target, mouse_event,
+        pointer_event->pointerId(), pointer_event->pointerType());
+    // TODO(https://crbug.com/40851596): The following call to
+    // `ProcessCaptureAndPositionOfPointerEvent()` does not see any pending
+    // capture.  Clean this up after the flag is enabled.
+  }
+
+  // Send got/lostpointercapture rightaway if necessary.
+  if (pointer_event->type() == event_type_names::kPointerup) {
+    ProcessCaptureAndPositionOfPointerEvent(pointer_event, target,
+                                            &mouse_event);
+  } else if (pointer_event->type() == event_type_names::kPointercancel) {
+    // Don't send boundary events in this case as it is a little tricky.
+    // This case happens for the drag operation and currently we don't
+    // let the page know that the pointer left the page while dragging.
+    ProcessPendingPointerCapture(pointer_event);
+  }
+
   if (mouse_event.GetType() == WebInputEvent::Type::kMouseLeave &&
-      mouse_event.pointer_type == WebPointerProperties::PointerType::kPen) {
+      (mouse_event.pointer_type == WebPointerProperties::PointerType::kPen ||
+       mouse_event.pointer_type ==
+           WebPointerProperties::PointerType::kEraser)) {
     pointer_event_factory_.Remove(pointer_event->pointerId());
   }
   return result;
@@ -1281,17 +1292,8 @@ void PointerEventManager::ElementRemoved(Element* target) {
 }
 
 bool PointerEventManager::SetPointerCapture(PointerId pointer_id,
-                                            Element* target,
-                                            bool explicit_capture) {
-  if (explicit_capture) {
-    UseCounter::Count(frame_->GetDocument(),
-                      WebFeature::kPointerEventSetCapture);
-  }
+                                            Element* target) {
   if (pointer_event_factory_.IsActiveButtonsState(pointer_id)) {
-    if (pointer_id != dispatching_pointer_id_) {
-      UseCounter::Count(frame_->GetDocument(),
-                        WebFeature::kPointerEventSetCaptureOutsideDispatch);
-    }
     pending_pointer_capture_target_.Set(pointer_id, target);
     return true;
   }

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
 #import "base/notreached.h"
 
 const char kIOSCredentialProviderPromoImpressionHistogram[] =
@@ -21,6 +22,10 @@ const char kIOSCredentialProviderPromoOnSetUpListIsReminderHistogram[] =
     "IOS.CredentialProviderExtension.Promo.OnSetUpList.IsReminder";
 const char kIOSCredentialProviderPromoOnSetUpListHistogram[] =
     "IOS.CredentialProviderExtension.Promo.OnSetUpList";
+const char kIOSCredentialProviderPromoOnTipsNotificationIsReminderHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnTipsNotification.IsReminder";
+const char kIOSCredentialProviderPromoOnTipsNotificationHistogram[] =
+    "IOS.CredentialProviderExtension.Promo.OnTipsNotification";
 
 namespace credential_provider_promo {
 
@@ -50,15 +55,22 @@ void RecordAction(IOSCredentialProviderPromoSource source,
                  ? kIOSCredentialProviderPromoOnSetUpListIsReminderHistogram
                  : kIOSCredentialProviderPromoOnSetUpListHistogram;
       break;
-    case IOSCredentialProviderPromoSource::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      name = is_reminder
-                 ? "IOS.CredentialProviderExtension.Promo.Unknown.IsReminder"
-                 : "IOS.CredentialProviderExtension.Promo.Unknown";
+    case IOSCredentialProviderPromoSource::kTipsNotification:
+      name =
+          is_reminder
+              ? kIOSCredentialProviderPromoOnTipsNotificationIsReminderHistogram
+              : kIOSCredentialProviderPromoOnTipsNotificationHistogram;
       break;
+    case IOSCredentialProviderPromoSource::kUnknown:
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(name.data(), action);
+
+  if (action == IOSCredentialProviderPromoAction::kTurnOnAutofill) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileCredentialProviderExtensionPromoTurnOnAutoFill"));
+  }
 }
 
 }  // namespace credential_provider_promo

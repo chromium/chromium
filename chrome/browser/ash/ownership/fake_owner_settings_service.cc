@@ -4,13 +4,44 @@
 
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 
+#include <memory>
+
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/ownership/mock_owner_key_util.h"
 
 namespace ash {
+
+// static
+base::CallbackListSubscription FakeOwnerSettingsService::SetUpTestingFactory(
+    StubCrosSettingsProvider* provider,
+    const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util) {
+  return BrowserContextDependencyManager::GetInstance()
+      ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+          [](StubCrosSettingsProvider* provider,
+             const scoped_refptr<ownership::OwnerKeyUtil>& owner_key_util,
+             content::BrowserContext* context) {
+            OwnerSettingsServiceAshFactory::GetInstance()->SetTestingFactory(
+                context,
+                base::BindOnce(
+                    [](StubCrosSettingsProvider* provider,
+                       const scoped_refptr<ownership::OwnerKeyUtil>&
+                           owner_key_util,
+                       content::BrowserContext* context)
+                        -> std::unique_ptr<KeyedService> {
+                      return std::make_unique<FakeOwnerSettingsService>(
+                          provider, Profile::FromBrowserContext(context),
+                          owner_key_util);
+                    },
+                    provider, owner_key_util));
+          },
+          provider, owner_key_util));
+}
 
 FakeOwnerSettingsService::FakeOwnerSettingsService(
     StubCrosSettingsProvider* provider,

@@ -36,7 +36,7 @@ HungPluginInfoBarDelegate::HungPluginInfoBarDelegate(
       button_text_(l10n_util::GetStringUTF16(
           IDS_BROWSER_HANGMONITOR_PLUGIN_INFOBAR_KILLBUTTON)) {}
 
-HungPluginInfoBarDelegate::~HungPluginInfoBarDelegate() {}
+HungPluginInfoBarDelegate::~HungPluginInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 HungPluginInfoBarDelegate::GetIdentifier() const {

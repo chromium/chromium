@@ -29,9 +29,6 @@ class StandaloneCvcFieldParserTest : public FormFieldParserTestBase,
 
 // Match standalone cvc.
 TEST_F(StandaloneCvcFieldParserTest, ParseStandaloneCvc) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
-
   AddTextFormFieldData("cvc", "CVC:", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
 
   ClassifyAndVerify(ParseResult::kParsed);
@@ -39,29 +36,15 @@ TEST_F(StandaloneCvcFieldParserTest, ParseStandaloneCvc) {
 
 // Do not parse non cvc standalone fields.
 TEST_F(StandaloneCvcFieldParserTest, ParseNonStandaloneCvc) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
 
   AddTextFormFieldData("other-field", "Other Field:", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::kNotParsed);
 }
 
-// Do not parse when standalone cvc flag is disabled.
-TEST_F(StandaloneCvcFieldParserTest, ParseStandaloneCvcFlagOff) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
-
-  AddTextFormFieldData("cvc", "CVC:", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
-
-  ClassifyAndVerify(ParseResult::kNotParsed);
-}
 
 // Do not parse gift card as standalone cvc fields.
 TEST_F(StandaloneCvcFieldParserTest, NotParseGiftCardAsStandaloneCvc) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
-
   AddTextFormFieldData("gift-card", "Gift Card Pin:", UNKNOWN_TYPE);
 
   ClassifyAndVerify(ParseResult::kNotParsed);

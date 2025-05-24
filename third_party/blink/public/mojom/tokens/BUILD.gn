@@ -116,6 +116,10 @@ mojom_component("tokens") {
           cpp = "::blink::WebNNContextToken"
         },
         {
+          mojom = "blink.mojom.WebNNPendingConstantToken"
+          cpp = "::blink::WebNNPendingConstantToken"
+        },
+        {
           mojom = "blink.mojom.WebNNTensorToken"
           cpp = "::blink::WebNNTensorToken"
         },

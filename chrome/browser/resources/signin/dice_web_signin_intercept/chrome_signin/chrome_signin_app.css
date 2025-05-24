@@ -51,7 +51,7 @@
 #contents-container {
   margin-top: 16px;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 10px;
   background-color: var(--color-chrome-signin-bubble-info-background);
 }
 
@@ -83,19 +83,18 @@
 }
 
 .account-icon-container {
-  --avatar-image-width: 60px;
-  height: var(--avatar-image-width);
-  left: calc(50% - var(--avatar-image-width)/2);
+  margin-left: auto;
+  margin-right: auto;
   position: relative;
-  width: var(--avatar-image-width);
+  width: fit-content;
 }
 
 .account-icon {
+  --avatar-image-width: 60px;
   /** The user icon may be transparent, add a background */
   background-color: var(--md-background-color);
   border-radius: 50%;
   height: var(--avatar-image-width);
-  top: 43px;
   width: var(--avatar-image-width);
 }
 

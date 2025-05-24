@@ -16,6 +16,9 @@ template("rust_macro") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     proc_macro_configs = invoker.configs
     target_type = "rust_proc_macro"
+
+    # Macros are loaded by rustc and shouldn't use chrome's allocation routines.
+    no_allocator_crate = true
   }
 }
 

@@ -19,9 +19,9 @@
 
 @implementation CountryCodePickerTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [CountryCodePickerAppInterface stopPresentingCountryCodePicker];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests the adding of a country code to a given phoner number and that the

@@ -14,6 +14,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.lifetime.DestroyChecker;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.ref.WeakReference;
 
@@ -22,12 +23,13 @@ import java.lang.ref.WeakReference;
  * periodic jank metric reporting and frame metric recording based on the Activity's lifecycle
  * events.
  */
+@NullMarked
 @RequiresApi(api = VERSION_CODES.N)
 class JankActivityTracker extends JankTrackerStateController implements ActivityStateListener {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
     private final DestroyChecker mDestroyChecker = new DestroyChecker();
 
-    private WeakReference<Activity> mActivityReference;
+    private final WeakReference<Activity> mActivityReference;
 
     JankActivityTracker(
             Activity context,

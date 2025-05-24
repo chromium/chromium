@@ -32,8 +32,7 @@ class InfoBarManager {
 
     virtual void OnInfoBarAdded(InfoBar* infobar);
     virtual void OnInfoBarRemoved(InfoBar* infobar, bool animate);
-    virtual void OnInfoBarReplaced(InfoBar* old_infobar,
-                                   InfoBar* new_infobar);
+    virtual void OnInfoBarReplaced(InfoBar* old_infobar, InfoBar* new_infobar);
     virtual void OnManagerShuttingDown(InfoBarManager* manager);
   };
 
@@ -102,6 +101,8 @@ class InfoBarManager {
 
   // Opens a URL according to the specified |disposition|.
   virtual void OpenURL(const GURL& url, WindowOpenDisposition disposition) = 0;
+
+  bool ShouldHideInFullscreen() const;
 
  protected:
   void set_animations_enabled(bool animations_enabled) {

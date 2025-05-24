@@ -4,11 +4,11 @@
 
 #include "chrome/browser/extensions/api/passwords_private/test_passwords_private_delegate.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router.h"
@@ -95,11 +95,6 @@ TestPasswordsPrivateDelegate::GetUrlCollection(const std::string& url) {
       api::passwords_private::UrlCollection());
 }
 
-bool TestPasswordsPrivateDelegate::IsAccountStoreDefault(
-    content::WebContents* web_contents) {
-  return is_account_store_default_;
-}
-
 bool TestPasswordsPrivateDelegate::AddPassword(
     const std::string& url,
     const std::u16string& username,
@@ -113,8 +108,8 @@ bool TestPasswordsPrivateDelegate::AddPassword(
 bool TestPasswordsPrivateDelegate::ChangeCredential(
     const api::passwords_private::PasswordUiEntry& credential) {
   const auto existing =
-      base::ranges::find(current_entries_, credential.id,
-                         &api::passwords_private::PasswordUiEntry::id);
+      std::ranges::find(current_entries_, credential.id,
+                        &api::passwords_private::PasswordUiEntry::id);
   if (existing == current_entries_.end()) {
     return false;
   }
@@ -134,11 +129,12 @@ bool TestPasswordsPrivateDelegate::ChangeCredential(
 void TestPasswordsPrivateDelegate::RemoveCredential(
     int id,
     api::passwords_private::PasswordStoreSet from_stores) {
-  const auto removed = base::ranges::remove(
+  const auto to_remove = std::ranges::remove(
       current_entries_, id, &api::passwords_private::PasswordUiEntry::id);
-  if (removed != current_entries_.end()) {
-    last_deleted_entry_ = std::move(*removed);
-    current_entries_.erase(removed);
+  if (!to_remove.empty()) {
+    CHECK_EQ(1u, to_remove.size());
+    last_deleted_entry_ = std::move(*to_remove.begin());
+    current_entries_.erase(to_remove.begin(), to_remove.end());
   }
   SendSavedPasswordsList();
 }
@@ -386,10 +382,6 @@ void TestPasswordsPrivateDelegate::SetProfile(Profile* profile) {
 
 void TestPasswordsPrivateDelegate::SetAccountStorageEnabled(bool enabled) {
   is_account_storage_enabled_ = enabled;
-}
-
-void TestPasswordsPrivateDelegate::SetIsAccountStoreDefault(bool is_default) {
-  is_account_store_default_ = is_default;
 }
 
 void TestPasswordsPrivateDelegate::AddCompromisedCredential(int id) {

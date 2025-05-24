@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//rlz/buildflags/buildflags.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("session") {
   sources = [
@@ -20,7 +19,6 @@ static_library("session") {
   ]
 
   public_deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/base",
@@ -31,6 +29,7 @@ static_library("session") {
     "//chromeos/ash/components/login/auth",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/login/integrity",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/dbus/tpm_manager:tpm_manager_proto",
     "//components/session_manager/core",
     "//components/user_manager",
@@ -40,22 +39,20 @@ static_library("session") {
 
   deps = [
     "//ash",
-    "//ash/components/arc:arc_base_utils",
-    "//ash/components/arc:arc_features",
-    "//ash/components/arc:prefs",
-    "//ash/components/arc/session:arc_base_enums",
     "//ash/constants",
     "//ash/webui/shimless_rma",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/accessibility/live_caption",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/boca",
     "//chrome/browser/ash/boot_times_recorder",
     "//chrome/browser/ash/calendar",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/kerberos",
     "//chrome/browser/ash/logging",
     "//chrome/browser/ash/login/demo_mode",
@@ -68,6 +65,7 @@ static_library("session") {
     "//chrome/browser/ash/tpm",
     "//chrome/browser/ash/u2f",
     "//chrome/browser/google",
+    "//chrome/browser/prefs:util",
     "//chrome/browser/screen_ai:screen_ai_dlc_installer",
     "//chrome/browser/ui/webui/ash/shimless_rma_dialog",
     "//chrome/common",
@@ -84,15 +82,21 @@ static_library("session") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/rmad",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network/portal_detector",
     "//chromeos/ash/components/osauth/public",
     "//chromeos/ash/components/peripheral_notification",
+    "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/settings",
-    "//chromeos/ash/components/standalone_browser",
     "//chromeos/ash/components/tpm",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_features",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/session:arc_base_enums",
+    "//chromeos/ash/services/cros_safety",
     "//chromeos/constants",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/ui/base",
@@ -100,7 +104,6 @@ static_library("session") {
     "//components/account_id",
     "//components/account_manager_core",
     "//components/component_updater",
-    "//components/flags_ui",
     "//components/language/core/browser",
     "//components/live_caption:utils",
     "//components/password_manager/core/browser:metrics_util",
@@ -108,6 +111,7 @@ static_library("session") {
     "//components/policy/core/common:common_constants",
     "//components/prefs",
     "//components/quirks",
+    "//components/server_certificate_database",
     "//components/session_manager:base",
     "//components/signin/public/base",
     "//components/signin/public/base:signin_switches",
@@ -117,6 +121,7 @@ static_library("session") {
     "//components/trusted_vault",
     "//components/user_manager:common",
     "//components/version_info",
+    "//components/webui/flags",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/common",
@@ -212,6 +217,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/prefs",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/login/auth/public:authpublic",

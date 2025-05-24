@@ -42,7 +42,7 @@ export const RelaunchMixin = dedupingMixin(
           };
         }
 
-        protected shouldShowRelaunchDialog: boolean;
+        declare protected shouldShowRelaunchDialog: boolean;
 
         constructor(...args: any[]) {
           super(...args);

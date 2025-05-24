@@ -8,8 +8,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/services/sharing/nearby/platform/bidirectional_stream.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 BluetoothSocket::BluetoothSocket(
     bluetooth::mojom::DeviceInfoPtr device,
@@ -80,5 +79,4 @@ void BluetoothSocket::CloseMojoSocketIfNecessary() {
   socket_.reset();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

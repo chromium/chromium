@@ -117,17 +117,6 @@ bool UsePassthroughCommandDecoder(const base::CommandLine* command_line) {
 #endif  // !BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 }
 
-bool PassthroughCommandDecoderSupported() {
-  GLDisplayEGL* display = gl::GLSurfaceEGL::GetGLDisplayEGL();
-  // Using the passthrough command buffer requires that specific ANGLE
-  // extensions are exposed
-  return display->ext->b_EGL_CHROMIUM_create_context_bind_generates_resource &&
-         display->ext->b_EGL_ANGLE_create_context_webgl_compatibility &&
-         display->ext->b_EGL_ANGLE_robust_resource_initialization &&
-         display->ext->b_EGL_ANGLE_display_texture_share_group &&
-         display->ext->b_EGL_ANGLE_create_context_client_arrays;
-}
-
 const GlWorkarounds& GetGlWorkarounds() {
   return g_workarounds;
 }
@@ -137,13 +126,6 @@ void SetGlWorkarounds(const GlWorkarounds& workarounds) {
 }
 
 #if BUILDFLAG(IS_WIN)
-unsigned int FrameRateToPresentDuration(float frame_rate) {
-  if (frame_rate == 0)
-    return 0u;
-  // Present duration unit is 100 ns.
-  return static_cast<unsigned int>(1.0E7 / frame_rate);
-}
-
 unsigned int DirectCompositionRootSurfaceBufferCount() {
   return base::FeatureList::IsEnabled(features::kDCompTripleBufferRootSwapChain)
              ? 3u
@@ -179,8 +161,8 @@ void LabelSwapChainBuffers(IDXGISwapChain* swap_chain,
   }
 }
 
-// Same as LabelSwapChainAndBuffers, but only does the buffers. Used for resize
-// operations
+// Labels swapchain with the name_prefix and its buffers with the string
+// name_prefix + _Buffer_ + <buffer_number>.
 void LabelSwapChainAndBuffers(IDXGISwapChain* swap_chain,
                               const char* name_prefix) {
   SetDebugName(swap_chain, name_prefix);
@@ -206,6 +188,10 @@ GLDisplay* GetDefaultDisplay() {
 void SetGpuPreferenceEGL(GpuPreference preference, uint64_t system_device_id) {
   GLDisplayManagerEGL::GetInstance()->SetGpuPreference(preference,
                                                        system_device_id);
+}
+
+uint64_t GetSystemDeviceIdEGLForTesting(GpuPreference preference) {
+  return GLDisplayManagerEGL::GetInstance()->GetSystemDeviceId(preference);
 }
 
 void RemoveGpuPreferenceEGL(GpuPreference preference) {

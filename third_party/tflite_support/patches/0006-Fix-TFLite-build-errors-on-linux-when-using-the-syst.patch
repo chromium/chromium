@@ -1,7 +1,7 @@
-From 3dc1cc4f100d9633736a8937482dcc838d98556a Mon Sep 17 00:00:00 2001
+From ffc815ed87e47c65a6b841026fe18bd60e4d983e Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
 Date: Wed, 30 Nov 2022 10:24:21 -0800
-Subject: [PATCH 06/10] Fix TFLite build errors on linux when using the system
+Subject: [PATCH 06/11] Fix TFLite build errors on linux when using the system
 
 ---
  .../metadata/cc/metadata_extractor.cc                        | 5 +++--
@@ -13,7 +13,7 @@ Subject: [PATCH 06/10] Fix TFLite build errors on linux when using the system
  6 files changed, 9 insertions(+), 8 deletions(-)
 
 diff --git a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
-index f4ee9192fe42a..d208da4e03780 100644
+index c6b4258b6acbc..bb42c6140dcd8 100644
 --- a/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
 +++ b/third_party/tflite_support/src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc
 @@ -23,13 +23,14 @@ limitations under the License.
@@ -107,5 +107,5 @@ index 762dd58f0fb41..bb27d96aef4b5 100644
  namespace tflite {
  namespace metadata {
 -- 
-2.42.0.515.g380fc7ccd1-goog
+2.49.0.777.g153de2bbd5-goog
 

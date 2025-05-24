@@ -1,35 +1,12 @@
-# These tests still need to be triaged and either okayed to skip or fixed.
--AutofillInteractiveDisableAutofillSelectListTest.DisableSelectListAutofilling
--AutofillInteractiveTest/AutofillInteractiveFencedFrameTest.*
--AutofillInteractiveTest_ClearForm.*
--AutofillInteractiveTest.*
--AutofillInteractiveTestBase.*
--AutofillInteractiveTestDynamicForm.*
--AutofillInteractiveFormSubmissionClearFormTest.*
--AutofillInteractiveFormSubmissionTest.*
--AutofillInteractiveTest/AutofillInteractiveTestShadowDom.*
--AutofillInteractiveTest_UndoAutofill.BasicUndoAutofill
--BookmarksFocusTest.DNDManager
+# These tests require that accessibility is disabled at startup, or that there
+# is some other AXMode during the test, which will not be the case when
+# --force-renderer-accessibility is used.
 -CaptionBubbleControllerViewsTest.AccessibleTextIsSometimesFocusable
--CookieControlsInteractiveUiTest.*
--ExtensionsToolbarContainerUITest.ClickingOnASecondActionClosesTheFirst
--FeaturePromoDialogWebUITabStripTest.InvokeUi_IPH_WebUITabStrip
--HighEfficiencyChipInteractiveTest.*
--HighEfficiencyMemorySavingsReportingImprovementsTest.RenderVisualizationInDialog
--IbanBubbleViewFullFormBrowserTest.*
--FreeListingCoupon/OfferNotificationBubbleViewsInteractiveUiTest.*
--FreeListingCoupon/OfferNotificationBubbleViewsWithDiscountOnChromeHistoryClusterTest.*
--GPayCardLinked/OfferNotificationBubbleViewsInteractiveUiTest.*
--GPayPromoCode/OfferNotificationBubbleViewsInteractiveUiTest.*
--MigrateToProfileAddressProfileTest.SaveWithEdit
--OfferNotificationIconViewInteractiveTest.IconAutoCollapse
--OfferNotificationIconViewInteractiveTest.IconCollapseAfterBubbleWidgetIsClosed
--OfferNotificationIconViewInteractiveTest.StopCollapseTimerAfterClickingIcon
--PermissionChipKombuchaTest.PermissionChipClickTest
--PopupBlockerBrowserTest.*
--PopupBlockerFencedFrameTest.BlockPopupThroughContentSettingFencedFrame
--SaveAddressProfileTest.SaveWithEdit
--TabResourceUsageTabHelperTest.MemoryUsageUpdatesAfterNavigation
--UpdateAccountAddressProfileTest.UpdateThroughEdit
--UpdateAddressProfileTest.UpdateThroughEdit
--WebUITabStripInteractiveTest.*
+
+# These tests fail because WebUITabStripContainerView is nullptr.
+# The reason why is that WebUITabStripContainerView::UseTouchableTabStrip()
+# returns false when a screen reader is active. Until that changes, these
+# tests are irrelevant on this bot.
+-WebUITabStripInteractiveTest.CanTypeInOmniboxAfterTabStripClose
+-WebUITabStripInteractiveTest.EventInContainerDoesNotClose
+-WebUITabStripInteractiveTest.EventInTabContentClosesContainer

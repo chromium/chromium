@@ -11,9 +11,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class CWVTranslationController;
 @class CWVTranslationLanguage;
+@class CWVTranslationLanguageDetectionDetails;
 
 // Updates delegate on translation progress.
-@protocol CWVTranslationControllerDelegate<NSObject>
+@protocol CWVTranslationControllerDelegate <NSObject>
 
 @optional
 
@@ -41,6 +42,12 @@ NS_ASSUME_NONNULL_BEGIN
     didFinishTranslationFromLanguage:(CWVTranslationLanguage*)sourceLanguage
                           toLanguage:(CWVTranslationLanguage*)targetLanguage
                                error:(nullable NSError*)error;
+
+// Called when the current page's language detection details have been
+// determined.
+- (void)translationController:(CWVTranslationController*)controller
+    didDeterminePageLanguageDetectionDetails:
+        (CWVTranslationLanguageDetectionDetails*)pageLanguageDetectionDetails;
 
 @end
 

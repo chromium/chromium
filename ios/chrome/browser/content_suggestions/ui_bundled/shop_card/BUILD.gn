@@ -1,0 +1,140 @@
+source_set("shop_card") {
+  sources = [
+    "shop_card_action_delegate.h",
+    "shop_card_commands.h",
+    "shop_card_favicon_consumer.h",
+    "shop_card_favicon_consumer_source.h",
+    "shop_card_item.h",
+    "shop_card_item.mm",
+    "shop_card_mediator.h",
+    "shop_card_mediator.mm",
+    "shop_card_view.h",
+    "shop_card_view.mm",
+  ]
+  deps = [
+    ":constants",
+    ":prefs",
+    ":price_tracking_shop_card",
+    ":shop_card_data",
+    "//base",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/image_fetcher/core",
+    "//components/payments/core",
+    "//components/payments/core:currency_formatter",
+    "//components/power_bookmarks/core",
+    "//components/power_bookmarks/core",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:observer_bridge",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/price_notifications/ui_bundled/cells",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("shop_card_data") {
+  sources = [
+    "shop_card_data.h",
+    "shop_card_data.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/commerce/core:commerce_types",
+    "//url",
+  ]
+}
+
+source_set("price_tracking_shop_card") {
+  sources = [
+    "shop_card_price_tracking_view.h",
+    "shop_card_price_tracking_view.mm",
+  ]
+  deps = [
+    ":shop_card_data",
+    "//base",
+    "//components/url_formatter",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption",
+    "//ios/chrome/browser/price_notifications/ui_bundled/cells",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("prefs") {
+  sources = [
+    "shop_card_prefs.h",
+    "shop_card_prefs.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "shop_card_constants.h",
+    "shop_card_constants.mm",
+  ]
+  deps = []
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "shop_card_mediator+testing.h",
+    "shop_card_mediator_unittest.mm",
+  ]
+  deps = [
+    ":shop_card",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/image_fetcher/core",
+    "//components/power_bookmarks/core",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-#include "content/browser/media/session/media_session_impl.h"
-
 #include <map>
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "content/browser/media/session/media_session_impl.h"
 #include "content/browser/media/session/media_session_player_observer.h"
 #include "content/browser/media/session/mock_media_session_service_impl.h"
 #include "content/public/test/test_media_session_client.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "services/media_session/public/cpp/media_metadata.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/constants.mojom.h"
@@ -79,6 +79,12 @@ class MockMediaSessionPlayerObserver : public MediaSessionPlayerObserver {
               OnRequestVisibility,
               (int player_id,
                RequestVisibilityCallback request_visibility_callback),
+              (override));
+  MOCK_METHOD(void,
+              OnAutoPictureInPictureInfoChanged,
+              (int player_id,
+               const media::PictureInPictureEventsInfo::AutoPipInfo&
+                   auto_picture_in_picture_info),
               (override));
 
   std::optional<media_session::MediaPosition> GetPosition(

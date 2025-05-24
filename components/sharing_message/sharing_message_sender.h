@@ -64,6 +64,8 @@ class SharingMessageSender {
         const SharingTargetDeviceInfo& device,
         sync_pb::UnencryptedSharingMessage message,
         SendMessageCallback callback) = 0;
+
+    virtual void ClearPendingMessages() = 0;
   };
 
   // Delegate type used to send a message.
@@ -97,6 +99,9 @@ class SharingMessageSender {
   // called with |type|.
   void RegisterSendDelegate(DelegateType type,
                             std::unique_ptr<SendMessageDelegate> delegate);
+
+  // Clears all pending messages for all delegates.
+  void ClearPendingMessages();
 
   // Returns SharingFCMSender for testing.
   SharingFCMSender* GetFCMSenderForTesting() const;

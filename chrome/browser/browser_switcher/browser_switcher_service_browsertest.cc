@@ -12,11 +12,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "chrome/browser/browser_switcher/browser_switcher_features.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_factory.h"
 #include "chrome/browser/browser_switcher/browser_switcher_sitelist.h"
@@ -37,7 +35,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "chrome/browser/browser_switcher/browser_switcher_service_win.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -126,9 +124,6 @@ void EnableBrowserSwitcher(policy::PolicyMap* policies) {
 
 class BrowserSwitcherServiceTest : public InProcessBrowserTest {
  public:
-  BrowserSwitcherServiceTest() {
-    feature_list_.InitAndEnableFeature(kBrowserSwitcherNoneIsGreylist);
-  }
   ~BrowserSwitcherServiceTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -234,7 +229,6 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
 #endif
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
 #if BUILDFLAG(IS_WIN)
@@ -847,9 +841,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherServiceTest,
                            .Set("manifest_version", 2)
                            .Set("version", "5.9"))
           .Build();
-  extensions::ExtensionSystem::Get(browser()->profile())
-      ->extension_service()
-      ->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(browser()->profile())
+      ->AddExtension(extension);
 
   // Cache files already exist.
   ASSERT_TRUE(base::CreateDirectory(cache_dir()));

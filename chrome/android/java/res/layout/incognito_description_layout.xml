@@ -14,12 +14,13 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:gravity="start"
     android:orientation="vertical"
-    android:paddingStart="@dimen/md_incognito_ntp_padding_left" >
+    android:paddingStart="@dimen/md_incognito_ntp_padding_horizontal" >
 
     <ImageView
         android:id="@+id/new_tab_incognito_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/md_incognito_ntp_view_horizontal_offset"
         tools:ignore="ContentDescription"
         android:src="@drawable/incognito_splash"
         app:tint="@color/ntp_incognito_icon_color" />
@@ -35,8 +36,7 @@ found in the LICENSE file.
         android:id="@+id/new_tab_incognito_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-        android:lineSpacingExtra="@dimen/md_incognito_ntp_line_spacing" />
+        style="@style/IncognitoNewTabTextView" />
 
     <LinearLayout
         android:id="@+id/new_tab_incognito_bulletpoints_container"
@@ -50,33 +50,33 @@ found in the LICENSE file.
             android:id="@+id/new_tab_incognito_features"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-            app:leading="@dimen/text_size_medium_leading" />
+            style="@style/IncognitoNewTabTextView" />
 
         <org.chromium.ui.widget.TextViewWithLeading
             android:id="@+id/new_tab_incognito_warning"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary.Baseline.Light"
-            app:leading="@dimen/text_size_medium_leading" />
+            style="@style/IncognitoNewTabTextView" />
 
     </LinearLayout>
 
-    <org.chromium.ui.widget.TextViewWithLeading
+    <org.chromium.ui.widget.TextViewWithClickableSpans
         android:id="@+id/learn_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/md_incognito_ntp_view_horizontal_offset"
         android:minHeight="@dimen/min_touch_target_size"
         android:gravity="center_vertical"
         android:text="@string/learn_more"
-        android:textAppearance="@style/TextAppearance.IncognitoNewTabLearnMoreLinkModern"
-        app:leading="@dimen/text_size_medium_leading" />
+        android:contentDescription="@string/incognito_tab_learn_more_accessibility_label"
+        style="@style/IncognitoNewTabLearnMoreLinkModernTextView" />
 
     <!-- Placeholder for a Cookie Controls or a Tracking Protection card. -->
     <ViewStub
         android:id="@+id/cookie_card_stub"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/md_incognito_ntp_view_horizontal_offset"
         android:layout_marginTop="12dp" />
 
 </org.chromium.chrome.browser.ntp.IncognitoDescriptionView>

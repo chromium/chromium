@@ -11,8 +11,7 @@
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // MessageReceiver implementation that observes all received messages from
 // the remote phone and notifies clients of the received messages.
@@ -32,7 +31,6 @@ class MessageReceiverImpl : public MessageReceiver,
   raw_ptr<PhoneHubStructuredMetricsLogger> phone_hub_structured_metrics_logger_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_IMPL_H_

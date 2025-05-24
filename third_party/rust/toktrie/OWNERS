@@ -1,0 +1,4 @@
+# `toktrie` crate has been brought into `chromium_crates_io` as a dependency
+# of the `llguidance` crate.  `derivre` is maintained in the same GitHub repo
+# as `llguidance`: https://github.com/guidance-ai/llguidance/tree/main/toktrie
+file://third_party/rust/llguidance/OWNERS

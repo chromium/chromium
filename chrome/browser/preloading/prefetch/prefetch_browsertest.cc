@@ -53,7 +53,6 @@ class PrefetchBrowserTest : public PlatformBrowserTest {
     attempt_entry_builder_ =
         std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
             PredictorToExpectInUkm());
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void TearDownOnMainThread() override {
@@ -89,6 +88,7 @@ class PrefetchBrowserTest : public PlatformBrowserTest {
   }
 
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
   net::test_server::EmbeddedTestServer ssl_server_{
       net::test_server::EmbeddedTestServer::TYPE_HTTPS};
   base::test::ScopedFeatureList feature_list_;
@@ -96,7 +96,6 @@ class PrefetchBrowserTest : public PlatformBrowserTest {
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
   std::unique_ptr<content::test::PreloadingAttemptUkmEntryBuilder>
       attempt_entry_builder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
 };
 
 #if BUILDFLAG(IS_ANDROID)
@@ -141,6 +140,49 @@ IN_PROC_BROWSER_TEST_F(PrefetchBrowserTest, CCTPrefetch) {
           /*ready_time=*/
           base::ScopedMockElapsedTimersForTest::kMockElapsedTime)});
 }
+
+class CCTPrerenderBrowserTestWithHoldback : public PrefetchBrowserTest {
+ public:
+  CCTPrerenderBrowserTestWithHoldback() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        chrome::android::kCCTNavigationalPrefetch, {{"holdback", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(CCTPrerenderBrowserTestWithHoldback,
+                       CCTPrefetchHoldback) {
+  const GURL initial_url = GetURL("/empty.html");
+  const GURL prefetch_url = GetURL("/simple.html");
+  ASSERT_TRUE(NavigateToURL(initial_url));
+
+  auto* chrome_prefetch_manager =
+      ChromePrefetchManager::GetOrCreateForWebContents(GetActiveWebContents());
+  chrome_prefetch_manager->StartPrefetchFromCCT(prefetch_url, false,
+                                                std::nullopt);
+
+  ASSERT_TRUE(NavigateToURL(prefetch_url));
+
+  auto cct_attempt_entry_builder =
+      std::make_unique<content::test::PreloadingAttemptUkmEntryBuilder>(
+          chrome_preloading_predictor::kChromeCustomTabs);
+
+  ukm::SourceId ukm_source_id =
+      GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  content::test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {cct_attempt_entry_builder->BuildEntry(
+          ukm_source_id, content::PreloadingType::kPrefetch,
+          content::PreloadingEligibility::kEligible,
+          content::PreloadingHoldbackStatus::kHoldback,
+          content::PreloadingTriggeringOutcome::kUnspecified,
+          content::PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true,
+          /*ready_time=*/std::nullopt)});
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import android.os.Build;
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -14,9 +15,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
@@ -26,16 +27,18 @@ import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.FieldType;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.List;
 
 /** The base class for credit card settings. */
+@NullMarked
 public abstract class AutofillCreditCardEditor extends AutofillEditorBase
         implements ProfileDependentSetting {
-    private Profile mProfile;
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Profile mProfile;
+    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     protected CreditCard mCard;
     protected Spinner mBillingAddress;
@@ -43,16 +46,10 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
-
-        // Do not use autofill for the fields.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getActivity()
-                    .getWindow()
-                    .getDecorView()
-                    .setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
-        }
 
         // Populate the billing address dropdown.
         ArrayAdapter<AutofillProfile> profilesAdapter =
@@ -65,11 +62,11 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
         profilesAdapter.add(noSelection);
 
         PersonalDataManager personalDataManager =
-                PersonalDataManagerFactory.getForProfile(mProfile);
+                PersonalDataManagerFactory.getForProfile(getProfile());
         List<AutofillProfile> profiles = personalDataManager.getProfilesForSettings();
         for (int i = 0; i < profiles.size(); i++) {
             AutofillProfile profile = profiles.get(i);
-            if (!TextUtils.isEmpty(profile.getStreetAddress())) {
+            if (!TextUtils.isEmpty(profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS))) {
                 profilesAdapter.add(profile);
             }
         }
@@ -117,7 +114,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
             return true;
         }
         if (item.getItemId() == R.id.help_menu_id) {
-            HelpAndFeedbackLauncherFactory.getForProfile(mProfile)
+            HelpAndFeedbackLauncherFactory.getForProfile(getProfile())
                     .show(
                             getActivity(),
                             getActivity().getString(R.string.help_context_autofill),
@@ -135,7 +132,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
 
     /** Return the {@link Profile} associated with the card being edited. */
     public Profile getProfile() {
-        return mProfile;
+        return assertNonNull(mProfile);
     }
 
     /**
@@ -143,7 +140,7 @@ public abstract class AutofillCreditCardEditor extends AutofillEditorBase
      * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 

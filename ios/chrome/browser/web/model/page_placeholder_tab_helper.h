@@ -84,8 +84,6 @@ class PagePlaceholderTabHelper
   bool add_placeholder_for_next_navigation_ = false;
 
   base::WeakPtrFactory<PagePlaceholderTabHelper> weak_factory_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_PAGE_PLACEHOLDER_TAB_HELPER_H_

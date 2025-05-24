@@ -4,6 +4,9 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_cache.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,6 +38,17 @@ MATCHER_P2(HasNameForDimensionId, cluster_id, product_name, "") {
 class ProductSpecificationsCacheTest : public testing::Test {
  public:
   const uint64_t kCacheSize = ProductSpecificationsCache::kCacheSize;
+  const base::TimeDelta kEntryInvalidationTime =
+      ProductSpecificationsCache::kEntryInvalidationTime;
+  base::test::ScopedFeatureList test_features_;
+
+  void SetUp() override {
+    test_features_.InitWithFeatures({kProductSpecificationsCache}, {});
+  }
+
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(ProductSpecificationsCacheTest, EntryMaintained) {
@@ -103,6 +117,39 @@ TEST_F(ProductSpecificationsCacheTest, LeastRecentlyUsedEvicted) {
   for (uint64_t i = 3; i < kCacheSize + 2; i++) {
     ASSERT_FALSE(cache.GetEntry({i}) == nullptr);
   }
+}
+
+TEST_F(ProductSpecificationsCacheTest, NoOpWhenDisabled) {
+  // Disable the caching feature.
+  test_features_.Reset();
+  test_features_.InitWithFeatures({}, {kProductSpecificationsCache});
+
+  ProductSpecificationsCache cache;
+
+  ProductSpecifications specs1;
+  specs1.product_dimension_map[1L] = kProductName1;
+  cache.SetEntry(kClusterIds1, std::move(specs1));
+
+  // The cache should always return a nullptr when disabled.
+  ASSERT_TRUE(cache.GetEntry(kClusterIds1) == nullptr);
+  ASSERT_TRUE(cache.GetEntry(kClusterIds2) == nullptr);
+}
+
+TEST_F(ProductSpecificationsCacheTest, EntryInvalidatedAfterTime) {
+  ProductSpecificationsCache cache;
+
+  ProductSpecifications specs1;
+  specs1.product_dimension_map[1L] = kProductName1;
+  cache.SetEntry(kClusterIds1, std::move(specs1));
+
+  // The entry should still be valid up to the invalidation time.
+  task_environment_.FastForwardBy(kEntryInvalidationTime);
+  EXPECT_THAT(cache.GetEntry(kClusterIds1),
+              HasNameForDimensionId(1L, kProductName1));
+
+  // The entry should have expired a second after the invalidation time.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(cache.GetEntry(kClusterIds1) == nullptr);
 }
 
 }  // namespace commerce

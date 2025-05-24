@@ -4,8 +4,8 @@
     xmlns:dist="http://schemas.android.com/apk/distribution"
     featureSplit="dev_ui"
     package="org.chromium.chrome.stable"
-    platformBuildVersionCode="35"
-    platformBuildVersionName="15"
+    platformBuildVersionCode="36"
+    platformBuildVersionName="16"
     android:versionCode="OFFSET=22"
     android:versionName="#.#.#.#">
   <dist:module dist:onDemand="true" dist:title="@string/dev_ui_module_title">  # DIFF-ANCHOR: 671a5c9f

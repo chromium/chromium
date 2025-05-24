@@ -10,8 +10,7 @@
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 class TaskOrderTest : public testing::Test {
  protected:
@@ -126,5 +125,4 @@ TEST_F(TaskOrderTest, DelayedTasksEqual) {
   ExpectEqual(order1, order2);
 }
 
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

@@ -14,5 +14,5 @@ CREDIT_CARD_TYPE | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCa
 CREDIT_CARD_NUMBER | cardNum |  |  | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType_2
 CREDIT_CARD_VERIFICATION_CODE | cid |  |  | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType_2
 CREDIT_CARD_EXP_MONTH | /peapod/handler/iditarod/CheckoutRegistrationHandler.expirationMonth | Expiration Date: | 0 | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType_2
-CREDIT_CARD_EXP_4_DIGIT_YEAR | /peapod/handler/iditarod/CheckoutRegistrationHandler.expirationYear | / | 0 | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType_2
+CREDIT_CARD_EXP_4_DIGIT_YEAR | /peapod/handler/iditarod/CheckoutRegistrationHandler.expirationYear | Expiration Date: | 0 | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType_2
 CREDIT_CARD_NAME_FULL | cardName | Shorty Nge | Shorty Nge | /peapod/handler/iditarod/CheckoutRegistrationHandler.creditCardType_2

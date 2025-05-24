@@ -12,7 +12,7 @@ namespace media {
 class AudioDecoderConfig;
 class DecoderBuffer;
 class VideoDecoderConfig;
-}
+}  // namespace media
 
 namespace cast_streaming {
 

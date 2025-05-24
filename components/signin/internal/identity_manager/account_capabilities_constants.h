@@ -5,8 +5,11 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_
 
+// `inline` is important here: this ensures that even though the definition is
+// in a header which can be included in multiple translation units, the linker
+// will deduplicate them into a single definition.
 #define ACCOUNT_CAPABILITY(cpp_label, java_label, name) \
-  extern const char cpp_label[];
+  inline constexpr char cpp_label[] = name;
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
 #undef ACCOUNT_CAPABILITY
 

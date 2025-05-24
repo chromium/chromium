@@ -68,7 +68,7 @@ void DisallowEmptyOriginId(base::OnceCallback<void(bool)> callback) {
 
 class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
  public:
-  MediaDrmStorageImplTest() {}
+  MediaDrmStorageImplTest() = default;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();

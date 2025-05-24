@@ -9,7 +9,7 @@ import "ui/gfx/image/mojom/image.mojom";
 // This API allows lacros-chrome to access properties from the identity manager
 // that lives in ash-chrome, such as account names for accounts that are not yet
 // known to lacros.
-[Stable, Uuid="2737cc5d-f807-4690-aec1-22091ce82565"]
+[Uuid="2737cc5d-f807-4690-aec1-22091ce82565"]
 interface IdentityManager {
   // Returns the full_name of the account with gaia id `gaia`.
   GetAccountFullName@0(string gaia) => (string full_name);

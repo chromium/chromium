@@ -2,25 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import math
 import os
 import random
 import sys
-from typing import Any, List
+from typing import Any
 import unittest
-
-from gpu_tests import color_profile_manager
-from gpu_tests import common_browser_args as cba
-from gpu_tests import common_typing as ct
-from gpu_tests import gpu_integration_test
-
-import gpu_path_util
 
 from telemetry.util import image_util
 from telemetry.util import rgba_color
 
+import gpu_path_util
+from gpu_tests import color_profile_manager
+from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
+from gpu_tests import gpu_integration_test
 
 class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   """Tests that screenshots are properly synchronized with the frame on
@@ -54,7 +50,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   @classmethod
-  def GenerateBrowserArgs(cls, additional_args: List[str]) -> List[str]:
+  def GenerateBrowserArgs(cls, additional_args: list[str]) -> list[str]:
     """Adds default arguments to |additional_args|.
 
     See the parent class' method documentation for additional information.
@@ -69,6 +65,13 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         # in tests.
         cba.TEST_TYPE_GPU,
     ])
+
+    # TODO(crbug.com/394842006): This flag is an android optimization which
+    # results in the toolbar hairline # being always drawn. The hariline
+    # overlaps with the page's contents and interferes with the tests. Disable
+    # it so the hairline isn't drawn.
+    default_args.extend(['--disable-features=AndroidBrowserControlsInViz'])
+
     return default_args
 
   @classmethod
@@ -142,7 +145,7 @@ class ScreenshotSyncIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self._CheckScreenshot()
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(
             os.path.dirname(os.path.abspath(__file__)), 'test_expectations',

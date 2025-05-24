@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
 #include "third_party/blink/renderer/core/css/css_unparsed_declaration_value.h"
@@ -45,6 +41,7 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
   DCHECK(property.IsProperty());
   switch (rule_type) {
     case StyleRule::kStyle:
+    case StyleRule::kScope:
       return true;
     case StyleRule::kPage:
     case StyleRule::kPageMargin:
@@ -57,8 +54,7 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
     case StyleRule::kPositionTry:
       return property.IsValidForPositionTry();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -218,7 +214,7 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
           /*is_animation_tainted=*/false,
           /*must_contain_variable_reference=*/true,
           /*restricted_value=*/true, /*comma_ends_declaration=*/false,
-          important, context_->GetExecutionContext());
+          important, *context_);
   if (!variable_data) {
     return false;
   }
@@ -252,17 +248,14 @@ static inline bool IsExposedInMode(const ExecutionContext* execution_context,
 //
 // Returns false if the string is outside the allowed range of ASCII, so that
 // it could never match any CSS properties or values.
-static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
-                                            unsigned length,
+static inline bool QuasiLowercaseIntoBuffer(base::span<const UChar> chars,
                                             char* dst) {
-  for (unsigned i = 0; i < length; ++i) {
-    UChar c = src[i];
+  for (unsigned i = 0; UChar c : chars) {
     if (c == 0 || c >= 0x7F) {  // illegal character
       return false;
     }
-    dst[i] = ToASCIILower(c);
+    UNSAFE_TODO(dst[i++]) = ToASCIILower(c);
   }
-  dst[length] = '\0';
   return true;
 }
 
@@ -279,21 +272,21 @@ static inline bool QuasiLowercaseIntoBuffer(const UChar* src,
 // This version never returns false, since the [0x80, 0xff] range
 // won't match anything anyway (it is really only needed for UChar,
 // since otherwise we could have e.g. U+0161 be downcasted to 0x61).
-static inline bool QuasiLowercaseIntoBuffer(const LChar* src,
-                                            unsigned length,
+static inline bool QuasiLowercaseIntoBuffer(base::span<const LChar> chars,
                                             char* dst) {
+  const LChar* src = chars.data();
+  unsigned length = static_cast<unsigned>(chars.size());
   unsigned i;
   for (i = 0; i < (length & ~3); i += 4) {
     uint32_t x;
-    memcpy(&x, src + i, sizeof(x));
+    UNSAFE_TODO(memcpy(&x, src + i, sizeof(x)));
     x |= (x & 0x40404040) >> 1;
-    memcpy(dst + i, &x, sizeof(x));
+    UNSAFE_TODO(memcpy(dst + i, &x, sizeof(x)));
   }
   for (; i < length; ++i) {
-    LChar c = src[i];
-    dst[i] = c | ((c & 0x40) >> 1);
+    LChar c = UNSAFE_TODO(src[i]);
+    UNSAFE_TODO(dst[i]) = c | ((c & 0x40) >> 1);
   }
-  dst[length] = '\0';
   return true;
 }
 
@@ -327,21 +320,22 @@ static CSSPropertyID ExposedProperty(CSSPropertyID property_id,
 template <typename CharacterType>
 static CSSPropertyID UnresolvedCSSPropertyID(
     const ExecutionContext* execution_context,
-    const CharacterType* property_name,
-    unsigned length,
+    base::span<const CharacterType> property_name,
     CSSParserMode mode) {
+  unsigned length = static_cast<unsigned>(property_name.size());
   if (length == 0) {
     return CSSPropertyID::kInvalid;
   }
-  if (length >= 3 && property_name[0] == '-' && property_name[1] == '-') {
+  if (length >= 3 && property_name[0] == '-' &&
+      UNSAFE_TODO(property_name[1]) == '-') {
     return CSSPropertyID::kVariable;
   }
   if (length > kMaxCSSPropertyNameLength) {
     return CSSPropertyID::kInvalid;
   }
 
-  char buffer[kMaxCSSPropertyNameLength + 1];  // 1 for null character
-  if (!QuasiLowercaseIntoBuffer(property_name, length, buffer)) {
+  char buffer[kMaxCSSPropertyNameLength];
+  if (!QuasiLowercaseIntoBuffer(property_name, buffer)) {
     return CSSPropertyID::kInvalid;
   }
 
@@ -350,7 +344,7 @@ static CSSPropertyID UnresolvedCSSPropertyID(
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    buffer[i] = ToASCIILower(property_name[i]);
+    UNSAFE_TODO(buffer[i] = ToASCIILower(property_name[i]));
   }
   DCHECK_EQ(hash_table_entry, FindProperty(buffer, length));
 #endif
@@ -358,41 +352,44 @@ static CSSPropertyID UnresolvedCSSPropertyID(
     return CSSPropertyID::kInvalid;
   }
 
-  CSSPropertyID property_id = static_cast<CSSPropertyID>(hash_table_entry->id);
-  if (kKnownExposedProperties.Has(property_id)) {
+  int id_and_exposed_bit = hash_table_entry->id_and_exposed_bit;
+  if (id_and_exposed_bit & kNotKnownExposedPropertyBit) {
+    // The property is behind a runtime flag, so we need to go ahead
+    // and actually do the resolution to see if that flag is on or not.
+    // This should happen only occasionally.
+    CSSPropertyID property_id = static_cast<CSSPropertyID>(
+        id_and_exposed_bit & ~kNotKnownExposedPropertyBit);
+    return ExposedProperty(property_id, execution_context, mode);
+  } else {
+    CSSPropertyID property_id = static_cast<CSSPropertyID>(id_and_exposed_bit);
     DCHECK_EQ(property_id,
               ExposedProperty(property_id, execution_context, mode));
     return property_id;
   }
-
-  // The property is behind a runtime flag, so we need to go ahead
-  // and actually do the resolution to see if that flag is on or not.
-  // This should happen only occasionally.
-  return ExposedProperty(property_id, execution_context, mode);
 }
 
 CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
                                       StringView string,
                                       CSSParserMode mode) {
   return WTF::VisitCharacters(string, [&](auto chars) {
-    return UnresolvedCSSPropertyID(execution_context, chars.data(),
-                                   chars.size(), mode);
+    return UnresolvedCSSPropertyID(execution_context, chars, mode);
   });
 }
 
 template <typename CharacterType>
-static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
-                                    unsigned length) {
-  char buffer[maxCSSValueKeywordLength + 1];  // 1 for null character
-  if (!QuasiLowercaseIntoBuffer(value_keyword, length, buffer)) {
+static CSSValueID CssValueKeywordID(
+    base::span<const CharacterType> value_keyword) {
+  char buffer[kMaxCSSValueKeywordLength];
+  if (!QuasiLowercaseIntoBuffer(value_keyword, buffer)) {
     return CSSValueID::kInvalid;
   }
 
+  unsigned length = static_cast<unsigned>(value_keyword.size());
   const Value* hash_table_entry = FindValue(buffer, length);
 #if DCHECK_IS_ON()
   // Verify that we get the same answer with standard lowercasing.
   for (unsigned i = 0; i < length; ++i) {
-    buffer[i] = ToASCIILower(value_keyword[i]);
+    UNSAFE_TODO(buffer[i] = ToASCIILower(value_keyword[i]));
   }
   DCHECK_EQ(hash_table_entry, FindValue(buffer, length));
 #endif
@@ -405,12 +402,12 @@ CSSValueID CssValueKeywordID(StringView string) {
   if (!length) {
     return CSSValueID::kInvalid;
   }
-  if (length > maxCSSValueKeywordLength) {
+  if (length > kMaxCSSValueKeywordLength) {
     return CSSValueID::kInvalid;
   }
 
-  return string.Is8Bit() ? CssValueKeywordID(string.Characters8(), length)
-                         : CssValueKeywordID(string.Characters16(), length);
+  return string.Is8Bit() ? CssValueKeywordID(string.Span8())
+                         : CssValueKeywordID(string.Span16());
 }
 
 const CSSValue* CSSPropertyParser::ConsumeCSSWideKeyword(

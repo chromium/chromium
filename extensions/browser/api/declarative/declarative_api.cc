@@ -23,6 +23,7 @@
 #include "extensions/browser/api/declarative/rules_registry_service.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/common/api/events.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -162,7 +163,7 @@ ExtensionFunction::ResponseAction RulesFunction::Run() {
   RecordUMA(event_name);
 
   // If we are not operating on a particular <webview>, then the key is 0.
-  int rules_registry_id = RulesRegistryService::kDefaultRulesRegistryID;
+  int rules_registry_id = rules_registry_ids::kDefaultRulesRegistryID;
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
   bool from_web_view = web_view_instance_id != 0;
@@ -235,8 +236,7 @@ void EventsEventAddRulesFunction::RecordUMA(
       type = kDeclarativeWebRequestWebviewAddRules;
       break;
     case DeclarativeAPIType::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   RecordUMAHelper(type);
 }
@@ -276,8 +276,7 @@ void EventsEventRemoveRulesFunction::RecordUMA(
       type = kDeclarativeWebRequestWebviewRemoveRules;
       break;
     case DeclarativeAPIType::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   RecordUMAHelper(type);
 }
@@ -321,8 +320,7 @@ void EventsEventGetRulesFunction::RecordUMA(
       type = kDeclarativeWebRequestWebviewGetRules;
       break;
     case DeclarativeAPIType::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   RecordUMAHelper(type);
 }

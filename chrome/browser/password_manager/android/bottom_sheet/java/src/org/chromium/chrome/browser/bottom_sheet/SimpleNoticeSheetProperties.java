@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.bottom_sheet;
 
 import android.text.SpannableString;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties defined here reflect the visible state of the simple notice sheet */
+@NullMarked
 public class SimpleNoticeSheetProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> SHEET_TITLE =
             new PropertyModel.WritableObjectPropertyKey<>("sheet_title");

@@ -122,6 +122,7 @@ IN_PROC_BROWSER_TEST_F(RequestMonitoringTest, UrlRequestRewriteDeny) {
   {
     fuchsia::web::NavigationState error_state;
     error_state.set_page_type(fuchsia::web::PageType::ERROR);
+    error_state.set_error_detail(fuchsia::web::ErrorDetail::LOAD_FAILED);
     EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
                                          fuchsia::web::LoadUrlParams(),
                                          page_url.spec()));
@@ -157,6 +158,7 @@ IN_PROC_BROWSER_TEST_F(RequestMonitoringTest, UrlRequestRewriteDenyAll) {
   {
     fuchsia::web::NavigationState error_state;
     error_state.set_page_type(fuchsia::web::PageType::ERROR);
+    error_state.set_error_detail(fuchsia::web::ErrorDetail::LOAD_FAILED);
     EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
                                          fuchsia::web::LoadUrlParams(),
                                          page_url.spec()));
@@ -170,6 +172,7 @@ IN_PROC_BROWSER_TEST_F(RequestMonitoringTest, UrlRequestRewriteDenyAll) {
     GURL page_url_localhost = page_url.ReplaceComponents(replacements);
     fuchsia::web::NavigationState error_state;
     error_state.set_page_type(fuchsia::web::PageType::ERROR);
+    error_state.set_error_detail(fuchsia::web::ErrorDetail::LOAD_FAILED);
     EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
                                          fuchsia::web::LoadUrlParams(),
                                          page_url.spec()));
@@ -215,6 +218,7 @@ IN_PROC_BROWSER_TEST_F(RequestMonitoringTest, UrlRequestRewriteSelectiveAllow) {
     GURL page_url_localhost = page_url.ReplaceComponents(replacements);
     fuchsia::web::NavigationState error_state;
     error_state.set_page_type(fuchsia::web::PageType::ERROR);
+    error_state.set_error_detail(fuchsia::web::ErrorDetail::LOAD_FAILED);
     EXPECT_TRUE(LoadUrlAndExpectResponse(frame.GetNavigationController(),
                                          fuchsia::web::LoadUrlParams(),
                                          page_url_localhost.spec()));

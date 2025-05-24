@@ -37,7 +37,6 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider_client.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_registration_options.h"
@@ -58,7 +57,6 @@ namespace blink {
 class ExecutionContext;
 class ExceptionState;
 class LocalDOMWindow;
-class ServiceWorkerErrorForUpdate;
 class ServiceWorkerRegistration;
 
 class MODULES_EXPORT ServiceWorkerContainer final
@@ -69,9 +67,6 @@ class MODULES_EXPORT ServiceWorkerContainer final
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  using RegistrationCallbacks =
-      WebServiceWorkerProvider::WebServiceWorkerRegistrationCallbacks;
-
   static const char kSupplementName[];
 
   static ServiceWorkerContainer* From(LocalDOMWindow&);
@@ -132,15 +127,16 @@ class MODULES_EXPORT ServiceWorkerContainer final
  private:
   class DomContentLoadedListener;
 
+  using RegistrationCallbacks =
+      WebServiceWorkerProvider::WebServiceWorkerRegistrationCallbacks;
+
   void RegisterServiceWorkerInternal(
       const KURL& scope_url,
       const KURL& script_url,
       std::optional<mojom::blink::ScriptType> script_type,
       mojom::blink::ServiceWorkerUpdateViaCache update_via_cache,
       WebFetchClientSettingsObject fetch_client_settings_object,
-      std::unique_ptr<CallbackPromiseAdapter<ServiceWorkerRegistration,
-                                             ServiceWorkerErrorForUpdate>>
-          callbacks);
+      std::unique_ptr<RegistrationCallbacks> callbacks);
 
   using ReadyProperty = ScriptPromiseProperty<ServiceWorkerRegistration,
                                               ServiceWorkerRegistration>;

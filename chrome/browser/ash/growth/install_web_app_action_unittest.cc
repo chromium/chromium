@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "base/json/json_reader.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"

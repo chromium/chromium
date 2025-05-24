@@ -13,6 +13,7 @@
 #include "chrome/browser/vr/test/animation_utils.h"
 #include "chrome/browser/vr/test/constants.h"
 #include "chrome/browser/vr/ui_scene.h"
+#include "ui/gfx/animation/keyframe/test/animation_utils.h"
 
 namespace vr {
 
@@ -29,7 +30,7 @@ class TestSpinner : public Spinner {
   TestSpinner(const TestSpinner&) = delete;
   TestSpinner& operator=(const TestSpinner&) = delete;
 
-  ~TestSpinner() override {}
+  ~TestSpinner() override = default;
 
   UiTexture* GetTexture() const override { return Spinner::GetTexture(); }
 };

@@ -8,20 +8,15 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
-#import "ios/web/public/browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace trusted_vault {
 class TrustedVaultService;
 }  // namespace trusted_vault
 
-class IOSTrustedVaultServiceFactory : public BrowserStateKeyedServiceFactory {
+// Owns all TrustedVaultService instances and associates them to profiles.
+class IOSTrustedVaultServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static trusted_vault::TrustedVaultService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static trusted_vault::TrustedVaultService* GetForProfile(ProfileIOS* profile);
   static IOSTrustedVaultServiceFactory* GetInstance();
 

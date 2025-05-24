@@ -9,6 +9,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
@@ -21,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
@@ -30,6 +32,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
@@ -50,7 +53,8 @@ class MahiPanelWidgetTest : public AshTestBase {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kMahi,
-                              chromeos::features::kFeatureManagementMahi},
+                              chromeos::features::kFeatureManagementMahi,
+                              chromeos::features::kMahiPanelResizable},
         /*disabled_features=*/{});
     AshTestBase::SetUp();
 
@@ -87,6 +91,15 @@ TEST_F(MahiPanelWidgetTest, DefaultWidgetBounds) {
             widget->GetRestoredBounds());
 }
 
+TEST_F(MahiPanelWidgetTest, AccessibleTitle) {
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(10, 10, 300, 300), &ui_controller_);
+
+  EXPECT_EQ(widget->GetRootView()->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(IDS_ASH_MAHI_PANEL_TITLE));
+}
+
 TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedBottomSpace) {
   UpdateDisplay("800x700");
   // Place the menu 200px above the screen's bottom to ensure there is not
@@ -101,6 +114,25 @@ TEST_F(MahiPanelWidgetTest, WidgetPositionWithConstrainedBottomSpace) {
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area().bottom() -
           kPanelBoundsShelfPadding,
       widget->GetRestoredBounds().bottom());
+}
+
+TEST_F(MahiPanelWidgetTest, WidgetAfterResize) {
+  UpdateDisplay("800x700");
+
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(100, 100, 300, 300), &ui_controller_);
+
+  // Click on the top left of the panel and drag towards the top left of the
+  // screen to resize.
+  GetEventGenerator()->set_current_screen_location(
+      widget->GetWindowBoundsInScreen().origin());
+  constexpr gfx::Vector2d kDragOffset(-50, -70);
+  GetEventGenerator()->DragMouseBy(kDragOffset.x(), kDragOffset.y());
+
+  auto expected_bounds =
+      gfx::Rect(50, 30, kPanelDefaultWidth + 50, kPanelDefaultHeight + 70);
+  EXPECT_EQ(expected_bounds, widget->GetWindowBoundsInScreen());
 }
 
 TEST_F(MahiPanelWidgetTest, WidgetPositionAfterWorkAreaBoundsChange) {

@@ -137,6 +137,8 @@ class MODULES_EXPORT MediaStream final
 
   void StreamEnded();
 
+  void NotifyEnabledStateChangeForWebRtcAudio(bool enabled);
+
   // MediaStreamDescriptorClient implementation
   void AddTrackByComponentAndFireEvents(MediaStreamComponent*,
                                         DispatchEventTiming) override;

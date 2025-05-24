@@ -21,10 +21,12 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/test_autofill_client.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/foundations/test_autofill_client.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/browser/test_autofill_client_ios.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -112,6 +114,7 @@ class FakeNetworkContext : public network::TestNetworkContext {
  public:
   FakeNetworkContext() = default;
   void IsHSTSActiveForHost(const std::string& host,
+                           bool is_top_level_nav,
                            IsHSTSActiveForHostCallback callback) override {
     std::move(callback).Run(false);
   }
@@ -158,7 +161,7 @@ PasswordController* CreatePasswordController(
     PrefService* pref_service,
     web::WebState* web_state,
     password_manager::PasswordStoreInterface* store,
-    MockPasswordManagerClient** weak_client) {
+    raw_ptr<MockPasswordManagerClient>* weak_client) {
   auto client = std::make_unique<NiceMock<MockPasswordManagerClient>>(
       pref_service, store);
   auto reuse_detection_client = std::make_unique<
@@ -236,10 +239,10 @@ struct TestPasswordFormData {
 class PasswordControllerTest : public PlatformTest {
  public:
   PasswordControllerTest() : web_client_(std::make_unique<ChromeWebClient>()) {
-    browser_state_ = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
   }
 
@@ -258,11 +261,11 @@ class PasswordControllerTest : public PlatformTest {
     // predictions on.
     PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
 
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state(), &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        web_state(), /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(
-        browser_state_->GetPrefs(), web_state(), store_.get(), &weak_client_);
+        profile_->GetPrefs(), web_state(), store_.get(), &weak_client_);
     passwordController_.passwordManager->set_leak_factory(
         std::make_unique<
             NiceMock<password_manager::MockLeakDetectionCheckFactory>>());
@@ -299,11 +302,9 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   bool WaitForMainFrame() {
-    autofill::FormUtilJavaScriptFeature* feature =
-        autofill::FormUtilJavaScriptFeature::GetInstance();
     return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return feature->GetWebFramesManager(web_state())->GetMainWebFrame() !=
-             nullptr;
+      return autofill::GetWebFramesManagerForAutofill(web_state())
+                 ->GetMainWebFrame() != nullptr;
     });
   }
 
@@ -382,7 +383,8 @@ class PasswordControllerTest : public PlatformTest {
                    fieldType:@"not_important"
                         type:@"input"
                   typedValue:SysUTF8ToNSString(typed_value)
-                     frameID:SysUTF8ToNSString(main_frame_id)];
+                     frameID:SysUTF8ToNSString(main_frame_id)
+                onlyPassword:NO];
     [passwordController_.sharedPasswordController
         checkIfSuggestionsAvailableForForm:form_query
                             hasUserGesture:YES
@@ -488,11 +490,9 @@ class PasswordControllerTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
-  // `autofill_client_` mocks KeyedServices, which need to outlive the
-  // `BrowserAutofillManager` owned by frame (`web_state`).
-  autofill::TestAutofillClient autofill_client_;
+  raw_ptr<ProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
 
   // SuggestionController for testing.
   PasswordsTestSuggestionController* suggestionController_;
@@ -505,7 +505,7 @@ class PasswordControllerTest : public PlatformTest {
 
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
 
-  MockPasswordManagerClient* weak_client_;
+  raw_ptr<MockPasswordManagerClient> weak_client_;
 };
 
 struct FindPasswordFormTestData {
@@ -583,7 +583,8 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:SysUTF8ToNSString(frame->GetFrameId())];
+               frameID:SysUTF8ToNSString(frame->GetFrameId())
+          onlyPassword:NO];
 
   NSString* suggestion_text = [NSString
       stringWithFormat:@"%@ ••••••••",
@@ -614,7 +615,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
        displayDescription:nil
                      icon:nil
                      type:autofill::SuggestionType::kAutocompleteEntry
-        backendIdentifier:nil
+                  payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
 
   SuggestionHandledCompletion completion = ^{
@@ -1265,8 +1266,8 @@ class PasswordControllerTestSimple : public PlatformTest {
     web_state_.SetWebFramesManager(content_world,
                                    std::move(web_frames_manager));
 
-    autofill::AutofillDriverIOSFactory::CreateForWebState(
-        &web_state_, &autofill_client_, /*bridge=*/nil, /*locale=*/"en");
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        &web_state_, /*bridge=*/nil);
 
     passwordController_ = CreatePasswordController(&pref_service_, &web_state_,
                                                    store_.get(), &weak_client_);
@@ -1286,11 +1287,11 @@ class PasswordControllerTestSimple : public PlatformTest {
 
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<web::FakeBrowserState> browser_state_;
-  autofill::TestAutofillClient autofill_client_;
+  web::FakeWebState web_state_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
   PasswordController* passwordController_;
   scoped_refptr<password_manager::MockPasswordStoreInterface> store_;
-  MockPasswordManagerClient* weak_client_;
-  web::FakeWebState web_state_;
+  raw_ptr<MockPasswordManagerClient> weak_client_;
   raw_ptr<web::FakeWebFramesManager> web_frames_manager_;
 };
 
@@ -1300,7 +1301,7 @@ TEST_F(PasswordControllerTestSimple, SaveOnNonHTMLLandingPage) {
   SharedPasswordController* sharedPasswordController =
       passwordController_.sharedPasswordController;
 
-  auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  auto web_frame = web::FakeWebFrame::CreateMainWebFrame();
   web_frame->set_browser_state(browser_state_.get());
   web::WebFrame* main_web_frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
@@ -1505,7 +1506,8 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
                    fieldType:@"text"
                         type:@"focus"
                   typedValue:@""
-                     frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                     frameID:SysUTF8ToNSString(GetMainWebFrameId())
+                onlyPassword:NO];
     [passwordController_.sharedPasswordController
         checkIfSuggestionsAvailableForForm:form_query
                             hasUserGesture:YES
@@ -1549,7 +1551,8 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+               frameID:SysUTF8ToNSString(GetMainWebFrameId())
+          onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:form_query
                           hasUserGesture:YES
@@ -1583,7 +1586,8 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNoPasswordForms) {
              fieldType:@"text"
                   type:@"focus"
             typedValue:@""
-               frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+               frameID:SysUTF8ToNSString(GetMainWebFrameId())
+          onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:form_query
                           hasUserGesture:YES
@@ -1637,7 +1641,7 @@ TEST_F(PasswordControllerTest, CheckPasswordGenerationSuggestion) {
       @[(@"var evt = document.createEvent('Events');"
          "password_.focus();"),
         @";"],
-      @[@"user0 ••••••••", @"abc ••••••••", @"Suggest Strong Password"],
+      @[@"user0 ••••••••", @"abc ••••••••", @"Suggest strong password"],
       @"[]=, onkeyup=false, onchange=false"
     },
   };
@@ -1944,8 +1948,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
                // content to an iframe, but it is the only way for this test.
                // Reattaching it manually for test purposes.
                "       frames[0].addEventListener('unload', function(event) {"
-               "  __gCrWeb.common.sendWebKitMessage('FrameBecameUnavailable',"
-               "      frames[0].__gCrWeb.message.getFrameId());"
+               "  window.webkit.messageHandlers['FrameBecameUnavailable']."
+               "      postMessage(frames[0].__gCrWeb.getFrameId());"
                "});"
                "}"
                "</script>"
@@ -1955,10 +1959,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnIFrameDetach) {
 
   WaitForFormManagersCreation();
 
-  autofill::FormUtilJavaScriptFeature* feature =
-      autofill::FormUtilJavaScriptFeature::GetInstance();
   std::set<WebFrame*> all_frames =
-      feature->GetWebFramesManager(web_state())->GetAllWebFrames();
+      autofill::GetWebFramesManagerForAutofill(web_state())->GetAllWebFrames();
   std::string iFrameID;
   for (auto* frame : all_frames) {
     if (!frame->IsMainFrame()) {
@@ -2016,8 +2018,8 @@ TEST_F(PasswordControllerTest,
                // content to an iframe, but it is the only way for this test.
                // Reattaching it manually for test purposes.
                "       frames[0].addEventListener('unload', function(event) {"
-               "  __gCrWeb.common.sendWebKitMessage('FrameBecameUnavailable',"
-               "      frames[0].__gCrWeb.message.getFrameId());"
+               "  window.webkit.messageHandlers['FrameBecameUnavailable']."
+               "      postMessage(frames[0].__gCrWeb.getFrameId());"
                "});"
                "}"
                "</script>"
@@ -2106,7 +2108,8 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldFocus) {
                  fieldType:@"password"
                       type:@"focus"
                 typedValue:@""
-                   frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                   frameID:SysUTF8ToNSString(GetMainWebFrameId())
+              onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:focus_query
                           hasUserGesture:YES
@@ -2148,7 +2151,8 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldInput) {
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@"generated_password_long"
-                   frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                   frameID:SysUTF8ToNSString(GetMainWebFrameId())
+              onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:extend_query
                           hasUserGesture:YES
@@ -2190,7 +2194,8 @@ TEST_F(PasswordControllerTest, PasswordGenerationFieldClear) {
                  fieldType:@"password"
                       type:@"input"
                 typedValue:@""
-                   frameID:SysUTF8ToNSString(GetMainWebFrameId())];
+                   frameID:SysUTF8ToNSString(GetMainWebFrameId())
+              onlyPassword:NO];
   [passwordController_.sharedPasswordController
       checkIfSuggestionsAvailableForForm:clear_query
                           hasUserGesture:YES

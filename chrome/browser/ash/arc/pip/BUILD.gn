@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("pip") {
   sources = [
@@ -17,9 +17,9 @@ static_library("pip") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//base",
     "//chrome/browser/picture_in_picture",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ui/base",
     "//components/keyed_service/core",
     "//content/public/browser",
@@ -35,9 +35,9 @@ source_set("unit_tests") {
 
   deps = [
     ":pip",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]

@@ -14,7 +14,6 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/sys_string_conversions.h"
-#include "components/variations/hashing.h"
 
 using TpmIdentifier = metrics::SystemProfileProto_TpmIdentifier;
 
@@ -36,7 +35,7 @@ typedef decltype(TpmGet_ManufacturerVersionInfo)*
 int __stdcall TpmGet_SpecVersion(unsigned int*, wchar_t*);
 typedef decltype(TpmGet_SpecVersion)* pTpmGet_SpecVersion;
 
-std::optional<TpmIdentifier> GetTpmIdentifier(bool report_full_names) {
+std::optional<TpmIdentifier> GetTpmIdentifier() {
   std::optional<TpmIdentifier> tpm_identifier;
   TpmIdentifier tpm_identifier_value;
 
@@ -112,36 +111,15 @@ std::optional<TpmIdentifier> GetTpmIdentifier(bool report_full_names) {
       base::SysWideToUTF8(tpm_spec_version_wide);
 
   tpm_identifier_value.set_manufacturer_id(id);
-  if (report_full_names) {
-    if (!manufacturer_version_string.empty()) {
-      tpm_identifier_value.set_manufacturer_version(
-          manufacturer_version_string);
-    }
-    if (!manufacturer_version_info_string.empty()) {
-      tpm_identifier_value.set_manufacturer_version_info(
-          manufacturer_version_info_string);
-    }
-    if (!tpm_spec_version_string.empty()) {
-      tpm_identifier_value.set_tpm_specific_version(tpm_spec_version_string);
-    }
-  }
-
   if (!manufacturer_version_string.empty()) {
-    std::size_t manufacturer_version_hash =
-        variations::HashName(manufacturer_version_string);
-    tpm_identifier_value.set_manufacturer_version_hash(
-        manufacturer_version_hash);
+    tpm_identifier_value.set_manufacturer_version(manufacturer_version_string);
   }
   if (!manufacturer_version_info_string.empty()) {
-    std::size_t manufacturer_version_info_hash =
-        variations::HashName(manufacturer_version_info_string);
-    tpm_identifier_value.set_manufacturer_version_info_hash(
-        manufacturer_version_info_hash);
+    tpm_identifier_value.set_manufacturer_version_info(
+        manufacturer_version_info_string);
   }
   if (!tpm_spec_version_string.empty()) {
-    std::size_t tpm_spec_version_hash =
-        variations::HashName(tpm_spec_version_string);
-    tpm_identifier_value.set_tpm_specific_version_hash(tpm_spec_version_hash);
+    tpm_identifier_value.set_tpm_specific_version(tpm_spec_version_string);
   }
 
   tpm_identifier = tpm_identifier_value;

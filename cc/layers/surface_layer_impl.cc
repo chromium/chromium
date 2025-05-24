@@ -18,6 +18,7 @@
 #include "cc/trees/occlusion.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
 
@@ -124,6 +125,16 @@ void SurfaceLayerImpl::SetIsReflection(bool is_reflection) {
   NoteLayerPropertyChanged();
 }
 
+void SurfaceLayerImpl::SetOverrideChildPaintFlags(
+    bool override_child_paint_flags) {
+  if (override_child_paint_flags_ == override_child_paint_flags) {
+    return;
+  }
+
+  override_child_paint_flags_ = override_child_paint_flags;
+  NoteLayerPropertyChanged();
+}
+
 void SurfaceLayerImpl::ResetStateForUpdateSubmissionStateCallback() {
   will_draw_needs_reset_ = true;
   NoteLayerPropertyChanged();
@@ -140,6 +151,7 @@ void SurfaceLayerImpl::PushPropertiesTo(LayerImpl* layer) {
   layer_impl->SetSurfaceHitTestable(surface_hit_testable_);
   layer_impl->SetHasPointerEventsNone(has_pointer_events_none_);
   layer_impl->SetIsReflection(is_reflection_);
+  layer_impl->SetOverrideChildPaintFlags(override_child_paint_flags_);
 
   if (layer_impl->IsActive() && will_draw_needs_reset_) {
     layer_impl->will_draw_ = false;
@@ -174,7 +186,8 @@ bool SurfaceLayerImpl::WillDraw(
   return will_draw;
 }
 
-void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void SurfaceLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                   viz::CompositorRenderPass* render_pass,
                                    AppendQuadsData* append_quads_data) {
   AppendRainbowDebugBorder(render_pass);
 
@@ -205,6 +218,10 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                  surface_range_, background_color(),
                  stretch_content_to_fill_bounds_);
     quad->is_reflection = is_reflection_;
+    if (override_child_paint_flags()) {
+      quad->override_child_filter_quality = GetFilterQuality();
+      quad->override_child_dynamic_range_limit = GetDynamicRangeLimit();
+    }
     // Add the primary surface ID as a dependency.
     append_quads_data->activation_dependencies.push_back(surface_range_.end());
     if (deadline_in_frames_) {
@@ -225,6 +242,24 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   // Unless the client explicitly specifies otherwise, don't block on
   // |surface_range_| more than once.
   deadline_in_frames_ = 0u;
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAlignSurfaceLayerImplToPixelGrid)) {
+    return;
+  }
+
+  // Don't allow DrawQuads to align on non-pixel boundaries.
+  gfx::Vector2dF quad_rect_offset = quad_rect.OffsetFromOrigin();
+  gfx::PointF rect_offset_in_target =
+      shared_quad_state->quad_to_target_transform.MapPoint(
+          gfx::PointF(quad_rect_offset.x(), quad_rect_offset.x()));
+  gfx::Vector2dF adjustment =
+      gfx::Vector2dF(rect_offset_in_target.x(), rect_offset_in_target.y()) -
+      gfx::Vector2dF(gfx::ToRoundedVector2d(gfx::Vector2dF(
+          rect_offset_in_target.x(), rect_offset_in_target.y())));
+  if (!adjustment.IsZero()) {
+    shared_quad_state->quad_to_target_transform.PostTranslate(-adjustment);
+  }
 }
 
 bool SurfaceLayerImpl::is_surface_layer() const {

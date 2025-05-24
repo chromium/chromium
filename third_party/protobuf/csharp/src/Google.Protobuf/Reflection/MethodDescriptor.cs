@@ -1,33 +1,10 @@
 #region Copyright notice and license
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 #endregion
 
 using Google.Protobuf.Collections;
@@ -40,35 +17,30 @@ namespace Google.Protobuf.Reflection
     /// </summary>
     public sealed class MethodDescriptor : DescriptorBase
     {
-        private readonly MethodDescriptorProto proto;
-        private readonly ServiceDescriptor service;
-        private MessageDescriptor inputType;
-        private MessageDescriptor outputType;
-
         /// <value>
         /// The service this method belongs to.
         /// </value>
-        public ServiceDescriptor Service { get { return service; } }
+        public ServiceDescriptor Service { get; }
 
         /// <value>
         /// The method's input type.
         /// </value>
-        public MessageDescriptor InputType { get { return inputType; } }
+        public MessageDescriptor InputType { get; private set; }
 
         /// <value>
         /// The method's input type.
         /// </value>
-        public MessageDescriptor OutputType { get { return outputType; } }
+        public MessageDescriptor OutputType { get; private set; }
 
         /// <value>
         /// Indicates if client streams multiple requests.
         /// </value>
-        public bool IsClientStreaming { get { return proto.ClientStreaming; } }
+        public bool IsClientStreaming => Proto.ClientStreaming;
 
         /// <value>
         /// Indicates if server streams multiple responses.
         /// </value>
-        public bool IsServerStreaming { get { return proto.ServerStreaming; } }
+        public bool IsServerStreaming => Proto.ServerStreaming;
 
         /// <summary>
         /// The (possibly empty) set of custom options for this method.
@@ -82,7 +54,18 @@ namespace Google.Protobuf.Reflection
         /// Custom options can be retrieved as extensions of the returned message.
         /// NOTE: A defensive copy is created each time this property is retrieved.
         /// </summary>
-        public MethodOptions GetOptions() => Proto.Options?.Clone();
+        public MethodOptions GetOptions()
+        {
+            var clone = Proto.Options?.Clone();
+            if (clone is null)
+            {
+                return null;
+            }
+            // Clients should be using feature accessor methods, not accessing features on the
+            // options proto.
+            clone.Features = null;
+            return clone;
+        }
 
         /// <summary>
         /// Gets a single value method option for this descriptor
@@ -91,7 +74,7 @@ namespace Google.Protobuf.Reflection
         public T GetOption<T>(Extension<MethodOptions, T> extension)
         {
             var value = Proto.Options.GetExtension(extension);
-            return value is IDeepCloneable<T> ? (value as IDeepCloneable<T>).Clone() : value;
+            return value is IDeepCloneable<T> c ? c.Clone() : value;
         }
 
         /// <summary>
@@ -105,14 +88,14 @@ namespace Google.Protobuf.Reflection
 
         internal MethodDescriptor(MethodDescriptorProto proto, FileDescriptor file,
                                   ServiceDescriptor parent, int index)
-            : base(file, parent.FullName + "." + proto.Name, index)
+            : base(file, parent.FullName + "." + proto.Name, index, parent.Features.MergedWith(proto.Options?.Features))
         {
-            this.proto = proto;
-            service = parent;
+            Proto = proto;
+            Service = parent;
             file.DescriptorPool.AddSymbol(this);
         }
 
-        internal MethodDescriptorProto Proto { get { return proto; } }
+        internal MethodDescriptorProto Proto { get; private set; }
 
         /// <summary>
         /// Returns a clone of the underlying <see cref="MethodDescriptorProto"/> describing this method.
@@ -125,24 +108,23 @@ namespace Google.Protobuf.Reflection
         /// <summary>
         /// The brief name of the descriptor's target.
         /// </summary>
-        public override string Name { get { return proto.Name; } }
+        public override string Name => Proto.Name;
 
         internal void CrossLink()
         {
             IDescriptor lookup = File.DescriptorPool.LookupSymbol(Proto.InputType, this);
-            if (!(lookup is MessageDescriptor))
+            if (lookup is not MessageDescriptor inputType)
             {
                 throw new DescriptorValidationException(this, "\"" + Proto.InputType + "\" is not a message type.");
             }
-            inputType = (MessageDescriptor) lookup;
+            InputType = inputType;
 
             lookup = File.DescriptorPool.LookupSymbol(Proto.OutputType, this);
-            if (!(lookup is MessageDescriptor))
+            if (lookup is not MessageDescriptor outputType)
             {
                 throw new DescriptorValidationException(this, "\"" + Proto.OutputType + "\" is not a message type.");
             }
-            outputType = (MessageDescriptor) lookup;
+            OutputType = outputType;
         }
     }
 }
- 

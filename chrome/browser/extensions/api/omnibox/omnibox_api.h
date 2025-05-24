@@ -13,12 +13,14 @@
 #include "chrome/browser/extensions/api/omnibox/suggestion_parser.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/extension_suggestion.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_icon_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -40,6 +42,16 @@ namespace extensions {
 // Event router class for events related to the omnibox API.
 class ExtensionOmniboxEventRouter {
  public:
+  static constexpr size_t kMaxSuggestionActions = 7;
+  static constexpr char kMaxSuggestionActionsExceededError[] =
+      "Found suggest result with %d action, which exceeds the limit of %d "
+      "actions per suggestion.";
+  static constexpr char kActionsRequireDirectInputPermissionError[] =
+      "Actions in suggest results require omnibox.directInput permission.";
+  static constexpr char kActionIconError[] =
+      "Action icon failed to parse for suggestion description: %s and action "
+      "name: %s.";
+
   ExtensionOmniboxEventRouter(const ExtensionOmniboxEventRouter&) = delete;
   ExtensionOmniboxEventRouter& operator=(const ExtensionOmniboxEventRouter&) =
       delete;
@@ -71,6 +83,12 @@ class ExtensionOmniboxEventRouter {
   static void OnDeleteSuggestion(Profile* profile,
                                  const ExtensionId& extension_id,
                                  const std::string& suggestion_text);
+
+  // The user has clicked an action of an extension omnibox suggestion result.
+  static void OnActionExecuted(Profile* profile,
+                               const ExtensionId& extension_id,
+                               const std::string& action_name,
+                               const std::string& content);
 };
 
 class OmniboxSendSuggestionsFunction : public ExtensionFunction {
@@ -92,12 +110,15 @@ class OmniboxSendSuggestionsFunction : public ExtensionFunction {
   // Notifies the omnibox that the suggestions have been prepared.
   void NotifySuggestionsReady();
 
-  // The suggestion parameters passed by the extension API call.
-  std::optional<api::omnibox::SendSuggestions::Params> params_;
+  // The parsed `params_.suggest_results`.
+  std::vector<ExtensionSuggestion> extension_suggestions_;
+
+  int request_id_;
 };
 
 class OmniboxAPI : public BrowserContextKeyedAPI,
-                   public ExtensionRegistryObserver {
+                   public ExtensionRegistryObserver,
+                   public PermissionsManager::Observer {
  public:
   explicit OmniboxAPI(content::BrowserContext* context);
 
@@ -133,6 +154,12 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
+  // PermissionsManager::Observer:
+  void OnExtensionPermissionsUpdated(
+      const Extension& extension,
+      const PermissionSet& permissions,
+      PermissionsManager::UpdateReason reason) override;
+
   // BrowserContextKeyedAPI implementation.
   static const char* service_name() {
     return "OmniboxAPI";
@@ -150,6 +177,11 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
   // Listen to extension load, unloaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
+
+  // Permissions observer to listen to `omnibox.directInput` permission changes.
+  base::ScopedObservation<extensions::PermissionsManager,
+                          extensions::PermissionsManager::Observer>
+      permissions_manager_observation_{this};
 
   // Keeps track of favicon-sized omnibox icons for extensions.
   ExtensionIconManager omnibox_icon_manager_;
@@ -181,7 +213,7 @@ class OmniboxSetDefaultSuggestionFunction : public ExtensionFunction {
 };
 
 // If the extension has set a custom default suggestion via
-// omnibox.setDefaultSuggestion, apply that to |match|. Otherwise, do nothing.
+// omnibox.setDefaultSuggestion, apply that to `match`. Otherwise, do nothing.
 void ApplyDefaultSuggestionForExtensionKeyword(
     Profile* profile,
     const TemplateURL* keyword,
@@ -191,7 +223,8 @@ void ApplyDefaultSuggestionForExtensionKeyword(
 // This function converts style information populated by the JSON schema
 // // compiler into an ACMatchClassifications object.
 ACMatchClassifications StyleTypesToACMatchClassifications(
-    const api::omnibox::SuggestResult &suggestion);
+    const std::vector<api::omnibox::MatchClassification>* description_styles,
+    const std::string& suggestion_description);
 
 }  // namespace extensions
 

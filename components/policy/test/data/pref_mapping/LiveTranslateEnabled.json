@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "accessibility.captions.live_translate_enabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  }
+]

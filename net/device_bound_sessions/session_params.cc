@@ -7,26 +7,31 @@
 namespace net::device_bound_sessions {
 
 SessionParams::SessionParams(std::string id,
-                             std::string refresh,
-                             Scope incoming_scope,
-                             std::vector<Credential> creds)
+                             GURL fetcher_url,
+                             std::string refresh_url,
+                             Scope scope,
+                             std::vector<Credential> creds,
+                             unexportable_keys::UnexportableKeyId key_id)
     : session_id(std::move(id)),
-      refresh_url(std::move(refresh)),
-      scope(std::move(incoming_scope)),
-      credentials(std::move(creds)) {}
+      fetcher_url(std::move(fetcher_url)),
+      refresh_url(std::move(refresh_url)),
+      scope(std::move(scope)),
+      credentials(std::move(creds)),
+      key_id(std::move(key_id)) {}
 
-SessionParams::SessionParams(SessionParams&& other) = default;
+SessionParams::SessionParams(SessionParams&& other) noexcept = default;
 
-SessionParams& SessionParams::operator=(SessionParams&& other) = default;
+SessionParams& SessionParams::operator=(SessionParams&& other) noexcept =
+    default;
 
 SessionParams::~SessionParams() = default;
 
 SessionParams::Scope::Scope() = default;
 
-SessionParams::Scope::Scope(Scope&& other) = default;
+SessionParams::Scope::Scope(Scope&& other) noexcept = default;
 
 SessionParams::Scope& SessionParams::Scope::operator=(
-    SessionParams::Scope&& other) = default;
+    SessionParams::Scope&& other) noexcept = default;
 
 SessionParams::Scope::~Scope() = default;
 

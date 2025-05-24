@@ -6,13 +6,20 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/components/prefs/PrefService.java" ]
+  sources = [
+    "java/src/org/chromium/components/prefs/PrefChangeRegistrar.java",
+    "java/src/org/chromium/components/prefs/PrefService.java",
+  ]
 }
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/components/prefs/PrefService.java" ]
+  sources = [
+    "java/src/org/chromium/components/prefs/PrefChangeRegistrar.java",
+    "java/src/org/chromium/components/prefs/PrefService.java",
+  ]
   deps = [
+    "//base:base_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",

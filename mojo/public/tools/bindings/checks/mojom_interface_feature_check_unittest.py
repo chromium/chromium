@@ -41,7 +41,7 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     mojoms = []
     self.WriteFile(filename, content)
     mojoms.append(filename)
-    with self.assertRaisesRegexp(check.CheckException, regexp):
+    with self.assertRaisesRegex(check.CheckException, regexp):
       self._ParseAndGenerate(mojoms)
 
   def testLoads(self):

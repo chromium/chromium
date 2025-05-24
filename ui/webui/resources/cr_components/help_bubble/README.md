@@ -3,9 +3,9 @@
 [Backend documentation can be found here.](/components/user_education/webui/README.md)
 
 Allows a WebUI page to support Polymer-based, blue material design ("Navi")
-[HelpBubble](/components/user_education/common/help_bubble.h)s that can be shown in the course of a
-[Feature Promo](/components/user_education/common/feature_promo_controller.h) or
-[Tutorial](/components/user_education/common/tutorial.h).
+[HelpBubble](/components/user_education/common/help_bubble/help_bubble.h)s that can be shown in the course of a
+[Feature Promo](/components/user_education/common/feature_promo/feature_promo_controller.h) or
+[Tutorial](/components/user_education/common/tutorial/tutorial.h).
 
 This is done by associating HTML elements in a component with an
 [ElementIdentifier](/ui/base/interaction/element_identifier.h) so they can be
@@ -27,8 +27,8 @@ Once you have performed setup on the backend:
  * Add [HelpBubbleMixin](./help_bubble_mixin.ts) to your Polymer component.
 
  * In your component's `ready()` or `connectedCallback()` method, call
-   `HelpBubbleMixin.registerHelpBubbleIdentifier()` one or more times.
- 
+   `HelpBubbleMixin.registerHelpBubble()` one or more times.
+
    * The first parameter should be the name of an
      [ElementIdentifier](/ui/base/interaction/element_identifier.h) you
      specified when creating your
@@ -53,7 +53,7 @@ Once you have performed setup on the backend:
      interactive test.
 
    * It is rare, but if your anchor element is not immediately present in your
-     component, you can instead wait to call `registerHelpBubbleIdentifier()`
+     component, you can instead wait to call `registerHelpBubble()`
      until after the element is created.
 
 ## Limitations
@@ -64,7 +64,7 @@ relaxed or removed in the near future):
  * Whether the native code believes that a help bubble can be shown in your
    component is based on the visibility of the corresponding anchor HTML element
    - the one with the ID you passed to
-   `HelpBubbleMixin.registerHelpBubbleIdentifier()`.
+   `HelpBubbleMixin.registerHelpBubble()`.
 
    * Visibility is not determined relative to the current viewport but rather to
      the entire page. The viewport will automatically scroll to display the

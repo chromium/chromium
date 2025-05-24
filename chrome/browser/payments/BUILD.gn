@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 source_set("browser_tests") {
   testonly = true
 
@@ -47,7 +45,6 @@ source_set("browser_tests") {
 
   deps = [
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/test:test_support",
     "//chrome/test/payments:test_support",
     "//components/payments/content",
@@ -83,8 +80,8 @@ source_set("browser_tests") {
     ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [ "//ash/public/cpp/external_arc:external_arc" ]
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/experiences/arc" ]
   }
 }
 
@@ -94,6 +91,8 @@ source_set("unittests") {
   sources = [ "payment_handler_permission_context_unittest.cc" ]
 
   deps = [
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/infobars/content",

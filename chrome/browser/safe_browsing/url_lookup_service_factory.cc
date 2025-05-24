@@ -25,6 +25,7 @@
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/utils.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
@@ -88,7 +89,12 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
                               AreSigninAndSyncSetUpForSafeBrowsingTokenFetches,
                           SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
-      profile->IsOffTheRecord(), g_browser_process->variations_service(),
+      profile->IsOffTheRecord(),
+      base::BindRepeating(
+          &RealTimeUrlLookupServiceFactory::GetVariationsService),
+      base::BindRepeating(&RealTimeUrlLookupServiceFactory::
+                              GetMinAllowedTimestampForReferrerChains,
+                          profile),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile),
       WebUIInfoSingleton::GetInstance());
@@ -106,6 +112,20 @@ RealTimeUrlLookupServiceFactory::GetURLLoaderFactory(
           g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
               profile));
   return network::SharedURLLoaderFactory::Create(std::move(url_loader_factory));
+}
+
+// static
+variations::VariationsService*
+RealTimeUrlLookupServiceFactory::GetVariationsService() {
+  return g_browser_process->variations_service();
+}
+
+// static
+base::Time
+RealTimeUrlLookupServiceFactory::GetMinAllowedTimestampForReferrerChains(
+    Profile* profile) {
+  return g_browser_process->safe_browsing_service()
+      ->GetMinAllowedTimestampForReferrerChains(profile);
 }
 
 void RealTimeUrlLookupServiceFactory::SetURLLoaderFactoryForTesting(

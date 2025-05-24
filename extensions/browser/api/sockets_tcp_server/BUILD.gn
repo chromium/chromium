@@ -17,14 +17,20 @@ source_set("sockets_tcp_server") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
+    "//base",
     "//content/public/browser",
-    "//content/public/common",
+    "//extensions/browser:browser_sources",
     "//extensions/browser/api/socket",
     "//extensions/browser/api/sockets_tcp",
     "//extensions/common",
     "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/mojom",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//content/public/common",
+    "//net",
+  ]
 }

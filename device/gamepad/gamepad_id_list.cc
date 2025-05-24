@@ -153,6 +153,7 @@ constexpr auto kGamepadInfo = base::MakeFixedFlatMap<
     {{0x054c, 0x0ba0}, kXInputTypeNone},
     {{0x054c, 0x0ce6}, kXInputTypeNone},
     {{0x054c, 0x0df2}, kXInputTypeNone},
+    {{0x054c, 0x0e5f}, kXInputTypeNone},
     // Elecom Co., Ltd
     {{0x056e, 0x2003}, kXInputTypeNone},
     {{0x056e, 0x2004}, kXInputTypeXbox360},
@@ -612,6 +613,7 @@ constexpr auto kGamepadInfo = base::MakeFixedFlatMap<
     {{0x2dc8, 0x2830}, kXInputTypeNone},
     {{0x2dc8, 0x3000}, kXInputTypeNone},
     {{0x2dc8, 0x3001}, kXInputTypeNone},
+    {{0x2dc8, 0x301b}, kXInputTypeNone},
     {{0x2dc8, 0x3106}, kXInputTypeXbox360},
     {{0x2dc8, 0x3820}, kXInputTypeNone},
     {{0x2dc8, 0x9001}, kXInputTypeNone},

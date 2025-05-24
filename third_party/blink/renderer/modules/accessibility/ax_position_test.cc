@@ -11,10 +11,10 @@
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/testing/accessibility_test.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 namespace test {
@@ -66,19 +66,6 @@ constexpr char kHTMLTable[] = R"HTML(
     <p id="after">After table.</p>
     )HTML";
 
-constexpr char kAOM[] = R"HTML(
-    <p id="before">Before virtual AOM node.</p>
-    <div id="aomParent"></div>
-    <p id="after">After virtual AOM node.</p>
-    <script>
-      let parent = document.getElementById("aomParent");
-      let node = MakeGarbageCollected<AccessibleNode>();
-      node.role = "button";
-      node.label = "Button";
-      parent.accessibleNode.appendChild(node);
-    </script>
-    )HTML";
-
 constexpr char kMap[] = R"HTML(
     <br id="br">
     <map id="map">
@@ -107,7 +94,8 @@ TEST_F(AccessibilityTest, PositionInText) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(3, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -130,7 +118,8 @@ TEST_F(AccessibilityTest, PositionBeforeText) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(0, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -153,7 +142,8 @@ TEST_F(AccessibilityTest, PositionBeforeTextWithFirstLetterCSSRule) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(0, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -177,7 +167,8 @@ TEST_F(AccessibilityTest, PositionAfterText) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(5, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -201,7 +192,8 @@ TEST_F(AccessibilityTest, PositionBeforeLineBreak) {
   EXPECT_EQ(GetDocument().body(), position.AnchorNode());
   EXPECT_EQ(1, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
 }
 
@@ -226,7 +218,8 @@ TEST_F(AccessibilityTest, PositionAfterLineBreak) {
   EXPECT_TRUE(position.GetPosition().IsOffsetInAnchor());
   EXPECT_EQ(0, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
 }
 
@@ -250,7 +243,8 @@ TEST_F(AccessibilityTest, FirstPositionInDivContainer) {
   EXPECT_TRUE(position.GetPosition().IsOffsetInAnchor());
   EXPECT_EQ(0, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_TRUE(ax_position_from_dom.IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_position_from_dom.ContainerObject());
@@ -272,7 +266,8 @@ TEST_F(AccessibilityTest, LastPositionInDivContainer) {
   EXPECT_EQ(div, position.AnchorNode());
   EXPECT_TRUE(position.GetPosition().IsAfterChildren());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -293,7 +288,8 @@ TEST_F(AccessibilityTest, FirstPositionInTextContainer) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(0, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -314,7 +310,8 @@ TEST_F(AccessibilityTest, LastPositionInTextContainer) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(5, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -410,7 +407,8 @@ TEST_F(AccessibilityTest, PositionInTextWithWhiteSpace) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(8, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -431,7 +429,8 @@ TEST_F(AccessibilityTest, PositionBeforeTextWithWhiteSpace) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(5, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -452,7 +451,8 @@ TEST_F(AccessibilityTest, PositionAfterTextWithWhiteSpace) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(10, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -476,7 +476,8 @@ TEST_F(AccessibilityTest, PositionBeforeLineBreakWithWhiteSpace) {
   EXPECT_EQ(GetDocument().body(), position.AnchorNode());
   EXPECT_EQ(1, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
 }
 
@@ -502,7 +503,8 @@ TEST_F(AccessibilityTest, PositionAfterLineBreakWithWhiteSpace) {
   // Any white space in the DOM should have been skipped.
   EXPECT_EQ(5, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
 }
 
@@ -527,7 +529,8 @@ TEST_F(AccessibilityTest, FirstPositionInDivContainerWithWhiteSpace) {
   // Any white space in the DOM should have been skipped.
   EXPECT_EQ(5, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_TRUE(ax_position_from_dom.IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_position_from_dom.ContainerObject());
@@ -549,7 +552,8 @@ TEST_F(AccessibilityTest, LastPositionInDivContainerWithWhiteSpace) {
   EXPECT_EQ(div, position.AnchorNode());
   EXPECT_TRUE(position.GetPosition().IsAfterChildren());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -571,7 +575,8 @@ TEST_F(AccessibilityTest, FirstPositionInTextContainerWithWhiteSpace) {
   // Any white space in the DOM should have been skipped.
   EXPECT_EQ(5, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -592,7 +597,8 @@ TEST_F(AccessibilityTest, LastPositionInTextContainerWithWhiteSpace) {
   EXPECT_EQ(text, position.AnchorNode());
   EXPECT_EQ(10, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(nullptr, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -611,7 +617,8 @@ TEST_F(AccessibilityTest, AXPositionFromDOMPositionWithWhiteSpace) {
   ASSERT_EQ(ax::mojom::Role::kStaticText, ax_static_text->RoleValue());
 
   const Position position_at_start(*text, 0);
-  const auto ax_position_at_start = AXPosition::FromPosition(position_at_start);
+  const auto ax_position_at_start =
+      AXPosition::FromPosition(position_at_start, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_start.IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_position_at_start.ContainerObject());
   EXPECT_EQ(0, ax_position_at_start.TextOffset());
@@ -619,14 +626,15 @@ TEST_F(AccessibilityTest, AXPositionFromDOMPositionWithWhiteSpace) {
 
   const Position position_after_white_space(*text, 5);
   const auto ax_position_after_white_space =
-      AXPosition::FromPosition(position_after_white_space);
+      AXPosition::FromPosition(position_after_white_space, GetAXObjectCache());
   EXPECT_TRUE(ax_position_after_white_space.IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_position_after_white_space.ContainerObject());
   EXPECT_EQ(0, ax_position_after_white_space.TextOffset());
   EXPECT_EQ(nullptr, ax_position_after_white_space.ChildAfterTreePosition());
 
   const Position position_at_end(*text, 15);
-  const auto ax_position_at_end = AXPosition::FromPosition(position_at_end);
+  const auto ax_position_at_end =
+      AXPosition::FromPosition(position_at_end, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_end.IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_position_at_end.ContainerObject());
   EXPECT_EQ(5, ax_position_at_end.TextOffset());
@@ -634,7 +642,7 @@ TEST_F(AccessibilityTest, AXPositionFromDOMPositionWithWhiteSpace) {
 
   const Position position_before_white_space(*text, 10);
   const auto ax_position_before_white_space =
-      AXPosition::FromPosition(position_before_white_space);
+      AXPosition::FromPosition(position_before_white_space, GetAXObjectCache());
   EXPECT_TRUE(ax_position_before_white_space.IsTextPosition());
   EXPECT_EQ(ax_static_text, ax_position_before_white_space.ContainerObject());
   EXPECT_EQ(5, ax_position_before_white_space.TextOffset());
@@ -652,7 +660,8 @@ TEST_F(AccessibilityTest, AXPositionsWithPreservedLeadingWhitespace) {
   EXPECT_EQ(6U, text->textContent().length());
 
   const Position position_at_start(*text, 0);
-  const auto ax_position_at_start = AXPosition::FromPosition(position_at_start);
+  const auto ax_position_at_start =
+      AXPosition::FromPosition(position_at_start, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_start.IsTextPosition());
   EXPECT_EQ(0, ax_position_at_start.TextOffset());
 
@@ -660,14 +669,15 @@ TEST_F(AccessibilityTest, AXPositionsWithPreservedLeadingWhitespace) {
   // would be 4 instead of 3.
   const Position position_after_white_space(*text, 3);
   const auto ax_position_after_white_space =
-      AXPosition::FromPosition(position_after_white_space);
+      AXPosition::FromPosition(position_after_white_space, GetAXObjectCache());
   EXPECT_TRUE(ax_position_after_white_space.IsTextPosition());
   EXPECT_EQ(3, ax_position_after_white_space.TextOffset());
 
   // If we didn't adjust for the break opportunity, the accessible text offset
   // would be 7 instead of 6.
   const Position position_at_end(*text, 6);
-  const auto ax_position_at_end = AXPosition::FromPosition(position_at_end);
+  const auto ax_position_at_end =
+      AXPosition::FromPosition(position_at_end, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_end.IsTextPosition());
   EXPECT_EQ(6, ax_position_at_end.TextOffset());
 }
@@ -690,22 +700,23 @@ TEST_F(AccessibilityTest, AXPositionsWithPreservedLeadingWhitespaceAndBreak) {
 
   const Position position_at_start_1(*text, 0);
   const auto ax_position_at_start_1 =
-      AXPosition::FromPosition(position_at_start_1);
+      AXPosition::FromPosition(position_at_start_1, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_start_1.IsTextPosition());
   EXPECT_EQ(0, ax_position_at_start_1.TextOffset());
 
   // If we didn't adjust for the break opportunity, the accessible text offset
   // would be 2 instead of 1.
   const Position position_after_white_space_1(*text, 1);
-  const auto ax_position_after_white_space_1 =
-      AXPosition::FromPosition(position_after_white_space_1);
+  const auto ax_position_after_white_space_1 = AXPosition::FromPosition(
+      position_after_white_space_1, GetAXObjectCache());
   EXPECT_TRUE(ax_position_after_white_space_1.IsTextPosition());
   EXPECT_EQ(1, ax_position_after_white_space_1.TextOffset());
 
   // If we didn't adjust for the break opportunity, the accessible text offset
   // would be 5 instead of 4.
   const Position position_at_end_1(*text, 4);
-  const auto ax_position_at_end_1 = AXPosition::FromPosition(position_at_end_1);
+  const auto ax_position_at_end_1 =
+      AXPosition::FromPosition(position_at_end_1, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_end_1.IsTextPosition());
   EXPECT_EQ(4, ax_position_at_end_1.TextOffset());
 
@@ -720,22 +731,23 @@ TEST_F(AccessibilityTest, AXPositionsWithPreservedLeadingWhitespaceAndBreak) {
 
   const Position position_at_start_2(*text, 0);
   const auto ax_position_at_start_2 =
-      AXPosition::FromPosition(position_at_start_2);
+      AXPosition::FromPosition(position_at_start_2, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_start_2.IsTextPosition());
   EXPECT_EQ(0, ax_position_at_start_2.TextOffset());
 
   // If we didn't adjust for the break opportunity, the accessible text offset
   // would be 4 instead of 3.
   const Position position_after_white_space_2(*text, 3);
-  const auto ax_position_after_white_space_2 =
-      AXPosition::FromPosition(position_after_white_space_2);
+  const auto ax_position_after_white_space_2 = AXPosition::FromPosition(
+      position_after_white_space_2, GetAXObjectCache());
   EXPECT_TRUE(ax_position_after_white_space_2.IsTextPosition());
   EXPECT_EQ(3, ax_position_after_white_space_2.TextOffset());
 
   // If we didn't adjust for the break opportunity, the accessible text offset
   // would be 7 instead of 6.
   const Position position_at_end_2(*text, 6);
-  const auto ax_position_at_end_2 = AXPosition::FromPosition(position_at_end_2);
+  const auto ax_position_at_end_2 =
+      AXPosition::FromPosition(position_at_end_2, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_end_2.IsTextPosition());
   EXPECT_EQ(6, ax_position_at_end_2.TextOffset());
 }
@@ -759,14 +771,16 @@ TEST_F(AccessibilityTest, AXPositionsInSVGTextWithXCoordinates) {
   EXPECT_EQ("Hel", text->textContent().Utf8());
 
   const Position position_at_h(*text, 0);
-  const auto ax_position_at_h = AXPosition::FromPosition(position_at_h);
+  const auto ax_position_at_h =
+      AXPosition::FromPosition(position_at_h, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_h.IsTextPosition());
   EXPECT_EQ(0, ax_position_at_h.TextOffset());
 
   // If we didn't adjust for isolate characters, the accessible text offset
   // would be 7 instead of 3.
   const Position position_after_l(*text, 3);
-  const auto ax_position_after_l = AXPosition::FromPosition(position_after_l);
+  const auto ax_position_after_l =
+      AXPosition::FromPosition(position_after_l, GetAXObjectCache());
   EXPECT_TRUE(ax_position_after_l.IsTextPosition());
   EXPECT_EQ(3, ax_position_after_l.TextOffset());
 
@@ -780,7 +794,8 @@ TEST_F(AccessibilityTest, AXPositionsInSVGTextWithXCoordinates) {
   // If we didn't adjust for isolate characters, the accessible text offset
   // would be 3 instead of 1.
   const Position position_at_o(*text, 1);
-  const auto ax_position_at_o = AXPosition::FromPosition(position_at_o);
+  const auto ax_position_at_o =
+      AXPosition::FromPosition(position_at_o, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_o.IsTextPosition());
   EXPECT_EQ(1, ax_position_at_o.TextOffset());
 
@@ -794,7 +809,8 @@ TEST_F(AccessibilityTest, AXPositionsInSVGTextWithXCoordinates) {
   // If we didn't adjust for isolate characters, the accessible text offset
   // would be 12 instead of 4.
   const Position position_at_d(*text, 4);
-  const auto ax_position_at_d = AXPosition::FromPosition(position_at_d);
+  const auto ax_position_at_d =
+      AXPosition::FromPosition(position_at_d, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_d.IsTextPosition());
   EXPECT_EQ(4, ax_position_at_d.TextOffset());
 
@@ -806,7 +822,8 @@ TEST_F(AccessibilityTest, AXPositionsInSVGTextWithXCoordinates) {
   EXPECT_EQ("!", text->textContent().Utf8());
 
   const Position position_at_end(*text, 1);
-  const auto ax_position_at_end = AXPosition::FromPosition(position_at_end);
+  const auto ax_position_at_end =
+      AXPosition::FromPosition(position_at_end, GetAXObjectCache());
   EXPECT_TRUE(ax_position_at_end.IsTextPosition());
   EXPECT_EQ(1, ax_position_at_end.TextOffset());
 }
@@ -834,7 +851,8 @@ TEST_F(AccessibilityTest, PositionInTextWithAffinity) {
   EXPECT_EQ(TextAffinity::kUpstream, position.Affinity());
 
   // Converting from DOM to AX positions should maintain affinity.
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(TextAffinity::kUpstream, ax_position.Affinity());
 }
 
@@ -876,9 +894,9 @@ TEST_F(AccessibilityTest, PositionInHTMLLabel) {
   ASSERT_EQ(ax::mojom::Role::kParagraph, ax_paragraph->RoleValue());
 
   const auto position_before_label = Position::BeforeNode(*label);
-  const auto ax_position_before_label =
-      AXPosition::FromPosition(position_before_label, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveLeft);
+  const auto ax_position_before_label = AXPosition::FromPosition(
+      position_before_label, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveLeft);
   EXPECT_FALSE(ax_position_before_label.IsTextPosition());
   EXPECT_EQ(ax_body, ax_position_before_label.ContainerObject());
   EXPECT_EQ(0, ax_position_before_label.ChildIndex());
@@ -889,16 +907,16 @@ TEST_F(AccessibilityTest, PositionInHTMLLabel) {
   const auto position_after_label = Position::AfterNode(*label);
   for (const auto& position :
        {position_before_text, position_in_text, position_after_label}) {
-    const auto ax_position =
-        AXPosition::FromPosition(position, TextAffinity::kDownstream,
-                                 AXPositionAdjustmentBehavior::kMoveLeft);
+    const auto ax_position = AXPosition::FromPosition(
+        position, GetAXObjectCache(), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveLeft);
     EXPECT_TRUE(ax_position.IsTextPosition());
     EXPECT_EQ(ax_label_text, ax_position.ContainerObject());
     EXPECT_EQ(nullptr, ax_position.ChildAfterTreePosition());
   }
   const auto position_before_paragraph = Position::BeforeNode(*paragraph);
   const auto ax_position_before_paragraph = AXPosition::FromPosition(
-      position_before_paragraph, TextAffinity::kDownstream,
+      position_before_paragraph, GetAXObjectCache(), TextAffinity::kDownstream,
       AXPositionAdjustmentBehavior::kMoveLeft);
   EXPECT_FALSE(ax_position_before_paragraph.IsTextPosition());
   EXPECT_EQ(ax_body, ax_position_before_paragraph.ContainerObject());
@@ -954,9 +972,9 @@ TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
   // The label element produces an ignored, but included node in the
   // accessibility tree. The position is set right before it.
   const auto position_before = Position::BeforeNode(*label);
-  const auto ax_position_before =
-      AXPosition::FromPosition(position_before, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveLeft);
+  const auto ax_position_before = AXPosition::FromPosition(
+      position_before, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveLeft);
   EXPECT_FALSE(ax_position_before.IsTextPosition());
   EXPECT_EQ(ax_body, ax_position_before.ContainerObject());
   EXPECT_EQ(0, ax_position_before.ChildIndex());
@@ -983,9 +1001,9 @@ TEST_F(AccessibilityTest, PositionInHTMLLabelIgnored) {
 
   for (const auto& position :
        {position_before_text, position_in_text, position_after}) {
-    const auto ax_position =
-        AXPosition::FromPosition(position, TextAffinity::kDownstream,
-                                 AXPositionAdjustmentBehavior::kMoveLeft);
+    const auto ax_position = AXPosition::FromPosition(
+        position, GetAXObjectCache(), TextAffinity::kDownstream,
+        AXPositionAdjustmentBehavior::kMoveLeft);
     EXPECT_TRUE(ax_position.IsTextPosition());
     EXPECT_EQ(ax_label_text, ax_position.ContainerObject());
     EXPECT_EQ(nullptr, ax_position.ChildAfterTreePosition());
@@ -1062,7 +1080,7 @@ TEST_F(AccessibilityTest, PositionInIgnoredObject) {
             position_before_visible.GetPosition().ComputeNodeAfterPosition());
 
   const auto ax_position_before_visible_from_dom =
-      AXPosition::FromPosition(position_before_visible);
+      AXPosition::FromPosition(position_before_visible, GetAXObjectCache());
   EXPECT_EQ(ax_position_before_visible, ax_position_before_visible_from_dom);
   EXPECT_EQ(ax_visible,
             ax_position_before_visible_from_dom.ChildAfterTreePosition());
@@ -1079,7 +1097,7 @@ TEST_F(AccessibilityTest, PositionInIgnoredObject) {
             position_first.GetPosition().ComputeNodeAfterPosition());
 
   const auto ax_position_first_from_dom =
-      AXPosition::FromPosition(position_first);
+      AXPosition::FromPosition(position_first, GetAXObjectCache());
   EXPECT_EQ(ax_position_first, ax_position_first_from_dom);
 
   EXPECT_EQ(ax_html, ax_position_first_from_dom.ChildAfterTreePosition());
@@ -1088,7 +1106,7 @@ TEST_F(AccessibilityTest, PositionInIgnoredObject) {
   // before |hidden| because the node is ignored but included in the tree.
   const auto position_before = Position::BeforeNode(*hidden);
   const auto ax_position_before_from_dom =
-      AXPosition::FromPosition(position_before);
+      AXPosition::FromPosition(position_before, GetAXObjectCache());
   EXPECT_EQ(ax_body, ax_position_before_from_dom.ContainerObject());
   EXPECT_EQ(0, ax_position_before_from_dom.ChildIndex());
   EXPECT_EQ(ax_hidden, ax_position_before_from_dom.ChildAfterTreePosition());
@@ -1097,7 +1115,7 @@ TEST_F(AccessibilityTest, PositionInIgnoredObject) {
   // before |visible|.
   const auto position_after = Position::AfterNode(*hidden);
   const auto ax_position_after_from_dom =
-      AXPosition::FromPosition(position_after);
+      AXPosition::FromPosition(position_after, GetAXObjectCache());
   EXPECT_EQ(ax_body, ax_position_after_from_dom.ContainerObject());
   EXPECT_EQ(1, ax_position_after_from_dom.ChildIndex());
   EXPECT_EQ(ax_visible, ax_position_after_from_dom.ChildAfterTreePosition());
@@ -1141,7 +1159,8 @@ TEST_F(AccessibilityTest, BeforePositionInARIAHiddenShouldNotSkipARIAHidden) {
   EXPECT_EQ(3, position.GetPosition().OffsetInContainerNode());
   EXPECT_EQ(hidden, position.GetPosition().ComputeNodeAfterPosition());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(ax_hidden, ax_position_from_dom.ChildAfterTreePosition());
 }
@@ -1174,7 +1193,8 @@ TEST_F(AccessibilityTest,
   EXPECT_EQ(5, position.GetPosition().OffsetInContainerNode());
   EXPECT_EQ(after, position.GetPosition().ComputeNodeAfterPosition());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(ax_after, ax_position_from_dom.ChildAfterTreePosition());
 
@@ -1186,7 +1206,7 @@ TEST_F(AccessibilityTest,
             position_previous.GetPosition().ComputeNodeAfterPosition());
 
   const auto ax_position_previous_from_dom =
-      AXPosition::FromPosition(position_previous);
+      AXPosition::FromPosition(position_previous, GetAXObjectCache());
   EXPECT_EQ(ax_position_previous, ax_position_previous_from_dom);
   EXPECT_EQ(nullptr, ax_position_previous_from_dom.ChildAfterTreePosition());
 }
@@ -1222,9 +1242,9 @@ TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
   const auto position_first = Position::FirstPositionInNode(*hidden);
   // Since "ax_hidden" has a static text child, the AXPosition should move to an
   // equivalent position on the static text child.
-  auto ax_position_left =
-      AXPosition::FromPosition(position_first, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveLeft);
+  auto ax_position_left = AXPosition::FromPosition(
+      position_first, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveLeft);
   EXPECT_TRUE(ax_position_left.IsValid());
   EXPECT_TRUE(ax_position_left.IsTextPosition());
   EXPECT_EQ(ax_hidden->FirstChildIncludingIgnored(),
@@ -1233,9 +1253,9 @@ TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
 
   // In this case, the adjustment behavior should not affect the outcome because
   // there is an equivalent AXPosition in the static text child.
-  auto ax_position_right =
-      AXPosition::FromPosition(position_first, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveRight);
+  auto ax_position_right = AXPosition::FromPosition(
+      position_first, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveRight);
   EXPECT_TRUE(ax_position_right.IsValid());
   EXPECT_TRUE(ax_position_right.IsTextPosition());
   EXPECT_EQ(ax_hidden->FirstChildIncludingIgnored(),
@@ -1243,9 +1263,9 @@ TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
   EXPECT_EQ(0, ax_position_right.TextOffset());
 
   const auto position_before = Position::BeforeNode(*hidden);
-  ax_position_left =
-      AXPosition::FromPosition(position_before, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveLeft);
+  ax_position_left = AXPosition::FromPosition(
+      position_before, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveLeft);
   EXPECT_TRUE(ax_position_left.IsValid());
   EXPECT_FALSE(ax_position_left.IsTextPosition());
   EXPECT_EQ(ax_container, ax_position_left.ContainerObject());
@@ -1255,9 +1275,9 @@ TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
   // Since an AXPosition before "ax_hidden" is valid, i.e. it does not need to
   // be adjusted, then adjustment behavior should not make a difference in the
   // outcome.
-  ax_position_right =
-      AXPosition::FromPosition(position_before, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveRight);
+  ax_position_right = AXPosition::FromPosition(
+      position_before, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveRight);
   EXPECT_TRUE(ax_position_right.IsValid());
   EXPECT_FALSE(ax_position_right.IsTextPosition());
   EXPECT_EQ(ax_container, ax_position_right.ContainerObject());
@@ -1267,18 +1287,18 @@ TEST_F(AccessibilityTest, FromPositionInARIAHidden) {
   // The DOM node right after "hidden" is accessibility ignored, so we should
   // see an adjustment in the relevant direction.
   const auto position_after = Position::AfterNode(*hidden);
-  ax_position_left =
-      AXPosition::FromPosition(position_after, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveLeft);
+  ax_position_left = AXPosition::FromPosition(
+      position_after, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveLeft);
   EXPECT_TRUE(ax_position_left.IsValid());
   EXPECT_TRUE(ax_position_left.IsTextPosition());
   EXPECT_EQ(ax_hidden->FirstChildIncludingIgnored(),
             ax_position_left.ContainerObject());
   EXPECT_EQ(12, ax_position_left.TextOffset());
 
-  ax_position_right =
-      AXPosition::FromPosition(position_after, TextAffinity::kDownstream,
-                               AXPositionAdjustmentBehavior::kMoveRight);
+  ax_position_right = AXPosition::FromPosition(
+      position_after, GetAXObjectCache(), TextAffinity::kDownstream,
+      AXPositionAdjustmentBehavior::kMoveRight);
   EXPECT_TRUE(ax_position_right.IsValid());
   EXPECT_FALSE(ax_position_right.IsTextPosition());
   EXPECT_EQ(ax_container, ax_position_right.ContainerObject());
@@ -1336,7 +1356,8 @@ TEST_F(AccessibilityTest, PositionInCanvas) {
   EXPECT_TRUE(position_1.GetPosition().IsOffsetInAnchor());
   EXPECT_EQ(0, position_1.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom_1 = AXPosition::FromPosition(position_1);
+  const auto ax_position_from_dom_1 =
+      AXPosition::FromPosition(position_1, GetAXObjectCache());
   EXPECT_EQ(ax_position_1, ax_position_from_dom_1);
 
   const auto ax_position_2 = AXPosition::CreatePositionBeforeObject(*ax_text);
@@ -1348,7 +1369,8 @@ TEST_F(AccessibilityTest, PositionInCanvas) {
   EXPECT_EQ(text, position_2.AnchorNode());
   EXPECT_EQ(0, position_2.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom_2 = AXPosition::FromPosition(position_2);
+  const auto ax_position_from_dom_2 =
+      AXPosition::FromPosition(position_2, GetAXObjectCache());
   EXPECT_EQ(ax_position_2, ax_position_from_dom_2);
 
   const auto ax_position_3 =
@@ -1363,7 +1385,8 @@ TEST_F(AccessibilityTest, PositionInCanvas) {
   // There is a line break between the start of the canvas and the button.
   EXPECT_EQ(2, position_3.GetPosition().ComputeOffsetInContainerNode());
 
-  const auto ax_position_from_dom_3 = AXPosition::FromPosition(position_3);
+  const auto ax_position_from_dom_3 =
+      AXPosition::FromPosition(position_3, GetAXObjectCache());
   EXPECT_EQ(ax_position_3, ax_position_from_dom_3);
 
   const auto ax_position_4 = AXPosition::CreatePositionBeforeObject(*ax_button);
@@ -1378,7 +1401,8 @@ TEST_F(AccessibilityTest, PositionInCanvas) {
   EXPECT_EQ(1, position_4.GetPosition().ComputeOffsetInContainerNode());
   EXPECT_EQ(button, position_4.GetPosition().ComputeNodeAfterPosition());
 
-  const auto ax_position_from_dom_4 = AXPosition::FromPosition(position_4);
+  const auto ax_position_from_dom_4 =
+      AXPosition::FromPosition(position_4, GetAXObjectCache());
   EXPECT_EQ(ax_position_4, ax_position_from_dom_4);
 }
 
@@ -1427,7 +1451,8 @@ TEST_F(AccessibilityTest, PositionBeforeListMarker) {
   EXPECT_EQ(1, position_1.GetPosition().OffsetInContainerNode());
   EXPECT_EQ(item, position_1.GetPosition().ComputeNodeAfterPosition());
 
-  const auto ax_position_from_dom_1 = AXPosition::FromPosition(position_1);
+  const auto ax_position_from_dom_1 =
+      AXPosition::FromPosition(position_1, GetAXObjectCache());
   EXPECT_EQ(
       ax_position_1.AsValidDOMPosition(AXPositionAdjustmentBehavior::kMoveLeft),
       ax_position_from_dom_1);
@@ -1446,7 +1471,8 @@ TEST_F(AccessibilityTest, PositionBeforeListMarker) {
   EXPECT_EQ(1, position_2.GetPosition().OffsetInContainerNode());
   EXPECT_EQ(item, position_2.GetPosition().ComputeNodeAfterPosition());
 
-  const auto ax_position_from_dom_2 = AXPosition::FromPosition(position_2);
+  const auto ax_position_from_dom_2 =
+      AXPosition::FromPosition(position_2, GetAXObjectCache());
   EXPECT_EQ(
       ax_position_2.AsValidDOMPosition(AXPositionAdjustmentBehavior::kMoveLeft),
       ax_position_from_dom_2);
@@ -1499,7 +1525,8 @@ TEST_F(AccessibilityTest, PositionAfterListMarker) {
   EXPECT_TRUE(position.GetPosition().IsOffsetInAnchor());
   EXPECT_EQ(0, position.GetPosition().OffsetInContainerNode());
 
-  const auto ax_position_from_dom = AXPosition::FromPosition(position);
+  const auto ax_position_from_dom =
+      AXPosition::FromPosition(position, GetAXObjectCache());
   EXPECT_EQ(ax_position, ax_position_from_dom);
   EXPECT_EQ(ax_text, ax_position_from_dom.ContainerObject());
   EXPECT_TRUE(ax_position_from_dom.IsTextPosition());
@@ -1725,7 +1752,6 @@ TEST_F(AccessibilityTest, DISABLED_PositionInTableWithCSSContent) {
 //
 // Objects deriving from |AXMockObject|, e.g. table columns, are in the
 // accessibility tree but are neither in the DOM or layout trees.
-// Same for virtual nodes created using the Accessibility Object Model (AOM).
 //
 
 TEST_F(AccessibilityTest, PositionBeforeAndAfterTable) {
@@ -1749,7 +1775,7 @@ TEST_F(AccessibilityTest, PositionBeforeAndAfterTable) {
   EXPECT_EQ(GetElementById("table"), table);
 
   const auto ax_position_before_from_dom =
-      AXPosition::FromPosition(position_before);
+      AXPosition::FromPosition(position_before, GetAXObjectCache());
   EXPECT_EQ(ax_position_before, ax_position_before_from_dom);
 
   const auto ax_position_after =
@@ -1762,7 +1788,7 @@ TEST_F(AccessibilityTest, PositionBeforeAndAfterTable) {
   EXPECT_EQ(after, node_after);
 
   const auto ax_position_after_from_dom =
-      AXPosition::FromPosition(position_after);
+      AXPosition::FromPosition(position_after, GetAXObjectCache());
   EXPECT_EQ(ax_position_after, ax_position_after_from_dom);
   EXPECT_EQ(ax_after, ax_position_after_from_dom.ChildAfterTreePosition());
 }
@@ -1801,7 +1827,7 @@ TEST_F(AccessibilityTest, PositionAtStartAndEndOfTable) {
   EXPECT_EQ(thead, position_at_start.GetPosition().ComputeNodeAfterPosition());
 
   const auto ax_position_at_start_from_dom =
-      AXPosition::FromPosition(position_at_start);
+      AXPosition::FromPosition(position_at_start, GetAXObjectCache());
   EXPECT_EQ(ax_position_at_start, ax_position_at_start_from_dom);
   EXPECT_EQ(ax_thead, ax_position_at_start_from_dom.ChildAfterTreePosition());
 
@@ -1813,7 +1839,7 @@ TEST_F(AccessibilityTest, PositionAtStartAndEndOfTable) {
   EXPECT_EQ(4, position_at_end.GetPosition().OffsetInContainerNode());
 
   const auto ax_position_at_end_from_dom =
-      AXPosition::FromPosition(position_at_end);
+      AXPosition::FromPosition(position_at_end, GetAXObjectCache());
   EXPECT_EQ(ax_position_at_end, ax_position_at_end_from_dom);
   EXPECT_EQ(nullptr, ax_position_at_end_from_dom.ChildAfterTreePosition());
 }
@@ -1844,7 +1870,7 @@ TEST_F(AccessibilityTest, PositionInTableHeader) {
             position_before.GetPosition().ComputeNodeAfterPosition());
 
   const auto ax_position_before_from_dom =
-      AXPosition::FromPosition(position_before);
+      AXPosition::FromPosition(position_before, GetAXObjectCache());
   EXPECT_EQ(ax_position_before, ax_position_before_from_dom);
   EXPECT_EQ(ax_first_header_cell,
             ax_position_before_from_dom.ChildAfterTreePosition());
@@ -1857,7 +1883,7 @@ TEST_F(AccessibilityTest, PositionInTableHeader) {
   EXPECT_EQ(6, position_after.GetPosition().OffsetInContainerNode());
 
   const auto ax_position_after_from_dom =
-      AXPosition::FromPosition(position_after);
+      AXPosition::FromPosition(position_after, GetAXObjectCache());
   EXPECT_EQ(ax_position_after, ax_position_after_from_dom);
   EXPECT_EQ(nullptr, ax_position_after_from_dom.ChildAfterTreePosition());
 }
@@ -1888,7 +1914,7 @@ TEST_F(AccessibilityTest, PositionInTableRow) {
             position_before.GetPosition().ComputeNodeAfterPosition());
 
   const auto ax_position_before_from_dom =
-      AXPosition::FromPosition(position_before);
+      AXPosition::FromPosition(position_before, GetAXObjectCache());
   EXPECT_EQ(ax_position_before, ax_position_before_from_dom);
   EXPECT_EQ(ax_first_cell,
             ax_position_before_from_dom.ChildAfterTreePosition());
@@ -1902,54 +1928,9 @@ TEST_F(AccessibilityTest, PositionInTableRow) {
   EXPECT_EQ(6, position_after.GetPosition().OffsetInContainerNode());
 
   const auto ax_position_after_from_dom =
-      AXPosition::FromPosition(position_after);
+      AXPosition::FromPosition(position_after, GetAXObjectCache());
   EXPECT_EQ(ax_position_after, ax_position_after_from_dom);
   EXPECT_EQ(nullptr, ax_position_after_from_dom.ChildAfterTreePosition());
-}
-
-TEST_F(AccessibilityTest, DISABLED_PositionInVirtualAOMNode) {
-  ScopedAccessibilityObjectModelForTest(true);
-  SetBodyInnerHTML(kAOM);
-
-  const Node* parent = GetElementById("aomParent");
-  ASSERT_NE(nullptr, parent);
-  const Node* after = GetElementById("after");
-  ASSERT_NE(nullptr, after);
-
-  const AXObject* ax_parent = GetAXObjectByElementId("aomParent");
-  ASSERT_NE(nullptr, ax_parent);
-  ASSERT_EQ(ax::mojom::Role::kGenericContainer, ax_parent->RoleValue());
-  ASSERT_EQ(1, ax_parent->ChildCountIncludingIgnored());
-  const AXObject* ax_button = ax_parent->FirstChildIncludingIgnored();
-  ASSERT_NE(nullptr, ax_button);
-  ASSERT_EQ(ax::mojom::Role::kButton, ax_button->RoleValue());
-  const AXObject* ax_after = GetAXObjectByElementId("after");
-  ASSERT_NE(nullptr, ax_after);
-  ASSERT_EQ(ax::mojom::Role::kParagraph, ax_after->RoleValue());
-
-  const auto ax_position_before =
-      AXPosition::CreatePositionBeforeObject(*ax_button);
-  const auto position_before = ax_position_before.ToPositionWithAffinity();
-  EXPECT_EQ(parent, position_before.AnchorNode());
-  EXPECT_TRUE(position_before.GetPosition().IsBeforeChildren());
-  EXPECT_EQ(nullptr, position_before.GetPosition().ComputeNodeAfterPosition());
-
-  const auto ax_position_before_from_dom =
-      AXPosition::FromPosition(position_before);
-  EXPECT_EQ(ax_position_before, ax_position_before_from_dom);
-  EXPECT_EQ(ax_button, ax_position_before_from_dom.ChildAfterTreePosition());
-
-  const auto ax_position_after =
-      AXPosition::CreatePositionAfterObject(*ax_button);
-  const auto position_after = ax_position_after.ToPositionWithAffinity();
-  EXPECT_EQ(after, position_after.AnchorNode());
-  EXPECT_TRUE(position_after.GetPosition().IsBeforeChildren());
-  EXPECT_EQ(nullptr, position_after.GetPosition().ComputeNodeAfterPosition());
-
-  const auto ax_position_after_from_dom =
-      AXPosition::FromPosition(position_after);
-  EXPECT_EQ(ax_position_after, ax_position_after_from_dom);
-  EXPECT_EQ(ax_after, ax_position_after_from_dom.ChildAfterTreePosition());
 }
 
 TEST_F(AccessibilityTest, PositionInInvalidMapLayout) {

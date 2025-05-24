@@ -12,16 +12,15 @@ namespace {
 
 DisplayGeometry ToDisplayGeometry(const display::Display& display,
                                   DisplayId primary_display_id) {
-  return DisplayGeometry{
-      .id = display.id(),
-      .x = display.bounds().x(),
-      .y = display.bounds().y(),
-      .width = static_cast<uint32_t>(display.bounds().width()),
-      .height = static_cast<uint32_t>(display.bounds().height()),
-      .dpi = static_cast<uint32_t>(
+  return DisplayGeometry(
+      display.id(), display.bounds().x(), display.bounds().y(),
+      static_cast<uint32_t>(display.bounds().width()),
+      static_cast<uint32_t>(display.bounds().height()),
+      static_cast<uint32_t>(
           AshProxy::ScaleFactorToDpi(display.device_scale_factor())),
-      .is_default = (display.id() == primary_display_id),
-  };
+      /* bpp */ 0,
+      /* is_default */ (display.id() == primary_display_id),
+      /* display_name */ display.label());
 }
 
 class DesktopDisplayInfoLoaderChromeOs : public DesktopDisplayInfoLoader {

@@ -293,14 +293,14 @@ jboolean FaviconHelper::GetForeignFaviconImageForURL(
   }
   history_ui_favicon_request_handler->GetRawFaviconForPageURL(
       page_url, static_cast<int>(j_desired_size_in_pixel),
+      /*fallback_to_host=*/true,
       base::BindOnce(&FaviconHelper::OnFaviconBitmapResultAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
-                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback)),
-      favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
+                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback)));
   return true;
 }
 
-FaviconHelper::~FaviconHelper() {}
+FaviconHelper::~FaviconHelper() = default;
 
 // Return the index of |sizes| whose area is largest but not exceeds int type
 // range. If all |sizes|'s area exceed int type range, return the first one.
@@ -334,9 +334,7 @@ void FaviconHelper::OnFaviconBitmapResultAvailable(
   // Convert favicon_image_result to java objects.
   ScopedJavaLocalRef<jobject> j_favicon_bitmap;
   if (result.is_valid()) {
-    SkBitmap favicon_bitmap;
-    gfx::PNGCodec::Decode(result.bitmap_data->front(),
-                          result.bitmap_data->size(), &favicon_bitmap);
+    SkBitmap favicon_bitmap = gfx::PNGCodec::Decode(*result.bitmap_data);
     if (!favicon_bitmap.isNull()) {
       j_favicon_bitmap = gfx::ConvertToJavaBitmap(favicon_bitmap);
     }
@@ -354,15 +352,12 @@ void FaviconHelper::OnComposedFaviconBitmapResultsAvailable(
   JNIEnv* env = AttachCurrentThread();
   std::vector<SkBitmap> result_bitmaps;
   std::vector<GURL> icon_url_vector;
-  for (size_t i = 0; i < results.size(); i++) {
-    favicon_base::FaviconRawBitmapResult result = results[i];
+  for (auto result : results) {
     if (!result.is_valid()) {
       continue;
     }
-    SkBitmap favicon_bitmap;
     icon_url_vector.push_back(result.icon_url);
-    gfx::PNGCodec::Decode(result.bitmap_data->front(),
-                          result.bitmap_data->size(), &favicon_bitmap);
+    SkBitmap favicon_bitmap = gfx::PNGCodec::Decode(*result.bitmap_data);
     result_bitmaps.push_back(std::move(favicon_bitmap));
   }
   ScopedJavaLocalRef<jobject> j_favicon_bitmap;

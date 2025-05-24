@@ -1,0 +1,15 @@
+<!doctype html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./2d-context-lost-and-reused-in-same-task-impl.js"></script>
+<canvas id="canvas"></canvas>
+<script>
+/**
+ * Tests losing the GPU context and keep using an HTMLCanvasElement in the same
+ * task, before the canvas realizes that the context is lost.
+ */
+promise_test(async () => {
+  const canvas = document.getElementById('canvas');
+  await TestLosingAndReusingCanvasInSameTask(canvas);
+}, 'HTMLCanvasElement can be used in the same task the GPU process died.');
+</script>

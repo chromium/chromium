@@ -43,6 +43,10 @@ struct VIEWS_EXPORT MenuConfig {
   bool ShouldShowAcceleratorText(const MenuItemView* item_view,
                                  std::u16string* text) const;
 
+  // Returns true if bubble border should be used for the menu controlled by
+  // `controller`.
+  bool ShouldUseBubbleBorderForMenu(const MenuController* controller) const;
+
   // Font lists used by menus.
   gfx::FontList font_list;
   gfx::FontList context_menu_font_list;
@@ -169,19 +173,6 @@ struct VIEWS_EXPORT MenuConfig {
   // appears.
   int show_delay = 400;
 
-  // Radius of the rounded corners of the menu border. Must be >= 0.
-  int corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
-      ShapeContextTokens::kMenuRadius);
-
-  // Radius of "auxiliary" rounded corners - comboboxes and context menus.
-  // Must be >= 0.
-  int auxiliary_corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
-      ShapeContextTokens::kMenuAuxRadius);
-
-  // Radius of the rounded corners of the touchable menu border
-  int touchable_corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
-      ShapeContextTokens::kMenuTouchRadius);
-
   // Radius of selection background on menu items.
   int item_corner_radius = 0;
 
@@ -221,8 +212,22 @@ struct VIEWS_EXPORT MenuConfig {
   // Margins for footnotes (HIGHLIGHTED item at the end of a menu).
   int footnote_vertical_margin = 11;
 
+ protected:
   // Should use a bubble border for menus.
   bool use_bubble_border = false;
+
+  // Radius of the rounded corners of the menu border. Must be >= 0.
+  int corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kMenuRadius);
+
+  // Radius of "auxiliary" rounded corners - comboboxes and context menus.
+  // Must be >= 0.
+  int auxiliary_corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kMenuAuxRadius);
+
+  // Radius of the rounded corners of the touchable menu border
+  int touchable_corner_radius = LayoutProvider::Get()->GetCornerRadiusMetric(
+      ShapeContextTokens::kMenuTouchRadius);
 
  private:
   // Set configuration as appropriate for the current platform. Called after

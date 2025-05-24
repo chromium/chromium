@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_metrics_recorder.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
@@ -24,7 +25,7 @@ class EditorConsentStore {
   EditorConsentStore& operator=(const EditorConsentStore&) = delete;
   ~EditorConsentStore();
 
-  ConsentStatus GetConsentStatus() const;
+  chromeos::editor_menu::EditorConsentStatus GetConsentStatus() const;
 
   // Updates the consent status based on user consent action.
   void ProcessConsentAction(ConsentAction consent_action);
@@ -34,7 +35,8 @@ class EditorConsentStore {
   void SetPrefService(PrefService* pref_service);
 
  private:
-  void SetConsentStatus(ConsentStatus consent_status);
+  void SetConsentStatus(
+      chromeos::editor_menu::EditorConsentStatus consent_status);
 
   // Updates the consent status based on the change in the user prefs.
   void OnUserPrefChanged();

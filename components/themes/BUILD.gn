@@ -1,0 +1,69 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("themes") {
+  public = [
+    "ntp_background_data.h",
+    "ntp_background_service.h",
+    "ntp_background_service_observer.h",
+  ]
+  sources = [
+    "ntp_background_data.cc",
+    "ntp_background_service.cc",
+  ]
+  public_deps = [
+    ":ntp_background_proto",
+    "//base",
+    "//components/image_fetcher/core",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//net",
+    "//services/network/public/cpp",
+    "//skia",
+    "//ui/gfx:color_utils",
+    "//url",
+  ]
+  deps = [
+    "//build:branding_buildflags",
+    "//components/application_locale_storage",
+    "//components/optimization_guide/core:features",
+    "//components/pref_registry",
+    "//components/search",
+    "//components/version_info",
+    "//ui/base:features",
+    "//ui/base/mojom",
+    "//ui/gfx",
+    "//ui/gfx/codec",
+  ]
+}
+
+proto_library("ntp_background_proto") {
+  sources = [ "ntp_background.proto" ]
+  generate_python = false
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "ntp_background_service_unittest.cc" ]
+
+  deps = [
+    ":themes",
+    "//base",
+    "//base/test:test_support",
+    "//components/application_locale_storage",
+    "//components/search",
+    "//components/version_info",
+    "//services/network:test_support",
+    "//services/network/public/cpp:cpp_base",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+
+  data = [ "//media/test/data/" ]
+}

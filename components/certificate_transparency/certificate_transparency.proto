@@ -44,10 +44,22 @@ message CTLog {
 
   enum Purpose {
     UNSET_PURPOSE = 0;
+    // The log is for production purposes. These logs appear in both
+    // https://www.gstatic.com/ct/log_list/v3/log_list.json and
+    // https://www.gstatic.com/ct/log_list/v3/all_logs_list.json
+    // They are actively monitored, they have their availability metrics
+    // published and they trigger incidents.
     PROD = 1;
+
+    // The log is for test purposes. These logs appear in all_logs_list.json
+    // but not in log_list.json.
     TEST = 2;
+
+    // The log is for monitoring purposes only. These logs are not trusted. They
+    // are included in availability metrics and all_logs_list.json but not in
+    // log_list.json.
+    MONITORING_ONLY = 3;
   }
-  // Whether the log is for production purposes, or test only.
   Purpose purpose = 7;
 
   enum CurrentState {
@@ -83,6 +95,14 @@ message CTLog {
   // State of the log at the time it was made read-only. Should only be set if
   // state is READ_ONLY.
   FinalTreeHead read_only_info = 16;
+
+  enum LogType {
+    LOG_TYPE_UNSPECIFIED = 0;
+    RFC6962 = 1;
+    STATIC_CT_API = 2;
+  }
+  // Type of the log.
+  LogType log_type = 18;
 }
 
 message LogOperator {

@@ -10,12 +10,14 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "pdf/buildflags.h"
+#include "url/gurl.h"
 
 #if !BUILDFLAG(ENABLE_PDF)
 #error "PDF must be enabled"
 #endif
 
 namespace content {
+class BrowserContext;
 class RenderFrameHost;
 }
 
@@ -38,16 +40,19 @@ void AddStrings(PdfViewerContext context, base::Value::Dict* dict);
 
 // Adds additional data used by the PDF Viewer UI in `dict`, for example
 // whether certain features are enabled/disabled.
-// `enable_printing` only applies for ChromeOS Ash.
-// `enable_annotations` only applies on platforms that supports annotations.
-void AddAdditionalData(bool enable_printing,
-                       bool enable_annotations,
+void AddAdditionalData(content::BrowserContext* context,
                        base::Value::Dict* dict);
 
 // For OOPIF PDF viewer only. Returns true if successfully sends a save event to
 // the PDF viewer, or false otherwise. Only successful if the PDF plugin should
 // handle the save event.
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host);
+
+// Dispatches an extension event to the PDF viewer containing an updated PDF URL
+// that was intended to be navigated to so the viewer can update its viewport
+// based on the fragment of that URL.
+void DispatchShouldUpdateViewportEvent(content::RenderFrameHost* embedder_host,
+                                       const GURL& new_pdf_url);
 
 }  // namespace pdf_extension_util
 

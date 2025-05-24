@@ -16,7 +16,11 @@ MockLoginScreenClient::MockLoginScreenClient() {
   Shell::Get()->login_screen_controller()->SetClient(this);
 }
 
-MockLoginScreenClient::~MockLoginScreenClient() = default;
+MockLoginScreenClient::~MockLoginScreenClient() {
+  if (Shell::HasInstance()) {
+    Shell::Get()->login_screen_controller()->SetClient(nullptr);
+  }
+}
 
 void MockLoginScreenClient::AuthenticateUserWithPasswordOrPin(
     const AccountId& account_id,

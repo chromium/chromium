@@ -54,7 +54,7 @@ void EmitNetworkDataError(DataError error);
 // Tracks type and source struct of errors from calls to cros_healthd probe
 // service. `source_type` matches the `type_name` lookup in
 // cros_healthd_helpers.
-void EmitCrosHealthdProbeError(const std::string_view source_type,
+void EmitCrosHealthdProbeError(std::string_view source_type,
                                cros_healthd::mojom::ErrorType error_type);
 
 void EmitKeyboardTesterRoutineDuration(

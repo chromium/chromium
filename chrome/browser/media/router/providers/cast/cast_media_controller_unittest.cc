@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 using base::Value;
 using testing::_;
@@ -70,14 +69,18 @@ base::Value::List GetSupportedMediaCommandsValue(
   base::Value::List commands;
   // |can_set_volume| and |can_mute| are not used, because the receiver volume
   // is used instead.
-  if (status.can_play_pause)
+  if (status.can_play_pause) {
     commands.Append("pause");
-  if (status.can_seek)
+  }
+  if (status.can_seek) {
     commands.Append("seek");
-  if (status.can_skip_to_next_track)
+  }
+  if (status.can_skip_to_next_track) {
     commands.Append("queue_next");
-  if (status.can_skip_to_previous_track)
+  }
+  if (status.can_skip_to_previous_track) {
     commands.Append("queue_next");
+  }
   return commands;
 }
 

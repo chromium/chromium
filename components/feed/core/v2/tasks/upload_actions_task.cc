@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <vector>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -24,6 +25,7 @@
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/request_throttler.h"
 #include "components/feed/core/v2/types.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace feed {
 using feedstore::StoredAction;
@@ -190,7 +192,7 @@ void UploadActionsTask::StorePendingAction() {
   // Are logging parameters associated with a different account?
   if (wire_action_->logging_parameters.email != account_info_.email
       // Is the datastore associated with a different account?
-      || stream_->GetMetadata().gaia() != account_info_.gaia) {
+      || GaiaId(stream_->GetMetadata().gaia()) != account_info_.gaia) {
     Done(UploadActionsStatus::kAbortUploadForWrongUser);
     return;
   }
@@ -258,7 +260,7 @@ void UploadActionsTask::UploadPendingActions() {
   // Can't upload actions for another user, so abort.
   if (stream_->GetAccountInfo() != account_info_ ||
       // Is the datastore associated with a different account?
-      stream_->GetMetadata().gaia() != account_info_.gaia) {
+      GaiaId(stream_->GetMetadata().gaia()) != account_info_.gaia) {
     Done(UploadActionsStatus::kAbortUploadForWrongUser);
     return;
   }

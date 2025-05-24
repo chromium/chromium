@@ -9,11 +9,13 @@ robolectric_library("junit") {
   sources = [
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientBridgeUnitTest.java",
     "src/org/chromium/components/facilitated_payments/FacilitatedPaymentsApiClientUnitTest.java",
+    "src/org/chromium/components/facilitated_payments/SecurePayloadTest.java",
   ]
   deps = [
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//components/facilitated_payments/android/java",
+    "//components/facilitated_payments/core/utils:facilitated_payments_enums_java",
     "//components/signin/public/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_test_runner_java",

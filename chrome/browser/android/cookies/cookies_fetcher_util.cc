@@ -50,18 +50,14 @@ void OnCookiesFetchFinished(
       continue;
     }
     ScopedJavaLocalRef<jobject> java_cookie = Java_CookiesFetcher_createCookie(
-        env, base::android::ConvertUTF8ToJavaString(env, cookie.Name()),
-        base::android::ConvertUTF8ToJavaString(env, cookie.Value()),
-        base::android::ConvertUTF8ToJavaString(env, cookie.Domain()),
-        base::android::ConvertUTF8ToJavaString(env, cookie.Path()),
+        env, cookie.Name(), cookie.Value(), cookie.Domain(), cookie.Path(),
         cookie.CreationDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         cookie.ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         cookie.LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         cookie.LastUpdateDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         cookie.SecureAttribute(), cookie.IsHttpOnly(),
         static_cast<int>(cookie.SameSite()), cookie.Priority(),
-        base::android::ConvertUTF8ToJavaString(
-            env, key_serialized_result->TopLevelSite()),
+        key_serialized_result->TopLevelSite(),
         static_cast<int>(cookie.SourceScheme()), cookie.SourcePort(),
         static_cast<int>(cookie.SourceType()));
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
@@ -89,25 +85,24 @@ void JNI_CookiesFetcher_PersistCookies(
                      ScopedJavaGlobalRef<jobject>(j_cookies_fetcher)));
 }
 
-void JNI_CookiesFetcher_RestoreCookies(
-    JNIEnv* env,
-    Profile* profile,
-    const JavaParamRef<jstring>& name,
-    const JavaParamRef<jstring>& value,
-    const JavaParamRef<jstring>& domain,
-    const JavaParamRef<jstring>& path,
-    jlong creation,
-    jlong expiration,
-    jlong last_access,
-    jlong last_update,
-    jboolean secure,
-    jboolean httponly,
-    jint same_site,
-    jint priority,
-    const JavaParamRef<jstring>& partition_key,
-    jint source_scheme,
-    jint source_port,
-    jint source_type) {
+void JNI_CookiesFetcher_RestoreCookies(JNIEnv* env,
+                                       Profile* profile,
+                                       std::string& name,
+                                       std::string& value,
+                                       std::string& domain,
+                                       std::string& path,
+                                       jlong creation,
+                                       jlong expiration,
+                                       jlong last_access,
+                                       jlong last_update,
+                                       jboolean secure,
+                                       jboolean httponly,
+                                       jint same_site,
+                                       jint priority,
+                                       std::string& partition_key,
+                                       jint source_scheme,
+                                       jint source_port,
+                                       jint source_type) {
   cookie_fetcher_restore_util::CookiesFetcherRestoreCookiesImpl(
       env, profile, name, value, domain, path, creation, expiration,
       last_access, last_update, secure, httponly, same_site, priority,

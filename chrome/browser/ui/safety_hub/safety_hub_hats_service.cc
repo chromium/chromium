@@ -7,23 +7,29 @@
 #include <utility>
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/safety_hub/card_data_helper.h"
-#include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/common/chrome_features.h"
 
 SafetyHubHatsService::SafetyHubHatsService(
     TrustSafetySentimentService* tss_service,
-    SafetyHubMenuNotificationService& menu_notification_service,
+    HatsService* hats_service,
     Profile& profile)
     : profile_(profile),
       tss_service_(tss_service),
-      menu_notification_service_(menu_notification_service) {}
+      hats_service_(hats_service) {}
+
+void SafetyHubHatsService::TriggerControlSurvey() {
+  if (!base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey) ||
+      !hats_service_) {
+    return;
+  }
+  hats_service_->LaunchSurvey(
+      kHatsSurveyTriggerSafetyHubOneOffExperimentControl);
+}
 
 void SafetyHubHatsService::SafetyHubModuleInteracted() {
   has_interacted_with_module_ = true;
@@ -32,8 +38,10 @@ void SafetyHubHatsService::SafetyHubModuleInteracted() {
   TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
 }
 
-void SafetyHubHatsService::SafetyHubNotificationClicked() {
+void SafetyHubHatsService::SafetyHubNotificationClicked(
+    std::optional<safety_hub::SafetyHubModuleType> sh_module) {
   has_clicked_notification_ = true;
+  last_module_clicked_ = sh_module;
   TriggerTrustSafetySentimentSurvey(
       TrustSafetySentimentService::FeatureArea::kSafetyHubInteracted);
   TriggerOneOffSurvey(kHatsSurveyTriggerSafetyHubOneOffExperimentInteraction);
@@ -61,19 +69,14 @@ void SafetyHubHatsService::TriggerTrustSafetySentimentSurvey(
 }
 
 void SafetyHubHatsService::TriggerOneOffSurvey(const std::string& trigger) {
-  if (!base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey)) {
+  if (!base::FeatureList::IsEnabled(features::kSafetyHubHaTSOneOffSurvey) ||
+      !hats_service_) {
     return;
   }
-
-  HatsService* hats_service = HatsServiceFactory::GetForProfile(
-      &*profile_, /*create_if_necessary=*/true);
-  if (!hats_service) {
-    return;
-  }
-  hats_service->LaunchSurvey(trigger,
-                             /*success_callback=*/base::DoNothing(),
-                             /*failure_callback=*/base::DoNothing(),
-                             GetSafetyHubProductSpecificData());
+  hats_service_->LaunchSurvey(trigger,
+                              /*success_callback=*/base::DoNothing(),
+                              /*failure_callback=*/base::DoNothing(),
+                              GetSafetyHubProductSpecificData());
 }
 
 std::map<std::string, bool>
@@ -84,9 +87,6 @@ SafetyHubHatsService::GetSafetyHubProductSpecificData() {
       has_clicked_notification_;
   product_specific_data["User interacted with Safety Hub"] =
       has_interacted_with_module_;
-
-  std::optional<safety_hub::SafetyHubModuleType> last_module =
-      menu_notification_service_->GetLastShownNotificationModule();
 
   static constexpr std::array<
       std::pair<safety_hub::SafetyHubModuleType, std::string_view>, 5>
@@ -103,7 +103,8 @@ SafetyHubHatsService::GetSafetyHubProductSpecificData() {
   for (const auto& module : modules) {
     product_specific_data[base::StrCat(
         {"Is notification module ", std::get<1>(module)})] =
-        last_module.has_value() && last_module.value() == std::get<0>(module);
+        last_module_clicked_.has_value() &&
+        last_module_clicked_.value() == std::get<0>(module);
   }
   safety_hub::SafetyHubCardState card_state =
       safety_hub::GetOverallState(&*profile_);

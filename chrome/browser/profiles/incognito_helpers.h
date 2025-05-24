@@ -9,8 +9,6 @@ namespace content {
 class BrowserContext;
 }
 
-namespace chrome {
-
 // Returns the original browser context even for Incognito contexts.
 content::BrowserContext* GetBrowserContextRedirectedInIncognito(
     content::BrowserContext* context);
@@ -23,7 +21,5 @@ const content::BrowserContext* GetBrowserContextRedirectedInIncognito(
 // instance of a service is created for the Incognito context.
 content::BrowserContext* GetBrowserContextOwnInstanceInIncognito(
     content::BrowserContext* context);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_PROFILES_INCOGNITO_HELPERS_H_

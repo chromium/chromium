@@ -347,7 +347,8 @@ Parser.prototype.parse = function(input) {
    * stream to next available char.
    */
   function skipWhitespace() {
-    while (i < input.length) {
+    // Only Array and string have length
+    while (i < /** @type {?} */ (input).length) {
       if (utils.isJsonWhitespace(input[i])) {
         i++;
         parser.pos_++;
@@ -541,7 +542,7 @@ Parser.prototype.parse = function(input) {
             pattern.lastIndex = i;
             const patternResult = pattern.exec(input);
             if (!patternResult) {
-              i = input.length + 1;
+              i = /** @type {?} */ (input).length + 1;
               break;
             }
             i = patternResult.index + 1;
@@ -713,10 +714,12 @@ Parser.prototype.parse = function(input) {
     goog.asserts.assert(opt_data !== '');  // '' not possible
 
     if (!opt_data) {
+      // `input` must be a string here.
       if (msgStart === -1) {
-        opt_data = parser.buffer_ + input.substring(streamStart, i);
+        opt_data = parser.buffer_ +
+            /** @type {string} */ (input).substring(streamStart, i);
       } else {
-        opt_data = input.substring(msgStart, i);
+        opt_data = /** @type {string} */ (input).substring(msgStart, i);
       }
     }
 

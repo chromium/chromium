@@ -19,12 +19,24 @@ FaceGazeSettingsHandler::~FaceGazeSettingsHandler() {
   AccessibilityManager::Get()->RemoveFaceGazeSettingsEventHandler();
 }
 
+void FaceGazeSettingsHandler::HandleRequestEnableFaceGaze(
+    const base::Value::List& args) {
+  DCHECK_EQ(args.size(), 1U);
+  const bool& enable = args[0].GetBool();
+  AccessibilityManager::Get()->RequestEnableFaceGaze(enable);
+}
+
 void FaceGazeSettingsHandler::HandleToggleGestureInfoForSettings(
     const base::Value::List& args) {
   DCHECK_EQ(args.size(), 1U);
   const bool& enabled = args[0].GetBool();
 
   AccessibilityManager::Get()->ToggleGestureInfoForSettings(enabled);
+}
+
+void FaceGazeSettingsHandler::HandleDisableDialogResult(bool accepted) {
+  AllowJavascript();
+  FireWebUIListener("settings.handleDisableDialogResult", accepted);
 }
 
 void FaceGazeSettingsHandler::HandleSendGestureInfoToSettings(
@@ -47,6 +59,10 @@ void FaceGazeSettingsHandler::RegisterMessages() {
       base::BindRepeating(
           &FaceGazeSettingsHandler::HandleToggleGestureInfoForSettings,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "requestEnableFaceGaze",
+      base::BindRepeating(&FaceGazeSettingsHandler::HandleRequestEnableFaceGaze,
+                          base::Unretained(this)));
 }
 
 }  // namespace ash::settings

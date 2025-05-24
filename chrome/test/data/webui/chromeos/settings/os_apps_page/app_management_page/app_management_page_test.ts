@@ -4,12 +4,12 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsAppManagementPageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsAppManagementPageElement} from 'chrome://os-settings/lazy_load.js';
 import {AppManagementBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {isHiddenByDomIf, replaceBody, replaceStore, setupFakeHandler} from '../../app_management/test_util.js';
 
 suite('<settings-app-management-page>', () => {

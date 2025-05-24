@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
@@ -16,11 +17,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/avatar_menu.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -46,6 +48,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "content/public/common/url_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -67,9 +70,7 @@ namespace {
 
 constexpr int kChromeRefreshImageLabelPadding = 6;
 
-// Value used to enlarge the AvatarIcon to accommodate for DIP scaling. This is
-// used to adapt other related icon modifications, such as the dotted circle
-// icon in SigninPending mode.
+// Value used to enlarge the AvatarIcon to accommodate for DIP scaling.
 constexpr int kAvatarIconEnlargement = 1;
 
 }  // namespace
@@ -84,6 +85,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
                                         /*is_source_accelerator=*/false)),
       browser_(browser_view->browser()),
       creation_time_(base::TimeTicks::Now()) {
+  CHECK(browser_);
   delegate_ = std::make_unique<AvatarToolbarButtonDelegate>(this, browser_);
 
   // Activate on press for left-mouse-button only to mimic other MenuButtons
@@ -126,7 +128,8 @@ void AvatarToolbarButton::UpdateIcon() {
 
   const int icon_size = GetIconSize();
   ui::ImageModel icon = delegate_->GetAvatarIcon(
-      icon_size, GetForegroundColor(ButtonState::STATE_NORMAL));
+      icon_size, GetForegroundColor(ButtonState::STATE_NORMAL),
+      GetColorProvider());
 
   SetImageModel(ButtonState::STATE_NORMAL, icon);
   SetImageModel(ButtonState::STATE_DISABLED,
@@ -218,7 +221,7 @@ void AvatarToolbarButton::UpdateAccessibilityLabel() {
   // accessibility label: the tooltip or no text if the button content has no
   // text initially. All the values needs to be overridden every time in order
   // clear the previous state effect.
-  std::u16string button_content = GetText();
+  std::u16string button_content(GetText());
   if (accessibility_label.has_value()) {
     if (button_content.empty()) {
       name = accessibility_label.value();
@@ -263,7 +266,7 @@ bool AvatarToolbarButton::ShouldPaintBorder() const {
 }
 
 bool AvatarToolbarButton::ShouldBlendHighlightColor() const {
-  return this->GetWidget() && this->GetWidget()->GetCustomTheme();
+  return delegate_->ShouldBlendHighlightColor();
 }
 
 base::ScopedClosureRunner AvatarToolbarButton::ShowExplicitText(
@@ -343,36 +346,63 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   }
 }
 
-void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH(
-    const AccountInfo& account_info) {
-  // TODO(b/351333491): Likely to need a delaying mechanism similar to
-  // `MaybeShowProfileSwitchIPH`. To be decided when implementing the
-  // invocation.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSupervisedUserProfileSigninFeature)) {
+    return;
+  }
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  CHECK(identity_manager);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  auto account_info = identity_manager->FindExtendedAccountInfoByAccountId(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   if (account_info.capabilities.is_subject_to_parental_controls() !=
       signin::Tribool::kTrue) {
     return;
   }
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHSupervisedUserProfileSigninFeature,
-      account_info.gaia);
-  params.title_params = base::UTF8ToUTF16(account_info.given_name);
+  if (account_info.IsEmpty()) {
+    return;
+  }
 
+  // Prevent showing the promo right when the browser was created.
+  // This is not just used for smoother animation, but it gives the anchor
+  // element enough time to become visible and display the IPH.
+  // TODO(crbug.com/372689164): investigate alternative rescheduling,
+  // using `CanShowFeaturePromo`.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH,
+                       weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHSupervisedUserProfileSigninFeature);
+  params.title_params = base::UTF8ToUTF16(account_info.given_name);
   browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 void AvatarToolbarButton::MaybeShowExplicitBrowserSigninPreferenceRememberedIPH(
     const AccountInfo& account_info) {
   user_education::FeaturePromoParams params(
       feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
-      account_info.gaia);
+      account_info.gaia.ToString());
   params.title_params = base::UTF8ToUTF16(account_info.given_name);
   browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 
-void AvatarToolbarButton::MaybeShowWebSignoutIPH(const std::string& gaia_id) {
-  CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled());
+void AvatarToolbarButton::MaybeShowWebSignoutIPH(const GaiaId& gaia_id) {
   browser_->window()->MaybeShowFeaturePromo(user_education::FeaturePromoParams(
-      feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id));
+      feature_engagement::kIPHSignoutWebInterceptFeature, gaia_id.ToString()));
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
@@ -397,15 +427,26 @@ void AvatarToolbarButton::OnThemeChanged() {
 }
 
 // static
-void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
+base::AutoReset<base::TimeDelta>
+AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
     base::TimeDelta delay) {
-  g_iph_min_delay_after_creation = delay;
+  return base::AutoReset<base::TimeDelta>(&g_iph_min_delay_after_creation,
+                                          delay);
 }
 
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
   if (button_action_disabled_) {
     return;
   }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (browser_->window()->IsFeaturePromoActive(
+          feature_engagement::kIPHPasswordsSavePrimingPromoFeature)) {
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHPasswordsSavePrimingPromoFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+#endif
 
   if (!explicit_button_pressed_action_.is_null()) {
     explicit_button_pressed_action_.Run();
@@ -454,6 +495,16 @@ bool AvatarToolbarButton::IsLabelPresentAndVisible() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
+void AvatarToolbarButton::UpdateButtonAction() {
+  internal_reset_button_action_closure_.RunAndReset();
+  std::optional<base::RepeatingClosure> button_action =
+      delegate_->GetButtonAction();
+  if (button_action.has_value()) {
+    internal_reset_button_action_closure_ =
+        SetExplicitButtonAction(*std::move(button_action));
+  }
+}
+
 void AvatarToolbarButton::UpdateLayoutInsets() {
   SetLayoutInsets(::GetLayoutInsets(
       IsLabelPresentAndVisible() ? AVATAR_CHIP_PADDING : TOOLBAR_BUTTON));
@@ -471,30 +522,6 @@ void AvatarToolbarButton::AddObserver(Observer* observer) {
 
 void AvatarToolbarButton::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
-}
-
-void AvatarToolbarButton::PaintButtonContents(gfx::Canvas* canvas) {
-  int icon_size = GetIconSize();
-  // This ensures that the bounds get are mirror adapted, and will only return
-  // the mirror values if RTL or mirror is enabled.
-  gfx::Rect avatar_image_bounds = image_container_view()->GetMirroredBounds();
-
-  // Override image bounds width and height to match the icon size used.
-  avatar_image_bounds.set_width(icon_size);
-  avatar_image_bounds.set_height(icon_size);
-  // This is needed to adapt the changes done in `AvatarToolbarButton::Layout()`
-  // where the internal image is enlarged. When enlarging an image, the
-  // coordinates are not affected, but the image size is and therefore the
-  // container of the image as well.
-  // This is only needed for the mirrored version since in the regular version
-  // the icon is placed at the beginning which does not take into consideration
-  // the total width (the total width is considered when getting the mirrored
-  // value).
-  if (GetMirrored()) {
-    avatar_image_bounds.set_x(avatar_image_bounds.x() + kAvatarIconEnlargement);
-  }
-
-  delegate_->PaintIcon(canvas, avatar_image_bounds);
 }
 
 // static

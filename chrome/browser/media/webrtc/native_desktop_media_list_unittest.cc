@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 
 #include <stddef.h>
@@ -133,12 +138,12 @@ class MockObserver : public DesktopMediaListObserver {
 
 class FakeScreenCapturer : public ThumbnailCapturer {
  public:
-  FakeScreenCapturer() {}
+  FakeScreenCapturer() = default;
 
   FakeScreenCapturer(const FakeScreenCapturer&) = delete;
   FakeScreenCapturer& operator=(const FakeScreenCapturer&) = delete;
 
-  ~FakeScreenCapturer() override {}
+  ~FakeScreenCapturer() override = default;
 
   // ThumbnailCapturer implementation.
   void Start(Consumer* consumer) override { consumer_ = consumer; }
@@ -178,7 +183,7 @@ class FakeWindowCapturer : public ThumbnailCapturer {
   FakeWindowCapturer(const FakeWindowCapturer&) = delete;
   FakeWindowCapturer& operator=(const FakeWindowCapturer&) = delete;
 
-  ~FakeWindowCapturer() override {}
+  ~FakeWindowCapturer() override = default;
 
   void SetWindowList(const SourceList& list) {
     base::AutoLock lock(window_list_lock_);
@@ -708,8 +713,7 @@ TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
                             &run_loop)));
   // Called upon webrtc::DesktopCapturer::CaptureFrame() call.
   ON_CALL(observer_, OnSourceThumbnailChanged(_))
-      .WillByDefault(
-          testing::InvokeWithoutArgs([]() { NOTREACHED_IN_MIGRATION(); }));
+      .WillByDefault(testing::InvokeWithoutArgs([]() { NOTREACHED(); }));
 
   model_->StartUpdating(&observer_);
 

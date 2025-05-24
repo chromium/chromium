@@ -80,7 +80,7 @@ class AnalyzeBaselines(AbstractRebaseliningCommand):
 
     def execute(self, options, args, tool):
         self._tool = tool
-        self._baseline_suffix_list = options.suffixes.split(',')
+        self._baseline_suffix_list = options.suffixes
         port_names = tool.port_factory.all_port_names(options.platform)
         if not port_names:
             _log.error("No port names match '%s'", options.platform)

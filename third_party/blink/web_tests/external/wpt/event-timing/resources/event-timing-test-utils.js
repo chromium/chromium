@@ -357,13 +357,20 @@ async function pointerdown(target) {
     .send();
 }
 
-async function pointerup(target) {
+async function orphanPointerup(target) {
   const actions = new test_driver.Actions();
-  return actions.addPointer("mousePointer", "mouse")
+  await actions.addPointer("mousePointer", "mouse")
     .pointerMove(0, 0, { origin: target })
     .pointerUp()
     .send();
+
+  // Orphan pointerup doesn't get triggered in some browsers. Sending a
+  // non-pointer related event to make sure that at least an event gets handled.
+  // If a browsers sends an orphan pointerup, it will always be before the
+  // keydown, so the test will correctly handle it.
+  await pressKey(target, 'a');
 }
+
 async function auxPointerdown(target) {
   const actions = new test_driver.Actions();
   return actions.addPointer("mousePointer", "mouse")
@@ -389,6 +396,17 @@ async function flingAndTapInTarget(target) {
         .pause(60)
         .pointerMove(0, 0, {origin: target})
         .pointerDown()
+        .pointerUp()
+        .send();
+}
+
+async function textSelectionInTarget(target) {
+  const actions = new test_driver.Actions();
+  return actions.addPointer("pointer1", "mouse")
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown({button: actions.ButtonType.LEFT})
+        .pointerMove(20, 60, {origin: target})
+        .pointerMove(20, 120, {origin: target})
         .pointerUp()
         .send();
 }
@@ -445,12 +463,33 @@ async function blockPointerDownEventListener(target, duration, count) {
   });
 }
 
+async function blockCapturePointerDownEventListener(target, duration) {
+  return new Promise(resolve => {
+    target.addEventListener("pointerdown", (e) => {
+      mainThreadBusy(duration);
+      target.setPointerCapture(e.pointerId);
+      resolve();
+    });
+  });
+}
+
 async function flingTapAndBlockMain(target, duration) {
-  await Promise.all([
-    blockPointerDownEventListener(target, 30, 2),
-    blockNextEventListener(target, "pointercancel", 30),
-    blockNextEventListener(target, "scroll", 30),
+  return Promise.all([
+    blockPointerDownEventListener(target, duration, 2),
+    blockNextEventListener(target, "pointercancel", duration),
+    blockNextEventListener(target, "scroll", duration),
     flingAndTapInTarget(target),
+  ]);
+}
+
+async function textSelectionAndBlockMain(target, duration) {
+  return Promise.all([
+    blockCapturePointerDownEventListener(target, "pointerdown", duration),
+    blockNextEventListener(target, "pointermove", duration),
+    blockNextEventListener(target, "scroll", duration),
+    blockNextEventListener(target, "pointerup", 10),
+    textSelectionInTarget(target),
+    // afterNextPaint(),
   ]);
 }
 
@@ -493,8 +532,8 @@ async function interactAndObserve(interactionType, target, observerPromise, key 
       break;
     }
     case 'orphan-pointerup': {
-      addListeners(target, ['pointerup']);
-      interactionPromise = pointerup(target);
+      addListeners(target, ['pointerup', 'keydown']);
+      interactionPromise = orphanPointerup(target);
       break;
     }
     case 'space-key-simulated-click': {
@@ -509,6 +548,21 @@ async function interactAndObserve(interactionType, target, observerPromise, key 
     }
     case 'fling-tap': {
       interactionPromise = flingTapAndBlockMain(target, 30);
+      break;
+    }
+    case 'selection-scroll': {
+      interactionPromise = textSelectionAndBlockMain(target, 30);
+      break;
+    }
+    case 'orphan-keydown': {
+      addListeners(target, ['keydown']);
+      interactionPromise = new test_driver.Actions()
+        .pointerMove(0, 0, {origin: target})
+        .pointerDown()
+        .pointerUp()
+        .addTick()
+        .keyDown('a')
+        .send();
       break;
     }
   }

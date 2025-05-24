@@ -2,6 +2,7 @@ noparent = True
 include_rules = [
   "+base/android",
   "+base/test/android",
+  "+build/android",
   "+components/browser_ui/styles/android",
   "+components/embedder_support/android",
   "+content/public/android",

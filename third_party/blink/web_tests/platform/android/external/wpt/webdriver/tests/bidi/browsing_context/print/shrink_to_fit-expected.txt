@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_shrink_to_fit[default]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_shrink_to_fit[True]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+[FAIL] test_shrink_to_fit[False]
+  webdriver.bidi.error.UnknownErrorException: unknown error ('Page.printToPDF' wasn't found)
+Harness: the test ran to completion.
+

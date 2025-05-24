@@ -32,8 +32,7 @@ export class SearchEngineChoiceBrowserProxy {
 
     const handler = new PageHandlerRemote();
     const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(
-        (handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+    factory.createPageHandler((handler).$.bindNewPipeAndPassReceiver());
 
     return instance = new SearchEngineChoiceBrowserProxy(handler);
   }

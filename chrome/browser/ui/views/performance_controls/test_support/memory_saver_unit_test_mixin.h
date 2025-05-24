@@ -7,9 +7,12 @@
 
 #include <concepts>
 
+#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_tab_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/test_support/discard_mock_navigation_handle.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/mock_navigation_handle.h"
 
 // Template to be used as a mixin class for memory saver tests extending
@@ -24,9 +27,6 @@ class MemorySaverUnitTestMixin : public T {
 
   ~MemorySaverUnitTestMixin() override = default;
 
-  MemorySaverUnitTestMixin(const MemorySaverUnitTestMixin&) = delete;
-  MemorySaverUnitTestMixin& operator=(const MemorySaverUnitTestMixin&) = delete;
-
   void SetMemorySaverModeEnabled(bool enabled) {
     performance_manager::user_tuning::UserPerformanceTuningManager::
         GetInstance()
@@ -40,7 +40,6 @@ class MemorySaverUnitTestMixin : public T {
     T::AddTab(T::browser(), GURL("http://foo.com"));
     content::WebContents* const contents =
         T::browser()->tab_strip_model()->GetActiveWebContents();
-    MemorySaverChipTabHelper::CreateForWebContents(contents);
     performance_manager::user_tuning::UserPerformanceTuningManager::
         PreDiscardResourceUsage::CreateForWebContents(contents, memory_savings,
                                                       discard_reason);
@@ -53,7 +52,11 @@ class MemorySaverUnitTestMixin : public T {
         std::make_unique<DiscardMockNavigationHandle>();
     navigation_handle.get()->SetWasDiscarded(is_discarded);
     navigation_handle.get()->SetWebContents(web_contents);
-    MemorySaverChipTabHelper::FromWebContents(web_contents)
+    T::browser()
+        ->tab_strip_model()
+        ->GetTabAtIndex(tab_index)
+        ->GetTabFeatures()
+        ->memory_saver_chip_helper()
         ->DidStartNavigation(navigation_handle.get());
 
     T::browser_view()

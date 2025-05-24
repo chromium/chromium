@@ -97,8 +97,7 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
                                        const std::string& match_result) {
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            base::as_bytes(base::make_span(cert)),
-            net::X509Certificate::FORMAT_AUTO);
+            base::as_byte_span(cert), net::X509Certificate::FORMAT_AUTO);
     ASSERT_FALSE(certs.empty());
     EXPECT_EQ(match_result,
               error_assistant()->MatchKnownMITMSoftware(certs[0]));
@@ -109,7 +108,7 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
     embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>();
   }
 
-  ~SSLErrorAssistantTest() override {}
+  ~SSLErrorAssistantTest() override = default;
 
   SSLErrorAssistant* error_assistant() const { return error_assistant_.get(); }
 

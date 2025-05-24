@@ -9,18 +9,17 @@
 #include <stdint.h>
 #include <winspool.h>
 
-#include <memory>
-
 #include "base/component_export.h"
+#include "base/containers/heap_array.h"
 
 namespace printing {
 
 namespace internal {
 
 COMPONENT_EXPORT(PRINT_BACKEND)
-std::unique_ptr<uint8_t[]> GetDriverInfo(HANDLE printer, int level);
+base::HeapArray<uint8_t> GetDriverInfo(HANDLE printer, int level);
 COMPONENT_EXPORT(PRINT_BACKEND)
-std::unique_ptr<uint8_t[]> GetPrinterInfo(HANDLE printer, int level);
+base::HeapArray<uint8_t> GetPrinterInfo(HANDLE printer, int level);
 
 // This class is designed to work with PRINTER_INFO_X structures
 // and calls GetPrinter internally with correctly allocated buffer.
@@ -29,15 +28,15 @@ class PrinterInfo {
  public:
   bool Init(HANDLE printer) {
     buffer_ = GetPrinterInfo(printer, level);
-    return buffer_ != nullptr;
+    return !buffer_.empty();
   }
 
   const PrinterInfoType* get() const {
-    return reinterpret_cast<const PrinterInfoType*>(buffer_.get());
+    return reinterpret_cast<const PrinterInfoType*>(buffer_.data());
   }
 
  private:
-  std::unique_ptr<uint8_t[]> buffer_;
+  base::HeapArray<uint8_t> buffer_;
 };
 
 // This class is designed to work with DRIVER_INFO_X structures
@@ -47,19 +46,20 @@ class DriverInfo {
  public:
   bool Init(HANDLE printer) {
     buffer_ = GetDriverInfo(printer, level);
-    return buffer_ != nullptr;
+    return !buffer_.empty();
   }
 
   const DriverInfoType* get() const {
-    return reinterpret_cast<const DriverInfoType*>(buffer_.get());
+    return reinterpret_cast<const DriverInfoType*>(buffer_.data());
   }
 
  private:
-  std::unique_ptr<uint8_t[]> buffer_;
+  base::HeapArray<uint8_t> buffer_;
 };
 
 }  // namespace internal
 
+using PrinterInfo1 = internal::PrinterInfo<PRINTER_INFO_1, 1>;
 using PrinterInfo2 = internal::PrinterInfo<PRINTER_INFO_2, 2>;
 using PrinterInfo5 = internal::PrinterInfo<PRINTER_INFO_5, 5>;
 

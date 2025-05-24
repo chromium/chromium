@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "build/build_config.h"
-#include "skia/ext/skcolorspace_trfn.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space_export.h"
 
@@ -61,6 +60,8 @@ class ColorSpaceDataView;
 // between any processes.
 class COLOR_SPACE_EXPORT ColorSpace {
  public:
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedPrimaries::CicpId` instead.
   enum class PrimaryID : uint8_t {
     // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
     // add them at the end and increment kMaxValue.
@@ -89,6 +90,8 @@ class COLOR_SPACE_EXPORT ColorSpace {
     kMaxValue = EBU_3213_E,
   };
 
+  // TODO(https://crbug.com/380457000): Delete this enum and use
+  // `SkNamedTransferFn::CicpId` instead.
   enum class TransferID : uint8_t {
     // Used as an enum for metrics. DO NOT reorder or delete values. Rather,
     // add them at the end and increment kMaxValue.
@@ -125,8 +128,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
     CUSTOM,
     // An HDR parametric transfer function defined by |transfer_params_|.
     CUSTOM_HDR,
-    // An HDR transfer function that is piecewise sRGB, and piecewise linear.
-    PIECEWISE_HDR,
     // An HDR transfer function that is linear, with the value 1 at 80 nits.
     // This transfer function is not SDR-referred, and therefore can only be
     // used (e.g, by ToSkColorSpace or GetTransferFunction) when an SDR white
@@ -240,21 +241,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // Uses P3 primaries. An HDR ColorSpace suitable for blending and compositing.
   static ColorSpace CreateExtendedSRGB10Bit();
 
-  // Create a piecewise-HDR color space.
-  // - If |primaries| is CUSTOM, then |custom_primary_matrix| must be
-  //   non-nullptr.
-  // - The SDR joint is the encoded pixel value where the SDR portion reaches 1,
-  //   usually 0.25 or 0.5, corresponding to giving 8 or 9 of 10 bits to SDR.
-  //   This must be in the open interval (0, 1).
-  // - The HDR level the value that the transfer function will evaluate to at 1,
-  //   and represents the maximum HDR brightness relative to the maximum SDR
-  //   brightness. This must be strictly greater than 1.
-  static ColorSpace CreatePiecewiseHDR(
-      PrimaryID primaries,
-      float sdr_joint,
-      float hdr_level,
-      const skcms_Matrix3x3* custom_primary_matrix = nullptr);
-
   // TODO(ccameron): Remove these, and replace with more generic constructors.
   static constexpr ColorSpace CreateJpeg() {
     // TODO(ccameron): Determine which primaries and transfer function were
@@ -277,7 +263,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
   static constexpr float kDefaultSDRWhiteLevel = 203.f;
 
   bool operator==(const ColorSpace& other) const;
-  bool operator!=(const ColorSpace& other) const;
   bool operator<(const ColorSpace& other) const;
   size_t GetHash() const;
   std::string ToString() const;
@@ -365,10 +350,6 @@ class COLOR_SPACE_EXPORT ColorSpace {
       skcms_TransferFunction* fn,
       std::optional<float> sdr_white_level = std::nullopt) const;
 
-  // Returns the parameters for a PIECEWISE_HDR transfer function. See
-  // CreatePiecewiseHDR for parameter meanings.
-  bool GetPiecewiseHDRParams(float* sdr_point, float* hdr_level) const;
-
   // Returns the transfer matrix for |bit_depth|. For most formats, this is the
   // RGB to YUV matrix.
   SkM44 GetTransferMatrix(int bit_depth) const;
@@ -424,7 +405,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   RangeID range_ = RangeID::INVALID;
 
   // Only used if primaries_ is PrimaryID::CUSTOM.
-  float custom_primary_matrix_[9] = {0};
+  float custom_primary_matrix_[9] = {};
 
   // Parameters for the transfer function. The interpretation depends on
   // |transfer_|. Only TransferParamCount() of these parameters are used, all
@@ -432,7 +413,7 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // - CUSTOM and CUSTOM_HDR: Entries A through G of the skcms_TransferFunction
   //   structure in alphabetical order.
   // - SMPTEST2084: SDR white point.
-  float transfer_params_[7] = {0};
+  float transfer_params_[7] = {};
 
   friend struct IPC::ParamTraits<gfx::ColorSpace>;
   friend struct mojo::StructTraits<gfx::mojom::ColorSpaceDataView,

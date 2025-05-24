@@ -1,8 +1,14 @@
 #ifndef _RAR_CMDDATA_
 #define _RAR_CMDDATA_
 
+#if defined(_WIN_ALL) && !defined(SFX_MODULE)
+// In Windows we implement our own command line parser to avoid replacing
+// \" by " in standard parser. Such replacing corrupts destination paths
+// like "dest path\" in extraction commands.
+#define CUSTOM_CMDLINE_PARSER
+#endif
 
-#define DefaultStoreList L"7z;ace;arj;bz2;cab;gz;jpeg;jpg;lha;lz;lzh;mp3;rar;taz;tbz;tbz2;tgz;txz;xz;z;zip;zipx;zst;tzst"
+#define DefaultStoreList L"7z;arj;bz2;cab;gz;jpeg;jpg;lha;lz;lzh;mp3;rar;taz;tbz;tbz2;tgz;txz;xz;z;zip;zipx;zst;tzst"
 
 enum RAR_CMD_LIST_MODE {RCLM_AUTO,RCLM_REJECT_LISTS,RCLM_ACCEPT_LISTS};
 
@@ -56,6 +62,8 @@ class CommandData:public RAROptions
     void ReportWrongSwitches(RARFORMAT Format);
 #endif
 
+    void GetBriefMaskList(const std::wstring &Masks,StringList &Args);
+
 
     std::wstring Command;
     std::wstring ArcName;
@@ -78,6 +86,9 @@ class CommandData:public RAROptions
     StringList InclArgs;
     StringList ArcNames;
     StringList StoreArgs;
+#ifdef PROPAGATE_MOTW
+    StringList MotwList;  // Extensions to assign the mark of the web.
+#endif
 
     SecPassword Password;
 

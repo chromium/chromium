@@ -53,17 +53,17 @@ suite('CrComponentsActivationCodePageTest', function() {
     MojoInterfaceProviderImpl.getInstance().setMojoServiceRemoteForTest(
         networkConfigRemote);
     networkConfigRemote.setDeviceStateForTest({
-      ipv4Address: undefined,
-      ipv6Address: undefined,
-      imei: undefined,
-      macAddress: undefined,
+      ipv4Address: null,
+      ipv6Address: null,
+      imei: null,
+      macAddress: null,
       scanning: false,
-      simLockStatus: undefined,
-      simInfos: undefined,
+      simLockStatus: null,
+      simInfos: null,
       inhibitReason: InhibitReason.kNotInhibited,
       simAbsent: false,
       managedNetworkAvailable: false,
-      serial: undefined,
+      serial: null,
       isCarrierLocked: true,
       isFlashing: false,
       type: NetworkType.kCellular,
@@ -120,11 +120,11 @@ suite('CrComponentsActivationCodePageTest', function() {
     // Mock camera on
     activationCodePage.showNoProfilesFound = true;
     assertEquals(
-        description.innerText!.trim(),
+        description.innerText.trim(),
         loadTimeData.getString('scanQRCodeNoProfilesFound'));
     activationCodePage.showNoProfilesFound = false;
     assertEquals(
-        description.innerText!.trim(), loadTimeData.getString('scanQRCode'));
+        description.innerText.trim(), loadTimeData.getString('scanQRCode'));
 
     // Clearing devices to test without camera
     assertTrue(!!mediaDevices);
@@ -132,11 +132,11 @@ suite('CrComponentsActivationCodePageTest', function() {
       await resolveEnumeratedDevicesPromise();
     activationCodePage.showNoProfilesFound = true;
     assertEquals(
-        description.innerText!.trim(),
+        description.innerText.trim(),
         loadTimeData.getString('enterActivationCodeNoProfilesFound'));
     activationCodePage.showNoProfilesFound = false;
     assertEquals(
-        description.innerText!.trim(),
+        description.innerText.trim(),
         loadTimeData.getString('enterActivationCode'));
   });
 
@@ -427,7 +427,7 @@ suite('CrComponentsActivationCodePageTest', function() {
 
   test(
       'Install error after manual entry should show error on input',
-      async function() {
+      function() {
         const input =
             activationCodePage.shadowRoot!.querySelector<CrInputElement>(
                 '#activationCode');
@@ -615,7 +615,7 @@ suite('CrComponentsActivationCodePageTest', function() {
       assertTrue(!!inputSubtitle);
       assertEquals(inputSubtitle.hidden, isInputInvalid);
       assertEquals(
-          inputSubtitle.innerText!.trim(),
+          inputSubtitle.innerText.trim(),
           loadTimeData.getString('scanQrCodeInputSubtitle'));
     };
 
@@ -754,7 +754,7 @@ suite('CrComponentsActivationCodePageTest', function() {
         ACTIVATION_CODE_VALID);
   });
 
-  test('check carrier lock warning', async function() {
+  test('check carrier lock warning', function() {
     assertTrue(!!activationCodePage.shadowRoot!.querySelector(
         '#carrierLockWarningContainer'));
   });
@@ -763,17 +763,17 @@ suite('CrComponentsActivationCodePageTest', function() {
       'check carrier lock warning not displayed for consumer devices',
       async function() {
         networkConfigRemote.setDeviceStateForTest({
-          ipv4Address: undefined,
-          ipv6Address: undefined,
-          imei: undefined,
-          macAddress: undefined,
+          ipv4Address: null,
+          ipv6Address: null,
+          imei: null,
+          macAddress: null,
           scanning: false,
-          simLockStatus: undefined,
-          simInfos: undefined,
+          simLockStatus: null,
+          simInfos: null,
           inhibitReason: InhibitReason.kNotInhibited,
           simAbsent: false,
           managedNetworkAvailable: false,
-          serial: undefined,
+          serial: null,
           isCarrierLocked: false,
           isFlashing: false,
           type: NetworkType.kCellular,

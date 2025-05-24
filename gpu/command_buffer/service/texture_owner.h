@@ -90,7 +90,7 @@ class GPU_GLES2_EXPORT TextureOwner
   virtual gl::ScopedJavaSurface CreateJavaSurface() const = 0;
 
   // Update the texture image using the latest available image data.
-  virtual void UpdateTexImage() = 0;
+  virtual bool UpdateTexImage(bool discard) = 0;
 
   // Transformation matrix if any associated with the texture image.
   virtual void ReleaseBackBuffers() = 0;
@@ -146,6 +146,8 @@ class GPU_GLES2_EXPORT TextureOwner
   AbstractTextureAndroid* texture() const { return texture_.get(); }
 
   int tracing_id() const { return tracing_id_; }
+
+  static constexpr char kMemoryDumpPrefix[] = "gpu/media_texture_owner_0x%x";
 
  private:
   friend class MockTextureOwner;

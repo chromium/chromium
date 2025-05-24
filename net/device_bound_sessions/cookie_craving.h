@@ -15,7 +15,9 @@
 #include "net/cookies/cookie_partition_key.h"
 
 namespace net {
+class URLRequest;
 class CanonicalCookie;
+class FirstPartySetMetadata;
 }
 
 namespace net::device_bound_sessions {
@@ -147,6 +149,14 @@ class NET_EXPORT CookieCraving : public CookieBase {
   static std::optional<CookieCraving> CreateFromProto(
       const proto::CookieCraving& proto);
 
+  // Whether the craving applies to the given `request`, with other
+  // arguments providing context for the access.
+  bool ShouldIncludeForRequest(
+      URLRequest* request,
+      const FirstPartySetMetadata& first_party_set_metadata,
+      const CookieOptions& options,
+      const CookieAccessParams& params) const;
+
  private:
   CookieCraving();
 
@@ -161,6 +171,8 @@ class NET_EXPORT CookieCraving : public CookieBase {
                 std::optional<CookiePartitionKey> partition_key,
                 CookieSourceScheme source_scheme,
                 int source_port);
+
+  using CookieBase::IncludeForRequestURL;
 };
 
 // Outputs a debug string, e.g. for more helpful test failure messages.

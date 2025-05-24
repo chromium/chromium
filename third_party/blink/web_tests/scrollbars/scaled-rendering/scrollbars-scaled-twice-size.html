@@ -1,0 +1,24 @@
+<!doctype html>
+<!-- Tests that scaled scrollbars in subscrollers render properly. -->
+<meta charset="utf-8">
+<script src="../../resources/testharness.js"></script>
+
+<style>
+  .scrollable {
+    height: 200px;
+    overflow: scroll;
+    position: fixed;
+    width: 200px;
+    transform: scale(2);
+    transform-origin: 0 0;
+  }
+
+  .content {
+    height: 400px;
+    width: 400px;
+  }
+  </style>
+
+<div class="scrollable" id="subscroller">
+  <div class="content"></div>
+</div>

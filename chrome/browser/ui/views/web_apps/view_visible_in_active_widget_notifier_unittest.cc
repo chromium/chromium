@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
-
 #include "chrome/browser/ui/views/web_apps/view_visible_in_active_widget_notifier.h"
+
+#include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"

@@ -9,13 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Error.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
-#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Unwinder.h"
-
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
@@ -24,6 +17,12 @@
 #include "base/profiler/profile_builder.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Elf.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Error.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Maps.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Memory.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Regs.h"
+#include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/Unwinder.h"
 
 #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 #include "third_party/libunwindstack/src/libunwindstack/include/unwindstack/MachineArm.h"
@@ -39,8 +38,8 @@ namespace {
 class NonElfModule : public ModuleCache::Module {
  public:
   explicit NonElfModule(unwindstack::MapInfo* map_info)
-      : start_(map_info->start()),
-        size_(map_info->end() - start_),
+      : start_(static_cast<uintptr_t>(map_info->start())),
+        size_(static_cast<uintptr_t>(map_info->end() - start_)),
         map_info_name_(map_info->name()) {}
   ~NonElfModule() override = default;
 
@@ -75,6 +74,9 @@ std::unique_ptr<unwindstack::Regs> CreateFromRegisterContext(
 #endif  // #if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
 }
 
+// The WriteLibunwindstackTraceEventArgs callers below get implicitly ifdef'ed
+// out as well, when ENABLE_BASE_TRACING is disabled.
+#if BUILDFLAG(ENABLE_BASE_TRACING)
 void WriteLibunwindstackTraceEventArgs(unwindstack::ErrorCode error_code,
                                        std::optional<int> num_frames,
                                        perfetto::EventContext& ctx) {
@@ -86,6 +88,7 @@ void WriteLibunwindstackTraceEventArgs(unwindstack::ErrorCode error_code,
     libunwindstack_unwinder->set_num_frames(*num_frames);
   }
 }
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 bool IsJavaModule(const base::ModuleCache::Module* module) {
   if (!module) {
@@ -204,10 +207,11 @@ UnwindResult LibunwindstackUnwinderAndroid::TryUnwind(
 
   for (const unwindstack::FrameData& frame : values.frames) {
     const ModuleCache::Module* module =
-        module_cache()->GetModuleForAddress(frame.pc);
+        module_cache()->GetModuleForAddress(static_cast<uintptr_t>(frame.pc));
     if (module == nullptr && frame.map_info != nullptr) {
       // Try searching for the module with same module start.
-      module = module_cache()->GetModuleForAddress(frame.map_info->start());
+      module = module_cache()->GetModuleForAddress(
+          static_cast<uintptr_t>(frame.map_info->start()));
       if (module == nullptr) {
         auto module_for_caching =
             std::make_unique<NonElfModule>(frame.map_info.get());

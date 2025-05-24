@@ -26,10 +26,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -51,14 +53,13 @@ public class NativeViewListRendererTest {
         protected void onLayout(boolean changed, int left, int top, int right, int bottom) {}
     }
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private FeedListContentManager mManager;
     private Context mContext;
     private NativeViewListRenderer mRenderer;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mContext = Robolectric.buildActivity(Activity.class).get();
 
         // Note: this behaves both like a mock and a real object.

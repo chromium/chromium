@@ -15,7 +15,19 @@ def __filegroups(ctx):
     fg.update(typescript.filegroups(ctx))
     return fg
 
-__handlers = {}
+def __codesign(ctx, cmd):
+    # codesign.py uses the last arguments as bundle.path
+    # and it would remove existing files under bundle.path,
+    # but siso could not detect such removal, so would cause failure
+    # in subsequent steps. https://crbug.com/372628498
+    # To capture such removal, specify the bundle path as output,
+    # so hashfs.RetrieveUpdateEntriesFromLocal can detect them.
+    bundle_path = ctx.fs.canonpath(cmd.args[-1])
+    ctx.actions.fix(reconcile_outputdirs = [bundle_path])
+
+__handlers = {
+    "codesign": __codesign,
+}
 __handlers.update(clang.handlers)
 __handlers.update(typescript.handlers)
 
@@ -23,6 +35,13 @@ def __step_config(ctx, step_config):
     config.check(ctx)
     step_config = clang.step_config(ctx, step_config)
     step_config = typescript.step_config(ctx, step_config)
+    step_config["rules"].extend([
+        {
+            "name": "codesign",
+            "command_prefix": "python3 ../../build/config/apple/codesign.py ",
+            "handler": "codesign",
+        },
+    ])
     return step_config
 
 chromium = module(

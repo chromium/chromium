@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 static_library("feature_status_change") {
   sources = [ "feature_status_change.h" ]
@@ -35,10 +33,6 @@ static_library("device_sync") {
     "cryptauth_device_activity_getter.h",
     "cryptauth_device_activity_getter_impl.cc",
     "cryptauth_device_activity_getter_impl.h",
-    "cryptauth_device_manager.cc",
-    "cryptauth_device_manager.h",
-    "cryptauth_device_manager_impl.cc",
-    "cryptauth_device_manager_impl.h",
     "cryptauth_device_notifier.h",
     "cryptauth_device_notifier_impl.cc",
     "cryptauth_device_notifier_impl.h",
@@ -56,17 +50,10 @@ static_library("device_sync") {
     "cryptauth_ecies_encryptor.h",
     "cryptauth_ecies_encryptor_impl.cc",
     "cryptauth_ecies_encryptor_impl.h",
-    "cryptauth_enroller.h",
-    "cryptauth_enroller_factory_impl.cc",
-    "cryptauth_enroller_factory_impl.h",
-    "cryptauth_enroller_impl.cc",
-    "cryptauth_enroller_impl.h",
     "cryptauth_enrollment_constants.cc",
     "cryptauth_enrollment_constants.h",
     "cryptauth_enrollment_manager.cc",
     "cryptauth_enrollment_manager.h",
-    "cryptauth_enrollment_manager_impl.cc",
-    "cryptauth_enrollment_manager_impl.h",
     "cryptauth_enrollment_result.cc",
     "cryptauth_enrollment_result.h",
     "cryptauth_feature_status_getter.cc",
@@ -202,8 +189,6 @@ static_library("test_support") {
     "cryptauth_v2_device_sync_test_devices.h",
     "fake_attestation_certificates_syncer.cc",
     "fake_attestation_certificates_syncer.h",
-    "fake_cryptauth_device_manager.cc",
-    "fake_cryptauth_device_manager.h",
     "fake_cryptauth_device_notifier.cc",
     "fake_cryptauth_device_notifier.h",
     "fake_cryptauth_device_syncer.cc",
@@ -286,14 +271,11 @@ source_set("unit_tests") {
     "cryptauth_api_call_flow_unittest.cc",
     "cryptauth_client_impl_unittest.cc",
     "cryptauth_device_activity_getter_impl_unittest.cc",
-    "cryptauth_device_manager_impl_unittest.cc",
     "cryptauth_device_notifier_impl_unittest.cc",
     "cryptauth_device_registry_impl_unittest.cc",
     "cryptauth_device_syncer_impl_unittest.cc",
     "cryptauth_device_unittest.cc",
     "cryptauth_ecies_encryptor_impl_unittest.cc",
-    "cryptauth_enroller_impl_unittest.cc",
-    "cryptauth_enrollment_manager_impl_unittest.cc",
     "cryptauth_feature_status_getter_impl_unittest.cc",
     "cryptauth_feature_status_setter_impl_unittest.cc",
     "cryptauth_feature_type_unittest.cc",

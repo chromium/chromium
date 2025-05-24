@@ -22,7 +22,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "components/download/public/common/download_item.h"
-#include "components/download/public/common/download_item_utils.h"
 #include "components/download/public/common/simple_download_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -372,13 +371,15 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
     // In-progress download items which are dangerous but not malicious can be
     // kept or discarded by the user via notification. This being the case, such
     // items have a special secondary text treatment.
-    if (IsDangerous() && !MightBeMalicious())
+    if (IsDangerous() && !MightBeMalicious()) {
       return cros_tokens::kTextColorWarning;
+    }
 
     // In-progress download items which are dangerous or insecure have a special
     // secondary text treatment.
-    if (IsDangerous() || IsInsecure())
+    if (IsDangerous() || IsInsecure()) {
       return cros_tokens::kTextColorAlert;
+    }
 
     return std::nullopt;
   }
@@ -425,8 +426,7 @@ class HoldingSpaceDownloadsDelegate::InProgressDownload
         delegate_->OnDownloadFailed(this);  // NOTE: Destroys `this`.
         break;
       case download::DownloadItem::MAX_DOWNLOAD_STATE:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -479,8 +479,9 @@ std::optional<holding_space_metrics::ItemLaunchFailureReason>
 HoldingSpaceDownloadsDelegate::OpenWhenComplete(const HoldingSpaceItem* item) {
   DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   for (const auto& in_progress_download : in_progress_downloads_) {
-    if (in_progress_download->GetHoldingSpaceItem() == item)
+    if (in_progress_download->GetHoldingSpaceItem() == item) {
       return in_progress_download->OpenWhenComplete();
+    }
   }
   return ItemLaunchFailureReason::kDownloadNotFound;
 }
@@ -491,8 +492,9 @@ void HoldingSpaceDownloadsDelegate::OnPersistenceRestored() {
   // is not allowed to use ARC, e.g. if the `profile()` is OTR.
   auto* const arc_file_system_bridge =
       arc::ArcFileSystemBridge::GetForBrowserContext(profile());
-  if (arc_file_system_bridge)
+  if (arc_file_system_bridge) {
     arc_file_system_bridge_observation_.Observe(arc_file_system_bridge);
+  }
 
   // Ash Chrome downloads.
   download_notifier_.AddProfile(profile());
@@ -531,8 +533,9 @@ void HoldingSpaceDownloadsDelegate::OnManagerGoingDown(
   }
 
   // Fail all of `manager`'s downloads.
-  for (InProgressDownload* in_progress_download : downloads_to_remove)
+  for (InProgressDownload* in_progress_download : downloads_to_remove) {
     OnDownloadFailed(in_progress_download);
+  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
@@ -548,8 +551,9 @@ void HoldingSpaceDownloadsDelegate::OnDownloadCreated(
 void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
     content::DownloadManager* manager,
     download::DownloadItem* download_item) {
-  if (!IsInProgress(download_item))
+  if (!IsInProgress(download_item)) {
     return;
+  }
 
   // In the common case, we already created an `InProgressDownload` for
   // `download_item` in `OnDownloadCreated()`.
@@ -568,12 +572,14 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
 void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
     const GURL& uri,
     const arc::mojom::MediaStoreMetadata& metadata) {
-  if (is_restoring_persistence())
+  if (is_restoring_persistence()) {
     return;
+  }
 
   // Holding space is only interested in download added events.
-  if (!metadata.is_download())
+  if (!metadata.is_download()) {
     return;
+  }
 
   const auto& download = metadata.get_download();
   const base::FilePath& relative_path = download->relative_path;
@@ -585,8 +591,7 @@ void HoldingSpaceDownloadsDelegate::OnMediaStoreUriAdded(
       file_manager::util::GetDownloadsFolderForProfile(profile()));
   if (!base::FilePath("Download/")
            .AppendRelativePath(relative_path.Append(display_name), &path)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   service()->AddItemOfType(HoldingSpaceItem::Type::kArcDownload, path);
@@ -599,8 +604,9 @@ void HoldingSpaceDownloadsDelegate::OnDownloadUpdated(
   // is set. In some cases, this requires the user to actively select the target
   // file path from a selection dialog. Only once file path information is set
   // should a holding space item be associated with the in-progress download.
-  if (!in_progress_download->GetFilePath().empty())
+  if (!in_progress_download->GetFilePath().empty()) {
     CreateOrUpdateHoldingSpaceItem(in_progress_download, invalidate_image);
+  }
 }
 
 void HoldingSpaceDownloadsDelegate::OnDownloadCompleted(
@@ -650,8 +656,9 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
   }
 
   // May be `nullptr` in tests.
-  if (!item)
+  if (!item) {
     return;
+  }
 
   // Commands.
   std::vector<HoldingSpaceItem::InProgressCommand> in_progress_commands;
@@ -700,48 +707,42 @@ void HoldingSpaceDownloadsDelegate::CreateOrUpdateHoldingSpaceItem(
       .SetProgress(in_progress_download->GetProgress());
 }
 
-void HoldingSpaceDownloadsDelegate::Cancel(
-    const HoldingSpaceItem* item,
-    HoldingSpaceCommandId command_id,
-    holding_space_metrics::EventSource event_source) {
+void HoldingSpaceDownloadsDelegate::Cancel(const HoldingSpaceItem* item,
+                                           HoldingSpaceCommandId command_id) {
   DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kCancelItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
-          {item}, holding_space_metrics::ItemAction::kCancel, event_source);
+          {item}, holding_space_metrics::ItemAction::kCancel);
       in_progress_download->Cancel();
       return;
     }
   }
 }
 
-void HoldingSpaceDownloadsDelegate::Pause(
-    const HoldingSpaceItem* item,
-    HoldingSpaceCommandId command_id,
-    holding_space_metrics::EventSource event_source) {
+void HoldingSpaceDownloadsDelegate::Pause(const HoldingSpaceItem* item,
+                                          HoldingSpaceCommandId command_id) {
   DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kPauseItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
-          {item}, holding_space_metrics::ItemAction::kPause, event_source);
+          {item}, holding_space_metrics::ItemAction::kPause);
       in_progress_download->Pause();
       return;
     }
   }
 }
 
-void HoldingSpaceDownloadsDelegate::Resume(
-    const HoldingSpaceItem* item,
-    HoldingSpaceCommandId command_id,
-    holding_space_metrics::EventSource event_source) {
+void HoldingSpaceDownloadsDelegate::Resume(const HoldingSpaceItem* item,
+                                           HoldingSpaceCommandId command_id) {
   DCHECK(HoldingSpaceItem::IsDownloadType(item->type()));
   DCHECK_EQ(HoldingSpaceCommandId::kResumeItem, command_id);
   for (const auto& in_progress_download : in_progress_downloads_) {
     if (in_progress_download->GetHoldingSpaceItem() == item) {
       holding_space_metrics::RecordItemAction(
-          {item}, holding_space_metrics::ItemAction::kResume, event_source);
+          {item}, holding_space_metrics::ItemAction::kResume);
       in_progress_download->Resume();
       return;
     }

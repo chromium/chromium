@@ -18,6 +18,7 @@
 #include "media/base/win/mf_mocks.h"
 #include "media/cdm/clear_key_cdm_common.h"
 #include "media/cdm/mock_helpers.h"
+#include "media/cdm/win/media_foundation_cdm_module.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,6 +49,8 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
     cdm_helper_ = cdm_helper.get();
     cdm_factory_ =
         std::make_unique<MediaFoundationCdmFactory>(std::move(cdm_helper));
+
+    MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(false);
   }
 
   ~MediaFoundationCdmFactoryTest() override = default;

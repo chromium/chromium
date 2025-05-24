@@ -15,6 +15,8 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <variant>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -37,7 +39,6 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "net/base/filename_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
@@ -50,7 +51,6 @@
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_conversion.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -85,7 +85,6 @@ using blink::WebString;
 using blink::WebTouchEvent;
 using blink::WebTouchPoint;
 using blink::WebURL;
-using blink::WebVector;
 using blink::WebView;
 
 namespace content {
@@ -147,8 +146,7 @@ WebInputEvent::Type PointerEventTypeForTouchPointState(
       return WebInputEvent::Type::kPointerMove;
     case WebTouchPoint::State::kStateStationary:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return WebInputEvent::Type::kUndefined;
+      NOTREACHED();
   }
 }
 
@@ -216,8 +214,7 @@ WebMouseEvent::Button GetButtonTypeFromButtonNumber(int button_code) {
     case 4:
       return WebMouseEvent::Button::kForward;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebMouseEvent::Button::kNoButton;
+  NOTREACHED();
 }
 
 int GetWebMouseEventModifierForButton(WebMouseEvent::Button button) {
@@ -237,8 +234,7 @@ int GetWebMouseEventModifierForButton(WebMouseEvent::Button button) {
     case WebPointerProperties::Button::kEraser:
       return 0;  // Not implemented yet
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const int kButtonsInModifiers =
@@ -415,7 +411,7 @@ bool OutsideRadius(const gfx::PointF& a, const gfx::PointF& b, float radius) {
           (a.y() - b.y()) * (a.y() - b.y())) > radius * radius;
 }
 
-void PopulateCustomItems(const WebVector<MenuItemInfo>& customItems,
+void PopulateCustomItems(const std::vector<MenuItemInfo>& customItems,
                          const std::string& prefix,
                          std::vector<std::string>* strings) {
   for (size_t i = 0; i < customItems.size(); ++i) {
@@ -478,7 +474,7 @@ std::vector<std::string> MakeMenuItemStringsFor(ContextMenuData* context_menu) {
     for (const char** item = kEditableMenuStrings; *item; ++item) {
       strings.push_back(*item);
     }
-    WebVector<WebString> suggestions;
+    std::vector<WebString> suggestions;
     WebTestSpellChecker::FillSuggestionList(
         WebString::FromUTF16(context_menu->misspelled_word), &suggestions);
     for (const WebString& suggestion : suggestions)
@@ -1878,10 +1874,10 @@ void EventSender::DumpFilenameBeingDragged(blink::WebLocalFrame* frame) {
 
   auto* frame_proxy =
       static_cast<WebFrameTestProxy*>(RenderFrame::FromWebFrame(frame));
-  WebVector<WebDragData::Item> items = current_drag_data_->Items();
+  std::vector<WebDragData::Item> items = current_drag_data_->Items();
   for (const auto& item : items) {
     if (const auto* binary_data_item =
-            absl::get_if<WebDragData::BinaryDataItem>(&item)) {
+            std::get_if<WebDragData::BinaryDataItem>(&item)) {
       WebURL url = binary_data_item->source_url;
       WebString filename_extension = binary_data_item->filename_extension;
       WebString content_disposition = binary_data_item->content_disposition;
@@ -1943,7 +1939,7 @@ void EventSender::LeapForward(int milliseconds) {
 
 void EventSender::BeginDragWithItems(
     blink::WebLocalFrame* frame,
-    const WebVector<WebDragData::Item>& items) {
+    const std::vector<WebDragData::Item>& items) {
   if (current_drag_data_) {
     // Nested dragging not supported, fuzzer code a likely culprit.
     // Cancel the current drag operation and throw an error.
@@ -1961,7 +1957,7 @@ void EventSender::BeginDragWithItems(
   for (const WebDragData::Item& item : items) {
     current_drag_data_->AddItem(item);
     if (const auto* filename_item =
-            absl::get_if<WebDragData::FilenameItem>(&item)) {
+            std::get_if<WebDragData::FilenameItem>(&item)) {
       file_paths.push_back(blink::WebStringToFilePath(filename_item->filename));
     }
   }
@@ -1994,7 +1990,7 @@ void EventSender::BeginDragWithItems(
 
 void EventSender::BeginDragWithFiles(blink::WebLocalFrame* frame,
                                      const std::vector<std::string>& files) {
-  WebVector<WebDragData::Item> items;
+  std::vector<WebDragData::Item> items;
 
   for (const std::string& file_path : files) {
     WebDragData::FilenameItem item = {
@@ -2009,7 +2005,7 @@ void EventSender::BeginDragWithFiles(blink::WebLocalFrame* frame,
 void EventSender::BeginDragWithStringData(blink::WebLocalFrame* frame,
                                           const std::string& data,
                                           const std::string& mime_type) {
-  WebVector<WebDragData::Item> items;
+  std::vector<WebDragData::Item> items;
   WebDragData::StringItem item = {
       .type = WebString::FromUTF8(mime_type),
       .data = WebString::FromUTF8(data),
@@ -2386,8 +2382,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
     case WebInputEvent::Type::kGestureFlingStart:
     case WebInputEvent::Type::kGestureFlingCancel:
       // Flings are no longer handled on the main thread.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case WebInputEvent::Type::kGestureTap: {
       float tap_count = 1;
       float width = 30;
@@ -2512,7 +2507,7 @@ void EventSender::GestureEvent(WebInputEvent::Type type,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   event.unique_touch_event_id = GetUniqueTouchEventId(args);
@@ -2800,7 +2795,7 @@ void EventSender::ReplaySavedEvents() {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

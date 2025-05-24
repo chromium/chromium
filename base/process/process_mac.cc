@@ -24,12 +24,6 @@ namespace base {
 
 namespace {
 
-// Enables setting the task role of every child process to
-// TASK_DEFAULT_APPLICATION.
-BASE_FEATURE(kMacSetDefaultTaskRole,
-             "MacSetDefaultTaskRole",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 // Returns the `task_role_t` of the process whose task port is `task_port`.
 std::optional<task_role_t> GetTaskCategoryPolicyRole(mach_port_t task_port) {
   task_category_policy_data_t category_policy;
@@ -146,13 +140,15 @@ bool SetPriorityImpl(mach_port_t task_port,
 Time Process::CreationTime() const {
   int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, Pid()};
   size_t len = 0;
-  if (sysctl(mib, std::size(mib), NULL, &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), NULL, &len, NULL, 0) < 0) {
     return Time();
+  }
 
   std::unique_ptr<struct kinfo_proc, base::FreeDeleter> proc(
       static_cast<struct kinfo_proc*>(malloc(len)));
-  if (sysctl(mib, std::size(mib), proc.get(), &len, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), proc.get(), &len, NULL, 0) < 0) {
     return Time();
+  }
   return Time::FromTimeVal(proc->kp_proc.p_un.__p_starttime);
 }
 
@@ -229,10 +225,6 @@ bool Process::SetPriority(PortProvider* port_provider, Priority priority) {
 
 // static
 void Process::SetCurrentTaskDefaultRole() {
-  if (!base::FeatureList::IsEnabled(kMacSetDefaultTaskRole)) {
-    return;
-  }
-
   SetTaskCategoryPolicy(mach_task_self(), TASK_FOREGROUND_APPLICATION);
 
   // Set the QoS settings to tier 0, to match the default value given to App Nap

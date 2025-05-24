@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
 #include "chrome/browser/browser_process.h"
 #include "components/user_manager/known_user.h"
 
@@ -29,7 +30,7 @@ void RecordReauthReason(const AccountId& account_id, ReauthReason reason) {
   if (GetReauthReason(known_user, account_id) == reason)
     return;
 
-  LOG(WARNING) << "Reauth reason updated: " << static_cast<int>(reason);
+  SYSLOG(WARNING) << "Reauth reason updated: " << static_cast<int>(reason);
   known_user.UpdateReauthReason(account_id, static_cast<int>(reason));
 }
 

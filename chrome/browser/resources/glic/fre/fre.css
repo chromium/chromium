@@ -1,0 +1,186 @@
+/* Copyright 2025 The Chromium Authors
+* Use of this source code is governed by a BSD-style license that can be
+* found in the LICENSE file. */
+
+/* Manually added colors to match the web colors used in the webview's
+* content. */
+:root {
+  color-scheme: light dark;
+  --color--surface-container: light-dark(#F0F4F9, #282A2C);
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.panel {
+  background-color: var(--cr-fallback-color-surface);
+}
+
+.dialog {
+  height: 100%;
+  width: 100%;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--cr-fallback-color-on-surface);
+  display: flex;
+  flex-direction: column;
+  --header-height: 24px;
+}
+
+.header {
+  padding: 12px 20px 12px 12px;
+  height: var(--header-height);
+  display: flex;
+  justify-content: right;
+}
+
+.close-button {
+  --cr-icon-button-size: var(--header-height);
+  --cr-icon-button-icon-size: 14px;
+  color: var(--cr-fallback-color-on-surface);
+}
+
+.container {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.notice {
+  width: 358px;
+  margin-top: calc(var(--header-height) * -1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.icon {
+  --iron-icon-fill-color: var(--cr-fallback-color-error);
+  margin-inline-start: 4px;
+}
+
+p {
+  margin: 0 0 8px;
+  text-align: center;
+}
+
+.headline {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 8px 0 4px;
+}
+
+#guestPanel {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+#webviewContainer {
+  width: 100%;
+  height: 100%;
+}
+
+.tonal-button {
+  margin-top: 8px;
+  background-color: var(--cr-fallback-color-tonal-container);
+  color: var(--cr-fallback-color-on-tonal-container);
+}
+
+.panel[hidden] {
+  display: none;
+}
+
+#loadingPanel .header {
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+#loadingPanel .container {
+  padding: 32px;
+  flex-direction: column;
+  justify-content: start;
+}
+
+/* Skeleton loader styles */
+.skeleton-loader-block {
+  width: 100%;
+  margin-bottom: 12px;
+  background-color: var(--color--surface-container);
+  border-radius: 12px;
+  animation: 1.5s infinite ease-in-out opacity-fade;
+}
+
+.container .bottom {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+}
+
+.a {
+  width: 90px;
+  height: 45px;
+  border-radius: 48px;
+}
+
+.b {
+  height: 64px;
+  animation-delay: 0.1s;
+}
+
+.c {
+  height: 78px;
+  margin-bottom: 1px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  animation-delay: 0.2s;
+}
+
+.d {
+  height: 44px;
+  margin-bottom: 1px;
+  border-radius: 0;
+  animation-delay: 0.3s;
+}
+
+.e {
+  height: 78px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  animation-delay: 0.4s;
+}
+
+.f {
+  height: 35px;
+  animation-delay: 0.5s;
+}
+
+.g {
+  width: 102px;
+  height: 44px;
+  border-radius: 48px;
+  animation-delay: 0.6s;
+}
+
+@keyframes opacity-fade {
+  0% {
+    opacity: 100%;
+  }
+  33% {
+    opacity: 50%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}

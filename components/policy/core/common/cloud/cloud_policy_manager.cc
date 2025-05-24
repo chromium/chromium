@@ -43,7 +43,7 @@ CloudPolicyManager::CloudPolicyManager(
             std::move(network_connection_tracker_getter)),
       waiting_for_policy_refresh_(false) {}
 
-CloudPolicyManager::~CloudPolicyManager() {}
+CloudPolicyManager::~CloudPolicyManager() = default;
 
 bool CloudPolicyManager::IsClientRegistered() const {
   return client() && client()->is_registered();

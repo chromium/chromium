@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("auth") {
   sources = [
@@ -22,7 +22,6 @@ static_library("auth") {
   deps = [
     "//ash/constants",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/profiles",

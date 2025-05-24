@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -28,6 +29,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-forward.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom.h"
 
 namespace content {
@@ -97,7 +99,8 @@ class MetricsWebContentsObserver
   void DidUpdateNavigationHandleTiming(
       content::NavigationHandle* navigation_handle) override;
   void NavigationStopped() override;
-  void OnInputEvent(const blink::WebInputEvent& event) override;
+  void OnInputEvent(const content::RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
@@ -253,8 +256,9 @@ class MetricsWebContentsObserver
   void AddCustomUserTiming(
       mojom::CustomUserTimingMarkPtr custom_timing) override;
 
-  void SetUpSharedMemoryForSmoothness(
-      base::ReadOnlySharedMemoryRegion shared_memory) override;
+  void SetUpSharedMemoryForUkms(
+      base::ReadOnlySharedMemoryRegion smoothness_memory,
+      base::ReadOnlySharedMemoryRegion dropped_frames_memory) override;
 
   // Common part for UpdateThroughput and OnTimingUpdated.
   bool DoesTimingUpdateHaveError(PageLoadTracker* tracker);
@@ -309,6 +313,15 @@ class MetricsWebContentsObserver
   // for the given main frame navigation.
   bool ShouldTrackMainFrameNavigation(
       content::NavigationHandle* navigation_handle) const;
+
+  // Determines if metrics should be collected for a given URL scheme.
+  // This is used for both navigation and resource timing updates.
+  // If this returns false, the navigation to the URL will not be tracked, and
+  // timing updates for resources loaded from the URL will not be propagated to
+  // metrics observers.
+  bool ShouldTrackScheme(std::string_view scheme) const;
+
+  bool ShouldTrackSchemeForNonWebUI(std::string_view scheme) const;
 
   void OnBrowserFeatureUsage(
       content::RenderFrameHost* render_frame_host,
@@ -380,14 +393,20 @@ class MetricsWebContentsObserver
       inactive_pages_;
 
   // This is currently set only for the main frame of each page associated with
-  // the WebContents.
-  base::flat_map<content::RenderFrameHost*, base::ReadOnlySharedMemoryRegion>
-      ukm_smoothness_data_;
+  // the WebContents. It maps to the shared memory for the smoothness and the
+  // dropped frame count UKMs.
+  base::flat_map<content::RenderFrameHost*,
+                 std::pair<base::ReadOnlySharedMemoryRegion,
+                           base::ReadOnlySharedMemoryRegion>>
+      ukm_data_;
 
   std::vector<mojom::CustomUserTimingMarkPtr> page_load_custom_timings_;
 
   // Has the MWCO observed at least one navigation?
   bool has_navigated_;
+
+  // Is the main frame a WebUI page?
+  bool main_frame_is_webui_ = false;
 
   base::ObserverList<MetricsLifecycleObserver> lifecycle_observers_;
   content::RenderFrameHostReceiverSet<mojom::PageLoadMetrics>

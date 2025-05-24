@@ -10,6 +10,7 @@
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_container.h"
 #import "ios/components/security_interstitials/lookalikes/lookalike_url_tab_allow_list.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
+#import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/platform_test.h"
@@ -17,6 +18,9 @@
 class LookalikeUrlTabHelperTest : public PlatformTest {
  protected:
   LookalikeUrlTabHelperTest() {
+    browser_state_.SetOffTheRecord(false);
+    web_state_.SetBrowserState(&browser_state_);
+
     LookalikeUrlTabHelper::CreateForWebState(&web_state_);
     LookalikeUrlTabAllowList::CreateForWebState(&web_state_);
     LookalikeUrlContainer::CreateForWebState(&web_state_);
@@ -52,6 +56,7 @@ class LookalikeUrlTabHelperTest : public PlatformTest {
   LookalikeUrlTabAllowList* allow_list() { return allow_list_; }
 
   base::HistogramTester histogram_tester_;
+  web::FakeBrowserState browser_state_;
   web::FakeWebState web_state_;
 
  private:
@@ -71,7 +76,7 @@ TEST_F(LookalikeUrlTabHelperTest, ShouldAllowResponse) {
                    .ShouldAllowNavigation());
   histogram_tester_.ExpectUniqueSample(
       lookalikes::kInterstitialHistogramName,
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           lookalikes::NavigationSuggestionEvent::kMatchSkeletonTop500),
       1);
 

@@ -16,6 +16,6 @@ UNKNOWN_TYPE | LOYALTY_ADDRESS<>ATR_indBillAsRewards | Save the address above as
 UNKNOWN_TYPE | LOYALTY_ACCOUNT<>sendEmail | Save the address above as my default billing address. I would like to receive promotions and special offers from Gymboree. | true | LOYALTY_ACCOUNT<>email_1
 UNKNOWN_TYPE | accept | I have read and accept the terms and conditions of Gymboree Rewards. (Rewards information and offers will be emailed to you.) | on | LOYALTY_ACCOUNT<>email_1
 
-UNKNOWN_TYPE | SEARCH_INPUT<>searchFor | search by keyword or item# | search by keyword or item# | SEARCH_INPUT<>searchFor_1
+EMAIL_ADDRESS | SUBSCRIBER_INFO<>email | Exclusive E-Mail Sign Up | Sign Up Today! | SUBSCRIBER_INFO<>email_1
 
-UNKNOWN_TYPE | SUBSCRIBER_INFO<>email | Exclusive E-Mail Sign Up | Sign Up Today! | SUBSCRIBER_INFO<>email_1
+UNKNOWN_TYPE | SEARCH_INPUT<>searchFor | search by keyword or item# | search by keyword or item# | SEARCH_INPUT<>searchFor_1

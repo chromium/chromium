@@ -10,8 +10,6 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
-#include "ash/style/ash_color_id.h"
-#include "ash/style/ash_color_provider.h"
 #include "ash/style/system_shadow.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -153,22 +151,22 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  ui::ColorId background_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBase80;
+  const ui::ColorId background_color_id = static_cast<ui::ColorId>(
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         kBubbleBorderRadius));
+  SetBackground(views::CreateRoundedRectBackground(background_color_id,
+                                                   kBubbleBorderRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleBorderRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
+
   // Set shadow
-  if (chromeos::features::IsJellyrollEnabled()) {
-    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
-        this, SystemShadow::Type::kElevation12);
-    shadow_->SetRoundedCornerRadius(kBubbleBorderRadius);
-  }
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kBubbleBorderRadius);
+
   SetVisible(false);
 }
 
@@ -178,9 +176,11 @@ void LoginBaseBubbleView::EnsureLayer() {
   }
   // Layer rendering is needed for animation.
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 }
 
 LoginBaseBubbleView::~LoginBaseBubbleView() = default;
@@ -197,8 +197,8 @@ void LoginBaseBubbleView::Show() {
 
   // Tell ChromeVox to read bubble contents.
   if (notify_a11y_alert_on_show_) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                             true /*send_native_event*/);
+    NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert,
+                                       true /*send_native_event*/);
   }
 }
 

@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/delete_edit_shortcut.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/input_mapping_view.h"
-#include "chrome/browser/ash/arc/input_overlay/ui/nudge_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/target_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/touch_point.h"
 #include "components/ukm/test_ukm_recorder.h"

@@ -21,8 +21,6 @@
 
 namespace {
 
-// TODO(jamescook): Support Lacros. This will require crosapi to be bootstrapped
-// for Lacros Crosier tests.
 class WebHandwritingIntegrationTest : public MixinBasedInProcessBrowserTest {
  public:
   WebHandwritingIntegrationTest()
@@ -37,13 +35,11 @@ class WebHandwritingIntegrationTest : public MixinBasedInProcessBrowserTest {
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDownOnMainThread() override {
     // Close the browser otherwise the test may hang on shutdown.
     browser()->window()->Close();
     MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ChromeOSIntegrationTestMixin chromeos_mixin_{&mixin_host_};
 

@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for base/android/feature_map.h state. */
 @JNINamespace("syncer")
+@NullMarked
 public final class SyncFeatureMap extends FeatureMap {
     public static final String SYNC_ENABLE_BOOKMARKS_IN_TRANSPORT_MODE =
             "SyncEnableBookmarksInTransportMode";

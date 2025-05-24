@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/bookmark_client.h"
@@ -79,6 +80,15 @@ class TestBookmarkClient : public BookmarkClient {
   void SetAccountBookmarkSyncMetadataAndScheduleWrite(
       const std::string& account_bookmark_sync_metadata);
 
+  // Allows overriding the value returned by
+  // `DecodeAccountBookmarkSyncMetadataResult()`.
+  void SetDecodeAccountBookmarkSyncMetadataResult(
+      DecodeAccountBookmarkSyncMetadataResult result);
+
+  // Simulates the log interval trigger by calling `metrics_callback_` that was
+  // the input in `SchedulePersistentTimerForDailyMetrics()`.
+  void TriggerPersistentLogInterval();
+
   // BookmarkClient:
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
   bool IsSyncFeatureEnabledIncludingBookmarks() override;
@@ -89,7 +99,7 @@ class TestBookmarkClient : public BookmarkClient {
   void DecodeLocalOrSyncableBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
-  void DecodeAccountBookmarkSyncMetadata(
+  DecodeAccountBookmarkSyncMetadataResult DecodeAccountBookmarkSyncMetadata(
       const std::string& metadata_str,
       const base::RepeatingClosure& schedule_save_closure) override;
   base::CancelableTaskTracker::TaskId GetFaviconImageForPageURL(
@@ -100,6 +110,8 @@ class TestBookmarkClient : public BookmarkClient {
       const BookmarkNode* parent,
       size_t index,
       std::unique_ptr<BookmarkNode> node) override;
+  void SchedulePersistentTimerForDailyMetrics(
+      base::RepeatingClosure metrics_callback) override;
 
  private:
   // Helpers for GetLoadManagedNodeCallback().
@@ -122,6 +134,12 @@ class TestBookmarkClient : public BookmarkClient {
   std::string account_bookmark_sync_metadata_;
   base::RepeatingClosure account_bookmark_sync_metadata_save_closure_ =
       base::DoNothing();
+
+  DecodeAccountBookmarkSyncMetadataResult
+      decode_account_bookmark_sync_metadata_result_ =
+          DecodeAccountBookmarkSyncMetadataResult::kSuccess;
+
+  base::RepeatingClosure metrics_callback_;
 };
 
 }  // namespace bookmarks

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/media_router/browser/issue_manager.h"
+
 #include <string>
 
 #include "base/test/task_environment.h"
-#include "components/media_router/browser/issue_manager.h"
 #include "components/media_router/browser/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,8 +28,7 @@ IssueInfo CreateTestIssue(IssueInfo::Severity severity) {
 class IssueManagerTest : public ::testing::Test {
  protected:
   IssueManagerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-  }
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~IssueManagerTest() override = default;
 
   content::BrowserTaskEnvironment task_environment_;

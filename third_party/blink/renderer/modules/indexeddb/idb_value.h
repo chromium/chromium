@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -22,10 +23,10 @@
 namespace blink {
 
 class BlobDataHandle;
-class SerializedScriptValue;
 class WebBlobInfo;
 
-// Represents an IndexedDB Object Store value retrieved from the backing store.
+// Represents an IndexedDB Object Store value retrieved from the backing store,
+// or a value to be written into the backing store.
 //
 // For most purposes, the backing store represents each IndexedDB value as wire
 // data (a vector of bytes produced by SerializedScriptValue) and attached Blobs
@@ -41,25 +42,30 @@ class WebBlobInfo;
 // the values before returning them to the user.
 class MODULES_EXPORT IDBValue final {
  public:
-  IDBValue(
-      Vector<char>&& data,
-      Vector<WebBlobInfo>,
-      Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>> =
-          {});
+  IDBValue();
   ~IDBValue();
 
   // Disallow copy and assign.
   IDBValue(const IDBValue&) = delete;
   IDBValue& operator=(const IDBValue&) = delete;
 
-  size_t DataSize() const { return data_.size(); }
-
   scoped_refptr<SerializedScriptValue> CreateSerializedValue() const;
+
+  void SetBlobInfo(Vector<WebBlobInfo> blob_info);
   const Vector<WebBlobInfo>& BlobInfo() const { return blob_info_; }
-  const Vector<char>& Data() const { return data_; }
+
+  void SetData(Vector<char> data);
+  void SetData(SerializedScriptValue::DataBufferPtr data);
+  base::span<const uint8_t> Data() const;
+
   const IDBKey* PrimaryKey() const { return primary_key_.get(); }
   const IDBKeyPath& KeyPath() const { return key_path_; }
 
+  void SetFileSystemAccessTokens(
+      Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
+          tokens) {
+    file_system_access_tokens_ = std::move(tokens);
+  }
   Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>&
   FileSystemAccessTokens() {
     return file_system_access_tokens_;
@@ -83,11 +89,6 @@ class MODULES_EXPORT IDBValue final {
   // are in use.
   void SetIsolate(v8::Isolate*);
 
-  // Replaces this value's wire bytes.
-  //
-  // Used when unwrapping a value whose wire bytes are stored in a Blob.
-  void SetData(Vector<char>&&);
-
   // Removes the last Blob from the IDBValue.
   //
   // When wire bytes are wrapped into a Blob, the Blob is appended at the end of
@@ -101,7 +102,14 @@ class MODULES_EXPORT IDBValue final {
  private:
   friend class IDBValueUnwrapper;
 
-  Vector<char> data_;
+  // Data serialized by SerializedScriptValue is stored:
+  // - in `data_from_mojo_` when reading from the backend via mojo
+  // - in `data_` before writing to the backend via mojo
+  Vector<char> data_from_mojo_;
+  SerializedScriptValue::DataBufferPtr data_;
+  // The number of times `data_` has been turned into a `SerialiedScriptValue`
+  // and had to be decompressed, tracked for metrics.
+  size_t decompression_count_ = 0;
 
   Vector<WebBlobInfo> blob_info_;
 

@@ -33,7 +33,7 @@
 ChromeTabRestoreServiceClient::ChromeTabRestoreServiceClient(Profile* profile)
     : profile_(profile) {}
 
-ChromeTabRestoreServiceClient::~ChromeTabRestoreServiceClient() {}
+ChromeTabRestoreServiceClient::~ChromeTabRestoreServiceClient() = default;
 
 sessions::LiveTabContext* ChromeTabRestoreServiceClient::CreateLiveTabContext(
     sessions::LiveTabContext* existing_context,

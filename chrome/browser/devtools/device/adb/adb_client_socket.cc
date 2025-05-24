@@ -178,8 +178,7 @@ AdbClientSocket::AdbClientSocket(int port)
     : host_(kLocalhost), port_(port) {
 }
 
-AdbClientSocket::~AdbClientSocket() {
-}
+AdbClientSocket::~AdbClientSocket() = default;
 
 void AdbClientSocket::RunConnectCallback(int result) {
   std::move(connect_callback_).Run(result);

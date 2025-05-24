@@ -99,8 +99,9 @@ void ConcatMenuModel::MenuWillClose() {
 
 ui::MenuModel* ConcatMenuModel::GetMenuAndIndex(size_t* index) const {
   size_t m1_count = m1_->GetItemCount();
-  if (*index < m1_count)
+  if (*index < m1_count) {
     return m1_;
+  }
 
   *index -= m1_count;
   DCHECK_LT(*index, m2_->GetItemCount());

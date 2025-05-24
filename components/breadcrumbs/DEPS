@@ -8,4 +8,5 @@ include_rules = [
   "+components/version_info",
   "+net/base/net_errors.h",
   "+ui/base",
+  "+ui/views",
 ]

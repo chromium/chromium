@@ -22,7 +22,7 @@ PasswordManagerTabHelper* PasswordManagerTabHelper::GetOrCreateForWebState(
 }
 
 PasswordManagerTabHelper::PasswordManagerTabHelper(web::WebState* web_state) {}
-PasswordManagerTabHelper::~PasswordManagerTabHelper() {}
+PasswordManagerTabHelper::~PasswordManagerTabHelper() = default;
 
 void PasswordManagerTabHelper::ScriptMessageReceived(
     const web::ScriptMessage& message) {
@@ -34,7 +34,5 @@ void PasswordManagerTabHelper::ScriptMessageReceived(
 void PasswordManagerTabHelper::SetFormHelper(PasswordFormHelper* form_helper) {
   password_form_helper_ = form_helper;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(PasswordManagerTabHelper)
 
 }  // namespace password_manager

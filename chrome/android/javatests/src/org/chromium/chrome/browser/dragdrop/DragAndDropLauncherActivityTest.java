@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
@@ -34,13 +35,18 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
+import org.chromium.chrome.browser.tabmodel.TabGroupMetadataExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -49,6 +55,9 @@ import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 /** Tests for {@link DragAndDropLauncherActivity}. */
@@ -86,7 +95,7 @@ public class DragAndDropLauncherActivityTest {
     @Test
     @LargeTest
     public void testDraggedLink_newWindow() throws Exception {
-        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, TabWindowManager.INVALID_WINDOW_ID);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Android.DragDrop.Tab.Type", DragDropType.LINK_TO_NEW_INSTANCE);
@@ -140,7 +149,7 @@ public class DragAndDropLauncherActivityTest {
         // the last accessed instance. Actual max # of instances will not be created as this would
         // cause a significant overhead for testing this scenario where a link is opened in an
         // existing instance.
-        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, TabWindowManager.INVALID_WINDOW_ID);
         ChromeTabbedActivity lastAccessedActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
@@ -187,7 +196,7 @@ public class DragAndDropLauncherActivityTest {
     @LargeTest
     public void testDraggedLink_invalidIntentCreationTimestamp() throws Exception {
         DragAndDropLauncherActivity.setDropTimeoutMsForTesting(500L);
-        Intent intent = createLinkDragDropIntent(mLinkUrl, MultiWindowUtils.INVALID_INSTANCE_ID);
+        Intent intent = createLinkDragDropIntent(mLinkUrl, TabWindowManager.INVALID_WINDOW_ID);
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newBuilder().expectNoRecords("Android.DragDrop.Tab.Type").build();
         Thread.sleep(DragAndDropLauncherActivity.getDropTimeoutMs() + 1);
@@ -205,7 +214,6 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
-    @EnableFeatures(ChromeFeatureList.DRAG_DROP_TAB_TEARING)
     public void testDraggedTab_newWindow() throws Exception {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -220,7 +228,7 @@ public class DragAndDropLauncherActivityTest {
                 sourceActivity.getTabModelSelector().getTotalTabCount();
 
         // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
-        Intent intent = createTabDragDropIntent(draggedTab);
+        Intent intent = createTabDragDropIntent(draggedTab, sourceActivity);
         ChromeTabbedActivity newActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,
@@ -269,6 +277,73 @@ public class DragAndDropLauncherActivityTest {
         newActivity.finish();
     }
 
+    /**
+     * Tests that a dragged tab group intent is launched by DragAndDropLauncherActivity in a new
+     * Chrome window with successful tab group reparenting.
+     */
+    @Test
+    @LargeTest
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_GROUP_DRAG_DROP_ANDROID)
+    public void testDraggedTabGroup_newWindow() throws Exception {
+        var sourceActivity = mActivityTestRule.getActivity();
+
+        // Open a tab group in the current activity, that will be used as the dragged tab group.
+        List<Tab> draggedTabGroup = prepareTabGroup();
+
+        var initialTabCountInSourceActivity =
+                sourceActivity.getTabModelSelector().getTotalTabCount();
+
+        // Simulate a tab drag/drop event to launch an intent in a new Chrome instance.
+        Intent intent = createTabGroupDragDropIntent(draggedTabGroup, sourceActivity);
+        ChromeTabbedActivity newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.CREATED,
+                        () -> mContext.startActivity(intent));
+
+        // Verify that a new Chrome instance is created.
+        Assert.assertEquals(
+                "Number of Chrome instances should be correct.",
+                2,
+                MultiWindowUtils.getInstanceCount());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Tab activityTab = newActivity.getActivityTab();
+                    Criteria.checkThat(
+                            "Activity tab should be non-null.",
+                            activityTab,
+                            Matchers.notNullValue());
+                    Criteria.checkThat(
+                            "Tab group should be moved from the source window.",
+                            sourceActivity.getTabModelSelector().getTotalTabCount(),
+                            Matchers.is(initialTabCountInSourceActivity - draggedTabGroup.size()));
+                });
+
+        // Verify that the dragged tab is reparented in the new instance.
+        int tabCountInNewActivity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> newActivity.getTabModelSelector().getTotalTabCount());
+        Assert.assertEquals(
+                "New window should have only the dragged tab group.",
+                draggedTabGroup.size(),
+                tabCountInNewActivity);
+        Tab newActivityTab = ThreadUtils.runOnUiThreadBlocking(newActivity::getActivityTab);
+        Assert.assertEquals(
+                "New activity selected tab should be the same as the dragged tab group selected"
+                        + " tab.",
+                draggedTabGroup.get(0),
+                newActivityTab);
+
+        // Verify metrics are recorded.
+        Assert.assertTrue(
+                "User action should be logged.",
+                mActionTester
+                        .getActions()
+                        .contains(DragAndDropLauncherActivity.LAUNCHED_FROM_TAB_GROUP_USER_ACTION));
+        newActivity.finish();
+    }
+
     private void addTabModelSelectorObserver(ChromeTabbedActivity activity) {
         TabModelSelector tabModelSelector = activity.getTabModelSelector();
         ThreadUtils.runOnUiThreadBlocking(
@@ -293,10 +368,82 @@ public class DragAndDropLauncherActivityTest {
                                 mContext, linkUrl, windowId, UrlIntentSource.LINK));
     }
 
-    private Intent createTabDragDropIntent(Tab tab) throws ExecutionException {
+    private Intent createTabDragDropIntent(Tab tab, Activity sourceActivity)
+            throws ExecutionException {
         return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        DragAndDropLauncherActivity.getTabIntent(
-                                mContext, tab, MultiWindowUtils.INVALID_INSTANCE_ID));
+                () -> {
+                    int sourceWindowId =
+                            TabWindowManagerSingleton.getInstance().getIdForWindow(sourceActivity);
+
+                    return DragAndDropLauncherActivity.buildTabOrGroupIntent(
+                            createTabDropData(tab, /* allowDragToCreateNewInstance= */ true),
+                            mContext,
+                            sourceWindowId,
+                            /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
+                });
+    }
+
+    private Intent createTabGroupDragDropIntent(List<Tab> draggedTabGroup, Activity sourceActivity)
+            throws ExecutionException {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    int sourceWindowId =
+                            TabWindowManagerSingleton.getInstance().getIdForWindow(sourceActivity);
+
+                    TabGroupMetadata tabGroupMetadata =
+                            TabGroupMetadataExtractor.extractTabGroupMetadata(
+                                    draggedTabGroup,
+                                    sourceWindowId,
+                                    draggedTabGroup.get(0).getId(),
+                                    /* isGroupShared= */ false);
+                    return DragAndDropLauncherActivity.buildTabOrGroupIntent(
+                            createTabGroupDropData(
+                                    tabGroupMetadata, /* allowDragToCreateNewInstance= */ true),
+                            mContext,
+                            sourceWindowId,
+                            /* destWindowId= */ TabWindowManager.INVALID_WINDOW_ID);
+                });
+    }
+
+    private List<Tab> prepareTabGroup() {
+        // 1. Create two new tabs.
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+
+        // 2. Assert the normal tab strip is selected and there are 3 normal tabs in total.
+        Assert.assertFalse(
+                "Expected normal strip to be selected",
+                mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
+        Assert.assertEquals(
+                "There should be three tabs present",
+                3,
+                mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+
+        // 3. Create tab group with 2 tabs.
+        List<Tab> tabGroup =
+                new ArrayList<>(
+                        Arrays.asList(
+                                mActivityTestRule.getActivity().getCurrentTabModel().getTabAt(0),
+                                mActivityTestRule.getActivity().getCurrentTabModel().getTabAt(1)));
+        TabUiTestHelper.createTabGroup(
+                mActivityTestRule.getActivity(), /* isIncognito= */ false, tabGroup);
+        return tabGroup;
+    }
+
+    private ChromeDropDataAndroid createTabGroupDropData(
+            TabGroupMetadata tabGroupMetadata, boolean allowDragToCreateNewInstance) {
+        return new ChromeTabGroupDropDataAndroid.Builder()
+                .withTabGroupMetadata(tabGroupMetadata)
+                .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
+                .build();
+    }
+
+    private ChromeDropDataAndroid createTabDropData(Tab tab, boolean allowDragToCreateNewInstance) {
+        return new ChromeTabDropDataAndroid.Builder()
+                .withTab(tab)
+                .withAllowDragToCreateInstance(allowDragToCreateNewInstance)
+                .build();
     }
 }

@@ -1578,7 +1578,7 @@ testSuite({
   },
 
   testCancel() {
-    const p = new GoogPromise(goog.nullFunction);
+    const p = new GoogPromise(functions.UNDEFINED);
     const child = p.then(shouldNotCall, (reason) => {
       assertTrue(reason instanceof GoogPromise.CancellationError);
       assertEquals(
@@ -1598,7 +1598,7 @@ testSuite({
       return;
     }
     // Given.
-    const p = new GoogPromise(goog.nullFunction);
+    const p = new GoogPromise(functions.UNDEFINED);
     function recurse(depth) {
       if (depth == 0) {
         p.cancel('cancellation message');
@@ -1622,7 +1622,7 @@ testSuite({
 
   testThenVoidCancel() {
     let thenVoidCalled = false;
-    const p = new GoogPromise(goog.nullFunction);
+    const p = new GoogPromise(functions.UNDEFINED);
 
     p.thenVoid(shouldNotCall, (reason) => {
       assertTrue(reason instanceof GoogPromise.CancellationError);
@@ -1681,7 +1681,7 @@ testSuite({
 
   testCancelPropagation() {
     let cancelError;
-    const p = new GoogPromise(goog.nullFunction);
+    const p = new GoogPromise(functions.UNDEFINED);
 
     const p2 =
         p.then(shouldNotCall, (reason) => {
@@ -1724,7 +1724,7 @@ testSuite({
     };
 
     let cancelError;
-    const p = new GoogPromise(goog.nullFunction);
+    const p = new GoogPromise(functions.UNDEFINED);
 
     const p2 = p.then(shouldNotCall, (reason) => {
       cancelError = reason;
@@ -1758,7 +1758,7 @@ testSuite({
   testCancelPropagationUpward() {
     let cancelError;
     const cancelCalls = [];
-    const parent = new GoogPromise(goog.nullFunction);
+    const parent = new GoogPromise(functions.UNDEFINED);
 
     const child = parent.then(shouldNotCall, (reason) => {
       assertTrue(reason instanceof GoogPromise.CancellationError);
@@ -1797,7 +1797,7 @@ testSuite({
   testThenVoidCancelPropagationUpward() {
     let cancelError;
     const cancelCalls = [];
-    const parent = new GoogPromise(goog.nullFunction);
+    const parent = new GoogPromise(functions.UNDEFINED);
 
     const child = parent.then(shouldNotCall, (reason) => {
       assertTrue(reason instanceof GoogPromise.CancellationError);

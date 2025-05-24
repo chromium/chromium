@@ -30,6 +30,7 @@ class FakeWebAppProvider;
 class FileUtilsWrapper;
 class GeneratedIconFixManager;
 class IsolatedWebAppInstallationManager;
+class IsolatedWebAppPolicyManager;
 class IsolatedWebAppUpdateManager;
 class ManifestUpdateManager;
 class NavigationCapturingLog;
@@ -49,12 +50,12 @@ class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
-class WebAppUiStateManager;
 class WebContentsManager;
+class WebAppProfileDeletionManager;
 
 #if BUILDFLAG(IS_CHROMEOS)
-class IsolatedWebAppPolicyManager;
 class WebAppRunOnOsLoginManager;
+class IwaBundleCacheManager;
 #endif
 
 // WebAppProvider is the heart of Chrome web app code.
@@ -73,7 +74,7 @@ class WebAppRunOnOsLoginManager;
 //       FROM_HERE,
 //       base::BindOnce([](WebAppProvider& provider) {
 //         ...
-//       }, std::ref(*provider));
+//       }, std::ref(*provider)));
 // - All subsystems are constructed independently of each other in the
 //   WebAppProvider constructor.
 // - Subsystem construction should have no side effects and start no tasks.
@@ -84,26 +85,41 @@ class WebAppProvider : public KeyedService {
   // Deprecated: Use GetForWebApps instead.
   static WebAppProvider* GetDeprecated(Profile* profile);
 
-  // On Windows, Mac and Linux, always returns a WebAppProvider.
-  // On Chrome OS: In Ash, returns nullptr if Lacros Web App (WebAppsCrosapi) is
-  // enabled and it is not the Shimless RMA app profile.
+  // This returns a WebAppProvider for the given `profile`, or `nullptr` if
+  // installed web apps are not supported on the given `profile`. Use
+  // `web_app::AreWebAppsEnabled` to determine if web apps are supported on a
+  // profile.
+  // Note: On ChromeOS, to support the system web app implementation, this also
+  // considers the `profile`'s 'original' profile, if `AreWebAppsEnabled`
+  // returns `false` for `profile`.
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
+  // web apps.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
-  // Returns the WebAppProvider for the current process. In particular:
-  // In Ash: Returns the WebAppProvider that hosts System Web Apps.
-  // In Lacros and other platforms: Returns the WebAppProvider that hosts
-  // non-system Web Apps.
+  // Returns the WebAppProvider for the current process.
   //
   // Avoid using this function where possible and prefer GetForWebApps which
-  // provides a guarantee they are being called from the correct process. Only
-  // use this if the calling code is shared between Ash and Lacros and expects
-  // the PWA WebAppProvider in Lacros and the SWA WebAppProvider in Ash.
+  // provides a guarantee they are being called from the correct process.
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
+  // web apps.
   static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
-  // Return the WebAppProvider for tests, regardless of whether this is running
-  // in Lacros/Ash. Blocks if the web app registry is not yet ready.
+  // Return the WebAppProvider for tests. Blocks if the web app registry is not
+  // yet ready.
+  // This returns  `nullptr` if installed web apps are not supported on the
+  // given `profile`. Use `web_app::AreWebAppsEnabled` to determine if web apps
+  // are supported on a profile.
+  // Note: On ChromeOS, to support the system web app implementation, this also
+  // considers the `profile`'s 'original' profile, if `AreWebAppsEnabled`
+  // returns `false` for `profile`.
+  // TODO(https://crbug.com/384063076): Stop returning the WebAppProvider for
+  // profiles where `AreWebAppsEnabled` returns `false` to support CrOS system
+  // web apps.
   static WebAppProvider* GetForTest(Profile* profile);
 
+  // See `GetForWebApps` above for when this returns `nullptr`.
   static WebAppProvider* GetForWebContents(content::WebContents* web_contents);
 
   using OsIntegrationManagerFactory =
@@ -160,8 +176,12 @@ class WebAppProvider : public KeyedService {
 #if BUILDFLAG(IS_CHROMEOS)
   // Runs web apps on OS login.
   WebAppRunOnOsLoginManager& run_on_os_login_manager();
-  IsolatedWebAppPolicyManager& iwa_policy_manager();
+
+  // Isolated Web App bundle cache manager.
+  IwaBundleCacheManager& iwa_cache_manager();
 #endif
+
+  IsolatedWebAppPolicyManager& iwa_policy_manager();
 
   WebAppUiManager& ui_manager();
 
@@ -222,6 +242,10 @@ class WebAppProvider : public KeyedService {
   // Returns a nullptr in the default implementation
   virtual FakeWebAppProvider* AsFakeWebAppProviderForTesting();
 
+#if BUILDFLAG(IS_MAC)
+  void DoDelayedPostStartupWork();
+#endif
+
  protected:
   virtual void StartImpl();
 
@@ -251,12 +275,12 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<IsolatedWebAppInstallationManager>
       isolated_web_app_installation_manager_;
   std::unique_ptr<IsolatedWebAppUpdateManager> iwa_update_manager_;
+  std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
 #if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppRunOnOsLoginManager> web_app_run_on_os_login_manager_;
-  std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
+  std::unique_ptr<IwaBundleCacheManager> iwa_cache_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;
-  std::unique_ptr<WebAppUiStateManager> ui_state_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppCommandManager> command_manager_;
   std::unique_ptr<WebAppCommandScheduler> command_scheduler_;
@@ -267,6 +291,7 @@ class WebAppProvider : public KeyedService {
   scoped_refptr<FileUtilsWrapper> file_utils_;
   std::unique_ptr<VisitedManifestManager> visited_manifest_manager_;
   std::unique_ptr<NavigationCapturingLog> navigation_capturing_log_;
+  std::unique_ptr<WebAppProfileDeletionManager> profile_deletion_manager_;
 
   base::OneShotEvent on_registry_ready_;
   base::OneShotEvent on_external_managers_synchronized_;

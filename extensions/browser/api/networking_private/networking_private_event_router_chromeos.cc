@@ -34,7 +34,7 @@ api::networking_private::CaptivePortalStatus GetCaptivePortalStatus(
   if (!network->IsConnectedState()) {
     return api::networking_private::CaptivePortalStatus::kOffline;
   }
-  switch (network->GetPortalState()) {
+  switch (network->portal_state()) {
     case NetworkState::PortalState::kUnknown:
       return api::networking_private::CaptivePortalStatus::kUnknown;
     case NetworkState::PortalState::kOnline:

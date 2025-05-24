@@ -10,18 +10,22 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 
 namespace storage_monitor {
 
 // Constructs and returns the location of the device using the |storage_name|.
+COMPONENT_EXPORT(STORAGE_MONITOR)
 std::string GetDeviceLocationFromStorageName(const std::string& storage_name);
 
 // Returns a unique device id from the given |storage_info|.
+COMPONENT_EXPORT(STORAGE_MONITOR)
 std::string GetDeviceIdFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info);
 
 // Helper function to get device label from storage information.
+COMPONENT_EXPORT(STORAGE_MONITOR)
 std::u16string GetDeviceLabelFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info);
 

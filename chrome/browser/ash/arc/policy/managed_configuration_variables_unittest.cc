@@ -25,6 +25,7 @@
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -39,7 +40,7 @@ typedef Parameter ParameterGetter(bool);
 constexpr const char kKey1[] = "key1";
 constexpr const char kKey2[] = "key2";
 
-constexpr char kTestGaiaId[] = "0123456789";
+constexpr GaiaId::Literal kTestGaiaId("0123456789");
 constexpr char kTestEmail[] = "username@somedomain.com";
 constexpr char kTestEmailName[] = "username";
 constexpr char kTestEmailDomain[] = "somedomain.com";

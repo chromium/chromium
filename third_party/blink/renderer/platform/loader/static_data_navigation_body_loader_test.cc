@@ -25,8 +25,7 @@ class StaticDataNavigationBodyLoaderTest
   void BodyDataReceived(base::span<const char> data) override {
     ASSERT_TRUE(expecting_data_received_);
     expecting_data_received_ = false;
-    data_received_ =
-        data_received_ + String::FromUTF8(data.data(), data.size());
+    data_received_ = data_received_ + String::FromUTF8(base::as_bytes(data));
     TakeActions();
   }
 

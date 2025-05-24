@@ -54,14 +54,15 @@ const char kDataContentType[] = "Content-Type: application/octet-stream";
 std::unique_ptr<ConnectorDataPipeGetter> CreateFileDataPipeGetterBlocking(
     const std::string& boundary,
     const std::string& metadata,
-    const base::FilePath& path) {
+    const base::FilePath& path,
+    bool is_obfuscated) {
   // FLAG_WIN_SHARE_DELETE is necessary to allow the file to be renamed by the
   // user clicking "Open Now" without causing download errors.
   base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                             base::File::FLAG_WIN_SHARE_DELETE);
 
-  return ConnectorDataPipeGetter::CreateMultipartPipeGetter(boundary, metadata,
-                                                            std::move(file));
+  return ConnectorDataPipeGetter::CreateMultipartPipeGetter(
+      boundary, metadata, std::move(file), is_obfuscated);
 }
 
 }  // namespace
@@ -71,12 +72,14 @@ MultipartUploadRequest::MultipartUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              data,
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
@@ -91,6 +94,8 @@ MultipartUploadRequest::MultipartUploadRequest(
     const std::string& metadata,
     const base::FilePath& path,
     uint64_t file_size,
+    bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
@@ -98,6 +103,8 @@ MultipartUploadRequest::MultipartUploadRequest(
                              metadata,
                              path,
                              file_size,
+                             is_obfuscated,
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
@@ -111,12 +118,14 @@ MultipartUploadRequest::MultipartUploadRequest(
     const GURL& base_url,
     const std::string& metadata,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              std::move(page_region),
+                             histogram_suffix,
                              traffic_annotation,
                              std::move(callback)),
       boundary_(net::GenerateMimeMultipartBoundary()),
@@ -159,7 +168,7 @@ void MultipartUploadRequest::SetRequestHeaders(
       data_size = data_size_;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   request->headers.SetHeader("X-Goog-Upload-Header-Content-Length",
                              base::NumberToString(data_size));
@@ -193,7 +202,7 @@ void MultipartUploadRequest::SendRequest() {
       SendPageRequest(std::move(resource_request));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -287,7 +296,7 @@ void MultipartUploadRequest::CreateDatapipe(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       base::BindOnce(&CreateFileDataPipeGetterBlocking, boundary_, metadata_,
-                     path_),
+                     path_, is_obfuscated_),
       base::BindOnce(&MultipartUploadRequest::DataPipeCreatedCallback,
                      weak_factory_.GetWeakPtr(), std::move(request)));
 }
@@ -300,6 +309,12 @@ void MultipartUploadRequest::OnURLLoaderComplete(
   int response_code = 0;
   if (url_loader_->ResponseInfo() && url_loader_->ResponseInfo()->headers)
     response_code = url_loader_->ResponseInfo()->headers->response_code();
+  if (!histogram_suffix_.empty()) {
+    std::string histogram = base::StrCat(
+        {"SafeBrowsing.MultipartUploader.NetworkResult.", histogram_suffix_});
+    RecordHttpResponseOrErrorCode(histogram.c_str(), url_loader_->NetError(),
+                                  response_code);
+  }
 
   RetryOrFinish(url_loader_->NetError(), response_code,
                 std::move(response_body));
@@ -336,17 +351,18 @@ MultipartUploadRequest::CreateStringRequest(
     const GURL& base_url,
     const std::string& metadata,
     const std::string& data,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     MultipartUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
-        url_loader_factory, base_url, metadata, data, traffic_annotation,
-        std::move(callback));
+        url_loader_factory, base_url, metadata, data, histogram_suffix,
+        traffic_annotation, std::move(callback));
   }
 
   return factory_->CreateStringRequest(url_loader_factory, base_url, metadata,
-                                       data, traffic_annotation,
-                                       std::move(callback));
+                                       data, histogram_suffix,
+                                       traffic_annotation, std::move(callback));
 }
 
 // static
@@ -357,12 +373,14 @@ MultipartUploadRequest::CreateFileRequest(
     const std::string& metadata,
     const base::FilePath& path,
     uint64_t file_size,
+    bool is_obfuscated,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     MultipartUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
-        url_loader_factory, base_url, metadata, path, file_size,
-        traffic_annotation, std::move(callback));
+        url_loader_factory, base_url, metadata, path, file_size, is_obfuscated,
+        histogram_suffix, traffic_annotation, std::move(callback));
   }
 
   // Note that multipart uploads only handle data that is less than
@@ -370,8 +388,8 @@ MultipartUploadRequest::CreateFileRequest(
   // passed as the `get_data_result` argument.
   return factory_->CreateFileRequest(url_loader_factory, base_url, metadata,
                                      BinaryUploadService::Result::SUCCESS, path,
-                                     file_size, traffic_annotation,
-                                     std::move(callback));
+                                     file_size, is_obfuscated, histogram_suffix,
+                                     traffic_annotation, std::move(callback));
 }
 
 // static
@@ -381,17 +399,18 @@ MultipartUploadRequest::CreatePageRequest(
     const GURL& base_url,
     const std::string& metadata,
     base::ReadOnlySharedMemoryRegion page_region,
+    const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     MultipartUploadRequest::Callback callback) {
   if (!factory_) {
     return std::make_unique<MultipartUploadRequest>(
         url_loader_factory, base_url, metadata, std::move(page_region),
-        traffic_annotation, std::move(callback));
+        histogram_suffix, traffic_annotation, std::move(callback));
   }
 
   return factory_->CreatePageRequest(url_loader_factory, base_url, metadata,
                                      BinaryUploadService::Result::SUCCESS,
-                                     std::move(page_region), traffic_annotation,
-                                     std::move(callback));
+                                     std::move(page_region), histogram_suffix,
+                                     traffic_annotation, std::move(callback));
 }
 }  // namespace safe_browsing

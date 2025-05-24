@@ -144,7 +144,7 @@ opus_int silk_VAD_GetSA_Q8_sse4_1(                  /* O    Return value, 0 if s
 
             for( i = 0; i < dec_subframe_length - 7; i += 8 )
             {
-                xmm_X   = _mm_loadu_si128( (__m128i *)&(X[ X_offset[ b ] + i + dec_subframe_offset ] ) );
+                xmm_X   = _mm_loadu_si128( (__m128i *)(void*)&(X[ X_offset[ b ] + i + dec_subframe_offset ] ) );
                 xmm_X   = _mm_srai_epi16( xmm_X, 3 );
                 xmm_X   = _mm_madd_epi16( xmm_X, xmm_X );
                 xmm_acc = _mm_add_epi32( xmm_acc, xmm_X );

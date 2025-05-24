@@ -89,7 +89,7 @@ AndroidAccessTokenFetcher::AndroidAccessTokenFetcher(
       request_was_cancelled_(false),
       weak_factory_(this) {}
 
-AndroidAccessTokenFetcher::~AndroidAccessTokenFetcher() {}
+AndroidAccessTokenFetcher::~AndroidAccessTokenFetcher() = default;
 
 void AndroidAccessTokenFetcher::Start(const std::string& client_id,
                                       const std::string& client_secret,
@@ -140,8 +140,9 @@ std::string AndroidAccessTokenFetcher::CombineScopes(
   std::string scope;
   for (std::vector<std::string>::const_iterator it = scopes.begin();
        it != scopes.end(); ++it) {
-    if (!scope.empty())
+    if (!scope.empty()) {
       scope += " ";
+    }
     scope += *it;
   }
   return scope;
@@ -166,7 +167,7 @@ ProfileOAuth2TokenServiceDelegateAndroid::
 }
 
 ProfileOAuth2TokenServiceDelegateAndroid::
-    ~ProfileOAuth2TokenServiceDelegateAndroid() {}
+    ~ProfileOAuth2TokenServiceDelegateAndroid() = default;
 
 ScopedJavaLocalRef<jobject>
 ProfileOAuth2TokenServiceDelegateAndroid::GetJavaObject() {
@@ -178,6 +179,12 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
   DVLOG(1)
       << "ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable"
       << " account= " << account_id;
+  if (base::FeatureList::IsEnabled(
+          switches::kMakeAccountsAvailableInIdentityManager)) {
+    std::vector<CoreAccountId> accounts = GetValidAccounts();
+    return base::Contains(accounts, account_id);
+  }
+
   std::string account_name = MapAccountIdToAccountName(account_id);
   if (account_name.empty()) {
     // This corresponds to the case when the account with id |account_id| is not
@@ -202,11 +209,12 @@ ProfileOAuth2TokenServiceDelegateAndroid::GetAccounts() const {
 }
 
 std::vector<CoreAccountId>
-ProfileOAuth2TokenServiceDelegateAndroid::GetValidAccounts() {
+ProfileOAuth2TokenServiceDelegateAndroid::GetValidAccounts() const {
   std::vector<CoreAccountId> ids;
   for (const CoreAccountId& id : GetAccounts()) {
-    if (ValidateAccountId(id))
+    if (ValidateAccountId(id)) {
       ids.emplace_back(id);
+    }
   }
   return ids;
 }
@@ -248,18 +256,18 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
 
 void ProfileOAuth2TokenServiceDelegateAndroid::
     SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-        const std::vector<CoreAccountInfo>& core_account_infos,
+        const std::vector<AccountInfo>& accounts,
         const std::optional<CoreAccountId>& primary_account_id) {
   // Seeds the accounts but doesn't remove the stale accounts from the
   // AccountTrackerService yet. We first need to send OnRefreshTokenRevoked
   // notifications for accounts being removed. Therefore we keep the accounts
   // until the notifications have been processed.
   account_tracker_service_->SeedAccountsInfo(
-      core_account_infos, primary_account_id,
+      accounts, primary_account_id,
       /*should_remove_stale_accounts=*/false);
   std::vector<CoreAccountId> account_ids;
-  for (const CoreAccountInfo& account_info : core_account_infos) {
-    CoreAccountId id(account_info.account_id);
+  for (const auto& account : accounts) {
+    CoreAccountId id(account.account_id);
     if (!id.empty()) {
       account_ids.push_back(std::move(id));
     }
@@ -269,7 +277,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
   UpdateAccountList(primary_account_id, GetValidAccounts(), account_ids);
   // Seeds again, now removing stale accounts
   account_tracker_service_->SeedAccountsInfo(
-      core_account_infos, primary_account_id,
+      accounts, primary_account_id,
       /*should_remove_stale_accounts=*/true);
 }
 
@@ -298,10 +306,12 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
   // FireRefreshToken* methods.
   SetAccounts(keep_accounts ? curr_ids : std::vector<CoreAccountId>());
 
-  for (const CoreAccountId& refreshed_id : refreshed_ids)
+  for (const CoreAccountId& refreshed_id : refreshed_ids) {
     FireRefreshTokenAvailable(refreshed_id);
-  for (const CoreAccountId& revoked_id : revoked_ids)
+  }
+  for (const CoreAccountId& revoked_id : revoked_ids) {
     FireRefreshTokenRevoked(revoked_id);
+  }
   if (fire_refresh_token_loaded_ == RT_WAIT_FOR_VALIDATION) {
     fire_refresh_token_loaded_ = RT_LOADED;
     FireRefreshTokensLoaded();
@@ -317,12 +327,15 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
     std::vector<CoreAccountId>* refreshed_ids,
     std::vector<CoreAccountId>* revoked_ids) {
   bool keep_accounts =
-      signed_in_id.has_value() && base::Contains(curr_ids, *signed_in_id);
+      base::FeatureList::IsEnabled(
+          switches::kMakeAccountsAvailableInIdentityManager) ||
+      (signed_in_id.has_value() && base::Contains(curr_ids, *signed_in_id));
   if (keep_accounts) {
     // Revoke token for ids that have been removed from the device.
     for (const CoreAccountId& prev_id : prev_ids) {
-      if (signed_in_id.has_value() && prev_id == *signed_in_id)
+      if (signed_in_id.has_value() && prev_id == *signed_in_id) {
         continue;
+      }
       if (!base::Contains(curr_ids, prev_id)) {
         DVLOG(1)
             << "ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList:"
@@ -338,8 +351,9 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
       refreshed_ids->push_back(*signed_in_id);
     }
     for (const CoreAccountId& curr_id : curr_ids) {
-      if (signed_in_id.has_value() && curr_id == *signed_in_id)
+      if (signed_in_id.has_value() && curr_id == *signed_in_id) {
         continue;
+      }
       DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList:"
                << "refreshed=" << curr_id;
       refreshed_ids->push_back(curr_id);
@@ -352,8 +366,9 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
       revoked_ids->push_back(*signed_in_id);
     }
     for (const CoreAccountId& prev_id : prev_ids) {
-      if (signed_in_id.has_value() && prev_id == *signed_in_id)
+      if (signed_in_id.has_value() && prev_id == *signed_in_id) {
         continue;
+      }
       DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList:"
                << "revoked=" << prev_id;
       revoked_ids->push_back(prev_id);
@@ -382,22 +397,22 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentialsInternal(
   // |FireRefreshTokenRevoked|.
   SetAccounts(std::vector<CoreAccountId>());
 
-  for (const CoreAccountId& account : accounts_to_revoke)
+  for (const CoreAccountId& account : accounts_to_revoke) {
     FireRefreshTokenRevoked(account);
+  }
 
   // We don't expose the list of accounts if the user is signed out, so it is
   // safe to assume that the account list is empty here.
   // TODO(crbug.com/40287987): Once we expose the list of accounts all the
   // time, this assumption should be re-evaluated.
-  const std::vector<CoreAccountInfo> empty_accounts_list =
-      std::vector<CoreAccountInfo>();
+  const std::vector<AccountInfo> empty_accounts_list =
+      std::vector<AccountInfo>();
   SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-      std::vector<CoreAccountInfo>(), std::nullopt);
+      std::vector<AccountInfo>(), std::nullopt);
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentialsInternal(
-    const CoreAccountId& primary_account_id,
-    bool is_syncing) {
+    const CoreAccountId& primary_account_id) {
   DCHECK_EQ(signin::LoadCredentialsState::LOAD_CREDENTIALS_NOT_STARTED,
             load_credentials_state());
   set_load_credentials_state(
@@ -440,25 +455,17 @@ void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
     JNIEnv* env,
     const JavaParamRef<jstring>& authToken,
     const jlong expiration_time_secs,
-    jboolean isTransientError,
+    GoogleServiceAuthError& authError,
     jlong nativeCallback) {
   std::string token;
-  if (authToken)
+  if (authToken) {
     token = ConvertJavaStringToUTF8(env, authToken);
+  }
   std::unique_ptr<FetchOAuth2TokenCallback> heap_callback(
       reinterpret_cast<FetchOAuth2TokenCallback*>(nativeCallback));
-  GoogleServiceAuthError err = GoogleServiceAuthError::AuthErrorNone();
-  if (!authToken) {
-    err =
-        isTransientError
-            ? GoogleServiceAuthError(GoogleServiceAuthError::CONNECTION_FAILED)
-            : GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                  GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                      CREDENTIALS_REJECTED_BY_SERVER);
-  }
 
   std::move(*heap_callback)
-      .Run(err, token,
+      .Run(authError, token,
            base::Time::FromSecondsSinceUnixEpoch(expiration_time_secs));
 }
 }  // namespace signin

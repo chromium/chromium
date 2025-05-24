@@ -55,10 +55,6 @@ class NET_EXPORT_PRIVATE HttpssvcMetrics {
   void SaveForAddressQuery(base::TimeDelta resolve_time,
                            enum HttpssvcDnsRcode rcode);
 
-  // Save the fact that the non-integrity queries failed. Prevents metrics from
-  // being recorded.
-  void SaveAddressQueryFailure();
-
   // Must only be called once.
   void SaveForHttps(enum HttpssvcDnsRcode rcode,
                     const std::vector<bool>& condensed_records,

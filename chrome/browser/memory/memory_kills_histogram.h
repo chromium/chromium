@@ -10,7 +10,7 @@
 
 namespace memory {
 
-constexpr base::TimeDelta kMaxMemoryKillTimeDelta = base::Seconds(30);
+inline constexpr base::TimeDelta kMaxMemoryKillTimeDelta = base::Seconds(30);
 
 }  // namespace memory
 

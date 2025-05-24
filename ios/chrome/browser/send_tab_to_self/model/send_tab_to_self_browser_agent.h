@@ -62,7 +62,6 @@ class SendTabToSelfBrowserAgent
 
  private:
   friend class BrowserUserData<SendTabToSelfBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SendTabToSelfBrowserAgent(Browser* browser);
 
@@ -76,9 +75,6 @@ class SendTabToSelfBrowserAgent
   // Stop observing the WebState and WebStateList and reset associated
   // variables.
   void CleanUpObserversAndVariables();
-
-  // The owning Browser
-  raw_ptr<Browser> browser_;
 
   // Owned by the SendTabToSelfSyncService which should outlive this class
   raw_ptr<send_tab_to_self::SendTabToSelfModel> model_;

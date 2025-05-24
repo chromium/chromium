@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "absoluteposition",
     srcs = ["absoluteposition.js"],
+    lenient = True,
     deps = [
         ":abstractposition",
         ":positioning",
@@ -19,6 +20,7 @@ closure_js_library(
 closure_js_library(
     name = "abstractposition",
     srcs = ["abstractposition.js"],
+    lenient = True,
     deps = [
         ":positioning",
         "//closure/goog/math:box",
@@ -29,6 +31,7 @@ closure_js_library(
 closure_js_library(
     name = "anchoredposition",
     srcs = ["anchoredposition.js"],
+    lenient = True,
     deps = [
         ":abstractposition",
         ":positioning",
@@ -40,6 +43,7 @@ closure_js_library(
 closure_js_library(
     name = "anchoredviewportposition",
     srcs = ["anchoredviewportposition.js"],
+    lenient = True,
     deps = [
         ":anchoredposition",
         ":positioning",
@@ -51,6 +55,7 @@ closure_js_library(
 closure_js_library(
     name = "clientposition",
     srcs = ["clientposition.js"],
+    lenient = True,
     deps = [
         ":abstractposition",
         ":positioning",
@@ -66,6 +71,7 @@ closure_js_library(
 closure_js_library(
     name = "menuanchoredposition",
     srcs = ["menuanchoredposition.js"],
+    lenient = True,
     deps = [
         ":anchoredviewportposition",
         ":positioning",
@@ -75,6 +81,7 @@ closure_js_library(
 closure_js_library(
     name = "positioning",
     srcs = ["positioning.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/dom",
@@ -91,6 +98,7 @@ closure_js_library(
 closure_js_library(
     name = "viewportclientposition",
     srcs = ["viewportclientposition.js"],
+    lenient = True,
     deps = [
         ":clientposition",
         ":positioning",
@@ -105,6 +113,7 @@ closure_js_library(
 closure_js_library(
     name = "viewportposition",
     srcs = ["viewportposition.js"],
+    lenient = True,
     deps = [
         ":abstractposition",
         ":positioning",

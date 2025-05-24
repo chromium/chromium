@@ -63,7 +63,6 @@
 namespace blink {
 
 using protocol::Array;
-using protocol::Maybe;
 unsigned InspectorLayerTreeAgent::last_snapshot_id_;
 
 inline String IdForLayer(const cc::Layer* layer) {
@@ -460,9 +459,9 @@ protocol::Response InspectorLayerTreeAgent::GetSnapshotById(
 
 protocol::Response InspectorLayerTreeAgent::replaySnapshot(
     const String& snapshot_id,
-    Maybe<int> from_step,
-    Maybe<int> to_step,
-    Maybe<double> scale,
+    std::optional<int> from_step,
+    std::optional<int> to_step,
+    std::optional<double> scale,
     String* data_url) {
   const PictureSnapshot* snapshot = nullptr;
   protocol::Response response = GetSnapshotById(snapshot_id, snapshot);
@@ -483,21 +482,21 @@ static void ParseRect(protocol::DOM::Rect& object, gfx::RectF* rect) {
 
 protocol::Response InspectorLayerTreeAgent::profileSnapshot(
     const String& snapshot_id,
-    Maybe<int> min_repeat_count,
-    Maybe<double> min_duration,
-    Maybe<protocol::DOM::Rect> clip_rect,
+    std::optional<int> min_repeat_count,
+    std::optional<double> min_duration,
+    std::unique_ptr<protocol::DOM::Rect> clip_rect,
     std::unique_ptr<protocol::Array<protocol::Array<double>>>* out_timings) {
   const PictureSnapshot* snapshot = nullptr;
   protocol::Response response = GetSnapshotById(snapshot_id, snapshot);
   if (!response.IsSuccess())
     return response;
   gfx::RectF rect;
-  if (clip_rect.has_value()) {
-    ParseRect(clip_rect.value(), &rect);
+  if (clip_rect) {
+    ParseRect(*clip_rect, &rect);
   }
   auto timings = snapshot->Profile(min_repeat_count.value_or(1),
                                    base::Seconds(min_duration.value_or(0)),
-                                   clip_rect.has_value() ? &rect : nullptr);
+                                   clip_rect ? &rect : nullptr);
   *out_timings = std::make_unique<Array<Array<double>>>();
   for (const auto& row : timings) {
     auto out_row = std::make_unique<protocol::Array<double>>();
@@ -519,14 +518,10 @@ protocol::Response InspectorLayerTreeAgent::snapshotCommandLog(
   const String& json = snapshot->SnapshotCommandLog()->ToJSONString();
   std::vector<uint8_t> cbor;
   if (json.Is8Bit()) {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint8_t>(json.Characters8(), json.length()), &cbor);
+    crdtp::json::ConvertJSONToCBOR(crdtp::span<uint8_t>(json.Span8()), &cbor);
   } else {
-    crdtp::json::ConvertJSONToCBOR(
-        crdtp::span<uint16_t>(
-            reinterpret_cast<const uint16_t*>(json.Characters16()),
-            json.length()),
-        &cbor);
+    crdtp::json::ConvertJSONToCBOR(crdtp::span<uint16_t>(json.SpanUint16()),
+                                   &cbor);
   }
   auto log_value = protocol::Value::parseBinary(cbor.data(), cbor.size());
   *command_log = protocol::ValueConversions<

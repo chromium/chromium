@@ -24,7 +24,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/base_event_utils.h"
@@ -35,6 +34,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -63,8 +63,9 @@ int CompareTextSelectionBounds(const gfx::SelectionBound& b1,
       b1.edge_start().x() < b2.edge_start().x()) {
     return -1;
   }
-  if (b1 == b2)
+  if (b1 == b2) {
     return 0;
+  }
   return 1;
 }
 
@@ -167,10 +168,11 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
   void SimulateSelectionHandleDrag(gfx::Vector2d v, int selection_handle) {
     TouchSelectionControllerImpl* controller = GetSelectionController();
     views::View* handle = nullptr;
-    if (selection_handle == 1)
+    if (selection_handle == 1) {
       handle = controller->GetHandle1View();
-    else
+    } else {
       handle = controller->GetHandle2View();
+    }
 
     gfx::Point grip_location =
         gfx::Point(handle->size().width() / 2, handle->size().height() / 2);
@@ -315,8 +317,9 @@ class TouchSelectionControllerImplTest : public ViewsTestBase {
     CreateTextfield();
     std::string some_text("some text");
     std::string textfield_text;
-    for (int i = 0; i < 10; ++i)
+    for (int i = 0; i < 10; ++i) {
       textfield_text += some_text;
+    }
     textfield_->SetText(ASCIIToUTF16(textfield_text));
 
     // Tap the textfield to invoke selection.
@@ -673,7 +676,7 @@ TEST_F(TouchSelectionControllerImplTest,
 }
 
 // Touch selection menu is not supported on Cast.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(TouchSelectionControllerImplTest,
        MenuAppearsAfterDraggingSelectionHandles) {
   CreateTextfield();
@@ -1110,14 +1113,16 @@ class TestTouchEditable : public ui::TouchEditable {
   void ConvertPointToScreen(gfx::Point* point) override {
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(window_->GetRootWindow());
-    if (screen_position_client)
+    if (screen_position_client) {
       screen_position_client->ConvertPointToScreen(window_, point);
+    }
   }
   void ConvertPointFromScreen(gfx::Point* point) override {
     aura::client::ScreenPositionClient* screen_position_client =
         aura::client::GetScreenPositionClient(window_->GetRootWindow());
-    if (screen_position_client)
+    if (screen_position_client) {
       screen_position_client->ConvertPointFromScreen(window_, point);
+    }
   }
   void OpenContextMenu(const gfx::Point& anchor) override { NOTREACHED(); }
   void DestroyTouchSelection() override { NOTREACHED(); }

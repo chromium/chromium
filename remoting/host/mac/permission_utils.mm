@@ -116,6 +116,10 @@ bool CanRecordScreen() {
   return ui::IsScreenCaptureAllowed();
 }
 
+void RequestScreenCapturePermission() {
+  ui::TryPromptUserForScreenCapture();
+}
+
 // macOS requires an additional runtime permission for injecting input using
 // CGEventPost (we use this in our input injector for Mac).  This method will
 // request that the user enable this permission for us if they are on an

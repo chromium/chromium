@@ -24,7 +24,7 @@ class S2CellId;
 // absent language.
 class SerializedLanguageTree {
  public:
-  virtual ~SerializedLanguageTree() {}
+  virtual ~SerializedLanguageTree() = default;
 
   virtual std::string GetLanguageAt(const size_t pos) const = 0;
   virtual size_t GetNumLanguages() const = 0;
@@ -43,7 +43,7 @@ class BitsetSerializedLanguageTree : public SerializedLanguageTree {
   BitsetSerializedLanguageTree(std::vector<std::string> languages,
                                std::bitset<numbits> bits)
       : languages_(languages), bits_(bits) {}
-  ~BitsetSerializedLanguageTree() override {}
+  ~BitsetSerializedLanguageTree() override = default;
 
   // SerializedTree implementation
   std::string GetLanguageAt(const size_t pos) const override {
@@ -63,7 +63,10 @@ class BitsetSerializedLanguageTree : public SerializedLanguageTree {
 class S2LangQuadTreeNode {
  public:
   S2LangQuadTreeNode();
-  S2LangQuadTreeNode(const S2LangQuadTreeNode& other);
+  S2LangQuadTreeNode(const S2LangQuadTreeNode& other) = delete;
+  S2LangQuadTreeNode(S2LangQuadTreeNode&& other);
+  S2LangQuadTreeNode& operator=(const S2LangQuadTreeNode& other) = delete;
+  S2LangQuadTreeNode& operator=(S2LangQuadTreeNode&& other);
   ~S2LangQuadTreeNode();
 
   // Return language of the leaf containing the given |cell|.

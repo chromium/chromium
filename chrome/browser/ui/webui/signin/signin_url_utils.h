@@ -31,16 +31,7 @@ GURL AppendSyncConfirmationQueryParams(const GURL& url,
                                        SyncConfirmationStyle style,
                                        bool is_sync_promo);
 
-// Returns `ReauthAccessPoint` encoded in the query of the reauth confirmation
-// URL.
-signin_metrics::ReauthAccessPoint GetReauthAccessPointForReauthConfirmationURL(
-    const GURL& url);
-
-// Returns a URL to display in the reauth confirmation dialog. The dialog was
-// triggered by |access_point|.
-GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point);
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 enum class ProfileCustomizationStyle {
   kDefault = 0,
   kLocalProfileCreation = 1
@@ -53,8 +44,12 @@ ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url);
 // Adds the `style` URL query parameters to `url` for the profile customization.
 GURL AppendProfileCustomizationQueryParams(const GURL& url,
                                            ProfileCustomizationStyle style);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+// TODO(crbug.com/381231566): `AddFromProfilePickerURLParameter()` is not called
+// anymore and is now dead code, it should be removed in upcoming changes along
+// with calls to `HasFromProfilePickerURLParameter()` and the dependant code.
+//
 // Checks if the |url| is coming from the ProfilePicker.
 bool HasFromProfilePickerURLParameter(const GURL& url);
 // Adds the ProfilePicker tag to the |url|. Returns the appended URL.

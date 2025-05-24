@@ -79,12 +79,12 @@ export class CrTooltipElement extends CrLitElement {
     };
   }
 
-  animationDelay: number = 500;
-  fitToVisibleBounds: boolean = false;
-  for: string = '';
-  manualMode: boolean = false;
-  offset: number = 14;
-  position: TooltipPosition = TooltipPosition.BOTTOM;
+  accessor animationDelay: number = 500;
+  accessor fitToVisibleBounds: boolean = false;
+  accessor for: string = '';
+  accessor manualMode: boolean = false;
+  accessor offset: number = 14;
+  accessor position: TooltipPosition = TooltipPosition.BOTTOM;
   private animationPlaying_: boolean = false;
   private showing_: boolean = false;
   private manualTarget_?: Element;
@@ -174,7 +174,7 @@ export class CrTooltipElement extends CrLitElement {
 
     if (!!this.textContent && this.textContent.trim() === '') {
       const children =
-          this.shadowRoot!.querySelector('slot')!.assignedElements();
+          this.shadowRoot.querySelector('slot')!.assignedElements();
       const hasNonEmptyChild = Array.from(children).some(
           (el: Element) => !!el.textContent && el.textContent.trim() !== '');
       if (!hasNonEmptyChild) {

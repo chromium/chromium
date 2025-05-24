@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file contains many long export lines that exceed the max-len limit */
-/* eslint-disable max-len */
+// This file contains many long export lines that exceed the max-len limit
+/* eslint-disable @stylistic/max-len */
 
 export type {
   BigBuffer,
@@ -14,8 +14,9 @@ export type {
 } from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 export {
   CameraIntentAction,
-} from '../../mojom/ash/components/arc/mojom/camera_intent.mojom-webui.js';
+} from '../../mojom/chromeos/ash/experiences/arc/mojom/camera_intent.mojom-webui.js';
 export {
+  AspectRatio,
   CameraAppHelper,
   CameraAppHelperRemote,
   CameraUsageOwnershipMonitorCallbackRouter,

@@ -13,7 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "build/buildflag.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/messaging_layer/util/report_queue_manual_test_context.h"
 #include "components/reporting/client/report_queue_configuration.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
@@ -31,11 +31,11 @@ BASE_FEATURE(kEncryptedReportingManualTestHeartbeatEvent,
 }  // namespace
 
 ManualTestHeartbeatEvent::ManualTestHeartbeatEvent() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   managed_session_service_ = std::make_unique<policy::ManagedSessionService>();
   CHECK(managed_session_service_);
   managed_session_observation_.Observe(managed_session_service_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   StartHeartbeatEvent();
 }
@@ -63,7 +63,7 @@ void ManualTestHeartbeatEvent::StartHeartbeatEvent() const {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 // User heartbeat event.
@@ -91,6 +91,6 @@ void ManualTestHeartbeatEvent::OnLogin(Profile* profile) {
             {base::TaskPriority::BEST_EFFORT, base::MayBlock()}));
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace reporting

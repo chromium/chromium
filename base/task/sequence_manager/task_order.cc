@@ -9,8 +9,7 @@
 #include "base/task/sequence_manager/enqueue_order.h"
 #include "base/task/sequence_manager/tasks.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 namespace {
 
@@ -21,11 +20,13 @@ static bool Compare(const base::sequence_manager::TaskOrder& task_order1,
                     const base::sequence_manager::TaskOrder& task_order2) {
   Comparator cmp{};
 
-  if (task_order1.enqueue_order() != task_order2.enqueue_order())
+  if (task_order1.enqueue_order() != task_order2.enqueue_order()) {
     return cmp(task_order1.enqueue_order(), task_order2.enqueue_order());
+  }
 
-  if (task_order1.delayed_run_time() != task_order2.delayed_run_time())
+  if (task_order1.delayed_run_time() != task_order2.delayed_run_time()) {
     return cmp(task_order1.delayed_run_time(), task_order2.delayed_run_time());
+  }
 
   // If the times happen to match, then we use the sequence number to decide.
   // Compare the difference to support integer roll-over.
@@ -75,15 +76,4 @@ bool TaskOrder::operator>=(const TaskOrder& other) const {
   return Compare<std::greater_equal<>>(*this, other);
 }
 
-bool TaskOrder::operator==(const TaskOrder& other) const {
-  return enqueue_order_ == other.enqueue_order_ &&
-         delayed_run_time_ == other.delayed_run_time_ &&
-         sequence_num_ == other.sequence_num_;
-}
-
-bool TaskOrder::operator!=(const TaskOrder& other) const {
-  return !(*this == other);
-}
-
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

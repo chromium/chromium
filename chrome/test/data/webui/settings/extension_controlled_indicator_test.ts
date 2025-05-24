@@ -55,7 +55,7 @@ suite('extension controlled indicator', function() {
   test('tapping manage button invokes browser proxy', async function() {
     const button = indicator.shadowRoot!.querySelector<HTMLElement>('#manage');
     assertTrue(!!button);
-    button!.click();
+    button.click();
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, `chrome://extensions/?id=${indicator.extensionId}`);
   });
@@ -63,7 +63,7 @@ suite('extension controlled indicator', function() {
   test('tapping disable button invokes browser proxy', async function() {
     const button = indicator.shadowRoot!.querySelector<HTMLElement>('#disable');
     assertTrue(!!button);
-    button!.click();
+    button.click();
     const extensionId = await browserProxy.whenCalled('disableExtension');
     assertEquals(extensionId, indicator.extensionId);
   });

@@ -53,7 +53,12 @@ EnumTraits<network::mojom::CookieExemptionReason,
       return network::mojom::CookieExemptionReason::kTopLevelStorageAccess;
     case net::CookieInclusionStatus::ExemptionReason::kScheme:
       return network::mojom::CookieExemptionReason::kScheme;
+    case net::CookieInclusionStatus::ExemptionReason::
+        kSameSiteNoneCookiesInSandbox:
+      return network::mojom::CookieExemptionReason::
+          kSameSiteNoneCookiesInSandbox;
   }
+  NOTREACHED();
 }
 
 bool EnumTraits<network::mojom::CookieExemptionReason,
@@ -94,7 +99,30 @@ bool EnumTraits<network::mojom::CookieExemptionReason,
     case network::mojom::CookieExemptionReason::kScheme:
       *output = net::CookieInclusionStatus::ExemptionReason::kScheme;
       return true;
+    case network::mojom::CookieExemptionReason::kSameSiteNoneCookiesInSandbox:
+      *output = net::CookieInclusionStatus::ExemptionReason::
+          kSameSiteNoneCookiesInSandbox;
+      return true;
   }
+  return false;
+}
+
+bool StructTraits<network::mojom::ExclusionReasonsDataView,
+                  net::CookieInclusionStatus::ExclusionReasonBitset>::
+    Read(network::mojom::ExclusionReasonsDataView view,
+         net::CookieInclusionStatus::ExclusionReasonBitset* out) {
+  *out = net::CookieInclusionStatus::ExclusionReasonBitset::FromEnumBitmask(
+      view.exclusions_bitmask());
+  return view.exclusions_bitmask() == out->ToEnumBitmask();
+}
+
+bool StructTraits<network::mojom::WarningReasonsDataView,
+                  net::CookieInclusionStatus::WarningReasonBitset>::
+    Read(network::mojom::WarningReasonsDataView view,
+         net::CookieInclusionStatus::WarningReasonBitset* out) {
+  *out = net::CookieInclusionStatus::WarningReasonBitset::FromEnumBitmask(
+      view.warnings_bitmask());
+  return view.warnings_bitmask() == out->ToEnumBitmask();
 }
 
 bool StructTraits<network::mojom::CookieInclusionStatusDataView,
@@ -102,16 +130,22 @@ bool StructTraits<network::mojom::CookieInclusionStatusDataView,
     Read(network::mojom::CookieInclusionStatusDataView status,
          net::CookieInclusionStatus* out) {
   net::CookieInclusionStatus::ExemptionReason exemption_reason;
-
-  out->set_exclusion_reasons(status.exclusion_reasons());
-  out->set_warning_reasons(status.warning_reasons());
-  if (!status.ReadExemptionReason(&exemption_reason)) {
+  net::CookieInclusionStatus::ExclusionReasonBitset exclusion_reasons;
+  net::CookieInclusionStatus::WarningReasonBitset warning_reasons;
+  if (!status.ReadExclusionReasons(&exclusion_reasons) ||
+      !status.ReadWarningReasons(&warning_reasons) ||
+      !status.ReadExemptionReason(&exemption_reason)) {
     return false;
   }
-  out->MaybeSetExemptionReason(exemption_reason);
+  std::optional<net::CookieInclusionStatus> maybe_status =
+      net::CookieInclusionStatus::MakeFromComponents(
+          exclusion_reasons, warning_reasons, exemption_reason);
 
-  return net::CookieInclusionStatus::ValidateExclusionAndWarningFromWire(
-      status.exclusion_reasons(), status.warning_reasons());
+  if (!maybe_status.has_value()) {
+    return false;
+  }
+  *out = std::move(maybe_status).value();
+  return true;
 }
 
 }  // namespace mojo

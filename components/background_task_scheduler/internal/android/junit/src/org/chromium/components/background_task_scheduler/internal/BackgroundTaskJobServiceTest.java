@@ -39,8 +39,8 @@ import java.util.concurrent.TimeUnit;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.S)
 public class BackgroundTaskJobServiceTest {
-    private static BackgroundTaskSchedulerJobService.Clock sClock = () -> 1415926535000L;
-    private static BackgroundTaskSchedulerJobService.Clock sZeroClock = () -> 0L;
+    private static final BackgroundTaskSchedulerJobService.Clock sClock = () -> 1415926535000L;
+    private static final BackgroundTaskSchedulerJobService.Clock sZeroClock = () -> 0L;
     @Mock private BackgroundTaskSchedulerDelegate mDelegate;
     @Mock private BackgroundTaskSchedulerUma mBackgroundTaskSchedulerUma;
     @Mock private BackgroundTaskSchedulerImpl mBackgroundTaskSchedulerImpl;
@@ -262,7 +262,7 @@ public class BackgroundTaskJobServiceTest {
     }
 
     public static class FakeBackgroundTaskFactory implements BackgroundTaskFactory {
-        private BackgroundTask mFakeBackgroundTask;
+        private final BackgroundTask mFakeBackgroundTask;
 
         FakeBackgroundTaskFactory(BackgroundTask fakeBackgroundTask) {
             mFakeBackgroundTask = fakeBackgroundTask;

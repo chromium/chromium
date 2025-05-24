@@ -74,6 +74,12 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
     find_ui_active_ = find_ui_active;
   }
 
+  // Accessors/Setters for find_ui_focused_.
+  bool find_ui_focused() const { return find_ui_focused_; }
+  void set_find_ui_focused(bool find_ui_focused) {
+    find_ui_focused_ = find_ui_focused;
+  }
+
   // Used _only_ by testing to get the current request ID.
   int current_find_request_id() { return current_find_request_id_; }
 
@@ -124,6 +130,9 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
+  // Used to determine if the find session is active for this WebContents.
+  bool is_find_session_active() const { return is_find_session_active_; }
+
  private:
   explicit FindTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<FindTabHelper>;
@@ -136,6 +145,9 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
 
   // True if the Find UI is active for this Tab.
   bool find_ui_active_ = false;
+
+  // True if the Find UI is focused for this Tab.
+  bool find_ui_focused_ = false;
 
   // True if a Find operation was aborted. This can happen if the Find box is
   // closed or if the search term inside the Find box is erased while a search
@@ -182,6 +194,10 @@ class FindTabHelper : public content::WebContentsUserData<FindTabHelper> {
   // The value of the |find_match| option for the active search, or false if
   // there is no active search.
   bool should_find_match_ = false;
+
+  // Keep track of find session for this webcontents.
+  // |true| if find session is active otherwise |false|.
+  bool is_find_session_active_ = false;
 
   // The optional delegate that remembers recent search text state.
   raw_ptr<Delegate> delegate_ = nullptr;

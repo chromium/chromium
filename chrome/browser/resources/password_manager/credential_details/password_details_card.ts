@@ -85,11 +85,14 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
       },
       groupName: String,
       iconUrl: String,
-      usernameCopyInteraction_: {
-        type: PasswordViewPageInteractions,
-        value() {
-          return PasswordViewPageInteractions.USERNAME_COPY_BUTTON_CLICKED;
-        },
+      shouldRegisterSharingPromo: {
+        type: Boolean,
+        value: false,
+      },
+
+      interactionsEnum_: {
+        type: Object,
+        value: PasswordViewPageInteractions,
       },
 
       showEditPasswordDialog_: Boolean,
@@ -122,16 +125,24 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     };
   }
 
-  password: chrome.passwordsPrivate.PasswordUiEntry;
-  groupName: string;
-  iconUrl: string;
-  isUsingAccountStore: boolean;
-  private showEditPasswordDialog_: boolean;
-  private passwordSharingDisabled_: boolean;
-  private showDeletePasswordDialog_: boolean;
-  private showShareFlow_: boolean;
-  private showShareButton_: boolean;
-  private showMovePasswordDialog_: boolean;
+  declare password: chrome.passwordsPrivate.PasswordUiEntry;
+  declare groupName: string;
+  declare iconUrl: string;
+  declare isUsingAccountStore: boolean;
+  /* This is set by the parent element, to only show help buble on the first
+   * card on the page. */
+  declare shouldRegisterSharingPromo: boolean;
+  declare private showEditPasswordDialog_: boolean;
+  declare private passwordSharingDisabled_: boolean;
+  declare private showDeletePasswordDialog_: boolean;
+  declare private showShareFlow_: boolean;
+  declare private showShareButton_: boolean;
+  declare private showMovePasswordDialog_: boolean;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.maybeRegisterSharingHelpBubble_();
+  }
 
   private isFederated_(): boolean {
     return !!this.password.federationText;
@@ -313,8 +324,12 @@ export class PasswordDetailsCardElement extends PasswordDetailsCardElementBase {
     this.isPasswordVisible = false;
   }
 
-  maybeRegisterSharingHelpBubble(): void {
-    if (!this.showShareButton_ && !this.passwordSharingDisabled_) {
+  private maybeRegisterSharingHelpBubble_(): void {
+    // Register the help bubble only if this is the first card in the list
+    // (`shouldRegisterSharingPromo` is true), and the share button is visible
+    // and not disabled.
+    if (!this.shouldRegisterSharingPromo ||
+        (!this.showShareButton_ && !this.passwordSharingDisabled_)) {
       return;
     }
 

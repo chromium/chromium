@@ -112,9 +112,6 @@ declare namespace chrome {
     export function isTabletModeEnabled(callback: (enabled: boolean) => void):
         void;
 
-    export function isRunningOnLacros(callback: (enabled: boolean) => void):
-        void;
-
   }
 }
 

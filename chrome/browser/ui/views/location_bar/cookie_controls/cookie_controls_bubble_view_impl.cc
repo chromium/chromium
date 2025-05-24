@@ -30,7 +30,7 @@ CookieControlsBubbleViewImpl::CookieControlsBubbleViewImpl(
     views::View* anchor_view,
     content::WebContents* web_contents,
     OnCloseBubbleCallback callback)
-    : LocationBarBubbleDelegateView(anchor_view, web_contents,true),
+    : LocationBarBubbleDelegateView(anchor_view, web_contents, true),
       callback_(std::move(callback)) {
   SetShowCloseButton(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -102,9 +102,10 @@ void CookieControlsBubbleViewImpl::CloseWidget() {
 }
 
 base::CallbackListSubscription
-CookieControlsBubbleViewImpl::RegisterOnUserClosedContentViewCallback(
+CookieControlsBubbleViewImpl::RegisterOnUserTriggeredReloadingActionCallback(
     base::RepeatingClosureList::CallbackType callback) {
-  return on_user_closed_content_view_callback_list_.Add(std::move(callback));
+  return on_user_triggered_reloading_action_callback_list_.Add(
+      std::move(callback));
 }
 
 gfx::Size CookieControlsBubbleViewImpl::CalculatePreferredSize(
@@ -144,7 +145,7 @@ bool CookieControlsBubbleViewImpl::OnCloseRequested(
     return close_reason != views::Widget::ClosedReason::kLostFocus;
   }
 
-  on_user_closed_content_view_callback_list_.Notify();
+  on_user_triggered_reloading_action_callback_list_.Notify();
   return false;
 }
 

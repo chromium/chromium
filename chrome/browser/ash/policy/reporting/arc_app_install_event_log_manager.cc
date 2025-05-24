@@ -129,7 +129,7 @@ ArcAppInstallEventLogManager::ArcLog::ArcLog() : InstallLog() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
-ArcAppInstallEventLogManager::ArcLog::~ArcLog() {}
+ArcAppInstallEventLogManager::ArcLog::~ArcLog() = default;
 
 std::unique_ptr<em::AppInstallReportRequest>
 ArcAppInstallEventLogManager::ArcLog::Serialize() {

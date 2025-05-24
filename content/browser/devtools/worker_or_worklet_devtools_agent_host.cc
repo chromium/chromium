@@ -10,7 +10,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/child_process_host.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
@@ -29,10 +28,9 @@ WorkerOrWorkletDevToolsAgentHost::WorkerOrWorkletDevToolsAgentHost(
       name_(name),
       destroyed_callback_(std::move(destroyed_callback)) {
   DCHECK(!devtools_worker_token.is_empty());
-  // TODO(crbug.com/40093136): Remove AddRef() and Release() once
-  // PlzDedicatedWorker is enabled and the code for non-PlzDedicatedWorker is
-  // deleted. Worker agent hosts will be retained by the Worker DevTools manager
-  // instead.
+  if (auto* rph = RenderProcessHost::FromID(process_id)) {
+    process_observation_.Observe(rph);
+  }
   AddRef();  // Self keep-alive while the worker agent is alive.
 }
 
@@ -57,8 +55,6 @@ void WorkerOrWorkletDevToolsAgentHost::ChildWorkerCreated(
     const GURL& url,
     const std::string& name,
     base::OnceCallback<void(DevToolsAgentHostImpl*)> callback) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker));
-
   url_ = url;
   name_ = name;
   destroyed_callback_ = std::move(callback);
@@ -69,6 +65,7 @@ void WorkerOrWorkletDevToolsAgentHost::Disconnected() {
   GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
                                     ChildProcessHost::kInvalidUniqueID);
   std::move(destroyed_callback_).Run(this);
+  process_observation_.Reset();
   Release();  // Matches AddRef() in constructor.
 }
 
@@ -101,6 +98,11 @@ void WorkerOrWorkletDevToolsAgentHost::Reload() {}
 
 bool WorkerOrWorkletDevToolsAgentHost::Close() {
   return false;
+}
+
+void WorkerOrWorkletDevToolsAgentHost::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  Disconnected();
 }
 
 }  // namespace content

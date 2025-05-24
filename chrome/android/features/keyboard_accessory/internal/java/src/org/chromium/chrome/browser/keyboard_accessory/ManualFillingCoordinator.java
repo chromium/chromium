@@ -40,7 +40,7 @@ import java.util.function.BooleanSupplier;
  */
 class ManualFillingCoordinator implements ManualFillingComponent {
     private final ManualFillingMediator mMediator = new ManualFillingMediator();
-    private ObserverList<Observer> mObserverList = new ObserverList<>();
+    private final ObserverList<Observer> mObserverList = new ObserverList<>();
 
     public ManualFillingCoordinator() {}
 
@@ -226,6 +226,12 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     @Override
     public int getKeyboardExtensionHeight() {
         return mMediator != null ? mMediator.getKeyboardExtensionHeight() : 0;
+    }
+
+    @Override
+    public ObservableSupplier<KeyboardAccessoryVisualStateProvider>
+            getKeyboardAccessoryVisualStateProvider() {
+        return mMediator.getKeyboardAccessoryVisualStateProvider();
     }
 
     @Override

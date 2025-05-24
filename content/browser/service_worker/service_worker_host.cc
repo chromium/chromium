@@ -24,6 +24,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -228,8 +229,12 @@ void ServiceWorkerHost::CreateBlobUrlStoreProvider(
   }
 
   storage_partition_impl->GetBlobUrlRegistry()->AddReceiver(
-      version()->key(), version()->key().origin(), GetProcessHost()->GetID(),
-      std::move(receiver));
+      version()->key(), version()->key().origin(),
+      GetProcessHost()->GetDeprecatedID(), std::move(receiver),
+      // Storage access can only be granted to dedicated workers.
+      base::BindRepeating([]() -> bool { return false; }),
+      !(GetContentClient()->browser()->IsBlobUrlPartitioningEnabled(
+          GetProcessHost()->GetBrowserContext())));
 }
 
 void ServiceWorkerHost::CreateBucketManagerHost(
@@ -263,8 +268,10 @@ blink::mojom::PermissionStatus ServiceWorkerHost::GetPermissionStatus(
 
   return process->GetBrowserContext()
       ->GetPermissionController()
-      ->GetPermissionStatusForWorker(permission_type, process,
-                                     GetBucketStorageKey().origin());
+      ->GetPermissionStatusForWorker(
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(permission_type),
+          process, GetBucketStorageKey().origin());
 }
 
 void ServiceWorkerHost::BindCacheStorageForBucket(
@@ -286,9 +293,9 @@ void ServiceWorkerHost::BindAIManager(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
   auto* process = GetProcessHost();
   if (process) {
-    GetContentClient()->browser()->BindAIManager(
-        process->GetBrowserContext(),
-        static_cast<base::SupportsUserData*>(this), std::move(receiver));
+    GetContentClient()->browser()->BindAIManager(process->GetBrowserContext(),
+                                                 this, /*rfh=*/nullptr,
+                                                 std::move(receiver));
   }
 }
 

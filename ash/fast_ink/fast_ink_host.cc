@@ -21,6 +21,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
@@ -58,11 +59,7 @@ FastInkHost::ScopedPaint::~ScopedPaint() {
 
 FastInkHost::FastInkHost() = default;
 FastInkHost::~FastInkHost() {
-  if (client_shared_image_) {
-    CHECK(context_provider_);
-    context_provider_->SharedImageInterface()->DestroySharedImage(
-        sync_token_, std::move(client_shared_image_));
-  }
+  ResetGpuBuffer();
 }
 
 void FastInkHost::Init(aura::Window* host_window) {
@@ -70,11 +67,10 @@ void FastInkHost::Init(aura::Window* host_window) {
   FrameSinkHost::Init(host_window);
 }
 
-void FastInkHost::InitForTesting(
-    aura::Window* host_window,
-    std::unique_ptr<cc::LayerTreeFrameSink> layer_tree_frame_sink) {
+void FastInkHost::InitForTesting(aura::Window* host_window,
+                                 FrameSinkFactory frame_sink_factory) {
   InitBufferMetadata(host_window);
-  FrameSinkHost::InitForTesting(host_window, std::move(layer_tree_frame_sink));
+  FrameSinkHost::InitForTesting(host_window, std::move(frame_sink_factory));
 }
 
 std::unique_ptr<FastInkHost::ScopedPaint> FastInkHost::CreateScopedPaint(
@@ -104,7 +100,16 @@ std::unique_ptr<viz::CompositorFrame> FastInkHost::CreateCompositorFrame(
 }
 
 void FastInkHost::OnFirstFrameRequested() {
+  CHECK(!client_shared_image_);
   InitializeFastInkBuffer(host_window());
+}
+
+void FastInkHost::OnFrameSinkLost() {
+  // The fast ink buffer becomes unusable the GPU crashes, which is one of the
+  // most common causes of FrameSink loss. A new buffer will be created once
+  // `OnFirstFrameRequested()` will be called.
+  ResetGpuBuffer();
+  FrameSinkHost::OnFrameSinkLost();
 }
 
 void FastInkHost::InitBufferMetadata(aura::Window* host_window) {
@@ -116,9 +121,11 @@ void FastInkHost::InitBufferMetadata(aura::Window* host_window) {
   // be done by the compositor.
   window_to_buffer_transform_ = host_window->GetHost()->GetRootTransform();
   gfx::Rect bounds(host_window->GetBoundsInScreen().size());
-  buffer_size_ =
-      cc::MathUtil::MapEnclosingClippedRect(window_to_buffer_transform_, bounds)
-          .size();
+  // TODO(oshima): Make this eplison default.
+  constexpr float kEpsilon = 0.001f;
+  buffer_size_ = cc::MathUtil::MapEnclosingClippedRectIgnoringError(
+                     window_to_buffer_transform_, bounds, kEpsilon)
+                     .size();
 }
 
 void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
@@ -133,12 +140,15 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   // This SharedImage will be used by the display compositor, will be updated
   // in parallel with being read, and will potentially be used in overlays.
-  constexpr gpu::SharedImageUsageSet usage =
+  gpu::SharedImageUsageSet usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
-  CHECK(!client_shared_image_);
+  if (sii->GetCapabilities().supports_scanout_shared_images) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
+
+  CHECK(!client_shared_image_) << "GPU buffer is already initialized";
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
       buffer_size_, usage, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
 
@@ -151,15 +161,14 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
       mapping = client_shared_image_->Map();
     }
     LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
-    uint8_t* memory =
-        mapping ? static_cast<uint8_t*>(mapping->Memory(0)) : nullptr;
-    if (memory != nullptr) {
+    if (mapping) {
       gfx::Size size = mapping->Size();
       int stride = mapping->Stride(0);
       // Clear the buffer before usage, since it may be uninitialized.
       // (http://b/168735625)
       for (int i = 0; i < size.height(); ++i) {
-        memset(memory + i * stride, 0, size.width() * 4);
+        memset(mapping->GetMemoryForPlane(0).data() + i * stride, 0,
+               size.width() * 4);
       }
     }
   }
@@ -168,6 +177,7 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
   for (auto pending_bitmap : pending_bitmaps_) {
     DrawBitmap(pending_bitmap.bitmap, pending_bitmap.damage_rect);
   }
+
   pending_bitmaps_.clear();
 }
 
@@ -179,7 +189,6 @@ gfx::Rect FastInkHost::BufferRectFromWindowRect(
 
 void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
   const bool initialized = client_shared_image_ != nullptr;
-
   if (!initialized) {
     // GPU process should be ready soon after start and `pending_bitmaps_`
     // should be drawn promptly. 60 is an arbitrary cap that should never
@@ -188,6 +197,7 @@ void FastInkHost::Draw(SkBitmap bitmap, const gfx::Rect& damage_rect) {
     pending_bitmaps_.push_back(PendingBitmap(bitmap, damage_rect));
     return;
   }
+
   DrawBitmap(bitmap, damage_rect);
 }
 
@@ -212,15 +222,26 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
     TRACE_EVENT1("ui", "FastInkHost::ScopedPaint::Copy", "damage_rect",
                  damage_rect.ToString());
 
-    uint8_t* data = static_cast<uint8_t*>(mapping->Memory(0));
     const int stride = mapping->Stride(0);
     bitmap.readPixels(
         SkImageInfo::MakeN32Premul(damage_rect.width(), damage_rect.height()),
-        data + damage_rect.y() * stride + damage_rect.x() * 4, stride, 0, 0);
+        mapping->GetMemoryForPlane(0).data() + damage_rect.y() * stride +
+            damage_rect.x() * 4,
+        stride, 0, 0);
   }
 
   {
     TRACE_EVENT0("ui", "FastInkHost::UpdateBuffer::Unmap");
+  }
+}
+
+void FastInkHost::ResetGpuBuffer() {
+  if (client_shared_image_) {
+    CHECK(context_provider_);
+    context_provider_->SharedImageInterface()->DestroySharedImage(
+        sync_token_, std::move(client_shared_image_));
+    client_shared_image_.reset();
+    sync_token_.Clear();
   }
 }
 

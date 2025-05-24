@@ -20,6 +20,7 @@
           a zrušte začiarknutie políčka „Používať server proxy pre sieť LAN".</translation>
 <translation id="4622039161600275920">Táto stránka bola zablokovaná prehliadačom Chromium</translation>
 <translation id="48558539577516920">Prehliadaču Chromium povoľte prístup k sieti v nastaveniach brány firewall alebo antivírusového softvéru.</translation>
+<translation id="4949828774841497663">Prejdite do sekcie Aplikácie &gt; Nastavenia systému &gt; Sieť, vyberte aktívnu sieť, kliknite na tlačidlo Podrobnosti… a zrušte výber všetkých vybraných proxy serverov.</translation>
 <translation id="580822234363523061">Prejdite na
           ponuku Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -28,6 +29,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a uistite sa, že je vaša konfigurácia nastavená na hodnotu „žiadny server proxy" alebo „priame".</translation>
+<translation id="648062525172759633">Tieto stránky môžu používať vývojári prehliadača Chromium a nemusia byť aktívne udržiavané ani testované. Ak ich chcete povoliť, prejdite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na tlačidlo povoľte stránky ladenia a potom sa vráťte na túto stránku.</translation>
 <translation id="6549378540556750549">Prehliadač Chromium je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Zmeny sa prejavia pri nasledujúcom reštartovaní prehliadača Chromium.</translation>
 <translation id="691026815377248078">Prehliadač Chromium potrebuje prístup k rozhraniu Bluetooth, aby mohol pokračovať 
@@ -41,9 +43,6 @@
         a zrušte výber položky <ph name="NO_PREFETCH_DESCRIPTION" />.
         Ak to problém nevyrieši, odporúčame túto možnosť vybrať,
         aby ste získali lepšiu výkonnosť.</translation>
-<translation id="8187289872471304532">Prejdite na možnosť
-          Aplikácie &gt; Systémové predvoľby &gt; Sieť &gt; Rozšírené nastavenia &gt; Servery proxy
-          a zrušte výber všetkých vybratých serverov proxy.</translation>
 <translation id="8597726643333341451">Prezeráte si zabezpečenú stránku Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium nebol správne vypnutý.</translation>
 </translationbundle>

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_ANDROID_SEGMENTATION_PLATFORM_SERVICE_ANDROID_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_ANDROID_SEGMENTATION_PLATFORM_SERVICE_ANDROID_H_
 
+#include <jni.h>
+
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -43,6 +45,17 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const JavaParamRef<jobject>& jcaller,
       const JavaParamRef<jstring>& j_segmentation_key);
+
+  void GetInputKeysForModel(JNIEnv* env,
+                            const JavaParamRef<jstring>& j_segmentation_key,
+                            const JavaParamRef<jobject>& j_callback);
+
+  void CollectTrainingData(JNIEnv* env,
+                           jint j_segment_id,
+                           jlong j_request_id,
+                           jlong j_ukm_source_id,
+                           const JavaParamRef<jobject>& j_param,
+                           const JavaParamRef<jobject>& j_callback);
 
   ScopedJavaLocalRef<jobject> GetJavaObject();
 

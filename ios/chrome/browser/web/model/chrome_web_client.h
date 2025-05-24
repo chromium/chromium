@@ -10,7 +10,10 @@
 #include <string_view>
 #include <vector>
 
+#include "build/blink_buildflags.h"
 #import "ios/web/public/web_client.h"
+
+class IOSChromeMainParts;
 
 // Chrome implementation of WebClient.
 class ChromeWebClient : public web::WebClient {
@@ -24,11 +27,13 @@ class ChromeWebClient : public web::WebClient {
 
   // WebClient implementation.
   std::unique_ptr<web::WebMainParts> CreateWebMainParts() override;
+  void InitializeFieldTrialAndFeatureList() override;
   void PreWebViewCreation() const override;
   void AddAdditionalSchemes(Schemes* schemes) const override;
   std::string GetApplicationLocale() const override;
   bool IsAppSpecificURL(const GURL& url) const override;
   std::string GetUserAgent(web::UserAgentType type) const override;
+  std::string GetMainThreadName() const override;
   std::u16string GetLocalizedString(int message_id) const override;
   std::string_view GetDataResource(
       int resource_id,
@@ -65,10 +70,16 @@ class ChromeWebClient : public web::WebClient {
   void SetOSLockdownModeEnabled(bool enabled) override;
   bool IsInsecureFormWarningEnabled(
       web::BrowserState* browser_state) const override;
+  void BuildEditMenu(web::WebState* web_state,
+                     id<UIMenuBuilder>) const override;
 
  private:
   // Reference to a view that is attached to a window.
   UIView* windowed_container_ = nil;
+
+#if BUILDFLAG(USE_BLINK)
+  std::unique_ptr<IOSChromeMainParts> main_parts_;
+#endif
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHROME_WEB_CLIENT_H_

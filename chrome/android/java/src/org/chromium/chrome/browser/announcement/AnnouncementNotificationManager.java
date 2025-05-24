@@ -12,6 +12,7 @@ import android.content.Intent;
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
@@ -115,12 +116,12 @@ public class AnnouncementNotificationManager {
 
     private static void close() {
         // Dismiss the notification.
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+        BaseNotificationManagerProxyFactory.create()
                 .cancel(ANNOUNCEMENT_NOTIFICATION_TAG, ANNOUNCEMENT_NOTIFICATION_ID);
     }
 
     @CalledByNative
-    private static void showNotification(String url) {
+    private static void showNotification(@JniType("std::string") String url) {
         Context context = ContextUtils.getApplicationContext();
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
@@ -148,7 +149,7 @@ public class AnnouncementNotificationManager {
                 createIntent(context, IntentType.OPEN, url),
                 NotificationUmaTracker.ActionType.ANNOUNCEMENT_OPEN);
 
-        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         nm.notify(notification);
 

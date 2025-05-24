@@ -148,9 +148,9 @@ void PerProfileWorkerTaskTracker::CreateWorkerTask(
     base::flat_map<WorkerId, std::unique_ptr<WorkerTask>>* out_worker_tasks) {
   DCHECK(worker_process_host);
   auto insertion_result = out_worker_tasks->emplace(
-      worker_id,
-      std::make_unique<WorkerTask>(worker_process_host->GetProcess().Handle(),
-                                   task_type, worker_process_host->GetID()));
+      worker_id, std::make_unique<WorkerTask>(
+                     worker_process_host->GetProcess().Handle(), task_type,
+                     worker_process_host->GetDeprecatedID()));
   DCHECK(insertion_result.second);
   worker_task_provider_->OnWorkerTaskAdded(
       insertion_result.first->second.get());

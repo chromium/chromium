@@ -24,7 +24,8 @@ class ChromeAndroidImpl : public ChromeImpl {
                     std::optional<MobileDevice> mobile_device,
                     std::string page_load_strategy,
                     std::unique_ptr<Device> device,
-                    bool autoaccept_beforeunload);
+                    bool autoaccept_beforeunload,
+                    bool enable_extension_targets);
   ~ChromeAndroidImpl() override;
 
   // Overridden from Chrome:

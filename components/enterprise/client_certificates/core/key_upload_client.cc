@@ -37,6 +37,7 @@ BPKUR::KeyTrustLevel SourceToTrustLevel(PrivateKeySource source) {
     case PrivateKeySource::kUnexportableKey:
       return BPKUR::CHROME_BROWSER_HW_KEY;
     case PrivateKeySource::kSoftwareKey:
+    case PrivateKeySource::kOsSoftwareKey:
       return BPKUR::CHROME_BROWSER_OS_KEY;
   }
 }
@@ -206,7 +207,7 @@ void KeyUploadClientImpl::OnCertificateResponseReceived(
             .pem_encoded_certificate();
     net::CertificateList certs =
         net::X509Certificate::CreateCertificateListFromBytes(
-            base::as_bytes(base::make_span(pem_encoded_certificate)),
+            base::as_byte_span(pem_encoded_certificate),
             net::X509Certificate::FORMAT_AUTO);
     if (!certs.empty()) {
       certificate = certs[0];

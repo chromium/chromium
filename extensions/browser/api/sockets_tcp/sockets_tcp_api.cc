@@ -358,10 +358,13 @@ ExtensionFunction::ResponseAction SocketsTcpSendFunction::Work() {
       sockets_tcp::Send::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   size_t io_buffer_size = params->data.size();
+  if (!TakeWriteQuota(io_buffer_size)) {
+    return RespondNow(Error(kExceedWriteQuotaError));
+  }
 
   auto io_buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(params->data.size());
-  base::ranges::copy(params->data, io_buffer->data());
+  std::ranges::copy(params->data, io_buffer->data());
 
   ResumableTCPSocket* socket = GetTcpSocket(params->socket_id);
   if (!socket) {
@@ -374,6 +377,8 @@ ExtensionFunction::ResponseAction SocketsTcpSendFunction::Work() {
 }
 
 void SocketsTcpSendFunction::OnCompleted(int net_result) {
+  ReturnWriteQuota();
+
   if (net_result >= net::OK) {
     SetSendResult(net::OK, net_result);
   } else {
@@ -394,8 +399,8 @@ void SocketsTcpSendFunction::SetSendResult(int net_result, int bytes_sent) {
   if (net_result == net::OK) {
     Respond(ArgumentList(std::move(args)));
   } else {
-    Respond(
-        ErrorWithArguments(std::move(args), net::ErrorToString(net_result)));
+    Respond(ErrorWithArgumentsDoNotUse(std::move(args),
+                                       net::ErrorToString(net_result)));
   }
 }
 

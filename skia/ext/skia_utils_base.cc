@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "skia/ext/skia_utils_base.h"
 
@@ -158,6 +154,13 @@ std::string SkcmsMatrix3x3ToString(const skcms_Matrix3x3& m) {
       "{rows:[[%1.4f,%1.4f,%1.4f],[%1.4f,%1.4f,%1.4f],[%1.4f,%1.4f,%1.4f]]}",
       m.vals[0][0], m.vals[0][1], m.vals[0][2], m.vals[1][0], m.vals[1][1],
       m.vals[1][2], m.vals[2][0], m.vals[2][1], m.vals[2][2]);
+}
+
+base::span<const uint8_t> as_byte_span(const SkData& sk_data LIFETIME_BOUND) {
+  // SAFETY: `data` is not null.  `bytes` and `size` come from the same
+  // container.  (`base::as_bytes_span` doesn't work because `data` accessor
+  // returns `void*`.)
+  return UNSAFE_BUFFERS(base::span(sk_data.bytes(), sk_data.size()));
 }
 
 }  // namespace skia

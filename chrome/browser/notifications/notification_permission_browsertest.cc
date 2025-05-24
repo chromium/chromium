@@ -348,9 +348,9 @@ IN_PROC_BROWSER_TEST_F(NotificationPermissionBrowserTest,
   std::unique_ptr<permissions::MockPermissionPromptFactory> bubble_factory =
       std::make_unique<permissions::MockPermissionPromptFactory>(manager);
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), TesterUrl()));
-  permissions::MockPermissionRequest req(
-      permissions::RequestType::kNotifications);
-  manager->AddRequest(GetActiveWebContents()->GetPrimaryMainFrame(), &req);
+  manager->AddRequest(GetActiveWebContents()->GetPrimaryMainFrame(),
+                      std::make_unique<permissions::MockPermissionRequest>(
+                          permissions::RequestType::kNotifications));
   bubble_factory->WaitForPermissionBubble();
   manager->Accept();
 

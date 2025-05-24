@@ -102,6 +102,7 @@ TEST_F(SandboxFileSystemBackendDelegateTest, IsAccessValid) {
   EXPECT_FALSE(IsAccessValid(CreateFileSystemURL(".")));
   EXPECT_FALSE(IsAccessValid(CreateFileSystemURL("..")));
 
+#if BUILDFLAG(IS_WIN)
   // This is also disallowed due to Windows XP parent path handling.
   EXPECT_FALSE(IsAccessValid(CreateFileSystemURL("...")));
 
@@ -109,6 +110,11 @@ TEST_F(SandboxFileSystemBackendDelegateTest, IsAccessValid) {
   // on Windows.
   EXPECT_FALSE(IsAccessValid(CreateFileSystemURL(" ..")));
   EXPECT_FALSE(IsAccessValid(CreateFileSystemURL(".. ")));
+#else
+  EXPECT_TRUE(IsAccessValid(CreateFileSystemURL("...")));
+  EXPECT_TRUE(IsAccessValid(CreateFileSystemURL(" ..")));
+  EXPECT_TRUE(IsAccessValid(CreateFileSystemURL(".. ")));
+#endif
 
   // Similar but safe cases.
   EXPECT_TRUE(IsAccessValid(CreateFileSystemURL(" .")));
@@ -137,8 +143,6 @@ TEST_F(SandboxFileSystemBackendDelegateTest, OpenFileSystemAccessesStorage) {
   EXPECT_EQ(last_error(), base::File::FILE_OK);
   EXPECT_EQ(quota_manager_proxy()->notify_bucket_accessed_count(), 1);
   EXPECT_EQ(quota_manager_proxy()->last_notified_storage_key(), storage_key);
-  EXPECT_EQ(quota_manager_proxy()->last_notified_type(),
-            blink::mojom::StorageType::kTemporary);
 }
 
 }  // namespace storage

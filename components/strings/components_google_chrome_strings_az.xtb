@@ -9,7 +9,11 @@
 <translation id="2447485272386224171">Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açıq mənbə layihəsi və digər <ph name="BEGIN_LINK_OSS" />açıq mənbə proqram təminatları tərəfindən<ph name="END_LINK_OSS" /> əlçatan edilib.</translation>
 <translation id="2588322182880276190">Chrome logosu</translation>
 <translation id="3444832043240812445"><ph name="BEGIN_LINK" />Xəta haqqında hesabatı aktiv etdikdə<ph name="END_LINK" />, bu səhifə yalnız son xətalar haqqında məlumatı göstərir.</translation>
+<translation id="3512634283363927263">Bu səhifələr Chrome developerləri tərəfindən istifadə üçün nəzərdə tutulub və aktiv şəkildə saxlanıla və ya sınaqdan keçirilə bilməz. Aktivləşdirmək üçün <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> ünvanına keçin, sazlama səhifələrini aktivləşdirmək üçün düyməni basın və sonra yenidən bu səhifəyə keçin.</translation>
 <translation id="3875312571075912821">Chrome'a brandmauerinizdə və ya antivirus ayarlarınızda şəbəkəyə giriş imkanı verin.</translation>
+<translation id="4949828774841497663">Tətbiqlər &gt; Sistem Ayarları &gt; Şəbəkə bölməsinə keçin,
+          aktiv şəbəkə keçin, Detallar... düyməsinə klikləyin və seçilmiş ola biləcək bütün proksilərin
+          seçimini silin.</translation>
 <translation id="5005121315113832363">Bu səhifə Chrome tərəfindən bloklanıb</translation>
 <translation id="6011049234605203654">Chrome menyuya gedin &gt;
           <ph name="SETTINGS_TITLE" />
@@ -36,8 +40,6 @@
           LAN Ayarları
           və "Proksi serveri LAN üçün işlədin" üzərindən seçimi qaldırın.</translation>
 <translation id="7230956101631259640">Təhlükəsiz Chrome səhifəsinə baxırsınız</translation>
-<translation id="8187289872471304532">Tətbiqlər &gt; Sistem Tərcihləri &gt; Şəbəkə &gt; Qabaqcıl &gt; Proksilər bölməsinə gedin
-          və seçilmiş hər hansı proksidən seçimi qaldırın.</translation>
 <translation id="8232971017369963250">Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açıq mənbə layihəsi olmadan mümkün olmazdı.</translation>
 <translation id="8279509328145658601">Chrome, həmçinin <ph name="BEGIN_LINK_OSS" />digər açıq mənbə proqram təminatı<ph name="END_LINK_OSS" /> olmadan mümkün olmazdı.</translation>
 <translation id="8544217240017914508">Google Chrome ödəniş metodlarını doldurmaq üçün ayarlara dəyişiklik etməyə çalışır.</translation>

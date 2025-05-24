@@ -12,6 +12,8 @@ import androidx.annotation.IntDef;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.BrowserStartupController;
 
 import java.lang.annotation.Retention;
@@ -21,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * Base class implementing {@link BackgroundTask} that adds native initialization, ensuring that
  * tasks are run after Chrome is successfully started.
  */
+@NullMarked
 public abstract class NativeBackgroundTask implements BackgroundTask {
     /** Specifies which action to take following onStartTaskBeforeNativeLoaded. */
     @IntDef({
@@ -53,6 +56,7 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
     private boolean mRunningInMinimalBrowserMode;
 
     /** Loads native and handles initialization. */
+    @SuppressWarnings("NullAway.Init")
     private NativeBackgroundTaskDelegate mDelegate;
 
     protected NativeBackgroundTask() {}
@@ -201,10 +205,10 @@ public abstract class NativeBackgroundTask implements BackgroundTask {
     /**
      * Method that should be implemented in derived classes to provide implementation of {@link
      * BackgroundTask#onStartTask(Context, TaskParameters, TaskFinishedCallback)} when native is
-     * loaded.
-     * This method will not be called unless {@link #onStartTaskBeforeNativeLoaded} returns
+     * loaded. This method will not be called unless {@link #onStartTaskBeforeNativeLoaded} returns
      * LOAD_NATIVE.
      */
+    @Initializer
     protected abstract void onStartTaskWithNative(
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback);
 

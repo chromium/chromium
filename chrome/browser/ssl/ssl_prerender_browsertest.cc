@@ -346,15 +346,11 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
 
     // Prerender the same insecure form.
     std::unique_ptr<content::PrerenderHandle> prerender_handle =
-        web_contents()->StartPrerendering(
+        prerender_helper_.AddEmbedderTriggeredPrerenderAsync(
             kUrl, content::PreloadingTriggerType::kEmbedder,
             prerender_utils::kDirectUrlInputMetricSuffix,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            /*should_warm_up_compositor=*/false,
-            content::PreloadingHoldbackStatus::kUnspecified,
-            /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
-            /*prerender_navigation_handle_callback=*/{});
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
     ASSERT_TRUE(prerender_handle);
     const content::FrameTreeNodeId kPrerenderHostId =
         prerender_helper_.GetHostForUrl(kUrl);

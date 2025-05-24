@@ -78,10 +78,10 @@ export class LocalizedLinkElement extends CrLitElement {
     };
   }
 
-  localizedString: string = '';
-  linkUrl: string = '';
-  linkDisabled: boolean = false;
-  private containerInnerHTML_: string = '';
+  accessor localizedString: string = '';
+  accessor linkUrl: string = '';
+  accessor linkDisabled: boolean = false;
+  private accessor containerInnerHTML_: string = '';
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -175,7 +175,7 @@ export class LocalizedLinkElement extends CrLitElement {
         'tabindex',
       ],
     });
-    const anchorTag = this.shadowRoot!.querySelector('a');
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (anchorTag) {
       anchorTag.addEventListener(
           'click', (event) => this.onAnchorTagClick_(event));
@@ -193,8 +193,7 @@ export class LocalizedLinkElement extends CrLitElement {
       event.preventDefault();
       return;
     }
-    this.dispatchEvent(new CustomEvent(
-        'link-clicked', {bubbles: true, composed: true, detail: {event}}));
+    this.fire('link-clicked', {event});
     // Stop propagation of the event, since it has already been handled by
     // opening the link.
     event.stopPropagation();
@@ -205,7 +204,7 @@ export class LocalizedLinkElement extends CrLitElement {
    *  disabled.
    */
   private updateAnchorTagTabIndex_() {
-    const anchorTag = this.shadowRoot!.querySelector('a');
+    const anchorTag = this.shadowRoot.querySelector('a');
     if (!anchorTag) {
       return;
     }

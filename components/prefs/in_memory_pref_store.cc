@@ -12,9 +12,9 @@
 #include "base/observer_list.h"
 #include "base/values.h"
 
-InMemoryPrefStore::InMemoryPrefStore() {}
+InMemoryPrefStore::InMemoryPrefStore() = default;
 
-InMemoryPrefStore::~InMemoryPrefStore() {}
+InMemoryPrefStore::~InMemoryPrefStore() = default;
 
 bool InMemoryPrefStore::GetValue(std::string_view key,
                                  const base::Value** value) const {

@@ -69,8 +69,9 @@
 
 - (void)forwardInvocation:(NSInvocation*)invocation {
   SEL selector = [invocation selector];
-  if ([_object respondsToSelector:selector])
+  if ([_object respondsToSelector:selector]) {
     [invocation invokeWithTarget:_object];
+  }
 }
 
 - (NSMethodSignature*)methodSignatureForSelector:(SEL)selector {
@@ -83,8 +84,9 @@
 
 - (BOOL)respondsToSelector:(SEL)selector {
   DCHECK(![_blocks objectForKey:NSStringFromSelector(selector)]);
-  if (selector == @selector(initWithRepresentedObject:))
+  if (selector == @selector(initWithRepresentedObject:)) {
     return YES;
+  }
 
   return [_object respondsToSelector:selector];
 }

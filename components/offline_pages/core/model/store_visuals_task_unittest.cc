@@ -27,7 +27,7 @@ OfflinePageVisuals CreateVisualsItem(base::Time now) {
 
 class StoreVisualsTaskTest : public ModelTaskTestBase {
  public:
-  ~StoreVisualsTaskTest() override {}
+  ~StoreVisualsTaskTest() override = default;
 
   std::unique_ptr<OfflinePageVisuals> ReadVisuals(int64_t offline_id) {
     std::unique_ptr<OfflinePageVisuals> visuals;

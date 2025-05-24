@@ -9,7 +9,7 @@
 
 namespace {
 
-void CallMeMaybe(int *number) {
+void CallMeMaybe(int* number) {
   (*number)++;
 }
 
@@ -82,7 +82,7 @@ class HasWeakPtr {
 };
 
 TEST(MockTimerTest, DoesNotRetainClosure) {
-  HasWeakPtr *has_weak_ptr = new HasWeakPtr();
+  HasWeakPtr* has_weak_ptr = new HasWeakPtr();
   base::WeakPtr<HasWeakPtr> weak_ptr(has_weak_ptr->AsWeakPtr());
   base::MockOneShotTimer timer;
   base::TimeDelta delay = base::Seconds(2);

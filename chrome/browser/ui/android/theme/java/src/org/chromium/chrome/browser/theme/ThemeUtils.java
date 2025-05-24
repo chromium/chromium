@@ -10,21 +10,22 @@ import android.graphics.Color;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
 
 /** Utility methods for theme colors. */
+@NullMarked
 public class ThemeUtils {
     /**
      * Alpha used when TextBox color is computed by brightening the Toolbar color using Color.WHITE.
@@ -52,7 +53,8 @@ public class ThemeUtils {
         @ColorInt
         int backgroundColor = rwhv != null ? rwhv.getBackgroundColor() : Color.TRANSPARENT;
         if (backgroundColor != Color.TRANSPARENT) return backgroundColor;
-        return ChromeColors.getPrimaryBackgroundColor(tab.getContext(), false);
+        return SurfaceColorUpdateUtils.getDefaultThemeColor(
+                tab.getContext(), /* isIncognito= */ false);
     }
 
     /**
@@ -89,15 +91,18 @@ public class ThemeUtils {
     public static @ColorInt int getTextBoxColorForToolbarBackgroundInNonNativePage(
             Context context, @ColorInt int color, boolean isIncognito, boolean isCustomTab) {
         // Text box color on default toolbar background in incognito mode is a pre-defined color.
+        // TODO(https://crbug.com/406890625): Update incognito mode once we have confirmation from
+        // UX.
         if (isIncognito) {
-            return context.getColor(R.color.toolbar_text_box_background_incognito);
+            return SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                    context, /* isIncognito= */ true);
         }
 
         // Text box color on default toolbar background in standard mode is a pre-defined
         // color instead of a calculated color.
         if (ThemeUtils.isUsingDefaultToolbarColor(context, false, color)) {
-            float tabElevation = context.getResources().getDimension(R.dimen.default_elevation_4);
-            return ChromeColors.getSurfaceColor(context, tabElevation);
+            return SurfaceColorUpdateUtils.getOmniboxBackgroundColor(
+                    context, /* isIncognito= */ false);
         }
 
         if (ColorUtils.shouldUseOpaqueTextboxBackground(color)) {
@@ -226,7 +231,7 @@ public class ThemeUtils {
      */
     public static boolean isUsingDefaultToolbarColor(
             Context context, boolean isIncognito, @ColorInt int color) {
-        return color == ChromeColors.getDefaultThemeColor(context, isIncognito);
+        return color == SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
     }
 
     /**
@@ -256,5 +261,25 @@ public class ThemeUtils {
         @ColorInt
         int hairlineColor = ContextCompat.getColor(context, R.color.toolbar_hairline_overlay);
         return ColorUtils.overlayColor(toolbarColor, hairlineColor);
+    }
+
+    /**
+     * Returns the {@link BrandedColorScheme} for the toolbar.
+     *
+     * @param context The context to get the toolbar surface color.
+     * @param toolbarColor The background color of the toolbar.
+     * @param isIncognito true if the current tab is an incognito tab.
+     */
+    public static @BrandedColorScheme int getBrandedColorScheme(
+            Context context, @ColorInt int toolbarColor, boolean isIncognito) {
+        if (isIncognito) return BrandedColorScheme.INCOGNITO;
+
+        boolean isDefaultColor = isUsingDefaultToolbarColor(context, isIncognito, toolbarColor);
+        if (isDefaultColor) return BrandedColorScheme.APP_DEFAULT;
+
+        boolean isDarkTheme = ColorUtils.shouldUseLightForegroundOnBackground(toolbarColor);
+        return isDarkTheme
+                ? BrandedColorScheme.DARK_BRANDED_THEME
+                : BrandedColorScheme.LIGHT_BRANDED_THEME;
     }
 }

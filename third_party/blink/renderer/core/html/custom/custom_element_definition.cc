@@ -270,6 +270,11 @@ void CustomElementDefinition::EnqueueDisconnectedCallback(Element& element) {
       element, CustomElementReactionFactory::CreateDisconnected(*this));
 }
 
+void CustomElementDefinition::EnqueueConnectedMoveCallback(Element& element) {
+  CustomElement::Enqueue(
+      element, CustomElementReactionFactory::CreateConnectedMove(*this));
+}
+
 void CustomElementDefinition::EnqueueAdoptedCallback(Element& element,
                                                      Document& old_document,
                                                      Document& new_document) {

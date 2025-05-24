@@ -1,0 +1,41 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module infobar_internals.mojom;
+
+// Types for every infobar that can be triggered from the internals page.
+enum InfoBarType {
+  kInstallerDownloader,
+};
+
+// Metadata describing an individual infobar that can be triggered.
+struct InfoBarEntry {
+  // The type associated with this infobar entry.
+  InfoBarType type;
+
+  // Human-readable label shown in the WebUI.
+  string name;
+};
+
+// Interface for browser-to-page events
+interface Page {
+  // Intentionally empty. No communication browser -> renderer is expected for
+  // now.
+};
+
+// Interface that implements page-to-browser events.
+interface PageHandler {
+  // Returns the list of infobars registered for testing.
+  GetInfoBars() => (array<InfoBarEntry> infobars);
+
+  // Invokes the C++ logic to trigger the infobar identified by `type`.
+  TriggerInfoBar(InfoBarType type) => (bool success);
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // Creates and binds a new PageHandler instance for the requesting page.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};

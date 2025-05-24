@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/context_menu_matcher.h"
+
 #include <string>
 
 #include "base/functional/bind.h"
@@ -21,7 +22,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace extensions {
 

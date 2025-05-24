@@ -26,7 +26,7 @@ namespace content {
 class DownloadManager;
 class WebContents;
 class WebUI;
-}
+}  // namespace content
 
 namespace download {
 class DownloadItem;
@@ -45,35 +45,6 @@ enum class SafeBrowsingEsbDownloadRowPromoOutcome {
   kMaxValue = kClicked,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/safe_browsing/enums.xml:SafeBrowsingEsbDownloadRowPromoOutcome)
-
-// Represents the possible actions a user can take on chrome://downloads from
-// the dangerous download interstitial.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(DangerousDownloadInterstitialAction)
-enum class DangerousDownloadInterstitialAction {
-  kOpenInterstitial = 0,
-  kCancelInterstitial = 1,
-  kOpenSurvey = 2,
-  kSaveDangerous = 3,
-  kMaxValue = kSaveDangerous
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/download/enums.xml:DangerousDownloadInterstitialAction)
-
-// Represents the possible actions a user can take on the chrome://downloads
-// dangerous download interstitial that trigger UMA logging of the latency
-// between opening the interstitial and performing the action.
-enum class DangerousDownloadInterstitialInteraction {
-  // Latency between opening and closing the interstitial.
-  kCancelInterstitial,
-  // Latency between opening the interstitial and opening the survey.
-  kOpenSurvey,
-  // Latency between opening the survey and saving the dangerous file.
-  kCompleteSurvey,
-  // Latency between opening the survey and saving the dangerous file.
-  kSaveDangerous
-};
 
 // The handler for Javascript messages related to the "downloads" view,
 // also observes changes to the download manager.
@@ -102,14 +73,8 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void Drag(const std::string& id) override;
   void SaveSuspiciousRequiringGesture(const std::string& id) override;
   void RecordOpenBypassWarningDialog(const std::string& id) override;
-  void RecordOpenBypassWarningInterstitial(const std::string& id) override;
-  void RecordOpenSurveyOnDangerousInterstitial(const std::string& id) override;
   void SaveDangerousFromDialogRequiringGesture(const std::string& id) override;
-  void SaveDangerousFromInterstitialNeedGesture(
-      const std::string& id,
-      downloads::mojom::DangerousDownloadInterstitialSurveyOptions) override;
   void RecordCancelBypassWarningDialog(const std::string& id) override;
-  void RecordCancelBypassWarningInterstitial(const std::string& id) override;
   void DiscardDangerous(const std::string& id) override;
   void RetryDownload(const std::string& id) override;
   void Show(const std::string& id) override;
@@ -182,10 +147,6 @@ class DownloadsDOMHandler : public content::WebContentsObserver,
   void CheckForRemovedFiles();
 
   DownloadsListTracker list_tracker_;
-
-  // Used for logging UMA metrics.
-  std::optional<base::TimeTicks> interstitial_open_time_;
-  std::optional<base::TimeTicks> interstitial_survey_open_time_;
 
   // IDs of downloads to remove when this handler gets deleted.
   std::vector<IdSet> removals_;

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator.h"
-#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 
 #import <ostream>
 
 #import "base/check.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
+#import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator.h"
 
@@ -31,8 +31,7 @@
 }
 
 + (const OverlayRequestSupport*)requestSupport {
-  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
-  return OverlayRequestSupport::None();
+  NOTREACHED() << "Subclasses implement.";
 }
 
 + (BOOL)showsOverlayUsingChildViewController {
@@ -58,11 +57,11 @@
 #pragma mark - Public
 
 - (void)startAnimated:(BOOL)animated {
-  NOTREACHED_IN_MIGRATION() << "Subclasses must implement.";
+  NOTREACHED() << "Subclasses must implement.";
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  NOTREACHED_IN_MIGRATION() << "Subclasses must implement.";
+  NOTREACHED() << "Subclasses must implement.";
 }
 
 #pragma mark - ChromeCoordinator

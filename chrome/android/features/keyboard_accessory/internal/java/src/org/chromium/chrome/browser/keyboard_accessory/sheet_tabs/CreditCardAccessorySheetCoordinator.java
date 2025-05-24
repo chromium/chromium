@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getValuableIcon;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabProperties.ITEMS;
 
 import android.content.Context;
@@ -14,8 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -50,14 +51,10 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
                 AccessoryTabType.CREDIT_CARDS,
                 scrollListener);
         mUiConfiguration =
-                createUiConfiguration(context, PersonalDataManagerFactory.getForProfile(profile));
+                createUiConfiguration(context, AutofillImageFetcherFactory.getForProfile(profile));
         mMediator =
                 new AccessorySheetTabMediator(
-                        mModel,
-                        AccessoryTabType.CREDIT_CARDS,
-                        Type.CREDIT_CARD_INFO,
-                        AccessoryAction.MANAGE_CREDIT_CARDS,
-                        null);
+                        mModel, Type.CREDIT_CARD_INFO, AccessoryAction.MANAGE_CREDIT_CARDS, null);
     }
 
     @Override
@@ -74,19 +71,23 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
 
     @VisibleForTesting
     static CreditCardAccessorySheetViewBinder.UiConfiguration createUiConfiguration(
-            Context context, PersonalDataManager personalDataManager) {
+            Context context, AutofillImageFetcher imageFetcher) {
         CreditCardAccessorySheetViewBinder.UiConfiguration uiConfiguration =
                 new CreditCardAccessorySheetViewBinder.UiConfiguration();
         uiConfiguration.cardDrawableFunction =
                 (info) ->
                         getCardIcon(
                                 context,
-                                personalDataManager,
+                                imageFetcher,
                                 info.getIconUrl(),
                                 CreditCardAccessorySheetViewBinder.getDrawableForOrigin(
                                         info.getOrigin()),
                                 ImageSize.SMALL,
                                 /* showCustomIcon= */ true);
+        uiConfiguration.loyaltyCardDrawableFunction =
+                (info) ->
+                        getValuableIcon(
+                                context, imageFetcher, info.getProgramLogoUrl(), ImageSize.SMALL);
         return uiConfiguration;
     }
 }

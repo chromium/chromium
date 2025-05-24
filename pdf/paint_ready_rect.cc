@@ -13,12 +13,19 @@
 
 namespace chrome_pdf {
 
+PaintReadyRect::PaintReadyRect(const gfx::Rect& rect, sk_sp<SkImage> image)
+    : PaintReadyRect(rect, std::move(image), /*flush_now=*/false) {}
+
 PaintReadyRect::PaintReadyRect(const gfx::Rect& rect,
                                sk_sp<SkImage> image,
                                bool flush_now)
     : rect_(rect), image_(std::move(image)), flush_now_(flush_now) {
-  DCHECK(image_);
+  CHECK(image_);
 }
+
+PaintReadyRect::PaintReadyRect(PaintReadyRect&&) noexcept = default;
+
+PaintReadyRect& PaintReadyRect::operator=(PaintReadyRect&&) noexcept = default;
 
 PaintReadyRect::PaintReadyRect(const PaintReadyRect& other) = default;
 

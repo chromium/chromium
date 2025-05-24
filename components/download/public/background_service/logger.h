@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_LOGGER_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE_LOGGER_H_
 
+#include "base/component_export.h"
 #include "base/values.h"
 
 namespace download {
 
 // A helper class to expose internals of the downloads system to a logging
 // component and/or debug UI.
-class Logger {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_BACKGROUND_SERVICE) Logger {
  public:
   // An Observer to be notified of any DownloadService changes.
   class Observer {

@@ -20,14 +20,12 @@
 // gRPC repo's src/core/plugin_registry/grpc_plugin_registry.cc then comment out
 // several lb plugins that have been stripped out by BUILD.chromium.gn.template
 
+#include <grpc/grpc.h>
 #include <grpc/support/port_platform.h>
 
-#include <grpc/grpc.h>
-
-#include "third_party/grpc/src/src/core/lib/config/core_configuration.h"
-#include "third_party/grpc/src/src/core/lib/surface/builtins.h"
-#include "third_party/grpc/src/src/core/lib/transport/http_connect_handshaker.h"
-#include "third_party/grpc/src/src/core/lib/transport/tcp_connect_handshaker.h"
+#include "third_party/grpc/source/src/core/config/core_configuration.h"
+#include "third_party/grpc/source/src/core/handshaker/http_connect/http_connect_handshaker.h"
+#include "third_party/grpc/source/src/core/handshaker/tcp_connect/tcp_connect_handshaker.h"
 
 namespace grpc_event_engine {
 namespace experimental {
@@ -118,7 +116,6 @@ void BuildCoreConfiguration(CoreConfiguration::Builder* builder) {
   RegisterBackendMetricFilter(builder);
   RegisterSecurityFilters(builder);
   RegisterExtraFilters(builder);
-  RegisterBuiltins(builder);
 }
 
 }  // namespace grpc_core

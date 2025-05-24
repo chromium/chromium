@@ -68,6 +68,10 @@ class TestServer {
     return test_server_->GetURL("/event-logging");
   }
 
+  GURL proxy_pac_url() const { return test_server_->GetURL("/proxy.pac"); }
+
+  GURL base_url() const { return test_server_->GetURL("/"); }
+
  private:
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request);
@@ -86,9 +90,12 @@ Matcher CreateEventLogMatcher(
     const std::vector<std::pair<proto::EnterpriseCompanionEvent::EventCase,
                                 EnterpriseCompanionStatus>>& expected_events);
 
+// Creates a matcher that expects a request for a pac script.
+Matcher CreatePacUrlMatcher(const TestServer& test_server);
+
 // Create and serialize a LogResponse proto.
 std::string CreateLogResponse(
-    const base::TimeDelta& next_request_wait = base::Seconds(0));
+    base::TimeDelta next_request_wait = base::Seconds(0));
 
 }  // namespace enterprise_companion
 

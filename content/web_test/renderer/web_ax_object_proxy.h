@@ -126,7 +126,6 @@ class WebAXObjectProxy : public gin::Wrappable<WebAXObjectProxy> {
   bool IsVisible();
   // Exposes the visited state of a link.
   bool IsVisited();
-  bool IsOffScreen();
   bool IsCollapsed();
   bool IsValid();
   bool IsReadOnly();

@@ -15,35 +15,44 @@ namespace {
 
 void FreeFn(void* address, void* context) {}
 
-void BatchFreeFn(void** to_be_freed, unsigned num_to_be_freed, void* context) {}
+void FreeWithSizeFn(void* address, size_t size, void* context) {}
 
-void FreeDefiniteSizeFn(void* address, size_t size, void* context) {}
+void FreeWithAlignmentFn(void* address, size_t alignment, void* context) {}
+
+void FreeWithSizeAndAlignmentFn(void* address,
+                                size_t size,
+                                size_t alignment,
+                                void* context) {}
+
+void BatchFreeFn(void** to_be_freed, unsigned num_to_be_freed, void* context) {}
 
 void TryFreeDefaultFn(void* address, void* context) {}
 
 static void AlignedFreeFn(void* address, void* context) {}
 
 AllocatorDispatch allocator_dispatch = {
-    nullptr,             // alloc_function
-    nullptr,             // alloc_unchecked_function
-    nullptr,             // alloc_zero_initialized_function
-    nullptr,             // alloc_aligned_function
-    nullptr,             // realloc_function
-    nullptr,             // realloc_unchecked_function
-    FreeFn,              // free_function
-    nullptr,             // get_size_estimate_function
-    nullptr,             // good_size_function
-    nullptr,             // claimed_address_function
-    nullptr,             // batch_malloc_function
-    BatchFreeFn,         // batch_free_function
-    FreeDefiniteSizeFn,  // free_definite_size_function
-    TryFreeDefaultFn,    // try_free_default_function
-    nullptr,             // aligned_malloc_function
-    nullptr,             // aligned_malloc_unchecked_function
-    nullptr,             // aligned_realloc_function
-    nullptr,             // aligned_realloc_unchecked_function
-    AlignedFreeFn,       // aligned_free_function
-    nullptr              // next
+    nullptr,                     // alloc_function
+    nullptr,                     // alloc_unchecked_function
+    nullptr,                     // alloc_zero_initialized_function
+    nullptr,                     // alloc_aligned_function
+    nullptr,                     // realloc_function
+    nullptr,                     // realloc_unchecked_function
+    FreeFn,                      // free_function
+    FreeWithSizeFn,              // free_definite_size_function
+    FreeWithAlignmentFn,         // free_with_alignment_function
+    FreeWithSizeAndAlignmentFn,  // free_with_size_and_alignment_function
+    nullptr,                     // get_size_estimate_function
+    nullptr,                     // good_size_function
+    nullptr,                     // claimed_address_function
+    nullptr,                     // batch_malloc_function
+    BatchFreeFn,                 // batch_free_function
+    TryFreeDefaultFn,            // try_free_default_function
+    nullptr,                     // aligned_malloc_function
+    nullptr,                     // aligned_malloc_unchecked_function
+    nullptr,                     // aligned_realloc_function
+    nullptr,                     // aligned_realloc_unchecked_function
+    AlignedFreeFn,               // aligned_free_function
+    nullptr                      // next
 };
 
 }  // namespace

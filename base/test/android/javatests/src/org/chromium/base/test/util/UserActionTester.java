@@ -16,10 +16,9 @@ import java.util.List;
 /** A util class that records UserActions. */
 public class UserActionTester implements Callback<String> {
     @GuardedBy("mActions")
-    private List<String> mActions;
+    private final List<String> mActions = new ArrayList<>();
 
     public UserActionTester() {
-        mActions = new ArrayList<>();
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
                     @Override

@@ -22,8 +22,6 @@
 #include "ash/system/holding_space/test_holding_space_tray_child_bubble.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -94,15 +92,7 @@ TEST_F(HoldingSpaceTrayChildBubbleTest, HasExpectedBubbleTreatment) {
   // Background.
   auto* background = child_bubble()->GetBackground();
   ASSERT_TRUE(background);
-  if (chromeos::features::IsJellyEnabled()) {
-    EXPECT_EQ(background->get_color(),
-              child_bubble()->GetColorProvider()->GetColor(
-                  cros_tokens::kCrosSysSystemBaseElevated));
-  } else {
-    EXPECT_EQ(
-        background->get_color(),
-        child_bubble()->GetColorProvider()->GetColor(kColorAshShieldAndBase80));
-  }
+  EXPECT_EQ(background->color(), cros_tokens::kCrosSysSystemBaseElevated);
   EXPECT_EQ(layer->background_blur(), ColorProvider::kBackgroundBlurSigma);
 
   // Border.
@@ -111,7 +101,7 @@ TEST_F(HoldingSpaceTrayChildBubbleTest, HasExpectedBubbleTreatment) {
   // Corner radius.
   EXPECT_TRUE(layer->is_fast_rounded_corner());
   EXPECT_EQ(layer->rounded_corner_radii(),
-            gfx::RoundedCornersF(GetBubbleCornerRadius()));
+            gfx::RoundedCornersF(kBubbleCornerRadius));
 }
 
 // HoldingSpaceTrayChildBubblePlaceholderTest ----------------------------------

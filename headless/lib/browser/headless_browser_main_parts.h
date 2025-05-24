@@ -16,6 +16,7 @@
 namespace headless {
 
 class HeadlessBrowserImpl;
+class HeadlessScreenOrientationDelegate;
 
 class HEADLESS_EXPORT HeadlessBrowserMainParts
     : public content::BrowserMainParts {
@@ -40,6 +41,9 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void MaybeStartLocalDevToolsHttpHandler();
 
   raw_ref<HeadlessBrowserImpl> browser_;
+
+  std::unique_ptr<HeadlessScreenOrientationDelegate>
+      screen_orientation_delegate_;
 
   bool devtools_http_handler_started_ = false;
 };

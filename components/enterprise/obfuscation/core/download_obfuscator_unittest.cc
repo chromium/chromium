@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,6 +52,7 @@ class DownloadObfuscatorTest : public testing::TestWithParam<TestParams> {
 };
 
 TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
+  base::HistogramTester histogram_tester;
   DownloadObfuscator obfuscator;
   const auto& params = GetParam();
 
@@ -78,6 +80,8 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
     } else {
       ASSERT_FALSE(result.has_value());
       EXPECT_EQ(result.error(), Error::kDisabled);
+      histogram_tester.ExpectUniqueSample(kObfuscationResultHistogram,
+                                          Error::kDisabled, 1);
       return;
     }
 
@@ -174,6 +178,7 @@ TEST_F(DownloadObfuscatorEnabledTest, ObfuscationConsistency) {
 
 // Test invalid data scenarios.
 TEST_F(DownloadObfuscatorEnabledTest, InvalidData) {
+  base::HistogramTester histogram_tester;
   DownloadObfuscator obfuscator;
 
   // Test deobfuscation with invalid header.
@@ -189,6 +194,8 @@ TEST_F(DownloadObfuscatorEnabledTest, InvalidData) {
       obfuscator.CalculateDeobfuscationOverhead(invalid_data);
   EXPECT_FALSE(overhead_result.has_value());
   EXPECT_EQ(overhead_result.error(), Error::kDeobfuscationFailed);
+  histogram_tester.ExpectUniqueSample(kObfuscationResultHistogram,
+                                      Error::kDeobfuscationFailed, 1);
 }
 
 // Test partial writes for deobfuscation.
@@ -205,8 +212,8 @@ TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
 
   while (total_deobfuscated_size < test_data.size()) {
     // Test that for partial writes, it reads the same obfuscated chunk.
-    auto deobfuscated_chunk = deobfuscator.GetNextDeobfuscatedChunk(
-        base::make_span(obfuscated.value()));
+    auto deobfuscated_chunk =
+        deobfuscator.GetNextDeobfuscatedChunk(base::span(obfuscated.value()));
     ASSERT_TRUE(deobfuscated_chunk.has_value());
 
     size_t bytes_to_read =
@@ -221,6 +228,16 @@ TEST_F(DownloadObfuscatorEnabledTest, PartialDeobfuscation) {
 
   EXPECT_EQ(deobfuscated_content, StringToVector(test_data));
   EXPECT_EQ(deobfuscator.GetNextChunkOffset(), obfuscated->size());
+
+  // Obfuscate an empty chunk to test scenarios where size is not given.
+  auto empty_obfuscated =
+      obfuscator.ObfuscateChunk(std::vector<uint8_t>(), true);
+  ASSERT_TRUE(empty_obfuscated.has_value());
+
+  auto deobfuscated_chunk = deobfuscator.GetNextDeobfuscatedChunk(
+      base::span(empty_obfuscated.value()));
+  ASSERT_TRUE(deobfuscated_chunk.has_value());
+  EXPECT_EQ(deobfuscated_chunk.value(), std::vector<uint8_t>());
 }
 
 }  // namespace enterprise_obfuscation

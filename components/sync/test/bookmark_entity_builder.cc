@@ -9,13 +9,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/loopback_server/persistent_bookmark_entity.h"
@@ -24,7 +24,6 @@
 #include "components/sync/protocol/unique_position.pb.h"
 
 using std::string;
-using syncer::GenerateUniquePositionSuffix;
 using syncer::LoopbackServerEntity;
 
 // A version must be passed when creating a LoopbackServerEntity, but this value
@@ -38,26 +37,50 @@ namespace fake_server {
 
 namespace {
 
-std::string GenerateUniquePositionStringForBookmark(const base::Uuid& uuid) {
-  return GenerateUniquePositionSuffix(syncer::ClientTagHash::FromUnhashed(
-      syncer::BOOKMARKS, uuid.AsLowercaseString()));
+syncer::UniquePosition::Suffix GenerateUniquePositionStringForBookmark(
+    const base::Uuid& uuid) {
+  if (!uuid.is_valid()) {
+    return syncer::UniquePosition::RandomSuffix();
+  }
+  return syncer::UniquePosition::GenerateSuffix(
+      syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                          uuid.AsLowercaseString()));
 }
 
 }  // namespace
 
 BookmarkEntityBuilder::BookmarkEntityBuilder(
     const string& title,
-    const string& originator_cache_guid,
-    const string& originator_client_item_id)
+    const base::Uuid& uuid,
+    const string& originator_cache_guid)
     : title_(title),
+      uuid_(uuid),
       originator_cache_guid_(originator_cache_guid),
-      originator_client_item_id_(originator_client_item_id),
-      unique_position_(GenerateUniquePosition()) {}
+      originator_client_item_id_(uuid.AsLowercaseString()) {}
+
+BookmarkEntityBuilder::BookmarkEntityBuilder(
+    const std::u16string& title,
+    const base::Uuid& uuid,
+    const std::string& originator_cache_guid)
+    : BookmarkEntityBuilder(base::UTF16ToUTF8(title),
+                            uuid,
+                            originator_cache_guid) {}
 
 BookmarkEntityBuilder::BookmarkEntityBuilder(
     const BookmarkEntityBuilder& other) = default;
 
 BookmarkEntityBuilder::~BookmarkEntityBuilder() = default;
+
+BookmarkEntityBuilder& BookmarkEntityBuilder::SetOriginatorClientItemId(
+    const std::string& originator_client_item_id) {
+  originator_client_item_id_ = originator_client_item_id;
+  return *this;
+}
+
+BookmarkEntityBuilder& BookmarkEntityBuilder::EnableClientTagHash() {
+  use_client_tag_hash_ = true;
+  return *this;
+}
 
 void BookmarkEntityBuilder::SetId(const std::string& id) {
   id_ = id;
@@ -76,9 +99,9 @@ BookmarkEntityBuilder& BookmarkEntityBuilder::SetParentGuid(
   return *this;
 }
 
-void BookmarkEntityBuilder::SetIndex(int index) {
+BookmarkEntityBuilder& BookmarkEntityBuilder::SetIndex(int index) {
   index_ = index;
-  unique_position_ = GenerateUniquePosition();
+  return *this;
 }
 
 BookmarkEntityBuilder& BookmarkEntityBuilder::SetGeneration(
@@ -113,22 +136,19 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::BuildFolder() {
                /*is_folder=*/true);
 }
 
+sync_pb::UniquePosition BookmarkEntityBuilder::GetUniquePosition() const {
+  return syncer::UniquePosition::FromInt64(
+             index_, GenerateUniquePositionStringForBookmark(uuid_))
+      .ToProto();
+}
+
 sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
     bool is_folder) {
   sync_pb::EntitySpecifics entity_specifics;
   sync_pb::BookmarkSpecifics* bookmark_specifics =
       entity_specifics.mutable_bookmark();
 
-  DCHECK_NE(bookmark_generation_,
-            BookmarkGeneration::kLegacyTitleUppercaseOriginatorClientItemId)
-      << "Bookmark with legacy title and uppercase originator_client_item_id "
-         "is not implemented.";
-  DCHECK_NE(bookmark_generation_,
-            BookmarkGeneration::kLegacyTitleWithoutGuidInSpecifics)
-      << "Bookmark with legacy title and without GUID in specifics is not "
-         "implemented.";
-
-  if (parent_id_.empty()) {
+  if (parent_id_.empty() && !parent_guid_.is_valid()) {
     parent_id_ =
         LoopbackServerEntity::CreateId(syncer::BOOKMARKS, "bookmark_bar");
     parent_guid_ = base::Uuid::ParseLowercase(bookmarks::kBookmarkBarNodeUuid);
@@ -138,10 +158,8 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
     bookmark_specifics->set_legacy_canonicalized_title(title_);
 
     // GUID must be valid for `kValidGuidAndLegacyTitle`.
-    base::Uuid uuid =
-        base::Uuid::ParseCaseInsensitive(originator_client_item_id_);
-    CHECK(uuid.is_valid());
-    bookmark_specifics->set_guid(uuid.AsLowercaseString());
+    CHECK(uuid_.is_valid());
+    bookmark_specifics->set_guid(uuid_.AsLowercaseString());
   }
 
   if (bookmark_generation_ >= BookmarkGeneration::kValidGuidAndFullTitle) {
@@ -153,7 +171,7 @@ sync_pb::EntitySpecifics BookmarkEntityBuilder::CreateBaseEntitySpecifics(
     bookmark_specifics->set_parent_guid(parent_guid_.AsLowercaseString());
     bookmark_specifics->set_type(is_folder ? sync_pb::BookmarkSpecifics::FOLDER
                                            : sync_pb::BookmarkSpecifics::URL);
-    *bookmark_specifics->mutable_unique_position() = unique_position_;
+    *bookmark_specifics->mutable_unique_position() = GetUniquePosition();
   }
 
   return entity_specifics;
@@ -167,17 +185,30 @@ std::unique_ptr<LoopbackServerEntity> BookmarkEntityBuilder::Build(
         syncer::BOOKMARKS, base::Uuid::GenerateRandomV4().AsLowercaseString());
   }
 
-  return base::WrapUnique<LoopbackServerEntity>(
-      new syncer::PersistentBookmarkEntity(
-          id_, kUnusedVersion, title_, originator_cache_guid_,
-          originator_client_item_id_, /*client_tag_hash=*/"", unique_position_,
-          entity_specifics, is_folder, parent_id_, kDefaultTime, kDefaultTime));
+  if (use_client_tag_hash_) {
+    return base::WrapUnique<LoopbackServerEntity>(
+        new syncer::PersistentBookmarkEntity(
+            id_, kUnusedVersion, title_, /*originator_cache_guid=*/"",
+            /*originator_client_item_id=*/"",
+            syncer::ClientTagHash::FromUnhashed(syncer::BOOKMARKS,
+                                                uuid_.AsLowercaseString())
+                .value(),
+            GetUniquePosition(), entity_specifics, is_folder, parent_id_,
+            kDefaultTime, kDefaultTime));
+  } else {
+    return base::WrapUnique<LoopbackServerEntity>(
+        new syncer::PersistentBookmarkEntity(
+            id_, kUnusedVersion, title_, originator_cache_guid_,
+            /*originator_client_item_id=*/originator_client_item_id_,
+            /*client_tag_hash=*/"", GetUniquePosition(), entity_specifics,
+            is_folder, parent_id_, kDefaultTime, kDefaultTime));
+  }
 }
 
 void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
     sync_pb::BookmarkSpecifics* bookmark_specifics) {
   DCHECK(bookmark_specifics);
-  // Both |favicon_| and |icon_url_| must be provided or empty simultaneously.
+  // Both `favicon_` and `icon_url_` must be provided or empty simultaneously.
   DCHECK(favicon_.IsEmpty() == icon_url_.is_empty());
   if (favicon_.IsEmpty()) {
     return;
@@ -187,15 +218,6 @@ void BookmarkEntityBuilder::FillWithFaviconIfNeeded(
   bookmark_specifics->set_favicon(favicon_bytes->front(),
                                   favicon_bytes->size());
   bookmark_specifics->set_icon_url(icon_url_.spec());
-}
-
-sync_pb::UniquePosition BookmarkEntityBuilder::GenerateUniquePosition() const {
-  base::Uuid uuid =
-      base::Uuid::ParseCaseInsensitive(originator_client_item_id_);
-  const string suffix = uuid.is_valid()
-                            ? GenerateUniquePositionStringForBookmark(uuid)
-                            : syncer::UniquePosition::RandomSuffix();
-  return syncer::UniquePosition::FromInt64(index_, suffix).ToProto();
 }
 
 }  // namespace fake_server

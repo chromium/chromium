@@ -1,5 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/net/model/crurl.h",
-  "+ios/chrome/browser/ui/authentication/cells/table_view_identity_item.h",
-  "+ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+  "+ios/chrome/browser/authentication/ui_bundled/cells/table_view_identity_item.h",
+  "+ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_utils.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
 ]

@@ -17,7 +17,6 @@ PrintingTag::PrintingTag(content::WebContents* web_contents)
     : WebContentsTag(web_contents) {
 }
 
-PrintingTag::~PrintingTag() {
-}
+PrintingTag::~PrintingTag() = default;
 
 }  // namespace task_manager

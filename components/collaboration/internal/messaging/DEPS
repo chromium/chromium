@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/strings/grit/components_strings.h",
+  "+components/sqlite_proto",
+  "+components/tab_groups",
+  "+components/url_formatter",
+  "+google_apis/gaia/gaia_id.h",
+  "+sql",
+  "+ui/base/l10n",
+]

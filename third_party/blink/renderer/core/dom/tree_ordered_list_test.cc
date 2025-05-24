@@ -25,7 +25,7 @@ TEST_F(TreeOrderedListTest, Basic) {
   Element* body = GetDocument().body();
   Element* a = body->QuerySelector(AtomicString("#a"));
 
-  TreeOrderedList list;
+  TreeOrderedList<Node> list;
 
   EXPECT_TRUE(list.IsEmpty());
   list.Add(a);
@@ -44,7 +44,7 @@ TEST_F(TreeOrderedListTest, DuplicateKeys) {
   Element* b = body->QuerySelector(AtomicString("#b"));
   Element* c = body->QuerySelector(AtomicString("#c"));
 
-  TreeOrderedList list;
+  TreeOrderedList<Node> list;
 
   list.Add(a);
   list.Add(c);
@@ -66,13 +66,13 @@ TEST_F(TreeOrderedListTest, SortedByDocumentPosition) {
   Element* c = body->QuerySelector(AtomicString("#c"));
   Element* d = body->QuerySelector(AtomicString("#d"));
 
-  TreeOrderedList list;
+  TreeOrderedList<Node> list;
 
   list.Add(a);
   list.Add(d);
   list.Add(c);
   list.Add(b);
-  TreeOrderedList::iterator it = list.begin();
+  TreeOrderedList<Node>::iterator it = list.begin();
   EXPECT_EQ(a, *it);
   EXPECT_EQ(b, *++it);
   EXPECT_EQ(c, *++it);

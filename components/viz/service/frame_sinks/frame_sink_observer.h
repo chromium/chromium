@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_SINK_OBSERVER_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_FRAME_SINK_OBSERVER_H_
 
+#include "components/viz/common/quads/compositor_frame_metadata.h"
+
 namespace viz {
 
 class FrameSinkId;
@@ -47,6 +49,18 @@ class FrameSinkObserver {
   // Called when a sink has finished processing a frame.
   virtual void OnFrameSinkDidFinishFrame(const FrameSinkId& frame_sink_id,
                                          const BeginFrameArgs& args) {}
+
+  // Called when the |device_scale_factor| related to |frame_sink_id| changes
+  // with latest activated frame.
+  virtual void OnFrameSinkDeviceScaleFactorChanged(
+      const FrameSinkId& frame_sink_id,
+      float device_scale_factor) {}
+
+  // Called when the |is_mobile_optimized| related to |frame_sink_id| changes
+  // with latest activated frame.
+  virtual void OnFrameSinkMobileOptimizedChanged(
+      const FrameSinkId& frame_sink_id,
+      bool is_mobile_optimized) {}
 
   // Called when capturing is started for `frame_sink_id`.
   virtual void OnCaptureStarted(const FrameSinkId& frame_sink_id) {}

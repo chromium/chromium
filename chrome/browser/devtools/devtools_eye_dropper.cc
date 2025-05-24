@@ -183,7 +183,7 @@ void DevToolsEyeDropper::UpdateCursor() {
   // on the platform. Linux, Mac and Win have large cursors with two circles for
   // original spot and its magnified projection; Ash gets smaller (64 px)
   // magnified projection only with centered hotspot.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const float kCursorSize = 63;
   const float kDiameter = 63;
   const float kHotspotOffset = 32;

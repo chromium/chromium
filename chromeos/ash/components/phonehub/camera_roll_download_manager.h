@@ -11,8 +11,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Manages photo and videos files downloaded via Camera Roll. Files will be
 // created under the Downloads folder and added to the Holding Space tray.
@@ -68,7 +67,6 @@ class CameraRollDownloadManager {
   CameraRollDownloadManager() = default;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_DOWNLOAD_MANAGER_H_

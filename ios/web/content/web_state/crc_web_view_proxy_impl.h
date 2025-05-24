@@ -7,9 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/web/public/ui/crw_web_view_proxy.h"
-
 #import "build/blink_buildflags.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 
 #if !BUILDFLAG(USE_BLINK)
 #error File can only be included when USE_BLINK is true

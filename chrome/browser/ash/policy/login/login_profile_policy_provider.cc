@@ -77,6 +77,7 @@ const DevicePolicyToUserPolicyMapEntry kDevicePoliciesWithPolicyOptionsMap[] = {
      key::kUserContextAwareAccessSignalsAllowlist},
     {key::kDeviceLoginScreenTouchVirtualKeyboardEnabled,
      key::kTouchVirtualKeyboardEnabled},
+    {key::kDeviceLoginScreenFaceGazeEnabled, key::kFaceGazeEnabled},
 
     // The authentication URL blocklist and allowlist policies implement content
     // control for authentication flows, including in the login screen and lock
@@ -182,7 +183,7 @@ LoginProfilePolicyProvider::LoginProfilePolicyProvider(
     : device_policy_service_(device_policy_service),
       waiting_for_device_policy_refresh_(false) {}
 
-LoginProfilePolicyProvider::~LoginProfilePolicyProvider() {}
+LoginProfilePolicyProvider::~LoginProfilePolicyProvider() = default;
 
 void LoginProfilePolicyProvider::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);
@@ -234,6 +235,12 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
       device_policy_service_->GetPolicies(chrome_namespaces);
   PolicyBundle bundle;
   PolicyMap& user_policy_map = bundle.Get(chrome_namespaces);
+
+  // We generally do not want the dino game being played on the login screen,
+  // see crbug.com/375062959.
+  user_policy_map.Set(key::kAllowDinosaurEasterEgg,
+                      PolicyLevel::POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                      POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
 
   // The device policies which includes the policy options
   // |kDevicePoliciesWithPolicyOptionsMap| should be applied after

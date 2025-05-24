@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_MINI_MAP_UI_BUNDLED_MINI_MAP_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_MINI_MAP_UI_BUNDLED_MINI_MAP_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-
 #import <UIKit/UIKit.h>
+
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 namespace web {
 class WebState;

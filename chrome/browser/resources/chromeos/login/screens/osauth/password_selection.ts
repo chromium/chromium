@@ -11,7 +11,7 @@ import '../../components/dialogs/oobe_loading_dialog.js';
 import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenMixin} from '../../components/mixins/login_screen_mixin.js';
@@ -67,11 +67,18 @@ export class PasswordSelection extends PasswordSelectionBase {
         type: Object,
         value: PasswordType,
       },
+
+      // Only visible when the user chose to skip PIN as a main factor setup.
+      backButtonVisible: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   private selectedPasswordType: string;
   private passwordTypeEnum: PasswordType;
+  private backButtonVisible: boolean;
 
   override ready(): void {
     super.ready();
@@ -82,6 +89,7 @@ export class PasswordSelection extends PasswordSelectionBase {
     return [
       'showProgress',
       'showPasswordChoice',
+      'showBackButton',
     ];
   }
 
@@ -100,12 +108,21 @@ export class PasswordSelection extends PasswordSelectionBase {
     this.selectedPasswordType = PasswordType.LOCAL_PASSWORD;
   }
 
+  override onBeforeHide(): void {
+    super.onBeforeHide();
+    this.backButtonVisible = false;
+  }
+
   showProgress(): void {
     this.setUIStep(PasswordSelectionState.PROGRESS);
   }
 
   showPasswordChoice(): void {
     this.setUIStep(PasswordSelectionState.SELECTION);
+  }
+
+  showBackButton(): void {
+    this.backButtonVisible = true;
   }
 
   private onBackClicked(): void {

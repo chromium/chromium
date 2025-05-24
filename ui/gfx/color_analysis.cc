@@ -188,8 +188,7 @@ class ColorBox {
         case BLUE:
           return SkColorGetB(a) < SkColorGetB(b);
       }
-      NOTREACHED_IN_MIGRATION();
-      return SkColorGetB(a) < SkColorGetB(b);
+      NOTREACHED();
     };
     // Just the portion of |color_space_| that's covered by this box should be
     // sorted.
@@ -482,8 +481,9 @@ SkColor CalculateKMeanColorOfBuffer(base::span<const uint8_t> decoded_data,
       // found, destroy this cluster.
       bool color_unique = false;
       for (int i = 0; i < 10; ++i) {
-        int pixel_pos = sampler->GetSample(img_width, img_height) %
-            (img_width * img_height);
+        const auto pixel_pos =
+            static_cast<size_t>(sampler->GetSample(img_width, img_height) %
+                                (img_width * img_height));
 
         uint8_t b = decoded_data[pixel_pos * 4];
         uint8_t g = decoded_data[pixel_pos * 4 + 1];
@@ -612,18 +612,19 @@ SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png,
                                  const HSL& lower_bound,
                                  const HSL& upper_bound,
                                  KMeanImageSampler* sampler) {
-  int img_width = 0;
-  int img_height = 0;
-  std::vector<uint8_t> decoded_data;
-  SkColor color = kDefaultBgColor;
-
-  if (!png.empty() &&
-      gfx::PNGCodec::Decode(png.data(), png.size(), gfx::PNGCodec::FORMAT_BGRA,
-                            &decoded_data, &img_width, &img_height)) {
-    return CalculateKMeanColorOfBuffer(decoded_data, img_width, img_height,
-                                       lower_bound, upper_bound, sampler, true);
+  if (png.empty()) {
+    return kDefaultBgColor;
   }
-  return color;
+
+  std::optional<gfx::PNGCodec::DecodeOutput> output =
+      gfx::PNGCodec::Decode(png, gfx::PNGCodec::FORMAT_BGRA);
+  if (!output) {
+    return kDefaultBgColor;
+  }
+
+  return CalculateKMeanColorOfBuffer(output->output, output->width,
+                                     output->height, lower_bound, upper_bound,
+                                     sampler, /*find_closest=*/true);
 }
 
 SkColor CalculateKMeanColorOfPNG(base::span<const uint8_t> png) {

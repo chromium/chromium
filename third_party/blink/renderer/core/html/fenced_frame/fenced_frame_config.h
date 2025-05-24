@@ -99,7 +99,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
     if constexpr (attr == Attribute::kURL) {
       return url_;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::optional<KURL> urn_uuid(base::PassKey<HTMLFencedFrameElement>) {
@@ -171,7 +171,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
       case Attribute::kURL:
         return url_attribute_visibility_;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Get attribute's value.
@@ -180,7 +180,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
     if constexpr (attr == Attribute::kURL) {
       return url_.GetString();
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Get the union based on attribute's `AttributeType`.
@@ -201,7 +201,7 @@ class CORE_EXPORT FencedFrameConfig final : public ScriptWrappable {
       case AttributeVisibility::kNull:
         return nullptr;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // The URN attribute is used as the key in the FencedFrameURNMapping map. When

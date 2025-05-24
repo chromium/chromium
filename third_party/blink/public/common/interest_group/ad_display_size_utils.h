@@ -36,7 +36,7 @@ BLINK_COMMON_EXPORT std::string ConvertAdDimensionToString(
 // - " 25sw "
 // - "100"
 BLINK_COMMON_EXPORT std::tuple<double, blink::AdSize::LengthUnit>
-ParseAdSizeString(const std::string_view input);
+ParseAdSizeString(std::string_view input);
 
 BLINK_COMMON_EXPORT bool IsValidAdSize(const blink::AdSize& size);
 

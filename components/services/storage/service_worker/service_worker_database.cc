@@ -148,6 +148,8 @@ namespace {
 // set a low write buffer size to trigger compaction more often.
 constexpr size_t kWriteBufferSize = 512 * 1024;
 
+using RouterSourceType = network::mojom::ServiceWorkerRouterSourceType;
+
 class ServiceWorkerEnv : public leveldb_env::ChromiumEnv {
  public:
   ServiceWorkerEnv() : ChromiumEnv(storage::CreateFilesystemProxy()) {}
@@ -1105,8 +1107,7 @@ const char* ServiceWorkerDatabase::StatusToString(
     case ServiceWorkerDatabase::Status::kErrorStorageDisconnected:
       return "Storage is disconnected";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Database unknown error";
+  NOTREACHED();
 }
 
 ServiceWorkerDatabase::ServiceWorkerDatabase(const base::FilePath& path)
@@ -1255,6 +1256,8 @@ ServiceWorkerDatabase::GetRegistrationsForStorageKey(
           opt_resources_list->clear();
         break;
       }
+      // TODO(crbug.com/372879072): remove this CHECK
+      CHECK_EQ(key.origin(), url::Origin::Create(registration->scope));
       registrations->push_back(std::move(registration));
     }
   }
@@ -2313,9 +2316,8 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::DeleteAllDataForOrigins(
       }
 
       auto match = key.origin() == requested_origin;
-      match = match ||
-              (key.IsThirdPartyContext() &&
-               key.top_level_site() == net::SchemefulSite(requested_origin));
+      match = match || (key.IsThirdPartyContext() &&
+                        key.top_level_site().IsSameSiteWith(requested_origin));
       if (!match) {
         continue;
       }
@@ -2413,8 +2415,7 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::LazyOpen(
       return Status::kOk;
     default:
       // Other cases should be handled in ReadDatabaseVersion.
-      NOTREACHED_IN_MIGRATION();
-      return Status::kErrorCorrupted;
+      NOTREACHED();
   }
 }
 
@@ -2789,30 +2790,44 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
             return Status::kErrorCorrupted;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kNetworkSource:
-            source.type =
-                network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+            source.type = RouterSourceType::kNetwork;
             source.network_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
-              kRaceSource:
-            source.type = network::mojom::ServiceWorkerRouterSourceType::kRace;
-            source.race_source.emplace();
+              kRaceNetworkAndFetchEventSource:
+            source.type = RouterSourceType::kRaceNetworkAndFetchEvent;
+            source.race_network_and_fetch_event_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
               kFetchEventSource:
-            source.type =
-                network::mojom::ServiceWorkerRouterSourceType::kFetchEvent;
+            source.type = RouterSourceType::kFetchEvent;
             source.fetch_event_source.emplace();
             break;
           case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
-              kCacheSource:
-            source.type = network::mojom::ServiceWorkerRouterSourceType::kCache;
+              kCacheSource: {
+            source.type = RouterSourceType::kCache;
             blink::ServiceWorkerRouterCacheSource cache_source;
             if (s.cache_source().has_cache_name()) {
               cache_source.cache_name = s.cache_source().cache_name();
             }
             source.cache_source = cache_source;
             break;
+          }
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kRaceNetworkAndCacheSource: {
+            source.type = RouterSourceType::kRaceNetworkAndCache;
+            source.race_network_and_cache_source.emplace();
+
+            const auto& cache_source =
+                s.race_network_and_cache_source().cache_source();
+            blink::ServiceWorkerRouterCacheSource cache_source_data;
+            if (cache_source.has_cache_name()) {
+              cache_source_data.cache_name = cache_source.cache_name();
+            }
+            source.race_network_and_cache_source->cache_source =
+                cache_source_data;
+            break;
+          }
         }
         router_rule.sources.emplace_back(source);
       }
@@ -2918,7 +2933,7 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
             ServiceWorkerRegistrationData::SKIPPABLE_EMPTY_FETCH_HANDLER);
         break;
       case blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   data.set_last_update_check_time(
@@ -3012,21 +3027,33 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
         ServiceWorkerRegistrationData::RouterRules::RuleV1::Source* source =
             v1->add_source();
         switch (s.type) {
-          case network::mojom::ServiceWorkerRouterSourceType::kNetwork:
+          case RouterSourceType::kNetwork:
             source->mutable_network_source();
             break;
-          case network::mojom::ServiceWorkerRouterSourceType::kRace:
-            source->mutable_race_source();
+          case RouterSourceType::kRaceNetworkAndFetchEvent:
+            source->mutable_race_network_and_fetch_event_source();
             break;
-          case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
+          case RouterSourceType::kFetchEvent:
             source->mutable_fetch_event_source();
             break;
-          case network::mojom::ServiceWorkerRouterSourceType::kCache:
+          case RouterSourceType::kCache: {
             auto* cache_source = source->mutable_cache_source();
             if (s.cache_source->cache_name) {
               cache_source->set_cache_name(*s.cache_source->cache_name);
             }
             break;
+          }
+          case RouterSourceType::kRaceNetworkAndCache: {
+            auto* race_network_and_cache_source =
+                source->mutable_race_network_and_cache_source();
+            auto* cache_source =
+                race_network_and_cache_source->mutable_cache_source();
+            if (s.race_network_and_cache_source->cache_source.cache_name) {
+              cache_source->set_cache_name(
+                  *s.race_network_and_cache_source->cache_source.cache_name);
+            }
+            break;
+          }
         }
       }
     }

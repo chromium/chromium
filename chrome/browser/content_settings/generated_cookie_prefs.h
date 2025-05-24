@@ -10,12 +10,21 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 
 namespace content_settings {
 
 extern const char kCookieDefaultContentSetting[];
+extern const char kThirdPartyCookieBlockingSetting[];
+
+// LINT.IfChange(ThirdPartyCookieBlockingSetting)
+enum class ThirdPartyCookieBlockingSetting {
+  BLOCK_THIRD_PARTY,
+  INCOGNITO_ONLY,
+};
+// LINT.ThenChange(/chrome/browser/resources/settings/site_settings/site_settings_prefs_browser_proxy.ts:ThirdPartyCookieBlockingSetting)
 
 // A generated preference that represents cookies content setting and supports
 // three states: allow, session only and block.
@@ -43,6 +52,29 @@ class GeneratedCookieDefaultContentSettingPref
   raw_ptr<HostContentSettingsMap> host_content_settings_map_;
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
+};
+
+class GeneratedThirdPartyCookieBlockingSettingPref
+    : public extensions::settings_private::GeneratedPref,
+      public content_settings::Observer {
+ public:
+  explicit GeneratedThirdPartyCookieBlockingSettingPref(Profile* profile);
+  ~GeneratedThirdPartyCookieBlockingSettingPref() override;
+
+  // Generated Preference Interface.
+  extensions::settings_private::SetPrefResult SetPref(
+      const base::Value* value) override;
+  extensions::api::settings_private::PrefObject GetPrefObject() const override;
+
+ private:
+  extensions::settings_private::SetPrefResult SetPrefResult(
+      CookieControlsMode value);
+  ThirdPartyCookieBlockingSetting GetValue() const;
+  // Fired when preferences used to generate this preference are changed.
+  void OnSourcePreferencesChanged();
+
+  const raw_ptr<Profile> profile_;
+  PrefChangeRegistrar user_prefs_registrar_;
 };
 
 }  // namespace content_settings

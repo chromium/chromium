@@ -28,9 +28,11 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/context_menu_params.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_manager.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -115,22 +117,36 @@ void LinkToTextMenuObserver::InitMenu(
   } else {
     url_ = params.page_url;
   }
+  annotation_type_ = params.annotation_type;
 
-  // It is possible that there is a new text selection on top of a highlight, in
-  // which case, both open_from_new_selection_ and opened_from_highlight are
-  // true. Consequently, a context menu for new text selection is created.
+  // It is possible that there is a new text selection on top of an annotation,
+  // in which case, both `open_from_new_selection_` and
+  // `annotation_type_.has_value()` are true. Consequently, a context menu for
+  // new text selection is created.
   if (open_from_new_selection_) {
     proxy_->AddMenuItem(
         IDC_CONTENT_CONTEXT_COPYLINKTOTEXT,
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT));
     RequestLinkGeneration();
-  } else if (params.opened_from_highlight) {
-    proxy_->AddMenuItem(
-        IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_RESHARELINKTOTEXT));
-    proxy_->AddMenuItem(
-        IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT,
-        l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
+  } else if (annotation_type_.has_value()) {
+    switch (annotation_type_.value()) {
+      case blink::mojom::AnnotationType::kSharedHighlight:
+        proxy_->AddMenuItem(
+            IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT,
+            l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_RESHARELINKTOTEXT));
+        proxy_->AddMenuItem(
+            IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT,
+            l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
+        break;
+      case blink::mojom::AnnotationType::kGlic:
+        proxy_->AddMenuItem(
+            IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT,
+            l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_REMOVELINKTOTEXT));
+        break;
+      case blink::mojom::AnnotationType::kTextFinder:
+      case blink::mojom::AnnotationType::kUserNote:
+        NOTIMPLEMENTED();
+    }
   }
 }
 
@@ -372,9 +388,28 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
 }
 
 void LinkToTextMenuObserver::RemoveHighlights() {
-  // Remove highlights from all frames in the primary page.
-  proxy_->GetWebContents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
-      &RemoveHighlightsInFrame);
+  CHECK(annotation_type_.has_value());
+  switch (annotation_type_.value()) {
+    case blink::mojom::AnnotationType::kSharedHighlight:
+      proxy_->GetWebContents()->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+          &RemoveHighlightsInFrame);
+      return;
+    case blink::mojom::AnnotationType::kGlic: {
+      mojo::Remote<blink::mojom::AnnotationAgentContainer>
+          annotation_agent_container;
+      proxy_->GetWebContents()
+          ->GetPrimaryMainFrame()
+          ->GetRemoteInterfaces()
+          ->GetInterface(
+              annotation_agent_container.BindNewPipeAndPassReceiver());
+      annotation_agent_container->RemoveAgentsOfType(
+          blink::mojom::AnnotationType::kGlic);
+      return;
+    }
+    case blink::mojom::AnnotationType::kTextFinder:
+    case blink::mojom::AnnotationType::kUserNote:
+      NOTIMPLEMENTED();
+  }
 }
 
 mojo::Remote<blink::mojom::TextFragmentReceiver>&

@@ -6,9 +6,11 @@ package org.chromium.components.content_capture;
 
 import android.view.autofill.AutofillId;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_capture.PlatformSession.PlatformSessionData;
 
 /** The task to update the captured content in platform. */
+@NullMarked
 class ContentUpdateTask extends ProcessContentCaptureDataTask {
     public ContentUpdateTask(
             FrameSession session,

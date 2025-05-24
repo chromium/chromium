@@ -31,37 +31,31 @@ class OverlayPanelContent {
   virtual ~OverlayPanelContent();
 
   // Called by the Java OverlayPanelContent when it is being destroyed.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
-  void OnPhysicalBackingSizeChanged(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
-      jint width,
-      jint height);
+  void OnPhysicalBackingSizeChanged(JNIEnv* env,
+                                    content::WebContents* web_contents,
+                                    jint width,
+                                    jint height);
 
   // Takes ownership of the WebContents which holds the panel content.
   void SetWebContents(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
-      const base::android::JavaParamRef<jobject>& jweb_contents,
+      content::WebContents* web_contents,
       const base::android::JavaParamRef<jobject>& jweb_contents_delegate);
 
   // Destroys the WebContents.
-  void DestroyWebContents(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& jobj);
+  void DestroyWebContents(JNIEnv* env);
 
   // Sets the delegate used to convert navigations to intents.
   void SetInterceptNavigationDelegate(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& delegate,
-      const base::android::JavaParamRef<jobject>& jweb_contents);
+      content::WebContents* web_contents);
 
   // Update the browser controls for the held web contents.
   void UpdateBrowserControlsState(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj,
       jboolean are_controls_hidden);
 
  private:

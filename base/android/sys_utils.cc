@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/android/build_info.h"
+#include "base/feature_list.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/base_tracing.h"
@@ -17,20 +18,45 @@
 namespace base {
 namespace android {
 
-bool SysUtils::IsLowEndDeviceFromJni() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_isLowEndDevice(env);
-}
+enum class IsLowMemoryOptions {
+  kAlwaysFalse,
+  kAlwaysTrue,
+  kJavalessApproximation
+};
+
+const base::FeatureParam<IsLowMemoryOptions>::Option kIsLowMemoryOptions[] = {
+    {IsLowMemoryOptions::kAlwaysFalse, "AlwaysFalse"},
+    {IsLowMemoryOptions::kAlwaysTrue, "AlwaysTrue"},
+    {IsLowMemoryOptions::kJavalessApproximation, "JavalessApproximation"}};
+
+BASE_FEATURE(kIsCurrentlyLowMemoryJavaless,
+             "IsCurrentlyLowMemoryJavaless",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_ENUM_PARAM(IsLowMemoryOptions,
+                        kIsCurrentlyLowMemoryOption,
+                        &kIsCurrentlyLowMemoryJavaless,
+                        "IsCurrentlyLowMemoryOption",
+                        IsLowMemoryOptions::kJavalessApproximation,
+                        &kIsLowMemoryOptions);
 
 bool SysUtils::IsCurrentlyLowMemory() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_isCurrentlyLowMemory(env);
-}
-
-// static
-int SysUtils::AmountOfPhysicalMemoryKB() {
-  JNIEnv* env = AttachCurrentThread();
-  return Java_SysUtils_amountOfPhysicalMemoryKB(env);
+  if (!FeatureList::IsEnabled(kIsCurrentlyLowMemoryJavaless)) {
+    return Java_SysUtils_isCurrentlyLowMemory(AttachCurrentThread());
+  }
+  switch (kIsCurrentlyLowMemoryOption.Get()) {
+    case IsLowMemoryOptions::kAlwaysFalse:
+      return false;
+    case IsLowMemoryOptions::kAlwaysTrue:
+      return true;
+    case IsLowMemoryOptions::kJavalessApproximation:
+      // Picked 138240 as it is the number we used to check against in Java's
+      // MemoryInfo.lowMemory. There are a lot of exceptions and edge cases,
+      // but capturing all them likely isn't worth it, so using the basic number
+      // instead. To see where this number is calculated, look at
+      // https://android.googlesource.com/platform/frameworks/base/+/a8e26bab3b8b3d939da5c646411578b565735473/services/core/java/com/android/server/am/ProcessList.java#1743
+      return base::SysInfo::AmountOfAvailablePhysicalMemory() < 138240;
+  }
 }
 
 // Logs the number of minor / major page faults to tracing (and also the time to
@@ -40,8 +66,9 @@ static void JNI_SysUtils_LogPageFaultCountToTracing(JNIEnv* env) {
   // expensive (reading and parsing a file).
   bool enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("startup", &enabled);
-  if (!enabled)
+  if (!enabled) {
     return;
+  }
   TRACE_EVENT_BEGIN2("memory", "CollectPageFaultCount", "minor", 0, "major", 0);
   std::unique_ptr<base::ProcessMetrics> process_metrics(
       base::ProcessMetrics::CreateProcessMetrics(

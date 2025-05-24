@@ -12,7 +12,7 @@ import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,9 +21,11 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isChild} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_browser_proxy.js';
+import type {ParentalControlsBrowserProxy} from './parental_controls_browser_proxy.js';
+import {ParentalControlsBrowserProxyImpl} from './parental_controls_browser_proxy.js';
 import {getTemplate} from './parental_controls_settings_card.html.js';
 
 const ParentalControlsSettingsCardElementBase =
@@ -41,14 +43,6 @@ export class ParentalControlsSettingsCardElement extends
 
   static get properties() {
     return {
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([Setting.kSetUpParentalControls]),
-      },
-
       isChild_: {
         type: Boolean,
         value() {
@@ -66,8 +60,14 @@ export class ParentalControlsSettingsCardElement extends
     };
   }
 
-  private online_: boolean;
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSetUpParentalControls,
+  ]);
+
   private browserProxy_: ParentalControlsBrowserProxy;
+  private readonly isChild_: boolean;
+  private online_: boolean;
 
   constructor() {
     super();

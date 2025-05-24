@@ -33,7 +33,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -44,8 +44,8 @@ class BoxShapeTest : public testing::Test {
 
   std::unique_ptr<Shape> CreateBoxShape(const FloatRoundedRect& bounds,
                                         float shape_margin) {
-    return Shape::CreateLayoutBoxShape(bounds, WritingMode::kHorizontalTb,
-                                       shape_margin);
+    return Shape::CreateLayoutBoxShape(
+        ContouredRect(bounds), WritingMode::kHorizontalTb, shape_margin);
   }
   test::TaskEnvironment task_environment_;
 };

@@ -43,20 +43,11 @@ namespace base {
     std::move(cb).Run(__VA_ARGS__);                                           \
   }
 
-CALLBACK_TESTS_VOID(NoArgsSameSignature, void(), []() {})
+CALLBACK_TESTS_VOID(NoArgsSameSignature, void(), [] {})
 
-CALLBACK_TESTS_VOID(
-    OneArgRemoveOneArg,
-    void(int),
-    []() {},
-    1)
+CALLBACK_TESTS_VOID(OneArgRemoveOneArg, void(int), [] {}, 1)
 
-CALLBACK_TESTS_VOID(
-    TwoArgsRemoveTwoArgs,
-    void(float, int),
-    []() {},
-    0.25f,
-    1)
+CALLBACK_TESTS_VOID(TwoArgsRemoveTwoArgs, void(float, int), [] {}, 0.25f, 1)
 
 CALLBACK_TESTS_VOID(
     OneArgSameSignature,
@@ -108,23 +99,14 @@ CALLBACK_TESTS_VOID(
     EXPECT_EQ(ExpectedReturn, std::move(cb).Run(__VA_ARGS__));               \
   }
 
-CALLBACK_TESTS_RETURN(
-    NoArgsSameSignature,
-    int(),
-    []() { return 2; },
-    2)
+CALLBACK_TESTS_RETURN(NoArgsSameSignature, int(), [] { return 2; }, 2)
 
-CALLBACK_TESTS_RETURN(
-    OneArgRemoveOneArg,
-    int(int),
-    []() { return 2; },
-    2,
-    1)
+CALLBACK_TESTS_RETURN(OneArgRemoveOneArg, int(int), [] { return 2; }, 2, 1)
 
 CALLBACK_TESTS_RETURN(
     TwoArgsRemoveTwoArgs,
     int(float, int),
-    []() { return 2; },
+    [] { return 2; },
     2,
     0.25f,
     1)
@@ -158,7 +140,7 @@ CALLBACK_TESTS_RETURN(
 CALLBACK_TESTS_RETURN(
     DiscardsMoveOnlyArgs,
     bool(int, std::unique_ptr<int>),
-    []() { return true; },
+    [] { return true; },
     true,
     2,
     std::make_unique<int>(3))
@@ -283,7 +265,7 @@ void ExampleFunctionOnceCallback(T&& callback) {
 
 TEST(RectifyCallbackTest, TemplateOverloadRectifiesOnceCallback) {
   ExampleFunctionOnceCallback(BindOnce(&ExampleTargetFunction));
-  ExampleFunctionOnceCallback(BindOnce([]() { return true; }));
+  ExampleFunctionOnceCallback(BindOnce([] { return true; }));
   ExampleFunctionOnceCallback(BindOnce([](double d, int i) { return d && i; }));
   auto cb = BindOnce(&ExampleTargetFunction);
   ExampleFunctionOnceCallback(std::move(cb));
@@ -291,25 +273,25 @@ TEST(RectifyCallbackTest, TemplateOverloadRectifiesOnceCallback) {
 
 TEST(RectifyCallbackTest, TemplateOverloadRectifiesRepeatingCallback) {
   ExampleFunctionOnceCallback(BindRepeating(&ExampleTargetFunction));
-  ExampleFunctionOnceCallback(BindRepeating([]() { return true; }));
+  ExampleFunctionOnceCallback(BindRepeating([] { return true; }));
   ExampleFunctionOnceCallback(
       BindRepeating([](double d, int i) { return d && i; }));
   auto cb = BindRepeating(&ExampleTargetFunction);
   ExampleFunctionOnceCallback(cb);
   bool result = true;
-  ExampleFunctionOnceCallback(BindLambdaForTesting([&]() { return result; }));
+  ExampleFunctionOnceCallback(BindLambdaForTesting([&] { return result; }));
 }
 
 TEST(RectifyCallbackTest, TemplateOverloadCoerceRepeatingTarget) {
   ExampleFunctionRepeatingCallback(BindRepeating(&ExampleTargetFunction));
-  ExampleFunctionRepeatingCallback(BindRepeating([]() { return true; }));
+  ExampleFunctionRepeatingCallback(BindRepeating([] { return true; }));
   ExampleFunctionRepeatingCallback(
       BindRepeating([](double d, int i) { return d && i; }));
   auto cb = BindRepeating(&ExampleTargetFunction);
   ExampleFunctionRepeatingCallback(cb);
   bool result = true;
   ExampleFunctionRepeatingCallback(
-      BindLambdaForTesting([&]() { return result; }));
+      BindLambdaForTesting([&] { return result; }));
 }
 
 TEST(RectifyCallbackTest, NullCallbackPassthrough) {

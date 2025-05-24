@@ -24,11 +24,13 @@ FirstPartyOrigin::FirstPartyOrigin(url::Origin document_origin)
     : document_origin_(std::move(document_origin)) {}
 
 bool FirstPartyOrigin::IsThirdParty(const GURL& url) const {
-  if (document_origin_.opaque())
+  if (document_origin_.opaque()) {
     return true;
+  }
   std::string_view host_piece = url.host_piece();
-  if (!last_checked_host_.empty() && host_piece == last_checked_host_)
+  if (!last_checked_host_.empty() && host_piece == last_checked_host_) {
     return last_checked_host_was_third_party_;
+  }
 
   last_checked_host_.assign(host_piece.data(), host_piece.size());
   last_checked_host_was_third_party_ = IsThirdPartyImpl(url, document_origin_);
@@ -41,4 +43,4 @@ bool FirstPartyOrigin::IsThirdParty(const GURL& url,
          IsThirdPartyImpl(url, first_party_origin);
 }
 
-}  // namespace subresouce_filter
+}  // namespace subresource_filter

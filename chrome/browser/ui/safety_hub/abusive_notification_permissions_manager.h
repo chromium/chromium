@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -18,7 +17,7 @@ namespace {
 // Maximum time in milliseconds to wait for the Safe Browsing service reputation
 // check. After this amount of time the outstanding check will be aborted, and
 // the resource will be treated as if it were safe.
-const int kCheckUrlTimeoutMs = 5000;
+inline constexpr int kCheckUrlTimeoutMs = 5000;
 }  // namespace
 
 namespace safe_browsing {
@@ -72,6 +71,13 @@ class AbusiveNotificationPermissionsManager {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern);
 
+  // Restores REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS entry for the
+  // primary_pattern after it was deleted after user
+  // has accepted the revocation (via `ClearRevokedPermissionsList()`).
+  void RestoreDeletedRevokedPermission(
+      const ContentSettingsPattern& primary_pattern,
+      content_settings::ContentSettingConstraints constraints);
+
   // If there's a clock for testing, return that. Otherwise, return an instance
   // of a default clock.
   const base::Clock* GetClock();
@@ -117,6 +123,8 @@ class AbusiveNotificationPermissionsManager {
       : safe_browsing::SafeBrowsingDatabaseManager::Client {
    public:
     SafeBrowsingCheckClient(
+        base::PassKey<safe_browsing::SafeBrowsingDatabaseManager::Client>
+            pass_key,
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>

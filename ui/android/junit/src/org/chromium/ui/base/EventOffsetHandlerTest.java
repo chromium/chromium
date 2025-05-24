@@ -22,7 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @Config(manifest = Config.NONE)
 public class EventOffsetHandlerTest {
     private EventOffsetHandler mHandler;
-    private EventOffsetHandler.EventOffsetHandlerDelegate mDelegate =
+    private final EventOffsetHandler.EventOffsetHandlerDelegate mDelegate =
             new EventOffsetHandler.EventOffsetHandlerDelegate() {
                 @Override
                 public float getTop() {

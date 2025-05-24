@@ -80,17 +80,6 @@ void VideoCaptureDeviceLinux::AllocateAndStart(
       TranslatePowerLineFrequencyToV4L2(GetPowerLineFrequency(params));
   capture_impl_ = std::make_unique<V4L2CaptureDelegate>(
       v4l2_.get(), device_descriptor_, task_runner_, line_frequency, rotation_);
-  if (!capture_impl_) {
-    client->OnError(VideoCaptureError::
-                        kDeviceCaptureLinuxFailedToCreateVideoCaptureDelegate,
-                    FROM_HERE, "Failed to create VideoCaptureDelegate");
-    return;
-  }
-
-  if (gmb_support_test_) {
-    capture_impl_->SetGPUEnvironmentForTesting(  // IN-TEST
-        std::move(gmb_support_test_));           // IN-TEST
-  }
 
   task_runner_->PostTask(
       FROM_HERE,
@@ -163,11 +152,6 @@ void VideoCaptureDeviceLinux::StopAndDeAllocateInternal(
   capture_impl_->StopAndDeAllocate();
   capture_impl_.reset();
   waiter->Signal();
-}
-
-void VideoCaptureDeviceLinux::SetGPUEnvironmentForTesting(
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support) {
-  gmb_support_test_ = std::move(gmb_support);
 }
 
 }  // namespace media

@@ -2,7 +2,7 @@ Name: Byte Buddy (without dependencies)
 Short Name: byte-buddy
 URL: https://github.com/raphw/byte-buddy
 Version: 1.14.12
-License: Apache 2.0
+License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: no

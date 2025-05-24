@@ -18,4 +18,4 @@ layer at (8,8)
           LayoutView at (0,0) size 100x100
         layer at (0,0)
           LayoutSVGRoot (block) {svg} at (0,0) size 100x100
-            LayoutSVGEllipse {circle} at (25,25) size 50x50 [fill={[type=SOLID] [color=#0000FF]}] [cx=50.00] [cy=50.00] [r=25.00]
+            LayoutSVGEllipse {circle} at (25,25) size 50x50 [fill={[type=SOLID] [color=#0000FF]}] [cx=50] [cy=50] [r=25]

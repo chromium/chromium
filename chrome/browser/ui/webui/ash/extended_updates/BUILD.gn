@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash, "Extended Updates UI is ChromeOS only.")
+assert(is_chromeos, "Extended Updates UI is ChromeOS only.")
 
 mojom("mojo_bindings") {
   sources = [ "extended_updates.mojom" ]
@@ -42,7 +41,6 @@ static_library("extended_updates") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/ash/extended_updates:resources",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common",
     "//components/services/app_service",

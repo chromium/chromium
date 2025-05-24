@@ -20,7 +20,7 @@ class IdTargetObserver;
 class AnchorElementObserver : public GarbageCollected<AnchorElementObserver>,
                               public ElementRareDataField {
  public:
-  // This observer is placed on an element (the "source" element) that wears
+  // This observer is placed on an element (the "source" element) that has
   // the anchor attribute. The observer maintains the
   // "ImplicitlyAnchoredElementCount" on the target element.
   explicit AnchorElementObserver(Element* source_element)

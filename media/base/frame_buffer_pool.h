@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -25,6 +26,8 @@ namespace media {
 class MEDIA_EXPORT FrameBufferPool
     : public base::RefCountedThreadSafe<FrameBufferPool> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Must be called on the same thread that `Shutdown()` is called on.  If
   // `zero_initialize_memory` is true, then initial allocations will be
   // cleared.  This does not affect reused buffers, which are never cleared.
@@ -40,14 +43,15 @@ class MEDIA_EXPORT FrameBufferPool
   // WARNING: To release the FrameBuffer, clients must either call Shutdown() or
   // ReleaseFrameBuffer() in addition to any callbacks returned by
   // CreateFrameCallback() (if any are created).
-  uint8_t* GetFrameBuffer(size_t min_size, void** fb_priv);
+  base::span<uint8_t> GetFrameBuffer(size_t min_size, void** fb_priv);
 
   // Called when a frame buffer allocation is no longer needed.
   void ReleaseFrameBuffer(void* fb_priv);
 
   // Allocates (or reuses) room for an alpha plane on a given frame buffer.
   // |fb_priv| must be a value previously returned by GetFrameBuffer().
-  uint8_t* AllocateAlphaPlaneForFrameBuffer(size_t min_size, void* fb_priv);
+  base::span<uint8_t> AllocateAlphaPlaneForFrameBuffer(size_t min_size,
+                                                       void* fb_priv);
 
   // Generates a "no_longer_needed" closure that holds a reference to this pool;
   // |fb_priv| must be a value previously returned by GetFrameBuffer(). The

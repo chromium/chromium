@@ -183,7 +183,7 @@ testSuite({
   },
 
   testBubblePosition() {
-    panelId = bubble.addPanel('A', 'Link', link, goog.nullFunction);
+    panelId = bubble.addPanel('A', 'Link', link, () => {});
     /** @suppress {visibility} suppression added to enable type checking */
     const CLEARANCE = Bubble.VERTICAL_CLEARANCE_;
     /** @suppress {visibility} suppression added to enable type checking */

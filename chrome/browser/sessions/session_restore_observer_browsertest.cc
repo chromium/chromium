@@ -7,7 +7,6 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -71,7 +70,7 @@ class MockSessionRestoreObserver : public SessionRestoreObserver {
 
 class SessionRestoreObserverTest : public InProcessBrowserTest {
  protected:
-  SessionRestoreObserverTest() {}
+  SessionRestoreObserverTest() = default;
 
   SessionRestoreObserverTest(const SessionRestoreObserverTest&) = delete;
   SessionRestoreObserverTest& operator=(const SessionRestoreObserverTest&) =
@@ -80,7 +79,7 @@ class SessionRestoreObserverTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     SessionStartupPref pref(SessionStartupPref::LAST);
     SessionStartupPref::SetStartupPref(browser()->profile(), pref);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     SessionServiceTestHelper helper(
         SessionServiceFactory::GetForProfile(browser()->profile()));
     helper.SetForceBrowserNotAliveWithNoWindows(true);

@@ -94,8 +94,7 @@ inline const char* LbValueFromStrictness(LineBreakStrictness strictness) {
     case LineBreakStrictness::kLoose:
       return "loose";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -363,13 +362,14 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
         : length_(base::saturated_cast<wtf_size_t>(utf8_locale.length())),
           buffer_(length_ + kMaxKeywordsLen + 1, 0) {
       // The `buffer_` is initialized to 0 above.
-      memcpy(buffer_.data(), utf8_locale.c_str(), length_);
+      base::span(buffer_).copy_prefix_from(
+          base::span(utf8_locale).first(length_));
     }
     explicit ULocaleKeywordBuilder(const String& locale)
         : ULocaleKeywordBuilder(locale.Utf8()) {}
 
     AtomicString ToAtomicString() const {
-      return AtomicString::FromUTF8(buffer_.data(), length_);
+      return AtomicString::FromUTF8(base::as_byte_span(buffer_).first(length_));
     }
 
     bool SetStrictness(LineBreakStrictness strictness) {
@@ -401,8 +401,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
       (!use_phrase || builder.SetKeywordValue("lw", "phrase"))) {
     return builder.ToAtomicString();
   }
-  NOTREACHED_IN_MIGRATION();
-  return string_;
+  NOTREACHED();
 }
 
 // static

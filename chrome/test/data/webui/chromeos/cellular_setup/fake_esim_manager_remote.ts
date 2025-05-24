@@ -65,7 +65,7 @@ export class FakeProfile implements ESimProfileInterface {
 
   installProfile(_confirmationCode: string):
       Promise<{result: ProfileInstallResult}> {
-    if (!this.profileInstallResult_ ||
+    if (this.profileInstallResult_ === null ||
         this.profileInstallResult_ === ProfileInstallResult.kSuccess) {
       this.properties.state = ProfileState.kActive;
     }
@@ -107,7 +107,7 @@ export class FakeProfile implements ESimProfileInterface {
 
   setProfileNickname(nickname: String16):
       Promise<{result: ESimOperationResult}> {
-    if (!this.esimOperationResult_ ||
+    if (this.esimOperationResult_ === null ||
         this.esimOperationResult_ === ESimOperationResult.kSuccess) {
       this.properties.nickname = nickname;
     }
@@ -130,7 +130,7 @@ export class FakeProfile implements ESimProfileInterface {
   }
 
   async resolveUninstallProfilePromise(): Promise<void> {
-    if (!this.esimOperationResult_ ||
+    if (this.esimOperationResult_ === null ||
         this.esimOperationResult_ === ESimOperationResult.kSuccess) {
       const removeProfileResult =
           await this.fakeEuicc_.removeProfileForTest(this.properties.iccid);

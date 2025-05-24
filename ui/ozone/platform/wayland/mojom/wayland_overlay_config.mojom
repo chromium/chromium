@@ -68,14 +68,4 @@ struct WaylandOverlayConfig {
   // Specifies priority of this overlay if delegated composition is supported
   // and enabled.
   gfx.mojom.OverlayPriorityHint priority_hint;
-
-  // Optional: specifies rounded clip bounds of the overlay if delegated
-  // composition is supported and enabled.
-  gfx.mojom.RRectF? rounded_clip_bounds;
-
-  // Optional: background color of this overlay plane.
-  skia.mojom.SkColor4f? background_color;
-
-  // Optional: clip rect for this overlay.
-  gfx.mojom.Rect? clip_rect;
 };

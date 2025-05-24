@@ -5,8 +5,10 @@
 package org.chromium.components.browser_ui.bottomsheet;
 
 import android.view.MotionEvent;
+import android.view.ViewGroup;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -53,7 +55,13 @@ public class BottomSheetTestSupport {
         getBottomSheet().setSheetOffsetFromBottom(offset, reason);
     }
 
-    /** @see {@link BottomSheet#getFullRatio()} */
+    public void setBottomMargin(int offset) {
+        getBottomSheet().setBottomMargin(offset);
+    }
+
+    /**
+     * @see {@link BottomSheet#getFullRatio()}
+     */
     public float getFullRatio() {
         return getBottomSheet().getFullRatio();
     }
@@ -113,6 +121,11 @@ public class BottomSheetTestSupport {
         return (BottomSheet) mController.getBottomSheetViewForTesting();
     }
 
+    /** Returns the container for the bottom sheet. */
+    public ViewGroup getSheetContainer() {
+        return mController.getBottomSheetContainerForTesting();
+    }
+
     /**
      * @return Whether has any token to suppress the bottom sheet.
      */
@@ -121,9 +134,14 @@ public class BottomSheetTestSupport {
                 () -> mController.hasSuppressionTokensForTesting());
     }
 
+    public void setEdgeToEdgeBottomInsetSupplier(Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+        getBottomSheet().setEdgeToEdgeBottomInsetSupplierForTesting(edgeToEdgeBottomInsetSupplier);
+    }
+
     /**
      * Wait for the bottom sheet to enter the specified state. If the sheet is already in the
      * specified state, this method returns immediately.
+     *
      * @param controller The controller for the bottom sheet.
      * @param state The state to wait for.
      */

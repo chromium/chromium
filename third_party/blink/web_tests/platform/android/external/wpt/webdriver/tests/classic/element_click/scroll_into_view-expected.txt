@@ -1,0 +1,21 @@
+This is a wdspec test.
+[FAIL] test_partially_visible_does_not_scroll[9]
+  AssertionError: assert 343 == 0
+[FAIL] test_partially_visible_does_not_scroll[8]
+  AssertionError: assert 344 == 0
+[FAIL] test_partially_visible_does_not_scroll[7]
+  AssertionError: assert 345 == 0
+[FAIL] test_partially_visible_does_not_scroll[6]
+  AssertionError: assert 346 == 0
+[FAIL] test_partially_visible_does_not_scroll[5]
+  AssertionError: assert 347 == 0
+[FAIL] test_partially_visible_does_not_scroll[4]
+  AssertionError: assert 348 == 0
+[FAIL] test_partially_visible_does_not_scroll[3]
+  AssertionError: assert 349 == 0
+[FAIL] test_partially_visible_does_not_scroll[2]
+  AssertionError: assert 350 == 0
+[FAIL] test_partially_visible_does_not_scroll[1]
+  AssertionError: assert 351 == 0
+Harness: the test ran to completion.
+

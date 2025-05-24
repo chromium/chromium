@@ -97,12 +97,18 @@ IdlePollingService::IdlePollingService()
 
 IdlePollingService::~IdlePollingService() = default;
 
-void IdlePollingService::PollIdleState() {
-  last_state_.idle_time = provider_->CalculateIdleTime();
-  last_state_.locked = provider_->CheckIdleStateIsLocked();
+IdlePollingService::State IdlePollingService::CreateCurrentIdleState() const {
+  return {
+      .locked = provider_->CheckIdleStateIsLocked(),
+      .idle_time = provider_->CalculateIdleTime(),
+  };
+}
 
-  // TODO(crbug.com/41445751): Only notify observers on change.
-  observers_.Notify(&Observer::OnIdleStateChange, last_state_);
+void IdlePollingService::PollIdleState() {
+  if (auto cur_state = CreateCurrentIdleState(); cur_state != last_state_) {
+    last_state_ = std::move(cur_state);
+    observers_.Notify(&Observer::OnIdleStateChange, last_state_);
+  }
 }
 
 }  // namespace ui

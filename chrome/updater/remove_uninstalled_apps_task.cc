@@ -19,8 +19,8 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/version.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/configurator.h"
-#include "chrome/updater/constants.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/update_service_impl.h"
@@ -133,7 +133,7 @@ void RemoveAppIDsAndSendUninstallPings(
       update_client->SendPing(
           crx_component,
           {.event_type = update_client::protocol_request::kEventUninstall,
-           .result = 1,
+           .result = update_client::protocol_request::kEventResultSuccess,
            .error_code = 0,
            .extra_code1 = ping_reason},
           base::BindOnce(&UninstallPingSent, barrier_closure));

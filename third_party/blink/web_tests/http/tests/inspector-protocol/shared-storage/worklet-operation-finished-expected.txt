@@ -1,0 +1,22 @@
+Tests shared storage worklet operation finished events.
+Events: [
+    [0] : {
+        executionTime : <number>
+        finishedTime : <number>
+        mainFrameId : <string>
+        method : run
+        operationId : 0
+        ownerOrigin : http://127.0.0.1:8000
+        workletTargetId : <string>
+    }
+    [1] : {
+        executionTime : <number>
+        finishedTime : <number>
+        mainFrameId : <string>
+        method : selectURL
+        operationId : 1
+        ownerOrigin : http://127.0.0.1:8000
+        workletTargetId : <string>
+    }
+]
+

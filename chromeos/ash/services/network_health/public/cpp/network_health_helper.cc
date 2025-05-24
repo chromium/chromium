@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chromeos/ash/services/network_health/in_process_instance.h"
 #include "chromeos/ash/services/network_health/network_health_service.h"
 #include "url/gurl.h"

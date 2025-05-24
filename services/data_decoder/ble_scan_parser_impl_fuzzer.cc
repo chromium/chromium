@@ -12,6 +12,6 @@
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   data_decoder::BleScanParserImpl::ParseBleScan(
       // Safety: `data` is guaranteed to be at least `size` bytes long.
-      UNSAFE_BUFFERS(base::make_span(data, size)));
+      UNSAFE_BUFFERS(base::span(data, size)));
   return 0;
 }

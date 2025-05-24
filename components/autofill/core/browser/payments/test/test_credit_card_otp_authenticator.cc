@@ -4,8 +4,8 @@
 
 #include "components/autofill/core/browser/payments/test/test_credit_card_otp_authenticator.h"
 
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 
 namespace autofill {
 

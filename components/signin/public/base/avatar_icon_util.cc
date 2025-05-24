@@ -33,12 +33,15 @@ constexpr char kImageURLOptionSeparator[] = "-";
 constexpr char kImageURLOptionSizePattern[] = R"(s\d+)";
 constexpr char kImageURLOptionSizeFormat[] = "s%d";
 constexpr char kImageURLOptionSquareCrop[] = "c";
+constexpr char kImageURLOptionCircleCrop[] = "cc";
 // Option to disable default avatar if user doesn't have a custom one.
 constexpr char kImageURLOptionNoSilhouette[] = "ns";
+constexpr char kImageURLOptionRequestPng[] = "rp";
 
 std::string BuildImageURLOptionsString(int image_size,
                                        bool no_silhouette,
-                                       const std::string& existing_options) {
+                                       const std::string& existing_options,
+                                       signin::AvatarCropType crop) {
   std::vector<std::string> url_options =
       base::SplitString(existing_options, kImageURLOptionSeparator,
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
@@ -48,13 +51,31 @@ std::string BuildImageURLOptionsString(int image_size,
     return RE2::FullMatch(str, size_pattern);
   });
   std::erase(url_options, kImageURLOptionSquareCrop);
+  std::erase(url_options, kImageURLOptionCircleCrop);
   std::erase(url_options, kImageURLOptionNoSilhouette);
 
   url_options.push_back(
       base::StringPrintf(kImageURLOptionSizeFormat, image_size));
-  url_options.push_back(kImageURLOptionSquareCrop);
-  if (no_silhouette)
+
+  switch (crop) {
+    case signin::AvatarCropType::kCircle:
+      url_options.push_back(kImageURLOptionCircleCrop);
+      // If the png option exists, remove it before adding it back. This
+      // ensures a predictable order of options.
+      std::erase(url_options, kImageURLOptionRequestPng);
+      // Request the image as a PNG so the circle crop leaves a
+      // transparent background.
+      url_options.push_back(kImageURLOptionRequestPng);
+      break;
+    case signin::AvatarCropType::kSquare:
+    case signin::AvatarCropType::kDefault:
+      url_options.push_back(kImageURLOptionSquareCrop);
+      break;
+  }
+
+  if (no_silhouette) {
     url_options.push_back(kImageURLOptionNoSilhouette);
+  }
   return base::JoinString(url_options, kImageURLOptionSeparator);
 }
 
@@ -63,14 +84,17 @@ std::string BuildImageURLOptionsString(int image_size,
 std::vector<std::string> TryProcessAsLegacyImageURL(
     std::vector<std::string> url_components,
     int image_size,
-    bool no_silhouette) {
-  if (url_components.back().empty())
+    bool no_silhouette,
+    signin::AvatarCropType crop) {
+  if (url_components.back().empty()) {
     return {};
+  }
 
   if (url_components.size() == kLegacyURLPathComponentsCount) {
     url_components.insert(
         url_components.begin() + kLegacyURLPathOptionsComponentPosition,
-        BuildImageURLOptionsString(image_size, no_silhouette, std::string()));
+        BuildImageURLOptionsString(image_size, no_silhouette, std::string(),
+                                   crop));
     return url_components;
   }
 
@@ -78,7 +102,7 @@ std::vector<std::string> TryProcessAsLegacyImageURL(
     std::string options =
         url_components.at(kLegacyURLPathOptionsComponentPosition);
     url_components[kLegacyURLPathOptionsComponentPosition] =
-        BuildImageURLOptionsString(image_size, no_silhouette, options);
+        BuildImageURLOptionsString(image_size, no_silhouette, options, crop);
     return url_components;
   }
 
@@ -90,7 +114,8 @@ std::vector<std::string> TryProcessAsLegacyImageURL(
 std::vector<std::string> TryProcessAsContentImageURL(
     std::vector<std::string> url_components,
     int image_size,
-    bool no_silhouette) {
+    bool no_silhouette,
+    signin::AvatarCropType crop) {
   if (url_components.size() < kContentURLPathMinComponentsCount ||
       url_components.size() > kContentURLPathMaxComponentsCount ||
       url_components.back().empty()) {
@@ -108,9 +133,9 @@ std::vector<std::string> TryProcessAsContentImageURL(
           ? ""
           : options_component->substr(options_pos + 1);
   // Update options in |options_component|.
-  *options_component =
-      component_without_options + kContentURLOptionsStartChar +
-      BuildImageURLOptionsString(image_size, no_silhouette, existing_options);
+  *options_component = component_without_options + kContentURLOptionsStartChar +
+                       BuildImageURLOptionsString(image_size, no_silhouette,
+                                                  existing_options, crop);
   return url_components;
 }
 
@@ -122,7 +147,8 @@ const int kAccountInfoImageSize = 256;
 
 GURL GetAvatarImageURLWithOptions(const GURL& old_url,
                                   int image_size,
-                                  bool no_silhouette) {
+                                  bool no_silhouette,
+                                  AvatarCropType crop) {
   DCHECK(old_url.is_valid());
 
   std::vector<std::string> components =
@@ -130,11 +156,11 @@ GURL GetAvatarImageURLWithOptions(const GURL& old_url,
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   auto new_components =
-      TryProcessAsContentImageURL(components, image_size, no_silhouette);
+      TryProcessAsContentImageURL(components, image_size, no_silhouette, crop);
 
   if (new_components.empty()) {
     new_components =
-        TryProcessAsLegacyImageURL(components, image_size, no_silhouette);
+        TryProcessAsLegacyImageURL(components, image_size, no_silhouette, crop);
   }
 
   if (new_components.empty()) {

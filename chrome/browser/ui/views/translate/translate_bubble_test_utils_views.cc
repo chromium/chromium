@@ -2,24 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
-
 #include "base/check_op.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
+#include "chrome/browser/ui/translate/translate_bubble_test_utils.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/combobox/combobox.h"
 
-namespace translate {
-
-namespace test_utils {
+namespace translate::test_utils {
 
 TranslateBubbleView* GetTranslateBubble(Browser* browser) {
-  return TranslateBubbleController::FromWebContents(
-             browser->tab_strip_model()->GetActiveWebContents())
+  return browser->GetFeatures()
+      .translate_bubble_controller()
       ->GetTranslateBubble();
 }
 
@@ -33,10 +31,10 @@ const TranslateBubbleModel* GetCurrentModel(Browser* browser) {
 void CloseCurrentBubble(Browser* browser) {
   DCHECK(browser);
   TranslateBubbleController* controller =
-      TranslateBubbleController::FromWebContents(
-          browser->tab_strip_model()->GetActiveWebContents());
-  if (controller)
+      browser->GetFeatures().translate_bubble_controller();
+  if (controller) {
     controller->CloseBubble();
+  }
 }
 
 void PressTranslate(Browser* browser) {
@@ -82,6 +80,4 @@ void SelectTargetLanguageByDisplayName(Browser* browser,
   bubble->TargetLanguageChanged();
 }
 
-}  // namespace test_utils
-
-}  // namespace translate
+}  // namespace translate::test_utils

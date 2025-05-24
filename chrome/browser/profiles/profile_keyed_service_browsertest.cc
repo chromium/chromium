@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <sstream>
 
 #include "base/containers/to_vector.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -29,20 +31,25 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/features.h"
 #include "pdf/buildflags.h"
-#include "printing/buildflags/buildflags.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/ui_base_features.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/common/companion/visual_query/features.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_switches.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/common/chrome_switches.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
-
+#if !BUILDFLAG(IS_CHROMEOS)
 // Creates a Profile and its underlying OTR Profile for testing.
 // Waits for all tasks to be done to get as many services created as possible.
 // Returns the Original Profile.
@@ -50,12 +57,13 @@ Profile* CreateProfileAndWaitForAllTasks(const base::FilePath& profile_path) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileWaiter profile_waiter;
   profile_manager->CreateProfileAsync(profile_path, {});
-  Profile* system_profile = profile_waiter.WaitForProfileAdded();
+  Profile* profile = profile_waiter.WaitForProfileAdded();
   // Wait for Profile creation, and potentially other services that will be
   // created after all tasks are done.
   content::RunAllTasksUntilIdle();
-  return system_profile;
+  return profile;
 }
+#endif
 
 // Gets all the KeyedServices from the DependencyGraph.
 std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
@@ -77,7 +85,7 @@ std::vector<KeyedServiceBaseFactory*> GetKeyedServiceBaseFactories() {
 std::string GetDifferenceString(const std::set<std::string>& set1,
                                 const std::set<std::string>& set2) {
   std::vector<std::string> differences;
-  base::ranges::set_difference(set1, set2, std::back_inserter(differences));
+  std::ranges::set_difference(set1, set2, std::back_inserter(differences));
 
   return differences.empty() ? "None" : base::JoinString(differences, ", ");
 }
@@ -179,21 +187,25 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {
           features::kTrustSafetySentimentSurvey,
-          companion::visual_query::features::kVisualQuerySuggestions,
 #if BUILDFLAG(IS_WIN)
           switches::kEnableBoundSessionCredentials,
 #endif  // BUILDFLAG(IS_WIN)
-          blink::features::kBrowsingTopics,
-          blink::features::kEnableBuiltInAIAPI,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+          features::kEnableCertManagementUIV2Write,
+#endif
+          network::features::kBrowsingTopics,
+          blink::features::kBuiltInAIAPI,
+          extensions_features::kForceWebRequestProxyForTest,
           net::features::kTopLevelTpcdOriginTrial,
           net::features::kTpcdTrialSettings,
           net::features::kTopLevelTpcdTrialSettings,
-          features::kPdfOcr,
-          features::kPersistentOriginTrials,
+          network::features::kReduceAcceptLanguage,
+          features::kMainNodeAnnotations,
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
           omnibox::kOnDeviceTailModel,
           omnibox::kOnDeviceHeadProviderNonIncognito,
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+          switches::kSyncEnableBookmarksInTransportMode,
         },
         {});
     // clang-format on
@@ -203,6 +215,8 @@ class ProfileKeyedServiceBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
+// System Profile does not exist on ChromeOS.
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
                        SystemProfileOTR_NeededServices) {
   Profile* system_profile =
@@ -223,389 +237,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   ASSERT_TRUE(system_profile->IsSystemProfile());
   TestKeyedProfileServicesActives(system_profile,
                                   /*expected_active_services_names=*/{});
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
-                       GuestProfileOTR_NeededServices) {
-  // clang-format off
-  std::set<std::string> guest_otr_active_services {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "CleanupManagerLacros",
-    "DownloadBubbleUpdateService",
-    "DownloadCoreService",
-    "MediaNotificationService",
-#else
-    "LiveCaptionController",
-    "LiveTranslateController",
-#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
-    "AIManagerKeyedService",
-    "AlarmManager",
-    "BackgroundContentsService",
-    "BackgroundSyncService",
-    "BluetoothApiAdvertisementManager",
-    "BluetoothApiSocketManager",
-    "BluetoothLowEnergyConnectionManager",
-    "BluetoothLowEnergyNotifySessionManager",
-    "BluetoothSocketEventDispatcher",
-    "BrowsingDataLifetimeManager",
-    "CookieSettings",
-#if BUILDFLAG(IS_WIN)
-    "BoundSessionCookieRefreshService",
-#endif  // BUILDFLAG(IS_WIN)
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-    "ExtensionInstallEventRouter",
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-    "ExtensionSystem",
-    "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
-    "FederatedIdentityPermissionContext",
-    "FederatedIdentityAutoReauthnPermissionContext",
-    "FeedbackPrivateAPI",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "FileChangeServiceBridge",
-#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
-    "FileSystemAccessPermissionContext",
-    "GeneratedPrefs",
-    "HeavyAdService",
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    "HidConnectionResourceManager",
-#endif
-    "HidDeviceManager",
-    "HostContentSettingsMap",
-    "MediaRouter",
-    "MediaRouterUIService",
-    "NotificationDisplayService",
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    "OnDeviceTailModelService",
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    "OneTimePermissionsTrackerKeyedService",
-    "OptimizationGuideKeyedService",
-    "PermissionDecisionAutoBlocker",
-    "PinnedToolbarActionsModel",
-    "PlatformNotificationService",
-    "PredictionModelHandlerProvider",
-    "PrefWatcher",
-    "PrivacySandboxSettings",
-    "ProcessManager",
-    "ProfileNetworkContextService",
-    "RealtimeReportingClient",
-    "RendererUpdater",
-    "ResumableTCPServerSocketManager",
-    "ResumableTCPSocketManager",
-    "ResumableUDPSocketManager",
-    "RulesRegistryService",
-    "SafeBrowsingPrivateEventRouter",
-    "SerialConnectionManager",
-    "SerialPortManager",
-    "SettingsPrivateEventRouter",
-    "SiteDataCacheFacadeFactory",
-    "SiteEngagementService",
-    "SocketManager",
-    "StorageNotificationService",
-    "TCPServerSocketEventDispatcher",
-    "TCPSocketEventDispatcher",
-    "TabGroupsEventRouter",
-    "ToolbarActionsModel",
-    "TrackingProtectionSettings",
-    "UDPSocketEventDispatcher",
-    "UkmBackgroundRecorderService",
-#if BUILDFLAG(IS_WIN)
-    "UnexportableKeyService",
-#endif  // BUILDFLAG(IS_WIN)
-    "UsbDeviceManager",
-    "UsbDeviceResourceManager",
-    "sct_reporting::Factory"
-  };
-  // clang-format on
-
-  Profile* guest_profile =
-      CreateProfileAndWaitForAllTasks(ProfileManager::GetGuestProfilePath());
-  ASSERT_TRUE(guest_profile->HasAnyOffTheRecordProfile());
-  Profile* guest_profile_otr = guest_profile->GetPrimaryOTRProfile(false);
-  ASSERT_TRUE(guest_profile_otr->IsOffTheRecord());
-  ASSERT_TRUE(guest_profile_otr->IsGuestSession());
-  TestKeyedProfileServicesActives(guest_profile_otr, guest_otr_active_services);
-}
-
-IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
-                       GuestProfileParent_NeededServices) {
-  // clang-format off
-  std::set<std::string> guest_active_services {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "CastNotificationControllerLacros",
-    "CertDbInitializerFactory",
-    "CleanupManagerLacros",
-    "ClipboardAPI",
-    "ExternalLogoutRequestEventHandler",
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    "ImageWriterControllerLacros",
-#endif
-    "MediaNotificationService",
-    "SessionStateChangedEventDispatcher",
-#else // !BUILDFLAG(IS_CHROMEOS_LACROS)
-    "SystemIndicatorManager",
-    "WebAppProvider",
-#endif
-    "AccountExtensionTracker",
-    "AccountReconcilor",
-    "ActivityLog",
-    "ActivityLogPrivateAPI",
-    "AdaptiveQuietNotificationPermissionUiEnabler",
-    "AdvancedProtectionStatusManager",
-    "AlarmManager",
-    "AnnouncementNotificationService",
-    "AppLifetimeMonitor",
-    "AppLoadService",
-    "AppRestoreService",
-    "AppServiceProxy",
-    "AppSessionService",
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-    "AppShortcutManager",
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
-    "ManualTestHeartbeatEvent",
-#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
-    "AppTerminationObserver",
-    "AppWindowRegistry",
-    "AudioAPI",
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    "AutocompleteScoringModelService",
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    "AutofillImageFetcher",
-    "AutofillPrivateEventRouter",
-    "AutofillStrikeDatabase",
-    "BackgroundContentsService",
-    "BackgroundFetchService",
-    "BackgroundSyncService",
-    "Blocklist",
-    "BluetoothAPI",
-    "BluetoothApiSocketManager",
-    "BluetoothApiAdvertisementManager",
-    "BluetoothLowEnergyAPI",
-    "BluetoothLowEnergyConnectionManager",
-    "BluetoothLowEnergyNotifySessionManager",
-    "BluetoothPrivateAPI",
-    "BluetoothSocketEventDispatcher",
-    "BookmarkManagerPrivateAPI",
-#if defined(TOOLKIT_VIEWS)
-    "BookmarkExpandedStateTracker",
-#endif
-    "BookmarkModel",
-    "BookmarkUndoService",
-    "BookmarksAPI",
-    "BrailleDisplayPrivateAPI",
-    "BrowsingTopicsService",
-    "ChildAccountService",
-    "ChromeSigninClient",
-    "CommandService",
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-    "ConnectorsService",
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-    "ContentIndexProvider",
-    "ContentSettingsService",
-    "CookieSettings",
-    "CookiesAPI",
-    "CWSInfoService",
-    "DataTypeStoreService",
-    "DeveloperPrivateAPI",
-    "DeviceInfoSyncService",
-    "DownloadCoreService",
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    "EnterpriseManagementService",
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    "EventRouter",
-    "ExtensionActionAPI",
-    "ExtensionActionManager",
-    "ExtensionCommandsGlobalRegistry",
-    "ExtensionGCMAppHandler",
-    "ExtensionGarbageCollector",
-    "ExtensionHostRegistry",
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-    "ExtensionInstallEventRouter",
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-    "ExtensionManagement",
-    "ExtensionPrefValueMap",
-    "ExtensionPrefs",
-    "ExtensionRegistry",
-    "ExtensionSyncService",
-    "ExtensionSystem",
-    "ExtensionSystemShared",
-    "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
-    "ExtensionWebUIOverrideRegistrar",
-    "FederatedIdentityPermissionContext",
-    "FederatedIdentityAutoReauthnPermissionContext",
-    "FeedbackPrivateAPI",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "FileChangeServiceBridge",
-#endif // BUILDFLAG(IS_CHROMEOS_LACROS)
-    "FileSystemAccessPermissionContext",
-    "FirstPartySetsPolicyService",
-    "FontPrefChangeNotifier",
-    "FontSettingsAPI",
-    "GAIAInfoUpdateService",
-    "GCMProfileService",
-    "GeneratedPrefs",
-    "HeavyAdService",
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    "HidConnectionResourceManager",
-#endif
-    "HidDeviceManager",
-    "HistoryAPI",
-    "HistoryService",
-    "HostContentSettingsMap",
-    "HttpEngagementKeyService",
-    "IdentityAPI",
-    "IdentityManager",
-    "IdleManager",
-    "InstallStageTracker",
-    "InstallTracker",
-    "InstallVerifier",
-    "InstanceIDProfileService",
-    "InvalidationService",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    "KcerFactory",
-#endif // BUILDFLAG(IS_CHROMEOS_ASH)
-    "LanguageSettingsPrivateDelegate",
-    "LazyBackgroundTaskQueue",
-    "ListFamilyMembersService",
-    "LocalOrSyncableBookmarkSyncServiceFactory",
-    "LoginUIServiceFactory",
-    "MDnsAPI",
-    "ManagedBookmarkService",
-    "ManagedConfigurationAPI",
-    "ManagementAPI",
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    "ManifestV2ExperimentManager",
-#endif
-    "MediaGalleriesAPI",
-    "MediaRouter",
-    "MediaRouterUIService",
-    "MenuManager",
-    "NavigationPredictorKeyedService",
-    "NetworkingPrivateEventRouter",
-    "NotificationDisplayService",
-    "NtpBackgroundService",
-    "NtpCustomBackgroundService",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    "NssServiceFactory",
-#endif // BUILDFLAG(IS_CHROMEOS_ASH)
-    "OmniboxAPI",
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    "OnDeviceTailModelService",
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-    "OneTimePermissionsTrackerKeyedService",
-    "OperationManager",
-    "OptimizationGuideKeyedService",
-    "OriginTrialService",
-    "PageContentAnnotationsService",
-    "PasswordsPrivateEventRouter",
-    "PermissionDecisionAutoBlocker",
-    "PermissionHelper",
-    "PermissionsManager",
-    "PermissionsUpdaterShutdownFactory",
-    "PersonalDataManager",
-    "PinnedTabService",
-    "PinnedToolbarActionsModel",
-    "PlatformNotificationService",
-    "PluginManager",
-    "PluginPrefs",
-    "PowerBookmarkService",
-    "PredictionModelHandlerProvider",
-    "PrefWatcher",
-    "PreferenceAPI",
-  #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
-    "PrintingMetricsService",
-  #endif // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_CUPS)
-    "PrinterProviderInternal",
-    "PrivacySandboxService",
-    "PrivacySandboxSettings",
-    "ProcessManager",
-    "ProcessMap",
-    "ProcessesAPI",
-    "ProfileNetworkContextService",
-    "ProtocolHandlerRegistry",
-    "RealtimeReportingClient",
-    "RendererStartupHelper",
-    "RendererUpdater",
-    "ResumableTCPServerSocketManager",
-    "ResumableTCPSocketManager",
-    "ResumableUDPSocketManager",
-    "RulesMonitorService",
-    "RulesRegistryService",
-    "RuntimeAPI",
-    "SafeBrowsingMetricsCollector",
-    "SafeBrowsingPrivateEventRouter",
-    "SafeBrowsingTailoredSecurityService",
-    "SearchEngineChoiceServiceFactory",
-    "SendTabToSelfClientService",
-    "SendTabToSelfSyncService",
-    "SerialConnectionManager",
-    "SerialPortManager",
-    "SessionDataService",
-    "SessionProtoDBFactory",
-    "SessionsAPI",
-    "SettingsOverridesAPI",
-    "SettingsPrivateEventRouter",
-    "ShoppingService",
-    "SidePanelService",
-    "SiteDataCacheFacadeFactory",
-    "SiteEngagementService",
-    "SocketManager",
-    "StorageAccessHeaderService",
-    "StorageFrontend",
-    "StorageNotificationService",
-    "SupervisedUserService",
-    "SyncInvalidationsService",
-    "SystemInfoAPI",
-    "TCPServerSocketEventDispatcher",
-    "TCPSocketEventDispatcher",
-    "TabGroupsEventRouter",
-    "TabsWindowsAPI",
-    "TemplateURLServiceFactory",
-    "ThemeService",
-    "ToolbarActionsModel",
-    "TopLevelTrialService",
-    "TpcdTrialService",
-    "TrackingProtectionSettings",
-    "TranslateRanker",
-    "TriggeredProfileResetter",
-    "TtsAPI",
-    "UDPSocketEventDispatcher",
-    "UkmBackgroundRecorderService",
-    "UsbDeviceManager",
-    "UsbDeviceResourceManager",
-    "UserCloudPolicyInvalidator",
-    "UserFmRegistrationTokenUploader",
-    "UserPolicySigninService",
-#if !BUILDFLAG(IS_ANDROID)
-    "VisualQuerySuggestionsService",
-#endif  // !BUILDFLAG(IS_ANDROID)
-    "WarningBadgeService",
-    "WarningService",
-    "WebAuthenticationProxyAPI",
-#if BUILDFLAG(IS_CHROMEOS)
-    "WebcamPrivateAPI",
-#endif
-    "WebDataService",
-    "WebNavigationAPI",
-    "WebRequestAPI",
-    "WebRequestEventRouter",
-    "WebRtcEventLogManagerKeyedService",
-    "WebrtcAudioPrivateEventService",
-    "feedback::FeedbackUploaderChrome",
-    "sct_reporting::Factory",
-    "ZeroSuggestCacheServiceFactory",
-  };
-  // clang-format on
-
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    guest_active_services.insert("ProductSpecificationsService");
-  }
-
-  Profile* guest_profile =
-      CreateProfileAndWaitForAllTasks(ProfileManager::GetGuestProfilePath());
-  ASSERT_FALSE(guest_profile->IsOffTheRecord());
-  ASSERT_TRUE(guest_profile->IsGuestSession());
-  TestKeyedProfileServicesActives(guest_profile, guest_active_services);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
@@ -632,6 +263,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "PasswordRequirementsServiceFactory",
     "PolicyBlocklist",
     "PolicyClipboardRestriction",
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ReportingEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "SafeSearch",
     "WebDataService",
 
@@ -673,6 +307,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "OmniboxSuggestionsWatcher",
     "PolicyBlocklist",
     "PolicyClipboardRestriction",
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ReportingEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
     "SafeSearch",
 
     // in chrome: using `BrowserContextKeyedServiceShutdownNotifierFactory`:
@@ -694,4 +331,605 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
   TestKeyedProfileServicesActives(system_profile_otr,
                                   exepcted_created_services_names,
                                   /*force_create_services=*/true);
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+class ProfileKeyedServiceGuestBrowserTest
+    : public ProfileKeyedServiceBrowserTest {
+ public:
+  ProfileKeyedServiceGuestBrowserTest() = default;
+  ~ProfileKeyedServiceGuestBrowserTest() override = default;
+
+  // ProfileKeyedServiceBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(ash::switches::kGuestSession);
+    command_line->AppendSwitch(::switches::kIncognito);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
+    command_line->AppendSwitchASCII(
+        ash::switches::kLoginUser,
+        user_manager::GuestAccountId().GetUserEmail());
+  }
+};
+#else
+using ProfileKeyedServiceGuestBrowserTest = ProfileKeyedServiceBrowserTest;
+#endif
+
+IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
+                       GuestProfileOTR_NeededServices) {
+  // clang-format off
+  std::set<std::string> guest_otr_active_services {
+    "AlarmManager",
+    "AXMainNodeAnnotatorController",
+    "AutocompleteActionPredictor",
+    "AutocompleteClassifier",
+    "AutocompleteControllerEmitter",
+    "AutocompleteHistoryManager",
+    "BackgroundContentsService",
+    "BackgroundSyncService",
+    "BluetoothApiAdvertisementManager",
+    "BluetoothApiSocketManager",
+    "BluetoothLowEnergyConnectionManager",
+    "BluetoothLowEnergyNotifySessionManager",
+    "BluetoothSocketEventDispatcher",
+    "BrowsingDataLifetimeManager",
+    "BrowsingDataRemover",
+    "CookieSettings",
+#if BUILDFLAG(IS_WIN)
+    "BoundSessionCookieRefreshService",
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ExtensionInstallEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ChromeEnterpriseRealTimeUrlLookupService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "ComponentExtensionContentSettingsAllowlist",
+#endif
+    "EnterpriseReportingPrivateEventRouter",
+    "ExtensionNavigationRegistry",
+    "ExtensionSystem",
+    "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
+    "FederatedIdentityPermissionContext",
+    "FederatedIdentityAutoReauthnPermissionContext",
+    "FeedbackPrivateAPI",
+    "FileSystemAccessPermissionContext",
+    "GeneratedPrefs",
+    "HeavyAdService",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "HidConnectionResourceManager",
+#endif
+    "HidDeviceManager",
+    "HostContentSettingsMap",
+    "LiveCaptionController",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "LiveTranslateController",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    "MediaRouter",
+    "MediaRouterUIService",
+    "NotificationDisplayService",
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "OnDeviceTailModelService",
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "OneTimePermissionsTrackerKeyedService",
+    "OptimizationGuideKeyedService",
+    "PermissionDecisionAutoBlocker",
+    "PinnedToolbarActionsModel",
+    "PlatformNotificationService",
+    "PredictionModelHandlerProvider",
+    "PrefWatcher",
+    "PrivacySandboxSettings",
+    "ProcessManager",
+    "ProfileNetworkContextService",
+    "RealtimeReportingClient",
+    "ReduceAcceptLanguage",
+    "RendererUpdater",
+    "ResumableTCPServerSocketManager",
+    "ResumableTCPSocketManager",
+    "ResumableUDPSocketManager",
+    "RulesRegistryService",
+    "SafeBrowsingPrivateEventRouter",
+    "SerialConnectionManager",
+    "SerialPortManager",
+    "SettingsPrivateEventRouter",
+    "SiteDataCacheFacadeFactory",
+    "SiteEngagementService",
+    "SocketManager",
+    "StorageNotificationService",
+    "TCPServerSocketEventDispatcher",
+    "TCPSocketEventDispatcher",
+    "TabGroupsEventRouter",
+    "ToolbarActionsModel",
+    "TrackingProtectionSettings",
+    "UDPSocketEventDispatcher",
+    "UkmBackgroundRecorderService",
+#if BUILDFLAG(IS_WIN)
+    "UnexportableKeyService",
+#endif  // BUILDFLAG(IS_WIN)
+    "UsbDeviceManager",
+    "UsbDeviceResourceManager",
+    "sct_reporting::Factory",
+
+    "BtmBrowserSigninDetector",
+    "ClientHints",
+    "ConnectorsService",
+    "DataControlsRulesService",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): This is most likely unnesssary on CrOS because
+    // it has its own UI, but factory is created, which should probably be
+    // removed.
+    "DownloadBubbleUpdateService",
+#endif
+    "EnterpriseManagementService",
+    "FindBarState",
+    "HistoryClustersService",
+    "IbanManager",
+    "InstantService",
+    "LanguageDetectionModelService",
+    "MediaEngagementServiceFactory",
+    "MediaNotificationService",
+    "MerchantPromoCodeManager",
+    "NoStatePrefetchManager",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "OfflineItemModelManager",
+#endif
+    "OmniboxInputWatcher",
+    "OpenerHeuristicService",
+    "PermissionManagerFactory",
+    "PrivacySandboxService",
+    "SafeBrowsingNavigationObserverManager",
+    "StatefulSSLHostStateDelegate",
+    "StorageAccessAPIService",
+    "SubresourceFilterProfileContext",
+    "TpcdTrialService",
+    "VerdictCacheManager",
+    "WebRequestProxyingURLLoaderFactory",
+    "captive_portal::CaptivePortalService",
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946):
+    // Verify these are necessary: then reorder or remove.
+
+    "AppListSyncableService",
+    "AppServiceProxy",
+    "CupsPrintersManagerFactory",
+    "DownloadCoreService",
+    "EventRouter",
+    "FileChangeService",
+    "FileSuggestKeyedService",
+    "HoldingSpaceService",
+    "LogSourceResource",
+    "PolicyCertService",
+    "PrimaryProfileServices",
+    "PrinterEventTracker",
+    "SharesheetService",
+    "SupervisedUserService",
+    "SystemWebAppManager",
+    "VirtualKeyboardAPI",
+    "VolumeManagerFactory",
+    "WebAppProvider",
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  };
+  // clang-format on
+  if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService() &&
+      SearchEnginePreconnector::ShouldBeEnabledForOffTheRecord()) {
+    guest_otr_active_services.insert("SearchEnginePreconnector");
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
+  // ChromeOS Guest mode starts with the guest otr profile.
+  Profile* guest_otr_profile = browser()->profile();
+  // Some key services are created asynchronosly. Wait util they're ready.
+#else
+  Browser* guest_browser = CreateGuestBrowser();
+  Profile* guest_otr_profile = guest_browser->profile();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_FALSE(guest_otr_profile->IsRegularProfile());
+  ASSERT_TRUE(guest_otr_profile->IsOffTheRecord());
+  ASSERT_TRUE(guest_otr_profile->IsGuestSession());
+  TestKeyedProfileServicesActives(guest_otr_profile, guest_otr_active_services);
+}
+
+IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
+                       GuestProfileParent_NeededServices) {
+  // clang-format off
+  std::set<std::string> guest_active_services {
+    "AccountBookmarkSyncServiceFactory",
+    "AccountExtensionTracker",
+    "ActivityLog",
+    "ActivityLogPrivateAPI",
+    "AdvancedProtectionStatusManager",
+    "AlarmManager",
+    "AnnouncementNotificationService",
+    "AppLifetimeMonitor",
+    "AppLoadService",
+    "AppRestoreService",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "AppServiceProxy",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    "AppSessionService",
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    "AppShortcutManager",
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
+    "ManualTestHeartbeatEvent",
+#endif // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)|| BUILDFLAG(IS_WIN)
+    "AppTerminationObserver",
+    "AppWindowRegistry",
+    "AudioAPI",
+    "AutocompleteActionPredictor",
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "AutocompleteScoringModelService",
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "AutofillClientProvider",
+    "AutofillImageFetcher",
+    "AutofillPrivateEventRouter",
+    "AutofillStrikeDatabase",
+    "BackgroundContentsService",
+    "BackgroundFetchService",
+    "BackgroundSyncService",
+    "Blocklist",
+    "BluetoothAPI",
+    "BluetoothApiSocketManager",
+    "BluetoothApiAdvertisementManager",
+    "BluetoothLowEnergyAPI",
+    "BluetoothLowEnergyConnectionManager",
+    "BluetoothLowEnergyNotifySessionManager",
+    "BluetoothPrivateAPI",
+    "BluetoothSocketEventDispatcher",
+    "BookmarkManagerPrivateAPI",
+#if defined(TOOLKIT_VIEWS)
+    "BookmarkExpandedStateTracker",
+    "BookmarkMergedSurfaceService",
+#endif
+    "BookmarkModel",
+    "BookmarkUndoService",
+    "BookmarksAPI",
+    "BrailleDisplayPrivateAPI",
+    "BrowsingTopicsService",
+    "ChildAccountService",
+    "ChromeSigninClient",
+    "CommandService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "ComponentExtensionContentSettingsAllowlist",
+#endif
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "ComponentLoader",
+#endif
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ConnectorsService",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ContentIndexProvider",
+    "ContentSettingsService",
+    "CookieSettings",
+    "CookiesAPI",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "CorruptedExtensionReinstaller",
+#endif
+    "CWSInfoService",
+    "DataTypeStoreService",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "DelayedInstallManager",
+#endif
+    "DeveloperPrivateAPI",
+    "DeviceInfoSyncService",
+    "DownloadCoreService",
+    "EventRouter",
+    "EnterpriseManagementService",
+    "ExtensionActionDispatcher",
+    "ExtensionActionManager",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "ExtensionAllowlist",
+#endif
+    "ExtensionCommandsGlobalRegistry",
+    "ExtensionErrorController",
+    "ExtensionGCMAppHandler",
+    "ExtensionGarbageCollector",
+    "ExtensionHostRegistry",
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ExtensionInstallEventRouter",
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+    "ExtensionManagement",
+    "ExtensionPrefValueMap",
+    "ExtensionPrefs",
+    "ExtensionRegistrar",
+    "ExtensionRegistry",
+    "ExtensionSyncService",
+    "ExtensionSystem",
+    "ExtensionSystemShared",
+    "ExtensionUpdater",
+    "ExtensionURLLoaderFactory::BrowserContextShutdownNotifierFactory",
+    "ExtensionWebUIOverrideRegistrar",
+    "ExternalInstallManager",
+  #if BUILDFLAG(ENABLE_EXTENSIONS)
+    "ExternalProviderManager",
+  #endif
+    "FaviconService",
+    "FederatedIdentityPermissionContext",
+    "FederatedIdentityAutoReauthnPermissionContext",
+    "FeedbackPrivateAPI",
+    "FileSystemAccessPermissionContext",
+    "FirstPartySetsPolicyService",
+    "FontPrefChangeNotifier",
+    "FontSettingsAPI",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "GAIAInfoUpdateService",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    "GCMProfileService",
+    "GeneratedPrefs",
+    "GlobalErrorService",
+    "HeavyAdService",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "HidConnectionResourceManager",
+    "ExtensionNavigationRegistry",
+#endif
+    "HidDeviceManager",
+    "HistoryAPI",
+    "HistoryService",
+    "HostContentSettingsMap",
+    "HttpEngagementKeyService",
+    "IdentityAPI",
+    "IdentityManager",
+    "IdleManager",
+    "InMemoryURLIndex",
+    "InstallStageTracker",
+    "InstallTracker",
+    "InstallVerifier",
+    "InstanceIDProfileService",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "InvalidationService",
+#endif
+    "LanguageModelManager",
+    "LanguageSettingsPrivateDelegate",
+    "LazyBackgroundTaskQueue",
+    "ListFamilyMembersService",
+    "LocalOrSyncableBookmarkSyncServiceFactory",
+    "LoginUIServiceFactory",
+    "MDnsAPI",
+    "ManagedBookmarkService",
+    "ManagedConfigurationAPI",
+    "ManagementAPI",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "ManifestV2ExperimentManager",
+#endif
+    "MediaGalleriesAPI",
+    "MediaRouter",
+    "MediaRouterUIService",
+    "MenuManager",
+    "NavigationPredictorKeyedService",
+    "NetworkingPrivateEventRouter",
+    "NotificationDisplayService",
+    "NtpBackgroundService",
+    "NtpCustomBackgroundService",
+#if BUILDFLAG(IS_CHROMEOS)
+    "NssServiceFactory",
+#endif // BUILDFLAG(IS_CHROMEOS)
+    "OmniboxAPI",
+    "OmniboxSuggestionsWatcher",
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "OnDeviceTailModelService",
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    "OneTimePermissionsTrackerKeyedService",
+    "OperationManager",
+    "OptimizationGuideKeyedService",
+    "OriginTrialService",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "PageContentAnnotationsService",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    "PasswordsPrivateEventRouter",
+    "PendingExtensionManager",
+    "PermissionDecisionAutoBlocker",
+    "PermissionHelper",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "PermissionsEventRouter",
+#endif
+    "PermissionsManager",
+    "PermissionsUpdaterShutdownFactory",
+    "PersonalDataManager",
+    "PinnedTabService",
+    "PinnedToolbarActionsModel",
+    "PlatformNotificationService",
+    "PluginManager",
+    "PluginPrefs",
+    "PowerBookmarkService",
+    "PredictionModelHandlerProvider",
+    "PredictorDatabase",
+    "PrefWatcher",
+    "PreferenceAPI",
+    "PrinterProviderInternal",
+    "PrivacySandboxService",
+    "PrivacySandboxSettings",
+    "ProcessManager",
+    "ProcessMap",
+    "ProcessesAPI",
+    "ProfileNetworkContextService",
+    "ProtocolHandlerRegistry",
+    "RealtimeReportingClient",
+    "RegionalCapabilitiesService",
+    "RendererStartupHelper",
+    "RendererUpdater",
+    "ResumableTCPServerSocketManager",
+    "ResumableTCPSocketManager",
+    "ResumableUDPSocketManager",
+    "RulesMonitorService",
+    "RulesRegistryService",
+    "RuntimeAPI",
+    "SafeBrowsingMetricsCollector",
+    "SafeBrowsingPrivateEventRouter",
+    "SafeBrowsingTailoredSecurityService",
+    "SearchEngineChoiceServiceFactory",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "SendTabToSelfClientService",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    "SendTabToSelfSyncService",
+    "SerialConnectionManager",
+    "SerialPortManager",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    "ServerCertificateDatabaseService",
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    "SessionDataService",
+    "SessionProtoDBFactory",
+    "SessionsAPI",
+    "sessions::TabRestoreService",
+    "SettingsOverridesAPI",
+    "SettingsPrivateEventRouter",
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    "SharedModuleService",
+#endif
+    "ShoppingService",
+    "SidePanelService",
+    "SiteDataCacheFacadeFactory",
+    "SiteEngagementService",
+    "SocketManager",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Desktop chrome create this via
+    // ShoppingService->SyncService->Spellchecker. Investigate if this is
+    // expected on desktop chrome.
+    "SpellcheckService",
+#endif
+    "StorageFrontend",
+    "StorageNotificationService",
+    "SupervisedUserService",
+    "SyncInvalidationsService",
+    "SystemInfoAPI",
+    "TCPServerSocketEventDispatcher",
+    "TCPSocketEventDispatcher",
+    "TabGroupsEventRouter",
+    "TabsWindowsAPI",
+    "TemplateURLPrepopulateDataResolver",
+    "TemplateURLServiceFactory",
+    "ThemeService",
+    "ToolbarActionsModel",
+    "TopLevelTrialService",
+    "TpcdTrialService",
+    "TrackingProtectionSettings",
+    "TranslateRanker",
+    "TriggeredProfileResetter",
+    "TtsAPI",
+    "UDPSocketEventDispatcher",
+    "UkmBackgroundRecorderService",
+    "UsbDeviceManager",
+    "UsbDeviceResourceManager",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "UserCloudPolicyInvalidator",
+    "UserFmRegistrationTokenUploader",
+    "UserPolicySigninService",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    "UserScriptWorldConfigurationManager",
+    "WarningBadgeService",
+    "WarningService",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "WebAppProvider",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+    "WebAuthenticationProxyAPI",
+#if BUILDFLAG(IS_CHROMEOS)
+    "WebcamPrivateAPI",
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    "WebDataService",
+    "WebNavigationAPI",
+    "WebRequestAPI",
+    "WebRequestEventRouter",
+    "WebRtcEventLogManagerKeyedService",
+    "WebrtcAudioPrivateEventService",
+    "WriteQuotaChecker",
+    "feature_engagement::Tracker",
+    "feedback::FeedbackUploaderChrome",
+    "sct_reporting::Factory",
+#if !BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
+    "ZeroSuggestCacheServiceFactory",
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/374351946):
+    // Verify these are necessary: then reorder or remove.
+
+    "AccountManagerPolicyController",
+    "ArcAppsPrivateAPI",
+    "AuthTokenValidatorFactory",
+    "AutotestPrivateAPI",
+    "CastMediaNotificationProducerKeyedService",
+    "ClientAppMetadataProviderService",
+    "ClipboardAPI",
+    "CrostiniMetricsService",
+    "CupsPrintJobManagerFactory",
+    "DebugLogsManagerFactory",
+    "DeviceSyncClient",
+    "DriveIntegrationService",
+    "EasyUnlockService",
+    "ExternalLogoutDoneEventHandler",
+    "ExternalLogoutRequestEventHandler",
+    "InputImeAPI",
+    "InputMethodAPI",
+    "KcerFactoryAsh",
+    "LogSourceResource",
+    "LorgnetteScannerManager",
+    "MediaNotificationService",
+    "MediaPerceptionAPIManager",
+    "MediaPlayerAPI",
+    "MultiDeviceSetupClient",
+    "MultiDeviceSetupService",
+    "NearbyConnector",
+    "NearbyProcessManager",
+    "OAuth2LoginManager",
+    "OobeCompletionTrackerFactory",
+    "OwnerSettingsService",
+    "Pkcs12Migrator",
+    "PlatformKeysService",
+    "PluginVmEngagementMetricsService",
+    "PolicyCertService",
+    "PrintJobHistoryService",
+    "PrintJobReportingServiceFactory",
+    "PrintingManager",
+    "Service",
+    "SessionStateChangedEventDispatcher",
+    "SmbService",
+    "SyncedPrintersManager",
+    "TerminalPrivateAPI",
+    "TtsEngineExtensionObserverChromeOS",
+    "UserNetworkConfigurationUpdater",
+    "UserPrivateTokenKeyPermissionsManagerService",
+    "VirtualKeyboardAPI",
+    "VolumeManagerFactory",
+    "VpnService",
+#endif // BUILDFLAG(IS_CHROMEOS)
+  };
+  // clang-format on
+
+  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+    guest_active_services.insert("ProductSpecificationsService");
+  }
+
+  if (SearchEnginePreconnector::ShouldBeEnabledAsKeyedService()) {
+    guest_active_services.insert("SearchEnginePreconnector");
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(user_manager::UserManager::Get()->IsLoggedInAsGuest());
+  // ChromeOS Guest mode starts with the guest otr profile.
+  Profile* guest_otr_profile = browser()->profile();
+  Profile* guest_parent_profile = guest_otr_profile->GetOriginalProfile();
+  // Some key services are created asynchronosly. Wait util they're ready.
+#else
+  Browser* guest_browser = CreateGuestBrowser();
+  Profile* guest_parent_profile =
+      guest_browser->profile()->GetOriginalProfile();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  content::RunAllTasksUntilIdle();
+
+  ASSERT_FALSE(guest_parent_profile->IsRegularProfile());
+  ASSERT_FALSE(guest_parent_profile->IsOffTheRecord());
+  ASSERT_TRUE(guest_parent_profile->IsGuestSession());
+  TestKeyedProfileServicesActives(guest_parent_profile, guest_active_services);
 }

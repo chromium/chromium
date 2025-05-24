@@ -11,7 +11,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -92,8 +91,7 @@ void SandboxQuotaObserver::SetUsageCacheEnabled(const url::Origin& origin,
   if (quota_manager_proxy_.get()) {
     quota_manager_proxy_->SetUsageCacheEnabled(
         QuotaClientType::kFileSystem,
-        blink::StorageKey::CreateFirstParty(origin),
-        FileSystemTypeToQuotaStorageType(type), enabled);
+        blink::StorageKey::CreateFirstParty(origin), enabled);
   }
 }
 

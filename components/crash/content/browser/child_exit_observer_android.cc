@@ -30,6 +30,8 @@ void PopulateTerminationInfo(
   info->renderer_has_visible_clients =
       content_info.renderer_has_visible_clients;
   info->renderer_was_subframe = content_info.renderer_was_subframe;
+  info->is_spare_renderer = content_info.is_spare_renderer;
+  info->has_spare_renderer = content_info.has_spare_renderer;
 }
 
 }  // namespace
@@ -70,7 +72,8 @@ void ChildExitObserver::OnRenderProcessHostCreated(
     content::RenderProcessHost* host) {
   // The child process pid isn't available when process is gone, keep a mapping
   // between process_host_id and pid, so we can find it later.
-  process_host_id_to_pid_[host->GetID()] = host->GetProcess().Handle();
+  process_host_id_to_pid_[host->GetDeprecatedID()] =
+      host->GetProcess().Handle();
   if (!render_process_host_observation_.IsObservingSource(host)) {
     render_process_host_observation_.AddObservation(host);
   }
@@ -151,7 +154,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
     const content::ChildProcessTerminationInfo* content_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   TerminationInfo info;
-  info.process_host_id = rph->GetID();
+  info.process_host_id = rph->GetDeprecatedID();
   info.pid = rph->GetProcess().Handle();
   info.process_type = content::PROCESS_TYPE_RENDERER;
   info.app_state = base::android::APPLICATION_STATE_UNKNOWN;
@@ -165,8 +168,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
   // chromecast.
   if (collector) {
     // SharedMemory creation / Map() might fail.
-    DCHECK(collector->MemoryMetrics());
-    info.blink_oom_metrics = *collector->MemoryMetrics();
+    info.blink_oom_metrics = collector->MemoryMetrics();
   }
 
   if (content_info) {
@@ -183,7 +185,7 @@ void ChildExitObserver::ProcessRenderProcessHostLifetimeEndEvent(
     info.renderer_shutdown_requested = rph->ShutdownRequested();
   }
 
-  const auto& iter = process_host_id_to_pid_.find(rph->GetID());
+  const auto& iter = process_host_id_to_pid_.find(rph->GetDeprecatedID());
   if (iter == process_host_id_to_pid_.end()) {
     return;
   }

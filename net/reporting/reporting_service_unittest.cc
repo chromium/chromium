@@ -239,8 +239,6 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader) {
 }
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
   ASSERT_TRUE(parsed_header.has_value());
@@ -262,9 +260,8 @@ TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
 TEST_P(ReportingServiceTest,
        ProcessReportingEndpointsHeaderNetworkIsolationKeyDisabled) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {net::features::kDocumentReporting},
-      {features::kPartitionConnectionsByNetworkIsolationKey});
+  feature_list.InitAndDisableFeature(
+      features::kPartitionConnectionsByNetworkIsolationKey);
 
   // Re-create the store, so it reads the new feature value.
   Init();
@@ -288,8 +285,6 @@ TEST_P(ReportingServiceTest,
 }
 
 TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
@@ -323,6 +318,46 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
       context()->cache()->GetExpiredSources().contains(*kReportingSource_));
 }
 
+TEST_P(ReportingServiceTest,
+       ProcessReportsBeforeSourceExpirationWhenUninitialized) {
+  // Test only relevant when using a persistent store. The store requires async
+  // loading, creating the opportunity for backlog tasks to accumulate before
+  // initialization completes.
+  if (!store()) {
+    GTEST_SKIP();
+  }
+  auto parsed_header =
+      ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
+  ASSERT_TRUE(parsed_header.has_value());
+  service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
+                                           kIsolationInfo_, *parsed_header);
+  // Add a "create report" task to the backlog (service not initialized yet).
+  service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
+                         kType_, base::Value::Dict(), 0,
+                         ReportingTargetType::kDeveloper);
+
+  // Now simulate the source being destroyed, adding a "mark source as
+  // expired" task to the backlog.
+  service()->SendReportsAndRemoveSource(*kReportingSource_);
+
+  // Verify neither operation has been processed yet.
+  std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
+  context()->cache()->GetReports(&reports);
+  EXPECT_EQ(0u, reports.size());
+  EXPECT_FALSE(
+      context()->cache()->GetExpiredSources().contains(*kReportingSource_));
+
+  // Now finish loading, which should process the backlog.
+  FinishLoading(true /* load_success */);
+
+  // 1. First the "create report" task was processed
+  context()->cache()->GetReports(&reports);
+  EXPECT_EQ(1u, reports.size());
+  // 2. Then the "mark source as expired" task was processed
+  EXPECT_TRUE(
+      context()->cache()->GetExpiredSources().contains(*kReportingSource_));
+}
+
 // Flaky in ChromeOS: crbug.com/1356127
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SendReportsAndRemoveSourceWithPendingReports \
@@ -333,8 +368,6 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
 #endif
 TEST_P(ReportingServiceTest,
        MAYBE_SendReportsAndRemoveSourceWithPendingReports) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
@@ -379,8 +412,6 @@ TEST_P(ReportingServiceTest,
 }
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(net::features::kDocumentReporting);
   auto parsed_header = ParseReportingEndpoints(kGroup_ + "=\"/path-absolute\"");
   ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,

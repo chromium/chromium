@@ -17,6 +17,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
@@ -417,10 +418,10 @@ class CupsPrintersManagerImpl
           PrinterConfigurer::Create(ppd_provider_, dlc_service_client_);
       printers_being_setup_[id].fingerprint = fingerprint;
       printers_being_setup_[id].configurer->SetUpPrinterInCups(
-          printer,
-          base::BindOnce(&CupsPrintersManagerImpl::OnPrinterSetupResult,
-                         weak_ptr_factory_.GetWeakPtr(), id,
-                         is_automatic_installation));
+          printer, base::BindOnce(
+                       &CupsPrintersManagerImpl::OnPrinterSetupResult,
+                       weak_ptr_factory_.GetWeakPtr(), id,
+                       is_automatic_installation, printer.ipp_printer_info()));
     }
   }
 
@@ -549,8 +550,9 @@ class CupsPrintersManagerImpl
                           PrinterStatusCallback cb) override {
     std::optional<Printer> printer = GetPrinter(printer_id);
     if (!printer) {
-      PRINTER_LOG(ERROR) << "Unable to complete printer status request. "
-                         << "Printer not found. Printer id: " << printer_id;
+      PRINTER_LOG(ERROR) << printer_id
+                         << ": Unable to complete printer status request: "
+                         << "GetPrinter failed.";
       CupsPrinterStatus printer_status(printer_id);
       printer_status.AddStatusReason(
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::
@@ -583,9 +585,11 @@ class CupsPrintersManagerImpl
 
     // Behavior for querying a non-IPP uri is undefined and disallowed.
     if (!IsIppUri(printer->uri())) {
-      PRINTER_LOG(DEBUG) << "Unable to complete printer status request. "
-                         << "Printer uri is invalid. Printer id: "
-                         << printer_id;
+      PRINTER_LOG(DEBUG) << printer_id
+                         << ": Cannot send status request to non-IPP URI for "
+                         << printer->make_and_model() << ": "
+                         << printer->uri().GetNormalized(
+                                /*always_include_port=*/true);
       CupsPrinterStatus printer_status(printer_id);
       printer_status.AddStatusReason(
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
@@ -595,6 +599,10 @@ class CupsPrintersManagerImpl
       return;
     }
 
+    PRINTER_LOG(DEBUG) << printer_id << ": Sending status request for "
+                       << printer->make_and_model() << ": "
+                       << printer->uri().GetNormalized(
+                              /*always_include_port=*/true);
     QueryIppPrinter(
         printer->uri().GetHostEncoded(), printer->uri().GetPort(),
         printer->uri().GetPathEncodedAsString(),
@@ -639,7 +647,8 @@ class CupsPrintersManagerImpl
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const chromeos::PrinterAuthenticationInfo& auth_info) {
+      const chromeos::PrinterAuthenticationInfo& auth_info,
+      const chromeos::IppPrinterInfo& ipp_printer_info) {
     ParsePrinterStatusFromPrinterQuery(printer_id, std::move(cb), result,
                                        printer_status, auth_info);
   }
@@ -656,8 +665,11 @@ class CupsPrintersManagerImpl
       case PrinterQueryResult::kHostnameResolution:
       case PrinterQueryResult::kUnreachable: {
         PRINTER_LOG(ERROR)
-            << "Printer status request failed. Could not reach printer "
-            << printer_id;
+            << printer_id
+            << ": Printer status request failed. Could not reach printer: "
+            << (result == PrinterQueryResult::kHostnameResolution
+                    ? "hostname resolution failed"
+                    : "device unreachable");
         CupsPrinterStatus error_printer_status(printer_id);
         error_printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::
@@ -668,9 +680,9 @@ class CupsPrintersManagerImpl
         break;
       }
       case PrinterQueryResult::kUnknownFailure: {
-        PRINTER_LOG(ERROR) << "Printer status request failed. Unknown failure "
-                              "trying to reach printer "
-                           << printer_id;
+        PRINTER_LOG(ERROR) << printer_id
+                           << ": Printer status request failed. Unknown "
+                              "failure trying to reach printer";
         CupsPrinterStatus error_printer_status(printer_id);
         error_printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
@@ -720,9 +732,10 @@ class CupsPrintersManagerImpl
 
   void QueryPrinterForAutoConf(
       const Printer& printer,
-      base::OnceCallback<void(bool)> callback) override {
+      base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)> callback)
+      override {
     if (!IsIppUri(printer.uri())) {
-      std::move(callback).Run(false);
+      std::move(callback).Run(false, chromeos::IppPrinterInfo{});
       return;
     }
 
@@ -731,24 +744,53 @@ class CupsPrintersManagerImpl
         printer.uri().GetPathEncodedAsString(),
         printer.uri().GetScheme() == chromeos::kIppsScheme,
         base::BindOnce(&CupsPrintersManagerImpl::OnQueryPrinterForAutoConf,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                       weak_ptr_factory_.GetWeakPtr(), printer.id(),
+                       std::move(callback)));
   }
 
   // Callback for QueryPrinterForAutoConf
   void OnQueryPrinterForAutoConf(
-      base::OnceCallback<void(bool)> callback,
+      std::string printer_id,
+      base::OnceCallback<void(bool, const chromeos::IppPrinterInfo&)> callback,
       PrinterQueryResult result,
       const ::printing::PrinterStatus& printer_status,
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const chromeos::PrinterAuthenticationInfo& auth_info) {
+      const chromeos::PrinterAuthenticationInfo& auth_info,
+      const chromeos::IppPrinterInfo& ipp_printer_info) {
     if (result != PrinterQueryResult::kSuccess) {
-      std::move(callback).Run(false);
+      std::string error;
+      switch (result) {
+        case PrinterQueryResult::kUnreachable:
+          error = "device unreachable";
+          break;
+        case PrinterQueryResult::kHostnameResolution:
+          error = "hostname resolution failed";
+          break;
+        case PrinterQueryResult::kUnknownFailure:
+          error = "unknown failure trying to reach printer";
+          break;
+        case PrinterQueryResult::kSuccess:
+          NOTREACHED();
+      }
+
+      PRINTER_LOG(ERROR) << printer_id
+                         << ": Failed to query printer attributes: " << error;
+
+      std::move(callback).Run(false, chromeos::IppPrinterInfo{});
       return;
     }
 
-    std::move(callback).Run(ipp_everywhere);
+    PRINTER_LOG(DEBUG) << printer_id << ": Printer attributes: make_and_model=["
+                       << make_and_model << "] document_formats=["
+                       << base::JoinString(document_formats, " ")
+                       << "] ipp_features=["
+                       << base::JoinString(ipp_printer_info.ipp_features, " ")
+                       << "] mopria_certified=["
+                       << ipp_printer_info.mopria_certified << "]";
+
+    std::move(callback).Run(ipp_everywhere, ipp_printer_info);
   }
 
  private:
@@ -798,8 +840,10 @@ class CupsPrintersManagerImpl
     return nullptr;
   }
 
-  void MaybeRecordInstallation(const Printer& printer,
-                               bool is_automatic_installation) {
+  void MaybeRecordInstallation(
+      const Printer& printer,
+      bool is_automatic_installation,
+      const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
     if (synced_printers_manager_->GetPrinter(printer.id())) {
       // It's just an update, not a new installation, so don't record an event.
@@ -838,7 +882,8 @@ class CupsPrintersManagerImpl
       } else {
         mode = PrinterEventTracker::kUser;
       }
-      event_tracker_->RecordIppPrinterInstalled(printer, mode);
+      event_tracker_->RecordIppPrinterInstalled(printer, mode,
+                                                ipp_printer_info);
     }
   }
 
@@ -1021,7 +1066,8 @@ class CupsPrintersManagerImpl
     if (code == PpdProvider::SUCCESS) {
       ppd_resolution_tracker_.MarkResolutionSuccessful(printer_id, ref);
     } else {
-      LOG(WARNING) << "Failed to resolve PPD reference for " << printer_id;
+      LOG(WARNING) << printer_id << ": Failed to resolve PPD reference: "
+                   << PpdProvider::CallbackResultCodeName(code);
       ppd_resolution_tracker_.MarkResolutionFailed(printer_id);
       if (!usb_manufacturer.empty()) {
         ppd_resolution_tracker_.SetManufacturer(printer_id, usb_manufacturer);
@@ -1031,9 +1077,11 @@ class CupsPrintersManagerImpl
   }
 
   // Callback for `SetUpPrinterInCups`.
-  void OnPrinterSetupResult(const std::string& printer_id,
-                            bool is_automatic_installation,
-                            PrinterSetupResult result) {
+  void OnPrinterSetupResult(
+      const std::string& printer_id,
+      bool is_automatic_installation,
+      const std::optional<chromeos::IppPrinterInfo>& ipp_printer_info,
+      PrinterSetupResult result) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_);
 
     std::map<std::string, PrinterSetupTracker>::iterator it =
@@ -1052,7 +1100,8 @@ class CupsPrintersManagerImpl
       if (user_printers_allowed_.GetValue()) {
         std::optional<chromeos::Printer> printer = printers_.Get(printer_id);
         if (printer) {
-          MaybeRecordInstallation(*printer, is_automatic_installation);
+          MaybeRecordInstallation(*printer, is_automatic_installation,
+                                  ipp_printer_info);
         }
       }
     }

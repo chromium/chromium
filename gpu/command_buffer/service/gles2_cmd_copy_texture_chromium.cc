@@ -11,10 +11,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <unordered_map>
 
 #include "base/containers/heap_array.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/gles2_cmd_copy_texture_chromium_utils.h"
 #include "gpu/command_buffer/service/context_state.h"
@@ -139,8 +139,7 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       targetIndex = SAMPLER_EXTERNAL_OES;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   switch (source_format) {
@@ -190,9 +189,8 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       sourceFormatIndex = S_FORMAT_RGB10_A2;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid source format "
-                                << gl::GLEnums::GetStringEnum(source_format);
-      break;
+      NOTREACHED() << "Invalid source format "
+                   << gl::GLEnums::GetStringEnum(source_format);
   }
 
   switch (dest_format) {
@@ -287,9 +285,8 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       destFormatIndex = D_FORMAT_RGB10_A2;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid destination format "
-                                << gl::GLEnums::GetStringEnum(dest_format);
-      break;
+      NOTREACHED() << "Invalid destination format "
+                   << gl::GLEnums::GetStringEnum(dest_format);
   }
 
   ShaderId id = 0;
@@ -421,8 +418,7 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
         source += "#define TextureLookup texture2DRect\n";
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     source +=
@@ -444,8 +440,7 @@ std::string GetFragmentShaderSource(unsigned glslVersion,
       source += "#define SamplerType samplerExternalOES\n";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Main shader source.
@@ -748,7 +743,7 @@ void PrepareUnpackBuffer(GLuint buffer[2],
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 enum TexImageCommandType {
@@ -800,8 +795,7 @@ void DoReadbackAndTexImage(TexImageCommandType command_type,
       case GL_SRGB8_ALPHA8:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // TODO(qiankun.miao@intel.com): PIXEL_PACK_BUFFER and PIXEL_UNPACK_BUFFER
@@ -1010,8 +1004,8 @@ void CopyTextureResourceManagerImpl::Destroy() {
   glDeleteFramebuffersEXT(1, &framebuffer_);
   framebuffer_ = 0;
 
-  base::ranges::for_each(vertex_shaders_, DeleteShader);
-  base::ranges::for_each(fragment_shaders_, DeleteShader);
+  std::ranges::for_each(vertex_shaders_, DeleteShader);
+  std::ranges::for_each(fragment_shaders_, DeleteShader);
 
   for (ProgramMap::const_iterator it = programs_.begin(); it != programs_.end();
        ++it) {

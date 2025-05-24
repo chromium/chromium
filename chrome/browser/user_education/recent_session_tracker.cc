@@ -3,25 +3,27 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/user_education/recent_session_tracker.h"
+
 #include <algorithm>
 #include <functional>
 
 #include "base/callback_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
-#include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 
 RecentSessionTracker::RecentSessionTracker(
-    user_education::FeaturePromoSessionManager& session_manager,
-    user_education::FeaturePromoStorageService& feature_promo_storage,
+    user_education::UserEducationSessionProvider& session_provider,
+    user_education::UserEducationStorageService& feature_promo_storage,
     RecentSessionDataStorageService& recent_session_storage)
-    : subscription_(session_manager.AddNewSessionCallback(
+    : subscription_(session_provider.AddNewSessionCallback(
           base::BindRepeating(&RecentSessionTracker::OnSessionStart,
                               base::Unretained(this)))),
       feature_promo_storage_(feature_promo_storage),
       recent_session_storage_(recent_session_storage) {
-  if (session_manager.new_session_since_startup()) {
+  if (session_provider.GetNewSessionSinceStartup()) {
     OnSessionStart();
   }
 }
@@ -41,7 +43,7 @@ void RecentSessionTracker::OnSessionStart() {
   if (!recent_session_data_) {
     recent_session_data_ = recent_session_storage_->ReadRecentSessionData();
   }
-  const user_education::FeaturePromoSessionData session =
+  const user_education::UserEducationSessionData session =
       feature_promo_storage_->ReadSessionData();
   CHECK(!session.start_time.is_null())
       << "This method should only be called when a new session starts; "

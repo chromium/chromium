@@ -37,16 +37,18 @@ bool IsBrandValid(std::string_view brand) {
 std::string ReadBrandFromFile() {
   std::string brand;
   base::FilePath brand_file_path(kRLZBrandFilePath);
-  if (!base::ReadFileToString(brand_file_path, &brand))
+  if (!base::ReadFileToString(brand_file_path, &brand)) {
     LOG(WARNING) << "Brand code file missing: " << brand_file_path.value();
+  }
   base::TrimWhitespaceASCII(brand, base::TRIM_ALL, &brand);
   return brand;
 }
 
 // For a valid |brand|, sets the brand code and runs |callback|.
 void SetBrand(base::OnceClosure callback, const std::string& brand) {
-  if (!IsBrandValid(brand))
+  if (!IsBrandValid(brand)) {
     return;
+  }
   g_browser_process->local_state()->SetString(prefs::kRLZBrand, brand);
   std::move(callback).Run();
 }
@@ -67,11 +69,13 @@ std::string GetBrand() {
   DCHECK(!content::BrowserThread::IsThreadInitialized(
              content::BrowserThread::UI) ||
          content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  if (g_brand_empty)
+  if (g_brand_empty) {
     return std::string();
+  }
   // Unit tests do not have prefs.
-  if (!g_browser_process->local_state())
+  if (!g_browser_process->local_state()) {
     return std::string();
+  }
   return g_browser_process->local_state()->GetString(prefs::kRLZBrand);
 }
 
@@ -79,8 +83,9 @@ std::string GetRlzBrand() {
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   std::optional<policy::MarketSegment> market_segment;
-  if (connector->IsDeviceEnterpriseManaged())
+  if (connector->IsDeviceEnterpriseManaged()) {
     market_segment = connector->GetEnterpriseMarketSegment();
+  }
   // The rlz brand code may change over time (e.g. when device goes from
   // unenrolled to enrolled status in OOBE). Prefer not to save it in pref to
   // avoid using outdated value.

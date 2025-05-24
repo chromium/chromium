@@ -1,0 +1,18 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "HistoryQueryIntentModelMetadataProto";
+
+package optimization_guide.proto;
+
+message HistoryQueryIntentModelMetadata {
+  // Token used for scoring.
+  optional string score_token = 1;
+  // Score threshold.
+  optional float score_threshold = 2;
+}

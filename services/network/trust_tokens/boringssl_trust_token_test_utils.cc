@@ -4,6 +4,7 @@
 
 #include "services/network/trust_tokens/boringssl_trust_token_test_utils.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -12,7 +13,6 @@
 
 #include "base/base64.h"
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
@@ -124,7 +124,7 @@ std::optional<std::string> TestTrustTokenIssuer::IssueUsingKey(
           /*out_len=*/raw_issuance_response.mutable_len(),
           /*out_tokens_issued=*/&num_tokens_issued,
           /*request=*/
-          base::as_bytes(base::make_span(raw_issuance_request)).data(),
+          base::as_byte_span(raw_issuance_request).data(),
           /*request_len=*/raw_issuance_request.size(),
           /*public_metadata=*/key_id,
           /*private_metadata=*/kPrivateMetadata,
@@ -155,17 +155,17 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::Redeem(
           &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
           /*out_client_data_len=*/redeemed_client_data.mutable_len(),
           /*request=*/
-          base::as_bytes(base::make_span(raw_redemption_request)).data(),
+          base::as_byte_span(raw_redemption_request).data(),
           /*request_len=*/raw_redemption_request.size()) != 1) {
     return nullptr;
   };
 
   EXPECT_EQ(received_private_metadata, kPrivateMetadata);
-  EXPECT_NE(base::ranges::find_if(keys_,
-                                  [&received_public_metadata](auto& key) {
-                                    return key.key_id ==
-                                           received_public_metadata;
-                                  }),
+  EXPECT_NE(std::ranges::find_if(keys_,
+                                 [&received_public_metadata](auto& key) {
+                                   return key.key_id ==
+                                          received_public_metadata;
+                                 }),
             std::end(keys_));
 
   return bssl::UniquePtr<TRUST_TOKEN>(redeemed_token);
@@ -192,7 +192,7 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::RedeemOverMessage(
           &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
           /*out_client_data_len=*/redeemed_client_data.mutable_len(),
           /*request=*/
-          base::as_bytes(base::make_span(raw_redemption_request)).data(),
+          base::as_byte_span(raw_redemption_request).data(),
           /*request_len=*/raw_redemption_request.size(),
           /*msg=*/reinterpret_cast<const unsigned char*>(message.c_str()),
           /*msg_len=*/message.size()) != 1) {
@@ -200,11 +200,11 @@ bssl::UniquePtr<TRUST_TOKEN> TestTrustTokenIssuer::RedeemOverMessage(
   }
 
   EXPECT_EQ(received_private_metadata, 1);
-  EXPECT_NE(base::ranges::find_if(keys_,
-                                  [&received_public_metadata](auto& key) {
-                                    return key.key_id ==
-                                           received_public_metadata;
-                                  }),
+  EXPECT_NE(std::ranges::find_if(keys_,
+                                 [&received_public_metadata](auto& key) {
+                                   return key.key_id ==
+                                          received_public_metadata;
+                                 }),
             std::end(keys_));
 
   return bssl::UniquePtr<TRUST_TOKEN>(redeemed_token);

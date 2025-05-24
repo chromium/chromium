@@ -16,6 +16,7 @@
 #define CRASHPAD_SNAPSHOT_WIN_EXCEPTION_SNAPSHOT_WIN_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include <memory>
@@ -63,6 +64,9 @@ class ExceptionSnapshotWin final : public ExceptionSnapshot {
   //! \param[in] exception_pointers The address of an `EXCEPTION_POINTERS`
   //!     record in the target process, passed through from the exception
   //!     handler.
+  //! \param[inout] gather_indirectly_referenced_memory_cap The remaining budget
+  //!     for indirectly referenced memory, honored on entry and updated on
+  //!     return.
   //!
   //! \note If the exception was triggered by
   //!     CrashpadClient::DumpAndCrashTargetProcess(), this has the side-effect

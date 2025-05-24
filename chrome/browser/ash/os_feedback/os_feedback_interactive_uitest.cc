@@ -158,15 +158,18 @@ IN_PROC_BROWSER_TEST_F(OsFeedbackInteractiveUiTest,
 
       Log("Clicking the continue button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kContinueButtonQuery),
-      ClickElement(kOsFeedbackWebContentsId, kContinueButtonQuery),
+      this->InteractiveBrowserTest::ClickElement(kOsFeedbackWebContentsId,
+                                                 kContinueButtonQuery),
 
       Log("Clicking the send button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kSendReportButtonQuery),
-      ClickElement(kOsFeedbackWebContentsId, kSendReportButtonQuery),
+      this->InteractiveBrowserTest::ClickElement(kOsFeedbackWebContentsId,
+                                                 kSendReportButtonQuery),
 
       Log("Clicking the done button"),
       WaitForElementToRender(kOsFeedbackWebContentsId, kDoneButtonQuery),
-      ClickElement(kOsFeedbackWebContentsId, kDoneButtonQuery),
+      this->InteractiveBrowserTest::ClickElement(kOsFeedbackWebContentsId,
+                                                 kDoneButtonQuery),
 
       Log("Waiting for the feedback app to exit"),
       WaitForHide(kOsFeedbackWebContentsId));

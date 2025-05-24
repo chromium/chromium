@@ -7,7 +7,6 @@
 #include <map>
 #include <memory>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
@@ -18,9 +17,9 @@
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/metrics/histogram_functions.h"
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace message_center {
 
@@ -28,7 +27,7 @@ namespace {
 
 unsigned g_next_serial_number = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Histograms ------------------------------------------------------------------
 
@@ -48,7 +47,7 @@ int CalculateImageByteSize(const gfx::Image& image) {
   return image.IsEmpty() ? 0 : image.Width() * image.Height() * kBytesPerPixel;
 }
 
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Helpers ---------------------------------------------------------------------
 
@@ -225,21 +224,21 @@ bool Notification::UseOriginAsContextMessage() const {
 }
 
 void Notification::SetImage(const gfx::Image& image) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Record the memory size of `image` in KB.
   base::UmaHistogramMemoryKB(kNotificationImageMemorySizeHistogram,
                              CalculateImageByteSize(image) / 1024);
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   optional_fields_.image = image;
 }
 
 void Notification::SetSmallImage(const gfx::Image& image) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Record the memory size of `image` in KB.
   base::UmaHistogramMemoryKB(kNotificationSmallImageMemorySizeHistogram,
                              CalculateImageByteSize(image) / 1024);
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   optional_fields_.small_image = image;
 }
@@ -269,12 +268,12 @@ gfx::Image Notification::GenerateMaskedSmallIcon(
     image = small_image().AsImageSkia();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool create_masked_image =
       !optional_fields_.ignore_accent_color_for_small_image;
 #else
   bool create_masked_image = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (create_masked_image) {
     image = gfx::ImageSkiaOperations::CreateMaskedImage(

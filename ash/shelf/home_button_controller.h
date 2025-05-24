@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "ash/assistant/model/assistant_ui_model_observer.h"
+#include "ash/capture_mode/sunfish_scanner_feature_watcher.h"
 #include "ash/public/cpp/app_list/app_list_controller_observer.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/display/display_observer.h"
 
 namespace display {
@@ -23,7 +25,7 @@ class GestureEvent;
 
 namespace ash {
 
-class AssistantOverlay;
+class HomeButtonTapOverlay;
 class HomeButton;
 
 // Controls behavior of the HomeButton, including a possible long-press
@@ -32,7 +34,8 @@ class HomeButton;
 class HomeButtonController : public AppListControllerObserver,
                              public display::DisplayObserver,
                              public AssistantStateObserver,
-                             public AssistantUiModelObserver {
+                             public AssistantUiModelObserver,
+                             public SunfishScannerFeatureWatcher::Observer {
  public:
   explicit HomeButtonController(HomeButton* button);
 
@@ -46,13 +49,20 @@ class HomeButtonController : public AppListControllerObserver,
   // should pass the event along to Button to consume.
   bool MaybeHandleGestureEvent(ui::GestureEvent* event);
 
-  // Whether the Assistant is available via long-press.
-  bool IsAssistantAvailable();
+  // Whether long-pressing the home button will perform an action, such as
+  // opening the Assistant UI or opening a Sunfish-behavior capture session.
+  bool IsLongPressActionAvailable();
 
   // Whether the Assistant UI currently showing.
   bool IsAssistantVisible();
 
  private:
+  // Whether the Assistant is available via long-press.
+  bool IsAssistantAvailable();
+
+  // Whether Sunfish or Scanner's UI can be shown.
+  bool IsSunfishOrScannerAvailable() const;
+
   // AppListControllerObserver:
   void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;
 
@@ -71,6 +81,10 @@ class HomeButtonController : public AppListControllerObserver,
       std::optional<AssistantEntryPoint> entry_point,
       std::optional<AssistantExitPoint> exit_point) override;
 
+  // SunfishScannerFeatureWatcher::Observer:
+  void OnSunfishScannerFeatureStatesChanged(
+      SunfishScannerFeatureWatcher& source) override;
+
   void OnAppListShown();
   void OnAppListDismissed();
 
@@ -83,8 +97,13 @@ class HomeButtonController : public AppListControllerObserver,
   const raw_ptr<HomeButton> button_;
 
   // Owned by the button's view hierarchy.
-  raw_ptr<AssistantOverlay> assistant_overlay_ = nullptr;
-  std::unique_ptr<base::OneShotTimer> assistant_animation_delay_timer_;
+  raw_ptr<HomeButtonTapOverlay> tap_overlay_ = nullptr;
+  std::unique_ptr<base::OneShotTimer> tap_animation_delay_timer_;
+
+  // Observes changes in Sunfish and Scanner feature states.
+  base::ScopedObservation<SunfishScannerFeatureWatcher,
+                          SunfishScannerFeatureWatcher::Observer>
+      sunfish_scanner_feature_observation_{this};
 
   display::ScopedDisplayObserver display_observer_{this};
 };

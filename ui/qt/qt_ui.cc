@@ -32,6 +32,8 @@
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ime/linux/linux_input_method_context.h"
+#include "ui/base/ime/text_edit_commands.h"
+#include "ui/base/ui_base_switches.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -60,16 +62,15 @@ namespace qt {
 
 namespace {
 
-const char kQtVersionFlag[] = "qt-version";
-
 void* LoadLibrary(const base::FilePath& path) {
   return dlopen(path.value().c_str(), RTLD_NOW | RTLD_GLOBAL);
 }
 
 bool PreferQt6() {
   auto* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(kQtVersionFlag)) {
-    std::string qt_version_string = cmd->GetSwitchValueASCII(kQtVersionFlag);
+  if (cmd->HasSwitch(switches::kQtVersionFlag)) {
+    std::string qt_version_string =
+        cmd->GetSwitchValueASCII(switches::kQtVersionFlag);
     unsigned int qt_version = 0;
     if (base::StringToUint(qt_version_string, &qt_version)) {
       switch (qt_version) {
@@ -110,8 +111,7 @@ int Qt5WeightToCssWeight(int weight) {
              lo.css_weight;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return kMapping[std::size(kMapping) - 1].css_weight;
+  NOTREACHED();
 }
 
 gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
@@ -231,7 +231,12 @@ bool QtUi::Initialize() {
   // SESSION_MANAGER to prevent creating an ICE connection.  See [1] and [2].
   // [1] https://crbug.com/1450759
   // [2] https://bugreports.qt.io/browse/QTBUG-38599
-  base::ScopedEnvironmentVariableOverride env_override("SESSION_MANAGER");
+  base::ScopedEnvironmentVariableOverride session_manager("SESSION_MANAGER");
+
+  // Disable QT input device handling since it's not needed and may result in
+  // crashes on certain device changes. See [3].
+  // [3] https://crbug.com/396193145
+  base::ScopedEnvironmentVariableOverride qt_xcb_no_xi2("QT_XCB_NO_XI2", "1");
 
   auto cmd_line = *base::CommandLine::ForCurrentProcess();
   if (auto* delegate = ui::LinuxUiDelegate::GetInstance()) {
@@ -390,6 +395,12 @@ QtUi::WindowFrameAction QtUi::GetWindowFrameAction(
   }
 }
 
+std::vector<std::string> QtUi::GetCmdLineFlagsForCopy() const {
+  return {std::string(switches::kUiToolkitFlag) + "=qt",
+          std::string(switches::kQtVersionFlag) + "=" +
+              base::NumberToString(qt_version_)};
+}
+
 DISABLE_CFI_VCALL
 bool QtUi::PreferDarkTheme() const {
   return color_utils::IsDark(
@@ -432,7 +443,8 @@ std::unique_ptr<ui::NavButtonProvider> QtUi::CreateNavButtonProvider() {
 }
 
 ui::WindowFrameProvider* QtUi::GetWindowFrameProvider(bool solid_frame,
-                                                      bool tiled) {
+                                                      bool tiled,
+                                                      bool maximized) {
   // QT prefers server-side decorations.
   return nullptr;
 }
@@ -454,12 +466,10 @@ int QtUi::GetCursorThemeSize() {
   return 0;
 }
 
-bool QtUi::GetTextEditCommandsForEvent(
-    const ui::Event& event,
-    int text_flags,
-    std::vector<ui::TextEditCommandAuraLinux>* commands) {
+ui::TextEditCommand QtUi::GetTextEditCommandForEvent(const ui::Event& event,
+                                                     int text_flags) {
   // QT doesn't have "key themes" (eg. readline bindings) like GTK.
-  return false;
+  return ui::TextEditCommand::INVALID_COMMAND;
 }
 
 #if BUILDFLAG(ENABLE_PRINTING)
@@ -533,7 +543,7 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
       {ui::kColorTextSelectionForeground, ColorType::kHighlightFg},
 
       // Platform-specific UI elements
-      {ui::kColorNativeButtonBorder, ColorType::kMidground},
+      {ui::kColorNativeBoxFrameBorder, ColorType::kMidground},
       {ui::kColorNativeHeaderButtonBorderActive, ColorType::kMidground},
       {ui::kColorNativeHeaderButtonBorderInactive, ColorType::kMidground,
        ColorState::kInactive},
@@ -662,10 +672,8 @@ void QtUi::ScaleFactorMaybeChangedImpl() {
   }
   if (display_config() != new_config) {
     display_config() = std::move(new_config);
-    for (ui::DeviceScaleFactorObserver& observer :
-         device_scale_factor_observer_list()) {
-      observer.OnDeviceScaleFactorChanged();
-    }
+    device_scale_factor_observer_list().Notify(
+        &ui::DeviceScaleFactorObserver::OnDeviceScaleFactorChanged);
   }
 }
 

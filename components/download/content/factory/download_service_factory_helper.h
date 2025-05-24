@@ -13,12 +13,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/clients.h"
+#include "components/download/public/background_service/url_loader_factory_getter.h"
 
 class SimpleFactoryKey;
 
 namespace network {
 class NetworkConnectionTracker;
-class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace leveldb_proto {
@@ -60,7 +60,7 @@ std::unique_ptr<BackgroundDownloadService> BuildInMemoryDownloadService(
     const base::FilePath& storage_dir,
     BlobContextGetterFactoryPtr blob_context_getter_factory,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+    URLLoaderFactoryGetterPtr url_loader_factory_getter);
 
 }  // namespace download
 

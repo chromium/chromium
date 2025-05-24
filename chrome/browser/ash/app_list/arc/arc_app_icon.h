@@ -52,7 +52,7 @@ class ArcAppIcon {
     virtual void OnIconFailed(ArcAppIcon* icon) {}
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   enum IconType {

@@ -58,7 +58,7 @@ void MandatoryReauthConfirmationBubbleView::AddedToWidget() {
   GetBubbleFrameView()->SetHeaderView(
       std::make_unique<ThemeTrackingNonAccessibleImageView>(
           *mandatory_reauth_opt_in_banner, *mandatory_reauth_opt_in_banner,
-          base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+          base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                               base::Unretained(this))));
 }
 
@@ -69,7 +69,7 @@ std::u16string MandatoryReauthConfirmationBubbleView::GetWindowTitle() const {
 void MandatoryReauthConfirmationBubbleView::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }

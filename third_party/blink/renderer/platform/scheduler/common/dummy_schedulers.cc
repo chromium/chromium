@@ -36,6 +36,7 @@ class DummyWidgetScheduler final : public WidgetScheduler {
   DummyWidgetScheduler& operator=(const DummyWidgetScheduler&) = delete;
   ~DummyWidgetScheduler() override = default;
 
+  void WillShutdown() override {}
   void Shutdown() override {}
   // Returns the input task runner.
   scoped_refptr<base::SingleThreadTaskRunner> InputTaskRunner() override {
@@ -82,7 +83,6 @@ class DummyFrameScheduler : public FrameScheduler {
     return &page_scheduler_->GetAgentGroupScheduler();
   }
 
-  void SetPreemptedForCooperativeScheduling(Preempted) override {}
   void SetFrameVisible(bool) override {}
   bool IsFrameVisible() const override { return true; }
   void SetVisibleAreaLarge(bool) override {}
@@ -111,6 +111,7 @@ class DummyFrameScheduler : public FrameScheduler {
   void OnFirstContentfulPaintInMainFrame() override {}
   void OnFirstMeaningfulPaint(base::TimeTicks timestamp) override {}
   void OnDispatchLoadEvent() override {}
+  void OnDidInstallNewDocument() override {}
   void OnMainFrameInteractive() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
   std::unique_ptr<blink::mojom::blink::PauseSubresourceLoadingHandle>
@@ -122,7 +123,6 @@ class DummyFrameScheduler : public FrameScheduler {
       WebSchedulingPriority) override {
     return nullptr;
   }
-  ukm::SourceId GetUkmSourceId() override { return ukm::kInvalidSourceId; }
   void OnStartedUsingNonStickyFeature(
       SchedulingPolicy::Feature feature,
       const SchedulingPolicy& policy,
@@ -193,7 +193,8 @@ class DummyPageScheduler : public PageScheduler {
     return *agent_group_scheduler_;
   }
   VirtualTimeController* GetVirtualTimeController() override { return nullptr; }
-  scoped_refptr<WidgetScheduler> CreateWidgetScheduler() override {
+  scoped_refptr<WidgetScheduler> CreateWidgetScheduler(
+      WidgetScheduler::Delegate*) override {
     return base::MakeRefCounted<DummyWidgetScheduler>();
   }
 
@@ -279,8 +280,7 @@ class DummyWebMainThreadScheduler : public WebThreadScheduler,
   void PostDelayedIdleTask(const base::Location&,
                            base::TimeDelta delay,
                            Thread::IdleTask) override {}
-  void PostNonNestableIdleTask(const base::Location&,
-                               Thread::IdleTask) override {}
+  void RemoveCancelledIdleTasks() override {}
   void AddRAILModeObserver(RAILModeObserver*) override {}
   void RemoveRAILModeObserver(RAILModeObserver const*) override {}
   base::TimeTicks MonotonicallyIncreasingVirtualTime() override {

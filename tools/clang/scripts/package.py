@@ -236,9 +236,15 @@ def main():
 
     build_cmd = [
         sys.executable,
-        os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
-        '--run-tests', '--pgo'
+        os.path.join(THIS_DIR, 'build.py'),
+        '--bootstrap',
+        '--disable-asserts',
+        '--run-tests',
     ]
+    # PGO drastically increases packaging time and x86-64 macs are almost
+    # obsolete while being slow, so don't PGO-optimize x86-64 mac toolchains.
+    if sys.platform != 'darwin' or platform.machine() == 'arm64':
+      build_cmd.append('--pgo')
     if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
     if sys.platform.startswith('linux'):
@@ -308,6 +314,7 @@ def main():
     runtime_package_name = 'clang-mac-runtime-library'
     runtime_packages = set([
         # AddressSanitizer runtime.
+        'lib/clang/$V/lib/darwin/libclang_rt.asan_ios_dynamic.dylib',
         'lib/clang/$V/lib/darwin/libclang_rt.asan_iossim_dynamic.dylib',
         'lib/clang/$V/lib/darwin/libclang_rt.asan_osx_dynamic.dylib',
 
@@ -315,6 +322,8 @@ def main():
         'lib/clang/$V/lib/darwin/libclang_rt.ios.a',
         'lib/clang/$V/lib/darwin/libclang_rt.iossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.osx.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.tvos.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.tvossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.watchos.a',
         'lib/clang/$V/lib/darwin/libclang_rt.watchossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.xros.a',
@@ -344,13 +353,18 @@ def main():
         'bin/llvm-nm',
 
         # AddressSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.a.syms',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan_static.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan_static.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan_static.a',
 
         # AddressSanitizer C++ runtime.
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan_cxx.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan_cxx.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan_cxx.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan_cxx.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan_cxx.a.syms',
@@ -372,13 +386,13 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.builtins-riscv64-android.a',
 
-        # Builtins for Linux and Lacros.
+        # Builtins for Linux.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.builtins.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.builtins.a',
 
-        # crtstart/crtend for Linux and Lacros.
+        # crtstart/crtend for Linux.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtbegin.o',
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtend.o',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtbegin.o',
@@ -420,11 +434,15 @@ def main():
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.tsan_cxx.a.syms',
 
         # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.ubsan_standalone.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a.syms',
 
         # UndefinedBehaviorSanitizer C++ runtime.
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a.syms',
@@ -441,9 +459,20 @@ def main():
     ])
   elif sys.platform == 'win32':
     runtime_package_name = 'clang-win-runtime-library'
+
     runtime_packages = set([
         # pylint: disable=line-too-long
         'bin/llvm-symbolizer.exe',
+
+        # AddressSanitizer runtime.
+        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll',
+        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib',
+
+        # Thunk for AddressSanitizer for component builds.
+        'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib',
+
+        # Thunk for AddressSanitizer for static builds.
+        'lib/clang/$V/lib/windows/clang_rt.asan_static_runtime_thunk-x86_64.lib',
 
         # Builtins for C/C++.
         'lib/clang/$V/lib/windows/clang_rt.builtins-i386.lib',
@@ -463,51 +492,6 @@ def main():
 
         # pylint: enable=line-too-long
     ])
-    # The list of asan libraries we need changes with
-    # https://github.com/llvm/llvm-project/pull/107899.
-    # TODO(https://crbug.com/365980757): move back above after clang roll
-    if os.path.exists(
-        os.path.join(
-            LLVM_RELEASE_DIR,
-            'lib/clang/{}/lib/windows/clang_rt.asan-x86_64.lib'.format(
-                RELEASE_VERSION))):
-      # AddressSanitizer C runtime (pure C won't link with *_cxx).
-      runtime_packages.add('lib/clang/$V/lib/windows/clang_rt.asan-x86_64.lib')
-
-      # AddressSanitizer C++ runtime.
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_cxx-x86_64.lib')
-
-      # Thunk for AddressSanitizer needed for static build of a shared lib.
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_dll_thunk-x86_64.lib')
-
-      # AddressSanitizer runtime for component build.
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll')
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib')
-
-      # Thunk for AddressSanitizer for component build of a shared lib.
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib'
-      )
-    else:
-      # AddressSanitizer runtime.
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll')
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib')
-
-      # Thunk for AddressSanitizer for component builds.
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib'
-      )
-
-      # Thunk for AddressSanitizer for static builds.
-      runtime_packages.add(
-          'lib/clang/$V/lib/windows/clang_rt.asan_static_runtime_thunk-x86_64.lib'
-      )
     want.update(runtime_packages)
 
   # reclient is a tool for executing programs remotely. When uploading the

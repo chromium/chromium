@@ -11,13 +11,16 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** The class to handle dark mode. */
 @Lifetime.WebView
 @JNINamespace("android_webview")
+@NullMarked
 public class AwDarkMode {
-    private Context mContext;
+    private final Context mContext;
     private long mNativeAwDarkMode;
 
     private static boolean sEnableSimplifiedDarkMode;
@@ -31,7 +34,7 @@ public class AwDarkMode {
         mContext = context;
     }
 
-    public void setWebContents(WebContents webContents) {
+    public void setWebContents(@Nullable WebContents webContents) {
         if (mNativeAwDarkMode != 0) {
             AwDarkModeJni.get().detachFromJavaObject(mNativeAwDarkMode, this);
             mNativeAwDarkMode = 0;

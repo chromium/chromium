@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/frame_loader.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -87,7 +88,7 @@ static void AppendMailtoPostFormDataToURL(KURL& url,
   body_data.AppendSpan(base::span_from_cstring("body="));
   FormDataEncoder::EncodeStringAsFormData(body_data, body.Utf8(),
                                           FormDataEncoder::kNormalizeCRLF);
-  body = String(body_data.data(), body_data.size()).Replace('+', "%20");
+  body = String(body_data).Replace('+', "%20");
 
   StringBuilder query;
   query.Append(url.Query());
@@ -137,8 +138,7 @@ String FormSubmission::Attributes::MethodString(SubmitMethod method) {
     case kDialogMethod:
       return "dialog";
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 void FormSubmission::Attributes::CopyFrom(const Attributes& other) {
@@ -393,6 +393,17 @@ void FormSubmission::Trace(Visitor* visitor) const {
   visitor->Trace(submitter_);
   visitor->Trace(target_frame_);
   visitor->Trace(origin_window_);
+}
+
+void FormSubmission::NotifyInspector() {
+  LocalFrame* origin_frame = origin_window_->GetFrame();
+  if (!origin_frame || !target_frame_) {
+    return;
+  }
+
+  probe::FrameRequestedNavigation(origin_frame, target_frame_.Get(),
+                                  resource_request_->Url(), reason_,
+                                  navigation_policy_);
 }
 
 void FormSubmission::Navigate() {

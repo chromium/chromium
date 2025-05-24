@@ -7,6 +7,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 
@@ -28,7 +29,10 @@ class AX_EXPORT AXTreeManagerMap {
   AXTreeManager* GetManager(const AXTreeID& tree_id);
 
  private:
-  std::unordered_map<AXTreeID, AXTreeManager*, AXTreeIDHash> map_;
+  std::unordered_map<AXTreeID,
+                     raw_ptr<AXTreeManager, CtnExperimental>,
+                     AXTreeIDHash>
+      map_;
 };
 
 }  // namespace ui

@@ -96,8 +96,6 @@ base::FilePath BaseTestServer::SSLOptions::GetCertificateFile() const {
       // This chain uses its own dedicated test root certificate to avoid
       // side-effects that may affect testing.
       return base::FilePath(FILE_PATH_LITERAL("redundant-server-chain.pem"));
-    case CERT_BAD_VALIDITY:
-      return base::FilePath(FILE_PATH_LITERAL("bad_validity.pem"));
     case CERT_KEY_USAGE_RSA_ENCIPHERMENT:
       return base::FilePath(
           FILE_PATH_LITERAL("key_usage_rsa_keyencipherment.pem"));
@@ -107,9 +105,8 @@ base::FilePath BaseTestServer::SSLOptions::GetCertificateFile() const {
     case CERT_TEST_NAMES:
       return base::FilePath(FILE_PATH_LITERAL("test_names.pem"));
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return base::FilePath();
 }
 
 BaseTestServer::BaseTestServer(Type type) : type_(type) {
@@ -140,9 +137,8 @@ std::string BaseTestServer::GetScheme() const {
     case TYPE_WSS:
       return "wss";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::string();
 }
 
 bool BaseTestServer::GetAddressList(AddressList* address_list) const {

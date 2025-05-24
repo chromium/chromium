@@ -28,7 +28,7 @@ struct StorageUnitInfo;
 
 namespace systeminfo {
 
-// Build StorageUnitInfo struct from StorageInfo instance. The |unit|
+// Build StorageUnitInfo struct from StorageInfo instance. The `unit`
 // parameter is the output value.
 void BuildStorageUnitInfo(const storage_monitor::StorageInfo& info,
                           api::system_storage::StorageUnitInfo* unit);
@@ -68,20 +68,20 @@ class SystemInfoProvider
   // called.
   virtual void PrepareQueryOnUIThread();
 
-  // The parameter |do_query_info_callback| is query info task which is posted
+  // The parameter `do_query_info_callback` is query info task which is posted
   // to SystemInfoProvider sequenced worker pool.
   //
   // You can do any initial things of *InfoProvider before start to query info.
-  // While overriding this method, |do_query_info_callback| *must* be called
+  // While overriding this method, `do_query_info_callback` *must* be called
   // directly or indirectly.
   //
   // Sample usage please refer to StorageInfoProvider.
   virtual void InitializeProvider(base::OnceClosure do_query_info_callback);
 
   // Start to query the system information. Should be called on UI thread.
-  // The |callback| will get called once the query is completed.
+  // The `callback` will get called once the query is completed.
   //
-  // If the parameter |callback| itself calls StartQueryInfo(callback2),
+  // If the parameter `callback` itself calls StartQueryInfo(callback2),
   // callback2 will be called immediately rather than triggering another call to
   // the system.
   void StartQueryInfo(QueryInfoCompletionCallback callback);
@@ -97,7 +97,7 @@ class SystemInfoProvider
   // Should be called in the blocking pool.
   virtual bool QueryInfo() = 0;
 
-  // Called on UI thread. The |success| parameter means whether it succeeds
+  // Called on UI thread. The `success` parameter means whether it succeeds
   // to get the information.
   void OnQueryCompleted(bool success);
 

@@ -12,14 +12,18 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.components.autofill.AutofillSuggestion;
+import org.chromium.components.autofill.LoyaltyCard;
+import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,13 +36,13 @@ class TouchToFillPaymentMethodViewBridge {
     private TouchToFillPaymentMethodViewBridge(
             TouchToFillPaymentMethodComponent.Delegate delegate,
             Context context,
-            PersonalDataManager personalDataManager,
+            AutofillImageFetcher imageFetcher,
             BottomSheetController bottomSheetController,
             WindowAndroid windowAndroid) {
         mComponent = new TouchToFillPaymentMethodCoordinator();
         mComponent.initialize(
                 context,
-                personalDataManager,
+                imageFetcher,
                 bottomSheetController,
                 delegate,
                 new BottomSheetFocusHelper(bottomSheetController, windowAndroid));
@@ -58,25 +62,27 @@ class TouchToFillPaymentMethodViewBridge {
         return new TouchToFillPaymentMethodViewBridge(
                 delegate,
                 context,
-                PersonalDataManagerFactory.getForProfile(profile),
+                AutofillImageFetcherFactory.getForProfile(profile),
                 bottomSheetController,
                 windowAndroid);
     }
 
     @CalledByNative
-    private void showSheet(
-            @JniType("std::vector") Object[] cards,
-            @JniType("std::vector") Object[] suggestions,
-            boolean shouldShowScanCreditCard) {
-        mComponent.showSheet(
-                (List<PersonalDataManager.CreditCard>) (List<?>) Arrays.asList(cards),
+    private void showCreditCards(
+            @JniType("std::vector") Object[] suggestions, boolean shouldShowScanCreditCard) {
+        mComponent.showCreditCards(
                 (List<AutofillSuggestion>) (List<?>) Arrays.asList(suggestions),
                 shouldShowScanCreditCard);
     }
 
     @CalledByNative
-    private void showSheet(@JniType("std::vector") List<PersonalDataManager.Iban> ibans) {
-        mComponent.showSheet(ibans);
+    private void showIbans(@JniType("std::vector") List<PersonalDataManager.Iban> ibans) {
+        mComponent.showIbans(ibans);
+    }
+
+    @CalledByNative
+    private void showLoyaltyCards(@JniType("std::vector") List<LoyaltyCard> loyaltyCards) {
+        mComponent.showLoyaltyCards(loyaltyCards);
     }
 
     @CalledByNative
@@ -90,15 +96,27 @@ class TouchToFillPaymentMethodViewBridge {
             @JniType("std::u16string") String secondaryLabel,
             @JniType("std::u16string") String subLabel,
             @JniType("std::u16string") String secondarySubLabel,
+            @JniType("std::u16string") String labelContentDescription,
+            @SuggestionType int suggestionType,
+            GURL customIconUrl,
+            int iconId,
             boolean applyDeactivatedStyle,
-            boolean shouldDisplayTermsAvailable) {
+            boolean shouldDisplayTermsAvailable,
+            @JniType("std::string") String guid,
+            boolean isLocalPaymentsMethod) {
         return new AutofillSuggestion.Builder()
                 .setLabel(label)
                 .setSecondaryLabel(secondaryLabel)
                 .setSubLabel(subLabel)
                 .setSecondarySubLabel(secondarySubLabel)
+                .setLabelContentDescription(labelContentDescription)
+                .setSuggestionType(suggestionType)
+                .setCustomIconUrl(customIconUrl)
+                .setIconId(iconId)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .setShouldDisplayTermsAvailable(shouldDisplayTermsAvailable)
+                .setGuid(guid)
+                .setIsLocalPaymentsMethod(isLocalPaymentsMethod)
                 .build();
     }
 }

@@ -21,10 +21,10 @@ std::optional<base::TimeDelta> GetPlaylistDuration(
 
   auto segments = playlist->GetSegments();
   // Usually manifests use an Endlist tag to end a live playback, but its
-  // also fairly common to see these on VOD content where the first media
-  // sequence is id 0 or 1.
+  // also fairly common to see these on VOD content that was clipped from
+  // live content.
   if (playlist->IsEndList()) {
-    if (!segments.empty() && segments[0]->GetMediaSequenceNumber() < 2) {
+    if (!segments.empty()) {
       return playlist->GetComputedDuration();
     }
   }
@@ -41,11 +41,12 @@ std::unique_ptr<HlsRendition> HlsRendition::CreateRendition(
     HlsRenditionHost* rendition_host,
     std::string role,
     scoped_refptr<hls::MediaPlaylist> playlist,
-    GURL uri) {
+    GURL uri,
+    MediaLog* media_log) {
   auto duration = GetPlaylistDuration(playlist.get());
   return std::make_unique<HlsRenditionImpl>(
       engine_host, rendition_host, std::move(role), std::move(playlist),
-      duration, std::move(uri));
+      duration, std::move(uri), media_log);
 }
 
 }  // namespace media

@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_EC_PRIVATE_KEY_FACTORY_H_
 
 #include "base/memory/weak_ptr.h"
+#include "base/values.h"
 #include "components/enterprise/client_certificates/core/private_key_factory.h"
 
 namespace client_certificates {
@@ -20,6 +21,8 @@ class ECPrivateKeyFactory : public PrivateKeyFactory {
   void LoadPrivateKey(
       const client_certificates_pb::PrivateKey& serialized_private_key,
       PrivateKeyCallback callback) override;
+  void LoadPrivateKeyFromDict(const base::Value::Dict& serialized_private_key,
+                              PrivateKeyCallback callback) override;
 
  private:
   base::WeakPtrFactory<ECPrivateKeyFactory> weak_factory_{this};

@@ -22,7 +22,6 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media_galleries/fileapi/media_file_system_backend.h"
 #include "chrome/browser/media_galleries/gallery_watch_manager.h"
 #include "chrome/browser/media_galleries/media_file_system_context.h"
@@ -43,7 +42,7 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #endif
 
@@ -80,7 +79,7 @@ class MediaFileSystemRegistryShutdownNotifierFactory
             "MediaFileSystemRegistry") {
     DependsOn(MediaGalleriesPreferencesFactory::GetInstance());
   }
-  ~MediaFileSystemRegistryShutdownNotifierFactory() override {}
+  ~MediaFileSystemRegistryShutdownNotifierFactory() override = default;
 };
 
 struct InvalidatedGalleriesInfo {
@@ -127,10 +126,10 @@ MediaFileSystemInfo::MediaFileSystemInfo(const std::u16string& fs_name,
       removable(removable),
       media_device(media_device) {}
 
-MediaFileSystemInfo::MediaFileSystemInfo() {}
+MediaFileSystemInfo::MediaFileSystemInfo() = default;
 MediaFileSystemInfo::MediaFileSystemInfo(const MediaFileSystemInfo& other) =
     default;
-MediaFileSystemInfo::~MediaFileSystemInfo() {}
+MediaFileSystemInfo::~MediaFileSystemInfo() = default;
 
 // The main owner of this class is
 // |MediaFileSystemRegistry::extension_hosts_map_|, but a callback may
@@ -499,13 +498,13 @@ void MediaFileSystemRegistry::OnRemovableStorageDetached(
 class MediaFileSystemRegistry::MediaFileSystemContextImpl
     : public MediaFileSystemContext {
  public:
-  MediaFileSystemContextImpl() {}
+  MediaFileSystemContextImpl() = default;
 
   MediaFileSystemContextImpl(const MediaFileSystemContextImpl&) = delete;
   MediaFileSystemContextImpl& operator=(const MediaFileSystemContextImpl&) =
       delete;
 
-  ~MediaFileSystemContextImpl() override {}
+  ~MediaFileSystemContextImpl() override = default;
 
   bool RegisterFileSystem(const std::string& device_id,
                           const std::string& fs_name,
@@ -518,7 +517,7 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
   void RevokeFileSystem(const std::string& fs_name) override {
     ExternalMountPoints::GetSystemInstance()->RevokeFileSystem(fs_name);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&MTPDeviceMapService::RevokeMTPFileSystem,
@@ -557,7 +556,7 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
   bool RegisterFileSystemForMTPDevice(const std::string& device_id,
                                       const std::string fs_name,
                                       const base::FilePath& path) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(!StorageInfo::IsMassStorageDevice(device_id));
 
@@ -576,8 +575,7 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
                        path.value(), fs_name, true /* read only */));
     return result;
 #else
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #endif
   }
 };

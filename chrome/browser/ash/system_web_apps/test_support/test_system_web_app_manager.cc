@@ -13,9 +13,9 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager_factory.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -73,15 +73,14 @@ TestSystemWebAppManagerCreator::TestSystemWebAppManagerCreator(
     : callback_(std::move(callback)) {
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
-          ->RegisterCreateServicesCallbackForTesting(
-              base::BindRepeating(&TestSystemWebAppManagerCreator::
-                                      OnWillCreateBrowserContextServices,
-                                  base::Unretained(this)));
+          ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+              &TestSystemWebAppManagerCreator::SetUpBrowserContextKeyedServices,
+              base::Unretained(this)));
 }
 
 TestSystemWebAppManagerCreator::~TestSystemWebAppManagerCreator() = default;
 
-void TestSystemWebAppManagerCreator::OnWillCreateBrowserContextServices(
+void TestSystemWebAppManagerCreator::SetUpBrowserContextKeyedServices(
     content::BrowserContext* context) {
   SystemWebAppManagerFactory::GetInstance()->SetTestingFactory(
       context, base::BindRepeating(

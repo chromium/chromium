@@ -4,10 +4,11 @@
 
 #include "chrome/browser/ui/passwords/bubble_controllers/save_update_bubble_controller.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,7 @@
 #include "chrome/grit/theme_resources.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -75,7 +77,7 @@ std::vector<password_manager::PasswordForm> DeepCopyForms(
     const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
   std::vector<password_manager::PasswordForm> result;
   result.reserve(forms.size());
-  base::ranges::transform(
+  std::ranges::transform(
       forms, std::back_inserter(result),
       &std::unique_ptr<password_manager::PasswordForm>::operator*);
   return result;
@@ -136,22 +138,9 @@ void SaveUpdateBubbleController::OnSaveClicked() {
   SetDismissalReason(metrics_util::CLICKED_ACCEPT);
   if (delegate_) {
     CleanStatisticsForSite(GetProfile(), GetOrigin());
-    if (IsAccountStorageOptInRequiredBeforeSave()) {
-      delegate_->AuthenticateUserForAccountStoreOptInAndSavePassword(
-          GetPendingPassword().username_value,
-          GetPendingPassword().password_value);
-    } else {
-      delegate_->SavePassword(GetPendingPassword().username_value,
-                              GetPendingPassword().password_value);
-      if (!IsCurrentStateUpdate() &&
-          delegate_->GetPasswordFeatureManager()
-              ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
-        delegate_
-            ->AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword();
-      } else {
-        delegate_->MaybeShowIOSPasswordPromo();
-      }
-    }
+    delegate_->SavePassword(GetPendingPassword().username_value,
+                            GetPendingPassword().password_value);
+    delegate_->MaybeShowIOSPasswordPromo();
   }
 }
 
@@ -161,6 +150,14 @@ void SaveUpdateBubbleController::OnNeverForThisSiteClicked() {
   if (delegate_) {
     CleanStatisticsForSite(GetProfile(), GetOrigin());
     delegate_->NeverSavePassword();
+  }
+}
+
+void SaveUpdateBubbleController::OnNotNowClicked() {
+  CHECK_EQ(password_manager::ui::PENDING_PASSWORD_STATE, GetState());
+  SetDismissalReason(metrics_util::CLICKED_NOT_NOW);
+  if (delegate_) {
+    delegate_->OnNotNowClicked();
   }
 }
 
@@ -249,32 +246,7 @@ void SaveUpdateBubbleController::ShouldRevealPasswords(
 }
 
 bool SaveUpdateBubbleController::IsUsingAccountStore() {
-  return delegate_->GetPasswordFeatureManager()->GetDefaultPasswordStore() ==
-         Store::kAccountStore;
-}
-
-bool SaveUpdateBubbleController::IsAccountStorageOptInRequiredBeforeSave() {
-  // If this is an update, either a) the password only exists in the profile
-  // store, so the opt-in shouldn't be offered because the account storage won't
-  // be used, or b) there is a copy in the account store, which means the user
-  // already opted in. Either way, the opt-in shouldn't be offered.
-  if (IsCurrentStateUpdate()) {
-    return false;
-  }
-  // If saving to the profile store, then no need to ask for opt-in.
-  if (!IsUsingAccountStore()) {
-    return false;
-  }
-  // If already opted in, no need to ask again.
-  if (delegate_->GetPasswordFeatureManager()->IsOptedInForAccountStorage()) {
-    return false;
-  }
-
-  return true;
-}
-
-bool SaveUpdateBubbleController::DidAuthForAccountStoreOptInFail() const {
-  return delegate_->DidAuthForAccountStoreOptInFail();
+  return delegate_->GetPasswordFeatureManager()->IsAccountStorageEnabled();
 }
 
 std::u16string SaveUpdateBubbleController::GetTitle() const {
@@ -294,9 +266,11 @@ void SaveUpdateBubbleController::ReportInteractions() {
     // Update the statistics for the save password bubble.
     Profile* profile = GetProfile();
     if (profile) {
-      if (GetDismissalReason() == metrics_util::NO_DIRECT_INTERACTION &&
+      if ((GetDismissalReason() == metrics_util::NO_DIRECT_INTERACTION ||
+           GetDismissalReason() == metrics_util::CLICKED_NOT_NOW) &&
           GetDisplayDisposition() ==
               metrics_util::AUTOMATIC_WITH_PASSWORD_PENDING) {
+        // When closed via X or "Not now", count the dismissals.
         if (interaction_stats_.dismissal_count <
             std::numeric_limits<
                 decltype(interaction_stats_.dismissal_count)>::max()) {

@@ -5,7 +5,8 @@
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';
-import {RoutineResultInfo, RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import type {RoutineResultInfo} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
+import {RoutineType, StandardRoutineResult} from 'chrome://diagnostics/system_routine_controller.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
@@ -37,7 +38,7 @@ suite('fakeSystemRoutineContollerTestSuite', function() {
         assertEquals(expectedType, resultInfo.type);
 
         if (resultInfo.result.hasOwnProperty('simpleResult')) {
-          assertEquals(expectedResult, resultInfo.result!.simpleResult);
+          assertEquals(expectedResult, resultInfo.result.simpleResult);
 
           // Can't have both simpleResult and powerResult
           assertFalse(resultInfo.result.hasOwnProperty('powerResult'));
@@ -45,7 +46,7 @@ suite('fakeSystemRoutineContollerTestSuite', function() {
 
         if (resultInfo.result.hasOwnProperty('powerResult')) {
           assertEquals(
-              expectedResult, resultInfo.result!.powerResult!.simpleResult);
+              expectedResult, resultInfo.result.powerResult!.simpleResult);
           // Can't have both simpleResult and powerResult
 
           assertFalse(resultInfo.result.hasOwnProperty('simpleResult'));
@@ -83,7 +84,7 @@ suite('fakeSystemRoutineContollerTestSuite', function() {
         assertTrue(controller.isRoutineInProgressForTesting());
         assertFalse(wasRun);
         assertEquals(expectedType, resultInfo.type);
-        assertEquals(expectedResult, resultInfo.result!.simpleResult);
+        assertEquals(expectedResult, resultInfo.result.simpleResult);
 
         // Mark that the test completed.
         wasRun = true;

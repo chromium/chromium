@@ -3,3 +3,29 @@ features:
   files:
   - prefers-color-scheme.html
   - prefers-color-scheme-*
+- name: forced-colors
+  files:
+  - forced-colors.html
+- name: prefers-contrast
+  files:
+  - prefers-contrast.html
+- name: prefers-reduced-transparency
+  files:
+  - prefers-reduced-transparency.html
+- name: overflow
+  files:
+  - overflow-media-features.html
+- name: dynamic-range
+  files:
+  - dynamic-range.html
+- name: display-mode
+  files:
+  - display-mode.html
+  - display-mode.tentative.html
+- name: update
+  files:
+  - update-media-feature.html
+- name: scripting
+  files:
+  - scripting.html
+  - scripting-*

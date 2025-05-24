@@ -36,8 +36,7 @@ ui::ResourceBundle::FontStyle GetFontStyleForIconSize(
     case extension_misc::EXTENSION_ICON_GIGANTOR:
       return ui::ResourceBundle::LargeFont;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::ResourceBundle::MediumFont;
+  NOTREACHED();
 }
 
 // Returns the background image to use for the given icon |size|.

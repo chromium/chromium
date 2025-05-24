@@ -16,8 +16,6 @@ struct wl_resource;
 
 namespace wl {
 
-class TestAugmentedSubSurface;
-
 extern const struct wl_subsurface_interface kTestSubSurfaceImpl;
 
 class TestSubSurface : public ServerObject {
@@ -41,13 +39,6 @@ class TestSubSurface : public ServerObject {
 
   wl_resource* parent_resource() const { return parent_resource_; }
 
-  void set_augmented_subsurface(TestAugmentedSubSurface* augmented_subsurface) {
-    augmented_subsurface_ = augmented_subsurface;
-  }
-  TestAugmentedSubSurface* augmented_subsurface() const {
-    return augmented_subsurface_;
-  }
-
  private:
   gfx::PointF position_;
   bool sync_ = false;
@@ -57,9 +48,6 @@ class TestSubSurface : public ServerObject {
 
   // Parent surface resource.
   raw_ptr<wl_resource, DanglingUntriaged> parent_resource_ = nullptr;
-
-  raw_ptr<TestAugmentedSubSurface, DanglingUntriaged> augmented_subsurface_ =
-      nullptr;
 };
 
 }  // namespace wl

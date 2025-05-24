@@ -188,7 +188,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
     this.signalsString = state.signalsJson;
   }
 
-  private async fetchDeviceTrustValues(): Promise<void> {
+  private fetchDeviceTrustValues() {
     this.pageHandler.getDeviceTrustState()
         .then(
             (response: {state: DeviceTrustState}) => response && response.state,
@@ -207,7 +207,7 @@ export class DeviceTrustConnectorElement extends CustomElement {
         });
   }
 
-  private async copySignals(copyButton: HTMLButtonElement): Promise<void> {
+  private copySignals(copyButton: HTMLButtonElement) {
     copyButton.disabled = true;
     navigator.clipboard.writeText(this.signalsString)
         .finally(() => copyButton.disabled = false);

@@ -12,6 +12,7 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:focusable="false">
+
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/address_bar_radio_group"
         android:layout_width="match_parent"

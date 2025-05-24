@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_REMOTEPLAYBACK_REMOTE_PLAYBACK_H_
 
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -20,6 +19,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/media/remote_playback_client.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -39,6 +39,7 @@ class AvailabilityCallbackWrapper;
 class HTMLMediaElement;
 class ScriptState;
 class V8RemotePlaybackAvailabilityCallback;
+class V8RemotePlaybackState;
 
 // Remote playback for HTMLMediaElements.
 // The new RemotePlayback pipeline is implemented on top of Presentation.
@@ -49,7 +50,7 @@ class MODULES_EXPORT RemotePlayback final
     : public EventTarget,
       public ExecutionContextLifecycleObserver,
       public ActiveScriptWrappable<RemotePlayback>,
-      public WebRemotePlaybackClient,
+      public RemotePlaybackClient,
       public PresentationAvailabilityObserver,
       public mojom::blink::PresentationConnection,
       public RemotePlaybackController {
@@ -97,7 +98,7 @@ class MODULES_EXPORT RemotePlayback final
   // element (by picking a remote playback device from the list, for example).
   ScriptPromise<IDLUndefined> prompt(ScriptState*, ExceptionState&);
 
-  String state() const;
+  V8RemotePlaybackState state() const;
 
   // The implementation of prompt(). Used by the native remote playback button.
   void PromptInternal();
@@ -125,10 +126,10 @@ class MODULES_EXPORT RemotePlayback final
   void DidChangeState(mojom::blink::PresentationConnectionState) override;
   void DidClose(mojom::blink::PresentationConnectionCloseReason) override;
 
-  // WebRemotePlaybackClient implementation.
+  // RemotePlaybackClient implementation.
   bool RemotePlaybackAvailable() const override;
-  void SourceChanged(const WebURL&, bool is_source_supported) override;
-  WebString GetPresentationId() override;
+  void SourceChanged(const KURL&, bool is_source_supported) override;
+  WTF::String GetPresentationId() override;
   void MediaMetadataChanged(
       std::optional<media::VideoCodec> video_codec,
       std::optional<media::AudioCodec> audio_codec) override;
@@ -190,7 +191,7 @@ class MODULES_EXPORT RemotePlayback final
 
   String presentation_id_;
   KURL presentation_url_;
-  WebURL source_;
+  KURL source_;
   bool is_source_supported_ = false;
   std::optional<media::VideoCodec> video_codec_ = std::nullopt;
   std::optional<media::AudioCodec> audio_codec_ = std::nullopt;

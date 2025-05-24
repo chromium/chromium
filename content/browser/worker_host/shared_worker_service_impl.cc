@@ -5,6 +5,7 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <iterator>
 #include <string>
@@ -19,6 +20,7 @@
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -31,6 +33,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/shared_worker_instance.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -77,9 +80,9 @@ void SharedWorkerServiceImpl::RemoveObserver(Observer* observer) {
 
 void SharedWorkerServiceImpl::EnumerateSharedWorkers(Observer* observer) {
   for (const auto& host : worker_hosts_) {
-    observer->OnWorkerCreated(host->token(), host->GetProcessHost()->GetID(),
-                              host->instance().storage_key().origin(),
-                              host->GetDevToolsToken());
+    observer->OnWorkerCreated(
+        host->token(), host->GetProcessHost()->GetDeprecatedID(),
+        host->instance().storage_key().origin(), host->GetDevToolsToken());
     if (host->started()) {
       observer->OnFinalResponseURLDetermined(host->token(),
                                              host->final_response_url());
@@ -180,10 +183,22 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   SharedWorkerHost* host = FindMatchingSharedWorkerHost(
       info->url, info->options->name, storage_key, info->same_site_cookies);
   if (host) {
+    // TODO(crbug.com/413207418): revise ScriptLoadFailed() to use enum.
+
     // Non-secure contexts cannot connect to secure workers, and secure contexts
     // cannot connect to non-secure workers:
     if (host->instance().creation_context_type() != creation_context_type) {
       ScriptLoadFailed(std::move(client), /*error_message=*/"");
+      return;
+    }
+    // If extended_lifetime does not match, raise.
+    // See: https://github.com/whatwg/html/issues/10997#issuecomment-2791533299
+    if (host->instance().extended_lifetime() != info->extended_lifetime) {
+      ScriptLoadFailed(
+          std::move(client),
+          "Failed to connect an existing shared worker because the "
+          "extendedLifetime given on the SharedWorker constructor doesn't "
+          "match the existing shared worker's extendedLifetime.");
       return;
     }
     // Step 11.4: "If worker global scope is not null, then check if worker
@@ -214,10 +229,10 @@ void SharedWorkerServiceImpl::ConnectToWorker(
     return;
   }
   auto partition_domain = site_instance->GetPartitionDomain(storage_partition_);
-  SharedWorkerInstance instance(info->url, info->options->type,
-                                info->options->credentials, info->options->name,
-                                storage_key, creation_context_type,
-                                info->same_site_cookies);
+  SharedWorkerInstance instance(
+      info->url, info->options->type, info->options->credentials,
+      info->options->name, storage_key, creation_context_type,
+      info->same_site_cookies, info->extended_lifetime);
   host = CreateWorker(
       *render_frame_host, instance, std::move(info->content_security_policies),
       std::move(info->outside_fetch_client_settings_object), partition_domain,
@@ -321,6 +336,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // cross-origin-isolated, create a new non-isolated SiteInstance for the
   // worker. This is because we have to assume the worker is non-isolated
   // because we don't know its COEP header.
+  // Note that Isolated Web Apps are exempt from this restriction as all IWA
+  // pages are served with COEP of `require-corp` by default.
   //
   // TODO(crbug.com/40122193): Move process allocation to after the
   // script is loaded so that the process allocation can take COEP header into
@@ -329,15 +346,21 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   if (site_instance->IsCrossOriginIsolated()) {
     site_instance = SiteInstanceImpl::CreateForUrlInfo(
         partition->browser_context(),
-        UrlInfo(UrlInfoInit(instance.url())
-                    .WithStoragePartitionConfig(partition->GetConfig())
-                    .WithWebExposedIsolationInfo(
-                        WebExposedIsolationInfo::CreateNonIsolated())),
+        UrlInfo(
+            UrlInfoInit(instance.url())
+                .WithStoragePartitionConfig(partition->GetConfig())
+                .WithWebExposedIsolationInfo(
+                    SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+                        partition->browser_context(), instance.url())
+                        ? WebExposedIsolationInfo::CreateIsolatedApplication(
+                              url::Origin::Create(instance.url()))
+                        : WebExposedIsolationInfo::CreateNonIsolated())),
         partition->is_guest(), site_instance->GetIsolationContext().is_fenced(),
         site_instance->IsFixedStoragePartition());
   }
 
-  RenderProcessHost* worker_process_host = site_instance->GetProcess();
+  RenderProcessHost* worker_process_host = site_instance->GetOrCreateProcess(
+      ProcessAllocationContext{ProcessAllocationSource::kSharedWorker});
   DCHECK(worker_process_host);
   DCHECK(worker_process_host->InSameStoragePartition(partition));
 
@@ -359,9 +382,16 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;
 
+  std::string fetch_event_client_id;
+  if (creator.GetLastCommittedServiceWorkerClient()) {
+    fetch_event_client_id =
+        creator.GetLastCommittedServiceWorkerClient()->client_uuid();
+  }
+
   auto service_worker_handle =
       std::make_unique<ServiceWorkerMainResourceHandle>(
           storage_partition_->GetServiceWorkerContext(), base::DoNothing(),
+          std::move(fetch_event_client_id),
           creator.GetLastCommittedServiceWorkerClient());
   auto* service_worker_handle_raw = service_worker_handle.get();
   host->SetServiceWorkerHandle(std::move(service_worker_handle));
@@ -400,8 +430,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       << worker_origin << " and " << host->instance().storage_key().origin()
       << " should be the same.";
   WorkerScriptFetcher::CreateAndStart(
-      worker_process_host->GetID(), host->token(), host->instance().url(),
-      creator, &creator,
+      worker_process_host->GetDeprecatedID(), host->token(),
+      host->instance().url(), creator, &creator,
       host->instance().DoesRequireCrossSiteRequestForCookies()
           ? net::SiteForCookies()
           : host->instance().storage_key().ToNetSiteForCookies(),

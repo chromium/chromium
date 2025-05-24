@@ -9,8 +9,10 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
+#include "base/i18n/string_search.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
@@ -44,19 +46,40 @@ bool IsChecked(const FormFieldData::CheckStatus& check_status) {
 }
 
 void SetCheckStatus(FormFieldData* form_field_data,
-                    bool isCheckable,
-                    bool isChecked) {
-  if (isChecked) {
-    form_field_data->set_check_status(FormFieldData::CheckStatus::kChecked);
-  } else {
-    if (isCheckable) {
-      form_field_data->set_check_status(
-          FormFieldData::CheckStatus::kCheckableButUnchecked);
-    } else {
-      form_field_data->set_check_status(
-          FormFieldData::CheckStatus::kNotCheckable);
+                    bool is_checkable,
+                    bool is_checked) {
+  using enum FormFieldData::CheckStatus;
+  form_field_data->set_check_status(!is_checkable ? kNotCheckable
+                                    : is_checked  ? kChecked
+                                                  : kCheckableButUnchecked);
+}
+
+std::optional<size_t> FindShortestSubstringMatchInSelect(
+    const std::u16string& value,
+    bool ignore_whitespace,
+    base::span<const SelectOption> field_options) {
+  std::optional<size_t> best_match;
+
+  std::u16string value_stripped =
+      ignore_whitespace ? RemoveWhitespace(value) : value;
+  base::i18n::FixedPatternStringSearchIgnoringCaseAndAccents searcher(
+      value_stripped);
+  for (size_t i = 0; i < field_options.size(); ++i) {
+    const SelectOption& option = field_options[i];
+    std::u16string option_value =
+        ignore_whitespace ? RemoveWhitespace(option.value) : option.value;
+    std::u16string option_text =
+        ignore_whitespace ? RemoveWhitespace(option.text) : option.text;
+    if (searcher.Search(option_value, nullptr, nullptr) ||
+        searcher.Search(option_text, nullptr, nullptr)) {
+      if (!best_match.has_value() ||
+          field_options[best_match.value()].value.size() >
+              option.value.size()) {
+        best_match = i;
+      }
     }
   }
+  return best_match;
 }
 
 std::vector<std::string> LowercaseAndTokenizeAttributeString(
@@ -133,8 +156,14 @@ SubmissionIndicatorEvent ToSubmissionIndicatorEvent(SubmissionSource source) {
       return SubmissionIndicatorEvent::DOM_MUTATION_AFTER_AUTOFILL;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SubmissionIndicatorEvent::NONE;
+  NOTREACHED();
+}
+
+GURL StripAuth(const GURL& gurl) {
+  GURL::Replacements rep;
+  rep.ClearUsername();
+  rep.ClearPassword();
+  return gurl.ReplaceComponents(rep);
 }
 
 GURL StripAuthAndParams(const GURL& gurl) {
@@ -148,27 +177,14 @@ GURL StripAuthAndParams(const GURL& gurl) {
 
 bool IsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
-  return IsAddressAutofillManuallyTriggered(trigger_source) ||
-         IsPaymentsAutofillManuallyTriggered(trigger_source) ||
-         IsPasswordsAutofillManuallyTriggered(trigger_source);
+  return IsPasswordsAutofillManuallyTriggered(trigger_source).value();
 }
 
-bool IsAddressAutofillManuallyTriggered(
+IsPasswordRequestManuallyTriggered IsPasswordsAutofillManuallyTriggered(
     AutofillSuggestionTriggerSource trigger_source) {
-  return trigger_source ==
-         AutofillSuggestionTriggerSource::kManualFallbackAddress;
-}
-
-bool IsPaymentsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source) {
-  return trigger_source ==
-         AutofillSuggestionTriggerSource::kManualFallbackPayments;
-}
-
-bool IsPasswordsAutofillManuallyTriggered(
-    AutofillSuggestionTriggerSource trigger_source) {
-  return trigger_source ==
-         AutofillSuggestionTriggerSource::kManualFallbackPasswords;
+  return IsPasswordRequestManuallyTriggered(
+      trigger_source ==
+      AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 }
 
 bool IsPlusAddressesManuallyTriggered(
@@ -177,12 +193,18 @@ bool IsPlusAddressesManuallyTriggered(
          AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses;
 }
 
-bool IsAddressFieldSwappingEnabled() {
+bool IsPaymentsFieldSwappingEnabled() {
 #if BUILDFLAG(IS_IOS)
-  return base::FeatureList::IsEnabled(features::kAutofillAddressFieldSwapping);
+  return false;
 #else
-  return true;
+  return base::FeatureList::IsEnabled(features::kAutofillPaymentsFieldSwapping);
 #endif
+}
+
+std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list) {
+  std::vector<std::u16string> titles = base::ToVector(
+      titles_list, [](const auto& list_item) { return list_item.first; });
+  return base::JoinString(titles, u",");
 }
 
 }  // namespace autofill

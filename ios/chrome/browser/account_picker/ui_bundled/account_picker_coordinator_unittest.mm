@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_coordinator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/test/task_environment.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -38,7 +39,9 @@ class AccountPickerCoordinatorTest : public PlatformTest {
     return [[AccountPickerCoordinator alloc]
         initWithBaseViewController:base_view_controller_
                            browser:browser_.get()
-                     configuration:configuration];
+                     configuration:configuration
+                       accessPoint:signin_metrics::AccessPoint::
+                                       kSaveToPhotosIos];
   }
 
   AccountPickerConfiguration* CreateAccountPickerConfiguration() {
@@ -51,7 +54,7 @@ class AccountPickerCoordinatorTest : public PlatformTest {
     return configuration;
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;

@@ -55,7 +55,7 @@ ukm::SourceId UkmRecorder::GetSourceIdForWebIdentityFromScope(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
-    base::PassKey<DIPSNavigationHandle>,
+    base::PassKey<content::BtmNavigationHandle>,
     const GURL& redirect_url) {
   return UkmRecorder::GetSourceIdFromScopeImpl(redirect_url,
                                                SourceIdType::REDIRECT_ID);
@@ -63,7 +63,7 @@ ukm::SourceId UkmRecorder::GetSourceIdForRedirectUrl(
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForDipsSite(
-    base::PassKey<DIPSServiceImpl>,
+    base::PassKey<content::BtmServiceImpl>,
     const std::string& site) {
   // Use REDIRECT_ID because DIPS sites are bounce trackers that redirected the
   // user (see go/dips). This method is used for background reporting of such
@@ -105,16 +105,32 @@ ukm::SourceId UkmRecorder::GetSourceIdForExtensionUrl(
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForNotificationPermission(
     base::PassKey<ChromePermissionsClient>,
-    const GURL& origin) {
-  return UkmRecorder::GetSourceIdFromScopeImpl(origin,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
                                                SourceIdType::NOTIFICATION_ID);
 }
 
 // static
 ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
     base::PassKey<PlatformNotificationServiceImpl>,
-    const GURL& origin) {
-  return UkmRecorder::GetSourceIdFromScopeImpl(origin,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
+                                               SourceIdType::NOTIFICATION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
+    base::PassKey<PersistentNotificationHandler>,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
+                                               SourceIdType::NOTIFICATION_ID);
+}
+
+// static
+ukm::SourceId UkmRecorder::GetSourceIdForNotificationEvent(
+    base::PassKey<NonPersistentNotificationHandler>,
+    const GURL& url) {
+  return UkmRecorder::GetSourceIdFromScopeImpl(url,
                                                SourceIdType::NOTIFICATION_ID);
 }
 

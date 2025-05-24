@@ -74,7 +74,7 @@ TestHarness::TestHarness(PolicyLevel level)
     : PolicyProviderTestHarness(level, POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD) {
 }
 
-TestHarness::~TestHarness() {}
+TestHarness::~TestHarness() = default;
 
 void TestHarness::SetUp() {}
 

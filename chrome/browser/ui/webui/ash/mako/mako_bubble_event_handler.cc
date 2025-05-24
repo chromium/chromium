@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_event_handler.h"
 
+#include <variant>
+
 #include "ash/constants/ash_features.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/display/screen.h"
@@ -300,7 +302,7 @@ void MakoBubbleEventHandler::ProcessPointerEvent(ui::LocatedEvent& event) {
   if (!delegate_) {
     return;
   }
-  state_ = absl::visit(
+  state_ = std::visit(
       StateProcessFunction(/*event=*/&event, /*delegate=*/delegate_), state_);
 }
 

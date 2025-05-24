@@ -15,6 +15,8 @@ import androidx.core.animation.Animator;
 import androidx.core.animation.AnimatorListenerAdapter;
 import androidx.core.animation.ValueAnimator;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.ui.interpolators.AndroidxInterpolators;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,12 +26,13 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Coordinator that creates/shows and hides/destroys the toolbar branding overlay over the title and
  * url.
  */
+@NullMarked
 public class ToolbarBrandingOverlayCoordinator {
     @VisibleForTesting static final int HIDING_DURATION_MS = 300;
 
-    private View mView;
-    private PropertyModel mModel;
-    private ValueAnimator mHidingAnimator;
+    private @Nullable View mView;
+    private final PropertyModel mModel;
+    private @Nullable ValueAnimator mHidingAnimator;
 
     /**
      * Constructs and shows the toolbar branding overlay.

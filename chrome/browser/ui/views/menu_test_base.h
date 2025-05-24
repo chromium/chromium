@@ -12,13 +12,13 @@
 #include "chrome/browser/ui/views/test/view_event_test_base.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/views/accessibility/ax_event_observer.h"
+#include "ui/views/accessibility/ax_update_observer.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 namespace views {
 class MenuItemView;
 class MenuRunner;
-}
+}  // namespace views
 
 // This is a convenience base class for menu related tests to provide some
 // common functionality.
@@ -35,7 +35,7 @@ class MenuRunner;
 // MenuItemView prevents repeated activation of a menu by clicks too
 // close in time.
 class MenuTestBase : public ViewEventTestBase,
-                     public views::AXEventObserver,
+                     public views::AXUpdateObserver,
                      public views::MenuDelegate {
  public:
   MenuTestBase();
@@ -45,7 +45,7 @@ class MenuTestBase : public ViewEventTestBase,
 
   ~MenuTestBase() override;
 
-  // AXEventObserver overrides.
+  // AXUpdateObserver overrides.
   void OnViewEvent(views::View*, ax::mojom::Event event_type) override;
 
   // Generate a mouse click and run |next| once the event has been processed.
@@ -54,13 +54,9 @@ class MenuTestBase : public ViewEventTestBase,
   // Generate a keypress and run |next| once the event has been processed.
   void KeyPress(ui::KeyboardCode keycode, base::OnceClosure next);
 
-  views::MenuItemView* menu() {
-    return menu_;
-  }
+  views::MenuItemView* menu() { return menu_; }
 
-  int last_command() const {
-    return last_command_;
-  }
+  int last_command() const { return last_command_; }
 
  protected:
   views::MenuRunner* menu_runner() { return menu_runner_.get(); }

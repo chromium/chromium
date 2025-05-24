@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/bsp_tree.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
@@ -33,7 +29,7 @@ namespace {
   } while (false);
 
 #define INT_VECTOR_FROM_ARRAY(array) \
-  std::vector<int>(array, array + std::size(array))
+  std::vector<int>(std::begin(array), std::end(array))
 
 #define CREATE_DRAW_POLYGON(vertex_vector, normal, polygon_id) \
   new DrawPolygon(NULL, vertex_vector, normal, polygon_id)

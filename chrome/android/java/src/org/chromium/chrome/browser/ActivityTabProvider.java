@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -18,7 +22,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 
 /** A class that provides the current {@link Tab} for various states of the browser's activity. */
-public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements Destroyable {
+@NullMarked
+public class ActivityTabProvider extends ObservableSupplierImpl<@Nullable Tab>
+        implements Destroyable {
     /**
      * A utility class for observing the activity tab via {@link TabObserver}. When the activity
      * tab changes, the observer is switched to that tab.
@@ -45,7 +51,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
         }
 
         @Override
-        protected void onObservingDifferentTab(Tab tab) {
+        protected void onObservingDifferentTab(@Nullable Tab tab) {
             onObservingDifferentTab(tab, false);
         }
 
@@ -59,20 +65,20 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
          *     provided tab may still be frozen and is not yet selected.
          * @deprecated - hint is unused, override this method without the hint parameter.
          */
-        protected void onObservingDifferentTab(Tab tab, boolean hint) {}
+        protected void onObservingDifferentTab(@Nullable Tab tab, boolean hint) {}
     }
 
     /** A handle to the {@link LayoutStateProvider} to get the active layout. */
-    private LayoutStateProvider mLayoutStateProvider;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
     /** The observer watching scene changes in the active layout. */
-    private LayoutStateObserver mLayoutStateObserver;
+    private final LayoutStateObserver mLayoutStateObserver;
 
     /** A handle to the {@link TabModelSelector}. */
-    private TabModelSelector mTabModelSelector;
+    private @Nullable TabModelSelector mTabModelSelector;
 
     /** An observer for watching tab creation and switching events. */
-    private TabModelSelectorTabModelObserver mTabModelObserver;
+    private @Nullable TabModelSelectorTabModelObserver mTabModelObserver;
 
     /** An observer for watching tab model switching event. */
     private final Callback<TabModel> mCurrentTabModelObserver;
@@ -90,17 +96,22 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                         // tab does not change, the event will noop.
                         if (LayoutType.SIMPLE_ANIMATION == layout) return;
 
+                        assumeNonNull(mTabModelSelector);
                         Tab tab = mTabModelSelector.getCurrentTab();
                         if (layout != LayoutType.BROWSING) tab = null;
                         triggerActivityTabChangeEvent(tab);
                     }
 
                     @Override
+                    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
                     public void onStartedHiding(@LayoutType int layout) {
                         if (mTabModelSelector == null) return;
 
                         if (LayoutType.TAB_SWITCHER == layout) {
-                            set(mTabModelSelector.getCurrentTab());
+                            // TODO(https://github.com/uber/NullAway/issues/1209): Remove
+                            // assumeNonNull().
+                            Tab tab = assumeNonNull(mTabModelSelector.getCurrentTab());
+                            set(tab);
                         }
                     }
                 };
@@ -119,7 +130,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
         assert mTabModelSelector == null;
         mTabModelSelector = selector;
         mTabModelObserver =
-                new TabModelSelectorTabModelObserver(mTabModelSelector) {
+                new TabModelSelectorTabModelObserver(selector) {
                     @Override
                     public void didSelectTab(Tab tab, @TabSelectionType int type, int lastId) {
                         triggerActivityTabChangeEvent(tab);
@@ -129,7 +140,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
                     public void willCloseTab(Tab tab, boolean didCloseAlone) {
                         // If this is the last tab to close, make sure a signal is sent to the
                         // observers.
-                        if (mTabModelSelector.getCurrentModel().getCount() <= 1) {
+                        if (selector.getCurrentModel().getCount() <= 1) {
                             triggerActivityTabChangeEvent(null);
                         }
                     }
@@ -151,7 +162,7 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
      * Check if the interactive tab change event needs to be triggered based on the provided tab.
      * @param tab The activity's tab.
      */
-    private void triggerActivityTabChangeEvent(Tab tab) {
+    private void triggerActivityTabChangeEvent(@Nullable Tab tab) {
         // Allow the event to trigger before native is ready (before the layout manager is set).
         if (mLayoutStateProvider != null
                 && !(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)
@@ -160,18 +171,23 @@ public class ActivityTabProvider extends ObservableSupplierImpl<Tab> implements 
             return;
         }
 
+        // TODO(https://github.com/uber/NullAway/issues/1209): Remove assumeNonNull().
+        assumeNonNull(tab);
         set(tab);
     }
 
     /** Clean up and detach any observers this object created. */
     @Override
     public void destroy() {
-        if (mLayoutStateProvider != null) mLayoutStateProvider.removeObserver(mLayoutStateObserver);
-        mLayoutStateProvider = null;
-        if (mTabModelObserver != null) mTabModelObserver.destroy();
-        if (mTabModelSelector != null) {
-            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+        if (mLayoutStateProvider != null) {
+            mLayoutStateProvider.removeObserver(mLayoutStateObserver);
+            mLayoutStateProvider = null;
         }
-        mTabModelSelector = null;
+        if (mTabModelSelector != null) {
+            assumeNonNull(mTabModelObserver);
+            mTabModelObserver.destroy();
+            mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
+            mTabModelSelector = null;
+        }
     }
 }

@@ -13,7 +13,6 @@ import android.provider.Browser;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.app.NotificationCompat;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -172,7 +171,6 @@ public class AutoFetchNotifier {
                                 ChromeChannelDefinitions.ChannelId.DOWNLOADS, metadata)
                         .setContentTitle(title)
                         .setGroup(COMPLETE_NOTIFICATION_TAG)
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_LOW)
                         .setSmallIcon(R.drawable.ic_chrome)
                         .addAction(
                                 /* icon= */ 0,
@@ -190,7 +188,7 @@ public class AutoFetchNotifier {
                                         deleteIntent,
                                         /* flags= */ 0));
 
-        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         manager.notify(notification);
         NotificationUmaTracker.getInstance()
@@ -357,7 +355,6 @@ public class AutoFetchNotifier {
                                 context.getString(
                                         R.string.offline_pages_auto_fetch_ready_notification_text))
                         .setGroup(COMPLETE_NOTIFICATION_TAG)
-                        .setPriorityBeforeO(NotificationCompat.PRIORITY_LOW)
                         .setSmallIcon(R.drawable.ic_chrome)
                         .setDeleteIntent(
                                 PendingIntentProvider.getBroadcast(
@@ -367,7 +364,7 @@ public class AutoFetchNotifier {
                                         /* flags= */ 0));
 
         NotificationWrapper notification = builder.buildNotificationWrapper();
-        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
         manager.notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(

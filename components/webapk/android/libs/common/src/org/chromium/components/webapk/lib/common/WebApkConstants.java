@@ -4,7 +4,10 @@
 
 package org.chromium.components.webapk.lib.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Stores WebAPK related constants. */
+@NullMarked
 public final class WebApkConstants {
     public static final String WEBAPK_PACKAGE_PREFIX = "org.chromium.webapk";
 }

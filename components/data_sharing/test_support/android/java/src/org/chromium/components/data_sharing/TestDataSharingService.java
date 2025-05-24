@@ -27,14 +27,6 @@ public class TestDataSharingService implements DataSharingService {
     }
 
     @Override
-    public void readAllGroups(Callback<GroupsDataSetOrFailureOutcome> callback) {
-        Callback.runNullSafe(
-                callback,
-                new DataSharingService.GroupsDataSetOrFailureOutcome(
-                        null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
-    }
-
-    @Override
     public void readGroup(String groupId, Callback<GroupDataOrFailureOutcome> callback) {
         Callback.runNullSafe(
                 callback,
@@ -48,11 +40,6 @@ public class TestDataSharingService implements DataSharingService {
                 callback,
                 new DataSharingService.GroupDataOrFailureOutcome(
                         null, PeopleGroupActionFailure.PERSISTENT_FAILURE));
-    }
-
-    @Override
-    public void deleteGroup(String groupId, Callback<Integer> callback) {
-        Callback.runNullSafe(callback, PeopleGroupActionOutcome.PERSISTENT_FAILURE);
     }
 
     @Override
@@ -86,15 +73,15 @@ public class TestDataSharingService implements DataSharingService {
     }
 
     @Override
-    public GURL getDataSharingURL(GroupData groupData) {
+    public GURL getDataSharingUrl(GroupData groupData) {
         return null;
     }
 
     @Override
-    public ParseURLResult parseDataSharingURL(GURL url) {
-        return new ParseURLResult(
-                new GroupToken(/* groupId= */ null, /* accessToken= */ null),
-                ParseURLStatus.UNKNOWN);
+    public ParseUrlResult parseDataSharingUrl(GURL url) {
+        return new ParseUrlResult(
+                new GroupToken(/* collaborationId= */ null, /* accessToken= */ null),
+                ParseUrlStatus.UNKNOWN);
     }
 
     @Override
@@ -116,12 +103,12 @@ public class TestDataSharingService implements DataSharingService {
     }
 
     @Override
-    public DataSharingUIDelegate getUIDelegate() {
+    public DataSharingUIDelegate getUiDelegate() {
         return null;
     }
 
     @Override
-    public ServiceStatus getServiceStatus() {
+    public Logger getLogger() {
         return null;
     }
 }

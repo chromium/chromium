@@ -78,6 +78,13 @@
   outline: 0;
 }
 
+@media (forced-colors: active) {
+  #anchor:focus,
+  #button:focus {
+    outline: var(--cr-focus-outline-hcm);
+  }
+}
+
 ::slotted([slot=prefix]) {
   margin-inline-end: 16px;
 }

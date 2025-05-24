@@ -4,6 +4,8 @@
 
 package org.chromium.components.webauthn;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
@@ -12,10 +14,13 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
@@ -32,17 +37,18 @@ import java.nio.ByteBuffer;
  * setEffectiveOrigin() first.
  */
 @JNINamespace("webauthn")
+@NullMarked
 public class InternalAuthenticator {
     private long mNativeInternalAuthenticatorAndroid;
     private final AuthenticatorImpl mAuthenticator;
 
     private InternalAuthenticator(
             long nativeInternalAuthenticatorAndroid,
-            Context context,
-            WebContents webContents,
-            FidoIntentSender intentSender,
-            RenderFrameHost renderFrameHost,
-            Origin topOrigin) {
+            @Nullable Context context,
+            @Nullable WebContents webContents,
+            @Nullable FidoIntentSender intentSender,
+            @Nullable RenderFrameHost renderFrameHost,
+            @Nullable Origin topOrigin) {
         mNativeInternalAuthenticatorAndroid = nativeInternalAuthenticatorAndroid;
         WebauthnModeProvider.getInstance().setGlobalWebauthnMode(WebauthnMode.CHROME);
         mAuthenticator =
@@ -68,7 +74,9 @@ public class InternalAuthenticator {
     public static InternalAuthenticator create(
             long nativeInternalAuthenticatorAndroid, RenderFrameHost renderFrameHost) {
         final WebContents webContents = WebContentsStatics.fromRenderFrameHost(renderFrameHost);
+        assumeNonNull(webContents);
         final WindowAndroid window = webContents.getTopLevelNativeWindow();
+        assumeNonNull(window);
         final Context context = window.getActivity().get();
         final Origin topOrigin = webContents.getMainFrame().getLastCommittedOrigin();
         return new InternalAuthenticator(
@@ -78,6 +86,17 @@ public class InternalAuthenticator {
                 new AuthenticatorImpl.WindowIntentSender(window),
                 renderFrameHost,
                 topOrigin);
+    }
+
+    @CalledByNative
+    public static InternalAuthenticator create(long nativeInternalAuthenticatorAndroid) {
+        return new InternalAuthenticator(
+                nativeInternalAuthenticatorAndroid,
+                ContextUtils.getApplicationContext(),
+                /* webContents= */ null,
+                /* intentSender= */ null,
+                /* renderFrameHost= */ null,
+                /* topOrigin= */ null);
     }
 
     @CalledByNative
@@ -124,19 +143,27 @@ public class InternalAuthenticator {
      */
     @CalledByNative
     public void getAssertion(ByteBuffer optionsByteBuffer) {
-        mAuthenticator.getAssertion(
+        mAuthenticator.getCredential(
                 PublicKeyCredentialRequestOptions.deserialize(optionsByteBuffer),
-                (status, response, domExceptionDetails) -> {
+                (getCredentialResponse) -> {
                     // DOMExceptions can only be passed through the webAuthenticationProxy
                     // extensions API, which doesn't exist on Android.
-                    assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
-                            && domExceptionDetails == null;
+                    assert getCredentialResponse.getGetAssertionResponse().status
+                                    != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS
+                            && getCredentialResponse.getGetAssertionResponse().domExceptionDetails
+                                    == null;
                     if (mNativeInternalAuthenticatorAndroid != 0) {
                         InternalAuthenticatorJni.get()
                                 .invokeGetAssertionResponse(
                                         mNativeInternalAuthenticatorAndroid,
-                                        status,
-                                        response == null ? null : response.serialize());
+                                        getCredentialResponse.getGetAssertionResponse().status,
+                                        getCredentialResponse.getGetAssertionResponse().credential
+                                                        == null
+                                                ? null
+                                                : getCredentialResponse
+                                                        .getGetAssertionResponse()
+                                                        .credential
+                                                        .serialize());
                     }
                 });
     }
@@ -198,10 +225,14 @@ public class InternalAuthenticator {
     @NativeMethods
     public interface Natives {
         void invokeMakeCredentialResponse(
-                long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer);
+                long nativeInternalAuthenticatorAndroid,
+                int status,
+                @Nullable ByteBuffer byteBuffer);
 
         void invokeGetAssertionResponse(
-                long nativeInternalAuthenticatorAndroid, int status, ByteBuffer byteBuffer);
+                long nativeInternalAuthenticatorAndroid,
+                int status,
+                @Nullable ByteBuffer byteBuffer);
 
         void invokeIsUserVerifyingPlatformAuthenticatorAvailableResponse(
                 long nativeInternalAuthenticatorAndroid, boolean isUVPAA);

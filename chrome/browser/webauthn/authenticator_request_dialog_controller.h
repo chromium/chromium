@@ -16,14 +16,21 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/webauthn/passkey_upgrade_request_controller.h"
+#include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/observable_authenticator_list.h"
+#include "chrome/browser/webauthn/password_credential_controller.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_change.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
+#include "url/gurl.h"
 
+class ChallengeUrlFetcher;
+class PasskeyUpgradeRequestController;
 class Profile;
 
 namespace content {
@@ -35,11 +42,14 @@ class RenderFrameHost;
 // the `Step` enumeration.
 class AuthenticatorRequestDialogController
     : public AuthenticatorRequestDialogModel::Observer,
-      public webauthn::PasskeyModel::Observer {
+      public webauthn::PasskeyModel::Observer,
+      public PasskeyUpgradeRequestController::Delegate {
  public:
   using RequestCallback = device::FidoRequestHandlerBase::RequestCallback;
   using BlePermissionCallback = base::RepeatingCallback<void(
       device::FidoRequestHandlerBase::BlePermissionCallback)>;
+  using EnclaveRequestCallback = base::RepeatingCallback<void(
+      std::unique_ptr<device::enclave::CredentialRequest>)>;
 
   AuthenticatorRequestDialogController(
       AuthenticatorRequestDialogModel* model,
@@ -54,7 +64,35 @@ class AuthenticatorRequestDialogController
 
   AuthenticatorRequestDialogModel* model() const;
 
+  // AuthenticatorRequestDialogModel::Observer:
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+  void StartOver() override;
+  void OnCreatePasskeyAccepted() override;
+  void OnRecoverSecurityDomainClosed() override;
+  void ContinueWithFlowAfterBleAdapterPowered() override;
+  void PowerOnBleAdapter() override;
+  void OpenBlePreferences() override;
+  void OnOffTheRecordInterstitialAccepted() override;
+  void CancelAuthenticatorRequest() override;
+  void OnRequestComplete() override;
+  void OnResidentCredentialConfirmed() override;
+  void OnHavePIN(std::u16string pin) override;
+  void EnclaveEnabledStatusChanged(EnclaveEnabledStatus status) override;
+  void OnAccountSelected(size_t index) override;
+  void OnAccountPreselectedIndex(size_t index) override;
+  void ContactPriorityPhone() override;
+  void OnBioEnrollmentDone() override;
+  void OnUserConfirmedPriorityMechanism() override;
+
+  // webauthn::PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
+
+  // PasskeyUpgradeRequestController::Delegate:
+  void PasskeyUpgradeSucceeded() override;
+  void PasskeyUpgradeFailed() override;
 
   // Hides the dialog. A subsequent call to SetCurrentStep() will unhide it.
   void HideDialog();
@@ -64,23 +102,18 @@ class AuthenticatorRequestDialogController
   // is only resolved after the UI is dismissed.
   bool is_request_complete() const;
 
-  // Starts the UX flow, by either showing the transport selection screen or
-  // the guided flow for them most likely transport.
-  //
-  // If |is_conditional_mediation| is true, credentials will be shown on the
-  // password autofill instead of the full-blown page-modal UI.
+  // Starts the UX flow, by either showing the transport or password selection
+  // screen or the guided flow for the most likely transport.
   //
   // Valid action when at step: kNotStarted.
   void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
                      transport_availability,
-                 bool is_conditional_mediation);
-
-  void StartOver() override;
+                 PasswordCredentialController::PasswordCredentials passwords);
 
   // Starts a modal WebAuthn flow (i.e. what you normally get if you call
   // WebAuthn with no mediation parameter) from a conditional request.
   //
-  // Valid action when at step: kConditionalMediation.
+  // Valid action when at step: kPasskeyAutofill.
   void TransitionToModalWebAuthnRequest();
 
   // Starts the UX flow. Tries to figure out the most likely transport to be
@@ -99,17 +132,6 @@ class AuthenticatorRequestDialogController
   void HideDialogAndDispatchToPlatformAuthenticator(
       std::optional<device::AuthenticatorType> type = std::nullopt);
 
-  void EnclaveEnabled() override;
-
-  void EnclaveNeedsReauth() override;
-
-  void OnCreatePasskeyAccepted() override;
-
-  // Called when the transport availability info changes.
-  void OnTransportAvailabilityChanged(
-      device::FidoRequestHandlerBase::TransportAvailabilityInfo
-          transport_availability);
-
   // Called when an attempt to contact a phone failed.
   void OnPhoneContactFailed(const std::string& name);
 
@@ -119,8 +141,6 @@ class AuthenticatorRequestDialogController
 
   // Called when `cable_connecting_sheet_timer_` completes.
   void OnCableConnectingTimerComplete();
-
-  void OnRecoverSecurityDomainClosed() override;
 
   // StartPhonePairing triggers the display of a QR code for pairing a new
   // phone.
@@ -140,10 +160,6 @@ class AuthenticatorRequestDialogController
   void EnsureBleAdapterIsPoweredAndContinue(base::OnceClosure action);
   void OnBleStatusKnown(device::FidoRequestHandlerBase::BleStatus ble_status);
 
-  void ContinueWithFlowAfterBleAdapterPowered() override;
-  void PowerOnBleAdapter() override;
-  void OpenBlePreferences() override;
-
   // Tries if a USB device is present -- the user claims they plugged it in.
   //
   // Valid action when at step: kUsbInsert.
@@ -156,15 +172,6 @@ class AuthenticatorRequestDialogController
   //
   // Valid action when at all steps.
   void StartPlatformAuthenticatorFlow();
-
-  void OnOffTheRecordInterstitialAccepted() override;
-  void ShowCableUsbFallback() override;
-
-  // Show caBLE activation sheet.
-  void ShowCable();
-
-  void CancelAuthenticatorRequest() override;
-  void OnRequestComplete() override;
 
   // To be called when Web Authentication request times-out.
   void OnRequestTimeout();
@@ -231,6 +238,9 @@ class AuthenticatorRequestDialogController
   // request should never have been sent to iCloud Keychain in the first place.
   bool OnNoPasskeys();
 
+  // To be called when fetching a challenge from a provided URL failed.
+  void OnChallengeUrlFailure();
+
   // To be called when the Bluetooth adapter status changes.
   void BluetoothAdapterStatusChanged(
       device::FidoRequestHandlerBase::BleStatus ble_status);
@@ -242,13 +252,10 @@ class AuthenticatorRequestDialogController
   void SetBluetoothAdapterPowerOnCallback(
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
   void SetRequestBlePermissionCallback(BlePermissionCallback callback);
-  void OnHavePIN(std::u16string pin) override;
 
   // Called when the user needs to retry user verification with the number of
   // |attempts| remaining.
   void OnRetryUserVerification(int attempts);
-
-  void OnResidentCredentialConfirmed() override;
 
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a
@@ -262,8 +269,6 @@ class AuthenticatorRequestDialogController
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback);
 
-  void OnAccountSelected(size_t index) override;
-
   // OnAccountPreselected is called when the user selects a discoverable
   // credential from a platform authenticator prior to providing user
   // authentication. `crededential_id` must match one of the credentials in
@@ -276,9 +281,7 @@ class AuthenticatorRequestDialogController
   device::AuthenticatorType OnAccountPreselected(
       const std::vector<uint8_t> credential_id);
 
-  void OnAccountPreselectedIndex(size_t index) override;
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
-  void ContactPriorityPhone() override;
 
   // ContactPhoneForTesting triggers a contact for a phone with the given name.
   // Only for unittests. UI should use |mechanisms()| to enumerate the
@@ -322,7 +325,6 @@ class AuthenticatorRequestDialogController
 
   void StartInlineBioEnrollment(base::OnceClosure next_callback);
   void OnSampleCollected(int bio_samples_remaining);
-  void OnBioEnrollmentDone() override;
 
   void set_is_non_webauthn_request(bool is_non_webauthn_request) {
     is_non_webauthn_request_ = is_non_webauthn_request;
@@ -347,8 +349,6 @@ class AuthenticatorRequestDialogController
   void set_allow_icloud_keychain(bool);
   void set_should_create_in_icloud_keychain(bool);
 
-  void set_enclave_can_be_default(bool can_be_default);
-
 #if BUILDFLAG(IS_MAC)
   void RecordMacOsStartedHistogram();
   void RecordMacOsSuccessHistogram(device::FidoRequestType,
@@ -357,7 +357,20 @@ class AuthenticatorRequestDialogController
   void set_has_icloud_drive_enabled(bool);
 #endif
 
-  void set_ambient_credential_types(int types);
+  void SetCredentialTypes(int types);
+
+  content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation()
+      const;
+  void SetUIPresentation(
+      content::AuthenticatorRequestClientDelegate::UIPresentation modality);
+
+  void ProvideChallengeUrl(
+      const GURL& url,
+      base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
+          callback);
+
+  void InitializeEnclaveRequestCallback(
+      device::FidoDiscoveryFactory* discovery_factory);
 
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
@@ -425,7 +438,8 @@ class AuthenticatorRequestDialogController
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
   void ContactPhoneAfterBleIsPowered(std::string name);
 
-  void StartConditionalMediationRequest();
+  void StartAutofillRequest();
+  void StartPasskeyUpgradeRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
 
@@ -451,23 +465,11 @@ class AuthenticatorRequestDialogController
   std::optional<size_t> IndexOfPriorityMechanism();
 
   std::optional<size_t> IndexOfGetAssertionPriorityMechanism();
+  std::optional<size_t> IndexOfImmediateGetPriorityMechanism();
   std::optional<size_t> IndexOfMakeCredentialPriorityMechanism();
 
   // Sets correct step for entering GPM pin based on `gpm_pin_is_arbitrary_`.
   void PromptForGPMPin();
-
-  // webauthn::PasskeyModel::Observer:
-  void OnPasskeysChanged(
-      const std::vector<webauthn::PasskeyModelChange>& changes) override;
-  void OnPasskeyModelShuttingDown() override;
-
-  // Update fields in `model_` based on the value of `transport_availability_`
-  // and `priority_mechanism_index_`.
-  void UpdateModelForTransportAvailability();
-
-  void OnUserConfirmedPriorityMechanism() override;
-
-  void OnChromeOSGPMRequestReady() override;
 
   // Returns true if this request could pick the enclave authenticator by
   // default. This only makes sense for a create() call.
@@ -476,6 +478,14 @@ class AuthenticatorRequestDialogController
   // Returns the render frame host associated with this request. The render
   // frame host indirectly owns the controller, and so it should outlive it.
   content::RenderFrameHost* GetRenderFrameHost() const;
+
+  // Lazy creation accessor.
+  ChallengeUrlFetcher* GetChallengeUrlFetcher();
+
+  void MaybeStartChallengeFetch();
+  void OnChallengeFetched();
+
+  void PopulatePasswords();
 
   raw_ptr<AuthenticatorRequestDialogModel> model_;
 
@@ -508,6 +518,8 @@ class AuthenticatorRequestDialogController
   device::FidoRequestHandlerBase::TransportAvailabilityInfo
       transport_availability_;
 
+  PasswordCredentialController::PasswordCredentials passwords_;
+
   content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
       account_preselected_callback_;
   RequestCallback request_callback_;
@@ -523,10 +535,6 @@ class AuthenticatorRequestDialogController
 
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
-
-  // True if this request should display credentials on the password autofill
-  // prompt instead of the page-modal, regular UI.
-  bool use_conditional_mediation_ = false;
 
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
@@ -573,13 +581,12 @@ class AuthenticatorRequestDialogController
   // profile authenticator.
   bool should_create_in_icloud_keychain_ = false;
 
-  // enclave_enabled_ is true if a "Google Password Manager" entry should be
-  // offered as a mechanism for creating a credential.
-  bool enclave_enabled_ = false;
-
-  // enclave_needs_reauth_ is true if a "Reauth to use Google Password Manager"
-  // entry should be offered as a mechanism for creating or using a credential.
-  bool enclave_needs_reauth_ = false;
+  // enclave_enabled_status_ determines whether Google Password Manager entries
+  // should be offered both for `makeCredential` or `getAssertion`. If reauth
+  // needed, instead of offering the actual passkeys or creating a passkey,
+  // re-authentication to Google is offered.
+  EnclaveEnabledStatus enclave_enabled_status_ =
+      EnclaveEnabledStatus::kDisabled;
 
   // The RP's hints. See
   // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints
@@ -605,18 +612,27 @@ class AuthenticatorRequestDialogController
   bool has_icloud_drive_enabled_ = false;
 #endif
 
-  bool enclave_can_be_default_ = true;
-
-  // The credential types that are being asked for in an ambient UI
-  // request.
-  int ambient_credential_types_ =
+  // The credential types that are being asked for.
+  int credential_types_ =
       static_cast<int>(blink::mojom::CredentialTypeFlags::kNone);
+
+  // ChallengeUrl support. The URL is the destination to fetch the challenge
+  // and the callback is invoked when the challenge is received.
+  GURL challenge_url_;
+  base::OnceCallback<void(std::optional<base::span<const uint8_t>>)>
+      challenge_callback_;
+
+  std::unique_ptr<ChallengeUrlFetcher> challenge_url_fetcher_;
 
   const content::GlobalRenderFrameHostId frame_host_id_;
 
   base::ScopedObservation<webauthn::PasskeyModel,
                           webauthn::PasskeyModel::Observer>
       passkey_model_observation_{this};
+
+  EnclaveRequestCallback enclave_request_callback_;
+  std::unique_ptr<PasskeyUpgradeRequestController>
+      passkey_upgrade_request_controller_;
 
   base::WeakPtrFactory<AuthenticatorRequestDialogController> weak_factory_{
       this};

@@ -8,20 +8,18 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/escape.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/reporting/metrics_utils.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/reporting_util.h"
@@ -37,16 +35,11 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/event_router.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process_platform_part_chromeos.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #else
@@ -64,158 +57,45 @@
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/device_signals/core/common/signals_constants.h"
-#include "components/policy/core/common/features.h"
 #endif
 
 namespace enterprise_connectors {
 
-namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const char kPolicyClientDescription[] = "any";
-#else
-const char kChromeBrowserCloudManagementClientDescription[] =
-    "a machine-level user";
-#endif
-const char kProfilePolicyClientDescription[] = "a profile-level user";
-
-bool IsClientValid(const std::string& dm_token,
-                   policy::CloudPolicyClient* client) {
-  return client && client->dm_token() == dm_token;
-}
-
-void UploadCallback(base::Value::Dict event_wrapper,
-                    bool per_profile,
-                    policy::CloudPolicyClient* client,
-                    EnterpriseReportingEventType eventType,
-                    policy::CloudPolicyClient::Result upload_result) {
-  // TODO(b/256553070): Do not crash if the client is unregistered.
-  CHECK(!upload_result.IsClientNotRegisteredError());
-
-// Device DM token is already set on Ash by reporting::GetContext(...)
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!per_profile && client) {
-    event_wrapper.SetByDottedPath(
-        "context.device",
-        policy::ReportingJobConfigurationBase::DeviceDictionaryBuilder::
-            BuildDeviceDictionary(client->dm_token(), client->client_id()));
-  }
-#endif
-  event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
-
-  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
-      std::move(event_wrapper));
-
-  if (upload_result.IsSuccess()) {
-    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
-                                  eventType);
-  } else {
-    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadFailure",
-                                  eventType);
-  }
-}
-
-void UploadSecurityEventReport(base::Value::Dict event,
-                               policy::CloudPolicyClient* client,
-                               std::string name,
-                               const ReportingSettings& settings,
-                               content::BrowserContext* context,
-                               base::Time time) {
-  base::Value::Dict event_wrapper =
-      base::Value::Dict()
-          .Set("time", base::TimeFormatAsIso8601(time))
-          .Set(name, std::move(event));
-
-  VLOG(1) << "enterprise.connectors: security event: "
-          << event_wrapper.DebugString();
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  base::Value::Dict report =
-      policy::RealtimeReportingJobConfiguration::BuildReport(
-          base::Value::List().Append(std::move(event_wrapper)),
-          reporting::GetContext(profile));
-
-  auto upload_callback = base::BindOnce(
-      &UploadCallback, report.Clone(), settings.per_profile, client,
-      enterprise_connectors::GetUmaEnumFromEventName(name));
-
-  client->UploadSecurityEventReport(
-      IncludeDeviceInfo(profile, settings.per_profile), std::move(report),
-      std::move(upload_callback));
-}
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-void PopulateSignals(base::Value::Dict event,
-                     policy::CloudPolicyClient* client,
-                     std::string name,
-                     ReportingSettings settings,
-                     content::BrowserContext* context,
-                     base::Time time,
-                     device_signals::SignalsAggregationResponse response) {
-  AddCrowdstrikeSignalsToEvent(event, response);
-  UploadSecurityEventReport(std::move(event), client, name, settings, context,
-                            time);
-}
-#endif
-
-bool IsManagedGuestSession() {
-#if BUILDFLAG(IS_CHROMEOS)
-  return chromeos::IsManagedGuestSession();
-#else
-  return false;
-#endif
-}
-
-}  // namespace
-
-const char RealtimeReportingClient::kKeyProfileIdentifier[] =
-    "profileIdentifier";
-const char RealtimeReportingClient::kKeyProfileUserName[] = "profileUserName";
-
 RealtimeReportingClient::RealtimeReportingClient(
     content::BrowserContext* context)
-    : context_(context) {
+    : RealtimeReportingClientBase(
+          g_browser_process->browser_policy_connector()
+              ->device_management_service(),
+          g_browser_process->shared_url_loader_factory()),
+      context_(context) {
   identity_manager_ = IdentityManagerFactory::GetForProfile(
       Profile::FromBrowserContext(context_));
 }
 
-RealtimeReportingClient::~RealtimeReportingClient() {
-  if (browser_client_)
-    browser_client_->RemoveObserver(this);
-  if (profile_client_)
-    profile_client_->RemoveObserver(this);
-}
-
-// static
-bool RealtimeReportingClient::ShouldInitRealtimeReportingClient() {
-  if (IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)) {
-    DVLOG(2) << "Safe browsing real-time reporting is not enabled in Managed "
-                "Guest Sessions.";
-    return false;
-  }
-
-  return true;
-}
+RealtimeReportingClient::~RealtimeReportingClient() = default;
 
 void RealtimeReportingClient::SetBrowserCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
-  if (client == nullptr && browser_client_)
+  if (client == nullptr && browser_client_) {
     browser_client_->RemoveObserver(this);
+  }
 
   browser_client_ = client;
-  if (browser_client_)
+  if (browser_client_) {
     browser_client_->AddObserver(this);
+  }
 }
 
 void RealtimeReportingClient::SetProfileCloudPolicyClientForTesting(
     policy::CloudPolicyClient* client) {
-  if (client == nullptr && profile_client_)
+  if (client == nullptr && profile_client_) {
     profile_client_->RemoveObserver(this);
+  }
 
   profile_client_ = client;
-  if (profile_client_)
+  if (profile_client_) {
     profile_client_->AddObserver(this);
+  }
 }
 
 void RealtimeReportingClient::SetIdentityManagerForTesting(
@@ -223,118 +103,7 @@ void RealtimeReportingClient::SetIdentityManagerForTesting(
   identity_manager_ = identity_manager;
 }
 
-void RealtimeReportingClient::InitRealtimeReportingClient(
-    const ReportingSettings& settings) {
-  // If the corresponding client is already initialized, do nothing.
-  if ((settings.per_profile &&
-       IsClientValid(settings.dm_token, profile_client_)) ||
-      (!settings.per_profile &&
-       IsClientValid(settings.dm_token, browser_client_))) {
-    DVLOG(2) << "Safe browsing real-time event reporting already initialized.";
-    return;
-  }
-
-  if (!ShouldInitRealtimeReportingClient())
-    return;
-
-  // |identity_manager_| may be null in tests and in guest profiles. If there
-  // is no identity manager then the profile username will be empty.
-  if (!identity_manager_) {
-    DVLOG(2)
-        << "Safe browsing real-time event reporting empty profile username.";
-  }
-
-  policy::CloudPolicyClient* client = nullptr;
-  std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
-      InitBrowserReportingClient(settings.dm_token);
-#else
-  std::pair<std::string, policy::CloudPolicyClient*> desc_and_client =
-      settings.per_profile ? InitProfileReportingClient(settings.dm_token)
-                           : InitBrowserReportingClient(settings.dm_token);
-#endif
-  if (!desc_and_client.second)
-    return;
-  policy_client_desc = std::move(desc_and_client.first);
-  client = std::move(desc_and_client.second);
-
-  OnCloudPolicyClientAvailable(policy_client_desc, client);
-}
-
-std::pair<std::string, policy::CloudPolicyClient*>
-RealtimeReportingClient::InitBrowserReportingClient(
-    const std::string& dm_token) {
-  // |device_management_service| may be null in tests. If there is no device
-  // management service don't enable the real-time reporting API since the
-  // router won't be able to create the reporting server client below.
-  policy::DeviceManagementService* device_management_service =
-      g_browser_process->browser_policy_connector()
-          ->device_management_service();
-  std::string policy_client_desc;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_client_desc = kPolicyClientDescription;
-#else
-  policy_client_desc = kChromeBrowserCloudManagementClientDescription;
-#endif
-  if (!device_management_service) {
-    DVLOG(2) << "Safe browsing real-time event requires a device management "
-                "service.";
-    return {policy_client_desc, nullptr};
-  }
-
-  policy::CloudPolicyClient* client = nullptr;
-  std::string client_id;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile = nullptr;
-  const user_manager::User* user = GetChromeOSUser();
-  if (user) {
-    profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-    // If primary user profile is not finalized, use the current profile.
-    if (!profile)
-      profile = Profile::FromBrowserContext(context_);
-  } else {
-    LOG(ERROR) << "Could not determine who the user is.";
-    profile = Profile::FromBrowserContext(context_);
-  }
-  DCHECK(profile);
-
-  if (IsManagedGuestSession()) {
-    client_id = reporting::GetMGSUserClientId().value_or("");
-  } else {
-    client_id = reporting::GetUserClientId(profile).value_or("");
-  }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* main_profile = GetMainProfileLacros();
-  if (main_profile) {
-    // Prefer the user client id if available.
-    client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
-  }
-#else
-  client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
-#endif
-
-  DCHECK(!client_id.empty());
-
-  // Make sure DeviceManagementService has been initialized.
-  device_management_service->ScheduleInitialization(0);
-
-  browser_private_client_ = std::make_unique<policy::CloudPolicyClient>(
-      device_management_service, g_browser_process->shared_url_loader_factory(),
-      policy::CloudPolicyClient::DeviceDMTokenCallback());
-  client = browser_private_client_.get();
-
-  if (!client->is_registered()) {
-    client->SetupRegistration(
-        dm_token, client_id,
-        /*user_affiliation_ids=*/std::vector<std::string>());
-  }
-
-  return {policy_client_desc, client};
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::pair<std::string, policy::CloudPolicyClient*>
 RealtimeReportingClient::InitProfileReportingClient(
     const std::string& dm_token) {
@@ -342,7 +111,7 @@ RealtimeReportingClient::InitProfileReportingClient(
       Profile::FromBrowserContext(context_)->GetCloudPolicyManager();
   if (!policy_manager || !policy_manager->core() ||
       !policy_manager->core()->client()) {
-    return {kProfilePolicyClientDescription, nullptr};
+    return {GetProfilePolicyClientDescription(), nullptr};
   }
 
   profile_private_client_ = std::make_unique<policy::CloudPolicyClient>(
@@ -355,43 +124,9 @@ RealtimeReportingClient::InitProfileReportingClient(
                             policy_manager->core()->client()->client_id(),
                             /*user_affiliation_ids*/ {});
 
-  return {kProfilePolicyClientDescription, client};
+  return {GetProfilePolicyClientDescription(), client};
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-
-void RealtimeReportingClient::OnCloudPolicyClientAvailable(
-    const std::string& policy_client_desc,
-    policy::CloudPolicyClient* client) {
-  if (client == nullptr) {
-    LOG(ERROR) << "Could not obtain " << policy_client_desc
-               << " for safe browsing real-time event reporting.";
-    return;
-  }
-
-  if (policy_client_desc == kProfilePolicyClientDescription) {
-    DCHECK_NE(profile_client_, client);
-    if (profile_client_ == client)
-      return;
-
-    if (profile_client_)
-      profile_client_->RemoveObserver(this);
-
-    profile_client_ = client;
-  } else {
-    DCHECK_NE(browser_client_, client);
-    if (browser_client_ == client)
-      return;
-
-    if (browser_client_)
-      browser_client_->RemoveObserver(this);
-
-    browser_client_ = client;
-  }
-
-  client->AddObserver(this);
-
-  VLOG(1) << "Ready for safe browsing real-time event reporting.";
-}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 std::optional<ReportingSettings>
 RealtimeReportingClient::GetReportingSettings() {
@@ -400,15 +135,16 @@ RealtimeReportingClient::GetReportingSettings() {
     return std::nullopt;
   }
 
-  return service->GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  return service->GetReportingSettings();
 }
 
 void RealtimeReportingClient::ReportRealtimeEvent(
     const std::string& name,
     const ReportingSettings& settings,
     base::Value::Dict event) {
-  ReportEventWithTimestamp(name, settings, std::move(event), base::Time::Now(),
-                           /*include_profile_user_name=*/true);
+  ReportEventWithTimestampDeprecated(name, settings, std::move(event),
+                                     base::Time::Now(),
+                                     /*include_profile_user_name=*/true);
 }
 
 void RealtimeReportingClient::ReportPastEvent(const std::string& name,
@@ -417,8 +153,8 @@ void RealtimeReportingClient::ReportPastEvent(const std::string& name,
                                               const base::Time& time) {
   // Do not include profile information for past events because for crash events
   // we do not necessarily know which profile caused the crash .
-  ReportEventWithTimestamp(name, settings, std::move(event), time,
-                           /*include_profile_user_name=*/false);
+  ReportEventWithTimestampDeprecated(name, settings, std::move(event), time,
+                                     /*include_profile_user_name=*/false);
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -445,76 +181,29 @@ void AddCrowdstrikeSignalsToEvent(
 
 #endif
 
-void RealtimeReportingClient::ReportEventWithTimestamp(
-    const std::string& name,
-    const ReportingSettings& settings,
-    base::Value::Dict event,
-    const base::Time& time,
-    bool include_profile_user_name) {
-  if (rejected_dm_token_timers_.contains(settings.dm_token)) {
-    return;
-  }
-
-#ifndef NDEBUG
-  // Make sure the event is included in the kAllReportingEvents array.
-  bool found = false;
-  for (const char* event_name : kAllReportingEvents) {
-    if (event_name == name) {
-      found = true;
-      break;
-    }
-  }
-  DCHECK(found);
-#endif
-
-  // Make sure real-time reporting is initialized.
-  InitRealtimeReportingClient(settings);
-  if ((settings.per_profile && !profile_client_) ||
-      (!settings.per_profile && !browser_client_)) {
-    return;
-  }
-
-  policy::CloudPolicyClient* client =
-      settings.per_profile ? profile_client_.get() : browser_client_.get();
-  event.Set(kKeyProfileIdentifier, GetProfileIdentifier());
-  if (include_profile_user_name) {
-    event.Set(kKeyProfileUserName, GetProfileUserName());
-  }
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  Profile* profile = Profile::FromBrowserContext(context_);
-  device_signals::SignalsAggregator* signals_aggregator =
-      enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
-  if (signals_aggregator) {
-    device_signals::SignalsAggregationRequest request;
-    request.signal_names.emplace(device_signals::SignalName::kAgent);
-    signals_aggregator->GetSignals(
-        request, base::BindOnce(&PopulateSignals, std::move(event), client,
-                                name, settings, context_, time));
-  } else {
-    UploadSecurityEventReport(std::move(event), client, name, settings,
-                              context_, time);
-  }
-#else
-  UploadSecurityEventReport(std::move(event), client, name, settings, context_,
-                            time);
-#endif
+void RealtimeReportingClient::SetProfileUserNameForTesting(
+    std::string username) {
+  username_ = std::move(username);
 }
 
-std::string RealtimeReportingClient::GetProfileUserName() const {
-  std::string username =
+std::string RealtimeReportingClient::GetProfileUserName() {
+  if (!username_.empty()) {
+    return username_;
+  }
+  username_ =
       identity_manager_ ? GetProfileEmail(identity_manager_) : std::string();
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (username.empty()) {
-    username = Profile::FromBrowserContext(context_)->GetPrefs()->GetString(
+  if (username_.empty()) {
+    username_ = Profile::FromBrowserContext(context_)->GetPrefs()->GetString(
         enterprise_signin::prefs::kProfileUserEmail);
   }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  return username;
+  return username_;
 }
 
-std::string RealtimeReportingClient::GetProfileIdentifier() const {
+std::string RealtimeReportingClient::GetProfileIdentifier() {
   if (profile_client_) {
     auto* profile_id_service =
         enterprise::ProfileIdServiceFactory::GetForProfile(
@@ -528,7 +217,185 @@ std::string RealtimeReportingClient::GetProfileIdentifier() const {
   return Profile::FromBrowserContext(context_)->GetPath().AsUTF8Unsafe();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+std::string RealtimeReportingClient::GetBrowserClientId() {
+  std::string client_id;
+#if BUILDFLAG(IS_CHROMEOS)
+  Profile* profile = nullptr;
+  const user_manager::User* user = GetChromeOSUser();
+  if (user) {
+    profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
+    // If primary user profile is not finalized, use the current profile.
+    if (!profile) {
+      profile = Profile::FromBrowserContext(context_);
+    }
+  } else {
+    LOG(ERROR) << "Could not determine who the user is.";
+    profile = Profile::FromBrowserContext(context_);
+  }
+  DCHECK(profile);
+
+  if (chromeos::IsManagedGuestSession()) {
+    client_id = reporting::GetMGSUserClientId().value_or("");
+  } else {
+    client_id = reporting::GetUserClientId(profile).value_or("");
+  }
+#else
+  client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#endif
+  return client_id;
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    policy::CloudPolicyClient* client,
+    const ReportingSettings& settings) {
+  Profile* profile = Profile::FromBrowserContext(context_);
+  device_signals::SignalsAggregator* signals_aggregator =
+      enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
+  if (signals_aggregator) {
+    device_signals::SignalsAggregationRequest request;
+    request.signal_names.emplace(device_signals::SignalName::kAgent);
+    signals_aggregator->GetSignals(
+        request,
+        base::BindOnce(&RealtimeReportingClient::PopulateSignalsAndReportEvent,
+                       AsWeakPtrImpl(), std::move(event), client, settings));
+  } else {
+    UploadSecurityEvent(std::move(event), client, settings);
+  }
+}
+
+void RealtimeReportingClient::PopulateSignalsAndReportEvent(
+    ::chrome::cros::reporting::proto::Event event,
+    policy::CloudPolicyClient* client,
+    ReportingSettings settings,
+    device_signals::SignalsAggregationResponse response) {
+  // TODO: AddCrowdstrikeSignalsToEvent(event, response);
+  UploadSecurityEvent(std::move(event), client, settings);
+}
+
+void RealtimeReportingClient::MaybeCollectDeviceSignalsAndReportEventDeprecated(
+    base::Value::Dict event,
+    policy::CloudPolicyClient* client,
+    std::string name,
+    const ReportingSettings& settings,
+    base::Time time) {
+  Profile* profile = Profile::FromBrowserContext(context_);
+  device_signals::SignalsAggregator* signals_aggregator =
+      enterprise_signals::SignalsAggregatorFactory::GetForProfile(profile);
+  if (signals_aggregator) {
+    device_signals::SignalsAggregationRequest request;
+    request.signal_names.emplace(device_signals::SignalName::kAgent);
+    signals_aggregator->GetSignals(
+        request,
+        base::BindOnce(
+            &RealtimeReportingClient::PopulateSignalsAndReportEventDeprecated,
+            AsWeakPtrImpl(), std::move(event), client, name, settings, context_,
+            time));
+  } else {
+    UploadSecurityEventReportDeprecated(std::move(event), client, name,
+                                        settings, time);
+  }
+}
+
+void RealtimeReportingClient::PopulateSignalsAndReportEventDeprecated(
+    base::Value::Dict event,
+    policy::CloudPolicyClient* client,
+    std::string name,
+    ReportingSettings settings,
+    content::BrowserContext* context,
+    base::Time time,
+    device_signals::SignalsAggregationResponse response) {
+  AddCrowdstrikeSignalsToEvent(event, response);
+  UploadSecurityEventReportDeprecated(std::move(event), client, name, settings,
+                                      time);
+}
+#endif
+
+bool RealtimeReportingClient::ShouldIncludeDeviceInfo(bool per_profile) {
+  return IncludeDeviceInfo(Profile::FromBrowserContext(context_), per_profile);
+}
+
+base::Value::Dict RealtimeReportingClient::ReportErrorDetails(
+    const policy::CloudPolicyClient::Result& upload_result) {
+  base::Value::Dict event_wrapper = base::Value::Dict();
+  event_wrapper.Set("uploaded_successfully", upload_result.IsSuccess());
+  if (!upload_result.IsSuccess()) {
+    event_wrapper.Set("error_code", upload_result.GetNetError());
+    event_wrapper.Set("error_message", upload_result.GetResponse().Clone());
+  }
+  return event_wrapper;
+}
+
+void RealtimeReportingClient::UploadCallbackDeprecated(
+    base::Value::Dict event_wrapper,
+    bool per_profile,
+    policy::CloudPolicyClient* client,
+    EnterpriseReportingEventType eventType,
+    policy::CloudPolicyClient::Result upload_result) {
+  // TODO(crbug.com/256553070): Do not crash if the client is unregistered.
+  CHECK(!upload_result.IsClientNotRegisteredError());
+
+// Device DM token is already set on ChromeOS by reporting::GetContext(...)
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (!per_profile && client) {
+    event_wrapper.SetByDottedPath(
+        "context.device",
+        policy::ReportingJobConfigurationBase::DeviceDictionaryBuilder::
+            BuildDeviceDictionary(client->dm_token(), client->client_id()));
+  }
+#endif
+  base::Value::Dict error_details = ReportErrorDetails(upload_result);
+  event_wrapper.Merge(std::move(error_details));
+
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
+      std::move(event_wrapper));
+
+  if (upload_result.IsSuccess()) {
+    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
+                                  eventType);
+  } else {
+    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadFailure",
+                                  eventType);
+  }
+}
+
+void RealtimeReportingClient::UploadCallback(
+    ::chrome::cros::reporting::proto::UploadEventsRequest request,
+    bool per_profile,
+    policy::CloudPolicyClient* client,
+    EnterpriseReportingEventType eventType,
+    policy::CloudPolicyClient::Result upload_result) {
+  base::Value::Dict event_wrapper = base::Value::Dict();
+  base::Value::Dict error_details = ReportErrorDetails(upload_result);
+  event_wrapper.Merge(std::move(error_details));
+  event_wrapper.Set("upload_request",
+                    base::EscapeNonASCII(request.SerializeAsString()));
+  event_wrapper.Set("event_type", static_cast<int>(eventType));
+
+  safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
+      std::move(event_wrapper));
+
+  if (upload_result.IsSuccess()) {
+    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadSuccess",
+                                  eventType);
+  } else {
+    base::UmaHistogramEnumeration("Enterprise.ReportingEventUploadFailure",
+                                  eventType);
+  }
+}
+
+base::Value::Dict RealtimeReportingClient::GetContext() {
+  return reporting::GetContext(Profile::FromBrowserContext(context_));
+}
+
+::chrome::cros::reporting::proto::UploadEventsRequest
+RealtimeReportingClient::CreateUploadEventsRequest() {
+  return reporting::CreateUploadEventsRequest(
+      Profile::FromBrowserContext(context_));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 const user_manager::User* RealtimeReportingClient::GetChromeOSUser() {
   return user_manager::UserManager::IsInitialized()
@@ -546,7 +413,9 @@ void RealtimeReportingClient::RemoveDmTokenFromRejectedSet(
 void RealtimeReportingClient::OnClientError(policy::CloudPolicyClient* client) {
   base::Value::Dict error_value;
   error_value.Set("error",
-                  "An event got an error status and hasn't been reported");
+                  "An event got an error status and hasn't been reported. Find "
+                  "details below in error_message and error_code.");
+
   error_value.Set("status", client->last_dm_status());
   safe_browsing::WebUIInfoSingleton::GetInstance()->AddToReportingEvents(
       error_value);
@@ -563,12 +432,13 @@ void RealtimeReportingClient::OnClientError(policy::CloudPolicyClient* client) {
       rejected_dm_token_timers_[client->dm_token()]->Start(
           FROM_HERE, base::Hours(24),
           base::BindOnce(&RealtimeReportingClient::RemoveDmTokenFromRejectedSet,
-                         GetWeakPtr(), client->dm_token()));
+                         AsWeakPtrImpl(), client->dm_token()));
     }
   }
 }
 
-base::WeakPtr<RealtimeReportingClient> RealtimeReportingClient::GetWeakPtr() {
+base::WeakPtr<RealtimeReportingClientBase>
+RealtimeReportingClient::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

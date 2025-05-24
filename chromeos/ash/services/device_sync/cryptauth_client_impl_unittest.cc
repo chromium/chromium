@@ -1014,7 +1014,7 @@ TEST_F(DeviceSyncCryptAuthClientTest,
   // With request pending, make second request.
   {
     base::test::TestFuture<NetworkRequestError> future2;
-    EXPECT_DCHECK_DEATH(client_->FindEligibleUnlockDevices(
+    EXPECT_NOTREACHED_DEATH(client_->FindEligibleUnlockDevices(
         cryptauth::FindEligibleUnlockDevicesRequest(),
         base::BindOnce(
             &NotCalledConstRef<cryptauth::FindEligibleUnlockDevicesResponse>),
@@ -1062,7 +1062,7 @@ TEST_F(DeviceSyncCryptAuthClientTest,
   // Second request fails.
   {
     base::test::TestFuture<NetworkRequestError> future;
-    EXPECT_DCHECK_DEATH(client_->FindEligibleUnlockDevices(
+    EXPECT_NOTREACHED_DEATH(client_->FindEligibleUnlockDevices(
         cryptauth::FindEligibleUnlockDevicesRequest(),
         base::BindOnce(
             &NotCalledConstRef<cryptauth::FindEligibleUnlockDevicesResponse>),

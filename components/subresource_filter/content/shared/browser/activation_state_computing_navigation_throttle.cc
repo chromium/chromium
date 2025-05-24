@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/content/shared/browser/activation_state_computing_navigation_throttle.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -12,7 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -23,37 +24,41 @@ namespace subresource_filter {
 // static
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
 ActivationStateComputingNavigationThrottle::CreateForRoot(
-    content::NavigationHandle* navigation_handle) {
-  CHECK(IsInSubresourceFilterRoot(navigation_handle),
+    content::NavigationThrottleRegistry& registry,
+    std::string_view uma_tag) {
+  CHECK(IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
         base::NotFatalUntil::M129);
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
-      navigation_handle, /*parent_activation_state=*/std::nullopt,
-      /*ruleset_handle*/ nullptr));
+      registry, /*parent_activation_state=*/std::nullopt,
+      /*ruleset_handle*/ nullptr, uma_tag));
 }
 
 // static
 std::unique_ptr<ActivationStateComputingNavigationThrottle>
 ActivationStateComputingNavigationThrottle::CreateForChild(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     VerifiedRuleset::Handle* ruleset_handle,
-    const mojom::ActivationState& parent_activation_state) {
-  CHECK(!IsInSubresourceFilterRoot(navigation_handle),
+    const mojom::ActivationState& parent_activation_state,
+    std::string_view uma_tag) {
+  CHECK(!IsInSubresourceFilterRoot(&registry.GetNavigationHandle()),
         base::NotFatalUntil::M129);
   CHECK_NE(mojom::ActivationLevel::kDisabled,
            parent_activation_state.activation_level, base::NotFatalUntil::M129);
   CHECK(ruleset_handle, base::NotFatalUntil::M129);
   return base::WrapUnique(new ActivationStateComputingNavigationThrottle(
-      navigation_handle, parent_activation_state, ruleset_handle));
+      registry, parent_activation_state, ruleset_handle, uma_tag));
 }
 
 ActivationStateComputingNavigationThrottle::
     ActivationStateComputingNavigationThrottle(
-        content::NavigationHandle* navigation_handle,
+        content::NavigationThrottleRegistry& registry,
         const std::optional<mojom::ActivationState> parent_activation_state,
-        VerifiedRuleset::Handle* ruleset_handle)
-    : content::NavigationThrottle(navigation_handle),
+        VerifiedRuleset::Handle* ruleset_handle,
+        std::string_view uma_tag)
+    : content::NavigationThrottle(registry),
       parent_activation_state_(parent_activation_state),
-      ruleset_handle_(ruleset_handle ? ruleset_handle->AsWeakPtr() : nullptr) {}
+      ruleset_handle_(ruleset_handle ? ruleset_handle->AsWeakPtr() : nullptr),
+      uma_tag_(uma_tag) {}
 
 ActivationStateComputingNavigationThrottle::
     ~ActivationStateComputingNavigationThrottle() = default;
@@ -73,15 +78,17 @@ void ActivationStateComputingNavigationThrottle::
 
 content::NavigationThrottle::ThrottleCheckResult
 ActivationStateComputingNavigationThrottle::WillStartRequest() {
-  if (parent_activation_state_)
+  if (parent_activation_state_) {
     CheckActivationState();
+  }
   return content::NavigationThrottle::PROCEED;
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 ActivationStateComputingNavigationThrottle::WillRedirectRequest() {
-  if (parent_activation_state_)
+  if (parent_activation_state_) {
     CheckActivationState();
+  }
   return content::NavigationThrottle::PROCEED;
 }
 
@@ -102,8 +109,9 @@ ActivationStateComputingNavigationThrottle::WillProcessResponse() {
   // finish, or start a new check now if there was no previous speculative
   // check.
   if (async_filter_ && async_filter_->has_activation_state()) {
-    if (IsInSubresourceFilterRoot(navigation_handle()))
+    if (IsInSubresourceFilterRoot(navigation_handle())) {
       UpdateWithMoreAccurateState();
+    }
     return content::NavigationThrottle::PROCEED;
   }
   CHECK(!deferred_, base::NotFatalUntil::M129);
@@ -141,14 +149,16 @@ void ActivationStateComputingNavigationThrottle::CheckActivationState() {
       ruleset_handle_.get(), std::move(params),
       base::BindOnce(&ActivationStateComputingNavigationThrottle::
                          OnActivationStateComputed,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      uma_tag_);
 }
 
 void ActivationStateComputingNavigationThrottle::OnActivationStateComputed(
     mojom::ActivationState state) {
   if (deferred_) {
-    if (IsInSubresourceFilterRoot(navigation_handle()))
+    if (IsInSubresourceFilterRoot(navigation_handle())) {
       UpdateWithMoreAccurateState();
+    }
     Resume();
   }
 }
@@ -170,8 +180,9 @@ ActivationStateComputingNavigationThrottle::filter() const {
   // delaying the navigation until the filter has computed an activation state.
   // See crbug.com/736249. In the mean time, have a check here to avoid
   // returning a filter in an invalid state.
-  if (async_filter_ && async_filter_->has_activation_state())
+  if (async_filter_ && async_filter_->has_activation_state()) {
     return async_filter_.get();
+  }
   return nullptr;
 }
 

@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -92,7 +93,7 @@ class ResetDataInstallableManager : public InstallableManager {
  public:
   explicit ResetDataInstallableManager(content::WebContents* web_contents)
       : InstallableManager(web_contents) {}
-  ~ResetDataInstallableManager() override {}
+  ~ResetDataInstallableManager() override = default;
 
   void SetQuitClosure(base::RepeatingClosure quit_closure) {
     quit_closure_ = quit_closure;
@@ -374,7 +375,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, ManagerInIncognito) {
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, CheckNoManifest) {
+// TODO(crbug.com/379660142) Re-enable this test once the flakiness is fixed.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_CheckNoManifest DISABLED_CheckNoManifest
+#else
+#define MAYBE_CheckNoManifest CheckNoManifest
+#endif
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, MAYBE_CheckNoManifest) {
   // Ensure that a page with no manifest returns the appropriate error and with
   // null fields for everything.
   base::HistogramTester histograms;
@@ -1200,8 +1207,14 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/410745060): Flaky on android bots
+#define MAYBE_CheckNestedCallsToGetData DISABLED_CheckNestedCallsToGetData
+#else
+#define MAYBE_CheckNestedCallsToGetData CheckNestedCallsToGetData
+#endif
 IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
-                       CheckNestedCallsToGetData) {
+                       MAYBE_CheckNestedCallsToGetData) {
   // Verify that we can call GetData while in a callback from GetData.
   base::RunLoop run_loop;
   InstallableParams params = GetWebAppParams();
@@ -1307,7 +1320,13 @@ IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest, DebugModeWithNoManifest) {
+#if defined(ARCH_CPU_X86)
+#define MAYBE_DebugModeWithNoManifest DISABLED_DebugModeWithNoManifest
+#else
+#define MAYBE_DebugModeWithNoManifest DebugModeWithNoManifest
+#endif
+IN_PROC_BROWSER_TEST_F(InstallableManagerBrowserTest,
+                       MAYBE_DebugModeWithNoManifest) {
   // Ensure that a page with no manifest stops with NO_MANIFEST in debug mode.
   base::RunLoop run_loop;
   std::unique_ptr<CallbackTester> tester(
@@ -1427,6 +1446,10 @@ class InstallableManagerAllowlistOriginBrowserTest
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerAllowlistOriginBrowserTest,
                        SecureOriginCheckRespectsUnsafeFlag) {
+  // TODO(crbug.com/361129282): Remove scoped http allowlisting once the
+  // `unsafely-treat-insecure-origin-as-secure` flag adds to the HTTP allowlist.
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {"www.google.com", "maps.google.com"}, browser()->profile()->GetPrefs());
   // The allowlisted origin should be regarded as secure.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kInsecureOrigin)));
   content::WebContents* contents =

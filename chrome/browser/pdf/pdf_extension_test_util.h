@@ -94,12 +94,6 @@ gfx::Point ConvertPageCoordToScreenCoord(
 
 // Synchronously sets the input focus on the plugin frame by clicking on the
 // top-left corner of a PDF document.
-// TODO(crbug.com/40268279): Remove this once there are no more existing use
-// cases.
-void SetInputFocusOnPlugin(extensions::MimeHandlerViewGuest* guest);
-
-// Synchronously sets the input focus on the plugin frame by clicking on the
-// top-left corner of a PDF document.
 void SetInputFocusOnPlugin(content::RenderFrameHost* extension_host,
                            content::WebContents* embedder_web_contents);
 

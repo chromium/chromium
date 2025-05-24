@@ -7,14 +7,21 @@
 
 #import <Foundation/Foundation.h>
 
-class AuthenticationService;
+class ChromeAccountManagerService;
 @protocol SingleSignOnService;
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 // Configuration object used by the ContentNotificationService.
 @interface ContentNotificationConfiguration : NSObject
 
-// AuthenticationService used by ContentNotificationService.
-@property(nonatomic, assign) AuthenticationService* authService;
+// IdentityManager used by ContentNotificationService.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
+
+// ChromeAccountManagerService use by ContentNotificationService.
+@property(nonatomic, assign) ChromeAccountManagerService* accountManager;
 
 // The SingleSignOnService used by ContentNotificationService.
 @property(nonatomic, strong) id<SingleSignOnService> ssoService;

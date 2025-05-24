@@ -5,30 +5,37 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MANAGER_IMPL_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_TOKEN_MANAGER_IMPL_H_
 
+#include <cstddef>
+#include <cstdint>
 #include <deque>
 #include <map>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/ip_protection/common/ip_protection_config_getter.h"
-#include "components/ip_protection/common/ip_protection_core.h"
-#include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
 
 namespace ip_protection {
 
+class IpProtectionTokenFetcher;
+class IpProtectionCore;
+enum class ProxyLayer;
+
 // An implementation of IpProtectionTokenManager that populates itself
-// using a passed in IpProtectionConfigGetter pointer from the cache.
+// using a passed in IpProtectionTokenFetcher pointer from the cache.
 class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
  public:
   explicit IpProtectionTokenManagerImpl(
       IpProtectionCore* core,
-      IpProtectionConfigGetter* config_getter,
+      std::unique_ptr<IpProtectionTokenFetcher> fetcher,
       ProxyLayer proxy_layer,
       bool disable_cache_management_for_testing = false);
   ~IpProtectionTokenManagerImpl() override;
@@ -36,6 +43,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   // IpProtectionTokenManager implementation.
   bool IsAuthTokenAvailable() override;
   bool IsAuthTokenAvailable(const std::string& geo_id) override;
+  bool WasTokenCacheEverFilled() override;
   std::optional<BlindSignedAuthToken> GetAuthToken() override;
   std::optional<BlindSignedAuthToken> GetAuthToken(
       const std::string& geo_id) override;
@@ -63,6 +71,8 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
     return !disable_cache_management_for_testing_;
   }
 
+  // Disable active cache management and reset the manager back to its base
+  // state: no tokens, no backoff, no active token fetches, no pending timers.
   void DisableCacheManagementForTesting(
       base::OnceClosure on_cache_management_disabled);
 
@@ -99,9 +109,6 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   const int batch_size_;
   const size_t cache_low_water_mark_;
 
-  // Feature flag to safely introduce token caching by geo.
-  bool enable_token_caching_by_geo_ = false;
-
   // The last time token rates were measured and the counts since then.
   base::TimeTicks last_token_rate_measurement_;
   int64_t tokens_spent_ = 0;
@@ -112,7 +119,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   std::map<std::string, std::deque<BlindSignedAuthToken>> cache_by_geo_;
 
   // Source of proxy list, when needed.
-  raw_ptr<IpProtectionConfigGetter> config_getter_;
+  std::unique_ptr<IpProtectionTokenFetcher> fetcher_;
 
   // The proxy layer which the cache of tokens will be used for.
   ProxyLayer proxy_layer_;
@@ -124,9 +131,11 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   // testing).
   const raw_ptr<IpProtectionCore> ip_protection_core_;
 
-  // True if an invocation of `config_getter_.TryGetAuthTokens()` is
-  // outstanding.
+  // True if an attempt to fetch tokens is outstanding.
   bool fetching_auth_tokens_ = false;
+
+  // True if the cache has been filled at least once.
+  bool cache_has_been_filled_ = false;
 
   // True if the "NetworkService.IpProtection.GeoChangeTokenPresence" metric
   // needs to be sampled. False if the presence has already been sampled. This
@@ -154,7 +163,7 @@ class IpProtectionTokenManagerImpl : public IpProtectionTokenManager {
   bool disable_cache_management_for_testing_ = false;
 
   // If false, token expiration is not fuzzed.
-  bool enable_token_expiration_fuzzing_for_testing_ = true;
+  bool enable_token_expiration_fuzzing_= true;
 
   base::RepeatingTimer measurement_timer_;
 

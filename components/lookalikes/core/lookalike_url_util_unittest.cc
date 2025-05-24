@@ -30,17 +30,14 @@ using version_info::Channel;
 namespace {
 // Tests lists for Combo Squatting. Some of these entries are intended to test
 // for various edge cases and aren't realistic for production.
-constexpr std::pair<const char*, const char*> kBrandNames[] = {
-    {"google", "google"},
-    {"youtube", "youtube"},
-    {"sample", "sarnple"},
-    {"example", "exarnple"},
-    {"vices", "vices"}};
-const char* const kPopularKeywords[] = {
+constexpr std::string_view kBrandNames[][2] = {{"google", "google"},
+                                               {"youtube", "youtube"},
+                                               {"sample", "sarnple"},
+                                               {"example", "exarnple"},
+                                               {"vices", "vices"}};
+constexpr std::string_view kPopularKeywords[] = {
     "online", "login", "account", "arnple", "services", "test", "security"};
-const ComboSquattingParams kComboSquattingParams{
-    kBrandNames, std::size(kBrandNames), kPopularKeywords,
-    std::size(kPopularKeywords)};
+const ComboSquattingParams kComboSquattingParams{kBrandNames, kPopularKeywords};
 
 }  // namespace
 
@@ -53,7 +50,7 @@ std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
     case TargetEmbeddingType::kSafetyTip:
       return "kSafetyTip";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // These tests do not use the production top domain list. This is to avoid

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.bookmarks.bar.BookmarkBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/bookmark_bar_padding"
+    android:background="@macro/default_bg_color"
+    android:gravity="center_vertical|end"
+    android:orientation="horizontal">
+
+  <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/bookmark_bar_items_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1" />
+
+  <ImageButton
+      android:id="@+id/bookmark_bar_overflow_button"
+      android:layout_width="@dimen/bookmark_bar_overflow_button_size"
+      android:layout_height="@dimen/bookmark_bar_overflow_button_size"
+      android:layout_marginStart="@dimen/bookmark_bar_spacing"
+      android:background="?attr/selectableItemBackground"
+      android:contentDescription="@string/bookmark_bar_overflow_button_content_description"
+      android:scaleType="fitCenter"
+      android:src="@drawable/ic_keyboard_double_arrow_right_24dp"
+      app:tint="@color/default_icon_color_tint_list" />
+
+  <View
+      android:layout_width="@dimen/bookmark_bar_divider_width"
+      android:layout_height="@dimen/bookmark_bar_divider_height"
+      android:layout_marginHorizontal="@dimen/bookmark_bar_spacing"
+      android:background="@macro/divider_line_bg_color" />
+
+  <include
+      android:id="@+id/bookmark_bar_all_bookmarks_button"
+      layout="@layout/bookmark_bar_button"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content" />
+
+</org.chromium.chrome.browser.bookmarks.bar.BookmarkBar>

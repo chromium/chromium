@@ -93,6 +93,7 @@ ModuleScriptDownloader::ModuleScriptDownloader(
   resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAccept,
       std::string_view("application/javascript"));
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(source_url);
 
   simple_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), kTrafficAnnotation);

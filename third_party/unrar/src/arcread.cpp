@@ -20,10 +20,10 @@ size_t Archive::ReadHeader()
     case RARFMT14:
       ReadSize=ReadHeader14();
       break;
-#endif
     case RARFMT15:
       ReadSize=ReadHeader15();
       break;
+#endif
     case RARFMT50:
       ReadSize=ReadHeader50();
       break;
@@ -106,6 +106,9 @@ void Archive::UnexpEndArcMsg()
   if (CurBlockPos!=ArcSize || NextBlockPos!=ArcSize)
   {
     uiMsg(UIERROR_UNEXPEOF,FileName);
+    if (CurHeaderType!=HEAD_FILE && CurHeaderType!=HEAD_UNKNOWN)
+      uiMsg(UIERROR_TRUNCSERVICE,FileName,SubHead.FileName);
+
     ErrHandler.SetErrorCode(RARX_WARNING);
   }
 }
@@ -137,6 +140,7 @@ inline int64 SafeAdd(int64 v1,int64 v2,int64 f)
 }
 
 
+#ifndef SFX_MODULE
 size_t Archive::ReadHeader15()
 {
   RawRead Raw(this);
@@ -145,7 +149,7 @@ size_t Archive::ReadHeader15()
 
   if (Decrypt)
   {
-#ifdef RAR_NOCRYPT // For rarext.dll and unrar_nocrypt.dll.
+#ifdef RAR_NOCRYPT // For rarext.dll, Setup.SFX and unrar_nocrypt.dll.
     return 0;
 #else
     RequestArcPassword(NULL);
@@ -545,6 +549,7 @@ size_t Archive::ReadHeader15()
 
   return Raw.Size();
 }
+#endif // #ifndef SFX_MODULE
 
 
 size_t Archive::ReadHeader50()
@@ -740,10 +745,15 @@ size_t Archive::ReadHeader50()
           byte csum[SIZE_PSWCHECK_CSUM];
           Raw.GetB(csum,SIZE_PSWCHECK_CSUM);
 
+// Exclude this code for rarext.dll, Setup.SFX and unrar_nocrypt.dll linked
+// without sha256. But still set Encrypted=true for rarext.dll here,
+// so it can recognize encrypted header archives in archive properties.
+#ifndef RAR_NOCRYPT
           byte Digest[SHA256_DIGEST_SIZE];
           sha256_get(CryptHead.PswCheck, SIZE_PSWCHECK, Digest);
 
           CryptHead.UsePswCheck=memcmp(csum,Digest,SIZE_PSWCHECK_CSUM)==0;
+#endif
         }
         Encrypted=true;
       }
@@ -894,6 +904,16 @@ size_t Archive::ReadHeader50()
         if (!FileBlock && hd->CmpName(SUBHEAD_TYPE_CMT))
           MainComment=true;
 
+        // For RAR5 format we read the user specified recovery percent here.
+        if (!FileBlock && hd->CmpName(SUBHEAD_TYPE_RR) && hd->SubData.size()>0)
+        {
+          // It is stored as a single byte up to RAR 6.02 and as vint since
+          // 6.10, where we extended the maximum RR size from 99% to 1000%.
+          RawRead RawPercent;
+          RawPercent.Read(hd->SubData.data(),hd->SubData.size());
+          RecoveryPercent=(int)RawPercent.GetV();
+
+        }
 
         if (BadCRC) // Add the file name to broken header message displayed above.
           uiMsg(UIERROR_FHEADERBROKEN,Archive::FileName,hd->FileName);
@@ -1036,22 +1056,30 @@ void Archive::ProcessExtra50(RawRead *Raw,size_t ExtraSize,const BaseBlock *bb)
       FileHeader *hd=(FileHeader *)bb;
       switch(FieldType)
       {
+#ifndef RAR_NOCRYPT // Except rarext.dll, Setup.SFX and unrar_nocrypt.dll.
         case FHEXTRA_CRYPT:
           {
             FileHeader *hd=(FileHeader *)bb;
             uint EncVersion=(uint)Raw->GetV();
             if (EncVersion>CRYPT_VERSION)
+            {
               UnkEncVerMsg(hd->FileName,L"x" + std::to_wstring(EncVersion));
+              hd->CryptMethod=CRYPT_UNKNOWN;
+            }
             else
             {
               uint Flags=(uint)Raw->GetV();
-              hd->UsePswCheck=(Flags & FHEXTRA_CRYPT_PSWCHECK)!=0;
-              hd->UseHashKey=(Flags & FHEXTRA_CRYPT_HASHMAC)!=0;
               hd->Lg2Count=Raw->Get1();
               if (hd->Lg2Count>CRYPT5_KDF_LG2_COUNT_MAX)
+              {
                 UnkEncVerMsg(hd->FileName,L"xc" + std::to_wstring(hd->Lg2Count));
+                hd->CryptMethod=CRYPT_UNKNOWN;
+              }
               else
               {
+                hd->UsePswCheck=(Flags & FHEXTRA_CRYPT_PSWCHECK)!=0;
+                hd->UseHashKey=(Flags & FHEXTRA_CRYPT_HASHMAC)!=0;
+
                 Raw->GetB(hd->Salt,SIZE_SALT50);
                 Raw->GetB(hd->InitV,SIZE_INITV);
                 if (hd->UsePswCheck)
@@ -1085,6 +1113,7 @@ void Archive::ProcessExtra50(RawRead *Raw,size_t ExtraSize,const BaseBlock *bb)
             }
           }
           break;
+#endif
         case FHEXTRA_HASH:
           {
             FileHeader *hd=(FileHeader *)bb;
@@ -1289,7 +1318,7 @@ size_t Archive::ReadHeader14()
     std::string FileName(NameSize,0);
     Raw.GetB((byte *)&FileName[0],NameSize);
     std::string NameA;
-    IntToExt(FileName,NameA);
+    OemToExt(FileName,NameA);
     CharToWide(NameA,FileHead.FileName);
     ConvertNameCase(FileHead.FileName);
     ConvertFileHeader(&FileHead);

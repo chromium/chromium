@@ -4,7 +4,10 @@
 
 package org.chromium.components.browser_ui.media;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for classes that need to be notified about media events. */
+@NullMarked
 public interface MediaNotificationListener {
     /** The media action was caused by direct interaction with the notification. */
     public static final int ACTION_SOURCE_MEDIA_NOTIFICATION = 1000;

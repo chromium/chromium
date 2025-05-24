@@ -1,4 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/share_kit",
   "+ios/chrome/browser/sync/model",
+  "+components/collaboration/public",
+  "+ios/chrome/browser/collaboration/model",
 ]

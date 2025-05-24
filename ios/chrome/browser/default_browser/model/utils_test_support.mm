@@ -57,3 +57,14 @@ void SimulateUserInterestedDefaultBrowserUserActivity(
 
   StoreTimestampsForPromoType(type, std::move(times));
 }
+
+void SimulateUserInteractionWithNonModalPromo(base::TimeDelta time_ago,
+                                              int interaction_count) {
+  NSDictionary<NSString*, NSObject*>* values = @{
+    kLastTimeUserInteractedWithNonModalPromo : (base::Time::Now() - time_ago)
+        .ToNSDate(),
+    kUserInteractedWithNonModalPromoCount :
+        [NSNumber numberWithInt:interaction_count]
+  };
+  SetValuesInStorage(values);
+}

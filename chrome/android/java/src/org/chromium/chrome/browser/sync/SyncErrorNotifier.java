@@ -57,7 +57,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
     private static final String TAG = "SyncUI";
 
-    private static ProfileKeyedMap<SyncErrorNotifier> sProfileMap =
+    private static final ProfileKeyedMap<SyncErrorNotifier> sProfileMap =
             new ProfileKeyedMap<>(ProfileKeyedMap.NO_REQUIRED_CLEANUP_ACTION);
 
     private final BaseNotificationManagerProxy mNotificationManager;
@@ -81,7 +81,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
     private static SyncErrorNotifier buildForProfile(Profile profile) {
         return new SyncErrorNotifier(
-                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()),
+                BaseNotificationManagerProxyFactory.create(),
                 SyncServiceFactory.getForProfile(profile),
                 TrustedVaultClient.get());
     }

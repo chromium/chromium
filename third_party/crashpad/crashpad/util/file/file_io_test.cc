@@ -16,6 +16,7 @@
 
 #include <stdio.h>
 
+#include <functional>
 #include <iterator>
 #include <limits>
 #include <type_traits>
@@ -39,202 +40,204 @@ using testing::_;
 using testing::InSequence;
 using testing::Return;
 
-class MockReadExactly : public internal::ReadExactlyInternal {
+class MockReadExactly {
  public:
-  MockReadExactly() : ReadExactlyInternal() {}
+  MockReadExactly() = default;
 
   MockReadExactly(const MockReadExactly&) = delete;
   MockReadExactly& operator=(const MockReadExactly&) = delete;
 
-  ~MockReadExactly() {}
+  ~MockReadExactly() = default;
 
   // Since it’s more convenient for the test to use uintptr_t than void*,
   // ReadExactlyInt() and ReadInt() adapt the types.
 
-  bool ReadExactlyInt(uintptr_t data, size_t size, bool can_log) {
-    return ReadExactly(reinterpret_cast<void*>(data), size, can_log);
+  bool ReadExactlyInt(bool can_log, uintptr_t data, size_t size) {
+    return internal::ReadExactly(std::bind_front(&MockReadExactly::Read, this),
+                                 can_log,
+                                 reinterpret_cast<void*>(data),
+                                 size);
   }
 
-  MOCK_METHOD(FileOperationResult, ReadInt, (uintptr_t, size_t, bool));
+  MOCK_METHOD(FileOperationResult, ReadInt, (bool, uintptr_t, size_t));
 
-  // ReadExactlyInternal:
-  FileOperationResult Read(void* data, size_t size, bool can_log) {
-    return ReadInt(reinterpret_cast<uintptr_t>(data), size, can_log);
+  FileOperationResult Read(bool can_log, void* data, size_t size) {
+    return ReadInt(can_log, reinterpret_cast<uintptr_t>(data), size);
   }
 };
 
 TEST(FileIO, ReadExactly_Zero) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(_, _, false)).Times(0);
-  EXPECT_TRUE(read_exactly.ReadExactlyInt(100, 0, false));
+  EXPECT_CALL(read_exactly, ReadInt(false, _, _)).Times(0);
+  EXPECT_TRUE(read_exactly.ReadExactlyInt(false, 100, 0));
 }
 
 TEST(FileIO, ReadExactly_SingleSmallSuccess) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(1000, 1, false)).WillOnce(Return(1));
-  EXPECT_TRUE(read_exactly.ReadExactlyInt(1000, 1, false));
+  EXPECT_CALL(read_exactly, ReadInt(false, 1000, 1)).WillOnce(Return(1));
+  EXPECT_TRUE(read_exactly.ReadExactlyInt(false, 1000, 1));
 }
 
 TEST(FileIO, ReadExactly_SingleSmallSuccessCanLog) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(1000, 1, true)).WillOnce(Return(1));
-  EXPECT_TRUE(read_exactly.ReadExactlyInt(1000, 1, true));
+  EXPECT_CALL(read_exactly, ReadInt(true, 1000, 1)).WillOnce(Return(1));
+  EXPECT_TRUE(read_exactly.ReadExactlyInt(true, 1000, 1));
 }
 
 TEST(FileIO, ReadExactly_SingleSmallFailure) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(1000, 1, false)).WillOnce(Return(-1));
-  EXPECT_FALSE(read_exactly.ReadExactlyInt(1000, 1, false));
+  EXPECT_CALL(read_exactly, ReadInt(false, 1000, 1)).WillOnce(Return(-1));
+  EXPECT_FALSE(read_exactly.ReadExactlyInt(false, 1000, 1));
 }
 
 TEST(FileIO, ReadExactly_SingleSmallFailureCanLog) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(1000, 1, true)).WillOnce(Return(-1));
-  EXPECT_FALSE(read_exactly.ReadExactlyInt(1000, 1, true));
+  EXPECT_CALL(read_exactly, ReadInt(true, 1000, 1)).WillOnce(Return(-1));
+  EXPECT_FALSE(read_exactly.ReadExactlyInt(true, 1000, 1));
 }
 
 TEST(FileIO, ReadExactly_DoubleSmallSuccess) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(0x1000, 2, false)).WillOnce(Return(1));
-  EXPECT_CALL(read_exactly, ReadInt(0x1001, 1, false)).WillOnce(Return(1));
-  EXPECT_TRUE(read_exactly.ReadExactlyInt(0x1000, 2, false));
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x1000, 2)).WillOnce(Return(1));
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x1001, 1)).WillOnce(Return(1));
+  EXPECT_TRUE(read_exactly.ReadExactlyInt(false, 0x1000, 2));
 }
 
 TEST(FileIO, ReadExactly_DoubleSmallShort) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(0x20000, 2, false)).WillOnce(Return(1));
-  EXPECT_CALL(read_exactly, ReadInt(0x20001, 1, false)).WillOnce(Return(0));
-  EXPECT_FALSE(read_exactly.ReadExactlyInt(0x20000, 2, false));
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x20000, 2)).WillOnce(Return(1));
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x20001, 1)).WillOnce(Return(0));
+  EXPECT_FALSE(read_exactly.ReadExactlyInt(false, 0x20000, 2));
 }
 
 TEST(FileIO, ReadExactly_DoubleSmallShortCanLog) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(0x20000, 2, true)).WillOnce(Return(1));
-  EXPECT_CALL(read_exactly, ReadInt(0x20001, 1, true)).WillOnce(Return(0));
-  EXPECT_FALSE(read_exactly.ReadExactlyInt(0x20000, 2, true));
+  EXPECT_CALL(read_exactly, ReadInt(true, 0x20000, 2)).WillOnce(Return(1));
+  EXPECT_CALL(read_exactly, ReadInt(true, 0x20001, 1)).WillOnce(Return(0));
+  EXPECT_FALSE(read_exactly.ReadExactlyInt(true, 0x20000, 2));
 }
 
 TEST(FileIO, ReadExactly_Medium) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(0x80000000, 0x20000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x80000000, 0x20000000))
       .WillOnce(Return(0x10000000));
-  EXPECT_CALL(read_exactly, ReadInt(0x90000000, 0x10000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x90000000, 0x10000000))
       .WillOnce(Return(0x8000000));
-  EXPECT_CALL(read_exactly, ReadInt(0x98000000, 0x8000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x98000000, 0x8000000))
       .WillOnce(Return(0x4000000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9c000000, 0x4000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9c000000, 0x4000000))
       .WillOnce(Return(0x2000000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9e000000, 0x2000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9e000000, 0x2000000))
       .WillOnce(Return(0x1000000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9f000000, 0x1000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9f000000, 0x1000000))
       .WillOnce(Return(0x800000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9f800000, 0x800000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9f800000, 0x800000))
       .WillOnce(Return(0x400000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fc00000, 0x400000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fc00000, 0x400000))
       .WillOnce(Return(0x200000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fe00000, 0x200000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fe00000, 0x200000))
       .WillOnce(Return(0x100000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ff00000, 0x100000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ff00000, 0x100000))
       .WillOnce(Return(0x80000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ff80000, 0x80000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ff80000, 0x80000))
       .WillOnce(Return(0x40000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffc0000, 0x40000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffc0000, 0x40000))
       .WillOnce(Return(0x20000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffe0000, 0x20000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffe0000, 0x20000))
       .WillOnce(Return(0x10000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fff0000, 0x10000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fff0000, 0x10000))
       .WillOnce(Return(0x8000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fff8000, 0x8000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fff8000, 0x8000))
       .WillOnce(Return(0x4000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fffc000, 0x4000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fffc000, 0x4000))
       .WillOnce(Return(0x2000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fffe000, 0x2000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fffe000, 0x2000))
       .WillOnce(Return(0x1000));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffff000, 0x1000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffff000, 0x1000))
       .WillOnce(Return(0x800));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffff800, 0x800, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffff800, 0x800))
       .WillOnce(Return(0x400));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffffc00, 0x400, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffffc00, 0x400))
       .WillOnce(Return(0x200));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffffe00, 0x200, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffffe00, 0x200))
       .WillOnce(Return(0x100));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fffff00, 0x100, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fffff00, 0x100))
       .WillOnce(Return(0x80));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fffff80, 0x80, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fffff80, 0x80))
       .WillOnce(Return(0x40));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fffffc0, 0x40, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fffffc0, 0x40))
       .WillOnce(Return(0x20));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fffffe0, 0x20, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fffffe0, 0x20))
       .WillOnce(Return(0x10));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffffff0, 0x10, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffffff0, 0x10))
       .WillOnce(Return(0x8));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffffff8, 0x8, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffffff8, 0x8))
       .WillOnce(Return(0x4));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffffffc, 0x4, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffffffc, 0x4))
       .WillOnce(Return(0x2));
-  EXPECT_CALL(read_exactly, ReadInt(0x9ffffffe, 0x2, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9ffffffe, 0x2))
       .WillOnce(Return(0x1));
-  EXPECT_CALL(read_exactly, ReadInt(0x9fffffff, 0x1, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x9fffffff, 0x1))
       .WillOnce(Return(0x1));
-  EXPECT_TRUE(read_exactly.ReadExactlyInt(0x80000000, 0x20000000, false));
+  EXPECT_TRUE(read_exactly.ReadExactlyInt(false, 0x80000000, 0x20000000));
 }
 
 TEST(FileIO, ReadExactly_LargeSuccess) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  constexpr size_t max = std::numeric_limits<uint32_t>::max();
-  constexpr size_t increment = std::numeric_limits<int32_t>::max();
-  EXPECT_CALL(read_exactly, ReadInt(0, max, false)).WillOnce(Return(increment));
-  EXPECT_CALL(read_exactly, ReadInt(increment, max - increment, false))
+  constexpr size_t max = std::numeric_limits<int32_t>::max();
+  constexpr size_t increment = max / 2;
+  EXPECT_CALL(read_exactly, ReadInt(false, 0, max)).WillOnce(Return(increment));
+  EXPECT_CALL(read_exactly, ReadInt(false, increment, max - increment))
       .WillOnce(Return(increment));
-  EXPECT_CALL(read_exactly, ReadInt(2 * increment, 1, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 2 * increment, 1))
       .WillOnce(Return(1));
-  EXPECT_TRUE(read_exactly.ReadExactlyInt(0, max, false));
+  EXPECT_TRUE(read_exactly.ReadExactlyInt(false, 0, max));
 }
 
 TEST(FileIO, ReadExactly_LargeShort) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(0, 0xffffffff, false))
-      .WillOnce(Return(0x7fffffff));
-  EXPECT_CALL(read_exactly, ReadInt(0x7fffffff, 0x80000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0, 0x7fffffff))
+      .WillOnce(Return(0x3fffffff));
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x3fffffff, 0x40000000))
       .WillOnce(Return(0x10000000));
-  EXPECT_CALL(read_exactly, ReadInt(0x8fffffff, 0x70000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x4fffffff, 0x30000000))
       .WillOnce(Return(0));
-  EXPECT_FALSE(read_exactly.ReadExactlyInt(0, 0xffffffff, false));
+  EXPECT_FALSE(read_exactly.ReadExactlyInt(false, 0, 0x7fffffff));
 }
 
 TEST(FileIO, ReadExactly_LargeFailure) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  EXPECT_CALL(read_exactly, ReadInt(0, 0xffffffff, false))
-      .WillOnce(Return(0x7fffffff));
-  EXPECT_CALL(read_exactly, ReadInt(0x7fffffff, 0x80000000, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 0, 0x7fffffff))
+      .WillOnce(Return(0x3fffffff));
+  EXPECT_CALL(read_exactly, ReadInt(false, 0x3fffffff, 0x40000000))
       .WillOnce(Return(-1));
-  EXPECT_FALSE(read_exactly.ReadExactlyInt(0, 0xffffffff, false));
+  EXPECT_FALSE(read_exactly.ReadExactlyInt(false, 0, 0x7fffffff));
 }
 
 TEST(FileIO, ReadExactly_TripleMax) {
   MockReadExactly read_exactly;
   InSequence in_sequence;
-  constexpr size_t max = std::numeric_limits<size_t>::max();
-  constexpr size_t increment =
-      std::numeric_limits<std::make_signed<size_t>::type>::max();
-  EXPECT_CALL(read_exactly, ReadInt(0, max, false)).WillOnce(Return(increment));
-  EXPECT_CALL(read_exactly, ReadInt(increment, max - increment, false))
+  // ReadExactly supports at most int32_t bytes.
+  constexpr size_t max = std::numeric_limits<int32_t>::max();
+  constexpr size_t increment = max / 2;
+  EXPECT_CALL(read_exactly, ReadInt(false, 0, max)).WillOnce(Return(increment));
+  EXPECT_CALL(read_exactly, ReadInt(false, increment, max - increment))
       .WillOnce(Return(increment));
-  EXPECT_CALL(read_exactly, ReadInt(2 * increment, 1, false))
+  EXPECT_CALL(read_exactly, ReadInt(false, 2 * increment, 1))
       .WillOnce(Return(1));
-  EXPECT_TRUE(read_exactly.ReadExactlyInt(0, max, false));
+  EXPECT_TRUE(read_exactly.ReadExactlyInt(false, 0, max));
 }
 
 class MockWriteAll : public internal::WriteAllInternal {

@@ -20,10 +20,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "ui/gfx/x/error.h"
 
 namespace x11 {
-
-class Error;
 
 // A memory buffer where the size of the memory buffer is unknown because its
 // given as `void*` from a C api which expects us to dynamically cast it to
@@ -196,7 +195,8 @@ class COMPONENT_EXPORT(X11) WriteBuffer {
   void AppendCurrentBuffer();
 
   std::vector<scoped_refptr<UnsizedRefCountedMemory>> owned_buffers_;
-  std::vector<base::span<uint8_t>> sized_buffers_;
+  // TODO(367764863) Rewrite to base::raw_span
+  RAW_PTR_EXCLUSION std::vector<base::span<uint8_t>> sized_buffers_;
   std::vector<uint8_t> current_buffer_;
   size_t offset_ = 0;
   std::vector<int> fds_;

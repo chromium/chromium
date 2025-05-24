@@ -11,7 +11,6 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/shortcuts/shortcut_icon_generator.h"
 #include "chrome/grit/platform_locale_settings.h"
 #include "components/url_formatter/url_formatter.h"
@@ -132,6 +131,8 @@ SizeToBitmap GenerateIcons(const std::string& app_name) {
   const std::u16string app_name_utf16 = base::UTF8ToUTF16(app_name);
   const char32_t icon_letter =
       shortcuts::GenerateIconLetterFromName(app_name_utf16);
+  LOG(ERROR) << "Generated icons for " << app_name << " with letter "
+             << std::string(1, icon_letter);
 
   SizeToBitmap icons;
   for (SquareSizePx size : SizesToGenerate()) {

@@ -9,6 +9,7 @@
 
 #include "mojo/core/node_controller.h"
 
+#include <algorithm>
 #include <limits>
 
 #include "base/containers/contains.h"
@@ -18,7 +19,6 @@
 #include "base/logging.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -383,7 +383,7 @@ void NodeController::DeserializeRawBytesAsEventForFuzzer(
   void* payload;
   auto message = NodeChannel::CreateEventMessage(0, data.size(), &payload, 0);
   DCHECK(message);
-  base::ranges::copy(data, static_cast<unsigned char*>(payload));
+  std::ranges::copy(data, static_cast<unsigned char*>(payload));
   DeserializeEventMessage(ports::NodeName(), std::move(message));
 }
 

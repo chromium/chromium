@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/virtual_keyboard_controller_win.h"
 
 #include "base/trace_event/trace_event.h"
+#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"

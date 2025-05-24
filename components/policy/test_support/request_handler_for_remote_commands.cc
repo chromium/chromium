@@ -38,7 +38,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForRemoteCommands::HandleRequest(
       client_storage()->GetClientOrNull(
           KeyValueFromUrl(request.GetURL(), dm_protocol::kParamDeviceID));
   if (!client_info) {
-    return CreateHttpResponse(net::HTTP_GONE, response.SerializeAsString());
+    return CreateHttpResponse(net::HTTP_GONE, response);
   }
 
   RemoteCommandsState* state = remote_commands_state();
@@ -66,7 +66,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForRemoteCommands::HandleRequest(
                               response.mutable_remote_command_response());
   LOG(INFO) << "serialized string: " << response.SerializeAsString();
 
-  return CreateHttpResponse(net::HTTP_OK, response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, response);
 }
 
 void RequestHandlerForRemoteCommands::ProcessSecureRemoteCommands(

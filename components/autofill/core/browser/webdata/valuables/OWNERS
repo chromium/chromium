@@ -1,0 +1,2 @@
+per-file *sync*=file://components/sync/OWNERS
+per-file *type_controller*=file://components/sync/OWNERS

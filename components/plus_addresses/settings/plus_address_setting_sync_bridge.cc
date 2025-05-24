@@ -12,7 +12,6 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -58,9 +57,6 @@ PlusAddressSettingSyncBridge::~PlusAddressSettingSyncBridge() = default;
 std::unique_ptr<PlusAddressSettingSyncBridge>
 PlusAddressSettingSyncBridge::CreateBridge(
     syncer::OnceDataTypeStoreFactory store_factory) {
-  if (!base::FeatureList::IsEnabled(syncer::kSyncPlusAddressSetting)) {
-    return nullptr;
-  }
   return std::make_unique<plus_addresses::PlusAddressSettingSyncBridge>(
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::PLUS_ADDRESS_SETTING,
@@ -194,12 +190,12 @@ bool PlusAddressSettingSyncBridge::IsEntityDataValid(
 }
 
 std::string PlusAddressSettingSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string PlusAddressSettingSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return entity_data.specifics.plus_address_setting().name();
 }
 
@@ -231,9 +227,8 @@ void PlusAddressSettingSyncBridge::StartSyncingWithDataAndMetadata(
     }
     processed_entries.emplace_back(record.id, std::move(specifics));
   }
-  settings_ =
-      base::MakeFlatMap<std::string, sync_pb::PlusAddressSettingSpecifics>(
-          std::move(processed_entries));
+  settings_ = base::flat_map<std::string, sync_pb::PlusAddressSettingSpecifics>(
+      std::move(processed_entries));
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 

@@ -1,0 +1,10 @@
+Name: strck
+URL: https://crates.io/crates/strck
+Version: 1.0.0
+Revision: 4c3add2f9964ce1c5720d7924dbf5291818fc37e
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/strck-v1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Checked owned and borrowed strings

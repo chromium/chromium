@@ -162,7 +162,7 @@ File* File::CreateFromControlState(ExecutionContext* context,
   String relative_path = state[index++];
   if (relative_path.empty())
     return File::CreateForUserProvidedFile(context, path, name);
-  return File::CreateWithRelativePath(context, path, relative_path);
+  return File::CreateWithRelativePath(context, path, name, relative_path);
 }
 
 String File::PathFromControlState(const FormControlState& state,
@@ -178,9 +178,10 @@ String File::PathFromControlState(const FormControlState& state,
 
 File* File::CreateWithRelativePath(ExecutionContext* context,
                                    const String& path,
+                                   const String& name,
                                    const String& relative_path) {
-  File* file = MakeGarbageCollected<File>(context, path, File::kAllContentTypes,
-                                          File::kIsUserVisible);
+  File* file = MakeGarbageCollected<File>(
+      context, path, name, File::kAllContentTypes, File::kIsUserVisible);
   file->relative_path_ = relative_path;
   return file;
 }
@@ -322,13 +323,10 @@ int64_t File::lastModified() const {
   return (LastModifiedTime() - base::Time::UnixEpoch()).InMilliseconds();
 }
 
-ScriptValue File::lastModifiedDate(ScriptState* script_state) const {
+ScriptObject File::lastModifiedDate(ScriptState* script_state) const {
   // lastModifiedDate returns a Date instance,
   // http://www.w3.org/TR/FileAPI/#dfn-lastModifiedDate
-  return ScriptValue(
-      script_state->GetIsolate(),
-      ToV8Traits<IDLNullable<IDLDate>>::ToV8(
-          script_state, std::optional<base::Time>(LastModifiedTime())));
+  return ToV8FromDate(script_state, std::make_optional(LastModifiedTime()));
 }
 
 std::optional<base::Time> File::LastModifiedTimeForSerialization() const {

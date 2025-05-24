@@ -13,7 +13,7 @@ namespace sharing {
 // TODO(crbug.com/40115622): reuse code from blink instead.
 class P2PSocketClientDelegate {
  public:
-  virtual ~P2PSocketClientDelegate() {}
+  virtual ~P2PSocketClientDelegate() = default;
 
   // Called after the socket has been opened with the local endpoint address
   // as argument. Please note that in the presence of multiple interfaces,

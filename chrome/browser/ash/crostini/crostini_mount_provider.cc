@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
@@ -58,7 +59,7 @@ void CrostiniMountProvider::OnRestarted(PrepareCallback callback,
   // The container's finished booting but we need to wait for the session
   // tracker to update which races against CrostiniManager calling us.
   subscription_ =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
           ->RunOnceContainerStarted(container_id_,
                                     base::BindOnce(
                                         [](PrepareCallback callback,

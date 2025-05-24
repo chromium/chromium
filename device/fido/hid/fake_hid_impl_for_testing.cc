@@ -49,14 +49,14 @@ void MockFidoHidConnection::Write(uint8_t report_id,
 void MockFidoHidConnection::GetFeatureReport(
     uint8_t report_id,
     GetFeatureReportCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockFidoHidConnection::SendFeatureReport(
     uint8_t report_id,
     const std::vector<uint8_t>& buffer,
     SendFeatureReportCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockFidoHidConnection::SetNonce(base::span<uint8_t const> nonce) {
@@ -79,7 +79,7 @@ void MockFidoHidConnection::ExpectWriteHidInit(
             ASSERT_EQ(64u, buffer.size());
             // First 7 bytes are 4 bytes of channel id, one byte representing
             // HID command, 2 bytes for payload length.
-            SetNonce(base::make_span(buffer).subspan(7, 8));
+            SetNonce(base::span(buffer).subspan<7, 8>());
             std::move(*cb).Run(true);
           }));
 }
@@ -140,14 +140,14 @@ void FakeFidoHidConnection::Write(uint8_t report_id,
 void FakeFidoHidConnection::GetFeatureReport(
     uint8_t report_id,
     GetFeatureReportCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeFidoHidConnection::SendFeatureReport(
     uint8_t report_id,
     const std::vector<uint8_t>& buffer,
     SendFeatureReportCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 FakeFidoHidManager::FakeFidoHidManager() = default;

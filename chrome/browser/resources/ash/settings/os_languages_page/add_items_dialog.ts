@@ -8,6 +8,7 @@
  * well as items being disabled by policy.
  */
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
@@ -16,17 +17,18 @@ import './cr_checkbox_with_policy.js';
 import './shared_style.css.js';
 import '../settings_shared.css.js';
 
-import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
-import {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
+import type {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
 import {FindShortcutMixin} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
-import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './add_items_dialog.html.js';
 
-const ITEMS_ADDED_EVENT_NAME = 'items-added' as const;
+const ITEMS_ADDED_EVENT_NAME = 'items-added';
 
 /**
  * `id` must unique.
@@ -64,30 +66,20 @@ export class OsSettingsAddItemsDialogElement extends
 
   static get properties() {
     return {
-      items: {
-        type: Array,
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
-      },
+      items: Array,
 
       /**
        * Item IDs to show in the "Suggested" section of the dialog.
        * Any items in this array which are disabled by policy, or IDs which do
        * not appear in the items array will be filtered out automatically.
        */
-      suggestedItemIds: {
-        type: Array,
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
-      },
+      suggestedItemIds: Array,
 
       header: String,
 
       searchLabel: String,
+
+      managedByPolicyLabel: String,
 
       suggestedItemsLabel: String,
 
@@ -95,15 +87,16 @@ export class OsSettingsAddItemsDialogElement extends
 
       policyTooltip: String,
 
+      showManagedByPolicy: {
+        type: Boolean,
+        value: false,
+      },
+
       lowercaseQueryString_: String,
 
       filteredItems_: {
         type: Array,
         computed: 'getFilteredItems_(items.*, lowercaseQueryString_)',
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
       },
 
       itemIdsToAdd_: {
@@ -130,10 +123,6 @@ export class OsSettingsAddItemsDialogElement extends
       suggestedItems_: {
         type: Array,
         computed: 'getSuggestedItems_(suggestedItemIds.*, itemIdsToItems_)',
-        // This array is shared between all instances of the class:
-        // https://crrev.com/c/3897703/comment/fa845200_e10503c6/
-        // TODO(b/265556004): Move this to the constructor to avoid this.
-        value: [],
       },
 
       showSuggestedList_: {
@@ -158,21 +147,23 @@ export class OsSettingsAddItemsDialogElement extends
   }
 
   // Public API: Items to show in the dialog (downwards data flow).
-  items: Item[];
+  items: Item[] = [];
   /**
    * Item IDs to show in the "Suggested" section of the dialog.
    * Any items in this array which are disabled by policy, or IDs which do not
    * appear in the items array will be filtered out automatically.
    */
-  suggestedItemIds: string[];
+  suggestedItemIds: string[] = [];
 
   // Public API: Strings displayed to the user, in the order a user would see
   // them (downwards data flow).
   header: string;
   searchLabel: string;
+  managedByPolicyLabel: string;
   suggestedItemsLabel: string;
   allItemsLabel: string;
   policyTooltip: string;
+  showManagedByPolicy: boolean;
 
   // Internal state.
   private itemIdsToAdd_: Set<string>;
@@ -184,12 +175,12 @@ export class OsSettingsAddItemsDialogElement extends
   /** Mapping from item ID to item for use in computing `suggestedItems_`. */
   private itemIdsToItems_: Map<string, Item>;
   /** All items in this array are guaranteed to not be disabled by policy. */
-  private suggestedItems_: Item[];
+  private suggestedItems_: Item[] = [];
   /** Whether suggestedItems_ is non-empty. */
   private showSuggestedList_: boolean;
 
   // Computed properties for filtered items.
-  private filteredItems_: Item[];
+  private filteredItems_: Item[] = [];
   /** Whether filteredItems_ is non-empty. */
   private showFilteredList_: boolean;
 

@@ -5,7 +5,7 @@
 // https://streams.spec.whatwg.org/#cqs-class
 
 [
-    Exposed=(Window,Worker,Worklet)
+    Exposed=*
 ] interface CountQueuingStrategy {
     [CallWith=ScriptState, MeasureAs=CountQueuingStrategyConstructor] constructor(QueuingStrategyInit init);
     readonly attribute unrestricted double highWaterMark;

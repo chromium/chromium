@@ -19,7 +19,7 @@ goog.require('goog.html.TrustedResourceUrl');
 goog.require('goog.module');
 goog.require('goog.module.BaseModule');
 goog.require('goog.module.ModuleLoadCallback');
-goog.require('goog.module.ModuleLoadFailureType');
+goog.requireType('goog.module.ModuleLoadFailure');
 
 
 
@@ -27,7 +27,7 @@ goog.require('goog.module.ModuleLoadFailureType');
  * A ModuleInfo object is used by the ModuleManager to hold information about a
  * module of js code that may or may not yet be loaded into the environment.
  *
- * @param {Array<string>} deps Ids of the modules that must be loaded before
+ * @param {!Array<string>} deps Ids of the modules that must be loaded before
  *     this one. The ids must be in dependency order (i.e. if the ith module
  *     depends on the jth module, then i > j).
  * @param {string} id The module's ID.
@@ -41,8 +41,8 @@ goog.module.ModuleInfo = function(deps, id) {
 
   /**
    * A list of the ids of the modules that must be loaded before this module.
-   * @type {Array<string>}
-   * @private
+   * @type {!Array<string>}
+   * @private @const
    */
   this.deps_ = deps;
 
@@ -106,7 +106,7 @@ goog.module.ModuleInfo.prototype.module_ = null;
 
 /**
  * Gets the dependencies of this module.
- * @return {Array<string>} The ids of the modules that this module depends on.
+ * @return {!Array<string>} The ids of the modules that this module depends on.
  */
 goog.module.ModuleInfo.prototype.getDependencies = function() {
   'use strict';
@@ -301,7 +301,7 @@ goog.module.ModuleInfo.prototype.onLoad = function(contextProvider) {
 
 /**
  * Calls the error callbacks for the module.
- * @param {goog.module.ModuleLoadFailureType} cause What caused the
+ * @param {!goog.module.ModuleLoadFailure} cause What caused the
  *     error.
  */
 goog.module.ModuleInfo.prototype.onError = function(cause) {

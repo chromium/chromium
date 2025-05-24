@@ -61,8 +61,8 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
 
   static std::atomic_bool network_enabled_;
 
-  // |fake_server_| should only be dereferenced on the same thread as
-  // |fake_server_task_runner_| runs on.
+  // `fake_server_` should only be dereferenced on the same thread as
+  // `fake_server_task_runner_` runs on.
   const base::WeakPtr<FakeServer> fake_server_;
   const scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner_;
 
@@ -98,8 +98,8 @@ class FakeServerHttpPostProviderFactory
   scoped_refptr<syncer::HttpPostProvider> Create() override;
 
  private:
-  // |fake_server_| should only be dereferenced on the same thread as
-  // |fake_server_task_runner_| runs on.
+  // `fake_server_` should only be dereferenced on the same thread as
+  // `fake_server_task_runner_` runs on.
   base::WeakPtr<FakeServer> fake_server_;
   scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner_;
 };

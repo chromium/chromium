@@ -52,14 +52,16 @@ def parse_args(argv):
   parser.add_argument(
       "--android",
       action="store_true",
-      help="Enable installation of android dependencies",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of android dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument(
       "--no-android",
       action="store_false",
       dest="android",
-      help="Disable installation of android dependencies",
-  )
+      # Deprecated flag retained as functional for backward compatibility:
+      # Enable installation of android dependencies
+      help=argparse.SUPPRESS)
   parser.add_argument("--arm",
                       action="store_true",
                       help="Enable installation of arm cross toolchain")
@@ -139,6 +141,20 @@ def check_lsb_release():
 def distro_codename():
   return subprocess.check_output(["lsb_release", "--codename",
                                   "--short"]).decode().strip()
+
+
+@functools.lru_cache(maxsize=1)
+def requires_pinned_linux_libc():
+  # See: https://crbug.com/403291652 and b/408002335
+  name = subprocess.check_output(["uname", "-r"]).decode().strip()
+  return name == '6.12.12-1rodete2-amd64'
+
+
+def add_version_workaround(packages):
+  if 'linux-libc-dev:i386' in packages:
+    idx = packages.index('linux-libc-dev:i386')
+    packages[idx] += '=5.8.14-1'
+    packages += ['linux-libc-dev=5.8.14-1']
 
 
 def check_distro(options):
@@ -254,7 +270,6 @@ def dev_list():
       "pkgconf",
       "rpm",
       "ruby",
-      "subversion",
       "uuid-dev",
       "wdiff",
       "x11-utils",
@@ -296,6 +311,10 @@ def dev_list():
 
   if package_exists("libinput-dev"):
     packages.append("libinput-dev")
+
+  # So accessibility APIs work, needed for AX fuzzer
+  if package_exists("at-spi2-core"):
+    packages.append("at-spi2-core")
 
   # Cross-toolchain strip is needed for building the sysroots.
   if package_exists("binutils-arm-linux-gnueabihf"):
@@ -430,6 +449,12 @@ def lib_list():
     packages.append("libasound2t64")
   else:
     packages.append("libasound2")
+
+  # Run-time packages required by interactive_ui_tests on mutter
+  if package_exists("libgraphene-1.0-0"):
+    packages.append("libgraphene-1.0-0")
+  if package_exists("mutter-common"):
+    packages.append("mutter-common")
 
   return packages
 
@@ -761,6 +786,9 @@ def package_list(options):
               backwards_compatible_list(options))
   packages = [maybe_append_t64(package) for package in set(packages)]
 
+  if requires_pinned_linux_libc():
+    add_version_workaround(packages)
+
   # Sort all the :i386 packages to the front, to avoid confusing dpkg-query
   # (https://crbug.com/446172).
   return sorted(packages, key=lambda x: (not x.endswith(":i386"), x))
@@ -839,6 +867,10 @@ def find_missing_packages(options):
         if not line.startswith("  "):
           break
         install += line.strip().split(" ")
+
+  if requires_pinned_linux_libc():
+    add_version_workaround(install)
+
   return install
 
 
@@ -856,8 +888,9 @@ def install_packages(options):
   except subprocess.CalledProcessError as e:
     # An apt-get exit status of 100 indicates that a real error has occurred.
     print("`apt-get --just-print install ...` failed", file=sys.stderr)
-    print("It produced the following output:", file=sys.stderr)
-    print(file=sys.stderr)
+    if e.stdout is not None:
+      print("It produced the following output:", file=sys.stderr)
+      print(e.stdout, file=sys.stderr)
     print("You will have to install the above packages yourself.",
           file=sys.stderr)
     print(file=sys.stderr)

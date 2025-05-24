@@ -5,13 +5,12 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_SINGLE_REQUEST_URL_LOADER_FACTORY_H_
 
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace network {
@@ -22,12 +21,24 @@ namespace network {
 class COMPONENT_EXPORT(NETWORK_CPP) SingleRequestURLLoaderFactory
     : public network::SharedURLLoaderFactory {
  public:
+  // Some arguments of `CreateLoaderAndStart()` are forwarded.
   using RequestHandler = base::OnceCallback<void(
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader>,
       mojo::PendingRemote<network::mojom::URLLoaderClient>)>;
 
   explicit SingleRequestURLLoaderFactory(RequestHandler handler);
+
+  // All arguments of `CreateLoaderAndStart()` are forwarded.
+  using FullRequestHandler = base::OnceCallback<void(
+      mojo::PendingReceiver<mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const ResourceRequest& request,
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)>;
+
+  explicit SingleRequestURLLoaderFactory(FullRequestHandler full_handler);
 
   SingleRequestURLLoaderFactory(const SingleRequestURLLoaderFactory&) = delete;
   SingleRequestURLLoaderFactory& operator=(

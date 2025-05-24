@@ -81,6 +81,7 @@ bool DidEndBeforeCallingOpenOrMoveFiles(OfficeTaskResult task_result) {
     case OfficeTaskResult::kFallbackQuickOfficeAfterOpen:
     case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
     case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
+    case OfficeTaskResult::kCannotGetSourceType:
       return false;
   }
 }
@@ -112,6 +113,7 @@ bool DidEndAtFallback(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCannotShowMoveConfirmation:
     case OfficeTaskResult::kNoFilesToOpen:
     case OfficeTaskResult::kFileAlreadyBeingOpened:
+    case OfficeTaskResult::kCannotGetSourceType:
       return false;
   }
 }
@@ -143,6 +145,7 @@ bool DidEndAtMoveConfirmation(OfficeTaskResult task_result) {
     case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
     case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
     case OfficeTaskResult::kFileAlreadyBeingOpened:
+    case OfficeTaskResult::kCannotGetSourceType:
       return false;
   }
 }
@@ -214,6 +217,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kMeteredConnection:
               case OfficeDriveOpenErrors::kDisableDrivePreferenceSet:
               case OfficeDriveOpenErrors::kDriveDisabledForAccountType:
+              case OfficeDriveOpenErrors::kDriveFsUnavailable:
                 break;
               case OfficeDriveOpenErrors::kTimeout:
               case OfficeDriveOpenErrors::kNoMetadata:
@@ -249,6 +253,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
               case OfficeOneDriveOpenErrors::
                   kAndroidOneDriveUnsupportedLocation:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -258,7 +264,13 @@ void CloudOpenMetrics::CheckForInconsistencies(
     } else {
       // CloudOpenTask::OpenOrMoveFiles() was called.
       ExpectLogged(source_volume);
-      ExpectLogged(transfer_required);
+      if (task_result.value == OfficeTaskResult::kCannotGetSourceType) {
+        // Special case where an upload was required but type of upload couldn't
+        // be determined.
+        ExpectNotLogged(transfer_required);
+      } else {
+        ExpectLogged(transfer_required);
+      }
       if (DidEndAtFallback(task_result.value)) {
         // The cloud open/upload flow was exited at the Fallback Dialog after
         // an open was attempted. OpenErrors should give a fallback reason.
@@ -285,6 +297,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -365,6 +379,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kDisableDrivePreferenceSet:
               case OfficeDriveOpenErrors::kDriveDisabledForAccountType:
               case OfficeDriveOpenErrors::kCannotGetRelativePath:
+              case OfficeDriveOpenErrors::kDriveFsUnavailable:
                 break;
               case OfficeDriveOpenErrors::kSuccess:
                 SetWrongValueLogged(drive_open_error);
@@ -388,6 +403,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kConversionToODFSUrlError:
               case OfficeOneDriveOpenErrors::kAndroidOneDriveInvalidUrl:
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 break;
               case OfficeOneDriveOpenErrors::kSuccess:
               case OfficeOneDriveOpenErrors::
@@ -424,6 +441,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeDriveOpenErrors::kDisableDrivePreferenceSet:
               case OfficeDriveOpenErrors::kDriveDisabledForAccountType:
               case OfficeDriveOpenErrors::kCannotGetRelativePath:
+              case OfficeDriveOpenErrors::kDriveFsUnavailable:
                 SetWrongValueLogged(drive_open_error);
                 break;
             }
@@ -449,6 +467,8 @@ void CloudOpenMetrics::CheckForInconsistencies(
               case OfficeOneDriveOpenErrors::kEmailsDoNotMatch:
               case OfficeOneDriveOpenErrors::
                   kAndroidOneDriveUnsupportedLocation:
+              case OfficeOneDriveOpenErrors::kFailedToLaunch:
+              case OfficeOneDriveOpenErrors::kMS365NotInstalled:
                 SetWrongValueLogged(one_drive_open_error);
                 break;
             }
@@ -696,6 +716,7 @@ void CloudOpenMetrics::CheckForInconsistencies(
           case OfficeTaskResult::kCancelledAtFallbackAfterOpen:
           case OfficeTaskResult::kCannotGetFallbackChoiceAfterOpen:
           case OfficeTaskResult::kFileAlreadyBeingOpened:
+          case OfficeTaskResult::kCannotGetSourceType:
             SetWrongValueLogged(task_result);
             break;
         }

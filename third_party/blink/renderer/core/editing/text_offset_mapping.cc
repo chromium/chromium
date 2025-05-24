@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/editing/text_offset_mapping.h"
 
 #include <ostream>
+
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/iterators/character_iterator.h"
@@ -12,6 +13,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -135,8 +137,8 @@ const Node* FindLastNonPseudoNodeIn(const LayoutObject& container) {
 //  3. Gh
 // See RangeWithNestedInlineBlock* tests.
 
-// Note: Since "inline-block" and "float" are not considered as text segment
-// boundary, we should not consider them as block for scanning.
+// Note: Since "inline-block" is not considered as text segment
+// boundary, we should not consider it as block for scanning.
 // Example in selection text:
 //  <div>|ab<b style="display:inline-block">CD</b>ef</div>
 //  selection.modify('extent', 'forward', 'word')
@@ -157,8 +159,7 @@ const LayoutBlockFlow* ComputeInlineContentsAsBlockFlow(
     return nullptr;
   if (!block_flow->ChildrenInline())
     return nullptr;
-  if (block_flow->IsAtomicInlineLevel() ||
-      block_flow->IsFloatingOrOutOfFlowPositioned()) {
+  if (block_flow->IsAtomicInlineLevel()) {
     const LayoutBlockFlow& root_block_flow =
         RootInlineContentsContainerOf(*block_flow);
     // Skip |root_block_flow| if it's an anonymous wrapper created for
@@ -236,6 +237,15 @@ TextOffsetMapping::InlineContents ComputeInlineContentsFromNode(
       ComputeInlineContentsAsBlockFlow(*layout_object);
   if (!block_flow)
     return TextOffsetMapping::InlineContents();
+  // If the node is inside a User agent Shadow root and the block_flow
+  // is anonymous and outside the shadow root we should pass
+  // node as Shadow host and get the layout object from that.
+  if (RuntimeEnabledFeatures::
+          NodeInUAShadowRootUnderAnonymousBlockFlowEnabled() &&
+      node.IsInUserAgentShadowRoot() && block_flow->IsAnonymous()) {
+    return CreateInlineContentsFromBlockFlow(
+        *block_flow, *(node.OwnerShadowHost()->GetLayoutObject()));
+  }
   return CreateInlineContentsFromBlockFlow(*block_flow, *layout_object);
 }
 

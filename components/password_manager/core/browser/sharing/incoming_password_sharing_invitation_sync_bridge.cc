@@ -106,9 +106,8 @@ IncomingPasswordSharingInvitationSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "This data type does not store or commit any data to the server.";
-  return nullptr;
 }
 
 std::unique_ptr<syncer::DataBatch>
@@ -122,13 +121,13 @@ IncomingPasswordSharingInvitationSyncBridge::GetAllDataForDebugging() {
 }
 
 std::string IncomingPasswordSharingInvitationSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return entity_data.specifics.incoming_password_sharing_invitation().guid();
 }
 
 std::string IncomingPasswordSharingInvitationSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetClientTag(entity_data);
 }
 

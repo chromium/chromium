@@ -4,13 +4,13 @@
 
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
@@ -76,16 +76,18 @@ void RevokeAllSecondaryTokens(
     bool is_primary_account =
         !primary_account.empty() && account == primary_account;
 
-    if (is_primary_account)
+    if (is_primary_account) {
       continue;
+    }
 
     bool should_revoke =
         !revoke_only_if_in_error ||
         identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
             account);
 
-    if (should_revoke)
+    if (should_revoke) {
       accounts_mutator->RemoveAccount(account, source);
+    }
   }
 }
 
@@ -101,8 +103,7 @@ bool DiceAccountReconcilorDelegate::IsReconcileEnabled() const {
 
 bool DiceAccountReconcilorDelegate::IsCookieBasedConsistencyMode() const {
   CHECK(IsReconcileEnabled());
-  return switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-         !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  return !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
 }
 
 void DiceAccountReconcilorDelegate::MatchTokensWithAccountsInCookie(
@@ -114,8 +115,8 @@ void DiceAccountReconcilorDelegate::MatchTokensWithAccountsInCookie(
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   for (const CoreAccountInfo& account_info :
        identity_manager_->GetAccountsWithRefreshTokens()) {
-    auto it = base::ranges::find(gaia_accounts, account_info.account_id,
-                                 &gaia::ListedAccount::id);
+    auto it = std::ranges::find(gaia_accounts, account_info.account_id,
+                                &gaia::ListedAccount::id);
     if (it == gaia_accounts.end() || !it->valid) {
       // Account not in the cookie or the account is not valid (session
       // expired) and requires the user to reauth.
@@ -135,8 +136,9 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
     bool first_execution) const {
   std::vector<CoreAccountId> valid_gaia_accounts_ids;
   for (const gaia::ListedAccount& gaia_account : gaia_accounts) {
-    if (gaia_account.valid)
+    if (gaia_account.valid) {
       valid_gaia_accounts_ids.push_back(gaia_account.id);
+    }
   }
 
   bool primary_account_has_token = false;
@@ -145,11 +147,13 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
         base::Contains(chrome_accounts, primary_account);
     bool primary_account_has_cookie =
         base::Contains(valid_gaia_accounts_ids, primary_account);
-    if (primary_account_has_token && !primary_account_has_cookie)
+    if (primary_account_has_token && !primary_account_has_cookie) {
       return InconsistencyReason::kMissingSyncCookie;
+    }
 
-    if (!primary_account_has_token && primary_account_has_cookie)
+    if (!primary_account_has_token && primary_account_has_cookie) {
       return InconsistencyReason::kSyncAccountAuthError;
+    }
   }
 
   bool missing_first_web_account_token =
@@ -157,29 +161,34 @@ DiceAccountReconcilorDelegate::GetInconsistencyReason(
       gaia_accounts[0].valid &&
       !base::Contains(chrome_accounts, gaia_accounts[0].id);
 
-  if (missing_first_web_account_token)
+  if (missing_first_web_account_token) {
     return InconsistencyReason::kMissingFirstWebAccountToken;
+  }
 
   std::sort(valid_gaia_accounts_ids.begin(), valid_gaia_accounts_ids.end());
   std::vector<CoreAccountId> sorted_chrome_accounts(chrome_accounts);
   std::sort(sorted_chrome_accounts.begin(), sorted_chrome_accounts.end());
   bool missing_token =
-      !base::ranges::includes(sorted_chrome_accounts, valid_gaia_accounts_ids);
+      !std::ranges::includes(sorted_chrome_accounts, valid_gaia_accounts_ids);
   bool missing_cookie =
-      !base::ranges::includes(valid_gaia_accounts_ids, sorted_chrome_accounts);
+      !std::ranges::includes(valid_gaia_accounts_ids, sorted_chrome_accounts);
 
-  if (missing_token && missing_cookie)
+  if (missing_token && missing_cookie) {
     return InconsistencyReason::kCookieTokenMismatch;
+  }
 
-  if (missing_token)
+  if (missing_token) {
     return InconsistencyReason::kMissingSecondaryToken;
+  }
 
-  if (missing_cookie)
+  if (missing_cookie) {
     return InconsistencyReason::kMissingSecondaryCookie;
+  }
 
   if (first_execution && primary_account_has_token &&
-      gaia_accounts[0].id != primary_account && gaia_accounts[0].valid)
+      gaia_accounts[0].id != primary_account && gaia_accounts[0].valid) {
     return InconsistencyReason::kSyncCookieNotFirst;
+  }
 
   return InconsistencyReason::kNone;
 }
@@ -194,8 +203,10 @@ bool DiceAccountReconcilorDelegate::ShouldDeleteAccountsFromGaia(
   // A valid Gaia account should be deleted if it does not have a Chrome
   // account.
   for (const gaia::ListedAccount& gaia_account : gaia_accounts) {
-    if (gaia_account.valid && !base::Contains(chrome_accounts, gaia_account.id))
+    if (gaia_account.valid &&
+        !base::Contains(chrome_accounts, gaia_account.id)) {
       return true;
+    }
   }
   return false;
 }
@@ -384,8 +395,7 @@ void DiceAccountReconcilorDelegate::RevokeSecondaryTokensForReconcileIfNeeded(
   }
 }
 
-void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
-    bool synced_data_deletion_in_progress) {
+void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction() {
   ConsentLevel consent_level = GetConsentLevelForPrimaryAccount();
   // Revoke secondary tokens to avoid reconcilor rebuilding cookies.
   RevokeAllSecondaryTokens(
@@ -412,21 +422,8 @@ void DiceAccountReconcilorDelegate::OnAccountsCookieDeletedByUserAction(
   }
 #endif
 
-  if (synced_data_deletion_in_progress &&
-      identity_manager_->HasPrimaryAccount(ConsentLevel::kSync)) {
-    // If sync data deletion in progress, avoid invalidating the sync
-    // account unless it is already in a persistent error state. This is needed
-    // to ensure the data gets deleted from the google account.
-    CoreAccountId primary_sync_account =
-        identity_manager_->GetPrimaryAccountId(ConsentLevel::kSync);
-    if (!identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-            primary_sync_account)) {
-      return;
-    }
-  }
-
-  // The primary account should be paused if the account cookie is deleted by
-  // user action.
+  // The primary account should be invalidated if the account cookie is deleted
+  // by user action.
   auto* accounts_mutator = identity_manager_->GetAccountsMutator();
   accounts_mutator->InvalidateRefreshTokenForPrimaryAccount(
       signin_metrics::SourceForRefreshTokenOperation::

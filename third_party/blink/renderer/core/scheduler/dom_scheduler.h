@@ -5,8 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_SCHEDULER_H_
 
+#include <atomic>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -31,6 +32,7 @@ class AbortSignal;
 class DOMTaskSignal;
 class ExceptionState;
 class SchedulerPostTaskOptions;
+class SchedulerTaskContext;
 class DOMSchedulerTest;
 class V8SchedulerPostTaskCallback;
 class WebSchedulingTaskQueue;
@@ -136,6 +138,11 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   using SignalToTaskQueueMap =
       HeapHashMap<WeakMember<DOMTaskSignal>, WeakMember<DOMTaskQueue>>;
 
+  static uint64_t NextIdForTracing() {
+    static std::atomic<uint64_t> next_id(0);
+    return next_id.fetch_add(1, std::memory_order_relaxed);
+  }
+
   // Creates and enqueues one fixed priority task queue for each priority with
   // the given queue type in the given vector.
   void CreateFixedPriorityTaskQueues(ExecutionContext*,
@@ -153,6 +160,11 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
   // Gets the task queue used to schedule tasks or continuations with the given
   // signal and type, creating it if needed.
   DOMTaskQueue* GetTaskQueue(DOMTaskSignal*, WebSchedulingQueueType);
+
+  // Returns the `SchedulerTaskContext` to use for scheduler.yield(). Records
+  // UseCounters for non-trivial inheritance, both for the case where the
+  // context is used, and the cross-frame case where it's ignored.
+  SchedulerTaskContext* GetSchedulerTaskContextForYield();
 
   // `fixed_priority_task_queues_` is initialized with one entry per priority,
   // indexed by priority. This will be empty when the window is detached.

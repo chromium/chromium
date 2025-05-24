@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "gin/converter.h"
@@ -70,6 +71,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
   void BeginGenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParamsPtr
           bidder_worklet_non_shared_params,
+      mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -77,10 +79,12 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const url::Origin& browser_signal_seller_origin,
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const base::TimeDelta browser_signal_recency,
+      bool browser_signal_for_debugging_only_sampling,
       blink::mojom::BiddingBrowserSignalsPtr bidding_browser_signals,
       base::Time auction_start_time,
       const std::optional<blink::AdSize>& requested_ad_size,
       uint16_t multi_bid_limit,
+      uint64_t group_by_origin_id,
       uint64_t trace_id,
       mojo::PendingAssociatedRemote<mojom::GenerateBidClient>
           generate_bid_client,
@@ -104,8 +108,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const std::optional<std::string>&
           direct_from_seller_auction_signals_header_ad_slot,
       const std::string& seller_signals_json,
-      mojom::KAnonymityBidMode kanon_mode,
-      bool bid_is_kanon,
+      mojom::KAnonymityStatus kanon_status,
       const GURL& browser_signal_render_url,
       double browser_signal_bid,
       const std::optional<blink::AdCurrency>& browser_signal_bid_currency,
@@ -121,6 +124,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
       const std::optional<url::Origin>& browser_signal_top_level_seller_origin,
       const std::optional<base::TimeDelta> browser_signal_reporting_timeout,
       std::optional<uint32_t> bidding_data_version,
+      const std::optional<std::string>& aggregate_win_signals,
       uint64_t trace_id,
       ReportWinCallback report_win_callback) override {
     ADD_FAILURE() << "ReportWin shouldn't be called on DebugConnector";
@@ -190,9 +194,10 @@ class AuctionV8HelperTest : public testing::Test {
               {
                 v8::Context::Scope ctx(helper->scratch_context());
                 std::optional<std::string> error_msg;
-                ASSERT_TRUE(
-                    helper->Compile(body, url, debug_id.get(), error_msg)
-                        .ToLocal(&script));
+                ASSERT_TRUE(helper
+                                ->Compile(body, url, debug_id.get(),
+                                          /*cached_data=*/nullptr, error_msg)
+                                .ToLocal(&script));
                 EXPECT_FALSE(error_msg.has_value());
               }
               v8::Local<v8::Context> context = helper->CreateContext();
@@ -304,11 +309,11 @@ TEST_F(AuctionV8HelperTest, Basic) {
   {
     v8::Context::Scope ctx(helper_->scratch_context());
     std::optional<std::string> error_msg;
-    ASSERT_TRUE(helper_
-                    ->Compile("function foo() { return 1;}",
-                              GURL("https://foo.test/"),
-                              /*debug_id=*/nullptr, error_msg)
-                    .ToLocal(&script));
+    ASSERT_TRUE(
+        helper_
+            ->Compile("function foo() { return 1;}", GURL("https://foo.test/"),
+                      /*debug_id=*/nullptr, /*cached_data=*/nullptr, error_msg)
+            .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value());
   }
 
@@ -333,6 +338,34 @@ TEST_F(AuctionV8HelperTest, Basic) {
     ASSERT_TRUE(gin::ConvertFromV8(helper_->isolate(), result, &int_result));
     EXPECT_EQ(1, int_result);
     EXPECT_TRUE(error_msgs.empty());
+  }
+}
+
+TEST_F(AuctionV8HelperTest, UseCachedData) {
+  v8::Local<v8::UnboundScript> script1;
+  {
+    v8::Context::Scope ctx(helper_->scratch_context());
+    std::optional<std::string> error_msg;
+    ASSERT_TRUE(
+        helper_
+            ->Compile("function foo() { return 1;}", GURL("https://foo.test/"),
+                      /*debug_id=*/nullptr, /*cached_data=*/nullptr, error_msg)
+            .ToLocal(&script1));
+    EXPECT_FALSE(error_msg.has_value());
+  }
+  v8::Local<v8::UnboundScript> script2;
+  {
+    v8::Context::Scope ctx(helper_->scratch_context());
+    std::optional<std::string> error_msg;
+    ASSERT_TRUE(
+        helper_
+            ->Compile(
+                "function foo() { return 1;}", GURL("https://foo.test/"),
+                /*debug_id=*/nullptr,
+                /*cached_data=*/v8::ScriptCompiler::CreateCodeCache(script1),
+                error_msg)
+            .ToLocal(&script2));
+    EXPECT_FALSE(error_msg.has_value());
   }
 }
 
@@ -373,7 +406,8 @@ TEST_F(AuctionV8HelperTest, Timeout) {
                         function foo() { return 1;}
                         while(1);)",
                                 GURL("https://foo.test/"),
-                                /*debug_id=*/nullptr, compile_error)
+                                /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                                compile_error)
                       .ToLocal(&script));
       EXPECT_EQ(compile_error, std::nullopt);
 
@@ -408,7 +442,8 @@ TEST_F(AuctionV8HelperTest, Timeout) {
                         function foo() {while (1);}
                         )",
                                 GURL("https://foo.test/"),
-                                /*debug_id=*/nullptr, compile_error)
+                                /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                                compile_error)
                       .ToLocal(&script));
       EXPECT_EQ(compile_error, std::nullopt);
 
@@ -447,7 +482,8 @@ TEST_F(AuctionV8HelperTest, Timeout) {
   ASSERT_TRUE(helper_
                   ->Compile("function foo() { return 1;}",
                             GURL("https://foo.test/"),
-                            /*debug_id=*/nullptr, compile_error)
+                            /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                            compile_error)
                   .ToLocal(&script));
   EXPECT_EQ(compile_error, std::nullopt);
 
@@ -483,7 +519,8 @@ TEST_F(AuctionV8HelperTest, NoTime) {
   ASSERT_TRUE(helper_
                   ->Compile("function foo() { return Date();}",
                             GURL("https://foo.test/"),
-                            /*debug_id=*/nullptr, compile_error)
+                            /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                            compile_error)
                   .ToLocal(&script));
   EXPECT_FALSE(compile_error.has_value());
   std::vector<std::string> error_msgs;
@@ -512,7 +549,8 @@ TEST_F(AuctionV8HelperTest, CompileError) {
   std::optional<std::string> error_msg;
   ASSERT_FALSE(helper_
                    ->Compile("function foo() { ", GURL("https://foo.test/"),
-                             /*debug_id=*/nullptr, error_msg)
+                             /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                             error_msg)
                    .ToLocal(&script));
   ASSERT_TRUE(error_msg.has_value());
   EXPECT_THAT(error_msg.value(), StartsWith("https://foo.test/:1 "));
@@ -528,7 +566,8 @@ TEST_F(AuctionV8HelperTest, RunErrorTopLevel) {
     ASSERT_TRUE(helper_
                     ->Compile("\n\nthrow new Error('I am an error');",
                               GURL("https://foo.test/"),
-                              /*debug_id=*/nullptr, error_msg)
+                              /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                              error_msg)
                     .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value());
   }
@@ -551,11 +590,11 @@ TEST_F(AuctionV8HelperTest, TargetFunctionNotFound) {
   {
     v8::Context::Scope ctx(helper_->scratch_context());
     std::optional<std::string> error_msg;
-    ASSERT_TRUE(helper_
-                    ->Compile("function foo() { return 1;}",
-                              GURL("https://foo.test/"),
-                              /*debug_id=*/nullptr, error_msg)
-                    .ToLocal(&script));
+    ASSERT_TRUE(
+        helper_
+            ->Compile("function foo() { return 1;}", GURL("https://foo.test/"),
+                      /*debug_id=*/nullptr, /*cached_data=*/nullptr, error_msg)
+            .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value());
   }
 
@@ -591,7 +630,8 @@ TEST_F(AuctionV8HelperTest, TargetFunctionError) {
     ASSERT_TRUE(helper_
                     ->Compile("function foo() { return notfound;}",
                               GURL("https://foo.test/"),
-                              /*debug_id=*/nullptr, error_msg)
+                              /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                              error_msg)
                     .ToLocal(&script));
     EXPECT_FALSE(error_msg.has_value());
   }
@@ -749,7 +789,8 @@ TEST_F(AuctionV8HelperTest, FormatScriptName) {
   ASSERT_TRUE(helper_
                   ->Compile("function foo() { return 1;}",
                             GURL("https://foo.test:8443/foo.js?v=3"),
-                            /*debug_id=*/nullptr, error_msg)
+                            /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                            error_msg)
                   .ToLocal(&script));
   EXPECT_EQ("https://foo.test:8443/foo.js?v=3",
             helper_->FormatScriptName(script));
@@ -931,9 +972,10 @@ TEST_F(AuctionV8HelperTest, DebugCompileError) {
             {
               v8::Context::Scope ctx(helper->scratch_context());
               std::optional<std::string> error_msg;
-              ASSERT_FALSE(
-                  helper->Compile(body, GURL(url), debug_id.get(), error_msg)
-                      .ToLocal(&script));
+              ASSERT_FALSE(helper
+                               ->Compile(body, GURL(url), debug_id.get(),
+                                         /*cached_data=*/nullptr, error_msg)
+                               .ToLocal(&script));
             }
           },
           helper_, id, kURL, kScriptSrc));
@@ -1490,7 +1532,8 @@ TEST_F(AuctionV8HelperTest, CloneWasmModule) {
   v8::Local<v8::UnboundScript> script;
   ASSERT_TRUE(helper_
                   ->Compile(kScript, GURL("https://foo.test/"),
-                            /*debug_id=*/nullptr, error_msg)
+                            /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                            error_msg)
                   .ToLocal(&script));
   EXPECT_FALSE(error_msg.has_value());
 
@@ -1632,7 +1675,8 @@ TEST_F(AuctionV8HelperTest, ExtractJsonTimeout) {
       std::optional<std::string> compile_error;
       ASSERT_TRUE(helper_
                       ->Compile(kScript, GURL("https://foo.test/"),
-                                /*debug_id=*/nullptr, compile_error)
+                                /*debug_id=*/nullptr, /*cached_data=*/nullptr,
+                                compile_error)
                       .ToLocal(&script));
       EXPECT_EQ(compile_error, std::nullopt);
 

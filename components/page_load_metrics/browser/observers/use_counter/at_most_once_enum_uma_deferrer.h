@@ -98,6 +98,9 @@ class AtMostOnceEnumUmaDeferrer {
   // True iff RecordOrDefer is already involked for given sample.
   bool IsRecordedOrDeferred(T sample) const;
 
+  // Returns a vector of recorded samples.
+  std::vector<T> GetRecordedValues();
+
   // Provided only for DCHECK.
   std::bitset<static_cast<size_t>(T::kMaxValue) + 1> recorded_or_deferred()
       const {
@@ -133,6 +136,18 @@ void AtMostOnceEnumUmaDeferrer<T>::DisableDeferAndFlush() {
                                         static_cast<T>(sample_value));
     }
   }
+}
+
+template <typename T>
+std::vector<T> AtMostOnceEnumUmaDeferrer<T>::GetRecordedValues() {
+  std::vector<T> set_values;
+  for (int sample_value = 0; sample_value <= static_cast<int>(T::kMaxValue);
+       ++sample_value) {
+    if (recorded_or_deferred_.test(sample_value)) {
+      set_values.push_back(static_cast<T>(sample_value));
+    }
+  }
+  return set_values;
 }
 
 template <typename T>

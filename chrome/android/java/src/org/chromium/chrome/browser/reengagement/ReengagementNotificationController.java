@@ -15,12 +15,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.DefaultBrowserInfo2;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -84,8 +84,8 @@ public class ReengagementNotificationController {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    protected void getDefaultBrowserInfo(Callback<DefaultBrowserInfo2.DefaultInfo> callback) {
-        DefaultBrowserInfo2.getDefaultBrowserInfo(callback);
+    protected void getDefaultBrowserInfo(Callback<DefaultBrowserInfo.DefaultInfo> callback) {
+        DefaultBrowserInfo.getDefaultBrowserInfo(callback);
     }
 
     private boolean showNotification(String feature) {
@@ -112,7 +112,7 @@ public class ReengagementNotificationController {
             return false;
         }
 
-        if (!mTracker.shouldTriggerHelpUI(feature)) return false;
+        if (!mTracker.shouldTriggerHelpUi(feature)) return false;
         mTracker.dismissed(feature);
 
         NotificationMetadata metadata =
@@ -136,7 +136,7 @@ public class ReengagementNotificationController {
                 .setAutoCancel(true);
 
         BaseNotificationManagerProxy notificationManager =
-                BaseNotificationManagerProxyFactory.create(mContext);
+                BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         notificationManager.notify(notification);
 

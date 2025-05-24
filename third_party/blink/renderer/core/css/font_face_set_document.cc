@@ -72,12 +72,6 @@ FontSelector* FontFaceSetDocument::GetFontSelector() const {
   return GetDocument()->GetStyleEngine().GetFontSelector();
 }
 
-AtomicString FontFaceSetDocument::status() const {
-  DEFINE_STATIC_LOCAL(AtomicString, loading, ("loading"));
-  DEFINE_STATIC_LOCAL(AtomicString, loaded, ("loaded"));
-  return is_loading_ ? loading : loaded;
-}
-
 void FontFaceSetDocument::DidLayout() {
   if (!GetExecutionContext()) {
     return;
@@ -92,11 +86,8 @@ void FontFaceSetDocument::DidLayout() {
 }
 
 void FontFaceSetDocument::StartLCPLimitTimerIfNeeded() {
-  // Make sure the timer is started at most once for each document, and only
-  // when the feature is enabled
-  if (!base::FeatureList::IsEnabled(
-          features::kAlignFontDisplayAutoTimeoutWithLCPGoal) ||
-      has_reached_lcp_limit_ || lcp_limit_timer_.IsActive() ||
+  // Make sure the timer is started at most once for each document.
+  if (has_reached_lcp_limit_ || lcp_limit_timer_.IsActive() ||
       !GetDocument()->Loader()) {
     return;
   }
@@ -171,25 +162,23 @@ void FontFaceSetDocument::FireDoneEventIfPossible() {
   FireDoneEvent();
 }
 
-bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
-                                           Font& font) {
+const Font* FontFaceSetDocument::ResolveFontStyle(const String& font_string) {
   if (font_string.empty()) {
-    return false;
+    return nullptr;
   }
 
   // Interpret fontString in the same way as the 'font' attribute of
   // CanvasRenderingContext2D.
   auto* parsed_style = CSSParser::ParseFont(font_string, GetExecutionContext());
   if (!parsed_style) {
-    return false;
+    return nullptr;
   }
 
   if (!GetDocument()->documentElement()) {
     auto* font_selector = GetDocument()->GetStyleEngine().GetFontSelector();
     FontDescription description =
         FontStyleResolver::ComputeFont(*parsed_style, font_selector);
-    font = Font(description, font_selector);
-    return true;
+    return MakeGarbageCollected<Font>(description, font_selector);
   }
 
   ComputedStyleBuilder builder =
@@ -205,14 +194,14 @@ bool FontFaceSetDocument::ResolveFontStyle(const String& font_string,
   builder.SetFontDescription(default_font_description);
   const ComputedStyle* style = builder.TakeStyle();
 
-  font = GetDocument()->GetStyleEngine().ComputeFont(
+  const Font* font = GetDocument()->GetStyleEngine().ComputeFont(
       *GetDocument()->documentElement(), *style, *parsed_style);
 
   // StyleResolver::ComputeFont() should have set the document's FontSelector
   // to |style|.
-  DCHECK_EQ(font.GetFontSelector(), GetFontSelector());
+  DCHECK_EQ(font->GetFontSelector(), GetFontSelector());
 
-  return true;
+  return font;
 }
 
 Document* FontFaceSetDocument::GetDocument() const {
@@ -259,8 +248,6 @@ void FontFaceSetDocument::AlignTimeoutWithLCPGoal(FontFace* font_face) {
 }
 
 void FontFaceSetDocument::LCPLimitReached(TimerBase*) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAlignFontDisplayAutoTimeoutWithLCPGoal));
   if (!GetDocument() || !GetDocument()->IsActive()) {
     return;
   }

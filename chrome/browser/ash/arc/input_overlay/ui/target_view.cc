@@ -108,7 +108,7 @@ int TargetView::GetCircleRadius() const {
     case ActionType::MOVE:
       return kActionMoveCircleRadius;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -119,7 +119,7 @@ int TargetView::GetCircleRingRadius() const {
     case ActionType::MOVE:
       return kActionMoveCircleRingRadius;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

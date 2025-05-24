@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "services/tracing/perfetto/perfetto_service.h"
 
 #include <utility>
@@ -110,7 +115,7 @@ void PerfettoService::ConnectToProducerHost(
   // should always be valid.
   DCHECK(shared_memory.IsValid());
 
-  auto new_producer = std::make_unique<ProducerHost>(&perfetto_task_runner_);
+  auto new_producer = std::make_unique<ProducerHost>();
   uint32_t producer_pid = receivers_.current_context();
   ProducerHost::InitializationResult result = new_producer->Initialize(
       std::move(producer_client), service_.get(),

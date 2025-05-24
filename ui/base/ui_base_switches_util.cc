@@ -33,13 +33,4 @@ bool IsElasticOverscrollEnabled() {
 #endif
 }
 
-bool IsTouchDragDropEnabled() {
-  const auto* const command_line = base::CommandLine::ForCurrentProcess();
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  return !command_line->HasSwitch(kDisableTouchDragDrop);
-#else
-  return command_line->HasSwitch(kEnableTouchDragDrop);
-#endif
-}
-
 }  // namespace switches

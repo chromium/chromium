@@ -1,8 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/link_to_text/ui_bundled",
-  "+ios/chrome/browser/ui/search_with",
-  "+ios/chrome/browser/overlays/ui_bundled/overlay_container_coordinator.h",
-  "+ios/chrome/browser/screen_time/ui_bundled/screen_time_coordinator.h",
-  "+ios/chrome/browser/ui/partial_translate",
-  "+ios/chrome/browser/ui/fullscreen",
-]

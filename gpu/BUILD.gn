@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/ui.gni")
 import("//gpu/vulkan/features.gni")
@@ -81,6 +80,8 @@ static_library("test_support") {
   sources = [
     "command_buffer/client/client_test_helper.cc",
     "command_buffer/client/client_test_helper.h",
+    "command_buffer/client/fake_gpu_memory_buffer.cc",
+    "command_buffer/client/fake_gpu_memory_buffer.h",
     "command_buffer/client/gles2_interface_stub.cc",
     "command_buffer/client/gles2_interface_stub.h",
     "command_buffer/client/gles2_interface_stub_autogen.h",
@@ -132,6 +133,7 @@ static_library("test_support") {
     "//gpu/ipc/common",
     "//gpu/ipc/service",
     "//gpu/skia_bindings:skia_bindings",
+    "//media",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/gfx:test_support",
@@ -145,19 +147,14 @@ static_library("test_support") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 }
 
-if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
+if (!is_android && !is_fuchsia && !is_chromeos && !is_ios) {
   proto_library("gl_lpm_fuzzer_proto") {
     sources = [ "command_buffer/tests/lpm/gl_lpm_fuzzer.proto" ]
 
     use_protobuf_full = true
-    deps = [ "//third_party/protobuf:protobuf_full" ]
   }
 
   static_library("gl_lpm_shader_to_string") {
@@ -336,11 +333,7 @@ test("gl_tests") {
     "//ui/gl/init",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -361,6 +354,8 @@ test("gl_tests") {
     frameworks = [ "IOSurface.framework" ]
     sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
   } else if (is_win) {
+    libs += [ "d3d12.lib" ]
+    libs += [ "d3d11.lib" ]
     deps += [
       "//third_party/microsoft_dxheaders:dxguids",
       "//ui/platform_window",
@@ -474,6 +469,7 @@ test("gpu_unittests") {
     "command_buffer/service/gpu_tracer_unittest.cc",
     "command_buffer/service/gr_cache_controller_unittest.cc",
     "command_buffer/service/gr_shader_cache_unittest.cc",
+    "command_buffer/service/graphite_shared_context_unittest.cc",
     "command_buffer/service/id_manager_unittest.cc",
     "command_buffer/service/indexed_buffer_binding_host_unittest.cc",
     "command_buffer/service/memory_program_cache_unittest.cc",
@@ -558,13 +554,13 @@ test("gpu_unittests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     # Image decode acceleration with hardware is only supported in Chrome OS.
     # The intention is to run this test in the linux-chromeos build.
     sources += [ "ipc/service/image_decode_accelerator_stub_unittest.cc" ]
   }
 
-  if (is_apple) {
+  if (is_mac) {
     sources += [
       "ipc/common/gpu_memory_buffer_impl_io_surface_unittest.cc",
       "ipc/service/gpu_memory_buffer_factory_io_surface_unittest.cc",
@@ -587,10 +583,6 @@ test("gpu_unittests") {
 
   if (is_linux || is_chromeos || is_android) {
     sources += [ "command_buffer/service/gpu_fence_manager_unittest.cc" ]
-  }
-
-  if (is_mac) {
-    sources += [ "ipc/service/built_in_shader_cache_unittest.cc" ]
   }
 
   # On official builds angle doesn't build null backend that is required for
@@ -631,7 +623,6 @@ test("gpu_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/viz/common:shared_image_format",
@@ -669,17 +660,10 @@ test("gpu_unittests") {
     "//url",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (is_android) {
-    deps += [
-      "//ui/android:ui_java",
-      "//ui/gl:gl_jni_headers",
-    ]
+    deps += [ "//ui/android:ui_java" ]
   }
 
   if (use_dawn) {

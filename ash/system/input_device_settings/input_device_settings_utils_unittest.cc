@@ -20,6 +20,7 @@
 #include "components/user_manager/known_user.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 namespace {
@@ -480,6 +481,23 @@ TEST_F(ButtonRemappingConversionTest,
   mojom::ButtonRemappingPtr remapping2 = ConvertDictToButtonRemapping(
       dict, mojom::CustomizationRestriction::kDisableKeyEventRewrites);
   EXPECT_FALSE(remapping2);
+}
+
+TEST_F(ButtonRemappingConversionTest, DictToButtonUnknownKeyCode) {
+  // Valid dict with name, vkey and static shortcut action fields.
+  base::Value::Dict dict;
+  dict.Set(prefs::kButtonRemappingName, "Button 1");
+  dict.Set(prefs::kButtonRemappingKeyboardCode,
+           static_cast<int>(ui::VKEY_UNKNOWN));
+  dict.Set(
+      prefs::kButtonRemappingStaticShortcutAction,
+      static_cast<int>(
+          button_remapping5.remapping_action->get_static_shortcut_action()));
+
+  // Return nullptr if the KeyCode is set to be an unknown key.
+  mojom::ButtonRemappingPtr remapping1 = ConvertDictToButtonRemapping(
+      dict, mojom::CustomizationRestriction::kAllowCustomizations);
+  EXPECT_FALSE(remapping1);
 }
 
 TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingArrayToList) {

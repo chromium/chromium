@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.add_username_dialog;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class AddUsernameDialogContentProperties {
     static final PropertyModel.WritableObjectPropertyKey<String> USERNAME =
             new PropertyModel.WritableObjectPropertyKey<>("username");

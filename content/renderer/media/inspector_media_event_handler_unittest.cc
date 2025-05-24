@@ -122,19 +122,9 @@ bool operator==(const blink::InspectorPlayerProperty& lhs,
   return lhs.name == rhs.name && lhs.value == rhs.value;
 }
 
-bool operator!=(const blink::InspectorPlayerProperty& lhs,
-                const blink::InspectorPlayerProperty& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator==(const blink::InspectorPlayerEvent& lhs,
                 const blink::InspectorPlayerEvent& rhs) {
   return lhs.timestamp == rhs.timestamp && lhs.value == rhs.value;
-}
-
-bool operator!=(const blink::InspectorPlayerEvent& lhs,
-                const blink::InspectorPlayerEvent& rhs) {
-  return !(lhs == rhs);
 }
 
 bool operator==(const blink::InspectorPlayerMessage& lhs,
@@ -142,19 +132,9 @@ bool operator==(const blink::InspectorPlayerMessage& lhs,
   return lhs.level == rhs.level && lhs.message == rhs.message;
 }
 
-bool operator!=(const blink::InspectorPlayerMessage& lhs,
-                const blink::InspectorPlayerMessage& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator==(const blink::InspectorPlayerError& lhs,
                 const blink::InspectorPlayerError& rhs) {
   return lhs.group == rhs.group && lhs.code == rhs.code;
-}
-
-bool operator!=(const blink::InspectorPlayerError& lhs,
-                const blink::InspectorPlayerError& rhs) {
-  return !(lhs == rhs);
 }
 
 MATCHER_P(PropertiesEqualTo, props, "") {

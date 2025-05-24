@@ -15,9 +15,10 @@ import androidx.preference.PreferenceScreen;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tracing.TracingController;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,12 +31,12 @@ import java.util.Set;
  * passed to the fragment via an extra (EXTRA_CATEGORY_TYPE).
  */
 public class TracingCategoriesSettings extends PreferenceFragmentCompat
-        implements SettingsPage, Preference.OnPreferenceChangeListener {
+        implements EmbeddableSettingsPage, Preference.OnPreferenceChangeListener {
     public static final String EXTRA_CATEGORY_TYPE = "type";
 
     // Non-translated strings:
     private static final String MSG_CATEGORY_SELECTION_TITLE = "Select categories";
-    private static final ObservableSupplier<String> sPageTitle =
+    private final ObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_CATEGORY_SELECTION_TITLE);
 
     private static final String SELECT_ALL_KEY = "select-all";
@@ -47,7 +48,7 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
     private CheckBoxPreference mSelectAllPreference;
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         PreferenceScreen preferenceScreen =
                 getPreferenceManager().createPreferenceScreen(getStyledContext());
         preferenceScreen.setOrderingAsAdded(true);
@@ -81,7 +82,7 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
     }
 
     private CheckBoxPreference createPreference(String category) {
@@ -124,5 +125,10 @@ public class TracingCategoriesSettings extends PreferenceFragmentCompat
             pref.setChecked(enabled);
             pref.callChangeListener(pref.isChecked());
         }
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

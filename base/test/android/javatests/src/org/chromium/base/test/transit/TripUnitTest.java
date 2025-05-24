@@ -7,9 +7,13 @@ package org.chromium.base.test.transit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
+
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 
@@ -19,34 +23,34 @@ import java.util.concurrent.atomic.AtomicReference;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TripUnitTest {
 
-    public static class NestedFactoryStation extends Station {
-        public final Condition mOuterCondition;
-        public final Condition mInnerCondition;
+    private static final String TAG = "TripUnitTest";
+
+    private static class NestedFactoryStation extends Station<Activity> {
         public final CallbackHelper mDeclareElementsCallbackHelper = new CallbackHelper();
         public final CallbackHelper mOuterCallbackHelper = new CallbackHelper();
         public final CallbackHelper mInnerCallbackHelper = new CallbackHelper();
+        public final Element<String> outerElement;
+        public Element<String> innerElement;
 
-        public NestedFactoryStation(Condition outerCondition, Condition innerCondition) {
-            mOuterCondition = outerCondition;
-            mInnerCondition = innerCondition;
-        }
+        public NestedFactoryStation(
+                ConditionWithResult<String> outerCondition,
+                ConditionWithResult<String> innerCondition) {
+            super(null);
 
-        @Override
-        public void declareElements(Elements.Builder elements) {
-            elements.declareLogicalElement(
+            declareElement(
                     LogicalElement.instrumentationThreadLogicalElement(
                             "LogicalElement 1, always True", () -> Condition.fulfilled()));
-            elements.declareEnterCondition(
+            declareEnterCondition(
                     InstrumentationThreadCondition.from(
                             "Enter Condition 1, always True", () -> Condition.fulfilled()));
-            elements.declareExitCondition(
+            declareExitCondition(
                     InstrumentationThreadCondition.from(
                             "Exit Condition 1, always True", () -> Condition.fulfilled()));
-            elements.declareEnterCondition(mOuterCondition);
-            elements.declareElementFactory(
-                    mOuterCondition,
+            outerElement = declareEnterConditionAsElement(outerCondition);
+            declareElementFactory(
+                    outerElement,
                     (nestedElements) -> {
-                        nestedElements.declareLogicalElement(
+                        nestedElements.declareElement(
                                 LogicalElement.instrumentationThreadLogicalElement(
                                         "LogicalElement 2, always True",
                                         () -> Condition.fulfilled()));
@@ -58,11 +62,12 @@ public class TripUnitTest {
                                 InstrumentationThreadCondition.from(
                                         "Exit Condition 2, always True",
                                         () -> Condition.fulfilled()));
-                        nestedElements.declareEnterCondition(mInnerCondition);
+                        innerElement =
+                                nestedElements.declareEnterConditionAsElement(innerCondition);
                         nestedElements.declareElementFactory(
-                                mInnerCondition,
+                                innerElement,
                                 (nestedNestedElements) -> {
-                                    nestedNestedElements.declareLogicalElement(
+                                    nestedNestedElements.declareElement(
                                             LogicalElement.instrumentationThreadLogicalElement(
                                                     "LogicalElement 3, always True",
                                                     () -> Condition.fulfilled()));
@@ -82,12 +87,13 @@ public class TripUnitTest {
         }
     }
 
-    public static class TestCondition extends InstrumentationThreadCondition {
+    public static class TestCondition extends ConditionWithResult<String> {
         public ConditionStatus mConditionStatus =
                 Condition.awaiting("Waiting for a call to setConditionStatus");
-        private String mDescription;
+        private final String mDescription;
 
         TestCondition(String description) {
+            super(/* isRunOnUiThread= */ false);
             mDescription = description;
         }
 
@@ -97,8 +103,12 @@ public class TripUnitTest {
         }
 
         @Override
-        public ConditionStatus checkWithSuppliers() {
-            return mConditionStatus;
+        public ConditionStatusWithResult<String> resolveWithSuppliers() {
+            if (mConditionStatus.isFulfilled()) {
+                return mConditionStatus.withResult("TestCondition's result");
+            } else {
+                return mConditionStatus.withoutResult();
+            }
         }
 
         public void setConditionStatus(ConditionStatus conditionStatus) {
@@ -106,18 +116,45 @@ public class TripUnitTest {
         }
     }
 
+    @After
+    public void tearDown() {
+        TrafficControl.hopOffPublicTransit();
+    }
+
     @Test
     public void testTransitionWithNestedElementFactory() throws Throwable {
-        Condition alwaysTrueCondition =
-                InstrumentationThreadCondition.from(
-                        "AlwaysTrueCondition", () -> Condition.fulfilled());
-        Station sourceStation = new NestedFactoryStation(alwaysTrueCondition, alwaysTrueCondition);
-        sourceStation.setStateActiveWithoutTransition();
-
         TestCondition outerCondition = new TestCondition("outer condition");
         TestCondition innerCondition = new TestCondition("inner condition");
         NestedFactoryStation destinationStation =
                 new NestedFactoryStation(outerCondition, innerCondition);
+
+        doTestTransitionWithNestedElementFactory(
+                destinationStation, outerCondition, innerCondition);
+    }
+
+    @Test
+    public void testTransitionWithNestedElementFactory_replaceCondition() throws Throwable {
+        TestCondition alwaysFalseCondition = new TestCondition("always false condition");
+        TestCondition outerCondition = new TestCondition("outer condition");
+        TestCondition innerCondition = new TestCondition("inner condition");
+        NestedFactoryStation destinationStation =
+                new NestedFactoryStation(alwaysFalseCondition, innerCondition);
+        destinationStation.outerElement.replaceEnterCondition(outerCondition);
+
+        doTestTransitionWithNestedElementFactory(
+                destinationStation, outerCondition, innerCondition);
+    }
+
+    private void doTestTransitionWithNestedElementFactory(
+            NestedFactoryStation destinationStation,
+            TestCondition outerCondition,
+            TestCondition innerCondition)
+            throws Throwable {
+        TestCondition alwaysTrueCondition = new TestCondition("always true condition");
+        alwaysTrueCondition.setConditionStatus(Condition.fulfilled());
+        NestedFactoryStation sourceStation =
+                new NestedFactoryStation(alwaysTrueCondition, alwaysTrueCondition);
+        sourceStation.setStateActiveWithoutTransition();
 
         Thread transitionThread =
                 new Thread(
@@ -132,6 +169,7 @@ public class TripUnitTest {
                 new Thread.UncaughtExceptionHandler() {
                     @Override
                     public void uncaughtException(Thread thread, Throwable ex) {
+                        Log.e(TAG, "uncaughtException ", ex);
                         maybeException.set(ex);
                     }
                 });
@@ -139,32 +177,38 @@ public class TripUnitTest {
         try {
             transitionThread.start();
             destinationStation.mDeclareElementsCallbackHelper.waitForNext();
-            assertEquals(destinationStation.mDeclareElementsCallbackHelper.getCallCount(), 1);
-            assertEquals(destinationStation.mOuterCallbackHelper.getCallCount(), 0);
-            assertEquals(destinationStation.mInnerCallbackHelper.getCallCount(), 0);
+            assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+            assertEquals(0, destinationStation.mOuterCallbackHelper.getCallCount());
+            assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
 
             outerCondition.setConditionStatus(Condition.fulfilled());
             destinationStation.mOuterCallbackHelper.waitForNext();
-            assertEquals(destinationStation.mDeclareElementsCallbackHelper.getCallCount(), 1);
-            assertEquals(destinationStation.mOuterCallbackHelper.getCallCount(), 1);
-            assertEquals(destinationStation.mInnerCallbackHelper.getCallCount(), 0);
+            assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+            assertEquals(1, destinationStation.mOuterCallbackHelper.getCallCount());
+            assertEquals(0, destinationStation.mInnerCallbackHelper.getCallCount());
 
             innerCondition.setConditionStatus(Condition.fulfilled());
             destinationStation.mInnerCallbackHelper.waitForNext();
         } finally {
             // Wait for transition to finish to ensure it succeeds.
             transitionThread.join();
-            // Rethrow exceptions inside the transition thread.
-            Throwable exception = maybeException.get();
-            if (exception != null) {
-                throw exception;
-            }
+        }
+        // Rethrow exceptions inside the transition thread.
+        Throwable exception = maybeException.get();
+        if (exception != null) {
+            throw exception;
         }
 
         // All elements from nested factories added to the destination elements.
-        assertEquals(3, destinationStation.getElements().getElements().size());
+
+        // 3 LogicalElements: constructor, outer factory, inner factory
+        // +2 outerElement and innerElement
+        assertEquals(5, destinationStation.getElements().getElements().size());
+        // 2 factories: outer factory, inner factory
         assertEquals(2, destinationStation.getElements().getElementFactories().size());
-        assertEquals(5, destinationStation.getElements().getOtherEnterConditions().size());
+        // 3 enter Conditions: constructor, outer factory, inner factory
+        assertEquals(3, destinationStation.getElements().getOtherEnterConditions().size());
+        // 3 exit Conditions: constructor, outer factory, inner factory
         assertEquals(3, destinationStation.getElements().getOtherExitConditions().size());
 
         // Conditions started and stopped monitoring during transition.
@@ -182,8 +226,8 @@ public class TripUnitTest {
                 innerCondition.mHasStoppedMonitoringForTesting);
 
         // Factory delayed declarations should only be called once.
-        assertEquals(destinationStation.mDeclareElementsCallbackHelper.getCallCount(), 1);
-        assertEquals(destinationStation.mOuterCallbackHelper.getCallCount(), 1);
-        assertEquals(destinationStation.mInnerCallbackHelper.getCallCount(), 1);
+        assertEquals(1, destinationStation.mDeclareElementsCallbackHelper.getCallCount());
+        assertEquals(1, destinationStation.mOuterCallbackHelper.getCallCount());
+        assertEquals(1, destinationStation.mInnerCallbackHelper.getCallCount());
     }
 }

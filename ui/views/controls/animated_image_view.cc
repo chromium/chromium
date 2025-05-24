@@ -53,8 +53,9 @@ void AnimatedImageView::SetAnimatedImage(
 void AnimatedImageView::Play(
     std::optional<lottie::Animation::PlaybackConfig> playback_config) {
   DCHECK(animated_image_);
-  if (state_ == State::kPlaying)
+  if (state_ == State::kPlaying) {
     return;
+  }
 
   state_ = State::kPlaying;
 
@@ -75,8 +76,9 @@ void AnimatedImageView::Play(
 }
 
 void AnimatedImageView::Stop() {
-  if (state_ == State::kStopped)
+  if (state_ == State::kStopped) {
     return;
+  }
 
   DCHECK(animated_image_);
   ClearCurrentCompositor();
@@ -92,8 +94,9 @@ gfx::Size AnimatedImageView::GetImageSize() const {
 
 void AnimatedImageView::OnPaint(gfx::Canvas* canvas) {
   View::OnPaint(canvas);
-  if (!animated_image_)
+  if (!animated_image_) {
     return;
+  }
   canvas->Save();
 
   gfx::Vector2d translation = GetImageBounds().origin().OffsetFromOrigin();
@@ -118,8 +121,9 @@ void AnimatedImageView::NativeViewHierarchyChanged() {
     ClearCurrentCompositor();
 
     // Restore the Play() state with the new compositor.
-    if (state_ == State::kPlaying)
+    if (state_ == State::kPlaying) {
       SetCompositorFromWidget();
+    }
   }
 }
 

@@ -35,19 +35,22 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 /** Basic Test for Chrome Android to switch Tabs. */
 @LargeTest
 @RunWith(BaseJUnit4ClassRunner.class)
+// Do not disable this test unless you are confident you can re-enable it quickly.
+// This is the main test that prevents crash-on-launch bugs.
 public class ChromeTabSwitcherTest {
     private static final String TAG = "SmokeTest";
     private static final String ACTIVITY_NAME = "com.google.android.apps.chrome.IntentDispatcher";
     private static final String TEST_PAGE =
             "/chrome/android/javatests/src/org/chromium/chrome/test/smoke/test.html";
 
-    private IUi2Locator mTabSwitcherButton = Ui2Locators.withAnyResEntry(R.id.tab_switcher_button);
+    private final IUi2Locator mTabSwitcherButton =
+            Ui2Locators.withAnyResEntry(R.id.tab_switcher_button);
 
-    private IUi2Locator mHubToolbar = Ui2Locators.withAnyResEntry(R.id.hub_toolbar);
+    private final IUi2Locator mHubToolbar = Ui2Locators.withAnyResEntry(R.id.hub_toolbar);
 
-    private IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
+    private final IUi2Locator mTabList = Ui2Locators.withAnyResEntry(R.id.tab_list_recycler_view);
 
-    private FirstRunNavigator mFirstRunNavigator = new FirstRunNavigator();
+    private final FirstRunNavigator mFirstRunNavigator = new FirstRunNavigator();
 
     public static final long TIMEOUT_MS = 20000L;
     public static final long UI_CHECK_INTERVAL = 1000L;
@@ -69,6 +72,8 @@ public class ChromeTabSwitcherTest {
     }
 
     @Test
+    // Do not disable this test unless you are confident you can re-enable it quickly.
+    // This is the main test that prevents crash-on-launch bugs.
     public void testTabSwitcher() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         String url = sEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);

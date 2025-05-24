@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -225,7 +226,9 @@ class CompositedScrollingMetricTest
     kScrollingOnCompositor = 0,
     kScrollingOnCompositorBlockedOnMain = 1,
     kScrollingOnMain = 2,
-    kMaxValue = kScrollingOnMain,
+    kRasterInducingScroll = 3,
+    kRasterInducingScrollBlockedOnMain = 4,
+    kMaxValue = kRasterInducingScrollBlockedOnMain,
   };
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -280,10 +283,10 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
 
   content::FetchHistogramsFromChildProcesses();
 
-  base::HistogramBase::Sample expected_bucket =
-      CompositedScrollEnabled() || RasterInducingScrollEnabled()
-          ? kScrollingOnCompositor
-          : kScrollingOnMain;
+  base::HistogramBase::Sample32 expected_bucket =
+      CompositedScrollEnabled()       ? kScrollingOnCompositor
+      : RasterInducingScrollEnabled() ? kRasterInducingScroll
+                                      : kScrollingOnMain;
 
   histograms.ExpectUniqueSample(kTouchHistogramName, expected_bucket, 2);
   histograms.ExpectUniqueSample(kWheelHistogramName, expected_bucket, 1);
@@ -328,7 +331,7 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest, BlockingEventHandlers) {
 
   content::FetchHistogramsFromChildProcesses();
 
-  base::HistogramBase::Sample expected_bucket =
+  base::HistogramBase::Sample32 expected_bucket =
       CompositedScrollEnabled() ? kScrollingOnCompositorBlockedOnMain
                                 : kScrollingOnMain;
 
@@ -384,10 +387,10 @@ IN_PROC_BROWSER_TEST_P(CompositedScrollingMetricTest,
 
   content::FetchHistogramsFromChildProcesses();
 
-  base::HistogramBase::Sample expected_bucket =
-      CompositedScrollEnabled() || RasterInducingScrollEnabled()
-          ? kScrollingOnCompositor
-          : kScrollingOnMain;
+  base::HistogramBase::Sample32 expected_bucket =
+      CompositedScrollEnabled()       ? kScrollingOnCompositor
+      : RasterInducingScrollEnabled() ? kRasterInducingScroll
+                                      : kScrollingOnMain;
 
   histograms.ExpectUniqueSample(kTouchHistogramName, expected_bucket, 2);
   histograms.ExpectUniqueSample(kWheelHistogramName, expected_bucket, 1);

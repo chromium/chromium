@@ -1,7 +1,7 @@
 Tests the signed exchange information are available when the navigation failed.
 
-inspected-page.html:1 Validity URL must be same-origin with request URL.
-inspected-page.html:1 Failed to parse SignedExchange header.
+about:blank:1 Validity URL must be same-origin with request URL.
+about:blank:1 Failed to parse SignedExchange header.
 * http://127.0.0.1:8000/loading/sxg/resources/sxg-invalid-validity-url.sxg
   failed: false
   statusCode: 200

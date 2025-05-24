@@ -8,11 +8,16 @@
 <!---Test reading flow for flex items re-ordered using CSS property order.
 If items are in a display: contents element that has reading flow layout parent,
 its direct children should also follow reading flow order.
-In this test, display: contents or not display: contents children are siblings
-of the same reading flow container.
+Buttons 1, 3 and container (contents) are children of the reading flow container.
+Buttons 2 and 4 are children of (contents), also a reading flow container.
+To respect the tree structure, (contents) -> 2 -> 4 must be visited together.
+Since 1 is first, button 1 is visited first.
 
 Expect order to be:
-1  -> 3 -> (contents) -> 2 -> 4
+1
+(contents)
+   2  4
+3
 -->
 
 <div class="wrapper">

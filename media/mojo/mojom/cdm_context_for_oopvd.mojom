@@ -1,0 +1,63 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+[EnableIf=allow_oop_video_decoder]
+enum DecryptStatus {
+  kSuccess,
+  kNoKey,
+  kFailure,
+};
+
+[EnableIf=allow_oop_video_decoder]
+enum CdmContextEvent {
+  kHasAdditionalUsableKey,
+  kHardwareContextReset,
+};
+
+// Interface for handling callbacks from the CdmContextForOOPVD interface below.
+[EnableIf=allow_oop_video_decoder]
+interface CdmContextEventCallback {
+  // Sends the event back to the registrar.
+  EventCallback(CdmContextEvent event);
+};
+
+// Maps to the media::CdmContext interface for remoting it to another process.
+[EnableIf=allow_oop_video_decoder]
+interface CdmContextForOOPVD {
+  // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwKeyData.
+  GetHwKeyData(DecryptConfig decrypt_config, array<uint8> hw_identifier) =>
+      (DecryptStatus status, array<uint8> key_data);
+
+  // Registers an interface for receiving event callbacks. This maps to
+  // media::CdmContext::RegisterEventCB.
+  RegisterEventCallback(pending_remote<CdmContextEventCallback> callback);
+
+  // Proxies to media::CdmContext::GetChromeOsCdmContext()->GetHwConfigData.
+  GetHwConfigData() => (bool success, array<uint8> config_data);
+
+  // Proxies to media::CdmContext::GetChromeOsCdmContext()->
+  // GetScreenResolutions.
+  GetScreenResolutions() => (array<gfx.mojom.Size> resolutions);
+
+  // Proxies to
+  // media::CdmContext::GetChromeOsCdmContext()->AllocateSecureBuffer.
+  AllocateSecureBuffer(uint32 size) => (handle<platform>? secure_buffer);
+
+  // Proxies to
+  // media::CdmContext::GetChromeOsCdmContext()->ParseEncryptedSliceHeader.
+  ParseEncryptedSliceHeader(uint64 secure_handle, uint32 offset,
+                              array<uint8> stream_data)
+      => (bool success, array<uint8> slice_header);
+
+  // Proxies to
+  // media::CdmContext::GetDecryptor()->Decrypt for video data.
+  DecryptVideoBuffer(DecoderBuffer buffer, array<uint8> bytes)
+      => (DecryptStatus status, DecoderBuffer? decoder_buffer,
+          array<uint8> bytes);
+};

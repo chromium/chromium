@@ -13,6 +13,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -48,7 +49,7 @@ class InstallerStateTest : public testing::Test {
   InstallerStateTest& operator=(const InstallerStateTest&) = delete;
 
  protected:
-  InstallerStateTest() {}
+  InstallerStateTest() = default;
 
   void SetUp() override { ASSERT_TRUE(test_dir_.CreateUniqueTempDir()); }
 
@@ -178,8 +179,9 @@ TEST_F(InstallerStateTest, InitializeTwice) {
   EXPECT_EQ(InstallerState::USER_LEVEL, installer_state.level());
   EXPECT_EQ(InstallerState::SINGLE_INSTALL_OR_UPDATE,
             installer_state.operation());
-  EXPECT_TRUE(wcsstr(installer_state.target_path().value().c_str(),
-                     install_static::GetChromeInstallSubDirectory().c_str()));
+  EXPECT_TRUE(UNSAFE_TODO(
+      wcsstr(installer_state.target_path().value().c_str(),
+             install_static::GetChromeInstallSubDirectory().c_str())));
   EXPECT_FALSE(installer_state.verbose_logging());
   EXPECT_EQ(installer_state.state_key(),
             install_static::GetClientStateKeyPath());
@@ -196,8 +198,9 @@ TEST_F(InstallerStateTest, InitializeTwice) {
   EXPECT_EQ(InstallerState::SYSTEM_LEVEL, installer_state.level());
   EXPECT_EQ(InstallerState::SINGLE_INSTALL_OR_UPDATE,
             installer_state.operation());
-  EXPECT_TRUE(wcsstr(installer_state.target_path().value().c_str(),
-                     install_static::GetChromeInstallSubDirectory().c_str()));
+  EXPECT_TRUE(UNSAFE_TODO(
+      wcsstr(installer_state.target_path().value().c_str(),
+             install_static::GetChromeInstallSubDirectory().c_str())));
   EXPECT_TRUE(installer_state.verbose_logging());
   EXPECT_EQ(installer_state.state_key(),
             install_static::GetClientStateKeyPath());

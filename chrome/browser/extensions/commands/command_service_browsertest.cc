@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/commands/command_service.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/commands/command_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -23,6 +25,8 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/command.h"
+#include "ui/base/accelerators/command_constants.h"
 
 namespace {
 const char kBasicBrowserActionKeybinding[] = "Ctrl+Shift+F";
@@ -43,17 +47,17 @@ constexpr char kManifestTemplate[] = R"({
     },
     "%s": {}})";
 
-// Get another command platform, whcih is used for simulating a command has been
+// Get another command platform, which is used for simulating a command has been
 // assigned with a shortcut on another platform.
 std::string GetAnotherCommandPlatform() {
 #if BUILDFLAG(IS_WIN)
-  return extensions::manifest_values::kKeybindingPlatformMac;
+  return ui::kKeybindingPlatformMac;
 #elif BUILDFLAG(IS_MAC)
-  return extensions::manifest_values::kKeybindingPlatformChromeOs;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return extensions::manifest_values::kKeybindingPlatformLinux;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  return extensions::manifest_values::kKeybindingPlatformWin;
+  return ui::kKeybindingPlatformChromeOs;
+#elif BUILDFLAG(IS_CHROMEOS)
+  return ui::kKeybindingPlatformLinux;
+#elif BUILDFLAG(IS_LINUX)
+  return ui::kKeybindingPlatformWin;
 #else
   return "";
 #endif
@@ -592,13 +596,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   CommandService* command_service = CommandService::Get(browser()->profile());
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ALL, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicNamedKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -607,13 +611,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
       extension->id(), kBasicNamedCommand, kBasicAlternateKeybinding);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ALL, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicAlternateKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -621,13 +625,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   command_service->RemoveKeybindingPrefs(extension->id(), kBasicNamedCommand);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ALL, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicNamedKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -642,13 +646,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
   CommandService* command_service = CommandService::Get(browser()->profile());
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ACTIVE, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicNamedKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -657,13 +661,13 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
       extension->id(), kBasicNamedCommand, kBasicAlternateKeybinding);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     EXPECT_TRUE(command_service->GetNamedCommands(
         extension->id(), CommandService::ACTIVE, CommandService::ANY_SCOPE,
         &command_map));
 
     ASSERT_EQ(1u, command_map.count(kBasicNamedCommand));
-    Command command = command_map[kBasicNamedCommand];
+    ui::Command command = command_map[kBasicNamedCommand];
     EXPECT_EQ(kBasicAlternateKeybinding,
               Command::AcceleratorToString(command.accelerator()));
   }
@@ -671,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest, GetNamedCommandsQueryActive) {
   command_service->RemoveKeybindingPrefs(extension->id(), kBasicNamedCommand);
 
   {
-    CommandMap command_map;
+    ui::CommandMap command_map;
     command_service->GetNamedCommands(
         extension->id(), CommandService::ACTIVE, CommandService::ANY_SCOPE,
         &command_map);

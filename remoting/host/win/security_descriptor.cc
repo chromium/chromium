@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "remoting/host/win/security_descriptor.h"
 
 #include <sddl.h>
@@ -71,20 +76,24 @@ ScopedSid GetLogonSid(HANDLE token) {
 }
 
 bool MakeScopedAbsoluteSd(const ScopedSd& relative_sd,
-                          ScopedSd* absolute_sd,
-                          ScopedAcl* dacl,
-                          ScopedSid* group,
-                          ScopedSid* owner,
-                          ScopedAcl* sacl) {
+                          ScopedSd& absolute_sd,
+                          ScopedAcl& dacl,
+                          ScopedSid& group,
+                          ScopedSid& owner,
+                          ScopedAcl& sacl) {
   // Get buffer sizes.
   DWORD absolute_sd_size = 0;
   DWORD dacl_size = 0;
   DWORD group_size = 0;
   DWORD owner_size = 0;
   DWORD sacl_size = 0;
-  if (MakeAbsoluteSD(relative_sd.get(), nullptr, &absolute_sd_size, nullptr,
-                     &dacl_size, nullptr, &sacl_size, nullptr, &owner_size,
-                     nullptr, &group_size) ||
+
+  // `MakeAbsoluteSD()` requires a non-const pointer.
+  ScopedSd& non_const_relative_sd = const_cast<ScopedSd&>(relative_sd);
+
+  if (MakeAbsoluteSD(non_const_relative_sd.get(), nullptr, &absolute_sd_size,
+                     nullptr, &dacl_size, nullptr, &sacl_size, nullptr,
+                     &owner_size, nullptr, &group_size) ||
       GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
     return false;
   }
@@ -97,18 +106,18 @@ bool MakeScopedAbsoluteSd(const ScopedSd& relative_sd,
   ScopedAcl local_sacl(sacl_size);
 
   // Do the conversion.
-  if (!MakeAbsoluteSD(relative_sd.get(), local_absolute_sd.get(),
+  if (!MakeAbsoluteSD(non_const_relative_sd.get(), local_absolute_sd.get(),
                       &absolute_sd_size, local_dacl.get(), &dacl_size,
                       local_sacl.get(), &sacl_size, local_owner.get(),
                       &owner_size, local_group.get(), &group_size)) {
     return false;
   }
 
-  absolute_sd->Swap(local_absolute_sd);
-  dacl->Swap(local_dacl);
-  group->Swap(local_group);
-  owner->Swap(local_owner);
-  sacl->Swap(local_sacl);
+  absolute_sd.Swap(local_absolute_sd);
+  dacl.Swap(local_dacl);
+  group.Swap(local_group);
+  owner.Swap(local_owner);
+  sacl.Swap(local_sacl);
   return true;
 }
 

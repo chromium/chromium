@@ -232,5 +232,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UISupportsFullScreenInAssistiveAccess</key>
+	<true/>
 </dict>
 </plist>

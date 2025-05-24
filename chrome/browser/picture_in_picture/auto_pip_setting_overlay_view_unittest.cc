@@ -120,9 +120,7 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
 
 TEST_F(AutoPipSettingOverlayViewTest, TestViewInitialization) {
   EXPECT_TRUE(widget()->IsVisible());
-  EXPECT_EQ(
-      background()->GetColorProvider()->GetColor(kColorPipWindowBackground),
-      background()->GetBackground()->get_color());
+  EXPECT_EQ(kColorPipWindowBackground, background()->GetBackground()->color());
   EXPECT_EQ(4.0f, blur_view()->layer()->background_blur());
 }
 

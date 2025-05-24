@@ -38,7 +38,7 @@ const base::FilePath::CharType kTestDir[] =
 
 class TestClient : public NotificationSchedulerClient {
  public:
-  TestClient() {}
+  TestClient() = default;
   TestClient(const TestClient&) = delete;
   TestClient& operator=(const TestClient&) = delete;
   ~TestClient() override = default;
@@ -129,7 +129,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   NotificationScheduleServiceTest& operator=(
       const NotificationScheduleServiceTest&) = delete;
 
-  ~NotificationScheduleServiceTest() override {}
+  ~NotificationScheduleServiceTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -210,7 +210,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   base::ScopedTempDir tmp_dir_;
   std::unique_ptr<KeyedService> service_;
   raw_ptr<TestBackgroundTaskScheduler> task_scheduler_;
-  std::map<SchedulerClientType, TestClient*> clients_;
+  std::map<SchedulerClientType, raw_ptr<TestClient, CtnExperimental>> clients_;
 };
 
 // Test to schedule a notification.

@@ -15,15 +15,15 @@
 
 namespace webauthn::authenticator {
 
-// RegistrationState is a singleton object that loads an install-wide secret at
-// startup and holds two FCM registrations. One registration, the "linking"
-// registration, is used when the user links with another device by scanning a
-// QR code. The second is advertised via Sync for other devices signed into the
-// same account. The reason for having two registrations is that the linking
-// registration can be rotated if the user wishes to unlink all QR-linked
-// devices. But we don't want to break synced peers when that happens. Instead,
-// for synced peers we require that they have received a recent sync status from
-// this device, i.e. we rotate them automatically.
+// RegistrationState is a singleton object that holds two FCM registrations when
+// required. One registration, the "linking" registration, is used when the user
+// links with another device by scanning a QR code. The second is advertised via
+// Sync for other devices signed into the same account. The reason for having
+// two registrations is that the linking registration can be rotated if the user
+// wishes to unlink all QR-linked devices. But we don't want to break synced
+// peers when that happens. Instead, for synced peers we require that they have
+// received a recent sync status from this device, i.e. we rotate them
+// automatically.
 class RegistrationState {
  public:
   // SystemInterface abstracts the rest of the system. This is mocked out for
@@ -42,13 +42,6 @@ class RegistrationState {
                  device::cablev2::authenticator::Registration::Event>)>
             event_callback) = 0;
 
-    // Returns the previous value passed to `SetRootSecret`.
-    virtual std::string GetRootSecret() = 0;
-
-    // Persist a short opaque string on disk, such that other applications
-    // cannot access it.
-    virtual void SetRootSecret(std::string secret) = 0;
-
     // Test whether the current device is suitable for prelinking.
     virtual void CanDeviceSupportCable(
         base::OnceCallback<void(bool)> callback) = 0;
@@ -56,20 +49,10 @@ class RegistrationState {
     // Test whether the current process is an in Android work profile.
     virtual void AmInWorkProfile(base::OnceCallback<void(bool)> callback) = 0;
 
-    // Generate a P-256 key pair from a seed.
-    virtual void CalculateIdentityKey(
-        const std::array<uint8_t, 32>& secret,
-        base::OnceCallback<void(bssl::UniquePtr<EC_KEY>)> callback) = 0;
-
     // Fetch prelinking information from Play Services, if any.
     virtual void GetPrelinkFromPlayServices(
         base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
             callback) = 0;
-
-    // Process an FCM message. The `serialized` argument contains a
-    // `device::cablev2::authenticator::Event` in serialized form.
-    virtual void OnCloudMessage(std::vector<uint8_t> serialized,
-                                bool is_make_credential) = 0;
 
     // Request that Sync refresh the DeviceInfo entity for this device.
     virtual void RefreshLocalDeviceInfo() = 0;
@@ -90,8 +73,6 @@ class RegistrationState {
   device::cablev2::authenticator::Registration* sync_registration() const {
     return sync_registration_.get();
   }
-  const std::array<uint8_t, 32>& secret() const { return secret_; }
-  const EC_KEY* identity_key() const { return identity_key_.get(); }
   bool device_supports_cable() const { return *device_supports_cable_; }
   bool am_in_work_profile() const { return *am_in_work_profile_; }
   const std::optional<std::vector<uint8_t>>& link_data_from_play_services()
@@ -135,18 +116,11 @@ class RegistrationState {
   // OnWorkProfileResult is run with the result of `AmInWorkProfile`.
   void OnWorkProfileResult(bool result);
 
-  // OnIdentityKeyReady is run with the result of `CalculateIdentityKey`.
-  void OnIdentityKeyReady(bssl::UniquePtr<EC_KEY> identity_key);
-
   const std::unique_ptr<SystemInterface> interface_;
   std::unique_ptr<device::cablev2::authenticator::Registration>
       linking_registration_;
   std::unique_ptr<device::cablev2::authenticator::Registration>
       sync_registration_;
-  std::array<uint8_t, 32> secret_;
-  // identity_key_ is a public/private P-256 key that is calculated from
-  // `secret_`. It's cached because it takes some time to compute.
-  bssl::UniquePtr<EC_KEY> identity_key_;
   std::unique_ptr<device::cablev2::authenticator::Registration::Event>
       pending_event_;
   // device_supports_cable_ caches the result of a Java function that checks

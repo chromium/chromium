@@ -23,8 +23,8 @@ public class WebApkOfflineDialog {
 
     /**
      * Shows dialog to notify user of network error.
+     *
      * @param activity Activity that will be used for {@link Dialog#show()}.
-     * @param errorMessage
      */
     public void show(final Activity activity, String errorMessage) {
         AlertDialog.Builder builder =

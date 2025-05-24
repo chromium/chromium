@@ -18,6 +18,8 @@
 const {SourceError} = require('./sourceerror');
 const path = require('path');
 
+const {normalizePath} = require('./normalize');
+
 /** @enum {string} */
 const DependencyType = {
   /** A file containing goog.provide statements. */
@@ -144,7 +146,8 @@ class ParsedDependency extends Dependency {
 
   /** @override */
   setClosurePath(closurePath) {
-    this.path_ = path.resolve(closurePath, this.closureRelativePath);
+    this.path_ =
+        normalizePath(path.resolve(closurePath, this.closureRelativePath));
   }
 
   /** @override */
@@ -308,6 +311,8 @@ class Graph {
         throw new Error('File registered twice? ' + dep.path);
       }
       this.depsByPath.set(dep.path, dep);
+      // Keep both OS-dependent path and POSIX style path.
+      this.depsByPath.set(normalizePath(dep.path), dep);
       for (const sym of dep.closureSymbols) {
         const previous = this.depsBySymbol.get(sym);
         if (previous) {

@@ -45,11 +45,12 @@ MockLargeIconService::MockLargeIconService() {
                             favicon_base::LargeIconCallback callback, auto) {
         favicon_base::FaviconRawBitmapResult result;
         result.icon_url = kIconUrl;
-        std::vector<unsigned char> png_bytes;
-        gfx::PNGCodec::EncodeBGRASkBitmap(
-            favicon_, /*discard_transparency=*/false, &png_bytes);
+        std::optional<std::vector<uint8_t>> png_bytes =
+            gfx::PNGCodec::EncodeBGRASkBitmap(favicon_,
+                                              /*discard_transparency=*/false);
 
-        result.bitmap_data = base::RefCountedBytes::TakeVector(&png_bytes);
+        result.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
+            std::move(png_bytes).value_or(std::vector<uint8_t>()));
         std::move(callback).Run(favicon_base::LargeIconResult(result));
         return kTaskId;
       });

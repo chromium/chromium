@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/web_transport.h"
 
-#include "base/auto_reset.h"
+#include <stdint.h>
+
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +15,6 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
-#include "net/third_party/quiche/src/quiche/common/platform/api/quiche_mem_slice.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_time.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
@@ -568,6 +563,10 @@ void WebTransport::Close(mojom::WebTransportCloseInfoPtr close_info) {
   transport_->Close(close_info_to_pass);
 }
 
+void WebTransport::CloseIfNonceMatches(base::UnguessableToken nonce) {
+  transport_->CloseIfNonceMatches(nonce);
+}
+
 void WebTransport::OnConnected(
     scoped_refptr<net::HttpResponseHeaders> response_headers) {
   if (torn_down_ || closing_) {
@@ -733,8 +732,7 @@ void WebTransport::OnDatagramReceived(std::string_view datagram) {
     return;
   }
 
-  client_->OnDatagramReceived(base::make_span(
-      reinterpret_cast<const uint8_t*>(datagram.data()), datagram.size()));
+  client_->OnDatagramReceived(base::as_byte_span(datagram));
 }
 
 void WebTransport::OnCanCreateNewOutgoingBidirectionalStream() {

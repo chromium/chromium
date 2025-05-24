@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "skia/ext/recursive_gaussian_convolution.h"
+
+#include <algorithm>
 #include <functional>
 #include <numeric>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "skia/ext/convolver.h"
-#include "skia/ext/recursive_gaussian_convolution.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkPoint.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -209,8 +210,8 @@ TEST(RecursiveGaussian, SmoothingImpulse) {
 
   // Smooth the inverse now.
   std::vector<unsigned char> output2(dest_byte_count);
-  base::ranges::transform(input, input.begin(),
-                          [](unsigned char c) { return 255U - c; });
+  std::ranges::transform(input, input.begin(),
+                         [](unsigned char c) { return 255U - c; });
   SingleChannelRecursiveGaussianY(&input[0], src_row_stride,
                                   kChannelIndex, kChannelCount,
                                   recursive_filter, image_size,
@@ -294,8 +295,8 @@ TEST(RecursiveGaussian, FirstDerivative) {
   EXPECT_EQ(image_total, box_inflated);
 
   // Try inverted image. Behaviour should be very similar (modulo rounding).
-  base::ranges::transform(input, input.begin(),
-                          [](unsigned char c) { return 255U - c; });
+  std::ranges::transform(input, input.begin(),
+                         [](unsigned char c) { return 255U - c; });
   SingleChannelRecursiveGaussianX(&input[0], src_row_stride,
                                   kChannelIndex, kChannelCount,
                                   recursive_filter, image_size,

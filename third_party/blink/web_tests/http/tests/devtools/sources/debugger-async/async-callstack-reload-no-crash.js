@@ -36,6 +36,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
 
   function afterReload() {
     TestRunner.addResult('PASS: Reloaded successfully.');
-    SourcesTestRunner.completeDebuggerTest();
+    TestRunner.completeTest();
   }
 })();

@@ -12,6 +12,7 @@
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/events/types/event_type.h"

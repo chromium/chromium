@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -14,7 +15,7 @@ namespace device {
 
 DeviceInfoQueryWin::DeviceInfoQueryWin()
     : device_info_list_(SetupDiCreateDeviceInfoList(nullptr, nullptr)) {
-  memset(&device_info_data_, 0, sizeof(device_info_data_));
+  UNSAFE_TODO(memset(&device_info_data_, 0, sizeof(device_info_data_)));
 }
 
 DeviceInfoQueryWin::~DeviceInfoQueryWin() {

@@ -22,12 +22,12 @@ USE_PYTHON_3 = f'This script will only run under python3.'
 
 # e.g. '  Section contains the following exports for CRYPT32.dll'
 RE_NEWMOD = re.compile(
-  'Section contains the following exports for (?P<dll>\w+\.(?i:dll|drv))')
+  r'Section contains the following exports for (?P<dll>\w+\.(?i:dll|drv))')
 # e.g. '       1020    0 00088A30 CertAddCRLContextToStore'
 #                        ^ can be blank
-RE_EXPORT = re.compile('^\s+\d+\s+[0-9A-F]+\s+[0-9A-F ]{8}\s+(?P<export>\w+)')
+RE_EXPORT = re.compile(r'^\s+\d+\s+[0-9A-F]+\s+[0-9A-F ]{8}\s+(?P<export>\w+)')
 # apiset line in apisets.inc (see generate_supported_apisets.py)
-RE_APISET = re.compile('^{"(?P<apiset>[^"]+)",\s*(?P<version>\d+)},')
+RE_APISET = re.compile(r'^{"(?P<apiset>[^"]+)",\s*(?P<version>\d+)},')
 
 def parse_file(f):
   """Naive parser for dumpbin output.

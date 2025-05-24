@@ -41,7 +41,6 @@
 #include "content/public/browser/service_process_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -50,6 +49,7 @@
 #include "net/base/features.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
@@ -643,9 +643,12 @@ IN_PROC_BROWSER_TEST_F(
       content::CookieAccessDetails::Type::kRead, "Cookie", "1",
       net::CookieAccessResult(
           net::CookieEffectiveSameSite::NO_RESTRICTION,
-          net::CookieInclusionStatus(
-              net::CookieInclusionStatus::WARN_PORT_MISMATCH),
-          net::CookieAccessSemantics::NONLEGACY, true)};
+          net::CookieInclusionStatus::MakeFromReasonsForTesting(
+              /*exclusions=*/{},
+              /*warnings=*/{net::CookieInclusionStatus::WarningReason::
+                                WARN_PORT_MISMATCH}),
+          net::CookieAccessSemantics::NONLEGACY,
+          net::CookieScopeSemantics::NONLEGACY, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(
                   // a.test/title1.html
@@ -662,17 +665,19 @@ IN_PROC_BROWSER_TEST_F(
   // If the sites are in the same Related Website Sets, we're expecting the
   // EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET exclusion reason.
   expected_third_party_inclusion_status.AddExclusionReason(
-      net::CookieInclusionStatus::
+      net::CookieInclusionStatus::ExclusionReason::
           EXCLUDE_THIRD_PARTY_BLOCKED_WITHIN_FIRST_PARTY_SET);
   expected_third_party_inclusion_status.AddExclusionReason(
-      net::CookieInclusionStatus::EXCLUDE_THIRD_PARTY_PHASEOUT);
+      net::CookieInclusionStatus::ExclusionReason::
+          EXCLUDE_THIRD_PARTY_PHASEOUT);
   expected_third_party_inclusion_status.AddWarningReason(
-      net::CookieInclusionStatus::WARN_PORT_MISMATCH);
+      net::CookieInclusionStatus::WarningReason::WARN_PORT_MISMATCH);
   const CookieAccess expected_third_party_access{
       content::CookieAccessDetails::Type::kRead, "Cookie", "1",
       net::CookieAccessResult(net::CookieEffectiveSameSite::NO_RESTRICTION,
                               expected_third_party_inclusion_status,
-                              net::CookieAccessSemantics::NONLEGACY, true)};
+                              net::CookieAccessSemantics::NONLEGACY,
+                              net::CookieScopeSemantics::NONLEGACY, true)};
   EXPECT_THAT(cookie_tracker.cookie_accesses(),
               testing::ElementsAre(
                   // a.test iframe under b.test

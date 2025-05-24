@@ -104,16 +104,9 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
   }
 
   MatchedProperties::Data options;
-  if (RuntimeEnabledFeatures::PageMarginBoxesEnabled()) {
-    // See https://drafts.csswg.org/css-page-3/#page-property-list
-    options.valid_property_filter =
-        static_cast<uint8_t>(ValidPropertyFilter::kPageContext);
-  } else {
-    // When PageMarginBoxes aren't enabled, we'll only allow the properties and
-    // descriptors that have an effect without that feature.
-    options.valid_property_filter =
-        static_cast<uint8_t>(ValidPropertyFilter::kLimitedPageContext);
-  }
+  // See https://drafts.csswg.org/css-page-3/#page-property-list
+  options.valid_property_filter =
+      static_cast<uint8_t>(ValidPropertyFilter::kPageContext);
   options.origin = origin;
 
   for (const StyleRulePage* rule : matched_page_rules) {

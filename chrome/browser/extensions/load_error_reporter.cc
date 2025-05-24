@@ -42,7 +42,7 @@ LoadErrorReporter::LoadErrorReporter(bool enable_noisy_errors)
     ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
 }
 
-LoadErrorReporter::~LoadErrorReporter() {}
+LoadErrorReporter::~LoadErrorReporter() = default;
 
 void LoadErrorReporter::ReportLoadError(
     const base::FilePath& extension_path,
@@ -73,7 +73,7 @@ void LoadErrorReporter::ReportError(const std::u16string& message,
 
   if (enable_noisy_errors_ && be_noisy) {
     chrome::ShowWarningMessageBox(
-        nullptr,
+        gfx::NativeWindow(),
         l10n_util::GetStringUTF16(IDS_EXTENSIONS_LOAD_ERROR_ALERT_HEADING),
         message);
   }

@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -24,8 +25,7 @@
 #include "base/posix/global_descriptors.h"
 #endif
 
-namespace base {
-namespace shared_memory {
+namespace base::shared_memory {
 namespace {
 
 constexpr char kSharedMemoryData[] = "shared_memory_data";
@@ -107,7 +107,7 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
       kSharedMemoryGUID,
       (read_only ? read_only_region.region.GetGUID() : unsafe_region.GetGUID())
           .ToString());
-  command_line.AppendSwitchASCII(kIsReadOnly, read_only ? "true" : "false");
+  command_line.AppendSwitchASCII(kIsReadOnly, base::ToString(read_only));
   LaunchOptions launch_options;
 
   // On windows, check both the elevated and non-elevated launches.
@@ -120,8 +120,7 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
 
   // Update the launch parameters.
   if (read_only) {
-    AddToLaunchParameters(kSharedMemoryData,
-                          read_only_region.region.Duplicate(),
+    AddToLaunchParameters(kSharedMemoryData, read_only_region.region,
 #if BUILDFLAG(IS_APPLE)
                           kArbitraryRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)
@@ -129,7 +128,7 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
 #endif
                           &command_line, &launch_options);
   } else {
-    AddToLaunchParameters(kSharedMemoryData, unsafe_region.Duplicate(),
+    AddToLaunchParameters(kSharedMemoryData, unsafe_region,
 #if BUILDFLAG(IS_APPLE)
                           kArbitraryRendezvousKey,
 #elif BUILDFLAG(IS_POSIX)
@@ -170,5 +169,4 @@ TEST_P(SharedMemorySwitchTest, PassViaSwitch) {
   EXPECT_EQ(0, exit_code);
 }
 
-}  // namespace shared_memory
-}  // namespace base
+}  // namespace base::shared_memory

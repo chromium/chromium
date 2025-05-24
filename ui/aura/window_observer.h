@@ -188,6 +188,13 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   // called if the window is destroyed during the loop.
   virtual void OnResizeLoopEnded(Window* window) {}
 
+  // Called when the window manager starts an interactive window drag move.
+  virtual void OnMoveLoopStarted(Window* window) {}
+
+  // Called when the window manager ends an interactive window drag move. This
+  // is not called if the window is destroyed during the drag.
+  virtual void OnMoveLoopEnded(Window* window) {}
+
   // Called when the opaque regions for occlusion of |window| is changed.
   virtual void OnWindowOpaqueRegionsForOcclusionChanged(Window* window) {}
 

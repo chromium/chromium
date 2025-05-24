@@ -9,9 +9,9 @@
 #include <string_view>
 #include <vector>
 
-
 #include "base/component_export.h"
-#include "third_party/abseil-cpp/absl/status/statusor.h"
+#include "base/types/expected.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace liburlpattern {
 
@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& o, Token token);
 // Token objects simply reference positions within the input |pattern|.  The
 // |pattern| must be kept alive as long as the Token objects.
 COMPONENT_EXPORT(LIBURLPATTERN)
-absl::StatusOr<std::vector<Token>> Tokenize(
+base::expected<std::vector<Token>, absl::Status> Tokenize(
     std::string_view pattern,
     TokenizePolicy policy = TokenizePolicy::kStrict);
 

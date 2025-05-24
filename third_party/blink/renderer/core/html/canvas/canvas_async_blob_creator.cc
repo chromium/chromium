@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/html/canvas/canvas_async_blob_creator.h"
 
 #include "base/location.h"
@@ -20,6 +15,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -40,8 +36,8 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
-
 #include "third_party/skia/include/core/SkSurface.h"
+#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace blink {
 
@@ -152,6 +148,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     base::TimeTicks start_time,
     ExecutionContext* context,
     const IdentifiableToken& input_digest,
+    CanvasInterventionsHelper::CanvasInterventionType intervention_type,
     ScriptPromiseResolver<Blob>* resolver)
     : CanvasAsyncBlobCreator(image,
                              options,
@@ -160,6 +157,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
                              start_time,
                              context,
                              input_digest,
+                             intervention_type,
                              resolver) {}
 
 CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
@@ -170,6 +168,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
     base::TimeTicks start_time,
     ExecutionContext* context,
     const IdentifiableToken& input_digest,
+    CanvasInterventionsHelper::CanvasInterventionType intervention_type,
     ScriptPromiseResolver<Blob>* resolver)
     : fail_encoder_initialization_for_test_(false),
       enforce_idle_encoding_for_test_(false),
@@ -178,6 +177,7 @@ CanvasAsyncBlobCreator::CanvasAsyncBlobCreator(
       start_time_(start_time),
       static_bitmap_image_loaded_(false),
       input_digest_(input_digest),
+      intervention_type_(intervention_type),
       callback_(callback),
       script_promise_resolver_(resolver) {
   CHECK(context);
@@ -250,7 +250,7 @@ void CanvasAsyncBlobCreator::Dispose() {
 ImageEncodeOptions* CanvasAsyncBlobCreator::GetImageEncodeOptionsForMimeType(
     ImageEncodingMimeType mime_type) {
   ImageEncodeOptions* encode_options = ImageEncodeOptions::Create();
-  encode_options->setType(ImageEncodingMimeTypeName(mime_type));
+  encode_options->setType(ImageEncoderUtils::MimeTypeName(mime_type));
   return encode_options;
 }
 
@@ -454,7 +454,7 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
   RecordIdleTaskStatusHistogram(idle_task_status_);
 
   Blob* result_blob =
-      Blob::Create(encoded_image, ImageEncodingMimeTypeName(mime_type_));
+      Blob::Create(encoded_image, ImageEncoderUtils::MimeTypeName(mime_type_));
   if (function_type_ == kHTMLCanvasToBlobCallback) {
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,
@@ -505,8 +505,7 @@ void CanvasAsyncBlobCreator::RecordIdentifiabilityMetric() {
         .Add(blink::IdentifiableSurface::FromTypeAndToken(
                  blink::IdentifiableSurface::Type::kCanvasReadback,
                  input_digest_),
-             blink::IdentifiabilityDigestOfBytes(base::make_span(
-                 data_buffer->Pixels(), data_buffer->ComputeByteSize())))
+             blink::IdentifiabilityDigestOfBytes(data_buffer->PixelData()))
         .Record(context_->UkmRecorder());
   }
 
@@ -522,10 +521,14 @@ void CanvasAsyncBlobCreator::TraceCanvasContent(
       [&](perfetto::EventContext ctx) {
         String data = "data:";
         if (encoded_image) {
-          data = data + ImageEncodingMimeTypeName(mime_type_) + ";base64," +
-                 Base64Encode(*encoded_image);
+          data = data + ImageEncoderUtils::MimeTypeName(mime_type_) +
+                 ";base64," + Base64Encode(*encoded_image);
         }
         ctx.AddDebugAnnotation("data_url", data.Utf8());
+        ctx.AddDebugAnnotation(
+            "noised",
+            intervention_type_ ==
+                CanvasInterventionsHelper::CanvasInterventionType::kNoise);
       });
 }
 

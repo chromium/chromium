@@ -4,97 +4,105 @@
 
 ## What goes here
 
-This directory contains some STL-like containers.
+This directory contains some stdlib-like containers.
 
 Things should be moved here that are generally applicable across the code base.
 Don't add things here just because you need them in one place and think others
-may someday want something similar. You can put specialized containers in
-your component's directory and we can promote them here later if we feel there
-is broad applicability.
+may someday want something similar. You can put specialized containers in your
+component's directory and we can promote them here later if we feel there is
+broad applicability.
 
 ### Design and naming
 
 Fundamental [//base principles](../README.md#design-and-naming) apply, i.e.:
 
-Containers should adhere as closely to STL as possible. Functions and behaviors
-not present in STL should only be added when they are related to the specific
-data structure implemented by the container.
+Containers should adhere as closely to stdlib as possible. Functions and
+behaviors not present in stdlib should only be added when they are related to
+the specific data structure implemented by the container.
 
-For STL-like containers our policy is that they should use STL-like naming even
-when it may conflict with the style guide. So functions and class names should
-be lower case with underscores. Non-STL-like classes and functions should use
-Google naming. Be sure to use the base namespace.
+For stdlib-like containers our policy is that they should use stdlib-like naming
+even when it may conflict with the style guide. So functions and class names
+should be lower case with underscores. Non-stdlib-like classes and functions
+should use Google naming. Be sure to use the base namespace.
 
 ## Map and set selection
 
 ### Usage advice
 
-*   Do not use `base::flat_map` or `base::flat_set` if the number of items will
-    be large or unbounded and elements will be inserted/deleted outside of the
-    containers constructor/destructor - they have O(n) performance on inserts
-    and deletes of individual items.
+1.  If you just need a generic map or set container without any additional
+    properties then prefer to use `absl::flat_hash_map` and
+    `absl::flat_hash_set`. These are versatile containers that have good
+    performance on both large and small sized data.
 
-*   Do not default to using `std::unordered_set` and `std::unordered_map`. In
-    the common case, query performance is unlikely to be sufficiently higher
-    than `std::map` to make a difference, insert performance is slightly worse,
-    and the memory overhead is high. This makes sense mostly for large tables
-    where you expect a lot of lookups.
+    1.  Is pointer-stability of values (but not keys) required? Then use
+        `absl::flat_hash_map<Key, std::unique_ptr<Value>>`.
+    2.  Is pointer-stability of keys required? Then use `absl::node_hash_map`
+        and `absl::node_hash_set`.
 
-*   Most maps and sets in Chrome are small and contain objects that can be moved
-    efficiently. In this case, consider `base::flat_map` and `base::flat_set`.
-    You need to be aware of the maximum expected size of the container since
-    individual inserts and deletes are O(n), giving O(n^2) construction time for
-    the entire map. But because it avoids mallocs in most cases, inserts are
-    better or comparable to other containers even for several dozen items, and
-    efficiently-moved types are unlikely to have performance problems for most
-    cases until you have hundreds of items. If your container can be constructed
-    in one shot, the constructor from vector gives O(n log n) construction times
-    and it should be strictly better than a `std::map`.
+2.  If you require sorted order, then the best choice depends on whether your
+    map is going to be written once and read many times, or if it is going to be
+    written frequently throughout its lifetime.
 
-    Conceptually inserting a range of n elements into a `base::flat_map` or
-    `base::flat_set` behaves as if insert() was called for each individually
-    element. Thus in case the input range contains repeated elements, only the
-    first one of these duplicates will be inserted into the container. This
-    behaviour applies to construction from a range as well.
+    1.  If the map is written once, then `base::flat_map` and `base::flat_set`
+        are good choices. While they have poor asymptotic behavior on writes, on
+        a write-once container this performance is no worse than the standard
+        library tree containers and so they are strictly better in terms of
+        overhead.
+    2.  If the map is always very small, then `base::flat_map` and
+        `base::flat_set` are again good choices, even if the map is being
+        written to multiple times. While mutations are O(n) this cost is
+        negligible for very small values of n compared to the cost of doing a
+        malloc on every mutation.
+    3.  If the map is written multiple times and is large then then `std::map`
+        and `std::set` are the best choices.
+    4.  If you require pointer stability (on either the key or value) then
+        `std::map` and `std::set` are the also the best choices.
 
-*   `base::small_map` has better runtime memory usage without the poor mutation
-    performance of large containers that `base::flat_map` has. But this
-    advantage is partially offset by additional code size. Prefer in cases where
-    you make many objects so that the code/heap tradeoff is good.
+When using `base::flat_map` and `base::flat_set` there are also fixed versions
+of these that are backed by a `std::array` instead of a `std::vector` and which
+don't provide mutating operators, but which are constexpr friendly and support
+stack allocation. If you are using the flat structures because your container is
+only written once then the fixed versions may be an even better alternative,
+particularly if you're looking for a structure that can be used as a
+compile-time lookup table.
 
-*   Use `std::map` and `std::set` if you can't decide. Even if they're not
-    great, they're unlikely to be bad or surprising.
+Note that this advice never suggests the use of `std::unordered_map` and
+`std::unordered_set`. These containers provides similar features to the Abseil
+flat hash containers but with worse performance. They should only be used if
+absolutely required for compatibility with third-party code.
 
-### Map and set details
+Also note that this advice does not suggest the use of the Abseil btree
+structures, `absl::btree_map` and `absl::btree_set`. This is because while these
+types do provide good performance for cases where you need a sorted container
+they have been found to introduce a very large code size penalty when using them
+in Chromium. Until this problem can be resolved they should not be used in
+Chromium code.
 
-Sizes are on 64-bit platforms. Stable iterators aren't invalidated when the
-container is mutated.
+### Map and set implementation details
 
-| Container                                  | Empty size            | Per-item overhead | Stable iterators? | Insert/delete complexity     |
-|:------------------------------------------ |:--------------------- |:----------------- |:----------------- |:-----------------------------|
-| `std::map`, `std::set`                     | 16 bytes              | 32 bytes          | Yes               | O(log n)                     |
-| `std::unordered_map`, `std::unordered_set` | 128 bytes             | 16 - 24 bytes     | No                | O(1)                         |
-| `base::flat_map`, `base::flat_set`         | 24 bytes              | 0 (see notes)     | No                | O(n)                         |
-| `base::small_map`                          | 24 bytes (see notes)  | 32 bytes          | No                | depends on fallback map type |
+Sizes are on 64-bit platforms. Ordered iterators means that iteration occurs in
+the sorted key order. Stable iterators means that iterators are not invalidated
+by unrelated modifications to the container. Stable pointers means that pointers
+to keys and values are not invalidated by unrelated modifications to the
+container.
 
-**Takeaways:** `std::unordered_map` and `std::unordered_set` have high
-overhead for small container sizes, so prefer these only for larger workloads.
+The table lists the values for maps, but the same properties apply to the
+corresponding set types.
 
-Code size comparisons for a block of code (see appendix) on Windows using
-strings as keys.
 
-| Container            | Code size  |
-|:-------------------- |:---------- |
-| `std::unordered_map` | 1646 bytes |
-| `std::map`           | 1759 bytes |
-| `base::flat_map`     | 1872 bytes |
-| `base::small_map`    | 2410 bytes |
+| Container             | Empty size | Per-item overhead | Ordered iterators? | Stable iterators? | Stable pointers? | Lookup complexity | Mutate complexity |
+|:--------------------- |:---------- |:----------------- |:------------------ |:----------------- |:---------------- |:----------------- |:----------------- |
+| `std::map`            | 16 bytes   | 32 bytes          | Yes                | Yes               | Yes              | O(log n)          | O(log n)          |
+| `std::unordered_map`  | 128 bytes  | 16-24 bytes       | No                 | No                | Yes              | O(1)              | O(1)              |
+| `base::flat_map`      | 24 bytes   | 0 bytes           | Yes                | No                | No               | O(log n)          | O(n)              |
+| `absl::flat_hash_map` | 40 bytes   | 1 byte            | No                 | No                | No               | O(1)              | O(1)              |
+| `absl::node_hash_map` | 40 bytes   | 1 byte            | No                 | No                | Yes              | O(1)              | O(1)              |
 
-**Takeaways:** `base::small_map` generates more code because of the inlining of
-both brute-force and red-black tree searching. This makes it less attractive
-for random one-off uses. But if your code is called frequently, the runtime
-memory benefits will be more important. The code sizes of the other maps are
-close enough it's not worth worrying about.
+Note that all of these containers except for `std::map` have some additional
+memory overhead based on their load factor that isn't accounted for by their
+per-item overhead. This includes `base::flat_map` which doesn't have a hash
+table load factor but does have the `std::vector` equivalent, unused capacity
+from its double-on-resize allocation strategy.
 
 ### std::map and std::set
 
@@ -216,20 +224,43 @@ constexpr auto kMap = base::MakeFixedFlatMap<std::string_view, int>(
 Both `MakeFixedFlatSet` and `MakeFixedFlatMap` require callers to explicitly
 specify the key (and mapped) type.
 
-### base::small\_map
+### absl::flat\_hash\_map and absl::flat\_hash\_set
 
-A small inline buffer that is brute-force searched that overflows into a full
-`std::map` or `std::unordered_map`. This gives the memory benefit of
-`base::flat_map` for small data sizes without the degenerate insertion
-performance for large container sizes.
+A hash table. These use Abseil's "swiss table" design which is elaborated on in
+more detail at https://abseil.io/about/design/swisstables and
+https://abseil.io/docs/cpp/guides/container#hash-tables. The short version is
+that it uses an open addressing scheme with a lookup scheme that is designed to
+minimize memory accesses and branch mispredicts.
 
-Since instantiations require both code for a `std::map` and a brute-force search
-of the inline container, plus a fancy iterator to cover both cases, code size
-is larger.
+The flat hash map structures also store the key and value directly in the hash
+table slots, eliminating the need for additional memory allocations for
+inserting or removing individual nodes. The comes at the cost of eliminating
+pointer stability: unlike the standard library hash tables a rehash will not
+only invalidate all iterators but also all pointers to the stored elements.
 
-The initial size in the above table is assuming a very small inline table. The
-actual size will be `sizeof(int) + min(sizeof(std::map), sizeof(T) *
-inline_size)`.
+In practical use these Abseil containers perform well enough that they are a
+good default choice for a map or set container when you don't have any stronger
+constraints. In fact, even when you require value pointer-stability it is still
+generally better to wrap the value in a `std::unique_ptr` than to use an
+alternative structure that provides such stability directly.
+
+### absl::node\_hash\_map and absl::node\_hash\_set
+
+A variant of the Abseil hash maps that stores the key-value pair in a separately
+allocated node rather than directly in the hash table slots. This guarantees
+pointer-stability for both the keys and values in the table, invalidating them
+only when the element is deleted, but it comes at the cost of requiring an
+additional allocation for every element inserted.
+
+There are two main uses for this structure. One is for cases where you require a
+map with pointer-stability for the key (not the value), which cannot be done
+with the Abseil flat map or set. The other is for cases where you want a drop-in
+replacement for an existing `std::unordered_map` or `std::unordered_set` and you
+aren't sure if pointer-stability is required. If you know that pointer-stability
+is unnecessary then it would be better to convert to the flat tables but this
+may be difficult to prove when working on unfamiliar code or doing a large scale
+change. In such cases the node hash maps are still generally superior to the
+standard library maps.
 
 ## Deque
 
@@ -363,32 +394,3 @@ require safety. There are several problems with that approach:
 Therefore, the minimal checks that we are adding to these base classes are the
 most efficient and effective way to achieve the beginning of the safety that we
 need. (Note that we cannot account for undefined behavior in callers.)
-
-## Appendix
-
-### Code for map code size comparison
-
-This just calls insert and query a number of times, with `printf`s that prevent
-things from being dead-code eliminated.
-
-```cpp
-TEST(Foo, Bar) {
-  base::small_map<std::map<std::string, Flubber>> foo;
-  foo.insert(std::make_pair("foo", Flubber(8, "bar")));
-  foo.insert(std::make_pair("bar", Flubber(8, "bar")));
-  foo.insert(std::make_pair("foo1", Flubber(8, "bar")));
-  foo.insert(std::make_pair("bar1", Flubber(8, "bar")));
-  foo.insert(std::make_pair("foo", Flubber(8, "bar")));
-  foo.insert(std::make_pair("bar", Flubber(8, "bar")));
-  auto found = foo.find("asdf");
-  printf("Found is %d\n", (int)(found == foo.end()));
-  found = foo.find("foo");
-  printf("Found is %d\n", (int)(found == foo.end()));
-  found = foo.find("bar");
-  printf("Found is %d\n", (int)(found == foo.end()));
-  found = foo.find("asdfhf");
-  printf("Found is %d\n", (int)(found == foo.end()));
-  found = foo.find("bar1");
-  printf("Found is %d\n", (int)(found == foo.end()));
-}
-```

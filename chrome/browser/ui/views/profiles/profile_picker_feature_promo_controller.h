@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_FEATURE_PROMO_CONTROLLER_H_
 
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/impl/feature_promo_controller_20.h"
 
 class UserEducationService;
 class ProfilePickerView;
@@ -16,7 +17,7 @@ class ProfilePickerView;
 // The class allows the management of IPH that are displayed in the Profile
 // Picker.
 class ProfilePickerFeaturePromoController
-    : public user_education::FeaturePromoControllerCommon {
+    : public user_education::FeaturePromoController20 {
  public:
   ProfilePickerFeaturePromoController(
       feature_engagement::Tracker* tracker_service,
@@ -26,7 +27,7 @@ class ProfilePickerFeaturePromoController
  private:
   // user_education::FeaturePromoControllerCommon:
   ui::ElementContext GetAnchorContext() const override;
-  bool CanShowPromoForElement(
+  user_education::FeaturePromoResult CanShowPromoForElement(
       ui::TrackedElement* anchor_element) const override;
   const ui::AcceleratorProvider* GetAcceleratorProvider() const override;
   std::u16string GetBodyIconAltText() const override;
@@ -35,8 +36,7 @@ class ProfilePickerFeaturePromoController
   std::u16string GetTutorialScreenReaderHint() const override;
   std::u16string GetFocusHelpBubbleScreenReaderHint(
       user_education::FeaturePromoSpecification::PromoType promo_type,
-      ui::TrackedElement* anchor_element,
-      bool is_critical_promo) const override;
+      ui::TrackedElement* anchor_element) const override;
 
   const raw_ptr<ProfilePickerView> profile_picker_view_;
 };

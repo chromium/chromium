@@ -6,11 +6,11 @@
 #define COMPONENTS_POLICY_CORE_COMMON_PROXY_POLICY_PROVIDER_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/policy_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace policy {
 
@@ -76,7 +76,7 @@ class POLICY_EXPORT ProxyPolicyProvider
   void ResetDelegate();
   void OnDelegateChanged();
 
-  absl::variant<UnownedDelegate, OwnedDelegate> delegate_ =
+  std::variant<UnownedDelegate, OwnedDelegate> delegate_ =
       UnownedDelegate(nullptr);
   bool block_policy_updates_for_testing_ = false;
 };

@@ -24,12 +24,10 @@ FakeTabRestoreService::GetTestingFactory() {
 }
 
 void FakeTabRestoreService::AddObserver(
-    sessions::TabRestoreServiceObserver* observer) {
-}
+    sessions::TabRestoreServiceObserver* observer) {}
 
 void FakeTabRestoreService::RemoveObserver(
-    sessions::TabRestoreServiceObserver* observer) {
-}
+    sessions::TabRestoreServiceObserver* observer) {}
 
 std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
     sessions::LiveTab* live_tab,
@@ -47,34 +45,33 @@ std::optional<SessionID> FakeTabRestoreService::CreateHistoricalTab(
 }
 
 void FakeTabRestoreService::BrowserClosing(sessions::LiveTabContext* context) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeTabRestoreService::BrowserClosed(sessions::LiveTabContext* context) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeTabRestoreService::CreateHistoricalGroup(
     sessions::LiveTabContext* context,
     const tab_groups::TabGroupId& group) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeTabRestoreService::GroupClosed(const tab_groups::TabGroupId& group) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeTabRestoreService::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-void FakeTabRestoreService::ClearEntries() {
-}
+void FakeTabRestoreService::ClearEntries() {}
 
 void FakeTabRestoreService::DeleteNavigationEntries(
     const DeletionPredicate& predicate) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const FakeTabRestoreService::Entries& FakeTabRestoreService::entries() const {
@@ -83,8 +80,7 @@ const FakeTabRestoreService::Entries& FakeTabRestoreService::entries() const {
 
 std::vector<sessions::LiveTab*> FakeTabRestoreService::RestoreMostRecentEntry(
     sessions::LiveTabContext* context) {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<sessions::LiveTab*>();
+  NOTREACHED();
 }
 
 void FakeTabRestoreService::RemoveEntryById(SessionID session_id) {
@@ -100,25 +96,21 @@ std::vector<sessions::LiveTab*> FakeTabRestoreService::RestoreEntryById(
     sessions::LiveTabContext* context,
     SessionID session_id,
     WindowOpenDisposition disposition) {
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<sessions::LiveTab*>();
+  NOTREACHED();
 }
 
 void FakeTabRestoreService::LoadTabsFromLastSession() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeTabRestoreService::IsLoaded() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
-void FakeTabRestoreService::DeleteLastSession() {
-}
+void FakeTabRestoreService::DeleteLastSession() {}
 
 bool FakeTabRestoreService::IsRestoring() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 FakeTabRestoreService::Entries::iterator

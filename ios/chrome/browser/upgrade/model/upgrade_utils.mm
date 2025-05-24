@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_utils.h"
 
 #import <Foundation/Foundation.h>
+
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 
 bool IsAppUpToDate() {

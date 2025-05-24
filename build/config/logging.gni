@@ -2,15 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
-import("//build/config/dcheck_always_on.gni")
 
 declare_args() {
-  # Use LogErrorNotReached() for NOTREACHED_IN_MIGRATION().
-  enable_log_error_not_reached =
-      is_chromeos_ash && !(is_debug || dcheck_always_on)
-
   # Stack traces will not include function names. Instead they will contain
   # file and offset information that can be used with
   # tools/valgrind/asan/asan_symbolize.py. By piping stderr through this script,

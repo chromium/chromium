@@ -58,13 +58,26 @@ export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
       sha256hashHex: String,
       displayName: String,
       isDeletable: Boolean,
+      showEditIcon: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
-  certSource: CertificateSource;
-  sha256hashHex: string;
-  displayName: string;
-  isDeletable: boolean;
+  declare certSource: CertificateSource;
+  declare sha256hashHex: string;
+  declare displayName: string;
+  declare isDeletable: boolean;
+  declare showEditIcon: boolean;
+
+  private certDetailsIconClass_(): string {
+    if (this.showEditIcon) {
+      return 'icon-edit';
+    } else {
+      return 'icon-visibility';
+    }
+  }
 
   private onViewCertificate_() {
     CertificatesV2BrowserProxy.getInstance().handler.viewCertificate(
@@ -74,7 +87,9 @@ export class CertificateEntryV2Element extends CertificateEntryV2ElementBase {
   private onDeleteCertificate_() {
     assert(this.isDeletable);
     CertificatesV2BrowserProxy.getInstance()
-        .handler.deleteCertificate(this.certSource, this.sha256hashHex)
+        .handler
+        .deleteCertificate(
+            this.certSource, this.displayName, this.sha256hashHex)
         .then((value: {result: ActionResult|null}) => {
           this.dispatchEvent(new CustomEvent('delete-result', {
             composed: true,

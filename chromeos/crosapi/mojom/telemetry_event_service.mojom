@@ -28,9 +28,8 @@ import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 // audio jack is plugged in or out.
 //
 // NextMinVersion: 2, NextIndex: 2
-[Stable]
 struct TelemetryAudioJackEventInfo {
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -42,7 +41,7 @@ struct TelemetryAudioJackEventInfo {
 
   State state@0;
 
-  [Stable, Extensible]
+  [Extensible]
   enum DeviceType {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField,
@@ -58,9 +57,8 @@ struct TelemetryAudioJackEventInfo {
 // Lid event info. This is emitted when the lid is closed or opened.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryLidEventInfo {
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -77,7 +75,6 @@ struct TelemetryLidEventInfo {
 // disconnected.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable]
 struct TelemetryUsbEventInfo {
   // Vendor name.
   string vendor@0;
@@ -91,7 +88,7 @@ struct TelemetryUsbEventInfo {
   // https://www.usb.org/defined-class-codes
   array<string> categories@4;
 
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -108,9 +105,9 @@ struct TelemetryUsbEventInfo {
 // plugged in or plugged out.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable, RenamedFrom="crosapi.mojom.TelemetryHdmiEventInfo"]
+[RenamedFrom="crosapi.mojom.TelemetryHdmiEventInfo"]
 struct TelemetryExternalDisplayEventInfo {
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -129,9 +126,8 @@ struct TelemetryExternalDisplayEventInfo {
 // out.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable]
 struct TelemetrySdCardEventInfo {
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -148,9 +144,8 @@ struct TelemetrySdCardEventInfo {
 // an external power source or the system receives/completes a suspend request.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryPowerEventInfo {
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -171,9 +166,8 @@ struct TelemetryPowerEventInfo {
 // removed from the garage.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryStylusGarageEventInfo {
-  [Stable, Extensible]
+  [Extensible]
   enum State {
     // This is required for backwards compatibility, should not be used.
     [Default] kUnmappedEnumField = 0,
@@ -193,7 +187,7 @@ struct TelemetryStylusGarageEventInfo {
 // included.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable, Extensible]
+[Extensible]
 enum TelemetryInputTouchButton {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -208,12 +202,11 @@ enum TelemetryInputTouchButton {
 // Emitted when some touchpad button is pressed or released.
 //
 // NextMinVersion: 1, NextIndex: 2
-[Stable]
 struct TelemetryTouchpadButtonEventInfo {
   // The button that corresponds to this event.
   TelemetryInputTouchButton button@0;
 
-  [Stable, Extensible]
+  [Extensible]
   // Whether the button is pressed or released.
   enum State {
     // This is required for backwards compatibility, should not be used.
@@ -230,7 +223,6 @@ struct TelemetryTouchpadButtonEventInfo {
 // Touch point info.
 //
 // NextMinVersion: 1, NextIndex: 6
-[Stable]
 struct TelemetryTouchPointInfo {
   // An id to track an initiated contact throughout its life cycle.
   uint32 tracking_id@0;
@@ -252,7 +244,6 @@ struct TelemetryTouchPointInfo {
 // Emitted when new touch points are updated.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryTouchpadTouchEventInfo {
   // The touch points reported by the touchpad.
   array<TelemetryTouchPointInfo> touch_points@0;
@@ -262,7 +253,6 @@ struct TelemetryTouchpadTouchEventInfo {
 // the first event from the touchpad.
 //
 // NextMinVersion: 1, NextIndex: 4
-[Stable]
 struct TelemetryTouchpadConnectedEventInfo {
   // The maximum possible x position of touch points.
   uint32 max_x@0;
@@ -278,7 +268,6 @@ struct TelemetryTouchpadConnectedEventInfo {
 // Emitted when new touch points are updated.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryTouchscreenTouchEventInfo {
   // The touch points reported by the touchscreen.
   array<TelemetryTouchPointInfo> touch_points@0;
@@ -288,7 +277,6 @@ struct TelemetryTouchscreenTouchEventInfo {
 // be the first event from the touchscreen.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct TelemetryTouchscreenConnectedEventInfo {
   // The maximum possible x position of touch points.
   uint32? max_x@0;
@@ -302,7 +290,6 @@ struct TelemetryTouchscreenConnectedEventInfo {
 // Stylus touch point info.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct TelemetryStylusTouchPointInfo {
   // The x position in the cartesian XY plane. The value ranges from 0 to
   // |max_x| as defined in TelemetryStylusConnectedEventInfo.
@@ -318,7 +305,6 @@ struct TelemetryStylusTouchPointInfo {
 // Emitted when new touch point is updated.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 struct TelemetryStylusTouchEventInfo {
   // The info of the stylus touch point. A null touch point means the stylus
   // leaves the contact.
@@ -329,7 +315,6 @@ struct TelemetryStylusTouchEventInfo {
 // the first event from the stylus.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable]
 struct TelemetryStylusConnectedEventInfo {
   // The maximum possible x position of touch points.
   uint32? max_x@0;
@@ -343,7 +328,7 @@ struct TelemetryStylusConnectedEventInfo {
 // Union of event info.
 //
 // NextMinVersion: 11, NextIndex: 16
-[Stable, Extensible]
+[Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
   // mapped to this.
@@ -389,7 +374,7 @@ union TelemetryEventInfo {
 // An enumeration of event categories.
 //
 // NextMinVersion: 11, NextIndex: 16
-[Stable, Extensible]
+[Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
   [Default] kUnmappedEnumField = 0,
@@ -413,7 +398,6 @@ enum TelemetryEventCategoryEnum {
 // Implemented by clients who desire events.
 //
 // NextMinVersion: 1, NextIndex: 1
-[Stable]
 interface TelemetryEventObserver {
   // Fired when an event happens.
   OnEvent@0(TelemetryEventInfo info);
@@ -422,7 +406,7 @@ interface TelemetryEventObserver {
 // Event interface exposed to Lacros.
 //
 // NextMinVersion: 1, NextIndex: 3
-[Stable, Uuid="9771fd1b-79b9-4698-b20f-3168d2af3f77"]
+[Uuid="9771fd1b-79b9-4698-b20f-3168d2af3f77"]
 interface TelemetryEventService {
   // Adds an observer to be notified on events. The caller can remove the
   // observer created by this call by closing their end of the message pipe.

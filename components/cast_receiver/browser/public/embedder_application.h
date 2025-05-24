@@ -15,7 +15,6 @@
 
 namespace content {
 class WebContents;
-class WebUIControllerFactory;
 }  // namespace content
 
 namespace cast_receiver {
@@ -77,13 +76,6 @@ class EmbedderApplication {
   // TODO(crbug.com/1359568): Change default implementation to be based on
   // Chromium state.
   virtual StreamingConfigManager* GetStreamingConfigManager();
-
-  // Creates a new platform-specific WebUIControllerFactory, or nullptr if
-  // this feature is not to be supported. Returns nullptr by default.
-  // |hosts| is the set of hosts for which the custom WebUIController associated
-  // with the returned factory should be used.
-  virtual std::unique_ptr<content::WebUIControllerFactory>
-  CreateWebUIControllerFactory(std::vector<std::string> hosts);
 
   // Loads |url| in the associated WebContents.
   virtual void NavigateToPage(const GURL& url);

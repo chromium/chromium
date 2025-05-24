@@ -8,6 +8,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_D
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_POSITION_END;
 import static androidx.browser.customtabs.CustomTabsIntent.ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION_NONE;
 import static androidx.browser.customtabs.CustomTabsIntent.CLOSE_BUTTON_POSITION_DEFAULT;
+import static androidx.browser.customtabs.CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
 
 import android.app.PendingIntent;
 import android.content.ComponentName;
@@ -16,16 +17,20 @@ import android.graphics.drawable.Drawable;
 import android.widget.RemoteViews;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.browser.customtabs.CustomTabsIntent;
 import androidx.browser.customtabs.CustomTabsIntent.CloseButtonPosition;
-import androidx.browser.customtabs.CustomTabsSessionToken;
+import androidx.browser.customtabs.CustomTabsIntent.OpenInBrowserState;
+import androidx.browser.customtabs.ExperimentalOpenInBrowser;
+import androidx.browser.trusted.FileHandlingData;
+import androidx.browser.trusted.LaunchHandlerClientMode;
 import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 import androidx.browser.trusted.sharing.ShareData;
 import androidx.browser.trusted.sharing.ShareTarget;
 
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -38,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Base class for model classes which parse incoming intent for customization data. */
+@NullMarked
 public abstract class BrowserServicesIntentDataProvider {
     // The type of UI for Custom Tab to use.
     @IntDef({
@@ -47,7 +53,9 @@ public abstract class BrowserServicesIntentDataProvider {
         CustomTabsUiType.READER_MODE,
         CustomTabsUiType.MINIMAL_UI_WEBAPP,
         CustomTabsUiType.OFFLINE_PAGE,
-        CustomTabsUiType.AUTH_TAB
+        CustomTabsUiType.AUTH_TAB,
+        CustomTabsUiType.NETWORK_BOUND_TAB,
+        CustomTabsUiType.POPUP
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface CustomTabsUiType {
@@ -59,6 +67,8 @@ public abstract class BrowserServicesIntentDataProvider {
         int OFFLINE_PAGE = 5;
         int READ_LATER = 6;
         int AUTH_TAB = 7;
+        int NETWORK_BOUND_TAB = 8;
+        int POPUP = 9;
     }
 
     // The type of Disclosure for TWAs to use.
@@ -99,6 +109,40 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * Defines whether the page title on the toolbar should be Visible, Hidden, or Visible only in
+     * Desktop Mode.
+     */
+    @IntDef({TitleVisibility.HIDDEN, TitleVisibility.VISIBLE, TitleVisibility.VISIBLE_IN_DESKTOP})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface TitleVisibility {
+        // Always hide
+        int HIDDEN = 0;
+        // Always show
+        int VISIBLE = 1;
+        // Only show in Desktop Mode
+        int VISIBLE_IN_DESKTOP = 2;
+    }
+
+    /**
+     * Converts from AndroidX's {@link CustomTabsIntent} values of title bar visibility to {@link
+     * TitleVisibility}.
+     *
+     * @see CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE
+     */
+    public static @TitleVisibility int customTabIntentTitleBarVisibility(
+            int intentValue, boolean isTWA) {
+        switch (intentValue) {
+            case CustomTabsIntent.NO_TITLE:
+                if (isTWA) return TitleVisibility.VISIBLE_IN_DESKTOP;
+                else return TitleVisibility.HIDDEN;
+            case CustomTabsIntent.SHOW_PAGE_TITLE:
+                return TitleVisibility.VISIBLE;
+            default:
+                return TitleVisibility.HIDDEN;
+        }
+    }
+
+    /**
      * Side sheet's default slide-in behavior. Same as {@link
      * ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
      */
@@ -125,7 +169,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The session specified in the intent, or null.
      */
-    public @Nullable CustomTabsSessionToken getSession() {
+    public @Nullable SessionHolder<?> getSession() {
         return null;
     }
 
@@ -182,12 +226,10 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return The URL that should be used from this intent.
-     * Must be called only after native has loaded.
+     * @return The URL that should be used from this intent. Must be called only after native has
+     *     loaded.
      */
-    public @Nullable String getUrlToLoad() {
-        return null;
-    }
+    public abstract String getUrlToLoad();
 
     /**
      * @return Whether url bar hiding should be enabled in the custom tab.
@@ -206,19 +248,19 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return ColorProvider to be used.
      */
-    public abstract @NonNull ColorProvider getColorProvider();
+    public abstract ColorProvider getColorProvider();
 
     /**
      * @return ColorProvider when the system is in light mode.
      */
-    public @NonNull ColorProvider getLightColorProvider() {
+    public ColorProvider getLightColorProvider() {
         return getColorProvider();
     }
 
     /**
      * @return ColorProvider when the system is in dark mode.
      */
-    public @NonNull ColorProvider getDarkColorProvider() {
+    public ColorProvider getDarkColorProvider() {
         return getColorProvider();
     }
 
@@ -232,8 +274,8 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return The title visibility state for the toolbar.
      */
-    public int getTitleVisibilityState() {
-        return CustomTabsIntent.NO_TITLE;
+    public @TitleVisibility int getTitleVisibilityState() {
+        return TitleVisibility.HIDDEN;
     }
 
     /**
@@ -275,8 +317,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return A array of {@link View} ids, of which the onClick event is handled by the Activity.
      */
-    @Nullable
-    public int[] getClickableViewIDs() {
+    public int @Nullable [] getClickableViewIDs() {
         return null;
     }
 
@@ -397,8 +438,11 @@ public abstract class BrowserServicesIntentDataProvider {
         return getActivityType() == ActivityType.WEB_APK;
     }
 
-    /** Returns {@link TrustedWebActivityDisplayMode} supplied in the intent. */
-    public @Nullable TrustedWebActivityDisplayMode getTwaDisplayMode() {
+    /**
+     * Returns {@link TrustedWebActivityDisplayMode} supplied in the intent. This a raw display mode
+     * that's not altered in any way.
+     */
+    public @Nullable TrustedWebActivityDisplayMode getProvidedTwaDisplayMode() {
         return null;
     }
 
@@ -425,8 +469,7 @@ public abstract class BrowserServicesIntentDataProvider {
     /**
      * @return Additional origins associated with a Trusted Web Activity client app.
      */
-    @Nullable
-    public List<String> getTrustedWebActivityAdditionalOrigins() {
+    public @Nullable List<String> getTrustedWebActivityAdditionalOrigins() {
         return null;
     }
 
@@ -434,8 +477,7 @@ public abstract class BrowserServicesIntentDataProvider {
      * @return All origins associated with a TrustedWebActivity client app, including the initially
      *     loaded origin.
      */
-    @Nullable
-    public Set<Origin> getAllTrustedWebActivityOrigins() {
+    public @Nullable Set<Origin> getAllTrustedWebActivityOrigins() {
         return null;
     }
 
@@ -531,8 +573,7 @@ public abstract class BrowserServicesIntentDataProvider {
         return TwaDisclosureUi.DEFAULT;
     }
 
-    @Nullable
-    public int[] getGsaExperimentIds() {
+    public int @Nullable [] getGsaExperimentIds() {
         return null;
     }
 
@@ -647,11 +688,25 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * Return the target network that should be used from this intent, the default value to be used
-     * when a network has not been explicitly set via intent.
+     * Return the target network handle {@link android.net.Network#getNetworkHandle} that loads
+     * associated with this intent must use. Defaults to {@code NetId.INVALID}, in which case we let
+     * the underlying system make this choice.
      */
     public long getTargetNetwork() {
         return NetId.INVALID;
+    }
+
+    /**
+     * Return whether this intent has a target network. Certain optimizations or features are not
+     * support for tabs targeting a network. This helper is useful for handling those scenarios.
+     */
+    public boolean hasTargetNetwork() {
+        return getTargetNetwork() != NetId.INVALID;
+    }
+
+    /** Return whether the close button is enabled and visible in the custom tab. */
+    public boolean isCloseButtonEnabled() {
+        return true;
     }
 
     /** Return {@code true} if the service was launched for authentication. */
@@ -660,17 +715,71 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /** Return the custom redirect scheme for AuthTab. */
-    public String getAuthRedirectScheme() {
+    public @Nullable String getAuthRedirectScheme() {
         return null;
     }
 
     /** Return the https redirect URL host (origin) for AuthTab. */
-    public String getAuthRedirectHost() {
+    public @Nullable String getAuthRedirectHost() {
         return null;
     }
 
     /** Return the https redirect URL path for AuthTab. */
-    public String getAuthRedirectPath() {
+    public @Nullable String getAuthRedirectPath() {
+        return null;
+    }
+
+    /** Return the client mode for Launch Handler API. */
+    public @LaunchHandlerClientMode.ClientMode int getLaunchHandlerClientMode() {
+        return LaunchHandlerClientMode.AUTO;
+    }
+
+    /**
+     * Return {@link FileHandlingData} which contains the URIs of the opened files for Launch
+     * Handler API.
+     */
+    public @Nullable FileHandlingData getFileHandlingData() {
+        return null;
+    }
+
+    /**
+     * Calculates the closest supported display mode to the provided one. To get provided display
+     * mode use {@link WebappExtras#displayMode} or {@link #getProvidedTwaDisplayMode()}.
+     *
+     * <p>A caller is guaranteed of the following fallback chain: <lo>
+     * <li>Fullscreen
+     * <li>Standalone
+     * <li>Minimal UI
+     * <li>Browser </lo>
+     *
+     * @return {@link DisplayMode} that the browser should be running PWA in.
+     */
+    public @DisplayMode.EnumType int getResolvedDisplayMode() {
+        return DisplayMode.BROWSER;
+    }
+
+    /**
+     * Returns the desired developer options for Open in Browser button in the custom tab's toolbar.
+     *
+     * @return {@link OpenInBrowserState} the desired settings for the Open in Browser button.
+     */
+    @ExperimentalOpenInBrowser
+    public @OpenInBrowserState int getOpenInBrowserButtonState() {
+        return OPEN_IN_BROWSER_STATE_OFF;
+    }
+
+    /**
+     * @return the TWA startup timestamp associated with an intent in the uptimeMillis timebase, or
+     *     null.
+     */
+    public @Nullable Long getTwaStartupUptimeMillis() {
+        return null;
+    }
+
+    /**
+     * @return the version of android_browser_helper, or null.
+     */
+    public @Nullable Integer getAndroidBrowserHelperVersion() {
         return null;
     }
 }

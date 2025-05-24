@@ -77,9 +77,7 @@ class UpgradeDetectorTest : public ::testing::Test {
       env_ = base::Environment::Create();
       // Store the original timezone of the device so that it can be restored in
       // the destructor at the end of the test.
-      std::string env_tz;
-      if (env_->GetVar("TZ", &env_tz))
-        original_tz_ = env_tz;
+      original_tz_ = env_->GetVar("TZ");
       tz_overridden_ = true;
     }
     DCHECK(env_);

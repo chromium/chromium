@@ -20,7 +20,7 @@ signin::IdentityManager* GetIdentityManagerForWebUI(web::WebUIIOS* web_ui) {
 
 syncer::SyncService* GetSyncServiceForWebUI(web::WebUIIOS* web_ui) {
   ProfileIOS* profile = ProfileIOS::FromWebUIIOS(web_ui);
-  return SyncServiceFactory::GetForBrowserState(profile->GetOriginalProfile());
+  return SyncServiceFactory::GetForProfile(profile->GetOriginalProfile());
 }
 
 syncer::SyncInvalidationsService* GetSyncInvalidationsServiceForWebUI(

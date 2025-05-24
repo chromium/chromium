@@ -6,27 +6,17 @@
 
 #include <utility>
 
-#include "ui/wm/core/window_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/lacros/window_utility.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/wm/core/window_util.h"
 
 namespace apps {
 
 namespace {
 
 std::string GetWindowUniqueId(aura::Window* window) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   const std::string* id = exo::GetShellApplicationId(window);
   return id ? *id : "";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return lacros_window_utility::GetRootWindowUniqueId(window);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -49,18 +39,6 @@ BrowserAppInstance::BrowserAppInstance(base::UnguessableToken id,
       is_web_contents_active(is_web_contents_active),
       browser_session_id(browser_session_id),
       restored_browser_session_id(restored_browser_session_id) {}
-
-BrowserAppInstance::BrowserAppInstance(BrowserAppInstanceUpdate update,
-                                       aura::Window* window)
-    : id(update.id),
-      type(update.type),
-      app_id(update.app_id),
-      window(window),
-      title(update.title),
-      is_browser_active_deprecated(update.is_browser_active),
-      is_web_contents_active(update.is_web_contents_active),
-      browser_session_id(update.browser_session_id),
-      restored_browser_session_id(update.restored_browser_session_id) {}
 
 BrowserAppInstance::~BrowserAppInstance() = default;
 
@@ -110,14 +88,12 @@ BrowserWindowInstance::BrowserWindowInstance(
     uint32_t browser_session_id,
     uint32_t restored_browser_session_id,
     bool is_incognito,
-    uint64_t lacros_profile_id,
     bool is_active)
     : id(id),
       window(window),
       browser_session_id(browser_session_id),
       restored_browser_session_id(restored_browser_session_id),
       is_incognito(is_incognito),
-      lacros_profile_id(lacros_profile_id),
       is_active_deprecated(is_active) {}
 
 BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
@@ -127,7 +103,6 @@ BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
       browser_session_id(update.browser_session_id),
       restored_browser_session_id(update.restored_browser_session_id),
       is_incognito(update.is_incognito),
-      lacros_profile_id(update.lacros_profile_id),
       is_active_deprecated(update.is_active) {}
 
 BrowserWindowInstance::~BrowserWindowInstance() = default;
@@ -146,17 +121,14 @@ BrowserWindowInstanceUpdate BrowserWindowInstance::ToUpdate() const {
                                      is_active_deprecated,
                                      browser_session_id,
                                      restored_browser_session_id,
-                                     is_incognito,
-                                     lacros_profile_id};
+                                     is_incognito};
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/373972275): This function is now constant and could be
+// removed.
 std::string BrowserWindowInstance::GetAppId() const {
-  return crosapi::browser_util::IsLacrosWindow(window)
-             ? app_constants::kLacrosAppId
-             : app_constants::kChromeAppId;
+  return app_constants::kChromeAppId;
 }
-#endif
 
 bool BrowserWindowInstance::is_active() const {
   return wm::IsActiveWindow(window);

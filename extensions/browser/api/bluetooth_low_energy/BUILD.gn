@@ -25,15 +25,19 @@ source_set("bluetooth_low_energy") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
+    "//base",
+    "//content/public/browser",
     "//device/bluetooth",
     "//device/bluetooth/public/cpp",
+    "//extensions/browser:browser_sources",
+    "//extensions/browser/api:extensions_api_client",
     "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//content/public/browser",
-    "//extensions/browser:browser_sources",
+  deps = [
+    "//extensions/browser/kiosk",
+    "//net",
   ]
 }

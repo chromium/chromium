@@ -4,14 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../shared_style.css.js';
-import '../shared_vars.css.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './activity_log_history_item.html.js';
+import {getCss} from './activity_log_history_item.css.js';
+import {getHtml} from './activity_log_history_item.html.js';
 
 export interface ActivityGroup {
   activityIds: Set<string>;
@@ -31,35 +29,56 @@ export interface PageUrlItem {
   count: number;
 }
 
-export class ActivityLogHistoryItemElement extends PolymerElement {
+export class ActivityLogHistoryItemElement extends CrLitElement {
   static get is() {
     return 'activity-log-history-item';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The underlying ActivityGroup that provides data for the
        * ActivityLogItem displayed.
        */
-      data: Object,
+      data: {type: Object},
 
-      isExpandable_: {
-        type: Boolean,
-        computed: 'computeIsExpandable_(data.countsByUrl)',
-      },
+      expanded_: {type: Boolean},
+      isExpandable_: {type: Boolean},
     };
   }
 
-  data: ActivityGroup;
-  private isExpandable_: boolean;
+  accessor data: ActivityGroup = {
+    activityIds: new Set<string>(),
+    key: '',
+    count: 0,
+    activityType: chrome.activityLogPrivate.ExtensionActivityFilter.API_CALL,
+    countsByUrl: new Map<string, number>(),
+    expanded: false,
+  };
+  protected accessor expanded_: boolean = false;
+  protected accessor isExpandable_: boolean = false;
 
-  private computeIsExpandable_(): boolean {
-    return this.data.countsByUrl.size > 0;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('data')) {
+      this.isExpandable_ = this.data.countsByUrl.size > 0;
+      this.expanded_ = this.data.expanded;
+    }
+  }
+
+  expand(expanded: boolean) {
+    if (this.isExpandable_) {
+      this.expanded_ = expanded;
+    }
   }
 
   /**
@@ -67,7 +86,7 @@ export class ActivityLogHistoryItemElement extends PolymerElement {
    * for this ActivityGroup (API call or content script invocation.) Resolve
    * ties by the alphabetical order of the page URL.
    */
-  private getPageUrls_(): PageUrlItem[] {
+  protected getPageUrls_(): PageUrlItem[] {
     return Array.from(this.data.countsByUrl.entries())
         .map(e => ({page: e[0], count: e[1]}))
         .sort(function(a, b) {
@@ -78,26 +97,27 @@ export class ActivityLogHistoryItemElement extends PolymerElement {
         });
   }
 
-  private onDeleteClick_(e: Event) {
+  protected onDeleteClick_(e: Event) {
     e.stopPropagation();
-    this.dispatchEvent(new CustomEvent('delete-activity-log-item', {
-      bubbles: true,
-      composed: true,
-      detail: Array.from(this.data.activityIds.values()),
-    }));
+    this.fire(
+        'delete-activity-log-item', Array.from(this.data.activityIds.values()));
   }
 
-  private onExpandClick_() {
+  protected onExpandClick_() {
     if (this.isExpandable_) {
-      this.set('data.expanded', !this.data.expanded);
+      this.expanded_ = !this.expanded_;
     }
+  }
+
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
   }
 
   /**
    * Show the call count for a particular page URL if more than one page
    * URL is associated with the key for this ActivityGroup.
    */
-  private shouldShowPageUrlCount_(): boolean {
+  protected shouldShowPageUrlCount_(): boolean {
     return this.data.countsByUrl.size > 1;
   }
 }

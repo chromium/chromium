@@ -27,7 +27,7 @@ Window GetWindowForEvent(const Event& event) {
 }  // namespace
 
 WmSync::WmSync(Connection* connection, base::OnceClosure on_synced)
-    : WmSync(connection, std::move(on_synced), connection->synced_with_wm()) {}
+    : WmSync(connection, std::move(on_synced), connection->CanSyncWithWm()) {}
 
 WmSync::WmSync(Connection* connection,
                base::OnceClosure on_synced,

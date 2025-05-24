@@ -29,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#include "sandbox/linux/services/resource_limits.h"
+#include "sandbox/linux/services/resource_limits.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 
 namespace media {
@@ -539,12 +539,6 @@ int main(int argc, char** argv) {
   feature_list->InitFromCommandLine(
       cmd_line->GetSwitchValueASCII(switches::kEnableFeatures),
       cmd_line->GetSwitchValueASCII(switches::kDisableFeatures));
-  if (feature_list->IsFeatureOverridden("V4L2FlatStatefulVideoDecoder")) {
-    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
-  }
-  if (feature_list->IsFeatureOverridden("V4L2FlatVideoDecoder")) {
-    enabled_features.push_back(media::kV4L2FlatStatefulVideoDecoder);
-  }
 #endif
 
   // Set up our test environment.

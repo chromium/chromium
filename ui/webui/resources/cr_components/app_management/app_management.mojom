@@ -10,18 +10,14 @@ import "url/mojom/url.mojom";
 enum AppType {
   kUnknown = 0,
   kArc,                   // Android app.
-  kBuiltIn,               // Built-in app.
   kCrostini,              // Linux (via Crostini) app.
   kChromeApp,             // Chrome app.
   kWeb,                   // Web app.
   kPluginVm,              // Plugin VM app, see go/pluginvm.
-  kStandaloneBrowser,     // Lacros browser app, see //docs/lacros.md.
   kRemote,                // Remote app.
   kBorealis,              // Borealis app, see go/borealis-app.
   kSystemWeb,             // System web app.
-  kStandaloneBrowserChromeApp,  // Chrome app hosted in Lacros.
   kExtension,             // Browser extension.
-  kStandaloneBrowserExtension,  // Extension hosted in Lacros.
   kBruschetta,            // Bruschetta app, see go/bruschetta.
 };
 
@@ -178,6 +174,9 @@ struct App {
   bool show_system_notifications_settings_link;
   // Whether to allow uninstall of the app.
   bool allow_uninstall;
+  // Whether to disable the user choice area to set navigation capturing for
+  // an app.
+  bool disable_user_choice_navigation_capturing;
 };
 
 // Extension-based apps primarily use install-time permissions that cannot be

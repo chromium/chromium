@@ -1,41 +1,23 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
-#include <google/protobuf/compiler/java/context.h>
+#include "google/protobuf/compiler/java/context.h"
 
-#include <google/protobuf/descriptor.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/compiler/java/field.h>
-#include <google/protobuf/compiler/java/helpers.h>
-#include <google/protobuf/compiler/java/name_resolver.h>
-#include <google/protobuf/stubs/map_util.h>
+#include <string>
+
+#include "absl/log/absl_log.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/string_view.h"
+#include "absl/strings/strip.h"
+#include "google/protobuf/compiler/java/field_common.h"
+#include "google/protobuf/compiler/java/helpers.h"
+#include "google/protobuf/compiler/java/internal_helpers.h"
+#include "google/protobuf/compiler/java/name_resolver.h"
+#include "google/protobuf/descriptor.h"
 
 namespace google {
 namespace protobuf {
@@ -43,7 +25,7 @@ namespace compiler {
 namespace java {
 
 Context::Context(const FileDescriptor* file, const Options& options)
-    : name_resolver_(new ClassNameResolver), options_(options) {
+    : name_resolver_(new ClassNameResolver(options)), options_(options) {
   InitializeFieldGeneratorInfo(file);
 }
 
@@ -54,46 +36,77 @@ ClassNameResolver* Context::GetNameResolver() const {
 }
 
 namespace {
+bool EqualWithSuffix(absl::string_view name1, absl::string_view suffix,
+                     absl::string_view name2) {
+  if (!absl::ConsumeSuffix(&name2, suffix)) return false;
+  return name1 == name2;
+}
+
+bool IsRepeatedFieldConflicting(const FieldDescriptor* field1,
+                                absl::string_view name1,
+                                const FieldDescriptor* field2,
+                                absl::string_view name2, std::string* info) {
+  if (field1->is_repeated() && !field2->is_repeated()) {
+    if (EqualWithSuffix(name1, "Count", name2)) {
+      *info =
+          absl::StrCat("both repeated field \"", field1->name(),
+                       "\" and singular ", "field \"", field2->name(),
+                       "\" generate the method \"", "get", name1, "Count()\"");
+      return true;
+    }
+    if (EqualWithSuffix(name1, "List", name2)) {
+      *info =
+          absl::StrCat("both repeated field \"", field1->name(),
+                       "\" and singular ", "field \"", field2->name(),
+                       "\" generate the method \"", "get", name1, "List()\"");
+      return true;
+    }
+  }
+
+  return false;
+}
+
+bool IsEnumFieldConflicting(const FieldDescriptor* field1,
+                            absl::string_view name1,
+                            const FieldDescriptor* field2,
+                            absl::string_view name2, std::string* info) {
+  if (field1->type() == FieldDescriptor::TYPE_ENUM &&
+      SupportUnknownEnumValue(field1) &&
+      EqualWithSuffix(name1, "Value", name2)) {
+    *info = absl::StrCat(
+        "both enum field \"", field1->name(), "\" and regular ", "field \"",
+        field2->name(), "\" generate the method \"", "get", name1, "Value()\"");
+    return true;
+  }
+
+  return false;
+}
+
+// Field 1 and 2 will be called the other way around as well, so no need to
+// check both ways here
+bool IsConflictingOneWay(const FieldDescriptor* field1, absl::string_view name1,
+                         const FieldDescriptor* field2, absl::string_view name2,
+                         std::string* info) {
+  return IsRepeatedFieldConflicting(field1, name1, field2, name2, info) ||
+         IsEnumFieldConflicting(field1, name1, field2, name2, info);
+
+  // Well, there are obviously many more conflicting cases, but it probably
+  // doesn't worth the effort to exhaust all of them because they rarely
+  // happen and as we are continuing adding new methods/changing existing
+  // methods the number of different conflicting cases will keep growing.
+  // We can just add more cases here when they are found in the real world.
+}
+
 // Whether two fields have conflicting accessors (assuming name1 and name2
 // are different). name1 and name2 are field1 and field2's camel-case name
 // respectively.
-bool IsConflicting(const FieldDescriptor* field1, const std::string& name1,
-                   const FieldDescriptor* field2, const std::string& name2,
+bool IsConflicting(const FieldDescriptor* field1, absl::string_view name1,
+                   const FieldDescriptor* field2, absl::string_view name2,
                    std::string* info) {
-  if (field1->is_repeated()) {
-    if (field2->is_repeated()) {
-      // Both fields are repeated.
-      return false;
-    } else {
-      // field1 is repeated, and field2 is not.
-      if (name1 + "Count" == name2) {
-        *info = "both repeated field \"" + field1->name() + "\" and singular " +
-                "field \"" + field2->name() + "\" generate the method \"" +
-                "get" + name1 + "Count()\"";
-        return true;
-      }
-      if (name1 + "List" == name2) {
-        *info = "both repeated field \"" + field1->name() + "\" and singular " +
-                "field \"" + field2->name() + "\" generate the method \"" +
-                "get" + name1 + "List()\"";
-        return true;
-      }
-      // Well, there are obviously many more conflicting cases, but it probably
-      // doesn't worth the effort to exhaust all of them because they rarely
-      // happen and as we are continuing adding new methods/changing existing
-      // methods the number of different conflicting cases will keep growing.
-      // We can just add more cases here when they are found in the real world.
-      return false;
-    }
-  } else {
-    if (field2->is_repeated()) {
-      return IsConflicting(field2, name2, field1, name1, info);
-    } else {
-      // None of the two fields are repeated.
-      return false;
-    }
-  }
+  return IsConflictingOneWay(field1, name1, field2, name2, info) ||
+         IsConflictingOneWay(field2, name2, field1, name1, info);
 }
+
 }  // namespace
 
 void Context::InitializeFieldGeneratorInfo(const FileDescriptor* file) {
@@ -131,15 +144,15 @@ void Context::InitializeFieldGeneratorInfoForFields(
   std::vector<std::string> conflict_reason(fields.size());
   for (int i = 0; i < fields.size(); ++i) {
     const FieldDescriptor* field = fields[i];
-    const std::string& name = UnderscoresToCapitalizedCamelCase(field);
+    const std::string& name = CapitalizedFieldName(field);
     for (int j = i + 1; j < fields.size(); ++j) {
       const FieldDescriptor* other = fields[j];
-      const std::string& other_name = UnderscoresToCapitalizedCamelCase(other);
+      const std::string& other_name = CapitalizedFieldName(other);
       if (name == other_name) {
         is_conflict[i] = is_conflict[j] = true;
         conflict_reason[i] = conflict_reason[j] =
-            "capitalized name of field \"" + field->name() +
-            "\" conflicts with field \"" + other->name() + "\"";
+            absl::StrCat("capitalized name of field \"", field->name(),
+                         "\" conflicts with field \"", other->name(), "\"");
       } else if (IsConflicting(field, name, other, other_name,
                                &conflict_reason[j])) {
         is_conflict[i] = is_conflict[j] = true;
@@ -147,46 +160,46 @@ void Context::InitializeFieldGeneratorInfoForFields(
       }
     }
     if (is_conflict[i]) {
-      GOOGLE_LOG(WARNING) << "field \"" << field->full_name() << "\" is conflicting "
-                   << "with another field: " << conflict_reason[i];
+      ABSL_LOG(WARNING) << "field \"" << field->full_name()
+                        << "\" is conflicting "
+                        << "with another field: " << conflict_reason[i];
     }
   }
   for (int i = 0; i < fields.size(); ++i) {
     const FieldDescriptor* field = fields[i];
     FieldGeneratorInfo info;
     info.name = CamelCaseFieldName(field);
-    info.capitalized_name = UnderscoresToCapitalizedCamelCase(field);
+    info.capitalized_name = CapitalizedFieldName(field);
     // For fields conflicting with some other fields, we append the field
     // number to their field names in generated code to avoid conflicts.
     if (is_conflict[i]) {
-      info.name += StrCat(field->number());
-      info.capitalized_name += StrCat(field->number());
+      absl::StrAppend(&info.name, field->number());
+      absl::StrAppend(&info.capitalized_name, field->number());
       info.disambiguated_reason = conflict_reason[i];
     }
+    info.options = options_;
     field_generator_info_map_[field] = info;
   }
 }
 
 const FieldGeneratorInfo* Context::GetFieldGeneratorInfo(
     const FieldDescriptor* field) const {
-  const FieldGeneratorInfo* result =
-      FindOrNull(field_generator_info_map_, field);
-  if (result == NULL) {
-    GOOGLE_LOG(FATAL) << "Can not find FieldGeneratorInfo for field: "
-               << field->full_name();
+  auto it = field_generator_info_map_.find(field);
+  if (it == field_generator_info_map_.end()) {
+    ABSL_LOG(FATAL) << "Can not find FieldGeneratorInfo for field: "
+                    << field->full_name();
   }
-  return result;
+  return &it->second;
 }
 
 const OneofGeneratorInfo* Context::GetOneofGeneratorInfo(
     const OneofDescriptor* oneof) const {
-  const OneofGeneratorInfo* result =
-      FindOrNull(oneof_generator_info_map_, oneof);
-  if (result == NULL) {
-    GOOGLE_LOG(FATAL) << "Can not find OneofGeneratorInfo for oneof: "
-               << oneof->name();
+  auto it = oneof_generator_info_map_.find(oneof);
+  if (it == oneof_generator_info_map_.end()) {
+    ABSL_LOG(FATAL) << "Can not find OneofGeneratorInfo for oneof: "
+                    << oneof->name();
   }
-  return result;
+  return &it->second;
 }
 
 // Does this message class have generated parsing, serialization, and other

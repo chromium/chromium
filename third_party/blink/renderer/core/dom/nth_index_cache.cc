@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 
 namespace blink {
 
@@ -149,8 +150,12 @@ unsigned NthIndexCache::NthChildIndex(
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
     const SelectorChecker::SelectorCheckingContext* context) {
-  if (element.IsPseudoElement() || !element.parentNode()) {
+  if (!element.parentNode()) {
     return 1;
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    return NthChildIndex(pseudo_element->UltimateOriginatingElement(), filter,
+                         selector_checker, context);
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
@@ -180,8 +185,12 @@ unsigned NthIndexCache::NthLastChildIndex(
     const CSSSelectorList* filter,
     const SelectorChecker* selector_checker,
     const SelectorChecker::SelectorCheckingContext* context) {
-  if (element.IsPseudoElement() && !element.parentNode()) {
+  if (!element.parentNode()) {
     return 1;
+  }
+  if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    return NthLastChildIndex(pseudo_element->UltimateOriginatingElement(),
+                             filter, selector_checker, context);
   }
   NthIndexCache* nth_index_cache = element.GetDocument().GetNthIndexCache();
   if (nth_index_cache && nth_index_cache->cache_) {
@@ -250,7 +259,7 @@ unsigned NthIndexCache::NthLastOfTypeIndex(Element& element) {
 void NthIndexCache::EnsureCache() {
   if (!cache_) {
     cache_ = MakeGarbageCollected<
-        HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>>();
+        GCedHeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>>();
   }
 }
 

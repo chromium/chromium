@@ -8,21 +8,25 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/resource_path.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
+#include "ui/webui/webui_util.h"
 #include "url/gurl.h"
+
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -37,7 +41,8 @@ CreateSampleBubbleParameters() {
       "+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
 
   AccountInfo intercepted_account;
-  intercepted_account.account_id = CoreAccountId::FromGaiaId("intercepted_ID");
+  intercepted_account.account_id =
+      CoreAccountId::FromGaiaId(GaiaId("intercepted_ID"));
   intercepted_account.given_name = "Sam";
   intercepted_account.full_name = "Sam Sample";
   intercepted_account.email = "sam.sample@intercepted.com";
@@ -45,7 +50,7 @@ CreateSampleBubbleParameters() {
   intercepted_account.hosted_domain = kNoHostedDomainFound;
 
   AccountInfo primary_account;
-  primary_account.account_id = CoreAccountId::FromGaiaId("primary_ID");
+  primary_account.account_id = CoreAccountId::FromGaiaId(GaiaId("primary_ID"));
   primary_account.given_name = "Tessa";
   primary_account.full_name = "Tessa Tester";
   primary_account.email = "tessa.tester@primary.com";
@@ -102,8 +107,9 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "chromeSigninDeclineText",
       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT);
-  source->AddLocalizedString("acceptButtonAriaLabel",
-                             IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL);
+  source->AddLocalizedString(
+      "acceptButtonAriaLabel",
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT);
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();

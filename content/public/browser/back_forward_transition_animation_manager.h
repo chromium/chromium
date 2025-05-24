@@ -37,6 +37,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
     // Indicates that an ongoing gesture has invoked. An animation to remove the
     // content of the entry the user is navigation away from is in progress.
     kInvokeAnimation,
+    // A native progress bar is also drawn, in addition to the the invoke
+    // animation.
+    kInvokeAnimationWithProgressBar,
+    // Indicates that animation manager is waiting for the embedder to show
+    // its content.
+    kWaitingForEmbedderContentForCommittedEntry,
     // All other stages for an active animation.
     kOther,
   };
@@ -103,6 +109,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManager {
   static bool ShouldAnimateNavigationTransition(
       NavigationDirection navigation_direction,
       ui::BackGestureEventSwipeEdge edge);
+
+  // Returns true if back forward visual transitions are enabled.
+  static bool AreBackForwardTransitionsEnabled();
 };
 
 }  // namespace content

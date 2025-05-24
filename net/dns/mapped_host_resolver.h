@@ -74,6 +74,7 @@ class NET_EXPORT MappedHostResolver : public HostResolver {
   HostCache* GetHostCache() override;
   base::Value::Dict GetDnsConfigAsValue() const override;
   void SetRequestContext(URLRequestContext* request_context) override;
+  bool IsHappyEyeballsV3Enabled() const override;
   HostResolverManager* GetManagerForTesting() override;
 
  private:

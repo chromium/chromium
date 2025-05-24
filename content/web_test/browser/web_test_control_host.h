@@ -133,7 +133,7 @@ class WebTestControlHost : public WebContentsObserver,
   void DidCreateOrAttachWebContents(WebContents* web_contents);
 
   void SetTempPath(const base::FilePath& temp_path);
-  void OverrideWebkitPrefs(blink::web_pref::WebPreferences* prefs);
+  void OverrideWebPreferences(blink::web_pref::WebPreferences* prefs);
   void OpenURL(const GURL& url);
   bool IsMainWindow(WebContents* web_contents) const;
   std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
@@ -242,8 +242,6 @@ class WebTestControlHost : public WebContentsObserver,
   void SetTrustTokenKeyCommitments(const std::string& raw_commitments,
                                    base::OnceClosure callback) override;
   void ClearTrustTokenState(base::OnceClosure callback) override;
-  void SetDatabaseQuota(int32_t quota) override;
-  void ClearAllDatabases() override;
   void SimulateWebNotificationClick(
       const std::string& title,
       int32_t action_index,

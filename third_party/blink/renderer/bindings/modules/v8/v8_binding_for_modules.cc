@@ -23,13 +23,9 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -101,11 +97,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
                                         "The ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
-    const char* start = static_cast<const char*>(buffer->Data());
-    size_t length = buffer->ByteLength();
     return IDBKey::CreateBinary(
         base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-            Vector<char>(base::span(start, length))));
+            Vector<char>(base::as_chars(buffer->ByteSpan()))));
   }
 
   if (value->IsArrayBufferView()) {
@@ -120,11 +114,9 @@ static std::unique_ptr<IDBKey> CreateIDBKeyFromSimpleValue(
                                         "The viewed ArrayBuffer is detached.");
       return IDBKey::CreateInvalid();
     }
-    const char* start = static_cast<const char*>(view->BaseAddress());
-    size_t length = view->byteLength();
     return IDBKey::CreateBinary(
         base::MakeRefCounted<base::RefCountedData<Vector<char>>>(
-            Vector<char>(base::span(start, length))));
+            Vector<char>(base::as_chars(view->ByteSpan()))));
   }
 
   return IDBKey::CreateInvalid();
@@ -223,7 +215,6 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValue(v8::Isolate* isolate,
       // A non-array: convert it directly.
       auto key = CreateIDBKeyFromSimpleValue(isolate, item, exception_state);
       if (exception_state.HadException()) {
-        DCHECK(!rethrow_scope.HasCaught());
         return IDBKey::CreateInvalid();
       }
       top->subkeys.push_back(std::move(key));
@@ -339,7 +330,7 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPath(
       }
       if (element == "lastModifiedDate") {
         ScriptState* script_state = ScriptState::From(isolate, context);
-        v8_value = file->lastModifiedDate(script_state).V8Value();
+        v8_value = file->lastModifiedDate(script_state).V8Object();
         ExecutionContext* execution_context = ToExecutionContext(script_state);
         UseCounter::Count(execution_context,
                           WebFeature::kIndexedDBFileLastModifiedDate);
@@ -565,8 +556,7 @@ bool InjectV8KeyIntoV8Value(v8::Isolate* isolate,
   // The conbination of a key generator and an empty key path is forbidden by
   // spec.
   if (!key_path_elements.size()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   v8::HandleScope handle_scope(isolate);
@@ -696,22 +686,6 @@ ScriptValue DeserializeScriptValue(ScriptState* script_state,
   options.blob_info = blob_info;
   return ScriptValue(isolate, serialized_value->Deserialize(isolate, options));
 }
-
-SQLValue NativeValueTraits<SQLValue>::NativeValue(
-    v8::Isolate* isolate,
-    v8::Local<v8::Value> value,
-    ExceptionState& exception_state) {
-  if (value.IsEmpty() || value->IsNull())
-    return SQLValue();
-  if (value->IsNumber())
-    return SQLValue(value.As<v8::Number>()->Value());
-  V8StringResource<> string_value(isolate, value);
-  if (!string_value.Prepare(exception_state)) {
-    return SQLValue();
-  }
-  return SQLValue(string_value);
-}
-
 
 #if DCHECK_IS_ON()
 // This assertion is used when a value has been retrieved from an object store

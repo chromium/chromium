@@ -93,17 +93,9 @@ bool DelegatedInkPointRendererGpu::Initialize(
 
 bool DelegatedInkPointRendererGpu::DelegatedInkIsSupported(
     const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) const {
-  const base::win::OSInfo::VersionNumber& os_version =
-      base::win::OSInfo::GetInstance()->version_number();
-  // Win11 24H2 is first introduced in insider build #26100. Issues related to
-  // the delegated ink trail API, such as flickering in the top 3rd of the
-  // screen are addressed in 24H2.
-  // TODO(crbug.com/40153696) Add 24H2 to base::win::Version.
-  const bool is_24h2_or_greater =
-      (os_version.major > 10) ||
-      (os_version.major == 10 && os_version.build >= 26100);
-
-  if (!is_24h2_or_greater) {
+  // Issues related to the delegated ink trail API, such as flickering in the
+  // top 3rd of the screen are addressed in 24H2.
+  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
     return false;
   }
 
@@ -275,6 +267,7 @@ void DelegatedInkPointRendererGpu::StoreDelegatedInkPoint(
 
   DCHECK(delegated_ink_points_.find(pointer_id) ==
              delegated_ink_points_.end() ||
+         delegated_ink_points_[pointer_id].empty() ||
          point.timestamp() >
              delegated_ink_points_[pointer_id].rbegin()->first.timestamp());
 
@@ -461,33 +454,35 @@ void DelegatedInkPointRendererGpu::DrawSavedTrailPoints() {
   }
 }
 
-std::unique_ptr<DCLayerOverlayParams>
+std::optional<DCLayerOverlayParams>
 DelegatedInkPointRendererGpu::MakeDelegatedInkOverlay(
     IDCompositionDevice2* dcomp_device2,
     IDXGISwapChain1* root_swap_chain,
     std::unique_ptr<gfx::DelegatedInkMetadata> metadata) {
   if (!Initialize(dcomp_device2, root_swap_chain)) {
-    return nullptr;
+    return std::nullopt;
   }
-  auto ink_layer = std::make_unique<DCLayerOverlayParams>();
+  DCLayerOverlayParams ink_layer;
   // Ink trail should be rendered on top of all content.
-  ink_layer->z_order = INT_MAX;
+  ink_layer.z_order = INT_MAX;
   const gfx::Rect presentation_rect =
       gfx::ToEnclosedRect(metadata->presentation_area());
   const gfx::Size presentation_area_enclosed_size =
       gfx::Size(presentation_rect.width(), presentation_rect.height());
-  ink_layer->quad_rect = gfx::Rect(presentation_area_enclosed_size);
-  ink_layer->content_rect = gfx::RectF(presentation_area_enclosed_size);
+  ink_layer.quad_rect = gfx::Rect(presentation_area_enclosed_size);
+  ink_layer.content_rect = gfx::RectF(presentation_area_enclosed_size);
   // If (0,0) of a visual is clipped out, it can result in delegated ink not
   // being drawn at all. This is more common when DComp Surfaces are enabled,
   // but doesn't negatively impact things when the swapchain is used, so just
   // offset the visual instead of clipping the top left corner in all cases.
-  ink_layer->clip_rect = std::make_optional<gfx::Rect>(
+  ink_layer.clip_rect = std::make_optional<gfx::Rect>(
       0, 0, presentation_rect.right(), presentation_rect.bottom());
-  ink_layer->transform = gfx::Transform::MakeTranslation(
+  ink_layer.transform = gfx::Transform::MakeTranslation(
       metadata->presentation_area().OffsetFromOrigin());
-  ink_layer->overlay_image = DCLayerOverlayImage(
-      presentation_area_enclosed_size, delegated_ink_trail_);
+  ink_layer.overlay_image = DCLayerOverlayImage(presentation_area_enclosed_size,
+                                                delegated_ink_trail_);
+  ink_layer.layer_id = gfx::OverlayLayerId::MakeVizInternal(
+      gfx::OverlayLayerId::VizInternalId::kDelegatedInkTrail);
   SetDelegatedInkTrailStartPoint(std::move(metadata));
   return ink_layer;
 }

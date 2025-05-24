@@ -402,11 +402,9 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteWatcherBeforeCallback) {
   // 3. Delete the WaitableEventWatcher
   // 4. WaitableEventWatcher callback should run (from #2)
 
-  WaitableEventWatcher::EventCallback watcher_callback = BindOnce(
-      [](bool* did_callback, WaitableEvent*) {
-        *did_callback = true;
-      },
-      Unretained(&did_callback));
+  WaitableEventWatcher::EventCallback watcher_callback =
+      BindOnce([](bool* did_callback, WaitableEvent*) { *did_callback = true; },
+               Unretained(&did_callback));
 
   task_runner->PostTask(
       FROM_HERE, BindOnce(IgnoreResult(&WaitableEventWatcher::StartWatching),

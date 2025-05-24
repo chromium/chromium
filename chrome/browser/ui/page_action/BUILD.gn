@@ -5,5 +5,14 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("icon_type") {
-  sources = [ "page_action_icon_type.h" ]
+  sources = [
+    "page_action_icon_type.cc",
+    "page_action_icon_type.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:channel_info",
+  ]
 }

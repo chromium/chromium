@@ -17,11 +17,14 @@
 #include "chrome/browser/policy/policy_util.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/features.h"
 #include "components/prefs/pref_service.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#endif
 
 namespace {
 
@@ -85,6 +88,7 @@ bool IsCommandAllowedInAppMode(int command_id, bool is_popup) {
       IDC_ZOOM_PLUS,
       IDC_ZOOM_NORMAL,
       IDC_ZOOM_MINUS,
+      IDC_CARET_BROWSING_TOGGLE,
   };
 
   constexpr int kAllowedPopup[] = {IDC_CLOSE_TAB};

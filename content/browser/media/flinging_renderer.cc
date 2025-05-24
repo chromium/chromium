@@ -51,7 +51,7 @@ std::unique_ptr<FlingingRenderer> FlingingRenderer::Create(
     return nullptr;
 
   auto flinging_controller = presentation_delegate->GetFlingingController(
-      render_frame_host->GetProcess()->GetID(),
+      render_frame_host->GetProcess()->GetDeprecatedID(),
       render_frame_host->GetRoutingID(), presentation_id);
 
   if (!flinging_controller)
@@ -89,10 +89,7 @@ void FlingingRenderer::StartPlayingFrom(base::TimeDelta time) {
   //
   // The FlingingRenderer doesn't need to buffer, since playback happens on a
   // different device. This means it's ok to always send BUFFERING_HAVE_ENOUGH
-  // when sending buffering state changes. That being said, sending state
-  // changes here might be surprising, but the same signals are sent from
-  // MediaPlayerRenderer::StartPlayingFrom(), and it has been working mostly
-  // smoothly for all HLS playback.
+  // when sending buffering state changes.
   client_->OnBufferingStateChange(media::BUFFERING_HAVE_ENOUGH,
                                   media::BUFFERING_CHANGE_REASON_UNKNOWN);
 }

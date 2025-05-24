@@ -16,11 +16,7 @@
 #endif  // defined(EXTENSIONS_COMPONENT_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(EXTENSIONS_COMPONENT_IMPLEMENTATION)
 #define EXTENSIONS_EXPORT __attribute__((visibility("default")))
-#else
-#define EXTENSIONS_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

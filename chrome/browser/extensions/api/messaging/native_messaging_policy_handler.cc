@@ -17,7 +17,8 @@ NativeMessagingHostListPolicyHandler::NativeMessagingHostListPolicyHandler(
       pref_path_(pref_path),
       allow_wildcards_(allow_wildcards) {}
 
-NativeMessagingHostListPolicyHandler::~NativeMessagingHostListPolicyHandler() {}
+NativeMessagingHostListPolicyHandler::~NativeMessagingHostListPolicyHandler() =
+    default;
 
 bool NativeMessagingHostListPolicyHandler::CheckListEntry(
     const base::Value& value) {

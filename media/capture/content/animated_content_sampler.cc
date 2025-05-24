@@ -46,7 +46,10 @@ constexpr auto kDriftCorrection = base::Seconds(2);
 
 AnimatedContentSampler::AnimatedContentSampler(
     base::TimeDelta min_capture_period)
-    : min_capture_period_(min_capture_period), sampling_state_(NOT_SAMPLING) {
+    : min_capture_period_(min_capture_period),
+      sampling_state_(NOT_SAMPLING),
+      enabled_(true),
+      majority_damaged_pixel_min_ratio_(2.0f / 3) {
   DCHECK_GT(min_capture_period_, base::TimeDelta());
 }
 
@@ -64,6 +67,10 @@ void AnimatedContentSampler::SetTargetSamplingPeriod(base::TimeDelta period) {
 void AnimatedContentSampler::ConsiderPresentationEvent(
     const gfx::Rect& damage_rect,
     base::TimeTicks event_time) {
+  if (!enabled_) {
+    return;  // The sampler is disabled.
+  }
+
   // Analyze the current event and recent history to determine whether animating
   // content is detected.
   AddObservation(damage_rect, event_time);
@@ -132,6 +139,10 @@ void AnimatedContentSampler::ConsiderPresentationEvent(
 }
 
 bool AnimatedContentSampler::HasProposal() const {
+  if (!enabled_) {
+    return false;
+  }
+
   return sampling_state_ != NOT_SAMPLING;
 }
 
@@ -230,8 +241,10 @@ bool AnimatedContentSampler::AnalyzeObservations(
   if ((last_event_time - first_event_time) < kMinObservationWindow) {
     return false;  // Content has not animated for long enough for accuracy.
   }
-  if (num_pixels_damaged_in_chosen <= (num_pixels_damaged_in_all * 2 / 3))
+  if (num_pixels_damaged_in_chosen <=
+      (num_pixels_damaged_in_all * majority_damaged_pixel_min_ratio_)) {
     return false;  // Animation is not damaging a supermajority of pixels.
+  }
 
   *rect = elected_rect;
   DCHECK_GT(count_frame_durations, 0u);

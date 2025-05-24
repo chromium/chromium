@@ -38,13 +38,14 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 using testing::_;
+using testing::Eq;
 
 namespace ash {
 
 namespace {
 
-constexpr char kFakeParentGaiaId[] = "someObfuscatedGaiaId";
-constexpr char kFakeParentGaiaId2[] = "anotherObfuscatedGaiaId";
+constexpr GaiaId::Literal kFakeParentGaiaId("someObfuscatedGaiaId");
+constexpr GaiaId::Literal kFakeParentGaiaId2("anotherObfuscatedGaiaId");
 constexpr char kFakeParentCredential[] = "someParentCredential";
 constexpr char kFakeAccessToken[] = "someAccessToken";
 
@@ -53,7 +54,7 @@ kidsmanagement::ListMembersResponse GetFakeFamilyMembers() {
 
   kidsmanagement::FamilyMember* homer = members.add_members();
   homer->set_role(kidsmanagement::HEAD_OF_HOUSEHOLD);
-  homer->set_user_id(kFakeParentGaiaId);
+  homer->set_user_id(kFakeParentGaiaId.ToString());
   homer->mutable_profile()->set_display_name("Homer Simpson");
   homer->mutable_profile()->set_email("homer@simpson.com");
   homer->mutable_profile()->set_profile_url("http://profile.url/homer");
@@ -62,7 +63,7 @@ kidsmanagement::ListMembersResponse GetFakeFamilyMembers() {
 
   kidsmanagement::FamilyMember* marge = members.add_members();
   marge->set_role(kidsmanagement::PARENT);
-  marge->set_user_id(kFakeParentGaiaId2);
+  marge->set_user_id(kFakeParentGaiaId2.ToString());
   marge->mutable_profile()->set_display_name("Marge Simpson");
   marge->mutable_profile()->set_profile_url("http://profile.url/marge");
 
@@ -86,7 +87,7 @@ kidsmanagement::ListMembersResponse GetFakeFamilyMembers() {
   return members;
 }
 
-std::map<std::string, GURL> GetFakeProfileImageUrlMap() {
+std::map<GaiaId, GURL> GetFakeProfileImageUrlMap() {
   return {
       {kFakeParentGaiaId, GURL("http://profile.url/homer/image")},
       {kFakeParentGaiaId2, GURL()},
@@ -98,7 +99,7 @@ gfx::Image GetFakeImage() {
       IDR_LOGIN_DEFAULT_USER);
 }
 
-std::map<std::string, gfx::Image> GetFakeProfileImageMap() {
+std::map<GaiaId, gfx::Image> GetFakeProfileImageMap() {
   return {
       {kFakeParentGaiaId, GetFakeImage()},
       {kFakeParentGaiaId2, gfx::Image()},
@@ -111,13 +112,13 @@ base::Value::List GetFakeParentsWithoutImage() {
   base::Value::Dict parent1;
   parent1.Set("email", "homer@simpson.com");
   parent1.Set("displayName", "Homer Simpson");
-  parent1.Set("obfuscatedGaiaId", kFakeParentGaiaId);
+  parent1.Set("obfuscatedGaiaId", kFakeParentGaiaId.ToString());
   parents.Append(std::move(parent1));
 
   base::Value::Dict parent2;
   parent2.Set("email", std::string());
   parent2.Set("displayName", "Marge Simpson");
-  parent2.Set("obfuscatedGaiaId", kFakeParentGaiaId2);
+  parent2.Set("obfuscatedGaiaId", kFakeParentGaiaId2.ToString());
   parents.Append(std::move(parent2));
 
   return parents;
@@ -125,14 +126,14 @@ base::Value::List GetFakeParentsWithoutImage() {
 
 base::Value::List GetFakeParentsWithImage() {
   base::Value::List parents = GetFakeParentsWithoutImage();
-  std::map<std::string, gfx::Image> profile_images = GetFakeProfileImageMap();
+  std::map<GaiaId, gfx::Image> profile_images = GetFakeProfileImageMap();
 
   for (auto& parent : parents) {
     const std::string* obfuscated_gaia_id =
         parent.GetDict().FindString("obfuscatedGaiaId");
     DCHECK(obfuscated_gaia_id);
     std::string profile_image;
-    if (profile_images[*obfuscated_gaia_id].IsEmpty()) {
+    if (profile_images[GaiaId(*obfuscated_gaia_id)].IsEmpty()) {
       gfx::ImageSkia default_icon =
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER);
@@ -141,7 +142,7 @@ base::Value::List GetFakeParentsWithImage() {
           default_icon.GetRepresentation(1.0f).GetBitmap());
     } else {
       profile_image = webui::GetBitmapDataUrl(
-          profile_images[*obfuscated_gaia_id].AsBitmap());
+          profile_images[GaiaId(*obfuscated_gaia_id)].AsBitmap());
     }
     parent.GetDict().Set("profileImage", profile_image);
   }
@@ -154,7 +155,7 @@ base::Value::Dict GetFakeParent() {
   parent.Set("email", "homer@simpson.com");
   parent.Set("displayName", "Homer Simpson");
   parent.Set("profileImageUrl", "http://profile.url/homer/image");
-  parent.Set("obfuscatedGaiaId", kFakeParentGaiaId);
+  parent.Set("obfuscatedGaiaId", kFakeParentGaiaId.ToString());
   return parent;
 }
 
@@ -168,19 +169,18 @@ class MockEduAccountLoginHandler : public EduAccountLoginHandler {
   MOCK_METHOD(void, FetchFamilyMembers, (), (override));
   MOCK_METHOD(void,
               FetchAccessToken,
-              (const std::string& obfuscated_gaia_id,
-               const std::string& password),
+              (const GaiaId& obfuscated_gaia_id, const std::string& password),
               (override));
   MOCK_METHOD(void,
               FetchReAuthProofTokenForParent,
               (const std::string& child_oauth_access_token,
-               const std::string& parent_obfuscated_gaia_id,
+               const GaiaId& parent_obfuscated_gaia_id,
                const std::string& parent_credential),
               (override));
   MOCK_METHOD(void,
               FetchParentImages,
               (base::Value::List parents,
-               (std::map<std::string, GURL> profile_image_urls)),
+               (std::map<GaiaId, GURL> profile_image_urls)),
               (override));
 };
 }  // namespace
@@ -294,12 +294,12 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninSuccess) {
   list_args.Append(kFakeParentCredential);
 
   EXPECT_CALL(*handler(),
-              FetchAccessToken(kFakeParentGaiaId, kFakeParentCredential));
+              FetchAccessToken(Eq(kFakeParentGaiaId), kFakeParentCredential));
   handler()->HandleParentSignin(list_args);
 
-  EXPECT_CALL(*handler(),
-              FetchReAuthProofTokenForParent(
-                  kFakeAccessToken, kFakeParentGaiaId, kFakeParentCredential));
+  EXPECT_CALL(*handler(), FetchReAuthProofTokenForParent(
+                              kFakeAccessToken, Eq(kFakeParentGaiaId),
+                              kFakeParentCredential));
   handler()->CreateReAuthProofTokenForParent(
       kFakeParentGaiaId, kFakeParentCredential,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE),
@@ -326,7 +326,7 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninAccessTokenFailure) {
   list_args.Append(kFakeParentCredential);
 
   EXPECT_CALL(*handler(),
-              FetchAccessToken(kFakeParentGaiaId, kFakeParentCredential));
+              FetchAccessToken(Eq(kFakeParentGaiaId), kFakeParentCredential));
   handler()->HandleParentSignin(list_args);
 
   handler()->CreateReAuthProofTokenForParent(
@@ -352,12 +352,12 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
   list_args.Append(kFakeParentCredential);
 
   EXPECT_CALL(*handler(),
-              FetchAccessToken(kFakeParentGaiaId, kFakeParentCredential));
+              FetchAccessToken(Eq(kFakeParentGaiaId), kFakeParentCredential));
   handler()->HandleParentSignin(list_args);
 
-  EXPECT_CALL(*handler(),
-              FetchReAuthProofTokenForParent(
-                  kFakeAccessToken, kFakeParentGaiaId, kFakeParentCredential));
+  EXPECT_CALL(*handler(), FetchReAuthProofTokenForParent(
+                              kFakeAccessToken, Eq(kFakeParentGaiaId),
+                              kFakeParentCredential));
   handler()->CreateReAuthProofTokenForParent(
       kFakeParentGaiaId, kFakeParentCredential,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE),
@@ -377,12 +377,12 @@ TEST_F(EduAccountLoginHandlerTest, HandleParentSigninReAuthProofTokenFailure) {
 
 TEST_F(EduAccountLoginHandlerTest, ProfileImageFetcherTest) {
   SetupNetwork();
-  std::map<std::string, gfx::Image> expected_profile_images =
+  std::map<GaiaId, gfx::Image> expected_profile_images =
       GetFakeProfileImageMap();
 
   // Expect callback to be called with all images in GetFakeProfileImageMap.
   auto callback = base::BindLambdaForTesting(
-      [&](std::map<std::string, gfx::Image> profile_images) {
+      [&](std::map<GaiaId, gfx::Image> profile_images) {
         EXPECT_EQ(expected_profile_images.size(), profile_images.size());
 
         for (const auto& profile_image_pair : profile_images) {

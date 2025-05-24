@@ -7,48 +7,32 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/ios/block_types.h"
+#import "base/ios/block_types.h"
 
-// Constants for deferred initialization of preferences observer.
-extern NSString* const kPrefObserverInit;
+@class DeferredInitializationQueue;
 
-// A singleton object to run initialization code asynchronously. Blocks are
-// scheduled to be run after a delay. The block is named when added to the
-// singleton so that other code can force a deferred block to be run
-// synchronously if necessary.
+// An object to run initialization code asynchronously. Blocks are scheduled to
+// be run after a delay. The block is named when scheduled so that other code
+// can force a deferred block to be run synchronously if necessary.
 @interface DeferredInitializationRunner : NSObject
 
-// Returns singleton instance.
-+ (DeferredInitializationRunner*)sharedInstance;
+// Initialize an instance with a specific queue.
+- (instancetype)initWithQueue:(DeferredInitializationQueue*)queue
+    NS_DESIGNATED_INITIALIZER;
 
-// Stores `block` under `name` to a queue of blocks to run. All blocks are run
-// sequentially with a small delay before the first block and between each
-// successive block. If a block is already registered under `name`, it is
-// replaced with `block` unless it has already been run.
+- (instancetype)init NS_UNAVAILABLE;
+
+// Adds `block` to the queue of block to run. The `name` can be used to
+// cancel the block (before it has been executed). If there is already
+// a block scheduled with `name`, it is cancelled.
 - (void)enqueueBlockNamed:(NSString*)name block:(ProceduralBlock)block;
 
 // Looks up a previously scheduled block of `name`. If block has not been
 // run yet, run it synchronously now.
-- (void)runBlockIfNecessary:(NSString*)name;
+- (void)runBlockNamed:(NSString*)name;
 
-// Cancels a previously scheduled block of `name`. This is a no-op if the
-// block has already been executed.
-- (void)cancelBlockNamed:(NSString*)name;
-
-// Number of blocks that have been registered but not executed yet.
-// Exposed for testing.
-@property(nonatomic, readonly) NSUInteger numberOfBlocksRemaining;
-
-@end
-
-@interface DeferredInitializationRunner (ExposedForTesting)
-
-// Time interval between two blocks. Default value is 200ms.
-@property(nonatomic, assign) NSTimeInterval delayBetweenBlocks;
-
-// Time interval before running the first block. To override default value of
-// 3s, set this property before the first call to `-enqueueBlockNamed:block:`.
-@property(nonatomic, assign) NSTimeInterval delayBeforeFirstBlock;
+// Cancel all pending blocks.
+- (void)cancelAllBlocks;
 
 @end
 

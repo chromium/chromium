@@ -57,8 +57,8 @@ class OwnerKeyUtilImplTest : public testing::Test {
   OwnerKeyUtilImplTest& operator=(const OwnerKeyUtilImplTest&) = delete;
 
  protected:
-  OwnerKeyUtilImplTest() {}
-  ~OwnerKeyUtilImplTest() override {}
+  OwnerKeyUtilImplTest() = default;
+  ~OwnerKeyUtilImplTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(tmpdir_.CreateUniqueTempDir());

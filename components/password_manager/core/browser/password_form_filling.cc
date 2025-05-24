@@ -17,12 +17,16 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/url_formatter/elide_url.h"
 
 namespace password_manager {
 
@@ -70,14 +74,20 @@ void Autofill(PasswordManagerClient* client,
   std::unique_ptr<BrowserSavePasswordProgressLogger> logger;
   if (password_manager_util::IsLoggingActive(client)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
-        client->GetLogManager());
+        client->GetCurrentLogManager());
     logger->LogMessage(Logger::STRING_PASSWORDMANAGER_AUTOFILL);
   }
+
+  // TODO(crbug.com/394297841): Check password change availability per website.
+  // Finch experiment should not be started without fixing it.
+  bool notify_browser_of_successful_filling =
+      client->GetPasswordChangeService() &&
+      client->GetPasswordChangeService()->IsPasswordChangeAvailable();
 
   PasswordFormFillData fill_data = CreatePasswordFormFillData(
       form_for_autofill, best_matches, std::move(preferred_match),
       client->GetLastCommittedOrigin(), wait_for_username,
-      suggestion_banned_fields);
+      suggestion_banned_fields, notify_browser_of_successful_filling);
   if (logger) {
     logger->LogBoolean(Logger::STRING_WAIT_FOR_USERNAME, wait_for_username);
   }
@@ -88,7 +98,7 @@ void Autofill(PasswordManagerClient* client,
     metrics_util::LogFilledPasswordFromAndroidApp(
         PreferredRealmIsFromAndroid(fill_data));
   }
-  driver->SetPasswordFillData(fill_data);
+  driver->PropagateFillDataOnParsingCompletion(fill_data);
 
   // Matches can be empty when there are only WebAuthn credentials available.
   // In that case there will be no actual fill so the client doesn't need
@@ -101,8 +111,15 @@ void Autofill(PasswordManagerClient* client,
 }
 
 std::string GetPreferredRealm(const PasswordForm& form) {
-  return form.app_display_name.empty() ? form.signon_realm
-                                       : form.app_display_name;
+  if (!form.app_display_name.empty()) {
+    return form.app_display_name;
+  }
+  if (!form.signon_realm.empty()) {
+    return form.signon_realm;
+  }
+  return base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+      url::Origin::Create(form.url),
+      url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
 
 bool IsSameOrigin(const Origin& frame_origin, const GURL& credential_url) {
@@ -135,11 +152,24 @@ LikelyFormFilling SendFillInformationToRenderer(
   }
 
   if (best_matches.empty() && !webauthn_suggestions_available) {
-    bool should_show_popup_without_passwords =
-        client->IsSavingAndFillingEnabled(observed_form.url) &&
-        (client->GetPasswordFeatureManager()->ShouldShowAccountStorageOptIn() ||
-         client->GetPasswordFeatureManager()->ShouldShowAccountStorageReSignin(
-             client->GetLastCommittedURL()));
+    bool should_show_popup_without_passwords = false;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    if (const auto* identity_manager = client->GetIdentityManager()) {
+      should_show_popup_without_passwords =
+          identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+              identity_manager->GetPrimaryAccountId(
+                  signin::ConsentLevel::kSignin));
+    }
+
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    if (!should_show_popup_without_passwords) {
+      client->MaybeShowSavePasswordPrimingPromo(observed_form.url);
+    }
+#endif
 
     driver->InformNoSavedCredentials(should_show_popup_without_passwords);
     metrics_recorder->RecordFillEvent(
@@ -201,9 +231,7 @@ LikelyFormFilling SendFillInformationToRenderer(
     // If the parser did not find a current password element, don't fill.
     wait_for_username_reason = WaitForUsernameReason::kFormNotGoodForFilling;
   } else if (observed_form.HasUsernameElement() &&
-             observed_form.HasNonEmptyPasswordValue() &&
-             observed_form.server_side_classification_successful &&
-             !observed_form.username_may_use_prefilled_placeholder) {
+             observed_form.HasNonEmptyPasswordValue()) {
     // Password is already filled in and we don't think the username is a
     // placeholder, so don't overwrite.
     wait_for_username_reason = WaitForUsernameReason::kPasswordPrefilled;
@@ -214,6 +242,8 @@ LikelyFormFilling SendFillInformationToRenderer(
   } else if (observed_form.accepts_webauthn_credentials) {
     wait_for_username_reason =
         WaitForUsernameReason::kAcceptsWebAuthnCredentials;
+  } else if (observed_form.IsSingleUsername()) {
+    wait_for_username_reason = WaitForUsernameReason::kSingleUsernameForm;
   }
 
   // Record no "FirstWaitForUsernameReason" metrics for a form that is not meant
@@ -259,12 +289,15 @@ PasswordFormFillData CreatePasswordFormFillData(
     std::optional<PasswordForm> preferred_match,
     const Origin& main_frame_origin,
     bool wait_for_username,
-    base::span<autofill::FieldRendererId> suggestion_banned_fields) {
+    base::span<const autofill::FieldRendererId> suggestion_banned_fields,
+    bool notify_browser_of_successful_filling) {
   PasswordFormFillData result;
 
   result.form_renderer_id = form_on_page.form_data.renderer_id();
   result.url = form_on_page.url;
   result.wait_for_username = wait_for_username;
+  result.notify_browser_of_successful_filling =
+      notify_browser_of_successful_filling;
 
   if (!form_on_page.only_for_fallback &&
       (form_on_page.HasPasswordElement() || form_on_page.IsSingleUsername())) {
@@ -273,8 +306,6 @@ PasswordFormFillData CreatePasswordFormFillData(
     // clicking on each password field so no need in any field identifiers.
     result.username_element_renderer_id =
         form_on_page.username_element_renderer_id;
-    result.username_may_use_prefilled_placeholder =
-        form_on_page.username_may_use_prefilled_placeholder;
 
     result.password_element_renderer_id =
         form_on_page.password_element_renderer_id;
@@ -290,6 +321,8 @@ PasswordFormFillData CreatePasswordFormFillData(
 
     result.preferred_login.uses_account_store =
         preferred_match->IsUsingAccountStore();
+    result.preferred_login.is_grouped_affiliation =
+        (GetMatchType(preferred_match.value()) == GetLoginMatchType::kGrouped);
 
     if (GetMatchType(preferred_match.value()) != GetLoginMatchType::kExact ||
         !IsSameOrigin(main_frame_origin, form_on_page.url)) {
@@ -310,6 +343,8 @@ PasswordFormFillData CreatePasswordFormFillData(
     value.username_value = match.username_value;
     value.password_value = match.password_value;
     value.uses_account_store = match.IsUsingAccountStore();
+    value.is_grouped_affiliation =
+        (GetMatchType(match) == GetLoginMatchType::kGrouped);
 
     if (GetMatchType(match) != GetLoginMatchType::kExact) {
       value.realm = GetPreferredRealm(match);

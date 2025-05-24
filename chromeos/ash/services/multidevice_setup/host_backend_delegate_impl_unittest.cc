@@ -57,10 +57,7 @@ class MultiDeviceSetupHostBackendDelegateImplTest
     // the former case, only public keys are needed, and in the latter case,
     // only Instance IDs are needed.
     for (multidevice::RemoteDeviceRef device : test_devices_) {
-      if (features::ShouldUseV1DeviceSync())
-        GetMutableRemoteDevice(device)->instance_id.clear();
-      else
-        GetMutableRemoteDevice(device)->public_key.clear();
+      GetMutableRemoteDevice(device)->public_key.clear();
     }
 
     fake_eligible_host_devices_provider_ =
@@ -102,10 +99,7 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   }
 
   int GetSetHostNetworkRequestCallbackQueueSize() {
-    return features::ShouldUseV1DeviceSync()
-               ? fake_device_sync_client_
-                     ->GetSetSoftwareFeatureStateInputsQueueSize()
-               : fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize();
+    return fake_device_sync_client_->GetSetFeatureStatusInputsQueueSize();
   }
 
   void InvokePendingSetHostNetworkRequestCallback(
@@ -114,13 +108,8 @@ class MultiDeviceSetupHostBackendDelegateImplTest
     size_t num_failure_events_before_call =
         observer_->num_failed_backend_requests();
 
-    if (features::ShouldUseV1DeviceSync()) {
-      fake_device_sync_client_->InvokePendingSetSoftwareFeatureStateCallback(
-          result_code);
-    } else {
-      fake_device_sync_client_->InvokePendingSetFeatureStatusCallback(
-          result_code);
-    }
+    fake_device_sync_client_->InvokePendingSetFeatureStatusCallback(
+        result_code);
 
     if (expected_to_notify_observer_and_start_retry_timer) {
       EXPECT_EQ(num_failure_events_before_call + 1u,
@@ -252,23 +241,6 @@ class MultiDeviceSetupHostBackendDelegateImplTest
   void VerifyLatestSetHostNetworkRequest(
       const multidevice::RemoteDeviceRef expected_host,
       bool expected_should_enable) {
-    // Verify inputs to SetSoftwareFeatureState().
-    if (features::ShouldUseV1DeviceSync()) {
-      ASSERT_FALSE(
-          fake_device_sync_client_->set_software_feature_state_inputs_queue()
-              .empty());
-      const device_sync::FakeDeviceSyncClient::SetSoftwareFeatureStateInputs&
-          inputs = fake_device_sync_client_
-                       ->set_software_feature_state_inputs_queue()
-                       .back();
-      EXPECT_EQ(expected_host.public_key(), inputs.public_key);
-      EXPECT_EQ(multidevice::SoftwareFeature::kBetterTogetherHost,
-                inputs.software_feature);
-      EXPECT_EQ(expected_should_enable, inputs.enabled);
-      EXPECT_EQ(expected_should_enable, inputs.is_exclusive);
-      return;
-    }
-
     // Verify inputs to SetFeatureStatus().
     ASSERT_FALSE(
         fake_device_sync_client_->set_feature_status_inputs_queue().empty());
@@ -522,9 +494,7 @@ TEST_F(MultiDeviceSetupHostBackendDelegateImplTest,
        InitialPendingRequestButNoInitialDevice) {
   CreateDelegate(
       std::nullopt /* initial_host */,
-      features::ShouldUseV1DeviceSync()
-          ? test_devices()[0].GetDeviceId()
-          : test_devices()[0].instance_id() /* initial_pending_host_request */);
+      test_devices()[0].instance_id() /* initial_pending_host_request */);
 
   // The delegate should have started a request as soon as it was created.
   // Simulate it succeeding.

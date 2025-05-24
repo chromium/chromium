@@ -22,11 +22,11 @@ public class StubbedHistoryProvider implements HistoryProvider {
     public final CallbackHelper removeItemsCallback = new CallbackHelper();
 
     private BrowsingHistoryObserver mObserver;
-    private List<HistoryItem> mItems = new ArrayList<>();
-    private List<HistoryItem> mSearchItems = new ArrayList<>();
-    private List<HistoryItem> mRemovedItems = new ArrayList<>();
+    private final List<HistoryItem> mItems = new ArrayList<>();
+    private final List<HistoryItem> mSearchItems = new ArrayList<>();
+    private final List<HistoryItem> mRemovedItems = new ArrayList<>();
 
-    /** The exclusive end position for the last query. **/
+    /** The exclusive end position for the last query. */
     private int mLastQueryEndPosition;
 
     private String mLastQuery;

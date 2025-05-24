@@ -4,14 +4,26 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.os.Build;
+import android.window.OnBackInvokedDispatcher;
+
+import com.google.common.collect.ImmutableList;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,16 +32,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.PackageManagerWrapper;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler;
 import org.chromium.chrome.browser.back_press.MinimizeAppAndCloseTabBackPressHandler.MinimizeAppAndCloseTabType;
@@ -38,70 +53,72 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigatio
 import org.chromium.chrome.browser.customtabs.shadows.ShadowExternalNavigationDelegateImpl;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerImpl;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.url.GURL;
 
 /**
  * Unit tests for {@link CustomTabActivityNavigationController}.
  *
- * {@link CustomTabActivityNavigationController#navigate} is tested in integration with other
+ * <p>{@link CustomTabActivityNavigationController#navigate} is tested in integration with other
  * classes in {@link CustomTabActivityUrlLoadingTest}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.CCT_BEFORE_UNLOAD)
+@EnableFeatures(ChromeFeatureList.CCT_PREDICTIVE_BACK_GESTURE)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowExternalNavigationDelegateImpl.class, ShadowPostTask.class})
 public class CustomTabActivityNavigationControllerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
 
     private CustomTabActivityNavigationController mNavigationController;
+    private TestContext mTestContext;
 
     @Mock CustomTabActivityTabController mTabController;
     @Mock FinishHandler mFinishHandler;
+    @Mock OnBackInvokedDispatcher mDispatcher;
+    @Mock private PackageManager mPackageManager;
+    @Mock private ResolveInfo mResolveInfo;
+    @Mock private ChromeTabbedActivity mAdjacentActivity;
+
+    class TestContext extends ContextWrapper {
+        public TestContext(Context base) {
+            super(base);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new PackageManagerWrapper(mPackageManager);
+        }
+    }
 
     @Before
     public void setUp() {
         ShadowPostTask.setTestImpl((@TaskTraits int taskTraits, Runnable task, long delay) -> {});
-        MockitoAnnotations.initMocks(this);
+        mTestContext = new TestContext(ContextUtils.getApplicationContext());
+        ContextUtils.initApplicationContextForTests(mTestContext);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when(env.activity.getOnBackInvokedDispatcher()).thenReturn(mDispatcher);
+        }
+
         mNavigationController = env.createNavigationController(mTabController);
         mNavigationController.setFinishHandler(mFinishHandler);
         Tab tab = env.prepareTab();
         when(tab.getUrl()).thenReturn(new GURL("")); // avoid DomDistillerUrlUtils going to native.
         env.tabProvider.setInitialTab(tab, TabCreationMode.DEFAULT);
+        doReturn(ImmutableList.of(mResolveInfo))
+                .when(mPackageManager)
+                .queryIntentActivities(any(), anyInt());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
-                                MinimizeAppAndCloseTabType.MINIMIZE_APP)
-                        .expectIntRecord(
-                                BackPressManager.getHistogramForTesting(),
-                                BackPressManager.getHistogramValue(
-                                        BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
-                        .build();
-        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
-        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
-
-        mNavigationController.navigateOnBack();
-        histogramWatcher.assertExpected();
-        verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
-        env.tabProvider.removeTab();
-        Assert.assertNull(env.tabProvider.getTab());
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void finishes_IfBackNavigationClosesTheOnlyTabWithNoUnloadEvents_BackPressRefactor() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
@@ -121,14 +138,16 @@ public class CustomTabActivityNavigationControllerTest {
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        mNavigationController
+                .getTabObserverForTesting()
+                .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack();
+        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
@@ -152,52 +171,25 @@ public class CustomTabActivityNavigationControllerTest {
                         .build();
         when(mTabController.onlyOneTabRemaining()).thenReturn(true);
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        mNavigationController
+                .getTabObserverForTesting()
+                .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack();
+        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
         verify(mFinishHandler).onFinish(FinishReason.USER_NAVIGATION, true);
         env.tabProvider.removeTab();
         Assert.assertNull(env.tabProvider.getTab());
-        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.CLOSE_TAB)
-                        .expectIntRecord(
-                                BackPressManager.getHistogramForTesting(),
-                                BackPressManager.getHistogramValue(
-                                        BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
-                        .build();
-        doAnswer(
-                        (Answer<Void>)
-                                invocation -> {
-                                    env.tabProvider.swapTab(env.prepareTab());
-                                    return null;
-                                })
-                .when(mTabController)
-                .closeTab();
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
-
-        mNavigationController.navigateOnBack();
-        histogramWatcher.assertExpected();
-        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void doesntFinish_IfBackNavigationReplacesTabWithPreviousOne_BackPressRefactor() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
-                                MinimizeAppAndCloseTabType.CLOSE_TAB)
                         .expectNoRecords(BackPressManager.getHistogramForTesting())
                         .build();
         doAnswer(
@@ -208,48 +200,26 @@ public class CustomTabActivityNavigationControllerTest {
                                 })
                 .when(mTabController)
                 .closeTab();
-        Assert.assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
 
-        mNavigationController.navigateOnBack();
+        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void doesntFinish_IfBackNavigationHappensWithBeforeUnloadHandler() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecord(
                                 MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
                                 MinimizeAppAndCloseTabType.CLOSE_TAB)
-                        .expectIntRecord(
-                                BackPressManager.getHistogramForTesting(),
-                                BackPressManager.getHistogramValue(
-                                        BackPressHandler.Type.MINIMIZE_APP_AND_CLOSE_TAB))
-                        .build();
-
-        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
-
-        mNavigationController.navigateOnBack();
-        histogramWatcher.assertExpected();
-        verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void doesntFinish_IfBackNavigationHappensWithBeforeUnloadHandler_BackPressRefactor() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                MinimizeAppAndCloseTabBackPressHandler.getHistogramNameForTesting(),
-                                MinimizeAppAndCloseTabType.CLOSE_TAB)
                         .expectNoRecords(BackPressManager.getHistogramForTesting())
                         .build();
 
         when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
 
-        mNavigationController.navigateOnBack();
+        mNavigationController.navigateOnBack(FinishReason.USER_NAVIGATION);
         histogramWatcher.assertExpected();
         verify(mFinishHandler, never()).onFinish(anyInt(), anyBoolean());
     }
@@ -276,6 +246,19 @@ public class CustomTabActivityNavigationControllerTest {
     }
 
     @Test
+    public void finishes_whenDoneReparentingToAdjacentActivity() {
+        ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(true);
+        MultiInstanceManagerImpl.setAdjacentWindowActivitySupplierForTesting(
+                () -> mAdjacentActivity);
+        MultiWindowUtils.setActivitySupplierForTesting(() -> mAdjacentActivity);
+
+        mNavigationController.openCurrentUrlInBrowser();
+
+        verify(mAdjacentActivity, times(1)).onNewIntent(any());
+        verify(mFinishHandler).onFinish(FinishReason.REPARENTING, false);
+    }
+
+    @Test
     public void startsNewActivity_WhenOpenInBrowserCalled_AndChromeCanNotHandleIntent() {
         ShadowExternalNavigationDelegateImpl.setWillChromeHandleIntent(false);
         mNavigationController.openCurrentUrlInBrowser();
@@ -293,5 +276,66 @@ public class CustomTabActivityNavigationControllerTest {
         mNavigationController.openCurrentUrlInBrowser();
         verify(mTabController, never()).detachAndStartReparenting(any(), any(), any());
         verify(env.activity).startActivity(any(), any());
+    }
+
+    @Test
+    public void observerDefaultsToOS_WhenOnlyOneTabRemains() {
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(false);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+
+        mNavigationController.navigateOnBack(FinishReason.HANDLED_BY_OS);
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        mNavigationController.getTabObserverForTesting().onTabSwapped(env.prepareTab());
+        Assert.assertFalse(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    public void observerDoesNotDefaultToOS_WhenPartialCCT() {
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(false);
+        when(mNavigationController.getIntentDataProviderForTesting().isPartialCustomTab())
+                .thenReturn(true);
+        mNavigationController
+                .getTabObserverForTesting()
+                .onInitialTabCreated(env.prepareTab(), TabCreationMode.DEFAULT);
+        assertTrue(mNavigationController.getHandleBackPressChangedSupplier().get());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void predictiveBackGesture_RequiresAndroidBaklava() {
+        Assert.assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
+
+        // Sets the Android version to Baklava.
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+
+        assertTrue(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
+    }
+
+    @Test
+    public void getVersionForTesting_ReturnsSetVersion() {
+        Assert.assertFalse(CustomTabActivityNavigationController.supportsPredictiveBackGesture());
+
+        // Sets the Android version to Baklava.
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+
+        Assert.assertEquals(
+                "The version should be 36, which is the Android API level for Baklava.",
+                /*Android 16 API level*/ 36,
+                (int) mNavigationController.getVersionForTesting());
+    }
+
+    @Test
+    public void whenCallbackInvoked_FinishesWithReasonHandledByOS() {
+        when(mTabController.onlyOneTabRemaining()).thenReturn(true);
+        when(mTabController.dispatchBeforeUnloadIfNeeded()).thenReturn(true);
+        CustomTabActivityNavigationController.enablePredictiveBackGestureForTesting();
+        mNavigationController.onSystemNavigation();
+
+        verify(mFinishHandler).onFinish(FinishReason.HANDLED_BY_OS, true);
     }
 }

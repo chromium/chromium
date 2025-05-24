@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.customtabs;
 
 import org.chromium.base.UnownedUserData;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -17,9 +19,10 @@ import java.util.function.BooleanSupplier;
  * Implementation of {@link TrustedCdn.PublisherUrlVisibility} to provide Tab with
  * the availability of publisher URL of trusted CDN when attached to a custom tab activity.
  */
+@NullMarked
 class CustomTabTrustedCdnPublisherUrlVisibility
         implements PublisherUrlVisibility, DestroyObserver, UnownedUserData {
-    private WindowAndroid mWindowAndroid;
+    private @Nullable WindowAndroid mWindowAndroid;
     private BooleanSupplier mIsPublisherPackageForSession;
 
     CustomTabTrustedCdnPublisherUrlVisibility(
@@ -37,6 +40,7 @@ class CustomTabTrustedCdnPublisherUrlVisibility
         return mIsPublisherPackageForSession.getAsBoolean();
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void onDestroy() {
         PublisherUrlVisibility.detach(this);

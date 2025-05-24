@@ -37,7 +37,7 @@ namespace blink {
 // Distance models are defined according to the OpenAL specification:
 // http://connect.creativelabs.com/openal/Documentation/OpenAL%201.1%20Specification.htm.
 
-class PLATFORM_EXPORT DistanceEffect {
+class PLATFORM_EXPORT DistanceEffect final {
   DISALLOW_NEW();
 
  public:

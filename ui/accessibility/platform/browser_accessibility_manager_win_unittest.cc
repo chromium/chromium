@@ -24,7 +24,6 @@ class TestFragmentRootDelegate : public ui::AXFragmentRootDelegateWin {
   TestFragmentRootDelegate(
       ui::BrowserAccessibilityManager* browser_accessibility_manager)
       : browser_accessibility_manager_(browser_accessibility_manager) {}
-  ~TestFragmentRootDelegate() = default;
 
   gfx::NativeViewAccessible GetChildOfAXFragmentRoot() override {
     return browser_accessibility_manager_->GetBrowserAccessibilityRoot()

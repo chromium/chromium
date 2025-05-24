@@ -48,7 +48,7 @@ TEST_F(BrowserDMTokenStorageMacTest, InitClientId) {
 class TestStoreDMTokenDelegate {
  public:
   TestStoreDMTokenDelegate() : called_(false), success_(true) {}
-  ~TestStoreDMTokenDelegate() {}
+  ~TestStoreDMTokenDelegate() = default;
 
   void OnDMTokenUpdated(bool success) {
     run_loop_.Quit();

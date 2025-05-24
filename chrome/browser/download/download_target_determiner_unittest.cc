@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>
@@ -47,6 +48,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
@@ -59,6 +61,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/mime_util.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,13 +79,14 @@
 #include "extensions/common/extension.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "components/user_manager/test_helper.h"
 #endif
 
 using download::DownloadItem;
@@ -109,15 +113,15 @@ const char kTransientPathValidationHistogram[] =
     "Download.PathValidationResult.Transient";
 
 template <typename T>
-base::HistogramBase::Sample ToHistogramSample(T t) {
-  return static_cast<base::HistogramBase::Sample>(t);
+base::HistogramBase::Sample32 ToHistogramSample(T t) {
+  return static_cast<base::HistogramBase::Sample32>(t);
 }
 
 // No-op delegate.
 class NullWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  NullWebContentsDelegate() {}
-  ~NullWebContentsDelegate() override {}
+  NullWebContentsDelegate() = default;
+  ~NullWebContentsDelegate() override = default;
 };
 
 // Google Mock action that posts a task to the current message loop that invokes
@@ -473,6 +477,7 @@ DownloadTargetDeterminerTest::CreateActiveDownloadItem(
       .WillByDefault(Return(ui::PAGE_TRANSITION_LINK));
   ON_CALL(*item, GetURL())
       .WillByDefault(ReturnRefOfCopy(download_url));
+  ON_CALL(*item, GetOriginalUrl()).WillByDefault(ReturnRefOfCopy(download_url));
   ON_CALL(*item, GetUrlChain())
       .WillByDefault(ReturnRefOfCopy(url_chain));
   ON_CALL(*item, HasUserGesture())
@@ -857,6 +862,71 @@ TEST_F(DownloadTargetDeterminerTest, MaybeDangerousContent) {
           download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT)));
   RunTestCasesWithActiveItem(kSafeBrowsingTestCases,
                              std::size(kSafeBrowsingTestCases));
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       MaybeDangerousContent_DownloadRestrictions) {
+  // Setting the "DownloadRestrictions" policy to 1 or 2 should result in the
+  // dangerous level persisting instead of being bypassed.
+  for (int download_restrictions : {1, 2}) {
+    profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions, download_restrictions);
+
+    const DownloadTestCase kSafeBrowsingTestCases[] = {
+        {// 0: Automatic Maybe dangerous content
+         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::ALLOW_ON_USER_GESTURE,
+         "http://phishing.example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+         FILE_PATH_LITERAL("foo.kindabad"),
+         DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_UNCONFIRMED},
+
+        {// 1: Automatic Maybe dangerous content with DANGEROUS type.
+         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::DANGEROUS, "http://phishing.example.com/foo.bad", "",
+         FILE_PATH_LITERAL(""),
+
+         FILE_PATH_LITERAL("foo.bad"),
+         DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_UNCONFIRMED},
+
+        {// 2: Save As Maybe dangerous content
+         SAVE_AS, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::DANGEROUS,
+         "http://phishing.example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+         FILE_PATH_LITERAL("foo.kindabad"),
+         DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+         EXPECT_UNCONFIRMED},
+
+        {// 3: Forced Maybe dangerous content
+         FORCED, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::DANGEROUS,
+         "http://phishing.example.com/foo.kindabad", "",
+         FILE_PATH_LITERAL("forced-foo.kindabad"),
+
+         FILE_PATH_LITERAL("forced-foo.kindabad"),
+         DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+         EXPECT_UNCONFIRMED}};
+
+    // Test assumptions:
+    ASSERT_EQ(
+        DownloadFileType::ALLOW_ON_USER_GESTURE,
+        safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+            base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{},
+            nullptr));
+    ASSERT_EQ(
+        DownloadFileType::DANGEROUS,
+        safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+            base::FilePath(FILE_PATH_LITERAL("foo.bad")), GURL{}, nullptr));
+
+    ON_CALL(*delegate(), CheckDownloadUrl_(_, _, _))
+        .WillByDefault(WithArg<2>(ScheduleCallback(
+            download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT)));
+    RunTestCasesWithActiveItem(kSafeBrowsingTestCases,
+                               std::size(kSafeBrowsingTestCases));
+  }
 }
 
 // Test whether the last saved directory is used for 'Save As' downloads.
@@ -1613,6 +1683,45 @@ TEST_F(DownloadTargetDeterminerTest, PromptAlways_TrustedExtension) {
   RunTestCasesWithActiveItem(kPromptingTestCases,
                              std::size(kPromptingTestCases));
 }
+
+TEST_F(DownloadTargetDeterminerTest, DownloadRestrictions_TrustedExtension) {
+  // The following test cases should not be blocked by the DownloadRestrictions
+  // policy, even if it is set to 1 or 2.
+  const DownloadTestCase kPromptingTestCases[] = {
+      {// 0: Automatic Browser Extension download
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.kindabad",
+       extensions::Extension::kMimeType, FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.crx"), DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD},
+
+      {// 1: Automatic User Script
+       AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.user.js", "",
+       FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.user.js"),
+       DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+       EXPECT_CRDOWNLOAD},
+  };
+
+  auto allow_offstore_install =
+      download_crx_util::OverrideOffstoreInstallAllowedForTesting(true);
+
+  profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions, 1);
+  RunTestCasesWithActiveItem(kPromptingTestCases,
+                             std::size(kPromptingTestCases));
+
+  profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions, 2);
+  RunTestCasesWithActiveItem(kPromptingTestCases,
+                             std::size(kPromptingTestCases));
+}
+
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // If the download path is managed, then we don't show any prompts.
@@ -1907,7 +2016,7 @@ TEST_F(DownloadTargetDeterminerTest, ResumedNoPrompt) {
   const base::FilePath::CharType* kInitialPath =
       FILE_PATH_LITERAL("some_path/bar.txt");
 
-  const DownloadTestCase kResumedTestCases[] = {
+  const auto kResumedTestCases = std::to_array<DownloadTestCase>({
       {// 0: Automatic Safe: Initial path is ignored since the user has not been
        // prompted before.
        AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
@@ -1947,7 +2056,7 @@ TEST_F(DownloadTargetDeterminerTest, ResumedNoPrompt) {
        DownloadItem::TARGET_DISPOSITION_OVERWRITE,
 
        EXPECT_LOCAL_PATH},
-  };
+  });
 
   // The test assumes that .kindabad files have a danger level of
   // ALLOW_ON_USER_GESTURE.
@@ -2026,7 +2135,7 @@ TEST_F(DownloadTargetDeterminerTest, ResumedWithPrompt) {
   const base::FilePath::CharType* kInitialPath =
       FILE_PATH_LITERAL("some_path/bar.txt");
 
-  const DownloadTestCase kResumedTestCases[] = {
+  const auto kResumedTestCases = std::to_array<DownloadTestCase>({
       {// 0: Automatic Safe
        AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
        DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.txt",
@@ -2046,24 +2155,32 @@ TEST_F(DownloadTargetDeterminerTest, ResumedWithPrompt) {
 
       {
           // 2: Automatic Dangerous
-          AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-          DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.kindabad",
-          "", FILE_PATH_LITERAL(""),
+          AUTOMATIC,
+          download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+          DownloadFileType::NOT_DANGEROUS,
+          "http://example.com/foo.kindabad",
+          "",
+          FILE_PATH_LITERAL(""),
 
           FILE_PATH_LITERAL("foo.kindabad"),
-          DownloadItem::TARGET_DISPOSITION_PROMPT, EXPECT_CRDOWNLOAD,
+          DownloadItem::TARGET_DISPOSITION_PROMPT,
+          EXPECT_CRDOWNLOAD,
       },
 
       {
           // 3: Automatic Dangerous
-          AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-          DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.bad", "",
+          AUTOMATIC,
+          download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+          DownloadFileType::NOT_DANGEROUS,
+          "http://example.com/foo.bad",
+          "",
           FILE_PATH_LITERAL(""),
 
-          FILE_PATH_LITERAL("foo.bad"), DownloadItem::TARGET_DISPOSITION_PROMPT,
+          FILE_PATH_LITERAL("foo.bad"),
+          DownloadItem::TARGET_DISPOSITION_PROMPT,
           EXPECT_CRDOWNLOAD,
       },
-  };
+  });
 
   ASSERT_EQ(
       DownloadFileType::ALLOW_ON_USER_GESTURE,
@@ -2109,7 +2226,8 @@ TEST_F(DownloadTargetDeterminerTest, IntermediateNameForResumed) {
     // Expected intermediate path relatvie to the test download path. An exact
     // match is performed if this string is non-empty. Ignored otherwise.
     const base::FilePath::CharType* expected_intermediate_path;
-  } kIntermediateNameTestCases[] = {
+  };
+  auto kIntermediateNameTestCases = std::to_array<IntermediateNameTestCase>({
       {{// 0: Automatic Safe
         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.txt",
@@ -2172,7 +2290,7 @@ TEST_F(DownloadTargetDeterminerTest, IntermediateNameForResumed) {
         EXPECT_LOCAL_PATH},
        FILE_PATH_LITERAL("forced-foo.txt"),
        FILE_PATH_LITERAL("forced-foo.txt")},
-  };
+  });
 
   // The test assumes that .kindabad files have a danger level of
   // ALLOW_ON_USER_GESTURE.
@@ -2219,7 +2337,8 @@ TEST_F(DownloadTargetDeterminerTest, MIMETypeDetermination) {
 
     // Expected MIME type for test case.
     const char* expected_mime_type;
-  } kMIMETypeTestCases[] = {
+  };
+  auto kMIMETypeTestCases = std::to_array<MIMETypeTestCase>({
       {{// 0:
         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
         DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.png",
@@ -2280,7 +2399,7 @@ TEST_F(DownloadTargetDeterminerTest, MIMETypeDetermination) {
 
         EXPECT_CRDOWNLOAD},
        ""},
-  };
+  });
 
   ON_CALL(
       *delegate(),
@@ -2320,7 +2439,8 @@ TEST_F(DownloadTargetDeterminerTest, MimeTypeFileExtension) {
 
     // Return value of DownloadItem::GetOriginalMimeType().
     std::string original_mime_type;
-  } kTestCases[] = {
+  };
+  auto kTestCases = std::to_array<MimeTypeFileExtensionTestCase>({
       {{// 0: Unsafe file extension generated by URL should not be replaced
         // to a safe extension to bypass the safe browsing check.
         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE,
@@ -2377,7 +2497,8 @@ TEST_F(DownloadTargetDeterminerTest, MimeTypeFileExtension) {
         DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.png",
         "image/gif", FILE_PATH_LITERAL(""), FILE_PATH_LITERAL("foo.txt"),
         DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_CRDOWNLOAD},
-       "foo.txt" /* suggested_file_name */}};
+       "foo.txt" /* suggested_file_name */},
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     std::unique_ptr<download::MockDownloadItem> item =
@@ -2847,7 +2968,7 @@ TEST_F(DownloadTargetDeterminerTest, DetermineLocalPathReturnsContentUri) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Tests that DLP policies are checked before determining the download path.
 class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
  protected:
@@ -2874,15 +2995,13 @@ class DownloadTargetDeterminerDlpTest : public DownloadTargetDeterminerTest {
     DownloadTargetDeterminerTest::SetUp();
 
     AccountId account_id =
-        AccountId::FromUserEmailGaiaId("test@example.com", "12345");
+        AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
     profile_->SetIsNewProfile(true);
-    user_manager::User* user =
-        user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-            account_id, /*is_affiliated=*/false,
-            user_manager::UserType::kRegular, profile_.get());
-    user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                /*browser_restart=*/false,
-                                /*is_child=*/false);
+    user_manager_->AddUserWithAffiliationAndTypeAndProfile(
+        account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
+        profile_.get());
+    user_manager_->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
     user_manager_->SimulateUserProfileLoad(account_id);
   }
 

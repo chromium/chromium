@@ -44,6 +44,10 @@ class UnnecessaryDiscardMonitor {
   // event started in the past.
   void OnReclaimTargetBegin(ReclaimTarget reclaim_target);
 
+  // Corrects the reclaim value of a reclaim target by accounting for tab
+  // discards that finished after this target was created.
+  ReclaimTarget CorrectReclaimTarget(ReclaimTarget reclaim_target);
+
   // Called when processing a reclaim target finishes.
   // Calculates any unnecessary discards from the current reclaim target and
   // reports corresponding metrics.
@@ -52,7 +56,7 @@ class UnnecessaryDiscardMonitor {
   // Called when a tab is discarded. This discard is automatically associated
   // with the most recent reclaim target. |discard_complete_time| should be the
   // time that the tab discard completed.
-  void OnDiscard(int64_t memory_freed_kb,
+  void OnDiscard(uint64_t memory_freed_kb,
                  base::TimeTicks discard_complete_time);
 
  private:
@@ -68,7 +72,7 @@ class UnnecessaryDiscardMonitor {
   // Represents a single kill event.
   struct KillEvent {
     // The estimated size of the kill.
-    int64_t kill_size_kb = 0;
+    uint64_t kill_size_kb = 0;
 
     // The time at which the kill finished.
     base::TimeTicks kill_time;

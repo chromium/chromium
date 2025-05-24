@@ -4,12 +4,14 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsResetBrowserProxyImpl, OsSettingsPowerwashDialogElement, ResetSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, LifetimeBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsPowerwashDialogElement, ResetSettingsCardElement} from 'chrome://os-settings/lazy_load.js';
+import {OsResetBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement} from 'chrome://os-settings/os_settings.js';
+import {LifetimeBrowserProxyImpl, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
 import {setESimManagerRemoteForTesting} from 'chrome://resources/ash/common/cellular_setup/mojo_interface_provider.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {ESimManagerRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeESimManagerRemote} from 'chrome://webui-test/chromeos/cellular_setup/fake_esim_manager_remote.js';
@@ -21,10 +23,7 @@ import {TestLifetimeBrowserProxy} from '../test_os_lifetime_browser_proxy.js';
 import {TestOsResetBrowserProxy} from './test_os_reset_browser_proxy.js';
 
 suite('<reset-settings-card>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
-  const route =
-      isRevampWayfindingEnabled ? routes.SYSTEM_PREFERENCES : routes.OS_RESET;
+  const route = routes.SYSTEM_PREFERENCES;
 
   let resetSettingsCard: ResetSettingsCardElement;
   let resetPageBrowserProxy: TestOsResetBrowserProxy;

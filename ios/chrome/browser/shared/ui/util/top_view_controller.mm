@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
+
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 
 namespace top_view_controller {

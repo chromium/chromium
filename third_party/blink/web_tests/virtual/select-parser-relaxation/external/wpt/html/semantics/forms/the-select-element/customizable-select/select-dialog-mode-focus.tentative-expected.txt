@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] In dialog mode the first focusable element should get focus.
+  assert_equals: The anchor should be focused. expected Element node <a id="interactive1" href="https://www.example.com/">Elep... but got Element node <select id="target">\n  <div></div>\n  <span></span>\n  <a i...
+[FAIL] In dialog mode tab should not close the picker.
+  assert_false: The select should initially be closed. expected false got true
+Harness: the test ran to completion.
+

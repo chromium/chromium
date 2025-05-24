@@ -9,16 +9,11 @@
 #ifndef COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_CHROMEOS_H_
 #define COMPONENTS_STORAGE_MONITOR_STORAGE_MONITOR_CHROMEOS_H_
 
-#include "build/chromeos_buildflags.h"
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-#error "Should only be used on ChromeOS."
-#endif
-
 #include <map>
 #include <memory>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
@@ -27,12 +22,17 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/mtp_manager.mojom.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#error "Should only be used on ChromeOS."
+#endif
+
 namespace storage_monitor {
 
 class MtpManagerClientChromeOS;
 
-class StorageMonitorCros : public StorageMonitor,
-                           public ash::disks::DiskMountManager::Observer {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitorCros
+    : public StorageMonitor,
+      public ash::disks::DiskMountManager::Observer {
  public:
   // Should only be called by browser start up code.
   // Use StorageMonitor::GetInstance() instead.

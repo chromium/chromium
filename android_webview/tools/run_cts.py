@@ -21,6 +21,7 @@ sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
 # pylint: disable=wrong-import-position,import-error
 import devil_chromium  # pylint: disable=unused-import
+from devil.android import apk_helper
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes
 from devil.android.tools import script_common
@@ -54,7 +55,9 @@ _DEFAULT_TRADEFED_ADB_PATH = os.path.join(ANDROID_SDK_ROOT, 'platform-tools')
 
 _CTS_WEBKIT_PACKAGES = ["com.android.cts.webkit", "android.webkit.cts"]
 
+# Value of these constants should match flags in //build/android/test_runner.py
 _TEST_APK_AS_INSTANT_ARG = '--test-apk-as-instant'
+_USE_WEBVIEW_PROVIDER_ARG = '--use-webview-provider'
 
 SDK_PLATFORM_DICT = {
     version_codes.OREO: 'O',
@@ -66,7 +69,7 @@ SDK_PLATFORM_DICT = {
     version_codes.S_V2: 'S',
     version_codes.TIRAMISU: 'T',
     version_codes.UPSIDE_DOWN_CAKE: 'U',
-    # TODO: b/353915320 - Update cts-release arg's choices once 'V' is added.
+    version_codes.VANILLA_ICE_CREAM: 'V',
 }
 
 # The test apks are apparently compatible across all architectures, the
@@ -442,6 +445,9 @@ def ForwardArgsToTestRunner(known_args):
     forwarded_args.extend(['--denylist-file', known_args.denylist_file])
   if known_args.test_apk_as_instant:
     forwarded_args.extend([_TEST_APK_AS_INSTANT_ARG])
+  if known_args.use_webview_provider:
+    forwarded_args.extend(
+        [_USE_WEBVIEW_PROVIDER_ARG, known_args.use_webview_provider])
   if known_args.verbose:
     forwarded_args.extend(['-' + 'v' * known_args.verbose])
   #TODO: Pass quiet to test runner when it becomes supported
@@ -459,11 +465,18 @@ def GetDevice(args):
       avd_config = avd.AvdConfig(args.avd_config)
       avd_config.Install()
       emulator_instance = avd_config.CreateInstance()
+
+      needs_writable_system = False
+      if args.use_webview_provider is not None:
+        package_name = apk_helper.GetPackageName(args.use_webview_provider)
+        logging.info('Package name of Webview APK under test: %s', package_name)
+        # Only need a writable system if it is the default WebView provider.
+        needs_writable_system = package_name in ('com.android.chrome',
+                                                 'com.google.android.webview')
       # Start the emulator w/ -writable-system s.t. we can remount the system
       # partition r/w and install our own webview provider. Require fast start
       # to avoid startup regressions.
-      emulator_instance.Start(writable_system=True,
-                              require_fast_start=True,
+      emulator_instance.Start(writable_system=needs_writable_system,
                               enable_network=True)
 
     devices = script_common.GetDevices(args.devices, args.denylist_file)
@@ -501,8 +514,7 @@ def main():
       '--cts-release',
       # TODO(aluo): --platform is deprecated (the meaning is unclear).
       '--platform',
-      # TODO: b/353915320 - Remove 'V' once added to SDK_PLATFORM_DICT.
-      choices=sorted(set(SDK_PLATFORM_DICT.values()) | {'V'}),
+      choices=sorted(set(SDK_PLATFORM_DICT.values())),
       required=False,
       default=None,
       help='Which CTS release to use for the run. This should generally be <= '
@@ -530,14 +542,14 @@ def main():
   parser.add_argument('-m',
                       '--module-apk',
                       dest='module_apk',
-                      help='CTS module apk name in the --cts-gcs-path'
-                      ' file, without the path prefix.')
+                      help=('CTS module apk name in the --cts-gcs-path '
+                            'file, without the path prefix.'))
   parser.add_argument(
       '--avd-config',
       type=os.path.realpath,
-      help='Path to the avd config textpb. '
-           '(See //tools/android/avd/proto for message definition'
-           ' and existing textpb files.)')
+      help=('Path to the avd config textpb. '
+            '(See //tools/android/avd/proto for message definition'
+            ' and existing textpb files.)'))
   # Emulator log will be routed to stdout when "--emulator-debug-tags" is set
   # without an output_manager.
   # Mark this arg as unused for run_cts to avoid dumping too much swarming log.
@@ -555,28 +567,28 @@ def main():
   parser.add_argument('--cts-archive-dir',
                       type=os.path.realpath,
                       default=_DEFAULT_CTS_ARCHIVE_DIR,
-                      help='Path to where CTS archives are stored. '
-                      'Defaults to: ' + _DEFAULT_CTS_ARCHIVE_DIR)
+                      help=('Path to where CTS archives are stored. '
+                            'Defaults to: ' + _DEFAULT_CTS_ARCHIVE_DIR))
   parser.add_argument('--tradefed-aapt-path',
                       type=os.path.realpath,
                       default=_DEFAULT_TRADEFED_AAPT_PATH,
-                      help='Path to where AAPT binary is located. '
-                      'Defaults to: ' + _DEFAULT_TRADEFED_AAPT_PATH)
+                      help=('Path to where AAPT binary is located. '
+                            'Defaults to: ' + _DEFAULT_TRADEFED_AAPT_PATH))
   parser.add_argument('--tradefed-adb-path',
                       type=os.path.realpath,
                       default=_DEFAULT_TRADEFED_ADB_PATH,
-                      help='Path to where ADB binary is located. '
-                      'Defaults to: ' + _DEFAULT_TRADEFED_ADB_PATH)
+                      help=('Path to where ADB binary is located. '
+                            'Defaults to: ' + _DEFAULT_TRADEFED_ADB_PATH))
 
   # The variations test seed file should be in JSON format. Please look
-  # in //third_party/chromium-variations for examples of variations
+  # in //components/variations/test_data/cipd for examples of variations
   # test seeds.
   parser.add_argument('--variations-test-seed-path',
                       type=os.path.relpath,
                       default=None,
-                      help='Path to a JSON file that contains the '
-                      'variations test seed. Defaults to running CTS tests '
-                      'without a variations test seed.')
+                      help=('Path to a JSON file that contains the '
+                            'variations test seed. Defaults to running CTS '
+                            'tests without a variations test seed.'))
   # We are re-using this argument that is used by our test runner
   # to detect if we are testing against an instant app
   # This allows us to know if we should filter tests based off the app
@@ -588,8 +600,17 @@ def main():
   parser.add_argument(
       _TEST_APK_AS_INSTANT_ARG,
       action='store_true',
-      help='Run CTS tests in instant app mode. '
-      'Instant apps run in a more restrictive execution environment.')
+      help=('Run CTS tests in instant app mode. '
+            'Instant apps run in a more restrictive execution environment.'))
+
+  # Read the package name from the apk path passed by this flag to
+  # determine if the emulator will start with "writable_system" or not.
+  parser.add_argument(_USE_WEBVIEW_PROVIDER_ARG,
+                      type=os.path.realpath,
+                      default=None,
+                      help=('Use this apk as the webview provider during test. '
+                            'The original provider will be restored if '
+                            'possible.'))
 
 
   test_filter.AddFilterOptions(parser)
@@ -608,8 +629,8 @@ def main():
 
     if (args.test_filter_files or args.test_filters
         or args.isolated_script_test_filters):
-      # TODO(aluo): auto-determine the module based on the test filter and the
-      # available tests in each module
+      # TODO(https://crbug.com/40617687): auto-determine the module based on the
+      # test filter and the available tests in each module
       if not args.module_apk:
         args.module_apk = 'CtsWebkitTestCases.apk'
 

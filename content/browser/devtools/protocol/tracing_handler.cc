@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/devtools/protocol/tracing_handler.h"
 
 #include <algorithm>
@@ -24,6 +19,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -623,8 +619,7 @@ void TracingHandler::OnTraceDataCollected(
   const size_t messageSuffixSize = 10;
   message.reserve(message.size() + valid_trace_fragment.size() +
                   messageSuffixSize - trace_data_buffer_state_.offset);
-  message.append(valid_trace_fragment.c_str() +
-                 trace_data_buffer_state_.offset);
+  message.append(valid_trace_fragment, trace_data_buffer_state_.offset);
   message += "] } }";
 
   frontend_->sendRawNotification(
@@ -718,16 +713,17 @@ void TracingHandler::OnTraceToStreamComplete(const std::string& stream_handle) {
                              stream_compression);
 }
 
-void TracingHandler::Start(Maybe<std::string> categories,
-                           Maybe<std::string> options,
-                           Maybe<double> buffer_usage_reporting_interval,
-                           Maybe<std::string> transfer_mode,
-                           Maybe<std::string> transfer_format,
-                           Maybe<std::string> transfer_compression,
-                           Maybe<Tracing::TraceConfig> config,
-                           Maybe<Binary> perfetto_config,
-                           Maybe<std::string> tracing_backend,
-                           std::unique_ptr<StartCallback> callback) {
+void TracingHandler::Start(
+    std::optional<std::string> categories,
+    std::optional<std::string> options,
+    std::optional<double> buffer_usage_reporting_interval,
+    std::optional<std::string> transfer_mode,
+    std::optional<std::string> transfer_format,
+    std::optional<std::string> transfer_compression,
+    std::unique_ptr<Tracing::TraceConfig> config,
+    std::optional<Binary> perfetto_config,
+    std::optional<std::string> tracing_backend,
+    std::unique_ptr<StartCallback> callback) {
   bool return_as_stream = transfer_mode.value_or("") ==
                           Tracing::Start::TransferModeEnum::ReturnAsStream;
   bool gzip_compression =
@@ -766,9 +762,9 @@ void TracingHandler::Start(Maybe<std::string> categories,
   } else {
     base::trace_event::TraceConfig browser_config =
         base::trace_event::TraceConfig();
-    if (config.has_value()) {
+    if (config) {
       base::Value::Dict dict;
-      CHECK(crdtp::ConvertProtocolValue(config.value(), &dict));
+      CHECK(crdtp::ConvertProtocolValue(*config, &dict));
       browser_config =
           GetTraceConfigFromDevToolsConfig(base::Value(std::move(dict)));
     } else if (categories.has_value() || options.has_value()) {
@@ -807,7 +803,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
     return;
   }
 
-  if (config.has_value() && (categories.has_value() || options.has_value())) {
+  if (config && (categories.has_value() || options.has_value())) {
     callback->sendFailure(Response::InvalidParams(
         "Either trace config (preferred), or categories+options should be "
         "specified, but not both."));
@@ -1000,8 +996,8 @@ void TracingHandler::OnCategoriesReceived(
 }
 
 void TracingHandler::RequestMemoryDump(
-    Maybe<bool> deterministic,
-    Maybe<std::string> level_of_detail,
+    std::optional<bool> deterministic,
+    std::optional<std::string> level_of_detail,
     std::unique_ptr<RequestMemoryDumpCallback> callback) {
   if (!IsTracing()) {
     callback->sendFailure(Response::ServerError("Tracing is not started"));
@@ -1045,17 +1041,19 @@ void TracingHandler::OnFrameFromVideoConsumer(
     return;
   }
   const SkBitmap skbitmap = DevToolsVideoConsumer::GetSkBitmapFromFrame(frame);
-  uint64_t frame_sequence = *frame->metadata().frame_sequence;
-
   // This reference_time is an ESTIMATE. It is set by the compositor frame sink
   // from the `expected_display_time`, which is based on a previously known
   // frame start PLUS the vsync interval (eg 16.6ms)
   base::TimeTicks expected_display_time = *frame->metadata().reference_time;
 
-  TRACE_EVENT_OBJECT_SNAPSHOT_WITH_ID_AND_TIMESTAMP(
-      TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"), "Screenshot",
-      frame_sequence, expected_display_time,
-      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
+  uint64_t frame_sequence = *frame->metadata().frame_sequence;
+  uint64_t source_id = *frame->metadata().source_id;
+
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"),
+                      "Screenshot", "expected_display_time",
+                      expected_display_time, "frame_sequence", frame_sequence,
+                      "source_id", source_id, "snapshot",
+                      std::make_unique<DevToolsTraceableScreenshot>(skbitmap));
 
   ++number_of_screenshots_from_video_consumer_;
   DCHECK(video_consumer_);

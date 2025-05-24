@@ -15,8 +15,9 @@ namespace internal {
 ComInitBalancer::ComInitBalancer(DWORD co_init) : co_init_(co_init) {
   ULARGE_INTEGER spy_cookie = {};
   HRESULT hr = ::CoRegisterInitializeSpy(this, &spy_cookie);
-  if (SUCCEEDED(hr))
+  if (SUCCEEDED(hr)) {
     spy_cookie_ = spy_cookie;
+  }
 }
 
 ComInitBalancer::~ComInitBalancer() {

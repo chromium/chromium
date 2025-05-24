@@ -18,7 +18,7 @@
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/web_applications/manifest_update_utils.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -27,8 +27,8 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/webapps/common/web_app_id.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #endif
 
 namespace content {
@@ -78,7 +78,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   ManifestUpdateManager();
   ~ManifestUpdateManager() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetSystemWebAppDelegateMap(
       const ash::SystemWebAppDelegateMap* system_web_apps_delegate_map);
 #endif
@@ -160,21 +160,26 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   bool MaybeConsumeUpdateCheck(const GURL& origin,
                                const webapps::AppId& app_id,
                                base::Time check_time);
+
   std::optional<base::Time> GetLastUpdateCheckTime(
       const webapps::AppId& app_id) const;
+
   void SetLastUpdateCheckTime(const GURL& origin,
                               const webapps::AppId& app_id,
                               base::Time time);
-  void OnUpdateStopped(const GURL& url,
+
+  void OnUpdateStopped(base::WeakPtr<content::WebContents> web_contents,
+                       const GURL& url,
                        const webapps::AppId& app_id,
                        ManifestUpdateResult result);
+
   void NotifyResult(const GURL& url,
                     const std::optional<webapps::AppId>& app_id,
                     ManifestUpdateResult result);
 
   static bool& BypassWindowCloseWaitingForTesting();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<const ash::SystemWebAppDelegateMap, DanglingUntriaged>
       system_web_apps_delegate_map_ = nullptr;
 #endif

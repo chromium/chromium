@@ -7,6 +7,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

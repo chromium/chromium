@@ -28,7 +28,7 @@ SessionServiceTestHelper::SessionServiceTestHelper(Profile* profile)
 SessionServiceTestHelper::SessionServiceTestHelper(SessionService* service)
     : service_(service) {}
 
-SessionServiceTestHelper::~SessionServiceTestHelper() {}
+SessionServiceTestHelper::~SessionServiceTestHelper() = default;
 
 void SessionServiceTestHelper::SaveNow() {
   return service_->GetCommandStorageManagerForTest()->Save();
@@ -67,12 +67,15 @@ void SessionServiceTestHelper::SetForceBrowserNotAliveWithNoWindows(
 // Be sure and null out service to force closing the file.
 void SessionServiceTestHelper::ReadWindows(
     std::vector<std::unique_ptr<sessions::SessionWindow>>* windows,
-    SessionID* active_window_id) {
+    SessionID* active_window_id,
+    std::string* platform_session_id,
+    std::set<SessionID>* discarded_window_ids) {
   sessions::CommandStorageManagerTestHelper test_helper(
       service_->GetCommandStorageManagerForTest());
   std::vector<std::unique_ptr<sessions::SessionCommand>> read_commands =
       test_helper.ReadLastSessionCommands();
-  RestoreSessionFromCommands(read_commands, windows, active_window_id);
+  RestoreSessionFromCommands(read_commands, windows, active_window_id,
+                             platform_session_id, discarded_window_ids);
   service_->RemoveUnusedRestoreWindows(windows);
 }
 

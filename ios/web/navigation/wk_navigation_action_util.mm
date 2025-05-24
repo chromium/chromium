@@ -10,8 +10,9 @@ namespace web {
 
 NavigationActionInitiationType GetNavigationActionInitiationType(
     WKNavigationAction* action) {
-  if (UIAccessibilityIsVoiceOverRunning())
+  if (UIAccessibilityIsVoiceOverRunning()) {
     return GetNavigationActionInitiationTypeWithVoiceOverOn(action.description);
+  }
   return GetNavigationActionInitiationTypeWithVoiceOverOff(action.description);
 }
 
@@ -37,8 +38,9 @@ GetNavigationActionInitiationTypeWithVoiceOverOff(
                  options:0
                    range:NSMakeRange(0, action_description.length)];
 
-  if (![click_type_match_result rangeAtIndex:0].length)
+  if (![click_type_match_result rangeAtIndex:0].length) {
     return NavigationActionInitiationType::kUnknownInitiator;
+  }
 
   NSRange match_range = [click_type_match_result rangeAtIndex:1];
   // SyntheticClickType represents the user action that happened to initiate
@@ -70,8 +72,9 @@ NavigationActionInitiationType GetNavigationActionInitiationTypeWithVoiceOverOn(
                  options:0
                    range:NSMakeRange(0, action_description.length)];
 
-  if (![position_match_result rangeAtIndex:0].length)
+  if (![position_match_result rangeAtIndex:0].length) {
     return NavigationActionInitiationType::kUnknownInitiator;
+  }
 
   float position_x =
       [action_description

@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
 #include "media/mojo/mojom/media_foundation_service.mojom.h"
@@ -44,11 +45,17 @@ class MEDIA_MOJO_EXPORT MediaFoundationServiceBroker final
   // mojom::GpuInfoObserver:
   void OnGpuInfoUpdate(const gpu::GPUInfo& gpu_info) final;
 
+  // Terminates the service.
+  void TerminateService();
+
  private:
   mojo::Receiver<mojom::MediaFoundationServiceBroker> receiver_;
   mojo::Receiver<mojom::GpuInfoObserver> gpu_info_observer_;
   base::OnceClosure ensure_sandboxed_cb_;
   std::unique_ptr<MediaFoundationService> media_foundation_service_;
+
+  // NOTE: Weak pointers must be invalidated before all other member variables.
+  base::WeakPtrFactory<MediaFoundationServiceBroker> weak_factory_{this};
 };
 
 }  // namespace media

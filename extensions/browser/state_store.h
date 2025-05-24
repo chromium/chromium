@@ -43,7 +43,7 @@ class StateStore : public ExtensionRegistryObserver {
                                        const std::string& key) = 0;
   };
 
-  // If |deferred_load| is true, we will defer the database loading until the
+  // If `deferred_load` is true, we will defer the database loading until the
   // application is less busy on startup.
   StateStore(content::BrowserContext* context,
              const scoped_refptr<value_store::ValueStoreFactory>& store_factory,
@@ -63,7 +63,7 @@ class StateStore : public ExtensionRegistryObserver {
   void RegisterKey(const std::string& key);
 
   // Get the value associated with the given extension and key, and pass
-  // it to |callback| asynchronously.
+  // it to `callback` asynchronously.
   void GetExtensionValue(const ExtensionId& extension_id,
                          const std::string& key,
                          ReadCallback callback);
@@ -84,7 +84,7 @@ class StateStore : public ExtensionRegistryObserver {
   void RemoveObserver(TestObserver* observer);
 
   // Flushes the state store (finishes any pending reads and writes). Should
-  // only be used for testing. Invokes |flushed_callback| upon completion.
+  // only be used for testing. Invokes `flushed_callback` upon completion.
   void FlushForTesting(base::OnceClosure flushed_callback);
 
  private:

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/offline_items_collection/core/offline_item.h"
-
 #include <iostream>
+
+#include "base/notreached.h"
+#include "components/offline_items_collection/core/offline_item.h"
 
 namespace offline_items_collection {
 
@@ -68,8 +69,7 @@ std::ostream& operator<<(std::ostream& os, const OfflineItemState& state) {
     case NUM_ENTRIES:
       return os << "NUM_ENTRIES";
   }
-  CHECK(false) << "state=" << static_cast<int>(state);
-  return os;
+  NOTREACHED() << "state=" << static_cast<int>(state);
 }
 
 std::ostream& operator<<(std::ostream& os, FailState state) {
@@ -139,8 +139,7 @@ std::ostream& operator<<(std::ostream& os, FailState state) {
     case FailState::CRASH:
       return os << "CRASH";
   }
-  CHECK(false) << "state=" << static_cast<int>(state);
-  return os;
+  NOTREACHED() << "state=" << static_cast<int>(state);
 }
 
 std::ostream& operator<<(std::ostream& os, PendingState state) {
@@ -152,8 +151,7 @@ std::ostream& operator<<(std::ostream& os, PendingState state) {
     case PendingState::PENDING_ANOTHER_DOWNLOAD:
       return os << "PENDING_ANOTHER_DOWNLOAD";
   }
-  CHECK(false) << "state=" << static_cast<int>(state);
-  return os;
+  NOTREACHED() << "state=" << static_cast<int>(state);
 }
 
 std::ostream& operator<<(std::ostream& os, OfflineItemFilter state) {
@@ -173,8 +171,7 @@ std::ostream& operator<<(std::ostream& os, OfflineItemFilter state) {
     case FILTER_NUM_ENTRIES:
       return os << "FILTER_NUM_ENTRIES";
   }
-  CHECK(false) << "state=" << static_cast<int>(state);
-  return os;
+  NOTREACHED() << "state=" << static_cast<int>(state);
 }
 
 }  // namespace offline_items_collection

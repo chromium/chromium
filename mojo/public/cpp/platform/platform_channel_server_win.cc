@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
@@ -27,7 +28,7 @@ class ListenerImpl : public PlatformChannelServer::Listener,
                      public base::win::ObjectWatcher::Delegate {
  public:
   ListenerImpl() {
-    memset(&connect_overlapped_, 0, sizeof(connect_overlapped_));
+    UNSAFE_TODO(memset(&connect_overlapped_, 0, sizeof(connect_overlapped_)));
   }
 
   ~ListenerImpl() override {

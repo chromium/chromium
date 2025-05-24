@@ -27,34 +27,52 @@ AutofillImageFetcherImpl::AutofillImageFetcherImpl(
 
 AutofillImageFetcherImpl::~AutofillImageFetcherImpl() {}
 
-GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
-  // Some Capital One cards have a static URL rather than 'proper' card art
-  // metadata, and so cannot be fetched at different sizes. We defer handling
-  // that URL to the base class.
-  //
-  // TODO(crbug.com/40221039): Remove this once the server stops sending down
-  // this static URL for some cards.
-  if (card_art_url.spec() == kCapitalOneCardArtUrl) {
-    return AutofillImageFetcher::ResolveCardArtURL(card_art_url);
-  }
+GURL AutofillImageFetcherImpl::ResolveImageURL(const GURL& image_url,
+                                               ImageType image_type) const {
+  switch (image_type) {
+    case ImageType::kCreditCardArtImage: {
+      // Some Capital One cards have a static URL rather than 'proper' card art
+      // metadata, and so cannot be fetched at different sizes. We defer
+      // handling that URL to the base class.
+      //
+      // TODO(crbug.com/40221039): Remove this once the server stops sending
+      // down this static URL for some cards.
+      if (image_url.spec() == kCapitalOneCardArtUrl) {
+        return image_url;
+      }
 
-  // A FIFE image fetching param suffix is appended to the URL. The image
-  // should be center cropped and of Size(40, 24). For better image quality
-  // we fetch an image based on the screen pixel density, and scale it in
-  // ResolveCardArtImage.
-  const int width = 40 * screen_scale_;
-  const int height = 24 * screen_scale_;
-  return GURL(card_art_url.spec() +
-              base::StringPrintf("=w%d-h%d-s", width, height));
+      // A FIFE image fetching param suffix is appended to the URL. The image
+      // should be center cropped and of Size(40, 24). For better image quality
+      // we fetch an image based on the screen pixel density, and scale it in
+      // ResolveCardArtImage.
+      const int width = 40 * screen_scale_;
+      const int height = 24 * screen_scale_;
+      return GURL(image_url.spec() +
+                  base::StringPrintf("=w%d-h%d-s", width, height));
+    }
+    case ImageType::kPixAccountImage:
+      // Pay with Pix is only queried in Chrome on Android.
+      NOTREACHED();
+    case ImageType::kValuableImage:
+      return image_url;
+  }
+}
+
+image_fetcher::ImageFetcher* AutofillImageFetcherImpl::GetImageFetcher() {
+  return image_fetcher_.get();
+}
+
+base::WeakPtr<AutofillImageFetcher> AutofillImageFetcherImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+void AutofillImageFetcherImpl::SetScreenScaleForTesting(CGFloat screen_scale) {
+  screen_scale_ = screen_scale;
 }
 
 gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     const GURL& card_art_url,
     const gfx::Image& card_art_image) {
-  if (card_art_image.IsEmpty()) {
-    return card_art_image;
-  }
-
   // Some Capital One cards have a static URL rather than 'proper' card art
   // metadata, and so cannot be fetched at different sizes. We defer handling
   // those images to the base class.
@@ -62,8 +80,7 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
   // TODO(crbug.com/40221039): Remove this once the server stops sending down
   // this static URL for some cards.
   if (card_art_url.spec() == kCapitalOneCardArtUrl) {
-    return AutofillImageFetcher::ResolveCardArtImage(card_art_url,
-                                                     card_art_image);
+    return card_art_image;
   }
 
   // The image has been fetched at Size(40, 24) * the screen pixel density,
@@ -99,17 +116,6 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
   }];
 
   return gfx::Image(image);
-}
-
-image_fetcher::ImageFetcher* AutofillImageFetcherImpl::GetImageFetcher() {
-  return image_fetcher_.get();
-}
-base::WeakPtr<AutofillImageFetcher> AutofillImageFetcherImpl::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
-void AutofillImageFetcherImpl::SetScreenScaleForTesting(CGFloat screen_scale) {
-  screen_scale_ = screen_scale;
 }
 
 }  // namespace autofill

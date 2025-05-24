@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("account_manager") {
   sources = [
@@ -34,7 +32,6 @@ static_library("account_manager") {
     "//chrome/browser:resources",
     "//chrome/browser:resources_grit",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common:constants",
     "//components/account_manager_core",
@@ -42,11 +39,10 @@ static_library("account_manager") {
     "//net",
     "//ui/aura",
     "//ui/base",
-    "//ui/resources:webui_resources_grd",
-    "//ui/resources:webui_resources_grd_grit",
     "//ui/strings:ui_strings",
     "//ui/strings:ui_strings_grit",
     "//ui/views",
+    "//ui/webui",
     "//ui/wm",
   ]
 }

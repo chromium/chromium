@@ -28,7 +28,7 @@ class InstallIndexHelper
     : public base::RefCountedThreadSafe<InstallIndexHelper> {
  public:
   // Starts indexing rulesets. Must be called on a sequence which supports file
-  // IO. The |callback| will be dispatched to the same sequence on which
+  // IO. The `callback` will be dispatched to the same sequence on which
   // IndexStaticRulesets() is called.
   using IndexCallback = base::OnceCallback<void(RulesetParseResult result)>;
   static void IndexStaticRulesets(
@@ -68,8 +68,8 @@ class InstallIndexHelper
   void OnAllRulesetsIndexed();
 
   // Callback invoked when indexing of a single ruleset is completed.
-  // |source_index| is the index of the FileBackedRulesetSource within
-  // |sources_|.
+  // `source_index` is the index of the FileBackedRulesetSource within
+  // `sources_`.
   void OnRulesetIndexed(base::OnceClosure ruleset_done_closure,
                         size_t source_index,
                         IndexAndPersistJSONRulesetResult result);
@@ -77,7 +77,7 @@ class InstallIndexHelper
   const std::vector<FileBackedRulesetSource> sources_;
   IndexCallback callback_;
 
-  // Stores the result for each FileBackedRulesetSource in |sources_|.
+  // Stores the result for each FileBackedRulesetSource in `sources_`.
   IndexResults results_;
 
   // We use a single shared Data Decoder service instance to process all of the

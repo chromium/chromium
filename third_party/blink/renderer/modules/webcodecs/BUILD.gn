@@ -99,12 +99,10 @@ blink_modules_sources("webcodecs") {
     "webcodecs_logger.h",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//media",
     "//media/mojo:buildflags",
     "//media/mojo/clients",
     "//media/mojo/mojom",
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/libyuv:libyuv",
     "//third_party/opus",
   ]

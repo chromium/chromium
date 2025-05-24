@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarkswidget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -125,22 +124,14 @@ public class BookmarkWidgetProvider extends AppWidgetProvider {
             views.setRemoteAdapter(R.id.bookmarks_list, updateIntent);
 
             appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.bookmarks_list);
-            Intent ic = new Intent(context, BookmarkWidgetProxy.class);
-            IntentUtils.addTrustedIntentExtras(ic);
-            ic.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             views.setPendingIntentTemplate(
                     R.id.bookmarks_list,
-                    PendingIntent.getActivity(
-                            context,
-                            0,
-                            ic,
-                            PendingIntent.FLAG_UPDATE_CURRENT
-                                    | IntentUtils.getPendingIntentMutabilityFlag(true)));
+                    BookmarkWidgetProxy.createBookmarkProxyLaunchIntent(context));
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
     }
 
-    private boolean shouldShowIconsOnly(AppWidgetManager appWidgetManager, int appWidgetId) {
+    public static boolean shouldShowIconsOnly(AppWidgetManager appWidgetManager, int appWidgetId) {
         int widthDp =
                 appWidgetManager
                         .getAppWidgetOptions(appWidgetId)

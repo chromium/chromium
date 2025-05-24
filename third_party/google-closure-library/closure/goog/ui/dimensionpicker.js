@@ -109,7 +109,10 @@ goog.ui.DimensionPicker.prototype.highlightedRows_ = 1;
 goog.ui.DimensionPicker.prototype.highlightedColumns_ = 1;
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.ui.DimensionPicker.prototype.enterDocument = function() {
   'use strict';
   goog.ui.DimensionPicker.superClass_.enterDocument.call(this);
@@ -132,7 +135,10 @@ goog.ui.DimensionPicker.prototype.enterDocument = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.ui.DimensionPicker.prototype.exitDocument = function() {
   'use strict';
   goog.ui.DimensionPicker.superClass_.exitDocument.call(this);
@@ -187,11 +193,13 @@ goog.ui.DimensionPicker.prototype.disposeInternal = function() {
  */
 goog.ui.DimensionPicker.prototype.handleMouseMove = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var highlightedSizeX = this.getRenderer().getGridOffsetX(
       this,
       this.isRightToLeft() ?
           /** @type {!HTMLElement} */ (e.target).offsetWidth - e.offsetX :
           e.offsetX);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var highlightedSizeY = this.getRenderer().getGridOffsetY(this, e.offsetY);
 
   this.setValue(highlightedSizeX, highlightedSizeY);
@@ -242,6 +250,7 @@ goog.ui.DimensionPicker.prototype.handleMouseUp = function(e) {
  * renderer's mouse catcher.
  * @param {goog.events.Event} e Resize event to handle.
  * @protected
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DimensionPicker.prototype.handleWindowResize = function(e) {
   'use strict';
@@ -328,6 +337,7 @@ goog.ui.DimensionPicker.prototype.getValue = function() {
  *     or a goog.math.Size object containing both.
  * @param {number=} opt_rows The number of rows to highlight.  Can be
  *     omitted when columns is a good.math.Size object.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DimensionPicker.prototype.setValue = function(columns, opt_rows) {
   'use strict';
@@ -369,9 +379,11 @@ goog.ui.DimensionPicker.prototype.setValue = function(columns, opt_rows) {
  * @param {?goog.events.Event} e Mouse event to handle.
  * @return {boolean}
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DimensionPicker.prototype.isEventOnGrid_ = function(e) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var gridEl = this.getRenderer().getMouseMoveElement(this);
   var gridBounds = gridEl.getBoundingClientRect();
   return e.clientX >= gridBounds.left && e.clientX <= gridBounds.right &&
@@ -383,6 +395,7 @@ goog.ui.DimensionPicker.prototype.isEventOnGrid_ = function(e) {
  * @param {?goog.events.Event} e Mouse or pointer event to handle.
  * @return {boolean}
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.DimensionPicker.isTouchEvent_ = function(e) {
   'use strict';

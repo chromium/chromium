@@ -12,6 +12,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -58,6 +59,7 @@
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/logger.h"
 #include "gpu/command_buffer/service/query_manager.h"
 #include "gpu/command_buffer/service/raster_cmd_validation.h"
@@ -116,9 +118,9 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif  // BUILDFLAG(USE_DAWN)
 
-#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 #include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
-#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_CHROMEOS)
 
 // Local versions of the SET_GL_ERROR macros
 #define LOCAL_SET_GL_ERROR(error, function_name, msg) \
@@ -345,7 +347,7 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
       gr_context->flush(info);
       gr_context->submit();
     } else {
-      CHECK(shared_context_state_->graphite_context());
+      CHECK(shared_context_state_->graphite_shared_context());
       auto recording =
           shared_context_state_->gpu_main_graphite_recorder()->snap();
       if (recording) {
@@ -356,8 +358,8 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
         };
         info.fFinishedContext = new base::WeakPtr<RasterCommandsCompletedQuery>(
             weak_ptr_factory_.GetWeakPtr());
-        shared_context_state_->graphite_context()->insertRecording(info);
-        shared_context_state_->graphite_context()->submit();
+        shared_context_state_->graphite_shared_context()->insertRecording(info);
+        shared_context_state_->graphite_shared_context()->submit();
       } else {
         finished_ = true;
       }
@@ -365,7 +367,7 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
   }
 
   void QueryCounter(base::subtle::Atomic32 submit_count) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void Pause() override { MarkAsPaused(); }
@@ -417,7 +419,7 @@ class RasterQueryManager : public QueryManager {
                      QuerySync* sync) override {
     if (target == GL_COMMANDS_COMPLETED_CHROMIUM &&
         (shared_context_state_->gr_context() ||
-         shared_context_state_->graphite_context())) {
+         shared_context_state_->graphite_shared_context())) {
       auto query = base::MakeRefCounted<RasterCommandsCompletedQuery>(
           shared_context_state_, this, target, std::move(buffer), sync);
       std::pair<QueryMap::iterator, bool> result =
@@ -610,16 +612,15 @@ class RasterDecoderImpl final : public RasterDecoder,
  private:
   gles2::ContextState* state() const {
     if (use_passthrough_) {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
     return shared_context_state_->context_state();
   }
   GrDirectContext* gr_context() const {
     return shared_context_state_->gr_context();
   }
-  skgpu::graphite::Context* graphite_context() const {
-    return shared_context_state_->graphite_context();
+  GraphiteSharedContext* graphite_shared_context() const {
+    return shared_context_state_->graphite_shared_context();
   }
   skgpu::graphite::Recorder* graphite_recorder() const {
     return shared_context_state_->gpu_main_graphite_recorder();
@@ -693,7 +694,6 @@ class RasterDecoderImpl final : public RasterDecoder,
                                  GLint y,
                                  GLsizei width,
                                  GLsizei height,
-                                 GLboolean unpack_flip_y,
                                  const volatile GLbyte* mailboxes);
   void DoWritePixelsINTERNAL(GLint x_offset,
                              GLint y_offset,
@@ -781,6 +781,9 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoDeleteTransferCacheEntryINTERNAL(GLuint entry_type, GLuint entry_id);
   void RestoreStateForAttrib(GLuint attrib, bool restore_array_binding);
   void DeletePaintCachePathsINTERNALHelper(
+      GLsizei n,
+      const volatile GLuint* paint_cache_ids);
+  void DeletePaintCacheEffectsINTERNALHelper(
       GLsizei n,
       const volatile GLuint* paint_cache_ids);
   void DoClearPaintCacheINTERNAL();
@@ -1005,8 +1008,7 @@ RasterDecoderImpl::RasterDecoderImpl(
       display_context_on_another_thread_(
           shared_image_manager &&
           shared_image_manager->display_context_on_another_thread()),
-      use_passthrough_(gles2::PassthroughCommandDecoderSupported() &&
-                       gpu_preferences.use_passthrough_cmd_decoder),
+      use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder),
       gpu_preferences_(gpu_preferences),
       logger_(&debug_marker_manager_,
               base::BindRepeating(&DecoderClient::OnConsoleMessage,
@@ -1080,8 +1082,8 @@ ContextResult RasterDecoderImpl::Initialize(
 
   query_manager_ = std::make_unique<RasterQueryManager>(shared_context_state_);
 
-  if (attrib_helper.enable_oop_rasterization) {
-    DCHECK(gr_context() || graphite_context());
+  if (attrib_helper.enable_gpu_rasterization) {
+    DCHECK(gr_context() || graphite_shared_context());
     use_gpu_raster_ = true;
     paint_cache_ = std::make_unique<cc::ServicePaintCache>();
   }
@@ -1103,10 +1105,8 @@ void RasterDecoderImpl::Destroy(bool have_context) {
     DoEndRasterCHROMIUM();
   }
 
-  if (have_context) {
-    if (use_gpu_raster_) {
-      transfer_cache()->DeleteAllEntriesForDecoder(raster_decoder_id_);
-    }
+  if (have_context && use_gpu_raster_ && transfer_cache()) {
+    transfer_cache()->DeleteAllEntriesForDecoder(raster_decoder_id_);
   }
 
   if (query_manager_) {
@@ -1181,11 +1181,21 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
       feature_info()->feature_flags().chromium_image_ycbcr_p010;
   caps.render_buffer_format_bgra8888 =
       feature_info()->feature_flags().ext_render_buffer_format_bgra8888;
-  // Vulkan currently doesn't support single-component cross-thread shared
-  // images.
-  caps.disable_one_component_textures =
-      workarounds().avoid_one_component_egl_images ||
-      (display_context_on_another_thread_ && features::IsUsingVulkan());
+
+  if (shared_context_state_->GrContextIsGL()) {
+    caps.disable_one_component_textures =
+        display_context_on_another_thread_ &&
+        workarounds().avoid_one_component_egl_images;
+  } else if (shared_context_state_->GrContextIsVulkan() ||
+             shared_context_state_->IsGraphiteDawnVulkan()) {
+    // Vulkan currently doesn't support single-component cross-thread shared
+    // images for WebView.
+    const bool is_drdc = features::IsDrDcEnabled() &&
+                         !feature_info()->workarounds().disable_drdc;
+    caps.disable_one_component_textures =
+        display_context_on_another_thread_ && !is_drdc;
+  }
+
   caps.angle_rgbx_internal_format =
       feature_info()->feature_flags().angle_rgbx_internal_format;
   caps.chromium_gpu_fence = feature_info()->feature_flags().chromium_gpu_fence;
@@ -1209,7 +1219,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
         gr_context()->colorTypeSupportedAsImage(kA16_unorm_SkColorType);
     caps.texture_half_float_linear =
         gr_context()->colorTypeSupportedAsImage(kA16_float_SkColorType);
-  } else if (graphite_context()) {
+  } else if (graphite_shared_context()) {
     caps.context_supports_distance_field_text = true;
     caps.texture_half_float_linear = true;
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -1230,7 +1240,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
         feature_info()->feature_flags().enable_texture_half_float_linear;
   }
 
-  if (graphite_context()) {
+  if (graphite_shared_context()) {
     bool supports_multiplanar_rendering = false;
 #if BUILDFLAG(SKIA_USE_DAWN)
     if (shared_context_state_->IsGraphiteDawn()) {
@@ -1246,7 +1256,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
     caps.supports_yuv_readback = true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (shared_context_state_->GrContextIsGL()) {
     PopulateDRMCapabilities(&caps, feature_info());
   }
@@ -1269,9 +1279,9 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
   else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return caps;
 }
@@ -1281,8 +1291,7 @@ GLCapabilities RasterDecoderImpl::GetGLCapabilities() {
 }
 
 const gles2::ContextState* RasterDecoderImpl::GetContextState() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void RasterDecoderImpl::RestoreGlobalState() const {
@@ -1386,8 +1395,8 @@ void RasterDecoderImpl::ProcessPendingQueries(bool did_finish) {
   if (query_manager_) {
     if (gr_context()) {
       gr_context()->checkAsyncWorkCompletion();
-    } else if (graphite_context()) {
-      graphite_context()->checkAsyncWorkCompletion();
+    } else if (graphite_shared_context()) {
+      graphite_shared_context()->checkAsyncWorkCompletion();
     }
     query_manager_->ProcessPendingQueries(did_finish);
   }
@@ -1635,8 +1644,7 @@ bool RasterDecoderImpl::ClearLevel(gles2::Texture* texture,
                                    int yoffset,
                                    int width,
                                    int height) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool RasterDecoderImpl::ClearCompressedTextureLevel(gles2::Texture* texture,
@@ -1645,8 +1653,7 @@ bool RasterDecoderImpl::ClearCompressedTextureLevel(gles2::Texture* texture,
                                                     unsigned format,
                                                     int width,
                                                     int height) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool RasterDecoderImpl::ClearCompressedTextureLevel3D(gles2::Texture* texture,
@@ -1656,8 +1663,7 @@ bool RasterDecoderImpl::ClearCompressedTextureLevel3D(gles2::Texture* texture,
                                                       int width,
                                                       int height,
                                                       int depth) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int RasterDecoderImpl::GetRasterDecoderId() const {
@@ -1943,12 +1949,11 @@ void RasterDecoderImpl::DoCopySharedImageINTERNAL(
     GLint y,
     GLsizei width,
     GLsizei height,
-    GLboolean unpack_flip_y,
     const volatile GLbyte* mailboxes) {
   CopySharedImageHelper helper(&shared_image_representation_factory_,
                                shared_context_state_.get());
-  auto result = helper.CopySharedImage(xoffset, yoffset, x, y, width, height,
-                                       unpack_flip_y, mailboxes);
+  auto result =
+      helper.CopySharedImage(xoffset, yoffset, x, y, width, height, mailboxes);
   if (!result.has_value()) {
     LOCAL_SET_GL_ERROR(result.error().gl_error,
                        result.error().function_name.c_str(),
@@ -1992,7 +1997,7 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
   }
 
   viz::SharedImageFormat dest_format = dest_shared_image->format();
-  if (SkColorTypeBytesPerPixel(viz::ToClosestSkColorType(true, dest_format)) !=
+  if (SkColorTypeBytesPerPixel(viz::ToClosestSkColorType(dest_format)) !=
       SkColorTypeBytesPerPixel(static_cast<SkColorType>(src_sk_color_type))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glWritePixels",
                        "Bytes per pixel for src SkColorType and dst "
@@ -2216,13 +2221,13 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
     return;
   }
 
-  size_t row_bytes[SkYUVAInfo::kMaxPlanes];
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> row_bytes;
   row_bytes[0] = src_row_bytes_plane1;
   row_bytes[1] = src_row_bytes_plane2;
   row_bytes[2] = src_row_bytes_plane3;
   row_bytes[3] = src_row_bytes_plane4;
 
-  size_t plane_offsets[SkYUVAInfo::kMaxPlanes];
+  std::array<size_t, SkYUVAInfo::kMaxPlanes> plane_offsets;
   plane_offsets[0] = 0;
   plane_offsets[1] = plane2_offset;
   plane_offsets[2] = plane3_offset;
@@ -2232,7 +2237,7 @@ void RasterDecoderImpl::DoWritePixelsYUVINTERNAL(
 
   size_t prev_byte_size = 0;
   for (int plane = 0; plane < yuv_info.numPlanes(); plane++) {
-    auto color_type = viz::ToClosestSkColorType(true, dest_format, plane);
+    auto color_type = viz::ToClosestSkColorType(dest_format, plane);
     auto plane_size =
         dest_format.GetPlaneSize(plane, gfx::Size(src_width, src_height));
     SkImageInfo src_info =
@@ -2347,15 +2352,23 @@ bool RasterDecoderImpl::DoWritePixelsINTERNALDirectTextureUpload(
         &pixmap, /*numLevels=*/1, dest_shared_image->surface_origin(),
         /*finishedProc=*/nullptr, /*finishedContext=*/nullptr);
   } else {
-    CHECK(graphite_context());
+    CHECK(graphite_shared_context());
+    auto graphite_texture_ref =
+        dest_scoped_access->graphite_texture_holder(/*plane_index=*/0);
+    auto* graphite_texture_ptr = graphite_texture_ref.release();
+    using graphite_texture_ptr_type = decltype(graphite_texture_ptr);
+    auto release_proc = [](void* context, skgpu::CallbackResult) {
+      static_cast<graphite_texture_ptr_type>(context)->Release();
+    };
     written = graphite_recorder()->updateBackendTexture(
-        dest_scoped_access->graphite_texture(/*plane_index=*/0), &pixmap,
-        /*numLevels=*/1);
+        graphite_texture_ptr->texture(), &pixmap,
+        /*numLevels=*/1, release_proc, graphite_texture_ptr);
   }
 
   shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
-  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores),
-                                           /*need_graphite_submit=*/true);
+  shared_context_state_->SubmitIfNecessary(
+      std::move(end_semaphores),
+      dest_scoped_access->NeedGraphiteContextSubmit());
 
   return written;
 }
@@ -2680,14 +2693,14 @@ void RasterDecoderImpl::DoReadbackYUVImagePixelsINTERNAL(
   // While this function indicates it's asynchronous, the DoFinish() call below
   // ensures it completes synchronously.
   YUVReadbackResult yuv_result;
-  if (graphite_context()) {
+  if (graphite_shared_context()) {
     // SkImage/SkSurface asyncRescaleAndReadPixels methods won't be implemented
     // for Graphite. Instead the equivalent methods will be on Graphite Context.
-    graphite_context()->asyncRescaleAndReadPixelsYUV420(
+    graphite_shared_context()->asyncRescaleAndReadPixelsYUV420(
         sk_image.get(), kJPEG_Full_SkYUVColorSpace, SkColorSpace::MakeSRGB(),
         src_rect, dst_size, SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedLinear, &OnReadYUVImagePixelsDone,
-        &yuv_result);
+        SkImage::RescaleMode::kRepeatedLinear,
+        base::BindOnce(&OnReadYUVImagePixelsDone), &yuv_result);
   } else {
     CHECK(gr_context());
     sk_image->asyncRescaleAndReadPixelsYUV420(
@@ -2791,6 +2804,19 @@ void RasterDecoderImpl::DeletePaintCachePathsINTERNALHelper(
   paint_cache_->Purge(cc::PaintCacheDataType::kPath, n, paint_cache_ids);
 }
 
+void RasterDecoderImpl::DeletePaintCacheEffectsINTERNALHelper(
+    GLsizei n,
+    const volatile GLuint* paint_cache_ids) {
+  if (!use_gpu_raster_) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION,
+                       "glDeletePaintCacheEntriesINTERNAL",
+                       "No chromium raster support");
+    return;
+  }
+  paint_cache_->Purge(cc::PaintCacheDataType::kSkRuntimeEffect, n,
+                      paint_cache_ids);
+}
+
 void RasterDecoderImpl::DoClearPaintCacheINTERNAL() {
   if (!use_gpu_raster_) {
     LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glClearPaintCacheINTERNAL",
@@ -2867,8 +2893,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
   DCHECK(locked_handles_.empty());
   DCHECK(!raster_canvas_);
 
-  SkColorType sk_color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, shared_image->format());
+  SkColorType sk_color_type = viz::ToClosestSkColorType(shared_image->format());
 
   int final_msaa_count;
   uint32_t flags;
@@ -2880,7 +2905,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
       break;
     case kMSAA:
       // Graphite operates as in the kDMSAA case below.
-      if (graphite_context()) {
+      if (graphite_shared_context()) {
         final_msaa_count = 1;
         flags = SkSurfaceProps::kDynamicMSAA_Flag;
         break;
@@ -3267,7 +3292,7 @@ void RasterDecoderImpl::DoCreateTransferCacheEntryINTERNAL(
                                          entry_id),
           handle, use_gpu ? gr_context() : nullptr,
           use_gpu ? graphite_recorder() : nullptr,
-          base::make_span(data_memory, data_size))) {
+          base::span(data_memory, data_size))) {
     LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glCreateTransferCacheEntryINTERNAL",
                        "Failure to deserialize transfer cache entry.");
     return;
@@ -3341,7 +3366,6 @@ void RasterDecoderImpl::RestoreStateForAttrib(GLuint attrib_index,
 // Include the auto-generated part of this file. We split this because it means
 // we can easily edit the non-auto generated parts right here in this file
 // instead of having to edit some template or the code generator.
-#include "build/chromeos_buildflags.h"
 #include "gpu/command_buffer/service/raster_decoder_autogen.h"
 
 }  // namespace raster

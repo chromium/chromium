@@ -64,8 +64,7 @@ api::audio::DeviceType GetAsAudioApiDeviceType(AudioDeviceType type) {
       return api::audio::DeviceType::kOther;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return api::audio::DeviceType::kOther;
+  NOTREACHED();
 }
 
 }  // namespace

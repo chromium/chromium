@@ -9,6 +9,10 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 
+  if (is_win) {
+    public_deps += [ "//url/mojom:url_mojom_gurl" ]
+  }
+
   cpp_typemaps = [
     {
       types = [
@@ -28,6 +32,7 @@ mojom("mojo_bindings") {
       traits_sources = [
         "//content/browser/tracing/trace_report/trace_report_mojom_traits.cc",
       ]
+      traits_deps = [ "//sql:sql_name_variants" ]
     },
   ]
 }

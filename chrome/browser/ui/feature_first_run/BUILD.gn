@@ -1,0 +1,44 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("feature_first_run") {
+  sources = [
+    "autofill_ai_first_run_dialog.h",
+    "feature_first_run_helper.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("impl") {
+  sources = [
+    "autofill_ai_first_run_dialog.cc",
+    "feature_first_run_helper.cc",
+  ]
+
+  deps = [
+    ":feature_first_run",
+    "//chrome/app/theme:theme_resources_grit",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/color:color_headers",
+    "//components/autofill_ai/core/browser",
+    "//components/constrained_window",
+    "//components/strings:components_strings_grit",
+    "//ui/strings:ui_strings_grit",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "feature_first_run_helper_browsertest.cc" ]
+  deps = [
+    ":feature_first_run",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

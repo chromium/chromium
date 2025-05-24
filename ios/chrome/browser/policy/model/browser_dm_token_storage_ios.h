@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_DM_TOKEN_STORAGE_IOS_H_
 #define IOS_CHROME_BROWSER_POLICY_MODEL_BROWSER_DM_TOKEN_STORAGE_IOS_H_
 
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -14,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
 namespace policy {
 

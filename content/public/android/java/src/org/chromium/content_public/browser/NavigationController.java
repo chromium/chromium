@@ -4,12 +4,14 @@
 
 package org.chromium.content_public.browser;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * The NavigationController Java wrapper to allow communicating with the native
  * NavigationController object.
  */
+@NullMarked
 public interface NavigationController {
     /**
      * @return Whether back navigation is possible from the "current entry".
@@ -95,7 +97,7 @@ public interface NavigationController {
      * Get a copy of the navigation history of NavigationController.
      * @return navigation history of NavigationController.
      */
-    public NavigationHistory getNavigationHistory();
+    public @Nullable NavigationHistory getNavigationHistory();
 
     /**
      * Get the navigation history of NavigationController from current navigation entry index
@@ -105,7 +107,8 @@ public interface NavigationController {
      * diection.
      * @return navigation history by keeping above constraints.
      */
-    public NavigationHistory getDirectedNavigationHistory(boolean isForward, int itemLimit);
+    public @Nullable NavigationHistory getDirectedNavigationHistory(
+            boolean isForward, int itemLimit);
 
     /** Clears SSL preferences for this NavigationController. */
     public void clearSslPreferences();
@@ -129,7 +132,7 @@ public interface NavigationController {
      * @param index Index to retrieve the NavigationEntry for.
      * @return Entry containing info about the navigation, null if the index is out of bounds.
      */
-    public NavigationEntry getEntryAtIndex(int index);
+    public @Nullable NavigationEntry getEntryAtIndex(int index);
 
     /**
      * @return The {@link NavigationEntry} that is appropriate to be displayed in the address bar.
@@ -141,7 +144,7 @@ public interface NavigationController {
      * @return The pending {@link NavigationEntry} for this controller or {@code null} if none
      *         exists.
      */
-    public NavigationEntry getPendingEntry();
+    public @Nullable NavigationEntry getPendingEntry();
 
     /**
      * @return The index of the last committed entry.
@@ -167,13 +170,22 @@ public interface NavigationController {
      * @param key The data key.
      * @return The data value, or null if not found.
      */
+    @Nullable
     String getEntryExtraData(int index, String key);
 
     /**
      * Sets extra data on the {@link NavigationEntry} at {@code index}.
+     *
      * @param index The index of the navigation entry.
      * @param key The data key.
      * @param value The data value.
      */
     void setEntryExtraData(int index, String key, String value);
+
+    /**
+     * Copies the navigation controller state from {@param sourceNavigationController} to this.
+     *
+     * @param sourceNavigationController The {@link NavigationController} to copy from.
+     */
+    void copyStateFrom(NavigationController sourceNavigationController);
 }

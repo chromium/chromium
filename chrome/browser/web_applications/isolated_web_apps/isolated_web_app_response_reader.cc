@@ -34,10 +34,13 @@ network::ResourceRequest RemoveQuery(
 
 IsolatedWebAppResponseReaderImpl::IsolatedWebAppResponseReaderImpl(
     std::unique_ptr<SignedWebBundleReader> reader,
-    TrustChecker trust_checker)
-    : reader_(std::move(reader)), trust_checker_(std::move(trust_checker)) {
-  CHECK_EQ(reader_->GetState(), SignedWebBundleReader::State::kInitialized);
-}
+    Profile& profile,
+    const web_package::SignedWebBundleId& web_bundle_id,
+    bool dev_mode)
+    : reader_(std::move(reader)),
+      profile_(profile),
+      web_bundle_id_(web_bundle_id),
+      dev_mode_(dev_mode) {}
 
 IsolatedWebAppResponseReaderImpl::~IsolatedWebAppResponseReaderImpl() = default;
 
@@ -49,10 +52,12 @@ IsolatedWebAppResponseReaderImpl::GetIntegrityBlock() {
 void IsolatedWebAppResponseReaderImpl::ReadResponse(
     const network::ResourceRequest& resource_request,
     ReadResponseCallback callback) {
-  RETURN_IF_ERROR(Error::FromTrustCheckerResult(trust_checker_.Run()),
-                  [&callback](Error error) {
-                    std::move(callback).Run(base::unexpected(std::move(error)));
-                  });
+  RETURN_IF_ERROR(
+      Error::FromTrustCheckerResult(IsolatedWebAppTrustChecker::IsTrusted(
+          *profile_, web_bundle_id_, dev_mode_)),
+      [&callback](Error error) {
+        std::move(callback).Run(base::unexpected(std::move(error)));
+      });
 
   // Remove query parameters from the request URL, if it has any. Resources
   // within Signed Web Bundles used for Isolated Web Apps never have username,
@@ -115,8 +120,7 @@ IsolatedWebAppResponseReader::Response::~Response() = default;
 void IsolatedWebAppResponseReader::Response::ReadBody(
     mojo::ScopedDataPipeProducerHandle producer_handle,
     base::OnceCallback<void(net::Error net_error)> callback) {
-  if (!reader_ ||
-      reader_->GetState() != SignedWebBundleReader::State::kInitialized) {
+  if (!reader_ || reader_->IsClosed()) {
     // The weak pointer to `reader_` might no longer be valid when this is
     // called. Also the reader might be closed.
     std::move(callback).Run(net::ERR_FAILED);

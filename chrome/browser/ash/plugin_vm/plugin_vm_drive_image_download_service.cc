@@ -100,10 +100,9 @@ plugin_vm::PluginVmInstaller::FailureReason ConvertToFailureReason(
     case google_apis::NO_CONNECTION:
       return FailureReason::DOWNLOAD_FAILED_NETWORK;
     default:
-      NOTREACHED_IN_MIGRATION();
       // This is only used to avoid compiler warnings, it is
       // not actually reachable.
-      return FailureReason::DOWNLOAD_FAILED_UNKNOWN;
+      NOTREACHED();
   }
 }
 }  // namespace

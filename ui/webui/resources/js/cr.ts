@@ -109,7 +109,7 @@ export function addWebUiListener(
     eventName: string, callback: Function): WebUiListener {
   webUiListenerMap[eventName] = webUiListenerMap[eventName] || {};
   const uid = createUid();
-  webUiListenerMap[eventName]![uid] = callback;
+  webUiListenerMap[eventName][uid] = callback;
   return {eventName: eventName, uid: uid};
 }
 

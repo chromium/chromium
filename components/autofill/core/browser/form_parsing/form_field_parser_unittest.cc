@@ -12,7 +12,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
+#include "components/autofill/core/browser/form_parsing/form_field_parser_test_api.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -34,21 +37,22 @@ class FormFieldParserTest : public FormFieldParserTestBase,
   // Parses all added fields using `ParseFormFields`.
   // Returns the number of fields parsed.
   int ParseFormFields(GeoIpCountryCode client_country = GeoIpCountryCode(""),
-                      LanguageCode language = LanguageCode("")) {
+                      LanguageCode language = LanguageCode(""),
+                      bool is_form_tag = true) {
     ParsingContext context(client_country, language,
-                           GetActivePatternFile().value());
-    FormFieldParser::ParseFormFields(context, fields_,
-                                     /*is_form_tag=*/true,
+                           GetActivePatternFile().value(),
+                           GetActiveRegexFeatures());
+    FormFieldParser::ParseFormFields(context, fields_, is_form_tag,
                                      field_candidates_map_);
     return field_candidates_map_.size();
   }
 
-  // Like `ParseFormFields()`, but using `ParseSingleFieldForms()` instead.
-  int ParseSingleFieldForms() {
+  // Like `ParseFormFields()`, but using `ParseSingleFields()` instead.
+  int ParseSingleFields() {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
-                           GetActivePatternFile().value());
-    FormFieldParser::ParseSingleFieldForms(context, fields_,
-                                           field_candidates_map_);
+                           GetActivePatternFile().value(),
+                           GetActiveRegexFeatures());
+    FormFieldParser::ParseSingleFields(context, fields_, field_candidates_map_);
     return field_candidates_map_.size();
   }
 
@@ -68,6 +72,15 @@ class FormFieldParserTest : public FormFieldParserTestBase,
     return field_candidates_map_.size();
   }
 
+  int ParseStandaloneLoyaltyCardFields() {
+    ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
+                           GetActivePatternFile().value(),
+                           GetActiveRegexFeatures());
+    FormFieldParser::ParseStandaloneLoyaltyCardFields(context, fields_,
+                                                      field_candidates_map_);
+    return field_candidates_map_.size();
+  }
+
   // FormFieldParserTestBase:
   // This function is unused in these unit tests, because FormFieldParser is not
   // a parser itself, but the infrastructure combining them.
@@ -75,8 +88,6 @@ class FormFieldParserTest : public FormFieldParserTestBase,
                                          AutofillScanner* scanner) override {
     return nullptr;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 struct MatchTestCase {
@@ -127,15 +138,15 @@ TEST_P(MatchTest, Match) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("positive_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_TRUE(FormFieldParser::MatchForTesting(context, &field, pattern,
-                                                 {MatchAttribute::kLabel}));
+    EXPECT_TRUE(FormFieldParserTestApi::Match(context, field, pattern,
+                                              {MatchAttribute::kLabel}));
   }
   for (const auto& pattern : negative_patterns) {
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
     SCOPED_TRACE("negative_pattern = " + base::UTF16ToUTF8(pattern));
-    EXPECT_FALSE(FormFieldParser::MatchForTesting(context, &field, pattern,
-                                                  {MatchAttribute::kLabel}));
+    EXPECT_FALSE(FormFieldParserTestApi::Match(context, field, pattern,
+                                               {MatchAttribute::kLabel}));
   }
 }
 
@@ -174,8 +185,8 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    EXPECT_TRUE(FormFieldParser::MatchForTesting(
-        context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
+    EXPECT_TRUE(FormFieldParserTestApi::Match(
+        context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
   {
     base::test::ScopedFeatureList feature_list;
@@ -183,59 +194,118 @@ TEST_F(FormFieldParserTest, TestParseableLabels) {
         features::kAutofillEnableSupportForParsingWithSharedLabels);
     ParsingContext context(GeoIpCountryCode(""), LanguageCode(""),
                            GetActivePatternFile().value());
-    EXPECT_FALSE(FormFieldParser::MatchForTesting(
-        context, autofill_field, u"First Name", {MatchAttribute::kLabel}));
+    EXPECT_FALSE(FormFieldParserTestApi::Match(
+        context, *autofill_field, u"First Name", {MatchAttribute::kLabel}));
   }
 }
 
-// Tests that `ParseSingleFieldForms` is called as part of `ParseFormFields`.
-TEST_F(FormFieldParserTest, ParseSingleFieldFormsInsideParseFormField) {
+// Tests that `ParseSingleFields` is called as part of `ParseFormFields`.
+TEST_F(FormFieldParserTest, ParseSingleFieldsInsideParseFormField) {
   AddTextFormFieldData("", "Phone", PHONE_HOME_CITY_AND_NUMBER);
   AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
 
-  // `ParseSingleFieldForms` should detect the promo code.
+  // `ParseSingleFields` should detect the promo code.
   EXPECT_EQ(3, ParseFormFields());
   TestClassificationExpectations();
 }
 
-// Test that `ParseSingleFieldForms` parses single field promo codes.
+// Test that `ParseSingleFields` parses single field promo codes.
 TEST_F(FormFieldParserTest, ParseFormFieldsForSingleFieldPromoCode) {
   // Parse single field promo code.
   AddTextFormFieldData("", "Promo code", MERCHANT_PROMO_CODE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 
   // Don't parse other fields.
   // UNKNOWN_TYPE is used as the expected type, which prevents it from being
   // part of the expectations in `TestClassificationExpectations()`.
   AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 }
 
-// Test that `ParseSingleFieldForms` parses single field IBAN.
-TEST_F(FormFieldParserTest, ParseSingleFieldFormsIban) {
+// Test that `ParseSingleFields` parses single field IBAN.
+TEST_F(FormFieldParserTest, ParseSingleFieldsIban) {
   // Parse single field IBAN.
   AddTextFormFieldData("", "IBAN", IBAN_VALUE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
   TestClassificationExpectations();
 
   // Don't parse other fields.
   // UNKNOWN_TYPE is used as the expected type, which prevents it from being
   // part of the expectations in `TestClassificationExpectations()`.
   AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
-  EXPECT_EQ(1, ParseSingleFieldForms());
+  EXPECT_EQ(1, ParseSingleFields());
+  TestClassificationExpectations();
+}
+
+// Tests that loyalty cards are parsed as part of `ParseFormFields`.
+TEST_F(FormFieldParserTest, ParseFormFieldsFieldsLoyaltyCard) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillEnableLoyaltyCardsFilling};
+  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
+  AddTextFormFieldData("", "Frequent Flyer", LOYALTY_MEMBERSHIP_ID);
+
+  // `ParseSingleFields` should detect the loyalty card field.
+  EXPECT_EQ(2, ParseFormFields());
+  TestClassificationExpectations();
+}
+
+// Test that `ParseSingleFields` parses a single loyalty card field.
+// LOYALTY_MEMBERSHIP_ID is allowlisted to be produced by the field
+// classification even if the form does not have >= 3 recognized field types.
+TEST_F(FormFieldParserTest, ParseStandaloneLoyaltyCardFields) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAutofillEnableLoyaltyCardsFilling,
+       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+      {});
+
+  // Parse single field loyalty card.
+  AddTextFormFieldData("", "frequent-flyer", LOYALTY_MEMBERSHIP_ID);
+  EXPECT_EQ(1, ParseStandaloneLoyaltyCardFields());
+  TestClassificationExpectations();
+
+  // Don't parse other fields.
+  // UNKNOWN_TYPE is used as the expected type, which prevents it from being
+  // part of the expectations in `TestClassificationExpectations()`.
+  AddTextFormFieldData("", "Address line 1", UNKNOWN_TYPE);
+  EXPECT_EQ(1, ParseStandaloneLoyaltyCardFields());
+  TestClassificationExpectations();
+}
+
+// Tests that email or loyalty cards fields are parsed as
+// `EMAIL_OR_LOYALTY_MEMBERSHIP_ID`.
+TEST_F(FormFieldParserTest, ParseFormFieldsFieldsEmailOrLoyaltyCard) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitWithFeatures(
+      {features::kAutofillEnableLoyaltyCardsFilling,
+       features::kAutofillEnableEmailOrLoyaltyCardsFilling},
+      {});
+  AddTextFormFieldData("", "Email Or Loyalty Card",
+                       EMAIL_OR_LOYALTY_MEMBERSHIP_ID);
+  AddTextFormFieldData("", "Password", UNKNOWN_TYPE);
+
+  // `ParseFormFields` should detect the email or loyalty card field.
+  EXPECT_EQ(1, ParseFormFields());
   TestClassificationExpectations();
 }
 
 // Test that `ParseStandaloneCvcField` parses standalone CVC fields.
 TEST_F(FormFieldParserTest, ParseStandaloneCVCFields) {
-  base::test::ScopedFeatureList scoped_feature(
-      features::kAutofillParseVcnCardOnFileStandaloneCvcFields);
-
   AddTextFormFieldData("", "CVC", CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   EXPECT_EQ(1, ParseStandaloneCVCFields());
+  TestClassificationExpectations();
+}
+
+// Test that email fields are parsed even when the field is not in a <form>.
+TEST_F(FormFieldParserTest, ParseStandaloneEmailFieldsOutsiteOfFormTag) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillEnableEmailHeuristicOutsideForms};
+  AddTextFormFieldData("", "Email", EMAIL_ADDRESS);
+  EXPECT_EQ(1, ParseFormFields(GeoIpCountryCode(""), LanguageCode(""),
+                               /*is_form_tag=*/false));
   TestClassificationExpectations();
 }
 
@@ -304,7 +374,7 @@ TEST_P(ParseInAnyOrderTest, ParseInAnyOrder) {
   }
 
   EXPECT_EQ(
-      FormFieldParser::ParseInAnyOrderForTesting(&scanner, fields_and_parsers),
+      FormFieldParserTestApi::ParseInAnyOrder(&scanner, fields_and_parsers),
       expect_success);
 
   if (expect_success) {
@@ -378,6 +448,55 @@ TEST_F(FormFieldParserTest, ParseStandaloneEmailSimilarToAddressName) {
   AddTextFormFieldData("state", "State", ADDRESS_HOME_STATE);
   AddTextFormFieldData("zip", "Zip", ADDRESS_HOME_ZIP);
   EXPECT_EQ(4, ParseFormFields(GeoIpCountryCode("BR"), LanguageCode("es")));
+  TestClassificationExpectations();
+}
+
+// Tests that:
+// - High quality label matches are prioritized over low quality label matches.
+// - Names matches are considered equally important as high quality label
+//   matches and ties are broken by parser level scores.
+TEST_F(FormFieldParserTest, LabelPrioritization) {
+  base::test::ScopedFeatureList feature{
+      features::kAutofillBetterLocalHeuristicPlaceholderSupport};
+
+  // - High quality name-type label.
+  // - Low quality address-type placeholder.
+  //   => High quality name-type wins.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, NAME_FULL);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kForId);
+
+  // - Low quality name-type label.
+  // - High quality address-type placeholder.
+  //   => Placeholder wins.
+  // (The expected type is address line 2, as the address parser qualifies the
+  //  first field as address line 1 internally, but this is overruled by the
+  //  higher priority name type. In practice rationalisation would fix the type)
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, ADDRESS_HOME_LINE2);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kDivTable);
+
+  // - High quality name-type label.
+  // - Low quality address-type placeholder.
+  // - Email-type name.
+  //   => Name wins because `kBaseEmailParserScore` > `kBaseNameParserScore`.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"email",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, EMAIL_ADDRESS);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kForId);
+
+  // - Low quality name-type label.
+  // - High quality address-type placeholder.
+  // - Email-type name.
+  //   => Name wins because `kBaseEmailParserScore` > `kBaseAddressParserScore`.
+  AddFormFieldData(FormControlType::kInputText, /*name=*/"email",
+                   /*label=*/"Full name", /*placeholder=*/"Street address",
+                   /*max_length=*/0, EMAIL_ADDRESS);
+  fields_.back()->set_label_source(FormFieldData::LabelSource::kDivTable);
+
+  EXPECT_EQ(4, ParseFormFields());
   TestClassificationExpectations();
 }
 

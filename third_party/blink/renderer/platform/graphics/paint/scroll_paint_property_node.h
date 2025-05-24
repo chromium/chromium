@@ -70,7 +70,7 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
     bool max_scroll_offset_affected_by_page_scale = false;
     CompositedScrollingPreference composited_scrolling_preference =
         CompositedScrollingPreference::kDefault;
-    MainThreadScrollingReasons main_thread_scrolling_reasons =
+    MainThreadScrollingReasons main_thread_repaint_reasons =
         cc::MainThreadScrollingReason::kNotScrollingOnMain;
     // The scrolling element id is stored directly on the scroll node and not
     // on the associated TransformPaintPropertyNode used for scroll offset.
@@ -170,15 +170,14 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
     return state_.composited_scrolling_preference;
   }
 
-  // Note that this doesn't include main-thread scrolling reasons computed
+  // Note that this doesn't include main-thread repaint reasons computed
   // after paint.
-  MainThreadScrollingReasons GetMainThreadScrollingReasons() const {
-    return state_.main_thread_scrolling_reasons;
+  MainThreadScrollingReasons GetMainThreadRepaintReasons() const {
+    return state_.main_thread_repaint_reasons;
   }
 
-  // Main thread scrolling reason for background attachment fixed descendants.
-  bool HasBackgroundAttachmentFixedDescendants() const {
-    return state_.main_thread_scrolling_reasons &
+  bool RequiresMainThreadForBackgroundAttachmentFixed() const {
+    return state_.main_thread_repaint_reasons &
            cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
   }
 
@@ -205,6 +204,8 @@ class PLATFORM_EXPORT ScrollPaintPropertyNode final
     DCHECK(!state_.compositor_element_id ||
            NamespaceFromCompositorElementId(state_.compositor_element_id) ==
                CompositorElementIdNamespace::kScroll);
+    DCHECK(cc::MainThreadScrollingReason::AreRepaintReasons(
+        state_.main_thread_repaint_reasons));
 #endif
   }
 

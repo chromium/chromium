@@ -11,6 +11,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/test/extension_state_tester.h"
 
 // The blocklist tests rely on the safe-browsing database.
@@ -79,7 +80,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, GreylistedExtensionDisabled) {
                       BLOCKLISTED_POTENTIALLY_UNWANTED);
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
 
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
@@ -107,7 +108,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, GreylistDontEnableManuallyDisabled) {
   service()->Init();
 
   // Manually disable.
-  service()->DisableExtension(kGood0, disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(kGood0, {disable_reason::DISABLE_USER_ACTION});
 
   test_blocklist.SetBlocklistState(kGood0, BLOCKLISTED_CWS_POLICY_VIOLATION,
                                    true);
@@ -122,18 +123,18 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, GreylistDontEnableManuallyDisabled) {
   // All extensions disabled.
   EXPECT_TRUE(state_tester.ExpectDisabledWithReasons(
       kGood0,
-      disable_reason::DISABLE_GREYLIST | disable_reason::DISABLE_USER_ACTION));
+      {disable_reason::DISABLE_GREYLIST, disable_reason::DISABLE_USER_ACTION}));
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kGood1, disable_reason::DISABLE_GREYLIST));
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kGood2, disable_reason::DISABLE_GREYLIST));
 
   // Greylisted extension can be enabled.
-  service()->EnableExtension(kGood1);
+  registrar()->EnableExtension(kGood1);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood1));
 
   // kGood1 is now manually disabled.
-  service()->DisableExtension(kGood1, disable_reason::DISABLE_USER_ACTION);
+  registrar()->DisableExtension(kGood1, {disable_reason::DISABLE_USER_ACTION});
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kGood1, disable_reason::DISABLE_USER_ACTION));
 
@@ -235,7 +236,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
   // The acknowledged state should not be cleared when the extension is
   // re-enabled.
@@ -279,7 +280,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
   // The acknowledged state should not be cleared when the extension is
   // re-enabled.
@@ -335,7 +336,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 
   // Set the blocklist to another greylist state.
@@ -386,7 +387,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
       extension_prefs));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 
   // Set the blocklist to the original blocklist state.
@@ -425,7 +426,7 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest, AcknowledgedStateBackFilled) {
       kGood0, disable_reason::DISABLE_GREYLIST));
 
   // Now user enables kGood0.
-  service()->EnableExtension(kGood0);
+  registrar()->EnableExtension(kGood0);
   EXPECT_TRUE(state_tester.ExpectEnabled(kGood0));
 
   // To simulate an old Chrome version, the acknowledged state is cleared.
@@ -465,7 +466,8 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
   EXPECT_TRUE(state_tester.ExpectBlocklisted(kGood0));
 
   // Now uninstall kGood0.
-  service()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
   // kGood0 should be removed from the blocklist.
   EXPECT_EQ(0u, registry()->blocklisted_extensions().size());
 
@@ -498,7 +500,8 @@ TEST_F(SafeBrowsingVerdictHandlerUnitTest,
   test_blocklist.SetBlocklistState(kGood0, BLOCKLISTED_MALWARE, true);
 
   // Uninstalled the extension in the middle of the update.
-  service()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  registrar()->UninstallExtension(kGood0, UNINSTALL_REASON_FOR_TESTING,
+                                  nullptr);
   // Should not crash when the update finishes.
   task_environment()->RunUntilIdle();
 }

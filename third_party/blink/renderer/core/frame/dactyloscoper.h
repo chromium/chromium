@@ -19,9 +19,12 @@
 
 namespace blink {
 
+namespace bindings {
+class EnumerationBase;
+}  // namespace bindings
+
 class ExecutionContext;
 class SVGStringListTearOff;
-class FontDescription;
 
 class CORE_EXPORT Dactyloscoper {
   DISALLOW_NEW();
@@ -44,7 +47,6 @@ class CORE_EXPORT Dactyloscoper {
 
   static void TraceFontLookup(ExecutionContext* execution_context,
                               const AtomicString& name,
-                              const FontDescription& font_description,
                               FontLookupType lookup_type);
 
   Dactyloscoper();
@@ -56,6 +58,9 @@ class CORE_EXPORT Dactyloscoper {
   static void RecordDirectSurface(ExecutionContext*,
                                   WebFeature,
                                   const IdentifiableToken&);
+  static void RecordDirectSurface(ExecutionContext*,
+                                  WebFeature,
+                                  const bindings::EnumerationBase&);
   static void RecordDirectSurface(ExecutionContext*, WebFeature, const String&);
   static void RecordDirectSurface(ExecutionContext*,
                                   WebFeature,

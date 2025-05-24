@@ -85,6 +85,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
 
   VpdStatus GetVpdStatus() const override;
 
+  LoadingState GetLoadingState() const override;
+
  private:
   using MachineFlags = base::flat_map<std::string, bool>;
 
@@ -121,9 +123,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SYSTEM) StatisticsProviderImpl
   std::optional<std::string_view> GetRegionalInformation(
       std::string_view name) const;
 
+  // Shorthand to check internal state if loading has already started.
+  bool HasLoadingStarted() const;
+
   StatisticsSources sources_;
 
-  bool load_statistics_started_;
+  LoadingState loading_state_;
   NameValuePairsParser::NameValueMap machine_info_;
   MachineFlags machine_flags_;
   // Statistics extracted from region file and associated with `kRegionKey`

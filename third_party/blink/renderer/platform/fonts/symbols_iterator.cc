@@ -21,10 +21,9 @@ using emoji_text_iter_t = UTF16RagelIterator;
 #include "third_party/emoji-segmenter/src/emoji_presentation_scanner.c"
 }  // namespace
 
-SymbolsIterator::SymbolsIterator(const UChar* buffer, unsigned buffer_size)
-    : cursor_(0), next_token_end_(0), next_token_emoji_(false) {
-  if (buffer_size) {
-    buffer_iterator_ = UTF16RagelIterator(buffer, buffer_size);
+SymbolsIterator::SymbolsIterator(base::span<const UChar> buffer) {
+  if (!buffer.empty()) {
+    buffer_iterator_ = UTF16RagelIterator(buffer);
 
     next_token_end_ = cursor_ + (scan_emoji_presentation(
                                      buffer_iterator_, buffer_iterator_.end(),
@@ -64,10 +63,9 @@ bool SymbolsIterator::Consume(unsigned* symbols_limit,
                                      &next_token_emoji_, &next_token_has_vs_) -
                                  buffer_iterator_);
   } while (current_token_emoji == next_token_emoji_ &&
-           (!RuntimeEnabledFeatures::FontVariantEmojiEnabled() ||
-            curr_has_vs == next_token_has_vs_));
+           (curr_has_vs == next_token_has_vs_));
 
-  if (RuntimeEnabledFeatures::FontVariantEmojiEnabled() && curr_has_vs) {
+  if (curr_has_vs) {
     *font_fallback_priority = current_token_emoji
                                   ? FontFallbackPriority::kEmojiEmojiWithVS
                                   : FontFallbackPriority::kEmojiTextWithVS;

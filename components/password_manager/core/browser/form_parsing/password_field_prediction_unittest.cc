@@ -10,9 +10,9 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/signatures.h"
@@ -48,33 +48,28 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     FormControlType form_control_type;
     FieldType input_type;
     FieldType expected_type;
-    bool may_use_prefilled_placeholder;
     std::vector<FieldType> additional_types;
   };
   const auto test_fields = std::to_array<TestField>(
-      {{"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE,
-        false},
+      {{"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE},
        // Password Manager is interested only in credential related types.
-       {"Email", FormControlType::kInputEmail, EMAIL_ADDRESS, EMAIL_ADDRESS,
-        false},
-       {"username", FormControlType::kInputText, USERNAME, USERNAME, true},
-       {"Password", FormControlType::kInputPassword, PASSWORD, PASSWORD, false},
+       {"Email", FormControlType::kInputEmail, EMAIL_ADDRESS, EMAIL_ADDRESS},
+       {"username", FormControlType::kInputText, USERNAME, USERNAME},
+       {"Password", FormControlType::kInputPassword, PASSWORD, PASSWORD},
        {"confirm_password", FormControlType::kInputPassword,
-        CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD, true},
+        CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD},
        // username in |additional_types| takes precedence if the feature is
        // enabled.
        {"email",
         FormControlType::kInputText,
         EMAIL_ADDRESS,
         USERNAME,
-        false,
         {USERNAME}},
        // cvc in |additional_types| takes precedence if the feature is enabled.
        {"cvc",
         FormControlType::kInputPassword,
         PASSWORD,
         CREDIT_CARD_VERIFICATION_CODE,
-        false,
         {CREDIT_CARD_VERIFICATION_CODE}},
        // `CREDIT_CARD_NUMBER` takes precedence over any credential related
        // types.
@@ -82,14 +77,12 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
         FormControlType::kInputPassword,
         PASSWORD,
         CREDIT_CARD_NUMBER,
-        false,
         {CREDIT_CARD_NUMBER}},
        // non-password, non-cvc types in |additional_types| are ignored.
        {"email",
         FormControlType::kInputText,
         UNKNOWN_TYPE,
         UNKNOWN_TYPE,
-        false,
         {EMAIL_ADDRESS}}});
 
   FormData form_data;
@@ -107,8 +100,6 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     for (FieldType type : test_fields[i].additional_types) {
       prediction.server_predictions.push_back(CreateFieldPrediction(type));
     }
-    prediction.may_use_prefilled_placeholder =
-        test_fields[i].may_use_prefilled_placeholder;
     autofill_predictions.insert({field.global_id(), std::move(prediction)});
     test_api(form_data).Append(std::move(field));
   }
@@ -127,8 +118,6 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     const PasswordFieldPrediction& actual_prediction =
         actual_predictions.fields[i];
     EXPECT_EQ(test_fields[i].expected_type, actual_prediction.type);
-    EXPECT_EQ(test_fields[i].may_use_prefilled_placeholder,
-              actual_prediction.may_use_prefilled_placeholder);
     EXPECT_EQ(CalculateFieldSignatureForField(form_data.fields()[i]),
               actual_prediction.signature);
   }
@@ -225,7 +214,10 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
        CredentialFieldType::kNonCredential},
       {"Not password", NOT_PASSWORD, CredentialFieldType::kNonCredential},
       {"Not username", NOT_USERNAME, CredentialFieldType::kNonCredential},
-      {"OTP", ONE_TIME_CODE, CredentialFieldType::kNonCredential}};
+      {"OTP", ONE_TIME_CODE, CredentialFieldType::kNonCredential},
+      {"Single username with intermediate values",
+       SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
+       CredentialFieldType::kSingleUsername}};
 
   for (const TestCase& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
@@ -258,39 +250,10 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   expected_result.fields.push_back(
       {single_username_field.renderer_id(),
        CalculateFieldSignatureForField(single_username_field),
-       autofill::SINGLE_USERNAME, /*may_use_prefilled_placeholder=*/false,
-       /*is_override=*/true});
+       autofill::SINGLE_USERNAME, /*is_override=*/true});
 
   EXPECT_EQ(ConvertToFormPredictions(driver_id, form, autofill_predictions),
             expected_result);
-}
-
-// Tests that new single username server prediction with enabled feature is
-// considered as single username.
-// TODO: crbug/40925827 - Move the test under
-// `FormPredictionsTest.DeriveFromFieldType` once the feature is enabled by
-// default.
-TEST(FormPredictionsTest, SingleUsernameWithIntermediateValues_EnabledFeature) {
-  base::test::ScopedFeatureList feature_list(
-      /*enable_feature=*/features::
-          kUsernameFirstFlowWithIntermediateValuesPredictions);
-  EXPECT_EQ(
-      DeriveFromFieldType(autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES),
-      CredentialFieldType::kSingleUsername);
-}
-
-// Tests that new single username server prediction with disabled feature is not
-// considered as credential field.
-// TODO: crbug/40925827 - Delete the test once the feature is enabled by
-// default.
-TEST(FormPredictionsTest,
-     SingleUsernameWithIntermediateValues_DisabledFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kUsernameFirstFlowWithIntermediateValuesPredictions);
-  EXPECT_EQ(
-      DeriveFromFieldType(autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES),
-      CredentialFieldType::kNone);
 }
 
 }  // namespace

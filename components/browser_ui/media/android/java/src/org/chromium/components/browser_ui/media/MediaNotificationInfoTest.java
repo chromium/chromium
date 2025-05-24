@@ -90,7 +90,6 @@ public class MediaNotificationInfoTest {
         assertNotNull(info);
 
         // Make sure hashCode() doesn't crash.
-        int hashValue = info.hashCode();
-        assertNotNull(hashValue);
+        info.hashCode();
     }
 }

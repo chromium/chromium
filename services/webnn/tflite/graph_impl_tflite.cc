@@ -4,29 +4,38 @@
 
 #include "services/webnn/tflite/graph_impl_tflite.h"
 
+#include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/to_vector.h"
+#include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notimplemented.h"
+#include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
+#include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/queueable_resource_state_base.h"
 #include "services/webnn/resource_task.h"
-#include "services/webnn/tflite/buffer_content.h"
+#include "services/webnn/tflite/buffer_content_tflite.h"
 #include "services/webnn/tflite/context_impl_tflite.h"
 #include "services/webnn/tflite/graph_builder_tflite.h"
 #include "services/webnn/tflite/op_resolver.h"
 #include "services/webnn/tflite/tensor_impl_tflite.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_graph_impl.h"
+#include "services/webnn/webnn_switches.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter_builder.h"
 #include "third_party/tflite/src/tensorflow/lite/stderr_reporter.h"
@@ -39,6 +48,24 @@
 namespace webnn::tflite {
 
 namespace {
+
+void DumpModelToFile(const flatbuffers::DetachedBuffer& model_content) {
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(
+          [](std::vector<uint8_t> data) {
+            static uint64_t dump_count = 0;
+            base::FilePath dump_directory =
+                base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+                    switches::kWebNNTfliteDumpModel);
+            base::FilePath dump_path = dump_directory.AppendASCII(
+                base::StringPrintf("model%d.tflite", dump_count++));
+            base::WriteFile(dump_path, data);
+          },
+          base::ToVector(model_content)));
+}
 
 std::string_view TfLiteStatusToString(TfLiteStatus status) {
   switch (status) {
@@ -60,6 +87,8 @@ std::string_view TfLiteStatusToString(TfLiteStatus status) {
       return "unresolved ops";
     case kTfLiteCancelled:
       return "cancelled";
+    case kTfLiteOutputShapeNotKnown:
+      return "output shape not known";
   }
 }
 
@@ -78,20 +107,14 @@ class GraphImplTflite::ComputeResources {
  public:
   static base::expected<std::unique_ptr<ComputeResources>, mojom::ErrorPtr>
   Create(WebNNContextImpl* context,
-         const mojom::GraphInfo& graph_info,
-         const base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>&
-             constant_operands) {
+         flatbuffers::DetachedBuffer buffer,
+         std::vector<uint8_t> buffer_data,
+         const base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
+             constant_operands,
+         bool graph_requires_fp32_precision) {
     auto self = std::make_unique<ComputeResources>();
 
-    ASSIGN_OR_RETURN(
-        self->model_content_,
-        GraphBuilderTflite::CreateAndBuild(context->properties(), graph_info,
-                                           constant_operands),
-        [](std::string error) {
-          return mojom::Error::New(mojom::Error::Code::kNotSupportedError,
-                                   std::move(error));
-        });
-
+    self->model_content_ = std::move(buffer);
     self->model_ = ::tflite::FlatBufferModel::BuildFromBuffer(
         reinterpret_cast<const char*>(self->model_content_.data()),
         self->model_content_.size(), ::tflite::DefaultErrorReporter());
@@ -101,14 +124,26 @@ class GraphImplTflite::ComputeResources {
                             "Unable to build flatbuffer model"));
     }
 
-    int num_threads =
-        context->options().thread_count_hint != 0
-            ? static_cast<int>(context->options().thread_count_hint)
-            : -1;  // Let the TFLite runtime decide.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kWebNNTfliteDumpModel)) {
+      DumpModelToFile(self->model_content_);
+    }
 
-    OpResolver op_resolver(context->options());
-    ::tflite::InterpreterBuilder builder(*self->model_, op_resolver);
-    builder.SetNumThreads(num_threads);
+    OpResolver op_resolver(context->options(), graph_requires_fp32_precision);
+
+    self->model_weights_ = std::move(buffer_data);
+    self->allocation_ = std::make_unique<::tflite::MemoryAllocation>(
+        self->model_weights_.data(), self->model_weights_.size(),
+        ::tflite::DefaultErrorReporter());
+
+    ::tflite::InterpreterBuilder builder(
+        self->model_->GetModel(), op_resolver, ::tflite::DefaultErrorReporter(),
+        /*options=*/nullptr, self->allocation_.get());
+    // On a lower-end system, use only one thread for 1 or 2 cores, use half
+    // of the cores for less than 8 cores. On systems with more cores, the max
+    // number threads is 4 to be used for inference.
+    builder.SetNumThreads(
+        std::min(4, (base::SysInfo::NumberOfProcessors() + 1) / 2));
     TfLiteStatus status = builder(&self->interpreter_);
     if (status != kTfLiteOk) {
       return base::unexpected(
@@ -150,69 +185,13 @@ class GraphImplTflite::ComputeResources {
 #endif
   }
 
-  mojom::ComputeResultPtr DoCompute(NamedBuffers named_inputs) {
-    InitializeBuffersForCompute();
-
-    for (int tensor_idx : interpreter_->inputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      auto it = named_inputs.find(tensor->name);
-      // The caller guarantees that all expected tensors have been provided.
-      CHECK(it != named_inputs.end());
-      compute_buffers_.at(tensor_idx)->AsSpan().copy_from(it->second);
-    }
-
-    std::vector<std::pair<int, raw_ref<const BufferContent>>> indexed_buffers;
-    indexed_buffers.reserve(compute_buffers_.size());
-    base::ranges::transform(
-        compute_buffers_, std::back_inserter(indexed_buffers),
-        [](const auto& index_and_buffer) {
-          return std::make_pair(index_and_buffer.first,
-                                raw_ref(*index_and_buffer.second));
-        });
-
-    TfLiteStatus status = InvokeInterpreter(std::move(indexed_buffers));
-    if (status != kTfLiteOk) {
-      return ToError<mojom::ComputeResult>(
-          mojom::Error::Code::kUnknownError,
-          base::StrCat({"Failed to compute: ", TfLiteStatusToString(status)}));
-    }
-
-    std::vector<std::pair<std::string, mojo_base::BigBuffer>> named_outputs;
-    named_outputs.reserve(interpreter_->outputs().size());
-    for (int tensor_idx : interpreter_->outputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      // Uses `SpanFromTensor()` because `tensor` may or may not be backed by
-      // one of our custom allocations.
-      named_outputs.emplace_back(tensor->name,
-                                 mojo_base::BigBuffer(SpanFromTensor(tensor)));
-    }
-
-    return mojom::ComputeResult::NewNamedOutputs(std::move(named_outputs));
-  }
-
-  void DoDispatch(base::flat_map<int, raw_ref<const BufferContent>> tensors) {
-    TfLiteStatus status = InvokeInterpreter(tensors);
-    if (status != kTfLiteOk) {
-      LOG(ERROR) << "Failed to compute: " << TfLiteStatusToString(status);
-      return;
-    }
-
-    // Copy the outputs that weren't configured as custom allocations.
-    for (int tensor_idx : interpreter_->outputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      if (tensor->allocation_type == kTfLitePersistentRo) {
-        tensors.at(tensor_idx)->AsSpan().copy_from(SpanFromTensor(tensor));
-      }
-    }
-  }
-
-  TfLiteStatus InvokeInterpreter(
-      const base::flat_map<int, raw_ref<const BufferContent>>& tensors) {
-    TfLiteStatus status;
-    bool needs_reallocate_tensors = false;
+  void DoDispatch(base::flat_map<int, raw_ref<const BufferContent>> tensors,
+                  ScopedTrace scoped_trace) {
+    scoped_trace.AddStep("Set up intepreter");
 
     // TODO: Detect when `tensors` hasn't changed since the last invocation and
     // this step can be skipped.
+    bool needs_reallocate_tensors = false;
     for (auto& [tensor_idx, buffer] : tensors) {
       TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
       if (tensor->allocation_type == kTfLitePersistentRo) {
@@ -222,110 +201,81 @@ class GraphImplTflite::ComputeResources {
       }
 
       base::span<uint8_t> data = buffer->AsSpan();
-      status = interpreter_->SetCustomAllocationForTensor(
+      TfLiteStatus status = interpreter_->SetCustomAllocationForTensor(
           tensor_idx, {data.data(), data.size()});
       if (status != kTfLiteOk) {
         LOG(ERROR) << "Unable set custom tensor allocation: "
                    << TfLiteStatusToString(status);
-        return status;
+        return;
       }
       needs_reallocate_tensors = true;
     }
 
     if (needs_reallocate_tensors) {
-      status = interpreter_->AllocateTensors();
+      TfLiteStatus status = interpreter_->AllocateTensors();
       if (status != kTfLiteOk) {
         LOG(ERROR) << "Unable to allocate tensors: "
                    << TfLiteStatusToString(status);
-        return status;
+        return;
       }
     }
 
+    scoped_trace.AddStep("Run inference");
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
     profiler_.StartProfiling();
 #endif
-    status = interpreter_->Invoke();
+    TfLiteStatus status = interpreter_->Invoke();
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
     profiler_.StopProfiling();
 #endif
 
-    return status;
+    if (status != kTfLiteOk) {
+      LOG(ERROR) << "Failed to compute: " << TfLiteStatusToString(status);
+      return;
+    }
+
+    // Copy the outputs that weren't configured as custom allocations.
+    scoped_trace.AddStep("Process outputs");
+    for (int tensor_idx : interpreter_->outputs()) {
+      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
+      if (tensor->allocation_type == kTfLitePersistentRo) {
+        tensors.at(tensor_idx)->AsSpan().copy_from(SpanFromTensor(tensor));
+      }
+    }
   }
 
   base::flat_map<int, raw_ref<const BufferContent>> CollectBuffersForDispatch(
       const base::flat_map<
-          std::string,
-          scoped_refptr<QueueableResourceState<BufferContent>>>& named_inputs,
+          int,
+          scoped_refptr<QueueableResourceState<BufferContent>>>& inputs,
       const base::flat_map<
-          std::string,
-          scoped_refptr<QueueableResourceState<BufferContent>>>&
-          named_outputs) {
+          int,
+          scoped_refptr<QueueableResourceState<BufferContent>>>& outputs) {
     std::vector<std::pair<int, raw_ref<const BufferContent>>> buffers;
+    buffers.reserve(inputs.size() + outputs.size());
 
-    buffers.reserve(named_inputs.size() + named_outputs.size());
-
-    for (int tensor_idx : interpreter_->inputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      auto it = named_inputs.find(tensor->name);
-      // The caller guarantees that all expected tensors have been provided.
-      CHECK(it != named_inputs.end());
-      buffers.emplace_back(tensor_idx, it->second->GetSharedLockedResource());
+    for (const auto& [tensor_idx, buffer] : inputs) {
+      buffers.emplace_back(tensor_idx, buffer->GetSharedLockedResource());
     }
-
-    for (int tensor_idx : interpreter_->outputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      auto it = named_outputs.find(tensor->name);
-      // The caller guarantees that all expected tensors have been provided.
-      CHECK(it != named_outputs.end());
-      buffers.emplace_back(tensor_idx,
-                           *it->second->GetExclusivelyLockedResource());
+    for (const auto& [tensor_idx, buffer] : outputs) {
+      buffers.emplace_back(tensor_idx, *buffer->GetExclusivelyLockedResource());
     }
 
     return buffers;
   }
 
  private:
-  void InitializeBuffersForCompute() {
-    if (compute_buffers_.size() > 0) {
-      return;
-    }
-
-    std::vector<std::pair<int, std::unique_ptr<BufferContent>>> buffers;
-    buffers.reserve(interpreter_->inputs().size() +
-                    interpreter_->outputs().size());
-
-    for (int tensor_idx : interpreter_->inputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      buffers.emplace_back(tensor_idx,
-                           std::make_unique<BufferContent>(tensor->bytes));
-    }
-
-    for (int tensor_idx : interpreter_->outputs()) {
-      TfLiteTensor* tensor = interpreter_->tensor(tensor_idx);
-      if (tensor->allocation_type == kTfLitePersistentRo) {
-        // The initial `AllocateTensors()` call has marked this output as a
-        // constant. It cannot be replaced with a custom allocation.
-        continue;
-      }
-
-      buffers.emplace_back(tensor_idx,
-                           std::make_unique<BufferContent>(tensor->bytes));
-    }
-
-    compute_buffers_ =
-        base::flat_map<int, std::unique_ptr<BufferContent>>(std::move(buffers));
-  }
-
   flatbuffers::DetachedBuffer model_content_;
+  std::vector<uint8_t> model_weights_;
 
   // `model_` depends on `model_content_` outliving it.
   std::unique_ptr<::tflite::FlatBufferModel> model_;
 
-  // `interpreter_` depends on `model_` outliving it.
-  std::unique_ptr<::tflite::Interpreter> interpreter_;
+  // `allocation_` depends on `model_weights_` outliving it.
+  std::unique_ptr<::tflite::Allocation> allocation_;
 
-  // Input and output buffers used for compute().
-  base::flat_map<int, std::unique_ptr<BufferContent>> compute_buffers_;
+  // `interpreter_` depends on `model_` and `allocation_` outliving it.
+  std::unique_ptr<::tflite::Interpreter> interpreter_;
 
 #if BUILDFLAG(WEBNN_ENABLE_TFLITE_PROFILER)
   ::tflite::profiling::BufferedProfiler profiler_{/*max_num_entries=*/1024};
@@ -335,92 +285,87 @@ class GraphImplTflite::ComputeResources {
 // static
 base::expected<std::unique_ptr<GraphImplTflite>, mojom::ErrorPtr>
 GraphImplTflite::CreateAndBuild(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     ComputeResourceInfo compute_resource_info,
-    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
+    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
     ContextImplTflite* context) {
+  ASSIGN_OR_RETURN(GraphBuilderTflite::Result result,
+                   GraphBuilderTflite::CreateAndBuild(
+                       context->properties(), *graph_info, constant_operands,
+                       compute_resource_info.operand_to_dependent_operations,
+                       compute_resource_info.operand_to_producing_operation),
+                   [](std::string error) {
+                     return mojom::Error::New(
+                         mojom::Error::Code::kNotSupportedError,
+                         std::move(error));
+                   });
+
   ASSIGN_OR_RETURN(
       std::unique_ptr<ComputeResources> compute_resources,
-      ComputeResources::Create(context, *graph_info, constant_operands));
-
+      ComputeResources::Create(context, std::move(result.buffer),
+                               std::move(result.buffer_data), constant_operands,
+                               result.graph_requires_fp32_precision));
+  // TODO(crbug.com/418031018): Get devices that will be used for dispatch.
   auto compute_resources_state =
       base::MakeRefCounted<QueueableResourceState<ComputeResources>>(
           std::move(compute_resources));
-  return base::WrapUnique(
-      new GraphImplTflite(std::move(compute_resource_info),
-                          std::move(compute_resources_state), context));
+  return base::WrapUnique(new GraphImplTflite(
+      std::move(receiver), std::move(compute_resource_info),
+      std::move(result.input_name_to_index),
+      std::move(result.output_name_to_index),
+      std::move(compute_resources_state), context, /*devices=*/{}));
 }
 
 GraphImplTflite::~GraphImplTflite() = default;
 
 GraphImplTflite::GraphImplTflite(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     ComputeResourceInfo compute_resource_info,
+    base::flat_map<std::string, int> input_name_to_index,
+    base::flat_map<std::string, int> output_name_to_index,
     scoped_refptr<QueueableResourceState<ComputeResources>>
         compute_resources_state,
-    ContextImplTflite* context)
-    : WebNNGraphImpl(context, std::move(compute_resource_info)),
-      compute_resources_state_(std::move(compute_resources_state)) {}
-
-void GraphImplTflite::ComputeImpl(NamedBuffers named_inputs,
-                                  ComputeCallback callback) {
-  // Exclusively reserve this graph's compute resources while the graph is
-  // executing.
-  std::vector<scoped_refptr<QueueableResourceStateBase>> exclusive_resources = {
-      compute_resources_state_};
-
-  auto task = base::MakeRefCounted<ResourceTask>(
-      /*shared_resources=*/std::vector<
-          scoped_refptr<QueueableResourceStateBase>>(),
-      std::move(exclusive_resources),
-      base::BindOnce(
-          [](NamedBuffers named_inputs,
-             scoped_refptr<QueueableResourceState<ComputeResources>>
-                 compute_resources_state,
-             ComputeCallback callback, base::OnceClosure completion_closure) {
-            ComputeResources* raw_compute_resources =
-                compute_resources_state->GetExclusivelyLockedResource();
-
-            base::ThreadPool::PostTaskAndReplyWithResult(
-                FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
-                base::BindOnce(
-                    &ComputeResources::DoCompute,
-                    // Unretained is safe here because a reference to
-                    // a `QueueableResourceState` corresponding to
-                    // `raw_compute_resources` is held by the
-                    // `ResourceTask` until `completion_closure` is run below.
-                    base::Unretained(raw_compute_resources),
-                    std::move(named_inputs)),
-                std::move(callback).Then(std::move(completion_closure)));
-          },
-          std::move(named_inputs), compute_resources_state_,
-          std::move(callback)));
-  task->Enqueue();
-}
+    ContextImplTflite* context,
+    std::vector<mojom::Device> devices)
+    : WebNNGraphImpl(std::move(receiver),
+                     context,
+                     std::move(compute_resource_info),
+                     std::move(devices)),
+      compute_resources_state_(std::move(compute_resources_state)),
+      input_name_to_index_(std::move(input_name_to_index)),
+      output_name_to_index_(std::move(output_name_to_index)) {}
 
 void GraphImplTflite::DispatchImpl(
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_inputs,
-    const base::flat_map<std::string_view, WebNNTensorImpl*>& named_outputs) {
-  std::vector<std::pair<std::string,
-                        scoped_refptr<QueueableResourceState<BufferContent>>>>
-      named_input_buffer_states, named_output_buffer_states;
-  named_input_buffer_states.reserve(named_inputs.size());
-  named_output_buffer_states.reserve(named_outputs.size());
+    const base::flat_map<std::string, WebNNTensorImpl*> named_inputs,
+    const base::flat_map<std::string, WebNNTensorImpl*> named_outputs) {
+  ScopedTrace scoped_trace("GraphImplTflite::DispatchImpl");
 
+  std::vector<
+      std::pair<int, scoped_refptr<QueueableResourceState<BufferContent>>>>
+      input_buffer_states, output_buffer_states;
+  input_buffer_states.reserve(named_inputs.size());
+  output_buffer_states.reserve(named_outputs.size());
+
+  // The caller guarantees that all expected tensors have been provided.
   for (const auto& [name, tensor] : named_inputs) {
-    named_input_buffer_states.emplace_back(
-        name, static_cast<TensorImplTflite*>(tensor)->GetBufferState());
+    input_buffer_states.emplace_back(
+        input_name_to_index_.at(name),
+        static_cast<TensorImplTflite*>(tensor)->GetBufferState());
   }
   for (const auto& [name, tensor] : named_outputs) {
-    named_output_buffer_states.emplace_back(
-        name, static_cast<TensorImplTflite*>(tensor)->GetBufferState());
+    output_buffer_states.emplace_back(
+        output_name_to_index_.at(name),
+        static_cast<TensorImplTflite*>(tensor)->GetBufferState());
   }
 
   // Input tensors will be read from while the graph is executing, so lock them
   // them as shared/read-only.
   std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources;
   shared_resources.reserve(named_inputs.size());
-  for (const auto& [name, buffer_state] : named_input_buffer_states) {
+  for (const auto& [name, buffer_state] : input_buffer_states) {
     shared_resources.push_back(buffer_state);
   }
 
@@ -430,24 +375,23 @@ void GraphImplTflite::DispatchImpl(
   // Extra +1 is for the compute resources.
   exclusive_resources.reserve(1 + named_outputs.size());
   exclusive_resources.push_back(compute_resources_state_);
-  for (const auto& [name, buffer_state] : named_output_buffer_states) {
+  for (const auto& [name, buffer_state] : output_buffer_states) {
     exclusive_resources.push_back(buffer_state);
   }
 
+  scoped_trace.AddStep("Acquire resources");
   auto task = base::MakeRefCounted<ResourceTask>(
       std::move(shared_resources), std::move(exclusive_resources),
       base::BindOnce(
           [](scoped_refptr<QueueableResourceState<ComputeResources>>
                  compute_resources_state,
              base::flat_map<
-                 std::string,
-                 scoped_refptr<QueueableResourceState<BufferContent>>>
+                 int, scoped_refptr<QueueableResourceState<BufferContent>>>
                  input_buffer_states,
              base::flat_map<
-                 std::string,
-                 scoped_refptr<QueueableResourceState<BufferContent>>>
+                 int, scoped_refptr<QueueableResourceState<BufferContent>>>
                  output_buffer_states,
-             base::OnceClosure completion_closure) {
+             ScopedTrace scoped_trace, base::OnceClosure completion_closure) {
             ComputeResources* raw_compute_resources =
                 compute_resources_state->GetExclusivelyLockedResource();
 
@@ -465,12 +409,12 @@ void GraphImplTflite::DispatchImpl(
                     // a `QueueableResourceState` corresponding to
                     // `raw_compute_resources` is held by the
                     // `ResourceTask` until `completion_closure` is run below.
-                    base::Unretained(raw_compute_resources),
-                    std::move(buffers)),
+                    base::Unretained(raw_compute_resources), std::move(buffers),
+                    std::move(scoped_trace)),
                 std::move(completion_closure));
           },
-          compute_resources_state_, std::move(named_input_buffer_states),
-          std::move(named_output_buffer_states)));
+          compute_resources_state_, std::move(input_buffer_states),
+          std::move(output_buffer_states), std::move(scoped_trace)));
   task->Enqueue();
 }
 

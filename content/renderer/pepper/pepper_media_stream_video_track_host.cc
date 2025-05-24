@@ -159,7 +159,7 @@ void ConvertFromMediaVideoFrame(const media::VideoFrame& src,
                        src_halfheight, dst, dst_halfwidth, dst_halfwidth,
                        dst_halfheight, kFilterMode);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -435,14 +435,11 @@ class PepperMediaStreamVideoTrackHost::VideoSource final
   ~VideoSource() final { StopSourceImpl(); }
 
   void StartSourceImpl(
-      blink::VideoCaptureDeliverFrameCB frame_callback,
-      blink::EncodedVideoFrameCB encoded_frame_callback,
-      blink::VideoCaptureSubCaptureTargetVersionCB
-          sub_capture_target_version_callback,
-      blink::VideoCaptureNotifyFrameDroppedCB frame_dropped_callback) final {
+      blink::MediaStreamVideoSourceCallbacks media_stream_callbacks) final {
     if (host_) {
-      host_->frame_deliverer_ =
-          new FrameDeliverer(video_task_runner(), std::move(frame_callback));
+      host_->frame_deliverer_ = new FrameDeliverer(
+          video_task_runner(),
+          std::move(media_stream_callbacks.deliver_frame_cb));
     }
   }
 

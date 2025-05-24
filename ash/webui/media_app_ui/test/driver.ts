@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
-import {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
+import type {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
 import {TEST_ONLY} from './launch.js';
 
 const {
@@ -215,21 +215,23 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
   }
   async getDirectoryHandle(
       _name: string, _options?: FileSystemGetDirectoryOptions):
-      Promise<FakeFileSystemDirectoryHandle> {
+      Promise<FileSystemDirectoryHandle> {
     throw new Error('Not implemented');
   }
 
-  async * entries(): AsyncIterableIterator<[string, FileSystemHandle]> {
+  async *
+      entries():
+          FileSystemDirectoryHandleAsyncIterator<[string, FileSystemHandle]> {
     for (const file of this.files) {
       yield [file.name, file];
     }
   }
-  async * keys(): AsyncIterableIterator<string> {
+  async * keys(): FileSystemDirectoryHandleAsyncIterator<string> {
     for (const file of this.files) {
       yield file.name;
     }
   }
-  async * values(): AsyncIterableIterator<FileSystemHandle> {
+  async * values(): FileSystemDirectoryHandleAsyncIterator<FileSystemHandle> {
     for (const file of this.files) {
       if (file.errorToFireOnIterate) {
         const error = file.errorToFireOnIterate;
@@ -241,7 +243,7 @@ export class FakeFileSystemDirectoryHandle extends FakeFileSystemHandle
   }
   async *
       [Symbol.asyncIterator]():
-          AsyncIterableIterator<[string, FileSystemHandle]> {
+          FileSystemDirectoryHandleAsyncIterator<[string, FileSystemHandle]> {
     for (const file of this.files) {
       if (file.errorToFireOnIterate) {
         const error = file.errorToFireOnIterate;

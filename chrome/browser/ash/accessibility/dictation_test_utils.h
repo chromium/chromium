@@ -110,8 +110,8 @@ class DictationTestUtils {
 
  private:
   // Set up helper methods.
-  void SetUpPumpkinDir();
-  void SetUpTestSupport();
+  void SetUpPumpkinDir(const char* pumpkin_dir);
+  void SetUpTestSupport(const char* test_support_dir);
   void WaitForDictationJSReady();
   void WaitForEditableFocus();
   void WaitForPumpkinTaggerReady();

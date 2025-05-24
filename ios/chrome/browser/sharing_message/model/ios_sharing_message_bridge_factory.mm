@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 
 #import "base/feature_list.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/sharing_message/sharing_message_bridge_impl.h"
 #import "components/sync/base/report_unrecoverable_error.h"
@@ -14,23 +13,17 @@
 #import "ios/chrome/common/channel_info.h"
 
 // static
-SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<SharingMessageBridge*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<SharingMessageBridge>(
+      profile, /*create=*/true);
 }
 
 // static
 SharingMessageBridge* IOSSharingMessageBridgeFactory::GetForProfileIfExists(
-    ChromeBrowserState* browser_state) {
-  return static_cast<SharingMessageBridge*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, false));
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<SharingMessageBridge>(
+      profile, /*create=*/false);
 }
 
 // static
@@ -40,11 +33,9 @@ IOSSharingMessageBridgeFactory* IOSSharingMessageBridgeFactory::GetInstance() {
 }
 
 IOSSharingMessageBridgeFactory::IOSSharingMessageBridgeFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SharingMessageBridge",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("SharingMessageBridge") {}
 
-IOSSharingMessageBridgeFactory::~IOSSharingMessageBridgeFactory() {}
+IOSSharingMessageBridgeFactory::~IOSSharingMessageBridgeFactory() = default;
 
 std::unique_ptr<KeyedService>
 IOSSharingMessageBridgeFactory::BuildServiceInstanceFor(

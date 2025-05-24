@@ -6,9 +6,9 @@
 #define UI_VIEWS_ANIMATION_INK_DROP_HOST_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -262,7 +262,7 @@ class VIEWS_EXPORT InkDropHost {
   float ink_drop_visible_opacity_ = 0.175f;
 
   // The color of the ripple and hover.
-  absl::variant<SkColor, ui::ColorId, base::RepeatingCallback<SkColor()>>
+  std::variant<SkColor, ui::ColorId, base::RepeatingCallback<SkColor()>>
       ink_drop_base_color_ = gfx::kPlaceholderColor;
 
   // TODO(pbos): Audit call sites to make sure highlight opacity is either
@@ -289,7 +289,7 @@ class VIEWS_EXPORT InkDropHost {
   // Attention is a state we apply on Buttons' ink drop when we want to draw
   // users' attention to this button and prompt users' interaction.
   // It consists of two visual effects: a default light blue color and a pulsing
-  // effect. Current use case is IPH. Go to chrome://internals/user-education
+  // effect. Current use case is IPH. Go to chrome://user-education-internals
   // and press e.g. IPH_TabSearch to see the effects.
   bool in_attention_state_ = false;
 };

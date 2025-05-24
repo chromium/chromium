@@ -48,7 +48,7 @@ export async function testDismissHandlerEmitsEvent(done: () => void) {
  */
 export async function testAdditionalButtonCanBeClicked() {
   warningBanner.addEventListener(
-      'click', () => console.log('additional event listner'));
+      'click', () => console.info('additional event listner'));
   warningBanner.querySelector<CrButtonElement>(
                    '[slot="extra-button"]')!.click();
   assertEquals(getLastVisitedURL(), 'http://test.com');

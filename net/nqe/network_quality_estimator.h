@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <optional>
@@ -19,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 #include "net/log/net_log_with_source.h"
@@ -253,14 +253,14 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   const NetworkQualityEstimatorParams* params() { return params_.get(); }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Enables getting the network id asynchronously when
   // GatherEstimatesForNextConnectionType(). This should always be called in
   // production, because getting the network id involves a blocking call to
   // recv() in AddressTrackerLinux, and the IO thread should never be blocked.
   // TODO(crbug.com/41376341): Remove after the bug is resolved.
   void EnableGetNetworkIdAsynchronously();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Forces the effective connection type to be recomputed as |type|. Once
   // called, effective connection type would always be computed as |type|.
@@ -553,8 +553,8 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // entries in the nqe::internal:ObservationCategory enum.
   // Each observation buffer in |rtt_ms_observations_| stores RTT observations
   // in milliseconds. Within a buffer, the observations are sorted by timestamp.
-  ObservationBuffer
-      rtt_ms_observations_[nqe::internal::OBSERVATION_CATEGORY_COUNT];
+  std::array<ObservationBuffer, nqe::internal::OBSERVATION_CATEGORY_COUNT>
+      rtt_ms_observations_;
 
   // Observer lists for round trip times and throughput measurements.
   base::ObserverList<RTTObserver>::Unchecked rtt_observer_list_;
@@ -621,7 +621,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
 
   std::optional<base::TimeTicks> last_signal_strength_check_timestamp_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Whether the network id should be obtained on a worker thread.
   bool get_network_id_asynchronously_ = false;
 #endif

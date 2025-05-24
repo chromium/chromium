@@ -212,7 +212,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
 
   raw_ptr<testing::NiceMock<MockClientIdsDatabase>, DanglingUntriaged>
       client_ids_database_;
-  std::map<GURL, AuthZoneMock*> auth_zones_;
+  std::map<GURL, raw_ptr<AuthZoneMock, CtnExperimental>> auth_zones_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
@@ -325,7 +325,8 @@ TEST_F(PrintingOAuth2AuthorizationZonesManagerTest,
   syncer::EntityChangeList data_change_list;
   data_change_list.push_back(syncer::EntityChange::CreateAdd(
       url_2.spec(), ToEntityData(url_2.spec())));
-  data_change_list.push_back(syncer::EntityChange::CreateDelete(url_1.spec()));
+  data_change_list.push_back(
+      syncer::EntityChange::CreateDelete(url_1.spec(), syncer::EntityData()));
   syncer::DataTypeSyncBridge* bridge =
       auth_zones_manager_->GetDataTypeSyncBridge();
 

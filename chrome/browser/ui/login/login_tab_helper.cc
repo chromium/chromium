@@ -17,7 +17,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-LoginTabHelper::~LoginTabHelper() {}
+LoginTabHelper::~LoginTabHelper() = default;
 
 void LoginTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
@@ -29,8 +29,9 @@ void LoginTabHelper::DidStartNavigation(
   // response bodies that have subframes or can trigger same-document
   // navigations.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument())
+      navigation_handle->IsSameDocument()) {
     return;
+  }
 
   login_handler_.reset();
 }
@@ -192,7 +193,7 @@ LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
 std::unique_ptr<LoginHandler> LoginTabHelper::CreateLoginHandler(
     const net::AuthChallengeInfo& auth_info,
     content::WebContents* web_contents,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return LoginHandler::Create(auth_info, web_contents,
                               std::move(auth_required_callback));
 }

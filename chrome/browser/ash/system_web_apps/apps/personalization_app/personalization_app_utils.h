@@ -52,8 +52,8 @@ AccountId GetAccountId(const Profile* profile);
 // profiles can, but kiosk and guest cannot.
 bool CanSeeWallpaperOrPersonalizationApp(const Profile* profile);
 
-// Verifies if the current language settings in English.
-bool IsSystemInEnglishLanguage();
+// Verifies if the current language settings are supported.
+bool IsSystemInSupportedLanguage();
 
 // Controls whether the profile can see and open SeaPen UI. Managed users have
 // age restrictions that underage users (<18) are not allowed to view and access

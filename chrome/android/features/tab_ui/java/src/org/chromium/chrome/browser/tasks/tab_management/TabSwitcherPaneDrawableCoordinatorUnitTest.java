@@ -9,7 +9,6 @@ import static org.junit.Assert.assertNotNull;
 import android.content.Context;
 
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,8 +19,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /**
@@ -31,6 +31,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabSwitcherPaneDrawableCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    private final ObservableSupplierImpl<TabModelDotInfo> mNotificationDotSupplier =
+            new ObservableSupplierImpl<>(TabModelDotInfo.HIDE);
 
     @Mock private TabModelSelector mTabModelSelector;
 
@@ -42,7 +45,9 @@ public class TabSwitcherPaneDrawableCoordinatorUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         // Needed for TabSwitcherDrawable to inflate correctly with SemanticColorUtils.
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
-        mCoordinator = new TabSwitcherPaneDrawableCoordinator(mContext, mTabModelSelector);
+        mCoordinator =
+                new TabSwitcherPaneDrawableCoordinator(
+                        mContext, mTabModelSelector, mNotificationDotSupplier);
     }
 
     @After
@@ -51,7 +56,6 @@ public class TabSwitcherPaneDrawableCoordinatorUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testGetTabSwitcherDrawable() {
         assertNotNull(mCoordinator.getTabSwitcherDrawable());
     }

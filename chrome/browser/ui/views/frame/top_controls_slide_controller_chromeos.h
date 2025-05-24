@@ -10,15 +10,11 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
 #include "ui/display/display_observer.h"
 #include "ui/views/view_observer.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#endif
 
 class BrowserView;
 class TopControlsSlideTabObserver;
@@ -101,14 +97,12 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
   // sliding behavior *before* immersive mode is entered.
   bool CanEnable(std::optional<bool> fullscreen_state) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called back from the ash::AccessibilityManager so that we're updated by the
   // status of Chromevox, which when enabled, sliding the top-controls should
   // be disabled. This is important for users who want to touch explore and need
   // this to be consistent.
   void OnAccessibilityStatusChanged(
       const ash::AccessibilityStatusEventDetails& event_details);
-#endif
 
   void OnEnabledStateChanged(bool new_state);
 
@@ -195,9 +189,7 @@ class TopControlsSlideControllerChromeOS : public TopControlsSlideController,
                  std::unique_ptr<TopControlsSlideTabObserver>>
       observed_tabs_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CallbackListSubscription accessibility_status_subscription_;
-#endif
 
   display::ScopedDisplayObserver display_observer_{this};
 };

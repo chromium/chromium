@@ -1,0 +1,120 @@
+<style include="settings-shared cr-spinner-style">
+  :host {
+    /* TODO(crbug.com/397187800): Use surface3 color. */
+    --dbd-container-color: var(--cr-fallback-color-surface2);
+    --dbd-container-border-radius: 12px;
+    --dbd-container-stacked-border-radius: 4px;
+  }
+
+  #checkboxContainer {
+    background-color: var(--dbd-container-color);
+    border-radius: var(--dbd-container-border-radius);
+    padding: 16px var(--cr-section-padding);
+  }
+
+  #checkboxContainer:has(+ #showMoreButton:not([hidden])) {
+    border-bottom-left-radius: var(--dbd-container-stacked-border-radius);
+    border-bottom-right-radius: var(--dbd-container-stacked-border-radius);
+    border-top-left-radius: var(--dbd-container-border-radius);
+    border-top-right-radius: var(--dbd-container-border-radius);
+    margin-bottom: 2px;
+  }
+
+  #manageOtherGoogleDataRow {
+    border-radius: var(--dbd-container-border-radius);
+    color: var(--cr-primary-text-color);
+    background: var(--dbd-container-color);
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+  }
+
+  #showMoreButton {
+    --cr-button-background-color: var(--dbd-container-color);
+    --cr-button-height: auto;
+    --cr-button-text-color: var(--cr-primary-text-color);
+    border: none;
+    border-bottom-left-radius: var(--dbd-container-border-radius);
+    border-bottom-right-radius: var(--dbd-container-border-radius);
+    border-top-left-radius: var(--dbd-container-stacked-border-radius);
+    border-top-right-radius: var(--dbd-container-stacked-border-radius);
+    padding: var(--cr-section-vertical-padding) 16px;
+    width: 100%;
+  }
+
+  #spinner {
+    margin-bottom: auto;
+    margin-inline-end: 16px;
+    margin-top: auto;
+  }
+
+  .checkbox-title {
+    font-weight: 500;
+  }
+
+  .row-aligned {
+    align-items: center;
+    display: flex;
+  }
+
+  settings-clear-browsing-data-account-indicator {
+    margin-inline-end: auto;
+  }
+</style>
+
+<cr-dialog id="deleteBrowsingDataDialog" close-text="$i18n{close}"
+    show-on-attach ignore-popstate ignore-enter-key>
+  <div slot="title">$i18n{clearBrowsingData}</div>
+  <div slot="body">
+    <settings-clear-browsing-data-time-picker id="timePicker" prefs="{{prefs}}"
+        on-selected-time-period-change="onTimePeriodChanged_">
+    </settings-clear-browsing-data-time-picker>
+    <div id="checkboxContainer">
+      <template is="dom-repeat"
+          items="[[expandedBrowsingDataTypeOptionsList_]]">
+        <settings-checkbox pref="[[item.pref]]" no-set-pref
+            sub-label="[[item.subLabel]]">
+          <div class="checkbox-title">[[item.label]]</div>
+        </settings-checkbox>
+      </template>
+      <template is="dom-if" if="[[dataTypesExpanded_]]">
+        <template is="dom-repeat" items="[[moreBrowsingDataTypeOptionsList_]]">
+          <settings-checkbox pref="[[item.pref]]" no-set-pref
+              sub-label="[[item.subLabel]]">
+            <div class="checkbox-title">[[item.label]]</div>
+          </settings-checkbox>
+        </template>
+      </template>
+    </div>
+    <cr-button id="showMoreButton" on-click="onShowMoreClick_"
+        hidden="[[shouldHideShowMoreButton_(
+            dataTypesExpanded_, moreBrowsingDataTypeOptionsList_)]]">
+      $i18n{clearBrowsingDataShowMore}
+      <cr-icon icon="cr:expand-more" aria-hidden="true" role="presentation">
+      </cr-icon>
+    </cr-button>
+    <cr-link-row id="manageOtherGoogleDataRow"
+        label="$i18n{manageOtherGoogleDataTitle}"
+        sub-label="$i18n{manageOtherGoogleDataDescription}"
+        role-description="$i18n{subpageArrowRoleDescription}">
+    </cr-link-row>
+  </div>
+
+  <div slot="button-container" class="row-aligned">
+<if expr="not is_chromeos">
+    <settings-clear-browsing-data-account-indicator>
+    </settings-clear-browsing-data-account-indicator>
+</if>
+    <div id="spinner" class="spinner" hidden="[[!isDeletionInProgress_]]"></div>
+    <cr-button id="cancelButton" class="cancel-button" autofocus
+        on-click="onCancelClick_" disabled="[[isDeletionInProgress_]]">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="deleteButton" class="action-button"
+        on-click="onDeleteBrowsingDataClick_"
+        disabled="[[shouldDisableDeleteButton_(
+            isDeletionInProgress_, isNoDatatypeSelected_)]]">
+      $i18n{clearData}
+    </cr-button>
+  </div>
+</cr-dialog>

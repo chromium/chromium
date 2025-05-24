@@ -17,9 +17,9 @@ source_set("unit_tests") {
   sources = [ "ios_task_tab_helper_unittest.mm" ]
   deps = [
     ":model",
-    "//ios/web/public:public",
-    "//ios/web/public/test:test",
+    "//ios/web/public",
+    "//ios/web/public/test",
     "//ios/web/public/test:util",
-    "//ios/web/public/test/fakes:fakes",
+    "//ios/web/public/test/fakes",
   ]
 }

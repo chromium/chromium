@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,6 +12,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_window_delegate.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "extensions/common/constants.h"
@@ -53,8 +53,9 @@ void ArcAppWindow::SetFullscreenMode(FullScreenMode mode) {
 
 void ArcAppWindow::SetDescription(const std::string& title,
                                   const gfx::ImageSkia& icon) {
-  if (!title.empty())
+  if (!title.empty()) {
     GetNativeWindow()->SetTitle(base::UTF8ToUTF16(title));
+  }
   if (icon.isNull()) {
     // Reset custom icon. Switch back to default.
     SetDefaultAppIcon();
@@ -82,8 +83,9 @@ bool ArcAppWindow::IsActive() const {
 
 void ArcAppWindow::Close() {
   auto task_id = arc::GetWindowTaskId(GetNativeWindow());
-  if (task_id.has_value())
+  if (task_id.has_value()) {
     arc::CloseTask(*task_id);
+  }
 }
 
 void ArcAppWindow::OnAppImageUpdated(
@@ -126,7 +128,8 @@ void ArcAppWindow::SetIcon(const gfx::ImageSkia& icon) {
   }
   exo::ShellSurfaceBase* shell_surface = static_cast<exo::ShellSurfaceBase*>(
       widget()->widget_delegate()->GetContentsView());
-  if (!shell_surface)
+  if (!shell_surface) {
     return;
+  }
   shell_surface->SetIcon(icon);
 }

@@ -21,6 +21,12 @@ namespace device {
 
 std::optional<bool> SystemGeolocationSourceApple::mock_wifi_status_;
 
+#if BUILDFLAG(IS_IOS_TVOS)
+// This delay is used to throttle location requests.
+constexpr base::TimeDelta kRequestLocationThrottleDelay =
+    base::Milliseconds(1000);
+#endif
+
 // static
 bool SystemGeolocationSourceApple::IsWifiEnabled() {
   if (mock_wifi_status_.has_value()) {
@@ -67,6 +73,18 @@ void SystemGeolocationSourceApple::PermissionUpdated() {
 void SystemGeolocationSourceApple::PositionUpdated(
     const mojom::Geoposition& position) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // Record the time to first position update. This is only done once to capture
+  // the initial position acquisition time.
+  if (!position_received_) {
+    const base::TimeDelta time_to_first_position =
+        base::TimeTicks::Now() - watch_start_time_;
+    UmaHistogramCustomTimes(
+        "Geolocation.CoreLocationProvider.TimeToFirstPosition",
+        time_to_first_position, base::Milliseconds(1), base::Seconds(10), 100);
+    position_received_ = true;
+  }
+
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
                               position);
 }
@@ -74,6 +92,9 @@ void SystemGeolocationSourceApple::PositionUpdated(
 void SystemGeolocationSourceApple::PositionError(
     const mojom::GeopositionError& error) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+  if (!session_result_) {
+    session_result_ = CoreLocationSessionResult::kCoreLocationError;
+  }
   // If an error reported from `LocationManagerDelegate` when
   // network change timer is running. Stop the timer (which also cancel the
   // pending fallback) and report that error.
@@ -87,16 +108,35 @@ void SystemGeolocationSourceApple::PositionError(
                               error);
 }
 
+#if BUILDFLAG(IS_IOS_TVOS)
+void SystemGeolocationSourceApple::OnRequestLocationThrottleTimerFiring() {
+  [location_manager_ requestLocation];
+}
+#endif
+
 void SystemGeolocationSourceApple::StartWatchingPositionInternal(
     bool high_accuracy) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+  watch_start_time_ = base::TimeTicks::Now();
   if (high_accuracy) {
     location_manager_.desiredAccuracy = kCLLocationAccuracyBest;
   } else {
     // Using kCLLocationAccuracyHundredMeters for consistency with Android.
     location_manager_.desiredAccuracy = kCLLocationAccuracyHundredMeters;
   }
+#if BUILDFLAG(IS_IOS_TVOS)
+  // tvOS uses requestLocation for the one-time delivery of the location.
+  // Since requestLocation updates location every call,
+  // `request_throttle_timer_` is used to throttle requests so that it
+  // mitigates location update by a client.
+  request_throttle_timer_.Start(
+      FROM_HERE, kRequestLocationThrottleDelay,
+      base::BindOnce(
+          &SystemGeolocationSourceApple::OnRequestLocationThrottleTimerFiring,
+          base::Unretained(this)));
+#else
   [location_manager_ startUpdatingLocation];
+#endif
   was_wifi_enabled_ = IsWifiEnabled();
 }
 
@@ -109,6 +149,9 @@ void SystemGeolocationSourceApple::StartWatchingPosition(bool high_accuracy) {
 }
 
 void SystemGeolocationSourceApple::StopWatchingPositionInternal() {
+#if BUILDFLAG(IS_IOS_TVOS)
+  request_throttle_timer_.Stop();
+#endif
   CHECK(main_task_runner_->BelongsToCurrentThread());
   [location_manager_ stopUpdatingLocation];
   // If `StopWatchingPosition` is called for any reason, stop the network status
@@ -120,6 +163,19 @@ void SystemGeolocationSourceApple::StopWatchingPositionInternal() {
     network_changed_timer_.Stop();
     net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   }
+
+  // Record the session result if either:
+  // 1. An error occurred (session_result_ is set).
+  // 2. At least one position update was received (position_received_ is true).
+  // This excludes short-lived sessions that start and stop immediately
+  // without obtaining any position updates.
+  if (session_result_ || position_received_) {
+    base::UmaHistogramSparse("Geolocation.CoreLocationProvider.SessionResult",
+                             static_cast<int>(session_result_.value_or(
+                                 CoreLocationSessionResult::kSuccess)));
+  }
+  session_result_.reset();
+  position_received_ = false;
 }
 
 void SystemGeolocationSourceApple::StopWatchingPosition() {
@@ -192,7 +248,8 @@ void SystemGeolocationSourceApple::OnNetworkChanged(
         device::mojom::kGeoPositionUnavailableErrorMessage;
     position_error.error_technical =
         "CoreLocationProvider: CoreLocation framework reported a "
-        "kCLErrorLocationUnknown failure.";
+        "kWifiDisabled error.";
+    session_result_ = CoreLocationSessionResult::kWifiDisabled;
     PositionError(position_error);
   }
 }

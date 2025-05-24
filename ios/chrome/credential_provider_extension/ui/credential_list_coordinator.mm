@@ -10,6 +10,7 @@
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/credential_provider_extension/passkey_request_details.h"
 #import "ios/chrome/credential_provider_extension/passkey_util.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
@@ -45,9 +46,7 @@
     NSArray<ASCredentialServiceIdentifier*>* serviceIdentifiers;
 
 // Information about a passkey credential request.
-@property(nonatomic, strong)
-    ASPasskeyCredentialRequestParameters* requestParameters API_AVAILABLE(
-        ios(17.0));
+@property(nonatomic, strong) PasskeyRequestDetails* passkeyRequestDetails;
 
 // Coordinator that shows a view for the user to create a new password.
 @property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
@@ -129,27 +128,29 @@
 }
 
 - (void)userSelectedCredential:(id<Credential>)credential {
-  [self reauthenticateIfNeededWithCompletionHandler:^(
-            ReauthenticationResult result) {
-    if (result != ReauthenticationResult::kFailure) {
-      if (!credential.isPasskey) {
-        ASPasswordCredential* passwordCredential =
-            [ASPasswordCredential credentialWithUser:credential.username
-                                            password:credential.password];
-        [self.credentialResponseHandler
-            userSelectedPassword:passwordCredential];
-      } else if (@available(iOS 17.0, *)) {
-        // TODO(crbug.com/330355124): Handle
-        // self.requestParameters.userVerificationPreference.
-
-        [self.credentialResponseHandler
+  if (@available(iOS 17.0, *)) {
+    if (credential.isPasskey) {
+      // Skip reauthentication if the credential is a passkey as it will be
+      // performed later on if needed.
+      [self.credentialResponseHandler
             userSelectedPasskey:credential
-                 clientDataHash:self.requestParameters.clientDataHash
-             allowedCredentials:self.allowedCredentials
-                     allowRetry:YES];
-      }
+          passkeyRequestDetails:self.passkeyRequestDetails];
+      return;
     }
-  }];
+  }
+
+  [self
+      reauthenticateIfNeededToAccessPasskeys:NO
+                       withCompletionHandler:^(ReauthenticationResult result) {
+                         if (result != ReauthenticationResult::kFailure) {
+                           ASPasswordCredential* passwordCredential =
+                               [ASPasswordCredential
+                                   credentialWithUser:credential.username
+                                             password:credential.password];
+                           [self.credentialResponseHandler
+                               userSelectedPassword:passwordCredential];
+                         }
+                       }];
 }
 
 - (void)showDetailsForCredential:(id<Credential>)credential {
@@ -172,19 +173,11 @@
 }
 
 - (NSArray<NSData*>*)allowedCredentials {
-  if (@available(iOS 17.0, *)) {
-    return self.requestParameters.allowedCredentials;
-  } else {
-    return nil;
-  }
+  return self.passkeyRequestDetails.allowedCredentials;
 }
 
-- (BOOL)isRequestingPasskey {
-  if (@available(iOS 17.0, *)) {
-    return self.requestParameters != nil;
-  } else {
-    return NO;
-  }
+- (NSString*)relyingPartyIdentifier {
+  return self.passkeyRequestDetails.relyingPartyIdentifier;
 }
 
 #pragma mark - CredentialDetailsConsumerDelegate
@@ -196,12 +189,13 @@
 
 - (void)unlockPasswordForCredential:(id<Credential>)credential
                   completionHandler:(void (^)(NSString*))completionHandler {
-  [self reauthenticateIfNeededWithCompletionHandler:^(
-            ReauthenticationResult result) {
-    if (result != ReauthenticationResult::kFailure) {
-      completionHandler(credential.password);
-    }
-  }];
+  [self
+      reauthenticateIfNeededToAccessPasskeys:NO
+                       withCompletionHandler:^(ReauthenticationResult result) {
+                         if (result != ReauthenticationResult::kFailure) {
+                           completionHandler(credential.password);
+                         }
+                       }];
 }
 
 #pragma mark - ConfirmationAlertActionHandler
@@ -227,12 +221,16 @@
 
 #pragma mark - Private
 
-// Asks user for hardware reauthentication if needed.
-- (void)reauthenticateIfNeededWithCompletionHandler:
-    (void (^)(ReauthenticationResult))completionHandler {
-  [self.reauthenticationHandler
-      verifyUserWithCompletionHandler:completionHandler
-      presentReminderOnViewController:self.viewController];
+// Asks user for hardware reauthentication if needed. `forPasskeys` indicates
+// whether the reauthentication is guarding an access to passkeys (when `YES`)
+// or an access to passwords (when `NO`).
+- (void)reauthenticateIfNeededToAccessPasskeys:(BOOL)forPasskeys
+                         withCompletionHandler:
+                             (void (^)(ReauthenticationResult))
+                                 completionHandler {
+  [self.reauthenticationHandler verifyUserToAccessPasskeys:forPasskeys
+                                     withCompletionHandler:completionHandler
+                           presentReminderOnViewController:self.viewController];
 }
 
 @end

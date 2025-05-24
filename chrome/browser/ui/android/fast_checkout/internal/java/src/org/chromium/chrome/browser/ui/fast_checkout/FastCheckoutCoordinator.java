@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ViewFlipper;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.FastCheckoutProperties.ScreenType;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutAutofillProfile;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
@@ -20,12 +22,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
 
+@NullMarked
 class FastCheckoutCoordinator implements FastCheckoutComponent {
-    private FastCheckoutMediator mMediator = new FastCheckoutMediator();
-    private PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
+    private final FastCheckoutMediator mMediator = new FastCheckoutMediator();
+    private final PropertyModel mModel = FastCheckoutProperties.createDefaultModel();
     private FastCheckoutSheetContent mContent;
     private BottomSheetController mBottomSheetController;
 
+    @Initializer
     @Override
     public void initialize(
             Context context,
@@ -41,18 +45,15 @@ class FastCheckoutCoordinator implements FastCheckoutComponent {
         mContent = new FastCheckoutSheetContent(mMediator, rootView);
 
         View homeScreenView = rootView.findViewById(R.id.fast_checkout_home_screen_sheet);
-        HomeScreenCoordinator homeScreenCoordinator =
-                new HomeScreenCoordinator(context, homeScreenView, mModel);
+        new HomeScreenCoordinator(context, homeScreenView, mModel);
 
         // The detail screen can display the Autofill profile or the credit
         // card selection.
         View detailScreenView = rootView.findViewById(R.id.fast_checkout_detail_screen_sheet);
-        DetailScreenCoordinator detailScreenCoordinator =
-                new DetailScreenCoordinator(
-                        context, detailScreenView, mModel, mBottomSheetController);
+        new DetailScreenCoordinator(context, detailScreenView, mModel, mBottomSheetController);
 
         ViewFlipper viewFlipperView =
-                (ViewFlipper) rootView.findViewById(R.id.fast_checkout_bottom_sheet_view_flipper);
+                rootView.findViewById(R.id.fast_checkout_bottom_sheet_view_flipper);
         mModel.addObserver(
                 (source, propertyKey) -> {
                     if (FastCheckoutProperties.CURRENT_SCREEN == propertyKey) {

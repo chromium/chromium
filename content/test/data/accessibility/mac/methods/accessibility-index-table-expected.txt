@@ -1,0 +1,3 @@
+row1.accessibilityIndex=0
+row2.accessibilityIndex=1
+row3.accessibilityIndex=2

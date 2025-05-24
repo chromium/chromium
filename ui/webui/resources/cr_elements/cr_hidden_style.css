@@ -7,9 +7,5 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-/* Included here so we don't have to include "iron-positioning" in every
- * stylesheet. See crbug.com/498405. */
-[hidden],
-:host([hidden]) {
-  display: none !important;
-}
+/* Purposefully empty since this style is generated at build time from the
+ * equivalent Lit version. */

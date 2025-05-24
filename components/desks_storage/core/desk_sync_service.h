@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,6 +37,9 @@ class DeskSyncService : public KeyedService {
 
   virtual base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetControllerDelegate();
+
+  virtual void RunWhenDesksTemplatesAreReadyOnFirstSync(
+      base::OnceClosure callback);
 
  private:
   std::unique_ptr<DeskSyncBridge> bridge_;

@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/key_event_utils.h"
+#include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -199,18 +200,20 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
   ui::test::ScopedEventTestTickClock clock;
   clock.SetNowTicks(event_time);
 
-  ui::MotionEventAndroid::Pointer p0(1, 13.7f, -7.13f, 5.3f, 1.2f, 0.1f, 0.2f,
+  const float pressure = 0.4f;
+  ui::MotionEventAndroid::Pointer p0(1, 13.7f, -7.13f, 5.3f, 1.2f, pressure,
+                                     0.1f, 0.2f,
                                      ui::MotionEventAndroid::GetAndroidToolType(
                                          ui::MotionEvent::ToolType::MOUSE));
   const float raw_offset_x = 11.f;
   const float raw_offset_y = 22.f;
   const float kPixToDip = 0.5f;
 
-  ui::MotionEventAndroid motion_event(
+  ui::MotionEventAndroidJava motion_event(
       AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
       base::TimeTicks() + base::Nanoseconds(kEventTimeNs),
-      AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, raw_offset_x,
-      raw_offset_y, false, &p0, nullptr);
+      AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, 0,
+      raw_offset_x, raw_offset_y, false, &p0, nullptr);
 
   WebMouseEvent web_event = input::WebMouseEventBuilder::Build(
       motion_event, blink::WebInputEvent::Type::kMouseDown, 1,
@@ -223,6 +226,7 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
             (p0.pos_y_pixels + raw_offset_y) * kPixToDip);
   EXPECT_EQ(web_event.button, blink::WebPointerProperties::Button::kLeft);
   EXPECT_EQ(web_event.TimeStamp(), event_time);
+  EXPECT_EQ(web_event.force, pressure);
 }
 
 // TODO(crbug.com/41353469): Add more tests for WebMouseEventBuilder

@@ -70,7 +70,7 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
   void StopBuffering();
 
   // BufferingBytesConsumer
-  Result BeginRead(const char** buffer, size_t* available) override;
+  Result BeginRead(base::span<const char>& buffer) override;
   Result EndRead(size_t read_size) override;
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(BlobSizePolicy) override;
   scoped_refptr<EncodedFormData> DrainAsFormData() override;
@@ -93,7 +93,7 @@ class PLATFORM_EXPORT BufferingBytesConsumer final
 
   const Member<BytesConsumer> bytes_consumer_;
   HeapTaskRunnerTimer<BufferingBytesConsumer> timer_;
-  HeapDeque<Member<HeapVector<char>>> buffer_;
+  HeapDeque<Member<GCedHeapVector<char>>> buffer_;
   size_t offset_for_first_chunk_ = 0;
 
   // The sum of the sizes of all Vectors in `buffer_`.

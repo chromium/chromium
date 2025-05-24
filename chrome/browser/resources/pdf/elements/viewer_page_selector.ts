@@ -43,8 +43,8 @@ export class ViewerPageSelectorElement extends CrLitElement {
     };
   }
 
-  docLength: number = 1;
-  pageNo: number = 1;
+  accessor docLength: number = 1;
+  accessor pageNo: number = 1;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -75,7 +75,7 @@ export class ViewerPageSelectorElement extends CrLitElement {
 
   /** @return True if the selector input field is currently focused. */
   isActive(): boolean {
-    return this.shadowRoot!.activeElement === this.$.pageSelector;
+    return this.shadowRoot.activeElement === this.$.pageSelector;
   }
 
   /** Immediately remove any non-digit characters. */

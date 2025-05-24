@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 
@@ -17,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
@@ -43,6 +39,8 @@ class LiteralBufferBase {
                 "T must be a character type");
 
  public:
+  using iterator = base::CheckedContiguousIterator<const T>;
+
   ~LiteralBufferBase() {
     if (!is_stored_inline())
       WTF::Partitions::BufferFree(begin_);
@@ -53,11 +51,21 @@ class LiteralBufferBase {
     return base::checked_cast<wtf_size_t>(end_ - begin_);
   }
 
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  ALWAYS_INLINE iterator begin() const {
+    return UNSAFE_TODO(iterator(begin_, end_));
+  }
+  ALWAYS_INLINE iterator end() const {
+    return UNSAFE_TODO(iterator(begin_, end_, end_));
+  }
+
   ALWAYS_INLINE bool IsEmpty() const { return begin_ == end_; }
 
   ALWAYS_INLINE const T& operator[](wtf_size_t index) const {
     CHECK_GT(size(), index);
-    return begin_[index];
+    // SAFETY: Check above.
+    return UNSAFE_BUFFERS(begin_[index]);
   }
 
  protected:
@@ -70,7 +78,7 @@ class LiteralBufferBase {
     if (end_ == end_of_storage_) [[unlikely]] {
       end_ = Grow();
     }
-    *end_++ = val;
+    UNSAFE_TODO(*end_++) = val;
   }
 
   template <typename OtherT, wtf_size_t kOtherSize>
@@ -82,7 +90,7 @@ class LiteralBufferBase {
     if (capacity() < new_size)
       Grow(new_size);
     std::copy_n(val.data(), count, end_);
-    end_ += count;
+    UNSAFE_TODO(end_ += count);
   }
 
   template <wtf_size_t kOtherInlineSize>
@@ -94,10 +102,10 @@ class LiteralBufferBase {
         WTF::Partitions::BufferFree(begin_);
       begin_ = static_cast<T*>(WTF::Partitions::BufferMalloc(
           AllocationSize(other_size), "LiteralBufferBase"));
-      end_of_storage_ = begin_ + other_size;
+      end_of_storage_ = UNSAFE_TODO(begin_ + other_size);
     }
     std::copy_n(other.data(), other_size, begin_);
-    end_ = begin_ + other_size;
+    end_ = UNSAFE_TODO(begin_ + other_size);
   }
 
   void Move(LiteralBufferBase&& other) {
@@ -110,12 +118,13 @@ class LiteralBufferBase {
       end_of_storage_ = other.end_of_storage_;
       other.begin_ = &other.inline_storage[0];
       other.end_ = other.begin_;
-      other.end_of_storage_ = other.begin_ + BUFFER_INLINE_CAPACITY;
+      other.end_of_storage_ =
+          UNSAFE_TODO(other.begin_ + BUFFER_INLINE_CAPACITY);
     } else {
       DCHECK_GE(capacity(), other.size());  // Sanity check.
       wtf_size_t other_size = other.size();
       std::copy_n(other.data(), other_size, begin_);
-      end_ = begin_ + other_size;
+      end_ = UNSAFE_TODO(begin_ + other_size);
     }
   }
 
@@ -156,8 +165,8 @@ class LiteralBufferBase {
     if (!is_stored_inline())
       WTF::Partitions::BufferFree(begin_);
     begin_ = new_storage;
-    end_ = new_storage + in_use;
-    end_of_storage_ = new_storage + new_capacity;
+    end_ = UNSAFE_TODO(new_storage + in_use);
+    end_of_storage_ = UNSAFE_TODO(new_storage + new_capacity);
     return end_;
   }
 
@@ -167,7 +176,7 @@ class LiteralBufferBase {
   // register.
   T* begin_ = &inline_storage[0];
   T* end_ = begin_;
-  T* end_of_storage_ = begin_ + BUFFER_INLINE_CAPACITY;
+  T* end_of_storage_ = UNSAFE_TODO(begin_ + BUFFER_INLINE_CAPACITY);
   T inline_storage[BUFFER_INLINE_CAPACITY];
 };
 
@@ -217,7 +226,7 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (this->data() == other.data())
       return *this;
     this->Copy(other);
-    is_8bit_ = other.is_8bit_;
+    bitwise_or_all_chars_ = other.bitwise_or_all_chars_;
     return *this;
   }
 
@@ -225,28 +234,28 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (this == &other)
       return *this;
     this->Copy(other);
-    is_8bit_ = other.is_8bit_;
+    bitwise_or_all_chars_ = other.bitwise_or_all_chars_;
     return *this;
   }
 
   UCharLiteralBuffer& operator=(UCharLiteralBuffer&& other) {
     if (this == &other)
       return *this;
-    const bool other_is_8bit = other.is_8bit_;
+    const UChar other_bitwise_or_all_chars = other.bitwise_or_all_chars_;
     this->Move(std::move(other));
-    is_8bit_ = other_is_8bit;
+    bitwise_or_all_chars_ = other_bitwise_or_all_chars;
     return *this;
   }
 
   // Clear without freeing any storage.
   ALWAYS_INLINE void clear() {
     this->ClearImpl();
-    is_8bit_ = true;
+    bitwise_or_all_chars_ = 0;
   }
 
   ALWAYS_INLINE void AddChar(UChar val) {
     this->AddCharImpl(val);
-    is_8bit_ &= (val <= 0xFF);
+    bitwise_or_all_chars_ |= val;
   }
 
   template <wtf_size_t kOtherSize>
@@ -258,27 +267,29 @@ class UCharLiteralBuffer : public LiteralBufferBase<UChar, kInlineSize> {
     if (Is8Bit()) {
       return String::Make8BitFrom16BitSource(base::span(*this));
     }
-    return String(this->data(), this->size());
-  }
-
-  String AsString8() const {
-    return String::Make8BitFrom16BitSource(base::span(*this));
+    return String(*this);
   }
 
   AtomicString AsAtomicString() const {
-    return AtomicString(this->data(), this->size(),
-                        Is8Bit() ? WTF::AtomicStringUCharEncoding::kIs8Bit
-                                 : WTF::AtomicStringUCharEncoding::kIs16Bit);
+    return AtomicString(*this, Is8Bit()
+                                   ? WTF::AtomicStringUCharEncoding::kIs8Bit
+                                   : WTF::AtomicStringUCharEncoding::kIs16Bit);
   }
 
-  ALWAYS_INLINE bool Is8Bit() const { return is_8bit_; }
+  ALWAYS_INLINE bool Is8Bit() const {
+    return (bitwise_or_all_chars_ & ~0xff) == 0;
+  }
 
  private:
   // Needed for operator=.
   template <wtf_size_t kOtherInlineSize>
   friend class UCharLiteralBuffer;
 
-  bool is_8bit_ = true;
+  // Bitwise OR of all characters in our buffer. We actually
+  // only ever care if anyone of them have any high (>= 8) bits set,
+  // but just checking that at the end is faster than branching
+  // all the time.
+  UChar bitwise_or_all_chars_ = 0;
 };
 
 #undef BUFFER_INLINE_CAPACITY

@@ -14,7 +14,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "components/performance_manager/persistence/site_data/site_data.pb.h"
@@ -58,8 +57,7 @@ ScopedReadOnlyDirectory::ScopedReadOnlyDirectory(
 
 // Initialize a SiteDataProto object with a test value (the same
 // value is used to initialize all fields).
-void InitSiteDataProto(SiteDataProto* proto,
-                       ::google::protobuf::int64 test_value) {
+void InitSiteDataProto(SiteDataProto* proto, int64_t test_value) {
   proto->set_last_loaded(test_value);
 
   SiteDataFeatureProto feature_proto;
@@ -141,7 +139,7 @@ class LevelDBSiteDataStoreTest : public ::testing::Test {
     for (size_t i = 0; i < num_entries; ++i) {
       SiteDataProto proto_temp;
       std::string origin_str = base::StringPrintf("http://%zu.com", i);
-      InitSiteDataProto(&proto_temp, static_cast<::google::protobuf::int64>(i));
+      InitSiteDataProto(&proto_temp, static_cast<int64_t>(i));
       EXPECT_TRUE(proto_temp.IsInitialized());
       url::Origin origin = url::Origin::Create(GURL(origin_str));
       db_->WriteSiteDataIntoStore(origin, proto_temp);
@@ -167,7 +165,7 @@ TEST_F(LevelDBSiteDataStoreTest, InitAndStoreSiteData) {
   EXPECT_FALSE(ReadFromDB(kDummyOrigin, &early_read_proto));
 
   // Add an entry to the data store and make sure that we can read it back.
-  ::google::protobuf::int64 test_value = 42;
+  int64_t test_value = 42;
   SiteDataProto stored_proto;
   InitSiteDataProto(&stored_proto, test_value);
   db_->WriteSiteDataIntoStore(kDummyOrigin, stored_proto);
@@ -239,18 +237,9 @@ TEST_F(LevelDBSiteDataStoreTest, DatabaseRecoveryTest) {
 
   EXPECT_TRUE(leveldb_chrome::CorruptClosedDBForTesting(GetDBPath()));
 
-  base::HistogramTester histogram_tester;
-  histogram_tester.ExpectTotalCount("PerformanceManager.SiteDB.DatabaseInit",
-                                    0);
-  // Open the corrupt DB and ensure that the appropriate histograms gets
-  // updated.
+  // Open the corrupt DB.
   OpenDB();
   EXPECT_TRUE(DbIsInitialized());
-  histogram_tester.ExpectUniqueSample("PerformanceManager.SiteDB.DatabaseInit",
-                                      1 /* kInitStatusCorruption */, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PerformanceManager.SiteDB.DatabaseInitAfterRepair",
-      0 /* kInitStatusOk */, 1);
 
   // TODO(sebmarchand): try to induce an I/O error by deleting one of the
   // manifest files.
@@ -302,7 +291,7 @@ TEST_F(LevelDBSiteDataStoreTest, DBGetsClearedOnVersionUpgrade) {
 
   // Add some dummy data to the data store to ensure the data store gets cleared
   // when upgrading it to the new version.
-  ::google::protobuf::int64 test_value = 42;
+  int64_t test_value = 42;
   SiteDataProto stored_proto;
   InitSiteDataProto(&stored_proto, test_value);
   db_->WriteSiteDataIntoStore(kDummyOrigin, stored_proto);

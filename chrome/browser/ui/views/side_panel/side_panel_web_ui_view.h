@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
@@ -22,6 +23,8 @@ namespace views {
 class MenuRunner;
 }  // namespace views
 
+class SidePanelEntryScope;
+
 // SidePanelWebUIView holds generic behavior for side panel entry views hosting
 // WebUI. This includes keyboard event handling, context menu triggering, and
 // handling visibility updates.
@@ -31,7 +34,8 @@ class SidePanelWebUIView : public views::WebView,
 
  public:
   static inline constexpr int kSidePanelWebViewId = 777;
-  SidePanelWebUIView(base::RepeatingClosure on_show_cb,
+  SidePanelWebUIView(SidePanelEntryScope& scope,
+                     base::RepeatingClosure on_show_cb,
                      base::RepeatingClosure close_cb,
                      WebUIContentsWrapper* contents_wrapper);
   SidePanelWebUIView(const SidePanelWebUIView&) = delete;
@@ -61,6 +65,7 @@ class SidePanelWebUIView : public views::WebView,
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+  base::CallbackListSubscription tab_will_discard_subscription_;
   base::WeakPtrFactory<SidePanelWebUIView> weak_factory_{this};
 };
 
@@ -70,10 +75,12 @@ class SidePanelWebUIViewT : public SidePanelWebUIView {
 
  public:
   SidePanelWebUIViewT(
+      SidePanelEntryScope& scope,
       base::RepeatingClosure on_show_cb,
       base::RepeatingClosure close_cb,
       std::unique_ptr<WebUIContentsWrapperT<T>> contents_wrapper)
-      : SidePanelWebUIView(std::move(on_show_cb),
+      : SidePanelWebUIView(scope,
+                           std::move(on_show_cb),
                            std::move(close_cb),
                            contents_wrapper.get()),
         contents_wrapper_(std::move(contents_wrapper)) {}

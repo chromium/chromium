@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+Found 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Element.setAttribute works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setAttribute' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] Element.setAttributeNS works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setAttributeNS' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] Element.setAttributeNode works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setAttributeNode' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] Element.setAttributeNodeNS works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setAttributeNodeNS' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] NamedNodeMap.setNamedItem works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setNamedItem' on 'NamedNodeMap': This document requires 'TrustedScript' assignment.
+[FAIL] NamedNodeMap.setNamedItemNS works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setNamedItemNS' on 'NamedNodeMap': This document requires 'TrustedScript' assignment.
+[FAIL] Attr.value works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setAttributeNS' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] Node.nodeValue works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setAttributeNS' on 'Element': This document requires 'TrustedScript' assignment.
+[FAIL] Node.textContent works for elementNS=https://example.com/namespace, element=foo,  attrName=onmouseup with a plain string
+  Failed to execute 'setAttributeNS' on 'Element': This document requires 'TrustedScript' assignment.
+Harness: the test ran to completion.
+

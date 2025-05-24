@@ -10,47 +10,40 @@ BASE_FEATURE(kAllowClientCertificateReportingForUsers,
              "AllowClientCertificateReportingForUsers",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kNewEvSignalsEnabled,
-             "NewEvSignalsEnabled",
+// Enables the addition of device signals fields to Profile-level Chrome
+// Reports.
+BASE_FEATURE(kProfileSignalsReportingEnabled,
+             "ProfileSignalsReportingEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<bool> kDisableFileSystemInfo{
-    &kNewEvSignalsEnabled, "DisableFileSystemInfo", false};
-const base::FeatureParam<bool> kDisableSettings{&kNewEvSignalsEnabled,
-                                                "DisableSettings", false};
-const base::FeatureParam<bool> kDisableAntiVirus{&kNewEvSignalsEnabled,
-                                                 "DisableAntiVirus", false};
-const base::FeatureParam<bool> kDisableHotfix{&kNewEvSignalsEnabled,
-                                              "DisableHotfix", false};
+// Enables the addition of device signals fields to Browser-level Chrome
+// Reports.
+BASE_FEATURE(kBrowserSignalsReportingEnabled,
+             "BrowserSignalsReportingEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsNewFunctionEnabled(NewEvFunction new_ev_function) {
-  // AntiVirus and Hotfix are considered "Launched". So only rely on the value
-  // of the kill-switch to control the feature's behavior.
-  bool disable_function = false;
-  switch (new_ev_function) {
-    case NewEvFunction::kFileSystemInfo:
-      disable_function = kDisableFileSystemInfo.Get();
-      break;
-    case NewEvFunction::kSettings:
-      disable_function = kDisableSettings.Get();
-      break;
-    case NewEvFunction::kAntiVirus:
-      disable_function = kDisableAntiVirus.Get();
-      break;
-    case NewEvFunction::kHotfix:
-      disable_function = kDisableHotfix.Get();
-      break;
-  }
+// Controls whether a signals-only profile report will be triggered when a valid
+// cookie change is observed.
+constexpr base::FeatureParam<bool> kTriggerOnCookieChange{
+    &kProfileSignalsReportingEnabled, "trigger_on_cookie_change", true};
 
-  if (!base::FeatureList::IsEnabled(kNewEvSignalsEnabled)) {
-    return false;
-  }
+// Controls the minimum interval that signals should be reported via profile
+// reports.
+// Example: "ProfileSignalsReportingEnabled:report_interval/3600" for 3600
+// seconds.
+constexpr base::FeatureParam<base::TimeDelta> kProfileSignalsReportingInterval{
+    &kProfileSignalsReportingEnabled, "report_interval", base::Hours(4)};
 
-  return !disable_function;
+bool IsProfileSignalsReportingEnabled() {
+  return base::FeatureList::IsEnabled(kProfileSignalsReportingEnabled);
+}
+
+bool IsBrowserSignalsReportingEnabled() {
+  return base::FeatureList::IsEnabled(kBrowserSignalsReportingEnabled);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+    BUILDFLAG(IS_CHROMEOS)
 // Enables the triggering of device signals consent dialog when conditions met
 // This feature also requires UnmanagedDeviceSignalsConsentFlowEnabled policy to
 // be enabled
@@ -62,18 +55,10 @@ bool IsConsentDialogEnabled() {
   return base::FeatureList::IsEnabled(kDeviceSignalsConsentDialog);
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_CHROMEOS_ASH)
+        // BUILDFLAG(IS_CHROMEOS)
 
 BASE_FEATURE(kNewEvSignalsUnaffiliatedEnabled,
              "NewEvSignalsUnaffiliatedEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kClearClientCertsOnExtensionReport,
-             "ClearClientCertsOnExtensionReport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsClearClientCertsOnExtensionReportEnabled() {
-  return base::FeatureList::IsEnabled(kClearClientCertsOnExtensionReport);
-}
 
 }  // namespace enterprise_signals::features

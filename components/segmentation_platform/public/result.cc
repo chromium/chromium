@@ -88,12 +88,45 @@ std::optional<float> AnnotatedNumericResult::GetResultForLabel(
   return std::nullopt;
 }
 
+base::flat_map<std::string, float> AnnotatedNumericResult::GetAllResults()
+    const {
+  base::flat_map<std::string, float> all_results;
+  if (result.output_config().predictor().has_generic_predictor()) {
+    const auto& labels =
+        result.output_config().predictor().generic_predictor().output_labels();
+    for (int index = 0; index < labels.size(); ++index) {
+      all_results[labels.at(index)] = result.result().at(index);
+    }
+  } else if (result.output_config().predictor().has_multi_class_classifier()) {
+    const auto& labels = result.output_config()
+                             .predictor()
+                             .multi_class_classifier()
+                             .class_labels();
+    for (int index = 0; index < labels.size(); ++index) {
+      all_results[labels.at(index)] = result.result().at(index);
+    }
+  }
+  return all_results;
+}
+
 std::string AnnotatedNumericResult::ToDebugString() const {
   std::stringstream debug_string;
   debug_string << "Status: " << StatusToString(status);
 
   for (int i = 0; i < result.result_size(); ++i) {
-    debug_string << " output " << i << ": " << result.result(i);
+    const std::string* label = nullptr;
+    if (result.output_config().predictor().has_multi_class_classifier()) {
+      label = &result.output_config()
+                   .predictor()
+                   .multi_class_classifier()
+                   .class_labels(i);
+    } else if (result.output_config().predictor().has_generic_predictor()) {
+      label =
+          &result.output_config().predictor().generic_predictor().output_labels(
+              i);
+    }
+    debug_string << " output " << (label ? *label : "") << ": "
+                 << result.result(i);
   }
 
   return debug_string.str();

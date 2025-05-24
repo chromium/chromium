@@ -49,7 +49,7 @@ public class IntPrefBackupSerializerTest {
 
         // Please update this expectation as well as the setInteger() ones below when a new pref is
         // added to the allowlist.
-        assertEquals(serializedNamesAndValues.size(), 1);
+        assertEquals(1, serializedNamesAndValues.size());
 
         boolean success =
                 serializer.tryDeserialize(

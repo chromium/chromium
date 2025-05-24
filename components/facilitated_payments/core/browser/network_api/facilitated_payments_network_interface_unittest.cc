@@ -87,7 +87,9 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
   IssueOAuthToken();
   ReturnResponse(
       payments_network_interface_.get(), net::HTTP_OK,
-      "{\"trigger_purchase_manager\":{\"o2_action_token\":\"dG9rZW4=\"}}");
+      "{\"trigger_purchase_manager\":{\"secure_payload\":{\"opaque_token\":"
+      "\"dG9rZW4=\",\"secure_data\":[{\"key\":1,\"value\":\"secure_data_"
+      "value\"}]}}}");
 
   // Verify the request contains necessary info like the payment details, and
   // the instrument id.
@@ -101,7 +103,8 @@ TEST_F(FacilitatedPaymentsNetworkInterfaceTest,
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
       result_);
   std::vector<uint8_t> expected_action_token = {'t', 'o', 'k', 'e', 'n'};
-  EXPECT_EQ(expected_action_token, response_details_->action_token_);
+  EXPECT_EQ(expected_action_token,
+            response_details_->secure_payload_.action_token);
 }
 
 TEST_F(FacilitatedPaymentsNetworkInterfaceTest,

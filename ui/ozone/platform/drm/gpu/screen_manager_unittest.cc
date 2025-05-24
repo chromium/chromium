@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 #include <drm_fourcc.h>
@@ -14,7 +19,6 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/manager/test/fake_display_snapshot.h"
@@ -860,12 +864,13 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
   HardwareDisplayController* controller =
       screen_manager_->GetDisplayController(GetPrimaryBounds());
   for (const auto& crtc : controller->crtc_controllers()) {
-    if (crtc->crtc() == primary_crtc_id)
+    if (crtc->crtc() == primary_crtc_id) {
       EXPECT_EQ(kDefaultMode.clock, crtc->mode().clock);
-    else if (crtc->crtc() == secondary_crtc_id)
+    } else if (crtc->crtc() == secondary_crtc_id) {
       EXPECT_EQ(secondary_mode.clock, crtc->mode().clock);
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   }
 }
 
@@ -2134,7 +2139,7 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcs) {
 }
 
 // TODO(b/322831691): Deterministic failure.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
   DISABLED_ReplaceDisplayControllersCrtcsNonexistent
 #else
@@ -2329,4 +2334,77 @@ TEST_F(ScreenManagerTest, TileDisplay) {
               Property(&CrtcController::tile_property,
                        Optional(EqTileProperty(nonprimary_tile_prop)))))));
 }
+
+TEST_F(ScreenManagerTest, DetachPlanesFromAllControllersSuccess) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kCommitModeset});
+
+  int last_commit_count = drm_->get_commit_modeset_count();
+  ASSERT_TRUE(screen_manager_->DetachPlanesFromAllControllers());
+  EXPECT_EQ(drm_->get_commit_modeset_count(), last_commit_count + 1);
+}
+
+TEST_F(ScreenManagerTest, DetachPlanesFromAllControllersCommitFailed) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kCommitModeset});
+
+  drm_->set_modeset_expectation(false);
+  int last_commit_count = drm_->get_commit_modeset_count();
+  ASSERT_FALSE(screen_manager_->DetachPlanesFromAllControllers());
+  EXPECT_EQ(drm_->get_commit_modeset_count(), last_commit_count + 1);
+}
+
+TEST_F(ScreenManagerTest, UpdateControllerToWindowMappingWithoutMaster) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  auto window = std::make_unique<DrmWindow>(1, device_manager_.get(),
+                                            screen_manager_.get());
+  window->Initialize();
+  window->SetBounds(GetPrimaryBounds());
+  screen_manager_->AddWindow(1, std::move(window));
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset});
+
+  ASSERT_NE(screen_manager_->GetWindow(1)->GetController(), nullptr);
+  ASSERT_TRUE(screen_manager_->GetWindow(1)
+                  ->GetController()
+                  ->GetDrmDevice()
+                  ->DropMaster());
+  screen_manager_->UpdateControllerToWindowMapping();
+  EXPECT_EQ(screen_manager_->GetWindow(1)->GetController(), nullptr);
+
+  window = screen_manager_->RemoveWindow(1);
+  window->Shutdown();
+}
+
 }  // namespace ui

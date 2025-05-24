@@ -111,12 +111,12 @@ TEST_F(StructTraitsTest, MemoryAllocatorDump) {
   std::unique_ptr<MemoryAllocatorDump> output;
   input->AddScalar("size", "bytes", 10);
   input->AddScalar("count", "number", 20);
-  input->set_flags(MemoryAllocatorDump::WEAK);
+  input->set_flags(MemoryAllocatorDump::kWeak);
   SerializeAndDeserialize<mojom::RawAllocatorDump>(input, &output);
 
   EXPECT_EQ(42u, output->guid().ToUint64());
   EXPECT_EQ("absolute/name", output->absolute_name());
-  EXPECT_EQ(MemoryAllocatorDump::WEAK, output->flags());
+  EXPECT_EQ(MemoryAllocatorDump::kWeak, output->flags());
   EXPECT_EQ(10u, output->GetSizeInternal());
   EXPECT_EQ(MemoryDumpLevelOfDetail::kDetailed, output->level_of_detail());
   MemoryAllocatorDump::Entry expected_entry1("size", "bytes", 10);
@@ -181,7 +181,7 @@ TEST_F(StructTraitsTest, ProcessMemoryDump) {
   {
     auto mad_it = dumps.find("global/1");
     ASSERT_NE(dumps.end(), mad_it);
-    EXPECT_FALSE(mad_it->second->flags() & MemoryAllocatorDump::WEAK);
+    EXPECT_FALSE(mad_it->second->flags() & MemoryAllocatorDump::kWeak);
     MemoryAllocatorDump::Entry expected_entry("shared_name", "url", "!");
     EXPECT_EQ(1u, mad_it->second->entries().size());
     EXPECT_THAT(mad_it->second->entries(), Contains(Eq(ByRef(expected_entry))));
@@ -189,7 +189,7 @@ TEST_F(StructTraitsTest, ProcessMemoryDump) {
   {
     auto mad_it = dumps.find("global/2");
     ASSERT_NE(dumps.end(), mad_it);
-    EXPECT_TRUE(mad_it->second->flags() & MemoryAllocatorDump::WEAK);
+    EXPECT_TRUE(mad_it->second->flags() & MemoryAllocatorDump::kWeak);
     MemoryAllocatorDump::Entry expected_entry("shared_weak_name", "url", ".");
     EXPECT_EQ(1u, mad_it->second->entries().size());
     EXPECT_THAT(mad_it->second->entries(), Contains(Eq(ByRef(expected_entry))));

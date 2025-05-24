@@ -25,11 +25,13 @@ import {PaymentsManagerExpectations, TestPaymentsManager} from './autofill_fake_
 export async function createPaymentsSection(
     creditCards: chrome.autofillPrivate.CreditCardEntry[],
     ibans: chrome.autofillPrivate.IbanEntry[],
+    payOverTimeIssuers: chrome.autofillPrivate.PayOverTimeIssuerEntry[],
     prefValues: any): Promise<SettingsPaymentsSectionElement> {
   // Override the PaymentsManagerImpl for testing.
   const paymentsManager = new TestPaymentsManager();
   paymentsManager.data.creditCards = creditCards;
   paymentsManager.data.ibans = ibans;
+  paymentsManager.data.payOverTimeIssuers = payOverTimeIssuers;
   // <if expr="is_win or is_macosx">
   paymentsManager.setIsDeviceAuthAvailable(
       loadTimeData.getBoolean('deviceAuthAvailable'));
@@ -59,6 +61,7 @@ export function getDefaultExpectations(): PaymentsManagerExpectations {
   expected.requestedIbans = 1;
   expected.removedIbans = 0;
   expected.isValidIban = 0;
+  expected.requestedPayOverTimeIssuers = 0;
   expected.authenticateUserAndFlipMandatoryAuthToggle = 0;
   expected.getLocalCard = 0;
   expected.bulkDeleteAllCvcs = 0;
@@ -84,7 +87,6 @@ export function getCardRowShadowRoot(paymentsList: HTMLElement): ShadowRoot {
   assertTrue(!!row);
   return row.shadowRoot!;
 }
-
 
 type PaymentEntryElement =
     SettingsCreditCardListEntryElement|SettingsIbanListEntryElement;
@@ -168,7 +170,8 @@ export async function deletePaymentMethod(
   paymentMethodItems.splice(index, 1);
   manager.data[dataProperty] = paymentMethodItems;
   manager.lastCallback.setPersonalDataManagerListener!
-      ([], manager.data.creditCards, manager.data.ibans);
+      ([], manager.data.creditCards, manager.data.ibans,
+       manager.data.payOverTimeIssuers);
 
   await flushTasks();
 }

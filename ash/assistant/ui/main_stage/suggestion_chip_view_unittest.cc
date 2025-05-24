@@ -14,10 +14,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/test/pixel_comparator.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -72,37 +70,13 @@ SkBitmap GetSuggestionChipViewBitmap(SuggestionChipView* view) {
   return canvas.GetBitmap();
 }
 
-std::string GetTestSuffix(const testing::TestParamInfo<bool>& info) {
-  return info.param ? "JellyEnabled" : "JellyDisabled";
-}
-
 }  // namespace
 
 // Tests -----------------------------------------------------------------------
 
-class SuggestionChipViewTest : public AshTestBase,
-                               public testing::WithParamInterface<bool> {
- public:
-  SuggestionChipViewTest() {
-    scoped_feature_list_.InitWithFeatureState(chromeos::features::kJelly,
-                                              GetParam());
-  }
+using SuggestionChipViewTest = AshTestBase;
 
-  SuggestionChipViewTest(const SuggestionChipViewTest&) = delete;
-  SuggestionChipViewTest& operator=(const SuggestionChipViewTest&) = delete;
-
-  ~SuggestionChipViewTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SuggestionChipViewTest,
-                         testing::Bool(),
-                         GetTestSuffix);
-
-TEST_P(SuggestionChipViewTest, ShouldHandleLocalIcons) {
+TEST_F(SuggestionChipViewTest, ShouldHandleLocalIcons) {
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =
       widget->SetContentsView(std::make_unique<SuggestionChipView>(
@@ -117,7 +91,7 @@ TEST_P(SuggestionChipViewTest, ShouldHandleLocalIcons) {
   ASSERT_PIXELS_EQ(actual, expected);
 }
 
-TEST_P(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
+TEST_F(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
   const gfx::ImageSkia expected =
       gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10);
 
@@ -139,7 +113,7 @@ TEST_P(SuggestionChipViewTest, ShouldHandleRemoteIcons) {
   EXPECT_TRUE(actual.BackedBySameObjectAs(expected));
 }
 
-TEST_P(SuggestionChipViewTest, DarkAndLightTheme) {
+TEST_F(SuggestionChipViewTest, DarkAndLightTheme) {
   auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
   dark_light_mode_controller->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -196,7 +170,7 @@ TEST_P(SuggestionChipViewTest, DarkAndLightTheme) {
               ColorProvider::ContentLayerType::kSeparatorColor))));
 }
 
-TEST_P(SuggestionChipViewTest, FontWeight) {
+TEST_F(SuggestionChipViewTest, FontWeight) {
   auto widget = CreateFramelessTestWidget();
   auto* suggestion_chip_view =
       widget->SetContentsView(std::make_unique<SuggestionChipView>(

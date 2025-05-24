@@ -434,8 +434,7 @@ bool CpuDataCollector::ReadCpuFreqAllTimeInState(
 // correct number of CPUs.
 CpuDataCollector::CpuDataCollector() : cpu_count_(-1) {}
 
-CpuDataCollector::~CpuDataCollector() {
-}
+CpuDataCollector::~CpuDataCollector() = default;
 
 void CpuDataCollector::Start() {
   timer_.Start(FROM_HERE, base::Seconds(kCpuDataSamplePeriodSec), this,
@@ -518,7 +517,6 @@ CpuDataCollector::StateOccupancySample::StateOccupancySample()
 CpuDataCollector::StateOccupancySample::StateOccupancySample(
     const StateOccupancySample& other) = default;
 
-CpuDataCollector::StateOccupancySample::~StateOccupancySample() {
-}
+CpuDataCollector::StateOccupancySample::~StateOccupancySample() = default;
 
 }  // namespace ash

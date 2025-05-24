@@ -55,7 +55,7 @@ void SwitchAccessMenuBubbleController::ShowMenu(
 
     menu_view_ = new SwitchAccessMenuView();
     menu_view_->SetBorder(views::CreateEmptyBorder(kBubbleMenuPadding));
-    bubble_view_->AddChildView(menu_view_.get());
+    bubble_view_->AddChildViewRaw(menu_view_.get());
 
     widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     TrayBackgroundView::InitializeBubbleAnimations(widget_);
@@ -87,8 +87,8 @@ void SwitchAccessMenuBubbleController::ShowMenu(
 
   widget_->SetBounds(resting_bounds);
   widget_->Show();
-  bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                         true);
+  bubble_view_->NotifyAccessibilityEventDeprecated(
+      ax::mojom::Event::kChildrenChanged, true);
 
   // The resting bounds includes padding on each side of the menu.
   // Remove that before passing to the back button controller so the back button
@@ -112,8 +112,8 @@ void SwitchAccessMenuBubbleController::HideMenuBubble() {
   if (widget_)
     widget_->Hide();
   if (bubble_view_)
-    bubble_view_->NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged,
-                                           true);
+    bubble_view_->NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kChildrenChanged, true);
 }
 
 void SwitchAccessMenuBubbleController::BubbleViewDestroyed() {

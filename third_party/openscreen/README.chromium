@@ -3,7 +3,7 @@ Short Name: openscreen
 URL: https://chromium.googlesource.com/openscreen
 Version: N/A
 Revision: 9499a256bc609e9efdf15a268fd047127870af41
-License: BSD
+License: BSD-3-Clause
 License File: src/LICENSE
 Security Critical: yes
 Shipped: yes

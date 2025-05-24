@@ -4,6 +4,8 @@
 
 package org.chromium.chromecast.base;
 
+import androidx.annotation.NonNull;
+
 import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -46,11 +48,7 @@ public class Both<A, B> {
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append(this.first.toString())
-                .append(", ")
-                .append(this.second.toString())
-                .toString();
+        return this.first + ", " + this.second;
     }
 
     @Override
@@ -67,20 +65,14 @@ public class Both<A, B> {
         return Objects.hash(this.first, this.second);
     }
 
-    /**
-     * Constructs a Both object containing both `a` and `b`.
-     */
-    public static <A, B> Both<A, B> both(A a, B b) {
-        assert a != null;
-        assert b != null;
+    /** Constructs a Both object containing both `a` and `b`. */
+    public static <A, B> Both<A, B> of(@NonNull A a, @NonNull B b) {
         return new Both<>(a, b);
     }
 
-    /**
-     * Turns a function of two arguments into a function of a single Both argument.
-     */
-    public static <A, B, R> Function<Both<A, B>, R> adapt(
-            BiFunction<? super A, ? super B, ? extends R> function) {
+    /** Turns a function of two arguments into a function of a single Both argument. */
+    public static <A, B, C> Function<Both<A, B>, C> adapt(
+            BiFunction<? super A, ? super B, ? extends C> function) {
         return (Both<A, B> data) -> function.apply(data.first, data.second);
     }
 

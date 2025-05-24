@@ -21,7 +21,8 @@ class COMPONENT_EXPORT(UI_BASE) BubbleCloser {
  public:
   // Installs an event monitor watching for mouse clicks outside of |window| or
   // any of its child windows. Invokes |on_click_outside| on each event.
-  BubbleCloser(NSWindow* window, base::RepeatingClosure on_click_outside);
+  BubbleCloser(gfx::NativeWindow window,
+               base::RepeatingClosure on_click_outside);
 
   BubbleCloser(const BubbleCloser&) = delete;
   BubbleCloser& operator=(const BubbleCloser&) = delete;

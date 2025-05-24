@@ -9,7 +9,7 @@ import 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SettingsToggleV2Element} from '../../controls/v2/settings_toggle_v2.js';
+import type {SettingsToggleV2Element} from '../../controls/v2/settings_toggle_v2.js';
 
 import {getTemplate} from './settings_toggle_v2_storybook.html.js';
 

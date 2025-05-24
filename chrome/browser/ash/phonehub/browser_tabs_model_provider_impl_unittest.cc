@@ -13,7 +13,6 @@
 #include "ash/constants/ash_switches.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/multidevice/remote_device_test_util.h"
@@ -34,8 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -46,8 +44,8 @@ constexpr char kPhoneNameTwo[] = "Galaxy";
 
 class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
  public:
-  SessionSyncServiceMock() {}
-  ~SessionSyncServiceMock() override {}
+  SessionSyncServiceMock() = default;
+  ~SessionSyncServiceMock() override = default;
 
   MOCK_CONST_METHOD0(GetGlobalIdMapper, syncer::GlobalIdMapper*());
   MOCK_METHOD0(GetOpenTabsUIDelegate, sync_sessions::OpenTabsUIDelegate*());
@@ -61,8 +59,8 @@ class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
 
 class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
  public:
-  OpenTabsUIDelegateMock() {}
-  ~OpenTabsUIDelegateMock() override {}
+  OpenTabsUIDelegateMock() = default;
+  ~OpenTabsUIDelegateMock() override = default;
 
   MOCK_METHOD1(GetAllForeignSessions,
                bool(std::vector<raw_ptr<const sync_sessions::SyncedSession,
@@ -330,5 +328,4 @@ TEST_F(BrowserTabsModelProviderImplTest, SessionCorrectlySelected) {
             session_b.get());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

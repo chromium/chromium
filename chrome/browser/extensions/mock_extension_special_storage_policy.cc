@@ -24,4 +24,5 @@ bool MockExtensionSpecialStoragePolicy::HasSessionOnlyOrigins() {
   return false;
 }
 
-MockExtensionSpecialStoragePolicy::~MockExtensionSpecialStoragePolicy() {}
+MockExtensionSpecialStoragePolicy::~MockExtensionSpecialStoragePolicy() =
+    default;

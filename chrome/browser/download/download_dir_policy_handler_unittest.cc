@@ -11,7 +11,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_dir_util.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/common/pref_names.h"
@@ -89,12 +88,10 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   ASSERT_TRUE(value->is_bool());
   EXPECT_FALSE(value->GetBool());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(store_->GetValue(drive::prefs::kDisableDrive, &value));
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_bool());
   EXPECT_FALSE(value->GetBool());
-#endif
 
   EXPECT_TRUE(store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
@@ -163,12 +160,10 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToOneDrive) {
   ASSERT_TRUE(value->is_bool());
   EXPECT_FALSE(value->GetBool());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(store_->GetValue(prefs::kAllowUserToRemoveODFS, &value));
   ASSERT_TRUE(value);
   ASSERT_TRUE(value->is_bool());
   EXPECT_FALSE(value->GetBool());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_TRUE(store_->GetValue(prefs::kDownloadDefaultDirectory, &value));
   ASSERT_TRUE(value);
@@ -188,10 +183,8 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToOneDrive) {
   EXPECT_FALSE(
       recommended_store_->GetValue(prefs::kPromptForDownload, nullptr));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_FALSE(
       recommended_store_->GetValue(prefs::kAllowUserToRemoveODFS, nullptr));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_TRUE(
       recommended_store_->GetValue(prefs::kDownloadDefaultDirectory, &value));

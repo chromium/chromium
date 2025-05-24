@@ -10,7 +10,7 @@ namespace tts {
 using CreateOutputStreamCallback =
     base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>;
 using CreateLoopbackStreamCallback =
-    base::OnceCallback<void(media::mojom::ReadOnlyAudioDataPipePtr)>;
+    base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>;
 
 MockAudioStreamFactory::MockAudioStreamFactory() = default;
 MockAudioStreamFactory::~MockAudioStreamFactory() = default;

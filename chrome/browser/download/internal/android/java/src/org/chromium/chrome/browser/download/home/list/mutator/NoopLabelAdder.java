@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 
 import java.util.List;
 
 /** Implementation of {@link LabelAdder} that doesn't add any labels. */
+@NullMarked
 public class NoopLabelAdder implements ListConsumer {
-    private ListConsumer mListConsumer;
+    private @Nullable ListConsumer mListConsumer;
 
     public NoopLabelAdder() {}
 

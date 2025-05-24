@@ -1,0 +1,44 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("quick_unlock_private") {
+  sources = [
+    "quick_unlock_private_api.cc",
+    "quick_unlock_private_api.h",
+    "quick_unlock_private_ash_utils.cc",
+    "quick_unlock_private_ash_utils.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/common/extensions/api",
+    "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/components/login/auth",
+    "//content/public/browser",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/quick_unlock",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/cryptohome:public",
+    "//chromeos/ash/components/login/auth/public:authpublic",
+    "//chromeos/ash/components/osauth/public",
+    "//components/prefs",
+    "//components/user_manager",
+  ]
+}

@@ -7,13 +7,14 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "base/pickle.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include <string_view>
 #include <tuple>
 
 #include "base/containers/span.h"
-#include "base/pickle.h"
 
 namespace {
 constexpr int kIterations = 16;

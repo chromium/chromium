@@ -1,14 +1,17 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer
-++++++textField multiline value='The <newline>textarea tag  defines a multi-line text input control.<newline>' textSelStart=0 textSelEnd=0
+++++++textField multiline value='The <newline>textarea tag  defines a multi-line text input control.<newline>' textSelStart=0 textSelEnd=0 maxLength=99
 ++++++++genericContainer
-++++++++++staticText name='The <newline>textarea tag  defines a multi-line text input control.<newline>'
+++++++++++staticText name='The '
 ++++++++++++inlineTextBox name='The '
+++++++++++lineBreak name='<newline>'
 ++++++++++++inlineTextBox name='<newline>'
+++++++++++staticText name='textarea tag  defines a multi-line text input control.'
 ++++++++++++inlineTextBox name='textarea tag  defines a multi-line text input'
 ++++++++++++inlineTextBox name=' '
 ++++++++++++inlineTextBox name='control.'
+++++++++++lineBreak name='<newline>'
 ++++++++++++inlineTextBox name='<newline>'
 ++++++++++lineBreak name='<newline>'
 ++++++++++++inlineTextBox name='<newline>'

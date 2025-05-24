@@ -26,6 +26,7 @@ typedef enum {
   kHistory = 2,
   kTabs = 3,
   kGemini = 4,
+  kPage = 5,
 
   kMaxStarterPackID
 } StarterPackID;
@@ -48,6 +49,7 @@ extern const StarterPackEngine bookmarks;
 extern const StarterPackEngine history;
 extern const StarterPackEngine tabs;
 extern const StarterPackEngine Gemini;
+extern const StarterPackEngine page;
 
 // Returns the current version of the starterpack data, so callers can know when
 // they need to re-merge.

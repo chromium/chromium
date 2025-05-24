@@ -18,13 +18,11 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.common.ChromeUrlConstants;
 import org.chromium.chrome.browser.homepage.settings.HomepageMetricsEnums.HomepageLocationType;
 import org.chromium.chrome.browser.homepage.settings.HomepageSettings;
-import org.chromium.chrome.browser.new_tab_url.DseNewTabUrlManager;
 import org.chromium.chrome.browser.partnercustomizations.HomepageCharacterizationHelper;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
@@ -88,8 +86,8 @@ public class HomepageManager
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, HomepageSettings.class);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, HomepageSettings.class);
     }
 
     /** Notify any listeners about a homepage state change. */
@@ -103,7 +101,10 @@ public class HomepageManager
      * @return Whether or not homepage is enabled.
      */
     public boolean isHomepageEnabled() {
-        return HomepagePolicyManager.isHomepageManagedByPolicy() || getPrefHomepageEnabled();
+        if (HomepagePolicyManager.isShowHomeButtonManaged()) {
+            return HomepagePolicyManager.getShowHomeButtonValue();
+        }
+        return HomepagePolicyManager.isHomepageLocationManaged() || getPrefHomepageEnabled();
     }
 
     /**
@@ -116,8 +117,7 @@ public class HomepageManager
     /**
      * Get the current homepage URI. If the homepage is disabled, return an empty GURL; otherwise it
      * will always return a non-empty GURL. In cases when the homepage is specifically set as empty,
-     * this function will fallback to return {@link ChromeUrlConstants.nativeNtpGurl()}. If the
-     * default search engine (DSE) isn't Google, may fallback to the DSE's new Tab URL.
+     * this function will fallback to return {@link ChromeUrlConstants.nativeNtpGurl()}.
      *
      * <p>This function needs to be called on UI thread since
      * ProfileManager.getLastUsedRegularProfile() is called.
@@ -128,7 +128,7 @@ public class HomepageManager
      * <p><b>isManagedByPolicy > useChromeNtp > useDefaultGurl > useCustomGurl</b>
      *
      * @return A non-empty GURL, if homepage is enabled. An empty GURL otherwise.
-     * @see HomepagePolicyManager#isHomepageManagedByPolicy()
+     * @see HomepagePolicyManager#isHomepageLocationManaged()
      * @see #getPrefHomepageUseChromeNtp()
      * @see #getPrefHomepageUseDefaultUri()
      */
@@ -140,14 +140,7 @@ public class HomepageManager
             homepageGurl = ChromeUrlConstants.nativeNtpGurl();
         }
 
-        // We have to use ProfileManager.getLastUsedRegularProfile() to get the last used regular
-        // Profile
-        // before HomepageManager supports multiple Profiles. Thus, if DSE isn't Google, pressing
-        // the home button may redirect to the DSE's new Tab URL, rather than showing an incognito
-        // NTP.
-        return DseNewTabUrlManager.maybeGetOverrideUrl(
-                homepageGurl,
-                ProfileManager.isInitialized() ? ProfileManager.getLastUsedRegularProfile() : null);
+        return homepageGurl;
     }
 
     /**
@@ -210,10 +203,11 @@ public class HomepageManager
 
     /**
      * Get homepage URI without checking if the homepage is enabled.
+     *
      * @return Homepage GURL based on policy and shared preference settings.
      */
     private @NonNull GURL getHomepageGurlIgnoringEnabledState() {
-        if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
+        if (HomepagePolicyManager.isHomepageLocationManaged()) {
             return HomepagePolicyManager.getHomepageUrl();
         }
         if (getPrefHomepageUseChromeNtp()) {
@@ -269,9 +263,9 @@ public class HomepageManager
     }
 
     /**
-     * True if the homepage URL is the default value. False means the homepage URL is using
-     * the user customized URL. Note that this method does not take enterprise policy into account.
-     * Use {@link HomepagePolicyManager#isHomepageManagedByPolicy} if policy information is needed.
+     * True if the homepage URL is the default value. False means the homepage URL is using the user
+     * customized URL. Note that this method does not take enterprise policy into account. Use
+     * {@link HomepagePolicyManager#isHomepageLocationManaged} if policy information is needed.
      *
      * @return Whether if the homepage URL is the default value.
      */
@@ -349,7 +343,7 @@ public class HomepageManager
      */
     @VisibleForTesting
     public @HomepageLocationType int getHomepageLocationType() {
-        if (HomepagePolicyManager.isHomepageManagedByPolicy()) {
+        if (HomepagePolicyManager.isHomepageLocationManaged()) {
             return UrlUtilities.isNtpUrl(HomepagePolicyManager.getHomepageUrl())
                     ? HomepageLocationType.POLICY_NTP
                     : HomepageLocationType.POLICY_OTHER;

@@ -14,43 +14,16 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/profiler/process_type.h"
+#include "base/profiler/periodic_sampling_scheduler.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/metrics/public/mojom/call_stack_profile_collector.mojom.h"
+#include "components/sampling_profiler/process_type.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
-
-// PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
-// thread through calls to GetTimeToNextCollection(). This class is exposed
-// to allow testing.
-class PeriodicSamplingScheduler {
- public:
-  PeriodicSamplingScheduler(base::TimeDelta sampling_duration,
-                            double fraction_of_execution_time_to_sample,
-                            base::TimeTicks start_time);
-  virtual ~PeriodicSamplingScheduler();
-
-  PeriodicSamplingScheduler(const PeriodicSamplingScheduler&) = delete;
-  PeriodicSamplingScheduler& operator=(const PeriodicSamplingScheduler&) =
-      delete;
-
-  // Returns the amount of time between now and the next collection.
-  base::TimeDelta GetTimeToNextCollection();
-
- protected:
-  // Virtual to provide seams for test use.
-  virtual double RandDouble() const;
-  virtual base::TimeTicks Now() const;
-
- private:
-  const base::TimeDelta period_duration_;
-  const base::TimeDelta sampling_duration_;
-  base::TimeTicks period_start_time_;
-};
 
 // IOSThreadProfiler performs startup and periodic profiling of Chrome
 // threads.
@@ -87,7 +60,7 @@ class IOSThreadProfiler {
   // Creates a profiler for a child thread and immediately starts it. This
   // should be called from a task posted on the child thread immediately after
   // thread start. The thread will be profiled until exit.
-  static void StartOnChildThread(base::ProfilerThreadType thread);
+  static void StartOnChildThread(sampling_profiler::ProfilerThreadType thread);
 
   // Sets the callback to use for reporting browser process profiles. This
   // indirection is required to avoid a dependency on unnecessary metrics code
@@ -113,7 +86,7 @@ class IOSThreadProfiler {
   // Creates the profiler. The task runner will be supplied for child threads
   // but not for main threads.
   IOSThreadProfiler(
-      base::ProfilerThreadType thread,
+      sampling_profiler::ProfilerThreadType thread,
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner =
           scoped_refptr<base::SingleThreadTaskRunner>());
 
@@ -135,8 +108,8 @@ class IOSThreadProfiler {
   // Creates a new periodic profiler and initiates a collection with it.
   void StartPeriodicSamplingCollection();
 
-  const base::ProfilerProcessType process_;
-  const base::ProfilerThreadType thread_;
+  const sampling_profiler::ProfilerProcessType process_;
+  const sampling_profiler::ProfilerThreadType thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
@@ -145,7 +118,7 @@ class IOSThreadProfiler {
   std::unique_ptr<base::StackSamplingProfiler> startup_profiler_;
 
   std::unique_ptr<base::StackSamplingProfiler> periodic_profiler_;
-  std::unique_ptr<PeriodicSamplingScheduler> periodic_sampling_scheduler_;
+  std::unique_ptr<base::PeriodicSamplingScheduler> periodic_sampling_scheduler_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<IOSThreadProfiler> weak_factory_{this};

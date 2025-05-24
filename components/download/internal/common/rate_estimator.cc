@@ -37,7 +37,7 @@ RateEstimator::RateEstimator(base::TimeDelta bucket_time,
   ResetBuckets(now);
 }
 
-RateEstimator::~RateEstimator() {}
+RateEstimator::~RateEstimator() = default;
 
 void RateEstimator::Increment(uint32_t count) {
   Increment(count, TimeTicks::Now());

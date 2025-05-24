@@ -23,6 +23,7 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
       backgroundColor: '',
       pictureUrl: '',
       isManaged: false,
+      hasEnterpriseLabel: false,
       welcomeTitle: '',
     };
   }

@@ -10,8 +10,9 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
+#include "chrome/browser/supervised_user/classify_url_navigation_throttle.h"
 #include "chrome/common/supervised_user_commands.mojom.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
@@ -35,7 +36,7 @@ class WebContents;
 }  // namespace content
 
 using OnInterstitialResultCallback = base::RepeatingCallback<
-    void(SupervisedUserNavigationThrottle::CallbackActions, bool, bool)>;
+    void(supervised_user::InterstitialResultCallbackActions, bool, bool)>;
 
 class SupervisedUserNavigationObserver
     : public content::WebContentsUserData<SupervisedUserNavigationObserver>,
@@ -103,12 +104,10 @@ class SupervisedUserNavigationObserver
                                 content::FrameTreeNodeId frame_id,
                                 const OnInterstitialResultCallback& callback);
 
-  void URLFilterCheckCallback(const GURL& url,
-                              int render_frame_process_id,
-                              int render_frame_routing_id,
-                              supervised_user::FilteringBehavior behavior,
-                              supervised_user::FilteringBehaviorReason reason,
-                              bool uncertain);
+  void URLFilterCheckCallback(
+      int render_frame_process_id,
+      int render_frame_routing_id,
+      supervised_user::SupervisedUserURLFilter::Result result);
 
   void MaybeShowInterstitial(const GURL& url,
                              supervised_user::FilteringBehaviorReason reason,

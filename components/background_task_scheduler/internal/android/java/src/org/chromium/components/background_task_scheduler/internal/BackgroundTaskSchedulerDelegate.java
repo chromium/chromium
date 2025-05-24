@@ -6,12 +6,14 @@ package org.chromium.components.background_task_scheduler.internal;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /**
  * The internal representation of a {@link BackgroundTaskScheduler} to make it possible to use
  * system API ({@link android.app.job.JobScheduler}.
  */
+@NullMarked
 interface BackgroundTaskSchedulerDelegate {
     String BACKGROUND_TASK_ID_KEY = "_background_task_id";
     String BACKGROUND_TASK_EXTRAS_KEY = "_background_task_extras";

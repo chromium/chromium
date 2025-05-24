@@ -6,10 +6,7 @@
 
 #include <utility>
 
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -26,17 +23,17 @@ namespace performance_manager {
 
 class PerformanceManagerImplTest : public testing::Test {
  public:
-  PerformanceManagerImplTest() {}
+  PerformanceManagerImplTest() = default;
 
   PerformanceManagerImplTest(const PerformanceManagerImplTest&) = delete;
   PerformanceManagerImplTest& operator=(const PerformanceManagerImplTest&) =
       delete;
 
-  ~PerformanceManagerImplTest() override {}
+  ~PerformanceManagerImplTest() override = default;
 
   void SetUp() override {
     EXPECT_FALSE(PerformanceManagerImpl::IsAvailable());
-    performance_manager_ = PerformanceManagerImpl::Create(base::DoNothing());
+    performance_manager_ = PerformanceManagerImpl::Create();
     // Make sure creation registers the created instance.
     EXPECT_TRUE(PerformanceManagerImpl::IsAvailable());
   }
@@ -166,58 +163,18 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
   PerformanceManagerImpl::BatchDeleteNodes(std::move(nodes));
 }
 
-TEST_F(PerformanceManagerImplTest, CallOnGraphImpl) {
+TEST_F(PerformanceManagerImplTest, GetGraphImpl) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
                                              PagePropertyFlags{},
                                              base::TimeTicks::Now());
-  base::RunLoop run_loop;
-  base::OnceClosure quit_closure = run_loop.QuitClosure();
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  PerformanceManagerImpl::GraphImplCallback graph_callback =
-      base::BindLambdaForTesting([&](GraphImpl* graph) {
-        EXPECT_TRUE(PerformanceManagerImpl::OnPMTaskRunnerForTesting());
-        EXPECT_EQ(page_node.get()->graph(), graph);
-        std::move(quit_closure).Run();
-      });
 
-  PerformanceManagerImpl::CallOnGraphImpl(FROM_HERE, std::move(graph_callback));
-  run_loop.Run();
+  ASSERT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();
+  EXPECT_EQ(page_node.get()->graph(), graph);
 
   PerformanceManagerImpl::DeleteNode(std::move(page_node));
-}
-
-TEST_F(PerformanceManagerImplTest, CallOnGraphAndReplyWithResult) {
-  // Create a page node for something to target.
-  std::unique_ptr<PageNodeImpl> page_node =
-      PerformanceManagerImpl::CreatePageNode(nullptr, std::string(), GURL(),
-                                             PagePropertyFlags{},
-                                             base::TimeTicks::Now());
-  base::RunLoop run_loop;
-
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  base::OnceCallback<int(GraphImpl*)> task =
-      base::BindLambdaForTesting([&](GraphImpl* graph) {
-        EXPECT_TRUE(PerformanceManagerImpl::OnPMTaskRunnerForTesting());
-        EXPECT_EQ(page_node.get()->graph(), graph);
-        return 1;
-      });
-
-  bool reply_called = false;
-  base::OnceCallback<void(int)> reply = base::BindLambdaForTesting([&](int i) {
-    EXPECT_EQ(i, 1);
-    reply_called = true;
-    std::move(run_loop.QuitClosure()).Run();
-  });
-
-  PerformanceManagerImpl::CallOnGraphAndReplyWithResult(
-      FROM_HERE, std::move(task), std::move(reply));
-  run_loop.Run();
-
-  PerformanceManagerImpl::DeleteNode(std::move(page_node));
-
-  EXPECT_TRUE(reply_called);
 }
 
 }  // namespace performance_manager

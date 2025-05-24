@@ -4,15 +4,12 @@
 
 #include "partition_alloc/partition_bucket.h"
 
-#include <algorithm>
 #include <cstdint>
 #include <tuple>
 
 #include "partition_alloc/address_pool_manager.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/freeslot_bitmap.h"
-#include "partition_alloc/freeslot_bitmap_constants.h"
 #include "partition_alloc/oom.h"
 #include "partition_alloc/page_allocator.h"
 #include "partition_alloc/page_allocator_constants.h"
@@ -21,6 +18,7 @@
 #include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_base/debug/alias.h"
 #include "partition_alloc/partition_alloc_base/immediate_crash.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
@@ -223,6 +221,18 @@ SlotSpanMetadata<MetadataKind::kReadOnly>* PartitionDirectMap(
   PartitionPageMetadata<MetadataKind::kReadOnly>* page_metadata = nullptr;
 
   {
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+    // Because of the performance reason, PartitionRoot's lock is unlocked
+    // here. However this causes multi-thread issue when running
+    // EnableShadowMetadata(). If some thread is running PartitionDirectMap()
+    // and unlock PartitionRoot lock and also another thread is running
+    // EnableShadowMetadata(), the metadata page's permission will be modified
+    // by both threads and chrome will crash. c.f. crbug.com/378809882
+    // Be careful. This should not block PartitionDirectMap() in another thread.
+    internal::SharedLock shared_lock(
+        PartitionRoot::g_shadow_metadata_init_mutex_);
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
     // Getting memory for direct-mapped allocations doesn't interact with the
     // rest of the allocator, but takes a long time, as it involves several
     // system calls. Although no mmap() (or equivalent) calls are made on
@@ -447,8 +457,7 @@ SlotSpanMetadata<MetadataKind::kReadOnly>* PartitionDirectMap(
       return nullptr;
     }
 
-    auto* next_entry =
-        root->get_freelist_dispatcher()->EmplaceAndInitNull(slot_start);
+    auto* next_entry = FreelistEntry::EmplaceAndInitNull(slot_start);
 
     writable_page_metadata->slot_span_metadata.SetFreelistHead(next_entry,
                                                                root);
@@ -624,6 +633,7 @@ void PartitionBucket::Init(uint32_t new_slot_size,
       ;
   num_system_pages_per_slot_span =
       ComputeSystemPagesPerSlotSpan(slot_size, prefer_smaller_slot_spans);
+  PA_CHECK(num_system_pages_per_slot_span > 0);
 
   InitCanStoreRawSize(use_small_single_slot_spans);
 }
@@ -672,7 +682,7 @@ PartitionBucket::AllocNewSlotSpan(PartitionRoot* root,
   for (auto* page = gap_start_page->ToWritable(root);
        page < gap_end_page->ToWritable(root); ++page) {
     PA_DCHECK(!page->is_valid);
-    page->has_valid_span_after_this = 1;
+    page->has_valid_span_after_this = true;
   }
   root->next_partition_page =
       adjusted_next_partition_page + slot_span_reservation_size;
@@ -696,7 +706,7 @@ PartitionBucket::AllocNewSlotSpan(PartitionRoot* root,
     PA_DEBUG_DATA_ON_STACK("spancmt", slot_span_committed_size);
 
     root->RecommitSystemPagesForData(
-        slot_span_start, slot_span_committed_size,
+        slot_span_start, SlotSpanCommittedSize(root),
         PageAccessibilityDisposition::kRequireUpdate,
         slot_size <= kMaxMemoryTaggingSize);
   }
@@ -811,9 +821,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
                                             std::memory_order_relaxed);
 
   root->next_super_page = super_page + kSuperPageSize;
-  uintptr_t state_bitmap =
-      super_page + PartitionPageSize() +
-      (is_direct_mapped() ? 0 : ReservedFreeSlotBitmapSize());
+  uintptr_t state_bitmap = super_page + PartitionPageSize();
   uintptr_t payload = state_bitmap;
 
   root->next_partition_page = payload;
@@ -839,7 +847,8 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
     }
   }
 
-  if (root->ChoosePool() == kBRPPoolHandle) {
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  if (root->brp_enabled()) {
     // Allocate a system page for InSlotMetadata table (only one of its
     // elements will be used). Shadow metadata does not need to protect
     // this table, because (1) corrupting the table won't help with the
@@ -851,6 +860,7 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
                             PageAccessibilityConfiguration::kReadWrite),
                         PageAccessibilityDisposition::kRequireUpdate);
   }
+#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   // If we were after a specific address, but didn't get it, assume that
   // the system chose a lousy address. Here most OS'es have a default
@@ -904,19 +914,6 @@ PartitionBucket::InitializeSuperPage(PartitionRoot* root,
     PA_DCHECK(payload > SuperPagesBeginFromExtent(current_extent) &&
               payload < SuperPagesEndFromExtent(current_extent));
   }
-
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-  // Commit the pages for freeslot bitmap.
-  if (!is_direct_mapped()) {
-    uintptr_t freeslot_bitmap_addr = super_page + PartitionPageSize();
-    PA_DCHECK(SuperPageFreeSlotBitmapAddr(super_page) == freeslot_bitmap_addr);
-    ScopedSyscallTimer timer{root};
-    RecommitSystemPages(freeslot_bitmap_addr, CommittedFreeSlotBitmapSize(),
-                        root->PageAccessibilityWithThreadIsolationIfEnabled(
-                            PageAccessibilityConfiguration::kReadWrite),
-                        PageAccessibilityDisposition::kRequireUpdate);
-  }
-#endif
 
   return payload;
 }
@@ -1019,11 +1016,9 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
   // Add all slots that fit within so far committed pages to the free list.
-  PartitionFreelistEntry* prev_entry = nullptr;
+  FreelistEntry* prev_entry = nullptr;
   uintptr_t next_slot_end = next_slot + slot_size;
   size_t free_list_entries_added = 0;
-
-  const auto* freelist_dispatcher = root->get_freelist_dispatcher();
 
   while (next_slot_end <= commit_end) {
     void* next_slot_ptr;
@@ -1041,7 +1036,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
     next_slot_ptr = reinterpret_cast<void*>(next_slot);
 #endif
 
-    auto* entry = freelist_dispatcher->EmplaceAndInitNull(next_slot_ptr);
+    auto* entry = FreelistEntry::EmplaceAndInitNull(next_slot_ptr);
 
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
@@ -1049,11 +1044,8 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
       writable_slot_span->SetFreelistHead(entry, root);
     } else {
       PA_DCHECK(free_list_entries_added);
-      freelist_dispatcher->SetNext(prev_entry, entry);
+      prev_entry->SetNext(entry);
     }
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-    FreeSlotBitmapMarkSlotAsFree(next_slot);
-#endif
     next_slot = next_slot_end;
     next_slot_end = next_slot + slot_size;
     prev_entry = entry;
@@ -1061,10 +1053,6 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
     free_list_entries_added++;
 #endif
   }
-
-#if PA_BUILDFLAG(USE_FREESLOT_BITMAP)
-  FreeSlotBitmapMarkSlotAsFree(return_slot);
-#endif
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // The only provisioned slot not added to the free list is the one being
@@ -1074,8 +1062,7 @@ PA_ALWAYS_INLINE uintptr_t PartitionBucket::ProvisionMoreSlotsAndAllocOne(
   // is large), meaning that |slot_span->freelist_head| can be nullptr.
   if (slot_span->get_freelist_head()) {
     PA_DCHECK(free_list_entries_added);
-    freelist_dispatcher->CheckFreeList(slot_span->get_freelist_head(),
-                                       slot_size);
+    slot_span->get_freelist_head()->CheckFreeList(slot_size);
   }
 #endif
 
@@ -1399,7 +1386,7 @@ uintptr_t PartitionBucket::SlowPathAlloc(
   // false where it sweeps the active list and may move things into the empty or
   // decommitted lists which affects the subsequent conditional.
   if (is_direct_mapped()) [[unlikely]] {
-    PA_DCHECK(raw_size > kMaxBucketed);
+    PA_DCHECK(raw_size > BucketIndexLookup::kMaxBucketSize);
     PA_DCHECK(this == &root->sentinel_bucket);
     PA_DCHECK(
         active_slot_spans_head ==
@@ -1546,16 +1533,13 @@ uintptr_t PartitionBucket::SlowPathAlloc(
   // If we found an active slot span with free slots, or an empty slot span, we
   // have a usable freelist head.
   if (new_slot_span->get_freelist_head() != nullptr) [[likely]] {
-    const PartitionFreelistDispatcher* freelist_dispatcher =
-        root->get_freelist_dispatcher();
-    PartitionFreelistEntry* entry =
-        new_slot_span->ToWritable(root)->PopForAlloc(new_bucket->slot_size,
-                                                     freelist_dispatcher);
+    FreelistEntry* entry =
+        new_slot_span->ToWritable(root)->PopForAlloc(new_bucket->slot_size);
 
     // We may have set *is_already_zeroed to true above, make sure that the
     // freelist entry doesn't contain data. Either way, it wouldn't be a good
     // idea to let users see our internal data.
-    uintptr_t slot_start = freelist_dispatcher->ClearForAllocation(entry);
+    uintptr_t slot_start = entry->ClearForAllocation();
     return slot_start;
   }
 
@@ -1576,6 +1560,65 @@ void PartitionBucket::InitializeSlotSpanForGwpAsan(
     SlotSpanMetadata<MetadataKind::kReadOnly>* slot_span,
     PartitionRoot* root) {
   InitializeSlotSpan(slot_span, root);
+}
+
+size_t PartitionBucket::SlotSpanCommittedSize(PartitionRoot* root) const {
+  // With lazy commit, we certainly don't want to commit more than
+  // necessary. This is not reached, but keep the CHECK() as documentation.
+  PA_CHECK(!kUseLazyCommit);
+
+  // Memory is reserved in units of PartitionPage, but a given slot span may be
+  // smaller than the reserved area. For instance (assuming 4k pages), for a
+  // bucket where the slot span size is 40kiB, we reserve 4 PartitionPage = 16 *
+  // 4 = 48kiB, but only ever commit 40kiB out of it.
+  //
+  // This means that the address space then looks like, assuming that the
+  // PartitionPage next to it is committed:
+  //   [SlotSpan range, 40kiB]                       rw-p
+  //   [Unused area in the last PartitionPage, 8kiB] ---p
+  //   [Next PartitionPages, size unknown ]          rw-p
+  //
+  // So we have a "hole" of inaccessible memory, and 3 memory regions. If
+  // instead we commit the full PartitionPages, we get (due to the kernel
+  // merging neighboring regions with uniform permissions):
+  //
+  //   [SlotSpan range, 40kiB + Unused area, 8kiB + next PartitionPages] rw-p
+  //
+  // So 1 memory region rather then 3. This matters, because on Linux kernels,
+  // there is a maximum number of VMAs per process, with the default limit a bit
+  // less than 2^16, and Chromium sometimes hits the limit (see
+  // /proc/sys/vm/max_map_count for the current limit), largely because of
+  // PartitionAlloc contributing thousands of regions. Locally, on a Linux
+  // system, this reduces the number of PartitionAlloc regions by up to ~4x.
+  //
+  // Why is it safe?
+  // The extra memory is not used by anything, so committing it doesn't make a
+  // difference. It makes it accessible though.
+  //
+  // How much does it cost?
+  // Almost nothing. On Linux, "committing" memory merely changes its
+  // permissions, it doesn't cost any memory until the pages are touched, which
+  // they are not. However, mprotect()-ed areas that are writable count towards
+  // the RLIMIT_DATA resource limit, which is used by the sandbox. So, while
+  // this change costs 0 physical memory (and actually saves some, by reducing
+  // the size of the VMA red-black tree in the kernel), it might increase
+  // slightly the cases where we bump into the sandbox memory limit.
+  //
+  // Is it safe to do while running?
+  // Since this is decided through root settings, the value changes at runtime,
+  // so we may decommit memory that was never committed. This is safe onLinux,
+  // since decommitting is just changing permissions back to PROT_NONE, which
+  // the tail end would already have.
+  //
+  // Can we do better?
+  // For simplicity, we do not "fix" the regions that were committed before the
+  // settings are changed (after feature list initialization). This means that
+  // we end up with more regions that we could. The intent is to run a field
+  // experiment, then change the default value, at which point we get the full
+  // impact, so this is only temporary.
+  return root->settings.fewer_memory_regions
+             ? (get_pages_per_slot_span() << PartitionPageShift())
+             : get_bytes_per_span();
 }
 
 }  // namespace partition_alloc::internal

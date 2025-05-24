@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_SIGNIN_USER_POLICY_OIDC_SIGNIN_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_ENTERPRISE_SIGNIN_USER_POLICY_OIDC_SIGNIN_SERVICE_FACTORY_H_
 
+#include <variant>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 class Profile;
 

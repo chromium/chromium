@@ -337,9 +337,6 @@ suite('AppearanceHandler', function() {
   // </if>
 
   test('openCustomizeChrome', function() {
-    loadTimeData.overrideValues({
-      toolbarPinningEnabled: true,
-    });
     createAppearancePage();
     const button =
         appearancePage.shadowRoot!.querySelector<HTMLElement>('#openTheme');
@@ -350,9 +347,6 @@ suite('AppearanceHandler', function() {
   });
 
   test('openCustomizeChromeToolbarSection', function() {
-    loadTimeData.overrideValues({
-      toolbarPinningEnabled: true,
-    });
     createAppearancePage();
     const button = appearancePage.shadowRoot!.querySelector<HTMLElement>(
         '#customizeToolbar');
@@ -364,9 +358,6 @@ suite('AppearanceHandler', function() {
   });
 
   test('resetPinnedToolbarActions', async function() {
-    loadTimeData.overrideValues({
-      toolbarPinningEnabled: true,
-    });
     appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(false);
     createAppearancePage();
     await microtasksFinished();
@@ -380,9 +371,6 @@ suite('AppearanceHandler', function() {
   });
 
   test('resetHiddenWhenNoPinnedActions', async function() {
-    loadTimeData.overrideValues({
-      toolbarPinningEnabled: true,
-    });
     appearanceBrowserProxy.setPinnedToolbarActionsAreDefaultResponse(true);
     createAppearancePage();
     await microtasksFinished();
@@ -485,42 +473,6 @@ suite('AppearanceHandler', function() {
     await microtasksFinished();
     assertTrue(
         !appearancePage.shadowRoot!.querySelector('#tabSearchPositionRow'));
-  });
-
-  test('ShowSavedTabGroupsToggleVisible', async function() {
-    loadTimeData.overrideValues({
-      tabGroupsSaveUIUpdateEnabled: true,
-    });
-    createAppearancePage();
-    await microtasksFinished();
-    assertTrue(isVisible(appearancePage.$.showSavedTabGroups));
-  });
-
-  test('ShowSavedTabGroupsToggleHidden', async function() {
-    loadTimeData.overrideValues({
-      tabGroupsSaveUIUpdateEnabled: false,
-    });
-    createAppearancePage();
-    await microtasksFinished();
-    assertFalse(isVisible(appearancePage.$.showSavedTabGroups));
-  });
-
-  test('ShowAutoPinNewTabGroupsToggleVisible', async function() {
-    loadTimeData.overrideValues({
-      tabGroupsSaveUIUpdateEnabled: true,
-    });
-    createAppearancePage();
-    await microtasksFinished();
-    assertTrue(isVisible(appearancePage.$.autoPinNewTabGroups));
-  });
-
-  test('ShowAutoPinNewTabGroupsToggleHidden', async function() {
-    loadTimeData.overrideValues({
-      tabGroupsSaveUIUpdateEnabled: false,
-    });
-    createAppearancePage();
-    await microtasksFinished();
-    assertFalse(isVisible(appearancePage.$.autoPinNewTabGroups));
   });
 });
 

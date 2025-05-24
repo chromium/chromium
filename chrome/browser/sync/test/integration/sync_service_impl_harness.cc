@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -32,6 +31,7 @@
 #include "components/sync/engine/traffic_logger.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/service/glue/sync_transport_data_prefs.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_internals_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
@@ -44,18 +44,12 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/zlib/google/compression_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/signin/chrome_signin_client.h"
-#include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "components/signin/public/base/signin_client.h"
-#endif
+namespace {
 
 using syncer::SyncCycleSnapshot;
 using syncer::SyncServiceImpl;
 
-const char* kSyncUrlClearServerDataKey = "sync-url-clear-server-data";
-
-namespace {
+constexpr char kSyncUrlClearServerDataKey[] = "sync-url-clear-server-data";
 
 bool HasAuthError(SyncServiceImpl* service) {
   return service->GetAuthError().state() ==
@@ -121,6 +115,21 @@ class SyncSetupChecker : public SingleClientStatusChangeChecker {
 
  private:
   const State wait_for_state_;
+};
+
+class SyncTransportStateChecker : public SingleClientStatusChangeChecker {
+ public:
+  SyncTransportStateChecker(SyncServiceImpl* service,
+                            syncer::SyncService::TransportState state)
+      : SingleClientStatusChangeChecker(service), state_(state) {}
+
+  bool IsExitConditionSatisfied(std::ostream* os) override {
+    *os << "Waiting for sync transport state to change";
+    return service()->GetTransportState() == state_;
+  }
+
+ private:
+  const syncer::SyncService::TransportState state_;
 };
 
 // Same as reset on chrome.google.com/sync.
@@ -193,15 +202,6 @@ SyncServiceImplHarness::SyncServiceImplHarness(Profile* profile,
       signin_type_(signin_type),
       profile_debug_name_(profile->GetDebugName()),
       signin_delegate_(CreateSyncSigninDelegate()) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The Main profile already has a primary account that cannot be changed.
-  // Allow changing it for test purposes only.
-  if (profile_->IsMainProfile()) {
-    ChromeSigninClientFactory::GetForProfile(profile_)
-        ->set_is_clear_primary_account_allowed_for_testing(
-            SigninClient::SignoutDecision::ALLOW);
-  }
-#endif
 }
 
 SyncServiceImplHarness::~SyncServiceImplHarness() = default;
@@ -224,6 +224,11 @@ signin::GaiaIdHash SyncServiceImplHarness::GetGaiaIdHashForPrimaryAccount()
           .gaia);
 }
 
+GaiaId SyncServiceImplHarness::GetGaiaIdForDefaultTestAccount() const {
+  CHECK_EQ(signin_type_, SigninType::FAKE_SIGNIN);
+  return signin::GetTestGaiaIdForEmail(username_);
+}
+
 bool SyncServiceImplHarness::SignInPrimaryAccount(
     signin::ConsentLevel consent_level) {
   DCHECK(!username_.empty());
@@ -239,18 +244,19 @@ bool SyncServiceImplHarness::SignInPrimaryAccount(
 
     case SigninType::FAKE_SIGNIN: {
       signin_delegate_->SigninFake(profile_, username_, consent_level);
-
-      // TODO(b/1523197): The below checks should also be satisfied for the
-      // above case.
-      signin::IdentityManager* identity_manager =
-          IdentityManagerFactory::GetForProfile(profile_);
-      CHECK(identity_manager->HasPrimaryAccount(consent_level));
-      CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(consent_level));
-      CHECK(!service()->GetAccountInfo().IsEmpty());
-
       break;
     }
   }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  // Note that `consent_level` is not actually guaranteed at this stage. In
+  // particular, live tests require closing the sync confirmation dialog before
+  // signin::ConsentLevel::kSync is granted.
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSignin));
+  CHECK(!service()->GetAccountInfo().IsEmpty());
 
   return true;
 }
@@ -279,12 +285,12 @@ void SyncServiceImplHarness::ResetSyncForPrimaryAccount() {
                username_, transport_data_prefs.GetBirthday());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void SyncServiceImplHarness::SignOutPrimaryAccount() {
   DCHECK(!username_.empty());
   signin_delegate_->SignOutPrimaryAccount(profile_);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
 void SyncServiceImplHarness::EnterSyncPausedStateForPrimaryAccount() {
@@ -298,6 +304,24 @@ bool SyncServiceImplHarness::ExitSyncPausedStateForPrimaryAccount() {
       IdentityManagerFactory::GetForProfile(profile_));
   // The engine was off in the sync-paused state, so wait for it to start.
   return AwaitSyncSetupCompletion();
+}
+
+bool SyncServiceImplHarness::EnterSignInPendingStateForPrimaryAccount() {
+  CHECK_EQ(service_->GetTransportState(),
+           syncer::SyncServiceImpl::TransportState::ACTIVE);
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+  return AwaitSyncTransportPaused();
+}
+
+bool SyncServiceImplHarness::ExitSignInPendingStateForPrimaryAccount() {
+  CHECK_EQ(service_->GetTransportState(),
+           syncer::SyncService::TransportState::PAUSED);
+  signin::SetRefreshTokenForPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_));
+  return AwaitSyncTransportActive();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -330,8 +354,13 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
     return false;
   }
 
-  // Now that auth is completed, request that sync actually start.
-  service()->SetSyncFeatureRequested();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_);
+  // Note that `ConsentLevel::kSync` is not actually guaranteed at this stage.
+  // Namely, live tests require closing the sync confirmation dialog before
+  // `ConsentLevel::kSync` is granted. This is achieved later below with
+  // `ConfirmSyncUI()`.
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
 
   if (!AwaitEngineInitialization()) {
     return false;
@@ -346,18 +375,25 @@ bool SyncServiceImplHarness::SetupSyncNoWaitForCompletion(
   // Notify SyncServiceImpl that we are done with configuration.
   FinishSyncSetup();
 
-  if (signin_type_ == SigninType::UI_SIGNIN) {
-    return signin_delegate_->ConfirmSyncUI(profile_);
+  if (signin_type_ == SigninType::UI_SIGNIN &&
+      !signin_delegate_->ConfirmSyncUI(profile_)) {
+    return false;
   }
+
+  CHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  CHECK(identity_manager->HasPrimaryAccountWithRefreshToken(
+      signin::ConsentLevel::kSync));
+  CHECK(!service()->GetAccountInfo().IsEmpty());
+
   return true;
 }
 
 void SyncServiceImplHarness::FinishSyncSetup() {
   sync_blocker_.reset();
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 bool SyncServiceImplHarness::AwaitMutualSyncCycleCompletion(
@@ -436,6 +472,16 @@ bool SyncServiceImplHarness::AwaitSyncTransportActive() {
     return false;
   }
 
+  return true;
+}
+
+bool SyncServiceImplHarness::AwaitSyncTransportPaused() {
+  if (!SyncTransportStateChecker(service(),
+                                 syncer::SyncService::TransportState::PAUSED)
+           .Wait()) {
+    LOG(ERROR) << "SyncTransportStateChecker timed out.";
+    return false;
+  }
   return true;
 }
 
@@ -571,6 +617,40 @@ SyncCycleSnapshot SyncServiceImplHarness::GetLastCycleSnapshot() const {
     return service()->GetLastCycleSnapshotForDebugging();
   }
   return SyncCycleSnapshot();
+}
+
+absl::flat_hash_map<syncer::DataType, size_t>
+SyncServiceImplHarness::GetTypesWithUnsyncedDataAndWait(
+    syncer::DataTypeSet requested_types) const {
+  base::test::TestFuture<absl::flat_hash_map<syncer::DataType, size_t>> future;
+  service()->GetTypesWithUnsyncedData(requested_types, future.GetCallback());
+  return future.Get();
+}
+
+syncer::LocalDataDescription
+SyncServiceImplHarness::GetLocalDataDescriptionAndWait(
+    syncer::DataType data_type) {
+  base::test::TestFuture<
+      std::map<syncer::DataType, syncer::LocalDataDescription>>
+      descriptions;
+  service()->GetLocalDataDescriptions({data_type}, descriptions.GetCallback());
+
+  if (descriptions.Get().size() != 1u) {
+    ADD_FAILURE()
+        << "The expected size of local data description map is 1. Found "
+        << descriptions.Get().size() << '.';
+    return syncer::LocalDataDescription();
+  }
+
+  if (descriptions.Get().begin()->first != data_type) {
+    ADD_FAILURE()
+        << DataTypeToDebugString(data_type)
+        << " is the only expected key in the local data description map. Found "
+        << DataTypeToDebugString(descriptions.Get().begin()->first) << '.';
+    return syncer::LocalDataDescription();
+  }
+
+  return descriptions.Get().begin()->second;
 }
 
 std::string SyncServiceImplHarness::GetServiceStatus() {

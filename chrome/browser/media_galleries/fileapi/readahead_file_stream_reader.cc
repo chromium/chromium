@@ -31,7 +31,7 @@ const int kBufferSize = 1024*1024;  // 1MB to minimize transaction costs.
 ReadaheadFileStreamReader::ReadaheadFileStreamReader(FileStreamReader* source)
     : source_(source), source_error_(0), source_has_pending_read_(false) {}
 
-ReadaheadFileStreamReader::~ReadaheadFileStreamReader() {}
+ReadaheadFileStreamReader::~ReadaheadFileStreamReader() = default;
 
 int ReadaheadFileStreamReader::Read(net::IOBuffer* buf,
                                     int buf_len,

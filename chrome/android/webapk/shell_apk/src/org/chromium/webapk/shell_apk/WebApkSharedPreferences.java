@@ -8,7 +8,10 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Contains utility methods and constants related to WebAPK shared preferences. */
+@NullMarked
 public final class WebApkSharedPreferences {
     /** Name of the shared preferences file. */
     private static final String PREF_PACKAGE = "org.chromium.webapk.shell_apk";

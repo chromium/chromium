@@ -142,6 +142,10 @@ def parse_deps(build_dir, deps_output):
         next(deps_iter)
       continue
 
+    if num_deps == 0:
+      next(deps_iter)
+      continue
+
     # Read the main file line.
     line = next(deps_iter)
     if not line.startswith('    '):
@@ -176,7 +180,7 @@ def parse_commands(build_dir, commands_output):
   ...  'clang-cl.exe /Fobaz.o /c baz.cc\n'.splitlines(keepends=True)))
   ['bar.c', 'dir1/dir2/baz.cc', 'foo.cc']
   """
-  COMPILE_RE = re.compile(r'.*clang.* [/-]c (\S+)')
+  COMPILE_RE = re.compile(r'.*\bclang\b.* [/-]c (\S+)')
   files = set()
   for line in commands_output:
     m = COMPILE_RE.match(line)
@@ -221,7 +225,7 @@ def main():
   total = 0
   for f in sorted(files):
     if f not in deps:
-      raise Exception("Missing deps for '%s'", f)
+      raise Exception("Missing deps for '%s'" % f)
     s = size(f) + sum(size(d) for d in deps[f])
     print('{} {}'.format(f, s))
     total += s

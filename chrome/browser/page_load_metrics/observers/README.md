@@ -7,9 +7,9 @@ and user interaction events happen during the course of a page load.
 
 This document provides a detailed guide to implementing a `PageLoadMetricsObserver`.
 For a quick introduction, you may wish to read the [implementation basics](#implementation-basics)
-section below, browse the [`PageLoadMetricsObserver`](/components/page_load_metrics/browser/page_load_metrics_observer.h)
-interface, and look over [existing `PageLoadMetricsObserver` implementations](/chrome/browser/page_load_metrics/observers/).
-You can refer [`AssertPageLoadMetricsObserver`](/components/page_load_metrics/browser/observers/assert_page_load_metrics_observer.h) for context and assumptions that callbacks can be rely on.
+section below, browse the [`PageLoadMetricsObserverInterface`](/components/page_load_metrics/browser/page_load_metrics_observer_interface.h),
+and look over [existing `PageLoadMetricsObserver` implementations](/chrome/browser/page_load_metrics/observers/).
+You can refer to [`AssertPageLoadMetricsObserver`](/components/page_load_metrics/browser/observers/assert_page_load_metrics_observer.h) for context and assumptions that callbacks can be rely on.
 
 `PageLoadMetricsObserver`s can track [web vitals](https://web.dev/vitals/) like time to [Largest Contentful Paint](https://web.dev/lcp) and other per-page metrics such as time to first user input in [UMA](/tools/metrics/histograms/README.md) or [UKM](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/services/metrics/ukm_api.md).
 
@@ -334,9 +334,9 @@ If your observer wants to track a new loading behavior, you can add it to the `W
 
 Observers can track aborted page loads. A page load abort occurs when some event occurs that causes the page load to be terminated. Note that page load abort tracking is somewhat experimental and is subject to change.
 
-Aborts can occur before or after commit. Observers can track aborts that happen before commit by implementing the OnFailedProvisionalLoad callback, and aborts that happen after commit by implementing the OnComplete callback. The current convention is to log aborts that occur before commit using the ‘.BeforeCommit’ histogram suffix, and after commit using a suffix such as ‘.AfterCommit.BeforePaint’.
+Aborts can occur before or after commit. Observers can track aborts that happen before commit by implementing the `OnFailedProvisionalLoad` callback, and aborts that happen after commit by implementing the `OnComplete` callback. The current convention is to log aborts that occur before commit using the `.BeforeCommit` histogram suffix, and after commit using a suffix such as `.AfterCommit.BeforePaint`.
 
-To determine whether an abort occurred, observers should check whether the abort_type field of the PageLoadExtraInfo structure has a value other than ABORT_NONE. The time until the page load was aborted is available in the time_to_abort field of the PageLoadExtraInfo structure.
+To determine whether an abort occurred, observers can use the [`PageLoadMetricsObserverDelegate`](/components/page_load_metrics/browser/page_load_metrics_observer_delegate.h) API with the [`page_load_metrics::GetPageAbortInfo`](/components/page_load_metrics/browser/page_load_metrics_util.cc) utility function. Observers should check whether the `reason` field of the `PageAbortInfo` structure has a value other than `ABORT_NONE`. The time until the page load was aborted is available in the `time_to_abort` field of the `PageAbortInfo` structure.
 
 ### Aggregating statistics across multiple page loads
 

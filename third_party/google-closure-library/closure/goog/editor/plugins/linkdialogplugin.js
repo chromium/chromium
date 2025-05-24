@@ -345,7 +345,7 @@ goog.editor.plugins.LinkDialogPlugin.prototype.createDialog = function(
       .listen(dialog, goog.ui.editor.AbstractDialog.EventType.OK, this.handleOk)
       .listen(
           dialog, goog.ui.editor.AbstractDialog.EventType.CANCEL,
-          this.handleCancel_)
+          this.handleCancel)
       .listen(
           dialog, goog.ui.editor.LinkDialog.EventType.BEFORE_TEST_LINK,
           this.handleBeforeTestLink);
@@ -402,6 +402,7 @@ goog.editor.plugins.LinkDialogPlugin.prototype.handleOk = function(e) {
  * @param {HTMLAnchorElement} anchor The anchor to set properties on.
  * @param {goog.events.Event} e Event object.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.LinkDialogPlugin.prototype.touchUpAnchorOnOk_ = function(
     anchor, e) {
@@ -432,9 +433,9 @@ goog.editor.plugins.LinkDialogPlugin.prototype.touchUpAnchorOnOk_ = function(
 /**
  * Handles the CANCEL event from the dialog by clearing the anchor if needed.
  * @param {goog.events.Event} e Event object.
- * @private
+ * @protected
  */
-goog.editor.plugins.LinkDialogPlugin.prototype.handleCancel_ = function(e) {
+goog.editor.plugins.LinkDialogPlugin.prototype.handleCancel = function(e) {
   'use strict';
   if (this.currentLink_.isNew()) {
     goog.dom.flattenElement(this.currentLink_.getAnchor());

@@ -14,7 +14,7 @@ found in the LICENSE file.
        android:pathData="m8.41,9.09 l-1.41,1.41 5,5 5,-5 -1.41,-1.41 -2.59,2.58v-8.67h-2v8.67zM21,19v-14c0,-1.11 -0.9,-2 -2,-2h-4v2h4v14h-14v-14h4v-2h-4c-1.1,0 -2,0.89 -2,2v14c0,1.1 0.9,2 2,2h14c1.1,0 2,-0.9 2,-2z"/>
    <path
        android:pathData="m0,0h24v24h-24z"
-       android:fillColor="@color/modern_grey_800"
+       android:fillColor="@color/baseline_neutral_20"
        android:fillType="evenOdd"/>
  </group>
 </vector>

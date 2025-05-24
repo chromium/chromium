@@ -32,7 +32,7 @@ base::WeakPtr<TabModalDialogViewIOS> TabModalDialogViewIOS::Create(
 }
 
 // TabModalDialogViewIOS:
-TabModalDialogViewIOS::~TabModalDialogViewIOS() {}
+TabModalDialogViewIOS::~TabModalDialogViewIOS() = default;
 
 void TabModalDialogViewIOS::CloseDialogWithoutCallback() {
   coordinator_ = nullptr;
@@ -40,7 +40,7 @@ void TabModalDialogViewIOS::CloseDialogWithoutCallback() {
 }
 
 std::u16string TabModalDialogViewIOS::GetUserInput() {
-  return std::u16string();
+  return [coordinator_ promptText];
 }
 
 void TabModalDialogViewIOS::Accept(const std::u16string& prompt_text) {

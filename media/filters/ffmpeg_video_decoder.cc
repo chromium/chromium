@@ -127,7 +127,7 @@ static void ReleaseVideoBufferImpl(void* opaque, uint8_t* data) {
 // static
 bool FFmpegVideoDecoder::IsCodecSupported(VideoCodec codec) {
   // We only build support for H.264.
-  return codec == VideoCodec::kH264 && IsBuiltInVideoCodec(codec);
+  return codec == VideoCodec::kH264 && IsDecoderBuiltInVideoCodec(codec);
 }
 
 FFmpegVideoDecoder::FFmpegVideoDecoder(MediaLog* media_log)
@@ -153,11 +153,10 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   if (format == PIXEL_FORMAT_UNKNOWN)
     return AVERROR(EINVAL);
   DCHECK(format == PIXEL_FORMAT_I420 || format == PIXEL_FORMAT_I422 ||
-         format == PIXEL_FORMAT_I444 || format == PIXEL_FORMAT_YUV420P9 ||
-         format == PIXEL_FORMAT_YUV420P10 || format == PIXEL_FORMAT_YUV422P9 ||
-         format == PIXEL_FORMAT_YUV422P10 || format == PIXEL_FORMAT_YUV444P9 ||
-         format == PIXEL_FORMAT_YUV444P10 || format == PIXEL_FORMAT_YUV420P12 ||
-         format == PIXEL_FORMAT_YUV422P12 || format == PIXEL_FORMAT_YUV444P12);
+         format == PIXEL_FORMAT_I444 || format == PIXEL_FORMAT_YUV420P10 ||
+         format == PIXEL_FORMAT_YUV422P10 || format == PIXEL_FORMAT_YUV444P10 ||
+         format == PIXEL_FORMAT_YUV420P12 || format == PIXEL_FORMAT_YUV422P12 ||
+         format == PIXEL_FORMAT_YUV444P12);
 
   // Do not trust `codec_context` sizes either.  Use whatever `frame` requests.
   gfx::Size coded_size(frame->width, frame->height);
@@ -178,7 +177,7 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   DCHECK_EQ(codec_context->lowres, 0);
 
   if (force_allocation_error_)
-    return AVERROR(EINVAL);
+    return AVERROR(ENOMEM);
 
   // FFmpeg has specific requirements on the allocation size of the frame.  The
   // following logic replicates FFmpeg's allocation strategy to ensure buffers
@@ -198,12 +197,12 @@ int FFmpegVideoDecoder::GetVideoBuffer(struct AVCodecContext* codec_context,
   // Round up the allocation, but keep `allocation_size` as the usable
   // allocation after aligning `data`.
   void* fb_priv = nullptr;
-  uint8_t* data = frame_pool_->GetFrameBuffer(allocation_size, &fb_priv);
-  if (!data) {
-    return AVERROR(EINVAL);
+  auto span = frame_pool_->GetFrameBuffer(allocation_size, &fb_priv);
+  if (span.empty() || !fb_priv) {
+    return AVERROR(ENOMEM);
   }
 
-  data = base::bits::AlignUp(data, layout->buffer_addr_align());
+  uint8_t* data = base::bits::AlignUp(span.data(), layout->buffer_addr_align());
 
   for (size_t plane = 0; plane < num_planes; ++plane) {
     frame->data[plane] = data + layout->planes()[plane].offset;
@@ -275,7 +274,7 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
       base::BindPostTaskToCurrentDefault(std::move(decode_cb));
 
   if (state_ == DecoderState::kError) {
-    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
+    std::move(decode_cb_bound).Run(error_status_);
     return;
   }
 
@@ -306,7 +305,10 @@ void FFmpegVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (!FFmpegDecode(*buffer)) {
     state_ = DecoderState::kError;
-    std::move(decode_cb_bound).Run(DecoderStatus::Codes::kFailed);
+    error_status_ = decoding_loop_->last_averror_code() == AVERROR(ENOMEM)
+                        ? DecoderStatus::Codes::kOutOfMemory
+                        : DecoderStatus::Codes::kFailed;
+    std::move(decode_cb_bound).Run(error_status_);
     return;
   }
 
@@ -324,6 +326,8 @@ void FFmpegVideoDecoder::Reset(base::OnceClosure closure) {
 
   avcodec_flush_buffers(codec_context_.get());
   state_ = DecoderState::kNormal;
+  error_status_ = DecoderStatus::Codes::kFailed;
+
   // PostTask() to avoid calling |closure| immediately.
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                            std::move(closure));
@@ -347,11 +351,12 @@ bool FFmpegVideoDecoder::FFmpegDecode(const DecoderBuffer& buffer) {
   // not want to allow on-stack allocation of AVPackets.
   AVPacket* packet = av_packet_alloc();
   if (buffer.end_of_stream()) {
-    packet->data = NULL;
+    packet->data = nullptr;
     packet->size = 0;
   } else {
-    packet->data = const_cast<uint8_t*>(buffer.data());
-    packet->size = buffer.size();
+    auto buffer_span = base::span(buffer);
+    packet->data = const_cast<uint8_t*>(buffer_span.data());
+    packet->size = buffer_span.size();
 
     DCHECK(packet->data);
     DCHECK_GT(packet->size, 0);
@@ -483,7 +488,7 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   ReleaseFFmpegResources();
 
   // Initialize AVCodecContext structure.
-  codec_context_.reset(avcodec_alloc_context3(NULL));
+  codec_context_.reset(avcodec_alloc_context3(nullptr));
   VideoDecoderConfigToAVCodecContext(config, codec_context_.get());
 
   codec_context_->thread_count = GetFFmpegVideoDecoderThreadCount(config);
@@ -494,18 +499,12 @@ bool FFmpegVideoDecoder::ConfigureDecoder(const VideoDecoderConfig& config,
   codec_context_->get_buffer2 = GetVideoBufferImpl;
   codec_context_->flags |= AV_CODEC_FLAG_COPY_OPAQUE;
 
-  if (base::FeatureList::IsEnabled(kFFmpegAllowLists)) {
-    // Note: FFmpeg will try to free this string, so we must duplicate it.
-    codec_context_->codec_whitelist =
-        av_strdup(FFmpegGlue::GetAllowedVideoDecoders());
-  }
-
   if (decode_nalus_) {
     codec_context_->flags2 |= AV_CODEC_FLAG2_CHUNKS;
   }
 
   const AVCodec* codec = avcodec_find_decoder(codec_context_->codec_id);
-  if (!codec || avcodec_open2(codec_context_.get(), codec, NULL) < 0) {
+  if (!codec || avcodec_open2(codec_context_.get(), codec, nullptr) < 0) {
     ReleaseFFmpegResources();
     return false;
   }

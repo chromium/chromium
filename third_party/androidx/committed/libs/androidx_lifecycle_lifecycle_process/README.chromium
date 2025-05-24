@@ -1,0 +1,16 @@
+Name: Lifecycle Process
+Short Name: lifecycle-process
+URL: https://developer.android.com/jetpack/androidx/releases/lifecycle#2.10.0-SNAPSHOT
+Version: 2.10.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Android Lifecycle Process
+
+Local Modifications:
+No modifications.

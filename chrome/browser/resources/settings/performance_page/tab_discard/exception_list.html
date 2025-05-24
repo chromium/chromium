@@ -1,10 +1,15 @@
-<style include="cr-shared-style settings-shared iron-flex">
+<style include="cr-shared-style settings-shared">
   .cr-padded-text {
     flex: 1;
   }
 
   .list-frame {
     padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  #outer {
+    display: flex;
+    flex-direction: column;
   }
 
   #outer > tab-discard-exception-entry:not(:first-of-type) {
@@ -30,7 +35,7 @@
 <div id="noSitesAdded" class="list-frame" hidden$="[[hasSites_(siteList_.*)]]">
   <div class="list-item secondary">$i18n{noSitesAdded}</div>
 </div>
-<div id="outer" class="layout vertical list-frame" role="list"
+<div id="outer" class="list-frame" role="list"
     hidden$="[[!hasSites_(siteList_.*)]]">
   <template is="dom-repeat" id="list" items="[[getSiteList_(siteList_.*)]]">
     <tab-discard-exception-entry prefs="[[prefs]]" entry="[[item]]"

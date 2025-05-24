@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/omnibox/browser/omnibox_view.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <utility>
 
@@ -25,15 +21,20 @@
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_controller.h"
+#include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/browser/test_omnibox_edit_model.h"
+#include "components/omnibox/browser/test_omnibox_popup_view.h"
 #include "components/omnibox/browser/test_omnibox_view.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -46,6 +47,7 @@ using testing::_;
 using testing::DoAll;
 using testing::Return;
 using testing::SaveArg;
+using testing::SaveArgPointee;
 
 namespace {
 
@@ -76,13 +78,43 @@ class OmniboxViewTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  raw_ptr<TestOmniboxClient, DanglingUntriaged> omnibox_client_;
   std::unique_ptr<TestOmniboxView> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<TestOmniboxClient> omnibox_client_;
 };
 
+class OmniboxViewPopupTest : public testing::Test {
+ public:
+  OmniboxViewPopupTest() {
+    auto omnibox_client = std::make_unique<TestOmniboxClient>();
+    omnibox_client_ = omnibox_client.get();
+
+    view_ = std::make_unique<TestOmniboxView>(std::move(omnibox_client));
+    view_->controller()->SetEditModelForTesting(
+        std::make_unique<TestOmniboxEditModel>(view_->controller(), view_.get(),
+                                               /*pref_service=*/nullptr));
+    model()->set_popup_view(&popup_view_);
+    model()->SetPopupIsOpen(true);
+  }
+
+  TestOmniboxView* view() { return view_.get(); }
+
+  TestOmniboxEditModel* model() {
+    return static_cast<TestOmniboxEditModel*>(view_->model());
+  }
+
+  TestOmniboxClient* client() { return omnibox_client_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestOmniboxView> view_;
+  raw_ptr<TestOmniboxClient> omnibox_client_;
+  TestOmniboxPopupView popup_view_;
+};
+}  // namespace
+
 TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
-  constexpr const char* urls[] = {
+  constexpr const auto urls = std::to_array<const char*>({
       " \x01 ",                                       // Safe query.
       "http://www.google.com?q=javascript:alert(0)",  // Safe URL.
       "JavaScript",                                   // Safe query.
@@ -94,11 +126,11 @@ TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
       "jaVascript:\njavaScript:\x01 alert(3) \x01",   // Single strip unsafe.
       ("\x01\x02\x03\x04\x05\x06\x07\x08\x09\x10\x11\x12\x13\x14\x15\x16\x17"
        "\x18\x19 JavaScript:alert(4)"),  // Leading control chars unsafe.
-      "\x01\x02javascript:\x03\x04JavaScript:alert(5)"  // Embedded control
-                                                        // characters unsafe.
-  };
+      "\x01\x02javascript:\x03\x04JavaScript:alert(5)",  // Embedded control
+                                                         // characters unsafe.
+  });
 
-  constexpr const char* expecteds[] = {
+  constexpr const auto expecteds = std::to_array<const char*>({
       " \x01 ",                                       // Safe query.
       "http://www.google.com?q=javascript:alert(0)",  // Safe URL.
       "JavaScript",                                   // Safe query.
@@ -109,12 +141,12 @@ TEST_F(OmniboxViewTest, TestStripSchemasUnsafeForPaste) {
       "alert(2)",                                     // Single strip unsafe.
       "alert(3) \x01",                                // Single strip unsafe.
       "alert(4)",  // Leading control chars unsafe.
-      "alert(5)"   // Embedded control characters unsafe.
-  };
+      "alert(5)",  // Embedded control characters unsafe.
+  });
 
   for (size_t i = 0; i < std::size(urls); i++) {
     EXPECT_EQ(ASCIIToUTF16(expecteds[i]),
-              OmniboxView::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
+              omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(urls[i])));
   }
 }
 
@@ -172,8 +204,7 @@ TEST_F(OmniboxViewTest, SanitizeTextForPaste) {
   };
 
   for (const auto& testcase : kTestcases) {
-    EXPECT_EQ(testcase.output,
-              OmniboxView::SanitizeTextForPaste(testcase.input));
+    EXPECT_EQ(testcase.output, omnibox::SanitizeTextForPaste(testcase.input));
   }
 }
 
@@ -214,6 +245,38 @@ TEST_F(OmniboxViewTest, DISABLED_GetIcon_BookmarkIcon) {
   EXPECT_EQ(expected_icon, icon);
 }
 
+// Tests GetIcon returns the keyword search provider favicon when the match is a
+// non-Google search query.
+TEST_F(OmniboxViewTest, GetIcon_NonGoogleKeywordSearch) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _))
+      .WillOnce(Return(expected_image));
+
+  TemplateURLData data;
+  data.SetKeyword(u"foo");
+  data.SetURL("https://foo.com");
+  TemplateURL* turl =
+      view()->controller()->client()->GetTemplateURLService()->Add(
+          std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+  match.keyword = u"foo";
+  model()->SetCurrentMatchForTest(match);
+
+  ui::ImageModel image = view()->GetIcon(
+      gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor, base::DoNothing(), false);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.GetImage().ToSkBitmap()->getColor(0, 0));
+}
+
 // Tests GetIcon returns the website's favicon when the match is a website.
 TEST_F(OmniboxViewTest, GetIcon_Favicon) {
   const GURL kUrl("https://woahDude.com");
@@ -233,6 +296,71 @@ TEST_F(OmniboxViewTest, GetIcon_Favicon) {
 
   EXPECT_EQ(page_url, kUrl);
 }
+
+// Tests GetIcon returns the search aggregator's favicon by bitmap when the
+// match is a non-Google search query with search aggregator keyword.
+TEST_F(OmniboxViewPopupTest, GetIcon_SearchAggregatorKeywordSearch) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+  gfx::Image expected_image =
+      gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+
+  EXPECT_CALL(*client(), GetFaviconForKeywordSearchProvider(_, _)).Times(0);
+
+  TemplateURLData data;
+  data.SetKeyword(u"foo");
+  data.SetURL("https://foo.com");
+  data.favicon_url = GURL("https://foo.com/icon.png");
+  data.policy_origin = TemplateURLData::PolicyOrigin::kSearchAggregator;
+  TemplateURL* turl =
+      view()->controller()->client()->GetTemplateURLService()->Add(
+          std::make_unique<TemplateURL>(data));
+  ASSERT_TRUE(turl);
+
+  // Sets the icon bitmap for search aggregator.
+  model()->SetIconBitmap(GURL("https://foo.com/icon.png"), bitmap);
+
+  AutocompleteMatch match;
+  match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
+  match.keyword = u"foo";
+  model()->SetCurrentMatchForTest(match);
+
+  ui::ImageModel image = view()->GetIcon(
+      gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor, base::DoNothing(), false);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.GetImage().ToSkBitmap()->getColor(0, 0));
+}
+
+// Tests GetIcon returns the website's favicon when the match is a website.
+TEST_F(OmniboxViewPopupTest, GetIcon_IconUrl) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(16, 16);
+  bitmap.eraseColor(SK_ColorRED);
+
+  EXPECT_CALL(*client(), GetFaviconForPageUrl(_, _)).Times(0);
+
+  // Creates a set of matches.
+  ACMatches matches;
+  AutocompleteMatch match(nullptr, 1000, false,
+                          AutocompleteMatchType::NAVSUGGEST);
+  match.icon_url = GURL("https://example.com/icon.png");
+  matches.push_back(match);
+  AutocompleteResult* result =
+      &view()->controller()->autocomplete_controller()->published_result_;
+  result->AppendMatches(matches);
+  model()->SetCurrentMatchForTest(match);
+
+  // Sets the icon bitmap for search aggregator match.
+  model()->SetIconBitmap(GURL("https://example.com/icon.png"), bitmap);
+
+  ui::ImageModel image = view()->GetIcon(
+      gfx::kFaviconSize, gfx::kPlaceholderColor, gfx::kPlaceholderColor,
+      gfx::kPlaceholderColor, gfx::kPlaceholderColor, base::DoNothing(), false);
+  gfx::test::CheckColors(bitmap.getColor(0, 0),
+                         image.GetImage().ToSkBitmap()->getColor(0, 0));
+}
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Tests GetStateChanges correctly determines if text was deleted.
@@ -240,144 +368,52 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
   {
     // Continuing autocompletion
     auto state_before =
-        TestOmniboxView::CreateState("google.com", 10, 3, 0);  // goo[gle.com]
-    auto state_after = TestOmniboxView::CreateState("goog", 4, 4, 0);  // goog|
+        TestOmniboxView::CreateState("google.com", 10, 3);  // goo[gle.com]
+    auto state_after = TestOmniboxView::CreateState("goog", 4, 4);  // goog|
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
     // Typing not the autocompletion
     auto state_before =
-        TestOmniboxView::CreateState("google.com", 1, 10, 0);  // g[oogle.com]
-    auto state_after = TestOmniboxView::CreateState("gi", 2, 2, 0);  // gi|
+        TestOmniboxView::CreateState("google.com", 1, 10);  // g[oogle.com]
+    auto state_after = TestOmniboxView::CreateState("gi", 2, 2);  // gi|
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
     // Deleting autocompletion
     auto state_before =
-        TestOmniboxView::CreateState("google.com", 1, 10, 0);  // g[oogle.com]
-    auto state_after = TestOmniboxView::CreateState("g", 1, 1, 0);  // g|
+        TestOmniboxView::CreateState("google.com", 1, 10);       // g[oogle.com]
+    auto state_after = TestOmniboxView::CreateState("g", 1, 1);  // g|
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_TRUE(state_changes.just_deleted_text);
   }
   {
     // Inserting
     auto state_before =
-        TestOmniboxView::CreateState("goole.com", 3, 3, 0);  // goo|le.com
+        TestOmniboxView::CreateState("goole.com", 3, 3);  // goo|le.com
     auto state_after =
-        TestOmniboxView::CreateState("google.com", 4, 4, 0);  // goog|le.com
+        TestOmniboxView::CreateState("google.com", 4, 4);  // goog|le.com
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
   {
     // Deleting
     auto state_before =
-        TestOmniboxView::CreateState("googgle.com", 5, 5, 0);  // googg|le.com
+        TestOmniboxView::CreateState("googgle.com", 5, 5);  // googg|le.com
     auto state_after =
-        TestOmniboxView::CreateState("google.com", 4, 4, 0);  // goog|le.com
+        TestOmniboxView::CreateState("google.com", 4, 4);  // goog|le.com
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_TRUE(state_changes.just_deleted_text);
   }
   {
     // Replacing
     auto state_before =
-        TestOmniboxView::CreateState("goojle.com", 3, 4, 0);  // goo[j]le.com
+        TestOmniboxView::CreateState("goojle.com", 3, 4);  // goo[j]le.com
     auto state_after =
-        TestOmniboxView::CreateState("google.com", 4, 4, 0);  // goog|le.com
+        TestOmniboxView::CreateState("google.com", 4, 4);  // goog|le.com
     auto state_changes = view()->GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
   }
 }
-
-// Tests GetStateChanges correctly determines if text was deleted.
-TEST_F(OmniboxViewTest, GetStateChanges_DeletedText_RichAutocompletion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      omnibox::kRichAutocompletion,
-      {{OmniboxFieldTrial::kRichAutocompletionAutocompleteNonPrefixAll.name,
-        "true"}});
-
-  // Cases with single selection
-
-  {
-    // Continuing autocompletion
-    auto state_before =
-        TestOmniboxView::CreateState("google.com", 10, 3, 7);  // goo[gle.com]
-    auto state_after = TestOmniboxView::CreateState("goog", 4, 4, 0);  // goog|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_FALSE(state_changes.just_deleted_text);
-  }
-  {
-    // Typing not the autocompletion
-    auto state_before =
-        TestOmniboxView::CreateState("google.com", 1, 10, 9);  // g[oogle.com]
-    auto state_after = TestOmniboxView::CreateState("gi", 2, 2, 0);  // gi|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_FALSE(state_changes.just_deleted_text);
-  }
-  {
-    // Deleting autocompletion
-    auto state_before =
-        TestOmniboxView::CreateState("google.com", 1, 10, 9);  // g[oogle.com]
-    auto state_after = TestOmniboxView::CreateState("g", 1, 1, 0);  // g|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_TRUE(state_changes.just_deleted_text);
-  }
-  {
-    // Inserting
-    auto state_before =
-        TestOmniboxView::CreateState("goole.com", 3, 3, 6);  // goo|le.com
-    auto state_after =
-        TestOmniboxView::CreateState("google.com", 4, 4, 0);  // goog|le.com
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_FALSE(state_changes.just_deleted_text);
-  }
-  {
-    // Deleting
-    auto state_before =
-        TestOmniboxView::CreateState("googgle.com", 5, 5, 0);  // googg|le.com
-    auto state_after =
-        TestOmniboxView::CreateState("google.com", 4, 4, 0);  // goog|le.com
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_TRUE(state_changes.just_deleted_text);
-  }
-  {
-    // Replacing
-    auto state_before =
-        TestOmniboxView::CreateState("goojle.com", 3, 4, 1);  // goo[j]le.com
-    auto state_after =
-        TestOmniboxView::CreateState("google.com", 4, 4, 0);  // goog|le.com
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_FALSE(state_changes.just_deleted_text);
-  }
-
-  // Cases with multiselection
-
-  {
-    // Continuing autocompletion with multiselection
-    auto state_before =
-        TestOmniboxView::CreateState("google.com", 4, 10, 7);  // [g]oog[le.com]
-    auto state_after = TestOmniboxView::CreateState("oogl", 4, 4, 0);  // oogl|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_FALSE(state_changes.just_deleted_text);
-  }
-  {
-    // Typing not the autocompletion with multiselection
-    auto state_before =
-        TestOmniboxView::CreateState("google.com", 4, 10, 7);  // [g]oog[le.com]
-    auto state_after = TestOmniboxView::CreateState("oogm", 4, 4, 0);  // oogm|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_FALSE(state_changes.just_deleted_text);
-  }
-  {
-    // Deleting autocompletion with multiselection
-    auto state_before =
-        TestOmniboxView::CreateState("google.com", 4, 10, 7);  // [g]oog[le.com]
-    auto state_after = TestOmniboxView::CreateState("oog", 3, 3, 0);  // oog|
-    auto state_changes = view()->GetStateChanges(state_before, state_after);
-    EXPECT_TRUE(state_changes.just_deleted_text);
-  }
-}
-
-}  // namespace

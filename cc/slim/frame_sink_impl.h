@@ -90,7 +90,6 @@ class COMPONENT_EXPORT(CC_SLIM) FrameSinkImpl
   void OnSurfaceEvicted(const viz::LocalSurfaceId& local_surface_id) override {}
   void OnBeginFrame(const viz::BeginFrameArgs& begin_frame_args,
                     const viz::FrameTimingDetailsMap& timing_details,
-                    bool frame_ack,
                     std::vector<viz::ReturnedResource> resources) override;
 
   // SchedulerClient:

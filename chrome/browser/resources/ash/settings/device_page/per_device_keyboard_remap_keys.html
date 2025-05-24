@@ -37,7 +37,7 @@
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kMeta]]" id="metaKey"
         meta-key="[[keyboard.metaKey]]"
-        aria-label="$i18n{perDeviceKeyboardKeySearch}"
+        aria-label="[[getActionRowLabel('perDeviceKeyboardKeySearch')]]"
         pref="{{fakeMetaPref}}"
         remove-top-border>
     </keyboard-remap-modifier-key-row>
@@ -46,7 +46,7 @@
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kControl]]" id="ctrlKey"
         meta-key="[[keyboard.metaKey]]"
-        aria-label="$i18n{perDeviceKeyboardKeyCtrl}"
+        aria-label="[[getActionRowLabel('perDeviceKeyboardKeyCtrl')]]"
         pref="{{fakeCtrlPref}}">
     </keyboard-remap-modifier-key-row>
     <keyboard-remap-modifier-key-row
@@ -54,7 +54,7 @@
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kAlt]]" id="altKey"
         meta-key="[[keyboard.metaKey]]"
-        aria-label="$i18n{perDeviceKeyboardKeyAlt}"
+        aria-label="[[getActionRowLabel('perDeviceKeyboardKeyAlt')]]"
         pref="{{fakeAltPref}}">
     </keyboard-remap-modifier-key-row>
     <keyboard-remap-modifier-key-row
@@ -62,7 +62,7 @@
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kEscape]]" id="escapeKey"
         meta-key="[[keyboard.metaKey]]"
-        aria-label="$i18n{perDeviceKeyboardKeyEscape}"
+        aria-label="[[getActionRowLabel('perDeviceKeyboardKeyEscape')]]"
         pref="{{fakeEscPref}}">
     </keyboard-remap-modifier-key-row>
     <keyboard-remap-modifier-key-row
@@ -70,7 +70,7 @@
         default-remappings="[[defaultRemappings]]"
         key="[[modifierKey.kBackspace]]" id="backspaceKey"
         meta-key="[[keyboard.metaKey]]"
-        aria-label="$i18n{perDeviceKeyboardKeyBackspace}"
+        aria-label="[[getActionRowLabel('perDeviceKeyboardKeyBackspace')]]"
         pref="{{fakeBackspacePref}}">
     </keyboard-remap-modifier-key-row>
     <template is="dom-if" if="[[hasAssistantKey]]" restamp>
@@ -79,7 +79,7 @@
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kAssistant]]" id="assistantKey"
           meta-key="[[keyboard.metaKey]]"
-          aria-label="$i18n{perDeviceKeyboardKeyAssistant}"
+          aria-label="[[getActionRowLabel('perDeviceKeyboardKeyAssistant')]]"
           pref="{{fakeAssistantPref}}">
       </keyboard-remap-modifier-key-row>
     </template>
@@ -89,7 +89,7 @@
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kCapsLock]]" id="capsLockKey"
           meta-key="[[keyboard.metaKey]]"
-          aria-label="$i18n{perDeviceKeyboardKeyCapsLock}"
+          aria-label="[[getActionRowLabel('perDeviceKeyboardKeyCapsLock')]]"
           pref="{{fakeCapsLockPref}}">
       </keyboard-remap-modifier-key-row>
     </template>
@@ -104,7 +104,7 @@
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kMeta]]" id="metaKey"
           meta-key="[[keyboard.metaKey]]"
-          aria-label="$i18n{perDeviceKeyboardKeySearch}"
+          aria-label="[[getActionRowLabel('perDeviceKeyboardKeySearch')]]"
           pref="{{fakeMetaPref}}"
           remove-top-border>
       </keyboard-remap-modifier-key-row>
@@ -113,7 +113,7 @@
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kControl]]" id="ctrlKey"
           meta-key="[[keyboard.metaKey]]"
-          aria-label="$i18n{perDeviceKeyboardKeyCtrl}"
+          aria-label="[[getActionRowLabel('perDeviceKeyboardKeyCtrl')]]"
           pref="{{fakeCtrlPref}}">
       </keyboard-remap-modifier-key-row>
       <keyboard-remap-modifier-key-row
@@ -121,7 +121,7 @@
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kAlt]]" id="altKey"
           meta-key="[[keyboard.metaKey]]"
-          aria-label="$i18n{perDeviceKeyboardKeyAlt}"
+          aria-label="[[getActionRowLabel('perDeviceKeyboardKeyAlt')]]"
           pref="{{fakeAltPref}}">
       </keyboard-remap-modifier-key-row>
       <keyboard-remap-modifier-key-row
@@ -129,7 +129,7 @@
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kEscape]]" id="escapeKey"
           meta-key="[[keyboard.metaKey]]"
-          aria-label="$i18n{perDeviceKeyboardKeyEscape}"
+          aria-label="[[getActionRowLabel('perDeviceKeyboardKeyEscape')]]"
           pref="{{fakeEscPref}}">
       </keyboard-remap-modifier-key-row>
       <keyboard-remap-modifier-key-row
@@ -137,7 +137,7 @@
           default-remappings="[[defaultRemappings]]"
           key="[[modifierKey.kBackspace]]" id="backspaceKey"
           meta-key="[[keyboard.metaKey]]"
-          aria-label="$i18n{perDeviceKeyboardKeyBackspace}"
+          aria-label="[[getActionRowLabel('perDeviceKeyboardKeyBackspace')]]"
           pref="{{fakeBackspacePref}}">
       </keyboard-remap-modifier-key-row>
       <template is="dom-if" if="[[hasAssistantKey]]" restamp>
@@ -146,18 +146,19 @@
             default-remappings="[[defaultRemappings]]"
             key="[[modifierKey.kAssistant]]" id="assistantKey"
             meta-key="[[keyboard.metaKey]]"
-            aria-label="$i18n{perDeviceKeyboardKeyAssistant}"
+            aria-label="[[getActionRowLabel('perDeviceKeyboardKeyAssistant')]]"
             pref="{{fakeAssistantPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
-      <template is="dom-if" if="[[hasRightAltKey]]" restamp>
+      <template is="dom-if" if="[[hasQuickInsertKey]]" restamp>
         <keyboard-remap-modifier-key-row
             has-function-key="[[hasFunctionKey]]"
             default-remappings="[[defaultRemappings]]"
-            key="[[modifierKey.kRightAlt]]" id="rightAltKey"
+            key="[[modifierKey.kQuickInsert]]" id="quickInsertKey"
             meta-key="[[keyboard.metaKey]]"
-            aria-label="$i18n{perDeviceKeyboardKeyRightAlt}"
-            pref="{{fakeRightAltPref}}">
+            aria-label=
+                "[[getActionRowLabel('perDeviceKeyboardKeyQuickInsert')]]"
+            pref="{{fakeQuickInsertPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
       <template is="dom-if" if="[[hasFunctionKey]]" restamp>
@@ -166,7 +167,7 @@
             default-remappings="[[defaultRemappings]]"
             key="[[modifierKey.kFunction]]" id="functionKey"
             meta-key="[[keyboard.metaKey]]"
-            aria-label="$i18n{perDeviceKeyboardKeyFunction}"
+            aria-label="[[getActionRowLabel('perDeviceKeyboardKeyFunction')]]"
             pref="{{fakeFunctionPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
@@ -176,7 +177,7 @@
             default-remappings="[[defaultRemappings]]"
             key="[[modifierKey.kCapsLock]]" id="capsLockKey"
             meta-key="[[keyboard.metaKey]]"
-            aria-label="$i18n{perDeviceKeyboardKeyCapsLock}"
+            aria-label="[[getActionRowLabel('perDeviceKeyboardKeyCapsLock')]]"
             pref="{{fakeCapsLockPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
@@ -192,45 +193,47 @@
             modifier="[[keyboard.sixPackKeyRemappings.del]]"
             key="del"
             pref="{{deletePref}}"
-            aria-label="$i18n{sixPackKeyLabelDelete}">
+            aria-label="[[getShortcutRowLabel('sixPackKeyLabelDelete')]]">
         </keyboard-six-pack-key-row>
         <keyboard-six-pack-key-row id="pageDown"
             modifier="[[keyboard.sixPackKeyRemappings.pageDown]]"
             key="pageDown"
             pref="{{pageDownPref}}"
-            aria-label="$i18n{sixPackKeyLabelPageDown}">
+            aria-label="[[getShortcutRowLabel('sixPackKeyLabelPageDown')]]">
         </keyboard-six-pack-key-row>
         <keyboard-six-pack-key-row id="pageUp"
             modifier="[[keyboard.sixPackKeyRemappings.pageUp]]"
             key="pageUp"
             pref="{{pageUpPref}}"
-            aria-label="$i18n{sixPackKeyLabelPageUp}">
+            aria-label="[[getShortcutRowLabel('sixPackKeyLabelPageUp')]]">
         </keyboard-six-pack-key-row>
         <keyboard-six-pack-key-row id="end"
             modifier="[[keyboard.sixPackKeyRemappings.end]]"
             key="end"
             pref="{{endPref}}"
-            aria-label="$i18n{sixPackKeyLabelEnd}">
+            aria-label="[[getShortcutRowLabel('sixPackKeyLabelEnd')]]">
         </keyboard-six-pack-key-row>
         <keyboard-six-pack-key-row id="home"
             modifier="[[keyboard.sixPackKeyRemappings.home]]"
             key="home"
             pref="{{homePref}}"
-            aria-label="$i18n{sixPackKeyLabelHome}">
+            aria-label="[[getShortcutRowLabel('sixPackKeyLabelHome')]]">
         </keyboard-six-pack-key-row>
         <keyboard-six-pack-key-row id="insert"
             modifier="[[keyboard.sixPackKeyRemappings.insert]]"
             key="insert"
             pref="{{insertPref}}"
-            aria-label="$i18n{sixPackKeyLabelInsert}">
+            aria-label="[[getShortcutRowLabel('sixPackKeyLabelInsert')]]">
         </keyboard-six-pack-key-row>
       </template>
       <template is="dom-if"
           if="[[shouldShowFkeys(keyboard.*, hasFunctionKey)]]">
-        <fkey-row key="f11" aria-label="$i18n{f11KeyLabel}" id="f11"
+        <fkey-row key="f11"
+            aria-label="[[getShortcutRowLabel('f11KeyLabel')]]" id="f11"
             pref="{{f11KeyPref}}" keyboard="[[keyboard]]">
         </fkey-row>
-        <fkey-row key="f12" aria-label="$i18n{f12KeyLabel}" id="f12"
+        <fkey-row key="f12"
+            aria-label="[[getShortcutRowLabel('f12KeyLabel')]]" id="f12"
             pref="{{f12KeyPref}}" keyboard="[[keyboard]]">
         </fkey-row>
       </template>

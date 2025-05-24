@@ -14,7 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/common/intent_helper/link_handler_model.h"
+#include "chromeos/ash/experiences/arc/intent_helper/link_handler_model.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "content/public/test/browser_task_environment.h"

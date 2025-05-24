@@ -15,7 +15,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/data_model/credit_card_benefit.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card_benefit.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/webdata/common/web_database_table.h"
@@ -125,6 +125,20 @@ struct ServerCvc {
 //                      kNetwork denotes that it is a network-level enrollment.
 //   product_terms_url  Issuer terms of service to be displayed on the settings
 //                      page.
+//   card_info_retrieval_enrollment_state
+//                      An enum indicating the enrollment state of this card
+//                      for card info(card number, expiry and cvc) runtime
+//                      retrieval from issuer. kRetrievalUnspecified is the
+//                      default value. kRetrievalEnrolled means the card has
+//                      been enrolled. kRetrievalUnenrolledAndNotEligible means
+//                      the card is not enrolled and is not eligible for
+//                      enrollment. kRetrievalUnenrolledAndEligible means the
+//                      card is not enrolled but is eligible for enrollment.
+//   card_benefit_source
+//                      The source of the saved benefit for this card. Can be a
+//                      card issuer or a third party platform represented by
+//                      an integer. Converted from CardBenefitSource enum from
+//                      the Chrome Sync response.
 // -----------------------------------------------------------------------------
 // server_card_cloud_token_data
 //                      Stores data related to Cloud Primary Account Number
@@ -343,8 +357,20 @@ struct ServerCvc {
 //                      A byte-encoded representation of the payment
 //                      instrument's protobuf, encrypted.
 // -----------------------------------------------------------------------------
+// payment_instrument_creation_options
+//                    This table contains payment instrument creation
+//                    options that can create payment instruments.
+//
+//   id               The server-generated ID for the creation option.
+//   serialized_value The serialized payment instrument creation option
+//                    proto.
+// -----------------------------------------------------------------------------
 class PaymentsAutofillTable : public WebDatabaseTable {
  public:
+  // Drops the tables created by PaymentsAutofillTable.
+  // TODO(crbug.com/390473673): Remove after M143.
+  class Dropper;
+
   PaymentsAutofillTable();
 
   PaymentsAutofillTable(const PaymentsAutofillTable&) = delete;
@@ -436,16 +462,15 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // This will clear all the local cvcs.
   bool ClearLocalCvcs();
 
+  // Method to clean up for crbug.com/411681430.
+  bool CleanupForCrbug411681430();
+
   // Methods to add, update, remove and get the metadata for server cards and
   // IBANs.
   // For get method, return true if the operations succeeded.
   // For add/update/remove methods, return true if any changes actually
   // occurred.
-  // TODO (crbug.com/1504063): Merge Add/UpdateServerCardMetadata into a single
-  // method AddOrUpdateServerCardMetadata.
-  bool AddServerCardMetadata(const PaymentsMetadata& card_metadata);
-  bool UpdateServerCardMetadata(const CreditCard& credit_card);
-  bool UpdateServerCardMetadata(const PaymentsMetadata& card_metadata);
+  bool AddOrUpdateServerCardMetadata(const PaymentsMetadata& card_metadata);
   bool RemoveServerCardMetadata(const std::string& id);
   bool GetServerCardsMetadata(
       std::vector<PaymentsMetadata>& cards_metadata) const;
@@ -534,6 +559,15 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool GetPaymentInstruments(
       std::vector<sync_pb::PaymentInstrument>& payment_instruments);
 
+  // Sets and gets the `payment_instrument_creation_options` table. Return true
+  // if the operation succeeded.
+  bool SetPaymentInstrumentCreationOptions(
+      const std::vector<sync_pb::PaymentInstrumentCreationOption>&
+          payment_instrument_creation_options);
+  bool GetPaymentInstrumentCreationOptions(
+      std::vector<sync_pb::PaymentInstrumentCreationOption>&
+          payment_instrument_creation_options);
+
   // Testing helper to access the database for checking the result of database
   // update.
   sql::Database* GetDbForTesting() const { return db(); }
@@ -568,6 +602,9 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool MigrateToVersion129AddGenericPaymentInstrumentsTable();
   bool MigrateToVersion131RemoveGenericPaymentInstrumentTypeColumn();
   bool MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
+  bool MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
+  bool MigrateToVersion136AddPaymentInstrumentCreationOptionsTable();
+  bool MigrateToVersion141AddCardBenefitSourceColumn();
 
  private:
   // Adds to |masked_credit_cards| and updates |server_card_metadata|.
@@ -600,6 +637,19 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   bool InitMaskedCreditCardBenefitsTable();
   bool InitBenefitMerchantDomainsTable();
   bool InitGenericPaymentInstrumentsTable();
+  bool InitPaymentInstrumentCreationOptionsTable();
+};
+
+class PaymentsAutofillTable::Dropper : public WebDatabaseTable {
+ public:
+  Dropper();
+  Dropper(const Dropper&) = delete;
+  Dropper& operator=(const Dropper&) = delete;
+  ~Dropper() override;
+
+  TypeKey GetTypeKey() const override;
+  bool CreateTablesIfNecessary() override;
+  bool MigrateToVersion(int version, bool* update_compatible_version) override;
 };
 
 }  // namespace autofill

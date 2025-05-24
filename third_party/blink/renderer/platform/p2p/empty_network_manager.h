@@ -9,11 +9,8 @@
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/webrtc/rtc_base/network.h"
+#include "third_party/webrtc/rtc_base/ip_address.h"
 #include "third_party/webrtc/rtc_base/third_party/sigslot/sigslot.h"
-
-namespace rtc {
-class IPAddress;
-}  // namespace rtc
 
 namespace blink {
 
@@ -23,7 +20,7 @@ class IpcNetworkManager;
 // A NetworkManager implementation which handles the case where local address
 // enumeration is not requested and just returns empty network lists. This class
 // is not thread safe and should only be used by WebRTC's network thread.
-class EmptyNetworkManager : public rtc::NetworkManagerBase,
+class EmptyNetworkManager : public webrtc::NetworkManagerBase,
                             public sigslot::has_slots<> {
  public:
   // This class is created on the main thread but used by WebRTC's worker thread
@@ -34,26 +31,26 @@ class EmptyNetworkManager : public rtc::NetworkManagerBase,
   EmptyNetworkManager& operator=(const EmptyNetworkManager&) = delete;
   PLATFORM_EXPORT ~EmptyNetworkManager() override;
 
-  // rtc::NetworkManager:
+  // webrtc::NetworkManager:
   void StartUpdating() override;
   void StopUpdating() override;
-  std::vector<const rtc::Network*> GetNetworks() const override;
+  std::vector<const webrtc::Network*> GetNetworks() const override;
   bool GetDefaultLocalAddress(int family,
-                              rtc::IPAddress* ipaddress) const override;
+                              webrtc::IPAddress* ipaddress) const override;
 
  private:
   friend class FilteringNetworkManagerTest;
   // We can't dereference the wrapped network manager from the construction
   // thread, as that would cause it to bind to the wrong sequence. We also can't
-  // obtain a `WeakPtr` from an arbitrary `rtc::NetworkManager`, so we take 2
+  // obtain a `WeakPtr` from an arbitrary `webrtc::NetworkManager`, so we take 2
   // pointers pointing to the same instance, one is a raw pointer for use on the
   // constructing thread and the other is a weak pointer for use on the worker
   // thread.
   // TODO(crbug.com/1191914): Simplify this, to avoid the subtleties of having
   // to pass two pointers to the same object.
-  PLATFORM_EXPORT EmptyNetworkManager(
-      rtc::NetworkManager* network_manager,
-      base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread);
+  PLATFORM_EXPORT EmptyNetworkManager(webrtc::NetworkManager* network_manager,
+                                      base::WeakPtr<webrtc::NetworkManager>
+                                          network_manager_for_signaling_thread);
 
   // Receive callback from the wrapped NetworkManager when the underneath
   // network list is changed.
@@ -71,7 +68,7 @@ class EmptyNetworkManager : public rtc::NetworkManagerBase,
   // `network_manager_for_signaling_thread_` is owned by the
   // PeerConnectionDependencyFactory, that may be destroyed when the frame is
   // detached.
-  base::WeakPtr<rtc::NetworkManager> network_manager_for_signaling_thread_;
+  base::WeakPtr<webrtc::NetworkManager> network_manager_for_signaling_thread_;
 
   base::WeakPtrFactory<EmptyNetworkManager> weak_ptr_factory_{this};
 };

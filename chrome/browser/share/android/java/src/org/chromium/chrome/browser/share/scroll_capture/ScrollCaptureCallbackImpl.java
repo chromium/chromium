@@ -24,7 +24,7 @@ import java.util.function.Consumer;
  */
 @RequiresApi(api = VERSION_CODES.S)
 public class ScrollCaptureCallbackImpl implements ScrollCaptureCallback {
-    private ScrollCaptureCallbackDelegate mDelegate;
+    private final ScrollCaptureCallbackDelegate mDelegate;
 
     public ScrollCaptureCallbackImpl(EntryManagerWrapper entryManagerWrapper) {
         mDelegate = new ScrollCaptureCallbackDelegate(entryManagerWrapper);

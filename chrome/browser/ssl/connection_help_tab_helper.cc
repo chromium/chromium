@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/content/urls.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -30,16 +29,14 @@ void RedirectToBundledHelp(content::WebContents* web_contents) {
 }
 }  // namespace
 
-ConnectionHelpTabHelper::~ConnectionHelpTabHelper() {}
+ConnectionHelpTabHelper::~ConnectionHelpTabHelper() = default;
 
 void ConnectionHelpTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Ignore pre-rendering navigations.
   if (navigation_handle->IsInPrimaryMainFrame() &&
-      (web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
-           GetHelpCenterURL()) ||
-       web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
-           GURL(kSymantecSupportUrl))) &&
+      web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
+          GetHelpCenterURL()) &&
       navigation_handle->IsErrorPage() &&
       net::IsCertificateError(navigation_handle->GetNetErrorCode())) {
     RedirectToBundledHelp(web_contents());

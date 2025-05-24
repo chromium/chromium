@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ko">
+<translation id="1293272072740285747">이 그룹을 유지하여 나중에 탭을 추가하거나 더 이상 필요하지 않으면 삭제하세요.
+
+삭제하면 모든 사용자가 '<ph name="TITLE_OF_GROUP" />' 탭 그룹의 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
+<translation id="1340839264183302272">그룹 나가기</translation>
+<translation id="1419023007528516122">기기에서 그룹이 완전히 삭제됩니다.</translation>
+<translation id="1501480321619201731">그룹 삭제</translation>
+<translation id="2677748264148917807">나가기</translation>
+<translation id="3547352561153509682"><ph name="USER_EMAIL" />에 로그인된 모든 기기에서 그룹이 삭제됩니다.</translation>
+<translation id="381219490185664296">탭 그룹을 해제하시겠습니까?</translation>
+<translation id="4139634748112164403">이 기기에서 탭은 열린 상태로 유지되지만, 그룹은 완전히 삭제됩니다.</translation>
+<translation id="4431937619879060901">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
+<translation id="4460014764210899310">그룹 해제</translation>
+<translation id="4777866634702576038">탭 그룹을 삭제하시겠습니까?</translation>
+<translation id="5094423602314093681">탭 및 그룹을 삭제하시겠습니까?</translation>
+<translation id="5647702255748985085">그룹에서 나가시겠습니까?</translation>
+<translation id="742664698522525515">그룹을 유지하시겠습니까?</translation>
+<translation id="750886945254958667">나중에 탭을 추가하려면 이 그룹을 유지하고, 더 이상 액세스할 필요가 없으면 그룹에서 나가세요.</translation>
+<translation id="8261506727792406068">삭제</translation>
+<translation id="870736955561925754">탭을 닫고 그룹을 삭제하시겠습니까?</translation>
+<translation id="8804742093141782941">그룹 유지</translation>
+<translation id="9169141410816678175">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
+<translation id="9216898458513705996">이 기기에서의 탭은 열린 상태로 유지되지만 <ph name="USER_EMAIL" />에 로그인된 모든 기기에서는 그룹이 삭제됩니다.</translation>
+<translation id="94870150074703282">그룹을 삭제하시겠습니까?</translation>
+</translationbundle>

@@ -59,7 +59,7 @@ ios_appex_bundle("test_content_process") {
 
   entitlements_target = ":content_process_entitlements"
   info_plist_target = ":tweak_content_process_plist"
-  bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcess"
+  bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcessExtension"
 }
 
 ios_appex_bundle("test_network_process") {
@@ -82,7 +82,7 @@ ios_appex_bundle("test_network_process") {
 
   entitlements_target = ":network_process_entitlements"
   info_plist_target = ":tweak_network_process_plist"
-  bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcess"
+  bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcessExtension"
 }
 
 ios_appex_bundle("test_gpu_process") {
@@ -105,5 +105,5 @@ ios_appex_bundle("test_gpu_process") {
 
   entitlements_target = ":gpu_process_entitlements"
   info_plist_target = ":tweak_gpu_process_plist"
-  bundle_identifier = "$shared_bundle_id_for_test_apps.GPUProcess"
+  bundle_identifier = "$shared_bundle_id_for_test_apps.GPUProcessExtension"
 }

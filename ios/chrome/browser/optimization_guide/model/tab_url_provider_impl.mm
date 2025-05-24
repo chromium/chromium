@@ -23,8 +23,9 @@ TabUrlProviderImpl::~TabUrlProviderImpl() = default;
 
 const std::vector<GURL> TabUrlProviderImpl::GetUrlsOfActiveTabs(
     const base::TimeDelta& duration_since_last_shown) {
-  if (!browser_list_)
+  if (!browser_list_) {
     return std::vector<GURL>();
+  }
 
   // Get all URLs from regular tabs.
   std::map<base::Time, GURL> urls;
@@ -48,8 +49,9 @@ const std::vector<GURL> TabUrlProviderImpl::GetUrlsOfActiveTabs(
 
   // Output the URLs from sorted map in desending order.
   std::vector<GURL> res;
-  for (const auto& [navigation_time, url] : base::Reversed(urls))
+  for (const auto& [navigation_time, url] : base::Reversed(urls)) {
     res.push_back(url);
+  }
 
   return res;
 }

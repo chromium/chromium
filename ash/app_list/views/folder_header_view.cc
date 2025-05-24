@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "ash/app_list/app_list_util.h"
@@ -152,7 +153,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
   void OnBlur() override {
     UpdateBackgroundColor(/*is_active=*/false);
 
-    folder_header_view_->ContentsChanged(this, GetText());
+    folder_header_view_->ContentsChanged(this, std::u16string(GetText()));
 
     // Ensure folder name is truncated when FolderNameView loses focus.
     SetText(folder_header_view_->GetElidedFolderName());
@@ -245,7 +246,7 @@ class FolderHeaderView::FolderNameView : public views::Textfield,
 
  private:
   void UpdateBackgroundColor(bool is_active) {
-    background()->SetNativeControlColor(GetFolderBackgroundColor(is_active));
+    background()->SetColor(GetFolderBackgroundColor(is_active));
     SchedulePaint();
   }
 
@@ -493,7 +494,7 @@ void FolderHeaderView::UpdateFolderNameAccessibleName() {
   folder_name_view_->GetViewAccessibility().SetName(accessible_name);
 }
 
-const std::u16string& FolderHeaderView::GetFolderNameForTest() {
+std::u16string_view FolderHeaderView::GetFolderNameForTest() {
   return folder_name_view_->GetText();
 }
 
@@ -566,9 +567,9 @@ void FolderHeaderView::Layout(PassKey) {
 
   gfx::Rect text_bounds(rect);
 
-  std::u16string text = folder_name_view_->GetText().empty()
-                            ? folder_name_placeholder_text_
-                            : folder_name_view_->GetText();
+  std::u16string_view text = folder_name_view_->GetText().empty()
+                                 ? folder_name_placeholder_text_
+                                 : folder_name_view_->GetText();
   int text_width =
       gfx::Canvas::GetStringWidth(text, folder_name_view_->GetFontList()) +
       folder_name_view_->GetCaretBounds().width() +

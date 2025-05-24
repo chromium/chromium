@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.crash;
 import android.app.job.JobInfo;
 import android.content.ComponentName;
 import android.content.Intent;
-import android.os.Build;
 import android.os.PersistableBundle;
 import android.os.Process;
 
@@ -15,6 +14,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
@@ -68,8 +68,8 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
     private static final int FAILURE = 0;
     private static final int SUCCESS = 1;
 
-    private static AtomicBoolean sBrowserCrashMetricsInitialized = new AtomicBoolean();
-    private static AtomicBoolean sDidBrowserCrashRecently = new AtomicBoolean();
+    private static final AtomicBoolean sBrowserCrashMetricsInitialized = new AtomicBoolean();
+    private static final AtomicBoolean sDidBrowserCrashRecently = new AtomicBoolean();
 
     @StringDef({ProcessType.BROWSER, ProcessType.RENDERER, ProcessType.GPU, ProcessType.OTHER})
     @Retention(RetentionPolicy.SOURCE)
@@ -361,16 +361,14 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
      * Attempts to upload the specified {@param minidumpFile} directly. If Android doesn't allow a
      * direct upload, then fallback to JobScheduler.
      *
-     * Note that the preferred way to upload minidump is only through JobScheduler, use this
+     * <p>Note that the preferred way to upload minidump is only through JobScheduler, use this
      * function if you need to upload it urgently.
      */
     static void tryUploadCrashDumpNow(File minidumpFile) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-                && !(ApplicationStatus.isInitialized()
-                        && ApplicationStatus.hasVisibleActivities())) {
-            // If we are on API 31+, Android does not allow us to start services from the
-            // background. If we are in the background, then go through the JobScheduler path
-            // instead. See crbug.com/1433529 for more details.
+        if (!(ApplicationStatus.isInitialized() && ApplicationStatus.hasVisibleActivities())) {
+            // Android does not allow us to start services from the background. If we are in the
+            // background, then go through the JobScheduler path instead. See crbug.com/1433529
+            // and crbug.com/407575680 for crashes caused by not doing this.
             scheduleUploadJob();
             return;
         }
@@ -387,15 +385,15 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
     /**
      * Attempts to upload the crash report with the given local ID.
      *
-     * Note that this method is asynchronous. All that is guaranteed is that
-     * upload attempts will be enqueued.
+     * <p>Note that this method is asynchronous. All that is guaranteed is that upload attempts will
+     * be enqueued.
      *
-     * This method is safe to call from the UI thread.
+     * <p>This method is safe to call from the UI thread.
      *
      * @param localId The local ID of the crash report.
      */
     @CalledByNative
-    public static void tryUploadCrashDumpWithLocalId(String localId) {
+    public static void tryUploadCrashDumpWithLocalId(@JniType("std::string") String localId) {
         if (localId == null || localId.isEmpty()) {
             Log.w(TAG, "Cannot force crash upload since local crash id is absent.");
             return;

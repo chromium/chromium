@@ -4,20 +4,15 @@
 
 #include "ios/chrome/browser/history/model/history_service_factory.h"
 
-#include <utility>
-
-#include "base/no_destructor.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/visit_delegate.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history/ios/browser/history_database_helper.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/history/model/history_client_impl.h"
-#include "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/common/channel_info.h"
 
@@ -25,32 +20,23 @@ namespace ios {
 
 namespace {
 
-std::unique_ptr<HistoryClientImpl> BuildHistoryClient(
-    ChromeBrowserState* browser_state) {
+std::unique_ptr<HistoryClientImpl> BuildHistoryClient(ProfileIOS* profile) {
   return std::make_unique<HistoryClientImpl>(
-      BookmarkModelFactory::GetForBrowserState(browser_state));
+      BookmarkModelFactory::GetForProfile(profile));
 }
 
 std::unique_ptr<KeyedService> BuildHistoryService(web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   std::unique_ptr<history::HistoryService> history_service(
-      new history::HistoryService(BuildHistoryClient(browser_state), nullptr));
+      new history::HistoryService(BuildHistoryClient(profile), nullptr));
   if (!history_service->Init(history::HistoryDatabaseParamsForPath(
-          browser_state->GetStatePath(), GetChannel()))) {
+          profile->GetStatePath(), GetChannel()))) {
     return nullptr;
   }
   return history_service;
 }
 
 }  // namespace
-
-// static
-history::HistoryService* HistoryServiceFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
-}
 
 // static
 history::HistoryService* HistoryServiceFactory::GetForProfile(
@@ -62,22 +48,8 @@ history::HistoryService* HistoryServiceFactory::GetForProfile(
     return nullptr;
   }
 
-  return static_cast<history::HistoryService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
-// static
-history::HistoryService* HistoryServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  // If saving history is disabled, only allow explicit access.
-  if (access_type != ServiceAccessType::EXPLICIT_ACCESS &&
-      profile->GetPrefs()->GetBoolean(prefs::kSavingBrowserHistoryDisabled)) {
-    return nullptr;
-  }
-
-  return static_cast<history::HistoryService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<history::HistoryService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -93,27 +65,17 @@ HistoryServiceFactory::GetDefaultFactory() {
 }
 
 HistoryServiceFactory::HistoryServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "HistoryService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("HistoryService",
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(BookmarkModelFactory::GetInstance());
 }
 
-HistoryServiceFactory::~HistoryServiceFactory() {
-}
+HistoryServiceFactory::~HistoryServiceFactory() = default;
 
 std::unique_ptr<KeyedService> HistoryServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   return BuildHistoryService(context);
-}
-
-web::BrowserState* HistoryServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool HistoryServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }
 
 }  // namespace ios

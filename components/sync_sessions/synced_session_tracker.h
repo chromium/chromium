@@ -254,8 +254,10 @@ class SyncedSessionTracker {
     // The SessionTab/SessionWindow objects referred to may be owned either by
     // the session in the |synced_session| or be temporarily unmapped and live
     // in the |unmapped_tabs|/|unmapped_windows| collections.
-    std::map<SessionID, sessions::SessionTab*> synced_tab_map;
-    std::map<SessionID, SyncedSessionWindow*> synced_window_map;
+    std::map<SessionID, raw_ptr<sessions::SessionTab, CtnExperimental>>
+        synced_tab_map;
+    std::map<SessionID, raw_ptr<SyncedSessionWindow, CtnExperimental>>
+        synced_window_map;
 
     // The collection of tabs/windows not owned by SyncedSession. This is the
     // case either because 1. (in the case of tabs) they were newly created by

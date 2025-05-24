@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_prf_values.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_network_or_issuer_information.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_credential_instrument.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_secure_payment_confirmation_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -27,12 +28,13 @@ namespace blink {
 
 namespace {
 
+static const char PUBLIC_KEY_CREDENTIAL_TYPE_STRING[] = "public-key";
+
 static const uint8_t kPrfInputData[] = {1, 2, 3, 4, 5, 6};
 
-WTF::Vector<uint8_t> CreateVector(const uint8_t* buffer,
-                                  const unsigned length) {
+WTF::Vector<uint8_t> CreateVector(base::span<const uint8_t> buffer) {
   WTF::Vector<uint8_t> vector;
-  vector.Append(buffer, length);
+  vector.AppendSpan(buffer);
   return vector;
 }
 
@@ -55,6 +57,21 @@ static AuthenticationExtensionsPRFInputs* CreatePrfInputs(
   return prf_inputs;
 }
 
+// Matches a PublicKeyCredentialParameters with the given type and algorithm.
+testing::Matcher<
+    const mojo::InlinedStructPtr<mojom::blink::PublicKeyCredentialParameters>>
+EqPublicKeyCredentialParameters(mojom::blink::PublicKeyCredentialType type,
+                                int32_t algorithm_identifier) {
+  return testing::Pointee(testing::AllOf(
+      testing::Field("type",
+                     &blink::mojom::blink::PublicKeyCredentialParameters::type,
+                     type),
+      testing::Field("algorithm_identifier",
+                     &blink::mojom::blink::PublicKeyCredentialParameters::
+                         algorithm_identifier,
+                     algorithm_identifier)));
+}
+
 }  // namespace
 
 // Test that parsing a valid SecurePaymentConfirmationRequest succeeds and
@@ -75,11 +92,9 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Success) {
 
   ASSERT_EQ(parsed_request->credential_ids.size(), 1u);
   EXPECT_EQ(parsed_request->credential_ids[0],
-            CreateVector(kSecurePaymentConfirmationCredentialId,
-                         std::size(kSecurePaymentConfirmationCredentialId)));
+            CreateVector(kSecurePaymentConfirmationCredentialId));
   EXPECT_EQ(parsed_request->challenge,
-            CreateVector(kSecurePaymentConfirmationChallenge,
-                         std::size(kSecurePaymentConfirmationChallenge)));
+            CreateVector(kSecurePaymentConfirmationChallenge));
   EXPECT_EQ(parsed_request->instrument->display_name, "My Card");
   EXPECT_EQ(parsed_request->instrument->icon.GetString(),
             "https://bank.example/icon.png");
@@ -428,8 +443,7 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_Extensions) {
           scope.GetExceptionState());
 
   ASSERT_FALSE(parsed_request->extensions.is_null());
-  WTF::Vector<uint8_t> prf_expected =
-      CreateVector(kPrfInputData, sizeof(kPrfInputData));
+  WTF::Vector<uint8_t> prf_expected = CreateVector(kPrfInputData);
   ASSERT_EQ(parsed_request->extensions->prf_inputs[0]->first, prf_expected);
 }
 
@@ -575,6 +589,39 @@ TEST(SecurePaymentConfirmationHelperTest, Parse_InvalidIssuerIcon) {
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(ESErrorType::kTypeError,
             scope.GetExceptionState().CodeAs<ESErrorType>());
+}
+
+// Test that parsing a SecurePaymentConfirmationRequest converts the browser
+// bound public key credential parameters.
+TEST(SecurePaymentConfirmationHelperTest, Parse_BrowserBroundPubKeyCredParams) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  SecurePaymentConfirmationRequest* request =
+      CreateSecurePaymentConfirmationRequest(scope);
+  auto request_cred_params =
+      HeapVector<Member<PublicKeyCredentialParameters>>();
+  PublicKeyCredentialParameters* cred_param_1 =
+      PublicKeyCredentialParameters::Create(scope.GetIsolate());
+  cred_param_1->setType(PUBLIC_KEY_CREDENTIAL_TYPE_STRING);
+  // See https://www.iana.org/assignments/cose/cose.xhtml for algorithm
+  // codes.
+  cred_param_1->setAlg(-9); /* -9 is "Unassigned" */
+  request_cred_params.push_back(std::move(cred_param_1));
+  request->setBrowserBoundPubKeyCredParams(std::move(request_cred_params));
+
+  // browserBoundPubKeyCredParams() are behind the
+  // SecurePaymentConfirmationBrowserBoundKeys runtime features flag. This test
+  // needs the flag's status at "test" or greater.
+  ScriptValue script_value(scope.GetIsolate(),
+                           ToV8Traits<SecurePaymentConfirmationRequest>::ToV8(
+                               scope.GetScriptState(), request));
+  ::payments::mojom::blink::SecurePaymentConfirmationRequestPtr parsed_request =
+      SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
+          script_value, *scope.GetExecutionContext(), ASSERT_NO_EXCEPTION);
+
+  EXPECT_THAT(parsed_request->browser_bound_pub_key_cred_params,
+              testing::ElementsAre(EqPublicKeyCredentialParameters(
+                  blink::mojom::PublicKeyCredentialType::PUBLIC_KEY, -9)));
 }
 
 }  // namespace blink

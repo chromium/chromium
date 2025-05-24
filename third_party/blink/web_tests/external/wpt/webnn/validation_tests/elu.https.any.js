@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API elu operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -19,29 +19,9 @@ promise_test(async t => {
   const options = {alpha: 1.0};
   const input = builder.input('input', {dataType: 'float32', shape: [1, 2, 3]});
   const output = builder.elu(input, options);
-  assert_equals(output.dataType(), 'float32');
-  assert_array_equals(output.shape(), [1, 2, 3]);
+  assert_equals(output.dataType, 'float32');
+  assert_array_equals(output.shape, [1, 2, 3]);
 }, '[elu] Build with options');
-
-promise_test(async t => {
-  const builder = new MLGraphBuilder(context);
-  const options = {
-    alpha: -1.0,
-    label: label,
-  };
-  const input = builder.input('input', {dataType: 'float32', shape: [1, 2, 3]});
-  assert_throws_with_label(() => builder.elu(input, options), regrexp);
-}, '[elu] Throw if options.alpha < 0');
-
-promise_test(async t => {
-  const builder = new MLGraphBuilder(context);
-  const options = {
-    alpha: 0,
-    label: label,
-  };
-  const input = builder.input('input', {dataType: 'float32', shape: [1]});
-  assert_throws_with_label(() => builder.elu(input, options), regrexp);
-}, '[elu] Throw if options.alpha == 0');
 
 promise_test(async t => {
   const builder = new MLGraphBuilder(context);

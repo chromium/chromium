@@ -17,7 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
@@ -39,6 +38,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
@@ -57,18 +58,19 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -82,15 +84,16 @@ import java.util.concurrent.ExecutionException;
 /** Instrumentation tests for {@link RecentTabsPage}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
+@EnableFeatures({ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP})
 public class RecentTabsPageTest {
-    private static final String EMAIL = "email@gmail.com";
-    private static final String NAME = "Email Emailson";
     private static final int COLOR_ID = TabGroupColorId.YELLOW;
     private static final int COLOR_ID_2 = TabGroupColorId.RED;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
@@ -111,10 +114,8 @@ public class RecentTabsPageTest {
 
     @Before
     public void setUp() throws Exception {
-        initMocks(this);
-
         RecentTabsManager.setRecentlyClosedTabManagerForTests(mManager);
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mTabModel = mActivity.getTabModelSelector().getModel(false);
         mTab = mActivity.getActivityTab();
@@ -125,99 +126,6 @@ public class RecentTabsPageTest {
         leaveRecentTabsPage();
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RecentTabsPage"})
-    @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
-    public void testRecentlyClosedGroupNoColorContentDescriptions() throws ExecutionException {
-        mPage = loadRecentTabsPage();
-        // Set a recently closed group with a title and confirm a view is rendered for it.
-        final RecentlyClosedGroup titleGroup =
-                new RecentlyClosedGroup(2, 0, "Group Title", COLOR_ID);
-        Token titleTabGroupId = new Token(27839L, 4789L);
-        titleGroup
-                .getTabs()
-                .add(
-                        new RecentlyClosedTab(
-                                0,
-                                0,
-                                "Tab Title 0",
-                                new GURL("https://www.example.com/url/0"),
-                                titleTabGroupId));
-        titleGroup
-                .getTabs()
-                .add(
-                        new RecentlyClosedTab(
-                                1,
-                                0,
-                                "Tab Title 1",
-                                new GURL("https://www.example.com/url/1"),
-                                titleTabGroupId));
-
-        // Set a recently closed group without a title and confirm a view is rendered for it.
-        final RecentlyClosedGroup noTitleGroup = new RecentlyClosedGroup(3, 0, null, COLOR_ID_2);
-        Token noTitleTabGroupId = new Token(798L, 4389L);
-        noTitleGroup
-                .getTabs()
-                .add(
-                        new RecentlyClosedTab(
-                                0,
-                                0,
-                                "Tab Title 0",
-                                new GURL("https://www.example.com/url/0"),
-                                noTitleTabGroupId));
-
-        List<RecentlyClosedEntry> entries = new ArrayList<>();
-        entries.add(titleGroup);
-        entries.add(noTitleGroup);
-        setRecentlyClosedEntries(entries);
-        assertEquals(2, mManager.getRecentlyClosedEntries(2).size());
-        final String titleGroupString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getString(
-                                            R.string.recent_tabs_group_closure_with_title,
-                                            titleGroup.getTitle());
-                        });
-        final String titleGroupAccessibilityString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getString(
-                                            R.string
-                                                    .recent_tabs_group_closure_with_title_accessibility,
-                                            titleGroup.getTitle());
-                        });
-        final String noTitleGroupString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals.recent_tabs_group_closure_without_title,
-                                            noTitleGroup.getTabs().size(),
-                                            noTitleGroup.getTabs().size());
-                        });
-        final String noTitleGroupAccessibilityString =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            return mActivity
-                                    .getResources()
-                                    .getQuantityString(
-                                            R.plurals
-                                                    .recent_tabs_group_closure_without_title_accessibility,
-                                            noTitleGroup.getTabs().size(),
-                                            noTitleGroup.getTabs().size());
-                        });
-        final View titleGroupView = waitForView(titleGroupString);
-        final View noTitleGroupView = waitForTabCountTitleView(noTitleGroupString);
-        assertEquals(titleGroupAccessibilityString, titleGroupView.getContentDescription());
-        assertEquals(noTitleGroupAccessibilityString, noTitleGroupView.getContentDescription());
     }
 
     @Test
@@ -257,7 +165,6 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testRecentlyClosedGroupColor() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
@@ -277,7 +184,7 @@ public class RecentTabsPageTest {
         assertEquals(GradientDrawable.OVAL, bgDrawable.getShape());
         assertEquals(
                 ColorStateList.valueOf(
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
+                        TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                                 mActivity, COLOR_ID, /* isIncognito= */ false)),
                 bgDrawable.getColor());
     }
@@ -285,7 +192,6 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void testRecentlyClosedGroupIconDoesNotPersist() throws ExecutionException {
         mPage = loadRecentTabsPage();
         // Set a recently closed group and confirm a view is rendered for it.
@@ -326,7 +232,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithTitle() throws Exception {
@@ -397,7 +302,6 @@ public class RecentTabsPageTest {
     @Test
     @LargeTest
     @Feature({"RecentTabsPage", "RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     // Disable sign-in to suppress sign-in promo, as it's unrelated to this render test.
     @Policies.Add(@Policies.Item(key = "BrowserSignin", string = "0"))
     public void testRecentlyClosedGroup_WithoutTitle() throws Exception {
@@ -571,14 +475,9 @@ public class RecentTabsPageTest {
     @Test
     @MediumTest
     @Feature({"RecentTabsPage"})
-    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testEmptyStateView_replaceSyncWithSignInDisabled() {
-        // Sign in and enable sync.
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        SigninTestUtil.signinAndEnableSync(
-                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL,
-                SyncTestUtil.getSyncServiceForLastUsedProfile());
+    public void testEmptyStateView() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        SigninTestUtil.signinAndEnableHistorySync(TestAccounts.ACCOUNT1);
 
         // Open an empty recent tabs page and confirm empty view shows.
         mPage = loadRecentTabsPage();
@@ -591,20 +490,12 @@ public class RecentTabsPageTest {
 
     @Test
     @MediumTest
-    @Feature({"RecentTabsPage"})
-    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testEmptyStateView() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-        SigninTestUtil.signinAndEnableHistorySync(
-                AccountManagerTestRule.TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL);
-
-        // Open an empty recent tabs page and confirm empty view shows.
+    @Feature({"RecentTabsPage", "RenderTest"})
+    public void testSigninPromoView() throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mPage = loadRecentTabsPage();
-        onView(
-                        allOf(
-                                withId(R.id.empty_state_container),
-                                withParent(withId(R.id.legacy_sync_promo_view_frame_layout))))
-                .check(matches(isDisplayed()));
+
+        mRenderTestRule.render(mPage.getView(), "signin_promo");
     }
 
     @Test

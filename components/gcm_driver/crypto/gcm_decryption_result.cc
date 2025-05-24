@@ -43,8 +43,7 @@ std::string ToGCMDecryptionResultDetailsString(GCMDecryptionResult result) {
       break;  // deliberate fall-through
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "(invalid result)";
+  NOTREACHED();
 }
 
 }  // namespace gcm

@@ -30,7 +30,7 @@ namespace blink {
 // may only be accessed from the signaling thread. The one exception to that is
 // access to slots (e.g., `NetworkManager::SignalNetworksChanged`) that are safe
 // to access from any thread.
-class IpcNetworkManager : public rtc::NetworkManagerBase,
+class IpcNetworkManager : public webrtc::NetworkManagerBase,
                           public blink::NetworkListObserver {
  public:
   // Constructor doesn't take ownership of the |network_list_manager|.
@@ -45,7 +45,7 @@ class IpcNetworkManager : public rtc::NetworkManagerBase,
   base::WeakPtr<IpcNetworkManager> PLATFORM_EXPORT
   AsWeakPtrForSignalingThread();
 
-  // rtc:::NetworkManager:
+  // webrtc:::NetworkManager:
   void StartUpdating() override;
   void StopUpdating() override;
   webrtc::MdnsResponderInterface* GetMdnsResponder() const override;

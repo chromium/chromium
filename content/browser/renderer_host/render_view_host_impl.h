@@ -24,9 +24,7 @@
 #include "build/build_config.h"
 #include "content/browser/renderer_host/browsing_context_state.h"
 #include "content/browser/renderer_host/frame_tree.h"
-#include "content/browser/renderer_host/input/input_device_change_observer.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
-#include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_owner_delegate.h"
 #include "content/browser/site_instance_group.h"
 #include "content/browser/site_instance_impl.h"
@@ -44,8 +42,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gl/gpu_preference.h"
-#include "ui/gl/gpu_switching_observer.h"
 
 namespace blink {
 namespace web_pref {
@@ -57,6 +53,7 @@ namespace content {
 
 class AgentSchedulingGroupHost;
 class RenderProcessHost;
+class RenderWidgetHostImpl;
 
 // A callback which will be called immediately before EnterBackForwardCache
 // starts.
@@ -97,7 +94,6 @@ class CONTENT_EXPORT RenderViewHostImpl
     : public RenderViewHost,
       public RenderWidgetHostOwnerDelegate,
       public RenderProcessHostObserver,
-      public ui::GpuSwitchingObserver,
       public IPC::Listener,
       public base::RefCounted<RenderViewHostImpl> {
  public:
@@ -147,9 +143,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   void RenderProcessExited(RenderProcessHost* host,
                            const ChildProcessTerminationInfo& info) override;
 
-  // GpuSwitchingObserver implementation.
-  void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
-
   // Set up the `blink::WebView` child process. Virtual because it is overridden
   // by TestRenderViewHost.
   // `opener_route_id` parameter indicates which `blink::WebView` created this
@@ -160,10 +153,14 @@ class CONTENT_EXPORT RenderViewHostImpl
   //   "noopener", and even if the opener has been closed since.
   // `proxy_route_id` is only used when creating a `blink::WebView` in an
   //   inactive state.
+  // `navigation_metrics_token` identifies the navigation for which this
+  //   view is being created, if any. This is used for navigation-related
+  //   metrics and trace events recorded in the renderer process.
   virtual bool CreateRenderView(
       const std::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
-      bool window_was_opened_by_another_window);
+      bool window_was_opened_by_another_window,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token);
 
   RenderViewHostDelegate* GetDelegate();
 
@@ -236,12 +233,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   // Send RenderViewReady to observers once the process is launched, but not
   // re-entrantly.
   void PostRenderViewReady();
-
-  // Passes current web preferences to the renderer after recomputing all of
-  // them, including the slow-to-compute hardware preferences.
-  // (WebContents::OnWebPreferencesChanged is a faster alternate that avoids
-  // slow recomputations.)
-  void OnHardwareConfigurationChanged();
 
   // Sets the routing id for the main frame. When set to MSG_ROUTING_NONE, the
   // view is not considered active.
@@ -337,6 +328,9 @@ class CONTENT_EXPORT RenderViewHostImpl
     return &*site_instance_group_;
   }
 
+  bool MayRenderWidgetForwardKeyboardEvent(
+      const input::NativeWebKeyboardEvent& key_event) override;
+
   // NOTE: Do not add functions that just send an IPC message that are called in
   // one or two places. Have the caller send the IPC message directly (unless
   // the caller places are in different platforms, in which case it's better
@@ -351,12 +345,10 @@ class CONTENT_EXPORT RenderViewHostImpl
   void RenderWidgetLostFocus() override;
   void RenderWidgetDidForwardMouseEvent(
       const blink::WebMouseEvent& mouse_event) override;
-  bool MayRenderWidgetForwardKeyboardEvent(
-      const input::NativeWebKeyboardEvent& key_event) override;
+
   bool ShouldContributePriorityToProcess() override;
   void SetBackgroundOpaque(bool opaque) override;
   bool IsMainFrameActive() override;
-  bool IsNeverComposited() override;
   blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() override;
 
   // IPC message handlers.
@@ -417,9 +409,6 @@ class CONTENT_EXPORT RenderViewHostImpl
   int main_frame_routing_id_;
 
   std::optional<mojom::ViewWidgetType> view_widget_type_;
-
-  // This monitors input changes so they can be reflected to the interaction MQ.
-  std::unique_ptr<InputDeviceChangeObserver> input_device_change_observer_;
 
   // This controls the lifecycle change and notify the renderer.
   std::unique_ptr<PageLifecycleStateManager> page_lifecycle_state_manager_;

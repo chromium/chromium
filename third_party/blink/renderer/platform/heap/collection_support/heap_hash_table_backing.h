@@ -13,6 +13,7 @@
 #include <type_traits>
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/utils.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state_storage.h"
@@ -114,6 +115,16 @@ struct ThreadingTrait<WTF::KeyValuePair<First, Second>> {
           : kAnyThread;
 };
 
+namespace internal {
+
+template <typename Table>
+struct CompactionTraits<blink::HeapHashTableBacking<Table>> {
+  static constexpr bool SupportsCompaction() {
+    using ValueTraits = typename Table::ValueTraits;
+    return ValueTraits::kSupportsCompaction;
+  }
+};
+}  // namespace internal
 }  // namespace blink
 
 namespace WTF {
@@ -281,6 +292,8 @@ struct IsTraceable<internal::ConcurrentBucket<T>> : IsTraceable<T> {};
 namespace cppgc {
 
 template <typename Table>
+  requires(blink::internal::CompactionTraits<
+           blink::HeapHashTableBacking<Table>>::SupportsCompaction())
 struct SpaceTrait<blink::HeapHashTableBacking<Table>> {
   using Space = blink::CompactableHeapHashTableBackingSpace;
 };

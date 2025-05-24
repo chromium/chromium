@@ -34,13 +34,13 @@ class TestComponentMetricsProviderDelegate
 
 class ComponentMetricsProviderTest : public testing::Test {
  public:
-  ComponentMetricsProviderTest() {}
+  ComponentMetricsProviderTest() = default;
 
   ComponentMetricsProviderTest(const ComponentMetricsProviderTest&) = delete;
   ComponentMetricsProviderTest& operator=(const ComponentMetricsProviderTest&) =
       delete;
 
-  ~ComponentMetricsProviderTest() override {}
+  ~ComponentMetricsProviderTest() override = default;
 };
 
 TEST_F(ComponentMetricsProviderTest, ProvideComponentMetrics) {

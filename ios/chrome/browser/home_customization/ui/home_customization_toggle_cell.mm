@@ -129,6 +129,10 @@ const CGFloat kNavigationIconImageViewWidth = 16;
     ]];
 
     _switch = [[UISwitch alloc] init];
+    [_switch
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
     [_switch addTarget:self
                   action:@selector(toggleModuleVisibility:)
         forControlEvents:UIControlEventValueChanged];

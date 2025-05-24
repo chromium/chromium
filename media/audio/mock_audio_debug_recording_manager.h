@@ -28,6 +28,6 @@ class MockAudioDebugRecordingManager : public AudioDebugRecordingManager {
   MOCK_METHOD0(DisableDebugRecording, void());
 };
 
-}  // namespace media.
+}  // namespace media
 
 #endif  // MEDIA_AUDIO_MOCK_AUDIO_DEBUG_RECORDING_MANAGER_H_

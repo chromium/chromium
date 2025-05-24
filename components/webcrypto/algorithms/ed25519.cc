@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "components/webcrypto/algorithms/ed25519.h"
 
 #include <string.h>
@@ -126,7 +131,7 @@ Status Ed25519Implementation::GenerateKey(
   // multiplication, but there aren't EVP APIs to avoid it without a lot of
   // boilerplate.
   blink::WebCryptoKey private_key;
-  status = CreateWebCryptoEd25519PrivateKey(base::make_span(privkey).first(32u),
+  status = CreateWebCryptoEd25519PrivateKey(base::span(privkey).first<32>(),
                                             key_algorithm, extractable,
                                             private_usages, &private_key);
   if (status.IsError())
@@ -297,14 +302,12 @@ Status Ed25519Implementation::ImportKeyJwk(
   JwkReader jwk;
 
   // 3. If the kty field of jwk is not "OKP", then throw a DataError.
-  // 5. If the alg field of jwk is present and is not "EdDSA", then throw a
-  // DataError.
   // 7. If the key_ops field of jwk is present, and is invalid according to the
   // requirements of JSON Web Key [JWK], or it does not contain all of the
   // specified usages values, then throw a DataError.
   // 8. If the ext field of jwk is present and has the value false and
   // extractable is true, then throw a DataError.
-  Status status = jwk.Init(key_data, extractable, usages, "OKP", "EdDSA");
+  Status status = jwk.Init(key_data, extractable, usages, "OKP", "");
   if (status.IsError())
     return status;
 
@@ -315,6 +318,18 @@ Status Ed25519Implementation::ImportKeyJwk(
     return status;
   if (jwk_crv != "Ed25519")
     return Status::ErrorJwkIncorrectCrv();
+
+  // 5. If the alg field of jwk is present and is not "EdDSA", then throw a
+  // DataError.
+  bool has_alg;
+  std::string jwk_alg;
+  status = jwk.GetAlg(&jwk_alg, &has_alg);
+  if (status.IsError()) {
+    return status;
+  }
+  if (has_alg && jwk_alg != "EdDSA" && jwk_alg != "Ed25519") {
+    return Status::ErrorJwkAlgorithmInconsistent();
+  }
 
   // Only private keys have a "d" parameter. The key may still be invalid, but
   // tentatively decide if it is a public or private key.
@@ -417,9 +432,9 @@ Status Ed25519Implementation::ExportKeyJwk(const blink::WebCryptoKey& key,
     return Status::OperationError();
   DCHECK_EQ(keylen, sizeof(raw_public_key));
 
-  // No "alg" is set for OKP keys.
   JwkWriter jwk(std::string(), key.Extractable(), key.Usages(), "OKP");
   jwk.SetString("crv", "Ed25519");
+  jwk.SetString("alg", "Ed25519");
 
   // Set "x", and "d" if it is a private key.
   jwk.SetBytes("x", raw_public_key);

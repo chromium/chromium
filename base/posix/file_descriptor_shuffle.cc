@@ -4,8 +4,9 @@
 
 #include "base/posix/file_descriptor_shuffle.h"
 
-#include <unistd.h>
 #include <stddef.h>
+#include <unistd.h>
+
 #include <ostream>
 
 #include "base/check.h"
@@ -26,8 +27,8 @@ bool PerformInjectiveMultimapDestructive(InjectiveMultimap* m,
     // We DCHECK the injectiveness of the mapping.
     for (size_t j_index = i_index + 1; j_index < m->size(); ++j_index) {
       InjectiveMultimap::value_type* j = &(*m)[j_index];
-      DCHECK(i->dest != j->dest) << "Both fd " << i->source
-          << " and " << j->source << " map to " << i->dest;
+      DCHECK(i->dest != j->dest) << "Both fd " << i->source << " and "
+                                 << j->source << " map to " << i->dest;
     }
 
     const bool is_identity = i->source == i->dest;
@@ -43,8 +44,9 @@ bool PerformInjectiveMultimapDestructive(InjectiveMultimap* m,
         j->close = true;
       }
 
-      if (i->close && i->source == j->dest)
+      if (i->close && i->source == j->dest) {
         i->close = false;
+      }
 
       if (i->close && i->source == j->source) {
         i->close = false;
@@ -53,12 +55,14 @@ bool PerformInjectiveMultimapDestructive(InjectiveMultimap* m,
     }
 
     if (!is_identity) {
-      if (!delegate->Move(i->source, i->dest))
+      if (!delegate->Move(i->source, i->dest)) {
         return false;
+      }
     }
 
-    if (!is_identity && i->close)
+    if (!is_identity && i->close) {
       delegate->Close(i->source);
+    }
   }
 
   return true;

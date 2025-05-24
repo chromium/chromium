@@ -33,23 +33,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_paths.h"
 #include "chrome/browser/extensions/updater/local_extension_cache.h"
 #endif
 
 namespace extensions::browsertest_util {
 
+#if BUILDFLAG(IS_CHROMEOS)
 void CreateAndInitializeLocalCache() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath extension_cache_dir;
   CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                &extension_cache_dir));
   base::FilePath cache_init_file = extension_cache_dir.Append(
       extensions::LocalExtensionCache::kCacheReadyFlagFileName);
   EXPECT_TRUE(base::WriteFile(cache_init_file, ""));
-#endif
 }
+#endif
 
 Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
   ui_test_utils::BrowserChangeObserver browser_change_observer(
@@ -89,37 +89,6 @@ size_t GetWindowControllerCountInProfile(Profile* profile) {
     }
   }
   return count;
-}
-
-bool DidChangeTitle(content::WebContents& web_contents,
-                    const std::u16string& original_title,
-                    const std::u16string& changed_title) {
-  const std::u16string& title = web_contents.GetTitle();
-  if (title == changed_title) {
-    return true;
-  }
-  if (title == original_title) {
-    return false;
-  }
-  ADD_FAILURE() << "Unexpected page title found:  " << title;
-  return false;
-}
-
-BlockedActionWaiter::BlockedActionWaiter(ExtensionActionRunner* runner)
-    : runner_(runner) {
-  runner_->set_observer_for_testing(this);  // IN-TEST
-}
-
-BlockedActionWaiter::~BlockedActionWaiter() {
-  runner_->set_observer_for_testing(nullptr);  // IN-TEST
-}
-
-void BlockedActionWaiter::Wait() {
-  run_loop_.Run();
-}
-
-void BlockedActionWaiter::OnBlockedActionAdded() {
-  run_loop_.Quit();
 }
 
 }  // namespace extensions::browsertest_util

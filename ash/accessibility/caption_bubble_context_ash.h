@@ -32,6 +32,7 @@ class ASH_EXPORT CaptionBubbleContextAsh
   const std::string GetSessionId() const override;
   void Activate() override {}
   bool IsActivatable() const override;
+  bool ShouldAvoidOverlap() const override;
   std::unique_ptr<::captions::CaptionBubbleSessionObserver>
   GetCaptionBubbleSessionObserver() override;
   ::captions::OpenCaptionSettingsCallback GetOpenCaptionSettingsCallback()

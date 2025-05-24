@@ -49,7 +49,7 @@ static void opus_projection_copy_channel_out_float(
   void *dst,
   int dst_stride,
   int dst_channel,
-  const opus_val16 *src,
+  const opus_res *src,
   int src_stride,
   int frame_size,
   void *user_data)
@@ -72,7 +72,7 @@ static void opus_projection_copy_channel_out_short(
   void *dst,
   int dst_stride,
   int dst_channel,
-  const opus_val16 *src,
+  const opus_res *src,
   int src_stride,
   int frame_size,
   void *user_data)
@@ -86,6 +86,27 @@ static void opus_projection_copy_channel_out_short(
 
   if (src != NULL)
     mapping_matrix_multiply_channel_out_short(matrix, src, dst_channel,
+      src_stride, short_dst, dst_stride, frame_size);
+}
+
+static void opus_projection_copy_channel_out_int24(
+  void *dst,
+  int dst_stride,
+  int dst_channel,
+  const opus_res *src,
+  int src_stride,
+  int frame_size,
+  void *user_data)
+{
+  opus_int32 *short_dst;
+  const MappingMatrix *matrix;
+  short_dst = (opus_int32 *)dst;
+  matrix = (const MappingMatrix *)user_data;
+  if (dst_channel == 0)
+    OPUS_CLEAR(short_dst, frame_size * dst_stride);
+
+  if (src != NULL)
+    mapping_matrix_multiply_channel_out_int24(matrix, src, dst_channel,
       src_stride, short_dst, dst_stride, frame_size);
 }
 
@@ -210,24 +231,28 @@ OpusProjectionDecoder *opus_projection_decoder_create(
 }
 
 #ifdef FIXED_POINT
-int opus_projection_decode(OpusProjectionDecoder *st, const unsigned char *data,
-                           opus_int32 len, opus_int16 *pcm, int frame_size,
-                           int decode_fec)
-{
-  return opus_multistream_decode_native(get_multistream_decoder(st), data, len,
-    pcm, opus_projection_copy_channel_out_short, frame_size, decode_fec, 0,
-    get_dec_demixing_matrix(st));
-}
+#define OPTIONAL_CLIP 0
 #else
+#define OPTIONAL_CLIP 1
+#endif
+
 int opus_projection_decode(OpusProjectionDecoder *st, const unsigned char *data,
                            opus_int32 len, opus_int16 *pcm, int frame_size,
                            int decode_fec)
 {
   return opus_multistream_decode_native(get_multistream_decoder(st), data, len,
-    pcm, opus_projection_copy_channel_out_short, frame_size, decode_fec, 1,
+    pcm, opus_projection_copy_channel_out_short, frame_size, decode_fec, OPTIONAL_CLIP,
     get_dec_demixing_matrix(st));
 }
-#endif
+
+int opus_projection_decode24(OpusProjectionDecoder *st, const unsigned char *data,
+                           opus_int32 len, opus_int32 *pcm, int frame_size,
+                           int decode_fec)
+{
+  return opus_multistream_decode_native(get_multistream_decoder(st), data, len,
+    pcm, opus_projection_copy_channel_out_int24, frame_size, decode_fec, 0,
+    get_dec_demixing_matrix(st));
+}
 
 #ifndef DISABLE_FLOAT_API
 int opus_projection_decode_float(OpusProjectionDecoder *st, const unsigned char *data,

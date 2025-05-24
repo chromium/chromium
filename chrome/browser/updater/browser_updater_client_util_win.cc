@@ -7,7 +7,7 @@
 #include "chrome/installer/util/install_util.h"
 #include "chrome/updater/updater_scope.h"
 
-updater::UpdaterScope GetUpdaterScope() {
+updater::UpdaterScope GetBrowserUpdaterScope() {
   return InstallUtil::IsPerUserInstall() ? updater::UpdaterScope::kUser
                                          : updater::UpdaterScope::kSystem;
 }

@@ -118,7 +118,7 @@ class TrayItemViewTest : public AshTestBase {
     // animation throughput data to be passed from cc to ui.
     ui::Compositor* const compositor =
         tray_item()->GetWidget()->GetCompositor();
-    while (compositor->has_throughput_trackers_for_testing()) {
+    while (compositor->has_compositor_metrics_trackers_for_testing()) {
       compositor->ScheduleFullRedraw();
       std::ignore = ui::WaitForNextFrameToBePresented(compositor,
                                                       base::Milliseconds(500));
@@ -239,8 +239,8 @@ TEST_F(TrayItemViewTest, LargeImageIcon) {
 
   // Set the image to a large image.
   gfx::Size kLargeImageSize(kLargeSize, kLargeSize);
-  tray_item()->image_view()->SetImage(
-      CreateSolidColorTestImage(kLargeImageSize, SK_ColorRED));
+  tray_item()->image_view()->SetImage(ui::ImageModel::FromImageSkia(
+      CreateSolidColorTestImage(kLargeImageSize, SK_ColorRED)));
 
   // The preferred size is the size of the larger image (which is not the
   // default tray icon size, see static_assert above).

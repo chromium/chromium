@@ -38,7 +38,6 @@ bool ShouldIgnoreProvider(ProviderType type) {
     case ProviderType::kImageSearch:
     case ProviderType::kHelpApp:
       return true;
-    case ProviderType::kInternalApp:
     case ProviderType::kArcAppShortcut:
     case ProviderType::kDriveSearch:
     case ProviderType::kGames:

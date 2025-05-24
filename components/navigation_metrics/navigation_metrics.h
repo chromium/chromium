@@ -5,10 +5,6 @@
 #ifndef COMPONENTS_NAVIGATION_METRICS_NAVIGATION_METRICS_H_
 #define COMPONENTS_NAVIGATION_METRICS_NAVIGATION_METRICS_H_
 
-#include <string>
-
-#include "components/url_formatter/spoof_checks/idna_metrics.h"
-
 class GURL;
 
 namespace profile_metrics {
@@ -26,6 +22,7 @@ extern const char kMainFrameSchemeDifferentPageOTR[];
 extern const char kMainFrameHasRTLDomain[];
 extern const char kMainFrameHasRTLDomainDifferentPage[];
 extern const char kMainFrameProfileType[];
+extern const char kMainFrameProfileTypeDifferentPage[];
 
 // A Scheme is an C++ enum type loggable in UMA for a histogram of UMA enum type
 // NavigationScheme.
@@ -65,11 +62,6 @@ void RecordPrimaryMainFrameNavigation(
     profile_metrics::BrowserProfileType profile_type);
 
 void RecordOmniboxURLNavigation(const GURL& url);
-
-// Records metrics about deviation characters in `hostname`. `hostname` can
-// be punycode or unicode and can have subdomains.
-IDNA2008DeviationCharacter RecordIDNA2008Metrics(
-    const std::u16string& hostname);
 
 }  // namespace navigation_metrics
 

@@ -4,15 +4,15 @@
 
 #include "services/network/ignore_errors_cert_verifier.h"
 
+#include <algorithm>
 #include <iterator>
 #include <string_view>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -61,21 +61,18 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
                                      const net::NetLogWithSource& net_log) {
   SPKIHashSet spki_fingerprints;
   std::string_view cert_spki;
-  SHA256HashValue hash;
   if (net::asn1::ExtractSPKIFromDERCert(
           net::x509_util::CryptoBufferAsStringPiece(
               params.certificate()->cert_buffer()),
           &cert_spki)) {
-    crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-    spki_fingerprints.insert(hash);
+    spki_fingerprints.insert(crypto::hash::Sha256(cert_spki));
   }
   for (const auto& intermediate :
        params.certificate()->intermediate_buffers()) {
     if (net::asn1::ExtractSPKIFromDERCert(
             net::x509_util::CryptoBufferAsStringPiece(intermediate.get()),
             &cert_spki)) {
-      crypto::SHA256HashString(cert_spki, &hash, sizeof(SHA256HashValue));
-      spki_fingerprints.insert(hash);
+      spki_fingerprints.insert(crypto::hash::Sha256(cert_spki));
     }
   }
 
@@ -100,7 +97,7 @@ int IgnoreErrorsCertVerifier::Verify(const RequestParams& params,
   if (ignore_errors) {
     verify_result->Reset();
     verify_result->verified_cert = params.certificate();
-    base::ranges::transform(
+    std::ranges::transform(
         spki_fingerprints, std::back_inserter(verify_result->public_key_hashes),
         [](const SHA256HashValue& v) { return HashValue(v); });
     if (!params.ocsp_response().empty()) {

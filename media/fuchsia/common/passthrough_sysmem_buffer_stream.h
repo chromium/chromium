@@ -5,6 +5,7 @@
 #ifndef MEDIA_FUCHSIA_COMMON_PASSTHROUGH_SYSMEM_BUFFER_STREAM_H_
 #define MEDIA_FUCHSIA_COMMON_PASSTHROUGH_SYSMEM_BUFFER_STREAM_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/fuchsia/common/sysmem_buffer_stream.h"
 #include "media/fuchsia/common/sysmem_client.h"
 #include "media/fuchsia/common/vmo_buffer_writer_queue.h"
@@ -39,9 +40,9 @@ class MEDIA_EXPORT PassthroughSysmemBufferStream : public SysmemBufferStream {
                            StreamProcessorHelper::IoPacket packet);
   void ProcessEndOfStream();
 
-  Sink* sink_ = nullptr;
+  raw_ptr<Sink> sink_ = nullptr;
 
-  SysmemAllocatorClient* const sysmem_allocator_;
+  const raw_ptr<SysmemAllocatorClient> sysmem_allocator_;
   std::unique_ptr<SysmemCollectionClient> output_buffer_collection_;
 
   VmoBufferWriterQueue queue_;

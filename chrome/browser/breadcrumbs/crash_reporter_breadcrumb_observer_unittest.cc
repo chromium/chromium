@@ -57,7 +57,7 @@ class CrashReporterBreadcrumbObserverTest : public PlatformTest {
   void TearDown() override {
     // TODO(crbug.com/40205024) This should call
     // crash_reporter::ResetCrashKeysForTesting() once
-    // ChromeUserManagerImpl::UpdateNumberOfUsers allows the static
+    // UserManagerImpl::UpdateNumberOfUsers allows the static
     // local crash_key to be cleared between tests.
     PlatformTest::TearDown();
   }

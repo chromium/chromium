@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
@@ -20,16 +21,24 @@ static struct EncodingParameters {
   bool disable_accelerator;
   std::string mime_type;
 } const kEncodingParameters[] = {
-    {true, "video/webm;codecs=VP8"},
-    {true, "video/webm;codecs=VP9"},
+    {true, "video/webm;codecs=vp8"},
+    {true, "video/webm;codecs=vp9"},
     {false, ""},  // Instructs the platform to choose any accelerated codec.
-    {false, "video/webm;codecs=VP8"},
-    {false, "video/webm;codecs=VP9"},
+    {false, "video/webm;codecs=vp8"},
+    {false, "video/webm;codecs=vp9"},
 };
 
 static const EncodingParameters kProprietaryEncodingParameters[] = {
-    {true, "video/x-matroska;codecs=AVC1"},
-    {false, "video/x-matroska;codecs=AVC1"},
+    {true, "video/x-matroska;codecs=avc1"},
+    {false, "video/x-matroska;codecs=avc1"},
+    {true, "video/mp4;codecs=avc1"},
+    {false, "video/mp4;codecs=avc1"},
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    {true, "video/x-matroska;codecs=hvc1.1.6.L186.B0"},
+    {false, "video/x-matroska;codecs=hvc1.1.6.L186.B0"},
+    {true, "video/mp4;codecs=hvc1.1.6.L186.B0"},
+    {false, "video/mp4;codecs=hvc1.1.6.L186.B0"},
+#endif
 };
 
 }  // namespace
@@ -51,7 +60,18 @@ class WebRtcMediaRecorderTest
     if (GetParam().disable_accelerator) {
       command_line->AppendSwitch(switches::kDisableAcceleratedVideoEncode);
     }
+
+    scoped_feature_list_.InitWithFeatures(
+        {
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+            media::kMediaRecorderHEVCSupport
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+        },
+        {});
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // TODO(crbug/361123384): Re-enable.
@@ -199,8 +219,8 @@ IN_PROC_BROWSER_TEST_P(WebRtcMediaRecorderTest,
 #elif BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // Fails on Win7 debug, https://crbug.com/703844.
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
-// Fails on Mac/Arm, https://crbug.com/1222675
+#elif BUILDFLAG(IS_MAC)
+// Fails on Mac, https://crbug.com/1222675
 #define MAYBE_PeerConnection DISABLED_PeerConnection
 #elif BUILDFLAG(IS_FUCHSIA) && defined(ARCH_CPU_X86_64)
 // Flaky on Fuchsia-x64, https://crbug.com/1408820

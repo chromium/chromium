@@ -4,21 +4,25 @@
 
 #include "chrome/browser/devtools/devtools_window_testing.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_utils.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -40,15 +44,17 @@ DevToolsWindowTesting::DevToolsWindowTesting(DevToolsWindow* window)
 DevToolsWindowTesting::~DevToolsWindowTesting() {
   DevToolsWindowTestings* instances =
       g_devtools_window_testing_instances.Pointer();
-  auto it = base::ranges::find(*instances, this);
+  auto it = std::ranges::find(*instances, this);
   CHECK(it != instances->end());
   instances->erase(it);
   if (!close_callback_.is_null())
     std::move(close_callback_).Run();
 
+#if !BUILDFLAG(IS_ANDROID)
   // Needed for Chrome_DevToolsADBThread to shut down gracefully in tests.
   ChromeDevToolsManagerDelegate::GetInstance()
       ->ResetAndroidDeviceManagerForTesting();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 // static
@@ -138,10 +144,7 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
       "{\"isUnderTest\": true, \"currentDockState\":\"\\\"bottom\\\"\"}" :
       "{\"isUnderTest\": true, \"currentDockState\":\"\\\"undocked\\\"\"}";
   scoped_refptr<content::DevToolsAgentHost> agent(
-      base::FeatureList::IsEnabled(::features::kDevToolsTabTarget)
-          ? content::DevToolsAgentHost::GetOrCreateForTab(
-                inspected_web_contents)
-          : content::DevToolsAgentHost::GetOrCreateFor(inspected_web_contents));
+      content::DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents));
   DevToolsWindow::ToggleDevToolsWindow(inspected_web_contents, profile, true,
                                        DevToolsToggleAction::Show(), settings);
   DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());
@@ -159,6 +162,7 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
       is_docked);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
     Browser* browser,
@@ -166,6 +170,7 @@ DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
   return OpenDevToolsWindowSync(
       browser->tab_strip_model()->GetActiveWebContents(), is_docked);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // static
 DevToolsWindow* DevToolsWindowTesting::OpenDevToolsWindowSync(
@@ -193,7 +198,11 @@ void DevToolsWindowTesting::CloseDevToolsWindow(
   if (window->is_docked_) {
     window->CloseWindow();
   } else {
+#if BUILDFLAG(IS_ANDROID)
+    window->main_web_contents_->Close();
+#else
     window->browser_->window()->Close();
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 }
 

@@ -26,10 +26,10 @@ suite('ListItemTest', () => {
     await microtasksFinished();
   });
 
-  test('check layout', async () => {
+  test('check layout', () => {
     assertTrue(isVisible(item));
     assertFalse(item.$.expandedContent.opened);
-    const enterpriseIcon = item.shadowRoot!.querySelector('cr-icon');
+    const enterpriseIcon = item.shadowRoot.querySelector('cr-icon');
     assertFalse(isVisible(enterpriseIcon));
   });
 
@@ -39,7 +39,7 @@ suite('ListItemTest', () => {
     item.managedByEnterprise = sampleManagedByEnterpriseSet.managedByEnterprise;
     await microtasksFinished();
 
-    const enterpriseIcon = item.shadowRoot!.querySelector('cr-icon');
+    const enterpriseIcon = item.shadowRoot.querySelector('cr-icon');
     assertTrue(isVisible(item));
     assertFalse(item.$.expandedContent.opened);
     assertTrue(isVisible(enterpriseIcon));
@@ -60,7 +60,7 @@ suite('ListItemTest', () => {
     item.query = 'primary';
     await microtasksFinished();
 
-    const boldedText = item.shadowRoot!.querySelector('b');
+    const boldedText = item.shadowRoot.querySelector('b');
     assertEquals('primary', boldedText!.textContent!.trim());
   });
 
@@ -68,7 +68,7 @@ suite('ListItemTest', () => {
     item.query = 'associated1';
     await microtasksFinished();
 
-    const boldedText = item.shadowRoot!.querySelector('b');
+    const boldedText = item.shadowRoot.querySelector('b');
     assertEquals('associated1', boldedText!.textContent!.trim());
   });
 
@@ -79,7 +79,7 @@ suite('ListItemTest', () => {
     item.managedByEnterprise = false;
     item.query = 'sEt3';
     await microtasksFinished();
-    const primarySite = item.shadowRoot!.querySelector<HTMLElement>('b');
+    const primarySite = item.shadowRoot.querySelector<HTMLElement>('b');
     assertTrue(!!primarySite);
     assertTrue(
         primarySite.innerText.toLowerCase().includes(item.query.toLowerCase()));

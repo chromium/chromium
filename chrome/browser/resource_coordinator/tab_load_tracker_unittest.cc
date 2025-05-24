@@ -67,12 +67,12 @@ class TestTabLoadTracker : public TabLoadTracker {
 // A mock observer class.
 class LenientMockObserver : public TabLoadTracker::Observer {
  public:
-  LenientMockObserver() {}
+  LenientMockObserver() = default;
 
   LenientMockObserver(const LenientMockObserver&) = delete;
   LenientMockObserver& operator=(const LenientMockObserver&) = delete;
 
-  ~LenientMockObserver() override {}
+  ~LenientMockObserver() override = default;
 
   // TabLoadTracker::Observer implementation:
   MOCK_METHOD2(OnStartTracking, void(content::WebContents*, LoadingState));
@@ -90,7 +90,7 @@ class TestWebContentsObserver : public content::WebContentsObserver {
                           TestTabLoadTracker* tracker)
       : content::WebContentsObserver(web_contents), tracker_(tracker) {}
 
-  ~TestWebContentsObserver() override {}
+  ~TestWebContentsObserver() override = default;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override {

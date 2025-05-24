@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <select>
+    <option id='opt1'>Option1</option>
+    <option id='opt2'>Option2</option>
+    <option id='opt3'>Option3</option>
+  </select>
+  <select multiple tabindex="0">
+    <option id='opt1' selected>Option1</option>
+    <option id='opt2' selected>Option2</option>
+    <option id='opt3'>Option3</option>
+  </select>
+  <select multiple>
+    <option id='opt1' selected>Option1</option>
+    <option id='opt2' selected>Option2</option>
+    <option id='opt3'>Option3</option>
+  </select>
+  <ul
+    role="listbox"
+    aria-multiselectable="true">
+    <li id="red" role="option" aria-selected="true">Red</li>
+    <li id="orange" role="option" aria-selected="true">Orange</li>
+    <li id="yellow" role="option" aria-selected="false">Yellow</li>
+  </ul>
+
+  <span id="ms_av_l" class="listbox-label">Available upgrades:</span>
+  <ul
+    id="ms_imp_list"
+    tabindex="0"
+    role="listbox"
+    aria-labelledby="ms_av_l"
+    aria-multiselectable="true">
+    <li id="ms_opt1" role="option" aria-selected="false">
+      <span class="checkmark" aria-hidden="true"></span>
+      " Leather seats "
+    </li>
+    <li id="ms_opt2" role="option" aria-selected="false">
+      <span class="checkmark" aria-hidden="true"></span>
+      " Front seat warmers "
+    </li>
+    <li id="ms_opt3" role="option" aria-selected="true" class="focused">
+      <span class="checkmark" aria-hidden="true">::before</span>
+      " Rear bucket seats "
+    </li>
+  </ul>
+</body>
+</html>

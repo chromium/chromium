@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -14,7 +15,6 @@
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/version_info/version_info.h"
 
 namespace chrome {
@@ -121,18 +121,17 @@ std::string GetChannelSuffixForExtraFlagsEnvVarName() {
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 std::string GetDesktopName(base::Environment* env) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Google Chrome packaged as a snap is a special case: the application name
   // is always "google-chrome", regardless of the channel (channels are built
   // in to snapd, switching between them or doing parallel installs does not
   // require distinct application names).
-  std::string snap_name;
-  if (env->GetVar("SNAP_NAME", &snap_name) && snap_name == "google-chrome")
+  std::string snap_name = env->GetVar("SNAP_NAME").value_or(std::string());
+  if (snap_name == "google-chrome") {
     return "google-chrome.desktop";
+  }
   version_info::Channel product_channel(GetChannel());
   switch (product_channel) {
     case version_info::Channel::CANARY:
@@ -149,13 +148,14 @@ std::string GetDesktopName(base::Environment* env) {
   // Allow $CHROME_DESKTOP to override the built-in value, so that development
   // versions can set themselves as the default without interfering with
   // non-official, packaged versions using the built-in value.
-  std::string name;
-  if (env->GetVar("CHROME_DESKTOP", &name) && !name.empty())
-    return name;
+  std::optional<std::string> name = env->GetVar("CHROME_DESKTOP");
+  if (name.has_value() && !name.value().empty()) {
+    return name.value();
+  }
   return "chromium-browser.desktop";
 #endif
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 version_info::Channel GetChannel() {
   return GetChannelImpl().channel;

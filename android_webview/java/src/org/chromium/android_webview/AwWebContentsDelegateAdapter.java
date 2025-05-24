@@ -23,6 +23,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.InvalidateTypes;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -174,8 +175,8 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
             ResourceRequestBody postData,
             int disposition,
             boolean isRendererInitiated) {
-        // This is only called in chrome layers.
-        assert false;
+        // Not supported.  There are very few cases where this is called other than in //chrome
+        // and we don't expect them to matter for WebView.
     }
 
     @Override
@@ -226,15 +227,22 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
     public void runFileChooser(
             final int processId,
             final int renderId,
-            final int modeFlags,
+            final int blinkFileChooserParamsMode,
+            boolean openWritable,
             String acceptTypes,
             String title,
             String defaultFilename,
             boolean capture) {
-        int correctedModeFlags = FileModeConversionHelper.convertFileChooserMode(modeFlags);
+        int webChromeClientMode =
+                FileModeConversionHelper.convertFileChooserMode(blinkFileChooserParamsMode);
         AwContentsClient.FileChooserParamsImpl params =
                 new AwContentsClient.FileChooserParamsImpl(
-                        correctedModeFlags, acceptTypes, title, defaultFilename, capture);
+                        webChromeClientMode,
+                        openWritable,
+                        acceptTypes,
+                        title,
+                        defaultFilename,
+                        capture);
 
         mContentsClient.showFileChooser(
                 new Callback<String[]>() {
@@ -249,12 +257,16 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
                         if (results == null) {
                             AwWebContentsDelegateJni.get()
                                     .filesSelectedInChooser(
-                                            processId, renderId, correctedModeFlags, null, null);
+                                            processId, renderId, webChromeClientMode, null, null);
                             return;
                         }
                         GetDisplayNameTask task =
                                 new GetDisplayNameTask(
-                                        mContext, processId, renderId, correctedModeFlags, results);
+                                        mContext,
+                                        processId,
+                                        renderId,
+                                        webChromeClientMode,
+                                        results);
                         task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                     }
                 },
@@ -401,5 +413,29 @@ class AwWebContentsDelegateAdapter extends AwWebContentsDelegate {
             return ContentUriUtils.getDisplayName(
                     uri, mContext, MediaStore.MediaColumns.DISPLAY_NAME);
         }
+    }
+
+    /** Handle zoom in/zoom out for ctrl + mouse wheel. */
+    @Override
+    public void contentsZoomChange(boolean zoomIn) {
+        boolean supportsZoom = mAwContents.getSettings().supportZoom();
+        if (supportsZoom) {
+            if (zoomIn) {
+                mAwContents.zoomIn();
+            } else {
+                mAwContents.zoomOut();
+            }
+        }
+    }
+
+    /**
+     * Convenience method for native to call without Context object. Determines if popups are
+     * supported for the context menu.
+     *
+     * @return true if popups are supported, false otherwise.
+     */
+    @Override
+    protected boolean isPopupSupported() {
+        return ContextMenuUtils.isPopupSupported(mContext);
     }
 }

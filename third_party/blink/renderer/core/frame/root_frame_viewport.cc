@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -20,7 +21,6 @@
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
-#include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -313,7 +313,8 @@ bool RootFrameViewport::SetScrollOffset(
     const ScrollOffset& offset,
     mojom::blink::ScrollType scroll_type,
     mojom::blink::ScrollBehavior scroll_behavior,
-    ScrollCallback on_finish) {
+    ScrollCallback on_finish,
+    bool targeted_scroll) {
   UpdateScrollAnimator();
 
   if (scroll_behavior == mojom::blink::ScrollBehavior::kAuto)
@@ -390,16 +391,8 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
     if (params->is_for_scroll_sequence) {
       mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
           params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-      if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
-        ScrollableArea::SetScrollOffset(new_scroll_offset, params->type,
-                                        behavior);
-      } else {
-        CHECK(GetSmoothScrollSequencer());
-        DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
-               params->type == mojom::blink::ScrollType::kUser);
-        GetSmoothScrollSequencer()->QueueAnimation(this, new_scroll_offset,
-                                                   behavior);
-      }
+      ScrollableArea::SetScrollOffset(new_scroll_offset, params->type,
+                                      behavior);
     } else {
       ScrollableArea::SetScrollOffset(new_scroll_offset, params->type);
     }
@@ -611,8 +604,6 @@ ScrollResult RootFrameViewport::UserScroll(
   }
 
   CancelProgrammaticScrollAnimation();
-  if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer())
-    sequencer->AbortAnimations();
 
   // TODO(bokan): Why do we call userScroll on the animators directly and
   // not through the ScrollableAreas?
@@ -673,10 +664,6 @@ ChromeClient* RootFrameViewport::GetChromeClient() const {
   return LayoutViewport().GetChromeClient();
 }
 
-SmoothScrollSequencer* RootFrameViewport::GetSmoothScrollSequencer() const {
-  return LayoutViewport().GetSmoothScrollSequencer();
-}
-
 void RootFrameViewport::ServiceScrollAnimations(double monotonic_time) {
   ScrollableArea::ServiceScrollAnimations(monotonic_time);
   LayoutViewport().ServiceScrollAnimations(monotonic_time);
@@ -730,6 +717,11 @@ bool RootFrameViewport::SnapContainerDataNeedsUpdate() const {
 
 void RootFrameViewport::SetSnapContainerDataNeedsUpdate(bool needs_update) {
   LayoutViewport().SetSnapContainerDataNeedsUpdate(needs_update);
+}
+
+std::optional<cc::SnapPositionData> RootFrameViewport::GetSnapPosition(
+    const cc::SnapSelectionStrategy& strategy) const {
+  return LayoutViewport().GetSnapPosition(strategy);
 }
 
 std::optional<gfx::PointF> RootFrameViewport::GetSnapPositionAndSetTarget(

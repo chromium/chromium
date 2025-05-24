@@ -25,7 +25,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/date_time_edit_element.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
@@ -497,8 +498,9 @@ void DateTimeEditBuilder::VisitLiteral(const String& text) {
     if (dir == WTF::unicode::kSegmentSeparator ||
         dir == WTF::unicode::kWhiteSpaceNeutral ||
         dir == WTF::unicode::kOtherNeutral) {
-      element->AppendChild(Text::Create(
-          EditElement().GetDocument(), String(&kRightToLeftMarkCharacter, 1u)));
+      element->AppendChild(
+          Text::Create(EditElement().GetDocument(),
+                       String(base::span_from_ref(kRightToLeftMarkCharacter))));
     }
   }
   element->AppendChild(Text::Create(EditElement().GetDocument(), text));
@@ -870,7 +872,7 @@ void DateTimeEditElement::SetEmptyValue(
 }
 
 DateTimeFieldElement* DateTimeEditElement::GetField(DateTimeField type) const {
-  auto it = base::ranges::find(fields_, type, &DateTimeFieldElement::Type);
+  auto it = std::ranges::find(fields_, type, &DateTimeFieldElement::Type);
   if (it == fields_.end())
     return nullptr;
   return it->Get();

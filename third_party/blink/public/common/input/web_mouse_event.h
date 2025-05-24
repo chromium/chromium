@@ -52,7 +52,7 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
                 base::TimeTicks time_stamp_param,
                 PointerId id_param = kMousePointerId)
       : WebInputEvent(type_param, modifiers_param, time_stamp_param),
-        WebPointerProperties(id_param) {}
+        WebPointerProperties(id_param, PointerType::kMouse) {}
 
   WebMouseEvent() : WebMouseEvent(kMousePointerId) {}
 
@@ -82,8 +82,19 @@ class BLINK_COMMON_EXPORT WebMouseEvent : public WebInputEvent,
   // back to 1 and |frame_translate_| X and Y coordinates back to 0.
   WebMouseEvent FlattenTransform() const;
 
+  // Makes the event modifier bit corresponding to the `button` field match the
+  // implied button state. More precisely, at mousedown it sets the modifier bit
+  // and at mouseup it resets the bit.  Low-level events from the system may not
+  // set/reset the bit correctly as per the spec:
+  // https://www.w3.org/TR/uievents/#dom-mouseevent-buttons
+  //
+  // Other modifier bits remain unchanged for these two events, and no change is
+  // made for other events.
+  void UpdateEventModifiersToMatchButton();
+
  protected:
-  WebMouseEvent(PointerId id_param) : WebPointerProperties(id_param) {}
+  WebMouseEvent(PointerId id_param)
+      : WebPointerProperties(id_param, PointerType::kMouse) {}
 
   void FlattenTransformSelf();
 

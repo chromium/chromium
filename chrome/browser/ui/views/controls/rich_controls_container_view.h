@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_CONTROLS_RICH_CONTROLS_CONTAINER_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/cookie_controls_enforcement.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -56,9 +58,14 @@ class RichControlsContainerView : public views::FlexLayoutView {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  views::Label* title() { return title_; }
+  // TODO(crbug.com/40281048): Remove; at least color, and possibly both of
+  // these, should instead be computed automatically from a single context value
+  // on the button.
+  void SetTitleTextStyleAndColor(int style, ui::ColorId color_id);
 
-  const std::u16string& GetTitleForTesting();
+  void SetIconImageSizeAndMargins(gfx::Size size, gfx::Insets margin);
+
+  std::u16string_view GetTitleForTesting() const;
   const ui::ImageModel GetIconForTesting();
   const ui::ImageModel GetEnforcedIconForTesting();
 

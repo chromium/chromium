@@ -11,10 +11,12 @@ import android.content.Intent;
 import androidx.core.app.PendingIntentCompat.Flags;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Provides {@link PendingIntent} and the flags used to build the PendingIntent. */
+@NullMarked
 public class PendingIntentProvider {
-    private PendingIntent mPendingIntent;
+    private final PendingIntent mPendingIntent;
     @Flags private final int mFlags;
     private final int mRequestCode;
 

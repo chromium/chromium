@@ -7,25 +7,29 @@
 
 namespace IOSPromoConstants {
 
-// Size of QR code image view including the Margin.
-const int kQrCodeImageSize = 85;
+// iOS promo QR code URLs.
+inline constexpr char kIOSPromoPasswordBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-passwords&android-campaign=desktop-chr-"
+    "passwords";
+inline constexpr char kIOSPromoAddressBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-address&android-campaign=desktop-chr-address";
+inline constexpr char kIOSPromoPaymentBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-payment&android-campaign=desktop-chr-payment";
 
-// URL used for the QR code within the password bubble promo.
-const char kPasswordBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-passwords&mt=8";
-
-const char kAddressBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-address&mt=8";
+// Size of the QR code image view including the quiet zone margin added by the
+// QR code generator.
+inline constexpr int kQrCodeImageSize = 90;
 
 struct IOSPromoTypeConfigs {
-  int kBubbleTitleID;
-  int kBubbleSubtitleID;
-  int kPromoTitleID;
-  int kPromoDescriptionID;
-  int kDeclineButtonTextID;
-  std::string kPromoQRCodeURL;
+  int bubble_title_id = -1;
+  int bubble_subtitle_id = -1;
+  int promo_title_id = -1;
+  int promo_description_id = -1;
+  int decline_button_text_id = -1;
+  std::string promo_qr_code_url;
 };
 
 }  // namespace IOSPromoConstants

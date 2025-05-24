@@ -59,8 +59,7 @@ static ClientNavigationReason ToReason(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ClientNavigationReason::kMetaTagRefresh;
+  NOTREACHED();
 }
 
 HttpRefreshScheduler::HttpRefreshScheduler(Document* document)

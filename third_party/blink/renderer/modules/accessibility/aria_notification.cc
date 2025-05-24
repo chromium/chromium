@@ -26,10 +26,10 @@ ax::mojom::blink::AriaNotificationInterrupt AsEnum(
 ax::mojom::blink::AriaNotificationPriority AsEnum(
     const V8AriaNotifyPriority& priority) {
   switch (priority.AsEnum()) {
-    case V8AriaNotifyPriority::Enum::kNone:
-      return ax::mojom::blink::AriaNotificationPriority::kNone;
-    case V8AriaNotifyPriority::Enum::kImportant:
-      return ax::mojom::blink::AriaNotificationPriority::kImportant;
+    case V8AriaNotifyPriority::Enum::kNormal:
+      return ax::mojom::blink::AriaNotificationPriority::kNormal;
+    case V8AriaNotifyPriority::Enum::kHigh:
+      return ax::mojom::blink::AriaNotificationPriority::kHigh;
   }
   NOTREACHED();
 }
@@ -39,9 +39,9 @@ ax::mojom::blink::AriaNotificationPriority AsEnum(
 AriaNotification::AriaNotification(const String& announcement,
                                    const AriaNotificationOptions* options)
     : announcement_(announcement),
-      notification_id_(options->notificationId()),
+      priority_(AsEnum(options->priority())),
       interrupt_(AsEnum(options->interrupt())),
-      priority_(AsEnum(options->priority())) {}
+      type_(options->type()) {}
 
 void AriaNotifications::Add(const String& announcement,
                             const AriaNotificationOptions* options) {

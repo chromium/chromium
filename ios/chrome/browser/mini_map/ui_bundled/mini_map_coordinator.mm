@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_action_handler.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_interstitial_view_controller.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -16,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -79,7 +83,7 @@
 - (void)start {
   [super start];
 
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = self.profile->GetPrefs();
   self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService
                                                 webState:self.webState.get()];
   self.mediator.delegate = self;
@@ -104,7 +108,7 @@
       self.consentViewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents =
-      @[ UISheetPresentationControllerDetent.largeDetent ];
+      @[ [UISheetPresentationControllerDetent largeDetent] ];
   [self.baseViewController presentViewController:self.consentViewController
                                         animated:YES
                                       completion:nil];
@@ -159,19 +163,26 @@
 
 - (void)doShowMapWithIPH:(BOOL)showIPH {
   __weak __typeof(self) weakSelf = self;
-  self.miniMapController =
-      ios::provider::CreateMiniMapController(self.text, ^(NSURL* url) {
-        [weakSelf mapDismissedRequestingURL:url];
-      });
+
+  MiniMapControllerCompletionWithURL completion = ^(NSURL* url) {
+    [weakSelf mapDismissedRequestingURL:url];
+  };
+
+  MiniMapControllerCompletionWithString completionWithQuery =
+      ^(NSString* query) {
+        [weakSelf mapDismissedRequestingQuery:query];
+      };
+  self.miniMapController = ios::provider::CreateMiniMapController(
+      self.text, completion, completionWithQuery);
+
   [self.miniMapController
       configureFooterWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_MINI_MAP_FOOTER_STRING)
-      leadingButtonTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE)
+      leadingButtonTitle:l10n_util::GetNSString(IDS_IOS_MINI_MAP_DISABLE_STRING)
       trailingButtonTitle:l10n_util::GetNSString(
                               IDS_IOS_OPTIONS_REPORT_AN_ISSUE)
       leadingButtonAction:^(UIViewController* viewController) {
-        [weakSelf
-            showContentSettingsFromMiniMapInViewController:viewController];
+        [weakSelf disableOneTapMinimapFromViewController:viewController];
       }
       trailingButtonAction:^(UIViewController* viewController) {
         [weakSelf reportAnIssueFromMiniMapInViewController:viewController];
@@ -227,6 +238,36 @@
       showContentsSettingsFromViewController:viewController];
 }
 
+- (void)disableOneTapMinimapFromViewController:
+    (UIViewController*)viewController {
+  [self.mediator userDisabledSettingFromMiniMap];
+
+  [viewController.presentingViewController dismissViewControllerAnimated:YES
+                                                              completion:nil];
+  id<SnackbarCommands> snackbarCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SnackbarCommands);
+  __weak __typeof(self) weakSelf = self;
+  [snackbarCommandHandler
+      showSnackbarWithMessage:l10n_util::GetNSString(
+                                  IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_STRING)
+      buttonText:l10n_util::GetNSString(
+                     IDS_IOS_MINI_MAP_DISABLE_CONFIRMATION_BUTTON_STRING)
+      messageAction:^{
+        [weakSelf userOpenedSettingsFromConfirmation];
+      }
+      completionAction:^(BOOL) {
+        [weakSelf workflowEnded];
+      }];
+}
+
+- (void)userOpenedSettingsFromConfirmation {
+  [self.mediator userOpenedSettingsFromDisableConfirmation];
+  id<SettingsCommands> settingsCommandHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), SettingsCommands);
+  [settingsCommandHandler
+      showContentsSettingsFromViewController:self.baseViewController];
+}
+
 - (void)reportAnIssueFromMiniMapInViewController:
     (UIViewController*)viewController {
   [self.mediator userReportedAnIssueFromMiniMap];
@@ -241,10 +282,30 @@
   _showingMap = NO;
   if (url) {
     [self.mediator userOpenedURLFromMiniMap];
-    OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:net::GURLWithNSURL(url)
-                     inIncognito:self.browser->GetBrowserState()
-                                     ->IsOffTheRecord()];
+    OpenNewTabCommand* command =
+        [OpenNewTabCommand commandWithURLFromChrome:net::GURLWithNSURL(url)
+                                        inIncognito:self.isOffTheRecord];
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationHandler openURLInNewTab:command];
+  } else {
+    [self.mediator userClosedMiniMap];
+  }
+  [self workflowEnded];
+}
+
+- (void)mapDismissedRequestingQuery:(NSString*)query {
+  _showingMap = NO;
+  if (query) {
+    [self.mediator userOpenedQueryFromMiniMap];
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForProfile(self.profile);
+    GURL url = templateURLService->GenerateSearchURLForDefaultSearchProvider(
+        base::SysNSStringToUTF16(query));
+
+    OpenNewTabCommand* command =
+        [OpenNewTabCommand commandWithURLFromChrome:url
+                                        inIncognito:self.isOffTheRecord];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];

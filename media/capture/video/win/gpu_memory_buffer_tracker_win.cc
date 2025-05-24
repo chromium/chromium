@@ -18,6 +18,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
@@ -113,8 +114,7 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
                                      const mojom::PlaneStridesPtr& strides) {
   // Only support NV12
   if (format != PIXEL_FORMAT_NV12) {
-    NOTREACHED_IN_MIGRATION() << "Unsupported VideoPixelFormat " << format;
-    return false;
+    NOTREACHED() << "Unsupported VideoPixelFormat " << format;
   }
 
   if (is_external_dxgi_handle_) {
@@ -122,9 +122,18 @@ bool GpuMemoryBufferTrackerWin::Init(const gfx::Size& dimensions,
                                 std::move(dimensions));
   }
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.dxgi_handle = CreateNV12Texture(d3d_device_.Get(), dimensions);
-  gmb_handle.dxgi_token = gfx::DXGIHandleToken();
+  base::win::ScopedHandle scoped_handle =
+      CreateNV12Texture(d3d_device_.Get(), dimensions);
+  if (!scoped_handle.IsValid()) {
+    return false;
+  }
+
+  gfx::DXGIHandle dxgi_handle = gfx::DXGIHandle(std::move(scoped_handle));
+  if (!dxgi_handle.IsValid()) {
+    return false;
+  }
+
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(dxgi_handle));
   return CreateBufferInternal(std::move(gmb_handle), std::move(dimensions));
 }
 
@@ -137,13 +146,13 @@ bool GpuMemoryBufferTrackerWin::IsSameGpuMemoryBuffer(
   // On Windows, we need use 'dxgi_token' to decide whether the two handles
   // point to same gmb instead of handle directly since handle could be
   // duplicated, please see GpuMemoryBufferImplDXGI::CloneHandle.
-  return buffer_->GetToken() == handle.dxgi_token;
+  return buffer_->GetToken() == handle.dxgi_handle().token();
 }
 
 bool GpuMemoryBufferTrackerWin::CreateBufferInternal(
     gfx::GpuMemoryBufferHandle buffer_handle,
     const gfx::Size& dimensions) {
-  if (!buffer_handle.dxgi_handle.IsValid()) {
+  if (!buffer_handle.dxgi_handle().IsValid()) {
     LOG(ERROR) << "dxgi_handle is not valid.";
     return false;
   }
@@ -153,8 +162,7 @@ bool GpuMemoryBufferTrackerWin::CreateBufferInternal(
       gfx::BufferFormat::YUV_420_BIPLANAR, gfx::BufferUsage::GPU_READ,
       gpu::GpuMemoryBufferImpl::DestructionCallback(), nullptr, nullptr);
   if (!buffer_) {
-    NOTREACHED_IN_MIGRATION() << "Failed to create GPU memory buffer";
-    return false;
+    NOTREACHED() << "Failed to create GPU memory buffer";
   }
 
   region_ = base::UnsafeSharedMemoryRegion::Create(GetMemorySizeInBytes());
@@ -220,9 +228,7 @@ GpuMemoryBufferTrackerWin::GetGpuMemoryBufferHandle() {
   if (IsD3DDeviceChanged()) {
     return gfx::GpuMemoryBufferHandle();
   }
-  auto handle = buffer_->CloneHandle();
-  handle.region = region_.Duplicate();
-  return handle;
+  return buffer_->CloneHandleWithRegion(region_.Duplicate());
 }
 
 VideoCaptureBufferType GpuMemoryBufferTrackerWin::GetBufferType() {

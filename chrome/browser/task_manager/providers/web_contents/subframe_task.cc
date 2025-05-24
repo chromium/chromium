@@ -30,18 +30,17 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions = {
 }  // namespace
 
 SubframeTask::SubframeTask(content::RenderFrameHost* render_frame_host,
-                           RendererTask* main_task)
+                           base::WeakPtr<RendererTask> main_task)
     : RendererTask(std::u16string(), nullptr, render_frame_host),
       site_instance_(render_frame_host->GetSiteInstance()),
-      main_task_(main_task) {
+      main_task_(std::move(main_task)) {
   set_title(GetTitle());
   // Note that we didn't get the RenderProcessHost from the WebContents, but
   // rather from the RenderFrameHost. Out-of-process iframes reside on
   // different processes than that of their main frame.
 }
 
-SubframeTask::~SubframeTask() {
-}
+SubframeTask::~SubframeTask() = default;
 
 void SubframeTask::UpdateTitle() {
   set_title(GetTitle());
@@ -52,7 +51,7 @@ void SubframeTask::UpdateFavicon() {
   // frame, but this Task represents other frames, so we don't care.
 }
 
-Task* SubframeTask::GetParentTask() const {
+base::WeakPtr<Task> SubframeTask::GetParentTask() const {
   return main_task_;
 }
 

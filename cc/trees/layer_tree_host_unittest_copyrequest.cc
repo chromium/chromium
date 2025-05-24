@@ -825,8 +825,7 @@ class LayerTreeHostTestAsyncTwoReadbacksWithoutDraw
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     ++callback_count_;
@@ -855,7 +854,8 @@ TEST_P(LayerTreeHostTestAsyncTwoReadbacksWithoutDraw, Test) {
 }
 
 class LayerTreeHostCopyRequestTestDeleteSharedImage
-    : public LayerTreeHostCopyRequestTest {
+    : public LayerTreeHostCopyRequestTest,
+      public gpu::TestSharedImageInterfaceClient {
  protected:
   std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
   CreateDisplayControllerOnThread() override {
@@ -866,6 +866,7 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
   std::unique_ptr<viz::SkiaOutputSurface> CreateSkiaOutputSurfaceOnThread(
       viz::DisplayCompositorMemoryAndTaskController*) override {
     display_context_provider_ = viz::TestContextProvider::Create();
+    display_context_provider_->SharedImageInterface()->SetClient(this);
     display_context_provider_->BindToCurrentSequence();
     return viz::FakeSkiaOutputSurface::Create3d(display_context_provider_);
   }
@@ -913,27 +914,8 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
 
   void DestroyCopyResultAndCheckNumSharedImages() {
     EXPECT_TRUE(result_);
+    // We expect DidDestroySharedImage to be called after releasing the result.
     result_.reset();
-
-    ImplThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&LayerTreeHostCopyRequestTestDeleteSharedImage::
-                           CheckNumSharedImagesAfterReadbackDestroyed,
-                       base::Unretained(this)));
-  }
-
-  void CheckNumSharedImagesAfterReadbackDestroyed() {
-    // After the copy we had |num_shared_images_after_readback_| many shared
-    // images, but releasing the copy output request should cause the shared
-    // image in the request to be destroyed by the compositor, so we should have
-    // 1 less by now.
-    EXPECT_EQ(num_shared_images_after_readback_ - 1,
-              display_context_provider_->SharedImageInterface()
-                  ->shared_image_count());
-
-    // Drop the reference to the context provider on the compositor thread.
-    display_context_provider_.reset();
-    EndTest();
   }
 
   void DisplayDidDrawAndSwapOnThread() override {
@@ -973,6 +955,20 @@ class LayerTreeHostCopyRequestTestDeleteSharedImage
                            base::Unretained(this)));
         break;
     }
+  }
+
+  void DidDestroySharedImage() override {
+    // After the copy we had |num_shared_images_after_readback_| many shared
+    // images, but releasing the copy output request should cause the shared
+    // image in the request to be destroyed by the compositor, so we should have
+    // 1 less by now.
+    EXPECT_EQ(num_shared_images_after_readback_ - 1,
+              display_context_provider_->SharedImageInterface()
+                  ->shared_image_count());
+
+    // Drop the reference to the context provider on the compositor thread.
+    display_context_provider_.reset();
+    EndTest();
   }
 
   scoped_refptr<viz::TestContextProvider> display_context_provider_;
@@ -1392,7 +1388,7 @@ class LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest
         else if (it.current_layer() == child)
           saw_child = true;
         else
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 

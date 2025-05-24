@@ -276,8 +276,8 @@ export class CrTreeItemElement extends CrTreeBaseElement {
   setExtraAriaLabel(s: string) {
     this.extraAriaLabel_ = s;
     if (this.shadowRoot && this.shadowRoot.querySelector('#extra-aria-label')) {
-      this.shadowRoot!.querySelector<HTMLElement>(
-                          '#extra-aria-label')!.textContent = s;
+      this.shadowRoot.querySelector<HTMLElement>(
+                         '#extra-aria-label')!.textContent = s;
     }
   }
 }

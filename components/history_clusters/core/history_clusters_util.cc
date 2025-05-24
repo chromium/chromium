@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
@@ -194,7 +193,7 @@ std::u16string ComputeURLForDisplay(const GURL& url, bool trim_after_host) {
 }
 
 void StableSortVisits(std::vector<history::ClusterVisit>& visits) {
-  base::ranges::stable_sort(visits, [](auto& v1, auto& v2) {
+  std::ranges::stable_sort(visits, [](auto& v1, auto& v2) {
     if (v1.score != v2.score) {
       // Use v1 > v2 to get higher scored visits BEFORE lower scored visits.
       return v1.score > v2.score;
@@ -248,7 +247,7 @@ void ApplySearchQuery(const std::string& query,
   }
 
   if (GetConfig().sort_clusters_within_batch_for_query) {
-    base::ranges::stable_sort(clusters, [](auto& c1, auto& c2) {
+    std::ranges::stable_sort(clusters, [](auto& c1, auto& c2) {
       // Use c1 > c2 to get higher scored clusters BEFORE lower scored clusters.
       return c1.search_match_score > c2.search_match_score;
     });
@@ -349,7 +348,7 @@ void CullVisitsThatShouldBeHidden(std::vector<history::Cluster>& clusters,
 void CoalesceRelatedSearches(std::vector<history::Cluster>& clusters) {
   constexpr size_t kMaxRelatedSearches = 5;
 
-  base::ranges::for_each(clusters, [](auto& cluster) {
+  std::ranges::for_each(clusters, [](auto& cluster) {
     for (const auto& visit : cluster.visits) {
       // Coalesce the unique related searches of this visit into the cluster
       // until the cap is reached.
@@ -378,7 +377,7 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
 
   // After that, sort clusters reverse-chronologically based on their highest
   // scored visit.
-  base::ranges::stable_sort(*clusters, [&](auto& c1, auto& c2) {
+  std::ranges::stable_sort(*clusters, [&](auto& c1, auto& c2) {
     if (c1.visits.empty()) {
       return false;
     }
@@ -421,7 +420,7 @@ std::string GetHistogramNameSliceForRequestSource(
     // If you add something here, add to the ClusteringRequestSource variant at
     // the top of history/histograms.xml.
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

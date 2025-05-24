@@ -27,33 +27,27 @@ MediaSink::~MediaSink() = default;
 MediaSink& MediaSink::operator=(const MediaSink& other) = default;
 MediaSink& MediaSink::operator=(MediaSink&& other) noexcept = default;
 
-bool MediaSink::operator==(const MediaSink& other) const {
-  return sink_id_ == other.sink_id_ && name_ == other.name_ &&
-         icon_type_ == other.icon_type_ && provider_id_ == other.provider_id_;
-}
-
-bool MediaSink::operator!=(const MediaSink& other) const {
-  return !operator==(other);
-}
-
 bool MediaSink::CompareUsingCollator(const MediaSink& other,
                                      const icu::Collator* collator) const {
-  if (icon_type_ != other.icon_type_)
+  if (icon_type_ != other.icon_type_) {
     return icon_type_ < other.icon_type_;
+  }
 
   if (collator) {
     std::u16string this_name = base::UTF8ToUTF16(name_);
     std::u16string other_name = base::UTF8ToUTF16(other.name_);
     UCollationResult result = base::i18n::CompareString16WithCollator(
         *collator, this_name, other_name);
-    if (result != UCOL_EQUAL)
+    if (result != UCOL_EQUAL) {
       return result == UCOL_LESS;
+    }
   } else {
     // Fall back to simple string comparison if collator is not
     // available.
     int val = name_.compare(other.name_);
-    if (val)
+    if (val) {
       return val < 0;
+    }
   }
 
   return sink_id_ < other.sink_id_;

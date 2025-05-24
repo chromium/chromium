@@ -29,6 +29,7 @@
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
 // The minimum height and maximum dialog dimensions.
 // We don't have a minimum width because operating systems have a minimum width
 // for Chrome.
@@ -47,7 +48,9 @@ int GetWebViewCornerRadius() {
 }
 
 }  // namespace
-void ShowSearchEngineChoiceDialog(
+
+// static
+void SearchEngineChoiceDialog::Show(
     Browser& browser,
     std::optional<gfx::Size> boundary_dimensions_for_test,
     std::optional<double> zoom_factor_for_test) {
@@ -60,7 +63,7 @@ void ShowSearchEngineChoiceDialog(
   delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   auto dialogView = std::make_unique<SearchEngineChoiceDialogView>(
       &browser, boundary_dimensions_for_test, zoom_factor_for_test);

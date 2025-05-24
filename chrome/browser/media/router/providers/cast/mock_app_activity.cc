@@ -8,7 +8,7 @@ namespace media_router {
 
 MockAppActivity::MockAppActivity(const MediaRoute& route,
                                  const std::string& app_id)
-    : AppActivity(route, app_id, nullptr, nullptr) {}
+    : AppActivity(route, app_id, nullptr, nullptr, logger_, debugger_) {}
 
 MockAppActivity::~MockAppActivity() = default;
 

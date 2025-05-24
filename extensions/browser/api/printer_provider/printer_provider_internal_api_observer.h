@@ -22,8 +22,8 @@ class PrinterProviderInternalAPIObserver {
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onGetPrintersRequested result returned by the
-  // extension |extension|.
-  // |request_id| is the request id passed to the original
+  // extension `extension`.
+  // `request_id` is the request id passed to the original
   // chrome.printerProvider.onGetPrintersRequested event.
   virtual void OnGetPrintersResult(const Extension* extension,
                                    int request_id,
@@ -31,8 +31,8 @@ class PrinterProviderInternalAPIObserver {
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onGetCapabilityRequested result returned by the
-  // extension |extension|.
-  // |request_id| is the request id passed to the original
+  // extension `extension`.
+  // `request_id` is the request id passed to the original
   // chrome.printerProvider.onGetCapabilityRequested event.
   virtual void OnGetCapabilityResult(const Extension* extension,
                                      int request_id,
@@ -40,8 +40,8 @@ class PrinterProviderInternalAPIObserver {
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onPrintRequested result returned by the extension
-  // |extension|.
-  // |request_id| is the request id passed to the original
+  // `extension`.
+  // `request_id` is the request id passed to the original
   // chrome.printerProvider.onPrintRequested event.
   virtual void OnPrintResult(
       const Extension* extension,
@@ -50,8 +50,8 @@ class PrinterProviderInternalAPIObserver {
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onGetUsbPrinterInfoRequested result returned by the
-  // extension |extension|.
-  // |request_id| is the request id passed to the original
+  // extension `extension`.
+  // `request_id` is the request id passed to the original
   // chrome.printerProvider.onGetUsbPrinterInfoRequested event.
   virtual void OnGetUsbPrinterInfoResult(
       const Extension* extension,

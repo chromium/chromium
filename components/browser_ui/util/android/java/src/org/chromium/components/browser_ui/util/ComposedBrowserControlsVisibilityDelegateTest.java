@@ -14,13 +14,16 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.cc.input.BrowserControlsState;
+
+import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link ComposedBrowserControlsVisibilityDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@LooperMode(LooperMode.Mode.LEGACY)
+@LooperMode(LooperMode.Mode.PAUSED)
 public class ComposedBrowserControlsVisibilityDelegateTest {
     private ComposedBrowserControlsVisibilityDelegate mComposedDelegate;
     private TestVisibilityDelegate mDelegate1;
@@ -149,6 +152,22 @@ public class ComposedBrowserControlsVisibilityDelegateTest {
         newDelegate.set(BrowserControlsState.SHOWN);
         mComposedDelegate.addDelegate(newDelegate);
         Assert.assertEquals(BrowserControlsState.SHOWN, composedState());
+    }
+
+    @Test
+    public void testDelegateLeak() {
+        WeakReference delegate = new WeakReference(mDelegate1);
+
+        Callback<Integer> callback = (value) -> {};
+        mComposedDelegate.addObserver(callback);
+        Assert.assertTrue(mComposedDelegate.hasObservers());
+
+        mComposedDelegate.removeObserver(callback);
+        Assert.assertFalse(mComposedDelegate.hasObservers());
+        mDelegate1 = null;
+        mComposedDelegate = null;
+        ShadowLooper.idleMainLooper();
+        Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(delegate));
     }
 
     private static class TestVisibilityDelegate extends BrowserControlsVisibilityDelegate {

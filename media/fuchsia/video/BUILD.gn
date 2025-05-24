@@ -9,6 +9,7 @@ source_set("video") {
     ":unittests",
     "//content/renderer/*",
     "//media/gpu/*",
+    "//media/mojo/clients/*",
     "//third_party/blink/renderer/modules/webcodecs/*",
   ]
   public = [

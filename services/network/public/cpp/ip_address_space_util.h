@@ -76,6 +76,20 @@ bool COMPONENT_EXPORT(NETWORK_CPP)
     IsLessPublicAddressSpace(mojom::IPAddressSpace lhs,
                              mojom::IPAddressSpace rhs);
 
+// Returns whether `lhs` is less public than `rhs`, but collapses the private
+// and local address spaces into the same bucket.
+//
+// This comparator is compatible with std::less.
+//
+// Address spaces go from most public to least public in the following order:
+//
+//  - public and unknown (equivalent)
+//  - private and local (equivalent)
+//
+bool COMPONENT_EXPORT(NETWORK_CPP)
+    IsLessPublicAddressSpaceLNA(mojom::IPAddressSpace lhs,
+                                mojom::IPAddressSpace rhs);
+
 // Represents optional parameters of CalculateClientAddressSpace().
 // This is effectively a subset of network::mojom::URLResponseHead.
 // WARNING: This struct just keeps references to parameters and does not own
@@ -122,6 +136,14 @@ mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpace(
 mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
     CalculateResourceAddressSpace(const GURL& url,
                                   const net::IPEndPoint& endpoint);
+
+// Return the IP address of the host if the host is a private IP address
+// literal, otherwise returns std::nullopt.
+std::optional<net::IPAddress> COMPONENT_EXPORT(NETWORK_CPP)
+    ParsePrivateIpFromUrl(const GURL& url);
+
+// Return true if the host of the URL is a .local domain as per RFC6762.
+bool COMPONENT_EXPORT(NETWORK_CPP) IsRFC6762LocalDomain(const GURL& url);
 
 }  // namespace network
 

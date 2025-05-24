@@ -25,7 +25,7 @@ class FakeClient : public SyncProcessRunner::Client {
   FakeClient(const FakeClient&) = delete;
   FakeClient& operator=(const FakeClient&) = delete;
 
-  ~FakeClient() override {}
+  ~FakeClient() override = default;
 
   SyncServiceState GetSyncServiceState() override { return service_state_; }
 
@@ -41,12 +41,12 @@ class FakeClient : public SyncProcessRunner::Client {
 
 class FakeTimerHelper : public SyncProcessRunner::TimerHelper {
  public:
-  FakeTimerHelper() {}
+  FakeTimerHelper() = default;
 
   FakeTimerHelper(const FakeTimerHelper&) = delete;
   FakeTimerHelper& operator=(const FakeTimerHelper&) = delete;
 
-  ~FakeTimerHelper() override {}
+  ~FakeTimerHelper() override = default;
 
   bool IsRunning() override { return !timer_task_.is_null(); }
 
@@ -101,7 +101,7 @@ class FakeSyncProcessRunner : public SyncProcessRunner {
   FakeSyncProcessRunner(const FakeSyncProcessRunner&) = delete;
   FakeSyncProcessRunner& operator=(const FakeSyncProcessRunner&) = delete;
 
-  ~FakeSyncProcessRunner() override {}
+  ~FakeSyncProcessRunner() override = default;
 
   void UpdateChanges(int num_changes) {
     OnChangesUpdated(num_changes);

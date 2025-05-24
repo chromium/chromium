@@ -1,0 +1,36 @@
+<!--
+@SCRIPT:
+  item1.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)
+  item1.isAccessibilityExpanded
+  item2.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)
+  item2.isAccessibilityExpanded
+  item3.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)
+  item3.isAccessibilityExpanded
+  item4.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)
+  item4.isAccessibilityExpanded
+  div1.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)
+  div1.isAccessibilityExpanded
+  div2.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)
+  div2.isAccessibilityExpanded
+  hr1.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)
+  hr1.isAccessibilityExpanded
+-->
+
+<!-- Keep this in alignment with content/test/data/accessibility/aria/aria-expanded.html -->
+
+<!DOCTYPE html>
+<html>
+<body>
+<ul role="menu" style="list-style-type: none">
+  <li id="item1" role="menuitem" aria-haspopup="true" aria-expanded="false">New</li>
+  <li id="item2" role="menuitem" aria-haspopup="true" aria-expanded="true">Open</li>
+  <li id="item3" role="menuitem" aria-expanded="false">Save</li>
+  <li id="item4" role="menuitem" aria-expanded="true">Quit</li>
+</ul>
+
+<!-- Following ARIA roles are not permitted to have aria-expanded -->
+<div id="div1" role="separator" aria-expanded="false">ARIA separator. aria-expanded value set to false.</div>
+<div id="div2" role="separator" aria-expanded="true">ARIA separator. aria-expanded value set to true.</div>
+<hr id="hr1" role="separator" aria-expanded="true">
+</body>
+</html>

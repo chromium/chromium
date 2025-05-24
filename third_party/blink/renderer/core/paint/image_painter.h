@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_IMAGE_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_IMAGE_PAINTER_H_
 
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -12,7 +13,6 @@ namespace blink {
 class GraphicsContext;
 class LayoutImage;
 struct PaintInfo;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 class ImagePainter {

@@ -4,6 +4,8 @@
 
 package org.chromium.components.module_installer.builder;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -15,6 +17,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)
+@NullMarked
 public @interface ModuleInterface {
     /** The name of the module. */
     String module();

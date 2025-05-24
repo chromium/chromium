@@ -18,10 +18,12 @@ import android.graphics.drawable.Drawable;
 import androidx.annotation.DrawableRes;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -39,6 +41,7 @@ public class UiUtilsUnitTest {
     private static final String CURRENT = "Current";
     private static final String OPEN = "Window is open";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Context mContext;
     @Mock Resources mResources;
     @Mock Drawable mDrawable;
@@ -48,7 +51,6 @@ public class UiUtilsUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mResources).when(mContext).getResources();
         doReturn(mDrawable).when(mResources).getDrawable(anyInt(), any());
         doReturn(EMPTY_WINDOW)
@@ -279,14 +281,22 @@ public class UiUtilsUnitTest {
     private InstanceInfo mockInstance(
             int taskId, int tabCount, int incognitoTabCount, boolean isIncognito) {
         return new InstanceInfo(
-                1, taskId, 0, "https://url.com", TITLE, tabCount, incognitoTabCount, isIncognito);
+                1,
+                taskId,
+                0,
+                "https://url.com",
+                TITLE,
+                tabCount,
+                incognitoTabCount,
+                isIncognito,
+                0);
     }
 
     private InstanceInfo mockInstance(int type) {
-        return new InstanceInfo(1, 57, type, "https://url.com", TITLE, 1, 1, true);
+        return new InstanceInfo(1, 57, type, "https://url.com", TITLE, 1, 1, true, 0);
     }
 
     private InstanceInfo mockInstanceBeforeLoadingTab(int type) {
-        return new InstanceInfo(1, 57, type, null, null, 1, 0, false);
+        return new InstanceInfo(1, 57, type, null, null, 1, 0, false, 0);
     }
 }

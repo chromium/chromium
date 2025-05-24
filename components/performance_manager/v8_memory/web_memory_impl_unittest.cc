@@ -44,16 +44,8 @@ class FakeSecurityChecker : public WebMeasureMemorySecurityChecker {
  public:
   explicit FakeSecurityChecker(bool allowed) : allowed_(allowed) {}
 
-  void CheckMeasureMemoryIsAllowed(
-      const FrameNode* frame_node,
-      MeasureMemoryCallback measure_memory_callback,
-      mojo::ReportBadMessageCallback bad_message_callback) const override {
-    if (allowed_) {
-      std::move(measure_memory_callback)
-          .Run(FrameNodeImpl::FromNode(frame_node)->GetWeakPtr());
-    } else {
-      std::move(bad_message_callback).Run("disallowed");
-    }
+  bool IsMeasureMemoryAllowed(const FrameNode* frame_node) const override {
+    return allowed_;
   }
 
  private:
@@ -145,15 +137,12 @@ TEST_F(WebMemoryImplPMTest, WebMeasureMemory) {
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame());
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(frame_node_wrapper);
-        FrameNode* frame_node = frame_node_wrapper.get();
-        WebMeasureMemory(
-            frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
-            std::make_unique<FakeSecurityChecker>(true),
-            std::move(measurement_callback), std::move(bad_message_callback));
-      }));
+  ASSERT_TRUE(frame_node_wrapper);
+  FrameNode* frame_node = frame_node_wrapper.get();
+  WebMeasureMemory(frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
+                   std::make_unique<FakeSecurityChecker>(true),
+                   std::move(measurement_callback),
+                   std::move(bad_message_callback));
 
   // Set up and bind the mock reporter.
   MockV8DetailedMemoryReporter mock_reporter;
@@ -186,15 +175,12 @@ TEST_F(WebMemoryImplPMTest, MeasurementInterrupted) {
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(child_frame());
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(frame_node_wrapper);
-        FrameNode* frame_node = frame_node_wrapper.get();
-        WebMeasureMemory(
-            frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
-            std::make_unique<FakeSecurityChecker>(true),
-            std::move(measurement_callback), std::move(bad_message_callback));
-      }));
+  ASSERT_TRUE(frame_node_wrapper);
+  FrameNode* frame_node = frame_node_wrapper.get();
+  WebMeasureMemory(frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
+                   std::make_unique<FakeSecurityChecker>(true),
+                   std::move(measurement_callback),
+                   std::move(bad_message_callback));
 
   // Set up and bind the mock reporter.
   MockV8DetailedMemoryReporter mock_reporter;
@@ -236,15 +222,12 @@ TEST_F(WebMemoryImplPMTest, MeasurementDisallowed) {
 
   base::WeakPtr<FrameNode> frame_node_wrapper =
       PerformanceManager::GetFrameNodeForRenderFrameHost(main_frame());
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        ASSERT_TRUE(frame_node_wrapper);
-        FrameNode* frame_node = frame_node_wrapper.get();
-        WebMeasureMemory(
-            frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
-            std::make_unique<FakeSecurityChecker>(false),
-            std::move(measurement_callback), std::move(bad_message_callback));
-      }));
+  ASSERT_TRUE(frame_node_wrapper);
+  FrameNode* frame_node = frame_node_wrapper.get();
+  WebMeasureMemory(frame_node, mojom::WebMemoryMeasurement::Mode::kDefault,
+                   std::make_unique<FakeSecurityChecker>(false),
+                   std::move(measurement_callback),
+                   std::move(bad_message_callback));
 
   run_loop.Run();
 }

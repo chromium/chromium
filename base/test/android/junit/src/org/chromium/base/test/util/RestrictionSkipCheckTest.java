@@ -15,6 +15,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for RestrictionSkipCheck. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@SuppressWarnings("UnusedMethod")
 public class RestrictionSkipCheckTest {
     private static final String TEST_RESTRICTION_APPLIES =
             "org.chromium.base.test.util.RestrictionSkipCheckTest.TEST_RESTRICTION_APPLIES";

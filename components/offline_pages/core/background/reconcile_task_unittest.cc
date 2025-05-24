@@ -31,8 +31,8 @@ const bool kUserRequested = true;
 
 class ReconcileTaskTest : public RequestQueueTaskTestBase {
  public:
-  ReconcileTaskTest() {}
-  ~ReconcileTaskTest() override {}
+  ReconcileTaskTest() = default;
+  ~ReconcileTaskTest() override = default;
 
   void SetUp() override;
 

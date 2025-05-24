@@ -10,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -35,6 +36,7 @@ class Profile;
 class AutocompleteResult;
 
 namespace content {
+class PreloadingData;
 class WebContents;
 }
 
@@ -270,6 +272,11 @@ class SearchPrefetchService : public KeyedService,
   void MaybePreloadDictionary(const AutocompleteResult& result);
   void DeletePreloadedDictionaries();
 
+  void RecordInterceptionMetrics(const std::u16string& search_terms,
+                                 SearchPrefetchServingReason serving_status);
+  void RecordPotentialDuplicateSearchTermsAheadOfNavigationalPrefetch(
+      const std::u16string& search_terms);
+
   // Prefetches that are started are stored using search terms as a key. Only
   // one prefetch should be started for a given search term until the old
   // prefetch expires.
@@ -279,7 +286,7 @@ class SearchPrefetchService : public KeyedService,
   std::map<GURL, std::unique_ptr<base::OneShotTimer>> prefetch_expiry_timers_;
 
   // The time of the last prefetch network/server error.
-  base::TimeTicks last_error_time_ticks_;
+  base::TimeTicks last_error_time_ticks_ = base::TimeTicks::Min();
 
   // The current state of the DSE.
   std::optional<TemplateURLData> template_url_service_data_;
@@ -294,11 +301,23 @@ class SearchPrefetchService : public KeyedService,
   // serving time of the response.
   std::map<GURL, std::pair<GURL, base::Time>> prefetch_cache_;
 
+  base::LRUCache<std::u16string, base::Time> search_terms_cache_{50};
+
   mojo::PendingRemote<network::mojom::PreloadedSharedDictionaryInfoHandle>
       preloaded_shared_dictionaries_handle_;
   base::OneShotTimer preloaded_shared_dictionaries_expiry_timer_;
 
   base::WeakPtrFactory<SearchPrefetchService> weak_factory_{this};
 };
+
+GURL GetPrefetchUrlFromMatch(
+    const TemplateURLRef::SearchTermsArgs& search_terms_args_from_match,
+    TemplateURLService& template_url_service,
+    bool is_navigation_likely);
+GURL GetPrerenderUrlFromMatch(
+    const TemplateURLRef::SearchTermsArgs& search_terms_args_from_match,
+    TemplateURLService& template_url_service);
+
+void SetIsNavigationInDomainCallback(content::PreloadingData* preloading_data);
 
 #endif  // CHROME_BROWSER_PRELOADING_PREFETCH_SEARCH_PREFETCH_SEARCH_PREFETCH_SERVICE_H_

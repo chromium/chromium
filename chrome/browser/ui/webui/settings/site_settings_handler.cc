@@ -4,16 +4,19 @@
 
 #include "chrome/browser/ui/webui/settings/site_settings_handler.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_value_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -25,11 +28,9 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
@@ -69,6 +70,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -105,7 +107,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -113,7 +115,9 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -146,7 +150,7 @@ constexpr char kNumCookies[] = "numCookies";
 constexpr char kHasPermissionSettings[] = "hasPermissionSettings";
 constexpr char kHasInstalledPWA[] = "hasInstalledPWA";
 constexpr char kIsInstalled[] = "isInstalled";
-constexpr char kRwsOwner[] = "fpsOwner";
+constexpr char kRwsOwner[] = "rwsOwner";
 constexpr char kRwsNumMembers[] = "rwsNumMembers";
 constexpr char kRwsEnterpriseManaged[] = "rwsEnterpriseManaged";
 constexpr char kZoom[] = "zoom";
@@ -230,16 +234,18 @@ void AddExceptionsGrantedByHostedApps(content::BrowserContext* context,
     GURL launch_url =
         extensions::AppLaunchInfo::GetLaunchWebURL(extension->get());
     // Skip adding the launch URL if it is part of the web extent.
-    if (web_extent.MatchesURL(launch_url))
+    if (web_extent.MatchesURL(launch_url)) {
       continue;
+    }
     site_settings::AddExceptionForHostedApp(launch_url.spec(),
                                             *extension->get(), exceptions);
   }
 }
 
 base::flat_set<url::Origin> GetInstalledAppOrigins(Profile* profile) {
-  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile))
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
     return base::flat_set<url::Origin>();
+  }
 
   std::vector<url::Origin> origins;
   apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -444,7 +450,7 @@ std::map<std::string, std::pair<std::string, int>> GetRwsMap(
       std::string etld_plus1 = GetEtldPlusOneForHost(
           BrowsingDataModel::GetHost(entry.data_owner.get()));
       auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
-      auto rws_owner = privacy_sandbox_service->GetFirstPartySetOwner(
+      auto rws_owner = privacy_sandbox_service->GetRelatedWebsiteSetOwner(
           schemeful_site.GetURL());
       if (rws_owner.has_value()) {
         rws_owner_to_members[rws_owner->GetURL().host()].insert(etld_plus1);
@@ -454,9 +460,9 @@ std::map<std::string, std::pair<std::string, int>> GetRwsMap(
 
   // site eTLD+1 : {owner site eTLD+1, # of sites in that related website set}
   std::map<std::string, std::pair<std::string, int>> rws_map;
-  for (auto rws : rws_owner_to_members) {
+  for (const auto& rws : rws_owner_to_members) {
     // Set rws owner and count of members for each eTLD+1
-    for (auto member : rws.second) {
+    for (const auto& member : rws.second) {
       rws_map[member] = {rws.first, rws.second.size()};
     }
   }
@@ -529,8 +535,9 @@ void ConvertSiteGroupMapToList(
       origin_object.Set(kNumCookies, 0);
 
       bool is_installed = installed_origins.contains(origin);
-      if (is_installed)
+      if (is_installed) {
         has_installed_pwa = true;
+      }
       origin_object.Set(kIsInstalled, is_installed);
 
       origin_object.Set(kHasPermissionSettings,
@@ -545,7 +552,7 @@ void ConvertSiteGroupMapToList(
       site_group.Set(kRwsNumMembers, rws_map[*etld_plus1].second);
       auto schemeful_site = ConvertEtldToSchemefulSite(*etld_plus1);
       site_group.Set(kRwsEnterpriseManaged,
-                     privacy_sandbox_service->IsPartOfManagedFirstPartySet(
+                     privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
                          schemeful_site));
     }
     list_value->Append(std::move(site_group));
@@ -596,7 +603,7 @@ GroupingKey GroupingKey::Deserialize(const std::string& serialized) {
   return GroupingKey::Create(url::Origin::Create(url));
 }
 
-GroupingKey::GroupingKey(const absl::variant<std::string, url::Origin>& value)
+GroupingKey::GroupingKey(const std::variant<std::string, url::Origin>& value)
     : value_(value) {}
 
 GroupingKey::GroupingKey(const GroupingKey& other) = default;
@@ -604,33 +611,33 @@ GroupingKey& GroupingKey::operator=(const GroupingKey& other) = default;
 GroupingKey::~GroupingKey() = default;
 
 std::string GroupingKey::Serialize() const {
-  return absl::visit(base::Overloaded{[](const std::string& etld_plus1) {
-                                        return kGroupingKeyEtldPrefix +
-                                               etld_plus1;
-                                      },
-                                      [](const url::Origin& origin) {
-                                        return kGroupingKeyOriginPrefix +
-                                               origin.GetURL().spec();
-                                      }},
-                     value_);
+  return std::visit(base::Overloaded{[](const std::string& etld_plus1) {
+                                       return kGroupingKeyEtldPrefix +
+                                              etld_plus1;
+                                     },
+                                     [](const url::Origin& origin) {
+                                       return kGroupingKeyOriginPrefix +
+                                              origin.GetURL().spec();
+                                     }},
+                    value_);
 }
 
 std::optional<std::string> GroupingKey::GetEtldPlusOne() const {
-  if (absl::holds_alternative<std::string>(value_)) {
-    return absl::get<std::string>(value_);
+  if (std::holds_alternative<std::string>(value_)) {
+    return std::get<std::string>(value_);
   }
   return std::nullopt;
 }
 
 std::optional<url::Origin> GroupingKey::GetOrigin() const {
-  if (absl::holds_alternative<url::Origin>(value_)) {
-    return absl::get<url::Origin>(value_);
+  if (std::holds_alternative<url::Origin>(value_)) {
+    return std::get<url::Origin>(value_);
   }
   return std::nullopt;
 }
 
 url::Origin GroupingKey::ToOrigin() const {
-  return absl::visit(
+  return std::visit(
       base::Overloaded{[](const std::string& etld_plus1) {
                          return ConvertEtldToOrigin(etld_plus1,
                                                     /*secure=*/false);
@@ -801,8 +808,9 @@ void SiteSettingsHandler::OnJavascriptAllowed() {
     auto* primary_otr_profile =
         profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     // Avoid duplicate observation.
-    if (primary_otr_profile != profile_)
+    if (primary_otr_profile != profile_) {
       ObserveSourcesForProfile(primary_otr_profile);
+    }
   }
 
   // Listen for zoom changes in the default StoragePartition and the primary
@@ -890,7 +898,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
                 IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_MEMBERSHIP_LABEL),
             "MEMBERS", static_cast<int>(rws_map[etld_plus1].second),
             "RWS_OWNER", rws_map[etld_plus1].first));
-    rwsPolicy = privacy_sandbox_service->IsPartOfManagedFirstPartySet(
+    rwsPolicy = privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
         ConvertEtldToSchemefulSite(etld_plus1));
   }
 
@@ -909,11 +917,14 @@ void SiteSettingsHandler::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type) {
-  if (!site_settings::HasRegisteredGroupName(content_type))
+  if (!site_settings::HasRegisteredGroupName(content_type)) {
     return;
+  }
 
   if (primary_pattern.MatchesAllHosts() &&
       secondary_pattern.MatchesAllHosts()) {
+    content_settings_uma_util::RecordContentSettingsHistogram(
+        "Permissions.SiteSettingsChanged", content_type);
     FireWebUIListener("contentSettingCategoryChanged",
                       base::Value(site_settings::ContentSettingsTypeToGroupName(
                           content_type)));
@@ -944,8 +955,9 @@ void SiteSettingsHandler::OnOffTheRecordProfileCreated(
 }
 
 void SiteSettingsHandler::OnProfileWillBeDestroyed(Profile* profile) {
-  if (profile->IsOffTheRecord())
+  if (profile->IsOffTheRecord()) {
     FireWebUIListener("onIncognitoStatusChanged", base::Value(false));
+  }
   StopObservingSourcesForProfile(profile);
 }
 
@@ -1007,8 +1019,9 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
     const base::Value::List& args) {
   CHECK_EQ(1U, args.size());
   auto origin = url::Origin::Create(GURL(args[0].GetString()));
-  if (origin.opaque())
+  if (origin.opaque()) {
     return;
+  }
   AllowJavascript();
 
   // TODO(crbug.com/40240175) - Permission info loading before storage info
@@ -1077,11 +1090,12 @@ void SiteSettingsHandler::HandleSetDefaultValueForContentType(
       site_settings::ContentSettingsTypeFromGroupName(content_type);
 
   Profile* profile = profile_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS special case: in Guest mode, settings are opened in Incognito
   // mode so we need the original profile to actually modify settings.
-  if (user_manager::UserManager::Get()->IsLoggedInAsGuest())
+  if (user_manager::UserManager::Get()->IsLoggedInAsGuest()) {
     profile = profile->GetOriginalProfile();
+  }
 #endif
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile);
@@ -1451,8 +1465,9 @@ void SiteSettingsHandler::HandleGetOriginPermissions(
     std::string type;
     DCHECK(type_val.is_string());
     const std::string* maybe_type = type_val.GetIfString();
-    if (maybe_type)
+    if (maybe_type) {
       type = *maybe_type;
+    }
     ContentSettingsType content_type =
         site_settings::ContentSettingsTypeFromGroupName(type);
     CHECK(content_type != ContentSettingsType::DEFAULT)
@@ -1553,8 +1568,9 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
   std::string value = args[2].GetString();
 
   const GURL origin(origin_string);
-  if (!origin.is_valid())
+  if (!origin.is_valid()) {
     return;
+  }
 
   ContentSetting setting;
   CHECK(content_settings::ContentSettingFromString(value, &setting));
@@ -1686,7 +1702,7 @@ void SiteSettingsHandler::HandleSetOriginPermissions(
       content::WebContents* web_contents = tab_strip->GetWebContentsAt(i);
       GURL tab_url = web_contents->GetLastCommittedURL();
       const bool tab_is_same_origin = url::IsSameOriginWith(origin, tab_url);
-      const bool tab_might_embed_origin = base::ranges::any_of(
+      const bool tab_might_embed_origin = std::ranges::any_of(
           additional_patterns_for_infobar, [&](const auto& additional_pattern) {
             return additional_pattern.Matches(tab_url);
           });
@@ -1717,8 +1733,9 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
 
   Profile* profile = nullptr;
   if (incognito) {
-    if (!profile_->HasPrimaryOTRProfile())
+    if (!profile_->HasPrimaryOTRProfile()) {
       return;
+    }
     profile = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     profile = profile_;
@@ -1767,17 +1784,6 @@ void SiteSettingsHandler::HandleResetCategoryPermissionForPattern(
   if (content_type == ContentSettingsType::COOKIES &&
       primary_pattern.MatchesAllHosts() &&
       !secondary_pattern.MatchesAllHosts()) {
-    // Remove TP exceptions along with 3PC exceptions if we are not showing
-    // them explicitly in settings but are supporting adding/removing via UB.
-    // TODO(https://b/333527273): Remove post-3PCD launch.
-    if (base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingUbControl) &&
-        !base::FeatureList::IsEnabled(
-            privacy_sandbox::kTrackingProtectionContentSettingInSettings)) {
-      map->SetContentSettingCustomScope(
-          ContentSettingsPattern::Wildcard(), secondary_pattern,
-          ContentSettingsType::TRACKING_PROTECTION, CONTENT_SETTING_DEFAULT);
-    }
     base::RecordAction(base::UserMetricsAction(
         "ThirdPartyCookies.SettingsSiteException.Removed"));
   }
@@ -1806,8 +1812,9 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
 
   Profile* target_profile = nullptr;
   if (incognito) {
-    if (!profile_->HasPrimaryOTRProfile())
+    if (!profile_->HasPrimaryOTRProfile()) {
       return;
+    }
     target_profile = profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   } else {
     target_profile = profile_;
@@ -1839,6 +1846,22 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
 
   map->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
                                     content_type, setting);
+
+  // Record which type of exception pattern was entered.
+  if (primary_pattern == ContentSettingsPattern::Wildcard() ||
+      secondary_pattern == ContentSettingsPattern::Wildcard()) {
+    // Skipping two-pattern exceptions.
+    ContentSettingsPattern::Scope content_setting_pattern_scope =
+        primary_pattern != ContentSettingsPattern::Wildcard()
+            ? primary_pattern.GetScope()
+            : secondary_pattern.GetScope();
+    base::UmaHistogramEnumeration("Privacy.SiteExceptionsAdded.ScopeType",
+                                  content_setting_pattern_scope);
+  }
+
+  // Record which content setting type is created.
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      "Privacy.SiteExceptionsAdded.ContentSettingType", content_type);
 
   if (content_type == ContentSettingsType::SOUND) {
     ContentSetting default_setting =
@@ -1936,8 +1959,9 @@ void SiteSettingsHandler::HandleFetchZoomLevels(const base::Value::List& args) {
 }
 
 void SiteSettingsHandler::SendZoomLevels() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   base::Value::List zoom_levels_exceptions;
 
@@ -2025,7 +2049,7 @@ void SiteSettingsHandler::SendZoomLevels() {
         // start. Therefore, we don't care for them.
         continue;
       case content::HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -2067,8 +2091,9 @@ void SiteSettingsHandler::HandleFetchBlockAutoplayStatus(
 }
 
 void SiteSettingsHandler::SendBlockAutoplayStatus() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
   base::Value::Dict status;
 
@@ -2091,8 +2116,9 @@ void SiteSettingsHandler::HandleSetBlockAutoplayEnabled(
     const base::Value::List& args) {
   AllowJavascript();
 
-  if (!UnifiedAutoplayConfig::IsBlockAutoplayUserModifiable(profile_))
+  if (!UnifiedAutoplayConfig::IsBlockAutoplayUserModifiable(profile_)) {
     return;
+  }
 
   CHECK_EQ(1U, args.size());
   CHECK(args[0].is_bool());
@@ -2124,13 +2150,16 @@ void SiteSettingsHandler::RebuildModel() {
 }
 
 void SiteSettingsHandler::ServicePendingRequests() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
 
-  if (send_sites_list_)
+  if (send_sites_list_) {
     OnStorageFetched();
-  if (update_site_details_)
+  }
+  if (update_site_details_) {
     OnGetUsageInfo();
+  }
 
   send_sites_list_ = false;
   update_site_details_ = false;
@@ -2138,27 +2167,32 @@ void SiteSettingsHandler::ServicePendingRequests() {
 
 void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
-  if (!observations_.IsObservingSource(map))
+  if (!observations_.IsObservingSource(map)) {
     observations_.AddObservation(map);
+  }
 
   auto* usb_context = UsbChooserContextFactory::GetForProfile(profile);
-  if (!chooser_observations_.IsObservingSource(usb_context))
+  if (!chooser_observations_.IsObservingSource(usb_context)) {
     chooser_observations_.AddObservation(usb_context);
+  }
 
   auto* serial_context = SerialChooserContextFactory::GetForProfile(profile);
-  if (!chooser_observations_.IsObservingSource(serial_context))
+  if (!chooser_observations_.IsObservingSource(serial_context)) {
     chooser_observations_.AddObservation(serial_context);
+  }
 
   auto* hid_context = HidChooserContextFactory::GetForProfile(profile);
-  if (!chooser_observations_.IsObservingSource(hid_context))
+  if (!chooser_observations_.IsObservingSource(hid_context)) {
     chooser_observations_.AddObservation(hid_context);
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
     auto* bluetooth_context =
         BluetoothChooserContextFactory::GetForProfile(profile);
-    if (!chooser_observations_.IsObservingSource(bluetooth_context))
+    if (!chooser_observations_.IsObservingSource(bluetooth_context)) {
       chooser_observations_.AddObservation(bluetooth_context);
+    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -2171,32 +2205,47 @@ void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
           file_system_access_permission_context);
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
+    auto& smart_card_context =
+        SmartCardPermissionContextFactory::GetForProfile(*profile);
+    if (!chooser_observations_.IsObservingSource(&smart_card_context)) {
+      chooser_observations_.AddObservation(&smart_card_context);
+    }
+  }
+#endif
   observed_profiles_.AddObservation(profile);
 }
 
 void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile);
-  if (observations_.IsObservingSource(map))
+  if (observations_.IsObservingSource(map)) {
     observations_.RemoveObservation(map);
+  }
 
   auto* usb_context = UsbChooserContextFactory::GetForProfile(profile);
-  if (chooser_observations_.IsObservingSource(usb_context))
+  if (chooser_observations_.IsObservingSource(usb_context)) {
     chooser_observations_.RemoveObservation(usb_context);
+  }
 
   auto* serial_context = SerialChooserContextFactory::GetForProfile(profile);
-  if (chooser_observations_.IsObservingSource(serial_context))
+  if (chooser_observations_.IsObservingSource(serial_context)) {
     chooser_observations_.RemoveObservation(serial_context);
+  }
 
   auto* hid_context = HidChooserContextFactory::GetForProfile(profile);
-  if (chooser_observations_.IsObservingSource(hid_context))
+  if (chooser_observations_.IsObservingSource(hid_context)) {
     chooser_observations_.RemoveObservation(hid_context);
+  }
 
   if (base::FeatureList::IsEnabled(
           features::kWebBluetoothNewPermissionsBackend)) {
     auto* bluetooth_context =
         BluetoothChooserContextFactory::GetForProfile(profile);
-    if (chooser_observations_.IsObservingSource(bluetooth_context))
+    if (chooser_observations_.IsObservingSource(bluetooth_context)) {
       chooser_observations_.RemoveObservation(bluetooth_context);
+    }
   }
 
   if (base::FeatureList::IsEnabled(
@@ -2217,8 +2266,9 @@ void SiteSettingsHandler::GetOriginStorage(
     AllSitesMap* all_sites_map,
     std::map<url::Origin, int64_t>* origin_size_map) {
   for (const auto& entry : *browsing_data_model_) {
-    if (entry.data_details->storage_size == 0)
+    if (entry.data_details->storage_size == 0) {
       continue;
+    }
 
     url::Origin origin =
         BrowsingDataModel::GetOriginForDataKey(entry.data_key.get());
@@ -2244,7 +2294,7 @@ void SiteSettingsHandler::GetHostCookies(
         host_cookie_map) {
   for (const auto& [owner, key, details] : *browsing_data_model_) {
     const net::CanonicalCookie* cookie =
-        absl::get_if<net::CanonicalCookie>(&key.get());
+        std::get_if<net::CanonicalCookie>(&key.get());
     // Skip data keys that don't have cookies.
     if (!cookie) {
       continue;
@@ -2426,8 +2476,9 @@ void SiteSettingsHandler::RemoveNonModelData(
   auto filter_builder = content::BrowsingDataFilterBuilder::Create(
       content::BrowsingDataFilterBuilder::Mode::kDelete);
 
-  for (const auto& origin : origins)
+  for (const auto& origin : origins) {
     filter_builder->AddOrigin(origin);
+  }
 
   CdmDocumentServiceImpl::ClearCdmData(
       profile_, base::Time::Min(), base::Time::Max(),
@@ -2506,10 +2557,10 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
 
     // Populate the `file_system_permission_grant` object with allowed
     // permissions.
-    for (auto& file_path : grantObj.directory_write_grants) {
+    for (auto& path_info : grantObj.directory_write_grants) {
       base::Value::Dict directory_write_grant;
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       directory_write_grant.Set(site_settings::kOrigin, origin_string);
       directory_write_grant.Set(site_settings::kFileSystemFilePath,
                                 file_path_string);
@@ -2519,9 +2570,9 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       edit_grants.Append(std::move(directory_write_grant));
     }
 
-    for (auto& file_path : grantObj.directory_read_grants) {
+    for (auto& path_info : grantObj.directory_read_grants) {
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       if (base::Contains(directory_edit_grants_file_paths, file_path_string)) {
         continue;
       }
@@ -2534,10 +2585,10 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       view_grants.Append(std::move(directory_read_grant));
     }
 
-    for (auto& file_path : grantObj.file_write_grants) {
+    for (auto& path_info : grantObj.file_write_grants) {
       base::Value::Dict file_write_grant;
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       file_write_grant.Set(site_settings::kOrigin, origin_string);
       file_write_grant.Set(site_settings::kFileSystemFilePath,
                            file_path_string);
@@ -2547,9 +2598,9 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       edit_grants.Append(std::move(file_write_grant));
     }
 
-    for (auto& file_path : grantObj.file_read_grants) {
+    for (auto& path_info : grantObj.file_read_grants) {
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       if (base::Contains(file_edit_grants_file_paths, file_path_string)) {
         continue;
       }

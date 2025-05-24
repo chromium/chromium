@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logDialogShownMetric;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.DETAILS;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossDialogSettingsProperties.HELP_BUTTON_VISIBILITY;
@@ -14,11 +16,11 @@ import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.password_manager.CustomTabIntentHelper;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.SettingsCustomTabLauncher;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -31,34 +33,37 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * migration to GMS Core failed. The user is then proposed to either update GMS Core (if it's a
  * valid option) or to run the passwords export flow.
  */
+@NullMarked
 public class PasswordAccessLossDialogSettingsCoordinator {
     private Context mContext;
     private ModalDialogManager mModalDialogManager;
     private PasswordAccessLossDialogSettingsMediator mMediator;
 
+    @Initializer
     public void showPasswordAccessLossDialog(
             Context context,
-            @NonNull ModalDialogManager modalDialogManager,
+            ModalDialogManager modalDialogManager,
             @PasswordAccessLossWarningType int warningType,
             Callback<Context> launchGmsUpdate,
             Runnable launchExportFlow,
-            CustomTabIntentHelper customTabIntentHelper) {
+            SettingsCustomTabLauncher settingsCustomTabLauncher) {
         assert warningType != PasswordAccessLossWarningType.NONE
                 : "Only show the access loss dialog if there is a reason to warn about.";
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mMediator =
                 new PasswordAccessLossDialogSettingsMediator(
-                        ContextUtils.activityFromContext(context),
+                        assertNonNull(ContextUtils.activityFromContext(context)),
                         modalDialogManager,
                         warningType,
                         launchGmsUpdate,
                         launchExportFlow,
-                        customTabIntentHelper);
+                        settingsCustomTabLauncher);
         View dialogCustomView = createAndBindDialogCustomView(warningType);
         mModalDialogManager.showDialog(
                 createDialogModel(context, warningType, dialogCustomView),
                 ModalDialogManager.ModalDialogType.APP);
+        logDialogShownMetric(warningType);
     }
 
     private View createAndBindDialogCustomView(@PasswordAccessLossWarningType int warningType) {
@@ -122,6 +127,7 @@ public class PasswordAccessLossDialogSettingsCoordinator {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
                 return R.string.access_loss_no_gms_desc;
             case PasswordAccessLossWarningType.NO_UPM:
+                return R.string.access_loss_no_upm_desc;
             case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
                 return R.string.access_loss_update_gms_desc;
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:

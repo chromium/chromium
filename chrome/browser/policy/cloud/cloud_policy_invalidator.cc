@@ -366,7 +366,6 @@ void CloudPolicyInvalidator::OnStoreError(CloudPolicyStore* store) {}
 
 void CloudPolicyInvalidator::OnExpectationChanged(
     invalidation::InvalidationsExpected expected) {
-  CHECK(state_ == State::STARTED);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   are_invalidations_expected_ = expected;
@@ -377,10 +376,14 @@ void CloudPolicyInvalidator::OnExpectationChanged(
 
 void CloudPolicyInvalidator::OnInvalidationReceived(
     const invalidation::DirectInvalidation& invalidation) {
-  CHECK(state_ == State::STARTED);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   LOG(WARNING) << "Received incoming invalidation: " << invalidation.version();
+  if (!policy_invalidation_handler_.IsCoreReady()) {
+    LOG(WARNING) << "Core is disconnected, ignoring invalidation.";
+    return;
+  }
+
   policy_invalidation_handler_.HandleInvalidation(invalidation);
 }
 
@@ -453,8 +456,10 @@ void CloudPolicyInvalidator::PolicyInvalidationHandler::HandleInvalidation(
   const std::string payload = invalidation.payload();
 
   // Ignore the invalidation if it is expired.
-  const auto last_fetch_time = base::Time::FromMillisecondsSinceUnixEpoch(
-      core_->store()->policy()->timestamp());
+  const auto* policy = core_->store()->policy();
+  const auto last_fetch_time =
+      policy ? base::Time::FromMillisecondsSinceUnixEpoch(policy->timestamp())
+             : base::Time();
   const auto current_time = clock_->Now();
   const bool is_expired =
       IsInvalidationExpired(invalidation, last_fetch_time, current_time);
@@ -545,7 +550,7 @@ void CloudPolicyInvalidator::RegisterWithInvalidationService(
   // Update subscription with the invalidation service.
   const bool success =
       invalidation_service->UpdateInterestedTopics(this, /*topics=*/{topic});
-  CHECK(success) << "Could not subscribe to topic: " << topic;
+  LOG_IF(ERROR, !success) << "Could not subscribe to topic: " << topic;
 }
 
 void CloudPolicyInvalidator::UnregisterWithInvalidationService() {

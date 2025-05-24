@@ -33,7 +33,7 @@ class SpanOrSize {
   SpanOrSize& operator=(SpanOrSize&&) = default;
 
   constexpr T* ptr_or_null_if_no_data() const {
-    return std::visit(base::Overloaded{
+    return std::visit(Overloaded{
                           [](const base::span<T>& span) { return span.data(); },
                           [](size_t size) -> T* { return nullptr; },
                       },
@@ -41,7 +41,7 @@ class SpanOrSize {
   }
 
   constexpr size_t size() const {
-    return std::visit(base::Overloaded{
+    return std::visit(Overloaded{
                           [](const base::span<T>& span) { return span.size(); },
                           [](size_t size) { return size; },
                       },
@@ -50,7 +50,7 @@ class SpanOrSize {
 
   constexpr optional_ref<const base::span<T>> span() const {
     return std::visit(
-        base::Overloaded{
+        Overloaded{
             [](const base::span<T>& span) {
               return optional_ref<const base::span<T>>(span);
             },

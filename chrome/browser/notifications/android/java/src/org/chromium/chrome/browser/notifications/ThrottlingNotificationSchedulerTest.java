@@ -35,7 +35,7 @@ public class ThrottlingNotificationSchedulerTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Map<String, Integer> mTaskInvocationMap = new HashMap<>();
+    private final Map<String, Integer> mTaskInvocationMap = new HashMap<>();
 
     @Before
     public void setUp() throws Exception {

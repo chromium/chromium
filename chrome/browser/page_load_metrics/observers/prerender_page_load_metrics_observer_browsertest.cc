@@ -5,19 +5,22 @@
 #include "components/page_load_metrics/browser/observers/prerender_page_load_metrics_observer.h"
 
 #include "base/containers/contains.h"
+#include "base/time/time.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/browser/preloading_trigger_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
 
 using PrerenderPageLoad = ukm::builders::PrerenderPageLoad;
@@ -39,10 +42,6 @@ class PrerenderPageLoadMetricsObserverBrowserTest
       : prerender_helper_(base::BindRepeating(
             &PrerenderPageLoadMetricsObserverBrowserTest::web_contents,
             base::Unretained(this))) {
-    // TODO(crbug.com/40193792): Remove this once kPrerender2MainFrameNavigation
-    // is enabled by default.
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kPrerender2MainFrameNavigation);
   }
   ~PrerenderPageLoadMetricsObserverBrowserTest() override = default;
 
@@ -129,7 +128,7 @@ class PrerenderPageLoadMetricsObserverBrowserTest
         internal::kHistogramLargestContentfulPaint, 0);
   }
 
-  void CheckResponsivenessMetrics(const GURL& url) {
+  void CheckResponsivenessMetrics(const GURL& url, bool is_incognito = false) {
     std::vector<std::string> ukm_list = {
         "InteractiveTiming.WorstUserInteractionLatency.MaxEventDuration",
         "InteractiveTiming.UserInteractionLatency.HighPercentile2."
@@ -165,12 +164,14 @@ class PrerenderPageLoadMetricsObserverBrowserTest
     for (auto& uma : uma_list) {
       histogram_tester().ExpectTotalCount(uma, 1);
     }
+
+    histogram_tester().ExpectTotalCount(
+        internal::
+            kHistogramPrerenderUserInteractionLatencyHighPercentile2MaxEventDurationIncognito,
+        is_incognito ? 1 : 0);
   }
 
   content::test::PrerenderTestHelper prerender_helper_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
@@ -380,14 +381,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                  TimingField::kFirstContentfulPaint);
   // Simulate a browser-initiated navigation.
-  web_contents()->OpenURL(
-      content::OpenURLParams(
-          prerender_url, content::Referrer(),
-          WindowOpenDisposition::CURRENT_TAB,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          /*is_renderer_initiated=*/false),
-      /*navigation_handle_callback=*/{});
+  prerender_helper_.NavigatePrimaryPageAsync(
+      prerender_url,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   waiter->Wait();
 
   histogram_tester().ExpectTotalCount(
@@ -676,6 +673,158 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       DomLoadedBeforeActivation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  prerender_helper_.AddPrerender(prerender_url);
+  prerender_helper_.WaitForPrerenderLoadCompletion(prerender_url);
+  content::test::PrerenderHostObserver observer(*web_contents(), prerender_url);
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+  // Flush metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+
+  std::string dom_content_loaded_histogram_name =
+      prerender_helper_.GenerateHistogramName(
+          "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3",
+          content::PreloadingTriggerType::kSpeculationRule, "");
+  std::string parse_start_histogram_name =
+      prerender_helper_.GenerateHistogramName(
+          "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation",
+          content::PreloadingTriggerType::kSpeculationRule, "");
+  histogram_tester().ExpectTotalCount(dom_content_loaded_histogram_name, 1);
+  histogram_tester().ExpectTotalCount(parse_start_histogram_name, 1);
+  // We shift the duration by the 1 minute when recording the metric.
+  base::TimeDelta shifting_duration = base::Minutes(1);
+  EXPECT_GE(histogram_tester().GetTotalSum(dom_content_loaded_histogram_name),
+            shifting_duration.InMilliseconds());
+  EXPECT_GE(histogram_tester().GetTotalSum(parse_start_histogram_name),
+            shifting_duration.InMilliseconds());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       DomLoadedAfterActivation) {
+  net::test_server::ControllableHttpResponse response(
+      embedded_test_server(), "/prerender/slow_layout.js");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL(
+      "/prerender/defer_domcontent_loaded_till_activation.html");
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *web_contents());
+  prerender_helper_.AddPrerenderAsync(prerender_url);
+  registry_observer.WaitForTrigger(prerender_url);
+  response.WaitForRequest();
+  content::RenderFrameHost* rfh =
+      prerender_helper_.GetPrerenderedMainFrameHost(prerender_url);
+
+  // The prerendered page is not loaded yet.
+  ASSERT_TRUE(rfh);
+
+  // Cannot use base::test::RunUntil due to an weird bug on macOS. See
+  // http://crbug.com/360052666.
+  // Wait the page to execute the script by checking whether an element has been
+  // attached to the document by script. Otherwise, dom_content_loaded_called
+  // may not be defined yet.
+  while (true) {
+    const bool new_element_was_attached_by_js =
+        EvalJs(rfh,
+               "document.getElementById('script_execution_watcher') !== null;")
+            .ExtractBool();
+    if (new_element_was_attached_by_js) {
+      break;
+    }
+    base::RunLoop run_loop;
+    run_loop.RunUntilIdle();
+  }
+  ASSERT_EQ(false, EvalJs(rfh, "dom_content_loaded_called"));
+
+  // Activate the page, and then release the blocking script.
+  content::test::PrerenderHostObserver observer(*web_contents(), prerender_url);
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+  std::ignore = ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       content::JsReplace("location = $1", prerender_url));
+  observer.WaitForActivation();
+  response.Send(net::HTTP_OK, "text/javascript", "");
+  response.Done();
+  waiter->Wait();
+
+  // Flush metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+  std::string histogram_name = prerender_helper_.GenerateHistogramName(
+      "PageLoad.Internal.Prerender2.DomContentLoadedToActivation3",
+      content::PreloadingTriggerType::kSpeculationRule, "");
+  histogram_tester().ExpectTotalCount(histogram_name, 1);
+  // We shift the duration by the 1 minute when recording the metric.
+  base::TimeDelta shifting_duration = base::Minutes(1);
+  EXPECT_LE(histogram_tester().GetTotalSum(histogram_name),
+            shifting_duration.InMilliseconds());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
+                       ResponseBodyReceivedAfterActivation) {
+  net::test_server::ControllableHttpResponse response(embedded_test_server(),
+                                                      "/title2.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), initial_url));
+
+  // Start a prerender.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  content::test::PrerenderHostRegistryObserver registry_observer(
+      *web_contents());
+  prerender_helper_.AddPrerenderAsync(prerender_url);
+  registry_observer.WaitForTrigger(prerender_url);
+  response.WaitForRequest();
+  response.Send(net::HTTP_OK, "text/html");
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(),
+                                                     prerender_url);
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(
+      page_load_metrics::PageLoadMetricsTestWaiter::TimingField::kLoadEvent);
+
+  std::ignore = ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       content::JsReplace("location = $1", prerender_url));
+  host_observer.WaitForActivation();
+
+  // Send the body after activation.
+  response.Send("<html>hello</html>");
+  response.Done();
+  waiter->Wait();
+
+  // Flush metrics.
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+  std::string histogram_name = prerender_helper_.GenerateHistogramName(
+      "PageLoad.Internal.Prerender2.MainResourceParseStartToActivation",
+      content::PreloadingTriggerType::kSpeculationRule, "");
+  histogram_tester().ExpectTotalCount(histogram_name, 1);
+  // We shift the duration by the 1 minute when recording the metric.
+  base::TimeDelta shifting_duration = base::Minutes(1);
+  EXPECT_LE(histogram_tester().GetTotalSum(histogram_name),
+            shifting_duration.InMilliseconds());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
                        MainFrameNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -807,4 +956,51 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
 
   CheckResponsivenessMetrics(navigation_url);
+}
+
+class PrerenderPageLoadMetricsObserverIncognitoBrowserTest
+    : public PrerenderPageLoadMetricsObserverBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kIncognito);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverIncognitoBrowserTest,
+                       MainFrameNavigationIncognito) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Navigate to an initial page.
+  auto initial_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Start a prerender and a main frame navigation in the prerendered page.
+  GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
+  GURL navigation_url = embedded_test_server()->GetURL("/title3.html");
+  content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(prerender_url);
+  prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
+  prerender_helper_.NavigatePrerenderedPage(host_id, navigation_url);
+  prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
+
+  // Activate and wait for FCP.
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstContentfulPaint);
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+  waiter->Wait();
+
+  // Simulate mouse click and wait for FirstInputDelay.
+  content::SimulateMouseClick(web_contents(), 0,
+                              blink::WebPointerProperties::Button::kLeft);
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kFirstInputDelay);
+  waiter->Wait();
+
+  // Force navigation to another page, which should force logging of histograms
+  // persisted at the end of the page load lifetime.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  CheckResponsivenessMetrics(navigation_url, true);
 }

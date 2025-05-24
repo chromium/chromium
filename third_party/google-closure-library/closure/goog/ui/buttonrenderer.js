@@ -10,7 +10,6 @@
 
 goog.provide('goog.ui.ButtonRenderer');
 
-goog.forwardDeclare('goog.ui.Button');
 goog.require('goog.a11y.aria');
 goog.require('goog.a11y.aria.Role');
 goog.require('goog.a11y.aria.State');
@@ -18,6 +17,7 @@ goog.require('goog.asserts');
 goog.require('goog.ui.ButtonSide');
 goog.require('goog.ui.Component');
 goog.require('goog.ui.ControlRenderer');  // circular
+goog.requireType('goog.ui.Button');
 
 
 
@@ -95,12 +95,16 @@ goog.ui.ButtonRenderer.prototype.updateAriaState = function(
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.ui.ButtonRenderer.prototype.createDom = function(button) {
   'use strict';
   var element = goog.ui.ButtonRenderer.base(this, 'createDom', button);
   this.setTooltip(element, button.getTooltip());
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var value = button.getValue();
   if (value) {
     this.setValue(element, value);
@@ -116,7 +120,10 @@ goog.ui.ButtonRenderer.prototype.createDom = function(button) {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.ui.ButtonRenderer.prototype.decorate = function(button, element) {
   'use strict';
   // The superclass implementation takes care of common attributes; we only
@@ -143,7 +150,7 @@ goog.ui.ButtonRenderer.prototype.decorate = function(button, element) {
  * @param {Element} element The button's root element.
  * @return {string|undefined} The button's value (undefined if none).
  */
-goog.ui.ButtonRenderer.prototype.getValue = goog.nullFunction;
+goog.ui.ButtonRenderer.prototype.getValue = function(element) {};
 
 
 /**
@@ -152,13 +159,14 @@ goog.ui.ButtonRenderer.prototype.getValue = goog.nullFunction;
  * @param {Element} element The button's root element.
  * @param {string} value New value.
  */
-goog.ui.ButtonRenderer.prototype.setValue = goog.nullFunction;
+goog.ui.ButtonRenderer.prototype.setValue = function(element, value) {};
 
 
 /**
  * Takes a button's root element, and returns its tooltip text.
  * @param {Element} element The button's root element.
  * @return {string|undefined} The tooltip text.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ButtonRenderer.prototype.getTooltip = function(element) {
   'use strict';
@@ -179,6 +187,9 @@ goog.ui.ButtonRenderer.prototype.setTooltip = function(element, tooltip) {
     // Don't set a title attribute if there isn't a tooltip. Blank title
     // attributes can be interpreted incorrectly by screen readers.
     if (tooltip) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       element.title = tooltip;
     } else {
       element.removeAttribute('title');

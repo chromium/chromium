@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/metrics/debug/structured/structured_metrics_debug_provider.h"
 #include "components/metrics/structured/buildflags/buildflags.h"

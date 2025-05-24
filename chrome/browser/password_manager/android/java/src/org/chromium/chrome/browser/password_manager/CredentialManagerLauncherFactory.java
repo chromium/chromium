@@ -9,6 +9,9 @@ import static org.chromium.base.ThreadUtils.assertOnUiThread;
 import android.content.Context;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerBackendException;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
@@ -16,8 +19,9 @@ import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.Cr
  * This factory returns an implementation for the launcher. The factory itself is also implemented
  * downstream.
  */
+@NullMarked
 public abstract class CredentialManagerLauncherFactory {
-    private static CredentialManagerLauncherFactory sInstance;
+    private static @Nullable CredentialManagerLauncherFactory sInstance;
 
     /**
      * Returns a launcher factory to be invoked whenever {@link #createLauncher()} is called. If no
@@ -27,7 +31,12 @@ public abstract class CredentialManagerLauncherFactory {
      */
     public static CredentialManagerLauncherFactory getInstance() {
         assertOnUiThread();
-        if (sInstance == null) sInstance = new CredentialManagerLauncherFactoryImpl();
+        if (sInstance == null) {
+            sInstance = ServiceLoaderUtil.maybeCreate(CredentialManagerLauncherFactory.class);
+        }
+        if (sInstance == null) {
+            sInstance = new CredentialManagerLauncherFactoryUpstreamImpl();
+        }
         return sInstance;
     }
 
@@ -37,7 +46,8 @@ public abstract class CredentialManagerLauncherFactory {
      * @return An implementation of the {@link CredentialManagerLauncher} if one exists.
      *     <p>TODO(crbug.com/40854052): Check if backend could be instantiated and throw error
      */
-    public CredentialManagerLauncher createLauncher() throws CredentialManagerBackendException {
+    public @Nullable CredentialManagerLauncher createLauncher()
+            throws CredentialManagerBackendException {
         return null;
     }
 

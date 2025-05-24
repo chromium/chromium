@@ -71,6 +71,8 @@ message AvdLaunchSettings {
 }
 
 message Avd {
+  // Next ID: 13
+
   // The emulator to use in running the AVD.
   CIPDPackage emulator_package = 1;
 
@@ -87,6 +89,10 @@ message Avd {
 
   // How to configure the AVD at creation.
   AvdSettings avd_settings = 6;
+
+  // This includes additional AvdSettings so that we can create AVDs with
+  // slightly different configs
+  map<string, AvdSettings> avd_variants = 12;
 
   // min sdk level for emulator.
   uint32 min_sdk = 7;

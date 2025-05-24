@@ -19,8 +19,8 @@
 #include "chrome/browser/ui/download/download_bubble_security_view_info.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_bubble_navigation_handler.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_row_view.h"
-#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -190,6 +190,8 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
                          views::Widget::InitParams::TYPE_WINDOW);
     auto bubble_delegate = std::make_unique<views::BubbleDialogDelegate>(
         anchor_widget_->GetContentsView(), views::BubbleBorder::TOP_RIGHT);
+    bubble_delegate->SetOwnedByWidget(
+        views::WidgetDelegate::OwnedByWidgetPassKey());
     bubble_delegate_ = bubble_delegate.get();
     bubble_navigator_ = std::make_unique<MockDownloadBubbleNavigationHandler>(
         *security_view_info_);
@@ -240,12 +242,22 @@ class DownloadBubbleSecurityViewTest : public ChromeViewsTestBase {
     ON_CALL(download_item1_, GetDangerType())
         .WillByDefault(Return(
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item1_, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(download_item1_, GetReferrerUrl())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://chromium.org")));
+    ON_CALL(download_item1_, GetTargetFilePath())
+        .WillByDefault(ReturnRefOfCopy(base::FilePath()));
     ON_CALL(download_item1_, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
 
     ON_CALL(download_item2_, GetDangerType())
         .WillByDefault(Return(
             download::DownloadDangerType::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE));
+    ON_CALL(download_item2_, IsDangerous()).WillByDefault(Return(true));
+    ON_CALL(download_item2_, GetReferrerUrl())
+        .WillByDefault(ReturnRefOfCopy(GURL("https://chromium.org")));
+    ON_CALL(download_item2_, GetTargetFilePath())
+        .WillByDefault(ReturnRefOfCopy(base::FilePath()));
     ON_CALL(download_item2_, GetURL())
         .WillByDefault(ReturnRefOfCopy(GURL("https://example.com/a.exe")));
   }

@@ -26,11 +26,17 @@ found in the LICENSE file.
             android:inputType="textPassword"
             android:singleLine="true"
             android:imeOptions="actionNext" />
+        <!--
+        Sets this TextView as a polite accessibility live region. Changes to
+        its text, such as "Verifying..." or "Incorrect passphrase", will be
+        announced by TalkBack without interrupting the user's current task.
+        -->
         <TextView
             android:id="@+id/verifying"
             android:gravity="center_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:accessibilityLiveRegion="polite"/>
         <org.chromium.ui.widget.TextViewWithClickableSpans
             android:id="@+id/reset_text"
             android:layout_width="match_parent"

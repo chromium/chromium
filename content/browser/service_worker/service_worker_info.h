@@ -54,7 +54,6 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   ServiceWorkerVersion::Status status;
   std::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type;
   blink::mojom::NavigationPreloadState navigation_preload_state;
-  GURL script_url;
   int thread_id;
   int devtools_agent_route_id;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;

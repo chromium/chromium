@@ -1,0 +1,8 @@
+specific_include_rules = {
+  'fake_gbm\.cc': [
+    '+third_party/minigbm/src/gbm.h',
+  ],
+  'scoped_bo_mapping_factory\.h': [
+    '+third_party/minigbm/src/gbm.h',
+  ],
+}

@@ -23,6 +23,7 @@ closure_js_library(
         "strokeandfillelement.js",
         "textelement.js",
     ],
+    lenient = True,
     deps = [
         "//closure/goog/array",
         "//closure/goog/asserts",
@@ -54,6 +55,7 @@ closure_js_library(
         "canvaselement.js",
         "canvasgraphics.js",
     ],
+    lenient = True,
     deps = [
         ":abstractgraphics",
         "//closure/goog/array",
@@ -96,11 +98,11 @@ closure_js_library(
     srcs = [
         "graphics.js",
     ],
+    lenient = True,
     deps = [
         ":abstractgraphics",
         ":canvasgraphics",
         ":svggraphics",
-        ":vmlgraphics",
         "//closure/goog/dom",
         "//closure/goog/useragent",
     ],
@@ -119,6 +121,7 @@ alias(
 closure_js_library(
     name = "lineargradient",
     srcs = ["lineargradient.js"],
+    lenient = True,
     deps = [
         ":abstractgraphics",
         "//closure/goog/asserts",
@@ -138,6 +141,7 @@ alias(
 closure_js_library(
     name = "paths",
     srcs = ["paths.js"],
+    lenient = True,
     deps = [
         ":abstractgraphics",
         "//closure/goog/math:coordinate",
@@ -175,6 +179,7 @@ closure_js_library(
         "svgelement.js",
         "svggraphics.js",
     ],
+    lenient = True,
     deps = [
         ":abstractgraphics",
         ":lineargradient",
@@ -192,37 +197,4 @@ closure_js_library(
 alias(
     name = "textelement",
     actual = ":graphics",
-)
-
-alias(
-    name = "vmlelement",
-    actual = ":graphics",
-)
-
-closure_js_library(
-    name = "vmlgraphics",
-    srcs = [
-        "vmlelement.js",
-        "vmlgraphics.js",
-    ],
-    deps = [
-        ":abstractgraphics",
-        ":lineargradient",
-        "//closure/goog/array",
-        "//closure/goog/dom",
-        "//closure/goog/dom:safe",
-        "//closure/goog/dom:tagname",
-        "//closure/goog/events",
-        "//closure/goog/events:browserevent",
-        "//closure/goog/events:eventhandler",
-        "//closure/goog/events:eventtype",
-        "//closure/goog/html:uncheckedconversions",
-        "//closure/goog/math",
-        "//closure/goog/math:size",
-        "//closure/goog/reflect",
-        "//closure/goog/string",
-        "//closure/goog/string:const",
-        "//closure/goog/style",
-        "//closure/goog/useragent",
-    ],
 )

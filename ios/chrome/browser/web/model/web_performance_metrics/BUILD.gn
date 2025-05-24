@@ -9,7 +9,7 @@ source_set("web_performance_metrics") {
   deps = [
     ":web_performance_metrics_js",
     "//base",
-    "//ios/web/public:public",
+    "//ios/web/public",
     "//ios/web/public:web_state_observer",
     "//ios/web/public/js_messaging",
   ]

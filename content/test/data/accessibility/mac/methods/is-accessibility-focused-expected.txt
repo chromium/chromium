@@ -1,0 +1,2 @@
+focused.isAccessibilityFocused=1
+not_focused.isAccessibilityFocused=0

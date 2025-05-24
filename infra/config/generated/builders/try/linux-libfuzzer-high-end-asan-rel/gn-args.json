@@ -1,0 +1,23 @@
+{
+  "gn_args": {
+    "archive_seed_corpus": false,
+    "dcheck_always_on": false,
+    "enable_mojom_fuzzer": true,
+    "ffmpeg_branding": "ChromeOS",
+    "generate_fuzzer_owners": false,
+    "high_end_fuzzer_targets": true,
+    "is_asan": true,
+    "is_component_build": true,
+    "is_debug": false,
+    "optimize_for_fuzzing": true,
+    "pdf_enable_xfa": true,
+    "proprietary_codecs": true,
+    "symbol_level": 0,
+    "target_cpu": "x64",
+    "target_os": "linux",
+    "use_libfuzzer": true,
+    "use_reclient": false,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

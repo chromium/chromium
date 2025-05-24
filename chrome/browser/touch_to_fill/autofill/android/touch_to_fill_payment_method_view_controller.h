@@ -7,6 +7,8 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
 
 namespace autofill {
@@ -32,6 +34,12 @@ class TouchToFillPaymentMethodViewController {
       base::android::JavaParamRef<jstring> guid) = 0;
   virtual void ServerIbanSuggestionSelected(JNIEnv* env,
                                             long instrument_id) = 0;
+  // Called when the user taps on a loyalty card in the payments TTF bottom
+  // sheet.
+  virtual void LoyaltyCardSuggestionSelected(
+      JNIEnv* env,
+      const std::string& loyalty_card_number) = 0;
+  virtual int GetJavaResourceId(int native_resource_id) = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
 };
 

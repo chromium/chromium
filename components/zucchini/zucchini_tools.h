@@ -24,20 +24,18 @@ status::Code ReadReferences(ConstBufferView image,
                             std::ostream& out);
 
 // Prints regions and types of all detected executables in |image|. Appends
-// detected subregions to |sub_image_list|.
+// detected subregions to |sub_image_list|. Uses |options| where
+// applicable.
 status::Code DetectAll(ConstBufferView image,
+                       const GenerateOptions& options,
                        std::ostream& out,
                        std::vector<ConstBufferView>* sub_image_list);
 
-// Prints all matched regions from |old_image| to |new_image|.
-// |imposed_matches|, if non-empty, encodes custom element matching to override
-// the default element detection and matching heuristics, and is formatted as:
-//   "#+#=#+#,#+#=#+#,..."  (e.g., "1+2=3+4", "1+2=3+4,5+6=7+8"),
-// where "#+#=#+#" encodes a match as 4 unsigned integers:
-//   [offset in "old", size in "old", offset in "new", size in "new"].
+// Prints all matched regions from |old_image| to |new_image|. Uses |options|
+// where applicable.
 status::Code MatchAll(ConstBufferView old_image,
                       ConstBufferView new_image,
-                      std::string imposed_matches,
+                      const GenerateOptions& options,
                       std::ostream& out);
 
 }  // namespace zucchini

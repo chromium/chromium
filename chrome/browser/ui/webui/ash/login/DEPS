@@ -14,7 +14,6 @@ include_rules = [
   "+chrome/browser/ash/app_mode",
   "+chrome/browser/ash/attestation",
   "+chrome/browser/ash/base",
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/customization",
   "+chrome/browser/ash/drive",
   "+chrome/browser/ash/http_auth_dialog.h",
@@ -64,6 +63,11 @@ include_rules = [
 specific_include_rules = {
   "core_oobe_handler\.cc": [
     "+ash/shell.h",
+  ],
+  "network_state_informer_browsertest\.cc": [
+    "+ash/shell.h",
+    "+components/proxy_config",
+    "+ash/test/ash_test_base.h",
   ],
   "oobe_ui\.cc": [
     "+ash/shell.h",

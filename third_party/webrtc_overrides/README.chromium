@@ -1,11 +1,11 @@
 Name: WebRTC
-URL: http://www.webrtc.org
-Version: 0
-Revision: 0
-License: BSD 3-Clause
+URL: This is the canonical public repository
+Version: N/A
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: yes
 Shipped: yes
+License Android Compatible: yes
 
 Description:
 This folder contains WebRTC files (third_party/webrtc) that should be
@@ -18,4 +18,4 @@ For information on WebRTC, see third_party/webrtc/README.chromium.
 Third party code used in this project is described in the file
 third_party/webrtc/LICENSE_THIRD_PARTY.
 
-Local Modifications:
+The webrtc homepage is www.webrtc.org.

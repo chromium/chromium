@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/input/peak_gpu_memory_tracker.h"
+#include "components/viz/common/resources/peak_gpu_memory_tracker.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -25,8 +25,8 @@ class CONTENT_EXPORT PeakGpuMemoryTrackerFactory {
   // GPU service. Destroy the PeakGpuMemoryTracker to request a report from the
   // GPU service. The report will be recorded in UMA Histograms for the given
   // |usage| type.
-  static std::unique_ptr<input::PeakGpuMemoryTracker> Create(
-      input::PeakGpuMemoryTracker::Usage usage);
+  static std::unique_ptr<viz::PeakGpuMemoryTracker> Create(
+      viz::PeakGpuMemoryTracker::Usage usage);
 };
 
 }  // namespace content

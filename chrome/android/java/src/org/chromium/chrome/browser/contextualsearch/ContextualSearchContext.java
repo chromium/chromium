@@ -6,20 +6,24 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
- * Provides a context in which to search, and links to the native ContextualSearchContext.
- * Includes the selection, selection offsets, surrounding page content, etc.
- * Requires an override of #onSelectionChanged to call when a non-empty selection is established
- * or changed.
+ * Provides a context in which to search, and links to the native ContextualSearchContext. Includes
+ * the selection, selection offsets, surrounding page content, etc. Requires an override of
+ * #onSelectionChanged to call when a non-empty selection is established or changed.
  */
+@NullMarked
 public abstract class ContextualSearchContext {
     static final int INVALID_OFFSET = -1;
 
@@ -42,20 +46,20 @@ public abstract class ContextualSearchContext {
 
     // The detected language of the context, or {@code null} if not yet detected, and empty if
     // it cannot be reliably determined.
-    private String mDetectedLanguage;
+    private @MonotonicNonNull String mDetectedLanguage;
 
     // The offset of an initial Tap gesture within the text content.
     private int mTapOffset = INVALID_OFFSET;
 
     // The selection being resolved, or null if no resolve has started.
-    private String mSelectionBeingResolved;
+    private @Nullable String mSelectionBeingResolved;
 
     // The original encoding of the base page.
     private String mEncoding;
 
     // The word that was tapped, as analyzed internally before selection takes place,
     // or {@code null} if no analysis has been done yet.
-    private String mWordTapped;
+    private @Nullable String mWordTapped;
 
     // The offset of the tapped word within the surrounding text or {@code INVALID_OFFSET} if not
     // yet analyzed.
@@ -64,11 +68,11 @@ public abstract class ContextualSearchContext {
     private int mTapWithinWordOffset = INVALID_OFFSET;
 
     // Translation members.
-    private @NonNull String mTargetLanguage = "";
-    private @NonNull String mFluentLanguages = "";
+    private String mTargetLanguage = "";
+    private String mFluentLanguages = "";
 
     // The Related Searches stamp - non-empty when Related Searches are being requested.
-    private String mRelatedSearchesStamp;
+    private @MonotonicNonNull String mRelatedSearchesStamp;
 
     /** Constructs a context that tracks the selection and some amount of page content. */
     ContextualSearchContext() {
@@ -77,20 +81,21 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * Updates a context to be able to resolve a search term and have a large amount of
-     * page content.
+     * Updates a context to be able to resolve a search term and have a large amount of page
+     * content.
+     *
      * @param homeCountry The country where the user usually resides, or an empty string if not
-     *        known.
+     *     known.
      * @param doSendBasePageUrl Whether the base-page URL should be sent to the server.
      * @param targetLanguage The language to translate into, in case translation might be needed.
-     * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that
-     *        the user can read fluently, or an empty string.
+     * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that the
+     *     user can read fluently, or an empty string.
      */
     void setResolveProperties(
-            @NonNull String homeCountry,
+            String homeCountry,
             boolean doSendBasePageUrl,
-            @NonNull String targetLanguage,
-            @NonNull String fluentLanguages) {
+            String targetLanguage,
+            String fluentLanguages) {
         // TODO(donnd): consider making this a constructor variation.
         mHasSetResolveProperties = true;
         ContextualSearchContextJni.get()
@@ -100,10 +105,11 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * This method should be called to clean up storage when an instance of this class is
-     * no longer in use.  The ContextualSearchContextJni.get().destroy will call the destructor on
-     * the native instance.
+     * This method should be called to clean up storage when an instance of this class is no longer
+     * in use. The ContextualSearchContextJni.get().destroy will call the destructor on the native
+     * instance.
      */
+    @SuppressWarnings("NullAway")
     void destroy() {
         assert mNativePointer != 0;
         ContextualSearchContextJni.get().destroy(mNativePointer, this);
@@ -127,11 +133,13 @@ public abstract class ContextualSearchContext {
 
     /**
      * Sets the surrounding text and selection offsets.
+     *
      * @param encoding The original encoding of the base page.
      * @param surroundingText The text from the base page surrounding the selection.
      * @param startOffset The offset of start the selection.
      * @param endOffset The offset of the end of the selection
      */
+    @Initializer
     @VisibleForTesting
     void setSurroundingText(
             String encoding, String surroundingText, int startOffset, int endOffset) {
@@ -156,7 +164,6 @@ public abstract class ContextualSearchContext {
     /**
      * @return The text that surrounds the selection, or {@code null} if none yet known.
      */
-    @Nullable
     String getSurroundingText() {
         return mSurroundingText;
     }
@@ -185,11 +192,9 @@ public abstract class ContextualSearchContext {
     }
 
     /**
-     * @return The selection being resolved, or {@code null} if no resolve has been
-     * requested.
+     * @return The selection being resolved, or {@code null} if no resolve has been requested.
      */
-    @Nullable
-    String getSelectionBeingResolved() {
+    @Nullable String getSelectionBeingResolved() {
         return mSelectionBeingResolved;
     }
 
@@ -197,7 +202,7 @@ public abstract class ContextualSearchContext {
      * @return The text content that follows the selection (one side of the surrounding text).
      */
     String getTextContentFollowingSelection() {
-        if (mSurroundingText != null
+        if (!TextUtils.isEmpty(mSurroundingText)
                 && mSelectionEndOffset > 0
                 && mSelectionEndOffset <= mSurroundingText.length()) {
             return mSurroundingText.substring(mSelectionEndOffset);
@@ -275,10 +280,10 @@ public abstract class ContextualSearchContext {
     /**
      * Gets the language of the current context's content by calling the native CLD3 detector if
      * needed.
+     *
      * @return An ISO 639 language code string, or an empty string if the language cannot be
-     *         reliably determined.
+     *     reliably determined.
      */
-    @NonNull
     String getDetectedLanguage() {
         assert mSurroundingText != null;
         if (mDetectedLanguage == null) {
@@ -290,16 +295,15 @@ public abstract class ContextualSearchContext {
 
     /**
      * Pushes the given languages down to the native ContextualSearchContext.
+     *
      * @param detectedLanguage An ISO 639 language code string for the language to translate from.
      * @param targetLanguage An ISO 639 language code string to translation into.
-     * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that
-     *        the user can read fluently, or an empty string.
+     * @param fluentLanguages An ordered comma-separated list of ISO 639 language codes that the
+     *     user can read fluently, or an empty string.
      */
     @VisibleForTesting
     void setTranslationLanguages(
-            @NonNull String detectedLanguage,
-            @NonNull String targetLanguage,
-            @NonNull String fluentLanguages) {
+            String detectedLanguage, String targetLanguage, String fluentLanguages) {
         // Set redundant languages to empty strings.
         fluentLanguages = targetLanguage.equals(fluentLanguages) ? "" : fluentLanguages;
         // The target language is essential in order to provide results the user can read, and if
@@ -346,10 +350,10 @@ public abstract class ContextualSearchContext {
 
     /**
      * @return The word tapped, or {@code null} if the word that was tapped cannot be identified by
-     *         the current limited parsing capability.
+     *     the current limited parsing capability.
      * @see #analyzeTap(int)
      */
-    String getWordTapped() {
+    @Nullable String getWordTapped() {
         return mWordTapped;
     }
 
@@ -434,7 +438,7 @@ public abstract class ContextualSearchContext {
     // ============================================================================================
 
     @VisibleForTesting
-    String getRelatedSearchesStamp() {
+    @Nullable String getRelatedSearchesStamp() {
         return mRelatedSearchesStamp;
     }
 
@@ -460,7 +464,7 @@ public abstract class ContextualSearchContext {
         void setResolveProperties(
                 long nativeContextualSearchContext,
                 ContextualSearchContext caller,
-                String homeCountry,
+                @JniType("std::string") String homeCountry,
                 boolean doSendBasePageUrl);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
@@ -471,21 +475,22 @@ public abstract class ContextualSearchContext {
                 int endAdjust);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
+        @JniType("std::string")
         String detectLanguage(long nativeContextualSearchContext, ContextualSearchContext caller);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
         void setTranslationLanguages(
                 long nativeContextualSearchContext,
                 ContextualSearchContext caller,
-                String detectedLanguage,
-                String targetLanguage,
-                String fluentLanguages);
+                @JniType("std::string") String detectedLanguage,
+                @JniType("std::string") String targetLanguage,
+                @JniType("std::string") String fluentLanguages);
 
         @NativeClassQualifiedName("NativeContextualSearchContext")
         void prepareToResolve(
                 long nativeContextualSearchContext,
                 ContextualSearchContext caller,
                 boolean isExactSearch,
-                String relatedSearchesStamp);
+                @JniType("std::string") String relatedSearchesStamp);
     }
 }

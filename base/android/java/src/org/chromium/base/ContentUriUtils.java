@@ -4,18 +4,20 @@
 
 package org.chromium.base;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
+import android.os.ParcelFileDescriptor;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
-import androidx.annotation.Nullable;
 import androidx.documentfile.provider.DocumentFile;
 
 import org.jni_zero.CalledByNative;
@@ -23,12 +25,22 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.io.IOException;
+import java.util.List;
 
 /** This class provides methods to access content URI schemes. */
 @JNINamespace("base")
+@NullMarked
 public abstract class ContentUriUtils {
     private static final String TAG = "ContentUriUtils";
+    private static final String PATH_TREE = "tree";
+    private static final String PATH_DOCUMENT = "document";
+    private static final String PATH_CREATE_CHILD_DOCUMENT = "create-child-document";
+    private static final String PATH_MIME_TYPE = "mime-type";
+    private static final String PATH_DISPLAY_NAME = "display-name";
 
     // Prevent instantiation.
     private ContentUriUtils() {}
@@ -44,13 +56,20 @@ public abstract class ContentUriUtils {
      * @return file descriptor upon success, or -1 otherwise.
      */
     @CalledByNative
-    public static int openContentUri(
+    public static @Nullable ParcelFileDescriptor openContentUri(
             @JniType("std::string") String uriString, @JniType("std::string") String mode) {
         AssetFileDescriptor afd = getAssetFileDescriptor(uriString, mode);
-        if (afd != null) {
-            return afd.getParcelFileDescriptor().detachFd();
-        }
-        return -1;
+        return afd != null ? afd.getParcelFileDescriptor() : null;
+    }
+
+    @CalledByNative
+    private static int getFd(ParcelFileDescriptor parcelFileDescriptor) {
+        return parcelFileDescriptor.getFd();
+    }
+
+    @CalledByNative
+    private static void close(ParcelFileDescriptor parcelFileDescriptor) {
+        StreamUtil.closeQuietly(parcelFileDescriptor);
     }
 
     /**
@@ -97,6 +116,7 @@ public abstract class ContentUriUtils {
      * @param nativeVector vector to populate with results via Natives#addFileInfoToVector(). Called
      *     only if file is found.
      */
+    @SuppressWarnings("NullAway") // Using broad try/catch to catch NullPointerException
     private static void populateFileInfo(String uriString, boolean listFiles, long nativeVector) {
         String[] columns = {
             DocumentsContract.Document.COLUMN_DOCUMENT_ID,
@@ -106,11 +126,10 @@ public abstract class ContentUriUtils {
             DocumentsContract.Document.COLUMN_LAST_MODIFIED,
         };
 
+        Uri uri = Uri.parse(uriString);
         Uri queryUri = null;
         try {
-            DocumentFile file =
-                    DocumentFile.fromTreeUri(
-                            ContextUtils.getApplicationContext(), Uri.parse(uriString));
+            DocumentFile file = DocumentFile.fromTreeUri(ContextUtils.getApplicationContext(), uri);
             if (file != null) {
                 if (listFiles) {
                     String documentId = DocumentsContract.getDocumentId(file.getUri());
@@ -122,11 +141,17 @@ public abstract class ContentUriUtils {
                 }
             }
         } catch (Exception e) {
-            Log.w(TAG, "Failed to get Documents URI for %s, listFiles=%s", uriString, listFiles);
+            // Ignore.
         }
+
         if (queryUri == null) {
-            // If URI is not a documents URI, then try to get size from AFD.
-            if (!listFiles) {
+            if (listFiles) {
+                return;
+            }
+            if (DocumentsContract.isDocumentUri(ContextUtils.getApplicationContext(), uri)) {
+                queryUri = uri;
+            } else {
+                // If URI is not a documents URI, then try to get size from AFD.
                 AssetFileDescriptor afd = getAssetFileDescriptor(uriString, "r");
                 if (afd != null) {
                     ContentUriUtilsJni.get()
@@ -134,19 +159,24 @@ public abstract class ContentUriUtils {
                                     nativeVector, uriString, null, false, afd.getLength(), 0);
                     StreamUtil.closeQuietly(afd);
                 }
+                return;
             }
-            return;
         }
 
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        try (Cursor c = resolver.query(queryUri, columns, null, null, null)) {
+        try (Cursor c = assumeNonNull(resolver.query(queryUri, columns, null, null, null))) {
             while (c.moveToNext()) {
-                String uri =
-                        c.isNull(0)
-                                ? null
-                                : DocumentsContract.buildDocumentUriUsingTree(
-                                                queryUri, c.getString(0))
-                                        .toString();
+                String path = null;
+                if (listFiles) {
+                    path =
+                            c.isNull(0)
+                                    ? null
+                                    : DocumentsContract.buildDocumentUriUsingTree(
+                                                    queryUri, c.getString(0))
+                                            .toString();
+                } else {
+                    path = uriString;
+                }
                 String displayName = c.isNull(1) ? null : c.getString(1);
                 boolean isDirectory =
                         !c.isNull(2)
@@ -155,7 +185,7 @@ public abstract class ContentUriUtils {
                 long lastModified = c.isNull(4) ? 0 : c.getLong(4);
                 ContentUriUtilsJni.get()
                         .addFileInfoToVector(
-                                nativeVector, uri, displayName, isDirectory, size, lastModified);
+                                nativeVector, path, displayName, isDirectory, size, lastModified);
             }
         } catch (Exception e) {
             Log.w(TAG, "Failed query for uri=" + uriString + ", listFiles=" + listFiles, e);
@@ -188,14 +218,26 @@ public abstract class ContentUriUtils {
     }
 
     /**
+     * Returns whether uriString is a Document URI as per DocumentsContract#isDocumentUri().
+     *
+     * @param uriString the content URI to look up.
+     * @return whether uriString is a Document URI.
+     */
+    @CalledByNative
+    private static boolean isDocumentUri(@JniType("std::string") String uriString) {
+        return DocumentsContract.isDocumentUri(
+                ContextUtils.getApplicationContext(), Uri.parse(uriString));
+    }
+
+    /**
      * Retrieve the MIME type for the content URI.
      *
      * @param uriString the content URI to look up.
      * @return MIME type or null if the input params are empty or invalid.
      */
-    @Nullable
     @CalledByNative
-    public static String getMimeType(@JniType("std::string") String uriString) {
+    public static @Nullable @JniType("std::string") String getMimeType(
+            @JniType("std::string") String uriString) {
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
         Uri uri = Uri.parse(uriString);
         if (isVirtualDocument(uri)) {
@@ -214,8 +256,8 @@ public abstract class ContentUriUtils {
      *     security issues.
      * @return AssetFileDescriptor of the content URI, or NULL if the file does not exist.
      */
-    @Nullable
-    private static AssetFileDescriptor getAssetFileDescriptor(String uriString, String mode) {
+    private static @Nullable AssetFileDescriptor getAssetFileDescriptor(
+            String uriString, String mode) {
         if ("w".equals(mode)) {
             Log.e(TAG, "Cannot open files with mode 'w'");
             return null;
@@ -254,6 +296,7 @@ public abstract class ContentUriUtils {
      * @return the display name of the @code uri if present in the database or an empty string
      *     otherwise.
      */
+    @SuppressWarnings("NullAway") // Using broad try/catch to catch NullPointerException
     public static String getDisplayName(Uri uri, Context context, String columnField) {
         if (uri == null) return "";
 
@@ -310,9 +353,8 @@ public abstract class ContentUriUtils {
      * @param uriString the content URI to look up.
      * @return the display name of the uri if present in the database or null otherwise.
      */
-    @Nullable
     @CalledByNative
-    public static String maybeGetDisplayName(@JniType("std::string") String uriString) {
+    public static @Nullable String maybeGetDisplayName(@JniType("std::string") String uriString) {
         Uri uri = Uri.parse(uriString);
 
         try {
@@ -376,7 +418,7 @@ public abstract class ContentUriUtils {
     /**
      * @return whether a Uri has content scheme.
      */
-    public static boolean isContentUri(String uri) {
+    public static boolean isContentUri(@Nullable String uri) {
         if (uri == null) return false;
         Uri parsedUri = Uri.parse(uri);
         return parsedUri != null && ContentResolver.SCHEME_CONTENT.equals(parsedUri.getScheme());
@@ -417,9 +459,8 @@ public abstract class ContentUriUtils {
      * @return uri
      * @see DocumentsContract#buildDocumentUriUsingTree(Uri, String)
      */
-    @Nullable
     @CalledByNative
-    public static String buildDocumentUriUsingTree(
+    public static @Nullable @JniType("std::string") String buildDocumentUriUsingTree(
             @JniType("std::string") String treeUri,
             @JniType("std::string") String encodedDocumentId) {
         try {
@@ -431,12 +472,173 @@ public abstract class ContentUriUtils {
         }
     }
 
+    /**
+     * Return the URI of the matching existing document, or build a URI which can be used by
+     * getDocumentFromQuery() to create the specified file or directory.
+     *
+     * @param parentUri URI of parent directory.
+     * @param displayName display name of file / dir.
+     * @param mimeType mime type of file, leave empty for directory.
+     * @param isDirectory true if document is a directory.
+     * @param create set to true if document should be created if it doesn't exist.
+     * @return Uri or null if no match is found and create is not set.
+     */
+    @CalledByNative
+    public static @Nullable @JniType("std::string") String getChildDocumentOrQuery(
+            @JniType("std::string") String parentUri,
+            @JniType("std::string") String displayName,
+            @JniType("std::string") String mimeType,
+            boolean isDirectory,
+            boolean create) {
+        if (isDirectory) {
+            mimeType = DocumentsContract.Document.MIME_TYPE_DIR;
+        } else if (mimeType.isEmpty()) {
+            mimeType = "application/octet-string";
+        }
+        try {
+            Uri uri = Uri.parse(parentUri);
+            String treeDocumentId = DocumentsContract.getTreeDocumentId(uri);
+            String documentId;
+            try {
+                documentId = DocumentsContract.getDocumentId(uri);
+            } catch (Exception e) {
+                documentId = treeDocumentId;
+            }
+            Uri child = findChild(uri.getAuthority(), treeDocumentId, documentId, displayName);
+            if (child != null) {
+                return child.toString();
+            } else if (!create) {
+                return null;
+            }
+            // Format of URL is:
+            // /create-child-document/tree/<tid>/document/<did>/mime-type/<mt>/display-name/<dn>.
+            return new Uri.Builder()
+                    .scheme(uri.getScheme())
+                    .authority(uri.getAuthority())
+                    .appendPath(PATH_CREATE_CHILD_DOCUMENT)
+                    .appendPath(PATH_TREE)
+                    .appendPath(treeDocumentId)
+                    .appendPath(PATH_DOCUMENT)
+                    .appendPath(documentId)
+                    .appendPath(PATH_MIME_TYPE)
+                    .appendPath(mimeType)
+                    .appendPath(PATH_DISPLAY_NAME)
+                    .appendPath(displayName)
+                    .build()
+                    .toString();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Find the child document.
+     *
+     * @param authority the authority of the parent URI.
+     * @param tree the document ID of the tree.
+     * @param parentDocumentId the document ID of the parent.
+     * @param displayName the display name of the document to find.
+     * @return the child document if found, or null.
+     */
+    private static @Nullable Uri findChild(
+            @Nullable String authority, String tree, String parentDocumentId, String displayName) {
+        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+        String[] columns = {
+            DocumentsContract.Document.COLUMN_DISPLAY_NAME,
+            DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+        };
+        Uri treeUri = DocumentsContract.buildTreeDocumentUri(authority, tree);
+        Uri queryUri = DocumentsContract.buildChildDocumentsUriUsingTree(treeUri, parentDocumentId);
+        // Use a selection to match displayName, but don't trust that it actually works.
+        String selection = String.format("%s = ?", DocumentsContract.Document.COLUMN_DISPLAY_NAME);
+        String[] selectionArgs = {displayName};
+        try (Cursor c =
+                assumeNonNull(resolver.query(queryUri, columns, selection, selectionArgs, null))) {
+            while (c.moveToNext()) {
+                // Verify display-name matches, and we have a valid docid.
+                if (c.isNull(0) || c.isNull(1) || !displayName.equals(c.getString(0))) {
+                    continue;
+                }
+                String documentId = c.getString(1);
+                return DocumentsContract.buildDocumentUriUsingTree(treeUri, documentId);
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Failed to find child %s, query=%s ", displayName, queryUri, e);
+        }
+        return null;
+    }
+
+    /**
+     * Returns true if this is a create child document query created by #getChildDocumentOrQuery().
+     *
+     * @param uriString the content URI.
+     * @return whether this is a create child document query.
+     */
+    @CalledByNative
+    private static boolean isCreateChildDocumentQuery(@JniType("std::string") String uriString) {
+        Uri uri = Uri.parse(uriString);
+        final List<String> paths = uri.getPathSegments();
+        // Format of URL is:
+        // /create-child-document/tree/<tid>/document/<did>/mime-type/<mt>/display-name/<dn>.
+        return paths.size() == 9
+                && PATH_CREATE_CHILD_DOCUMENT.equals(paths.get(0))
+                && PATH_TREE.equals(paths.get(1))
+                && PATH_DOCUMENT.equals(paths.get(3))
+                && PATH_MIME_TYPE.equals(paths.get(5))
+                && PATH_DISPLAY_NAME.equals(paths.get(7));
+    }
+
+    /**
+     * Gets or creates a document with the details encodied in queryUriString which must be
+     * generated from #getChildDocumentOrQuery().
+     *
+     * @param queryUriString the content URI to create a document from.
+     * @param create if true, the document will be created if it does not exist.
+     * @return The URI of the created document or null
+     */
+    @SuppressWarnings("NullAway") // Using broad try/catch to catch NullPointerException
+    @CalledByNative
+    private static @Nullable @JniType("std::string") String getDocumentFromQuery(
+            @JniType("std::string") String queryUriString, boolean create) {
+        if (!isCreateChildDocumentQuery(queryUriString)) {
+            return null;
+        }
+        Uri uri = Uri.parse(queryUriString);
+        final List<String> paths = uri.getPathSegments();
+        // Format of URL is:
+        // /create-child-document/tree/<tid>/document/<did>/mime-type/<mt>/display-name/<dn>.
+        String tree = paths.get(2);
+        String parentDocumentId = paths.get(4);
+        String mimeType = paths.get(6);
+        String displayName = paths.get(8);
+        ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
+
+        // Check if document already exists.
+        Uri child = findChild(uri.getAuthority(), tree, parentDocumentId, displayName);
+        if (child != null) {
+            return child.toString();
+        }
+
+        // Create document if requested.
+        if (create) {
+            Uri treeUri = DocumentsContract.buildTreeDocumentUri(uri.getAuthority(), tree);
+            Uri parentUri = DocumentsContract.buildDocumentUriUsingTree(treeUri, parentDocumentId);
+            try {
+                return DocumentsContract.createDocument(resolver, parentUri, mimeType, displayName)
+                        .toString();
+            } catch (Exception e) {
+                Log.w(TAG, "Failed to create %s: %s", queryUriString, e.getMessage());
+            }
+        }
+        return null;
+    }
+
     @NativeMethods
     interface Natives {
         void addFileInfoToVector(
                 long vectorPointer,
-                String uri,
-                String displayName,
+                @Nullable @JniType("std::string") String uri,
+                @Nullable @JniType("std::string") String displayName,
                 boolean isDirectory,
                 long size,
                 long lastModified);

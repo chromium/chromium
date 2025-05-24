@@ -18,18 +18,12 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_version_info.h"
+#include "ui/gl/startup_trace.h"
 
 namespace gl {
 
 void DriverGL::InitializeStaticBindings() {
-#if DCHECK_IS_ON()
-  // Ensure struct has been zero-initialized.
-  auto bytes = base::byte_span_from_ref(*this);
-  for (auto byte : bytes) {
-    DCHECK_EQ(0, byte);
-  };
-#endif
-
+  GPU_STARTUP_TRACE_EVENT("DriverGL::InitializeStaticBindings");
   fn.glActiveTextureFn = reinterpret_cast<glActiveTextureProc>(
       GetGLProcAddress("glActiveTexture"));
   fn.glAttachShaderFn =
@@ -343,6 +337,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_AMD_framebuffer_multisample_advanced");
   ext.b_GL_ANGLE_base_vertex_base_instance =
       gfx::HasExtension(extensions, "GL_ANGLE_base_vertex_base_instance");
+  ext.b_GL_ANGLE_blob_cache =
+      gfx::HasExtension(extensions, "GL_ANGLE_blob_cache");
   ext.b_GL_ANGLE_framebuffer_blit =
       gfx::HasExtension(extensions, "GL_ANGLE_framebuffer_blit");
   ext.b_GL_ANGLE_framebuffer_multisample =
@@ -625,6 +621,12 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   } else if (ext.b_GL_ANGLE_framebuffer_blit) {
     fn.glBlitFramebufferFn = reinterpret_cast<glBlitFramebufferProc>(
         GetGLProcAddress("glBlitFramebufferANGLE"));
+  }
+
+  if (ext.b_GL_ANGLE_blob_cache) {
+    fn.glBlobCacheCallbacksANGLEFn =
+        reinterpret_cast<glBlobCacheCallbacksANGLEProc>(
+            GetGLProcAddress("glBlobCacheCallbacksANGLE"));
   }
 
   if (ver->IsAtLeastGLES(3u, 0u)) {
@@ -2558,8 +2560,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
 }
 
 void DriverGL::ClearBindings() {
-  auto bytes = base::byte_span_from_ref(*this);
-  std::ranges::fill(bytes, 0);
+  *this = {};
 }
 
 void GLApiBase::glAcquireTexturesANGLEFn(GLuint numTextures,
@@ -2746,6 +2747,12 @@ void GLApiBase::glBlitFramebufferFn(GLint srcX0,
                                     GLenum filter) {
   driver_->fn.glBlitFramebufferFn(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0,
                                   dstX1, dstY1, mask, filter);
+}
+
+void GLApiBase::glBlobCacheCallbacksANGLEFn(GLSETBLOBPROCANGLE set,
+                                            GLGETBLOBPROCANGLE get,
+                                            const void* userData) {
+  driver_->fn.glBlobCacheCallbacksANGLEFn(set, get, userData);
 }
 
 void GLApiBase::glBufferDataFn(GLenum target,
@@ -6042,6 +6049,13 @@ void TraceGLApi::glBlitFramebufferFn(GLint srcX0,
   TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glBlitFramebuffer");
   gl_api_->glBlitFramebufferFn(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1,
                                dstY1, mask, filter);
+}
+
+void TraceGLApi::glBlobCacheCallbacksANGLEFn(GLSETBLOBPROCANGLE set,
+                                             GLGETBLOBPROCANGLE get,
+                                             const void* userData) {
+  TRACE_EVENT_BINARY_EFFICIENT0("gpu", "TraceGLAPI::glBlobCacheCallbacksANGLE");
+  gl_api_->glBlobCacheCallbacksANGLEFn(set, get, userData);
 }
 
 void TraceGLApi::glBufferDataFn(GLenum target,
@@ -9941,6 +9955,16 @@ void LogGLApi::glBlitFramebufferFn(GLint srcX0,
                                      << GLEnums::GetStringEnum(filter) << ")");
   gl_api_->glBlitFramebufferFn(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1,
                                dstY1, mask, filter);
+}
+
+void LogGLApi::glBlobCacheCallbacksANGLEFn(GLSETBLOBPROCANGLE set,
+                                           GLGETBLOBPROCANGLE get,
+                                           const void* userData) {
+  GL_SERVICE_LOG("glBlobCacheCallbacksANGLE"
+                 << "(" << reinterpret_cast<void*>(set) << ", "
+                 << reinterpret_cast<void*>(get) << ", "
+                 << static_cast<const void*>(userData) << ")");
+  gl_api_->glBlobCacheCallbacksANGLEFn(set, get, userData);
 }
 
 void LogGLApi::glBufferDataFn(GLenum target,
@@ -14488,10 +14512,8 @@ void LogGLApi::glWindowRectanglesEXTFn(GLenum mode,
 
 namespace {
 void NoContextHelper(const char* method_name) {
-  DUMP_WILL_BE_NOTREACHED()
-      << "Trying to call " << method_name << " without current GL context";
-  LOG(ERROR) << "Trying to call " << method_name
-             << " without current GL context";
+  NOTREACHED() << "Trying to call " << method_name
+               << " without current GL context";
 }
 }  // namespace
 
@@ -14681,6 +14703,12 @@ void NoContextGLApi::glBlitFramebufferFn(GLint srcX0,
                                          GLbitfield mask,
                                          GLenum filter) {
   NoContextHelper("glBlitFramebuffer");
+}
+
+void NoContextGLApi::glBlobCacheCallbacksANGLEFn(GLSETBLOBPROCANGLE set,
+                                                 GLGETBLOBPROCANGLE get,
+                                                 const void* userData) {
+  NoContextHelper("glBlobCacheCallbacksANGLE");
 }
 
 void NoContextGLApi::glBufferDataFn(GLenum target,

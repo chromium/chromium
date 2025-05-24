@@ -7,12 +7,10 @@
 #include "ash/shell.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/media_ui_ash.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -39,10 +37,8 @@ ui::MouseEvent pressed_event(ui::EventType::kMousePressed,
 
 class GlobalMediaControlsCastStartTest : public InProcessBrowserTest {
  public:
-  GlobalMediaControlsCastStartTest() {
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
-  }
+  GlobalMediaControlsCastStartTest() = default;
+  ~GlobalMediaControlsCastStartTest() override = default;
 
  protected:
   // Registers a DeviceService that will later bind a DeviceListHost when asked.
@@ -123,15 +119,13 @@ class GlobalMediaControlsCastStartTest : public InProcessBrowserTest {
     return crosapi::CrosapiManager::Get()->crosapi_ash()->media_ui_ash();
   }
 
-  base::test::ScopedFeatureList feature_list_;
-
   // Remotes to objects in Ash.
   mojo::Remote<global_media_controls::mojom::DevicePickerProvider>
       picker_provider_;
   mojo::Remote<global_media_controls::mojom::DeviceListClient>
       device_list_client_;
 
-  // Mocks for objects in Lacros that communicate with Chromecast devices.
+  // Mocks for objects in ash browser that communicate with Chromecast devices.
   global_media_controls::test::MockDeviceService device_service_;
   global_media_controls::test::MockDeviceListHost device_list_host_;
 };

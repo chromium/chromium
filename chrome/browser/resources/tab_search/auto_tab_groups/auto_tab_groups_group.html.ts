@@ -10,45 +10,35 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div class="group">
-  ${this.multiTabOrganization ? html`
-    <div class="group-header-row">
-      ${this.showInput_ ? html`
-        <cr-input id="multiOrganizationInput" type="text" .value="${this.name}"
-            @value-changed="${this.onNameChanged_}"
-            aria-label="${this.getInputAriaLabel_()}"
-            @focus="${this.onInputFocus_}"
-            @blur="${this.onInputBlur_}"
-            @keydown="${this.onInputKeyDown_}">
-        </cr-input>
-      ` : html`
-        <div class="group-name-row">
-          <div class="auto-tab-groups-header group-name">${this.name}</div>
-          <cr-icon-button class="icon-edit"
-              aria-label="${this.getEditButtonAriaLabel_()}"
-              title="${this.getEditButtonAriaLabel_()}"
-              @click="${this.onEditClick_}">
-          </cr-icon-button>
-        </div>
-      `}
-      ${this.showReject ? html`
-        <cr-icon-button id="rejectButton"
-            aria-label="${this.getRejectButtonAriaLabel_()}"
-            title="${this.getRejectButtonAriaLabel_()}"
-            iron-icon="tab-search:close"
-            @click="${this.onRejectGroupClick_}">
+  <div class="group-header-row">
+    ${this.showInput_ ? html`
+      <cr-input id="input" type="text" .value="${this.name}"
+          @value-changed="${this.onNameChanged_}"
+          aria-label="${this.getInputAriaLabel_()}"
+          @focus="${this.onInputFocus_}"
+          @blur="${this.onInputBlur_}"
+          @keydown="${this.onInputKeyDown_}">
+      </cr-input>
+    ` : html`
+      <div class="group-name-row">
+        <div class="auto-tab-groups-header group-name">${this.name}</div>
+        <cr-icon-button class="icon-edit"
+            aria-label="${this.getEditButtonAriaLabel_()}"
+            title="${this.getEditButtonAriaLabel_()}"
+            @click="${this.onEditClick_}">
         </cr-icon-button>
-      ` : ''}
-    </div>
-    <div class="divider"></div>
-  ` : html`
-    <cr-input id="singleOrganizationInput" type="text" .value="${this.name}"
-        @value-changed="${this.onNameChanged_}"
-        aria-label="${this.getInputAriaLabel_()}"
-        @focus="${this.onInputFocus_}"
-        @blur="${this.onInputBlur_}"
-        @keydown="${this.onInputKeyDown_}">
-    </cr-input>
-  `}
+      </div>
+    `}
+    ${this.showReject ? html`
+      <cr-icon-button id="rejectButton"
+          aria-label="${this.getRejectButtonAriaLabel_()}"
+          title="${this.getRejectButtonAriaLabel_()}"
+          iron-icon="tab-search:close"
+          @click="${this.onRejectGroupClick_}">
+      </cr-icon-button>
+    ` : ''}
+  </div>
+  <div class="divider"></div>
   <cr-page-selector id="selector" role="listbox" show-all
       @keydown="${this.onListKeyDown_}"
       selectable="tab-search-item"
@@ -59,22 +49,19 @@ export function getHtml(this: AutoTabGroupsGroupElement) {
       ` : ''}
       <tab-search-item class="mwb-list-item" .data="${item}"
           role="option"
-          ?compact="${this.multiTabOrganization}"
+          size="compact"
           tabindex="${this.getTabIndex_(index)}"
           data-index="${index}"
           @close="${this.onTabRemove_}"
           @focus="${this.onTabFocus_}"
           @blur="${this.onTabBlur_}"
           close-button-icon="tab-search:remove"
-          in-suggested-group>
+          close-button-tooltip="$i18n{tabOrganizationCloseTabTooltip}"
+          close-button-aria-label="${this.getCloseButtonAriaLabel_(item)}"
+          hide-timestamp>
       </tab-search-item>
     `)}
   </cr-page-selector>
-  ${!this.multiTabOrganization ? html`
-    <auto-tab-groups-results-actions
-        @create-group-click="${this.onCreateGroupClick_}">
-    </auto-tab-groups-results-actions>
-  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

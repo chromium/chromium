@@ -1,2 +1,19 @@
-<!DOCTYPE html>
-<img src="/blank.jpg" loading="lazy">
+<!doctype html>
+<img id="image" src="/blank.jpg" loading="lazy" />
+
+<script>
+  let image_loaded = false;
+  let promise_with_resolvers = Promise.withResolvers();
+  let image = document.getElementById("image");
+
+  image.addEventListener("load", (_) => {
+    image_loaded = true;
+    promise_with_resolvers.resolve();
+  });
+
+  function runLoop() {
+    return new Promise((resolve) => {
+      setTimeout(resolve, 100);
+    });
+  }
+</script>

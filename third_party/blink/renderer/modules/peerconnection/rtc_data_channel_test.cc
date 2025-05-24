@@ -16,6 +16,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -257,8 +258,8 @@ class RTCDataChannelTest : public ::testing::Test {
     V8TestingScope scope;
     ScopedTransferableRTCDataChannelForTest scoped_feature(/*enabled=*/true);
 
-    rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-        new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+    webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+        new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
     auto* channel = MakeGarbageCollected<RTCDataChannel>(
         scope.GetExecutionContext(), webrtc_channel);
 
@@ -285,8 +286,8 @@ class RTCDataChannelTest : public ::testing::Test {
 }  // namespace
 
 TEST_F(RTCDataChannelTest, ChangeStateEarly) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
 
   // Change state on the webrtc channel before creating the blink channel.
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
@@ -300,12 +301,12 @@ TEST_F(RTCDataChannelTest, ChangeStateEarly) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the early state change was not lost.
-  EXPECT_EQ("open", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kOpen, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, BufferedAmount) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
@@ -319,8 +320,8 @@ TEST_F(RTCDataChannelTest, BufferedAmount) {
 }
 
 TEST_F(RTCDataChannelTest, BufferedAmountLow) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* onbufferedamountlow_handler = MakeGarbageCollected<MockEventListener>();
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
@@ -340,26 +341,26 @@ TEST_F(RTCDataChannelTest, BufferedAmountLow) {
 }
 
 TEST_F(RTCDataChannelTest, Open) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
   channel->OnStateChange(webrtc::DataChannelInterface::kOpen);
-  EXPECT_EQ("open", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kOpen, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, Close) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
   channel->OnStateChange(webrtc::DataChannelInterface::kClosed);
-  EXPECT_EQ("closed", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosed, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, Message) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* onmessage_handler = MakeGarbageCollected<MockEventListener>();
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
@@ -370,8 +371,8 @@ TEST_F(RTCDataChannelTest, Message) {
 }
 
 TEST_F(RTCDataChannelTest, SendAfterContextDestroyed) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
@@ -386,15 +387,15 @@ TEST_F(RTCDataChannelTest, SendAfterContextDestroyed) {
 }
 
 TEST_F(RTCDataChannelTest, CloseAfterContextDestroyed) {
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
 
   channel->ContextDestroyed();
   channel->close();
-  EXPECT_EQ(String::FromUTF8("closed"), channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosed, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, StopsThrottling) {
@@ -404,29 +405,29 @@ TEST_F(RTCDataChannelTest, StopsThrottling) {
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Creating an RTCDataChannel doesn't enable the opt-out.
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
       scope.GetExecutionContext(), webrtc_channel);
-  EXPECT_EQ("connecting", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kConnecting, channel->readyState());
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Transitioning to 'open' enables the opt-out.
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("open", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kOpen, channel->readyState());
   EXPECT_TRUE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Transitioning to 'closing' keeps the opt-out enabled.
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kClosing);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("closing", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosing, channel->readyState());
   EXPECT_TRUE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Transitioning to 'closed' stops the opt-out.
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kClosed);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("closed", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosed, channel->readyState());
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 }
 
@@ -434,8 +435,8 @@ TEST_F(RTCDataChannelTest, TransfersDisabled) {
   V8TestingScope scope;
   ScopedTransferableRTCDataChannelForTest scoped_feature(/*enabled=*/false);
 
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
       scope.GetExecutionContext(), webrtc_channel);
 
@@ -446,8 +447,8 @@ TEST_F(RTCDataChannelTest, TransferableInCreationScopeOnly) {
   V8TestingScope scope;
   ScopedTransferableRTCDataChannelForTest scoped_feature(/*enabled=*/true);
 
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
       scope.GetExecutionContext(), webrtc_channel);
 
@@ -464,8 +465,8 @@ TEST_F(RTCDataChannelTest, TransferAllowedOnlyOnce) {
   V8TestingScope scope;
   ScopedTransferableRTCDataChannelForTest scoped_feature(/*enabled=*/true);
 
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
       scope.GetExecutionContext(), webrtc_channel);
 
@@ -518,8 +519,8 @@ TEST_F(RTCDataChannelTest, SendPreventsTransfers) {
 TEST_F(RTCDataChannelTest, NoSendAfterClose) {
   V8TestingScope scope;
 
-  rtc::scoped_refptr<MockDataChannel> webrtc_channel(
-      new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
+  webrtc::scoped_refptr<MockDataChannel> webrtc_channel(
+      new webrtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
       scope.GetExecutionContext(), webrtc_channel);
   channel->close();

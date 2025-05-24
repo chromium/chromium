@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/support_tool/screenshot_data_collector.h"
 
 #include <string>
@@ -54,10 +59,7 @@ class ScreenshotDataCollectorTest : public ::testing::Test {
     const GURL url(kTestImageBase64);
     std::string mime_type, charset, data;
     EXPECT_TRUE(net::DataURL::Parse(url, &mime_type, &charset, &data));
-    bitmap_ = *gfx::JPEGCodec::Decode(
-                   reinterpret_cast<const unsigned char*>(data.c_str()),
-                   data.length())
-                   .get();
+    bitmap_ = gfx::JPEGCodec::Decode(base::as_byte_span(data));
 
     webrtc::DesktopSize size(bitmap_.width(), bitmap_.height());
     frame_ = std::make_unique<webrtc::BasicDesktopFrame>(std::move(size));

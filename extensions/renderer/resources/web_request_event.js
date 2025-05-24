@@ -6,6 +6,8 @@ var CHECK = requireNative('logging').CHECK;
 var idGeneratorNatives = requireNative('id_generator');
 var utils = require('utils');
 var webRequestInternal = getInternalApi('webRequestInternal');
+const allowAsyncResponsesForAllEvents =
+    requireNative('web_request_natives').AllowAsyncResponsesForAllEvents();
 const isServiceWorkerContext =
     requireNative('service_worker_natives').IsServiceWorkerContext();
 
@@ -102,14 +104,33 @@ WebRequestEventImpl.prototype.addListener =
     var webViewInstanceId = this.webViewInstanceId;
     subEventCallback = function() {
       var requestId = arguments[0].requestId;
-      try {
-        var result = $Function.apply(cb, null, arguments);
+
+      function sendEventHandledWithResult(result) {
         webRequestInternal.eventHandled(
             eventName, subEventName, requestId, webViewInstanceId, result);
-      } catch (e) {
+      }
+      function handleHandlerError(e) {
         webRequestInternal.eventHandled(
             eventName, subEventName, requestId, webViewInstanceId);
         throw e;
+      }
+
+      try {
+        let result = $Function.apply(cb, null, arguments);
+        if (allowAsyncResponsesForAllEvents &&
+            result instanceof $Promise.self) {
+          $Promise.catch(
+              $Promise.then(result, (asyncResult) => {
+                sendEventHandledWithResult(asyncResult);
+              }),
+              (e) => {
+                handleHandlerError(e);
+              });
+        } else {
+          sendEventHandledWithResult(result);
+        }
+      } catch (e) {
+        handleHandlerError(e);
       }
     };
   } else if (

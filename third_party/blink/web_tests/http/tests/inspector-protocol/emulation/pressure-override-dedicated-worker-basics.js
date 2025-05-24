@@ -9,9 +9,10 @@
 
   testRunner.expectedSuccess(
       'Set pressure state override to \'critical\'',
-      await dp.Emulation.setPressureStateOverride({
+      await dp.Emulation.setPressureDataOverride({
         source: 'cpu',
         state: 'critical',
+        ownContributionEstimate: 0.2
       }));
 
   // Ensure that the system focus and focused frame checks in

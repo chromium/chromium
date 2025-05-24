@@ -4,6 +4,7 @@
 
 #include "device/udev_linux/fake_udev_loader.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -11,7 +12,6 @@
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 
 struct udev {
   // empty
@@ -220,7 +220,7 @@ udev_device* FakeUdevLoader::udev_device_new_from_subsystem_sysname(
 udev_device* FakeUdevLoader::udev_device_new_from_syspath(udev* udev_context,
                                                           const char* syspath) {
   DCHECK(syspath);
-  auto it = base::ranges::find(devices_, syspath, &udev_device::syspath);
+  auto it = std::ranges::find(devices_, syspath, &udev_device::syspath);
   return it == devices_.end() ? nullptr : it->get();
 }
 

@@ -4,11 +4,13 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -64,7 +66,7 @@ void WaitForExtensionsDevModeControlsVisibility(
           "  }"
           "});",
           dev_controls_accessor_js, dev_controls_visibility_check_js,
-          (expected_visible ? "true" : "false"))));
+          base::ToString(expected_visible))));
 }
 
 // Utility to get a PolicyMap for setting the DeveloperToolsAvailability policy
@@ -338,6 +340,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, DeveloperToolsDisabledExtensionsDevMode) {
 #endif
 IN_PROC_BROWSER_TEST_F(PolicyTest,
                        MAYBE_DebugURLsDisabledByDeveloperToolsAvailability) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler;
+
   // Get a url for a standard web page.
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL tab_url(embedded_test_server()->GetURL("/empty.html"));

@@ -10,13 +10,15 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A {@link ViewHolder} responsible for building and setting properties on the tiles. */
+@NullMarked
 class TileViewHolder extends ViewHolder {
     /** Creates an instance of a {@link TileViewHolder}. */
     protected TileViewHolder(View itemView) {

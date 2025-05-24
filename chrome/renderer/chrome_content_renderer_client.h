@@ -21,7 +21,7 @@
 #include "chrome/common/media/webrtc_logging.mojom.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/nacl/common/buildflags.h"
-#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_model_setter_impl.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_thread.h"
@@ -45,6 +45,10 @@
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/common/plugin.mojom.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_model_setter_impl.h"
 #endif
 
 class ChromeRenderThreadObserver;
@@ -75,6 +79,10 @@ namespace extensions {
 class Extension;
 }
 #endif
+
+namespace fingerprinting_protection_filter {
+class UnverifiedRulesetDealer;
+}  // namespace fingerprinting_protection_filter
 
 namespace subresource_filter {
 class UnverifiedRulesetDealer;
@@ -227,7 +235,7 @@ class ChromeContentRendererClient
   void DidSetUserAgent(const std::string& user_agent) override;
   void AppendContentSecurityPolicy(
       const blink::WebURL& url,
-      blink::WebVector<blink::WebContentSecurityPolicyHeader>* csp) override;
+      std::vector<blink::WebContentSecurityPolicyHeader>* csp) override;
   std::unique_ptr<blink::WebLinkPreviewTriggerer> CreateLinkPreviewTriggerer()
       override;
 
@@ -300,11 +308,15 @@ class ChromeContentRendererClient
 #endif
   std::unique_ptr<subresource_filter::UnverifiedRulesetDealer>
       subresource_filter_ruleset_dealer_;
+  std::unique_ptr<fingerprinting_protection_filter::UnverifiedRulesetDealer>
+      fingerprinting_protection_ruleset_dealer_;
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::set<std::string> allowed_camera_device_origins_;
 #endif
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::unique_ptr<safe_browsing::PhishingModelSetterImpl>
       phishing_model_setter_;
+#endif
 
   scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       browser_interface_broker_;

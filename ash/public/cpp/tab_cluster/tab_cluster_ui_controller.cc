@@ -4,9 +4,10 @@
 
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_controller.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/tab_cluster/tab_cluster_ui_item.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 
 namespace ash {
 
@@ -31,8 +32,8 @@ void TabClusterUIController::UpdateTabItem(TabClusterUIItem* tab_item) {
 }
 
 void TabClusterUIController::RemoveTabItem(TabClusterUIItem* tab_item) {
-  auto iter = base::ranges::find(tab_items_, tab_item,
-                                 &std::unique_ptr<TabClusterUIItem>::get);
+  auto iter = std::ranges::find(tab_items_, tab_item,
+                                &std::unique_ptr<TabClusterUIItem>::get);
   DCHECK(iter != tab_items_.end());
   // Since observer may need to use item values, notify observer before removing
   // from item list.

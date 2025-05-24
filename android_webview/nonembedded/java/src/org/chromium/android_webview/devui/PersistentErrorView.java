@@ -16,7 +16,7 @@ import androidx.annotation.IdRes;
 
 /** Shows a text message at the top of a Layout to show error messages. */
 public class PersistentErrorView {
-    private ViewGroup mViewGroup;
+    private final ViewGroup mViewGroup;
 
     /**
      * @param context The Activity where this View is shon.

@@ -7,12 +7,13 @@
  * dialog for viewing and erasing credentials stored on a security key.
  */
 
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import '../site_favicon.js';
 import '../i18n_setup.js';
@@ -85,6 +86,8 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
         observer: 'dialogPageChanged_',
       },
 
+      dialogTitle_: String,
+
       /**
        * The list of credentials displayed in the dialog.
        */
@@ -111,29 +114,28 @@ export class SettingsSecurityKeysCredentialManagementDialogElement extends
       minPinLength_: Number,
       newDisplayName_: String,
       newUsername_: String,
-      userHandle_: String,
       userNameInputError_: String,
     };
   }
 
-  private cancelButtonVisible_: boolean;
-  private closeButtonVisible_: boolean;
-  private confirmButtonDisabled_: boolean;
-  private confirmButtonLabel_: string;
-  private confirmButtonVisible_: boolean;
-  private confirmMsg_: string;
-  private credentialIdToDelete_: string;
-  private credentials_: Credential[];
-  private dialogPage_: CredentialManagementDialogPage;
-  private dialogTitle_: string;
-  private displayNameInputError_: string;
-  private editingCredential_: Credential;
-  private editButtonVisible_: boolean;
-  private errorMsg_: string;
-  private minPinLength_: number;
-  private newDisplayName_: string;
-  private newUsername_: string;
-  private userNameInputError_: string;
+  declare private cancelButtonVisible_: boolean;
+  declare private closeButtonVisible_: boolean;
+  declare private confirmButtonDisabled_: boolean;
+  declare private confirmButtonLabel_: string;
+  declare private confirmButtonVisible_: boolean;
+  declare private confirmMsg_: string;
+  declare private credentialIdToDelete_: string;
+  declare private credentials_: Credential[];
+  declare private dialogPage_: CredentialManagementDialogPage;
+  declare private dialogTitle_: string;
+  declare private displayNameInputError_: string;
+  declare private editingCredential_: Credential;
+  declare private editButtonVisible_: boolean;
+  declare private errorMsg_: string;
+  declare private minPinLength_: number;
+  declare private newDisplayName_: string;
+  declare private newUsername_: string;
+  declare private userNameInputError_: string;
 
   private browserProxy_: SecurityKeysCredentialBrowserProxy =
       SecurityKeysCredentialBrowserProxyImpl.getInstance();

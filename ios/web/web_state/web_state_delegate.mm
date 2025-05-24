@@ -89,4 +89,6 @@ id<CRWResponderInputView> WebStateDelegate::GetResponderInputView(
   return nil;
 }
 
-}  // web
+void WebStateDelegate::OnNewWebViewCreated(WebState* source) {}
+
+}  // namespace web

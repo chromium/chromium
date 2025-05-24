@@ -28,16 +28,20 @@ std::unique_ptr<EntityChange> EntityChange::CreateUpdate(
 
 // static
 std::unique_ptr<EntityChange> EntityChange::CreateDelete(
-    const std::string& storage_key) {
+    const std::string& storage_key,
+    EntityData data) {
   return base::WrapUnique(
-      new EntityChange(storage_key, ACTION_DELETE, EntityData()));
+      new EntityChange(storage_key, ACTION_DELETE, std::move(data)));
 }
 
 // static
 std::unique_ptr<EntityChange>
 EntityChange::CreateDeletedCollaborationMembership(
     const std::string& storage_key) {
-  std::unique_ptr<EntityChange> entity_change = CreateDelete(storage_key);
+  // EntityData() is not used for the deleted collaboration membership because
+  // this is not a remote entity update.
+  std::unique_ptr<EntityChange> entity_change =
+      CreateDelete(storage_key, EntityData());
   entity_change->is_deleted_collaboration_membership_ = true;
   return entity_change;
 }

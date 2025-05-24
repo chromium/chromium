@@ -4,7 +4,7 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -44,7 +44,7 @@
   },
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {

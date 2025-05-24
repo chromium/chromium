@@ -40,7 +40,7 @@ BleV2Socket::BleV2Socket() {
   input_stream_ = std::make_unique<BleV2InputStream>();
   output_stream_ = std::make_unique<BleV2OutputStream>();
 }
-BleV2Socket::~BleV2Socket() {}
+BleV2Socket::~BleV2Socket() = default;
 
 InputStream& BleV2Socket::GetInputStream() {
   // Left deliberately unimplemented.
@@ -57,17 +57,19 @@ Exception BleV2Socket::Close() {
   return {Exception::kSuccess};
 }
 
-::nearby::api::ble_v2::BlePeripheral* BleV2Socket::GetRemotePeripheral() {
-  // Left deliberately unimplemented.
+::nearby::api::ble_v2::BlePeripheral::UniqueId
+BleV2Socket::GetRemotePeripheralId() {
+  // Although this appears to be implemented, this is incorrect and only left
+  // in this state for overriding and testing purposes.
   auto device_info = bluetooth::mojom::DeviceInfo::New();
   peripheral_ = std::make_unique<BleV2RemotePeripheral>(std::move(device_info));
-  return peripheral_.get();
+  return peripheral_->GetUniqueId();
 }
 
 // =================BleV2ServerSocket=================
-BleV2ServerSocket::BleV2ServerSocket() {}
+BleV2ServerSocket::BleV2ServerSocket() = default;
 
-BleV2ServerSocket::~BleV2ServerSocket() {}
+BleV2ServerSocket::~BleV2ServerSocket() = default;
 
 std::unique_ptr<::nearby::api::ble_v2::BleSocket> BleV2ServerSocket::Accept() {
   // This implementation of Accept intentionally blocks on the calling thread

@@ -105,13 +105,14 @@ MockVideoEncoder* CreateMockEncoder(ScriptState* script_state,
                                                 exception_state);
 }
 
-VideoEncoderInit* CreateInit(ScriptFunction* output_callback,
+VideoEncoderInit* CreateInit(ScriptState* script_state,
+                             ScriptFunction* output_callback,
                              ScriptFunction* error_callback) {
   auto* init = MakeGarbageCollected<VideoEncoderInit>();
-  init->setOutput(
-      V8EncodedVideoChunkOutputCallback::Create(output_callback->V8Function()));
-  init->setError(
-      V8WebCodecsErrorCallback::Create(error_callback->V8Function()));
+  init->setOutput(V8EncodedVideoChunkOutputCallback::Create(
+      output_callback->ToV8Function(script_state)));
+  init->setError(V8WebCodecsErrorCallback::Create(
+      error_callback->ToV8Function(script_state)));
   return init;
 }
 
@@ -146,8 +147,8 @@ TEST_F(VideoEncoderTest, RejectFlushAfterClose) {
   auto* script_state = v8_scope.GetScriptState();
 
   MockFunctionScope mock_function(script_state);
-  auto* init =
-      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectNoCall());
+  auto* init = CreateInit(script_state, mock_function.ExpectNoCall(),
+                          mock_function.ExpectNoCall());
   auto* encoder = CreateEncoder(script_state, init, es);
   ASSERT_FALSE(es.HadException());
 
@@ -195,8 +196,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
       pressure_manager_provider.GetEncoderPressureManager();
 
   // Create a video encoder.
-  auto* init =
-      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectNoCall());
+  auto* init = CreateInit(script_state, mock_function.ExpectNoCall(),
+                          mock_function.ExpectNoCall());
   auto* encoder = CreateMockEncoder(script_state, init, es);
   ASSERT_FALSE(es.HadException());
 
@@ -300,8 +301,8 @@ TEST_F(
   MockFunctionScope mock_function(script_state);
 
   // Create a video encoder.
-  auto* init =
-      CreateInit(mock_function.ExpectCall(), mock_function.ExpectNoCall());
+  auto* init = CreateInit(script_state, mock_function.ExpectCall(),
+                          mock_function.ExpectNoCall());
   auto* encoder = CreateMockEncoder(script_state, init, es);
 
   auto* config = CreateConfig();
@@ -373,8 +374,8 @@ TEST_F(VideoEncoderTest,
   MockFunctionScope mock_function(script_state);
 
   // Create a video encoder.
-  auto* init =
-      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectNoCall());
+  auto* init = CreateInit(script_state, mock_function.ExpectNoCall(),
+                          mock_function.ExpectNoCall());
   auto* encoder = CreateMockEncoder(script_state, init, es);
 
   auto* config = CreateConfig();
@@ -443,8 +444,8 @@ TEST_F(VideoEncoderTest,
   MockFunctionScope mock_function(script_state);
 
   // Create a video encoder.
-  auto* init =
-      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectCall());
+  auto* init = CreateInit(script_state, mock_function.ExpectNoCall(),
+                          mock_function.ExpectCall());
   auto* encoder = CreateMockEncoder(script_state, init, es);
 
   auto* config = CreateConfig();
@@ -495,8 +496,8 @@ TEST_F(VideoEncoderTest, NoAvailableMediaVideoEncoder) {
   MockFunctionScope mock_function(script_state);
 
   // Create a video encoder.
-  auto* init =
-      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectCall());
+  auto* init = CreateInit(script_state, mock_function.ExpectNoCall(),
+                          mock_function.ExpectCall());
   auto* encoder = CreateMockEncoder(script_state, init, es);
   auto* config = CreateConfig();
   EXPECT_CALL(*encoder, CreateMediaVideoEncoder(_, _, _))

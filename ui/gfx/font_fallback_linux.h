@@ -7,18 +7,18 @@
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 // Exposed fallback font caches methods for testing.
-GFX_EXPORT size_t GetFallbackFontEntriesCacheSizeForTesting();
-GFX_EXPORT size_t GetFallbackFontListCacheSizeForTesting();
-GFX_EXPORT void ClearAllFontFallbackCachesForTesting();
+COMPONENT_EXPORT(GFX) size_t GetFallbackFontEntriesCacheSizeForTesting();
+COMPONENT_EXPORT(GFX) size_t GetFallbackFontListCacheSizeForTesting();
+COMPONENT_EXPORT(GFX) void ClearAllFontFallbackCachesForTesting();
 
-struct GFX_EXPORT FallbackFontData {
+struct COMPONENT_EXPORT(GFX) FallbackFontData {
   std::string name;
   base::FilePath filepath;
   int fontconfig_interface_id = 0;
@@ -38,9 +38,10 @@ struct GFX_EXPORT FallbackFontData {
 //                     (e.g. "en", "ja", "zh-CN")
 //
 // Return whether the request was successful or not.
-GFX_EXPORT bool GetFallbackFontForChar(UChar32 c,
-                                       const std::string& preferred_locale,
-                                       FallbackFontData* fallback_font);
+COMPONENT_EXPORT(GFX)
+bool GetFallbackFontForChar(UChar32 c,
+                            const std::string& preferred_locale,
+                            FallbackFontData* fallback_font);
 
 }  // namespace gfx
 

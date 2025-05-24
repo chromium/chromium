@@ -42,12 +42,6 @@ namespace safe_browsing {
 // installs or other tests.
 class PlatformStateStoreTestBase : public ::testing::Test {
  protected:
-  PlatformStateStoreTestBase() {}
-
-  PlatformStateStoreTestBase(const PlatformStateStoreTestBase&) = delete;
-  PlatformStateStoreTestBase& operator=(const PlatformStateStoreTestBase&) =
-      delete;
-
   void SetUp() override {
     ::testing::Test::SetUp();
     ASSERT_NO_FATAL_FAILURE(

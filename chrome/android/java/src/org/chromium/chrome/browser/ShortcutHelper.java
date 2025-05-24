@@ -12,6 +12,7 @@ import android.util.Base64;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
@@ -80,19 +81,19 @@ public class ShortcutHelper {
     }
 
     /**
-     * Adds home screen shortcut which opens in a {@link WebappActivity}. Creates web app
-     * home screen shortcut and registers web app asynchronously.
+     * Adds home screen shortcut which opens in a {@link WebappActivity}. Creates web app home
+     * screen shortcut and registers web app asynchronously.
      */
     @SuppressWarnings("unused")
     @CalledByNative
     private static void addWebapp(
-            final String id,
-            final String url,
-            final String scopeUrl,
-            final String userTitle,
-            final String name,
-            final String shortName,
-            final String iconUrl,
+            final @JniType("std::string") String id,
+            final @JniType("std::string") String url,
+            final @JniType("std::string") String scopeUrl,
+            final @JniType("std::u16string") String userTitle,
+            final @JniType("std::u16string") String name,
+            final @JniType("std::u16string") String shortName,
+            final @JniType("std::string") String iconUrl,
             final Bitmap icon,
             boolean isIconAdaptive,
             @DisplayMode.EnumType final int displayMode,
@@ -162,12 +163,12 @@ public class ShortcutHelper {
     /** Adds home screen shortcut which opens in the browser Activity. */
     @CalledByNative
     public static void addShortcut(
-            String id,
-            String url,
-            String userTitle,
+            @JniType("std::string") String id,
+            @JniType("std::string") String url,
+            @JniType("std::u16string") String userTitle,
             Bitmap icon,
             boolean isIconAdaptive,
-            String iconUrl) {
+            @JniType("std::string") String iconUrl) {
         Intent shortcutIntent =
                 createShortcutIntent(url, id, ShortcutSource.ADD_TO_HOMESCREEN_SHORTCUT);
         sDelegate.addShortcutToHomescreen(id, userTitle, icon, isIconAdaptive, shortcutIntent);
@@ -175,13 +176,15 @@ public class ShortcutHelper {
 
     /**
      * Stores the specified bitmap as the splash screen for a web app.
-     * @param id          ID of the web app which is storing data.
-     * @param splashImage Image which should be displayed on the splash screen of
-     *                    the web app. This can be null of there is no image to show.
+     *
+     * @param id ID of the web app which is storing data.
+     * @param splashImage Image which should be displayed on the splash screen of the web app. This
+     *     can be null of there is no image to show.
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    private static void storeWebappSplashImage(final String id, final Bitmap splashImage) {
+    private static void storeWebappSplashImage(
+            final @JniType("std::string") String id, final Bitmap splashImage) {
         final WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(id);
         if (storage == null) {
             // The app is not installed yet; put it in this map for now.
@@ -298,7 +301,8 @@ public class ShortcutHelper {
      */
     @CalledByNative
     @VisibleForTesting
-    public static boolean doesOriginContainAnyInstalledWebApk(String origin) {
+    public static boolean doesOriginContainAnyInstalledWebApk(
+            @JniType("std::string") String origin) {
         return WebappRegistry.getInstance()
                 .hasAtLeastOneWebApkForOrigin(origin.toLowerCase(Locale.getDefault()));
     }
@@ -309,7 +313,7 @@ public class ShortcutHelper {
      */
     @CalledByNative
     @VisibleForTesting
-    public static boolean doesOriginContainAnyInstalledTwa(String origin) {
+    public static boolean doesOriginContainAnyInstalledTwa(@JniType("std::string") String origin) {
         return WebappRegistry.getInstance().isTwaInstalled(origin.toLowerCase(Locale.getDefault()));
     }
 
@@ -363,7 +367,7 @@ public class ShortcutHelper {
     }
 
     @CalledByNative
-    public static void setForceWebApkUpdate(String id) {
+    public static void setForceWebApkUpdate(@JniType("std::string") String id) {
         WebappDataStorage storage = WebappRegistry.getInstance().getWebappDataStorage(id);
         if (storage != null) {
             storage.setShouldForceUpdate(true);

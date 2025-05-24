@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group_layout.h"
 
+#include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_layout_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group_layout_entry.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_binding_layout.h"
@@ -78,15 +79,15 @@ wgpu::BindGroupLayoutEntry AsDawnType(
 }
 
 // TODO(crbug.com/1069302): Remove when unused.
-std::unique_ptr<wgpu::BindGroupLayoutEntry[]> AsDawnType(
+base::HeapArray<wgpu::BindGroupLayoutEntry> AsDawnType(
     GPUDevice* device,
     const HeapVector<Member<GPUBindGroupLayoutEntry>>& webgpu_objects,
     Vector<std::unique_ptr<wgpu::ExternalTextureBindingLayout>>*
         externalTextureBindingLayouts,
     ExceptionState& exception_state) {
-  wtf_size_t count = webgpu_objects.size();
-  std::unique_ptr<wgpu::BindGroupLayoutEntry[]> dawn_objects(
-      new wgpu::BindGroupLayoutEntry[count]);
+  const wtf_size_t count = webgpu_objects.size();
+  auto dawn_objects =
+      base::HeapArray<wgpu::BindGroupLayoutEntry>::WithSize(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     dawn_objects[i] =
         AsDawnType(device, webgpu_objects[i].Get(),
@@ -104,7 +105,7 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
   DCHECK(webgpu_desc);
 
   uint32_t entry_count = 0;
-  std::unique_ptr<wgpu::BindGroupLayoutEntry[]> entries;
+  base::HeapArray<wgpu::BindGroupLayoutEntry> entries;
   Vector<std::unique_ptr<wgpu::ExternalTextureBindingLayout>>
       externalTextureBindingLayouts;
   entry_count = static_cast<uint32_t>(webgpu_desc->entries().size());
@@ -119,7 +120,7 @@ GPUBindGroupLayout* GPUBindGroupLayout::Create(
 
   wgpu::BindGroupLayoutDescriptor dawn_desc = {
       .entryCount = entry_count,
-      .entries = entries.get(),
+      .entries = entries.data(),
   };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {

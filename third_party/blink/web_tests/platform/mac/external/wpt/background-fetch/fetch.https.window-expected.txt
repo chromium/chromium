@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Requests with PUT method require CORS Preflight and succeed.
+  assert_equals: expected "backgroundfetchsuccess" but got "backgroundfetchfail"
+[FAIL] Requests with text/json content type require CORS Preflight and succeed.
+  assert_equals: expected "backgroundfetchsuccess" but got "backgroundfetchfail"
+[FAIL] Background Fetch that exceeds the quota throws a QuotaExceededError
+  promise_rejects_dom: This fetch should have thrown a quota exceeded error function "function() { throw e; }" threw object "QuotaExceededError: Quota exceeded." that is not a DOMException QUOTA_EXCEEDED_ERR: property "code" is equal to 0, expected 22
+Harness: the test ran to completion.
+

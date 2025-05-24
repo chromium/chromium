@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 
+#import <algorithm>
+
 #import "base/containers/contains.h"
-#import "base/ranges/algorithm.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_delegate.h"
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper_observer.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -18,8 +19,6 @@ InfobarType GetInfobarType(infobars::InfoBar* infobar) {
 }  // namespace
 
 #pragma mark - InfobarBadgeTabHelper
-
-WEB_STATE_USER_DATA_KEY_IMPL(InfobarBadgeTabHelper)
 
 InfobarBadgeTabHelper::InfobarBadgeTabHelper(web::WebState* web_state)
     : infobar_accept_observer_(this),
@@ -120,9 +119,10 @@ void InfobarBadgeTabHelper::RegisterInfobar(infobars::InfoBar* infobar) {
 void InfobarBadgeTabHelper::UnregisterInfobar(infobars::InfoBar* infobar) {
   // Handling the case where an infobar is removed during prerendering.
   if (!delegate_) {
-    auto pos = base::ranges::find(infobars_added_when_prerendering_, infobar);
-    if (pos != infobars_added_when_prerendering_.end())
+    auto pos = std::ranges::find(infobars_added_when_prerendering_, infobar);
+    if (pos != infobars_added_when_prerendering_.end()) {
       infobars_added_when_prerendering_.erase(pos);
+    }
     return;
   }
   // All other cases.

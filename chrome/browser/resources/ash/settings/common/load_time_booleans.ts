@@ -23,10 +23,6 @@ export function isSecondaryUser(): boolean {
   return loadTimeData.getBoolean('isSecondaryUser');
 }
 
-export function isRevampWayfindingEnabled(): boolean {
-  return loadTimeData.getBoolean('isRevampWayfindingEnabled');
-}
-
 // Apps page
 export function androidAppsVisible(): boolean {
   return loadTimeData.getBoolean('androidAppsVisible');
@@ -84,11 +80,6 @@ export function isAccountManagerEnabled(): boolean {
   return loadTimeData.getBoolean('isAccountManagerEnabled');
 }
 
-// Personalization page
-export function shouldShowMultitaskingInPersonalization(): boolean {
-  return loadTimeData.getBoolean('shouldShowMultitaskingInPersonalization');
-}
-
 // Reset page
 export function isPowerwashAllowed(): boolean {
   return loadTimeData.getBoolean('allowPowerwash');
@@ -116,11 +107,15 @@ export function isMagicBoostNoticeBannerVisible(): boolean {
   return loadTimeData.getBoolean('isMagicBoostNoticeBannerVisible');
 }
 
+export function isLobsterSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isLobsterSettingsToggleVisible');
+}
+
+export function isScannerSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isScannerSettingsToggleVisible');
+}
+
 // System preferences page
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');
-}
-
-export function shouldShowMultitasking(): boolean {
-  return loadTimeData.getBoolean('shouldShowMultitasking');
 }

@@ -24,7 +24,8 @@ import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './pointers.html.js';
 
@@ -50,7 +51,7 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
 
       hasHapticTouchpad: Boolean,
 
-      swapPrimaryOptions: {
+      swapPrimaryOptions_: {
         readOnly: true,
         type: Array,
         value() {
@@ -108,29 +109,6 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
       },
 
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kTouchpadTapToClick,
-          Setting.kTouchpadTapDragging,
-          Setting.kTouchpadReverseScrolling,
-          Setting.kTouchpadAcceleration,
-          Setting.kTouchpadSpeed,
-          Setting.kTouchpadHapticFeedback,
-          Setting.kTouchpadHapticClickSensitivity,
-          Setting.kPointingStickAcceleration,
-          Setting.kPointingStickSpeed,
-          Setting.kPointingStickSwapPrimaryButtons,
-          Setting.kMouseSwapPrimaryButtons,
-          Setting.kMouseReverseScrolling,
-          Setting.kMouseAcceleration,
-          Setting.kMouseSpeed,
-        ]),
-      },
-
-      /**
        * Whether settings should be split per device.
        */
       isDeviceSettingsSplitEnabled_: {
@@ -147,7 +125,32 @@ export class SettingsPointersElement extends SettingsPointersElementBase {
   hasPointingStick: boolean;
   hasTouchpad: boolean;
   hasHapticTouchpad: boolean;
-  private isDeviceSettingsSplitEnabled_: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kTouchpadTapToClick,
+    Setting.kTouchpadTapDragging,
+    Setting.kTouchpadReverseScrolling,
+    Setting.kTouchpadAcceleration,
+    Setting.kTouchpadSpeed,
+    Setting.kTouchpadHapticFeedback,
+    Setting.kTouchpadHapticClickSensitivity,
+    Setting.kPointingStickAcceleration,
+    Setting.kPointingStickSpeed,
+    Setting.kPointingStickSwapPrimaryButtons,
+    Setting.kMouseSwapPrimaryButtons,
+    Setting.kMouseReverseScrolling,
+    Setting.kMouseAcceleration,
+    Setting.kMouseSpeed,
+  ]);
+
+  private readonly hapticClickSensitivityValues_:
+      Array<{value: number, ariaValue: number}>;
+  private readonly isDeviceSettingsSplitEnabled_: boolean;
+  private readonly sensitivityValues_: number[];
+  private showHeadings_: boolean;
+  private subsectionClass_: string;
+  private swapPrimaryOptions_: Array<{value: boolean, name: string}>;
 
   /**
    * Headings should only be visible if more than one subsection is present.

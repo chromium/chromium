@@ -19,17 +19,13 @@ import android.view.Window;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.display_cutout.ActivityDisplayCutoutModeSupplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.ui.base.WindowAndroid;
 
-import javax.inject.Inject;
-
 /** Allows to enter and exit immersive mode in TWAs and WebAPKs. */
-@ActivityScope
 public class ImmersiveModeController implements WindowFocusChangedObserver, DestroyObserver {
     private static final int ENTER_IMMERSIVE_MODE_ON_WINDOW_FOCUS_DELAY_MILLIS = 300;
     private static final int RESTORE_IMMERSIVE_MODE_DELAY_MILLIS = 3000;
@@ -56,27 +52,25 @@ public class ImmersiveModeController implements WindowFocusChangedObserver, Dest
             (IMMERSIVE_MODE_UI_FLAGS & ~View.SYSTEM_UI_FLAG_IMMERSIVE)
                     | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
 
-    @Inject
     public ImmersiveModeController(
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             Activity activity,
-            WindowAndroid window) {
+            WindowAndroid windowAndroid,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         mActivity = activity;
         lifecycleDispatcher.register(this);
 
-        mCutoutSupplier.attach(window.getUnownedUserDataHost());
+        mCutoutSupplier.attach(windowAndroid.getUnownedUserDataHost());
     }
 
     /**
      * Sets activity's decor view into an immersive mode and ensures it stays that way.
      *
-     * @param layoutInDisplayCutoutMode Integer defining how to deal with cutouts, see
-     * {@link android.view.WindowManager.LayoutParams#layoutInDisplayCutoutMode} and
-     * https://developer.android.com/guide/topics/display-cutout
-     *
-     * @param sticky Whether {@link View#SYSTEM_UI_FLAG_IMMERSIVE} or
-     * {@link View#SYSTEM_UI_FLAG_IMMERSIVE_STICKY} should be used.
-     * See https://developer.android.com/training/system-ui/immersive#sticky-immersive
+     * @param layoutInDisplayCutoutMode Integer defining how to deal with cutouts, see {@link
+     *     android.view.WindowManager.LayoutParams#layoutInDisplayCutoutMode} and
+     *     https://developer.android.com/guide/topics/display-cutout
+     * @param sticky Whether {@link View#SYSTEM_UI_FLAG_IMMERSIVE} or {@link
+     *     View#SYSTEM_UI_FLAG_IMMERSIVE_STICKY} should be used. See
+     *     https://developer.android.com/training/system-ui/immersive#sticky-immersive
      */
     public void enterImmersiveMode(int layoutInDisplayCutoutMode, boolean sticky) {
         if (mInImmersiveMode) return;

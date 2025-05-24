@@ -8,24 +8,14 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace syncer {
 class SyncInvalidationsService;
 }  // namespace syncer
 
-class SyncInvalidationsServiceFactory : public BrowserStateKeyedServiceFactory {
+class SyncInvalidationsServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  SyncInvalidationsServiceFactory(const SyncInvalidationsServiceFactory&) =
-      delete;
-  SyncInvalidationsServiceFactory& operator=(
-      const SyncInvalidationsServiceFactory&) = delete;
-
-  // TODO(crbug.com/358301380): remove this method.
-  static syncer::SyncInvalidationsService* GetForBrowserState(
-      ProfileIOS* profile);
-
   // Returned value may be nullptr in case if sync invalidations are disabled or
   // not supported.
   static syncer::SyncInvalidationsService* GetForProfile(ProfileIOS* profile);

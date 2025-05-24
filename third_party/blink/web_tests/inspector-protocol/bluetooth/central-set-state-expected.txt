@@ -1,0 +1,5 @@
+Tests updating the state of the simulateCentral.
+true
+true
+false
+

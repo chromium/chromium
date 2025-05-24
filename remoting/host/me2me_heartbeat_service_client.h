@@ -12,7 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "remoting/base/directory_service_client.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/host/heartbeat_service_client.h"
 
 namespace network {
@@ -53,13 +53,13 @@ class Me2MeHeartbeatServiceClient : public HeartbeatServiceClient {
   // HeartbeatServiceClient::HeartbeatResponseCallback bound.
   void OnLegacyHeartbeatResponse(
       HeartbeatResponseCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<apis::v1::HeartbeatResponse> response);
   // DirectoryServiceClient::SendHeartbeatCallback with
   // HeartbeatServiceClient::HeartbeatResponseCallback bound.
   void OnSendHeartbeatResponse(
       HeartbeatResponseCallback callback,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<apis::v1::SendHeartbeatResponse> response);
 
   // The entity to update in Directory service.

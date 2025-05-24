@@ -46,7 +46,7 @@ class DirectConvolver;
 // sub-section of a large impulse response.  It incorporates a delay line to
 // account for the offset of the sub-section within the larger impulse
 // response.
-class ReverbConvolverStage {
+class ReverbConvolverStage final {
   USING_FAST_MALLOC(ReverbConvolverStage);
 
  public:

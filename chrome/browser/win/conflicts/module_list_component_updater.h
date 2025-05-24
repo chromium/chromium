@@ -42,7 +42,7 @@ class ModuleListComponentUpdater
   void InitializeOnUIThread();
 
   // ComponentUpdateService::Observer:
-  void OnEvent(Events event, const std::string& component_id) override;
+  void OnEvent(const update_client::CrxUpdateItem& item) override;
 
   // Holds the id of the Third Party Module List component.
   std::string module_list_component_id_;

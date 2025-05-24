@@ -11,8 +11,8 @@
 #include "chromeos/ash/components/phonehub/feature_status.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 const char kCompletedActionMetricName[] = "PhoneHub.CompletedUserAction";
 }  // namespace
@@ -74,5 +74,4 @@ TEST_F(UserActionRecorderImplTest, RecordActions) {
       /*expected_count=*/1);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -19,13 +19,15 @@ import android.content.Context;
 import android.os.PersistableBundle;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ActivityState;
@@ -62,11 +64,12 @@ public class OfflineBackgroundTaskTest {
     private static final boolean SCREEN_ON_AND_UNLOCKED = true;
     private static final int MINIMUM_BATTERY_LEVEL = 33;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PersistableBundle mTaskExtras;
     private long mTestTime;
-    private TriggerConditions mTriggerConditions =
+    private final TriggerConditions mTriggerConditions =
             new TriggerConditions(!REQUIRE_POWER, MINIMUM_BATTERY_LEVEL, REQUIRE_UNMETERED);
-    private DeviceConditions mDeviceConditions =
+    private final DeviceConditions mDeviceConditions =
             new DeviceConditions(
                     !POWER_CONNECTED,
                     MINIMUM_BATTERY_LEVEL + 5,
@@ -85,7 +88,6 @@ public class OfflineBackgroundTaskTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
         doReturn(true)
                 .when(mTaskScheduler)

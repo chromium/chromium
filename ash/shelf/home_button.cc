@@ -40,6 +40,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "home_button.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -153,13 +154,15 @@ class HomeButton::ButtonImageView : public views::View {
 
     gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
 
-    const bool is_assistant_available =
-        button_controller_->IsAssistantAvailable();
+    const bool is_long_press_action_available =
+        button_controller_->IsLongPressActionAvailable();
     // Paint a white ring as the foreground for the app list circle. The
     // ceil/dsf math assures that the ring draws sharply and is centered at all
     // scale factors.
-    const float ring_outer_radius_dp = is_assistant_available ? 8.0f : 7.0f;
-    const float ring_thickness_dp = is_assistant_available ? 1.0f : 1.5f;
+    const float ring_outer_radius_dp =
+        is_long_press_action_available ? 8.0f : 7.0f;
+    const float ring_thickness_dp =
+        is_long_press_action_available ? 1.0f : 1.5f;
     {
       gfx::ScopedCanvas scoped_canvas(canvas);
       const float dsf = canvas->UndoDeviceScaleFactor();
@@ -169,7 +172,7 @@ class HomeButton::ButtonImageView : public views::View {
       fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
       fg_flags.setColor(GetColorProvider()->GetColor(GetIconColorId()));
 
-      if (is_assistant_available) {
+      if (is_long_press_action_available) {
         // active: 100% alpha, inactive: 54% alpha
         fg_flags.setAlphaf(button_controller_->IsAssistantVisible()
                                ? kAssistantVisibleAlpha / 255.0f
@@ -183,7 +186,7 @@ class HomeButton::ButtonImageView : public views::View {
       // Make sure the center of the circle lands on pixel centers.
       canvas->DrawCircle(circle_center, radius, fg_flags);
 
-      if (is_assistant_available) {
+      if (is_long_press_action_available) {
         fg_flags.setAlphaf(1.0f);
         const float kCircleRadiusDp = 5.f;
         fg_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -232,7 +235,7 @@ class HomeButton::ButtonImageView : public views::View {
       return;
     }
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         GetBackgroundColorId(), shelf_config->control_border_radius()));
 
     if (shelf_config->in_tablet_mode() && !shelf_config->is_in_app()) {
@@ -430,15 +433,13 @@ void HomeButton::Layout(PassKey) {
   }
 }
 
+void HomeButton::AddedToWidget() {
+  UpdateTooltipText();
+}
+
 void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
   if (!controller_.MaybeHandleGestureEvent(event))
     Button::OnGestureEvent(event);
-}
-
-std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
-  // Don't show a tooltip if we're already showing the app list.
-  return IsShowingAppList() ? std::u16string()
-                            : GetViewAccessibility().GetCachedName();
 }
 
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
@@ -492,7 +493,7 @@ void HomeButton::ButtonPressed(views::Button* sender,
     }
 
     if (label_nudge_timer_.IsRunning())
-      label_nudge_timer_.AbandonAndStop();
+      label_nudge_timer_.Stop();
     AnimateNudgeLabelFadeOut();
   }
 }
@@ -501,7 +502,7 @@ void HomeButton::OnShelfConfigUpdated() {
   button_image_view_->UpdateForShelfConfigChange();
 }
 
-void HomeButton::OnAssistantAvailabilityChanged() {
+void HomeButton::OnIconUpdated() {
   // `button_image_view_` may not be set during `HomeButton` construction -
   // `button_image_view_` is created after `controller_`, which can end up
   // calling this method in response to registering assistant state observer.
@@ -519,6 +520,7 @@ void HomeButton::HandleLocaleChange() {
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
   TooltipTextChanged();
+  UpdateTooltipText();
   // Reset the bounds rect so the child layer bounds get updated on next shelf
   // layout if the RTL changed.
   SetBoundsRect(gfx::Rect());
@@ -676,6 +678,12 @@ void HomeButton::CreateExpandableContainer() {
   expandable_container_->layer()->SetName("NudgeLabelContainer");
 }
 
+void HomeButton::UpdateTooltipText() {
+  // Don't show a tooltip if we're already showing the app list.
+  SetTooltipText(IsShowingAppList() ? std::u16string()
+                                    : GetViewAccessibility().GetCachedName());
+}
+
 void HomeButton::CreateNudgeLabel() {
   DCHECK(!expandable_container_);
 
@@ -701,7 +709,7 @@ void HomeButton::CreateNudgeLabel() {
   nudge_label_->layer()->SetFillsBoundsOpaquely(false);
   nudge_label_->SetTextContext(CONTEXT_LAUNCHER_NUDGE_LABEL);
   nudge_label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
-  nudge_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  nudge_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *nudge_label_);
   expandable_container_->SetVisible(false);

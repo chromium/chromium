@@ -6,11 +6,14 @@
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
-  Exposed=(Window, DedicatedWorker)
+  Exposed=(Window, Worker)
 ] interface MLTensor {
   readonly attribute MLOperandDataType dataType;
   readonly attribute FrozenArray<unsigned long> shape;
-  readonly attribute MLTensorUsageFlags usage;
+  readonly attribute boolean exportableToGPU;
+  readonly attribute boolean readable;
+  readonly attribute boolean writable;
+  readonly attribute boolean constant;
 
   void destroy();
 };

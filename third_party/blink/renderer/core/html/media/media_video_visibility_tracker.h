@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client_types.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/skia/include/core/SkRect.h"
 
@@ -139,7 +139,8 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
 
   ListBasedHitTestBehavior ComputeOcclusion(const ClientIdsSet& client_ids_set,
                                             Metrics&,
-                                            const Node& node);
+                                            const Node& node,
+                                            DOMNodeId node_id);
   bool MeetsVisibilityThreshold(Metrics& counters, const PhysicalRect& rect);
   void ReportVisibility(bool meets_visibility_threshold);
   bool ComputeVisibility();

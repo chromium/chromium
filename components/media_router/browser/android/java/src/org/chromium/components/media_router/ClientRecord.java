@@ -4,10 +4,13 @@
 
 package org.chromium.components.media_router;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** Contains information about a single client connection to the {@link MediaRoute}. */
+@NullMarked
 public class ClientRecord {
     /** The route id through which the client is connected. Should be a 1:1 relationship. */
     public final String routeId;

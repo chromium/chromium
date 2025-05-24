@@ -4,7 +4,6 @@
 
 #include "components/live_caption/greedy_text_stabilizer.h"
 
-#include <regex>
 #include <string>
 #include <unordered_map>
 #include <vector>

@@ -16,7 +16,9 @@ import java.lang.annotation.Target;
  * require an annotation processor).
  */
 @Target({ElementType.TYPE})
-@Retention(RetentionPolicy.SOURCE)
+// Must be CLASS retention in order to cause compile_java.py to not skip @ServiceImpl parsing via
+// its incremental mode.
+@Retention(RetentionPolicy.CLASS)
 public @interface ServiceImpl {
     /** The service implemented by this class. */
     Class<?> value();

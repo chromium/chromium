@@ -28,7 +28,7 @@ public class ChromiumAndroidConfigurer extends AndroidConfigurer {
     }
 
     private static JSONObject sConfigJson;
-    private Optional<ExtraConfiguration> mExtraConfig;
+    private final Optional<ExtraConfiguration> mExtraConfig;
 
     static void setJsonConfig(JSONObject root) {
         sConfigJson = root;

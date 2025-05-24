@@ -13,8 +13,6 @@ var GuestViewContainer = require('guestViewContainer').GuestViewContainer;
 function ExtensionOptionsImpl(extensionoptionsElement) {
   $Function.call(
       GuestViewContainer, this, extensionoptionsElement, 'extensionoptions');
-
-  new ExtensionOptionsEvents(this);
 };
 
 ExtensionOptionsImpl.prototype.__proto__ = GuestViewContainer.prototype;
@@ -27,6 +25,10 @@ ExtensionOptionsImpl.prototype.onElementAttached = function() {
 ExtensionOptionsImpl.prototype.setupAttributes = function() {
   this.attributes[ExtensionOptionsConstants.ATTRIBUTE_EXTENSION] =
       new ExtensionOptionsAttributes.ExtensionAttribute(this);
+};
+
+ExtensionOptionsImpl.prototype.setupEvents = function() {
+  new ExtensionOptionsEvents(this);
 };
 
 ExtensionOptionsImpl.prototype.buildContainerParams = function() {

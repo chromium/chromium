@@ -11,6 +11,8 @@
 
 + (void)logInstalledWidgets;
 
++ (void)logWidgetDeletedUiCount;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_WIDGET_KIT_MODEL_WIDGET_METRICS_UTIL_H_

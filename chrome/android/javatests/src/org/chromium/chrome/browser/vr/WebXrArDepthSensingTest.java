@@ -38,12 +38,12 @@ import java.util.concurrent.Callable;
 })
 public class WebXrArDepthSensingTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
 
     @Rule public RuleChain mRuleChain;
 
-    private ChromeActivityTestRule mTestRule;
+    private final ChromeActivityTestRule mTestRule;
     private WebXrArTestFramework mWebXrArTestFramework;
 
     public WebXrArDepthSensingTest(Callable<ChromeActivityTestRule> callable) throws Exception {

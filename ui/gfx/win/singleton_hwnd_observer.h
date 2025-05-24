@@ -7,8 +7,8 @@
 
 #include <windows.h>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -18,7 +18,7 @@ class SingletonHwnd;
 // cleanup if either the SingletonHwnd or forwarded object is destroyed first.
 // Note that if you want to register a hot key on the SingletonHwnd, you need to
 // use a SingletonHwndHotKeyObserver instead for each hot key.
-class GFX_EXPORT SingletonHwndObserver {
+class COMPONENT_EXPORT(GFX) SingletonHwndObserver {
  public:
   using WndProc = base::RepeatingCallback<void(HWND, UINT, WPARAM, LPARAM)>;
 

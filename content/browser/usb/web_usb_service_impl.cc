@@ -168,7 +168,7 @@ void WebUsbServiceImpl::Create(
     RenderFrameHostImpl& render_frame_host,
     mojo::PendingReceiver<blink::mojom::WebUsbService> pending_receiver) {
   if (!render_frame_host.IsFeatureEnabled(
-          blink::mojom::PermissionsPolicyFeature::kUsb)) {
+          network::mojom::PermissionsPolicyFeature::kUsb)) {
     mojo::ReportBadMessage("Permissions policy blocks access to USB.");
     return;
   }
@@ -260,7 +260,7 @@ std::vector<uint8_t> WebUsbServiceImpl::GetProtectedInterfaceClasses() const {
     is_usb_unrestricted =
         render_frame_host_ &&
         render_frame_host_->IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
+            network::mojom::PermissionsPolicyFeature::kUsbUnrestricted) &&
         HasIsolatedContextCapability(render_frame_host_);
   }
   if (is_usb_unrestricted) {

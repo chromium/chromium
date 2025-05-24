@@ -89,8 +89,8 @@ class MODULES_EXPORT NavigatorAuction final
 
   ScriptPromise<IDLUndefined> clearOriginJoinedAdInterestGroups(
       ScriptState*,
-      const String,
-      const Vector<String>,
+      const String&,
+      Vector<String>,
       ExceptionState&);
   static ScriptPromise<IDLUndefined> clearOriginJoinedAdInterestGroups(
       ScriptState*,
@@ -279,10 +279,10 @@ class MODULES_EXPORT NavigatorAuction final
 
   void GetInterestGroupAdAuctionDataComplete(
       base::TimeTicks start_time,
+      bool is_single_seller,
       ScriptPromiseResolver<AdAuctionData>* resolver,
-      mojo_base::BigBuffer request,
-      const std::optional<base::Uuid>& request_id,
-      const WTF::String& error_message);
+      Vector<mojom::blink::AdAuctionPerSellerRequestPtr> requests,
+      const std::optional<base::Uuid>& request_id);
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.

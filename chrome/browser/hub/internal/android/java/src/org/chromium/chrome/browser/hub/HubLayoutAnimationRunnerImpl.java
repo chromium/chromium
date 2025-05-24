@@ -8,18 +8,19 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.supplier.SyncOneshotSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.hub.HubLayoutAnimationRunner.AnimationState;
 
 import java.util.Collections;
 import java.util.LinkedList;
 
 /** Implementation of {@link HubLayoutAnimationRunner}. */
+@NullMarked
 public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     private final HubLayoutAnimatorProvider mAnimatorProvider;
 
@@ -103,7 +104,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
     }
 
     @Override
-    public void addListener(@NonNull HubLayoutAnimationListener animationListener) {
+    public void addListener(HubLayoutAnimationListener animationListener) {
         assert mAnimationState == AnimationState.INITIALIZING
                 : "Attempting to add an HubLayoutAnimationListener that may not be called.";
         ensureListenersList();
@@ -132,7 +133,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         onAnimatorReady(animatorSupplier.get());
     }
 
-    private void postOnAnimatorReady(@NonNull HubLayoutAnimator animator) {
+    private void postOnAnimatorReady(HubLayoutAnimator animator) {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
@@ -140,7 +141,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
                 });
     }
 
-    private void onAnimatorReady(@NonNull HubLayoutAnimator animator) {
+    private void onAnimatorReady(HubLayoutAnimator animator) {
         if (mAnimationState >= AnimationState.STARTED) return;
 
         assert mAnimationState == AnimationState.WAITING_FOR_ANIMATOR
@@ -191,6 +192,7 @@ public class HubLayoutAnimationRunnerImpl implements HubLayoutAnimationRunner {
         return mListeners == null ? Collections.emptyList() : mListeners;
     }
 
+    @EnsuresNonNull("mListeners")
     private void ensureListenersList() {
         if (mListeners == null) {
             mListeners = new LinkedList<HubLayoutAnimationListener>();

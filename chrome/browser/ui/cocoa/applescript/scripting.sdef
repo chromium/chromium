@@ -88,7 +88,7 @@
       <parameter name="in" code="kfil" description="The file in which to save the object." type="file" optional="yes">
         <cocoa key="File"/>
       </parameter>
-      <parameter name="as" code="fltp" description="The file type in which to save the data. Can be &apos;only html&apos; or &apos;complete html&apos;, default is &apos;complete html&apos;." type="text" optional="yes">
+      <parameter name="as" code="fltp" description="The file type in which to save the data. Can be &apos;only html&apos;, &apos;complete html&apos;, or &apos;single file&apos;; default is &apos;complete html&apos;." type="text" optional="yes">
         <cocoa key="FileType"/>
       </parameter>
     </command>

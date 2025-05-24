@@ -8,10 +8,10 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -165,8 +165,8 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
 
   // Simulates an autofill event.
   Suggestion suggestion(u"TestValue", SuggestionType::kIbanEntry);
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(suggestion, form,
-                                                             field);
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      suggestion, form.global_id(), field.global_id());
 
   ASSERT_OK_AND_ASSIGN(
       auto expected_data,
@@ -178,7 +178,7 @@ TEST_F(AutofillFeedbackDataUnitTest, IncludesLastAutofillEventLogEntry) {
   // Update the expected data with a last_autofill_event entry.
   base::Value::Dict last_autofill_event;
   last_autofill_event.Set("associatedCountry", "");
-  last_autofill_event.Set("type", "SingleFieldFormFillerIban");
+  last_autofill_event.Set("type", "SingleFieldFillerIban");
   expected_data.GetDict().Set("lastAutofillEvent",
                               std::move(last_autofill_event));
 
@@ -197,8 +197,8 @@ TEST_F(AutofillFeedbackDataUnitTest,
 
   // Simulates an autofill event.
   Suggestion suggestion(u"TestValue", SuggestionType::kIbanEntry);
-  browser_autofill_manager_->OnSingleFieldSuggestionSelected(suggestion, form,
-                                                             field);
+  browser_autofill_manager_->OnSingleFieldSuggestionSelected(
+      suggestion, form.global_id(), field.global_id());
 
   // Advance the clock 4 minutes should disregard the last autofill event log.
   task_environment_.FastForwardBy(base::Minutes(4));

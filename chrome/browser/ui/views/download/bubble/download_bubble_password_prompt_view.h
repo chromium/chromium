@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_PASSWORD_PROMPT_VIEW_H_
 
+#include <string_view>
+
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/layout/table_layout_view.h"
 
@@ -26,7 +28,7 @@ class DownloadBubblePasswordPromptView : public views::TableLayoutView {
   ~DownloadBubblePasswordPromptView() override;
 
   void SetState(State state);
-  const std::u16string& GetText() const;
+  std::u16string_view GetText() const;
 
  private:
   bool IsError(State state) const;

@@ -283,6 +283,14 @@ enum class TaskType : unsigned char {
   // Tasks related to renderer-initiated navigation cancellation.
   kInternalNavigationCancellation = 80,
 
+  // Tasks related to autofill.
+  //
+  // TODO(crbug.com/382342234): This was added to distinguish autofill tasks
+  // from kInternalUserInteraction tasks to exclude them from task deferral
+  // policies, but tasks with this type need to be synchronized with synchronous
+  // submission. Remove this if the autofill tasks become synchronous.
+  kInternalAutofill = 88,
+
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
   ///////////////////////////////////////
@@ -312,7 +320,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kMaxValue = kMainThreadTaskQueueV8BestEffort,
+  kMaxValue = kInternalAutofill,
 };
 
 }  // namespace blink

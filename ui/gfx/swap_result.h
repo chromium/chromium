@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/time/time.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/gpu_fence_handle.h"
 
 namespace gfx {
@@ -77,7 +77,7 @@ struct SwapResponse {
 };
 
 // Sent as part of finishing a swap.
-struct GFX_EXPORT SwapCompletionResult {
+struct COMPONENT_EXPORT(GFX) SwapCompletionResult {
   explicit SwapCompletionResult(gfx::SwapResult swap_result);
   SwapCompletionResult(gfx::SwapResult swap_result,
                        gfx::GpuFenceHandle release_fence);

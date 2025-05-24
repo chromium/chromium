@@ -12,7 +12,6 @@ import static org.mockito.Mockito.when;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -24,7 +23,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.url.GURL;
@@ -33,8 +31,6 @@ import org.chromium.url.GURL;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class BoardingPassControllerTest {
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ObservableSupplier<Tab> mMockTabProvider;
 
@@ -51,7 +47,7 @@ public class BoardingPassControllerTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(BoardingPassBridgeJni.TEST_HOOKS, mMockBoardingPassBridgeJni);
+        BoardingPassBridgeJni.setInstanceForTesting(mMockBoardingPassBridgeJni);
         createControllerAndVerify();
     }
 

@@ -55,6 +55,8 @@ class MockCdmAuxiliaryHelper : public CdmAuxiliaryHelper {
   MOCK_METHOD1(GetStorageIdCalled, std::vector<uint8_t>(uint32_t version));
   void GetStorageId(uint32_t version, StorageIdCB callback) override;
 
+  MOCK_METHOD(void, RecordUkm, (const CdmMetricsData&), (override));
+
 #if BUILDFLAG(IS_WIN)
   MOCK_METHOD(void,
               GetMediaFoundationCdmData,

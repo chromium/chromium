@@ -10,7 +10,7 @@
 
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/message_center/arc_notification_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -436,7 +436,7 @@ void AshMessagePopupCollection::AnimationStarted() {
     // this when the first popup shows in the animation sequence.
     animation_tracker_.emplace(last_pop_up_added_->GetWidget()
                                    ->GetCompositor()
-                                   ->RequestNewThroughputTracker());
+                                   ->RequestNewCompositorMetricsTracker());
     animation_tracker_->Start(metrics_util::ForSmoothnessV3(
         base::BindRepeating(&ReportPopupAnimationSmoothness)));
   }

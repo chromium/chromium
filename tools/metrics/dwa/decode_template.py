@@ -20,7 +20,7 @@ namespace dwa {{
 namespace builders {{
 
 typedef std::map<uint64_t, const char*> MetricDecodeMap;
-typedef std::map<uint64_t, const char*> StudyDecodeMap;
+typedef std::map<uint32_t, const char*> StudyDecodeMap;
 struct EntryDecoder {{
   const char* name;
   const MetricDecodeMap metric_map;

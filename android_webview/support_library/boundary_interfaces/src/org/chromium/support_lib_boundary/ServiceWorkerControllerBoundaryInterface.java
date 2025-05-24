@@ -4,11 +4,15 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for ServiceWorkerController. */
+@NullMarked
 public interface ServiceWorkerControllerBoundaryInterface {
     /* ServiceWorkerWebSettings */ InvocationHandler getServiceWorkerWebSettings();
 
-    void setServiceWorkerClient(/* ServiceWorkerClient */ InvocationHandler client);
+    void setServiceWorkerClient(/* ServiceWorkerClient */ @Nullable InvocationHandler client);
 }

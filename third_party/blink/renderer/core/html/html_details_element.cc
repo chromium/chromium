@@ -69,15 +69,6 @@ void HTMLDetailsElement::DispatchPendingEvent(
     GetDocument().SetToggleDuringParsing(false);
 }
 
-LayoutObject* HTMLDetailsElement::CreateLayoutObject(
-    const ComputedStyle& style) {
-  if (RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-    return HTMLElement::CreateLayoutObject(style);
-  }
-
-  return LayoutObject::CreateBlockFlowOrListItem(this, style);
-}
-
 // Creates shadow DOM:
 // #shadowroot
 //   <SLOT id="details-summary">
@@ -100,9 +91,7 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   content_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
   content_slot_->SetIdAttribute(shadow_element_names::kIdDetailsContent);
-  if (RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-    content_slot_->SetShadowPseudoId(shadow_element_names::kIdDetailsContent);
-  }
+  content_slot_->SetShadowPseudoId(shadow_element_names::kIdDetailsContent);
   content_slot_->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                         CSSValueID::kHidden);
   content_slot_->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
@@ -187,7 +176,7 @@ void HTMLDetailsElement::ParseAttribute(
     }
     pending_toggle_event_ =
         ToggleEvent::Create(event_type_names::kToggle, Event::Cancelable::kNo,
-                            old_state, new_state);
+                            old_state, new_state, /*source=*/nullptr);
     pending_event_task_ = PostCancellableTask(
         *GetDocument().GetTaskRunner(TaskType::kDOMManipulation), FROM_HERE,
         WTF::BindOnce(&HTMLDetailsElement::DispatchPendingEvent,
@@ -200,9 +189,6 @@ void HTMLDetailsElement::ParseAttribute(
 
     if (is_open_) {
       content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
-      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
-      }
 
       // https://html.spec.whatwg.org/multipage/interactive-elements.html#ensure-details-exclusivity-by-closing-other-elements-if-needed
       //
@@ -230,10 +216,6 @@ void HTMLDetailsElement::ParseAttribute(
         }
       }
     } else {
-      if (!RuntimeEnabledFeatures::DetailsStylingEnabled()) {
-        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                        CSSValueID::kBlock);
-      }
       content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
                                       CSSValueID::kHidden);
       content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
@@ -245,13 +227,16 @@ void HTMLDetailsElement::ParseAttribute(
 
 void HTMLDetailsElement::AttributeChanged(
     const AttributeModificationParams& params) {
-  const QualifiedName& name = params.name;
-  if (name == html_names::kNameAttr) {
+  if (params.name == html_names::kNameAttr) {
     if (!params.new_value.empty()) {
       UseCounter::Count(GetDocument(),
                         WebFeature::kHTMLDetailsElementNameAttribute);
     }
     MaybeCloseForExclusivity();
+  }
+  if (params.name == html_names::kOpenAttr &&
+      params.old_value != params.new_value) {
+    PseudoStateChanged(CSSSelector::kPseudoOpen);
   }
 
   HTMLElement::AttributeChanged(params);
@@ -352,10 +337,10 @@ bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
   return details_to_open.size();
 }
 
-bool HTMLDetailsElement::IsValidCommand(HTMLElement& invoker,
-                                        CommandEventType command) {
-  bool parent_is_valid = HTMLElement::IsValidCommand(invoker, command);
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
+bool HTMLDetailsElement::IsValidBuiltinCommand(HTMLElement& invoker,
+                                               CommandEventType command) {
+  bool parent_is_valid = HTMLElement::IsValidBuiltinCommand(invoker, command);
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
     return parent_is_valid;
   }
   return parent_is_valid || command == CommandEventType::kToggle ||
@@ -365,7 +350,7 @@ bool HTMLDetailsElement::IsValidCommand(HTMLElement& invoker,
 
 bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
                                                CommandEventType command) {
-  CHECK(IsValidCommand(invoker, command));
+  CHECK(IsValidBuiltinCommand(invoker, command));
 
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;
@@ -373,20 +358,31 @@ bool HTMLDetailsElement::HandleCommandInternal(HTMLElement& invoker,
 
   if (command == CommandEventType::kToggle) {
     ToggleOpen();
-    return true;
   } else if (command == CommandEventType::kClose) {
     if (is_open_) {
       setAttribute(html_names::kOpenAttr, g_null_atom);
     }
-    return true;
   } else if (command == CommandEventType::kOpen) {
     if (!is_open_) {
       setAttribute(html_names::kOpenAttr, g_empty_atom);
     }
-    return true;
+  } else {
+    return false;
   }
 
-  return false;
+  if (RuntimeEnabledFeatures::ToggleEventSourceEnabled() &&
+      pending_toggle_event_) {
+    // pending_toggle_event_ is created inside the attribute handling code which
+    // we can't pass the invoker to, so we set it here instead.
+    pending_toggle_event_ = ToggleEvent::Create(
+        pending_toggle_event_->type(),
+        pending_toggle_event_->cancelable() ? Event::Cancelable::kYes
+                                            : Event::Cancelable::kNo,
+        pending_toggle_event_->oldState(), pending_toggle_event_->newState(),
+        &invoker);
+  }
+
+  return true;
 }
 
 }  // namespace blink

@@ -54,8 +54,9 @@ void MediaRouterAndroidBridge::CreateRoute(const MediaSource::Id& source_id,
   ScopedJavaLocalRef<jstring> jorigin =
       ConvertUTF8ToJavaString(env, origin.GetURL().spec());
   base::android::ScopedJavaLocalRef<jobject> java_web_contents;
-  if (web_contents)
+  if (web_contents) {
     java_web_contents = web_contents->GetJavaWebContents();
+  }
 
   Java_BrowserMediaRouter_createRoute(env, java_media_router_, jsource_id,
                                       jsink_id, jpresentation_id, jorigin,
@@ -75,8 +76,9 @@ void MediaRouterAndroidBridge::JoinRoute(const MediaSource::Id& source_id,
   ScopedJavaLocalRef<jstring> jorigin =
       ConvertUTF8ToJavaString(env, origin.GetURL().spec());
   base::android::ScopedJavaLocalRef<jobject> java_web_contents;
-  if (web_contents)
+  if (web_contents) {
     java_web_contents = web_contents->GetJavaWebContents();
+  }
 
   Java_BrowserMediaRouter_joinRoute(env, java_media_router_, jsource_id,
                                     jpresentation_id, jorigin,
@@ -137,8 +139,9 @@ MediaRouterAndroidBridge::GetFlingingController(
   flinging_controller.Reset(Java_BrowserMediaRouter_getFlingingControllerBridge(
       env, java_media_router_, jroute_id));
 
-  if (flinging_controller.is_null())
+  if (flinging_controller.is_null()) {
     return nullptr;
+  }
 
   return std::make_unique<FlingingControllerBridge>(flinging_controller);
 }

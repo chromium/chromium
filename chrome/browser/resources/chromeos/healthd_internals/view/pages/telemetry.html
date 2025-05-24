@@ -1,0 +1,49 @@
+<style include="healthd-internals-shared cr-shared-style">
+  #pageContainer {
+    overflow: overlay;
+    max-height: 100vh;
+  }
+
+  #pageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  #headerEndContainer {
+    display: flex;
+    gap: 8px;
+    padding-inline-end: 8px;
+    align-items: center;
+  }
+
+  .cr-centered-card-container {
+    min-width: 700px;
+  }
+</style>
+<div id="pageContainer">
+  <div class="cr-centered-card-container">
+    <div id="pageHeader">
+      <h1>Telemetry</h1>
+      <div id="headerEndContainer">
+        <cr-button class="action-button" on-click="onExpandAllButtonClick">
+          Expand All
+        </cr-button>
+        <cr-button class="cancel-button" on-click="onCollapseAllButtonClicked">
+          Collapse All
+        </cr-button>
+        <label>Last update: [[lastUpdateTime]]</label>
+      </div>
+    </div>
+    <healthd-internals-cpu-card id="cpuCard" class="telemetry-card">
+    </healthd-internals-cpu-card>
+    <healthd-internals-memory-card id="memoryCard" class="telemetry-card">
+    </healthd-internals-memory-card>
+    <healthd-internals-fan-card id="fanCard" class="telemetry-card">
+    </healthd-internals-fan-card>
+    <healthd-internals-power-card id="powerCard" class="telemetry-card">
+    </healthd-internals-power-card>
+    <healthd-internals-thermal-card id="thermalCard" class="telemetry-card">
+    </healthd-internals-thermal-card>
+  </div>
+</div>

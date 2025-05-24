@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_SPEECH_SPEECH_SYNTHESIS_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/tts_controller.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -48,6 +49,7 @@ class SpeechSynthesisImpl : public blink::mojom::SpeechSynthesis,
  private:
   raw_ptr<BrowserContext> browser_context_;
   raw_ptr<WebContents> web_contents_;
+  GlobalRenderFrameHostId frame_id_;
 
   mojo::ReceiverSet<blink::mojom::SpeechSynthesis> receiver_set_;
   mojo::RemoteSet<blink::mojom::SpeechSynthesisVoiceListObserver> observer_set_;

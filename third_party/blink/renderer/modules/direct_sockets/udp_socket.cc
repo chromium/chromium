@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket.h"
 
-#include "base/barrier_callback.h"
+#include <algorithm>
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
+#include "base/notreached.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -14,9 +16,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
@@ -178,6 +183,37 @@ mojom::blink::DirectBoundUDPSocketOptionsPtr CreateBoundUDPSocketOptions(
   return socket_options;
 }
 
+std::unique_ptr<protocol::Network::DirectUDPSocketOptions> MapProbeUDPOptions(
+    const UDPSocketOptions* options) {
+  auto probe_options_builder =
+      protocol::Network::DirectUDPSocketOptions::create();
+
+  if (options->hasRemoteAddress()) {
+    probe_options_builder.setRemoteAddr(options->remoteAddress());
+  }
+  if (options->hasRemotePort()) {
+    probe_options_builder.setRemotePort(options->remotePort());
+  }
+  if (options->hasLocalAddress()) {
+    probe_options_builder.setLocalAddr(options->localAddress());
+  }
+  if (options->hasLocalPort()) {
+    probe_options_builder.setLocalPort(options->localPort());
+  }
+  if (options->hasDnsQueryType()) {
+    probe_options_builder.setDnsQueryType(
+        Socket::MapProbeDnsQueryType(options->dnsQueryType()));
+  }
+  if (options->hasSendBufferSize()) {
+    probe_options_builder.setSendBufferSize(options->sendBufferSize());
+  }
+  if (options->hasReceiveBufferSize()) {
+    probe_options_builder.setReceiveBufferSize(options->receiveBufferSize());
+  }
+
+  return probe_options_builder.build();
+}
+
 }  // namespace
 
 // static
@@ -235,13 +271,13 @@ ScriptPromise<IDLUndefined> UDPSocket::close(ScriptState*,
       DOMExceptionCode::kAbortError, "Stream closed.");
 
   auto readable_cancel = readable_stream_wrapper_->Readable()->cancel(
-      script_state, ScriptValue::From(script_state, reason), exception_state);
-  DCHECK(!exception_state.HadException()) << exception_state.Message();
+      script_state, ScriptValue::From(script_state, reason),
+      ASSERT_NO_EXCEPTION);
   readable_cancel.MarkAsHandled();
 
   auto writable_abort = writable_stream_wrapper_->Writable()->abort(
-      script_state, ScriptValue::From(script_state, reason), exception_state);
-  DCHECK(!exception_state.HadException()) << exception_state.Message();
+      script_state, ScriptValue::From(script_state, reason),
+      ASSERT_NO_EXCEPTION);
   writable_abort.MarkAsHandled();
 
   return closed(script_state);
@@ -270,7 +306,7 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
           std::move(socket_listener_remote),
           WTF::BindOnce(&UDPSocket::OnConnectedUDPSocketOpened,
                         WrapPersistent(this), std::move(socket_listener)));
-      return true;
+      break;
     }
     case network::mojom::blink::RestrictedUDPSocketMode::BOUND: {
       auto bound_options =
@@ -283,9 +319,16 @@ bool UDPSocket::Open(const UDPSocketOptions* options,
           std::move(socket_listener_remote),
           WTF::BindOnce(&UDPSocket::OnBoundUDPSocketOpened,
                         WrapPersistent(this), std::move(socket_listener)));
-      return true;
+
+      break;
     }
   }
+  std::unique_ptr<protocol::Network::DirectUDPSocketOptions> proble_options =
+      MapProbeUDPOptions(options);
+  probe::DirectUDPSocketCreated(GetExecutionContext(), inspector_id_,
+                                *proble_options);
+
+  return true;
 }
 
 void UDPSocket::FinishOpen(
@@ -296,33 +339,42 @@ void UDPSocket::FinishOpen(
     const std::optional<net::IPEndPoint>& local_addr,
     const std::optional<net::IPEndPoint>& peer_addr) {
   if (result == net::OK) {
-    auto close_callback = base::BarrierCallback<ScriptValue>(
-        /*num_callbacks=*/2, WTF::BindOnce(&UDPSocket::OnBothStreamsClosed,
-                                           WrapWeakPersistent(this)));
-
-    auto* script_state = GetScriptState();
     readable_stream_wrapper_ = MakeGarbageCollected<UDPReadableStreamWrapper>(
-        script_state, close_callback, udp_socket_, std::move(socket_listener));
-    // |peer_addr| is populated only in CONNECTED mode.
+        GetScriptState(),
+        WTF::BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+        udp_socket_, std::move(socket_listener), inspector_id_);
     writable_stream_wrapper_ = MakeGarbageCollected<UDPWritableStreamWrapper>(
-        script_state, close_callback, udp_socket_, mode);
+        GetScriptState(),
+        WTF::BindOnce(&UDPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+        udp_socket_, mode, inspector_id_);
 
     auto* open_info = UDPSocketOpenInfo::Create();
 
     open_info->setReadable(readable_stream_wrapper_->Readable());
     open_info->setWritable(writable_stream_wrapper_->Writable());
 
+    std::optional<String> opt_remote_address;
+    std::optional<uint16_t> opt_remote_port;
+
     if (peer_addr) {
-      open_info->setRemoteAddress(String{peer_addr->ToStringWithoutPort()});
+      opt_remote_address = String{peer_addr->ToStringWithoutPort()};
+      opt_remote_port = peer_addr->port();
+
+      open_info->setRemoteAddress(*opt_remote_address);
       open_info->setRemotePort(peer_addr->port());
     }
 
-    open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
+    auto local_address = String{local_addr->ToStringWithoutPort()};
+    open_info->setLocalAddress(local_address);
     open_info->setLocalPort(local_addr->port());
 
     opened_->Resolve(open_info);
 
     SetState(State::kOpen);
+
+    probe::DirectUDPSocketOpened(
+        GetExecutionContext(), inspector_id_, local_address, local_addr->port(),
+        std::move(opt_remote_address), std::move(opt_remote_port));
   } else {
     FailOpenWith(result);
     SetState(State::kAborted);
@@ -361,6 +413,8 @@ void UDPSocket::FailOpenWith(int32_t error) {
   opened_->Reject(exception);
   GetClosedProperty().Reject(ScriptValue(GetScriptState()->GetIsolate(),
                                          exception->ToV8(GetScriptState())));
+
+  abort_net_error_ = error;
 }
 
 mojo::PendingReceiver<network::mojom::blink::RestrictedUDPSocket>
@@ -384,11 +438,28 @@ void UDPSocket::ContextDestroyed() {
   ReleaseResources();
 }
 
+void UDPSocket::SetState(State state) {
+  Socket::SetState(state);
+  switch (state) {
+    case Socket::State::kOpening:
+    case Socket::State::kOpen:
+      break;
+    case Socket::State::kClosed:
+      probe::DirectUDPSocketClosed(GetExecutionContext(), inspector_id_);
+      break;
+    case Socket::State::kAborted:
+      probe::DirectUDPSocketAborted(GetExecutionContext(), inspector_id_,
+                                    abort_net_error_);
+      break;
+  }
+}
+
 void UDPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(udp_socket_);
   visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
+  visitor->Trace(stream_error_);
 
   ScriptWrappable::Trace(visitor);
   Socket::Trace(visitor);
@@ -413,16 +484,30 @@ void UDPSocket::ReleaseResources() {
   udp_socket_->Close();
 }
 
-void UDPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
+void UDPSocket::OnStreamClosed(v8::Local<v8::Value> exception, int net_error) {
   DCHECK_EQ(GetState(), State::kOpen);
-  DCHECK_EQ(args.size(), 2U);
+  DCHECK_LE(streams_closed_count_, 1);
 
-  // Finds first actual exception and rejects |closed| with it.
+  if (stream_error_.IsEmpty() && !exception.IsEmpty()) {
+    stream_error_.Reset(GetScriptState()->GetIsolate(), exception);
+    abort_net_error_ = net_error;
+  }
+
+  if (++streams_closed_count_ == 2) {
+    OnBothStreamsClosed();
+  }
+}
+
+void UDPSocket::OnBothStreamsClosed() {
+  // If one of the streams was errored, rejects |closed| with the first
+  // exception.
   // If neither stream was errored, resolves |closed|.
-  if (auto it = base::ranges::find_if_not(args, &ScriptValue::IsEmpty);
-      it != args.end()) {
-    GetClosedProperty().Reject(*it);
+  if (!stream_error_.IsEmpty()) {
+    auto* isolate = GetScriptState()->GetIsolate();
+    GetClosedProperty().Reject(
+        ScriptValue(isolate, stream_error_.Get(isolate)));
     SetState(State::kAborted);
+    stream_error_.Reset();
   } else {
     GetClosedProperty().ResolveWithUndefined();
     SetState(State::kClosed);

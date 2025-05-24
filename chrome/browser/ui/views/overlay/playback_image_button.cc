@@ -21,7 +21,6 @@
 
 namespace {
 
-constexpr int kPlaybackButtonSize = 48;
 constexpr int kPlaybackButtonIconSize = 24;
 
 }  // namespace
@@ -32,7 +31,7 @@ PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
   // never change.
   if (base::FeatureList::IsEnabled(
           media::kVideoPictureInPictureControlsUpdate2024)) {
-    SetSize(gfx::Size(kPlaybackButtonSize, kPlaybackButtonSize));
+    SetSize(gfx::Size(kCenterButtonSize, kCenterButtonSize));
 
     play_image_ = ui::ImageModel::FromVectorIcon(
         vector_icons::kPlayArrowIcon, ui::kColorSysOnSecondaryContainer,
@@ -73,20 +72,12 @@ void PlaybackImageButton::OnBoundsChanged(const gfx::Rect& rect) {
 
 void PlaybackImageButton::SetPlaybackState(
     const VideoOverlayWindowViews::PlaybackState playback_state) {
-  if (playback_state_ == playback_state)
-    return;
-
-  playback_state_ = playback_state;
-  UpdateImageAndText();
-}
-
-void PlaybackImageButton::SetWindowSize(const gfx::Size& window_size) {
-  if (window_size_.has_value() && window_size_.value() == window_size) {
+  if (playback_state_ == playback_state) {
     return;
   }
 
-  window_size_ = window_size;
-  UpdatePosition();
+  playback_state_ = playback_state;
+  UpdateImageAndText();
 }
 
 void PlaybackImageButton::UpdateImageAndText() {
@@ -123,20 +114,13 @@ void PlaybackImageButton::UpdateImageAndText() {
   SchedulePaint();
 }
 
-void PlaybackImageButton::UpdatePosition() {
-  CHECK(window_size_.has_value());
-
-  SetPosition(gfx::Point((window_size_->width() / 2) - (size().width() / 2),
-                         (window_size_->height() / 2) - (size().height() / 2)));
-}
-
 void PlaybackImageButton::SetPlayButtonBackground() {
   if (!base::FeatureList::IsEnabled(
           media::kVideoPictureInPictureControlsUpdate2024)) {
     return;
   }
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      ui::kColorSysSecondaryContainer, kPlaybackButtonSize / 2));
+  SetBackground(views::CreateRoundedRectBackground(
+      ui::kColorSysSecondaryContainer, kCenterButtonSize / 2));
 }
 
 void PlaybackImageButton::SetPauseButtonBackground() {
@@ -146,7 +130,7 @@ void PlaybackImageButton::SetPauseButtonBackground() {
   }
 
   SetBackground(views::CreateRoundedRectBackground(
-      SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF), kPlaybackButtonSize / 2));
+      SkColorSetARGB(0x33, 0xFF, 0xFF, 0xFF), kCenterButtonSize / 2));
 }
 
 BEGIN_METADATA(PlaybackImageButton)

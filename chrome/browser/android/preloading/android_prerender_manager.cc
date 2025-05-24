@@ -41,20 +41,28 @@ bool AndroidPrerenderManager::StartPrerendering(
   PrerenderManager::CreateForWebContents(web_contents);
   auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
   CHECK(prerender_manager);
-  prerender_handle_ = prerender_manager->StartPrerenderNewTabPage(
-      prerender_url, chrome_preloading_predictor::kTouchOnNewTabPage);
-  return prerender_handle_ != nullptr;
+  base::WeakPtr<content::PrerenderHandle> prerender_handle =
+      prerender_manager->StartPrerenderNewTabPage(
+          prerender_url, chrome_preloading_predictor::kTouchOnNewTabPage);
+  if (prerender_handle) {
+    prerender_handle_map_[web_contents] = prerender_handle;
+  } else if (prerender_handle_map_.contains(web_contents) &&
+             !prerender_handle_map_[web_contents]) {
+    prerender_handle_map_.erase(web_contents);
+  }
+  return prerender_handle != nullptr;
 }
 
 void AndroidPrerenderManager::StopPrerendering(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_web_contents) {
-  if (prerender_handle_) {
-    content::WebContents* const web_contents =
-        content::WebContents::FromJavaWebContents(j_web_contents);
+  content::WebContents* const web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  if (prerender_handle_map_.contains(web_contents)) {
     auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
     CHECK(prerender_manager);
-    prerender_manager->StopPrerenderNewTabPage(prerender_handle_);
-    prerender_handle_ = nullptr;
+    prerender_manager->StopPrerenderNewTabPage(
+        prerender_handle_map_[web_contents]);
+    prerender_handle_map_.erase(web_contents);
   }
 }

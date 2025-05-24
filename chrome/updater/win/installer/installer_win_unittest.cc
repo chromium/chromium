@@ -185,7 +185,7 @@ TEST(BuildInstallerCommandLineArgumentsTest, LegacyCommandLine) {
   EXPECT_EQ(exit_result.exit_code, updater::SUCCESS_EXIT_CODE);
   const base::CommandLine command_line = base::CommandLine::FromString(
       base::StrCat({L"exe.exe ", cmd_line_args.get()}));
-  EXPECT_EQ(command_line.GetSwitchValueASCII(updater::kInstallSwitch),
+  EXPECT_EQ(command_line.GetSwitchValueUTF8(updater::kInstallSwitch),
             "appguid={8A69D345-D564-463C-AFF1-A69D9E530F96}&appname=Google%"
             "20Chrome&needsadmin=Prefers&lang=en");
 }

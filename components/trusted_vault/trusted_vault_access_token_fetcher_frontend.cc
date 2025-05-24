@@ -22,14 +22,12 @@ TrustedVaultAccessTokenFetcherFrontend::TrustedVaultAccessTokenFetcherFrontend(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
   DCHECK(identity_manager_);
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
   UpdatePrimaryAccountIfNeeded();
 }
 
 TrustedVaultAccessTokenFetcherFrontend::
-    ~TrustedVaultAccessTokenFetcherFrontend() {
-  identity_manager_->RemoveObserver(this);
-}
+    ~TrustedVaultAccessTokenFetcherFrontend() = default;
 
 base::WeakPtr<TrustedVaultAccessTokenFetcherFrontend>
 TrustedVaultAccessTokenFetcherFrontend::GetWeakPtr() {
@@ -60,6 +58,12 @@ void TrustedVaultAccessTokenFetcherFrontend::FetchAccessToken(
 void TrustedVaultAccessTokenFetcherFrontend::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   UpdatePrimaryAccountIfNeeded();
+}
+
+void TrustedVaultAccessTokenFetcherFrontend::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  CHECK_EQ(identity_manager, identity_manager_);
+  identity_manager_observation_.Reset();
 }
 
 void TrustedVaultAccessTokenFetcherFrontend::UpdatePrimaryAccountIfNeeded() {

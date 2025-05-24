@@ -113,8 +113,10 @@ std::string GetFilePathWithReplacements(
   for (const auto& replacement : text_to_replace) {
     const std::string& old_text = replacement.first;
     const std::string& new_text = replacement.second;
-    std::string base64_old = base::Base64Encode(old_text);
-    std::string base64_new = base::Base64Encode(new_text);
+    std::string base64_old = base::EscapeQueryParamValue(
+        base::Base64Encode(old_text), /*use_plus=*/true);
+    std::string base64_new = base::EscapeQueryParamValue(
+        base::Base64Encode(new_text), /*use_plus=*/true);
     if (new_file_path == original_file_path)
       new_file_path += "?";
     else
@@ -230,6 +232,25 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   auto http_response = std::make_unique<BasicHttpResponse>();
   http_response->set_code(HTTP_OK);
 
+  // Extract the ETag from the file path
+  base::File::Info info;
+  CHECK(base::GetFileInfo(file_path, &info));
+  const uint64_t last_modified =
+      info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds();
+  const std::string etag =
+      base::StringPrintf("\"%s-%zx-%" PRIx64 "\"", file_path.MaybeAsASCII(),
+                         file_contents.size(), last_modified);
+
+  // Check for If-None-Match header in the request
+  auto if_none_match_it = request.headers.find("If-None-Match");
+  if (if_none_match_it != request.headers.end()) {
+    const std::string& if_none_match = if_none_match_it->second;
+    if (if_none_match == etag) {
+      // ETag matches, return 304 Not Modified
+      http_response->set_code(HTTP_NOT_MODIFIED);
+    }
+  }
+
   if (request.headers.find("Range") != request.headers.end()) {
     std::vector<HttpByteRange> ranges;
 
@@ -251,8 +272,10 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
 
   http_response->set_content_type(GetContentType(file_path));
   http_response->AddCustomHeader("Accept-Ranges", "bytes");
-  http_response->AddCustomHeader("ETag", "'" + file_path.MaybeAsASCII() + "'");
-  http_response->set_content(file_contents);
+  http_response->AddCustomHeader("ETag", etag);
+  if (http_response->code() != HTTP_NOT_MODIFIED) {
+    http_response->set_content(file_contents);
+  }
   return http_response;
 }
 

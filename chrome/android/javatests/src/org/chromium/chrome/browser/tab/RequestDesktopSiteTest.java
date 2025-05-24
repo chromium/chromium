@@ -16,7 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -40,19 +41,21 @@ import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
 /** Test for user flows around {@link ContentSettingsType.REQUEST_DESKTOP_SITE}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class RequestDesktopSiteTest {
     private static final String URL_1 = "https://www.chromium.org/";
     private static final String URL_2 = "https://www.example.com/";
     private CallbackHelper mMenuObserver;
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -61,12 +64,11 @@ public class RequestDesktopSiteTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         // Disable IPH to avoid interruptions on the app menu.
         TrackerFactory.setTrackerForTests(mMockTracker);
         Mockito.doReturn(false)
                 .when(mMockTracker)
-                .shouldTriggerHelpUI(ArgumentMatchers.anyString());
+                .shouldTriggerHelpUi(ArgumentMatchers.anyString());
         mActivityTestRule.startMainActivityOnBlankPage();
         mMenuObserver = new CallbackHelper();
         mActivityTestRule

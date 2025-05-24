@@ -1,0 +1,14 @@
+include_rules = [
+  "+chrome/common/chrome_switches.h",
+  "+chrome/common/chrome_version.h",
+  "+chrome/install_static",
+  "+chrome/installer/util/google_update_constants.h",
+  "+components/crash/core/app",
+  "+components/crash/core/common/crash_key.h",
+  "+content/public/common/content_switches.h",
+]
+specific_include_rules = {
+  "service_unittest\.cc": [
+    "+third_party/crashpad/crashpad/client"
+  ]
+}

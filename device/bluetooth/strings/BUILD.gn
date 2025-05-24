@@ -6,12 +6,10 @@ import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
 
-grit("strings") {
+grit_strings("strings") {
   source = "../bluetooth_strings.grd"
-  outputs =
-      [ "grit/bluetooth_strings.h" ] +
-      process_file_template(all_chrome_locales,
-                            [ "bluetooth_strings_{{source_name_part}}.pak" ])
+  outputs = [ "grit/bluetooth_strings.h" ]
+  output_prefix = "bluetooth_strings_"
 }
 
 repack("bluetooth_test_strings") {

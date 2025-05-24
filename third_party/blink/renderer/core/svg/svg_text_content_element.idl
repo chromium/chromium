@@ -28,21 +28,20 @@
 [Exposed=Window]
 interface SVGTextContentElement : SVGGraphicsElement {
     // lengthAdjust Types
-    [MeasureAs=SVG1DOMText] const unsigned short LENGTHADJUST_UNKNOWN          = 0;
-    [MeasureAs=SVG1DOMText] const unsigned short LENGTHADJUST_SPACING          = 1;
-    [MeasureAs=SVG1DOMText] const unsigned short LENGTHADJUST_SPACINGANDGLYPHS = 2;
+    const unsigned short LENGTHADJUST_UNKNOWN          = 0;
+    const unsigned short LENGTHADJUST_SPACING          = 1;
+    const unsigned short LENGTHADJUST_SPACINGANDGLYPHS = 2;
 
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedLength      textLength;
-    [MeasureAs=SVG1DOMText] readonly attribute SVGAnimatedEnumeration lengthAdjust;
+    readonly attribute SVGAnimatedLength      textLength;
+    readonly attribute SVGAnimatedEnumeration lengthAdjust;
 
     long getNumberOfChars();
     [HighEntropy, Measure] float getComputedTextLength();
     [HighEntropy, Measure, RaisesException] float getSubStringLength(unsigned long charnum, unsigned long nchars);
-    // TODO(foolip): SVGPoint/SVGRect should be DOMPoint/DOMRect.
     [HighEntropy, Measure, RaisesException] SVGPoint getStartPositionOfChar(unsigned long charnum);
     [HighEntropy, Measure, RaisesException] SVGPoint getEndPositionOfChar(unsigned long charnum);
     [HighEntropy, Measure, RaisesException] SVGRect getExtentOfChar(unsigned long charnum);
     [RaisesException] float getRotationOfChar(unsigned long charnum);
-    [RaisesException] long getCharNumAtPosition(SVGPoint point);
+    [RaisesException] long getCharNumAtPosition(optional DOMPointInit point = {});
     [RaisesException] void selectSubString(unsigned long charnum, unsigned long nchars);
 };

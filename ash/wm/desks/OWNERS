@@ -1,4 +1,3 @@
-afakhry@chromium.org
 dandersson@chromium.org
 
 # For desks UIs, desk bars, tests, and utilities.
@@ -9,3 +8,5 @@ per-file *view*=yongshun@chromium.org
 per-file *desk_bar*=yongshun@chromium.org
 per-file *test*=yongshun@chromium.org
 per-file *util*=yongshun@chromium.org
+
+afakhry@chromium.org  #{LAST_RESORT_SUGGESTION}

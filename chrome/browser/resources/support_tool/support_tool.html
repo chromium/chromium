@@ -21,22 +21,22 @@ found in the LICENSE file.
 <div id="support-tool-pages">
   <cr-page-selector selected="[[selectedPage_]]" attr-for-selected="page-index">
     <issue-details id="issueDetails"
-        page-index$="[[supportToolPageIndex_.ISSUE_DETAILS]]">
+        page-index$="[[supportToolPageIndexEnum_.ISSUE_DETAILS]]">
     </issue-details>
     <data-collectors id="dataCollectors"
-        page-index$="[[supportToolPageIndex_.DATA_COLLECTOR_SELECTION]]">
+        page-index$="[[supportToolPageIndexEnum_.DATA_COLLECTOR_SELECTION]]">
     </data-collectors>
     <spinner-page id="spinnerPage"  page-title="$i18n{dataCollectionSpinner}"
-        page-index$="[[supportToolPageIndex_.SPINNER]]">
+        page-index$="[[supportToolPageIndexEnum_.SPINNER]]">
     </spinner-page>
     <pii-selection id="piiSelection"
-        page-index$="[[supportToolPageIndex_.PII_SELECTION]]">
+        page-index$="[[supportToolPageIndexEnum_.PII_SELECTION]]">
     </pii-selection>
     <spinner-page id="exportSpinner" page-title="$i18n{dataExportSpinner}"
-        page-index$="[[supportToolPageIndex_.EXPORT_SPINNER]]">
+        page-index$="[[supportToolPageIndexEnum_.EXPORT_SPINNER]]">
     </spinner-page>
     <data-export-done id="dataExportDone"
-        page-index$="[[supportToolPageIndex_.DATA_EXPORT_DONE]]">
+        page-index$="[[supportToolPageIndexEnum_.DATA_EXPORT_DONE]]">
     </data-export-done>
   </cr-page-selector>
 </div>

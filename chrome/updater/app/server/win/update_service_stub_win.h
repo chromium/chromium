@@ -10,6 +10,10 @@
 #include "base/sequence_checker.h"
 #include "chrome/updater/update_service.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 // Receives calls from the client and delegates them to an UpdateService
@@ -27,7 +31,8 @@ class UpdateServiceStubWin : public UpdateService {
 
   // updater::UpdateService overrides.
   void GetVersion(base::OnceCallback<void(const base::Version&)>) override;
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override;
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     base::OnceCallback<void(int)> callback) override;
   void RegisterApp(const RegistrationRequest& request,
                    base::OnceCallback<void(int)> callback) override;
   void GetAppStates(
@@ -37,12 +42,14 @@ class UpdateServiceStubWin : public UpdateService {
       const std::string& app_id,
       Priority priority,
       PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) override;
   void Update(const std::string& app_id,
               const std::string& install_data_index,
               Priority priority,
               PolicySameVersionUpdate policy_same_version_update,
+              const std::string& language,
               base::RepeatingCallback<void(const UpdateState&)> state_update,
               base::OnceCallback<void(Result)> callback) override;
   void UpdateAll(base::RepeatingCallback<void(const UpdateState&)> state_update,
@@ -51,6 +58,7 @@ class UpdateServiceStubWin : public UpdateService {
                const std::string& client_install_data,
                const std::string& install_data_index,
                Priority priority,
+               const std::string& language,
                base::RepeatingCallback<void(const UpdateState&)> state_update,
                base::OnceCallback<void(Result)> callback) override;
   void CancelInstalls(const std::string& app_id) override;
@@ -60,6 +68,7 @@ class UpdateServiceStubWin : public UpdateService {
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateState&)> state_update,
       base::OnceCallback<void(Result)> callback) override;
 

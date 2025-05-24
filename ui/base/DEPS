@@ -1,12 +1,10 @@
 include_rules = [
-  "+chromeos/crosapi/cpp/crosapi_constants.h",
-  "+chromeos/crosapi/mojom/emoji_picker.mojom.h",
-  "+chromeos/lacros/lacros_paths.h",
-  "+chromeos/lacros/lacros_service.h",
+  "+cc/paint",
   "+components/vector_icons",
   "+components/version_info",
   "+media/media_buildflags.h",
   "+net",
+  "+skia",
   "+skia/ext",
   "+third_party/brotli",
   "+third_party/re2",
@@ -19,9 +17,9 @@ include_rules = [
   "+ui/gfx",
   "+ui/resources/grit/ui_resources.h",
   "+ui/resources/grit/ui_unscaled_resources.h",
-  "+ui/resources/grit/webui_resources.h",
   "+ui/strings/grit/app_locale_settings.h",
   "+ui/strings/grit/ax_strings.h",
   "+ui/strings/grit/ui_strings.h",
-  "+url"
+  "+ui/webui/resources/grit/webui_resources.h",
+  "+url",
 ]

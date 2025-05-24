@@ -1,0 +1,45 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='Main Content' nameFrom=contents
+++++++++staticText name='Main Content' nameFrom=contents
+++++++++++inlineTextBox name='Main Content' nameFrom=contents
+++++++paragraph
+++++++++staticText name='This is the main content of the page.' nameFrom=contents
+++++++++++inlineTextBox name='This is the main content of the page.' nameFrom=contents
+++++++paragraph
+++++++++staticText name='This text is is positioned far to the left. However, it will still be included in the final tree when the AXModeOnScreen is on because we only care about vertical scrolling.' nameFrom=contents
+++++++++++inlineTextBox name='This ' nameFrom=contents
+++++++++++inlineTextBox name='text ' nameFrom=contents
+++++++++++inlineTextBox name='is ' nameFrom=contents
+++++++++++inlineTextBox name='is ' nameFrom=contents
+++++++++++inlineTextBox name='positioned ' nameFrom=contents
+++++++++++inlineTextBox name='far ' nameFrom=contents
+++++++++++inlineTextBox name='to ' nameFrom=contents
+++++++++++inlineTextBox name='the ' nameFrom=contents
+++++++++++inlineTextBox name='left. ' nameFrom=contents
+++++++++++inlineTextBox name='However, ' nameFrom=contents
+++++++++++inlineTextBox name='it ' nameFrom=contents
+++++++++++inlineTextBox name='will ' nameFrom=contents
+++++++++++inlineTextBox name='still ' nameFrom=contents
+++++++++++inlineTextBox name='be ' nameFrom=contents
+++++++++++inlineTextBox name='included ' nameFrom=contents
+++++++++++inlineTextBox name='in ' nameFrom=contents
+++++++++++inlineTextBox name='the ' nameFrom=contents
+++++++++++inlineTextBox name='final ' nameFrom=contents
+++++++++++inlineTextBox name='tree ' nameFrom=contents
+++++++++++inlineTextBox name='when ' nameFrom=contents
+++++++++++inlineTextBox name='the ' nameFrom=contents
+++++++++++inlineTextBox name='AXModeOnScreen ' nameFrom=contents
+++++++++++inlineTextBox name='is ' nameFrom=contents
+++++++++++inlineTextBox name='on ' nameFrom=contents
+++++++++++inlineTextBox name='because ' nameFrom=contents
+++++++++++inlineTextBox name='we ' nameFrom=contents
+++++++++++inlineTextBox name='only ' nameFrom=contents
+++++++++++inlineTextBox name='care ' nameFrom=contents
+++++++++++inlineTextBox name='about ' nameFrom=contents
+++++++++++inlineTextBox name='vertical ' nameFrom=contents
+++++++++++inlineTextBox name='scrolling.' nameFrom=contents
+++++++paragraph
+++++++++staticText name='More content here.' nameFrom=contents
+++++++++++inlineTextBox name='More content here.' nameFrom=contents

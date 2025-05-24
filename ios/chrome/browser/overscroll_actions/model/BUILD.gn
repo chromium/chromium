@@ -9,7 +9,6 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/overscroll_actions/ui_bundled",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/web/public",

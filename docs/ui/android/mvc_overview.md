@@ -42,7 +42,7 @@ The coordinator owns the component overall, i.e. it creates the other objects in
 
 #### Mediator
 
-The mediator is responsible for the interaction with the coordinator and with the Chrome backend (including the native code). It reacts to changes in the backend (e.g. the canonical model for bookmarks or content suggestions, which lives in the native code) or other components and updates the model based on that, or receives events from th;e view and notifies the backend.
+The mediator is responsible for the interaction with the coordinator and with the Chrome backend (including the native code). It reacts to changes in the backend (e.g. the canonical model for bookmarks or content suggestions, which lives in the native code) or other components and updates the model based on that, or receives events from the view and notifies the backend.
 
 #### ModelChangeProcessor
 

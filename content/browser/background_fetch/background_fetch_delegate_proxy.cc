@@ -19,6 +19,7 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
@@ -92,13 +93,16 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
   if (auto* controller = GetPermissionController()) {
     blink::mojom::PermissionStatus permission_status =
         blink::mojom::PermissionStatus::DENIED;
+    const auto descriptor = content::PermissionDescriptorUtil::
+        CreatePermissionDescriptorForPermissionType(
+            blink::PermissionType::BACKGROUND_FETCH);
     if (rfh) {
       DCHECK(origin == rfh->GetLastCommittedOrigin());
-      permission_status = controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::BACKGROUND_FETCH, rfh);
+      permission_status =
+          controller->GetPermissionStatusForCurrentDocument(descriptor, rfh);
     } else if (rph) {
-      permission_status = controller->GetPermissionStatusForWorker(
-          blink::PermissionType::BACKGROUND_FETCH, rph, origin);
+      permission_status =
+          controller->GetPermissionStatusForWorker(descriptor, rph, origin);
     }
     switch (permission_status) {
       case blink::mojom::PermissionStatus::GRANTED:

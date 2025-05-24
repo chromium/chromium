@@ -31,6 +31,7 @@ import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
@@ -88,14 +89,15 @@ import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is the delegate to which WebViewProxy forwards all API calls.
  *
- * Most of the actual functionality is implemented by AwContents (or WebContents within
- * it). This class also contains WebView-specific APIs that require the creation of other
- * adapters (otherwise org.chromium.content would depend on the webview.chromium package)
- * and a small set of no-op deprecated APIs.
+ * <p>Most of the actual functionality is implemented by AwContents (or WebContents within it). This
+ * class also contains WebView-specific APIs that require the creation of other adapters (otherwise
+ * org.chromium.content would depend on the webview.chromium package) and a small set of no-op
+ * deprecated APIs.
  */
 @SuppressWarnings("deprecation")
 @Lifetime.WebView
@@ -113,7 +115,7 @@ class WebViewChromium
     // The client adapter class.
     private WebViewContentsClientAdapter mContentsClientAdapter;
     // The wrapped Context.
-    private Context mContext;
+    private final Context mContext;
 
     // Variables for functionality provided by this adapter ---------------------------------------
     private ContentSettingsAdapter mWebSettings;
@@ -135,6 +137,8 @@ class WebViewChromium
     static void enableSlowWholeDocumentDraw() {
         sRecordWholeDocumentEnabledByApi = true;
     }
+
+    private static final AtomicBoolean sFirstWebViewInstanceCreated = new AtomicBoolean();
 
     // Used to record the UMA histogram WebView.WebViewApiCall. Since these values are persisted to
     // logs, they should never be renumbered or reused.
@@ -704,7 +708,8 @@ class WebViewChromium
     public void init(
             final Map<String, Object> javaScriptInterfaces, final boolean privateBrowsing) {
         long startTime = SystemClock.uptimeMillis();
-        boolean isFirstWebViewInit = !mFactory.hasStarted();
+        boolean wasChromiumAlreadyInitialized = mFactory.isChromiumInitialized();
+        boolean isFirstWebViewInstance = !sFirstWebViewInstanceCreated.getAndSet(true);
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
                 mFactory.startYourEngines(true);
@@ -750,7 +755,11 @@ class WebViewChromium
                 mFactory.startYourEngines(true);
             }
 
-            final boolean isAccessFromFileURLsGrantedByDefault =
+            // At this point it is guaranteed that global Chromium init has completed on the UI
+            // thread, as all paths have called startYourEngines. However, this function itself is
+            // *not* necessarily running on the UI thread due to the pre-JBMR2 case above.
+
+            final boolean isAccessFromFileUrlsGrantedByDefault =
                     mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
             final boolean areLegacyQuirksEnabled =
                     mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
@@ -771,7 +780,7 @@ class WebViewChromium
                         mFactory.createContentSettingsAdapter(
                                 new AwSettings(
                                         mContext,
-                                        isAccessFromFileURLsGrantedByDefault,
+                                        isAccessFromFileUrlsGrantedByDefault,
                                         areLegacyQuirksEnabled,
                                         allowEmptyDocumentPersistence,
                                         allowGeolocationOnInsecureOrigins,
@@ -786,7 +795,7 @@ class WebViewChromium
             }
 
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
-                mWebSettings.getAwSettings().setCSSHexAlphaColorEnabled(true);
+                mWebSettings.getAwSettings().setCssHexAlphaColorEnabled(true);
                 mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
             }
 
@@ -794,6 +803,9 @@ class WebViewChromium
 
             mSharedWebViewChromium.init(mContentsClientAdapter);
 
+            // In the normal case where we are currently on the UI thread, this will run initForReal
+            // synchronously. For pre-JBMR2 apps we might not be on the UI thread, in which case it
+            // will be posted and we do not wait for it.
             mFactory.addTask(
                     new Runnable() {
                         @Override
@@ -811,31 +823,42 @@ class WebViewChromium
                     });
         }
 
-        // If initialization hasn't been deferred, record a startup time histogram entry
-        // and trace event(s).
-        if (mFactory.hasStarted()) {
-            if (isFirstWebViewInit) {
+        long elapsedTime = SystemClock.uptimeMillis() - startTime;
+        if (isFirstWebViewInstance) {
+            if (wasChromiumAlreadyInitialized) {
+                // This is the first WebView created, but global Chromium initialization happened
+                // before the constructor was called.
                 RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
-                        SystemClock.uptimeMillis() - startTime);
-
-                TraceEvent.webViewStartupTotalFactoryInit(
-                        mFactory.getInitInfo().mTotalFactoryInitStartTime,
-                        mFactory.getInitInfo().mTotalFactoryInitDuration);
-
-                TraceEvent.webViewStartupStage1(
-                        mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
-
-                TraceEvent.webViewStartupStage2(
-                        startTime, SystemClock.uptimeMillis() - startTime, true);
+                        "Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup",
+                        elapsedTime);
+                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, false);
             } else {
+                // This is the first WebView created, and we blocked running global Chromium
+                // initialization during the constructor.
                 RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
-                        SystemClock.uptimeMillis() - startTime);
-
-                TraceEvent.webViewStartupStage2(
-                        startTime, SystemClock.uptimeMillis() - startTime, false);
+                        "Android.WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup",
+                        elapsedTime);
+                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, true);
             }
+        } else {
+            // This is not the first WebView created; global Chromium initialization must have
+            // happened beforehand.
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.NotFirstInstance", elapsedTime);
+            TraceEvent.webViewStartupNotFirstInstance(startTime, elapsedTime);
+        }
+
+        // Record "legacy" metrics. These have suboptimal definitions because they don't allow for
+        // the case where global Chromium initialization happened before the first WebView instance
+        // was constructed, and just use "cold/warm" to refer to whether global Chromium
+        // initialization had to be run during the constructor or not, giving the "cold" case a
+        // bimodal distribution.
+        if (!wasChromiumAlreadyInitialized) {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold", elapsedTime);
+        } else {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm", elapsedTime);
         }
     }
 
@@ -901,7 +924,7 @@ class WebViewChromium
             }
 
             // TODO: This assumes AwContents ignores second Paint param.
-            mAwContents.setLayerType(mWebView.getLayerType(), null);
+            mAwContents.getViewMethods().setLayerType(mWebView.getLayerType(), null);
 
             mSharedWebViewChromium.initForReal(mAwContents);
         }
@@ -2212,6 +2235,7 @@ class WebViewChromium
             mAwContents.cancelAllPrerendering();
             mSharedWebViewChromium.setWebViewClient(client);
             mContentsClientAdapter.setWebViewClient(mSharedWebViewChromium.getWebViewClient());
+            mAwContents.onWebViewClientUpdated(client);
             if (client != null) {
                 ApiImplementationLogger.logWebViewClientImplementation(client);
             }
@@ -2743,7 +2767,7 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_ACCESSIBILITY_NODE_PROVIDER")) {
             recordWebViewApiCall(ApiCall.GET_ACCESSIBILITY_NODE_PROVIDER);
-            return mAwContents.getAccessibilityNodeProvider();
+            return mAwContents.getViewMethods().getAccessibilityNodeProvider();
         }
     }
 
@@ -2868,7 +2892,9 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onContainerViewOverScrolled(scrollX, scrollY, clampedX, clampedY);
+        mAwContents
+                .getViewMethods()
+                .onContainerViewOverScrolled(scrollX, scrollY, clampedX, clampedY);
     }
 
     @Override
@@ -2883,7 +2909,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onWindowVisibilityChanged(visibility);
+        mAwContents.getViewMethods().onWindowVisibilityChanged(visibility);
     }
 
     @Override
@@ -2900,7 +2926,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onDraw(canvas);
+        mAwContents.getViewMethods().onDraw(canvas);
     }
 
     @Override
@@ -2963,7 +2989,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onConfigurationChanged(newConfig);
+        mAwContents.getViewMethods().onConfigurationChanged(newConfig);
     }
 
     @Override
@@ -2982,7 +3008,7 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent = TraceEvent.scoped("WebView.APICall.Framework.ON_DRAG_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_DRAG_EVENT);
-            return mAwContents.onDragEvent(event);
+            return mAwContents.getViewMethods().onDragEvent(event);
         }
     }
 
@@ -2995,7 +3021,7 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_CREATE_INPUT_CONNECTION")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_CREATE_INPUT_CONNECTION);
-            return mAwContents.onCreateInputConnection(outAttrs);
+            return mAwContents.getViewMethods().onCreateInputConnection(outAttrs);
         }
     }
 
@@ -3056,7 +3082,7 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent = TraceEvent.scoped("WebView.APICall.Framework.ON_KEY_UP")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_KEY_UP);
-            return mAwContents.onKeyUp(keyCode, event);
+            return mAwContents.getViewMethods().onKeyUp(keyCode, event);
         }
     }
 
@@ -3067,7 +3093,7 @@ class WebViewChromium
         // point we must bind Chromium's UI thread to the current thread.
         mFactory.startYourEngines(false);
         checkThread();
-        mAwContents.onAttachedToWindow();
+        mAwContents.getViewMethods().onAttachedToWindow();
     }
 
     @Override
@@ -3083,7 +3109,7 @@ class WebViewChromium
             return;
         }
 
-        mAwContents.onDetachedFromWindow();
+        mAwContents.getViewMethods().onDetachedFromWindow();
     }
 
     @Override
@@ -3102,7 +3128,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onVisibilityChanged(changedView, visibility);
+        mAwContents.getViewMethods().onVisibilityChanged(changedView, visibility);
     }
 
     @Override
@@ -3120,7 +3146,7 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_WINDOW_FOCUS_CHANGED")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_WINDOW_FOCUS_CHANGED);
-            mAwContents.onWindowFocusChanged(hasWindowFocus);
+            mAwContents.getViewMethods().onWindowFocusChanged(hasWindowFocus);
         }
     }
 
@@ -3139,7 +3165,7 @@ class WebViewChromium
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ON_FOCUS_CHANGED")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_FOCUS_CHANGED);
-            mAwContents.onFocusChanged(focused, direction, previouslyFocusedRect);
+            mAwContents.getViewMethods().onFocusChanged(focused, direction, previouslyFocusedRect);
         }
     }
 
@@ -3160,7 +3186,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onSizeChanged(w, h, ow, oh);
+        mAwContents.getViewMethods().onSizeChanged(w, h, ow, oh);
     }
 
     @Override
@@ -3175,7 +3201,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onContainerViewScrollChanged(l, t, oldl, oldt);
+        mAwContents.getViewMethods().onContainerViewScrollChanged(l, t, oldl, oldt);
     }
 
     @Override
@@ -3195,7 +3221,7 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.DISPATCH_KEY_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.DISPATCH_KEY_EVENT);
-            return mAwContents.dispatchKeyEvent(event);
+            return mAwContents.getViewMethods().dispatchKeyEvent(event);
         }
     }
 
@@ -3216,7 +3242,7 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_TOUCH_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_TOUCH_EVENT);
-            return mAwContents.onTouchEvent(ev);
+            return mAwContents.getViewMethods().onTouchEvent(ev);
         }
     }
 
@@ -3237,7 +3263,7 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_HOVER_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_HOVER_EVENT);
-            return mAwContents.onHoverEvent(event);
+            return mAwContents.getViewMethods().onHoverEvent(event);
         }
     }
 
@@ -3258,7 +3284,7 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_GENERIC_MOTION_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_GENERIC_MOTION_EVENT);
-            return mAwContents.onGenericMotionEvent(event);
+            return mAwContents.getViewMethods().onGenericMotionEvent(event);
         }
     }
 
@@ -3287,7 +3313,7 @@ class WebViewChromium
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.REQUEST_FOCUS")) {
             recordWebViewApiCall(ApiCall.REQUEST_FOCUS);
-            mAwContents.requestFocus();
+            mAwContents.getViewMethods().requestFocus();
             return mWebViewPrivate.super_requestFocus(direction, previouslyFocusedRect);
         }
     }
@@ -3306,7 +3332,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        mAwContents.getViewMethods().onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
@@ -3368,7 +3394,7 @@ class WebViewChromium
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_LAYER_TYPE")) {
             recordWebViewApiCall(ApiCall.SET_LAYER_TYPE);
-            mAwContents.setLayerType(layerType, paint);
+            mAwContents.getViewMethods().setLayerType(layerType, paint);
         }
     }
 
@@ -3404,7 +3430,7 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_START_TEMPORARY_DETACH")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_START_TEMPORARY_DETACH);
-            mAwContents.onStartTemporaryDetach();
+            mAwContents.getViewMethods().onStartTemporaryDetach();
         }
     }
 
@@ -3413,7 +3439,7 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_FINISH_TEMPORARY_DETACH")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_FINISH_TEMPORARY_DETACH);
-            mAwContents.onFinishTemporaryDetach();
+            mAwContents.getViewMethods().onFinishTemporaryDetach();
         }
     }
 
@@ -3432,8 +3458,13 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_CHECK_IS_TEXT_EDITOR")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_CHECK_IS_TEXT_EDITOR);
-            return mAwContents.onCheckIsTextEditor();
+            return mAwContents.getViewMethods().onCheckIsTextEditor();
         }
+    }
+
+    @Override
+    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        return mAwContents.onApplyWindowInsets(insets);
     }
 
     // TODO(crbug.com/40280893): Add override annotation when SDK includes this method.
@@ -3457,7 +3488,7 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeHorizontalScrollRange();
+        return mAwContents.getViewMethods().computeHorizontalScrollRange();
     }
 
     @Override
@@ -3474,7 +3505,7 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeHorizontalScrollOffset();
+        return mAwContents.getViewMethods().computeHorizontalScrollOffset();
     }
 
     @Override
@@ -3491,7 +3522,7 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeVerticalScrollRange();
+        return mAwContents.getViewMethods().computeVerticalScrollRange();
     }
 
     @Override
@@ -3508,7 +3539,7 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeVerticalScrollOffset();
+        return mAwContents.getViewMethods().computeVerticalScrollOffset();
     }
 
     @Override
@@ -3525,7 +3556,7 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeVerticalScrollExtent();
+        return mAwContents.getViewMethods().computeVerticalScrollExtent();
     }
 
     @Override
@@ -3541,7 +3572,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.computeScroll();
+        mAwContents.getViewMethods().computeScroll();
     }
 
     @Override
@@ -3644,6 +3675,7 @@ class WebViewChromium
         }
 
         // @Override
+        @SuppressWarnings("UnusedMethod")
         public boolean super_onHoverEvent(MotionEvent event) {
             return mWebViewPrivate.super_onHoverEvent(event);
         }

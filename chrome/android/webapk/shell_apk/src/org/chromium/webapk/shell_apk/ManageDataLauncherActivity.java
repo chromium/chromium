@@ -6,6 +6,8 @@ package org.chromium.webapk.shell_apk;
 
 import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -17,7 +19,6 @@ import android.content.pm.ShortcutInfo;
 import android.content.pm.ShortcutManager;
 import android.graphics.drawable.Icon;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
@@ -25,8 +26,8 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
 
@@ -37,6 +38,7 @@ import java.util.List;
  * Handles site settings shortcuts for WebApks. The shortcut opens the web browser's site settings
  * for the start url associated with the WebApk.
  */
+@NullMarked
 public class ManageDataLauncherActivity extends Activity {
     public static final String ACTION_SITE_SETTINGS =
             "android.support.customtabs.action.ACTION_MANAGE_TRUSTED_WEB_ACTIVITY_DATA";
@@ -62,9 +64,9 @@ public class ManageDataLauncherActivity extends Activity {
     private Uri mUrl;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mProviderPackage = getIntent().getStringExtra(EXTRA_PROVIDER_PACKAGE);
+        mProviderPackage = assertNonNull(getIntent().getStringExtra(EXTRA_PROVIDER_PACKAGE));
         mUrl = Uri.parse(getIntent().getStringExtra(EXTRA_SITE_SETTINGS_URL));
 
         if (!siteSettingsShortcutEnabled(this, mProviderPackage)) {
@@ -156,7 +158,6 @@ public class ManageDataLauncherActivity extends Activity {
      * app's main activity will be used by default. This activity needs to define the MAIN action
      * and LAUNCHER category in order to attach the shortcut.
      */
-    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private static ShortcutInfo createSiteSettingsShortcutInfo(
             Context context, String url, String providerPackage) {
         Intent siteSettingsIntent = new Intent(context, ManageDataLauncherActivity.class);
@@ -181,8 +182,6 @@ public class ManageDataLauncherActivity extends Activity {
      */
     public static void updateSiteSettingsShortcut(
             Context context, HostBrowserLauncherParams params) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return;
-
         ShortcutManager shortcutManager = context.getSystemService(ShortcutManager.class);
 
         // Remove potentially existing shortcut if package does not support shortcuts.

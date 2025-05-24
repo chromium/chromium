@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -101,6 +102,13 @@ enum class ManifestIdParseResult {
 // DataTypeLocalChangeProcessor and WebAppDatabase (the storage).
 class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
  public:
+  // Disable the logic that resumes pending sync installs, and fixes cases where
+  // os integration is missing but the app's install_state indicates OS
+  // integration should be present. Only intended for use in tests that need to
+  // check the app state before these operations are done.
+  static base::AutoReset<bool>
+  DisableResumeSyncInstallAndMissingOsIntegrationForTesting();
+
   explicit WebAppSyncBridge(WebAppRegistrarMutable* registrar);
   // Tests may inject mocks using this ctor.
   WebAppSyncBridge(
@@ -112,13 +120,10 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   void SetSubsystems(AbstractWebAppDatabaseFactory* database_factory,
                      WebAppCommandManager* command_manager,
-                     WebAppCommandScheduler* command_scheduler_,
-                     WebAppInstallManager* install_manager_);
+                     WebAppCommandScheduler* command_scheduler,
+                     WebAppInstallManager* install_manager);
 
   using CommitCallback = base::OnceCallback<void(bool success)>;
-  using RepeatingInstallCallback =
-      base::RepeatingCallback<void(const webapps::AppId& app_id,
-                                   webapps::InstallResultCode code)>;
   using RepeatingUninstallCallback =
       base::RepeatingCallback<void(const webapps::AppId& app_id,
                                    webapps::UninstallResultCode code)>;
@@ -207,11 +212,15 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   std::optional<syncer::ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
       syncer::EntityChangeList entity_changes) override;
+  void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
+                                   delete_metadata_change_list) override;
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
+  std::string GetStorageKey(
+      const syncer::EntityData& entity_data) const override;
   bool IsEntityDataValid(const syncer::EntityData& entity_data) const override;
 
   // Signals that the sync system has received data from the server at some
@@ -226,20 +235,6 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
     disable_checks_for_testing_ = disable_checks_for_testing;
   }
 
-  using RetryIncompleteUninstallsCallback = base::RepeatingCallback<void(
-      const base::flat_set<webapps::AppId>& apps_to_uninstall)>;
-  void SetRetryIncompleteUninstallsCallbackForTesting(
-      RetryIncompleteUninstallsCallback callback);
-  using InstallWebAppsAfterSyncCallback =
-      base::RepeatingCallback<void(std::vector<WebApp*> web_apps,
-                                   RepeatingInstallCallback callback)>;
-  void SetInstallWebAppsAfterSyncCallbackForTesting(
-      InstallWebAppsAfterSyncCallback callback);
-  using UninstallFromSyncCallback =
-      base::RepeatingCallback<void(const std::vector<webapps::AppId>& web_apps,
-                                   RepeatingUninstallCallback callback)>;
-  void SetUninstallFromSyncCallbackForTesting(
-      UninstallFromSyncCallback callback);
   WebAppDatabase* GetDatabaseForTesting() const { return database_.get(); }
 
   // TODO(crbug.com/41490924): Remove this and make it so tests can
@@ -264,6 +259,9 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
   void OnDatabaseOpened(base::OnceClosure callback,
                         Registry registry,
                         std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+
+  void EnsureShortcutAppToDiyAppMigration();
+
   // Update apps that don't have a UserDisplayMode set for the current platform.
   void EnsureAppsHaveUserDisplayModeForCurrentPlatform();
   void EnsurePartiallyInstalledAppsHaveCorrectStatus();
@@ -289,10 +287,7 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
       const std::vector<webapps::AppId>& apps_display_mode_changed);
 
   void MaybeUninstallAppsPendingUninstall();
-  void MaybeInstallAppsFromSyncAndPendingInstallation();
-
-  void InstallWebAppsAfterSync(std::vector<WebApp*> web_apps,
-                               RepeatingInstallCallback callback);
+  void MaybeInstallAppsFromSyncAndPendingInstallOrSyncOsIntegration();
 
   std::unique_ptr<WebAppDatabase> database_;
   const raw_ptr<WebAppRegistrarMutable, DanglingUntriaged> registrar_;
@@ -307,13 +302,6 @@ class WebAppSyncBridge : public syncer::DataTypeSyncBridge {
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;
-
-  RetryIncompleteUninstallsCallback
-      retry_incomplete_uninstalls_callback_for_testing_;
-  InstallWebAppsAfterSyncCallback
-      install_web_apps_after_sync_callback_for_testing_;
-  UninstallFromSyncCallback
-      uninstall_from_sync_before_registry_update_callback_for_testing_;
 
   base::WeakPtrFactory<WebAppSyncBridge> weak_ptr_factory_{this};
 };

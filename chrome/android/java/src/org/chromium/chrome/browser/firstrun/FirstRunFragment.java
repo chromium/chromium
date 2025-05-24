@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.firstrun;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** This interface is implemented by FRE fragments. */
+@NullMarked
 public interface FirstRunFragment {
     /**
      * Notifies that the object returned by {@link #getPageDelegate()} and its dependencies have
@@ -21,18 +23,19 @@ public interface FirstRunFragment {
     @Deprecated
     default void onNativeInitialized() {}
 
-    /** @see androidx.fragment.app.Fragment#getActivity(). */
-    @Nullable
-    Activity getActivity();
+    /**
+     * @see androidx.fragment.app.Fragment#getActivity().
+     */
+    @Nullable Activity getActivity();
 
     /**
      * Set the a11y focus when the fragment is shown on the screen.
      *
-     * Android ViewPager cannot always assign the correct a11y focus automatically when switching
+     * <p>Android ViewPager cannot always assign the correct a11y focus automatically when switching
      * between pages. See https://crbug.com/1094064 for more detail.
      *
-     * Note that this function can be called before views for the fragment is created. To avoid NPE,
-     * it is suggested to add null checker inside this function implementation. See
+     * <p>Note that this function can be called before views for the fragment is created. To avoid
+     * NPE, it is suggested to add null checker inside this function implementation. See
      * https://crbug.com/1140174 for more detail.
      */
     void setInitialA11yFocus();

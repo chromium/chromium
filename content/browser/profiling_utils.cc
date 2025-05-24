@@ -76,6 +76,7 @@ void AskAllChildrenToDumpProfilingData(base::OnceClosure callback) {
 #if BUILDFLAG(IS_WIN)
     // On Windows, elevated processes are never passed the profiling data file
     // so cannot dump their data.
+    CHECK(browser_child_iter.GetData().sandbox_type.has_value());
     if (browser_child_iter.GetData().sandbox_type ==
         sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
       continue;

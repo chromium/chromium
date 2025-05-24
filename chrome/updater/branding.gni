@@ -19,6 +19,7 @@ if (is_chrome_branded) {
   mac_updater_bundle_identifier = "org.chromium.ChromiumUpdater"
   privileged_helper_bundle_name = "ChromiumUpdaterPrivilegedHelper"
   privileged_helper_name = "org.chromium.Chromium.UpdaterPrivilegedHelper"
+  updater_app_icon_path = "//chrome/app/theme/chromium/mac/app.icns"
   updater_company_full_name = "Chromium Authors"
   updater_company_short_name = "Chromium"
   updater_company_short_name_lowercase = "chromium"

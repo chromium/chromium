@@ -57,8 +57,6 @@ class TestRulesetService : public subresource_filter::RulesetService {
   TestRulesetService(const TestRulesetService&) = delete;
   TestRulesetService& operator=(const TestRulesetService&) = delete;
 
-  ~TestRulesetService() override = default;
-
   using UnindexedRulesetInfo = subresource_filter::UnindexedRulesetInfo;
   void IndexAndStoreAndPublishRulesetIfNeeded(
       const UnindexedRulesetInfo& unindexed_ruleset_info) override {
@@ -90,8 +88,6 @@ class SubresourceFilterMockComponentUpdateService
       const SubresourceFilterMockComponentUpdateService&) = delete;
   SubresourceFilterMockComponentUpdateService& operator=(
       const SubresourceFilterMockComponentUpdateService&) = delete;
-
-  ~SubresourceFilterMockComponentUpdateService() override = default;
 };
 
 subresource_filter::Configuration CreateConfigUsingRulesetFlavor(
@@ -135,6 +131,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   }
 
   void TearDown() override {
+    test_ruleset_service_ = nullptr;
     TestingBrowserProcess::GetGlobal()->SetRulesetService(nullptr);
     task_environment_.RunUntilIdle();
     PlatformTest::TearDown();
@@ -142,7 +139,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
 
   TestRulesetService* service() { return test_ruleset_service_; }
 
-  void WriteStringToFile(const std::string data, const base::FilePath& path) {
+  void WriteStringToFile(const std::string& data, const base::FilePath& path) {
     ASSERT_TRUE(base::WriteFile(path, data));
   }
 
@@ -192,8 +189,7 @@ class SubresourceFilterComponentInstallerTest : public PlatformTest {
   std::unique_ptr<SubresourceFilterComponentInstallerPolicy> policy_;
   TestingPrefServiceSimple pref_service_;
 
-  raw_ptr<TestRulesetService, DanglingUntriaged> test_ruleset_service_ =
-      nullptr;
+  raw_ptr<TestRulesetService> test_ruleset_service_ = nullptr;
 };
 
 TEST_F(SubresourceFilterComponentInstallerTest,
@@ -313,8 +309,8 @@ TEST_F(SubresourceFilterComponentInstallerTest, InstallerAttributesDefault) {
 }
 
 TEST_F(SubresourceFilterComponentInstallerTest, InstallerAttributesCustomTag) {
-  constexpr char kTagKey[] = "tag";
-  constexpr char kTagValue[] = "a";
+  static constexpr char kTagKey[] = "tag";
+  static constexpr char kTagValue[] = "a";
 
   subresource_filter::testing::ScopedSubresourceFilterConfigurator
       scoped_configuration(CreateConfigUsingRulesetFlavor(kTagValue));

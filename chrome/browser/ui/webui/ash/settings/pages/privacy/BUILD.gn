@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("privacy") {
   sources = [
@@ -28,6 +26,7 @@ static_library("privacy") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/login/auth",
     "//components/metrics",
@@ -39,17 +38,14 @@ static_library("privacy") {
   ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//ash/webui/projector_app/public/cpp",
     "//base:i18n",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/eche_app",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/login/session",
@@ -57,20 +53,22 @@ static_library("privacy") {
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/common:chrome_features",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/dbus/pciguard",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/peripheral_notification",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
     "//components/google/core/common",
     "//components/sync/base:features",
     "//ui/base",
     "//ui/chromeos",
+    "//ui/webui",
     "//url",
   ]
 
@@ -104,6 +102,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom",
     "//chrome/browser/web_applications",
     "//chrome/common",

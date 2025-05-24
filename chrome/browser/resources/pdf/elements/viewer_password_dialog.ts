@@ -41,7 +41,7 @@ export class ViewerPasswordDialogElement extends CrLitElement {
     };
   }
 
-  invalid: boolean = false;
+  accessor invalid: boolean = false;
 
   close() {
     this.$.dialog.close();

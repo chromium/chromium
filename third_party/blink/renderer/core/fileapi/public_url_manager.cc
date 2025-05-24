@@ -120,7 +120,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
           execution_context->GetTaskRunner(TaskType::kFileReading));
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -272,9 +272,10 @@ void PublicURLManager::Resolve(
       WTF::BindOnce(metrics_callback, WrapPersistent(GetExecutionContext())));
 }
 
-void PublicURLManager::Resolve(
+void PublicURLManager::ResolveAsBlobURLToken(
     const KURL& url,
-    mojo::PendingReceiver<mojom::blink::BlobURLToken> token_receiver) {
+    mojo::PendingReceiver<mojom::blink::BlobURLToken> token_receiver,
+    bool is_top_level_navigation) {
   if (is_stopped_)
     return;
 
@@ -290,8 +291,8 @@ void PublicURLManager::Resolve(
     }
   };
 
-  GetBlobURLStore().ResolveForNavigation(
-      url, std::move(token_receiver),
+  GetBlobURLStore().ResolveAsBlobURLToken(
+      url, std::move(token_receiver), is_top_level_navigation,
       WTF::BindOnce(metrics_callback, WrapPersistent(GetExecutionContext())));
 }
 

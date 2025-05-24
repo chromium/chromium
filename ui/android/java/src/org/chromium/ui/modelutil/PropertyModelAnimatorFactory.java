@@ -7,12 +7,14 @@ package org.chromium.ui.modelutil;
 import android.animation.ObjectAnimator;
 import android.util.FloatProperty;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel.WritableFloatPropertyKey;
 
 /**
  * Static factory class that creates Animators for MVC properties by providing implementations of
  * android.util.Property that mutate a given property in a given model.
  */
+@NullMarked
 public class PropertyModelAnimatorFactory {
     /**
      * Builds an Animator for the given model, key, and target value.

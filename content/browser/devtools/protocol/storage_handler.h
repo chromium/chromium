@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -19,9 +20,10 @@
 #include "content/browser/interest_group/devtools_enums.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
+#include "content/public/browser/global_routing_id.h"
 #include "storage/browser/quota/quota_manager.h"
+#include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 
 namespace storage {
 class QuotaOverrideHandle;
@@ -29,6 +31,7 @@ class QuotaOverrideHandle;
 
 namespace content {
 class AttributionManager;
+class RenderFrameHostImpl;
 class StoragePartition;
 
 namespace protocol {
@@ -37,7 +40,9 @@ class StorageHandler
     : public DevToolsDomainHandler,
       public Storage::Backend,
       public content::InterestGroupManagerImpl::InterestGroupObserver,
-      public AttributionObserver {
+      public AttributionObserver,
+      public content::SharedStorageRuntimeManager::
+          SharedStorageObserverInterface {
  public:
   explicit StorageHandler(DevToolsAgentHostClient* client);
 
@@ -77,20 +82,20 @@ class StorageHandler
   void GetQuotaOverrideHandle();
   void OverrideQuotaForOrigin(
       const String& origin,
-      Maybe<double> quota_size,
+      std::optional<double> quota_size,
       std::unique_ptr<OverrideQuotaForOriginCallback> callback) override;
 
   // Cookies management
   void GetCookies(
-      Maybe<std::string> browser_context_id,
+      std::optional<std::string> browser_context_id,
       std::unique_ptr<Storage::Backend::GetCookiesCallback> callback) override;
 
   void SetCookies(
       std::unique_ptr<protocol::Array<Network::CookieParam>> cookies,
-      Maybe<std::string> browser_context_id,
+      std::optional<std::string> browser_context_id,
       std::unique_ptr<Storage::Backend::SetCookiesCallback> callback) override;
 
-  void ClearCookies(Maybe<std::string> browser_context_id,
+  void ClearCookies(std::optional<std::string> browser_context_id,
                     std::unique_ptr<Storage::Backend::ClearCookiesCallback>
                         callback) override;
 
@@ -130,7 +135,7 @@ class StorageHandler
       const std::string& owner_origin_string,
       const std::string& key,
       const std::string& value,
-      Maybe<bool> ignore_if_present,
+      std::optional<bool> ignore_if_present,
       std::unique_ptr<SetSharedStorageEntryCallback> callback) override;
   void DeleteSharedStorageEntry(
       const std::string& owner_origin_string,
@@ -171,6 +176,11 @@ class StorageHandler
       const std::string& request_id,
       const std::vector<std::string>& devtools_auction_ids);
 
+  Response SetProtectedAudienceKAnonymity(
+      const std::string& in_owner_origin,
+      const std::string& in_group_name,
+      std::unique_ptr<std::vector<Binary>> in_hashes) override;
+
  private:
   // See definition for lifetime information.
   class CacheStorageObserver;
@@ -183,8 +193,8 @@ class StorageHandler
   CacheStorageObserver* GetCacheStorageObserver();
   IndexedDBObserver* GetIndexedDBObserver();
 
-  SharedStorageWorkletHostManager* GetSharedStorageWorkletHostManager();
-  absl::variant<protocol::Response, storage::SharedStorageManager*>
+  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();
+  std::variant<protocol::Response, storage::SharedStorageManager*>
   GetSharedStorageManager();
   storage::QuotaManagerProxy* GetQuotaManagerProxy();
   AttributionManager* GetAttributionManager();
@@ -208,14 +218,34 @@ class StorageHandler
       attribution_reporting::mojom::StoreSourceResult) override;
   void OnTriggerHandled(std::optional<uint64_t> cleared_debug_key,
                         const CreateReportResult&) override;
+  void OnReportSent(const AttributionReport&,
+                    bool is_debug_report,
+                    const SendResult&) override;
 
-  void NotifySharedStorageAccessed(
-      const base::Time& access_time,
-      SharedStorageWorkletHostManager::SharedStorageObserverInterface::
-          AccessType type,
-      FrameTreeNodeId main_frame_id,
+  // content::SharedStorageRuntimeManager::SharedStorageObserverInterface
+  GlobalRenderFrameHostId AssociatedFrameHostId() const override;
+  bool ShouldReceiveAllSharedStorageReports() const override;
+  void OnSharedStorageAccessed(
+      base::Time access_time,
+      blink::SharedStorageAccessScope scope,
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
+          method,
+      GlobalRenderFrameHostId main_frame_id,
       const std::string& owner_origin,
-      const SharedStorageEventParams& params);
+      const SharedStorageEventParams& params) override;
+  void OnSharedStorageSelectUrlUrnUuidGenerated(const GURL& urn_uuid) override;
+  void OnSharedStorageSelectUrlConfigPopulated(
+      const std::optional<FencedFrameConfig>& config) override;
+  void OnSharedStorageWorkletOperationExecutionFinished(
+      base::Time finished_time,
+      base::TimeDelta execution_time,
+      SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessMethod
+          method,
+      int operation_id,
+      int worklet_ordinal_id,
+      const base::UnguessableToken& worklet_devtools_token,
+      GlobalRenderFrameHostId main_frame_id,
+      const std::string& owner_origin) override;
 
   void NotifyCacheStorageListChanged(
       const storage::BucketLocator& bucket_locator);
@@ -229,8 +259,9 @@ class StorageHandler
   void NotifyCreateOrUpdateBucket(const storage::BucketInfo& bucket_info);
   void NotifyDeleteBucket(const storage::BucketLocator& bucket_locator);
 
-  Response FindStoragePartition(const Maybe<std::string>& browser_context_id,
-                                StoragePartition** storage_partition);
+  Response FindStoragePartition(
+      const std::optional<std::string>& browser_context_id,
+      StoragePartition** storage_partition);
 
   void ResetAttributionReporting();
 
@@ -247,7 +278,6 @@ class StorageHandler
   raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
   std::unique_ptr<CacheStorageObserver> cache_storage_observer_;
   std::unique_ptr<IndexedDBObserver> indexed_db_observer_;
-  std::unique_ptr<SharedStorageObserver> shared_storage_observer_;
   std::unique_ptr<QuotaManagerObserver> quota_manager_observer_;
 
   // Exposes the API for managing storage quota overrides.
@@ -259,6 +289,10 @@ class StorageHandler
 
   base::ScopedObservation<AttributionManager, AttributionObserver>
       attribution_observation_{this};
+  base::ScopedObservation<
+      content::SharedStorageRuntimeManager,
+      content::SharedStorageRuntimeManager::SharedStorageObserverInterface>
+      shared_storage_observation_{this};
 
   base::WeakPtrFactory<StorageHandler> weak_ptr_factory_{this};
 };

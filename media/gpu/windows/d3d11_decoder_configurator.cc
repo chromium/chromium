@@ -25,7 +25,8 @@ namespace {
 
 GUID GetD3D11DecoderGUID(const VideoCodecProfile& profile,
                          uint8_t bit_depth,
-                         VideoChromaSampling chroma_sampling) {
+                         VideoChromaSampling chroma_sampling,
+                         ComD3D11Device device) {
   switch (profile) {
     case H264PROFILE_BASELINE:
     case H264PROFILE_MAIN:
@@ -59,7 +60,9 @@ GUID GetD3D11DecoderGUID(const VideoCodecProfile& profile,
     case HEVCPROFILE_MAIN10:
       return D3D11_DECODER_PROFILE_HEVC_VLD_MAIN10;
     case HEVCPROFILE_REXT:
-      return GetHEVCRangeExtensionPrivateGUID(bit_depth, chroma_sampling);
+      return GetHEVCRangeExtensionGUID(
+          bit_depth, chroma_sampling,
+          SupportsHEVCRangeExtensionDXVAProfile(device));
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     default:
       return {};
@@ -90,7 +93,8 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
     uint8_t bit_depth,
     VideoChromaSampling chroma_sampling,
     MediaLog* media_log,
-    bool use_shared_handle) {
+    bool use_shared_handle,
+    ComD3D11Device device) {
   // Decoder swap chains do not support shared resources. More info in
   // https://crbug.com/911847. To enable Kaby Lake+ systems for using shared
   // handle, we disable decode swap chain support if shared handle is enabled.
@@ -109,12 +113,17 @@ std::unique_ptr<D3D11DecoderConfigurator> D3D11DecoderConfigurator::Create(
   }
 
   GUID decoder_guid =
-      GetD3D11DecoderGUID(config.profile(), bit_depth, chroma_sampling);
+      GetD3D11DecoderGUID(config.profile(), bit_depth, chroma_sampling, device);
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  // For D3D11/D3D12, 8b/10b-422 HEVC will share 10b-422 GUID no matter
-  // it is defined by Intel or DXVA spec(as part of Windows SDK).
-  if (decoder_guid == DXVA_ModeHEVC_VLD_Main422_10_Intel) {
-    decoder_dxgi_format = DXGI_FORMAT_Y210;
+  if (decoder_guid == DXVA_ModeHEVC_VLD_Main12) {
+    constexpr UINT kNVIDIADeviceId = 0x10DE;
+    ComDXGIDevice dxgi_device;
+    if (SUCCEEDED(device.As(&dxgi_device)) &&
+        GetGPUVendorID(dxgi_device) == kNVIDIADeviceId) {
+      // NVIDIA driver requires output format to be P010 for HEVC 12b420 range
+      // extension profile.
+      decoder_dxgi_format = DXGI_FORMAT_P010;
+    }
   }
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (decoder_guid == GUID()) {

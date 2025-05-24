@@ -38,7 +38,7 @@ class DownloadOfflineContentProviderTest : public testing::Test {
   DownloadOfflineContentProviderTest& operator=(
       const DownloadOfflineContentProviderTest&) = delete;
 
-  ~DownloadOfflineContentProviderTest() override {}
+  ~DownloadOfflineContentProviderTest() override = default;
 
   void InitializeDownloads(bool full_browser) {
     coordinator_.SetSimpleDownloadManager(&mock_manager_, full_browser);

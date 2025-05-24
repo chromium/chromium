@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 
 #include <iostream>
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/shell_window_ids.h"
+#include "ash/shell.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
@@ -20,7 +17,6 @@
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/emoji_picker_resources.h"
 #include "chrome/grit/emoji_picker_resources_map.h"
@@ -36,9 +32,9 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 constexpr gfx::Size kExtensionWindowSize(420, 480);
@@ -51,10 +47,24 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   explicit EmojiBubbleDialogView(
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
       gfx::Rect caret_bounds)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
+      : WebUIBubbleDialogView(nullptr,
+                              contents_wrapper->GetWeakPtr(),
+                              std::nullopt,
+                              views::BubbleBorder::TOP_RIGHT,
+                              /*autosize=*/false),
         contents_wrapper_(std::move(contents_wrapper)),
         caret_bounds_(caret_bounds) {
-    set_has_parent(false);
+    // Place the emoji bubble in the float container to ensure it appears above
+    // float and PIP windows for example. See crbug.com/402617739 for more
+    // details.
+    display::Display display =
+        display::Screen::GetScreen()->GetDisplayMatching(caret_bounds);
+    aura::Window* root_window =
+        ash::Shell::GetRootWindowForDisplayId(display.id());
+    CHECK(root_window);
+    set_parent_window(ash::Shell::GetContainer(
+        root_window, ash::kShellWindowId_FloatContainer));
+
     set_corner_radius(20);
     SetProperty(views::kElementIdentifierKey, ash::kEmojiPickerElementId);
   }
@@ -113,15 +123,13 @@ EmojiUI::EmojiUI(content::WebUI* web_ui)
       chrome::kChromeUIEmojiPickerHost);
 
   // Add required resources.
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kEmojiPickerResources, kEmojiPickerResourcesSize),
-      IDR_EMOJI_PICKER_INDEX_HTML);
-  source->AddResourcePaths(base::make_span(kEmoji, kEmojiSize));
+  webui::SetupWebUIDataSource(source, kEmojiPickerResources,
+                              IDR_EMOJI_PICKER_INDEX_HTML);
+  source->AddResourcePaths(kEmoji);
 
   // Add seal extra resources.
   if (SealUtils::ShouldEnable()) {
-    source->AddResourcePaths(
-        base::make_span(kSealResources, kSealResourcesSize));
+    source->AddResourcePaths(kSealResources);
   }
 
   // Some web components defined in seal extra resources are based on lit; so

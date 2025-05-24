@@ -13,13 +13,16 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_constants.mojom.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/views/accessibility/test_list_grid_view.h"
@@ -52,11 +55,13 @@ namespace {
 // Whether |left| represents the same COM object as |right|.
 template <typename T, typename U>
 bool IsSameObject(T* left, U* right) {
-  if (!left && !right)
+  if (!left && !right) {
     return true;
+  }
 
-  if (!left || !right)
+  if (!left || !right) {
     return false;
+  }
 
   ComPtr<IUnknown> left_unknown;
   left->QueryInterface(IID_PPV_ARGS(&left_unknown));
@@ -65,6 +70,16 @@ bool IsSameObject(T* left, U* right) {
   right->QueryInterface(IID_PPV_ARGS(&right_unknown));
 
   return left_unknown == right_unknown;
+}
+
+// Calls `Release()` on each of the `count` interface pointers in `pointers`.
+void ReleasePointers(IUnknown** pointers, LONG count) {
+  if (count > 0) {
+    std::ranges::for_each(
+        // SAFETY: `count` is the number of pointers in `pointers`.
+        UNSAFE_BUFFERS(base::span(pointers, static_cast<size_t>(count))),
+        [](IUnknown* ptr) { ptr->Release(); });
+  }
 }
 
 }  // namespace
@@ -111,7 +126,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   Textfield* textfield = new Textfield;
   textfield->GetViewAccessibility().SetName(u"Name");
   textfield->SetText(u"Value");
-  content->AddChildView(textfield);
+  content->AddChildViewRaw(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());
   LONG child_count = 0;
@@ -156,10 +171,10 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   View* content = widget->SetContentsView(std::make_unique<View>());
 
   Label* label = new Label(u"Label");
-  content->AddChildView(label);
+  content->AddChildViewRaw(label);
   Textfield* textfield = new Textfield;
   textfield->GetViewAccessibility().SetName(*label);
-  content->AddChildView(textfield);
+  content->AddChildViewRaw(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());
   LONG child_count = 0;
@@ -182,7 +197,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   ComPtr<IAccessible2_2> textfield_ia2;
   EXPECT_EQ(S_OK, textfield_accessible.As(&textfield_ia2));
   ScopedBstr type(IA2_RELATION_LABELLED_BY);
-  IUnknown** targets;
+  base::win::ScopedCoMem<IUnknown*> targets;
   LONG n_targets;
   EXPECT_EQ(S_OK, textfield_ia2->get_relationTargetsOfType(
                       type.Get(), 0, &targets, &n_targets));
@@ -193,6 +208,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
   ScopedVariant role;
   EXPECT_EQ(S_OK, label_accessible->get_accRole(childid_self, role.Receive()));
   EXPECT_EQ(ROLE_SYSTEM_STATICTEXT, V_I4(role.ptr()));
+  ReleasePointers(targets.get(), n_targets);
 }
 
 // A subclass of ViewAXPlatformNodeDelegateWinTest that we run twice,
@@ -300,10 +316,10 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   View* content = widget->SetContentsView(std::make_unique<View>());
 
   View* infobar = new View;
-  content->AddChildView(infobar);
+  content->AddChildViewRaw(infobar);
 
   View* infobar2 = new View;
-  content->AddChildView(infobar2);
+  content->AddChildViewRaw(infobar2);
 
   View* root_view = content->parent();
   ASSERT_EQ(nullptr, root_view->parent());
@@ -319,15 +335,15 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
 
   // Initially, there are no alerts
   ScopedBstr alerts_bstr(L"alerts");
-  IUnknown** targets;
+  base::win::ScopedCoMem<IUnknown*> targets;
   LONG n_targets;
   ASSERT_EQ(S_FALSE, root_view_accessible->get_relationTargetsOfType(
                          alerts_bstr.Get(), 0, &targets, &n_targets));
   ASSERT_EQ(0, n_targets);
 
   // Fire alert events on the infobars.
-  infobar->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
-  infobar2->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+  infobar->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
+  infobar2->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kAlert, true);
 
   // Now calling get_relationTargetsOfType should retrieve the alerts.
   ASSERT_EQ(S_OK, root_view_accessible->get_relationTargetsOfType(
@@ -336,27 +352,26 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   {
     // SAFETY: get_relationTargetsOfType() is a COM interface which guarantees
     // that exactly n_targets pointers are available starting at targets.
-    UNSAFE_BUFFERS(base::span<IUnknown*> targets_span(
-                       targets, base::checked_cast<size_t>(n_targets));)
+    auto targets_span = UNSAFE_BUFFERS(base::span(targets.get(), 2u));
     ASSERT_TRUE(IsSameObject(infobar_accessible.Get(), targets_span[0]));
     ASSERT_TRUE(IsSameObject(infobar2_accessible.Get(), targets_span[1]));
   }
-  CoTaskMemFree(targets);
+  ReleasePointers(targets.get(), n_targets);
+  targets.Reset(nullptr);
 
   // If we set max_targets to 1, we should only get the first one.
   ASSERT_EQ(S_OK, root_view_accessible->get_relationTargetsOfType(
                       alerts_bstr.Get(), 1, &targets, &n_targets));
   ASSERT_EQ(1, n_targets);
   ASSERT_TRUE(IsSameObject(infobar_accessible.Get(), targets[0]));
-  CoTaskMemFree(targets);
 
   // If we delete the first view, we should only get the second one now.
   delete infobar;
+  targets.Reset(nullptr);
   ASSERT_EQ(S_OK, root_view_accessible->get_relationTargetsOfType(
                       alerts_bstr.Get(), 0, &targets, &n_targets));
   ASSERT_EQ(1, n_targets);
   ASSERT_TRUE(IsSameObject(infobar2_accessible.Get(), targets[0]));
-  CoTaskMemFree(targets);
 }
 
 // Test trying to retrieve child widgets during window close does not crash.
@@ -407,11 +422,11 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, Overrides) {
                                              ax::mojom::NameFrom::kAttribute);
   alert_view->GetViewAccessibility().SetDescription("Description");
   alert_view->GetViewAccessibility().SetIsLeaf(true);
-  contents_view->AddChildView(alert_view);
+  contents_view->AddChildViewRaw(alert_view);
 
   // Descendant should be ignored because the parent uses SetIsLeaf().
   View* ignored_descendant = new View;
-  alert_view->AddChildView(ignored_descendant);
+  alert_view->AddChildViewRaw(ignored_descendant);
 
   ComPtr<IAccessible> content_accessible(
       contents_view->GetNativeViewAccessible());
@@ -546,14 +561,14 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
 
   Textfield* text_field = new Textfield();
   text_field->SetReadOnly(true);
-  content->AddChildView(text_field);
+  content->AddChildViewRaw(text_field);
 
   ComPtr<IRawElementProviderSimple> textfield_provider =
       GetIRawElementProviderSimple(text_field);
   EXPECT_UIA_BOOL_EQ(textfield_provider, UIA_IsControlElementPropertyId, true);
 }
 
-TEST_F(ViewAXPlatformNodeDelegateWinTest, TextPositionAt) {
+TEST_F(ViewAXPlatformNodeDelegateWinTest, UIAGetPropertyValue_Histograms) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams init_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
@@ -561,19 +576,23 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextPositionAt) {
 
   View* content = widget->SetContentsView(std::make_unique<View>());
 
-  Label* label = new Label(u"Label's Name");
-  content->AddChildView(label);
-  label->GetViewAccessibility().EnsureAtomicViewAXTreeManager();
-  ViewAXPlatformNodeDelegate* label_accessibility =
-      static_cast<ViewAXPlatformNodeDelegate*>(&label->GetViewAccessibility());
-  label_accessibility->GetData();
+  Textfield* text_field = new Textfield();
+  text_field->SetReadOnly(true);
+  content->AddChildViewRaw(text_field);
 
-  ui::AXNodePosition::AXPositionInstance actual_position =
-      label_accessibility->CreateTextPositionAt(
-          0, ax::mojom::TextAffinity::kDownstream);
-  EXPECT_NE(nullptr, actual_position.get());
-  EXPECT_EQ(0, actual_position->text_offset());
-  EXPECT_EQ(u"Label's Name", actual_position->GetText());
+  ComPtr<IRawElementProviderSimple> textfield_provider =
+      GetIRawElementProviderSimple(text_field);
+  ScopedVariant actual;
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs2.View.UMA_API_GET_PROPERTY_VALUE", 0);
+
+  ASSERT_HRESULT_SUCCEEDED(textfield_provider->GetPropertyValue(
+      UIA_IsControlElementPropertyId, actual.Receive()));
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs2.View.UMA_API_GET_PROPERTY_VALUE", 1);
 }
 
 //
@@ -633,8 +652,9 @@ class ViewAXPlatformNodeDelegateWinTableTest
   }
 
   void TearDown() override {
-    if (!widget_->IsClosed())
+    if (!widget_->IsClosed()) {
       widget_->Close();
+    }
     ViewAXPlatformNodeDelegateWinTest::TearDown();
   }
 
@@ -714,14 +734,14 @@ class ViewAXPlatformNodeDelegateWinInnerTextRangeTest
 
     textfield_ = new Textfield();
     textfield_->SetBounds(0, 0, 100, 40);
-    widget_->GetContentsView()->AddChildView(textfield_.get());
+    widget_->GetContentsView()->AddChildViewRaw(textfield_.get());
 
     TextfieldTestApi textfield_test_api(textfield_);
     textfield_test_api.GetRenderText()->set_glyph_width_for_test(5);
     textfield_test_api.GetRenderText()->set_glyph_height_for_test(8);
 
     label_ = new Label();
-    widget_->GetContentsView()->AddChildView(label_.get());
+    widget_->GetContentsView()->AddChildViewRaw(label_.get());
 
     // TODO(crbug.com/40924888): This is not obvious, but the
     // AtomicViewAXTreeManager gets initialized from this GetData() call. This
@@ -741,6 +761,11 @@ class ViewAXPlatformNodeDelegateWinInnerTextRangeTest
       widget_->Close();
     }
     ViewsTestBase::TearDown();
+  }
+
+  void MockAXModeAdded() {
+    ui::AXMode mode = ui::AXPlatform::GetInstance().GetMode();
+    widget_->OnAXModeAdded(mode);
   }
 
   ViewAXPlatformNodeDelegate* textfield_delegate() {
@@ -791,6 +816,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, EmptyLabel_EmptyRect) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_LTR) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  CHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -855,6 +883,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_LTR) {
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
        Textfield_TextOverflow) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -936,6 +967,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -958,6 +992,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
       label_->display_text_.get());
   render_text_test_api.SetGlyphWidth(kGlyphWidth);
   render_text_test_api.SetGlyphHeight(kGlyphHeight);
+  // Since we are force setting the render text's glyph size manually, we need
+  // to make sure to refresh the accessible text offsets manually too.
+  label_->RefreshAccessibleTextOffsetsIfNeeded();
 
   // TODO(crbug.com/40924888): This is not obvious, but we need to call
   // `GetData` to refresh the text offsets and accessible name. This won't be
@@ -995,6 +1032,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -1087,6 +1127,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_RTL) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -1113,6 +1156,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_RTL) {
       label_->display_text_.get());
   render_text_test_api.SetGlyphWidth(kGlyphWidth);
   render_text_test_api.SetGlyphHeight(kGlyphHeight);
+  // Since we are force setting the render text's glyph size manually, we need
+  // to make sure to refresh the accessible text offsets manually too.
+  label_->RefreshAccessibleTextOffsetsIfNeeded();
 
   // TODO(crbug.com/40924888): This is not obvious, but we need to call
   // `GetData` to refresh the text offsets and accessible name. This won't be
@@ -1207,6 +1253,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
        Textfield_ScreenPhysicalPixels) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 

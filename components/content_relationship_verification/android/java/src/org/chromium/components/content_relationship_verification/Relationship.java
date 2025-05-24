@@ -4,6 +4,8 @@
 
 package org.chromium.components.content_relationship_verification;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Collections;
@@ -14,17 +16,18 @@ import java.util.List;
  *
  * [1] https://developers.google.com/digital-asset-links/v1/getting-started
  */
+@NullMarked
 public class Relationship {
     public final String packageName;
-    public final Origin origin;
+    public final @Nullable Origin origin;
     public final String relation;
-    public final List<String> signatureFingerprints;
+    public final @Nullable List<String> signatureFingerprints;
 
     /** Creates a {@link Relationship} to hold relationship details. */
     public Relationship(
             String packageName,
-            List<String> signatureFingerprints,
-            Origin origin,
+            @Nullable List<String> signatureFingerprints,
+            @Nullable Origin origin,
             String relation) {
         this.packageName = packageName;
         this.signatureFingerprints = signatureFingerprints;

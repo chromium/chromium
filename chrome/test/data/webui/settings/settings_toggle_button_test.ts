@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
@@ -49,13 +49,17 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.pref!.value);
   });
 
-  test('fires a change event', (done) => {
-    testElement.addEventListener('change', () => {
-      assertFalse(testElement.checked);
-      done();
-    });
+  test('fires a change event', async () => {
     assertTrue(testElement.checked);
+    let changeEventPromise = eventToPromise('change', testElement);
     testElement.click();
+    let changeEvent = await changeEventPromise;
+    assertFalse(changeEvent.detail);
+
+    changeEventPromise = eventToPromise('change', testElement);
+    testElement.click();
+    changeEvent = await changeEventPromise;
+    assertTrue(changeEvent.detail);
   });
 
   test('fires a change event for label', (done) => {
@@ -67,13 +71,16 @@ suite('SettingsToggleButton', () => {
     testElement.$.labelWrapper.click();
   });
 
-  test('fires a change event for toggle', (done) => {
-    testElement.addEventListener('change', () => {
-      assertFalse(testElement.checked);
-      done();
-    });
+  test('fires a change event for toggle', async () => {
     assertTrue(testElement.checked);
+    const toggleChangeEventPromise =
+        eventToPromise('change', testElement.$.control);
+    const hostChangeEventPromise = eventToPromise('change', testElement);
     testElement.$.control.click();
+    const toggleChangeEvent = await toggleChangeEventPromise;
+    const hostChangeEvent = await hostChangeEventPromise;
+    assertNotEquals(toggleChangeEvent, hostChangeEvent);
+    assertEquals(testElement, hostChangeEvent.target);
   });
 
   test('fires a single change event per tap', async () => {
@@ -279,7 +286,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    learnMoreLink!.click();
+    learnMoreLink.click();
     assertTrue(testElement.checked);
   });
 
@@ -300,11 +307,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testLabelTextAlt = 'test label text alt';
     testElement.setAttribute('label', testLabelTextAlt);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelTextAlt);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelTextAlt);
   });
 
   test('set aria-label attribute should override aria-label of toggle', () => {
@@ -313,11 +320,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testAriaLabel = 'test aria label';
     testElement.setAttribute('aria-label', testAriaLabel);
-    assertEquals(crToggle!.getAttribute('aria-label'), testAriaLabel);
+    assertEquals(crToggle.getAttribute('aria-label'), testAriaLabel);
   });
 
   test('sub label with action link should have proper role', () => {
@@ -329,7 +336,7 @@ suite('SettingsToggleButton', () => {
             '#sub-label-text-with-link');
     assertTrue(!!subLabelTextWithLink);
 
-    const actionLink = subLabelTextWithLink!.querySelector('a');
+    const actionLink = subLabelTextWithLink.querySelector('a');
     assertTrue(!!actionLink);
     assertEquals(actionLink.getAttribute('role'), 'link');
   });
@@ -348,7 +355,7 @@ suite('SettingsToggleButton', () => {
     assertEquals(actionLink.getAttribute('aria-label'), 'Label');
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('click on sub label link should not toggle the button', () => {
     let subLabelTextWithLink =
         testElement.shadowRoot!.querySelector('#sub-label-text-with-link');
@@ -384,7 +391,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    subLabelTextWithLink!.click();
+    subLabelTextWithLink.click();
     assertFalse(testElement.checked);
   });
   // </if>

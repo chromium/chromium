@@ -14,18 +14,6 @@ class GPUHeapProperty : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // gpu_heap_property.idl
-  static constexpr uint32_t kDeviceLocal =
-      V8GPUHeapProperty::Constant::kDeviceLocal;
-  static constexpr uint32_t kHostVisible =
-      V8GPUHeapProperty::Constant::kHostVisible;
-  static constexpr uint32_t kHostCoherent =
-      V8GPUHeapProperty::Constant::kHostCoherent;
-  static constexpr uint32_t kHostUncached =
-      V8GPUHeapProperty::Constant::kHostUncached;
-  static constexpr uint32_t kHostCached =
-      V8GPUHeapProperty::Constant::kHostCached;
-
   GPUHeapProperty(const GPUHeapProperty&) = delete;
   GPUHeapProperty& operator=(const GPUHeapProperty&) = delete;
 };

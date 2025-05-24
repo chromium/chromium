@@ -58,7 +58,7 @@ LogoutConfirmationDialog::LogoutConfirmationDialog(
   label_ = new views::Label;
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetMultiLine(true);
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
 
   UpdateLabel();
 

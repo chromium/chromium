@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/html/canvas/resources/canvas-promise-test.js"></script>
+<script src="./webgpu-helpers.js"></script>
+
+<h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-canvas-readback</h1>
+<p>
+  transferBackFromGPUTexture() should preserve texture changes done by WebGPU
+  when transferring it back to the 2D canvas.
+</p>
+
+<script>
+
+runCanvasTestsInWorker({dependencies: ['./webgpu-helpers.js']});
+
+/**
+ * transferBackFromGPUTexture() should preserve texture changes done by WebGPU
+ * when transferring it back to the 2D canvas.
+ */
+for (const [pixelFormat, contextOptions] of [
+  ['rgb8', {}],
+  ['float16', {colorSpace: 'srgb', colorType: 'float16'}],
+]) {
+  canvasPromiseTest(async (canvas) => {
+    const adapter = await getWebGPUAdapter();
+    // Skip this test on Mac Swiftshader due to "Invalid Texture" errors.
+    if (isMacSwiftShader(adapter.info)) {
+      return;
+    }
+
+    const device = await getWebGPUDevice(adapter);
+
+    // Convert the canvas to a texture.
+    const ctx = canvas.getContext('2d', contextOptions);
+    const tex = ctx.transferToGPUTexture({device: device});
+
+    // Fill the texture with a color containing distinct values in each channel.
+    clearTextureToColor(device, tex,
+                        { r: 64 / 255, g: 128 / 255, b: 192 / 255, a: 1.0 });
+
+    // Finish our WebGPU pass and restore the canvas.
+    ctx.transferBackFromGPUTexture();
+
+    // Verify that the canvas contains our chosen color across every pixel.
+    checkCanvasColor(ctx, [0x40, 0x80, 0xC0, 0xFF]);
+  }, 'transferBackFromGPUTexture() should transfer ' + pixelFormat +
+     ' textures ' + 'modified by WebGPU back to the 2D canvas.');
+}
+
+</script>

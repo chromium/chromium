@@ -13,41 +13,6 @@
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace jni_zero {
-namespace internal {
-template <typename T>
-concept IsJavaRef = std::is_base_of_v<JavaRef<jobject>, T>;
-
-template <typename T>
-concept HasReserve = requires(T t) { t.reserve(0); };
-
-template <typename T>
-concept HasPushBack = requires(T t, T::value_type v) { t.push_back(v); };
-
-template <typename T>
-concept HasInsert = requires(T t, T::value_type v) { t.insert(v); };
-
-template <typename T>
-concept IsMap = requires(T t) {
-  typename T::key_type;
-  typename T::mapped_type;
-};
-
-template <typename T>
-concept IsContainer = requires(T t) {
-  !IsMap<T>;
-  typename T::value_type;
-  t.begin();
-  t.end();
-  t.size();
-};
-
-template <typename T>
-concept IsObjectContainer =
-    IsContainer<T> && !std::is_arithmetic_v<typename T::value_type>;
-
-template <typename T>
-concept IsOptional = std::same_as<T, std::optional<typename T::value_type>>;
-}  // namespace internal
 
 // Allow conversions using std::optional by wrapping non-optional conversions.
 template <internal::IsOptional T>
@@ -155,14 +120,6 @@ inline ByteArrayView FromJniArray<ByteArrayView>(
   return ByteArrayView(env, j_array);
 }
 
-// There is a circular dependency between common_apis.cc and here.
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobjectArray>
-CollectionToArray(JNIEnv* env, const JavaRef<jobject>& collection);
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToList(
-    JNIEnv* env,
-    const JavaRef<jobjectArray>& array);
-
 template <internal::IsObjectContainer ContainerType>
 inline ContainerType FromJniCollection(JNIEnv* env,
                                        const JavaRef<jobject>& j_collection) {
@@ -174,17 +131,13 @@ inline ContainerType FromJniCollection(JNIEnv* env,
 template <internal::IsObjectContainer ContainerType>
 inline ScopedJavaLocalRef<jobject> ToJniList(JNIEnv* env,
                                              const ContainerType& collection) {
+  if (collection.empty()) {
+    return g_empty_list.AsLocalRef(env);
+  }
   ScopedJavaLocalRef<jobjectArray> arr =
       ToJniArray(env, collection, g_object_class);
   return ArrayToList(env, arr);
 }
-
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobjectArray> MapToArray(
-    JNIEnv* env,
-    const JavaRef<jobject>& map);
-JNI_ZERO_COMPONENT_BUILD_EXPORT ScopedJavaLocalRef<jobject> ArrayToMap(
-    JNIEnv* env,
-    const JavaRef<jobjectArray>& array);
 
 // Convert Map -> stl map type using FromJniType() on each key & value.
 template <internal::IsMap ContainerType>
@@ -236,6 +189,9 @@ inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
   using KeyType = ContainerType::key_type;
   using ValueType = ContainerType::mapped_type;
   jsize map_jsize = static_cast<jsize>(map.size());
+  if (map_jsize == 0) {
+    return g_empty_map.AsLocalRef(env);
+  }
   jobjectArray j_array =
       env->NewObjectArray(map_jsize * 2, g_object_class, nullptr);
   CheckException(env);
@@ -262,5 +218,40 @@ inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
   auto array = ScopedJavaLocalRef<jobjectArray>::Adopt(env, j_array);
   return ArrayToMap(env, array);
 }
+
+template <>
+inline bool FromJniType<bool>(JNIEnv* env, const JavaRef<jobject>& j_bool) {
+  return FromJavaBoolean(env, j_bool);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<bool>(JNIEnv* env, bool val) {
+  return ToJavaBoolean(env, val);
+}
+
+template <>
+inline int32_t FromJniType<int32_t>(JNIEnv* env,
+                                    const JavaRef<jobject>& j_int) {
+  return FromJavaInteger(env, j_int);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<int32_t>(JNIEnv* env,
+                                                      int32_t val) {
+  return ToJavaInteger(env, val);
+}
+
+template <>
+inline int64_t FromJniType<int64_t>(JNIEnv* env,
+                                    const JavaRef<jobject>& j_long) {
+  return FromJavaLong(env, j_long);
+}
+
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<int64_t>(JNIEnv* env,
+                                                      int64_t val) {
+  return ToJavaLong(env, val);
+}
+
 }  // namespace jni_zero
 #endif  // JNI_ZERO_DEFAULT_CONVERSIONS_H_

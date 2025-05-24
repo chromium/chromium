@@ -11,8 +11,6 @@ goog.setTestOnly();
 
 const CssSpecificity = goog.require('goog.html.CssSpecificity');
 const testSuite = goog.require('goog.testing.testSuite');
-const userAgent = goog.require('goog.userAgent');
-const userAgentProduct = goog.require('goog.userAgent.product');
 
 
 /**
@@ -21,11 +19,7 @@ const userAgentProduct = goog.require('goog.userAgent.product');
  */
 function assertSpecificityEquals(expected, selector) {
   const specificity = CssSpecificity.getSpecificity(selector);
-  if (userAgentProduct.IE && !userAgent.isVersionOrHigher(9)) {
-    assertArrayEquals([0, 0, 0, 0], specificity);
-  } else {
-    assertArrayEquals(expected, specificity);
-  }
+  assertArrayEquals(expected, specificity);
 }
 
 testSuite({

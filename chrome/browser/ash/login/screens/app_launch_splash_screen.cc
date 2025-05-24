@@ -160,6 +160,12 @@ void AppLaunchSplashScreen::ToggleNetworkConfig(bool visible) {
   view_->ToggleNetworkConfig(visible);
 }
 
+void AppLaunchSplashScreen::HideThrobber() {
+  if (view_) {
+    view_->HideThrobber();
+  }
+}
+
 void AppLaunchSplashScreen::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
@@ -170,7 +176,7 @@ void AppLaunchSplashScreen::SetAppData(Data data) {
     return;
   }
 
-  base::Value::Dict screen_data = GetScreenData(data);
+  base::Value::Dict screen_data = GetScreenData(app_data_);
   view_->SetAppData(std::move(screen_data));
 }
 

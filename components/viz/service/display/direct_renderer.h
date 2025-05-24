@@ -41,7 +41,6 @@ class FilterOperations;
 
 namespace gfx {
 class ColorSpace;
-class RRectF;
 }  // namespace gfx
 
 namespace gpu {
@@ -120,6 +119,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     // integration testing.
     gfx::CALayerResult ca_layer_error_code = gfx::kCALayerSuccess;
 #endif
+
+    bool is_handling_interaction = false;
+    bool is_handling_animation = false;
+
     std::optional<int64_t> choreographer_vsync_id;
     int64_t swap_trace_id = -1;
   };
@@ -223,10 +226,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
     bool scanout_dcomp_surface = false;
   };
 
-  static gfx::RectF QuadVertexRect();
-  static void QuadRectTransform(gfx::Transform* quad_rect_transform,
-                                const gfx::Transform& quad_transform,
-                                const gfx::RectF& quad_rect);
   // Returns a transform that maps the the draw rect (i.e. the render pass
   // output rect) to the device space (i.e. buffer space).
   gfx::AxisTransform2d CalculateTargetToDeviceTransform(
@@ -272,7 +271,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       AggregatedRenderPassId render_pass_id) const;
   const cc::FilterOperations* BackdropFiltersForPass(
       AggregatedRenderPassId render_pass_id) const;
-  const std::optional<gfx::RRectF> BackdropFilterBoundsForPass(
+  const std::optional<SkPath> BackdropFilterBoundsForPass(
       AggregatedRenderPassId render_pass_id) const;
 
   virtual void SetRenderPassBackingDrawnRect(
@@ -311,9 +310,10 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   virtual void BeginDrawingFrame() = 0;
   virtual void FinishDrawingFrame() = 0;
   // If a pass contains a single tile draw quad and can be drawn without
-  // a render pass (e.g. applying a filter directly to the tile quad)
-  // return that quad, otherwise return null.
-  virtual const DrawQuad* CanPassBeDrawnDirectly(
+  // a render pass (e.g. applying a filter directly to the tile quad) return
+  // that quad. If the render pass itself is empty, but may have backdrop
+  // filters, return nullptr. Otherwise, return nullopt.
+  virtual std::optional<const DrawQuad*> CanPassBeDrawnDirectly(
       const AggregatedRenderPass* pass,
       const RenderPassRequirements& requirements);
   virtual void EnsureScissorTestDisabled() = 0;
@@ -364,24 +364,22 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // Whether partial swap can be used.
   bool use_partial_swap_ = false;
 
-  // Whether render pass drawn rect functionality can be used. This means we
-  // will be tracking the drawn area of a render pass to determine what needs to
-  // be redrawn every frame.
-  bool use_render_pass_drawn_rect_ = false;
-
   // A map from RenderPass id to the single quad present in and replacing the
   // RenderPass. The DrawQuads are owned by their RenderPasses, which outlive
   // the drawn frame, so it is safe to store these pointers until the end of
   // DrawFrame().
-  base::flat_map<AggregatedRenderPassId, const DrawQuad*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<const DrawQuad, CtnExperimental>>
       render_pass_bypass_quads_;
 
   // A map from RenderPass id to the filters used when drawing the RenderPass.
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_filters_;
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_backdrop_filters_;
-  base::flat_map<AggregatedRenderPassId, std::optional<gfx::RRectF>>
+  base::flat_map<AggregatedRenderPassId, std::optional<SkPath>>
       render_pass_backdrop_filter_bounds_;
   base::flat_map<AggregatedRenderPassId, gfx::Rect>
       backdrop_filter_output_rects_;
@@ -423,9 +421,17 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       std::unique_ptr<DelegatedInkPointRendererSkia> renderer) {}
 
  private:
-  virtual void DrawDelegatedInkTrail();
+  // Update the damage rect of the render pass that will contain the drawn ink
+  // trail, or had drawn the ink trail in the previous frame.
+  void AddInkDamageToRenderPass(const AggregatedRenderPass* render_pass,
+                                gfx::Rect& output_damage_rect);
 
   bool initialized_ = false;
+
+  // Track the id of the render pass that received delegated ink in the latest
+  // frame. This will be used when the the ink trail is cleared and damage
+  // needs to be applied to the correct render pass.
+  std::optional<AggregatedRenderPassId> last_pass_with_delegated_ink_;
 
   gfx::Rect last_root_render_pass_scissor_rect_;
   gfx::Size enlarge_pass_texture_amount_;

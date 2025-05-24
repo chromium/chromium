@@ -17,6 +17,7 @@ try_.defaults.set(
     cores = 32,
     os = os.LINUX_DEFAULT,
     execution_timeout = try_.DEFAULT_EXECUTION_TIMEOUT,
+    reclient_enabled = False,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
@@ -74,13 +75,17 @@ try_.builder(
             "dcheck_always_on",
         ],
     ),
-    builderless = False,
     cores = None,
     os = os.MAC_ANY,
     cpu = cpu.ARM64,
     # TODO(crbug.com/40208487) builds with PGO change take long time.
     # Keep in sync with mac-official in ci/chromium.star.
     execution_timeout = 15 * time.hour,
+    tryjob = try_.job(
+        location_filters = [
+            "chrome/build/mac-arm.pgo.txt",
+        ],
+    ),
 )
 
 try_.builder(
@@ -96,6 +101,7 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     execution_timeout = 6 * time.hour,
 )
 
@@ -113,5 +119,6 @@ try_.builder(
         ],
     ),
     os = os.WINDOWS_DEFAULT,
+    ssd = True,
     execution_timeout = 6 * time.hour,
 )

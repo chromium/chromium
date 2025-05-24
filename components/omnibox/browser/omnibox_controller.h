@@ -11,7 +11,7 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/prefs/pref_change_registrar.h"
+#include "components/search_engines/template_url_starter_pack_data.h"
 
 class OmniboxClient;
 class OmniboxView;
@@ -20,7 +20,10 @@ class OmniboxView;
 // omnibox, including `AutocompleteController` and `OmniboxEditModel`.
 class OmniboxController : public AutocompleteController::Observer {
  public:
-  OmniboxController(OmniboxView* view, std::unique_ptr<OmniboxClient> client);
+  OmniboxController(OmniboxView* view,
+                    std::unique_ptr<OmniboxClient> client,
+                    base::TimeDelta autocomplete_stop_timer_duration =
+                        kAutocompleteDefaultStopTimerDuration);
   ~OmniboxController() override;
   OmniboxController(const OmniboxController&) = delete;
   OmniboxController& operator=(const OmniboxController&) = delete;
@@ -76,24 +79,13 @@ class OmniboxController : public AutocompleteController::Observer {
   // when the starter pack expansion feature is enabled.
   bool IsSuggestionHidden(const AutocompleteMatch& match) const;
 
-  // Returns whether or not `suggestion_group_id` should be collapsed in the UI.
-  // This method takes into account both the user's stored prefs as well as
-  // the server-provided visibility hint. Returns false if `suggestion_group_id`
-  // is not found in the results.
-  bool IsSuggestionGroupHidden(omnibox::GroupId suggestion_group_id) const;
-
-  // Sets the UI collapsed/expanded state of the `suggestion_group_id` in the
-  // user's stored prefs based on the value of `hidden`. Does nothing if
-  // `suggestion_group_id` is not found in the results.
-  void SetSuggestionGroupHidden(omnibox::GroupId suggestion_group_id,
-                                bool hidden) const;
-
  private:
-  // Stores the bitmap in the OmniboxPopupModel.
-  void SetRichSuggestionBitmap(int result_index, const SkBitmap& bitmap);
-
-  // Called when the prefs for the visibility of groups changes.
-  void OnSuggestionGroupVisibilityPrefChanged();
+  // Stores the bitmap, using `icon_url` as the key in
+  // `edit_model_->icon_bitmaps_` if provided, or `result_index` in
+  // `edit_model_->rich_suggestion_bitmaps_` otherwise.
+  void SetRichSuggestionBitmap(int result_index,
+                               const GURL& icon_url,
+                               const SkBitmap& bitmap);
 
   std::unique_ptr<OmniboxClient> client_;
 
@@ -105,9 +97,6 @@ class OmniboxController : public AutocompleteController::Observer {
   // docs/dangling_ptr_guide.md) the `edit_model_` field needs to be declared
   // *after* the `autocomplete_controller_` field.
   std::unique_ptr<OmniboxEditModel> edit_model_;
-
-  // Observes changes to the prefs for the visibility of groups.
-  PrefChangeRegistrar pref_change_registrar_;
 
   base::WeakPtrFactory<OmniboxController> weak_ptr_factory_{this};
 };

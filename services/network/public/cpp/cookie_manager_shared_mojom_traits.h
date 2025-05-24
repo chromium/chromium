@@ -44,13 +44,39 @@ struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
+    StructTraits<network::mojom::ExclusionReasonsDataView,
+                 net::CookieInclusionStatus::ExclusionReasonBitset> {
+  static uint64_t exclusions_bitmask(
+      const net::CookieInclusionStatus::ExclusionReasonBitset& s) {
+    return s.ToEnumBitmask();
+  }
+  static bool Read(network::mojom::ExclusionReasonsDataView view,
+                   net::CookieInclusionStatus::ExclusionReasonBitset* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
+    StructTraits<network::mojom::WarningReasonsDataView,
+                 net::CookieInclusionStatus::WarningReasonBitset> {
+  static uint64_t warnings_bitmask(
+      const net::CookieInclusionStatus::WarningReasonBitset& s) {
+    return s.ToEnumBitmask();
+  }
+  static bool Read(network::mojom::WarningReasonsDataView view,
+                   net::CookieInclusionStatus::WarningReasonBitset* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(NETWORK_CPP_COOKIES)
     StructTraits<network::mojom::CookieInclusionStatusDataView,
                  net::CookieInclusionStatus> {
-  static uint32_t exclusion_reasons(const net::CookieInclusionStatus& s) {
-    return static_cast<uint32_t>(s.exclusion_reasons().to_ulong());
+  static net::CookieInclusionStatus::ExclusionReasonBitset exclusion_reasons(
+      const net::CookieInclusionStatus& s) {
+    return s.exclusion_reasons();
   }
-  static uint32_t warning_reasons(const net::CookieInclusionStatus& s) {
-    return static_cast<uint32_t>(s.warning_reasons().to_ulong());
+  static net::CookieInclusionStatus::WarningReasonBitset warning_reasons(
+      const net::CookieInclusionStatus& s) {
+    return s.warning_reasons();
   }
   static net::CookieInclusionStatus::ExemptionReason exemption_reason(
       const net::CookieInclusionStatus& s) {

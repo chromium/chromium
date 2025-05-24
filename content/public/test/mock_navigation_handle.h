@@ -17,6 +17,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/http/http_connection_info.h"
@@ -62,6 +63,9 @@ class MockNavigationHandle : public NavigationHandle {
     return is_prerendered_page_activation_;
   }
   bool IsInFencedFrameTree() const override { return is_in_fenced_frame_tree_; }
+  bool IsGuestViewMainFrame() const override {
+    return GetNavigatingFrameType() == FrameType::kGuestMainFrame;
+  }
   FrameType GetNavigatingFrameType() const override {
     NOTIMPLEMENTED();
     return FrameType::kPrimaryMainFrame;
@@ -83,9 +87,16 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsInOutermostMainFrame() override {
     return !GetParentFrameOrOuterDocument();
   }
-  MOCK_METHOD0(GetFrameTreeNodeId, FrameTreeNodeId());
+  content::FrameTreeNodeId GetFrameTreeNodeId() override {
+    if (IsInPrimaryMainFrame()) {
+      CHECK(web_contents_);
+      return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+    }
+    CHECK(render_frame_host_);
+    return render_frame_host_->GetFrameTreeNodeId();
+  }
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
-  MOCK_METHOD(int, GetExpectedRenderProcessHostId, ());
+  MOCK_METHOD(ChildProcessId, GetExpectedRenderProcessHostId, ());
   bool IsServedFromBackForwardCache() override {
     return is_served_from_bfcache_;
   }
@@ -126,6 +137,7 @@ class MockNavigationHandle : public NavigationHandle {
   MOCK_METHOD0(GetNavigationUIData, NavigationUIData*());
   MOCK_METHOD0(IsExternalProtocol, bool());
   net::Error GetNetErrorCode() override { return net_error_code_; }
+  int GetNetExtendedErrorCode() override { return net_extended_error_code_; }
   RenderFrameHost* GetRenderFrameHost() const override {
     return render_frame_host_;
   }
@@ -209,7 +221,7 @@ class MockNavigationHandle : public NavigationHandle {
               (blink::mojom::TransferrableURLLoaderPtr));
   MOCK_METHOD(bool, IsSameProcess, ());
   MOCK_METHOD(NavigationEntry*, GetNavigationEntry, (), (const, override));
-  MOCK_METHOD(int, GetNavigationEntryOffset, ());
+  MOCK_METHOD(int, GetNavigationEntryOffset, (), (const, override));
   MOCK_METHOD(void,
               ForceEnableOriginTrials,
               (const std::vector<std::string>& trials));
@@ -279,6 +291,9 @@ class MockNavigationHandle : public NavigationHandle {
   }
   void set_net_error_code(net::Error error_code) {
     net_error_code_ = error_code;
+  }
+  void set_net_extended_error_code(int net_extended_error_code) {
+    net_extended_error_code_ = net_extended_error_code;
   }
   void set_render_frame_host(RenderFrameHost* render_frame_host) {
     render_frame_host_ = render_frame_host;
@@ -352,6 +367,7 @@ class MockNavigationHandle : public NavigationHandle {
   blink::mojom::Referrer referrer_;
   ui::PageTransition page_transition_ = ui::PAGE_TRANSITION_LINK;
   net::Error net_error_code_ = net::OK;
+  int net_extended_error_code_ = 0;
   raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
   bool is_same_document_ = false;
   bool is_served_from_bfcache_ = false;

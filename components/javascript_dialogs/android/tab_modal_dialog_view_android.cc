@@ -135,7 +135,7 @@ TabModalDialogViewAndroid::TabModalDialogViewAndroid(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Keep a ref to the java side object until we get accept or cancel.

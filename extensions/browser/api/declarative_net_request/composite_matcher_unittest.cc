@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_net_request/composite_matcher.h"
 
+#include <array>
 #include <string>
 #include <utility>
 #include <vector>
@@ -536,12 +532,13 @@ TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
       std::move(matchers), /*extension_id=*/"",
       HostPermissionsAlwaysRequired::kTrue);
 
-  struct TestCases {
+  struct TestCase {
     const char* url;
     const PageAccess access;
     const bool expected_notify_withheld;
     std::optional<int> expected_matched_rule_id;
-  } cases[] = {
+  };
+  const auto cases = std::to_array<TestCase>({
       {"https://example.com", PageAccess::kAllowed, false, block_rule.id},
       {"https://example.com", PageAccess::kWithheld, true, std::nullopt},
       {"https://foo.com", PageAccess::kAllowed, false, allow_rule.id},
@@ -552,7 +549,7 @@ TEST_F(CompositeMatcherTest, HostPermissionsAlwaysRequired) {
       {"http://upgrade.com", PageAccess::kWithheld, true, std::nullopt},
       {"http://nomatch.com", PageAccess::kAllowed, false, std::nullopt},
       {"http://nomatch.com", PageAccess::kWithheld, false, std::nullopt},
-  };
+  });
 
   for (size_t i = 0; i < std::size(cases); i++) {
     SCOPED_TRACE(base::StringPrintf("Testing case %zu", i));

@@ -7,7 +7,7 @@
 
   // This is a valid function, but since the interface is marked nodoc, it wont
   // be documented.
-  static void fooFunction();
+  static undefined fooFunction();
 };
 
 partial interface Browser {

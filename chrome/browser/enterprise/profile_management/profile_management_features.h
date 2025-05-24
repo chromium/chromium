@@ -34,6 +34,10 @@ BASE_DECLARE_FEATURE(kEnableGenericOidcAuthProfileManagement);
 // enrollments.
 BASE_DECLARE_FEATURE(kOidcEnrollmentAuthSource);
 
+// Controls whether OIDC interception from navigation auth header instead of the
+// usual URL params is permitted. This flag only works on Chrome Canary or Dev.
+BASE_DECLARE_FEATURE(kOidcAuthHeaderInterception);
+
 // Oidc authentication related feature params.
 extern const base::FeatureParam<std::string> kOidcAuthStubDmToken;
 extern const base::FeatureParam<std::string> kOidcAuthStubProfileId;
@@ -41,13 +45,17 @@ extern const base::FeatureParam<std::string> kOidcAuthStubClientId;
 extern const base::FeatureParam<std::string> kOidcAuthStubUserName;
 extern const base::FeatureParam<std::string> kOidcAuthStubUserEmail;
 extern const base::FeatureParam<bool> kOidcAuthIsDasherBased;
-extern const base::FeatureParam<bool> kOidcAuthForceErrorUi;
+extern const base::FeatureParam<int> kOidcAuthForceErrorUi;
 extern const base::FeatureParam<bool> kOidcAuthForceTimeoutUi;
 extern const base::FeatureParam<base::TimeDelta> kOidcEnrollRegistrationTimeout;
 
 // List of hosts to be added as eligible to `kOidcEnrollmentAuthSource`,
 // takes the form of a comma-separated string.
 extern const base::FeatureParam<std::string> kOidcAuthAdditionalHosts;
+
+// List of URLs to be added as eligible to `kOidcAuthHeaderInterception`,
+// takes the form of a comma-separated string.
+extern const base::FeatureParam<std::string> kOidcAuthAdditionalUrls;
 
 }  // namespace profile_management::features
 

@@ -11,10 +11,26 @@
 
 #include "base/strings/string_split.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace net {
+
+namespace internal {
+MATCHER_P(HasExactlyExclusionReasonsForTesting, reasons, "") {
+  const CookieInclusionStatus status = arg;
+  return testing::ExplainMatchResult(
+      true, status.HasExactlyExclusionReasonsForTesting(reasons),
+      result_listener);
+}
+MATCHER_P(HasExactlyWarningReasonsForTesting, reasons, "") {
+  const CookieInclusionStatus status = arg;
+  return testing::ExplainMatchResult(
+      true, status.HasExactlyWarningReasonsForTesting(reasons),
+      result_listener);
+}
+}  // namespace internal
 
 MATCHER_P(MatchesCookieLine, cookie_line, "") {
   std::string argument_line = CanonicalCookie::BuildCookieLine(arg);
@@ -118,21 +134,15 @@ MATCHER_P(HasExactlyExemptionReason, reason, "") {
 
 // Helper for checking that status.HasExactlyExclusionReasonsForTesting(reasons)
 // == true.
-MATCHER_P(HasExactlyExclusionReasonsForTesting, reasons, "") {
-  const CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(
-      true, status.HasExactlyExclusionReasonsForTesting(reasons),
-      result_listener);
-}
+inline constexpr auto& HasExactlyExclusionReasonsForTesting =
+    internal::HasExactlyExclusionReasonsForTesting<
+        CookieInclusionStatus::ExclusionReasonBitset>;
 
 // Helper for checking that status.HasExactlyWarningReasonsForTesting(reasons)
 // == true.
-MATCHER_P(HasExactlyWarningReasonsForTesting, reasons, "") {
-  const CookieInclusionStatus status = arg;
-  return testing::ExplainMatchResult(
-      true, status.HasExactlyWarningReasonsForTesting(reasons),
-      result_listener);
-}
+inline constexpr auto& HasExactlyWarningReasonsForTesting =
+    internal::HasExactlyWarningReasonsForTesting<
+        CookieInclusionStatus::WarningReasonBitset>;
 
 MATCHER(ShouldWarn, "") {
   net::CookieInclusionStatus status = arg;

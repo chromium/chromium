@@ -5,7 +5,6 @@
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate_factory.h"
 
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "extensions/browser/extension_system_provider.h"
 
@@ -31,8 +30,6 @@ UsersPrivateDelegateFactory::UsersPrivateDelegateFactory()
           "UsersPrivateDelegate",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
               // TODO(crbug.com/41488885): Check if this service is needed for
               // Ash Internals.

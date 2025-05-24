@@ -20,6 +20,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -79,10 +80,16 @@ VideoConferencePermissions VideoConferenceWebApp::GetPermissions() {
       [&](content::RenderFrameHost* rfh) {
         auto camera_status =
             permission_controller->GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::VIDEO_CAPTURE, rfh);
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        blink::PermissionType::VIDEO_CAPTURE),
+                rfh);
         auto microphone_status =
             permission_controller->GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::AUDIO_CAPTURE, rfh);
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        blink::PermissionType::AUDIO_CAPTURE),
+                rfh);
 
         has_camera_permission |=
             camera_status == blink::mojom::PermissionStatus::GRANTED;

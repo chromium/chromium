@@ -24,7 +24,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
@@ -57,7 +58,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class PopularUrlsTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final String TAG = "PopularUrlsTest";
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -84,7 +86,7 @@ public class PopularUrlsTest {
         mStatus = new RunStatus(STATUS_FILE);
         mFailed = false;
         mDoShortWait = checkDoShortWait();
-        mActivityTestRule.startMainActivityFromLauncher();
+        mActivityTestRule.startFromLauncher();
     }
 
     @After
@@ -120,7 +122,7 @@ public class PopularUrlsTest {
     }
 
     private static class RunStatus {
-        private File mFile;
+        private final File mFile;
         private int mIteration;
         private int mPage;
         private String mUrl;
@@ -383,7 +385,6 @@ public class PopularUrlsTest {
      * Navigate to all the pages listed in the input.
      *
      * @param perf Whether this is a performance test or stability test.
-     * @throws IOException
      */
     public void loadPages(boolean perf) throws IOException {
         OutputStreamWriter outputWriter = null;

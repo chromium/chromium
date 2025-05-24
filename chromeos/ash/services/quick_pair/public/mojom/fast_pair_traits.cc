@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/quick_pair/public/mojom/fast_pair_traits.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <vector>
 
-#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
@@ -34,8 +34,8 @@ bool StructTraits<DecryptedResponseDataView, DecryptedResponse>::Read(
     return false;
   }
 
-  base::ranges::copy(address_bytes, out->address_bytes.begin());
-  base::ranges::copy(salt_bytes, out->salt.begin());
+  std::ranges::copy(address_bytes, out->address_bytes.begin());
+  std::ranges::copy(salt_bytes, out->salt.begin());
   out->flags = data.flags();
   out->num_addresses = data.num_addresses();
 
@@ -55,7 +55,7 @@ bool StructTraits<DecryptedPasskeyDataView, DecryptedPasskey>::Read(
     return false;
 
   out->passkey = data.passkey();
-  base::ranges::copy(salt_bytes, out->salt.begin());
+  std::ranges::copy(salt_bytes, out->salt.begin());
 
   return true;
 }

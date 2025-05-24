@@ -10,7 +10,12 @@
 // The completion handler that will be called at the end of the Mini Map flow.
 // If the passed URL is not nil, it indicates that the user requested to open
 // this URL.
-using MiniMapControllerCompletion = void (^)(NSURL*);
+using MiniMapControllerCompletionWithURL = void (^)(NSURL*);
+
+// The completion handler that will be called at the end of the Mini Map flow.
+// If the passed String is not nil, it indicates that the address was not
+// resolved correctly and must be searched in a new tab.
+using MiniMapControllerCompletionWithString = void (^)(NSString*);
 
 @protocol MiniMapController <NSObject>
 
@@ -48,9 +53,12 @@ namespace provider {
 // Creates a one time MiniMapController to present the mini map for `address`.
 // `completion` is called after the minimap is dismissed with an optional URL.
 // If present, it indicates that the user requested to open the URL.
+// In case of error, `completion_with_query` is called with a query to open in
+// a new tab.
 id<MiniMapController> CreateMiniMapController(
     NSString* address,
-    MiniMapControllerCompletion completion);
+    MiniMapControllerCompletionWithURL completion,
+    MiniMapControllerCompletionWithString completion_with_query);
 
 }  // namespace provider
 }  // namespace ios

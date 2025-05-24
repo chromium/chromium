@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
+<translation id="1149198577555059081">Cari atau taip URL</translation>
 <translation id="1324575488877808473">Buka Chrome untuk melihat laman yang paling kerap anda lawati di sini.</translation>
 <translation id="2513892053093488070">Carian Suara</translation>
 <translation id="2535710892645968259">Lompat ke Permainan Dino Chrome daripada skrin kunci anda.</translation>
@@ -15,11 +16,11 @@
 <translation id="405442954313519726">Cari atau navigasi dalam tab baharu, dalam mod Inkognito, menggunakan suara anda atau dengan kod QR.</translation>
 <translation id="4557098988773644458">Lompat ke Permainan Dino Chrome</translation>
 <translation id="4678859075583681103">Mulakan carian baharu atau buka laman yang paling kerap anda lawati daripada halaman utama iPhone anda.</translation>
-<translation id="4954445889641385956">Cari atau taip URL</translation>
 <translation id="4962772945748414465">Buka WEBSITE_PLACEHOLDER</translation>
 <translation id="5234725349196694896">Cari dalam Chrome menggunakan enjin carian kegemaran anda.</translation>
 <translation id="5277852985315196237">Cari atau taip URL</translation>
 <translation id="529497070985873480">Dino Chrome</translation>
+<translation id="5325847452011598583">Tiada akaun</translation>
 <translation id="5683557219437283801">Carian Suara</translation>
 <translation id="6179961764474023795">Tindakan Pantas</translation>
 <translation id="6330929932864892436">Cari atau Taip URL</translation>
@@ -39,7 +40,9 @@ taip URL</translation>
 <translation id="8104498668011127805">Lompat ke Permainan Dino Chrome</translation>
 <translation id="8150601371542319992">Lens</translation>
 <translation id="8171952085734471362">Carian Inkognito</translation>
+<translation id="8310150944719146950">Akaun</translation>
 <translation id="8564942608461410346">Cari dalam Chrome menggunakan enjin carian kegemaran anda.</translation>
+<translation id="8858765528951093286">Akaun yang digunakan dengan widget telah dialih keluar. Untuk memilih akaun lain, ketik Edit Widget.</translation>
 <translation id="9175676375569833962">Cari
 kata laluan</translation>
 </translationbundle>

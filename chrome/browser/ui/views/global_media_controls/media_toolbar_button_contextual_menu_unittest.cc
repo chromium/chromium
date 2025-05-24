@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 
-#include "base/test/scoped_feature_list.h"
+#include <memory>
+
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_debugger_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -24,8 +24,6 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
     media_router::MockMediaRouter* router =
         static_cast<media_router::MockMediaRouter*>(
             media_router::ChromeMediaRouterFactory::GetInstance()
@@ -33,7 +31,7 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
                     profile(), base::BindRepeating(
                                    &media_router::MockMediaRouter::Create)));
 
-    menu_ = MediaToolbarButtonContextualMenu::Create(browser());
+    menu_ = std::make_unique<MediaToolbarButtonContextualMenu>(browser());
 
     ON_CALL(*router, GetDebugger())
         .WillByDefault(testing::ReturnRef(debugger_));
@@ -59,7 +57,7 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
         media_router::prefs::kMediaRouterShowCastSessionsStartedByOtherDevices,
         std::make_unique<base::Value>(policy_value));
 
-    auto menu = MediaToolbarButtonContextualMenu::Create(browser());
+    auto menu = std::make_unique<MediaToolbarButtonContextualMenu>(browser());
     auto model = menu->CreateMenuModel();
     ASSERT_EQ(model->GetCommandIdAt(0),
               IDC_MEDIA_TOOLBAR_CONTEXT_SHOW_OTHER_SESSIONS);
@@ -69,11 +67,10 @@ class MediaToolbarButtonContextualMenuTest : public MenuModelTest,
  private:
   media_router::MediaRouterDebuggerImpl debugger_;
   std::unique_ptr<MediaToolbarButtonContextualMenu> menu_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(MediaToolbarButtonContextualMenuTest, ShowMenu) {
-  auto menu = MediaToolbarButtonContextualMenu::Create(browser());
+  auto menu = std::make_unique<MediaToolbarButtonContextualMenu>(browser());
   auto model = menu->CreateMenuModel();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_EQ(model->GetItemCount(), 2u);

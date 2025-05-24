@@ -54,17 +54,13 @@ void PasswordEditDialogBridge::ShowPasswordEditDialog(
 
   base::android::ScopedJavaLocalRef<jobjectArray> j_saved_usernames =
       base::android::ToJavaArrayOfStrings(env, saved_usernames);
-  base::android::ScopedJavaLocalRef<jstring> j_username =
-      base::android::ConvertUTF16ToJavaString(env, username);
-  base::android::ScopedJavaLocalRef<jstring> j_password =
-      base::android::ConvertUTF16ToJavaString(env, password);
   base::android::ScopedJavaLocalRef<jstring> j_account_email =
       account_email.has_value()
           ? base::android::ConvertUTF8ToJavaString(env, account_email.value())
           : nullptr;
 
   Java_PasswordEditDialogBridge_showPasswordEditDialog(
-      env, java_password_dialog_, j_saved_usernames, j_username, j_password,
+      env, java_password_dialog_, j_saved_usernames, username, password,
       j_account_email);
 }
 
@@ -73,13 +69,10 @@ void PasswordEditDialogBridge::Dismiss() {
   Java_PasswordEditDialogBridge_dismiss(env, java_password_dialog_);
 }
 
-void PasswordEditDialogBridge::OnDialogAccepted(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& username,
-    const base::android::JavaParamRef<jstring>& password) {
-  delegate_->HandleSavePasswordFromDialog(
-      base::android::ConvertJavaStringToUTF16(username),
-      base::android::ConvertJavaStringToUTF16(password));
+void PasswordEditDialogBridge::OnDialogAccepted(JNIEnv* env,
+                                                std::u16string& username,
+                                                std::u16string& password) {
+  delegate_->HandleSavePasswordFromDialog(username, password);
 }
 
 void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,
@@ -90,7 +83,6 @@ void PasswordEditDialogBridge::OnDialogDismissed(JNIEnv* env,
 
 jboolean PasswordEditDialogBridge::IsUsingAccountStorage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& username) {
-  return delegate_->IsUsingAccountStorage(
-      base::android::ConvertJavaStringToUTF16(username));
+    std::u16string& username) {
+  return delegate_->IsUsingAccountStorage(username);
 }

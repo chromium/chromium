@@ -12,21 +12,20 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "content/browser/webauth/virtual_authenticator.h"
 #include "content/common/content_export.h"
+#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
 
 namespace content {
 
-class VirtualAuthenticator;
 class VirtualFidoDiscoveryFactory;
 
-// Implements the Mojo interface representing a virtual authenticator manager
-// for the Web Authentication API. Allows setting up and configurating virtual
-// authenticator devices for testing.
-class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
-    : public blink::test::mojom::VirtualAuthenticatorManager {
+// Allows setting up and configurating virtual authenticator devices for
+// testing, the devtools WebAuthn pane, and WebDriver.
+class CONTENT_EXPORT VirtualAuthenticatorManagerImpl {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -39,20 +38,16 @@ class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
       delete;
   VirtualAuthenticatorManagerImpl& operator=(
       const VirtualAuthenticatorManagerImpl&) = delete;
-  ~VirtualAuthenticatorManagerImpl() override;
+  ~VirtualAuthenticatorManagerImpl();
 
   void AddObserver(Observer*);
   void RemoveObserver(Observer*);
-
-  void AddReceiver(
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-          receiver);
 
   // Creates an authenticator based on |options| and adds it to the list of
   // authenticators owned by this object. It returns a non-owning pointer to
   // the authenticator, or |nullptr| on error.
   VirtualAuthenticator* AddAuthenticatorAndReturnNonOwningPointer(
-      const blink::test::mojom::VirtualAuthenticatorOptions& options);
+      const VirtualAuthenticator::Options& options);
 
   // Sets whether the UI is enabled or not. Defaults to false.
   void enable_ui(bool enable_ui) { enable_ui_ = enable_ui; }
@@ -71,16 +66,6 @@ class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
 
   std::unique_ptr<VirtualFidoDiscoveryFactory> MakeDiscoveryFactory();
 
- protected:
-  // blink::test::mojom::VirtualAuthenticatorManager:
-  void CreateAuthenticator(
-      blink::test::mojom::VirtualAuthenticatorOptionsPtr options,
-      CreateAuthenticatorCallback callback) override;
-  void GetAuthenticators(GetAuthenticatorsCallback callback) override;
-  void RemoveAuthenticator(const std::string& id,
-                           RemoveAuthenticatorCallback callback) override;
-  void ClearAuthenticators(ClearAuthenticatorsCallback callback) override;
-
  private:
   VirtualAuthenticator* AddAuthenticator(
       std::unique_ptr<VirtualAuthenticator> authenticator);
@@ -91,8 +76,6 @@ class CONTENT_EXPORT VirtualAuthenticatorManagerImpl
 
   // The key is the unique_id of the corresponding value (the authenticator).
   std::map<std::string, std::unique_ptr<VirtualAuthenticator>> authenticators_;
-
-  mojo::ReceiverSet<blink::test::mojom::VirtualAuthenticatorManager> receivers_;
 
   base::WeakPtrFactory<VirtualAuthenticatorManagerImpl> weak_factory_{this};
 };

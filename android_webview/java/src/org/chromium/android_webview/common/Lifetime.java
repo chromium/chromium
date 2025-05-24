@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -12,6 +14,7 @@ import java.lang.annotation.RetentionPolicy;
  *
  * See: //android_webview/docs/lifetime-annotations.md.
  */
+@NullMarked
 public class Lifetime {
     private Lifetime() {}
 

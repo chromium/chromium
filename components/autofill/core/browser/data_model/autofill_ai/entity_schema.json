@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Passport",
+    "attributes": [ "Name", "Country", "Number", "Issue date", "Expiration date" ],
+    "obfuscated attributes": [ "Number" ],
+    "import constraints": [
+      [ "Number" ]
+    ],
+    "merge constraints": "import constraints",
+    "strike keys": [
+      [ "Number" ]
+    ],
+    "disambiguation order": [ "Name", "Country" ],
+    "syncable": false
+  },
+  {
+    "name": "Driver's license",
+    "attributes": [ "Name", "State", "Number", "Issue date", "Expiration date" ],
+    "import constraints": [
+      [ "Number" ]
+    ],
+    "merge constraints": "import constraints",
+    "disambiguation order": [ "Name", "State" ],
+    "syncable": false
+  },
+  {
+    "name": "Vehicle",
+    "attributes": [ "Make", "Model", "Year", "Owner", "Plate number", "Plate state", "VIN" ],
+    "obfuscated attributes": [ "VIN" ],
+    "import constraints": [
+      [ "Plate number" ],
+      [ "VIN" ]
+    ],
+    "merge constraints": "import constraints",
+    "disambiguation order": [ "Make", "Model", "Year", "Owner" ],
+    "syncable": false
+  }
+]

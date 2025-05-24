@@ -33,8 +33,8 @@ class CORE_EXPORT LogicalFragment {
                                              : physical_fragment_.Size().width;
   }
   LogicalSize Size() const {
-    return physical_fragment_.Size().ConvertToLogical(
-        writing_direction_.GetWritingMode());
+    return ToLogicalSize(physical_fragment_.Size(),
+                         writing_direction_.GetWritingMode());
   }
   WritingDirectionMode GetWritingDirection() const {
     return writing_direction_;

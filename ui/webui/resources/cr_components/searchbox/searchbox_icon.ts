@@ -137,17 +137,18 @@ export class SearchboxIconElement extends PolymerElement {
     };
   }
 
-  backgroundImage: string;
-  defaultIcon: string;
-  hasIconContainerBackground: boolean;
-  inSearchbox: boolean;
-  isAnswer: boolean;
-  isWeatherAnswer: boolean;
-  maskImage: string;
-  match: AutocompleteMatch;
-  private iconStyle_: string;
-  private imageSrc_: string;
-  private imageLoading_: boolean;
+  declare backgroundImage: string;
+  declare defaultIcon: string;
+  declare hasIconContainerBackground: boolean;
+  declare inSearchbox: boolean;
+  declare isAnswer: boolean;
+  declare isWeatherAnswer: boolean;
+  declare maskImage: string;
+  declare match: AutocompleteMatch;
+  declare private iconStyle_: string;
+  declare private imageSrc_: string;
+  declare private imageLoading_: boolean;
+  declare private isLensSearchbox_: boolean;
 
   //============================================================================
   // Helpers
@@ -171,7 +172,9 @@ export class SearchboxIconElement extends PolymerElement {
     }
 
     if (this.defaultIcon ===
-        '//resources/cr_components/searchbox/icons/google_g.svg') {
+            '//resources/cr_components/searchbox/icons/google_g.svg' ||
+        this.defaultIcon ===
+            '//resources/cr_components/searchbox/icons/google_g_gradient.svg') {
       // The google_g.svg is a fully colored icon, so it needs to be displayed
       // as a background image as mask images will mask the colors.
       return `url(${this.defaultIcon})`;
@@ -189,6 +192,10 @@ export class SearchboxIconElement extends PolymerElement {
   }
 
   private computeMaskImage_(): string {
+    // Lens searchboxes should always have the Google G in the searchbox.
+    if (this.isLensSearchbox_ && this.inSearchbox) {
+      return `url(${this.defaultIcon})`;
+    }
     if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
       return `url(${this.match.iconUrl})`;
     } else {
@@ -225,6 +232,7 @@ export class SearchboxIconElement extends PolymerElement {
       'drive_slides',
       'drive_video',
       'google_g',
+      'google_g_gradient',
       'note',
       'sites',
     ];

@@ -26,6 +26,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_discard_reason.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-forward.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -34,7 +35,6 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -108,6 +108,10 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // guest view.
   bool IsMainFrame() const;
   bool IsOutermostMainFrame() const;
+
+  // Returns true if all the ancestors of the current frame have a potentially
+  // trustworthy origin.
+  bool AreAncestorsSecure();
 
   FrameTree& frame_tree() const { return frame_tree_.get(); }
   Navigator& navigator();
@@ -221,6 +225,21 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return render_manager_.current_replication_state().origin;
   }
 
+  // Returns the origin of the last *successfully* committed page in this
+  // frame. This may be different from current_origin() if the current page is
+  // an error page.
+  // IMPORTANT: Use current_origin() instead, as all security-relevant decisions
+  // should be made using the current origin of the frame. The last successful
+  // origin is only relevant for specific abuse mitigations that require
+  // tracking the previous state of a frame before an error page navigation.
+  const url::Origin& last_successful_origin() const {
+    return last_successful_origin_;
+  }
+
+  void set_last_successful_origin(const url::Origin& origin) {
+    last_successful_origin_ = origin;
+  }
+
   // Returns the latest frame policy (sandbox flags and container policy) for
   // this frame. This includes flags inherited from parent frames and the latest
   // flags from the <iframe> element hosting this frame. The returned policies
@@ -233,10 +252,15 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
     return pending_frame_policy_;
   }
 
-  // Update this frame's sandbox flags and container policy.  This is called
-  // when a parent frame updates the "sandbox" attribute in the <iframe> element
-  // for this frame, or any of the attributes which affect the container policy
-  // ("allowfullscreen", "allowpaymentrequest", "allow", and "src".)
+  // Update this frame's sandbox flags, container policy and deferred fetch
+  // policy.
+  // This is called when either
+  // - a parent frame updates the "sandbox" attribute in the <iframe> element
+  //   for this frame
+  // - any of the attributes which affect the container policy
+  //   ("allowfullscreen", "allowpaymentrequest", "allow", and "src".)
+  // - a frame begins navigation which leads to calculation of deferred fetch
+  //   policy.
   // These policies won't take effect until next navigation.  If this frame's
   // parent is itself sandboxed, the parent's sandbox flags are combined with
   // those in |frame_policy|.
@@ -709,15 +733,12 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
       const std::vector<GURL>& redirects,
       const GURL& original_url,
       std::unique_ptr<CrossOriginEmbedderPolicyReporter> coep_reporter,
-      int http_response_code) override;
+      std::unique_ptr<DocumentIsolationPolicyReporter> dip_reporter,
+      int http_response_code,
+      base::TimeTicks actual_navigation_start) override;
   void CancelNavigation(NavigationDiscardReason reason) override;
   void ResetNavigationsForDiscard() override;
   bool Credentialless() const override;
-#if !BUILDFLAG(IS_ANDROID)
-  void GetVirtualAuthenticatorManager(
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-          receiver) override;
-#endif
   FrameType GetCurrentFrameType() const override;
 
   // Restart the navigation restoring the page from the back-forward cache
@@ -887,12 +908,17 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   const blink::mojom::TreeScopeType tree_scope_type_ =
       blink::mojom::TreeScopeType::kDocument;
 
-  // Track the pending sandbox flags and container policy for this frame. When a
-  // parent frame dynamically updates 'sandbox', 'allow', 'allowfullscreen',
-  // 'allowpaymentrequest' or 'src' attributes, the updated policy for the frame
-  // is stored here, and transferred into
+  // Track the pending sandbox flags, container policy, and deferred fetch
+  // policy for this frame.
+  // When a parent frame dynamically updates 'sandbox', 'allow',
+  // 'allowfullscreen', 'allowpaymentrequest' or 'src' attributes, the updated
+  // policy for the frame is stored here, and transferred into
   // render_manager_.current_replication_state().frame_policy when they take
   // effect on the next frame navigation.
+  //
+  // Note that updates to FramePolicy from the renderer side must be explicitly
+  // set in this field via `SetPendingFramePolicy()`; Otherwise, the browser
+  // side won't have it saved and can't pass it to new RenderFrameHost.
   blink::FramePolicy pending_frame_policy_;
 
   // Whether the frame was created by javascript.  This is useful to prune
@@ -937,6 +963,14 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   // used to cancel the task.
   // See `CancelRestartingBackForwardCacheNavigation()`.
   base::CancelableTaskTracker restart_back_forward_cached_navigation_tracker_;
+
+  // The last successfully committed origin in this frame. Set in two scenarios:
+  // 1. By RenderFrameHostImpl::DidNavigate() when a navigation in this frame
+  //    succeeds.
+  // 2. By RenderFrameHostImpl::SetOriginDependentStateOfNewFrame() when a new
+  //    frame is first created, which will reflect the origin of the initial
+  //    about::blank document before any navigation has committed.
+  url::Origin last_successful_origin_;
 
   // Manages creation and swapping of RenderFrameHosts for this frame.
   //

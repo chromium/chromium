@@ -6,7 +6,6 @@
 
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -137,6 +136,24 @@ TEST_F(SerializationTest, SVGForeignObjectCrash) {
   // This is a crash test. We don't verify the content of the strictly processed
   // markup as it's too verbose and not interesting.
   EXPECT_TRUE(strictly_processed_fragment);
+}
+
+// Regression test for https://crbug.com/40840595
+TEST_F(SerializationTest, CSSFontFaceLoadCrash) {
+  const String markup =
+      "<style>"
+      "  @font-face {"
+      "    font-family: \"custom-font\";"
+      "    src: "
+      "url(\"https://mdn.github.io/css-examples/web-fonts/VeraSeBd.ttf\");"
+      "  }"
+      "  </style>"
+      "<span style=\"font-family: custom-font\">lorem ipsum</span>";
+  const String sanitized_markup = CreateStrictlyProcessedMarkupWithContext(
+      GetDocument(), markup, 0, markup.length(), KURL());
+  // This is a crash test. We don't verify the content of the strictly processed
+  // markup as it is not interesting.
+  EXPECT_TRUE(sanitized_markup);
 }
 
 }  // namespace blink

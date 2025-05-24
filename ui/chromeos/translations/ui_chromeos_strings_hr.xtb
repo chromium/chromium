@@ -19,6 +19,7 @@
 <translation id="115443833402798225">hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalanski</translation>
 <translation id="1168100932582989117">Googleovi poslužitelji naziva</translation>
+<translation id="1170788066030116158">Datum snimanja</translation>
 <translation id="1172970565351728681">Preostalo je oko <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1173916544412572294">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, pojedinosti</translation>
@@ -72,6 +73,7 @@
 <translation id="1577977504532381335">Pregledajte pravila administratora</translation>
 <translation id="158849752021629804">Potrebna je matična mreža</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">Komprimiraj</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="162175252992296058">portugalski s američkom međunarodnom tipkovnicom</translation>
 <translation id="1629521517399325891">Korisnički certifikat nije dostupan za autentifikaciju mreže.</translation>
@@ -105,6 +107,7 @@
 <translation id="1810764548349082891">Pregled nije dostupan</translation>
 <translation id="1812302367230252929">transliteracija za amharski</translation>
 <translation id="1813278315230285598">Usluge</translation>
+<translation id="181434555916624618">Rezultati s osobama zasad se neće prikazivati. Isprobajte drugi prompt.</translation>
 <translation id="1829129547161959350">Pingvin</translation>
 <translation id="183183971458492120">Učitavanje podataka...</translation>
 <translation id="1832073788765803750">Uska katakana</translation>
@@ -135,7 +138,6 @@
 <translation id="2084809735218147718">Zahvaljuje vam pjesmom</translation>
 <translation id="2088690981887365033">VPN mreža</translation>
 <translation id="209653272837065803">Nema dovoljno prostora za pohranu da bi se datoteke nastavile sinkronizirati</translation>
-<translation id="2111134541987263231">Uključite opciju <ph name="BEGIN_BOLD" />Dopusti u anonimnom načinu<ph name="END_BOLD" /></translation>
 <translation id="2114191879048183086">Izbrisat će se više stavki (<ph name="NUMBER_OF_ITEMS" />) i nećete ih moći vratiti.</translation>
 <translation id="2122305276694332719">Automatsko povezivanje sa skrivenom mrežom omogućuje drugima da vide vaš uređaj i neke mrežne postavke i stoga se ne preporučuje.</translation>
 <translation id="2125607626296734455">kmerski</translation>
@@ -166,7 +168,6 @@
 <translation id="2304820083631266885">Planet</translation>
 <translation id="2305020378527873881">Stavka <ph name="VOLUME_NAME" /> izbačena je.</translation>
 <translation id="2307462900900812319">Konfiguriraj mrežu</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Proširenje s ID-jem <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}one{Proširenja s ID-jevima <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}few{Proširenja s ID-jevima <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}other{Proširenja s ID-jevima <ph name="BEGIN_LIST" /><ph name="END_LIST" /> nije moguće pronaći. Obratite se administratoru.}}</translation>
 <translation id="2325650632570794183">Ta vrsta datoteke nije podržana. Posjetite Chrome web-trgovinu da biste pronašli aplikaciju koja može otvoriti tu vrstu datoteke.</translation>
 <translation id="2326539130272988168">bugarski</translation>
 <translation id="233822363739146957">Nema dovoljno prostora za pohranu da bi se sinkronizirale sve datoteke</translation>
@@ -238,7 +239,6 @@
 <translation id="290843123675549676">marathski</translation>
 <translation id="2923240520113693977">Estonski</translation>
 <translation id="2938685643439809023">Mongolski</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Nije moguće pronaći proširenje}one{Nije moguće pronaći proširenja}few{Nije moguće pronaći proširenja}other{Nije moguće pronaći proširenja}}</translation>
 <translation id="2943503720238418293">Upotrijebite kraći naziv</translation>
 <translation id="2949781154072577687">Formatiranje diska <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">Meduza</translation>
@@ -295,7 +295,6 @@
 <translation id="3356580349448036450">Dovršeno</translation>
 <translation id="3358452157379365236">Gitara</translation>
 <translation id="3368922792935385530">Spojeno</translation>
-<translation id="3372635229069101468">Kliknite <ph name="BEGIN_BOLD" />Pojedinosti<ph name="END_BOLD" /></translation>
 <translation id="3382143449143186018">nepalski s tipkovnicom InScript</translation>
 <translation id="338691029516748599">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, upravlja administrator, povežite</translation>
 <translation id="3408072735282270043">Aktiviraj, <ph name="NETWORK_NAME" /></translation>
@@ -385,7 +384,6 @@
 <translation id="4124935795427217608">Jednorog</translation>
 <translation id="4131235941541910880">Nepotrebne stavke premjestite u otpad</translation>
 <translation id="4134804435730168042">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, aktivira se nakon postavljanja uređaja</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Uključite sljedeće proširenje u anonimnom načinu:}one{Uključite sljedeća proširenja u anonimnom načinu:}few{Uključite sljedeća proširenja u anonimnom načinu:}other{Uključite sljedeća proširenja u anonimnom načinu:}}</translation>
 <translation id="4153015322587141338">Desnom tipkom kliknite datoteku i odaberite "<ph name="PIN_COMMAND" />" da biste brzo pristupali datotekama na traci.</translation>
 <translation id="4157569377477607576">Prema pravilima administratora ne preporučuje se sljedeće:</translation>
 <translation id="4159731583141908892">Premješteno: <ph name="FILE_NAME" />.</translation>
@@ -393,7 +391,6 @@
 <translation id="4179621117429069925">Ta je stavka u otpadu</translation>
 <translation id="4186579485882418952">Omogući izvanmrežno</translation>
 <translation id="4193154014135846272">Googleov dokument</translation>
-<translation id="4197674956721858839">Komprimiraj odabrano</translation>
 <translation id="4202378258276439759">španjolski (Latinska Amerika)</translation>
 <translation id="4202977638116331303">gruzijski</translation>
 <translation id="421017592316736757">Morate biti na mreži da biste pristupili toj datoteci.</translation>
@@ -421,6 +418,7 @@
 <translation id="4387004326333427325">Certifikat za autentifikaciju odbijen je daljinski</translation>
 <translation id="4394214039309501350">Vanjska veza</translation>
 <translation id="4394980935660306080">Prethodno ovog tjedna</translation>
+<translation id="4397435965699247285">OneDrive nije dostupan dok ste offline</translation>
 <translation id="4398096759193130964">Vratite stavke ili ih povucite u novu mapu izvan otpada</translation>
 <translation id="4401287888955153199">Izdvoji sve</translation>
 <translation id="4410695710508688828">Operacija izdvajanja nije uspjela. <ph name="ERROR_MESSAGE" /></translation>
@@ -483,9 +481,7 @@
 <translation id="4801956050125744859">Zadrži oba</translation>
 <translation id="4804827417948292437">Avokado</translation>
 <translation id="4805966553127040832">Vraćanje stavki (ukupno <ph name="COUNT" />)</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Organizacija zahtijeva proširenje za upotrebu anonimnog načina}one{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}few{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}other{Organizacija zahtijeva određena proširenja za upotrebu anonimnog načina}}</translation>
 <translation id="4826849268470072925">tamilski ITRANS</translation>
-<translation id="482932175346970750">U preglednik unesite <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /></translation>
 <translation id="4843566743023903107">Chromebaseovi</translation>
 <translation id="4850886885716139402">Prikaz</translation>
 <translation id="485316830061041779">Njemački</translation>
@@ -558,7 +554,6 @@
     na datotekama s drugima i sve to na jednom mjestu.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Oporavljene datoteke s Google diska</translation>
 <translation id="5278111733643988471">Da biste vratili tu stavku, povucite je u novu mapu izvan otpada. Izbrisana je izvorna mapa <ph name="PARENT_FOLDER_NAME" /> za tu stavku.</translation>
-<translation id="5283101102242354279">Uključite proširenja u anonimnom načinu:</translation>
 <translation id="5288441970121584418">Hamburger</translation>
 <translation id="5293615890992542006">Administratorska pravila blokiraju premještanje te datoteke</translation>
 <translation id="5305688511332277257">Nijedan nije instaliran</translation>
@@ -812,7 +807,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, pojedinosti</translation>
 <translation id="7246947237293279874">FTP proxy</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
-<translation id="7252604552361840748">Pronađite navedeno proširenje</translation>
 <translation id="7256405249507348194">Neprepoznata pogreška: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Dostupne usluge</translation>
 <translation id="7291818353625820805">Želite li da se unos tipke ponavlja? Isključite naglaske u postavkama tipkovnice.</translation>

@@ -4,9 +4,12 @@
 
 package org.chromium.ui.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.List;
 
 /** A delegate interface for the photo picker. */
+@NullMarked
 public interface PhotoPickerDelegate {
     /**
      * Called to display the photo picker.

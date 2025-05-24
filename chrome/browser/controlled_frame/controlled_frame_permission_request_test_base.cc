@@ -28,7 +28,6 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
 #include "url/origin.h"
 
 using testing::EndsWith;

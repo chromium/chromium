@@ -8,7 +8,6 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/webdatabase/sqlite/sql_value.h"
 
 namespace blink {
 
@@ -42,13 +41,6 @@ ScriptValue DeserializeScriptValue(ScriptState*,
 #if DCHECK_IS_ON()
 void AssertPrimaryKeyValidOrInjectable(ScriptState*, const IDBValue*);
 #endif
-
-template <>
-struct NativeValueTraits<SQLValue> {
-  static SQLValue NativeValue(v8::Isolate*,
-                              v8::Local<v8::Value>,
-                              ExceptionState&);
-};
 
 // Used by Indexed DB when converting an explicit value to a key.
 // https://w3c.github.io/IndexedDB/#convert-value-to-key

@@ -13,7 +13,7 @@ build_webui("build") {
     "most_visited_title.css",
     "most_visited_title.html",
   ]
-  non_web_component_files = [ "most_visited_title.ts" ]
+  ts_files = [ "most_visited_title.ts" ]
 
   ts_definitions = [ "embedded_search.d.ts" ]
 }

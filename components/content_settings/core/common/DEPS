@@ -6,12 +6,17 @@ include_rules = [
   "+net/cookies/cookie_util.h",
   "+net/cookies/cookie_constants.h",
   "+net/cookies/cookie_setting_override.h",
+  "+net/cookies/cookie_partition_key.h",
   "+net/cookies/static_cookie_policy.h",
   "+net/cookies/site_for_cookies.h",
   "+testing",
   "+third_party/icu/fuzzers/fuzzer_utils.h",
   "+url",
   "+components/privacy_sandbox/privacy_sandbox_features.h",
+  "+services/network/public/cpp/permissions_policy",
+
+  # TODO(crbug.com/382291442): Remove once launched.
+  "+services/network/public/cpp/features.h",
 ]
 
 specific_include_rules = {

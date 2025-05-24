@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: no access\nTypeError: no access\n    at new Promise (<anonymous>)\n    at globalThis.shadowRealmEvalAsync (https://web-platform.test:8444/resources/testharness-shadowrealm-outer.js:17:10)\n    at TestRunner.createShadowRealmAndStartTests (https://web-platform.test:8444/wasm/jsapi/exception/toString.tentative.any.audioworklet-shadowrealm.js:11:11)\n    at new TestRunner (https://web-platform.test:8444/resources/testharness-shadowrealm-audioworkletprocessor.js:8:10)
+Harness: the test ran to completion.

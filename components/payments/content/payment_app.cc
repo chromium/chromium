@@ -24,8 +24,7 @@ int GetSortingGroup(const PaymentApp& app) {
     case PaymentApp::Type::NATIVE_MOBILE_APP:
       return 2;
     case PaymentApp::Type::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
-      return 99;
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -33,9 +32,17 @@ int GetSortingGroup(const PaymentApp& app) {
 PaymentApp::PaymentApp(int icon_resource_id, Type type)
     : icon_resource_id_(icon_resource_id), type_(type) {}
 
-PaymentApp::~PaymentApp() {}
+PaymentApp::~PaymentApp() = default;
 
 const SkBitmap* PaymentApp::icon_bitmap() const {
+  return nullptr;
+}
+
+const SkBitmap* PaymentApp::issuer_bitmap() const {
+  return nullptr;
+}
+
+const SkBitmap* PaymentApp::network_bitmap() const {
   return nullptr;
 }
 

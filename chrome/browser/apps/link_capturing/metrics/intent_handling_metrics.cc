@@ -9,10 +9,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -57,14 +57,12 @@ IntentPickerAction GetIntentPickerAction(
         case apps::PickerEntryType::kDevice:
         case apps::PickerEntryType::kMacOs:
         case apps::PickerEntryType::kUnknown:
-          NOTREACHED_IN_MIGRATION();
-          return IntentPickerAction::kInvalid;
+          NOTREACHED();
       }
     case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
       // For the HTTP/HTTPS Intent Picker, preferred app metrics are recorded
       // separately in RecordPreferredAppLinkClickMetrics.
-      NOTREACHED_IN_MIGRATION();
-      return IntentPickerAction::kInvalid;
+      NOTREACHED();
   }
 }
 
@@ -82,8 +80,7 @@ Platform GetIntentPickerDestinationPlatform(IntentPickerAction action) {
     case IntentPickerAction::kError:
       return Platform::CHROME;
     case IntentPickerAction::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return Platform::CHROME;
+      NOTREACHED();
   }
 }
 
@@ -145,7 +142,7 @@ void IntentHandlingMetrics::RecordLinkCapturingEntryPointShown(
                                 LinkCapturingEvent::kEntryPointShown);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
     content::BrowserContext* context,
     PickerEntryType entry_type,
@@ -158,6 +155,6 @@ void IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
         context, arc::UserInteractionType::APP_STARTED_FROM_LINK);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace apps

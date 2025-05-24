@@ -116,9 +116,6 @@ class ContentTranslateDriver : public TranslateDriver,
       const translate::LanguageDetectionDetails& details,
       bool page_level_translation_criteria_met) override;
 
- protected:
-  bool IsAutoHrefTranslateAllOriginsEnabled() const;
-
  private:
   void OnPageAway(int page_seq_no);
 

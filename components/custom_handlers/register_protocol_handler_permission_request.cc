@@ -5,10 +5,13 @@
 #include "components/custom_handlers/register_protocol_handler_permission_request.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/custom_handlers/protocol_handler_registry.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -22,14 +25,13 @@ RegisterProtocolHandlerPermissionRequest::
         GURL url,
         base::ScopedClosureRunner fullscreen_block)
     : PermissionRequest(
-          url.DeprecatedGetOriginAsURL(),
-          permissions::RequestType::kRegisterProtocolHandler,
-          /*has_gesture=*/false,
+          std::make_unique<permissions::PermissionRequestData>(
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  permissions::RequestType::kRegisterProtocolHandler),
+              /*user_gesture=*/false,
+              url.DeprecatedGetOriginAsURL()),
           base::BindRepeating(
               &RegisterProtocolHandlerPermissionRequest::PermissionDecided,
-              base::Unretained(this)),
-          base::BindOnce(
-              &RegisterProtocolHandlerPermissionRequest::DeleteRequest,
               base::Unretained(this))),
       registry_(registry),
       handler_(handler),
@@ -65,7 +67,8 @@ RegisterProtocolHandlerPermissionRequest::GetMessageTextFragment() const {
 void RegisterProtocolHandlerPermissionRequest::PermissionDecided(
     ContentSetting result,
     bool is_one_time,
-    bool is_final_decision) {
+    bool is_final_decision,
+    const permissions::PermissionRequestData& request_data) {
   DCHECK(!is_one_time);
   DCHECK(is_final_decision);
   if (result == ContentSetting::CONTENT_SETTING_ALLOW) {
@@ -79,10 +82,6 @@ void RegisterProtocolHandlerPermissionRequest::PermissionDecided(
         base::UserMetricsAction("RegisterProtocolHandler.InfoBar_Deny"));
     registry_->OnIgnoreRegisterProtocolHandler(handler_);
   }
-}
-
-void RegisterProtocolHandlerPermissionRequest::DeleteRequest() {
-  delete this;
 }
 
 }  // namespace custom_handlers

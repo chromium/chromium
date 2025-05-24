@@ -43,8 +43,7 @@ namespace {
       return ::blink::ResourceLoadPriority::kVeryHigh;
   }
 
-  NOTREACHED_IN_MIGRATION() << priority;
-  return blink::ResourceLoadPriority::kUnresolved;
+  NOTREACHED() << priority;
 }
 
 }  // namespace
@@ -197,11 +196,6 @@ FetchRequestData* FetchRequestData::Create(
     request->SetWindowId(fetch_api_request->fetch_window_id.value());
 
   if (fetch_api_request->trust_token_params) {
-    if (script_state) {
-      // script state might be null for some tests
-      DCHECK(RuntimeEnabledFeatures::PrivateStateTokensEnabled(
-          ExecutionContext::From(script_state)));
-    }
     std::optional<network::mojom::blink::TrustTokenParams> trust_token_params =
         std::move(*(fetch_api_request->trust_token_params->Clone().get()));
     request->SetTrustTokenParams(trust_token_params);
@@ -253,6 +247,7 @@ FetchRequestData* FetchRequestData::CloneExceptBody() {
   request->attribution_reporting_support_ = attribution_reporting_support_;
   request->service_worker_race_network_request_token_ =
       service_worker_race_network_request_token_;
+  request->retry_options_ = retry_options_;
   return request;
 }
 

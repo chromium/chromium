@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.JustNowProvider;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.ListItem;
@@ -20,9 +20,10 @@ import java.util.List;
  * compared based on mime type. For further tie-breakers, timestamp and ID are used.
  * Note, the input list must contain only offline items.
  */
+@NullMarked
 public class DateSorter implements ListConsumer {
-    private final JustNowProvider mJustNowProvider;
-    private ListConsumer mListConsumer;
+    private final @Nullable JustNowProvider mJustNowProvider;
+    private @Nullable ListConsumer mListConsumer;
 
     public DateSorter(@Nullable JustNowProvider justNowProvider) {
         mJustNowProvider = justNowProvider;

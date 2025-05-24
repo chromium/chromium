@@ -121,7 +121,7 @@ class ClientControlledStateDelegate
   ClientControlledStateDelegate& operator=(
       const ClientControlledStateDelegate&) = delete;
 
-  ~ClientControlledStateDelegate() override {}
+  ~ClientControlledStateDelegate() override = default;
 
   // Overridden from ash::ClientControlledState::Delegate:
   void HandleWindowStateRequest(ash::WindowState* window_state,
@@ -160,7 +160,7 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
   ClientControlledWindowStateDelegate& operator=(
       const ClientControlledWindowStateDelegate&) = delete;
 
-  ~ClientControlledWindowStateDelegate() override {}
+  ~ClientControlledWindowStateDelegate() override = default;
 
   // Overridden from ash::WindowStateDelegate:
   bool ToggleFullscreen(ash::WindowState* window_state) override {
@@ -212,10 +212,8 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
     return;
   }
 
-  std::unique_ptr<ash::PresentationTimeRecorder> OnDragStarted(
-      int component) override {
+  void OnDragStarted(int component) override {
     shell_surface_->OnDragStarted(component);
-    return nullptr;
   }
 
   void OnDragFinished(bool canceled, const gfx::PointF& location) override {
@@ -834,7 +832,7 @@ void ClientControlledShellSurface::OnDidProcessDisplayChanges(
   // Android has an obsolete bounds for a while and applies it incorrectly.
   // We need to ignore those bounds change until the states are completely
   // synced on both sides.
-  const bool any_displays_rotated = base::ranges::any_of(
+  const bool any_displays_rotated = std::ranges::any_of(
       configuration_change.display_metrics_changes,
       [](const DisplayManagerObserver::DisplayMetricsChange& change) {
         return change.changed_metrics &
@@ -850,7 +848,7 @@ void ClientControlledShellSurface::OnDidProcessDisplayChanges(
 
   // Early return if no display changes are relevant to the shell surface's host
   // display.
-  const auto host_display_change = base::ranges::find(
+  const auto host_display_change = std::ranges::find(
       configuration_change.display_metrics_changes, output_display_id(),
       [](const DisplayManagerObserver::DisplayMetricsChange& change) {
         return change.display->id();

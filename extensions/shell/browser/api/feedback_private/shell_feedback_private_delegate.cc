@@ -36,7 +36,7 @@ void ShellFeedbackPrivateDelegate::FetchSystemInformation(
   fetcher->Fetch(std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<system_logs::SystemLogsSource>
 ShellFeedbackPrivateDelegate::CreateSingleLogSource(
     api::feedback_private::LogSource source_type) const {
@@ -55,12 +55,6 @@ api::feedback_private::LandingPageType
 ShellFeedbackPrivateDelegate::GetLandingPageType(
     const feedback::FeedbackData& feedback_data) const {
   return api::feedback_private::LandingPageType::kNoLandingPage;
-}
-
-void ShellFeedbackPrivateDelegate::GetLacrosHistograms(
-    GetHistogramsCallback callback) {
-  NOTIMPLEMENTED();
-  std::move(callback).Run(std::string());
 }
 #endif
 

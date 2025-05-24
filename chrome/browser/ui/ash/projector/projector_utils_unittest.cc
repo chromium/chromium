@@ -10,7 +10,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -27,6 +26,7 @@
 #include "components/user_manager/user_type.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
 
@@ -34,7 +34,7 @@ namespace ash {
 
 namespace {
 
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 class ScopedLogIn {
  public:
@@ -46,8 +46,9 @@ class ScopedLogIn {
     // Prevent access to DBus. This switch is reset in case set from test SetUp
     // due massive usage of InitFromArgv.
     base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
-    if (!command_line.HasSwitch(switches::kTestType))
+    if (!command_line.HasSwitch(switches::kTestType)) {
       command_line.AppendSwitch(switches::kTestType);
+    }
 
     switch (user_type) {
       case user_manager::UserType::kRegular:  // fallthrough
@@ -66,7 +67,7 @@ class ScopedLogIn {
         LogInGuestUser();
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -124,8 +125,9 @@ class ProjectorUtilsTest : public testing::Test {
     RegisterUserProfilePrefs(prefs->registry());
     TestingProfile::Builder builder;
     builder.SetPrefService(std::move(prefs));
-    if (is_child())
+    if (is_child()) {
       builder.SetIsSupervisedProfile();
+    }
     builder.OverridePolicyConnectorIsManagedForTesting(is_managed());
     profile_ = builder.Build();
   }

@@ -309,6 +309,28 @@ void HostFrameSinkManager::RequestCopyOfOutput(
                                            capture_exact_surface_id);
 }
 
+void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(
+    base::UnguessableToken grouping_id,
+    mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+        rir_delegate_client_remote,
+    mojo::PendingReceiver<input::mojom::RenderInputRouterDelegate>
+        rir_delegate_receiver) {
+  frame_sink_manager_->SetupRenderInputRouterDelegateConnection(
+      grouping_id, std::move(rir_delegate_client_remote),
+      std::move(rir_delegate_receiver));
+}
+
+void HostFrameSinkManager::NotifyRendererBlockStateChanged(
+    bool blocked,
+    const std::vector<FrameSinkId>& render_input_routers) {
+  frame_sink_manager_->NotifyRendererBlockStateChanged(blocked,
+                                                       render_input_routers);
+}
+
+void HostFrameSinkManager::RequestInputBack() {
+  frame_sink_manager_->RequestInputBack();
+}
+
 void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
     const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
     ScreenshotDestinationReadyCallback callback) {
@@ -448,6 +470,8 @@ void HostFrameSinkManager::OnAggregatedHitTestRegionListUpdated(
 void HostFrameSinkManager::VerifyThreadIdsDoNotBelongToHost(
     const std::vector<int32_t>& thread_ids,
     VerifyThreadIdsDoNotBelongToHostCallback callback) {
+  static_assert(
+      std::is_same_v<int32_t, base::PlatformThreadId::UnderlyingType>);
   base::flat_set<base::PlatformThreadId> tids(thread_ids.begin(),
                                               thread_ids.end());
   std::move(callback).Run(CheckThreadIdsDoNotBelongToCurrentProcess(tids));

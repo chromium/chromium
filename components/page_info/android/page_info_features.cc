@@ -22,7 +22,7 @@ namespace {
 // this array may either refer to features defined in the header of this file or
 // in other locations in the code base (e.g. content_features.h), and must be
 // replicated in the same order in PageInfoFeatures.java.
-const base::Feature* kFeaturesExposedToJava[] = {
+const base::Feature* const kFeaturesExposedToJava[] = {
     &content_settings::features::kUserBypassUI,
 };
 

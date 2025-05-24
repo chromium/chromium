@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_click_at_fractional_coordinates
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected integer, received float in "actions"/0/"actions"/1/"x". Expected integer, received float in "actions"/0/"actions"/1/"y".)
+[FAIL] test_touch_pointer_properties
+  AssertionError: assert 6 == 7
+[FAIL] test_touch_pointer_properties_angle_twist
+  AssertionError: assert 6 == 7
+Harness: the test ran to completion.
+

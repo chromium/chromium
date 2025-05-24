@@ -53,7 +53,7 @@
 namespace WTF {
 
 template <typename CharType>
-inline bool IsASCII(CharType c) {
+constexpr inline bool IsASCII(CharType c) {
   return !(c & ~0x7F);
 }
 
@@ -126,7 +126,7 @@ inline char ToASCIILower(char c) {
 }
 
 template <typename CharType>
-inline CharType ToASCIIUpper(CharType c) {
+constexpr inline CharType ToASCIIUpper(CharType c) {
   return c & ~((c >= 'a' && c <= 'z') << 5);
 }
 

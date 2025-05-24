@@ -1,0 +1,81 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --border-bottom-height: 1px;
+  --button-row-height: calc(2 * var(--padding-top-bottom) +
+      var(--cr-button-height));
+  --drawer-transition: 0.3s cubic-bezier(.25, .1, .25, 1);
+  --padding-top-bottom: 10px;
+}
+
+cr-tooltip-icon {
+  margin-inline-end: 20px;
+}
+
+#devDrawer[expanded] #buttonStrip {
+  top: 0;
+}
+
+#devDrawer {
+  background: #fff;
+  border-bottom: 1px solid var(--google-grey-300);
+  height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  transition: height var(--drawer-transition);
+}
+
+@media (prefers-color-scheme: dark) {
+  #devDrawer {
+    background: none;
+    border-bottom-color: var(--cr-separator-color);
+  }
+}
+
+#devDrawer[expanded] {
+  height: calc(var(--button-row-height) + var(--border-bottom-height));
+}
+
+#buttonStrip {
+  margin-inline-end: auto;
+  margin-inline-start: 24px;
+  padding: var(--padding-top-bottom) 0;
+  position: absolute;
+  top: calc(var(--button-row-height) * -1);
+  transition: top var(--drawer-transition);
+  /* Prevent selection of the blank space between buttons. */
+  user-select: none;
+  width: 100%;
+}
+
+#buttonStrip cr-button {
+  margin-inline-end: 16px;
+}
+
+.more-actions {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.more-actions span {
+  margin-inline-end: 16px;
+}
+
+cr-toolbar {
+  --cr-toolbar-center-basis: 680px;
+  --cr-toolbar-field-max-width: var(--cr-toolbar-center-basis);
+  --cr-toolbar-field-width: 100%;
+  --cr-toolbar-header-white-space: nowrap;
+}

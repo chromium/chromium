@@ -4,7 +4,7 @@
 
 #include "services/device/public/cpp/generic_sensor/sensor_mojom_traits.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
 
 namespace mojo {
 
@@ -45,7 +45,7 @@ bool StructTraits<
   }
 
   out->raw.timestamp = data.timestamp();
-  base::ranges::copy(raw_values, out->raw.values);
+  std::ranges::copy(raw_values, out->raw.values);
 
   return true;
 }

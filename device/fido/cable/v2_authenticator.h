@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/span.h"
@@ -16,7 +17,6 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/network_context_factory.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-forward.h"
 
 namespace device::cablev2::authenticator {
@@ -108,10 +108,10 @@ class Transport {
   // report. The first element is a message from the peer. |Disconnected| is
   // handled separately because it's context dependent whether that is an error
   // or not.
-  using Update = absl::variant<std::pair<PayloadType, std::vector<uint8_t>>,
-                               Platform::Error,
-                               Platform::Status,
-                               Disconnected>;
+  using Update = std::variant<std::pair<PayloadType, std::vector<uint8_t>>,
+                              Platform::Error,
+                              Platform::Status,
+                              Disconnected>;
   virtual ~Transport();
 
   // StartReading requests that the given callback be called whenever a message

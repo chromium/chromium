@@ -14,6 +14,8 @@
 
 #include "util/file/file_io.h"
 
+#include <functional>
+
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -22,29 +24,17 @@ namespace crashpad {
 
 namespace {
 
-class FileIOReadExactly final : public internal::ReadExactlyInternal {
- public:
-  explicit FileIOReadExactly(FileHandle file)
-      : ReadExactlyInternal(), file_(file) {}
-
-  FileIOReadExactly(const FileIOReadExactly&) = delete;
-  FileIOReadExactly& operator=(const FileIOReadExactly&) = delete;
-
-  ~FileIOReadExactly() {}
-
- private:
-  // ReadExactlyInternal:
-  FileOperationResult Read(void* buffer, size_t size, bool can_log) override {
-    FileOperationResult rv = ReadFile(file_, buffer, size);
-    if (rv < 0) {
-      PLOG_IF(ERROR, can_log) << internal::kNativeReadFunctionName;
-      return -1;
-    }
-    return rv;
+FileOperationResult FileIORead(FileHandle file,
+                               bool can_log,
+                               void* buffer,
+                               size_t size) {
+  FileOperationResult rv = ReadFile(file, buffer, size);
+  if (rv < 0) {
+    PLOG_IF(ERROR, can_log) << internal::kNativeReadFunctionName;
+    return -1;
   }
-
-  FileHandle file_;
-};
+  return rv;
+}
 
 class FileIOWriteAll final : public internal::WriteAllInternal {
  public:
@@ -64,19 +54,21 @@ class FileIOWriteAll final : public internal::WriteAllInternal {
   FileHandle file_;
 };
 
-}  // namespace
-
-namespace internal {
-
-bool ReadExactlyInternal::ReadExactly(void* buffer, size_t size, bool can_log) {
+FileOperationResult ReadUntil(
+    std::function<FileOperationResult(void*, size_t)> read_function,
+    void* buffer,
+    size_t size) {
+  // Ensure bytes read fit within int32_t::max to make sure that they also fit
+  // into FileOperationResult on all platforms.
+  DCHECK_LE(size, size_t{std::numeric_limits<int32_t>::max()});
   uintptr_t buffer_int = reinterpret_cast<uintptr_t>(buffer);
   size_t total_bytes = 0;
   size_t remaining = size;
   while (remaining > 0) {
-    FileOperationResult bytes_read =
-        Read(reinterpret_cast<char*>(buffer_int), remaining, can_log);
+    const FileOperationResult bytes_read =
+        read_function(reinterpret_cast<char*>(buffer_int), remaining);
     if (bytes_read < 0) {
-      return false;
+      return bytes_read;
     }
 
     DCHECK_LE(static_cast<size_t>(bytes_read), remaining);
@@ -89,10 +81,27 @@ bool ReadExactlyInternal::ReadExactly(void* buffer, size_t size, bool can_log) {
     remaining -= bytes_read;
     total_bytes += bytes_read;
   }
+  return total_bytes;
+}
 
-  if (total_bytes != size) {
+}  // namespace
+
+namespace internal {
+
+bool ReadExactly(
+    std::function<FileOperationResult(bool, void*, size_t)> read_function,
+    bool can_log,
+    void* buffer,
+    size_t size) {
+  const FileOperationResult result =
+      ReadUntil(std::bind_front(read_function, can_log), buffer, size);
+  if (result < 0) {
+    return false;
+  }
+
+  if (static_cast<size_t>(result) != size) {
     LOG_IF(ERROR, can_log) << "ReadExactly: expected " << size << ", observed "
-                           << total_bytes;
+                           << result;
     return false;
   }
 
@@ -121,13 +130,23 @@ bool WriteAllInternal::WriteAll(const void* buffer, size_t size) {
 }  // namespace internal
 
 bool ReadFileExactly(FileHandle file, void* buffer, size_t size) {
-  FileIOReadExactly read_exactly(file);
-  return read_exactly.ReadExactly(buffer, size, false);
+  return internal::ReadExactly(
+      std::bind_front(&FileIORead, file), false, buffer, size);
+}
+
+FileOperationResult ReadFileUntil(FileHandle file, void* buffer, size_t size) {
+  return ReadUntil(std::bind_front(&FileIORead, file, false), buffer, size);
 }
 
 bool LoggingReadFileExactly(FileHandle file, void* buffer, size_t size) {
-  FileIOReadExactly read_exactly(file);
-  return read_exactly.ReadExactly(buffer, size, true);
+  return internal::ReadExactly(
+      std::bind_front(&FileIORead, file), true, buffer, size);
+}
+
+FileOperationResult LoggingReadFileUntil(FileHandle file,
+                                         void* buffer,
+                                         size_t size) {
+  return ReadUntil(std::bind_front(&FileIORead, file, true), buffer, size);
 }
 
 bool WriteFile(FileHandle file, const void* buffer, size_t size) {

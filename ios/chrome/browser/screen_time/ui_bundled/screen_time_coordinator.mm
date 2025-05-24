@@ -5,9 +5,10 @@
 #import "ios/chrome/browser/screen_time/ui_bundled/screen_time_coordinator.h"
 
 #import "ios/chrome/browser/screen_time/model/screen_time_history_deleter_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/screen_time/ui_bundled/screen_time_mediator.h"
 #import "ios/chrome/browser/screen_time/ui_bundled/screen_time_view_controller.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface ScreenTimeCoordinator ()
@@ -26,7 +27,10 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (self.browser->GetProfile()->IsOffTheRecord()) {
+  Browser* const browser = self.browser;
+  ProfileIOS* const profile = browser->GetProfile();
+
+  if (profile->IsOffTheRecord()) {
     self.screenTimeViewController =
         [ScreenTimeViewController sharedOTRInstance];
   } else {
@@ -34,10 +38,10 @@
   }
 
   self.mediator = [[ScreenTimeMediator alloc]
-        initWithWebStateList:self.browser->GetWebStateList()
-      suppressUsageRecording:self.browser->GetProfile()->IsOffTheRecord()];
+        initWithWebStateList:browser->GetWebStateList()
+      suppressUsageRecording:profile->IsOffTheRecord()];
 
-  ScreenTimeHistoryDeleterFactory::GetForProfile(self.browser->GetProfile());
+  ScreenTimeHistoryDeleterFactory::GetForProfile(profile);
 }
 
 - (void)stop {
@@ -51,8 +55,9 @@
 #pragma mark - Private properties
 
 - (void)setMediator:(ScreenTimeMediator*)mediator {
-  if (_mediator == mediator)
+  if (_mediator == mediator) {
     return;
+  }
 
   if (_mediator) {
     [_mediator disconnect];
@@ -68,8 +73,9 @@
 
 - (void)setScreenTimeViewController:
     (ScreenTimeViewController*)screenTimeViewController {
-  if (_screenTimeViewController == screenTimeViewController)
+  if (_screenTimeViewController == screenTimeViewController) {
     return;
+  }
 
   if (_screenTimeViewController) {
     [_screenTimeViewController willMoveToParentViewController:nil];

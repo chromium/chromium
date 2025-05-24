@@ -84,7 +84,7 @@ class MockObserver : public net::ProxyConfigService::Observer {
 
 class PrefProxyConfigTrackerImplTest : public testing::Test {
  protected:
-  PrefProxyConfigTrackerImplTest() {}
+  PrefProxyConfigTrackerImplTest() = default;
 
   // Initializes the proxy config service. The delegate config service has the
   // specified initial config availability.

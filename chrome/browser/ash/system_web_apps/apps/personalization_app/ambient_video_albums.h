@@ -44,7 +44,8 @@ std::optional<AmbientVideo> FindAmbientVideoByAlbumId(std::string_view id);
 inline constexpr std::string_view kCloudsAlbumId = "AmbientCloudsVideoAlbumId";
 inline constexpr std::string_view kNewMexicoAlbumId =
     "AmbientNewMexicoVideoAlbumId";
-
+inline constexpr std::string_view kJupiterAlbumId =
+    "AmbientJupiterVideoAlbumId";
 }  // namespace ash::personalization_app
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_PERSONALIZATION_APP_AMBIENT_VIDEO_ALBUMS_H_

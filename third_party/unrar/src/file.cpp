@@ -828,9 +828,17 @@ bool File::IsDevice()
 #ifndef SFX_MODULE
 int64 File::Copy(File &Dest,int64 Length)
 {
-  std::vector<byte> Buffer(File::CopyBufferSize());
-  int64 CopySize=0;
   bool CopyAll=(Length==INT64NDF);
+
+  // Adjust the buffer size to data size. So we do not waste too much time
+  // to vector initialization when copying many small data blocks like
+  // when updating an archive with many small files.
+  size_t BufSize=File::CopyBufferSize();
+  if (!CopyAll && Length<(int64)BufSize)
+    BufSize=(size_t)Length;
+
+  std::vector<byte> Buffer(BufSize);
+  int64 CopySize=0;
 
   while (CopyAll || Length>0)
   {

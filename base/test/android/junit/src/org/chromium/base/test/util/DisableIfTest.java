@@ -18,6 +18,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for the DisableIf annotation and its SkipCheck implementation. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, sdk = 29)
+@SuppressWarnings("UnusedMethod")
 public class DisableIfTest {
     private static void expectShouldSkip(boolean shouldSkip, Class<?> testClass) {
         try {

@@ -2,53 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/country_codes/country_codes.h"
+
 #include <string>
 #include <vector>
 
-#include "components/country_codes/country_codes.h"
+#include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace country_codes {
 
 namespace {
+// A subset of valid country codes.
+constexpr char kCountryCodeList[][3] = {"AE", "AU", "BR", "CA", "CN", "DE",
+                                        "FR", "GB", "IN", "JP", "MX", "NZ",
+                                        "PL", "US", "VI", "ZA"};
 
 TEST(CountryCodesTest, ConvertToAndFromCountryCode) {
   // A subset of valid country codes.
-  const char kCountryCodeList[][3] = {"AE", "AU", "BR", "CA", "CN", "DE",
-                                      "FR", "GB", "IN", "JP", "MX", "NZ",
-                                      "PL", "US", "VI", "ZA"};
-
   for (auto* code : kCountryCodeList) {
-    ASSERT_EQ(code, CountryIDToCountryString(CountryStringToCountryID(code)));
+    // Lowercase values are not valid.
+    ASSERT_FALSE(CountryId(base::ToLowerASCII(code)).IsValid());
+
+    // Uppercase values are valid and properly reflected.
+    ASSERT_TRUE(CountryId(code).IsValid());
+    ASSERT_EQ(code, CountryId(code).CountryCode());
   }
 }
 
 TEST(CountryCodesTest, InvalidCountryCode) {
-  // This code is invalid because it contains 3 characters.
-  constexpr char kInvalidCountryCode[] = "ZZZ";
-
-  // Ensure the component-defined constant is converted to the "unknown" value.
-  ASSERT_EQ(kCountryIDUnknown, CountryStringToCountryID(kCountryCodeUnknown));
-
-  // Fake country codes should also produce an error value.
-  ASSERT_EQ(kCountryIDUnknown, CountryStringToCountryID(kInvalidCountryCode));
+  ASSERT_FALSE(CountryId("Z").IsValid());
+  ASSERT_FALSE(CountryId("ZZZ").IsValid());
+  ASSERT_FALSE(CountryId("A1").IsValid());
+  ASSERT_FALSE(CountryId("1A").IsValid());
+  ASSERT_FALSE(CountryId("12").IsValid());
 }
 
-TEST(CountryCodesTest, InvalidCountryID) {
-  // This ID is invalid because more than the bottom 16 bits are set.
-  constexpr int kInvalidCountryIDExtraBits = 1 << 16;
+TEST(CountryCodesTest, DeserializeInvalidCodes) {
+  ASSERT_FALSE(CountryId::Deserialize(1 << 16).IsValid());
+  ASSERT_FALSE(CountryId::Deserialize(-5).IsValid());
+  ASSERT_FALSE(CountryId::Deserialize(0x1234).IsValid());
+  ASSERT_FALSE(CountryId::Deserialize('0' << 8 | '1').IsValid());
+}
 
-  // Negative IDs are also invalid.
-  constexpr int kInvalidCountryIDNegative = -5;
-
-  // Ensure the component-defined constant is converted to the "unknown" value.
-  ASSERT_EQ(kCountryCodeUnknown, CountryIDToCountryString(kCountryIDUnknown));
-
-  // Fake country IDs should also produce an error value.
-  ASSERT_EQ(kCountryCodeUnknown,
-            CountryIDToCountryString(kInvalidCountryIDExtraBits));
-  ASSERT_EQ(kCountryCodeUnknown,
-            CountryIDToCountryString(kInvalidCountryIDNegative));
+TEST(CountryCodesTest, DeserializeValidCodes) {
+  for (auto* code : kCountryCodeList) {
+    ASSERT_EQ(CountryId(code),
+              CountryId::Deserialize(CountryId(code).Serialize()));
+  }
 }
 
 }  // namespace

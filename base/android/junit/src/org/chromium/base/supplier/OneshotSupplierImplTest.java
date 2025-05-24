@@ -25,7 +25,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @Config(shadows = {ShadowProcess.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class OneshotSupplierImplTest {
-    private OneshotSupplierImpl<String> mSupplier = new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<String> mSupplier = new OneshotSupplierImpl<>();
 
     @Spy private Callback<String> mCallback1;
     @Spy private Callback<String> mCallback2;

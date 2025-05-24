@@ -286,8 +286,12 @@ v8::Local<v8::Object> StorageArea::CreateStorageArea(
 void StorageArea::HandleFunctionCall(const std::string& method_name,
                                      gin::Arguments* arguments) {
   v8::Isolate* isolate = arguments->isolate();
+  // This is only ever called from JavaScript, so we must have entered the
+  // isolate already in this thread.
+  CHECK_EQ(v8::Isolate::GetCurrent(), isolate);
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = arguments->GetHolderCreationContext();
+  CHECK_EQ(isolate, context->GetIsolate());
 
   // The context may have been invalidated, as in the case where this could be
   // a reference to an object from a removed frame.
@@ -335,8 +339,7 @@ v8::Local<v8::Value> StorageArea::GetOnChangedEvent(
       isolate, gin::StringToSymbol(isolate, "onChangedEvent"));
   v8::Local<v8::Value> event;
   if (!wrapper->GetPrivate(context, key).ToLocal(&event)) {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
+    NOTREACHED();
   }
 
   DCHECK(!event.IsEmpty());
@@ -349,8 +352,7 @@ v8::Local<v8::Value> StorageArea::GetOnChangedEvent(
         context);
     v8::Maybe<bool> set_result = wrapper->SetPrivate(context, key, event);
     if (!set_result.IsJust() || !set_result.FromJust()) {
-      NOTREACHED_IN_MIGRATION();
-      return v8::Local<v8::Value>();
+      NOTREACHED();
     }
   }
   return event;

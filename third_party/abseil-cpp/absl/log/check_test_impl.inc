@@ -39,6 +39,7 @@
 namespace absl_log_internal {
 
 using ::testing::AllOf;
+using ::testing::AnyOf;
 using ::testing::HasSubstr;
 using ::testing::Not;
 
@@ -64,7 +65,6 @@ TEST(CHECKTest, TestLogicExpressions) {
   ABSL_TEST_CHECK(i < 0 || i > 3);
 }
 
-#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
 ABSL_CONST_INIT const auto global_var_check = [](int i) {
   ABSL_TEST_CHECK(i > 0);  // NOLINT
   return i + 1;
@@ -74,7 +74,6 @@ ABSL_CONST_INIT const auto global_var = [](int i) {
   ABSL_TEST_CHECK_GE(i, 0);  // NOLINT
   return i + 1;
 }(global_var_check);
-#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG
 
 TEST(CHECKTest, TestPlacementsInCompoundStatements) {
   // check placement inside if/else clauses
@@ -89,13 +88,11 @@ TEST(CHECKTest, TestPlacementsInCompoundStatements) {
   case 0:
     ABSL_TEST_CHECK(true);  // NOLINT
 
-#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
   constexpr auto var = [](int i) {
     ABSL_TEST_CHECK(i > 0);  // NOLINT
     return i + 1;
   }(global_var);
   (void)var;
-#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG
 }
 
 TEST(CHECKTest, TestBoolConvertible) {
@@ -354,7 +351,6 @@ TEST(CHECKTest, TestComparisonPlacementsInCompoundStatements) {
   case 0:
     ABSL_TEST_CHECK_STRCASEEQ("A", "a");
 
-#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
   constexpr auto var = [](int i) {
     ABSL_TEST_CHECK_GT(i, 0);
     return i + 1;
@@ -374,7 +370,6 @@ TEST(CHECKTest, TestComparisonPlacementsInCompoundStatements) {
   int var4 = (({ ABSL_TEST_CHECK_STREQ("a", "a"); }), global_var < 10) ? 1 : 0;
   (void)var4;
 #endif  // __GNUC__
-#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG
 }
 
 TEST(CHECKTest, TestDCHECK) {
@@ -441,7 +436,6 @@ TEST(CHECKTest, TestQCHECKPlacementsInCompoundStatements) {
   case 0:
     ABSL_TEST_QCHECK(true);
 
-#if ABSL_INTERNAL_CPLUSPLUS_LANG >= 201703L
   constexpr auto var = [](int i) {
     ABSL_TEST_QCHECK(i > 0);  // NOLINT
     return i + 1;
@@ -452,7 +446,6 @@ TEST(CHECKTest, TestQCHECKPlacementsInCompoundStatements) {
   int var2 = (({ ABSL_TEST_CHECK_LE(1, 2); }), global_var < 10) ? 1 : 0;
   (void)var2;
 #endif  // __GNUC__
-#endif  // ABSL_INTERNAL_CPLUSPLUS_LANG
 }
 
 class ComparableType {
@@ -642,14 +635,12 @@ void AbslStringify(Sink& sink, const PointerIsStringifiable* var) {
 TEST(CHECKDeathTest, TestPointerPrintedAsNumberDespiteAbslStringify) {
   const auto* p = reinterpret_cast<const PointerIsStringifiable*>(0x1234);
 
-#ifdef _MSC_VER
   EXPECT_DEATH(
       ABSL_TEST_CHECK_EQ(p, nullptr),
-      HasSubstr("Check failed: p == nullptr (0000000000001234 vs. (null))"));
-#else   // _MSC_VER
-  EXPECT_DEATH(ABSL_TEST_CHECK_EQ(p, nullptr),
-               HasSubstr("Check failed: p == nullptr (0x1234 vs. (null))"));
-#endif  // _MSC_VER
+      AnyOf(
+        HasSubstr("Check failed: p == nullptr (0000000000001234 vs. (null))"),
+        HasSubstr("Check failed: p == nullptr (0x1234 vs. (null))")
+      ));
 }
 
 // An uncopyable object with operator<<.

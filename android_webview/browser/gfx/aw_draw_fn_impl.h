@@ -12,7 +12,6 @@
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/public/browser/draw_fn.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/threading/platform_thread.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 namespace android_webview {
@@ -65,9 +64,6 @@ class AwDrawFnImpl {
 
   std::optional<AwVulkanContextProvider::ScopedSecondaryCBDraw>
       scoped_secondary_cb_draw_;
-
-  // Latched on first DrawGL / InitVk call.
-  std::optional<base::PlatformThreadId> render_thread_id_;
 
   bool skip_next_post_draw_vk_ = false;
 };

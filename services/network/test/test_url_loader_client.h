@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_TEST_TEST_URL_LOADER_CLIENT_H_
 
 #include <stdint.h>
+
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -100,6 +101,17 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   void RunUntilDisconnect();
   void RunUntilTransferSizeUpdated();
 
+  // Sets a callback to be invoked when OnReceiveResponse is called.
+  // If the URLLoader has been provided with a WeakPtr<mojom::URLLoaderClient>
+  // obtained via GetSyncClientWeakPtr(), this callback will be invoked
+  // synchronously by the URLLoader.
+  void SetResponseReceivedCallback(
+      base::OnceClosure response_received_callback);
+
+  // Returns a WeakPtr to this TestURLLoaderClient, allowing synchronous
+  // invocation of callbacks by the URLLoader.
+  base::WeakPtr<mojom::URLLoaderClient> GetSyncClientWeakPtr();
+
  private:
   void OnMojoDisconnect();
 
@@ -123,11 +135,15 @@ class TestURLLoaderClient final : public mojom::URLLoaderClient {
   base::OnceClosure quit_closure_for_disconnect_;
   base::OnceClosure quit_closure_for_on_transfer_size_updated_;
 
+  base::OnceClosure response_received_callback_;
+
   int64_t body_transfer_size_ = 0;
   int64_t current_upload_position_ = 0;
   int64_t total_upload_size_ = 0;
 
   std::vector<network::mojom::EarlyHintsPtr> early_hints_;
+
+  base::WeakPtrFactory<TestURLLoaderClient> weak_ptr_factory_{this};
 };
 
 }  // namespace network

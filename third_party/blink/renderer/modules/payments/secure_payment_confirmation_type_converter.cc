@@ -66,6 +66,12 @@ TypeConverter<payments::mojom::blink::SecurePaymentConfirmationRequestPtr,
             blink::KURL(input->issuerInfo()->icon()));
   }
 
+  if (input->hasBrowserBoundPubKeyCredParams()) {
+    output->browser_bound_pub_key_cred_params = ConvertTo<
+        WTF::Vector<blink::mojom::blink::PublicKeyCredentialParametersPtr>>(
+        input->browserBoundPubKeyCredParams());
+  }
+
   output->show_opt_out = input->getShowOptOutOr(false);
 
   return output;

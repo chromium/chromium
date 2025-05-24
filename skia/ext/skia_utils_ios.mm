@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
@@ -22,8 +23,8 @@ const uint8_t kICOHeaderMagic[4] = {0x00, 0x00, 0x01, 0x00};
 bool EncodesIcoImage(NSData* image_data) {
   if (image_data.length < std::size(kICOHeaderMagic))
     return false;
-  return memcmp(kICOHeaderMagic, image_data.bytes,
-                std::size(kICOHeaderMagic)) == 0;
+  return UNSAFE_TODO(memcmp(kICOHeaderMagic, image_data.bytes,
+                            std::size(kICOHeaderMagic))) == 0;
 }
 
 }  // namespace

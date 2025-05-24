@@ -106,7 +106,7 @@ MenuItem::ContextList GetContexts(const std::vector<
         contexts.Add(extensions::MenuItem::ACTION);
         break;
       case extensions::api::context_menus::ContextType::kNone:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return contexts;

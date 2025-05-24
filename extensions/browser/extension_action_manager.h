@@ -16,6 +16,8 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/api/extension_action/action_info.h"
 
+class BrowserContextKeyedServiceFactory;
+
 namespace content {
 class BrowserContext;
 }
@@ -33,7 +35,7 @@ class ExtensionActionManager : public KeyedService,
   explicit ExtensionActionManager(content::BrowserContext* browser_context);
   ~ExtensionActionManager() override;
 
-  // Returns this |browser_context|'s ExtensionActionManager. One instance is
+  // Returns this `browser_context`'s ExtensionActionManager. One instance is
   // shared between a BrowserContext and its off-the-record version.
   static ExtensionActionManager* Get(content::BrowserContext* browser_context);
 
@@ -44,7 +46,8 @@ class ExtensionActionManager : public KeyedService,
   // the manifest key.
   ExtensionAction* GetExtensionAction(const Extension& extension) const;
 
-  static void EnsureFactoryBuilt();
+  // Retrieves the factory instance for the ExtensionActionManager.
+  static BrowserContextKeyedServiceFactory* GetFactory();
 
  private:
   // Implement ExtensionRegistryObserver.

@@ -7,9 +7,9 @@
  * by generating a unique ID and sending it to the browser from each frame.
  */
 
-import {generateRandomId, getFrameId} from '//ios/web/public/js_messaging/resources/frame_id.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
+import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * The name of the message handler in C++ land which will process registration
@@ -17,7 +17,7 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
  * is reused in non-autofill contexts, this hardcoded value should be replaced
  * with a param.
  */
-const NATIVE_MESSAGE_HANDLER = 'FormHandlersMessage';
+const NATIVE_MESSAGE_HANDLER = 'FrameRegistrationMessage';
 
 /**
  * An identifying string used by interframe messages.
@@ -88,8 +88,7 @@ function updateRegistrationLogbook(remoteToken: string, count: number) {
  */
 function registerSelfWithRemoteToken(remoteId: string): void {
   sendWebKitMessage(NATIVE_MESSAGE_HANDLER, {
-    'command': REGISTER_AS_CHILD_FRAME_COMMAND,
-    'local_frame_id': getFrameId(),
+    'local_frame_id': gCrWeb.getFrameId(),
     'remote_frame_id': remoteId,
   });
 }
@@ -99,7 +98,7 @@ function registerSelfWithRemoteToken(remoteId: string): void {
  * @param {MessageEvent} payload The data sent via postMessage.
  */
 function processChildFrameMessage(payload: MessageEvent): void {
-  if (!gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled()) {
+  if (!gCrWebLegacy.autofill_form_features.isAutofillAcrossIframesEnabled()) {
     return;
   }
   const command: unknown = payload.data?.command;
@@ -111,7 +110,7 @@ function processChildFrameMessage(payload: MessageEvent): void {
       payload.source?.postMessage({
         command: REGISTER_AS_CHILD_FRAME_ACK,
         remoteFrameId: remoteId,
-      });
+      }, {targetOrigin: payload.origin});
     }
   } else if (command === REGISTER_AS_CHILD_FRAME_ACK) {
     const remoteId = payload.data?.remoteFrameId;
@@ -131,18 +130,18 @@ function processChildFrameMessage(payload: MessageEvent): void {
  *      cached or a freshly generated one.
  */
 function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
-  if (!gCrWeb.hasOwnProperty('remoteFrameIdRegistrar')) {
-    gCrWeb.remoteFrameIdRegistrar = new Map();
+  if (!gCrWebLegacy.hasOwnProperty('remoteFrameIdRegistrar')) {
+    gCrWebLegacy.remoteFrameIdRegistrar = new Map();
   }
 
   // Return the cached remote token if the frame was already registered.
-  if (gCrWeb.remoteFrameIdRegistrar.has(frame)) {
-    return gCrWeb.remoteFrameIdRegistrar.get(frame);
+  if (gCrWebLegacy.remoteFrameIdRegistrar.has(frame)) {
+    return gCrWebLegacy.remoteFrameIdRegistrar.get(frame);
   }
 
   // Otherwise, create a remote ID for the frame and cache it.
   const remoteId: string = generateRandomId();
-  gCrWeb.remoteFrameIdRegistrar.set(frame, remoteId);
+  gCrWebLegacy.remoteFrameIdRegistrar.set(frame, remoteId);
   return remoteId;
 }
 
@@ -158,6 +157,10 @@ function getRemoteIdForFrame(frame: HTMLIFrameElement): string {
  */
 function registerChildFrame(frame: HTMLIFrameElement): string {
   const remoteFrameId: string = getRemoteIdForFrame(frame);
+
+  // Store remote frame token in DOM. This way, page content world scripts can
+  // read the token as the DOM is shared across content worlds.
+  frame.setAttribute(CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE, remoteFrameId);
 
   const register = (delayUntilNextRetryMs: number) => {
     if ((registrationLogbook.get(remoteFrameId) ?? 0) >=
@@ -196,12 +199,8 @@ function registerChildFrame(frame: HTMLIFrameElement): string {
   return remoteFrameId;
 }
 
-// TODO(crbug.com/40263245): This is exposed via gCrWeb to enable use in
-// form_handlers.js. When that file is converted to TS, this can be removed.
-gCrWeb.child_frame_registration = {processChildFrameMessage};
-
-export {
+gCrWebLegacy.remoteFrameRegistration = {
+  processChildFrameMessage,
   registerChildFrame,
   registerSelfWithRemoteToken,
-  processChildFrameMessage,
 };

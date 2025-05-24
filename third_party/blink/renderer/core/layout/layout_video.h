@@ -28,6 +28,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_media.h"
+#include "third_party/blink/renderer/core/layout/natural_sizing_info.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -51,12 +52,14 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
 
   HTMLVideoElement* VideoElement() const;
 
+  void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
+
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutVideo";
   }
 
-  void IntrinsicSizeChanged() override;
+  void NaturalSizeChanged() override;
 
   OverflowClipAxes ComputeOverflowClipAxes() const final {
     NOT_DESTROYED();
@@ -69,8 +72,8 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   void UpdateFromElement() final;
   void InvalidateCompositing();
 
-  PhysicalSize CalculateIntrinsicSize(float scale);
-  void UpdateIntrinsicSize();
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
+  void UpdateNaturalSize();
 
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
@@ -88,7 +91,7 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
   }
   CompositingReasons AdditionalCompositingReasons() const override;
 
-  PhysicalSize cached_image_size_;
+  PhysicalNaturalSizingInfo natural_dimensions_;
 };
 
 template <>

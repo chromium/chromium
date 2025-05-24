@@ -48,6 +48,7 @@ const char* kSensitivePolicies[] = {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
     key::kAutoOpenFileTypes,
+    key::kEnterpriseSearchAggregatorSettings,
     key::kHomepageIsNewTabPage,
     key::kPasswordProtectionChangePasswordURL,
     key::kPasswordProtectionLoginURLs,

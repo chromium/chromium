@@ -9,6 +9,7 @@
 
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/zip.h"
 #include "media/base/audio_bus.h"
 #include "media/base/vector_math.h"
 
@@ -36,9 +37,9 @@ void DelayBuffer::Write(FrameTicks position,
   // Make a copy of the AudioBus for later consumption. Apply the volume setting
   // by scaling the audio signal during the copy.
   auto copy = media::AudioBus::Create(input_bus.channels(), input_bus.frames());
-  for (int ch = 0; ch < input_bus.channels(); ++ch) {
-    media::vector_math::FMUL(input_bus.channel(ch), volume, input_bus.frames(),
-                             copy->channel(ch));
+  for (auto [src_ch, dest_ch] :
+       base::zip(input_bus.AllChannels(), copy->AllChannels())) {
+    media::vector_math::FMUL(src_ch, volume, dest_ch);
   }
 
   chunks_.emplace_back(position, std::move(copy));

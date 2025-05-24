@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/version.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/chrome_version_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -61,12 +60,11 @@ HelpAppNotificationController::HelpAppNotificationController(Profile* profile)
 HelpAppNotificationController::~HelpAppNotificationController() = default;
 
 void HelpAppNotificationController::MaybeShowReleaseNotesNotification() {
-  if (IsNotificationShownForCurrentMilestone(profile_) &&
-      !base::FeatureList::IsEnabled(
-          features::kReleaseNotesNotificationAlwaysEligible)) {
+  if (IsNotificationShownForCurrentMilestone(profile_)) {
     return;
   }
-  if (features::IsForestFeatureEnabled()) {
+  if (!base::FeatureList::IsEnabled(
+          features::kReleaseNotesNotificationAlwaysEligible)) {
     return;
   }
   ReleaseNotesStorage release_notes_storage(profile_);

@@ -1,0 +1,23 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+<if expr="not is_ios">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+</if>
+<if expr="is_ios">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+</if>
+    <title>Chrome URLs</title>
+<if expr="is_ios">
+    <script src="chrome://resources/js/ios/mojo_api.js"></script>
+</if>
+  </head>
+  <body>
+    <chrome-urls-app></chrome-urls-app>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

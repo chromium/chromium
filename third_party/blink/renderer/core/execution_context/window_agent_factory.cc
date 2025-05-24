@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/renderer/core/execution_context/window_agent.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -82,9 +83,11 @@ WindowAgent* WindowAgentFactory::GetAgentForOrigin(
   // All chrome extensions need to share the same agent because they can
   // access each other's windows directly.
   if (CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii())) {
-    DEFINE_STATIC_LOCAL(Persistent<TupleOriginAgents>, static_origin_agents,
-                        (MakeGarbageCollected<TupleOriginAgents>()));
-    tuple_origin_agents = static_origin_agents;
+    using TupleOriginAgentsHolder = DisallowNewWrapper<TupleOriginAgents>;
+    DEFINE_STATIC_LOCAL(Persistent<TupleOriginAgentsHolder>,
+                        static_origin_agents,
+                        (MakeGarbageCollected<TupleOriginAgentsHolder>()));
+    tuple_origin_agents = &static_origin_agents->Value();
   }
 
   SchemeAndRegistrableDomain key(origin->Protocol(), registrable_domain);

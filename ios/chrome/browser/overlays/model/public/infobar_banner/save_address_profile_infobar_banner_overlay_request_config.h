@@ -45,7 +45,7 @@ class SaveAddressProfileBannerRequestConfig
   }
 
  private:
-  OVERLAY_USER_DATA_SETUP(SaveAddressProfileBannerRequestConfig);
+  friend class OverlayUserData<SaveAddressProfileBannerRequestConfig>;
   explicit SaveAddressProfileBannerRequestConfig(infobars::InfoBar* infobar);
 
   // OverlayUserData:

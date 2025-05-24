@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
@@ -30,8 +30,8 @@
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -43,14 +43,15 @@
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/trusted_vault/proto/vault.pb.h"
-#include "components/trusted_vault/test/mock_trusted_vault_connection.h"
+#include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
+#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/fido/cable/v2_handshake.h"
@@ -125,9 +126,9 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskey() {
 syncer::DeviceInfo CreateDeviceInfo() {
   syncer::DeviceInfo::PhoneAsASecurityKeyInfo paask_info;
   paask_info.contact_id = std::vector<uint8_t>({1, 2, 3});
-  base::ranges::fill(paask_info.peer_public_key_x962, 0);
+  std::ranges::fill(paask_info.peer_public_key_x962, 0);
   paask_info.peer_public_key_x962[0] = 1;
-  base::ranges::fill(paask_info.secret, 0);
+  std::ranges::fill(paask_info.secret, 0);
   paask_info.secret[0] = 2;
   paask_info.id = device::cablev2::sync::IDNow();
   paask_info.tunnel_server_domain = 0;
@@ -155,18 +156,6 @@ syncer::DeviceInfo CreateDeviceInfo() {
       /*floating_workspace_last_signin_timestamp=*/base::Time::Now());
 }
 
-std::u16string ExpectedPasskeyLabel() {
-  if (device::kWebAuthnGpmPin.Get()) {
-    // In this case GPM should be enabled by default.
-    return l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER);
-  } else {
-    // Otherwise the label will mention the priority phone.
-    return l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-                                      kPhoneName);
-  }
-}
-
 // Autofill integration tests. This file contains end-to-end tests for
 // integration between WebAuthn and Autofill. These tests are sensitive to focus
 // changes, so they are interactive UI tests.
@@ -191,18 +180,17 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
     // ChromeAuthenticatorRequestDelegate::TestObserver:
     void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
-      std::unique_ptr<
-          testing::NiceMock<trusted_vault::MockTrustedVaultConnection>>
-          connection = std::make_unique<
-              testing::NiceMock<trusted_vault::MockTrustedVaultConnection>>();
+      auto connection = std::make_unique<testing::NiceMock<
+          trusted_vault::MockTrustedVaultThrottlingConnection>>();
       ON_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                               testing::_, testing::_))
+                               testing::_, testing::_, testing::_))
           .WillByDefault(
               [](const CoreAccountInfo&,
                  base::OnceCallback<void(
                      trusted_vault::
                          DownloadAuthenticationFactorsRegistrationStateResult)>
-                     callback) mutable {
+                     callback,
+                 base::RepeatingClosure _) mutable {
                 trusted_vault::
                     DownloadAuthenticationFactorsRegistrationStateResult result;
                 result.state = trusted_vault::
@@ -248,13 +236,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials},
-        /*disabled_features=*/{
-            // Disable this feature explicitly, as it can cause unexpected email
-            // fields to be parsed in these tests.
-            // TODO(crbug.com/1493145): Remove when/if launched.
-            autofill::features::kAutofillEnableEmailHeuristicOnlyAddressForms});
+    scoped_feature_list_.InitWithFeatures({device::kWebAuthnHybridLinking},
+                                          /*disabled_features=*/{});
     ASSERT_TRUE(https_server_.InitializeAndListen());
 
     create_services_subscription_ =
@@ -322,8 +305,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
         delegate_observer_.get());
 
-    mock_hw_provider_ =
-        std::make_unique<crypto::ScopedMockUnexportableKeyProvider>();
+    fake_hw_provider_ =
+        std::make_unique<crypto::ScopedFakeUnexportableKeyProvider>();
     fake_uv_provider_ =
         std::make_unique<crypto::ScopedFakeUserVerifyingKeyProvider>();
 
@@ -500,7 +483,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
   std::unique_ptr<DelegateObserver> delegate_observer_;
   base::test::ScopedFeatureList scoped_feature_list_;
   logging::ScopedVmoduleSwitches scoped_vmodule_;
-  std::unique_ptr<crypto::ScopedMockUnexportableKeyProvider> mock_hw_provider_;
+  std::unique_ptr<crypto::ScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   std::unique_ptr<crypto::ScopedFakeUserVerifyingKeyProvider> fake_uv_provider_;
 
 #if BUILDFLAG(IS_WIN)
@@ -577,8 +560,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       GPMPasskeys) {
+// TODO(crbug.com/372493822): remove when hybrid linking flag is removed.
+IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest, GPMPasskeys) {
   // Have the virtual device masquerade as a phone.
   virtual_device_factory_->SetTransport(device::FidoTransportProtocol::kHybrid);
 
@@ -631,95 +614,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   ASSERT_EQ(webauthn_entry_count, 1u);
   ASSERT_LT(suggestion_index, suggestions.size()) << "WebAuthn entry not found";
   EXPECT_EQ(webauthn_entry.main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value, ExpectedPasskeyLabel());
+  EXPECT_EQ(webauthn_entry.labels.at(0).at(0).value,
+            l10n_util::GetStringUTF16(
+                IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER));
   EXPECT_EQ(webauthn_entry.icon, autofill::Suggestion::Icon::kGlobe);
-
-  // Click the credential.
-  test_api(static_cast<autofill::AutofillPopupControllerImpl&>(
-               *suggestion_controller))
-      .DisableThreshold(true);
-  suggestion_controller->AcceptSuggestion(suggestion_index);
-  std::string result;
-  ASSERT_TRUE(message_queue.WaitForMessage(&result));
-  EXPECT_EQ(result, "\"webauthn: OK\"");
-
-  // Tapping a GPM passkey will not automatically hide the popup
-  // because the enclave might still be loading. Manually hide the
-  // popup so that the autofill client can be destroyed, avoiding
-  // a DCHECK on test tear down.
-  autofill_client->HideAutofillSuggestions(
-      autofill::SuggestionHidingReason::kTabGone);
-  // The tracker outlives the test. Clean up the device_info to avoid flakiness.
-  tracker->Remove(&device_info);
-}
-
-// Tests that downloading passkeys from sync during a conditional UI also
-// updates the autofill popup with the newly downloaded credentials.
-IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
-                       GPMPasskeys_UpdatePasskeys) {
-  // Have the virtual device masquerade as a phone.
-  virtual_device_factory_->SetTransport(device::FidoTransportProtocol::kHybrid);
-
-  // Make sure input events cannot close the autofill popup.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  autofill::ChromeAutofillClient* autofill_client =
-      autofill::ChromeAutofillClient::FromWebContentsForTesting(web_contents);
-  autofill_client->SetKeepPopupOpenForTesting(true);
-
-  // Execute the Conditional UI request.
-  content::DOMMessageQueue message_queue(web_contents);
-  content::ExecuteScriptAsync(web_contents, kConditionalUIRequest);
-
-  delegate_observer_->WaitForUI();
-
-  // Interact with the username field until the popup shows up. This has the
-  // effect of waiting for the browser to send the renderer the password
-  // information, and waiting for the UI to render.
-  base::WeakPtr<autofill::AutofillSuggestionController> suggestion_controller;
-  while (!suggestion_controller) {
-    content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    suggestion_controller =
-        autofill_client->suggestion_controller_for_testing();
-  }
-
-  // There should be no webauthn suggestions.
-  auto suggestions = suggestion_controller->GetSuggestions();
-  for (const auto& suggestion : suggestions) {
-    ASSERT_NE(suggestion.type, autofill::SuggestionType::kWebauthnCredential);
-  }
-
-  // Simulate the user opting in to sync by injecting a phone and a passkey.
-  syncer::DeviceInfo device_info = CreateDeviceInfo();
-  auto* tracker = static_cast<syncer::FakeDeviceInfoTracker*>(
-      DeviceInfoSyncServiceFactory::GetForProfile(browser()->profile())
-          ->GetDeviceInfoTracker());
-  tracker->Add(&device_info);
-
-  // Inject a GPM passkey.
-  PasskeyModelFactory::GetForProfile(browser()->profile())
-      ->AddNewPasskeyForTesting(CreatePasskey());
-
-  // The newly added passkey should be added to the popup. The request needs
-  // time to restart, poll the popup until the new entry shows up.
-  std::optional<autofill::Suggestion> webauthn_entry;
-  size_t suggestion_index;
-  while (!webauthn_entry) {
-    content::SimulateMouseClickOrTapElementWithId(web_contents, "username");
-    suggestion_controller =
-        autofill_client->suggestion_controller_for_testing();
-    suggestions = suggestion_controller->GetSuggestions();
-    for (size_t i = 0; i < suggestions.size(); ++i) {
-      if (suggestions[i].type ==
-          autofill::SuggestionType::kWebauthnCredential) {
-        webauthn_entry = suggestions[i];
-        suggestion_index = i;
-      }
-    }
-  }
-  EXPECT_EQ(webauthn_entry->main_text.value, u"flandre");
-  EXPECT_EQ(webauthn_entry->labels.at(0).at(0).value, ExpectedPasskeyLabel());
-  EXPECT_EQ(webauthn_entry->icon, autofill::Suggestion::Icon::kGlobe);
 
   // Click the credential.
   test_api(static_cast<autofill::AutofillPopupControllerImpl&>(
@@ -757,7 +655,8 @@ class WebAuthnWindowsAutofillIntegrationTest
                                                "Flandre Scarlet");
     device::PublicKeyCredentialRpEntity rp(kRpId);
     fake_webauthn_api_->InjectDiscoverableCredential(
-        kCredentialID1, std::move(rp), std::move(user));
+        kCredentialID1, std::move(rp), std::move(user),
+        /*provider_name=*/std::nullopt);
 
     win_webauthn_api_override_ =
         std::make_unique<device::WinWebAuthnApi::ScopedOverride>(
@@ -797,7 +696,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest,
                                              "Sakuya Izayoi");
   device::PublicKeyCredentialRpEntity rp(kRpId);
   fake_webauthn_api_->InjectDiscoverableCredential(
-      kCredentialID2, std::move(rp), std::move(user));
+      kCredentialID2, std::move(rp), std::move(user),
+      /*provider_name=*/std::nullopt);
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+-->
+<!-- Set counting must not break when items are in a table -->
+
+<!-- Data table -->
+<table role="table">
+  <tr><th>Animal</th><th>Furry?</th></tr>
+  <tr><td><input type=radio name=example1>Cats</label></td><td>Yes</td></tr>
+  <tr><td><input type=radio name=example1>Birds</label></td><td>Sometimes</td></tr>
+  <tr><td><input type=radio name=example1>Dogs</label></td><td>No</td></tr>
+</table>
+
+<!-- Layout table -->
+<table>
+  <tr><td>Animal</td><td>Furry?</td></tr>
+  <tr><td><input type=radio name=example1>Avocado</label></td><td>Yes</td></tr>
+  <tr><td><input type=radio name=example1>Brussels sprouts</label></td><td>Sometimes</td></tr>
+  <tr><td><input type=radio name=example1>Turnips</label></td><td>No</td></tr>
+</table>
+
+<!-- Grid -->
+<table role="grid">
+  <tr><th>Travel mode</th><th>Convenient?</th></tr>
+  <tr><td><input type=radio name=example1>Train</label></td><td>Yes</td></tr>
+  <tr><td><input type=radio name=example1>Bicycle</label></td><td>Sometimes</td></tr>
+  <tr><td><input type=radio name=example1>Air</label></td><td>No</td></tr>
+</table>

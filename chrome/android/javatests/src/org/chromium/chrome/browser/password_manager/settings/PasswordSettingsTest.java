@@ -25,9 +25,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -51,6 +51,8 @@ import org.chromium.components.sync.PassphraseType;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.Set;
+
 /**
  * Tests for the "Passwords" settings screen. These tests are not batchable (without significant
  * effort), so consider splitting large new suites into separate classes.
@@ -61,6 +63,8 @@ public class PasswordSettingsTest {
     private static final String OFFER_TO_SAVE_PASSWORDS_HISTOGRAM =
             "PasswordManager.Settings.ToggleOfferToSavePasswords";
     private static final String AUTO_SIGNIN_HISTOGRAM = "PasswordManager.Settings.ToggleAutoSignIn";
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mPasswordSettingsActivityTestRule =
@@ -78,7 +82,6 @@ public class PasswordSettingsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
 
         // By default sync is off. Tests can override this later.
@@ -387,16 +390,6 @@ public class PasswordSettingsTest {
         PasswordCheckFactory.destroy();
     }
 
-    @Test
-    @MediumTest
-    @Feature({"Preferences"})
-    public void testLocalPasswordsMigrationSheetTriggeredWhenShouldShow() {
-        mTestHelper.setPasswordSourceWithMultipleEntries(PasswordSettingsTestHelper.GREEK_GODS);
-        assertFalse(mTestHelper.getHandler().wasShowWarningCalled());
-        mTestHelper.startPasswordSettingsFromMainSettings(mPasswordSettingsActivityTestRule);
-        assertTrue(mTestHelper.getHandler().wasShowWarningCalled());
-    }
-
     private static PrefService getPrefService() {
         return UserPrefs.get(ProfileManager.getLastUsedRegularProfile());
     }
@@ -414,12 +407,8 @@ public class PasswordSettingsTest {
                                     usingCustomPassphrase
                                             ? PassphraseType.CUSTOM_PASSPHRASE
                                             : PassphraseType.KEYSTORE_PASSPHRASE);
-                    when(mMockSyncService.getActiveDataTypes())
-                            .thenReturn(
-                                    CollectionUtil.newHashSet(
-                                            syncingPasswords
-                                                    ? DataType.PASSWORDS
-                                                    : DataType.AUTOFILL));
+                    Integer elements = syncingPasswords ? DataType.PASSWORDS : DataType.AUTOFILL;
+                    when(mMockSyncService.getActiveDataTypes()).thenReturn(Set.of(elements));
                 });
     }
 }

@@ -40,8 +40,8 @@ class TaskLogger final {
     virtual void OnLogRecorded(const TaskLog& task_log) = 0;
 
    protected:
-    Observer() {}
-    virtual ~Observer() {}
+    Observer() = default;
+    virtual ~Observer() = default;
   };
 
   TaskLogger();

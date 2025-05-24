@@ -95,7 +95,8 @@ SVGLayoutResult LayoutSVGFilterPrimitive::UpdateSVGLayout(
     const SVGLayoutInfo&) {
   NOT_DESTROYED();
   ClearNeedsLayout();
-  return {};
+  return SVGLayoutResult(/*bounds_changed=*/false,
+                         /*has_viewport_dependence=*/false);
 }
 
 }  // namespace blink

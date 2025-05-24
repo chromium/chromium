@@ -9,6 +9,7 @@
 #import <memory>
 
 #import "base/command_line.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/run_loop.h"
 #import "base/strings/string_split.h"
 #import "base/strings/sys_string_conversions.h"
@@ -312,9 +313,11 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
   SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
       ->StoreMainFrameUnsafeResource(resource);
 
-  NSError* error = [NSError errorWithDomain:kSafeBrowsingErrorDomain
-                                       code:kUnsafeResourceErrorCode
-                                   userInfo:nil];
+  NSError* error =
+      [NSError errorWithDomain:kSafeBrowsingErrorDomain
+                          code:base::checked_cast<NSInteger>(
+                                   SafeBrowsingErrorCode::kUnsafeResource)
+                      userInfo:nil];
   __block bool callback_called = false;
   __block NSString* page = nil;
   base::OnceCallback<void(NSString*)> callback =
@@ -332,6 +335,102 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageForSafeBrowsingError) {
 
   EXPECT_TRUE(callback_called);
   NSString* error_string = l10n_util::GetNSString(IDS_SAFEBROWSING_HEADING);
+  EXPECT_TRUE([page containsString:error_string]);
+}
+
+// Tests PrepareErrorPage for a safe browsing enterprise block error, which
+// results in a committed enterprise interstitial.
+TEST_F(ChromeWebClientTest,
+       PrepareErrorPageForSafeBrowsingEnterpriseBlockError) {
+  // Store an unsafe resource in `web_state`'s container.
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile());
+  SafeBrowsingUrlAllowList::CreateForWebState(&web_state);
+  SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state);
+  security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+      &web_state);
+
+  security_interstitials::UnsafeResource resource;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_BLOCK;
+  resource.url = GURL("http://www.chromium.test");
+  resource.weak_web_state = web_state.GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::URL_REAL_TIME_CHECK;
+  SafeBrowsingUrlAllowList::FromWebState(&web_state)
+      ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
+  SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
+      ->StoreMainFrameUnsafeResource(resource);
+
+  NSError* error = [NSError
+      errorWithDomain:kSafeBrowsingErrorDomain
+                 code:(NSInteger)SafeBrowsingErrorCode::kEnterpriseBlock
+             userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/std::optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  NSString* error_string = l10n_util::GetNSString(IDS_ENTERPRISE_BLOCK_HEADING);
+  EXPECT_TRUE([page containsString:error_string]);
+}
+
+// Tests PrepareErrorPage for a safe browsing enterprise warn error, which
+// results in a committed enterprise interstitial.
+TEST_F(ChromeWebClientTest,
+       PrepareErrorPageForSafeBrowsingEnterpriseWarnError) {
+  // Store an unsafe resource in `web_state`'s container.
+  web::FakeWebState web_state;
+  web_state.SetBrowserState(profile());
+  SafeBrowsingUrlAllowList::CreateForWebState(&web_state);
+  SafeBrowsingUnsafeResourceContainer::CreateForWebState(&web_state);
+  security_interstitials::IOSBlockingPageTabHelper::CreateForWebState(
+      &web_state);
+
+  security_interstitials::UnsafeResource resource;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  resource.url = GURL("http://www.chromium.test");
+  resource.weak_web_state = web_state.GetWeakPtr();
+  // Added to ensure that `threat_source` isn't considered UNKNOWN in this case.
+  resource.threat_source = safe_browsing::ThreatSource::URL_REAL_TIME_CHECK;
+  SafeBrowsingUrlAllowList::FromWebState(&web_state)
+      ->AddPendingUnsafeNavigationDecision(resource.url, resource.threat_type);
+  SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state)
+      ->StoreMainFrameUnsafeResource(resource);
+
+  NSError* error =
+      [NSError errorWithDomain:kSafeBrowsingErrorDomain
+                          code:(NSInteger)SafeBrowsingErrorCode::kEnterpriseWarn
+                      userInfo:nil];
+  __block bool callback_called = false;
+  __block NSString* page = nil;
+  base::OnceCallback<void(NSString*)> callback =
+      base::BindOnce(^(NSString* error_html) {
+        callback_called = true;
+        page = error_html;
+      });
+
+  ChromeWebClient web_client;
+  web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,
+                              /*is_post=*/false,
+                              /*is_off_the_record=*/false,
+                              /*info=*/std::optional<net::SSLInfo>(),
+                              /*navigation_id=*/0, std::move(callback));
+
+  EXPECT_TRUE(callback_called);
+  NSString* error_string = l10n_util::GetNSString(IDS_ENTERPRISE_WARN_HEADING);
   EXPECT_TRUE([page containsString:error_string]);
 }
 

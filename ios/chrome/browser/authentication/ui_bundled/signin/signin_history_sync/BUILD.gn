@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("signin_history_sync") {
+  sources = [
+    "signin_and_history_sync_coordinator.h",
+    "signin_and_history_sync_coordinator.mm",
+  ]
+  deps = [
+    "//components/sync/service",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/history_sync",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/instant_signin",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+  ]
+}

@@ -23,7 +23,7 @@ inline constexpr base::Time kMP4Epoch =
 inline constexpr uint16_t kUndefinedLanguageCode = 0x55C4;
 
 uint16_t MEDIA_EXPORT
-ConvertIso639LanguageCodeToU16(const std::string_view input_language);
+ConvertIso639LanguageCodeToU16(std::string_view input_language);
 
 // Convert given default Time unit, e.g. 1000 milliseconds per 1 second, to
 // a given timescale, timescale value per second.

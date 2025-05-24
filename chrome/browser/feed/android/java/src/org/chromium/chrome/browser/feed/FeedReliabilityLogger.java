@@ -7,9 +7,8 @@ package org.chromium.chrome.browser.feed;
 import android.os.SystemClock;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger;
 import org.chromium.chrome.browser.xsurface.feed.FeedCardOpeningReliabilityLogger.PageLoadError;
@@ -21,6 +20,7 @@ import org.chromium.components.feed.proto.wire.ReliabilityLoggingEnums.DiscoverL
 import org.chromium.net.NetError;
 
 /** Home for logic related to feed reliability logging. */
+@NullMarked
 public class FeedReliabilityLogger implements UrlFocusChangeListener {
     private final FeedLaunchReliabilityLogger mLaunchLogger;
     private final @Nullable FeedUserInteractionReliabilityLogger mUserInteractionLogger;
@@ -36,9 +36,9 @@ public class FeedReliabilityLogger implements UrlFocusChangeListener {
      * @param cardOpeningLogger FeedCardOpeningLogger for report events related to card tapping.
      */
     public FeedReliabilityLogger(
-            @NonNull FeedLaunchReliabilityLogger launchLogger,
+            FeedLaunchReliabilityLogger launchLogger,
             @Nullable FeedUserInteractionReliabilityLogger userInteractionLogger,
-            @NonNull FeedCardOpeningReliabilityLogger cardOpeningLogger) {
+            FeedCardOpeningReliabilityLogger cardOpeningLogger) {
         mLaunchLogger = launchLogger;
         mUserInteractionLogger = userInteractionLogger;
         mCardOpeningLogger = cardOpeningLogger;

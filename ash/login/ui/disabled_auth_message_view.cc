@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/login_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -146,7 +147,7 @@ DisabledAuthMessageView::TestApi::TestApi(DisabledAuthMessageView* view)
 
 DisabledAuthMessageView::TestApi::~TestApi() = default;
 
-const std::u16string&
+std::u16string_view
 DisabledAuthMessageView::TestApi::GetDisabledAuthMessageContent() const {
   return view_->message_contents_->GetText();
 }
@@ -165,8 +166,8 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetFocusBehavior(FocusBehavior::ALWAYS);
-  SetBackground(views::CreateThemedRoundedRectBackground(
-      kColorAshShieldAndBaseOpaque, kRoundedCornerRadiusDp));
+  SetBackground(views::CreateRoundedRectBackground(kColorAshShieldAndBaseOpaque,
+                                                   kRoundedCornerRadiusDp));
 
   // The icon size has to be defined later if the image will be visible.
   message_icon_ = AddChildView(std::make_unique<views::ImageView>());
@@ -183,7 +184,7 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
   message_title_->SetFontList(gfx::FontList().Derive(
       kTitleFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   decorate_label(message_title_);
-  message_title_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_title_->SetEnabledColor(kColorAshTextColorPrimary);
 
   message_contents_ = AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
@@ -192,7 +193,7 @@ DisabledAuthMessageView::DisabledAuthMessageView() {
       kContentsFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::NORMAL));
   decorate_label(message_contents_);
   message_contents_->SetMultiLine(true);
-  message_contents_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_contents_->SetEnabledColor(kColorAshTextColorPrimary);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kPane);
   UpdateAccessibleName();
@@ -214,9 +215,9 @@ void DisabledAuthMessageView::SetAuthDisabledMessage(
   CHECK(!message.icon.IsEmpty());
   message_icon_->SetImage(message.icon);
   message_title_->SetText(message.title);
-  message_title_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_title_->SetEnabledColor(kColorAshTextColorPrimary);
   message_contents_->SetText(message.content);
-  message_contents_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_contents_->SetEnabledColor(kColorAshTextColorPrimary);
 }
 
 void DisabledAuthMessageView::SetAuthDisabledMessage(
@@ -256,7 +257,7 @@ void DisabledAuthMessageView::UpdateAccessibleName() {
     GetViewAccessibility().SetName(
         std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   } else {
-    GetViewAccessibility().SetName(message_title_->GetText());
+    GetViewAccessibility().SetName(std::u16string(message_title_->GetText()));
   }
 }
 

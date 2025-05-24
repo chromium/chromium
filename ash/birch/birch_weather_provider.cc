@@ -22,6 +22,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_names.h"
@@ -41,6 +42,12 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kEnableBirchWeatherApiForTestingOverride)) {
     // Avoid calling into the Weather API when the switch is set for testing.
+    Shell::Get()->birch_model()->SetWeatherItems({});
+    return;
+  }
+  if (!Shell::Get()->session_controller()->IsActiveUserSessionStarted() ||
+      Shell::Get()->session_controller()->IsActiveAccountManaged()) {
+    // Weather not allowed for managed accounts.
     Shell::Get()->birch_model()->SetWeatherItems({});
     return;
   }
@@ -100,15 +107,10 @@ void BirchWeatherProvider::RequestBirchDataFetch() {
 }
 
 void BirchWeatherProvider::FetchWeather() {
-  // Use the prod endpoint by default. This results in the alpha server being
-  // used for canary/dev channel and the prod server being used for beta/stable.
-  const bool prefer_prod_endpoint = base::GetFieldTrialParamByFeatureAsBool(
-      features::kBirchWeather, "prod_weather_endpoint", true);
   Shell::Get()
       ->ambient_controller()
       ->ambient_backend_controller()
       ->FetchWeather("chromeos-system-ui",
-                     /*prefer_alpha_endpoint=*/!prefer_prod_endpoint,
                      base::BindOnce(&BirchWeatherProvider::OnWeatherInfoFetched,
                                     weak_factory_.GetWeakPtr()));
 }

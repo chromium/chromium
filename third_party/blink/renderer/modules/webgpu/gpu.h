@@ -42,6 +42,7 @@ class GPURequestAdapterOptions;
 class NavigatorBase;
 class ScriptState;
 class DawnControlClientHolder;
+class V8GPUTextureFormat;
 class WGSLLanguageFeatures;
 
 struct BoxedMappableWGPUBufferHandles
@@ -80,14 +81,15 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   // ExecutionContextLifecycleObserver overrides
   void ContextDestroyed() override;
 
-  // gpu.idl
+  // gpu.idl {{{
   ScriptPromise<IDLNullable<GPUAdapter>> requestAdapter(
       ScriptState* script_state,
       const GPURequestAdapterOptions* options);
-  String getPreferredCanvasFormat();
+  V8GPUTextureFormat getPreferredCanvasFormat();
   WGSLLanguageFeatures* wgslLanguageFeatures() const;
+  // }}} End of WebIDL binding implementation.
 
-  static wgpu::TextureFormat preferred_canvas_format();
+  static wgpu::TextureFormat GetPreferredCanvasFormat();
 
   // Store the buffer in a weak hash set so we can destroy it when the
   // context is destroyed.
@@ -96,7 +98,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   // destroyed.
   void UntrackMappableBuffer(GPUBuffer* buffer);
 
-  BoxedMappableWGPUBufferHandles* mappable_buffer_handles() const {
+  BoxedMappableWGPUBufferHandles* GetMappableBufferHandles() const {
     return mappable_buffer_handles_.get();
   }
 
@@ -110,7 +112,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
       ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
       wgpu::RequestAdapterStatus status,
       wgpu::Adapter adapter,
-      const char* error_message);
+      wgpu::StringView error_message);
 
   void RecordAdapterForIdentifiability(ScriptState* script_state,
                                        const GPURequestAdapterOptions* options,

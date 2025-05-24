@@ -1,11 +1,11 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {
-        "note": "Default value (no policies set).",
+        "note": "Default value (no policies set, override by default_for_enterprise_users=0).",
         "prefs": {
           "arc.backup_restore.enabled": {
             "value": false
@@ -20,6 +20,17 @@
         "prefs": {
           "arc.backup_restore.enabled": {
             "value": false
+          }
+        }
+      },
+      {
+        "note": "BackupAndRestoreEnabled (1) leaves pref untouched.",
+        "policies": {
+          "ArcBackupRestoreServiceEnabled": 1
+        },
+        "prefs": {
+          "arc.backup_restore.enabled": {
+            "default_value": false
           }
         }
       },

@@ -92,11 +92,13 @@ void ResizeHandleButton::SetPosition(
 
 void ResizeHandleButton::SetQuadrant(
     VideoOverlayWindowViews::WindowQuadrant quadrant) {
-  if (current_quadrant_ == quadrant)
+  if (current_quadrant_ == quadrant) {
     return;
+  }
   current_quadrant_ = quadrant;
-  if (GetWidget())
+  if (GetWidget()) {
     UpdateImageForQuadrant();
+  }
 }
 
 void ResizeHandleButton::UpdateImageForQuadrant() {

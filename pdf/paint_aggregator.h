@@ -24,7 +24,10 @@ class PaintAggregator {
  public:
   struct PaintUpdate {
     PaintUpdate();
-    PaintUpdate(const PaintUpdate& that);
+    PaintUpdate(PaintUpdate&&) noexcept;
+    PaintUpdate& operator=(PaintUpdate&&) noexcept;
+    PaintUpdate(const PaintUpdate&) = delete;
+    PaintUpdate& operator=(const PaintUpdate&) = delete;
     ~PaintUpdate();
 
     // True if there is a scroll applied. This indicates that the scroll delta
@@ -52,6 +55,9 @@ class PaintAggregator {
   };
 
   PaintAggregator();
+  PaintAggregator(const PaintAggregator&) = delete;
+  PaintAggregator& operator=(const PaintAggregator&) = delete;
+  ~PaintAggregator();
 
   // There is a PendingUpdate if InvalidateRect or ScrollRect were called and
   // ClearPendingUpdate was not called.
@@ -60,14 +66,16 @@ class PaintAggregator {
 
   PaintUpdate GetPendingUpdate();
 
-  // Sets the result of a call to the plugin to paint.  This includes rects that
-  // are finished painting (ready), and ones that are still in-progress
-  // (pending).
-  void SetIntermediateResults(const std::vector<PaintReadyRect>& ready,
-                              const std::vector<gfx::Rect>& pending);
+  // Sets the result of a call to the plugin to paint.
+  //
+  // - `ready` includes rects that are finished painting.
+  // - `pending` includes rects that are still in-progress.
+  void SetIntermediateResults(std::vector<PaintReadyRect> ready,
+                              std::vector<gfx::Rect> pending);
 
-  // Returns the rectangles that are ready to be painted.
-  std::vector<PaintReadyRect> GetReadyRects() const;
+  // Returns the rectangles that are ready to be painted. Caller takes
+  // ownership.
+  std::vector<PaintReadyRect> TakeReadyRects();
 
   // The given rect should be repainted.
   void InvalidateRect(const gfx::Rect& rect);
@@ -85,29 +93,32 @@ class PaintAggregator {
   //
   //  - The paint bounds union is computed on the fly so we don't have to keep
   //    a rectangle up to date as we do different operations.
-  class InternalPaintUpdate {
-   public:
+  struct InternalPaintUpdate {
     InternalPaintUpdate();
+    InternalPaintUpdate(InternalPaintUpdate&&) noexcept;
+    InternalPaintUpdate& operator=(InternalPaintUpdate&&) noexcept;
+    InternalPaintUpdate(const InternalPaintUpdate&) = delete;
+    InternalPaintUpdate& operator=(const InternalPaintUpdate&) = delete;
     ~InternalPaintUpdate();
-
-    // Computes the rect damaged by scrolling within `scroll_rect` by
-    // `scroll_delta`. This rect must be repainted. It is not included in
-    // paint_rects.
-    gfx::Rect GetScrollDamage() const;
 
     gfx::Vector2d scroll_delta;
     gfx::Rect scroll_rect;
 
     // Does not include the scroll damage rect unless
-    // synthesized_scroll_damage_rect_ is set.
+    // `synthesized_scroll_damage_rect` is set.
     std::vector<gfx::Rect> paint_rects;
 
     // Rectangles that are finished painting.
     std::vector<PaintReadyRect> ready_rects;
 
-    // Whether we have added the scroll damage rect to paint_rects yet or not.
-    bool synthesized_scroll_damage_rect_;
+    // Whether the scroll damage rect has been added to `paint_rects` yet.
+    bool synthesized_scroll_damage_rect = false;
   };
+
+  // Computes the rect damaged by scrolling within `update_.scroll_rect` by
+  // `update_.scroll_delta`. This rect must be repainted. It is not included in
+  // `update_.paint_rects`.
+  gfx::Rect GetScrollDamage() const;
 
   gfx::Rect ScrollPaintRect(const gfx::Rect& paint_rect,
                             const gfx::Vector2d& amount) const;

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//testing/test.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
 import("//third_party/blink/renderer/platform/platform.gni")
 import("//third_party/blink/renderer/platform/platform_generated.gni")
@@ -134,8 +135,12 @@ blink_platform_sources("loader") {
     "fetch/url_loader/cached_metadata_handler.h",
     "fetch/url_loader/code_cache_fetcher.cc",
     "fetch/url_loader/code_cache_fetcher.h",
+    "fetch/url_loader/content_decoding_url_loader_throttle.cc",
+    "fetch/url_loader/content_decoding_url_loader_throttle.h",
     "fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.cc",
     "fetch/url_loader/dedicated_or_shared_worker_fetch_context_impl.h",
+    "fetch/url_loader/isolated_code_cache_fetcher.cc",
+    "fetch/url_loader/isolated_code_cache_fetcher.h",
     "fetch/url_loader/mojo_url_loader_client.cc",
     "fetch/url_loader/mojo_url_loader_client.h",
     "fetch/url_loader/navigation_body_loader.cc",
@@ -155,12 +160,16 @@ blink_platform_sources("loader") {
     "fetch/url_loader/url_loader_client.h",
     "fetch/url_loader/url_loader_factory.cc",
     "fetch/url_loader/url_loader_factory.h",
+    "fetch/url_loader/webui_bundled_code_cache_fetcher.cc",
+    "fetch/url_loader/webui_bundled_code_cache_fetcher.h",
     "fetch/url_loader/worker_main_script_loader.cc",
     "fetch/url_loader/worker_main_script_loader.h",
     "fetch/url_loader/worker_main_script_loader_client.h",
+    "fetch/webui_bundled_cached_metadata_handler.cc",
+    "fetch/webui_bundled_cached_metadata_handler.h",
     "fetch/worker_resource_timing_notifier.h",
-    "internet_disconnected_url_loader.cc",
-    "internet_disconnected_url_loader.h",
+    "integrity_report.cc",
+    "integrity_report.h",
     "link_header.cc",
     "link_header.h",
     "mixed_content.cc",
@@ -171,6 +180,8 @@ blink_platform_sources("loader") {
     "subresource_integrity.cc",
     "subresource_integrity.h",
     "tracked_child_url_loader_factory_bundle.cc",
+    "unencoded_digest.cc",
+    "unencoded_digest.h",
     "web_url_request_extra_data.cc",
     "web_url_request_util.cc",
   ]
@@ -247,6 +258,7 @@ source_set("unit_tests") {
     "link_header_test.cc",
     "static_data_navigation_body_loader_test.cc",
     "subresource_integrity_test.cc",
+    "unencoded_digest_unittest.cc",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
@@ -262,6 +274,27 @@ source_set("unit_tests") {
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/platform:platform",
     "//third_party/blink/renderer/platform:test_support",
+  ]
+}
+
+test("unencoded_digest_fuzzer") {
+  sources = [ "unencoded_digest_fuzzer.cc" ]
+
+  deps = [
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+    "//third_party/blink/renderer/platform:platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+  ]
+
+  fuzztests = [
+    "UnencodedDigest.CreateFuzzer",
+    "UnencodedDigest.MatchFuzzer",
   ]
 }
 

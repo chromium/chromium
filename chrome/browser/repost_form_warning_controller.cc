@@ -13,8 +13,7 @@ RepostFormWarningController::RepostFormWarningController(
     content::WebContents* web_contents)
     : TabModalConfirmDialogDelegate(web_contents) {}
 
-RepostFormWarningController::~RepostFormWarningController() {
-}
+RepostFormWarningController::~RepostFormWarningController() = default;
 
 std::u16string RepostFormWarningController::GetTitle() {
   return l10n_util::GetStringUTF16(IDS_HTTP_POST_WARNING_TITLE);

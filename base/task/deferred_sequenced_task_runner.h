@@ -60,7 +60,7 @@ class BASE_EXPORT DeferredSequencedTaskRunner : public SequencedTaskRunner {
   bool Started() const;
 
  private:
-  struct DeferredTask  {
+  struct DeferredTask {
     DeferredTask();
     DeferredTask(DeferredTask&& other);
     ~DeferredTask();

@@ -52,13 +52,13 @@ suite('CrScrollObserverMixinLit', function() {
     document.body.appendChild(element);
 
     const container =
-        element.shadowRoot!.querySelector<HTMLElement>('#container');
+        element.shadowRoot.querySelector<HTMLElement>('#container');
     assertTrue(!!container);
 
     // Can scroll since content height is 200%.
     await whenAttributeIs(container, 'class', 'scrolled-to-top can-scroll');
 
-    const content = element.shadowRoot!.querySelector<HTMLElement>('#content');
+    const content = element.shadowRoot.querySelector<HTMLElement>('#content');
     assertTrue(!!content);
 
     // Make content half the height of the container. can-scroll should be
@@ -77,7 +77,7 @@ suite('CrScrollObserverMixinLit', function() {
     document.body.appendChild(element);
 
     const container =
-        element.shadowRoot!.querySelector<HTMLElement>('#container');
+        element.shadowRoot.querySelector<HTMLElement>('#container');
     assertTrue(!!container);
 
     // At the top.

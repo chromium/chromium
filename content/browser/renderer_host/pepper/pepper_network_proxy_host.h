@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <optional>
-#include <queue>
 #include <set>
 #include <string>
 

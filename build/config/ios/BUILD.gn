@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
+import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/toolchain/apple/toolchain.gni")
 import("//build/toolchain/rbe.gni")
@@ -24,6 +26,8 @@ config("compiler") {
     triplet_cpu = "armv7"
   } else if (current_cpu == "arm64") {
     triplet_cpu = "arm64"
+  } else if (current_cpu == "arm64e") {
+    triplet_cpu = "arm64e"
   } else {
     assert(false, "unsupported cpu: $current_cpu")
   }
@@ -40,7 +44,11 @@ config("compiler") {
   }
 
   # OS.
-  triplet_os = "apple-ios"
+  if (target_platform == "iphoneos") {
+    triplet_os = "apple-ios"
+  } else if (target_platform == "tvos") {
+    triplet_os = "apple-tvos"
+  }
 
   # Set target.
   common_flags = [

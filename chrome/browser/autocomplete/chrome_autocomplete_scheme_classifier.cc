@@ -44,8 +44,8 @@ ChromeAutocompleteSchemeClassifier::ChromeAutocompleteSchemeClassifier(
     : profile_(profile) {
 }
 
-ChromeAutocompleteSchemeClassifier::~ChromeAutocompleteSchemeClassifier() {
-}
+ChromeAutocompleteSchemeClassifier::~ChromeAutocompleteSchemeClassifier() =
+    default;
 
 metrics::OmniboxInputType
 ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
@@ -104,6 +104,5 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return metrics::OmniboxInputType::EMPTY;
+  NOTREACHED();
 }

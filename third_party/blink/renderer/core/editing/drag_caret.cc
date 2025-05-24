@@ -37,8 +37,6 @@ namespace blink {
 DragCaret::DragCaret()
     : display_item_client_(MakeGarbageCollected<CaretDisplayItemClient>()) {}
 
-DragCaret::~DragCaret() = default;
-
 void DragCaret::LayoutBlockWillBeDestroyed(const LayoutBlock& block) {
   display_item_client_->LayoutBlockWillBeDestroyed(block);
 }
@@ -60,11 +58,6 @@ bool DragCaret::IsContentRichlyEditable() const {
 
 void DragCaret::SetCaretPosition(const PositionWithAffinity& position) {
   position_ = position;
-  Document* document = nullptr;
-  if (Node* node = position_.AnchorNode()) {
-    document = &node->GetDocument();
-    SetDocument(document);
-  }
 }
 
 void DragCaret::NodeChildrenWillBeRemoved(ContainerNode& container) {
@@ -73,8 +66,10 @@ void DragCaret::NodeChildrenWillBeRemoved(ContainerNode& container) {
   Node* const anchor_node = position_.GetPosition().AnchorNode();
   if (!anchor_node || anchor_node == container)
     return;
-  if (!container.IsShadowIncludingInclusiveAncestorOf(*anchor_node))
+  if (container.GetDocument() != anchor_node->GetDocument() ||
+      !container.IsShadowIncludingInclusiveAncestorOf(*anchor_node)) {
     return;
+  }
   Clear();
 }
 
@@ -84,15 +79,16 @@ void DragCaret::NodeWillBeRemoved(Node& node) {
   Node* const anchor_node = position_.GetPosition().AnchorNode();
   if (!anchor_node)
     return;
-  if (!node.IsShadowIncludingInclusiveAncestorOf(*anchor_node))
+  if (node.GetDocument() != anchor_node->GetDocument() ||
+      !node.IsShadowIncludingInclusiveAncestorOf(*anchor_node)) {
     return;
+  }
   Clear();
 }
 
 void DragCaret::Trace(Visitor* visitor) const {
   visitor->Trace(position_);
   visitor->Trace(display_item_client_);
-  SynchronousMutationObserver::Trace(visitor);
 }
 
 bool DragCaret::ShouldPaintCaret(const LayoutBlock& block) const {

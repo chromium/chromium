@@ -2,6 +2,7 @@ include_rules = [
   "+chromeos/startup",
   "+components/discardable_memory",
   "+components/download",
+  "+components/embedder_support/switches.h",
   "+components/power_monitor",
   "+components/tracing/common",
   "+content",

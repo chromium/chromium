@@ -42,11 +42,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
-// This should be after all other #includes.
-#if defined(_WINDOWS_)  // Detect whether windows.h was included.
-// See base/win/windows_h_disallowed.h for details.
-#error Windows.h was included unexpectedly.
-#endif  // defined(_WINDOWS_)
+#include "base/win/windows_h_disallowed.h"
 
 namespace blink {
 
@@ -76,12 +72,6 @@ ScrollOffset ScrollAnimator::DesiredTargetOffset() const {
           run_state_ == RunState::kWaitingToSendToCompositor)
              ? target_offset_
              : CurrentOffset();
-}
-
-bool ScrollAnimator::HasRunningAnimation() const {
-  return run_state_ != RunState::kPostAnimationCleanup &&
-         (animation_curve_ ||
-          run_state_ == RunState::kWaitingToSendToCompositor);
 }
 
 ScrollOffset ScrollAnimator::ComputeDeltaToConsume(
@@ -308,10 +298,10 @@ void ScrollAnimator::CreateAnimationCurve() {
   DCHECK(!animation_curve_);
   // It is not correct to assume the input type from the granularity, but we've
   // historically determined animation parameters from granularity.
-  cc::ScrollOffsetAnimationCurveFactory::ScrollType scroll_type =
+  cc::ScrollOffsetAnimationCurve::ScrollType scroll_type =
       (last_granularity_ == ui::ScrollGranularity::kScrollByPixel)
-          ? cc::ScrollOffsetAnimationCurveFactory::ScrollType::kMouseWheel
-          : cc::ScrollOffsetAnimationCurveFactory::ScrollType::kKeyboard;
+          ? cc::ScrollOffsetAnimationCurve::ScrollType::kMouseWheel
+          : cc::ScrollOffsetAnimationCurve::ScrollType::kKeyboard;
   animation_curve_ = cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
       CompositorOffsetFromBlinkOffset(target_offset_), scroll_type);
   animation_curve_->SetInitialValue(

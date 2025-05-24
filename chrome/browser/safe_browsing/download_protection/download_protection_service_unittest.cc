@@ -9,7 +9,9 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -27,6 +29,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -36,6 +39,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -43,8 +47,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_item_warning_data.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -52,24 +54,16 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/test_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/download_protection/check_file_system_access_write_request.h"
-#include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
-#include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_unittest_util.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/safe_browsing/download_protection/ppapi_download_request.h"
-#include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
-#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 #include "chrome/common/safe_browsing/mock_binary_feature_extractor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -111,7 +105,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
-#include "extensions/browser/test_event_router.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -132,6 +125,27 @@
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
+#include "chrome/browser/safe_browsing/test_extension_event_observer.h"
+#include "chrome/common/extensions/api/safe_browsing_private.h"
+#include "extensions/browser/test_event_router.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/test_binary_upload_service.h"
+#include "chrome/browser/safe_browsing/download_protection/download_feedback.h"
+#include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
+#include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
+#else
+#include "chrome/browser/safe_browsing/android/download_protection_metrics_data.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_delegate_android.h"
+#include "components/safe_browsing/core/browser/db/v4_test_util.h"
+#endif
+
 using base::RunLoop;
 using content::BrowserThread;
 using content::FileSystemAccessWriteItem;
@@ -151,12 +165,35 @@ using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::StrictMock;
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace OnDangerousDownloadOpened =
     extensions::api::safe_browsing_private::OnDangerousDownloadOpened;
+#endif
 
 namespace safe_browsing {
 
 namespace {
+// Default filename that should appear as a a file eligible for download
+// protection checks.
+#if BUILDFLAG(IS_ANDROID)
+const base::FilePath::CharType kEligibleFilename[] = FILE_PATH_LITERAL("a.apk");
+#else
+const base::FilePath::CharType kEligibleFilename[] = FILE_PATH_LITERAL("a.exe");
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+// Fake content-URI values for Android tests.
+const base::FilePath::CharType kContentUri[] =
+    FILE_PATH_LITERAL("content://media/foo.bar");
+const base::FilePath::CharType kTempContentUri[] =
+    FILE_PATH_LITERAL("content://media/temp/foo.bar");
+
+// Default APK filename for Android tests.
+const base::FilePath::CharType kApkFilename[] = FILE_PATH_LITERAL("a.apk");
+
+const char kAndroidDownloadProtectionOutcomeHistogram[] =
+    "SBClientDownload.Android.DownloadProtectionOutcome";
+#endif
 
 // A SafeBrowsingDatabaseManager implementation that returns a fixed result for
 // a given URL.
@@ -180,11 +217,14 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   ~MockSafeBrowsingDatabaseManager() override = default;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<KeyedService> CreateTestBinaryUploadService(
     content::BrowserContext* browser_context) {
   return std::make_unique<TestBinaryUploadService>();
 }
+#endif
 
+#if !BUILDFLAG(IS_ANDROID)
 class MockDownloadFeedbackService : public DownloadFeedbackService {
  public:
   MockDownloadFeedbackService() : DownloadFeedbackService(nullptr, nullptr) {}
@@ -197,13 +237,16 @@ class MockDownloadFeedbackService : public DownloadFeedbackService {
                const std::string& ping_request,
                const std::string& ping_response));
 };
+#endif
 
 class FakeSafeBrowsingService : public TestSafeBrowsingService {
  public:
   explicit FakeSafeBrowsingService(Profile* profile) {
     services_delegate_ = ServicesDelegate::CreateForTest(this, this);
+#if !BUILDFLAG(IS_ANDROID)
     CloudBinaryUploadServiceFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating(&CreateTestBinaryUploadService));
+#endif
     mock_database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
   }
   FakeSafeBrowsingService(const FakeSafeBrowsingService&) = delete;
@@ -272,12 +315,27 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
  private:
   // ServicesDelegate::ServicesCreator:
   bool CanCreateDatabaseManager() override { return true; }
-  bool CanCreateIncidentReportingService() override { return true; }
+
+  bool CanCreateIncidentReportingService() override {
+#if BUILDFLAG(IS_ANDROID)
+    // Android does not support Incident Reporting for downloads.
+    return false;
+#else
+    return true;
+#endif
+  }
+
   safe_browsing::SafeBrowsingDatabaseManager* CreateDatabaseManager() override {
     return mock_database_manager_.get();
   }
+
   IncidentReportingService* CreateIncidentReportingService() override {
+#if BUILDFLAG(IS_ANDROID)
+    // Android does not support Incident Reporting for downloads.
+    return nullptr;
+#else
     return new IncidentReportingService(nullptr);
+#endif
   }
 
   base::flat_map<Profile*, std::unique_ptr<network::TestURLLoaderFactory>>
@@ -321,6 +379,9 @@ ACTION_P(CheckDownloadUrlDone, threat_type) {
           base::Unretained(arg1), arg0, threat_type));
 }
 
+// Templated on whether to explicitly set a mock database manager in the
+// TestSafeBrowsingService.
+template <bool ShouldSetDbManager>
 class DownloadProtectionServiceTestBase
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -330,7 +391,11 @@ class DownloadProtectionServiceTestBase
       : ChromeRenderViewHostTestHarness(time_source),
         in_process_utility_thread_helper_(
             std::make_unique<content::InProcessUtilityThreadHelper>()),
-        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+        testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
+#if BUILDFLAG(IS_ANDROID)
+    EnableFeatures({kMaliciousApkDownloadCheck});
+#endif
+  }
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -339,6 +404,10 @@ class DownloadProtectionServiceTestBase
     // to test that we're on the correct thread work.
     sb_service_ =
         base::MakeRefCounted<StrictMock<FakeSafeBrowsingService>>(profile());
+    // Set a mock database manager if desired.
+    if constexpr (ShouldSetDbManager) {
+      sb_service_->SetDatabaseManager(sb_service_->mock_database_manager());
+    }
     sb_service_->Initialize();
     ON_CALL(*sb_service_->mock_database_manager(),
             MatchDownloadAllowlistUrl(_, _))
@@ -353,27 +422,30 @@ class DownloadProtectionServiceTestBase
         base::MakeRefCounted<StrictMock<MockBinaryFeatureExtractor>>();
     ON_CALL(*binary_feature_extractor_, ExtractImageFeatures(_, _, _, _))
         .WillByDefault(Return(true));
+    download_service_ = sb_service_->download_protection_service();
+#if !BUILDFLAG(IS_ANDROID)
     auto feedback_service = std::make_unique<MockDownloadFeedbackService>();
     feedback_service_ = feedback_service.get();
-    download_service_ = sb_service_->download_protection_service();
-    download_service_->binary_feature_extractor_ = binary_feature_extractor_;
     download_service_->feedback_service_ = std::move(feedback_service);
+#endif
+    download_service_->binary_feature_extractor_ = binary_feature_extractor_;
     download_service_->SetEnabled(true);
     client_download_request_subscription_ =
         download_service_->RegisterClientDownloadRequestCallback(
             base::BindRepeating(
-                &DownloadProtectionServiceTestBase::OnClientDownloadRequest,
+                &DownloadProtectionServiceTestBase<
+                    ShouldSetDbManager>::OnClientDownloadRequest,
                 base::Unretained(this)));
     ppapi_download_request_subscription_ =
         download_service_->RegisterPPAPIDownloadRequestCallback(
-            base::BindRepeating(
-                &DownloadProtectionServiceTestBase::OnPPAPIDownloadRequest,
-                base::Unretained(this)));
+            base::BindRepeating(&DownloadProtectionServiceTestBase<
+                                    ShouldSetDbManager>::OnPPAPIDownloadRequest,
+                                base::Unretained(this)));
     file_system_access_write_request_subscription_ =
         download_service_->RegisterFileSystemAccessWriteRequestCallback(
-            base::BindRepeating(
-                &DownloadProtectionServiceTestBase::OnPPAPIDownloadRequest,
-                base::Unretained(this)));
+            base::BindRepeating(&DownloadProtectionServiceTestBase<
+                                    ShouldSetDbManager>::OnPPAPIDownloadRequest,
+                                base::Unretained(this)));
     RunLoop().RunUntilIdle();
     has_result_ = false;
 
@@ -392,12 +464,14 @@ class DownloadProtectionServiceTestBase
     // Turn off binary sampling by default.
     SetBinarySamplingProbability(0.0);
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
     // |test_event_router_| is owned by KeyedServiceFactory.
     test_event_router_ = extensions::CreateAndUseTestEventRouter(profile());
     extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
         ->SetTestingFactory(
             profile(),
             base::BindRepeating(&BuildSafeBrowsingPrivateEventRouter));
+#endif
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
     enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
@@ -427,7 +501,9 @@ class DownloadProtectionServiceTestBase
     client_download_request_subscription_ = {};
     ppapi_download_request_subscription_ = {};
     file_system_access_write_request_subscription_ = {};
+#if !BUILDFLAG(IS_ANDROID)
     feedback_service_ = nullptr;
+#endif
     sb_service_->ShutDown();
     // Flush all of the thread message loops to ensure that there are no
     // tasks currently running.
@@ -485,6 +561,8 @@ class DownloadProtectionServiceTestBase
     download_service_->allowlist_sample_rate_ = target_rate;
   }
 
+  // Note: This only works for desktop platforms where the sampling rate depends
+  // upon FileTypePolicies.
   void SetBinarySamplingProbability(double target_rate) {
     std::unique_ptr<DownloadFileTypeConfig> config =
         policies_.DuplicateConfig();
@@ -559,7 +637,7 @@ class DownloadProtectionServiceTestBase
     response.set_request_deep_scan(request_deep_scan);
     response.set_token("response_token");
     sb_service_->GetTestURLLoaderFactory(profile)->AddResponse(
-        PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         response.SerializeAsString());
   }
 
@@ -571,7 +649,7 @@ class DownloadProtectionServiceTestBase
     if (net_error != net::OK) {
       network::URLLoaderCompletionStatus status;
       sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-          PPAPIDownloadRequest::GetDownloadRequestUrl(),
+          download_service_->GetDownloadRequestUrl(),
           network::mojom::URLResponseHead::New(), std::string(),
           network::URLLoaderCompletionStatus(net_error));
       return;
@@ -580,24 +658,52 @@ class DownloadProtectionServiceTestBase
                                      request_deep_scan);
   }
 
+  // Common setup code for MockDownloadItem.
+  // `tmp_path_literal` and `final_path_literal` are ignored on Android.
   void PrepareBasicDownloadItem(
       NiceMockDownloadItem* item,
       const std::vector<std::string> url_chain_items,
       const std::string& referrer_url,
       const base::FilePath::StringType& tmp_path_literal,
-      const base::FilePath::StringType& final_path_literal) {
+      const base::FilePath::StringType& final_path_literal,
+      std::optional<base::FilePath> display_name = std::nullopt) {
+#if BUILDFLAG(IS_ANDROID)
+    // For realism on Android, the final path and temp path are typically
+    // content-URIs, and only the display name should be used.
+    base::FilePath tmp_path = base::FilePath(kTempContentUri);
+    base::FilePath final_path = base::FilePath(kContentUri);
+
+    // Supply a default display name for Android tests that is eligible for
+    // download protection.
+    display_name = display_name.value_or(base::FilePath(kApkFilename));
+#else
     base::FilePath tmp_path = temp_dir_.GetPath().Append(tmp_path_literal);
     base::FilePath final_path = temp_dir_.GetPath().Append(final_path_literal);
+#endif
     PrepareBasicDownloadItemWithFullPaths(item, url_chain_items, referrer_url,
-                                          tmp_path, final_path);
+                                          tmp_path, final_path, display_name);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  void PrepareBasicDownloadItemWithContentUri(
+      NiceMockDownloadItem* item,
+      const std::vector<std::string> url_chain_items,
+      const std::string& referrer_url,
+      const base::FilePath& display_name) {
+    PrepareBasicDownloadItem(item, url_chain_items, referrer_url,
+                             /*ignored*/ base::FilePath::StringType(),
+                             /*ignored*/ base::FilePath::StringType(),
+                             display_name);
+  }
+#endif
 
   void PrepareBasicDownloadItemWithFullPaths(
       NiceMockDownloadItem* item,
       const std::vector<std::string> url_chain_items,
       const std::string& referrer_url,
       const base::FilePath& tmp_full_path,
-      const base::FilePath& final_full_path) {
+      const base::FilePath& final_full_path,
+      std::optional<base::FilePath> display_name = std::nullopt) {
     url_chain_.clear();
     for (std::string url_chain_item : url_chain_items) {
       url_chain_.emplace_back(url_chain_item);
@@ -608,6 +714,7 @@ class DownloadProtectionServiceTestBase
     referrer_ = GURL(referrer_url);
     tmp_path_ = tmp_full_path;
     final_path_ = final_full_path;
+    display_name_ = display_name.value_or(final_path_.BaseName());
     hash_ = "hash";
 
     EXPECT_CALL(*item, GetURL()).WillRepeatedly(Invoke([&]() -> const GURL& {
@@ -616,6 +723,8 @@ class DownloadProtectionServiceTestBase
     EXPECT_CALL(*item, GetFullPath()).WillRepeatedly(ReturnRef(tmp_path_));
     EXPECT_CALL(*item, GetTargetFilePath())
         .WillRepeatedly(ReturnRef(final_path_));
+    EXPECT_CALL(*item, GetFileNameToReportUser())
+        .WillRepeatedly(Return(display_name_));
     EXPECT_CALL(*item, GetUrlChain()).WillRepeatedly(ReturnRef(url_chain_));
     EXPECT_CALL(*item, GetReferrerUrl()).WillRepeatedly(ReturnRef(referrer_));
     EXPECT_CALL(*item, GetTabUrl())
@@ -652,7 +761,7 @@ class DownloadProtectionServiceTestBase
     result->size = 100;
     result->frame_url = GURL("https://example.com/foo/bar");
     result->has_user_gesture = true;
-    result->web_contents = web_contents();
+    result->web_contents = web_contents()->GetWeakPtr();
     result->browser_context = profile();
     return result;
   }
@@ -706,18 +815,18 @@ class DownloadProtectionServiceTestBase
                               base::OnceClosure quit_closure) {
     BrowserThread::GetTaskRunnerForThread(thread)->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &DownloadProtectionServiceTestBase::RunAllPendingAndQuitUI,
-            base::Unretained(this), std::move(quit_closure)));
+        base::BindOnce(&DownloadProtectionServiceTestBase<
+                           ShouldSetDbManager>::RunAllPendingAndQuitUI,
+                       base::Unretained(this), std::move(quit_closure)));
   }
 
   void FlushMessageLoop(BrowserThread::ID thread) {
     RunLoop run_loop;
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &DownloadProtectionServiceTestBase::PostRunMessageLoopTask,
-            base::Unretained(this), thread, run_loop.QuitClosure()));
+        base::BindOnce(&DownloadProtectionServiceTestBase<
+                           ShouldSetDbManager>::PostRunMessageLoopTask,
+                       base::Unretained(this), thread, run_loop.QuitClosure()));
     run_loop.Run();
   }
 
@@ -787,7 +896,9 @@ class DownloadProtectionServiceTestBase
 
   scoped_refptr<FakeSafeBrowsingService> sb_service_;
   scoped_refptr<MockBinaryFeatureExtractor> binary_feature_extractor_;
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockDownloadFeedbackService> feedback_service_;
+#endif
   raw_ptr<DownloadProtectionService, DanglingUntriaged> download_service_;
   DownloadCheckResult result_;
   bool has_result_;
@@ -798,46 +909,65 @@ class DownloadProtectionServiceTestBase
   base::CallbackListSubscription ppapi_download_request_subscription_;
   base::CallbackListSubscription file_system_access_write_request_subscription_;
   std::unique_ptr<ClientDownloadRequest> last_client_download_request_;
-  // The following 5 fields are used by PrepareBasicDownloadItem() function to
+  // The following 6 fields are used by PrepareBasicDownloadItem() function to
   // store attributes of the last download item. They can be modified
   // afterwards and the *item will return the new values.
   std::vector<GURL> url_chain_;
   GURL referrer_;
   base::FilePath tmp_path_;
   base::FilePath final_path_;
+  base::FilePath display_name_;
   std::string hash_;
   base::ScopedTempDir temp_dir_;
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   raw_ptr<extensions::TestEventRouter, DanglingUntriaged> test_event_router_;
+#endif
   TestingProfileManager testing_profile_manager_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   std::unique_ptr<policy::MockCloudPolicyClient> client_;
 };
 
-using DownloadProtectionServiceTest = DownloadProtectionServiceTestBase;
+// These tests use a mock database manager. By default on desktop platforms, the
+// test fixture uses the mock database manager created by the
+// TestSafeBrowsingService acting as ServicesCreator, so it doesn't need to be
+// explicitly set. But on Android it must be set explicitly because
+// ServicesDelegateAndroid doesn't respect CanCreateDatabaseManager().
+#if BUILDFLAG(IS_ANDROID)
+using DownloadProtectionServiceTest =
+    DownloadProtectionServiceTestBase</*ShouldSetDbManager=*/true>;
+#else
+using DownloadProtectionServiceTest =
+    DownloadProtectionServiceTestBase</*ShouldSetDbManager=*/false>;
+#endif
 
-using DeepScanningDownloadTest = DownloadProtectionServiceTestBase;
+using DeepScanningDownloadTest = DownloadProtectionServiceTest;
 
 class DownloadProtectionServiceMockTimeTest
-    : public DownloadProtectionServiceTestBase {
+    : public DownloadProtectionServiceTest {
  public:
   DownloadProtectionServiceMockTimeTest()
-      : DownloadProtectionServiceTestBase(
+      : DownloadProtectionServiceTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 };
 
 // A test with the appropriate feature flags enabled to test the behavior for
 // Enhanced Protection users.
-class EnhancedProtectionDownloadTest
-    : public DownloadProtectionServiceTestBase {
+class EnhancedProtectionDownloadTest : public DownloadProtectionServiceTest {
  public:
   EnhancedProtectionDownloadTest() {
-    EnableFeatures({kSafeBrowsingRemoveCookiesInAuthRequests});
+    EnableFeatures({
+        kSafeBrowsingRemoveCookiesInAuthRequests,
+#if BUILDFLAG(IS_ANDROID)
+        kMaliciousApkDownloadCheck,
+#endif
+    });
   }
 };
 
-void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
-    ArchiveType type) {
+template <bool ShouldSetDbManager>
+void DownloadProtectionServiceTestBase<ShouldSetDbManager>::
+    CheckClientDownloadReportCorruptArchive(ArchiveType type) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
   NiceMockDownloadItem item;
@@ -861,7 +991,8 @@ void DownloadProtectionServiceTestBase::CheckClientDownloadReportCorruptArchive(
   RunLoop run_loop;
   download_service_->CheckClientDownload(
       &item,
-      base::BindRepeating(&DownloadProtectionServiceTestBase::CheckDoneCallback,
+      base::BindRepeating(&DownloadProtectionServiceTestBase<
+                              ShouldSetDbManager>::CheckDoneCallback,
                           base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
 
@@ -890,6 +1021,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadInvalidUrl) {
                              "http://www.google.com/",     // referrer
                              FILE_PATH_LITERAL("a.tmp"),   // tmp_path
                              FILE_PATH_LITERAL("a.exe"));  // final_path
+
+    // Though MayCheckClientDownload returns false, if CheckClientDownload()
+    // were in fact called anyway, test that we do not ultimately send a ping.
+    EXPECT_FALSE(download_service_->delegate()->MayCheckClientDownload(&item));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -906,6 +1041,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadInvalidUrl) {
                              "http://www.google.com/",           // referrer
                              FILE_PATH_LITERAL("a.tmp"),         // tmp_path
                              FILE_PATH_LITERAL("a.exe"));        // final_path
+
+    // Though MayCheckClientDownload returns false, if CheckClientDownload()
+    // were in fact called anyway, test that we do not ultimately send a ping.
+    EXPECT_FALSE(download_service_->delegate()->MayCheckClientDownload(&item));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -919,18 +1058,30 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadInvalidUrl) {
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadNotABinary) {
   NiceMockDownloadItem item;
-  PrepareBasicDownloadItem(&item,
-                           std::vector<std::string>(),   // empty url_chain
-                           "http://www.google.com/",     // referrer
-                           FILE_PATH_LITERAL("a.tmp"),   // tmp_path
-                           FILE_PATH_LITERAL("a.txt"));  // final_path
+  PrepareBasicDownloadItem(
+      &item, {"http://www.evil.com/a.txt"},  // url_chain
+      "http://www.google.com/",              // referrer
+      FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+      FILE_PATH_LITERAL("a.txt"),            // final_path
+      // Do not use the default APK filename override for Android in
+      // PrepareBasicDownloadItem.
+      base::FilePath(FILE_PATH_LITERAL("a.txt")));  // display_name
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+
+  EXPECT_EQ(
+      download_service_->delegate()->IsSupportedDownload(item, final_path_),
+      MayCheckDownloadResult::kMaySendSampledPingOnly);
+
+  // This returns true because of the possibility of sampling an unsupported
+  // file type.
   RunLoop run_loop;
-  download_service_->CheckClientDownload(
+  EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
       &item,
       base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                          base::Unretained(this), run_loop.QuitClosure()));
+                          base::Unretained(this), run_loop.QuitClosure())));
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  // But the ping is not ultimately sent because binary sampling is off.
   EXPECT_FALSE(HasClientDownloadRequest());
 }
 
@@ -954,7 +1105,7 @@ TEST_F(DownloadProtectionServiceTest,
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
       .Times(3);
 
-  // We should not get whilelist checks for other URLs than specified below.
+  // We should not get allowlist checks for other URLs than specified below.
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
       .Times(0);
@@ -977,10 +1128,10 @@ TEST_F(DownloadProtectionServiceTest,
     // With no referrer and just the bad url, should be marked DANGEROUS.
     url_chain_.emplace_back("http://www.evil.com/bla.exe");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -992,10 +1143,10 @@ TEST_F(DownloadProtectionServiceTest,
     // Check that the referrer is not matched against the allowlist.
     referrer_ = GURL("http://www.google.com/");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
 
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
@@ -1009,10 +1160,10 @@ TEST_F(DownloadProtectionServiceTest,
     // Redirect from a site shouldn't be checked either.
     url_chain_.emplace(url_chain_.begin(), "http://www.google.com/redirect");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -1024,10 +1175,10 @@ TEST_F(DownloadProtectionServiceTest,
     // Only if the final url is allowlisted should it be SAFE.
     url_chain_.emplace_back("http://www.google.com/a.exe");
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     // TODO(grt): Make the service produce the request even when the URL is
@@ -1078,10 +1229,10 @@ TEST_F(DownloadProtectionServiceTest,
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1094,10 +1245,10 @@ TEST_F(DownloadProtectionServiceTest,
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1107,10 +1258,10 @@ TEST_F(DownloadProtectionServiceTest,
     //           ClientDownloadRequest should NOT be sent.
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1122,10 +1273,10 @@ TEST_F(DownloadProtectionServiceTest,
     SetExtendedReportingPreference(true);
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -1135,6 +1286,8 @@ TEST_F(DownloadProtectionServiceTest,
   }
 }
 
+// "Light" pings for sampled files are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
   // Server response will be discarded.
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
@@ -1167,10 +1320,12 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    // This returns true because of the possibility of sampling an unsupported
+    // file type.
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1180,10 +1335,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
     //           A "light" ClientDownloadRequest should be sent.
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     ASSERT_TRUE(HasClientDownloadRequest());
@@ -1209,10 +1364,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
         &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
         nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     EXPECT_FALSE(HasClientDownloadRequest());
@@ -1222,17 +1377,19 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSampledFile) {
     //           ClientDownloadRequest should NOT be sent.
     content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
     RunLoop run_loop;
-    download_service_->CheckClientDownload(
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                            base::Unretained(this), run_loop.QuitClosure()));
+                            base::Unretained(this), run_loop.QuitClosure())));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     EXPECT_FALSE(HasClientDownloadRequest());
   }
 }
+#endif
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadFetchFailed) {
+  base::HistogramTester histogram_tester;
   // HTTP request will fail.
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_INTERNAL_SERVER_ERROR,
                   net::ERR_FAILED);
@@ -1261,6 +1418,10 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadFetchFailed) {
                           base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
@@ -1286,11 +1447,14 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
       .Times(9);
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+#if !BUILDFLAG(IS_ANDROID)
   std::string feedback_ping;
   std::string feedback_response;
+#endif
   ClientDownloadResponse expected_response;
 
   {
+    base::HistogramTester histogram_tester;
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -1299,13 +1463,17 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_TRUE(HasClientDownloadRequest());
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+        /*sample=*/200,
+        /*expected_bucket_count=*/1);
     ClearClientDownloadRequest();
   }
   {
     // Invalid response should result in SAFE (default value in proto).
     ClientDownloadResponse invalid_response;
     sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-        PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         invalid_response.SerializePartialAsString());
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -1316,7 +1484,9 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
+#if !BUILDFLAG(IS_ANDROID)
     Mock::VerifyAndClearExpectations(feedback_service_);
+#endif
   }
   {
     // If the response is dangerous the result should also be marked as
@@ -1332,22 +1502,28 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
+#if !BUILDFLAG(IS_ANDROID)
     Mock::VerifyAndClearExpectations(feedback_service_);
+#endif
   }
   {
     // If the response is dangerous and the server requests an upload,
     // we should upload.
     PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK,
                     true /* upload_requested */);
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(*feedback_service_,
                 BeginFeedbackForDownload(profile(), &item, _, _));
+#endif
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
+#if !BUILDFLAG(IS_ANDROID)
     Mock::VerifyAndClearExpectations(feedback_service_);
+#endif
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
@@ -1356,10 +1532,12 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     // If the response is uncommon the result should also be marked as uncommon.
     PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
                     true /* upload_requested */);
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(*feedback_service_,
                 BeginFeedbackForDownload(profile(), &item, _, _))
         .WillOnce(
             DoAll(SaveArg<2>(&feedback_ping), SaveArg<3>(&feedback_response)));
+#endif
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -1367,6 +1545,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
+#if !BUILDFLAG(IS_ANDROID)
     Mock::VerifyAndClearExpectations(feedback_service_);
     ClientDownloadRequest decoded_request;
     EXPECT_TRUE(decoded_request.ParseFromString(feedback_ping));
@@ -1376,6 +1555,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     expected_response.set_request_deep_scan(false);
     expected_response.set_token("response_token");
     EXPECT_EQ(expected_response.SerializeAsString(), feedback_response);
+#endif
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
   }
@@ -1384,10 +1564,12 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     // dangerous_host.
     PrepareResponse(ClientDownloadResponse::DANGEROUS_HOST, net::HTTP_OK,
                     net::OK, true /* upload_requested */);
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(*feedback_service_,
                 BeginFeedbackForDownload(profile(), &item, _, _))
         .WillOnce(
             DoAll(SaveArg<2>(&feedback_ping), SaveArg<3>(&feedback_response)));
+#endif
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -1395,10 +1577,12 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS_HOST));
+#if !BUILDFLAG(IS_ANDROID)
     Mock::VerifyAndClearExpectations(feedback_service_);
     expected_response.set_verdict(ClientDownloadResponse::DANGEROUS_HOST);
     expected_response.set_upload(true);
     EXPECT_EQ(expected_response.SerializeAsString(), feedback_response);
+#endif
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
   }
@@ -1409,10 +1593,12 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
 
     PrepareResponse(ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE,
                     net::HTTP_OK, net::OK, true /* upload_requested */);
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(*feedback_service_,
                 BeginFeedbackForDownload(profile(), &item, _, _))
         .WillOnce(
             DoAll(SaveArg<2>(&feedback_ping), SaveArg<3>(&feedback_response)));
+#endif
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
@@ -1420,11 +1606,13 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS_ACCOUNT_COMPROMISE));
+#if !BUILDFLAG(IS_ANDROID)
     Mock::VerifyAndClearExpectations(feedback_service_);
     expected_response.set_verdict(
         ClientDownloadResponse::DANGEROUS_ACCOUNT_COMPROMISE);
     expected_response.set_upload(true);
     EXPECT_EQ(expected_response.SerializeAsString(), feedback_response);
+#endif
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
   }
@@ -1449,17 +1637,21 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
     // UNKNOWN. And if the server requests an upload, we should upload.
     PrepareResponse(ClientDownloadResponse::UNKNOWN, net::HTTP_OK, net::OK,
                     true /* upload_requested */);
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_CALL(*feedback_service_,
                 BeginFeedbackForDownload(profile(), &item, _, _))
         .WillOnce(
             DoAll(SaveArg<2>(&feedback_ping), SaveArg<3>(&feedback_response)));
+#endif
     RunLoop run_loop;
     download_service_->CheckClientDownload(
         &item,
         base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
                             base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
+#if !BUILDFLAG(IS_ANDROID)
     Mock::VerifyAndClearExpectations(feedback_service_);
+#endif
     EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
     EXPECT_TRUE(HasClientDownloadRequest());
     ClearClientDownloadRequest();
@@ -1597,6 +1789,8 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadData) {
   ClearClientDownloadRequest();
 }
 
+// Zip file analysis is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
@@ -1723,6 +1917,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportCorruptZip) {
   CheckClientDownloadReportCorruptArchive(ZIP);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadReportCorruptDmg) {
@@ -2078,6 +2273,15 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadValidateRequest) {
       .WillOnce(SetDosHeaderContents("dummy dos header"));
 #endif  // BUILDFLAG(IS_MAC)
 
+  sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_TRUE(
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
+                .has_value());
+        std::string upload_data = network::GetUploadData(request);
+        EXPECT_FALSE(upload_data.empty());
+      }));
+
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
   RunLoop run_loop;
@@ -2228,6 +2432,9 @@ TEST_F(DownloadProtectionServiceTest,
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_TRUE(request.headers
+                              .GetHeader(net::HttpRequestHeaders::kContentType)
+                              .has_value());
               upload_data = network::GetUploadData(request);
               if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
@@ -2290,6 +2497,9 @@ TEST_F(DownloadProtectionServiceTest,
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_TRUE(request.headers
+                              .GetHeader(net::HttpRequestHeaders::kContentType)
+                              .has_value());
               upload_data = network::GetUploadData(request);
               if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
@@ -2762,6 +2972,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_AllowlistedURL) {
 }
 
 TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_FetchFailed) {
+  base::HistogramTester histogram_tester;
   base::FilePath default_file_path(FILE_PATH_LITERAL("/foo/bar/test.crx"));
   std::vector<base::FilePath::StringType> alternate_extensions;
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK,
@@ -2781,13 +2992,17 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_FetchFailed) {
   run_loop.Run();
 
   ASSERT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.PPAPIDownloadRequest.NetworkResult",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_InvalidResponse) {
   base::FilePath default_file_path(FILE_PATH_LITERAL("/foo/bar/test.crx"));
   std::vector<base::FilePath::StringType> alternate_extensions;
   sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-      PPAPIDownloadRequest::GetDownloadRequestUrl().spec(), "Hello world!");
+      download_service_->GetDownloadRequestUrl().spec(), "Hello world!");
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
       .WillRepeatedly(
@@ -2828,11 +3043,15 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Timeout) {
 }
 
 TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
+  base::HistogramTester histogram_tester;
   RunLoop interceptor_run_loop;
 
   std::string upload_data;
   sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        EXPECT_TRUE(
+            request.headers.GetHeader(net::HttpRequestHeaders::kContentType)
+                .has_value());
         upload_data = network::GetUploadData(request);
       }));
 
@@ -2868,6 +3087,11 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
   EXPECT_EQ(".txt", request.alternate_extensions(0));
   EXPECT_EQ(".abc", request.alternate_extensions(1));
   EXPECT_EQ(".sdF", request.alternate_extensions(2));
+
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.PPAPIDownloadRequest.NetworkResult",
+      /*sample=*/200,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest,
@@ -2984,10 +3208,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       &expected_mimetypes,
       0,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe()         // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe()  // expected_profile_identifier
   );
 
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
@@ -3054,10 +3278,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
       {} /* expected_scan_id */, std::nullopt /* content_transfer_reason */,
       /*user_justification*/ std::nullopt);
 
@@ -3109,10 +3333,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       &expected_mimetypes,
       0,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe()         // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe()  // expected_profile_identifier
   );
 
   download_service_->ReportDelayedBypassEvent(
@@ -3173,10 +3397,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
       {} /* expected_scan_id */, std::nullopt /* content_transfer_method */,
       /*user_justification*/ std::nullopt);
 
@@ -3238,10 +3462,10 @@ TEST_F(DownloadProtectionServiceTest,
           kTriggerFileDownload,  // expected_trigger
       response.results()[0], &expected_mimetypes,
       1234,  // expected_content_size
-      safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BYPASSED),  // expected_result
-      "",                                         // expected_username
-      profile()->GetPath().AsUTF8Unsafe(),        // expected_profile_identifier
+      enterprise_connectors::EventResultToString(
+          enterprise_connectors::EventResult::BYPASSED),  // expected_result
+      "",                                                 // expected_username
+      profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
       {} /* expected_scan_id */, std::nullopt /* content_transfer_method */,
       /*user_justification*/ std::nullopt);
 
@@ -3251,6 +3475,7 @@ TEST_F(DownloadProtectionServiceTest,
 
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item,
@@ -3285,6 +3510,7 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
   EXPECT_EQ(1, test_event_router_->GetEventCount(
                    OnDangerousDownloadOpened::kEventName));
 }
+#endif
 
 TEST_F(DownloadProtectionServiceTest, CheckClientDownloadAllowlistedByPolicy) {
   AddDomainToEnterpriseAllowlist("example.com");
@@ -3314,6 +3540,8 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadAllowlistedByPolicy) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::ALLOWLISTED_BY_POLICY));
 }
 
+// TODO(crbug.com/397407934): Support download feedback on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, CheckOffTheRecordDoesNotSendFeedback) {
   NiceMockDownloadItem item;
   EXPECT_FALSE(download_service_->MaybeBeginFeedbackForDownload(
@@ -3326,10 +3554,11 @@ TEST_F(DownloadProtectionServiceTest, CheckOffTheRecordDoesNotSendFeedback) {
           /*create_if_needed=*/true),
       &item, "", ""));
 }
+#endif
 
 // ------------ class DownloadProtectionServiceFlagTest ----------------
 class DownloadProtectionServiceFlagTest
-    : public DownloadProtectionServiceTestBase,
+    : public DownloadProtectionServiceTest,
       public testing::WithParamInterface<bool> {
  protected:
   DownloadProtectionServiceFlagTest()
@@ -3347,7 +3576,7 @@ class DownloadProtectionServiceFlagTest
         safe_browsing::switches::kSbManualDownloadBlocklist,
         blocklisted_hash_hex_);
 
-    DownloadProtectionServiceTestBase::SetUp();
+    DownloadProtectionServiceTest::SetUp();
   }
 
   // Hex 64 chars
@@ -3387,6 +3616,8 @@ TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
 }
 
+// Zip file analysis is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 // Test a real .zip with a real .exe in it, where the .exe is manually
 // blocklisted by hash.
 TEST_F(DownloadProtectionServiceFlagTest,
@@ -3418,6 +3649,7 @@ TEST_F(DownloadProtectionServiceFlagTest,
   // Overriden by flag:
   EXPECT_TRUE(IsResult(DownloadCheckResult::DANGEROUS));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadProtectionServiceTest,
        VerifyReferrerChainWithEmptyNavigationHistory) {
@@ -3694,6 +3926,26 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+// Android enforces a feature state before checking a File System Access Write.
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_NotEnabled) {
+  DisableFeatures({kMaliciousApkDownloadCheck});
+
+  auto item = PrepareBasicFileSystemAccessWriteItem(
+      /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
+      /*final_path_literal=*/FILE_PATH_LITERAL(kEligibleFilename));
+
+  RunLoop run_loop;
+  download_service_->CheckFileSystemAccessWrite(
+      std::move(item),
+      base::BindOnce(&DownloadProtectionServiceTest::CheckDoneCallback,
+                     base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  EXPECT_FALSE(HasClientDownloadRequest());
+}
+#endif
+
 TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_NotABinary) {
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
@@ -3709,6 +3961,8 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_NotABinary) {
   EXPECT_FALSE(HasClientDownloadRequest());
 }
 
+// "Light" pings for sampled files are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest,
        FileSystemAccessWriteRequest_SampledFile) {
   // Server response will be discarded.
@@ -3808,16 +4062,18 @@ TEST_F(DownloadProtectionServiceTest,
     EXPECT_FALSE(HasClientDownloadRequest());
   }
 }
+#endif
 
 TEST_F(DownloadProtectionServiceTest,
        FileSystemAccessWriteRequest_FetchFailed) {
+  base::HistogramTester histogram_tester;
   // HTTP request will fail.
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_INTERNAL_SERVER_ERROR,
                   net::ERR_FAILED);
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
@@ -3836,6 +4092,10 @@ TEST_F(DownloadProtectionServiceTest,
                      base::Unretained(this), run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNKNOWN));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+      /*sample=*/net::ERR_FAILED,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
@@ -3843,7 +4103,7 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
               MatchDownloadAllowlistUrl(_, _))
@@ -3860,6 +4120,7 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
   ClientDownloadResponse expected_response;
 
   {
+    base::HistogramTester histogram_tester;
     RunLoop run_loop;
     download_service_->CheckFileSystemAccessWrite(
         CloneFileSystemAccessWriteItem(item.get()),
@@ -3868,13 +4129,17 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     EXPECT_TRUE(HasClientDownloadRequest());
+    histogram_tester.ExpectUniqueSample(
+        /*name=*/"SBClientDownload.DownloadRequestNetworkResult",
+        /*sample=*/200,
+        /*expected_bucket_count=*/1);
     ClearClientDownloadRequest();
   }
   {
     // Invalid response should result in SAFE (default value in proto).
     ClientDownloadResponse invalid_response;
     sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
-        PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         invalid_response.SerializePartialAsString());
     RunLoop run_loop;
     download_service_->CheckFileSystemAccessWrite(
@@ -3922,7 +4187,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
   item->web_contents = nullptr;
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
@@ -3955,7 +4220,7 @@ TEST_F(DownloadProtectionServiceTest,
       testing_profile_manager_.CreateTestingProfile("profile 1");
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
   item->browser_context = profile1;
 
   // Note 'AtMost' is used below because on Mac timing differences make the
@@ -3984,7 +4249,7 @@ TEST_F(DownloadProtectionServiceTest,
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.txt"));
+      /*final_path_literal=*/kEligibleFilename);
   item->frame_url = GURL("https://example.com/foo");
   download_service_->CheckFileSystemAccessWrite(
       std::move(item),
@@ -4001,7 +4266,7 @@ TEST_F(DownloadProtectionServiceTest,
        FileSystemAccessWriteRequest_CheckRequest) {
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.exe.crswap"),
-      /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
+      /*final_path_literal=*/kEligibleFilename);
   item->frame_url = GURL("http://www.google.com/");
 
   GURL tab_url("http://tab.com/final");
@@ -4093,6 +4358,9 @@ TEST_F(DownloadProtectionServiceTest,
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_TRUE(request.headers
+                              .GetHeader(net::HttpRequestHeaders::kContentType)
+                              .has_value());
               upload_data = network::GetUploadData(request);
               if (!upload_data.empty()) {
                 interceptor_run_loop.Quit();
@@ -4151,6 +4419,8 @@ TEST_F(DownloadProtectionServiceTest,
   }
 }
 
+// No access tokens on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
@@ -4187,6 +4457,9 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_EQ(*request.headers.GetHeader(
+                            net::HttpRequestHeaders::kAuthorization),
+                        "Bearer access_token");
               // Cookies should be removed when token is set.
               EXPECT_EQ(request.credentials_mode,
                         network::mojom::CredentialsMode::kOmit);
@@ -4202,7 +4475,6 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
         WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 1u);
-    EXPECT_EQ(requests[0]->access_token(), "access_token");
   }
 
   {
@@ -4231,6 +4503,10 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
     sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
         base::BindLambdaForTesting(
             [&](const network::ResourceRequest& request) {
+              EXPECT_FALSE(
+                  request.headers
+                      .GetHeader(net::HttpRequestHeaders::kAuthorization)
+                      .has_value());
               // Cookies should be attached when token is empty.
               EXPECT_EQ(request.credentials_mode,
                         network::mojom::CredentialsMode::kInclude);
@@ -4246,7 +4522,6 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
         WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 2u);
-    EXPECT_TRUE(requests[1]->access_token().empty());
   }
 
   WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
@@ -4283,6 +4558,17 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
         .Times(1);
+    sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
+        base::BindLambdaForTesting(
+            [&](const network::ResourceRequest& request) {
+              EXPECT_FALSE(
+                  request.headers
+                      .GetHeader(net::HttpRequestHeaders::kAuthorization)
+                      .has_value());
+              // Cookies should be attached when token is empty.
+              EXPECT_EQ(request.credentials_mode,
+                        network::mojom::CredentialsMode::kInclude);
+            }));
 
     // Confirm that we don't try to request fetching the token
     base::MockCallback<base::OnceClosure> access_token_requested;
@@ -4300,7 +4586,6 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
         WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 1u);
-    EXPECT_TRUE(requests[0]->access_token().empty());
     identity_test_env_adaptor_->identity_test_env()
         ->SetCallbackForNextAccessTokenRequest(base::NullCallback());
   }
@@ -4330,6 +4615,16 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
         .Times(1);
+    sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
+        base::BindLambdaForTesting(
+            [&](const network::ResourceRequest& request) {
+              EXPECT_EQ(*request.headers.GetHeader(
+                            net::HttpRequestHeaders::kAuthorization),
+                        "Bearer access_token");
+              // Cookies should be removed when token is set.
+              EXPECT_EQ(request.credentials_mode,
+                        network::mojom::CredentialsMode::kOmit);
+            }));
 
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -4341,11 +4636,11 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
         WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 2u);
-    EXPECT_EQ(requests[1]->access_token(), "access_token");
   }
 
   WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
 }
+#endif
 
 TEST_F(EnhancedProtectionDownloadTest, NoAccessTokenWhileIncognito) {
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
@@ -4380,6 +4675,17 @@ TEST_F(EnhancedProtectionDownloadTest, NoAccessTokenWhileIncognito) {
                 ExtractImageFeatures(
                     tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
         .Times(1);
+    sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
+        base::BindLambdaForTesting(
+            [&](const network::ResourceRequest& request) {
+              EXPECT_FALSE(
+                  request.headers
+                      .GetHeader(net::HttpRequestHeaders::kAuthorization)
+                      .has_value());
+              // Cookies should be attached when token is empty.
+              EXPECT_EQ(request.credentials_mode,
+                        network::mojom::CredentialsMode::kInclude);
+            }));
 
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -4391,7 +4697,6 @@ TEST_F(EnhancedProtectionDownloadTest, NoAccessTokenWhileIncognito) {
     const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
         WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
     ASSERT_EQ(requests.size(), 1u);
-    EXPECT_TRUE(requests[0]->access_token().empty());
   }
 
   WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
@@ -4421,7 +4726,7 @@ TEST_F(DownloadProtectionServiceTest,
     ClientDownloadResponse response;
     response.set_verdict(ClientDownloadResponse::SAFE);
     sb_service_->GetTestURLLoaderFactory(profile1)->AddResponse(
-        PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         response.SerializeAsString());
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
@@ -4458,7 +4763,7 @@ TEST_F(DownloadProtectionServiceTest,
     ClientDownloadResponse response;
     response.set_verdict(ClientDownloadResponse::SAFE);
     sb_service_->GetTestURLLoaderFactory(profile2)->AddResponse(
-        PPAPIDownloadRequest::GetDownloadRequestUrl().spec(),
+        download_service_->GetDownloadRequestUrl().spec(),
         response.SerializeAsString());
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
@@ -4685,6 +4990,8 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+// Advanced Protection deep scans are not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, AdvancedProtectionRequestScan) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
                   /*upload_requested=*/true, /*request_deep_scan=*/true);
@@ -4758,6 +5065,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_EQ("response_token",
             DownloadProtectionService::GetDownloadPingToken(&item));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DownloadProtectionServiceTest, AdvancedProtectionRequestScanFalse) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
@@ -4910,6 +5218,8 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanFalseWhenIncognito) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
+// Deep scanning is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyEnabled) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
                   /*upload_requested=*/true, /*request_deep_scan=*/true);
@@ -4947,6 +5257,7 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyEnabled) {
   run_loop.Run();
   EXPECT_TRUE(IsResult(DownloadCheckResult::IMMEDIATE_DEEP_SCAN));
 }
+#endif
 
 TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyDisabled) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
@@ -4986,6 +5297,8 @@ TEST_F(DownloadProtectionServiceTest, ESBRequestScanPolicyDisabled) {
   EXPECT_TRUE(IsResult(DownloadCheckResult::UNCOMMON));
 }
 
+// TODO(crbug.com/397407934): Support download feedback on Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, DownloadFeedbackOnDangerous) {
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
@@ -5056,13 +5369,11 @@ TEST_F(DownloadProtectionServiceTest, DownloadFeedbackOnDangerous) {
     Mock::VerifyAndClearExpectations(feedback_service_);
   }
 }
-
-class EnterpriseCsdDownloadTest : public DownloadProtectionServiceTestBase {
- public:
-  EnterpriseCsdDownloadTest() = default;
-};
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+using EnterpriseCsdDownloadTest = DownloadProtectionServiceTest;
+
 TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
   std::string file_contents = "Normal file contents";
   base::FilePath file_path;
@@ -5218,6 +5529,9 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
+// Deep scans, Advanced Protection, and encrypted archives are not supported on
+// Android.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DownloadProtectionServiceTest, ESBRequestScan) {
   PrepareResponse(ClientDownloadResponse::UNCOMMON, net::HTTP_OK, net::OK,
                   /*upload_requested=*/true, /*request_deep_scan=*/true);
@@ -5323,5 +5637,504 @@ TEST_F(DownloadProtectionServiceTest, EncryptedArchive) {
   // Downloads of encrypted archives cannot immediately deep scan
   EXPECT_TRUE(IsResult(DownloadCheckResult::PROMPT_FOR_SCANNING));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+struct UrlOverrideTestCase {
+  // If null, no override is specified.
+  const char* override_string = nullptr;
+  // Specified only if different from `override_string`.
+  const char* expected_url = nullptr;
+};
+
+// Tests for Android download protection logic, parameterized by whether Android
+// download protection is in telemetry-only mode, and the Safe Browsing state,
+// and the service override URL to use.
+// These tests use the real RemoteDatabaseManager rather than a mock.
+class AndroidDownloadProtectionTest
+    : public DownloadProtectionServiceTestBase</*ShouldSetDbManager=*/false>,
+      public testing::WithParamInterface<
+          std::tuple<bool, SafeBrowsingState, UrlOverrideTestCase>> {
+ public:
+  using Outcome =
+      DownloadProtectionMetricsData::AndroidDownloadProtectionOutcome;
+
+  AndroidDownloadProtectionTest() {
+    base::FieldTrialParams params = {
+        {std::string(kMaliciousApkDownloadCheckTelemetryOnly.name),
+         IsTelemetryOnlyMode() ? "true" : "false"}};
+    if (GetUrlOverrideString()) {
+      params.insert(
+          {std::string(kMaliciousApkDownloadCheckServiceUrlOverride.name),
+           std::string(GetUrlOverrideString())});
+    }
+    feature_list_.InitAndEnableFeatureWithParameters(kMaliciousApkDownloadCheck,
+                                                     params);
+  }
+
+  bool IsTelemetryOnlyMode() const { return std::get<0>(GetParam()); }
+
+  SafeBrowsingState GetSafeBrowsingState() const { return get<1>(GetParam()); }
+
+  const char* GetUrlOverrideString() const {
+    return get<2>(GetParam()).override_string;
+  }
+
+  // Calling this function requires that the test has an override URL.
+  GURL GetExpectedDownloadRequestUrl() const {
+    CHECK(GetUrlOverrideString());
+    if (const char* expected = get<2>(GetParam()).expected_url;
+        expected != nullptr) {
+      return GURL{expected};
+    }
+    return GURL{GetUrlOverrideString()};
+  }
+
+  void SetUp() override {
+    DownloadProtectionServiceTestBase<false>::SetUp();
+    SetSafeBrowsingState(profile()->GetPrefs(), GetSafeBrowsingState());
+    // Stop and restart the RemoteDatabaseManager with a test URLLoaderFactory.
+    test_shared_loader_factory_ =
+        base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+            sb_service_->GetTestURLLoaderFactory(profile()));
+    sb_service_->database_manager()->StopOnUIThread(/*shutdown=*/false);
+    sb_service_->database_manager()->StartOnUIThread(
+        test_shared_loader_factory_, GetTestV4ProtocolConfig());
+  }
+
+  bool ShouldAndroidDownloadProtectionBeActive() const {
+    switch (GetSafeBrowsingState()) {
+      case SafeBrowsingState::NO_SAFE_BROWSING:
+        return false;
+      case SafeBrowsingState::STANDARD_PROTECTION:
+        return !IsTelemetryOnlyMode();
+      case SafeBrowsingState::ENHANCED_PROTECTION:
+        return true;
+    }
+  }
+
+  void ResetHistogramTester() {
+    histograms_ = std::make_unique<base::HistogramTester>();
+  }
+
+  void ExpectHistogramUniqueSample(Outcome outcome) {
+    histograms_->ExpectUniqueSample(kAndroidDownloadProtectionOutcomeHistogram,
+                                    outcome, 1);
+  }
+
+  void OverrideNextShouldSample(bool should_sample) {
+    static_cast<DownloadProtectionDelegateAndroid*>(
+        download_service_->delegate())
+        ->SetNextShouldSampleForTesting(should_sample);
+  }
+
+  // Expects MaybeCheckClientDownload to return false, and therefore no ping to
+  // be sent.
+  void ExpectNoCheckClientDownload(download::DownloadItem* item) {
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(_, _))
+        .Times(0);
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(_, _, _, _))
+        .Times(0);
+
+    EXPECT_FALSE(
+        download_service_->MaybeCheckClientDownload(item, base::DoNothing()));
+    EXPECT_FALSE(HasClientDownloadRequest());
+
+    Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
+  }
+
+  // Expects MaybeCheckClientDownload to return true, and to send a ping over
+  // the network.
+  void ExpectCheckClientDownload(
+      download::DownloadItem* item,
+      base::optional_ref<GURL> download_request_url = std::nullopt) {
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
+        .Times(1);
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(
+                    tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
+        .Times(1);
+    sb_service_->GetTestURLLoaderFactory(profile())->SetInterceptor(
+        base::BindLambdaForTesting(
+            [&](const network::ResourceRequest& request) {
+              EXPECT_EQ(*request.headers.GetHeader(
+                            net::HttpRequestHeaders::kContentType),
+                        "application/x-protobuf");
+              EXPECT_TRUE(
+                  request.headers.GetHeader("X-Goog-Api-Key").has_value());
+              EXPECT_EQ(
+                  request.url,
+                  // Check for the correct service URL, if provided.
+                  download_request_url
+                      ? *download_request_url
+                      : download_service_->delegate()->GetDownloadRequestUrl());
+            }));
+
+    RunLoop run_loop;
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
+        item,
+        base::BindRepeating(&AndroidDownloadProtectionTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure())));
+    run_loop.Run();
+
+    EXPECT_TRUE(HasClientDownloadRequest());
+
+    Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
+  }
+
+  // Common test code for CheckClientDownload().
+  void TestCheckClientDownload(
+      base::optional_ref<GURL> download_request_url = std::nullopt,
+      base::OnceCallback<void(download::DownloadItem*)> verify_item =
+          base::DoNothing()) {
+    // Response to any requests will be DANGEROUS.
+    PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
+    // Override the random sampling.
+    OverrideNextShouldSample(true);
+
+    ResetHistogramTester();
+    {
+      NiceMockDownloadItem item;
+      content::DownloadItemUtils::AttachInfoForTesting(&item, profile(),
+                                                       nullptr);
+      PrepareBasicDownloadItemWithContentUri(
+          &item, /*url_chain_items=*/{"http://www.evil.com/bla.apk"},
+          /*referrer_url=*/"",
+          /*display_name=*/base::FilePath(kApkFilename));
+
+      std::move(verify_item).Run(&item);
+
+      if (ShouldAndroidDownloadProtectionBeActive()) {
+        ExpectCheckClientDownload(&item, download_request_url);
+      } else {
+        ExpectNoCheckClientDownload(&item);
+      }
+    }
+    // The histogram is logged when the item goes out of scope.
+
+    if (ShouldAndroidDownloadProtectionBeActive()) {
+      EXPECT_TRUE(IsResult(IsTelemetryOnlyMode()
+                               ? DownloadCheckResult::UNKNOWN
+                               : DownloadCheckResult::DANGEROUS));
+      EXPECT_TRUE(GetClientDownloadRequest()->has_download_type());
+      EXPECT_EQ(GetClientDownloadRequest()->download_type(),
+                ClientDownloadRequest::ANDROID_APK);
+      EXPECT_EQ(GetClientDownloadRequest()->file_basename(), "a.apk");
+      ExpectHistogramUniqueSample(Outcome::kClientDownloadRequestSent);
+    } else {
+      ExpectHistogramUniqueSample(Outcome::kDownloadProtectionDisabled);
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
+  std::unique_ptr<base::HistogramTester> histograms_;
+};
+
+const SafeBrowsingState kSafeBrowsingStates[] = {
+    SafeBrowsingState::NO_SAFE_BROWSING,
+    SafeBrowsingState::STANDARD_PROTECTION,
+    SafeBrowsingState::ENHANCED_PROTECTION,
+};
+
+// The parameter indicates: whether Android download protection is in
+// telemetry-only mode; the Safe Browsing state of the profile; the service URL
+// override.
+INSTANTIATE_TEST_SUITE_P(
+    /* No label */,
+    AndroidDownloadProtectionTest,
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(kSafeBrowsingStates),
+                     testing::Values(UrlOverrideTestCase{})));
+
+const char kDefaultAndroidDownloadRequestUrl[] =
+    "https://androidchromeprotect.pa.googleapis.com/v1/download";
+
+using AndroidDownloadProtectionTestWithOverrideUrl =
+    AndroidDownloadProtectionTest;
+INSTANTIATE_TEST_SUITE_P(
+    WithOverrideUrl,
+    AndroidDownloadProtectionTestWithOverrideUrl,
+    testing::Combine(testing::Bool(),
+                     testing::ValuesIn(kSafeBrowsingStates),
+                     testing::ValuesIn<UrlOverrideTestCase>({
+                         // Valid URL overrides.
+                         {"https://foo.googleapis.com/path"},
+                         {"https://foo.google.com/path"},
+                         {"https://google.com/path"},
+                         {kDefaultAndroidDownloadRequestUrl},
+                         // Invalid cases should fall back to the default URL.
+                         {"", kDefaultAndroidDownloadRequestUrl},
+                         {"bogus.com", kDefaultAndroidDownloadRequestUrl},
+                         // Not a Google associated domain.
+                         {"https://foo.notgoogle.com/path",
+                          kDefaultAndroidDownloadRequestUrl},
+                         // Not HTTPS.
+                         {"http://foo.googleapis.com/path",
+                          kDefaultAndroidDownloadRequestUrl},
+                         {"file:///foo/bar", kDefaultAndroidDownloadRequestUrl},
+                     })));
+
+// On Android, the RemoteDatabaseManager doesn't check any blocklist for
+// downloads.
+TEST_P(AndroidDownloadProtectionTest, CheckDownloadUrl) {
+  NiceMockDownloadItem item;
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+  PrepareBasicDownloadItemWithContentUri(
+      &item, /*url_chain_items=*/
+      {"https://www.example.test/", "http://www.evil.com/bla.apk"},
+      /*referrer_url=*/"https://www.google.com",
+      /*display_name=*/base::FilePath(kApkFilename));
+
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+
+  EXPECT_EQ(download_service_->delegate()->ShouldCheckDownloadUrl(&item),
+            ShouldAndroidDownloadProtectionBeActive());
+
+  // On Android, CheckDownloadURL always returns immediately which means the
+  // client object callback will never be called. Nevertheless the callback
+  // provided to CheckClientDownload must still be called.
+  // Note: This calls CheckDownloadUrl() regardless of the value of
+  // ShouldCheckDownloadUrl(). Normally the caller is responsible for checking
+  // ShouldCheckDownloadUrl(). CheckDownloadUrl() itself should behave the same
+  // in either case.
+  RunLoop run_loop;
+  download_service_->CheckDownloadUrl(
+      &item, base::BindOnce(&AndroidDownloadProtectionTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
+}
+
+// Tests that CheckClientDownload is called if Android download protection is
+// active.
+TEST_P(AndroidDownloadProtectionTest, CheckClientDownload) {
+  TestCheckClientDownload();
+}
+
+TEST_P(AndroidDownloadProtectionTestWithOverrideUrl, CheckClientDownload) {
+  SCOPED_TRACE(GetUrlOverrideString());
+
+  // Test that the correct service override URL is used.
+  GURL expected_url = GetExpectedDownloadRequestUrl();
+  EXPECT_EQ(download_service_->delegate()->GetDownloadRequestUrl(),
+            expected_url);
+
+  TestCheckClientDownload(expected_url);
+}
+
+TEST_P(AndroidDownloadProtectionTest,
+       NoCheckClientDownloadForNonSupportedType) {
+  if (!ShouldAndroidDownloadProtectionBeActive()) {
+    return;
+  }
+
+  // Response to any requests will be DANGEROUS.
+  PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
+  // Override the random sampling.
+  OverrideNextShouldSample(true);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item;
+    content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item, /*url_chain_items=*/{"http://www.evil.com/bla.apk"},
+        /*referrer_url=*/"",
+        /*display_name=*/
+        base::FilePath(FILE_PATH_LITERAL("not_supported_filetype.dex")));
+
+    EXPECT_EQ(
+        download_service_->delegate()->IsSupportedDownload(item, display_name_),
+        MayCheckDownloadResult::kMaySendSampledPingOnly);
+
+    EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(_, _))
+        .Times(0);
+    EXPECT_CALL(*binary_feature_extractor_.get(),
+                ExtractImageFeatures(_, _, _, _))
+        .Times(0);
+
+    // This returns true because there may be a ping sent, as far as
+    // DownloadProtectionService knows at this point...
+    RunLoop run_loop;
+    EXPECT_TRUE(download_service_->MaybeCheckClientDownload(
+        &item,
+        base::BindRepeating(&AndroidDownloadProtectionTest::CheckDoneCallback,
+                            base::Unretained(this), run_loop.QuitClosure())));
+    run_loop.Run();
+
+    // ... except that we are guaranteed not to send a ping because the sample
+    // rate for unsupported file types is 0.
+    EXPECT_EQ(download_service_->delegate()->GetUnsupportedFileSampleRate(
+                  display_name_),
+              0.0);
+    EXPECT_FALSE(HasClientDownloadRequest());
+
+    Mock::VerifyAndClearExpectations(binary_feature_extractor_.get());
+  }
+  // The histogram is logged when the item goes out of scope.
+  ExpectHistogramUniqueSample(Outcome::kDownloadNotSupportedType);
+}
+
+TEST_P(AndroidDownloadProtectionTest, NoCheckClientDownloadNotSampled) {
+  if (!ShouldAndroidDownloadProtectionBeActive()) {
+    return;
+  }
+
+  // Response to any requests will be DANGEROUS.
+  PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
+  // Override the random sampling to guarantee we won't sample.
+  OverrideNextShouldSample(false);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item;
+    content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item, /*url_chain_items=*/{"http://www.evil.com/bla.apk"},
+        /*referrer_url=*/"",
+        /*display_name=*/
+        base::FilePath(kApkFilename));
+
+    // The sampling from the delegate results in MaybeCheckClientDownload
+    // returning false.
+    ExpectNoCheckClientDownload(&item);
+  }
+  // The histogram is logged when the item goes out of scope.
+  ExpectHistogramUniqueSample(Outcome::kNotSampled);
+}
+
+// Tests the various false outcomes of IsSupportedDownload().
+TEST_P(AndroidDownloadProtectionTest, IsSupportedDownloadFalse) {
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item_empty_url_chain;
+    content::DownloadItemUtils::AttachInfoForTesting(&item_empty_url_chain,
+                                                     profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_empty_url_chain, /*url_chain_items=*/{},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(kApkFilename));
+    std::vector<GURL> empty_url_chain;
+    EXPECT_CALL(item_empty_url_chain, GetUrlChain())
+        .WillRepeatedly(ReturnRef(empty_url_chain));
+
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_empty_url_chain, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
+  }
+  ExpectHistogramUniqueSample(Outcome::kEmptyUrlChain);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item_invalid_url;
+    content::DownloadItemUtils::AttachInfoForTesting(&item_invalid_url,
+                                                     profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_invalid_url, /*url_chain_items=*/{"bogus_url"},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(kApkFilename));
+
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_invalid_url, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
+  }
+  ExpectHistogramUniqueSample(Outcome::kInvalidUrl);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item_unsupported_url_scheme;
+    content::DownloadItemUtils::AttachInfoForTesting(
+        &item_unsupported_url_scheme, profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_unsupported_url_scheme,
+        /*url_chain_items=*/{"unsupported://blah"},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(kApkFilename));
+
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_unsupported_url_scheme, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
+  }
+  ExpectHistogramUniqueSample(Outcome::kUnsupportedUrlScheme);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item_remote_file_url;
+    content::DownloadItemUtils::AttachInfoForTesting(&item_remote_file_url,
+                                                     profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_remote_file_url,
+        /*url_chain_items=*/{"file://drive.test/download"},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(kApkFilename));
+
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_remote_file_url, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
+  }
+  ExpectHistogramUniqueSample(Outcome::kRemoteFile);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item_local_file_url;
+    content::DownloadItemUtils::AttachInfoForTesting(&item_local_file_url,
+                                                     profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_local_file_url, /*url_chain_items=*/{"file:///download"},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(kApkFilename));
+
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_local_file_url, final_path_),
+              MayCheckDownloadResult::kMayNotCheckDownload);
+  }
+  ExpectHistogramUniqueSample(Outcome::kLocalFile);
+
+  ResetHistogramTester();
+  {
+    NiceMockDownloadItem item_display_name_not_apk;
+    content::DownloadItemUtils::AttachInfoForTesting(&item_display_name_not_apk,
+                                                     profile(), nullptr);
+    PrepareBasicDownloadItemWithContentUri(
+        &item_display_name_not_apk,
+        /*url_chain_items=*/{"https://evil.com/bla.apk"},
+        /*referrer_url=*/"",
+        /*display_name=*/base::FilePath(FILE_PATH_LITERAL("a.dex")));
+
+    EXPECT_EQ(download_service_->delegate()->IsSupportedDownload(
+                  item_display_name_not_apk, final_path_),
+              MayCheckDownloadResult::kMaySendSampledPingOnly);
+  }
+  ExpectHistogramUniqueSample(Outcome::kDownloadNotSupportedType);
+}
+
+// Tests that CheckClientDownload is called even if the download is not a
+// FULL_PING file type according to FileTypePolicies, but is otherwise supported
+// for Android download protection. This essentially tests that Android download
+// protection bypasses FileTypePolicies and applies its own hardcoded logic to
+// always ping only for APK files.
+// TODO(chlily): Refactor/fix FileTypePolicies to consolidate platform-specific
+// logic, then use FileTypePolicies on Android instead of bypassing it.
+TEST_P(AndroidDownloadProtectionTest,
+       CheckClientDownloadIgnoresFileTypePolicies) {
+  FileTypePoliciesTestOverlay file_type_policies;
+  auto no_ping_config = std::make_unique<DownloadFileTypeConfig>();
+  no_ping_config->mutable_default_file_type()->set_ping_setting(
+      DownloadFileType::NO_PING);
+  file_type_policies.SwapConfig(no_ping_config);
+
+  TestCheckClientDownload(
+      /*download_request_url=*/std::nullopt,
+      /*verify_item=*/base::BindLambdaForTesting(
+          [](download::DownloadItem* item) {
+            // Check that setup worked properly.
+            EXPECT_FALSE(FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
+                item->GetFileNameToReportUser()));
+          }));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing

@@ -262,4 +262,31 @@ public class HomeModulesMetricsUtilsUnitTest {
                 moduleType, modulePosition, /* isShownAtStartup= */ true);
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    @SmallTest
+    public void testRecordModuleImpressionCountBeforeInteraction() {
+        @ModuleType int moduleType = ModuleType.TAB_GROUP_PROMO;
+        int impressionCount = 2;
+        String histogramNameWithPosition =
+                "MagicStack.Clank.NewTabPage.Regular.Module.TabGroupPromo.ImpressionCountBeforeInteraction";
+        String histogramNameStartupWithPosition =
+                "MagicStack.Clank.NewTabPage.Startup.Module.TabGroupPromo.ImpressionCountBeforeInteraction";
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(histogramNameWithPosition, impressionCount)
+                        .build();
+        HomeModulesMetricsUtils.recordEducationalTipModuleImpressionCountBeforeInteraction(
+                moduleType, /* isShownAtStartup= */ false, impressionCount);
+        histogramWatcher.assertExpected();
+
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(histogramNameStartupWithPosition, impressionCount)
+                        .build();
+        HomeModulesMetricsUtils.recordEducationalTipModuleImpressionCountBeforeInteraction(
+                moduleType, /* isShownAtStartup= */ true, impressionCount);
+        histogramWatcher.assertExpected();
+    }
 }

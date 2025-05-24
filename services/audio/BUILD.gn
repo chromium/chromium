@@ -4,7 +4,6 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/cast.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
 import("//testing/test.gni")
 
@@ -19,7 +18,6 @@ source_set("audio") {
     "device_listener_output_stream.h",
     "device_notifier.cc",
     "device_notifier.h",
-    "device_output_listener.h",
     "group_coordinator-impl.h",
     "group_coordinator.h",
     "in_process_audio_manager_accessor.cc",
@@ -56,6 +54,7 @@ source_set("audio") {
     "realtime_audio_thread.cc",
     "realtime_audio_thread.h",
     "reference_output.h",
+    "reference_signal_provider.h",
     "service.cc",
     "service.h",
     "service_factory.cc",
@@ -64,19 +63,15 @@ source_set("audio") {
     "snooper_node.h",
     "stream_factory.cc",
     "stream_factory.h",
-    "stream_monitor.h",
     "sync_reader.cc",
     "sync_reader.h",
     "system_info.cc",
     "system_info.h",
-    "user_input_monitor.cc",
-    "user_input_monitor.h",
   ]
 
   deps = [
     ":testing_api_support",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
   ]
 
   public_deps = [
@@ -102,6 +97,8 @@ source_set("audio") {
     sources += [
       "audio_processor_handler.cc",
       "audio_processor_handler.h",
+      "loopback_reference_manager.cc",
+      "loopback_reference_manager.h",
       "mixing_graph.cc",
       "mixing_graph.h",
       "mixing_graph_impl.cc",
@@ -187,13 +184,11 @@ source_set("tests") {
     "test/mock_group_member.h",
     "test/mock_log.cc",
     "test/mock_log.h",
-    "user_input_monitor_unittest.cc",
   ]
 
   deps = [
     ":audio",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//media:test_support",
     "//services/audio/public/cpp",
     "//services/audio/public/cpp:test_support",

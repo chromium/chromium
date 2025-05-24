@@ -10,11 +10,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
-import android.graphics.drawable.LayerDrawable;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,10 +28,8 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabActionListener;
@@ -44,14 +42,11 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 /** {@link org.chromium.ui.modelutil.SimpleRecyclerViewMcp.ViewBinder} for tab List. */
 class TabListViewBinder {
-    private static final int TAB_GROUP_ICON_COLOR_LEVEL = 1;
-
     /**
      * Main entrypoint for binding TabListView
      *
      * @param view The view to bind to.
      * @param model The model to bind.
-     * @param viewType The view type to bind.
      */
     public static void bindTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
@@ -70,6 +65,26 @@ class TabListViewBinder {
             bindSelectableListTab(model, (ViewLookupCachingFrameLayout) view, propertyKey);
         } else {
             assert false : "Unsupported TabActionState provided to bindTab.";
+        }
+    }
+
+    /**
+     * Handles any cleanup for recycled views that might be expensive to keep around in the pool.
+     *
+     * @param model The property model to possibly cleanup.
+     * @param view The view to possibly cleanup.
+     */
+    public static void onViewRecycled(PropertyModel model, View view) {
+        if (view instanceof TabListView tabListView) {
+            ImageView faviconView = tabListView.findViewById(R.id.start_icon);
+            faviconView.setImageDrawable(null);
+
+            FrameLayout colorContainer = tabListView.findViewById(R.id.after_title_container);
+            TabCardViewBinderUtils.detachTabGroupColorView(colorContainer);
+
+            FrameLayout labelContainer =
+                    tabListView.findViewById(R.id.before_description_container);
+            labelContainer.removeAllViews();
         }
     }
 
@@ -95,7 +110,7 @@ class TabListViewBinder {
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
             boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            updateColors(view, isIncognito, isSelected);
+            updateColors(view, isIncognito);
 
             @DrawableRes
             int selectedTabBackground =
@@ -112,8 +127,12 @@ class TabListViewBinder {
         } else if (TabProperties.URL_DOMAIN == propertyKey) {
             String domain = model.get(TabProperties.URL_DOMAIN);
             ((TextView) view.findViewById(R.id.description)).setText(domain);
-        } else if (TabProperties.TAB_GROUP_COLOR_ID == propertyKey) {
-            setTabGroupColorIcon(view, model);
+        } else if (TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER == propertyKey) {
+            @Nullable
+            TabGroupColorViewProvider provider =
+                    model.get(TabProperties.TAB_GROUP_COLOR_VIEW_PROVIDER);
+            FrameLayout container = view.findViewById(R.id.after_title_container);
+            TabCardViewBinderUtils.updateTabGroupColorView(container, provider);
         } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
             @Nullable
@@ -144,6 +163,9 @@ class TabListViewBinder {
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {
             TabGridViewBinder.setNullableLongClickListener(
                     model.get(TabProperties.TAB_LONG_CLICK_LISTENER), view, model);
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            // Ignore this data for tab card labels in selectable mode.
+            updateTabCardLabel(view, /* tabCardLabelData= */ null);
         }
     }
 
@@ -167,10 +189,15 @@ class TabListViewBinder {
                             view.getContext(),
                             model.get(TabProperties.IS_INCOGNITO),
                             /* isSelected= */ false));
-        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_STRING == propertyKey) {
-            view.findViewById(R.id.end_button)
-                    .setContentDescription(
-                            model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_STRING));
+        } else if (TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            TextResolver actionButtonDescriptionTextResolver =
+                    model.get(TabProperties.ACTION_BUTTON_DESCRIPTION_TEXT_RESOLVER);
+            CharSequence actionButtonDescriptionString =
+                    TabCardViewBinderUtils.resolveNullSafe(
+                            actionButtonDescriptionTextResolver, view.getContext());
+            view.findViewById(R.id.end_button).setContentDescription(actionButtonDescriptionString);
+        } else if (TabProperties.TAB_CARD_LABEL_DATA == propertyKey) {
+            updateTabCardLabel(view, model.get(TabProperties.TAB_CARD_LABEL_DATA));
         }
     }
 
@@ -181,7 +208,7 @@ class TabListViewBinder {
      * @param isIncognito Whether the model is in incognito mode.
      * @param isSelected Whether the item is selected.
      */
-    private static void updateColors(ViewGroup view, boolean isIncognito, boolean isSelected) {
+    private static void updateColors(ViewGroup view, boolean isIncognito) {
         // TODO(crbug.com/40272756): isSelected is ignored as the selected row is only outlined not
         // colored so it should use the unselected color. This will be addressed in a fixit.
 
@@ -228,7 +255,7 @@ class TabListViewBinder {
         TabListView tabListView = (TabListView) view;
         if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             tabListView.setSelectionDelegate(model.get(TabProperties.TAB_SELECTION_DELEGATE));
-            tabListView.setItem(tabId);
+            tabListView.setItem(TabListEditorItemSelectionId.createTabId(tabId));
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
@@ -237,7 +264,7 @@ class TabListViewBinder {
 
             Context context = view.getContext();
             Resources res = view.getResources();
-            int level = getCheckmarkLevel(res, isSelected);
+            int level = TabCardViewBinderUtils.getCheckmarkLevel(res, isSelected);
             ColorStateList backgroundColorStateList =
                     getBackgroundColorStateList(context, isSelected, isIncognito);
 
@@ -257,56 +284,6 @@ class TabListViewBinder {
     private static void setFavicon(View view, Drawable favicon) {
         ImageView faviconView = view.findViewById(R.id.start_icon);
         faviconView.setImageDrawable(favicon);
-    }
-
-    private static void setTabGroupColorIcon(ViewGroup view, PropertyModel model) {
-        ImageView colorIconView = view.findViewById(R.id.icon);
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            colorIconView.setVisibility(View.VISIBLE);
-
-            // If the tab is a single tab item, a tab that is part of a group but shown in the
-            // TabGridDialogView list representation, or an invalid case, do not set/show.
-            if (model.get(TabProperties.TAB_GROUP_COLOR_ID)
-                    == TabGroupColorUtils.INVALID_COLOR_ID) {
-                colorIconView.setVisibility(View.GONE);
-                return;
-            }
-
-            Context context = view.getContext();
-            final @ColorInt int color =
-                    ColorPickerUtils.getTabGroupColorPickerItemColor(
-                            context,
-                            model.get(TabProperties.TAB_GROUP_COLOR_ID),
-                            model.get(TabProperties.IS_INCOGNITO));
-
-            // If the icon already exists, just apply the color to the existing drawable.
-            LayerDrawable bgDrawable = (LayerDrawable) colorIconView.getBackground();
-            if (bgDrawable == null) {
-                LayerDrawable tabGroupColorIcon =
-                        (LayerDrawable)
-                                ResourcesCompat.getDrawable(
-                                        context.getResources(),
-                                        R.drawable.tab_group_color_icon,
-                                        context.getTheme());
-                ((GradientDrawable) tabGroupColorIcon.getDrawable(TAB_GROUP_ICON_COLOR_LEVEL))
-                        .setColor(color);
-                colorIconView.setBackground(tabGroupColorIcon);
-            } else {
-                bgDrawable.mutate();
-                ((GradientDrawable) bgDrawable.getDrawable(TAB_GROUP_ICON_COLOR_LEVEL))
-                        .setColor(color);
-            }
-
-        } else {
-            colorIconView.setVisibility(View.GONE);
-        }
-    }
-
-    private static int getCheckmarkLevel(Resources res, boolean isSelected) {
-        return isSelected
-                ? res.getInteger(R.integer.list_item_level_selected)
-                : res.getInteger(R.integer.list_item_level_default);
     }
 
     private static ColorStateList getCheckedDrawableColorStateList(
@@ -331,5 +308,46 @@ class TabListViewBinder {
                             ? R.color.default_icon_color_light
                             : R.color.default_icon_color_tint_list);
         }
+    }
+
+    private static void updateTabCardLabel(
+            ViewGroup view, @Nullable TabCardLabelData tabCardLabelData) {
+        @Nullable
+        TabCardLabelView labelView = getOrSetupTabCardLabelView(view, tabCardLabelData == null);
+        if (labelView != null) {
+            labelView.setData(tabCardLabelData);
+        }
+    }
+
+    private static @Nullable TabCardLabelView getOrSetupTabCardLabelView(
+            ViewGroup view, boolean isDataNull) {
+        FrameLayout labelContainer = view.findViewById(R.id.before_description_container);
+        if (labelContainer.getChildCount() > 0) {
+            return (TabCardLabelView) labelContainer.getChildAt(0);
+        } else if (isDataNull) {
+            // Avoid eagerly creating the view in the event the data is null and it isn't already
+            // created.
+            return null;
+        }
+        Context context = labelContainer.getContext();
+        TabCardLabelView labelView =
+                (TabCardLabelView)
+                        LayoutInflater.from(context)
+                                .inflate(R.layout.tab_card_label_layout, labelContainer, false);
+        labelContainer.addView(labelView);
+
+        Resources res = context.getResources();
+        int marginEnd = res.getDimensionPixelSize(R.dimen.tab_card_label_list_margin_end);
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) labelView.getLayoutParams();
+        params.setMarginEnd(marginEnd);
+        labelView.setLayoutParams(params);
+
+        // TODO(crbug.com/362306803): This is technically supposed to have elevation. However,
+        // propagating clipToPadding=false and clipChildren=false all the way from
+        // title_and_description_layout up to tab_list_card_item to make it look right is not worth
+        // the complexity/risk of impacting other list UI when this UI is likely to be deprecated in
+        // 2025.
+        labelView.setElevation(0);
+        return labelView;
     }
 }

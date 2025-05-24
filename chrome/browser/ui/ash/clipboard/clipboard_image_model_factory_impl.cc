@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/ash/clipboard/clipboard_image_model_factory_impl.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
@@ -66,10 +67,11 @@ void ClipboardImageModelFactoryImpl::CancelRequest(
     return;
   }
 
-  auto iter = base::ranges::find(pending_list_, id,
-                                 &ClipboardImageModelRequest::Params::id);
-  if (iter == pending_list_.end())
+  auto iter = std::ranges::find(pending_list_, id,
+                                &ClipboardImageModelRequest::Params::id);
+  if (iter == pending_list_.end()) {
     return;
+  }
 
   pending_list_.erase(iter);
 }
@@ -84,11 +86,13 @@ void ClipboardImageModelFactoryImpl::Deactivate() {
 
   // Rendering will not stop if |active_until_empty_| has been set true by a
   // call to `RenderCurrentPendingRequests()`.
-  if (active_until_empty_)
+  if (active_until_empty_) {
     return;
+  }
 
-  if ((!request_ || !request_->IsModifyingClipboard()))
+  if ((!request_ || !request_->IsModifyingClipboard())) {
     return;
+  }
 
   // Stop the currently running request if it is modifying the clipboard.
   // ClipboardImageModelFactory is `Deactivate()`-ed prior to the user pasting
@@ -109,8 +113,9 @@ void ClipboardImageModelFactoryImpl::OnShutdown() {
 }
 
 void ClipboardImageModelFactoryImpl::StartNextRequest() {
-  if (pending_list_.empty())
+  if (pending_list_.empty()) {
     active_until_empty_ = false;
+  }
 
   if (pending_list_.empty() || (!active_ && !active_until_empty_) ||
       (request_ && request_->IsRunningRequest())) {
@@ -134,8 +139,9 @@ void ClipboardImageModelFactoryImpl::StartNextRequest() {
 }
 
 void ClipboardImageModelFactoryImpl::OnRequestIdle() {
-  if (!request_)
+  if (!request_) {
     return;
+  }
 
   DCHECK(!request_->IsRunningRequest())
       << "Running requests should timeout or complete before being cleaned up.";

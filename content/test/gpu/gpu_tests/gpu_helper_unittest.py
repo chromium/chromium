@@ -3,27 +3,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from collections.abc import Callable
+import dataclasses
+from typing import Any
 import unittest
 from unittest import mock
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+from telemetry.internal.platform import gpu_info
 
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_helper
-from telemetry.internal.platform import gpu_info
 
 
 # pylint: disable=too-many-arguments
-def CreateGpuDeviceDict(vendor_id: Optional[int] = None,
-                        device_id: Optional[int] = None,
-                        sub_sys_id: Optional[int] = None,
-                        revision: Optional[int] = None,
-                        vendor_string: Optional[str] = None,
-                        device_string: Optional[str] = None,
-                        driver_vendor: Optional[str] = None,
-                        driver_version: Optional[str] = None
-                        ) -> Dict[str, Union[str, int]]:
+def CreateGpuDeviceDict(
+    vendor_id: int | None = None,
+    device_id: int | None = None,
+    sub_sys_id: int | None = None,
+    revision: int | None = None,
+    vendor_string: str | None = None,
+    device_string: str | None = None,
+    driver_vendor: str | None = None,
+    driver_version: str | None = None) -> dict[str, str | int]:
   return {
       'vendor_id':
       vendor_id or 0,
@@ -51,25 +52,25 @@ def CreateGpuDeviceDict(vendor_id: Optional[int] = None,
 class TagHelperTestCase():
   """Struct-like class for defining a tag helper test case."""
   expected_result: Any
-  device_dict: Dict[str, Union[str, int]] = ct.EmptyDict()
-  aux_attributes: Dict[str, Any] = ct.EmptyDict()
-  feature_status: Dict[str, str] = ct.EmptyDict()
-  extra_browser_args: List[str] = ct.EmptyList()
+  device_dict: dict[str, str | int] = ct.EmptyDict()
+  aux_attributes: dict[str, Any] = ct.EmptyDict()
+  feature_status: dict[str, str] = ct.EmptyDict()
+  extra_browser_args: list[str] = ct.EmptyList()
 
 
 class TagHelpersUnittest(unittest.TestCase):
 
   def runTagHelperTestWithIndex(
       self, tc: TagHelperTestCase,
-      test_method: Callable[[Optional[gpu_info.GPUInfo], int], Any]) -> None:
+      test_method: Callable[[gpu_info.GPUInfo | None, int], Any]) -> None:
     """Helper method for running a single tag helper test case w/ index."""
     info = gpu_info.GPUInfo([CreateGpuDeviceDict(**tc.device_dict)],
                             tc.aux_attributes, tc.feature_status, None)
     self.assertEqual(test_method(info, 0), tc.expected_result)
 
-  def runTagHelperTest(self, tc: TagHelperTestCase,
-                       test_method: Callable[[Optional[gpu_info.GPUInfo]], Any]
-                       ) -> None:
+  def runTagHelperTest(
+      self, tc: TagHelperTestCase,
+      test_method: Callable[[gpu_info.GPUInfo | None], Any]) -> None:
     """Helper method for running a single tag helper test case w/o index."""
     info = gpu_info.GPUInfo([CreateGpuDeviceDict(**tc.device_dict)],
                             tc.aux_attributes, tc.feature_status, None)
@@ -302,25 +303,6 @@ class TagHelpersUnittest(unittest.TestCase):
                     return_value=False):
       self.assertEqual(gpu_helper.GetDisplayServer(''), None)
 
-  def testGetOOPCanvasStatus(self) -> None:
-    """Tests all the code paths for the GetOOPCanvasStatus() method."""
-    cases = [
-        # No feature status.
-        TagHelperTestCase('no-oop-c'),
-        # Feature status off.
-        TagHelperTestCase(
-            'no-oop-c',
-            feature_status={'canvas_oop_rasterization': 'enabled_off'}),
-        # Feature status on.
-        TagHelperTestCase(
-            'oop-c', feature_status={'canvas_oop_rasterization': 'enabled_on'}),
-    ]
-
-    for tc in cases:
-      self.runTagHelperTest(tc, gpu_helper.GetOOPCanvasStatus)
-
-    # Undefined info.
-    self.assertEqual(gpu_helper.GetOOPCanvasStatus(None), 'no-oop-c')
 
   def testGetAsanStatus(self) -> None:
     """Tests all code paths for the GetAsanStatus() method."""
@@ -499,7 +481,7 @@ class EvaluateVersionComparisonUnittest(unittest.TestCase):
         self.assertFalse(gpu_helper.EvaluateVersionComparison(right, op, left))
 
 
-def GetGreaterTestCases() -> Tuple[Tuple[str, str], ...]:
+def GetGreaterTestCases() -> tuple[tuple[str, str], ...]:
   return (
       # Purely numerical.
       ('2.2.3.4', '1.2.3.4'),

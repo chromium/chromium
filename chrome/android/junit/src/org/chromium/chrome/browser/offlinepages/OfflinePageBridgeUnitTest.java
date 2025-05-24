@@ -21,15 +21,15 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 
 import java.util.ArrayList;
@@ -39,6 +39,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class OfflinePageBridgeUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private OfflinePageBridge mBridge;
 
     private static final String TEST_NAMESPACE = "TEST_NAMESPACE";
@@ -79,12 +80,10 @@ public class OfflinePageBridgeUnitTest {
 
     @Captor ArgumentCaptor<Callback<Integer>> mDeleteCallbackArgument;
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock OfflinePageBridge.Natives mOfflinePageBridgeJniMock;
 
     /** Mocks the observer. */
-    public class MockOfflinePageModelObserver extends OfflinePageModelObserver {
+    public static class MockOfflinePageModelObserver extends OfflinePageModelObserver {
         public long lastDeletedOfflineId;
         public ClientId lastDeletedClientId;
 
@@ -97,8 +96,7 @@ public class OfflinePageBridgeUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(OfflinePageBridgeJni.TEST_HOOKS, mOfflinePageBridgeJniMock);
+        OfflinePageBridgeJni.setInstanceForTesting(mOfflinePageBridgeJniMock);
         OfflinePageBridge bridge = new OfflinePageBridge(0);
         // Using the spy to automatically marshal all the calls to the original methods if they are
         // not mocked explicitly.
@@ -264,13 +262,6 @@ public class OfflinePageBridgeUnitTest {
         mBridge.deletePagesByOfflineId(list, callback);
 
         verify(callback, times(1)).onResult(any(Integer.class));
-    }
-
-    /** Performs a proper cast from Object to a List<OfflinePageItem>. */
-    private static List<OfflinePageItem> convertToListOfOfflinePages(Object o) {
-        @SuppressWarnings("unchecked")
-        List<OfflinePageItem> list = (List<OfflinePageItem>) o;
-        return list;
     }
 
     private Callback<List<OfflinePageItem>> createMultipleItemCallback(final int itemCount) {

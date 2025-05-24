@@ -55,7 +55,7 @@ class WebstoreInstallWithPromptAppsOnly
       const WebstoreInstallWithPromptAppsOnly&) = delete;
 
  private:
-  ~WebstoreInstallWithPromptAppsOnly() override {}
+  ~WebstoreInstallWithPromptAppsOnly() override = default;
 
   // extensions::WebstoreStandaloneInstaller overrides:
   void OnManifestParsed() override;

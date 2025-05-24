@@ -289,6 +289,75 @@ class FieldTrialToStruct(unittest.TestCase):
     self.maxDiff = None
     self.assertEqual(expected, result)
 
+  _DISABLE_BENCHMARKING_CONFIG = {
+      'Trial1': [{
+          'platforms': ['windows'],
+          'experiments': [
+              {
+                  'name': 'Group1',
+                  'disable_benchmarking': True,
+              },
+          ]
+      }],
+      'Trial2': [{
+          'platforms': ['windows'],
+          'experiments': [{
+              'name': 'Group2',
+              'disable_benchmarking': False,
+          }]
+      }],
+      'Trial3': [{
+          'platforms': ['windows'],
+          'experiments': [{
+              'name': 'Group3',
+          }]
+      }]
+  }
+
+  def test_FieldTrialToDescriptionWithDisableBenchmarkingTrial(self):
+    result = fieldtrial_to_struct._FieldTrialConfigToDescription(
+        self._DISABLE_BENCHMARKING_CONFIG, ['windows'])
+    expected = {
+        'elements': {
+            'kFieldTrialConfig': {
+                'studies': [{
+                    'name':
+                    'Trial1',
+                    'experiments': [
+                        {
+                            'name': 'Group1',
+                            'platforms': ['Study::PLATFORM_WINDOWS'],
+                            'disable_benchmarking': True,
+                            'form_factors': [],
+                        },
+                    ],
+                }, {
+                    'name':
+                    'Trial2',
+                    'experiments': [
+                        {
+                            'name': 'Group2',
+                            'platforms': ['Study::PLATFORM_WINDOWS'],
+                            'form_factors': [],
+                        },
+                    ],
+                }, {
+                    'name':
+                    'Trial3',
+                    'experiments': [
+                        {
+                            'name': 'Group3',
+                            'platforms': ['Study::PLATFORM_WINDOWS'],
+                            'form_factors': [],
+                        },
+                    ],
+                }]
+            }
+        }
+    }
+    self.maxDiff = None
+    self.assertEqual(expected, result)
+
   _MULTIPLE_OVERRIDE_UI_STRING_CONFIG = {
     'Trial1': [
       {

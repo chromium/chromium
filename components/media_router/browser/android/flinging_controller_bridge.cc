@@ -98,8 +98,9 @@ void FlingingControllerBridge::OnMediaStatusUpdated(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_bridge,
     const base::android::JavaParamRef<jobject>& j_status) {
-  if (!observer_)
+  if (!observer_) {
     return;
+  }
 
   media::MediaStatus status;
 

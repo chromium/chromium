@@ -22,7 +22,8 @@ StyleInitialData::StyleInitialData(Document& document,
             document, *specified_initial_value);
     CSSVariableData* computed_initial_data =
         StyleBuilderConverter::ConvertRegisteredPropertyVariableData(
-            *computed_initial_value, false /* is_animation_tainted */);
+            *computed_initial_value, false /* is_animation_tainted */,
+            false /* is_attr_tainted */);
 
     variables_.SetData(entry.key, computed_initial_data);
     variables_.SetValue(entry.key, computed_initial_value);

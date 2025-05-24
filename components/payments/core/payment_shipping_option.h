@@ -27,7 +27,6 @@ class PaymentShippingOption {
   ~PaymentShippingOption();
 
   bool operator==(const PaymentShippingOption& other) const;
-  bool operator!=(const PaymentShippingOption& other) const;
   PaymentShippingOption& operator=(const PaymentShippingOption& other);
 
   // Populates the properties of this PaymentShippingOption from |dict|.

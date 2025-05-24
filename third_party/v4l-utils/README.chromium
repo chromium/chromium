@@ -1,7 +1,8 @@
 Name: v4l-utils
 URL: http://git.linuxtv.org/v4l-utils.git
 Version: 1.6.0
-License: LGPL 2.1
+Revision: 02f0dda860a8b7d16792c616bdeb5b02303c288f
+License: LGPL-2.1
 License File: COPYING.libv4l
 Security Critical: No
 Shipped: yes

@@ -1,0 +1,39 @@
+<!doctype html>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/reporting/resources/report-helper.js"></script>
+
+<body>
+<script>
+
+  promise_test(async () => {
+    const {ORIGIN} = get_host_info();
+    const REMOTE_EXECUTOR =
+      `/common/dispatcher/remote-executor.html?pipe=`;
+    const iframe_uuid = token();
+
+    let header =
+      `header(Integrity-Policy,blocked-destinations=\\(script\\)\\, endpoints=\\(integrity-endpoint-1 integrity-endpoint-2\\))`;
+    const iframe_url = `${REMOTE_EXECUTOR}${encodeURIComponent(header)}&uuid=${iframe_uuid}`;
+
+    const iframe = document.createElement('iframe');
+    iframe.src = iframe_url;
+    document.body.appendChild(iframe);
+
+    // Execute code directly from the iframe.
+    const ctx = new RemoteContext(iframe_uuid);
+    const result = await ctx.execute_script(async (ORIGIN) => {
+      const isolatedWorldId = 1;
+      const value = await testRunner.evaluateScriptInIsolatedWorldAndReturnValue(
+          isolatedWorldId,
+          String(`(async()=>{window.ran = false;await import('${ORIGIN}/content-security-policy/resources/ran.js');return window.ran;})()`));
+      return value;
+    }, [ORIGIN]);
+    assert_true(result);
+  }, "Extension based fetch is not blocked by Integrity-Policy");
+</script>
+

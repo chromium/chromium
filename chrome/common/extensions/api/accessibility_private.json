@@ -170,6 +170,21 @@
             "type": "boolean",
             "description": "True if the double click flag should be set.",
             "optional": true
+          },
+          "isTripleClick": {
+            "type": "boolean",
+            "description": "True if the triple click flag should be set.",
+            "optional": true
+          },
+          "useRewriters": {
+            "type": "boolean",
+            "description": "If true, uses rewriters for the mouse event; only allowed if used from FaceGaze. Otherwise indicates that rewriters should be skipped.",
+            "optional": true
+          },
+          "forceNotSynthetic": {
+            "type": "boolean",
+            "description": "If true, forces mouse event to appear as a real mouse event; only allowed if used from FaceGaze. Otherwise indicates that this mouse event should be marked as synthetic.",
+            "optional": true
           }
         }
       },
@@ -245,7 +260,7 @@
       {
         "id": "AccessibilityFeature",
         "type": "string",
-        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices", "faceGazeGravityWells"],
+        "enum": ["dictationContextChecking", "faceGaze", "googleTtsHighQualityVoices", "captionsOnBrailleDisplay"],
         "description": "Subset of accessibility features."
       },
       {
@@ -713,17 +728,17 @@
             "description": "True for ChromeVox (native), false for TalkBack."
           }
         ],
-	"returns_async": {
-	  "name": "callback",
-	  "desctiprion": "Callback function.",
-	  "parameters": [
+        "returns_async": {
+          "name": "callback",
+          "description": "Callback function.",
+          "parameters": [
             {
-	      "name": "response",
-	      "$ref": "SetNativeChromeVoxResponse",
-	      "description": "Return Success if successfully toggled. Return error description otherwise."
-	    }
-	  ]
-	}
+              "name": "response",
+              "$ref": "SetNativeChromeVoxResponse",
+              "description": "Return Success if successfully toggled. Return error description otherwise."
+            }
+          ]
+        }
       },
       {
         "name": "sendSyntheticKeyEvent",
@@ -740,6 +755,12 @@
             "type": "boolean",
             "description": "If true, uses rewriters for the key event; only allowed if used from Dictation or FaceGaze. Otherwise indicates that rewriters should be skipped.",
             "optional": true
+          },
+          {
+            "name": "isRepeat",
+            "type": "boolean",
+            "description": "If true, sets the key event to repeat, which should occur if the key event should be held. Otherwise, the key event should not repeat.",
+            "optional": true
           }
         ]
       },
@@ -754,6 +775,23 @@
             "description": "True if accessibility component extensions should receive mouse events."
           }
         ]
+      },
+      {
+        "name": "enableLiveCaption",
+        "type": "function",
+        "description": "Enables or disables live captioning",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True if live caption should be turned on."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [],
+          "optional": true
+        }
       },
       {
         "name": "setCursorPosition",
@@ -787,17 +825,6 @@
           {
             "name": "state",
             "$ref": "SelectToSpeakState"
-          }
-        ]
-      },
-      {
-        "name": "clipboardCopyInActiveLacrosGoogleDoc",
-        "type": "function",
-        "description": "Called by the Select-to-Speak extension to request a clipboard copy in the active Lacros Google Docs tab for the copy-paste fallback.",
-        "parameters": [ {
-            "name": "url",
-            "type": "string",
-            "description": "URL of the Google Docs tab."
           }
         ]
       },
@@ -1069,23 +1096,6 @@
         }
       },
       {
-        "name": "isLacrosPrimary",
-        "type": "function",
-        "description": "Gets whether new browser windows and tabs should be in Lacros browser.",
-        "parameters": [],
-        "returns_async": {
-          "name": "callback",
-          "description": "A callback that is run when the result is returned.",
-          "parameters": [
-            {
-              "type": "boolean",
-              "name": "useLacros",
-              "description": "True if new browser windows and tabs should be in Lacros."
-            }
-          ]
-        }
-      },
-      {
         "name": "showToast",
         "type": "function",
         "description": "Displays an accessibility-related toast.",
@@ -1132,6 +1142,24 @@
             "name": "text",
             "type": "string",
             "description": "The text to be displayed in the bubble UI."
+          },
+          {
+            "name": "isWarning",
+            "type": "boolean",
+            "description": "True if the bubble UI contains a warning about state.",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "enableDragEventRewriter",
+        "type": "function",
+        "description": "Turns on/off the DragEventRewriter, which rewrites kMouseMoved events into kMouseDragged events.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "Whether or not the DragEventRewriter should be enabled."
           }
         ]
       }

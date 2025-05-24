@@ -1,0 +1,22 @@
+include_rules = [
+  # Use ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h instead
+  "-ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_app_interface.h",
+  # use ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h instead
+  "-ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_app_interface.h",
+  "+ios/chrome/browser/blocking_overlay/ui_bundled/blocking_overlay_view_controller.h",
+  "+ios/chrome/browser/browser_view/ui_bundled",
+  "+ios/chrome/browser/crash_report/model/crash_report_helper.h",
+  "+ios/chrome/browser/default_browser/model/utils.h",
+  "+ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h",
+  "+ios/chrome/browser/device_sharing/model/device_sharing_browser_agent.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h",
+  "+ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h",
+  "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/sessions/model",
+  "+ios/chrome/browser/settings/model/sync/utils/sync_presenter.h",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/snapshots/model/snapshot_browser_agent.h",
+  "+ios/chrome/browser/tabs/model/inactive_tabs",
+  "+ios/chrome/browser/default_browser/model/features.h",
+]

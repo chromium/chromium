@@ -6,26 +6,34 @@ module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "sandbox/policy/mojom/context.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 
+// Model weights could be passed as an opened file or a file path.
+union ModelFile {
+  // This should be used with the GPU backend.
+  //
+  // TODO(crbug.com/313919363): This should be a ReadOnlyFile.
+  mojo_base.mojom.File file;
+
+  // This should be used with the APU backend.
+  mojo_base.mojom.FilePath path;
+};
+
 // Opened file resources needed to define the model.
 struct ModelAssets {
-  // Model weights could be passed as an opened file or a file path.
-  // The backend type will decide which one should be used, or
-  // which one is preferred if both are passed. If both are unset,
-  // usually the operation should fail.
-  // APU backend: weights_path should be used.
-  // GPU backend: weights should be used.
-  // TODO(b/313919363): This should also be a ReadOnlyFile.
-  mojo_base.mojom.File? weights;
-  mojo_base.mojom.FilePath? weights_path;
+  // Model weights. The backend may prefer these to be passed a certain way.
+  ModelFile weights;
 
   // Currently the only usage of sp model will be passed by file path.
   mojo_base.mojom.FilePath? sp_model_path;
+
+  // File which may be used to store a backend-specific cache of the model
+  // weights or to load previously-cached model weights from. This file must be
+  // writable to allow the backend to write out its custom data.
+  mojo_base.mojom.File? cache;
 };
 
 // Type of the backend to run the model.
@@ -35,6 +43,14 @@ enum ModelBackendType {
   // The APU accelerator backend. Only available on devices with APU, and need
   // special APU model files.
   kApu,
+  // The CPU backend.
+  kCpu,
+};
+
+// Options for specifying the performance characteristics of the model to load.
+enum ModelPerformanceHint {
+  kHighestQuality,
+  kFastestInference,
 };
 
 // Params to describe the model to load.
@@ -52,10 +68,9 @@ struct LoadModelParams {
   // List of adaptation ranks the model should support.
   array<uint32> adaptation_ranks;
 
-  // If this is true, the multiple sessions support will be enabled.
-  // The previous session will not be canceled when starting new session if
-  // this feature is enabled.
-  bool support_multiple_sessions;
+  // Chooses the performance characteristics of the model loaded. If only a
+  // single model is available, this field will do nothing.
+  ModelPerformanceHint performance_hint = kHighestQuality;
 };
 
 struct TextSafetyModelAssets {
@@ -108,24 +123,28 @@ enum SafetyFeature {
   kAudioTitleRequest = 2,
   kAudioSummaryResponse = 3,
   kAudioTitleResponse = 4,
+  [MinVersion=1] kAudioSummaryResponseV2 = 5,
+  [MinVersion=1] kAudioTitleResponseV2 = 6,
 };
 
 // A service which allows loading trusted models which are stored on-device and
 // which may process untrustworthy data.
 [ServiceSandbox=sandbox.mojom.Sandbox.kOnDeviceModelExecution,
- RequireContext=sandbox.mojom.Context.kBrowser]
+    RequireContext=sandbox.mojom.Context.kBrowser]
 interface OnDeviceModelService {
   // Initializes a new model instance given `params`. If the model can not be
   // created the model pipe will be reset.
-  LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model) =>
-      (LoadModelResult result);
+  LoadModel(LoadModelParams params, pending_receiver<OnDeviceModel> model)
+      => (LoadModelResult result);
+
+  // Returns the capabilities for a model specified by `weights`. Note that this
+  // will not load the model, so is much cheaper than calling LoadModel().
+  GetCapabilities(ModelFile weights) => (Capabilities capabilities);
 
   // Initializes a new TextSafetyModel with the provided params.
   // The model is disconnected on any errors with it.
   LoadTextSafetyModel(
-    TextSafetyModelParams params,
-    pending_receiver<TextSafetyModel> model
-  );
+      TextSafetyModelParams params, pending_receiver<TextSafetyModel> model);
 
   // Returns the performance class based on benchmarks run on the device.
   GetEstimatedPerformanceClass() => (PerformanceClass performance_class);
@@ -144,16 +163,14 @@ interface OnDeviceModelPlatformService {
   LoadPlatformModel@0(
       mojo_base.mojom.Uuid uuid,
       pending_receiver<OnDeviceModel> model,
-      [MinVersion=1] pending_remote<PlatformModelProgressObserver>?
+      pending_remote<PlatformModelProgressObserver>?
           progress_observer) => (LoadModelResult result);
 
   // Gets the platform model state given platform model `uuid`.
-  [MinVersion=1]
   GetPlatformModelState@1(mojo_base.mojom.Uuid uuid)
       => (PlatformModelState result);
 
   // Returns the performance class based on benchmarks run on the device.
-  [MinVersion=2]
   GetEstimatedPerformanceClass@2() => (PerformanceClass performance_class);
 
   // Formats the input fields with the model uuid and feature combination.
@@ -165,7 +182,6 @@ interface OnDeviceModelPlatformService {
   // For example, a feature may need "name" & "something" & "action" to complete
   // the following string: "I'm {name}, I have {something}, please {action} for
   // me.". And different feature may require different sets of key value pairs.
-  [MinVersion=3]
   FormatInput@3(mojo_base.mojom.Uuid uuid,
                 FormatFeature feature,
                 map<string, string> fields) => (string? result);
@@ -173,7 +189,6 @@ interface OnDeviceModelPlatformService {
   // Validates the `text` is safe or not with the given `safety_feature` and
   // `safety_info`. The `safety_info` should be the result returned by
   // `ClassifyTextSafety()`. Returns true if the `text` is safe.
-  [MinVersion=4]
   ValidateSafetyResult@4(
       SafetyFeature safety_feature, string text, SafetyInfo safety_info)
       => (bool result);

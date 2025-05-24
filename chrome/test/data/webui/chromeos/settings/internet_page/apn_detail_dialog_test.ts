@@ -4,11 +4,12 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {ApnDetailDialog, CrCheckboxElement, CrDialogElement, CrInputElement} from 'chrome://os-settings/os_settings.js';
+import type {ApnDetailDialog, CrCheckboxElement, CrDialogElement, CrInputElement} from 'chrome://os-settings/os_settings.js';
 import {ApnDetailDialogMode} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ApnProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnSource, ApnState, ApnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNull, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
@@ -23,11 +24,11 @@ const TEST_APN: ApnProperties = {
   ipType: ApnIpType.kAutomatic,
   apnTypes: [ApnType.kDefault],
   state: ApnState.kEnabled,
-  id: undefined,
-  language: undefined,
-  localizedName: undefined,
-  name: undefined,
-  attach: undefined,
+  id: null,
+  language: null,
+  localizedName: null,
+  name: null,
+  attach: null,
   source: ApnSource.kUi,
 };
 
@@ -259,8 +260,8 @@ suite('<apn-detail-dialog>', () => {
              optionNodes: NodeListOf<HTMLOptionElement>) => {
               for (const [idx, expectedText] of expectedTextArray.entries()) {
                 assertTrue(!!optionNodes[idx]);
-                assertTrue(!!optionNodes[idx]!.text);
-                assertEquals(expectedText, optionNodes[idx]!.text);
+                assertTrue(!!optionNodes[idx].text);
+                assertEquals(expectedText, optionNodes[idx].text);
               }
             };
         const authTypeDropDown =

@@ -30,7 +30,6 @@ class CONTENT_EXPORT PrefetchType {
   PrefetchType& operator=(const PrefetchType& prefetch_type) = delete;
 
   bool operator==(const PrefetchType& rhs) const = default;
-  bool operator!=(const PrefetchType& rhs) const = default;
 
   PreloadingTriggerType trigger_type() const { return trigger_type_; }
 

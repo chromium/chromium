@@ -28,8 +28,8 @@ const alicePayMethod = {
   },
 };
 
-var first;
-var second;
+let first;
+let second;
 
 /**
  * Sets the |first| variable and prints both |first| and |second| only if both

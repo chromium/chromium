@@ -5,6 +5,7 @@
 #include "content/browser/media/capture/desktop_capture_device_mac.h"
 
 #include <CoreGraphics/CoreGraphics.h>
+#include <CoreVideo/CVPixelBuffer.h>
 
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/media/capture/io_surface_capture_device_base_mac.h"

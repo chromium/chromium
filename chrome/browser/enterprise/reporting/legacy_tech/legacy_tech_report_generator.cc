@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
-#include "components/enterprise/common/proto/legacy_tech_events.pb.h"
+
+#include "components/enterprise/common/proto/synced/legacy_tech_events.pb.h"
 #include "content/public/browser/legacy_tech_cookie_issue_details.h"
 
 namespace enterprise_reporting {

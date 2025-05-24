@@ -9,8 +9,11 @@
 
 namespace blink {
 
-using CharacterPropertyType = uint8_t;
+using CharacterPropertyType = uint16_t;
 
+// TODO(lingqi): Some values are never used. e.g., a char that is Hangul should
+// always be kIsCJKIdeographOrSymbol, os 0b1000 is never used. Attempt to
+// compress the Property.
 enum class CharacterProperty : CharacterPropertyType {
   kIsCJKIdeographOrSymbol = 1 << 0,
   kIsPotentialCustomElementNameChar = 1 << 1,
@@ -23,8 +26,14 @@ enum class CharacterProperty : CharacterPropertyType {
   kHanKerningMask = ((1 << kHanKerningSize) - 1),
   kHanKerningShiftedMask = kHanKerningMask << kHanKerningShift,
 
-  kNumBits = kHanKerningShift + kHanKerningSize,
+  // Bits to store `EastAsianSpacingType`.
+  kEastAsianSpacingShift = 8,
+  kEastAsianSpacingSize = 2,
+  kEastAsianSpacingShiftedMask = ((1 << kEastAsianSpacingSize) - 1)
+                                 << kEastAsianSpacingShift,
+  kNumBits = kEastAsianSpacingShift + kEastAsianSpacingSize,
 };
+
 static_assert(static_cast<unsigned>(CharacterProperty::kNumBits) <=
               sizeof(CharacterPropertyType) * 8);
 

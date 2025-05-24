@@ -49,8 +49,7 @@ AutocompleteScoringModelExecutor::Postprocess(
   absl::Status status =
       tflite::task::core::PopulateVector<float>(output_tensors[0], &output);
   if (!status.ok()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
   DCHECK_EQ(1u, output.size());
   return output;

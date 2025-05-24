@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 
+#include <algorithm>
 #include <list>
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/views/chrome_web_dialog_view.h"
 #include "components/session_manager/core/session_manager.h"
@@ -87,7 +87,7 @@ const size_t SystemWebDialogDelegate::kDialogMarginForInternalScreenPx = 48;
 SystemWebDialogDelegate* SystemWebDialogDelegate::FindInstance(
     const std::string& id) {
   auto* instances = GetInstances();
-  auto iter = base::ranges::find(*instances, id, &SystemWebDialogDelegate::Id);
+  auto iter = std::ranges::find(*instances, id, &SystemWebDialogDelegate::Id);
   return iter == instances->end() ? nullptr : *iter;
 }
 
@@ -107,8 +107,9 @@ gfx::Size SystemWebDialogDelegate::ComputeDialogSizeForInternalScreen(
   // TODO(crbug.com/40112040): It could be possible that a Chromebox is
   // hooked up to a low-resolution monitor. It might be a good idea to check
   // that display's resolution as well.
-  if (!display::HasInternalDisplay())
+  if (!display::HasInternalDisplay()) {
     return preferred_size;
+  }
 
   display::Display internal_display;
   if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(

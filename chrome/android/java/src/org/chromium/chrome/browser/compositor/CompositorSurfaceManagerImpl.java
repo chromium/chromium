@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * Manage multiple SurfaceViews for the compositor, so that transitions between
@@ -38,7 +39,7 @@ import org.chromium.base.Log;
  */
 class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, CompositorSurfaceManager {
     private static class SurfaceState {
-        public SurfaceView surfaceView;
+        public final SurfaceView surfaceView;
 
         // Do we expect a surfaceCreated?
         public boolean createPending;
@@ -125,7 +126,7 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     private SurfaceState mRequestedByClient;
 
     // Client that we notify about surface change events.
-    private SurfaceManagerCallbackTarget mClient;
+    private final SurfaceManagerCallbackTarget mClient;
 
     // View to which we'll attach the SurfaceView.
     private final ViewGroup mParentView;
@@ -158,6 +159,8 @@ class CompositorSurfaceManagerImpl implements SurfaceHolder.Callback2, Composito
     @Override
     public void requestSurface(int format) {
         Log.i(TAG, "Transitioning to surface with format: %d", format);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.Compositor.IsRequestingOpaqueSurface", format != PixelFormat.TRANSLUCENT);
         mRequestedByClient = (format == PixelFormat.TRANSLUCENT) ? mTranslucent : mOpaque;
 
         // If destruction is pending, then we must wait for it to complete.  When we're notified

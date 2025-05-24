@@ -11,12 +11,11 @@
 #include <string>
 
 #include "base/types/strong_alias.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -377,24 +376,11 @@ class MODULES_EXPORT ManifestParser {
   std::optional<mojom::blink::ManifestShareTargetPtr> ParseShareTarget(
       const JSONObject* object);
 
-  // Parses the 'url_handlers' field of a Manifest, as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-  // Returns the parsed list of UrlHandlers. The returned UrlHandlers are empty
-  // if the field didn't exist, parsing failed, the input list was empty, or if
-  // the blink feature flag is disabled.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableUrlHandlers.
-  Vector<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandlers(
-      const JSONObject* object);
-
-  // Parses a single URL handler entry in 'url_handlers', as defined in:
-  // https://github.com/WICG/pwa-url-handler/blob/main/explainer.md
-  // Returns |std::nullopt| if the UrlHandler was invalid, or a UrlHandler if
-  // parsing succeeded.
-  // This feature is experimental and is only enabled by the blink feature flag:
-  // blink::features::kWebAppEnableUrlHandlers.
-  std::optional<mojom::blink::ManifestUrlHandlerPtr> ParseUrlHandler(
-      const JSONObject* object);
+  // Keep in sync with ScopeExtensionTypeMap. E.g. kOrigin -> "origin"
+  enum class ScopeExtensionType {
+    kOrigin = 0,
+  };
+  static constexpr const char* ScopeExtensionTypeMap[1] = {"origin"};
 
   // Parses the 'scope_extensions' field of a Manifest, as defined in:
   // https://github.com/WICG/manifest-incubations/blob/gh-pages/scope_extensions-explainer.md
@@ -541,8 +527,8 @@ class MODULES_EXPORT ManifestParser {
   // Parses the 'permissions_policy' field of the manifest.
   // This outsources semantic parsing of the policy to the
   // PermissionsPolicyParser.
-  Vector<blink::ParsedPermissionsPolicyDeclaration> ParseIsolatedAppPermissions(
-      const JSONObject* object);
+  Vector<network::ParsedPermissionsPolicyDeclaration>
+  ParseIsolatedAppPermissions(const JSONObject* object);
   Vector<String> ParseOriginAllowlist(const JSONArray* allowlist,
                                       const String& feature);
 
@@ -577,6 +563,10 @@ class MODULES_EXPORT ManifestParser {
       const JSONObject* pattern_object);
 
   String ParseVersion(const JSONObject* object);
+
+  // Parses the `update_token` field in the manifest iff the `id` is defined in
+  // the manifest. Returns `String()` which is null otherwise.
+  String ParseUpdateToken(const JSONObject* object, bool has_custom_id);
 
   void AddErrorInfo(const String& error_msg,
                     bool critical = false,

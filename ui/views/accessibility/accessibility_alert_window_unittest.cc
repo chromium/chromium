@@ -25,8 +25,9 @@ class FakeAXAuraObjCacheDelegate : public AXAuraObjCache::Delegate {
   void OnChildWindowRemoved(AXAuraObjWrapper* parent) override {}
   void OnEvent(AXAuraObjWrapper* aura_obj,
                ax::mojom::Event event_type) override {
-    if (event_type == ax::mojom::Event::kAlert)
+    if (event_type == ax::mojom::Event::kAlert) {
       count_++;
+    }
   }
 
   int count() { return count_; }

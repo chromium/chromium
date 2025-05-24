@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
+import type {ScanningBrowserProxy, SelectedPath} from 'chrome://scanning/scanning_browser_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/chromeos/test_browser_proxy.js';
 
 const EMPTY_SELECTED_PATH: SelectedPath = {

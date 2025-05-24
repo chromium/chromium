@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/private_aggregation/private_aggregation_internals_ui.h"
 
@@ -34,12 +30,10 @@ PrivateAggregationInternalsUI::PrivateAggregationInternalsUI(WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIPrivateAggregationInternalsHost);
 
-  source->AddResourcePaths(
-      base::make_span(kPrivateAggregationInternalsResources,
-                      kPrivateAggregationInternalsResourcesSize));
+  source->AddResourcePaths(kPrivateAggregationInternalsResources);
 
   source->SetDefaultResource(
-    IDR_PRIVATE_AGGREGATION_INTERNALS_PRIVATE_AGGREGATION_INTERNALS_HTML);
+      IDR_PRIVATE_AGGREGATION_INTERNALS_PRIVATE_AGGREGATION_INTERNALS_HTML);
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,

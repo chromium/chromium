@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/filters/vpx_video_decoder.h"
 
 #include <memory>
@@ -102,8 +107,7 @@ class VpxVideoDecoderTest : public testing::Test {
         case DecoderStatus::Codes::kOk:
           break;
         case DecoderStatus::Codes::kAborted:
-          NOTREACHED_IN_MIGRATION();
-          [[fallthrough]];
+          NOTREACHED();
         default:
           DCHECK(output_frames_.empty());
           return status;
@@ -322,7 +326,7 @@ TEST_F(VpxVideoDecoderTest, MemoryPoolAllowsMultipleDisplay) {
 
   scoped_refptr<DecoderBuffer> data =
       ReadTestDataFile("vp9-duplicate-frame.webm");
-  InMemoryUrlProtocol protocol(data->data(), data->size(), false);
+  InMemoryUrlProtocol protocol(*data, false);
   FFmpegGlue glue(&protocol);
   ASSERT_TRUE(glue.OpenContext());
 

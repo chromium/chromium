@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 
 namespace enterprise_connectors::test {
@@ -25,17 +26,14 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
       FakeFileRequestCallback callback)>;
 
   FakeFilesRequestHandler(FakeFileUploadCallback fake_file_upload_callback,
+                          ContentAnalysisInfo* content_analysis_info,
                           safe_browsing::BinaryUploadService* upload_service,
                           Profile* profile,
-                          const AnalysisSettings& analysis_settings,
                           GURL url,
                           const std::string& source,
                           const std::string& destination,
-                          const std::string& user_action_id,
-                          const std::string& tab_title,
                           const std::string& content_transfer_method,
                           safe_browsing::DeepScanAccessPoint access_point,
-                          ContentAnalysisRequest::Reason reason,
                           const std::vector<base::FilePath>& paths,
                           CompletionCallback callback);
 
@@ -43,17 +41,14 @@ class FakeFilesRequestHandler : public FilesRequestHandler {
 
   static std::unique_ptr<FilesRequestHandler> Create(
       FakeFileUploadCallback fake_file_upload_callback,
+      ContentAnalysisInfo* content_analysis_info,
       safe_browsing::BinaryUploadService* upload_service,
       Profile* profile,
-      const AnalysisSettings& analysis_settings,
       GURL url,
       const std::string& source,
       const std::string& destination,
-      const std::string& user_action_id,
-      const std::string& tab_title,
       const std::string& content_transfer_method,
       safe_browsing::DeepScanAccessPoint access_point,
-      ContentAnalysisRequest::Reason reason,
       const std::vector<base::FilePath>& paths,
       FilesRequestHandler::CompletionCallback callback);
 

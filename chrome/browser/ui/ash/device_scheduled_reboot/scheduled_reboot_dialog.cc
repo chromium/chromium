@@ -30,8 +30,9 @@ ScheduledRebootDialog::ScheduledRebootDialog(const base::Time& reboot_time,
 ScheduledRebootDialog::~ScheduledRebootDialog() {
   if (dialog_delegate_) {
     views::Widget* widget = dialog_delegate_->GetWidget();
-    if (widget->HasObserver(this))
+    if (widget->HasObserver(this)) {
       widget->RemoveObserver(this);
+    }
     widget->CloseNow();
     dialog_delegate_ = nullptr;
   }
@@ -56,11 +57,13 @@ void ScheduledRebootDialog::ShowBubble(const base::Time& reboot_time,
                       base::TimeFormatShortDate(reboot_time)))
                   .set_is_secondary())
           .Build();
-
+  // TODO(crbug.com/41493925): Autosizing this bubble once this bubble's anchor
+  // point is in the correct position.
   auto bubble = views::BubbleDialogModelHost::CreateModal(
-      std::move(dialog_model), ui::mojom::ModalType::kSystem);
+      std::move(dialog_model), ui::mojom::ModalType::kSystem,
+      /*autosize=*/false);
   dialog_delegate_ = bubble.get();
-  bubble->SetOwnedByWidget(true);
+  bubble->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   constrained_window::CreateBrowserModalDialogViews(std::move(bubble),
                                                     native_view)
       ->Show();
@@ -77,8 +80,9 @@ views::DialogDelegate* ScheduledRebootDialog::GetDialogDelegate() const {
 }
 
 void ScheduledRebootDialog::UpdateWindowTitle() {
-  if (dialog_delegate_)
+  if (dialog_delegate_) {
     dialog_delegate_->SetTitle(BuildTitle());
+  }
 }
 
 const std::u16string ScheduledRebootDialog::BuildTitle() const {

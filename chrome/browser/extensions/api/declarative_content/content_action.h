@@ -12,8 +12,11 @@
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "extensions/browser/user_script_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -50,8 +53,8 @@ class ContentAction {
   virtual void Revert(const ApplyInfo& apply_info) const = 0;
 
   // Factory method that instantiates a concrete ContentAction implementation
-  // according to |json_action|, the representation of the ContentAction as
-  // received from the extension API.  Sets |error| and returns NULL in case of
+  // according to `json_action`, the representation of the ContentAction as
+  // received from the extension API.  Sets `error` and returns NULL in case of
   // an error.
   static std::unique_ptr<ContentAction> Create(
       content::BrowserContext* browser_context,

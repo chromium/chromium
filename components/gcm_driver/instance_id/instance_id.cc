@@ -18,7 +18,7 @@ const char kGCMScope[] = "GCM";
 InstanceID::InstanceID(const std::string& app_id, gcm::GCMDriver* gcm_driver)
     : gcm_driver_(gcm_driver), app_id_(app_id) {}
 
-InstanceID::~InstanceID() {}
+InstanceID::~InstanceID() = default;
 
 void InstanceID::GetEncryptionInfo(const std::string& authorized_entity,
                                    GetEncryptionInfoCallback callback) {

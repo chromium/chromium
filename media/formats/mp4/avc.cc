@@ -9,11 +9,11 @@
 
 #include "media/formats/mp4/avc.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "media/base/decrypt_config.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_reader.h"
@@ -25,7 +25,8 @@ namespace mp4 {
 static constexpr uint8_t kAnnexBStartCode[] = {0, 0, 0, 1};
 static constexpr int kAnnexBStartCodeSize = 4;
 
-static bool ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
+// static
+bool AVC::ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
   const size_t kLengthSize = 4;
   size_t pos = 0;
   while (buf->size() > kLengthSize && buf->size() - kLengthSize > pos) {
@@ -39,7 +40,7 @@ static bool ConvertAVCToAnnexBInPlaceForLengthSize4(std::vector<uint8_t>* buf) {
       return false;
     }
 
-    base::ranges::copy(kAnnexBStartCode, buf->begin() + pos);
+    std::ranges::copy(kAnnexBStartCode, buf->begin() + pos);
     pos += kLengthSize + nal_length;
   }
   return pos == buf->size();
@@ -130,7 +131,7 @@ bool AVC::InsertParamSetsAnnexB(const AVCDecoderConfigurationRecord& avc_config,
   // Clear |parser| and |start| since they aren't needed anymore and
   // will hold stale pointers once the insert happens.
   parser.reset();
-  start = NULL;
+  start = nullptr;
 
   std::vector<uint8_t> param_sets;
   RCHECK(AVC::ConvertConfigToAnnexB(avc_config, &param_sets));
@@ -192,7 +193,6 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
   DVLOG(3) << __func__;
-  DCHECK(buffer);
 
   BitstreamConverter::AnalysisResult result;
   result.is_conformant = false;  // Will change if needed before return.
@@ -315,9 +315,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
         return result;
 
       case H264Parser::kUnsupportedStream:
-        NOTREACHED_IN_MIGRATION()
-            << "AdvanceToNextNALU() returned kUnsupportedStream!";
-        return result;
+        NOTREACHED() << "AdvanceToNextNALU() returned kUnsupportedStream!";
 
       case H264Parser::kEOStream:
         done = true;

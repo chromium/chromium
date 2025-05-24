@@ -483,6 +483,7 @@ goog.editor.Table.createDomTable = function(
     'borderColor': style.borderColor,
     'borderWidth': style.borderWidth + 'px'
   });
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   tableElement.border = style.borderWidth;
   tableElement.setAttribute('bordercolor', style.borderColor);
   tableElement.setAttribute('cellspacing', '0');

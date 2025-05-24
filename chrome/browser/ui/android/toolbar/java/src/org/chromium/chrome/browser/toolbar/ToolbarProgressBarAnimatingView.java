@@ -13,10 +13,12 @@ import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.util.AttributeSet;
 import android.view.animation.Interpolator;
-import android.widget.FrameLayout.LayoutParams;
 import android.widget.ImageView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
@@ -24,6 +26,7 @@ import org.chromium.ui.interpolators.Interpolators;
  * An animating ImageView that is drawn on top of the progress bar. This will animate over the
  * current length of the progress bar only if the progress bar is static for some amount of time.
  */
+@NullMarked
 public class ToolbarProgressBarAnimatingView extends ImageView {
     /** The drawable inside this ImageView. */
     private final ColorDrawable mAnimationDrawable;
@@ -73,19 +76,19 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
     private boolean mIsCanceled;
 
     /** If the layout is RTL. */
-    private boolean mIsRtl;
+    private final boolean mIsRtl;
 
     /** The update listener for the animation. */
-    private ProgressBarUpdateListener mListener;
+    private final ProgressBarUpdateListener mListener;
 
     /** The last fraction of the animation that was drawn. */
     private float mLastAnimatedFraction;
 
     /** The last animation that received an update. */
-    private ValueAnimator mLastUpdatedAnimation;
+    private @Nullable ValueAnimator mLastUpdatedAnimation;
 
     /** The ratio of px to dp. */
-    private float mDpToPx;
+    private final float mDpToPx;
 
     /** An animation update listener that moves an ImageView across the progress bar. */
     private class ProgressBarUpdateListener implements AnimatorUpdateListener {
@@ -99,11 +102,9 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
 
     /**
      * @param context The Context for this view.
-     * @param height The LayoutParams for this view.
      */
-    public ToolbarProgressBarAnimatingView(Context context, LayoutParams layoutParams) {
-        super(context);
-        setLayoutParams(layoutParams);
+    public ToolbarProgressBarAnimatingView(Context context, AttributeSet attrs) {
+        super(context, attrs);
         mIsCanceled = true;
         mIsRtl = LocalizationUtils.isLayoutRtl();
         mDpToPx = getResources().getDisplayMetrics().density;
@@ -152,7 +153,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
         if (mProgressWidth <= 0) return;
 
         // Total duration: logE(progress_dp) * 200 * 1.3
-        long totalDuration = (long) (Math.log(mProgressWidth / mDpToPx) / Math.log(Math.E)) * 260;
+        long totalDuration = (long) ((Math.log(mProgressWidth / mDpToPx) / Math.log(Math.E)) * 260);
         if (totalDuration <= 0) return;
 
         mSlowAnimation.setDuration((long) (totalDuration * SLOW_ANIMATION_FRACTION));
@@ -183,10 +184,11 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
 
     /**
      * Update the animating view.
+     *
      * @param animator The current running animator.
      * @param animatedFraction The current fraction of completion for the animation.
      */
-    private void updateAnimation(ValueAnimator animator, float animatedFraction) {
+    private void updateAnimation(@Nullable ValueAnimator animator, float animatedFraction) {
         if (mIsCanceled) return;
         float interpolatorProgress = mInterpolator.getInterpolation(animatedFraction);
 

@@ -9,6 +9,7 @@
 
 #include "storage/browser/blob/blob_memory_controller.h"
 
+#include <array>
 #include <optional>
 
 #include "base/files/file_util.h"
@@ -325,8 +326,7 @@ TEST_F(BlobMemoryControllerTest, PageToDisk) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
 
   // Add our original item as populated so it's paged to disk.
-  future_data.Populate(base::as_bytes(
-      base::make_span(kData, kTestBlobStorageMaxBlobMemorySize)));
+  future_data.Populate(base::as_byte_span(kData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 
@@ -401,8 +401,7 @@ TEST_F(BlobMemoryControllerTest, CancelMemoryRequest) {
   EXPECT_EQ(0u, controller.disk_usage());
 
   // Add our original item as populated so we start paging to disk.
-  future_data.Populate(base::as_bytes(
-      base::make_span(kData, kTestBlobStorageMaxBlobMemorySize)));
+  future_data.Populate(base::as_byte_span(kData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 
@@ -577,9 +576,9 @@ TEST_F(BlobMemoryControllerTest, MultipleFilesPaged) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
 
   // Add our original item as populated so it's paged to disk.
-  future_data1.Populate(base::as_bytes(base::make_span(kData1, kSize1)));
+  future_data1.Populate(base::as_byte_span(kData1));
   items1[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
-  future_data2.Populate(base::as_bytes(base::make_span(kData2, kSize2)));
+  future_data2.Populate(base::as_byte_span(kData2));
   items2[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> both_items = {items1[0],
@@ -681,7 +680,7 @@ TEST_F(BlobMemoryControllerTest, PagingStopsWhenFull) {
   // Create all of our blobs.
   std::vector<scoped_refptr<ShareableBlobDataItem>> all_items;
   std::vector<base::WeakPtr<QuotaAllocationTask>> memory_tasks;
-  bool memory_requested[kBlobsThatCanFit] = {};
+  std::array<bool, kBlobsThatCanFit> memory_requested = {};
   for (size_t i = 0; i < kBlobsThatCanFit; i++) {
     BlobDataBuilder builder("fake");
     builder.AppendData(std::string(kData, kDataSize));
@@ -829,8 +828,7 @@ TEST_F(BlobMemoryControllerTest, DisableDiskWithFileAndMemoryPending) {
   EXPECT_EQ(0u, controller.disk_usage());
 
   // Add our original item as populated so we start paging it to disk.
-  future_data.Populate(
-      base::as_bytes(base::make_span(kDataMemoryData, kFirstMemorySize)));
+  future_data.Populate(base::as_byte_span(kDataMemoryData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 

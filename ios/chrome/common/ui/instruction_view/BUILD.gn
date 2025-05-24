@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("instruction_view") {
+  sources = [
+    "instruction_view.h",
+    "instruction_view.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:dynamic_type_util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("instructions_half_sheet") {
+  sources = [
+    "instructions_half_sheet_coordinator.h",
+    "instructions_half_sheet_coordinator.mm",
+    "instructions_half_sheet_view_controller.h",
+    "instructions_half_sheet_view_controller.mm",
+  ]
+  deps = [
+    ":instruction_view",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.h",
+    "constants.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

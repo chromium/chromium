@@ -197,8 +197,7 @@ class MultipleFramesObserver : public content::WebContentsObserver {
         return client.second.get();
       }
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   std::map<content::RenderFrameHost*,

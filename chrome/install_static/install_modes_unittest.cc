@@ -47,8 +47,8 @@ MATCHER(ContainsIllegalProgIdChar, "") {
 }  // namespace
 
 TEST(InstallModes, VerifyModes) {
-  ASSERT_THAT(NUM_INSTALL_MODES, Gt(0));
-  for (int i = 0; i < NUM_INSTALL_MODES; ++i) {
+  ASSERT_THAT(kInstallModes.size(), Gt(0));
+  for (size_t i = 0; i < kInstallModes.size(); ++i) {
     const InstallConstants& mode = kInstallModes[i];
 
     // The modes must be listed in order.

@@ -8,9 +8,11 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
@@ -38,6 +40,8 @@ using ::ash::AuthStatusConsumer;
 using ::ash::Key;
 using ::ash::UserContext;
 
+class PrefService;
+
 namespace {
 
 const char kInSessionAuthHelpPageUrl[] =
@@ -47,8 +51,9 @@ InSessionAuthDialogClient* g_auth_dialog_client_instance = nullptr;
 
 }  // namespace
 
-InSessionAuthDialogClient::InSessionAuthDialogClient()
-    : auth_performer_(ash::UserDataAuthClient::Get()) {
+InSessionAuthDialogClient::InSessionAuthDialogClient(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)),
+      auth_performer_(ash::UserDataAuthClient::Get()) {
   ash::WebAuthNDialogController::Get()->SetClient(this);
 
   DCHECK(!g_auth_dialog_client_instance);
@@ -192,10 +197,6 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   user_context->SetSyncPasswordData(password_manager::PasswordHashData(
       user->GetAccountId().GetUserEmail(), base::UTF8ToUTF16(secret),
       false /*force_update*/));
-  if (user->GetAccountId().GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    LOG(FATAL) << "Incorrect Active Directory user type "
-               << user_context->GetUserType();
-  }
 
   DCHECK(!pending_auth_state_);
   pending_auth_state_.emplace(std::move(callback));
@@ -278,7 +279,7 @@ void InSessionAuthDialogClient::OnAuthSessionStarted(
 
   // Take temporary ownership of user_context to pass on later.
   user_context_ = std::move(user_context);
-  pin_engine_.emplace(&auth_performer_);
+  pin_engine_.emplace(&local_state_.get(), &auth_performer_);
   legacy_fingerprint_engine_.emplace(&auth_performer_);
   std::move(callback).Run(true);
 }
@@ -296,8 +297,9 @@ void InSessionAuthDialogClient::OnAuthVerified(
     std::move(pending_auth_state_->callback).Run(false);
   } else {
     // TODO(b:241256423): Tell cryptohome to release WebAuthN secret.
-    if (authenticated_by_password)
+    if (authenticated_by_password) {
       OnPasswordAuthSuccess(*user_context_);
+    }
     std::move(pending_auth_state_->callback).Run(true);
   }
 
@@ -309,8 +311,9 @@ void InSessionAuthDialogClient::OnPasswordAuthSuccess(
   ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
       ash::quick_unlock::QuickUnlockFactory::GetForAccountId(
           user_context.GetAccountId());
-  if (quick_unlock_storage)
+  if (quick_unlock_storage) {
     quick_unlock_storage->MarkStrongAuth();
+  }
 }
 
 void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
@@ -321,8 +324,9 @@ void InSessionAuthDialogClient::AuthenticateUserWithFingerprint(
 
 void InSessionAuthDialogClient::OnFingerprintScan(
     const ::user_data_auth::FingerprintScanResult& result) {
-  if (!fingerprint_scan_done_callback_)
+  if (!fingerprint_scan_done_callback_) {
     return;
+  }
 
   switch (result) {
     case user_data_auth::FINGERPRINT_SCAN_RESULT_SUCCESS:

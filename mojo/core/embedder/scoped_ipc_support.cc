@@ -45,6 +45,9 @@ ScopedIPCSupport::ScopedIPCSupport(
 ScopedIPCSupport::~ScopedIPCSupport() {
   if (IsMojoIpczEnabled()) {
     // No extra shutdown required for mojo-ipcz.
+    // Suppress -Wunused-private-field warning, to not leak the buildflags
+    // include into the header.
+    (void)shutdown_policy_;
     return;
   }
 
@@ -63,7 +66,7 @@ ScopedIPCSupport::~ScopedIPCSupport() {
   base::ScopedAllowBaseSyncPrimitives allow_io;
   shutdown_event.Wait();
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

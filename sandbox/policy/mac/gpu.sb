@@ -132,18 +132,14 @@
     (extension-class "com.apple.app-sandbox.read")
     (subpath "/")))
 
-(if (param-true? filter-syscalls-debug)
-  (when (defined? 'syscall-unix)
-    (deny syscall-unix (with send-signal SIGSYS))
-    (allow syscall-unix
-      (syscall-number SYS_csrctl)
-      (syscall-number SYS_getentropy)
-      (syscall-number SYS_getxattr)
-      (syscall-number SYS_kdebug_typefilter)
-      (syscall-number SYS_sigaltstack)
-      (syscall-number SYS_write)
-      (syscall-number SYS_write_nocancel)
-)))
-
 (if (not (maybe-disable-metal-shader-cache))
   (maybe-allow-metal-shader-cache-access))
+
+; Needed for WebNN Core ML backend - https://crbug.com/344935458
+(if (and (>= os-version 1400) (param-defined? helper-bundle-id))
+    (let ((helper-bundle-cache-dir
+          (user-homedir-path (string-append "/Library/Caches/"
+                          (param helper-bundle-id) "/com.apple.e5rt.e5bundlecache"))))
+      (allow file-read* file-write*
+        (subpath helper-bundle-cache-dir)
+)))

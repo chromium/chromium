@@ -34,7 +34,7 @@
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
-#include "remoting/base/breakpad_utils.h"
+#include "remoting/base/crash/breakpad_utils.h"
 #include "remoting/base/typed_buffer.h"
 #include "remoting/host/base/switches.h"
 #include "remoting/host/usage_stats_consent.h"

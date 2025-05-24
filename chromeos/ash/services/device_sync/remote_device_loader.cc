@@ -4,11 +4,11 @@
 
 #include "chromeos/ash/services/device_sync/remote_device_loader.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
@@ -116,9 +116,8 @@ void RemoteDeviceLoader::Load(RemoteDeviceCallback callback) {
 void RemoteDeviceLoader::OnPSKDerived(
     const cryptauth::ExternalDeviceInfo& device,
     const std::string& psk) {
-  auto iterator =
-      base::ranges::find(remaining_devices_, device.public_key(),
-                         &cryptauth::ExternalDeviceInfo::public_key);
+  auto iterator = std::ranges::find(remaining_devices_, device.public_key(),
+                                    &cryptauth::ExternalDeviceInfo::public_key);
 
   DCHECK(iterator != remaining_devices_.end());
   remaining_devices_.erase(iterator);

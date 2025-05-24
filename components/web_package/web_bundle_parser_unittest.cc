@@ -9,15 +9,16 @@
 
 #include "components/web_package/web_bundle_parser.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -248,8 +249,9 @@ void CheckIfSignatureStackEntryIsValid(
   EXPECT_EQ(entry->signature_info->get_ed25519()->public_key, public_key);
 
   // The attributes should contain the public key.
-  EXPECT_NE(base::ranges::search(entry->attributes_cbor, public_key.bytes()),
-            entry->attributes_cbor.end());
+  EXPECT_NE(
+      std::ranges::search(entry->attributes_cbor, public_key.bytes()).begin(),
+      entry->attributes_cbor.end());
 }
 
 }  // namespace
@@ -716,7 +718,7 @@ TEST_F(WebBundleParserTest,
 TEST_F(WebBundleParserTest, RandomAccessContextLengthSmallerThanWebBundle) {
   std::vector<uint8_t> bundle = CreateSmallBundle();
   std::vector<uint8_t> invalid_length = {0, 0, 0, 0, 0, 0, 0, 10};
-  base::ranges::copy(invalid_length, bundle.end() - 8);
+  std::ranges::copy(invalid_length, bundle.end() - 8);
   TestDataSource data_source(bundle, /*is_random_access_context=*/true);
 
   ExpectFormatError(ParseUnsignedBundle(&data_source));
@@ -732,7 +734,7 @@ TEST_F(WebBundleParserTest, RandomAccessContextFileSmallerThanLengthField) {
 TEST_F(WebBundleParserTest, RandomAccessContextLengthBiggerThanFile) {
   std::vector<uint8_t> bundle = CreateSmallBundle();
   std::vector<uint8_t> invalid_length = {0xff, 0, 0, 0, 0, 0, 0, 0};
-  base::ranges::copy(invalid_length, bundle.end() - 8);
+  std::ranges::copy(invalid_length, bundle.end() - 8);
   TestDataSource data_source(bundle, /*is_random_access_context=*/true);
 
   ExpectFormatError(ParseUnsignedBundle(&data_source));
@@ -781,8 +783,8 @@ TEST_F(WebBundleParserTest, SignedBundleIntegrityBlockIsParsedCorrectly) {
   EXPECT_EQ(integrity_block->signature_stack.size(), 1ul);
   auto& entry = integrity_block->signature_stack[0];
   EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
-      entry, absl::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[0])
-                 .public_key));
+      entry,
+      std::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[0]).public_key));
 }
 
 TEST_F(WebBundleParserTest,
@@ -812,7 +814,7 @@ TEST_F(WebBundleParserTest,
   for (unsigned long i = 0; i < num_signatures; ++i) {
     EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
         integrity_block->signature_stack[i],
-        absl::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[i])
+        std::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[i])
             .public_key));
   }
 }
@@ -855,7 +857,7 @@ TEST_F(WebBundleParserTest,
   for (size_t index = 0; index < total_signatures; ++index) {
     if (signatures_errors[index].empty()) {
       auto* key_pair =
-          absl::get_if<test::Ed25519KeyPair>(&bundle_and_keys.key_pairs[index]);
+          std::get_if<test::Ed25519KeyPair>(&bundle_and_keys.key_pairs[index]);
       EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
           integrity_block->signature_stack[index], key_pair->public_key));
     } else {
@@ -1035,8 +1037,8 @@ TEST_F(WebBundleParserTest, SignedBundleWithMultipleAttributes) {
   EXPECT_EQ(integrity_block->signature_stack.size(), 1ul);
   auto& entry = integrity_block->signature_stack[0];
   EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
-      entry, absl::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[0])
-                 .public_key));
+      entry,
+      std::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[0]).public_key));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleV2) {
@@ -1067,8 +1069,8 @@ TEST_F(WebBundleParserTest, SignedBundleV2) {
   EXPECT_EQ(integrity_block->signature_stack.size(), 1ul);
   auto& entry = integrity_block->signature_stack[0];
   EXPECT_NO_FATAL_FAILURE(CheckIfSignatureStackEntryIsValid(
-      entry, absl::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[0])
-                 .public_key));
+      entry,
+      std::get<test::Ed25519KeyPair>(bundle_and_keys.key_pairs[0]).public_key));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleWithMultiplePublicKeyAttributes) {

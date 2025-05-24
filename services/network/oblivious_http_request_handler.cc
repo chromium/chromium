@@ -10,7 +10,6 @@
 #include "base/i18n/time_formatting.h"
 #include "base/not_fatal_until.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_log_util.h"
@@ -57,6 +56,9 @@ class StatefulObliviousHttpClient {
     auto key_configs =
         quiche::ObliviousHttpKeyConfigs::ParseConcatenatedKeys(key_config_str);
     if (!key_configs.ok()) {
+      return std::nullopt;
+    }
+    if (key_configs->NumKeys() == 0) {
       return std::nullopt;
     }
     quiche::ObliviousHttpHeaderKeyConfig key_config =

@@ -42,7 +42,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/common/webui_url_constants.h"
 #endif
 
@@ -137,7 +137,7 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
     return true;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // chrome-untrusted://terminal/ runs the SSH extension code which can store
   // SSH known_hosts, config, and Identity keys. Use unlimitedStorage to match
   // extension config.
@@ -362,9 +362,10 @@ void ExtensionSpecialStoragePolicy::AddOriginWithUnlimitedStorage(
 // SpecialCollection helper class
 //-----------------------------------------------------------------------------
 
-ExtensionSpecialStoragePolicy::SpecialCollection::SpecialCollection() {}
+ExtensionSpecialStoragePolicy::SpecialCollection::SpecialCollection() = default;
 
-ExtensionSpecialStoragePolicy::SpecialCollection::~SpecialCollection() {}
+ExtensionSpecialStoragePolicy::SpecialCollection::~SpecialCollection() =
+    default;
 
 bool ExtensionSpecialStoragePolicy::SpecialCollection::Contains(
     const GURL& origin) {

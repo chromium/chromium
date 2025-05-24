@@ -154,32 +154,6 @@ class TestClientControlledStateDelegate
   WindowStateRequestCallback window_state_request_callback_;
 };
 
-class TestWidgetDelegate : public views::WidgetDelegateView {
- public:
-  TestWidgetDelegate() = default;
-
-  TestWidgetDelegate(const TestWidgetDelegate&) = delete;
-  TestWidgetDelegate& operator=(const TestWidgetDelegate&) = delete;
-
-  ~TestWidgetDelegate() override = default;
-
-  void EnableSnap() {
-    SetCanMaximize(true);
-    SetCanResize(true);
-    GetWidget()->OnSizeConstraintsChanged();
-  }
-
-  void EnableFloat() {
-    SetCanResize(true);
-    GetWidget()->OnSizeConstraintsChanged();
-  }
-
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
-      views::Widget* widget) override {
-    return std::make_unique<NonClientFrameViewAsh>(widget);
-  }
-};
-
 class TestEmptyState : public WindowState::State {
  public:
   void OnWMEvent(WindowState* window_state, const WMEvent* event) override {}
@@ -256,6 +230,35 @@ void VerifySnappedBounds(aura::Window* window, float expected_snap_ratio) {
 
 }  // namespace
 
+class ClientControlledStateTestWidgetDelegate
+    : public views::WidgetDelegateView {
+ public:
+  ClientControlledStateTestWidgetDelegate() = default;
+
+  ClientControlledStateTestWidgetDelegate(
+      const ClientControlledStateTestWidgetDelegate&) = delete;
+  ClientControlledStateTestWidgetDelegate& operator=(
+      const ClientControlledStateTestWidgetDelegate&) = delete;
+
+  ~ClientControlledStateTestWidgetDelegate() override = default;
+
+  void EnableSnap() {
+    SetCanMaximize(true);
+    SetCanResize(true);
+    GetWidget()->OnSizeConstraintsChanged();
+  }
+
+  void EnableFloat() {
+    SetCanResize(true);
+    GetWidget()->OnSizeConstraintsChanged();
+  }
+
+  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+      views::Widget* widget) override {
+    return std::make_unique<NonClientFrameViewAsh>(widget);
+  }
+};
+
 class ClientControlledStateTest : public AshTestBase {
  public:
   ClientControlledStateTest() = default;
@@ -269,7 +272,7 @@ class ClientControlledStateTest : public AshTestBase {
   void SetUp() override {
     AshTestBase::SetUp();
 
-    widget_delegate_ = new TestWidgetDelegate();
+    widget_delegate_ = new ClientControlledStateTestWidgetDelegate();
 
     views::Widget::InitParams params(
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -298,7 +301,9 @@ class ClientControlledStateTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
-  TestWidgetDelegate* widget_delegate() { return widget_delegate_; }
+  ClientControlledStateTestWidgetDelegate* widget_delegate() {
+    return widget_delegate_;
+  }
 
  protected:
   aura::Window* window() { return widget_->GetNativeWindow(); }
@@ -378,8 +383,8 @@ class ClientControlledStateTest : public AshTestBase {
   raw_ptr<ClientControlledState, DanglingUntriaged> state_ = nullptr;
   raw_ptr<TestClientControlledStateDelegate, DanglingUntriaged>
       state_delegate_ = nullptr;
-  raw_ptr<TestWidgetDelegate, DanglingUntriaged> widget_delegate_ =
-      nullptr;  // owned by itself.
+  raw_ptr<ClientControlledStateTestWidgetDelegate, DanglingUntriaged>
+      widget_delegate_ = nullptr;  // owned by itself.
   raw_ptr<FakeWindowStateDelegate, DanglingUntriaged> window_state_delegate_ =
       nullptr;
   std::unique_ptr<views::Widget> widget_;

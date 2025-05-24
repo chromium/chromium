@@ -49,7 +49,7 @@ class SVGFilterGraphNodeMap final
  public:
   SVGFilterGraphNodeMap();
 
-  typedef HeapHashSet<Member<FilterEffect>> FilterEffectSet;
+  using FilterEffectSet = GCedHeapHashSet<Member<FilterEffect>>;
 
   void AddBuiltinEffect(FilterEffect*);
   void AddPrimitive(SVGFilterPrimitiveStandardAttributes&, FilterEffect*);

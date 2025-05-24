@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './calendar.js';
-import '../../module_header.js';
+import '../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -14,7 +14,6 @@ import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import type {CalendarElement} from './calendar.js';
-import {getCss} from './google_calendar_module.css.js';
 import {getHtml} from './google_calendar_module.html.js';
 import {GoogleCalendarProxyImpl} from './google_calendar_proxy.js';
 
@@ -37,10 +36,6 @@ export class GoogleCalendarModuleElement extends
     return 'ntp-google-calendar-module';
   }
 
-  static override get styles() {
-    return getCss();
-  }
-
   override render() {
     return getHtml.bind(this)();
   }
@@ -52,8 +47,8 @@ export class GoogleCalendarModuleElement extends
     };
   }
 
-  protected events_: CalendarEvent[];
-  protected showInfoDialog_: boolean;
+  protected accessor events_: CalendarEvent[] = [];
+  protected accessor showInfoDialog_: boolean = false;
 
   private handler_: GoogleCalendarPageHandlerRemote;
 
@@ -111,7 +106,7 @@ export class GoogleCalendarModuleElement extends
       composed: true,
       detail: {
         message: this.i18n('modulesGoogleCalendarDismissToastMessage'),
-        restoreCallback: this.handler_.restoreModule,
+        restoreCallback: () => this.handler_.restoreModule(),
       },
     }));
   }
@@ -122,10 +117,6 @@ export class GoogleCalendarModuleElement extends
 
   protected onInfoDialogClose_() {
     this.showInfoDialog_ = false;
-  }
-
-  protected onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
   }
 }
 

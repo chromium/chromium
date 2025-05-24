@@ -79,7 +79,7 @@ suite('cr-expand-button', function() {
     const labelId = 'label';
     assertEquals(
         'true',
-        button.shadowRoot!.querySelector(`#${labelId}`)!.getAttribute(
+        button.shadowRoot.querySelector(`#${labelId}`)!.getAttribute(
             'aria-hidden'));
     assertEquals(labelId, icon.getAttribute('aria-labelledby'));
   });

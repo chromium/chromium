@@ -322,7 +322,7 @@ size_t SourceBufferRange::DeleteGOPFromFront(BufferQueue* deleted_buffers) {
   size_t total_bytes_deleted = 0;
 
   KeyframeMap::const_iterator front = keyframe_map_.begin();
-  CHECK(front != keyframe_map_.end(), base::NotFatalUntil::M130);
+  CHECK(front != keyframe_map_.end());
 
   // Delete the keyframe at the start of |keyframe_map_|.
   keyframe_map_.erase(front);
@@ -580,7 +580,7 @@ base::TimeDelta SourceBufferRange::FindHighestBufferedTimestampAtOrBefore(
   }
 
   auto key_iter = GetFirstKeyframeAtOrBefore(timestamp);
-  CHECK(key_iter != keyframe_map_.end(), base::NotFatalUntil::M130)
+  CHECK(key_iter != keyframe_map_.end())
       << "BelongsToRange() semantics failed.";
   DCHECK(key_iter->first <= timestamp);
 

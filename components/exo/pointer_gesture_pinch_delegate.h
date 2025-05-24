@@ -29,7 +29,7 @@ class PointerGesturePinchDelegate {
                                  base::TimeTicks time_stamp) = 0;
 
  protected:
-  virtual ~PointerGesturePinchDelegate() {}
+  virtual ~PointerGesturePinchDelegate() = default;
 };
 
 }  // namespace exo

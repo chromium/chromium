@@ -133,7 +133,7 @@ final class WebStorageAdapter extends WebStorage {
                                 TraceEvent.scoped(
                                         "WebView.APICall.Framework.WEB_STORAGE_DELETE_ORIGIN")) {
                             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_STORAGE_DELETE_ORIGIN);
-                            mQuotaManagerBridge.deleteOrigin(origin);
+                            mQuotaManagerBridge.deleteOriginFramework(origin);
                         }
                     });
             return;
@@ -141,7 +141,7 @@ final class WebStorageAdapter extends WebStorage {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_DELETE_ORIGIN")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_STORAGE_DELETE_ORIGIN);
-            mQuotaManagerBridge.deleteOrigin(origin);
+            mQuotaManagerBridge.deleteOriginFramework(origin);
         }
     }
 
@@ -155,7 +155,7 @@ final class WebStorageAdapter extends WebStorage {
                                         "WebView.APICall.Framework.WEB_STORAGE_DELETE_ALL_DATA")) {
                             WebViewChromium.recordWebViewApiCall(
                                     ApiCall.WEB_STORAGE_DELETE_ALL_DATA);
-                            mQuotaManagerBridge.deleteAllData();
+                            mQuotaManagerBridge.deleteAllDataFramework();
                         }
                     });
             return;
@@ -163,8 +163,12 @@ final class WebStorageAdapter extends WebStorage {
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.WEB_STORAGE_DELETE_ALL_DATA")) {
             WebViewChromium.recordWebViewApiCall(ApiCall.WEB_STORAGE_DELETE_ALL_DATA);
-            mQuotaManagerBridge.deleteAllData();
+            mQuotaManagerBridge.deleteAllDataFramework();
         }
+    }
+
+    /* package */ AwQuotaManagerBridge getQuotaManagerBridge() {
+        return mQuotaManagerBridge;
     }
 
     private static boolean checkNeedsPost() {

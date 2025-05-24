@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_delegate.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
+#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -93,7 +94,8 @@ bool AppLauncherTabHelper::IsAppUrl(const GURL& url) {
   return !(web::UrlHasWebScheme(url) ||
            web::GetWebClient()->IsAppSpecificURL(url) ||
            url.SchemeIs(url::kFileScheme) || url.SchemeIs(url::kAboutScheme) ||
-           url.SchemeIs(url::kBlobScheme));
+           url.SchemeIs(url::kBlobScheme) ||
+           url.SchemeIs(web::kMarketplaceKitScheme));
 }
 
 void AppLauncherTabHelper::SetDelegate(AppLauncherTabHelperDelegate* delegate) {
@@ -378,5 +380,3 @@ AppLauncherTabHelper::GetPolicyDecisionAndOptionalAppLaunchRequest(
   }
   return {PolicyDecision::Cancel(), std::move(optional_app_launch_request)};
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(AppLauncherTabHelper)

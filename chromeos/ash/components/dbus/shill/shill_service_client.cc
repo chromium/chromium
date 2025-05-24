@@ -330,7 +330,8 @@ class ShillServiceClientImpl : public ShillServiceClient {
   }
 
  private:
-  using HelperMap = std::map<std::string, ShillClientHelper*>;
+  using HelperMap =
+      std::map<std::string, raw_ptr<ShillClientHelper, CtnExperimental>>;
 
   // Returns the corresponding ShillClientHelper for the profile.
   ShillClientHelper* GetHelper(const dbus::ObjectPath& service_path) {

@@ -12,14 +12,16 @@ if (is_android) {
   }
 }
 
-source_set("common") {
+component("common") {
+  defines = [ "IS_COMPONENTS_CONTINUOUS_SEARCH_COMMON_IMPL" ]
+
   sources = [
     "search_result_extractor_client_status.h",
     "title_validator.cc",
     "title_validator.h",
   ]
 
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

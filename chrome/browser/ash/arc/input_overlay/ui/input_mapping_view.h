@@ -29,8 +29,6 @@ class InputMappingView : public views::View, public TouchInjectorObserver {
   void SetDisplayMode(const DisplayMode mode);
 
  private:
-  void ProcessPressedEvent(const ui::LocatedEvent& event);
-
   // Reorder the child views to have focus order as:
   // If the window aspect-ratio > 1
   // - First, focus the views on the left half of the window from top to bottom.
@@ -41,10 +39,6 @@ class InputMappingView : public views::View, public TouchInjectorObserver {
 
   // Adds the action without opening the ButtonOptionsMenu.
   void OnActionAddedInternal(Action& action);
-
-  // ui::EventHandler:
-  void OnMouseEvent(ui::MouseEvent* event) override;
-  void OnGestureEvent(ui::GestureEvent* event) override;
 
   // TouchInjectorObserver:
   void OnActionAdded(Action& action) override;

@@ -70,6 +70,7 @@ class OmniboxPopupPresenter : public views::WebView,
   raw_ptr<LocationBarView> location_bar_view_;
 
   // Created by this, closed by this; owned and destroyed by OS.
+  // TODO(crbug.com/40232479): Migrate this to CLIENT_OWNS_WIDGET.
   raw_ptr<views::Widget> widget_;
 
   // Whether any call to `GetHandler` has been made.

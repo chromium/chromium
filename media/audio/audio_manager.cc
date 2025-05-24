@@ -77,10 +77,6 @@ std::unique_ptr<AudioManager> CreateAudioManager(
     std::unique_ptr<AudioThread> audio_thread,
     AudioLogFactory* audio_log_factory);
 
-void AudioManager::SetMaxStreamCountForTesting(int max_input, int max_output) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 AudioManager::AudioManager(std::unique_ptr<AudioThread> audio_thread)
     : audio_thread_(std::move(audio_thread)) {
   DCHECK(audio_thread_);

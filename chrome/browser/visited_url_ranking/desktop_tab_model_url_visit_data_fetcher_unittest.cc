@@ -73,7 +73,7 @@ TEST_F(DesktopTabModelURLVisitDataFetcherTest, FetchURLVisitData) {
 
   auto options = FetchOptions(
       {
-          {FetchOptions::URLType::kActiveLocalTab,
+          {URLVisitAggregate::URLType::kActiveLocalTab,
            {.age_limit = base::Days(1)}},
       },
       {
@@ -105,7 +105,7 @@ TEST_F(DesktopTabModelURLVisitDataFetcherTest,
 
   auto options = FetchOptions(
       {
-          {FetchOptions::URLType::kActiveLocalTab,
+          {URLVisitAggregate::URLType::kActiveLocalTab,
            {.age_limit = base::Days(1)}},
       },
       {

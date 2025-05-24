@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/style/ash_color_id.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
@@ -25,8 +24,8 @@ RoundedLabel::RoundedLabel(int horizontal_padding,
       preferred_height_(preferred_height) {
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
-  SetEnabledColorId(kColorAshTextColorPrimary);
+  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
+  SetEnabledColor(kColorAshTextColorPrimary);
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
 
@@ -49,9 +48,7 @@ gfx::Size RoundedLabel::CalculatePreferredSize(
 void RoundedLabel::OnPaintBorder(gfx::Canvas* canvas) {
   views::HighlightBorder::PaintBorderToCanvas(
       canvas, *this, GetLocalBounds(), gfx::RoundedCornersF(rounding_dp_),
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderNoShadow
-          : views::HighlightBorder::Type::kHighlightBorder2);
+      views::HighlightBorder::Type::kHighlightBorderNoShadow);
 }
 
 BEGIN_METADATA(RoundedLabel)

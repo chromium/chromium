@@ -1,0 +1,91 @@
+[workspace]
+resolver = "2"
+members = ["diplomat-gen", "bakeddata", "provider", "temporal_capi"]
+
+[workspace.package]
+edition = "2021"
+version = "0.0.7"
+rust-version = "1.82.0"
+authors = ["boa-dev"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/boa-dev/temporal"
+readme = "./README.md"
+exclude = [
+    "docs/*",
+    ".github/*",
+    "debug/",
+    ".gitignore",
+    "CONTRIBUTING.md",
+    "cliff.toml",
+]
+
+[workspace.dependencies]
+# Self
+temporal_rs = { version = "~0.0.7", path = ".", default-features = false }
+timezone_provider = { version = "~0.0.7", path = "./provider" }
+
+# Dependencies
+tinystr = "0.8.1"
+icu_calendar = { version = "2.0.0", default-features = false }
+icu_locale = "2.0.0"
+rustc-hash = "2.1.0"
+num-traits = { version = "0.2.19", default-features = false }
+ixdtf = "0.5.0"
+iana-time-zone = "0.1.63"
+log = "0.4.27"
+tzif = "0.3.0"
+jiff-tzdb = "0.1.4"
+combine = "4.6.7"
+web-time = "1.1.0"
+
+[package]
+name = "temporal_rs"
+keywords = ["date", "time", "calendar", "timezone", "duration"]
+categories = ["date-and-time", "internationalization"]
+description = "Temporal in Rust is an implementation of the TC39 Temporal Builtin Proposal in Rust."
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+rust-version.workspace = true
+readme.workspace = true
+exclude.workspace = true
+
+[dependencies]
+
+tinystr.workspace = true
+icu_calendar = { workspace = true, features = ["compiled_data"] }
+icu_locale.workspace = true
+num-traits.workspace = true
+ixdtf = { workspace = true, features = ["duration"]}
+writeable = "0.6.1"
+
+# log feature
+log = { workspace = true, optional = true }
+
+# tzdb feature
+tzif = { workspace = true, optional = true }
+jiff-tzdb = { workspace = true, optional = true }
+combine = { workspace = true, optional = true }
+timezone_provider = { workspace = true, optional = true}
+
+# System time feature
+web-time = { workspace = true, optional =  true }
+iana-time-zone = { workspace = true, optional = true }
+core_maths = "0.1.1"
+
+[features]
+default = ["sys"]
+log = ["dep:log"]
+compiled_data = ["tzdb"]
+sys = ["std", "dep:web-time", "dep:iana-time-zone"]
+tzdb = ["dep:tzif", "std", "dep:jiff-tzdb", "dep:combine", "dep:timezone_provider"]
+std = []
+
+[package.metadata.cargo-all-features]
+denylist = ["default"]
+max_combination_size = 4
+
+[package.metadata.docs.rs]
+all-features = true

@@ -16,6 +16,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/segmentation_platform/internal/database/ukm_types.h"
 #include "components/segmentation_platform/internal/metadata/metadata_writer.h"
@@ -174,7 +175,7 @@ void DatabaseApiClients::ExecuteModelWithInput(
     const ModelProvider::Request& inputs,
     ExecutionCallback callback) {
   // This model should not be executed, only used for tracking custom metrics.
-  CHECK(0);
+  NOTREACHED();
 }
 
 }  // namespace segmentation_platform

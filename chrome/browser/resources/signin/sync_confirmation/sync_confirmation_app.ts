@@ -4,11 +4,10 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
-import './icons.html.js';
-import './strings.m.js';
+import '/icons.html.js';
+import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -63,18 +62,19 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
     };
   }
 
-  protected accountImageSrc_: string =
+  protected accessor accountImageSrc_: string =
       loadTimeData.getString('accountPictureUrl');
-  protected anyButtonClicked_: boolean = false;
-  protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
-  private showEnterpriseBadge_: boolean = false;
-  protected syncBenefitsList_: SyncBenefit[] =
+  protected accessor anyButtonClicked_: boolean = false;
+  protected accessor isModalDialog_: boolean =
+      loadTimeData.getBoolean('isModalDialog');
+  private accessor showEnterpriseBadge_: boolean = false;
+  protected accessor syncBenefitsList_: SyncBenefit[] =
       JSON.parse(loadTimeData.getString('syncBenefitsList'));
   private syncConfirmationBrowserProxy_: SyncConfirmationBrowserProxy =
       SyncConfirmationBrowserProxyImpl.getInstance();
-  protected useClickableSyncInfoDesc_: boolean =
+  protected accessor useClickableSyncInfoDesc_: boolean =
       loadTimeData.getBoolean('useClickableSyncInfoDesc');
-  private screenMode_: ScreenMode = ScreenMode.PENDING;
+  private accessor screenMode_: ScreenMode = ScreenMode.PENDING;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -125,7 +125,7 @@ export class SyncConfirmationAppElement extends SyncConfirmationAppElementBase {
   /** @return Text of the consent description elements. */
   private getConsentDescription_(): string[] {
     const consentDescription =
-        Array.from(this.shadowRoot!.querySelectorAll('[consent-description]'))
+        Array.from(this.shadowRoot.querySelectorAll('[consent-description]'))
             .filter(
                 element => element.getBoundingClientRect().width *
                         element.getBoundingClientRect().height >

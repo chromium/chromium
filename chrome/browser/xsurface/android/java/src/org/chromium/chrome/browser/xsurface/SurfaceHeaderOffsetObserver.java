@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.xsurface;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Implemented internally.
  *
@@ -13,6 +15,7 @@ package org.chromium.chrome.browser.xsurface;
  * position that is currently rendered onscreen.
  * @see org.chromium.chrome.browser.feed.ScrollListener
  */
+@NullMarked
 public interface SurfaceHeaderOffsetObserver {
     /**
      * Called when the vertical offset of the header (1st item) in the scrollable container changes.

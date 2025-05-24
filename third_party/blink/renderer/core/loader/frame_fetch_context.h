@@ -96,6 +96,8 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
                          const AtomicString& initiator_type) override;
   bool AllowImage() const override;
 
+  void ModifyRequestForMixedContentUpgrade(ResourceRequest&) override;
+
   void PopulateResourceRequestBeforeCacheAccess(
       const ResourceLoaderOptions& options,
       ResourceRequest& request) override;
@@ -108,6 +110,10 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
       ResourceRequest&,
       const ResourceLoaderOptions&) override;
 
+  bool StartSpeculativeImageDecode(Resource* resource,
+                                   base::OnceClosure callback) override;
+  bool SpeculativeDecodeRequestInFlight() const override;
+
   bool IsPrerendering() const override;
 
   bool DoesLCPPHaveAnyHintData() override;
@@ -115,7 +121,6 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   bool DoesLCPPHaveLcpElementLocatorHintData() override;
 
   // Exposed for testing.
-  void ModifyRequestForCSP(ResourceRequest&);
   void AddClientHintsIfNecessary(const std::optional<float> resource_width,
                                  ResourceRequest&);
 
@@ -151,7 +156,7 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   void AddLcpPredictedCallback(base::OnceClosure callback) override;
 
  private:
-  friend class FrameFetchContextTest;
+  friend class FrameFetchContextTestBase;
 
   struct FrozenState;
 
@@ -196,7 +201,12 @@ class CORE_EXPORT FrameFetchContext final : public BaseFetchContext,
   Settings* GetSettings() const;
   String GetUserAgent() const;
   std::optional<UserAgentMetadata> GetUserAgentMetadata() const;
-  const PermissionsPolicy* GetPermissionsPolicy() const override;
+  const network::PermissionsPolicy* GetPermissionsPolicy() const override;
+  const FeatureContext* GetFeatureContext() const override;
+  HashSet<HashAlgorithm> CSPHashesToReport() const override;
+  void AddCSPHashReport(
+      const String& url,
+      const HashMap<HashAlgorithm, String>& integrity_hashes) override;
   const ClientHintsPreferences GetClientHintsPreferences() const;
   float GetDevicePixelRatio() const;
   String GetReducedAcceptLanguage() const;

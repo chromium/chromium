@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_strip_scroll_session.h"
 
 #include <memory>
 
@@ -10,7 +10,7 @@
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,11 +36,7 @@ class MockTabDragWithScrollManager : public TabDragWithScrollManager {
   MockTabDragWithScrollManager& operator=(MockTabDragWithScrollManager&&) =
       delete;
 
-  MOCK_METHOD(bool, IsDraggingTabState, (), ());
-  MOCK_METHOD(void,
-              MoveAttached,
-              (const gfx::Point& point_in_screen, bool just_attached),
-              ());
+  MOCK_METHOD(void, MoveAttached, (gfx::Point point_in_screen), ());
   MOCK_METHOD(views::ScrollView*, GetScrollView, (), ());
   MOCK_METHOD(gfx::Point, GetLastPointInScreen, (), ());
   MOCK_METHOD(views::View*, GetAttachedContext, (), ());
@@ -50,7 +46,7 @@ class MockTabDragWithScrollManager : public TabDragWithScrollManager {
 class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
  public:
   explicit TabStripScrollSessionWithTimerTestBase(
-      TabDragController::ScrollWithDragStrategy strategy)
+      TabStripScrollSession::ScrollWithDragStrategy strategy)
       : strategy_(strategy) {
     scoped_feature_list_.InitWithFeatures({tabs::kScrollableTabStrip}, {});
   }
@@ -64,7 +60,7 @@ class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
     drag_controller_ = std::make_unique<MockTabDragWithScrollManager>();
 
     if (strategy_ ==
-        TabDragController::ScrollWithDragStrategy::kVariableSpeed) {
+        TabStripScrollSession::ScrollWithDragStrategy::kVariableSpeed) {
       scroll_session_ = std::make_unique<TabStripScrollSessionWithTimer>(
           *(drag_controller_.get()),
           TabStripScrollSessionWithTimer::ScrollSessionTimerType::
@@ -90,8 +86,8 @@ class TabStripScrollSessionWithTimerTestBase : public ChromeViewsTestBase {
   void TearDown() override { ChromeViewsTestBase::TearDown(); }
 
  protected:
-  TabDragController::ScrollWithDragStrategy strategy_ =
-      TabDragController::ScrollWithDragStrategy::kDisabled;
+  TabStripScrollSession::ScrollWithDragStrategy strategy_ =
+      TabStripScrollSession::ScrollWithDragStrategy::kDisabled;
   std::unique_ptr<MockTabDragWithScrollManager> drag_controller_;
   std::unique_ptr<views::ScrollView> scroll_view_;
   std::unique_ptr<TabStripScrollSessionWithTimer> scroll_session_;
@@ -105,7 +101,7 @@ class TabStripScrollSessionTestWithConstantSpeed
  public:
   TabStripScrollSessionTestWithConstantSpeed()
       : TabStripScrollSessionWithTimerTestBase(
-            TabDragController::ScrollWithDragStrategy::kConstantSpeed) {}
+            TabStripScrollSession::ScrollWithDragStrategy::kConstantSpeed) {}
   TabStripScrollSessionTestWithConstantSpeed(
       const TabStripScrollSessionTestWithConstantSpeed&) = delete;
   TabStripScrollSessionTestWithConstantSpeed& operator=(
@@ -172,10 +168,6 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(scroll_view_.get()));
 
-  EXPECT_CALL(*drag_controller_, IsDraggingTabState())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(true));
-
   EXPECT_CALL(*drag_controller_, GetLastPointInScreen())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(gfx::Point()));
@@ -184,7 +176,7 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(dragged_tabs_rect));
 
-  EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(1);
+  EXPECT_CALL(*drag_controller_, MoveAttached(_)).Times(1);
 
   // act
   scroll_session_->MaybeStart();
@@ -222,7 +214,7 @@ TEST_F(TabStripScrollSessionTestWithConstantSpeed,
       .Times(AtLeast(1))
       .WillOnce(Return(dragged_tabs_rect_for_scrolling_right))
       .WillRepeatedly(Return(dragged_tabs_rect_for_scrolling_left));
-  EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(0);
+  EXPECT_CALL(*drag_controller_, MoveAttached(_)).Times(0);
 
   // act
   scroll_session_->MaybeStart();
@@ -239,7 +231,7 @@ class TabStripScrollSessionTestWithVariableSpeed
  public:
   TabStripScrollSessionTestWithVariableSpeed()
       : TabStripScrollSessionWithTimerTestBase(
-            TabDragController::ScrollWithDragStrategy::kVariableSpeed) {}
+            TabStripScrollSession::ScrollWithDragStrategy::kVariableSpeed) {}
   TabStripScrollSessionTestWithVariableSpeed(
       const TabStripScrollSessionTestWithVariableSpeed&) = delete;
   TabStripScrollSessionTestWithVariableSpeed& operator=(
@@ -267,10 +259,6 @@ TEST_F(TabStripScrollSessionTestWithVariableSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(scroll_view_.get()));
 
-  EXPECT_CALL(*drag_controller_, IsDraggingTabState())
-      .Times(AtLeast(1))
-      .WillRepeatedly(Return(true));
-
   EXPECT_CALL(*drag_controller_, GetEnclosingRectForDraggedTabs())
       .Times(AtLeast(1))
       .WillRepeatedly(Return(dragged_tabs_rect));
@@ -279,7 +267,7 @@ TEST_F(TabStripScrollSessionTestWithVariableSpeed,
       .Times(AtLeast(1))
       .WillRepeatedly(Return(gfx::Point()));
 
-  EXPECT_CALL(*drag_controller_, MoveAttached(_, false)).Times(1);
+  EXPECT_CALL(*drag_controller_, MoveAttached(_)).Times(1);
 
   scroll_session_->MaybeStart();
   EXPECT_TRUE(mock_timer_->IsRunning());

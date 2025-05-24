@@ -12,11 +12,10 @@
 #import "ios/chrome/browser/tabs/model/ios_chrome_synced_tab_delegate.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
-BROWSER_USER_DATA_KEY_IMPL(SyncedWindowDelegateBrowserAgent)
-
 SyncedWindowDelegateBrowserAgent::SyncedWindowDelegateBrowserAgent(
     Browser* browser)
-    : web_state_list_(browser->GetWebStateList()),
+    : BrowserUserData(browser),
+      web_state_list_(browser->GetWebStateList()),
       session_id_(SessionID::NewUnique()) {
   browser->AddObserver(this);
   for (int index = 0; index < web_state_list_->count(); ++index) {

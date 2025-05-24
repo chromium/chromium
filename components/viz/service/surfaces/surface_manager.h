@@ -26,6 +26,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/surfaces/surface_observer.h"
@@ -289,8 +290,9 @@ class VIZ_SERVICE_EXPORT SurfaceManager {
 
   // This returns true if early-acks for frame activation during interaction is
   // enabled and if the number of frames since ack and the last interactive
-  // frame is below the cooldown threshold.
-  bool ShouldAckInteractiveFrame(const BeginFrameAck& ack) const;
+  // frame is below the cooldown threshold. This is only true for the Surfaces
+  // which are not currently being interacted with.
+  bool ShouldAckNonInteractiveFrame(const CompositorFrameMetadata& ack) const;
 
   // Can be nullptr.
   const raw_ptr<SurfaceManagerDelegate> delegate_;

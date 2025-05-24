@@ -23,17 +23,17 @@ namespace {
 // TODO(b/311679168): Move this to share logic with ContentAnalysisDelegate.
 std::string GetMimeType(const ui::ClipboardFormatType& clipboard_format) {
   if (clipboard_format == ui::ClipboardFormatType::PlainTextType()) {
-    return ui::kMimeTypeText;
+    return ui::kMimeTypePlainText;
   } else if (clipboard_format == ui::ClipboardFormatType::HtmlType()) {
-    return ui::kMimeTypeHTML;
+    return ui::kMimeTypeHtml;
   } else if (clipboard_format == ui::ClipboardFormatType::SvgType()) {
     return ui::kMimeTypeSvg;
   } else if (clipboard_format == ui::ClipboardFormatType::RtfType()) {
-    return ui::kMimeTypeRTF;
+    return ui::kMimeTypeRtf;
   } else if (clipboard_format == ui::ClipboardFormatType::PngType()) {
-    return ui::kMimeTypePNG;
+    return ui::kMimeTypePng;
   } else if (clipboard_format == ui::ClipboardFormatType::FilenamesType()) {
-    return ui::kMimeTypeURIList;
+    return ui::kMimeTypeUriList;
   }
   return "";
 }
@@ -47,16 +47,16 @@ GURL GetURL(const content::ClipboardEndpoint& endpoint) {
   return *endpoint.data_transfer_endpoint()->GetURL();
 }
 
-safe_browsing::EventResult GetEventResult(Rule::Level level) {
+enterprise_connectors::EventResult GetEventResult(Rule::Level level) {
   switch (level) {
     case Rule::Level::kNotSet:
     case Rule::Level::kAllow:
     case Rule::Level::kReport:
-      return safe_browsing::EventResult::ALLOWED;
+      return enterprise_connectors::EventResult::ALLOWED;
     case Rule::Level::kBlock:
-      return safe_browsing::EventResult::BLOCKED;
+      return enterprise_connectors::EventResult::BLOCKED;
     case Rule::Level::kWarn:
-      return safe_browsing::EventResult::WARNED;
+      return enterprise_connectors::EventResult::WARNED;
   }
 }
 
@@ -77,41 +77,80 @@ bool PolicyAppliedAtUserScope(content::BrowserContext* browser_context,
 // -------------------------------
 
 // static
-std::string ReportingService::GetClipboardSourceString(
+enterprise_connectors::ContentMetaData::CopiedTextSource
+ReportingService::GetClipboardSource(
     const content::ClipboardEndpoint& source,
     const content::ClipboardEndpoint& destination,
     const char* scope_pref) {
   CHECK(destination.browser_context());
 
+  using SourceType = enterprise_connectors::ContentMetaData::CopiedTextSource;
+
+  enterprise_connectors::ContentMetaData::CopiedTextSource copied_text_source;
   if (!source.browser_context()) {
-    return "CLIPBOARD";
+    copied_text_source.set_context(SourceType::CLIPBOARD);
+  } else if (Profile::FromBrowserContext(source.browser_context())
+                 ->IsIncognitoProfile()) {
+    copied_text_source.set_context(SourceType::INCOGNITO);
+  } else if (source.browser_context() == destination.browser_context()) {
+    copied_text_source.set_context(SourceType::SAME_PROFILE);
+  } else {
+    copied_text_source.set_context(SourceType::OTHER_PROFILE);
   }
 
-  if (source.browser_context() &&
-      Profile::FromBrowserContext(source.browser_context())
-          ->IsIncognitoProfile()) {
-    return "INCOGNITO";
+  switch (copied_text_source.context()) {
+    case SourceType::UNSPECIFIED:
+    case SourceType::INCOGNITO:
+    case SourceType::CLIPBOARD:
+      break;
+    case SourceType::OTHER_PROFILE:
+      // Only add a source URL if the other profile is getting the policy
+      // applied at the machine scope, not the user scope.
+      if (PolicyAppliedAtUserScope(destination.browser_context(), scope_pref)) {
+        break;
+      }
+      [[fallthrough]];
+    case SourceType::SAME_PROFILE:
+      if (source.data_transfer_endpoint() &&
+          source.data_transfer_endpoint()->IsUrlType() &&
+          source.data_transfer_endpoint()->GetURL()) {
+        copied_text_source.set_url(
+            source.data_transfer_endpoint()->GetURL()->spec());
+      }
+      break;
   }
 
-  if (source.data_transfer_endpoint() &&
-      source.data_transfer_endpoint()->IsUrlType() &&
-      source.data_transfer_endpoint()->GetURL()) {
-    if (source.browser_context() != destination.browser_context() &&
-        PolicyAppliedAtUserScope(destination.browser_context(), scope_pref)) {
+  return copied_text_source;
+}
+
+// static
+std::string ReportingService::GetClipboardSourceString(
+    const content::ClipboardEndpoint& source,
+    const content::ClipboardEndpoint& destination,
+    const char* scope_pref) {
+  return GetClipboardSourceString(
+      GetClipboardSource(source, destination, scope_pref));
+}
+
+// static
+std::string ReportingService::GetClipboardSourceString(
+    const enterprise_connectors::ContentMetaData::CopiedTextSource& source) {
+  if (!source.url().empty()) {
+    return source.url();
+  }
+
+  switch (source.context()) {
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::UNSPECIFIED:
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::SAME_PROFILE:
+      return "";
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::INCOGNITO:
+      return "INCOGNITO";
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::CLIPBOARD:
+      return "CLIPBOARD";
+    case enterprise_connectors::ContentMetaData::CopiedTextSource::
+        OTHER_PROFILE:
       return "OTHER_PROFILE";
-    }
-
-    // Reaching this line implies that the `DataTransferEndpoint` for `source`
-    // is none of the special sources (OS clipboard, incognito, other profile)
-    // and that it is a URL endpoint, so in that case the URL is simply returned
-    // as a string.
-    return source.data_transfer_endpoint()->GetURL()->spec();
   }
-
-  // This can be reached if the `DataTransferEndpoint` is not a URL and not null
-  // only on CrOS. For now there are no special values for those CrOS-only
-  // endpoints so we just fallback to "CLIPBOARD".
-  return "CLIPBOARD";
 }
 
 ReportingService::ReportingService(content::BrowserContext& browser_context)
@@ -138,7 +177,7 @@ void ReportingService::ReportPasteWarningBypassed(
   ReportCopyOrPaste(
       source, destination, metadata, verdict,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerWebContentUpload,
-      safe_browsing::EventResult::BYPASSED);
+      enterprise_connectors::EventResult::BYPASSED);
 }
 
 void ReportingService::ReportCopy(const content::ClipboardEndpoint& source,
@@ -157,7 +196,7 @@ void ReportingService::ReportCopyWarningBypassed(
   ReportCopyOrPaste(
       source, /*destination=*/std::nullopt, metadata, verdict,
       extensions::SafeBrowsingPrivateEventRouter::kTriggerClipboardCopy,
-      safe_browsing::EventResult::BYPASSED);
+      enterprise_connectors::EventResult::BYPASSED);
 }
 
 void ReportingService::ReportCopyOrPaste(
@@ -166,7 +205,7 @@ void ReportingService::ReportCopyOrPaste(
     const content::ClipboardMetadata& metadata,
     const Verdict& verdict,
     const std::string& trigger,
-    safe_browsing::EventResult event_result) {
+    enterprise_connectors::EventResult event_result) {
   auto* router =
       extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
           &profile_.get());

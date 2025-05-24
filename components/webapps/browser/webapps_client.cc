@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/auto_reset.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
 namespace webapps {

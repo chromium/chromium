@@ -43,7 +43,6 @@ class UnifiedConsentBrowserTest : public SyncTest {
     sync_blocker_ = GetSyncService(client_id)->GetSetupInProgressHandle();
     ASSERT_TRUE(GetClient(client_id)->SignInPrimaryAccount(
         signin::ConsentLevel::kSync));
-    GetSyncService(client_id)->SetSyncFeatureRequested();
     ASSERT_TRUE(GetClient(client_id)->AwaitEngineInitialization());
   }
 

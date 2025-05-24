@@ -6,10 +6,6 @@
 
 #include <memory>
 
-#include "ash/components/arc/mojom/webapk.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/fake_webapk_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -26,6 +22,10 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/fake_webapk_instance.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapk/webapk.pb.h"
 #include "content/public/test/browser_task_environment.h"

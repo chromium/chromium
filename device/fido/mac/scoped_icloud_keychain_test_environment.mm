@@ -11,15 +11,25 @@ namespace device::fido::icloud_keychain {
 
 ScopedTestEnvironment::ScopedTestEnvironment(
     std::vector<DiscoverableCredentialMetadata> creds) {
-  auto fake = base::MakeRefCounted<FakeSystemInterface>();
-  fake->SetCredentials(std::move(creds));
-  fake->set_auth_state(FakeSystemInterface::kAuthAuthorized);
-  SetSystemInterfaceForTesting(fake);
+  fake_ = base::MakeRefCounted<FakeSystemInterface>();
+  fake_->SetCredentials(std::move(creds));
+  fake_->set_auth_state(FakeSystemInterface::kAuthAuthorized);
+  SetSystemInterfaceForTesting(fake_);
   return;
 }
 
 ScopedTestEnvironment::~ScopedTestEnvironment() {
   SetSystemInterfaceForTesting(nullptr);
+}
+
+void ScopedTestEnvironment::SetMakeCredentialCallback(
+    base::RepeatingCallback<void(const CtapMakeCredentialRequest&)> callback) {
+  fake_->SetMakeCredentialCallback(std::move(callback));
+}
+
+void ScopedTestEnvironment::SetGetAssertionCallback(
+    base::RepeatingCallback<void(const CtapGetAssertionRequest&)> callback) {
+  fake_->SetGetAssertionCallback(std::move(callback));
 }
 
 }  // namespace device::fido::icloud_keychain

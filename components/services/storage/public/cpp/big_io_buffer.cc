@@ -16,14 +16,13 @@ BigIOBuffer::BigIOBuffer(size_t size)
     : BigIOBuffer(mojo_base::BigBuffer(size)) {}
 
 BigIOBuffer::~BigIOBuffer() {
-  // Must clear `data_` so base class doesn't hold a dangling ptr.
-  data_ = nullptr;
-  size_ = 0UL;
+  // Must clear raw data pointer in base class so it doesn't hold a dangling
+  // ptr.
+  ClearSpan();
 }
 
 mojo_base::BigBuffer BigIOBuffer::TakeBuffer() {
-  data_ = nullptr;
-  size_ = 0UL;
+  ClearSpan();
   return std::move(buffer_);
 }
 

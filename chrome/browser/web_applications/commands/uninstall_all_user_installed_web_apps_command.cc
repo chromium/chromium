@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/sync/base/data_type.h"
 #include "components/webapps/browser/uninstall_result_code.h"

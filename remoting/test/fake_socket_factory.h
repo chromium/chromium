@@ -23,7 +23,7 @@ namespace remoting {
 class FakeNetworkDispatcher;
 class LeakyBucket;
 
-class FakePacketSocketFactory : public rtc::PacketSocketFactory,
+class FakePacketSocketFactory : public webrtc::PacketSocketFactory,
                                 public FakeNetworkDispatcher::Node {
  public:
   // |dispatcher| must outlive the factory.
@@ -71,50 +71,50 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
            (total_packets_received_ + total_packets_dropped_);
   }
 
-  // rtc::PacketSocketFactory interface.
-  rtc::AsyncPacketSocket* CreateUdpSocket(
-      const rtc::SocketAddress& local_address,
+  // webrtc::PacketSocketFactory interface.
+  webrtc::AsyncPacketSocket* CreateUdpSocket(
+      const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port) override;
-  rtc::AsyncListenSocket* CreateServerTcpSocket(
-      const rtc::SocketAddress& local_address,
+  webrtc::AsyncListenSocket* CreateServerTcpSocket(
+      const webrtc::SocketAddress& local_address,
       uint16_t min_port,
       uint16_t max_port,
       int opts) override;
-  rtc::AsyncPacketSocket* CreateClientTcpSocket(
-      const rtc::SocketAddress& local_address,
-      const rtc::SocketAddress& remote_address,
-      const rtc::PacketSocketTcpOptions& opts) override;
+  webrtc::AsyncPacketSocket* CreateClientTcpSocket(
+      const webrtc::SocketAddress& local_address,
+      const webrtc::SocketAddress& remote_address,
+      const webrtc::PacketSocketTcpOptions& opts) override;
   std::unique_ptr<webrtc::AsyncDnsResolverInterface> CreateAsyncDnsResolver()
       override;
 
   // FakeNetworkDispatcher::Node interface.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetThread() const override;
-  const rtc::IPAddress& GetAddress() const override;
-  void ReceivePacket(const rtc::SocketAddress& from,
-                     const rtc::SocketAddress& to,
+  const webrtc::IPAddress& GetAddress() const override;
+  void ReceivePacket(const webrtc::SocketAddress& from,
+                     const webrtc::SocketAddress& to,
                      const scoped_refptr<net::IOBuffer>& data,
                      int data_size) override;
 
  private:
   struct PendingPacket {
     PendingPacket();
-    PendingPacket(const rtc::SocketAddress& from,
-                  const rtc::SocketAddress& to,
+    PendingPacket(const webrtc::SocketAddress& from,
+                  const webrtc::SocketAddress& to,
                   const scoped_refptr<net::IOBuffer>& data,
                   int data_size);
     PendingPacket(const PendingPacket& other);
     ~PendingPacket();
 
-    rtc::SocketAddress from;
-    rtc::SocketAddress to;
+    webrtc::SocketAddress from;
+    webrtc::SocketAddress to;
     scoped_refptr<net::IOBuffer> data;
     int data_size;
   };
 
   using ReceiveCallback =
-      base::RepeatingCallback<void(const rtc::SocketAddress& from,
-                                   const rtc::SocketAddress& to,
+      base::RepeatingCallback<void(const webrtc::SocketAddress& from,
+                                   const webrtc::SocketAddress& to,
                                    const scoped_refptr<net::IOBuffer>& data,
                                    int data_size)>;
   typedef std::map<uint16_t, ReceiveCallback> UdpSocketsMap;
@@ -124,7 +124,7 @@ class FakePacketSocketFactory : public rtc::PacketSocketFactory,
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   scoped_refptr<FakeNetworkDispatcher> dispatcher_;
 
-  rtc::IPAddress address_;
+  webrtc::IPAddress address_;
 
   std::unique_ptr<LeakyBucket> leaky_bucket_;
   base::TimeDelta latency_average_;

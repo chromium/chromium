@@ -4132,20 +4132,6 @@ error::Error GLES2DecoderPassthroughImpl::HandleMemoryBarrierByRegion(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleSwapBuffers(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::SwapBuffers& c =
-      *static_cast<const volatile gles2::cmds::SwapBuffers*>(cmd_data);
-  GLuint64 swap_id = c.swap_id();
-  GLbitfield flags = static_cast<GLbitfield>(c.flags);
-  error::Error error = DoSwapBuffers(swap_id, flags);
-  if (error != error::kNoError) {
-    return error;
-  }
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderPassthroughImpl::HandleGetMaxValueInBufferCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -4542,7 +4528,6 @@ GLES2DecoderPassthroughImpl::HandleCopySharedImageINTERNALImmediate(
   GLint y = static_cast<GLint>(c.y);
   GLsizei width = static_cast<GLsizei>(c.width);
   GLsizei height = static_cast<GLsizei>(c.height);
-  GLboolean unpack_flip_y = static_cast<GLboolean>(c.unpack_flip_y);
   uint32_t mailboxes_size;
   if (!GLES2Util::ComputeDataSize<GLbyte, 32>(1, &mailboxes_size)) {
     return error::kOutOfBounds;
@@ -4555,8 +4540,8 @@ GLES2DecoderPassthroughImpl::HandleCopySharedImageINTERNALImmediate(
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  error::Error error = DoCopySharedImageINTERNAL(
-      xoffset, yoffset, x, y, width, height, unpack_flip_y, mailboxes);
+  error::Error error = DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, width,
+                                                 height, mailboxes);
   if (error != error::kNoError) {
     return error;
   }
@@ -4578,7 +4563,8 @@ GLES2DecoderPassthroughImpl::HandleCopySharedImageToTextureINTERNALImmediate(
   GLint src_y = static_cast<GLint>(c.src_y);
   GLsizei width = static_cast<GLsizei>(c.width);
   GLsizei height = static_cast<GLsizei>(c.height);
-  GLboolean flip_y = static_cast<GLboolean>(c.flip_y);
+  GLboolean is_dst_origin_top_left =
+      static_cast<GLboolean>(c.is_dst_origin_top_left);
   uint32_t src_mailbox_size;
   if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &src_mailbox_size)) {
     return error::kOutOfBounds;
@@ -4594,7 +4580,7 @@ GLES2DecoderPassthroughImpl::HandleCopySharedImageToTextureINTERNALImmediate(
   }
   error::Error error = DoCopySharedImageToTextureINTERNAL(
       texture, target, internal_format, type, src_x, src_y, width, height,
-      flip_y, src_mailbox);
+      is_dst_origin_top_left, src_mailbox);
   if (error != error::kNoError) {
     return error;
   }

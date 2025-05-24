@@ -6,6 +6,7 @@
 #define ASH_WEBUI_ECHE_APP_UI_LAUNCH_APP_HELPER_H_
 
 #include <optional>
+#include <variant>
 
 #include "ash/webui/eche_app_ui/feature_status.h"
 #include "ash/webui/eche_app_ui/mojom/eche_app.mojom.h"
@@ -13,7 +14,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace gfx {
 class Image;
@@ -50,17 +50,17 @@ class LaunchAppHelper {
 
     NotificationInfo(
         Category category,
-        absl::variant<NotificationType, mojom::WebNotificationType> type);
+        std::variant<NotificationType, mojom::WebNotificationType> type);
     ~NotificationInfo();
 
     Category category() const { return category_; }
-    absl::variant<NotificationType, mojom::WebNotificationType> type() const {
+    std::variant<NotificationType, mojom::WebNotificationType> type() const {
       return type_;
     }
 
    private:
     Category category_;
-    absl::variant<NotificationType, mojom::WebNotificationType> type_;
+    std::variant<NotificationType, mojom::WebNotificationType> type_;
   };
 
   using LaunchNotificationFunction =

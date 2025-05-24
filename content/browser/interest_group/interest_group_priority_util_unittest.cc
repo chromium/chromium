@@ -10,6 +10,7 @@
 #include "base/time/time.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
@@ -249,6 +250,9 @@ TEST_F(InterestGroupPriorityUtilTest, BrowserSignalsAge) {
   EXPECT_EQ(0, CalculateInterestGroupPriority(
                    auction_config_, storage_interest_group_, base_time,
                    /*priority_vector=*/{{"browserSignals.ageInDaysMax30", 2}}));
+  EXPECT_EQ(0, CalculateInterestGroupPriority(
+                   auction_config_, storage_interest_group_, base_time,
+                   /*priority_vector=*/{{"browserSignals.ageInDaysMax90", 2}}));
 
   // Add 59 seconds to make sure minutes are not rounded up. Don't need to do
   // this for hours or years because the 59 minutes case test hours aren't
@@ -273,6 +277,10 @@ TEST_F(InterestGroupPriorityUtilTest, BrowserSignalsAge) {
                    auction_config_, storage_interest_group_,
                    fifty_nine_minutes_from_base,
                    /*priority_vector=*/{{"browserSignals.ageInDaysMax30", 2}}));
+  EXPECT_EQ(0, CalculateInterestGroupPriority(
+                   auction_config_, storage_interest_group_,
+                   fifty_nine_minutes_from_base,
+                   /*priority_vector=*/{{"browserSignals.ageInDaysMax90", 2}}));
 
   base::Time twenty_three_hours_frome_base = base_time + base::Hours(23);
   EXPECT_EQ(2 * 23 * 60,
@@ -294,6 +302,10 @@ TEST_F(InterestGroupPriorityUtilTest, BrowserSignalsAge) {
                    auction_config_, storage_interest_group_,
                    twenty_three_hours_frome_base,
                    /*priority_vector=*/{{"browserSignals.ageInDaysMax30", 2}}));
+  EXPECT_EQ(0, CalculateInterestGroupPriority(
+                   auction_config_, storage_interest_group_,
+                   twenty_three_hours_frome_base,
+                   /*priority_vector=*/{{"browserSignals.ageInDaysMax90", 2}}));
 
   base::Time twenty_nine_days_frome_base = base_time + base::Days(29);
   EXPECT_EQ(
@@ -316,9 +328,14 @@ TEST_F(InterestGroupPriorityUtilTest, BrowserSignalsAge) {
       CalculateInterestGroupPriority(
           auction_config_, storage_interest_group_, twenty_nine_days_frome_base,
           /*priority_vector=*/{{"browserSignals.ageInDaysMax30", 2}}));
+  EXPECT_EQ(
+      2 * 29,
+      CalculateInterestGroupPriority(
+          auction_config_, storage_interest_group_, twenty_nine_days_frome_base,
+          /*priority_vector=*/{{"browserSignals.ageInDaysMax90", 2}}));
 
   base::Time one_year_from_base = base_time + base::Days(365);
-  EXPECT_EQ(2 * 30 * 24 * 60,
+  EXPECT_EQ(2 * blink::MaxInterestGroupLifetime().InDays() * 24 * 60,
             CalculateInterestGroupPriority(
                 auction_config_, storage_interest_group_, one_year_from_base,
                 /*priority_vector=*/{{"browserSignals.ageInMinutes", 2}}));
@@ -334,6 +351,10 @@ TEST_F(InterestGroupPriorityUtilTest, BrowserSignalsAge) {
             CalculateInterestGroupPriority(
                 auction_config_, storage_interest_group_, one_year_from_base,
                 /*priority_vector=*/{{"browserSignals.ageInDaysMax30", 2}}));
+  EXPECT_EQ(2 * blink::MaxInterestGroupLifetime().InDays(),
+            CalculateInterestGroupPriority(
+                auction_config_, storage_interest_group_, one_year_from_base,
+                /*priority_vector=*/{{"browserSignals.ageInDaysMax90", 2}}));
 
   base::Time one_year_before_base = base_time - base::Days(365);
   EXPECT_EQ(0,
@@ -352,6 +373,10 @@ TEST_F(InterestGroupPriorityUtilTest, BrowserSignalsAge) {
             CalculateInterestGroupPriority(
                 auction_config_, storage_interest_group_, one_year_before_base,
                 /*priority_vector=*/{{"browserSignals.ageInDaysMax30", 2}}));
+  EXPECT_EQ(0,
+            CalculateInterestGroupPriority(
+                auction_config_, storage_interest_group_, one_year_before_base,
+                /*priority_vector=*/{{"browserSignals.ageInDaysMax90", 2}}));
 }
 
 }  // namespace content

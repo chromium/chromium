@@ -1,0 +1,4 @@
+[document web]
+++[dialog]
+++++[heading] level:1
+++++[heading] level:2

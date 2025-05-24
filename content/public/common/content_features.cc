@@ -8,11 +8,12 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
 #include "content/common/buildflags.h"
-#include "content/public/common/dips_utils.h"
+#include "content/public/common/btm_utils.h"
+#include "content/public/common/buildflags.h"
 
 namespace features {
 
@@ -23,6 +24,12 @@ namespace features {
 // postMessage. See https://crbug.com/40109437.
 BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
              "AdditionalOpaqueOriginEnforcements",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Fallback to next named service slot if launching a privileged service process
+// hangs. In practice, this means if GPU launch hanges, then retry it once.
+BASE_FEATURE(kAndroidFallbackToNextSlot,
+             "AndroidFallbackToNextSlot",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Warm up a spare renderer after each navigation on Android.
@@ -54,6 +61,17 @@ const base::FeatureParam<int> kAndroidSpareRendererTimeoutSeconds{
     &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_timeout_seconds",
     60};
 
+// The lower memory limit to create a spare renderer after each navigation on
+// Android.
+const base::FeatureParam<int> kAndroidSpareRendererMemoryThreshold{
+    &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_memory_threshold",
+    1077};
+
+// Kill the spare renderer when the browser goes to the background to free
+// resources.
+const base::FeatureParam<bool> kAndroidSpareRendererKillWhenBackgrounded{
+    &kAndroidWarmUpSpareRendererWithTimeout, "kill_when_backgrounded", false};
+
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
              "AudioServiceLaunchOnStartup",
@@ -62,10 +80,7 @@ BASE_FEATURE(kAudioServiceLaunchOnStartup,
 // Runs the audio service in a separate process.
 BASE_FEATURE(kAudioServiceOutOfProcess,
              "AudioServiceOutOfProcess",
-// TODO(crbug.com/40118868): Remove !IS_CHROMEOS_LACROS once lacros starts being
-// built with OS_CHROMEOS instead of OS_LINUX.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -91,12 +106,6 @@ BASE_FEATURE(kBackgroundFetch,
 // Enable using the BackForwardCache.
 BASE_FEATURE(kBackForwardCache,
              "BackForwardCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allows pages that created a MediaSession service to stay eligible for the
-// back/forward cache.
-BASE_FEATURE(kBackForwardCacheMediaSessionService,
-             "BackForwardCacheMediaSessionService",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Set a time limit for the page to enter the cache. Disabling this prevents
@@ -139,7 +148,7 @@ BASE_FEATURE(kBatterySaverModeAlignWakeUps,
 //  - kBlockInsecurePrivateNetworkRequestsFromUnknown
 BASE_FEATURE(kBlockInsecurePrivateNetworkRequests,
              "BlockInsecurePrivateNetworkRequests",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When this feature is enabled, requests to localhost initiated from non-secure
 // contexts in the `private` IP address space are blocked.
@@ -164,18 +173,13 @@ BASE_FEATURE(kBrokerFileOperationsOnDiskCacheInNetworkService,
              "BrokerFileOperationsOnDiskCacheInNetworkService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, mouse user activation will be verified by the browser side.
-BASE_FEATURE(kBrowserVerifiedUserActivationMouse,
-             "BrowserVerifiedUserActivationMouse",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Allows pages with cache-control:no-store to enter the back/forward cache.
 // Feature params can specify whether pages with cache-control:no-store can be
 // restored if cookies change / if HTTPOnly cookies change.
-// TODO(crbug.com/40189625): Enable this feature.
+// TODO(crbug.com/40189625): Remove this feature and clean up.
 BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
              "CacheControlNoStoreEnterBackForwardCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This killswitch is distinct from the OT.
 // It allows us to remotely disable the feature, and get it to stop working even
@@ -184,33 +188,6 @@ BASE_FEATURE(kCacheControlNoStoreEnterBackForwardCache,
 BASE_FEATURE(kCapturedSurfaceControlKillswitch,
              "CapturedSurfaceControlKillswitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// If enabled, CSC permissions are sticky - as all other permissions.
-// If disabled, CSC permissions are scoped to the capture session's duration.
-BASE_FEATURE(kCapturedSurfaceControlStickyPermissions,
-             "CapturedSurfaceControlStickyPermissions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This serves as an overall kill switch to kill CdmStorageDatabase. If
-// disabled, no operations will be routed through the CdmStorage* path, even in
-// the migration code that lives in MediaLicense* code path.
-// This feature is enabled as default alongside with
-// kCdmStorageDatabaseMigration enabled by default as to allow for data transfer
-// from the MediaLicenseDatabase to CdmStorageDatabase to occur. Refer to
-// go/cdm-storage-migration-details for more details.
-BASE_FEATURE(kCdmStorageDatabase,
-             "CdmStorageDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This guards between using the MediaLicense* code path and the CdmStorage*
-// code path for storing Cdm data. This will be enabled by default as we do not
-// want the CdmStorageDatabase to be used solely.
-// Later when the migration is finished, we will remove this flag so that
-// kCdmStorageDatabase serves as the only flag. Refer to
-// go/cdm-storage-migration-details for more details.
-BASE_FEATURE(kCdmStorageDatabaseMigration,
-             "CdmStorageDatabaseMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
@@ -250,22 +227,6 @@ const char kCookieDeprecationTestingDisableAdsAPIsName[] = "disable_ads_apis";
 // Adiitional FeatureParams for CookieDeprecationFacilitatedTesting are defined
 // in chrome/browser/tpcd/experiment/tpcd_experiment_features.cc.
 
-// When enabled, the DevTools Privacy UI is displayed.
-BASE_FEATURE(kDevToolsPrivacyUI,
-             "DevToolsPrivacyUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables Blink cooperative scheduling.
-BASE_FEATURE(kCooperativeScheduling,
-             "CooperativeScheduling",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables crash reporting via Reporting API.
-// https://www.w3.org/TR/reporting/#crash-report
-BASE_FEATURE(kCrashReporting,
-             "CrashReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables deferring the creation of the speculative RFH when the navigation
 // starts. The creation of a speculative RFH consumes about 2ms and is blocking
 // the network request. With this feature the creation will be deferred until
@@ -294,6 +255,20 @@ const base::FeatureParam<bool> kCreateSpeculativeRFHFilterRestore{
 const base::FeatureParam<int> kCreateSpeculativeRFHDelayMs{
     &kDeferSpeculativeRFHCreation, "create_speculative_rfh_delay_ms", 0};
 
+// When a device bound session
+// (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) is
+// terminated, evict pages with cache-control:no-store from the
+// BFCache. Note that if `kCacheControlNoStoreEnterBackForwardCache` is
+// disabled, no such pages will be in the cache.
+BASE_FEATURE(kDeviceBoundSessionTerminationEvictBackForwardCache,
+             "DeviceBoundSessionTerminationEvictBackForwardCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the DevTools Privacy UI is displayed.
+BASE_FEATURE(kDevToolsPrivacyUI,
+             "DevToolsPrivacyUI",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the Digital Goods API is enabled.
 // https://github.com/WICG/digital-goods/
 BASE_FEATURE(kDigitalGoodsApi,
@@ -305,69 +280,61 @@ BASE_FEATURE(kDigitalGoodsApi,
 #endif
 );
 
-// Enables the DIPS (Detect Incidental Party State) feature.
+// Enables the BTM (Bounce Tracking Mitigation) feature.
 // On by default to allow for collecting metrics. All potentially dangerous
-// behavior (database persistence, DIPS deletion) will be gated by params.
-BASE_FEATURE(kDIPS, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
+// behavior (database persistence, storage deletion) will be gated by params.
+BASE_FEATURE(kBtm, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Set whether DIPS persists its database to disk.
-const base::FeatureParam<bool> kDIPSPersistedDatabaseEnabled{
-    &kDIPS, "persist_database", true};
-
-// Set whether DIPS performs deletion.
-const base::FeatureParam<bool> kDIPSDeletionEnabled{&kDIPS, "delete", true};
+// Flag used to control the TTL for user interactions (separately from the
+// |kBtm| feature flag).
+BASE_FEATURE(kBtmTtl, "DIPSTtl", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Set the time period that Chrome will wait for before clearing storage for a
 // site after it performs some action (e.g. bouncing the user or using storage)
 // without user interaction.
-const base::FeatureParam<base::TimeDelta> kDIPSGracePeriod{
-    &kDIPS, "grace_period", base::Hours(1)};
+const base::FeatureParam<base::TimeDelta> kBtmGracePeriod{&kBtm, "grace_period",
+                                                          base::Hours(1)};
 
 // Set the cadence at which Chrome will attempt to clear incidental state
 // repeatedly.
-const base::FeatureParam<base::TimeDelta> kDIPSTimerDelay{&kDIPS, "timer_delay",
-                                                          base::Hours(1)};
+const base::FeatureParam<base::TimeDelta> kBtmTimerDelay{&kBtm, "timer_delay",
+                                                         base::Hours(1)};
 
-// Sets how long DIPS maintains interactions and Web Authn Assertions (WAA) for
+// Sets how long BTM maintains interactions and Web Authn Assertions (WAA) for
 // a site.
 //
-// If a site in the DIPS database has an interaction or WAA within the grace
-// period a DIPS-triggering action, then that action and all ensuing actions are
-// protected from DIPS clearing until the interaction and WAA "expire" as set
+// If a site in the BTM database has an interaction or WAA within the grace
+// period a BTM-triggering action, then that action and all ensuing actions are
+// protected from BTM clearing until the interaction and WAA "expire" as set
 // by this param.
 // NOTE: Updating this param name (to reflect WAA) is deemed unnecessary as far
 // as readability is concerned.
-const base::FeatureParam<base::TimeDelta> kDIPSInteractionTtl{
-    &kDIPS, "interaction_ttl", base::Days(45)};
+const base::FeatureParam<base::TimeDelta> kBtmInteractionTtl{
+    &kBtmTtl, "interaction_ttl", base::Days(45)};
 
-constexpr base::FeatureParam<content::DIPSTriggeringAction>::Option
-    kDIPSTriggeringActionOptions[] = {
-        {content::DIPSTriggeringAction::kNone, "none"},
-        {content::DIPSTriggeringAction::kStorage, "storage"},
-        {content::DIPSTriggeringAction::kBounce, "bounce"},
-        {content::DIPSTriggeringAction::kStatefulBounce, "stateful_bounce"}};
+constexpr base::FeatureParam<content::BtmTriggeringAction>::Option
+    kBtmTriggeringActionOptions[] = {
+        {content::BtmTriggeringAction::kNone, "none"},
+        {content::BtmTriggeringAction::kStorage, "storage"},
+        {content::BtmTriggeringAction::kBounce, "bounce"},
+        {content::BtmTriggeringAction::kStatefulBounce, "stateful_bounce"}};
 
-// Sets the actions which will trigger DIPS clearing for a site. The default is
-// to set to kBounce, but can be overridden by Finch experiment groups,
+// Sets the actions which will trigger BTM clearing for a site. The default is
+// to set to |kBounce|, but can be overridden by Finch experiment groups,
 // command-line flags, or chrome flags.
-//
-// Note: Maintain a matching nomenclature of the options with the feature flag
-// entries at about_flags.cc.
-const base::FeatureParam<content::DIPSTriggeringAction> kDIPSTriggeringAction{
-    &kDIPS, "triggering_action", content::DIPSTriggeringAction::kStatefulBounce,
-    &kDIPSTriggeringActionOptions};
+const base::FeatureParam<content::BtmTriggeringAction> kBtmTriggeringAction{
+    &kBtm, "triggering_action", content::BtmTriggeringAction::kBounce,
+    &kBtmTriggeringActionOptions};
 
 // Denotes the length of a time interval within which any client-side redirect
 // is viewed as a bounce (provided all other criteria are equally met). The
 // interval starts every time a page finishes a navigation (a.k.a. a commit is
 // registered).
-const base::FeatureParam<base::TimeDelta> kDIPSClientBounceDetectionTimeout{
-    &kDIPS, "client_bounce_detection_timeout", base::Seconds(10)};
+const base::FeatureParam<base::TimeDelta> kBtmClientBounceDetectionTimeout{
+    &kBtm, "client_bounce_detection_timeout", base::Seconds(10)};
 
-// Whether DIPS deletes Privacy Sandbox data.
-BASE_FEATURE(kDIPSPreservePSData,
-             "DIPSPreservePSData",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables Bounce Tracking Mitigations for Dual Use sites.
+BASE_FEATURE(kBtmDualUse, "BtmDualUse", base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables HW decode acceleration for WebRTC.
 BASE_FEATURE(kWebRtcHWDecoding,
@@ -390,16 +357,10 @@ BASE_FEATURE(kWebContentsDiscard,
              "WebContentsDiscard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables disconnecting the `ExtensionMessagePort` when the page using the port
-// enters BFCache.
-BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,
-             "DisconnectExtensionMessagePortWhenPageEntersBFCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable drawing under System Bars within DisplayCutout.
 BASE_FEATURE(kDrawCutoutEdgeToEdge,
              "DrawCutoutEdgeToEdge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable establishing the GPU channel early in renderer startup.
 BASE_FEATURE(kEarlyEstablishGpuChannel,
@@ -434,36 +395,39 @@ BASE_FEATURE(kEnsureExistingRendererAlive,
 // We enable it here by default to support use in origin trials.
 BASE_FEATURE(kFedCm, "FedCm", base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the "Use a different account" button in the FedCM account chooser to
-// log in to another IDP account, if the IDP opts in.
-BASE_FEATURE(kFedCmUseOtherAccount,
-             "FedCmUseOtherAccount",
+// Support usernames and phone numbers to identify users, instead of
+// (or in addition to) names and emails.
+BASE_FEATURE(kFedCmAlternativeIdentifiers,
+             "FedCmAlternativeIdentifiers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM Authz API.
-BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables RPs to enhance autofill with federated accounts fetched by the FedCM
+// API.
+BASE_FEATURE(kFedCmAutofill,
+             "FedCmAutofill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM ButtonMode feature.
-// Note that actual exposure of the API to web content is controlled by
-// the flag in RuntimeEnabledFeatures on the blink side. See also the use
-// of kSetOnlyIfOverridden in content/child/runtime_features.cc. We enable
-// it here by default to support use in origin trials.
-BASE_FEATURE(kFedCmButtonMode,
-             "FedCmButtonMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables cooldown on ignore in FedCM API.
+BASE_FEATURE(kFedCmCooldownOnIgnore,
+             "FedCmCooldownOnIgnore",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables usage of the FedCM Delegation API.
+BASE_FEATURE(kFedCmDelegation,
+             "FedCmDelegation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration,
              "FedCmIdPregistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the IDP signin status API for use with FedCM, including avoiding
-// network requests when not signed in and mismatch handling.
-// When turned off, Login-Status headers are still parsed and processed
-// and FedCM mismatch metrics are collected.
-BASE_FEATURE(kFedCmIdpSigninStatusEnabled,
-             "FedCmIdpSigninStatusEnabled",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// For cross-site iframes, sends the top-level origin to the IDP and parses
+// an optional returned boolean indicating whether it is part of the same
+// client to allow for UI decisions based on the boolean.
+BASE_FEATURE(kFedCmIframeOrigin,
+             "FedCmIframeOrigin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint,
@@ -476,15 +440,20 @@ BASE_FEATURE(kFedCmMultipleIdentityProviders,
              "FedCmMultipleIdentityProviders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM API with the Selective Disclosure API at the same
-// time.
-BASE_FEATURE(kFedCmSelectiveDisclosure,
-             "FedCmSelectiveDisclosure",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// Enables showing filtered out accounts in FedCM UI after the user attempts to
+// login to an account. These accounts are shown greyed out.
+BASE_FEATURE(kFedCmShowFilteredAccounts,
+             "FedCmShowFilteredAccounts",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,
              "FedCmWithoutWellKnownEnforcement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Lightweight FedCM Mode
+BASE_FEATURE(kFedCmLightweightMode,
+             "FedCmLightweightMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables browser-side focus verification when crossing fenced boundaries.
@@ -492,10 +461,33 @@ BASE_FEATURE(kFencedFramesEnforceFocus,
              "FencedFramesEnforceFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This is a kill switch for focusing the RenderWidgetHostViewAndroid on
+// ActionDown on every touch sequence if not focused already, please see
+// crbug.com/381820236. The root view, RWHVA, is always focused in Chrome,
+// however this might not be true on WebView, see crbug.com/378779896 for more
+// details.
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kFocusRenderWidgetHostViewAndroidOnActionDown,
+             "FocusRenderWidgetHostViewAndroidOnActionDown",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+// Whether a memory pressure signal in a renderer should be forwarded to Blink
+// isolates. Forwarding the signal triggers a GC (critical) or starts
+// incremental marking (moderate), see `v8::Heap::CheckMemoryPressure`.
+BASE_FEATURE(kForwardMemoryPressureToBlinkIsolates,
+             "ForwardMemoryPressureToBlinkIsolates",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the Digital Credential API.
 BASE_FEATURE(kWebIdentityDigitalCredentials,
              "WebIdentityDigitalCredentials",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the Digital Credentials Creation API.
+BASE_FEATURE(kWebIdentityDigitalCredentialsCreation,
+             "WebIdentityDigitalCredentialsCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
@@ -510,15 +502,27 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
              "NetworkQualityEstimatorWebHoldback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Determines if an extra brand version pair containing possibly escaped double
-// quotes and escaped backslashed should be added to the Sec-CH-UA header
-// (activated by kUserAgentClientHint)
-BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
+// Whether GuestViews (see components/guest_view/README.md) are implemented
+// using MPArch inner pages. See https://crbug.com/40202416
+BASE_FEATURE(kGuestViewMPArch,
+             "GuestViewMPArch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // See crbug.com/359623664
 BASE_FEATURE(kIdbPrioritizeForegroundClients,
              "IdbPrioritizeForegroundClients",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether we ignore duplicate navigations or not, in favor of
+// preserving the already ongoing navigation.
+BASE_FEATURE(kIgnoreDuplicateNavs,
+             "IgnoreDuplicateNavs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDuplicateNavThreshold,
+                   &kIgnoreDuplicateNavs,
+                   "duplicate_nav_threshold",
+                   base::Milliseconds(2000));
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -567,41 +571,19 @@ BASE_FEATURE(kIsolateOrigins,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
 
-// Enables experimental JavaScript shared memory features.
-BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
-             "JavaScriptExperimentalSharedMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enable lazy initialization of the media controls.
 BASE_FEATURE(kLazyInitializeMediaControls,
              "LazyInitializeMediaControls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables reporting of Cookie Issues for Legacy Technology Report.
-BASE_FEATURE(kLegacyTechReportEnableCookieIssueReports,
-             "LegacyTechReportEnableCookieIssueReports",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Configures whether Blink on Windows 8.0 and below should use out of process
-// API font fallback calls to retrieve a fallback font family name as opposed to
-// using a hard-coded font lookup table.
-BASE_FEATURE(kLegacyWindowsDWriteFontFallback,
-             "LegacyWindowsDWriteFontFallback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLogJsConsoleMessages,
              "LogJsConsoleMessages",
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-// Uses ThreadType::kDisplayCritical for the main thread
-BASE_FEATURE(kMainThreadCompositingPriority,
-             "MainThreadCompositingPriority",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The MBI mode controls whether or not communication over the
 // AgentSchedulingGroup is ordered with respect to the render-process-global
@@ -634,6 +616,15 @@ const base::FeatureParam<MBIMode> kMBIModeParam {
       &mbi_mode_types
 };
 
+// Controls the configurablity of the navigation confidence noise level.
+// If the feature is not enabled, then the epsilon value will be 1.1.
+BASE_FEATURE(kNavigationConfidenceEpsilon,
+             "NavigationConfidenceEpsilon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// The epsilon value returned if `kNavigationConfidenceNoise` is enabled.
+const base::FeatureParam<double> kNavigationConfidenceEpsilonValue{
+    &kNavigationConfidenceEpsilon, "navigation-confidence-epsilon-value", 1.1};
+
 // When NavigationNetworkResponseQueue is enabled, the browser will schedule
 // some tasks related to navigation network responses in a kHigh priority
 // queue.
@@ -655,16 +646,6 @@ BASE_FEATURE(kNetworkServiceInProcess,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-// Kill switch for Web Notification content images.
-BASE_FEATURE(kNotificationContentImage,
-             "NotificationContentImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables the notification trigger API.
-BASE_FEATURE(kNotificationTriggers,
-             "NotificationTriggers",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature which holdbacks NoStatePrefetch on all surfaces.
 BASE_FEATURE(kNoStatePrefetchHoldback,
@@ -708,24 +689,24 @@ BASE_FEATURE(kPeriodicBackgroundSync,
              "PeriodicBackgroundSync",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill-switch to introduce a compatibility breaking restriction.
-BASE_FEATURE(kPepperCrossOriginRedirectRestriction,
-             "PepperCrossOriginRedirectRestriction",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables Persistent Origin Trials. It causes tokens for an origin to be stored
-// and persisted for the next navigation. This way, an origin trial can affect
-// things before receiving the response, for instance it can affect the next
-// navigation's network request.
-BASE_FEATURE(kPersistentOriginTrials,
-             "PersistentOriginTrials",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Use code paths for prefetch/prerender integration.
+// See also `kPrerender2FallbackPrefetchSpecRules`.
+BASE_FEATURE(kPrefetchPrerenderIntegration,
+             "PrefetchPrerenderIntegration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, browser-initiated prefetch is allowed.
 // Please see crbug.com/40946257 for more details.
 BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,
              "PrefetchBrowserInitiatedTriggers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This was used for enabling a new limit and scheduler for prerender triggers
+// (crbug.com/40275452). Now the new implementation is used by default and this
+// flag is just for injecting parameters through field trials.
+BASE_FEATURE(kPrerender2NewLimitAndScheduler,
+             "Prerender2NewLimitAndScheduler",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables exposure of ads APIs in the renderer: Attribution Reporting,
 // FLEDGE, Topics, along with a number of other features actively in development
@@ -808,9 +789,16 @@ BASE_FEATURE(kOriginKeyedProcessesByDefault,
 // Fires the `pushsubscriptionchange` event defined here:
 // https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
 // for subscription refreshes, revoked permissions or subscription losses
-BASE_FEATURE(kPushSubscriptionChangeEvent,
-             "PushSubscriptionChangeEvent",
+BASE_FEATURE(kPushSubscriptionChangeEventOnInvalidation,
+             "PushSubscriptionChangeEventOnInvalidation",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Fires the `pushsubscriptionchange` event defined here:
+// https://w3c.github.io/push-api/#the-pushsubscriptionchange-event
+// upon manual resubscription to previously unsubscribed notifications.
+BASE_FEATURE(kPushSubscriptionChangeEventOnResubscribe,
+             "PushSubscriptionChangeEventOnResubscribe",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, queues navigations instead of cancelling the previous
 // navigation if the previous navigation is already waiting for commit.
@@ -820,16 +808,29 @@ BASE_FEATURE(kQueueNavigationsWhileWaitingForCommit,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, sends SubresourceResponseStarted IPC only when the user has
-// allowed any HTTPS-related warning exceptions. From field data, (see
-// `SSL.Experimental.SubresourceResponse`), ~100% of subresource notifications
-// are not required, since allowing certificate exceptions by users is a rare
-// event. Hence, if user has never allowed any certificate or HTTP exceptions,
-// notifications are not sent to the browser. Once we start sending these
-// messages, we keep sending them until all exceptions are revoked and browser
-// restart occurs.
+// allowed any HTTPS-related warning exceptions. From field data, ~100% of
+// subresource notifications are not required, since allowing certificate
+// exceptions by users is a rare event. Hence, if user has never allowed any
+// certificate or HTTP exceptions, notifications are not sent to the browser.
+// Once we start sending these messages, we keep sending them until all
+// exceptions are revoked and browser restart occurs.
 BASE_FEATURE(kReduceSubresourceResponseStartedIPC,
              "ReduceSubresourceResponseStartedIPC",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When a Web application is video-capturing a tab, it can use the Region
+// Capture API to crop the resulting video.
+// - If `kRegionCaptureOfOtherTabs` is disabled, the Web application can only
+// crop self-capture tracks. (That is, cropping is only possible when the
+// application is capturing its own tab.)
+// - If `kRegionCaptureOfOtherTabs` is enabled, the Web application  can crop
+// video-captures of any tab (so long as that other tab collaborates by sending
+// a CropTarget).
+BASE_FEATURE(kRegionCaptureOfOtherTabs,
+             "RegionCaptureOfOtherTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // RenderDocument:
 //
@@ -855,6 +856,15 @@ BASE_FEATURE(kRestrictThreadPoolInBackground,
 // Set a tri-state priority on v8 isolates reflecting the renderer priority.
 BASE_FEATURE(kSetIsolatesPriority,
              "SetIsolatesPriority",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, sends the spare renderer information when setting the
+// priority of renderers. Currently only Android handles the spare renderer
+// information in priority.
+// The target priority of a spare renderer in Android is decided by the feature
+// parameters in ContentFeatureList.java.
+BASE_FEATURE(kSpareRendererProcessPriority,
+             "SpareRendererProcessPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Reuse compositor instances with RenderDocument
@@ -921,26 +931,35 @@ constexpr base::FeatureParam<double> kProcessPerSiteMainFrameTotalMemoryLimit{
     &kProcessPerSiteUpToMainFrameThreshold,
     "ProcessPerSiteMainFrameTotalMemoryLimit", 2 * 1024 * 1024 * 1024u};
 
-// Enables ServiceWorker static routing API.
-// https://github.com/WICG/service-worker-static-routing-api
-BASE_FEATURE(kServiceWorkerStaticRouter,
-             "ServiceWorkerStaticRouter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables auto preloading for fetch requests before invoking the fetch handler
+// in ServiceWorker. The fetch request inside the fetch handler is resolved with
+// this preload response. If the fetch handler result is fallback, uses this
+// preload request as a fallback network request.
+//
+// Unlike navigation preload, this preloading is applied to subresources. Also,
+// it doesn't require a developer opt-in.
+//
+// crbug.com/1472634 for more details.
+BASE_FEATURE(kServiceWorkerAutoPreload,
+             "ServiceWorkerAutoPreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
+// crbug.com/374606637: When this is enabled, race-network-and-fetch-hander will
+// prioritize the response processing for the network request over the
+// processing for the fetch handler.
+BASE_FEATURE(
+    kServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement,
+    "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement",
+    base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process.
-// Camera requests from Lacros are forwarded to Ash via a Mojo connection
-// established through cros-api. Since cros-api isn't available in utility
-// processes, Lacros's video capture service has to run within the browser
-// process.
 BASE_FEATURE(kRunVideoCaptureServiceInBrowserProcess,
              "RunVideoCaptureServiceInBrowserProcess",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
+#endif
 
 // Update scheduler settings using resourced on ChromeOS.
 BASE_FEATURE(kSchedQoSOnResourcedForChrome,
@@ -979,24 +998,27 @@ BASE_FEATURE(kServiceWorkerPaymentApps,
 // isolated renderers.
 BASE_FEATURE(kSharedArrayBuffer,
              "SharedArrayBuffer",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-// If enabled, SharedArrayBuffer is present and can be transferred on desktop
-// platforms. This flag is used only as a "kill switch" as we migrate towards
-// requiring 'crossOriginIsolated'.
-BASE_FEATURE(kSharedArrayBufferOnDesktop,
-             "SharedArrayBufferOnDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch for creating first-party StorageKeys in
-// RenderFrameHostImpl::CalculateStorageKey for frames with extension URLs.
-BASE_FEATURE(kShouldAllowFirstPartyStorageKeyOverrideFromEmbedder,
-             "ShouldAllowFirstPartyStorageKeyOverrideFromEmbedder",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(PLATFORM_CFM)
+// Supports x-on-meet-coop interop implementation.
+// TODO: crbug.com/398741358 - clean up this temporary workaround after
+// https://crbug.com/333029146 replaces COOP restrict-properties.
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // If enabled, GetUserMedia API will only work when the concerned tab is in
 // focus
 BASE_FEATURE(kUserMediaCaptureOnFocus,
              "UserMediaCaptureOnFocus",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A feature to enable using the update token in the manifest or icon url
+// changes to detect app updates. When this is enabled, automatic icon
+// downloading is disabled.
+BASE_FEATURE(kWebAppEnableUpdateTokenParsing,
+             "WebAppEnableUpdateTokenParsing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // This is intended as a kill switch for the WebOTP Service feature. To enable
@@ -1013,6 +1035,13 @@ BASE_FEATURE(kWebLockScreenApi,
 // SiteInstanceGroup as the initiator.
 BASE_FEATURE(kSiteInstanceGroupsForDataUrls,
              "SiteInstanceGroupsForDataUrls",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, puts non-isolated sites in separate SiteInstances in a default
+// SiteInstanceGroup (per BrowsingInstance), rather than sharing a default
+// SiteInstance.
+BASE_FEATURE(kDefaultSiteInstanceGroups,
+             "DefaultSiteInstanceGroups",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to isolate sites of documents that specify an eligible
@@ -1047,27 +1076,22 @@ const base::FeatureParam<base::TimeDelta>
         &kSiteIsolationForCrossOriginOpenerPolicy, "expiration_timeout",
         base::Days(7)};
 
-// This feature controls whether the renderer should use SkiaFontManager to
-// fetch fonts from the Browser's SkiaFontService. It is currently scoped to
+// This feature controls whether the renderer should use FontDataManager to
+// fetch fonts from the Browser's FontDataService. It is currently scoped to
 // just Windows. See crbug.com/335680565.
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kSkiaFontService,
-             "SkiaFontService",
+BASE_FEATURE(kFontDataServiceAllWebContents,
+             "FontDataServiceAllWebContents",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<SkiaFontServiceTypefaceType>::Option
-    skia_font_service_typeface[] = {
-        {SkiaFontServiceTypefaceType::kDwrite, "DWrite"},
-        {SkiaFontServiceTypefaceType::kFreetype, "FreeType"}};
-const base::FeatureParam<SkiaFontServiceTypefaceType>
-    kSkiaFontServiceTypefaceType{&kSkiaFontService, "typeface",
-                                 SkiaFontServiceTypefaceType::kDwrite,
-                                 &skia_font_service_typeface};
-
-// Whether a utility process configured to use a "UI" message pump should also
-// initialize COM.
-BASE_FEATURE(kUtilityWithUiPumpInitializesCom,
-             "UtilityWithUiPumpInitializesCom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<FontDataServiceTypefaceType>::Option
+    font_data_service_typeface[] = {
+        {FontDataServiceTypefaceType::kDwrite, "DWrite"},
+        {FontDataServiceTypefaceType::kFreetype, "Freetype"},
+        {FontDataServiceTypefaceType::kFontations, "Fontations"}};
+const base::FeatureParam<FontDataServiceTypefaceType>
+    kFontDataServiceTypefaceType{&kFontDataServiceAllWebContents, "typeface",
+                                 FontDataServiceTypefaceType::kDwrite,
+                                 &font_data_service_typeface};
 #endif  // BUILDFLAG(IS_WIN)
 
 // When enabled, OOPIFs will not try to reuse compatible processes from
@@ -1094,7 +1118,7 @@ BASE_FEATURE(kStrictOriginIsolation,
 // much memory is not attempted to be reused.
 BASE_FEATURE(kSubframeProcessReuseThresholds,
              "SubframeProcessReuseThresholds",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Specifies the memory threshold for the `kSubframeProcessReuseThresholds`
 // feature, which only allows a process to be reused for another subframe if the
@@ -1104,7 +1128,7 @@ BASE_FEATURE(kSubframeProcessReuseThresholds,
 // process reuse experiments.
 constexpr base::FeatureParam<double> kSubframeProcessReuseMemoryThreshold{
     &kSubframeProcessReuseThresholds, "SubframeProcessReuseMemoryThreshold",
-    2 * 1024 * 1024 * 1024u};
+    512 * 1024 * 1024u};
 
 // Disallows window.{alert, prompt, confirm} if triggered inside a subframe that
 // is not same origin with the main frame.
@@ -1143,6 +1167,15 @@ const base::FeatureParam<int> kTouchDragMovementThresholdDip{
     &kTouchDragAndContextMenu, "DragAndDropMovementThresholdDipParam", 60};
 #endif
 
+// Controls whether the browser should track and reuse free and empty renderer
+// processes. When enabled, the browser maintains a list of renderer processes
+// that are currently not hosting any frames and are thus eligible for reuse
+// when a new renderer process is needed. Currently, only background renderer
+// processes are considered for reuse.
+BASE_FEATURE(kTrackEmptyRendererProcessesForReuse,
+             "TrackEmptyRendererProcessesForReuse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This feature is for a reverse Origin Trial, enabling SharedArrayBuffer for
 // sites as they migrate towards requiring cross-origin isolation for these
 // features.
@@ -1157,16 +1190,8 @@ BASE_FEATURE(kUnrestrictedSharedArrayBuffer,
 // If enabled, blink's context snapshot is used rather than the v8 snapshot.
 BASE_FEATURE(kUseContextSnapshot,
              "UseContextSnapshot",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
-// Allows user activation propagation to all frames having the same origin as
-// the activation notifier frame.  This is an intermediate measure before we
-// have an iframe attribute to declaratively allow user activation propagation
-// to subframes.
-BASE_FEATURE(kUserActivationSameOriginVisibility,
-             "UserActivationSameOriginVisibility",
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // Enables comparing browser and renderer's DidCommitProvisionalLoadParams in
 // RenderFrameHostImpl::VerifyThatBrowserAndRendererCalculatedDidCommitParamsMatch.
@@ -1196,20 +1221,29 @@ BASE_FEATURE(kWebAssemblyBaseline,
              "WebAssemblyBaseline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// When a Web application is video-capturing a tab, it can use the Element
+// Capture API to restrict the resulting video.
+// - If `kElementCaptureOfOtherTabs` is disabled, the Web application can only
+// restrict self-capture tracks. (That is, restrictping is only possible when
+// the application is capturing its own tab.)
+// - If `kElementCaptureOfOtherTabs` is enabled, the Web application  can
+// restrict video-captures of any tab (so long as that other tab collaborates by
+// sending a RestrictionTarget).
+BASE_FEATURE(kElementCaptureOfOtherTabs,
+             "ElementCaptureOfOtherTabs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 // Enable WebAssembly JSPI.
 BASE_FEATURE(kEnableExperimentalWebAssemblyJSPI,
              "WebAssemblyExperimentalJSPI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable WebAssembly lazy compilation (JIT on first call).
 BASE_FEATURE(kWebAssemblyLazyCompilation,
              "WebAssemblyLazyCompilation",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enable WebAssembly Memory64.
-BASE_FEATURE(kWebAssemblyMemory64,
-             "WebAssemblyMemory64",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable WebAssembly tiering (Liftoff -> TurboFan).
 BASE_FEATURE(kWebAssemblyTiering,
@@ -1257,6 +1291,26 @@ BASE_FEATURE(kWebUICodeCache,
              "WebUICodeCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables build-time generated resource-bundled code caches for WebUI pages.
+// See crbug.com/375509504 for details.
+BASE_FEATURE(kWebUIBundledCodeCache,
+             "WebUIBundledCodeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables populating the WebUI URL to code cache resource map.
+const base::FeatureParam<bool> kWebUIBundledCodeCacheGenerateResourceMap{
+    &kWebUIBundledCodeCache, "WebUIBundledCodeCacheGenerateResourceMap", true};
+
+#if !BUILDFLAG(IS_ANDROID)
+// Reports WebUI Javascript errors to the crash server on all desktop platforms.
+// Previously, this was only supported on ChromeOS and Linux.
+// Intentionally enabled by default and will be used as a kill switch in case
+// of regressions.
+BASE_FEATURE(kWebUIJSErrorReportingExtended,
+            "WebUIJSErrorReportingExtended",
+            base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Controls whether the WebUSB API is enabled:
 // https://wicg.github.io/webusb
 BASE_FEATURE(kWebUsb, "WebUSB", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1272,26 +1326,28 @@ BASE_FEATURE(kWebPermissionsApi,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// When enabled, will no longer cache java side AccessibilityNodeInfo objects.
+BASE_FEATURE(kAccessibilityDeprecateJavaNodeCache,
+             "AccessibilityDeprecateJavaNodeCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, TYPE_ANNOUNCE events will no longer be sent for live regions in
+// the web contents.
+BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
+             "AccessibilityDeprecateTypeAnnounce",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, includes the ACTION_LONG_CLICK action to all relevant nodes in
 // the web contents accessibility tree.
 BASE_FEATURE(kAccessibilityIncludeLongClickAction,
              "AccessibilityIncludeLongClickAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows the use of page zoom in place of accessibility text autosizing, and
-// updated UI to replace existing Chrome Accessibility Settings.
-BASE_FEATURE(kAccessibilityPageZoom,
-             "AccessibilityPageZoom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether the OS-level font setting is adjusted for.
-const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
-    &kAccessibilityPageZoom, "AdjustForOSLevel", false};
-
-// Enables the use of enhancements to the Page Zoom feature based on user
-// feedback from the v1 version (e.g. reset button, better IPH, etc).
-BASE_FEATURE(kAccessibilityPageZoomEnhancements,
-             "AccessibilityPageZoomEnhancements",
+// Enables the second iteration of AccessibilityPageZoom, which continues
+// the work completed in the first experiment and the subsequent fast-follow.
+// This version of the experiment explores enabling OS-level adjustments.
+BASE_FEATURE(kAccessibilityPageZoomV2,
+             "AccessibilityPageZoomV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of a unified code path for AXTree snapshots.
@@ -1303,11 +1359,16 @@ BASE_FEATURE(kAccessibilityUnifiedSnapshots,
 // background thread.
 BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
              "AccessibilityManageBroadcastReceiverOnBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable open PDF inline on Android.
 BASE_FEATURE(kAndroidOpenPdfInline,
              "AndroidOpenPdfInline",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// A feature to enable launch handler and file handler api for Chrome on Android
+BASE_FEATURE(kAndroidWebAppLaunchHandler,
+             "AndroidWebAppLaunchHandler",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
@@ -1320,57 +1381,43 @@ BASE_FEATURE(kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady,
              "GinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Rebind service binding when consecutive Context.updateServiceGroup() call is
+// done. If this is disabled, it rebinds the service binding on each
+// Context.updateServiceGroup() call.
+BASE_FEATURE(kGroupRebindingForGroupImportance,
+             "GroupRebindingForGroupImportance",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Reduce the priority of GPU process when in background so it is more likely
 // to be killed first if the OS needs more memory.
 BASE_FEATURE(kReduceGpuPriorityOnBackground,
              "ReduceGpuPriorityOnBackground",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, shows a dropdown menu for mouse and trackpad secondary
-// clicks (i.e. right click) with respect to text selection.
-BASE_FEATURE(kMouseAndTrackpadDropdownMenu,
-             "MouseAndTrackpadDropdownMenu",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Apply text selection menu order correction logic for Android.
-// TODO(crbug.com/40947146) This is a kill switch landed in M122.
-// Please remove after M124.
-BASE_FEATURE(kSelectionMenuItemModification,
-             "SelectionMenuItemModification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Screen Capture API support for Android
+// Screen Capture API support for Android.
+// This should not be enabled unless ENABLE_SCREEN_CAPTURE is on, otherwise
+// it won't work.
 BASE_FEATURE(kUserMediaScreenCapturing,
              "UserMediaScreenCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Kill switch for the WebNFC feature. This feature can be enabled for all sites
-// using the kEnableExperimentalWebPlatformFeatures flag.
-// https://w3c.github.io/web-nfc/
-BASE_FEATURE(kWebNfc, "WebNFC", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Kill switch for allowing webview to suppress tap immediately after fling,
-// matching chrome behavior.
-BASE_FEATURE(kWebViewSuppressTapDuringFling,
-             "WebViewSuppressTapDuringFling",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
 // Enables backgrounding hidden renderers on Mac.
 BASE_FEATURE(kMacAllowBackgroundingRenderProcesses,
              "MacAllowBackgroundingRenderProcesses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables a fix for a macOS IME Live Conversion issue. crbug.com/40226470 and
 // crbug.com/40060200
 BASE_FEATURE(kMacImeLiveConversionFix,
              "MacImeLiveConversionFix",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMacSyscallSandbox,
-             "MacSyscallSandbox",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Changes how Chrome responds to accessibility activation signals on macOS
 // Sonoma, to avoid unnecessary changes to the screen reader state.
@@ -1380,13 +1427,13 @@ BASE_FEATURE(kSonomaAccessibilityActivationRefinements,
 
 #endif  // BUILDFLAG(IS_MAC)
 
-#if defined(WEBRTC_USE_PIPEWIRE)
-// Controls whether the PipeWire support for screen capturing is enabled on the
-// Wayland display server.
-BASE_FEATURE(kWebRtcPipeWireCapturer,
-             "WebRTCPipeWireCapturer",
+#if BUILDFLAG(IS_ANDROID)
+// Disables WebAuthn on Android Auto. Default enabled in M137, remove in or
+// after M140.
+BASE_FEATURE(kWebauthnDisabledOnAuto,
+             "WebAuthenticationDisabledOnAuto",
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // defined(WEBRTC_USE_PIPEWIRE)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Default amount of days after which the global navigation capturing IPH
 // guardrails are cleared from storage.
@@ -1395,16 +1442,23 @@ const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{
 
 BASE_FEATURE(kPwaNavigationCapturing,
              "PwaNavigationCapturing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
     {{CapturingState::kDefaultOn, "on_by_default"},
      {CapturingState::kDefaultOff, "off_by_default"},
      {CapturingState::kReimplDefaultOn, "reimpl_default_on"},
-     {CapturingState::kReimplDefaultOff, "reimpl_default_off"}};
+     {CapturingState::kReimplDefaultOff, "reimpl_default_off"},
+     {CapturingState::kReimplOnViaClientMode, "reimpl_on_via_client_mode"}};
 
 const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",
-    CapturingState::kDefaultOn, &kNavigationCapturingParams};
+    CapturingState::kReimplOnViaClientMode, &kNavigationCapturingParams};
+
+const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
+    &kPwaNavigationCapturing, "initial_nav_forced_off_apps", ""};
+
+const base::FeatureParam<std::string> kForcedOffCapturingAppsUserSetting{
+    &kPwaNavigationCapturing, "user_settings_forced_off_apps", ""};
 
 namespace {
 enum class VideoCaptureServiceConfiguration {
@@ -1414,7 +1468,7 @@ enum class VideoCaptureServiceConfiguration {
 };
 
 VideoCaptureServiceConfiguration GetVideoCaptureServiceConfiguration() {
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
 #else
   return base::FeatureList::IsEnabled(
@@ -1434,6 +1488,13 @@ bool IsVideoCaptureServiceEnabledForOutOfProcess() {
 bool IsVideoCaptureServiceEnabledForBrowserProcess() {
   return GetVideoCaptureServiceConfiguration() ==
          VideoCaptureServiceConfiguration::kEnabledForBrowserProcess;
+}
+
+bool IsPushSubscriptionChangeEventEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kPushSubscriptionChangeEventOnInvalidation) ||
+         base::FeatureList::IsEnabled(
+             features::kPushSubscriptionChangeEventOnResubscribe);
 }
 
 }  // namespace features

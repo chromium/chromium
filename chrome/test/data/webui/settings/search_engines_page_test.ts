@@ -266,7 +266,7 @@ suite('SearchEnginePageTests', function() {
     const expandButton =
         activesListElement.shadowRoot!.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
-    assertTrue(expandButton!.hasAttribute('hidden'));
+    assertTrue(expandButton.hasAttribute('hidden'));
   });
 
   test('testOthersList', function() {
@@ -303,11 +303,11 @@ suite('SearchEnginePageTests', function() {
           searchEnginesInfo.others[i + 1]!.name);
     }
 
-    const othersEntries = othersListElement!.shadowRoot!.querySelectorAll(
+    const othersEntries = othersListElement.shadowRoot!.querySelectorAll(
         'settings-search-engine-entry');
 
     // Ensure that they are displayed in alphabetical order.
-    for (let i = 0; i < othersEntries!.length - 1; i++) {
+    for (let i = 0; i < othersEntries.length - 1; i++) {
       assertTrue(
           othersEntries[i]!.engine.name <= othersEntries[i + 1]!.engine.name);
     }
@@ -315,7 +315,7 @@ suite('SearchEnginePageTests', function() {
     const expandButton =
         othersListElement.shadowRoot!.querySelector('cr-expand-button');
     assertTrue(!!expandButton);
-    assertFalse(expandButton!.hasAttribute('hidden'));
+    assertFalse(expandButton.hasAttribute('hidden'));
   });
 
   // Test that the keyboard shortcut radio buttons are shown as expected, and
@@ -328,12 +328,12 @@ suite('SearchEnginePageTests', function() {
     const radioButtons =
         page.shadowRoot!.querySelectorAll('controlled-radio-button');
     assertEquals(2, radioButtons.length);
-    assertEquals('true', radioButtons.item(0)!.name);
-    assertEquals('false', radioButtons.item(1)!.name);
+    assertEquals('true', radioButtons.item(0).name);
+    assertEquals('false', radioButtons.item(1).name);
 
     // Check behavior when switching space triggering off.
-    radioButtons.item(1)!.click();
-    await eventToPromise('selected-changed', radioGroup);
+    radioButtons.item(1).click();
+    await eventToPromise('change', radioGroup);
     assertEquals('false', radioGroup.selected);
     let result =
         await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
@@ -342,7 +342,7 @@ suite('SearchEnginePageTests', function() {
 
     // Check behavior when switching space triggering on.
     radioButtons.item(0).click();
-    await eventToPromise('selected-changed', radioGroup);
+    await eventToPromise('change', radioGroup);
     assertEquals('true', radioGroup.selected);
     result = await browserProxy.whenCalled('recordSearchEnginesPageHistogram');
     assertEquals(
@@ -361,7 +361,7 @@ suite('SearchEnginePageTests', function() {
 
     const message = page.shadowRoot!.querySelector('#noOtherEngines');
     assertTrue(!!message);
-    assertFalse(message!.hasAttribute('hidden'));
+    assertFalse(message.hasAttribute('hidden'));
 
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
@@ -369,7 +369,7 @@ suite('SearchEnginePageTests', function() {
       others: [createSampleSearchEngine()],
       extensions: [],
     });
-    assertTrue(message!.hasAttribute('hidden'));
+    assertTrue(message.hasAttribute('hidden'));
   });
 
   // Tests that the add search engine dialog opens when the corresponding
@@ -568,11 +568,11 @@ suite('SearchEnginePageTests', function() {
 
     const messageActive = page.shadowRoot!.querySelector('#noActiveEngines');
     assertTrue(!!messageActive);
-    assertFalse(messageActive!.hasAttribute('hidden'));
+    assertFalse(messageActive.hasAttribute('hidden'));
 
     const messageOther = page.shadowRoot!.querySelector('#noOtherEngines');
     assertTrue(!!messageOther);
-    assertFalse(messageOther!.hasAttribute('hidden'));
+    assertFalse(messageOther.hasAttribute('hidden'));
 
     webUIListenerCallback('search-engines-changed', {
       defaults: [],
@@ -580,7 +580,7 @@ suite('SearchEnginePageTests', function() {
       others: [createSampleSearchEngine()],
       extensions: [],
     });
-    assertTrue(messageActive!.hasAttribute('hidden'));
-    assertTrue(messageOther!.hasAttribute('hidden'));
+    assertTrue(messageActive.hasAttribute('hidden'));
+    assertTrue(messageOther.hasAttribute('hidden'));
   });
 });

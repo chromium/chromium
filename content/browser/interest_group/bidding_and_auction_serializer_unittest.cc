@@ -4,6 +4,8 @@
 
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 
+#include <limits>
+
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
@@ -44,8 +46,12 @@ StorageInterestGroup MakeInterestGroup(blink::InterestGroup interest_group) {
   StorageInterestGroup storage_group;
   storage_group.interest_group = std::move(interest_group);
   storage_group.bidding_browser_signals =
-      blink::mojom::BiddingBrowserSignals::New(3, 5, std::move(previous_wins),
-                                               false);
+      blink::mojom::BiddingBrowserSignals::New(
+          3, 5, std::move(previous_wins), false,
+          /*click_and_view_counts=*/
+          blink::mojom::ViewAndClickCounts::New(
+              /*view_counts=*/blink::mojom::ViewOrClickCounts::New(),
+              /*click_counts=*/blink::mojom::ViewOrClickCounts::New()));
   storage_group.joining_origin = storage_group.interest_group.owner;
   return storage_group;
 }
@@ -104,14 +110,16 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithDefaultConfig) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), 5 * 1024 - kEncryptionOverhead);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), 5 * 1024 - kEncryptionOverhead);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
@@ -132,19 +140,19 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithLargeRequestSize) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
-  base::HistogramTester histogram_tester;
-
   const size_t kRequestSize = 2000;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
@@ -160,14 +168,12 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithSmallRequestSize) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 107, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
@@ -188,14 +194,13 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithTooSmallRequestSize) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), 0u);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_FALSE(data.has_value());
+
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 2, 1);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 0);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 0);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
@@ -225,20 +230,21 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSize) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
+
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest,
        SerializeWithPerOwnerSizeBiggerThanRequestSize) {
-  base::HistogramTester histogram_tester;
-
   const size_t kRequestSize = 2000;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
@@ -263,20 +269,15 @@ TEST_F(BiddingAndAuctionSerializerTest,
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
-
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 3);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 192, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeExpands) {
-  base::HistogramTester histogram_tester;
-
   const size_t kRequestSize = 6000;
   blink::mojom::AuctionDataConfigPtr config =
       blink::mojom::AuctionDataConfig::New();
@@ -301,14 +302,12 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeExpands) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 4);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.NumGroups", 400, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeShrinks) {
@@ -338,16 +337,19 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithPerOwnerSizeShrinks) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
+
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 0, 2);
   histogram_tester.ExpectTotalCount(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 200, 1);
-  histogram_tester.ExpectTotalCount(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1);
 }
 
 TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
@@ -377,8 +379,13 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
 
   AddGroupsToSerializer(serializer);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
+
   histogram_tester.ExpectBucketCount(
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 3, 3);
   histogram_tester.ExpectBucketCount(
@@ -387,8 +394,6 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithFixedSizeGroups) {
       "Ads.InterestGroup.ServerAuction.Request.NumIterations", 4);
   histogram_tester.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.Request.NumGroups", 95, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Ads.InterestGroup.ServerAuction.Request.RelativeCompressedSize", 1, 1);
 }
 
 // Test that the encrypted request still has the full size even when the
@@ -416,8 +421,12 @@ TEST_F(BiddingAndAuctionSerializerTest, SerializeWithNoGroupsSetBuyersFixed) {
   serializer.SetConfig(std::move(config));
   serializer.SetDebugReportInLockout(false);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
 }
 
 // Test that the encrypted request still has the full size even when the
@@ -446,8 +455,12 @@ TEST_F(BiddingAndAuctionSerializerTest,
   serializer.SetConfig(std::move(config));
   serializer.SetDebugReportInLockout(false);
 
-  BiddingAndAuctionData data = serializer.Build();
-  EXPECT_EQ(data.request.size(), kRequestSize - kEncryptionOverhead);
+  std::optional<BiddingAndAuctionData> data = serializer.Build();
+  ASSERT_TRUE(data.has_value());
+  std::optional<std::vector<uint8_t>> request =
+      serializer.BuildRequestFromMessage(kOriginA, base::Time::Now());
+  ASSERT_TRUE(request.has_value());
+  EXPECT_EQ(request->size(), kRequestSize - kEncryptionOverhead);
 }
 
 class TargetSizeEstimatorTest : public testing::Test {
@@ -600,6 +613,39 @@ TEST_F(TargetSizeEstimatorTest, ProportionalWorstCase) {
   EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 100), 108 - kBidderOverhead);
   EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 208), 110 - kBidderOverhead);
   EXPECT_EQ(estimator.EstimateTargetSize(kOriginD, 318), 111 - kBidderOverhead);
+}
+
+TEST_F(TargetSizeEstimatorTest, LargeRequest) {
+  blink::mojom::AuctionDataConfigPtr config =
+      blink::mojom::AuctionDataConfig::New();
+  config->request_size = std::numeric_limits<uint32_t>::max();
+  config->per_buyer_configs[kOriginA] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  config->per_buyer_configs[kOriginB] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  config->per_buyer_configs[kOriginC] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  config->per_buyer_configs[kOriginD] =
+      blink::mojom::AuctionDataBuyerConfig::New(
+          /*size=*/std::numeric_limits<uint32_t>::max());
+  BiddingAndAuctionSerializer::TargetSizeEstimator estimator(0, &*config);
+  // Values passed to UpdatePerBuyerMaxSize do not include overhead.
+  estimator.UpdatePerBuyerMaxSize(kOriginA, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginB, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginC, 100 - kBidderOverhead);
+  estimator.UpdatePerBuyerMaxSize(kOriginD, 100 - kBidderOverhead);
+  // Value returned from EstimateTargetSize do not include overhead.
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginA, 0),
+            1073741820 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginB, 100),
+            1431655728 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginC, 200),
+            2147483544 - kBidderOverhead);
+  EXPECT_EQ(estimator.EstimateTargetSize(kOriginD, 300),
+            4294966992 - kBidderOverhead);
 }
 
 }  // namespace

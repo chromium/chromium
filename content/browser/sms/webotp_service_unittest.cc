@@ -91,7 +91,8 @@ class Service {
     // DocumentService implementation must be deleted by calling one of the
     // `*AndDeleteThis()` methods.
     service_ = &WebOTPService::CreateForTesting(
-        &fetcher_, OriginList{origin}, *web_contents->GetPrimaryMainFrame(),
+        &fetcher_, WebOTPService::OriginList{origin},
+        *web_contents->GetPrimaryMainFrame(),
         service_remote_.BindNewPipeAndPassReceiver());
     service_->SetConsentHandlerForTesting(consent_handler_.get());
   }
@@ -119,7 +120,7 @@ class Service {
                      const string& otp,
                      /* avoid showing user prompts */
                      UserConsent consent_requirement = UserConsent::kObtained) {
-    provider_.NotifyReceive(OriginList{Origin::Create(url)}, otp,
+    provider_.NotifyReceive(WebOTPService::OriginList{Origin::Create(url)}, otp,
                             consent_requirement);
   }
 

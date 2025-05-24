@@ -65,3 +65,9 @@ along with their hash codes. This makes it easier to look up the annotation.
 ```
 vpython3 ./tools/traffic_annotation/scripts/auditor/hashes.py
 ```
+
+## Testing Changes to auditor.py
+Unit tests need to be run manually:
+```
+vpython3 tools/traffic_annotation/scripts/auditor/auditor_test.py
+```

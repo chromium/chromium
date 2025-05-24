@@ -18,8 +18,6 @@ class PrefService;
 
 namespace signin {
 
-BASE_DECLARE_FEATURE(kPersistentRepeaterTimerUseWallClock);
-
 // This class fires a task repeatedly, across application restarts. The timer
 // stores the date of the last invocation in a preference, which is persisted
 // to disk.
@@ -59,7 +57,6 @@ class PersistentRepeatingTimer {
   const raw_ref<const base::Clock> clock_;
 
   base::WallClockTimer wall_timer_;
-  base::OneShotTimer tick_timer_;
 };
 
 }  // namespace signin

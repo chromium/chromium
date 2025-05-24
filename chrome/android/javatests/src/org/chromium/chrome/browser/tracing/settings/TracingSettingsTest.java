@@ -41,14 +41,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tracing.TracingController;
-import org.chromium.chrome.browser.tracing.TracingNotificationManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.components.browser_ui.settings.ButtonPreference;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 
 import java.io.File;
@@ -74,12 +75,12 @@ public class TracingSettingsTest {
     @Before
     public void setUp() {
         mMockNotificationManager = new MockNotificationManagerProxy();
-        TracingNotificationManager.overrideNotificationManagerForTesting(mMockNotificationManager);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
     }
 
     @After
     public void tearDown() {
-        TracingNotificationManager.overrideNotificationManagerForTesting(null);
+        NotificationProxyUtils.setNotificationEnabledForTest(null);
     }
 
     /**
@@ -225,7 +226,6 @@ public class TracingSettingsTest {
         // Recording started, a notification with a stop button should be displayed.
         Notification notification = waitForNotification().notification;
         Assert.assertEquals(FLAG_ONGOING_EVENT, notification.flags & FLAG_ONGOING_EVENT);
-        Assert.assertEquals(null, notification.deleteIntent);
         Assert.assertEquals(1, NotificationCompat.getActionCount(notification));
         PendingIntent stopIntent = NotificationCompat.getAction(notification, 0).actionIntent;
 
@@ -272,7 +272,7 @@ public class TracingSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     public void testNotificationsDisabledMessage() throws Exception {
-        mMockNotificationManager.setNotificationsEnabled(false);
+        NotificationProxyUtils.setNotificationEnabledForTest(false);
 
         mSettingsActivityTestRule.startSettingsActivity();
         final PreferenceFragmentCompat fragment = mSettingsActivityTestRule.getFragment();
@@ -287,12 +287,10 @@ public class TracingSettingsTest {
         Assert.assertFalse(startTracingButton.isEnabled());
         Assert.assertEquals(
                 TracingSettings.MSG_NOTIFICATIONS_DISABLED, statusPreference.getTitle());
-
-        mMockNotificationManager.setNotificationsEnabled(true);
     }
 
     public static class CategoryParams implements ParameterProvider {
-        private static List<ParameterSet> sParams =
+        private static final List<ParameterSet> sParams =
                 Arrays.asList(
                         new ParameterSet()
                                 .value(TracingSettings.UI_PREF_DEFAULT_CATEGORIES, "toplevel")
@@ -330,9 +328,10 @@ public class TracingSettingsTest {
         Context context = ApplicationProvider.getApplicationContext();
         Assert.assertNotNull(categoriesPref.getExtras());
         Assert.assertFalse(categoriesPref.getExtras().isEmpty());
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Intent intent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         context, TracingCategoriesSettings.class, categoriesPref.getExtras());
         mSettingsActivityTestRule.launchActivity(intent);
         SettingsActivity categoriesActivity = mSettingsActivityTestRule.getActivity();

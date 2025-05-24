@@ -28,9 +28,6 @@ if (proprietary_codecs && !is_debug && !is_component_build) {
   # iostream.cpp: _GLOBAL__I_000101
   _chrome_common_count += 1
 
-  # v8/src/parsing/token.cc: _GLOBAL__sub_I_token.cc
-  _chrome_common_count += 1
-
   if (use_clang_coverage) {
     # InstrProfilingRuntime.cpp, Only in coverage builds, not production.
     _chrome_common_count += 1

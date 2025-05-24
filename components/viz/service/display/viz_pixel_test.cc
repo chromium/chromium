@@ -5,7 +5,6 @@
 #include "components/viz/service/display/viz_pixel_test.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 
 namespace viz {

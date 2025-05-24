@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef NET_DNS_HOST_RESOLVER_MANAGER_JOB_H_
 #define NET_DNS_HOST_RESOLVER_MANAGER_JOB_H_
 
+#include <array>
 #include <deque>
 #include <memory>
 #include <optional>
+#include <variant>
 #include <vector>
 
 #include "base/containers/linked_list.h"
@@ -32,7 +29,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
@@ -191,7 +187,7 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
    private:
     RequestPriority highest_priority_;
     size_t total_count_ = 0;
-    size_t counts_[NUM_PRIORITIES] = {};
+    std::array<size_t, NUM_PRIORITIES> counts_ = {};
   };
 
   base::Value::Dict NetLogJobCreationParams(const NetLogSource& source);
@@ -244,11 +240,12 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
   // HostResolverDnsTask::Delegate implementation:
   void OnDnsTaskComplete(base::TimeTicks start_time,
                          bool allow_fallback,
-                         HostCache::Entry results,
+                         HostResolverDnsTask::Results results,
                          bool secure) override;
   void OnIntermediateTransactionsComplete(
       std::optional<HostResolverDnsTask::SingleTransactionResults>
           single_transaction_results) override;
+  bool IsHappyEyeballsV3Enabled() const override;
   void AddTransactionTimeQueued(base::TimeDelta time_queued) override;
 
   // DnsTaskResultsManager::Delegate implementation:

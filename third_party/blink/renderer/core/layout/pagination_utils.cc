@@ -46,7 +46,7 @@ LogicalSize PageBoxDefaultSizeWithSourceOrientation(const Document& document,
                                                     LogicalSize layout_size) {
   DCHECK(ShouldCenterPageOnPaper(document.GetFrame()->GetPrintParams()));
   LogicalSize target_size =
-      PageBoxDefaultSize(document).ConvertToLogical(style.GetWritingMode());
+      ToLogicalSize(PageBoxDefaultSize(document), style.GetWritingMode());
   if (layout_size.inline_size != layout_size.block_size &&
       (target_size.inline_size > target_size.block_size) !=
           (layout_size.inline_size > layout_size.block_size)) {
@@ -121,7 +121,7 @@ LogicalSize DesiredPageContainingBlockSize(const Document& document,
     }
   }
 
-  return layout_size.ConvertToLogical(style.GetWritingMode());
+  return ToLogicalSize(layout_size, style.GetWritingMode());
 }
 
 void ResolvePageBoxGeometry(const BlockNode& page_box,
@@ -228,7 +228,7 @@ float TargetScaleForPage(const PhysicalBoxFragment& page_container) {
                          &geometry, &margins);
   LogicalSize source_size = geometry.border_box_size + margins;
   LogicalSize target_size =
-      page_container.Size().ConvertToLogical(style.GetWritingMode());
+      ToLogicalSize(page_container.Size(), style.GetWritingMode());
 
   return layout_scale * TargetShrinkScaleFactor(target_size, source_size);
 }
@@ -352,21 +352,36 @@ PhysicalRect StitchedPageContentRect(
   DCHECK_EQ(page_container.GetBoxType(), PhysicalFragment::kPageContainer);
   const PhysicalBoxFragment& page_border_box = GetPageBorderBox(page_container);
   const PhysicalBoxFragment& page_area = GetPageArea(page_border_box);
+  const LayoutView& view = *page_container.GetDocument().GetLayoutView();
+  const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
+  const BlockBreakToken* previous_break_token =
+      FindPreviousBreakTokenForPageArea(page_area);
+
+  return StitchedPageContentRect(page_area, first_page_area,
+                                 previous_break_token);
+}
+
+PhysicalRect StitchedPageContentRect(
+    const PhysicalBoxFragment& page_area,
+    const PhysicalBoxFragment& first_page_area,
+    const BlockBreakToken* previous_break_token) {
+  DCHECK_EQ(page_area.GetBoxType(), PhysicalFragment::kPageArea);
+  DCHECK_EQ(first_page_area.GetBoxType(), PhysicalFragment::kPageArea);
+
   PhysicalRect physical_page_rect = page_area.LocalRect();
 
-  if (const BlockBreakToken* previous_break_token =
-          FindPreviousBreakTokenForPageArea(page_area)) {
+  if (previous_break_token) {
     LayoutUnit consumed_block_size = previous_break_token->ConsumedBlockSize();
-    WritingMode writing_mode = page_container.Style().GetWritingMode();
-    if (writing_mode == WritingMode::kVerticalRl) {
-      const LayoutView& view = *page_container.GetDocument().GetLayoutView();
-      const PhysicalBoxFragment& first_page_area = *GetPageArea(view, 0);
+    PhysicalDirection block_end =
+        page_area.Style().GetWritingDirection().BlockEnd();
+    if (block_end == PhysicalDirection::kLeft) {
       physical_page_rect.offset.left += first_page_area.Size().width;
       physical_page_rect.offset.left -=
           consumed_block_size + page_area.Size().width;
-    } else if (writing_mode == WritingMode::kVerticalLr) {
+    } else if (block_end == PhysicalDirection::kRight) {
       physical_page_rect.offset.left += consumed_block_size;
     } else {
+      CHECK_EQ(block_end, PhysicalDirection::kDown);
       physical_page_rect.offset.top += consumed_block_size;
     }
   }

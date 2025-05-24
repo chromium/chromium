@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import android.content.Context;
+import android.util.Pair;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -20,26 +25,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
-import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.chrome.browser.tabwindow.TabModelSelectorFactory;
+import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.concurrent.TimeoutException;
 import java.util.regex.Pattern;
@@ -78,13 +87,15 @@ public class ContextMenuLoadUrlParamsTest {
         }
 
         public RecordingTabModelSelector(
+                Context context,
+                ModalDialogManager modalDialogManager,
                 OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                TabCreatorManager tabCreatorManager,
-                TabModelFilterFactory tabModelFilterFactory) {
+                TabCreatorManager tabCreatorManager) {
             super(
+                    context,
+                    modalDialogManager,
                     profileProviderSupplier,
                     tabCreatorManager,
-                    tabModelFilterFactory,
                     () -> NextTabPolicy.HIERARCHICAL,
                     AsyncTabParamsManagerSingleton.getInstance(),
                     false,
@@ -101,15 +112,23 @@ public class ContextMenuLoadUrlParamsTest {
         TabWindowManagerSingleton.setTabModelSelectorFactoryForTesting(
                 new TabModelSelectorFactory() {
                     @Override
-                    public TabModelSelector buildSelector(
+                    public TabModelSelector buildTabbedSelector(
                             Context context,
+                            ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
                         return new RecordingTabModelSelector(
+                                context,
+                                modalDialogManager,
                                 profileProviderSupplier,
-                                tabCreatorManager,
-                                new ChromeTabModelFilterFactory(context));
+                                tabCreatorManager);
+                    }
+
+                    @Override
+                    public Pair<TabModelSelector, Destroyable> buildHeadlessSelector(
+                            @WindowId int windowId, Profile profile) {
+                        return Pair.create(null, null);
                     }
                 });
     }
@@ -148,13 +167,13 @@ public class ContextMenuLoadUrlParamsTest {
                 "testLink",
                 R.id.contextmenu_open_in_new_tab);
 
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams);
-        Assert.assertEquals(
+        assertNotNull(sOpenNewTabLoadUrlParams);
+        assertEquals(
                 sActivityTestRule.getTestServer().getURL(HTML_PATH),
                 sOpenNewTabLoadUrlParams.getReferrer().getUrl());
 
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
-        Assert.assertNotEquals(
+        assertNotNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+        assertNotEquals(
                 sOpenNewTabLoadUrlParams.getAdditionalNavigationParams().getInitiatorProcessId(),
                 -1);
     }
@@ -172,9 +191,9 @@ public class ContextMenuLoadUrlParamsTest {
                 "testLink",
                 R.id.contextmenu_open_in_incognito_tab);
 
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams);
-        Assert.assertNull(sOpenNewTabLoadUrlParams.getReferrer());
-        Assert.assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
+        assertNotNull(sOpenNewTabLoadUrlParams);
+        assertNull(sOpenNewTabLoadUrlParams.getReferrer());
+        assertNull(sOpenNewTabLoadUrlParams.getAdditionalNavigationParams());
     }
 
     /** Verifies that the referrer is stripped from username and password fields. */
@@ -184,11 +203,11 @@ public class ContextMenuLoadUrlParamsTest {
     public void testOpenInNewTabSanitizeReferrer() throws TimeoutException {
         String testUrl = sActivityTestRule.getTestServer().getURL(HTML_PATH);
         String[] schemeAndUrl = SCHEME_SEPARATOR_RE.split(testUrl, 2);
-        Assert.assertEquals(2, schemeAndUrl.length);
+        assertEquals(2, schemeAndUrl.length);
         String testUrlUserPass = schemeAndUrl[0] + "://user:pass@" + schemeAndUrl[1];
         triggerContextMenuLoad(testUrlUserPass, "testLink", R.id.contextmenu_open_in_new_tab);
-        Assert.assertNotNull(sOpenNewTabLoadUrlParams);
-        Assert.assertEquals(testUrl, sOpenNewTabLoadUrlParams.getReferrer().getUrl());
+        assertNotNull(sOpenNewTabLoadUrlParams);
+        assertEquals(testUrl, sOpenNewTabLoadUrlParams.getReferrer().getUrl());
     }
 
     private void triggerContextMenuLoad(String url, String openerDomId, int menuItemId)

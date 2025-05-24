@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <memory>
@@ -22,6 +23,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check_deref.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -33,8 +35,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
@@ -49,6 +51,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/app_service_test.h"
 #include "chrome/browser/apps/app_service/publisher_host.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
@@ -62,12 +65,12 @@
 #include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/core/reporting_user_tracker.h"
+#include "chrome/browser/ash/policy/status_collector/enterprise_activity_storage.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_content_client.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_unit_test_suite.h"
@@ -98,6 +101,7 @@
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -108,7 +112,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "components/account_id/account_id.h"
 #include "components/ownership/mock_owner_key_util.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -117,7 +120,9 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/upload_list/upload_list.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
@@ -292,8 +297,12 @@ constexpr base::TimeDelta kHour = base::Hours(1);
 
 const char kKioskAccountId[] = "kiosk_user@localhost";
 const char kWebKioskAccountId[] = "web_kiosk_user@localhost";
+const char kIwaKioskAccountId[] = "iwa_kiosk_user@localhost";
 const char kKioskAppId[] = "kiosk_app_id";
 const char kWebKioskAppUrl[] = "http://example.com";
+const char kIwaKioskWebBundleId[] =
+    "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+const char kIwaKioskUpdateUrl[] = "https://example.com/update.json";
 const char kExternalMountPoint[] = "/a/b/c";
 const char kPublicAccountId[] = "public_user@localhost";
 const char kArcStatus[] = R"(
@@ -851,6 +860,15 @@ class DeviceStatusCollectorTest : public testing::Test {
             DeviceLocalAccount::EphemeralMode::kUnset,
             fake_web_kiosk_app_basic_info_,
             kWebKioskAccountId),
+        fake_iwa_kiosk_basic_info_(kIwaKioskWebBundleId,
+                                   kIwaKioskUpdateUrl,
+                                   /*update_channel=*/std::string(),
+                                   /*pinned_version=*/std::string(),
+                                   /*allow_downgrades=*/false),
+        fake_iwa_kiosk_device_local_account_(
+            DeviceLocalAccount::EphemeralMode::kUnset,
+            fake_iwa_kiosk_basic_info_,
+            kIwaKioskAccountId),
         user_data_dir_override_(chrome::DIR_USER_DATA),
         crash_dumps_dir_override_(chrome::DIR_CRASH_DUMPS) {
     scoped_stub_install_attributes_.Get()->SetCloudManaged("managed.com",
@@ -1066,10 +1084,10 @@ class DeviceStatusCollectorTest : public testing::Test {
     testing_profile_ = profile_builder.Build();
 
     auto* user_manager = GetFakeChromeUserManager();
-    auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+    user_manager->AddUserWithAffiliationAndTypeAndProfile(
         account_id, is_affiliated, user_type, testing_profile_.get());
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false, /*is_child=*/false);
+    user_manager->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   void MockRegularUserWithAffiliation(const AccountId& account_id,
@@ -1090,6 +1108,9 @@ class DeviceStatusCollectorTest : public testing::Test {
       case DeviceLocalAccountType::kWebKioskApp:
         user = user_manager->AddWebKioskAppUser(account_id);
         break;
+      case DeviceLocalAccountType::kKioskIsolatedWebApp:
+        user = user_manager->AddKioskIwaUser(account_id);
+        break;
       default:
         FAIL() << "Unexpected kiosk app type.";
     }
@@ -1099,9 +1120,8 @@ class DeviceStatusCollectorTest : public testing::Test {
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
     SetDeviceLocalAccountsForTesting(&owner_settings_service_, {account});
-    user_manager->UserLoggedIn(account_id, user->username_hash(),
-                               /*browser_restart=*/false,
-                               /*is_child=*/false);
+    user_manager->UserLoggedIn(
+        account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   }
 
   std::unique_ptr<ScopedChromeOSVersionInfo> MockPlatformVersion(
@@ -1158,6 +1178,33 @@ class DeviceStatusCollectorTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  void MockAutoLaunchKioskIwa(
+      const DeviceLocalAccount& auto_launch_app_account) {
+    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>(
+        CHECK_DEREF(scoped_local_state_.Get()));
+    kiosk_iwa_manager_->AddAppForTesting(auto_launch_app_account);
+
+    std::vector<DeviceLocalAccount> accounts;
+    accounts.push_back(auto_launch_app_account);
+    SetDeviceLocalAccountsForTesting(&owner_settings_service_, accounts);
+
+    owner_settings_service_.SetString(
+        ash::kAccountsPrefDeviceLocalAccountAutoLoginId,
+        auto_launch_app_account.account_id);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void AddActivityPeriodForUser(const std::string& user_email) {
+    base::Time start_time = test_clock_.Now();
+    test_clock_.Advance(base::Hours(1));
+    base::Time end_time = test_clock_.Now();
+    test_clock_.Advance(base::Hours(1));
+
+    status_collector_->GetActivityStorageForTesting().AddActivityPeriod(
+        start_time, end_time, user_email);
+  }
+
   // Convenience method.
   int64_t ActivePeriodMilliseconds() {
     return DeviceStatusCollector::kIdlePollInterval.InMilliseconds();
@@ -1182,6 +1229,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   std::unique_ptr<TestingProfile> testing_profile_;
   // Only set after MockAutoLaunchWebKioskApp was called.
   std::unique_ptr<ash::WebKioskAppManager> web_kiosk_app_manager_;
+  // Only set after MockAutoLaunchKioskIwa was called.
+  std::unique_ptr<ash::KioskIwaManager> kiosk_iwa_manager_;
   // Only set after MockAutoLaunchKioskAppWithRequiredPlatformVersion was
   // called.
   std::unique_ptr<ash::KioskChromeAppManager> kiosk_chrome_app_manager_;
@@ -1196,6 +1245,8 @@ class DeviceStatusCollectorTest : public testing::Test {
   const DeviceLocalAccount fake_kiosk_device_local_account_;
   const WebKioskAppBasicInfo fake_web_kiosk_app_basic_info_;
   const DeviceLocalAccount fake_web_kiosk_device_local_account_;
+  const IsolatedWebAppKioskBasicInfo fake_iwa_kiosk_basic_info_;
+  const DeviceLocalAccount fake_iwa_kiosk_device_local_account_;
   base::ScopedPathOverride user_data_dir_override_;
   base::ScopedPathOverride crash_dumps_dir_override_;
   raw_ptr<ash::FakeUpdateEngineClient, DanglingUntriaged> update_engine_client_;
@@ -1204,7 +1255,6 @@ class DeviceStatusCollectorTest : public testing::Test {
   base::SimpleTestClock test_clock_;
 
   apps::ScopedOmitBorealisAppsForTesting scoped_omit_borealis_apps_for_testing_;
-  apps::ScopedOmitBuiltInAppsForTesting scoped_omit_built_in_apps_for_testing_;
   apps::ScopedOmitPluginVmAppsForTesting
       scoped_omit_plugin_vm_apps_for_testing_;
 
@@ -1482,8 +1532,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityTimesKeptUntilSubmittedSuccessfully) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1503,8 +1551,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityNoUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1514,10 +1560,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
   const AccountId public_account_id(AccountId::FromUserEmail(
       "public@public-accounts.device-local.localhost"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddPublicAccountUser(public_account_id);
-  user_manager->UserLoggedIn(public_account_id, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddPublicAccountUser(public_account_id);
+  user_manager->UserLoggedIn(
+      public_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(public_account_id));
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1532,8 +1578,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithPublicSessionUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1543,10 +1587,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
   const AccountId public_account_id(
       AccountId::FromUserEmail("public@web-kiosk-apps.device-local.localhost"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddPublicAccountUser(public_account_id);
-  user_manager->UserLoggedIn(public_account_id, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddPublicAccountUser(public_account_id);
+  user_manager->UserLoggedIn(
+      public_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(public_account_id));
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1559,10 +1603,35 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithKioskUser) {
             device_status_.active_periods(0).session_type());
 }
 
+TEST_F(DeviceStatusCollectorTest, ActivityWithIwaKioskUser) {
+  DisableDefaultSettings();
+  ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
+                                 ui::IDLE_STATE_ACTIVE};
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceActivityTimes, true);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceUsers, true);
+  const AccountId kiosk_account_id(AccountId::FromUserEmail(
+      "public@isolated-kiosk-apps.device-local.localhost"));
+  auto* user_manager = GetFakeChromeUserManager();
+  user_manager->AddPublicAccountUser(kiosk_account_id);
+  user_manager->UserLoggedIn(
+      kiosk_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(kiosk_account_id));
+
+  EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
+  EXPECT_FALSE(status_collector_->IsReportingUsers());
+
+  status_collector_->Simulate(test_states, 3);
+  GetStatus();
+  EXPECT_EQ(1, device_status_.active_periods_size());
+  EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_EQ(em::ActiveTimePeriod::SESSION_IWA_KIOSK,
+            device_status_.active_periods(0).session_type());
+}
+
 TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1571,11 +1640,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
       ash::kReportDeviceUsers, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   EXPECT_TRUE(status_collector_->IsReportingActivityTimes());
   EXPECT_TRUE(status_collector_->IsReportingUsers());
@@ -1604,8 +1672,6 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithAffiliatedUser) {
 
 TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   DisableDefaultSettings();
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kActivityReportingSessionType);
   ui::IdleState test_states[] = {ui::IDLE_STATE_ACTIVE, ui::IDLE_STATE_ACTIVE,
                                  ui::IDLE_STATE_ACTIVE};
   scoped_testing_cros_settings_.device_settings()->SetBoolean(
@@ -1614,11 +1680,10 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
       ash::kReportDeviceUsers, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   EXPECT_FALSE(status_collector_->IsReportingActivityTimes());
   EXPECT_FALSE(status_collector_->IsReportingUsers());
@@ -1641,6 +1706,34 @@ TEST_F(DeviceStatusCollectorTest, ActivityWithNotAffiliatedUser) {
   EXPECT_EQ(1, device_status_.active_periods_size());
   EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
   EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
+}
+
+// Remove deprecated ARC Kiosk account from the activity periods list.
+TEST_F(DeviceStatusCollectorTest, PrepopulatedActivityPeriods) {
+  DisableDefaultSettings();
+
+  // Simulate when something is left from the previous session reporting.
+  // ARC Kiosk activity to be removed.
+  const std::string kArcKioskEmail =
+      std::string("test@") + user_manager::kArcKioskDomain;
+  AddActivityPeriodForUser(kArcKioskEmail);
+  // Regular user activity to be uploaded.
+  const std::string kTestEmail = std::string("test@test.com");
+  AddActivityPeriodForUser(kTestEmail);
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceActivityTimes, true);
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceUsers, true);
+
+  GetStatus();
+  EXPECT_EQ(2, device_status_.active_periods_size());
+  // No email and session type are reported for ARC kiosk account.
+  EXPECT_TRUE(device_status_.active_periods(0).user_email().empty());
+  EXPECT_FALSE(device_status_.active_periods(0).has_session_type());
+  // Both email and session type are reported for regular user account.
+  EXPECT_EQ(device_status_.active_periods(1).user_email(), kTestEmail);
+  EXPECT_TRUE(device_status_.active_periods(1).has_session_type());
 }
 
 TEST_F(DeviceStatusCollectorTest, DevSwitchBootMode) {
@@ -1720,7 +1813,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
   // Expect the version info to be reported by default.
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -1734,7 +1826,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ->set_status(::tpm_manager::STATUS_DBUS_ERROR);
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -1751,7 +1842,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ash::kReportDeviceVersionInfo, false);
   GetStatus();
   EXPECT_FALSE(device_status_.has_browser_version());
-  EXPECT_FALSE(device_status_.has_is_lacros_primary_browser());
   EXPECT_FALSE(device_status_.has_channel());
   EXPECT_FALSE(device_status_.has_os_version());
   EXPECT_FALSE(device_status_.has_firmware_version());
@@ -1762,7 +1852,6 @@ TEST_F(DeviceStatusCollectorTest, VersionInfo) {
       ash::kReportDeviceVersionInfo, true);
   GetStatus();
   EXPECT_TRUE(device_status_.has_browser_version());
-  EXPECT_TRUE(device_status_.has_is_lacros_primary_browser());
   EXPECT_TRUE(device_status_.has_channel());
   EXPECT_TRUE(device_status_.has_os_version());
   EXPECT_TRUE(device_status_.has_firmware_version());
@@ -1784,41 +1873,35 @@ TEST_F(DeviceStatusCollectorTest, ReportUsers) {
   const AccountId account_id5(AccountId::FromUserEmail("user5@managed.com"));
 
   auto* user_manager = GetFakeChromeUserManager();
-  auto* public_user = user_manager->AddPublicAccountUser(public_account_id);
-  user_manager->UserLoggedIn(public_account_id, public_user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->AddPublicAccountUser(public_account_id);
+  user_manager->UserLoggedIn(
+      public_account_id,
+      user_manager::TestHelper::GetFakeUsernameHash(public_account_id));
 
-  auto* user0 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user0->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user1 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id1, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id1, user1->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user2 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id1, user_manager::TestHelper::GetFakeUsernameHash(account_id1));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id2, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id2, user2->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user3 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id2, user_manager::TestHelper::GetFakeUsernameHash(account_id2));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id3, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id3, user3->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user4 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id3, user_manager::TestHelper::GetFakeUsernameHash(account_id3));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id4, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id4, user4->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
-  auto* user5 = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->UserLoggedIn(
+      account_id4, user_manager::TestHelper::GetFakeUsernameHash(account_id4));
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id5, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id5, user5->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id5, user_manager::TestHelper::GetFakeUsernameHash(account_id5));
 
   // Verify that users are reported by default.
   GetStatus();
@@ -2220,15 +2303,6 @@ TEST_F(DeviceStatusCollectorTest, CrostiniTerminaVmKernelVersionReporting) {
   EXPECT_TRUE(got_session_status_);
   EXPECT_EQ(kTerminaVmKernelVersion,
             session_status_.crostini_status().last_launch_vm_kernel_version());
-
-  // Check that nothing is reported when the feature flag is disabled:
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kCrostiniAdditionalEnterpriseReporting);
-  GetStatus();
-  EXPECT_TRUE(got_session_status_);
-  EXPECT_TRUE(session_status_.crostini_status()
-                  .last_launch_vm_kernel_version()
-                  .empty());
 }
 
 TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
@@ -2250,9 +2324,6 @@ TEST_F(DeviceStatusCollectorTest, CrostiniAppUsageReporting) {
 
   testing_profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                            true);
-  scoped_feature_list_.InitWithFeatures(
-      {features::kCrostiniAdditionalEnterpriseReporting}, {});
-
   const std::string desktop_file_id = "vim";
   const std::string package_id =
       "vim;2:8.0.0197-4+deb9u1;amd64;installed:debian-stable";
@@ -2322,9 +2393,6 @@ TEST_F(DeviceStatusCollectorTest,
 
   testing_profile_->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                            false);
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kCrostiniAdditionalEnterpriseReporting);
-
   GetStatus();
   EXPECT_TRUE(got_session_status_);
 
@@ -2588,6 +2656,28 @@ TEST_F(DeviceStatusCollectorTest, ReportWebKioskSessionStatus) {
   EXPECT_EQ(kWebKioskAccountId, session_status_.device_local_account_id());
   const em::AppStatus app = session_status_.installed_apps(0);
   EXPECT_EQ(kWebKioskAppUrl, app.app_id());
+  EXPECT_FALSE(app.has_status());
+  EXPECT_FALSE(app.has_error());
+  // Expect no User DM Token for kiosk sessions.
+  EXPECT_FALSE(session_status_.has_user_dm_token());
+}
+
+TEST_F(DeviceStatusCollectorTest, ReportIwaKioskSessionStatus) {
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportDeviceSessionStatus, true);
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_iwa_kiosk_device_local_account_));
+
+  // Set up a device-local account for single-app Web kiosk mode.
+  MockRunningKioskApp(fake_iwa_kiosk_device_local_account_,
+                      DeviceLocalAccountType::kKioskIsolatedWebApp);
+
+  GetStatus();
+  EXPECT_TRUE(got_session_status_);
+  ASSERT_EQ(1, session_status_.installed_apps_size());
+  EXPECT_EQ(kIwaKioskAccountId, session_status_.device_local_account_id());
+  const em::AppStatus app = session_status_.installed_apps(0);
+  EXPECT_EQ(kIwaKioskWebBundleId, app.app_id());
   EXPECT_FALSE(app.has_status());
   EXPECT_FALSE(app.has_error());
   // Expect no User DM Token for kiosk sessions.
@@ -2872,6 +2962,25 @@ TEST_F(DeviceStatusCollectorTest, ReportRunningWebKioskApp) {
   ASSERT_TRUE(device_status_.has_running_kiosk_app());
   const em::AppStatus app = device_status_.running_kiosk_app();
   EXPECT_EQ(kWebKioskAppUrl, app.app_id());
+  EXPECT_FALSE(app.has_status());
+  EXPECT_FALSE(app.has_error());
+}
+
+TEST_F(DeviceStatusCollectorTest, ReportRunningIwaKioskApp) {
+  DisableDefaultSettings();
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ash::kReportRunningKioskApp, true);
+  MockAutoLaunchKioskIwa(fake_iwa_kiosk_device_local_account_);
+
+  MockRunningKioskApp(fake_iwa_kiosk_device_local_account_,
+                      DeviceLocalAccountType::kKioskIsolatedWebApp);
+  status_collector_->set_kiosk_account(std::make_unique<DeviceLocalAccount>(
+      fake_iwa_kiosk_device_local_account_));
+
+  GetStatus();
+  ASSERT_TRUE(device_status_.has_running_kiosk_app());
+  const em::AppStatus app = device_status_.running_kiosk_app();
+  EXPECT_EQ(kIwaKioskWebBundleId, app.app_id());
   EXPECT_FALSE(app.has_status());
   EXPECT_FALSE(app.has_error());
 }
@@ -4039,11 +4148,11 @@ class DeviceStatusCollectorNetworkInterfacesTest
             iface->device_path() == dev.device_path &&
             iface->mdn() == dev.mdn && iface->iccid() == dev.iccid &&
             (iface->type() != em::NetworkInterface::TYPE_CELLULAR ||
-             base::ranges::equal(iface->eids().begin(), iface->eids().end(),
-                                 kFakeSimSlots,
-                                 kFakeSimSlots + std::size(kFakeSimSlots),
-                                 base::ranges::equal_to(), std::identity(),
-                                 &FakeSimSlotInfo::eid))) {
+             std::ranges::equal(iface->eids().begin(), iface->eids().end(),
+                                std::begin(kFakeSimSlots),
+                                std::end(kFakeSimSlots),
+                                std::ranges::equal_to(), std::identity(),
+                                &FakeSimSlotInfo::eid))) {
           found_match = true;
           break;
         }
@@ -4094,11 +4203,10 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfUnaffiliatedUser) {
       ash::kReportDeviceNetworkConfiguration, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   GetStatus();
   VerifyReporting();
@@ -4110,11 +4218,10 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfAffiliatedUser) {
       ash::kReportDeviceNetworkConfiguration, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
 
   GetStatus();
   VerifyReporting();
@@ -4127,9 +4234,9 @@ TEST_F(DeviceStatusCollectorNetworkInterfacesTest, IfPublicSession) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddPublicAccountUser(
       AccountId::FromUserEmail(kPublicAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();
@@ -4228,9 +4335,9 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, Default) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();
@@ -4266,11 +4373,11 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfUnaffiliatedUser) {
       ash::kReportDeviceNetworkStatus, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, false, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
+
   GetStatus();
   EXPECT_EQ(0, device_status_.network_states_size());
 }
@@ -4281,11 +4388,11 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfAffiliatedUser) {
       ash::kReportDeviceNetworkStatus, true);
   const AccountId account_id0(AccountId::FromUserEmail("user0@managed.com"));
   auto* user_manager = GetFakeChromeUserManager();
-  auto* user = user_manager->AddUserWithAffiliationAndTypeAndProfile(
+  user_manager->AddUserWithAffiliationAndTypeAndProfile(
       account_id0, true, user_manager::UserType::kRegular, nullptr);
-  user_manager->UserLoggedIn(account_id0, user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      account_id0, user_manager::TestHelper::GetFakeUsernameHash(account_id0));
+
   GetStatus();
   VerifyReporting();
 }
@@ -4297,9 +4404,9 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfPublicSession) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user = user_manager->AddPublicAccountUser(
       AccountId::FromUserEmail(kPublicAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();
@@ -4312,9 +4419,9 @@ TEST_F(DeviceStatusCollectorNetworkStateTest, IfKioskMode) {
   auto* user_manager = GetFakeChromeUserManager();
   auto* user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskAccountId));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false,
-                             /*is_child=*/false);
+  user_manager->UserLoggedIn(
+      user->GetAccountId(),
+      user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
   GetStatus();
   VerifyReporting();

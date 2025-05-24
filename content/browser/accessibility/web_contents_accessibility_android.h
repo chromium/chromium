@@ -15,13 +15,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/web_contents_accessibility.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/scoped_accessibility_mode.h"
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
 class MotionEventAndroid;
 struct AXTreeUpdate;
-}
+}  // namespace ui
 
 namespace content {
 
@@ -42,6 +43,7 @@ class BrowserAccessibilityAndroid;
 class BrowserAccessibilityManagerAndroid;
 class WebContents;
 class WebContentsImpl;
+class ScopedAccessibilityMode;
 
 // Bridges BrowserAccessibilityManagerAndroid and Java WebContentsAccessibility.
 // A RenderWidgetHostConnector runs behind to manage the connection. Referenced
@@ -132,6 +134,14 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jweb_contents);
 
+  // This method turns on the renderer-side accessibility engine for this
+  // web contents.
+  void SetBrowserAXMode(JNIEnv* env,
+                        jboolean is_known_screen_reader_enabled,
+                        jboolean is_complex_accessibility_service_enabled,
+                        jboolean is_form_controls_candidate,
+                        jboolean is_on_screen_mode_candidate);
+
   base::android::ScopedJavaLocalRef<jstring> GetSupportedHtmlElementTypes(
       JNIEnv* env);
 
@@ -191,12 +201,15 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // Use |can_wrap_to_last_element| to specify if a backwards search can wrap
   // around to the last element. This is used to expose the last HTML element
   // upon swiping backwards into a WebView.
-  jint FindElementType(JNIEnv* env,
-                       jint start_id,
-                       const base::android::JavaParamRef<jstring>& element_type,
-                       jboolean forwards,
-                       jboolean can_wrap_to_last_element,
-                       jboolean use_default_predicate);
+  jint FindElementType(
+      JNIEnv* env,
+      jint start_id,
+      const base::android::JavaParamRef<jstring>& element_type_str,
+      jboolean forwards,
+      jboolean can_wrap_to_last_element,
+      jboolean use_default_predicate,
+      jboolean is_known_screen_reader_enabled,
+      jboolean is_only_one_accessibility_service_enabled);
 
   // Respond to a ACTION_[NEXT/PREVIOUS]_AT_MOVEMENT_GRANULARITY action
   // and move the cursor/selection within the given node id. We keep track
@@ -227,6 +240,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void MoveAccessibilityFocus(JNIEnv* env,
                               jint old_unique_id,
                               jint new_unique_id);
+
+  // Sets the sequential focus starting point. This sends a message to the
+  // renderer. The sequential focus starting point sets the node on which
+  // tab/shift tab should continue without actually changing input focus.
+  void SetSequentialFocusStartingPoint(JNIEnv* env, jint unique_id);
 
   // Returns true if the object is a slider.
   bool IsSlider(JNIEnv* env, jint id);
@@ -262,6 +280,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   // Request loading inline text boxes for a given node.
   void LoadInlineTextBoxes(JNIEnv* env, jint id);
+  void RecordInlineTextBoxMetrics(bool from_focus);
 
   // Get the bounds of each character for a given static text node,
   // starting from index |start| with length |len|. The resulting array
@@ -365,13 +384,14 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleContentChanged(int32_t unique_id);
   void HandleFocusChanged(int32_t unique_id);
   void HandleCheckStateChanged(int32_t unique_id);
-  void HandleStateDescriptionChanged(int32_t unique_id);
   void HandleClicked(int32_t unique_id);
+  void HandleMenuOpened(int32_t unique_id);
+  void HandleWindowContentChange(int32_t unique_id, int32_t subType);
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
-  void HandleDialogModalOpened(int32_t unique_id);
+  void HandlePaneOpened(int32_t unique_id);
   void AnnounceLiveRegionText(const std::u16string& text);
-  void HandleTextContentChanged(int32_t unique_id);
+  void HandleActiveDescendantChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);
   void HandleEditableTextChanged(int32_t unique_id);
   void HandleSliderChanged(int32_t unique_id);
@@ -387,6 +407,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   base::WeakPtr<WebContentsAccessibilityAndroid> GetWeakPtr();
 
  private:
+  friend class MockWebContentsAccessibilityAndroid;
+
+  WebContentsAccessibilityAndroid();
+
   BrowserAccessibilityManagerAndroid* GetRootBrowserAccessibilityManager();
 
   BrowserAccessibilityAndroid* GetAXFromUniqueID(int32_t unique_id);
@@ -445,6 +469,8 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   // This isn't associated with a real WebContents and is only populated when
   // this class is constructed with a ui::AXTreeUpdate.
   std::unique_ptr<BrowserAccessibilityManagerAndroid> snapshot_root_manager_;
+
+  std::unique_ptr<ScopedAccessibilityMode> scoped_accessibility_mode_;
 
   base::WeakPtrFactory<WebContentsAccessibilityAndroid> weak_ptr_factory_{this};
 };

@@ -94,7 +94,7 @@ OfflineItem OfflineItemConversions::CreateOfflineItem(
       item.state = OfflineItemState::PAUSED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   item.fail_state = request.fail_state();
   item.progress.value = 0;

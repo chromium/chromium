@@ -56,7 +56,6 @@ class ReportingCacheImpl : public ReportingCache {
                  base::Value::Dict body,
                  int depth,
                  base::TimeTicks queued,
-                 int attempts,
                  ReportingTargetType target_type) override;
   void GetReports(
       std::vector<raw_ptr<const ReportingReport, VectorExperimental>>*

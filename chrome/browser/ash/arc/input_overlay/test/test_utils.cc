@@ -6,13 +6,13 @@
 
 #include <cstddef>
 
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/arc_input_overlay_metrics.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -113,7 +113,7 @@ std::u16string GetControlName(ActionType action_type,
       control_type_id = IDS_INPUT_OVERLAY_BUTTON_TYPE_JOYSTICK_BUTTON_LABEL;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (key_string.empty()) {
@@ -155,6 +155,16 @@ void VerifyButtonOptionsMenuFunctionTriggeredUkmEvent(
       ukm::builders::GameControls_ButtonOptionsMenuFunctionTriggered::
           kFunctionName,
       expect_histograms_value);
+}
+
+void VerifyPlayWithGameControlsHistogram(
+    const base::HistogramTester& histograms,
+    const std::vector<int>& histograms_values) {
+  DCHECK_EQ(2u, histograms_values.size());
+  const std::string histogram_name =
+      BuildGameControlsHistogramName(kPlayGameWithGameControlsHistogram);
+  histograms.ExpectBucketCount(histogram_name, false, histograms_values[0]);
+  histograms.ExpectBucketCount(histogram_name, true, histograms_values[1]);
 }
 
 }  // namespace arc::input_overlay

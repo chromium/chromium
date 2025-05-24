@@ -28,12 +28,12 @@ class WebState;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Generates a new snapshot and runs a callback with the new snapshot image.
-// - If the web state is not showing anything other than a web view (e.g.,
-//   native content, incognito tabs) and it doesn't have JavaScript dialogs,
-//   - it uses WebKit-based snapshot APIs
+// - If the web state is not showing a new tab page, the page is not incognito
+//   and it doesn't have JavaScript dialogs,
+//   - it uses WebKit-based snapshot API
 //   - and the callback is called asynchronously.
 // - Otherwise,
-//   - it uses UIKit-based snapshot APIs
+//   - it uses UIKit-based snapshot API
 //   - and the callback is called immediately (without posting a task).
 - (void)generateSnapshotWithCompletion:(void (^)(UIImage*))completion;
 

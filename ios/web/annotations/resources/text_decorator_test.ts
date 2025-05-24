@@ -6,7 +6,8 @@
  * @fileoverview Tests for text_decorator.ts.
  */
 
-import {TextAnnotationList, TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import type {TextViewportAnnotation} from '//ios/web/annotations/resources/text_annotation_list.js';
+import {TextAnnotationList} from '//ios/web/annotations/resources/text_annotation_list.js';
 import {TextDecorator} from '//ios/web/annotations/resources/text_decorator.js';
 import {TextChunk, TextSection} from '//ios/web/annotations/resources/text_extractor.js';
 import {TextStyler} from '//ios/web/annotations/resources/text_styler.js';
@@ -17,7 +18,7 @@ class InertTextStyler extends TextStyler {
       void {}
 }
 
-class TestTextDecorator extends TestSuite {
+export class TestTextDecorator extends TestSuite {
   // Mark: Utils
 
   annotation(
@@ -385,5 +386,3 @@ class TestTextDecorator extends TestSuite {
     expectEq(newHTML, document.body.innerHTML);
   }
 }
-
-export {TestTextDecorator}

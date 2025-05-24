@@ -132,14 +132,16 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, SchemaReadyWithComponents) {
   mock_provider_.UpdatePolicy(std::move(bundle));
   Mock::VerifyAndClearExpectations(&observer_);
 
-  EXPECT_CALL(mock_provider_, RefreshPolicies(PolicyFetchReason::kUnspecified))
+  EXPECT_CALL(mock_provider_,
+              RefreshPolicies(PolicyFetchReason::kSchemaUpdated))
       .Times(0);
   schema_registry_.RegisterComponent(
       PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, "xyz"), CreateTestSchema());
   schema_registry_.SetExtensionsDomainsReady();
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
-  EXPECT_CALL(mock_provider_, RefreshPolicies(PolicyFetchReason::kUnspecified));
+  EXPECT_CALL(mock_provider_,
+              RefreshPolicies(PolicyFetchReason::kSchemaUpdated));
   schema_registry_.SetDomainReady(POLICY_DOMAIN_CHROME);
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
@@ -178,7 +180,8 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, DelegateUpdates) {
   mock_provider_.UpdateChromePolicy(policy_map);
   Mock::VerifyAndClearExpectations(&observer_);
 
-  EXPECT_CALL(mock_provider_, RefreshPolicies(PolicyFetchReason::kUnspecified));
+  EXPECT_CALL(mock_provider_,
+              RefreshPolicies(PolicyFetchReason::kSchemaUpdated));
   schema_registry_.SetAllDomainsReady();
   EXPECT_TRUE(schema_registry_.IsReady());
   Mock::VerifyAndClearExpectations(&mock_provider_);
@@ -201,7 +204,8 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, DelegateUpdates) {
 }
 
 TEST_F(SchemaRegistryTrackingPolicyProviderTest, RemoveAndAddComponent) {
-  EXPECT_CALL(mock_provider_, RefreshPolicies(PolicyFetchReason::kUnspecified));
+  EXPECT_CALL(mock_provider_,
+              RefreshPolicies(PolicyFetchReason::kSchemaUpdated));
   const PolicyNamespace ns(POLICY_DOMAIN_EXTENSIONS, "xyz");
   schema_registry_.RegisterComponent(ns, CreateTestSchema());
   schema_registry_.SetAllDomainsReady();
@@ -227,7 +231,8 @@ TEST_F(SchemaRegistryTrackingPolicyProviderTest, RemoveAndAddComponent) {
 
   // Adding it back should serve the current policies again, even though they
   // haven't changed on the platform provider.
-  EXPECT_CALL(mock_provider_, RefreshPolicies(PolicyFetchReason::kUnspecified));
+  EXPECT_CALL(mock_provider_,
+              RefreshPolicies(PolicyFetchReason::kSchemaUpdated));
   schema_registry_.RegisterComponent(ns, CreateTestSchema());
   Mock::VerifyAndClearExpectations(&mock_provider_);
 

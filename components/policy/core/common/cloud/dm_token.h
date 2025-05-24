@@ -48,7 +48,7 @@ class POLICY_EXPORT DMToken {
  private:
   enum class Status { kValid, kInvalid, kEmpty };
 
-  DMToken(Status status, const std::string_view value);
+  DMToken(Status status, std::string_view value);
 
   Status status_;
   std::string value_;

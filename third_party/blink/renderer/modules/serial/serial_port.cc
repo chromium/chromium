@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_output_signals.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_serial_port_info.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -47,8 +48,7 @@ const int kMaxBufferSize = 16 * 1024 * 1024; /* 16 MiB */
 bool SendErrorIsFatal(SerialSendError error) {
   switch (error) {
     case SerialSendError::NONE:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case SerialSendError::SYSTEM_ERROR:
       return false;
     case SerialSendError::DISCONNECTED:
@@ -59,8 +59,7 @@ bool SendErrorIsFatal(SerialSendError error) {
 bool ReceiveErrorIsFatal(SerialReceiveError error) {
   switch (error) {
     case SerialReceiveError::NONE:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case SerialReceiveError::BREAK:
     case SerialReceiveError::FRAME_ERROR:
     case SerialReceiveError::OVERRUN:
@@ -92,8 +91,7 @@ SerialPortInfo* SerialPort::getInfo() {
     info->setUsbVendorId(info_->usb_vendor_id);
   if (info_->has_usb_product_id)
     info->setUsbProductId(info_->usb_product_id);
-  if (RuntimeEnabledFeatures::WebSerialBluetoothEnabled() &&
-      info_->bluetooth_service_class_id) {
+  if (info_->bluetooth_service_class_id) {
     info->setBluetoothServiceClassId(
         MakeGarbageCollected<V8UnionStringOrUnsignedLong>(
             info_->bluetooth_service_class_id->uuid));
@@ -152,7 +150,7 @@ ScriptPromise<IDLUndefined> SerialPort::open(ScriptState* script_state,
   } else if (options->parity() == "odd") {
     mojo_options->parity_bit = device::mojom::blink::SerialParityBit::ODD;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   switch (options->stopBits()) {
@@ -211,8 +209,7 @@ ReadableStream* SerialPort::readable(ScriptState* script_state,
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   if (!CreateDataPipe(&producer, &consumer)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kQuotaExceededError,
-                                      kResourcesExhaustedReadBuffer);
+    QuotaExceededError::Throw(exception_state, kResourcesExhaustedReadBuffer);
     return nullptr;
   }
 
@@ -237,8 +234,7 @@ WritableStream* SerialPort::writable(ScriptState* script_state,
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   if (!CreateDataPipe(&producer, &consumer)) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kQuotaExceededError,
-                                      kResourcesExhaustedWriteBuffer);
+    QuotaExceededError::Throw(exception_state, kResourcesExhaustedWriteBuffer);
     return nullptr;
   }
 

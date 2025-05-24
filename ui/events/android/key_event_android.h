@@ -16,15 +16,21 @@ namespace ui {
 // This is used mainly as a conveyor of Java event object.
 class EVENTS_EXPORT KeyEventAndroid {
  public:
+  KeyEventAndroid(JNIEnv* env, jobject event);
   KeyEventAndroid(JNIEnv* env, jobject event, int key_code);
+  // Synthesize android key event from given android action, key code, etc.
+  KeyEventAndroid(int action, int key_code, int meta_state);
 
-  KeyEventAndroid(const KeyEventAndroid&) = delete;
-  KeyEventAndroid& operator=(const KeyEventAndroid&) = delete;
+  KeyEventAndroid(const KeyEventAndroid& other);
+  KeyEventAndroid& operator=(const KeyEventAndroid& other);
 
   ~KeyEventAndroid();
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   int key_code() const { return key_code_; }
+
+  int MetaState() const;
+  int Action() const;
 
  private:
   // The Java reference to the key event.

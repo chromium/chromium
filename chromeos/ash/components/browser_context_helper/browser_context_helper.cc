@@ -123,7 +123,7 @@ content::BrowserContext* BrowserContextHelper::GetBrowserContextByUser(
   return browser_context;
 }
 
-const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
+user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
     content::BrowserContext* browser_context) {
   if (!IsUserBrowserContext(browser_context)) {
     return nullptr;
@@ -133,12 +133,11 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
   const AccountId* account_id = AnnotatedAccountId::Get(browser_context);
   if (!account_id) {
     // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
-    LOG(ERROR) << "AccountId is not annotated";
-    CHECK_IS_TEST();
+    CHECK_IS_TEST() << "AccountId is not annotated";
   }
   if (UseAnnotatedAccountId()) {
     CHECK(account_id);
-    return user_manager::UserManager::Get()->FindUser(*account_id);
+    return user_manager::UserManager::Get()->FindUserAndModify(*account_id);
   }
 
   const std::string hash = GetUserIdHashFromBrowserContext(browser_context);
@@ -148,12 +147,11 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
   // TODO(crbug.com/40225390): find user by AccountId, once it is annotated
   // to Profile in tests.
   auto* user_manager = user_manager::UserManager::Get();
-  for (const user_manager::User* user : user_manager->GetLoggedInUsers()) {
+  for (user_manager::User* user : user_manager->GetLoggedInUsers()) {
     if (user->username_hash() == hash) {
       if (!account_id || *account_id != user->GetAccountId()) {
         // TODO(crbug.com/40225390): fix tests to annotate AccountId properly.
-        LOG(ERROR) << "AccountId is mismatched";
-        CHECK_IS_TEST();
+        CHECK_IS_TEST() << "AccountId is mismatched";
       }
       return user;
     }
@@ -205,12 +203,6 @@ BrowserContextHelper::DeprecatedGetOrCreateSigninBrowserContext() {
     return nullptr;
   }
   return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
-}
-
-base::FilePath BrowserContextHelper::GetLockScreenAppBrowserContextPath()
-    const {
-  return delegate_->GetUserDataDir()->Append(
-      kLockScreenAppBrowserContextBaseName);
 }
 
 base::FilePath BrowserContextHelper::GetLockScreenBrowserContextPath() const {

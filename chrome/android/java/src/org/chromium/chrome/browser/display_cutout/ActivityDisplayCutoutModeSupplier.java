@@ -4,13 +4,12 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -19,14 +18,15 @@ import org.chromium.ui.base.WindowAndroid;
  * If the activity uses a custom display cutout mode, ActivityDisplayCutoutModeSupplier should be
  * attached to WindowAndroid prior to the first tab getting attached to WindowAndroid.
  */
+@NullMarked
 public class ActivityDisplayCutoutModeSupplier extends UnownedUserDataSupplier<Integer> {
     /** The key for accessing this object on an {@link org.chromium.base.UnownedUserDataHost}. */
     private static final UnownedUserDataKey<ActivityDisplayCutoutModeSupplier> KEY =
             new UnownedUserDataKey<>(ActivityDisplayCutoutModeSupplier.class);
 
-    private static ObservableSupplierImpl<Integer> sInstanceForTesting;
+    private static @Nullable ObservableSupplierImpl<Integer> sInstanceForTesting;
 
-    public static @Nullable ObservableSupplier<Integer> from(@NonNull WindowAndroid window) {
+    public static @Nullable ObservableSupplier<Integer> from(WindowAndroid window) {
         if (sInstanceForTesting != null) return sInstanceForTesting;
         return KEY.retrieveDataFromHost(window.getUnownedUserDataHost());
     }

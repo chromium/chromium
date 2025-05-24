@@ -56,11 +56,7 @@ Status::Status(Status&& x) {
   message_ = x.message_;
 }
 
-Status& Status::operator=(const Status& x) {
-  code_ = x.code_;
-  message_ = x.message_;
-  return *this;
-}
+Status& Status::operator=(const Status& x) = default;
 
 Status& Status::operator=(Status&& x) {
   code_ = x.code_;
@@ -89,9 +85,6 @@ bool operator==(const Status& lhs, const Status& rhs) {
   return lhs.code_ == rhs.code_;
 }
 
-bool operator!=(const Status& lhs, const Status& rhs) {
-  return lhs.code_ != rhs.code_;
-}
 
 Status OkStatus() {
   return Status(StatusCode::kOk);

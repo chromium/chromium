@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <vector>
 
 #include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/vr/test/multi_class_browser_test.h"
@@ -16,6 +16,8 @@
 
 // Browser tests for indicators shown at various phases of an immersive session.
 
+// TODO(https://crbug.com/381000093): Fix tests on Android
+#if !BUILDFLAG(IS_ANDROID)
 namespace vr {
 
 namespace {
@@ -219,3 +221,4 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(
 }
 
 }  // namespace vr
+#endif  // if !BUILDFLAG(IS_ANDROID)

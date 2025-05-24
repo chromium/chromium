@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/page_load_metrics/browser/observers/ad_metrics/frame_tree_data.h"
 
@@ -142,8 +138,7 @@ FrameTreeData::GetCreativeOriginStatusWithThrottling() const {
       return OriginStatusWithThrottling::kCrossAndUnthrottled;
     // We expect the above values to cover all cases.
     default:
-      NOTREACHED_IN_MIGRATION();
-      return OriginStatusWithThrottling::kUnknownAndUnthrottled;
+      NOTREACHED();
   }
 }
 

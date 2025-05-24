@@ -4,7 +4,6 @@
 
 #include "content/browser/service_worker/service_worker_main_resource_loader_interceptor.h"
 
-#include "build/chromeos_buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,9 +88,9 @@ TEST_F(ServiceWorkerMainResourceLoaderInterceptorTest,
 TEST_F(ServiceWorkerMainResourceLoaderInterceptorTest,
        ShouldCreateForNavigation_ExternalFileScheme) {
   bool expected_handler_created = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   expected_handler_created = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(
       expected_handler_created,
       ShouldCreateForNavigation(GURL("externalfile:drive/doc"),

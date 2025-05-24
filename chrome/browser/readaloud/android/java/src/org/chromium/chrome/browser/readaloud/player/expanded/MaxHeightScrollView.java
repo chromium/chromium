@@ -9,9 +9,11 @@ import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.widget.ScrollView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.R;
 
 /** An implementation of scroll view with enforced max height. */
+@NullMarked
 public class MaxHeightScrollView extends ScrollView {
     private int mMaxHeight;
 

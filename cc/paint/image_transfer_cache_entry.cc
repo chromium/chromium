@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/image_transfer_cache_entry.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <type_traits>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -32,7 +28,6 @@
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/graphite/Image.h"
 #include "third_party/skia/include/gpu/graphite/Recorder.h"
-#include "ui/gfx/color_conversion_sk_filter_cache.h"
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/mojom/hdr_metadata.mojom.h"
 
@@ -154,8 +149,7 @@ size_t GetAlignmentForColorType(SkColorType color_type) {
     return 4;
   if (bpp <= 16)
     return 16;
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool WritePixmap(PaintOpWriter& writer, const SkPixmap& pixmap) {
@@ -167,6 +161,7 @@ bool WritePixmap(PaintOpWriter& writer, const SkPixmap& pixmap) {
   DCHECK_GT(pixmap.height(), 0);
   DCHECK_GT(pixmap.rowBytes(), 0u);
   writer.Write(pixmap.colorType());
+  writer.Write(pixmap.alphaType());
   writer.Write(pixmap.width());
   writer.Write(pixmap.height());
   size_t data_size = pixmap.computeByteSize();
@@ -180,7 +175,12 @@ bool WritePixmap(PaintOpWriter& writer, const SkPixmap& pixmap) {
   // generation can fail.
   // https://crbug.com/863659, https://crbug.com/1300188
   writer.AlignMemory(GetAlignmentForColorType(pixmap.colorType()));
-  writer.WriteData(data_size, pixmap.addr());
+  // SAFETY: data_size comes from SkPixmap::computeByteSize(), which is then
+  // checked for SIZE_MAX; that's the appropriate size for the buffer returned
+  // by SkPixmap::addr().
+  auto pixmap_data = UNSAFE_BUFFERS(
+      base::span(static_cast<const uint8_t*>(pixmap.addr()), data_size));
+  writer.WriteData(pixmap_data);
   return true;
 }
 
@@ -197,6 +197,14 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
     DLOG(ERROR) << "Invalid color type";
     return false;
   }
+  SkAlphaType alpha_type = kUnknown_SkAlphaType;
+  reader.Read(&alpha_type);
+  if (alpha_type != kPremul_SkAlphaType &&
+      alpha_type != kUnpremul_SkAlphaType &&
+      alpha_type != kOpaque_SkAlphaType) {
+    DLOG(ERROR) << "Invalid alpha type";
+    return false;
+  }
   int width = 0;
   reader.Read(&width);
   int height = 0;
@@ -206,8 +214,7 @@ bool ReadPixmap(PaintOpReader& reader, SkPixmap& pixmap) {
     return false;
   }
 
-  auto image_info =
-      SkImageInfo::Make(width, height, color_type, kPremul_SkAlphaType);
+  auto image_info = SkImageInfo::Make(width, height, color_type, alpha_type);
   size_t row_bytes = 0;
   reader.ReadSize(&row_bytes);
   if (row_bytes < image_info.minRowBytes()) {
@@ -306,7 +313,7 @@ sk_sp<SkImage> ReadImage(
     return nullptr;
   }
 
-  SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes];
+  std::array<SkPixmap, SkYUVAInfo::kMaxPlanes> pixmaps;
   bool fits_on_gpu = true;
   const int num_pixmaps = NumPixmapsForYUVConfig(plane_config);
   for (int i = 0; i < num_pixmaps; ++i) {
@@ -454,9 +461,10 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap* pixmap)
   pixmaps[0] = pixmap;
 }
 
-ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
-                                            const SkYUVAInfo& yuva_info,
-                                            const SkColorSpace* color_space)
+ClientImageTransferCacheEntry::Image::Image(
+    base::span<const SkPixmap> yuva_pixmaps,
+    const SkYUVAInfo& yuva_info,
+    const SkColorSpace* color_space)
     : yuv_plane_config(yuva_info.planeConfig()),
       yuv_subsampling(yuva_info.subsampling()),
       yuv_color_space(yuva_info.yuvColorSpace()),
@@ -469,7 +477,9 @@ ClientImageTransferCacheEntry::Image::Image(const SkPixmap yuva_pixmaps[],
   DCHECK_EQ(yuva_info.sitingX(), SkYUVAInfo::Siting::kCentered);
   DCHECK_EQ(yuva_info.sitingY(), SkYUVAInfo::Siting::kCentered);
   DCHECK(IsYUVAInfoValid(yuv_plane_config, yuv_subsampling, yuv_color_space));
-  for (int i = 0; i < SkYUVAInfo::NumPlanes(yuv_plane_config); ++i) {
+  const auto num_planes =
+      base::checked_cast<size_t>(SkYUVAInfo::NumPlanes(yuv_plane_config));
+  for (size_t i = 0; i < num_planes; ++i) {
     pixmaps[i] = &yuva_pixmaps[i];
   }
 }
@@ -747,7 +757,7 @@ bool ServiceImageTransferCacheEntry::Deserialize(
         }
         SkPixmap pixmap;
         if (!image->peekPixels(&pixmap)) {
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Image should be referencing transfer buffer SkPixmap";
         }
         image = SkImages::RasterFromPixmapCopy(pixmap);

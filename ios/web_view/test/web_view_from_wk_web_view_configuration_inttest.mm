@@ -5,15 +5,16 @@
 #import <ChromeWebView/ChromeWebView.h>
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/observer.h"
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest_mac.h"
-#include "url/gurl.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest_mac.h"
+#import "url/gurl.h"
 
 namespace ios_web_view {
 
@@ -75,7 +76,7 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
 @end
 
 @implementation WKUIDelegateForTest {
-  ios_web_view::WebViewFromWKWebViewConfigurationTest* _test;
+  raw_ptr<ios_web_view::WebViewFromWKWebViewConfigurationTest> _test;
 }
 
 - (instancetype)initWithTest:

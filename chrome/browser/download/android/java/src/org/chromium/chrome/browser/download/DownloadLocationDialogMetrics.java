@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.download;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Class that contains helper functions for download location download feature metrics recording.
  */
+@NullMarked
 public final class DownloadLocationDialogMetrics {
     /**
      * Defines events for download location suggestion feature. Used in histograms, don't reuse or

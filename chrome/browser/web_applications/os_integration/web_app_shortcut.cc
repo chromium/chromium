@@ -158,8 +158,8 @@ void UpdatePlatformShortcutsAndPostCallback(
 
 std::vector<WebAppShortcutsMenuItemInfo::Icon>
 ConvertIconProtoDataToShortcutsMenuIcon(
-    const ::google::protobuf::RepeatedPtrField<proto::ShortcutIconData>&
-        shortcut_icon_data) {
+    const ::google::protobuf::RepeatedPtrField<
+        proto::os_state::ShortcutIconData>& shortcut_icon_data) {
   std::vector<WebAppShortcutsMenuItemInfo::Icon> shortcut_menu_item_icons;
   for (const auto& icon_data : shortcut_icon_data) {
     WebAppShortcutsMenuItemInfo::Icon icon;
@@ -195,12 +195,14 @@ gfx::ImageFamily PackageIconsIntoImageFamily(
 std::unique_ptr<ShortcutInfo> SetFavicon(
     std::unique_ptr<ShortcutInfo> shortcut_info,
     IconPurpose purpose,
+    bool is_diy_app,
     gfx::ImageFamily image_family) {
   if (purpose == IconPurpose::ANY) {
     shortcut_info->favicon = std::move(image_family);
   } else if (purpose == IconPurpose::MASKABLE) {
     shortcut_info->favicon_maskable = std::move(image_family);
   }
+  shortcut_info->is_diy_app = is_diy_app;
   return shortcut_info;
 }
 
@@ -217,13 +219,13 @@ std::unique_ptr<ShortcutInfo> BuildShortcutInfoWithoutFavicon(
     const GURL& start_url,
     const base::FilePath& profile_path,
     const std::string& profile_name,
-    const proto::WebAppOsIntegrationState& state) {
+    const proto::os_state::WebAppOsIntegration& state) {
   auto shortcut_info = std::make_unique<ShortcutInfo>();
 
   shortcut_info->app_id = app_id;
   shortcut_info->url = start_url;
   DCHECK(state.has_shortcut());
-  const proto::ShortcutDescription& shortcut_state = state.shortcut();
+  const proto::os_state::ShortcutDescription& shortcut_state = state.shortcut();
   DCHECK(shortcut_state.has_title());
   shortcut_info->title = base::UTF8ToUTF16(shortcut_state.title());
   DCHECK(shortcut_state.has_description());
@@ -290,7 +292,8 @@ void PopulateFaviconPurposeForShortcutInfo(
       app->downloaded_icon_sizes(purpose), GetDesiredIconSizesForShortcut());
 
   auto populate_and_return_shortcut_info =
-      base::BindOnce(&SetFavicon, std::move(shortcut_info_to_populate), purpose)
+      base::BindOnce(&SetFavicon, std::move(shortcut_info_to_populate), purpose,
+                     app->is_diy_app())
           .Then(std::move(callback));
 
   if (!icon_sizes_in_px.empty()) {
@@ -329,7 +332,7 @@ void PopulateFaviconForShortcutInfo(
 }
 
 std::vector<WebAppShortcutsMenuItemInfo> CreateShortcutsMenuItemInfos(
-    const proto::ShortcutMenus& shortcut_menus) {
+    const proto::os_state::ShortcutMenus& shortcut_menus) {
   std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_infos;
   for (const auto& shortcut_menu_info : shortcut_menus.shortcut_menu_info()) {
     WebAppShortcutsMenuItemInfo item_info;
@@ -382,20 +385,6 @@ ShortcutLocations MergeLocations(
   merged_locations.in_startup =
       creation_locations.in_startup || user_specified_locations.in_startup;
   return merged_locations;
-}
-
-bool operator==(const ShortcutLocations& location1,
-                const ShortcutLocations& location2) {
-  return (location1.on_desktop == location2.on_desktop) &&
-         (location1.in_quick_launch_bar == location2.in_quick_launch_bar) &&
-         (location1.in_startup == location2.in_startup) &&
-         (location1.applications_menu_location ==
-          location2.applications_menu_location);
-}
-
-bool operator!=(const ShortcutLocations& location1,
-                const ShortcutLocations& location2) {
-  return !(location1 == location2);
 }
 
 std::string GenerateApplicationNameFromInfo(const ShortcutInfo& shortcut_info) {
@@ -553,7 +542,7 @@ base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
 #if !BUILDFLAG(IS_MAC)
 void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // Multi-profile shortcuts exist only on macOS.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 

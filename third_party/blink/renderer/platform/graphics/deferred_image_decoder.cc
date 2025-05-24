@@ -101,8 +101,8 @@ DeferredImageDecoder::DeferredImageDecoder(
       can_yuv_decode_(false),
       has_hot_spot_(false),
       image_is_high_bit_depth_(false),
-      complete_frame_content_id_(PaintImage::GetNextContentId()) {
-}
+      has_c2pa_manifest_(false),
+      complete_frame_content_id_(PaintImage::GetNextContentId()) {}
 
 DeferredImageDecoder::~DeferredImageDecoder() {
 }
@@ -137,7 +137,7 @@ sk_sp<PaintImageGenerator> DeferredImageDecoder::CreateGenerator() {
   if (image_is_high_bit_depth_)
     info = info.makeColorType(kRGBA_F16_SkColorType);
 
-  WebVector<FrameMetadata> frames(frame_data_.size());
+  std::vector<FrameMetadata> frames(frame_data_.size());
   for (wtf_size_t i = 0; i < frame_data_.size(); ++i) {
     frames[i].complete = frame_data_[i].is_received_;
     frames[i].duration = FrameDurationAtIndex(i);
@@ -178,7 +178,7 @@ bool DeferredImageDecoder::CreateGainmapGenerator(
   if (!gainmap_) {
     return false;
   }
-  WebVector<FrameMetadata> frames;
+  std::vector<FrameMetadata> frames;
 
   SkImageInfo gainmap_image_info =
       SkImageInfo::Make(gainmap_->frame_generator->GetFullSize(),
@@ -258,6 +258,11 @@ wtf_size_t DeferredImageDecoder::FrameCount() {
                            : frame_data_.size();
 }
 
+bool DeferredImageDecoder::HasC2PAManifest() const {
+  return metadata_decoder_ ? metadata_decoder_->HasC2PAManifest()
+                           : has_c2pa_manifest_;
+}
+
 int DeferredImageDecoder::RepetitionCount() const {
   return metadata_decoder_ ? metadata_decoder_->RepetitionCount()
                            : repetition_count_;
@@ -332,6 +337,7 @@ void DeferredImageDecoder::ActivateLazyDecoding() {
 
   size_ = metadata_decoder_->Size();
   image_is_high_bit_depth_ = metadata_decoder_->ImageIsHighBitDepth();
+  has_c2pa_manifest_ = metadata_decoder_->HasC2PAManifest();
   has_hot_spot_ = metadata_decoder_->HotSpot(hot_spot_);
   filename_extension_ = metadata_decoder_->FilenameExtension();
   mime_type_ = metadata_decoder_->MimeType();

@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/cr_nav_menu_item_style.css.js';
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_vars.css.js';
 import '../icons.html.js';
@@ -22,8 +22,10 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
+import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
+import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import type {PageVisibility} from '../page_visibility.js';
-import type {Route, SettingsRoutes} from '../router.js';
+import type {Route} from '../router.js';
 import {RouteObserverMixin, Router} from '../router.js';
 
 import {getTemplate} from './settings_menu.html.js';
@@ -54,24 +56,20 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
        */
       pageVisibility: Object,
 
-      showAdvancedFeaturesMainControl_: {
+      showAiPage_: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
+        value: () => loadTimeData.getBoolean('showAiPage'),
       },
     };
   }
 
-  pageVisibility?: PageVisibility;
-  private showAdvancedFeaturesMainControl_: boolean;
-  private routes_: SettingsRoutes;
+  declare pageVisibility?: PageVisibility;
+  declare private showAiPage_: boolean;
+  private metricsBrowserProxy_: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
-    this.routes_ = Router.getInstance().getRoutes();
-  }
-
-  private showExperimentalMenuItem_(): boolean {
-    return this.showAdvancedFeaturesMainControl_ &&
+  private showAiPageMenuItem_(): boolean {
+    return this.showAiPage_ &&
         (!this.pageVisibility || this.pageVisibility.ai !== false);
   }
 
@@ -125,12 +123,17 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'settings-menu has an entry with an invalid route.');
     Router.getInstance().navigateTo(
-        route!, /* dynamicParams */ undefined, /* removeSearch */ true);
+        route, /* dynamicParams */ undefined, /* removeSearch */ true);
   }
 
   private onExtensionsLinkClick_() {
     chrome.metricsPrivate.recordUserAction(
         'SettingsMenu_ExtensionsLinkClicked');
+  }
+
+  private onAiPageClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        'SettingsMenu_AiPageEntryPointClicked');
   }
 }
 

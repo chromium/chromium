@@ -12,7 +12,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 
 namespace crash_reporter {
 
@@ -28,7 +28,7 @@ FallbackCrashHandlerLauncher::FallbackCrashHandlerLauncher() {
   memset(&exception_pointers_, 0, sizeof(exception_pointers_));
 }
 
-FallbackCrashHandlerLauncher::~FallbackCrashHandlerLauncher() {}
+FallbackCrashHandlerLauncher::~FallbackCrashHandlerLauncher() = default;
 
 bool FallbackCrashHandlerLauncher::Initialize(
     const base::CommandLine& program,
@@ -115,15 +115,13 @@ DWORD FallbackCrashHandlerLauncher::LaunchAndWaitForHandler(
   if (error != WAIT_OBJECT_0) {
     // This should never happen, barring handle abuse.
     // TODO(siggi): Record an UMA metric here.
-    NOTREACHED_IN_MIGRATION();
-    error = GetLastError();
+    NOTREACHED();
   } else {
     // On successful wait, return the exit code of the fallback crash handler
     // process.
     if (!GetExitCodeProcess(process_info.hProcess, &error)) {
       // This should never happen, barring handle abuse.
-      NOTREACHED_IN_MIGRATION();
-      error = GetLastError();
+      NOTREACHED();
     }
   }
 

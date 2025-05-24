@@ -23,7 +23,6 @@ class ProfilingClient : public mojom::ProfilingClient {
   void StartProfiling(mojom::ProfilingParamsPtr params,
                       StartProfilingCallback callback) override;
   void RetrieveHeapProfile(RetrieveHeapProfileCallback callback) override;
-  void AddHeapProfileToTrace(AddHeapProfileToTraceCallback callback) override;
 
   void BindToInterface(mojo::PendingReceiver<mojom::ProfilingClient> receiver);
 

@@ -26,7 +26,7 @@ typedef base::OnceCallback<void(std::unique_ptr<BlocklistData>)>
 // multiple asynchronous operations in parallel and maintain ordering.
 class OptOutStore {
  public:
-  virtual ~OptOutStore() {}
+  virtual ~OptOutStore() = default;
 
   // Adds a new navigation to the store. |opt_out| is whether the user opted out
   // of the action.

@@ -1,0 +1,108 @@
+<!--
+@MAC-ALLOW:AXExpanded
+@WIN-ALLOW:details-roles*
+@WIN-ALLOW:EXPANDED*
+@WIN-ALLOW:HASPOPUP*
+@WIN-ALLOW:haspopup*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
+@AURALINUX-ALLOW:details-roles*
+@AURALINUX-ALLOW:expanded*
+@AURALINUX-ALLOW:haspopup:*
+-->
+
+<!-- Closed popover -->
+<button commandfor="d1" command="toggle-popover">d1 button - outside - toggle-popover</button>
+<button commandfor="d1" command="close">d1 button - outside - unrelated action</button>
+<button commandfor="d1" command="--frobulate">d1 button - outside - custom action</button>
+<button commandfor="d1" command="toggle-popover">d1 button - outside - toggle-popover</button>
+<button commandfor="d1" command="show-popover">d1 button - outside & next - show-popover</button>
+<div id="d1" popover>
+  <button commandfor="d1" command="show-popover">d1 button - inside - show-popover</button>
+  <button commandfor="d1" command="hide-popover">d1 button - inside - hide-popover</button>
+  <button commandfor="d1" command="toggle-popover">d1 button - inside - toggle-popover</button>
+  <button commandfor="d1" command="close">Button inside popover, with unrelated action</button>
+  <button commandfor="d1" command="--frobulate">d1 button - inside - custom action</button>
+</div>
+
+<!-- Opened popover -->
+<button commandfor="d2" command="toggle-popover">d2 button - outside - toggle-popover</button>
+<button commandfor="d2" command="close">d2 button - outside - unrelated action</button>
+<button commandfor="d2" command="--frobulate">d2 button - outside - custom action</button>
+<button commandfor="d2" command="toggle-popover">d2 button - outside - toggle-popover</button>
+<button commandfor="d2" command="show-popover">d2 button - outside & next - show-popover</button>
+<div id="d2" popover>
+  <button commandfor="d2" command="show-popover">d2 button - inside - show-popover</button>
+  <button commandfor="d2" command="hide-popover">d2 button - inside - hide-popover</button>
+  <button commandfor="d2" command="toggle-popover">d2 button - inside - toggle-popover</button>
+  <button commandfor="d2" command="close">d2 button - inside - related action</button>
+  <button commandfor="d2" command="--frobulate">d2 button - inside - custom action</button>
+</div>
+
+<!-- Opened manual popover -->
+<button commandfor="d3" command="toggle-popover">d3 button - outside - toggle-popover</button>
+<button commandfor="d3" command="close">d3 button - outside - unrelated action</button>
+<button commandfor="d3" command="--frobulate">d3 button - outside - custom action</button>
+<button commandfor="d3" command="toggle-popover">d3 button - outside - toggle-popover</button>
+<button commandfor="d3" command="show-popover">d3 button - outside & next - show-popover</button>
+<div id="d3" popover="manual">
+  <button commandfor="d3" command="show-popover">d3 button - inside - show-popover</button>
+  <button commandfor="d3" command="hide-popover">d3 button - inside - hide-popover</button>
+  <button commandfor="d3" command="toggle-popover">d3 button - inside - toggle-popover</button>
+  <button commandfor="d3" command="close">d3 button - inside - related action</button>
+  <button commandfor="d3" command="--frobulate">d3 button - inside - custom action</button>
+</div>
+
+<!-- Non-existent popover -->
+<button commandfor="d4" command="toggle-popover">d4 button - outside - toggle-popover</button>
+<button commandfor="d4" command="close">d4 button - outside - unrelated action</button>
+<button commandfor="d4" command="--frobulate">d4 button - outside - custom action</button>
+<button commandfor="d4" command="toggle-popover">d4 button - outside - toggle-popover</button>
+<button commandfor="d4" command="show-popover">d4 button - outside & next - show-popover</button>
+
+<!-- Hide Popover -->
+<button commandfor="d5" command="toggle-popover">d5 button - outside - toggle-popover</button>
+<button commandfor="d5" command="close">d5 button - outside - unrelated action</button>
+<button commandfor="d5" command="--frobulate">d5 button - outside - custom action</button>
+<button commandfor="d5" command="toggle-popover">d5 button - outside - toggle-popover</button>
+<button commandfor="d5" command="show-popover">d5 button - outside & next - show-popover</button>
+<div popover id="d5">
+  <button commandfor="d5" command="show-popover">d5 button - inside - show-popover</button>
+  <button commandfor="d5" command="hide-popover">d5 button - inside - hide-popover</button>
+  <button commandfor="d5" command="toggle-popover">d5 button - inside - toggle-popover</button>
+  <button commandfor="d5" command="close">d5 button - inside - related action</button>
+  <button commandfor="d5" command="--frobulate">d5 button - inside - custom action</button>
+</div>
+
+<!-- Closed popover with toggle as next -->
+<button commandfor="d6" command="close">d1 button - outside - unrelated action</button>
+<button commandfor="d6" command="--frobulate">d1 button - outside - custom action</button>
+<button commandfor="d6" command="hide-popover">d1 button - outside - hide-popover</button>
+<button commandfor="d6" command="show-popover">d1 button - outside & next - show-popover</button>
+<button commandfor="d6" command="toggle-popover">d1 button - outside - toggle-popover</button>
+<div id="d6" popover>
+  <button commandfor="d6" command="show-popover">d1 button - inside - show-popover</button>
+  <button commandfor="d6" command="hide-popover">d1 button - inside - hide-popover</button>
+  <button commandfor="d6" command="toggle-popover">d1 button - inside - toggle-popover</button>
+  <button commandfor="d6" command="close">Button inside popover, with unrelated action</button>
+  <button commandfor="d6" command="--frobulate">d1 button - inside - custom action</button>
+</div>
+
+<!-- Closed popover with hide as next -->
+<button commandfor="d6" command="close">d1 button - outside - unrelated action</button>
+<button commandfor="d6" command="--frobulate">d1 button - outside - custom action</button>
+<button commandfor="d6" command="toggle-popover">d1 button - outside - toggle-popover</button>
+<button commandfor="d6" command="show-popover">d1 button - outside & next - show-popover</button>
+<button commandfor="d6" command="hide-popover">d1 button - outside - hide-popover</button>
+<div id="d6" popover>
+  <button commandfor="d6" command="show-popover">d1 button - inside - show-popover</button>
+  <button commandfor="d6" command="hide-popover">d1 button - inside - hide-popover</button>
+  <button commandfor="d6" command="toggle-popover">d1 button - inside - toggle-popover</button>
+  <button commandfor="d6" command="close">Button inside popover, with unrelated action</button>
+  <button commandfor="d6" command="--frobulate">d1 button - inside - custom action</button>
+</div>
+
+<script>
+  d3.showPopover();
+  d2.showPopover();
+</script>

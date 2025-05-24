@@ -41,7 +41,7 @@ UsbPolicyAllowedDevices::UsbPolicyAllowedDevices(PrefService* pref_service) {
   CreateOrUpdateMap();
 }
 
-UsbPolicyAllowedDevices::~UsbPolicyAllowedDevices() {}
+UsbPolicyAllowedDevices::~UsbPolicyAllowedDevices() = default;
 
 bool UsbPolicyAllowedDevices::IsDeviceAllowed(
     const url::Origin& origin,

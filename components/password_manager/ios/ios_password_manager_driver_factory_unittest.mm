@@ -48,7 +48,7 @@ TEST_F(IOSPasswordManagerDriverFactoryTest, CreateFactoryAndDriver) {
       IOSPasswordManagerDriverFactory::FromWebState(&web_state_);
   ASSERT_TRUE(factory != nullptr);
 
-  auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  auto web_frame = web::FakeWebFrame::CreateMainWebFrame();
   web::FakeWebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 
@@ -86,7 +86,7 @@ TEST_F(IOSPasswordManagerDriverFactoryTest,
   IOSPasswordManagerDriverFactory::CreateForWebState(
       &web_state_, password_controller_, password_manager_.get());
 
-  auto web_frame = web::FakeWebFrame::CreateMainWebFrame(GURL());
+  auto web_frame = web::FakeWebFrame::CreateMainWebFrame();
   web::FakeWebFrame* frame = web_frame.get();
   web_frames_manager_->AddWebFrame(std::move(web_frame));
 

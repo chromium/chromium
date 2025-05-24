@@ -134,9 +134,12 @@ void TabOrganizationRequest::CancelRequest() {
 }
 
 void TabOrganizationRequest::LogResults(const TabOrganizationSession* session) {
-  // Log metrics about the response.
-  UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Response.Succeeded",
-                        state_ == State::COMPLETED);
+  // Only log success metrics about the response if the response was started.
+  if (state_ != State::NOT_STARTED) {
+    UMA_HISTOGRAM_BOOLEAN("Tab.Organization.Response.Succeeded",
+                          state_ == State::COMPLETED);
+  }
+
   if (!response_ || state_ != State::COMPLETED) {
     return;
   }

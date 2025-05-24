@@ -250,6 +250,8 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // Prevent display sleeping while content capture is in progress.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
+  bool has_sent_on_started_to_client_ = false;
+
   // Creates WeakPtrs for use on the device thread.
   base::WeakPtrFactory<FrameSinkVideoCaptureDevice> weak_factory_{this};
 };

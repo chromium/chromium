@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/shell/app/resource.h"
 #include "content/shell/browser/shell.h"
+#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 // Receives notification that the window is closing so that it can start the
@@ -211,7 +212,7 @@ gfx::NativeWindow ShellPlatformDelegate::GetNativeWindow(Shell* shell) {
   DCHECK(base::Contains(shell_data_map_, shell));
   ShellData& shell_data = shell_data_map_[shell];
 
-  return shell_data.delegate.window;
+  return gfx::NativeWindow(shell_data.delegate.window);
 }
 
 void ShellPlatformDelegate::CleanUp(Shell* shell) {
@@ -266,8 +267,7 @@ void ShellPlatformDelegate::EnableUIControl(Shell* shell,
       id = IDC_NAV_STOP;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown UI control";
-      return;
+      NOTREACHED() << "Unknown UI control";
   }
   [[shell_data.delegate.window.contentView viewWithTag:id]
       setEnabled:is_enabled];

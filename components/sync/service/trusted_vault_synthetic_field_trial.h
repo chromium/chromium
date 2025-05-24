@@ -9,6 +9,8 @@
 #include <string>
 #include <string_view>
 
+class GaiaId;
+
 namespace sync_pb {
 class TrustedVaultAutoUpgradeExperimentGroup;
 }  // namespace sync_pb
@@ -47,17 +49,17 @@ class TrustedVaultAutoUpgradeSyntheticFieldTrialGroup {
   const std::string& name() const { return name_; }
 
   // Metric recording.
-  void LogValidationMetricsUponOnProfileLoad(std::string_view gaia_id) const;
+  void LogValidationMetricsUponOnProfileLoad(const GaiaId& gaia_id) const;
 
   // Exposed publicly for unit-testing.
   static float DeterministicFloatBetweenZeroAndOneFromGaiaIdForTest(
-      std::string_view gaia_id,
+      const GaiaId& gaia_id,
       std::string_view salt);
   static bool ShouldSampleGaiaIdWithTenPercentProbabilityForTest(
-      std::string_view gaia_id);
+      const GaiaId& gaia_id);
 
  private:
-  void LogValidationMetrics(std::string_view gaia_id,
+  void LogValidationMetrics(const GaiaId& gaia_id,
                             std::string_view short_metric_name) const;
 
   // Empty if `this` is invalid.

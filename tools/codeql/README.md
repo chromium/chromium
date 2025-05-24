@@ -34,8 +34,7 @@ build itself, feel free to contact codeql-discuss@chromium.org.
     see more than one database. The database for Chrome always begins with
     `chrome`. You may download other databases if you like!  They represent
     other `gn` targets that are used within Chrome and may be of interest to
-    security researchers. For instance, we currently build the `libavif` target
-    for those interested in inspecting that codec library specifically.)
+    security researchers.)
 
 2. Install the VSCode CodeQL Extension
 

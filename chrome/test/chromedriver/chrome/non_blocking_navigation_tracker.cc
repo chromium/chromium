@@ -4,7 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/non_blocking_navigation_tracker.h"
 
-NonBlockingNavigationTracker::~NonBlockingNavigationTracker() {}
+NonBlockingNavigationTracker::~NonBlockingNavigationTracker() = default;
 
 Status NonBlockingNavigationTracker::IsPendingNavigation(
     const Timeout* timeout,

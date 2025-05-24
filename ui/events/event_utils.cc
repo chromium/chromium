@@ -291,14 +291,12 @@ std::string_view EventTypeName(EventType type) {
     CASE_TYPE(EventType::kCancelMode);
     CASE_TYPE(EventType::kUmaData);
     case EventType::kLast:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
       // Don't include default, so that we get an error when new type is added.
   }
 #undef CASE_TYPE
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::vector<std::string_view> EventFlagsNames(int event_flags) {

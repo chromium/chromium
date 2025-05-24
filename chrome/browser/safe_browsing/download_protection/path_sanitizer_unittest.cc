@@ -15,8 +15,9 @@ namespace {
 // Returns the root directory with a trailing separator. Works on all platforms.
 base::FilePath GetRootDirectory() {
   base::FilePath dir_temp;
-  if (!base::PathService::Get(base::DIR_TEMP, &dir_temp))
-    NOTREACHED_IN_MIGRATION();
+  if (!base::PathService::Get(base::DIR_TEMP, &dir_temp)) {
+    NOTREACHED();
+  }
 
   std::vector<base::FilePath::StringType> components = dir_temp.GetComponents();
 

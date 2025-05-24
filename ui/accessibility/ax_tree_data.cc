@@ -4,8 +4,7 @@
 
 #include "ui/accessibility/ax_tree_data.h"
 
-#include <set>
-
+#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +18,13 @@ AXTreeData::AXTreeData()
       sel_focus_affinity(ax::mojom::TextAffinity::kDownstream) {}
 
 AXTreeData::AXTreeData(const AXTreeData& other) = default;
+
+AXTreeData::AXTreeData(AXTreeData&& other) noexcept = default;
+
+AXTreeData& AXTreeData::operator=(const AXTreeData& other) = default;
+
+AXTreeData& AXTreeData::operator=(AXTreeData&& other) noexcept = default;
+
 AXTreeData::~AXTreeData() = default;
 
 // Note that this includes an initial space character if nonempty, but
@@ -91,13 +97,9 @@ bool operator==(const AXTreeData& lhs, const AXTreeData& rhs) {
           lhs.sel_focus_affinity == rhs.sel_focus_affinity);
 }
 
-bool operator!=(const AXTreeData& lhs, const AXTreeData& rhs) {
-  return !(lhs == rhs);
-}
-
 const AXTreeData& AXTreeDataUnknown() {
-  static const AXTreeData ax_tree_data_unknown;
-  return ax_tree_data_unknown;
+  static const base::NoDestructor<AXTreeData> ax_tree_data_unknown;
+  return *ax_tree_data_unknown;
 }
 
 }  // namespace ui

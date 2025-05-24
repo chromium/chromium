@@ -19,16 +19,6 @@ constexpr char kComponent[2][11] = {"component1", "component2"};
 }  // namespace
 
 class CrOSComponentInstallerMetadataTest : public testing::Test {
- public:
-  CrOSComponentInstallerMetadataTest() = default;
-
-  CrOSComponentInstallerMetadataTest(
-      const CrOSComponentInstallerMetadataTest&) = delete;
-  CrOSComponentInstallerMetadataTest& operator=(
-      const CrOSComponentInstallerMetadataTest&) = delete;
-
-  ~CrOSComponentInstallerMetadataTest() override = default;
-
  protected:
   content::BrowserTaskEnvironment task_environment_;
 };

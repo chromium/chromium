@@ -30,13 +30,13 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/encoding_tables.h"
 
+#include <unicode/ucnv.h>
+
+#include <algorithm>
 #include <memory>
 #include <mutex>
 
-#include <unicode/ucnv.h>
-
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -198,7 +198,7 @@ const Jis0208EncodeIndex& EnsureJis0208EncodeIndexForEncode() {
     auto& index = EnsureJis0208EncodeIndexForDecode();
     for (size_t i = 0; i < index.size(); ++i)
       (*table)[i] = {index[i].second, index[i].first};
-    base::ranges::stable_sort(*table, CompareFirst{});
+    std::ranges::stable_sort(*table, CompareFirst{});
   });
   return *table;
 }
@@ -301,7 +301,7 @@ const EucKrEncodeIndex& EnsureEucKrEncodeIndexForEncode() {
     auto& index = EnsureEucKrEncodeIndexForDecode();
     for (size_t i = 0; i < index.size(); ++i)
       (*table)[i] = {index[i].second, index[i].first};
-    base::ranges::sort(*table, CompareFirst{});
+    std::ranges::sort(*table, CompareFirst{});
     DCHECK(SortedFirstsAreUnique(*table));
   });
   return *table;
@@ -375,7 +375,7 @@ const Gb18030EncodeIndex& EnsureGb18030EncodeIndexForEncode() {
     auto& index = EnsureGb18030EncodeTable();
     for (uint16_t i = 0; i < index.size(); ++i)
       (*table)[i] = {index[i], i};
-    base::ranges::stable_sort(*table, CompareFirst{});
+    std::ranges::stable_sort(*table, CompareFirst{});
   });
   return *table;
 }

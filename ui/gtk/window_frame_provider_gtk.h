@@ -20,7 +20,7 @@ namespace gtk {
 
 class WindowFrameProviderGtk : public ui::WindowFrameProvider {
  public:
-  WindowFrameProviderGtk(bool solid_frame, bool tiled);
+  WindowFrameProviderGtk(bool solid_frame, bool tiled, bool maximized);
 
   WindowFrameProviderGtk(const WindowFrameProviderGtk&) = delete;
   WindowFrameProviderGtk& operator=(const WindowFrameProviderGtk&) = delete;
@@ -65,6 +65,7 @@ class WindowFrameProviderGtk : public ui::WindowFrameProvider {
   // Input parameters used for drawing.
   const bool solid_frame_;
   const bool tiled_;
+  const bool maximized_;
 
   // Scale-independent metric calculated based on the bitmaps.
   std::optional<gfx::Insets> frame_thickness_dip_;

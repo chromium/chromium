@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container_layout.h"
 
+#include "base/containers/adapters.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
 #include "ui/gfx/geometry/rect.h"
@@ -77,25 +78,24 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
   size_t index = host_view()->children().size() - 1;
   size_t divider_index = 0;
   int divider_width = 0;
-  for (auto i = host_view()->children().rbegin();
-       i != host_view()->children().rend(); i++) {
-    if (!IsChildIncludedInLayout(*i)) {
+  for (const auto& i : base::Reversed(host_view()->children())) {
+    if (!IsChildIncludedInLayout(i)) {
       index--;
       continue;
     }
     // If the next child is the divider, skip it. It only is included in the
     // layout if one of the following children is visible.
-    if (!views::Button::AsButton(*i)) {
+    if (!views::Button::AsButton(i)) {
       divider_index = index;
-      divider_width = (*i)->GetPreferredSize().width() +
-                      (*i)->GetProperty(views::kMarginsKey)->width();
+      divider_width = i->GetPreferredSize().width() +
+                      i->GetProperty(views::kMarginsKey)->width();
       index--;
       continue;
     }
     // Get the preferred size and include the divider width if this view is
     // causing the divider to need to be shown.
-    const int margin_width = (*i)->GetProperty(views::kMarginsKey)->width();
-    gfx::Size preferred_size = (*i)->GetPreferredSize();
+    const int margin_width = i->GetProperty(views::kMarginsKey)->width();
+    gfx::Size preferred_size = i->GetPreferredSize();
     preferred_size.Enlarge(margin_width, 0);
     if (divider_index > index && !divider_space_preallocated) {
       preferred_size.Enlarge(divider_width, 0);
@@ -103,7 +103,7 @@ PinnedToolbarActionsContainerLayout::CalculateProposedLayout(
 
     const PinnedToolbarActionFlexPriority priority =
         static_cast<PinnedToolbarActionFlexPriority>(
-            (*i)->GetProperty(kToolbarButtonFlexPriorityKey));
+            i->GetProperty(kToolbarButtonFlexPriorityKey));
     const bool has_preallocated_space_in_layout =
         priority == PinnedToolbarActionFlexPriority::kHigh ||
         (fits_all_medium_priority &&

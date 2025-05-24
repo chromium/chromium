@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] The <selectedcontent> element should reflect the HTML contents of the selected <option>.
+  assert_equals: The innerHTML of <selectedcontent> should initially match the innerHTML of the selected <option>. expected "\\n      <span class=\\"one\\">span</span> one\\n    " but got ""
+[FAIL] When there are multiple <selectedcontent> elements, only the one in tree order should be kept up to date.
+  assert_equals: selectedcontent should initially be one. expected "one" but got ""
+[FAIL] <seletedcontent> behavior in disconnected <select>.
+  assert_equals: <selectedcontent> should be updated when <select> is connected to the document. expected "two" but got ""
+Harness: the test ran to completion.
+

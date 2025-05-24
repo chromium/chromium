@@ -10,6 +10,7 @@
 #include "base/strings/utf_ostream_operators.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_system_access_ui_helper {
@@ -17,7 +18,7 @@ namespace file_system_access_ui_helper {
 namespace {
 
 struct UnaryTestData {
-  base::FilePath::StringPieceType input;
+  base::FilePath::StringType input;
   std::u16string expected;
 };
 
@@ -107,8 +108,15 @@ static const struct UnaryTestData elided_cases[] = {
 class FileSystemAccessUIHelpersTest : public testing::Test {};
 
 TEST_F(FileSystemAccessUIHelpersTest, GetPathForDisplayAsParagraph) {
+  content::PathInfo input(base::FilePath(FILE_PATH_LITERAL("path")), "display");
+#if BUILDFLAG(IS_ANDROID)
+  // Android content-URIs should use display-name.
+  input.path = base::FilePath("content://auth/path");
+  EXPECT_EQ(u"display", GetPathForDisplayAsParagraph(input));
+#endif
+
   for (const auto& i : cases) {
-    base::FilePath input(i.input);
+    input.path = base::FilePath(i.input);
     std::u16string observed = GetPathForDisplayAsParagraph(input);
     EXPECT_EQ(i.expected, observed)
         << "input: " << i.input
@@ -117,8 +125,15 @@ TEST_F(FileSystemAccessUIHelpersTest, GetPathForDisplayAsParagraph) {
 }
 
 TEST_F(FileSystemAccessUIHelpersTest, GetElidedPathForDisplayAsTitle) {
+  content::PathInfo input(base::FilePath(FILE_PATH_LITERAL("path")), "display");
+#if BUILDFLAG(IS_ANDROID)
+  // Android content-URIs should use display-name.
+  input.path = base::FilePath("content://auth/path");
+  EXPECT_EQ(u"display", GetElidedPathForDisplayAsTitle(input));
+#endif
+
   for (const auto& i : cases) {
-    base::FilePath input(i.input);
+    input.path = base::FilePath(i.input);
     std::u16string observed = GetElidedPathForDisplayAsTitle(input);
     EXPECT_EQ(i.expected, observed)
         << "input: " << i.input
@@ -126,7 +141,7 @@ TEST_F(FileSystemAccessUIHelpersTest, GetElidedPathForDisplayAsTitle) {
   }
 
   for (const auto& i : elided_cases) {
-    base::FilePath input(i.input);
+    input.path = base::FilePath(i.input);
     std::u16string observed = GetElidedPathForDisplayAsTitle(input);
     EXPECT_EQ(i.expected, observed)
         << "input: " << i.input

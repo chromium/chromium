@@ -4,7 +4,7 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("cellular_setup") {
   sources = [
@@ -28,9 +28,7 @@ static_library("cellular_setup") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
-    "//chrome/browser/ash/mobile",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/common",
     "//chromeos/ash/components/network",
     "//components/login",
@@ -41,6 +39,7 @@ static_library("cellular_setup") {
     "//ui/chromeos",
     "//ui/gfx/geometry",
     "//ui/views",
+    "//ui/webui",
     "//url",
   ]
 }

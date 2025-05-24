@@ -34,7 +34,6 @@ class WebStateUpdateBrowserAgent
 
  private:
   friend class BrowserUserData<WebStateUpdateBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit WebStateUpdateBrowserAgent(Browser* browser);
 

@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
     private EditText mUrlBar;
     private SurfaceView mRenderedView;
 
-    private OutcomeReceiver<SandboxedSdk, LoadSdkException> mLoadSdkReceiver =
+    private final OutcomeReceiver<SandboxedSdk, LoadSdkException> mLoadSdkReceiver =
             new OutcomeReceiver<>() {
                 @Override
                 public void onResult(SandboxedSdk sandboxedSdk) {
@@ -83,30 +83,32 @@ public class MainActivity extends Activity {
                 }
             };
 
-    private OutcomeReceiver<Bundle, RequestSurfacePackageException> mLoadSurfacePackageReceiver =
-            new OutcomeReceiver<Bundle, RequestSurfacePackageException>() {
-                @Override
-                public void onResult(Bundle result) {
-                    sHandler.post(
-                            () -> {
-                                SurfacePackage surfacePackage =
-                                        result.getParcelable(
-                                                EXTRA_SURFACE_PACKAGE, SurfacePackage.class);
-                                mRenderedView.setChildSurfacePackage(surfacePackage);
-                                mRenderedView.setVisibility(View.VISIBLE);
-                                mSurfacePackageLoaded = true;
-                            });
-                    makeToast("Rendered surface view");
-                }
+    private final OutcomeReceiver<Bundle, RequestSurfacePackageException>
+            mLoadSurfacePackageReceiver =
+                    new OutcomeReceiver<Bundle, RequestSurfacePackageException>() {
+                        @Override
+                        public void onResult(Bundle result) {
+                            sHandler.post(
+                                    () -> {
+                                        SurfacePackage surfacePackage =
+                                                result.getParcelable(
+                                                        EXTRA_SURFACE_PACKAGE,
+                                                        SurfacePackage.class);
+                                        mRenderedView.setChildSurfacePackage(surfacePackage);
+                                        mRenderedView.setVisibility(View.VISIBLE);
+                                        mSurfacePackageLoaded = true;
+                                    });
+                            makeToast("Rendered surface view");
+                        }
 
-                @Override
-                public void onError(@NonNull RequestSurfacePackageException error) {
-                    makeToast(
-                            String.format(
-                                    "Failed: %s. Error code %s!",
-                                    error, error.getRequestSurfacePackageErrorCode()));
-                }
-            };
+                        @Override
+                        public void onError(@NonNull RequestSurfacePackageException error) {
+                            makeToast(
+                                    String.format(
+                                            "Failed: %s. Error code %s!",
+                                            error, error.getRequestSurfacePackageErrorCode()));
+                        }
+                    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

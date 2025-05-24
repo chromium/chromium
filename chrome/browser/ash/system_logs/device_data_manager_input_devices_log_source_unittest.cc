@@ -55,7 +55,7 @@ std::vector<std::string> SplitLines(const std::string& param) {
 
 class DeviceDataManagerInputDevicesLogSourceTest : public ::testing::Test {
  public:
-  DeviceDataManagerInputDevicesLogSourceTest() {}
+  DeviceDataManagerInputDevicesLogSourceTest() = default;
   DeviceDataManagerInputDevicesLogSourceTest(
       const DeviceDataManagerInputDevicesLogSourceTest&) = delete;
   DeviceDataManagerInputDevicesLogSourceTest& operator=(

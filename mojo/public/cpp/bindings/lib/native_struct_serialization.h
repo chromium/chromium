@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <limits>
-
 #include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/pickle.h"

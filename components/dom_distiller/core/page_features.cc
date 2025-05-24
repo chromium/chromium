@@ -152,26 +152,21 @@ std::vector<double> CalculateDerivedFeaturesFromJSON(
     return std::vector<double>();
   }
 
-  std::optional<base::Value> json =
-      base::JSONReader::Read(stringified_json->GetString());
-  if (!json) {
+  std::optional<base::Value::Dict> dict =
+      base::JSONReader::ReadDict(stringified_json->GetString());
+  if (!dict) {
     return std::vector<double>();
   }
 
-  if (!json->is_dict()) {
-    return std::vector<double>();
-  }
+  std::optional<double> numElements = dict->FindDouble("numElements");
+  std::optional<double> numAnchors = dict->FindDouble("numAnchors");
+  std::optional<double> numForms = dict->FindDouble("numForms");
+  std::optional<bool> isOGArticle = dict->FindBool("opengraph");
 
-  auto& dict = json->GetDict();
-  std::optional<double> numElements = dict.FindDouble("numElements");
-  std::optional<double> numAnchors = dict.FindDouble("numAnchors");
-  std::optional<double> numForms = dict.FindDouble("numForms");
-  std::optional<bool> isOGArticle = dict.FindBool("opengraph");
-
-  std::string* url = dict.FindString("url");
-  std::string* innerText = dict.FindString("innerText");
-  std::string* textContent = dict.FindString("textContent");
-  std::string* innerHTML = dict.FindString("innerHTML");
+  std::string* url = dict->FindString("url");
+  std::string* innerText = dict->FindString("innerText");
+  std::string* textContent = dict->FindString("textContent");
+  std::string* innerHTML = dict->FindString("innerHTML");
   if (!(isOGArticle.has_value() && url && numElements && numAnchors &&
         numForms && innerText && textContent && innerHTML)) {
     return std::vector<double>();

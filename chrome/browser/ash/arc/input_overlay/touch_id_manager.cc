@@ -21,7 +21,7 @@ TouchIdManager* TouchIdManager::GetInstance() {
   return instance.get();
 }
 
-TouchIdManager::TouchIdManager() {}
+TouchIdManager::TouchIdManager() = default;
 TouchIdManager::~TouchIdManager() = default;
 
 int TouchIdManager::ObtainTouchID() {

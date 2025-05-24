@@ -1,0 +1,6 @@
+specific_include_rules = {
+  "tab_drag_controller_interactive_uitest.cc": [
+    "+ash/shell.h",
+    "+ash/wm/window_state.h",
+  ],
+}

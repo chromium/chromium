@@ -30,7 +30,7 @@ class BookmarkUndoServiceFactory : public ProfileKeyedServiceFactory {
   ~BookmarkUndoServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 

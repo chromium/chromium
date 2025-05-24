@@ -47,16 +47,14 @@ std::unique_ptr<media::AudioBus> CreateStereoZeroInitializedAudioBusForFrames(
 std::unique_ptr<media::AudioBus> CreateStereoZeroInitializedAudioBusForDuration(
     base::TimeDelta duration);
 
-// Accumulates the `length` number of audio frames in the `source` audio bus
-// starting at `source_start_frame`, to the already existing frames in the
-// `destination` bus starting at `destination_start_frame`.
-// Both `source` and `destination` buses must have the same number of channels.
-// `source_start_frame` + `length` must be within the bounds of the `source`
-// bus, and `destination_start_frame` + `length` also must be within the bounds
-// of the `destination` bus.
+// Accumulates the first `length` number of audio frames in the `source` audio
+// bus to the already existing frames in the `destination` bus starting at
+// `destination_start_frame`. Both `source` and `destination` buses must have
+// the same number of channels. `length` must not exceed the number of frames in
+// `source`, and `destination_start_frame` + `length` also must be within the
+// bounds of the `destination` bus.
 void AccumulateBusTo(const media::AudioBus& source,
                      media::AudioBus* destination,
-                     int source_start_frame,
                      int destination_start_frame,
                      int length);
 

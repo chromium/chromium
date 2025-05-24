@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/platform/web_drag_data.h"
+
+#include <variant>
+#include <vector>
+
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
@@ -67,39 +69,39 @@ TEST(WebDragDataTest, items) {
   }
 
   WebDragData data = data_object->ToWebDragData();
-  WebVector<WebDragData::Item> items = data.Items();
+  std::vector<WebDragData::Item> items = data.Items();
   ASSERT_EQ(6u, items.size());
 
   {
-    const auto* item = absl::get_if<WebDragData::FilenameItem>(&items[0]);
+    const auto* item = std::get_if<WebDragData::FilenameItem>(&items[0]);
     ASSERT_TRUE(item != nullptr);
     EXPECT_EQ("/native/path", item->filename);
     EXPECT_EQ("path", item->display_name);
   }
 
   {
-    const auto* item = absl::get_if<WebDragData::StringItem>(&items[1]);
+    const auto* item = std::get_if<WebDragData::StringItem>(&items[1]);
     ASSERT_TRUE(item != nullptr);
     EXPECT_EQ("text/plain", item->type);
     EXPECT_EQ("name", item->data);
   }
 
   {
-    const auto* item = absl::get_if<WebDragData::FilenameItem>(&items[2]);
+    const auto* item = std::get_if<WebDragData::FilenameItem>(&items[2]);
     ASSERT_TRUE(item != nullptr);
     EXPECT_EQ("/native/visible/snapshot", item->filename);
     EXPECT_EQ("name", item->display_name);
   }
 
   {
-    const auto* item = absl::get_if<WebDragData::FilenameItem>(&items[3]);
+    const auto* item = std::get_if<WebDragData::FilenameItem>(&items[3]);
     ASSERT_TRUE(item != nullptr);
     EXPECT_EQ("/native/not-visible/snapshot", item->filename);
     EXPECT_EQ("name", item->display_name);
   }
 
   {
-    const auto* item = absl::get_if<WebDragData::FileSystemFileItem>(&items[4]);
+    const auto* item = std::get_if<WebDragData::FileSystemFileItem>(&items[4]);
     ASSERT_TRUE(item != nullptr);
     EXPECT_EQ(
         "filesystem:http://example.com/isolated/hash/visible-non-native-file",
@@ -108,7 +110,7 @@ TEST(WebDragDataTest, items) {
   }
 
   {
-    const auto* item = absl::get_if<WebDragData::FileSystemFileItem>(&items[5]);
+    const auto* item = std::get_if<WebDragData::FileSystemFileItem>(&items[5]);
     ASSERT_TRUE(item != nullptr);
     EXPECT_EQ(
         "filesystem:http://example.com/isolated/hash/"

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_SAVED_TAB_GROUPS_SAVED_TAB_GROUP_CONTROLLER_H_
 
 #include "base/uuid.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
 
 class Browser;
@@ -15,6 +15,7 @@ namespace tab_groups {
 
 // The API for performing updates to the SavedTabGroup feature.
 class SavedTabGroupController {
+ public:
   // Opens a Saved Tab Group in a specified browser and sets all of the required
   // state in the SavedTabGroupService. Returns the local group id that was
   // opened. If no group was opened, return nullopt.
@@ -28,7 +29,10 @@ class SavedTabGroupController {
   // true, add to the front of the tab group list and pin it, otherwise add to
   // the back. Returns the id of the saved group.
   virtual base::Uuid SaveGroup(const tab_groups::TabGroupId& group_id,
-                               bool is_pinned = false) = 0;
+                               bool is_pinned) = 0;
+  base::Uuid SaveGroup(const tab_groups::TabGroupId& group_id) {
+    return SaveGroup(group_id, false);
+  }
 
   // Unsaves a group. Finds the group_id in the list of saved tab groups and
   // removes it. Stops Listening to all tabs.

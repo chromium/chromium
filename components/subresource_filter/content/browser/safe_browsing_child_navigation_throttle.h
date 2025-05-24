@@ -35,7 +35,7 @@ class SafeBrowsingChildNavigationThrottle
     : public ChildFrameNavigationFilteringThrottle {
  public:
   SafeBrowsingChildNavigationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       AsyncDocumentSubresourceFilter* parent_frame_filter,
       base::WeakPtr<ProfileInteractionManager> profile_interaction_manager,
       base::RepeatingCallback<std::string(const GURL& url)>

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PRELOADING_PREFETCH_ZERO_SUGGEST_PREFETCH_ZERO_SUGGEST_PREFETCH_TAB_HELPER_H_
 
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -22,7 +23,8 @@ class ZeroSuggestPrefetchTabHelper
       delete;
 
   // content::WebContentsObserver:
-  void PrimaryPageChanged(content::Page& page) override;
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(

@@ -531,7 +531,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
   DWORD current_length = 0;
   uint8_t* destination_ptr = nullptr;
   RETURN_ON_HR_FAILURE(
-      output_buffer->Lock(&destination_ptr, NULL, &current_length),
+      output_buffer->Lock(&destination_ptr, nullptr, &current_length),
       "Failed to lock output buffer", OutputStatus::kFailed);
   // SAFETY: IMFMediaBuffer::Lock returns a pointer that points to at least
   // `current_length` many bytes (and up to a larger max, which we discard).
@@ -574,6 +574,7 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
         pcmi |= (int32_t{c} << 24) & 0xff000000;
         destination = destination.subspan(3u);
         CHECK(channel_data.Write(base::byte_span_from_ref(
+            base::allow_nonunique_obj,
             SignedInt32SampleTypeTraits::ToFloat(pcmi))));
       }
     }

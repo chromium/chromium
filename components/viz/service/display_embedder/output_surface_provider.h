@@ -26,7 +26,7 @@ class OutputSurface;
 // Handles creating OutputSurface for FrameSinkManagerImpl.
 class OutputSurfaceProvider {
  public:
-  virtual ~OutputSurfaceProvider() {}
+  virtual ~OutputSurfaceProvider() = default;
 
   // Needs to be called before calling the CreateOutputSurface function. Output
   // of this should feed into the CreateOutputSurface function.

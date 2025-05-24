@@ -172,13 +172,13 @@ bool AreCertsSameOrganization(const bssl::RDNSequence& leaf_rdn_sequence,
 ChromeRequireCTDelegate::ChromeRequireCTDelegate()
     : url_matcher_(std::make_unique<url_matcher::URLMatcher>()), next_id_(0) {}
 
-ChromeRequireCTDelegate::~ChromeRequireCTDelegate() {}
+ChromeRequireCTDelegate::~ChromeRequireCTDelegate() = default;
 
-net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel
+net::RequireCTDelegate::CTRequirementLevel
 ChromeRequireCTDelegate::IsCTRequiredForHost(
-    const std::string& hostname,
+    std::string_view hostname,
     const net::X509Certificate* chain,
-    const net::HashValueVector& spki_hashes) {
+    const net::HashValueVector& spki_hashes) const {
   if (MatchHostname(hostname) || MatchSPKI(chain, spki_hashes)) {
     return CTRequirementLevel::NOT_REQUIRED;
   }
@@ -203,7 +203,7 @@ void ChromeRequireCTDelegate::UpdateCTPolicies(
   ParseSpkiHashes(excluded_spkis, &spkis_);
 }
 
-bool ChromeRequireCTDelegate::MatchHostname(const std::string& hostname) const {
+bool ChromeRequireCTDelegate::MatchHostname(std::string_view hostname) const {
   if (url_matcher_->IsEmpty())
     return false;
 

@@ -65,6 +65,10 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
   // occurred, with the elements ordered from oldest to newest batch occurrence.
   const std::vector<std::vector<CoreAccountId>>& BatchChangeRecords() const;
 
+#if BUILDFLAG(IS_IOS)
+  size_t GetOnEndBatchOfPrimaryAccountChangesCalledCount() const;
+#endif  // BUILDFLAG(IS_IOS)
+
  private:
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -87,6 +91,10 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
 
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
+
+#if BUILDFLAG(IS_IOS)
+  void OnEndBatchOfPrimaryAccountChanges() override;
+#endif  // BUILDFLAG(IS_IOS)
 
   void StartBatchOfRefreshTokenStateChanges();
   void OnEndBatchOfRefreshTokenStateChanges() override;
@@ -121,6 +129,10 @@ class TestIdentityManagerObserver : IdentityManager::Observer {
   bool is_inside_batch_ = false;
   bool was_called_account_removed_with_info_callback_ = false;
   std::vector<std::vector<CoreAccountId>> batch_change_records_;
+
+#if BUILDFLAG(IS_IOS)
+  size_t on_end_batch_of_primary_account_changes_called_count_ = 0;
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 }  // namespace signin

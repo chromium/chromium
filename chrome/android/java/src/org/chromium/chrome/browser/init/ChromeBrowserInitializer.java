@@ -170,33 +170,41 @@ public class ChromeBrowserInitializer {
         tasks.add(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    // Run as early as possible. It should also be in a separate task (and after)
-                    // initNetworkChangeNotifier, as this posts a task to the UI thread that would
-                    // interfere with preconneciton otherwise. By preconnecting afterwards, we make
-                    // sure that this task has run.
-                    delegate.maybePreconnect();
+                    try (TraceEvent te = TraceEvent.scoped("Activity.maybePreconnect")) {
+                        // Run as early as possible. It should also be in a separate task (and
+                        // after) initNetworkChangeNotifier, as this posts a task to the UI thread
+                        // that would interfere with preconneciton otherwise. By preconnecting
+                        // afterwards, we make sure that this task has run.
+                        delegate.maybePreconnect();
+                    }
                 });
 
         tasks.add(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    if (delegate.isActivityFinishingOrDestroyed()) return;
-                    delegate.initializeCompositor();
+                    try (TraceEvent te = TraceEvent.scoped("Activity.initializeCompositor")) {
+                        if (delegate.isActivityFinishingOrDestroyed()) return;
+                        delegate.initializeCompositor();
+                    }
                 });
 
         tasks.add(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    if (delegate.isActivityFinishingOrDestroyed()) return;
-                    delegate.initializeState();
+                    try (TraceEvent te = TraceEvent.scoped("Activity.initializeState")) {
+                        if (delegate.isActivityFinishingOrDestroyed()) return;
+                        delegate.initializeState();
+                    }
                 });
 
         tasks.add(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    if (delegate.isActivityFinishingOrDestroyed()) return;
-                    // Some tasks posted by this are on the critical path.
-                    delegate.startNativeInitialization();
+                    try (TraceEvent te = TraceEvent.scoped("Activity.finishNativeInitialization")) {
+                        if (delegate.isActivityFinishingOrDestroyed()) return;
+                        // Some tasks posted by this are on the critical path.
+                        delegate.startNativeInitialization();
+                    }
                 });
 
         ProcessInitializationHandler.getInstance()
@@ -216,7 +224,7 @@ public class ChromeBrowserInitializer {
 
         if (isAsync) {
             // We want to start this queue once the C++ startup tasks have run; allow the
-            // C++ startup to run asynchonously, and set it up to start the Java queue once
+            // C++ startup to run asynchronously, and set it up to start the Java queue once
             // it has finished.
             startChromeBrowserProcessesAsync(
                     delegate.shouldStartGpuProcess(),

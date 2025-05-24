@@ -8,22 +8,15 @@
 #include "base/no_destructor.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
 instance_id::InstanceIDProfileService*
-IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-instance_id::InstanceIDProfileService*
 IOSChromeInstanceIDProfileServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<instance_id::InstanceIDProfileService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()
+      ->GetServiceForProfileAs<instance_id::InstanceIDProfileService>(
+          profile, /*create=*/true);
 }
 
 // static
@@ -35,9 +28,7 @@ IOSChromeInstanceIDProfileServiceFactory::GetInstance() {
 
 IOSChromeInstanceIDProfileServiceFactory::
     IOSChromeInstanceIDProfileServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "InstanceIDProfileService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("InstanceIDProfileService") {
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
 }
 
@@ -49,10 +40,8 @@ IOSChromeInstanceIDProfileServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   DCHECK(!context->IsOffTheRecord());
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<instance_id::InstanceIDProfileService>(
-      IOSChromeGCMProfileServiceFactory::GetForBrowserState(browser_state)
-          ->driver(),
-      browser_state->IsOffTheRecord());
+      IOSChromeGCMProfileServiceFactory::GetForProfile(profile)->driver(),
+      profile->IsOffTheRecord());
 }

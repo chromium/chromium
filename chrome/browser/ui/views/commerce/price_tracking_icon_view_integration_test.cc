@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -13,7 +15,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -27,6 +28,7 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -70,6 +72,9 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
         TestWithBrowserView::GetTestingFactories();
     factories.emplace_back(BookmarkModelFactory::GetInstance(),
                            BookmarkModelFactory::GetDefaultFactory());
+    factories.emplace_back(
+        BookmarkMergedSurfaceServiceFactory::GetInstance(),
+        BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     factories.emplace_back(ManagedBookmarkServiceFactory::GetInstance(),
                            ManagedBookmarkServiceFactory::GetDefaultFactory());
     factories.emplace_back(

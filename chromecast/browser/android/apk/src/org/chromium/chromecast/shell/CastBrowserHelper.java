@@ -14,45 +14,45 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.net.NetworkChangeNotifier;
 
-/**
- * Static, one-time initialization for the browser process.
- */
+/** Static, one-time initialization for the browser process. */
 public class CastBrowserHelper {
     private static final String TAG = "CastBrowserHelper";
 
     private static boolean sIsBrowserInitialized;
 
-    /**
-     * Starts the browser process synchronously, returning success or failure. If the browser has
-     * already started, immediately returns true without performing any more initialization.
-     * This may only be called on the UI thread.
-     *
-     * @return whether or not the process started successfully
-     * 
-     * TODO(sanfin): Remove this overload.
-     */    
-    public static void initializeBrowser(Context context) {
-        initializeBrowser(context, null);
-    }
-    
-    public static void initializeBrowser(Context context, Intent intent) {
-        if (sIsBrowserInitialized) return;
+    public static void initializeBrowserAsync(Context context, Intent intent) {
+        if (sIsBrowserInitialized) {
+            return;
+        }
 
-        Log.d(TAG, "Performing one-time browser initialization");
+        Log.d(TAG, "Performing one-time browser initialization asynchronously");
 
-        // Initializing the command line must occur before loading the library.
         CastCommandLineHelper.initCommandLine(intent);
-
-        DeviceUtils.addDeviceSpecificUserAgentSwitch();
+        DeviceUtils.updateDeviceSpecificUserAgentSwitch(context);
         LibraryLoader.getInstance().ensureInitialized();
 
         Log.d(TAG, "Loading BrowserStartupController...");
-        BrowserStartupController.getInstance().startBrowserProcessesSync(
-                LibraryProcessType.PROCESS_BROWSER, /*singleProcess=*/false,
-                /*startGpuProcess=*/false);
-        NetworkChangeNotifier.init();
-        // Cast shell always expects to receive notifications to track network state.
-        NetworkChangeNotifier.registerToReceiveNotificationsAlways();
-        sIsBrowserInitialized = true;
+        BrowserStartupController.getInstance()
+                .startBrowserProcessesAsync(
+                        LibraryProcessType.PROCESS_BROWSER,
+                        /* startGpuProcess= */ false,
+                        /* startMinimalBrowser= */ false,
+                        new BrowserStartupController.StartupCallback() {
+                            @Override
+                            public void onSuccess() {
+                                Log.i(TAG, "Browser initialization succeeded");
+                                NetworkChangeNotifier.init();
+                                // Cast shell always expects to receive notifications to track
+                                // network state.
+                                NetworkChangeNotifier.registerToReceiveNotificationsAlways();
+                                sIsBrowserInitialized = true;
+                            }
+
+                            @Override
+                            public void onFailure() {
+                                Log.e(TAG, "Browser initialization failed");
+                                sIsBrowserInitialized = false;
+                            }
+                        });
     }
 }

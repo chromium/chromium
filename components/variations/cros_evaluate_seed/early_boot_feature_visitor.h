@@ -20,6 +20,9 @@ namespace variations::cros_early_boot::evaluate_seed {
 // output by the evaluate_seed binary.
 class EarlyBootFeatureVisitor : public base::FeatureVisitor {
  public:
+  // All early-boot CrOS feature names must start with "CrOSEarlyBoot".
+  static constexpr char kPrefix[] = "CrOSEarlyBoot";
+
   EarlyBootFeatureVisitor();
 
   EarlyBootFeatureVisitor(const EarlyBootFeatureVisitor&) = delete;

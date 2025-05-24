@@ -83,7 +83,7 @@ class ImageDecoderDelegateAdapter : public ImageDecoder::ImageRequest {
 
 }  // namespace
 
-SupportedImageTypeValidator::~SupportedImageTypeValidator() {}
+SupportedImageTypeValidator::~SupportedImageTypeValidator() = default;
 
 // static
 bool SupportedImageTypeValidator::SupportsFileType(const base::FilePath& path) {

@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.readaloud;
 
 import android.app.Activity;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -24,6 +24,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 
 /** Functions for reading feature flags and params and checking eligibility. */
 @JNINamespace("readaloud")
+@NullMarked
 public final class ReadAloudFeatures {
     private static final String API_KEY_OVERRIDE_PARAM_NAME = "api_key_override";
     private static final String VOICES_OVERRIDE_PARAM_NAME = "voices_override";
@@ -111,6 +112,14 @@ public final class ReadAloudFeatures {
         return true;
     }
 
+    public static boolean isAudioOverviewsAllowed() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS);
+    }
+
+    public static boolean isAudioOverviewsFeedbackAllowed() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_AUDIO_OVERVIEWS_FEEDBACK);
+    }
+
     public static @IneligibilityReason int getIneligibilityReason() {
         return sIneligibilityReason;
     }
@@ -126,7 +135,7 @@ public final class ReadAloudFeatures {
     }
 
     /** Returns true if Read Aloud entrypoint can be added to overflow menu in CCT. */
-    public static boolean isEnabledForOverflowMenuInCCT() {
+    public static boolean isEnabledForOverflowMenuInCct() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD_IN_OVERFLOW_MENU_IN_CCT);
     }
 
@@ -143,14 +152,13 @@ public final class ReadAloudFeatures {
     }
 
     /** Returns true if the ReadAloud CCT IPH should highlight the menu button. */
-    public static boolean isIPHMenuButtonHighlightCCTEnabled() {
+    public static boolean isIPHMenuButtonHighlightCctEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT);
     }
 
     /** Returns the API key override feature param if present, or null otherwise. */
-    @Nullable
-    public static String getApiKeyOverride() {
+    public static @Nullable String getApiKeyOverride() {
         String apiKeyOverride =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.READALOUD, API_KEY_OVERRIDE_PARAM_NAME);

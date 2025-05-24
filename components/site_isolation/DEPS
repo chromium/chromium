@@ -1,12 +1,14 @@
 include_rules = [
   "+base",
   "+build",
+  "+components/grit/components_resources.h",
   "+components/prefs",
   "+components/user_prefs",
   "+components/variations",
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
+  "+ui/base/resource/resource_bundle.h",
   "+url",
 ]
 

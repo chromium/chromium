@@ -17,6 +17,10 @@
 
 class GURL;
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace update_client {
 class NetworkFetcher;
 }
@@ -124,6 +128,7 @@ class DMClient {
   //   4) Fetch fails, device status is not changed.
   //
   static void FetchPolicy(
+      policy::PolicyFetchReason reason,
       std::unique_ptr<Configurator> config,
       scoped_refptr<device_management_storage::DMStorage> storage,
       PolicyFetchCallback callback);

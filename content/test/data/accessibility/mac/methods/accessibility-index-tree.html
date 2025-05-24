@@ -1,0 +1,31 @@
+<!--
+@SCRIPT:
+  outeritem1.accessibilityIndex
+  outeritem2.accessibilityIndex
+  middleitem1.accessibilityIndex
+  middleitem2.accessibilityIndex
+  inneritem1.accessibilityIndex
+  inneritem2.accessibilityIndex
+-->
+
+<!-- Keep this in alignment with content/test/data/accessibility/aria/aria-tree.html -->
+
+<!DOCTYPE html>
+<html>
+<body>
+<ul role="tree">
+  <li id="outeritem1" role="treeitem" aria-checked="mixed"><a href="#animals">Animals</a>
+    <ul role="group">
+      <li id="middleitem1"role="treeitem"><a href="#domesticated">Domesticated</a>
+        <ul role="group">
+          <li id="inneritem1" role="treeitem" aria-checked="true"><a href="#dog">Dog</a></li>
+          <li id="inneritem2" role="treeitem" aria-checked="false"><a href="#cat">Cat</a></li>
+        </ul>
+      </li>
+      <li id="middleitem2" role="treeitem"><a href="#wild">Wild</a></li>
+    </ul>
+  </li>
+  <li id="outeritem2" role="treeitem"><a href="#plants">Plants</a></li>
+</ul>
+</body>
+</html>

@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import './print_preview_shared.css.js';
 
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {CrSearchFieldMixin} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin.js';
-import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {CrSearchFieldMixinLit} from 'chrome://resources/cr_elements/cr_search_field/cr_search_field_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {stripDiacritics} from 'chrome://resources/js/search_highlight_utils.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './print_preview_search_box.html.js';
+import {getCss} from './print_preview_search_box.css.js';
+import {getHtml} from './print_preview_search_box.html.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -31,7 +29,7 @@ export interface PrintPreviewSearchBoxElement {
 }
 
 const PrintPreviewSearchBoxElementBase =
-    CrSearchFieldMixin(WebUiListenerMixin(PolymerElement));
+    CrSearchFieldMixinLit(WebUiListenerMixinLit(CrLitElement));
 
 export class PrintPreviewSearchBoxElement extends
     PrintPreviewSearchBoxElementBase {
@@ -39,13 +37,17 @@ export class PrintPreviewSearchBoxElement extends
     return 'print-preview-search-box';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      autofocus: Boolean,
+      autofocus: {type: Boolean},
 
       searchQuery: {
         type: Object,
@@ -54,13 +56,11 @@ export class PrintPreviewSearchBoxElement extends
     };
   }
 
-  override autofocus: boolean;
-  searchQuery: RegExp|null;
+  override accessor autofocus: boolean = false;
+  accessor searchQuery: RegExp|null = null;
   private lastQuery_: string = '';
 
-  override ready() {
-    super.ready();
-
+  override firstUpdated() {
     this.addEventListener('search-changed', e => this.onSearchChanged_(e));
   }
 
@@ -84,7 +84,7 @@ export class PrintPreviewSearchBoxElement extends
         safeQuery.length > 0 ? new RegExp(`(${safeQuery})`, 'ig') : null;
   }
 
-  private onClearClick_() {
+  protected onClearClick_() {
     this.setValue('');
     this.$.searchInput.focus();
   }

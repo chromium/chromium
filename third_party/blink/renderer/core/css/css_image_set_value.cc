@@ -28,6 +28,7 @@
 #include <algorithm>
 
 #include "third_party/blink/renderer/core/css/css_image_set_option_value.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/style_image_set.h"
@@ -41,6 +42,7 @@ CSSImageSetValue::CSSImageSetValue()
 CSSImageSetValue::~CSSImageSetValue() = default;
 
 const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
+    const CSSLengthResolver& resolver,
     const float device_scale_factor) {
   // This method is implementing the selection logic described in the
   // "CSS Images Module Level 4" spec:
@@ -65,7 +67,7 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
   if (options_.empty()) {
     for (const auto& i : *this) {
       auto* option = To<CSSImageSetOptionValue>(i.Get());
-      if (option->IsSupported()) {
+      if (option->IsSupported(resolver)) {
         options_.push_back(option);
       }
     }
@@ -78,20 +80,21 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
       options_.push_back(nullptr);
     } else {
       std::stable_sort(options_.begin(), options_.end(),
-                       [](auto& left, auto& right) {
-                         return left->ComputedResolution() <
-                                right->ComputedResolution();
+                       [&resolver](auto& left, auto& right) {
+                         return left->ComputedResolution(resolver) <
+                                right->ComputedResolution(resolver);
                        });
-      auto last = std::unique(
-          options_.begin(), options_.end(), [](auto& left, auto& right) {
-            return left->ComputedResolution() == right->ComputedResolution();
-          });
+      auto last = std::unique(options_.begin(), options_.end(),
+                              [&resolver](auto& left, auto& right) {
+                                return left->ComputedResolution(resolver) ==
+                                       right->ComputedResolution(resolver);
+                              });
       options_.erase(last, options_.end());
     }
   }
 
   for (const auto& option : options_) {
-    if (option && option->ComputedResolution() >= device_scale_factor) {
+    if (option && option->ComputedResolution(resolver) >= device_scale_factor) {
       return option.Get();
     }
   }
@@ -110,12 +113,9 @@ StyleImage* CSSImageSetValue::CachedImage(
   return cached_image_.Get();
 }
 
-StyleImage* CSSImageSetValue::CacheImage(
-    StyleImage* style_image,
-    const float device_scale_factor,
-    bool is_origin_clean) {
-  cached_image_ =
-      MakeGarbageCollected<StyleImageSet>(style_image, this, is_origin_clean);
+StyleImage* CSSImageSetValue::CacheImage(StyleImage* style_image,
+                                         const float device_scale_factor) {
+  cached_image_ = MakeGarbageCollected<StyleImageSet>(style_image, this);
   cached_device_scale_factor_ = device_scale_factor;
   return cached_image_.Get();
 }

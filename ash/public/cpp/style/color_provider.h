@@ -23,35 +23,23 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
   // Types of Controls layer.
   enum class ControlsLayerType {
-    kHairlineBorderColor,
     kControlBackgroundColorActive,
     kControlBackgroundColorInactive,
-    kControlBackgroundColorAlert,
-    kControlBackgroundColorWarning,
-    kControlBackgroundColorPositive,
-    kFocusAuraColor,
     kFocusRingColor,
   };
 
   enum class ContentLayerType {
-    kScrollBarColor,
     kSeparatorColor,
 
     kTextColorPrimary,
-    // Inverted `kTextColorPrimary` on current color mode.
-    kInvertedTextColorPrimary,
     kTextColorSecondary,
-    kTextColorAlert,
-    kTextColorWarning,
-    kTextColorPositive,
     kTextColorURL,
-    kTextColorSuggestion,
 
     kIconColorPrimary,
     kIconColorSecondary,
     kIconColorAlert,
     kIconColorWarning,
-    kIconColorPositive,
+
     // Color for prominent icon, e.g, "Add connection" icon button inside
     // VPN detailed view.
     kIconColorProminent,
@@ -61,9 +49,6 @@ class ASH_PUBLIC_EXPORT ColorProvider {
 
     // The default color for button labels.
     kButtonLabelColor,
-    // Inverted `kButtonLabelColor` on current color mode.
-    kInvertedButtonLabelColor,
-    kButtonLabelColorPrimary,
 
     // Color for blue button labels, e.g, 'Retry' button of the system toast.
     kButtonLabelColorBlue,
@@ -71,49 +56,11 @@ class ASH_PUBLIC_EXPORT ColorProvider {
     kButtonIconColor,
     kButtonIconColorPrimary,
 
-    // Color for app state indicator.
-    kAppStateIndicatorColor,
-    kAppStateIndicatorColorInactive,
-
-    // Color for slider.
-    kSliderColorActive,
-    kSliderColorInactive,
-
-    // Color for radio button.
-    kRadioColorActive,
-    kRadioColorInactive,
-
     // Color for toggle button.
     kSwitchKnobColorActive,
     kSwitchKnobColorInactive,
     kSwitchTrackColorActive,
     kSwitchTrackColorInactive,
-
-    // Color for current active desk's border.
-    kCurrentDeskColor,
-
-    // Color for the battery's badge (bolt, unreliable, X).
-    kBatteryBadgeColor,
-
-    // Color for the switch access's back button.
-    kSwitchAccessInnerStrokeColor,
-    kSwitchAccessOuterStrokeColor,
-
-    // Color for the media controls.
-    kProgressBarColorForeground,
-    kProgressBarColorBackground,
-
-    // Color used to highlight a hovered view.
-    kHighlightColorHover,
-
-    // Color for the background of battery system info view.
-    kBatterySystemInfoBackgroundColor,
-
-    // Color for the battery icon in the system info view.
-    kBatterySystemInfoIconColor,
-
-    // Color of the capture region in the capture session.
-    kCaptureRegionColor,
   };
 
   static ColorProvider* Get();

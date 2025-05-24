@@ -11,7 +11,6 @@
 
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -20,7 +19,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -28,9 +27,11 @@
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/windows.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/gfx/range/range.h"
 
 using tabs::TabModel;
@@ -77,6 +78,8 @@ bool IndexSupportsGroupMove(TabStripModel* tab_strip,
 ExtensionFunction::ResponseAction TabGroupsGetFunction::Run() {
   std::optional<api::tab_groups::Get::Params> params =
       api::tab_groups::Get::Params::Create(args());
+  DCHECK(params.has_value());
+
   EXTENSION_FUNCTION_VALIDATE(params);
   int group_id = params->group_id;
 
@@ -106,9 +109,13 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
   WindowController* window_controller =
       ChromeExtensionFunctionDetails(this).GetCurrentWindowController();
   if (!window_controller) {
-    return RespondNow(Error(tabs_constants::kNoCurrentWindowError));
+    return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
   }
   Browser* current_browser = window_controller->GetBrowser();
+  if (!current_browser) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
 
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (!profile->IsSameOrParent(browser->profile()))
@@ -163,6 +170,12 @@ ExtensionFunction::ResponseAction TabGroupsQueryFunction::Run() {
         continue;
       }
 
+      if (params->query_info.shared.has_value() &&
+          ExtensionTabUtil::GetSharedStateOfGroup(id) !=
+              params->query_info.shared.value()) {
+        continue;
+      }
+
       result_list.Append(
           ExtensionTabUtil::CreateTabGroupObject(id, *visual_data).ToValue());
     }
@@ -177,15 +190,19 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   int group_id = params->group_id;
-  Browser* browser = nullptr;
+  WindowController* window = nullptr;
   tab_groups::TabGroupId id = tab_groups::TabGroupId::CreateEmpty();
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
   std::string error;
   if (!ExtensionTabUtil::GetGroupById(group_id, browser_context(),
-                                      include_incognito_information(), &browser,
+                                      include_incognito_information(), &window,
                                       &id, &visual_data, &error)) {
     return RespondNow(Error(std::move(error)));
   }
+
+  // Since this is in a tab group, there should not be a prerender tab (with no
+  // window).
+  CHECK(window);
 
   DCHECK(!id.is_empty());
 
@@ -202,17 +219,24 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
   if (params->update_properties.title)
     title = base::UTF8ToUTF16(*params->update_properties.title);
 
-  TabStripModel* tab_strip_model =
-      ExtensionTabUtil::GetEditableTabStripModel(browser);
-  if (!tab_strip_model)
-    return RespondNow(Error(tabs_constants::kTabStripNotEditableError));
-  if (!tab_strip_model->SupportsTabGroups())
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+
+  Browser* browser = window->GetBrowser();
+  if (!browser) {
     return RespondNow(
-        Error(tabs_constants::kTabStripDoesNotSupportTabGroupsError));
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
+  TabStripModel* tab_strip_model = browser->tab_strip_model();
+  if (!tab_strip_model->SupportsTabGroups()) {
+    return RespondNow(
+        Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
+  }
   TabGroup* tab_group = tab_strip_model->group_model()->GetTabGroup(id);
 
   tab_groups::TabGroupVisualData new_visual_data(title, color, collapsed);
-  tab_group->SetVisualData(std::move(new_visual_data));
+  tab_strip_model->ChangeTabGroupVisuals(id, std::move(new_visual_data));
 
   if (!has_callback())
     return RespondNow(NoArguments());
@@ -251,23 +275,27 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
                                       const std::optional<int>& window_id,
                                       tab_groups::TabGroupId* group,
                                       std::string* error) {
-  Browser* source_browser = nullptr;
+  WindowController* source_window = nullptr;
   const tab_groups::TabGroupVisualData* visual_data = nullptr;
   if (!ExtensionTabUtil::GetGroupById(
           group_id, browser_context(), include_incognito_information(),
-          &source_browser, group, &visual_data, error)) {
+          &source_window, group, &visual_data, error)) {
     return false;
   }
 
-  TabStripModel* source_tab_strip =
-      ExtensionTabUtil::GetEditableTabStripModel(source_browser);
-  if (!source_tab_strip) {
-    *error = tabs_constants::kTabStripNotEditableError;
+  if (!ExtensionTabUtil::IsTabStripEditable()) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
 
+  Browser* source_browser = source_window->GetBrowser();
+  if (!source_browser) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+  TabStripModel* source_tab_strip = source_browser->tab_strip_model();
   if (!source_tab_strip->SupportsTabGroups()) {
-    *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
     return false;
   }
 
@@ -278,66 +306,35 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   if (window_id) {
-    WindowController* window_controller = nullptr;
+    WindowController* target_window = nullptr;
     if (!windows_util::GetControllerFromWindowID(
             this, *window_id, WindowController::GetAllWindowFilter(),
-            &window_controller, error)) {
+            &target_window, error)) {
       return false;
     }
-    Browser* target_browser = window_controller->GetBrowser();
+    Browser* target_browser = target_window->GetBrowser();
+    if (!target_browser) {
+      *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+      return false;
+    }
 
     // TODO(crbug.com/40638654): Rather than calling is_type_normal(), should
     // this call SupportsWindowFeature(Browser::FEATURE_TABSTRIP)?
     if (!target_browser->is_type_normal()) {
-      *error = tabs_constants::kCanOnlyMoveTabsWithinNormalWindowsError;
+      *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
       return false;
     }
 
-    if (target_browser->profile() != source_browser->profile()) {
-      *error = tabs_constants::kCanOnlyMoveTabsWithinSameProfileError;
+    if (target_window->profile() != source_window->profile()) {
+      *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinSameProfileError;
       return false;
     }
 
     // If windowId is different from the current window, move between windows.
-    if (target_browser == source_browser) {
-      return false;
+    if (target_browser != source_browser) {
+      return MoveTabGroupBetweenBrowsers(source_browser, target_browser, *group,
+                                         *visual_data, tabs, new_index, error);
     }
-
-    TabStripModel* target_tab_strip =
-        ExtensionTabUtil::GetEditableTabStripModel(target_browser);
-    if (!target_tab_strip) {
-      *error = tabs_constants::kTabStripNotEditableError;
-      return false;
-    }
-
-    if (!target_tab_strip->SupportsTabGroups()) {
-      *error = tabs_constants::kTabStripDoesNotSupportTabGroupsError;
-      return false;
-    }
-
-    if (new_index > target_tab_strip->count() || new_index < 0) {
-      new_index = target_tab_strip->count();
-    }
-
-    if (!IndexSupportsGroupMove(target_tab_strip, new_index, error)) {
-      return false;
-    }
-
-    target_tab_strip->group_model()->AddTabGroup(*group, *visual_data);
-
-    for (size_t i = 0; i < tabs.length(); ++i) {
-      // Detach tabs from the same index each time, since each detached tab is
-      // removed from the model, and groups are always contiguous.
-      std::unique_ptr<TabModel> detached_tab =
-          source_tab_strip->DetachTabAtForInsertion(tabs.start());
-
-      // Attach tabs in consecutive indices, to insert them in the same order.
-      target_tab_strip->InsertDetachedTabAt(new_index + i,
-                                            std::move(detached_tab),
-                                            AddTabTypes::ADD_NONE, *group);
-    }
-
-    return true;
   }
 
   // Perform a move within the same window.
@@ -368,6 +365,56 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
   }
 
   source_tab_strip->MoveGroupTo(*group, new_index);
+
+  return true;
+}
+
+bool TabGroupsMoveFunction::MoveTabGroupBetweenBrowsers(
+    Browser* source_browser,
+    Browser* target_browser,
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData& visual_data,
+    const gfx::Range& tabs,
+    int new_index,
+    std::string* error) {
+  TabStripModel* target_tab_strip =
+      ExtensionTabUtil::GetEditableTabStripModel(target_browser);
+  if (!target_tab_strip) {
+    *error = ExtensionTabUtil::kTabStripNotEditableError;
+    return false;
+  }
+
+  if (!target_tab_strip->SupportsTabGroups()) {
+    *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
+    return false;
+  }
+
+  if (new_index > target_tab_strip->count() || new_index < 0) {
+    new_index = target_tab_strip->count();
+  }
+
+  if (!IndexSupportsGroupMove(target_tab_strip, new_index, error)) {
+    return false;
+  }
+
+  // When moving a group between windows, Saved Tab Groups must pause
+  // listening since the group is in an invalid state. Since Extensions
+  // implements it's own bulk move action, pausing must be performed here.
+  tab_groups::TabGroupSyncService* tab_group_sync_service =
+      tab_groups::SavedTabGroupUtils::GetServiceForProfile(
+          target_browser->profile());
+  std::unique_ptr<tab_groups::ScopedLocalObservationPauser>
+      tab_groups_sync_movement_observation;
+  if (tab_group_sync_service) {
+    tab_groups_sync_movement_observation =
+        tab_group_sync_service->CreateScopedLocalObserverPauser();
+  }
+
+  TabStripModel* source_tab_strip = source_browser->tab_strip_model();
+  std::unique_ptr<DetachedTabCollection> detached_group =
+      source_tab_strip->DetachTabGroupForInsertion(group);
+  target_tab_strip->InsertDetachedTabGroupAt(std::move(detached_group),
+                                             new_index);
 
   return true;
 }

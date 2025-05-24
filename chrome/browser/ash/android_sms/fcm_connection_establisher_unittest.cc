@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/android_sms/fcm_connection_establisher.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -35,7 +36,7 @@ class FcmConnectionEstablisherTest : public testing::Test {
                                   blink::TransferableMessage message) {
     auto payload = blink::DecodeToWebMessagePayload(std::move(message));
     EXPECT_EQ(base::UTF8ToUTF16(expected),
-              absl::get<std::u16string>(payload.value()));
+              std::get<std::u16string>(payload.value()));
   }
 
  private:
@@ -135,7 +136,7 @@ TEST_F(FcmConnectionEstablisherTest, TestEstablishConnection) {
 
   int last_retry_bucket_count = histogram_tester.GetBucketCount(
       "AndroidSms.FcmMessageDispatchRetry",
-      static_cast<base::HistogramBase::Sample>(
+      static_cast<base::HistogramBase::Sample32>(
           FcmConnectionEstablisher::MessageType::kStart));
 
   int retry_count = 0;

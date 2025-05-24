@@ -425,7 +425,7 @@ void AmbientAnimationView::RestartThroughputTracking() {
   DCHECK(widget);
   ui::Compositor* compositor = widget->GetCompositor();
   DCHECK(compositor);
-  throughput_tracker_ = compositor->RequestNewThroughputTracker();
+  throughput_tracker_ = compositor->RequestNewCompositorMetricsTracker();
   throughput_tracker_->Start(
       base::BindOnce(&OnCompositorThroughputReported,
                      /*logging_start_time=*/base::TimeTicks::Now(),

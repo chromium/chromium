@@ -25,7 +25,7 @@ const submechanism = {
   },
 };
 
-const handler = recordFunction(goog.nullFunction);
+const handler = recordFunction(() => {});
 let mechanism;
 
 testSuite({

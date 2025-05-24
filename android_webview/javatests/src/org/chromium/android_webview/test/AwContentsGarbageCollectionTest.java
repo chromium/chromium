@@ -296,6 +296,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
     @DisableHardwareAcceleration
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SuppressWarnings("UnusedMethod")
     public void testGcAfterUsingJavascriptObject() throws Throwable {
         runAwContentsGcTest(
                 () -> {
@@ -315,8 +316,8 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                             return mAwContents;
                         }
 
-                        private int mValue;
-                        private AwContents mAwContents;
+                        private final int mValue;
+                        private final AwContents mAwContents;
                     }
                     String html = "<html>Hello World</html>";
                     TestAwContentsClient contentsClient = new TestAwContentsClient();

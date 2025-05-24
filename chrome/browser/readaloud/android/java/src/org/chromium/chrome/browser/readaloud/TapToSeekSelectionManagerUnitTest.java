@@ -14,13 +14,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -42,10 +42,11 @@ import org.chromium.url.JUnitTestGURLs;
     ChromeFeatureList.READALOUD_TAP_TO_SEEK
 })
 public class TapToSeekSelectionManagerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private ReadAloudController mReadAloudController;
 
     @Mock private Profile mProfile;
@@ -64,7 +65,6 @@ public class TapToSeekSelectionManagerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn(false).when(mProfile).isOffTheRecord();
         doReturn(mWebContents).when(mTab).getWebContents();
         doReturn(mWebContents2).when(mTab2).getWebContents();

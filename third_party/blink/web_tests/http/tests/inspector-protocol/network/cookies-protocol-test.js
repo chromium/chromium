@@ -78,6 +78,32 @@
     testRunner.log(`Cookies as seen on server: ${JSON.stringify(body)}`);
   }
 
+  class Barrier {
+    constructor(nExpectedEvents) {
+      ({promise: this.promise, resolve: this.resolve} = Promise.withResolvers());
+      this.count = 0;
+      this.nExpectedEvents = nExpectedEvents;
+    }
+
+    onEvent() {
+      this.count++;
+      if (this.count == this.nExpectedEvents) {
+        this.resolve();
+      }
+    }
+  }
+
+  function listenerWithBarrier(nExpectedEvents, eventListenerCb) {
+    const barrier = new Barrier(nExpectedEvents);
+    return {
+      promise: barrier.promise,
+      listener(event) {
+        eventListenerCb(event);
+        barrier.onEvent();
+      },
+    };
+  }
+
   function listenForSiteHasCookieInOtherPartition(event) {
     testRunner.log(
       'Site has cookie in other partition: '
@@ -92,15 +118,17 @@
   }
 
   async function getPartitionedCookies() {
-    dp.Network.onRequestWillBeSentExtraInfo(
-        listenForSiteHasCookieInOtherPartition);
-    dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
+    const reqBarrier = listenerWithBarrier(2, listenForSiteHasCookieInOtherPartition);
+    const respBarrier = listenerWithBarrier(2, listenForResponsePartitionKey);
+    dp.Network.onRequestWillBeSentExtraInfo(reqBarrier.listener);
+    dp.Network.onResponseReceivedExtraInfo(respBarrier.listener);
+
     // This will set a partitioned cookie
     await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php');
 
-    dp.Network.offRequestWillBeSentExtraInfo(
-      listenForSiteHasCookieInOtherPartition);
-    dp.Network.offResponseReceivedExtraInfo(listenForResponsePartitionKey);
+    await Promise.all([reqBarrier.promise, respBarrier.promise]);
+    dp.Network.offRequestWillBeSentExtraInfo(reqBarrier.listener);
+    dp.Network.offResponseReceivedExtraInfo(respBarrier.listener);
 
     await logCookies();
   }
@@ -109,7 +137,7 @@
   testRunner.log('Enabling network');
   await dp.Network.enable();
 
-  testRunner.runTestSuite([
+  await testRunner.runTestSuite([
     deleteAllCookies,
 
     async function nonUnicodeCookie() {
@@ -147,7 +175,7 @@
         value: 'bar',
         partitionKey: {
           topLevelSite: 'https://devtools.test:8443',
-          hasCrossSiteAncestor: false
+          hasCrossSiteAncestor: true
         },
         sameSite: 'None'
       });
@@ -158,7 +186,7 @@
         value: 'bar',
         partitionKey: {
           topLevelSite: 'https://notinset.test:8443',
-          hasCrossSiteAncestor: false
+          hasCrossSiteAncestor: true
         },
         sameSite: 'None'
       });
@@ -250,58 +278,18 @@
     getPartitionedCookies,
     deleteAllCookies,
 
-    async function setPartitionedCookiesWithAncestorChainBitVals() {
-      await setCookies([
-        {
-          url: 'https://acbDefaultFalse.test:8443',
-          secure: true,
-          name: '__Host-foo',
-          value: 'bar',
-          partitionKey: {
-            topLevelSite: 'https://example.test:8443',
-            hasCrossSiteAncestor: false
-          },
-          sameSite: 'None'
-        },
-        {
-          url: 'https://acbFalse.test:8443',
-          secure: true,
-          name: '__Host-foo',
-          value: 'bar',
-          partitionKey: {
-            topLevelSite: 'https://example.test:8443',
-            hasCrossSiteAncestor: false
-          },
-          sameSite: 'None'
-        },
-        {
-          url: 'https://acbTrue.test:8443',
-          secure: true,
-          name: '__Host-foo',
-          value: 'bar',
-          partitionKey: {
-            topLevelSite: 'https://devtools.test:8443',
-            hasCrossSiteAncestor: true
-          },
-          sameSite: 'None'
-        }
-      ]);
-      logCookies((await dp.Network.getCookies()).result);
-    },
-    getPartitionedCookies,
-    deleteAllCookies,
-
     async function getPartitionedCookieFromOpaqueOrigin() {
-      dp.Network.onRequestWillBeSentExtraInfo(
-        listenForSiteHasCookieInOtherPartition);
-      dp.Network.onResponseReceivedExtraInfo(listenForResponsePartitionKey);
+      const reqBarrier = listenerWithBarrier(2, listenForSiteHasCookieInOtherPartition);
+      const respBarrier = listenerWithBarrier(2, listenForResponsePartitionKey);
+      dp.Network.onRequestWillBeSentExtraInfo(reqBarrier.listener);
+      dp.Network.onResponseReceivedExtraInfo(respBarrier.listener);
 
       await page.navigate('https://devtools.test:8443/inspector-protocol/resources/iframe-third-party-cookie-parent.php?opaque');
-      logCookies((await dp.Network.getCookies()).result);
+      await logCookies((await dp.Network.getCookies()).result);
 
-      dp.Network.offRequestWillBeSentExtraInfo(
-        listenForSiteHasCookieInOtherPartition);
-      dp.Network.offResponseReceivedExtraInfo(listenForResponsePartitionKey);
+      await Promise.all([reqBarrier.promise, respBarrier.promise]);
+      dp.Network.offRequestWillBeSentExtraInfo(reqBarrier.listener);
+      dp.Network.offResponseReceivedExtraInfo(respBarrier.listener);
     },
 
     deleteAllCookies,

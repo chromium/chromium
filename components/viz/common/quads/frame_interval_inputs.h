@@ -29,6 +29,7 @@ enum class ContentFrameIntervalType {
   kVideo,
   kAnimatingImage,  // Gifs.
   kScrollBarFadeOutAnimation,
+  kCompositorScroll,
 };
 
 VIZ_COMMON_EXPORT std::string ContentFrameIntervalTypeToString(
@@ -38,7 +39,7 @@ struct VIZ_COMMON_EXPORT ContentFrameIntervalInfo {
   // Type of content that has fixed content frame interval.
   ContentFrameIntervalType type = ContentFrameIntervalType::kVideo;
 
-  // Content frame interval.
+  // Content frame interval. 0 for kCompositorScroll.
   base::TimeDelta frame_interval;
 
   // Number of _additional_ content this entry refers to. Eg if there are 2
@@ -60,6 +61,15 @@ struct VIZ_COMMON_EXPORT FrameIntervalInputs {
   // Ideally this should be limited to latency-sensitive animations only, such
   // as touch scrolling, in the future.
   bool has_input = false;
+
+  // Frame has input from user. This intentionally excludes non-user input
+  // events such as fling. In contrast to `has_input`, this only applies to the
+  // current frame, is set to false immediately instead of with a delay; this
+  // also means it can flip back and forth frequently.
+  bool has_user_input = false;
+
+  // The maximum of x or y scroll speed.
+  float major_scroll_speed_in_pixels_per_second = 0.f;
 
   // Any content that has a fixed or specified content frame interval can be
   // added to `content_interval_info`. If `content_interval_info` contains

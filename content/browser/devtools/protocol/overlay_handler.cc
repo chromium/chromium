@@ -33,13 +33,14 @@ void OverlayHandler::SetRenderer(int process_host_id,
 
 Response OverlayHandler::SetInspectMode(
     const String& in_mode,
-    Maybe<protocol::Overlay::HighlightConfig> in_highlightConfig) {
+    std::unique_ptr<protocol::Overlay::HighlightConfig> in_highlightConfig) {
   inspect_mode_ = in_mode;
   UpdateCaptureInputEvents();
   return Response::FallThrough();
 }
 
-Response OverlayHandler::SetPausedInDebuggerMessage(Maybe<String> message) {
+Response OverlayHandler::SetPausedInDebuggerMessage(
+    std::optional<String> message) {
   paused_message_ = message.value_or(std::string());
   UpdateCaptureInputEvents();
   return Response::FallThrough();

@@ -28,7 +28,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
-#include "third_party/googletest/src/googletest/include/gtest/gtest.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 // Helper common requests and responses. All of these are for the NOTIFICATION
@@ -243,6 +243,8 @@ void InitializeProtoHelperObjects() {
           PermissionPrediction_Likelihood_DiscretizedLikelihood_UNLIKELY);
 }
 
+constexpr auto kCpssV3ExperimentId =
+    permissions::PredictionRequestFeatures::ExperimentId::kCpssV3ExperimentId;
 }  // namespace
 
 namespace permissions {
@@ -298,8 +300,9 @@ class PredictionServiceTest : public testing::Test {
                        std::unique_ptr<GeneratePredictionsRequest> request,
                        std::string access_token) {
     received_requests_.emplace_back(std::move(request));
-    if (request_loop)
+    if (request_loop) {
       request_loop->Quit();
+    }
 
     // Access token should always be the empty string.
     EXPECT_EQ(std::string(), access_token);
@@ -311,8 +314,9 @@ class PredictionServiceTest : public testing::Test {
       bool response_from_cache,
       const std::optional<GeneratePredictionsResponse>& response) {
     received_responses_.emplace_back(response);
-    if (response_loop)
+    if (response_loop) {
       response_loop->Quit();
+    }
 
     // The response is never from the cache.
     EXPECT_FALSE(response_from_cache);
@@ -350,14 +354,85 @@ class PredictionServiceTest : public testing::Test {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
 
+// This test should be the first one, otherwise it fails.
+TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {permissions::features::kPermissionPredictionsV2,
+       permissions::features::kPermissionsAIv1},
+      {});
+
+  struct {
+    size_t prompt_count;
+    int expected_bucket;
+  } kTests[] = {{4, 4},   {5, 5},   {6, 6},   {7, 7},    {8, 8},
+                {9, 9},   {10, 10}, {11, 10}, {12, 12},  {14, 12},
+                {15, 15}, {19, 15}, {20, 20}, {100, 20}, {1000, 20}};
+
+  prediction_service_->set_prediction_service_url_for_testing(
+      GURL(kUrl_Likely));
+
+  for (const auto& kTest : kTests) {
+    permissions::PredictionRequestFeatures features = kFeaturesAllCountsZero;
+    features.requested_permission_counts.denies = kTest.prompt_count;
+
+    permissions::GeneratePredictionsRequest expected_request =
+        kRequestAllCountsZero;
+    expected_request.mutable_permission_features()
+        ->at(0)
+        .mutable_permission_stats()
+        ->set_avg_deny_rate(1);
+    expected_request.mutable_permission_features()
+        ->at(0)
+        .mutable_permission_stats()
+        ->set_prompts_count(kTest.expected_bucket);
+    expected_request.mutable_permission_features()
+        ->at(0)
+        .set_permission_relevance(
+            permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+
+    base::RunLoop run_loop;
+    StartLookup(features, &run_loop, nullptr /* response_loop */);
+    run_loop.Run();
+
+    EXPECT_EQ(1u, received_requests_.size());
+    EXPECT_EQ(expected_request.SerializeAsString(),
+              received_requests_[0]->SerializeAsString());
+
+    received_requests_.clear();
+  }
+}
+
 TEST_F(PredictionServiceTest, BuiltProtoRequestIsCorrect) {
   // Test origin being added correctly in the request.
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      permissions::features::kPermissionPredictionsV2);
+  scoped_feature_list.InitWithFeatures(
+      {permissions::features::kPermissionPredictionsV2,
+       permissions::features::kPermissionsAIv1},
+      {});
   kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
   kRequestAllCountsZero.mutable_site_features()->set_origin(
       "https://www.test.example/");
+  kRequestAllCountsZero.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestRoundedCounts.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestEqualCountsTotal20.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestEqualCountsTotal20.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestDifferentCounts.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
 
   struct {
     PredictionRequestFeatures entity;
@@ -390,17 +465,38 @@ TEST_F(PredictionServiceTest, CPSSv3BuiltProtoRequestIsCorrect) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {permissions::features::kPermissionPredictionsV2,
-       permissions::features::kPermissionPredictionsV3},
+       permissions::features::kPermissionsAIv1},
       {});
   kFeaturesAllCountsZero.url = test_requesting_url.GetWithEmptyPath();
   kRequestAllCountsZero.mutable_site_features()->set_origin(
       "https://www.test.example/");
 
-  kFeaturesAllCountsZero.experiment_id = 1;
-  kFeaturesCountsNeedingRounding.experiment_id = 1;
-  kFeaturesEvenCountsOver100.experiment_id = 1;
-  kFeaturesEvenCountsOver100Alt.experiment_id = 1;
-  kFeaturesDifferentCounts.experiment_id = 1;
+  kFeaturesAllCountsZero.experiment_id = kCpssV3ExperimentId;
+  kFeaturesCountsNeedingRounding.experiment_id = kCpssV3ExperimentId;
+  kFeaturesEvenCountsOver100.experiment_id = kCpssV3ExperimentId;
+  kFeaturesEvenCountsOver100Alt.experiment_id = kCpssV3ExperimentId;
+  kFeaturesDifferentCounts.experiment_id = kCpssV3ExperimentId;
+
+  kRequestAllCountsZero.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestRoundedCounts.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestEqualCountsTotal20.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestEqualCountsTotal20.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
+  kRequestDifferentCounts.mutable_permission_features()
+      ->at(0)
+      .set_permission_relevance(
+          permissions::PermissionFeatures_Relevance_RELEVANCE_UNSPECIFIED);
 
   kRequestAllCountsZero.mutable_client_features()
       ->mutable_experiment_config()
@@ -486,50 +582,28 @@ TEST_F(PredictionServiceTest, ResponsesAreCorrect) {
   }
 }
 
-// Test that the Web Prediction Service url can be overridden via feature params
-// and command line, and the fallback logic in case the provided url is not
-// valid.
+// Test that the Web Prediction Service url can be overridden via  command line,
+// and the fallback logic in case the provided url is not valid.
 TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
   struct {
     std::optional<std::string> command_line_switch_value;
-    std::optional<std::string> url_override_param_value;
     GURL expected_request_url;
     permissions::GeneratePredictionsResponse expected_response;
   } kTests[] = {
       // Test without any overrides.
-      {std::nullopt, std::nullopt, GURL(kDefaultPredictionServiceUrl),
-       kResponseLikely},
-
-      // Test only the FeatureParam override.
-      {std::nullopt, kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
-      {std::nullopt, "this is not a url", GURL(kDefaultPredictionServiceUrl),
-       kResponseLikely},
-      {std::nullopt, "", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+      {std::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
 
       // Test only the command line override.
-      {kUrl_Unlikely.spec(), std::nullopt, kUrl_Unlikely, kResponseUnlikely},
-      {"this is not a url", std::nullopt, GURL(kDefaultPredictionServiceUrl),
+      {kUrl_Unlikely.spec(), kUrl_Unlikely, kResponseUnlikely},
+      {"this is not a url", GURL(kDefaultPredictionServiceUrl),
        kResponseLikely},
-      {"", std::nullopt, GURL(kDefaultPredictionServiceUrl), kResponseLikely},
-
-      // Command line takes precedence over FeatureParam, if valid.
-      {kUrl_Likely.spec(), kUrl_Unlikely.spec(), kUrl_Likely, kResponseLikely},
-      {"this is not a url", kUrl_Unlikely.spec(), kUrl_Unlikely,
-       kResponseUnlikely},
-      {"this is not a url", "this is not a url",
-       GURL(kDefaultPredictionServiceUrl), kResponseLikely},
+      {"", GURL(kDefaultPredictionServiceUrl), kResponseLikely},
   };
 
   prediction_service_->recalculate_service_url_every_time_for_testing();
 
   for (const auto& kTest : kTests) {
     base::test::ScopedFeatureList scoped_feature_list;
-    if (kTest.url_override_param_value.has_value()) {
-      scoped_feature_list.InitAndEnableFeatureWithParameters(
-          features::kPermissionPredictionServiceUseUrlOverride,
-          {{feature_params::kPermissionPredictionServiceUrlOverride.name,
-            kTest.url_override_param_value.value()}});
-    }
 
     if (kTest.command_line_switch_value.has_value()) {
       base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -551,24 +625,6 @@ TEST_F(PredictionServiceTest, FeatureParamAndCommandLineCanOverrideDefaultUrl) {
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
         kDefaultPredictionServiceUrlSwitchKey);
   }
-}
-
-TEST_F(PredictionServiceTest,
-       FeatureEnabledWithNoFeatureParamFallsBackOnDefault) {
-  prediction_service_->recalculate_service_url_every_time_for_testing();
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPermissionPredictionServiceUseUrlOverride);
-
-  base::RunLoop response_loop;
-  StartLookup(kFeaturesAllCountsZero, nullptr, &response_loop);
-  Respond(GURL(kDefaultPredictionServiceUrl));
-  response_loop.Run();
-  EXPECT_EQ(1u, received_responses_.size());
-  EXPECT_TRUE(received_responses_[0]);
-  EXPECT_EQ(kResponseLikely.SerializeAsString(),
-            received_responses_[0]->SerializeAsString());
 }
 
 TEST_F(PredictionServiceTest, HandleSimultaneousRequests) {
@@ -607,44 +663,6 @@ TEST_F(PredictionServiceTest, InvalidResponse) {
   Respond(GURL(kUrl_Invalid));
   response_loop.Run();
   EXPECT_FALSE(received_responses_[0]);
-}
-
-TEST_F(PredictionServiceTest, PromptCountsAreBucketed) {
-  struct {
-    size_t prompt_count;
-    int expected_bucket;
-  } kTests[] = {{4, 4},   {5, 5},   {6, 6},   {7, 7},    {8, 8},
-                {9, 9},   {10, 10}, {11, 10}, {12, 12},  {14, 12},
-                {15, 15}, {19, 15}, {20, 20}, {100, 20}, {1000, 20}};
-
-  prediction_service_->set_prediction_service_url_for_testing(
-      GURL(kUrl_Likely));
-
-  for (const auto& kTest : kTests) {
-    permissions::PredictionRequestFeatures features = kFeaturesAllCountsZero;
-    features.requested_permission_counts.denies = kTest.prompt_count;
-
-    permissions::GeneratePredictionsRequest expected_request =
-        kRequestAllCountsZero;
-    expected_request.mutable_permission_features()
-        ->at(0)
-        .mutable_permission_stats()
-        ->set_avg_deny_rate(1);
-    expected_request.mutable_permission_features()
-        ->at(0)
-        .mutable_permission_stats()
-        ->set_prompts_count(kTest.expected_bucket);
-
-    base::RunLoop run_loop;
-    StartLookup(features, &run_loop, nullptr /* response_loop */);
-    run_loop.Run();
-
-    EXPECT_EQ(1u, received_requests_.size());
-    EXPECT_EQ(expected_request.SerializeAsString(),
-              received_requests_[0]->SerializeAsString());
-
-    received_requests_.clear();
-  }
 }
 
 }  // namespace permissions

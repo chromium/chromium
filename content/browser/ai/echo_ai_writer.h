@@ -24,6 +24,9 @@ class EchoAIWriter : public blink::mojom::AIWriter {
              const std::optional<std::string>& context,
              mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
                  pending_responder) override;
+  void MeasureUsage(const std::string& input,
+                    const std::string& context,
+                    MeasureUsageCallback callback) override;
 };
 
 }  // namespace content

@@ -19,11 +19,18 @@ const testingDom = goog.require('goog.testing.dom');
 /** @type {!HTMLDivElement} */
 const div = dom.createElement(TagName.DIV);
 
-function assertLinkify(comment, input, expected, preserveNewlines = undefined) {
+/**
+ * @private
+ */
+function assertLinkify(
+    comment, input, expected, preserveNewlines = undefined,
+    preserveSpacesAndTabs = undefined) {
   assertEquals(
-      comment, expected,
-      SafeHtml.unwrap(linkify.linkifyPlainTextAsHtml(
-          input, {rel: '', target: ''}, preserveNewlines)));
+      comment, expected, SafeHtml.unwrap(linkify.linkifyPlainTextAsHtml(input, {
+        attributes: {rel: '', target: ''},
+        preserveNewlines,
+        preserveSpacesAndTabs,
+      })));
 }
 
 testSuite({
@@ -328,7 +335,7 @@ testSuite({
         linkify.linkifyPlainTextAsHtml(
             'The link for www.google.com is located somewhere in ' +
                 'https://www.google.fr/?hl=en, you should find it easily.',
-            {rel: '', target: ''}));
+            {attributes: {rel: '', target: ''}}));
     testingDom.assertHtmlContentsMatch(
         'The link for <a href="http://www.google.com">www.google.com<\/a> is ' +
             'located somewhere in ' +
@@ -342,7 +349,7 @@ testSuite({
         div,
         linkify.linkifyPlainTextAsHtml(
             'Attribute with <class> name www.w3c.org.',
-            {'class': 'link-added'}));
+            {attributes: {'class': 'link-added'}}));
     testingDom.assertHtmlContentsMatch(
         'Attribute with &lt;class&gt; name <a href="http://www.w3c.org" ' +
             'target="_blank" rel="nofollow" class="link-added">www.w3c.org<\/a>.',
@@ -556,5 +563,51 @@ testSuite({
         'Preserving newlines with no links', 'Line 1\nLine 2',
         'Line 1<br>Line 2',
         /* preserveNewlines */ true);
+  },
+
+  testPreserveSpacesAndTabs() {
+    assertLinkify(
+        'Preserving spaces', ' Example:\n http://www.google.com/ ',
+        '&#160;Example:\n&#160;<a href="http://www.google.com/">http://www.google.com/<\/a>&#160;',
+        /* preserveNewlines */ false,
+        /* preserveSpacesAndTabs */ true);
+    assertLinkify(
+        'Preserving spaces with no links', ' Line 1\n  Line 2 ',
+        '&#160;Line 1\n&#160; Line 2 ',
+        /* preserveNewlines */ false,
+        /* preserveSpacesAndTabs */ true);
+    assertLinkify(
+        'Preserving tabs', 'Example:\thttp://www.google.com/',
+        'Example:<span style="white-space:pre">\t</span><a href="http://www.google.com/">http://www.google.com/<\/a>',
+        /* preserveNewlines */ false,
+        /* preserveSpacesAndTabs */ true);
+    assertLinkify(
+        'Preserving tabs with no links', 'Column 1\t\tColumn 2',
+        'Column 1<span style="white-space:pre">\t\t</span>Column 2',
+        /* preserveNewlines */ false,
+        /* preserveSpacesAndTabs */ true);
+  },
+
+  testPreserveNewlinesSpacesAndTabs() {
+    assertLinkify(
+        'Preserving spaces', ' Example:\n http://www.google.com/ ',
+        '&#160;Example:<br>&#160;<a href="http://www.google.com/">http://www.google.com/<\/a>&#160;',
+        /* preserveNewlines */ true,
+        /* preserveSpacesAndTabs */ true);
+    assertLinkify(
+        'Preserving spaces with no links', ' Line 1\n  Line 2 ',
+        '&#160;Line 1<br>&#160; Line 2 ',
+        /* preserveNewlines */ true,
+        /* preserveSpacesAndTabs */ true);
+    assertLinkify(
+        'Preserving tabs', 'Example:\n\thttp://www.google.com/',
+        'Example:<br><span style="white-space:pre">\t</span><a href="http://www.google.com/">http://www.google.com/<\/a>',
+        /* preserveNewlines */ true,
+        /* preserveSpacesAndTabs */ true);
+    assertLinkify(
+        'Preserving tabs with no links', 'Line 1\n\t\tLine 2',
+        'Line 1<br><span style="white-space:pre">\t\t</span>Line 2',
+        /* preserveNewlines */ true,
+        /* preserveSpacesAndTabs */ true);
   },
 });

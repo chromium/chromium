@@ -143,7 +143,6 @@ std::unique_ptr<webapps::ShortcutInfo> CreateShortcutInfoFromSpecifics(
     shortcut_info->best_primary_icon_url =
         GURL(webapk_specifics.icon_infos(0).url());
     shortcut_info->is_primary_icon_maskable =
-        webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons() &&
         webapk_specifics.icon_infos(0).purpose() ==
             sync_pb::WebApkIconInfo_Purpose_MASKABLE;
   } else {
@@ -507,14 +506,14 @@ std::unique_ptr<syncer::DataBatch> WebApkSyncBridge::GetAllDataForDebugging() {
 // chrome/browser/web_applications/web_app_sync_bridge.cc's
 // WebAppSyncBridge::GetClientTag().
 std::string WebApkSyncBridge::GetClientTag(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_web_apk());
 
   return ManifestIdStrToAppId(entity_data.specifics.web_apk().manifest_id());
 }
 
 std::string WebApkSyncBridge::GetStorageKey(
-    const syncer::EntityData& entity_data) {
+    const syncer::EntityData& entity_data) const {
   return GetClientTag(entity_data);
 }
 

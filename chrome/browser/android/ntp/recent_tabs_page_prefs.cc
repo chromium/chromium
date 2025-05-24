@@ -32,7 +32,7 @@ void RecentTabsPagePrefs::Destroy(JNIEnv* env) {
   delete this;
 }
 
-RecentTabsPagePrefs::~RecentTabsPagePrefs() {}
+RecentTabsPagePrefs::~RecentTabsPagePrefs() = default;
 
 jboolean RecentTabsPagePrefs::GetSnapshotDocumentCollapsed(JNIEnv* env) {
   return profile_->GetPrefs()->GetBoolean(prefs::kNtpCollapsedSnapshotDocument);
@@ -70,24 +70,23 @@ void RecentTabsPagePrefs::SetSyncPromoCollapsed(
 
 jboolean RecentTabsPagePrefs::GetForeignSessionCollapsed(
     JNIEnv* env,
-    const JavaParamRef<jstring>& session_tag) {
+    std::string& session_tag) {
   const base::Value::Dict& dict =
       profile_->GetPrefs()->GetDict(prefs::kNtpCollapsedForeignSessions);
-  return dict.contains(ConvertJavaStringToUTF8(env, session_tag));
+  return dict.contains(session_tag);
 }
 
-void RecentTabsPagePrefs::SetForeignSessionCollapsed(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& session_tag,
-    jboolean is_collapsed) {
+void RecentTabsPagePrefs::SetForeignSessionCollapsed(JNIEnv* env,
+                                                     std::string& session_tag,
+                                                     jboolean is_collapsed) {
   // Store session tags for collapsed sessions in a preference so that the
   // collapsed state persists.
   PrefService* prefs = profile_->GetPrefs();
   ScopedDictPrefUpdate update(prefs, prefs::kNtpCollapsedForeignSessions);
   if (is_collapsed)
-    update->Set(ConvertJavaStringToUTF8(env, session_tag), true);
+    update->Set(session_tag, true);
   else
-    update->Remove(ConvertJavaStringToUTF8(env, session_tag));
+    update->Remove(session_tag);
 }
 
 // static

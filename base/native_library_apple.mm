@@ -83,13 +83,8 @@ void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
 std::string GetNativeLibraryName(std::string_view name) {
   DCHECK(IsStringASCII(name));
 #if BUILDFLAG(IS_IOS)
-  // Returns Frameworks/mylib.framework/mylib
-  return FilePath()
-      .Append("Frameworks")
-      .Append(name)
-      .AddExtension("framework")
-      .Append(name)
-      .value();
+  // Returns mylib.framework/mylib
+  return FilePath().Append(name).AddExtension("framework").Append(name).value();
 #else
   return StrCat({"lib", name, ".dylib"});
 #endif
@@ -98,12 +93,8 @@ std::string GetNativeLibraryName(std::string_view name) {
 std::string GetLoadableModuleName(std::string_view name) {
   DCHECK(IsStringASCII(name));
 #if BUILDFLAG(IS_IOS)
-  // Returns Frameworks/mylib.framework
-  return FilePath()
-      .Append("Frameworks")
-      .Append(name)
-      .AddExtension("framework")
-      .value();
+  // Returns mylib.framework
+  return FilePath().Append(name).AddExtension("framework").value();
 #else
   return StrCat({name, ".so"});
 #endif

@@ -14,12 +14,12 @@
 
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Route, Router, routes} from '../router.js';
 
-import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
-import {Constructor} from './types.js';
+import {RouteObserverMixin, type RouteObserverMixinInterface} from './route_observer_mixin.js';
+import type {Constructor} from './types.js';
 
 type FinderFn = () => HTMLElement|null;
 export type ElementConfig = string|HTMLElement|FinderFn;
@@ -75,9 +75,6 @@ export const RouteOriginMixin = dedupingMixin(
           }
 
           // Route change does not apply to the route for this page.
-          // When infinite scroll exists (OsSettingsRevampWayfinding disabled)
-          // subpage triggers should be refocused if the previous route was the
-          // root page.
           if (newRoute !== this.route && newRoute !== routes.BASIC) {
             return;
           }

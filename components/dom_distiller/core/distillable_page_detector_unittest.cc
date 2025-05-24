@@ -13,7 +13,7 @@ namespace {
 
 class Builder {
  public:
-  Builder() {}
+  Builder() = default;
 
   Builder& Stump(int feature_number, double split, double weight) {
     StumpProto* stump = proto_.add_stump();

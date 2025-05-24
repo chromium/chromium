@@ -61,6 +61,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
+#include "chrome/browser/ui/ash/login/login_display_host_common.h"
 #include "chrome/browser/ui/ash/login/login_display_host_mojo.h"
 #include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
@@ -71,8 +72,6 @@
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -85,6 +84,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -183,7 +183,7 @@ bool HasManagedDeviceSettings() {
 bool IsOobeComplete() {
   // Oobe is completed and we have a user or we are enterprise enrolled.
   return StartupUtils::IsOobeCompleted() &&
-         ((!user_manager::UserManager::Get()->GetUsers().empty() &&
+         ((!user_manager::UserManager::Get()->GetPersistedUsers().empty() &&
            !HasManagedDeviceSettings()) ||
           ash::InstallAttributes::Get()->IsEnterpriseManaged());
 }
@@ -247,8 +247,7 @@ bool ShouldPreserveUserContext() {
   }
   WizardContext* wizard_context =
       LoginDisplayHost::default_host()->GetWizardContext();
-  if (!wizard_context || !wizard_context->add_user_from_cached_credentials ||
-      !wizard_context->user_context) {
+  if (!wizard_context || !wizard_context->timebound_user_context_holder) {
     return false;
   }
   return true;
@@ -269,14 +268,14 @@ void ShowLoginWizardFinish(
     return;
   }
 
-  std::unique_ptr<UserContext> user_context;
+  std::unique_ptr<TimeboundUserContextHolder> user_context;
   if (ShouldShowSigninScreen(first_screen)) {
     if (ShouldPreserveUserContext()) {
       // Move the user context to the local variable before it's destroyed.
       WizardContext* wizard_context =
           LoginDisplayHost::default_host()->GetWizardContext();
       CHECK(wizard_context);
-      user_context = std::move(wizard_context->user_context);
+      user_context = std::move(wizard_context->timebound_user_context_holder);
     }
     // Shutdown WebUI host to replace with the Mojo one.
     MaybeShutdownLoginDisplayHostWebUI();
@@ -292,21 +291,13 @@ void ShowLoginWizardFinish(
     // Tests may have already allocated an instance for us to use.
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-  } else if (first_screen == LacrosDataMigrationScreenView::kScreenId) {
-    // TODO(crbug.com/40169227): Once lacros is officially released,
-    // `ShowLoginWizard()` will no longer be called with lacros screen id.
-    // Instead simply call `SigninUI::StartBrowserDataMigration()` as part of
-    // the login flow.
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-    DCHECK(session_manager::SessionManager::Get());
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
-  } else if (first_screen == LacrosDataBackwardMigrationScreenView::kScreenId) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-    DCHECK(session_manager::SessionManager::Get());
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
+    display_host =
+        new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN,
+                                 /*update_geolocation_usage_allowed=*/true);
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
+    display_host =
+        new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN,
+                                 /*update_geolocation_usage_allowed=*/true);
     DCHECK(session_manager::SessionManager::Get());
     session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else {
@@ -317,8 +308,7 @@ void ShowLoginWizardFinish(
     // Restore the user context within the wizard context.
     WizardContext* wizard_context = display_host->GetWizardContext();
     CHECK(wizard_context);
-    wizard_context->user_context = std::move(user_context);
-    wizard_context->add_user_from_cached_credentials = true;
+    wizard_context->timebound_user_context_holder = std::move(user_context);
   }
 
   // Restore system timezone.
@@ -401,7 +391,8 @@ void OnLanguageSwitchedCallback(
 // (`switch_locale` is empty) or after a locale switch otherwise.
 void TriggerShowLoginWizardFinish(
     std::string switch_locale,
-    std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> data) {
+    std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> data,
+    bool login_input_methods_only) {
   if (switch_locale.empty()) {
     ShowLoginWizardFinish(data->first_screen, data->startup_manifest);
   } else {
@@ -410,9 +401,10 @@ void TriggerShowLoginWizardFinish(
 
     // Load locale keyboards here. Hardware layout would be automatically
     // enabled.
-    locale_util::SwitchLanguage(
-        switch_locale, true, true /* login_layouts_only */, std::move(callback),
-        ProfileManager::GetActiveUserProfile());
+    locale_util::SwitchLanguage(switch_locale,
+                                /*enable_locale_keyboard_layouts=*/true,
+                                login_input_methods_only, std::move(callback),
+                                ProfileManager::GetActiveUserProfile());
   }
 }
 
@@ -502,7 +494,8 @@ class LoginDisplayHostWebUI::KeyboardDrivenOobeKeyHandler
 // LoginDisplayHostWebUI, public
 
 LoginDisplayHostWebUI::LoginDisplayHostWebUI()
-    : oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
+    : LoginDisplayHostCommon(/*update_geolocation_usage_allowed=*/true),
+      oobe_startup_sound_played_(StartupUtils::IsOobeCompleted()) {
   SessionManagerClient::Get()->AddObserver(this);
   CrasAudioHandler::Get()->AddAudioObserver(this);
 
@@ -538,7 +531,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
 
   ResetKeyboardOverscrollBehavior();
 
-  views::FocusManager::set_arrow_key_traversal_enabled(false);
   ResetLoginWindowAndView();
 
   CHECK(!views::WidgetObserver::IsInObserverList());
@@ -641,9 +633,10 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   }
 
   if (ash::features::IsBootAnimationEnabled()) {
-    auto* welcome_screen = GetWizardController()->GetScreen<WelcomeScreen>();
     const bool should_show =
-        wizard_controller_->current_screen() == welcome_screen;
+        wizard_controller_->HasScreen(WelcomeView::kScreenId) &&
+        wizard_controller_->current_screen() ==
+            GetWizardController()->GetScreen<WelcomeScreen>();
     if (should_show) {
       ash::Shell::Get()
           ->booting_animation_controller()
@@ -663,11 +656,11 @@ WizardController* LoginDisplayHostWebUI::GetWizardController() {
 }
 
 void LoginDisplayHostWebUI::OnStartUserAdding() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::CancelUserAdding() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::OnStartSignInScreen() {
@@ -680,7 +673,8 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
   DVLOG(1) << "Starting sign in screen";
   CreateExistingUserController();
 
-  existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
+  existing_user_controller_->Init(
+      user_manager::UserManager::Get()->GetPersistedUsers());
 
   ShowGaiaDialogCommon(EmptyAccountId());
 
@@ -943,7 +937,7 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
 
 void LoginDisplayHostWebUI::ShowWebUI() {
   session_observation_.Reset();
-  show_webui_guard_.AbandonAndStop();
+  show_webui_guard_.Stop();
 
   DCHECK(login_window_);
   DCHECK(login_view_);
@@ -966,7 +960,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   }
 
   if (system::InputDeviceSettings::ForceKeyboardDrivenUINavigation()) {
-    views::FocusManager::set_arrow_key_traversal_enabled(true);
+    arrow_key_traversal_enabler_.emplace();
     focus_ring_controller_ = std::make_unique<FocusRingController>();
     focus_ring_controller_->SetVisible(true);
 
@@ -985,6 +979,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
       &params, kShellWindowId_LockScreenContainer);
   login_window_ = new views::Widget;
   login_window_->Init(std::move(params));
+  Shell::UpdateAccessibilityForStatusAreaWidget();
 
   login_view_ = new WebUILoginView(weak_factory_.GetWeakPtr());
   login_view_->Init();
@@ -1027,6 +1022,7 @@ void LoginDisplayHostWebUI::ResetLoginWindowAndView() {
     login_window_->RemoveRemovalsObserver(this);
     login_window_->RemoveObserver(this);
     login_window_ = nullptr;
+    Shell::UpdateAccessibilityForStatusAreaWidget();
   }
 
   // Release wizard controller with the webui and hosting window so that it
@@ -1103,11 +1099,11 @@ void LoginDisplayHostWebUI::HandleDisplayCaptivePortal() {
 void LoginDisplayHostWebUI::OnCancelPasswordChangedFlow() {}
 
 void LoginDisplayHostWebUI::UpdateAddUserButtonStatus() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::RequestSystemInfoUpdate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool LoginDisplayHostWebUI::HasUserPods() {
@@ -1115,7 +1111,7 @@ bool LoginDisplayHostWebUI::HasUserPods() {
 }
 
 void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::UseAlternativeAuthentication(
@@ -1126,11 +1122,7 @@ void LoginDisplayHostWebUI::UseAlternativeAuthentication(
 
 void LoginDisplayHostWebUI::RunLocalAuthentication(
     std::unique_ptr<UserContext> user_context) {
-  NOTREACHED_IN_MIGRATION();
-}
-
-void LoginDisplayHostWebUI::StartBrowserDataMigration() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {
@@ -1215,7 +1207,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
       input_method::InputMethodManager::Get();
 
   if (g_browser_process && g_browser_process->local_state()) {
-    manager->GetActiveIMEState()->SetInputMethodLoginDefault();
+    manager->GetActiveIMEState()->SetInputMethodLoginDefault(
+        /*is_in_oobe_context=*/true);
   }
 
   system::InputDeviceSettings::Get()->SetNaturalScroll(
@@ -1276,7 +1269,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
     std::unique_ptr<ShowLoginWizardSwitchLanguageCallbackData> data =
         std::make_unique<ShowLoginWizardSwitchLanguageCallbackData>(
             first_screen, nullptr);
-    TriggerShowLoginWizardFinish(switch_locale, std::move(data));
+    TriggerShowLoginWizardFinish(switch_locale, std::move(data),
+                                 /*login_input_methods_only=*/true);
     return;
   }
 
@@ -1303,7 +1297,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
                                                     startup_manifest));
 
   if (!current_locale.empty() || locale.empty()) {
-    TriggerShowLoginWizardFinish(std::string(), std::move(data));
+    TriggerShowLoginWizardFinish(std::string(), std::move(data),
+                                 /*login_input_methods_only=*/false);
     return;
   }
 
@@ -1314,7 +1309,8 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   prefs->SetString(language::prefs::kApplicationLocale, locale);
   StartupUtils::SetInitialLocale(locale);
 
-  TriggerShowLoginWizardFinish(locale, std::move(data));
+  TriggerShowLoginWizardFinish(locale, std::move(data),
+                               /*login_input_methods_only=*/false);
 }
 
 void SwitchWebUItoMojo() {

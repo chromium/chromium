@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_no_capabilities
+  Failed: DID NOT RAISE <class 'webdriver.error.TimeoutException'>
+[FAIL] test_string_ignore
+  Failed: DID NOT RAISE <class 'webdriver.error.TimeoutException'>
+[FAIL] test_default_ignore
+  Failed: DID NOT RAISE <class 'webdriver.error.TimeoutException'>
+[FAIL] test_file_ignore
+  Failed: DID NOT RAISE <class 'webdriver.error.TimeoutException'>
+Harness: the test ran to completion.
+

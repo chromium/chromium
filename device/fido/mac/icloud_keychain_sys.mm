@@ -25,10 +25,10 @@ NSData* ToNSData(base::span<const uint8_t> data) {
 API_AVAILABLE(macos(15.0))
 ASAuthorizationPublicKeyCredentialPRFAssertionInputValues* ToInputValues(
     const device::PRFInput& input) {
-  NSData* first = ToNSData(input.salt1);
+  NSData* first = ToNSData(input.input1);
   NSData* second = nil;
-  if (input.salt2) {
-    second = ToNSData(*input.salt2);
+  if (input.input2) {
+    second = ToNSData(*input.input2);
   }
   return [[ASAuthorizationPublicKeyCredentialPRFAssertionInputValues alloc]
       initWithSaltInput1:first

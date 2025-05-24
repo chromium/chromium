@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import android.content.res.Resources;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,7 +13,6 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkAddNewFolderCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderPickerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -23,6 +20,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -31,7 +29,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -53,10 +50,8 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
     private BookmarkFolderPickerCoordinator mCoordinator;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Profile profile = getProfileProvider().getOriginalProfile();
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
         mBookmarkModel = BookmarkModel.getForProfile(profile);
 
         List<String> bookmarkIdsAsStrings =
@@ -67,7 +62,6 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
             return;
         }
 
-        Resources res = getResources();
         mBookmarkImageFetcher =
                 new BookmarkImageFetcher(
                         profile,
@@ -77,10 +71,8 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                                 ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                                 profile.getProfileKey(),
                                 GlobalDiscardableReferencePool.getReferencePool()),
-                        new LargeIconBridge(profile),
-                        BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
-                        BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                        BookmarkUtils.getFaviconDisplaySize(res));
+                        BookmarkViewUtils.getRoundedIconGenerator(
+                                this, BookmarkRowDisplayPref.VISUAL));
         BookmarkAddNewFolderCoordinator addNewFolderCoordinator =
                 new BookmarkAddNewFolderCoordinator(
                         this,
@@ -107,11 +99,7 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
                                 shoppingService),
                         shoppingService);
 
-        BackPressHelper.create(
-                this,
-                getOnBackPressedDispatcher(),
-                mCoordinator,
-                SecondaryActivity.BOOKMARK_FOLDER_PICKER);
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator);
 
         Toolbar toolbar = mCoordinator.getToolbar();
         setSupportActionBar(toolbar);

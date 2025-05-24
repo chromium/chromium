@@ -105,7 +105,7 @@ OfflinePageArchivePublisherImpl::OfflinePageArchivePublisherImpl(
     ArchiveManager* archive_manager)
     : archive_manager_(archive_manager), delegate_(GetDefaultDelegate()) {}
 
-OfflinePageArchivePublisherImpl::~OfflinePageArchivePublisherImpl() {}
+OfflinePageArchivePublisherImpl::~OfflinePageArchivePublisherImpl() = default;
 
 void OfflinePageArchivePublisherImpl::SetDelegateForTesting(
     OfflinePageArchivePublisherImpl::Delegate* delegate) {
@@ -155,11 +155,10 @@ OfflinePageArchivePublisherImpl::Delegate::AddCompletedDownload(
   JNIEnv* env = base::android::AttachCurrentThread();
 
   if (ShouldUseDownloadsCollection()) {
-    base::FilePath new_file_path =
-        base::FilePath(base::android::ConvertJavaStringToUTF8(
-            Java_OfflinePageArchivePublisherBridge_publishArchiveToDownloadsCollection(
-                env, android::OfflinePageBridge::ConvertToJavaOfflinePage(
-                         env, page))));
+    base::FilePath new_file_path = base::FilePath(
+        Java_OfflinePageArchivePublisherBridge_publishArchiveToDownloadsCollection(
+            env,
+            android::OfflinePageBridge::ConvertToJavaOfflinePage(env, page)));
 
     if (new_file_path.empty())
       return PublishArchiveResult::Failure(SavePageResult::FILE_MOVE_FAILED);
@@ -171,24 +170,17 @@ OfflinePageArchivePublisherImpl::Delegate::AddCompletedDownload(
   // TODO(petewil): Handle empty page title.
   std::string page_title = base::UTF16ToUTF8(page.title);
 
-  // Convert strings to jstring references.
-  ScopedJavaLocalRef<jstring> j_title =
-      base::android::ConvertUTF8ToJavaString(env, page_title);
   // We use the title for a description, since the add to the download manager
   // fails without a description, and we don't have anything better to use.
-  ScopedJavaLocalRef<jstring> j_description =
-      base::android::ConvertUTF8ToJavaString(env, page_title);
-  ScopedJavaLocalRef<jstring> j_path = base::android::ConvertUTF8ToJavaString(
-      env, offline_pages::store_utils::ToDatabaseFilePath(page.file_path));
-  ScopedJavaLocalRef<jstring> j_uri =
-      base::android::ConvertUTF8ToJavaString(env, page.url.spec());
-  ScopedJavaLocalRef<jstring> j_referer =
-      base::android::ConvertUTF8ToJavaString(env, std::string());
+  std::string description = page_title;
+  std::string path =
+      offline_pages::store_utils::ToDatabaseFilePath(page.file_path);
+  std::string uri = page.url.spec();
 
   int64_t download_id =
       Java_OfflinePageArchivePublisherBridge_addCompletedDownload(
-          env, j_title, j_description, j_path, page.file_size, j_uri,
-          j_referer);
+          env, page_title, description, path, page.file_size, uri,
+          std::string());
   DCHECK_NE(download_id, kArchivePublishedWithoutDownloadId);
   if (download_id == kArchiveNotPublished)
     return PublishArchiveResult::Failure(

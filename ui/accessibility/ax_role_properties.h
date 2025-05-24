@@ -79,6 +79,10 @@ AX_BASE_EXPORT bool IsControl(const ax::mojom::Role role);
 AX_BASE_EXPORT bool IsControlOnAndroid(const ax::mojom::Role role,
                                        bool isFocusable);
 
+// Returns true if the provided role is a container on the Android platform,
+// which include aria landmark roles, and iframe roles.
+AX_BASE_EXPORT bool IsContainerOnAndroid(const ax::mojom::Role role);
+
 // Returns true for an <input> used for a date or time.
 AX_BASE_EXPORT bool IsDateOrTimeInput(const ax::mojom::Role role);
 
@@ -279,6 +283,10 @@ AX_BASE_EXPORT bool IsPlainContentElement(const ax::mojom::Role role);
 // https://www.w3.org/WAI/ARIA/apg/patterns/treeview/examples/treeview-1b/
 AX_BASE_EXPORT bool SupportsArrowKeysForExpandCollapse(
     const ax::mojom::Role role);
+
+// Returns true if the provided role supports naming from child content.
+// https://www.w3.org/WAI/ARIA/apg/practices/names-and-descriptions/#naming_with_child_content.
+AX_BASE_EXPORT bool SupportsNamingWithChildContent(const ax::mojom::Role role);
 
 }  // namespace ui
 

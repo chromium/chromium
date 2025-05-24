@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
@@ -154,11 +153,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTestWithVerifier,
   app_list::AppListSyncableService* service =
       app_list::AppListSyncableServiceFactory::GetForProfile(verifier());
 
-  // Default apps: chrome + web store + internal apps .
-  const size_t kNumDefaultApps =
-      2u + app_list::GetNumberOfInternalAppsShowInLauncherForTest(
-               /*apps_name=*/nullptr, GetProfile(0));
-  ASSERT_EQ(kNumApps + kNumDefaultApps, service->sync_items().size());
+  // Default apps: chrome + web store.
+  ASSERT_EQ(kNumApps + 2u, service->sync_items().size());
 
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
   ASSERT_TRUE(AllProfilesHaveSameAppList());
@@ -185,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   base::RunLoop().RunUntilIdle();
 
   for (const std::string& app_id : app_ids) {
-    service->SetPinPosition(app_id, pin_position, /*pinned_by_policy=*/false);
+    service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }
   EXPECT_TRUE(SyncItemsHaveNames(service));
@@ -230,7 +226,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
 
   // Change data when sync is off.
   for (const std::string& app_id : app_ids) {
-    service->SetPinPosition(app_id, pin_position, /*pinned_by_policy=*/false);
+    service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }
   SyncAppListHelper::GetInstance()->MoveAppFromFolder(profile, app_ids[0],

@@ -143,6 +143,16 @@ const char kFirstClonedResetTimestamp[] = "cloned_install.first_timestamp";
 // updated every time we reset the client due to cloned install.
 const char kLastClonedResetTimestamp[] = "cloned_install.last_timestamp";
 
+// The start of the latest session during which the install was detected as
+// cloned. Not to be mixed up with the metrics ID reset moment recorded in
+// `kLastClonedResetTimestamp`, which requires a restart after the clone
+// detection. This one is intended as a reference point to check whether some
+// other event happened on the original machine or on the clone. This will be
+// updated every time a cloned install is detected, and cleared alongside the
+// other `cloned_install` prefs on UMA opt-out.
+const char kSessionStartTimestampForLastClonedDetection[] =
+    "cloned_install.session_start_last_detection_timestamp";
+
 // A time stamp at which time the browser was known to be alive. Used to
 // evaluate whether the browser crash was due to a whole system crash.
 // At minimum this is updated each time the "exited_cleanly" preference is

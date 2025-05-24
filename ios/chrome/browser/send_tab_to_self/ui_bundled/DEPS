@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/chrome/browser/infobars/ui_bundled/presentation",
+  "+ios/chrome/browser/overlays/ui_bundled",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/authentication/ui_bundled",
+  "+ios/chrome/browser/settings/ui_bundled/cells",
+]

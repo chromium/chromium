@@ -10,12 +10,14 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/subresource_filter/content/shared/browser/child_frame_navigation_test_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -35,27 +37,42 @@ class SafeBrowsingChildNavigationThrottleTest
 
   ~SafeBrowsingChildNavigationThrottleTest() override = default;
 
+  void SetUp() override {
+    ChildFrameNavigationFilteringThrottleTestHarness::SetUp();
+    // The |parent_filter_| is the parent frame's filter. Do not register a
+    // throttle if the parent is not activated with a valid filter.
+
+    throttle_inserter_ =
+        std::make_unique<content::TestNavigationThrottleInserter>(
+            content::RenderViewHostTestHarness::web_contents(),
+            base::BindLambdaForTesting(
+                [&](content::NavigationThrottleRegistry& registry) -> void {
+                  if (parent_filter_) {
+                    auto throttle =
+                        std::make_unique<SafeBrowsingChildNavigationThrottle>(
+                            registry, parent_filter_.get(),
+                            /*profile_interaction_manager=*/
+                            base::WeakPtr<ProfileInteractionManager>(),
+                            base::BindRepeating([](const GURL& filtered_url) {
+                              return base::StringPrintf(
+                                  kDisallowChildFrameConsoleMessageFormat,
+                                  filtered_url.possibly_invalid_spec().c_str());
+                            }),
+                            /*ad_evidence=*/std::nullopt);
+                    EXPECT_NE(nullptr, throttle->GetNameForLogging());
+                    registry.AddThrottle(std::move(throttle));
+                  }
+                }));
+  }
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     ASSERT_FALSE(navigation_handle->IsInMainFrame());
-    // The |parent_filter_| is the parent frame's filter. Do not register a
-    // throttle if the parent is not activated with a valid filter.
-    if (parent_filter_) {
-      auto throttle = std::make_unique<SafeBrowsingChildNavigationThrottle>(
-          navigation_handle, parent_filter_.get(),
-          /*profile_interaction_manager=*/
-          base::WeakPtr<ProfileInteractionManager>(),
-          base::BindRepeating([](const GURL& filtered_url) {
-            return base::StringPrintf(
-                kDisallowChildFrameConsoleMessageFormat,
-                filtered_url.possibly_invalid_spec().c_str());
-          }),
-          /*ad_evidence=*/std::nullopt);
-      ASSERT_NE(nullptr, throttle->GetNameForLogging());
-      navigation_handle->RegisterThrottleForTesting(std::move(throttle));
-    }
   }
+
+ private:
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
 
 TEST_F(SafeBrowsingChildNavigationThrottleTest, DelayMetrics) {

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_DEVTOOLS_UTIL_H_
 #define CHROME_BROWSER_EXTENSIONS_DEVTOOLS_UTIL_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 class Profile;
 enum class DevToolsOpenedByAction;
 

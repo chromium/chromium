@@ -32,8 +32,8 @@
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
@@ -180,9 +180,10 @@ using ElementMetaParamsMap =
     HeapHashMap<WeakMember<const Element>, Member<const MetaParams>>;
 
 ElementMetaParamsMap& FullscreenParamsMap() {
-  DEFINE_STATIC_LOCAL(Persistent<ElementMetaParamsMap>, map,
-                      (MakeGarbageCollected<ElementMetaParamsMap>()));
-  return *map;
+  using ElementMetaParamsMapHolder = DisallowNewWrapper<ElementMetaParamsMap>;
+  DEFINE_STATIC_LOCAL(Persistent<ElementMetaParamsMapHolder>, holder,
+                      (MakeGarbageCollected<ElementMetaParamsMapHolder>()));
+  return holder->Value();
 }
 
 bool HasFullscreenFlag(const Element& element) {
@@ -314,7 +315,7 @@ bool AllowedToUseFullscreen(const Document& document,
   // 2. If Permissions Policy is enabled, return the policy for "fullscreen"
   // feature.
   return document.GetExecutionContext()->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kFullscreen, report_on_failure);
+      network::mojom::PermissionsPolicyFeature::kFullscreen, report_on_failure);
 }
 
 // https://fullscreen.spec.whatwg.org/#fullscreen-is-supported

@@ -20,20 +20,20 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
-#include "url/gurl.h"
 
+class Browser;
 class ExtensionViewViews;
 
 namespace content {
 class BrowserContext;
 class DevToolsAgentHost;
-}
+}  // namespace content
 
 namespace extensions {
 class Extension;
 class ExtensionViewHost;
 enum class UnloadedExtensionReason;
-}
+}  // namespace extensions
 
 // The bubble used for hosting a browser-action popup provided by an extension.
 class ExtensionPopup : public views::BubbleDialogDelegateView,
@@ -60,7 +60,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // BOTTOM_*, then the popup 'pops up', otherwise the popup 'drops down'.
   // The actual display of the popup is delayed until the page contents
   // finish loading in order to minimize UI flashing and resizing.
-  static void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+  static void ShowPopup(Browser* browser,
+                        std::unique_ptr<extensions::ExtensionViewHost> host,
                         views::View* anchor_view,
                         views::BubbleBorder::Arrow arrow,
                         PopupShowAction show_action,
@@ -118,7 +119,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
  private:
   class ScopedDevToolsAgentHostObservation;
 
-  ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
+  ExtensionPopup(Browser* browser,
+                 std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::View* anchor_view,
                  views::BubbleBorder::Arrow arrow,
                  PopupShowAction show_action,
@@ -134,6 +136,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
 
   // Handles a signal from the extension host to close.
   void HandleCloseExtensionHost(extensions::ExtensionHost* host);
+
+  raw_ptr<Browser> browser_;
 
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;

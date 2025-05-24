@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/file_manager/file_manager_ui.h"
 #include "base/command_line.h"
@@ -48,7 +47,9 @@
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
@@ -66,10 +67,11 @@
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/drivefs/drivefs_host.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -102,7 +104,9 @@ using file_manager::io_task::IOTaskController;
 using file_manager::util::EntryDefinition;
 using file_manager::util::FileDefinition;
 using guest_os::GuestOsService;
+using guest_os::GuestOsServiceFactory;
 using guest_os::GuestOsSharePath;
+using guest_os::GuestOsSharePathFactory;
 
 namespace fmp = extensions::api::file_manager_private;
 
@@ -180,8 +184,7 @@ fmp::IoTaskState GetIoTaskState(io_task::State state) {
     case io_task::State::kCancelled:
       return fmp::IoTaskState::kCancelled;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::IoTaskState::kError;
+      NOTREACHED();
   }
 }
 
@@ -207,8 +210,7 @@ fmp::IoTaskType GetIoTaskType(io_task::OperationType type) {
     case io_task::OperationType::kZip:
       return fmp::IoTaskType::kZip;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::IoTaskType::kCopy;
+      NOTREACHED();
   }
 }
 
@@ -225,8 +227,7 @@ fmp::PolicyErrorType GetPolicyErrorType(
     case io_task::PolicyErrorType::kDlpWarningTimeout:
       return fmp::PolicyErrorType::kDlpWarningTimeout;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::PolicyErrorType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -378,13 +379,6 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
     system_notification_manager()->HandleDeviceEvent(event);
   }
 
-  // DeviceEventRouter overrides.
-  bool IsExternalStorageDisabled() override {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return profile_->GetPrefs()->GetBoolean(
-        disks::prefs::kExternalStorageDisabled);
-  }
-
  private:
   const raw_ptr<Profile> profile_;
 };
@@ -493,7 +487,7 @@ void RecordFileSystemProviderMountMetrics(const Volume& volume) {
 
 // Returns a map from the given `files` to their parent directory.
 std::map<base::FilePath, std::vector<base::FilePath>>
-MapFilePathsToParentDirectory(const std::vector<base::FilePath> files) {
+MapFilePathsToParentDirectory(const std::vector<base::FilePath>& files) {
   std::map<base::FilePath, std::vector<base::FilePath>> dir_files_map;
   for (const auto& file : files) {
     dir_files_map[file.DirName()].push_back(file);
@@ -666,12 +660,13 @@ void EventRouter::Shutdown() {
   }
 
   // GuestOsService doesn't exist for all profiles.
-  if (GuestOsService* const service = GuestOsService::GetForProfile(profile_)) {
+  if (GuestOsService* const service =
+          GuestOsServiceFactory::GetForProfile(profile_)) {
     service->MountProviderRegistry()->RemoveObserver(this);
   }
 
   if (GuestOsSharePath* const path =
-          GuestOsSharePath::GetForProfile(profile_)) {
+          GuestOsSharePathFactory::GetForProfile(profile_)) {
     path->RemoveObserver(this);
   }
 
@@ -754,12 +749,13 @@ void EventRouter::ObserveEvents() {
   }
 
   if (GuestOsSharePath* const path =
-          GuestOsSharePath::GetForProfile(profile_)) {
+          GuestOsSharePathFactory::GetForProfile(profile_)) {
     path->AddObserver(this);
   }
 
   // GuestOsService doesn't exist for all profiles.
-  if (GuestOsService* const service = GuestOsService::GetForProfile(profile_)) {
+  if (GuestOsService* const service =
+          GuestOsServiceFactory::GetForProfile(profile_)) {
     service->MountProviderRegistry()->AddObserver(this);
   }
 

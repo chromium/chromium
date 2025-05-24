@@ -10,10 +10,10 @@
 
 #include "base/check_op.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_property_node.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
@@ -85,14 +85,17 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
    public:
     State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
           const gfx::RectF& layout_clip_rect,
-          const FloatRoundedRect& paint_clip_rect)
-        : local_transform_space(&local_transform_space) {
+          const FloatRoundedRect& paint_clip_rect,
+          bool requires_expanded_rect = false)
+        : local_transform_space(&local_transform_space),
+          requires_expanded_rect_(requires_expanded_rect) {
       SetClipRect(layout_clip_rect, paint_clip_rect);
     }
     State(const TransformPaintPropertyNodeOrAlias& local_transform_space,
           const EffectPaintPropertyNode* pixel_moving_filter)
         : local_transform_space(&local_transform_space),
-          pixel_moving_filter(pixel_moving_filter) {
+          pixel_moving_filter(pixel_moving_filter),
+          requires_expanded_rect_(false) {
       DCHECK(layout_clip_rect_.IsInfinite());
       paint_clip_rect_ = FloatRoundedRect(layout_clip_rect_.Rect());
     }
@@ -122,6 +125,7 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
 
    private:
     friend class ClipPaintPropertyNode;
+    bool requires_expanded_rect_;
     FloatClipRect layout_clip_rect_;
     FloatRoundedRect paint_clip_rect_;
   };
@@ -135,6 +139,9 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
     return MakeGarbageCollected<ClipPaintPropertyNode>(kNonParentAlias, parent,
                                                        std::move(state));
   }
+
+  static const FloatClipRect& ExpandedLayoutClipRect();
+  static const FloatRoundedRect& ExpandedPaintClipRect();
 
   void Trace(Visitor* visitor) const final {
     ClipPaintPropertyNodeOrAlias::Trace(visitor);
@@ -168,12 +175,28 @@ class PLATFORM_EXPORT ClipPaintPropertyNode final
   // The clip rect for painting and compositing. It may be pixel snapped, or
   // not (e.g. for SVG).
   const FloatRoundedRect& PaintClipRect() const {
+    if (state_.requires_expanded_rect_) {
+      return ExpandedPaintClipRect();
+    }
     return state_.paint_clip_rect_;
   }
   // The clip rect used for GeometryMapper to map in layout coordinates.
   const FloatClipRect& LayoutClipRect() const {
+    if (state_.requires_expanded_rect_) {
+      return ExpandedLayoutClipRect();
+    }
     return state_.layout_clip_rect_;
   }
+  // The clip rect used for GeometryMapper to map in layout coordinates,
+  // ignoring cc clip paths
+  const FloatClipRect& PreciseLayoutClipRect() const {
+    return state_.layout_clip_rect_;
+  }
+
+  bool IsForCompositeClipPathAnimation() const {
+    return state_.requires_expanded_rect_;
+  }
+
   const FloatClipRect& LayoutClipRectExcludingOverlayScrollbars() const {
     return state_.layout_clip_rect_excluding_overlay_scrollbars
                ? *state_.layout_clip_rect_excluding_overlay_scrollbars

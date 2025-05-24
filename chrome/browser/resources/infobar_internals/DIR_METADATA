@@ -1,0 +1,6 @@
+monorail: {
+  component: "UI>Browser>Infobars"
+}
+buganizer_public: {
+  component_id: 1456657
+}

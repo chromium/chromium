@@ -10,8 +10,10 @@
 #include "base/task/thread_pool.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/tracing_service.h"
+#include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -91,7 +93,10 @@ tracing::mojom::TracingService& TracingServiceController::GetService() {
               .WithDisplayName("Tracing Service")
               .Pass());
     }
-    service_.reset_on_disconnect();
+    // Unretained is safe because `this` owns `service_`.
+    service_.set_disconnect_handler(
+        base::BindOnce(&TracingServiceController::OnTracingServiceDisconnected,
+                       base::Unretained(this)));
 
     // Initialize the new service instance by pushing a pipe to each currently
     // registered client, including the browser process itself.
@@ -110,9 +115,17 @@ tracing::mojom::TracingService& TracingServiceController::GetService() {
           /*pid=*/entry.first, std::move(remote_process)));
     }
     service_->Initialize(std::move(initial_clients));
+
+    GetContentClient()->browser()->OnTracingServiceStarted();
   }
 
   return *service_.get();
+}
+
+void TracingServiceController::OnTracingServiceDisconnected() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  service_.reset();
+  GetContentClient()->browser()->OnTracingServiceStopped();
 }
 
 void TracingServiceController::RegisterClientOnUIThread(

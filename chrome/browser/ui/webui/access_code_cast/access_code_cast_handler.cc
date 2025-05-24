@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <numeric>
-
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
+
+#include <algorithm>
+#include <numeric>
 
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
@@ -80,8 +80,7 @@ AccessCodeCastCastMode CastModeMetricsHelper(MediaCastMode mode) {
     case MediaCastMode::REMOTE_PLAYBACK:
       return AccessCodeCastCastMode::kRemotePlayback;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return AccessCodeCastCastMode::kPresentation;
+      NOTREACHED();
   }
 }
 
@@ -161,8 +160,9 @@ AccessCodeCastHandler::AccessCodeCastHandler(
 AccessCodeCastHandler::~AccessCodeCastHandler() {
   AccessCodeCastMetrics::RecordAccessCodeNotFoundCount(
       access_code_not_found_count_);
-  if (media_route_starter_)
+  if (media_route_starter_) {
     media_route_starter_->RemoveMediaSinkWithCastModesObserver(this);
+  }
 }
 
 void AccessCodeCastHandler::Init() {
@@ -214,13 +214,14 @@ bool AccessCodeCastHandler::IsCastModeAvailable(MediaCastMode mode) const {
 // attempt to create route parameters before the sink is in QRM will fail.
 void AccessCodeCastHandler::CheckForDiscoveryCompletion() {
   // Dialog  has already notified (with most likely an error).
-  if (!add_sink_callback_)
+  if (!add_sink_callback_) {
     return;
+  }
   DCHECK(sink_id_) << "Must have a sink id to complete!";
   DCHECK(media_route_starter_) << "Must have a MediaRouteStarter to complete!";
 
   // Verify that the sink is in QRM.
-  if (base::ranges::none_of(cast_mode_set_, [this](MediaCastMode cast_mode) {
+  if (std::ranges::none_of(cast_mode_set_, [this](MediaCastMode cast_mode) {
         return media_route_starter_->SinkSupportsCastMode(*sink_id_, cast_mode);
       })) {
     // sink hasn't been added to QRM yet.
@@ -235,8 +236,9 @@ void AccessCodeCastHandler::OnSinkAddedResult(
     std::optional<MediaSink::Id> sink_id) {
   DCHECK(sink_id || add_sink_result != AddSinkResultCode::OK);
 
-  if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND)
+  if (add_sink_result == AddSinkResultCode::ACCESS_CODE_NOT_FOUND) {
     access_code_not_found_count_++;
+  }
 
   // Wait for OnResultsUpdated before triggering the |add_sink_callback_| since
   // we are not entirely sure the sink is ready to be casted to yet.
@@ -401,8 +403,9 @@ void AccessCodeCastHandler::SetSyncServiceForTesting(
 }
 
 bool AccessCodeCastHandler::IsAccountSyncEnabled() {
-  if (!identity_manager_ || !sync_service_)
+  if (!identity_manager_ || !sync_service_) {
     return false;
+  }
   return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync) &&
          sync_service_->IsSyncFeatureActive();
 }

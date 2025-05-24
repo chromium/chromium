@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -17,13 +16,15 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/login/reauth_stats.h"
-#include "chrome/browser/ash/login/signin/token_handle_fetcher.h"
+#include "chrome/browser/ash/login/signin/legacy_token_handle_fetcher.h"
+#include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
@@ -162,13 +163,13 @@ std::u16string GetMessageBodyForDeviceAccountErrors(
   }
 }
 
-std::unique_ptr<TokenHandleFetcher> CreateTokenHandleFetcher(
+std::unique_ptr<LegacyTokenHandleFetcher> CreateTokenHandleFetcher(
     Profile* profile,
-    TokenHandleUtil* token_handle_util) {
+    TokenHandleStore* token_handle_store) {
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(profile);
-  return std::make_unique<TokenHandleFetcher>(profile, token_handle_util,
-                                              account_id);
+  return std::make_unique<LegacyTokenHandleFetcher>(profile, token_handle_store,
+                                                    account_id);
 }
 
 }  // namespace
@@ -181,9 +182,10 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
       account_manager_(g_browser_process->platform_part()
                            ->GetAccountManagerFactory()
                            ->GetAccountManager(profile_->GetPath().value())),
-      token_handle_util_(std::make_unique<TokenHandleUtil>()),
+      token_handle_store_(
+          TokenHandleStoreFactory::Get()->GetTokenHandleStore()),
       token_handle_fetcher_(
-          CreateTokenHandleFetcher(profile_, token_handle_util_.get())) {
+          CreateTokenHandleFetcher(profile_, token_handle_store_)) {
   DCHECK(account_manager_);
   // Create a unique notification ID for this profile.
   device_account_notification_id_ =
@@ -194,9 +196,9 @@ SigninErrorNotifier::SigninErrorNotifier(SigninErrorController* controller,
   error_controller_->AddObserver(this);
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(profile_);
-  if (TokenHandleUtil::HasToken(account_id) &&
-      !TokenHandleUtil::IsRecentlyChecked(account_id)) {
-    token_handle_util_->IsReauthRequired(
+  if (token_handle_store_->HasToken(account_id) &&
+      !token_handle_store_->IsRecentlyChecked(account_id)) {
+    token_handle_store_->IsReauthRequired(
         account_id, profile->GetURLLoaderFactory(),
         base::BindOnce(&SigninErrorNotifier::OnTokenHandleCheck,
                        weak_factory_.GetWeakPtr()));
@@ -240,8 +242,14 @@ void SigninErrorNotifier::RegisterPrefs(PrefRegistrySimple* registry) {
 }
 
 void SigninErrorNotifier::Shutdown() {
-  error_controller_->RemoveObserver(this);
+  if (error_controller_) {
+    error_controller_->RemoveObserver(this);
+  }
   error_controller_ = nullptr;
+  if (token_handle_fetcher_) {
+    token_handle_fetcher_.reset();
+  }
+  token_handle_store_ = nullptr;
 }
 
 void SigninErrorNotifier::OnErrorChanged() {
@@ -249,9 +257,9 @@ void SigninErrorNotifier::OnErrorChanged() {
     return;
 
   if (!error_controller_->HasError()) {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, device_account_notification_id_);
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT,
         secondary_account_notification_id_);
     return;
@@ -302,7 +310,7 @@ void SigninErrorNotifier::HandleDeviceAccountError(
           device_account_notification_id_, error_message);
 
   // Update or add the notification.
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -359,7 +367,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
   notification.SetSystemPriority();
 
   // Update or add the notification.
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }
@@ -367,9 +375,7 @@ void SigninErrorNotifier::OnCheckDummyGaiaTokenForAllAccounts(
 void SigninErrorNotifier::HandleSecondaryAccountReauthNotificationClick(
     std::optional<int> button_index) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, ash::features::IsOsSettingsRevampWayfindingEnabled()
-                    ? chromeos::settings::mojom::kPeopleSectionPath
-                    : chromeos::settings::mojom::kMyAccountsSubpagePath);
+      profile_, chromeos::settings::mojom::kPeopleSectionPath);
 }
 
 }  // namespace ash

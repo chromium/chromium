@@ -51,10 +51,6 @@ class LocationBarModelDelegate {
   // in the location bar.
   virtual bool ShouldDisplayURL() const;
 
-  // Returns whether the omnibox should use the new security indicators for
-  // secure HTTPS connections.
-  virtual bool ShouldUseUpdatedConnectionSecurityIndicators() const;
-
   // Returns the underlying security level of the page without regard to any
   // user edits that may be in progress.
   virtual security_state::SecurityLevel GetSecurityLevel() const;
@@ -98,7 +94,7 @@ class LocationBarModelDelegate {
   virtual TemplateURLService* GetTemplateURLService();
 
  protected:
-  virtual ~LocationBarModelDelegate() {}
+  virtual ~LocationBarModelDelegate() = default;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_

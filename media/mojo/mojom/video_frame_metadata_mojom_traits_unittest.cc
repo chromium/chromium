@@ -8,7 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "media/mojo/mojom/traits_test_service.mojom.h"
+#include "media/mojo/mojom/traits_test_service.test-mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +68,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.allow_overlay);
   EXPECT_FALSE(metadata_out.copy_required);
   EXPECT_FALSE(metadata_out.end_of_stream);
-  EXPECT_FALSE(metadata_out.texture_owner);
+  EXPECT_FALSE(metadata_out.in_surface_view);
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
   EXPECT_FALSE(metadata_out.protected_video);
   EXPECT_FALSE(metadata_out.hw_protected);
@@ -76,7 +76,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.power_efficient);
   EXPECT_FALSE(metadata_out.read_lock_fences_enabled);
   EXPECT_FALSE(metadata_out.interactive_content);
-  EXPECT_FALSE(metadata_out.overlay_plane_id.has_value());
+  EXPECT_FALSE(metadata_out.tracking_token.has_value());
   EXPECT_FALSE(metadata_out.device_scale_factor.has_value());
   EXPECT_FALSE(metadata_out.page_scale_factor.has_value());
   EXPECT_FALSE(metadata_out.root_scroll_offset_x.has_value());
@@ -94,6 +94,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.frame_duration.has_value());
   EXPECT_FALSE(metadata_out.wallclock_frame_duration.has_value());
   EXPECT_FALSE(metadata_out.frame_sequence.has_value());
+  EXPECT_FALSE(metadata_out.source_id.has_value());
+  EXPECT_FALSE(metadata_out.background_blur.has_value());
 }
 
 TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
@@ -104,6 +106,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   // ints
   metadata_in.capture_counter = 123;
   metadata_in.frame_sequence = 456;
+  metadata_in.source_id = 789;
 
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
@@ -115,7 +118,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.allow_overlay = true;
   metadata_in.copy_required = true;
   metadata_in.end_of_stream = true;
-  metadata_in.texture_owner = true;
+  metadata_in.in_surface_view = true;
   metadata_in.wants_promotion_hint = true;
   metadata_in.protected_video = true;
   metadata_in.hw_protected = true;
@@ -125,7 +128,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.interactive_content = true;
 
   // base::UnguessableTokens
-  metadata_in.overlay_plane_id = base::UnguessableToken::Create();
+  metadata_in.tracking_token = base::UnguessableToken::Create();
 
   // doubles
   metadata_in.device_scale_factor = 2.0;
@@ -150,6 +153,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.frame_duration = base::Milliseconds(16);
   metadata_in.wallclock_frame_duration = base::Milliseconds(17);
 
+  metadata_in.background_blur = media::EffectInfo{.enabled = true};
+
   VideoFrameMetadata metadata_out;
 
   ASSERT_TRUE(RoundTrip(metadata_in, &metadata_out));
@@ -160,7 +165,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.allow_overlay, metadata_out.allow_overlay);
   EXPECT_EQ(metadata_in.copy_required, metadata_out.copy_required);
   EXPECT_EQ(metadata_in.end_of_stream, metadata_out.end_of_stream);
-  EXPECT_EQ(metadata_in.texture_owner, metadata_out.texture_owner);
+  EXPECT_EQ(metadata_in.in_surface_view, metadata_out.in_surface_view);
   EXPECT_EQ(metadata_in.wants_promotion_hint,
             metadata_out.wants_promotion_hint);
   EXPECT_EQ(metadata_in.protected_video, metadata_out.protected_video);
@@ -171,7 +176,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.read_lock_fences_enabled,
             metadata_out.read_lock_fences_enabled);
   EXPECT_EQ(metadata_in.interactive_content, metadata_out.interactive_content);
-  EXPECT_EQ(metadata_in.overlay_plane_id, metadata_out.overlay_plane_id);
+  EXPECT_EQ(metadata_in.tracking_token, metadata_out.tracking_token);
   EXPECT_EQ(metadata_in.device_scale_factor, metadata_out.device_scale_factor);
   EXPECT_EQ(metadata_in.page_scale_factor, metadata_out.page_scale_factor);
   EXPECT_EQ(metadata_in.root_scroll_offset_x,
@@ -193,6 +198,9 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.wallclock_frame_duration,
             metadata_out.wallclock_frame_duration);
   EXPECT_EQ(metadata_in.frame_sequence, metadata_out.frame_sequence);
+  EXPECT_EQ(metadata_in.source_id, metadata_out.source_id);
+  EXPECT_EQ(metadata_in.background_blur->enabled,
+            metadata_out.background_blur->enabled);
 }
 
 }  // namespace media

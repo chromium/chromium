@@ -13,35 +13,6 @@
 
 namespace blink {
 namespace internal {
-namespace {
-
-struct PodType {
-  int x;
-  float y;
-  char c;
-  char g[10];
-};
-
-#if !defined(ARCH_CPU_LITTLE_ENDIAN) && !defined(ARCH_CPU_BIG_ENDIAN)
-#error "What kind of CPU is this?"
-#endif
-
-}  // namespace
-
-// has_unique_object_representations
-static_assert(has_unique_object_representations<int>::value, "");
-static_assert(has_unique_object_representations<float>::value, "");
-static_assert(has_unique_object_representations<double>::value, "");
-
-// long double: check_blink_style doesn't let us use the word 'long' here.
-static_assert(has_unique_object_representations<decltype(1.0l)>::value, "");
-
-// Pointers aren't considered to have a unique representation.
-static_assert(!has_unique_object_representations<int*>::value, "");
-
-// Nor are POD types though they could be if they are dense and don't have any
-// internal padding.
-static_assert(!has_unique_object_representations<PodType>::value, "");
 
 TEST(IdentifiabilityInternalTemplatesTest, DigestOfObjectRepresentation) {
   const int kV = 5;
@@ -79,17 +50,6 @@ TEST(IdentifiabilityInternalTemplatesTest, DigestOfObjectRepresentation) {
   EXPECT_EQ(INT64_C(5), DigestOfObjectRepresentation(kV));
   EXPECT_EQ(INT64_C(5), DigestOfObjectRepresentation(kRV));
   EXPECT_EQ(INT64_C(5), DigestOfObjectRepresentation(kRVV));
-}
-
-TEST(IdentifiabilityInternalTemplatesTest,
-     DigestOfObjectRepresentation_Floats) {
-  // IEEE 754 32-bit single precision float.
-  if (sizeof(float) == 4)
-    EXPECT_EQ(INT64_C(1069547520), DigestOfObjectRepresentation(1.5f));
-
-  // IEEE 754 64-bit double precision float.
-  if (sizeof(double) == 8)
-    EXPECT_EQ(INT64_C(4609434218613702656), DigestOfObjectRepresentation(1.5));
 }
 
 }  // namespace internal

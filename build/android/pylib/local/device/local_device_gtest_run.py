@@ -13,18 +13,26 @@ import os
 import posixpath
 import subprocess
 import shutil
+import sys
 import time
 
+from devil import base_error
 from devil.android import crash_handler
 from devil.android import device_errors
 from devil.android import device_temp_file
 from devil.android import logcat_monitor
 from devil.android import ports
+from devil.android.ndk import abis
+from devil.android.tools import system_app
 from devil.android.sdk import version_codes
 from devil.utils import reraiser_thread
 from incremental_install import installer
+from lib.common import google_storage_helper
+from lib.proto import exception_recorder
+from lib.proto import measures
 from pylib import constants
 from pylib.base import base_test_result
+from pylib.base import test_exception
 from pylib.gtest import gtest_test_instance
 from pylib.local import local_test_server_spawner
 from pylib.local.device import local_device_environment
@@ -32,7 +40,6 @@ from pylib.local.device import local_device_test_run
 from pylib.symbols import stack_symbolizer
 from pylib.utils import code_coverage_utils
 from pylib.utils import device_dependencies
-from pylib.utils import google_storage_helper
 from pylib.utils import logdog_helper
 from py_trace_event import trace_event
 from py_utils import contextlib_ext
@@ -287,13 +294,20 @@ class _ApkDelegate:
       try:
         device.StartInstrumentation(
             self._component, extras=extras, raw=False, **kwargs)
-      except device_errors.CommandFailedError:
+      except device_errors.CommandFailedError as e:
         logging.exception('gtest shard failed.')
-      except device_errors.CommandTimeoutError:
+        exception_recorder.register(
+            test_exception.StartInstrumentationFailedError(e))
+      except device_errors.CommandTimeoutError as e:
         logging.exception('gtest shard timed out.')
-      except device_errors.DeviceUnreachableError:
+        exception_recorder.register(
+            test_exception.StartInstrumentationTimeoutError(e))
+      except device_errors.DeviceUnreachableError as e:
+        exception_recorder.register(e)
         logging.exception('gtest shard device unreachable.')
       except Exception:
+        exception_recorder.register(
+            test_exception.StartInstrumentationError(e))
         device.ForceStop(self._package)
         raise
       finally:
@@ -307,8 +321,14 @@ class _ApkDelegate:
       stdout_file_path = stdout_file.name
       if self._env.force_main_user:
         stdout_file_path = device.ResolveSpecialPath(stdout_file_path)
-      stdout_file_content = device.ReadFile(stdout_file_path,
-                                            as_root=self._env.force_main_user)
+      try:
+        stdout_file_content = device.ReadFile(stdout_file_path,
+                                              as_root=self._env.force_main_user)
+      except device_errors.AdbCommandFailedError as e:
+        exception_recorder.register(
+            test_exception.StartInstrumentationStdoutError(e))
+        raise
+
       return stdout_file_content.splitlines()
 
   def PullAppFiles(self, device, files, directory):
@@ -444,15 +464,24 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
   def SetUp(self):
     @local_device_environment.handle_shard_failures_with(
         on_failure=self._env.DenylistDevice)
+    @measures.timed_func('device_setup')
     @trace_event.traced
     def individual_device_set_up(device, host_device_tuples):
+
+      @measures.timed_func('device_setup', 'install_apk')
       def install_apk(dev):
         # Install test APK.
-        self._delegate.Install(dev)
+        try:
+          self._delegate.Install(dev)
+        except device_errors.CommandFailedError as e:
+          raise test_exception.InstallationFailedError(e) from e
+        except device_errors.CommandTimeoutError as e:
+          raise test_exception.InstallationTimeoutError(e) from e
+        except base_error.BaseError as e:
+          raise test_exception.InstallationError(e) from e
 
+      @measures.timed_func('device_setup', 'push_test_data')
       def push_test_data(dev):
-        if self._test_instance.use_existing_test_data:
-          return
         # Push data dependencies.
         device_root = self._delegate.GetTestDataRoot(dev)
         if self._env.force_main_user:
@@ -478,11 +507,8 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                               check_return=True,
                               as_root=self._env.force_main_user)
 
+      @measures.timed_func('device_setup', 'start_servers')
       def start_servers(dev):
-        if self._env.disable_test_server:
-          logging.warning('Not starting test server. Some tests may fail.')
-          return
-
         try:
           # See https://crbug.com/1030827.
           # This is a hack that may break in the future. We're relying on the
@@ -510,19 +536,69 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
       def bind_crash_handler(step, dev):
         return lambda: crash_handler.RetryOnSystemCrash(step, dev)
 
-      steps = [
-          bind_crash_handler(s, device)
-          for s in (install_apk, push_test_data, start_servers)
-      ]
+      steps = [install_apk]
+      if not self._test_instance.use_existing_test_data:
+        steps.append(push_test_data)
+      if self._env.disable_test_server:
+        logging.warning('Not starting test server. Some tests may fail.')
+      else:
+        steps.append(start_servers)
+
+      steps = [bind_crash_handler(s, device) for s in steps]
       if self._env.concurrent_adb:
         reraiser_thread.RunAsync(steps)
       else:
         for step in steps:
           step()
 
-    self._env.parallel_devices.pMap(
-        individual_device_set_up,
-        self._test_instance.GetDataDependencies())
+      if self._test_instance.deploy_mock_openxr_runtime:
+
+        def deploy_openxr_runtime(dev):
+          apk_path = dev.GetApplicationPaths(
+              'org.chromium.device.vr.openxr_test_support')
+          apk_dir = os.path.dirname(apk_path[0])
+
+          abi = device.product_cpu_abi
+          # Some architectures don't map 1:1 with the folder names.
+          arch_path = {abis.ARM_64: 'arm64', abis.ARM: 'arm'}.get(abi, abi)
+
+          device_openxr_runtime_path = os.path.join(apk_dir, 'lib', arch_path,
+                                                    'libopenxrruntime.so')
+          if not dev.PathExists(device_openxr_runtime_path, as_root=True):
+            logging.exception('Could not locate OpenXr runtime on device. '
+                              'Note that openxr deployment seems to fail with '
+                              'incremental_install=True')
+            sys.exit(1)
+
+          local_json_path = os.path.join(constants.GetOutDirectory(),
+                                         'mock_vr_clients', 'bin', 'openxr',
+                                         'openxr.json')
+          device_json_path = '/product/etc/openxr/1/active_runtime.json'
+          with open(local_json_path, 'r') as local_json_file:
+            openxr_json_contents = local_json_file.read()
+          openxr_json_contents = openxr_json_contents.replace(
+              'OPENXR_RUNTIME_PATH', device_openxr_runtime_path)
+
+          # Enabling SystemAppModification is a slow process, and the files that
+          # need to be deployed this way are pretty static. As an optimization
+          # (especially for local development), only attempt a re-deployment if
+          # the contents of the files have changed.
+          try:
+            device_json_contents = dev.ReadFile(device_json_path, as_root=True)
+            replace_openxr_json = (device_json_contents != openxr_json_contents)
+          except device_errors.CommandFailedError:
+            replace_openxr_json = True
+
+          if replace_openxr_json:
+            with system_app.EnableSystemAppModification(device):
+              dev.WriteFile(device_json_path,
+                            openxr_json_contents,
+                            as_root=True)
+
+        deploy_openxr_runtime(device)
+
+    self._env.parallel_devices.pMap(individual_device_set_up,
+                                    self._test_instance.GetDataDependencies())
 
   #override
   def _ShouldShardTestsForDevices(self):

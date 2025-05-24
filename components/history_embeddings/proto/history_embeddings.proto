@@ -29,3 +29,35 @@ message EmbeddingVector {
 message EmbeddingsValue {
   repeated EmbeddingVector vectors = 1;
 }
+
+// Represents configurable parameters for word match boosting.
+message WordMatchSearchParams {
+  float minimum_embedding_score = 1;
+  float score_boost_factor = 2;
+  float word_match_limit = 3;
+  float smoothing_factor = 4;
+  float minimum_term_length = 5;
+  uint32 max_term_count = 6;
+  float required_term_ratio = 7;
+}
+
+// A single test case for word match boosting.
+message WordMatchBoostTestCase {
+  // Configuration for the word match boosting algorithm and formula.
+  WordMatchSearchParams params = 1;
+
+  // Raw query text.
+  string query = 2;
+
+  // Full set of passages for a hypothetical page.
+  PassagesValue passages = 3;
+
+  // This represents the boost term only, not including best embedding score.
+  float expected_score_boost = 4;
+}
+
+// A composite of many test cases for word match boosting.
+message WordMatchBoostTest {
+  repeated string stop_words = 1;
+  repeated WordMatchBoostTestCase cases = 2;
+}

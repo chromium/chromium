@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/synchronization/lock.h"
+
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/lap_timer.h"

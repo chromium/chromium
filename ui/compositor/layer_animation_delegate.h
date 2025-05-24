@@ -40,7 +40,7 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
                                           PropertyChangeReason reasons) = 0;
   virtual void SetGrayscaleFromAnimation(float grayscale,
                                          PropertyChangeReason reason) = 0;
-  virtual void SetColorFromAnimation(SkColor color,
+  virtual void SetColorFromAnimation(SkColor4f color,
                                      PropertyChangeReason reason) = 0;
   virtual void SetClipRectFromAnimation(const gfx::Rect& clip_rect,
                                         PropertyChangeReason reason) = 0;
@@ -57,7 +57,7 @@ class COMPOSITOR_EXPORT LayerAnimationDelegate {
   virtual bool GetVisibilityForAnimation() const = 0;
   virtual float GetBrightnessForAnimation() const = 0;
   virtual float GetGrayscaleForAnimation() const = 0;
-  virtual SkColor GetColorForAnimation() const = 0;
+  virtual SkColor4f GetColorForAnimation() const = 0;
   virtual gfx::Rect GetClipRectForAnimation() const = 0;
   virtual gfx::RoundedCornersF GetRoundedCornersForAnimation() const = 0;
   virtual const gfx::LinearGradient& GetGradientMaskForAnimation() const = 0;

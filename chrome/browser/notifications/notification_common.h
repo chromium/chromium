@@ -35,6 +35,10 @@ struct PersistentNotificationMetadata : public NotificationCommon::Metadata {
   static const PersistentNotificationMetadata* From(const Metadata* metadata);
 
   GURL service_worker_scope;
+  bool is_suspicious = false;
+  // Skips appending UA buttons such as "Unsubscribe" and "Site Settings".
+  // Developer buttons are unaffected.
+  bool skip_ua_buttons = false;
 };
 
 // Metadata for NON_PERSISTENT notifications.

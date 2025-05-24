@@ -23,7 +23,17 @@ class CompareWithDemoteByType {
   // |demotions_by_type_|.
   int GetDemotedRelevance(const Match& match) const {
     auto demotion_it = demotions_.find(match.type);
-    return (demotion_it == demotions_.end())
+
+    // Add a check here to ensure we don't demote `NAVSUGGEST` matches created
+    // by the `EnterpriseSearchAggregatorProvider`. This allows users to see
+    // `EnterpriseSearchAggregatorProvider` suggestions in the realbox.
+    // TODO(crbug.com/419303069): If additional requirements for demotion
+    //   specific to a provider emerges, we should refactor
+    //   `CompareWithDemoteByType` to `CompareWithDemoteByProviderAndType`.
+    return (demotion_it == demotions_.end() ||
+            (match.type == AutocompleteMatchType::NAVSUGGEST &&
+             match.provider->type() ==
+                 AutocompleteProvider::Type::TYPE_ENTERPRISE_SEARCH_AGGREGATOR))
                ? match.relevance
                : (match.relevance * demotion_it->second);
   }

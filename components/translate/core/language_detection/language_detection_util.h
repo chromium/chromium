@@ -12,7 +12,7 @@ enum class LanguageVerificationType;
 
 // Given a detected language and whether that detection is reliable, returns the
 // ISO 639 language code of |utf8_text|. Returns
-// |translate::kUnknownLanguageCode|
+// |language_detection::kUnknownLanguageCode|
 //  for unreliable, "unknown", and xx-Latn predictions that are currently not
 // supported.
 std::string FilterDetectedLanguage(const std::string& utf8_text,
@@ -20,8 +20,8 @@ std::string FilterDetectedLanguage(const std::string& utf8_text,
                                    bool is_detection_reliable);
 
 // Returns the ISO 639 language code of the specified |utf8_text|, or
-// |translate::kUnknownLanguageCode| if it failed. |is_model_reliable| will be
-// set as true if CLD says the detection is reliable and
+// |language_detection::kUnknownLanguageCode| if it failed. |is_model_reliable|
+// will be set as true if CLD says the detection is reliable and
 // |model_reliability_score| will contain the model's confidence in that
 // detection.
 std::string DetermineTextLanguage(const std::string& utf8_text,

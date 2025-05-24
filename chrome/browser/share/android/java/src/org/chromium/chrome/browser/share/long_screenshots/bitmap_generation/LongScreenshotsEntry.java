@@ -27,14 +27,14 @@ import java.lang.annotation.RetentionPolicy;
  * {@link getBitmap} to retrieve the generated bitmap.
  */
 public class LongScreenshotsEntry {
-    private Rect mRect;
+    private final Rect mRect;
     private BitmapGenerator mGenerator;
     private @EntryStatus int mCurrentStatus;
 
     // Generated bitmap
     private Bitmap mGeneratedBitmap;
     private EntryListener mEntryListener;
-    private Callback<Integer> mMemoryTracker;
+    private final Callback<Integer> mMemoryTracker;
 
     @IntDef({
         EntryStatus.UNKNOWN,

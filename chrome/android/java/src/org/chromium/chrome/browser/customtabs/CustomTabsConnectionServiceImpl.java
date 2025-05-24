@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.browser.auth.AuthTabSessionToken;
 import androidx.browser.customtabs.CustomTabsService;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
@@ -71,9 +72,10 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
 
     @Override
     @androidx.browser.customtabs.ExperimentalPrefetch
-    protected void prefetch(CustomTabsSessionToken sessionToken, Uri uri, PrefetchOptions options) {
+    protected void prefetch(
+            CustomTabsSessionToken sessionToken, List<Uri> urls, PrefetchOptions options) {
         if (!isFirstRunDone()) return;
-        mConnection.prefetch(sessionToken, uri, options);
+        mConnection.prefetch(sessionToken, urls, options);
     }
 
     @Override
@@ -138,6 +140,16 @@ public class CustomTabsConnectionServiceImpl extends CustomTabsConnectionService
             EngagementSignalsCallback callback,
             Bundle extras) {
         return mConnection.setEngagementSignalsCallback(sessionToken, callback, extras);
+    }
+
+    @Override
+    protected void cleanUpSession(@NonNull AuthTabSessionToken sessionToken) {
+        mConnection.cleanUpSession(sessionToken);
+    }
+
+    @Override
+    protected boolean newAuthTabSession(@NonNull AuthTabSessionToken sessionToken) {
+        return mConnection.newAuthTabSession(sessionToken);
     }
 
     private boolean isFirstRunDone() {

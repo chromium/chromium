@@ -13,7 +13,7 @@
 
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/utf_offset_string_conversions.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -29,7 +29,6 @@ class PrefRegistrySyncable;
 // systems that involve indexing and searching bookmarks.
 namespace bookmarks {
 
-class BookmarkClient;
 class BookmarkModel;
 class BookmarkNode;
 
@@ -59,10 +58,10 @@ class VectorIterator {
       current_;
 };
 
-// Clones bookmark node, adding newly created nodes to |parent| starting at
-// |index_to_add_at|. If |reset_node_times| is true cloned bookmarks and
+// Clones bookmark node, adding newly created nodes to `parent` starting at
+// `index_to_add_at`. If `reset_node_times` is true cloned bookmarks and
 // folders will receive new creation times and folder modification times
-// instead of using the values stored in |elements|.
+// instead of using the values stored in `elements`.
 void CloneBookmarkNode(BookmarkModel* model,
                        const std::vector<BookmarkNodeData::Element>& elements,
                        const BookmarkNode* parent,
@@ -80,20 +79,62 @@ void CopyToClipboard(
     metrics::BookmarkEditSource source,
     bool is_off_the_record);
 
-// Pastes from the clipboard. The new nodes are added to |parent|, unless
-// |parent| is null in which case this does nothing. The nodes are inserted
-// at |index|.
-void PasteFromClipboard(BookmarkModel* model,
-                        const BookmarkNode* parent,
-                        size_t index);
-
-// Returns true if the user can copy from the pasteboard.
-bool CanPasteFromClipboard(BookmarkModel* model, const BookmarkNode* node);
-
-// Returns a vector containing up to |max_count| of the most recently modified
-// user folders. This never returns an empty vector.
+// Returns a vector containing of the most recently modified user folders. This
+// never returns an empty vector.
 std::vector<const BookmarkNode*> GetMostRecentlyModifiedUserFolders(
-    BookmarkModel* model, size_t max_count);
+    BookmarkModel* model);
+
+// If this should be used on mobile we need to reevaluate if this implementation
+// makes sense. See tests in bookmark_utils_unittest.cc which currently fail
+// outside of desktop. Enable and update those if this is to be used on mobile.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Bookmark nodes, split by account/local bookmarks.
+struct BookmarkNodesSplitByAccountAndLocal final {
+  BookmarkNodesSplitByAccountAndLocal();
+  BookmarkNodesSplitByAccountAndLocal(
+      const BookmarkNodesSplitByAccountAndLocal&);
+  BookmarkNodesSplitByAccountAndLocal& operator=(
+      const BookmarkNodesSplitByAccountAndLocal&);
+  ~BookmarkNodesSplitByAccountAndLocal();
+
+  std::vector<const BookmarkNode*> account_nodes;
+  std::vector<const BookmarkNode*> local_nodes;
+};
+
+// Get recently-used-folders, including permanent nodes for display split up by
+// "account" and "local" nodes. If there are no "account" bookmarks all entries
+// are returned as local nodes even if sync'd, to be displayed as a single list
+// without any headers/labels.
+//
+// In case of a mixed account and local bookmarks in the MRU nodes, this would
+// display:
+//   - Account Bookmark Heading
+//     - Most recently used custom account bookmarks
+//     - Account permanent folders if visible
+//   - Local Bookmark Heading
+//     - Most recently used custom local bookmarks
+//     - Local permanent folder if it is the most recently used folder
+//
+// If MRU nodes are only local or account, this would display:
+//   - Most recently used custom
+//   - Account/Local and syncable permanent nodes
+//
+// Note: The parent of `display_node` is pushed on top of its corresponding list
+// if it is a non-permanent folder or at the end if it is a permanent folder
+// that is not already included.
+BookmarkNodesSplitByAccountAndLocal GetMostRecentlyUsedFoldersForDisplay(
+    BookmarkModel* model,
+    const BookmarkNode* displayed_node);
+
+// Returns permanent nodes for display. Either account or local+syncable types
+// are always available, sometimes both (non-empty visible local permanent
+// nodes).
+BookmarkNodesSplitByAccountAndLocal GetPermanentNodesForDisplay(
+    const BookmarkModel* model);
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
+// Returns true if any local permanent nodes contain bookmarks.
+bool HasLocalOrSyncableBookmarks(const BookmarkModel* model);
 
 // Returns the most recently added bookmarks. This does not return folders,
 // only nodes of type url.
@@ -101,7 +142,7 @@ void GetMostRecentlyAddedEntries(BookmarkModel* model,
                                  size_t count,
                                  std::vector<const BookmarkNode*>* nodes);
 
-// Returns true if |n1| was added more recently than |n2|.
+// Returns true if `n1` was added more recently than `n2`.
 bool MoreRecentlyAdded(const BookmarkNode* n1, const BookmarkNode* n2);
 
 // Returns the most recently used bookmarks. This does not return folders,
@@ -112,9 +153,9 @@ void GetMostRecentlyUsedEntries(BookmarkModel* model,
                                 size_t count,
                                 std::vector<const BookmarkNode*>* nodes);
 
-// Returns up to |max_count| bookmarks from |model| whose url or title contain
-// the text |query.word_phrase_query| and exactly match |query.url| and
-// |query.title|, for all of the preceding fields that are not NULL.
+// Returns up to `max_count` bookmarks from `model` whose url or title contain
+// the text `query.word_phrase_query` and exactly match `query.url` and
+// `query.title`, for all of the preceding fields that are not NULL.
 std::vector<const BookmarkNode*> GetBookmarksMatchingProperties(
     BookmarkModel* model,
     const QueryFields& query,
@@ -124,7 +165,7 @@ std::vector<const BookmarkNode*> GetBookmarksMatchingProperties(
 std::vector<std::u16string> ParseBookmarkQuery(
     const bookmarks::QueryFields& query);
 
-// Returns true iff |title| or |url| contains each string in |words|. This is
+// Returns true iff `title` or `url` contains each string in `words`. This is
 // used when searching for bookmarks.
 bool DoesBookmarkContainWords(const std::u16string& title,
                               const GURL& url,
@@ -136,17 +177,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 // Register managed bookmarks preferences.
 void RegisterManagedBookmarksPrefs(PrefRegistrySimple* registry);
 
-// Returns the parent for newly created folders/bookmarks. If |selection| has
-// one element and it is a folder, |selection[0]| is returned, otherwise
-// |parent| is returned. If |index| is non-null it is set to the index newly
-// added nodes should be added at.
-const BookmarkNode* GetParentForNewNodes(
-    const BookmarkNode* parent,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>&
-        selection,
-    size_t* index);
-
-// Deletes the bookmark folders for the given list of |ids|.
+// Deletes the bookmark folders for the given list of `ids`.
 void DeleteBookmarkFolders(BookmarkModel* model,
                            const std::vector<int64_t>& ids,
                            const base::Location& location);
@@ -154,68 +185,37 @@ void DeleteBookmarkFolders(BookmarkModel* model,
 // If there are no user bookmarks for url, a bookmark is created.
 const BookmarkNode* AddIfNotBookmarked(BookmarkModel* model,
                                        const GURL& url,
-                                       const std::u16string& title,
-                                       const BookmarkNode* parent = nullptr);
+                                       const std::u16string& title);
 
-// Removes all bookmarks for the given |url|.
+// Removes all bookmarks for the given `url`.
 void RemoveAllBookmarks(BookmarkModel* model,
                         const GURL& url,
                         const base::Location& location);
 
-// Truncates an overly-long URL, unescapes it and interprets the
-// characters as UTF-8 (both via url_formatter::FormatUrl()), and
-// lower-cases it, returning the result. |adjustments|, if non-NULL, is
-// set to reflect the transformations the URL spec underwent to become the
-// return value.  If a caller computes offsets (e.g., for the position
-// of matched text) in this cleaned-up string, it can use |adjustments|
-// to calculate the location of these offsets in the original string
-// (via base::OffsetAdjuster::UnadjustOffsets()).  This is useful if later
-// the original string gets formatted in a different way for displaying.
-// In this case, knowing the offsets in the original string will allow them
-// to be properly translated to offsets in the newly-formatted string.
-//
-// The unescaping done by this function makes it possible to match substrings
-// that were originally escaped for navigation; for example, if the user
-// searched for "a&p", the query would be escaped as "a%26p", so without
-// unescaping, an input string of "a&p" would no longer match this URL.  Note
-// that the resulting unescaped URL may not be directly navigable (which is
-// why it was escaped to begin with).
-//
-// |url| must be a valid URL.
-std::u16string CleanUpUrlForMatching(
-    const GURL& gurl,
-    base::OffsetAdjuster::Adjustments* adjustments);
-
-// Returns the lower-cased title, possibly truncated if the original title
-// is overly-long.
-std::u16string CleanUpTitleForMatching(const std::u16string& title);
-
-// Returns true if all the |nodes| can be edited by the user, which means they
-// aren't enterprise-managed, as BookmarkClient::IsNodeManaged().
-bool CanAllBeEditedByUser(
-    BookmarkClient* client,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes);
-
-// Returns true if |url| has a bookmark in the |model| that can be edited
+// Returns true if `url` has a bookmark in the `model` that can be edited
 // by the user.
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url);
 
-// Returns the node with |id|, or NULL if there is no node with |id|.
+// Returns the node with `id`, or NULL if there is no node with `id`.
 const BookmarkNode* GetBookmarkNodeByID(const BookmarkModel* model, int64_t id);
 
-// Returns true if |node| is a descendant of |root|.
+// Returns true if `node` is a descendant of `root`.
 bool IsDescendantOf(const BookmarkNode* node, const BookmarkNode* root);
 
-// Returns true if any node in |list| is a descendant of |root|.
+// Returns true if any node in `list` is a descendant of `root`.
 bool HasDescendantsOf(
     const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& list,
     const BookmarkNode* root);
 
 // Returns the parent to add new nodes to, never returns null (as long as
-// the model is loaded). If |url| is non-empty, features will have the
+// the model is loaded). If `url` is non-empty, features will have the
 // opportunity to suggest contextually relevant folders.
 const BookmarkNode* GetParentForNewNodes(BookmarkModel* model,
                                          const GURL& url = GURL());
+
+// This pruning keeps visible, non-managed folder nodes.
+bool PruneFoldersForDisplay(const BookmarkModel* model,
+                            const BookmarkNode* node);
 
 }  // namespace bookmarks
 

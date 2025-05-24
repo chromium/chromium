@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
@@ -33,7 +32,7 @@ void CommonThemePaintMenuItemBackground(
     case NativeTheme::kNormal:
     case NativeTheme::kDisabled: {
       ui::ColorId id = kColorMenuBackground;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       id = kColorAshSystemUIMenuBackground;
 #endif
       flags.setColor(color_provider->GetColor(id));
@@ -41,15 +40,14 @@ void CommonThemePaintMenuItemBackground(
     }
     case NativeTheme::kHovered: {
       ui::ColorId id = kColorMenuItemBackgroundSelected;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       id = kColorAshSystemUIMenuItemBackgroundSelected;
 #endif
       flags.setColor(color_provider->GetColor(id));
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid state " << state;
-      break;
+      NOTREACHED() << "Invalid state " << state;
   }
   if (menu_item.corner_radius > 0) {
     const SkScalar radius = SkIntToScalar(menu_item.corner_radius);

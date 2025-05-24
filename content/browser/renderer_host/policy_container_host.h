@@ -17,6 +17,7 @@
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/cross_origin_opener_policy.h"
 #include "services/network/public/cpp/document_isolation_policy.h"
+#include "services/network/public/cpp/integrity_policy.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -43,13 +44,16 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
       const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       const network::DocumentIsolationPolicy& document_isolation_policy,
+      network::IntegrityPolicy integrity_policy,
+      network::IntegrityPolicy integrity_policy_report_only,
       network::mojom::WebSandboxFlags sandbox_flags,
       bool is_credentialless,
       bool can_navigate_top_without_user_gesture,
-      bool allow_cross_origin_isolation);
+      bool cross_origin_isolation_enabled_by_dip);
 
   explicit PolicyContainerPolicies(
-      const blink::mojom::PolicyContainerPolicies& policies);
+      const blink::mojom::PolicyContainerPolicies& policies,
+      bool is_web_secure_context);
 
   // Used when loading workers from network schemes.
   // WARNING: This does not populate referrer policy.
@@ -77,6 +81,11 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
 
   blink::mojom::PolicyContainerPoliciesPtr ToMojoPolicyContainerPolicies()
       const;
+
+  // PolicyContainerPolicies structs are comparable for equality.
+  CONTENT_EXPORT friend bool operator==(const PolicyContainerPolicies&,
+                                        const PolicyContainerPolicies&) =
+      default;
 
   // The referrer policy for the associated document. If not overwritten via a
   // call to SetReferrerPolicy (for example after parsing the Referrer-Policy
@@ -119,6 +128,9 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // https://github.com/explainers-by-googlers/document-isolation-policy
   network::DocumentIsolationPolicy document_isolation_policy;
 
+  network::IntegrityPolicy integrity_policy;
+  network::IntegrityPolicy integrity_policy_report_only;
+
   // Tracks the sandbox flags which are in effect on this document. This
   // includes any flags which have been set by a Content-Security-Policy header,
   // in addition to those which are set by the embedding frame.
@@ -138,20 +150,15 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // will always have this value set to true.
   bool can_navigate_top_without_user_gesture = true;
 
-  // The top-level initial empty document opened as a popup by a cross-origin
-  // iframe might inherit the COOP policies of the top-level document but it
-  // shouldn't have crossOriginIsolated capabilities if COOP was initially set
-  // by another origin. Hence, we pass down this boolean to tell the renderer to
-  // restrict those capabilities. For more detail, see
-  // https://github.com/hemeryar/coi-with-popups/blob/main/docs/cross_origin_iframe_popup.MD
-  bool allow_cross_origin_isolation = false;
+  // Whether crossOriginIsolation was enabled by DocumentIsolationPolicy. We
+  // pass this to the renderer process, because crossOriginIsolation enabled by
+  // DocumentIsolationPolicy is not subject to the CrossOriginIoslation
+  // Permission Policy (computed in the renderer process).
+  // TODO(crbug.com/393522283): Ensure the COI status of a context is properly
+  // computed in the browser process and just pass it instead of passing several
+  // booleans to the renderer process and having it do the computation.
+  bool cross_origin_isolation_enabled_by_dip = false;
 };
-
-// PolicyContainerPolicies structs are comparable for equality.
-CONTENT_EXPORT bool operator==(const PolicyContainerPolicies& lhs,
-                               const PolicyContainerPolicies& rhs);
-CONTENT_EXPORT bool operator!=(const PolicyContainerPolicies& lhs,
-                               const PolicyContainerPolicies& rhs);
 
 // Streams a human-readable string representation of |policies| to |out|.
 CONTENT_EXPORT std::ostream& operator<<(
@@ -218,6 +225,13 @@ class CONTENT_EXPORT PolicyContainerHost
     return policies_.document_isolation_policy;
   }
 
+  const network::IntegrityPolicy& integrity_policy() const {
+    return policies_.integrity_policy;
+  }
+  const network::IntegrityPolicy& integrity_policy_report_only() const {
+    return policies_.integrity_policy_report_only;
+  }
+
   network::mojom::WebSandboxFlags sandbox_flags() const {
     return policies_.sandbox_flags;
   }
@@ -252,8 +266,8 @@ class CONTENT_EXPORT PolicyContainerHost
     policies_.can_navigate_top_without_user_gesture = value;
   }
 
-  void SetAllowCrossOriginIsolation(bool value) {
-    policies_.allow_cross_origin_isolation = value;
+  void SetCrossOriginIsolationEnabledByDIP() {
+    policies_.cross_origin_isolation_enabled_by_dip = true;
   }
 
   // Return a PolicyContainer containing copies of the policies and a pending

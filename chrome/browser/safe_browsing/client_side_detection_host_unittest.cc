@@ -36,11 +36,12 @@
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/url_checker_holder.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom-shared.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/core/browser/db/hit_report.h"
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
@@ -135,6 +136,10 @@ MATCHER_P(PartiallyEqualVerdict, other, "") {
           other.is_phishing() == arg->is_phishing());
 }
 
+MATCHER_P(HasScamThreatSubtype, other, "") {
+  return (other.threat_subtype == arg.threat_subtype);
+}
+
 // Test that the callback is nullptr when the verdict is not phishing.
 MATCHER(CallbackIsNull, "") {
   return arg.is_null();
@@ -143,14 +148,14 @@ MATCHER(CallbackIsNull, "") {
 class MockClientSideDetectionService : public ClientSideDetectionService {
  public:
   MockClientSideDetectionService()
-      : ClientSideDetectionService(nullptr, nullptr, nullptr) {}
+      : ClientSideDetectionService(nullptr, nullptr) {}
 
   MockClientSideDetectionService(const MockClientSideDetectionService&) =
       delete;
   MockClientSideDetectionService& operator=(
       const MockClientSideDetectionService&) = delete;
 
-  ~MockClientSideDetectionService() override {}
+  ~MockClientSideDetectionService() override = default;
 
   MOCK_METHOD3(SendClientReportPhishingRequest,
                void(std::unique_ptr<ClientPhishingRequest>,
@@ -163,6 +168,13 @@ class MockClientSideDetectionService : public ClientSideDetectionService {
   MOCK_METHOD0(GetModelSharedMemoryRegion, base::ReadOnlySharedMemoryRegion());
   MOCK_METHOD0(GetModelType, CSDModelType());
   MOCK_METHOD0(IsModelAvailable, bool());
+  MOCK_METHOD(
+      void,
+      InquireOnDeviceModel,
+      (std::string,
+       base::OnceCallback<void(
+           std::optional<optimization_guide::proto::ScamDetectionResponse>)>));
+  MOCK_METHOD0(LogOnDeviceModelEligibilityReason, void());
 };
 
 class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
@@ -178,24 +190,8 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
       delete;
 
   MOCK_METHOD1(DisplayBlockingPage, void(const UnsafeResource& resource));
-
-  // Helper function which calls OnBlockingPageComplete for this client
-  // object.
-  void InvokeOnBlockingPageComplete(
-    const security_interstitials::UnsafeResource::UrlCheckCallback& callback) {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    // Note: this will delete the client object in the case of the CsdClient
-    // implementation.
-    if (!callback.is_null()) {
-      security_interstitials::UnsafeResource::UrlCheckResult result(
-          false /*proceed*/, true /*showed_interstitial*/,
-          false /*has_post_commit_interstitial_skipped*/);
-      callback.Run(result);
-    }
-  }
-
  protected:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 };
 
 class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
@@ -240,6 +236,23 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
 
  private:
   base::flat_map<std::string, bool> urls_allowlist_match_;
+};
+
+class MockClientSideDetectionHostDelegate
+    : public ChromeClientSideDetectionHostDelegate {
+ public:
+  explicit MockClientSideDetectionHostDelegate(
+      content::WebContents* web_contents)
+      : ChromeClientSideDetectionHostDelegate(web_contents) {}
+
+  void GetInnerText(HostInnerTextCallback callback) override {
+    std::move(callback).Run(inner_text_);
+  }
+
+  void ForceEmptyInnerText() { inner_text_ = ""; }
+
+ private:
+  std::string inner_text_ = "inner text";
 };
 
 }  // namespace
@@ -345,9 +358,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     InitTestApi(web_contents()->GetPrimaryMainFrame());
 
     // Inject service classes.
-    csd_service_ = std::make_unique<MockClientSideDetectionService>();
-    database_manager_ = new StrictMock<MockSafeBrowsingDatabaseManager>();
-    ui_manager_ = new StrictMock<MockSafeBrowsingUIManager>();
+    csd_service_ = std::make_unique<NiceMock<MockClientSideDetectionService>>();
+    database_manager_ = new NiceMock<MockSafeBrowsingDatabaseManager>();
+    ui_manager_ = new NiceMock<MockSafeBrowsingUIManager>();
 
     identity_test_env_.MakePrimaryAccountAvailable("user@gmail.com",
                                                    signin::ConsentLevel::kSync);
@@ -363,9 +376,13 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         base::BindRepeating(&safe_browsing::SyncUtils::IsPrimaryAccountSignedIn,
                             identity_test_env_.identity_manager()));
     auto token_fetcher =
-        std::make_unique<StrictMock<MockSafeBrowsingTokenFetcher>>();
+        std::make_unique<NiceMock<MockSafeBrowsingTokenFetcher>>();
     raw_token_fetcher_ = token_fetcher.get();
     csd_host_->set_token_fetcher_for_testing(std::move(token_fetcher));
+    auto delegate =
+        std::make_unique<MockClientSideDetectionHostDelegate>(web_contents());
+    raw_delegate_ = delegate.get();
+    csd_host_->set_delegate_for_testing(std::move(delegate));
     // Commit to a URL for tests that do not explicitly NavigateAndCommit.
     // Committing to "about:blank" avoids triggering logic irrelevant for tests.
     NavigateAndCommit(GURL("about:blank"));
@@ -375,6 +392,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
   void TearDown() override {
     raw_token_fetcher_ = nullptr;
+    raw_delegate_ = nullptr;
 
     // Delete the host object on the UI thread and release the
     // SafeBrowsingService.
@@ -429,6 +447,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
                                                 : AsyncMatch::NO_MATCH));
       EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
           .WillOnce(Return(true));
+    } else {
+      EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
+          .Times(0);
     }
     if (get_valid_cached_result) {
       EXPECT_CALL(*csd_service_, GetValidCachedResult(url, NotNull()))
@@ -469,14 +490,38 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
+  std::string GetRequestTypeName(
+      ClientSideDetectionType client_side_detection_type) {
+    switch (client_side_detection_type) {
+      case safe_browsing::ClientSideDetectionType::
+          CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
+        return "Unknown";
+      case safe_browsing::ClientSideDetectionType::FORCE_REQUEST:
+        return "ForceRequest";
+      case safe_browsing::ClientSideDetectionType::
+          NOTIFICATION_PERMISSION_PROMPT:
+        return "NotificationPermissionPrompt";
+      case safe_browsing::ClientSideDetectionType::TRIGGER_MODELS:
+        return "TriggerModel";
+      case safe_browsing::ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED:
+        return "KeyboardLockRequested";
+      case safe_browsing::ClientSideDetectionType::POINTER_LOCK_REQUESTED:
+        return "PointerLockRequested";
+      case safe_browsing::ClientSideDetectionType::VIBRATION_API:
+        return "VibrationApi";
+      case safe_browsing::ClientSideDetectionType::FULLSCREEN_API:
+        return "FullscreenApi";
+    }
+  }
+
  protected:
   std::unique_ptr<ClientSideDetectionHost> csd_host_;
-  std::unique_ptr<MockClientSideDetectionService> csd_service_;
-  scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
-  scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager>> database_manager_;
+  std::unique_ptr<NiceMock<MockClientSideDetectionService>> csd_service_;
+  scoped_refptr<NiceMock<MockSafeBrowsingUIManager>> ui_manager_;
+  scoped_refptr<NiceMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
-  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
-      nullptr;
+  raw_ptr<NiceMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ = nullptr;
+  raw_ptr<MockClientSideDetectionHostDelegate> raw_delegate_ = nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -529,33 +574,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
 
   // Make sure DisplayBlockingPage is not going to be called.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-  std::move(cb).Run(GURL(verdict.url()), false, net::HTTP_OK);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
-}
-
-TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  // Case 2: client thinks the page is phishing and so does the server but
-  // showing the interstitial is disabled => no interstitial is shown.
-  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
-  ClientPhishingRequest verdict;
-  verdict.set_url("http://phishingurl.com/");
-  verdict.set_client_score(1.0f);
-  verdict.set_is_phishing(true);
-
-  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
-                                 PartiallyEqualVerdict(verdict), _, _))
-      .WillOnce(MoveArg<1>(&cb));
-  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
-  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
-  ASSERT_FALSE(cb.is_null());
-
-  // Make sure DisplayBlockingPage is not going to be called.
-  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-  std::move(cb).Run(GURL(verdict.url()), false, net::HTTP_OK);
+  std::move(cb).Run(GURL(verdict.url()), false, net::HTTP_OK, std::nullopt);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
 }
@@ -566,7 +585,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
 
   base::HistogramTester histogram_tester;
 
-  // Case 3: client thinks the page is phishing and so does the server.
+  // Case 2: client thinks the page is phishing and so does the server.
   // We show an interstitial.
   ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
   GURL phishing_url("http://phishingurl.com/");
@@ -586,7 +605,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   UnsafeResource resource;
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
       .WillOnce(SaveArg<0>(&resource));
-  std::move(cb).Run(phishing_url, true, net::HTTP_OK);
+  std::move(cb).Run(phishing_url, true, net::HTTP_OK, std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
@@ -597,12 +616,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
-
-  // Make sure the client object will be deleted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
-                     ui_manager_, resource.callback));
+  EXPECT_TRUE(resource.navigation_id.has_value());
 
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
@@ -613,7 +627,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
-  // Case 4 & 5: client thinks a page is phishing then navigates to
+  // Case 3 & 4: client thinks a page is phishing then navigates to
   // another page which is also considered phishing by the client
   // before the server responds with a verdict.  After a while the
   // server responds for both requests with a phishing verdict.  Only
@@ -660,10 +674,10 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
       .WillOnce(SaveArg<0>(&resource));
 
-  std::move(cb).Run(phishing_url, true,
-                    net::HTTP_OK);  // Should have no effect.
-  std::move(cb_other).Run(other_phishing_url, true,
-                          net::HTTP_OK);  // Should show interstitial.
+  std::move(cb).Run(phishing_url, true, net::HTTP_OK,
+                    std::nullopt);  // Should have no effect.
+  std::move(cb_other).Run(other_phishing_url, true, net::HTTP_OK,
+                          std::nullopt);  // Should show interstitial.
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
@@ -674,19 +688,13 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
-
-  // Make sure the client object will be deleted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
-                     ui_manager_, resource.callback));
 }
 
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneVerdictNotPhishing) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
-  // Case 6: renderer sends a verdict string that isn't phishing.
+  // Case 5: renderer sends a verdict string that isn't phishing.
   ClientPhishingRequest verdict;
   verdict.set_url("http://not-phishing.com/");
   verdict.set_client_score(0.1f);
@@ -730,7 +738,7 @@ TEST_F(
   UnsafeResource resource;
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
       .WillOnce(SaveArg<0>(&resource));
-  std::move(cb).Run(phishing_url, true, net::HTTP_OK);
+  std::move(cb).Run(phishing_url, true, net::HTTP_OK, std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
@@ -742,12 +750,6 @@ TEST_F(
   EXPECT_EQ(web_contents(),
             unsafe_resource_util::GetWebContentsForResource(resource));
 
-  // Make sure the client object will be deleted.
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&MockSafeBrowsingUIManager::InvokeOnBlockingPageComplete,
-                     ui_manager_, resource.callback));
-
   // Test that the histogram has been logged that the allowlist did exist with
   // the server model verdict phishy.
   histogram_tester.ExpectUniqueSample(
@@ -755,29 +757,6 @@ TEST_F(
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.HighConfidenceAllowlistMatchOnServerVerdictPhishy",
       true, 1);
-}
-
-TEST_F(ClientSideDetectionHostTest,
-       PhishingDetectionDoneVerdictNotPhishingButSBMatchSubResource) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  // Case 7: renderer sends a verdict string that isn't phishing but the URL
-  // of a subresource was on the regular phishing or malware lists.
-  GURL url("http://not-phishing.com/");
-  ClientPhishingRequest verdict;
-  verdict.set_url(url.spec());
-  verdict.set_client_score(0.1f);
-  verdict.set_is_phishing(false);
-
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateAndCommit(url);
-  WaitAndCheckPreClassificationChecks();
-
-  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -808,46 +787,6 @@ TEST_F(ClientSideDetectionHostTest,
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
                                 &kFalse);
   NavigateAndCommit(url);
-  WaitAndCheckPreClassificationChecks();
-
-  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
-}
-
-TEST_F(
-    ClientSideDetectionHostTest,
-    PhishingDetectionDoneVerdictNotPhishingButSBMatchOnSubresourceWhileNavPending) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  // When a malware hit happens on a committed page while a slow pending load is
-  // in progress, the csd report should be sent for the committed page.
-
-  GURL start_url("http://safe.example.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(start_url, false);
-  ExpectPreClassificationChecks(start_url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateAndCommit(start_url);
-  WaitAndCheckPreClassificationChecks();
-
-  // Now navigate to a different host which does not have a SB hit.
-  GURL url("http://not-malware-not-phishing-but-malware-subresource.com/");
-  ClientPhishingRequest verdict;
-  verdict.set_url(url.spec());
-  verdict.set_client_score(0.1f);
-  verdict.set_is_phishing(false);
-
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
-  NavigateAndCommit(url);
-
-  // Create a pending navigation, but don't commit it.
-  GURL pending_url("http://slow.example.com/");
-  auto pending_navigation =
-      content::NavigationSimulator::CreateBrowserInitiated(pending_url,
-                                                           web_contents());
-  pending_navigation->Start();
-
   WaitAndCheckPreClassificationChecks();
 
   PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
@@ -1015,6 +954,8 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
     GTEST_SKIP();
 
+  base::HistogramTester histogram_tester;
+
   // Navigate the tab to a page.  We should see a StartPhishingDetection IPC.
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
@@ -1024,6 +965,13 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   WaitAndCheckPreClassificationChecks();
 
   fake_phishing_detector_.CheckMessage(&url);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
+      PreClassificationCheckResult::CLASSIFY, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -1046,17 +994,82 @@ TEST_F(ClientSideDetectionHostTest,
     GTEST_SKIP();
   }
 
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  enabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
+  SetFeatures(enabled_features, {});
+
+  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
   base::HistogramTester histogram_tester;
 
   GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kFalse,
-                                &kFalse);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlist) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  enabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
+  SetFeatures(enabled_features, {});
+
+  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(0.0f);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 0);
+}
+
+TEST_F(
+    ClientSideDetectionHostTest,
+    TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlistDueToDisabledFeature) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  std::vector<base::test::FeatureRef> disabled_features = {};
+  disabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
+  SetFeatures({}, disabled_features);
+
+  // We will set the acceptance rate to 100%, but it won't be accepted because
+  // the feature is disabled.
+  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 0);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -1184,21 +1197,6 @@ TEST_F(ClientSideDetectionHostTest,
   // If the url isn't in the cache and we are over the reporting limit, we
   // don't do classification.
   GURL url("http://host7.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
-  ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
-                                &kFalse);
-  NavigateAndKeepLoading(web_contents(), url);
-  WaitAndCheckPreClassificationChecks();
-
-  fake_phishing_detector_.CheckMessage(nullptr);
-}
-
-TEST_F(ClientSideDetectionHostTest,
-       TestPreClassificationCheckOverBothReportingLimits) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch))
-    GTEST_SKIP();
-
-  GURL url("http://host.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, &kFalse, &kFalse, &kTrue,
                                 &kFalse);
@@ -1446,7 +1444,7 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
   ASSERT_FALSE(cb.is_null());
-  std::move(cb).Run(example_url, false, net::HTTP_OK);
+  std::move(cb).Run(example_url, false, net::HTTP_OK, std::nullopt);
 
   ClientSideDetectionFeatureCache* feature_cache_map =
       ClientSideDetectionFeatureCache::FromWebContents(web_contents());
@@ -1480,6 +1478,7 @@ TEST_F(ClientSideDetectionHostTest,
 
   SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
 
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo}, {});
   GURL example_url("http://suspiciousurl.com/");
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
   ExpectPreClassificationChecks(
@@ -1542,13 +1541,254 @@ TEST_F(ClientSideDetectionHostTest,
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
 
   ASSERT_FALSE(cb.is_null());
-  std::move(cb).Run(example_url, false, net::HTTP_OK);
+  std::move(cb).Run(example_url, false, net::HTTP_OK, std::nullopt);
 
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.ClientSideDetectionTypeRequest",
       ClientSideDetectionType::FORCE_REQUEST, 1);
   histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
                                      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo", false,
+      1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       RTLookupResponseOnFirstURLInRedirectChainTriggersForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL first_url_redirect("http://firsturlsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  // We will only create a RTLookupResponse for the first URL and cache it in
+  // the cache_manager.
+  RTLookupResponse response;
+
+  RTLookupResponse::ThreatInfo* new_threat_info2 = response.add_threat_info();
+  new_threat_info2->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+  new_threat_info2->set_threat_type(
+      RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+  new_threat_info2->set_cache_duration_sec(60);
+  new_threat_info2->set_cache_expression_using_match_type(
+      "firsturlsuspicious.com/");
+  new_threat_info2->set_cache_expression_match_type(
+      RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  response.set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  EXPECT_EQ(
+      static_cast<int>(safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+          first_url_redirect));
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+
+  // The verdict's is_phishing is false, but we will still send a ping! We are
+  // using the third URL for the verdict because it's the last in the referrer
+  // chain, but the first is in the cache, so it should still send a ping.
+  ClientPhishingRequest verdict;
+  verdict.set_url(third_url_redirect.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_force_request");
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(third_url_redirect, false, net::HTTP_OK, std::nullopt);
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RedirectChainContainsForceRequest", true, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       NoRTLookupResponseInRedirectChainContainsForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL first_url_redirect("http://firsturlnotsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  // The verdict's is_phishing is false, and there are no force requests at all
+  // in the current URL and its redirect chain, so no ping will be sent.
+  ClientPhishingRequest verdict;
+  verdict.set_url(third_url_redirect.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 0);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.RedirectChainContainsForceRequest", false, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       RedirectChainKillswitchDoesNotTriggersForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionRedirectChainKillswitch}, {});
+
+  base::HistogramTester histogram_tester;
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  GURL first_url_redirect("http://firsturlsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  VerdictCacheManager* cache_manager =
+      VerdictCacheManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  // We will only create a RTLookupResponse for the first URL and cache it in
+  // the cache_manager.
+  RTLookupResponse response;
+
+  RTLookupResponse::ThreatInfo* new_threat_info2 = response.add_threat_info();
+  new_threat_info2->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+  new_threat_info2->set_threat_type(
+      RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+  new_threat_info2->set_cache_duration_sec(60);
+  new_threat_info2->set_cache_expression_using_match_type(
+      "firsturlsuspicious.com/");
+  new_threat_info2->set_cache_expression_match_type(
+      RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+  response.set_client_side_detection_type(
+      safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+  cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+  EXPECT_EQ(
+      static_cast<int>(safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+      cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+          first_url_redirect));
+
+  // The verdict's is_phishing is false, but we will still send a ping! We are
+  // using the third URL for the verdict because it's the last in the referrer
+  // chain, but the first is in the cache, so it should still send a ping.
+  ClientPhishingRequest verdict;
+  verdict.set_url(third_url_redirect.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::TRIGGER_MODELS, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     false, 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.RedirectChainContainsForceRequest", 0);
 }
 
 class ClientSideDetectionHostNotificationTest
@@ -1651,18 +1891,20 @@ TEST_F(ClientSideDetectionHostNotificationTest,
   // Set up mock call to token fetcher.
   SafeBrowsingTokenFetcher::Callback cb;
   EXPECT_CALL(*raw_token_fetcher_, Start(_)).WillOnce(MoveArg<0>(&cb));
-
-  permissions::MockPermissionRequest request1(
+  permissions::MockPermissionRequest::MockPermissionRequestState request_state;
+  auto request1 = std::make_unique<permissions::MockPermissionRequest>(
       url, permissions::RequestType::kNotifications,
-      permissions::PermissionRequestGestureType::GESTURE);
+      permissions::PermissionRequestGestureType::GESTURE,
+      request_state.GetWeakPtr());
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents());
-  manager->AddRequest(web_contents()->GetPrimaryMainFrame(), &request1);
+  manager->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                      std::move(request1));
 
   WaitForBubbleToBeShown();
 
   EXPECT_TRUE(prompt_factory_->is_visible());
-  EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request1.request_type()));
+  EXPECT_TRUE(prompt_factory_->RequestTypeSeen(request_state.request_type));
   ASSERT_EQ(prompt_factory_->request_count(), 1);
 
   // Wait for token fetcher to be called.
@@ -1674,7 +1916,7 @@ TEST_F(ClientSideDetectionHostNotificationTest,
   manager->Accept();
   task_environment()->RunUntilIdle();
 
-  EXPECT_TRUE(request1.granted());
+  EXPECT_TRUE(request_state.granted);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PhishingDetectorResult.NotificationPermissionPrompt",
@@ -1734,7 +1976,7 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
     ClientSideDetectionHostTest::SetUp();
 
     SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
-    SetFeatures({kSafeBrowsingAsyncRealTimeCheck}, {});
+    SetFeatures({kClientSideDetectionAcceptHCAllowlist}, {});
 
     AsyncCheckTracker::CreateForWebContents(
         web_contents(),
@@ -1784,7 +2026,7 @@ class ClientSideDetectionRTLookupResponseForceRequestTest
         /*hash_realtime_selection=*/
         hash_realtime_utils::HashRealTimeSelection::kNone,
         /*is_async_check=*/true, /*check_allowlist_before_hash_database=*/false,
-        SessionID::InvalidValue());
+        SessionID::InvalidValue(), /*referring_app_info=*/std::nullopt);
     tracker->TransferUrlChecker(std::move(checker));
     // all_checks_completed must be set to true to notify
     // ClientSideDetectionHost.
@@ -1826,10 +2068,10 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   SetRTResponseInCacheManager(/*is_enforced=*/true);
 
   // get_valid_cached_result is set to nullptr, because the request type is not
-  // TRIGGER_MODELS.
-  ExpectPreClassificationChecks(example_url, &kFalse, &kFalse,
-                                /*get_valid_cached_result=*/nullptr, &kFalse,
-                                &kFalse);
+  // TRIGGER_MODELS. Force request triggers also bypass the CSD allowlist.
+  ExpectPreClassificationChecks(
+      example_url, &kFalse, /*match_csd_allowlist=*/nullptr,
+      /*get_valid_cached_result=*/nullptr, &kFalse, &kFalse);
   // This call should trigger preclassification check again.
   CompleteAsyncCheck();
 
@@ -1871,6 +2113,90 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 }
 
 TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
+       AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  GURL example_url("http://suspiciousurl.com/");
+
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
+
+  // First navigate to a page, which should trigger preclassification check.
+  ExpectPreClassificationChecks(
+      /*url=*/example_url, /*is_private=*/&kFalse,
+      /*match_csd_allowlist=*/&kFalse, /*get_valid_cached_result=*/&kFalse,
+      /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  // Force request should not be triggered, because RTLookupResponse hasn't
+  // been cached.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 0);
+
+  SetRTResponseInCacheManager(/*is_enforced=*/true);
+
+  // Generally, this never happens unless a sampled RTLookupResponse contains
+  // the suspicious URL. For the purpose of this test, we will set that there's
+  // a match.
+  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, true);
+
+  // get_valid_cached_result is set to nullptr, because the request type is not
+  // TRIGGER_MODELS. Force request bypasses CSD allowlist check.
+  ExpectPreClassificationChecks(
+      example_url, &kFalse, /*match_csd_allowlist=*/nullptr,
+      /*get_valid_cached_result=*/nullptr, &kFalse, &kFalse);
+  // This call should trigger preclassification check again.
+  CompleteAsyncCheck();
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  task_environment()->RunUntilIdle();
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+  // The verdict's is_phishing is false, but we will still send a ping!
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.8f);
+  verdict.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 _, _, "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_force_request");
+  task_environment()->RunUntilIdle();
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  task_environment()->RunUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult::kTriggered,
+      1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.ForceRequest", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 0);
+}
+
+TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
        AsyncCheckTrackerNotTriggerClassificationRequestNoEnforcedPing) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
@@ -1907,7 +2233,7 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
 }
 
 TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
-       AsyncCheckTrackerNotTriggerClassificationRequestAlreadyPhishing) {
+       AsyncCheckTrackerTriggersClassificationRequestOnLocalModelPhishing) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
@@ -1938,22 +2264,125 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   // Check that the page is phishing and triggers a ping.
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.LocalModelDetectsPhishing", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.LocalModelDetectsPhishing.TriggerModel", true, 1);
 
   SetRTResponseInCacheManager(/*is_enforced=*/true);
+
+  // get_valid_cached_result is set to nullptr, because the request type is not
+  // TRIGGER_MODELS. Force request triggers also bypass the CSD allowlist.
+  ExpectPreClassificationChecks(
+      example_url, &kFalse, /*match_csd_allowlist=*/nullptr,
+      /*get_valid_cached_result=*/nullptr, &kFalse, &kFalse);
+  // Calling this should trigger preclassification again, because local model
+  // phishy verdict is not a condition to skip the async check force request
+  // because the force request ping will contain information that the page load
+  // request may have missed.
+  CompleteAsyncCheck();
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb2;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb2));
+  task_environment()->RunUntilIdle();
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb2;
+  // The verdict's is_phishing is false, but we will still send a ping!
+  ClientPhishingRequest verdict2;
+  verdict2.set_url(example_url.spec());
+  verdict2.set_client_score(0.8f);
+  verdict2.set_is_phishing(false);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 _, _, "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb2));
+
+  ASSERT_FALSE(token_cb2.is_null());
+  std::move(token_cb2).Run("fake_access_token_for_force_request");
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  task_environment()->RunUntilIdle();
+
+  // Enforce request should be triggered again, because the local model will
+  // think it's phishy, but force request pings can contain other information,
+  // such as the LLM information.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.ClientSideDetection."
+      "AsyncCheckTriggerForceRequestResult",
+      ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult::kTriggered,
+      1);
+}
+
+TEST_F(
+    ClientSideDetectionRTLookupResponseForceRequestTest,
+    AsyncCheckTrackerNotTriggerClassificationRequestOnTriggerModelPingConvertedToForceRequest) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  GURL example_url("http://suspiciousurl.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(example_url, false);
+  ExpectPreClassificationChecks(
+      /*url=*/example_url, /*is_private=*/&kFalse,
+      /*match_csd_allowlist=*/&kFalse, /*get_valid_cached_result=*/&kFalse,
+      /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(0.5f);
+  verdict.set_is_phishing(false);
+
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_for_force_request"))
+      .WillOnce(MoveArg<1>(&cb));
+  // Setup RTResponse in cache prior to calling PhishingDetectionDone.
+  SetRTResponseInCacheManager(/*is_enforced=*/true);
+
+  PhishingDetectionDone(mojo_base::ProtoWrapper(verdict));
+  task_environment()->RunUntilIdle();
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_force_request");
+
+  // Check that the page is phishing and triggers a ping.
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest",
+      ClientSideDetectionType::FORCE_REQUEST, 1);
+  histogram_tester.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                     true, 1);
 
   CompleteAsyncCheck();
   task_environment()->RunUntilIdle();
 
-  // Enforce request should not be triggered again, because the page is already
-  // phishing and the ping is already sent.
+  // Enforce request should NOT be triggered again, because the page load ping
+  // has been converted to a force request ping.
   histogram_tester.ExpectBucketCount(
       "SBClientPhishing.ClientSideDetectionTypeRequest",
-      ClientSideDetectionType::FORCE_REQUEST, 0);
+      ClientSideDetectionType::FORCE_REQUEST, 1);
   histogram_tester.ExpectUniqueSample(
       "SBClientPhishing.ClientSideDetection."
       "AsyncCheckTriggerForceRequestResult",
       ClientSideDetectionHost::AsyncCheckTriggerForceRequestResult::
-          kSkippedTriggerModelsPingNotSkipped,
+          kSkippedTriggerModelsPingSentAsForceRequest,
       1);
 }
 
@@ -2018,6 +2447,1231 @@ TEST_F(ClientSideDetectionHostDebugFeaturesTest,
   NavigateAndKeepLoading(web_contents(), url);
   WaitAndCheckPreClassificationChecks();
   fake_phishing_detector_.CheckMessage(&url);
+}
+
+class ClientSideDetectionHostScamDetectionTest
+    : public ClientSideDetectionHostTest {
+ public:
+  ClientSideDetectionHostScamDetectionTest() = default;
+
+  void SetUp() override {
+    ClientSideDetectionHostTest::SetUp();
+    SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+    csd_service_->SetOnDeviceAvailabilityForTesting(true);
+    database_manager_->SetAllowlistLookupDetailsForUrl(example_url_, false);
+
+    ON_CALL(*raw_token_fetcher_, Start(_))
+        .WillByDefault(
+            testing::Invoke([&](SafeBrowsingTokenFetcher::Callback callback) {
+              std::move(callback).Run("fake_access_token");
+            }));
+    NavigateAndCommit(example_url_);
+  }
+
+  void CacheForcedTriggerInfo(bool has_llama_forced_trigger_info,
+                              bool intelligent_scan,
+                              const std::string& cache_expression) {
+    VerdictCacheManager* cache_manager =
+        VerdictCacheManagerFactory::GetForProfile(
+            Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+    RTLookupResponse response;
+
+    RTLookupResponse::ThreatInfo* new_threat_info2 = response.add_threat_info();
+    new_threat_info2->set_verdict_type(RTLookupResponse::ThreatInfo::DANGEROUS);
+    new_threat_info2->set_threat_type(
+        RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING);
+    new_threat_info2->set_cache_duration_sec(60);
+    new_threat_info2->set_cache_expression_using_match_type(cache_expression);
+    new_threat_info2->set_cache_expression_match_type(
+        RTLookupResponse::ThreatInfo::EXACT_MATCH);
+
+    response.set_client_side_detection_type(
+        safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+
+    if (has_llama_forced_trigger_info) {
+      safe_browsing::LlamaForcedTriggerInfo llama_forced_trigger_info;
+      safe_browsing::LlamaTriggerRuleInfo* llama_trigger_rule_info =
+          llama_forced_trigger_info.add_llama_trigger_rule_infos();
+      llama_trigger_rule_info->set_llama_trigger_rule_id(28);
+      llama_trigger_rule_info->set_intelligent_scan(intelligent_scan);
+      llama_forced_trigger_info.set_trigger_url(cache_expression);
+      llama_forced_trigger_info.set_intelligent_scan(intelligent_scan);
+      response.mutable_llama_forced_trigger_info()->Swap(
+          &llama_forced_trigger_info);
+    }
+
+    cache_manager->CacheRealTimeUrlVerdict(response, base::Time::Now());
+    EXPECT_EQ(
+        static_cast<int>(safe_browsing::ClientSideDetectionType::FORCE_REQUEST),
+        cache_manager->GetCachedRealTimeUrlClientSideDetectionType(
+            example_url_));
+    if (has_llama_forced_trigger_info) {
+      safe_browsing::LlamaForcedTriggerInfo cache_llama_forced_trigger_info;
+      EXPECT_TRUE(cache_manager->GetCachedRealTimeLlamaForcedTriggerInfo(
+          example_url_, &cache_llama_forced_trigger_info));
+      // Because llama_forced_trigger_info is not copied, but rather passed by
+      // reference, we explicitly check with direct values set to the object
+      // above.
+      EXPECT_EQ(cache_llama_forced_trigger_info.intelligent_scan(),
+                intelligent_scan);
+      EXPECT_EQ(static_cast<int>(
+                    cache_llama_forced_trigger_info.llama_trigger_rule_infos()
+                        .size()),
+                1);
+      EXPECT_EQ(cache_llama_forced_trigger_info.llama_trigger_rule_infos()
+                    .at(0)
+                    .llama_trigger_rule_id(),
+                28);
+      EXPECT_EQ(cache_llama_forced_trigger_info.llama_trigger_rule_infos()
+                    .at(0)
+                    .intelligent_scan(),
+                intelligent_scan);
+    }
+  }
+
+  void SetInquireOnDeviceModelCallback(bool should_return_response) {
+    EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _))
+        .WillOnce(testing::Invoke(
+            [=, this](
+                std::string rendered_text,
+                base::OnceCallback<void(
+                    std::optional<
+                        optimization_guide::proto::ScamDetectionResponse>)>
+                    callback) {
+              if (!should_return_response) {
+                std::move(callback).Run(std::nullopt);
+                return;
+              }
+              optimization_guide::proto::ScamDetectionResponse
+                  scam_detection_response;
+              scam_detection_response.set_brand(example_brand_);
+              scam_detection_response.set_intent(example_intent_);
+              std::move(callback).Run(scam_detection_response);
+            }));
+  }
+
+  void SetSendClientReportPhishingRequestCallback(
+      bool has_expected_brand_and_intent,
+      std::optional<IntelligentScanInfo::NoInfoReason> expected_no_info_reason,
+      std::optional<std::string> expected_llama_forced_trigger_info_trigger_url,
+      bool returned_is_phishing,
+      IntelligentScanVerdict returned_intelligent_scan_verdict) {
+    EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
+        .Times(1)
+        .WillOnce(testing::Invoke(
+            [=, this](
+                std::unique_ptr<ClientPhishingRequest> request,
+                ClientSideDetectionService::ClientReportPhishingRequestCallback
+                    callback,
+                const std::string&) {
+              if (has_expected_brand_and_intent) {
+                EXPECT_EQ(request->intelligent_scan_info().brand(),
+                          example_brand_);
+                EXPECT_EQ(request->intelligent_scan_info().intent(),
+                          example_intent_);
+              } else {
+                EXPECT_FALSE(request->intelligent_scan_info().has_brand());
+                EXPECT_FALSE(request->intelligent_scan_info().has_intent());
+              }
+              if (expected_no_info_reason.has_value()) {
+                EXPECT_EQ(request->intelligent_scan_info().no_info_reason(),
+                          expected_no_info_reason.value());
+              } else {
+                EXPECT_FALSE(
+                    request->intelligent_scan_info().has_no_info_reason());
+              }
+              if (expected_llama_forced_trigger_info_trigger_url.has_value()) {
+                EXPECT_EQ(
+                    request->llama_forced_trigger_info().trigger_url(),
+                    expected_llama_forced_trigger_info_trigger_url.value());
+              } else {
+                EXPECT_FALSE(
+                    request->llama_forced_trigger_info().has_trigger_url());
+              }
+              std::move(callback).Run(example_url_, returned_is_phishing,
+                                      net::HTTP_OK,
+                                      returned_intelligent_scan_verdict);
+            }));
+  }
+
+  void VerifyExpectedCalls() {
+    EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+    EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+    EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+  }
+
+  void VerifyGeneralScamDetectionHistograms(
+      ClientSideDetectionType expected_request_type,
+      std::optional<bool> is_on_device_model_available,
+      std::optional<bool> model_has_successful_response,
+      std::optional<IntelligentScanVerdict> intelligent_scan_verdict) {
+    histogram_tester_.ExpectBucketCount(
+        "SBClientPhishing.ClientSideDetectionTypeRequest",
+        expected_request_type, 1);
+    if (is_on_device_model_available) {
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime",
+          is_on_device_model_available.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
+              GetRequestTypeName(expected_request_type),
+          is_on_device_model_available.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.IsOnDeviceModelAvailableAtInquiryTime." +
+              GetRequestTypeName(expected_request_type),
+          0);
+    }
+    if (model_has_successful_response.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
+          model_has_successful_response.value(), 1);
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
+              GetRequestTypeName(expected_request_type),
+          model_has_successful_response.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse", 0);
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
+              GetRequestTypeName(expected_request_type),
+          0);
+    }
+    if (intelligent_scan_verdict.has_value()) {
+      histogram_tester_.ExpectUniqueSample(
+          "SBClientPhishing.IntelligentScanVerdict",
+          intelligent_scan_verdict.value(), 1);
+    } else {
+      histogram_tester_.ExpectTotalCount(
+          "SBClientPhishing.IntelligentScanVerdict", 0);
+    }
+  }
+
+  void VerifyForcedTriggerScamDetectionHistograms(
+      bool force_request,
+      bool has_llama_forced_trigger_info,
+      bool intelligent_scan,
+      std::optional<bool> redirect_chain_contains_llama_forced_trigger_info) {
+    histogram_tester_.ExpectBucketCount("SBClientPhishing.RTLookupForceRequest",
+                                        force_request, 1);
+    histogram_tester_.ExpectBucketCount(
+        "SBClientPhishing.RTLookupForceRequest.HasLlamaForcedTriggerInfo",
+        has_llama_forced_trigger_info, 1);
+    if (redirect_chain_contains_llama_forced_trigger_info.has_value()) {
+      histogram_tester_.ExpectBucketCount(
+          "SBClientPhishing.RedirectChainContainsForcedTriggerInfo",
+          *redirect_chain_contains_llama_forced_trigger_info, 1);
+    }
+
+    if (has_llama_forced_trigger_info) {
+      histogram_tester_.ExpectBucketCount(
+          "SBClientPhishing.LlamaForcedTriggerInfo.IntelligentScan",
+          intelligent_scan, 1);
+      histogram_tester_.ExpectBucketCount(
+          "SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleInfosSize",
+          1, 1);
+      histogram_tester_.ExpectBucketCount(
+          "SBClientPhishing.LlamaForcedTriggerInfo.LlamaTriggerRuleId", 28, 1);
+    }
+  }
+
+  void PhishingDetectionDone(bool is_phishing,
+                             float client_score,
+                             ClientSideDetectionType type,
+                             bool did_match_high_confidence_allowlist) {
+    ClientPhishingRequest verdict;
+    verdict.set_url(example_url_.spec());
+    verdict.set_client_score(client_score);
+    verdict.set_is_phishing(is_phishing);
+    csd_host_->PhishingDetectionDone(type,
+                                     /*is_sample_ping=*/false,
+                                     did_match_high_confidence_allowlist,
+                                     mojom::PhishingDetectorResult::SUCCESS,
+                                     mojo_base::ProtoWrapper(verdict));
+  }
+
+  void SetExampleUrl(GURL example_url) { example_url_ = example_url; }
+
+  base::HistogramTester histogram_tester_;
+  GURL example_url_{"http://suspiciousurl.com/"};
+  std::string example_brand_ = "Example Brand";
+  std::string example_intent_ = "Example Intent";
+};
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       KeyboardLockRequestTriggersOnDeviceLLMWithEmptyResponse) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  // Because the client side detection type is KEYBOARD_LOCK_REQUESTED, we will
+  // call to inquire the on-device model.
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/false);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Although the score is not phishy at all, we will still inquire the
+  // on-device model because the ping is triggered by keyboard lock.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/false,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       KeyboardLockRequestTriggersOnDeviceLLMWithFullResponse) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       EmptyInnerTextDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  raw_delegate_->ForceEmptyInnerText();
+  // Because the inner text is empty, we will NOT inquire the on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/IntelligentScanInfo::EMPTY_TEXT,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       AllowlistedOnHCDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  // Because the URL is on the HC allowlist, we will NOT inquire the
+  // on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/IntelligentScanInfo::ALLOWLISTED,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/true);
+
+  VerifyExpectedCalls();
+  // Allowlisted page does not check whether the on-device model is available,
+  // because it exists through the allowlist check beforehand.
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       NoOnDeviceModelDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+  csd_service_->SetOnDeviceAvailabilityForTesting(false);
+  // Because the on-device model is unavailable, we will NOT inquire the
+  // on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(1);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/
+      IntelligentScanInfo::ON_DEVICE_MODEL_UNAVAILABLE,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/false,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       NonKeyboardLockRequestDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection}, {});
+
+  // Because the client side detection type is POINTER_LOCK_REQUESTED, we will
+  // NOT inquire the on-device model.
+  EXPECT_CALL(*csd_service_, LogOnDeviceModelEligibilityReason()).Times(0);
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::POINTER_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  // Because the request is non-keyboard lock request, we don't check for
+  // on-device model availability.
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::POINTER_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+}
+
+TEST_F(
+    ClientSideDetectionHostScamDetectionTest,
+    ScamExperimentVerdictOnClientPhishingResponseButDoesntShowBlockingPageDueToDisabledFlag) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection},
+              {kClientSideDetectionShowScamVerdictWarning});
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+  // We do not expect the blocking page to pop up because
+  // kClientSideDetectionShowScamVerdictWarning is disabled.
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.0f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       ScamExperimentVerdictOnClientPhishingResponseAndShowBlockingPage) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionShowScamVerdictWarning},
+              {});
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+  // Now we run the callback to receive a server response. We do expect the
+  // blocking page to pop up on a non-phishy response with the scam experiment
+  // verdict because the feature is now enabled despite the is_phishy field is
+  // false.
+  UnsafeResource resource;
+  resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1;
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasScamThreatSubtype(resource)))
+      .Times(1);
+
+  PhishingDetectionDone(
+      /*is_phishing=*/false, /*client_score=*/0.0f,
+      ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+      /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       RTLookupResponseLlamaForcedTriggerInfoTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+              {});
+  CacheForcedTriggerInfo(
+      /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/true,
+      /*cache_expression=*/example_url_.GetContent());
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true, /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/true,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       RTLookupResponseHaveFalseIntelligentScanSoItDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+              {});
+  CacheForcedTriggerInfo(
+      /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/false,
+      /*cache_expression=*/example_url_.GetContent());
+  // Because the RTLookupResponse does contain the LlamaForcedTriggerInfo but
+  // intelligent_scan field is set to false, we will not inquire the on device
+  // model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  // We do not check for on-device model availability if LLAMA force request
+  // does not request it initially.
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true, /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/false,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
+}
+
+TEST_F(
+    ClientSideDetectionHostScamDetectionTest,
+    RTLookupResponseDoesNotHaveLlamaForcedTriggerInfoSoItDoesNotTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+              {});
+  CacheForcedTriggerInfo(
+      /*has_llama_forced_trigger_info=*/false,
+      /*intelligent_scan=*/false,
+      /*cache_expression=*/example_url_.GetContent());
+  // Because the RTLookupResponse does not contain the LlamaForcedTriggerInfo at
+  // all and it wasn't found in the cache, we will not inquire the on device
+  // model.
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true, /*has_llama_forced_trigger_info=*/false,
+      /*intelligent_scan=*/false,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
+}
+
+TEST_F(
+    ClientSideDetectionHostScamDetectionTest,
+    RedirectChainContainsRTLookupResponseLlamaForcedTriggerInfoSoItTriggersOnDeviceLLM) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+              {});
+
+  GURL first_url_redirect("http://firsturlsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  // Set the example url to the first in the redirect chain so that the cache is
+  // done for the first URL.
+  SetExampleUrl(first_url_redirect);
+  CacheForcedTriggerInfo(/*has_llama_forced_trigger_info=*/true,
+                         /*intelligent_scan=*/true,
+                         /*cache_expression=*/first_url_redirect.GetContent());
+
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+
+  // Re-set the example URL to the final url in the redirect chain.
+  SetExampleUrl(third_url_redirect);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      first_url_redirect.GetContent(),
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true, /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/true,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/true);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       RedirectChainDoesNotContainRTLookupResponseLlamaForcedTriggerInfo) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+              {});
+
+  GURL first_url_redirect("http://firsturlnotsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  // Set the example url to the first in the redirect chain so that the cache is
+  // done for the first URL. The force request will exist, but the
+  // LlamaForcedTriggerInfo will not.
+  SetExampleUrl(first_url_redirect);
+  CacheForcedTriggerInfo(/*has_llama_forced_trigger_info=*/false,
+                         /*intelligent_scan=*/false,
+                         /*cache_expression=*/first_url_redirect.GetContent());
+
+  // Re-set the example URL to the final url in the redirect chain.
+  SetExampleUrl(third_url_redirect);
+
+  // Because there is no forced trigger info in the first URL in the referrer
+  // chain either, there won't be any on-device model calls.
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true,
+      /*has_llama_forced_trigger_info=*/false,
+      /*intelligent_scan=*/false,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/false);
+}
+
+TEST_F(
+    ClientSideDetectionHostScamDetectionTest,
+    RedirectChainDoesContainRTLookupResponseLlamaForcedTriggerInfoButKillswitchIsEnabled) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionForcedLlamaRedirectChainKillswitch,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+              {});
+
+  GURL first_url_redirect("http://firsturlnotsuspicious.com/");
+  GURL second_url_redirect("http://secondurlnotsuspicious.com/");
+  GURL third_url_redirect("http://thirdurlnotsuspicious.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(first_url_redirect, false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(second_url_redirect,
+                                                     false);
+  database_manager_->SetAllowlistLookupDetailsForUrl(third_url_redirect, false);
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      first_url_redirect, web_contents());
+  navigation->Start();
+  navigation->Redirect(second_url_redirect);
+  navigation->Redirect(third_url_redirect);
+  navigation->Commit();
+
+  content::NavigationEntry* entry =
+      web_contents()->GetController().GetVisibleEntry();
+
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(entry->GetRedirectChain().size(), 3u);
+
+  // Set the example url to the first in the redirect chain so that the cache is
+  // done for the first URL. The force request will exist and the
+  // LlamaForcedTriggerInfo as well, but due to killswitch, it won't matter.
+  SetExampleUrl(first_url_redirect);
+  CacheForcedTriggerInfo(/*has_llama_forced_trigger_info=*/true,
+                         /*intelligent_scan=*/true,
+                         /*cache_expression=*/first_url_redirect.GetContent());
+
+  // Re-set the example URL to the final url in the redirect chain.
+  SetExampleUrl(third_url_redirect);
+
+  // There is a LlamaForcedTriggerInfo, but due to the killswitch, there won't
+  // be any on-device model calls.
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
+
+  // Due to the killswitch, there will be no LlamaForcedTriggerInfo found in the
+  // redirect chain.
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true,
+      /*has_llama_forced_trigger_info=*/false,
+      /*intelligent_scan=*/true,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
+}
+
+TEST_F(
+    ClientSideDetectionHostTest,
+    FullscreenApiCallChecksAllowlistInPreClassificationAndDoesNotProceedWithClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  enabled_features.push_back(kClientSideDetectionAcceptHCAllowlist);
+  SetFeatures(enabled_features, {});
+
+  csd_host_->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0f);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 1);
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  csd_host_->DidToggleFullscreenModeForTab(false, false);
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnFullscreenApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.FullscreenApi", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.FullscreenApi",
+      PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       TwoFullscreenApiTriggersOnSamePageOnlyLogsOnePreclassificationCheck) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, nullptr, nullptr, nullptr, nullptr,
+                                nullptr);
+  csd_host_->DidToggleFullscreenModeForTab(false, false);
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.FullscreenApi", 1);
+
+  // We do not expect preclassification checks this time because we've done it
+  // already on the same page.
+  csd_host_->DidToggleFullscreenModeForTab(false, false);
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.FullscreenApi", 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       TwoKeyboardLockRequestsOnSamePageOnlyLogsOnePreclassificationCheck) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host3.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, true);
+
+  // Keyboard lock request incoming, which triggers preclassification checks.
+  ExpectPreClassificationChecks(
+      /*url=*/url, /*is_private=*/&kFalse,
+      /*match_csd_allowlist=*/nullptr, /*get_valid_cached_result=*/nullptr,
+      /*over_phishing_report_limit=*/nullptr, /*is_local=*/nullptr);
+
+  csd_host_->KeyboardLockRequested();
+  WaitAndCheckPreClassificationChecks();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested", 1);
+
+  // We trigger keyboard lock again, but because we're still on the same page,
+  // we do not trigger preclassification again.
+  csd_host_->KeyboardLockRequested();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested", 1);
+}
+
+TEST_F(
+    ClientSideDetectionHostScamDetectionTest,
+    RTLookupResponseLlamaForcedTriggerInfoTriggersOnDeviceLLMAndShowWarning) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+               kClientSideDetectionShowLlamaScamVerdictWarning},
+              {});
+  CacheForcedTriggerInfo(
+      /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/true,
+      /*cache_expression=*/example_url_.GetContent());
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+
+  UnsafeResource resource;
+  resource.threat_subtype = ThreatSubtype::SCAM_EXPERIMENT_VERDICT_2;
+  // We do expect the blocking page to pop up on a non-phishy response with the
+  // scam experiment verdict because
+  // kClientSideDetectionShowLlamaScamVerdictWarning is now enabled despite the
+  // is_phishy field is false.
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasScamThreatSubtype(resource)))
+      .Times(1);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true, /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/true,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
+}
+
+TEST_F(
+    ClientSideDetectionHostScamDetectionTest,
+    RTLookupResponseLlamaForcedTriggerInfoTriggersOnDeviceLLMButNotShowWarningDueToDisabledStudy) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection},
+              {kClientSideDetectionShowLlamaScamVerdictWarning});
+
+  CacheForcedTriggerInfo(
+      /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/true,
+      /*cache_expression=*/example_url_.GetContent());
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/
+      example_url_.GetContent(),
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+  // Now we run the callback to receive a server response. Because the study is
+  // disabled, we do NOT expect the blocking page to pop up on a non-phishy
+  // response with the scam experiment verdict.
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
+
+  // Although the phishing detection done is set to TRIGGER_MODELS, it will
+  // eventually switch to FORCE_REQUEST because the verdict cache manager
+  // contains a suspicious RTLookupResponse.
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::FORCE_REQUEST,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_2);
+  VerifyForcedTriggerScamDetectionHistograms(
+      /*force_request=*/true, /*has_llama_forced_trigger_info=*/true,
+      /*intelligent_scan=*/true,
+      /*redirect_chain_contains_llama_forced_trigger_info=*/std::nullopt);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       CatchAllScamExperimentVerdictDoesNotShowWarning) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+               kClientSideDetectionShowScamVerdictWarning,
+               kClientSideDetectionShowLlamaScamVerdictWarning},
+              {});
+
+  EXPECT_CALL(*csd_service_, InquireOnDeviceModel(_, _)).Times(0);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/false,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY);
+  // Because the callback responds with the catch all verdict, we will not show
+  // a warning.
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
+
+  // The verdict's is_phishing is true, so that we send a ping and await a
+  // response.
+  PhishingDetectionDone(/*is_phishing=*/true, /*client_score=*/0.8f,
+                        ClientSideDetectionType::TRIGGER_MODELS,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  // Although the warning has not been displayed, we should still check that the
+  // histogram has been logged. In addition, because the client side detection
+  // type is TRIGGER_MODELS, we do not check for on device model availability.
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::TRIGGER_MODELS,
+      /*is_on_device_model_available=*/std::nullopt,
+      /*model_has_successful_response=*/std::nullopt,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_TELEMETRY);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       CatchAllEnforcementScamExperimentVerdictDoesNotShowWarningDueToStudies) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection},
+              {kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+               kClientSideDetectionShowScamVerdictWarning,
+               kClientSideDetectionShowLlamaScamVerdictWarning});
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+
+  // Now we run the callback to receive a server response. Because the callback
+  // responds with the catch all enforcement verdict, but the studies are
+  // disabled, we will NOT show a warning.
+  EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+}
+
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       CatchAllEnforcementScamExperimentVerdictDoesShowWarning) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionBrandAndIntentForScamDetection,
+               kClientSideDetectionSendLlamaForcedTriggerInfo,
+               kClientSideDetectionLlamaForcedTriggerInfoForScamDetection,
+               kClientSideDetectionShowScamVerdictWarning,
+               kClientSideDetectionShowLlamaScamVerdictWarning},
+              {});
+  SetInquireOnDeviceModelCallback(/*should_return_response=*/true);
+  SetSendClientReportPhishingRequestCallback(
+      /*has_expected_brand_and_intent=*/true,
+      /*expected_no_info_reason=*/std::nullopt,
+      /*expected_llama_forced_trigger_info_trigger_url=*/std::nullopt,
+      /*returned_is_phishing=*/false,
+      /*returned_intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
+
+  UnsafeResource resource;
+  resource.threat_subtype =
+      ThreatSubtype::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT;
+  // Because the callback responds with the catch all enforcement verdict, we
+  // WILL show a warning.
+  EXPECT_CALL(*ui_manager_.get(),
+              DisplayBlockingPage(HasScamThreatSubtype(resource)))
+      .Times(1);
+
+  PhishingDetectionDone(/*is_phishing=*/false, /*client_score=*/0.8f,
+                        ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED,
+                        /*did_match_high_confidence_allowlist=*/false);
+
+  VerifyExpectedCalls();
+  VerifyGeneralScamDetectionHistograms(
+      /*expected_request_type=*/ClientSideDetectionType::
+          KEYBOARD_LOCK_REQUESTED,
+      /*is_on_device_model_available=*/true,
+      /*model_has_successful_response=*/true,
+      /*intelligent_scan_verdict=*/
+      IntelligentScanVerdict::SCAM_EXPERIMENT_CATCH_ALL_ENFORCEMENT);
 }
 
 }  // namespace safe_browsing

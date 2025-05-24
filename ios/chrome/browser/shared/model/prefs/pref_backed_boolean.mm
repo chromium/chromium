@@ -10,6 +10,9 @@
 
 @implementation PrefBackedBoolean {
   BooleanPrefMember _pref;
+
+  // Record whether -stop was called.
+  BOOL _stopped;
 }
 
 @synthesize observer = _observer;
@@ -20,13 +23,15 @@
     // Use weak pointer to prevent circular dependency.
     __weak PrefBackedBoolean* weakSelf = self;
     _pref.Init(prefName, prefs, base::BindRepeating(^() {
-                 PrefBackedBoolean* strongSelf = weakSelf;
-                 if (strongSelf) {
-                   [strongSelf.observer booleanDidChange:strongSelf];
-                 }
+                 [weakSelf notifyObserver];
                }));
   }
   return self;
+}
+
+- (void)dealloc {
+  CHECK(_stopped, base::NotFatalUntil::M140)
+      << "-stop should be called on PrefBackedBoolean";
 }
 
 - (BOOL)value {
@@ -38,7 +43,12 @@
 }
 
 - (void)stop {
+  _stopped = YES;
   _pref.Destroy();
+}
+
+- (void)notifyObserver {
+  [_observer booleanDidChange:self];
 }
 
 @end

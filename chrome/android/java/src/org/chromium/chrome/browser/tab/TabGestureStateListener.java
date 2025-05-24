@@ -4,25 +4,31 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.GestureListenerManager;
 import org.chromium.content_public.browser.GestureStateListener;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * {@link GestureStateListener} implementation for a {@link Tab}. Associated with an active
- * {@link WebContents} via its {@link GestureListenerManager}. The listener is managed as
- * UserData for the Tab, with WebContents updated as the active one changes over time.
+ * {@link GestureStateListener} implementation for a {@link Tab}. Associated with an active {@link
+ * WebContents} via its {@link GestureListenerManager}. The listener is managed as UserData for the
+ * Tab, with WebContents updated as the active one changes over time.
  */
+@NullMarked
 public final class TabGestureStateListener extends TabWebContentsUserData {
     private static final Class<TabGestureStateListener> USER_DATA_KEY =
             TabGestureStateListener.class;
 
     private final Tab mTab;
-    private GestureStateListener mGestureListener;
+    private @Nullable GestureStateListener mGestureListener;
 
     /**
      * Creates TabGestureStateListener and lets the WebContentsUserData of the Tab manage it.
+     *
      * @param tab Tab instance that the active WebContents instance gets loaded in.
      */
     public static TabGestureStateListener from(Tab tab) {
@@ -42,7 +48,9 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
 
     @Override
     public void initWebContents(WebContents webContents) {
+        assert mGestureListener == null;
         GestureListenerManager manager = GestureListenerManager.fromWebContents(webContents);
+        assumeNonNull(manager);
         mGestureListener =
                 new GestureStateListener() {
                     @Override
@@ -86,7 +94,7 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
                     }
 
                     private void onScrollingStateChanged() {
-                        boolean scrolling = manager != null ? manager.isScrollInProgress() : false;
+                        boolean scrolling = manager.isScrollInProgress();
                         RewindableIterator<TabObserver> observers =
                                 ((TabImpl) mTab).getTabObservers();
                         while (observers.hasNext()) {
@@ -98,10 +106,12 @@ public final class TabGestureStateListener extends TabWebContentsUserData {
     }
 
     @Override
-    public void cleanupWebContents(WebContents webContents) {
+    public void cleanupWebContents(@Nullable WebContents webContents) {
         if (webContents != null) {
             GestureListenerManager manager = GestureListenerManager.fromWebContents(webContents);
-            if (manager != null) manager.removeListener(mGestureListener);
+            if (manager != null && mGestureListener != null) {
+                manager.removeListener(mGestureListener);
+            }
         }
         mGestureListener = null;
     }

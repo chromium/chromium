@@ -16,7 +16,3 @@ bool operator==(const PromoData& lhs, const PromoData& rhs) {
   return lhs.middle_slot_json == rhs.middle_slot_json &&
          lhs.promo_log_url == rhs.promo_log_url && lhs.promo_id == rhs.promo_id;
 }
-
-bool operator!=(const PromoData& lhs, const PromoData& rhs) {
-  return !(lhs == rhs);
-}

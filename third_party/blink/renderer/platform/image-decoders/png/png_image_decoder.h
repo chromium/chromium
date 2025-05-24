@@ -33,6 +33,9 @@
 
 namespace blink {
 
+// This class decodes the PNG image format using `libpng`.  This class also
+// provides support for chunks that are not directly supported by `libpng` (e.g.
+// APNG chunks like `acTL` or `fdAT`, or color-space chunks like `cICP`).
 class PLATFORM_EXPORT PNGImageDecoder final : public ImageDecoder {
  public:
   PNGImageDecoder(AlphaOption,

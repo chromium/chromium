@@ -31,6 +31,10 @@
 
 class Profile;
 
+namespace base {
+class Value;
+}
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -170,6 +174,22 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   void TabNavigationPathEntriesDeleted(SessionID window_id,
                                        SessionID tab_id) override;
 
+#if DCHECK_IS_ON()
+  // Returns the state of this class and logs for the
+  // chrome://internals/session-service debug page. The logs are in reverse
+  // order for truncation ease. This value is NOT STABLE -
+  // do not rely on it's contents for anything.
+  virtual base::Value ToDebugValue() const;
+#endif  // DCHECK_IS_ON()
+
+  // Some platforms support windowing system level session management, in such
+  // cases, GetPlatformSessionId() returns a non-empty string identifier
+  // provided by the platform at session initialization and persisted in the
+  // session command backing storage for future session restoration.
+  // See ui/ozone/public/platfrom_session_manager.h for more details.
+  std::optional<std::string> GetPlatformSessionId();
+  void SetPlatformSessionIdForTesting(const std::string& id);
+
  protected:
   // Creates a SessionService for the specified profile.
   SessionServiceBase(Profile* profile, SessionServiceType type);
@@ -276,6 +296,14 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   friend class SessionServiceBaseTestHelper;
   friend class SessionServiceTestHelper;
 
+  // If supported by the platform, initializes windowing system level session
+  // and requests `discarded_window_ids` to be removed from the session. If it
+  // succeeds, `platform_session_id_` should contain the session id to be used
+  // by browser windows to associate them to a given platform session.
+  void InitializePlatformSessionIfNeeded(
+      const std::string& restored_platform_session_id,
+      const std::set<SessionID>& discarded_window_ids);
+
   // This is always non-null.
   raw_ptr<Profile> profile_;
 
@@ -306,6 +334,10 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   bool is_saving_enabled_ = true;
 
   bool did_save_commands_at_least_once_ = false;
+
+  // The platform session identifier, if supported and successfully initialized.
+  // See GetPlatformSessionId() for more details.
+  std::optional<std::string> platform_session_id_;
 
   base::WeakPtrFactory<SessionServiceBase> weak_factory_{this};
 };

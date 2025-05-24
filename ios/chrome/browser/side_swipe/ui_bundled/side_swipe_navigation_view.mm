@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_gesture_recognizer.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
-#import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -29,10 +29,12 @@ typedef struct {
 
 CGFloat MapValueToRange(FloatRange from, FloatRange to, CGFloat value) {
   DCHECK(from.min < from.max);
-  if (value <= from.min)
+  if (value <= from.min) {
     return to.min;
-  if (value >= from.max)
+  }
+  if (value >= from.max) {
     return to.max;
+  }
   const CGFloat fromDst = from.max - from.min;
   const CGFloat toDst = to.max - to.min;
   return to.min + ((value - from.min) / fromDst) * toDst;
@@ -67,7 +69,7 @@ const NSTimeInterval kSelectionAnimationDuration = 0.5;
 UIColor* SelectionCircleColor() {
   return [UIColor colorNamed:kTextfieldBackgroundColor];
 }
-}
+}  // namespace
 
 @interface SideSwipeNavigationView () {
  @private
@@ -134,9 +136,9 @@ UIColor* SelectionCircleColor() {
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
-        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
-        UITraitUserInterfaceLevel.self
+        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+        UITraitUserInterfaceLevel.class
       ]);
       __weak __typeof(self) weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
@@ -155,16 +157,18 @@ UIColor* SelectionCircleColor() {
   CGFloat padding = floor(std::abs(currentPoint.x - half) / half);
 
   // Push towards the edges.
-  if (currentPoint.x > half)
+  if (currentPoint.x > half) {
     currentPoint.x += padding;
-  else
+  } else {
     currentPoint.x -= padding;
+  }
 
   // But don't go past the edges.
-  if (currentPoint.x < 0)
+  if (currentPoint.x < 0) {
     currentPoint.x = 0;
-  else if (currentPoint.x > width)
+  } else if (currentPoint.x > width) {
     currentPoint.x = width;
+  }
 
   return currentPoint;
 }
@@ -407,6 +411,15 @@ UIColor* SelectionCircleColor() {
                        withDirection:direction
                         withDuration:kSelectionAnimationDuration];
   }
+}
+
+- (void)moveTargetViewOnScreenWithAnimation {
+  // NO-OP
+}
+
+- (void)moveTargetViewOffscreenInDirection:
+    (UISwipeGestureRecognizerDirection)direction {
+  // NO-OP
 }
 
 - (void)animateTargetViewCompleted:(BOOL)completed

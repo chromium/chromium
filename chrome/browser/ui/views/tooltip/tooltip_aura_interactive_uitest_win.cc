@@ -21,7 +21,7 @@
 
 class TooltipAuraUiaTest : public InProcessBrowserTest {
  public:
-  TooltipAuraUiaTest() {}
+  TooltipAuraUiaTest() = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{::features::kUiaProvider};

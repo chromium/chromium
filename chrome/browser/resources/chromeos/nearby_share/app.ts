@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import '/shared/nearby_onboarding_one_page.js';
-import '/shared/nearby_onboarding_page.js';
 import '/shared/nearby_visibility_page.js';
 import './nearby_confirmation_page.js';
 import './nearby_discovery_page.js';
@@ -14,7 +13,6 @@ import {NearbyShareSettingsMixin} from '/shared/nearby_share_settings_mixin.js';
 import {CloseReason} from '/shared/types.js';
 import type {CrViewManagerElement} from 'chrome://resources/ash/common/cr_elements/cr_view_manager/cr_view_manager.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -28,7 +26,6 @@ import {getTemplate} from './app.html.js';
 enum Page {
   CONFIRMATION = 'confirmation',
   DISCOVERY = 'discovery',
-  ONBOARDING = 'onboarding',
   ONEPAGE_ONBOARDING = 'onboarding-one',
   VISIBILITY = 'visibility',
 }
@@ -53,7 +50,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
   static get properties() {
     return {
       /** Mirroring the enum so that it can be used from HTML bindings. */
-      Page: {
+      pageEnum_: {
         type: Object,
         value: Page,
       },
@@ -125,14 +122,6 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
   }
 
   /**
-   * Determines if the feature flag for One-page onboarding workflow is enabled.
-   * @return Whether the one-page onboarding is enabled
-   */
-  private isOnePageOnboardingEnabled_(): boolean {
-    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
-  }
-
-  /**
    * Called when component is attached and all settings values have been
    * retrieved.
    */
@@ -150,9 +139,7 @@ export class NearbyShareAppElement extends NearbyShareAppElementBase {
       return;
     }
 
-    const onboardingPage = this.isOnePageOnboardingEnabled_() ?
-        Page.ONEPAGE_ONBOARDING :
-        Page.ONBOARDING;
+    const onboardingPage = Page.ONEPAGE_ONBOARDING;
     this.$.viewManager.switchView(onboardingPage);
     this.focusOnPageContainer_(onboardingPage);
   }

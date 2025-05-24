@@ -40,7 +40,7 @@ namespace extensions {
 class MimeHandlerViewEmbedder : public content::WebContentsObserver {
  public:
   // Returns the instance associated with an ongoing navigation in a frame
-  // identified by |frame_tree_node_id| if it exists.
+  // identified by `frame_tree_node_id` if it exists.
   static MimeHandlerViewEmbedder* Get(
       content::FrameTreeNodeId frame_tree_node_id);
 
@@ -80,7 +80,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
       mojo::PendingRemote<mime_handler::BeforeUnloadControl>
           before_unload_control_remote,
       std::unique_ptr<guest_view::GuestViewBase> guest);
-  // Returns null before |render_frame_host_| is known.
+  // Returns null before `render_frame_host_` is known.
   mojom::MimeHandlerViewContainerManager* GetContainerManager();
 
   // The ID for the embedder frame of MimeHandlerViewGuest.
@@ -89,7 +89,7 @@ class MimeHandlerViewEmbedder : public content::WebContentsObserver {
   const std::string stream_id_;
   const std::string internal_id_;
 
-  // The frame associated with |frame_tree_node_id_|. Known to MHVE after the
+  // The frame associated with `frame_tree_node_id_`. Known to MHVE after the
   // navigation commits.
   raw_ptr<content::RenderFrameHost> render_frame_host_ = nullptr;
   mojo::AssociatedRemote<mojom::MimeHandlerViewContainerManager>

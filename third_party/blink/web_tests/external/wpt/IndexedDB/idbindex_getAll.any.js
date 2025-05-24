@@ -1,214 +1,86 @@
-// META: global=window,worker
 // META: title=IndexedDB: Test IDBIndex.getAll
+// META: global=window,worker
+// META: script=resources/nested-cloning-common.js
 // META: script=resources/support.js
+// META: script=resources/support-get-all.js
+// META: script=resources/support-promises.js
+// META: timeout=long
 
 'use_strict';
 
-const alphabet = 'abcdefghijklmnopqrstuvwxyz'.split('');
-const ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: 'C'}, 'Single item get');
 
-function getall_test(func, name) {
-  indexeddb_test(
-    function(t, connection, tx) {
-      let store = connection.createObjectStore('generated',
-            {autoIncrement: true, keyPath: 'id'});
-      let index = store.createIndex('test_idx', 'upper');
-      alphabet.forEach(function(letter) {
-        store.put({ch: letter, upper: letter.toUpperCase()});
-      });
+index_get_all_values_test(
+    /*storeName=*/ 'empty', /*options=*/ undefined, 'Empty object store');
 
-      store = connection.createObjectStore('out-of-line', null);
-      index = store.createIndex('test_idx', 'upper');
-      alphabet.forEach(function(letter) {
-        store.put({ch: letter, upper: letter.toUpperCase()}, letter);
-      });
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ undefined, 'Get all');
 
-      store = connection.createObjectStore('out-of-line-not-unique', null);
-      index = store.createIndex('test_idx', 'half');
-      alphabet.forEach(function(letter) {
-        if (letter <= 'm')
-          store.put({ch: letter, half: 'first'}, letter);
-        else
-          store.put({ch: letter, half: 'second'}, letter);
-      });
+index_get_all_values_test(
+    /*storeName=*/ 'generated', /*options=*/ undefined,
+    'Get all with generated keys');
 
-      store = connection.createObjectStore('out-of-line-multi', null);
-      index = store.createIndex('test_idx', 'attribs', {multiEntry: true});
-      alphabet.forEach(function(letter) {
-        attrs = [];
-        if (['a', 'e', 'i', 'o', 'u'].indexOf(letter) != -1)
-          attrs.push('vowel');
-        else
-          attrs.push('consonant');
-        if (letter == 'a')
-          attrs.push('first');
-        if (letter == 'z')
-          attrs.push('last');
-        store.put({ch: letter, attribs: attrs}, letter);
-      });
+index_get_all_values_test(
+    /*storeName=*/ 'large-values', /*options=*/ undefined,
+    'Get all with large values');
 
-      store = connection.createObjectStore('empty', null);
-      index = store.createIndex('test_idx', 'upper');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {count: 10}, 'maxCount=10');
+
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.bound('G', 'M')}, 'Get bound range');
+
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.bound('G', 'M'), count: 3},
+    'Get bound range with maxCount');
+
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {
+      query:
+          IDBKeyRange.bound('G', 'K', /*lowerOpen=*/ false, /*upperOpen=*/ true)
     },
-    func,
-    name
-  );
-}
+    'Get upper excluded');
 
-function createGetAllRequest(t, storeName, connection, range, maxCount) {
-    const transaction = connection.transaction(storeName, 'readonly');
-    const store = transaction.objectStore(storeName);
-    const index = store.index('test_idx');
-    const req = index.getAll(range, maxCount);
-    req.onerror = t.unreached_func('getAll request should succeed');
-    return req;
-}
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {
+      query:
+          IDBKeyRange.bound('G', 'K', /*lowerOpen=*/ true, /*upperOpen=*/ false)
+    },
+    'Get lower excluded');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection, 'C');
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), ['c']);
-          assert_array_equals(data.map(function(e) { return e.upper; }), ['C']);
-          t.done();
-      });
-    }, 'Single item get');
+index_get_all_values_test(
+    /*storeName=*/ 'generated',
+    /*options=*/ {query: IDBKeyRange.bound(4, 15), count: 3},
+    'Get bound range (generated) with maxCount');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'empty', connection);
-      req.onsuccess = t.step_func(function(evt) {
-          assert_array_equals(evt.target.result, [],
-              'getAll() on empty object store should return an empty array');
-          t.done();
-      });
-    }, 'Empty object store');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {query: 'Doesn\'t exist'},
+    'Non existent key');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection);
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), alphabet);
-          assert_array_equals(data.map(function(e) { return e.upper; }), ALPHABET);
-          t.done();
-      });
-    }, 'Get all keys');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {count: 0}, 'maxCount=0');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection, undefined,
-                                    10);
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), 'abcdefghij'.split(''));
-          assert_array_equals(data.map(function(e) { return e.upper; }), 'ABCDEFGHIJ'.split(''));
-          t.done();
-      });
-    }, 'maxCount=10');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line', /*options=*/ {count: 4294967295},
+    'Max value count');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection,
-                                    IDBKeyRange.bound('G', 'M'));
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_array_equals(data.map(function(e) { return e.ch; }), 'ghijklm'.split(''));
-          assert_array_equals(data.map(function(e) { return e.upper; }), 'GHIJKLM'.split(''));
-          t.done();
-      });
-    }, 'Get bound range');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.upperBound('0')},
+    'Query with empty range where  first key < upperBound');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection,
-                                    IDBKeyRange.bound('G', 'M'), 3);
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), 'ghi'.split(''));
-          assert_array_equals(data.map(function(e) { return e.upper; }), 'GHI'.split(''));
-          t.done();
-      });
-    }, 'Get bound range with maxCount');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line',
+    /*options=*/ {query: IDBKeyRange.lowerBound('ZZ')},
+    'Query with empty range where lowerBound < last key');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection,
-          IDBKeyRange.bound('G', 'K', false, true));
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), 'ghij'.split(''));
-          assert_array_equals(data.map(function(e) { return e.upper; }), 'GHIJ'.split(''));
-          t.done();
-      });
-    }, 'Get upper excluded');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line-not-unique', /*options=*/ {query: 'first'},
+    'Retrieve multiEntry key');
 
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection,
-          IDBKeyRange.bound('G', 'K', true, false));
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), 'hijk'.split(''));
-          assert_array_equals(data.map(function(e) { return e.upper; }), 'HIJK'.split(''));
-          t.done();
-      });
-    }, 'Get lower excluded');
-
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'generated',
-          connection, IDBKeyRange.bound(4, 15), 3);
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_true(Array.isArray(data));
-          assert_equals(data.length, 0);
-          t.done();
-      });
-    }, 'Get bound range (generated) with maxCount');
-
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line',
-          connection, "Doesn't exist");
-      req.onsuccess = t.step_func(function(evt) {
-          assert_array_equals(evt.target.result, [],
-              'getAll() using a nonexistent key should return an empty array');
-          t.done();
-      req.onerror = t.unreached_func('getAll request should succeed');
-      });
-    }, 'Non existent key');
-
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line', connection,
-          undefined, 0);
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), alphabet);
-          assert_array_equals(data.map(function(e) { return e.upper; }), ALPHABET);
-          t.done();
-      });
-    }, 'maxCount=0');
-
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line-not-unique', connection,
-                                    'first');
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), 'abcdefghijklm'.split(''));
-          assert_true(data.every(function(e) { return e.half === 'first'; }));
-          t.done();
-      });
-    }, 'Retrieve multiEntry key');
-
-getall_test(function(t, connection) {
-      const req = createGetAllRequest(t, 'out-of-line-multi', connection,
-                                    'vowel');
-      req.onsuccess = t.step_func(function(evt) {
-          const data = evt.target.result;
-          assert_class_string(data, 'Array', 'result should be an array');
-          assert_array_equals(data.map(function(e) { return e.ch; }), ['a', 'e', 'i', 'o', 'u']);
-          assert_array_equals(data[0].attribs, ['vowel', 'first']);
-          assert_true(data.every(function(e) { return e.attribs[0] === 'vowel'; }));
-          t.done();
-      });
-    }, 'Retrieve one key multiple values');
+index_get_all_values_test(
+    /*storeName=*/ 'out-of-line-multi', /*options=*/ {query: 'vowel'},
+    'Retrieve one key multiple values');

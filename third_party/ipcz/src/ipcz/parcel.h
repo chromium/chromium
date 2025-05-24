@@ -5,11 +5,13 @@
 #ifndef IPCZ_SRC_IPCZ_PARCEL_H_
 #define IPCZ_SRC_IPCZ_PARCEL_H_
 
+#include <algorithm>
 #include <atomic>
 #include <cstddef>
 #include <cstdint>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "ipcz/api_object.h"
@@ -22,7 +24,6 @@
 #include "third_party/abseil-cpp/absl/base/macros.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
@@ -103,15 +104,15 @@ class Parcel {
   size_t data_size() const { return data_view().size(); }
 
   bool has_data_fragment() const {
-    return absl::holds_alternative<DataFragment>(data_.storage);
+    return std::holds_alternative<DataFragment>(data_.storage);
   }
   const Fragment& data_fragment() const {
     ABSL_ASSERT(has_data_fragment());
-    return absl::get<DataFragment>(data_.storage).fragment();
+    return std::get<DataFragment>(data_.storage).fragment();
   }
   const Ref<NodeLinkMemory>& data_fragment_memory() const {
     ABSL_ASSERT(has_data_fragment());
-    return absl::get<DataFragment>(data_.storage).memory();
+    return std::get<DataFragment>(data_.storage).memory();
   }
 
   absl::Span<Ref<APIObject>> objects_view() const { return objects_.view; }
@@ -135,6 +136,8 @@ class Parcel {
   // Note that the size of `out_handles` must not be larger than the size of
   // objects_view().
   void ConsumeHandles(absl::Span<IpczHandle> out_handles);
+
+  void SetEnvelope(DriverObject envelope);
 
   // Produces a log-friendly description of the Parcel, useful for various
   // debugging log messages.
@@ -189,10 +192,10 @@ class Parcel {
   // A variant backing type for the parcel's data. Data may be in shared memory,
   // heap-allocated and initialized from within the Parcel, or heap-allocated by
   // a received Message and moved into the Parcel from there.
-  using DataStorage = absl::variant<absl::monostate,
-                                    DataFragment,
-                                    std::vector<uint8_t>,
-                                    Message::ReceivedDataBuffer>;
+  using DataStorage = std::variant<std::monostate,
+                                   DataFragment,
+                                   std::vector<uint8_t>,
+                                   Message::ReceivedDataBuffer>;
 
   // Groups a DataStorage with a view into its data. This defines its own move
   // construction and assignment operators to ensure that moved-from data is
@@ -240,6 +243,8 @@ class Parcel {
   // updated by the containing Parcel as needed.
   size_t num_subparcels_ = 1;
   size_t subparcel_index_ = 0;
+
+  DriverObject envelope_;
 };
 
 }  // namespace ipcz

@@ -7,36 +7,37 @@
  * the annotations manager.
  */
 
-import {CountedIntersectionObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
-import {ElementWithSymbolIndex, HTMLElementWithSymbolIndex, isValidNode, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
-import {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
+import type {CountedIntersectionObserver} from '//ios/web/annotations/resources/text_dom_observer.js';
+import type {ElementWithSymbolIndex, HTMLElementWithSymbolIndex, NodeWithSymbolIndex} from '//ios/web/annotations/resources/text_dom_utils.js';
+import {isValidNode} from '//ios/web/annotations/resources/text_dom_utils.js';
+import type {IdleTaskTracker} from '//ios/web/annotations/resources/text_tasks.js';
 
 // Delay before starting text extraction.
-const EXTRACTION_TIMEOUT_MS = 300;
+export const EXTRACTION_TIMEOUT_MS = 300;
 
 // Using Symbol as property key ensure the data doesn't show up in
 // property key lists.
 
 // Tagged on an `Element` that is is visible according to IntersectionObserver.
-const visibleElement = Symbol('visibleElement');
+export const visibleElement = Symbol('visibleElement');
 
 // Tagged on parent chain of every element with `visibleElement`. It maintains
 // a count of how many descendants are visible and is used to avoid going
 // down uselessly a branch of the DOM that is 100% not visible when extracting
 // text.
-const visibleDescendantCount = Symbol('visibleDescendantCount');
+export const visibleDescendantCount = Symbol('visibleDescendantCount');
 
 // Tagged on an text `Node` that contribute to their parent element
 // `observedTextNodeCount`.
-const observedNode = Symbol('observedNode');
+export const observedNode = Symbol('observedNode');
 
 // Tagged on an `Element` that is is visible according to IntersectionObserver.
 // The attached value contains the number of text nodes child that have
 // requested observation.
-const observedTextNodeCount = Symbol('observedTextNodeCount');
+export const observedTextNodeCount = Symbol('observedTextNodeCount');
 
 // Interface to used parts of `IntersectionObserver`. Can be mocked easily.
-class InternalIntersectionObserver {
+export class InternalIntersectionObserver {
   constructor(
       _callback: IntersectionObserverCallback,
       _options?: IntersectionObserverInit) {}
@@ -46,7 +47,7 @@ class InternalIntersectionObserver {
 }
 
 // Real time `IntersectionObserverInterface` based on `IntersectionObserver`.
-class LiveIntersectionObserver implements InternalIntersectionObserver {
+export class LiveIntersectionObserver implements InternalIntersectionObserver {
   private observer: IntersectionObserver;
 
   constructor(
@@ -66,7 +67,7 @@ class LiveIntersectionObserver implements InternalIntersectionObserver {
 }
 
 // Interface for objects wanting to visit the visible part of the DOM.
-interface TextNodeVisitor {
+export interface TextNodeVisitor {
   // Called when starting the visit.
   begin(): void;
   // Called for visible text `textNode` with `textContent` not null.
@@ -81,7 +82,7 @@ interface TextNodeVisitor {
   end(): void;
 }
 
-class TextIntersectionObserver implements CountedIntersectionObserver {
+export class TextIntersectionObserver implements CountedIntersectionObserver {
   private intersectionOptions = {
     // Monitor viewport.
     root: null,
@@ -257,7 +258,7 @@ class TextIntersectionObserver implements CountedIntersectionObserver {
 
     node[observedNode] = true;
 
-    let count = element[observedTextNodeCount] ?? 0;
+    const count = element[observedTextNodeCount] ?? 0;
     if (count === 0) {
       this.observer?.observe(element);
     }
@@ -276,7 +277,7 @@ class TextIntersectionObserver implements CountedIntersectionObserver {
     if (!element || !isValidNode(element)) {
       return;
     }
-    let count = element[observedTextNodeCount] ?? 0;
+    const count = element[observedTextNodeCount] ?? 0;
     if (count === 1) {
       this.observer?.unobserve(element);
       delete element[observedTextNodeCount];
@@ -299,16 +300,4 @@ class TextIntersectionObserver implements CountedIntersectionObserver {
     this.observer?.disconnect();
     this.observer = null;
   }
-}
-
-export {
-  EXTRACTION_TIMEOUT_MS,
-  visibleElement,
-  visibleDescendantCount,
-  observedNode,
-  observedTextNodeCount,
-  TextIntersectionObserver,
-  TextNodeVisitor,
-  InternalIntersectionObserver,
-  LiveIntersectionObserver
 }

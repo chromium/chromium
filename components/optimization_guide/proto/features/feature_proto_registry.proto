@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+// This package contains protos that are not actually used in the compiled
+// binary, but instead configure which protos that generated reflection methods
+// support.
+package optimization_guide.proto.registry;
+
+option optimize_for = LITE_RUNTIME;
+
+import public "components/optimization_guide/proto/features/compose.proto";
+import public "components/optimization_guide/proto/features/example_for_testing.proto";
+import public "components/optimization_guide/proto/features/history_answer.proto";
+import public "components/optimization_guide/proto/features/history_query_intent.proto";
+import public "components/optimization_guide/proto/features/permissions_ai.proto";
+import public "components/optimization_guide/proto/features/prompt_api.proto";
+import public "components/optimization_guide/proto/features/proofreader_api.proto";
+import public "components/optimization_guide/proto/string_value.proto";
+import public "components/optimization_guide/proto/features/scam_detection.proto";
+import public "components/optimization_guide/proto/features/summarize.proto";
+import public "components/optimization_guide/proto/features/tab_organization.proto";
+import public "components/optimization_guide/proto/features/writing_assistance_api.proto";
+
+// Extra LoggingData message for using the Test capability on-device.
+message TestLoggingData {
+  optimization_guide.proto.StringValue request = 1;
+  optimization_guide.proto.StringValue response = 2;
+}
+
+// TODO(holte): Move this to summarize.proto
+message SummarizeLoggingData {
+  optimization_guide.proto.SummarizeRequest request = 1;
+  optimization_guide.proto.ComposeResponse response = 2;
+}
+
+// This message is never instantiated, it just enumerates the message types that
+// will be supported as requests/responses by on-device code.
+message OnDeviceFeatureProtoRegistry {
+  optimization_guide.proto.ComposeLoggingData a = 1;
+  optimization_guide.proto.HistoryAnswerLoggingData b = 2;
+  optimization_guide.proto.HistoryQueryIntentLoggingData c = 3;
+  optimization_guide.proto.PromptApiLoggingData d = 4;
+  TestLoggingData e = 5;
+  SummarizeLoggingData f = 6;
+  optimization_guide.proto.TabOrganizationLoggingData g = 7;
+  optimization_guide.proto.ScamDetectionLoggingData h = 8;
+  optimization_guide.proto.WritingAssistanceApiLoggingData i = 9;
+  ExampleForTestingData j = 10;
+  optimization_guide.proto.PermissionsAILoggingData k = 11;
+  optimization_guide.proto.ProofreaderApiLoggingData l = 12;
+}

@@ -68,7 +68,8 @@
           "builder": "mac-enterprise-companion-try-builder-rel",
           "group": "tryserver.chromium.enterprise_companion"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac11-x64-enterprise-companion-tester-rel/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -15,3 +15,131 @@ mojom("mojo_bindings") {
 
   disable_variants = true
 }
+
+source_set("access_code_cast") {
+  sources = [
+    "access_code_cast_dialog.h",
+    "access_code_cast_handler.h",
+    "access_code_cast_ui.h",
+  ]
+
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/media/router/discovery",
+    "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+    "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/media_router",
+    "//chrome/common",
+    "//components/access_code_cast/common:metrics",
+    "//components/media_router/browser",
+    "//components/media_router/common",
+    "//components/signin/public/identity_manager",
+    "//components/sync/service",
+    "//content/public/browser",
+    "//content/public/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/web_dialogs",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "access_code_cast_dialog.cc",
+    "access_code_cast_handler.cc",
+    "access_code_cast_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":access_code_cast",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/access_code_cast:resources",
+    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
+    "//chrome/common",
+    "//components/access_code_cast/common:metrics",
+    "//components/media_router/browser",
+    "//components/media_router/common",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/strings:components_strings",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//ui/display",
+    "//ui/views",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  sources = [
+    "access_code_cast_dialog_browsertest.cc",
+    "access_code_cast_handler_browsertest.cc",
+  ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":access_code_cast",
+    "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test/media_router/access_code_cast:access_code_cast_integration_base",
+    "//components/prefs",
+    "//components/sessions",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "access_code_cast_handler_unittest.cc" ]
+
+  deps = [
+    ":access_code_cast",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/media/router",
+    "//chrome/browser/media/router:test_support",
+    "//chrome/browser/media/router/discovery",
+    "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/global_media_controls:test_support",
+    "//chrome/browser/ui/media_router",
+    "//chrome/test:test_support",
+    "//components/media_router/browser",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common",
+    "//components/media_router/common/providers/cast/channel",
+    "//components/media_router/common/providers/cast/channel:test_support",
+    "//components/sessions",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

@@ -24,10 +24,12 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
+#include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/text_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -131,20 +133,12 @@ void ReportImagePixelInaccuracy(HTMLImageElement* image_element) {
 PaintTimingDetector::PaintTimingDetector(LocalFrameView* frame_view)
     : frame_view_(frame_view),
       text_paint_timing_detector_(
-          MakeGarbageCollected<TextPaintTimingDetector>(frame_view,
-                                                        this,
-                                                        nullptr /*set later*/)),
+          MakeGarbageCollected<TextPaintTimingDetector>(frame_view, this)),
       image_paint_timing_detector_(
-          MakeGarbageCollected<ImagePaintTimingDetector>(
-              frame_view,
-              nullptr /*set later*/)),
-      callback_manager_(
-          MakeGarbageCollected<PaintTimingCallbackManagerImpl>(frame_view)) {
+          MakeGarbageCollected<ImagePaintTimingDetector>(frame_view)) {
   if (PaintTimingVisualizer::IsTracingEnabled()) {
     visualizer_.emplace();
   }
-  text_paint_timing_detector_->ResetCallbackManager(callback_manager_.Get());
-  image_paint_timing_detector_->ResetCallbackManager(callback_manager_.Get());
 }
 
 void PaintTimingDetector::NotifyPaintFinished() {
@@ -156,20 +150,18 @@ void PaintTimingDetector::NotifyPaintFinished() {
   } else {
     visualizer_.reset();
   }
-  text_paint_timing_detector_->OnPaintFinished();
-  if (image_paint_timing_detector_) {
-    image_paint_timing_detector_->OnPaintFinished();
-  }
-  if (callback_manager_->CountCallbacks() > 0) {
-    callback_manager_->RegisterPaintTimeCallbackForCombinedCallbacks();
-  }
+
   LocalDOMWindow* window = frame_view_->GetFrame().DomWindow();
   if (window) {
     DOMWindowPerformance::performance(*window)->OnPaintFinished();
+
+    if (auto* heuristics = window->GetSoftNavigationHeuristics()) {
+      heuristics->OnPaintFinished();
+    }
   }
-  if (Document* document = frame_view_->GetFrame().GetDocument()) {
-    document->OnPaintFinished();
-  }
+
+  PaintTiming::From(*frame_view_->GetFrame().GetDocument())
+      .NotifyPaintFinished();
 }
 
 // static
@@ -529,8 +521,8 @@ void PaintTimingDetector::ReportIgnoredContent() {
 }
 
 const LargestContentfulPaintDetails&
-PaintTimingDetector::LatestLcpDetailsForTest() const {
-  return largest_contentful_paint_calculator_->LatestLcpDetails();
+PaintTimingDetector::LatestLcpDetailsForTest() {
+  return GetLargestContentfulPaintCalculator()->LatestLcpDetails();
 }
 
 bool PaintTimingDetector::IsUnrelatedSoftNavigationPaint(const Node& node) {
@@ -595,7 +587,6 @@ void PaintTimingDetector::Trace(Visitor* visitor) const {
   visitor->Trace(image_paint_timing_detector_);
   visitor->Trace(frame_view_);
   visitor->Trace(largest_contentful_paint_calculator_);
-  visitor->Trace(callback_manager_);
   visitor->Trace(potential_soft_navigation_image_record_);
   visitor->Trace(potential_soft_navigation_text_record_);
 }

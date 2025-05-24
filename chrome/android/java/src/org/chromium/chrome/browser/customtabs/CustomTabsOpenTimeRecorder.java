@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -144,7 +145,8 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
         @FinishReason int finishReason = mNavigationController.getFinishReason();
         if (finishReason == FinishReason.USER_NAVIGATION
                 || finishReason == FinishReason.REPARENTING
-                || finishReason == FinishReason.OPEN_IN_BROWSER) {
+                || finishReason == FinishReason.OPEN_IN_BROWSER
+                || finishReason == FinishReason.HANDLED_BY_OS) {
             mCloseCause = CloseCause.USER_ACTION_CHROME;
         }
     }
@@ -157,7 +159,7 @@ class CustomTabsOpenTimeRecorder implements StartStopWithNativeObserver {
     interface Natives {
         void recordCustomTabSession(
                 long time,
-                String packageName,
+                @JniType("std::string") String packageName,
                 long sessionDuration,
                 boolean wasUserClosed,
                 boolean isPartialCct);

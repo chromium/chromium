@@ -8,15 +8,19 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_container.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_into_view_options.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -1193,8 +1197,9 @@ TEST_F(ElementTest, ColumnPseudoElements) {
 
   Element* element = GetElementById("test");
 
+  PhysicalRect dummy_column_rect;
   PseudoElement* first_column_pseudo_element =
-      element->CreateColumnPseudoElement();
+      element->GetOrCreateColumnPseudoElementIfNeeded(0u, dummy_column_rect);
   ASSERT_TRUE(first_column_pseudo_element);
   EXPECT_EQ(first_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1205,7 +1210,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
             0.3f);
 
   PseudoElement* second_column_pseudo_element =
-      element->CreateColumnPseudoElement();
+      element->GetOrCreateColumnPseudoElementIfNeeded(1u, dummy_column_rect);
   ASSERT_TRUE(second_column_pseudo_element);
   EXPECT_EQ(second_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1217,7 +1222,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
       0.3f);
 
   PseudoElement* third_column_pseudo_element =
-      element->CreateColumnPseudoElement();
+      element->GetOrCreateColumnPseudoElementIfNeeded(2u, dummy_column_rect);
   ASSERT_TRUE(third_column_pseudo_element);
   EXPECT_EQ(third_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
   ASSERT_TRUE(
@@ -1235,6 +1240,174 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
+}
+
+TEST_F(ElementTest, TheCheckMarkPseudoElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      .checked::checkmark {
+        content: "*";
+      }
+
+      .base-button {
+        appearance: base-select;
+      }
+
+      .base-picker::picker(select) {
+        appearance: base-select;
+      }
+    </style>
+
+    <div class="checked" id="a-div"></div>
+
+    <select class="checked">
+      <option id="not-base-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-button">
+      <option id="base-button-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-picker">
+      <option id="base-picker-option" value="the only option"></option>
+    </select>
+
+    <select class="checked base-picker base-button" id="target">
+      <option id="target-option" value="the only option"></option>
+    </select>
+    )HTML");
+
+  // GetPseudoElement() relies on style recalc.
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  auto checkmark_pseudo_for = [this](const char* id) -> PseudoElement* {
+    Element* e = GetElementById(id);
+    return e->GetPseudoElement(kPseudoIdCheckMark);
+  };
+
+  // The `::checkmark` pseudo element should only be created for option
+  // elements in an appearance:base-select.
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("a-div"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("not-base-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("base-button-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("base-picker-option"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("target"));
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("target-option"));
+
+  LocalFrame::NotifyUserActivation(
+      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+  To<HTMLSelectElement>(GetElementById("target"))
+      ->showPicker(ASSERT_NO_EXCEPTION);
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  EXPECT_EQ(nullptr, checkmark_pseudo_for("target"));
+  EXPECT_NE(nullptr, checkmark_pseudo_for("target-option"));
+}
+
+TEST_F(ElementTest, ThePickerIconPseudoElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #a-div::picker-icon {
+        content: "*";
+      }
+
+      #target::picker-icon {
+        content: "*";
+      }
+    </style>
+
+    <div id="a-div"></div>
+
+    <select id="target">
+      <option id="target-option" value="the only option"></option>
+    </select>
+    )HTML");
+
+  // GetPseudoElement() relies on style recalc.
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  Element* div = GetElementById("a-div");
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdPickerIcon));
+
+  // The `::picker-icon` pseudo element should only be created for select
+  // elements.
+  Element* target = GetElementById("target");
+  EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdPickerIcon));
+
+  Element* target_option = GetElementById("target-option");
+  EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdPickerIcon));
+}
+
+TEST_F(ElementTest, GenerateScrollMarkerGroup) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style id="test-style">
+      #scroller {
+        scroll-marker-group: before;
+        overflow: scroll;
+      }
+      #non-scroller {
+        scroll-marker-group: before;
+      }
+    </style>
+    <div id="scroller"></div>
+    <div id="non-scroller"></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* scroller = GetElementById("scroller");
+  Element* non_scroller = GetElementById("non-scroller");
+
+  EXPECT_TRUE(scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+  EXPECT_FALSE(
+      non_scroller->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore));
+}
+
+TEST_F(ElementTest, NestedMarkerInheritsFromPseudoParent) {
+  ScopedCSSNestedPseudoElementsForTest feature(false);
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+    li {
+      list-style-type: none;
+    }
+
+    li::before {
+      content: '';
+      list-style-type: disc;
+      list-style-position: inside;
+      float: left;
+      display: list-item;
+    }
+    </style>
+    <ul>
+      <li id="target">Item 1</li>
+    </ul>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  Element* before = target->GetPseudoElement(kPseudoIdBefore);
+  Element* marker = before->GetPseudoElement(kPseudoIdMarker);
+
+  EXPECT_EQ(marker->GetComputedStyle()->ListStyleType()->GetCounterStyleName(),
+            AtomicString("disc"));
+}
+
+TEST_F(ElementTest, ScrollIntoViewNearestUseCounted) {
+  // Set via setAttribute
+  SetBodyInnerHTML(R"HTML(
+    <body>
+      <div id=target></div>
+    </body>
+  )HTML");
+  EXPECT_FALSE(
+      GetDocument().IsUseCounted(WebFeature::kScrollIntoViewContainerNearest));
+  ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+  options->setContainer(V8ScrollContainer::Enum::kNearest);
+  GetElementById("target")->scrollIntoViewWithOptions(options);
+  EXPECT_TRUE(
+      GetDocument().IsUseCounted(WebFeature::kScrollIntoViewContainerNearest));
 }
 
 }  // namespace blink

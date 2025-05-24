@@ -27,7 +27,7 @@ const uint8_t kFakeIccData[] = {0x00, 0x00, 0x08, 0x90, 0x20, 0x20,
 
 class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
  public:
-  DeviceQuirksPolicyTest() {}
+  DeviceQuirksPolicyTest() = default;
 
   DeviceQuirksPolicyTest(const DeviceQuirksPolicyTest&) = delete;
   DeviceQuirksPolicyTest& operator=(const DeviceQuirksPolicyTest&) = delete;

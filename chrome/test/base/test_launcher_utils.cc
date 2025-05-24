@@ -14,7 +14,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -30,12 +29,8 @@
 namespace test_launcher_utils {
 
 void PrepareBrowserCommandLineForTests(base::CommandLine* command_line) {
-  // Don't show the first run ui.
+  // Don't show the first run ui and disable the default browser check.
   command_line->AppendSwitch(switches::kNoFirstRun);
-
-  // No default browser check, it would create an info-bar (if we are not the
-  // default browser) that could conflicts with some tests expectations.
-  command_line->AppendSwitch(switches::kNoDefaultBrowserCheck);
 
   // Enable info level logging to stderr by default so that we can see when bad
   // stuff happens, but honor the flags specified from the command line. Use the

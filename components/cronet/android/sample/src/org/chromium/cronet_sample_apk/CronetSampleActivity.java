@@ -57,7 +57,7 @@ public class CronetSampleActivity extends FragmentActivity {
     }
 
     @SuppressWarnings("deprecation")
-    private void updateNavigationBarUI(int chosenFragmentId) {
+    private void updateNavigationBarUi(int chosenFragmentId) {
         final int childCount = mBottomNav.getChildCount();
         for (int i = 0; i < childCount; ++i) {
             View view = mBottomNav.getChildAt(i);
@@ -91,6 +91,6 @@ public class CronetSampleActivity extends FragmentActivity {
                 .beginTransaction()
                 .replace(R.id.fragment_container, mActivityViewModel.getFragment(chosenFragmentId))
                 .commit();
-        updateNavigationBarUI(chosenFragmentId);
+        updateNavigationBarUi(chosenFragmentId);
     }
 }

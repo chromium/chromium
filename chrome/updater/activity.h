@@ -20,7 +20,6 @@ class ActivityDataService final : public update_client::ActivityDataService {
   explicit ActivityDataService(UpdaterScope scope);
   ActivityDataService(const ActivityDataService&) = delete;
   ActivityDataService& operator=(const ActivityDataService&) = delete;
-  ~ActivityDataService() override = default;
 
   // update_client::ActivityDataService:
   void GetActiveBits(const std::vector<std::string>& ids,

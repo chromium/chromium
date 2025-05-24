@@ -4,7 +4,7 @@
 
 package org.chromium.base.library_loader;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Mockable stub for all native methods in Linker.
@@ -12,19 +12,20 @@ import androidx.annotation.NonNull;
  * This functionality is usually generated from @NativeMethods, which cannot be used for the
  * auxiliary native library used by classes in Linker and other classes in this package.
  */
+@NullMarked
 class LinkerJni implements Linker.Natives {
     @Override
-    public void findMemoryRegionAtRandomAddress(@NonNull Linker.LibInfo libInfo) {
+    public void findMemoryRegionAtRandomAddress(Linker.LibInfo libInfo) {
         nativeFindMemoryRegionAtRandomAddress(libInfo);
     }
 
     @Override
-    public void reserveMemoryForLibrary(@NonNull Linker.LibInfo libInfo) {
+    public void reserveMemoryForLibrary(Linker.LibInfo libInfo) {
         nativeReserveMemoryForLibrary(libInfo);
     }
 
     @Override
-    public boolean findRegionReservedByWebViewZygote(@NonNull Linker.LibInfo libInfo) {
+    public boolean findRegionReservedByWebViewZygote(Linker.LibInfo libInfo) {
         return nativeFindRegionReservedByWebViewZygote(libInfo);
     }
 
@@ -46,13 +47,11 @@ class LinkerJni implements Linker.Natives {
 
     // Does not use JNI Generator because the native side is in libchromium_linker.so rather
     // libmonochrome.so
-    private static native void nativeFindMemoryRegionAtRandomAddress(
-            @NonNull Linker.LibInfo libInfo);
+    private static native void nativeFindMemoryRegionAtRandomAddress(Linker.LibInfo libInfo);
 
-    private static native void nativeReserveMemoryForLibrary(@NonNull Linker.LibInfo libInfo);
+    private static native void nativeReserveMemoryForLibrary(Linker.LibInfo libInfo);
 
-    private static native boolean nativeFindRegionReservedByWebViewZygote(
-            @NonNull Linker.LibInfo libInfo);
+    private static native boolean nativeFindRegionReservedByWebViewZygote(Linker.LibInfo libInfo);
 
     private static native boolean nativeLoadLibrary(
             String libFilePath, Linker.LibInfo libInfo, boolean spawnRelroRegion);

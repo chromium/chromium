@@ -1,0 +1,45 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("carousel") {
+  sources = [
+    "carousel_item.h",
+    "carousel_item.mm",
+    "carousel_item_menu_provider.h",
+    "omnibox_popup_carousel_cell.h",
+    "omnibox_popup_carousel_cell.mm",
+    "omnibox_popup_carousel_control.h",
+    "omnibox_popup_carousel_control.mm",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui:omnibox_popup_shared",
+    "//ios/chrome/browser/omnibox/ui/popup/row",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "omnibox_popup_carousel_control_unittest.mm",
+    "omnibox_popup_carousel_control_unittest_util.h",
+    "omnibox_popup_carousel_control_unittest_util.mm",
+  ]
+  deps = [
+    ":carousel",
+    "//base",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/common/ui/favicon",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_EXTENSION_INSTALL_STATUS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_WEBSTORE_PRIVATE_EXTENSION_INSTALL_STATUS_H_
 
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 
@@ -45,7 +48,7 @@ enum ExtensionInstallStatus {
 };
 
 // Returns the Extension install status for a Chrome web store extension with
-// |extension_id| in |profile|. Note that this function won't check whether the
+// `extension_id` in `profile`. Note that this function won't check whether the
 // extension's manifest type, required permissions are blocked by enterprise
 // policy. type blocking or permission blocking or manifest version. Please use
 // this function only if manifest file is not available.

@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
@@ -94,9 +95,14 @@ std::unique_ptr<PolicyBundle> BuildRestrictedPolicyBundle() {
 
 class RestrictedMGSPolicyProviderAshTest : public ash::DeviceSettingsTestBase {
  public:
+  RestrictedMGSPolicyProviderAshTest()
+      : ash::DeviceSettingsTestBase(/*profile_creation_enabled=*/false) {}
+
   void SetUp() override {
-    ash::DeviceSettingsTestBase::SetUp();
     ash::LoginState::Initialize();
+    ash::DeviceSettingsTestBase::SetUp();
+    install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>();
+
     cros_settings_holder_ = std::make_unique<ash::CrosSettingsHolder>(
         device_settings_service_.get(),
         TestingBrowserProcess::GetGlobal()->local_state());
@@ -109,10 +115,12 @@ class RestrictedMGSPolicyProviderAshTest : public ash::DeviceSettingsTestBase {
   void TearDown() override {
     cros_settings_helper_.reset();
     cros_settings_holder_.reset();
+    install_attributes_.reset();
     ash::DeviceSettingsTestBase::TearDown();
     ash::LoginState::Shutdown();
   }
 
+  std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_;
   std::unique_ptr<ash::CrosSettingsHolder> cros_settings_holder_;
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_helper_;
 };

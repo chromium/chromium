@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/browsing_topics/util.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 
@@ -312,6 +313,15 @@ TEST_F(EpochTopicsTest, FromEmptyDictionaryValue) {
   EXPECT_FALSE(candidate_topic.IsValid());
 }
 
+TEST_F(EpochTopicsTest, FromDictValueInvalidCalculationTime) {
+  EpochTopics epoch_topics(kCalculationTime);
+
+  base::Value::Dict dict_value = epoch_topics.ToDictValue();
+  dict_value.Set("calculation_time", "nonsense");
+  EpochTopics read_epoch_topics = EpochTopics::FromDictValue(dict_value);
+  EXPECT_EQ(read_epoch_topics.calculation_time(), base::Time());
+}
+
 TEST_F(EpochTopicsTest,
        FromDictionaryValueWithoutConfigVersion_UseConfigVersion1) {
   base::Value::Dict dict;
@@ -407,7 +417,7 @@ TEST_F(EpochTopicsTest,
 TEST_F(EpochTopicsTest, ScheduleExpiration) {
   feature_list_.InitWithFeaturesAndParameters(
       /*enabled_features=*/
-      {{blink::features::kBrowsingTopics, {}},
+      {{network::features::kBrowsingTopics, {}},
        {blink::features::kBrowsingTopicsParameters,
         {{"epoch_retention_duration", "28s"}}}},
       /*disabled_features=*/{});

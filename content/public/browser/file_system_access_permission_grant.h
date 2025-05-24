@@ -43,6 +43,9 @@ class CONTENT_EXPORT FileSystemAccessPermissionGrant
   // path.
   virtual base::FilePath GetPath() = 0;
 
+  // The display name for path. If empty, basename of path should be used.
+  virtual std::string GetDisplayName() = 0;
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class PermissionRequestOutcome {

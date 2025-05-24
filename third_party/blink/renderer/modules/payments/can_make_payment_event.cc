@@ -15,6 +15,27 @@
 
 namespace blink {
 
+class CanMakePaymentRespondWithFulfill final
+    : public ThenCallable<IDLBoolean, CanMakePaymentRespondWithFulfill> {
+ public:
+  explicit CanMakePaymentRespondWithFulfill(
+      CanMakePaymentRespondWithObserver* observer)
+      : observer_(observer) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observer_);
+    ThenCallable<IDLBoolean, CanMakePaymentRespondWithFulfill>::Trace(visitor);
+  }
+
+  void React(ScriptState* script_state, bool response) {
+    DCHECK(observer_);
+    observer_->OnResponseFulfilled(script_state, response);
+  }
+
+ private:
+  Member<CanMakePaymentRespondWithObserver> observer_;
+};
+
 CanMakePaymentEvent* CanMakePaymentEvent::Create(
     const AtomicString& type,
     const CanMakePaymentEventInit* initializer) {
@@ -56,7 +77,7 @@ CanMakePaymentEvent::modifiers() const {
 }
 
 void CanMakePaymentEvent::respondWith(ScriptState* script_state,
-                                      ScriptPromiseUntyped script_promise,
+                                      ScriptPromise<IDLBoolean> script_promise,
                                       ExceptionState& exception_state) {
   if (!isTrusted()) {
     exception_state.ThrowDOMException(
@@ -67,8 +88,10 @@ void CanMakePaymentEvent::respondWith(ScriptState* script_state,
 
   stopImmediatePropagation();
   if (observer_) {
-    observer_->ObservePromiseResponse(script_state, script_promise,
-                                      exception_state);
+    observer_->RespondWith(
+        script_state, script_promise,
+        MakeGarbageCollected<CanMakePaymentRespondWithFulfill>(observer_),
+        exception_state);
   }
 }
 

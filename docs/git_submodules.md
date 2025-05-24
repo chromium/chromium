@@ -10,7 +10,7 @@ be exposed.
 
 [TOC]
 
-## A quick introduction to Git submoduldes
+## A quick introduction to Git submodules
 
 [Git submodules](https://git-scm.com/docs/gitsubmodules) are managed via the
 combination of `.gitmodules` files and gitlinks. `.gitmodules` is a text file
@@ -48,7 +48,7 @@ Corresponding DEPS entry would look like:
 
 ## How to avoid accidental Git submodule updates?
 
-The simplest approach is to always run gclient sync after updated chromium
+The simplest approach is to always run gclient sync after updating chromium
 checkout (e.g. after `git pull`, or `git checkout`). You can automate that by
 adding post-checkout hook (example below). To confirm there are no changes, run
 `git status`. If you use `git commit -a`, check the "Changes to be committed"
@@ -290,4 +290,3 @@ If you want to keep your gitlink, then run `git add <affected path>`.
 
 Please file [a bug under Infra>SDK
 component](https://bugs.chromium.org/p/chromium/issues/entry?components=Infra%3ESDK).
-

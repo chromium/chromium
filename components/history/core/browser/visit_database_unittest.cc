@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/history/core/browser/visit_database.h"
+
 #include <stddef.h>
 
 #include <set>
@@ -10,9 +12,9 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/url_database.h"
-#include "components/history/core/browser/visit_database.h"
 #include "components/history/core/browser/visited_link_database.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -47,9 +49,6 @@ class VisitDatabaseTest : public PlatformTest,
                           public URLDatabase,
                           public VisitDatabase,
                           public VisitedLinkDatabase {
- public:
-  VisitDatabaseTest() {}
-
  private:
   // Test setup.
   void SetUp() override {
@@ -71,7 +70,7 @@ class VisitDatabaseTest : public PlatformTest,
   // Provided for URL/VisitDatabase.
   sql::Database& GetDB() override { return db_; }
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
 };
 
 TEST_F(VisitDatabaseTest, Add) {
@@ -1040,54 +1039,6 @@ TEST_F(VisitDatabaseTest, GetLastVisitToOrigin_MostRecentVisitTime) {
       url::Origin::Create(GURL("https://www.chromium.org")), begin_time,
       end_time, &last_visit));
   EXPECT_EQ(last_visit, begin_time + base::Minutes(2));
-}
-
-TEST_F(VisitDatabaseTest, GetLastVisitToURL) {
-  {
-    base::Time last_visit;
-    EXPECT_TRUE(GetLastVisitToURL(GURL("https://foo.com/bar/baz"),
-                                  base::Time::FromTimeT(1000), &last_visit));
-    EXPECT_EQ(last_visit, base::Time());
-  }
-
-  VisitRow most_recent{AddURL(URLRow(GURL("https://foo.com/bar/baz"))),
-                       base::Time::FromTimeT(200),
-                       0,
-                       ui::PageTransitionFromInt(0),
-                       0,
-                       false,
-                       0};
-  AddVisit(&most_recent, SOURCE_BROWSED);
-  VisitRow older_visit{AddURL(URLRow(GURL("https://foo.com/bar/baz"))),
-                       base::Time::FromTimeT(100),
-                       0,
-                       ui::PageTransitionFromInt(0),
-                       0,
-                       false,
-                       0};
-  AddVisit(&older_visit, SOURCE_BROWSED);
-  VisitRow wrong_url{AddURL(URLRow(GURL("https://foo.com/wrong_url"))),
-                     base::Time::FromTimeT(300),
-                     0,
-                     ui::PageTransitionFromInt(0),
-                     0,
-                     false,
-                     0};
-  AddVisit(&wrong_url, SOURCE_BROWSED);
-
-  {
-    base::Time last_visit;
-    EXPECT_TRUE(GetLastVisitToURL(GURL("https://foo.com/bar/baz"),
-                                  base::Time::FromTimeT(1000), &last_visit));
-    EXPECT_EQ(last_visit, base::Time::FromTimeT(200));
-  }
-  // Test getting the older visit using an `end_time` of 150.
-  {
-    base::Time last_visit;
-    EXPECT_TRUE(GetLastVisitToURL(GURL("https://foo.com/bar/baz"),
-                                  base::Time::FromTimeT(150), &last_visit));
-    EXPECT_EQ(last_visit, base::Time::FromTimeT(100));
-  }
 }
 
 // TODO(crbug.com/40940281): Test is failing.

@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_
 
+#include <string_view>
+
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class Profile;
+class ScopedWindowCallToAction;
 
 // Enum for logging the price insights icon label. Each label we ever use
 // should have a separate enum even if they are semantically similar (e.g.
@@ -45,8 +48,7 @@ class PriceInsightsIconView : public PageActionIconView {
   // PageActionIconView:
   views::BubbleDialogDelegate* GetBubble() const override;
 
-  const std::u16string& GetIconLabelForTesting();
-
+  std::u16string_view GetIconLabelForTesting() const;
   bool IsIconHighlightedForTesting();
 
  protected:
@@ -84,6 +86,8 @@ class PriceInsightsIconView : public PageActionIconView {
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
+
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_INSIGHTS_ICON_VIEW_H_

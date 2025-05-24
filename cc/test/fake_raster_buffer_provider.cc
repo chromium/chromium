@@ -11,15 +11,6 @@
 
 namespace cc {
 
-class StubGpuBacking : public ResourcePool::GpuBacking {
- public:
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {}
-};
-
 FakeRasterBufferProviderImpl::FakeRasterBufferProviderImpl() = default;
 
 FakeRasterBufferProviderImpl::~FakeRasterBufferProviderImpl() = default;
@@ -32,21 +23,14 @@ FakeRasterBufferProviderImpl::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  auto backing = std::make_unique<StubGpuBacking>();
-  backing->shared_image = gpu::ClientSharedImage::CreateForTesting();
-  resource.set_gpu_backing(std::move(backing));
+  auto backing = std::make_unique<ResourcePool::Backing>(
+      resource.size(), resource.format(), resource.color_space());
+  backing->CreateSharedImageForTesting();
+  resource.set_backing(std::move(backing));
   return nullptr;
 }
 
 void FakeRasterBufferProviderImpl::Flush() {}
-
-viz::SharedImageFormat FakeRasterBufferProviderImpl::GetFormat() const {
-  return viz::SinglePlaneFormat::kRGBA_8888;
-}
-
-bool FakeRasterBufferProviderImpl::IsResourcePremultiplied() const {
-  return true;
-}
 
 bool FakeRasterBufferProviderImpl::CanPartialRasterIntoProvidedResource()
     const {

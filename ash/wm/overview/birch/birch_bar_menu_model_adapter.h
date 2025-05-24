@@ -8,6 +8,7 @@
 #include "ash/app_menu/app_menu_model_adapter.h"
 #include "ash/ash_export.h"
 #include "ash/style/checkbox.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace aura {
 class Window;
@@ -27,7 +28,7 @@ class ASH_EXPORT BirchBarMenuModelAdapter : public AppMenuModelAdapter,
   BirchBarMenuModelAdapter(
       std::unique_ptr<ui::SimpleMenuModel> birch_menu_model,
       views::Widget* widget_owner,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       base::OnceClosure on_menu_closed_callback,
       bool is_tablet_mode,
       bool for_chip_menu);

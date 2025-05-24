@@ -75,15 +75,12 @@ RotateAttestationCredentialJob::GetType() const {
 
 bool RotateAttestationCredentialJob::ParseCommandPayload(
     const std::string& command_payload) {
-  std::optional<base::Value> root(base::JSONReader::Read(command_payload));
+  std::optional<base::Value::Dict> root =
+      base::JSONReader::ReadDict(command_payload);
   if (!root)
     return false;
 
-  if (!root->is_dict())
-    return false;
-
-  std::string* nonce_ptr = root->GetDict().FindString(kNoncePathField);
-
+  std::string* nonce_ptr = root->FindString(kNoncePathField);
   if (nonce_ptr && !nonce_ptr->empty()) {
     nonce_ = *nonce_ptr;
     return true;

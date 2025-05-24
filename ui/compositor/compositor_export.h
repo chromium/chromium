@@ -15,11 +15,7 @@
 #endif  // defined(COMPOSITOR_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(COMPOSITOR_IMPLEMENTATION)
 #define COMPOSITOR_EXPORT __attribute__((visibility("default")))
-#else
-#define COMPOSITOR_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

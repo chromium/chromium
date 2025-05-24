@@ -14,7 +14,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/language/core/browser/language_prefs_test_util.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -36,7 +35,7 @@ class LanguagePrefsTest : public testing::Test {
 
   void SetUp() override {
     prefs_->SetString(language::prefs::kAcceptLanguages, std::string());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     prefs_->SetString(language::prefs::kPreferredLanguages, std::string());
 #endif
   }
@@ -78,7 +77,7 @@ TEST_F(LanguagePrefsTest, UpdateLanguageList) {
 
 TEST_F(LanguagePrefsTest, UpdateForcedLanguageList) {
   // Only test policy-forced languages on non-Chrome OS platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   GTEST_SKIP();
 #else
   language::test::LanguagePrefTester content_languages_tester =
@@ -166,15 +165,15 @@ TEST_F(LanguagePrefsTest, ResetLanguagePrefs) {
 #endif
   content_languages_tester.ExpectSelectedLanguagePrefs("");
   // Accept languages pref is reset to the default value, not cleared.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   content_languages_tester.ExpectAcceptLanguagePrefs(
       prefs_->GetDefaultPrefValue(language::prefs::kPreferredLanguages)
           ->GetString());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   content_languages_tester.ExpectAcceptLanguagePrefs(
       prefs_->GetDefaultPrefValue(language::prefs::kAcceptLanguages)
           ->GetString());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(LanguagePrefsTest, ULPLanguagesPref) {

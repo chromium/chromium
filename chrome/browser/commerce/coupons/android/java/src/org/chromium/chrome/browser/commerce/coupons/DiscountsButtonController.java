@@ -8,40 +8,57 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.CommerceBottomSheetContentController;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.chrome.browser.toolbar.optional_button.BaseButtonDataProvider;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** This class is responsible for providing UI resources for showing the Discounts action. */
+@NullMarked
 public class DiscountsButtonController extends BaseButtonDataProvider {
 
-    private @NonNull Supplier<CommerceBottomSheetContentController>
+    private final BottomSheetController mBottomSheetController;
+    private final BottomSheetObserver mBottomSheetObserver;
+    private final Supplier<CommerceBottomSheetContentController>
             mCommerceBottomSheetContentController;
 
     public DiscountsButtonController(
             Context context,
-            Supplier<Tab> activeTabSupplier,
+            Supplier<@Nullable Tab> activeTabSupplier,
             ModalDialogManager modalDialogManager,
-            @NonNull
-                    Supplier<CommerceBottomSheetContentController>
-                            commerceBottomSheetContentController) {
+            BottomSheetController bottomSheetController,
+            Supplier<CommerceBottomSheetContentController> commerceBottomSheetContentController) {
         super(
                 activeTabSupplier,
                 modalDialogManager,
                 AppCompatResources.getDrawable(context, R.drawable.ic_shoppingmode_24dp),
-                context.getString(R.string.discount_icon_expanded_text),
-                R.string.discount_icon_expanded_text,
-                true,
-                null,
+                /* contentDescription= */ context.getString(R.string.discount_container_title),
+                /* actionChipLabelResId= */ R.string.discount_container_title,
+                /* supportsTinting= */ true,
+                /* iphCommandBuilder= */ null,
                 AdaptiveToolbarButtonVariant.DISCOUNTS,
-                Resources.ID_NULL,
-                false);
+                /* tooltipTextResId= */ Resources.ID_NULL);
+
+        mBottomSheetController = bottomSheetController;
+        mBottomSheetObserver =
+                new EmptyBottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {
+                        mButtonData.setEnabled(newState == SheetState.HIDDEN);
+                        notifyObservers(mButtonData.canShow());
+                    }
+                };
+        mBottomSheetController.addObserver(mBottomSheetObserver);
 
         mCommerceBottomSheetContentController = commerceBottomSheetContentController;
     }
@@ -49,5 +66,12 @@ public class DiscountsButtonController extends BaseButtonDataProvider {
     @Override
     public void onClick(View view) {
         mCommerceBottomSheetContentController.get().requestShowContent();
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
     }
 }

@@ -24,15 +24,6 @@ const char kLocalStorageLeveldbName[] = "leveldb";
 const base::FilePath::CharType kServiceWorkerDirectory[] =
     FILE_PATH_LITERAL("Service Worker");
 
-// The path where media license data is persisted on disk, relative to the path
-// for the respective storage bucket.
-const base::FilePath::CharType kMediaLicenseDirectory[] =
-    FILE_PATH_LITERAL("Media Licenses");
-
-// The file name of the database storing media license data.
-const base::FilePath::CharType kMediaLicenseDatabaseFileName[] =
-    FILE_PATH_LITERAL("Media Licenses.db");
-
 // The path where File System data is persisted on disk for partitioned storage.
 const base::FilePath::CharType kFileSystemDirectory[] =
     FILE_PATH_LITERAL("FileSystem");

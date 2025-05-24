@@ -5,6 +5,7 @@
 #ifndef BASE_TYPES_OPTIONAL_REF_H_
 #define BASE_TYPES_OPTIONAL_REF_H_
 
+#include <concepts>
 #include <memory>
 #include <optional>
 #include <type_traits>
@@ -68,8 +69,8 @@ namespace base {
 template <typename T>
 class optional_ref {
  private:
-  // Disallowed because `std::optional` (and `std::optional`) do not allow
-  // their template argument to be a reference type.
+  // Disallowed because `std::optional` does not allow its template argument to
+  // be a reference type.
   static_assert(!std::is_reference_v<T>,
                 "T must not be a reference type (use a pointer?)");
 
@@ -185,6 +186,21 @@ class optional_ref {
     requires(std::constructible_from<U, T>)
   constexpr std::optional<U> CopyAsOptional() const {
     return ptr_ ? std::optional<U>(*ptr_) : std::nullopt;
+  }
+
+  // Equality comparison operator against `optional_ref<U>`.
+  template <typename U>
+    requires std::equality_comparable_with<T, U>
+  constexpr bool operator==(optional_ref<U> u) const {
+    return (!has_value() && !u.has_value()) ||
+           (has_value() && u.has_value() && value() == u.value());
+  }
+
+  // Equality comparison operator against `T`.
+  constexpr bool operator==(const T& t) const
+    requires(std::equality_comparable<T>)
+  {
+    return has_value() && value() == t;
   }
 
  private:

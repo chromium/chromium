@@ -12,6 +12,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <ios>
@@ -34,9 +35,8 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/logging/log_severity.h"
 #include "base/strings/cstring_view.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -47,6 +47,7 @@
 #include "sql/fuzzers/sql_disk_corruption.pb.h"
 #include "sql/recovery.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/sqlite/fuzz/sql_query_grammar.pb.h"
 #include "third_party/sqlite/fuzz/sql_query_proto_to_string.h"
@@ -74,7 +75,7 @@ std::optional<base::CommandLine> GetCommandLine() {
       additional_args, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 #if BUILDFLAG(IS_WIN)
   std::vector<std::wstring> wargv(argv.size());
-  base::ranges::transform(
+  std::ranges::transform(
       argv.begin(), argv.end(), wargv.begin(),
       [](std::string str) { return std::wstring(str.begin(), str.end()); });
   return base::CommandLine::FromArgvWithoutProgram(wargv);
@@ -125,13 +126,6 @@ class Environment {
 
   // The path the database is copied to after it's been mutated.
   const base::FilePath& out_db_path() const { return out_db_path_; }
-
-  // Deletes the backing file and related journal files.
-  void DeleteDbFiles() const {
-    CHECK(base::DeleteFile(GetTempFilePath("db.sqlite")));
-    CHECK(base::DeleteFile(GetTempFilePath("db.sqlite-journal")));
-    CHECK(base::DeleteFile(GetTempFilePath("db.sqlite-wal")));
-  }
 
   void AssertTempDirIsEmpty() const {
     if (base::IsDirectoryEmpty(temp_dir_.GetPath())) {
@@ -258,10 +252,10 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
   //
   // TODO: A slight improvement would be to filter out individual "ATTACH
   // DATABASE" queries rather than throwing away the whole test case.
-  if (base::ranges::any_of(fuzzer_input.queries().extra_queries(),
-                           &sql_query_grammar::SQLQuery::has_attach_db) ||
-      base::ranges::any_of(fuzzer_input.queries_after_open().extra_queries(),
-                           &sql_query_grammar::SQLQuery::has_attach_db)) {
+  if (std::ranges::any_of(fuzzer_input.queries().extra_queries(),
+                          &sql_query_grammar::SQLQuery::has_attach_db) ||
+      std::ranges::any_of(fuzzer_input.queries_after_open().extra_queries(),
+                          &sql_query_grammar::SQLQuery::has_attach_db)) {
     return;
   }
 
@@ -277,9 +271,9 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
     std::cout << test_case;
   }
 
-  sql::DatabaseOptions database_options;
-  database_options.wal_mode = test_case.wal_mode();
-  sql::Database database(database_options);
+  sql::Database database(
+      sql::DatabaseOptions().set_wal_mode(test_case.wal_mode()),
+      sql::test::kTestTag);
   CHECK(database.Open(env.db_path()));
 
   // Bootstrap the database with SQL queries derived from `fuzzer_input`.
@@ -294,9 +288,8 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
 
   // Mutate the backing file. Skip the expensive file operations when there are
   // no bytes to mutate.
-  int64_t file_length;
-  CHECK(base::GetFileSize(env.db_path(), &file_length));
-  if (file_length > 0) {
+  std::optional<int64_t> file_length = GetFileSize(env.db_path());
+  if (*file_length > 0) {
     base::File file(env.db_path(), base::File::FLAG_OPEN |
                                        base::File::FLAG_READ |
                                        base::File::FLAG_WRITE);
@@ -305,7 +298,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
     // is on a physical disk.
     for (TestCase::Mutation mutation : test_case.mutations()) {
       // File read/write operations expect positions to point within the file.
-      mutation.pos %= file_length;
+      mutation.pos %= *file_length;
       if (mutation.pos < 0) {
         mutation.pos = 0;
       }
@@ -326,7 +319,7 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
           file.Write(mutation.pos, reinterpret_cast<char*>(&buf), num_read),
           -1);
     }
-    CHECK_EQ(file_length, file.GetLength());
+    CHECK_EQ(*file_length, file.GetLength());
   }
 
   if (!env.out_db_path().empty()) {
@@ -350,12 +343,16 @@ DEFINE_PROTO_FUZZER(const sql_fuzzers::RecoveryFuzzerTestCase& fuzzer_input) {
     logging::ScopedLoggingSettings scoped_logging;
     logging::SetMinLogLevel(logging::LOGGING_FATAL);
     std::ignore = database.Execute(test_case.sql_statement_after_open());
-
-    database.Close();
   }
 
-  // Delete the backing file to prepare for the next iteration.
-  env.DeleteDbFiles();
+  // The database must be closed before we can call `sql::Database::Delete()`.
+  // Note that it could be open even though `database.Open()` returned false.
+  database.Close();
+  CHECK(!database.is_open());
+
+  // Delete the backing file and related journal files so the next iteration
+  // starts with a clean slate.
+  PCHECK(sql::Database::Delete(env.db_path()));
   // Ensure that no unexpected files were created in the temp directory.
   env.AssertTempDirIsEmpty();
 }

@@ -4,19 +4,20 @@
 
 package org.chromium.chrome.browser.sync;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.SyncService;
 
 /** Provides profile specific SyncService instances. */
+@NullMarked
 public class SyncServiceFactory {
-    @Nullable private static SyncService sSyncServiceForTest;
+    private static @Nullable SyncService sSyncServiceForTest;
 
     private SyncServiceFactory() {}
 

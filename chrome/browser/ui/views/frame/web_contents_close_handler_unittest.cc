@@ -13,20 +13,16 @@ class MockWebContentsCloseHandlerDelegate
  public:
   MockWebContentsCloseHandlerDelegate()
       : task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-        got_clone_(false),
-        got_destroy_(false) {}
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
   MockWebContentsCloseHandlerDelegate(
       const MockWebContentsCloseHandlerDelegate&) = delete;
   MockWebContentsCloseHandlerDelegate& operator=(
       const MockWebContentsCloseHandlerDelegate&) = delete;
 
-  ~MockWebContentsCloseHandlerDelegate() override {}
+  ~MockWebContentsCloseHandlerDelegate() override = default;
 
-  void Clear() {
-    got_clone_ = got_destroy_ = false;
-  }
+  void Clear() { got_clone_ = got_destroy_ = false; }
 
   bool got_clone() const { return got_clone_; }
   void clear_got_clone() { got_clone_ = false; }
@@ -40,8 +36,8 @@ class MockWebContentsCloseHandlerDelegate
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  bool got_clone_;
-  bool got_destroy_;
+  bool got_clone_ = false;
+  bool got_destroy_ = false;
 };
 
 // -----------------------------------------------------------------------------
@@ -54,12 +50,10 @@ class WebContentsCloseHandlerTest : public testing::Test {
   WebContentsCloseHandlerTest& operator=(const WebContentsCloseHandlerTest&) =
       delete;
 
-  ~WebContentsCloseHandlerTest() override {}
+  ~WebContentsCloseHandlerTest() override = default;
 
  protected:
-  bool IsTimerRunning() const {
-    return close_handler_.timer_.IsRunning();
-  }
+  bool IsTimerRunning() const { return close_handler_.timer_.IsRunning(); }
 
   MockWebContentsCloseHandlerDelegate close_handler_delegate_;
   WebContentsCloseHandler close_handler_;

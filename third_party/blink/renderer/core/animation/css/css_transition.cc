@@ -15,7 +15,7 @@ CSSTransition::CSSTransition(ExecutionContext* execution_context,
                              AnimationEffect* content,
                              uint64_t transition_generation,
                              const PropertyHandle& transition_property)
-    : Animation(execution_context, timeline, content),
+    : Animation(execution_context, timeline, content, /*trigger=*/nullptr),
       transition_property_(transition_property) {
   // The owning_element does not always equal to the target element of an
   // animation.
@@ -27,7 +27,7 @@ AtomicString CSSTransition::transitionProperty() const {
   return transition_property_.GetCSSPropertyName().ToAtomicString();
 }
 
-String CSSTransition::playState() const {
+V8AnimationPlayState CSSTransition::playState() const {
   // TODO(1043778): Flush is likely not required once the CSSTransition is
   // disassociated from its owning element.
   if (GetDocument())

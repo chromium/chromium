@@ -86,7 +86,7 @@ TEST(FakeKeyedUnexportableKeyServiceTest, SignSlowlyAsync) {
   FakeKeyedUnexportableKeyService fake_service;
   unexportable_keys::UnexportableKeyId key_id;
   std::vector<uint8_t> data = {1, 2, 3};
-  fake_service.SignSlowlyAsync(key_id, data, kTaskPriority,
+  fake_service.SignSlowlyAsync(key_id, data, kTaskPriority, /*max_retries=*/0,
                                future.GetCallback());
 
   EXPECT_TRUE(future.IsReady());

@@ -11,10 +11,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.IdRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.ref.WeakReference;
 
@@ -35,6 +36,7 @@ import java.lang.ref.WeakReference;
  *     Use the same way that you would use a normal {@link android.widget.FrameLayout}, but instead
  *     of using {@link #findViewById(int)} to access views, use {@link #fastFindViewById(int)}.
  */
+@NullMarked
 public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
     /** A map containing views that have had lookup performed on them for quicker access. */
     private final SparseArray<WeakReference<View>> mCachedViews = new SparseArray<>();
@@ -57,8 +59,8 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
             };
 
     /** Default constructor for use in XML. */
-    public ViewLookupCachingFrameLayout(Context context, AttributeSet atts) {
-        super(context, atts);
+    public ViewLookupCachingFrameLayout(Context context, @Nullable AttributeSet attrs) {
+        super(context, attrs);
         setOnHierarchyChangeListener(mListener);
     }
 
@@ -73,7 +75,8 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
      * @param view The root of the tree to attach listeners to.
      * @param listener The listener to attach (null to unset).
      */
-    private void setHierarchyListenerOnTree(View view, OnHierarchyChangeListener listener) {
+    private void setHierarchyListenerOnTree(
+            View view, @Nullable OnHierarchyChangeListener listener) {
         if (!(view instanceof ViewGroup)) return;
 
         ViewGroup group = (ViewGroup) view;
@@ -85,16 +88,16 @@ public class ViewLookupCachingFrameLayout extends OptimizedFrameLayout {
 
     /**
      * Does the same thing as {@link #findViewById(int)} but caches the result if not null.
-     * Subsequent lookups are cheaper as a result. Adding or removing a child view invalidates
-     * the cache for the ID of the view removed and causes a re-lookup.
+     * Subsequent lookups are cheaper as a result. Adding or removing a child view invalidates the
+     * cache for the ID of the view removed and causes a re-lookup.
+     *
      * @param id The ID of the view to lookup.
      * @return The view if it exists.
      */
-    @Nullable
-    public View fastFindViewById(@IdRes int id) {
+    public <T extends @Nullable View> T fastFindViewById(@IdRes int id) {
         WeakReference<View> ref = mCachedViews.get(id);
-        View view = null;
-        if (ref != null) view = ref.get();
+        T view = null;
+        if (ref != null) view = (T) ref.get();
         if (view == null) view = findViewById(id);
         if (BuildConfig.ENABLE_ASSERTS) {
             assert view == findViewById(id) : "View caching logic is broken!";

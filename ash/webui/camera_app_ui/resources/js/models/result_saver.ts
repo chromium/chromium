@@ -49,7 +49,7 @@ export interface ResultSaver {
   /**
    * Saves captured video result.
    *
-   * @param file Contains the video file to be saved.
+   * @param video Contains the video file to be saved.
    */
   saveVideo(video: FileAccessEntry): Awaitable<void>;
 }
@@ -132,7 +132,7 @@ export class DefaultResultSaver implements ResultSaver {
 
     // Rescan file system. Only select files following CCA naming styles.
     const files = (await filesystem.getEntries())
-                      .filter((file) => Filenamer.isCCAFileFormat(file.name));
+                      .filter((file) => Filenamer.isCcaFileFormat(file.name));
     if (files.length === 0) {
       await this.updateCover(null);
       return;

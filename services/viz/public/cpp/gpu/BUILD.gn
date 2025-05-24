@@ -12,8 +12,6 @@ source_set("gpu") {
   ]
 
   sources = [
-    "client_gpu_memory_buffer_manager.cc",
-    "client_gpu_memory_buffer_manager.h",
     "command_buffer_metrics.cc",
     "context_provider_command_buffer.cc",
     "gpu.cc",
@@ -30,7 +28,6 @@ source_set("gpu") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//gpu",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
@@ -57,7 +54,6 @@ source_set("tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",

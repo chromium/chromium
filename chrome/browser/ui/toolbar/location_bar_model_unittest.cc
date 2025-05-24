@@ -25,8 +25,8 @@
 #include "ui/gfx/text_elider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension_builder.h"
 #endif
 
@@ -159,9 +159,9 @@ class LocationBarModelTest : public BrowserWithTestWindowTest {
   void NavigateAndCheckElided(const GURL& https_url);
 };
 
-LocationBarModelTest::LocationBarModelTest() {}
+LocationBarModelTest::LocationBarModelTest() = default;
 
-LocationBarModelTest::~LocationBarModelTest() {}
+LocationBarModelTest::~LocationBarModelTest() = default;
 
 void LocationBarModelTest::SetUp() {
   BrowserWithTestWindowTest::SetUp();
@@ -182,7 +182,7 @@ void LocationBarModelTest::SetUp() {
       extensions::ExtensionBuilder("Test")
           .SetID("fooooooooooooooooooooooooooooooo")
           .Build();
-  extension_system->extension_service()->AddExtension(extension.get());
+  extensions::ExtensionRegistrar::Get(profile())->AddExtension(extension);
 #endif
 }
 

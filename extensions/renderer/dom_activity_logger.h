@@ -58,14 +58,12 @@ class DOMActivityLogger: public blink::WebDOMActivityLogger {
   void LogMethod(v8::Isolate* isolate,
                  v8::Local<v8::Context> context,
                  const blink::WebString& api_name,
-                 int argc,
-                 const v8::Local<v8::Value>* argv,
+                 base::span<const v8::Local<v8::Value>> args,
                  const blink::WebURL& url,
                  const blink::WebString& title) override;
   void LogEvent(blink::WebLocalFrame& frame,
                 const blink::WebString& event_name,
-                int argc,
-                const blink::WebString* argv,
+                base::span<const blink::WebString> args,
                 const blink::WebURL& url,
                 const blink::WebString& title) override;
 

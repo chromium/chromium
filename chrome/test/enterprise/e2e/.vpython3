@@ -25,8 +25,8 @@ verify_pep425_tag: [
 
 wheel: <
   name: "infra/celab/celab/windows-amd64"
-  # Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8740952378222893377
-  version: "XfIlUm_LH8DmUDM8XpyA-ENp8m0-ppKc-e-3DfA4dw0C"
+  # Source: https://ci.chromium.org/ui/p/celab/builders/ci/Windows/b8721169349763625857
+  version: "mqot-xwD5WHFEI-6a4I1GHcOIw5NFPdWfwn9m8CjEeoC"
 >
 
 # googleapiclient
@@ -202,4 +202,19 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/attrs-py3"
   version: "version:23.1.0"
+>
+
+# `cryptography` (and its transitive dependencies) for root/client certificates
+# testing.
+wheel: <
+  name: "infra/python/wheels/cryptography/${vpython_platform}"
+  version: "version:43.0.0"
+>
+wheel: <
+  name: "infra/python/wheels/cffi/${vpython_platform}"
+  version: "version:1.15.1.chromium.2"
+>
+wheel: <
+  name: "infra/python/wheels/pycparser-py2_py3"
+  version: "version:2.19"
 >

@@ -151,7 +151,7 @@ class GritNodeUnittest(unittest.TestCase):
         </if>
       </messages>''')
     grd.SetOutputLanguage('fr')
-    output = ''.join(rc_header.Format(grd, 'fr', '.'))
+    output = ''.join(rc_header.Format(grd, 'fr', None, '.'))
     self.assertIn('#define IDS_A 2378\n#define IDS_B 2379', output)
 
   def testMaxIds(self):

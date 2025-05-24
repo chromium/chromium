@@ -23,6 +23,7 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/signin/public/identity_manager/signin_constants.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/protocol/gaia_password_reuse.pb.h"
 #import "components/sync_user_events/fake_user_event_service.h"
@@ -54,6 +55,7 @@ using ::testing::_;
 using PasswordReuseDialogInteraction =
     sync_pb::GaiaPasswordReuse::PasswordReuseDialogInteraction;
 using PasswordReuseLookup = sync_pb::GaiaPasswordReuse::PasswordReuseLookup;
+using signin::constants::kNoHostedDomainFound;
 
 namespace {
 
@@ -116,7 +118,7 @@ class FakeChromePasswordProtectionService
   bool IsPrimaryAccountSignedIn() const override {
     return is_account_signed_in_;
   }
-  bool IsAccountGmail(const std::string& username) const override {
+  bool IsAccountConsumer(const std::string& username) const override {
     return is_no_hosted_domain_found_;
   }
   void SetIsIncognito(bool is_incognito) { is_incognito_ = is_incognito; }
@@ -409,7 +411,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyPersistPhishedSavedPasswordCredential) {
   service_->SetIsIncognito(false);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test"}, {"http://2.example.com"}};
+      {"http://example.test", GURL("http://example.test/"), u"user"},
+      {"http://2.example.com", GURL("http://2.example.test/"), u"user2"}};
 
   EXPECT_CALL(mock_add_callback_, Run(_, credentials[0]));
   EXPECT_CALL(mock_add_callback_, Run(_, credentials[1]));
@@ -420,8 +423,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
        VerifyRemovePhishedSavedPasswordCredential) {
   service_->SetIsIncognito(false);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"http://example.test", u"username1"},
-      {"http://2.example.test", u"username2"}};
+      {"http://example.test", GURL("http://example.test/"), u"username1"},
+      {"http://2.example.test", GURL("http://2.example.test/"), u"username2"}};
 
   EXPECT_CALL(mock_remove_callback_, Run(_, credentials[0]));
   EXPECT_CALL(mock_remove_callback_, Run(_, credentials[1]));

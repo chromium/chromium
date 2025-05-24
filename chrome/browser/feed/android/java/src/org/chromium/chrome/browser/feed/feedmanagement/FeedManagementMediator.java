@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsIntent;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -32,9 +33,10 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Design doc here: https://docs.google.com/document/d/1D-ZfhGv9GFLXHYKzAqsaw-LiVhsENRTJC5ZMaZ9z0sQ/
  * edit#heading=h.p79wagdgjgx6
  */
+@NullMarked
 public class FeedManagementMediator {
     private static final String TAG = "FeedManagementMdtr";
-    private ModelList mModelList;
+    private final ModelList mModelList;
     private final Context mContext;
     private final @StreamKind int mInitiatingStreamKind;
 
@@ -73,8 +75,8 @@ public class FeedManagementMediator {
 
     private PropertyModel generateListItem(
             int titleResource, int descriptionResource, OnClickListener listener) {
-        String title = mContext.getResources().getString(titleResource);
-        String description = mContext.getResources().getString(descriptionResource);
+        String title = mContext.getString(titleResource);
+        String description = mContext.getString(descriptionResource);
         return new PropertyModel.Builder(FeedManagementItemProperties.ALL_KEYS)
                 .with(FeedManagementItemProperties.TITLE_KEY, title)
                 .with(FeedManagementItemProperties.DESCRIPTION_KEY, description)
@@ -109,8 +111,7 @@ public class FeedManagementMediator {
         Intent fakeIntent = new Intent();
         ComponentName fakeComponentName = new ComponentName(mContext.getPackageName(), "FakeClass");
         fakeIntent.setComponent(fakeComponentName);
-        int mutabililtyFlag = 0;
-        mutabililtyFlag = PendingIntent.FLAG_IMMUTABLE;
+        int mutabililtyFlag = PendingIntent.FLAG_IMMUTABLE;
         return PendingIntent.getActivity(mContext, 0, fakeIntent, mutabililtyFlag);
     }
 
@@ -126,7 +127,7 @@ public class FeedManagementMediator {
     void handleFollowingClick(View view) {
         Log.d(TAG, "Following click caught.");
         FeedServiceBridge.reportOtherUserAction(
-                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
         launchUriActivity("https://www.google.com/preferences/interests/yourinterests?sh=n");
     }
 
@@ -134,7 +135,7 @@ public class FeedManagementMediator {
     void handleHiddenClick(View view) {
         Log.d(TAG, "Hidden click caught.");
         FeedServiceBridge.reportOtherUserAction(
-                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
+                mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_HIDDEN);
         launchUriActivity("https://www.google.com/preferences/interests/hidden?sh=n");
     }
 }

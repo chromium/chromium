@@ -41,7 +41,7 @@ class NotificationDisplayServiceShutdownNotifierFactory
             "NotificationDisplayService") {
     DependsOn(NotificationDisplayServiceFactory::GetInstance());
   }
-  ~NotificationDisplayServiceShutdownNotifierFactory() override {}
+  ~NotificationDisplayServiceShutdownNotifierFactory() override = default;
 };
 
 }  // namespace

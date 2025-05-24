@@ -51,10 +51,9 @@ class TestSecurityStateHelper {
         malicious_content_status_(MALICIOUS_CONTENT_STATUS_NONE),
         is_error_page_(false),
         is_view_source_(false),
-        has_policy_certificate_(false),
         safety_tip_info_({security_state::SafetyTipStatus::kUnknown, GURL()}),
         is_https_only_mode_upgraded_(false) {}
-  virtual ~TestSecurityStateHelper() {}
+  virtual ~TestSecurityStateHelper() = default;
 
   void SetCertificate(scoped_refptr<net::X509Certificate> cert) {
     cert_ = std::move(cert);
@@ -91,9 +90,6 @@ class TestSecurityStateHelper {
     is_view_source_ = is_view_source;
   }
 
-  void set_has_policy_certificate(bool has_policy_cert) {
-    has_policy_certificate_ = has_policy_cert;
-  }
   void SetUrl(const GURL& url) { url_ = url; }
 
   void set_safety_tip_status(
@@ -124,8 +120,7 @@ class TestSecurityStateHelper {
   }
 
   security_state::SecurityLevel GetSecurityLevel() const {
-    return security_state::GetSecurityLevel(*GetVisibleSecurityState(),
-                                            has_policy_certificate_);
+    return security_state::GetSecurityLevel(*GetVisibleSecurityState());
   }
 
   bool HasMajorCertificateError() const {
@@ -143,7 +138,6 @@ class TestSecurityStateHelper {
   MaliciousContentStatus malicious_content_status_;
   bool is_error_page_;
   bool is_view_source_;
-  bool has_policy_certificate_;
   security_state::SafetyTipInfo safety_tip_info_;
   bool is_https_only_mode_upgraded_;
 };
@@ -158,22 +152,12 @@ TEST(SecurityStateTest, SHA1Blocked) {
   helper.AddCertStatus(net::CERT_STATUS_SHA1_SIGNATURE_PRESENT);
   EXPECT_TRUE(security_state::IsSHA1InChain(*helper.GetVisibleSecurityState()));
   EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
-
-  // Ensure that policy-installed certificates do not interfere.
-  helper.set_has_policy_certificate(true);
-  EXPECT_TRUE(security_state::IsSHA1InChain(*helper.GetVisibleSecurityState()));
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
 // Tests that SHA1-signed certificates, when allowed by policy, downgrade the
 // security state of the page to NONE.
 TEST(SecurityStateTest, SHA1Warning) {
   TestSecurityStateHelper helper;
-  EXPECT_TRUE(security_state::IsSHA1InChain(*helper.GetVisibleSecurityState()));
-  EXPECT_EQ(NONE, helper.GetSecurityLevel());
-
-  // Ensure that policy-installed certificates do not interfere.
-  helper.set_has_policy_certificate(true);
   EXPECT_TRUE(security_state::IsSHA1InChain(*helper.GetVisibleSecurityState()));
   EXPECT_EQ(NONE, helper.GetSecurityLevel());
 }
@@ -274,35 +258,6 @@ TEST(SecurityStateTest, MixedForm) {
   EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
 }
 
-// Tests that policy-installed-certificates do not interfere with mixed content
-// notifications.
-TEST(SecurityStateTest, MixedContentWithPolicyCertificate) {
-  TestSecurityStateHelper helper;
-
-  helper.set_has_policy_certificate(true);
-  helper.set_cert_status(0);
-
-  // Verify that if no mixed content is present, the policy-installed
-  // certificate is recorded.
-  EXPECT_EQ(SECURE_WITH_POLICY_INSTALLED_CERT, helper.GetSecurityLevel());
-
-  // Verify that a mixed form downgrades the security level.
-  helper.set_contained_mixed_form(true);
-  EXPECT_EQ(NONE, helper.GetSecurityLevel());
-
-  // Verify that passive mixed content downgrades the security level.
-  helper.set_contained_mixed_form(false);
-  helper.set_displayed_mixed_content(true);
-  SecurityLevel expected_passive_level = WARNING;
-  EXPECT_EQ(expected_passive_level, helper.GetSecurityLevel());
-
-  // Ensure that active mixed content downgrades the security level.
-  helper.set_contained_mixed_form(false);
-  helper.set_displayed_mixed_content(false);
-  helper.set_ran_mixed_content(true);
-  EXPECT_EQ(DANGEROUS, helper.GetSecurityLevel());
-}
-
 // Tests that HTTP URLs cause a WARNING security level.
 TEST(SecurityStateTest, WarningOnHttp) {
   TestSecurityStateHelper helper;
@@ -357,8 +312,6 @@ TEST(SecurityStateTest, LocalhostOrFileUrl) {
 // Tests IsSslCertificateValid function.
 TEST(SecurityStateTest, SslCertificateValid) {
   EXPECT_TRUE(IsSslCertificateValid(SecurityLevel::SECURE));
-  EXPECT_TRUE(
-      IsSslCertificateValid(SecurityLevel::SECURE_WITH_POLICY_INSTALLED_CERT));
 
   EXPECT_FALSE(IsSslCertificateValid(SecurityLevel::NONE));
   EXPECT_FALSE(IsSslCertificateValid(SecurityLevel::DANGEROUS));

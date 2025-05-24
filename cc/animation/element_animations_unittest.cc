@@ -648,7 +648,6 @@ TEST_F(ElementAnimationsTest, AnimationsAreDeleted) {
   EXPECT_FALSE(animation_->keyframe_effect()->needs_push_properties());
 
   EXPECT_FALSE(host_->needs_push_properties());
-  EXPECT_FALSE(host_impl_->needs_push_properties());
 
   animation_impl_->ActivateKeyframeModels();
 
@@ -664,7 +663,6 @@ TEST_F(ElementAnimationsTest, AnimationsAreDeleted) {
   animation_->UpdateState(true, nullptr);
 
   EXPECT_FALSE(host_->needs_push_properties());
-  EXPECT_FALSE(host_impl_->needs_push_properties());
 
   events = CreateEventsForTesting();
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));

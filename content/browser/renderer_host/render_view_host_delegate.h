@@ -29,6 +29,7 @@ namespace content {
 
 class RenderViewHost;
 class RenderViewHostDelegateView;
+class RenderViewHostImpl;
 
 //
 // RenderViewHostDelegate
@@ -66,9 +67,10 @@ class RenderViewHostDelegate {
   // `blink::WebView` is going to be destroyed
   virtual void RenderViewDeleted(RenderViewHost* render_view_host) {}
 
-  // Return a dummy RendererPreferences object that will be used by the renderer
-  // associated with the owning RenderViewHost.
-  virtual const blink::RendererPreferences& GetRendererPrefs() const = 0;
+  // Returns a RendererPreferences object that will be used by the renderer
+  // associated with the given `render_view_host`.
+  virtual const blink::RendererPreferences& GetRendererPrefs(
+      RenderViewHostImpl* render_view_host) = 0;
 
   // Notification from the renderer host that blocked UI event occurred.
   // This happens when there are tab-modal dialogs. In this case, the
@@ -92,8 +94,8 @@ class RenderViewHostDelegate {
   // WebPreferences. If we want to guarantee that the value reflects the current
   // state of the WebContents, NotifyPreferencesChanged() should be called
   // before calling this.
-  virtual const blink::web_pref::WebPreferences&
-  GetOrCreateWebPreferences() = 0;
+  virtual const blink::web_pref::WebPreferences& GetOrCreateWebPreferences(
+      RenderViewHostImpl* render_view_host) = 0;
 
   // Sets the WebPreferences for the WebContents associated with this
   // RenderViewHost to |prefs| and send the new value to all renderers in the
@@ -104,14 +106,6 @@ class RenderViewHostDelegate {
   // Returns the light, dark and forced color maps for the ColorProvider
   // associated with this RenderViewHost.
   virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() const = 0;
-
-  // Triggers a total recomputation of WebPreferences by resetting the current
-  // cached WebPreferences to null and triggering the recomputation path for
-  // both the "slow" attributes (hardware configurations/things that require
-  // slow platform/device polling) which normally won't get recomputed after
-  // the first time we set it and "fast" attributes (which always gets
-  // recomputed).
-  virtual void RecomputeWebPreferencesSlow() {}
 
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();

@@ -5,15 +5,17 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_AUTOFILL_ANDROID_TOUCH_TO_FILL_DELEGATE_ANDROID_IMPL_H_
 
+#include <variant>
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/ui/fast_checkout_client.h"
-#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/integrators/fast_checkout/fast_checkout_client.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 
@@ -72,13 +74,13 @@ inline constexpr const char kUmaTouchToFillCreditCardTriggerOutcome[] =
     "Autofill.TouchToFill.CreditCard.TriggerOutcome";
 inline constexpr const char kUmaTouchToFillIbanTriggerOutcome[] =
     "Autofill.TouchToFill.Iban.TriggerOutcome";
+inline constexpr const char kUmaTouchToFillLoyaltyCardTriggerOutcome[] =
+    "Autofill.TouchToFill.LoyaltyCard.TriggerOutcome";
 
 class BrowserAutofillManager;
 class FormStructure;
 
 // Delegate for in-browser Touch To Fill (TTF) surface display and selection.
-// Currently TTF surface is eligible for credit card and IBAN forms on click
-// on an empty focusable field.
 //
 // If the surface was shown once, it won't be triggered again on the same page.
 // But calling |Reset()| on navigation restores such showing eligibility.
@@ -131,7 +133,9 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   void CreditCardSuggestionSelected(std::string unique_id,
                                     bool is_virtual) override;
   void IbanSuggestionSelected(
-      absl::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
+      std::variant<Iban::Guid, Iban::InstrumentId> backend_id) override;
+  void LoyaltyCardSuggestionSelected(
+      const std::string& loyalty_card_number) override;
   void OnDismissed(bool dismissed_by_user) override;
 
   void LogMetricsAfterSubmission(const FormStructure& submitted_form) override;
@@ -149,14 +153,18 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
 
   struct DryRunResult {
     DryRunResult(TriggerOutcome outcome,
-                 absl::variant<std::vector<CreditCard>, std::vector<Iban>>
-                     items_to_suggest);
+                 std::variant<std::vector<CreditCard>,
+                              std::vector<Iban>,
+                              std::vector<LoyaltyCard>> items_to_suggest);
     DryRunResult(DryRunResult&&);
     DryRunResult& operator=(DryRunResult&&);
     ~DryRunResult();
 
     TriggerOutcome outcome;
-    absl::variant<std::vector<CreditCard>, std::vector<Iban>> items_to_suggest;
+    std::variant<std::vector<CreditCard>,
+                 std::vector<Iban>,
+                 std::vector<LoyaltyCard>>
+        items_to_suggest;
   };
 
   // Checks all preconditions for showing the TTF, that is, for calling
@@ -180,6 +188,10 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
   DryRunResult DryRunForCreditCard(const AutofillField& field,
                                    const FormStructure& form,
                                    const FormData& received_form);
+
+  // Returns a DryRunResult with the user's fillable loyalty cards, or
+  // an error reason if TTF should not be triggered.
+  DryRunResult DryRunForLoyaltyCard();
 
   bool HasAnyAutofilledFields(const FormStructure& submitted_form) const;
 

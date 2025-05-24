@@ -29,18 +29,16 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.autofill.PersonalDataManager;
-import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -48,10 +46,6 @@ import java.util.List;
 
 /** Unit tests for {@link AutofillVirtualCardEnrollmentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    AutofillFeatures.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES,
-    AutofillFeatures.AUTOFILL_ENABLE_CARD_ART_IMAGE
-})
 public class AutofillVirtualCardEnrollmentDialogTest {
     private static final String LEGAL_MESSAGE_URL = "http://www.google.com";
     private static final String ACCEPT_BUTTON_TEXT = "Yes";
@@ -61,7 +55,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
 
     @Mock private Callback<Integer> mResultHandlerMock;
     @Mock private AutofillVirtualCardEnrollmentDialog.LinkClickCallback mOnLinkClickedMock;
-    @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private AutofillImageFetcher mImageFetcher;
     private FakeModalDialogManager mModalDialogManager;
     private AutofillVirtualCardEnrollmentDialog mDialog;
     private VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
@@ -77,7 +71,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         ApplicationProvider.getApplicationContext(),
                         mModalDialogManager,
-                        mPersonalDataManager,
+                        mImageFetcher,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,
@@ -124,7 +118,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         activity,
                         mModalDialogManager,
-                        mPersonalDataManager,
+                        mImageFetcher,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,
@@ -140,7 +134,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         assertThat(virtualCardEducationText.length()).isGreaterThan(0);
 
         // Assert that the text of this span is correct.
-        NoUnderlineClickableSpan learnMoreSpan =
+        ChromeClickableSpan learnMoreSpan =
                 getOnlyClickableSpanFromString(virtualCardEducationText);
         assertThat(getHighlightedTextFromSpannableString(virtualCardEducationText, learnMoreSpan))
                 .isEqualTo("Learn more about virtual cards");
@@ -164,7 +158,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         activity,
                         mModalDialogManager,
-                        mPersonalDataManager,
+                        mImageFetcher,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,
@@ -180,8 +174,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         assertThat(googleLegalMessageText.length()).isGreaterThan(0);
 
         // Assert that the text of this span is correct.
-        NoUnderlineClickableSpan googleSpan =
-                getOnlyClickableSpanFromString(googleLegalMessageText);
+        ChromeClickableSpan googleSpan = getOnlyClickableSpanFromString(googleLegalMessageText);
         assertThat(getHighlightedTextFromSpannableString(googleLegalMessageText, googleSpan))
                 .isEqualTo("oo");
         // Click on the link. The callback doesn't use the view so it can be null.
@@ -205,7 +198,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
                 new AutofillVirtualCardEnrollmentDialog(
                         activity,
                         mModalDialogManager,
-                        mPersonalDataManager,
+                        mImageFetcher,
                         mVirtualCardEnrollmentFields,
                         ACCEPT_BUTTON_TEXT,
                         DECLINE_BUTTON_TEXT,
@@ -221,8 +214,7 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         assertThat(issuerLegalMessageText.length()).isGreaterThan(0);
 
         // Assert that the text of this span is correct.
-        NoUnderlineClickableSpan issuerSpan =
-                getOnlyClickableSpanFromString(issuerLegalMessageText);
+        ChromeClickableSpan issuerSpan = getOnlyClickableSpanFromString(issuerLegalMessageText);
         assertThat(getHighlightedTextFromSpannableString(issuerLegalMessageText, issuerSpan))
                 .isEqualTo("ss");
         // Click on the link. The callback doesn't use the view so it can be null.
@@ -241,16 +233,16 @@ public class AutofillVirtualCardEnrollmentDialogTest {
         return (SpannableString) ((TextView) customView.findViewById(textViewId)).getText();
     }
 
-    private NoUnderlineClickableSpan getOnlyClickableSpanFromString(SpannableString string) {
-        NoUnderlineClickableSpan[] spans =
-                string.getSpans(0, string.length(), NoUnderlineClickableSpan.class);
-        // Assert that there is only one NoUnderlineClickableSpan.
+    private ChromeClickableSpan getOnlyClickableSpanFromString(SpannableString string) {
+        ChromeClickableSpan[] spans =
+                string.getSpans(0, string.length(), ChromeClickableSpan.class);
+        // Assert that there is only one ChromeClickableSpan.
         assertThat(spans.length).isEqualTo(1);
         return spans[0];
     }
 
     private String getHighlightedTextFromSpannableString(
-            SpannableString spannableString, NoUnderlineClickableSpan clickableSpan) {
+            SpannableString spannableString, ChromeClickableSpan clickableSpan) {
         int start = spannableString.getSpanStart(clickableSpan);
         int end = spannableString.getSpanEnd(clickableSpan);
         return spannableString.subSequence(start, end).toString();

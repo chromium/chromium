@@ -12,13 +12,15 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "components/autofill/core/browser/autofill_address_util.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,18 +31,18 @@ namespace autofill {
 using ::testing::Property;
 using profile_ref = base::optional_ref<const AutofillProfile>;
 
-class AddressBubblesControllerTest
-    : public BrowserWithTestWindowTest {
+// TODO(crbug.com/384547121): Unit test shouldn't use BrowserWithTestWindowTest
+// or TestWithBrowserView.
+class AddressBubblesControllerTest : public TestWithBrowserView {
  public:
   AddressBubblesControllerTest() = default;
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    TestWithBrowserView::SetUp();
     AddTab(browser(), GURL("about:blank"));
   }
 
   AddressBubblesController* controller() {
-    return AddressBubblesController::FromWebContents(
-        web_contents());
+    return AddressBubblesController::FromWebContents(web_contents());
   }
 
  protected:
@@ -49,17 +51,18 @@ class AddressBubblesControllerTest
   }
 
   const std::string& app_locale() const {
-    return g_browser_process->GetApplicationLocale();
+    return g_browser_process->GetFeatures()
+        ->application_locale_storage()
+        ->Get();
   }
 };
 
-TEST_F(AddressBubblesControllerTest,
-       DialogAcceptedInvokesCallback) {
+TEST_F(AddressBubblesControllerTest, DialogAcceptedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kAccepted,
@@ -68,13 +71,12 @@ TEST_F(AddressBubblesControllerTest,
       AutofillClient::AddressPromptUserDecision::kAccepted, std::nullopt);
 }
 
-TEST_F(AddressBubblesControllerTest,
-       DialogCancelledInvokesCallback) {
+TEST_F(AddressBubblesControllerTest, DialogCancelledInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 
   EXPECT_CALL(callback,
               Run(AutofillClient::AddressPromptUserDecision::kDeclined,
@@ -86,13 +88,12 @@ TEST_F(AddressBubblesControllerTest,
 // This is testing that closing all tabs (which effectively destroys the web
 // contents) will trigger the save callback with kIgnored decions if the users
 // hasn't interacted with the prompt already.
-TEST_F(AddressBubblesControllerTest,
-       WebContentsDestroyedInvokesCallback) {
+TEST_F(AddressBubblesControllerTest, WebContentsDestroyedInvokesCallback) {
   AutofillProfile profile = test::GetFullProfile();
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   // There is only now tab open, so the active web contents, are the
@@ -120,7 +121,7 @@ TEST_F(AddressBubblesControllerTest, BubbleShouldBeVisibleByDefault) {
   AutofillProfile profile = test::GetFullProfile();
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{},
+      /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 
   // Bubble is visible and active
@@ -137,7 +138,7 @@ TEST_F(AddressBubblesControllerTest,
 
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{},
+      /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 
   // Second prompt should be auto declined.
@@ -147,7 +148,7 @@ TEST_F(AddressBubblesControllerTest,
                   Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
 }
 
 // This is testing that when a second prompt comes while another prompt is in
@@ -160,7 +161,7 @@ TEST_F(AddressBubblesControllerTest,
   base::MockCallback<AutofillClient::AddressProfileSavePromptCallback> callback;
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{}, callback.Get());
+      /*is_migration_to_account=*/{}, callback.Get());
   controller()->OnBubbleClosed();
 
   // When second prompt comes, the first one will be ignored.
@@ -168,7 +169,7 @@ TEST_F(AddressBubblesControllerTest,
                             Property(&profile_ref::has_value, false)));
   AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
       web_contents(), profile, /*original_profile=*/nullptr,
-      /*options=*/{},
+      /*is_migration_to_account=*/{},
       /*callback=*/base::DoNothing());
 }
 

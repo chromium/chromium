@@ -11,7 +11,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
@@ -20,8 +19,10 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/declarative/declarative_constants.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
@@ -33,6 +34,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/image/image.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 namespace {
@@ -65,7 +68,7 @@ class RequestContentScriptTest : public ExtensionServiceTestBase {
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
 
     extension_system->CreateUserScriptManager();
-    service()->AddExtension(extension());
+    ExtensionRegistrar::Get(profile())->AddExtension(extension());
     extension_system->SetReady();
     base::RunLoop().RunUntilIdle();
   }
@@ -120,7 +123,7 @@ TEST(DeclarativeContentActionTest, ShowActionWithoutAction) {
           .SetManifest(std::move(manifest))
           .SetLocation(ManifestLocation::kComponent)
           .Build();
-  env.GetExtensionService()->AddExtension(extension.get());
+  env.GetExtensionRegistrar()->AddExtension(extension.get());
 
   TestingProfile profile;
   base::HistogramTester histogram_tester;
@@ -151,7 +154,7 @@ TEST_P(ParameterizedDeclarativeContentActionTest, ShowAction) {
           .SetLocation(ManifestLocation::kInternal)
           .Build();
 
-  env.GetExtensionService()->AddExtension(extension.get());
+  env.GetExtensionRegistrar()->AddExtension(extension.get());
 
   std::string error;
   TestingProfile profile;

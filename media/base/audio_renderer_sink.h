@@ -26,6 +26,8 @@ struct AudioGlitchInfo;
 class AudioRendererSink
     : public base::RefCountedThreadSafe<media::AudioRendererSink> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   class RenderCallback {
    public:
     // Attempts to completely fill all channels of |dest|, returns actual
@@ -104,7 +106,7 @@ class AudioRendererSink
 
  protected:
   friend class base::RefCountedThreadSafe<AudioRendererSink>;
-  virtual ~AudioRendererSink() {}
+  virtual ~AudioRendererSink() = default;
 };
 
 // Same as AudioRendererSink except that Initialize() and Start() can be called
@@ -114,7 +116,7 @@ class AudioRendererSink
 
 class RestartableAudioRendererSink : public AudioRendererSink {
  protected:
-  ~RestartableAudioRendererSink() override {}
+  ~RestartableAudioRendererSink() override = default;
 };
 
 class SwitchableAudioRendererSink : public RestartableAudioRendererSink {
@@ -128,7 +130,7 @@ class SwitchableAudioRendererSink : public RestartableAudioRendererSink {
                                   OutputDeviceStatusCB callback) = 0;
 
  protected:
-  ~SwitchableAudioRendererSink() override {}
+  ~SwitchableAudioRendererSink() override = default;
 };
 
 }  // namespace media

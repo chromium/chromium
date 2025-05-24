@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/strings/grit/components_strings.h"
@@ -76,7 +77,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
     : id_(id), item_(std::move(item)), media_color_theme_(media_color_theme) {
   CHECK(item_);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.background_color_id, kBackgroundCornerRadius));
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, kBackgroundInsets,
@@ -141,7 +142,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   source_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
-  source_label_->SetEnabledColorId(
+  source_label_->SetEnabledColor(
       media_color_theme_.secondary_foreground_color_id);
   favicon_source->SetFlexForView(source_label_, 1);
 
@@ -189,15 +190,14 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       views::style::STYLE_BODY_2_BOLD));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-  title_label_->SetEnabledColorId(
-      media_color_theme_.primary_foreground_color_id);
+  title_label_->SetEnabledColor(media_color_theme_.primary_foreground_color_id);
 
   artist_label_ = metadata_column->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_2));
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   artist_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
-  artist_label_->SetEnabledColorId(
+  artist_label_->SetEnabledColor(
       media_color_theme_.primary_foreground_color_id);
 
   // |play_pause_button_container| inside |metadata_row| holds the play pause
@@ -208,7 +208,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       play_pause_button_container, static_cast<int>(MediaSessionAction::kPlay),
       vector_icons::kPlayArrowIcon,
       IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY);
-  play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+  play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
       media_color_theme_.play_button_container_color_id,
       kPlayPauseButtonSize.height() / 2));
 
@@ -221,7 +221,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       progress_row->AddChildView(std::make_unique<views::Label>(
           std::u16string(), views::style::CONTEXT_LABEL,
           views::style::STYLE_BODY_5));
-  current_timestamp_label_->SetEnabledColorId(
+  current_timestamp_label_->SetEnabledColor(
       media_color_theme_.secondary_foreground_color_id);
 
   // Create the previous track button.
@@ -284,7 +284,7 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       progress_row->AddChildView(std::make_unique<views::Label>(
           std::u16string(), views::style::CONTEXT_LABEL,
           views::style::STYLE_BODY_5));
-  duration_timestamp_label_->SetEnabledColorId(
+  duration_timestamp_label_->SetEnabledColor(
       media_color_theme_.secondary_foreground_color_id);
 
   // Add the device selector view below the |progress_row| if there is one.
@@ -324,6 +324,7 @@ MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
   for (auto& observer : observers_) {
     observer.OnMediaItemUIDestroyed(id_);
   }
+  observers_.Clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -348,7 +349,7 @@ void MediaItemUIUpdatedView::UpdateAccessibleName() {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACCESSIBLE_NAME));
   } else {
-    GetViewAccessibility().SetName(title_label_->GetText());
+    GetViewAccessibility().SetName(std::u16string(title_label_->GetText()));
   }
 }
 
@@ -391,7 +392,7 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
         static_cast<int>(MediaSessionAction::kPause), vector_icons::kPauseIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PAUSE,
         media_color_theme_.pause_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         media_color_theme_.pause_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   } else {
@@ -400,7 +401,7 @@ void MediaItemUIUpdatedView::UpdateWithMediaSessionInfo(
         vector_icons::kPlayArrowIcon,
         IDS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_ACTION_PLAY,
         media_color_theme_.play_button_foreground_color_id);
-    play_pause_button_->SetBackground(views::CreateThemedRoundedRectBackground(
+    play_pause_button_->SetBackground(views::CreateRoundedRectBackground(
         media_color_theme_.play_button_container_color_id,
         kPlayPauseButtonSize.height() / 2));
   }
@@ -787,7 +788,7 @@ views::Label* MediaItemUIUpdatedView::GetDurationTimestampLabelForTesting() {
 
 MediaActionButton* MediaItemUIUpdatedView::GetMediaActionButtonForTesting(
     MediaSessionAction action) {
-  const auto i = base::ranges::find(
+  const auto i = std::ranges::find(
       media_action_buttons_, static_cast<int>(action), &views::View::GetID);
   return (i == media_action_buttons_.end()) ? nullptr : *i;
 }

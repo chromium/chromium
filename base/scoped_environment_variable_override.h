@@ -6,6 +6,7 @@
 #define BASE_SCOPED_ENVIRONMENT_VARIABLE_OVERRIDE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -37,8 +38,7 @@ class BASE_EXPORT ScopedEnvironmentVariableOverride final {
   std::unique_ptr<Environment> environment_;
   std::string variable_name_;
   bool overridden_;
-  bool was_set_;
-  std::string old_value_;
+  std::optional<std::string> old_value_;
 };
 
 }  // namespace base

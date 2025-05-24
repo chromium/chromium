@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cookies/parsed_cookie.h"
 
+#include <array>
 #include <string>
 
 #include "base/strings/strcat.h"
@@ -131,11 +127,11 @@ TEST(ParsedCookieTest, ParseValueStrings) {
 
   // Strings with trailing whitespace or the separator character should parse OK
   // but ValueMatchesParsedValue() should fail.
-  std::string valid_values_with_trailing_chars[] = {
+  auto valid_values_with_trailing_chars = std::to_array<std::string>({
       "lastRequest=1624663552846 ",   // Space at end
       "lastRequest=1624663552846\t",  // Tab at end
       "lastRequest=1624663552846;",   // Token separator at end
-  };
+  });
   const size_t valid_value_length =
       valid_values_with_trailing_chars[0].length() - 1;
   for (const auto& value : valid_values_with_trailing_chars) {
@@ -457,8 +453,9 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   ParsedCookie pc21("name=value; path=" + too_long_path, &status);
   EXPECT_TRUE(pc21.IsValid());
   EXPECT_FALSE(pc21.HasPath());
-  EXPECT_TRUE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
+  EXPECT_TRUE(
+      status.HasWarningReason(CookieInclusionStatus::WarningReason::
+                                  WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
 
   // NOTE: max_domain is based on the max attribute value as defined in
   // RFC6525bis, but this is larger than what is recommended by RFC1123.
@@ -476,8 +473,9 @@ TEST(ParsedCookieTest, EnforceSizeConstraints) {
   ParsedCookie pc31("name=value; domain=" + too_long_domain);
   EXPECT_TRUE(pc31.IsValid());
   EXPECT_FALSE(pc31.HasDomain());
-  EXPECT_TRUE(status.HasWarningReason(
-      CookieInclusionStatus::WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
+  EXPECT_TRUE(
+      status.HasWarningReason(CookieInclusionStatus::WarningReason::
+                                  WARN_ATTRIBUTE_VALUE_EXCEEDS_MAX_SIZE));
 
   std::string pc40_suffix = "; domain=example.com";
 
@@ -1074,7 +1072,7 @@ TEST(ParsedCookieTest, SameSiteValues) {
 
 TEST(ParsedCookieTest, InvalidNonAlphanumericChars) {
   // clang-format off
-  const char* cases[] = {
+  auto cases = std::to_array<const char *>({
       "name=\x05",
       "name=foo\x1c" "bar",
       "name=foobar\x11",
@@ -1090,7 +1088,7 @@ TEST(ParsedCookieTest, InvalidNonAlphanumericChars) {
       "foo=ba,ba\x7F" "z=bo",
       "fo\x7F" "o=ba,z=bo",
       "foo=bar\x7F" ";z=bo",
-  };
+  });
   // clang-format on
 
   for (size_t i = 0; i < std::size(cases); i++) {

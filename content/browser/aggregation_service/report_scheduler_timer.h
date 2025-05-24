@@ -13,7 +13,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -51,12 +50,6 @@ class CONTENT_EXPORT ReportSchedulerTimer
     // that will be passed the same `now`.
     virtual void OnReportingTimeReached(base::Time now,
                                         base::Time timer_desired_run_time) = 0;
-
-    // Called when the connection changes from online to offline. When this
-    // happens the timer is paused which means `OnReportingTimeReached` will not
-    // be called until it gets resumed. Before resuming the timer,
-    // `AdjustOfflineReportTimes` will be called.
-    virtual void OnReportingPaused() {}
 
     // Called when the connection changes from offline to online. May also be
     // called on a connection change if there are no stored reports, see

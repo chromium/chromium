@@ -9,6 +9,7 @@
 
 #include "sandbox/linux/tests/test_utils.h"
 
+#include <cstdint>
 #include <errno.h>
 #include <sys/mman.h>
 #include <sys/stat.h>

@@ -4,25 +4,39 @@
 
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_configuration.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/public/provider/chrome/browser/photos/photos_api.h"
 
-// static
-PhotosService* PhotosServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
+namespace {
+
+// Build a PhotosService instance.
+std::unique_ptr<KeyedService> BuildPhotosService(web::BrowserState* context) {
+  PhotosServiceConfiguration* configuration =
+      [[PhotosServiceConfiguration alloc] init];
+  ApplicationContext* application_context = GetApplicationContext();
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  configuration.singleSignOnService =
+      application_context->GetSingleSignOnService();
+  configuration.prefService = profile->GetPrefs();
+  configuration.identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  configuration.accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
+  return ios::provider::CreatePhotosService(configuration);
 }
+
+}  // namespace
 
 // static
 PhotosService* PhotosServiceFactory::GetForProfile(ProfileIOS* profile) {
-  return static_cast<PhotosService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<PhotosService>(profile,
+                                                              /*create=*/true);
 }
 
 // static
@@ -31,10 +45,17 @@ PhotosServiceFactory* PhotosServiceFactory::GetInstance() {
   return instance.get();
 }
 
+// static
+BrowserStateKeyedServiceFactory::TestingFactory
+PhotosServiceFactory::GetDefaultFactory() {
+  return base::BindOnce(&BuildPhotosService);
+}
+
 PhotosServiceFactory::PhotosServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PhotosService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("PhotosService",
+                                    TestingCreation::kNoServiceForTests,
+                                    ProfileSelection::kRedirectedInIncognito,
+                                    ServiceCreation::kCreateWithProfile) {
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ChromeAccountManagerServiceFactory::GetInstance());
 }
@@ -43,27 +64,5 @@ PhotosServiceFactory::~PhotosServiceFactory() = default;
 
 std::unique_ptr<KeyedService> PhotosServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  PhotosServiceConfiguration* configuration =
-      [[PhotosServiceConfiguration alloc] init];
-  ApplicationContext* application_context = GetApplicationContext();
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  configuration.singleSignOnService =
-      application_context->GetSingleSignOnService();
-  configuration.prefService = chrome_browser_state->GetPrefs();
-  configuration.identityManager =
-      IdentityManagerFactory::GetForProfile(chrome_browser_state);
-  configuration.accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          chrome_browser_state);
-  return ios::provider::CreatePhotosService(configuration);
-}
-
-web::BrowserState* PhotosServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateRedirectedInIncognito(context);
-}
-
-bool PhotosServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
+  return BuildPhotosService(context);
 }

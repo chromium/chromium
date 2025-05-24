@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/sharing/sharing_service_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -66,8 +67,7 @@ std::u16string SharingUiController::GetTitle(SharingDialogType dialog_type) {
 
     case SharingSendMessageResult::kSuccessful:
     case SharingSendMessageResult::kCancelled:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
 
     case SharingSendMessageResult::kPayloadTooLarge:
     case SharingSendMessageResult::kInternalError:

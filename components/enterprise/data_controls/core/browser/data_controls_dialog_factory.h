@@ -21,10 +21,13 @@ class DataControlsDialogFactory {
   // Entry point to be used to show a `DataControlDialog`. It's possible no
   // extra dialog will be shown in certain cases, for example if one already
   // exists for `type` in the current context.
-  void ShowDialogIfNeeded(content::WebContents* web_contents,
-                          DataControlsDialog::Type type,
-                          base::OnceCallback<void(bool bypassed)> callback =
-                              base::OnceCallback<void(bool bypassed)>());
+  virtual void ShowDialogIfNeeded(content::WebContents* web_contents,
+                                  DataControlsDialog::Type type);
+
+  virtual void ShowDialogIfNeeded(
+      content::WebContents* web_contents,
+      DataControlsDialog::Type type,
+      base::OnceCallback<void(bool bypassed)> callback);
 
  private:
   virtual DataControlsDialog* CreateDialog(

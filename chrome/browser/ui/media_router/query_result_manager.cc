@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 
+#include <algorithm>
 #include <unordered_set>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "content/public/browser/browser_thread.h"
@@ -35,13 +35,14 @@ class QueryResultManager::MediaSourceMediaSinksObserver
     DCHECK(result_manager);
   }
 
-  ~MediaSourceMediaSinksObserver() override {}
+  ~MediaSourceMediaSinksObserver() override = default;
 
   // MediaSinksObserver:
   void OnSinksReceived(const std::vector<MediaSink>& result) override {
     latest_sink_ids_.clear();
-    for (const MediaSink& sink : result)
+    for (const MediaSink& sink : result) {
       latest_sink_ids_.push_back(sink.id());
+    }
 
     result_manager_->SetSinksCompatibleWithSource(cast_mode_, source_, result);
     result_manager_->NotifyOnResultsUpdated();
@@ -66,7 +67,7 @@ class QueryResultManager::AnyMediaSinksObserver : public MediaSinksObserver {
   AnyMediaSinksObserver(MediaRouter* router, QueryResultManager* result_manager)
       : MediaSinksObserver(router), result_manager_(result_manager) {}
 
-  ~AnyMediaSinksObserver() override {}
+  ~AnyMediaSinksObserver() override = default;
 
   // MediaSinksObserver:
   void OnSinksReceived(const std::vector<MediaSink>& sinks) override {
@@ -136,8 +137,9 @@ void QueryResultManager::RemoveSourcesForCastMode(MediaCastMode cast_mode) {
 CastModeSet QueryResultManager::GetSupportedCastModes() const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CastModeSet modes;
-  for (const auto& cast_mode_pair : cast_mode_sources_)
+  for (const auto& cast_mode_pair : cast_mode_sources_) {
     modes.insert(cast_mode_pair.first);
+  }
 
   return modes;
 }
@@ -147,8 +149,9 @@ std::unique_ptr<MediaSource> QueryResultManager::GetSourceForCastModeAndSink(
     MediaSink::Id sink_id) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto sink_entry = sinks_with_sources_.find(sink_id);
-  if (sink_entry == sinks_with_sources_.end())
+  if (sink_entry == sinks_with_sources_.end()) {
     return nullptr;
+  }
   return GetHighestPrioritySourceForCastModeAndSink(cast_mode,
                                                     sink_entry->second);
 }
@@ -170,8 +173,9 @@ std::vector<MediaSinkWithCastModes> QueryResultManager::GetSinksWithCastModes()
     sinks.push_back(sink_with_cast_modes);
   }
   for (const auto& sink : all_sinks_) {
-    if (!base::Contains(sinks_with_sources_, sink.id()))
-      sinks.push_back(MediaSinkWithCastModes(sink));
+    if (!base::Contains(sinks_with_sources_, sink.id())) {
+      sinks.emplace_back(sink);
+    }
   }
 
   return sinks;
@@ -181,8 +185,9 @@ void QueryResultManager::RemoveOldSourcesForCastMode(
     MediaCastMode cast_mode,
     const std::vector<MediaSource>& new_sources) {
   const auto& cast_mode_it = cast_mode_sources_.find(cast_mode);
-  if (cast_mode_it == cast_mode_sources_.end())
+  if (cast_mode_it == cast_mode_sources_.end()) {
     return;
+  }
 
   for (const MediaSource& source : cast_mode_it->second) {
     if (!base::Contains(new_sources, source)) {
@@ -211,8 +216,9 @@ void QueryResultManager::SetSinksCompatibleWithSource(
     const MediaSource& source,
     const std::vector<MediaSink>& new_sinks) {
   std::unordered_set<MediaSink::Id> new_sink_ids;
-  for (const MediaSink& sink : new_sinks)
+  for (const MediaSink& sink : new_sinks) {
     new_sink_ids.insert(sink.id());
+  }
 
   // (1) Iterate through current sink set, remove cast mode from those that
   // do not appear in latest result.
@@ -220,8 +226,9 @@ void QueryResultManager::SetSinksCompatibleWithSource(
        /* no-op */) {
     const MediaSink::Id& sink_id = it->first;
     CastModesWithMediaSources& sources_for_sink = it->second;
-    if (!base::Contains(new_sink_ids, sink_id))
+    if (!base::Contains(new_sink_ids, sink_id)) {
       sources_for_sink.RemoveSource(cast_mode, source);
+    }
     if (sources_for_sink.IsEmpty()) {
       sinks_with_sources_.erase(it++);
     } else {
@@ -252,12 +259,14 @@ QueryResultManager::GetHighestPrioritySourceForCastModeAndSink(
     MediaCastMode cast_mode,
     const CastModesWithMediaSources& sources_for_sink) const {
   const auto& cast_mode_it = cast_mode_sources_.find(cast_mode);
-  if (cast_mode_it == cast_mode_sources_.end())
+  if (cast_mode_it == cast_mode_sources_.end()) {
     return nullptr;
+  }
 
   for (const MediaSource& source : cast_mode_it->second) {
-    if (sources_for_sink.HasSource(cast_mode, source))
+    if (sources_for_sink.HasSource(cast_mode, source)) {
       return std::make_unique<MediaSource>(source.id());
+    }
   }
   return nullptr;
 }
@@ -269,7 +278,7 @@ bool QueryResultManager::AreSourcesValidForCastMode(
   bool has_cast_mode = cast_mode_it != cast_mode_sources_.end();
   // If a source has already been registered, then it must be associated with
   // |cast_mode|.
-  return base::ranges::none_of(sources, [=, this](const MediaSource& source) {
+  return std::ranges::none_of(sources, [=, this](const MediaSource& source) {
     return base::Contains(sinks_observers_, source) &&
            (!has_cast_mode || !base::Contains(cast_mode_it->second, source));
   });
@@ -277,8 +286,9 @@ bool QueryResultManager::AreSourcesValidForCastMode(
 
 void QueryResultManager::NotifyOnResultsUpdated() {
   std::vector<MediaSinkWithCastModes> sinks = GetSinksWithCastModes();
-  for (MediaSinkWithCastModesObserver& observer : observers_)
+  for (MediaSinkWithCastModesObserver& observer : observers_) {
     observer.OnSinksUpdated(sinks);
+  }
 }
 
 }  // namespace media_router

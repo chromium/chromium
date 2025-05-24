@@ -325,6 +325,10 @@ void BluetoothDeviceChooserController::GetDevice(
     return;
   }
 
+  CheckAdapterAndStartGettingDevices();
+}
+
+void BluetoothDeviceChooserController::CheckAdapterAndStartGettingDevices() {
   if (adapter_->GetOsPermissionStatus() ==
       device::BluetoothAdapter::PermissionStatus::kDenied) {
     chooser_->SetAdapterPresence(
@@ -507,9 +511,8 @@ void BluetoothDeviceChooserController::OnBluetoothChooserEvent(
   switch (event) {
     case BluetoothChooserEvent::RESCAN:
       device_ids_.clear();
-      PopulateConnectedDevices();
       DCHECK(chooser_);
-      StartDeviceDiscovery();
+      CheckAdapterAndStartGettingDevices();
       // No need to close the chooser so we return.
       return;
     case BluetoothChooserEvent::DENIED_PERMISSION:

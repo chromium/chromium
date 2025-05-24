@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/indexed_db/indexed_db_return_value.h"
 
 #include <stdint.h>
@@ -32,5 +27,9 @@ blink::mojom::IDBReturnValuePtr IndexedDBReturnValue::ConvertReturnValue(
                                          &mojo_value->value->external_objects);
   return mojo_value;
 }
+
+IndexedDBReturnValue::IndexedDBReturnValue() = default;
+IndexedDBReturnValue::IndexedDBReturnValue(IndexedDBValue value)
+    : IndexedDBValue(std::move(value)) {}
 
 }  // namespace content::indexed_db

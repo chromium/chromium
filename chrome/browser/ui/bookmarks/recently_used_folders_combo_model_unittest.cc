@@ -22,13 +22,13 @@ using bookmarks::TestBookmarkClient;
 // OnComboboxModelChanged() is invoked.
 class TestComboboxModelObserver : public ui::ComboboxModelObserver {
  public:
-  TestComboboxModelObserver() : changed_(false) {}
+  TestComboboxModelObserver() = default;
 
   TestComboboxModelObserver(const TestComboboxModelObserver&) = delete;
   TestComboboxModelObserver& operator=(const TestComboboxModelObserver&) =
       delete;
 
-  ~TestComboboxModelObserver() override {}
+  ~TestComboboxModelObserver() override = default;
 
   // Returns whether the model changed and clears changed state.
   bool GetAndClearChanged() {
@@ -45,7 +45,7 @@ class TestComboboxModelObserver : public ui::ComboboxModelObserver {
   void OnComboboxModelDestroying(ui::ComboboxModel* model) override {}
 
  private:
-  bool changed_;
+  bool changed_ = false;
 };
 
 class RecentlyUsedFoldersComboModelTest : public testing::Test {
@@ -70,8 +70,9 @@ TEST_F(RecentlyUsedFoldersComboModelTest, NoDups) {
   RecentlyUsedFoldersComboModel model(bookmark_model.get(), new_node);
   std::set<std::u16string> items;
   for (size_t i = 0; i < model.GetItemCount(); ++i) {
-    if (!model.IsItemSeparatorAt(i))
+    if (!model.IsItemSeparatorAt(i)) {
       EXPECT_EQ(0u, items.count(model.GetItemAt(i)));
+    }
   }
 }
 

@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/plus_address_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+      android:id="@+id/plus_address_logo"
+      android:layout_width="@dimen/plus_address_title_icon_size"
+      android:layout_height="wrap_content"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="@dimen/list_item_default_margin"
+      android:src="@drawable/ic_logo_googleg_20dp"
+      app:tint="@color/plus_address_google_logo_tint_color"
+      android:tintMode="src_atop"
+      android:importantForAccessibility="no"
+      android:adjustViewBounds="true"
+      android:scaleType="fitXY" />
+
+    <TextView
+        android:id="@+id/plus_address_notice_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        style="@style/TextAppearance.Headline.Primary" />
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/plus_address_modal_explanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:breakStrategy="simple"
+        android:layout_marginBottom="@dimen/list_item_default_margin"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+    <LinearLayout
+        android:id="@+id/proposed_plus_address_container"
+        android:descendantFocusability="blocksDescendants"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:background="@drawable/proposed_plus_address_background">
+
+    <ImageView
+        android:id="@+id/proposed_plus_address_logo"
+        android:layout_width="@dimen/plus_address_logo_icon_size"
+        android:layout_height="@dimen/plus_address_logo_icon_size"
+        android:layout_weight="0"
+        android:src="@drawable/ic_plus_addresses_logo_24dp"
+        app:tint="@macro/default_icon_color"
+        android:tintMode="src_in"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="@dimen/plus_address_logo_icon_padding"/>
+
+    <org.chromium.ui.widget.LoadingView
+        android:id="@+id/proposed_plus_address_loading_view"
+        android:layout_width="@dimen/plus_address_logo_icon_size"
+        android:layout_height="@dimen/plus_address_logo_icon_size"
+        android:layout_weight="0"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="@dimen/plus_address_logo_icon_padding"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/proposed_plus_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+    <ImageView
+        android:id="@+id/refresh_plus_address_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:src="@drawable/ic_refresh_white_24dp"
+        android:contentDescription="@string/plus_address_model_refresh_button_accessible_name_android"
+        app:tint="@color/refresh_plus_address_icon_tint_list"
+        android:tintMode="src_in"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <org.chromium.ui.widget.TextViewWithClickableSpans
+        android:id="@+id/plus_address_first_time_use_notice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:textAlignment="center"
+        android:breakStrategy="simple"
+        android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:visibility="gone"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/plus_address_confirm_button"
+        style="@style/FilledButton"
+        android:enabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+        android:layout_marginBottom="@dimen/list_item_default_margin"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:minWidth="@dimen/min_touch_target_size" />
+
+    <org.chromium.ui.widget.LoadingView
+        android:id="@+id/plus_address_creation_loading_view"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/min_touch_target_size"
+        android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
+        android:layout_marginBottom="@dimen/list_item_default_margin"
+        android:layout_gravity="center"
+        android:visibility="gone"/>
+
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/plus_address_cancel_button"
+        style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+        android:minHeight="@dimen/min_touch_target_size"
+        android:minWidth="@dimen/min_touch_target_size" />
+
+</LinearLayout>

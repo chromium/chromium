@@ -1,0 +1,143 @@
+<style include="settings-shared">
+  :host {
+    --cr-section-indent-width: 60px;
+    --illustration-width: 344px;
+  }
+
+  .background {
+    background-color: var(--page-backdrop-bg-color);
+  }
+
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two columns */
+    grid-template-rows: repeat(3, 1fr);    /* Three rows */
+    gap: 10px;
+  }
+
+  .grid-item p {
+    width: var(--illustration-width);
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  .illustration {
+    height: 135px;
+    width: var(--illustration-width);
+  }
+
+  .keyboard-preview {
+    padding-top: var(--cr-section-padding);
+    padding-right: var(--cr-section-padding);
+    padding-left: var(--cr-section-padding);
+    padding-bottom: 0;
+  }
+
+  .keyboard-preview-separator {
+    border-top: var(--cr-separator-line);
+    margin: 0 20px;
+  }
+
+  settings-toggle-button {
+    padding-inline-end: var(--cr-section-padding);
+    padding-inline-start: var(--cr-section-padding);
+  }
+</style>
+
+<div class="background">
+  <settings-card>
+    <settings-toggle-button
+        id="mouseKeysToggle"
+        label="[[toggleLabel_]]"
+        pref="{{prefs.settings.a11y.mouse_keys.enabled}}"
+        deep-link-focus-id$="[[Setting.kMouseKeysEnabled]]">
+    </settings-toggle-button>
+  </settings-card>
+  <settings-card>
+    <keyboard-shortcut-banner header="$i18n{mouseKeysShortcutTitle}"
+        body="$i18n{mouseKeysShortcut}"
+        shortcut-label-properties="[[getShortcutLabelProperties_()]]"
+        hide-dismiss-button>
+    </keyboard-shortcut-banner>
+    <div class="settings-box start-padding">
+      <div class="flex start settings-box-text settings-box-hr"
+          id="mouseKeysAcceleration"
+          aria-hidden="true">
+        $i18n{mouseKeysAcceleration}
+      </div>
+      <settings-slider show-markers
+          pref="{{prefs.settings.a11y.mouse_keys.acceleration}}"
+          ticks="[[mouseKeysAccelerationTicks_()]]"
+          label-aria="$i18n{mouseKeysAcceleration}"
+          label-min="$i18n{mouseKeysAccelerationMinLabel}"
+          label-max="$i18n{mouseKeysAccelerationMaxLabel}">
+      </settings-slider>
+    </div>
+    <div class="settings-box">
+      <div class="start settings-box-text" id="mouseKeysMaxSpeed"
+          aria-hidden="true">
+        $i18n{mouseKeysMaxSpeed}
+      </div>
+      <settings-slider show-markers
+          pref="{{prefs.settings.a11y.mouse_keys.max_speed}}"
+          ticks="[[mouseKeysMaxSpeedTicks_()]]"
+          label-aria="$i18n{mouseKeysMaxSpeed}"
+          label-min="$i18n{mouseKeysMaxSpeedMinLabel}"
+          label-max="$i18n{mouseKeysMaxSpeedMaxLabel}">
+      </settings-slider>
+    </div>
+  </settings-card>
+  <settings-card>
+    <settings-toggle-button id="mouseKeysUsePrimaryKeys"
+        class="settings-box hr"
+        pref="{{prefs.settings.a11y.mouse_keys.use_primary_keys}}"
+        label="$i18n{mouseKeysUsePrimaryKeys}">
+    </settings-toggle-button>
+    <div class="settings-box"
+      hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
+      <div class="start settings-box-text" aria-hidden="true">
+        $i18n{mouseKeysDominantHand}
+      </div>
+      <settings-dropdown-menu id="mouseKeysDominantHand"
+          label="$i18n{mouseKeysDominantHand}"
+          pref="{{prefs.settings.a11y.mouse_keys.dominant_hand}}"
+          menu-options="[[mouseKeysDominantHandOptions_]]">
+      </settings-dropdown-menu>
+  </settings-card>
+  <settings-card>
+    <div id="primaryKeysPreview"
+      class="keyboard-preview"
+      hidden$="[[!prefs.settings.a11y.mouse_keys.use_primary_keys.value]]">
+      <h2>$i18n{primaryKeyTitle}</h2>
+        <div class="grid-container">
+          <template is="dom-repeat"
+            items="[[getPrimaryKeyboardPreviewOptions_(prefs.settings.a11y.mouse_keys.dominant_hand.value)]]"
+            as="option">
+              <div class="grid-item">
+                <iron-icon icon="[[option.icon]]"
+                  class="illustration">
+                </iron-icon>
+                <p>[[option.label]]</p>
+              </div>
+          </template>
+        </div>
+    </div>
+    <div class="keyboard-preview-separator"></div>
+    <div class="keyboard-preview">
+      <h2>$i18n{numKeypadTitle}</h2>
+      <div class="grid-container">
+        <template is="dom-repeat"
+          items="[[numKeypadPreviewOptions_]]" as="option">
+            <div class="grid-item">
+              <iron-icon icon="[[option.icon]]"
+                class="illustration">
+              </iron-icon>
+              <p>[[option.label]]</p>
+            </div>
+        </template>
+      </div>
+    </div>
+  </settings-card>
+</div>

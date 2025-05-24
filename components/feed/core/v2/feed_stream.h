@@ -87,11 +87,11 @@ class FeedStream : public FeedApi,
     virtual void ClearAll() = 0;
     virtual AccountInfo GetAccountInfo() = 0;
     virtual bool IsSigninAllowed() = 0;
-    virtual bool IsSupervisedAccount() = 0;
     virtual void PrefetchImage(const GURL& url) = 0;
     virtual void RegisterExperiments(const Experiments& experiments) = 0;
     virtual void RegisterFeedUserSettingsFieldTrial(std::string_view group) = 0;
     virtual std::string GetCountry() = 0;
+    virtual void SetFeedLaunchCuiMetadata(const std::string& metadata) = 0;
   };
 
   FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
@@ -186,6 +186,7 @@ class FeedStream : public FeedApi,
                              FeedUserActionType action_type) override;
   void ReportOtherUserAction(const StreamType& stream_type,
                              FeedUserActionType action_type) override;
+  void ReportOtherUserAction(FeedUserActionType action_type) override;
   void ReportInfoCardTrackViewStarted(SurfaceId surface_id,
                                       int info_card_type) override;
   void ReportInfoCardViewed(SurfaceId surface_id,

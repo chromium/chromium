@@ -92,8 +92,7 @@ bool MakeUITouchEventsFromWebTouchEvents(
       type = ui::EventType::kTouchCancelled;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   int flags = ui::WebEventModifiersToEventFlags(touch.GetModifiers());
@@ -318,8 +317,10 @@ void SyntheticGestureTargetAura::GetVSyncParameters(
   interval = vsync_interval_;
 }
 
-void SyntheticGestureTargetAura::OnBeginFrame(base::TimeTicks frame_begin_time,
-                                              base::TimeDelta frame_interval) {
+void SyntheticGestureTargetAura::OnBeginFrame(
+    base::TimeTicks frame_begin_time,
+    base::TimeDelta frame_interval,
+    std::optional<base::TimeTicks> first_coalesced_frame_begin_time) {
   vsync_timebase_ = frame_begin_time;
   vsync_interval_ = frame_interval;
 }

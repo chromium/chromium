@@ -91,8 +91,8 @@ class SecurePaymentConfirmationModel {
   }
 
   // Network icon.
-  const SkBitmap* network_icon() const { return &network_icon_; }
-  void set_network_icon(const SkBitmap& network_icon) {
+  const SkBitmap* network_icon() const { return network_icon_; }
+  void set_network_icon(const SkBitmap* network_icon) {
     network_icon_ = network_icon;
   }
 
@@ -109,8 +109,8 @@ class SecurePaymentConfirmationModel {
   }
 
   // Issuer icon.
-  const SkBitmap* issuer_icon() const { return &issuer_icon_; }
-  void set_issuer_icon(const SkBitmap& issuer_icon) {
+  const SkBitmap* issuer_icon() const { return issuer_icon_; }
+  void set_issuer_icon(const SkBitmap* issuer_icon) {
     issuer_icon_ = issuer_icon;
   }
 
@@ -210,15 +210,15 @@ class SecurePaymentConfirmationModel {
 
   std::u16string instrument_label_;
   std::u16string instrument_value_;
-  raw_ptr<const SkBitmap, DanglingUntriaged> instrument_icon_ = nullptr;
+  raw_ptr<const SkBitmap> instrument_icon_ = nullptr;
 
   std::u16string network_label_;
   std::u16string network_value_;
-  SkBitmap network_icon_;
+  raw_ptr<const SkBitmap> network_icon_ = nullptr;
 
   std::u16string issuer_label_;
   std::u16string issuer_value_;
-  SkBitmap issuer_icon_;
+  raw_ptr<const SkBitmap> issuer_icon_ = nullptr;
 
   std::u16string total_label_;
   std::u16string total_value_;

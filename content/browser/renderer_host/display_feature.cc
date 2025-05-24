@@ -6,15 +6,6 @@
 
 namespace content {
 
-bool DisplayFeature::operator==(const DisplayFeature& other) const {
-  return orientation == other.orientation && offset == other.offset &&
-         mask_length == other.mask_length;
-}
-
-bool DisplayFeature::operator!=(const DisplayFeature& other) const {
-  return !(*this == other);
-}
-
 std::vector<gfx::Rect> DisplayFeature::ComputeViewportSegments(
     const gfx::Size& visible_viewport_size,
     int root_view_offset_from_origin) const {

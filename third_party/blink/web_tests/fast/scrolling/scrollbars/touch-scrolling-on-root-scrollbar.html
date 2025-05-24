@@ -19,13 +19,12 @@ window.onload = () => {
     await waitForCompositorCommit();
     await waitForScrollReset();
 
-    const SCROLL_AMOUNT =
-        getScrollbarButtonScrollDelta(document.scrollingElement);
+    const SCROLL_AMOUNT = SCROLLBAR_SCROLL_PIXELS;
 
     // Tap on the Down arrow of the viewport.
     let position = downArrow();
     await touchTapScroll(position.x, position.y, document);
-    assert_equals(window.scrollY, SCROLL_AMOUNT.y,
+    assert_equals(window.scrollY, SCROLL_AMOUNT,
                   "Pressing the down arrow didn't scroll.");
 
     // Tap on the Up arrow of the viewport.
@@ -37,7 +36,7 @@ window.onload = () => {
     // Tap on the Right arrow of the viewport.
     position = rightArrow();
     await touchTapScroll(position.x, position.y, document);
-    assert_equals(window.scrollX, SCROLL_AMOUNT.x,
+    assert_equals(window.scrollX, SCROLL_AMOUNT,
                   "Pressing the right arrow didn't scroll.");
 
     // Tap on the Left arrow of the viewport.

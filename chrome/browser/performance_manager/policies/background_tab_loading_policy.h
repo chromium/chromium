@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_BACKGROUND_TAB_LOADING_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_BACKGROUND_TAB_LOADING_POLICY_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -34,8 +35,8 @@ namespace policies {
 // background tab loading at all times.
 class BackgroundTabLoadingPolicy : public GraphOwned,
                                    public NodeDataDescriberDefaultImpl,
-                                   public PageNode::ObserverDefaultImpl,
-                                   public SystemNode::ObserverDefaultImpl {
+                                   public PageNodeObserver,
+                                   public SystemNodeObserver {
  public:
   // `all_restored_tabs_loaded_callback` is invoked when all tabs passed to
   // ScheduleLoadForRestoredTabs() are loaded.
@@ -71,6 +72,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     base::WeakPtr<PageNode> page_node;
     GURL main_frame_url;
     blink::mojom::PermissionStatus notification_permission_status;
+    std::optional<size_t> site_engagement;
   };
 
   // Schedules the PageNodes in |page_node_and_permission_vector| to be loaded
@@ -88,13 +90,23 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
 
  private:
   friend class ::performance_manager::BackgroundTabLoadingBrowserTest;
+  friend class BackgroundTabLoadingPolicyTest;
 
   // Holds data about a PageNode waiting to be loaded by this policy.
   struct PageNodeToLoadData {
-    explicit PageNodeToLoadData(PageNode* page_node);
-    PageNodeToLoadData(const PageNodeToLoadData&) = delete;
+    PageNodeToLoadData(const PageNode* page_node,
+                       std::optional<size_t> site_engagement);
     ~PageNodeToLoadData();
+
+    // Move-only.
+    PageNodeToLoadData(const PageNodeToLoadData&) = delete;
     PageNodeToLoadData& operator=(const PageNodeToLoadData&) = delete;
+    PageNodeToLoadData(PageNodeToLoadData&&) = default;
+    PageNodeToLoadData& operator=(PageNodeToLoadData&&) = default;
+
+    // Returns true if the data about this PageNode indicates it uses background
+    // communication.
+    bool UsesBackgroundCommunication() const;
 
     // Keeps a pointer to the corresponding PageNode.
     raw_ptr<const PageNode> page_node;
@@ -106,6 +118,8 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
     // Initialized to nullopt and set asynchronously with the proper value from
     // the sites database.
     std::optional<bool> updates_title_or_favicon_in_bg;
+
+    std::optional<size_t> site_engagement;
   };
 
   // Comparator used to sort PageNodeToLoadData.
@@ -128,7 +142,7 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   // returns false, then the policy no longer attempts to load |page_node| and
   // removes it from the policy's internal state. This is called immediately
   // prior to trying to load the PageNode.
-  bool ShouldLoad(const PageNode* page_node);
+  bool ShouldLoad(const PageNodeToLoadData& page_node_data);
 
   // This will initialize |page_node_to_load_data->used_in_bg| to the proper
   // value, score the tab and call DispatchNotifyAllTabsScoredIfNeeded().
@@ -267,6 +281,20 @@ class BackgroundTabLoadingPolicy : public GraphOwned,
   FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicyTest,
                            ShouldLoad_FreeMemory);
   FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicyTest,
+                           ShouldLoad_SiteEngagement);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicySiteEngagementTest,
+                           ShouldLoad_NoBackgroundCommunication);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicySiteEngagementTest,
+                           ShouldLoad_NotificationPermission);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundTabLoadingPolicySiteEngagementTest,
+                           ShouldLoad_UpdatesTitleOrFaviconInBackground);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackgroundTabLoadingPolicyScheduleLoadTest,
+      ScheduleLoadForRestoredTabs_WithoutNotificationPermission);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackgroundTabLoadingPolicyScheduleLoadTest,
+      ScheduleLoadForRestoredTabs_WithNotificationPermission);
   FRIEND_TEST_ALL_PREFIXES(
       ::performance_manager::BackgroundTabLoadingBrowserTest,
       RestoredTabsAreLoadedGradually);

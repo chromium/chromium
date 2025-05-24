@@ -13,12 +13,12 @@ namespace ui_devtools {
 // interfaces that you need to acquire.
 class ConnectorDelegate {
  public:
-  ConnectorDelegate() {}
+  ConnectorDelegate() = default;
 
   ConnectorDelegate(const ConnectorDelegate&) = delete;
   ConnectorDelegate& operator=(const ConnectorDelegate&) = delete;
 
-  virtual ~ConnectorDelegate() {}
+  virtual ~ConnectorDelegate() = default;
 
   virtual void BindTracingConsumerHost(
       mojo::PendingReceiver<tracing::mojom::ConsumerHost> receiver) = 0;

@@ -92,10 +92,6 @@ bool ClipboardData::operator==(const ClipboardData& that) const {
                               that.maybe_bitmap_.value());
 }
 
-bool ClipboardData::operator!=(const ClipboardData& that) const {
-  return !(*this == that);
-}
-
 std::optional<size_t> ClipboardData::CalculateSize(
     const std::optional<ClipboardInternalFormat>& format,
     const std::optional<ClipboardFormatType>& custom_data_format) const {

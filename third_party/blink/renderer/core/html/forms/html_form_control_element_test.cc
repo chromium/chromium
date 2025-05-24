@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 
 #include <memory>
+
+#include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -186,9 +188,6 @@ INSTANTIATE_TEST_SUITE_P(
                         "type=submit",
                         FormControlType::kButtonSubmit),
         std::make_tuple("button", "type=reset", FormControlType::kButtonReset),
-        std::make_tuple("button",
-                        "type=selectlist",
-                        FormControlType::kButtonSelectList),
         std::make_tuple("fieldset", "", FormControlType::kFieldset),
         std::make_tuple("input", "", FormControlType::kInputText),
         std::make_tuple("input", "type=button", FormControlType::kInputButton),
@@ -225,7 +224,6 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple("output", "", FormControlType::kOutput),
         std::make_tuple("select", "", FormControlType::kSelectOne),
         std::make_tuple("select", "multiple", FormControlType::kSelectMultiple),
-        std::make_tuple("selectlist", "", FormControlType::kSelectList),
         std::make_tuple("textarea", "", FormControlType::kTextArea)));
 
 }  // namespace blink

@@ -18,7 +18,9 @@
 #include "chrome/browser/predictors/proxy_lookup_client_impl.h"
 #include "chrome/browser/predictors/resolve_host_client_impl.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "net/base/network_anonymization_key.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -79,11 +81,17 @@ struct PreresolveInfo {
 // Stores all data need for running a preresolve and a subsequent optional
 // preconnect for a |url|.
 struct PreresolveJob {
-  PreresolveJob(const GURL& url,
-                int num_sockets,
-                bool allow_credentials,
-                net::NetworkAnonymizationKey network_anonymization_key,
-                PreresolveInfo* info);
+  PreresolveJob(
+      const GURL& url,
+      int num_sockets,
+      bool allow_credentials,
+      net::NetworkAnonymizationKey network_anonymization_key,
+      net::NetworkTrafficAnnotationTag traffic_annotation_tag,
+      std::optional<content::StoragePartitionConfig> storage_partition_config,
+      std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client,
+      PreresolveInfo* info);
 
   PreresolveJob(const PreresolveJob&) = delete;
   PreresolveJob& operator=(const PreresolveJob&) = delete;
@@ -101,6 +109,13 @@ struct PreresolveJob {
   int num_sockets;
   bool allow_credentials;
   net::NetworkAnonymizationKey network_anonymization_key;
+  net::NetworkTrafficAnnotationTag traffic_annotation_tag;
+  // The default for the profile is used if this is absent.
+  std::optional<content::StoragePartitionConfig> storage_partition_config;
+
+  std::optional<net::ConnectionKeepAliveConfig> keepalive_config;
+  mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+      connection_change_observer_client;
   // Raw pointer usage is fine here because even though PreresolveJob can
   // outlive PreresolveInfo. It's only accessed on PreconnectManager class
   // context and PreresolveInfo lifetime is tied to PreconnectManager.
@@ -125,7 +140,7 @@ class PreconnectManager {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when a preconnect to |preconnect_url| is initiated for |url|.
     virtual void PreconnectInitiated(const GURL& url,
@@ -141,7 +156,7 @@ class PreconnectManager {
   // An observer for testing.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     virtual void OnPreconnectUrl(const GURL& url,
                                  int num_sockets,
@@ -150,6 +165,8 @@ class PreconnectManager {
     virtual void OnPreresolveFinished(
         const GURL& url,
         const net::NetworkAnonymizationKey& network_anonymization_key,
+        mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>&
+            observer,
         bool success) {}
     virtual void OnProxyLookupFinished(
         const GURL& url,
@@ -180,14 +197,23 @@ class PreconnectManager {
   // socket.
   virtual void StartPreresolveHost(
       const GURL& url,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      const content::StoragePartitionConfig* storage_partition_config);
   virtual void StartPreresolveHosts(
       const std::vector<GURL>& urls,
-      const net::NetworkAnonymizationKey& network_anonymization_key);
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      const content::StoragePartitionConfig* storage_partition_config);
   virtual void StartPreconnectUrl(
       const GURL& url,
       bool allow_credentials,
-      net::NetworkAnonymizationKey network_anonymization_key);
+      net::NetworkAnonymizationKey network_anonymization_key,
+      net::NetworkTrafficAnnotationTag traffic_annotation,
+      const content::StoragePartitionConfig* storage_partition_config,
+      std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client);
 
   // No additional jobs associated with the |url| will be queued after this.
   virtual void Stop(const GURL& url);
@@ -212,14 +238,21 @@ class PreconnectManager {
       const GURL& url,
       int num_sockets,
       bool allow_credentials,
-      const net::NetworkAnonymizationKey& network_anonymization_key) const;
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      const content::StoragePartitionConfig* storage_partition_config,
+      std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
+      mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
+          connection_change_observer_client) const;
   std::unique_ptr<ResolveHostClientImpl> PreresolveUrl(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      const content::StoragePartitionConfig* storage_partition_config,
       ResolveHostCallback callback) const;
   std::unique_ptr<ProxyLookupClientImpl> LookupProxyForUrl(
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
+      const content::StoragePartitionConfig* storage_partition_config,
       ProxyLookupCallback callback) const;
 
   // Whether the PreconnectManager should be performing preloading operations
@@ -232,7 +265,8 @@ class PreconnectManager {
   void AllPreresolvesForUrlFinished(PreresolveInfo* info);
 
   // NOTE: Returns a non-null pointer outside of unittesting contexts.
-  network::mojom::NetworkContext* GetNetworkContext() const;
+  network::mojom::NetworkContext* GetNetworkContext(
+      const content::StoragePartitionConfig* storage_partition_config) const;
 
   base::WeakPtr<Delegate> delegate_;
   const raw_ptr<content::BrowserContext> browser_context_;

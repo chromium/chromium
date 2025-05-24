@@ -17,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -52,7 +51,7 @@ class ProfileCloudPolicyManager;
 class UserCloudPolicyManager;
 class CloudPolicyManager;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class UserCloudPolicyManagerAsh;
 #endif
 }  // namespace policy
@@ -108,19 +107,13 @@ class Profile : public content::BrowserContext {
     // Creates a unique OTR profile id for tests.
     static OTRProfileID CreateUniqueForTesting();
 
-    bool operator==(const OTRProfileID& other) const {
-      return profile_id_ == other.profile_id_;
-    }
-
-    bool operator!=(const OTRProfileID& other) const {
-      return profile_id_ != other.profile_id_;
-    }
-
-    bool operator<(const OTRProfileID& other) const {
-      return profile_id_ < other.profile_id_;
-    }
+    friend constexpr bool operator==(const OTRProfileID&,
+                                     const OTRProfileID&) = default;
+    friend constexpr auto operator<=>(const OTRProfileID&,
+                                      const OTRProfileID&) = default;
 
     bool AllowsBrowserWindows() const;
+    bool IsDevTools() const;
 
 #if BUILDFLAG(IS_CHROMEOS)
     // Returns true if the OTR Profile was created for captive portal signin.
@@ -292,9 +285,8 @@ class Profile : public content::BrowserContext {
 
   // Returns whether the profile is associated with the account of a child.
   // This method should not be used in new code to gate child-specific
-  // functionality. Prefer a feture specific method
-  // (eg. `SupervisedUserService::IsURLFilteringEnabled()`) or alternatively
-  // use `SupervisedUserService::IsSubjectToParentalControls()`.
+  // functionality.
+  // Use `supervised_user::IsSubjectToParentalControls()` instead.
   virtual bool IsChild() const = 0;
 
   // Returns whether opening browser windows is allowed in this profile. For
@@ -340,7 +332,7 @@ class Profile : public content::BrowserContext {
   // Returns the SchemaRegistryService.
   virtual policy::SchemaRegistryService* GetPolicySchemaRegistryService() = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the UserCloudPolicyManagerAsh.
   virtual policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() = 0;
 #else
@@ -353,8 +345,7 @@ class Profile : public content::BrowserContext {
   // This function combine three Get*CloudPolicyManager functions above and
   // always returns the one that is currently activated.
   //
-  // Returns UserCloudPolicyManagerAsh on Ash
-  // Returns null for Lacros main profile
+  // Returns UserCloudPolicyManagerAsh on ChromeOS.
   // For others, returns UserCloudPolicyManager if it exists, otherwise use
   // ProfileCloudPolicyManager.
   virtual policy::CloudPolicyManager* GetCloudPolicyManager() = 0;
@@ -367,7 +358,7 @@ class Profile : public content::BrowserContext {
   virtual base::FilePath last_selected_directory() = 0;
   virtual void set_last_selected_directory(const base::FilePath& path) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   enum AppLocaleChangedVia{// Caused by chrome://settings change.
                            APP_LOCALE_CHANGED_VIA_SETTINGS,
                            // Locale has been reverted via LocaleChangeGuard.
@@ -394,7 +385,7 @@ class Profile : public content::BrowserContext {
 
   // Initializes Chrome OS's preferences.
   virtual void InitChromeOSPreferences() = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns the home page for this profile.
   virtual GURL GetHomePage() = 0;
@@ -406,7 +397,7 @@ class Profile : public content::BrowserContext {
   // IsRegularProfile(), IsSystemProfile(), IsIncognitoProfile(), and
   // IsGuestSession() are mutually exclusive.
   // Note: IsGuestSession() is not mutually exclusive with the rest of the
-  // methods mentioned above on Ash and Lacros. TODO(crbug.com/40233408).
+  // methods mentioned above on ChromeOS. TODO(crbug.com/40233408).
   //
   // IsSystemProfile() returns true for both regular and off-the-record profile
   //   of the system profile.
@@ -418,9 +409,6 @@ class Profile : public content::BrowserContext {
 
   // Returns whether it is an Incognito profile. An Incognito profile is an
   // off-the-record profile that is used for incognito mode.
-  //
-  // TODO(crbug.com/40233408): Also returns true for Lacros in a Ash guest
-  // profile.
   bool IsIncognitoProfile() const;
 
   // Returns true if this is a primary OffTheRecord profile, which covers the
@@ -434,17 +422,9 @@ class Profile : public content::BrowserContext {
   // Returns whether it is a system profile.
   bool IsSystemProfile() const;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns `true` if this is the first/initial Profile path in Lacros, and -
-  // for regular sessions, if this Profile has the Device Account logged in.
-  // For non-regular sessions (Guest Sessions, Managed Guest Sessions) which do
-  // not have the concept of a Device Account, the latter condition is not
-  // checked.
-  static bool IsMainProfilePath(base::FilePath profile_path);
-
-  // Returns true if this is the main profile as defined above.
-  virtual bool IsMainProfile() const = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Returns true if this OffTheRecord profile was created via the
+  // "createBrowsingContext" Chrome DevTools Protocol command.
+  bool IsDevToolsOTRProfile() const;
 
   bool CanUseDiskWhenOffTheRecord() override;
 
@@ -515,6 +495,9 @@ class Profile : public content::BrowserContext {
     return instant_service_;
   }
 
+  // Returns a debug information in std::string.
+  std::string ToDebugString();
+
 #if BUILDFLAG(IS_ANDROID)
   static Profile* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);
   jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject() const;
@@ -536,8 +519,13 @@ class Profile : public content::BrowserContext {
   // Returns whether the user has signed in this profile to an account.
   virtual bool IsSignedIn() = 0;
 
- protected:
   const std::optional<OTRProfileID> otr_profile_id_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(40233408): Remove this when migration is completed.
+  // True if the guest profile uses BrowserProfileType::kGuest.
+  bool new_guest_profile_impl_;
+#endif
 
  private:
   bool restored_last_session_ = false;

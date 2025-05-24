@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -60,14 +65,19 @@ class FakeDelegate : public ClientSideDetectionService::Delegate {
       content::BrowserContext* context) override {
     return true;
   }
+  void StartListeningToOnDeviceModelUpdate() override { return; }
+  void StopListeningToOnDeviceModelUpdate() override { return; }
+  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
+  GetModelExecutorSession() override {
+    return nullptr;
+  }
+  void LogOnDeviceModelEligibilityReason() override { return; }
 };
 
 class FakeClientSideDetectionService : public ClientSideDetectionService {
  public:
   FakeClientSideDetectionService()
-      : ClientSideDetectionService(std::make_unique<FakeDelegate>(),
-                                   nullptr,
-                                   nullptr) {}
+      : ClientSideDetectionService(std::make_unique<FakeDelegate>(), nullptr) {}
 
   void SendClientReportPhishingRequest(
       std::unique_ptr<ClientPhishingRequest> verdict,
@@ -276,13 +286,14 @@ class ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
-    InProcessBrowserTest::SetUp();
+    ExclusiveAccessTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     set_up_client_side_model();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    ExclusiveAccessTest::SetUpOnMainThread();
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {
@@ -414,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(page_url, true, net::HTTP_OK);
+      .Run(page_url, true, net::HTTP_OK, std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
@@ -463,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(prerender_url, true, net::HTTP_OK);
+      .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -516,7 +527,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(prerender_url, true, net::HTTP_OK);
+      .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 
   ClientSideDetectionFeatureCache* feature_cache_map =
       ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
@@ -589,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(prerender_url, true, net::HTTP_OK);
+      .Run(prerender_url, true, net::HTTP_OK, std::nullopt);
 
   LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
       feature_cache_map->GetOrCreateDebuggingMetadataForURL(prerender_url);
@@ -765,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(initial_url, true, net::HTTP_OK);
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.KeyboardLockRequested", 1);
@@ -838,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(initial_url, true, net::HTTP_OK);
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.PointerLockRequested", 1);
@@ -851,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(
 
 class ClientSideDetectionHostVibrateTest : public InProcessBrowserTest {
  public:
-  ClientSideDetectionHostVibrateTest() {}
+  ClientSideDetectionHostVibrateTest() = default;
 
   ClientSideDetectionHostVibrateTest(
       const ClientSideDetectionHostVibrateTest&) = delete;
@@ -999,7 +1010,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   // TODO(andysjlim): Navigating to initial page alongside the first page logs
   // the histogram twice. Figure out why.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult", 2);
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel", 2);
 
   VibrationObserverWaiter waiter(GetWebContents());
   EXPECT_FALSE(waiter.DidVibrate());
@@ -1009,12 +1020,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   run_loop.Run();
   waiter.Wait();
 
+  // TODO(andysjlim): Just like above, VibrationRequested() in the host class is
+  // hit twice, although the web contents observer notification is hit once, so
+  // the second immediately cancels the first. Observe why this happens.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult", 3);
-  ClientSideDetectionFeatureCache* feature_cache_map =
-      ClientSideDetectionFeatureCache::FromWebContents(GetWebContents());
-  EXPECT_TRUE(
-      feature_cache_map->WasVibrationClassificationTriggered(initial_url));
+      "SBClientPhishing.PreClassificationCheckResult.VibrationApi", 2);
   EXPECT_TRUE(waiter.DidVibrate());
 
   // Triggering vibration again on the same page will not trigger
@@ -1023,8 +1033,11 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   TriggerVibrate(1234, second_vibrate_run_loop.QuitClosure());
   second_vibrate_run_loop.Run();
   waiter.Wait();
+
+  // The total count has not changed although the second_vibration_run_loop has
+  // triggered another vibration.
   histogram_tester.ExpectTotalCount(
-      "SBClientPhishing.PreClassificationCheckResult", 3);
+      "SBClientPhishing.PreClassificationCheckResult.VibrationApi", 2);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
@@ -1077,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
   std::move(fake_csd_service.saved_callback())
-      .Run(initial_url, true, net::HTTP_OK);
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.VibrationApi", 1);

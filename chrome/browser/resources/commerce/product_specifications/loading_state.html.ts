@@ -9,10 +9,11 @@ import type {LoadingStateElement} from './loading_state.js';
 export function getHtml(this: LoadingStateElement) {
   return html`
   <div id="loadingContainer">
-    <cr-loading-gradient>
+    <cr-loading-gradient id="gradientContainer">
       <svg id="svg" height="511">
         <clippath id="clipPath"></clippath>
       </svg>
     </cr-loading-gradient>
-  </div>`;
+  </div>
+  <div id="lastColumnGradient"></div>`;
 }

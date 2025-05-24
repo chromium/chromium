@@ -4,12 +4,13 @@
 
 #include "components/allocation_recorder/crash_handler/payload.h"
 
+#include <algorithm>
+
 #include "base/allocator/dispatcher/notification_data.h"
 #include "base/allocator/dispatcher/subsystem.h"
 #include "base/bits.h"
 #include "base/containers/span.h"
 #include "base/debug/allocation_trace.h"
-#include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::allocator::dispatcher::AllocationNotificationData;
@@ -73,7 +74,7 @@ void VerifyAllocationEntriesAreEqual(
 
   const auto& report_frames = report_entry.stack_trace().frames();
   std::vector<const void*> converted_frames;
-  base::ranges::transform(
+  std::ranges::transform(
       report_frames, std::back_inserter(converted_frames),
       [](const allocation_recorder::StackFrame& frame) {
         return reinterpret_cast<const void*>(frame.address());
@@ -166,7 +167,7 @@ TEST(CreatePayloadWithProcessingFailuresTest, VerifyMultipleMessages) {
                                        "You'd better not ignore it."};
 
   const allocation_recorder::Payload payload =
-      CreatePayloadWithProcessingFailures(base::make_span(messages));
+      CreatePayloadWithProcessingFailures(base::span(messages));
 
   ASSERT_TRUE(payload.has_processing_failures());
   EXPECT_EQ(std::ssize(messages),

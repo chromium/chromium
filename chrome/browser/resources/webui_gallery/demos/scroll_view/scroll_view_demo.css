@@ -5,9 +5,10 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=../demo.css.js
+ * #import=//resources/cr_elements/cr_scrollable_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
- * #include=demo
+ * #include=demo cr-scrollable-lit
  * #css_wrapper_metadata_end */
 
 /* Parent of #container for CrContainerShadowMixin needs to be flex column. */
@@ -54,4 +55,24 @@
 
 #itemsLengthSlider {
   width: 200px;
+}
+
+#cr-scrollable-demos {
+  flex-direction: row;
+}
+
+.cr-scrollable {
+  box-sizing: border-box;
+  width: 100%;
+  height: 300px;
+  padding: 12px;
+}
+
+.block {
+  height: 500px;
+}
+
+.label {
+  position: sticky;
+  top: 0;
 }

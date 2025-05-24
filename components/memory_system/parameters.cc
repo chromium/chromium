@@ -6,7 +6,7 @@
 
 #include <string_view>
 
-#include "base/profiler/process_type.h"
+#include "components/sampling_profiler/process_type.h"
 
 namespace memory_system {
 
@@ -16,7 +16,7 @@ GwpAsanParameters::GwpAsanParameters(bool boost_sampling,
 
 ProfilingClientParameters::ProfilingClientParameters(
     version_info::Channel channel,
-    base::ProfilerProcessType process_type)
+    sampling_profiler::ProfilerProcessType process_type)
     : channel(channel), process_type(process_type) {}
 
 DispatcherParameters::DispatcherParameters(

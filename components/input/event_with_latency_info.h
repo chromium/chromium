@@ -33,7 +33,7 @@ class EventWithLatencyInfo {
                        const ui::LatencyInfo& l)
       : event(type, modifiers, time_stamp), latency(l) {}
 
-  EventWithLatencyInfo() {}
+  EventWithLatencyInfo() = default;
 
   [[nodiscard]] bool CanCoalesceWith(const EventWithLatencyInfo& other) const {
     if (other.event.GetType() != event.GetType())
@@ -43,10 +43,6 @@ class EventWithLatencyInfo {
   }
 
   void CoalesceWith(const EventWithLatencyInfo& other) {
-    // |other| should be a newer event than |this|.
-    if (other.latency.trace_id() >= 0 && latency.trace_id() >= 0)
-      DCHECK_GT(other.latency.trace_id(), latency.trace_id());
-
     // New events get coalesced into older events, and the newer timestamp
     // should always be preserved.
     const base::TimeTicks time_stamp = other.event.TimeStamp();

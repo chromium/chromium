@@ -1,4 +1,0 @@
-[alias]
-
-# The list of features should be the same as the one under `[package.metadata.docs.rs]`
-nightly_docs = "doc --no-deps -F nightly_docs,derive,extern_crate_alloc,extern_crate_std,zeroable_maybe_uninit,zeroable_atomics,min_const_generics,wasm_simd,must_cast"

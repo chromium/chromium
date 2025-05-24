@@ -7,8 +7,10 @@ import 'chrome://os-settings/os_settings.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import type { SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {clearBody} from '../utils.js';
 // clang-format on
 
@@ -269,7 +271,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    learnMoreLink!.click();
+    learnMoreLink.click();
     assertTrue(testElement.checked);
   });
 
@@ -290,11 +292,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testLabelTextAlt = 'test label text alt';
     testElement.setAttribute('label', testLabelTextAlt);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelTextAlt);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelTextAlt);
   });
 
   test('set aria-label attribute should override aria-label of toggle', () => {
@@ -303,11 +305,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testAriaLabel = 'test aria label';
     testElement.setAttribute('aria-label', testAriaLabel);
-    assertEquals(crToggle!.getAttribute('aria-label'), testAriaLabel);
+    assertEquals(crToggle.getAttribute('aria-label'), testAriaLabel);
   });
 
   test('sub label with action link should have proper role', () => {
@@ -319,7 +321,7 @@ suite('SettingsToggleButton', () => {
             '#sub-label-text-with-link');
     assertTrue(!!subLabelTextWithLink);
 
-    const actionLink = subLabelTextWithLink!.querySelector('a');
+    const actionLink = subLabelTextWithLink.querySelector('a');
     assertTrue(!!actionLink);
     assertEquals(actionLink.getAttribute('role'), 'link');
   });
@@ -373,7 +375,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    subLabelTextWithLink!.click();
+    subLabelTextWithLink.click();
     assertFalse(testElement.checked);
   });
 });

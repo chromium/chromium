@@ -98,7 +98,8 @@ void RemoveWatcherOnUIThread(
 
 }  // namespace
 
-ArcDocumentsProviderWatcherManager::ArcDocumentsProviderWatcherManager() {}
+ArcDocumentsProviderWatcherManager::ArcDocumentsProviderWatcherManager() =
+    default;
 
 ArcDocumentsProviderWatcherManager::~ArcDocumentsProviderWatcherManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);

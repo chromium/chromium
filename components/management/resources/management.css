@@ -6,13 +6,14 @@
 html {
   --google-blue-300: rgb(138, 180, 248);
   --google-blue-700: rgb(25, 103, 210);
-  --google-grey-200: rgb(232, 234, 237);
-  --google-gray-500: rgb(154, 160, 166);
+  --google-gray-300: rgb(218, 220, 224);
   --google-gray-700: rgb(95, 99, 104);
   --google-grey-900: rgb(32, 33, 36);
 
-  --heading-color: var(--google-gray-900);
+  /* Text/Primary in Chrome iOS Design System. */
+  --heading-color: rgb(0, 0, 0);
   --link-color: var(--google-blue-700);
+  /* Text/Primary Low in Chrome iOS Design System. */
   --text-color: var(--google-gray-700);
 
   -webkit-text-size-adjust: 100%;
@@ -24,9 +25,10 @@ html {
 
 @media (prefers-color-scheme: dark) {
   html {
-    --heading-color: var(--google-grey-200);
-    --text-color: var(--google-gray-500);
+    --heading-color: rgb(255, 255, 255);
+    --text-color: var(--google-gray-300);
     --link-color: var(--google-blue-300);
+
     background: var(--google-grey-900);
   }
 }
@@ -59,17 +61,44 @@ a {
 
 #main-message,
 #unmanaged-info {
-  color: var(--heading-color);
   font-size: 1.6em;
   font-weight: normal;
   line-height: 1.25em;
   margin-bottom: 16px;
 }
 
-#secondary-message {
+.description-text {
   color: var(--text-color);
   font-size: 1.2em;
+  line-height: 1.6em;
   font-weight: normal;
+}
+
+.heading {
+  color: var(--heading-color);
+}
+
+#connectors-section-title {
+  font-size: 1.4em;
+  font-weight: normal;
+  line-height: 1.25em;
+  margin-top: 32px;
+  margin-bottom: 16px;
+}
+
+#connectors-section-description {
+  margin-bottom: 28px;
+}
+
+.event-section {
+  margin-bottom: 24px;
+  margin-top: 24px;
+}
+
+.event-title {
+  font-size: 1.3em;
+  font-weight: 590;
+  margin-bottom: 8px;
 }
 
 @media (max-width: 700px) {
@@ -113,14 +142,21 @@ a {
 
   #main-message,
   #unmanaged-info {
-    font-size: 1.5em;
+    font-size: 1.54em;
     margin-bottom: 8px;
   }
 
-  #secondary-message {
+  .description-text {
     font-size: .95em;
-    line-height: 1.61em;
-    margin-top: 8px;
+    line-height: 1.57em;
+  }
+
+  #connectors-section-title {
+    font-size: 1.33em;
+  }
+
+  .event-title {
+    font-size: 1em;
   }
 }
 

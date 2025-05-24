@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] Test that decodingInfo rejects if the video configuration contentType has more than one parameter
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that decodingInfo rejects if the video configuration contentType has one parameter that isn't codecs
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that decodingInfo rejects if the audio configuration contentType has more than one parameters
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that decodingInfo rejects if the audio configuration contentType has one parameter that isn't codecs
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that decodingInfo rejects for type 'webrtc' if HDR members are set
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

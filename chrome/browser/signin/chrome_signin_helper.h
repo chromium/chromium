@@ -10,10 +10,10 @@
 
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 
 namespace content_settings {
@@ -109,9 +109,9 @@ void FixAccountConsistencyRequestHeader(
     bool is_off_the_record,
     int incognito_availibility,
     AccountConsistencyMethod account_consistency,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     signin::Tribool is_child_account,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool is_secondary_account_addition_allowed,
 #endif
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -129,7 +129,7 @@ void ProcessAccountConsistencyResponseHeaders(ResponseAdapter* response,
 // Parses and returns an account ID (Gaia ID) from HTTP response header
 // Google-Accounts-RemoveLocalAccount. Returns an empty string if parsing
 // failed. Exposed for testing purposes.
-std::string ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
+GaiaId ParseGaiaIdFromRemoveLocalAccountResponseHeaderForTesting(
     const net::HttpResponseHeaders* response_headers);
 
 }  // namespace signin

@@ -8,11 +8,12 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_callback_installer.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_response_info.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/overlays/model/test/fake_overlay_request_callback_installer.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -27,9 +28,9 @@ namespace {
 // The modality to use in tests.
 const OverlayModality kModality = OverlayModality::kWebContentArea;
 // Request configs used in tests.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(SupportedConfig);
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(UnsupportedConfig);
-DEFINE_TEST_OVERLAY_RESPONSE_INFO(DispatchInfo);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(SupportedConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(UnsupportedConfig);
+DEFINE_STATELESS_OVERLAY_RESPONSE_INFO(DispatchInfo);
 
 // Fake version of OverlayBrowserAgentBase used for tests.
 class FakeOverlayBrowserAgent
@@ -45,9 +46,9 @@ class FakeOverlayBrowserAgent
 
  private:
   friend class BrowserUserData<FakeOverlayBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
-  FakeOverlayBrowserAgent(Browser* browser) : OverlayBrowserAgentBase(browser) {
+  FakeOverlayBrowserAgent(Browser* browser)
+      : OverlayBrowserAgentBase(browser), BrowserUserData(browser) {
     // Add a fake callback installer for kModality that supports requests
     // configured with SupportedConfig and dispatched responses with
     // DispatchInfo.
@@ -62,7 +63,6 @@ class FakeOverlayBrowserAgent
   testing::StrictMock<MockOverlayRequestCallbackReceiver>
       mock_callback_receiver_;
 };
-BROWSER_USER_DATA_KEY_IMPL(FakeOverlayBrowserAgent)
 }  // namespace
 
 // Test fixture for OverlayBrowserAgentBase.
@@ -70,9 +70,9 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
  public:
   OverlayBrowserAgentBaseTest() {
     // Create the Browser and set up the browser agent.
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     FakeOverlayBrowserAgent::CreateForBrowser(browser_.get());
     // Set up the infobar OverlayPresenter.
     OverlayPresenter::FromBrowser(browser_.get(), kModality)
@@ -105,7 +105,7 @@ class OverlayBrowserAgentBaseTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   raw_ptr<web::WebState> web_state_ = nullptr;
   std::unique_ptr<Browser> browser_;
   FakeOverlayPresentationContext presentation_context_;

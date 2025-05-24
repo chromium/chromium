@@ -22,6 +22,11 @@ extern "C" {
 #endif
 
 /*
+ * Backward compatibility
+ */
+#define UTF8ToHtml htmlUTF8ToHtml
+
+/*
  * Most of the back-end structures from XML and HTML are shared.
  */
 typedef xmlParserCtxt htmlParserCtxt;
@@ -42,31 +47,22 @@ typedef struct _htmlElemDesc htmlElemDesc;
 typedef htmlElemDesc *htmlElemDescPtr;
 struct _htmlElemDesc {
     const char *name;	/* The tag name */
-    char startTag;      /* Whether the start tag can be implied */
+    char startTag;      /* unused */
     char endTag;        /* Whether the end tag can be implied */
     char saveEndTag;    /* Whether the end tag should be saved */
     char empty;         /* Is this an empty element ? */
-    char depr;          /* Is this a deprecated element ? */
-    char dtd;           /* 1: only in Loose DTD, 2: only Frameset one */
+    char depr;          /* unused */
+    char dtd;           /* unused */
     char isinline;      /* is this a block 0 or inline 1 element */
     const char *desc;   /* the description */
 
-/* NRK Jan.2003
- * New fields encapsulating HTML structure
- *
- * Bugs:
- *	This is a very limited representation.  It fails to tell us when
- *	an element *requires* subelements (we only have whether they're
- *	allowed or not), and it doesn't tell us where CDATA and PCDATA
- *	are allowed.  Some element relationships are not fully represented:
- *	these are flagged with the word MODIFIER
- */
-    const char** subelts;		/* allowed sub-elements of this element */
-    const char* defaultsubelt;	/* subelement for suggested auto-repair
-					   if necessary or NULL */
-    const char** attrs_opt;		/* Optional Attributes */
-    const char** attrs_depr;		/* Additional deprecated attributes */
-    const char** attrs_req;		/* Required attributes */
+    const char** subelts XML_DEPRECATED_MEMBER;
+    const char* defaultsubelt XML_DEPRECATED_MEMBER;
+    const char** attrs_opt XML_DEPRECATED_MEMBER;
+    const char** attrs_depr XML_DEPRECATED_MEMBER;
+    const char** attrs_req XML_DEPRECATED_MEMBER;
+
+    int dataMode;
 };
 
 /*
@@ -85,11 +81,6 @@ struct _htmlEntityDesc {
 XML_DEPRECATED
 XMLPUBVAR const xmlSAXHandlerV1 htmlDefaultSAXHandler;
 
-#ifdef LIBXML_THREAD_ENABLED
-XML_DEPRECATED
-XMLPUBFUN const xmlSAXHandlerV1 *__htmlDefaultSAXHandler(void);
-#endif
-
 #endif /* LIBXML_SAX1_ENABLED */
 
 /*
@@ -105,9 +96,11 @@ XMLPUBFUN const htmlEntityDesc *
 XMLPUBFUN const htmlEntityDesc *
 			htmlEntityValueLookup(unsigned int value);
 
+XML_DEPRECATED
 XMLPUBFUN int
 			htmlIsAutoClosed(htmlDocPtr doc,
 					 htmlNodePtr elem);
+XML_DEPRECATED
 XMLPUBFUN int
 			htmlAutoCloseTag(htmlDocPtr doc,
 					 const xmlChar *name,
@@ -157,7 +150,7 @@ XMLPUBFUN htmlDocPtr
 			htmlParseFile	(const char *filename,
 					 const char *encoding);
 XMLPUBFUN int
-			UTF8ToHtml	(unsigned char *out,
+			htmlUTF8ToHtml	(unsigned char *out,
 					 int *outlen,
 					 const unsigned char *in,
 					 int *inlen);
@@ -203,20 +196,26 @@ XMLPUBFUN void
  * to the xmlReadDoc() and similar calls.
  */
 typedef enum {
-    HTML_PARSE_RECOVER  = 1<<0, /* Relaxed parsing */
+    HTML_PARSE_RECOVER  = 1<<0, /* No effect */
+    HTML_PARSE_HTML5    = 1<<1, /* HTML5 support */
     HTML_PARSE_NODEFDTD = 1<<2, /* do not default a doctype if not found */
     HTML_PARSE_NOERROR	= 1<<5,	/* suppress error reports */
     HTML_PARSE_NOWARNING= 1<<6,	/* suppress warning reports */
-    HTML_PARSE_PEDANTIC	= 1<<7,	/* pedantic error reporting */
+    HTML_PARSE_PEDANTIC	= 1<<7,	/* No effect */
     HTML_PARSE_NOBLANKS	= 1<<8,	/* remove blank nodes */
-    HTML_PARSE_NONET	= 1<<11,/* Forbid network access */
+    HTML_PARSE_NONET	= 1<<11,/* No effect */
     HTML_PARSE_NOIMPLIED= 1<<13,/* Do not add implied html/body... elements */
     HTML_PARSE_COMPACT  = 1<<16,/* compact small text nodes */
-    HTML_PARSE_IGNORE_ENC=1<<21 /* ignore internal document encoding hint */
+    HTML_PARSE_HUGE     = 1<<19,/* relax any hardcoded limit from the parser */
+    HTML_PARSE_IGNORE_ENC=1<<21,/* ignore internal document encoding hint */
+    HTML_PARSE_BIG_LINES= 1<<22 /* Store big lines numbers in text PSVI field */
 } htmlParserOption;
 
 XMLPUBFUN void
 		htmlCtxtReset		(htmlParserCtxtPtr ctxt);
+XMLPUBFUN int
+		htmlCtxtSetOptions	(htmlParserCtxtPtr ctxt,
+					 int options);
 XMLPUBFUN int
 		htmlCtxtUseOptions	(htmlParserCtxtPtr ctxt,
 					 int options);
@@ -283,7 +282,7 @@ XMLPUBFUN htmlDocPtr
 					 const char *encoding,
 					 int options);
 
-/* NRK/Jan2003: further knowledge of HTML structure
+/* deprecated content model
  */
 typedef enum {
   HTML_NA = 0 ,		/* something we don't check at all */
@@ -296,9 +295,13 @@ typedef enum {
 /* Using htmlElemDesc rather than name here, to emphasise the fact
    that otherwise there's a lookup overhead
 */
+XML_DEPRECATED
 XMLPUBFUN htmlStatus htmlAttrAllowed(const htmlElemDesc*, const xmlChar*, int) ;
+XML_DEPRECATED
 XMLPUBFUN int htmlElementAllowedHere(const htmlElemDesc*, const xmlChar*) ;
+XML_DEPRECATED
 XMLPUBFUN htmlStatus htmlElementStatusHere(const htmlElemDesc*, const htmlElemDesc*) ;
+XML_DEPRECATED
 XMLPUBFUN htmlStatus htmlNodeStatus(htmlNodePtr, int) ;
 /**
  * htmlDefaultSubelement:

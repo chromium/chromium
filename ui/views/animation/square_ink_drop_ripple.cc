@@ -119,10 +119,12 @@ constexpr float kQuickActionBurstScale = 1.3f;
 // Returns the InkDropState sub animation duration for the given |state|.
 base::TimeDelta GetAnimationDuration(InkDropHost* ink_drop_host,
                                      InkDropSubAnimations state) {
-  if (!PlatformStyle::kUseRipples ||
-      !gfx::Animation::ShouldRenderRichAnimation() ||
-      (ink_drop_host &&
-       ink_drop_host->GetMode() == InkDropHost::InkDropMode::ON_NO_ANIMATE)) {
+  if constexpr (!PlatformStyle::kUseRipples) {
+    return base::TimeDelta();
+  }
+  if (!gfx::Animation::ShouldRenderRichAnimation() ||
+             (ink_drop_host && ink_drop_host->GetMode() ==
+                                   InkDropHost::InkDropMode::ON_NO_ANIMATE)) {
     return base::TimeDelta();
   }
 
@@ -272,8 +274,9 @@ void SquareInkDropRipple::AnimateStateChange(InkDropState old_ink_drop_state,
       }
       break;
     case InkDropState::ACTION_PENDING: {
-      if (old_ink_drop_state == new_ink_drop_state)
+      if (old_ink_drop_state == new_ink_drop_state) {
         return;
+      }
       DLOG_IF(WARNING, InkDropState::HIDDEN != old_ink_drop_state)
           << "Invalid InkDropState transition. old_ink_drop_state="
           << ToString(old_ink_drop_state)
@@ -411,8 +414,9 @@ void SquareInkDropRipple::SetStateToHidden() {
 
 void SquareInkDropRipple::AbortAllAnimations() {
   root_layer_.GetAnimator()->AbortAllAnimations();
-  for (auto& painted_layer : painted_layers_)
+  for (auto& painted_layer : painted_layers_) {
     painted_layer->GetAnimator()->AbortAllAnimations();
+  }
 }
 
 void SquareInkDropRipple::SetTransforms(const InkDropTransforms transforms) {

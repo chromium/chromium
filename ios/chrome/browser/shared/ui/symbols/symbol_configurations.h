@@ -33,6 +33,12 @@ extern const CGFloat kSettingsRootSymbolImagePointSize;
 // The size of the cloud slash icon.
 extern const CGFloat kCloudSlashSymbolPointSize;
 
+// Returns the background color for incognito symbol.
+UIColor* LargeIncognitoBackgroundColor();
+
+// Returns the foreground color for incognito symbol.
+UIColor* LargeIncognitoForegroundColor();
+
 // Returns the palette to be used on incognito symbol when it is small.
 NSArray<UIColor*>* SmallIncognitoPalette();
 

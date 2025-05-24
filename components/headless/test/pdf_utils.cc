@@ -15,7 +15,6 @@
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/geometry/size_f.h"
 
 namespace headless {
 
@@ -29,8 +28,10 @@ bool PDFPageBitmap::Render(base::span<const uint8_t> pdf_data, int page_index) {
     return false;
   }
 
+  page_size_in_points_ = page_size_in_points.value();
+
   gfx::SizeF page_size_in_pixels =
-      gfx::ScaleSize(page_size_in_points.value(),
+      gfx::ScaleSize(page_size_in_points_,
                      static_cast<float>(kDpi) / printing::kPointsPerInch);
 
   gfx::Rect page_rect(gfx::ToCeiledSize(page_size_in_pixels));

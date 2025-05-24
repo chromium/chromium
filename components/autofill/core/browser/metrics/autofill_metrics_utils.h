@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_UTILS_H_
 
 #include "components/autofill/core/browser/autofill_field.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
@@ -25,6 +25,16 @@ bool IsEmailOnlyForm(const FormStructure& form);
 bool IsPostalAddressForm(const FormStructure& form);
 
 }  // namespace internal
+
+// Used to store `CalculateMinimalIncompatibleProfileWithTypeSets() ` result. It
+// contains the `profile` that was being compared and a set of FieldTypes that
+// had different values.
+struct DifferingProfileWithTypeSet {
+  const raw_ptr<const AutofillProfile> profile;
+  const FieldTypeSet field_type_set;
+
+  bool operator==(const DifferingProfileWithTypeSet& other) const = default;
+};
 
 // kAccount profiles are synced from an external source and have potentially
 // originated from outside of Autofill. In order to determine the added value
@@ -65,7 +75,8 @@ enum class SettingsVisibleFieldTypeForMetrics {
   // kHonorificPrefix = 10,  // Deprecated in M123.
   kCompany = 11,
   kAdminLevel2 = 12,
-  kMaxValue = kAdminLevel2
+  kAlternativeName = 13,
+  kMaxValue = kAlternativeName
 };
 
 // Converts a server field type that can be edited in the settings to an enum
@@ -86,6 +97,40 @@ DenseSet<FormTypeNameForLogging> GetAddressFormTypesForLogging(
 // `FormType::kCreditCardForm` or `FormType::kStandaloneCvcForm`.
 DenseSet<FormTypeNameForLogging> GetCreditCardFormTypesForLogging(
     const FormStructure& form);
+
+// Returns whether the caller should log autofill suggestions shown metrics.
+// Some suggestions can be "displayed" without a direct user action (i.e. typing
+// into a field or unfocusing a text area with a previous
+// `FillingProduct::kCompose` suggestion). We do not want to log suggestion
+// shown logs for them since they defeat the purpose of the metric.
+bool ShouldLogAutofillSuggestionShown(
+    AutofillSuggestionTriggerSource trigger_source);
+
+// This function encodes the integer value of a `FieldType` and the
+// boolean value of `suggestion_accepted` into a 14 bit integer.
+// The lower 2 bits are used to encode the filling acceptance and the higher 12
+// bits are used to encode the field type. This integer is used to determine
+// which bucket of metrics such as
+// "Autofill.KeyMetrics.FillingAcceptance.GroupedByFocusedFieldType"
+// should be emitted.
+// Even though `suggestion_accepted` could be encoded in only 1 bit, 2 bits are
+// used to leave room for possible other future values.
+int GetBucketForAcceptanceMetricsGroupedByFieldType(FieldType field_type,
+                                                    bool suggestion_accepted);
+
+// Given the result of `CalculateMinimalIncompatibleProfileWithTypeSets()`,
+// returns the minimum number of fields whose removal makes `import_candidate` a
+// duplicate of any entry in `existing_profiles`. Returns
+// `std::numeric_limits<int>::max()` in case `min_incompatible_sets` is empty.
+int GetDuplicationRank(
+    base::span<const DifferingProfileWithTypeSet> min_incompatible_sets);
+
+// Returns 64-bit hash of the string of form global id, which consists of
+// |frame_token| and |renderer_id|.
+uint64_t FormGlobalIdToHash64Bit(const FormGlobalId& form_global_id);
+// Returns 64-bit hash of the string of field global id, which consists of
+// |frame_token| and |renderer_id|.
+uint64_t FieldGlobalIdToHash64Bit(const FieldGlobalId& field_global_id);
 
 }  // namespace autofill::autofill_metrics
 

@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.gsa;
 import android.content.pm.PackageInfo;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** This class provides utilities for the state of Google Search App. */
+@NullMarked
 public class GSAUtils {
+    private static final Object sPackageInfoLock = new Object();
+    @Nullable private static volatile PackageInfo sPackageInfo;
+
     public static final String GSA_PACKAGE_NAME = "com.google.android.googlequicksearchbox";
     public static final String GSA_CLASS_NAME =
             "com.google.android.apps.search.googleapp.activity.GoogleAppActivity";
@@ -33,7 +37,7 @@ public class GSAUtils {
      * @return Whether the AGSA version on the device is below the given minimum
      */
     public static boolean isAgsaVersionBelowMinimum(
-            String installedVersionName, String minimumVersionName) {
+            @Nullable String installedVersionName, @Nullable String minimumVersionName) {
         if (TextUtils.isEmpty(installedVersionName) || TextUtils.isEmpty(minimumVersionName)) {
             return true;
         }
@@ -64,7 +68,29 @@ public class GSAUtils {
      * @return The version name of the Agsa package or null if it can't be found.
      */
     public static @Nullable String getAgsaVersionName() {
-        PackageInfo packageInfo = PackageUtils.getPackageInfo(GSA_PACKAGE_NAME, 0);
-        return packageInfo == null ? null : packageInfo.versionName;
+        PackageInfo info = getAgsaPackageInfo();
+        return info == null ? null : info.versionName;
+    }
+
+    /**
+     * Check if the AGSA is enabled
+     *
+     * @return Whether the AGSA is enabled
+     */
+    public static boolean isAgsaEnabled() {
+        PackageInfo info = getAgsaPackageInfo();
+        return info != null && info.applicationInfo != null && info.applicationInfo.enabled;
+    }
+
+    @Nullable
+    private static PackageInfo getAgsaPackageInfo() {
+        if (sPackageInfo == null) {
+            synchronized (sPackageInfoLock) {
+                if (sPackageInfo == null) {
+                    sPackageInfo = PackageUtils.getPackageInfo(GSA_PACKAGE_NAME, 0);
+                }
+            }
+        }
+        return sPackageInfo;
     }
 }

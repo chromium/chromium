@@ -14,9 +14,11 @@
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 
 using content::WebContents;
 using ImageType = ContentSettingImageModel::ImageType;
@@ -25,6 +27,10 @@ typedef InProcessBrowserTest ContentSettingImageModelBrowserTest;
 
 // Tests that every model creates a valid bubble.
 IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest, CreateBubbleModel) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content_settings::PageSpecificContentSettings* content_settings =
@@ -45,12 +51,9 @@ IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest, CreateBubbleModel) {
   // to the same setting.
   static constexpr ContentSettingImageModel::ImageType
       content_settings_to_test[] = {
-          ImageType::COOKIES,
-          ImageType::IMAGES,
-          ImageType::JAVASCRIPT,
-          ImageType::POPUPS,
-          ImageType::MIXEDSCRIPT,
-          ImageType::PROTOCOL_HANDLERS,
+          ImageType::COOKIES,     ImageType::IMAGES,
+          ImageType::JAVASCRIPT,  ImageType::POPUPS,
+          ImageType::MIXEDSCRIPT, ImageType::PROTOCOL_HANDLERS,
           ImageType::MIDI_SYSEX,
       };
 

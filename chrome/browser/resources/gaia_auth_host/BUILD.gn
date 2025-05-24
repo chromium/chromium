@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
@@ -83,7 +82,7 @@ grit("resources") {
 }
 
 # Limit closure targets to ChromeOS, since closure is deprecated on Desktop.
-if (is_chromeos_ash) {
+if (is_chromeos) {
   js_type_check("closure_compile") {
     deps = [
       ":authenticator",

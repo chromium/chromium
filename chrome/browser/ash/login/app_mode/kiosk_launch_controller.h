@@ -31,7 +31,6 @@
 
 namespace app_mode {
 class ForceInstallObserver;
-class LacrosLauncher;
 }  // namespace app_mode
 
 namespace ash {
@@ -173,13 +172,11 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
 
  private:
   friend class KioskLaunchControllerTest;
-  friend class KioskLaunchControllerUsingLacrosTest;
 
   class ScopedAcceleratorDisabler;
 
   enum AppState {
     kCreatingProfile = 0,  // Profile is being created.
-    kLaunchingLacros,
     kInitLauncher,          // Launcher is initializing
     kInstallingApp,         // App is being installed.
     kInstallingExtensions,  // Force-installed extensions are being installed.
@@ -192,8 +189,6 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   void OnCancelAppLaunch();
   void OnNetworkConfigRequested();
   void InitializeKeyboard();
-  void LaunchLacros();
-  void OnLacrosLaunchComplete();
   void InitializeLauncher();
 
   // `KioskAppLauncher::Observer`
@@ -275,8 +270,6 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   std::unique_ptr<CancellableJob> profile_loader_handle_;
   // The function used to load the Kiosk profile. Overridable in tests.
   kiosk::LoadProfileCallback profile_loader_;
-
-  std::unique_ptr<app_mode::LacrosLauncher> lacros_launcher_;
 
   std::unique_ptr<AcceleratorController> accelerator_controller_;
   std::unique_ptr<ScopedAcceleratorDisabler> accelerator_disabler_;

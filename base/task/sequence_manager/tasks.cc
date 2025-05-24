@@ -4,36 +4,36 @@
 
 #include "base/task/sequence_manager/tasks.h"
 
+#include <variant>
+
 #include "base/task/sequence_manager/task_order.h"
 
-namespace base {
-namespace sequence_manager {
+namespace base::sequence_manager {
 
 Task::Task(internal::PostedTask posted_task,
            EnqueueOrder sequence_order,
            EnqueueOrder enqueue_order,
            TimeTicks queue_time,
-           WakeUpResolution resolution,
            TimeDelta leeway)
-    : PendingTask(posted_task.location,
-                  std::move(posted_task.callback),
-                  queue_time,
-                  absl::holds_alternative<base::TimeTicks>(
-                      posted_task.delay_or_delayed_run_time)
-                      ? absl::get<base::TimeTicks>(
-                            posted_task.delay_or_delayed_run_time)
-                      : base::TimeTicks(),
-                  leeway,
-                  posted_task.delay_policy),
+    : PendingTask(
+          posted_task.location,
+          std::move(posted_task.callback),
+          queue_time,
+          std::holds_alternative<base::TimeTicks>(
+              posted_task.delay_or_delayed_run_time)
+              ? std::get<base::TimeTicks>(posted_task.delay_or_delayed_run_time)
+              : base::TimeTicks(),
+          leeway,
+          posted_task.delay_policy),
       nestable(posted_task.nestable),
       task_type(posted_task.task_type),
       task_runner(std::move(posted_task.task_runner)),
       enqueue_order_(enqueue_order),
       delayed_task_handle_delegate_(
           std::move(posted_task.delayed_task_handle_delegate)) {
-  DCHECK(!absl::holds_alternative<base::TimeDelta>(
+  DCHECK(!std::holds_alternative<base::TimeDelta>(
              posted_task.delay_or_delayed_run_time) ||
-         absl::get<base::TimeDelta>(posted_task.delay_or_delayed_run_time)
+         std::get<base::TimeDelta>(posted_task.delay_or_delayed_run_time)
              .is_zero());
   // We use |sequence_num| when comparing PendingTask for ordering purposes
   // and it may wrap around to a negative number during the static cast, hence,
@@ -41,7 +41,6 @@ Task::Task(internal::PostedTask posted_task,
   // change of |PendingTask::sequence_num|'s type.
   static_assert(std::is_same_v<decltype(sequence_num), int>, "");
   sequence_num = static_cast<int>(sequence_order);
-  this->is_high_res = resolution == WakeUpResolution::kHigh;
 }
 
 Task::Task(Task&& move_from) = default;
@@ -58,21 +57,24 @@ TaskOrder Task::task_order() const {
 }
 
 void Task::SetHeapHandle(HeapHandle heap_handle) {
-  if (!delayed_task_handle_delegate_)
+  if (!delayed_task_handle_delegate_) {
     return;
+  }
 
   delayed_task_handle_delegate_->SetHeapHandle(heap_handle);
 }
 
 void Task::ClearHeapHandle() {
-  if (!delayed_task_handle_delegate_)
+  if (!delayed_task_handle_delegate_) {
     return;
+  }
   delayed_task_handle_delegate_->ClearHeapHandle();
 }
 
 HeapHandle Task::GetHeapHandle() const {
-  if (!delayed_task_handle_delegate_)
+  if (!delayed_task_handle_delegate_) {
     return HeapHandle::Invalid();
+  }
   return delayed_task_handle_delegate_->GetHeapHandle();
 }
 
@@ -96,14 +98,16 @@ bool Task::WillRunTask() {
 }
 
 TimeTicks WakeUp::earliest_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly)
+  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly) {
     return time - leeway;
+  }
   return time;
 }
 
 TimeTicks WakeUp::latest_time() const {
-  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner)
+  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner) {
     return time + leeway;
+  }
   return time;
 }
 
@@ -146,5 +150,4 @@ PostedTask::PostedTask(PostedTask&& move_from) noexcept = default;
 PostedTask::~PostedTask() = default;
 
 }  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager

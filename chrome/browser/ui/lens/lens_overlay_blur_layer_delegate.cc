@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_blur_layer_delegate.h"
 
+#include "base/compiler_specific.h"
 #include "base/timer/timer.h"
 #include "cc/paint/render_surface_filters.h"
 #include "components/lens/lens_features.h"
@@ -22,18 +23,19 @@ bool AreBitmapsEqual(const SkBitmap& bitmap1, const SkBitmap& bitmap2) {
   // Compare pixel data
   SkPixmap pixmap1 = bitmap1.pixmap();
   SkPixmap pixmap2 = bitmap2.pixmap();
-  return memcmp(pixmap1.addr(), pixmap2.addr(), pixmap1.computeByteSize()) == 0;
+  return UNSAFE_TODO(memcmp(pixmap1.addr(), pixmap2.addr(),
+                            pixmap1.computeByteSize())) == 0;
 }
 }  // namespace
 
 namespace lens {
 
 LensOverlayBlurLayerDelegate::LensOverlayBlurLayerDelegate(
-    ui::Layer* layer,
     content::RenderWidgetHost* background_view_host)
-    : layer_(layer), background_view_host_(background_view_host) {
-  CHECK(layer);
-  layer->set_delegate(this);
+    : background_view_host_(background_view_host) {
+  SetLayer(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED));
+  layer()->SetFillsBoundsOpaquely(true);
+  layer()->set_delegate(this);
 
   render_widget_host_observer_.Observe(background_view_host);
 
@@ -83,7 +85,7 @@ void LensOverlayBlurLayerDelegate::OnPaintLayer(
   filter_flags.setImageFilter(filter);
 
   // Configure `canvas`.
-  gfx::SizeF layer_size(layer_->size());
+  gfx::SizeF layer_size(layer()->size());
   ui::PaintRecorder recorder(context, gfx::ToFlooredSize(layer_size));
   gfx::Canvas* const canvas = recorder.canvas();
 
@@ -130,12 +132,13 @@ void LensOverlayBlurLayerDelegate::FetchBackgroundImage() {
 
 void LensOverlayBlurLayerDelegate::UpdateBackgroundImage(
     const SkBitmap& bitmap) {
-  if (bitmap.drawsNothing() ||
+  auto layer_size = layer()->size();
+  if (bitmap.drawsNothing() || layer_size.width() * layer_size.height() <= 0 ||
       AreBitmapsEqual(background_screenshot_, bitmap)) {
     return;
   }
   background_screenshot_ = bitmap;
-  layer_->SchedulePaint(gfx::Rect(layer_->size()));
+  layer()->SchedulePaint(gfx::Rect(layer_size));
 }
 
 }  // namespace lens

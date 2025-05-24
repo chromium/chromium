@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/containers/span.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/memory/raw_ptr_exclusion.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -58,8 +59,10 @@ struct TabGroupInfo {
 struct SessionInfo {
   const int active_index = -1;
   const int pinned_tab_count = 0;
-  const base::span<const TabInfo> tabs;
-  const base::span<const TabGroupInfo> tab_groups;
+  // TODO(crbug.com/367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const TabInfo> tabs;
+  // TODO(crbug.com/367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const TabGroupInfo> tab_groups;
 };
 
 // Name of the sessions used by the tests (random string obtained by
@@ -90,7 +93,7 @@ constexpr TabInfo kTabs1[] = {
 constexpr SessionInfo kSessionInfo1 = {
     .active_index = 1,
     .pinned_tab_count = 2,
-    .tabs = base::make_span(kTabs1),
+    .tabs = base::span(kTabs1),
 };
 
 constexpr TabInfo kTabs2[] = {
@@ -110,14 +113,14 @@ const TabGroupInfo kTabGroups1[] = {
 constexpr SessionInfo kSessionInfo2 = {
     .active_index = 0,
     .pinned_tab_count = 0,
-    .tabs = base::make_span(kTabs2),
+    .tabs = base::span(kTabs2),
 };
 
 constexpr SessionInfo kSessionWithGroupsInfo = {
     .active_index = 0,
     .pinned_tab_count = 0,
-    .tabs = base::make_span(kTabs2),
-    .tab_groups = base::make_span(kTabGroups1),
+    .tabs = base::span(kTabs2),
+    .tab_groups = base::span(kTabGroups1),
 };
 
 // Returns the path to the directory containing the optimized session

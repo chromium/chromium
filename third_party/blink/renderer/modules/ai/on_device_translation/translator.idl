@@ -1,0 +1,78 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Translator API
+// https://github.com/webmachinelearning/translation-api
+
+dictionary TranslatorCreateCoreOptions {
+  required DOMString sourceLanguage;
+  required DOMString targetLanguage;
+};
+
+dictionary TranslatorCreateOptions : TranslatorCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+};
+
+dictionary TranslatorTranslateOptions {
+  AbortSignal signal;
+};
+
+[
+  Exposed(Window TranslationAPI, Worker TranslationAPIForWorkers),
+  RuntimeEnabled=TranslationAPI,
+  SecureContext
+]
+interface Translator {
+  [
+    MeasureAs=Translator_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(TranslatorCreateCoreOptions options);
+
+  [
+    MeasureAs=Translator_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Translator> create(TranslatorCreateOptions options);
+
+  [
+    MeasureAs=Translator_Translate,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> translate(DOMString input, optional TranslatorTranslateOptions options = {});
+
+  [
+    MeasureAs=Translator_TranslateStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream translateStreaming(DOMString input, optional TranslatorTranslateOptions options = {});
+
+  [
+    MeasureAs=Translator_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional TranslatorTranslateOptions options = {}
+  );
+
+  [
+    MeasureAs=Translator_Destroy,
+    CallWith=ScriptState
+  ]
+  undefined destroy();
+
+  [MeasureAs=Translator_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+  [MeasureAs=Translator_SourceLanguage]
+  readonly attribute DOMString sourceLanguage;
+  [MeasureAs=Translator_TargetLanguage]
+  readonly attribute DOMString targetLanguage;
+};

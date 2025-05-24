@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_IOS_TEST_EVENT_WAITER_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_IOS_TEST_EVENT_WAITER_H_
 
-#include <list>
+#import <list>
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"

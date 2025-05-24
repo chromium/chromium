@@ -6,14 +6,12 @@
 
 #include <set>
 
-#include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
+#include "chrome/browser/devtools/devtools_availability_checker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/developer_private.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
@@ -25,14 +23,18 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 namespace extensions {
 
 InspectableViewsFinder::InspectableViewsFinder(Profile* profile)
     : profile_(profile) {
 }
 
-InspectableViewsFinder::~InspectableViewsFinder() {
-}
+InspectableViewsFinder::~InspectableViewsFinder() = default;
 
 api::developer_private::ViewType ConvertViewType(const mojom::ViewType type) {
   api::developer_private::ViewType developer_private_type =
@@ -106,8 +108,9 @@ InspectableViewsFinder::ViewList InspectableViewsFinder::GetViewsForExtension(
     const Extension& extension,
     bool is_enabled) {
   ViewList result;
-  if (!ChromeDevToolsManagerDelegate::AllowInspection(profile_, &extension))
+  if (!IsInspectionAllowed(profile_, &extension)) {
     return result;
+  }
   GetViewsForExtensionForProfile(
       extension, profile_, is_enabled, false, &result);
   if (profile_->HasPrimaryOTRProfile()) {
@@ -191,9 +194,9 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
     }
 
     content::RenderProcessHost* process = host->GetProcess();
-    result->push_back(ConstructView(url, process->GetID(), host->GetRoutingID(),
-                                    is_incognito, !host->IsInPrimaryMainFrame(),
-                                    ConvertViewType(host_type)));
+    result->push_back(ConstructView(
+        url, process->GetDeprecatedID(), host->GetRoutingID(), is_incognito,
+        !host->IsInPrimaryMainFrame(), ConvertViewType(host_type)));
   }
 
   std::vector<WorkerId> service_worker_ids =
@@ -210,6 +213,7 @@ void InspectableViewsFinder::GetViewsForExtensionProcess(
 void InspectableViewsFinder::GetAppWindowViewsForExtension(
     const Extension& extension,
     ViewList* result) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   AppWindowRegistry* registry = AppWindowRegistry::Get(profile_);
   if (!registry)
     return;
@@ -227,10 +231,12 @@ void InspectableViewsFinder::GetAppWindowViewsForExtension(
       url = window->initial_url();
 
     content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
-    result->push_back(ConstructView(
-        url, main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
-        false, false, ConvertViewType(GetViewType(web_contents))));
+    result->push_back(
+        ConstructView(url, main_frame->GetProcess()->GetDeprecatedID(),
+                      main_frame->GetRoutingID(), false, false,
+                      ConvertViewType(GetViewType(web_contents))));
   }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions

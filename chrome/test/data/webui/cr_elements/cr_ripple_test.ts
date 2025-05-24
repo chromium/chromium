@@ -26,6 +26,11 @@ suite('CrRipple', function() {
         new PointerEvent('pointerup', {pointerId: 1}));
   }
 
+  function pointerout() {
+    ripple.parentElement!.dispatchEvent(
+        new PointerEvent('pointerout', {pointerId: 1}));
+  }
+
   function keydown(key: string) {
     ripple.parentElement!.dispatchEvent(
         new KeyboardEvent('keydown', {key, cancelable: true}));
@@ -60,7 +65,7 @@ suite('CrRipple', function() {
           }
         }
       });
-      observer.observe(ripple.shadowRoot!, {childList: true});
+      observer.observe(ripple.shadowRoot, {childList: true});
       triggerFn();
     });
   }
@@ -76,7 +81,7 @@ suite('CrRipple', function() {
           assertNotReached('Unexpected ripple shown');
         }
       });
-      observer.observe(ripple.shadowRoot!, {childList: true});
+      observer.observe(ripple.shadowRoot, {childList: true});
 
       // Yield to ensure that any unexpected ripples have a chance to surface.
       window.setTimeout(() => {
@@ -110,6 +115,13 @@ suite('CrRipple', function() {
     return assertRipplesShown(1, () => {
       pointerdown();
       pointerup();
+    });
+  });
+
+  test('RippleShown_PointerDownOut', function() {
+    return assertRipplesShown(1, () => {
+      pointerdown();
+      pointerout();
     });
   });
 

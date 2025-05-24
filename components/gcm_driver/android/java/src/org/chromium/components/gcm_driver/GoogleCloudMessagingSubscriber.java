@@ -6,16 +6,18 @@ package org.chromium.components.gcm_driver;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 
 /** Helper to subscribe to and unsubscribe from Google Cloud Messaging. */
+@NullMarked
 public interface GoogleCloudMessagingSubscriber {
     /**
      * Subscribes to a source to start receiving messages from it.
-     * <p>
-     * This method may perform blocking I/O and should not be called on the main thread.
+     *
+     * <p>This method may perform blocking I/O and should not be called on the main thread.
      *
      * @param source The source of the notifications to subscribe to.
      * @param subtype The sub-source of the notifications.

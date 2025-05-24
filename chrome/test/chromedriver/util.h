@@ -98,7 +98,7 @@ bool GetOptionalSafeInt(const base::Value::Dict& dict,
                         bool* has_value = nullptr);
 
 bool SetSafeInt(base::Value::Dict& dict,
-                const std::string_view path,
+                std::string_view path,
                 int64_t in_value_64);
 
 #endif  // CHROME_TEST_CHROMEDRIVER_UTIL_H_

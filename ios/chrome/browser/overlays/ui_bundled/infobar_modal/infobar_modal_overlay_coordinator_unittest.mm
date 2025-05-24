@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator.h"
 
 #import "base/test/ios/wait_util.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_coordinator+modal_configuration.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/infobar_modal_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
@@ -18,13 +18,13 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace {
 // Request config type used for testing.
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
-}
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(ModalConfig);
+}  // namespace
 
 // Mediator used by FakeInfobarModalOverlayCoordinators.
 @interface FakeModalMediator : InfobarModalOverlayMediator
@@ -73,8 +73,8 @@ DEFINE_TEST_OVERLAY_REQUEST_CONFIG(ModalConfig);
 class InfobarModalOverlayCoordinatorTest : public PlatformTest {
  public:
   InfobarModalOverlayCoordinatorTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
-        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
+      : profile_(TestProfileIOS::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(profile_.get())),
         request_(OverlayRequest::CreateWithConfig<ModalConfig>()),
         root_view_controller_([[UIViewController alloc] init]),
         coordinator_([[FakeInfobarModalOverlayCoordinator alloc]
@@ -87,7 +87,7 @@ class InfobarModalOverlayCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   MockOverlayRequestCoordinatorDelegate delegate_;
   std::unique_ptr<OverlayRequest> request_;

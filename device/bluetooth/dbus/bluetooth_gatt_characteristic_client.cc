@@ -123,7 +123,7 @@ class BluetoothGattCharacteristicClientImpl
 
   // BluetoothGattCharacteristicClient override.
   void WriteValue(const dbus::ObjectPath& object_path,
-                  const std::vector<uint8_t>& value,
+                  base::span<const uint8_t> value,
                   std::string_view type_option,
                   base::OnceClosure callback,
                   ErrorCallback error_callback) override {
@@ -159,7 +159,7 @@ class BluetoothGattCharacteristicClientImpl
   }
 
   void PrepareWriteValue(const dbus::ObjectPath& object_path,
-                         const std::vector<uint8_t>& value,
+                         base::span<const uint8_t> value,
                          base::OnceClosure callback,
                          ErrorCallback error_callback) override {
     dbus::ObjectProxy* object_proxy =

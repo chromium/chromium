@@ -1,7 +1,7 @@
 rootWebArea focusable
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer focusable description='1234' name='Example Paragraph 1 Example Paragraph 2' descriptionFrom=title
+++++++genericContainer focusable name='1234' nameFrom=title
 ++++++++paragraph
 ++++++++++staticText name='Example Paragraph 1'
 ++++++++++++inlineTextBox name='Example '
@@ -16,7 +16,7 @@ rootWebArea focusable
 rootWebArea focusable name='overflow-auto'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer focusable description='1234' name='Example Paragraph 1 Example Paragraph 2' descriptionFrom=title
+++++++genericContainer focusable name='1234' nameFrom=title
 ++++++++paragraph
 ++++++++++staticText name='Example Paragraph 1'
 ++++++++++++inlineTextBox name='Example '
@@ -39,7 +39,7 @@ rootWebArea focusable name='only-small-content'
 rootWebArea focusable name='large-content'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer focusable description='1234' name='large content' descriptionFrom=title
+++++++genericContainer focusable name='1234' nameFrom=title
 ++++++++blockquote
 ++++++++++staticText name='small'
 ++++++++++++inlineTextBox name='small'
@@ -62,7 +62,7 @@ rootWebArea focusable name='p-font-small'
 rootWebArea focusable name='p-font-large'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer focusable description='1234' name='large content' descriptionFrom=title
+++++++genericContainer focusable name='1234' nameFrom=title
 ++++++++blockquote
 ++++++++++staticText name='small'
 ++++++++++++inlineTextBox name='small'
@@ -86,7 +86,7 @@ rootWebArea focusable name='overflow-hidden'
 rootWebArea focusable name='finished'
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer focusable description='1234' name='large content' descriptionFrom=title
+++++++genericContainer focusable name='1234' nameFrom=title
 ++++++++blockquote
 ++++++++++staticText name='small'
 ++++++++++++inlineTextBox name='small'

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/types/expected.h"
 #include "components/update_client/protocol_parser.h"
 
 namespace update_client {
@@ -19,6 +20,9 @@ class ProtocolParserJSON final : public ProtocolParser {
 
   ProtocolParserJSON(const ProtocolParserJSON&) = delete;
   ProtocolParserJSON& operator=(const ProtocolParserJSON&) = delete;
+
+  static base::expected<Results, std::string> ParseJSON(
+      const std::string& json);
 
  private:
   // Overrides for ProtocolParser.

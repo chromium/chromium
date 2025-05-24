@@ -148,7 +148,7 @@ class DictionaryObserverCounter : public SpellcheckCustomDictionary::Observer {
   DictionaryObserverCounter& operator=(const DictionaryObserverCounter&) =
       delete;
 
-  virtual ~DictionaryObserverCounter() {}
+  virtual ~DictionaryObserverCounter() = default;
 
   int loads() const { return loads_; }
   int changes() const { return changes_; }

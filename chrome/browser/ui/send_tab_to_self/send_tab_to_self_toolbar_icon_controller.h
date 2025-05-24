@@ -14,11 +14,8 @@ class Profile;
 
 namespace send_tab_to_self {
 
-class SendTabToSelfToolbarIconControllerDelegate;
-
-// Controller for the SendTabToSelfToolbarIconView that decides when to show
+// Controller for send tab to self's toolbar button that decides when to show
 // or hide the icon from the toolbar.
-// Owned by send_tab_to_self::ReceivingUiHandlerRegistry.
 class SendTabToSelfToolbarIconController
     : public send_tab_to_self::ReceivingUiHandler,
       public BrowserListObserver {
@@ -30,6 +27,9 @@ class SendTabToSelfToolbarIconController
       const SendTabToSelfToolbarIconController&) = delete;
   ~SendTabToSelfToolbarIconController() override;
 
+  // Returns true if the toolbar button can be shown for the provided browser.
+  static bool CanShowOnBrowser(Browser* browser);
+
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
@@ -38,19 +38,6 @@ class SendTabToSelfToolbarIconController
 
   // BrowserListObserver implementation
   void OnBrowserSetLastActive(Browser* browser) override;
-
-
-  void AddDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
-
-  void RemoveDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
-
-  const Profile* profile() const override;
-
-  void LogNotificationOpened();
-
-  void LogNotificationDismissed();
-
-  void ClearDelegateListForTesting() { delegate_list_.clear(); }
 
  private:
   void StorePendingEntry(
@@ -65,11 +52,6 @@ class SendTabToSelfToolbarIconController
   // (e.g. the active browser is incognito or a different profile), we store it
   // here and wait until an appropriate browser becomes active to display it.
   std::unique_ptr<SendTabToSelfEntry> pending_entry_;
-
-  std::vector<raw_ptr<SendTabToSelfToolbarIconControllerDelegate>>
-      delegate_list_;
-
-  SendTabToSelfToolbarIconControllerDelegate* GetActiveDelegate();
 };
 
 }  // namespace send_tab_to_self

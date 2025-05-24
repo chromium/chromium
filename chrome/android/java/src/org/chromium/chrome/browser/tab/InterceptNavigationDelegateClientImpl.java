@@ -5,12 +5,17 @@
 package org.chromium.chrome.browser.tab;
 
 import android.app.Activity;
+import android.content.Intent;
 
-import androidx.annotation.Nullable;
-
-import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
-import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.InterceptNavigationDelegateClient;
 import org.chromium.components.external_intents.InterceptNavigationDelegateImpl;
 import org.chromium.components.external_intents.RedirectHandler;
@@ -23,8 +28,10 @@ import org.chromium.ui.base.WindowAndroid;
  * Class that provides embedder-level information to InterceptNavigationDelegateImpl based off a
  * Tab.
  */
+@NullMarked
 public class InterceptNavigationDelegateClientImpl implements InterceptNavigationDelegateClient {
-    private TabImpl mTab;
+    private static @Nullable Boolean sIsInDesktopWindowingModeForTesting;
+    private final TabImpl mTab;
     private final TabObserver mTabObserver;
     private InterceptNavigationDelegateImpl mInterceptNavigationDelegate;
 
@@ -48,6 +55,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                             mInterceptNavigationDelegate.setExternalNavigationHandler(
                                     createExternalNavigationHandler());
                         }
+                        mInterceptNavigationDelegate.onActivityAttachmentChanged(window != null);
                     }
 
                     @Override
@@ -70,14 +78,8 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     }
 
     @Override
-    public ExternalNavigationHandler createExternalNavigationHandler() {
+    public @Nullable ExternalNavigationHandler createExternalNavigationHandler() {
         return mTab.getDelegateFactory().createExternalNavigationHandler(mTab);
-    }
-
-    @Override
-    public long getLastUserInteractionTime() {
-        ChromeActivity associatedActivity = mTab.getActivity();
-        return (associatedActivity == null) ? -1 : associatedActivity.getLastUserInteractionTime();
     }
 
     @Override
@@ -88,11 +90,6 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public boolean isIncognito() {
         return mTab.isIncognitoBranded();
-    }
-
-    @Override
-    public boolean areIntentLaunchesAllowedInHiddenTabsForNavigation(NavigationHandle handle) {
-        return false;
     }
 
     @Override
@@ -113,30 +110,66 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
     @Override
     public void closeTab() {
         if (mTab.isClosing()) return;
-        mTab.getActivity().getTabModelSelector().closeTab(mTab);
+        mTab.getActivity()
+                .getTabModelSelector()
+                .tryCloseTab(
+                        TabClosureParams.closeTab(mTab).allowUndo(false).build(),
+                        /* allowDialog= */ false);
     }
 
-    @Override
-    public void onNavigationStarted(NavigationHandle handle) {}
-
-    @Override
-    public void onDecisionReachedForNavigation(
-            NavigationHandle handle, OverrideUrlLoadingResult overrideUrlLoadingResult) {}
-
+    @Initializer
     public void initializeWithDelegate(InterceptNavigationDelegateImpl delegate) {
         mInterceptNavigationDelegate = delegate;
         mTab.addObserver(mTabObserver);
     }
 
     public void destroy() {
-        assert mInterceptNavigationDelegate != null;
         mTab.removeObserver(mTabObserver);
-        mInterceptNavigationDelegate = null;
     }
 
     @Override
     public void loadUrlIfPossible(LoadUrlParams loadUrlParams) {
         if (mTab.isDestroyed() || mTab.isClosing()) return;
         mTab.loadUrl(loadUrlParams);
+    }
+
+    @Override
+    public boolean isTabInPWA() {
+        return mTab.isTabInPWA();
+    }
+
+    @Override
+    public boolean isTabInBrowser() {
+        return mTab.isTabInBrowser();
+    }
+
+    @Override
+    public boolean isInDesktopWindowingMode() {
+        if (sIsInDesktopWindowingModeForTesting != null) {
+            return sIsInDesktopWindowingModeForTesting;
+        }
+
+        // TODO(crbug.com/417047079): replace the following check with desktop windowing mode
+        // as soon as https://chromium-review.googlesource.com/c/chromium/src/+/6527788 is resolved.
+        // return MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity());
+        return DeviceInfo.isDesktop();
+    }
+
+    @Override
+    public void startReparentingTask() {
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        ReparentingTask.from(mTab)
+                .begin(
+                        ContextUtils.getApplicationContext(),
+                        intent,
+                        /* startActivityOptions= */ null,
+                        /* finalizeCallback= */ null);
+    }
+
+    public static void setIsDesktopWindowingModeForTesting(boolean v) {
+        sIsInDesktopWindowingModeForTesting = v;
+        ResettersForTesting.register(() -> sIsInDesktopWindowingModeForTesting = null);
     }
 }

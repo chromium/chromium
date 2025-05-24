@@ -26,6 +26,7 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/public/browser/service_worker_context_observer.h"
+#include "content/public/browser/service_worker_registration_information.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -193,7 +194,9 @@ class ServiceWorkerContextTest : public ServiceWorkerContextCoreObserver,
   }
   void OnRegistrationStored(int64_t registration_id,
                             const GURL& scope,
-                            const blink::StorageKey& key) override {
+                            const blink::StorageKey& key,
+                            const ServiceWorkerRegistrationInformation&
+                                service_worker_info) override {
     NotificationLog log;
     log.type = REGISTRATION_STORED;
     log.scope = scope;
@@ -314,7 +317,9 @@ class TestServiceWorkerContextObserver : public ServiceWorkerContextObserver {
   }
 
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override {
+                            const GURL& scope,
+                            const ServiceWorkerRegistrationInformation&
+                                service_worker_info) override {
     EventLog log;
     log.type = EventType::RegistrationStored;
     log.registration_id = registration_id;

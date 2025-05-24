@@ -7,7 +7,7 @@
  * 'site-list-entry' shows an Allowed and Blocked site for a given category.
  */
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
@@ -29,13 +29,6 @@ import {ChooserType, ContentSettingsTypes, CookiesExceptionType, SITE_EXCEPTION_
 import {getTemplate} from './site_list_entry.html.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
 import type {SiteException} from './site_settings_prefs_browser_proxy.js';
-
-export interface SiteListEntryElement {
-  $: {
-    actionMenuButton: HTMLElement,
-    resetSite: HTMLElement,
-  };
-}
 
 const SiteListEntryElementBase =
     FocusRowMixin(BaseMixin(SiteSettingsMixin(I18nMixin(PolymerElement))));
@@ -60,12 +53,23 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
         value: false,
       },
 
-      /**
-       * Site to display in the widget.
-       */
+      /** Site to display in the widget.*/
       model: {
         type: Object,
         observer: 'onModelChanged_',
+      },
+
+      /** Whether this entry is the only entry in the Allowed/Blocked section.*/
+      singletonEntry: {
+        type: Boolean,
+      },
+
+      /**
+       * The header for the Allowed/Blocked section this entry is in. Used for
+       * aria-label to fix cases where the screenreader hasn't already read it.
+       */
+      sectionHeader: {
+        type: String,
       },
 
       /**
@@ -104,13 +108,15 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
     };
   }
 
-  private readOnlyList: boolean;
-  model: SiteException;
-  private chooserType: ChooserType;
-  private chooserObject: object;
-  private showPolicyPrefIndicator_: boolean;
-  private allowNavigateToSiteDetail_: boolean;
-  cookiesExceptionType: CookiesExceptionType;
+  declare private readOnlyList: boolean;
+  declare model: SiteException;
+  declare private singletonEntry: boolean;
+  declare private sectionHeader: string;
+  declare private chooserType: ChooserType;
+  declare private chooserObject: object;
+  declare private showPolicyPrefIndicator_: boolean;
+  declare private allowNavigateToSiteDetail_: boolean;
+  declare cookiesExceptionType: CookiesExceptionType;
 
   private onShowTooltip_() {
     const indicator =
@@ -192,6 +198,21 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
       return this.model.embeddingOrigin;
     }
     return this.model.displayName;
+  }
+
+  /**
+   * Returns an appropriate aria-label for this entry. The reset (trash can)
+   * button has a different aria-label, see the HTML.
+   */
+  private computeAriaLabel_(): string {
+    if (this.singletonEntry) {
+      // Screen readers sometimes only read the grid's label (which is in
+      // site_list.html) if the grid has more than 1 row. That contains the
+      // important context of whether this site is allowed or blocked, so we
+      // explicitly add it to the aria-label here to make sure it's read.
+      return `${this.computeDisplayName_()} ${this.sectionHeader}`;
+    }
+    return this.computeDisplayName_();
   }
 
   /**
@@ -279,9 +300,10 @@ export class SiteListEntryElement extends SiteListEntryElementBase {
       return;
     }
 
-    this.fire(
-        'show-action-menu',
-        {anchor: this.$.actionMenuButton, model: this.model});
+    this.fire('show-action-menu', {
+      anchor: this.shadowRoot!.querySelector('#actionMenuButton'),
+      model: this.model,
+    });
   }
 
   private onModelChanged_() {

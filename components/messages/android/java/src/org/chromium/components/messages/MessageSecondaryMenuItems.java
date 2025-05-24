@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenu;
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A class used by {@link MessageWrapper} to manage the message secondary menu and menu items. */
+@NullMarked
 public class MessageSecondaryMenuItems {
     @VisibleForTesting ModelList mMenuItems = new ModelList();
 

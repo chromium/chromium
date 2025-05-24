@@ -9,9 +9,11 @@ import android.content.Intent;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
 
 /** Delegate for browser related functions used by Drag and Drop. */
+@NullMarked
 public interface DragAndDropBrowserDelegate {
     /** Get whether to support the image drop into Chrome. */
     boolean getSupportDropInChrome();

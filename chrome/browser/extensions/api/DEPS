@@ -14,6 +14,9 @@ specific_include_rules = {
     "+components/web_package",
     "+skia/public/mojom/bitmap.mojom.h",
   ],
+  "extension_context_menu_browsertest\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
   "tls_socket_unittest\.cc": [
     "+services/network/network_context.h",
   ],
@@ -22,5 +25,8 @@ specific_include_rules = {
   ],
   "udp_socket_unittest\.cc": [
     "+services/network/network_context.h",
+  ],
+  "window_open_apitest\.cc": [
+    "+ash/wm/window_pin_util.h",
   ],
 }

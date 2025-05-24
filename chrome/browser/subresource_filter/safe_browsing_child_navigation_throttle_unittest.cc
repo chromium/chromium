@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -24,6 +26,8 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
+#include "net/base/features.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -33,9 +37,6 @@ namespace subresource_filter {
 namespace {
 
 using content_settings::CookieSettings;
-
-const char kChildFrameNavigationDeferredForAdTaggingHistogram[] =
-    "PageLoad.FrameCounts.AdFrames.PerFrame.DeferredForTagging";
 
 }  // namespace
 
@@ -63,6 +64,8 @@ class SafeBrowsingChildNavigationThrottleAdTaggingTest
         HostContentSettingsMapFactory::GetForProfile(browser_context());
     profile_interaction_manager_ = std::make_unique<ProfileInteractionManager>(
         SubresourceFilterProfileContextFactory::GetForProfile(profile()));
+
+    SetUpThrottleInserter();
   }
 
   // content::RenderViewHostTestHarness:
@@ -76,21 +79,32 @@ class SafeBrowsingChildNavigationThrottleAdTaggingTest
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override {
     ASSERT_FALSE(navigation_handle->IsInMainFrame());
-    // The |parent_filter_| is the parent frame's filter. Do not register a
-    // throttle if the parent is not activated with a valid filter.
-    if (parent_filter_) {
-      auto throttle = std::make_unique<SafeBrowsingChildNavigationThrottle>(
-          navigation_handle, parent_filter_.get(),
-          profile_interaction_manager_->AsWeakPtr(),
-          base::BindRepeating([](const GURL& filtered_url) {
-            return base::StringPrintf(
-                kDisallowChildFrameConsoleMessageFormat,
-                filtered_url.possibly_invalid_spec().c_str());
-          }),
-          /*ad_evidence=*/std::nullopt);
-      ASSERT_NE(nullptr, throttle->GetNameForLogging());
-      navigation_handle->RegisterThrottleForTesting(std::move(throttle));
-    }
+  }
+
+  void SetUpThrottleInserter() {
+    throttle_inserter_ =
+        std::make_unique<content::TestNavigationThrottleInserter>(
+            content::RenderViewHostTestHarness::web_contents(),
+            base::BindLambdaForTesting(
+                [&](content::NavigationThrottleRegistry& registry) -> void {
+                  // The |parent_filter_| is the parent frame's filter. Do not
+                  // register a throttle if the parent is not activated with a
+                  // valid filter.
+                  if (parent_filter_) {
+                    auto throttle =
+                        std::make_unique<SafeBrowsingChildNavigationThrottle>(
+                            registry, parent_filter_.get(),
+                            profile_interaction_manager_->AsWeakPtr(),
+                            base::BindRepeating([](const GURL& filtered_url) {
+                              return base::StringPrintf(
+                                  kDisallowChildFrameConsoleMessageFormat,
+                                  filtered_url.possibly_invalid_spec().c_str());
+                            }),
+                            /*ad_evidence=*/std::nullopt);
+                    EXPECT_NE(nullptr, throttle->GetNameForLogging());
+                    registry.AddThrottle(std::move(throttle));
+                  }
+                }));
   }
 
   void CreateSubframeAndInitNavigation(const GURL& first_url,
@@ -116,6 +130,7 @@ class SafeBrowsingChildNavigationThrottleAdTaggingTest
 
   scoped_refptr<HostContentSettingsMap> settings_map_;
   std::unique_ptr<ProfileInteractionManager> profile_interaction_manager_;
+  std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
 };
 
 TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
@@ -134,9 +149,6 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
   EXPECT_FALSE(navigation_simulator()->IsDeferred());
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_simulator()->GetLastThrottleCheckResult().action());
-
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, false, 1);
 }
 
 TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
@@ -153,9 +165,6 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
 
   // The navigation should be deferred, since a 3P cookie exception applies.
   EXPECT_TRUE(navigation_simulator()->IsDeferred());
-
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, true, 1);
 }
 
 TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
@@ -176,21 +185,12 @@ TEST_F(SafeBrowsingChildNavigationThrottleAdTaggingTest,
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             navigation_simulator()->GetLastThrottleCheckResult().action());
 
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, false, 1);
-
   // Redirect the navigation to a URL that a 3P cookie exception applies to
   // (under the current top-level origin).
   navigation_simulator()->Redirect(GURL("https://excepted-child-frame.test"));
 
   // The navigation should be deferred.
   EXPECT_TRUE(navigation_simulator()->IsDeferred());
-
-  histogram_tester.ExpectTotalCount(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, 2);
-  histogram_tester.ExpectBucketCount(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, true,
-      1);  // from excepted-child-frame.test
 }
 
 class SafeBrowsingChildNavigationThrottleExceptionCheckDisabledTest
@@ -219,6 +219,8 @@ class SafeBrowsingChildNavigationThrottleExceptionCheckDisabledTest
         HostContentSettingsMapFactory::GetForProfile(browser_context());
     profile_interaction_manager_ = std::make_unique<ProfileInteractionManager>(
         SubresourceFilterProfileContextFactory::GetForProfile(profile()));
+
+    SetUpThrottleInserter();
   }
 };
 
@@ -236,9 +238,6 @@ TEST_F(SafeBrowsingChildNavigationThrottleExceptionCheckDisabledTest,
   // The navigation should be deferred, even though no 3P cookie exception
   // applies, since exception checking is disabled.
   EXPECT_TRUE(navigation_simulator()->IsDeferred());
-
-  histogram_tester.ExpectUniqueSample(
-      kChildFrameNavigationDeferredForAdTaggingHistogram, true, 1);
 }
 
 }  // namespace subresource_filter

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_badge_tab_helper.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
-#import "ios/chrome/browser/ui/infobars/test_infobar_badge_tab_helper_delegate.h"
+#import "ios/chrome/browser/infobars/ui_bundled/test_infobar_badge_tab_helper_delegate.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"

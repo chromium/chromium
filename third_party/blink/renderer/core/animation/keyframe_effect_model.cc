@@ -35,6 +35,8 @@
 
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
+#include "third_party/blink/renderer/core/animation/keyframe.h"
+#include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_equality.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
@@ -50,44 +52,75 @@
 
 namespace blink {
 
-PropertyHandleSet KeyframeEffectModelBase::Properties() const {
-  PropertyHandleSet result;
-  for (const auto& keyframe : keyframes_) {
-    if (!keyframe->HasComputedOffset()) {
+KeyframeEffectModelBase::KeyframeProperties::Iterator&
+KeyframeEffectModelBase::KeyframeProperties::Iterator::operator++() {
+  if (++(*current_property_) == keyframe_properties_->end()) {
+    keyframes_.take_first_elem();
+    AdvanceToNextKeyframeWithProperties();
+  }
+  return *this;
+}
+
+void KeyframeEffectModelBase::KeyframeProperties::Iterator::
+    AdvanceToNextKeyframeWithProperties() {
+  keyframe_properties_ = nullptr;
+  current_property_.reset();
+  while (!keyframes_.empty()) {
+    const Keyframe* current_keyframe = keyframes_.front();
+    if (!current_keyframe->HasComputedOffset()) {
       // Keyframe is not reachable. This case occurs when we have a timeline
       // offset in the keyframe but are not using a view timeline and thus the
       // offset cannot be resolved.
+      keyframes_.take_first_elem();
       continue;
     }
-    for (const auto& property : keyframe->Properties()) {
-      result.insert(property);
+    keyframe_properties_ = &current_keyframe->Properties();
+    current_property_ = keyframe_properties_->begin();
+    if (current_property_ != keyframe_properties_->end()) {
+      return;
     }
+    keyframes_.take_first_elem();
   }
-  return result;
 }
 
-const PropertyHandleSet& KeyframeEffectModelBase::EnsureDynamicProperties() const {
-  if (dynamic_properties_) {
-    return *dynamic_properties_;
+PropertyHandleSet
+KeyframeEffectModelBase::KeyframeProperties::UniqueProperties() const {
+  PropertyHandleSet properties;
+  for (const auto property : *this) {
+    properties.insert(property);
   }
+  return properties;
+}
 
-  dynamic_properties_ = std::make_unique<PropertyHandleSet>();
+void KeyframeEffectModelBase::IterableDynamicProperties::Iterator::
+    AdvanceToNextGroup() {
+  while (current_keyframe_group_ != model_->keyframe_groups_->end() &&
+         current_keyframe_group_->value->IsStatic()) {
+    current_keyframe_group_++;
+  }
+}
+
+bool KeyframeEffectModelBase::IterableDynamicProperties::Contains(
+    const PropertyHandle& property) const {
+  auto iter = model_->keyframe_groups_->find(property);
+  if (iter == model_->keyframe_groups_->end()) {
+    return false;
+  }
+  if (iter->value->IsStatic()) {
+    return false;
+  }
+  return true;
+}
+
+KeyframeEffectModelBase::KeyframeProperties
+KeyframeEffectModelBase::Properties() const {
+  return KeyframeProperties(this);
+}
+
+KeyframeEffectModelBase::IterableDynamicProperties
+KeyframeEffectModelBase::DynamicProperties() const {
   EnsureKeyframeGroups();
-  if (!RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
-    // Unless the static optimization is enabled, all properties are considered
-    // dynamic.
-    for (const auto& entry : *keyframe_groups_) {
-      dynamic_properties_->insert(entry.key);
-    }
-  } else {
-    for (const auto& entry : *keyframe_groups_) {
-      if (!entry.value->IsStatic()) {
-        dynamic_properties_->insert(entry.key);
-      }
-    }
-  }
-
-  return *dynamic_properties_;
+  return IterableDynamicProperties(this);
 }
 
 bool KeyframeEffectModelBase::HasStaticProperty() const {
@@ -465,7 +498,7 @@ void KeyframeEffectModelBase::EnsureKeyframeGroups() const {
 }
 
 bool KeyframeEffectModelBase::RequiresPropertyNode() const {
-  for (const auto& property : EnsureDynamicProperties()) {
+  for (const auto& property : DynamicProperties()) {
     if (!property.IsCSSProperty() ||
         (property.GetCSSProperty().PropertyID() != CSSPropertyID::kVariable &&
          property.GetCSSProperty().PropertyID() !=
@@ -482,25 +515,23 @@ void KeyframeEffectModelBase::EnsureInterpolationEffectPopulated() const {
 
   for (const auto& entry : *keyframe_groups_) {
     const PropertySpecificKeyframeVector& keyframes = entry.value->Keyframes();
-    if (RuntimeEnabledFeatures::StaticAnimationOptimizationEnabled()) {
-      // Skip cross-fade interpolations in the static property optimization to
-      // avoid introducing a side-effect in serialization of the computed value.
-      // cross-fade(A 50%, A 50%) is visually equivalent to rendering A, but at
-      // present, we expect the computed style to reflect an explicit
-      // cross-fade.
-      PropertyHandle handle = entry.key;
-      if (entry.value->IsStatic() && handle.IsCSSProperty() &&
-          handle.GetCSSProperty().PropertyID() !=
-              CSSPropertyID::kListStyleImage) {
-        // All keyframes have the same property value.
-        // Create an interpolation from starting keyframe to starting keyframe.
-        // The resulting interpolation record will be marked as static and can
-        // short-circuit the local fraction calculation.
-        CHECK(keyframes.size());
-        interpolation_effect_->AddStaticValuedInterpolation(entry.key,
-                                                            *keyframes[0]);
-        continue;
-      }
+    // Skip cross-fade interpolations in the static property optimization to
+    // avoid introducing a side-effect in serialization of the computed value.
+    // cross-fade(A 50%, A 50%) is visually equivalent to rendering A, but at
+    // present, we expect the computed style to reflect an explicit
+    // cross-fade.
+    PropertyHandle handle = entry.key;
+    if (entry.value->IsStatic() && handle.IsCSSProperty() &&
+        handle.GetCSSProperty().PropertyID() !=
+            CSSPropertyID::kListStyleImage) {
+      // All keyframes have the same property value.
+      // Create an interpolation from starting keyframe to starting keyframe.
+      // The resulting interpolation record will be marked as static and can
+      // short-circuit the local fraction calculation.
+      CHECK(keyframes.size());
+      interpolation_effect_->AddStaticValuedInterpolation(entry.key,
+                                                          *keyframes[0]);
+      continue;
     }
     for (wtf_size_t i = 0; i < keyframes.size() - 1; i++) {
       wtf_size_t start_index = i;
@@ -574,7 +605,6 @@ bool KeyframeEffectModelBase::ResolveTimelineOffsets(
 
 void KeyframeEffectModelBase::ClearCachedData() {
   keyframe_groups_ = nullptr;
-  dynamic_properties_.reset();
   interpolation_effect_->Clear();
   last_fraction_ = std::numeric_limits<double>::quiet_NaN();
   needs_compositor_keyframes_snapshot_ = true;

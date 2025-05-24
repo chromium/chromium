@@ -19,8 +19,8 @@
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "services/network/public/cpp/resource_request.h"
 
 namespace web_package {
@@ -115,16 +115,11 @@ class IsolatedWebAppReaderRegistry
                            TestSignedWebBundleReaderLifetime);
 
   // IwaKeyDistributionInfoProvider::Observer:
-  void OnComponentUpdateSuccess(
-      const base::Version& component_version) override;
-
-  void ClearCacheForPathImpl(const base::FilePath& web_bundle_path,
-                             bool dev_mode,
-                             base::OnceClosure callback);
+  void OnComponentUpdateSuccess(const base::Version& version,
+                                bool is_preloaded) override;
 
   void OnResponseReaderCreated(
       const base::FilePath& web_bundle_path,
-      bool dev_mode,
       const web_package::SignedWebBundleId& web_bundle_id,
       base::expected<std::unique_ptr<IsolatedWebAppResponseReader>,
                      UnusableSwbnFileError> reader);
@@ -147,7 +142,8 @@ class IsolatedWebAppReaderRegistry
   // memory.
   class Cache {
    public:
-    struct Key;
+    using Key = base::FilePath;
+
     class Entry;
 
     Cache();
@@ -165,13 +161,6 @@ class IsolatedWebAppReaderRegistry
         Args&&... args);
 
     void Erase(base::flat_map<Key, Entry>::iterator iterator);
-
-    struct Key {
-      base::FilePath path;
-      bool dev_mode;
-
-      bool operator<(const Key& other) const;
-    };
 
     // A cache `Entry` has two states: In its initial `kPending` state, it
     // caches requests made to a Signed Web Bundle until an

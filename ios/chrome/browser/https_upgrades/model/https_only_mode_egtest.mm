@@ -60,8 +60,6 @@ enum class TestType {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = NoForceRelaunchAndResetState;
-  config.features_enabled.push_back(
-      security_interstitials::features::kHttpsOnlyMode);
 
   config.features_disabled.push_back(
       security_interstitials::features::kHttpsUpgrades);
@@ -75,19 +73,21 @@ enum class TestType {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
-  [HttpsUpgradeAppInterface clearAllowlist];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+    [HttpsUpgradeAppInterface clearAllowlist];
+  }
 
   if ([self testType] == TestType::kHttpsOnlyMode) {
     [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
   [HttpsUpgradeAppInterface clearAllowlist];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Returns true if the HTTPS-Only Mode interstitial is enabled.

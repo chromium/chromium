@@ -27,19 +27,19 @@ class TestExtensionDir {
   TestExtensionDir& operator=(const TestExtensionDir&) = delete;
   TestExtensionDir& operator=(TestExtensionDir&&);
 
-  // Writes |manifest| to manifest.json within the unpacked dir. No validation
+  // Writes `manifest` to manifest.json within the unpacked dir. No validation
   // is performed. If desired this should be done on extension installation.
   void WriteManifest(std::string_view manifest);
 
   // As above, but using a base::Value::Dict instead of JSON string.
   void WriteManifest(const base::Value::Dict& manifest);
 
-  // Writes |contents| to |filename| within the unpacked dir, overwriting
+  // Writes `contents` to `filename` within the unpacked dir, overwriting
   // anything that was already there.
   void WriteFile(const base::FilePath::StringType& filename,
                  std::string_view contents);
 
-  // Copies the file at |from_path| into |local_filename| under the temp
+  // Copies the file at `from_path` into `local_filename` under the temp
   // directory, overwriting anything that was already there.
   void CopyFileTo(const base::FilePath& from_path,
                   const base::FilePath::StringType& local_filename);

@@ -153,8 +153,8 @@ template <class InputT,
           class... Types,
           class OutputT = decltype(unchecked::UncheckedConvertPtr(
               std::declval<InputT>(),
-              std::declval<Types>()...)),
-          class = std::enable_if_t<std::is_default_constructible_v<OutputT>>>
+              std::declval<Types>()...))>
+  requires(std::is_default_constructible_v<OutputT>)
 OutputT ConvertPtr(InputT input, Types... args) {
   return (input) ? unchecked::UncheckedConvertPtr(std::move(input), args...)
                  : OutputT();

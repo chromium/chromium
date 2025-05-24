@@ -26,6 +26,8 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,6 +41,7 @@ import java.util.Set;
  * of relationship with (e.g. digital asset links, or web links).
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class AppDefinedDomains {
 
     private static final String ASSET_STATEMENTS_IDENTIFIER = "asset_statements";
@@ -184,7 +187,7 @@ public class AppDefinedDomains {
     // Finds and returns the parser for the embedding app's AndroidManifest.
     // Iterates over a finite range of cookies to find the correct manifest. Returns null if
     // no manifest matches the package name of the embedding app.
-    private static XmlResourceParser getManifestParser() {
+    private static @Nullable XmlResourceParser getManifestParser() {
         for (int assetCookie = 1; assetCookie < MAX_COOKIE_VALUE; assetCookie++) {
             XmlResourceParser parser;
             try {

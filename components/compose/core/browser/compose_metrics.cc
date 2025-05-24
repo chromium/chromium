@@ -174,7 +174,7 @@ void PageUkmTracker::MaybeLogUkm() {
       .Record(ukm::UkmRecorder::Get());
 }
 
-ComposeSessionEvents::ComposeSessionEvents() {}
+ComposeSessionEvents::ComposeSessionEvents() = default;
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   base::UmaHistogramEnumeration(kComposeContextMenuCtr, event);
@@ -351,7 +351,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     case compose::ComposeSessionCloseReason::kEndedAtFre:
     case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
     case compose::ComposeSessionCloseReason::kEndedAtMsbb:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Report all location-agnostic metrics.

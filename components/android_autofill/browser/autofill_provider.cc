@@ -9,20 +9,8 @@
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
-namespace {
-
-bool g_is_crowdsourcing_manager_disabled_for_testing = false;
-}  // namespace
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AutofillProvider);
-
-bool AutofillProvider::is_crowdsourcing_manager_disabled_for_testing() {
-  return g_is_crowdsourcing_manager_disabled_for_testing;
-}
-
-void AutofillProvider::set_is_crowdsourcing_manager_disabled_for_testing() {
-  g_is_crowdsourcing_manager_disabled_for_testing = true;
-}
 
 AutofillProvider::AutofillProvider(content::WebContents* web_contents)
     : content::WebContentsUserData<AutofillProvider>(*web_contents) {

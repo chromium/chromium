@@ -6,10 +6,12 @@
 
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
@@ -19,7 +21,8 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 PushNotificationService::PushNotificationService()
-    : client_manager_(std::make_unique<PushNotificationClientManager>()) {
+    : client_manager_(std::make_unique<PushNotificationClientManager>(
+          base::SequencedTaskRunner::GetCurrentDefault())) {
   context_manager_ = [[PushNotificationAccountContextManager alloc]
       initWithProfileManager:GetApplicationContext()->GetProfileManager()];
 }
@@ -41,26 +44,22 @@ void PushNotificationService::SetPreference(NSString* account_id,
                                             bool enabled) {
   DCHECK(context_manager_);
   if (enabled) {
-    [context_manager_
-        enablePushNotification:client_id
-                    forAccount:base::SysNSStringToUTF8(account_id)];
+    [context_manager_ enablePushNotification:client_id
+                                  forAccount:GaiaId(account_id)];
   } else {
-    [context_manager_
-        disablePushNotification:client_id
-                     forAccount:base::SysNSStringToUTF8(account_id)];
+    [context_manager_ disablePushNotification:client_id
+                                   forAccount:GaiaId(account_id)];
   }
-  SetPreferences(
-      account_id,
-      [context_manager_
-          preferenceMapForAccount:base::SysNSStringToUTF8(account_id)],
-      ^(NSError* error){
-      });
+  SetPreferences(account_id,
+                 [context_manager_ preferenceMapForAccount:GaiaId(account_id)],
+                 ^(NSError* error){
+                 });
 }
 
 void PushNotificationService::RegisterAccount(
     NSString* account_id,
     CompletionHandler completion_handler) {
-  if ([context_manager_ addAccount:base::SysNSStringToUTF8(account_id)]) {
+  if ([context_manager_ addAccount:GaiaId(account_id)]) {
     SetAccountsToDevice([context_manager_ accountIDs], completion_handler);
   }
 }
@@ -68,7 +67,7 @@ void PushNotificationService::RegisterAccount(
 void PushNotificationService::UnregisterAccount(
     NSString* account_id,
     CompletionHandler completion_handler) {
-  if ([context_manager_ removeAccount:base::SysNSStringToUTF8(account_id)]) {
+  if ([context_manager_ removeAccount:GaiaId(account_id)]) {
     SetAccountsToDevice([context_manager_ accountIDs], completion_handler);
   }
 }
@@ -79,7 +78,7 @@ std::string PushNotificationService::GetRepresentativeTargetIdForGaiaId(
   return "";
 }
 
-void PushNotificationService::RegisterBrowserStatePrefs(
+void PushNotificationService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(prefs::kFeaturePushNotificationPermissions);
   registry->RegisterBooleanPref(prefs::kSendTabNotificationsPreviouslyDisabled,

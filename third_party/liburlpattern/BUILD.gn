@@ -11,7 +11,7 @@ config("warnings") {
 
 component("liburlpattern") {
   defines = [ "IS_LIBURLPATTERN_IMPL" ]
-  deps = [
+  public_deps = [
     "//base:base",
     "//third_party/abseil-cpp:absl",
     "//third_party/icu:icu",
@@ -26,6 +26,8 @@ component("liburlpattern") {
     "options.h",
     "parse.cc",
     "parse.h",
+    "part.cc",
+    "part.h",
     "pattern.cc",
     "pattern.h",
     "tokenize.cc",

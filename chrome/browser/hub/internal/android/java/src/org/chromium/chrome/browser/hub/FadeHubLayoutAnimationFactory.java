@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.function.DoubleConsumer;
 
@@ -22,6 +22,7 @@ import java.util.function.DoubleConsumer;
  * long)} or {@link #createFadeOutAnimator(HubContainerView, long)} to prepare an animator when
  * {@link HubLayoutAnimatorProvider#supplyAnimatorNow()} is invoked.
  */
+@NullMarked
 public class FadeHubLayoutAnimationFactory {
     /**
      * Create a fade in {@link HubLayoutAnimator}.
@@ -32,9 +33,7 @@ public class FadeHubLayoutAnimationFactory {
      * @return the requested animator.
      */
     public static HubLayoutAnimator createFadeInAnimator(
-            @NonNull HubContainerView hubContainerView,
-            long durationMs,
-            @NonNull DoubleConsumer onAlphaChange) {
+            HubContainerView hubContainerView, long durationMs, DoubleConsumer onAlphaChange) {
         return FadeHubLayoutAnimationFactoryImpl.createFadeInAnimator(
                 hubContainerView, durationMs, onAlphaChange);
     }
@@ -48,9 +47,7 @@ public class FadeHubLayoutAnimationFactory {
      * @return the requested animator.
      */
     public static HubLayoutAnimator createFadeOutAnimator(
-            @NonNull HubContainerView hubContainerView,
-            long durationMs,
-            @NonNull DoubleConsumer onAlphaChange) {
+            HubContainerView hubContainerView, long durationMs, DoubleConsumer onAlphaChange) {
         return FadeHubLayoutAnimationFactoryImpl.createFadeOutAnimator(
                 hubContainerView, durationMs, onAlphaChange);
     }
@@ -64,9 +61,7 @@ public class FadeHubLayoutAnimationFactory {
      * @return the requested animator provider
      */
     public static HubLayoutAnimatorProvider createFadeInAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            long durationMs,
-            @NonNull DoubleConsumer onAlphaChange) {
+            HubContainerView hubContainerView, long durationMs, DoubleConsumer onAlphaChange) {
         return FadeHubLayoutAnimationFactoryImpl.createFadeInAnimatorProvider(
                 hubContainerView, durationMs, onAlphaChange);
     }
@@ -80,9 +75,7 @@ public class FadeHubLayoutAnimationFactory {
      * @return the requested animator provider.
      */
     public static HubLayoutAnimatorProvider createFadeOutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            long durationMs,
-            @NonNull DoubleConsumer onAlphaChange) {
+            HubContainerView hubContainerView, long durationMs, DoubleConsumer onAlphaChange) {
         return FadeHubLayoutAnimationFactoryImpl.createFadeOutAnimatorProvider(
                 hubContainerView, durationMs, onAlphaChange);
     }

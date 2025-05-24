@@ -17,8 +17,6 @@
 
 namespace blink {
 
-class Document;
-
 // AnnotationSelector based on TextFragmentFinder. This selector allows
 // attaching to DOM based on exact or a range of text with provided prefix or
 // suffix.
@@ -32,7 +30,7 @@ class CORE_EXPORT TextAnnotationSelector : public AnnotationSelector,
 
   // AnnotationSelector Interface
   String Serialize() const override;
-  void FindRange(Document& document,
+  void FindRange(Range& search_range,
                  SearchType type,
                  FinishedCallback finished_cb) override;
   bool IsTextSelector() const override { return true; }

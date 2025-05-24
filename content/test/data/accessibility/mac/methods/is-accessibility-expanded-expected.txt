@@ -1,0 +1,14 @@
+item1.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)=1
+item1.isAccessibilityExpanded=0
+item2.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)=1
+item2.isAccessibilityExpanded=1
+item3.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)=1
+item3.isAccessibilityExpanded=0
+item4.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)=1
+item4.isAccessibilityExpanded=1
+div1.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)=0
+div1.isAccessibilityExpanded=0
+div2.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)=0
+div2.isAccessibilityExpanded=0
+hr1.isAccessibilitySelectorAllowed(@SEL:isAccessibilityExpanded)=0
+hr1.isAccessibilityExpanded=0

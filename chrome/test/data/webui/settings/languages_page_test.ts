@@ -97,6 +97,7 @@ suite('LanguagesPage', function() {
   suite('AddLanguagesDialog', function() {
     let dialog: SettingsAddLanguagesDialogElement;
     let dialogItems: NodeListOf<SettingsCheckboxListEntryElement>;
+    let addLanguagesButton: CrButtonElement;
     let cancelButton: CrButtonElement;
     let actionButton: CrButtonElement;
     let dialogClosedResolver: PromiseResolver<void>;
@@ -124,9 +125,9 @@ suite('LanguagesPage', function() {
     }
 
     setup(function() {
-      const addLanguagesButton =
-          languagesPage.shadowRoot!.querySelector<HTMLElement>('#addLanguages')!
-          ;
+      addLanguagesButton =
+          languagesPage.shadowRoot!.querySelector<CrButtonElement>(
+              '#addLanguages')!;
       const whenDialogOpen = eventToPromise('cr-dialog-open', languagesPage);
       addLanguagesButton.click();
 
@@ -168,6 +169,14 @@ suite('LanguagesPage', function() {
 
     teardown(function() {
       dialogClosedObserver.disconnect();
+    });
+
+    test('undefined languages', function() {
+      assertFalse(addLanguagesButton.disabled);
+
+      // Make the languages undefined and make sure the button is disabled.
+      languagesPage.languages = undefined;
+      assertTrue(addLanguagesButton.disabled);
     });
 
     test('cancel', function() {

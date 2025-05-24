@@ -26,6 +26,8 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension.h"
@@ -967,8 +969,8 @@ TEST_F(PermissionsUpdaterTestWithEnhancedHostControls,
   }
 
   // Note that the PermissionsManger requires the extension to be in the
-  // ExtensionRegistry, so add it through the ExtensionService.
-  service()->AddExtension(extension.get());
+  // ExtensionRegistry, so add it through the ExtensionRegistrar.
+  registrar()->AddExtension(extension);
 
   const GURL first_url("http://first.example");
   const GURL second_url("http://second.example");

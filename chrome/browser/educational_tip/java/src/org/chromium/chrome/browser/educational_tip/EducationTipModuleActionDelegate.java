@@ -6,20 +6,27 @@ package org.chromium.chrome.browser.educational_tip;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.hub.PaneId;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** The delegate to provide actions for the educational tips module. */
+@NullMarked
 public interface EducationTipModuleActionDelegate {
 
     /** Gets the application context. */
-    @NonNull
     Context getContext();
 
+    /** Gets the profile supplier. */
+    ObservableSupplier<Profile> getProfileSupplier();
+
+    /** Gets the tab model selector. */
+    TabModelSelector getTabModelSelector();
+
     /** Gets the instance of {@link BottomSheetController}. */
-    @NonNull
     BottomSheetController getBottomSheetController();
 
     /**
@@ -34,4 +41,13 @@ public interface EducationTipModuleActionDelegate {
 
     /** Opens the app menu and highlights the quick delete menu item. */
     void openAndHighlightQuickDeleteMenuItem();
+
+    /** Opens the the history sync opt in page. */
+    void showHistorySyncOptIn(Runnable removeModuleCallback);
+
+    /**
+     * Returns the total number of tabs for relaunch across both regular and incognito browsing
+     * modes through shared preference key.
+     */
+    int getTabCountForRelaunchFromSharedPrefs();
 }

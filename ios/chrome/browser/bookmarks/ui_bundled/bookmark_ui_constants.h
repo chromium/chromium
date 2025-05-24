@@ -19,6 +19,11 @@ extern NSString* const kBookmarkFolderEditViewContainerIdentifier;
 extern NSString* const kBookmarkFolderCreateViewContainerIdentifier;
 // Accessibility identifier of the Bookmark Folder Picker View container.
 extern NSString* const kBookmarkFolderPickerViewContainerIdentifier;
+// Accessibility identifier of the Bookmark Folder Picker search bar.
+extern NSString* const kBookmarksFolderPickerSearchBarIdentifier;
+// Accessibility identifier of the Bookmark Folder Picker search scrim.
+extern NSString* const kBookmarksFolderPickerSearchScrimIdentifier;
+
 // Accessibility identifier of the Bookmark Home TableView.
 extern NSString* const kBookmarksHomeTableViewIdentifier;
 // Accessibility identifier of the Bookmark Home context menu.

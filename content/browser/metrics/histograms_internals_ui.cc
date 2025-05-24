@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/metrics/histograms_internals_ui.h"
 
@@ -53,8 +49,7 @@ void CreateAndAddHistogramsHTMLSource(BrowserContext* browser_context) {
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources chrome://webui-test 'self';");
 
-  source->AddResourcePaths(
-      base::make_span(kHistogramsResources, kHistogramsResourcesSize));
+  source->AddResourcePaths(kHistogramsResources);
   source->SetDefaultResource(IDR_HISTOGRAMS_HISTOGRAMS_INTERNALS_HTML);
 }
 
@@ -137,7 +132,7 @@ void HistogramsMessageHandler::HandleStartMoninoring(
     const base::Value::List& args) {
   JsParams params = AllowJavascriptAndUnpackParams(args);
   ImportHistograms(params.include_subprocesses);
-  histogram_monitor_.StartMonitoring(params.query);
+  histogram_monitor_.StartMonitoring();
   ResolveJavascriptCallback(base::Value(params.callback_id),
                             base::Value("Success"));
 }
@@ -145,7 +140,7 @@ void HistogramsMessageHandler::HandleStartMoninoring(
 void HistogramsMessageHandler::HandleFetchDiff(const base::Value::List& args) {
   JsParams params = AllowJavascriptAndUnpackParams(args);
   ImportHistograms(params.include_subprocesses);
-  base::Value::List histograms_list = histogram_monitor_.GetDiff();
+  base::Value::List histograms_list = histogram_monitor_.GetDiff(params.query);
   ResolveJavascriptCallback(base::Value(params.callback_id),
                             std::move(histograms_list));
 }

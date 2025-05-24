@@ -9,14 +9,15 @@
 
 #include "components/js_injection/renderer/js_binding.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/overloaded.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "components/js_injection/common/interfaces.mojom-forward.h"
 #include "components/js_injection/renderer/js_communication.h"
@@ -25,7 +26,6 @@
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/messaging/string_message_codec.h"
@@ -37,6 +37,7 @@
 #include "v8/include/v8.h"
 
 namespace {
+
 constexpr char kPostMessage[] = "postMessage";
 constexpr char kOnMessage[] = "onmessage";
 constexpr char kAddEventListener[] = "addEventListener";
@@ -59,8 +60,8 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
 
   std::optional<base::span<const uint8_t>> GetAsSpanIfPossible()
       const override {
-    return base::make_span(static_cast<const uint8_t*>(array_buffer_->Data()),
-                           array_buffer_->ByteLength());
+    return base::span(static_cast<const uint8_t*>(array_buffer_->Data()),
+                      array_buffer_->ByteLength());
   }
 
   void CopyInto(base::span<uint8_t> dest) const override {
@@ -72,7 +73,7 @@ class V8ArrayBufferPayload : public blink::WebMessageArrayBufferPayload {
   v8::Local<v8::ArrayBuffer> array_buffer_;
 };
 
-}  // anonymous namespace
+}  // namespace
 
 namespace js_injection {
 
@@ -153,7 +154,7 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   v8::TryCatch try_catch(isolate);
   try_catch.SetVerbose(true);
 
-  v8::Local<v8::Value> v8_message = absl::visit(
+  v8::Local<v8::Value> v8_message = std::visit(
       base::Overloaded{
           [isolate](std::u16string& string_value) -> v8::Local<v8::Value> {
             return gin::ConvertToV8(isolate, std::move(string_value));
@@ -165,8 +166,8 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
             CHECK(backing_store->ByteLength() ==
                   array_buffer_value->GetLength());
             array_buffer_value->CopyInto(
-                base::make_span(static_cast<uint8_t*>(backing_store->Data()),
-                                backing_store->ByteLength()));
+                base::span(static_cast<uint8_t*>(backing_store->Data()),
+                           backing_store->ByteLength()));
             return v8::ArrayBuffer::New(isolate, std::move(backing_store));
           }},
       message);
@@ -192,7 +193,7 @@ void JsBinding::OnPostMessage(blink::WebMessagePayload message) {
   }
   for (const auto& listener : listeners_copy) {
     // Ensure the listener is still registered.
-    if (base::Contains(listeners_, listener)) {
+    if (find_listener(listener) != listeners_.end()) {
       web_frame->RequestExecuteV8Function(context, listener, self, 1, argv, {});
     }
   }
@@ -294,8 +295,9 @@ void JsBinding::AddEventListener(gin::Arguments* args) {
     return;
   }
 
-  if (base::Contains(listeners_, listener))
+  if (find_listener(listener) != listeners_.end()) {
     return;
+  }
 
   v8::Local<v8::Context> context = args->GetHolderCreationContext();
   listeners_.push_back(
@@ -326,11 +328,9 @@ void JsBinding::RemoveEventListener(gin::Arguments* args) {
     return;
   }
 
-  auto iter = base::ranges::find(listeners_, listener);
-  if (iter == listeners_.end())
-    return;
-
-  listeners_.erase(iter);
+  if (auto iter = find_listener(listener); iter != listeners_.end()) {
+    listeners_.erase(iter);
+  }
 }
 
 v8::Local<v8::Function> JsBinding::GetOnMessage(v8::Isolate* isolate) {

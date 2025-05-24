@@ -41,9 +41,9 @@ class CC_EXPORT DecodedImageTracker {
   // Request that the given image be decoded. This issues a callback upon
   // completion. The callback takes a bool indicating whether the decode was
   // successful or not.
-  void QueueImageDecode(const PaintImage& image,
-                        const TargetColorParams& target_color_params,
-                        base::OnceCallback<void(bool)> callback);
+  void QueueImageDecode(const DrawImage& image,
+                        base::OnceCallback<void(bool)> callback,
+                        bool speculative);
 
   // Unlock all locked images - used to respond to memory pressure or
   // application background.

@@ -15,11 +15,7 @@
 #endif  // defined(URL_MATCHER_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(URL_MATCHER_IMPLEMENTATION)
 #define URL_MATCHER_EXPORT __attribute__((visibility("default")))
-#else
-#define URL_MATCHER_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

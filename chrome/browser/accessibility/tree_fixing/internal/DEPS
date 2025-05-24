@@ -1,0 +1,6 @@
+specific_include_rules = {
+  'ax_tree_fixing_screenshotter.*': [
+    "+components/paint_preview/common/recording_map.h",
+    "+components/paint_preview/public/paint_preview_compositor_service.h",
+  ]
+}

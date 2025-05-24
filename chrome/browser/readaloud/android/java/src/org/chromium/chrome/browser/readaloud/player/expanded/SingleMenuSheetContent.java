@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.readaloud.player.expanded;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.LayoutInflater;
@@ -11,6 +13,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -22,8 +25,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * <p>This is a temporary class on the way to making a menu sheet that can hold multiple menus
  * (options menu and voice menu on the same sheet).
  */
+@NullMarked
 abstract class SingleMenuSheetContent extends MenuSheetContent {
-    private final Context mContext;
     protected final Menu mMenu;
 
     SingleMenuSheetContent(
@@ -42,7 +45,6 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
             int titleStringId,
             LayoutInflater layoutInflater) {
         super(parent, bottomSheetController);
-        mContext = context;
 
         mMenu = (Menu) layoutInflater.inflate(R.layout.readaloud_menu, null);
         mMenu.afterInflating(
@@ -62,7 +64,7 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
     void notifySheetClosed(BottomSheetContent closingContent) {
         super.notifySheetClosed(closingContent);
         if (closingContent == this) {
-            mMenu.getScrollView().scrollTo(0, 0);
+            assumeNonNull(mMenu.getScrollView()).scrollTo(0, 0);
         }
     }
 
@@ -83,7 +85,7 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
 
     @Override
     public int getVerticalScrollOffset() {
-        return mMenu.getScrollView().getScrollY();
+        return assumeNonNull(mMenu.getScrollView()).getScrollY();
     }
 
     Menu getMenuForTesting() {

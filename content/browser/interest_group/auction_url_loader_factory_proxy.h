@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
@@ -140,9 +139,6 @@ class CONTENT_EXPORT AuctionURLLoaderFactoryProxy
   //   It needs to start with `<trusted_signals_base_url_>.
   bool CouldBeTrustedSignalsUrl(const GURL& url,
                                 const std::string& accept_header) const;
-
-  mojo::PendingRemote<network::mojom::DevToolsObserver>
-  CreateDevtoolsObserver();
 
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_;
 

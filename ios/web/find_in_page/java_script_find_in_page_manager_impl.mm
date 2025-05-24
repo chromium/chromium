@@ -23,13 +23,9 @@
 namespace web {
 
 // static
-void JavaScriptFindInPageManager::CreateForWebState(WebState* web_state) {
-  DCHECK(web_state);
-  if (!FromWebState(web_state)) {
-    web_state->SetUserData(
-        UserDataKey(),
-        std::make_unique<JavaScriptFindInPageManagerImpl>(web_state));
-  }
+std::unique_ptr<JavaScriptFindInPageManager>
+JavaScriptFindInPageManager::Create(WebState* web_state) {
+  return std::make_unique<JavaScriptFindInPageManagerImpl>(web_state);
 }
 
 JavaScriptFindInPageManagerImpl::JavaScriptFindInPageManagerImpl(
@@ -311,7 +307,5 @@ void JavaScriptFindInPageManagerImpl::SelectCurrentMatch() {
                        weak_factory_.GetWeakPtr()));
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(JavaScriptFindInPageManager)
 
 }  // namespace web

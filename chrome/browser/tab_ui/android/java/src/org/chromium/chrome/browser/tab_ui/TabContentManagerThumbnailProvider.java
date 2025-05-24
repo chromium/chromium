@@ -10,8 +10,11 @@ import android.graphics.drawable.Drawable;
 import android.util.Size;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** {@link ThumbnailProvider} adapter for {@link TabContentManager}. */
+@NullMarked
 public class TabContentManagerThumbnailProvider implements ThumbnailProvider {
     private final TabContentManager mTabContentManager;
 
@@ -24,14 +27,17 @@ public class TabContentManagerThumbnailProvider implements ThumbnailProvider {
 
     @Override
     public void getTabThumbnailWithCallback(
-            int tabId, Size thumbnailSize, boolean isSelected, Callback<Drawable> callback) {
+            int tabId,
+            Size thumbnailSize,
+            boolean isSelected,
+            Callback<@Nullable Drawable> callback) {
 
         mTabContentManager.getTabThumbnailWithCallback(
                 tabId, thumbnailSize, adaptCallback(callback));
     }
 
-    private static Callback<Bitmap> adaptCallback(Callback<Drawable> callback) {
-        return (Bitmap bitmap) -> {
+    private static Callback<@Nullable Bitmap> adaptCallback(Callback<@Nullable Drawable> callback) {
+        return (@Nullable Bitmap bitmap) -> {
             Drawable drawable = null;
             if (bitmap != null) {
                 drawable = new BitmapDrawable(bitmap);

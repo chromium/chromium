@@ -14,7 +14,7 @@ namespace base {
 enum {
   PATH_ANDROID_START = 300,
 
-  DIR_ANDROID_APP_DATA,  // Directory where to put Android app's data.
+  DIR_ANDROID_APP_DATA,          // Directory where to put Android app's data.
   DIR_ANDROID_EXTERNAL_STORAGE,  // Android external storage directory.
 
   PATH_ANDROID_END

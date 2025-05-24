@@ -85,9 +85,10 @@ class LastRequestResultCache {
     pmi_result_cache_[key] = status;
   }
 
-  PermissionStatus GetResult(PermissionType permission,
-                             const GURL& requesting_origin,
-                             const GURL& embedding_origin) const {
+  PermissionStatus GetResult(
+      const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const {
     // TODO(ddorwin): We should be denying empty origins at a higher level.
     if (requesting_origin.is_empty() || embedding_origin.is_empty()) {
       return PermissionStatus::ASK;
@@ -98,6 +99,8 @@ class LastRequestResultCache {
     DCHECK(embedding_origin.is_valid())
         << embedding_origin.possibly_invalid_spec();
 
+    const PermissionType permission =
+        blink::PermissionDescriptorToPermissionType(permission_descriptor);
     switch (permission) {
       case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
       case PermissionType::STORAGE_ACCESS_GRANT:
@@ -161,7 +164,7 @@ class LastRequestResultCache {
 
 class AwPermissionManager::PendingRequest {
  public:
-  PendingRequest(const std::vector<PermissionType> permissions,
+  PendingRequest(const std::vector<PermissionType>& permissions,
                  GURL requesting_origin,
                  GURL embedding_origin,
                  int render_process_id,
@@ -263,7 +266,8 @@ void AwPermissionManager::RequestPermissions(
     base::OnceCallback<void(const std::vector<PermissionStatus>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto const& permissions = request_description.permissions;
+  auto const& permissions = blink::PermissionDescriptorToPermissionTypes(
+      request_description.permissions);
   if (permissions.empty()) {
     std::move(callback).Run(std::vector<PermissionStatus>());
     return;
@@ -336,24 +340,21 @@ void AwPermissionManager::RequestPermissions(
         break;
       case PermissionType::CLIPBOARD_SANITIZED_WRITE:
         // This is the permission for writing vetted data (such as plain text or
-        // sanitized images) using the async clipboard API. Chrome automatically
-        // grants access with a user gesture, and alternatively queries for
-        // gesture-less access with a popup bubble. For now, just grant based on
-        // user gesture.
-        // Reading from the clipboard or writing custom data is represented with
-        // the CLIPBOARD_READ_WRITE permission, and that requires an explicit
-        // user approval, which is not implemented yet. See crbug.com/1271620
-        pending_request_raw->SetPermissionStatus(
-            permissions[i], request_description.user_gesture
-                                ? PermissionStatus::GRANTED
-                                : PermissionStatus::DENIED);
+        // sanitized images) using the async clipboard API.
+        // This permission type implies that user gesture is present, and as
+        // such, it can be auto-granted to conform with Chrome logic.
+        // Reading from the clipboard or writing
+        // custom data is represented with the CLIPBOARD_READ_WRITE permission,
+        // and that requires an explicit user approval, which is not implemented
+        // yet. See crbug.com/1271620
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::GRANTED);
         break;
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
       case PermissionType::NOTIFICATIONS:
       case PermissionType::DURABLE_STORAGE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::PAYMENT_HANDLER:
       case PermissionType::BACKGROUND_FETCH:
@@ -418,6 +419,13 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::WAKE_LOCK_SYSTEM:
         pending_request_raw->SetPermissionStatus(permissions[i],
                                                  PermissionStatus::DENIED);
+        break;
+      case PermissionType::LOCAL_NETWORK_ACCESS:
+        // PermissionType::LOCAL_NETWORK_ACCESS requests are always granted so
+        // that local network requests in WebView work as-is. WebView is
+        // currently out-of-scope for Local Network Access restrictions.
+        pending_request_raw->SetPermissionStatus(permissions[i],
+                                                 PermissionStatus::GRANTED);
         break;
       case PermissionType::NUM:
         NOTREACHED() << "PermissionType::NUM was not expected here.";
@@ -526,20 +534,22 @@ void AwPermissionManager::RequestPermissionsFromCurrentDocument(
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatus(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
-  return GetPermissionStatusInternal(permission, requesting_origin,
+  return GetPermissionStatusInternal(permission_descriptor, requesting_origin,
                                      embedding_origin,
                                      /*web_contents=*/nullptr);
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     content::WebContents* web_contents) {
-  switch (permission) {
+  const blink::PermissionType permission_type =
+      blink::PermissionDescriptorToPermissionType(permission_descriptor);
+  switch (permission_type) {
     // Setting results is called outside the Permissions API only for these
     // permissions.
     case blink::PermissionType::STORAGE_ACCESS_GRANT:
@@ -547,18 +557,20 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
       if (!base::FeatureList::IsEnabled(features::kWebViewAutoSAA)) {
         return PermissionStatus::DENIED;
       }
-      return result_cache_->GetResult(permission, requesting_origin,
+      return result_cache_->GetResult(permission_descriptor, requesting_origin,
                                       embedding_origin);
     }
     case blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER:
-      return result_cache_->GetResult(permission, requesting_origin,
+      return result_cache_->GetResult(permission_descriptor, requesting_origin,
                                       embedding_origin);
 
     case blink::PermissionType::GEOLOCATION:
       return GetGeolocationPermission(requesting_origin, web_contents);
 
+    case blink::PermissionType::CLIPBOARD_SANITIZED_WRITE:
     case blink::PermissionType::MIDI:
     case blink::PermissionType::SENSORS:
+    case blink::PermissionType::LOCAL_NETWORK_ACCESS:
       // These permissions are auto-granted by WebView.
       return PermissionStatus::GRANTED;
 
@@ -567,11 +579,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::VIDEO_CAPTURE:
       // These permissions are always forwarded to the app to handle.
       return PermissionStatus::ASK;
-    case blink::PermissionType::CLIPBOARD_SANITIZED_WRITE:
-      // This permission depends on user_gesture, so should always ask.
-      return PermissionStatus::ASK;
 
-    case blink::PermissionType::ACCESSIBILITY_EVENTS:
     case blink::PermissionType::AR:
     case blink::PermissionType::AUTOMATIC_FULLSCREEN:
     case blink::PermissionType::BACKGROUND_FETCH:
@@ -601,7 +609,8 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::WINDOW_MANAGEMENT:
       return PermissionStatus::DENIED;
   }
-  NOTREACHED() << "Unhandled permission type: " << static_cast<int>(permission);
+  NOTREACHED() << "Unhandled permission type: "
+               << static_cast<int>(permission_type);
 }
 
 PermissionStatus AwPermissionManager::GetGeolocationPermission(
@@ -614,38 +623,40 @@ PermissionStatus AwPermissionManager::GetGeolocationPermission(
   }
 
   AwSettings* settings = AwSettings::FromWebContents(web_contents);
+  if (!settings) {
+    // If we don't have a settings, we can't determine if we have
+    // permission.
+    return PermissionStatus::ASK;
+  }
+
   if (!settings->geolocation_enabled()) {
     return PermissionStatus::DENIED;
   }
-  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
-  if (!aw_contents->UseLegacyGeolocationPermissionAPI()) {
-    // The new geolocation API does not have a cache for permission decisions,
-    // so if that's in use, we will need to ask the app.
-    return PermissionStatus::ASK;
-  }
+
   return context_delegate_->GetGeolocationPermission(requesting_origin);
 }
 
 content::PermissionResult
 AwPermissionManager::GetPermissionResultForOriginWithoutContext(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status = GetPermissionStatus(
-      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
+                          embedding_origin.GetURL());
 
   return content::PermissionResult(
       status, content::PermissionStatusSource::UNSPECIFIED);
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host);
   return GetPermissionStatusInternal(
-      permission,
+      permission_descriptor,
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
@@ -654,18 +665,19 @@ PermissionStatus AwPermissionManager::GetPermissionStatusForCurrentDocument(
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusForWorker(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
-  return GetPermissionStatus(permission, worker_origin, worker_origin);
+  return GetPermissionStatus(permission_descriptor, worker_origin,
+                             worker_origin);
 }
 
 PermissionStatus AwPermissionManager::GetPermissionStatusForEmbeddedRequester(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
   return GetPermissionStatusInternal(
-      permission, requesting_origin.GetURL(),
+      permission_descriptor, requesting_origin.GetURL(),
       permissions::PermissionUtil::GetLastCommittedOriginAsURL(
           render_frame_host->GetMainFrame()),
       content::WebContents::FromRenderFrameHost(render_frame_host));
@@ -725,7 +737,6 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::CLIPBOARD_SANITIZED_WRITE:
       case PermissionType::PAYMENT_HANDLER:
@@ -757,6 +768,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::SENSORS:
       case PermissionType::WAKE_LOCK_SCREEN:
       case PermissionType::WAKE_LOCK_SYSTEM:
+      case PermissionType::LOCAL_NETWORK_ACCESS:
         // There is nothing to cancel so this is simply ignored.
         break;
       case PermissionType::NUM:
@@ -838,7 +850,7 @@ void AwPermissionManager::ClearEnumerateDevicesCachedPermission(
 
 int AwPermissionManager::GetRenderProcessID(
     content::RenderFrameHost* render_frame_host) {
-  return render_frame_host->GetProcess()->GetID();
+  return render_frame_host->GetProcess()->GetDeprecatedID();
 }
 
 int AwPermissionManager::GetRenderFrameID(

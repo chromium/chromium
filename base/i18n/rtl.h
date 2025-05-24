@@ -6,6 +6,7 @@
 #define BASE_I18N_RTL_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/i18n/base_i18n_export.h"
 #include "build/build_config.h"
@@ -53,7 +54,24 @@ BASE_I18N_EXPORT void SetICUDefaultLocale(const std::string& locale_string);
 BASE_I18N_EXPORT bool IsRTL();
 
 // A test utility function to set the application default text direction.
+// Prefer using ScopedRTLForTesting instead of this function directly.
 BASE_I18N_EXPORT void SetRTLForTesting(bool rtl);
+
+// A RAII wrapper for setting RTL in tests. Automatically restores the previous
+// RTL state when destroyed. This is the preferred way to set RTL state in
+// tests.
+class BASE_I18N_EXPORT ScopedRTLForTesting {
+ public:
+  explicit ScopedRTLForTesting(bool rtl);
+  ~ScopedRTLForTesting();
+
+  // Not copyable or movable
+  ScopedRTLForTesting(const ScopedRTLForTesting&) = delete;
+  ScopedRTLForTesting& operator=(const ScopedRTLForTesting&) = delete;
+
+ private:
+  bool previous_rtl_state_;
+};
 
 // Returns whether the text direction for the default ICU locale is RTL.  This
 // assumes that SetICUDefaultLocale has been called to set the default locale to
@@ -72,8 +90,8 @@ BASE_I18N_EXPORT TextDirection
 GetTextDirectionForLocaleInStartUp(const char* locale_name);
 
 // Returns the text direction for |locale_name|.
-BASE_I18N_EXPORT TextDirection GetTextDirectionForLocale(
-    const char* locale_name);
+BASE_I18N_EXPORT TextDirection
+GetTextDirectionForLocale(const char* locale_name);
 
 // Given the string in |text|, returns the directionality of the first or last
 // character with strong directionality in the string. If no character in the
@@ -82,9 +100,9 @@ BASE_I18N_EXPORT TextDirection GetTextDirectionForLocale(
 // directionality characters. Please refer to http://unicode.org/reports/tr9/
 // for more information.
 BASE_I18N_EXPORT TextDirection
-GetFirstStrongCharacterDirection(const std::u16string& text);
+GetFirstStrongCharacterDirection(std::u16string_view text);
 BASE_I18N_EXPORT TextDirection
-GetLastStrongCharacterDirection(const std::u16string& text);
+GetLastStrongCharacterDirection(std::u16string_view text);
 
 // Given the string in |text|, returns LEFT_TO_RIGHT or RIGHT_TO_LEFT if all the
 // strong directionality characters in the string are of the same
@@ -92,7 +110,7 @@ GetLastStrongCharacterDirection(const std::u16string& text);
 // LTR and RTL strong directionality characters. Defaults to LEFT_TO_RIGHT if
 // the string does not contain directionality characters. Please refer to
 // http://unicode.org/reports/tr9/ for more information.
-BASE_I18N_EXPORT TextDirection GetStringDirection(const std::u16string& text);
+BASE_I18N_EXPORT TextDirection GetStringDirection(std::u16string_view text);
 
 // Given the string in |text|, this function modifies the string in place with
 // the appropriate Unicode formatting marks that mark the string direction
@@ -134,7 +152,7 @@ BASE_I18N_EXPORT void SanitizeUserSuppliedString(std::u16string* text);
 // Returns true if the string contains at least one character with strong right
 // to left directionality; that is, a character with either R or AL Unicode
 // BiDi character type.
-BASE_I18N_EXPORT bool StringContainsStrongRTLChars(const std::u16string& text);
+BASE_I18N_EXPORT bool StringContainsStrongRTLChars(std::u16string_view text);
 
 // Wraps a string with an LRE-PDF pair which essentialy marks the string as a
 // Left-To-Right string. Doing this is useful in order to make sure LTR
@@ -154,7 +172,7 @@ BASE_I18N_EXPORT void WrapPathWithLTRFormatting(const FilePath& path,
 // Return the string in |text| wrapped with LRE (Left-To-Right Embedding) and
 // PDF (Pop Directional Formatting) marks, if needed for UI display purposes.
 [[nodiscard]] BASE_I18N_EXPORT std::u16string
-GetDisplayStringInLTRDirectionality(const std::u16string& text);
+GetDisplayStringInLTRDirectionality(std::u16string_view text);
 
 // Strip the beginning (U+202A..U+202B, U+202D..U+202E) and/or ending (U+202C)
 // explicit bidi control characters from |text|, if there are any. Otherwise,
@@ -162,7 +180,7 @@ GetDisplayStringInLTRDirectionality(const std::u16string& text);
 // semantic effect. They can be deleted so they might not always appear in a
 // pair.
 [[nodiscard]] BASE_I18N_EXPORT std::u16string
-StripWrappingBidiControlCharacters(const std::u16string& text);
+StripWrappingBidiControlCharacters(std::u16string_view text);
 
 }  // namespace i18n
 }  // namespace base

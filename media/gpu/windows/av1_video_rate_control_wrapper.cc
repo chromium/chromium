@@ -29,6 +29,8 @@ template <>
 aom::AV1RateControlRtcConfig AV1RateControl::ConvertControlConfig(
     const RateControlConfig& config) {
   aom::AV1RateControlRtcConfig rc_config;
+  rc_config.is_screen = config.content_type ==
+                        VideoEncodeAccelerator::Config::ContentType::kDisplay;
   rc_config.width = config.width;
   rc_config.height = config.height;
   rc_config.target_bandwidth = config.target_bandwidth;

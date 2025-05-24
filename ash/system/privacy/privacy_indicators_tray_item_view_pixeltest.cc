@@ -75,12 +75,12 @@ TEST_P(PrivacyIndicatorsTrayItemViewPixelTest, Basics) {
   SimulateAnimateToFullyExpandedState(privacy_indicators_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "full_view" + GetScreenshotNameSuffix(),
-      /*revision_number=*/1, notification_center_tray));
+      /*revision_number=*/3, notification_center_tray));
 
   SimulateAnimationEnded(privacy_indicators_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "dot_view" + GetScreenshotNameSuffix(),
-      /*revision_number=*/1, notification_center_tray));
+      /*revision_number=*/2, notification_center_tray));
 }
 
 }  // namespace ash

@@ -28,7 +28,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_NG_SHAPE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_NG_SHAPE_CACHE_H_
 
-#include "base/containers/span.h"
 #include "base/hash/hash.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
@@ -44,10 +43,11 @@ namespace blink {
 
 class NGShapeCache : public GarbageCollected<NGShapeCache> {
  public:
-  static constexpr unsigned kMaxTextLengthOfEntries = 15;
+  static constexpr unsigned kMaxTextLengthOfEntries = 30;
   static constexpr unsigned kMaxSize = 2048;
 
-  NGShapeCache() {
+  explicit NGShapeCache(const SimpleFontData* primary_font)
+      : primary_font_(primary_font) {
     DCHECK(RuntimeEnabledFeatures::LayoutNGShapeCacheEnabled());
   }
   NGShapeCache(const NGShapeCache&) = delete;
@@ -56,6 +56,7 @@ class NGShapeCache : public GarbageCollected<NGShapeCache> {
   void Trace(Visitor* visitor) const {
     visitor->Trace(ltr_string_map_);
     visitor->Trace(rtl_string_map_);
+    visitor->Trace(primary_font_);
   }
 
   template <typename ShapeResultFunc>
@@ -65,17 +66,28 @@ class NGShapeCache : public GarbageCollected<NGShapeCache> {
     if (text.length() > kMaxTextLengthOfEntries) {
       return shape_result_func();
     }
-    auto& map =
-        direction == TextDirection::kLtr ? ltr_string_map_ : rtl_string_map_;
-    if (map.size() >= kMaxSize) {
-      auto it = map.find(text);
-      return it != map.end() ? it->value.Get() : shape_result_func();
+
+    auto& map = IsLtr(direction) ? ltr_string_map_ : rtl_string_map_;
+    if (map.size() >= kMaxSize) [[unlikely]] {
+      const auto it = map.find(text);
+      return (it != map.end() && it->value) ? it->value.Get()
+                                            : shape_result_func();
     }
-    auto add_result = map.insert(text, nullptr);
-    if (add_result.is_new_entry) {
-      add_result.stored_value->value = shape_result_func();
+
+    const auto add_result = map.insert(text, nullptr);
+    if (add_result.stored_value->value) {
+      return add_result.stored_value->value;
     }
-    return add_result.stored_value->value.Get();
+
+    const ShapeResult* result = shape_result_func();
+
+    // Only shape-results without font-fallback are valid, because the cache is
+    // in the `primary_font_`.
+    if (!result->HasFallbackFonts(primary_font_)) {
+      add_result.stored_value->value = result;
+    }
+
+    return result;
   }
 
  private:
@@ -83,6 +95,7 @@ class NGShapeCache : public GarbageCollected<NGShapeCache> {
 
   SmallStringMap ltr_string_map_;
   SmallStringMap rtl_string_map_;
+  Member<const SimpleFontData> primary_font_;
 };
 
 }  // namespace blink

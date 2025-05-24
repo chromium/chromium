@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "components/cronet/cronet_upload_data_stream.h"
 #include "components/cronet/native/engine.h"
 #include "components/cronet/native/generated/cronet.idl_impl_struct.h"
@@ -230,8 +231,7 @@ Cronet_UrlRequestStatusListener_Status ConvertLoadState(
       // A load state is retrieved but there is no corresponding
       // request status. This most likely means that the mapping is
       // incorrect.
-      CHECK(false);
-      return Cronet_UrlRequestStatusListener_Status_INVALID;
+      NOTREACHED();
   }
 }
 

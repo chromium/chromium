@@ -34,9 +34,9 @@
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_target_info.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/content/browser/download/download_stats.h"
-#include "components/safe_browsing/content/common/file_type_policies.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -67,7 +67,7 @@
 #include "ui/shell_dialogs/select_file_utils_win.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -76,6 +76,11 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "components/safe_browsing/content/browser/download/download_stats.h"
+#include "components/safe_browsing/content/common/file_type_policies.h"
 #endif
 
 using content::BrowserThread;
@@ -205,8 +210,7 @@ void DownloadTargetDeterminer::DoLoop() {
         result = DoDetermineIntermediatePath();
         break;
       case STATE_NONE:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
   } while (result == CONTINUE);
   // Note that if a callback completes synchronously, the handler will still
@@ -324,12 +328,14 @@ base::FilePath DownloadTargetDeterminer::GenerateFileName() const {
       download_->GetURL(), download_->GetContentDisposition(), referrer_charset,
       suggested_filename, sniffed_mime_type, default_filename);
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // We don't replace the file extension if sfafe browsing consider the file
   // extension to be unsafe. Just let safe browsing scan the generated file.
   if (safe_browsing::FileTypePolicies::GetInstance()->IsCheckedBinaryFile(
           generated_filename)) {
     return generated_filename;
   }
+#endif
 
   // If no mime type or explicitly specified a name, don't replace file
   // extension.
@@ -499,7 +505,7 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
                conflict_action_ == DownloadPathReservationTracker::UNIQUIFY);
         break;
       case download::PathValidationResult::COUNT:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     virtual_path_ = path;
@@ -527,7 +533,7 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
         confirmation_reason_ = DownloadConfirmationReason::TARGET_CONFLICT;
         break;
       case download::PathValidationResult::COUNT:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -959,8 +965,6 @@ void DownloadTargetDeterminer::CheckAppVerificationDone(
     safe_browsing::VerifyAppsEnabledResult result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(STATE_CHECK_VISITED_REFERRER_BEFORE, next_state_);
-  base::UmaHistogramEnumeration("SBClientDownload.AndroidAppVerificationResult",
-                                result);
   is_app_verification_enabled_ =
       result == safe_browsing::VerifyAppsEnabledResult::SUCCESS_ENABLED;
   DoLoop();
@@ -1031,12 +1035,14 @@ void DownloadTargetDeterminer::CheckVisitedReferrerBeforeDone(
     bool visited_referrer_before) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_EQ(STATE_DETERMINE_INTERMEDIATE_PATH, next_state_);
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::RecordDownloadFileTypeAttributes(
       safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
           virtual_path_.BaseName(), download_->GetURL(),
           GetProfile()->GetPrefs()),
       download_->HasUserGesture(), visited_referrer_before,
       GetLastDownloadBypassTimestamp());
+#endif
   danger_level_ = GetDangerLevel(
       visited_referrer_before ? VISITED_REFERRER : NO_VISITS_TO_REFERRER);
   if (danger_level_ != DownloadFileType::NOT_DANGEROUS &&
@@ -1254,7 +1260,7 @@ DownloadConfirmationReason DownloadTargetDeterminer::NeedsConfirmation(
 
 bool DownloadTargetDeterminer::IsDownloadDlpBlocked(
     const base::FilePath& download_path) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* web_contents =
       download_ ? content::DownloadItemUtils::GetWebContents(download_)
                 : nullptr;
@@ -1290,6 +1296,23 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
     PriorVisitsToReferrer visits) const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
+  // User-initiated extension downloads from pref-whitelisted sources are not
+  // considered dangerous.
+  if (download_->HasUserGesture() &&
+      download_crx_util::IsTrustedExtensionDownload(GetProfile(), *download_)) {
+    return DownloadFileType::NOT_DANGEROUS;
+  }
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  DownloadFileType::DangerLevel danger_level =
+      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+          virtual_path_.BaseName(), download_->GetURL(),
+          GetProfile()->GetPrefs());
+  policy::DownloadRestriction download_restriction =
+      static_cast<policy::DownloadRestriction>(
+          GetProfile()->GetPrefs()->GetInteger(
+              policy::policy_prefs::kDownloadRestrictions));
+
   // If the user has has been prompted or will be, assume that the user has
   // approved the download. A programmatic download is considered safe unless it
   // contains malware.
@@ -1301,13 +1324,19 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   if (HasPromptedForPath() ||
       confirmation_reason_ != DownloadConfirmationReason::NONE ||
       user_approved_path) {
-    return DownloadFileType::NOT_DANGEROUS;
-  }
-
-  // User-initiated extension downloads from pref-whitelisted sources are not
-  // considered dangerous.
-  if (download_->HasUserGesture() &&
-      download_crx_util::IsTrustedExtensionDownload(GetProfile(), *download_)) {
+    // If the "DownloadRestrictions" enterprise policy explicitly disallows the
+    // download, don't let the user gesture bypass the dangerous verdict.
+    //
+    // TODO(chlily) Need to verify how DownloadRestrictions policy functions
+    // when there is no Safe Browsing in the build. The policy (or at least
+    // the dangerous file types part of it) should still be active even if
+    // Safe Browsing is unavailable. (!BUILDFLAG(SAFE_BROWSING_AVAILABLE))
+    if ((download_restriction == policy::DownloadRestriction::DANGEROUS_FILES ||
+         download_restriction ==
+             policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES) &&
+        danger_level != DownloadFileType::NOT_DANGEROUS) {
+      return DownloadFileType::DANGEROUS;
+    }
     return DownloadFileType::NOT_DANGEROUS;
   }
 
@@ -1315,11 +1344,6 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
   if (download_prefs_->IsAutoOpenEnabled(download_->GetURL(), virtual_path_) &&
       download_->HasUserGesture())
     return DownloadFileType::NOT_DANGEROUS;
-
-  DownloadFileType::DangerLevel danger_level =
-      safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
-          virtual_path_.BaseName(), download_->GetURL(),
-          GetProfile()->GetPrefs());
 
   // A danger level of ALLOW_ON_USER_GESTURE is used to label potentially
   // dangerous file types that have a high frequency of legitimate use. We would
@@ -1340,6 +1364,9 @@ DownloadFileType::DangerLevel DownloadTargetDeterminer::GetDangerLevel(
        (download_->HasUserGesture() && visits == VISITED_REFERRER)))
     return DownloadFileType::NOT_DANGEROUS;
   return danger_level;
+#else
+  return DownloadFileType::NOT_DANGEROUS;
+#endif
 }
 
 std::optional<base::Time>

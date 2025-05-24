@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.browserservices.metrics;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Class to record Uma related to Origin Verifier */
+@NullMarked
 public class OriginVerifierMetricsRecorder {
     @IntDef({
         VerificationResult.ONLINE_SUCCESS,

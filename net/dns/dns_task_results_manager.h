@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -21,7 +22,6 @@
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -38,7 +38,7 @@ namespace net {
 class NET_EXPORT_PRIVATE DnsTaskResultsManager {
  public:
   // Time to wait for a AAAA response after receiving an A response.
-  static constexpr base::TimeDelta kResolutionDelay = base::Milliseconds(50);
+  static base::TimeDelta GetResolutionDelay();
 
   // Interface for watching for intermediate service endpoints updates.
   class Delegate {
@@ -65,7 +65,7 @@ class NET_EXPORT_PRIVATE DnsTaskResultsManager {
   // Expected be called when a DnsTransaction is completed.
   void ProcessDnsTransactionResults(
       DnsQueryType query_type,
-      const std::set<std::unique_ptr<HostResolverInternalResult>>& results);
+      std::set<const HostResolverInternalResult*> results);
 
   // Returns the current service endpoints. The results could change over time.
   // Use the delegate's OnServiceEndpointsUpdated() to watch for updates.

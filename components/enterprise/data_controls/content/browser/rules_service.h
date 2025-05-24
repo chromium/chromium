@@ -62,12 +62,10 @@ class RulesService : public KeyedService {
   // enabled, and populate `rules_`.
   void OnDataControlsRulesUpdate();
 
-  // Watches changes to the "DataControlsRules" policy. Does nothing if the
-  // "EnableDesktopDataControls" experiment is disabled.
+  // Watches changes to the "DataControlsRules" policy.
   PrefChangeRegistrar pref_registrar_;
 
-  // List of rules created from the "DataControlsRules" policy. Empty if the
-  // "EnableDesktopDataControls" experiment is disabled.
+  // List of rules created from the "DataControlsRules" policy.
   std::vector<Rule> rules_;
 };
 

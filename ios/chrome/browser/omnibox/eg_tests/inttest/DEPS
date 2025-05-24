@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/autocomplete/model",
+  "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/feature_engagement/model",
+  "+ios/chrome/browser/https_upgrades/model",
+  "+ios/chrome/browser/sessions/model",
+]

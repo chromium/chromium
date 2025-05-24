@@ -76,8 +76,8 @@
       self.viewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent,
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent],
   ];
 
   [self.baseViewController presentViewController:self.viewController
@@ -99,7 +99,7 @@
   [_applicationHandler
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:URL.gurl
-                                       inIncognito:self.browser->GetProfile()
+                                       inIncognito:self.profile
                                                        ->IsOffTheRecord()]];
 }
 

@@ -34,8 +34,7 @@ constexpr char kPasswordStoreMetricsReporterKey[] =
 
 class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  public:
-  explicit StoreMetricReporterHelper(ChromeBrowserState* browser_state)
-      : browser_state_(browser_state) {
+  explicit StoreMetricReporterHelper(ProfileIOS* profile) : profile_(profile) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&StoreMetricReporterHelper::StartMetricsReporting,
@@ -47,31 +46,29 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
  private:
   void StartMetricsReporting() {
     password_manager::PasswordStoreInterface* profile_store =
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     password_manager::PasswordStoreInterface* account_store =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-            browser_state_, ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
+            profile_, ServiceAccessType::EXPLICIT_ACCESS)
             .get();
     syncer::SyncService* sync_service =
-        SyncServiceFactory::GetForProfileIfExists(browser_state_);
+        SyncServiceFactory::GetForProfileIfExists(profile_);
     password_manager::PasswordReuseManager* password_reuse_manager =
-        IOSChromePasswordReuseManagerFactory::GetForBrowserState(
-            browser_state_);
+        IOSChromePasswordReuseManagerFactory::GetForProfile(profile_);
     password_manager::PasswordManagerSettingsService* settings =
-        IOSPasswordManagerSettingsServiceFactory::GetForBrowserState(
-            browser_state_);
+        IOSPasswordManagerSettingsServiceFactory::GetForProfile(profile_);
 
-    PrefService* pref_service = browser_state_->GetPrefs();
+    PrefService* pref_service = profile_->GetPrefs();
 
-    metrics_reporter_ = std::make_unique<
-        password_manager::StoreMetricsReporter>(
-        profile_store, account_store, sync_service, pref_service,
-        password_reuse_manager, settings,
-        base::BindOnce(
-            &StoreMetricReporterHelper::RemoveInstanceFromBrowserStateUserData,
-            weak_ptr_factory_.GetWeakPtr()));
+    metrics_reporter_ =
+        std::make_unique<password_manager::StoreMetricsReporter>(
+            profile_store, account_store, sync_service, pref_service,
+            password_reuse_manager, settings,
+            base::BindOnce(
+                &StoreMetricReporterHelper::RemoveInstanceFromProfileUserData,
+                weak_ptr_factory_.GetWeakPtr()));
 
     [ASCredentialIdentityStore.sharedStore
         getCredentialIdentityStoreStateWithCompletion:^(
@@ -87,8 +84,8 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
         }];
   }
 
-  void RemoveInstanceFromBrowserStateUserData() {
-    browser_state_->RemoveUserData(kPasswordStoreMetricsReporterKey);
+  void RemoveInstanceFromProfileUserData() {
+    profile_->RemoveUserData(kPasswordStoreMetricsReporterKey);
   }
 
   // Logs if the user had enabled the credential provider in their iOS settings
@@ -112,7 +109,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
     }
   }
 
-  const raw_ptr<ChromeBrowserState> browser_state_;
+  const raw_ptr<ProfileIOS> profile_;
   // StoreMetricReporterHelper is owned by the profile `metrics_reporter_` life
   // time is now bound to the profile.
   std::unique_ptr<password_manager::StoreMetricsReporter> metrics_reporter_;
@@ -121,8 +118,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
 
 }  // namespace
 
-void DelayReportingPasswordStoreMetrics(ChromeBrowserState* browser_state) {
-  browser_state->SetUserData(
-      kPasswordStoreMetricsReporterKey,
-      std::make_unique<StoreMetricReporterHelper>(browser_state));
+void DelayReportingPasswordStoreMetrics(ProfileIOS* profile) {
+  profile->SetUserData(kPasswordStoreMetricsReporterKey,
+                       std::make_unique<StoreMetricReporterHelper>(profile));
 }

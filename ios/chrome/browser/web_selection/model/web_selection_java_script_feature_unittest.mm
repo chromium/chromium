@@ -9,7 +9,6 @@
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
@@ -64,7 +63,6 @@ class WebSelectionJavaScriptFeatureTest : public PlatformTest {
  public:
   WebSelectionJavaScriptFeatureTest()
       : web_client_(std::make_unique<ChromeWebClient>()) {
-    feature_list_.InitAndEnableFeature(kIOSEditMenuPartialTranslate);
     profile_ = TestProfileIOS::Builder().Build();
 
     web::WebState::CreateParams params(profile_.get());
@@ -95,7 +93,6 @@ class WebSelectionJavaScriptFeatureTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   std::unique_ptr<TestWebSelectionJavaScriptFeatureObserver>

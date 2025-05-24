@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/android/overscroll_glow.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "cc/slim/layer.h"
 #include "ui/android/edge_effect.h"
@@ -223,7 +220,7 @@ void OverscrollGlow::Pull(base::TimeTicks current_time,
 
   gfx::Vector2dF overscroll_pull =
       gfx::ScaleVector2d(overscroll_delta, inv_width, inv_height);
-  const float edge_pull[EDGE_COUNT] = {
+  const std::array<float, EDGE_COUNT> edge_pull = {
       min(overscroll_pull.y(), 0.f),  // Top
       min(overscroll_pull.x(), 0.f),  // Left
       max(overscroll_pull.y(), 0.f),  // Bottom
@@ -234,7 +231,7 @@ void OverscrollGlow::Pull(base::TimeTicks current_time,
       gfx::ScaleVector2d(overscroll_location, inv_width, inv_height);
   displacement.set_x(max(0.f, min(1.f, displacement.x())));
   displacement.set_y(max(0.f, min(1.f, displacement.y())));
-  const float edge_displacement[EDGE_COUNT] = {
+  const std::array<float, EDGE_COUNT> edge_displacement = {
       1.f - displacement.x(),  // Top
       displacement.y(),        // Left
       displacement.x(),        // Bottom
@@ -259,7 +256,7 @@ void OverscrollGlow::Absorb(base::TimeTicks current_time,
   DCHECK(!velocity.IsZero());
 
   // Only trigger on initial overscroll at a non-zero velocity
-  const float overscroll_velocities[EDGE_COUNT] = {
+  const std::array<float, EDGE_COUNT> overscroll_velocities = {
       y_overscroll_started ? min(velocity.y(), 0.f) : 0,  // Top
       x_overscroll_started ? min(velocity.x(), 0.f) : 0,  // Left
       y_overscroll_started ? max(velocity.y(), 0.f) : 0,  // Bottom

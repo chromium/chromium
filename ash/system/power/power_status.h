@@ -280,6 +280,7 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
 
  private:
   friend class ScopedFakePowerStatus;
+  friend class FakePowerStatus;
 
   // Global singleton instance of the PowerStatus
   static PowerStatus* g_power_status_;

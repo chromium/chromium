@@ -105,7 +105,7 @@ TEST_F(InsertListCommandTest, CleanupNodeSameAsDestinationNode) {
   EXPECT_EQ(
       "<ul><li><table><colgroup><col>"
       "</colgroup></table></li>"
-      "<li><button>|</button></li></ul><br>",
+      "<li><button>|</button></li></ul>",
       GetSelectionTextFromBody());
 }
 
@@ -177,7 +177,7 @@ TEST_F(InsertListCommandTest, ListifyInputInTableCell) {
   Selection().SetSelection(
       SetSelectionTextToBody(
           "^<ruby><div style='display: table-cell'><input style='display: "
-          "table-cell' type='file' maxlength='100'><select>|"),
+          "table-cell' type='file' maxlength='100'><select></div></ruby>|"),
       SetSelectionOptions());
   auto* command = MakeGarbageCollected<InsertListCommand>(
       GetDocument(), InsertListCommand::kUnorderedList);
@@ -185,11 +185,11 @@ TEST_F(InsertListCommandTest, ListifyInputInTableCell) {
   // Crash happens here.
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<ruby><div style=\"display: "
-      "table-cell\"><ul><li>^<br></li><li><ruby><div style=\"display: "
-      "table-cell\">|<input maxlength=\"100\" style=\"display: table-cell\" "
-      "type=\"file\"></div></ruby></li><li><select></select></li></ul></div></"
-      "ruby>",
+      "<ruby><div style=\"display: table-cell\"><ul><li><ruby><div "
+      "style=\"display: table-cell\">"
+      "^<input maxlength=\"100\" style=\"display: table-cell\" "
+      "type=\"file\">|</div></ruby>"
+      "</li><li><select></select></li></ul></div></ruby>",
       GetSelectionTextFromBody());
 }
 
@@ -209,9 +209,9 @@ TEST_F(InsertListCommandTest, ListifyInputInTableCell1) {
   // Crash happens here.
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<div contenteditable=\"true\">^<br><ol><li><ruby><rb><ol><li><br></li>"
-      "<li><ruby><rb><input></rb></ruby></li><li><br></li><li><br></li></ol>"
-      "</rb></ruby></li></ol>|XXX<div></div></div>",
+      "<div contenteditable=\"true\">^<br><ol><li><ruby><rb><ol><li><ruby>"
+      "<rb><input></rb></ruby></li></ol></rb></ruby></li></ol>XXX|<div></div>"
+      "</div>",
       GetSelectionTextFromBody());
 }
 
@@ -323,7 +323,8 @@ TEST_F(InsertListCommandTest, SelectionFromEndOfTableToAfterTable) {
   // Crash happens here.
   EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<table><tbody><tr><td><ol><li>|<br></li></ol></td></tr></tbody></table>",
+      "<table><tbody><tr><td><ol><li>^<br></li></ol></td></tr></tbody></"
+      "table>|",
       GetSelectionTextFromBody());
 }
 

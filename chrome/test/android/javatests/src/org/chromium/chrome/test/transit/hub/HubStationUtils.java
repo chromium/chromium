@@ -14,10 +14,12 @@ public class HubStationUtils {
     // R.string.accessibility_tab_switcher_standard_stack.
     // The incognito contentDescription is the actual string found in the resource:
     // R.string.accessibility_tab_switcher_incognito_stack.
-    private static Map<Integer, String> sPaneIdToContentDescriptionMap =
+    private static final Map<Integer, String> sPaneIdToContentDescriptionMap =
             Map.ofEntries(
                     Map.entry(PaneId.TAB_SWITCHER, "standard tab"),
-                    Map.entry(PaneId.INCOGNITO_TAB_SWITCHER, "Incognito tabs"));
+                    Map.entry(PaneId.INCOGNITO_TAB_SWITCHER, "Incognito tabs"),
+                    Map.entry(PaneId.TAB_GROUPS, "Tab groups"),
+                    Map.entry(PaneId.HISTORY, "History"));
 
     /**
      * @param paneId The pane to get the content description of.
@@ -42,6 +44,10 @@ public class HubStationUtils {
                 return new RegularTabSwitcherStation(regularTabsExist, incognitoTabsExist);
             case PaneId.INCOGNITO_TAB_SWITCHER:
                 return new IncognitoTabSwitcherStation(regularTabsExist, incognitoTabsExist);
+            case PaneId.TAB_GROUPS:
+                return new TabGroupPaneStation(regularTabsExist, incognitoTabsExist);
+            case PaneId.HISTORY:
+                return new HistoryPaneStation(regularTabsExist, incognitoTabsExist);
             default:
                 throw new IllegalArgumentException("No hub station is available for " + paneId);
         }

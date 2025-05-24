@@ -66,7 +66,7 @@ AmbientVideoView::AmbientVideoView(std::string_view video_file,
       BuildFileUrl(html_path), kAmbientVideoFileQueryParam, video_file);
   ash_web_view_->Navigate(ambient_video_url);
 
-  AddChildView(peripheral_ui_.get());
+  AddChildViewRaw(peripheral_ui_.get());
   peripheral_ui_->UpdateLeftPaddingToMatchBottom();
   // Update details label to empty string as details info is not shown for
   // ambient video.

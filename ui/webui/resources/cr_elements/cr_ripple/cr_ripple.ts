@@ -36,9 +36,9 @@ export class CrRippleElement extends CrLitElement {
     };
   }
 
-  holdDown: boolean = false;
-  recenters: boolean = false;
-  noink: boolean = false;
+  accessor holdDown: boolean = false;
+  accessor recenters: boolean = false;
+  accessor noink: boolean = false;
 
   private ripples_: Element[] = [];
   private eventTracker_: EventTracker = new EventTracker();
@@ -57,6 +57,11 @@ export class CrRippleElement extends CrLitElement {
         (e: Event) => this.uiDownAction(e as PointerEvent));
     this.eventTracker_.add(
         keyEventTarget, 'pointerup', () => this.uiUpAction());
+
+    // 'pointerup' does not fire if the pointer is moved outside the bounds of
+    // `keyEventTarget` before releasing, so also listen for `pointerout`.
+    this.eventTracker_.add(
+        keyEventTarget, 'pointerout', () => this.uiUpAction());
 
     this.eventTracker_.add(keyEventTarget, 'keydown', (e: KeyboardEvent) => {
       if (e.defaultPrevented) {
@@ -176,7 +181,7 @@ export class CrRippleElement extends CrLitElement {
     ripple.style.height = ripple.style.width = (2 * radius) + 'px';
 
     this.ripples_.push(ripple);
-    this.shadowRoot!.appendChild(ripple);
+    this.shadowRoot.appendChild(ripple);
 
     ripple.animate(
         {
@@ -219,7 +224,7 @@ export class CrRippleElement extends CrLitElement {
 
       const animation = ripple.animate(
           {
-            opacity: [opacity!.value!, 0],
+            opacity: [opacity.value, 0],
           },
           {
             duration: 150,

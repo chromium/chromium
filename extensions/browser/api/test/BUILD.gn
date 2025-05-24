@@ -18,12 +18,14 @@ source_set("test") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//content/public/common",
-    "//extensions/common",
-    "//extensions/common/api",
+    "//extensions/browser:browser_sources",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//content",
+    "//extensions/browser/api:extensions_api_client",
+    "//extensions/common/api",
+  ]
 }

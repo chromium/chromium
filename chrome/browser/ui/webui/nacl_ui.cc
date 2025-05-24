@@ -142,8 +142,7 @@ class NaClDomHandler : public WebUIMessageHandler {
 NaClDomHandler::NaClDomHandler()
     : has_plugin_info_(false),
       pnacl_path_validated_(false),
-      pnacl_path_exists_(false) {
-}
+      pnacl_path_exists_(false) {}
 
 NaClDomHandler::~NaClDomHandler() = default;
 
@@ -176,8 +175,8 @@ void AddLineBreak(base::Value::List* list) {
 
 bool NaClDomHandler::isPluginEnabled(size_t plugin_index) {
   std::vector<content::WebPluginInfo> info_array;
-  PluginService::GetInstance()->GetPluginInfoArray(
-      GURL(), "application/x-nacl", false, &info_array, NULL);
+  PluginService::GetInstance()->GetPluginInfoArray(GURL(), "application/x-nacl",
+                                                   false, &info_array, NULL);
   PluginPrefs* plugin_prefs =
       PluginPrefs::GetForProfile(Profile::FromWebUI(web_ui())).get();
   return (!info_array.empty() &&
@@ -202,8 +201,8 @@ void NaClDomHandler::AddOperatingSystemInfo(base::Value::List* list) {
 void NaClDomHandler::AddPluginList(base::Value::List* list) {
   // Obtain the version of the NaCl plugin.
   std::vector<content::WebPluginInfo> info_array;
-  PluginService::GetInstance()->GetPluginInfoArray(
-      GURL(), "application/x-nacl", false, &info_array, NULL);
+  PluginService::GetInstance()->GetPluginInfoArray(GURL(), "application/x-nacl",
+                                                   false, &info_array, NULL);
   std::u16string nacl_version;
   std::u16string nacl_key = u"NaCl plugin";
   if (info_array.empty()) {
@@ -256,9 +255,8 @@ void NaClDomHandler::AddPnaclInfo(base::Value::List* list) {
 
 void NaClDomHandler::AddNaClInfo(base::Value::List* list) {
   std::u16string nacl_enabled_string = u"Disabled";
-  if (isPluginEnabled(0) &&
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableNaCl)) {
+  if (isPluginEnabled(0) && base::CommandLine::ForCurrentProcess()->HasSwitch(
+                                switches::kEnableNaCl)) {
     nacl_enabled_string = u"Enabled by flag '--enable-nacl'";
   }
   AddPair(list, u"Native Client (non-portable, outside web store)",
@@ -319,14 +317,16 @@ void CheckVersion(const base::FilePath& pnacl_path, std::string* version) {
   JSONFileValueDeserializer deserializer(pnacl_json_path);
   std::string error;
   std::unique_ptr<base::Value> root = deserializer.Deserialize(nullptr, &error);
-  if (!root || !root->is_dict())
+  if (!root || !root->is_dict()) {
     return;
+  }
 
   // Now try to get the field. This may leave version empty if the
   // the "get" fails (no key, or wrong type).
   if (const std::string* ptr = root->GetDict().FindString("pnacl-version")) {
-    if (base::IsStringASCII(*ptr))
+    if (base::IsStringASCII(*ptr)) {
       *version = *ptr;
+    }
   }
 }
 
@@ -344,8 +344,9 @@ bool CheckPathAndVersion(std::string* version) {
 void NaClDomHandler::MaybeRespondToPage() {
   // Don't reply until everything is ready.  The page will show a 'loading'
   // message until then.
-  if (callback_id_.empty() || !has_plugin_info_)
+  if (callback_id_.empty() || !has_plugin_info_) {
     return;
+  }
 
   if (!pnacl_path_validated_) {
     std::string* version_string = new std::string;

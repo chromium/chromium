@@ -14,7 +14,6 @@
 
 using ShowFeedbackPageTest = BrowserWithTestWindowTest;
 
-// TODO(crbug.com/40719879): Fix the test for Lacros build.
 // TODO(crbug.com/1167223): Fix the test for WebUIFeedback.
 TEST_F(ShowFeedbackPageTest, DISABLED_UserFeedbackDisallowed) {
   base::HistogramTester histogram_tester;

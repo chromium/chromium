@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("rollback_network_config") {
   sources = [
@@ -20,7 +20,6 @@ static_library("rollback_network_config") {
 
   deps = [
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/settings",
     "//chromeos/ash/components/dbus/shill",

@@ -29,7 +29,7 @@ class SiteDataStore {
                               std::optional<int64_t> on_disk_size_kb)>;
 
   SiteDataStore() = default;
-  virtual ~SiteDataStore() {}
+  virtual ~SiteDataStore() = default;
 
   // Checks the if there's an entry with the key |origin| and if pass the
   // corresponding proto to |callback|.

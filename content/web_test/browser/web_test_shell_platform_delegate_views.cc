@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/web_test/browser/web_test_shell_platform_delegate.h"
-
 #include "base/containers/contains.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_platform_data_aura.h"
+#include "content/web_test/browser/web_test_shell_platform_delegate.h"
+#include "ui/events/platform/platform_event_source.h"
 
 namespace content {
 
@@ -33,6 +33,11 @@ void WebTestShellPlatformDelegate::Initialize(
     web_test_platform_ = std::make_unique<WebTestPlatformData>();
     web_test_platform_->aura =
         std::make_unique<ShellPlatformDataAura>(default_window_size);
+
+    // This suppresses mousemove events from WindowEventDispatcher, which
+    // matches Mac behavior (AppKit will send a mousemove to a new
+    // RenderWidgetHostView when it is onscreen, but not when headless).
+    ui::PlatformEventSource::SetIgnoreNativePlatformEvents(true);
   }
 }
 
@@ -56,8 +61,7 @@ gfx::NativeWindow WebTestShellPlatformDelegate::GetNativeWindow(Shell* shell) {
   if (!IsHeadless())
     return ShellPlatformDelegate::GetNativeWindow(shell);
 
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 void WebTestShellPlatformDelegate::CleanUp(Shell* shell) {

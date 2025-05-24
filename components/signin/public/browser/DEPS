@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/signin/public",
+  # Remove this after moving AccountReconcilor from core/browser.
+  "+components/signin/core/browser",
+]

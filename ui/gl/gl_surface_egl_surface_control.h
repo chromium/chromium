@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
+#include "ui/gfx/android/surface_control_frame_rate.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gl/gl_export.h"
@@ -66,7 +67,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
                gfx::FrameData data) override;
 
   bool SupportsPlaneGpuFences() const override;
-  void SetFrameRate(float frame_rate) override;
+  void SetFrameRate(gfx::SurfaceControlFrameRate frame_rate) override;
   void SetChoreographerVsyncIdForNextFrame(
       std::optional<int64_t> choreographer_vsync_id) override;
 
@@ -261,7 +262,7 @@ class GL_EXPORT GLSurfaceEGLSurfaceControl : public Presenter {
   // committed (if commit is enabled) or acked (if commit is not enabled).
   uint32_t num_transaction_commit_or_ack_pending_ = 0u;
 
-  float frame_rate_ = 0;
+  gfx::SurfaceControlFrameRate frame_rate_;
   bool frame_rate_update_pending_ = false;
 
   base::CancelableOnceClosure check_pending_presentation_callback_queue_task_;

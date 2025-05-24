@@ -4,6 +4,8 @@
 
 #include "ash/system/ime_menu/ime_menu_tray.h"
 
+#include <string_view>
+
 #include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller.h"
@@ -13,6 +15,7 @@
 #include "ash/public/cpp/ime_info.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/ime_menu/ime_list_view.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
@@ -28,12 +31,14 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/text_input_flags.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchscreen_device.h"
 #include "ui/events/event.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_class_properties.h"
 
@@ -74,7 +79,7 @@ class ImeMenuTrayTest : public AshTestBase {
   bool IsVisible() { return GetTray()->GetVisible(); }
 
   // Returns the label text of the tray.
-  const std::u16string& GetTrayText() { return GetTray()->label_->GetText(); }
+  std::u16string_view GetTrayText() { return GetTray()->label_->GetText(); }
 
   // Returns true if the background color of the tray is active.
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }
@@ -129,7 +134,7 @@ class ImeMenuTrayTest : public AshTestBase {
 
       // Tests that the checked IME is the current IME.
       ui::AXNodeData node_data;
-      ime.first->GetAccessibleNodeData(&node_data);
+      ime.first->GetViewAccessibility().GetAccessibleNodeData(&node_data);
       const auto checked_state = static_cast<ax::mojom::CheckedState>(
           node_data.GetIntAttribute(ax::mojom::IntAttribute::kCheckedState));
       if (checked_state == ax::mojom::CheckedState::kTrue) {
@@ -613,6 +618,30 @@ TEST_F(ImeMenuTrayTest, ImeMenuHasBottomInsetsOnLockScreen) {
                           ->GetViewByID(VIEW_ID_IME_LIST_VIEW_SCROLLER)
                           ->GetProperty(views::kMarginsKey);
   EXPECT_GT(container_margins->bottom(), 0);
+}
+
+TEST_F(ImeMenuTrayTest, AccessibleNames) {
+  Shell::Get()->ime_controller()->SetExtraInputOptionsEnabledState(
+      /*is_extra_input_options_enabled=*/true, /*is_emoji_enabled=*/true,
+      /*is_handwriting_enabled=*/true, /*is_voice_enabled=*/true);
+
+  {
+    ui::AXNodeData node_data;
+    GetTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              l10n_util::GetStringUTF16(IDS_ASH_IME_MENU_ACCESSIBLE_NAME));
+  }
+
+  // Show IME tray bubble.
+  GetTray()->ShowBubble();
+
+  TrayBubbleView* bubble_view = GetTray()->GetBubbleView();
+  {
+    ui::AXNodeData node_data;
+    bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+              GetTray()->GetAccessibleNameForBubble());
+  }
 }
 
 }  // namespace ash

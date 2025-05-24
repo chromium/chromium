@@ -28,6 +28,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
@@ -38,6 +39,7 @@
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -132,8 +134,7 @@ std::string GetDownloadCreationTypeNames(
     case DownloadItem::TYPE_SAVE_PAGE_AS:
       return "SAVE_PAGE_AS";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "INVALID_TYPE";
+      NOTREACHED();
   }
 }
 
@@ -186,8 +187,7 @@ std::string GetDownloadDangerNames(DownloadDangerType type) {
     case DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return "BLOCKED_SCAN_FAILED";
     case DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return "UNKNOWN_DANGER_TYPE";
+      NOTREACHED();
   }
 }
 
@@ -240,7 +240,7 @@ class DownloadItemActivatedData
     out->append(
         base::StringPrintf("\"start_offset\":\"%" PRId64 "\",", start_offset_));
     out->append(base::StringPrintf("\"has_user_gesture\":\"%s\"",
-                                   has_user_gesture_ ? "true" : "false"));
+                                   base::ToString(has_user_gesture_).c_str()));
     out->append("}");
   }
 
@@ -486,12 +486,14 @@ DownloadItemImpl::DownloadItemImpl(
     DownloadItemImplDelegate* delegate,
     uint32_t download_id,
     const base::FilePath& path,
+    const base::FilePath& display_name,
     const GURL& url,
     const std::string& mime_type,
     DownloadJob::CancelRequestCallback cancel_request_callback)
     : request_info_(url),
       guid_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
       download_id_(download_id),
+      display_name_(display_name),
       mime_type_(mime_type),
       original_mime_type_(mime_type),
       start_tick_(base::TimeTicks::Now()),
@@ -633,7 +635,7 @@ void DownloadItemImpl::Pause() {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -678,7 +680,7 @@ void DownloadItemImpl::Resume(bool user_resume) {
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
     case TARGET_RESOLVED_INTERNAL:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -816,6 +818,15 @@ DownloadItem::DownloadState DownloadItemImpl::GetState() const {
   return InternalToExternalState(state_);
 }
 
+void DownloadItemImpl::SetStateForTesting(DownloadItem::DownloadState state) {
+  CHECK_IS_TEST();
+  state_ = ExternalToInternalState(state);
+}
+
+void DownloadItemImpl::SetDownloadUrlForTesting(GURL url) {
+  request_info_.url_chain.push_back(url);
+}
+
 DownloadInterruptReason DownloadItemImpl::GetLastReason() const {
   return last_reason_;
 }
@@ -857,9 +868,8 @@ bool DownloadItemImpl::CanResume() const {
     }
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 bool DownloadItemImpl::IsDone() const {
@@ -1072,8 +1082,7 @@ bool DownloadItemImpl::IsDangerous() const {
     case DOWNLOAD_DANGER_TYPE_DEEP_SCANNED_FAILED:
       return false;
     case DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1312,7 +1321,7 @@ std::string DownloadItemImpl::DebugString(bool verbose) const {
         IsPaused() ? 'T' : 'F', DebugResumeModeString(GetResumeMode()),
         auto_resume_count_, GetDangerType(), AllDataSaved() ? 'T' : 'F',
         GetLastModifiedTime().c_str(), GetETag().c_str(),
-        download_file_ ? "true" : "false", url_list.c_str(),
+        base::ToString(download_file_).c_str(), url_list.c_str(),
         GetFullPath().value().c_str(), GetTargetFilePath().value().c_str(),
         GetReferrerUrl().spec().c_str(),
         GetSerializedEmbedderDownloadData().c_str());
@@ -1460,6 +1469,15 @@ void DownloadItemImpl::MarkAsComplete() {
 
   DCHECK(AllDataSaved());
   destination_info_.end_time = base::Time::Now();
+#if BUILDFLAG(IS_ANDROID)
+  if (GetTargetFilePath().IsContentUri()) {
+    GetDownloadTaskRunner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            base::IgnoreResult(&DownloadCollectionBridge::PublishDownload),
+            GetTargetFilePath()));
+  }
+#endif
   TransitionTo(COMPLETE_INTERNAL);
   UpdateObservers();
 }
@@ -2153,8 +2171,7 @@ void DownloadItemImpl::InterruptWithPartialState(
 
     case INITIAL_INTERNAL:
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
 
     case TARGET_PENDING_INTERNAL:
     case INTERRUPTED_TARGET_PENDING_INTERNAL:
@@ -2385,8 +2402,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
   switch (state_) {
     case INITIAL_INTERNAL:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case TARGET_PENDING_INTERNAL:
     case TARGET_RESOLVED_INTERNAL:
@@ -2454,8 +2470,7 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
       break;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   DVLOG(20) << __func__ << "() from:" << DebugDownloadStateString(old_state)
@@ -2690,8 +2705,7 @@ DownloadItem::DownloadState DownloadItemImpl::InternalToExternalState(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return MAX_DOWNLOAD_STATE;
+  NOTREACHED();
 }
 
 // static
@@ -2707,9 +2721,8 @@ DownloadItemImpl::ExternalToInternalState(DownloadState external_state) {
     case INTERRUPTED:
       return INTERRUPTED_INTERNAL;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return MAX_DOWNLOAD_INTERNAL_STATE;
 }
 
 // static
@@ -2734,9 +2747,8 @@ bool DownloadItemImpl::IsValidSavePackageStateTransition(
              to == INTERRUPTED_INTERNAL;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 #else
   return true;
 #endif
@@ -2784,9 +2796,8 @@ bool DownloadItemImpl::IsValidStateTransition(DownloadInternalState from,
       return false;
 
     case MAX_DOWNLOAD_INTERNAL_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 #else
   return true;
 #endif  // DCHECK_IS_ON()
@@ -2818,8 +2829,7 @@ const char* DownloadItemImpl::DebugDownloadStateString(
     case MAX_DOWNLOAD_INTERNAL_STATE:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown download state " << state;
-  return "unknown";
+  NOTREACHED() << "Unknown download state " << state;
 }
 
 const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
@@ -2835,8 +2845,7 @@ const char* DownloadItemImpl::DebugResumeModeString(ResumeMode mode) {
     case ResumeMode::USER_RESTART:
       return "USER_RESTART";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown resume mode " << static_cast<int>(mode);
-  return "unknown";
+  NOTREACHED() << "Unknown resume mode " << static_cast<int>(mode);
 }
 
 std::pair<int64_t, int64_t> DownloadItemImpl::GetRangeRequestOffset() const {

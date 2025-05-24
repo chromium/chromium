@@ -62,7 +62,7 @@ class TestImage : public Image {
     return gfx::Size(image_->width(), image_->height());
   }
 
-  bool CurrentFrameKnownToBeOpaque() override { return false; }
+  bool IsOpaque() override { return false; }
 
   void DestroyDecodedData() override {
     // Image pure virtual stub.
@@ -144,6 +144,24 @@ TEST(DragImageTest, TrimWhitespace) {
       DragImage::Create(url, test_label, device_scale_factor);
   std::unique_ptr<DragImage> expected_image =
       DragImage::Create(url, expected_label, device_scale_factor);
+
+  EXPECT_EQ(test_image->Size().width(), expected_image->Size().width());
+}
+
+// crbug.com/393280409
+TEST(DragImageTest, CreateWithClipping) {
+  test::TaskEnvironment task_environment;
+  KURL url("http://www.example.com/");
+  String test_label = "Example Example Example";
+  float device_scale_factor = 3.0f;
+
+  KURL expected_url(u"http://ww\u2026ple.com/");
+  String expected_label = u"Example Exam\u2026";
+
+  std::unique_ptr<DragImage> test_image =
+      DragImage::Create(url, test_label, device_scale_factor);
+  std::unique_ptr<DragImage> expected_image =
+      DragImage::Create(expected_url, expected_label, device_scale_factor);
 
   EXPECT_EQ(test_image->Size().width(), expected_image->Size().width());
 }

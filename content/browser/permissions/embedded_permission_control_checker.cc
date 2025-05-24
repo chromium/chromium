@@ -4,6 +4,12 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
+#include <string>
+
+#include "base/strings/string_number_conversions.h"
+#include "content/browser/log_console_message.h"
+#include "third_party/blink/public/common/features_generated.h"
+
 using blink::mojom::EmbeddedPermissionControlClient;
 using blink::mojom::PermissionName;
 
@@ -15,9 +21,7 @@ namespace {
 // type, so as to limit the potential for abuse/misuse, for example: embedded
 // iframes can be intentionally disruptive by appending too many embedded
 // permission elements.
-// TODO(crbug.com/40275129): Add a command line switch to disable the check
-// policy and other security measures.
-constexpr static int kMaxPEPCPerPage = 2;
+constexpr static int kMaxPEPCPerPage = 3;
 
 }  // namespace
 
@@ -34,11 +38,19 @@ void EmbeddedPermissionControlChecker::CheckPageEmbeddedPermission(
       std::make_unique<Client>(this, std::move(permissions),
                                std::move(pending_client), std::move(callback));
   auto& queue = client_map_[client->permissions()];
-  if (queue.size() < kMaxPEPCPerPage) {
+  if (queue.size() < kMaxPEPCPerPage ||
+      base::FeatureList::IsEnabled(
+          blink::features::kBypassPepcSecurityForTesting)) {
     client->OnEmbeddedPermissionControlRegistered(/*allow=*/true);
   }
-
   queue.push_back(std::move(client));
+  if (queue.size() == kMaxPEPCPerPage) {
+    page().GetMainDocument().AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kWarning,
+        "Maximum limit of " + base::NumberToString(kMaxPEPCPerPage) +
+            " permission elements has been reached. More permission"
+            " elements can be added but they will not be clickable");
+  }
 }
 
 PAGE_USER_DATA_KEY_IMPL(EmbeddedPermissionControlChecker);

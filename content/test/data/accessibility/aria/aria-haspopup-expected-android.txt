@@ -1,10 +1,10 @@
 android.webkit.WebView focusable focused
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
-++android.widget.Spinner clickable focusable
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting
+++android.widget.Spinner clickable focusable interesting

@@ -28,6 +28,8 @@ class LaserPointerControllerTestApi {
   bool IsEnabled() const;
   bool IsShowingLaserPointer() const;
   bool IsFadingAway() const;
+  bool HasLaserPointerView() const;
+  views::View* GetLaserPointerView() const;
   PaletteTray* GetPaletteTrayOnDisplay(int64_t display_id) const;
   const FastInkPoints& laser_points() const;
   const FastInkPoints& predicted_laser_points() const;

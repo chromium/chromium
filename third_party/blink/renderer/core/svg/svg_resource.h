@@ -79,6 +79,8 @@ class SVGResource : public GarbageCollected<SVGResource> {
   virtual void Load(Document&, CrossOriginAttributeValue) {}
   virtual void LoadWithoutCSP(Document&) {}
 
+  virtual bool IsLoading() const { return false; }
+
   Element* Target() const { return target_.Get(); }
   // Returns the target's LayoutObject (if target exists and is attached to the
   // layout tree). Also perform cycle-checking, and may thus return nullptr if
@@ -163,6 +165,7 @@ class ExternalSVGResourceDocumentContent final
   void Trace(Visitor*) const override;
 
  private:
+  bool IsLoading() const override;
   Element* ResolveTarget();
 
   // SVGResourceDocumentObserver:
@@ -188,6 +191,7 @@ class ExternalSVGResourceImageContent final : public SVGResource,
  private:
   void Prefinalize();
 
+  bool IsLoading() const override;
   Element* ResolveTarget();
 
   // ImageResourceObserver overrides

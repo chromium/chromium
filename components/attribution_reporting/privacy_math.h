@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <compare>
-#include <map>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -21,7 +20,9 @@
 namespace attribution_reporting {
 
 class AttributionScopesData;
-class TriggerSpecs;
+class EventReportWindows;
+class MaxEventLevelReports;
+class TriggerDataSet;
 
 struct FakeEventLevelReport {
   uint32_t trigger_data;
@@ -39,7 +40,10 @@ struct FakeEventLevelReport {
 using RandomizedResponse = std::optional<std::vector<FakeEventLevelReport>>;
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-bool IsValid(const RandomizedResponse&, const TriggerSpecs&);
+bool IsValid(const RandomizedResponse&,
+             const TriggerDataSet&,
+             const EventReportWindows&,
+             MaxEventLevelReports);
 
 enum class RandomizedResponseError {
   kExceedsChannelCapacityLimit,
@@ -50,8 +54,7 @@ enum class RandomizedResponseError {
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
  public:
-  RandomizedResponseData(double rate,
-                         RandomizedResponse);
+  RandomizedResponseData(double rate, RandomizedResponse);
 
   ~RandomizedResponseData();
 
@@ -85,7 +88,9 @@ double GetRandomizedResponseRate(uint32_t num_states, double epsilon);
 // Returns the number of possible output states for the given API configuration.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<uint32_t, RandomizedResponseError> GetNumStates(
-    const TriggerSpecs& specs);
+    const TriggerDataSet&,
+    const EventReportWindows&,
+    MaxEventLevelReports);
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) PrivacyMathConfig {
   // Controls the max number bits of information that can be associated with
@@ -109,7 +114,9 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) PrivacyMathConfig {
 // Otherwise will return a vector of fake reports.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponse(const TriggerSpecs& specs,
+DoRandomizedResponse(const TriggerDataSet&,
+                     const EventReportWindows&,
+                     MaxEventLevelReports,
                      double epsilon,
                      mojom::SourceType,
                      const std::optional<AttributionScopesData>&,
@@ -154,7 +161,7 @@ base::CheckedNumeric<uint32_t> GetNumberOfStarsAndBarsSequences(
 // indexed by `sequence_index`. The indexing technique uses the k-combination
 // utility documented above.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::vector<uint32_t>, absl::monostate> GetStarIndices(
+base::expected<std::vector<uint32_t>, std::monostate> GetStarIndices(
     base::StrictNumeric<uint32_t> num_stars,
     base::StrictNumeric<uint32_t> num_bars,
     base::StrictNumeric<uint32_t> sequence_index);
@@ -194,37 +201,13 @@ double ComputeChannelCapacityScopes(
 // 2. For all other stars, count the number of bars that precede them. Each
 //    star represents a report where the reporting window and trigger data is
 //    uniquely determined by that number.
-//
-// `CHECK()`s `TriggerSpecs::SingleSharedSpec()`.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
 GetFakeReportsForSequenceIndex(
-    const TriggerSpecs&,
+    const TriggerDataSet&,
+    const EventReportWindows&,
+    MaxEventLevelReports,
     base::StrictNumeric<uint32_t> random_stars_and_bars_sequence_index);
-
-// Note: this method for sampling is not 1:1 with the above function for the
-// same sequence index, even for equivalent API configs.
-//
-// Takes a `StateMap`, to optimize with the cache from previous calls that
-// pre-compute the number of states (`GetNumStatesRecursive()`).
-using StateMap = std::map<uint32_t, uint32_t>;
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<std::vector<FakeEventLevelReport>, RandomizedResponseError>
-GetFakeReportsForSequenceIndex(const TriggerSpecs& specs,
-                               base::StrictNumeric<uint32_t> index,
-                               StateMap& map);
-
-// Exposed to speed up tests which perform randomized response many times in a
-// row.
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::expected<RandomizedResponseData, RandomizedResponseError>
-DoRandomizedResponseWithCache(
-    const TriggerSpecs& specs,
-    double epsilon,
-    StateMap& map,
-    mojom::SourceType,
-    const std::optional<AttributionScopesData>& scopes_data,
-    const PrivacyMathConfig&);
 
 }  // namespace internal
 

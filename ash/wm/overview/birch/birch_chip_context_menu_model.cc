@@ -4,12 +4,14 @@
 
 #include "ash/wm/overview/birch/birch_chip_context_menu_model.h"
 
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -78,17 +80,25 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
           CreateIconForMenuItem(kForbidIcon));
       break;
     case BirchSuggestionType::kCoral:
-      AddItemWithIcon(base::to_underlying(CommandId::kCoralNewDesk),
-                      u"New Coral Desk", CreateIconForMenuItem(kCoralOpenIcon));
-      AddItemWithIcon(base::to_underlying(CommandId::kCoralSaveForLater),
-                      u"Save Coral For Later",
-                      CreateIconForMenuItem(kSaveDeskForLaterIcon));
+      // TODO(zxdan): Localize the strings.
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kCoralNewDesk),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_OPEN_GROUP),
+          CreateIconForMenuItem(kCoralOpenIcon));
+      if (features::IsCoralFeatureEnabled() &&
+          !display::Screen::GetScreen()->InTabletMode() &&
+          !BirchBarController::Get()->is_informed_restore()) {
+        AddItemWithIcon(
+            base::to_underlying(CommandId::kCoralSaveForLater),
+            l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_SAVE_GROUP),
+            CreateIconForMenuItem(kSaveDeskForLaterIcon));
+      }
       AddSeparator(ui::NORMAL_SEPARATOR);
       add_hide_suggestion_item();
-      // TODO(yulunwu) Replace with product name.
-      AddItemWithIcon(base::to_underlying(CommandId::kHideCoralSuggestions),
-                      u"Hide all coral suggestions",
-                      CreateIconForMenuItem(kForbidIcon));
+      AddItemWithIcon(
+          base::to_underlying(CommandId::kHideCoralSuggestions),
+          l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CORAL_CHIP_MENU_HIDE_GROUP),
+          CreateIconForMenuItem(kForbidIcon));
       break;
     default:
       break;
@@ -107,11 +117,13 @@ BirchChipContextMenuModel::BirchChipContextMenuModel(
                            : IDS_ASH_BIRCH_SHOW_TEMPERATURE_IN_CELSIUS));
   }
 
-  // Add feedback menu for Coral
-  if (chip_type == BirchSuggestionType::kCoral) {
+  // Add feedback menu for Coral.
+  if (chip_type == BirchSuggestionType::kCoral &&
+      coral_util::IsCoralFeedbackAllowedByPolicy(GetPrefService())) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddItemWithIcon(base::to_underlying(CommandId::kProvideFeedback),
-                    u"Send feedback", CreateIconForMenuItem(kFeedbackIcon));
+                    l10n_util::GetStringUTF16(IDS_ASH_BIRCH_SEND_FEEDBACK),
+                    CreateIconForMenuItem(kFeedbackIcon));
   }
 }
 

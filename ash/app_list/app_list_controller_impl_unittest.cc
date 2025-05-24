@@ -10,6 +10,7 @@
 #include "ash/app_list/app_list_badge_controller.h"
 #include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/app_list/model/search/search_box_model.h"
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
@@ -23,7 +24,11 @@
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/test_capture_mode_delegate.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/test/keyboard_test_util.h"
@@ -38,6 +43,7 @@
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/public/cpp/test/test_shelf_item_delegate.h"
+#include "ash/scanner/scanner_enterprise_policy.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_view.h"
@@ -48,12 +54,15 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
+#include "base/auto_reset.h"
 #include "base/i18n/number_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "components/session_manager/session_manager_types.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
@@ -503,6 +512,91 @@ TEST_F(AppListControllerImplTest, SimulateProfileSwapNoCrashOnDestruct) {
   Shell::Get()->app_list_controller()->ClearActiveModel();
   updated_model.reset();
   // Test that there is no crash on ~AppListModel() when the test finishes.
+}
+
+// Test with Scanner feature flags enabled, as `ScannerController` is only
+// instantiated when the feature flags are enabled when `Shell` is initialised.
+class AppListControllerImplScannerEnabledTest
+    : public AppListControllerImplTest {
+ public:
+  AppListControllerImplScannerEnabledTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            features::kSunfishFeature,
+            features::kScannerUpdate,
+            features::kScannerDogfood,
+        },
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(AppListControllerImplScannerEnabledTest,
+       SunfishButtonVisibilityUpdatedOnAppListVisibilityChange) {
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  prefs->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+  auto* test_capture_mode_delegate = static_cast<TestCaptureModeDelegate*>(
+      CaptureModeController::Get()->delegate_for_testing());
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
+  SearchBoxModel* search_box_model =
+      AppListModelProvider::Get()->search_model()->search_box();
+
+  // Start with Scanner icon.
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
+  // Scanner icon -> hidden.
+  prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                    static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kHidden);
+  // Hidden -> Scanner icon.
+  prefs->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
+  // Scanner icon -> Sunfish icon (with Scanner enabled).
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(true);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
+  // Sunfish icon -> hidden.
+  prefs->SetInteger(prefs::kScannerEnterprisePolicyAllowed,
+                    static_cast<int>(ScannerEnterprisePolicy::kDisallowed));
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kHidden);
+  // Hidden -> Sunfish icon (with Scanner disabled).
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(true);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithSunfishIcon);
+  // Sunfish icon -> Scanner icon.
+  prefs->SetInteger(
+      prefs::kScannerEnterprisePolicyAllowed,
+      static_cast<int>(ScannerEnterprisePolicy::kAllowedWithModelImprovement));
+  test_capture_mode_delegate->set_is_search_allowed_by_policy(false);
+  app_list_controller->OnVisibilityChanged(/*visible=*/false, /*display_id=*/0);
+  app_list_controller->OnVisibilityChanged(/*visible=*/true, /*display_id=*/0);
+  EXPECT_EQ(search_box_model->sunfish_button_visibility(),
+            SearchBoxModel::SunfishButtonVisibility::kShownWithScannerIcon);
 }
 
 class AppListControllerImplTestWithNotificationBadging
@@ -1171,6 +1265,12 @@ class AppListControllerWithAssistantTest : public AppListControllerImplTest {
   // AppListControllerImplTest:
   void SetUp() override {
     AppListControllerImplTest::SetUp();
+
+    if (ash::assistant::features::IsNewEntryPointEnabled()) {
+      GTEST_SKIP()
+          << "Assistant is not available if new entry point is enabled. "
+             "crbug.com/388361414";
+    }
 
     assistant_test_api_->SetAssistantEnabled(true);
     assistant_test_api_->GetAssistantState()->NotifyFeatureAllowed(

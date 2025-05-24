@@ -6,19 +6,21 @@ package org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.ColorInt;
+import androidx.annotation.Px;
 
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** View logic for SharedImageTiles component. */
+@NullMarked
 public class SharedImageTilesView extends LinearLayout {
     private final Context mContext;
     private TextView mCountTileView;
@@ -42,22 +44,29 @@ public class SharedImageTilesView extends LinearLayout {
         mLastButtonTileView = findViewById(R.id.last_tile_container);
     }
 
-    void setTileBackgroundColor(@ColorInt int backgroundColor) {
-        LinearLayout container = (LinearLayout) findViewById(R.id.last_tile_container);
-        if (container != null) {
-            Drawable drawable = container.getBackground();
-            drawable.setColorFilter(backgroundColor, PorterDuff.Mode.SRC_IN);
-        }
-    }
+    void applyConfig(SharedImageTilesConfig config) {
+        Resources res = mContext.getResources();
+        Pair<Integer, Integer> borderAndTotalIconSize = config.getBorderAndTotalIconSizes(res);
+        @Px int borderSize = borderAndTotalIconSize.first;
+        @Px int iconTotalSize = borderAndTotalIconSize.second;
+        @Px int textPadding = res.getDimensionPixelSize(config.textPaddingDp);
 
-    void setColorTheme(@SharedImageTilesColor int color) {
-        // Note: This view is following the SharedImageTilesColor.DEFAULT theme by default.
-        // Resetting to default theme after setting dynamic theme is not supported.
-        if (color == SharedImageTilesColor.DYNAMIC) {
-            mCountTileView.setTextColor(
-                    SemanticColorUtils.getDefaultIconColorOnAccent1Container(mContext));
-            setTileBackgroundColor(SemanticColorUtils.getColorPrimaryContainer(mContext));
+        // Style the icon tiles.
+        for (int i = 0; i < getChildCount(); i++) {
+            ViewGroup viewGroup = (ViewGroup) getChildAt(i);
+            viewGroup.getLayoutParams().height = iconTotalSize;
+            viewGroup.setMinimumWidth(iconTotalSize);
+            GradientDrawable drawable = (GradientDrawable) viewGroup.getBackground();
+            drawable.setColor(config.backgroundColor);
+            drawable.setStroke(borderSize, config.borderColor);
         }
+
+        // Style the number tile. Note that textColor must be set after textAppearance in order to
+        // override the color of the text.
+        mCountTileView.setTextAppearance(config.textStyle);
+        mCountTileView.setTextColor(config.textColor);
+        mCountTileView.setPadding(
+                /* left= */ textPadding, /* top= */ 0, /* right= */ textPadding, /* bottom= */ 0);
     }
 
     void resetIconTiles(int count) {

@@ -1,8 +1,10 @@
-"use strict;"
+"use strict";
 
 const BASE_URL = document.baseURI.substring(0, document.baseURI.lastIndexOf('/') + 1);
 const BASE_PATH = (new URL(BASE_URL)).pathname;
-const RESOURCE_PATH = `${BASE_PATH}resources/`
+
+// Allow overriding to allow other repositories to use these utility functions.
+let RESOURCE_PATH = `${BASE_PATH}resources/`
 
 const DEFAULT_INTEREST_GROUP_NAME = 'default name';
 
@@ -286,6 +288,7 @@ function createInterestGroupForOrigin(uuid, origin,
 async function joinInterestGroupWithoutDefaults(test, interestGroup,
                                                 durationSeconds = 60) {
   await navigator.joinAdInterestGroup(interestGroup, durationSeconds);
+  await makeInterestGroupKAnonymous(interestGroup);
   test.add_cleanup(
     async () => { await navigator.leaveAdInterestGroup(interestGroup); });
 }
@@ -326,7 +329,7 @@ async function joinNegativeInterestGroup(
       `await joinInterestGroupWithoutDefaults(` +
           `test_instance, ${JSON.stringify(interestGroup)})`);
   } else {
-    await joinInterestGroupWithoutDefaults(test_instance, interestGroup);
+    await joinInterestGroupWithoutDefaults(test, interestGroup);
   }
 }
 
@@ -544,8 +547,10 @@ async function runReportTest(test, uuid, codeToInsert, expectedReportURLs,
 // - test/uuid: the test object and uuid from the test case (see generateUuid)
 // - buyers: array of strings, each a domain for a buyer participating in this
 //       auction
-// - actionNonce: string, the auction nonce for this auction, typically
+// - auctionNonce: string, the auction nonce for this auction, typically
 //       retrieved from a prior call to navigator.createAuctionNonce
+// - additionalBidsPromise: promise resolving to undefined, to be resolved when
+//       the additional bids have been retrieved with fetch().
 // - highestScoringOtherBid: the amount of the second-highest bid,
 //       or zero if there's no second-highest bid
 // - winningAdditionalBidId: the label of the winning bid
@@ -565,6 +570,25 @@ async function runAdditionalBidTest(test, uuid, buyers, auctionNonce,
   await waitForObservedRequests(
       uuid, [createHighestScoringOtherBidReportURL(uuid, highestScoringOtherBid),
              createBidderReportURL(uuid, winningAdditionalBidId)]);
+}
+
+// Similar to runAdditionalBidTest(), but expects no winner. It takes the
+// following arguments:
+// - test/uuid: the test object and uuid from the test case (see generateUuid)
+// - buyers: array of strings, each a domain for a buyer participating in this
+//       auction
+// - auctionNonce: string, the auction nonce for this auction, typically
+//       retrieved from a prior call to navigator.createAuctionNonce
+// - additionalBidsPromise: promise resolving to undefined, to be resolved when
+//       the additional bids have been retrieved with fetch().
+async function runAdditionalBidTestNoWinner(
+    test, uuid, buyers, auctionNonce, additionalBidsPromise) {
+  await runBasicFledgeTestExpectingNoWinner(test, uuid, {
+    interestGroupBuyers: buyers,
+    auctionNonce: auctionNonce,
+    additionalBids: additionalBidsPromise,
+    decisionLogicURL: createDecisionScriptURL(uuid)
+  });
 }
 
 // Runs "script" in "child_window" via an eval call. The "child_window" must
@@ -671,6 +695,16 @@ async function joinCrossOriginInterestGroup(test, uuid, origin, interestGroupOve
                    `await joinInterestGroup(test_instance, "${uuid}", ${interestGroup})`);
 }
 
+// Leaves a cross-origin interest group, by running a leave in an iframe.
+async function leaveCrossOriginInterestGroup(test, uuid, origin, interestGroupOverrides = {}) {
+  let interestGroup = JSON.stringify(
+      createInterestGroupForOrigin(uuid, origin, interestGroupOverrides));
+
+  let iframe = await createIframe(test, origin, 'join-ad-interest-group');
+  await runInFrame(test, iframe,
+                   `await leaveInterestGroup(${interestGroup})`);
+}
+
 // Joins an interest group in a top-level window, which has the same origin
 // as the joined interest group.
 async function joinInterestGroupInTopLevelWindow(
@@ -759,81 +793,200 @@ function directFromSellerSignalsValidatorCode(uuid, expectedSellerSignals,
 }
 
 let additionalBidHelper = function() {
+
   // Creates an additional bid with the given parameters. This additional bid
   // specifies a biddingLogicURL that provides an implementation of
   // reportAdditionalBidWin that triggers a sendReportTo() to the bidder report
   // URL of the winning additional bid. Additional bids are described in more
   // detail at
   // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#6-additional-bids.
-  function createAdditionalBid(uuid, auctionNonce, seller, buyer, interestGroupName, bidAmount,
-                               additionalBidOverrides = {}) {
+  // Returned bids have an additional `testMetadata` field that's modified by
+  // several of the other helper functions defined below and is consumed by
+  // `fetchAdditionalBids()`. Created additional bids must be used only once,
+  // as `fetchAdditionalBids()` consumes and discards the `testMetadata` field.
+  function createAdditionalBid(uuid, seller, buyer, interestGroupName, bidAmount) {
     return {
       interestGroup: {
         name: interestGroupName,
-        biddingLogicURL: createBiddingScriptURL(
-          {
-            origin: buyer,
-            reportAdditionalBidWin: `sendReportTo("${createBidderReportURL(uuid, interestGroupName)}");`
-          }),
+        biddingLogicURL: createBiddingScriptURL({
+          origin: buyer,
+          reportAdditionalBidWin: `sendReportTo("${
+              createBidderReportURL(uuid, interestGroupName)}");`
+        }),
         owner: buyer
       },
-      bid: {
-        ad: ['metadata'],
-        bid: bidAmount,
-        render: createRenderURL(uuid)
-      },
-      auctionNonce: auctionNonce,
+      bid: {ad: ['metadata'], bid: bidAmount, render: createRenderURL(uuid)},
       seller: seller,
-      ...additionalBidOverrides
+      testMetadata: {}
     };
   }
 
-  // Gets the testMetadata for an additional bid, initializing it if needed.
-  function getAndMaybeInitializeTestMetadata(additionalBid) {
-    if (additionalBid.testMetadata === undefined) {
-      additionalBid.testMetadata = {};
-    }
-    return additionalBid.testMetadata;
+  // Sets the auction nonce that will be included by the server on the
+  // 'Ad-Auction-Additional-Bid' response header for this bid. All valid
+  // additional bids should have an auctionNonce in the header, so this
+  // should be called by most tests.
+  function setAuctionNonceInHeader(additionalBid, auctionNonce) {
+    additionalBid.testMetadata.auctionNonce = auctionNonce;
   }
 
-  // Tells the additional bid endpoint to correctly sign the additional bid with
+  // Sets the seller nonce that will be included by the server on the
+  // 'Ad-Auction-Additional-Bid' response header for this bid.
+  function setSellerNonceInHeader(additionalBid, sellerNonce) {
+    additionalBid.testMetadata.sellerNonce = sellerNonce;
+  }
+
+  // Tells `fetchAdditionalBids` to correctly sign the additional bid with
   // the given secret keys before returning that as a signed additional bid.
+  // The signatures aren't computed yet because `additionalBid` - whose string
+  // representation is signed - may still change between when this is called
+  // and when `fetchAdditionalBids` is called.
   function signWithSecretKeys(additionalBid, secretKeys) {
-    getAndMaybeInitializeTestMetadata(additionalBid).
-        secretKeysForValidSignatures = secretKeys;
+    additionalBid.testMetadata.secretKeysForValidSignatures = secretKeys;
   }
 
-  // Tells the additional bid endpoint to incorrectly sign the additional bid with
-  // the given secret keys before returning that as a signed additional bid. This
-  // is used for testing the behavior when the auction encounters an invalid
-  // signature.
+  // Tells the additional bid endpoint to incorrectly sign the additional bid
+  // with the given secret keys before returning that as a signed additional
+  // bid. This is used for testing the behavior when the auction encounters an
+  // invalid signature. The signatures aren't computed yet because
+  // `additionalBid` - whose string representation is signed - may still change
+  // between when this is called and when `fetchAdditionalBids` is called.
   function incorrectlySignWithSecretKeys(additionalBid, secretKeys) {
-    getAndMaybeInitializeTestMetadata(additionalBid).
-        secretKeysForInvalidSignatures = secretKeys;
+    additionalBid.testMetadata.secretKeysForInvalidSignatures = secretKeys;
+  }
+
+  // Takes the auctionNonce and sellerNonce as strings, and combines them with
+  // SHA256, returning the result as a base64 string.
+  async function computeBidNonce(auctionNonce, sellerNonce) {
+    // Compute the bidNonce as hashed bytes.
+    const combined_utf8 = new TextEncoder().encode(auctionNonce + sellerNonce);
+    const hashed = await crypto.subtle.digest('SHA-256',combined_utf8);
+
+    // Convert the hashed bytes to base64.
+    return btoa(String.fromCharCode(...new Uint8Array(hashed)));
   }
 
   // Adds a single negative interest group to an additional bid, as described at:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#622-how-additional-bids-specify-their-negative-interest-groups
   function addNegativeInterestGroup(additionalBid, negativeInterestGroup) {
-    additionalBid["negativeInterestGroup"] = negativeInterestGroup;
+    additionalBid.negativeInterestGroup = negativeInterestGroup;
   }
 
   // Adds multiple negative interest groups to an additional bid, as described at:
   // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#622-how-additional-bids-specify-their-negative-interest-groups
-  function addNegativeInterestGroups(additionalBid, negativeInterestGroups,
-                                     joiningOrigin) {
-    additionalBid["negativeInterestGroups"] = {
+  function addNegativeInterestGroups(
+      additionalBid, negativeInterestGroups, joiningOrigin) {
+    additionalBid.negativeInterestGroups = {
       joiningOrigin: joiningOrigin,
       interestGroupNames: negativeInterestGroups
     };
   }
 
-  // Fetch some number of additional bid from a seller and verify that the
-  // 'Ad-Auction-Additional-Bid' header is not visible in this JavaScript context.
-  // The `additionalBids` parameter is a list of additional bids.
+  const _ed25519ModulePromise =
+      import('../third_party/noble-ed25519/noble-ed25519.js');
+
+  // Returns a signature entry for a signed additional bid.
+  //
+  // `message` is the additional bid text (or other text if generating an
+  // invalid signature) to sign.
+  //
+  // `base64EncodedSecretKey` is the base64-encoded Ed25519 key with which to
+  // sign the message. From this secret key, the public key can be deduced,
+  // which becomes part of the signature entry.
+  async function _generateSignature(message, base64EncodedSecretKey) {
+    const ed25519 = await _ed25519ModulePromise;
+    const secretKey =
+        Uint8Array.from(atob(base64EncodedSecretKey), c => c.charCodeAt(0));
+    const [publicKey, signature] = await Promise.all([
+      ed25519.getPublicKeyAsync(secretKey),
+      ed25519.signAsync(new TextEncoder().encode(message), secretKey)
+    ]);
+
+    return {
+      'key': btoa(String.fromCharCode(...publicKey)),
+      'signature': btoa(String.fromCharCode(...signature))
+    };
+  }
+
+  // Returns a signed additional bid given an additional bid and secret keys.
+  // `additionalBid` is the additional bid to sign. It must not contain a
+  // `testMetadata` - that should have been removed prior to calling this.
+  //
+  // `secretKeysForValidSignatures` is a list of strings, each a base64-encoded
+  // Ed25519 secret key with which to sign the additional bid, whereas
+  // `secretKeysForInvalidSignatures` is a list of strings, each a
+  // base64-encoded Ed25519 secret key with which to *incorrectly* sign the
+  // additional bid.
+  async function _signAdditionalBid(
+      additionalBid, secretKeysForValidSignatures,
+      secretKeysForInvalidSignatures) {
+    async function _signString(string, secretKeys) {
+      if (!secretKeys) {
+        return [];
+      }
+      return await Promise.all(secretKeys.map(
+             async secretKey => await _generateSignature(
+                  string, secretKey)));
+    }
+
+    assert_not_own_property(
+        additionalBid, 'testMetadata',
+        'testMetadata should be removed from additionalBid before signing');
+    const additionalBidString = JSON.stringify(additionalBid);
+    let [validSignatures, invalidSignatures] = await Promise.all([
+        _signString(additionalBidString, secretKeysForValidSignatures),
+
+        // For invalid signatures, we use the correct secret key to sign a
+        // different message - the additional bid prepended by 'invalid' - so
+        // that the signature is a structually valid signature with the correct
+        // (public) key, but can't be used to verify the additional bid.
+        _signString('invalid' + additionalBidString, secretKeysForInvalidSignatures)
+    ]);
+    return {
+        'bid': additionalBidString,
+        'signatures': validSignatures.concat(invalidSignatures)
+    };
+  }
+
+  // Given an additionalBid object, this returns a string to be used as the
+  // value of the `Ad-Auction-Additional-Bid` response header. To produce this
+  // header, this signs the signing the `additionalBid` with the signatures
+  // specified by prior calls to `signWithSecretKeys` and
+  // `incorrectlySignWithSecretKeys` above; base64-encodes the stringified
+  // `signedAdditionalBid`; and then prepends that with the `auctionNonce` and/or
+  // `sellerNonce` specified by prior calls to `setAuctionNonceInHeader` and
+  // `setSellerNonceInHeader` above, respectively.
+  async function _convertAdditionalBidToResponseHeader(additionalBid) {
+    const testMetadata = additionalBid.testMetadata;
+    delete additionalBid.testMetadata;
+
+    const signedAdditionalBid = await _signAdditionalBid(
+        additionalBid,
+        testMetadata.secretKeysForValidSignatures,
+        testMetadata.secretKeysForInvalidSignatures);
+
+
+    return [
+        testMetadata.auctionNonce,
+        testMetadata.sellerNonce,
+        btoa(JSON.stringify(signedAdditionalBid))
+    ].filter(k => k !== undefined).join(':');
+  }
+
+  // Fetch some number of fully prepared additional bid from a seller and verify
+  // that the `Ad-Auction-Additional-Bid` header is not visible in this
+  // JavaScript context. The `additionalBids` parameter is a list of additional
+  // bids objects created by `createAdditionalBid` and modified by other
+  // functions on this helper. Once passed to this method, additional bids may
+  // not be reused in a future call to `fetchAdditionalBids()`, since this
+  // mothod consumes and destroys their `testMetadata` field.
   async function fetchAdditionalBids(seller, additionalBids) {
+    let additionalBidHeaderValues = await Promise.all(additionalBids.map(
+        async additionalBid =>
+            await _convertAdditionalBidToResponseHeader(additionalBid)));
+
     const url = new URL(`${seller}${RESOURCE_PATH}additional-bids.py`);
-    url.searchParams.append('additionalBids', JSON.stringify(additionalBids));
+    url.searchParams.append(
+        'additionalBidHeaderValues', JSON.stringify(additionalBidHeaderValues));
     const response = await fetch(url.href, {adAuctionHeaders: true});
 
     assert_equals(response.status, 200, 'Failed to fetch additional bid: ' + await response.text());
@@ -844,8 +997,11 @@ let additionalBidHelper = function() {
 
   return {
     createAdditionalBid: createAdditionalBid,
+    setAuctionNonceInHeader: setAuctionNonceInHeader,
+    setSellerNonceInHeader: setSellerNonceInHeader,
     signWithSecretKeys: signWithSecretKeys,
     incorrectlySignWithSecretKeys: incorrectlySignWithSecretKeys,
+    computeBidNonce: computeBidNonce,
     addNegativeInterestGroup: addNegativeInterestGroup,
     addNegativeInterestGroups: addNegativeInterestGroups,
     fetchAdditionalBids: fetchAdditionalBids
@@ -884,4 +1040,108 @@ async function setCookie(test) {
   await deleteAllCookies();
   document.cookie = 'cookie=cookie; path=/'
   test.add_cleanup(deleteAllCookies);
+}
+
+async function makeInterestGroupKAnonymous(passedInterestGroup) {
+  // Make a copy so we can sanitize fields without affecting the tests.
+  let interestGroup = structuredClone(passedInterestGroup);
+  const ownerURL = new URL(interestGroup.owner);
+  interestGroup.owner = ownerURL.origin;
+  interestGroup.name = String(interestGroup.name).toWellFormed();
+  interestGroup.biddingLogicURL =
+      (new URL(interestGroup.biddingLogicURL, BASE_URL)).toString();
+
+  function b64(array) {
+    return btoa(String.fromCharCode.apply(null, array));
+  }
+  let hashes = [];
+  if (Array.isArray(interestGroup.ads)) {
+    for (const ad of interestGroup.ads) {
+      hashes.push(b64(await computeKeyHashOfAd(interestGroup, ad)));
+      hashes.push(
+          b64(await computeKeyHashOfReportingId(interestGroup, ad, null)));
+      if (Array.isArray(ad.selectableBuyerAndSellerReportingIds)) {
+        for (const id of ad.selectableBuyerAndSellerReportingIds) {
+          hashes.push(
+              b64(await computeKeyHashOfReportingId(interestGroup, ad, id)));
+        }
+      }
+    }
+  }
+  if (Array.isArray(interestGroup.adComponents)) {
+    for (const ad of interestGroup.adComponents) {
+      hashes.push(b64(await computeKeyHashOfComponentAd(interestGroup, ad)));
+    }
+  }
+  await test_driver.set_protected_audience_k_anonymity(
+      interestGroup.owner, interestGroup.name, hashes);
+}
+
+async function computeKeyHashOfAd(ig, ad) {
+  const encoder = new TextEncoder();
+  const kAnonKey = encoder.encode(
+      `AdBid\n${ig.owner}/\n${ig.biddingLogicURL}\n${ad.renderURL}`);
+  return new Uint8Array(await window.crypto.subtle.digest('SHA-256', kAnonKey));
+}
+
+async function computeKeyHashOfReportingId(ig, ad, selectedReportingId = null) {
+  const encoder = new TextEncoder();
+  let kAnonKey = null;
+  if (!selectedReportingId) {
+    if (ad.buyerAndSellerReportingId) {
+      kAnonKey = encoder.encode(
+          `BuyerAndSellerReportId\n${ig.owner}/\n${ig.biddingLogicURL}\n${
+              ad.renderURL}\n${ad.buyerAndSellerReportingId}`);
+    } else if (ad.buyerReportingId) {
+      kAnonKey = encoder.encode(`BuyerReportId\n${ig.owner}/\n${
+          ig.biddingLogicURL}\n${ad.renderURL}\n${ad.buyerReportingId}`);
+    } else {
+      kAnonKey = encoder.encode(`NameReport\n${ig.owner}/\n${
+          ig.biddingLogicURL}\n${ad.renderURL}\n${ig.name}`);
+    }
+  } else {
+    function encodeKeyPartInto(part, array) {
+      array[0] = 0x0a;
+      if (!part) {
+        for (let i = 1; i < 6; i++) {
+          array[i] = 0x00;
+        }
+        return 6;
+      }
+      const len = part.length;
+      array[1] = 0x01;
+      array[2] = (len >> 24) % 256
+      array[3] = (len >> 16) % 256
+      array[4] = (len >> 8) % 256
+      array[5] = len % 256;
+      encoder.encodeInto(part, array.subarray(6));
+      return 1 + 5 + len;
+    }
+    const baseText = `SelectedBuyerAndSellerReportId\n${ig.owner}/\n${
+        ig.biddingLogicURL}\n${ad.renderURL}`;
+    const selectedReportingIdLen =
+        1 + 5 + (selectedReportingId ? selectedReportingId.length : 0);
+    const buyerAndSellerReportingIdLen = 1 + 5 +
+        (ad.buyerAndSellerReportingId ? ad.buyerAndSellerReportingId.length : 0)
+    const buyerReportingIdLen =
+        1 + 5 + (ad.buyerReportingId ? ad.buyerReportingId.length : 0)
+    const expectedLen = baseText.length + selectedReportingIdLen +
+        buyerAndSellerReportingIdLen + buyerReportingIdLen;
+    kAnonKey = new Uint8Array(expectedLen);
+    let actualLen = 0;
+    actualLen += encoder.encodeInto(baseText, kAnonKey).written;
+    actualLen +=
+        encodeKeyPartInto(selectedReportingId, kAnonKey.subarray(actualLen));
+    actualLen += encodeKeyPartInto(
+        ad.buyerAndSellerReportingId, kAnonKey.subarray(actualLen));
+    actualLen +=
+        encodeKeyPartInto(ad.buyerReportingId, kAnonKey.subarray(actualLen));
+  }
+  return new Uint8Array(await window.crypto.subtle.digest('SHA-256', kAnonKey));
+}
+
+async function computeKeyHashOfComponentAd(ig, ad) {
+  const encoder = new TextEncoder();
+  const kAnonKey = encoder.encode(`ComponentBid\n${ad.renderURL}`);
+  return new Uint8Array(await window.crypto.subtle.digest('SHA-256', kAnonKey));
 }

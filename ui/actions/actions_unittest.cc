@@ -245,7 +245,7 @@ TEST_F(ActionIdMapTest, MapBetweenEnumAndString) {
 #include "ui/actions/action_id_macros.inc"
 
 TEST_F(ActionIdMapTest, MergeMaps) {
-  auto test_action_map = base::MakeFlatMap<ActionId, std::string>(
+  auto test_action_map = base::flat_map<ActionId, std::string>(
       std::vector<std::pair<ActionId, std::string>>{TEST_ACTION_IDS});
   ActionIdMap::AddActionIdToStringMappings(test_action_map);
 
@@ -448,22 +448,31 @@ TEST_F(ActionItemTest, TestActionItemPinnableKey) {
   manager.AddAction(std::move(builder).Build());
   auto* action_test1 = manager.FindAction(kActionTest1);
   ASSERT_TRUE(action_test1);
-  ASSERT_FALSE(action_test1->GetProperty(kActionItemPinnableKey));
+  ASSERT_EQ(action_test1->GetProperty(kActionItemPinnableKey),
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kNotPinnable));
   action_test1->SetProperty(kActionItemPinnableKey, true);
-  ASSERT_TRUE(action_test1->GetProperty(kActionItemPinnableKey));
+  ASSERT_EQ(action_test1->GetProperty(kActionItemPinnableKey),
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kPinnable));
 
   // test using builder
-  builder = ActionItem::Builder()
-                .SetText(kActionText)
-                .SetActionId(kActionTest2)
-                .SetProperty(kActionItemPinnableKey, true)
-                .SetVisible(true)
-                .SetEnabled(true);
+  builder =
+      ActionItem::Builder()
+          .SetText(kActionText)
+          .SetActionId(kActionTest2)
+          .SetProperty(kActionItemPinnableKey,
+                       std::underlying_type_t<actions::ActionPinnableState>(
+                           actions::ActionPinnableState::kPinnable))
+          .SetVisible(true)
+          .SetEnabled(true);
 
   manager.AddAction(std::move(builder).Build());
   auto* action_test2 = manager.FindAction(kActionTest2);
   ASSERT_TRUE(action_test2);
-  ASSERT_TRUE(action_test2->GetProperty(kActionItemPinnableKey));
+  ASSERT_EQ(action_test2->GetProperty(kActionItemPinnableKey),
+            std::underlying_type_t<actions::ActionPinnableState>(
+                actions::ActionPinnableState::kPinnable));
 }
 
 TEST_F(ActionItemTest, TestActionProperties) {

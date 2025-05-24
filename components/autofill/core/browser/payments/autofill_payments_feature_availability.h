@@ -9,20 +9,15 @@ namespace autofill {
 
 class AutofillClient;
 class CreditCard;
-class PaymentsDataManager;
 
 // Returns whether the `card` is shown in an Autofill suggestion dropdown with a
 // benefit label.
 bool DidDisplayBenefitForCard(const CreditCard& card,
-                              const AutofillClient& autofill_client,
-                              const PaymentsDataManager& payments_data_manager);
+                              const AutofillClient& autofill_client);
 
 // Returns whether the `card` is populated with a card art image and a card
 // product name and whether they both should be shown.
 bool ShouldShowCardMetadata(const CreditCard& card);
-
-// Returns whether the virtual card is supported.
-bool VirtualCardFeatureEnabled();
 
 // Returns whether VCN 3DS authentication is enabled and can be used as an
 // authentication option.

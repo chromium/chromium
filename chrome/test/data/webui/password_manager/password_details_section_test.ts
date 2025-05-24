@@ -502,7 +502,7 @@ suite('PasswordDetailsSectionTest', function() {
         section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntry);
-    assertTrue(isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
+    assertTrue(isVisible(passwordEntry.shadowRoot!.querySelector<HTMLElement>(
         '.move-password-container')));
   });
 
@@ -529,7 +529,7 @@ suite('PasswordDetailsSectionTest', function() {
         section.shadowRoot!.querySelector<PasswordDetailsCardElement>(
             'password-details-card');
     assertTrue(!!passwordEntry);
-    assertFalse(isVisible(passwordEntry!.shadowRoot!.querySelector<HTMLElement>(
+    assertFalse(isVisible(passwordEntry.shadowRoot!.querySelector<HTMLElement>(
         '.move-password-container')));
   });
 });

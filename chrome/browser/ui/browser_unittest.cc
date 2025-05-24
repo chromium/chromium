@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -24,7 +23,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -36,7 +35,7 @@ using content::SiteInstance;
 using content::WebContents;
 using content::WebContentsTester;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using session_manager::SessionState;
 #endif
 
@@ -264,7 +263,7 @@ TEST_F(BrowserUnitTest, CreateBrowserWithIncognitoModeEnabled) {
   EXPECT_TRUE(otr_browser);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
   // Setting up user manager state to be in kiosk mode:
   // Creating a new user manager.
@@ -295,12 +294,12 @@ TEST_F(BrowserUnitTest, CreateBrowserDuringKioskSplashScreen) {
 
 class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
  public:
-  BrowserBookmarkBarTest() {}
+  BrowserBookmarkBarTest() = default;
 
   BrowserBookmarkBarTest(const BrowserBookmarkBarTest&) = delete;
   BrowserBookmarkBarTest& operator=(const BrowserBookmarkBarTest&) = delete;
 
-  ~BrowserBookmarkBarTest() override {}
+  ~BrowserBookmarkBarTest() override = default;
 
  protected:
   BookmarkBar::State window_bookmark_bar_state() const {
@@ -322,15 +321,14 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
  private:
   class BookmarkBarStateTestBrowserWindow : public TestBrowserWindow {
    public:
-    BookmarkBarStateTestBrowserWindow()
-        : browser_(nullptr), bookmark_bar_state_(BookmarkBar::HIDDEN) {}
+    BookmarkBarStateTestBrowserWindow() : browser_(nullptr) {}
 
     BookmarkBarStateTestBrowserWindow(
         const BookmarkBarStateTestBrowserWindow&) = delete;
     BookmarkBarStateTestBrowserWindow& operator=(
         const BookmarkBarStateTestBrowserWindow&) = delete;
 
-    ~BookmarkBarStateTestBrowserWindow() override {}
+    ~BookmarkBarStateTestBrowserWindow() override = default;
 
     void set_browser(Browser* browser) { browser_ = browser; }
 
@@ -356,7 +354,7 @@ class BrowserBookmarkBarTest : public BrowserWithTestWindowTest {
     }
 
     raw_ptr<Browser, DanglingUntriaged> browser_;  // Weak ptr.
-    BookmarkBar::State bookmark_bar_state_;
+    BookmarkBar::State bookmark_bar_state_ = BookmarkBar::HIDDEN;
   };
 };
 

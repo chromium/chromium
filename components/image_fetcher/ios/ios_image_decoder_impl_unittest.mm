@@ -58,7 +58,7 @@ class IOSImageDecoderImplTest : public PlatformTest {
     ios_image_decoder_impl_ = CreateIOSImageDecoder();
   }
 
-  ~IOSImageDecoderImplTest() override {}
+  ~IOSImageDecoderImplTest() override = default;
 
   base::test::TaskEnvironment scoped_task_evironment_;
   std::unique_ptr<ImageDecoder> ios_image_decoder_impl_;

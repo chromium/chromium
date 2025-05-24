@@ -8,11 +8,13 @@ import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binds the custom view for archived tabs. */
+@NullMarked
 public class ArchivedTabsCardViewBinder {
     /**
      * Binder method for the archived tabs custom message
@@ -47,6 +49,11 @@ public class ArchivedTabsCardViewBinder {
                     v -> {
                         ((Runnable) model.get(ArchivedTabsCardViewProperties.CLICK_HANDLER)).run();
                     });
+        } else if (ArchivedTabsCardViewProperties.WIDTH == key) {
+            View card = view.findViewById(R.id.card);
+            var params = card.getLayoutParams();
+            params.width = model.get(ArchivedTabsCardViewProperties.WIDTH);
+            card.setLayoutParams(params);
         }
     }
 }

@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Progress bar animation logic that smoothly accelerates in the beginning and smoothly decelerates
  * towards the end. The model is applying a constant acceleration followed by a constant
  * deceleration.
  */
+@NullMarked
 class ProgressAnimationSmooth implements ToolbarProgressBar.AnimationLogic {
     // The (de)acceleration unit is progress per second squared where 0 <= progress <= 1.
     private static final float FINISHING_ACCELERATION = 7.0f;

@@ -104,8 +104,7 @@ ChildProcess::ChildProcess(base::ThreadType io_thread_type,
     initialized_thread_pool_ = true;
   }
 
-  tracing::InitTracingPostThreadPoolStartAndFeatureList(
-      /* enable_consumer */ false);
+  tracing::InitTracingPostFeatureList(/*enable_consumer=*/false);
 
   // Ensure the visibility tracker is created on the main thread.
   ProcessVisibilityTracker::GetInstance();
@@ -162,7 +161,7 @@ ChildProcess::~ChildProcess() {
     base::ThreadPoolInstance::Get()->Shutdown();
   }
 
-#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
+#if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO_PROFILING)
   // Flush the profiling data to disk. Doing this manually (vs relying on this
   // being done automatically when the process exits) will ensure that this data
   // doesn't get lost if the process is fast killed.

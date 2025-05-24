@@ -39,8 +39,7 @@ class Shorthand : public CSSProperty {
       const CSSParserContext&,
       const CSSParserLocalContext&,
       HeapVector<CSSPropertyValue, 64>& properties) const {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
  protected:

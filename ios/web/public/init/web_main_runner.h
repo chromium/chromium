@@ -14,11 +14,14 @@ class WebMainRunner {
  public:
   virtual ~WebMainRunner() {}
 
-  // Create a new WebMainRunner object.
+  // Creates a new WebMainRunner object.
   static WebMainRunner* Create();
 
-  // Initialize all necessary web state.
-  virtual int Initialize(WebMainParams params) = 0;
+  // Initializes the minimum infrastructure necessary at startup.
+  virtual void Initialize(WebMainParams params) = 0;
+
+  // Initialize all remaining necessary web state.
+  virtual int Startup() = 0;
 
   // Shut down the web state.
   virtual void ShutDown() = 0;

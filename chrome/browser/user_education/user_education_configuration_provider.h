@@ -11,7 +11,7 @@
 #include "components/feature_engagement/public/configuration_provider.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/feature_engagement/public/group_list.h"
-#include "components/user_education/common/feature_promo_registry.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
 
 // Provides feature engagement configuration based on IPH registered in the
 // browser.
@@ -40,7 +40,6 @@ class UserEducationConfigurationProvider
 
  private:
   user_education::FeaturePromoRegistry registry_;
-  const bool use_v2_behavior_;
 };
 
 #endif  // CHROME_BROWSER_USER_EDUCATION_USER_EDUCATION_CONFIGURATION_PROVIDER_H_

@@ -10,7 +10,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/common/content_switches.h"
@@ -21,7 +20,7 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #endif
@@ -30,12 +29,8 @@ namespace content {
 
 void WebRtcContentBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnforceWebRtcIPPermissionCheck);
-
   // Loopback interface is the non-default local address. They should only be in
-  // the candidate list if the ip handling policy is "default" AND the media
-  // permission is granted.
+  // the candidate list if the the media permission is granted.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kAllowLoopbackInPeerConnection);
 }
@@ -43,7 +38,7 @@ void WebRtcContentBrowserTestBase::SetUpCommandLine(
 void WebRtcContentBrowserTestBase::SetUp() {
   // We need pixel output when we dig pixels out of video tags for verification.
   EnablePixelOutput();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::CrasAudioClient::InitializeFake();
   ash::CrasAudioHandler::InitializeForTesting();
 #endif
@@ -54,7 +49,7 @@ void WebRtcContentBrowserTestBase::SetUp() {
 
 void WebRtcContentBrowserTestBase::TearDown() {
   ContentBrowserTest::TearDown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::CrasAudioHandler::Shutdown();
   ash::CrasAudioClient::Shutdown();
 #endif

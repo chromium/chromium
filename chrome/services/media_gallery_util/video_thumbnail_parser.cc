@@ -68,7 +68,7 @@ void OnEncodedVideoFrameExtracted(
 
   std::unique_ptr<media::MediaLog> log;
   std::unique_ptr<media::VideoDecoder> software_decoder;
-  if (media::IsBuiltInVideoCodec(config.codec())) {
+  if (media::IsDecoderBuiltInVideoCodec(config.codec())) {
     switch (config.codec()) {
       case media::VideoCodec::kH264:
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
@@ -77,7 +77,7 @@ void OnEncodedVideoFrameExtracted(
             std::make_unique<media::FFmpegVideoDecoder>(log.get());
         break;
 #else
-        // IsBuiltInVideoCodec(H264) should never return true if
+        // IsDecoderBuiltInVideoCodec(H264) should never return true if
         // ENABLE_FFMPEG_VIDEO_DECODERS is false.
         NOTREACHED();
 #endif
@@ -87,7 +87,7 @@ void OnEncodedVideoFrameExtracted(
         software_decoder = std::make_unique<media::VpxVideoDecoder>();
         break;
 #else
-        // IsBuiltInVideoCodec(VP8|VP9) should never return true if
+        // IsDecoderBuiltInVideoCodec(VP8|VP9) should never return true if
         // ENABLE_FFMPEG_VIDEO_DECODERS is false.
         NOTREACHED();
 #endif
@@ -97,7 +97,7 @@ void OnEncodedVideoFrameExtracted(
             std::make_unique<media::NullMediaLog>());
         break;
 #else
-        // IsBuiltInVideoCodec(AV1) should never return true if
+        // IsDecoderBuiltInVideoCodec(AV1) should never return true if
         // ENABLE_FFMPEG_VIDEO_DECODERS is false.
         NOTREACHED();
 #endif

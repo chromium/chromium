@@ -23,6 +23,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_id.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -41,7 +42,7 @@ class IdentityManager;
 void SimulateSuccessfulFetchOfAccountInfo(IdentityManager*,
                                           const CoreAccountId&,
                                           const std::string&,
-                                          const std::string&,
+                                          const GaiaId&,
                                           const std::string&,
                                           const std::string&,
                                           const std::string&,
@@ -59,7 +60,7 @@ class AccountTrackerService {
   typedef base::RepeatingCallback<void(const AccountInfo& info)>
       AccountInfoCallback;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Possible values for the kAccountIdMigrationState preference.
   // Keep in sync with OAuth2LoginAccountRevokedMigrationState histogram enum.
   // These values are persisted to logs. Entries should not be renumbered and
@@ -94,31 +95,30 @@ class AccountTrackerService {
   // have been fetched.
   std::vector<AccountInfo> GetAccounts() const;
   AccountInfo GetAccountInfo(const CoreAccountId& account_id) const;
-  AccountInfo FindAccountInfoByGaiaId(const std::string& gaia_id) const;
+  AccountInfo FindAccountInfoByGaiaId(const GaiaId& gaia_id) const;
   AccountInfo FindAccountInfoByEmail(const std::string& email) const;
 
   // Picks the correct account_id for the specified account depending on the
   // migration state.
-  CoreAccountId PickAccountIdForAccount(const std::string& gaia,
+  CoreAccountId PickAccountIdForAccount(const GaiaId& gaia,
                                         const std::string& email) const;
 
   // Seeds the account whose account_id is given by PickAccountIdForAccount()
   // with its corresponding gaia id and email address.  Returns the same
   // value PickAccountIdForAccount() when given the same arguments.
-  CoreAccountId SeedAccountInfo(
-      const std::string& gaia,
-      const std::string& email,
-      signin_metrics::AccessPoint access_point =
-          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  CoreAccountId SeedAccountInfo(const GaiaId& gaia,
+                                const std::string& email,
+                                signin_metrics::AccessPoint access_point =
+                                    signin_metrics::AccessPoint::kUnknown);
 
   // Seeds the account represented by |info|. If the account is already tracked
   // and compatible, the empty fields will be updated with values from |info|.
   // If after the update IsValid() is true, OnAccountUpdated will be fired.
   CoreAccountId SeedAccountInfo(AccountInfo info);
 
-  // Seeds the accounts with |core_account_infos|. The primary account id is
+  // Seeds the accounts with |accounts|. The primary account id is
   // passed to keep it from getting removed.
-  void SeedAccountsInfo(const std::vector<CoreAccountInfo>& core_account_infos,
+  void SeedAccountsInfo(const std::vector<AccountInfo>& accounts,
                         const std::optional<CoreAccountId>& primary_account_id,
                         bool should_remove_stale_accounts);
 
@@ -132,7 +132,7 @@ class AccountTrackerService {
 
   void RemoveAccount(const CoreAccountId& account_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AccountIdMigrationState GetMigrationState() const;
   void SetMigrationDone();
 #endif
@@ -176,7 +176,7 @@ class AccountTrackerService {
       signin::IdentityManager*,
       const CoreAccountId&,
       const std::string&,
-      const std::string&,
+      const GaiaId&,
       const std::string&,
       const std::string&,
       const std::string&,
@@ -216,7 +216,7 @@ class AccountTrackerService {
   // be the case when the migration state is set to MIGRATION_DONE.
   bool AreAllAccountsMigrated() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Migrate accounts to be keyed by gaia id instead of normalized email.
   // Requires that the migration state is set to MIGRATION_IN_PROGRESS.
   void MigrateToGaiaId();
@@ -232,7 +232,7 @@ class AccountTrackerService {
   // Returns the saved migration state in the preferences.
   static AccountIdMigrationState GetMigrationState(
       const PrefService* pref_service);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Update the child status on the provided account.
   // This does not notify observers, or persist updates to disk - the caller

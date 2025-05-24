@@ -34,11 +34,6 @@ class CrostiniThrottle : public KeyedService, public ash::ThrottleService {
     virtual void SetCpuRestriction(bool) = 0;
   };
 
-  // Returns singleton instance for the given BrowserContext, or nullptr if
-  // the browser |context| is not allowed to use Crostini.
-  static CrostiniThrottle* GetForBrowserContext(
-      content::BrowserContext* context);
-
   explicit CrostiniThrottle(content::BrowserContext* context);
 
   CrostiniThrottle(const CrostiniThrottle&) = delete;
@@ -52,8 +47,6 @@ class CrostiniThrottle : public KeyedService, public ash::ThrottleService {
   void set_delegate_for_testing(std::unique_ptr<Delegate> delegate) {
     delegate_ = std::move(delegate);
   }
-
-  static void EnsureFactoryBuilt();
 
  private:
   // ash::ThrottleService:

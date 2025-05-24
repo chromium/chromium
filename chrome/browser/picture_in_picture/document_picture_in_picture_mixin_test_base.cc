@@ -58,6 +58,12 @@ void DocumentPictureInPictureMixinTestBase::
   ASSERT_TRUE(GetRenderWidgetHostView()->IsShowing());
 }
 
+void DocumentPictureInPictureMixinTestBase::NavigateToUrl(
+    Browser* browser,
+    const GURL& test_page_url) const {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
+}
+
 void DocumentPictureInPictureMixinTestBase::WaitForPageLoad(
     content::WebContents* contents) {
   EXPECT_TRUE(WaitForLoadStop(contents));

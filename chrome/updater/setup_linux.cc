@@ -13,8 +13,8 @@
 
 namespace updater {
 
-void InstallCandidate(UpdaterScope scope,
-                      base::OnceCallback<void(int)> callback) {
+void InstallPlatformCandidate(UpdaterScope scope,
+                              base::OnceCallback<void(int)> callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(FROM_HERE, {base::MayBlock()},
                                                base::BindOnce(&Setup, scope),
                                                std::move(callback));

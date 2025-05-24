@@ -144,9 +144,9 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
 
   void BindAIManager(mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
- private:
   RenderProcessHost* GetProcessHost() const;
 
+ private:
   int worker_process_id_;
 
   // The service worker being hosted. Raw pointer is safe because the version

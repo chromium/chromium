@@ -1,0 +1,28 @@
+[document web]
+++[combo box] name='forbidden select' expandable expanded haspopup:menu posinset:1 setsize:2
+++++[dialog] setsize:2
+++++++[menu item] name='one' selectable selected
+++++++[menu item] name='two' selectable
+++++++[push button] name='forbidden button'
+++[section]
+=== Start Continuation ===
+[document web]
+++[combo box] name='forbidden select' expandable expanded haspopup:menu posinset:1 setsize:2
+++++[menu] setsize:2
+++++++[menu item] name='one' selectable selected posinset:1 setsize:2
+++++++[menu item] name='two' selectable posinset:2 setsize:2
+++[section]
+++++[section]
+++++++[static] name='removeForbidden'
+=== Start Continuation ===
+[document web]
+++[combo box] name='forbidden select' expandable expanded haspopup:menu posinset:1 setsize:2
+++++[dialog] setsize:2
+++++++[menu item] name='one' selectable selected
+++++++[menu item] name='two' selectable
+++++++[push button] name='forbidden button'
+++[section]
+++++[section]
+++++++[static] name='removeForbidden'
+++++[section]
+++++++[static] name='addForbidden'

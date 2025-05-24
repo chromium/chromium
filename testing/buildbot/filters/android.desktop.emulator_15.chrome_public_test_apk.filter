@@ -1,0 +1,87 @@
+# crbug.com/376095153
+-org.chromium.chrome.browser.display_cutout.DisplayCutoutTest.*
+
+# crbug.com/375710620
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigation
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testModeAfterNavigationWithPref
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testNoSpuriousResizeEventOverlaysContent
+-org.chromium.chrome.browser.VirtualKeyboardResizeTest.testResizesVisualMetaTag
+
+# crbug.com/376100658
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.testCanNotPreselectWithoutIcon
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.testCanNotPreselectWithoutNameAndIcon
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.testCanPreselect
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.testDoNotCallCanMakePayment
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.testHasSupportedPaymentMethods
+-org.chromium.chrome.browser.payments.PaymentRequestServiceWorkerPaymentAppTest.testNoSupportedPaymentMethods
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_Complete
+-org.chromium.chrome.browser.payments.PaymentRequestCanMakePaymentMetricsTest.testNoQuery_UserAbort
+
+-org.chromium.chrome.browser.payments.PaymentRequestContactDetailsTest.testPaymentRequestIncognitoMode
+-org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.testAddEmailAndPhoneAndPay
+-org.chromium.chrome.browser.payments.PaymentRequestEmailAndPhoneTest.testAddInvalidEmailAndCancel
+-org.chromium.chrome.browser.payments.PaymentRequestNameTest.testAddInvalidNameAndCancel
+-org.chromium.chrome.browser.payments.PaymentRequestNameTest.testAddNameAndPay
+
+# crbug.com/376169912
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testFakeSearchBoxWidth
+-org.chromium.chrome.browser.ntp.ShowNtpAtStartupTest.testMvtLayoutHorizontalMargin
+
+# crbug.com/376168546
+-org.chromium.chrome.browser.tabmodel.ContextMenuLoadUrlParamsTest.*
+
+# crbug.com/376367458
+-org.chromium.chrome.browser.app.ContextMenuDragTest.*
+
+# crbug.com/376375165
+-org.chromium.chrome.browser.NavigateTest.testOpenLink
+-org.chromium.chrome.browser.NavigateTest.testTabObserverOnPageLoadStarted
+-org.chromium.chrome.browser.NavigateTest.testWindowOpenUrlSpoof
+
+# crbug.com/376371633
+-org.chromium.chrome.browser.tabmodel.ChromeTabCreatorTest.testCreateNewTabInBackground
+
+# crbug.com/368117896
+-org.chromium.chrome.browser.commerce.coupons.DiscountsIntegrationTest.testRenderDiscountContextualPageActionIcon
+
+# crbug.com/376527109
+-org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinatorTest.testIphMessageResizedOnTablet
+-org.chromium.chrome.browser.tasks.tab_management.TabListContainerViewBinderTest.testSetInitialScrollIndex_Grid
+
+# crbug.com/376528174
+-org.chromium.chrome.browser.signin.FullscreenSigninAndHistorySyncIntegrationTest.testScreenRotation
+
+# crbug.com/394668480
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenu
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuBeforeFirstRun
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuForOfflinePage
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testAppMenuNoCustomEntries
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testMaxMenuItems
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_FeatureDisabled
+-org.chromium.chrome.browser.customtabs.CustomTabActivityAppMenuTest.testNoHistoryItem_NoClientPackage
+
+# crbug.com/394671175
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_PostLongPressClickNoSelectionEditor
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSelectionEditor_ShareActionAllFilterableTabs
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testDialogSetup_WithStartSurface
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSelectionEditorPosition
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testStripDialog_TabListEditorCloseAll_CustomHomepage
+-org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testStripDialog_TabListEditorCloseAll_NoCustomHomepage
+
+# crbug.com/394673741
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesImageLinkOptions
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testContextMenuRetrievesLinkOptions
+
+# crbug.com/394674606
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy
+-org.chromium.chrome.browser.bookmarks.BookmarkPersonalizedSigninPromoTest.shouldHideBookmarksSigninPromoIfDataTypesSyncing
+
+# crbug.com/394675204
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testChromePage
+-org.chromium.chrome.browser.page_info.PageInfoViewDarkModeTest.testShowOnSecureWebsiteDark
+
+# crbug.com/415101606
+-org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSavePage
+
+# crbug.com/415118264
+-org.chromium.chrome.browser.customtabs.CustomTabActivityIncognitoTest.ensureAddCustomMenuItemHasNoEffect

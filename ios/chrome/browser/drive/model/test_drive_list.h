@@ -27,7 +27,7 @@ class TestDriveList final : public DriveList {
   id<SystemIdentity> GetIdentity() const final;
   bool IsExecutingQuery() const final;
   void CancelCurrentQuery() final;
-  void ListItems(const DriveListQuery& query,
+  void ListFiles(const DriveListQuery& query,
                  DriveListCompletionCallback completion_callback) final;
 
  private:

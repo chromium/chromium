@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -63,6 +64,29 @@ TEST(StartupTabProviderTest, GetResetTriggerTabsForState_Negative) {
       StartupTabProviderImpl::GetResetTriggerTabsForState(false);
 
   ASSERT_TRUE(output.empty());
+}
+
+TEST(StartupTabProviderTest, GetResetTriggerTabsForState_WelcomeSkipped) {
+  std::vector<GURL> input = {GURL(u"chrome://welcome"),
+                             GURL(u"chrome://welcome-win10"),
+                             GURL(u"http://welcome")};
+  base::HistogramTester tester;
+
+  StartupTabs output =
+      StartupTabProviderImpl::GetInitialPrefsTabsForState(true, input);
+
+#if BUILDFLAG(IS_WIN)
+  // chrome://welcome-win10 existed only on Windows, so we check and skip it
+  // only there.
+  ASSERT_EQ(1U, output.size());
+  EXPECT_EQ(input[2], output[0].url);
+  tester.ExpectBucketCount("Startup.StartupTabs.IsWelcomePageSkipped", true, 2);
+#else
+  ASSERT_EQ(2U, output.size());
+  EXPECT_EQ(input[1], output[0].url);
+  EXPECT_EQ(input[2], output[1].url);
+  tester.ExpectBucketCount("Startup.StartupTabs.IsWelcomePageSkipped", true, 1);
+#endif
 }
 
 TEST(StartupTabProviderTest, GetPinnedTabsForState) {
@@ -241,11 +265,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   // Unsafe scheme should be filtered out.
-  // Note that chrome:// URLs are allowed on Lacros so that trustworthy calls
-  // from Ash will work (URLs from untrustworthy applications are filtered
-  // before getting to StartupTabProvider).
   {
     base::CommandLine command_line({CMD_ARG(""), CMD_ARG("chrome://flags")});
     StartupTabProviderImpl instance;
@@ -256,7 +276,6 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
     EXPECT_EQ(CommandLineTabsPresent::kNo,
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Exceptional settings page.
   {

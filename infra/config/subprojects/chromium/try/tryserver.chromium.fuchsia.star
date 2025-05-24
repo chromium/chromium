@@ -24,8 +24,12 @@ try_.defaults.set(
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
+    # crbug.com/372192123 - downloading with "minimum" strategy doesn't work
+    # well for Fuchsia builds because some packaging steps require executables.
+    siso_output_local_strategy = "greedy",
     siso_project = siso.project.DEFAULT_UNTRUSTED,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+    siso_remote_linking = True,
 )
 
 consoles.list_view(
@@ -198,15 +202,27 @@ try_.orchestrator_builder(
     experiments = {
         # go/nplus1shardsproposal
         "chromium.add_one_test_shard": 10,
-        "chromium.compilator_can_outlive_parent": 100,
         # crbug.com/940930
         "chromium.enable_cleandead": 100,
-        # b/346598710
-        "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
     tryjob = try_.job(),
     use_clang_coverage = True,
+)
+
+# TODO(fxbug.dev/370067428): Remove once Netstack2 no longer exists.
+try_.builder(
+    name = "fuchsia-netstack2-x64-cast-receiver-rel",
+    mirrors = ["ci/fuchsia-netstack2-x64-cast-receiver-rel"],
+    gn_args = "ci/fuchsia-netstack2-x64-cast-receiver-rel",
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
+)
+
+try_.builder(
+    name = "fuchsia-x64-perf-cast-receiver-rel",
+    mirrors = ["ci/fuchsia-x64-perf-cast-receiver-rel"],
+    gn_args = "ci/fuchsia-x64-perf-cast-receiver-rel",
+    contact_team_email = "chrome-fuchsia-engprod@google.com",
 )
 
 try_.compilator_builder(

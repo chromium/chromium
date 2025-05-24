@@ -27,7 +27,6 @@
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 
 namespace ash {
@@ -142,12 +141,13 @@ class AvailabilityChecker {
   }
 
   static bool CheckAvailabilityStatus(Status* status) {
-    int64_t size;
-    if (!base::GetFileSize(GetUpdateLocationFilePath(), &size)) {
+    std::optional<int64_t> size =
+        base::GetFileSize(GetUpdateLocationFilePath());
+    if (!size.has_value()) {
       // File doesn't exist or error - can't determine availability status.
       return false;
     }
-    status->update_available = size > 0;
+    status->update_available = size.value() > 0;
     base::FilePath srk_vulnerable_roca_file;
     CHECK(base::PathService::Get(
         chrome::FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
@@ -255,15 +255,12 @@ void GetAvailableUpdateModes(
   } else {
     // Consumer device or still in OOBE.
     if (!InstallAttributes::Get()->IsDeviceLocked()) {
-      // Device in OOBE. If FRE is required, enterprise enrollment might still
-      // be pending, in which case TPM firmware updates are disallowed until
-      // FRE determines that the device is not remotely managed or it does get
-      // enrolled and the admin allows TPM firmware updates.
-      const auto requirement =
-          policy::AutoEnrollmentTypeChecker::GetFRERequirementAccordingToVPD(
-              system::StatisticsProvider::GetInstance());
-      if (requirement == policy::AutoEnrollmentTypeChecker::FRERequirement::
-                             kExplicitlyRequired) {
+      // Device in OOBE. If enrollment check is required, enterprise enrollment
+      // might still be pending, in which case TPM firmware updates are
+      // disallowed until enrollment state determination determines that the
+      // device is not remotely managed or it does get enrolled and the admin
+      // allows TPM firmware updates.
+      if (policy::AutoEnrollmentTypeChecker::IsEnabled()) {
         std::move(completion).Run(std::set<Mode>());
         return;
       }

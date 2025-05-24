@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This is an interface for delaying running of callbacks. */
+@NullMarked
 public interface CallbackDelayer {
     /**
      * Run a callback after a delay specific to a particular implementation. The callback is always

@@ -6,8 +6,12 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_SENDER_H_
 
 #include "base/functional/callback_forward.h"
-#include "base/values.h"
 #include "content/browser/attribution_reporting/send_result.h"
+
+namespace base {
+class DictValue;
+class ValueView;
+}  // namespace base
 
 namespace content {
 
@@ -35,6 +39,8 @@ class AttributionReportSender {
   using AggregatableDebugReportSentCallback = base::OnceCallback<
       void(const AggregatableDebugReport&, base::ValueView, int status)>;
 
+  virtual void SetInFirstBatch(bool in_first_batch) = 0;
+
   // Sends `report` and runs `sent_callback` when done.
   virtual void SendReport(AttributionReport report,
                           bool is_debug_report,
@@ -43,7 +49,7 @@ class AttributionReportSender {
   virtual void SendReport(AttributionDebugReport, DebugReportSentCallback) = 0;
 
   virtual void SendReport(AggregatableDebugReport,
-                          base::Value::Dict report_body,
+                          base::DictValue report_body,
                           AggregatableDebugReportSentCallback) = 0;
 };
 

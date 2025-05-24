@@ -9,8 +9,8 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device_reauth.DeviceAuthSource;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -19,6 +19,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator handles the creation, update, and interaction of the device lock UI. */
+@NullMarked
 public class DeviceLockCoordinator {
     /** Delegate for device lock MVC. */
     public interface Delegate {

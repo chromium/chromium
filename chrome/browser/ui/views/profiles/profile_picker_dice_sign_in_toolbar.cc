@@ -81,8 +81,9 @@ void ProfilePickerDiceSignInToolbar::OnThemeChanged() {
 }
 
 void ProfilePickerDiceSignInToolbar::UpdateToolbarColor() {
-  if (!GetColorProvider())
+  if (!GetColorProvider()) {
     return;
+  }
 
   SkColor background_color = GetColorProvider()->GetColor(kColorToolbar);
   SetBackground(views::CreateSolidBackground(background_color));

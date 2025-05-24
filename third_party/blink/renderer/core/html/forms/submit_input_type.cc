@@ -78,10 +78,6 @@ String SubmitInputType::DefaultLabel() const {
   return GetLocale().QueryString(IDS_FORM_SUBMIT_LABEL);
 }
 
-bool SubmitInputType::IsTextButton() const {
-  return true;
-}
-
 void SubmitInputType::ValueAttributeChanged() {
   UseCounter::Count(GetElement().GetDocument(),
                     WebFeature::kInputTypeSubmitWithValue);

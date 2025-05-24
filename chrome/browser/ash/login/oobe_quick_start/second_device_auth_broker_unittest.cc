@@ -33,6 +33,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/http/http_status_code.h"
@@ -44,7 +45,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 
 namespace ash::quick_start {
@@ -343,19 +343,18 @@ class SecondDeviceAuthBrokerTest : public ::testing::Test {
             return;
           }
 
-          std::optional<base::Value> request_body =
-              base::JSONReader::Read(request.request_body->elements()
-                                         ->at(0)
-                                         .As<network::DataElementBytes>()
-                                         .AsStringPiece());
-          if (!request_body || !request_body->is_dict()) {
+          std::optional<base::Value::Dict> request_body =
+              base::JSONReader::ReadDict(request.request_body->elements()
+                                             ->at(0)
+                                             .As<network::DataElementBytes>()
+                                             .AsStringPiece());
+          if (!request_body) {
             SimulateBadRequest(kGetChallengeDataUrl);
             return;
           }
 
-          const base::Value::Dict& request_dict = request_body->GetDict();
           const std::string* target_device_type =
-              request_dict.FindString(kTargetDeviceType);
+              request_body->FindString(kTargetDeviceType);
           if (!target_device_type || *target_device_type != kChromeOS) {
             SimulateBadRequest(kGetChallengeDataUrl);
             return;
@@ -987,7 +986,7 @@ TEST_F(SecondDeviceAuthBrokerTest, FetchAuthCodeReturnsAnAuthCode) {
   AuthCodeSuccessResponse expected_response;
   expected_response.email = "fake-user@example.com";
   expected_response.auth_code = "fake-auth-code";
-  expected_response.gaia_id = "fake-gaia-id";
+  expected_response.gaia_id = GaiaId("fake-gaia-id");
   SecondDeviceAuthBroker::AuthCodeResponse response =
       FetchAuthCode(/*fido_assertion_info=*/FidoAssertionInfo{},
                     /*certificate=*/GetCertificate());
@@ -1011,19 +1010,18 @@ TEST_F(SecondDeviceAuthBrokerTest,
           return;
         }
 
-        std::optional<base::Value> request_body =
-            base::JSONReader::Read(request.request_body->elements()
-                                       ->at(0)
-                                       .As<network::DataElementBytes>()
-                                       .AsStringPiece());
-        if (!request_body || !request_body->is_dict()) {
+        std::optional<base::Value::Dict> request_body =
+            base::JSONReader::ReadDict(request.request_body->elements()
+                                           ->at(0)
+                                           .As<network::DataElementBytes>()
+                                           .AsStringPiece());
+        if (!request_body) {
           SimulateBadRequest(kStartSessionUrl);
           return;
         }
 
-        const base::Value::Dict& request_dict = request_body->GetDict();
         const base::Value::Dict* target_device_info =
-            request_dict.FindDict(kTargetDeviceInfoKey);
+            request_body->FindDict(kTargetDeviceInfoKey);
         if (!target_device_info) {
           SimulateBadRequest(kStartSessionUrl);
           return;

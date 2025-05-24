@@ -51,8 +51,9 @@ class NativeThemeFluentTest : public ::testing::Test,
   }
 
   void VerifyArrowRectIsIntRect(const gfx::RectF& arrow_rect) const {
-    if (theme_.ArrowIconsAvailable())
+    if (theme_.ArrowIconsAvailable()) {
       return;
+    }
 
     // Verify that an arrow rect with triangular arrows is an integer rect.
     EXPECT_TRUE(IsNearestRectWithinDistance(arrow_rect, 0.01f));
@@ -96,8 +97,9 @@ class NativeThemeFluentTest : public ::testing::Test,
         base::ClampFloor(kFluentScrollbarThickness * ScaleFromDIP());
 
     if (part == NativeTheme::kScrollbarUpArrow ||
-        part == NativeTheme::kScrollbarDownArrow)
+        part == NativeTheme::kScrollbarDownArrow) {
       return gfx::RectF(0, 0, track_thickness, button_length);
+    }
 
     return gfx::RectF(0, 0, button_length, track_thickness);
   }
@@ -190,12 +192,12 @@ TEST_F(NativeThemeFluentTest, GetThumbColor) {
   EXPECT_EQ(hovered_thumb_color, scrollbar_color(NativeTheme::kHovered));
   EXPECT_EQ(pressed_thumb_color, scrollbar_color(NativeTheme::kPressed));
 
-  // When there is a css color set in the extra params, the state is overridden
-  // and the scrollbars always return this color.
+  // When there is a css color set in the extra params, we modify the color
+  // when it is hovered or pressed to signal the change in state.
   extra_params.thumb_color = css_color;
   EXPECT_EQ(to_skcolor(css_color), scrollbar_color(NativeTheme::kNormal));
-  EXPECT_EQ(to_skcolor(css_color), scrollbar_color(NativeTheme::kHovered));
-  EXPECT_EQ(to_skcolor(css_color), scrollbar_color(NativeTheme::kPressed));
+  EXPECT_NE(to_skcolor(css_color), scrollbar_color(NativeTheme::kHovered));
+  EXPECT_NE(to_skcolor(css_color), scrollbar_color(NativeTheme::kPressed));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

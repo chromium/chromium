@@ -114,7 +114,7 @@ DEVICE_PERF_OUTPUT_DIR = (
 
 SCREENSHOTS_DIR = os.path.join(DIR_SOURCE_ROOT, 'out_screenshots')
 
-ANDROID_SDK_BUILD_TOOLS_VERSION = '35.0.0'
+ANDROID_SDK_BUILD_TOOLS_VERSION = '36.0.0'
 ANDROID_SDK_ROOT = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'android_sdk',
                                 'public')
 ANDROID_SDK_TOOLS = os.path.join(ANDROID_SDK_ROOT,
@@ -147,7 +147,7 @@ PYTHON_UNIT_TEST_SUITES = {
         os.path.join(DIR_SOURCE_ROOT, 'build', 'android'),
         'test_modules': [
             'devil.android.device_utils_test',
-            'devil.android.md5sum_test',
+            'devil.android.devil_util_test',
             'devil.utils.cmd_helper_test',
             'pylib.results.json_results_test',
         ]

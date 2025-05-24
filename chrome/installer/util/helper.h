@@ -46,6 +46,12 @@ base::FilePath GetChromeInstallPathWithPrefs(bool system_install,
 base::FilePath FindInstallPath(bool system_install,
                                const base::Version& version);
 
+// Returns true if the current process seems to be properly installed. "Properly
+// installed" means that there is a Chrome at the current level (per-machine or
+// per-user) and install mode registered with the updater, and the current
+// process appears to reside in that Chrome's installation directory.
+bool IsCurrentProcessInstalled();
+
 }  // namespace installer
 
 #endif  // CHROME_INSTALLER_UTIL_HELPER_H_

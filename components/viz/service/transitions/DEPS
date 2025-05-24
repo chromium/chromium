@@ -1,10 +1,10 @@
 # Please consult components/viz/README.md about allowable dependencies.
 
 include_rules = [
-  "+components/viz/service/display/shared_bitmap_manager.h",
   "+components/viz/service/frame_sinks",
   "+components/viz/service/surfaces",
   "+gpu/command_buffer/common",
+  "+gpu/command_buffer/client/test_shared_image_interface.h",
 ]
 
 specific_include_rules = {

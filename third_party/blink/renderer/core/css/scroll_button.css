@@ -1,0 +1,41 @@
+::scroll-button(*) {
+  appearance: auto;
+  -internal-align-content-block: center;
+  margin: 0__qem;
+  font: -webkit-small-control;
+  text-rendering: auto; /* FIXME: Remove when tabs work with optimizeLegibility. */
+  letter-spacing: normal;
+  word-spacing: normal;
+  line-height: normal;
+  text-transform: none;
+  text-indent: 0;
+  text-shadow: none;
+  display: inline-block;
+  text-align: center;
+  cursor: default;
+  padding-block: 1px;
+  padding-inline: 6px;
+  border: 2px outset ButtonBorder;
+  box-sizing: border-box;
+  background-color: ButtonFace;
+  color: ButtonText;
+  align-items: flex-start;
+}
+
+::scroll-button(*):disabled {
+  background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(19, 1, 1, 0.3));
+  border-color: light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  color: light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+}
+
+::scroll-button(*):active {
+  border-style: inset;
+}
+
+::scroll-button(*):active:disabled {
+  border-style: outset;
+}
+
+::scroll-button(*):focus-visible {
+  outline: auto 1px -webkit-focus-ring-color;
+}

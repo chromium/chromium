@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API hardSigmoid operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -18,8 +18,8 @@ promise_test(async t => {
   const options = {alpha: 0.5, beta: 1.0};
   const input = builder.input('input', {dataType: 'float16', shape: [1, 2, 3]});
   const output = builder.hardSigmoid(input, options);
-  assert_equals(output.dataType(), 'float16');
-  assert_array_equals(output.shape(), [1, 2, 3]);
+  assert_equals(output.dataType, 'float16');
+  assert_array_equals(output.shape, [1, 2, 3]);
 }, '[hardSigmoid] Test building with options');
 
 promise_test(async t => {

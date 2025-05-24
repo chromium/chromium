@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_check;
 import android.app.Activity;
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 
 /**
@@ -14,6 +15,7 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
  * the compromised passwords and exposes actions that will help the users to make safer their
  * credentials.
  */
+@NullMarked
 public interface PasswordCheck extends PasswordCheckComponentUi.Delegate {
     /** Observes events and state changes of the password check. */
     interface Observer {

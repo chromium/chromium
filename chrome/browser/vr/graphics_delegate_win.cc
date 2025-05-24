@@ -31,10 +31,10 @@ void GraphicsDelegateWin::Initialize(base::OnceClosure on_initialized) {
 
   context_provider_ = base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       gpu_channel_host_, content::kGpuStreamIdDefault,
-      content::kGpuStreamPriorityUI, gpu::kNullSurfaceHandle,
-      GURL(std::string("chrome://gpu/VrUiWin")), false /* automatic flushes */,
-      false /* support locking */, gpu::SharedMemoryLimits::ForMailboxContext(),
-      attributes, viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
+      content::kGpuStreamPriorityUI, GURL(std::string("chrome://gpu/VrUiWin")),
+      false /* automatic flushes */, false /* support locking */,
+      gpu::SharedMemoryLimits::ForMailboxContext(), attributes,
+      viz::command_buffer_metrics::ContextType::XR_COMPOSITING);
 
   if (context_provider_->BindToCurrentSequence() ==
       gpu::ContextResult::kSuccess) {
@@ -108,6 +108,7 @@ void GraphicsDelegateWin::PostRender() {
   // Generate a SyncToken after GPU is done accessing the texture.
   access_done_sync_token_ = gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(scoped_shared_image_access_));
+  sii_->VerifySyncToken(access_done_sync_token_);
   shared_image_texture_.reset();
   gl_->BindTexture(GL_TEXTURE_2D, 0);
   draw_frame_buffer_ = 0;
@@ -153,7 +154,6 @@ bool GraphicsDelegateWin::EnsureMemoryBuffer() {
     return false;
   }
 
-  gl_->WaitSyncTokenCHROMIUM(sii_->GenUnverifiedSyncToken().GetConstData());
   return true;
 }
 

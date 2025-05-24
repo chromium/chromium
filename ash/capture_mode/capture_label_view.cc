@@ -159,7 +159,7 @@ CaptureLabelView::CaptureLabelView(
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBase80));
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCaptureLabelRadius));
   layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
   layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
@@ -175,7 +175,7 @@ CaptureLabelView::CaptureLabelView(
   label_ = AddChildView(std::make_unique<views::Label>(std::u16string()));
   label_->SetPaintToLayer();
   label_->layer()->SetFillsBoundsOpaquely(false);
-  label_->SetEnabledColorId(kColorAshTextColorPrimary);
+  label_->SetEnabledColor(kColorAshTextColorPrimary);
   label_->SetBackgroundColor(SK_ColorTRANSPARENT);
 
   capture_mode_util::SetHighlightBorder(
@@ -265,7 +265,13 @@ void CaptureLabelView::UpdateIconAndText() {
   label_->SetVisible(label_visibility);
   if (label_visibility && (label_->GetText() != text)) {
     label_->SetText(text);
-    capture_mode_util::TriggerAccessibilityAlertSoon(base::UTF16ToUTF8(text));
+
+    // Don't trigger an accessibility alert if we are in a Sunfish session, as
+    // the sunfish label text differs from the session open alert.
+    if (!capture_mode_session_->active_behavior()
+             ->ShouldPaintSunfishCaptureRegion()) {
+      capture_mode_util::TriggerAccessibilityAlertSoon(base::UTF16ToUTF8(text));
+    }
   }
 }
 

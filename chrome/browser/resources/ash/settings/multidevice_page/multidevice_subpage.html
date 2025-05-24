@@ -78,24 +78,11 @@
             MultiDeviceFeature.PHONE_HUB_TASK_CONTINUATION,
             pageContentData)]]"
         restamp>
-      <template is="dom-if"
-          if="[[isSyncedSessionSharingEnabled_(pageContentData)]]"
-          restamp>
-        <settings-multidevice-task-continuation-item-lacros
-            id="phoneHubTaskContinuationItemLacros"
-            page-content-data="[[pageContentData]]"
-            deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
-        </settings-multidevice-task-continuation-item-lacros>
-      </template>
-      <template is="dom-if"
-          if="[[!isSyncedSessionSharingEnabled_(pageContentData)]]"
-          restamp>
-        <settings-multidevice-task-continuation-item
-            id="phoneHubTaskContinuationItem"
-            page-content-data="[[pageContentData]]"
-            deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
-        </settings-multidevice-task-continuation-item>
-      </template>
+      <settings-multidevice-task-continuation-item
+          id="phoneHubTaskContinuationItem"
+          page-content-data="[[pageContentData]]"
+          deep-link-focus-id$="[[Setting.kPhoneHubTaskContinuationOnOff]]">
+      </settings-multidevice-task-continuation-item>
     </template>
     <template is="dom-if"
         if="[[shouldShowPhoneHubCameraRollItem_(pageContentData)]]"
@@ -180,25 +167,4 @@
       </settings-multidevice-wifi-sync-item>
     </template>
   </div>
-</template>
-<template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-  <div class="settings-box two-line">
-    <div id="forgetDeviceLabel" class="start" aria-hidden="true">
-      $i18n{multideviceForgetDevice}
-      <div id="forgetDeviceSummary" class="secondary" aria-hidden="true">
-        $i18n{multideviceForgetDeviceSummary}
-      </div>
-    </div>
-    <cr-button on-click="handleForgetDeviceClick_"
-        aria-labelledby="forgetDeviceLabel"
-        aria-describedby="forgetDeviceSummary"
-        deep-link-focus-id$="[[Setting.kForgetPhone]]">
-      $i18n{multideviceForgetDeviceDisconnect}
-    </cr-button>
-  </div>
-  <template is="dom-if" if="[[shouldShowForgetDeviceDialog_]]" restamp>
-    <settings-multidevice-forget-device-dialog
-      on-close="onCloseForgetDeviceDialog_">
-    </settings-multidevice-forget-device-dialog>
-  </template>
 </template>

@@ -158,8 +158,8 @@ bool RoundedDisplayProvider::UpdateRoundedDisplaySurface() {
   host_window_->SetBounds(screen_util::SnapBoundsToDisplayEdge(
       gfx::Rect(display.bounds().size()), GetRootWindow(display_id_)));
 
-  gfx::Rect content_rect(host_window_->bounds());
-  gfx::Rect damage_rect;
+  const gfx::Rect content_rect(host_window_->bounds());
+  const gfx::Rect damage_rect(content_rect);
 
   // Submit a compositor frame to update the surface. Textures will be reused,
   // unless we decide to create new gutters, otherwise the positions of the

@@ -18,7 +18,7 @@ InterpolationValue CSSAngleInterpolationType::MaybeConvertNeutral(
 
 InterpolationValue CSSAngleInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState*,
+    const StyleResolverState&,
     ConversionCheckers&) const {
   auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
   if (!primitive_value || !primitive_value->IsAngle()) {
@@ -41,6 +41,19 @@ const CSSValue* CSSAngleInterpolationType::CreateCSSValue(
   return CSSNumericLiteralValue::Create(
       To<InterpolableNumber>(value).Value(state.CssToLengthConversionData()),
       CSSPrimitiveValue::UnitType::kDegrees);
+}
+
+InterpolationValue
+CSSAngleInterpolationType::MaybeConvertCustomPropertyUnderlyingValue(
+    const CSSValue& value) const {
+  if (const auto* numeric_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+    if (numeric_value->IsAngle()) {
+      return InterpolationValue(MakeGarbageCollected<InterpolableNumber>(
+          numeric_value->ComputeDegrees(),
+          CSSPrimitiveValue::UnitType::kDegrees));
+    }
+  }
+  return nullptr;
 }
 
 }  // namespace blink

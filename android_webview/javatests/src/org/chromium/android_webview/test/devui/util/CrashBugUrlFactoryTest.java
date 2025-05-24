@@ -78,6 +78,7 @@ public class CrashBugUrlFactoryTest {
                 hasData(
                         hasParamWithValue(
                                 "template", BugTrackerConstants.DEFAULT_WEBVIEW_TEMPLATE)));
+        assertThat(intent, hasData(hasParamWithValue("title", "User reported crash")));
         assertThat(intent, hasData(hasParamWithValue("priority", "P3")));
         assertThat(intent, hasData(hasParamWithValue("type", "BUG")));
         assertThat(

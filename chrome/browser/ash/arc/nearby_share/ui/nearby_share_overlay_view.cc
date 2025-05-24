@@ -55,7 +55,7 @@ NearbyShareOverlayView::NearbyShareOverlayView(views::View* child_view)
         views::kFlexBehaviorKey,
         views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero));
 
-    AddChildView(child_view);
+    AddChildViewRaw(child_view);
   }
 }
 

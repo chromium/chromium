@@ -86,6 +86,7 @@ goog.ui.ToolbarColorMenuButtonRenderer.prototype.setValue = function(
  * @param {goog.ui.Control} button goog.ui.ColorMenuButton whose DOM is to be
  *     initialized as it enters the document.
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.ui.ToolbarColorMenuButtonRenderer.prototype.initializeDom = function(
     button) {

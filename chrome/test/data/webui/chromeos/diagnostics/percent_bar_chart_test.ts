@@ -5,7 +5,7 @@
 import 'chrome://diagnostics/percent_bar_chart.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
+import type {PercentBarChartElement} from 'chrome://diagnostics/percent_bar_chart.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import type {PaperProgressElement} from 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
@@ -43,8 +43,10 @@ suite('percentBarChartTestSuite', function() {
     const max = 30;
     return initializePercentBarChart(header, value, max).then(() => {
       assert(percentBarChartElement);
-      const paperProgress = percentBarChartElement.shadowRoot!.querySelector(
-                                'paper-progress') as PaperProgressElement;
+      const paperProgress =
+          percentBarChartElement.shadowRoot!
+              .querySelector<PaperProgressElement>('paper-progress');
+      assert(paperProgress);
       assertEquals(value, paperProgress.value);
       assertEquals(max, paperProgress.max);
       const chartName = strictQuery(
@@ -59,8 +61,10 @@ suite('percentBarChartTestSuite', function() {
     const max = 100;
     return initializePercentBarChart(header, value, max).then(() => {
       assert(percentBarChartElement);
-      const paperProgress = percentBarChartElement.shadowRoot!.querySelector(
-                                'paper-progress') as PaperProgressElement;
+      const paperProgress =
+          percentBarChartElement.shadowRoot!
+              .querySelector<PaperProgressElement>('paper-progress');
+      assert(paperProgress);
       assertEquals(paperProgress.value, paperProgress.max);
     });
   });

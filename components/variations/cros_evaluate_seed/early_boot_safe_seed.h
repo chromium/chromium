@@ -7,6 +7,7 @@
 
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/featured/featured.pb.h"
+#include "components/variations/seed_reader_writer.h"
 #include "components/variations/variations_safe_seed_store.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
@@ -38,16 +39,12 @@ class EarlyBootSafeSeed : public VariationsSafeSeedStore {
   void SetFetchTime(const base::Time& fetch_time) override;
 
   int GetMilestone() const override;
-  void SetMilestone(int milestone) override;
 
   base::Time GetTimeForStudyDateChecks() const override;
   void SetTimeForStudyDateChecks(const base::Time& safe_seed_time) override;
 
-  std::string GetCompressedSeed() const override;
-  void SetCompressedSeed(const std::string& safe_compressed) override;
-
-  std::string GetSignature() const override;
-  void SetSignature(const std::string& safe_seed_signature) override;
+  StoredSeed GetCompressedSeed() const override;
+  void SetCompressedSeed(ValidatedSeedInfo seed_info) override;
 
   std::string GetLocale() const override;
   void SetLocale(const std::string& locale) override;
@@ -59,6 +56,10 @@ class EarlyBootSafeSeed : public VariationsSafeSeedStore {
   std::string GetSessionConsistencyCountry() const override;
   void SetSessionConsistencyCountry(
       const std::string& session_consistency_country) override;
+
+  SeedReaderWriter* GetSeedReaderWriterForTesting() override;
+  void SetSeedReaderWriterForTesting(
+      std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;
 
   void ClearState() override;
 

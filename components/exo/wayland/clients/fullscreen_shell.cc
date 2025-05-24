@@ -34,9 +34,9 @@ void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
 ////////////////////////////////////////////////////////////////////////////////
 // FullscreenClient, public:
 
-FullscreenClient::FullscreenClient() {}
+FullscreenClient::FullscreenClient() = default;
 
-FullscreenClient::~FullscreenClient() {}
+FullscreenClient::~FullscreenClient() = default;
 
 bool FullscreenClient::Run(const InitParams& params) {
   wl_callback_listener frame_listener = {FrameCallback};
@@ -168,8 +168,7 @@ void FullscreenClient::HandleMode(void* data,
       surface_size_.SetSize(height, width);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   std::unique_ptr<wl_region> opaque_region(static_cast<wl_region*>(

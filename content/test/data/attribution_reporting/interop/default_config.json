@@ -108,6 +108,9 @@
   // reports per source.
   "max_aggregatable_debug_reports_per_source": "5",
 
+  // Positive integer that controls the max number of aggregatable reports per source.
+  "max_aggregatable_reports_per_source": "20",
+
   // Non-empty list that controls which origins are allowed as aggregation
   // coordinators. The first value is used as the default if a trigger omits
   // the corresponding field.

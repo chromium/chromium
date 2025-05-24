@@ -94,6 +94,12 @@ EncoderStatus SetUpVpxConfig(const VideoEncoder::Options& opts,
     config->rc_min_quantizer = 12;
   }
   config->rc_resize_allowed = 0;
+  config->rc_undershoot_pct = 50;
+  config->rc_overshoot_pct = 50;
+  config->rc_buf_initial_sz = 600;
+  config->rc_buf_optimal_sz = 600;
+  config->rc_buf_sz = 1000;
+
   // Only if latency_mode is real time, a frame might be dropped.
   config->rc_dropframe_thresh =
       opts.latency_mode == VideoEncoder::LatencyMode::Realtime
@@ -536,6 +542,7 @@ void VpxVideoEncoder::Initialize(VideoCodecProfile profile,
     }
   }
   vpx_codec_control(codec.get(), VP8E_SET_STATIC_THRESHOLD, static_thresh);
+  vpx_codec_control(codec.get(), VP8E_SET_MAX_INTRA_BITRATE_PCT, 600);
 
   options_ = options;
   originally_configured_size_ = options.frame_size;

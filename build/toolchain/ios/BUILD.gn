@@ -76,10 +76,29 @@ ios_toolchain("ios_clang_arm64") {
   }
 }
 
+ios_toolchain("ios_clang_arm64e") {
+  toolchain_args = {
+    current_cpu = "arm64e"
+
+    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
+    use_lld = false
+  }
+}
+
 ios_toolchain("ios_clang_arm64_16_0") {
   toolchain_args = {
     current_cpu = "arm64"
     ios_deployment_target = "16.0"
+  }
+}
+
+ios_toolchain("ios_clang_arm64e_16_0") {
+  toolchain_args = {
+    current_cpu = "arm64e"
+    ios_deployment_target = "16.0"
+
+    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
+    use_lld = false
   }
 }
 
@@ -102,10 +121,29 @@ ios_app_ext_toolchain("ios_clang_arm64_app_ext") {
   }
 }
 
+ios_app_ext_toolchain("ios_clang_arm64e_app_ext") {
+  toolchain_args = {
+    current_cpu = "arm64e"
+
+    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
+    use_lld = false
+  }
+}
+
 ios_blink_app_ext_toolchain("ios_clang_arm64_blink_app_ext") {
   toolchain_args = {
     current_cpu = "arm64"
     use_blink = true
+  }
+}
+
+ios_blink_app_ext_toolchain("ios_clang_arm64e_blink_app_ext") {
+  toolchain_args = {
+    current_cpu = "arm64e"
+    use_blink = true
+
+    # TODO(crbug.com/408032145): Add ptrauth support to lld, remove this.
+    use_lld = false
   }
 }
 

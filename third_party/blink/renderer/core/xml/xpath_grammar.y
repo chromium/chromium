@@ -98,13 +98,13 @@ using blink::xpath::Step;
 %type <blink::Persistent<blink::xpath::Step>> DescendantOrSelf
 %type <blink::Persistent<blink::xpath::Step::NodeTest>> NodeTest
 %type <blink::Persistent<blink::xpath::Expression>> Predicate
-%type <blink::Persistent<blink::HeapVector<blink::Member<blink::xpath::Predicate>>>> OptionalPredicateList
-%type <blink::Persistent<blink::HeapVector<blink::Member<blink::xpath::Predicate>>>> PredicateList
+%type <blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>> OptionalPredicateList
+%type <blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>> PredicateList
 %type <blink::Persistent<blink::xpath::Step>> AbbreviatedStep
 %type <blink::Persistent<blink::xpath::Expression>> Expr
 %type <blink::Persistent<blink::xpath::Expression>> PrimaryExpr
 %type <blink::Persistent<blink::xpath::Expression>> FunctionCall
-%type <blink::Persistent<blink::HeapVector<blink::Member<blink::xpath::Expression>>>> ArgumentList
+%type <blink::Persistent<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>>> ArgumentList
 %type <blink::Persistent<blink::xpath::Expression>> Argument
 %type <blink::Persistent<blink::xpath::Expression>> UnionExpr
 %type <blink::Persistent<blink::xpath::Expression>> PathExpr
@@ -288,7 +288,7 @@ OptionalPredicateList:
 PredicateList:
     Predicate
     {
-      $$ = blink::MakeGarbageCollected<blink::HeapVector<blink::Member<blink::xpath::Predicate>>>();
+      $$ = blink::MakeGarbageCollected<blink::GCedHeapVector<blink::Member<blink::xpath::Predicate>>>();
       $$->push_back(blink::MakeGarbageCollected<blink::xpath::Predicate>($1));
     }
     |
@@ -359,7 +359,7 @@ FunctionCall:
     |
     kFunctionName '(' ArgumentList ')'
     {
-      $$ = blink::xpath::CreateFunction($1, *$3);
+      $$ = blink::xpath::CreateFunction($1, $3.Get());
       if (!$$)
         YYABORT;
     }
@@ -368,7 +368,7 @@ FunctionCall:
 ArgumentList:
     Argument
     {
-      $$ = blink::MakeGarbageCollected<blink::HeapVector<blink::Member<blink::xpath::Expression>>>();
+      $$ = blink::MakeGarbageCollected<blink::GCedHeapVector<blink::Member<blink::xpath::Expression>>>();
       $$->push_back($1);
     }
     |

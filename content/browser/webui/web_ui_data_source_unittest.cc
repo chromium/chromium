@@ -2,15 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/webui/web_ui_data_source_impl.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/test/test_content_client.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+#include "base/command_line.h"
+#include "content/public/common/content_switches.h"
+#include "ui/base/webui/resource_path.h"
+#endif
 
 namespace content {
 namespace {
@@ -81,14 +90,18 @@ class WebUIDataSourceTest : public testing::Test {
   std::string request_path_;
   TestClient client_;
 
- private:
-  void SetUp() override {
-    SetContentClient(&client_);
-    WebUIDataSourceImpl* source = new WebUIDataSourceImpl("host");
+  void CreateDataSource(std::string source_name) {
+    WebUIDataSourceImpl* source = new WebUIDataSourceImpl(source_name);
     source->disable_load_time_data_defaults_for_testing();
     source_ = base::WrapRefCounted(source);
   }
 
+  void SetUp() override {
+    SetContentClient(&client_);
+    CreateDataSource("host");
+  }
+
+ private:
   BrowserTaskEnvironment task_environment_;
   scoped_refptr<WebUIDataSourceImpl> source_;
 };
@@ -448,5 +461,57 @@ TEST_F(WebUIDataSourceTest, SetCrossOriginPolicyValues) {
   source()->OverrideCrossOriginResourcePolicy("same-origin");
   EXPECT_EQ("same-origin", url_data_source->GetCrossOriginResourcePolicy());
 }
+
+TEST_F(WebUIDataSourceTest, GetOrigin) {
+  CreateDataSource("host");
+  EXPECT_EQ(source()->GetOrigin(), url::Origin::Create(GURL("chrome://host")));
+  CreateDataSource("chrome-untrusted://host/");
+  EXPECT_EQ(source()->GetOrigin(),
+            url::Origin::Create(GURL("chrome-untrusted://host")));
+}
+
+#if BUILDFLAG(LOAD_WEBUI_FROM_DISK)
+// LoadWebUIFromDiskTest does not run on any bots, only meant to run locally,
+// since it tests a feature only used during local development and guarded by a
+// build flag.
+class LoadWebUIFromDiskTest : public WebUIDataSourceTest {
+ protected:
+  void SetUp() override {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kLoadWebUIfromDisk);
+    WebUIDataSourceTest::SetUp();
+  }
+};
+
+void LoadFromDiskCallback(scoped_refptr<base::RefCountedMemory> data) {
+  std::string result(base::as_string_view(*data));
+  EXPECT_TRUE(base::Contains(result, "hello plain!"));
+}
+
+TEST_F(LoadWebUIFromDiskTest, FilepathInfoExists) {
+  // The path must be relative to DIR_EXE.
+  base::FilePath path =
+      base::FilePath::FromUTF8Unsafe("../../content/test/data/plain.txt");
+  const webui::ResourcePath kResources[1] = {
+      {
+          "bar.js",
+          kDummyJSResourceId,
+          path.value().c_str(),
+      },
+  };
+
+  source()->AddResourcePaths(kResources);
+  StartDataRequest("bar.js", base::BindOnce(&LoadFromDiskCallback));
+}
+
+TEST_F(LoadWebUIFromDiskTest, FilepathInfoNotExists) {
+  const webui::ResourcePath kResources[1] = {
+      {"bar.js", kDummyJSResourceId},
+  };
+
+  source()->AddResourcePaths(kResources);
+  StartDataRequest("bar.js", base::BindOnce(&NamedResourceBarJSCallback));
+}
+#endif  // BUILDFLAG(LOAD_WEBUI_FROM_DISK)
 
 }  // namespace content

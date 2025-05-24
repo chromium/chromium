@@ -12,12 +12,9 @@
 namespace {
 // Minimum amount of time for a normal/incognito transition to be considered.
 constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
-}
+}  // namespace
 
-@interface IncognitoUsageAppStateAgent () <AppStateObserver, SceneStateObserver>
-
-// Observed app state.
-@property(nonatomic, weak) AppState* appState;
+@interface IncognitoUsageAppStateAgent ()
 
 @property(nonatomic, assign) BOOL incognitoContentVisible;
 
@@ -27,7 +24,6 @@ constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
 @end
 
 @implementation IncognitoUsageAppStateAgent
-
 - (instancetype)init {
   self = [super init];
   if (self) {
@@ -111,32 +107,11 @@ constexpr base::TimeDelta kMinimumDelay = base::Seconds(10);
   }
 }
 
-#pragma mark - AppStateAgent
-
-- (void)setAppState:(AppState*)appState {
-  // This should only be called once!
-  DCHECK(!_appState);
-
-  _appState = appState;
-  [appState addObserver:self];
-
-  for (SceneState* scene in appState.connectedScenes) {
-    [scene addObserver:self];
-  }
-  [self updateIncognitoContentVisible];
-}
-
-#pragma mark - AppStateObserver
-
-- (void)appState:(AppState*)appState sceneConnected:(SceneState*)sceneState {
-  [sceneState addObserver:self];
-  [self updateIncognitoContentVisible];
-}
-
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  [super sceneState:sceneState transitionedToActivationLevel:level];
   if (sceneState.incognitoContentVisible) {
     [self updateIncognitoContentVisible];
   }

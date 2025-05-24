@@ -120,7 +120,10 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
   gpu::webgpu::WebGPUInterface* WebGPUInterface() override {
     return webgpu_interface_.get();
   }
-  gpu::ContextSupport* ContextSupport() override { return nullptr; }
+  gpu::ContextSupport* ContextSupport() override {
+    return raster_context_provider_ ? raster_context_provider_->ContextSupport()
+                                    : nullptr;
+  }
 
   bool BindToCurrentSequence() override { return false; }
   void SetLostContextCallback(base::RepeatingClosure) override {}
@@ -134,9 +137,6 @@ class FakeWebGraphicsContext3DProvider : public WebGraphicsContext3DProvider {
                ? raster_context_provider_->SharedImageInterface()
                : test_shared_image_interface_.get();
   }
-  void CopyVideoFrame(media::PaintCanvasVideoRenderer* video_render,
-                      media::VideoFrame* video_frame,
-                      cc::PaintCanvas* canvas) override {}
   viz::RasterContextProvider* RasterContextProvider() const override {
     return raster_context_provider_;
   }

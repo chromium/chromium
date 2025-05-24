@@ -34,7 +34,7 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
   AndroidLiveTabContext(const AndroidLiveTabContext&) = delete;
   AndroidLiveTabContext& operator=(const AndroidLiveTabContext&) = delete;
 
-  ~AndroidLiveTabContext() override {}
+  ~AndroidLiveTabContext() override = default;
 
   // Overridden from LiveTabContext:
   void ShowBrowserWindow() override;
@@ -66,6 +66,7 @@ class AndroidLiveTabContext : public sessions::LiveTabContext {
       const sessions::tab_restore::Tab& tab,
       int tab_index,
       bool select,
+      bool is_restoring_group_or_window,
       sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab&) override;

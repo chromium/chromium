@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import SPARKLE_SHADER_SOURCE from './sparkle_shader.js';
-import {Vec4} from './utils.js';
+import type {Vec4} from './utils.js';
 
 const VERTEX_SHADER_SOURCE = `#version 100
 precision highp float;

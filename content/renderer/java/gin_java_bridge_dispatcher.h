@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/containers/id_map.h"
 #include "base/memory/ref_counted.h"
@@ -19,10 +20,19 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/scheme_host_port_matcher.h"
 
 namespace content {
 
 class GinJavaBridgeObject;
+
+struct NamedObject {
+  using ObjectMap = base::IDMap<GinJavaBridgeObject*>;
+  using ObjectID = ObjectMap::KeyType;
+
+  ObjectID object_id;
+  net::SchemeHostPortMatcher matcher;
+};
 
 // This class handles injecting Java objects into the main frame of a
 // RenderView. The 'add' and 'remove' messages received from the browser
@@ -53,7 +63,9 @@ class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
   GinJavaBridgeObject* GetObject(ObjectID object_id);
   void OnGinJavaBridgeObjectDeleted(GinJavaBridgeObject* object);
 
-  void AddNamedObject(const std::string& name, ObjectID object_id) override;
+  void AddNamedObject(const std::string& name,
+                      ObjectID object_id,
+                      const std::string& matcher) override;
   void RemoveNamedObject(const std::string& name) override;
   void SetHost(mojo::PendingRemote<mojom::GinJavaBridgeHost> host) override;
 
@@ -63,7 +75,7 @@ class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
   // RenderFrameObserver implementation.
   void OnDestruct() override;
 
-  typedef std::map<std::string, ObjectID> NamedObjectMap;
+  typedef std::map<std::string, NamedObject> NamedObjectMap;
   NamedObjectMap named_objects_;
   ObjectMap objects_;
   bool inside_did_clear_window_object_ = false;

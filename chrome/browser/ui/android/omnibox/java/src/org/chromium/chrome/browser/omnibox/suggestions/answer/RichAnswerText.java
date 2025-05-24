@@ -9,10 +9,10 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.MetricAffectingSpan;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.ColorType;
 import org.chromium.components.omnibox.AnswerDataProto.FormattedString.FormattedStringFragment;
@@ -23,10 +23,8 @@ import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 
 import java.util.List;
 
-/**
- * {@link AnswerText} implementation based on RichAnswerTemplate as the source of answer lines (as
- * opposed to SuggestionAnswer, implemented by {@link AnswerTextNewLayout}).
- */
+/** {@link AnswerText} implementation based on RichAnswerTemplate as the source of answer lines. */
+@NullMarked
 class RichAnswerText implements AnswerText {
 
     /** Content of the line of text in omnibox suggestion. */
@@ -38,7 +36,7 @@ class RichAnswerText implements AnswerText {
     private String mAccessibilityDescription;
     private int mMaxLines = 1;
     private final AnswerType mAnswerType;
-    private boolean mUseRichAnswerCard;
+    private final boolean mUseRichAnswerCard;
 
     @Override
     public SpannableStringBuilder getText() {
@@ -57,8 +55,8 @@ class RichAnswerText implements AnswerText {
 
     /** Construct an array of two AnswerText instances for the given RichAnswerTemplate. */
     static AnswerText[] from(
-            @NonNull Context context,
-            @NonNull RichAnswerTemplate richAnswerTemplate,
+            Context context,
+            RichAnswerTemplate richAnswerTemplate,
             AnswerType answerType,
             boolean reverseStockTextColor,
             boolean useRichAnswerCard) {

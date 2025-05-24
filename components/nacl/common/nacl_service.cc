@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "content/public/common/content_switches.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -29,7 +30,12 @@ mojo::IncomingInvitation GetMojoInvitation() {
   endpoint = mojo::PlatformChannelEndpoint(mojo::PlatformHandle(base::ScopedFD(
       base::GlobalDescriptors::GetInstance()->Get(kMojoIPCChannel))));
   DCHECK(endpoint.is_valid());
-  return mojo::IncomingInvitation::Accept(std::move(endpoint));
+  MojoAcceptInvitationFlags flags = MOJO_ACCEPT_INVITATION_FLAG_NONE;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableMojoBroker)) {
+    flags |= MOJO_ACCEPT_INVITATION_FLAG_INHERIT_BROKER;
+  }
+  return mojo::IncomingInvitation::Accept(std::move(endpoint), flags);
 }
 
 }  // namespace

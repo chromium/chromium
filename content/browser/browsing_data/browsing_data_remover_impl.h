@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <set>
 
@@ -144,7 +145,9 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kSharedStorage = 15,
     kPreflightCache = 16,
     kSharedDictionary = 17,
-    kMaxValue = kSharedDictionary,
+    kPrefetchCache = 18,
+    kPrerenderCache = 19,
+    kMaxValue = kPrerenderCache,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:BrowsingDataRemoverTasks)
 

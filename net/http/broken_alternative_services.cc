@@ -99,7 +99,7 @@ void BrokenAlternativeServices::Clear() {
 void BrokenAlternativeServices::MarkBrokenUntilDefaultNetworkChanges(
     const BrokenAlternativeService& broken_alternative_service) {
   DCHECK(!broken_alternative_service.alternative_service.host.empty());
-  DCHECK_NE(kProtoUnknown,
+  DCHECK_NE(NextProto::kProtoUnknown,
             broken_alternative_service.alternative_service.protocol);
 
   // The brokenness will expire on the default network change or based on
@@ -122,7 +122,7 @@ void BrokenAlternativeServices::MarkBrokenImpl(
     const BrokenAlternativeService& broken_alternative_service) {
   // Empty host means use host of origin, callers are supposed to substitute.
   DCHECK(!broken_alternative_service.alternative_service.host.empty());
-  DCHECK_NE(kProtoUnknown,
+  DCHECK_NE(NextProto::kProtoUnknown,
             broken_alternative_service.alternative_service.protocol);
 
   auto it =
@@ -154,7 +154,7 @@ void BrokenAlternativeServices::MarkBrokenImpl(
 
 void BrokenAlternativeServices::MarkRecentlyBroken(
     const BrokenAlternativeService& broken_alternative_service) {
-  DCHECK_NE(kProtoUnknown,
+  DCHECK_NE(NextProto::kProtoUnknown,
             broken_alternative_service.alternative_service.protocol);
   if (recently_broken_alternative_services_.Get(broken_alternative_service) ==
       recently_broken_alternative_services_.end()) {
@@ -198,7 +198,7 @@ bool BrokenAlternativeServices::WasRecentlyBroken(
 
 void BrokenAlternativeServices::Confirm(
     const BrokenAlternativeService& broken_alternative_service) {
-  DCHECK_NE(kProtoUnknown,
+  DCHECK_NE(NextProto::kProtoUnknown,
             broken_alternative_service.alternative_service.protocol);
 
   // Remove |broken_alternative_service| from

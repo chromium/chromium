@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace ash {
@@ -19,7 +20,7 @@ AppListMenuModelAdapter::AppListMenuModelAdapter(
     const std::string& app_id,
     std::unique_ptr<ui::SimpleMenuModel> menu_model,
     views::Widget* widget_owner,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     const AppLaunchedMetricParams& metric_params,
     AppListViewAppType type,
     base::OnceClosure on_menu_closed_callback,
@@ -50,7 +51,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
         UMA_HISTOGRAM_ENUMERATION(
             "Apps.ContextMenuShowSourceV2.ProductivityLauncherRecentApp."
             "TabletMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+            source_type());
         UMA_HISTOGRAM_TIMES(
             "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherRecentApp."
             "TabletMode",
@@ -59,7 +60,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
         UMA_HISTOGRAM_ENUMERATION(
             "Apps.ContextMenuShowSourceV2.ProductivityLauncherRecentApp."
             "ClamshellMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+            source_type());
         UMA_HISTOGRAM_TIMES(
             "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherRecentApp."
             "ClamshellMode",
@@ -71,7 +72,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
         UMA_HISTOGRAM_ENUMERATION(
             "Apps.ContextMenuShowSourceV2.ProductivityLauncherAppGrid."
             "TabletMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+            source_type());
         UMA_HISTOGRAM_TIMES(
             "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherAppGrid."
             "TabletMode",
@@ -80,7 +81,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
         UMA_HISTOGRAM_ENUMERATION(
             "Apps.ContextMenuShowSourceV2.ProductivityLauncherAppGrid."
             "ClamshellMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+            source_type());
         UMA_HISTOGRAM_TIMES(
             "Apps.ContextMenuUserJourneyTimeV2.ProductivityLauncherAppGrid."
             "ClamshellMode",
@@ -92,7 +93,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
         base::UmaHistogramEnumeration(
             "Apps.ContextMenuShowSourceV2.AppsCollections."
             "TabletMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+            source_type());
         base::UmaHistogramTimes(
             "Apps.ContextMenuUserJourneyTimeV2.AppsCollections."
             "TabletMode",
@@ -101,7 +102,7 @@ void AppListMenuModelAdapter::RecordHistogramOnMenuClosed() {
         base::UmaHistogramEnumeration(
             "Apps.ContextMenuShowSourceV2.AppsCollections."
             "ClamshellMode",
-            source_type(), ui::MenuSourceType::MENU_SOURCE_TYPE_LAST);
+            source_type());
         base::UmaHistogramTimes(
             "Apps.ContextMenuUserJourneyTimeV2.AppsCollections."
             "ClamshellMode",

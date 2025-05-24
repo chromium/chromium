@@ -21,12 +21,13 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace drive {
 
 const char FakeDriveFsHelper::kPredefinedProfileSalt[] = "salt";
 const char FakeDriveFsHelper::kDefaultUserEmail[] = "testuser@gmail.com";
-const char FakeDriveFsHelper::kDefaultGaiaId[] = "123456";
+const GaiaId::Literal FakeDriveFsHelper::kDefaultGaiaId("123456");
 
 FakeDriveFsHelper::FakeDriveFsHelper(Profile* profile,
                                      const base::FilePath& mount_path)
@@ -53,8 +54,9 @@ FakeDriveFsHelper::CreateFakeDriveFsListenerFactory() {
 }
 
 bool SetUpUserDataDirectoryForDriveFsTest() {
-  AccountId account_id = AccountId::FromUserEmailGaiaId(
-      FakeDriveFsHelper::kDefaultUserEmail, FakeDriveFsHelper::kDefaultGaiaId);
+  AccountId account_id =
+      AccountId::FromUserEmailGaiaId(FakeDriveFsHelper::kDefaultUserEmail,
+                                     GaiaId(FakeDriveFsHelper::kDefaultGaiaId));
   return SetUpUserDataDirectoryForDriveFsTest(account_id);
 }
 
@@ -66,7 +68,7 @@ bool SetUpUserDataDirectoryForDriveFsTest(const AccountId& account_id) {
   user_dict.Set("account_type",
                 AccountId::AccountTypeToString(account_id.GetAccountType()));
   user_dict.Set("email", account_id.GetUserEmail());
-  user_dict.Set("gaia_id", account_id.GetGaiaId());
+  user_dict.Set("gaia_id", account_id.GetGaiaId().ToString());
   known_users_list.Append(std::move(user_dict));
 
   base::Value::Dict local_state;

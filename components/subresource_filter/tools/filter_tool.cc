@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -45,32 +46,45 @@ GURL ParseRequestUrl(std::string_view arg) {
 url_pattern_index::proto::ElementType ParseType(std::string_view type) {
   // If the user provided a resource type, use it. Else if it's the empty string
   // it will default to ELEMENT_TYPE_OTHER.
-  if (type == "other")
+  if (type == "other") {
     return url_pattern_index::proto::ELEMENT_TYPE_OTHER;
-  if (type == "script")
+  }
+  if (type == "script") {
     return url_pattern_index::proto::ELEMENT_TYPE_SCRIPT;
-  if (type == "image")
+  }
+  if (type == "image") {
     return url_pattern_index::proto::ELEMENT_TYPE_IMAGE;
-  if (type == "stylesheet")
+  }
+  if (type == "stylesheet") {
     return url_pattern_index::proto::ELEMENT_TYPE_STYLESHEET;
-  if (type == "object")
+  }
+  if (type == "object") {
     return url_pattern_index::proto::ELEMENT_TYPE_OBJECT;
-  if (type == "xmlhttprequest")
+  }
+  if (type == "xmlhttprequest") {
     return url_pattern_index::proto::ELEMENT_TYPE_XMLHTTPREQUEST;
-  if (type == "object_subrequest")
+  }
+  if (type == "object_subrequest") {
     return url_pattern_index::proto::ELEMENT_TYPE_OBJECT_SUBREQUEST;
-  if (type == "subdocument")
+  }
+  if (type == "subdocument") {
     return url_pattern_index::proto::ELEMENT_TYPE_SUBDOCUMENT;
-  if (type == "ping")
+  }
+  if (type == "ping") {
     return url_pattern_index::proto::ELEMENT_TYPE_PING;
-  if (type == "media")
+  }
+  if (type == "media") {
     return url_pattern_index::proto::ELEMENT_TYPE_MEDIA;
-  if (type == "font")
+  }
+  if (type == "font") {
     return url_pattern_index::proto::ELEMENT_TYPE_FONT;
-  if (type == "popup")
+  }
+  if (type == "popup") {
     return url_pattern_index::proto::ELEMENT_TYPE_POPUP;
-  if (type == "websocket")
+  }
+  if (type == "websocket") {
     return url_pattern_index::proto::ELEMENT_TYPE_WEBSOCKET;
+  }
 
   return url_pattern_index::proto::ELEMENT_TYPE_OTHER;
 }
@@ -82,8 +96,8 @@ const url_pattern_index::flat::UrlRule* FindMatchingUrlRule(
     url_pattern_index::proto::ElementType type) {
   subresource_filter::mojom::ActivationState state;
   state.activation_level = subresource_filter::mojom::ActivationLevel::kEnabled;
-  subresource_filter::DocumentSubresourceFilter filter(document_origin, state,
-                                                       ruleset);
+  subresource_filter::DocumentSubresourceFilter filter(
+      document_origin, state, ruleset, kSafeBrowsingRulesetConfig.uma_tag);
 
   return filter.FindMatchingUrlRule(request_url, type);
 }
@@ -160,8 +174,9 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
 
   std::string line;
   while (std::getline(*request_stream, line)) {
-    if (line.empty())
+    if (line.empty()) {
       continue;
+    }
 
     std::optional<base::Value> dictionary = base::JSONReader::Read(line);
     CHECK(dictionary);
@@ -177,21 +192,25 @@ void FilterTool::MatchBatchImpl(std::istream* request_stream,
     bool blocked;
     const url_pattern_index::flat::UrlRule* rule =
         MatchImpl(origin, request_url, request_type, &blocked);
-    if (rule)
+    if (rule) {
       matched_rules[rule] += 1;
+    }
 
-    if (print_each_request)
+    if (print_each_request) {
       PrintResult(blocked, rule, origin, request_url, request_type);
+    }
   }
 
-  if (print_each_request)
+  if (print_each_request) {
     return;
+  }
 
   // Sort the rules in descending order by match count.
   std::vector<std::pair<std::string, int>> vector_rules;
   for (auto rule_and_count : matched_rules) {
-    if (rule_and_count.second < min_match_count)
+    if (rule_and_count.second < min_match_count) {
       continue;
+    }
 
     vector_rules.push_back(std::make_pair(
         url_pattern_index::FlatUrlRuleToFilterlistString(rule_and_count.first)

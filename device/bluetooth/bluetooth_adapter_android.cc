@@ -10,16 +10,20 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
+#include "device/base/features.h"
 #include "device/bluetooth/android/wrappers.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
+#include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_device_android.h"
 #include "device/bluetooth/bluetooth_discovery_session_outcome.h"
+#include "device/bluetooth/bluetooth_socket_thread.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothAdapter_jni.h"
@@ -51,7 +55,8 @@ namespace device {
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
   return BluetoothAdapterAndroid::Create(
-      BluetoothAdapterWrapper_CreateWithDefaultAdapter());
+      BluetoothAdapterWrapper_CreateWithDefaultAdapter(
+          base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)));
 }
 
 // static
@@ -65,6 +70,7 @@ scoped_refptr<BluetoothAdapterAndroid> BluetoothAdapterAndroid::Create(
       bluetooth_adapter_wrapper));
 
   adapter->ui_task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
+  adapter->socket_thread_ = BluetoothSocketThread::Get();
 
   return adapter;
 }
@@ -98,6 +104,13 @@ bool BluetoothAdapterAndroid::IsPresent() const {
                                                j_adapter_);
 }
 
+BluetoothAdapter::PermissionStatus
+BluetoothAdapterAndroid::GetOsPermissionStatus() const {
+  return static_cast<BluetoothAdapter::PermissionStatus>(
+      Java_ChromeBluetoothAdapter_getOsPermissionStatus(AttachCurrentThread(),
+                                                        j_adapter_));
+}
+
 bool BluetoothAdapterAndroid::IsPowered() const {
   return Java_ChromeBluetoothAdapter_isPowered(AttachCurrentThread(),
                                                j_adapter_);
@@ -117,6 +130,20 @@ void BluetoothAdapterAndroid::SetDiscoverable(bool discoverable,
 bool BluetoothAdapterAndroid::IsDiscovering() const {
   return Java_ChromeBluetoothAdapter_isDiscovering(AttachCurrentThread(),
                                                    j_adapter_);
+}
+
+BluetoothAdapter::ConstDeviceList BluetoothAdapterAndroid::GetDevices() const {
+  PopulatePairedDevices();
+  return BluetoothAdapter::GetDevices();
+}
+
+void BluetoothAdapterAndroid::PopulatePairedDevices() const {
+  if (!base::FeatureList::IsEnabled(features::kBluetoothRfcommAndroid)) {
+    return;
+  }
+
+  Java_ChromeBluetoothAdapter_populatePairedDevices(AttachCurrentThread(),
+                                                    j_adapter_);
 }
 
 BluetoothAdapter::UUIDList BluetoothAdapterAndroid::GetUUIDs() const {
@@ -161,6 +188,21 @@ void BluetoothAdapterAndroid::OnAdapterStateChanged(
     const bool powered) {
   RunPendingPowerCallbacks();
   NotifyAdapterPoweredChanged(powered);
+  if (!powered) {
+    UpdateDeviceConnectStatesOnAdapterOff();
+  }
+}
+
+void BluetoothAdapterAndroid::UpdateDeviceConnectStatesOnAdapterOff() {
+  for (auto& device : devices_) {
+    BluetoothDeviceAndroid* device_android =
+        static_cast<BluetoothDeviceAndroid*>(device.second.get());
+    if (device_android->is_acl_connected()) {
+      device_android->UpdateAclConnectState(BLUETOOTH_TRANSPORT_DUAL,
+                                            /*connected=*/false);
+      NotifyDeviceChanged(device_android);
+    }
+  }
 }
 
 void BluetoothAdapterAndroid::OnScanFailed(
@@ -189,15 +231,12 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
   auto iter = devices_.find(device_address);
 
   bool is_new_device = false;
-  std::unique_ptr<BluetoothDeviceAndroid> device_android_owner;
   BluetoothDeviceAndroid* device_android;
 
   if (iter == devices_.end()) {
     // New device.
     is_new_device = true;
-    device_android_owner =
-        BluetoothDeviceAndroid::Create(this, bluetooth_device_wrapper);
-    device_android = device_android_owner.get();
+    device_android = CreateDevice(device_address, bluetooth_device_wrapper);
   } else {
     // Existing device.
     device_android = static_cast<BluetoothDeviceAndroid*>(iter->second.get());
@@ -270,13 +309,127 @@ void BluetoothAdapterAndroid::CreateOrUpdateDeviceOnScan(
   }
 
   if (is_new_device) {
-    devices_[device_address] = std::move(device_android_owner);
     for (auto& observer : observers_)
       observer.DeviceAdded(this, device_android);
   } else {
     for (auto& observer : observers_)
       observer.DeviceChanged(this, device_android);
   }
+}
+
+void BluetoothAdapterAndroid::PopulateOrUpdatePairedDevice(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& caller,
+    const base::android::JavaParamRef<jstring>& address,
+    const base::android::JavaParamRef<jobject>&
+        bluetooth_device_wrapper,  // Java Type: bluetoothDeviceWrapper
+    bool from_broadcast_receiver) {
+  std::string device_address = ConvertJavaStringToUTF8(env, address);
+  auto iter = devices_.find(device_address);
+
+  bool is_new_device = iter == devices_.end();
+  if (!is_new_device) {
+    // If an event doesn't come from the broadcast receiver, then we're
+    // pushing already paired devices in GetDevices() from Java code to native
+    // code. There is no need to notify observers because the device paired
+    // state doesn't change.
+    if (from_broadcast_receiver) {
+      NotifyDeviceChanged(iter->second.get());
+    }
+    return;
+  }
+
+  BluetoothDeviceAndroid* device =
+      CreateDevice(device_address, bluetooth_device_wrapper);
+
+  // We don't notify observers for populated paired devices unless it's from
+  // bonded state broadcast receiver. See crbug.com/387371131 for more details.
+  if (!from_broadcast_receiver) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.DeviceAdded(this, device);
+  }
+}
+
+void BluetoothAdapterAndroid::OnDeviceUnpaired(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& caller,
+    const base::android::JavaParamRef<jstring>& address) {
+  std::string device_address = ConvertJavaStringToUTF8(env, address);
+  auto iter = devices_.find(device_address);
+  if (iter == devices_.end()) {
+    return;
+  }
+
+  base::TimeDelta duration_before_expiry = iter->second->GetLastUpdateTime() +
+                                           BluetoothAdapter::timeoutSec -
+                                           base::Time::NowFromSystemTime();
+  if (duration_before_expiry.is_negative() ||
+      duration_before_expiry.is_zero()) {
+    RemoveTimedOutDevices();
+    return;
+  }
+
+  ui_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BluetoothAdapterAndroid::RemoveTimedOutDevices,
+                     weak_ptr_factory_.GetWeakPtr()),
+      duration_before_expiry);
+}
+
+void BluetoothAdapterAndroid::UpdateDeviceAclConnectState(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& caller,
+    const base::android::JavaParamRef<jstring>& address,
+    const base::android::JavaParamRef<jobject>&
+        bluetooth_device_wrapper,  // Java Type: BluetoothDeviceWrapper
+    uint8_t transport,
+    bool connected) {
+  std::string device_address = ConvertJavaStringToUTF8(env, address);
+
+  auto iter = devices_.find(device_address);
+  bool is_new_device = iter == devices_.end();
+  if (is_new_device && !connected) {
+    return;
+  }
+
+  BluetoothDeviceAndroid* device;
+  if (is_new_device) {
+    device = CreateDevice(device_address, bluetooth_device_wrapper);
+  } else {
+    device = static_cast<BluetoothDeviceAndroid*>(iter->second.get());
+  }
+
+  bool was_connected = device->IsConnected();
+  device->UpdateAclConnectState(transport, connected);
+
+  if (is_new_device) {
+    for (auto& observer : observers_) {
+      observer.DeviceAdded(this, device);
+    }
+    return;
+  }
+
+  // Not a new device.
+  bool is_connected = device->IsConnected();
+  if (was_connected != is_connected) {
+    NotifyDeviceChanged(device);
+  }
+}
+
+BluetoothDeviceAndroid* BluetoothAdapterAndroid::CreateDevice(
+    const std::string& device_address,
+    const base::android::JavaParamRef<jobject>&
+        bluetooth_device_wrapper) {  // Java Type: BluetoothDeviceWrapper
+  BluetoothDeviceAndroid* device;
+  std::unique_ptr<BluetoothDeviceAndroid> device_owner =
+      BluetoothDeviceAndroid::Create(this, bluetooth_device_wrapper,
+                                     ui_task_runner_, socket_thread_);
+  device = device_owner.get();
+  devices_[device_address] = std::move(device_owner);
+  return device;
 }
 
 BluetoothAdapterAndroid::BluetoothAdapterAndroid() {}
@@ -373,6 +526,7 @@ void BluetoothAdapterAndroid::StartScanWithFilter(
   // This function should only be called if this is the first discovery session.
   // Otherwise we should have called updateFilter.
   DCHECK_EQ(NumDiscoverySessions(), 1);
+
   bool session_added = false;
   if (IsPowered()) {
     auto android_scan_filter = CreateAndroidFilter(discovery_filter.get());

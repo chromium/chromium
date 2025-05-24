@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -135,6 +134,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
     builder.SetContainerType(container_type);
     ContainerElement().SetComputedStyle(builder.TakeStyle());
     return evaluator->SnapContainerChanged(snapped);
+  }
+
+  Change StyleContainerChanged(ContainerQueryEvaluator* evaluator) {
+    return evaluator->StyleContainerChanged();
   }
 
   bool EvalAndAdd(ContainerQueryEvaluator* evaluator,
@@ -331,7 +334,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
 
   // Calling StyleContainerChanged without changing the style should not produce
   // a change.
-  EXPECT_EQ(Change::kNone, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNone, StyleContainerChanged(evaluator));
   EXPECT_EQ(3u, GetResults(evaluator).size());
 
   const bool inherited = true;
@@ -344,7 +347,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
-  EXPECT_EQ(Change::kNone, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNone, StyleContainerChanged(evaluator));
   EXPECT_EQ(3u, GetResults(evaluator).size());
 
   // Set --foo: bar. Should trigger change.
@@ -354,7 +357,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
-  EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNearestContainer, StyleContainerChanged(evaluator));
   EXPECT_EQ(0u, GetResults(evaluator).size());
 
   // Set --bar: foo. Should trigger change because size part also matches.
@@ -365,7 +368,7 @@ TEST_F(ContainerQueryEvaluatorTest, StyleContainerChanged) {
                           inherited);
   style = builder.TakeStyle();
   container_element.SetComputedStyle(style);
-  EXPECT_EQ(Change::kNearestContainer, evaluator->StyleContainerChanged());
+  EXPECT_EQ(Change::kNearestContainer, StyleContainerChanged(evaluator));
   EXPECT_EQ(0u, GetResults(evaluator).size());
 }
 

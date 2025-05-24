@@ -20,26 +20,33 @@ const char kImpressionFeatureEngagementMigrationCompletedKey[] =
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 std::optional<Promo> PromoForName(std::string_view promo) {
-  if (promo == "promos_manager::Promo::Test")
+  if (promo == "promos_manager::Promo::Test") {
     return promos_manager::Promo::Test;
+  }
 
-  if (promo == "promos_manager::Promo::DefaultBrowser")
+  if (promo == "promos_manager::Promo::DefaultBrowser") {
     return promos_manager::Promo::DefaultBrowser;
+  }
 
-  if (promo == "promos_manager::Promo::AppStoreRating")
+  if (promo == "promos_manager::Promo::AppStoreRating") {
     return promos_manager::Promo::AppStoreRating;
+  }
 
-  if (promo == "promos_manager::Promo::CredentialProviderExtension")
+  if (promo == "promos_manager::Promo::CredentialProviderExtension") {
     return promos_manager::Promo::CredentialProviderExtension;
+  }
 
-  if (promo == "promos_manager::Promo::PostRestoreSignInFullscreen")
+  if (promo == "promos_manager::Promo::PostRestoreSignInFullscreen") {
     return promos_manager::Promo::PostRestoreSignInFullscreen;
+  }
 
-  if (promo == "promos_manager::Promo::PostRestoreSignInAlert")
+  if (promo == "promos_manager::Promo::PostRestoreSignInAlert") {
     return promos_manager::Promo::PostRestoreSignInAlert;
+  }
 
-  if (promo == "promos_manager::Promo::WhatsNew")
+  if (promo == "promos_manager::Promo::WhatsNew") {
     return promos_manager::Promo::WhatsNew;
+  }
 
   if (promo == "promos_manager::Promo::PostRestoreDefaultBrowserAlert") {
     return promos_manager::Promo::PostRestoreDefaultBrowserAlert;
@@ -71,6 +78,18 @@ std::optional<Promo> PromoForName(std::string_view promo) {
 
   if (promo == "promos_manager::Promo::PostDefaultAbandonment") {
     return promos_manager::Promo::PostDefaultAbandonment;
+  }
+
+  if (promo == "promos_manager::Promo::SigninFullscreen") {
+    return promos_manager::Promo::SigninFullscreen;
+  }
+
+  if (promo == "promos_manager::Promo::WelcomeBack") {
+    return promos_manager::Promo::WelcomeBack;
+  }
+
+  if (promo == "promos_manager::Promo::GLICPromo") {
+    return promos_manager::Promo::GLICPromo;
   }
 
   return std::nullopt;
@@ -112,6 +131,12 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "StaySafeDefaultBrowser";
     case promos_manager::Promo::PostDefaultAbandonment:
       return "PostDefaultAbandonment";
+    case promos_manager::Promo::SigninFullscreen:
+      return "SigninFullscreen";
+    case promos_manager::Promo::WelcomeBack:
+      return "WelcomeBack";
+    case promos_manager::Promo::GLICPromo:
+      return "GLICPromo";
   }
 }
 

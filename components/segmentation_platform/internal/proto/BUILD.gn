@@ -13,5 +13,5 @@ proto_library("proto") {
     "signal_storage_config.proto",
   ]
 
-  link_deps = [ "//components/segmentation_platform/public/proto" ]
+  deps = [ "//components/segmentation_platform/public/proto" ]
 }

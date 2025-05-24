@@ -208,9 +208,7 @@ base::WeakPtr<BluetoothAdapterCast> BluetoothAdapterCast::GetCastWeakPtr() {
 }
 
 bool BluetoothAdapterCast::SetPoweredImpl(bool powered) {
-  NOTREACHED_IN_MIGRATION()
-      << "This method is not invoked when SetPowered() is overridden.";
-  return true;
+  NOTREACHED() << "This method is not invoked when SetPowered() is overridden.";
 }
 
 void BluetoothAdapterCast::StartScanWithFilter(

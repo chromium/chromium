@@ -9,6 +9,8 @@
 
 #include "chrome/browser/download/download_browsertest_utils.h"
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
@@ -289,12 +291,16 @@ bool DownloadTestBase::CheckDownloadFullPaths(
     return false;
   }
 
-  int64_t origin_file_size = 0;
-  EXPECT_TRUE(base::GetFileSize(origin_file, &origin_file_size));
+  std::optional<int64_t> origin_file_size = base::GetFileSize(origin_file);
+  if (!origin_file_size.has_value()) {
+    ADD_FAILURE() << "origin_file_size does not have a value";
+    return false;
+  }
+
   std::string original_file_contents;
   EXPECT_TRUE(base::ReadFileToString(origin_file, &original_file_contents));
-  EXPECT_TRUE(
-      VerifyFile(downloaded_file, original_file_contents, origin_file_size));
+  EXPECT_TRUE(VerifyFile(downloaded_file, original_file_contents,
+                         origin_file_size.value()));
 
   // Delete the downloaded copy of the file.
   bool downloaded_file_deleted = base::DieFileDie(downloaded_file, false);
@@ -442,6 +448,10 @@ void DownloadTestBase::EnableFileChooser(bool enable) {
 
 bool DownloadTestBase::DidShowFileChooser() {
   return file_activity_observer_->TestAndResetDidShowFileChooser();
+}
+
+void DownloadTestBase::SetAllowOpenDownload(bool allow) {
+  file_activity_observer_->SetAllowOpenDownload(allow);
 }
 
 bool DownloadTestBase::VerifyFile(const base::FilePath& path,

@@ -22,7 +22,7 @@ SchedulerStub::SchedulerStub()
                          net::NetworkChangeNotifier::CONNECTION_2G),
       trigger_conditions_(false, 0, false) {}
 
-SchedulerStub::~SchedulerStub() {}
+SchedulerStub::~SchedulerStub() = default;
 
 void SchedulerStub::Schedule(const TriggerConditions& trigger_conditions) {
   schedule_called_ = true;

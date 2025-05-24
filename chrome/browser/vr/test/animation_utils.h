@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_VR_TEST_ANIMATION_UTILS_H_
 #define CHROME_BROWSER_VR_TEST_ANIMATION_UTILS_H_
 
-#include "chrome/browser/vr/target_property.h"
+#include <vector>
 
-#include "ui/gfx/animation/keyframe/test/animation_utils.h"
+#include "chrome/browser/vr/target_property.h"
 
 namespace vr {
 

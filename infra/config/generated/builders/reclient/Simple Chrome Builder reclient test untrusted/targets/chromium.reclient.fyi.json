@@ -1,0 +1,7 @@
+{
+  "Simple Chrome Builder reclient test untrusted": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  }
+}

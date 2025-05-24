@@ -40,7 +40,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   ~OverlayProcessorWin() override;
 
   bool IsOverlaySupported() const override;
-  gfx::Rect GetPreviousFrameOverlaysBoundingRect() const override;
   gfx::Rect GetAndResetOverlayDamage() override;
 
   // Returns true if the platform supports hw overlays and surface occluding
@@ -70,9 +69,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   void SetFrameHasDelegatedInk() override;
 
-  bool frame_has_delegated_ink_for_testing() const {
+  bool frame_has_forced_dcomp_surface_for_testing() const {
     CHECK_IS_TEST();
-    return frame_has_delegated_ink_;
+    return frame_has_forced_dcomp_surface_;
   }
 
   // Sets whether or not |render_pass_id| will be marked for a DComp surface
@@ -159,7 +158,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   };
 
   // Attempt to promote all the quads in |root_render_pass|. Promoted quads will
-  // be placed in |out_candidates| in front-to-back order. Returns true if all
+  // be placed in |out_candidates| in back-to-front order. Returns true if all
   // quads were successfully promoted.
   base::expected<DelegatedCompositingResult, DelegationStatus>
   TryDelegatedCompositing(
@@ -179,13 +178,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
   // TODO(crbug.com/324460866): Used for partially delegated compositing.
   static DCLayerOverlayProcessor::RenderPassOverlayDataMap
   UpdatePromotedRenderPassPropertiesAndGetSurfaceContentPasses(
-      bool is_full_delegated_compositing,
       const AggregatedRenderPassList& render_passes,
       const PromotedRenderPassesInfo& promoted_render_passes_info);
 
   // Insert overlay candidates from |surface_content_render_passes| into
   // |candidates|, assigning correct plane z-order in the process. |candidates|
-  // is assumed to be in front-to-back. The resulting candidates list is not
+  // is assumed to be in back-to-front. The resulting candidates list is not
   // sorted. Returns the union rect of overlays in
   // |surface_content_render_passes|.
   // TODO(crbug.com/324460866): Used for partially delegated compositing.
@@ -211,9 +209,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorWin
 
   bool delegation_succeeded_last_frame_ = false;
 
-  // If true, causes the use of DComp surfaces as the backing image of a render
-  // pass, given that UseDCompSurfacesForDelegatedInk is also enabled.
-  bool frame_has_delegated_ink_ = false;
+  // If true, causes the use of DComp surfaces as the backing image of all
+  // render passes for the frame.
+  bool frame_has_forced_dcomp_surface_ = false;
 
   // Returned and reset by |GetAndResetOverlayDamage| to fully damage the root
   // render pass when we drop out of delegated compositing. This is essentially

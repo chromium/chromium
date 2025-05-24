@@ -10,9 +10,10 @@ td {
 tr {
     break-inside: avoid;
 }
+.td { color: blue; }
 </style>
 <p>crbug.com/99124: Table rows shouldn't straddle page boundaries.</p>
-<div style="-webkit-columns:3; line-height: 20px; column-fill: auto; height:190px; background-color: yellow;">
+<div style="columns:3; line-height: 20px; column-fill: auto; gap:0; width:450px; height:190px; background-color: yellow;">
     <table>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
@@ -22,7 +23,7 @@ tr {
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
-        <tr><td class="td" data-total-y=185>Te</td><td>xt</td></tr>
+        <tr><td class="td" data-total-x="151" data-total-y="1">Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
@@ -30,7 +31,7 @@ tr {
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
-        <tr><td class="td" data-total-y=369>Te</td><td>xt</td></tr>
+        <tr><td class="td" data-total-x="301" data-total-y="1">Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
         <tr><td>Te</td><td>xt</td></tr>
@@ -44,4 +45,3 @@ tr {
 <script>
     checkLayout(".td", document.getElementById("console"));
 </script>
-

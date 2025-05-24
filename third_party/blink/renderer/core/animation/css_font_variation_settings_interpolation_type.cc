@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_font_variation_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
@@ -19,24 +21,17 @@ namespace blink {
 class CSSFontVariationSettingsNonInterpolableValue final
     : public NonInterpolableValue {
  public:
-  ~CSSFontVariationSettingsNonInterpolableValue() final = default;
-
-  static scoped_refptr<CSSFontVariationSettingsNonInterpolableValue> Create(
-      Vector<uint32_t> tags) {
-    return base::AdoptRef(
-        new CSSFontVariationSettingsNonInterpolableValue(std::move(tags)));
+  explicit CSSFontVariationSettingsNonInterpolableValue(Vector<uint32_t>&& tags)
+      : tags_(tags) {
+    DCHECK_GT(tags_.size(), 0u);
   }
+  ~CSSFontVariationSettingsNonInterpolableValue() final = default;
 
   const Vector<uint32_t>& Tags() const { return tags_; }
 
   DECLARE_NON_INTERPOLABLE_VALUE_TYPE();
 
  private:
-  explicit CSSFontVariationSettingsNonInterpolableValue(Vector<uint32_t> tags)
-      : tags_(std::move(tags)) {
-    DCHECK_GT(tags_.size(), 0u);
-  }
-
   const Vector<uint32_t> tags_;
 };
 
@@ -53,7 +48,7 @@ struct DowncastTraits<CSSFontVariationSettingsNonInterpolableValue> {
   }
 };
 
-static const Vector<uint32_t> GetTags(
+static Vector<uint32_t> GetTags(
     const NonInterpolableValue& non_interpolable_value) {
   return To<CSSFontVariationSettingsNonInterpolableValue>(
              non_interpolable_value)
@@ -72,7 +67,7 @@ class UnderlyingTagsChecker final
   ~UnderlyingTagsChecker() final = default;
 
  private:
-  bool IsValid(const InterpolationEnvironment&,
+  bool IsValid(const CSSInterpolationEnvironment&,
                const InterpolationValue& underlying) const final {
     return tags_ == GetTags(*underlying.non_interpolable_value);
   }
@@ -115,7 +110,8 @@ static InterpolationValue ConvertFontVariationSettings(
   }
   return InterpolationValue(
       numbers,
-      CSSFontVariationSettingsNonInterpolableValue::Create(std::move(tags)));
+      MakeGarbageCollected<CSSFontVariationSettingsNonInterpolableValue>(
+          std::move(tags)));
 }
 
 InterpolationValue
@@ -148,10 +144,23 @@ CSSFontVariationSettingsInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontVariationSettingsInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
-    ConversionCheckers&) const {
+    const StyleResolverState& state,
+    ConversionCheckers& conversion_checkers) const {
+  if (const auto* value_list = DynamicTo<CSSValueList>(value)) {
+    for (const CSSValue* feature : *value_list) {
+      if (To<cssvalue::CSSFontVariationValue>(feature)
+              ->Value()
+              ->IsElementDependent()) {
+        conversion_checkers.push_back(
+            TreeCountingChecker::Create(state.CssToLengthConversionData()));
+        break;
+      }
+    }
+  }
+  // TODO(crbug.com/415572412): Create a LengthUnitsChecker for relative units
+  // if necessary.
   scoped_refptr<FontVariationSettings> settings =
-      StyleBuilderConverter::ConvertFontVariationSettings(*state, value);
+      StyleBuilderConverter::ConvertFontVariationSettings(state, value);
   return ConvertFontVariationSettings(settings.get());
 }
 
@@ -184,7 +193,7 @@ void CSSFontVariationSettingsInterpolationType::Composite(
     underlying_value_owner.MutableValue().interpolable_value->ScaleAndAdd(
         underlying_fraction, *value.interpolable_value);
   } else {
-    underlying_value_owner.Set(*this, value);
+    underlying_value_owner.Set(this, value);
   }
 }
 

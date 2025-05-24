@@ -1,4 +1,4 @@
-<style include="md-select">
+<style include="md-select cr-scrollable">
   :host {
     --compose-loading-body-and-footer-height: 136px;
     --gap-between-sections_: 16px;
@@ -121,7 +121,7 @@
     box-sizing: border-box;
     grid-area: body;
     display: grid;
-    grid-template-areas: "textarea" "bodyContent";
+    grid-template-areas: "textarea" "inputModes" "bodyContent";
     grid-auto-columns: 100%;
     max-height: 220px;
     padding: 0 20px;
@@ -129,7 +129,7 @@
 
   :host(:not([submitted_])) #body {
     /* Non-submitted dialog has no bodyContent. */
-    grid-template-areas: "textarea";
+    grid-template-areas: "textarea" "inputModes";
   }
 
   /* Set scroll-related styles for the result text container. */
@@ -138,10 +138,6 @@
     border-style: solid;
     border-width: 1px 0;
     overflow-y: auto;
-  }
-
-  #resultTextContainer.can-scroll:not(.scrolled-to-top) {
-    border-top-color: var(--scrollable-border-color);
   }
 
   #resultTextContainer::-webkit-scrollbar {
@@ -162,6 +158,13 @@
     /* There is no footer in the loading screen. */
     grid-template-areas: "body";
     height: var(--compose-loading-body-and-footer-height);
+  }
+
+  #inputModesContainer {
+    grid-area: inputModes;
+    display: flex;
+    margin-top: 14px;
+    gap: 8px;
   }
 
   #textarea {
@@ -213,11 +216,22 @@
     overflow: auto;
     /* Incorporates width of righthand scrollbar. */
     padding-inline-start: 16px;
-    margin-inline-end: 4px;
 
     --scrollbar-width_: 4px;
+    --scrollbar-margin-inline-end_: 4px;
     padding-inline-end: calc(12px - var(--scrollbar-width_));
+    margin-inline-end: var(--scrollbar-margin-inline-end_);
     scrollbar-gutter: stable;
+  }
+
+  #resultTextContainer .cr-scrollable-top {
+    --cr-scrollable-border-color: var(--color-compose-dialog-divider);
+    /* Since there is a margin-inline-end on #resultsTextContainer, anchor the
+     * border to the end of it so that the border stretches past the scrollbar
+     * and the margin. */
+    inset-inline-end: calc(anchor(end) - var(--scrollbar-margin-inline-end_));
+    inset-inline-start: anchor(start);
+    width: unset;
   }
 
   /* Border separating result container text and actions bar. */
@@ -444,7 +458,8 @@
   .md-select[hidden],
   .icon-buttons-row cr-icon-button[hidden],
   #loading[hidden],
-  #editContainer[hidden] {
+  #editContainer[hidden],
+  #inputModesContainer[hidden] {
     display: none;
   }
 </style>
@@ -514,7 +529,20 @@
         readonly="[[submitted_]]" allow-exiting-readonly-mode="[[!loading_]]"
         on-edit-click="onEditClick_" input-params="[[inputParams_]]">
       </compose-textarea>
-
+      <div id="inputModesContainer" hidden$="[[!showInputModes_]]">
+        <cr-chip id="polishChip" selected on-click="onPolishChipClick_">
+          <cr-icon icon="[[polishChipIcon_]]"></cr-icon>
+          $i18n{inputModeChipPolish}
+        </cr-chip>
+        <cr-chip id="elaborateChip" on-click="onElaborateChipClick_">
+          <cr-icon icon="[[elaborateChipIcon_]]"></cr-icon>
+          $i18n{inputModeChipElaborate}
+        </cr-chip>
+        <cr-chip id="formalizeChip" on-click="onFormalizeChipClick_">
+          <cr-icon icon="[[formalizeChipIcon_]]"></cr-icon>
+          $i18n{inputModeChipFormalize}
+        </cr-chip>
+      </div>
       <div id="loading"
           hidden="[[!loadingIndicatorShown_]]">
         <cr-loading-gradient>
@@ -530,7 +558,8 @@
       <div id="resultContainer" class="result-container"
           hidden="[[hideResults_(hasOutput_, feedbackEnabled_)]]">
         <div id="resultContainerInner">
-          <div id="resultTextContainer">
+          <div id="resultTextContainer" class="cr-scrollable">
+            <div class="cr-scrollable-top"></div>
             <compose-result-text id="resultText" text-input="[[responseText_]]"
               is-output-complete="{{outputComplete_}}"
               has-output="{{hasOutput_}}"
@@ -602,13 +631,6 @@
               hidden$="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{onDeviceUsedFooter}
           </b>
-          <!-- <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
-              >$i18nRaw{dogfoodFooter}</span>
-          <span hidden="[[!showDefaultResultFooter_(response_, enableUiRefinements)]]"
-              >$i18nRaw{resultFooter}</span>
-          <span
-            hidden="[[!showRefinementsResultFooter_(response_, enableUiRefinements)]]"
-            >$i18nRaw{refinementsResultFooter}</span> -->
           <span hidden="[[!showOnDeviceDogfoodFooter_(response_)]]"
               >$i18nRaw{dogfoodFooter}</span>
           <span hidden="[[showOnDeviceDogfoodFooter_(response_)]]"

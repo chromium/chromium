@@ -18,6 +18,7 @@
 #include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/common/chrome_switches.h"
@@ -151,7 +152,7 @@ class TranslateBubbleViewUITest
 
   InteractiveTestApi::MultiStep WaitForBucket(
       const std::string& histogram_name,
-      base::HistogramBase::Sample sample) {
+      base::HistogramBase::Sample32 sample) {
     return InteractiveTestApi::Steps(InteractiveTestApi::Do(
         base::BindOnce(&TranslateBubbleViewUITest::WaitForBucketImpl,
                        base::Unretained(this), histogram_name, sample)));
@@ -166,8 +167,9 @@ class TranslateBubbleViewUITest
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
-    if (request.GetURL().path() != "/mock_translate_script.js")
+    if (request.GetURL().path() != "/mock_translate_script.js") {
       return nullptr;
+    }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
         new net::test_server::BasicHttpResponse);
@@ -197,8 +199,9 @@ class TranslateBubbleViewUITest
   }
 
   TranslateBubbleView* GetCurrentTranslateBubble() {
-    return TranslateBubbleController::FromWebContents(
-               browser()->tab_strip_model()->GetActiveWebContents())
+    return browser()
+        ->GetFeatures()
+        .translate_bubble_controller()
         ->GetTranslateBubble();
   }
 
@@ -219,7 +222,7 @@ class TranslateBubbleViewUITest
   }
 
   void WaitForBucketImpl(const std::string& histogram_name,
-                         base::HistogramBase::Sample sample) {
+                         base::HistogramBase::Sample32 sample) {
     // Wait until the bucket is recorded.
     base::RunLoop run_loop;
     while (run_loop.running()) {
@@ -334,7 +337,7 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, ClickOpenLanguageSettings) {
         WaitForLanguageSettingInNewTab(kTranslateSettingsElementId),
         // V2. Verify the histogram is recorded correctly.
         WaitForBucket(translate::kTranslateUiInteractionEvent,
-                      static_cast<base::HistogramBase::Sample>(
+                      static_cast<base::HistogramBase::Sample32>(
                           translate::UIInteraction::kOpenLanguageSettings)));
   }
 }
@@ -386,8 +389,9 @@ IN_PROC_BROWSER_TEST_P(TranslateBubbleViewUITest, NetworkInterruption) {
   bool offline = false;
   content::URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
       [&](content::URLLoaderInterceptor::RequestParams* params) -> bool {
-        if (!offline)
+        if (!offline) {
           return false;
+        }
         params->client->OnComplete(
             network::URLLoaderCompletionStatus(net::ERR_INTERNET_DISCONNECTED));
         return true;

@@ -25,7 +25,8 @@ class StubDevToolsClient : public DevToolsClient {
   const std::string& SessionId() const override;
   const std::string& TunnelSessionId() const override;
   Status SetTunnelSessionId(std::string session_id) override;
-  Status StartBidiServer(std::string bidi_mapper_script) override;
+  Status StartBidiServer(std::string bidi_mapper_script,
+                         bool enable_unsafe_extension_debugging) override;
   bool IsNull() const override;
   bool WasCrashed() override;
   bool IsConnected() const override;
@@ -62,6 +63,7 @@ class StubDevToolsClient : public DevToolsClient {
   WebViewImpl* GetOwner() const override;
   DevToolsClient* GetParentClient() const override;
   bool IsMainPage() const override;
+  bool IsTabTarget() const override;
   Status SendRaw(const std::string& message) override;
   bool HasMessageForAnySession() const override;
 
@@ -91,6 +93,7 @@ class StubDevToolsClient : public DevToolsClient {
   raw_ptr<WebViewImpl> owner_ = nullptr;
   bool is_connected_ = false;
   bool autoaccept_beforeunload_ = false;
+  bool is_tab_ = false;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_STUB_DEVTOOLS_CLIENT_H_

@@ -16,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/raster/raster_source.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -312,8 +311,8 @@ PictureLayerTiling* PictureLayerTilingSet::AddTiling(
 }
 
 int PictureLayerTilingSet::NumHighResTilings() const {
-  return base::ranges::count(tilings_, HIGH_RESOLUTION,
-                             &PictureLayerTiling::resolution);
+  return std::ranges::count(tilings_, HIGH_RESOLUTION,
+                            &PictureLayerTiling::resolution);
 }
 
 PictureLayerTiling* PictureLayerTilingSet::FindTilingWithScaleKey(
@@ -328,7 +327,7 @@ PictureLayerTiling* PictureLayerTilingSet::FindTilingWithScaleKey(
 PictureLayerTiling* PictureLayerTilingSet::FindTilingWithResolution(
     TileResolution resolution) const {
   auto iter =
-      base::ranges::find(tilings_, resolution, &PictureLayerTiling::resolution);
+      std::ranges::find(tilings_, resolution, &PictureLayerTiling::resolution);
   if (iter == tilings_.end())
     return nullptr;
   return iter->get();
@@ -379,8 +378,8 @@ void PictureLayerTilingSet::RemoveAllTilings() {
 }
 
 void PictureLayerTilingSet::Remove(PictureLayerTiling* tiling) {
-  auto iter = base::ranges::find(tilings_, tiling,
-                                 &std::unique_ptr<PictureLayerTiling>::get);
+  auto iter = std::ranges::find(tilings_, tiling,
+                                &std::unique_ptr<PictureLayerTiling>::get);
   if (iter == tilings_.end())
     return;
   tilings_.erase(iter);
@@ -418,7 +417,7 @@ bool PictureLayerTilingSet::TilingsNeedUpdate(
 
   // Finally, if some state changed (either frame time or visible rect), then we
   // need to inform the tilings of the change.
-  const auto& last_frame = visible_rect_history_.front();
+  const auto& last_frame = visible_rect_history_.back();
   if (current_frame_time_in_seconds != last_frame.frame_time_in_seconds)
     return true;
 
@@ -441,7 +440,7 @@ gfx::Rect PictureLayerTilingSet::ComputeSkewport(
     return skewport;
 
   // Use the oldest recorded history to get a stable skewport.
-  const auto& historical_frame = visible_rect_history_.back();
+  const auto& historical_frame = visible_rect_history_.front();
   double time_delta =
       current_frame_time_in_seconds - historical_frame.frame_time_in_seconds;
   if (time_delta == 0.)
@@ -542,10 +541,15 @@ void PictureLayerTilingSet::UpdatePriorityRects(
   // Finally, update our visible rect history. Note that we use the original
   // visible rect here, since we want as accurate of a history as possible for
   // stable skewports.
-  if (visible_rect_history_.size() == 2)
-    visible_rect_history_.pop_back();
-  visible_rect_history_.push_front(FrameVisibleRect(
-      visible_rect_in_layer_space_, current_frame_time_in_seconds));
+  const auto frame_visible_rect = FrameVisibleRect(
+      visible_rect_in_layer_space_, current_frame_time_in_seconds);
+  if (visible_rect_history_.size() < 2) {
+    visible_rect_history_.reserve(2);
+    visible_rect_history_.push_back(frame_visible_rect);
+  } else {
+    DCHECK_EQ(visible_rect_history_.size(), 2u);
+    visible_rect_history_ = {visible_rect_history_[1], frame_visible_rect};
+  }
 }
 
 bool PictureLayerTilingSet::UpdateTilePriorities(

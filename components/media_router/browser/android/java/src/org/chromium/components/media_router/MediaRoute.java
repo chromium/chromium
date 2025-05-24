@@ -4,7 +4,10 @@
 
 package org.chromium.components.media_router;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Contains all the info about the media route created by any {@link MediaRouteProvider}. */
+@NullMarked
 public class MediaRoute {
     private static final String MEDIA_ROUTE_ID_PREFIX = "route:";
     private static final String MEDIA_ROUTE_ID_SEPARATOR = "/";

@@ -65,7 +65,7 @@ const ULONG64* GetSupportedMitigations() {
     if (!::GetProcessMitigationPolicy(::GetCurrentProcess(),
                                       ProcessMitigationOptionsMask,
                                       &mitigations, mits_size)) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -539,7 +539,7 @@ void ConvertProcessMitigationsToPolicy(MitigationFlags flags,
 
   // This mitigation is supported on systems with no non-architectural core
   // sharing and have enabled support for SMT isolation scheduling.
-  if (version >= base::win::Version::WIN11_23H2 &&
+  if (version >= base::win::Version::WIN11_24H2 &&
       flags & MITIGATION_RESTRICT_CORE_SHARING) {
     *policy_value_2 |=
         PROCESS_CREATION_MITIGATION_POLICY2_RESTRICT_CORE_SHARING_ALWAYS_ON;

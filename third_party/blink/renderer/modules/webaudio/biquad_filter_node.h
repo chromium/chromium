@@ -38,6 +38,7 @@ namespace blink {
 class BaseAudioContext;
 class BiquadFilterOptions;
 class ExceptionState;
+class V8BiquadFilterType;
 
 class BiquadFilterNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();
@@ -65,8 +66,8 @@ class BiquadFilterNode final : public AudioNode {
 
   void Trace(Visitor*) const override;
 
-  String type() const;
-  void setType(const String&);
+  V8BiquadFilterType type() const;
+  void setType(const V8BiquadFilterType&);
 
   AudioParam* frequency() { return frequency_.Get(); }
   AudioParam* q() { return q_.Get(); }

@@ -12,6 +12,9 @@
           }
         `;
         document.head.appendChild(newStyle);
+        if (testRunner) {
+          testRunner.setAnimationRequiresRaster(true);
+        }
     }
     function forceLayout() {
         const img = document.querySelector('img');

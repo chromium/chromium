@@ -64,8 +64,9 @@ base::Value::Dict GetCapabilitiesFull() {
     base::Value::Dict option;
     option.Set(kDisplayName, base::NumberToString(i));
     option.Set(kValue, i);
-    if (i == 1)
+    if (i == 1) {
       option.Set(kIsDefault, true);
+    }
     pages_per_sheet.Append(std::move(option));
   }
   base::Value::Dict pages_per_sheet_option;
@@ -107,8 +108,9 @@ base::Value::Dict* GetVendorCapabilityAtIndex(base::Value::Dict& printer,
                                               size_t index) {
   base::Value::List* vendor_capabilities_list =
       printer.FindList(kVendorCapability);
-  if (!vendor_capabilities_list || index >= vendor_capabilities_list->size())
+  if (!vendor_capabilities_list || index >= vendor_capabilities_list->size()) {
     return nullptr;
+  }
 
   auto& ret = (*vendor_capabilities_list)[index];
   return ret.is_dict() ? &ret.GetDict() : nullptr;
@@ -381,8 +383,9 @@ TEST_F(PrintPreviewUtilsTest, FilterBadVendorCapabilityOneElement) {
     base::Value::Dict option;
     option.Set(kDisplayName, base::NumberToString(i));
     option.Set(kValue, i);
-    if (i == 1)
+    if (i == 1) {
       option.Set(kIsDefault, true);
+    }
     pages_per_sheet.Append(std::move(option));
   }
   vendor_dict->Set(kOptionKey, std::move(pages_per_sheet));

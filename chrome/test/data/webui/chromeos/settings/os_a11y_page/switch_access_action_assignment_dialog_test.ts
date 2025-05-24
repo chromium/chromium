@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsSwitchAccessActionAssignmentDialogElement, SwitchAccessCommand} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsSwitchAccessActionAssignmentDialogElement} from 'chrome://os-settings/lazy_load.js';
+import {SwitchAccessCommand} from 'chrome://os-settings/lazy_load.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 

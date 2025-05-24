@@ -141,7 +141,7 @@ class ArmTranslatorEncodeDecodeTest {
  public:
   using CODE_T = typename TRAITS::code_t;
 
-  ArmTranslatorEncodeDecodeTest() {}
+  ArmTranslatorEncodeDecodeTest() = default;
 
   // For each instruction (with |clean_slate_code| in |instr_list|) and for each
   // |disp| in |good_disp_list|, forms |code| with |encode_fun()| and checks for
@@ -211,7 +211,7 @@ class ArmTranslatorWriteReadTest {
  public:
   using CODE_T = typename TRAITS::code_t;
 
-  ArmTranslatorWriteReadTest() {}
+  ArmTranslatorWriteReadTest() = default;
 
   // Expects successful Write() to |clean_slate_code| for each |target_rva_list|
   // RVA, using each |instr_rva_list| RVA, and that the resulting |code| leads

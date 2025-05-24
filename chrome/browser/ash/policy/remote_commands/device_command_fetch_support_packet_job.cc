@@ -36,8 +36,6 @@
 #include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/remote_commands/crd/crd_remote_command_utils.h"
 #include "chrome/browser/ash/policy/uploading/system_log_uploader.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -242,14 +240,14 @@ bool DeviceCommandFetchSupportPacketJob::ParseCommandPayload(
 bool DeviceCommandFetchSupportPacketJob::ParseCommandPayloadImpl(
     const std::string& command_payload) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::optional<base::Value> value = base::JSONReader::Read(command_payload);
-  if (!value.has_value() || !value->is_dict()) {
+  std::optional<base::Value::Dict> value =
+      base::JSONReader::ReadDict(command_payload);
+  if (!value) {
     return false;
   }
 
-  const base::Value::Dict& dict = value->GetDict();
   const base::Value::Dict* details_dict =
-      dict.FindDict(kSupportPacketDetailsKey);
+      value->FindDict(kSupportPacketDetailsKey);
   if (!details_dict) {
     return false;
   }
@@ -398,8 +396,8 @@ void DeviceCommandFetchSupportPacketJob::OnDataExported(
     std::set<SupportToolError> errors) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const auto export_error =
-      base::ranges::find(errors, SupportToolErrorCode::kDataExportError,
-                         &SupportToolError::error_code);
+      std::ranges::find(errors, SupportToolErrorCode::kDataExportError,
+                        &SupportToolError::error_code);
 
   if (export_error != errors.end()) {
     base::UmaHistogramEnumeration(kFetchSupportPacketFailureHistogramName,

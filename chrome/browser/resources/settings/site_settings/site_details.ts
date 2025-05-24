@@ -13,10 +13,9 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../icons.html.js';
 import '../privacy_icons.html.js';
 import '../settings_shared.css.js';
@@ -133,6 +132,16 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
             loadTimeData.getBoolean('enableWebBluetoothNewPermissionsBackend'),
       },
 
+      // <if expr="is_chromeos">
+      enableSmartCardReadersContentSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableSmartCardReadersContentSetting');
+        },
+      },
+      // </if>
+
       autoPictureInPictureEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('autoPictureInPictureEnabled'),
@@ -147,12 +156,18 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
       enableHandTrackingContentSetting_: {
         type: Boolean,
         value: () =>
-              loadTimeData.getBoolean('enableHandTrackingContentSetting'),
+            loadTimeData.getBoolean('enableHandTrackingContentSetting'),
       },
 
       capturedSurfaceControlEnabled_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
+      },
+
+      enablePermissionSiteSettingsRadioButton_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('enablePermissionSiteSettingsRadioButton'),
       },
 
       contentSettingsTypesEnum_: {
@@ -165,36 +180,45 @@ export class SiteDetailsElement extends SiteDetailsElementBase {
         value: ChooserType,
       },
 
-      enableKeyboardAndPointerLockPrompt_: {
+      enableKeyboardLockPrompt_: {
         type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('enableKeyboardAndPointerLockPrompt'),
+        value: () => loadTimeData.getBoolean('enableKeyboardLockPrompt'),
       },
 
       enableWebAppInstallation_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableWebAppInstallation'),
       },
+
+      enableLocalNetworkAccessSetting_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableLocalNetworkAccessSetting'),
+      },
     };
   }
 
-  blockAutoplayEnabled: boolean;
-  pageTitle: string;
-  private origin_: string;
-  private storedData_: string;
-  private numCookies_: string;
-  private rwsMembership_: string;
-  private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
-  private enableExperimentalWebPlatformFeatures_: boolean;
-  private enableWebBluetoothNewPermissionsBackend_: boolean;
-  private autoPictureInPictureEnabled_: boolean;
-  private enableAutomaticFullscreenContentSetting_: boolean;
-  private enableHandTrackingContentSetting_: boolean;
-  private capturedSurfaceControlEnabled_: boolean;
-  private enableWebAppInstallation_: boolean;
+  declare blockAutoplayEnabled: boolean;
+  declare pageTitle: string;
+  declare private origin_: string;
+  declare private storedData_: string;
+  declare private numCookies_: string;
+  declare private rwsMembership_: string;
+  declare private rwsEnterprisePref_: chrome.settingsPrivate.PrefObject;
+  declare private enableExperimentalWebPlatformFeatures_: boolean;
+  declare private enableWebBluetoothNewPermissionsBackend_: boolean;
+  // <if expr="is_chromeos">
+  declare private enableSmartCardReadersContentSetting_: boolean;
+  // </if>
+  declare private autoPictureInPictureEnabled_: boolean;
+  declare private enableAutomaticFullscreenContentSetting_: boolean;
+  declare private enableHandTrackingContentSetting_: boolean;
+  declare private capturedSurfaceControlEnabled_: boolean;
+  declare private enablePermissionSiteSettingsRadioButton_: boolean;
+  declare private enableWebAppInstallation_: boolean;
   private websiteUsageProxy_: WebsiteUsageBrowserProxy =
       WebsiteUsageBrowserProxyImpl.getInstance();
-  private enableKeyboardAndPointerLockPrompt_: boolean;
+  declare private enableKeyboardLockPrompt_: boolean;
+  declare private enableLocalNetworkAccessSetting_: boolean;
 
   override connectedCallback() {
     super.connectedCallback();

@@ -8,6 +8,7 @@ cast_test_group("starboard_media_tests") {
   tests = [
     "//chromecast/starboard/media/cdm:starboard_decryptor_cast_test",
     "//chromecast/starboard/media/cdm:starboard_drm_key_tracker_test",
+    "//chromecast/starboard/media/cdm:starboard_drm_wrapper_test",
     "//chromecast/starboard/media/media:media_pipeline_backend_starboard_test",
     "//chromecast/starboard/media/media:mime_utils_test",
     "//chromecast/starboard/media/media:starboard_audio_decoder_test",

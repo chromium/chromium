@@ -15,17 +15,16 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/form_data_importer.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
-#include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
 #include "url/origin.h"
 
 class SaveCardOfferObserver;
@@ -78,8 +77,10 @@ class CreditCardSaveManager {
     // Phone number was found on any address (not currently used).
     PHONE_NUMBER = 1 << 11,
     // Set if cardholder name was explicitly requested in the offer-to-save
-    // dialog.  In general, this should happen when name is conflicting/missing
-    // and the user does not have a Google Payments account.
+    // dialog. In general, this should happen when name is conflicting/missing
+    // and the user does not have a Google Payments account. On iOS, this is set
+    // when cardholder name is conflicting/missing even when the user already
+    // has a Google Payments account.
     USER_PROVIDED_NAME = 1 << 12,
     // Set if expiration date was explicitly requested in the offer-to-save
     // dialog. In general, this should happen when expiration date month or year
@@ -103,7 +104,7 @@ class CreditCardSaveManager {
   };
 
   // `client` must outlive the CreditCardSaveManager.
-  CreditCardSaveManager(AutofillClient* client, const std::string& app_locale);
+  explicit CreditCardSaveManager(AutofillClient* client);
 
   CreditCardSaveManager(const CreditCardSaveManager&) = delete;
   CreditCardSaveManager& operator=(const CreditCardSaveManager&) = delete;
@@ -137,7 +138,8 @@ class CreditCardSaveManager {
       const FormStructure& submitted_form,
       const CreditCard& card,
       FormDataImporter::CreditCardImportType credit_card_import_type,
-      bool is_credit_card_upstream_enabled);
+      bool is_credit_card_upstream_enabled,
+      ukm::SourceId ukm_source_id);
 
   // Begins the process to offer upload credit card save to the user if the
   // imported card passes all requirements and Google Payments approves.
@@ -145,7 +147,8 @@ class CreditCardSaveManager {
   // offered for upload is already a local card on the device.
   void AttemptToOfferCardUploadSave(const FormStructure& submitted_form,
                                     const CreditCard& card,
-                                    const bool uploading_local_card);
+                                    const bool uploading_local_card,
+                                    ukm::SourceId ukm_source_id);
 
   // Begins the process to offer server CVC save to the user.
   virtual void AttemptToOfferCvcUploadSave(const CreditCard& card);
@@ -153,9 +156,6 @@ class CreditCardSaveManager {
   // Returns true if all the conditions for enabling the upload of credit card
   // are satisfied.
   virtual bool IsCreditCardUploadEnabled();
-
-  // For testing.
-  void SetAppLocale(std::string app_locale) { app_locale_ = app_locale; }
 
   // Set Autofill address profiles that are only preliminarily imported.
   // A preliminary import may happen when the address is found in the same
@@ -177,13 +177,11 @@ class CreditCardSaveManager {
   // for the card on the server. Exposed for testing.
   virtual void OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
-          upload_card_response_details);
+      const payments::UploadCardResponseDetails& upload_card_response_details);
 
  private:
   friend class CreditCardSaveManagerTest;
   friend class CreditCardSaveManagerTestObserverBridge;
-  friend class LocalCardMigrationBrowserTest;
   friend class TestCreditCardSaveManager;
   friend class SaveCardBubbleViewsFullFormBrowserTest;
   friend class FakeCreditCardServer;
@@ -200,8 +198,7 @@ class CreditCardSaveManager {
   // prompt before showing virtual card enrollment prompt.
   void InitVirtualCardEnroll(
       const CreditCard& credit_card,
-      std::optional<payments::PaymentsNetworkInterface::
-                        GetDetailsForEnrollmentResponseDetails>
+      std::optional<payments::GetDetailsForEnrollmentResponseDetails>
           get_details_for_enrollment_response_details);
 
   // Returns the CreditCardSaveStrikeDatabase for |client_|.
@@ -214,17 +211,13 @@ class CreditCardSaveManager {
   // this CVC should be blocked.
   bool DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  // Returns the GetLocalCardMigrationStrikeDatabase for |client_|.
-  LocalCardMigrationStrikeDatabase* GetLocalCardMigrationStrikeDatabase();
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
   // Returns the legal message retrieved from Payments. On failure or not
   // meeting Payments's conditions for upload, |legal_message| will contain
   // nullptr. |supported_card_bin_ranges| is a list of BIN prefix ranges which
   // are supported, with the first and second number in the pair being the start
   // and end of the range.
   void OnDidGetUploadDetails(
+      ukm::SourceId ukm_source_id,
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
@@ -243,8 +236,7 @@ class CreditCardSaveManager {
   // contain countries.
   void SetProfilesForCreditCardUpload(
       const CreditCard& card,
-      payments::PaymentsNetworkInterface::UploadCardRequestDetails*
-          upload_request);
+      payments::UploadCardRequestDetails* upload_request);
 
   // Analyzes the decisions made while importing address profile and credit card
   // data in preparation for upload credit card save, in order to determine what
@@ -261,7 +253,7 @@ class CreditCardSaveManager {
 
   // Offers credit card upload if Payments has allowed offering to save and the
   // Autofill StrikeSystem has made its decision.
-  void OfferCardUploadSave();
+  void OfferCardUploadSave(ukm::SourceId ukm_source_id);
 
   // Called once the user makes a decision with respect to the local credit card
   // offer-to-save prompt. If accepted, clears strikes for the to-be-saved card
@@ -345,7 +337,8 @@ class CreditCardSaveManager {
   // Logs the card upload decisions in UKM and UMA.
   // |upload_decision_metrics| is a bitmask of
   // |AutofillMetrics::CardUploadDecisionMetric|.
-  void LogCardUploadDecisions(int upload_decision_metrics);
+  void LogCardUploadDecisions(ukm::SourceId ukm_source_id,
+                              int upload_decision_metrics);
 
   // Logs the card upload decisions bitmask to chrome://autofill-internals.
   void LogCardUploadDecisionsToAutofillInternals(int upload_decision_metrics);
@@ -363,14 +356,12 @@ class CreditCardSaveManager {
 
   const raw_ref<AutofillClient> client_;
 
-  std::string app_locale_;
-
   // The credit card to be saved if local credit card or local or server CVC
   // save is accepted.
   CreditCard card_save_candidate_;
 
   // Collected information about a pending upload request.
-  payments::PaymentsNetworkInterface::UploadCardRequestDetails upload_request_;
+  payments::UploadCardRequestDetails upload_request_;
 
   // A bitmask of |AutofillMetrics::CardUploadDecisionMetric| representing the
   // decisions made when determining if credit card upload save should be
@@ -423,28 +414,10 @@ class CreditCardSaveManager {
   // card.
   std::vector<AutofillProfile> preliminarily_imported_address_profiles_;
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  std::unique_ptr<LocalCardMigrationStrikeDatabase>
-      local_card_migration_strike_database_;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
   // May be null.
   raw_ptr<ObserverForTest> observer_for_testing_ = nullptr;
 
   base::WeakPtrFactory<CreditCardSaveManager> weak_ptr_factory_{this};
-
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_ShouldRequestCardholderName_ResetBetweenConsecutiveSaves);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_ShouldRequestExpirationDate_ResetBetweenConsecutiveSaves);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_WalletSyncTransportEnabled_ShouldNotRequestExpirationDate);
-  FRIEND_TEST_ALL_PREFIXES(
-      CreditCardSaveManagerTest,
-      UploadCreditCard_WalletSyncTransportNotEnabled_ShouldRequestExpirationDate);
 };
 
 }  // namespace autofill

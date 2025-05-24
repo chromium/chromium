@@ -200,4 +200,16 @@ TEST_F(CheckboxActionViewControllerTest, TestCheckboxClicked) {
   EXPECT_TRUE(action_item->GetChecked());
 }
 
+TEST_F(CheckboxTest, AccessibleCheckedState) {
+  checkbox()->SetChecked(true);
+  ui::AXNodeData data;
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kTrue);
+
+  checkbox()->SetChecked(false);
+  data = ui::AXNodeData();
+  checkbox()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
+}
+
 }  // namespace views

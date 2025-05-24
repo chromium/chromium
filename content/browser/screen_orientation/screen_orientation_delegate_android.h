@@ -7,6 +7,7 @@
 
 #include <jni.h>
 
+#include "content/common/content_export.h"
 #include "content/public/browser/screen_orientation_delegate.h"
 #include "services/device/public/mojom/screen_orientation_lock_types.mojom-shared.h"
 
@@ -16,7 +17,8 @@ class WebContents;
 
 // Android implementation of ScreenOrientationDelegate. The functionality of
 // ScreenOrientationProvider is always supported.
-class ScreenOrientationDelegateAndroid : public ScreenOrientationDelegate {
+class CONTENT_EXPORT ScreenOrientationDelegateAndroid
+    : public ScreenOrientationDelegate {
  public:
   ScreenOrientationDelegateAndroid();
 
@@ -33,6 +35,11 @@ class ScreenOrientationDelegateAndroid : public ScreenOrientationDelegate {
             device::mojom::ScreenOrientationLockType lock_orientation) override;
   bool ScreenOrientationProviderSupported(WebContents* web_contents) override;
   void Unlock(WebContents* web_contents) override;
+
+ protected:
+  // Checks if this is a phone or not.
+  // Virtual for testing.
+  virtual bool IsPhone() const;
 };
 
 } // namespace content

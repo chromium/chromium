@@ -51,3 +51,10 @@ include_rules = [
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "arc_session_manager_browsertest\.cc": [
+    "+chrome/browser/ash/test",
+    "+chrome/browser/ui/browser_window.h",
+  ]
+}

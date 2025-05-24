@@ -7,14 +7,16 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/omnibox/browser/tab_matcher.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 class TabMatcherImpl : public TabMatcher {
  public:
   explicit TabMatcherImpl(ProfileIOS* profile);
 
   bool IsTabOpenWithURL(const GURL& gurl,
-                        const AutocompleteInput* input) const override;
+                        const AutocompleteInput* input,
+                        bool unused_exclude_active_tab = true) const override;
 
  private:
   raw_ptr<ProfileIOS> profile_ = nullptr;

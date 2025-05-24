@@ -4,7 +4,6 @@
 
 #include "partition_alloc/partition_alloc_base/cpu.h"
 
-#include <algorithm>
 #include <cinttypes>
 #include <climits>
 #include <cstddef>
@@ -14,6 +13,7 @@
 #include <utility>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 
 #if PA_BUILDFLAG(PA_ARCH_CPU_ARM_FAMILY) &&                \
     (PA_BUILDFLAG(IS_ANDROID) || PA_BUILDFLAG(IS_LINUX) || \
@@ -97,7 +97,7 @@ uint64_t xgetbv(uint32_t xcr) {
 
 void CPU::Initialize() {
 #if PA_BUILDFLAG(PA_ARCH_CPU_X86_FAMILY)
-  int cpu_info[4] = {-1};
+  int cpu_info[4] = {-1, 0, 0, 0};
 
   // __cpuid with an InfoType argument of 0 returns the number of
   // valid Ids in CPUInfo[0] and the CPU identification string in
@@ -112,7 +112,7 @@ void CPU::Initialize() {
 
   // Interpret CPU feature information.
   if (num_ids > 0) {
-    int cpu_info7[4] = {0};
+    int cpu_info7[4] = {};
     __cpuid(cpu_info, 1);
     if (num_ids >= 7) {
       __cpuid(cpu_info7, 7);

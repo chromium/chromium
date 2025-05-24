@@ -26,9 +26,6 @@ class PlaybackImageButton : public OverlayWindowImageButton {
   void SetPlaybackState(
       const VideoOverlayWindowViews::PlaybackState playback_state);
 
-  // Updates the position of this button within the new bounds of the window.
-  void SetWindowSize(const gfx::Size& window_size);
-
  protected:
   // Overridden from views::View.
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
@@ -39,8 +36,6 @@ class PlaybackImageButton : public OverlayWindowImageButton {
 
   void SetPlayButtonBackground();
   void SetPauseButtonBackground();
-
-  std::optional<gfx::Size> window_size_;
 
   VideoOverlayWindowViews::PlaybackState playback_state_ =
       VideoOverlayWindowViews::PlaybackState::kEndOfVideo;

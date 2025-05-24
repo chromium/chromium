@@ -25,7 +25,10 @@ source_set("test_support") {
     "test/fake_optical_character_recognizer.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//services/screen_ai/public/mojom",
+  ]
   public_deps = [ ":optical_character_recognizer" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

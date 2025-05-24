@@ -14,7 +14,7 @@
 namespace blink {
 
 class ScriptState;
-class ScriptValue;
+class ScriptObject;
 
 class CORE_EXPORT V8ObjectBuilder final {
   STACK_ALLOCATED();
@@ -51,8 +51,8 @@ class CORE_EXPORT V8ObjectBuilder final {
     return *this;
   }
 
-  ScriptValue GetScriptValue() const;
-  v8::Local<v8::Object> V8Value() const { return object_; }
+  ScriptObject ToScriptObject() const;
+  v8::Local<v8::Object> V8Object() const { return object_; }
 
  private:
   void AddInternal(const StringView& name, v8::Local<v8::Value>);

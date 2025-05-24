@@ -19,6 +19,6 @@ TestScopedOfflineClockOverride::~TestScopedOfflineClockOverride() {
 
 TestScopedOfflineClock::TestScopedOfflineClock() : override_(this) {}
 
-TestScopedOfflineClock::~TestScopedOfflineClock() {}
+TestScopedOfflineClock::~TestScopedOfflineClock() = default;
 
 }  // namespace offline_pages

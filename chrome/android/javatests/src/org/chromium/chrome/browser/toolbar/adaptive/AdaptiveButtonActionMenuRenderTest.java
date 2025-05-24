@@ -41,11 +41,7 @@ import java.util.List;
 /** Render tests for adaptive test long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:mode/always-share"
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class AdaptiveButtonActionMenuRenderTest {
     @ParameterAnnotations.ClassParameter
     public static List<ParameterSet> sClassParams =
@@ -58,7 +54,7 @@ public class AdaptiveButtonActionMenuRenderTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_TOOLBAR)
                     .build();
 
@@ -76,7 +72,7 @@ public class AdaptiveButtonActionMenuRenderTest {
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
                     AdaptiveButtonActionMenuCoordinator coordinator =
-                            new AdaptiveButtonActionMenuCoordinator();
+                            new AdaptiveButtonActionMenuCoordinator(/* showMenu= */ true);
 
                     coordinator.displayMenu(
                             activity,

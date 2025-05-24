@@ -57,7 +57,7 @@ class DocumentLoaderImpl : public DocumentLoader {
   };
 
   // Called by the completion callback of the document's URLLoader.
-  void DidOpenPartial(int32_t result);
+  void DidOpenPartial(bool success);
 
   // Call to read data from the document's URLLoader.
   void ReadMore();

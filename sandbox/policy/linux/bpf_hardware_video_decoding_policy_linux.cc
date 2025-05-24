@@ -6,6 +6,7 @@
 
 #include <linux/kcmp.h>
 
+#include "base/notreached.h"
 #include "media/gpu/buildflags.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
@@ -43,11 +44,10 @@ HardwareVideoDecodingProcessPolicy::ComputePolicyType(
   // sandbox type to exist only in those configurations so that the
   // HardwareVideoDecodingProcessPolicy is only compiled in those scenarios. As
   // it is now, kHardwareVideoDecoding exists for all ash-chrome builds because
-  // chrome/browser/ash/arc/video/gpu_arc_video_service_host.cc depends on it
-  // and that file is built for ash-chrome regardless of VA-API/V4L2. That means
-  // that bots like linux-chromeos-rel end up compiling this policy.
-  CHECK(false);
-  return PolicyType::kVaapiOnIntel;
+  // chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.cc depends on
+  // it and that file is built for ash-chrome regardless of VA-API/V4L2. That
+  // means that bots like linux-chromeos-rel end up compiling this policy.
+  NOTREACHED();
 #endif
 }
 

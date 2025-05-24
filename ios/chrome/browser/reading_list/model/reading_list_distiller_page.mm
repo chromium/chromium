@@ -43,7 +43,11 @@ const char16_t* kGetIframeURLJavaScript =
     "  if (link !== null) {"
     "    return link.getAttribute('href');"
     "  }"
-    "  return document.getElementsByTagName('iframe')[0].src;"
+    "  var iframe = document.getElementsByTagName('iframe')[0];"
+    "  if (iframe) {"
+    "    return iframe.src;"
+    "  }"
+    "  return '';"
     "})()";
 
 const char16_t* kWikipediaWorkaround =
@@ -74,6 +78,10 @@ ReadingListDistillerPage::ReadingListDistillerPage(
 }
 
 ReadingListDistillerPage::~ReadingListDistillerPage() {}
+
+bool ReadingListDistillerPage::ShouldFetchOfflineData() {
+  return true;
+}
 
 void ReadingListDistillerPage::DistillPageImpl(const GURL& url,
                                                const std::string& script) {

@@ -5,27 +5,21 @@
 #include "components/sqlite_proto/key_value_table.h"
 
 #include "base/memory/scoped_refptr.h"
+#include "base/test/protobuf_matchers.h"
 #include "components/sqlite_proto/test_proto.pb.h"
 #include "sql/database.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using ::testing::ElementsAre;
-using ::testing::Pair;
-using ::testing::UnorderedElementsAre;
 
 namespace sqlite_proto {
 
 namespace {
 
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized, actual_serialized;
-  message.SerializeToString(&expected_serialized);
-  arg.SerializeToString(&actual_serialized);
-  return expected_serialized == actual_serialized;
-}
+using base::test::EqualsProto;
+using ::testing::ElementsAre;
+using ::testing::Pair;
+using ::testing::UnorderedElementsAre;
 
 bool CreateProtoTable(sql::Database* db) {
   const char kCreateProtoTableStatementTemplate[] =
@@ -47,7 +41,7 @@ class KeyValueTableTest : public ::testing::Test {
   ~KeyValueTableTest() override = default;
 
  protected:
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   KeyValueTable<TestProto> table_{"my_table"};
 };
 
@@ -134,7 +128,7 @@ TEST_F(KeyValueTableTest, DeleteAll) {
 TEST_F(KeyValueTableTest, PutGetDefaultValue) {
   TestProto element;
   table_.UpdateData("a", element, &db_);
-  ASSERT_EQ(element.ByteSize(), 0);
+  ASSERT_EQ(element.ByteSizeLong(), 0u);
 
   std::map<std::string, TestProto> my_data;
   table_.GetAllData(&my_data, &db_);

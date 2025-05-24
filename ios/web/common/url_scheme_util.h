@@ -20,6 +20,9 @@ bool UrlHasWebScheme(const GURL& url);
 // Returns true if the URL has a www content scheme, i.e. http, https or data.
 bool UrlHasWebScheme(NSURL* url);
 
+// The scheme used for links to install apps on iOS.
+inline constexpr char kMarketplaceKitScheme[] = "marketplace-kit";
+
 }  // namespace web
 
 #endif  // IOS_WEB_COMMON_URL_SCHEME_UTIL_H_

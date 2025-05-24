@@ -16,19 +16,6 @@
 namespace extensions {
 
 // static
-// Must match ScopedTestNativeMessagingHost::kHostName.
-const char* const NativeMessageEchoHost::kHostName =
-    "com.google.chrome.test.echo";
-
-// static
-// Must match ScopedTestNativeMessagingHost::kExtensionId.
-const char* const NativeMessageEchoHost::kOrigins[] = {
-    "chrome-extension://knldjmfmopnpolahpmmgbagdohdnhkik/"};
-
-// static
-const size_t NativeMessageEchoHost::kOriginCount = std::size(kOrigins);
-
-// static
 std::unique_ptr<NativeMessageHost> NativeMessageEchoHost::Create(
     content::BrowserContext* browser_context) {
   return std::make_unique<NativeMessageEchoHost>();

@@ -5,12 +5,14 @@
 #include "third_party/blink/renderer/core/css/font_face_set.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_font_face_set_load_status.h"
 #include "third_party/blink/renderer/core/css/font_face_cache.h"
 #include "third_party/blink/renderer/core/css/font_face_set_load_event.h"
 #include "third_party/blink/renderer/platform/font_family_names.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -48,6 +50,12 @@ void FontFaceSet::FireLoadingEvent() {
     DispatchEvent(
         *FontFaceSetLoadEvent::CreateForFontFaces(event_type_names::kLoading));
   }
+}
+
+V8FontFaceSetLoadStatus FontFaceSet::status() const {
+  return V8FontFaceSetLoadStatus(is_loading_
+                                     ? V8FontFaceSetLoadStatus::Enum::kLoading
+                                     : V8FontFaceSetLoadStatus::Enum::kLoaded);
 }
 
 FontFaceSet* FontFaceSet::addForBinding(ScriptState*,
@@ -189,31 +197,31 @@ ScriptPromise<IDLSequence<FontFace>> FontFaceSet::load(
     return ScriptPromise<IDLSequence<FontFace>>();
   }
 
-  Font font;
-  if (!ResolveFontStyle(font_string, font)) {
+  const Font* font = ResolveFontStyle(font_string);
+  if (!font) {
     return ScriptPromise<IDLSequence<FontFace>>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kSyntaxError,
-            "Could not resolve '" + font_string + "' as a font."));
+            WTF::StrCat({"Could not resolve '", font_string, "' as a font."})));
   }
 
   FontFaceCache* font_face_cache = GetFontSelector()->GetFontFaceCache();
-  FontFaceArray* faces = MakeGarbageCollected<FontFaceArray>();
-  for (const FontFamily* f = &font.GetFontDescription().Family(); f;
+  FontFaceArray faces = FontFaceArray();
+  for (const FontFamily* f = &font->GetFontDescription().Family(); f;
        f = f->Next()) {
     if (f->FamilyIsGeneric()) {
       continue;
     }
     CSSSegmentedFontFace* segmented_font_face =
-        font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
+        font_face_cache->Get(font->GetFontDescription(), f->FamilyName());
     if (segmented_font_face) {
-      segmented_font_face->Match(text, faces);
+      segmented_font_face->Match(text, &faces);
     }
   }
 
   auto* resolver =
-      MakeGarbageCollected<LoadFontPromiseResolver>(faces, script_state);
+      MakeGarbageCollected<LoadFontPromiseResolver>(&faces, script_state);
   auto promise = resolver->Promise();
   // After this, resolver->promise() may return null.
   resolver->LoadFonts();
@@ -227,11 +235,11 @@ bool FontFaceSet::check(const String& font_string,
     return false;
   }
 
-  Font font;
-  if (!ResolveFontStyle(font_string, font)) {
+  const Font* font = ResolveFontStyle(font_string);
+  if (!font) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
-        "Could not resolve '" + font_string + "' as a font.");
+        WTF::StrCat({"Could not resolve '", font_string, "' as a font."}));
     return false;
   }
 
@@ -243,15 +251,15 @@ bool FontFaceSet::check(const String& font_string,
     UChar32 c = text.CharacterStartingAt(index);
     index += U16_LENGTH(c);
 
-    for (const FontFamily* f = &font.GetFontDescription().Family(); f;
+    for (const FontFamily* f = &font->GetFontDescription().Family(); f;
          f = f->Next()) {
       if (f->FamilyIsGeneric() || font_selector->IsPlatformFamilyMatchAvailable(
-                                      font.GetFontDescription(), *f)) {
+                                      font->GetFontDescription(), *f)) {
         continue;
       }
 
       CSSSegmentedFontFace* face =
-          font_face_cache->Get(font.GetFontDescription(), f->FamilyName());
+          font_face_cache->Get(font->GetFontDescription(), f->FamilyName());
       if (face && !face->CheckFont(c)) {
         return false;
       }

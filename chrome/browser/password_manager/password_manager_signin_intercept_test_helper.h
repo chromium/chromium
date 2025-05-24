@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace base {
 class CommandLine;
@@ -54,13 +55,13 @@ class PasswordManagerSigninInterceptTestHelper {
   // Adds the account in the profile.
   CoreAccountId AddGaiaAccountToProfile(Profile* profile,
                                         const std::string& email,
-                                        const std::string& gaia_id);
+                                        const GaiaId& gaia_id);
 
   DiceWebSigninInterceptor* GetSigninInterceptor(Profile* profile);
 
   std::string gaia_username() const;
   std::string gaia_email() const;
-  std::string gaia_id() const;
+  GaiaId gaia_id() const;
 
  private:
   raw_ptr<const net::test_server::EmbeddedTestServer> https_test_server_;

@@ -6,18 +6,25 @@
 
 #include <set>
 
-#include "base/hash/md5.h"
 #include "base/i18n/time_formatting.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "crypto/obsolete/md5.h"
 
 namespace em = enterprise_management;
 
 namespace policy {
+
+// This is a separate function and not in `namespace {}` so it can be friended
+// by crypto/obsolete/md5, as required for using that class.
+crypto::obsolete::Md5 MakeMd5HasherForPolicyEventId() {
+  return {};
+}
 
 namespace {
 // Common Key names used when building the dictionary to pass to the Chrome
@@ -57,35 +64,22 @@ constexpr char kCrxInstallErrorDetail[] = "crxInstallErrorDetail";
 constexpr char kFetchErrorCode[] = "fetchErrorCode";
 constexpr char kFetchTries[] = "fetchTries";
 
-// Calculates hash for the given |event| and |context|, and stores the hash in
-// |hash|. Returns true if |event| and |context| are json serializable and
-// |hash| is not nullptr, otherwise return false.
-bool GetHash(const base::Value::Dict& event,
-             const base::Value::Dict& context,
-             std::string* hash) {
-  if (hash == nullptr) {
-    return false;
+// Serializes |event| and |context| as JSON and returns the MD5 hash of the two JSON strings
+// concatenated together. Returns std::nullopt if either |event| or |context| cannot be
+// serialized.
+std::optional<std::string> GetHash(const base::Value::Dict& event,
+                                   const base::Value::Dict& context) {
+  std::optional<std::string> event_json = base::WriteJson(event);
+  std::optional<std::string> context_json = base::WriteJson(context);
+
+  if (!event_json || !context_json) {
+    return std::nullopt;
   }
 
-  std::string serialized_string;
-  JSONStringValueSerializer serializer(&serialized_string);
-  if (!serializer.Serialize(event)) {
-    return false;
-  }
-
-  base::MD5Context ctx;
-  base::MD5Init(&ctx);
-  base::MD5Update(&ctx, serialized_string);
-
-  if (!serializer.Serialize(context)) {
-    return false;
-  }
-  base::MD5Update(&ctx, serialized_string);
-
-  base::MD5Digest digest;
-  base::MD5Final(&digest, &ctx);
-  *hash = base::MD5DigestToBase16(digest);
-  return true;
+  crypto::obsolete::Md5 hasher = MakeMd5HasherForPolicyEventId();
+  hasher.Update(base::as_byte_span(*event_json));
+  hasher.Update(base::as_byte_span(*context_json));
+  return base::ToLowerASCII(base::HexEncode(hasher.Finish()));
 }
 
 }  // namespace
@@ -245,9 +239,8 @@ base::Value::Dict ConvertExtensionEventToValue(
     wrapper.Set(kTime, base::TimeFormatAsIso8601(timestamp));
   }
 
-  std::string event_id;
-  if (GetHash(wrapper, context, &event_id)) {
-    wrapper.Set(kEventId, event_id);
+  if (auto event_id = GetHash(wrapper, context)) {
+    wrapper.Set(kEventId, *event_id);
   }
 
   return wrapper;
@@ -344,9 +337,8 @@ base::Value::Dict ConvertArcAppEventToValue(
     wrapper.Set(kTime, base::TimeFormatAsIso8601(timestamp));
   }
 
-  std::string event_id;
-  if (GetHash(wrapper, context, &event_id)) {
-    wrapper.Set(kEventId, event_id);
+  if (auto event_id = GetHash(wrapper, context)) {
+    wrapper.Set(kEventId, *event_id);
   }
 
   return wrapper;

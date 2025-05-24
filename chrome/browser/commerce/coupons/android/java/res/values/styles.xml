@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2014 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="TextAppearance.DiscountCodeText" parent="TextAppearance.TextSmall.Primary">
+        <item name="android:textColor">@color/price_drop_annotation_text_green</item>
+    </style>
+</resources>

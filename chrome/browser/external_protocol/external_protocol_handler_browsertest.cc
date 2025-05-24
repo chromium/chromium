@@ -133,7 +133,7 @@ class TabAddedRemovedObserver : public TabStripModelObserver {
       loop_.Quit();
       return;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void Wait() {
@@ -268,8 +268,7 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
 
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
                                                     Profile* profile) override {
@@ -283,12 +282,12 @@ class AlwaysBlockedExternalProtocolHandlerDelegate
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
       content::WebContents* web_contents) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void FinishedProcessingCheck() override {}
 };

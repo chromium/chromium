@@ -5,9 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=/tangible_sync_style_shared_lit.css.js
+ * #import=/tangible_sync_style_shared.css.js
  * #scheme=relative
- * #include=tangible-sync-style-shared-lit
+ * #include=tangible-sync-style-shared
  * #css_wrapper_metadata_end */
 
 :host {
@@ -21,6 +21,7 @@
 
 .icon-container {
   text-align: center;
+  margin-bottom: 24px;
 }
 
 .text-container {
@@ -39,15 +40,18 @@
   line-height: 24px;
   width: 564px;
 }
+
 .tangible-sync-style .title {
-  font-size: 36px;
-  line-height: 44px;
+  font-size: 24px;
+  line-height: 32px;
+  margin: auto;
 }
 
 .tangible-sync-style .subtitle {
+  color: var(--google-grey-700);
   font-size: 16px;
   line-height: 24px;
-  color: var(--google-grey-700);
+  margin: auto;
 }
 
 @media (prefers-color-scheme: dark) {

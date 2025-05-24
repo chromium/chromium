@@ -26,7 +26,7 @@ class SESSIONS_EXPORT TabRestoreServiceObserver {
   virtual void TabRestoreServiceLoaded(TabRestoreService* service) {}
 
  protected:
-  virtual ~TabRestoreServiceObserver() {}
+  virtual ~TabRestoreServiceObserver() = default;
 };
 
 }  // namespace sessions

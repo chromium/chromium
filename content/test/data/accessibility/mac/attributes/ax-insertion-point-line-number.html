@@ -4,34 +4,46 @@
   wait for AXFocusedUIElementChanged on AXTextField
   emptyLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
   emptyLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  emptyLine.accessibilityInsertionPointLineNumber
   singleLine.setAccessibilityFocused(TRUE)
   wait for AXFocusedUIElementChanged on AXTextField
   singleLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
   singleLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  singleLine.accessibilityInsertionPointLineNumber
   press ArrowRight
   singleLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  singleLine.accessibilityInsertionPointLineNumber
   multiLine.setAccessibilityFocused(TRUE)
   wait for AXFocusedUIElementChanged on AXTextField
   multiLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
   multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine.accessibilityInsertionPointLineNumber
   press ArrowRight
   multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine.accessibilityInsertionPointLineNumber
   press ArrowDown
   multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine.accessibilityInsertionPointLineNumber
   press ArrowLeft
   multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine.accessibilityInsertionPointLineNumber
   press ArrowDown
   multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine.accessibilityInsertionPointLineNumber
   press ArrowRight
   multiLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine.accessibilityInsertionPointLineNumber
   multiLine_emptyFirstLine.setAccessibilityFocused(TRUE)
   wait for AXFocusedUIElementChanged on AXTextField
   multiLine_emptyFirstLine.accessibilityAttributeNames.has(AXInsertionPointLineNumber)
   multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine_emptyFirstLine.accessibilityInsertionPointLineNumber
   press ArrowDown
   multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine_emptyFirstLine.accessibilityInsertionPointLineNumber
   press ArrowRight
   multiLine_emptyFirstLine.accessibilityAttributeValue(AXInsertionPointLineNumber)
+  multiLine_emptyFirstLine.accessibilityInsertionPointLineNumber
 -->
 <!DOCTYPE html>
 <style>

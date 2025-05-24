@@ -61,8 +61,9 @@ class FakeOverlayRequestQueueImplDelegate
   const RemovedRequestStorage* GetRemovedRequestStorage(
       OverlayRequest* request) {
     for (auto& storage : removed_requests_) {
-      if (storage.request.get() == request)
+      if (storage.request.get() == request) {
         return &storage;
+      }
     }
     return nullptr;
   }

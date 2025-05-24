@@ -18,6 +18,22 @@ enum class PermissionRequestGestureType {
   NUM
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PermissionRequestRelevance)
+enum class PermissionRequestRelevance {
+  kUnspecified = 0,
+  kVeryLow = 1,
+  kLow = 2,
+  kMedium = 3,
+  kHigh = 4,
+  kVeryHigh = 5,
+
+  // Always keep at the end.
+  kMaxValue = kVeryHigh,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionRequestRelevance)
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_ENUMS_H_

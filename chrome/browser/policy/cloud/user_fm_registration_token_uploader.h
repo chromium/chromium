@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_POLICY_CLOUD_USER_FM_REGISTRATION_TOKEN_UPLOADER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_observer.h"
@@ -47,7 +48,7 @@ class UserFmRegistrationTokenUploader : public KeyedService,
 
   raw_ptr<CloudPolicyManager> policy_manager_ = nullptr;
 
-  std::unique_ptr<FmRegistrationTokenUploader> uploader_;
+  std::vector<std::unique_ptr<FmRegistrationTokenUploader>> uploaders_;
 };
 
 }  // namespace policy

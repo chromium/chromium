@@ -29,13 +29,13 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 namespace {
 
 bool ClearBrowsingData(bool off_the_record, BrowsingDataRemoveMask mask) {
-  ChromeBrowserState* browser_state =
-      off_the_record ? chrome_test_util::GetCurrentIncognitoBrowserState()
-                     : chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = off_the_record
+                            ? chrome_test_util::GetCurrentIncognitoProfile()
+                            : chrome_test_util::GetOriginalProfile();
 
   __block bool did_complete = false;
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(browser_state);
+      BrowsingDataRemoverFactory::GetForProfile(profile);
   browsingDataRemover->Remove(browsing_data::TimePeriod::ALL_TIME, mask,
                               base::BindOnce(^{
                                 did_complete = true;
@@ -69,7 +69,7 @@ bool ClearCookiesAndSiteData() {
 bool ClearAllWebStateBrowsingData() {
   __block bool callback_finished = false;
   WKWebsiteDataStore* data_store =
-      web::GetDataStoreForBrowserState(GetOriginalBrowserState());
+      web::GetDataStoreForBrowserState(GetOriginalProfile());
   [data_store removeDataOfTypes:[WKWebsiteDataStore allWebsiteDataTypes]
                   modifiedSince:[NSDate distantPast]
               completionHandler:^{
@@ -81,10 +81,10 @@ bool ClearAllWebStateBrowsingData() {
 }
 
 bool ClearCertificatePolicyCache(bool off_the_record) {
-  ChromeBrowserState* browser_state = off_the_record
-                                          ? GetCurrentIncognitoBrowserState()
-                                          : GetOriginalBrowserState();
-  auto cache = web::BrowserState::GetCertificatePolicyCache(browser_state);
+  ProfileIOS* profile =
+      off_the_record ? GetCurrentIncognitoProfile() : GetOriginalProfile();
+  scoped_refptr<web::CertificatePolicyCache> cache =
+      web::BrowserState::GetCertificatePolicyCache(profile);
   __block BOOL policies_cleared = NO;
   web::GetIOThreadTaskRunner({})->PostTask(FROM_HERE, base::BindOnce(^{
                                              cache->ClearCertificatePolicies();
@@ -97,11 +97,10 @@ bool ClearCertificatePolicyCache(bool off_the_record) {
 
 int GetBrowsingHistoryEntryCount(NSError** error) {
   // Call the history service.
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   history::HistoryService* history_service =
-      ios::HistoryServiceFactory::GetForBrowserState(
-          browser_state, ServiceAccessType::EXPLICIT_ACCESS);
+      ios::HistoryServiceFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   __block bool history_service_callback_called = false;
   __block int count = -1;

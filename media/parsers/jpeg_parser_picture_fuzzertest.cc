@@ -22,6 +22,6 @@ Environment* env = new Environment();
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   media::JpegParseResult result;
-  ParseJpegPicture(base::make_span(data, size), &result);
+  ParseJpegPicture(base::span(data, size), &result);
   return 0;
 }

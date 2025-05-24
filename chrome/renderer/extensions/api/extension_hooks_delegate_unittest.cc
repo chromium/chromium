@@ -30,13 +30,13 @@ namespace extensions {
 class ExtensionHooksDelegateTest
     : public NativeExtensionBindingsSystemUnittest {
  public:
-  ExtensionHooksDelegateTest() {}
+  ExtensionHooksDelegateTest() = default;
 
   ExtensionHooksDelegateTest(const ExtensionHooksDelegateTest&) = delete;
   ExtensionHooksDelegateTest& operator=(const ExtensionHooksDelegateTest&) =
       delete;
 
-  ~ExtensionHooksDelegateTest() override {}
+  ~ExtensionHooksDelegateTest() override = default;
 
   // NativeExtensionBindingsSystemUnittest:
   void SetUp() override {

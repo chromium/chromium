@@ -255,12 +255,16 @@ def main():
   # Calculate the absolute path to the pixel test executable file.
   executable_full_path = pathlib.Path(known_args.test_target).resolve()
 
+  # Leverage testing/xvfb.py to set up Aura env.
+  xvfb_py_full_path = pathlib.Path('testing/xvfb.py').resolve()
+
   # Calculate the absolute path to the directory that hosts output data.
   output_root_path = pathlib.Path(known_args.root_dir).resolve()
 
   # Skip the Skia Gold functionality. Because this script compares images
   # through hash code.
   pixel_test_command_base = [
+      str(xvfb_py_full_path),
       str(executable_full_path), '--bypass-skia-gold-functionality'
   ]
 

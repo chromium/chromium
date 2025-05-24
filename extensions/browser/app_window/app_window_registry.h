@@ -44,7 +44,7 @@ class AppWindowRegistry : public KeyedService,
     // it not visible.
     virtual void OnAppWindowHidden(AppWindow* app_window);
     // Called just after an app window was shown.
-    // |was_hidden| will be true if the app window was considered hidden or if
+    // `was_hidden` will be true if the app window was considered hidden or if
     // it had not been shown before.
     virtual void OnAppWindowShown(AppWindow* app_window, bool was_hidden);
     // Called just after an app window was activated.
@@ -67,7 +67,7 @@ class AppWindowRegistry : public KeyedService,
   static AppWindowRegistry* Get(content::BrowserContext* context);
 
   void AddAppWindow(AppWindow* app_window);
-  // Called by |app_window| when it is activated.
+  // Called by `app_window` when it is activated.
   void AppWindowActivated(AppWindow* app_window);
   void AppWindowHidden(AppWindow* app_window);
   void AppWindowShown(AppWindow* app_window, bool was_hidden);
@@ -98,7 +98,7 @@ class AppWindowRegistry : public KeyedService,
 
   // Returns whether a AppWindow's ID was last known to have a DevToolsAgent
   // attached to it, which should be restored during a reload of a corresponding
-  // newly created |web_contents|.
+  // newly created `web_contents`.
   bool HadDevToolsAttached(content::WebContents* web_contents) const;
 
   class Factory : public BrowserContextKeyedServiceFactory {
@@ -124,17 +124,17 @@ class AppWindowRegistry : public KeyedService,
   };
 
  private:
-  // Ensures the specified |app_window| is included in |app_windows_|.
-  // Otherwise adds |app_window| to the back of |app_windows_|.
+  // Ensures the specified `app_window` is included in `app_windows_`.
+  // Otherwise adds `app_window` to the back of `app_windows_`.
   void AddAppWindowToList(AppWindow* app_window);
 
-  // Bring |app_window| to the front of |app_windows_|. If it is not in the
+  // Bring `app_window` to the front of `app_windows_`. If it is not in the
   // list, add it first.
   void BringToFront(AppWindow* app_window);
 
   // Create a key that identifies an AppWindow across App reloads. If the window
   // was given an id in CreateParams, the key is the extension id, a colon
-  // separator, and the AppWindow's |id|. If there is no |id|, the
+  // separator, and the AppWindow's `id`. If there is no `id`, the
   // chrome-extension://extension-id/page.html URL will be used. If the
   // WebContents is not for a AppWindow, return an empty string.
   std::string GetWindowKeyForWebContents(

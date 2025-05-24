@@ -4,27 +4,18 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "HSTSPolicyBypassList": [
-            "example"
-          ]
-        },
-        "prefs": {
-          "hsts.policy.upgrade_bypass_list": {
-            "location": "user_profile",
-            "value": [
-              "example"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "hsts.policy.upgrade_bypass_list",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "example"
+        ]
+      ]
+    }
   }
 ]

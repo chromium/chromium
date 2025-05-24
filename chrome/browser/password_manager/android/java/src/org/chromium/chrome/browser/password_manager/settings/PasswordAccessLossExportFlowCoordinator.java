@@ -4,12 +4,17 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
+import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -27,6 +32,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
  * PasswordAccessLossImportDialogCoordinator}). This step is executed only if GMS Core is installed
  * and up to date.
  */
+@NullMarked
 public class PasswordAccessLossExportFlowCoordinator
         implements PasswordAccessLossExportDialogCoordinator.Observer {
     private final FragmentActivity mActivity;
@@ -35,6 +41,8 @@ public class PasswordAccessLossExportFlowCoordinator
     private final Runnable mChromeShutDownRunnable;
     private final PasswordAccessLossExportDialogCoordinator mExportDialogCoordinator;
 
+    private final @PasswordAccessLossWarningType int mWarningType;
+
     public PasswordAccessLossExportFlowCoordinator(
             FragmentActivity activity,
             Profile profile,
@@ -42,11 +50,11 @@ public class PasswordAccessLossExportFlowCoordinator
         mActivity = activity;
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mWarningType = getAccessLossWarningType();
         // In case the warning is prompted for the NEW_GMS_CORE_MIGRATION_FAILED case, the user will
         // be redirected to the import flow in GMS Core. Therefore, Chrome should be restarted
         // instead of shut down so that it doesn't interfere with GMS Core opening.
-        boolean shouldRestartChrome =
-                getAccessLossWarningType() == PasswordAccessLossWarningType.NO_GMS_CORE;
+        boolean shouldRestartChrome = mWarningType == PasswordAccessLossWarningType.NO_GMS_CORE;
         mChromeShutDownRunnable = () -> ApplicationLifetime.terminate(shouldRestartChrome);
         mExportDialogCoordinator =
                 new PasswordAccessLossExportDialogCoordinator(mActivity, mProfile, this);
@@ -62,6 +70,7 @@ public class PasswordAccessLossExportFlowCoordinator
         mActivity = activity;
         mProfile = profile;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
+        mWarningType = getAccessLossWarningType();
         mChromeShutDownRunnable = chromeShutDownRunnable;
         mExportDialogCoordinator = exportDialogCoordinator;
     }
@@ -84,13 +93,15 @@ public class PasswordAccessLossExportFlowCoordinator
 
     private @PasswordAccessLossWarningType int getAccessLossWarningType() {
         PrefService prefService = UserPrefs.get(mProfile);
-        return PasswordManagerHelper.getAccessLossWarningType(prefService);
+        return PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService);
     }
 
     @Override
     public void onPasswordsDeletionFinished() {
-        if (getAccessLossWarningType()
-                != PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED) {
+        if (mWarningType != PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED) {
+            // If in the flow with no GMS Core on the device, the export flow ends here.
+            logExportFlowLastStepMetric(
+                    getAccessLossWarningType(), PasswordAccessLossWarningExportStep.EXPORT_DONE);
             mChromeShutDownRunnable.run();
             return;
         }

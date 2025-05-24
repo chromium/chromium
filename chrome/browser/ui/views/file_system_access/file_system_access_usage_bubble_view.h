@@ -59,11 +59,13 @@ class FileSystemAccessUsageBubbleView : public LocationBarBubbleDelegateView {
     ui::ImageModel GetIcon(size_t row) override;
     std::u16string GetTooltip(size_t row) override;
     void SetObserver(ui::TableModelObserver*) override;
-
    private:
     const std::vector<base::FilePath> files_;
     const std::vector<base::FilePath> directories_;
   };
+
+  // Updates the visibility state of the bubble in the action item framework.
+  void UpdateBubbleVisibilityState(bool is_bubble_visible);
 
   FileSystemAccessUsageBubbleView(views::View* anchor_view,
                                   content::WebContents* web_contents,

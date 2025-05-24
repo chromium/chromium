@@ -107,17 +107,22 @@ class small_map_default_init {
 template <typename M>
 struct has_key_equal {
   typedef char sml;  // "small" is sometimes #defined so we use an abbreviation.
-  typedef struct { char dummy[2]; } big;
+  typedef struct {
+    char dummy[2];
+  } big;
   // Two functions, one accepts types that have a key_equal member, and one that
   // accepts anything. They each return a value of a different size, so we can
   // determine at compile-time which function would have been called.
-  template <typename U> static big test(typename U::key_equal*);
-  template <typename> static sml test(...);
+  template <typename U>
+  static big test(typename U::key_equal*);
+  template <typename>
+  static sml test(...);
   // Determines if M::key_equal exists by looking at the size of the return
   // type of the compiler-chosen test() function.
   static const bool value = (sizeof(test<M>(0)) == sizeof(big));
 };
-template <typename M> const bool has_key_equal<M>::value;
+template <typename M>
+const bool has_key_equal<M>::value;
 
 // Base template used for map types that do NOT have an M::key_equal member,
 // e.g., std::map<>. These maps have a strict weak ordering comparator rather
@@ -178,7 +183,9 @@ class small_map {
   }
 
   constexpr void operator=(const small_map& src) {
-    if (&src == this) return;
+    if (&src == this) {
+      return;
+    }
 
     // This is not optimal. If src and dest are both using the small array, we
     // could skip the teardown and reconstruct. One problem to be resolved is

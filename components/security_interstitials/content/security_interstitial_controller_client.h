@@ -6,12 +6,14 @@
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SECURITY_INTERSTITIAL_CONTROLLER_CLIENT_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "url/gurl.h"
 
 namespace content {
-  class WebContents;
-}
+class RenderFrameHost;
+class WebContents;
+}  // namespace content
 
 namespace security_interstitials {
 
@@ -47,6 +49,9 @@ class SecurityInterstitialControllerClient
   void OpenUrlInCurrentTab(const GURL& url) override;
   void OpenUrlInNewForegroundTab(const GURL& url) override;
   void OpenEnhancedProtectionSettings() override;
+#if BUILDFLAG(IS_ANDROID)
+  void OpenAdvancedProtectionSettings() override;
+#endif
   PrefService* GetPrefService() override;
   const std::string& GetApplicationLocale() const override;
   bool CanLaunchDateAndTimeSettings() override;
@@ -56,9 +61,11 @@ class SecurityInterstitialControllerClient
  protected:
   // security_interstitials::ControllerClient overrides.
   const std::string GetExtendedReportingPrefName() const override;
-  raw_ptr<content::WebContents> web_contents_;
+  content::WebContents* web_contents() { return &*web_contents_; }
+  content::RenderFrameHost* InterstitialRenderFrameHost() const;
 
  private:
+  base::WeakPtr<content::WebContents> web_contents_;
   raw_ptr<PrefService> prefs_;
   const std::string app_locale_;
   // The default safe page we should go to if there is no previous page to go

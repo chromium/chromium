@@ -38,6 +38,12 @@ struct StructTraits<webnn::mojom::SupportedDataTypesDataView,
   static bool uint8(const webnn::SupportedDataTypes& supported_data_types) {
     return supported_data_types.Has(webnn::OperandDataType::kUint8);
   }
+  static bool int4(const webnn::SupportedDataTypes& supported_data_types) {
+    return supported_data_types.Has(webnn::OperandDataType::kInt4);
+  }
+  static bool uint4(const webnn::SupportedDataTypes& supported_data_types) {
+    return supported_data_types.Has(webnn::OperandDataType::kUint4);
+  }
   static bool Read(webnn::mojom::SupportedDataTypesDataView data,
                    webnn::SupportedDataTypes* out) {
     if (data.float32()) {
@@ -63,6 +69,12 @@ struct StructTraits<webnn::mojom::SupportedDataTypesDataView,
     }
     if (data.uint8()) {
       out->Put(webnn::OperandDataType::kUint8);
+    }
+    if (data.int4()) {
+      out->Put(webnn::OperandDataType::kInt4);
+    }
+    if (data.uint4()) {
+      out->Put(webnn::OperandDataType::kUint4);
     }
     return true;
   }

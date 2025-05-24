@@ -7,7 +7,7 @@ import './extension_permission.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ParentAccessEvent} from '../parent_access_app.js';
-import {ExtensionApprovalsParams} from '../parent_access_ui.mojom-webui.js';
+import type {ExtensionApprovalsParams} from '../parent_access_ui.mojom-webui.js';
 import {getParentAccessParams} from '../parent_access_ui_handler.js';
 import {decodeMojoString16, getBase64EncodedSrcForPng} from '../utils.js';
 
@@ -37,6 +37,8 @@ export class ExtensionApprovalsTemplate extends PolymerElement {
     };
   }
 
+  screenTitle: string;
+  screenSubtitle: string;
   extensionIconSrc: string;
   extensionName: string;
   extensionPermissions: Permission[];

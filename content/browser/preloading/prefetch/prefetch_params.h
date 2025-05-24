@@ -54,10 +54,10 @@ bool PrefetchCloseIdleSockets();
 // Whether a spare renderer should be started after prefetching.
 bool PrefetchStartsSpareRenderer();
 
-// The amount of time |PrefetchService| will keep an owned |PrefetchContainer|
-// alive. If this value is zero or less, the service will keep the prefetch
-// forever.
-base::TimeDelta PrefetchContainerLifetimeInPrefetchService();
+// The default amount of time `PrefetchService` will keep an owned
+// `PrefetchContainer` alive. If this value is zero or less, the service will
+// keep the prefetch forever. This can be overridden in the `PrefetchContainer`.
+base::TimeDelta PrefetchContainerDefaultTtlInPrefetchService();
 
 // Returns if the specified host should have the prefetch proxy bypassed for
 // testing purposes. Currently this is only used for WPT test servers.
@@ -100,11 +100,18 @@ int PrefetchCanaryCheckRetries();
 // The maximum amount of time to block until the head of a prefetch is received.
 // If the value is zero or less, then a navigation can be blocked indefinitely.
 CONTENT_EXPORT base::TimeDelta PrefetchBlockUntilHeadTimeout(
-    const PrefetchType& prefetch_type);
+    const PrefetchType& prefetch_type,
+    bool is_nav_prerender);
 
-// Gets the histogram suffix to use for the given eagerness parameter.
-CONTENT_EXPORT std::string GetPrefetchEagernessHistogramSuffix(
-    blink::mojom::SpeculationEagerness eagerness);
+// Gets the histogram suffix for the given `prefetch_type` and
+// `embedder_histogram_suffix`.
+// `embedder_histogram_suffix` will be utilized directly to generate the
+// histogram names. `TriggerTypeAndEagerness` in
+// //tools/metrics/histograms/metadata/prefetch/histograms.xml should be updated
+// if we start using a new one.
+CONTENT_EXPORT std::string GetMetricsSuffixTriggerTypeAndEagerness(
+    const PrefetchType prefetch_type,
+    const std::optional<std::string>& embedder_histogram_suffix);
 
 // Returns the max number of eager prefetches allowed.
 size_t MaxNumberOfEagerPrefetchesPerPage();
@@ -118,10 +125,10 @@ bool PrefetchNIKScopeEnabled();
 // Please see crbug.com/40946257 for more details.
 bool PrefetchBrowserInitiatedTriggersEnabled();
 
-// Returns true iff prefetch code should use new wait loop in
-// `PrefetchMatchResolver2::FindPrefetch()` instead of
-// `PrefetchService::GetPrefetchToServe()`.
-CONTENT_EXPORT bool UseNewWaitLoop();
+size_t GetPrefetchDataPipeTeeBodySizeLimit();
+
+// Returns true iff we should use `PrefetchScheduler`.
+CONTENT_EXPORT bool UsePrefetchScheduler();
 
 }  // namespace content
 

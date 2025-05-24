@@ -21,8 +21,7 @@ TrackedPreferenceIncident::TrackedPreferenceIncident(
       tracked_preference_incident.release());
 }
 
-TrackedPreferenceIncident::~TrackedPreferenceIncident() {
-}
+TrackedPreferenceIncident::~TrackedPreferenceIncident() = default;
 
 IncidentType TrackedPreferenceIncident::GetType() const {
   return IncidentType::TRACKED_PREFERENCE;

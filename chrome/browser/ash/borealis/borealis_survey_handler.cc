@@ -6,8 +6,10 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
-#include "base/functional/bind_internal.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -52,7 +54,7 @@ std::optional<int> BorealisSurveyHandler::GetGameId(const std::string& app_id) {
 
 base::flat_map<std::string, std::string> BorealisSurveyHandler::GetSurveyData(
     std::string owner_id,
-    const std::string app_id,
+    std::string app_id,
     std::string window_title,
     std::optional<int> game_id) {
   // Number of monitors

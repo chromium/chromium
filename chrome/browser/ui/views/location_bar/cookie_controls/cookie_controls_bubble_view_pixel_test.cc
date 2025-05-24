@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -21,9 +21,9 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
@@ -35,9 +35,6 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
-using Status = content_settings::TrackingProtectionBlockingStatus;
-using FeatureType = content_settings::TrackingProtectionFeatureType;
-
 class CookieControlsBubbleViewPixelTest
     : public DialogBrowserTest,
       public testing::WithParamInterface<CookieBlocking3pcdStatus> {
@@ -46,6 +43,7 @@ class CookieControlsBubbleViewPixelTest
 
   void TearDownOnMainThread() override {
     cookie_controls_coordinator_ = nullptr;
+    controller_ = nullptr;
     cookie_controls_icon_ = nullptr;
     DialogBrowserTest::TearDownOnMainThread();
   }
@@ -97,22 +95,21 @@ class CookieControlsBubbleViewPixelTest
         CookieSettingsFactory::GetForProfile(browser()->profile()),
         /*original_cookie_settings=*/nullptr,
         HostContentSettingsMapFactory::GetForProfile(browser()->profile()),
-        /*tracking_protection_settings=*/nullptr);
+        TrackingProtectionSettingsFactory::GetForProfile(browser()->profile()),
+        /*is_incognito_profile=*/false);
 
     cookie_controls_coordinator_ =
-        cookie_controls_icon_->GetCoordinatorForTesting();
+        &cookie_controls_icon_->GetCoordinatorForTesting();
     cookie_controls_coordinator_->SetDisplayNameForTesting(u"example.com");
   }
 
-  void SetStatus(
-      bool controls_visible,
-      bool protections_on,
-      CookieControlsEnforcement enforcement,
-      CookieBlocking3pcdStatus blocking_status,
-      int days_to_expiration,
-      std::vector<content_settings::TrackingProtectionFeature> features) {
+  void SetStatus(CookieControlsState controls_state,
+                 CookieControlsEnforcement enforcement,
+                 CookieBlocking3pcdStatus blocking_status,
+                 int days_to_expiration) {
     // ShowBubble will initialize the view controller.
     cookie_controls_coordinator_->ShowBubble(
+        browser()->GetBrowserView().toolbar_button_provider(),
         browser()->tab_strip_model()->GetActiveWebContents(),
         controller_.get());
     auto expiration = days_to_expiration
@@ -123,9 +120,8 @@ class CookieControlsBubbleViewPixelTest
     // after OnStatusChanged() is called it will pull state from
     // CookieControlsController, which has not been updated to reflect what is
     // needed for this test.
-    view_controller()->OnStatusChanged(controls_visible, protections_on,
-                                       enforcement, blocking_status, expiration,
-                                       features);
+    view_controller()->OnStatusChanged(controls_state, enforcement,
+                                       blocking_status, expiration);
     cookie_controls_icon()->DisableUpdatesForTesting();
   }
 
@@ -158,20 +154,6 @@ class CookieControlsBubbleViewPixelTest
     }
   }
 
-  std::vector<content_settings::TrackingProtectionFeature>
-  GetTrackingProtectionFeatures() {
-    if (protections_on_) {
-      if (GetParam() == CookieBlocking3pcdStatus::kLimited) {
-        return {
-            {FeatureType::kThirdPartyCookies, enforcement_, Status::kLimited}};
-      } else {
-        return {
-            {FeatureType::kThirdPartyCookies, enforcement_, Status::kBlocked}};
-      }
-    }
-    return {{FeatureType::kThirdPartyCookies, enforcement_, Status::kAllowed}};
-  }
-
   void ShowUi(const std::string& name_with_param_suffix) override {
     BlockThirdPartyCookies();
     NavigateToUrlWithThirdPartyCookies();
@@ -179,8 +161,7 @@ class CookieControlsBubbleViewPixelTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "CookieControlsBubbleViewImpl");
     cookie_controls_icon()->ExecuteForTesting();
-    SetStatus(controls_visible_, protections_on_, enforcement_, GetParam(),
-              days_to_expiration_, GetTrackingProtectionFeatures());
+    SetStatus(controls_state_, enforcement_, GetParam(), days_to_expiration_);
     waiter.WaitIfNeededAndGet();
 
     // Even with the waiter, it's possible that the toggle is in the process
@@ -213,10 +194,10 @@ class CookieControlsBubbleViewPixelTest
   }
 
  protected:
-  bool controls_visible_ = true;
-  bool protections_on_ = true;
   CookieControlsEnforcement enforcement_ =
       CookieControlsEnforcement::kNoEnforcement;
+  CookieControlsState controls_state_ = CookieControlsState::kBlocked3pc;
+
   int days_to_expiration_ = 0;
   // Overriding `base::Time::Now()` to obtain a consistent X days until
   // exception expiration calculation regardless of the time the test runs.
@@ -238,34 +219,36 @@ IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_PermanentException) {
-  protections_on_ = false;
+  set_baseline("6229914");
+  controls_state_ = CookieControlsState::kAllowed3pc;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_TemporaryException) {
-  protections_on_ = false;
+  set_baseline("6229914");
+  controls_state_ = CookieControlsState::kAllowed3pc;
   days_to_expiration_ = 90;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByCookieSetting) {
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByCookieSetting;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByPolicy) {
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByPolicy;
   ShowAndVerifyUi();
 }
 
 IN_PROC_BROWSER_TEST_P(CookieControlsBubbleViewPixelTest,
                        InvokeUi_EnforcedByExtension) {
-  protections_on_ = false;
+  controls_state_ = CookieControlsState::kAllowed3pc;
   enforcement_ = CookieControlsEnforcement::kEnforcedByExtension;
   ShowAndVerifyUi();
 }

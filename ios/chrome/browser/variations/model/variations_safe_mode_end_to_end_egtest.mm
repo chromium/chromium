@@ -17,7 +17,6 @@
 #import "components/variations/pref_names.h"
 #import "components/variations/service/safe_seed_manager.h"
 #import "components/variations/variations_test_utils.h"
-
 #import "ios/chrome/browser/variations/model/variations_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -116,9 +115,9 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   self.continueAfterFailure = YES;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self resetAppState:[self appConfigurationForCleanRestart]];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -127,15 +126,8 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 //
 // Corresponds to VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
 // in variations_safe_mode_browsertest.cc.
-- (void)testVariationsSafeModeEndToEnd {
-// TODO(crbug.com/40215027): Test fails on iOS 17.5+ iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 17.5, *)) {
-    if ([ChromeEarlGrey isIPadIdiom]) {
-      EARL_GREY_TEST_DISABLED(@"This test fails on iOS 17.5+ iPad device.");
-    }
-  }
-#endif
+// TODO(crbug.com/379849501): Test is flaky on various bots.
+- (void)DISABLED_testVariationsSafeModeEndToEnd {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
 
   // Set the safe seed value. Validate that the seed is set but not active.

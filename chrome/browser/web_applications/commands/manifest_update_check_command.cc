@@ -418,14 +418,13 @@ ManifestUpdateCheckCommand::MakeAppIconIdentityUpdateDecision() const {
   // Web apps that were installed by sync but have generated icons get a window
   // of time where they can "fix" themselves silently to use the site provided
   // icons.
-  if (base::FeatureList::IsEnabled(
-          features::kWebAppSyncGeneratedIconUpdateFix) &&
-      web_app.is_generated_icon() &&
+  if (web_app.is_generated_icon() &&
       web_app.latest_install_source() == webapps::WebappInstallSource::SYNC &&
       generated_icon_fix_util::IsWithinFixTimeWindow(web_app)) {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     generated_icon_fix_util::EnsureFixTimeWindowStarted(
-        *lock_, update, app_id_, GeneratedIconFixSource_MANIFEST_UPDATE);
+        *lock_, update, app_id_,
+        proto::GENERATED_ICON_FIX_SOURCE_MANIFEST_UPDATE);
     return IdentityUpdateDecision::kSilentlyAllow;
   }
 

@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_op_resolver.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "third_party/tensorflow-text/src/tensorflow_text/core/kernels/mst_solver.h"
@@ -57,21 +58,21 @@ void DependencyParserModel::UpdateWithFile(base::File model_file) {
   ScopedDependencyParserModelStateRecorder recorder(
       DependencyParserModelState::kModelFileInvalid);
 
-  if (!model_file.IsValid()) {
+  model_file_ = std::move(model_file);
+  if (!model_file_.IsValid()) {
     return;
   }
 
   base::ElapsedTimer timer;
-  std::string file_content(model_file.GetLength(), '\0');
-  if (!model_file.ReadAndCheck(0, base::as_writable_byte_span(file_content))) {
-    return;
-  }
-
   auto tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
       std::make_unique<DependencyParserOpResolver>());
-  absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
-      reinterpret_cast<const char*>(std::data(file_content)),
-      model_file.GetLength());
+#if BUILDFLAG(IS_WIN)
+  absl::Status model_load_status =
+      tflite_engine->BuildModelFromFileHandle(model_file_.GetPlatformFile());
+#else
+  absl::Status model_load_status = tflite_engine->BuildModelFromFileDescriptor(
+      model_file_.GetPlatformFile());
+#endif
   if (!model_load_status.ok()) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "Accessibility.DependencyParserModel.InvalidModelFile", true);
@@ -110,8 +111,8 @@ int64_t DependencyParserModel::GetModelVersion() const {
   return 1;
 }
 
-std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
-    std::vector<std::string> input) {
+std::vector<size_t> DependencyParserModel::GetDependencyHeads(
+    base::span<const std::string> input) {
   DCHECK(IsAvailable());
   base::ElapsedTimer timer;
 
@@ -126,7 +127,7 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
   TfLiteTensor* input_tensor = interpreter->input_tensor(0);
   tflite::DynamicBuffer input_buffer;
 
-  for (absl::string_view token : input) {
+  for (const auto& token : input) {
     tflite::StringRef string_ref;
     string_ref.str = token.data();
     string_ref.len = token.size();
@@ -147,7 +148,7 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
   const TfLiteTensor* output_tensor = interpreter->output_tensor(0);
   if (output_tensor == nullptr) {
     DLOG(ERROR) << "Error: output tensor is null.";
-    return std::vector<unsigned int>();
+    return {};
   }
   size_t size = output_tensor->dims->data[0];
   base::UmaHistogramBoolean(
@@ -155,7 +156,7 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
       size == input.size());
   if (size != input.size()) {
     DLOG(ERROR) << "Error: output tensor size does not match input size.";
-    return std::vector<unsigned int>();
+    return {};
   }
 
   std::vector<std::vector<float>> dependency_graph;
@@ -170,21 +171,19 @@ std::vector<unsigned int> DependencyParserModel::GetDependencyHeads(
     dependency_graph.emplace_back(dependency_graph_inner);
   }
 
-  std::vector<unsigned int> dependency_heads =
-      SolveDependencies(dependency_graph);
-  return dependency_heads;
+  return SolveDependencies(dependency_graph);
 }
 
-std::vector<unsigned int> DependencyParserModel::SolveDependencies(
+std::vector<size_t> DependencyParserModel::SolveDependencies(
     base::span<const std::vector<float>> input) {
-  tensorflow::text::MstSolver<unsigned int, float> solver;
-  int size = input.size();
+  tensorflow::text::MstSolver<size_t, float> solver;
+  size_t size = input.size();
   if (!solver.Init(/*forest=*/false, size).ok()) {
     return {};
   }
 
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < size; j++) {
+  for (size_t i = 0; i < size; i++) {
+    for (size_t j = 0; j < size; j++) {
       if (i == j) {
         solver.AddRoot(i, input[i][j]);
       } else {
@@ -193,7 +192,7 @@ std::vector<unsigned int> DependencyParserModel::SolveDependencies(
     }
   }
 
-  std::vector<unsigned int> heads;
+  std::vector<size_t> heads;
   heads.resize(size);
   if (!solver.Solve(&heads).ok()) {
     return {};

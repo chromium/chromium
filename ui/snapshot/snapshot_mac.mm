@@ -164,7 +164,7 @@ bool ShouldForceOldAPIUse() {
   // This is fixed in macOS 15.
   //
   // https://crbug.com/333443445, FB13717818
-  if (base::mac::MacOSVersion() > 15'00'00) {
+  if (base::mac::MacOSVersion() >= 15'00'00) {
     return false;
   }
 
@@ -188,7 +188,7 @@ void GrabWindowSnapshot(gfx::NativeWindow native_window,
   // tabstrip.
   NSView* view = native_window.GetNativeNSWindow().contentView.superview;
 
-  GrabViewSnapshot(view, source_rect, std::move(callback));
+  GrabViewSnapshot(gfx::NativeView(view), source_rect, std::move(callback));
 }
 
 void GrabViewSnapshot(gfx::NativeView view,

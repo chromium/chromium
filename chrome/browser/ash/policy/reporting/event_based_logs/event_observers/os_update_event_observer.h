@@ -8,13 +8,14 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ash/policy/core/device_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
 #include "chrome/browser/ash/policy/reporting/os_updates/os_updates_reporter.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
 
 namespace policy {
+
+class DeviceCloudPolicyManagerAsh;
 
 // Observes `reporting::OsUpdatesReporter` for OS update failures. When the OS
 // update failure event is observed, it uploads the related log files to server.

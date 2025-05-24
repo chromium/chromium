@@ -108,14 +108,6 @@ class CONTENT_EXPORT PreloadingData {
   // PreloadingAttempt class. Here callers pass the `url_predicate_callback` to
   // verify if the navigated and triggered URLs match based on callers logic.
   //
-  // A caller can pass `planned_max_preloading_type` (defaults to
-  // `preloading_type`) different from `preloading_type` if the caller expects
-  // this preloading attempt will be consumed by other preloadings. For
-  // example, a caller can start from triggering prefetch and then proceed
-  // with triggering prerender. `preloading_type` must be upgradable to
-  // `planned_max_preloading_type`. See `IsPreloadingTypeUpgradableTo()` in
-  // //content/browser/preloading/preloading_attempt_impl.cc.
-  //
   // `triggering_primary_page_source_id` is a UKM source ID of the page that
   // triggered preloading. This is used for recording the metrics for user
   // visible primary pages (Preloading_Attempt_PreviousPrimaryPage) to measure
@@ -126,7 +118,6 @@ class CONTENT_EXPORT PreloadingData {
       PreloadingPredictor predictor,
       PreloadingType preloading_type,
       PreloadingURLMatchCallback url_match_predicate,
-      std::optional<PreloadingType> planned_max_preloading_type,
       ukm::SourceId triggering_primary_page_source_id) = 0;
 
   // Creates a new PreloadingPrediction. Same as above `url_predicate_callback`

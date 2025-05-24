@@ -47,7 +47,7 @@ class MockVideoCaptureDevicesChangedObserver
               base::RunLoop().RunUntilIdle();
             }));
 
-    ConnectToService();
+    EnsureConnectedToService();
     base::RunLoop().RunUntilIdle();
   }
 
@@ -114,11 +114,103 @@ TEST_F(DevicesChangedObserverTest, ServiceCrashes) {
 
   // Crashing the service should call disconnect_cb resulting in calling
   // |HandleDevicesChanged|. But device change events are still registered
-  // because the OnConnectionError() function calls ConnectToService().
+  // because the OnConnectionError() function calls EnsureConnectedToService().
   EXPECT_CALL(*mock_video_capture_service_device_changed_observer_,
               HandleDevicesChanged(MediaDeviceType::kMediaVideoInput))
       .Times(1);
   mock_video_capture_service_device_changed_observer_->CrashService();
+  base::RunLoop().RunUntilIdle();
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DevicesChangedObserverTest, ServiceDisconnect) {
+  EXPECT_CALL(observer,
+              OnDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE))
+      .Times(1);
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Disconnect the service manually should not call disconnect_cb so no
+  // |HandleDevicesChanged|. Device change events will not be raised after
+  // disconnect.
+  EXPECT_CALL(*mock_video_capture_service_device_changed_observer_,
+              HandleDevicesChanged(MediaDeviceType::kMediaVideoInput))
+      .Times(0);
+  mock_video_capture_service_device_changed_observer_
+      ->DisconnectVideoSourceProvider();
+  base::RunLoop().RunUntilIdle();
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DevicesChangedObserverTest, ConnectServiceAfterCrash) {
+  EXPECT_CALL(observer,
+              OnDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE))
+      .Times(2);
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Crashing the service should call disconnect_cb resulting in calling
+  // |HandleDevicesChanged|. Manually call EnsureConnectedToService won't affect
+  // current mojo bound state.
+  EXPECT_CALL(*mock_video_capture_service_device_changed_observer_,
+              HandleDevicesChanged(MediaDeviceType::kMediaVideoInput))
+      .Times(1);
+  mock_video_capture_service_device_changed_observer_->CrashService();
+  base::RunLoop().RunUntilIdle();
+  mock_video_capture_service_device_changed_observer_
+      ->EnsureConnectedToService();
+  base::RunLoop().RunUntilIdle();
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DevicesChangedObserverTest, ConnectServiceAfterDisconnect) {
+  EXPECT_CALL(observer,
+              OnDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE))
+      .Times(2);
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Disconnect the service manually should not call disconnect_cb so no
+  // |HandleDevicesChanged|. Device change events will be raised after service
+  // is connecteded.
+  EXPECT_CALL(*mock_video_capture_service_device_changed_observer_,
+              HandleDevicesChanged(MediaDeviceType::kMediaVideoInput))
+      .Times(0);
+  mock_video_capture_service_device_changed_observer_
+      ->DisconnectVideoSourceProvider();
+  base::RunLoop().RunUntilIdle();
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+  mock_video_capture_service_device_changed_observer_
+      ->EnsureConnectedToService();
+  base::RunLoop().RunUntilIdle();
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST_F(DevicesChangedObserverTest, ConnectServiceTwiceAfterDisconnect) {
+  EXPECT_CALL(observer,
+              OnDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE))
+      .Times(2);
+  RaiseDeviceChangeEvent();
+  base::RunLoop().RunUntilIdle();
+
+  // Disconnect the service manually should not call disconnect_cb so no
+  // |HandleDevicesChanged|. Device change events will be raised after service
+  // is connecteded.
+  EXPECT_CALL(*mock_video_capture_service_device_changed_observer_,
+              HandleDevicesChanged(MediaDeviceType::kMediaVideoInput))
+      .Times(0);
+  mock_video_capture_service_device_changed_observer_
+      ->DisconnectVideoSourceProvider();
+  base::RunLoop().RunUntilIdle();
+  mock_video_capture_service_device_changed_observer_
+      ->EnsureConnectedToService();
+  mock_video_capture_service_device_changed_observer_
+      ->EnsureConnectedToService();
   base::RunLoop().RunUntilIdle();
   RaiseDeviceChangeEvent();
   base::RunLoop().RunUntilIdle();

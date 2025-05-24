@@ -108,16 +108,17 @@ export class SettingsSafetyHubModuleElement extends
     };
   }
 
-  sites: SiteInfo[];
-  header: string;
-  subheader: string|TrustedHTML;
-  headerIcon: string;
-  headerIconColor: string;
-  buttonIcon: string;
-  buttonAriaLabelId: string;
-  buttonTooltipText: string;
-  moreButtonAriaLabelId: string;
-  moreActionVisible: boolean;
+  declare sites: SiteInfo[];
+  declare animated: boolean;
+  declare header: string;
+  declare subheader: string|TrustedHTML;
+  declare headerIcon: string;
+  declare headerIconColor: string;
+  declare buttonIcon: string;
+  declare buttonAriaLabelId: string;
+  declare buttonTooltipText: string;
+  declare moreButtonAriaLabelId: string;
+  declare moreActionVisible: boolean;
 
   private modelUpdateDelayMsForTesting_: number|null = null;
 
@@ -191,13 +192,13 @@ export class SettingsSafetyHubModuleElement extends
     // Remove the item that corresponds to |origin|. If no origin is specified,
     // remove all items.
     let removedAll = (origin === null);
-    for (let i = 0; i < this.sites!.length; ++i) {
-      if (origin === null || origin === this.sites![i]!.origin) {
-        items[i]!.classList.add('hiding');
+    for (let i = 0; i < this.sites.length; ++i) {
+      if (origin === null || origin === this.sites[i].origin) {
+        items[i].classList.add('hiding');
         if (origin) {
           // If this is the last site being removed, the visuals should be
           // the same as if all sites were removed.
-          removedAll ||= (this.sites!.length === 1);
+          removedAll ||= (this.sites.length === 1);
           break;
         }
       }
@@ -234,8 +235,8 @@ export class SettingsSafetyHubModuleElement extends
 
     let wasEmpty = true;
     for (let i = 0; i < items.length; ++i) {
-      if (origins.includes(this.sites![i]!.origin)) {
-        items[i]!.classList.add('showing');
+      if (origins.includes(this.sites[i].origin)) {
+        items[i].classList.add('showing');
       } else {
         // If at least one item doesn't need showing, there was at least
         // one already rendered item.

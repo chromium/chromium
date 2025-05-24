@@ -1,0 +1,63 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/webmachinelearning/prompt-api
+
+// The argument to the prompt() method and others like it
+typedef (
+  sequence<LanguageModelMessage>
+  // Shorthand for `[{ role: "user", content: [{ type: "text", value: providedValue }] }]`
+  or DOMString
+) LanguageModelPrompt;
+
+dictionary LanguageModelMessage {
+  required LanguageModelMessageRole role;
+
+  // The DOMString branch is shorthand for `[{ type: "text", value: providedValue }]`
+  required (DOMString or sequence<LanguageModelMessageContent>) content;
+};
+
+dictionary LanguageModelMessageContent {
+  required LanguageModelMessageType type;
+  required LanguageModelMessageValue value;
+};
+
+enum LanguageModelMessageRole { "system", "user", "assistant" };
+
+enum LanguageModelMessageType { "text", "image", "audio" };
+
+typedef (
+  ImageBitmapSource
+  or AudioBuffer
+  or HTMLAudioElement
+  or BufferSource
+  or DOMString
+) LanguageModelMessageValue;
+
+dictionary LanguageModelCreateCoreOptions {
+  // Note: these two have custom out-of-range handling behavior, not in the IDL layer.
+  // They are unrestricted double so as to allow +Infinity without failing.
+  unrestricted double topK;
+  unrestricted double temperature;
+
+  // The expected types and languages for the session.
+  sequence<LanguageModelExpected> expectedInputs;
+  sequence<LanguageModelExpected> expectedOutputs;
+};
+
+dictionary LanguageModelCreateOptions : LanguageModelCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+
+  sequence<LanguageModelMessage> initialPrompts;
+
+  // DEPRECATED: Use `initialPrompts: [{role: 'system', content: ... }, ...]`.
+  // TODO(crbug.com/381974893): Remove this along with the console warning.
+  DOMString systemPrompt;
+};
+
+dictionary LanguageModelExpected {
+  required LanguageModelMessageType type;
+  sequence<DOMString> languages;
+};

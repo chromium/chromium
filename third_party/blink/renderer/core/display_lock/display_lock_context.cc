@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 
 #include <string>
@@ -23,7 +18,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -1344,6 +1338,8 @@ const char* DisplayLockContext::RenderAffectingStateName(int state) const {
       return "DescendantIsViewTransitionElement";
     case RenderAffectingState::kDescendantIsAnchorTarget:
       return "kDescendantIsAnchorTarget";
+    case RenderAffectingState::kHasScrollerWithScrollMarkerGroup:
+      return "kHasScrollerWithScrollMarkerGroup";
     case RenderAffectingState::kNumRenderAffectingStates:
       break;
   }
@@ -1399,6 +1395,11 @@ bool DisplayLockContext::ActivatableDisplayLocksForced() const {
 
 void DisplayLockContext::SetAffectedByAnchorPositioning(bool val) {
   SetRenderAffectingState(RenderAffectingState::kDescendantIsAnchorTarget, val);
+}
+
+bool DisplayLockContext::IsScreenReaderActive() const {
+  return document_->ExistingAXObjectCache() &&
+         document_->ExistingAXObjectCache()->IsScreenReaderActive();
 }
 
 }  // namespace blink

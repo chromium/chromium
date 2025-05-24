@@ -14,10 +14,14 @@ build_webui_tests("build") {
     "test_feedback_browser_proxy.ts",
   ]
 
-  ts_path_mappings =
-      [ "chrome://feedback/*|" +
+  ts_path_mappings = [
+    "chrome://feedback/*|" +
         rebase_path("$root_gen_dir/chrome/browser/resources/feedback/tsc/*",
-                    target_gen_dir) ]
+                    target_gen_dir),
+    "chrome://feedback/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
+  ]
 
   ts_definitions = [ "//tools/typescript/definitions/feedback_private.d.ts" ]
   ts_deps = [

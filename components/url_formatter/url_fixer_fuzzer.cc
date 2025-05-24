@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/url_formatter/url_fixer.h"
+
+#include <fuzzer/FuzzedDataProvider.h>
 #include <stdint.h>
 
 #include <string>
 #include <tuple>
-
-#include <fuzzer/FuzzedDataProvider.h>
 
 #include "base/at_exit.h"
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "url/third_party/mozilla/url_parse.h"
 

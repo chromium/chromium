@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/reporting/reporting_header_parser.h"
 
 #include <cstring>
@@ -332,7 +337,6 @@ void ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
     const NetworkAnonymizationKey& network_anonymization_key,
     const url::Origin& origin,
     base::flat_map<std::string, std::string> header) {
-  DCHECK(base::FeatureList::IsEnabled(net::features::kDocumentReporting));
   DCHECK(GURL::SchemeIsCryptographic(origin.scheme()));
   DCHECK(!reporting_source.is_empty());
   DCHECK(network_anonymization_key.IsEmpty() ||

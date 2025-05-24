@@ -30,11 +30,11 @@ VmoBufferWriterQueue::PendingBuffer::PendingBuffer(PendingBuffer&& other) =
     default;
 
 const uint8_t* VmoBufferWriterQueue::PendingBuffer::data() const {
-  return buffer->data() + buffer_pos;
+  return base::span(*buffer).subspan(buffer_pos).data();
 }
 
 size_t VmoBufferWriterQueue::PendingBuffer::bytes_left() const {
-  return buffer->size() - buffer_pos;
+  return base::span(*buffer).subspan(buffer_pos).size();
 }
 
 void VmoBufferWriterQueue::PendingBuffer::AdvanceCurrentPos(size_t bytes) {
@@ -111,7 +111,7 @@ void VmoBufferWriterQueue::PumpPackets() {
     unused_buffers_.pop_back();
 
     size_t bytes_filled = buffers_[buffer_index].Write(
-        base::make_span(current_buffer->data(), current_buffer->bytes_left()));
+        base::span(current_buffer->data(), current_buffer->bytes_left()));
     current_buffer->AdvanceCurrentPos(bytes_filled);
 
     bool buffer_end = current_buffer->bytes_left() == 0;

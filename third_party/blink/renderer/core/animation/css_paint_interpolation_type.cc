@@ -35,8 +35,7 @@ bool GetColor(const CSSProperty& property,
     case CSSPropertyID::kStroke:
       return GetColorFromPaint(style.StrokePaint(), result);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -132,17 +131,10 @@ InterpolationValue CSSPaintInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSPaintInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
-  mojom::blink::ColorScheme color_scheme =
-      state ? state->StyleBuilder().UsedColorScheme()
-            : mojom::blink::ColorScheme::kLight;
-  const ui::ColorProvider* color_provider =
-      state ? state->GetDocument().GetColorProviderForPainting(color_scheme)
-            : nullptr;
   InterpolableValue* interpolable_color =
-      CSSColorInterpolationType::MaybeCreateInterpolableColor(
-          value, color_scheme, color_provider);
+      CSSColorInterpolationType::MaybeCreateInterpolableColor(value, &state);
   if (!interpolable_color)
     return nullptr;
   return InterpolationValue(interpolable_color);
@@ -178,7 +170,7 @@ void CSSPaintInterpolationType::ApplyStandardPropertyValue(
       builder.SetInternalVisitedStrokePaint(SVGPaint(color));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

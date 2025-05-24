@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_subsample_entry.h"
 #include "third_party/blink/renderer/modules/webcodecs/array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/test_helpers.h"
@@ -22,7 +23,7 @@ namespace {
 TEST(EncodedVideoChunkTest, ConstructorAndAttributes) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  String type = "key";
+  V8EncodedVideoChunkType::Enum type = V8EncodedVideoChunkType::Enum::kKey;
   int64_t timestamp = 1000000;
   std::string data = "test";
   auto* init = EncodedVideoChunkInit::Create();
@@ -41,7 +42,7 @@ TEST(EncodedVideoChunkTest, ConstructorAndAttributes) {
 TEST(EncodedVideoChunkTest, ConstructorWithDuration) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  String type = "key";
+  V8EncodedVideoChunkType::Enum type = V8EncodedVideoChunkType::Enum::kKey;
   int64_t timestamp = 1000000;
   uint64_t duration = 16667;
   std::string data = "test";

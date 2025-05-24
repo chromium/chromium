@@ -41,8 +41,7 @@ void ResetScreenHandler::DeclareLocalizedValues(
   builder->Add("resetWarningDataDetails",
                IDS_RESET_SCREEN_WARNING_DETAILS_DATA);
   builder->Add("resetRestartMessage", IDS_RESET_SCREEN_RESTART_MSG);
-  builder->AddF("resetRevertPromise",
-                IDS_RESET_SCREEN_PREPARING_REVERT_PROMISE,
+  builder->AddF("resetRevertPromise", IDS_RESET_SCREEN_PREPARING_REVERT_PROMISE,
                 IDS_SHORT_PRODUCT_NAME);
   builder->AddF("resetRevertSpinnerMessage",
                 IDS_RESET_SCREEN_PREPARING_REVERT_SPINNER_MESSAGE,

@@ -7,12 +7,12 @@ package org.chromium.chrome.browser.contextmenu;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
-class ContextMenuItemWithIconButtonProperties extends ContextMenuItemProperties {
+class ContextMenuItemWithIconButtonProperties extends ListMenuItemProperties {
     public static final WritableObjectPropertyKey<Drawable> BUTTON_IMAGE =
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<CharSequence> BUTTON_CONTENT_DESC =
@@ -22,9 +22,13 @@ class ContextMenuItemWithIconButtonProperties extends ContextMenuItemProperties 
             new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(
-                    ContextMenuItemProperties.ALL_KEYS,
-                    new PropertyKey[] {
-                        BUTTON_IMAGE, BUTTON_CONTENT_DESC, BUTTON_MENU_ID, BUTTON_CLICK_LISTENER
-                    });
+            new PropertyKey[] {
+                MENU_ITEM_ID,
+                TITLE,
+                ENABLED,
+                BUTTON_IMAGE,
+                BUTTON_CONTENT_DESC,
+                BUTTON_MENU_ID,
+                BUTTON_CLICK_LISTENER
+            };
 }

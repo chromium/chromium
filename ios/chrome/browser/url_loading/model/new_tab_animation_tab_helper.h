@@ -31,8 +31,6 @@ class NewTabAnimationTabHelper
   friend class web::WebStateUserData<NewTabAnimationTabHelper>;
 
   bool animation_disabled_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_URL_LOADING_MODEL_NEW_TAB_ANIMATION_TAB_HELPER_H_

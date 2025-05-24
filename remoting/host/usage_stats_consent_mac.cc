@@ -34,7 +34,7 @@ bool GetUsageStatsConsent(bool& allowed, bool& set_by_policy) {
       std::optional<bool> host_config_value =
           host_config->FindBool(kUsageStatsConsentConfigPath);
       if (host_config_value.has_value()) {
-        allowed = host_config_value.value();
+        allowed = *host_config_value;
         return true;
       }
     }

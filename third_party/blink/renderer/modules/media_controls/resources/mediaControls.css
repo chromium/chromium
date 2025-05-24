@@ -200,7 +200,10 @@ audio::-internal-media-controls-download-button,
 video::-internal-media-controls-download-button,
 audio::-internal-media-controls-playback-speed-button,
 video::-internal-media-controls-playback-speed-button,
-video::-internal-media-controls-picture-in-picture-button {
+video::-internal-media-controls-picture-in-picture-button,
+audio::-internal-media-controls-audio-track-selection-button,
+video::-internal-media-controls-audio-track-selection-button,
+video::-internal-media-controls-video-track-selection-button {
   appearance: -internal-media-control;
   background-size: 20px;
   background-repeat: no-repeat;
@@ -447,6 +450,16 @@ audio::-internal-media-controls-download-button {
 video::-internal-media-controls-playback-speed-button,
 audio::-internal-media-controls-playback-speed-button {
   background-image: light-dark(url(ic_playback_speed.svg), url(ic_playback_speed_white.svg));
+}
+
+video::-internal-media-controls-audio-track-selection-button,
+audio::-internal-media-controls-audio-track-selection-button {
+  background-image: light-dark(url(ic_audio_track.svg), url(ic_audio_track_white.svg));
+}
+
+video::-internal-media-controls-video-track-selection-button,
+audio::-internal-media-controls-video-track-selection-button {
+  background-image: light-dark(url(ic_video_track.svg), url(ic_video_track_white.svg));
 }
 
 video::-internal-media-controls-overflow-button,
@@ -898,6 +911,10 @@ audio::-internal-media-controls-text-track-list,
 video::-internal-media-controls-text-track-list,
 audio::-internal-media-controls-playback-speed-list,
 video::-internal-media-controls-playback-speed-list,
+audio::-internal-media-controls-audio-track-selection-list,
+video::-internal-media-controls-audio-track-selection-list,
+audio::-internal-media-controls-video-track-selection-list,
+video::-internal-media-controls-video-track-selection-list,
 audio::-internal-media-controls-overflow-menu-list,
 video::-internal-media-controls-overflow-menu-list {
   max-height: 250px;
@@ -936,10 +953,14 @@ audio::-internal-media-controls-text-track-list-header,
 video::-internal-media-controls-text-track-list-header,
 audio::-internal-media-controls-playback-speed-list-header,
 video::-internal-media-controls-playback-speed-list-header,
+audio::-internal-media-controls-track-selection-list-header,
+video::-internal-media-controls-track-selection-list-header,
 audio::-internal-media-controls-text-track-list-item,
 video::-internal-media-controls-text-track-list-item,
 audio::-internal-media-controls-playback-speed-list-item,
 video::-internal-media-controls-playback-speed-list-item,
+audio::-internal-media-controls-track-selection-list-item,
+video::-internal-media-controls-track-selection-list-item,
 audio::-internal-media-controls-overflow-menu-list-item,
 video::-internal-media-controls-overflow-menu-list-item {
   display: flex;
@@ -1000,6 +1021,7 @@ label[pseudo="-internal-media-controls-overflow-menu-list-item"] div span {
 }
 
 label[pseudo="-internal-media-controls-text-track-list-item"] span,
+label[pseudo="-internal-media-controls-track-selection-list-item"] span,
 label[pseudo="-internal-media-controls-playback-speed-list-item"] span {
   line-height: normal;
   overflow: hidden;
@@ -1069,12 +1091,16 @@ audio::-internal-media-controls-text-track-list-header:focus,
 video::-internal-media-controls-text-track-list-header:focus,
 audio::-internal-media-controls-playback-speed-list-header:focus,
 video::-internal-media-controls-playback-speed-list-header:focus,
+audio::-internal-media-controls-track-selection-list-header:focus,
+video::-internal-media-controls-track-selection-list-header:focus,
 audio::-internal-media-controls-text-track-list-item:focus,
 video::-internal-media-controls-text-track-list-item:focus,
 audio::-internal-media-controls-playback-speed-list-item:focus,
 video::-internal-media-controls-playback-speed-list-item:focus,
+audio::-internal-media-controls-track-selection-list-item:focus,
+video::-internal-media-controls-track-selection-list-item:focus,
 audio::-internal-media-controls-overflow-menu-list-item:focus,
-video::-internal-media-controls-overflow-menu-list-item:focus {
+video::-internal-media-controls-overflow-menu-list-item:focus{
   background-color: light-dark(#e0e0e0, #545454);
   color: light-dark(rgba(0,0,0,0.87), rgba(255,255,255,0.87));
   outline: none;
@@ -1084,10 +1110,14 @@ audio::-internal-media-controls-text-track-list-header:focus-visible,
 video::-internal-media-controls-text-track-list-header:focus-visible,
 audio::-internal-media-controls-playback-speed-list-header:focus-visible,
 video::-internal-media-controls-playback-speed-list-header:focus-visible,
+audio::-internal-media-controls-track-selection-list-header:focus-visible,
+video::-internal-media-controls-track-selection-list-header:focus-visible,
 audio::-internal-media-controls-text-track-list-item:focus-visible,
 video::-internal-media-controls-text-track-list-item:focus-visible,
 audio::-internal-media-controls-playback-speed-list-item:focus-visible,
 video::-internal-media-controls-playback-speed-list-item:focus-visible,
+audio::-internal-media-controls-track-selection-list-item:focus-visible,
+video::-internal-media-controls-track-selection-list-item:focus-visible,
 audio::-internal-media-controls-overflow-menu-list-item:focus-visible,
 video::-internal-media-controls-overflow-menu-list-item:focus-visible {
   border: 1px solid currentColor;
@@ -1102,10 +1132,14 @@ audio::-internal-media-controls-text-track-list-header,
 video::-internal-media-controls-text-track-list-header,
 audio::-internal-media-controls-playback-speed-list-header,
 video::-internal-media-controls-playback-speed-list-header,
+audio::-internal-media-controls-track-selection-list-header,
+video::-internal-media-controls-track-selection-list-header,
 audio::-internal-media-controls-text-track-list-item,
 video::-internal-media-controls-text-track-list-item,
 audio::-internal-media-controls-playback-speed-list-item,
-video::-internal-media-controls-playback-speed-list-item {
+video::-internal-media-controls-playback-speed-list-item,
+audio::-internal-media-controls-track-selection-list-item,
+video::-internal-media-controls-track-selection-list-item {
   padding-left: 58px;
   justify-content: space-between;
 }
@@ -1113,7 +1147,9 @@ video::-internal-media-controls-playback-speed-list-item {
 audio::-internal-media-controls-text-track-list-header,
 video::-internal-media-controls-text-track-list-header,
 audio::-internal-media-controls-playback-speed-list-header,
-video::-internal-media-controls-playback-speed-list-header {
+video::-internal-media-controls-playback-speed-list-header,
+audio::-internal-media-controls-track-selection-list-header,
+video::-internal-media-controls-track-selection-list-header {
   background-size: 18px;
   background-position: 20px center;
   background-repeat: no-repeat;
@@ -1121,11 +1157,13 @@ video::-internal-media-controls-playback-speed-list-header {
 }
 
 label[pseudo="-internal-media-controls-text-track-list-item"] *,
+label[pseudo="-internal-media-controls-track-selection-list-item"] *,
 label[pseudo="-internal-media-controls-playback-speed-list-item"] * {
   pointer-events: none;
 }
 
 label[pseudo="-internal-media-controls-text-track-list-item"] input,
+label[pseudo="-internal-media-controls-track-selection-list-item"] input,
 label[pseudo="-internal-media-controls-playback-speed-list-item"] input {
   appearance: none;
   width: 18px;
@@ -1135,6 +1173,7 @@ label[pseudo="-internal-media-controls-playback-speed-list-item"] input {
 }
 
 label[pseudo="-internal-media-controls-text-track-list-item"] input:checked,
+label[pseudo="-internal-media-controls-track-selection-list-item"] input:checked,
 label[pseudo="-internal-media-controls-playback-speed-list-item"] input:checked {
   background: url(ic_check_blue.svg) no-repeat center center;
 }
@@ -1590,10 +1629,14 @@ audio::-internal-media-controls-text-track-list {
   video::-internal-media-controls-text-track-list-header,
   audio::-internal-media-controls-playback-speed-list-header,
   video::-internal-media-controls-playback-speed-list-header,
+  audio::-internal-media-controls-track-selection-list-header,
+  video::-internal-media-controls-track-selection-list-header,
   audio::-internal-media-controls-text-track-list-item,
   video::-internal-media-controls-text-track-list-item,
   audio::-internal-media-controls-playback-speed-list-item,
   video::-internal-media-controls-playback-speed-list-item,
+  audio::-internal-media-controls-track-selection-list-item,
+  video::-internal-media-controls-track-selection-list-item,
   audio::-internal-media-controls-overflow-menu-list-item,
   video::-internal-media-controls-overflow-menu-list-item {
     background-color: Window;

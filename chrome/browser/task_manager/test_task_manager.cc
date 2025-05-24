@@ -14,8 +14,7 @@ TestTaskManager::TestTaskManager()
   set_timer_for_testing(std::make_unique<base::MockRepeatingTimer>());
 }
 
-TestTaskManager::~TestTaskManager() {
-}
+TestTaskManager::~TestTaskManager() = default;
 
 void TestTaskManager::ActivateTask(TaskId task_id) {
 }
@@ -24,7 +23,8 @@ bool TestTaskManager::IsTaskKillable(TaskId task_id) {
   return true;
 }
 
-void TestTaskManager::KillTask(TaskId task_id) {
+bool TestTaskManager::KillTask(TaskId task_id) {
+  return true;
 }
 
 double TestTaskManager::GetPlatformIndependentCPUUsage(TaskId task_id) const {
@@ -101,8 +101,16 @@ const base::ProcessId& TestTaskManager::GetProcessId(TaskId task_id) const {
   return pid_;
 }
 
+TaskId TestTaskManager::GetRootTaskId(TaskId task_id) const {
+  return 0;
+}
+
 Task::Type TestTaskManager::GetType(TaskId task_id) const {
   return Task::UNKNOWN;
+}
+
+Task::SubType TestTaskManager::GetSubType(TaskId task_id) const {
+  return Task::SubType::kNoSubType;
 }
 
 SessionID TestTaskManager::GetTabId(TaskId task_id) const {
@@ -182,6 +190,10 @@ bool TestTaskManager::IsRunningInVM(TaskId task_id) const {
 TaskId TestTaskManager::GetTaskIdForWebContents(
     content::WebContents* web_contents) const {
   return -1;
+}
+
+bool TestTaskManager::IsTaskValid(TaskId task_id) const {
+  return true;
 }
 
 base::TimeDelta TestTaskManager::GetRefreshTime() {

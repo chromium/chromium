@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2244252133441425811">Povolit výběr snímkové frekvence videa</translation>
 <translation id="2271433936731426666">Aktivovat snímek videa na celou obrazovku</translation>
-<translation id="2281736597583450397">Získejte ostřejší detaily s vylepšeným zoomem</translation>
 <translation id="2320741269052147773">Posunout doleva</translation>
 <translation id="2360840973209616515">Aplikaci k focení a natáčení spravuje váš administrátor.
         Pokud se chcete dozvědět podrobnosti, kontaktujte administrátora.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Oddálit</translation>
 <translation id="5976160379964388480">Ostatní</translation>
 <translation id="6073451960410192870">Zastavit nahrávání</translation>
-<translation id="6165508094623778733">Další informace</translation>
 <translation id="6197807149213783179">Uložit metadata</translation>
 <translation id="6233780560267770709">3 krát 3</translation>
 <translation id="6243827288366940320">Zlatý řez</translation>
@@ -122,7 +120,6 @@
 Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou fotku nebo video a popište, kde je problém. (Například fotka je příliš tmavá nebo objekt není zaostřen.)</translation>
 <translation id="6519884562954018934">Připojit se k síti <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Sdílet</translation>
-<translation id="6586509689874700895">Nejdříve zobrazení přibližte stisknutím tlačítka <ph name="BUTTON_NAME" />. Po pořízení fotky pak lépe uvidíte detaily.</translation>
 <translation id="659539649712855529">Byl zkopírován text <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Zobrazit všechna rozlišení</translation>
 <translation id="6631515515009660915">Vypnout zrcadlení</translation>
@@ -168,7 +165,6 @@ Pokud se zpětná vazba týká kvality fotek nebo videí, připojte ukázkovou f
 <translation id="8609951387004618906">Otevřít adresu <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Přepnout ztlumení mikrofonu. Ztlumení je zapnuté</translation>
-<translation id="8712637175834984815">Hotovo</translation>
 <translation id="8730621377337864115">Hotovo</translation>
 <translation id="8732462232047530626">Zobrazit náhled metadat</translation>
 <translation id="874854738381978209">Byla zjištěna síť Wi-Fi.</translation>

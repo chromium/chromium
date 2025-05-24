@@ -30,7 +30,6 @@
 #include "chromeos/ash/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/ash/services/device_sync/public/cpp/device_sync_prefs.h"
 #include "chromeos/ash/services/device_sync/public/cpp/fake_client_app_metadata_provider.h"
-#include "chromeos/ash/services/device_sync/public/cpp/fake_gcm_device_info_provider.h"
 #include "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "components/gcm_driver/fake_gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -48,18 +47,7 @@ namespace device_sync {
 namespace {
 
 const char kTestEmail[] = "example@gmail.com";
-const char kTestGcmDeviceInfoLongDeviceId[] = "longDeviceId";
 const size_t kNumTestDevices = 5u;
-
-const cryptauth::GcmDeviceInfo& GetTestGcmDeviceInfo() {
-  static const base::NoDestructor<cryptauth::GcmDeviceInfo> gcm_device_info([] {
-    cryptauth::GcmDeviceInfo gcm_device_info;
-    gcm_device_info.set_long_device_id(kTestGcmDeviceInfoLongDeviceId);
-    return gcm_device_info;
-  }());
-
-  return *gcm_device_info;
-}
 
 class MockInstanceIDDriver : public instance_id::InstanceIDDriver {
  public:
@@ -87,9 +75,9 @@ class FakeDeviceSyncImplFactory : public DeviceSyncImpl::Factory {
   // DeviceSyncImpl::Factory:
   std::unique_ptr<DeviceSyncBase> CreateInstance(
       signin::IdentityManager* identity_manager,
+      gcm::GCMDriver* gcm_driver,
       instance_id::InstanceIDDriver* instance_id_driver,
       PrefService* profile_prefs,
-      const GcmDeviceInfoProvider* gcm_device_info_provider,
       ClientAppMetadataProvider* client_app_metadata_provider,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<base::OneShotTimer> timer,
@@ -176,8 +164,7 @@ class DeviceSyncClientImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    fake_gcm_device_info_provider_ =
-        std::make_unique<FakeGcmDeviceInfoProvider>(GetTestGcmDeviceInfo());
+    fake_gcm_driver_ = std::make_unique<gcm::FakeGCMDriver>();
     fake_client_app_metadata_provider_ =
         std::make_unique<FakeClientAppMetadataProvider>();
 
@@ -207,9 +194,8 @@ class DeviceSyncClientImplTest : public testing::Test {
     RegisterProfilePrefs(test_pref_service_->registry());
 
     device_sync_ = DeviceSyncImpl::Factory::Create(
-        identity_test_environment_->identity_manager(),
+        identity_test_environment_->identity_manager(), fake_gcm_driver_.get(),
         &fake_instance_id_driver_, test_pref_service_.get(),
-        fake_gcm_device_info_provider_.get(),
         fake_client_app_metadata_provider_.get(), shared_url_loader_factory,
         std::make_unique<base::OneShotTimer>(),
         base::BindRepeating(
@@ -560,7 +546,7 @@ class DeviceSyncClientImplTest : public testing::Test {
     for (auto device : remote_device_ref_list)
       ref_public_keys.push_back(device.public_key());
     std::sort(ref_public_keys.begin(), ref_public_keys.end(),
-              [](auto public_key_1, auto public_key_2) {
+              [](const auto& public_key_1, const auto& public_key_2) {
                 return public_key_1 < public_key_2;
               });
 
@@ -568,7 +554,7 @@ class DeviceSyncClientImplTest : public testing::Test {
     for (auto device : remote_device_list)
       public_keys.push_back(device.public_key);
     std::sort(public_keys.begin(), public_keys.end(),
-              [](auto public_key_1, auto public_key_2) {
+              [](const auto& public_key_1, const auto& public_key_2) {
                 return public_key_1 < public_key_2;
               });
 
@@ -580,8 +566,8 @@ class DeviceSyncClientImplTest : public testing::Test {
   const base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
+  std::unique_ptr<gcm::FakeGCMDriver> fake_gcm_driver_;
   testing::NiceMock<MockInstanceIDDriver> fake_instance_id_driver_;
-  std::unique_ptr<FakeGcmDeviceInfoProvider> fake_gcm_device_info_provider_;
   std::unique_ptr<FakeClientAppMetadataProvider>
       fake_client_app_metadata_provider_;
   raw_ptr<FakeDeviceSync, DanglingUntriaged> fake_device_sync_;

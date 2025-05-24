@@ -66,8 +66,7 @@ bool HiddenInputType::SupportsValidation() const {
 }
 
 LayoutObject* HiddenInputType::CreateLayoutObject(const ComputedStyle&) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void HiddenInputType::AccessKeyAction(SimulatedClickCreationScope) {}

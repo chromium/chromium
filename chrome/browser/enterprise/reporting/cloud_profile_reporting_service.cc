@@ -10,16 +10,17 @@
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/device_signals/core/browser/signals_aggregator.h"
 #include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/chrome_profile_request_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
@@ -32,6 +33,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/signals/signals_aggregator_factory.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
@@ -49,19 +54,6 @@ BASE_FEATURE(kAlwaysUploadExtensionInfo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-std::string GetProfileName(Profile* profile) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  // profile manager may not be available in test.
-  if (!profile_manager)
-    return std::string();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
-  ProfileAttributesEntry* entry =
-      storage.GetProfileAttributesWithPath(profile->GetPath());
-  if (!entry)
-    return std::string();
-  return base::UTF16ToUTF8(entry->GetName());
-}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 bool CanUploadExtensionInfo(Profile* profile) {
@@ -117,9 +109,17 @@ void CloudProfileReportingService::CreateReportScheduler() {
   ReportScheduler::CreateParams params;
   params.client = cloud_policy_client_.get();
   params.delegate = delegate_factory.GetReportSchedulerDelegate(profile_);
+
   params.profile_request_generator =
       std::make_unique<ChromeProfileRequestGenerator>(
-          profile_->GetPath(), GetProfileName(profile_), &delegate_factory);
+          profile_->GetPath(), &delegate_factory,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+          enterprise_signals::SignalsAggregatorFactory::GetForProfile(
+              profile_));
+#else
+          /*signals_aggregator=*/nullptr);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   params.profile_request_generator->ToggleExtensionReport(
       base::BindRepeating(&CanUploadExtensionInfo, profile_));

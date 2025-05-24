@@ -4,7 +4,8 @@
 
 #include "extensions/renderer/bindings/api_binding_test.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/task/single_thread_task_runner.h"
 #include "gin/array_buffer.h"
 #include "gin/public/context_holder.h"
@@ -75,8 +76,8 @@ void APIBindingTest::DisposeAllContexts() {
           OnWillDisposeContext(context);
           if (exit)
             context->Exit();
+          holder.reset();
         }
-        holder.reset();
 
         // Garbage collect everything so that we find any issues where we might
         // be double-freeing.
@@ -116,8 +117,8 @@ void APIBindingTest::DisposeContext(v8::Local<v8::Context> context) {
     return;
   }
 
-  auto iter = base::ranges::find(additional_context_holders_, context,
-                                 &gin::ContextHolder::context);
+  auto iter = std::ranges::find(additional_context_holders_, context,
+                                &gin::ContextHolder::context);
   ASSERT_TRUE(iter != additional_context_holders_.end())
       << "Could not find context";
   OnWillDisposeContext(context);

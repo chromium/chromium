@@ -104,28 +104,6 @@ public final class MetricsBridgeService extends Service {
         int COUNT = 3;
     }
 
-    // Build a histogram record synchronously so it can be included in the batch of records sent to
-    // the client instead of calling the base.metrics.RecordHistogram API (which is async and will
-    // log in the next batch of records). This histogram captures errors that might happen when the
-    // service is unable to send the current batch to the client. That's why this has to be added to
-    // the current batch being sent.
-    private static byte[] logRetrieveMetricsTaskStatus(@RetrieveMetricsTaskStatus int sample) {
-        // Similar to calling RecordHistogram.recordEnumeratedHistogram(
-        //        "Android.WebView.NonEmbeddedMetrics.RetrieveMetricsTaskStatus", sample,
-        //        RetrieveMetricsTaskStatus.COUNT);
-        HistogramRecord record =
-                HistogramRecord.newBuilder()
-                        .setRecordType(RecordType.HISTOGRAM_LINEAR)
-                        .setHistogramName(
-                                "Android.WebView.NonEmbeddedMetrics.RetrieveMetricsTaskStatus")
-                        .setSample(sample)
-                        .setMin(1)
-                        .setMax(RetrieveMetricsTaskStatus.COUNT)
-                        .setNumBuckets(ParsingLogResult.COUNT + 1)
-                        .build();
-        return record.toByteArray();
-    }
-
     @Override
     public void onCreate() {
         // Restore saved histograms from disk.

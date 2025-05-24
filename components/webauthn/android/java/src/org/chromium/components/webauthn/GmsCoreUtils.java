@@ -5,12 +5,17 @@
 package org.chromium.components.webauthn;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
 
+@NullMarked
 public class GmsCoreUtils {
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
     private static final int GMSCORE_MIN_VERSION_GET_MATCHING_CRED_IDS = 223300000;
     private static final int GMSCORE_MIN_VERSION_HYBRID_API = 231206000;
     private static final int GMSCORE_MIN_VERSION_RESULT_RECEIVER = 240700000;
+    // This version is the minimum needed for dynamic lookup of services, which
+    // the persistent API requires.
+    static final int GMSCORE_MIN_VERSION_DYNAMIC_LOOKUP = 17895000;
     static final int GMSCORE_MIN_VERSION = 16890000;
 
     private static int sGmsCorePackageVersion;
@@ -44,5 +49,9 @@ public class GmsCoreUtils {
     /** Returns whether makeCredential / getAssertion APIs support responding via ResultReceiver. */
     static boolean isResultReceiverSupported() {
         return getGmsCoreVersion() >= GMSCORE_MIN_VERSION_RESULT_RECEIVER;
+    }
+
+    public static void setGmsCoreVersionForTesting(int version) {
+        sGmsCorePackageVersion = version;
     }
 }

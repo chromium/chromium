@@ -22,7 +22,7 @@ vars = {
 
   'chromium_git': 'https://chromium.googlesource.com',
 
-  'abseil_revision': 'a64dd87cec79c80c88190265cfea0cbd4027677f',
+  'abseil_revision': 'cc230bcfdbc1814256376e30b84be7b2f0d1335f',
   'build_revision': '10bd27f7de8a48c05205b92ccdaf782ae6f2fe17',
   'buildtools_revision': '571c37f17dd4d1de37cc2efb6b32ff1032e47be2',
   'catapult_revision': 'e939ac77bb9471acc10f49e82cfe65790068c3d1',

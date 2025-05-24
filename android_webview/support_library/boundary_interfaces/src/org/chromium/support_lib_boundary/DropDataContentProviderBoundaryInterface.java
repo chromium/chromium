@@ -10,28 +10,29 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.io.FileNotFoundException;
 
 /** Boundary interface for DropDataProvider. */
+@NullMarked
 public interface DropDataContentProviderBoundaryInterface {
     boolean onCreate();
 
-    String[] getStreamTypes(@NonNull Uri uri, @NonNull String mimeTypeFilter);
+    String @Nullable [] getStreamTypes(Uri uri, String mimeTypeFilter);
 
-    ParcelFileDescriptor openFile(@NonNull ContentProvider providerWrapper, @NonNull Uri uri)
+    @Nullable ParcelFileDescriptor openFile(ContentProvider providerWrapper, Uri uri)
             throws FileNotFoundException;
 
     Cursor query(
-            @NonNull Uri uri,
-            @Nullable String[] projection,
+            Uri uri,
+            String @Nullable [] projection,
             @Nullable String selection,
-            @Nullable String[] selectionArgs,
+            String @Nullable [] selectionArgs,
             @Nullable String sortOrder);
 
-    String getType(@NonNull Uri uri);
+    @Nullable String getType(@Nullable Uri uri);
 
     Uri cache(byte[] imageBytes, String encodingFormat, String filename);
 
@@ -39,5 +40,5 @@ public interface DropDataContentProviderBoundaryInterface {
 
     void onDragEnd(boolean imageInUse);
 
-    Bundle call(@NonNull String method, @Nullable String arg, @Nullable Bundle extras);
+    @Nullable Bundle call(String method, @Nullable String arg, @Nullable Bundle extras);
 }

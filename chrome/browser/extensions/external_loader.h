@@ -9,9 +9,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
-class ExternalProviderImpl;
+class ExternalProviderInterface;
 
 // Base class for gathering a list of external extensions. Subclasses
 // implement loading from registry, JSON file, policy.
@@ -31,7 +34,7 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
   ExternalLoader& operator=(const ExternalLoader&) = delete;
 
   // Specifies the provider that owns this object.
-  void Init(ExternalProviderImpl* owner);
+  void Init(ExternalProviderInterface* owner);
 
   // Called by the owner before it gets deleted.
   void OwnerShutdown();
@@ -62,7 +65,7 @@ class ExternalLoader : public base::RefCountedThreadSafe<ExternalLoader> {
  private:
   friend class base::RefCountedThreadSafe<ExternalLoader>;
 
-  raw_ptr<ExternalProviderImpl> owner_ = nullptr;  // weak
+  raw_ptr<ExternalProviderInterface> owner_ = nullptr;
 };
 
 }  // namespace extensions

@@ -1,0 +1,16 @@
+Name: WebKit
+Short Name: webkit
+URL: https://developer.android.com/jetpack/androidx/releases/webkit#1.15.0-SNAPSHOT
+Version: 1.15.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+The WebKit Support Library is a static library you can add to your Android application in order to use android.webkit APIs that are not available for older platform versions.
+
+Local Modifications:
+No modifications.

@@ -31,22 +31,23 @@ class AutofillImageFetcherImplTest : public PlatformTest {
 };
 
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
-  // ResolveCardArtURL should append FIFE parameters, specifying an image
-  // that is 40x24px scaled to the screen scale.
+  // ResolveImageURL should append FIFE parameters, specifying an image that is
+  // 40x24px scaled to the screen scale.
   autofill_image_fetcher()->SetScreenScaleForTesting(4);
-  EXPECT_EQ(autofill_image_fetcher()->ResolveCardArtURL(
-                GURL("https://www.example.com/fake_image1")),
+  EXPECT_EQ(autofill_image_fetcher()->ResolveImageURL(
+                GURL("https://www.example.com/fake_image1"),
+                AutofillImageFetcherBase::ImageType::kCreditCardArtImage),
             GURL("https://www.example.com/fake_image1=w160-h96-s"));
 }
 
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage) {
   // On iOS, the underlying decoder for the image fetcher always decodes
-  // into a scale=1 UIImage. ResolveCardArtImage then re-scales it to match
-  // the screen scale.
+  // into a scale=1 UIImage. ResolveImage for credit card images then re-scales
+  // it to match the screen scale.
   //
   // For this test, we mimic this by creating a UIImage of scale 1 directly,
-  // then making sure that ResolveCardArtImage re-scales it to the mocked
-  // screen scale set on the AutofillImageFetcherImpl.
+  // then making sure that ResolveImage re-scales it to the mocked screen scale
+  // set on the AutofillImageFetcherImpl.
   UIImage* input_image = gfx::test::CreatePlatformImage();
   input_image = [UIImage imageWithCGImage:[input_image CGImage]
                                     scale:1
@@ -54,17 +55,19 @@ TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage) {
   ASSERT_EQ(input_image.scale, 1);
 
   autofill_image_fetcher()->SetScreenScaleForTesting(7);
-  gfx::Image card_art_image = autofill_image_fetcher()->ResolveCardArtImage(
-      GURL("https://example.com/fake_image1"), gfx::Image(input_image));
+  gfx::Image card_art_image = autofill_image_fetcher()->ResolveImage(
+      GURL("https://example.com/fake_image1"), gfx::Image(input_image),
+      AutofillImageFetcherBase::ImageType::kCreditCardArtImage);
   EXPECT_EQ(card_art_image.ToUIImage().scale, 7);
 }
 
 // Regression test for crbug.com/1484797, in which the server can return an
-// empty image that caused AutofillImageFetcherImpl::ResolveCardArtImage to
+// empty image that caused `AutofillImageFetcherImpl::ResolveCardArtImage()` to
 // crash.
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtImage_EmptyImage) {
-  gfx::Image resolved_image = autofill_image_fetcher()->ResolveCardArtImage(
-      GURL("https://example.com/fake_image1"), gfx::Image());
+  gfx::Image resolved_image = autofill_image_fetcher()->ResolveImage(
+      GURL("https://example.com/fake_image1"), gfx::Image(),
+      AutofillImageFetcherBase::ImageType::kCreditCardArtImage);
   EXPECT_TRUE(resolved_image.IsEmpty());
 }
 

@@ -29,6 +29,7 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
 #include "third_party/blink/public/common/features.h"
@@ -41,7 +42,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_producer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
+#include "third_party/blink/renderer/platform/loader/fetch/webui_bundled_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -89,9 +90,7 @@ bool IsRequestContextSupported(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Incompatible request context type: " << request_context;
-  return false;
+  NOTREACHED() << "Incompatible request context type: " << request_context;
 }
 
 }  // namespace
@@ -106,15 +105,14 @@ ScriptResource* ScriptResource::Fetch(
         v8_compile_hints_producer,
     v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         v8_compile_hints_consumer,
-    bool v8_compile_hints_magic_comment_runtime_enabled) {
+    v8_compile_hints::MagicCommentMode magic_comment_mode) {
   DCHECK(IsRequestContextSupported(
       params.GetResourceRequest().GetRequestContext()));
   auto* resource = To<ScriptResource>(fetcher->RequestResource(
       params,
       ScriptResourceFactory(isolate, streaming_allowed,
                             v8_compile_hints_producer,
-                            v8_compile_hints_consumer,
-                            v8_compile_hints_magic_comment_runtime_enabled,
+                            v8_compile_hints_consumer, magic_comment_mode,
                             params.GetScriptType()),
       client));
   return resource;
@@ -134,7 +132,7 @@ ScriptResource* ScriptResource::CreateForTest(
       request, options, decoder_options, isolate, kNoStreaming,
       /*v8_compile_hints_producer=*/nullptr,
       /*v8_compile_hints_consumer=*/nullptr,
-      /*v8_compile_hints_magic_comment_runtime_enabled=*/false, script_type);
+      v8_compile_hints::MagicCommentMode::kNone, script_type);
 }
 
 ScriptResource::ScriptResource(
@@ -147,7 +145,7 @@ ScriptResource::ScriptResource(
         v8_compile_hints_producer,
     v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
         v8_compile_hints_consumer,
-    bool v8_compile_hints_magic_comment_runtime_enabled,
+    v8_compile_hints::MagicCommentMode magic_comment_mode,
     mojom::blink::ScriptType initial_request_script_type)
     : TextResource(resource_request,
                    ResourceType::kScript,
@@ -162,8 +160,7 @@ ScriptResource::ScriptResource(
           std::make_unique<TextResourceDecoder>(decoder_options)),
       v8_compile_hints_producer_(v8_compile_hints_producer),
       v8_compile_hints_consumer_(v8_compile_hints_consumer),
-      v8_compile_hints_magic_comment_runtime_enabled_(
-          v8_compile_hints_magic_comment_runtime_enabled) {
+      magic_comment_mode_(magic_comment_mode) {
   static bool script_streaming_enabled =
       base::FeatureList::IsEnabled(features::kScriptStreaming);
   static bool script_streaming_for_non_http_enabled =
@@ -396,20 +393,31 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
       Platform::Current()->ShouldUseCodeCacheWithHashing(
           WebURL(GetResourceRequest().Url()));
 
-  bool code_cache_supported = http_family || code_cache_with_hashing_supported;
-  if (code_cache_supported) {
+  bool webui_bundled_code_cache_supported =
+      SchemeRegistry::SchemeSupportsWebUIBundledBytecode(
+          GetResourceRequest().Url().Protocol()) &&
+      GetResourceRequest().Url().ProtocolIs(
+          response.CurrentRequestUrl().Protocol()) &&
+      Platform::Current()->GetWebUIBundledCodeCacheResourceId(
+          GURL(GetResourceRequest().Url()));
+
+  if (webui_bundled_code_cache_supported) {
+    cached_metadata_handler_ =
+        MakeGarbageCollected<WebUIBundledCachedMetadataHandler>();
+  } else if (code_cache_with_hashing_supported) {
     std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
         response, mojom::blink::CodeCacheType::kJavascript,
         GetResourceRequest().RequestorOrigin());
-    if (code_cache_with_hashing_supported) {
-      cached_metadata_handler_ =
-          MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
-              Encoding(), std::move(sender));
-    } else {
-      cached_metadata_handler_ =
-          MakeGarbageCollected<ScriptCachedMetadataHandler>(Encoding(),
-                                                            std::move(sender));
-    }
+    cached_metadata_handler_ =
+        MakeGarbageCollected<ScriptCachedMetadataHandlerWithHashing>(
+            Encoding(), std::move(sender));
+  } else if (http_family) {
+    std::unique_ptr<CachedMetadataSender> sender = CachedMetadataSender::Create(
+        response, mojom::blink::CodeCacheType::kJavascript,
+        GetResourceRequest().RequestorOrigin());
+    cached_metadata_handler_ =
+        MakeGarbageCollected<ScriptCachedMetadataHandler>(Encoding(),
+                                                          std::move(sender));
   }
 }
 
@@ -542,8 +550,7 @@ void ScriptResource::AdvanceStreamingState(StreamingState new_state) {
       CHECK_EQ(new_state, StreamingState::kStreamingDisabled);
       break;
     case StreamingState::kStreamingDisabled:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 
   streaming_state_ = new_state;

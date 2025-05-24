@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/css_math_negate.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_sum_value.h"
@@ -22,8 +23,7 @@ std::optional<CSSNumericSumValue> CSSMathNegate::SumValue() const {
     return std::nullopt;
   }
 
-  base::ranges::for_each(maybe_sum->terms,
-                         [](auto& term) { term.value *= -1; });
+  std::ranges::for_each(maybe_sum->terms, [](auto& term) { term.value *= -1; });
   return maybe_sum;
 }
 

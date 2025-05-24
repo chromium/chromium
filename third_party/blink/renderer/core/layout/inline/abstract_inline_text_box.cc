@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_buffer.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -46,7 +47,7 @@ class AbstractInlineTextBoxCache final {
     MapKey key = ToMapKey(cursor);
     const auto it = map_->find(key);
     auto* const layout_text =
-        To<LayoutText>(cursor.CurrentMutableLayoutObject());
+        To<LayoutText>(cursor.Current().GetMutableLayoutObject());
     if (it != map_->end()) {
       CHECK(layout_text->HasAbstractInlineTextBox());
       return it->value.Get();
@@ -77,7 +78,7 @@ class AbstractInlineTextBoxCache final {
 
   static AbstractInlineTextBoxCache* s_instance_;
 
-  using MapType = HeapHashMap<MapKey, Member<AbstractInlineTextBox>>;
+  using MapType = GCedHeapHashMap<MapKey, Member<AbstractInlineTextBox>>;
   Persistent<MapType> map_;
 };
 
@@ -96,7 +97,7 @@ void AbstractInlineTextBox::WillDestroy(const InlineCursor& cursor) {
   if (cursor.CurrentItem()) {
     return AbstractInlineTextBoxCache::WillDestroy(cursor);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 AbstractInlineTextBox::AbstractInlineTextBox(const InlineCursor& cursor)
@@ -141,7 +142,7 @@ void AbstractInlineTextBox::Detach() {
 LayoutText* AbstractInlineTextBox::GetFirstLetterPseudoLayoutText() const {
   // We only want to apply the first letter to the first inline text box
   // for a LayoutObject.
-  if (!IsFirst()) {
+  if (!IsFirstForLayoutObject()) {
     return nullptr;
   }
 
@@ -271,7 +272,9 @@ AXObjectCache* AbstractInlineTextBox::ExistingAXObjectCache() const {
                       : nullptr;
 }
 
-void AbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
+void AbstractInlineTextBox::GetCharacterLayoutPixelOffsets(
+    Vector<int>& offsets) const {
+  offsets.resize(Len());
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return;
@@ -279,7 +282,6 @@ void AbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   if (!shape_result_view) {
     // When |fragment_| for BR, we don't have shape result.
     // "aom-computed-boolean-properties.html" reaches here.
-    widths.resize(Len());
     return;
   }
   // TODO(layout-dev): Add support for IndividualCharacterRanges to
@@ -287,14 +289,17 @@ void AbstractInlineTextBox::CharacterWidths(Vector<float>& widths) const {
   ShapeResult* shape_result = shape_result_view->CreateShapeResult();
   Vector<CharacterRange> ranges;
   shape_result->IndividualCharacterRanges(&ranges);
-  widths.reserve(ranges.size());
-  widths.resize(0);
-  for (const auto& range : ranges)
-    widths.push_back(range.Width());
-  // The shaper can fail to return glyph metrics for all characters (see
-  // crbug.com/613915 and crbug.com/615661) so add empty ranges to ensure all
-  // characters have an associated range.
-  widths.resize(Len());
+  float width_so_far = 0;
+  for (wtf_size_t i = 0; i < offsets.size(); ++i) {
+    if (i < ranges.size()) {
+      // The shaper can fail to return glyph metrics for all characters (see
+      // crbug.com/613915 and crbug.com/615661) so add empty ranges to ensure
+      // all characters have an associated range. This means that if there is no
+      // range value, we assume 0 and just add the previous offset.
+      width_so_far += ranges[i].Width();
+    }
+    offsets[i] = roundf(width_so_far);
+  }
 }
 
 void AbstractInlineTextBox::GetWordBoundaries(
@@ -425,7 +430,7 @@ void AbstractInlineTextBox::GetWordBoundariesForText(
     //      could refactor their word boundary algorithm so that we could simply
     //      reuse it for accessibility. Anyway, we currently do not see a strong
     //      case to justify spending time to match this behavior perfectly.
-    if (WTF::unicode::IsPunct(text[offset]) || U16_IS_SURROGATE(text[offset])) {
+    if (IsWordBoundary(text[offset])) {
       // Case 1: A new word should start before and end after a series of
       // punctuation marks, i.e., Consecutive punctuation marks should be
       // accumulated into a single word. For example, "|Hello|+++---|there|".
@@ -457,9 +462,7 @@ void AbstractInlineTextBox::GetWordBoundariesForText(
       // Case 3: A word should end if `offset` is proceeded by a word break or
       // a punctuation.
       UChar prev_character = text[offset - 1];
-      if (IsWordBreak(prev_character) ||
-          WTF::unicode::IsPunct(prev_character) ||
-          U16_IS_SURROGATE(prev_character)) {
+      if (IsWordBreak(prev_character) || IsWordBoundary(prev_character)) {
         if (word_start) {
           words.emplace_back(*word_start, offset);
           word_start = std::nullopt;
@@ -502,43 +505,13 @@ String AbstractInlineTextBox::GetText() const {
   return result;
 }
 
-bool AbstractInlineTextBox::IsFirst() const {
+bool AbstractInlineTextBox::IsFirstForLayoutObject() const {
   const InlineCursor& cursor = GetCursor();
   if (!cursor)
     return true;
   InlineCursor first_fragment;
   first_fragment.MoveTo(*cursor.Current().GetLayoutObject());
   return cursor == first_fragment;
-}
-
-bool AbstractInlineTextBox::IsLast() const {
-  InlineCursor cursor = GetCursor();
-  if (!cursor)
-    return true;
-  cursor.MoveToNextForSameLayoutObject();
-  return !cursor;
-}
-
-AbstractInlineTextBox* AbstractInlineTextBox::NextOnLine() const {
-  InlineCursor cursor = GetCursorOnLine();
-  if (!cursor)
-    return nullptr;
-  for (cursor.MoveToNext(); cursor; cursor.MoveToNext()) {
-    if (cursor.Current().GetLayoutObject()->IsText())
-      return GetOrCreate(cursor);
-  }
-  return nullptr;
-}
-
-AbstractInlineTextBox* AbstractInlineTextBox::PreviousOnLine() const {
-  InlineCursor cursor = GetCursorOnLine();
-  if (!cursor)
-    return nullptr;
-  for (cursor.MoveToPrevious(); cursor; cursor.MoveToPrevious()) {
-    if (cursor.Current().GetLayoutObject()->IsText())
-      return GetOrCreate(cursor);
-  }
-  return nullptr;
 }
 
 bool AbstractInlineTextBox::IsLineBreak() const {

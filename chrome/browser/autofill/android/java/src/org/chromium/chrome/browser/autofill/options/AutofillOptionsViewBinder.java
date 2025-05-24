@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProper
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_HINT;
 import static org.chromium.chrome.browser.autofill.options.AutofillOptionsProperties.THIRD_PARTY_TOGGLE_IS_READ_ONLY;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,6 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Stateless view binder of the autofill options component. Whenever a ModelChangeProcessor detects
  * model changes, this class helps to map the model state to the {@link AutofillOptionsFragment}.
  */
+@NullMarked
 class AutofillOptionsViewBinder {
     /**
      * Bind the changes of {@link AutofillOptionsProperties} to the view of the options component

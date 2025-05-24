@@ -198,8 +198,9 @@ TEST_F(InkDropImplTest, LayersRemovedFromHostAfterHighlight) {
 TEST_F(InkDropImplTest, LayersRemovedFromHostAfterInkDrop) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   EXPECT_FALSE(AreLayersAddedToHost());
 
@@ -508,8 +509,9 @@ TEST_P(InkDropImplHideAutoHighlightTest,
 TEST_P(InkDropImplHideAutoHighlightTest, DeactivatedAnimatesWhenNotFocused) {
   // TODO(bruthig): Re-enable! For some reason these tests fail on some win
   // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
+  if (!gfx::Animation::ShouldRenderRichAnimation()) {
     return;
+  }
 
   test_api().SetShouldHighlight(false);
 

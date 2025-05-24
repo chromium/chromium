@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_types.h"
@@ -35,7 +36,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   AppMenuModelAdapter(const std::string& app_id,
                       std::unique_ptr<ui::SimpleMenuModel> model,
                       views::Widget* widget_owner,
-                      ui::MenuSourceType source_type,
+                      ui::mojom::MenuSourceType source_type,
                       base::OnceClosure on_menu_closed_callback,
                       bool is_tablet_mode);
 
@@ -75,7 +76,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
  protected:
   const std::string& app_id() const { return app_id_; }
   base::TimeTicks menu_open_time() const { return menu_open_time_; }
-  ui::MenuSourceType source_type() const { return source_type_; }
+  ui::mojom::MenuSourceType source_type() const { return source_type_; }
   bool is_tablet_mode() const { return is_tablet_mode_; }
 
   // Helper method to record ExecuteCommand() histograms.
@@ -100,7 +101,7 @@ class APP_MENU_EXPORT AppMenuModelAdapter : public views::MenuModelAdapter {
   raw_ptr<views::Widget> widget_owner_;
 
   // The event type which was used to show the menu.
-  const ui::MenuSourceType source_type_;
+  const ui::mojom::MenuSourceType source_type_;
 
   // The callback which is triggered when the menu is closed.
   base::OnceClosure on_menu_closed_callback_;

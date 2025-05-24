@@ -12,6 +12,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/test/ash_test_base.h"
@@ -26,6 +27,7 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -372,6 +374,55 @@ TEST_F(AnnotatorControllerTest, RegisterViewTwice) {
   annotator_controller()->DisableAnnotator();
   EXPECT_FALSE(primary_display_tray->visible_preferred());
   EXPECT_FALSE(external_display_tray->visible_preferred());
+}
+
+TEST_F(AnnotatorControllerTest, AnnotatorTrayAccessibleName) {
+  auto* annotation_tray = Shell::GetPrimaryRootWindowController()
+                              ->GetStatusAreaWidget()
+                              ->annotation_tray();
+  annotator_controller()->RegisterView(Shell::GetPrimaryRootWindow());
+  annotator_controller()->CreateAnnotationOverlayForWindow(
+      Shell::GetPrimaryRootWindow(), std::nullopt);
+  EXPECT_TRUE(annotation_tray->visible_preferred());
+
+  {
+    ui::AXNodeData tray_data;
+    annotation_tray->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
+    EXPECT_EQ(
+        tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE)));
+  }
+
+  annotator_controller()->EnableAnnotatorTool();
+  EXPECT_TRUE(annotator_controller()->is_annotator_enabled());
+
+  {
+    ui::AXNodeData tray_data;
+    annotation_tray->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
+    EXPECT_EQ(
+        tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ON_STATE)));
+  }
+
+  annotator_controller()->ResetTools();
+  EXPECT_FALSE(annotator_controller()->is_annotator_enabled());
+
+  {
+    ui::AXNodeData tray_data;
+    annotation_tray->GetViewAccessibility().GetAccessibleNodeData(&tray_data);
+    EXPECT_EQ(
+        tray_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_ACCESSIBLE_TITLE,
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_AREA_PROJECTOR_ANNOTATION_TRAY_OFF_STATE)));
+  }
 }
 
 }  // namespace ash

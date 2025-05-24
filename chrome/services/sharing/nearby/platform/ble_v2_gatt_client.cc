@@ -30,7 +30,7 @@ void CancelPendingTasks(
             << " pending calls.";
   }
 
-  for (base::WaitableEvent* event : std::move(events_to_cancel)) {
+  for (base::WaitableEvent* event : events_to_cancel) {
     event->Signal();
   }
 }

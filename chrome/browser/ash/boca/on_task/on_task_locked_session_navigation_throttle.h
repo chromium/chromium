@@ -19,19 +19,24 @@ class OnTaskLockedSessionNavigationThrottle
  public:
   // Returns a navigation throttle when the navigation is happening inside
   // a tabbed web app and the tabbed web app has a pinned home tab.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
   ~OnTaskLockedSessionNavigationThrottle() override;
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
   explicit OnTaskLockedSessionNavigationThrottle(
-      content::NavigationHandle* handle);
+      content::NavigationThrottleRegistry& registry);
+
+  // Checks to see if the url we are currently navigating should be blocked
+  // regardless of restriction levels. This includes special chrome urls, files,
+  // blobs, downloads and other sensitive local schemes.
+  bool ShouldBlockSensitiveUrlNavigation();
 
   // Checks that the restriction is applied to the navigation whether it
   // happens via redirect or when the navigation is first started.
@@ -42,6 +47,13 @@ class OnTaskLockedSessionNavigationThrottle
   // this navigation, we will set that tab's restrictions to
   // `kLimitedNavigation`.
   bool MaybeProceedForOneLevelDeep(content::WebContents* tab, const GURL& url);
+
+  // Displays the blocked URL toast when a navigation is cancelled. This should
+  // only be blocked if the navigation was user-initiated.
+  void MaybeShowBlockedURLToast();
+
+  // Checks to see if the navigation is happening outside of the OnTask window.
+  bool IsOutsideOnTaskAppNavigation();
 
   // `should_redirects_pass` allows url redirects to go through without going
   // through the blocklist checks. This should only be flipped to true after the

@@ -180,7 +180,7 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 [[nodiscard]] FormFieldData CreateTestSelectField(
     const std::vector<const char*>& values);
 
-[[nodiscard]] FormFieldData CreateTestSelectOrSelectListField(
+[[nodiscard]] FormFieldData CreateTestSelectField(
     std::string_view label,
     std::string_view name,
     std::string_view value,
@@ -212,8 +212,20 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
     std::string_view value = kIbanValue,
     bool is_https = true);
 
-// Creates a 'FormData` with a username and a password fields.
+// Populates `form_data` with data corresponding to a loyalty card form (a form
+// with a single loyalty card field).
+[[nodiscard]] FormData CreateTestLoyaltyCardFormData();
+
+// Populates `form_data` with data corresponding to a merchant promo code form
+// (a form with a single merchant promo code field).
+[[nodiscard]] FormData CreateTestMerchantPromoCodeFormData();
+
+// Creates a `FormData` with a username and a password field.
 [[nodiscard]] FormData CreateTestPasswordFormData();
+
+// Creates a `FormData` that mimics a signup form (username field and two
+// password fields).
+[[nodiscard]] FormData CreateTestSignupFormData();
 
 // Creates a `FormData` with a single unclassified field.
 [[nodiscard]] FormData CreateTestUnclassifiedFormData();

@@ -1,15 +1,11 @@
 This is a testharness.js-based test.
-Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["inserttext"," "]] "<b>a</b><i>@</i><u>b</u>{}" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>a</b><i>@</i><u>b</u> " but got "<b>a</b><i>@</i><u>b&nbsp;</u>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>a</b><i>@</i><u>b</u>&nbsp;" but got "<b>a</b><i>@</i><u>b&nbsp;</u>"
 [FAIL] [["inserttext"," "]] "a@b<b>[]c</b>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"mailto:a@b\\">a@b</a><b> c</b>" but got "a@b&nbsp;<b>c</b>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "a@b<b>&nbsp;c</b>" but got "a@b&nbsp;<b>c</b>"
 [FAIL] [["inserttext","\\t"]] "http://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a\\">http://a</a>\\t" but got "http://a<span style=\\"white-space:pre\\">\\t</span>"
-[FAIL] [["inserttext","\\f"]] "http://a[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<a href=\\"http://a\\">http://a</a>\\f" but got "http://a\\f"
-[FAIL] [["inserttext","   "]] "foo[]" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo &nbsp;&nbsp;" but got "foo&nbsp; &nbsp;"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "http://a\\t" but got "http://a<span style=\\"white-space:pre\\">\\t</span>"
 [FAIL] [["inserttext","a"]] "<p>foo</p>{}" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p>a" but got "<p>fooa</p>"
 [FAIL] [["inserttext","a"]] "{}<p>foo" compare innerHTML

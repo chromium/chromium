@@ -6,6 +6,7 @@
 
 #include <cmath>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/style/typography.h"
@@ -44,7 +45,7 @@ constexpr int kDividerHeight = 1;
 
 int GetDialogHeight(const AppInstallDialogArgs& dialog_args) {
   if (const AppInfoArgs* app_info_args =
-          absl::get_if<AppInfoArgs>(&dialog_args)) {
+          std::get_if<AppInfoArgs>(&dialog_args)) {
     int height = kMinimumDialogHeight;
     // TODO(b/329515116): Adjust height for long URLs that wrap multiple
     // lines.
@@ -212,7 +213,7 @@ void AppInstallDialog::Show(gfx::NativeWindow parent,
   dialog_args_ = std::move(dialog_args);
   dialog_height_ = GetDialogHeight(dialog_args_.value());
 
-  if (absl::holds_alternative<AppInfoArgs>(dialog_args_.value())) {
+  if (std::holds_alternative<AppInfoArgs>(dialog_args_.value())) {
     set_dialog_modal_type(ui::mojom::ModalType::kWindow);
   }
 

@@ -211,7 +211,7 @@ TEST_F(DiversionFileManagerTest, Writes) {
         ASSERT_TRUE(scoped_fd.is_valid());
         EXPECT_EQ(file_size, 9u);
         EXPECT_EQ(base::File::FILE_OK, error);
-        char buf[9] = {0};
+        char buf[9] = {};
         EXPECT_TRUE(base::ReadFromFD(scoped_fd.get(), buf));
         EXPECT_EQ(buf, base::span_from_cstring("hi there."));
         *called = true;

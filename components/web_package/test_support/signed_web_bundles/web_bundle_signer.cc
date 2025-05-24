@@ -5,6 +5,7 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 
 #include <limits>
+#include <variant>
 
 #include "base/check_is_test.h"
 #include "base/containers/extend.h"
@@ -38,10 +39,10 @@ cbor::Value CreateSignatureStackEntryAttributes(
     const PublicKey& public_key,
     IntegritySignatureErrorsForTesting errors_for_testing = {}) {
   std::vector<uint8_t> public_key_bytes =
-      absl::visit(base::Overloaded{[](const auto& public_key) {
-                    return base::ToVector(public_key.bytes());
-                  }},
-                  public_key);
+      std::visit(base::Overloaded{[](const auto& public_key) {
+                   return base::ToVector(public_key.bytes());
+                 }},
+                 public_key);
   if (errors_for_testing.Has(
           IntegritySignatureErrorForTesting::kInvalidPublicKeyLength)) {
     public_key_bytes.push_back(42);
@@ -68,14 +69,13 @@ cbor::Value CreateSignatureStackEntryAttributes(
       attributes.emplace("ed25519", public_key_bytes);
     } else {
       attributes.emplace(
-          absl::visit(
-              base::Overloaded{[](const Ed25519PublicKey&) {
-                                 return kEd25519PublicKeyAttributeName;
-                               },
-                               [](const EcdsaP256PublicKey&) {
-                                 return kEcdsaP256PublicKeyAttributeName;
-                               }},
-              public_key),
+          std::visit(base::Overloaded{[](const Ed25519PublicKey&) {
+                                        return kEd25519PublicKeyAttributeName;
+                                      },
+                                      [](const EcdsaP256PublicKey&) {
+                                        return kEcdsaP256PublicKeyAttributeName;
+                                      }},
+                     public_key),
           public_key_bytes);
     }
   }
@@ -203,7 +203,7 @@ cbor::Value CreateIntegrityBlockForBundle(
         CreateIntegrityBlock(/*signature_stack=*/{}, ib_attributes,
                              errors_for_testing.integrity_block_errors));
 
-    absl::visit(
+    std::visit(
         base::Overloaded{[&](const auto& key_pair) {
           // Create the attributes map for the current signature stack entry.
           std::optional<std::vector<uint8_t>> attributes = cbor::Writer::Write(
@@ -243,7 +243,7 @@ void FillIdAttributesIfPossibleAndNecessary(
       errors_for_testing.Has(IntegrityBlockErrorForTesting::kNoAttributes)) {
     return;
   }
-  ib_attributes = {.web_bundle_id = absl::visit(
+  ib_attributes = {.web_bundle_id = std::visit(
                        [](const auto& key_pair) {
                          return SignedWebBundleId::CreateForPublicKey(
                                     key_pair.public_key)

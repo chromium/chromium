@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("tether") {
   sources = [
@@ -58,6 +58,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui/ash/network",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",

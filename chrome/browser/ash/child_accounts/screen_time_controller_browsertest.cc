@@ -428,13 +428,8 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, UnlockDailyLimitWithDuration) {
 }
 
 // Tests the default time window limit.
-// TODO(crbug.com/1358216): Flaky on Linux
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_DefaultBedtime DISABLED_DefaultBedtime
-#else
-#define MAYBE_DefaultBedtime DefaultBedtime
-#endif
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, MAYBE_DefaultBedtime) {
+// TODO(crbug.com/1358216): Flaky
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DISABLED_DefaultBedtime) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 GMT");
   ScreenLockerTester().Lock();
 
@@ -549,9 +544,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, DefaultDailyLimit) {
 }
 
 // Tests that the bedtime locks an active session when it is reached.
-// TODO(crbug.com/334319436): Flaky test.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
-                       DISABLED_ActiveSessionBedtime) {
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, ActiveSessionBedtime) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
   system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");
@@ -582,9 +575,7 @@ IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
 }
 
 // Tests that the daily limit locks the device when it is reached.
-// TODO(crbug.com/334304756): Flaky on CrOS.
-IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest,
-                       DISABLED_ActiveSessionDailyLimit) {
+IN_PROC_BROWSER_TEST_F(ScreenTimeControllerTest, ActiveSessionDailyLimit) {
   LogInChildAndSetupClockWithTime("1 Jan 2018 10:00:00 PST");
 
   system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"PST");

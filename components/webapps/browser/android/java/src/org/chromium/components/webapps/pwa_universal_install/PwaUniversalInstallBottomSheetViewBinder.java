@@ -9,6 +9,7 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.webapps.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -17,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Binds a pwa-universal-install {@link PropertyModel} with a {@link
  * PwaUniversalInstallBottomSheetView}.
  */
+@NullMarked
 class PwaUniversalInstallBottomSheetViewBinder {
     static void bind(
             PropertyModel model, PwaUniversalInstallBottomSheetView view, PropertyKey propertyKey) {

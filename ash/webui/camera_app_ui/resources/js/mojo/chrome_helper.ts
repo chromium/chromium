@@ -15,6 +15,7 @@ import {
 import {windowController} from '../window_controller.js';
 
 import {
+  AspectRatio,
   BigBuffer,
   CameraAppHelper,
   CameraAppHelperRemote,
@@ -291,7 +292,7 @@ export abstract class ChromeHelper {
   abstract initLidStateMonitor(onChange: (lidStatus: LidState) => void):
       Promise<LidState>;
 
-  abstract initSWPrivacySwitchMonitor(
+  abstract initSwPrivacySwitchMonitor(
       onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean>;
 
   abstract getEventsSender(): Promise<EventsSenderRemote>;
@@ -304,6 +305,8 @@ export abstract class ChromeHelper {
   abstract performOcr(jpeg: Blob): Promise<OcrResult>;
 
   abstract createPdfBuilder(): PdfBuilderRemote;
+
+  abstract getAspectRatioOrder(): Promise<AspectRatio[]>;
 
   /**
    * Creates a new instance of ChromeHelper if it is not set. Returns the
@@ -533,7 +536,7 @@ class ChromeHelperImpl extends ChromeHelper {
     return lidStatus;
   }
 
-  override async initSWPrivacySwitchMonitor(
+  override async initSwPrivacySwitchMonitor(
       onChange: (is_sw_privacy_switch_on: boolean) => void): Promise<boolean> {
     const monitorCallbackRouter =
         wrapEndpoint(new SWPrivacySwitchMonitorCallbackRouter());
@@ -587,5 +590,10 @@ class ChromeHelperImpl extends ChromeHelper {
     const pdfBuilderReceiver = pdfBuilderRemote.$.bindNewPipeAndPassReceiver();
     this.remote.createPdfBuilder(pdfBuilderReceiver);
     return wrapEndpoint(pdfBuilderRemote);
+  }
+
+  override async getAspectRatioOrder(): Promise<AspectRatio[]> {
+    const {order} = await this.remote.getAspectRatioOrder();
+    return order;
   }
 }

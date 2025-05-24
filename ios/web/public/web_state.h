@@ -72,7 +72,8 @@ class WebState : public base::SupportsUserData {
  public:
   // Callback used to load the full information for the WebState when
   // it will become realized.
-  using WebStateStorageLoader = base::OnceCallback<proto::WebStateStorage()>;
+  using WebStateStorageLoader =
+      base::OnceCallback<std::optional<proto::WebStateStorage>()>;
 
   // Callback used to fetch the native session for the WebState.
   using NativeSessionFetcher = base::OnceCallback<NSData*()>;
@@ -92,7 +93,7 @@ class WebState : public base::SupportsUserData {
 
 #if BUILDFLAG(USE_BLINK)
     // If `created_with_opener`, a pointer to the opener WebState.
-    WebState* opener_web_state;
+    raw_ptr<WebState> opener_web_state = nullptr;
 #endif
 
     // Value used to set the last time the WebState was made active; this
@@ -176,8 +177,9 @@ class WebState : public base::SupportsUserData {
         base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)>
             callback,
         mojo::GenericPendingReceiver* receiver) {
-      if (auto typed_receiver = receiver->As<Interface>())
+      if (auto typed_receiver = receiver->As<Interface>()) {
         callback.Run(std::move(typed_receiver));
+      }
     }
 
     const raw_ptr<WebState> web_state_;

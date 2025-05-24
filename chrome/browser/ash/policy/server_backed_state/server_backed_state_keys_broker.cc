@@ -32,7 +32,7 @@ ServerBackedStateKeysBroker::ServerBackedStateKeysBroker(
     ash::SessionManagerClient* session_manager_client)
     : session_manager_client_(session_manager_client), requested_(false) {}
 
-ServerBackedStateKeysBroker::~ServerBackedStateKeysBroker() {}
+ServerBackedStateKeysBroker::~ServerBackedStateKeysBroker() = default;
 
 base::CallbackListSubscription
 ServerBackedStateKeysBroker::RegisterUpdateCallback(

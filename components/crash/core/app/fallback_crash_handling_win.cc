@@ -58,16 +58,14 @@ bool SetupFallbackCrashHandling(const base::CommandLine& command_line) {
   // Get the database path.
   base::FilePath database_path = command_line.GetSwitchValuePath("database");
   if (database_path.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   std::unique_ptr<FallbackCrashHandlerLauncher> fallback_launcher(
       new FallbackCrashHandlerLauncher());
 
   if (!fallback_launcher->Initialize(base_command_line, database_path)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // This is necessary because chrome_elf stubs out the

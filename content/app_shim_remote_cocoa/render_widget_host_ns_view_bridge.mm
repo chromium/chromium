@@ -397,7 +397,7 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
     // menu to finish showing to get the nested run loop of the stack.
     // Attempting to show a new menu while the old menu is still visible or
     // fading out confuses AppKit, since we're still in the nested event loop of
-    // DisplayPopupMenu(). See https://crbug.com/812260.
+    // DisplayPopupMenu(). See https://crbug.com/41370640.
     pending_menus_.emplace_back(std::move(menu), std::move(callback));
     return;
   }
@@ -413,9 +413,9 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
   }
 
   // Retain the Cocoa view for the duration of the pop-up so that it can't be
-  // dealloced if the widget is destroyed while the pop-up's up (which
-  // would in turn delete me, causing a crash once the -runMenuInView
-  // call returns. That's what was happening in <http://crbug.com/33250>).
+  // dealloced if the widget is destroyed while the pop-up's up (which would in
+  // turn delete me, causing a crash once the -runMenuInView call returns.
+  // That's what was happening in <https://crbug.com/40346793>).
   RenderWidgetHostViewCocoa* cocoa_view = cocoa_view_;
 
   // Get a weak pointer to `this`, so we can detect if we get destroyed while
@@ -466,16 +466,7 @@ void RenderWidgetHostNSViewBridge::DisplayPopupMenu(
     return;
   }
 
-  if (runner.menuItemWasChosen) {
-    int index = runner.indexOfSelectedItem;
-    if (index < 0) {
-      std::move(callback).Run(std::nullopt);
-    } else {
-      std::move(callback).Run(index);
-    }
-  } else {
-    std::move(callback).Run(std::nullopt);
-  }
+  std::move(callback).Run(runner.selectedMenuItemIndex);
 
   std::vector<PendingPopupMenu> next_menus = std::exchange(pending_menus_, {});
   if (!next_menus.empty()) {

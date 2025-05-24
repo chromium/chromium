@@ -6,11 +6,14 @@ package org.chromium.base.test.transit;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /** A {@link Transition} out of a {@link Facility}. */
+@NullMarked
 class FacilityCheckOut extends Transition {
     private final String mFacilityNames;
 

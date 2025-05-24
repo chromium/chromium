@@ -122,10 +122,6 @@ bool App::operator==(const App& other) const {
   return true;
 }
 
-bool App::operator!=(const App& other) const {
-  return !(*this == other);
-}
-
 AppPtr App::Clone() const {
   auto app = std::make_unique<App>(app_type, app_id);
 

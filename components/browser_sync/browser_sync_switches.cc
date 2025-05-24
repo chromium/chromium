@@ -9,17 +9,9 @@
 
 namespace switches {
 
-BASE_FEATURE(kSyncUseFCMRegistrationTokensList,
-             "SyncUseFCMRegistrationTokensList",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kSyncFilterOutInactiveDevicesForSingleClient,
-             "SyncFilterOutInactiveDevicesForSingleClient",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMigrateSyncingUserToSignedIn,
              "MigrateSyncingUserToSignedIn",
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -37,6 +29,10 @@ BASE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn,
 
 BASE_FEATURE(kForceMigrateSyncingUserToSignedIn,
              "ForceMigrateSyncingUserToSignedIn",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
 }  // namespace switches

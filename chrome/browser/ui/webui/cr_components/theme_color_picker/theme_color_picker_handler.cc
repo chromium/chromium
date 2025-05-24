@@ -84,7 +84,7 @@ ThemeColorPickerHandler::ThemeColorPickerHandler(
       ntp_custom_background_service_.get());
 }
 
-ThemeColorPickerHandler::~ThemeColorPickerHandler() {}
+ThemeColorPickerHandler::~ThemeColorPickerHandler() = default;
 
 // static
 void ThemeColorPickerHandler::RegisterProfilePrefs(

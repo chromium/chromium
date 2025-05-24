@@ -10,6 +10,7 @@
 #include "base/strings/strcat.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace supervised_user {
 
@@ -25,7 +26,7 @@ void SetFamilyMemberAttributesForTesting(
   mutable_member->mutable_profile()->set_profile_image_url(
       base::StrCat({"http://image.url/", username}));
   mutable_member->set_role(role);
-  mutable_member->set_user_id(signin::GetTestGaiaIdForEmail(email));
+  mutable_member->set_user_id(signin::GetTestGaiaIdForEmail(email).ToString());
 }
 
 }  // namespace supervised_user

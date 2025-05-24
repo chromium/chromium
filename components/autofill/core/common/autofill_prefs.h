@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_
 
+#include <string_view>
+
 #include "build/build_config.h"
-#include "google_apis/gaia/core_account_id.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -21,9 +22,23 @@ namespace autofill::prefs {
 // component. Keep alphabetized, and document each in the .cc file.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 
+// Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
+inline constexpr char kAutofillEnabledDeprecated[] = "autofill.enabled";
 // String serving as a seed for ablation studies.
 inline constexpr std::string_view kAutofillAblationSeedPref =
     "autofill.ablation_seed";
+// A dictionary that contains (hashed) GAIA ids and their opt-in status for
+// AutofillAI.
+inline constexpr char kAutofillAiOptInStatus[] =
+    "autofill.autofill_ai.opt_in_status";
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+// Boolean that is true if BNPL on Autofill is enabled.
+inline constexpr char kAutofillBnplEnabled[] = "autofill.bnpl_enabled";
+// Boolean that is true if the user has ever seen a BNPL suggestion.
+inline constexpr char kAutofillHasSeenBnpl[] = "autofill.has_seen_bnpl";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 // Boolean that is true if Autofill is enabled and allowed to save credit card
 // data.
 inline constexpr char kAutofillCreditCardEnabled[] =
@@ -36,55 +51,30 @@ inline constexpr char kAutofillCreditCardFidoAuthEnabled[] =
 inline constexpr char kAutofillCreditCardFidoAuthOfferCheckboxState[] =
     "autofill.credit_card_fido_auth_offer_checkbox_state";
 #endif  // BUILDFLAG(IS_ANDROID)
-// Please use kAutofillCreditCardEnabled and kAutofillProfileEnabled instead.
-inline constexpr char kAutofillEnabledDeprecated[] = "autofill.enabled";
 // Boolean that is true if a form with an IBAN field has ever been submitted, or
 // an IBAN has ever been saved via Chrome payments settings page. This helps to
 // enable IBAN functionality for those users who are not in a country where IBAN
 // is generally available but have used IBAN already.
 inline constexpr char kAutofillHasSeenIban[] = "autofill.has_seen_iban";
-// Boolean that is true if Autofill is enabled and allowed to save IBAN data.
-inline constexpr char kAutofillIbanEnabled[] = "autofill.iban_enabled";
 // Integer that is set to the last version where the profile deduping routine
 // was run. This routine will be run once per version.
 inline constexpr char kAutofillLastVersionDeduped[] =
     "autofill.last_version_deduped";
-// To simplify the rollout of AutofillSilentlyRemoveQuasiDuplicates,
-// deduplication can be run a second time per milestone for users enrolled in
-// the experiment. This pref tracks whether deduplication was run a second time.
-// TODO(crbug.com/325450676): Remove after the rollout finished.
-inline constexpr char kAutofillRanQuasiDuplicateExtraDeduplication[] =
-    "autofill.ran_quasi_duplicate_extra_deduplication";
-// Integer that is set to the last version where disused addresses were
-// deleted. This deletion will be run once per version.
-inline constexpr char kAutofillLastVersionDisusedAddressesDeleted[] =
-    "autofill.last_version_disused_addresses_deleted";
-// Integer that is set to the last version where disused credit cards were
-// deleted. This deletion will be run once per version.
-inline constexpr char kAutofillLastVersionDisusedCreditCardsDeleted[] =
-    "autofill.last_version_disused_credit_cards_deleted";
-// Boolean that is true if the orphan rows in the autofill table were removed.
-inline constexpr char kAutofillOrphanRowsRemoved[] =
-    "autofill.orphan_rows_removed";
 // Boolean that is true, when users can save their CVCs.
 inline constexpr char kAutofillPaymentCvcStorage[] =
     "autofill.payment_cvc_storage";
 // Boolean that is true when users can see the card benefits with the card.
 inline constexpr char kAutofillPaymentCardBenefits[] =
     "autofill.payment_card_benefits";
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
-// Boolean that controls improved autofill filling predictions. When enabled,
-// the autofill functionality is enhanced with adopting user data to
-// the form being filled in, which is triggered by the user via an extra
-// autofill suggestion.
-inline constexpr char kAutofillPredictionImprovementsEnabled[] =
-    "autofill.prediction_improvements.enabled";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS)
 // Boolean that is true if Autofill is enabled and allowed to save profile data.
 // Do not get/set the value of this pref directly. Use provided getter/setter.
 inline constexpr char kAutofillProfileEnabled[] = "autofill.profile_enabled";
+// To simplify the rollout of `kAutofillDeduplicateAccountAddresses`,
+// deduplication can be run a second time per milestone for users enrolled in
+// the experiment. This pref tracks whether deduplication was run a second time.
+// TODO(crbug.com/357074792): Remove after the rollout finished.
+inline constexpr char kAutofillRanExtraDeduplication[] =
+    "autofill.ran_extra_deduplication";
 // The opt-ins for Sync Transport features for each client.
 inline constexpr char kAutofillSyncTransportOptIn[] =
     "autofill.sync_transport_opt_ins";
@@ -146,6 +136,8 @@ inline constexpr char kAutofillUsingVirtualViewStructure[] =
 inline constexpr char kAutofillThirdPartyPasswordManagersAllowed[] =
     "autofill.third_party_password_managers_allowed";
 inline constexpr char kFacilitatedPaymentsPix[] = "facilitated_payments.pix";
+inline constexpr char kFacilitatedPaymentsEwallet[] =
+    "facilitated_payments.ewallet";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The maximum value for the
@@ -180,8 +172,6 @@ bool HasSeenIban(const PrefService* prefs);
 
 void SetAutofillHasSeenIban(PrefService* prefs);
 
-bool IsAutofillManaged(const PrefService* prefs);
-
 bool IsAutofillProfileManaged(const PrefService* prefs);
 
 bool IsAutofillCreditCardManaged(const PrefService* prefs);
@@ -213,21 +203,31 @@ bool IsPaymentCardBenefitsEnabled(const PrefService* prefs);
 
 void SetPaymentCardBenefits(PrefService* prefs, bool value);
 
-void SetUserOptedInWalletSyncTransport(PrefService* prefs,
-                                       const CoreAccountId& account_id,
-                                       bool opted_in);
-
-bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
-                                      const CoreAccountId& account_id);
-
 void ClearSyncTransportOptIns(PrefService* prefs);
-
-bool UsesVirtualViewStructureForAutofill(const PrefService* prefs);
 
 void SetFacilitatedPaymentsPix(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsPixEnabled(const PrefService* prefs);
 
+void SetFacilitatedPaymentsEwallet(PrefService* prefs, bool value);
+
+bool IsFacilitatedPaymentsEwalletEnabled(const PrefService* prefs);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+void SetAutofillBnplEnabled(PrefService* prefs, bool value);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+bool IsAutofillBnplEnabled(const PrefService* prefs);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+void SetAutofillHasSeenBnpl(PrefService* prefs);
+
+bool HasSeenBnpl(const PrefService* prefs);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
 }  // namespace autofill::prefs
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_PREFS_H_

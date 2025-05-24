@@ -8,7 +8,6 @@
 
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
@@ -20,7 +19,6 @@
 #include "components/password_manager/core/browser/password_reuse_manager_signin_notifier_impl.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/shared_preferences_delegate.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -84,11 +82,6 @@ PasswordReuseManagerFactory* PasswordReuseManagerFactory::GetInstance() {
 
 password_manager::PasswordReuseManager*
 PasswordReuseManagerFactory::GetForProfile(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordReuseDetectionEnabled)) {
-    return nullptr;
-  }
-
   return static_cast<password_manager::PasswordReuseManager*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
@@ -96,9 +89,6 @@ PasswordReuseManagerFactory::GetForProfile(Profile* profile) {
 std::unique_ptr<KeyedService>
 PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK(base::FeatureList::IsEnabled(
-      password_manager::features::kPasswordReuseDetectionEnabled));
-
   Profile* profile = Profile::FromBrowserContext(context);
 
   password_manager::PasswordStoreInterface* store =
@@ -138,10 +128,7 @@ PasswordReuseManagerFactory::BuildServiceInstanceForBrowserContext(
   // Prepare password hash data for reuse detection.
   reuse_manager->PreparePasswordHashData(GetSignInStateForMetrics(profile));
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   std::unique_ptr<password_manager::PasswordReuseManagerSigninNotifier>
       notifier = std::make_unique<
           password_manager::PasswordReuseManagerSigninNotifierImpl>(

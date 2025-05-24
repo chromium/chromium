@@ -52,9 +52,10 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
@@ -81,44 +82,22 @@ bool SupportsSharedWorker() {
 #endif
 }
 
+std::string ParamToTestSuffix(const testing::TestParamInfo<bool>& info) {
+  if (info.param) {
+    return "PrivateNetworkAccessForWorkersEnabled";
+  } else {
+    return "PrivateNetworkAccessForWorkersDisabled";
+  }
+}
+
 }  // namespace
 
-// These tests are parameterized on following options:
-// 0 => Base
-// 1 => kPlzDedicatedWorker enabled
-// 2 => kPrivateNetworkAccessForWorkers enabled
 class WorkerTest : public ContentBrowserTest,
-                   public testing::WithParamInterface<int> {
+                   public testing::WithParamInterface<bool> {
  public:
   WorkerTest() : select_certificate_count_(0) {
-    switch (GetParam()) {
-      case 0:  // Base case.
-        feature_list_.InitWithFeatures({},
-                                       {
-                                           blink::features::kPlzDedicatedWorker,
-                                       });
-        break;
-      case 1:  // PlzDedicatedWorker
-        feature_list_.InitWithFeatures(
-            {
-                blink::features::kPlzDedicatedWorker,
-            },
-            {
-                features::kPrivateNetworkAccessForWorkers,
-            });
-        break;
-      case 2:  // PrivateNetworkAccessForWorkers
-        feature_list_.InitWithFeatures(
-            {
-                blink::features::kPlzDedicatedWorker,
-                features::kPrivateNetworkAccessForWorkers,
-            },
-            {});
-        break;
-      default:
-        NOTREACHED_IN_MIGRATION();
-        break;
-    }
+    feature_list_.InitWithFeatureState(
+      features::kPrivateNetworkAccessForWorkers, GetParam());
   }
 
   void SetUpOnMainThread() override {
@@ -167,8 +146,10 @@ class WorkerTest : public ContentBrowserTest,
     RunTest(shell(), url, expect_failure);
   }
 
-  static void QuitUIMessageLoop(base::OnceClosure callback,
-                                bool is_primary_main_frame /* unused */) {
+  static void QuitUIMessageLoop(
+      base::OnceClosure callback,
+      bool is_primary_main_frame_navigation /* unused */,
+      bool is_navigation /* unused */) {
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
   }
 
@@ -320,7 +301,7 @@ class WorkerTest : public ContentBrowserTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Range(0, 3));
+INSTANTIATE_TEST_SUITE_P(All, WorkerTest, testing::Bool(), ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(WorkerTest, SingleWorker) {
   RunTest(GetTestURL("single_worker.html", std::string()));
@@ -340,7 +321,8 @@ class WorkerTestWithAllowFileAccessFromFiles : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerTestWithAllowFileAccessFromFiles,
-                         testing::Range(0, 3));
+                         testing::Bool(),
+                         ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(WorkerTestWithAllowFileAccessFromFiles,
                        SingleWorkerFromFile) {
@@ -920,7 +902,7 @@ class WorkerFromCredentiallessIframeNikBrowserTest : public WorkerTest {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          WorkerFromCredentiallessIframeNikBrowserTest,
-                         testing::Range(0, 3));
+                         testing::Bool(), ParamToTestSuffix);
 
 IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
                        SharedWorkerRequestIsDoneWithPartitionedNetworkState) {
@@ -961,7 +943,10 @@ IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
         ->PreconnectSockets(1, worker_url.DeprecatedGetOriginAsURL(),
                             network::mojom::CredentialsMode::kInclude,
                             main_rfh->GetIsolationInfoForSubresources()
-                                .network_anonymization_key());
+                                .network_anonymization_key(),
+                            net::MutableNetworkTrafficAnnotationTag(
+                                TRAFFIC_ANNOTATION_FOR_TESTS),
+                            std::nullopt, mojo::NullRemote());
 
     connection_tracker_->WaitForAcceptedConnections(1);
     EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
@@ -1129,6 +1114,210 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SameSiteCookiesSharedWorkerCrossAll) {
       subframe_rfh,
       "new SharedWorker('/workers/worker.js', {sameSiteCookies: 'all'});");
   ASSERT_FALSE(worker_result.error.empty());
+}
+
+// Test for the SharedWorker extendedLifetime option.
+// See: https://github.com/whatwg/html/issues/10997
+class SharedWorkerExtendedLifetimeBrowserTest : public ContentBrowserTest {
+ public:
+  SharedWorkerExtendedLifetimeBrowserTest()
+      : features_({blink::features::kSharedWorkerExtendedLifetime}) {}
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  SharedWorkerHost* CreateSharedWorkerInMainURL() {
+    GURL main_url = embedded_test_server()->GetURL("/title1.html");
+    EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+    EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker =
+        new SharedWorker("/workers/messageport_worker.js",
+                          {extendedLifetime: true});
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+    auto* host = GetSharedWorkerHost(
+        embedded_test_server()->GetURL("/workers/messageport_worker.js"));
+    return host;
+  }
+  SharedWorkerHost* GetSharedWorkerHostFromToken(
+      const blink::SharedWorkerToken& token) {
+    return GetSharedWorkerService()->GetSharedWorkerHostFromToken(token);
+  }
+
+ private:
+  SharedWorkerServiceImpl* GetSharedWorkerService() {
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    DCHECK(partition);
+    return static_cast<SharedWorkerServiceImpl*>(
+        partition->GetSharedWorkerService());
+  }
+  SharedWorkerHost* GetSharedWorkerHost(const GURL& url) {
+    auto* service = GetSharedWorkerService();
+    return service->FindMatchingSharedWorkerHost(
+        url, "", blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+        blink::mojom::SharedWorkerSameSiteCookies::kAll);
+  }
+
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedWorkerExtendedLifetimeBrowserTest,
+                       EnsureExtendLifetime) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  auto* host = CreateSharedWorkerInMainURL();
+  EXPECT_TRUE(host);
+  EXPECT_TRUE(host->instance().extended_lifetime());
+  auto token = host->token();
+
+  // Navigate to the other page to the other URL.
+  GURL other_url = embedded_test_server()->GetURL("/title2.html");
+  EXPECT_TRUE(NavigateToURL(shell(), other_url));
+  // Ensure the SharedWorker exist.
+  EXPECT_TRUE(GetSharedWorkerHostFromToken(token));
+
+  // Navigate back to the main URL.
+  auto* host2 = CreateSharedWorkerInMainURL();
+  EXPECT_TRUE(host2);
+  EXPECT_TRUE(host2->instance().extended_lifetime());
+
+  // Since the extended lifetime is enabled, SharedWorkerHost should be the
+  // same.
+  EXPECT_EQ(host, host2);
+}
+
+class SharedWorkerExtendedLifetimeBrowserOriginTrialTest
+    : public SharedWorkerExtendedLifetimeBrowserTest {
+ public:
+  SharedWorkerExtendedLifetimeBrowserOriginTrialTest() {
+    // Explicitly disable the feature.
+    features_.InitWithFeatures(
+        {}, {blink::features::kSharedWorkerExtendedLifetime});
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // The public key for the default privatey key used by the
+    // tools/origin_trials/generate_token.py tool.
+    static constexpr char kOriginTrialTestPublicKey[] =
+        "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
+    command_line->AppendSwitchASCII("origin-trial-public-key",
+                                    kOriginTrialTestPublicKey);
+  }
+
+  SharedWorkerHost* GetSharedWorkerHost(const GURL& url) {
+    StoragePartition* partition = shell()
+                                      ->web_contents()
+                                      ->GetBrowserContext()
+                                      ->GetDefaultStoragePartition();
+    DCHECK(partition);
+    auto* service = static_cast<SharedWorkerServiceImpl*>(
+        partition->GetSharedWorkerService());
+    return service->FindMatchingSharedWorkerHost(
+        url, "", blink::StorageKey::CreateFirstParty(url::Origin::Create(url)),
+        blink::mojom::SharedWorkerSameSiteCookies::kAll);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SharedWorkerExtendedLifetimeBrowserOriginTrialTest,
+                       Basic) {
+  if (!SupportsSharedWorker()) {
+    return;
+  }
+
+  embedded_test_server()->StartAcceptingConnections();
+
+  // The URL that was used to register the Origin Trial token.
+  static constexpr char kOriginUrl[] = "https://127.0.0.1:44444";
+  // Generated by running (in tools/origin_trials):
+  // $ tools/origin_trials/generate_token.py https://127.0.0.1:44444 \
+  // SharedWorkerExtendedLifetime --expire-timestamp=2000000000
+  static constexpr char kOriginTrialToken[] =
+      "AzjgBY2MbbdL8LkRTaCTW9YVLuvei0SwokOz+"
+      "XqA24rqL3DV5QunyXddT1SkivH7curgzFjvXj83ZefHUD5SgAYAAABmeyJvcmlnaW4iOiAia"
+      "HR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAiZmVhdHVyZSI6ICJTaGFyZWRXb3JrZXJFeHRlb"
+      "mRlZExpZmV0aW1lIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+
+  const GURL main_url(base::StrCat({kOriginUrl, "/title1.html"}));
+  const GURL shared_worker_url(
+      base::StrCat({kOriginUrl, "/workers/messageport_worker.js"}));
+
+  std::map<GURL, int /* number_of_invocations */> expected_request_urls = {
+      {main_url, 1},
+      {shared_worker_url, 1},
+  };
+
+  base::RunLoop run_loop;
+
+  // The origin trial token is associated with an origin. We can't guarantee the
+  // EmbeddedTestServer to use a specific port. So the URLLoaderInterceptor is
+  // used instead.
+  URLLoaderInterceptor shared_worker_loader(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        auto it = expected_request_urls.find(params->url_request.url);
+        if (it == expected_request_urls.end()) {
+          return false;
+        }
+
+        const std::string content_type =
+            base::EndsWith(params->url_request.url.path_piece(), ".js")
+                ? "text/javascript"
+                : "text/html";
+
+        const std::string headers = base::ReplaceStringPlaceholders(
+            "HTTP/1.1 200 OK\n"
+            "Content-type: $1\n"
+            "Origin-Trial: $2\n"
+            "\n",
+            {content_type, kOriginTrialToken}, {});
+
+        URLLoaderInterceptor::WriteResponse(
+            "content/test/data" + params->url_request.url.path(),
+            params->client.get(), &headers, std::optional<net::SSLInfo>(),
+            params->url_request.url);
+
+        if (--it->second == 0) {
+          expected_request_urls.erase(it);
+        }
+        if (expected_request_urls.empty()) {
+          run_loop.Quit();
+        }
+        return true;
+      }));
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
+    new Promise(resolve => {
+      const worker =
+        new SharedWorker("/workers/messageport_worker.js",
+                          {extendedLifetime: true});
+      worker.onerror = (e) => resolve("Worker blocked.");
+      worker.port.onmessage = (e) => resolve(e.data);
+    })
+  )"));
+
+  auto* host = GetSharedWorkerHost(shared_worker_url);
+  EXPECT_TRUE(host);
+  EXPECT_TRUE(host->instance().extended_lifetime());
+
+  run_loop.Run();
 }
 
 }  // namespace content

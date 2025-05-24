@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] .flex 5
+  assert_equals: \n<div class="flex min" style="flex-flow: row nowrap" data-expected-width="80" data-expected-height="70">\n  <div data-expected-width="35" data-expected-height="60">X X</div>\n  <div data-expected-width="35" data-expected-height="60">X X</div>\n</div>\nheight expected 70 but got 20
+[FAIL] .flex 6
+  assert_equals: \n<div class="flex max" style="flex-flow: row nowrap" data-expected-width="80" data-expected-height="70">\n  <div data-expected-width="35" data-expected-height="60">X X</div>\n  <div data-expected-width="35" data-expected-height="60">X X</div>\n</div>\nheight expected 70 but got 210
+Harness: the test ran to completion.
+

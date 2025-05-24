@@ -44,6 +44,8 @@ class PasskeyChangeQuotaTracker {
   // quota has been exceeded.
   bool CanMakeChange(const url::Origin& origin);
 
+  void ResetForTesting();
+
  private:
   PasskeyChangeQuotaTracker();
   friend struct base::DefaultSingletonTraits<PasskeyChangeQuotaTracker>;

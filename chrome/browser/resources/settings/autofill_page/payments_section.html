@@ -1,4 +1,4 @@
-<style include="cr-shared-style settings-shared iron-flex passwords-shared">
+<style include="cr-shared-style settings-shared passwords-shared">
   .expiration-column {
     align-items: center;
     display: flex;
@@ -17,14 +17,6 @@
     padding-inline-start: 20px;
   }
 
-  #migrateCreditCards {
-    border-bottom: var(--cr-separator-line);
-    border-top: none;
-  }
-
-  #migrateCreditCardsButton {
-    margin: 0 auto;
-  }
 </style>
 <settings-toggle-button id="autofillCreditCardToggle"
     no-extension-indicator label="$i18n{enableCreditCardsLabel}"
@@ -53,11 +45,20 @@
 </template>
 <template is="dom-if" if="[[cardBenefitsFlagEnabled_]]">
   <settings-toggle-button id="cardBenefitsToggle"
-      no-extension-indicator label="$i18n{cardBenefitsToggleLabel}"
+      no-extension-indicator label="$i18n{cardBenefitsLabel}"
       sub-label-with-link="[[cardBenefitsSublabel_]]"
       on-sub-label-link-clicked="onCardBenefitsSublabelLinkClick_"
       disabled="[[!prefs.autofill.credit_card_enabled.value]]"
       pref="{{prefs.autofill.payment_card_benefits}}">
+  </settings-toggle-button>
+</template>
+<template is="dom-if" if="[[shouldShowPayOverTimeSettings_]]">
+  <settings-toggle-button id="payOverTimeToggle"
+      no-extension-indicator label="$i18n{autofillPayOverTimeSettingsLabel}"
+      sub-label-with-link="[[payOverTimeSublabel_]]"
+      on-sub-label-link-clicked="onPayOverTimeSublabelLinkClick_"
+      disabled="[[!prefs.autofill.credit_card_enabled.value]]"
+      pref="{{prefs.autofill.bnpl_enabled}}">
   </settings-toggle-button>
 </template>
 <settings-toggle-button id="canMakePaymentToggle"
@@ -120,15 +121,11 @@
     </cr-lazy-render>
   </template>
 </div>
-<cr-link-row id="migrateCreditCards"
-    hidden$="[[!checkIfMigratable_(creditCards,
-        prefs.autofill.credit_card_enabled.value)]]"
-    on-click="onMigrateCreditCardsClick_"
-    label="$i18n{migrateCreditCardsLabel}"
-    sub-label="[[migratableCreditCardsInfo_]]"></cr-link-row>
 <settings-payments-list id="paymentsList"
     class="list-frame payment-list-margin-start"
-    credit-cards="[[creditCards]]" ibans="[[ibans]]"
+    credit-cards="[[creditCards]]"
+    ibans="[[ibans]]"
+    pay-over-time-issuers="[[payOverTimeIssuers]]"
     on-dots-iban-menu-click="onDotsIbanMenuClick_"
     on-remote-iban-menu-click="onRemoteEditIbanMenuClick_"
     on-dots-card-menu-click="onCreditCardDotsMenuClick_"

@@ -23,8 +23,8 @@ struct OncValueSignature;
 
 struct OncFieldSignature {
   const char* onc_field_name;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
+  // This field is not a raw_ptr<> because it only ever points to statically-
+  // allocated memory that is never freed, so it can't possibly dangle.
   RAW_PTR_EXCLUSION const OncValueSignature* value_signature;
   // If this is non-null, it will be called if the field doesn't have a value
   // after shill->onc translation and the returned value will be assigned to the
@@ -34,14 +34,10 @@ struct OncFieldSignature {
 
 struct COMPONENT_EXPORT(CHROMEOS_ONC) OncValueSignature {
   base::Value::Type onc_type;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
+  // These fields are not raw_ptr<>s because they only ever point to statically-
+  // allocated memory that is never freed, so they can't possibly dangle.
   RAW_PTR_EXCLUSION const OncFieldSignature* fields;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
   RAW_PTR_EXCLUSION const OncValueSignature* onc_array_entry_signature;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #global-scope
   RAW_PTR_EXCLUSION const OncValueSignature* base_signature;
 };
 

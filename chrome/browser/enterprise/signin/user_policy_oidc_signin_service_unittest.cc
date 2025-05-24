@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/signin/user_policy_oidc_signin_service.h"
 
+#include <variant>
+
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -36,6 +38,7 @@
 #include "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,7 +63,7 @@ const ProfileManagementOidcTokens kExampleOidcTokens =
 constexpr char kExampleUserEmail[] = "user@test.com";
 constexpr char kExampleDmToken[] = "example_dm_token";
 constexpr char kExampleClientId[] = "example_client_id";
-constexpr char kExampleGaiaId[] = "123";
+constexpr GaiaId::Literal kExampleGaiaId("123");
 
 class FakeUserPolicyOidcSigninService
     : public policy::UserPolicyOidcSigninService {
@@ -69,7 +72,7 @@ class FakeUserPolicyOidcSigninService
       Profile* profile,
       PrefService* local_state,
       DeviceManagementService* device_management_service,
-      absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+      std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
           policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory,
@@ -96,7 +99,7 @@ class FakeUserPolicyOidcSigninService
     CHECK(expect_restore_);
 
     auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-    policy_data->set_gaia_id(kExampleGaiaId);
+    policy_data->set_gaia_id(kExampleGaiaId.ToString());
     if (test_profile_->GetProfileCloudPolicyManager()) {
       static_cast<MockProfileCloudPolicyStore*>(
           test_profile_->GetProfileCloudPolicyManager()->core()->store())
@@ -130,13 +133,13 @@ class UnittestProfileManager : public FakeProfileManager {
     builder.SetDelegate(delegate);
     builder.SetCreateMode(create_mode);
 
-    if (absl::holds_alternative<std::unique_ptr<UserCloudPolicyManager>>(
+    if (std::holds_alternative<std::unique_ptr<UserCloudPolicyManager>>(
             policy_manager_)) {
       builder.SetUserCloudPolicyManager(std::move(
-          absl::get<std::unique_ptr<UserCloudPolicyManager>>(policy_manager_)));
+          std::get<std::unique_ptr<UserCloudPolicyManager>>(policy_manager_)));
     } else {
       builder.SetProfileCloudPolicyManager(
-          std::move(absl::get<std::unique_ptr<ProfileCloudPolicyManager>>(
+          std::move(std::get<std::unique_ptr<ProfileCloudPolicyManager>>(
               policy_manager_)));
     }
 
@@ -145,15 +148,14 @@ class UnittestProfileManager : public FakeProfileManager {
   }
 
   void SetPolicyManagerForNextProfile(
-      absl::variant<std::unique_ptr<UserCloudPolicyManager>,
-                    std::unique_ptr<ProfileCloudPolicyManager>>
-          policy_manager) {
+      std::variant<std::unique_ptr<UserCloudPolicyManager>,
+                   std::unique_ptr<ProfileCloudPolicyManager>> policy_manager) {
     policy_manager_ = std::move(policy_manager);
   }
 
  private:
-  absl::variant<std::unique_ptr<UserCloudPolicyManager>,
-                std::unique_ptr<ProfileCloudPolicyManager>>
+  std::variant<std::unique_ptr<UserCloudPolicyManager>,
+               std::unique_ptr<ProfileCloudPolicyManager>>
       policy_manager_;
 };
 
@@ -270,7 +272,7 @@ class UserPolicyOidcSigninServiceTest
     profile_ptr->GetPrefs()->SetString(
         enterprise_signin::prefs::kProfileUserEmail, kExampleUserEmail);
 
-    absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+    std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
         policy_manager;
 
     if (is_3p_identity_synced()) {

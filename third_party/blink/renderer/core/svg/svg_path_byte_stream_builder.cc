@@ -17,13 +17,9 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
@@ -36,7 +32,9 @@ class SVGPathByteStreamBuilder::CoalescingBuffer {
  public:
   explicit CoalescingBuffer(SVGPathByteStreamBuilderStorage& result)
       : current_offset_(0), result_(result) {}
-  ~CoalescingBuffer() { result_.Append(bytes_, current_offset_); }
+  ~CoalescingBuffer() {
+    result_.AppendSpan(base::span(bytes_).first(current_offset_));
+  }
 
   template <typename DataType>
   void WriteType(DataType value) {
@@ -44,7 +42,7 @@ class SVGPathByteStreamBuilder::CoalescingBuffer {
     data.value = value;
     wtf_size_t type_size = sizeof(ByteType<DataType>);
     DCHECK_LE(current_offset_ + type_size, sizeof(bytes_));
-    memcpy(bytes_ + current_offset_, data.bytes, type_size);
+    UNSAFE_TODO(memcpy(bytes_ + current_offset_, data.bytes, type_size));
     current_offset_ += type_size;
   }
 
@@ -114,7 +112,7 @@ void SVGPathByteStreamBuilder::EmitSegment(const PathSegmentData& segment) {
       buffer.WritePoint(segment.target_point);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

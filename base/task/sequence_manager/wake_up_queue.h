@@ -45,10 +45,6 @@ class BASE_EXPORT WakeUpQueue {
   // Debug info.
   Value::Dict AsValue(TimeTicks now) const;
 
-  bool has_pending_high_resolution_tasks() const {
-    return pending_high_res_wake_up_count_;
-  }
-
   // Returns true if there are no pending delayed tasks.
   bool empty() const { return wake_up_queue_.empty(); }
 
@@ -111,7 +107,6 @@ class BASE_EXPORT WakeUpQueue {
   };
 
   IntrusiveHeap<ScheduledWakeUp, std::greater<>> wake_up_queue_;
-  int pending_high_res_wake_up_count_ = 0;
 
   const scoped_refptr<const internal::AssociatedThreadId> associated_thread_;
 };

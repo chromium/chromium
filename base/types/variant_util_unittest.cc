@@ -4,14 +4,15 @@
 
 #include "base/types/variant_util.h"
 
+#include <variant>
+
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 namespace {
 
 TEST(VariantUtilTest, IndexOfType) {
-  using TestType = absl::variant<bool, int, double>;
+  using TestType = std::variant<bool, int, double>;
 
   static_assert(VariantIndexOfType<TestType, bool>() == 0);
   static_assert(VariantIndexOfType<TestType, int>() == 1);

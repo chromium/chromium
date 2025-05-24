@@ -18,7 +18,7 @@ class GpuVideoAcceleratorFactories;
 
 namespace blink {
 
-// VideoTrackRecorder::Encoder class encodes h264, vp8, vp9 and av1 using
+// VideoTrackRecorder::Encoder class encodes h264, hevc, vp8, vp9 and av1 using
 // media::VideoEncoder implementation.
 class MODULES_EXPORT MediaRecorderEncoderWrapper final
     : public VideoTrackRecorder::Encoder {
@@ -26,7 +26,7 @@ class MODULES_EXPORT MediaRecorderEncoderWrapper final
   using CreateEncoderCB =
       base::RepeatingCallback<std::unique_ptr<media::VideoEncoder>(
           media::GpuVideoAcceleratorFactories*)>;
-  using OnErrorCB = base::OnceClosure;
+  using OnErrorCB = base::OnceCallback<void(const media::EncoderStatus&)>;
 
   MediaRecorderEncoderWrapper(
       scoped_refptr<base::SequencedTaskRunner> encoding_task_runner,

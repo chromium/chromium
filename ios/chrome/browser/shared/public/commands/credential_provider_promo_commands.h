@@ -12,6 +12,8 @@ enum class CredentialProviderPromoTrigger {
                                          // the promo before.
   SetUpList,                             // User has clicked the Autofill item
                                          // in the Set Up List on the NTP.
+  TipsNotification,                      // User has tapped the CPE Tips
+                                         // notification.
 };
 
 // Commands to show app-wide promos.

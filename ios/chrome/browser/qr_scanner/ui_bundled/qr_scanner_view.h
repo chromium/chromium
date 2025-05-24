@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_H_
 #define IOS_CHROME_BROWSER_QR_SCANNER_UI_BUNDLED_QR_SCANNER_VIEW_H_
 
-#import "ios/chrome/browser/ui/scanner/scanner_view.h"
+#import "ios/chrome/browser/scanner/ui_bundled/scanner_view.h"
 
 // The view rendering the QR Scanner UI. The view contains the camera
 // preview, a semi-transparent overlay with a transparent viewport, border

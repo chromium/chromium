@@ -4,12 +4,13 @@
 
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/json/values_util.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/unguessable_token.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -105,7 +106,6 @@ bool HoldingSpaceItem::IsDownloadType(HoldingSpaceItem::Type type) {
   switch (type) {
     case Type::kArcDownload:
     case Type::kDownload:
-    case Type::kLacrosDownload:
       return true;
     case Type::kDiagnosticsLog:
     case Type::kDriveSuggestion:
@@ -134,7 +134,6 @@ bool HoldingSpaceItem::IsScreenCaptureType(HoldingSpaceItem::Type type) {
     case Type::kDiagnosticsLog:
     case Type::kDownload:
     case Type::kDriveSuggestion:
-    case Type::kLacrosDownload:
     case Type::kLocalSuggestion:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
@@ -155,7 +154,6 @@ bool HoldingSpaceItem::IsSuggestionType(HoldingSpaceItem::Type type) {
     case Type::kArcDownload:
     case Type::kDiagnosticsLog:
     case Type::kDownload:
-    case Type::kLacrosDownload:
     case Type::kNearbyShare:
     case Type::kPhoneHubCameraRoll:
     case Type::kPhotoshopWeb:
@@ -357,11 +355,11 @@ std::optional<HoldingSpaceProgress> HoldingSpaceItem::SetProgress(
 std::optional<std::vector<HoldingSpaceItem::InProgressCommand>>
 HoldingSpaceItem::SetInProgressCommands(
     std::vector<InProgressCommand> in_progress_commands) {
-  DCHECK(base::ranges::all_of(in_progress_commands,
-                              [](const InProgressCommand& in_progress_command) {
-                                return holding_space_util::IsInProgressCommand(
-                                    in_progress_command.command_id);
-                              }));
+  DCHECK(std::ranges::all_of(in_progress_commands,
+                             [](const InProgressCommand& in_progress_command) {
+                               return holding_space_util::IsInProgressCommand(
+                                   in_progress_command.command_id);
+                             }));
 
   if (progress_.IsComplete() || in_progress_commands_ == in_progress_commands) {
     return std::nullopt;

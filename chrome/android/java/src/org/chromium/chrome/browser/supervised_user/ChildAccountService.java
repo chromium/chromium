@@ -30,7 +30,7 @@ public class ChildAccountService {
     @CalledByNative
     static void reauthenticateChildAccount(
             WindowAndroid windowAndroid,
-            @JniType("std::string") String accountName,
+            @JniType("std::string") String accountEmail,
             final long nativeOnFailureCallback) {
         ThreadUtils.assertOnUiThread();
         final Activity activity = windowAndroid.getActivity().get();
@@ -43,7 +43,7 @@ public class ChildAccountService {
                     });
             return;
         }
-        Account account = AccountUtils.createAccountFromName(accountName);
+        Account account = AccountUtils.createAccountFromEmail(accountEmail);
         AccountManagerFacadeProvider.getInstance()
                 .updateCredentials(
                         account,

@@ -89,8 +89,10 @@ void PerformBlockingConvertSelection(SelectionRequestor* requestor,
   EXPECT_TRUE(requestor->PerformBlockingConvertSelection(selection, target,
                                                          &out_data, &out_type));
   EXPECT_EQ(expected_data.size(), out_data.size());
-  EXPECT_EQ(expected_data, ui::RefCountedMemoryToString(
-                               base::RefCountedBytes::TakeVector(&out_data)));
+  EXPECT_EQ(
+      expected_data,
+      ui::RefCountedMemoryToString(
+          base::MakeRefCounted<base::RefCountedBytes>(std::move(out_data))));
   EXPECT_EQ(x11::Atom::STRING, out_type);
 }
 

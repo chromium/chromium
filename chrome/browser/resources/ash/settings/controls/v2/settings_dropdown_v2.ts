@@ -114,6 +114,8 @@ export class SettingsDropdownV2Element extends SettingsDropdownV2ElementBase {
     ];
   }
 
+  override ariaDescription: string;
+  override ariaLabel: string;
   options: DropdownOptionList;
   override validPrefTypes: chrome.settingsPrivate.PrefType[] = [
     chrome.settingsPrivate.PrefType.NUMBER,

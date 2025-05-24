@@ -5,10 +5,14 @@
 #include "crypto/mock_apple_keychain.h"
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 
 namespace {
+
+constexpr char kPassword[] = "mock_password";
 
 // Adds an entry to a local histogram to indicate that the Apple Keychain would
 // have been accessed, if this class were not a mock of the Apple Keychain.
@@ -23,57 +27,38 @@ void IncrementKeychainAccessHistogram() {
 
 namespace crypto {
 
-OSStatus MockAppleKeychain::FindGenericPassword(
-    UInt32 serviceNameLength,
-    const char* serviceName,
-    UInt32 accountNameLength,
-    const char* accountName,
-    UInt32* passwordLength,
-    void** passwordData,
-    AppleSecKeychainItemRef* itemRef) const {
+MockAppleKeychain::MockAppleKeychain() = default;
+MockAppleKeychain::~MockAppleKeychain() = default;
+
+base::expected<std::vector<uint8_t>, OSStatus>
+MockAppleKeychain::FindGenericPassword(std::string_view service_name,
+                                       std::string_view account_name) const {
   IncrementKeychainAccessHistogram();
 
   // When simulating |noErr|, return canned |passwordData| and
   // |passwordLength|.  Otherwise, just return given code.
   if (find_generic_result_ == noErr) {
-    static const char kPassword[] = "my_password";
-    DCHECK(passwordData);
-    // The function to free this data is mocked so the cast is fine.
-    *passwordData = const_cast<char*>(kPassword);
-    DCHECK(passwordLength);
-    *passwordLength = std::size(kPassword);
-    password_data_count_++;
+    return base::ToVector(base::byte_span_from_cstring(kPassword));
   }
 
-  return find_generic_result_;
-}
-
-OSStatus MockAppleKeychain::ItemFreeContent(void* data) const {
-  // No-op.
-  password_data_count_--;
-  return noErr;
+  return base::unexpected(find_generic_result_);
 }
 
 OSStatus MockAppleKeychain::AddGenericPassword(
-    UInt32 serviceNameLength,
-    const char* serviceName,
-    UInt32 accountNameLength,
-    const char* accountName,
-    UInt32 passwordLength,
-    const void* passwordData,
-    AppleSecKeychainItemRef* itemRef) const {
+    std::string_view service_name,
+    std::string_view account_name,
+    base::span<const uint8_t> password) const {
   IncrementKeychainAccessHistogram();
 
   called_add_generic_ = true;
 
-  DCHECK_GT(passwordLength, 0U);
-  DCHECK(passwordData);
+  DCHECK(!password.empty());
   return noErr;
 }
 
 std::string MockAppleKeychain::GetEncryptionPassword() const {
   IncrementKeychainAccessHistogram();
-  return "mock_password";
+  return kPassword;
 }
 
 }  // namespace crypto

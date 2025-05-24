@@ -18,6 +18,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/nqe/network_quality_estimator.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -90,8 +91,7 @@ std::unique_ptr<TCPClientSocket> TCPClientSocket::CreateFromBoundSocket(
 int TCPClientSocket::Bind(const IPEndPoint& address) {
   if (current_address_index_ >= 0 || bind_address_) {
     // Cannot bind the socket if we are already connected or connecting.
-    NOTREACHED_IN_MIGRATION();
-    return ERR_UNEXPECTED;
+    NOTREACHED();
   }
 
   int result = OK;
@@ -221,9 +221,7 @@ int TCPClientSocket::DoConnectLoop(int result) {
         rv = DoConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state " << state;
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state " << state;
     }
   } while (rv != ERR_IO_PENDING && next_connect_state_ != CONNECT_STATE_NONE);
 
@@ -242,6 +240,10 @@ int TCPClientSocket::DoConnect() {
   }
 
   next_connect_state_ = CONNECT_STATE_CONNECT_COMPLETE;
+
+  if (!IsPortAllowedForIpEndpoint(endpoint)) {
+    return ERR_UNSAFE_PORT;
+  }
 
   if (!socket_->IsValid()) {
     int result = OpenSocket(endpoint.GetFamily());
@@ -392,7 +394,7 @@ bool TCPClientSocket::WasEverUsed() const {
 }
 
 NextProto TCPClientSocket::GetNegotiatedProtocol() const {
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool TCPClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
@@ -569,10 +571,11 @@ void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
   // failure. Note that failures also include cases when the connect attempt
   // was cancelled by the client before the handshake completed.
   if (result == OK) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Success",
-                               duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Net.TcpConnectAttempt.Latency.Success", duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error", duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error",
+                                          duration);
   }
 }
 

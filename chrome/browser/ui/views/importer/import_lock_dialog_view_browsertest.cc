@@ -13,7 +13,7 @@
 
 class ImportLockDialogViewBrowserTest : public DialogBrowserTest {
  public:
-  ImportLockDialogViewBrowserTest() {}
+  ImportLockDialogViewBrowserTest() = default;
 
   ImportLockDialogViewBrowserTest(const ImportLockDialogViewBrowserTest&) =
       delete;

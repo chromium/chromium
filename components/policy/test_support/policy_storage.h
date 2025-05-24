@@ -147,6 +147,17 @@ class PolicyStorage {
     metrics_log_segment_ = segment;
   }
 
+  const std::optional<
+      enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment>
+  k12_age_classification_metrics_log_segment() const {
+    return k12_age_classification_metrics_log_segment_;
+  }
+  void set_k12_age_classification_metrics_log_segment(
+      enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment
+          segment) {
+    k12_age_classification_metrics_log_segment_ = segment;
+  }
+
   base::Time timestamp() const { return timestamp_; }
   void set_timestamp(const base::Time& timestamp) { timestamp_ = timestamp; }
 
@@ -189,9 +200,10 @@ class PolicyStorage {
   const InitialEnrollmentState* GetInitialEnrollmentState(
       const std::string& brand_serial_id) const;
 
-  // Returns hashes for brand serial IDs whose initial enrollment state is
-  // registered on the server. Only hashes, which, when divied by |modulus|,
-  // result in the specified |remainder|, are returned.
+  // Returns truncated hashes (the first 8 bytes only) for brand serial IDs
+  // whose initial enrollment state is registered on the server. Only hashes,
+  // which, when divied by |modulus|, result in the specified |remainder|, are
+  // returned.
   std::vector<std::string> GetMatchingSerialHashes(uint64_t modulus,
                                                    uint64_t remainder) const;
 
@@ -239,6 +251,9 @@ class PolicyStorage {
       market_segment_;
   std::optional<enterprise_management::PolicyData::MetricsLogSegment>
       metrics_log_segment_;
+  std::optional<
+      enterprise_management::PolicyData::K12AgeClassificationMetricsLogSegment>
+      k12_age_classification_metrics_log_segment_;
 
   base::Time timestamp_;
 

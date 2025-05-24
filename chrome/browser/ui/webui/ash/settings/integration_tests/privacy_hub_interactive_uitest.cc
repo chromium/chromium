@@ -77,9 +77,8 @@ class PrivacyHubInteractiveUiTest : public InteractiveAshTest {
   }
 };
 
-class PrivacyHubSettingsPageTest
-    : public PrivacyHubInteractiveUiTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+class PrivacyHubSettingsPageTest : public PrivacyHubInteractiveUiTest,
+                                   public testing::WithParamInterface<bool> {
  public:
   PrivacyHubSettingsPageTest() {
     using FeatureList = std::vector<base::test::FeatureRef>;
@@ -89,13 +88,10 @@ class PrivacyHubSettingsPageTest
       return flag_on ? enabled_features : disabled_features;
     };
     feature_set(LocationFlagOn()).push_back(features::kCrosPrivacyHub);
-    feature_set(PerAppPermissionFlagOn())
-        .push_back(features::kCrosPrivacyHubAppPermissions);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool LocationFlagOn() const { return std::get<0>(GetParam()); }
-  bool PerAppPermissionFlagOn() const { return std::get<1>(GetParam()); }
+  bool LocationFlagOn() const { return GetParam(); }
 
   auto WaitForElement(bool condition,
                       const ui::ElementIdentifier& element_id,
@@ -116,8 +112,6 @@ class PrivacyHubSettingsPageTest
 IN_PROC_BROWSER_TEST_P(PrivacyHubSettingsPageTest, PrivacyControls) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsSettingsWebContentsId);
   ASSERT_EQ(features::IsCrosPrivacyHubLocationEnabled(), LocationFlagOn());
-  ASSERT_EQ(features::IsCrosPrivacyHubAppPermissionsEnabled(),
-            PerAppPermissionFlagOn());
 
   RunTestSequence(
       Log("Opening OS settings system web app"),
@@ -132,34 +126,26 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubSettingsPageTest, PrivacyControls) {
               chromeos::settings::mojom::kPrivacyHubSubpagePath)),
 
       Log("Waiting for camera subpage trigger to exist or not"),
-      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
-                     ControlElementQuery(SensorType::kCamera,
-                                         ControlElementType::kSubpageLink)),
+      WaitForElementExists(
+          kOsSettingsWebContentsId,
+          ControlElementQuery(SensorType::kCamera,
+                              ControlElementType::kSubpageLink)),
 
       Log("Waiting for the camera toggle button to exist or not"),
-      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
-                     ControlElementQuery(SensorType::kCamera,
-                                         ControlElementType::kToggle)),
-
-      Log("Waiting for the legacy camera toggle button to exist or not"),
-      WaitForElement(!PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
-                     ControlElementQuery(SensorType::kCamera,
-                                         ControlElementType::kLegacyToggle)),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           ControlElementQuery(SensorType::kCamera,
+                                               ControlElementType::kToggle)),
 
       Log("Waiting for microphone subpage trigger to exist or not"),
-      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
-                     ControlElementQuery(SensorType::kMicrophone,
-                                         ControlElementType::kSubpageLink)),
+      WaitForElementExists(
+          kOsSettingsWebContentsId,
+          ControlElementQuery(SensorType::kMicrophone,
+                              ControlElementType::kSubpageLink)),
 
       Log("Waiting for the microphone toggle button to exist or not"),
-      WaitForElement(PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
-                     ControlElementQuery(SensorType::kMicrophone,
-                                         ControlElementType::kToggle)),
-
-      Log("Waiting for the legacy microphone toggle button to exist or not"),
-      WaitForElement(!PerAppPermissionFlagOn(), kOsSettingsWebContentsId,
-                     ControlElementQuery(SensorType::kMicrophone,
-                                         ControlElementType::kLegacyToggle)),
+      WaitForElementExists(kOsSettingsWebContentsId,
+                           ControlElementQuery(SensorType::kMicrophone,
+                                               ControlElementType::kToggle)),
 
       Log("Waiting for geolocation subpage trigger to exist or not"),
       WaitForElement(LocationFlagOn(), kOsSettingsWebContentsId,
@@ -171,9 +157,7 @@ IN_PROC_BROWSER_TEST_P(PrivacyHubSettingsPageTest, PrivacyControls) {
 
 INSTANTIATE_TEST_SUITE_P(All,
                          PrivacyHubSettingsPageTest,
-                         testing::Combine(
-                             /*location_on=*/testing::Bool(),
-                             /*per_app_permissions_on=*/testing::Bool()));
+                         /*location_on=*/testing::Bool());
 
 // Tests for privacy hub app permissions feature.
 class PrivacyHubAppPermissionsInteractiveUiTest
@@ -181,11 +165,9 @@ class PrivacyHubAppPermissionsInteractiveUiTest
  public:
   PrivacyHubAppPermissionsInteractiveUiTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kCrosPrivacyHub,
-                              features::kCrosPrivacyHubAppPermissions},
+        /*enabled_features=*/{features::kCrosPrivacyHub},
         /*disabled_features=*/{});
     CHECK(features::IsCrosPrivacyHubLocationEnabled());
-    CHECK(features::IsCrosPrivacyHubAppPermissionsEnabled());
   }
 
  private:

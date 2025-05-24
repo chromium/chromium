@@ -4,6 +4,7 @@
 
 package org.chromium.content.app;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.UsedByReflection;
 
 /**
@@ -11,4 +12,5 @@ import org.chromium.build.annotations.UsedByReflection;
  * distinction by type-checking objects against this parent class.
  */
 @UsedByReflection("Subclass names constructed by appending a number to this class's name")
+@NullMarked
 public class PrivilegedProcessService extends ContentChildProcessService {}

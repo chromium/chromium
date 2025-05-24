@@ -5,10 +5,13 @@
 #ifndef NET_FIRST_PARTY_SETS_LOCAL_SET_DECLARATION_H_
 #define NET_FIRST_PARTY_SETS_LOCAL_SET_DECLARATION_H_
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
+#include "net/first_party_sets/sets_mutation.h"
 
 namespace net {
 
@@ -29,9 +32,17 @@ class NET_EXPORT LocalSetDeclaration {
   // Constructs a set declaration with the given entries. All entries must be in
   // the same set (i.e. they must have the same primary site). The set must not
   // be a singleton (i.e. must have more than one entry, or must be empty).
-  explicit LocalSetDeclaration(
+  //
+  // Every alias must satisfy the following conditions:
+  // * It must map to some canonical site that is in `set_entries`.
+  // * If the alias is also present in `set_entries`, its entry must be
+  // identical to the canonical's entry.
+  //
+  // Returns std::nullopt if any invariants are violated.
+  static std::optional<LocalSetDeclaration> Create(
       base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
-      base::flat_map<SchemefulSite, SchemefulSite> aliases);
+      base::flat_map<SchemefulSite, SchemefulSite> aliases,
+      bool emit_errors = false);
 
   ~LocalSetDeclaration();
 
@@ -42,17 +53,17 @@ class NET_EXPORT LocalSetDeclaration {
 
   bool empty() const { return entries_.empty(); }
 
-  size_t size() const { return entries_.size(); }
+  size_t size() const { return entries_.size() + aliases_.size(); }
 
-  const base::flat_map<SchemefulSite, FirstPartySetEntry>& entries() const {
-    return entries_;
-  }
-
-  const base::flat_map<SchemefulSite, SchemefulSite>& aliases() const {
-    return aliases_;
-  }
+  // Computes the SetsMutation that can be used to implement the changes
+  // described in this instance.
+  SetsMutation ComputeMutation() const;
 
  private:
+  LocalSetDeclaration(
+      base::flat_map<SchemefulSite, FirstPartySetEntry> set_entries,
+      base::flat_map<SchemefulSite, SchemefulSite> aliases);
+
   // Stores the set of entries, without ccTLD aliases. This may be empty if no
   // set was locally defined.
   base::flat_map<SchemefulSite, FirstPartySetEntry> entries_;

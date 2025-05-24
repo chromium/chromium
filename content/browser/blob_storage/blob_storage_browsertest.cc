@@ -9,7 +9,6 @@
 #include "base/test/bind.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -18,7 +17,6 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
-#include "storage/browser/blob/blob_memory_controller.h"
 #include "storage/browser/blob/blob_storage_constants.h"
 #include "storage/browser/blob/blob_storage_context.h"
 
@@ -94,27 +92,6 @@ class BlobStorageBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(BlobStorageBrowserTest, BlobCombinations) {
   SetBlobLimits();
   SimpleTest(GetTestUrl("blob_storage", "blob_creation_and_slicing.html"));
-
-  auto blob_context = GetBlobContext();
-  base::RunLoop loop;
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        const storage::BlobMemoryController& memory_controller =
-            blob_context->context()->memory_controller();
-        // Our exact usages depend on IPC message ordering & garbage collection.
-        // Since this is basically random, we just check bounds.
-        EXPECT_LT(0u, memory_controller.memory_usage());
-        EXPECT_LT(0ul, memory_controller.disk_usage());
-        EXPECT_GE(memory_controller.disk_usage(),
-                  static_cast<uint64_t>(memory_controller.memory_usage()));
-        EXPECT_GE(limits_.max_blob_in_memory_space,
-                  memory_controller.memory_usage());
-        EXPECT_GE(limits_.effective_max_disk_space,
-                  memory_controller.disk_usage());
-
-        loop.Quit();
-      }));
-  loop.Run();
 
   shell()->Close();
 

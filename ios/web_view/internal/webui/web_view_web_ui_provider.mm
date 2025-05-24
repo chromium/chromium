@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/components/webui/web_ui_provider.h"
-
 #import "components/sync/invalidations/sync_invalidations_service.h"
 #import "components/version_info/channel.h"
+#import "ios/components/webui/web_ui_provider.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 #import "ios/web_view/internal/sync/web_view_sync_service_factory.h"

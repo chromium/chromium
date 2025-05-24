@@ -38,7 +38,7 @@ const char16_t kIgnoreButtonMessage[] =
 
 class TestGrammarServiceClient : public GrammarServiceClient {
  public:
-  TestGrammarServiceClient() {}
+  TestGrammarServiceClient() = default;
   ~TestGrammarServiceClient() override = default;
 
   bool RequestTextCheck(Profile* profile,
@@ -96,7 +96,6 @@ class MockSuggestionHandler : public SuggestionHandlerInterface {
               (int context_id,
                const std::u16string& candidate,
                size_t delete_previous_utf16_len,
-               bool use_replace_surrounding_text,
                std::string* error),
               (override));
   MOCK_METHOD(bool,

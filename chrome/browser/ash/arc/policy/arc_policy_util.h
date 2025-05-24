@@ -18,50 +18,56 @@ class Profile;
 namespace arc {
 namespace policy_util {
 
-constexpr char kArcPolicyKeyAccountTypesWithManagementDisabled[] =
+inline constexpr char kArcPolicyKeyAccountTypesWithManagementDisabled[] =
     "accountTypesWithManagementDisabled";
-constexpr char kArcPolicyKeyAlwaysOnVpnPackage[] = "alwaysOnVpnPackage";
-constexpr char kArcPolicyKeyApplications[] = "applications";
-constexpr char kArcPolicyKeyAvailableAppSetPolicyDeprecated[] =
+inline constexpr char kArcPolicyKeyAlwaysOnVpnPackage[] = "alwaysOnVpnPackage";
+inline constexpr char kArcPolicyKeyApplications[] = "applications";
+inline constexpr char kArcPolicyKeyAvailableAppSetPolicyDeprecated[] =
     "availableAppSetPolicy";
-constexpr char kArcPolicyKeyComplianceRules[] = "complianceRules";
-constexpr char kArcPolicyKeyInstallUnknownSourcesDisabled[] =
+inline constexpr char kArcPolicyKeyComplianceRules[] = "complianceRules";
+inline constexpr char kArcPolicyKeyInstallUnknownSourcesDisabled[] =
     "installUnknownSourcesDisabled";
-constexpr char kArcPolicyKeyMaintenanceWindow[] = "maintenanceWindow";
-constexpr char kArcPolicyKeyModifyAccountsDisabled[] = "modifyAccountsDisabled";
-constexpr char kArcPolicyKeyPermissionGrants[] = "permissionGrants";
-constexpr char kArcPolicyKeyPermittedAccessibilityServices[] =
+inline constexpr char kArcPolicyKeyMaintenanceWindow[] = "maintenanceWindow";
+inline constexpr char kArcPolicyKeyModifyAccountsDisabled[] =
+    "modifyAccountsDisabled";
+inline constexpr char kArcPolicyKeyPermissionGrants[] = "permissionGrants";
+inline constexpr char kArcPolicyKeyPermittedAccessibilityServices[] =
     "permittedAccessibilityServices";
-constexpr char kArcPolicyKeyPlayStoreMode[] = "playStoreMode";
-constexpr char kArcPolicyKeyShortSupportMessage[] = "shortSupportMessage";
-constexpr char kArcPolicyKeyStatusReportingSettings[] =
+inline constexpr char kArcPolicyKeyPlayStoreMode[] = "playStoreMode";
+inline constexpr char kArcPolicyKeyShortSupportMessage[] =
+    "shortSupportMessage";
+inline constexpr char kArcPolicyKeyStatusReportingSettings[] =
     "statusReportingSettings";
-constexpr char kArcPolicyKeyWorkAccountAppWhitelistDeprecated[] =
+inline constexpr char kArcPolicyKeyWorkAccountAppWhitelistDeprecated[] =
     "workAccountAppWhitelist";
-constexpr char kArcPolicyKeyGuid[] = "guid";
-constexpr char kArcPolicyKeyApkCacheEnabled[] = "apkCacheEnabled";
-constexpr char kArcPolicyKeyMountPhysicalMediaDisabled[] =
+inline constexpr char kArcPolicyKeyGuid[] = "guid";
+inline constexpr char kArcPolicyKeyApkCacheEnabled[] = "apkCacheEnabled";
+inline constexpr char kArcPolicyKeyMountPhysicalMediaDisabled[] =
     "mountPhysicalMediaDisabled";
-constexpr char kArcPolicyKeyDebuggingFeaturesDisabled[] =
+inline constexpr char kArcPolicyKeyDebuggingFeaturesDisabled[] =
     "debuggingFeaturesDisabled";
-constexpr char kArcPolicyKeyCameraDisabled[] = "cameraDisabled";
-constexpr char kArcPolicyKeyPrintingDisabled[] = "printingDisabled";
-constexpr char kArcPolicyKeyScreenCaptureDisabled[] = "screenCaptureDisabled";
-constexpr char kArcPolicyKeyShareLocationDisabled[] = "shareLocationDisabled";
-constexpr char kArcPolicyKeyUnmuteMicrophoneDisabled[] =
+inline constexpr char kArcPolicyKeyCameraDisabled[] = "cameraDisabled";
+inline constexpr char kArcPolicyKeyPrintingDisabled[] = "printingDisabled";
+inline constexpr char kArcPolicyKeyScreenCaptureDisabled[] =
+    "screenCaptureDisabled";
+inline constexpr char kArcPolicyKeyShareLocationDisabled[] =
+    "shareLocationDisabled";
+inline constexpr char kArcPolicyKeyUnmuteMicrophoneDisabled[] =
     "unmuteMicrophoneDisabled";
-constexpr char kArcPolicyKeySetWallpaperDisabled[] = "setWallpaperDisabled";
-constexpr char kArcPolicyKeyVpnConfigDisabled[] = "vpnConfigDisabled";
-constexpr char kArcPolicyKeyPrivateKeySelectionEnabled[] =
+inline constexpr char kArcPolicyKeySetWallpaperDisabled[] =
+    "setWallpaperDisabled";
+inline constexpr char kArcPolicyKeyVpnConfigDisabled[] = "vpnConfigDisabled";
+inline constexpr char kArcPolicyKeyPrivateKeySelectionEnabled[] =
     "privateKeySelectionEnabled";
-constexpr char kArcPolicyKeyChoosePrivateKeyRules[] = "choosePrivateKeyRules";
-constexpr char kArcPolicyKeyCredentialsConfigDisabled[] =
+inline constexpr char kArcPolicyKeyChoosePrivateKeyRules[] =
+    "choosePrivateKeyRules";
+inline constexpr char kArcPolicyKeyCredentialsConfigDisabled[] =
     "credentialsConfigDisabled";
-constexpr char kArcPolicyKeyCaCerts[] = "caCerts";
-constexpr char kArcPolicyKeyRequiredKeyPairs[] = "requiredKeyPairs";
-constexpr char kArcPolicyKeyDpsInteractionsDisabled[] =
+inline constexpr char kArcPolicyKeyCaCerts[] = "caCerts";
+inline constexpr char kArcPolicyKeyRequiredKeyPairs[] = "requiredKeyPairs";
+inline constexpr char kArcPolicyKeyDpsInteractionsDisabled[] =
     "dpsInteractionsDisabled";
-constexpr char kArcPolicyKeyEnabledSystemAppPackageNames[] =
+inline constexpr char kArcPolicyKeyEnabledSystemAppPackageNames[] =
     "enabledSystemAppPackageNames";
 
 // An app's install type specified by the policy.

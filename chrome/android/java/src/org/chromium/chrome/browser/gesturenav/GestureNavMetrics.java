@@ -8,11 +8,13 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Metrics util class. */
+@NullMarked
 class GestureNavMetrics {
     // Used to record the UMA histogram GestureNavigation. This definition should be
     // in sync with the enum "GestureNavigationDirection" in tools/metrics/histograms/enums.xml.

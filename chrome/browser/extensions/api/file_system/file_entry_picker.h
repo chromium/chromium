@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "extensions/browser/api/file_system/file_system_delegate.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 

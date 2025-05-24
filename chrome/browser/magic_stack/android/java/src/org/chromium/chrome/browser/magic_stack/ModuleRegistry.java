@@ -6,24 +6,25 @@ package org.chromium.chrome.browser.magic_stack;
 
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.LifecycleObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
+import org.chromium.components.segmentation_platform.InputContext;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /** A class which is responsible for registering module builders {@link ModuleProviderBuilder}. */
+@NullMarked
 public class ModuleRegistry {
     /** The callback interface which is called when the view of a module is inflated. */
     public interface OnViewCreatedCallback {
-        void onViewCreated(@ModuleType int moduleType, @NonNull ViewGroup view);
+        void onViewCreated(@ModuleType int moduleType, ViewGroup view);
     }
 
     private static final String TAG = "ModuleRegistry";
@@ -37,8 +38,8 @@ public class ModuleRegistry {
     private LifecycleObserver mLifecycleObserver;
 
     public ModuleRegistry(
-            @NonNull HomeModulesConfigManager homeModulesConfigManager,
-            @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+            HomeModulesConfigManager homeModulesConfigManager,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mHomeModulesConfigManager = homeModulesConfigManager;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mLifecycleObserver =
@@ -62,7 +63,7 @@ public class ModuleRegistry {
      * @param moduleType The type of the module.
      * @param builder The object of the module builder.
      */
-    public void registerModule(@ModuleType int moduleType, @NonNull ModuleProviderBuilder builder) {
+    public void registerModule(@ModuleType int moduleType, ModuleProviderBuilder builder) {
         mModuleBuildersMap.put(moduleType, builder);
         if (builder instanceof ModuleConfigChecker) {
             mHomeModulesConfigManager.registerModuleEligibilityChecker(
@@ -78,8 +79,7 @@ public class ModuleRegistry {
      *     is created.
      */
     public void registerAdapter(
-            @NonNull SimpleRecyclerViewAdapter adapter,
-            @NonNull OnViewCreatedCallback onViewCreatedCallback) {
+            SimpleRecyclerViewAdapter adapter, OnViewCreatedCallback onViewCreatedCallback) {
         for (Integer moduleType : mModuleBuildersMap.keySet()) {
             ModuleProviderBuilder builder = mModuleBuildersMap.get(moduleType);
             adapter.registerType(
@@ -104,8 +104,8 @@ public class ModuleRegistry {
      */
     public boolean build(
             @ModuleType int moduleType,
-            @NonNull ModuleDelegate moduleDelegate,
-            @NonNull Callback<ModuleProvider> onModuleBuiltCallback) {
+            ModuleDelegate moduleDelegate,
+            Callback<ModuleProvider> onModuleBuiltCallback) {
         if (!mModuleBuildersMap.containsKey(moduleType)) {
             Log.i(TAG, "The module type isn't supported!");
             return false;
@@ -116,6 +116,7 @@ public class ModuleRegistry {
     }
 
     /** Destroys the registry. */
+    @SuppressWarnings("NullAway") // Restrict non-@Nullable assumptions to before destroy().
     public void destroy() {
         if (mActivityLifecycleDispatcher == null) return;
 
@@ -126,5 +127,14 @@ public class ModuleRegistry {
         mActivityLifecycleDispatcher.unregister(mLifecycleObserver);
         mLifecycleObserver = null;
         mActivityLifecycleDispatcher = null;
+    }
+
+    /** Creates an instance of InputContext. */
+    InputContext createInputContext() {
+        InputContext inputContext = new InputContext();
+        for (ModuleProviderBuilder builder : mModuleBuildersMap.values()) {
+            inputContext.mergeFrom(builder.createInputContext());
+        }
+        return inputContext;
     }
 }

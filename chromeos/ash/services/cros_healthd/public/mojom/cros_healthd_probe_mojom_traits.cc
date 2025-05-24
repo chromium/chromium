@@ -24,8 +24,7 @@ ash::cros_healthd::mojom::CpuArchitectureEnum EnumTraits<
       return ash::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ash::cros_healthd::mojom::CpuArchitectureEnum::kUnknown;
+  NOTREACHED();
 }
 
 bool EnumTraits<ash::cros_healthd::mojom::CpuArchitectureEnum,
@@ -47,8 +46,7 @@ bool EnumTraits<ash::cros_healthd::mojom::CpuArchitectureEnum,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

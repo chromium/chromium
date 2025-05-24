@@ -13,10 +13,12 @@ import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.File;
 
 /** Helper for issuing intents to the android framework. */
+@NullMarked
 public abstract class IntentHelper {
     private IntentHelper() {}
 

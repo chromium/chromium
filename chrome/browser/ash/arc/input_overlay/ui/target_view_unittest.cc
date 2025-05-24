@@ -37,9 +37,9 @@ class TargetViewTest : public OverlayViewTestBase {
   gfx::Point GetPointInScreenFromTargetView(const gfx::Point& point) const {
     DCHECK(touch_injector_);
 
-    const auto& bounds_origin = touch_injector_->content_bounds().origin();
+    gfx::Rect bounds = touch_injector_->content_bounds();
     gfx::Point point_in_screen = point;
-    point_in_screen.Offset(bounds_origin.x(), bounds_origin.y());
+    point_in_screen.Offset(bounds.origin().x(), bounds.origin().y());
     return point_in_screen;
   }
 

@@ -52,7 +52,7 @@ public class WebappDirectoryManagerTest {
     public void setUp() {
         mContext = RuntimeEnvironment.application;
         ContextUtils.initApplicationContext(mContext);
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         PathUtils.setPrivateDataDirectorySuffix("chrome");
         WebappDirectoryManager.resetForTesting();
     }

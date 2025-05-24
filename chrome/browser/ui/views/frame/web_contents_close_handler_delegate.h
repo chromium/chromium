@@ -19,7 +19,7 @@ class WebContentsCloseHandlerDelegate {
   virtual void DestroyClonedLayer() = 0;
 
  protected:
-  virtual ~WebContentsCloseHandlerDelegate() {}
+  virtual ~WebContentsCloseHandlerDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_WEB_CONTENTS_CLOSE_HANDLER_DELEGATE_H_

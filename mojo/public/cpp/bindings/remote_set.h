@@ -202,8 +202,19 @@ class RemoteSetImpl {
   Iterator end() const { return Iterator(storage_.end()); }
 
   void FlushForTesting() {
-    for (auto& it : storage_) {
-      it.second.FlushForTesting();
+    // Avoid flushing while iterating over `storage_` because this map may be
+    // mutated during individual flush operations.  Instead, snapshot the
+    // RemoteSetElementId first, then iterate over them.
+    std::vector<RemoteSetElementId> ids;
+    for (const auto& entry : storage_) {
+      ids.push_back(entry.first);
+    }
+
+    for (auto& id : ids) {
+      auto it = storage_.find(id);
+      if (it != storage_.end()) {
+        it->second.FlushForTesting();
+      }
     }
   }
 

@@ -42,7 +42,7 @@ bool IsAccountManagerAvailable(Profile* profile) {
   // In Web kiosk mode, we should not enable account manager since we use robot
   // accounts.
   if (user_manager::UserManager::IsInitialized() &&
-      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()) {
+      user_manager::UserManager::Get()->IsLoggedInAsKioskWebApp()) {
     return false;
   }
 

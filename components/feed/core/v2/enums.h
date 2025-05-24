@@ -25,7 +25,6 @@ enum class NetworkRequestType : int {
   kQueryNextPage = 10,
   kSingleWebFeedListContents = 11,
   kQueryWebFeed = 12,
-  kSupervisedFeed = 13,
 };
 std::ostream& operator<<(std::ostream& out, NetworkRequestType value);
 
@@ -94,7 +93,8 @@ enum class LoadStreamStatus {
   kNetworkFetchTimedOut = 29,
   kLoadNotAllowedDisabled = 30,
   kLoadNotAllowedDisabledByDse = 31,
-  kMaxValue = kLoadNotAllowedDisabledByDse,
+  kNoCardReceived = 32,
+  kMaxValue = kNoCardReceived,
 };
 
 // Were we able to load fresh Feed data. This should be 'true' unless some kind

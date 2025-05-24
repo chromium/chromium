@@ -16,14 +16,18 @@ import android.view.ViewGroup.LayoutParams;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
@@ -37,7 +41,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.NightModeTestUtils;
 
 import java.io.IOException;
@@ -46,15 +50,21 @@ import java.util.List;
 /** Render tests for tab switcher long-press menu popup. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase {
+public class TabSwitcherActionMenuRenderTest {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER)
                     .build();
 
@@ -70,21 +80,21 @@ public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        MockitoAnnotations.initMocks(this);
+    @Before
+    public void setUp() throws Exception {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        super.setUpTest();
+
+        mActivityTestRule.launchActivity(null);
+
         when(mTabModelSelectorSupplier.hasValue()).thenReturn(true);
         when(mTabModelSelectorSupplier.get()).thenReturn(mTabModelSelector);
         when(mTabModelSelector.getModel(true)).thenReturn(mModel);
         when(mModel.getCount()).thenReturn(0);
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
-        super.tearDownTest();
     }
 
     @Test
@@ -108,7 +118,7 @@ public class TabSwitcherActionMenuRenderTest extends BlankUiTestActivityTestCase
     private void showMenu() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Activity activity = getActivity();
+                    Activity activity = mActivityTestRule.getActivity();
                     TabSwitcherActionMenuCoordinator coordinator =
                             new TabSwitcherActionMenuCoordinator(
                                     mProfile, mTabModelSelectorSupplier);

@@ -110,6 +110,7 @@ chromium-metrics-reviews@google.com.
   <int value="20" label="Help center"/>
   <int value="21" label="Open bookmark (via double-click / enter)"/>
   <int value="22" label="Open folder (via double-click / enter)"/>
+  <int value="23" label="Open in split view"/>
 </enum>
 
 <!-- LINT.IfChange(BookmarkReorderDropTarget) -->
@@ -118,6 +119,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Bookmark bar view"/>
   <int value="1" label="Bookmark manager API"/>
   <int value="2" label="Bookmark Menu"/>
+  <int value="3" label="Bookmark side panel"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/bookmarks/bookmark_drag_drop.h:BookmarkReorderDropTarget) -->
@@ -128,6 +130,19 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Space or Enter"/>
   <int value="3" label="Mouse click"/>
 </enum>
+
+<!-- LINT.IfChange(BookmarksExistInStorageType) -->
+
+<enum name="BookmarksExistInStorageType">
+  <summary>
+    The storage in which bookmarks are stored in permanent nodes.
+  </summary>
+  <int value="0" label="Local only"/>
+  <int value="1" label="Account only"/>
+  <int value="2" label="Local and Account"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/bookmarks/common/bookmark_metrics.h:BookmarksExistInStorageType) -->
 
 <enum name="BookmarksSidePanelSearchCTREvent">
   <int value="0" label="Shown"/>
@@ -151,6 +166,19 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Normal"/>
   <int value="1" label="Partner"/>
   <int value="2" label="ReadingList"/>
+</enum>
+
+<enum name="JavaBookmarkBridgeBackends">
+  <int value="0" label="Bookmarks"/>
+  <int value="1" label="Partner bookmarks"/>
+  <int value="2" label="Local reading list"/>
+  <int value="3" label="Account reading list"/>
+  <int value="4" label="Reading list manager"/>
+</enum>
+
+<enum name="JavaBookmarkBridgeLoadedState">
+  <int value="0" label="Loading started"/>
+  <int value="1" label="Loading finished"/>
 </enum>
 
 <enum name="MobileBookmarkManagerBookmarkRowDisplayPref">

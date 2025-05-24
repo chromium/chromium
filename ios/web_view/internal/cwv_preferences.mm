@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/cwv_preferences_internal.h"
-
 #import "base/functional/bind.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/language/core/browser/pref_names.h"
@@ -12,6 +10,8 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/translate/core/browser/translate_pref_names.h"
 #import "components/translate/core/browser/translate_prefs.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
+#import "ios/web_view/internal/cwv_preferences_internal.h"
 
 @implementation CWVPreferences {
   PrefService* _prefService;
@@ -56,6 +56,14 @@
   return autofill::prefs::IsAutofillPaymentMethodsEnabled(_prefService);
 }
 
+- (void)setAutofillAddressSyncEnabled:(BOOL)enabled {
+  ios_web_view::SetAutofillAddressSyncEnabled(_prefService, enabled);
+}
+
+- (BOOL)isAutofillAddressSyncEnabled {
+  return ios_web_view::IsAutofillAddressSyncEnabled(_prefService);
+}
+
 - (void)setPasswordAutofillEnabled:(BOOL)enabled {
   _prefService->SetBoolean(password_manager::prefs::kCredentialsEnableService,
                            enabled);
@@ -81,7 +89,7 @@
       _prefService,
       enabled ? safe_browsing::SafeBrowsingState::STANDARD_PROTECTION
               : safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING,
-      /*is_esb_enabled_in_sync=*/false);
+      /*is_esb_enabled_by_account_integration=*/false);
 }
 
 - (BOOL)isSafeBrowsingEnabled {

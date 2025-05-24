@@ -1,5 +1,5 @@
 // META: title=test WebNN API pooling operations
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -33,46 +33,6 @@
 //     MLOperand input, optional MLPool2dOptions options = {});
 // MLOperand maxPool2d(
 //     MLOperand input, optional MLPool2dOptions options = {});
-
-
-const getPoolingOperatorsPrecisionTolerance = (graphResources) => {
-  const args = graphResources.operators[0].arguments;
-  const inputShape =
-      graphResources.inputs[args[0][Object.keys(args[0])[0]]].descriptor.shape;
-  const options =
-      args.length === 2 ? {...args[1][Object.keys(args[1])[0]]} : {};
-  let height;
-  let width;
-
-  if (options.windowDimensions) {
-    height = options.windowDimensions[0];
-    width = options.windowDimensions[1];
-  } else {
-    // If not present, the window dimensions are assumed to be the height and
-    // width dimensions of the input shape
-    if (options.layout && options.layout === 'nhwc') {
-      height = inputShape[1];
-      width = inputShape[2];
-    } else {
-      // nhwc layout of input
-      height = inputShape[2];
-      width = inputShape[3];
-    }
-  }
-
-  const tolerance = height * width + 2;
-  const toleranceDict = {
-    averagePool2d: {float32: tolerance, float16: tolerance},
-    l2Pool2d: {float32: tolerance, float16: tolerance},
-    maxPool2d: {float32: 0, float16: 0},
-  };
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {
-    metricType: 'ULP',
-    value: toleranceDict[graphResources.operators[0].name][expectedDataType]
-  };
-};
 
 const poolingOperatorsTests = [
   // averagePool2d tests
@@ -660,6 +620,53 @@ const poolingOperatorsTests = [
             40.00800323486328, 43.85149002075195, 41.061283111572266
           ],
           'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'averagePool2d float32 4D tensor options.roundingType=ceil and no padding',
+    'graph': {
+      'inputs': {
+        'averagePool2dInput': {
+          'data': [
+            22.975555419921875, 78.15438079833984,  9.686111450195312,
+            51.298038482666016, 32.193084716796875, 87.65037536621094,
+            87.25082397460938,  39.49794006347656,  80.0996322631836,
+            10.220142364501953, 52.602699279785156, 1.4128639698028564,
+            11.95406436920166,  85.00074768066406,  64.78374481201172,
+            88.03128814697266,  11.333850860595703, 70.61659240722656,
+            84.90442657470703,  79.06687927246094,  7.3287248611450195,
+            35.97796630859375,  10.177306175231934, 1.4140757322311401,
+            78.10037994384766,  91.59549713134766,  65.64701080322266,
+            55.14215087890625,  18.432437896728516, 49.34624099731445,
+            15.648024559020996, 68.02723693847656
+          ],
+          'descriptor': {shape: [1, 2, 4, 4], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'averagePool2d',
+        'arguments': [
+          {'input': 'averagePool2dInput'}, {
+            'options': {
+              'windowDimensions': [3, 3],
+              'strides': [2, 2],
+              'roundingType': 'ceil'
+            }
+          }
+        ],
+        'outputs': 'averagePool2dOutput'
+      }],
+      'expectedOutputs': {
+        'averagePool2dOutput': {
+          'data': [
+            51.20364761352539, 40.29140853881836, 50.77684020996094,
+            51.70764923095703, 50.63130187988281, 49.3919792175293,
+            53.128265380859375, 51.11610412597656
+          ],
+          'descriptor': {shape: [1, 2, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -1450,12 +1457,12 @@ const poolingOperatorsTests = [
       'expectedOutputs': {
         'l2Pool2dOutput': {
           'data': [
-            171.5061492919922, 164.9919891357422, 8222.29296875,
+            171.5061492919922, 164.9919891357422, 90.6768569946289,
             160.0518341064453, 149.63897705078125, 65.15908813476562,
-            132.56260681152344, 139.84808349609375, 708.620849609375,
-            142.6990966796875, 139.51637268066406, 5245.4814453125,
+            132.56260681152344, 139.84808349609375, 26.61993408203125,
+            142.6990966796875, 139.51637268066406, 72.42569732666016,
             165.07762145996094, 161.11062622070312, 96.38701629638672,
-            150.1616668701172, 146.8201904296875, 8216.69921875
+            150.1616668701172, 146.8201904296875, 90.64601135253906
           ],
           'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'}
         }
@@ -1508,12 +1515,12 @@ const poolingOperatorsTests = [
       'expectedOutputs': {
         'l2Pool2dOutput': {
           'data': [
-            171.5061492919922, 164.9919891357422, 8222.29296875,
+            171.5061492919922, 164.9919891357422, 90.6768569946289,
             160.0518341064453, 149.63897705078125, 65.15908813476562,
-            132.56260681152344, 139.84808349609375, 708.620849609375,
-            142.6990966796875, 139.51637268066406, 5245.4814453125,
+            132.56260681152344, 139.84808349609375, 26.61993408203125,
+            142.6990966796875, 139.51637268066406, 72.42569732666016,
             165.07762145996094, 161.11062622070312, 96.38701629638672,
-            150.1616668701172, 146.8201904296875, 8216.69921875
+            150.1616668701172, 146.8201904296875, 90.64601135253906
           ],
           'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'}
         }
@@ -2298,8 +2305,7 @@ const poolingOperatorsTests = [
 
 if (navigator.ml) {
   poolingOperatorsTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getPoolingOperatorsPrecisionTolerance, test);
+    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

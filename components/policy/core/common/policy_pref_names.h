@@ -26,6 +26,17 @@ enum class IncognitoModeAvailability {
   kNumTypes
 };
 
+// The enum cocorresponding to the type of download restriction.
+enum class DownloadRestriction {
+  NONE = 0,
+  DANGEROUS_FILES = 1,
+  POTENTIALLY_DANGEROUS_FILES = 2,
+  ALL_FILES = 3,
+  // MALICIOUS_FILES has a stricter definition of harmful file than
+  // DANGEROUS_FILES and does not block based on file extension.
+  MALICIOUS_FILES = 4,
+};
+
 namespace policy_prefs {
 
 #if BUILDFLAG(IS_WIN)
@@ -49,7 +60,6 @@ extern const char kUrlBlocklist[];
 extern const char kUrlAllowlist[];
 extern const char kUserPolicyRefreshRate[];
 extern const char kIntensiveWakeUpThrottlingEnabled[];
-extern const char kUserAgentClientHintsGREASEUpdateEnabled[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kBackForwardCacheEnabled[];
 extern const char kReadAloudEnabled[];
@@ -59,24 +69,32 @@ extern const char kLastPolicyCheckTime[];
 #endif
 #if BUILDFLAG(IS_IOS)
 extern const char kUserPolicyNotificationWasShown[];
+extern const char kSyncDisabledAlertShown[];
 #endif
 extern const char kForceGoogleSafeSearch[];
 extern const char kForceYouTubeRestrict[];
 extern const char kHideWebStoreIcon[];
 extern const char kIncognitoModeAvailability[];
-extern const char kBeforeunloadEventCancelByPreventDefaultEnabled[];
 extern const char kKeyboardFocusableScrollersEnabled[];
 extern const char kStandardizedBrowserZoomEnabled[];
 extern const char kPolicyTestPageEnabled[];
+extern const char kHasDismissedPolicyPagePromotionBanner[];
 extern const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[];
 extern const char kLocalTestPoliciesForNextStartup[];
-extern const char kMutationEventsEnabled[];
 extern const char kCSSCustomStateDeprecatedSyntaxEnabled[];
+extern const char kSelectParserRelaxationEnabled[];
 extern const char kForcePermissionPolicyUnloadDefaultEnabled[];
+extern const char kDownloadRestrictions[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kAlwaysOnVpnPreConnectUrlAllowlist[];
 extern const char kFloatingWorkspaceEnabled[];
 #endif
+extern const char kBuiltInAIAPIsEnabled[];
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
+extern const char kPasswordManagerBlocklist[];
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }  // namespace policy_prefs
 }  // namespace policy
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
+<translation id="1122068467107743258">Рабочий профиль</translation>
 <translation id="1275718070701477396">Выбрано</translation>
 <translation id="138513070655895675">Выберите этот пункт меню, чтобы изменить способ оплаты.</translation>
 <translation id="2129442648318919291">Настроить автозаполнение адресов.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">Адрес доставки</translation>
 <translation id="8873105120914375071">Хотите быстрее оформлять заказы?</translation>
 <translation id="9032876013752408138">Включить автозаполнение</translation>
+<translation id="932327136139879170">Главная страница</translation>
 <translation id="984275831282074731">Способы оплаты</translation>
 </translationbundle>

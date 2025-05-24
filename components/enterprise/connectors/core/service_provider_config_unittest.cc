@@ -137,7 +137,11 @@ TEST(ServiceProviderConfigTest, Trellix) {
   ASSERT_TRUE(service_provider.analysis->local_path);
   ASSERT_EQ("Trellix_DLP", std::string(service_provider.analysis->local_path));
   ASSERT_TRUE(service_provider.analysis->user_specific);
-  ASSERT_EQ(service_provider.analysis->subject_names.size(), 1u);
+  ASSERT_EQ(service_provider.analysis->subject_names.size(), 2u);
+  ASSERT_EQ(std::string(service_provider.analysis->subject_names[0]),
+            "MUSARUBRA US LLC");
+  ASSERT_EQ(std::string(service_provider.analysis->subject_names[1]),
+            "Musarubra US LLC");
 
   // The trellix local service provider has 1 tag: dlp.
   ASSERT_EQ(service_provider.analysis->supported_tags.size(), 1u);

@@ -48,7 +48,7 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
   static get properties() {
     return {
       passkey: Object,
-      interactions_: {
+      interactionsEnum_: {
         type: Object,
         value: PasswordViewPageInteractions,
       },
@@ -64,21 +64,21 @@ export class PasskeyDetailsCardElement extends PasskeyDetailsCardElementBase {
     ];
   }
 
-  passkey: chrome.passwordsPrivate.PasswordUiEntry;
-  private showEditPasskeyDialog_: boolean;
-  private showDeletePasskeyDialog_: boolean;
-  private infoLabelText_: string;
+  declare passkey: chrome.passwordsPrivate.PasswordUiEntry;
+  declare private showEditPasskeyDialog_: boolean;
+  declare private showDeletePasskeyDialog_: boolean;
+  declare private infoLabelText_: string;
 
   private getUsernameValue_(): string {
     return !this.passkey.username || this.passkey.username === '' ?
         this.i18n('usernamePlaceholder') :
-        this.passkey.username!;
+        this.passkey.username;
   }
 
   private getDisplayNameValue_(): string {
     return !this.passkey.displayName || this.passkey.displayName === '' ?
         this.i18n('displayNamePlaceholder') :
-        this.passkey.displayName!;
+        this.passkey.displayName;
   }
 
   private onDeleteClick_() {

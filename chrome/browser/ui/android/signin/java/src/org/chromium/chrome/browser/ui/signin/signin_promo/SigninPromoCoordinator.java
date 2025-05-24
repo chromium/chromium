@@ -4,102 +4,121 @@
 
 package org.chromium.chrome.browser.ui.signin.signin_promo;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.StringRes;
-
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
+import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.chrome.browser.ui.signin.R;
+import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
-import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-import java.util.Set;
-
 /** Coordinator for the signin promo card. */
-public final class SigninPromoCoordinator {
-    private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
+@NullMarked
+public class SigninPromoCoordinator {
+    private static boolean sPromoDisabledForTesting;
+    private final Context mContext;
+    private final SigninPromoDelegate mDelegate;
     private final SigninPromoMediator mMediator;
+    private @Nullable ImpressionTracker mImpressionTracker;
+    private @Nullable PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
-    private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
+    /** Disables promo in tests. */
+    public static void disablePromoForTesting() {
+        sPromoDisabledForTesting = true;
+        ResettersForTesting.register(() -> sPromoDisabledForTesting = false);
+    }
 
     /**
-     * Creates and instance of the {@link SigninPromoCoordinator}.
+     * Creates an instance of the {@link SigninPromoCoordinator}.
      *
      * @param context The Android {@link Context}.
-     * @param titleStringId The resource id for the title string.
-     * @param descriptionStringId The resource id for the description string.
-     * @param shouldSuppressSecondaryButton Whether the secondary button should be suppressed.
-     * @param shouldHideDismissButton Whether the dismiss button fo the promo card should be hidden.
+     * @param profile A {@link Profile} object to access identity services. This must be the
+     *     original profile, not the incognito one.
+     * @param delegate A {@link SigninPromoDelegate} to customize the view.
      */
-    public SigninPromoCoordinator(
-            Context context,
-            @StringRes int titleStringId,
-            @StringRes int descriptionStringId,
-            boolean shouldSuppressSecondaryButton,
-            boolean shouldHideDismissButton) {
-        // TODO(crbug.com/327387704): Observe the AccountManagerFacade so that the promo gets
-        // properly updated when the list of accounts changes.
+    public SigninPromoCoordinator(Context context, Profile profile, SigninPromoDelegate delegate) {
+        mContext = context;
+        mDelegate = delegate;
+        ProfileDataCache profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
+        IdentityManager identityManager =
+                IdentityServicesProvider.get().getIdentityManager(profile);
+        SyncService syncService = SyncServiceFactory.getForProfile(profile);
+        assumeNonNull(identityManager);
+        assumeNonNull(syncService);
         mMediator =
                 new SigninPromoMediator(
-                        context,
-                        titleStringId,
-                        descriptionStringId,
-                        shouldSuppressSecondaryButton,
-                        shouldHideDismissButton);
+                        identityManager,
+                        syncService,
+                        AccountManagerFacadeProvider.getInstance(),
+                        profileDataCache,
+                        delegate);
+    }
+
+    public void destroy() {
+        mMediator.destroy();
+        destroyPropertyModelChangeProcessor();
+    }
+
+    /** Determines whether the signin promo can be shown. */
+    public boolean canShowPromo() {
+        return !sPromoDisabledForTesting && mMediator.canShowPromo();
+    }
+
+    /** Builds a promo view object for the corresponding access point. */
+    public View buildPromoView(ViewGroup parent) {
+        return LayoutInflater.from(mContext)
+                .inflate(getLayoutResId(mDelegate.getAccessPoint()), parent, false);
     }
 
     /** Sets the view that is controlled by this coordinator. */
-    public void setView(PersonalizedSigninPromoView view) {
+    public void setView(View view) {
+        PersonalizedSigninPromoView promoView = view.findViewById(R.id.signin_promo_view_container);
+        if (promoView == null) {
+            throw new IllegalArgumentException("Promo view doesn't exist in container");
+        }
+        destroyPropertyModelChangeProcessor();
+        mPropertyModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mMediator.getModel(), promoView, SigninPromoViewBinder::bind);
+        mImpressionTracker = new ImpressionTracker(promoView);
+        mImpressionTracker.setListener(mMediator::recordImpression);
+    }
+
+    private void destroyPropertyModelChangeProcessor() {
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();
             mPropertyModelChangeProcessor = null;
+            // Always initialized and destroyed with mPropertyModelChangeProcessor.
+            assumeNonNull(mImpressionTracker);
+            mImpressionTracker.setListener(null);
+            mImpressionTracker = null;
         }
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mMediator.getModel(), view, SigninPromoViewBinder::bind);
     }
 
-    public void increasePromoShowCount() {
-        // TODO(crbug.com/327387704): Implement this method
-    }
-
-    // TODO(crbug.com/327387704): When this MVC is integrated into more access points, move this
-    // inside a switch statement.
-    public static boolean canShowBookmarkSigninPromo(Profile profile) {
-        if (IdentityServicesProvider.get()
-                .getIdentityManager(profile)
-                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
-            return false;
-        }
-
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
-        if (syncService
-                .getSelectedTypes()
-                .containsAll(
-                        Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST))) {
-            return false;
-        }
-
-        boolean isTypeManagedByPolicy =
-                syncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
-        boolean isMaxImpressionCountReached =
-                ChromeSharedPreferences.getInstance()
-                                .readInt(
-                                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                                SigninPreferencesManager.SyncPromoAccessPointId
-                                                        .BOOKMARKS))
-                        >= MAX_IMPRESSIONS_BOOKMARKS;
-        boolean isPromoDismissed =
-                ChromeSharedPreferences.getInstance()
-                        .readBoolean(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, false);
-
-        return !isTypeManagedByPolicy && !isMaxImpressionCountReached && !isPromoDismissed;
+    static int getLayoutResId(@SigninAccessPoint int accessPoint) {
+        return switch (accessPoint) {
+            case SigninAccessPoint.BOOKMARK_MANAGER -> R.layout.sync_promo_view_bookmarks;
+            case SigninAccessPoint.HISTORY_PAGE -> R.layout.sync_promo_view_history_page;
+            case SigninAccessPoint.NTP_FEED_TOP_PROMO -> R.layout
+                    .sync_promo_view_content_suggestions;
+            case SigninAccessPoint.RECENT_TABS -> R.layout.sync_promo_view_recent_tabs;
+            default -> throw new IllegalArgumentException("Invalid sign-in promo access point");
+        };
     }
 }

@@ -1,0 +1,16 @@
+Name: ViewPager2
+Short Name: viewpager2
+URL: https://developer.android.com/jetpack/androidx/releases/viewpager2#1.2.0-SNAPSHOT
+Version: 1.2.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+AndroidX Widget ViewPager2
+
+Local Modifications:
+No modifications.

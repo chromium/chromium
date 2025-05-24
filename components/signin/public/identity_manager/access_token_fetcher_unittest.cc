@@ -19,12 +19,14 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/access_token_restriction.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -42,18 +44,18 @@ namespace {
 
 using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
-const char kTestGaiaId[] = "dummyId";
-const char kTestGaiaId2[] = "dummyId2";
-const char kTestEmail[] = "me@gmail.com";
-const char kTestEmail2[] = "me2@gmail.com";
+constexpr GaiaId::Literal kTestGaiaId("dummyId");
+constexpr GaiaId::Literal kTestGaiaId2("dummyId2");
+constexpr char kTestEmail[] = "me@gmail.com";
+constexpr char kTestEmail2[] = "me2@gmail.com";
 
 // Used just to check that the id_token is passed along.
-const char kIdTokenEmptyServices[] =
+constexpr char kIdTokenEmptyServices[] =
     "dummy-header."
     "eyAic2VydmljZXMiOiBbXSB9"  // payload: { "services": [] }
     ".dummy-signature";
 
-const char kPriviligedConsumerName[] = "extensions_identity_api";
+constexpr char kPriviligedConsumerName[] = "extensions_identity_api";
 
 }  // namespace
 
@@ -75,6 +77,7 @@ class AccessTokenFetcherTest
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
+    SigninPrefs::RegisterProfilePrefs(pref_service_.registry());
 
     account_tracker_->Initialize(&pref_service_, base::FilePath());
     primary_account_manager_ = std::make_unique<PrimaryAccountManager>(
@@ -86,19 +89,17 @@ class AccessTokenFetcherTest
     token_service_.RemoveAccessTokenDiagnosticsObserver(this);
   }
 
-  CoreAccountId SetPrimaryAccount(const std::string& gaia_id,
+  CoreAccountId SetPrimaryAccount(const GaiaId& gaia_id,
                                   const std::string& email,
                                   ConsentLevel consent_level) {
     CoreAccountInfo account_info = AddAccount(gaia_id, email);
     primary_account_manager_->SetPrimaryAccountInfo(
-        account_info, consent_level,
-        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+        account_info, consent_level, signin_metrics::AccessPoint::kUnknown);
 
     return account_info.account_id;
   }
 
-  CoreAccountInfo AddAccount(const std::string& gaia_id,
-                             const std::string& email) {
+  CoreAccountInfo AddAccount(const GaiaId& gaia_id, const std::string& email) {
     account_tracker()->SeedAccountInfo(gaia_id, email);
     return account_tracker()->FindAccountInfoByGaiaId(gaia_id);
   }
@@ -207,8 +208,9 @@ class AccessTokenFetcherTest
       const CoreAccountId& account_id,
       const std::string& consumer_id,
       const OAuth2AccessTokenManager::ScopeSet& scopes) override {
-    if (on_access_token_request_callback_)
+    if (on_access_token_request_callback_) {
       std::move(on_access_token_request_callback_).Run();
+    }
   }
 
   base::test::TaskEnvironment task_environment_;

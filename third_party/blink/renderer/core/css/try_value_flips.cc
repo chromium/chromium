@@ -121,12 +121,7 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
   add(CSSPropertyID::kJustifySelf, transform.FlippedStart()
                                        ? CSSPropertyID::kAlignSelf
                                        : CSSPropertyID::kJustifySelf);
-  if (RuntimeEnabledFeatures::CSSPositionAreaPropertyEnabled()) {
-    add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
-  }
-  if (RuntimeEnabledFeatures::CSSInsetAreaPropertyEnabled()) {
-    add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
-  }
+  add(CSSPropertyID::kPositionArea, CSSPropertyID::kPositionArea);
 
   if (transform.FlippedStart()) {
     add(CSSPropertyID::kBlockSize, CSSPropertyID::kInlineSize);
@@ -139,8 +134,7 @@ const CSSPropertyValueSet* TryValueFlips::CreateFlipSet(
 
   // Consider updating `kMaxDeclarations` when new properties are added.
 
-  return ImmutableCSSPropertyValueSet::Create(
-      declarations.data(), declarations.size(), kHTMLStandardMode);
+  return ImmutableCSSPropertyValueSet::Create(declarations, kHTMLStandardMode);
 }
 
 namespace {
@@ -176,8 +170,7 @@ LogicalAxis DeterminePropertyAxis(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LogicalAxis::kInline;
+  NOTREACHED();
 }
 
 std::optional<LogicalAxis> DetermineValueAxis(
@@ -649,8 +642,7 @@ const CSSValue* TransformPositionArea(
   return MakeGarbageCollected<CSSValuePair>(
       CSSIdentifierValue::Create(first_value_transformed),
       CSSIdentifierValue::Create(second_value_transformed),
-      pair->KeepIdenticalValues() ? CSSValuePair::kKeepIdenticalValues
-                                  : CSSValuePair::kDropIdenticalValues);
+      CSSValuePair::kKeepIdenticalValues);
 }
 
 }  // namespace
@@ -673,8 +665,7 @@ const CSSValue* TryValueFlips::FlipValue(
     return TransformSelfAlignment(value, logical_axis, transform,
                                   writing_direction);
   }
-  if (from_property == CSSPropertyID::kPositionArea ||
-      from_property == CSSPropertyID::kInsetArea) {
+  if (from_property == CSSPropertyID::kPositionArea) {
     return TransformPositionArea(value, transform, writing_direction);
   }
   return value;

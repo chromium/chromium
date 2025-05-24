@@ -11,6 +11,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <locale>
 #include <memory>
 #include <string>
@@ -40,7 +41,6 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/keycode_text_conversion.h"
 #include "chrome/test/chromedriver/logging.h"
@@ -54,9 +54,7 @@
 
 namespace {
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Ensure that there is a writable shared memory directory. We use
 // network::SimpleURLLoader to connect to Chrome, and it calls
 // base::subtle::PlatformSharedMemoryRegion::Create to get a shared memory
@@ -322,7 +320,7 @@ int main(int argc, char *argv[]) {
   std::string url_base;
   if (cmd_line->HasSwitch("h") || cmd_line->HasSwitch("help")) {
     std::string options;
-    const char* const kOptionAndDescriptions[] = {
+    const auto kOptionAndDescriptions = std::to_array<const char*>({
         "port=PORT",
         "port to listen on",
         "adb-port=PORT",
@@ -349,11 +347,11 @@ int main(int argc, char *argv[]) {
         "add readable timestamps to log",
         "enable-chrome-logs",
         "show logs from the browser (overrides other logging options)",
-        "bidi-mapper-path",
+        "bidi-mapper-path=PATH",
         "custom bidi mapper path",
-    // TODO(crbug.com/40118868): Revisit the macro expression once build flag
-    // switch of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+        "debug-bidi-mapper",
+        "(experimental) run bidi mapper in a visible tab for debugging purposes",
+#if BUILDFLAG(IS_LINUX)
         "disable-dev-shm-usage",
         "do not use /dev/shm "
         "(add this switch if seeing errors related to shared memory)",
@@ -364,7 +362,7 @@ int main(int argc, char *argv[]) {
         "ignore-explicit-port",
         "(experimental) ignore the port specified explicitly, "
         "find a free port instead",
-    };
+    });
     for (size_t i = 0; i < std::size(kOptionAndDescriptions) - 1; i += 2) {
       options += base::StringPrintf(
           "  --%-30s%s\n",
@@ -490,9 +488,7 @@ int main(int argc, char *argv[]) {
     VLOG(0) << GetPortProtectionMessage();
   }
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   EnsureSharedMemory(cmd_line);
 #endif
 

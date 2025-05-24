@@ -98,6 +98,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   gfx::SizeF scrollable_viewport_size;
 
+  // The size of the viewport for the visible region in DIP.
+  gfx::Size visible_viewport_size;
+
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
 
   bool may_contain_video = false;
@@ -108,6 +111,9 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // This includes during the touch interaction just prior to the initiation of
   // gesture scroll events.
   bool is_handling_interaction = false;
+
+  // True if this compositor frame contains animations.
+  bool is_handling_animation = false;
 
   // This color is usually obtained from the background color of the <body>
   // element. It can be used for filling in gutter areas around the frame when
@@ -168,9 +174,18 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // value set.
   std::optional<float> top_controls_visible_height;
 
+  // Specifies the interval at which the client's content is updated. This can
+  // be used to configure the display to the optimal vsync interval available.
+  // If unspecified, or set to BeginFrameArgs::MinInterval, it is assumed that
+  // the client can animate at the maximum frame rate supported by the Display.
+  std::optional<base::TimeDelta> preferred_frame_interval;
+
   // Display transform hint when the frame is generated. Note this is only
   // applicable to frames of the root surface.
   gfx::OverlayTransform display_transform_hint = gfx::OVERLAY_TRANSFORM_NONE;
+
+  // Please refer RenderFrameMetadata::is_mobile_optimized for detailed comment.
+  bool is_mobile_optimized = false;
 
   // Contains the metadata required for drawing a delegated ink trail onto the
   // end of a rendered ink stroke. This should only be present when two

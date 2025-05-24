@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 
 #include "base/containers/adapters.h"
@@ -102,10 +97,6 @@ void LineInfo::SetLineStyle(const InlineNode& node,
   const LayoutBox* box = node.GetLayoutBox();
   line_style_ = box->Style(use_first_line_style_);
   needs_accurate_end_position_ = ComputeNeedsAccurateEndPosition();
-  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    is_ruby_base_ = box->IsRubyBase();
-    is_ruby_text_ = box->IsRubyText();
-  }
 
   // Reset block start offset related members.
   annotation_block_start_adjustment_ = LayoutUnit();
@@ -119,18 +110,12 @@ ETextAlign LineInfo::GetTextAlign(bool is_last_line) const {
 
   if (is_ruby_text_) {
     ETextAlign text_align = LineStyle().GetTextAlign();
-    if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-      if (text_align == ComputedStyleInitialValues::InitialTextAlign()) {
-        return ETextAlign::kJustify;
-      }
-    } else {
-      ERubyAlign ruby_align = LineStyle().RubyAlign();
-      if ((ruby_align == ERubyAlign::kSpaceAround &&
-           (text_align == ComputedStyleInitialValues::InitialTextAlign() ||
-            text_align == ETextAlign::kJustify)) ||
-          ruby_align == ERubyAlign::kSpaceBetween) {
-        return ETextAlign::kJustify;
-      }
+    ERubyAlign ruby_align = LineStyle().RubyAlign();
+    if ((ruby_align == ERubyAlign::kSpaceAround &&
+         (text_align == ComputedStyleInitialValues::InitialTextAlign() ||
+          text_align == ETextAlign::kJustify)) ||
+        ruby_align == ERubyAlign::kSpaceBetween) {
+      return ETextAlign::kJustify;
     }
   }
 
@@ -213,7 +198,7 @@ InlineItemTextIndex LineInfo::End() const {
     return GetBreakToken()->Start();
   }
   if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
-    return {end_item_index_, ItemsData().items[end_item_index_].StartOffset()};
+    return {end_item_index_, ItemsData().items[end_item_index_]->StartOffset()};
   }
   return ItemsData().End();
 }
@@ -223,7 +208,7 @@ unsigned LineInfo::EndTextOffset() const {
     return GetBreakToken()->StartTextOffset();
   }
   if (end_item_index_ && end_item_index_ < ItemsData().items.size()) {
-    return ItemsData().items[end_item_index_].StartOffset();
+    return ItemsData().items[end_item_index_]->StartOffset();
   }
   return ItemsData().text_content.length();
 }
@@ -267,35 +252,6 @@ bool LineInfo::GlyphCountIsGreaterThan(wtf_size_t limit) const {
   return false;
 }
 
-bool LineInfo::ShouldHangTrailingSpaces() const {
-  if (RuntimeEnabledFeatures::
-          HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
-    return true;
-  }
-  if (!HasTrailingSpaces()) {
-    return false;
-  }
-  if (!line_style_->ShouldWrapLine()) {
-    return false;
-  }
-  switch (text_align_) {
-    case ETextAlign::kStart:
-    case ETextAlign::kJustify:
-      return true;
-    case ETextAlign::kEnd:
-    case ETextAlign::kCenter:
-    case ETextAlign::kWebkitCenter:
-      return false;
-    case ETextAlign::kLeft:
-    case ETextAlign::kWebkitLeft:
-      return IsLtr(BaseDirection());
-    case ETextAlign::kRight:
-    case ETextAlign::kWebkitRight:
-      return IsRtl(BaseDirection());
-  }
-  NOTREACHED_IN_MIGRATION();
-}
-
 bool LineInfo::IsHyphenated() const {
   for (const InlineItemResult& item_result : base::Reversed(Results())) {
     if (item_result.Length()) {
@@ -308,28 +264,14 @@ bool LineInfo::IsHyphenated() const {
 void LineInfo::UpdateTextAlign() {
   text_align_ = GetTextAlign(IsLastLine());
 
-  if (RuntimeEnabledFeatures::
-          HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
-    allow_hang_for_alignment_ = true;
+  allow_hang_for_alignment_ = true;
 
-    if (HasTrailingSpaces()) {
-      hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-      return;
-    }
-
-    hang_width_ = LayoutUnit();
-  } else {
-    allow_hang_for_alignment_ = false;
-
-    if (HasTrailingSpaces() && line_style_->ShouldWrapLine()) {
-      if (ShouldHangTrailingSpaces()) {
-        hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
-        allow_hang_for_alignment_ = true;
-        return;
-      }
-      hang_width_ = ComputeTrailingSpaceWidth();
-    }
+  if (HasTrailingSpaces()) {
+    hang_width_ = ComputeTrailingSpaceWidth(&end_offset_for_justify_);
+    return;
   }
+
+  hang_width_ = LayoutUnit();
 
   if (text_align_ == ETextAlign::kJustify)
     end_offset_for_justify_ = InflowEndOffset();
@@ -361,7 +303,6 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
     bool will_continue = false;
 
     unsigned end_offset = item_result.EndOffset();
-    DCHECK(end_offset);
 
     if (item.Type() == InlineItem::kControl ||
         item_result.has_only_pre_wrap_trailing_spaces) {
@@ -375,8 +316,10 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
         DCHECK(!item_result.inline_size);
         continue;  // Skip empty items. See `LineBreaker::HandleEmptyText`.
       }
+
       const String& text = items_data_->text_content;
-      if (end_offset && IsHangingSpace(text[end_offset - 1])) {
+      DCHECK_GE(end_offset, 1u);
+      if (IsHangingSpace(text[end_offset - 1])) {
         do {
           --end_offset;
         } while (end_offset > item_result.StartOffset() &&
@@ -407,9 +350,7 @@ LayoutUnit LineInfo::ComputeTrailingSpaceWidth(unsigned* end_offset_out) const {
       }
     }
 
-    if (trailing_item_width &&
-        RuntimeEnabledFeatures::
-            HangingWhitespaceDoesNotDependOnAlignmentEnabled()) {
+    if (trailing_item_width) {
       switch (item.Style()->GetWhiteSpaceCollapse()) {
         case WhiteSpaceCollapse::kCollapse:
         case WhiteSpaceCollapse::kPreserveBreaks:
@@ -599,14 +540,11 @@ void LineInfo::RemoveParallelFlowBreakToken(unsigned item_index) {
                           return a->StartItemIndex() < b->StartItemIndex();
                         }));
 #endif  //  EXPENSIVE_DCHECKS_ARE_ON()
-  for (auto iter = parallel_flow_break_tokens_.begin();
-       iter != parallel_flow_break_tokens_.end(); ++iter) {
-    const InlineBreakToken* break_token = *iter;
+  for (wtf_size_t i = 0; i < parallel_flow_break_tokens_.size(); ++i) {
+    const InlineBreakToken* break_token = parallel_flow_break_tokens_[i];
     DCHECK(break_token->IsInParallelBlockFlow());
     if (break_token->StartItemIndex() >= item_index) {
-      const wtf_size_t index =
-          static_cast<wtf_size_t>(iter - parallel_flow_break_tokens_.begin());
-      parallel_flow_break_tokens_.Shrink(index);
+      parallel_flow_break_tokens_.Shrink(i);
       break;
     }
   }

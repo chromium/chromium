@@ -10,11 +10,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/permissions/features.h"
 #include "components/permissions/origin_keyed_permission_action_service.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_ui_selector.h"
 #include "components/permissions/permission_uma_util.h"
@@ -176,7 +176,9 @@ class PermissionsClient {
           permissions::feature_params::PermissionElementPromptPosition>
           pepc_prompt_position,
       ContentSetting initial_permission_status,
-      base::OnceCallback<void()> hats_shown_callback_);
+      base::OnceCallback<void()> hats_shown_callback_,
+      std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+          preview_parameters);
 
   // Called for each request type when a permission prompt is resolved.
   virtual void OnPromptResolved(
@@ -192,7 +194,9 @@ class PermissionsClient {
           permissions::feature_params::PermissionElementPromptPosition>
           pepc_prompt_position,
       ContentSetting initial_permission_status,
-      content::WebContents* web_contents);
+      content::WebContents* web_contents,
+      std::optional<PermissionHatsTriggerHelper::PreviewParametersForHats>
+          preview_parameters);
 
   // Returns true if user has 3 consecutive notifications permission denies,
   // returns false otherwise.
@@ -291,6 +295,9 @@ class PermissionsClient {
   // IDR_INFOBAR_TRANSLATE) to an Android drawable resource ID.
   // Returns 0 if a mapping wasn't found.
   virtual int MapToJavaDrawableId(int resource_id);
+
+  // Gets the name of the embedder.
+  virtual const std::u16string GetClientApplicationName() const = 0;
 #else
   // Creates a permission prompt.
   // TODO(crbug.com/40107932): Move the desktop permission prompt
@@ -310,6 +317,30 @@ class PermissionsClient {
   // necessary permission(s) needed to provide a particular permission-gated
   // capability to sites.
   virtual bool CanRequestDevicePermission(ContentSettingsType type) const;
+
+  // Returns true if the |type| can be blocked by device policy, for example, by
+  // the custodian of a supervised user.
+  virtual bool IsPermissionBlockedByDevicePolicy(
+      content::WebContents* web_contents,
+      ContentSetting setting,
+      const content_settings::SettingInfo& info,
+      ContentSettingsType type) const;
+
+  // Returns true if the |type| can be allowed by device policy, for example
+  // admins can use the whitelist to allow device access without prompt.
+  virtual bool IsPermissionAllowedByDevicePolicy(
+      content::WebContents* web_contents,
+      ContentSetting setting,
+      const content_settings::SettingInfo& info,
+      ContentSettingsType type) const;
+
+  // Returns true if the system blocks the access to the specified content type
+  // permission.
+  virtual bool IsSystemDenied(ContentSettingsType type) const;
+
+  // Returns `true` if Chrome can request system-level permission. Returns
+  // `false` otherwise.
+  virtual bool CanPromptSystemPermission(ContentSettingsType type) const;
 
   virtual favicon::FaviconService* GetFaviconService(
       content::BrowserContext* browser_context);

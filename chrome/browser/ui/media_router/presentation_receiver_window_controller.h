@@ -102,6 +102,7 @@ class PresentationReceiverWindowController final
                    const std::string& request_method,
                    base::OnceCallback<void(bool)> callback) final;
   bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
       content::SiteInstance* source_site_instance,
       content::mojom::WindowContainerType window_container_type,
       const GURL& opener_url,

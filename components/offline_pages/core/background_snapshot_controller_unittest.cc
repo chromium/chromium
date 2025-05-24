@@ -50,7 +50,7 @@ BackgroundSnapshotControllerTest::BackgroundSnapshotControllerTest()
       snapshot_started_(true),
       snapshot_count_(0) {}
 
-BackgroundSnapshotControllerTest::~BackgroundSnapshotControllerTest() {}
+BackgroundSnapshotControllerTest::~BackgroundSnapshotControllerTest() = default;
 
 void BackgroundSnapshotControllerTest::SetUp() {
   controller_ =

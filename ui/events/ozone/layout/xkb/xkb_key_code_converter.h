@@ -7,6 +7,8 @@
 
 #include <xkbcommon/xkbcommon.h>
 
+#include "base/component_export.h"
+
 namespace ui {
 
 enum class DomCode : uint32_t;

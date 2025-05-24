@@ -1,0 +1,21 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos",
+      "android"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webauthn.remote_desktop_allowed_origins",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://remotedesktop.google.com",
+          "https://vdi.corp.example"
+        ]
+      ]
+    }
+  }
+]

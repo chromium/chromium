@@ -6,9 +6,12 @@
 #define CONTENT_PUBLIC_TEST_FILE_SYSTEM_CHOOSER_TEST_HELPERS_H_
 
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -30,6 +33,9 @@ struct SelectFileDialogParams {
   base::FilePath default_path;
   std::u16string title;
   std::optional<GURL> caller;
+#if BUILDFLAG(IS_ANDROID)
+  std::vector<std::u16string> accept_types;
+#endif
 };
 
 // A fake ui::SelectFileDialog, which will cancel the file selection instead of

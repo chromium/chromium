@@ -1,0 +1,35 @@
+<!doctype html>
+<title>Not supported module types in source phase imports.</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  setup({allow_uncaught_exception: true});
+
+  const test_load = async_test(
+      "Not supported source phase import types should throw a syntax error/");
+
+  const error_message = "Uncaught SyntaxError: {name} cannot be imported. Only Wasm module imports are supported in the source phase.";
+  window.log = [];
+  window.addEventListener("error", ev => {
+    log.push(ev.message);
+  });
+
+  window.addEventListener("load", test_load.step_func_done(ev => {
+    assert_equals(log[0], error_message.replace("{name}", "./resources/test_module.js"));
+    assert_equals(log[1], error_message.replace("{name}", "./resources/test_module.css"));
+    assert_equals(log[2], error_message.replace("{name}", "./resources/test_module.json"));
+  }));
+</script>
+
+<script type=module onload="log.push('js import succesful')">
+  import source exportedNamesSource from "./resources/test_module.js";
+</script>
+
+<script type=module onload="log.push('css import succesful')">
+  import source exportedNamesSource from "./resources/test_module.css" with { type : "css" };
+</script>
+
+<script type=module onload="log.push('json import succesful')">
+  import source exportedNamesSource from "./resources/test_module.json" with { type : "json" };
+</script>

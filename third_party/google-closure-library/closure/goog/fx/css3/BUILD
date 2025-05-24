@@ -7,12 +7,14 @@ licenses(["notice"])
 closure_js_library(
     name = "fx",
     srcs = ["fx.js"],
+    lenient = True,
     deps = [":transition"],
 )
 
 closure_js_library(
     name = "transition",
     srcs = ["transition.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/fx:transitionbase",

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -105,7 +106,8 @@ class AsyncDocumentSubresourceFilter {
       VerifiedRuleset::Handle* ruleset_handle,
       InitializationParams params,
       base::OnceCallback<void(mojom::ActivationState)>
-          activation_state_callback);
+          activation_state_callback,
+      std::string_view uma_tag);
 
   // Creates a Core and initializes it asynchronously on a |task_runner| using
   // the supplied |inherited_document_origin| (see below) and a VerifiedRuleset
@@ -124,10 +126,10 @@ class AsyncDocumentSubresourceFilter {
   // intact (e.g. the activation level is not kDisabled).
   // |inherited_document_origin| supplies the origin of the new document, which
   // should have been inherited from the same frame as the |activation_state|.
-  AsyncDocumentSubresourceFilter(
-      VerifiedRuleset::Handle* ruleset_handle,
-      const url::Origin& inherited_document_origin,
-      const mojom::ActivationState& activation_state);
+  AsyncDocumentSubresourceFilter(VerifiedRuleset::Handle* ruleset_handle,
+                                 const url::Origin& inherited_document_origin,
+                                 const mojom::ActivationState& activation_state,
+                                 std::string_view uma_tag);
 
   AsyncDocumentSubresourceFilter(const AsyncDocumentSubresourceFilter&) =
       delete;
@@ -225,14 +227,16 @@ class AsyncDocumentSubresourceFilter::Core {
   // Computes mojom::ActivationState from |params| and initializes a DSF using
   // it. Returns the computed activation state.
   mojom::ActivationState Initialize(InitializationParams params,
-                                    VerifiedRuleset* verified_ruleset);
+                                    VerifiedRuleset* verified_ruleset,
+                                    std::string_view uma_tag);
 
   // Initializes a DSF using the provided |activation_state|. Should only be
   // used in certain uncommon situations. See the second
   // AsyncDocumentSubresourceFilter constructor for details.
   void InitializeWithActivation(mojom::ActivationState activation_state,
                                 const url::Origin& document_origin,
-                                VerifiedRuleset* verified_ruleset);
+                                VerifiedRuleset* verified_ruleset,
+                                std::string_view uma_tag);
 
   std::optional<DocumentSubresourceFilter> filter_;
   SEQUENCE_CHECKER(sequence_checker_);

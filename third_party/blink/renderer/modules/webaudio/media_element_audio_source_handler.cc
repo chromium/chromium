@@ -55,7 +55,7 @@ class MediaElementAudioSourceHandlerLocker final {
 MediaElementAudioSourceHandler::MediaElementAudioSourceHandler(
     AudioNode& node,
     HTMLMediaElement& media_element)
-    : AudioHandler(kNodeTypeMediaElementAudioSource,
+    : AudioHandler(NodeType::kNodeTypeMediaElementAudioSource,
                    node,
                    node.context()->sampleRate()),
       media_element_(media_element) {

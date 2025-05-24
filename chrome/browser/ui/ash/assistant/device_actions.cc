@@ -8,9 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/functional/bind.h"
@@ -24,6 +21,9 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "components/prefs/pref_service.h"
@@ -85,13 +85,15 @@ std::vector<AndroidAppInfo> GetAppsInfo() {
   }
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
-    if (!app_info)
+    if (!app_info) {
       continue;
+    }
     AndroidAppInfo android_app_info;
     android_app_info.package_name = app_info->package_name;
     auto package = prefs->GetPackage(app_info->package_name);
-    if (package)
+    if (package) {
       android_app_info.version = package->package_version;
+    }
     android_app_info.localized_app_name = app_info->name;
     android_app_info.intent = app_info->intent_uri;
     android_apps_info.push_back(std::move(android_app_info));
@@ -102,8 +104,9 @@ std::vector<AndroidAppInfo> GetAppsInfo() {
 void NotifyAndroidAppListRefreshed(
     base::ObserverList<ash::assistant::AppListEventSubscriber>* subscribers) {
   std::vector<AndroidAppInfo> android_apps_info = GetAppsInfo();
-  for (auto& subscriber : *subscribers)
+  for (auto& subscriber : *subscribers) {
     subscriber.OnAndroidAppListRefreshed(android_apps_info);
+  }
 }
 
 }  // namespace
@@ -176,8 +179,9 @@ void DeviceActions::SetSwitchAccessEnabled(bool enabled) {
 
 bool DeviceActions::OpenAndroidApp(const AndroidAppInfo& app_info) {
   auto status = delegate_->GetAndroidAppStatus(app_info.package_name);
-  if (status != AppStatus::kAvailable)
+  if (status != AppStatus::kAvailable) {
     return false;
+  }
 
   auto* app = ARC_GET_INSTANCE_FOR_METHOD(
       arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
@@ -223,8 +227,9 @@ void DeviceActions::AddAndFireAppListEventSubscriber(
 
   app_list_subscribers_.AddObserver(subscriber);
 
-  if (prefs && !scoped_prefs_observations_.IsObservingSource(prefs))
+  if (prefs && !scoped_prefs_observations_.IsObservingSource(prefs)) {
     scoped_prefs_observations_.AddObservation(prefs);
+  }
 }
 
 void DeviceActions::RemoveAppListEventSubscriber(
@@ -235,8 +240,9 @@ void DeviceActions::RemoveAppListEventSubscriber(
 std::optional<std::string> DeviceActions::GetAndroidAppLaunchIntent(
     const AndroidAppInfo& app_info) {
   auto status = delegate_->GetAndroidAppStatus(app_info.package_name);
-  if (status != AppStatus::kAvailable)
+  if (status != AppStatus::kAvailable) {
     return std::nullopt;
+  }
 
   return GetLaunchIntent(std::move(app_info));
 }

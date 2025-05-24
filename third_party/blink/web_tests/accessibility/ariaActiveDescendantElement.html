@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="contenteditable-combobox" role="combobox" contenteditable="true"
+    aria-expanded="true" aria-haspopup="menu" aria-autocomplete="list">
+    <ul id="list1" role="listbox">
+        <li id="list1-option1" role="option">Option 1</li>
+        <li id="list1-option2" role="option">Option 2</li>
+        <li id="list1-option3" role="option">Option 3</li>
+    </ul>
+</div>
+
+<input id="input-combobox" role="combobox" type="text" aria-expanded="true"
+    aria-haspopup="menu" aria-autocomplete="list" aria-owns="list2">
+
+<ul id="list2" role="listbox">
+    <li id="list2-option1" role="option">Option 1</li>
+    <li id="list2-option2" role="option">Option 2</li>
+    <li id="list2-option3" role="option">Option 3</li>
+</ul>
+
+<input id="input-searchbox" role="combobox" type="search"
+       aria-expanded="true" aria-haspopup="menu"
+       aria-autocomplete="list" aria-owns="list3">
+<ul id="list3" role="listbox">
+    <li id="list3-option1" role="option">Option 1</li>
+    <li id="list3-option2" role="option">Option 2</li>
+    <li id="list3-option3" role="option">Option 3</li>
+</ul>
+
+<textarea id="textarea-combobox" role="combobox" aria-expanded="true"
+          aria-haspopup="menu" aria-autocomplete="list" aria-owns="list4">
+</textarea>
+<ul id="list4" role="listbox">
+    <li id="list4-option1" role="option">Option 1</li>
+    <li id="list4-option2" role="option">Option 2</li>
+    <li id="list4-option3" role="option">Option 3</li>
+</ul>
+
+<div id="combobox-composite-widget" role="combobox" aria-expanded="true"
+     aria-haspopup="menu" aria-autocomplete="list">
+  <input id="input-type-text"  type="text" aria-controls="list5">
+</div>
+<ul id="list5" role="listbox">
+    <li id="list5-option1" role="option">Option 1</li>
+    <li id="list5-option2" role="option">Option 2</li>
+    <li id="list5-option3" role="option">Option 3</li>
+</ul>
+
+<script>
+function testExpectations(t, widgetId, textboxId, listboxId) {
+    console.log('testExpectations ' + widgetId);
+    var listbox = document.getElementById(listboxId);
+    var textbox = document.getElementById(textboxId);
+    textbox.focus();
+
+    var widget = document.getElementById(widgetId);
+
+    var axWidget = accessibilityController.accessibleElementById(widgetId);
+    var axTextbox = accessibilityController.accessibleElementById(textboxId);
+    var axListbox = accessibilityController.accessibleElementById(listboxId);
+
+    assert_true(axWidget.isExpanded, widgetId + '.isExpanded');
+    assert_equals(axWidget.hasPopup, 'menu');
+
+    for (let i = 1; i <= 3; i++) {
+        let selectedId = listboxId + '-option' + i;
+        let selected = document.getElementById(selectedId);
+        let axSelected = accessibilityController.accessibleElementById(selectedId);
+        assert_true(axSelected.isSelectable, selectedId + '.isSelectable');
+        assert_false(axSelected.isSelected,
+                     selectedId + '.isSelected before ariaActiveDesecendantElement set');
+        textbox.ariaActiveDescendantElement = selected;
+        assert_true(axSelected.isSelected,
+                    selectedId + '.isSelected after ariaActiveDesecendantElement set');
+        assert_true(axTextbox.isFocused, widgetId + '.isFocused');
+        textbox.ariaActiveDescendantElement = null;
+        assert_false(axSelected.isSelected,
+                    selectedId + '.isSelected after ariaActiveDesecendantElement removed');
+    }
+    testNext(t);
+}
+
+var idsToTest = [
+    [ 'contenteditable-combobox', 'contenteditable-combobox', 'list1' ],
+    [ 'input-combobox', 'input-combobox', 'list2' ],
+    [ 'input-searchbox', 'input-searchbox', 'list3' ],
+    [ 'textarea-combobox', 'textarea-combobox', 'list4' ],
+    [ 'combobox-composite-widget', 'input-type-text', 'list5' ] ];
+
+function testNext(t) {
+    if (idsToTest.length == 0)
+        t.done();
+    let nextIds = idsToTest.shift();
+    t.step(() => { testExpectations(t, nextIds[0], nextIds[1], nextIds[2]) });
+}
+
+async_test((t) => {
+    testNext(t);
+}, 'Changing ariaActiveDescendantElement correctly sets selected element');
+
+</script>
+
+<!-- Test illegal spaces in id attribute, to make sure it doesn't crash/assert
+     and that the getter returns the correct element -->
+<input id="input-combobox3" role="combobox" type="text" aria-expanded="true"
+       aria-haspopup="menu" aria-autocomplete="list" aria-owns="list3"
+       aria-activedescendant="list3 option2">
+
+<ul id="list3" role="listbox">
+    <li id="list3 option1" role="option">Option 1</li>
+    <li id="list3 option2" role="option">Option 2</li>
+    <li id="list3 option3" role="option">Option 3</li>
+</ul>
+
+<script>
+
+test((t) => {
+  let combobox3 = document.getElementById("input-combobox3");
+  let list3option2 = document.getElementById("list3 option2");
+  assert_equals(list3option2, combobox3.ariaActiveDescendantElement);
+}, "Spaces in IDs don't prevent aria-activedescendant from being computed correctly");
+
+</script>

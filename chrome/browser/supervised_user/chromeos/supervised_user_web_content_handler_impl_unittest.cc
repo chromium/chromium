@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/parent_access.mojom.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -95,7 +96,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kApproved, 1);
+      supervised_user::LocalApprovalResult::kApproved, 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::WebContentHandler::
           GetLocalApprovalDurationMillisecondsHistogram(),
@@ -138,7 +139,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
 
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kDeclined, 1);
+      supervised_user::LocalApprovalResult::kDeclined, 1);
   histogram_tester.ExpectTotalCount(
       supervised_user::WebContentHandler::
           GetLocalApprovalDurationMillisecondsHistogram(),
@@ -186,7 +187,7 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       0);
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kCanceled, 1);
+      supervised_user::LocalApprovalResult::kCanceled, 1);
 }
 
 TEST_F(SupervisedUserWebContentHandlerImplTest,
@@ -227,5 +228,5 @@ TEST_F(SupervisedUserWebContentHandlerImplTest,
       0);
   histogram_tester.ExpectUniqueSample(
       supervised_user::WebContentHandler::GetLocalApprovalResultHistogram(),
-      supervised_user::WebContentHandler::LocalApprovalResult::kError, 1);
+      supervised_user::LocalApprovalResult::kError, 1);
 }

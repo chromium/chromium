@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
 
+#include <array>
 #include <utility>
 
 #include "base/files/file.h"
@@ -27,7 +23,7 @@ constexpr base::FilePath::CharType kExtractedBinFileName[] =
     FILE_PATH_LITERAL("extracted.bin");
 
 // https://www.gnu.org/software/tar/manual/html_node/Standard.html
-constexpr char kExpectedMagic[5] = {'u', 's', 't', 'a', 'r'};
+constexpr unsigned char kExpectedMagic[5] = {'u', 's', 't', 'a', 'r'};
 constexpr int kMagicOffset = 257;
 
 }  // namespace
@@ -43,13 +39,13 @@ bool TarExtractor::IsTarFile(const base::FilePath& image_path) {
 
   // Tar header record is always 512 bytes, so if the file is shorter than that,
   // it's not tar.
-  char header[512] = {};
-  if (src_file.ReadAtCurrentPos(header, sizeof(header)) != sizeof(header)) {
+  std::array<unsigned char, 512> header = {};
+  if (src_file.ReadAtCurrentPos(header).value_or(0) != std::size(header)) {
     return false;
   }
 
-  return std::equal(kExpectedMagic, kExpectedMagic + sizeof(kExpectedMagic),
-                    header + kMagicOffset);
+  return std::equal(std::begin(kExpectedMagic), std::end(kExpectedMagic),
+                    &header[kMagicOffset]);
 }
 
 // static

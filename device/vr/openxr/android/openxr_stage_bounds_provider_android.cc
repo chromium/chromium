@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 #include "device/vr/openxr/android/openxr_stage_bounds_provider_android.h"
 
+#include <algorithm>
 #include <set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -54,11 +54,11 @@ std::vector<gfx::Point3F> OpenXrStageBoundsProviderAndroid::GetStageBounds() {
   // the vector backwards.
   std::vector<gfx::Point3F> stage_bounds;
   stage_bounds.reserve(vertices_count_output);
-  base::ranges::transform(boundary_vertices.rbegin(), boundary_vertices.rend(),
-                          std::back_inserter(stage_bounds),
-                          [](const XrVector2f& xr_coord) {
-                            return gfx::Point3F(xr_coord.x, 0.0, xr_coord.y);
-                          });
+  std::ranges::transform(boundary_vertices.rbegin(), boundary_vertices.rend(),
+                         std::back_inserter(stage_bounds),
+                         [](const XrVector2f& xr_coord) {
+                           return gfx::Point3F(xr_coord.x, 0.0, xr_coord.y);
+                         });
 
   return stage_bounds;
 }

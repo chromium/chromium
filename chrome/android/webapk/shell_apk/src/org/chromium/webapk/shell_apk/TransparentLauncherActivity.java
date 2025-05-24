@@ -8,10 +8,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.SystemClock;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
+
 /** UI-less activity which launches host browser. */
+@NullMarked
 public class TransparentLauncherActivity extends Activity {
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         long activityStartTimeMs = SystemClock.elapsedRealtime();
         super.onCreate(savedInstanceState);
 
@@ -20,8 +25,10 @@ public class TransparentLauncherActivity extends Activity {
                         new LaunchHostBrowserSelector.Callback() {
                             @Override
                             public void onBrowserSelected(
-                                    String hostBrowserPackageName, boolean dialogShown) {
-                                if (hostBrowserPackageName == null) {
+                                    @Nullable PackageNameAndComponentName
+                                            hostBrowserPackageNameAndComponentName,
+                                    boolean dialogShown) {
+                                if (hostBrowserPackageNameAndComponentName == null) {
                                     finish();
                                     return;
                                 }
@@ -29,7 +36,7 @@ public class TransparentLauncherActivity extends Activity {
                                         HostBrowserLauncherParams.createForIntent(
                                                 TransparentLauncherActivity.this,
                                                 getIntent(),
-                                                hostBrowserPackageName,
+                                                hostBrowserPackageNameAndComponentName,
                                                 dialogShown,
                                                 activityStartTimeMs,
                                                 /* splashShownTimeMs= */ -1);
@@ -40,7 +47,7 @@ public class TransparentLauncherActivity extends Activity {
                         });
     }
 
-    protected void onHostBrowserSelected(HostBrowserLauncherParams params) {
+    protected void onHostBrowserSelected(@Nullable HostBrowserLauncherParams params) {
         if (params != null) {
             WebApkUtils.grantUriPermissionToHostBrowserIfShare(getApplicationContext(), params);
             HostBrowserLauncher.launch(this, params);

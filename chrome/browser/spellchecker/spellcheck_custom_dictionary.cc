@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 
 #include <stddef.h>
@@ -200,11 +205,9 @@ int SanitizeWordsToRemove(const std::set<std::string>& existing,
 
 }  // namespace
 
-SpellcheckCustomDictionary::Change::Change() {
-}
+SpellcheckCustomDictionary::Change::Change() = default;
 
-SpellcheckCustomDictionary::Change::~Change() {
-}
+SpellcheckCustomDictionary::Change::~Change() = default;
 
 void SpellcheckCustomDictionary::Change::AddWord(const std::string& word) {
   to_add_.insert(word);
@@ -241,8 +244,7 @@ SpellcheckCustomDictionary::SpellcheckCustomDictionary(
           dictionary_directory_name.Append(chrome::kCustomDictionaryFileName)),
       is_loaded_(false) {}
 
-SpellcheckCustomDictionary::~SpellcheckCustomDictionary() {
-}
+SpellcheckCustomDictionary::~SpellcheckCustomDictionary() = default;
 
 const std::set<std::string>& SpellcheckCustomDictionary::GetWords() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -418,7 +420,7 @@ base::WeakPtr<syncer::SyncableService> SpellcheckCustomDictionary::AsWeakPtr() {
 SpellcheckCustomDictionary::LoadFileResult::LoadFileResult()
     : is_valid_file(false) {}
 
-SpellcheckCustomDictionary::LoadFileResult::~LoadFileResult() {}
+SpellcheckCustomDictionary::LoadFileResult::~LoadFileResult() = default;
 
 // static
 std::unique_ptr<SpellcheckCustomDictionary::LoadFileResult>

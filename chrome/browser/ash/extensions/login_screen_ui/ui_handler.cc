@@ -41,7 +41,6 @@ const char kErrorNotOnLoginOrLockScreen[] =
 
 const char kExtensionNameImprivata[] = "Imprivata OneSign";
 const char kExtensionNameImprivataTest[] = "LoginScreenUi test extension";
-const char kExtensionNameUnknown[] = "UNKNOWN EXTENSION";
 
 std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
   const extensions::Feature* imprivata_login_screen_extension =
@@ -55,8 +54,7 @@ std::string GetHardcodedExtensionName(const extensions::Extension* extension) {
   if (extension->id() == "oclffehlkdgibkainkilopaalpdobkan") {
     return kExtensionNameImprivataTest;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kExtensionNameUnknown;
+  NOTREACHED();
 }
 
 bool CanUseLoginScreenUiApi(const extensions::Extension* extension) {

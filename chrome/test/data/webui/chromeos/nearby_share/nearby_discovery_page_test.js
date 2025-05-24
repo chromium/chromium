@@ -11,7 +11,6 @@ import {ShareType} from 'chrome://nearby/shared/nearby_share_share_type.mojom-we
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ShareTargetType} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_target_types.mojom-webui.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 
@@ -31,16 +30,6 @@ suite('DiscoveryPageTest', function() {
   let nextId = 1;
 
   /**
-   * Compares two unguessable tokens.
-   * @param {!UnguessableToken} a
-   * @param {!UnguessableToken} b
-   */
-  function assertTokensEqual(a, b) {
-    assertEquals(a.high, b.high);
-    assertEquals(a.low, b.low);
-  }
-
-  /**
    * Compares two share targets.
    * @param {?ShareTarget} a
    * @param {?ShareTarget} b
@@ -48,7 +37,7 @@ suite('DiscoveryPageTest', function() {
   function assertShareTargetsEqual(a, b) {
     assertTrue(!!a);
     assertTrue(!!b);
-    assertTokensEqual(a.id, b.id);
+    assertEquals(a.id, b.id);
   }
 
   /**
@@ -240,7 +229,8 @@ suite('DiscoveryPageTest', function() {
    */
   function createShareTarget(name, for_self_share = false) {
     return {
-      id: {high: BigInt(0), low: BigInt(nextId++)},
+      id: '0'.repeat(16) +
+          (nextId++).toString(16).padStart(16, '0').toUpperCase(),
       name,
       type: ShareTargetType.kPhone,
       imageUrl: {
@@ -356,7 +346,7 @@ suite('DiscoveryPageTest', function() {
     discoveryPageElement.selectedShareTarget = created;
     getButton('#actionButton').click();
     const selectedId = await discoveryManager.whenCalled('selectShareTarget');
-    assertTokensEqual(created.id, selectedId);
+    assertEquals(created.id, selectedId);
   });
 
   test('selects share target with error', async function() {
@@ -401,7 +391,7 @@ suite('DiscoveryPageTest', function() {
 
     discoveryPageElement.selectShareTargetForTesting(targets[0]);
     const selectedId = await discoveryManager.whenCalled('selectShareTarget');
-    assertTokensEqual(created.id, selectedId);
+    assertEquals(created.id, selectedId);
 
     await discoveryManager.whenCalled('selectShareTarget');
     assertEquals('confirmation', eventDetail.page);

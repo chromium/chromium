@@ -15,8 +15,9 @@ WritableSharedMemoryRegion::CreateFunction*
 
 // static
 WritableSharedMemoryRegion WritableSharedMemoryRegion::Create(size_t size) {
-  if (create_hook_)
+  if (create_hook_) {
     return create_hook_(size);
+  }
 
   subtle::PlatformSharedMemoryRegion handle =
       subtle::PlatformSharedMemoryRegion::CreateWritable(size);
@@ -41,8 +42,9 @@ WritableSharedMemoryRegion::TakeHandleForSerialization(
 ReadOnlySharedMemoryRegion WritableSharedMemoryRegion::ConvertToReadOnly(
     WritableSharedMemoryRegion region) {
   subtle::PlatformSharedMemoryRegion handle = std::move(region.handle_);
-  if (!handle.ConvertToReadOnly())
+  if (!handle.ConvertToReadOnly()) {
     return {};
+  }
 
   return ReadOnlySharedMemoryRegion::Deserialize(std::move(handle));
 }
@@ -50,8 +52,9 @@ ReadOnlySharedMemoryRegion WritableSharedMemoryRegion::ConvertToReadOnly(
 UnsafeSharedMemoryRegion WritableSharedMemoryRegion::ConvertToUnsafe(
     WritableSharedMemoryRegion region) {
   subtle::PlatformSharedMemoryRegion handle = std::move(region.handle_);
-  if (!handle.ConvertToUnsafe())
+  if (!handle.ConvertToUnsafe()) {
     return {};
+  }
 
   return UnsafeSharedMemoryRegion::Deserialize(std::move(handle));
 }
@@ -72,12 +75,14 @@ WritableSharedMemoryMapping WritableSharedMemoryRegion::MapAt(
     uint64_t offset,
     size_t size,
     SharedMemoryMapper* mapper) const {
-  if (!IsValid())
+  if (!IsValid()) {
     return {};
+  }
 
   auto result = handle_.MapAt(offset, size, mapper);
-  if (!result.has_value())
+  if (!result.has_value()) {
     return {};
+  }
 
   return WritableSharedMemoryMapping(result.value(), size, handle_.GetGUID(),
                                      mapper);

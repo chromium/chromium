@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.single_tab;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** List of the single tab view properties. */
+@NullMarked
 class SingleTabViewProperties {
     private SingleTabViewProperties() {}
 

@@ -9,12 +9,14 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "base/apple/scoped_dispatch_object.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_histogram.h"
 
 namespace content {
@@ -27,17 +29,19 @@ namespace content {
 // use which one.
 class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
  public:
+  using ChangeEvent = FilePathWatcherFSEventsChangeTracker::ChangeEvent;
+
+  // We only call FSEventStreamCreate once per FilePathWatcher. This number is
+  // used to report usage. If more FSEventStreamCreate calls are added, this
+  // number must be updated.
+  static constexpr size_t kNumberOfFSEventStreamCreateCalls = 1;
+
   FilePathWatcherFSEvents();
   FilePathWatcherFSEvents(const FilePathWatcherFSEvents&) = delete;
   FilePathWatcherFSEvents& operator=(const FilePathWatcherFSEvents&) = delete;
   ~FilePathWatcherFSEvents() override;
 
-  // Represents a single FSEvents event.
-  struct ChangeEvent {
-    FSEventStreamEventFlags event_flags;
-    base::FilePath event_path;
-    std::optional<uint64_t> event_inode;
-  };
+  size_t current_usage() const override;
 
   // FilePathWatcher::PlatformDelegate overrides.
   bool Watch(const base::FilePath& path,
@@ -46,7 +50,8 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   bool WatchWithChangeInfo(
       const base::FilePath& path,
       const WatchOptions& options,
-      const FilePathWatcher::CallbackWithChangeInfo& callback) override;
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override;
   void Cancel() override;
 
  private:
@@ -62,9 +67,6 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   void OnFilePathsChanged(bool is_root_changed_event,
                           FSEventStreamEventId root_change_at,
                           std::map<FSEventStreamEventId, ChangeEvent> events);
-
-  // Called on the watcher task runner thread to dispatch path events.
-  void DispatchEvents(std::map<FSEventStreamEventId, ChangeEvent> events);
 
   // (Re-)Initialize the event stream to start reporting events from
   // |start_event|.
@@ -85,8 +87,7 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   bool StartEventStream(FSEventStreamEventId start_event,
                         const base::FilePath& path);
 
-  bool recursive_watch_ = false;
-  bool report_modified_path_ = false;
+  std::optional<FilePathWatcherFSEventsChangeTracker> change_tracker_;
 
   // Callback to notify upon changes.
   // (Only accessed from the task_runner() thread).
@@ -97,11 +98,6 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
 
   base::FilePath target_;
   base::FilePath resolved_target_;
-
-  // Signals whether to check for a target deletion or creation event, and
-  // coalesce the event if needed.
-  bool coalesce_next_target_deletion_ = false;
-  bool coalesce_next_target_creation_ = false;
 
   // Backend stream we receive event callbacks from (strong reference).
   // (Only accessed from the libdispatch queue.)

@@ -5,8 +5,6 @@
 #include "ios/chrome/browser/language/model/url_language_histogram_factory.h"
 
 #include "base/no_destructor.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -18,32 +16,22 @@ UrlLanguageHistogramFactory* UrlLanguageHistogramFactory::GetInstance() {
 }
 
 // static
-language::UrlLanguageHistogram* UrlLanguageHistogramFactory::GetForBrowserState(
-    ProfileIOS* const profile) {
-  return GetForProfile(profile);
-}
-
-// static
 language::UrlLanguageHistogram* UrlLanguageHistogramFactory::GetForProfile(
     ProfileIOS* const profile) {
-  return static_cast<language::UrlLanguageHistogram*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<language::UrlLanguageHistogram>(
+      profile, /*create=*/true);
 }
 
 UrlLanguageHistogramFactory::UrlLanguageHistogramFactory()
-    : BrowserStateKeyedServiceFactory(
-          "UrlLanguageHistogram",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("UrlLanguageHistogram") {}
 
 UrlLanguageHistogramFactory::~UrlLanguageHistogramFactory() {}
 
 std::unique_ptr<KeyedService>
 UrlLanguageHistogramFactory::BuildServiceInstanceFor(
     web::BrowserState* const context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<language::UrlLanguageHistogram>(
-      browser_state->GetPrefs());
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return std::make_unique<language::UrlLanguageHistogram>(profile->GetPrefs());
 }
 
 void UrlLanguageHistogramFactory::RegisterBrowserStatePrefs(

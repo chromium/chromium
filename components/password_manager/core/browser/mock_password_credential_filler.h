@@ -22,7 +22,9 @@ class MockPasswordCredentialFiller final : public PasswordCredentialFiller {
 
   MOCK_METHOD(void,
               FillUsernameAndPassword,
-              (const std::u16string&, const std::u16string&),
+              (const std::u16string&,
+               const std::u16string&,
+               base::OnceCallback<void(bool)>),
               (override));
   MOCK_METHOD(void, UpdateTriggerSubmission, (bool), (override));
   MOCK_METHOD(bool, ShouldTriggerSubmission, (), (const override));
@@ -35,7 +37,6 @@ class MockPasswordCredentialFiller final : public PasswordCredentialFiller {
               (),
               (const override));
   MOCK_METHOD(GURL, GetFrameUrl, (), (const override));
-  MOCK_METHOD(void, Dismiss, (ToShowVirtualKeyboard), (override));
 
   base::WeakPtr<PasswordCredentialFiller> AsWeakPtr() override;
 

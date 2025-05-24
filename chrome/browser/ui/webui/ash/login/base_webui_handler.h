@@ -18,7 +18,6 @@
 #include "components/login/base_screen_handler_utils.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "ui/gfx/native_widget_types.h"
 
 namespace login {
 class LocalizedValuesBuilder;

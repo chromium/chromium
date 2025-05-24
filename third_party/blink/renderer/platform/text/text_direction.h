@@ -66,8 +66,7 @@ inline base::i18n::TextDirection ToBaseTextDirection(TextDirection direction) {
     case TextDirection::kRtl:
       return base::i18n::TextDirection::RIGHT_TO_LEFT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::i18n::TextDirection::UNKNOWN_DIRECTION;
+  NOTREACHED();
 }
 
 }  // namespace blink

@@ -203,7 +203,7 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
     __weak __typeof(self) weakSelf = self;
     UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                      UITraitCollection* previousCollection) {
@@ -226,6 +226,7 @@ const CGFloat kTitleLabelLineHeightMultiple = 1.3;
 #endif
 
 - (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
   if (self.URLIsExpanded) {
     self.expandURLButton.hidden = YES;
     self.URLLabel.numberOfLines = 0;

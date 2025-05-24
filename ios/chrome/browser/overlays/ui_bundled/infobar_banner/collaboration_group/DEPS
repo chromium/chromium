@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/collaboration/model/messaging/infobar",
+  "+ios/chrome/browser/share_kit/model",
+]

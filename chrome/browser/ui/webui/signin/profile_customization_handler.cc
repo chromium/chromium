@@ -149,15 +149,17 @@ void ProfileCustomizationHandler::HandleDone(const base::Value::List& args) {
                                            /*is_default_name=*/false);
   }
 
-  if (completion_callback_)
+  if (completion_callback_) {
     std::move(completion_callback_).Run(CustomizationResult::kDone);
+  }
 }
 
 void ProfileCustomizationHandler::HandleSkip(const base::Value::List& args) {
   CHECK_EQ(0u, args.size());
 
-  if (completion_callback_)
+  if (completion_callback_) {
     std::move(completion_callback_).Run(CustomizationResult::kSkip);
+  }
 }
 
 void ProfileCustomizationHandler::HandleDeleteProfile(
@@ -185,8 +187,9 @@ void ProfileCustomizationHandler::HandleSetAvatarIcon(
 void ProfileCustomizationHandler::UpdateProfileInfo(
     const base::FilePath& profile_path) {
   DCHECK(IsJavascriptAllowed());
-  if (profile_path != profile_->GetPath())
+  if (profile_path != profile_->GetPath()) {
     return;
+  }
   FireWebUIListener("on-profile-info-changed", GetProfileInfoValue());
 }
 
@@ -203,9 +206,11 @@ base::Value::Dict ProfileCustomizationHandler::GetProfileInfoValue() {
                                    avatar_icon_size, avatar_icon_size);
   dict.Set("pictureUrl", webui::GetBitmapDataUrl(icon.AsBitmap()));
   dict.Set("isManaged", AccountInfo::IsManaged(entry->GetHostedDomain()));
+  dict.Set("hasEnterpriseLabel", !entry->GetEnterpriseProfileLabel().empty());
   std::u16string gaia_name = entry->GetGAIANameToDisplay();
-  if (gaia_name.empty())
+  if (gaia_name.empty()) {
     gaia_name = entry->GetLocalProfileName();
+  }
   dict.Set("welcomeTitle", l10n_util::GetStringFUTF8(
                                IDS_PROFILE_CUSTOMIZATION_WELCOME, gaia_name));
   return dict;

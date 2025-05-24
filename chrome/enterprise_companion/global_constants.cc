@@ -15,6 +15,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -51,8 +52,6 @@ class GlobalConstantsImpl : public GlobalConstants {
     ApplyOverrides();
 #endif
   }
-
-  ~GlobalConstantsImpl() override = default;
 
   GURL CrashUploadURL() const override { return crash_upload_url_; }
 
@@ -147,6 +146,7 @@ class GlobalConstantsImpl : public GlobalConstants {
                      GURL& value) {
     const std::string* str = overrides.FindString(key);
     if (str) {
+      VLOG(2) << __func__ << ": " << key << " = " << *str;
       value = GURL(*str);
     }
   }
@@ -156,6 +156,7 @@ class GlobalConstantsImpl : public GlobalConstants {
                      base::TimeDelta& value) {
     std::optional<int> override_val = overrides.FindInt(key);
     if (override_val) {
+      VLOG(2) << __func__ << ": " << key << " = " << *override_val;
       value = base::Seconds(*override_val);
     }
   }
@@ -166,7 +167,8 @@ class GlobalConstantsImpl : public GlobalConstants {
                      std::wstring& value) {
     const std::string* str = overrides.FindString(key);
     if (str) {
-      value = base::ASCIIToWide(*str);
+      VLOG(2) << __func__ << ": " << key << " = " << *str;
+      value = base::UTF8ToWide(*str);
     }
   }
 #endif
@@ -181,7 +183,7 @@ std::optional<base::FilePath> GetOverridesFilePath() {
     VLOG(1) << "Can't get overrides file path: can't get install dir.";
     return std::nullopt;
   }
-  return install_dir->AppendASCII("overrides.json");
+  return install_dir->Append(FILE_PATH_LITERAL("overrides.json"));
 }
 
 const GlobalConstants* GetGlobalConstants() {

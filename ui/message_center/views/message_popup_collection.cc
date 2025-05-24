@@ -7,10 +7,10 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -156,7 +156,7 @@ void MessagePopupCollection::AnimateResize() {
 
 MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
     const std::string& notification_id) {
-  auto it = base::ranges::find_if(popup_items_, [&](const auto& child) {
+  auto it = std::ranges::find_if(popup_items_, [&](const auto& child) {
     // Exit early if the popup ptr has been set to nullptr by
     // `NotifyPopupClosed` but has not been cleared from `popup_items_`.
     if (!child.popup)
@@ -179,8 +179,8 @@ MessageView* MessagePopupCollection::GetMessageViewForNotificationId(
 void MessagePopupCollection::ConvertNotificationViewToGroupedNotificationView(
     const std::string& ungrouped_notification_id,
     const std::string& new_grouped_notification_id) {
-  auto it = base::ranges::find(popup_items_, ungrouped_notification_id,
-                               &PopupItem::id);
+  auto it = std::ranges::find(popup_items_, ungrouped_notification_id,
+                              &PopupItem::id);
   if (it == popup_items_.end())
     return;
 
@@ -192,7 +192,7 @@ void MessagePopupCollection::ConvertGroupedNotificationViewToNotificationView(
     const std::string& grouped_notification_id,
     const std::string& new_single_notification_id) {
   auto it =
-      base::ranges::find(popup_items_, grouped_notification_id, &PopupItem::id);
+      std::ranges::find(popup_items_, grouped_notification_id, &PopupItem::id);
   if (it == popup_items_.end())
     return;
 

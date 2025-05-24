@@ -314,12 +314,12 @@ goog.dom.annotate.helpAnnotateText_ = function(
       termHits[termIndexOfNextHit].shift();
 
       // Append everything from the end of the last hit up to this one.
-      html.push(text.substr(pos, posOfNextHit - pos));
+      html.push(text.slice(pos, posOfNextHit));
 
       // Append the annotated term.
       var termLen = terms[termIndexOfNextHit][0].length;
-      var termHtml =
-          goog.html.SafeHtml.htmlEscape(text.substr(posOfNextHit, termLen));
+      var termHtml = goog.html.SafeHtml.htmlEscape(
+          text.slice(posOfNextHit, posOfNextHit + termLen));
       html.push(
           annotateFn(goog.asserts.assertNumber(termIndexOfNextHit), termHtml));
 
@@ -327,7 +327,7 @@ goog.dom.annotate.helpAnnotateText_ = function(
     }
 
     // Append everything after the last hit.
-    html.push(text.substr(pos));
+    html.push(text.slice(pos));
     return goog.html.SafeHtml.concat(html);
   } else {
     return null;

@@ -58,7 +58,7 @@ TEST_F(LayoutSVGForeignObjectTest, DivInForeignObject) {
   EXPECT_EQ(svg, HitTest(450, 350));
 
   // Rect based hit testing
-  auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
+  auto& results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
   int count = 0;
   EXPECT_EQ(3u, results.size());
   for (auto result : results) {
@@ -128,7 +128,7 @@ TEST_F(LayoutSVGForeignObjectTest, IframeInForeignObject) {
   EXPECT_EQ(svg, HitTest(450, 400));
 
   // Rect based hit testing
-  auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
+  auto& results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
   int count = 0;
   EXPECT_EQ(7u, results.size());
   for (auto result : results) {
@@ -195,7 +195,7 @@ TEST_F(LayoutSVGForeignObjectTest, HitTestZoomedForeignObject) {
   EXPECT_EQ(svg, HitTest(290, 286 + 256));
 
   // Rect based hit testing
-  auto results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
+  auto& results = RectBasedHitTest(PhysicalRect(0, 0, 300, 300));
   int count = 0;
   EXPECT_EQ(3u, results.size());
   for (auto result : results) {

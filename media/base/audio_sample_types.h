@@ -66,7 +66,7 @@ class FloatSampleTypeTraits {
     // level drivers that may not properly handle these values.
     // Note: Passing NaN to `std::clamp()` is UB.
     return std::isnan(source_value)
-               ? kMinValue
+               ? kZeroPointValue
                : std::clamp(static_cast<SampleType>(source_value), kMinValue,
                             kMaxValue);
   }

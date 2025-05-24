@@ -39,6 +39,7 @@
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors_error_status.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom-shared.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -50,12 +51,16 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
+class FeatureContext;
+class UnencodedDigest;
 class ResourceLoadTiming;
 class ServiceWorkerRouterInfo;
+class UseCounter;
 
 // A ResourceResponse is a "response" object used in blink. Conceptually
 // it is https://fetch.spec.whatwg.org/#concept-response, but it contains
@@ -156,6 +161,7 @@ class PLATFORM_EXPORT ResourceResponse final {
   bool IsAttachment() const;
 
   AtomicString HttpContentType() const;
+  AtomicString GetFilteredHttpContentEncoding() const;
 
   // These functions return parsed values of the corresponding response headers.
   // NaN means that the header was not present or had invalid value.
@@ -164,12 +170,13 @@ class PLATFORM_EXPORT ResourceResponse final {
   bool CacheControlContainsMustRevalidate() const;
   bool HasCacheValidatorFields() const;
   std::optional<base::TimeDelta> CacheControlMaxAge() const;
-  std::optional<base::Time> Date() const;
+  std::optional<base::Time> Date(UseCounter&) const;
   std::optional<base::TimeDelta> Age() const;
-  std::optional<base::Time> Expires() const;
-  std::optional<base::Time> LastModified() const;
+  std::optional<base::Time> Expires(UseCounter&) const;
+  std::optional<base::Time> LastModified(UseCounter&) const;
   // Will always return values >= 0.
   base::TimeDelta CacheControlStaleWhileRevalidate() const;
+  std::optional<blink::UnencodedDigest> UnencodedDigest(const FeatureContext*) const;
 
   unsigned ConnectionID() const;
   void SetConnectionID(unsigned);
@@ -468,6 +475,14 @@ class PLATFORM_EXPORT ResourceResponse final {
         should_use_source_hash_for_js_code_cache;
   }
 
+  void SetDeviceBoundSessionUsage(
+      network::mojom::DeviceBoundSessionUsage usage) {
+    device_bound_session_usage_ = usage;
+  }
+  network::mojom::DeviceBoundSessionUsage DeviceBoundSessionUsage() const {
+    return device_bound_session_usage_;
+  }
+
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -499,6 +514,9 @@ class PLATFORM_EXPORT ResourceResponse final {
   network::mojom::PrivateNetworkAccessPreflightResult
       private_network_access_preflight_result_ =
           network::mojom::PrivateNetworkAccessPreflightResult::kNone;
+
+  network::mojom::DeviceBoundSessionUsage device_bound_session_usage_ =
+      network::mojom::DeviceBoundSessionUsage::kUnknown;
 
   bool was_cached_ : 1;
   bool connection_reused_ : 1;

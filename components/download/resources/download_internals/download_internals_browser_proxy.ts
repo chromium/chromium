@@ -60,6 +60,7 @@ export interface ServiceStatus {
 
 export interface ServiceEntry {
   client: string;
+  file_path: string;
   guid: string;
   state: ServiceEntryState;
   url: string;

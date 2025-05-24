@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <string>
 #include <vector>
 
@@ -1839,7 +1835,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
   // Remove the last "/""
   test_server_origin.pop_back();
 
-  struct {
+  struct TestCases {
     // Set in the main SXG's inner response header.
     // Example:
     //   Link: <http://***/**.data>;rel="preload";as="fetch";crossorigin
@@ -1859,7 +1855,8 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
     // is served from the server without SXG, the result must be "server". If
     // failed to fetch the data, the result must be "failed".
     const char* const expected_result;
-  } kTestCases[] = {
+  };
+  auto kTestCases = std::to_array<TestCases>({
       // - If crossorigin is not set in the preload header, cross origin fetch
       //   goes to the server. It is because the mode of the preload request
       //   ("no-cors") and the mode of the fetch request ("cors") doesn't match.
@@ -1920,7 +1917,7 @@ IN_PROC_BROWSER_TEST_F(SignedExchangeSubresourcePrefetchBrowserTest,
       //       "ACAC: true" header, succeeds to load.
       {"crossorigin=\"use-credentials\"", test_server_origin.c_str(), true,
        "include", "sxg"},
-  };
+  });
 
   const GURL target_sxg_url = embedded_test_server()->GetURL(target_sxg_path);
   const GURL target_url = embedded_test_server()->GetURL(target_path);

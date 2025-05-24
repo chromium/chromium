@@ -16,9 +16,9 @@ using base::android::AttachCurrentThread;
 using LocationSettingsDialogOutcomeCallback =
     LocationSettings::LocationSettingsDialogOutcomeCallback;
 
-LocationSettingsImpl::LocationSettingsImpl() {}
+LocationSettingsImpl::LocationSettingsImpl() = default;
 
-LocationSettingsImpl::~LocationSettingsImpl() {}
+LocationSettingsImpl::~LocationSettingsImpl() = default;
 
 bool LocationSettingsImpl::HasAndroidLocationPermission() {
   JNIEnv* env = AttachCurrentThread();

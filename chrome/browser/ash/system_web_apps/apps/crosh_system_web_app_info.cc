@@ -16,8 +16,14 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
+CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CROSH,
+                                "Crosh",
+                                GURL(chrome::kChromeUIUntrustedCroshURL),
+                                profile) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForCroshSystemWebApp() {
+CroshSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url(chrome::kChromeUIUntrustedCroshURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -30,23 +36,13 @@ CreateWebAppInfoForCroshSystemWebApp() {
   return info;
 }
 
-CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(ash::SystemWebAppType::CROSH,
-                                "Crosh",
-                                GURL(chrome::kChromeUIUntrustedCroshURL),
-                                profile) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-CroshSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForCroshSystemWebApp();
-}
-
 bool CroshSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-Browser* CroshSystemAppDelegate::GetWindowForLaunch(Profile* profile,
-                                                    const GURL& url) const {
+ash::BrowserDelegate* CroshSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
   return nullptr;
 }
 

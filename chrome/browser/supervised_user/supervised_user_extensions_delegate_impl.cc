@@ -16,10 +16,13 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/ui/supervised_user/parent_permission_dialog.h"
+#include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -145,7 +148,7 @@ void SupervisedUserExtensionsDelegateImpl::
       &::OnParentPermissionDialogComplete, std::move(done_callback_));
 
   gfx::NativeWindow parent_window =
-      contents ? contents->GetTopLevelNativeWindow() : nullptr;
+      contents ? contents->GetTopLevelNativeWindow() : gfx::NativeWindow();
   parent_permission_dialog_ =
       ParentPermissionDialog::CreateParentPermissionDialogForExtension(
           Profile::FromBrowserContext(context_), parent_window, icon,
@@ -197,15 +200,9 @@ void SupervisedUserExtensionsDelegateImpl::RequestExtensionApproval(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   CHECK(contents.value());
   content::WebContents* web_contents = contents.value().get();
-  if (CanInstallExtensions()) {
-    ShowParentPermissionDialogForExtension(extension, contents.value().get(),
-                                           icon,
-                                           extension_approval_entry_point);
-    return;
-  }
-  ShowInstallBlockedByParentDialogForExtension(
-      extension, web_contents,
-      ExtensionInstalledBlockedByParentDialogAction::kEnable);
+  // Always invoke the parent permission dialog.
+  ShowParentPermissionDialogForExtension(extension, web_contents, icon,
+                                         extension_approval_entry_point);
   return;
 #elif BUILDFLAG(IS_CHROMEOS)
   // ParentAccessDialog handles the blocked use case for ChromeOS.

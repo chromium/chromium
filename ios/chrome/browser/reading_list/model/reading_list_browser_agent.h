@@ -32,7 +32,6 @@ class ReadingListBrowserAgent
 
  private:
   friend class BrowserUserData<ReadingListBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit ReadingListBrowserAgent(Browser* browser);
 
@@ -57,9 +56,6 @@ class ReadingListBrowserAgent
   // Creates the "view" action for the snackbar message for bulk adding to
   // Reading List.
   MDCSnackbarMessageAction* CreateViewAction();
-
-  // The browser associated with this agent.
-  raw_ptr<Browser> browser_;
 
   // Create weak pointers to ensure that the callback bound to the object is
   // canceled when the object is destroyed.

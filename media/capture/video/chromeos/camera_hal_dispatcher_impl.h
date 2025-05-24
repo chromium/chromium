@@ -309,7 +309,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 
   std::string GetDeviceIdFromCameraId(int32_t camera_id);
   base::flat_set<std::string> GetDeviceIdsFromCameraIds(
-      base::flat_set<int32_t> camera_ids);
+      const base::flat_set<int32_t>& camera_ids);
 
   void StopOnProxyThread();
 

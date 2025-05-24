@@ -11,4 +11,9 @@ found in the LICENSE file.
 
     <!-- Status bar icon styling. -->
     <bool name="window_light_status_bar">true</bool>
+
+    <!-- Shared x axis transition durations. -->
+    <integer name="shared_x_axis_enter_transition_duration">283</integer>
+    <integer name="shared_x_axis_exit_duration">83</integer>
+    <integer name="shared_x_axis_transition_duration">366</integer>
 </resources>

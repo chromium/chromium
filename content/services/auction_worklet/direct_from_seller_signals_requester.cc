@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check.h"
@@ -25,7 +26,6 @@
 #include "content/services/auction_worklet/public/cpp/auction_downloader.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-local-handle.h"
@@ -52,36 +52,33 @@ std::optional<std::string> CheckHeader(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   // TODO(crbug.com/40269364): Remove support for old header names once API
   // users have switched.
-  std::string old_header_value;
-  std::string new_header_value;
-  // TODO(crbug.com/40269364): Remove old names once API users have migrated to
-  // new names.
-  const bool got_new_header =
-      headers->GetNormalizedHeader("Ad-Auction-Only", &new_header_value);
-  const bool got_old_header =
-      headers->GetNormalizedHeader("X-FLEDGE-Auction-Only", &old_header_value);
-  if (!got_new_header && !got_old_header) {
+  std::optional<std::string> old_header_value =
+      headers->GetNormalizedHeader("X-FLEDGE-Auction-Only");
+  std::optional<std::string> new_header_value =
+      headers->GetNormalizedHeader("Ad-Auction-Only");
+  if (!new_header_value && !old_header_value) {
     return "Missing Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only) "
            "header.";
   }
-  if (got_old_header) {
-    if (got_new_header) {
+  if (old_header_value) {
+    if (new_header_value) {
       if (old_header_value != new_header_value) {
         return base::StringPrintf(
             "Ad-Auction-Only: %s does not match deprecated header "
             "X-FLEDGE-Auction-Only: %s.",
-            new_header_value.c_str(), old_header_value.c_str());
+            new_header_value->c_str(), old_header_value->c_str());
       }
     } else {
       new_header_value = std::move(old_header_value);
     }
   }
-  if (!base::EqualsCaseInsensitiveASCII(new_header_value, "true")) {
+  if (!new_header_value ||
+      !base::EqualsCaseInsensitiveASCII(*new_header_value, "true")) {
     return base::StringPrintf(
         "Wrong Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only) header "
         "value. Expected \"true\", found "
         "\"%s\".",
-        new_header_value.c_str());
+        new_header_value.value_or(std::string()).c_str());
   }
 
   return std::nullopt;
@@ -112,15 +109,15 @@ v8::Local<v8::Value> DirectFromSellerSignalsRequester::Result::GetSignals(
     v8::Local<v8::Context> context,
     std::vector<std::string>& errors) const {
   DCHECK(v8_helper.v8_runner()->RunsTasksInCurrentSequence());
-  if (absl::holds_alternative<ErrorString>(response_or_error_)) {
-    errors.push_back(absl::get<ErrorString>(response_or_error_).value());
+  if (std::holds_alternative<ErrorString>(response_or_error_)) {
+    errors.push_back(std::get<ErrorString>(response_or_error_).value());
     return v8::Null(v8_helper.isolate());
   }
 
-  DCHECK(absl::holds_alternative<scoped_refptr<ResponseString>>(
+  DCHECK(std::holds_alternative<scoped_refptr<ResponseString>>(
       response_or_error_));
   scoped_refptr<ResponseString> response =
-      absl::get<scoped_refptr<ResponseString>>(response_or_error_);
+      std::get<scoped_refptr<ResponseString>>(response_or_error_);
   v8::MaybeLocal<v8::Value> v8_result =
       response ? v8_helper.CreateValueFromJson(context, response->value())
                : v8::Null(v8_helper.isolate());
@@ -134,14 +131,14 @@ v8::Local<v8::Value> DirectFromSellerSignalsRequester::Result::GetSignals(
 }
 
 bool DirectFromSellerSignalsRequester::Result::IsNull() const {
-  if (absl::holds_alternative<ErrorString>(response_or_error_)) {
+  if (std::holds_alternative<ErrorString>(response_or_error_)) {
     return false;
   }
 
-  DCHECK(absl::holds_alternative<scoped_refptr<ResponseString>>(
+  DCHECK(std::holds_alternative<scoped_refptr<ResponseString>>(
       response_or_error_));
   scoped_refptr<ResponseString> response =
-      absl::get<scoped_refptr<ResponseString>>(response_or_error_);
+      std::get<scoped_refptr<ResponseString>>(response_or_error_);
   return response == nullptr;
 }
 
@@ -246,6 +243,7 @@ DirectFromSellerSignalsRequester::LoadSignals(
             AuctionDownloader::MimeType::kJson,
             /*post_body=*/std::nullopt,
             /*content_type=*/std::nullopt,
+            /*num_igs_for_trusted_bidding_signals_kvv1=*/std::nullopt,
             AuctionDownloader::ResponseStartedCallback(),
             base::BindOnce(
                 &DirectFromSellerSignalsRequester::OnSignalsDownloaded,

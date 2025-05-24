@@ -20,6 +20,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -187,7 +188,7 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 
   if (crashed_overlay_view_.view()) {
     CHECK(crashed_overlay_view_.view()->owned_by_client());
-    AddChildView(crashed_overlay_view_.view());
+    AddChildViewRaw(crashed_overlay_view_.view());
     holder_->SetVisible(false);
     crashed_overlay_view_.view()->SetBoundsRect(GetLocalBounds());
   }
@@ -198,6 +199,16 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 base::CallbackListSubscription WebView::AddWebContentsAttachedCallback(
     WebContentsAttachedCallback callback) {
   return web_contents_attached_callbacks_.Add(callback);
+}
+
+base::CallbackListSubscription WebView::AddWebContentsDetachedCallback(
+    WebContentsDetachedCallback callback) {
+  return web_contents_detached_callbacks_.Add(callback);
+}
+
+base::CallbackListSubscription WebView::AddWebContentsFocusedCallback(
+    WebContentsFocusedCallback callback) {
+  return web_contents_focused_callbacks_.Add(callback);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -316,7 +327,7 @@ void WebView::RemovedFromWidget() {
   // Immediately clear the accessible parent upon being removed, as it's a
   // weak reference to an object that is about to be destroyed.
   if (holder_->native_view()) {
-    holder_->SetParentAccessible(nullptr);
+    holder_->SetParentAccessible(gfx::NativeViewAccessible());
   }
 }
 
@@ -406,6 +417,7 @@ void WebView::DidToggleFullscreenModeForTab(bool entered_fullscreen,
 void WebView::OnWebContentsFocused(
     content::RenderWidgetHost* render_widget_host) {
   RequestFocus();
+  web_contents_focused_callbacks_.Notify(this);
 }
 
 void WebView::AXTreeIDForMainFrameHasChanged() {
@@ -468,6 +480,7 @@ void WebView::DetachWebContentsNativeView() {
   TRACE_EVENT0("views", "WebView::DetachWebContentsNativeView");
   if (web_contents()) {
     holder_->Detach();
+    web_contents_detached_callbacks_.Notify(this);
   }
 }
 
@@ -492,9 +505,9 @@ void WebView::NotifyAccessibilityWebContentsChanged() {
     content::RenderFrameHost* rfh =
         web_contents() ? web_contents()->GetPrimaryMainFrame() : nullptr;
     GetViewAccessibility().SetChildTreeID(rfh ? rfh->GetAXTreeID()
-                                                   : ui::AXTreeIDUnknown());
+                                              : ui::AXTreeIDUnknown());
   }
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
 }
 
 std::unique_ptr<content::WebContents> WebView::CreateWebContents(

@@ -24,8 +24,6 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_service.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/add_remove_user_event.pb.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -34,12 +32,12 @@
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/dbus/missive/missive_client.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/reporting/proto/synced/record.pb.h"
@@ -130,10 +128,7 @@ class UserAddedRemovedReporterBrowserTest
   UserAddedRemovedReporterBrowserTest() {
     // Add unaffiliated user for testing purposes.
     login_manager_mixin_.AppendRegularUsers(1);
-
     login_manager_mixin_.set_session_restore_enabled();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceLoginLogout, true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -158,6 +153,10 @@ class UserAddedRemovedReporterBrowserTest
         kTestAffiliationId);
     user_policy_update->policy_data()->add_user_affiliation_ids(
         kTestAffiliationId);
+
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_login_logout(true);
   }
 
   const AccountId test_account_id_ = AccountId::FromUserEmailGaiaId(
@@ -168,8 +167,6 @@ class UserAddedRemovedReporterBrowserTest
   FakeGaiaMixin fake_gaia_mixin_{&mixin_host_};
   LoginManagerMixin login_manager_mixin_{
       &mixin_host_, LoginManagerMixin::UserList(), &fake_gaia_mixin_};
-
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_F(UserAddedRemovedReporterBrowserTest,

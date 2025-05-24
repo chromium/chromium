@@ -40,18 +40,17 @@ namespace WTF {
 
 ASSERT_SIZE(AtomicString, String);
 
-#if defined(ARCH_CPU_64_BITS)
-AtomicString::AtomicString(const LChar* chars, size_t length)
-    : AtomicString(chars, base::checked_cast<unsigned>(length)) {}
-#endif  // defined(ARCH_CPU_64_BITS)
+AtomicString::AtomicString(base::span<const LChar> chars)
+    : string_(AtomicStringTable::Instance().Add(
+          chars.data(),
+          base::checked_cast<wtf_size_t>(chars.size()))) {}
 
-AtomicString::AtomicString(const LChar* chars, unsigned length)
-    : string_(AtomicStringTable::Instance().Add(chars, length)) {}
-
-AtomicString::AtomicString(const UChar* chars,
-                           unsigned length,
+AtomicString::AtomicString(base::span<const UChar> chars,
                            AtomicStringUCharEncoding encoding)
-    : string_(AtomicStringTable::Instance().Add(chars, length, encoding)) {}
+    : string_(AtomicStringTable::Instance().Add(
+          chars.data(),
+          base::checked_cast<wtf_size_t>(chars.size()),
+          encoding)) {}
 
 AtomicString::AtomicString(const UChar* chars)
     : string_(AtomicStringTable::Instance().Add(
@@ -73,13 +72,15 @@ scoped_refptr<StringImpl> AtomicString::AddSlowCase(StringImpl* string) {
   return AtomicStringTable::Instance().Add(string);
 }
 
-AtomicString AtomicString::FromUTF8(const char* chars, size_t length) {
-  if (!chars)
+AtomicString AtomicString::FromUTF8(base::span<const uint8_t> bytes) {
+  if (!bytes.data()) {
     return g_null_atom;
-  if (!length)
+  }
+  if (bytes.empty()) {
     return g_empty_atom;
-  return AtomicString(
-      AtomicStringTable::Instance().AddUTF8(chars, chars + length));
+  }
+  return AtomicString(AtomicStringTable::Instance().AddUTF8(
+      bytes.data(), bytes.data() + bytes.size()));
 }
 
 AtomicString AtomicString::FromUTF8(const char* chars) {
@@ -87,11 +88,12 @@ AtomicString AtomicString::FromUTF8(const char* chars) {
     return g_null_atom;
   if (!*chars)
     return g_empty_atom;
-  return AtomicString(AtomicStringTable::Instance().AddUTF8(chars, nullptr));
+  return AtomicString(AtomicStringTable::Instance().AddUTF8(
+      reinterpret_cast<const uint8_t*>(chars), nullptr));
 }
 
-AtomicString AtomicString::FromUTF8(std::string_view string) {
-  return AtomicString::FromUTF8(string.data(), string.length());
+AtomicString AtomicString::FromUTF8(std::string_view utf8_string) {
+  return FromUTF8(base::as_byte_span(utf8_string));
 }
 
 AtomicString AtomicString::LowerASCII(AtomicString source) {

@@ -7,7 +7,9 @@
 #import <cmath>
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_controller.h"
+#import "ios/web/common/features.h"
 
 namespace {
 // Returns YES if `size1` and `size2` are less than 0.5 different in both width
@@ -29,7 +31,9 @@ BOOL CGSizeAlmostEqualToSize(CGSize size1, CGSize size2) {
 @property(nonatomic, readonly) BOOL presentedViewControllerResizesContainer;
 @end
 
-@implementation OverlayPresentationContextViewController
+@implementation OverlayPresentationContextViewController {
+  BOOL _isInViewDidLayoutSubviews;
+}
 
 #pragma mark - Accessors
 
@@ -57,6 +61,15 @@ BOOL CGSizeAlmostEqualToSize(CGSize size1, CGSize size2) {
       CGSizeAlmostEqualToSize(newLayoutFrame.size, oldLayoutFrame.size)) {
     return;
   }
+
+  // Avoid recursion that can happen when multiple animations are happening
+  // (example: entering fullscreen and displaying an infobar).
+  if (!base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault) &&
+      _isInViewDidLayoutSubviews) {
+    return;
+  }
+  _isInViewDidLayoutSubviews = YES;
+
   self.layoutView = newLayoutView;
 
   // Lay out the presentation context and its container view to match
@@ -77,6 +90,7 @@ BOOL CGSizeAlmostEqualToSize(CGSize size1, CGSize size2) {
     self.layoutView.frame =
         [self.layoutView.superview convertRect:newLayoutFrame fromView:window];
   }
+  _isInViewDidLayoutSubviews = NO;
 }
 
 - (void)presentViewController:(UIViewController*)viewController
@@ -100,8 +114,9 @@ BOOL CGSizeAlmostEqualToSize(CGSize size1, CGSize size2) {
   // overlay is removed.
   [super dismissViewControllerAnimated:animated
                             completion:^{
-                              if (completion)
+                              if (completion) {
                                 completion();
+                              }
                               [self.view setNeedsLayout];
                             }];
 }

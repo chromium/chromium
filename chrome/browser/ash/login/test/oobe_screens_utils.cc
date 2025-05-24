@@ -287,7 +287,7 @@ OobeUiDestroyedWaiter::OobeUiDestroyedWaiter(OobeUI* oobe_ui) {
   oobe_ui_observation_.Observe(oobe_ui);
 }
 
-OobeUiDestroyedWaiter::~OobeUiDestroyedWaiter() {}
+OobeUiDestroyedWaiter::~OobeUiDestroyedWaiter() = default;
 
 void OobeUiDestroyedWaiter::Wait() {
   if (was_destroyed_)

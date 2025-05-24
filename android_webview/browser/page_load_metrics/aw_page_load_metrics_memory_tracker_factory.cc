@@ -7,6 +7,7 @@
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/page_load_metrics/browser/features.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
 
 namespace android_webview {
@@ -30,7 +31,8 @@ AwPageLoadMetricsMemoryTrackerFactory::AwPageLoadMetricsMemoryTrackerFactory()
 
 bool AwPageLoadMetricsMemoryTrackerFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return base::FeatureList::IsEnabled(features::kV8PerFrameMemoryMonitoring);
+  return base::FeatureList::IsEnabled(
+      page_load_metrics::features::kV8PerFrameMemoryMonitoring);
 }
 
 std::unique_ptr<KeyedService>

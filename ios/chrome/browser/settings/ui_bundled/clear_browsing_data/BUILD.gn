@@ -1,0 +1,254 @@
+# Copyright 2019 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("clear_browsing_data") {
+  sources = [
+    "browsing_data_counter_wrapper_producer.h",
+    "browsing_data_counter_wrapper_producer.mm",
+    "clear_browsing_data_consumer.h",
+    "clear_browsing_data_coordinator.h",
+    "clear_browsing_data_coordinator.mm",
+    "clear_browsing_data_manager.h",
+    "clear_browsing_data_manager.mm",
+    "clear_browsing_data_table_view_controller.h",
+    "clear_browsing_data_table_view_controller.mm",
+    "clear_browsing_data_ui_delegate.h",
+    "pop_up_menu_control.h",
+    "pop_up_menu_control.mm",
+    "quick_delete_browsing_data_coordinator.h",
+    "quick_delete_browsing_data_coordinator.mm",
+    "quick_delete_browsing_data_delegate.h",
+    "quick_delete_browsing_data_view_controller.h",
+    "quick_delete_browsing_data_view_controller.mm",
+    "quick_delete_browsing_data_view_controller_delegate.h",
+    "quick_delete_consumer.h",
+    "quick_delete_coordinator.h",
+    "quick_delete_coordinator.mm",
+    "quick_delete_mediator.h",
+    "quick_delete_mediator.mm",
+    "quick_delete_mutator.h",
+    "quick_delete_presentation_commands.h",
+    "quick_delete_view_controller.h",
+    "quick_delete_view_controller.mm",
+    "table_view_pop_up_cell.h",
+    "table_view_pop_up_cell.mm",
+    "time_range_selector_table_view_controller+Testing.h",
+    "time_range_selector_table_view_controller.h",
+    "time_range_selector_table_view_controller.mm",
+  ]
+  deps = [
+    ":ui_constants",
+    ":util",
+    "//components/browsing_data/core",
+    "//components/browsing_data/core:cookie_or_cache_deletion_choice",
+    "//components/feature_engagement/public",
+    "//components/history/core/browser",
+    "//components/password_manager/core/common",
+    "//components/prefs/ios",
+    "//components/search_engines",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/strings",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled/signout_action_sheet",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ios/chrome/browser/browsing_data/model:feature_flags",
+    "//ios/chrome/browser/browsing_data/model:util",
+    "//ios/chrome/browser/discover_feed/model",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/keyboard/ui_bundled",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:table_view_bottom_sheet_view_controller",
+    "//ios/chrome/browser/shared/ui/elements:elements_internal",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:icons",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:styler",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_ui",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//ui/base",
+    "//ui/strings",
+  ]
+}
+
+source_set("ui_constants") {
+  sources = [
+    "clear_browsing_data_ui_constants.h",
+    "clear_browsing_data_ui_constants.mm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "clear_browsing_data_manager_unittest.mm",
+    "quick_delete_mediator_unittest.mm",
+    "quick_delete_util_unittest.mm",
+    "time_range_selector_table_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":clear_browsing_data",
+    ":test_support",
+    ":util",
+    "//base",
+    "//base/test:test_support",
+    "//components/browsing_data/core",
+    "//components/feature_engagement/public",
+    "//components/history/core/browser",
+    "//components/password_manager/core/browser/password_store:test_support",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/search_engines",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/strings",
+    "//components/sync:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ios/chrome/browser/browsing_data/model:feature_flags",
+    "//ios/chrome/browser/browsing_data/model:test_support",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/settings/ui_bundled/cells",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/common",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "fake_browsing_data_counter_wrapper_producer.h",
+    "fake_browsing_data_counter_wrapper_producer.mm",
+  ]
+  deps = [
+    ":clear_browsing_data",
+    "//base",
+  ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [
+    "clear_browsing_data_egtest.mm",
+    "quick_delete_browing_data_egtest.mm",
+    "quick_delete_egtest.mm",
+  ]
+  deps = [
+    ":features",
+    ":ui_constants",
+    "//base/test:test_support",
+    "//components/browsing_data/core",
+    "//components/browsing_data/core:cookie_or_cache_deletion_choice",
+    "//components/data_sharing/public:features",
+    "//components/signin/internal/identity_manager:capabilities",
+    "//components/signin/public/base",
+    "//components/strings",
+    "//components/sync/base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/autofill/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
+    "//ios/chrome/browser/settings/ui_bundled/cells:clear_browsing_data_constants",
+    "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/elements:constants",
+    "//ios/chrome/browser/shared/ui/elements:eg_test_support+eg2",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_constant",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
+    "//ios/chrome/browser/tabs/model/inactive_tabs:features",
+    "//ios/chrome/common/ui/confirmation_alert:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("util") {
+  sources = [
+    "quick_delete_util.h",
+    "quick_delete_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/browsing_data/core",
+    "//components/strings",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ui/base",
+  ]
+}

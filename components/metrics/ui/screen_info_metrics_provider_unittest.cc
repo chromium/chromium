@@ -19,13 +19,13 @@ const float kScreenScaleFactor = 2;
 
 class TestScreenInfoMetricsProvider : public ScreenInfoMetricsProvider {
  public:
-  TestScreenInfoMetricsProvider() {}
+  TestScreenInfoMetricsProvider() = default;
 
   TestScreenInfoMetricsProvider(const TestScreenInfoMetricsProvider&) = delete;
   TestScreenInfoMetricsProvider& operator=(
       const TestScreenInfoMetricsProvider&) = delete;
 
-  ~TestScreenInfoMetricsProvider() override {}
+  ~TestScreenInfoMetricsProvider() override = default;
 
  private:
   std::optional<gfx::Size> GetScreenSize() const override {
@@ -43,13 +43,13 @@ class TestScreenInfoMetricsProvider : public ScreenInfoMetricsProvider {
 
 class ScreenInfoMetricsProviderTest : public testing::Test {
  public:
-  ScreenInfoMetricsProviderTest() {}
+  ScreenInfoMetricsProviderTest() = default;
 
   ScreenInfoMetricsProviderTest(const ScreenInfoMetricsProviderTest&) = delete;
   ScreenInfoMetricsProviderTest& operator=(
       const ScreenInfoMetricsProviderTest&) = delete;
 
-  ~ScreenInfoMetricsProviderTest() override {}
+  ~ScreenInfoMetricsProviderTest() override = default;
 };
 
 TEST_F(ScreenInfoMetricsProviderTest, ProvideSystemProfileMetrics) {

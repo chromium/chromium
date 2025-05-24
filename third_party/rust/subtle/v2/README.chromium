@@ -1,0 +1,10 @@
+Name: subtle
+URL: https://crates.io/crates/subtle
+Version: 2.6.1
+Revision: 5457b5448b021d1da101ababbb854e6657233943
+License: BSD-3-Clause
+License File: //third_party/rust/chromium_crates_io/vendor/subtle-v2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Pure-Rust traits and utilities for constant-time cryptographic implementations.

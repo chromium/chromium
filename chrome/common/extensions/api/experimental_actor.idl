@@ -1,0 +1,32 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Experimental API to handle acting and returning new browser state.
+[implemented_in="chrome/browser/extensions/api/experimental_actor/experimental_actor_api.h"]
+namespace experimentalActor {
+  callback DataCallback = void(ArrayBuffer data);
+  callback ClosureCallback = void();
+
+  interface Functions {
+    // Creates and starts a new task. By default, opens a new tab to
+    // about:blank that is ready for actions. The startTaskProto can
+    // optionally specify a tab_id to use an existing tab instead of creating
+    // a new one.
+    // startTaskProto: encoded optimization_guide.proto.BrowserStartTask
+    // startTaskcallback:
+    //   encoded optimization_guide.proto.BrowserStartTaskResult
+    static void startTask(ArrayBuffer startTaskProto,
+                          DataCallback startTaskcallback);
+    // Executes one or more actions according to request.
+    // request: encoded optimization_guide.proto.BrowserAction
+    // response: encoded optimization_guide.proto.BrowserActionResult
+    static void executeAction(ArrayBuffer browserActionProto,
+                              DataCallback executeActioncallback);
+    // Stops a task.
+    // taskId: id of the task to stop.
+    // stopTaskcallback: a closure that is called when the task is stopped.
+    static void stopTask(long taskId,
+                         ClosureCallback stopTaskcallback);
+  };
+};

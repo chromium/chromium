@@ -1,0 +1,327 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+import("//pdf/features.gni")
+import("//ppapi/buildflags/buildflags.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("content_settings") {
+  sources = [
+    "content_settings_manager_delegate.h",
+    "mixed_content_settings_tab_helper.h",
+    "one_time_permission_provider.h",
+    "page_specific_content_settings_delegate.h",
+    "sound_content_setting_observer.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/permissions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/browsing_data/content",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/custom_handlers",
+    "//components/permissions",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
+
+  allow_circular_includes_from = []
+
+  if (is_android) {
+    sources += [
+      "javascript_optimizer_provider_android.h",
+      "request_desktop_site_web_contents_observer_android.h",
+    ]
+  } else {
+    sources += [
+      "generated_cookie_prefs.h",
+      "generated_permission_prompting_behavior_pref.h",
+    ]
+
+    if (enable_extensions) {
+      public_deps += [ "//chrome/browser/extensions" ]
+
+      # _perf* uses extensions and extensions uses pref.
+      allow_circular_includes_from = [ "//chrome/browser/extensions" ]
+    }
+  }
+}
+
+source_set("impl") {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  sources = [
+    "content_settings_manager_delegate.cc",
+    "mixed_content_settings_tab_helper.cc",
+    "one_time_permission_provider.cc",
+    "page_specific_content_settings_delegate.cc",
+    "sound_content_setting_observer.cc",
+  ]
+
+  deps = [
+    ":content_settings",
+    ":content_settings_factory",
+    ":content_settings_util",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/permissions",
+    "//chrome/browser/permissions/system",
+    "//chrome/browser/picture_in_picture",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/pref_registry",
+    "//components/supervised_user/core/browser",
+    "//pdf:features",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/webui",
+  ]
+
+  if (is_android) {
+    sources += [
+      "javascript_optimizer_provider_android.cc",
+      "request_desktop_site_web_contents_observer_android.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/notifications",
+      "//chrome/browser/notifications:notifications_java_enum_srcjar",
+    ]
+  } else {
+    sources += [
+      "generated_cookie_prefs.cc",
+      "generated_permission_prompting_behavior_pref.cc",
+    ]
+
+    deps += [
+      "//chrome/browser/ui/tabs",
+      "//components/guest_view/browser",
+    ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [ "//extensions/browser" ]
+  }
+
+  if (enable_pdf) {
+    deps += [ "//chrome/browser/pdf" ]
+  }
+}
+
+# Fixes circular deps with different components. For example -
+# //c/b/permissions, //c/b/media/webrtc, etc.
+source_set("content_settings_factory") {
+  sources = [
+    "cookie_settings_factory.h",
+    "host_content_settings_map_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("content_settings_factory_impl") {
+  sources = [
+    "cookie_settings_factory.cc",
+    "host_content_settings_map_factory.cc",
+  ]
+
+  deps = [
+    ":content_settings",
+    ":content_settings_factory",
+    "//chrome/browser/notifications",
+    "//chrome/browser/permissions",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/permissions:permissions_common",
+    "//components/supervised_user/core/browser",
+    "//ui/webui",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (enable_extensions) {
+    deps += [ "//extensions/browser" ]
+  }
+
+  if (is_android) {
+    deps += [ "//chrome/browser/notifications:notifications_java_enum_srcjar" ]
+  }
+}
+
+# Fixes circular deps with different components. For example -
+# //c/b/permissions, //c/b/media/webrtc, etc.
+source_set("content_settings_util") {
+  sources = [ "chrome_content_settings_utils.h" ]
+}
+
+source_set("content_settings_util_impl") {
+  sources = [ "chrome_content_settings_utils.cc" ]
+
+  deps = [
+    ":content_settings_util",
+    "//base",
+    "//content/public/browser",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "mixed_content_settings_tab_helper_browsertest.cc",
+      "sound_content_setting_observer_browsertest.cc",
+    ]
+
+    deps = [
+      ":content_settings",
+      ":content_settings_factory",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/content_settings",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/browser",
+      "//components/content_settings/core/browser",
+      "//components/network_session_configurator/common",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+      "//net:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//third_party/blink/public/common:headers",
+      "//url",
+    ]
+
+    if (enable_extensions && enable_plugins) {
+      sources += [ "content_settings_browsertest.cc" ]
+
+      deps += [
+        "//build:chromeos_buildflags",
+        "//chrome/browser",
+        "//chrome/browser/ui/tabs:tab_strip",
+        "//chrome/common:chrome_features",
+        "//chrome/common:constants",
+        "//chrome/test:test_support",
+        "//components/browsing_data/content",
+        "//components/content_settings/core/browser:cookie_settings",
+        "//components/content_settings/core/common",
+        "//components/nacl/common:buildflags",
+        "//components/prefs",
+        "//pdf:buildflags",
+        "//ppapi/buildflags",
+        "//services/network/public/cpp",
+        "//testing/gmock",
+        "//third_party/widevine/cdm:buildflags",
+      ]
+
+      if (enable_pdf) {
+        deps += [ "//components/pdf/browser" ]
+      }
+    }
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "content_settings_default_provider_unittest.cc",
+    "content_settings_origin_value_map_unittest.cc",
+    "content_settings_policy_provider_unittest.cc",
+    "content_settings_pref_provider_unittest.cc",
+    "cookie_settings_factory_unittest.cc",
+    "host_content_settings_map_unittest.cc",
+    "mock_settings_observer.cc",
+    "mock_settings_observer.h",
+    "one_time_permission_provider_unittest.cc",
+    "page_specific_content_settings_unittest.cc",
+    "sound_content_setting_observer_unittest.cc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//testing/gmock",
+  ]
+
+  deps = [
+    ":content_settings",
+    ":content_settings_factory",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/browser",
+    "//chrome/browser/permissions",
+    "//chrome/browser/prefs",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_enums",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/client_hints/common",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/browser:test_support",
+    "//components/content_settings/core/common:features",
+    "//components/content_settings/core/test:test_support",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common:features",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/ukm:test_support",
+    "//components/ukm/content",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//media",
+    "//net",
+    "//ppapi/buildflags",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [ "javascript_optimizer_provider_android_unittest.cc" ]
+  } else {
+    sources += [ "generated_cookie_prefs_unittest.cc" ]
+
+    deps += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/tabs",
+      "//chrome/common/extensions",
+      "//chrome/common/extensions/api",
+    ]
+  }
+}

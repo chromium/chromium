@@ -4,7 +4,11 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
+#include <variant>
+
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -41,7 +45,7 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
       PasteIfAllowed,
       void(base::optional_ref<const ui::DataTransferEndpoint> data_src,
            base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-           absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+           std::variant<size_t, std::vector<base::FilePath>> pasted_content,
            content::RenderFrameHost* rfh,
            base::OnceCallback<void(bool)> callback));
 
@@ -73,8 +77,6 @@ class DataProtectionClipboardTest : public testing::Test {
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
   }
 
   void SetUp() override { ui::TestClipboard::CreateForCurrentThread(); }
@@ -120,12 +122,28 @@ class DataProtectionClipboardTest : public testing::Test {
                                       *contents()->GetPrimaryMainFrame());
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  void EnableDataControls() {
+    scoped_features_.InitWithFeatures(
+        /* enabled_features */ {data_controls::
+                                    kEnableClipboardDataControlsAndroid},
+        /* disabled_features */ {});
+  }
+
+  void DisableDataControls() {
+    scoped_features_.InitWithFeatures(
+        /* enabled_features */ {},
+        /* disabled_features */ {
+            data_controls::kEnableClipboardDataControlsAndroid});
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_features_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
+  base::test::ScopedFeatureList scoped_features_;
 };
 
 using DataProtectionPasteIfAllowedByPolicyTest = DataProtectionClipboardTest;
@@ -148,6 +166,9 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
             "image");
 }
 
+// The DataTransferPolicyController is not relevant / supported by Clank, and
+// is thus disabled.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataTransferPolicyController_Allowed) {
   PolicyControllerTest policy_controller;
@@ -155,7 +176,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
       .WillOnce(testing::Invoke(
           [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
              base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-             absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+             std::variant<size_t, std::vector<base::FilePath>> pasted_content,
              content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(true);
@@ -181,7 +202,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
       .WillOnce(testing::Invoke(
           [](base::optional_ref<const ui::DataTransferEndpoint> data_src,
              base::optional_ref<const ui::DataTransferEndpoint> data_dst,
-             absl::variant<size_t, std::vector<base::FilePath>> pasted_content,
+             std::variant<size_t, std::vector<base::FilePath>> pasted_content,
              content::RenderFrameHost* rfh,
              base::OnceCallback<void(bool)> callback) {
             std::move(callback).Run(false);
@@ -195,6 +216,7 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
   testing::Mock::VerifyAndClearExpectations(&policy_controller);
   EXPECT_FALSE(future.Get());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
        DataProtectionPaste_NoDestinationWebContents) {
@@ -212,6 +234,9 @@ TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
   base::test::TestFuture<const ui::ClipboardFormatType&,
                          const content::ClipboardPasteData&,
                          std::optional<std::u16string>>
@@ -226,7 +251,28 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
   EXPECT_FALSE(replacement);
 }
 
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoEndpoint) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      content::ClipboardEndpoint(std::nullopt), CopyMetadata(),
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
+}
+
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
   data_controls::SetDataControls(profile_->GetPrefs(), {
                                                            R"({
                     "sources": {
@@ -309,6 +355,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
        StringReplacement_NoBrowserContextSource) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
   data_controls::SetDataControls(profile_->GetPrefs(), {
                                                            R"({
                     "sources": {
@@ -394,6 +443,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
        StringReplacement_MultiType) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
   data_controls::SetDataControls(profile_->GetPrefs(), {
                                                            R"({
                     "sources": {
@@ -500,6 +552,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
   data_controls::SetDataControls(profile_->GetPrefs(), {
                                                            R"({
                     "sources": {
@@ -534,6 +589,9 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoStringReplacement) {
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
   data_controls::SetDataControls(profile_->GetPrefs(), {
                                                            R"({
                     "sources": {
@@ -589,9 +647,8 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   EXPECT_TRUE(first_paste_data->html.empty());
 
   // The pasted bitmap should be in the PNG field instead of the bitmap one.
-  SkBitmap pasted_bitmap;
-  gfx::PNGCodec::Decode(first_paste_data->png.data(),
-                        first_paste_data->png.size(), &pasted_bitmap);
+  SkBitmap pasted_bitmap = gfx::PNGCodec::Decode(first_paste_data->png);
+  ASSERT_FALSE(pasted_bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, pasted_bitmap));
   EXPECT_TRUE(first_paste_data->bitmap.empty());
 
@@ -599,9 +656,8 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   content::ClipboardPasteData same_tab_data;
   ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
 
-  pasted_bitmap = SkBitmap();
-  gfx::PNGCodec::Decode(same_tab_data.png.data(), same_tab_data.png.size(),
-                        &pasted_bitmap);
+  pasted_bitmap = gfx::PNGCodec::Decode(same_tab_data.png);
+  ASSERT_FALSE(pasted_bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, pasted_bitmap));
   EXPECT_TRUE(same_tab_data.bitmap.empty());
 
@@ -629,5 +685,68 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
                                                 same_tab_data);
   EXPECT_TRUE(same_tab_data.empty());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       CopyAction_DataControlsDisabledOnAndroid) {
+  DisableDataControls();
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  content::ClipboardMetadata metadata = CopyMetadata();
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), metadata,
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
+
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
+  EXPECT_TRUE(same_tab_data.empty());
+}
+
+TEST_F(DataProtectionPasteIfAllowedByPolicyTest,
+       PasteAction_DataControlsDisabledOnAndroid) {
+  DisableDataControls();
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "destinations": {
+                      "urls": ["destination.com"]
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  // Without a controller set up, the paste should be allowed through.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>> future;
+  PasteIfAllowedByPolicy(
+      SourceEndpoint(), DestinationEndpoint(), {.size = 1234},
+      MakeClipboardPasteData("text", "image", {}), future.GetCallback());
+  auto paste_data = future.Get();
+  EXPECT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, u"text");
+  EXPECT_EQ(std::string(paste_data->png.begin(), paste_data->png.end()),
+            "image");
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace enterprise_data_protection

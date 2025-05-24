@@ -43,10 +43,6 @@ class SerialChooserController final
 
   const device::mojom::SerialPortInfo& GetPortForTest(size_t index) const;
 
-  // Retrieves a list of serial devices from the serial port manager and updates
-  // the view's entries.
-  void GetDevices();
-
   // permissions::ChooserController:
   bool ShouldShowHelpButton() const override;
   std::u16string GetNoOptionsText() const override;
@@ -56,10 +52,12 @@ class SerialChooserController final
   size_t NumOptions() const override;
   std::u16string GetOption(size_t index) const override;
   bool IsPaired(size_t index) const override;
+  void RefreshOptions() override;
   void Select(const std::vector<size_t>& indices) override;
   void Cancel() override;
   void Close() override;
   void OpenAdapterOffHelpUrl() const override;
+  void OpenBluetoothPermissionHelpUrl() const override;
   void OpenHelpCenterUrl() const override;
   void OpenPermissionPreferences() const override;
   bool ShouldShowAdapterOffView() const override;
@@ -82,6 +80,10 @@ class SerialChooserController final
                              bool powered) override;
 
  private:
+  // Retrieves a list of serial devices from the serial port manager and updates
+  // the view's entries.
+  void GetDevices();
+
   void OnGetDevices(std::vector<device::mojom::SerialPortInfoPtr> ports);
   bool DisplayDevice(const device::mojom::SerialPortInfo& port) const;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
@@ -92,6 +94,7 @@ class SerialChooserController final
                     scoped_refptr<device::BluetoothAdapter> adapter);
   // Whether it will only show ports from bluetooth devices.
   bool IsWirelessSerialPortOnly();
+  void OpenBluetoothHelpUrl() const;
 
   std::vector<blink::mojom::SerialPortFilterPtr> filters_;
   std::vector<::device::BluetoothUUID> allowed_bluetooth_service_class_ids_;

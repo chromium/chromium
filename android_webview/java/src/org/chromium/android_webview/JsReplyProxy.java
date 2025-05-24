@@ -4,22 +4,22 @@
 
 package org.chromium.android_webview;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.MessagePayload;
 
 /**
- * Used for Js Java interaction, to receive postMessage back to the injected JavaScript object.
- * When the native counterpart of this object is gone, we still don't know if this is ready for gc
- * since developer could hold a reference to it. So just cut the connection between native and Java.
+ * Used for Js Java interaction, to receive postMessage back to the injected JavaScript object. When
+ * the native counterpart of this object is gone, we still don't know if this is ready for gc since
+ * developer could hold a reference to it. So just cut the connection between native and Java.
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class JsReplyProxy extends AwSupportLibIsomorphic {
     private long mNativeJsReplyProxy;
 
@@ -30,10 +30,8 @@ public class JsReplyProxy extends AwSupportLibIsomorphic {
     /**
      * Post message to the injected JavaScript object. Note that it will drop message if the
      * injected object is gone.
-     *
-     * @param message a non-null String message post to the JavaScript object.
      */
-    public void postMessage(@NonNull final MessagePayload payload) {
+    public void postMessage(final MessagePayload payload) {
         if (mNativeJsReplyProxy == 0) return;
         PostTask.runOrPostTask(
                 TaskTraits.UI_USER_VISIBLE,

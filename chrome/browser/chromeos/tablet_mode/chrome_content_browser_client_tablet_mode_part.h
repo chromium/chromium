@@ -22,12 +22,12 @@ class ChromeContentBrowserClientTabletModePart
   ~ChromeContentBrowserClientTabletModePart() override;
 
   // ChromeContentBrowserClientParts:
-  void OverrideWebkitPrefs(content::WebContents* web_contents,
-                           blink::web_pref::WebPreferences* web_prefs) override;
+  void OverrideWebPreferences(
+      content::WebContents* web_contents,
+      content::SiteInstance& main_frame_site,
+      blink::web_pref::WebPreferences* web_prefs) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool UseDefaultFontSizeForTest(const GURL& url);
-#endif
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_TABLET_MODE_CHROME_CONTENT_BROWSER_CLIENT_TABLET_MODE_PART_H_

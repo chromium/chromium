@@ -35,8 +35,7 @@ class MockStarboardApiWrapper : public StarboardApiWrapper {
               WriteSample,
               (void* player,
                StarboardMediaType type,
-               StarboardSampleInfo* sample_infos,
-               int sample_infos_count),
+               base::span<const StarboardSampleInfo> sample_infos),
               (override));
   MOCK_METHOD(void,
               WriteEndOfStream,

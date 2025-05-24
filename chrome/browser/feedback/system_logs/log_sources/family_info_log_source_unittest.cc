@@ -24,6 +24,22 @@
 
 namespace system_logs {
 
+namespace {
+// Configures the account_info so that ListFamilyMembersService will fetch
+// family info for that account.
+AccountInfo& WithFamilyInfoFetching(AccountInfo& account_info) {
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  if (supervised_user::FetchListFamilyMembersWithCapability()) {
+    mutator.set_can_fetch_family_member_info(true);
+    mutator.set_is_subject_to_parental_controls(false);
+  } else {
+    mutator.set_can_fetch_family_member_info(false);
+    mutator.set_is_subject_to_parental_controls(true);
+  }
+  return account_info;
+}
+}  // namespace
+
 class FamilyInfoLogSourceTest : public ::testing::Test {
  public:
   void SetUp() override {
@@ -96,17 +112,11 @@ TEST_F(FamilyInfoLogSourceTest, FetchMemberSignedInBeforeDeadline) {
 
 TEST_F(FamilyInfoLogSourceTest,
        FetchMemberSignedInBeforeDeadlineWithFamilyMemberPref) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {supervised_user::kUseFamilyMemberRolePrefsForFeedback,
-       supervised_user::kFetchListFamilyMembersWithCapability},
-      {});
   AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
       "user_child@gmail.com", signin::ConsentLevel::kSignin);
 
-  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
-  mutator.set_can_fetch_family_member_info(true);
-  identity_test_env_.UpdateAccountInfoForAccount(primary_account);
+  identity_test_env_.UpdateAccountInfoForAccount(
+      WithFamilyInfoFetching(primary_account));
 
   test_list_family_members_service_->Init();
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(

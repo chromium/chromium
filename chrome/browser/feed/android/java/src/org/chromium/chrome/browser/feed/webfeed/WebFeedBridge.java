@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.feed.webfeed;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.url.GURL;
 
@@ -20,6 +22,7 @@ import java.util.List;
 
 /** Class providing access to functionality provided by the Web Feed native component. */
 @JNINamespace("feed")
+@NullMarked
 public class WebFeedBridge {
     // Values from web_feeds.proto:
     public static final int CHANGE_REASON_WEB_PAGE_MENU = 1;
@@ -27,12 +30,6 @@ public class WebFeedBridge {
     public static final int CHANGE_REASON_MANAGEMENT = 3;
     public static final int CHANGE_REASON_RECOMMENDATION_WEB_PAGE_ACCELERATOR = 6;
     public static final int CHANGE_REASON_SINGLE_WEB_FEED = 7;
-
-    // Access to JNI test hooks for other libraries. This can go away once more Feed code is
-    // migrated to chrome/browser/feed.
-    public static org.jni_zero.JniStaticTestMocker<WebFeedBridge.Natives> getTestHooksForTesting() {
-        return WebFeedBridgeJni.TEST_HOOKS;
-    }
 
     private WebFeedBridge() {}
 
@@ -56,7 +53,7 @@ public class WebFeedBridge {
      * @param callback The callback to receive the past visits query results.
      *            Upon failure, VisitCounts is populated with 0 visits.
      */
-    public static void getVisitCountsToHost(GURL url, Callback<VisitCounts> callback) {
+    public static void getVisitCountsToHost(@Nullable GURL url, Callback<VisitCounts> callback) {
         WebFeedBridgeJni.get()
                 .getRecentVisitCountsToHost(
                         url, (result) -> callback.onResult(new VisitCounts(result[0], result[1])));
@@ -88,7 +85,7 @@ public class WebFeedBridge {
         @CalledByNative("WebFeedMetadata")
         public WebFeedMetadata(
                 byte[] id,
-                String title,
+                @JniType("std::string") String title,
                 GURL visitUrl,
                 @WebFeedSubscriptionStatus int subscriptionStatus,
                 @WebFeedAvailabilityStatus int availabilityStatus,
@@ -113,8 +110,8 @@ public class WebFeedBridge {
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
     public static void getWebFeedMetadataForPage(
-            Tab tab,
-            GURL url,
+            @Nullable Tab tab,
+            @Nullable GURL url,
             @WebFeedPageInformationRequestReason int reason,
             Callback<WebFeedMetadata> callback) {
         WebFeedBridgeJni.get()
@@ -132,7 +129,8 @@ public class WebFeedBridge {
 
     /**
      * Returns the Web Feed id for the web feed associated with this page.
-     * @param url The URL for which the status is being requested.
+     *
+     * @param id The URL for which the status is being requested.
      * @param callback The callback to receive the Web Feed metadata, or null if it is not found.
      */
     public static void queryWebFeedId(String id, Callback<QueryResult> callback) {
@@ -216,7 +214,10 @@ public class WebFeedBridge {
     /** Container for results from an QueryWebFeed request. */
     public static class QueryResult {
         @CalledByNative("QueryResult")
-        public QueryResult(String webFeedId, String title, String url) {
+        public QueryResult(
+                @JniType("std::string") String webFeedId,
+                @JniType("std::string") String title,
+                @JniType("std::string") String url) {
             this.webFeedId = webFeedId;
             this.title = title;
             this.url = url;
@@ -244,7 +245,10 @@ public class WebFeedBridge {
      * @param callback The callback to receive the follow results.
      */
     public static void followFromUrl(
-            Tab tab, GURL url, int webFeedChangeReason, Callback<FollowResults> callback) {
+            Tab tab,
+            @Nullable GURL url,
+            int webFeedChangeReason,
+            Callback<FollowResults> callback) {
         WebFeedBridgeJni.get()
                 .followWebFeed(new WebFeedPageInformation(url, tab), webFeedChangeReason, callback);
     }
@@ -257,7 +261,7 @@ public class WebFeedBridge {
      * @param callback The callback to receive the follow results.
      */
     public static void followFromId(
-            byte[] webFeedId,
+            byte @Nullable [] webFeedId,
             boolean isDurable,
             int webFeedChangeReason,
             Callback<FollowResults> callback) {
@@ -299,23 +303,23 @@ public class WebFeedBridge {
     /** Information about a web page, which may be used to identify an associated Web Feed. */
     public static class WebFeedPageInformation {
         /** The URL of the page. */
-        public final GURL mUrl;
+        public final @Nullable GURL mUrl;
 
         /** The tab hosting the page. */
-        public final Tab mTab;
+        public final @Nullable Tab mTab;
 
-        WebFeedPageInformation(GURL url, Tab tab) {
+        WebFeedPageInformation(@Nullable GURL url, @Nullable Tab tab) {
             mUrl = url;
             mTab = tab;
         }
 
         @CalledByNative("WebFeedPageInformation")
-        GURL getUrl() {
+        @Nullable GURL getUrl() {
             return mUrl;
         }
 
         @CalledByNative("WebFeedPageInformation")
-        Tab getTab() {
+        @Nullable Tab getTab() {
             return mTab;
         }
     }
@@ -329,7 +333,7 @@ public class WebFeedBridge {
                 Callback<FollowResults> callback);
 
         void followWebFeedById(
-                byte[] webFeedId,
+                byte @Nullable [] webFeedId,
                 boolean isDurable,
                 int webFeedChangeReason,
                 Callback<FollowResults> callback);
@@ -353,13 +357,13 @@ public class WebFeedBridge {
 
         void refreshRecommendedFeeds(Callback<Boolean> callback);
 
-        void getRecentVisitCountsToHost(GURL url, Callback<int[]> callback);
+        void getRecentVisitCountsToHost(@Nullable GURL url, Callback<int[]> callback);
 
         void incrementFollowedFromWebPageMenuCount();
 
-        void queryWebFeed(String url, Callback<QueryResult> callback);
+        void queryWebFeed(@JniType("std::string") String url, Callback<QueryResult> callback);
 
-        void queryWebFeedId(String id, Callback<QueryResult> callback);
+        void queryWebFeedId(@JniType("std::string") String id, Callback<QueryResult> callback);
 
         boolean isCormorantEnabledForLocale();
 

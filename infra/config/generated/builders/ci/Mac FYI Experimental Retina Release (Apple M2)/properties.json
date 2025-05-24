@@ -71,7 +71,8 @@
           "builder": "gpu-fyi-try-mac-arm64-apple-m2-exp",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac FYI Experimental Retina Release (Apple M2)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

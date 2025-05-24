@@ -21,12 +21,23 @@ const char* CTPolicyComplianceToString(CTPolicyCompliance status) {
     case CTPolicyCompliance::CT_POLICY_COMPLIANCE_DETAILS_NOT_AVAILABLE:
       return "COMPLIANCE_DETAILS_NOT_AVAILABLE";
     case CTPolicyCompliance::CT_POLICY_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return "unknown";
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "unknown";
+  NOTREACHED();
+}
+
+const char* CTRequirementStatusToString(CTRequirementsStatus status) {
+  switch (status) {
+    case CTRequirementsStatus::CT_NOT_REQUIRED:
+      return "CT_NOT_REQUIRED";
+    case CTRequirementsStatus::CT_REQUIREMENTS_MET:
+      return "CT_REQUIREMENTS_MET";
+    case CTRequirementsStatus::CT_REQUIREMENTS_NOT_MET:
+      return "CT_REQUIREMENTS_NOT_MET";
+  }
+
+  NOTREACHED();
 }
 
 }  // namespace net::ct

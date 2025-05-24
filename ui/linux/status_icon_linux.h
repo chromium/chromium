@@ -12,6 +12,7 @@
 
 namespace gfx {
 class ImageSkia;
+struct VectorIcon;
 }
 
 namespace ui {
@@ -32,6 +33,7 @@ class COMPONENT_EXPORT(LINUX_UI) StatusIconLinux {
     virtual bool HasClickAction() = 0;
 
     virtual const gfx::ImageSkia& GetImage() const = 0;
+    virtual const gfx::VectorIcon* GetIcon() const = 0;
     virtual const std::u16string& GetToolTip() const = 0;
     virtual ui::MenuModel* GetMenuModel() const = 0;
 
@@ -45,7 +47,8 @@ class COMPONENT_EXPORT(LINUX_UI) StatusIconLinux {
   StatusIconLinux();
   virtual ~StatusIconLinux();
 
-  virtual void SetIcon(const gfx::ImageSkia& image) = 0;
+  virtual void SetImage(const gfx::ImageSkia& image) = 0;
+  virtual void SetIcon(const gfx::VectorIcon& icon) = 0;
   virtual void SetToolTip(const std::u16string& tool_tip) = 0;
 
   // Invoked after a call to SetContextMenu() to let the platform-specific

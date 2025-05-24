@@ -60,6 +60,10 @@ float TestWebUI::GetDeviceScaleFactor() {
   return 1.0f;
 }
 
+void TestWebUI::OverrideTitle(const std::u16string& title) {
+  temp_string_ = title;
+}
+
 const std::u16string& TestWebUI::GetOverriddenTitle() {
   return temp_string_;
 }

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../module_header.js';
+import '../module_header.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CalendarEvent} from '../../../calendar_data.mojom-webui.js';
 import {I18nMixinLit, loadTimeData} from '../../../i18n_setup.js';
 import type {OutlookCalendarPageHandlerRemote} from '../../../outlook_calendar.mojom-webui.js';
+import {ParentTrustedDocumentProxy} from '../../microsoft_auth_frame_connector.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
@@ -42,10 +43,12 @@ export class OutlookCalendarModuleElement extends
   static override get properties() {
     return {
       events_: {type: Object},
+      showInfoDialog_: {type: Boolean},
     };
   }
 
-  protected events_: CalendarEvent[];
+  protected accessor events_: CalendarEvent[] = [];
+  protected accessor showInfoDialog_: boolean = false;
 
   private handler_: OutlookCalendarPageHandlerRemote;
 
@@ -59,9 +62,26 @@ export class OutlookCalendarModuleElement extends
     return [
       [
         {
+          action: 'dismiss',
+          icon: 'modules:visibility_off',
+          text: this.i18nRecursive(
+              '', 'modulesDismissForHoursButtonText',
+              'calendarModuleDismissHours'),
+        },
+        {
           action: 'disable',
           icon: 'modules:block',
           text: this.i18n('modulesOutlookCalendarDisableButtonText'),
+        },
+        {
+          action: 'signout',
+          icon: 'modules:logout',
+          text: this.i18n('modulesMicrosoftSignOutButtonText'),
+        },
+        {
+          action: 'info',
+          icon: 'modules:info',
+          text: this.i18n('moduleInfoButtonTitle'),
         },
       ],
       [
@@ -76,6 +96,7 @@ export class OutlookCalendarModuleElement extends
 
   protected onDisableButtonClick_() {
     const disableEvent = new CustomEvent('disable-module', {
+      bubbles: true,
       composed: true,
       detail: {
         message: loadTimeData.getStringF(
@@ -86,10 +107,31 @@ export class OutlookCalendarModuleElement extends
     this.dispatchEvent(disableEvent);
   }
 
-  protected onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
+  protected onInfoButtonClick_() {
+    this.showInfoDialog_ = true;
+  }
+
+  protected onInfoDialogClose_() {
+    this.showInfoDialog_ = false;
+  }
+
+  protected onDismissButtonClick_() {
+    this.handler_.dismissModule();
+    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        message: this.i18n('modulesOutlookCalendarDismissToastMessage'),
+        restoreCallback: () => this.handler_.restoreModule(),
+      },
+    }));
+  }
+
+  protected onSignOutButtonClick_() {
+    ParentTrustedDocumentProxy.getInstance()?.getChildDocument().signOut();
   }
 }
+
 
 customElements.define(
     OutlookCalendarModuleElement.is, OutlookCalendarModuleElement);

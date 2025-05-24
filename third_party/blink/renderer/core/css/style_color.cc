@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_relative_color_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/properties/css_color_function_parser.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
@@ -129,13 +130,15 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
     const CSSValue& channel0,
     const CSSValue& channel1,
     const CSSValue& channel2,
-    const CSSValue* alpha)
+    const CSSValue* alpha,
+    const CSSLengthResolver& length_resolver)
     : UnresolvedColorFunction(UnresolvedColorFunction::Type::kRelativeColor),
       origin_color_(origin_color.color_or_unresolved_color_function_),
       origin_color_type_(ResolveColorOperandType(origin_color)),
       color_interpolation_space_(color_interpolation_space) {
   auto to_channel =
-      [](const CSSValue& value) -> scoped_refptr<const CalculationValue> {
+      [&length_resolver](
+          const CSSValue& value) -> scoped_refptr<const CalculationValue> {
     if (const CSSNumericLiteralValue* numeric =
             DynamicTo<CSSNumericLiteralValue>(value)) {
       if (numeric->IsPercentage()) {
@@ -160,7 +163,7 @@ StyleColor::UnresolvedRelativeColor::UnresolvedRelativeColor(
                                                 Length::ValueRange::kAll);
     } else if (const CSSMathFunctionValue* function =
                    DynamicTo<CSSMathFunctionValue>(value)) {
-      return function->ToCalcValue(CSSToLengthConversionData());
+      return function->ToCalcValue(length_resolver);
     } else {
       NOTREACHED();
     }
@@ -253,18 +256,11 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
   // hsl and hwb are specified with percent reference ranges of 0..100 in
   // channels 1 and 2, but blink::Color represents these values over 0..1.
   // We scale up the origin values so that they pass through computation
-  // correctly, then later, scale them down in the final result.
-  //
-  // https://www.w3.org/TR/css-color-4/#hue-syntax
-  // Channels representing <hue> are normalized to the range [0,360).
-  const bool is_hxx_color_space =
-      (color_interpolation_space_ == Color::ColorSpace::kHSL) ||
-      (color_interpolation_space_ == Color::ColorSpace::kHWB);
-  const bool is_lch_color_space =
-      (color_interpolation_space_ == Color::ColorSpace::kLch) ||
-      (color_interpolation_space_ == Color::ColorSpace::kOklch);
-
-  if (is_hxx_color_space) {
+  // correctly, then later
+  // (in ColorFunctionParser::MakePerColorSpaceAdjustments()), scale them down
+  // in the final result.
+  if (color_interpolation_space_ == Color::ColorSpace::kHSL ||
+      color_interpolation_space_ == Color::ColorSpace::kHWB) {
     keyword_values[1].second *= 100.;
     keyword_values[2].second *= 100.;
   }
@@ -275,7 +271,7 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
 
   auto to_channel_value =
       [&evaluation_input](const CalculationValue* calculation_value,
-                          double channel_percentage) -> std::optional<float> {
+                          double channel_percentage) -> std::optional<double> {
     // The color function metadata table uses NaN to indicate that percentages
     // are not applicable to a given channel. NaN is not suitable as a clamp
     // limit for evaluating a CalculationValue, so translate it into float max.
@@ -288,42 +284,21 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
     return std::nullopt;
   };
 
-  std::array<std::optional<float>, 3> params = {
+  std::array<std::optional<double>, 3> params = {
       to_channel_value(channel0_.get(),
                        function_metadata.channel_percentage[0]),
       to_channel_value(channel1_.get(),
                        function_metadata.channel_percentage[1]),
       to_channel_value(channel2_.get(),
                        function_metadata.channel_percentage[2])};
-  std::optional<float> param_alpha = to_channel_value(alpha_.get(), 1.f);
+  std::optional<double> param_alpha = to_channel_value(alpha_.get(), 1.f);
+  ColorFunctionParser::MakePerColorSpaceAdjustments(
+      /*is_relative_color=*/true,
+      /*is_legacy_syntax=*/false, color_interpolation_space_, params,
+      param_alpha);
 
-  auto wrap_hue_channel = [](std::optional<float>& param) {
-    if (param.has_value()) {
-      // Perform the wrap at double precision to avoid floating-point rounding
-      // drift which is observable at single precision for some values.
-      param.value() =
-          fmod(fmod(static_cast<double>(param.value()), 360.0) + 360.0, 360.0);
-    }
-  };
-  auto scale_down_channel = [](std::optional<float>& param) {
-    if (param.has_value()) {
-      param.value() /= 100.f;
-    }
-  };
-  if (is_hxx_color_space) {
-    wrap_hue_channel(params[0]);
-    scale_down_channel(params[1]);
-    scale_down_channel(params[2]);
-  } else if (is_lch_color_space) {
-    wrap_hue_channel(params[2]);
-  }
-
-  Color result = Color::FromColorSpace(color_interpolation_space_, params[0],
-                                       params[1], params[2], param_alpha);
-  if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
-    result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
-  }
-  return result;
+  return Color::FromColorSpace(color_interpolation_space_, params[0], params[1],
+                               params[2], param_alpha);
 }
 
 bool StyleColor::UnresolvedRelativeColor::operator==(
@@ -350,8 +325,13 @@ Color StyleColor::Resolve(const Color& current_color,
                           mojom::blink::ColorScheme color_scheme,
                           bool* is_current_color) const {
   if (IsUnresolvedColorFunction()) {
-    return color_or_unresolved_color_function_.unresolved_color_function
-        ->Resolve(current_color);
+    Color result =
+        color_or_unresolved_color_function_.unresolved_color_function->Resolve(
+            current_color);
+    if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
+      result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+    }
+    return result;
   }
 
   if (is_current_color) {
@@ -371,15 +351,6 @@ Color StyleColor::Resolve(const Color& current_color,
   return GetColor();
 }
 
-Color StyleColor::ResolveWithAlpha(Color current_color,
-                                   mojom::blink::ColorScheme color_scheme,
-                                   int alpha,
-                                   bool* is_current_color) const {
-  Color color = Resolve(current_color, color_scheme, is_current_color);
-  // TODO(crbug.com/1333988) This looks unfriendly to CSS Color 4.
-  return Color(color.Red(), color.Green(), color.Blue(), alpha);
-}
-
 StyleColor StyleColor::ResolveSystemColor(
     mojom::blink::ColorScheme color_scheme,
     const ui::ColorProvider* color_provider,
@@ -390,15 +361,23 @@ StyleColor StyleColor::ResolveSystemColor(
   return StyleColor(color, color_keyword_);
 }
 
+const CSSValue* StyleColor::ToCSSValue() const {
+  if (IsUnresolvedColorFunction()) {
+    return GetUnresolvedColorFunction().ToCSSValue();
+  }
+  if (IsCurrentColor()) {
+    return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+  }
+  return cssvalue::CSSColor::Create(GetColor());
+}
+
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
                                    bool is_in_web_app_scope) {
-  if (const char* value_name = getValueName(keyword)) {
-    if (const NamedColor* named_color = FindColor(
-            value_name, static_cast<wtf_size_t>(strlen(value_name)))) {
-      return Color::FromRGBA32(named_color->argb_value);
-    }
+  std::string_view value_name = GetCSSValueName(keyword);
+  if (const NamedColor* named_color = FindColor(value_name)) {
+    return Color::FromRGBA32(named_color->argb_value);
   }
 
   return LayoutTheme::GetTheme().SystemColor(
@@ -506,7 +485,7 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
   } else if (color.IsUnresolvedColorFunction()) {
     return stream << color.GetUnresolvedColorFunction();
   } else if (color.HasColorKeyword() && !color.IsNumeric()) {
-    return stream << getValueName(color.GetColorKeyword());
+    return stream << GetCSSValueName(color.GetColorKeyword());
   } else {
     return stream << color.GetColor();
   }

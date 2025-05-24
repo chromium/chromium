@@ -38,6 +38,7 @@ source_set("ui") {
     "password_undo_helper.h",
     "passwords_grouper.cc",
     "passwords_grouper.h",
+    "passwords_provider.h",
     "post_save_compromised_helper.cc",
     "post_save_compromised_helper.h",
     "saved_passwords_presenter.cc",

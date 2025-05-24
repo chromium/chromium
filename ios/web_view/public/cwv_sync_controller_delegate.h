@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class CWVSyncController;
 
 // Delegate of CWVSyncController.
-@protocol CWVSyncControllerDelegate<NSObject>
+@protocol CWVSyncControllerDelegate <NSObject>
 
 @optional
 

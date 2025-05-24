@@ -4,6 +4,7 @@
 
 #include "content/browser/site_instance_group.h"
 
+#include "base/auto_reset.h"
 #include "base/observer_list.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -39,6 +40,10 @@ SiteInstanceGroupId SiteInstanceGroup::GetId() const {
 
 base::SafeRef<SiteInstanceGroup> SiteInstanceGroup::GetSafeRef() {
   return weak_ptr_factory_.GetSafeRef();
+}
+
+base::WeakPtr<SiteInstanceGroup> SiteInstanceGroup::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 base::WeakPtr<SiteInstanceGroup>
@@ -105,13 +110,8 @@ bool SiteInstanceGroup::IsRelatedSiteInstanceGroup(SiteInstanceGroup* group) {
   return browsing_instance_id() == group->browsing_instance_id();
 }
 
-bool SiteInstanceGroup::IsCoopRelatedSiteInstanceGroup(
-    SiteInstanceGroup* group) {
-  return coop_related_group_token() == group->coop_related_group_token();
-}
-
 void SiteInstanceGroup::RenderProcessHostDestroyed(RenderProcessHost* host) {
-  DCHECK_EQ(process_->GetID(), host->GetID());
+  DCHECK_EQ(process_->GetDeprecatedID(), host->GetDeprecatedID());
   process_->RemoveObserver(this);
 
   // Remove references to `this` from all SiteInstances in this group. That will
@@ -148,9 +148,7 @@ SiteInstanceGroup* SiteInstanceGroup::CreateForTesting(
                            WebExposedIsolationInfo::CreateNonIsolated(),
                            /*is_guest=*/false,
                            /*is_fenced=*/false,
-                           /*is_fixed_storage_partition=*/false,
-                           /*coop_related_group=*/nullptr,
-                           /*common_coop_origin=*/std::nullopt),
+                           /*is_fixed_storage_partition=*/false),
       process);
 }
 

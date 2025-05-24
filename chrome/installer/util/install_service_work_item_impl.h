@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/strings/cstring_view.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -115,6 +116,14 @@ class InstallServiceWorkItemImpl {
   // Copies and returns a vector containing a sequence of C-style strings
   // terminated with '\0\0'. Return an empty vector if the input is nullptr.
   static std::vector<wchar_t> MultiSzToVector(const wchar_t* multi_sz);
+
+  // Returns true if a cursory check appears to indicate that the service
+  // hosting `clsid` is installed.
+  static bool IsComServiceInstalled(const GUID& clsid);
+
+  // Returns the current name of the service as registered with the SCM.
+  static std::wstring GetCurrentServiceName(base::wcstring_view service_name,
+                                            base::wcstring_view registry_path);
 
  private:
   class ScHandleTraits {

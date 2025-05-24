@@ -14,17 +14,13 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/functional/bind_internal.h"
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 
 namespace autofill {
-
-namespace {
-static const char kSharedId[] = "shared_id";
-}  // namespace
 
 // Contains virtual functions for per-project implementations of StrikeDatabase
 // to interface from, as well as a pointer to StrikeDatabase. This class is
@@ -42,6 +38,8 @@ class StrikeDatabaseIntegratorBase {
     // Block feature: Not enough time has passed since the last strike.
     kRequiredDelayNotPassed = 2,
   };
+
+  static constexpr char kSharedId[] = "shared_id";
 
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
   virtual ~StrikeDatabaseIntegratorBase();

@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/animation/timing_calculations.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -116,6 +117,11 @@ TimelineRange::ScrollOffsets TimelineRange::ConvertNamedRange(
       // progress visibility range.
       //   100% is equivalent to 100% of the cover range.
       return {align_subject_start_view_start, align_subject_end_view_start};
+
+    case TimelineOffset::NamedRange::kScroll:
+      DCHECK(RuntimeEnabledFeatures::ScrollTimelineNamedRangeScrollEnabled());
+      // Represents the full scroll range of the viewport.
+      return scroll_limits_;
   }
 }
 

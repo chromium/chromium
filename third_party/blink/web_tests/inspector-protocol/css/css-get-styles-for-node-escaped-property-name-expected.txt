@@ -1,0 +1,110 @@
+The test verifies functionality of protocol method CSS.getMatchedStylesForNode and CSS.getInlineStylesForNode when parsing property names with escaped characters
+{
+    id : <number>
+    result : {
+        inlineStyle : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : --\{\&\:a\}b
+                    range : {
+                        endColumn : 18
+                        endLine : 0
+                        startColumn : 0
+                        startLine : 0
+                    }
+                    text : --\{\&\:a\}b: red;
+                    value : red
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : color
+                    range : {
+                        endColumn : 44
+                        endLine : 0
+                        startColumn : 19
+                        startLine : 0
+                    }
+                    text : color: var(--\{\&\:a\}b);
+                    value : var(--\{\&\:a\}b)
+                }
+                [2] : {
+                    name : --{&:a}b
+                    value : red
+                }
+                [3] : {
+                    name : color
+                    value : var(--\{\&\:a\}b)
+                }
+            ]
+            cssText : --\{\&\:a\}b: red; color: var(--\{\&\:a\}b);
+            range : {
+                endColumn : 44
+                endLine : 0
+                startColumn : 0
+                startLine : 0
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+    }
+    sessionId : <string>
+}
+{
+    id : <number>
+    result : {
+        inlineStyle : {
+            cssProperties : [
+                [0] : {
+                    disabled : false
+                    implicit : false
+                    name : --\{\\\:a\}b\\
+                    range : {
+                        endColumn : 20
+                        endLine : 0
+                        startColumn : 0
+                        startLine : 0
+                    }
+                    text : --\{\\\:a\}b\\: red;
+                    value : red
+                }
+                [1] : {
+                    disabled : false
+                    implicit : false
+                    name : color
+                    range : {
+                        endColumn : 48
+                        endLine : 0
+                        startColumn : 21
+                        startLine : 0
+                    }
+                    text : color: var(--\{\\\:a\}b\\);
+                    value : var(--\{\\\:a\}b\\)
+                }
+                [2] : {
+                    name : --{\:a}b\
+                    value : red
+                }
+                [3] : {
+                    name : color
+                    value : var(--\{\\\:a\}b\\)
+                }
+            ]
+            cssText : --\{\\\:a\}b\\: red; color: var(--\{\\\:a\}b\\);
+            range : {
+                endColumn : 48
+                endLine : 0
+                startColumn : 0
+                startLine : 0
+            }
+            shorthandEntries : [
+            ]
+            styleSheetId : <string>
+        }
+    }
+    sessionId : <string>
+}
+

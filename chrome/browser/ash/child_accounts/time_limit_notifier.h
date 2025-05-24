@@ -12,10 +12,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
-namespace base {
-class SequencedTaskRunner;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 }  // namespace content
@@ -48,10 +44,6 @@ class TimeLimitNotifier {
 
  private:
   friend class TimeLimitNotifierTest;
-
-  // For tests, sets up the notification timers using the given task runner.
-  TimeLimitNotifier(content::BrowserContext* context,
-                    scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   const raw_ptr<content::BrowserContext> context_;
 

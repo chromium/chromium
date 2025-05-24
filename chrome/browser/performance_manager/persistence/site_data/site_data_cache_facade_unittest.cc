@@ -23,7 +23,6 @@
 #include "components/performance_manager/persistence/site_data/leveldb_site_data_store.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_factory.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_impl.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -116,15 +115,15 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
   MockSiteDataCache* SetUpMockCache() {
     MockSiteDataCache* mock_cache_raw = nullptr;
     auto browser_context_id = profile()->UniqueId();
-    RunInGraph([&] {
-      auto mock_cache = std::make_unique<MockSiteDataCache>(browser_context_id);
-      mock_cache_raw = mock_cache.get();
 
-      auto* factory = SiteDataCacheFactory::GetInstance();
-      ASSERT_TRUE(factory);
-      factory->SetCacheForTesting(browser_context_id, std::move(mock_cache));
-      factory->SetCacheInspectorForTesting(browser_context_id, mock_cache_raw);
-    });
+    auto mock_cache = std::make_unique<MockSiteDataCache>(browser_context_id);
+    mock_cache_raw = mock_cache.get();
+
+    auto* factory = SiteDataCacheFactory::GetInstance();
+    EXPECT_TRUE(factory);
+    factory->SetCacheForTesting(browser_context_id, std::move(mock_cache));
+    factory->SetCacheInspectorForTesting(browser_context_id, mock_cache_raw);
+
     return mock_cache_raw;
   }
 
@@ -134,36 +133,13 @@ class SiteDataCacheFacadeTest : public testing::TestWithPerformanceManager {
 };
 
 TEST_F(SiteDataCacheFacadeTest, IsDataCacheRecordingForTesting) {
-  bool cache_is_recording = false;
-
   SiteDataCacheFacade data_cache_facade(profile());
   data_cache_facade.WaitUntilCacheInitializedForTesting();
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    data_cache_facade.IsDataCacheRecordingForTesting(
-        base::BindLambdaForTesting([&](bool is_recording) {
-          cache_is_recording = is_recording;
-          std::move(quit_closure).Run();
-        }));
-    run_loop.Run();
-  }
-  EXPECT_TRUE(cache_is_recording);
+  EXPECT_TRUE(data_cache_facade.IsDataCacheRecordingForTesting());
 
   SiteDataCacheFacade off_record_data_cache_facade(
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
-  {
-    base::RunLoop run_loop;
-    auto quit_closure = run_loop.QuitClosure();
-    off_record_data_cache_facade.IsDataCacheRecordingForTesting(
-        base::BindLambdaForTesting([&](bool is_recording) {
-          cache_is_recording = is_recording;
-          quit_closure.Run();
-        }));
-    run_loop.Run();
-  }
-
-  EXPECT_FALSE(cache_is_recording);
+  EXPECT_FALSE(off_record_data_cache_facade.IsDataCacheRecordingForTesting());
 }
 
 // Verify that an origin is removed from the data cache (in memory and on disk)

@@ -55,8 +55,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
     virtual void OnSafeBrowsingHit(const UnsafeResource& resource) = 0;
 
    protected:
-    Observer() {}
-    virtual ~Observer() {}
+    Observer() = default;
+    virtual ~Observer() = default;
   };
 
   // Interface via which the embedder supplies contextual information to
@@ -89,13 +89,11 @@ class SafeBrowsingUIManager : public BaseUIManager {
         const GURL& page_url,
         const std::string& reason,
         int net_error_code) = 0;
-#if !BUILDFLAG(IS_ANDROID)
     virtual void TriggerUrlFilteringInterstitialExtensionEventIfDesired(
         content::WebContents* web_contents,
         const GURL& page_url,
         const std::string& threat_type,
         safe_browsing::RTLookupResponse rt_lookup_response) = 0;
-#endif
 
     // Gets the NoStatePrefetchContents instance associated with |web_contents|
     // if one exists (i.e., if |web_contents| is being prerendered).
@@ -196,9 +194,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
   // DisplayBlockingPage(), which creates it.
   static void CreateAllowlistForTesting(content::WebContents* web_contents);
 
-  static std::string GetThreatTypeStringForInterstitial(
-      safe_browsing::SBThreatType threat_type);
-
   // Add and remove observers. These methods must be invoked on the UI thread.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* remove);
@@ -211,7 +206,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
       const std::string& reason,
       int net_error_code);
 
-#if !BUILDFLAG(IS_ANDROID)
   // Invokes TriggerUrlFilteringInterstitialExtensionEventIfDesired() on
   // |delegate_|.
   void ForwardUrlFilteringInterstitialExtensionEventToEmbedder(
@@ -219,7 +213,6 @@ class SafeBrowsingUIManager : public BaseUIManager {
       const GURL& page_url,
       const std::string& threat_type,
       safe_browsing::RTLookupResponse rt_lookup_response);
-#endif
 
   const std::string app_locale() const override;
   history::HistoryService* history_service(

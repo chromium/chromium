@@ -215,6 +215,10 @@ struct CurrentWallpaper {
   // `WallpaperType::{kDaily, kOnline}`.
   // May be empty string.
   string description_content;
+
+  // Extra description link about the image.
+  // Only set for `WallpaperType::{kDaily, kOnline}`.
+  url.mojom.Url? action_url;
 };
 
 // Receives updated wallpaper information whenever it is changed.
@@ -680,6 +684,9 @@ interface AmbientObserver {
   // and Theme* intefaces.
   OnGeolocationPermissionForSystemServicesChanged(bool enabled,
                                                   bool is_user_modifiable);
+
+  // Notifies the JS side about the ambient theme preview images.
+  OnAmbientThemePreviewImagesChanged(map<AmbientTheme, url.mojom.Url> previews);
 };
 
 // Provides APIs to expose Ambient mode settings.

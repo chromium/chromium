@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/net/fake_stream_socket.h"
 
 #include <algorithm>
@@ -12,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
@@ -98,7 +104,7 @@ class SocketBuffer {
   }
 
   std::vector<char> data_;
-  char* pending_read_data_;
+  raw_ptr<char> pending_read_data_;
   size_t pending_read_len_;
   net::CompletionOnceCallback pending_read_callback_;
   bool eos_ = false;
@@ -202,7 +208,7 @@ bool FakeStreamSocket::WasEverUsed() const {
 }
 
 net::NextProto FakeStreamSocket::GetNegotiatedProtocol() const {
-  return net::kProtoUnknown;
+  return net::NextProto::kProtoUnknown;
 }
 
 bool FakeStreamSocket::GetSSLInfo(net::SSLInfo* /* ssl_info */) {

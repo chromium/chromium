@@ -9,11 +9,11 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/safe_base_name.h"
@@ -28,7 +28,8 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/fileapi/arc_content_file_system_url_util.h"
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -37,14 +38,15 @@
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_arc_tracker.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/webui_url_constants.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -53,6 +55,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "components/user_manager/user_manager.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
@@ -67,56 +70,60 @@ namespace {
 
 ArcOpenUrlDelegateImpl* g_instance = nullptr;
 
-constexpr auto kOSSettingsMap = base::MakeFixedFlatMap<ChromePage,
-                                                       const char*>({
-    {ChromePage::ACCOUNTS,
-     chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2},
-    {ChromePage::AUDIO, chromeos::settings::mojom::kAudioSubpagePath},
-    {ChromePage::BLUETOOTH,
-     chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
-    {ChromePage::BLUETOOTHDEVICES,
-     chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
-    {ChromePage::CUPSPRINTERS,
-     chromeos::settings::mojom::kPrintingDetailsSubpagePath},
-    {ChromePage::DATETIME, chromeos::settings::mojom::kDateAndTimeSectionPath},
-    {ChromePage::DISPLAY, chromeos::settings::mojom::kDisplaySubpagePath},
-    {ChromePage::GRAPHICSTABLET,
-     chromeos::settings::mojom::kGraphicsTabletSubpagePath},
-    {ChromePage::HELP, chromeos::settings::mojom::kAboutChromeOsSectionPath},
-    {ChromePage::KEYBOARDOVERLAY,
-     chromeos::settings::mojom::kKeyboardSubpagePath},
-    {ChromePage::LOCKSCREEN,
-     chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2},
-    {ChromePage::MAIN, ""},
-    {ChromePage::MANAGEACCESSIBILITY,
-     chromeos::settings::mojom::kAccessibilitySectionPath},
-    {ChromePage::MANAGEACCESSIBILITYTTS,
-     chromeos::settings::mojom::kTextToSpeechSubpagePath},
-    {ChromePage::MULTIDEVICE,
-     chromeos::settings::mojom::kMultiDeviceSectionPath},
-    {ChromePage::NETWORKSTYPEVPN,
-     chromeos::settings::mojom::kVpnDetailsSubpagePath},
-    {ChromePage::OSLANGUAGESINPUT,
-     chromeos::settings::mojom::kInputSubpagePath},
-    {ChromePage::OSLANGUAGESLANGUAGES,
-     chromeos::settings::mojom::kLanguagesSubpagePath},
-    {ChromePage::PERDEVICEKEYBOARD,
-     chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath},
-    {ChromePage::PERDEVICEMOUSE,
-     chromeos::settings::mojom::kPerDeviceMouseSubpagePath},
-    {ChromePage::PERDEVICEPOINTINGSTICK,
-     chromeos::settings::mojom::kPerDevicePointingStickSubpagePath},
-    {ChromePage::PERDEVICETOUCHPAD,
-     chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath},
-    {ChromePage::POINTEROVERLAY,
-     chromeos::settings::mojom::kPointersSubpagePath},
-    {ChromePage::POWER, chromeos::settings::mojom::kPowerSubpagePath},
-    {ChromePage::PRIVACYHUB, chromeos::settings::mojom::kPrivacyHubSubpagePath},
-    {ChromePage::SMARTPRIVACY,
-     chromeos::settings::mojom::kSmartPrivacySubpagePath},
-    {ChromePage::STORAGE, chromeos::settings::mojom::kStorageSubpagePath},
-    {ChromePage::WIFI, chromeos::settings::mojom::kWifiNetworksSubpagePath},
-});
+constexpr auto kOSSettingsMap =
+    base::MakeFixedFlatMap<ChromePage, const char*>({
+        {ChromePage::ACCOUNTS,
+         chromeos::settings::mojom::kManageOtherPeopleSubpagePathV2},
+        {ChromePage::AUDIO, chromeos::settings::mojom::kAudioSubpagePath},
+        {ChromePage::BLUETOOTH,
+         chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
+        {ChromePage::BLUETOOTHDEVICES,
+         chromeos::settings::mojom::kBluetoothDevicesSubpagePath},
+        {ChromePage::CUPSPRINTERS,
+         chromeos::settings::mojom::kPrintingDetailsSubpagePath},
+        {ChromePage::DATETIME,
+         chromeos::settings::mojom::kSystemPreferencesSectionPath},
+        {ChromePage::DISPLAY, chromeos::settings::mojom::kDisplaySubpagePath},
+        {ChromePage::GRAPHICSTABLET,
+         chromeos::settings::mojom::kGraphicsTabletSubpagePath},
+        {ChromePage::HELP,
+         chromeos::settings::mojom::kAboutChromeOsSectionPath},
+        {ChromePage::KEYBOARDOVERLAY,
+         chromeos::settings::mojom::kKeyboardSubpagePath},
+        {ChromePage::LOCKSCREEN,
+         chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2},
+        {ChromePage::MAIN, ""},
+        {ChromePage::MANAGEACCESSIBILITY,
+         chromeos::settings::mojom::kAccessibilitySectionPath},
+        {ChromePage::MANAGEACCESSIBILITYTTS,
+         chromeos::settings::mojom::kTextToSpeechSubpagePath},
+        {ChromePage::MULTIDEVICE,
+         chromeos::settings::mojom::kMultiDeviceSectionPath},
+        {ChromePage::NETWORKSTYPEVPN,
+         chromeos::settings::mojom::kVpnDetailsSubpagePath},
+        {ChromePage::OSLANGUAGESINPUT,
+         chromeos::settings::mojom::kInputSubpagePath},
+        {ChromePage::OSLANGUAGESLANGUAGES,
+         chromeos::settings::mojom::kLanguagesSubpagePath},
+        {ChromePage::PERDEVICEKEYBOARD,
+         chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath},
+        {ChromePage::PERDEVICEMOUSE,
+         chromeos::settings::mojom::kPerDeviceMouseSubpagePath},
+        {ChromePage::PERDEVICEPOINTINGSTICK,
+         chromeos::settings::mojom::kPerDevicePointingStickSubpagePath},
+        {ChromePage::PERDEVICETOUCHPAD,
+         chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath},
+        {ChromePage::POINTEROVERLAY,
+         chromeos::settings::mojom::kPointersSubpagePath},
+        {ChromePage::POWER, chromeos::settings::mojom::kPowerSubpagePath},
+        {ChromePage::PRIVACYHUB,
+         chromeos::settings::mojom::kPrivacyHubSubpagePath},
+        {ChromePage::SMARTPRIVACY,
+         chromeos::settings::mojom::kSmartPrivacySubpagePath},
+        {ChromePage::STORAGE, chromeos::settings::mojom::kStorageSubpagePath},
+        {ChromePage::WIFI, chromeos::settings::mojom::kWifiNetworksSubpagePath},
+        {ChromePage::NETWORKS, chromeos::settings::mojom::kNetworkSectionPath},
+    });
 
 constexpr auto kBrowserSettingsMap =
     base::MakeFixedFlatMap<ChromePage, const char*>({
@@ -200,45 +207,6 @@ apps::IntentPtr ConvertLaunchIntent(
   return intent;
 }
 
-// Finds the best matching web app that can handle the |url|.
-std::optional<std::string> FindWebAppForURL(Profile* profile, const GURL& url) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
-  if (!proxy) {
-    return std::nullopt;
-  }
-
-  std::vector<std::string> app_ids = proxy->GetAppIdsForUrl(
-      url, /*exclude_browsers=*/true, /*exclude_browser_tab_apps=*/true);
-
-  std::string best_match;
-  size_t best_match_length = 0;
-  for (const std::string& app_id : app_ids) {
-    // Among all the matched apps, select a web app with the longest matching
-    // scope.
-    size_t match_length = 0;
-    proxy->AppRegistryCache().ForOneApp(
-        app_id, [&url, &match_length](const apps::AppUpdate& update) {
-          if (update.AppType() != apps::AppType::kWeb) {
-            return;
-          }
-          for (const auto& filter : update.IntentFilters()) {
-            match_length =
-                std::max(match_length,
-                         apps_util::IntentFilterUrlMatchLength(filter, url));
-          }
-        });
-    if (match_length > best_match_length) {
-      best_match_length = match_length;
-      best_match = app_id;
-    }
-  }
-  if (best_match.empty()) {
-    return std::nullopt;
-  }
-  return best_match;
-}
-
 }  // namespace
 
 ArcOpenUrlDelegateImpl::ArcOpenUrlDelegateImpl() {
@@ -258,27 +226,11 @@ ArcOpenUrlDelegateImpl* ArcOpenUrlDelegateImpl::GetForTesting() {
 }
 
 void ArcOpenUrlDelegateImpl::OpenUrlFromArc(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return;
-
-  GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
-  // If Lacros is enabled, convert externalfile:// url into file:// url
-  // managed by the FuseBox moniker system because Lacros cannot handle
-  // externalfile:// urls.
-  // TODO(crbug.com/1374575): Check if other externalfile:// urls can use the
-  // same logic. If so, move this code into CrosapiNewWindowDelegate::OpenUrl()
-  // which is only for Lacros.
-  if (crosapi::browser_util::IsLacrosEnabled() &&
-      url_to_open.SchemeIs(content::kExternalFileScheme)) {
-    Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(
-        user_manager::UserManager::Get()->GetPrimaryUser());
-    // `profile` may be null if sign-in has happened but the profile isn't
-    // loaded yet.
-    if (!profile)
-      return;
-    url_to_open = ConvertToMonikerFileUrl(profile, url);
   }
 
+  GURL url_to_open = ConvertArcUrlToExternalFileUrlIfNeeded(url);
   ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       url_to_open, ash::NewWindowDelegate::OpenUrlFrom::kArc,
       ash::NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -292,20 +244,20 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   // opened through here to be installed in the profile associated with ARC.
   // |user| may be null if sign-in hasn't happened yet
   const auto* user = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!user)
+  if (!user) {
     return;
+  }
 
   // `profile` may be null if sign-in has happened but the profile isn't loaded
   // yet.
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   std::optional<webapps::AppId> app_id =
-      web_app::IsWebAppsCrosapiEnabled()
-          ? FindWebAppForURL(profile, url)
-          : web_app::FindInstalledAppWithUrlInScope(profile, url,
-                                                    /*window_only=*/true);
+      web_app::FindInstalledAppWithUrlInScope(profile, url,
+                                              /*window_only=*/true);
 
   if (!app_id) {
     OpenUrlFromArc(url);
@@ -337,27 +289,32 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
-  if (!prefs)
+  if (!prefs) {
     return;
+  }
 
   std::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id.value());
-  if (!package_name.has_value())
+  if (!package_name.has_value()) {
     return;
+  }
 
   ChromeShelfController* chrome_shelf_controller =
       ChromeShelfController::instance();
-  if (!chrome_shelf_controller)
+  if (!chrome_shelf_controller) {
     return;
+  }
 
   auto* arc_tracker =
       chrome_shelf_controller->app_service_app_window_controller()
           ->app_service_arc_tracker();
-  if (!arc_tracker)
+  if (!arc_tracker) {
     return;
+  }
 
-  for (const auto& id : prefs->GetAppsForPackage(package_name.value()))
+  for (const auto& id : prefs->GetAppsForPackage(package_name.value())) {
     arc_tracker->CloseWindows(id);
+  }
 }
 
 void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
@@ -376,22 +333,23 @@ void ArcOpenUrlDelegateImpl::OpenArcCustomTab(
   auto custom_tab = std::make_unique<arc::CustomTab>(arc_window);
   auto web_contents = arc::CreateArcCustomTabWebContents(profile, url);
 
+  const user_manager::User& user = CHECK_DEREF(
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile));
+
   // |custom_tab_browser| will be destroyed when its tab strip becomes empty,
   // either due to the user opening the custom tab page in a tabbed browser or
   // because of the CustomTabSessionImpl object getting destroyed.
-  Browser::CreateParams params(Browser::TYPE_CUSTOM_TAB, profile,
-                               /*user_gesture=*/true);
-  params.omit_from_session_restore = true;
-  auto* custom_tab_browser = Browser::Create(params);
-
-  custom_tab_browser->tab_strip_model()->AppendWebContents(
-      std::move(web_contents), /* foreground= */ true);
+  ash::BrowserDelegate* custom_tab_browser =
+      ash::BrowserController::GetInstance()->CreateCustomTab(
+          user, std::move(web_contents));
+  CHECK(custom_tab_browser);
 
   // TODO(crbug.com/41454219): Remove this temporary conversion to InterfacePtr
-  // once OnOpenCustomTab from //ash/components/arc/mojom/intent_helper.mojom
-  // could take pending_remote directly. Refer to crrev.com/c/1868870.
-  auto custom_tab_remote(
-      CustomTabSessionImpl::Create(std::move(custom_tab), custom_tab_browser));
+  // once OnOpenCustomTab from
+  // //chromeos/ash/experiences/arc/mojom/intent_helper.mojom could take
+  // pending_remote directly. Refer to crrev.com/c/1868870.
+  auto custom_tab_remote(CustomTabSessionImpl::Create(
+      std::move(custom_tab), &custom_tab_browser->GetBrowser()));
   std::move(callback).Run(std::move(custom_tab_remote));
 }
 
@@ -415,7 +373,7 @@ void ArcOpenUrlDelegateImpl::OpenChromePageFromArc(ChromePage page) {
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
@@ -433,8 +391,9 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
   // |profile| may be null if sign-in has happened but the profile isn't loaded
   // yet.
   Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (!profile)
+  if (!profile) {
     return;
+  }
 
   webapps::AppId app_id =
       web_app::GenerateAppId(/*manifest_id=*/std::nullopt, start_url);
@@ -447,8 +406,9 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
       });
 
   if (!app_installed) {
-    if (arc_intent->data)
+    if (arc_intent->data) {
       OpenUrlFromArc(*arc_intent->data);
+    }
     return;
   }
 

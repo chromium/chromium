@@ -91,12 +91,17 @@ SolidColorScrollbarLayer::GetScrollbarLayerType() const {
   return kSolidColor;
 }
 
-void SolidColorScrollbarLayer::PushPropertiesTo(
+void SolidColorScrollbarLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state, unsafe_state);
-  static_cast<SolidColorScrollbarLayerImpl*>(layer)->set_color(color());
+  ScrollbarLayerBase::PushDirtyPropertiesTo(layer, dirty_flag, commit_state,
+                                            unsafe_state);
+
+  if (dirty_flag & kChangedGeneralProperty) {
+    static_cast<SolidColorScrollbarLayerImpl*>(layer)->set_color(color());
+  }
 }
 
 void SolidColorScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {

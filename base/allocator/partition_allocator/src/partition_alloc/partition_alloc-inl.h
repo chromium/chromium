@@ -5,13 +5,13 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_INL_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_INL_H_
 
-#include <algorithm>
 #include <cstring>
 
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/cxx_wrapper/algorithm.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/random.h"
 #include "partition_alloc/tagging.h"
@@ -65,29 +65,13 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   // faster. Note that for direct-mapped allocations, memory is decomitted at
   // free() time, so freed memory usage cannot happen.
 
-#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
+#if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION) && PA_BUILDFLAG(ENABLE_PKEYS)
   LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
   size_t size_to_memset = std::min(size, size_t{1} << 19);
   memset(ptr, value, size_to_memset);
 }
 #endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
-
-// Returns true if we've hit the end of a random-length period. We don't want to
-// invoke `RandomValue` too often, because we call this function in a hot spot
-// (`Free`), and `RandomValue` incurs the cost of atomics.
-#if !PA_BUILDFLAG(DCHECKS_ARE_ON)
-PA_ALWAYS_INLINE bool RandomPeriod() {
-  static thread_local uint8_t counter = 0;
-  if (counter == 0) [[unlikely]] {
-    // It's OK to truncate this value.
-    counter = static_cast<uint8_t>(RandomValue());
-  }
-  // If `counter` is 0, this will wrap. That is intentional and OK.
-  counter--;
-  return counter == 0;
-}
-#endif  // !PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 PA_ALWAYS_INLINE uintptr_t ObjectInnerPtr2Addr(const void* ptr) {
   return UntagPtr(ptr);

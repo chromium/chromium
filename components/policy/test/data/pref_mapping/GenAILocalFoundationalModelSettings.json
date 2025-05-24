@@ -4,31 +4,16 @@
       "win",
       "linux",
       "mac",
-      "chromeos_lacros"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "GenAILocalFoundationalModelSettings": 0
-        },
-        "prefs": {
-          "optimization_guide.gen_ai_local_foundational_model_settings": {
-            "value": 0,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "GenAILocalFoundationalModelSettings": 1
-        },
-        "prefs": {
-          "optimization_guide.gen_ai_local_foundational_model_settings": {
-            "value": 1,
-            "location": "local_state"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "optimization_guide.gen_ai_local_foundational_model_settings",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
   }
 ]

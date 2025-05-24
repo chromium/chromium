@@ -14,7 +14,9 @@ class LoginUIPrefController {
  public:
   // Applies effects of login-screen prefs, e.g., mouse and touchpad settings
   // that are coming from the owner user and/or device policies.
-  LoginUIPrefController();
+  // `session_state` specifies whether it's the first (primary user) or
+  // subsequent (secondary user) login.
+  explicit LoginUIPrefController(bool update_geolocation_usage_allowed);
   LoginUIPrefController(const LoginUIPrefController&) = delete;
   LoginUIPrefController& operator=(const LoginUIPrefController&) = delete;
   ~LoginUIPrefController();
@@ -36,6 +38,8 @@ class LoginUIPrefController {
   void UpdateGeolocationUsageAllowed();
 
   PrefChangeRegistrar pref_change_registrar_;
+
+  bool update_geolocation_usage_allowed_;
 
   base::WeakPtrFactory<LoginUIPrefController> weak_factory_{this};
 };

@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/native_theme/native_theme.h"
@@ -84,12 +85,13 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
   SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   SetTitle(controller_->GetHeader());
-  SetOwnedByWidget(false);
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](MediaGalleriesDialogViews* dialog) {
-        dialog->controller_->DialogFinished(dialog->accepted_);
-      },
-      this));
+  RegisterDeleteDelegateCallback(
+      RegisterDeleteCallbackPassKey(),
+      base::BindOnce(
+          [](MediaGalleriesDialogViews* dialog) {
+            dialog->controller_->DialogFinished(dialog->accepted_);
+          },
+          this));
 
   std::u16string label = controller_->GetAuxiliaryButtonText();
   if (!label.empty()) {
@@ -110,8 +112,9 @@ MediaGalleriesDialogViews::MediaGalleriesDialogViews(
 }
 
 MediaGalleriesDialogViews::~MediaGalleriesDialogViews() {
-  if (!ControllerHasWebContents())
+  if (!ControllerHasWebContents()) {
     delete contents_;
+  }
 }
 
 void MediaGalleriesDialogViews::AcceptDialogForTesting() {
@@ -198,8 +201,9 @@ void MediaGalleriesDialogViews::UpdateGalleries() {
   InitChildViews();
   contents_->DeprecatedLayoutImmediately();
 
-  if (ControllerHasWebContents())
+  if (ControllerHasWebContents()) {
     DialogModelChanged();
+  }
 }
 
 bool MediaGalleriesDialogViews::AddOrUpdateGallery(
@@ -254,7 +258,7 @@ bool MediaGalleriesDialogViews::IsDialogButtonEnabled(
 void MediaGalleriesDialogViews::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   for (CheckboxMap::const_iterator iter = checkbox_map_.begin();
        iter != checkbox_map_.end(); ++iter) {
     if (iter->second->Contains(source)) {
@@ -264,9 +268,10 @@ void MediaGalleriesDialogViews::ShowContextMenuForViewImpl(
   }
 }
 
-void MediaGalleriesDialogViews::ShowContextMenu(const gfx::Point& point,
-                                                ui::MenuSourceType source_type,
-                                                MediaGalleryPrefId id) {
+void MediaGalleriesDialogViews::ShowContextMenu(
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type,
+    MediaGalleryPrefId id) {
   context_menu_runner_ = std::make_unique<views::MenuRunner>(
       controller_->GetContextMenu(id),
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
@@ -285,8 +290,9 @@ bool MediaGalleriesDialogViews::ControllerHasWebContents() const {
 void MediaGalleriesDialogViews::ButtonPressed(base::RepeatingClosure closure) {
   confirm_available_ = true;
 
-  if (ControllerHasWebContents())
+  if (ControllerHasWebContents()) {
     DialogModelChanged();
+  }
 
   closure.Run();
 }

@@ -40,47 +40,53 @@ class FakeStartupTabProvider : public StartupTabProvider {
   StartupTabs GetDistributionFirstRunTabs(
       StartupBrowserCreator* browser_creator) const override {
     StartupTabs tabs;
-    if (options_ & kDistributionFirstRunTabs)
+    if (options_ & kDistributionFirstRunTabs) {
       tabs.emplace_back(GURL("https://distribution"));
+    }
     return tabs;
   }
 
   StartupTabs GetResetTriggerTabs(Profile* profile) const override {
     StartupTabs tabs;
-    if (options_ & kResetTriggerTabs)
+    if (options_ & kResetTriggerTabs) {
       tabs.emplace_back(GURL("https://reset-trigger"));
+    }
     return tabs;
   }
 
   StartupTabs GetPinnedTabs(const base::CommandLine& command_line_,
                             Profile* profile) const override {
     StartupTabs tabs;
-    if (options_ & kPinnedTabs)
+    if (options_ & kPinnedTabs) {
       tabs.emplace_back(GURL("https://pinned"), StartupTab::Type::kPinned);
+    }
     return tabs;
   }
 
   StartupTabs GetPreferencesTabs(const base::CommandLine& command_line_,
                                  Profile* profile) const override {
     StartupTabs tabs;
-    if (options_ & kPreferencesTabs)
+    if (options_ & kPreferencesTabs) {
       tabs.emplace_back(GURL("https://prefs"));
+    }
     return tabs;
   }
 
   StartupTabs GetNewTabPageTabs(const base::CommandLine& command_line_,
                                 Profile* profile) const override {
     StartupTabs tabs;
-    if (options_ & kNewTabPageTabs)
+    if (options_ & kNewTabPageTabs) {
       tabs.emplace_back(GURL("https://new-tab"));
+    }
     return tabs;
   }
 
   StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const override {
     StartupTabs tabs;
-    if (has_incompatible_applications && (options_ & kPostCrashTabs))
+    if (has_incompatible_applications && (options_ & kPostCrashTabs)) {
       tabs.emplace_back(GURL("https://incompatible-applications"));
+    }
     return tabs;
   }
 
@@ -88,8 +94,9 @@ class FakeStartupTabProvider : public StartupTabProvider {
                                  const base::FilePath& cur_dir,
                                  Profile* profile) const override {
     StartupTabs tabs;
-    if (options_ & kCommandLineTabs)
+    if (options_ & kCommandLineTabs) {
       tabs.emplace_back(GURL("https://cmd-line"));
+    }
     return tabs;
   }
 
@@ -103,8 +110,9 @@ class FakeStartupTabProvider : public StartupTabProvider {
 #if !BUILDFLAG(IS_ANDROID)
   StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override {
     StartupTabs tabs;
-    if (options_ & kNewFeaturesTabs)
+    if (options_ & kNewFeaturesTabs) {
       tabs.emplace_back(GURL("https://whats-new/"));
+    }
     return tabs;
   }
 
@@ -112,8 +120,9 @@ class FakeStartupTabProvider : public StartupTabProvider {
       Profile* profile,
       const StartupTabs& other_startup_tabs) const override {
     StartupTabs tabs;
-    if (options_ & kPrivacySandboxTabs)
+    if (options_ & kPrivacySandboxTabs) {
       tabs.emplace_back(GURL("https://privacy-sandbox"));
+    }
     return tabs;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -419,7 +428,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
 
   std::vector<std::string> expected_tab_hosts;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    expected_tab_hosts.emplace_back("new-tab");
+  expected_tab_hosts.emplace_back("new-tab");
 #else
   // Onboarding is not supported and has no effect.
   expected_tab_hosts.emplace_back("whats-new");

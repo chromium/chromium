@@ -47,16 +47,16 @@ public class StatusIndicatorCoordinator {
         default void onStatusIndicatorShowAnimationEnd() {}
     }
 
-    private StatusIndicatorMediator mMediator;
-    private StatusIndicatorSceneLayer mSceneLayer;
+    private final StatusIndicatorMediator mMediator;
+    private final StatusIndicatorSceneLayer mSceneLayer;
     private boolean mIsShowing;
     private Runnable mRemoveOnLayoutChangeListener;
     private int mResourceId;
     private ViewResourceAdapter mResourceAdapter;
-    private ResourceManager mResourceManager;
+    private final ResourceManager mResourceManager;
     private boolean mResourceRegistered;
-    private Activity mActivity;
-    private Callback<Runnable> mRequestRender;
+    private final Activity mActivity;
+    private final Callback<Runnable> mRequestRender;
     private boolean mInitialized;
 
     /**

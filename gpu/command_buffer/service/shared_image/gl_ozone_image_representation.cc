@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_gl_textures_holder.h"
-#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_fence.h"
@@ -82,9 +81,13 @@ void GLTexturePassthroughOzoneImageRepresentation::EndAccess() {
   // ChromeOS VMs don't support gpu fences, so there is no good way to
   // synchronize with GL.
   if (gl::GLFence::IsGpuFenceSupported() && need_end_fence_) {
-    auto gl_fence = gl::GLFence::CreateForGpuFence();
-    DCHECK(gl_fence);
-    fence = gl_fence->GetGpuFence()->GetGpuFenceHandle().Clone();
+    if (auto gl_fence = gl::GLFence::CreateForGpuFence()) {
+      auto gpu_fence = gl_fence->GetGpuFence();
+      CHECK(gpu_fence);
+      fence = gpu_fence->GetGpuFenceHandle().Clone();
+    } else {
+      DLOG(ERROR) << "Failed to create GPU fence";
+    }
   }
   bool readonly =
       current_access_mode_ != GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM;

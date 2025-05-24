@@ -5,6 +5,7 @@ ci/Win x64 Builder
 ci/Win x64 Builder (dbg)
 ci/Win10 Tests x64
 ci/Win10 Tests x64 (dbg)
+ci/Win10 Tests x86
 ci/Win11 Tests x64
 ci/Windows deterministic
 ci/win-archive-rel
@@ -20,8 +21,6 @@ try/win-arm64-clobber-rel
 try/win-arm64-compile-dbg
 try/win-arm64-dbg
 try/win-arm64-rel
-try/win-arm64-rel-compilator
 try/win-clobber-rel
-try/win11-23h2-rel
 try/win11-rel
 try/win32-clobber-rel

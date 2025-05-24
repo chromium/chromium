@@ -181,8 +181,7 @@ std::optional<AnimationTimeDelta> TimingCalculations::CalculateActiveTime(
       DCHECK(!local_time.has_value());
       return std::nullopt;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 }
 
@@ -300,11 +299,9 @@ bool TimingCalculations::IsCurrentDirectionForwards(
     std::optional<double> current_iteration,
     Timing::PlaybackDirection direction) {
   const bool current_iteration_is_even =
-      !current_iteration ? false
-                         : (std::isinf(current_iteration.value())
-                                ? true
-                                : IsWithinAnimationTimeEpsilon(
-                                      fmod(current_iteration.value(), 2), 0));
+      current_iteration &&
+      (std::isinf(current_iteration.value()) ||
+       IsWithinAnimationTimeEpsilon(fmod(current_iteration.value(), 2), 0));
 
   switch (direction) {
     case Timing::PlaybackDirection::NORMAL:

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fa">
+<translation id="1122068467107743258">محل کار</translation>
 <translation id="1275718070701477396">انتخاب شد</translation>
 <translation id="138513070655895675">تغییر به روش پرداخت دیگر بااستفاده از این گزینه منو.</translation>
 <translation id="2129442648318919291">مدیریت نشانی‌ها.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">اطلاعات ارسال</translation>
 <translation id="8873105120914375071">می‌خواهید سریع‌تر تصفیه حساب کنید؟</translation>
 <translation id="9032876013752408138">تکمیل خودکار اطلاعات</translation>
+<translation id="932327136139879170">منزل</translation>
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 </translationbundle>

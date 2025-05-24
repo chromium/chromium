@@ -1,0 +1,11 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++listBox name='selection_list'
+++++++++genericContainer ignored
+++++++++++group name='Enabled'
+++++++++++++genericContainer ignored
+++++++++++++++listBoxOption name='One' selected=false
+++++++++++++++listBoxOption name='Two' selected=false
+++++++++++++++listBoxOption name='Three' selected=false
+++++++++++++++listBoxOption name='Four' selected=false

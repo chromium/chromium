@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
@@ -249,7 +250,7 @@ void DrmOverlayValidatorTest::AddPlane(const OverlaySurfaceCandidate& params) {
       GetFourCCFormatFromBufferFormat(params.format), params.buffer_size);
   plane_list_.emplace_back(
       std::move(drm_framebuffer), params.color_space, params.plane_z_order,
-      absl::get<gfx::OverlayTransform>(params.transform), gfx::Rect(),
+      std::get<gfx::OverlayTransform>(params.transform), gfx::Rect(),
       gfx::ToNearestRect(params.display_rect), params.crop_rect, true, nullptr);
 }
 

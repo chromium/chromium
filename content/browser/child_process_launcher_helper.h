@@ -59,7 +59,8 @@ namespace base {
 class CommandLine;
 
 #if BUILDFLAG(IS_IOS)
-class MachPortRendezvousServer;
+class MachPortRendezvousServerIOS;
+class ScopedTempDir;
 #endif
 }
 
@@ -133,8 +134,12 @@ class ChildProcessLauncherHelper
       mojo::OutgoingInvitation mojo_invitation,
       const mojo::ProcessErrorCallback& process_error_callback,
       std::unique_ptr<ChildProcessLauncherFileData> file_data,
-      base::UnsafeSharedMemoryRegion histogram_memory_region,
-      base::ReadOnlySharedMemoryRegion tracing_config_memory_region);
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          histogram_memory_region,
+      scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+          tracing_config_memory_region,
+      scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+          tracing_output_memory_region);
 
   // The methods below are defined in the order they are called.
 
@@ -186,6 +191,14 @@ class ChildProcessLauncherHelper
       bool* is_synchronous_launch,
       int* launch_result);
 
+#if BUILDFLAG(IS_WIN)
+  // This is the callback target that handles the result from
+  // StartSandboxedProcess().
+  void FinishStartSandboxedProcessOnLauncherThread(base::Process process,
+                                                   DWORD last_error,
+                                                   int launch_result);
+#endif
+
   // Called right after the process has been launched, whether it was created
   // successfully or not. If the process launch is asynchronous, the process may
   // not yet be created. Platform specific.
@@ -195,6 +208,9 @@ class ChildProcessLauncherHelper
 
   // Called once the process has been created, successfully or not.
   void PostLaunchOnLauncherThread(ChildProcessLauncherHelper::Process process,
+#if BUILDFLAG(IS_WIN)
+                                  DWORD last_error,
+#endif
                                   int launch_result);
 
   // Posted by PostLaunchOnLauncherThread onto the client thread.
@@ -226,6 +242,8 @@ class ChildProcessLauncherHelper
   void OnChildProcessStarted(pid_t process_id,
                              std::unique_ptr<LaunchResult> launch_result);
   void ClearProcessStorage();
+  void SetExitCode(int exit_code);
+  std::optional<int> GetExitCode();
 
 #if defined(__OBJC__)
   NSObject* GetProcess();
@@ -293,12 +311,6 @@ class ChildProcessLauncherHelper
   std::optional<base::ProcessId> process_id_ = std::nullopt;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // The priority of the process. The state is stored to avoid changing the
-  // setting repeatedly.
-  std::optional<base::Process::Priority> priority_;
-#endif
-
   // The PlatformChannel that will be used to transmit an invitation to the
   // child process in most cases. Only used if the platform's helper
   // implementation doesn't return a server endpoint from
@@ -319,11 +331,11 @@ class ChildProcessLauncherHelper
 
 #if BUILDFLAG(IS_MAC)
   std::unique_ptr<sandbox::SeatbeltExecClient> seatbelt_exec_client_;
-  sandbox::mac::SandboxPolicy policy_;
+  std::string serialized_policy_;
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_IOS)
-  std::unique_ptr<base::MachPortRendezvousServer> rendezvous_server_;
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+  std::unique_ptr<base::MachPortRendezvousServerIOS> rendezvous_server_;
   std::unique_ptr<ProcessStorageBase> process_storage_;
 #endif
 
@@ -343,11 +355,27 @@ class ChildProcessLauncherHelper
   base::win::ScopedHandle log_handle_;
 #endif
 
-  // Histogram shared memory region metadata.
-  base::UnsafeSharedMemoryRegion histogram_memory_region_;
+#if BUILDFLAG(IS_IOS)
+  std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
+  std::optional<int> exit_code_;
+#endif
 
-  // Startup tracing config shared memory region.
-  base::ReadOnlySharedMemoryRegion tracing_config_memory_region_;
+  // Histogram shared memory region. Ownership of the memory region object is
+  // shared with the process host which runs, and is destroyed, asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      histogram_memory_region_;
+
+  // Startup tracing config shared memory region. Ownership of the memory region
+  // object is shared with the process host which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::ReadOnlySharedMemoryRegion>>
+      tracing_config_memory_region_;
+
+  // Startup tracing output shared memory region. Ownership of the memory region
+  // object is shared with the process host which runs, and is destroyed,
+  // asynchronously.
+  scoped_refptr<base::RefCountedData<base::UnsafeSharedMemoryRegion>>
+      tracing_output_memory_region_;
 
   // Creation time of the helper, used for metrics.
   // TODO(crbug.com/40287847): Remove when parallel launching is finished.

@@ -37,8 +37,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 
-namespace chrome {
-namespace startup {
+namespace chrome::startup {
 
 namespace {
 
@@ -158,8 +157,9 @@ base::Value GetWebApps::GetInstalledWebApps() {
 base::Value GetWebApps::GetOpenWebApps() {
   base::flat_map<std::string, base::Value::List> open_apps;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->type() != Browser::Type::TYPE_APP)
+    if (browser->type() != Browser::Type::TYPE_APP) {
       continue;
+    }
     std::string app_profile_base_name =
         browser->profile()->GetBaseName().AsUTF8Unsafe();
     if (!profile_base_name_.empty() &&
@@ -214,5 +214,4 @@ void WriteWebAppsToFile(const base::FilePath& output_file,
   GetWebApps::Start(output_file, profile_base_name);
 }
 
-}  // namespace startup
-}  // namespace chrome
+}  // namespace chrome::startup

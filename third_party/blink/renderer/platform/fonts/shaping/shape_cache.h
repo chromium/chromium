@@ -24,13 +24,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_SHAPE_CACHE_H_
+
+#include <algorithm>
 
 #include "base/containers/span.h"
 #include "base/hash/hash.h"
@@ -68,25 +65,24 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
           direction_(static_cast<unsigned>(direction)) {
       DCHECK(characters.size() <= kCapacity);
       // Up-convert from LChar to UChar.
-      for (uint16_t i = 0; i < characters.size(); ++i) {
-        characters_[i] = characters[i];
-      }
-
-      hash_ = static_cast<unsigned>(base::FastHash(
-          base::as_bytes(base::make_span(characters_, length_))));
+      std::ranges::copy(characters, characters_);
+      hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 
     SmallStringKey(base::span<const UChar> characters, TextDirection direction)
         : length_(static_cast<uint16_t>(characters.size())),
           direction_(static_cast<unsigned>(direction)) {
       DCHECK(characters.size() <= kCapacity);
-      memcpy(characters_, characters.data(), characters.size_bytes());
-      hash_ = static_cast<unsigned>(base::FastHash(
-          base::as_bytes(base::make_span(characters_, length_))));
+      base::span(characters_).copy_prefix_from(characters);
+      hash_ = static_cast<unsigned>(base::FastHash(base::as_byte_span(*this)));
     }
 
-    const UChar* Characters() const { return characters_; }
     uint16_t length() const { return length_; }
+    const UChar* begin() const { return characters_; }
+    const UChar* end() const {
+      // SAFETY: Constructors ensures `length_ <= kCapacity`.
+      return UNSAFE_BUFFERS(characters_ + length_);
+    }
     TextDirection Direction() const {
       return static_cast<TextDirection>(direction_);
     }
@@ -121,11 +117,11 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
     visitor->Trace(short_string_map_);
   }
 
-  ShapeCacheEntry* Add(const TextRun& run, ShapeCacheEntry entry) {
+  ShapeCacheEntry* Add(const TextRun& run) {
     if (run.length() > SmallStringKey::Capacity())
       return nullptr;
 
-    return AddSlowCase(run, std::move(entry));
+    return AddSlowCase(run);
   }
 
   void ClearIfVersionChanged(unsigned version) {
@@ -156,7 +152,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
   }
 
  private:
-  ShapeCacheEntry* AddSlowCase(const TextRun& run, ShapeCacheEntry entry) {
+  ShapeCacheEntry* AddSlowCase(const TextRun& run) {
     bool is_new_entry;
     ShapeCacheEntry* value;
     if (run.length() == 1) {
@@ -166,7 +162,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
       if (run.Direction() == TextDirection::kRtl)
         key |= (1u << 31);
       SingleCharMap::AddResult add_result =
-          single_char_map_.insert(key, std::move(entry));
+          single_char_map_.insert(key, ShapeCacheEntry());
       is_new_entry = add_result.is_new_entry;
       value = &add_result.stored_value->value;
     } else {
@@ -177,7 +173,7 @@ class ShapeCache : public GarbageCollected<ShapeCache> {
         small_string_key = SmallStringKey(run.Span16(), run.Direction());
       }
       SmallStringMap::AddResult add_result =
-          short_string_map_.insert(small_string_key, std::move(entry));
+          short_string_map_.insert(small_string_key, ShapeCacheEntry());
       is_new_entry = add_result.is_new_entry;
       value = &add_result.stored_value->value;
     }
@@ -230,7 +226,7 @@ inline bool operator==(const ShapeCache::SmallStringKey& a,
                        const ShapeCache::SmallStringKey& b) {
   if (a.length() != b.length() || a.Direction() != b.Direction())
     return false;
-  return WTF::Equal(a.Characters(), b.Characters(), a.length());
+  return base::span(a) == base::span(b);
 }
 
 }  // namespace blink

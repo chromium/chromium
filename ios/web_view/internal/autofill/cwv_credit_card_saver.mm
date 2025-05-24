@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
+#import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "ios/web/public/thread/web_task_traits.h"
-#include "ios/web/public/thread/web_thread.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
 #import "net/base/apple/url_conversions.h"
-#include "ui/gfx/range/range.h"
+#import "ui/gfx/range/range.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

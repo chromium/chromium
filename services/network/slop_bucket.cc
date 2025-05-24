@@ -458,8 +458,7 @@ class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
     // that can be stored in a size_t.
     filled_up_to_ += bytes;
     CHECK_LE(filled_up_to_, chunk_size);
-    data_ += bytes;
-    size_ -= bytes;
+    SetSpan(span().subspan(bytes));
   }
 
   // Notes that `bytes` bytes have been written to the mojo data pipe and should
@@ -495,7 +494,7 @@ class SlopBucket::ChunkIOBuffer final : public net::IOBuffer {
  private:
   ~ChunkIOBuffer() override {
     // Prevent the base class from trying to free `data_`.
-    data_ = nullptr;
+    ClearSpan();
     // Return the chunk to the pool.
     Manager::Get().ReleaseChunk(std::move(base_));
   }

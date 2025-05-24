@@ -32,11 +32,10 @@ WebViewSyncClient::WebViewSyncClient(
     syncer::SyncInvalidationsService* sync_invalidations_service)
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
-      sync_invalidations_service_(sync_invalidations_service) {
-  engine_factory_ = std::make_unique<browser_sync::SyncEngineFactoryImpl>(
-      this, device_info_sync_service->GetDeviceInfoTracker(),
-      data_type_store_service->GetSyncDataPath());
-
+      sync_invalidations_service_(sync_invalidations_service),
+      engine_factory_(this,
+                      device_info_sync_service->GetDeviceInfoTracker(),
+                      data_type_store_service->GetSyncDataPath()) {
   // TODO(crbug.com/40264840): introduce ios webview version of
   // TrustedVaultServiceFactory.
   trusted_vault_client_ = std::make_unique<WebViewTrustedVaultClient>();
@@ -73,7 +72,7 @@ WebViewSyncClient::GetExtensionsActivity() {
 }
 
 syncer::SyncEngineFactory* WebViewSyncClient::GetSyncEngineFactory() {
-  return engine_factory_.get();
+  return &engine_factory_;
 }
 
 bool WebViewSyncClient::IsCustomPassphraseAllowed() {

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 
 #include <fcntl.h>
@@ -135,7 +140,7 @@ MmappedBuffer::MmappedBuffer(const base::PlatformFile ioctl_fd,
     : num_planes_(v4l2_buffer.length), buffer_id_(0) {
   for (uint32_t i = 0; i < num_planes_; ++i) {
     void* start_addr =
-        mmap(NULL, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
+        mmap(nullptr, v4l2_buffer.m.planes[i].length, PROT_READ | PROT_WRITE,
              MAP_SHARED, ioctl_fd, v4l2_buffer.m.planes[i].m.mem_offset);
 
     LOG_IF(FATAL, start_addr == MAP_FAILED)
@@ -172,10 +177,8 @@ scoped_refptr<MmappedBuffer> V4L2Queue::GetBuffer(const size_t index) const {
 
 template <typename T>
 bool V4L2IoctlShim::Ioctl(int request_code, T arg) const {
-  NOTREACHED_IN_MIGRATION()
-      << "Please add a specialized function for the given V4L2 ioctl "
-         "request code.";
-  return !kIoctlOk;
+  NOTREACHED() << "Please add a specialized function for the given V4L2 ioctl "
+                  "request code.";
 }
 
 template <>

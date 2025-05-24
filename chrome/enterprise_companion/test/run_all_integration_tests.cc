@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -11,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/flags.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
@@ -31,8 +37,8 @@ bool IsUserElevated() {
 std::optional<base::FilePath> GetLogFilePath() {
   const char* var = std::getenv("ISOLATED_OUTDIR");
   return var ? std::make_optional(
-                   base::FilePath::FromUTF8Unsafe(var).AppendASCII(
-                       "enterprise_companion_integration_test.log"))
+                   base::FilePath::FromUTF8Unsafe(var).Append(FILE_PATH_LITERAL(
+                       "enterprise_companion_integration_test.log")))
              : std::nullopt;
 }
 
@@ -60,7 +66,7 @@ int main(int argc, char* argv[]) {
                        /*enable_tickcount=*/false);
 
   if (!IsUserElevated()) {
-    LOG(ERROR) << "Integration tests must be run as root/Admin.";
+    VLOG(1) << "Integration tests must be run as root/Admin.";
     return 1;
   }
 
@@ -69,11 +75,11 @@ int main(int argc, char* argv[]) {
   // can break the updater on the system.
   if (!std::getenv("ISOLATED_OUTDIR") &&
       std::strcmp(PRODUCT_FULLNAME_STRING, "ChromiumEnterpriseCompanion")) {
-    LOG(ERROR) << "Running branded enterprise companion tests can break the "
-                  "updater for the branded browser. If you don't care about "
-                  "broken updaters and want to run the branded enterprise "
-                  "companion tests locally, define an environment variable "
-                  "ISOLATED_OUTDIR and set it to a local directory.";
+    VLOG(1) << "Running branded enterprise companion tests can break the "
+               "updater for the branded browser. If you don't care about "
+               "broken updaters and want to run the branded enterprise "
+               "companion tests locally, define an environment variable "
+               "ISOLATED_OUTDIR and set it to a local directory.";
     return 1;
   }
 

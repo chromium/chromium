@@ -51,8 +51,8 @@ class FeatureCompilerTest(unittest.TestCase):
         'component_extensions_auto_granted':
         False,
         'contexts': [
-            'privileged_extension', 'privileged_web_page',
-            'lock_screen_extension'
+            'privileged_extension',
+            'privileged_web_page',
         ],
         'default_parent':
         True,

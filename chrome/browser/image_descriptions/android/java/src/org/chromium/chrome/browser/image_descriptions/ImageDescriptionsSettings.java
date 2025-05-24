@@ -6,17 +6,19 @@ package org.chromium.chrome.browser.image_descriptions;
 
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
@@ -24,10 +26,11 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
  * allows a user to control whether or not the feature is on, and whether or not it is allowed to
  * run on mobile data or requires a Wi-Fi connection.
  */
+@NullMarked
 public class ImageDescriptionsSettings extends PreferenceFragmentCompat
         implements Preference.OnPreferenceChangeListener,
                 CustomDividerFragment,
-                SettingsPage,
+                EmbeddableSettingsPage,
                 ProfileDependentSetting {
     public static final String IMAGE_DESCRIPTIONS = "image_descriptions_switch";
     public static final String IMAGE_DESCRIPTIONS_DATA_POLICY = "image_descriptions_data_policy";
@@ -59,7 +62,7 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
     }
 
     @Override
-    public void onCreatePreferences(Bundle bundle, String s) {
+    public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.image_descriptions_preference);
 
         Bundle extras = getArguments();
@@ -104,12 +107,19 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
         return true;
     }
 
+    @Initializer
     public void setDelegate(ImageDescriptionsControllerDelegate delegate) {
         mDelegate = delegate;
     }
 
+    @Initializer
     @Override
     public void setProfile(Profile profile) {
         mProfile = profile;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

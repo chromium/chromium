@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("skyvault") {
   sources = [
@@ -14,6 +14,8 @@ static_library("skyvault") {
     "drive_upload_observer.h",
     "file_location_utils.cc",
     "file_location_utils.h",
+    "histogram_helper.cc",
+    "histogram_helper.h",
     "local_files_cleanup.cc",
     "local_files_cleanup.h",
     "local_files_migration_constants.h",
@@ -25,6 +27,8 @@ static_library("skyvault") {
     "migration_coordinator.h",
     "migration_notification_manager.cc",
     "migration_notification_manager.h",
+    "odfs_file_deleter.cc",
+    "odfs_file_deleter.h",
     "odfs_skyvault_uploader.cc",
     "odfs_skyvault_uploader.h",
     "policy_utils.cc",
@@ -51,6 +55,7 @@ static_library("skyvault") {
     "//chrome/browser/ash/guest_os/public",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
+    "//chrome/browser/chromeos/upload_office_to_cloud",
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -102,6 +107,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:test_support",
+    "//chromeos/ash/components/disks:test_support",
     "//chromeos/ash/components/system",
     "//components/download/public/common:test_support",
     "//content/test:test_support",
@@ -126,8 +132,6 @@ source_set("browser_tests") {
     "migration_notification_manager_browsertest.cc",
     "odfs_skyvault_uploader_browsertest.cc",
     "policy_utils_browsertest.cc",
-    "skyvault_test_base.cc",
-    "skyvault_test_base.h",
   ]
 
   deps = [
@@ -142,6 +146,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_system_provider",
     "//chrome/browser/ash/file_system_provider:test_support",
     "//chrome/browser/ash/policy/skyvault/test:test_support",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/policy:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",

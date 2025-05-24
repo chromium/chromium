@@ -4,6 +4,7 @@
 
 #include "chrome/browser/webauthn/cablev2_devices.h"
 
+#include <algorithm>
 #include <array>
 #include <string>
 #include <string_view>
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/i18n/time_formatting.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,7 +50,7 @@ bool CopyBytestring(std::array<uint8_t, N>* out, const std::string* value) {
     return false;
   }
 
-  base::ranges::copy(bytes, out->begin());
+  std::ranges::copy(bytes, out->begin());
   return true;
 }
 
@@ -260,9 +260,10 @@ std::unique_ptr<Pairing> PairingFromSyncedDevice(
   pairing->last_updated = device->last_updated_timestamp();
 
   // The pairing ID from sync is zero-padded to the standard length.
-  pairing->id.assign(device::cablev2::kPairingIDSize, 0);
   static_assert(device::cablev2::kPairingIDSize >= sizeof(paask_info.id), "");
-  memcpy(pairing->id.data(), &paask_info.id, sizeof(paask_info.id));
+  pairing->id.assign(device::cablev2::kPairingIDSize, 0);
+  base::span(pairing->id)
+      .copy_prefix_from(base::byte_span_from_ref(paask_info.id));
 
   // The channel priority is only approximate and exists to help testing and
   // development. I.e. we want the development or Canary install on a device to

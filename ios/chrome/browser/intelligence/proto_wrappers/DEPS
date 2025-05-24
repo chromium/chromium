@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
+  "+ios/web/find_in_page/find_in_page_java_script_feature.h",
+]

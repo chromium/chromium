@@ -6,15 +6,16 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {GooglePhotosAlbum, Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
+import type {GooglePhotosAlbum} from 'chrome://personalization/js/personalization_app.js';
+import {Paths, PersonalizationBreadcrumbElement, PersonalizationRouterElement, TopicSource} from 'chrome://personalization/js/personalization_app.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('PersonalizationBreadcrumbElementTest', function() {
   let breadcrumbElement: PersonalizationBreadcrumbElement|null;
@@ -80,7 +81,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('wallpaperLabel')]);
 
     // current breadcrumbs Home > Wallpaper.
     // remain in the same page when Wallpaper is clicked on.
@@ -92,7 +93,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('wallpaperLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('wallpaperLabel')]);
   });
 
   test('click home button goes back to root page', async () => {
@@ -114,7 +115,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     });
 
     const homeButton =
-        breadcrumbElement!.shadowRoot!.getElementById('homeButton');
+        breadcrumbElement.shadowRoot!.getElementById('homeButton');
     homeButton!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.ROOT, path);
@@ -127,7 +128,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     assertTrue(
-        !breadcrumbElement!.shadowRoot!.getElementById('backButton'),
+        !breadcrumbElement.shadowRoot!.getElementById('backButton'),
         'no back button');
   });
 
@@ -148,8 +149,8 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!,
-        [breadcrumbElement.i18n('wallpaperLabel'), collection!.name]);
+        breadcrumbContainer,
+        [breadcrumbElement.i18n('wallpaperLabel'), collection.name]);
 
     const original = PersonalizationRouterElement.instance;
     const goToRoutePromise = new Promise<[Paths, Object]>(resolve => {
@@ -166,7 +167,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > Zero
     // navigate to Wallpaper subpage when Wallpaper breadcrumb is clicked on.
     const wallpaperBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
     wallpaperBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.COLLECTIONS, path);
@@ -221,7 +222,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // navigate to Google Photos subpage when Google Photos breadcrumb is
     // clicked on.
     const googlePhotoBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb1');
     googlePhotoBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.GOOGLE_PHOTOS_COLLECTION, path);
@@ -260,7 +261,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > Google Photos
     // navigate to Wallpaper subpage when Wallpaper breadcrumb is clicked on.
     const wallpaperBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
     wallpaperBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.COLLECTIONS, path);
@@ -300,7 +301,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > My Images
     // navigate to Wallpaper subpage when Wallpaper breadcrumb is clicked on.
     const wallpaperBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
     wallpaperBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.COLLECTIONS, path);
@@ -317,7 +318,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('screensaverLabel')]);
 
     // current breadcrumbs Home > Screensaver.
     // remain in the same page when Screensaver is clicked on.
@@ -329,7 +330,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         breadcrumbElement.shadowRoot!.getElementById('selector');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer!, [breadcrumbElement.i18n('screensaverLabel')]);
+        breadcrumbContainer, [breadcrumbElement.i18n('screensaverLabel')]);
   });
 
   test(
@@ -367,7 +368,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         // navigate to ambient subpage when Screensaver breadcrumb is clicked
         // on.
         const screensaverBreadcrumb =
-            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
         screensaverBreadcrumb!.click();
         const [path, queryParams] = await goToRoutePromise;
         assertEquals(Paths.AMBIENT, path);
@@ -409,14 +410,14 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         // navigate to ambient subpage when Screensaver breadcrumb is clicked
         // on.
         const screensaverBreadcrumb =
-            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb0');
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumb0');
         screensaverBreadcrumb!.click();
         const [path, queryParams] = await goToRoutePromise;
         assertEquals(Paths.AMBIENT, path);
         assertDeepEquals({}, queryParams);
       });
 
-  test('show breadcrumbs for SeaPen templates', async () => {
+  test('show breadcrumbs for SeaPen templates', () => {
     loadTimeData.overrideValues({isSeaPenTextInputEnabled: false});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_COLLECTION,
@@ -432,8 +433,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
   });
 
   test(
-      'show breadcrumbs for SeaPen templates with freeform enabled',
-      async () => {
+      'show breadcrumbs for SeaPen templates with freeform enabled', () => {
         loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
         breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
           'path': Paths.SEA_PEN_COLLECTION,
@@ -444,7 +444,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('wallpaperLabel'),
-          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+          breadcrumbElement.i18n('seaPenTemplatesWallpaperLabel'),
         ]);
       });
 
@@ -479,7 +479,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     // current breadcrumbs: Home > Wallpaper > Sea Pen > Park
     // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
     const seaPenBreadcrumb =
-        breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumb1');
     seaPenBreadcrumb!.click();
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.SEA_PEN_COLLECTION, path);
@@ -500,7 +500,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
         assertBreadcrumbs(breadcrumbContainer, [
           breadcrumbElement.i18n('wallpaperLabel'),
-          breadcrumbElement.i18n('seaPenFreeformWallpaperTemplatesLabel'),
+          breadcrumbElement.i18n('seaPenTemplatesWallpaperLabel'),
           'Airbrushed',
         ]);
 
@@ -519,14 +519,14 @@ suite('PersonalizationBreadcrumbElementTest', function() {
         // current breadcrumbs: Home > Wallpaper > Sea Pen > Park
         // navigate to Sea Pen subpage when Sea Pen breadcrumb is clicked on.
         const seaPenBreadcrumb =
-            breadcrumbElement!.shadowRoot!.getElementById('breadcrumb1');
+            breadcrumbElement.shadowRoot!.getElementById('breadcrumb1');
         seaPenBreadcrumb!.click();
         const [path, queryParams] = await goToRoutePromise;
         assertEquals(Paths.SEA_PEN_COLLECTION, path);
         assertDeepEquals({}, queryParams);
       });
 
-  test('show breadcrumbs for SeaPen freeform', async () => {
+  test('show breadcrumbs for SeaPen freeform', () => {
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_FREEFORM,
     });
@@ -536,11 +536,11 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(breadcrumbContainer, [
       breadcrumbElement.i18n('wallpaperLabel'),
-      breadcrumbElement.i18n('seaPenLabel'),
+      breadcrumbElement.i18n('seaPenFreeformWallpaperLabel'),
     ]);
   });
 
-  test('hide dropdown icon for sea pen templates', async () => {
+  test('hide dropdown icon for sea pen templates', () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_COLLECTION,
@@ -552,7 +552,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertFalse(!!dropdownIcon);
   });
 
-  test('show dropdown icon for SeaPen results', async () => {
+  test('show dropdown icon for SeaPen results', () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,
@@ -565,28 +565,28 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     assertTrue(!!dropdownIcon);
   });
 
-  test('click SeaPen template breadcrumb to show dropdown menu', async () => {
+  test('click SeaPen template breadcrumb to show dropdown menu', () => {
     loadTimeData.overrideValues({isSeaPenEnabled: true});
     breadcrumbElement = initElement(PersonalizationBreadcrumbElement, {
       'path': Paths.SEA_PEN_RESULTS,
       'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
     });
 
-    const breadcrumb = (breadcrumbElement.shadowRoot!.querySelector(
-                            '#seaPenDropdown') as HTMLElement)
-                           .parentElement;
+    const breadcrumb =
+        breadcrumbElement.shadowRoot!
+            .querySelector<HTMLElement>('#seaPenDropdown')!.parentElement;
     breadcrumb!.click();
 
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
     assertTrue(!!dropdownMenu);
-    assertTrue(dropdownMenu!.open, 'the action menu should be open');
+    assertTrue(dropdownMenu.open, 'the action menu should be open');
     const allMenuItems = dropdownMenu.querySelectorAll('button');
     assertTrue(allMenuItems.length > 1);
     const selectedElement =
         dropdownMenu.querySelectorAll('button[aria-checked=\'true\']');
     assertEquals(1, selectedElement.length);
-    assertEquals('Airbrushed', (selectedElement[0] as HTMLElement)!.innerText);
+    assertEquals('Airbrushed', (selectedElement[0] as HTMLElement).innerText);
   });
 
   test('navigates with SeaPen dropdown', async () => {
@@ -595,8 +595,9 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       'path': Paths.SEA_PEN_RESULTS,
       'seaPenTemplateId': SeaPenTemplateId.kFlower.toString(),
     });
-    const dropdownIcon = breadcrumbElement.shadowRoot!.querySelector(
-                             '#seaPenDropdown') as HTMLElement;
+    const dropdownIcon =
+        breadcrumbElement.shadowRoot!.querySelector<HTMLElement>(
+            '#seaPenDropdown');
     dropdownIcon!.click();
     const dropdownMenu =
         breadcrumbElement.shadowRoot!.querySelector('cr-action-menu');
@@ -616,7 +617,7 @@ suite('PersonalizationBreadcrumbElementTest', function() {
       };
     });
 
-    template!.click();
+    template.click();
 
     const [path, queryParams] = await goToRoutePromise;
     assertEquals(Paths.SEA_PEN_RESULTS, path);
@@ -645,8 +646,8 @@ suite('PersonalizationBreadcrumbElementTest', function() {
 
     // Get all 4 breadcrumbs.
     let allBreadcrumbs =
-        Array.from(breadcrumbElement.shadowRoot!.querySelectorAll(
-            '.selectable')) as HTMLElement[];
+        Array.from(breadcrumbElement.shadowRoot!.querySelectorAll<HTMLElement>(
+            '.selectable'));
     assertEquals(4, allBreadcrumbs.length);
 
     // Check initial tab indices.
@@ -676,8 +677,8 @@ suite('PersonalizationBreadcrumbElementTest', function() {
     await waitAfterNextRender(breadcrumbElement);
 
     // There should now be 3 breadcrumbs.
-    allBreadcrumbs = Array.from(breadcrumbElement.shadowRoot!.querySelectorAll(
-                         '.selectable')) as HTMLElement[];
+    allBreadcrumbs = Array.from(
+        breadcrumbElement.shadowRoot!.querySelectorAll('.selectable'));
     assertEquals(3, allBreadcrumbs.length);
 
     // And tabindex for first breadcrumb should be 0.

@@ -17,16 +17,44 @@ class CORE_EXPORT OptionListIterator final {
   STACK_ALLOCATED();
 
  public:
-  explicit OptionListIterator(const HTMLSelectElement* select)
+  enum class StartingPoint {
+    kStart,
+    kEnd,
+    kLast,
+  };
+  explicit OptionListIterator(
+      const HTMLSelectElement& select,
+      StartingPoint starting_point = StartingPoint::kStart)
       : select_(select), current_(nullptr) {
-    if (select_)
-      Advance(nullptr);
+    switch (starting_point) {
+      case StartingPoint::kStart:
+        Advance(nullptr);
+        break;
+      case StartingPoint::kLast:
+        Retreat(nullptr);
+        break;
+      case StartingPoint::kEnd:
+        break;
+    }
   }
-  HTMLOptionElement* operator*() { return current_; }
-  void operator++() {
-    if (current_)
+  HTMLOptionElement& operator*() {
+    DCHECK(current_);
+    return *current_;
+  }
+  HTMLOptionElement* operator->() { return current_; }
+  OptionListIterator& operator++() {
+    if (current_) {
       Advance(current_);
+    }
+    return *this;
   }
+  OptionListIterator& operator--() {
+    if (current_) {
+      Retreat(current_);
+    }
+    return *this;
+  }
+  operator bool() const { return current_; }
   bool operator==(const OptionListIterator& other) const {
     return current_ == other.current_;
   }
@@ -36,9 +64,10 @@ class CORE_EXPORT OptionListIterator final {
 
  private:
   void Advance(HTMLOptionElement* current);
+  void Retreat(HTMLOptionElement* current);
 
-  const HTMLSelectElement* select_;
-  HTMLOptionElement* current_;  // nullptr means we reached to the end.
+  const HTMLSelectElement& select_;
+  HTMLOptionElement* current_;  // nullptr means we reached the end.
 };
 
 // OptionList class is a lightweight version of HTMLOptionsCollection.
@@ -46,13 +75,42 @@ class OptionList final {
   STACK_ALLOCATED();
 
  public:
-  explicit OptionList(const HTMLSelectElement& select) : select_(&select) {}
+  explicit OptionList(const HTMLSelectElement& select) : select_(select) {}
   using Iterator = OptionListIterator;
-  Iterator begin() { return Iterator(select_); }
-  Iterator end() { return Iterator(nullptr); }
+  Iterator begin() {
+    return Iterator(select_, OptionListIterator::StartingPoint::kStart);
+  }
+  Iterator end() {
+    return Iterator(select_, OptionListIterator::StartingPoint::kEnd);
+  }
+  Iterator last() {
+    return Iterator(select_, OptionListIterator::StartingPoint::kLast);
+  }
+  bool Empty() {
+    return !Iterator(select_, OptionListIterator::StartingPoint::kStart);
+  }
+  unsigned size() const;
+  typedef bool (*OptionMatchingPredicate)(HTMLOptionElement& option);
+  HTMLOptionElement* NextFocusableOption(HTMLOptionElement& option,
+                                         bool inclusive = false) {
+    return FindFocusableOption(option, /*forward*/ true, inclusive);
+  }
+  HTMLOptionElement* PreviousFocusableOption(HTMLOptionElement& option,
+                                             bool inclusive = false) {
+    return FindFocusableOption(option, /*forward*/ false, inclusive);
+  }
+
+  // This method calls IsKeyboardFocusableSlow with
+  // Element::UpdateBehavior::kAssertNoLayoutUpdates on each option until it
+  // finds a focusable one, then returns it.
+  HTMLOptionElement* FirstKeyboardFocusableOption();
 
  private:
-  const HTMLSelectElement* select_;
+  HTMLOptionElement* FindFocusableOption(HTMLOptionElement& option,
+                                         bool forward,
+                                         bool inclusive);
+
+  const HTMLSelectElement& select_;
 };
 
 }  // namespace blink

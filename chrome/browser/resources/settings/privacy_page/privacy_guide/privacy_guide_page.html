@@ -99,7 +99,7 @@
   }
 </style>
 <div id="privacyGuideCard" on-keydown="onKeyDown_" part="privacyGuideCard"
-    style="--privacy-guide-v2-translate-multiplier: [[translateMultiplier_]]">
+    style="--privacy-guide-translate-multiplier: [[translateMultiplier_]]">
   <div id="background" aria-hidden="true"
       hidden$="[[!showAnySettingFragment_(privacyGuideStep_)]]"
       style="--privacy-guide-step: [[stepIndicatorModel_.active]]">
@@ -132,7 +132,7 @@
     </privacy-guide-msbb-fragment>
     <privacy-guide-history-sync-fragment
         id="[[privacyGuideStepEnum_.HISTORY_SYNC]]" class="managed-fragment"
-        prefs="{{prefs}}" slot="view">
+        slot="view">
     </privacy-guide-history-sync-fragment>
     <privacy-guide-cookies-fragment id="[[privacyGuideStepEnum_.COOKIES]]"
         class="managed-fragment" prefs="{{prefs}}" slot="view">

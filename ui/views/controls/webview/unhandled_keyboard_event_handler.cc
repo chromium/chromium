@@ -42,8 +42,9 @@ bool UnhandledKeyboardEventHandler::HandleKeyboardEvent(
     // set the flag and fix it if no event was handled.
     ignore_next_char_event_ = true;
 
-    if (focus_manager->ProcessAccelerator(accelerator))
+    if (focus_manager->ProcessAccelerator(accelerator)) {
       return true;
+    }
 
     // ProcessAccelerator didn't handle the accelerator, so we know both
     // that |this| is still valid, and that we didn't want to set the flag.

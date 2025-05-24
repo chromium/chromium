@@ -34,7 +34,7 @@ public class TabSupplierObserverTest {
 
     @Mock private Tab mAnotherMockedTab;
 
-    private ObservableSupplierImpl<Tab> mObservableTabSupplier =
+    private final ObservableSupplierImpl<Tab> mObservableTabSupplier =
             new ObservableSupplierImpl<>(mMockTab);
 
     /** A test observer that provides access to the tab being observed. */

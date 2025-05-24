@@ -12,3 +12,5 @@ console-call-getter-on-proto.js:29 B {value: 239}
             get foo: ƒ foo()
             [[Prototype]]: Object
 
+
+

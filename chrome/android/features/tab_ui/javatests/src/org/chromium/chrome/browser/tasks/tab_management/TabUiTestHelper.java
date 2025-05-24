@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
@@ -33,7 +32,8 @@ import static org.chromium.components.browser_ui.widget.RecyclerViewTestUtils.wa
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.BitmapDrawable;
-import android.provider.Settings;
+import android.os.SystemClock;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -57,7 +57,6 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matcher;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -66,7 +65,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubLayout;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
@@ -77,12 +75,13 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ContentUrlConstants;
 
@@ -175,7 +174,7 @@ public class TabUiTestHelper {
         try {
             finishedHidingCallbackHelper.waitForOnly();
         } catch (TimeoutException e) {
-            fail("LayoutType.TAB_SWITCHER never finished hiding.");
+            throw new AssertionError("LayoutType.TAB_SWITCHER never finished hiding.", e);
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -282,18 +281,27 @@ public class TabUiTestHelper {
      */
     public static void closeFirstTabGroupInTabSwitcher(Context context) {
         closeFirstTabInTabSwitcher(context);
-        if (ChromeFeatureList.sTabGroupPaneAndroid.isEnabled()) {
-            onView(withText("Close")).perform(click());
-        }
+        onView(withText("Close")).perform(click());
     }
 
     /**
-     * Close the Nth tab in grid tab switcher.
+     * Closes the Nth tab in grid tab switcher.
      *
-     * @param context The activity context.
-     * @param index The index of the target tab to close.
+     * @see #closeNthTabInTabSwitcher(Context, int, boolean)
      */
     static void closeNthTabInTabSwitcher(Context context, int index) {
+        closeNthTabInTabSwitcher(context, index, /* performMouseClick= */ false);
+    }
+
+    /**
+     * Closes the Nth tab in grid tab switcher.
+     *
+     * @param context the Activity context.
+     * @param index the index of the tab to close.
+     * @param performMouseClick whether to click the close button by simulating {@link MotionEvent}s
+     *     from a mouse.
+     */
+    static void closeNthTabInTabSwitcher(Context context, int index, boolean performMouseClick) {
         onView(
                         allOf(
                                 isDescendantOfA(withId(getTabSwitcherAncestorId(context))),
@@ -316,7 +324,25 @@ public class TabUiTestHelper {
                                 RecyclerView.ViewHolder viewHolder =
                                         recyclerView.findViewHolderForAdapterPosition(index);
                                 assert viewHolder != null;
-                                viewHolder.itemView.findViewById(R.id.action_button).performClick();
+
+                                View actionButton =
+                                        viewHolder.itemView.findViewById(R.id.action_button);
+                                if (!performMouseClick) {
+                                    actionButton.performClick();
+                                    return;
+                                }
+
+                                long motionDownTime = SystemClock.uptimeMillis();
+                                actionButton.dispatchTouchEvent(
+                                        MotionEventTestUtils.createMouseMotionEvent(
+                                                motionDownTime,
+                                                /* eventTime= */ motionDownTime,
+                                                MotionEvent.ACTION_DOWN));
+                                actionButton.dispatchTouchEvent(
+                                        MotionEventTestUtils.createMouseMotionEvent(
+                                                motionDownTime,
+                                                /* eventTime= */ motionDownTime + 200,
+                                                MotionEvent.ACTION_UP));
                             }
                         });
     }
@@ -402,15 +428,12 @@ public class TabUiTestHelper {
             tabGroup.add(tabModel.getTabAt(i));
         }
         createTabGroup(cta, isIncognito, tabGroup);
-        assertTrue(
-                cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter);
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(isIncognito);
-        assertEquals(1, filter.getCount());
+                cta.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
+        assertEquals(1, filter.getTabGroupCount());
+        assertEquals(1, filter.getIndividualTabAndGroupCount());
     }
 
     /**
@@ -473,20 +496,18 @@ public class TabUiTestHelper {
 
     /**
      * Create a tab group using {@code tabs}.
-     * @param cta             The current running activity.
-     * @param isIncognito     Whether the group is in normal model or incognito model.
-     * @param tabs            A list of {@link Tab} to create group.
+     *
+     * @param cta The current running activity.
+     * @param isIncognito Whether the group is in normal model or incognito model.
+     * @param tabs A list of {@link Tab} to create group.
      */
     public static void createTabGroup(
             ChromeTabbedActivity cta, boolean isIncognito, List<Tab> tabs) {
         if (tabs.size() == 0) return;
-        assert cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(isIncognito);
+                cta.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
         Tab rootTab = tabs.get(0);
         for (int i = 1; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
@@ -497,24 +518,9 @@ public class TabUiTestHelper {
     }
 
     /**
-     * @return whether animators are enabled on device by checking whether the animation duration
-     * scale is set to 0.0.
-     */
-    public static boolean areAnimatorsEnabled() {
-        // We default to assuming that animations are enabled in case ANIMATOR_DURATION_SCALE is not
-        // defined.
-        final float defaultScale = 1f;
-        float durationScale =
-                Settings.Global.getFloat(
-                        ContextUtils.getApplicationContext().getContentResolver(),
-                        Settings.Global.ANIMATOR_DURATION_SCALE,
-                        defaultScale);
-        return !(durationScale == 0.0);
-    }
-
-    /**
      * Make Chrome have {@code numTabs} of regular Tabs and {@code numIncognitoTabs} of incognito
      * tabs with {@code url} loaded.
+     *
      * @param rule The {@link ChromeTabbedActivityTestRule}.
      * @param numTabs The number of regular tabs.
      * @param numIncognitoTabs The number of incognito tabs.
@@ -810,8 +816,8 @@ public class TabUiTestHelper {
             int TAB_SUGGESTION_MESSAGE = 1;
         }
 
-        private int mExpectedCount;
-        @ChildrenType private int mExpectedChildrenType;
+        private final int mExpectedCount;
+        @ChildrenType private final int mExpectedChildrenType;
 
         public static ChildrenCountAssertion havingTabCount(int tabCount) {
             return new ChildrenCountAssertion(ChildrenType.TAB, tabCount);

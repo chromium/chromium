@@ -5,28 +5,24 @@
 #include "chrome/browser/ui/views/webauthn/hover_list_view.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/webauthn/webauthn_hover_button.h"
+#include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
-#include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
-#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -77,9 +73,8 @@ HoverListView::HoverListView(std::unique_ptr<HoverListModel> model)
                        model_->IsButtonEnabled(item_tag), item_tag);
   }
 
-  scroll_view_ = new views::ScrollView();
+  scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetContents(std::move(item_container));
-  AddChildView(scroll_view_.get());
   scroll_view_->ClipHeightTo(GetPreferredViewHeight(),
                              GetPreferredViewHeight());
 }
@@ -97,7 +92,7 @@ void HoverListView::AppendListItemView(const ui::ImageModel& icon,
                           base::Unretained(model_.get()), item_tag));
 
   auto* list_item_view_ptr = hover_button.release();
-  item_container_->AddChildView(list_item_view_ptr);
+  item_container_->AddChildViewRaw(list_item_view_ptr);
   auto* separator =
       item_container_->AddChildView(std::make_unique<views::Separator>());
   tags_to_list_item_views_.emplace(

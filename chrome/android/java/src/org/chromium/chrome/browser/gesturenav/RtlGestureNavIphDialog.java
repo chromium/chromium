@@ -11,10 +11,10 @@ import android.view.View.OnAttachStateChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.IphDialogView;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -24,6 +24,7 @@ import org.chromium.ui.modaldialog.ModalDialogProperties.ButtonStyles;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Dialog of educating users on how to navigate by gesture in RTL mode. */
+@NullMarked
 public class RtlGestureNavIphDialog {
 
     private final IphDialogView mIphDialogView;
@@ -42,14 +43,13 @@ public class RtlGestureNavIphDialog {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.iph_dialog_layout, null, false);
         mModalDialogManager = modalDialogManager;
-        mIphDialogView.setDrawable(
+        String title = context.getString(R.string.rtl_gesture_nav_iph_dialog_title);
+        String description = context.getString(R.string.rtl_gesture_nav_iph_dialog_content);
+        mIphDialogView.initialize(
                 AppCompatResources.getDrawable(
                         context, R.drawable.rtl_gesture_nav_iph_dialog_drawable),
-                context.getResources().getString(R.string.rtl_gesture_nav_iph_dialog_content));
-        mIphDialogView.setTitle(
-                context.getResources().getString(R.string.rtl_gesture_nav_iph_dialog_title));
-        mIphDialogView.setDescription(
-                context.getResources().getString(R.string.rtl_gesture_nav_iph_dialog_content));
+                title,
+                description);
         mIphDialogView.setIntervalMs(1200);
 
         ModalDialogProperties.Controller dialogController =
@@ -65,7 +65,7 @@ public class RtlGestureNavIphDialog {
                     @Override
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         dismissed.run();
-                        mIphDialogView.stopIPHAnimation();
+                        mIphDialogView.stopIphAnimation();
                         detachParentGlobalLayoutListener();
                     }
                 };
@@ -75,7 +75,7 @@ public class RtlGestureNavIphDialog {
                         .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
-                                context.getResources().getString(R.string.got_it))
+                                context.getString(R.string.got_it))
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ButtonStyles.PRIMARY_FILLED_NO_NEGATIVE)
@@ -102,13 +102,13 @@ public class RtlGestureNavIphDialog {
         mIphDialogView.addOnAttachStateChangeListener(
                 new OnAttachStateChangeListener() {
                     @Override
-                    public void onViewAttachedToWindow(@NonNull View v) {
-                        mIphDialogView.startIPHAnimation();
+                    public void onViewAttachedToWindow(View v) {
+                        mIphDialogView.startIphAnimation();
                         mIphDialogView.removeOnAttachStateChangeListener(this);
                     }
 
                     @Override
-                    public void onViewDetachedFromWindow(@NonNull View v) {}
+                    public void onViewDetachedFromWindow(View v) {}
                 });
     }
 

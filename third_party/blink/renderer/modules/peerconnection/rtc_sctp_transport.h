@@ -19,6 +19,7 @@ namespace blink {
 
 class SctpTransportProxy;
 class RTCDtlsTransport;
+class V8RTCSctpTransportState;
 
 enum class RTCSctpTransportState { kChecking, kConnected, kClosed };
 
@@ -32,18 +33,18 @@ class MODULES_EXPORT RTCSctpTransport final
  public:
   RTCSctpTransport(
       ExecutionContext* context,
-      rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport);
+      webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport);
   // Constructor with explicit thread injection, used for testing.
   RTCSctpTransport(
       ExecutionContext* context,
-      rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport,
+      webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport,
       scoped_refptr<base::SingleThreadTaskRunner> main_thread,
       scoped_refptr<base::SingleThreadTaskRunner> worker_thread);
   ~RTCSctpTransport() override;
 
   // rtc_sctp_transport.idl
   RTCDtlsTransport* transport() const;
-  String state() const;
+  V8RTCSctpTransportState state() const;
   double maxMessageSize() const;
   std::optional<int16_t> maxChannels() const;
 
@@ -59,7 +60,7 @@ class MODULES_EXPORT RTCSctpTransport final
   // Others
   void ChangeState(webrtc::SctpTransportInformation info);
   void SetTransport(RTCDtlsTransport*);
-  rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport();
+  webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport();
   // Called from owning RtcPeerConnection when it is closed.
   void Close();
   // For garbage collection.
@@ -67,7 +68,7 @@ class MODULES_EXPORT RTCSctpTransport final
 
  private:
   webrtc::SctpTransportInformation current_state_;
-  rtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport_;
+  webrtc::scoped_refptr<webrtc::SctpTransportInterface> native_transport_;
   std::unique_ptr<SctpTransportProxy> proxy_;
   Member<RTCDtlsTransport> dtls_transport_;
   bool start_completed_ = false;

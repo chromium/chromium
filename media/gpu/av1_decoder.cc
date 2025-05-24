@@ -9,19 +9,22 @@
 
 #include "media/gpu/av1_decoder.h"
 
+#include <algorithm>
 #include <bitset>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
+#include "media/base/agtm.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/av1_picture.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/libgav1/src/src/decoder_state.h"
 #include "third_party/libgav1/src/src/gav1/status_code.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
+#include "third_party/skia/include/core/SkData.h"
 #include "ui/gfx/hdr_metadata.h"
 
 namespace media {
@@ -52,9 +55,7 @@ VideoCodecProfile AV1ProfileToVideoCodecProfile(
       return AV1PROFILE_PROFILE_PRO;
     default:
       // ObuParser::ParseSequenceHeader() validates the profile.
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid profile: " << base::strict_cast<int>(profile);
-      return AV1PROFILE_PROFILE_MAIN;
+      NOTREACHED() << "Invalid profile: " << base::strict_cast<int>(profile);
   }
 }
 
@@ -199,14 +200,15 @@ void AV1Decoder::Reset() {
 
 void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto decoder_buffer_span = base::span(decoder_buffer);
   stream_id_ = id;
-  stream_ = decoder_buffer.data();
-  stream_size_ = decoder_buffer.size();
+  stream_ = decoder_buffer_span.data();
+  stream_size_ = decoder_buffer_span.size();
   ClearCurrentFrame();
 
   parser_ = base::WrapUnique(new (std::nothrow) libgav1::ObuParser(
-      decoder_buffer.data(), decoder_buffer.size(), kDefaultOperatingPoint,
-      buffer_pool_.get(), state_.get()));
+      decoder_buffer_span.data(), decoder_buffer_span.size(),
+      kDefaultOperatingPoint, buffer_pool_.get(), state_.get()));
   if (!parser_) {
     on_error_ = true;
     return;
@@ -218,15 +220,14 @@ void AV1Decoder::SetStream(int32_t id, const DecoderBuffer& decoder_buffer) {
     decrypt_config_ = decoder_buffer.decrypt_config()->Clone();
   else
     decrypt_config_.reset();
-  if (decoder_buffer.has_side_data() &&
-      decoder_buffer.side_data()->secure_handle) {
+  if (decoder_buffer.side_data() && decoder_buffer.side_data()->secure_handle) {
     secure_handle_ = decoder_buffer.side_data()->secure_handle;
   } else {
     secure_handle_ = 0;
   }
 
   const AV1Accelerator::Status status = accelerator_->SetStream(
-      base::make_span(stream_.get(), stream_size_), decrypt_config_.get());
+      base::span(stream_.get(), stream_size_), decrypt_config_.get());
   if (status != AV1Accelerator::Status::kOk) {
     on_error_ = true;
     return;
@@ -483,6 +484,22 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       hdr_metadata_->smpte_st_2086 =
           ToGfxSmpteSt2086(current_frame_->hdr_mdcv());
     }
+    if (current_frame_->itut_t35_set()) {
+      // SAFETY: The best we can do is trust the size provided by libgav1.
+      auto t35_payload_span = UNSAFE_BUFFERS(base::span<const uint8_t>(
+          current_frame_->itut_t35().payload_bytes,
+          static_cast<size_t>(current_frame_->itut_t35().payload_size)));
+      const std::optional<gfx::HdrMetadataAgtm> agtm =
+          GetHdrMetadataAgtmFromItutT35(current_frame_->itut_t35().country_code,
+                                        t35_payload_span);
+      if (agtm.has_value()) {
+        if (!hdr_metadata_.has_value()) {
+          hdr_metadata_.emplace();
+        }
+        // Overwrite existing AGTM metadata if any.
+        hdr_metadata_->agtm = agtm;
+      }
+    }
 
     DCHECK(current_sequence_header_->film_grain_params_present ||
            !frame_header.film_grain_params.apply_grain);
@@ -542,7 +559,7 @@ void AV1Decoder::ClearReferenceFrames() {
   ref_frames_.fill(nullptr);
   // If AV1Decoder has decided to clear the reference frames, then ObuParser
   // must have also decided to do so.
-  DCHECK_EQ(base::ranges::count(state_->reference_frame, nullptr),
+  DCHECK_EQ(std::ranges::count(state_->reference_frame, nullptr),
             static_cast<int>(state_->reference_frame.size()));
 }
 
@@ -596,7 +613,7 @@ AV1Decoder::AV1Accelerator::Status AV1Decoder::DecodeAndOutputPicture(
   }
   const AV1Accelerator::Status status = accelerator_->SubmitDecode(
       *pic, *current_sequence_header_, ref_frames_, tile_buffers,
-      base::make_span(stream_.get(), stream_size_));
+      base::span(stream_.get(), stream_size_));
   if (status != AV1Accelerator::Status::kOk) {
     if (status == AV1Accelerator::Status::kTryAgain)
       pending_pic_ = std::move(pic);

@@ -46,7 +46,7 @@ found in the LICENSE file.
       android:id="@+id/clear_text_button"
       android:layout_width="wrap_content"
       android:layout_height="match_parent"
-      android:background="@null"
+      android:background="@drawable/search_box_icon_background"
       android:contentDescription="@string/accessibility_toolbar_btn_delete_url"
       android:paddingHorizontal="12dp"
       android:scaleType="center"

@@ -28,6 +28,8 @@ import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.webapps.WebappsUtils;
 
+import java.util.UUID;
+
 /**
  * The Notification service receives intents fired as responses to user actions issued on Android
  * notifications displayed in the notification tray.
@@ -45,11 +47,28 @@ public class NotificationServiceImpl extends NotificationService.Impl {
         public void onReceive(Context context, Intent intent) {
             Log.i(TAG, "Received a notification intent in the NotificationService's receiver.");
 
+            // Ensure that jobId is not null.
+            String jobId = intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_ID);
+            boolean hasNotificationId = true;
+            if (jobId == null) {
+                hasNotificationId = false;
+                jobId = UUID.randomUUID().toString();
+            }
+            TrampolineActivityTracker.getInstance()
+                    .startProcessingNewIntent(jobId, TrampolineActivityTracker.JobDuration.LONG);
             // For certain critical notification actions, we might want to perform some processing
             // immediately to reassure the user that the interaction has been acknowledged, without
             // potentially incurring the native startup and job scheduling delay. In some cases,
             // this returns false indicating no further processing necessary.
             if (!NotificationPlatformBridge.dispatchNotificationEventPreNative(intent)) {
+                TrampolineActivityTracker.getInstance().onIntentCompleted(jobId);
+                return;
+            }
+
+            // Don't start the job if intent dnotification Id is empty, since onStartJob() will
+            // early return anyways.
+            if (!hasNotificationId) {
+                TrampolineActivityTracker.getInstance().onIntentCompleted(jobId);
                 return;
             }
 
@@ -103,6 +122,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
             int result = scheduler.schedule(job);
 
             if (result != JobScheduler.RESULT_SUCCESS) {
+                TrampolineActivityTracker.getInstance().onIntentCompleted(jobId);
                 NotificationUmaTracker.getInstance()
                         .recordIntentHandlerJobStage(
                                 NotificationUmaTracker.IntentHandlerJobStage.SCHEDULE_JOB_FAILED,
@@ -170,15 +190,24 @@ public class NotificationServiceImpl extends NotificationService.Impl {
         }
 
         if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
-            Receiver receiver = new Receiver();
-            receiver.onReceive(ContextUtils.getApplicationContext(), intent);
+            // This method is called on a background thread. Since Receiver.onReceive() handles
+            // broadcast intent on UI thread, it is better post a task to UI thread to call
+            // onReceive() here. Otherwise, all the classes referenced by onReceive() will
+            // need to deal with synchronization issues as they can be called on 2 different
+            // threads.
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        Receiver receiver = new Receiver();
+                        receiver.onReceive(ContextUtils.getApplicationContext(), intent);
+                    });
             return;
         }
 
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    dispatchIntentOnUIThread(intent);
+                    dispatchIntentOnUiThread(intent);
                 });
 
         PostTask.runOrPostTask(
@@ -194,21 +223,19 @@ public class NotificationServiceImpl extends NotificationService.Impl {
      *
      * @param intent The intent containing the notification's information.
      */
-    static void dispatchIntentOnUIThread(Intent intent) {
+    static void dispatchIntentOnUiThread(Intent intent) {
         final BrowserParts parts =
                 new EmptyBrowserParts() {
                     @Override
                     public void finishNativeInitialization() {
                         // Warm up the WebappRegistry, as we need to check if this notification
-                        // should launch a
-                        // standalone web app. This no-ops if the registry is already initialized
-                        // and warmed.
+                        // should launch a standalone web app. This no-ops if the registry is
+                        // already initialized and warmed.
                         WebappRegistry.getInstance();
                         WebappRegistry.warmUpSharedPrefs();
 
                         // Now that the browser process is initialized, we pass forward the call to
-                        // the
-                        // NotificationPlatformBridge which will take care of delivering the
+                        // the NotificationPlatformBridge which will take care of delivering the
                         // appropriate events.
                         NotificationUmaTracker.getInstance()
                                 .recordIntentHandlerJobStage(
@@ -219,8 +246,7 @@ public class NotificationServiceImpl extends NotificationService.Impl {
                         }
 
                         // TODO(peter): Verify that the lifetime of the NotificationService is
-                        // sufficient
-                        // when a notification event could be dispatched successfully.
+                        // sufficient when a notification event could be dispatched successfully.
                     }
                 };
 

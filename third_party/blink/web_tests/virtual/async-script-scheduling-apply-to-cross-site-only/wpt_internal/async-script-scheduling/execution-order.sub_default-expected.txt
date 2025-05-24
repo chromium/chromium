@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Async Script Execution Order
-  Uncaught Error: assert_equals: expected "async_preload_or_blocking_render;async_preload_or_blocking_render;async;async;async;inline1;external;inline2;defer;DOMContentLoaded" but got "async_preload_or_blocking_render;async_preload_or_blocking_render;async;inline1;external;inline2;defer;DOMContentLoaded;async;async"
-Harness: the test ran to completion.
-

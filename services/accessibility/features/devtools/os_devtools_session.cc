@@ -80,6 +80,8 @@ class OSDevToolsSession::IOSession : public blink::mojom::DevToolsSession {
                        std::vector<uint8_t>(message.begin(), message.end())));
   }
 
+  void UnpauseAndTerminate() override { NOTREACHED(); }
+
  private:
   IOSession(const scoped_refptr<DebugCommandQueue> debug_command_queue,
             DispatchCallback v8_thread_dispatch)
@@ -200,6 +202,10 @@ void OSDevToolsSession::DispatchProtocolCommand(
   }
 }
 
+void OSDevToolsSession::UnpauseAndTerminate() {
+  NOTREACHED();
+}
+
 void OSDevToolsSession::sendResponse(
     int call_id,
     std::unique_ptr<v8_inspector::StringBuffer> message) {
@@ -290,7 +296,7 @@ blink::mojom::DevToolsMessagePtr OSDevToolsSession::FinalizeMessage(
     message_to_send = std::move(json);
   }
   auto mojo_msg = blink::mojom::DevToolsMessage::New();
-  mojo_msg->data = std::move(message_to_send);
+  mojo_msg->data = {message_to_send};
   return mojo_msg;
 }
 

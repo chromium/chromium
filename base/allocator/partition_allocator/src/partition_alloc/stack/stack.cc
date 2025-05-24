@@ -150,7 +150,7 @@ StackTopRegistry::~StackTopRegistry() = default;
 // static
 StackTopRegistry& StackTopRegistry::Get() {
   static base::NoDestructor<StackTopRegistry> instance;
-  return *instance.get();
+  return *instance;
 }
 
 void StackTopRegistry::NotifyThreadCreated(void* stack_top) {

@@ -4,11 +4,15 @@
 
 package org.chromium.base;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Flags of this type assume native is loaded and the value can be retrieved directly from native.
  */
+@NullMarked
 public class PostNativeFlag extends Flag {
-    private Boolean mInMemoryCachedValue;
+    private @Nullable Boolean mInMemoryCachedValue;
 
     public PostNativeFlag(FeatureMap featureMap, String featureName) {
         super(featureMap, featureName);
@@ -18,7 +22,7 @@ public class PostNativeFlag extends Flag {
     public boolean isEnabled() {
         if (mInMemoryCachedValue != null) return mInMemoryCachedValue;
 
-        if (FeatureList.hasTestFeature(mFeatureName)) {
+        if (FeatureOverrides.hasTestFeature(mFeatureName)) {
             return mFeatureMap.isEnabledInNative(mFeatureName);
         }
 

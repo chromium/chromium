@@ -96,7 +96,7 @@ FeedbackUploader::FeedbackUploader(
                        SharedURLLoaderFactoryGetter(),
                        shared_url_loader_factory) {}
 
-FeedbackUploader::~FeedbackUploader() {}
+FeedbackUploader::~FeedbackUploader() = default;
 
 // static
 void FeedbackUploader::SetMinimumRetryDelayForTesting(base::TimeDelta delay) {
@@ -209,7 +209,7 @@ void FeedbackUploader::DispatchReport() {
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
-              email: "cros-feedback-app@google.com"
+              email: "cros-device-enablement@google.com"
             }
           }
           user_data {

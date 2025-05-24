@@ -351,13 +351,12 @@ TEST_F(ContentSettingsStoreTest, RemoveEmbedded) {
   store()->RemoveObserver(&observer);
 }
 
-TEST_F(ContentSettingsStoreTest, ChromeExtensionSchemeMetrics) {
+TEST_F(ContentSettingsStoreTest, ChromeExtensionOriginMetrics) {
   base::HistogramTester histogram_tester;
   content_settings::ContentSettingsRegistry::GetInstance();
   std::string extension_id(32, 'a');
   ContentSettingsPattern chrome_extension_pattern =
-      ContentSettingsPattern::FromString(
-          "chrome-extension://peoadpeiejnhkmpaakpnompolbglelel/");
+      ContentSettingsPattern::FromString("*://" + extension_id + "/*");
   ContentSettingsPattern https_pattern =
       ContentSettingsPattern::FromString("https://example.test/");
 
@@ -367,7 +366,7 @@ TEST_F(ContentSettingsStoreTest, ChromeExtensionSchemeMetrics) {
       ContentSettingsType::COOKIES, CONTENT_SETTING_ALLOW,
       ChromeSettingScope::kRegular);
   histogram_tester.ExpectUniqueSample(
-      "Extensions.ContentSettings.PrimaryPatternChromeExtensionScheme",
+      "Extensions.ContentSettings.PrimaryPatternMatchesExtensionOrigin",
       content_settings_uma_util::ContentSettingTypeToHistogramValue(
           ContentSettingsType::COOKIES),
       1);
@@ -378,7 +377,7 @@ TEST_F(ContentSettingsStoreTest, ChromeExtensionSchemeMetrics) {
       ContentSettingsType::IMAGES, CONTENT_SETTING_ALLOW,
       ChromeSettingScope::kRegular);
   histogram_tester.ExpectUniqueSample(
-      "Extensions.ContentSettings.SecondaryPatternChromeExtensionScheme",
+      "Extensions.ContentSettings.SecondaryPatternMatchesExtensionOrigin",
       content_settings_uma_util::ContentSettingTypeToHistogramValue(
           ContentSettingsType::IMAGES),
       1);

@@ -4,7 +4,6 @@
 
 #include "chromeos/ash/services/wifi_direct/wifi_direct_manager.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/sync_socket.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -60,7 +59,6 @@ class WifiDirectManagerTest : public testing::Test {
   void SetUp() override {
     shill_clients::InitializeFakes();
     PatchPanelClient::InitializeFake();
-    feature_list_.InitAndEnableFeature(features::kWifiDirect);
     WifiP2PController::Initialize();
     wifi_direct_manager_ = std::make_unique<WifiDirectManager>();
   }

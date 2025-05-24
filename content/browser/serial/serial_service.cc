@@ -21,14 +21,14 @@
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/device/public/mojom/serial.mojom.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace content {
 
 SerialService::SerialService(RenderFrameHost* rfh)
     : DocumentUserData<SerialService>(rfh) {
   DCHECK(render_frame_host().IsFeatureEnabled(
-      blink::mojom::PermissionsPolicyFeature::kSerial));
+      network::mojom::PermissionsPolicyFeature::kSerial));
   // Serial API is not supported for back-forward cache for now because we
   // don't have support for closing/freezing ports when the frame is added to
   // the back-forward cache, so we mark frames that use this API as disabled

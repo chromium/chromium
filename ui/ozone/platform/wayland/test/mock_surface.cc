@@ -135,8 +135,6 @@ MockSurface::~MockSurface() {
     wl_resource_destroy(blending_->resource());
   if (prioritized_surface_ && prioritized_surface_->resource())
     wl_resource_destroy(prioritized_surface_->resource());
-  if (augmented_surface_ && augmented_surface_->resource())
-    wl_resource_destroy(augmented_surface_->resource());
 }
 
 MockSurface* MockSurface::FromResource(wl_resource* resource) {
@@ -221,7 +219,7 @@ void MockSurface::ReleaseBufferFenced(wl_resource* buffer,
   DCHECK(buffer);
   auto iter = linux_buffer_releases_.find(buffer);
   CHECK(iter != linux_buffer_releases_.end(), base::NotFatalUntil::M130);
-  auto* linux_buffer_release = iter->second;
+  auto* linux_buffer_release = iter->second.get();
   if (!release_fence.is_null()) {
     zwp_linux_buffer_release_v1_send_fenced_release(linux_buffer_release,
                                                     release_fence.Peek());

@@ -14,7 +14,6 @@ class AnchorEvaluator;
 class ComputedStyle;
 class CSSPropertyValueSet;
 class Element;
-class HTMLSlotElement;
 class StyleScopeFrame;
 
 // StyleRecalcContext is an object that is passed on the stack during
@@ -43,26 +42,9 @@ class CORE_EXPORT StyleRecalcContext {
   // before calling this function.
   static StyleRecalcContext FromInclusiveAncestors(Element&);
 
-  // When traversing into slotted children, the container is in the shadow-
-  // including inclusive ancestry of the slotted element's host. Return a
-  // context with the container adjusted as necessary.
-  StyleRecalcContext ForSlotChildren(const HTMLSlotElement& slot) const;
-
-  // Called to update the context when matching ::slotted rules for shadow host
-  // children. ::slotted rules may query containers inside the slot's shadow
-  // tree as well.
-  StyleRecalcContext ForSlottedRules(HTMLSlotElement& slot) const;
-
-  // Called to update the context when matching ::part rules for shadow hosts.
-  StyleRecalcContext ForPartRules(Element& host) const;
-
   // Set to the nearest container (for size container queries), if any.
   // This is used to evaluate container queries in ElementRuleCollector.
   Element* container = nullptr;
-
-  // Used to decide which is the the closest style() @container candidate for
-  // ::slotted() and ::part() rule matching. Otherwise nullptr.
-  Element* style_container = nullptr;
 
   // Used to evaluate anchor() and anchor-size() queries.
   //
@@ -119,13 +101,17 @@ class CORE_EXPORT StyleRecalcContext {
   // not have a style.
   bool is_outside_flat_tree = false;
 
-  // True when we're computing style interleaved from OOF-layout. This can
-  // happen when e.g. position-try-fallbacks is used.
+  // True if the ancestor of this element had a content-visibility: auto
+  // style and was locked, meaning that this is a forced update.
+  bool has_content_visibility_auto_locked_ancestor = false;
+
+  // Set to true if there is an ancestor element which has animations or
+  // transitions applied. Used to optimize after-change style computation.
+  bool has_animating_ancestor = false;
   //
-  // Note however that declarations from @position-try styles may still be
-  // included when this flag is false (see OutOfFlowData, "speculative
-  // @position-try styling").
-  bool is_interleaved_oof = false;
+  // True if any scroller ancestor of this element had a scroll-marker-group
+  // property set to "before" or "after".
+  bool has_scroller_ancestor_with_scroll_marker_group_property = false;
 };
 
 }  // namespace blink

@@ -14,7 +14,8 @@ import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_se
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {PROVISIONING_ERROR_CODE_PREFIX, ReimagingProvisioningPage} from 'chrome://shimless-rma/reimaging_provisioning_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {ProvisioningError, ProvisioningStatus, RmadErrorCode, StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import type {StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {ProvisioningError, ProvisioningStatus, RmadErrorCode} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

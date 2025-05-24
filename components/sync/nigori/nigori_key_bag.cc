@@ -16,7 +16,7 @@
 namespace syncer {
 namespace {
 
-// Note that |key_name| is redundant but computing the name from |nigori| can be
+// Note that `key_name` is redundant but computing the name from `nigori` can be
 // expensive.
 sync_pb::NigoriKey NigoriToProto(const Nigori& nigori,
                                  const std::string& key_name) {
@@ -103,8 +103,7 @@ std::string NigoriKeyBag::AddKey(std::unique_ptr<Nigori> nigori) {
   DCHECK(nigori);
   const std::string key_name = nigori->GetKeyName();
   if (key_name.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return key_name;
+    NOTREACHED();
   }
   nigori_map_.emplace(key_name, std::move(nigori));
   return key_name;

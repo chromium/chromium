@@ -29,6 +29,8 @@ struct FileHandler {
     ~AcceptEntry();
     AcceptEntry(const AcceptEntry& accept_entry);
 
+    friend bool operator==(const AcceptEntry&, const AcceptEntry&) = default;
+
     base::Value AsDebugValue() const;
 
     // A MIME type that can be handled by the file handler.
@@ -87,14 +89,7 @@ std::set<std::string> GetFileExtensionsFromFileHandlers(
 std::set<std::string> GetFileExtensionsFromFileHandler(
     const FileHandler& file_handler);
 
-bool operator==(const FileHandler::AcceptEntry& accept_entry1,
-                const FileHandler::AcceptEntry& accept_entry2);
 bool operator==(const FileHandler& file_handler1,
-                const FileHandler& file_handler2);
-
-bool operator!=(const FileHandler::AcceptEntry& accept_entry1,
-                const FileHandler::AcceptEntry& accept_entry2);
-bool operator!=(const FileHandler& file_handler1,
                 const FileHandler& file_handler2);
 
 }  // namespace apps

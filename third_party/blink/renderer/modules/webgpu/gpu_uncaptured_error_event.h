@@ -26,8 +26,9 @@ class GPUUncapturedErrorEvent : public Event {
 
   void Trace(Visitor*) const override;
 
-  // gpu_uncaptured_error_event.idl
+  // gpu_uncaptured_error_event.idl {{{
   GPUError* error();
+  // }}} End of WebIDL binding implementation.
 
  private:
   Member<GPUError> error_;

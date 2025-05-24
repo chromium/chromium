@@ -6,19 +6,15 @@
 
 #include <string_view>
 
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "ppapi/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
+#if BUILDFLAG(ENABLE_PPAPI)
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #endif
 
 namespace {
@@ -80,11 +76,11 @@ void ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
       value);
 }
 
-#if BUILDFLAG(ENABLE_PLUGINS)
+#if BUILDFLAG(ENABLE_PPAPI)
 // static
-void ChromeMetricsServiceAccessor::BindMetricsServiceReceiver(
-    mojo::PendingReceiver<chrome::mojom::MetricsService> receiver) {
-  class Thunk : public chrome::mojom::MetricsService {
+void ChromeMetricsServiceAccessor::BindPpapiMetricsServiceReceiver(
+    mojo::PendingReceiver<chrome::mojom::PpapiMetricsService> receiver) {
+  class Thunk : public chrome::mojom::PpapiMetricsService {
    public:
     void IsMetricsAndCrashReportingEnabled(
         base::OnceCallback<void(bool)> callback) override {
@@ -94,4 +90,4 @@ void ChromeMetricsServiceAccessor::BindMetricsServiceReceiver(
   };
   mojo::MakeSelfOwnedReceiver(std::make_unique<Thunk>(), std::move(receiver));
 }
-#endif  // BUILDFLAG(ENABLE_PLUGINS)
+#endif  // BUILDFLAG(ENABLE_PPAPI)

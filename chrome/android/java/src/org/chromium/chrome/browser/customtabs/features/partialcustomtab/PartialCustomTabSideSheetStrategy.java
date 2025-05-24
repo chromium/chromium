@@ -34,12 +34,14 @@ import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsCallback;
 import androidx.browser.customtabs.CustomTabsIntent;
 
-import org.chromium.base.MathUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.features.CustomTabDimensionUtils;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarButtonsCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
@@ -49,10 +51,7 @@ import org.chromium.ui.base.LocalizationUtils;
  * class should be owned by the CustomTabActivity.
  */
 public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrategy {
-    private static final int WINDOW_WIDTH_EXPANDED_CUTOFF_DP = 840;
     private static final int SIDE_SHEET_UI_DELAY = 20;
-    private static final float MINIMAL_WIDTH_RATIO_EXPANDED = 0.33f;
-    private static final float MINIMAL_WIDTH_RATIO_MEDIUM = 0.5f;
     private static final NoAnimator NO_ANIMATOR = new NoAnimator();
 
     private final @Px int mUnclampedInitialWidth;
@@ -60,9 +59,18 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private final int mRoundedCornersPosition;
 
     private boolean mIsMaximized;
-    private int mDecorationType;
+    private final int mDecorationType;
     private boolean mSlideDownAnimation; // Slide down to bottom when closing the sheet.
     private boolean mSheetOnRight;
+    private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
+
+    /** Callback used to notify the maximize button on side sheet PCCT click event. */
+    public interface MaximizeButtonCallback {
+        /**
+         * @return {@code true} if the PCCT gets maximized. {@code false} if restored.
+         */
+        boolean onClick();
+    }
 
     public PartialCustomTabSideSheetStrategy(
             Activity activity,
@@ -146,13 +154,27 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     @Override
     public void onToolbarInitialized(
-            View coordinatorView, CustomTabToolbar toolbar, @Px int toolbarCornerRadius) {
-        super.onToolbarInitialized(coordinatorView, toolbar, toolbarCornerRadius);
+            View coordinatorView,
+            CustomTabToolbar toolbar,
+            @Px int toolbarCornerRadius,
+            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+        super.onToolbarInitialized(
+                coordinatorView, toolbar, toolbarCornerRadius, toolbarButtonsCoordinator);
 
+        mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
         if (mShowMaximizeButton) {
-            toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
+            if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+                mToolbarButtonsCoordinator.showSideSheetMaximizeButton(
+                        mIsMaximized, () -> toggleMaximize(true));
+            } else {
+                toolbar.initSideSheetMaximizeButton(mIsMaximized, () -> toggleMaximize(true));
+            }
         }
-        toolbar.setMinimizeButtonEnabled(false);
+        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+            mToolbarButtonsCoordinator.setMinimizeButtonEnabled(false);
+        } else {
+            toolbar.setMinimizeButtonEnabled(false);
+        }
         updateDragBarVisibility(/* dragHandlebarVisibility= */ View.GONE);
     }
 
@@ -234,7 +256,7 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     }
 
     private void maybeResetFocusForScreenReaders() {
-        if (AccessibilityState.isScreenReaderEnabled()) {
+        if (AccessibilityState.isComplexUserInteractionServiceEnabled()) {
             // After resizing the view, notify the window state change to let screen reader
             // focus navigation work as before.
             mToolbarView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED);
@@ -415,10 +437,10 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
 
     private void positionOnWindow() {
         WindowManager.LayoutParams attrs = mActivity.getWindow().getAttributes();
-        attrs.height = mDisplayHeight - mStatusbarHeight - mNavbarHeight;
+        attrs.height = mDisplayHeight - mStatusBarHeight - mNavbarHeight;
         attrs.width = calculateWidth(mUnclampedInitialWidth);
 
-        attrs.y = mStatusbarHeight;
+        attrs.y = mStatusBarHeight;
         attrs.x =
                 (mSheetOnRight ? mVersionCompat.getDisplayWidth() - attrs.width : 0)
                         + mVersionCompat.getXOffset();
@@ -429,11 +451,8 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     private int calculateWidth(int unclampedWidth) {
         int displayWidth = mVersionCompat.getDisplayWidth();
         int displayWidthDp = mVersionCompat.getDisplayWidthDp();
-        float minWidthRatio =
-                displayWidthDp < WINDOW_WIDTH_EXPANDED_CUTOFF_DP
-                        ? MINIMAL_WIDTH_RATIO_MEDIUM
-                        : MINIMAL_WIDTH_RATIO_EXPANDED;
-        return MathUtils.clamp(unclampedWidth, displayWidth, (int) (displayWidth * minWidthRatio));
+        return CustomTabDimensionUtils.getInitialWidth(
+                unclampedWidth, displayWidth, displayWidthDp);
     }
 
     private float calculateElevation() {
@@ -482,7 +501,13 @@ public class PartialCustomTabSideSheetStrategy extends PartialCustomTabBaseStrat
     @Override
     public void destroy() {
         super.destroy();
-        if (mShowMaximizeButton) ((CustomTabToolbar) mToolbarView).removeSideSheetMaximizeButton();
+        if (mShowMaximizeButton) {
+            if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
+                mToolbarButtonsCoordinator.removeSideSheetMaximizeButton();
+            } else {
+                mToolbarView.removeSideSheetMaximizeButton();
+            }
+        }
     }
 
     void setSlideDownAnimationForTesting(boolean slideDown) {

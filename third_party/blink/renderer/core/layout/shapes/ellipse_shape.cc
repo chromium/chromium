@@ -42,8 +42,7 @@ std::pair<float, float> EllipseShape::InlineAndBlockRadiiIncludingMargin()
     const {
   float margin_radius_x = radius_x_ + ShapeMargin();
   float margin_radius_y = radius_y_ + ShapeMargin();
-  if (!RuntimeEnabledFeatures::ShapeOutsideWritingModeFixEnabled() ||
-      IsHorizontalWritingMode(writing_mode_)) {
+  if (IsHorizontalWritingMode(writing_mode_)) {
     return {margin_radius_x, margin_radius_y};
   }
   return {margin_radius_y, margin_radius_x};
@@ -88,10 +87,13 @@ LineSegment EllipseShape::GetExcludedInterval(LayoutUnit logical_top,
 }
 
 void EllipseShape::BuildDisplayPaths(DisplayPaths& paths) const {
-  paths.shape.AddEllipse(center_, radius_x_, radius_y_);
+  DCHECK(paths.shape.IsEmpty());
+  DCHECK(paths.margin_shape.IsEmpty());
+
+  paths.shape = Path::MakeEllipse(center_, radius_x_, radius_y_);
   if (ShapeMargin()) {
-    paths.margin_shape.AddEllipse(center_, radius_x_ + ShapeMargin(),
-                                  radius_y_ + ShapeMargin());
+    paths.margin_shape = Path::MakeEllipse(center_, radius_x_ + ShapeMargin(),
+                                           radius_y_ + ShapeMargin());
   }
 }
 

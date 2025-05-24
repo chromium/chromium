@@ -78,8 +78,7 @@ constexpr BackendUsage SelectedBackendToMetric(
     case os_crypt::SelectedLinuxBackend::KWALLET6:
       return used ? BackendUsage::kKwallet6 : BackendUsage::kKwallet6Failed;
   }
-  NOTREACHED_IN_MIGRATION();
-  return BackendUsage::kDeferFailed;
+  NOTREACHED();
 }
 
 const char* SelectedLinuxBackendToString(
@@ -98,8 +97,7 @@ const char* SelectedLinuxBackendToString(
     case os_crypt::SelectedLinuxBackend::KWALLET6:
       return "KWALLET6";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace

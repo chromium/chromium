@@ -109,6 +109,9 @@
     <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="Menu description for opening bookmark in Incognito window">
       Open in &amp;Incognito window
     </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW" desc="Menu description for opening bookmark in a split view">
+      Open in &amp;split view
+    </message>
     <message name="IDS_BOOKMARK_BAR_EDIT" desc="Title of the bookmark context menu item that brings up the bookmark editor">
       &amp;Edit...
     </message>
@@ -169,6 +172,9 @@
     </message>
     <message name="IDS_BOOKMARK_BAR_OPEN_INCOGNITO" desc="In Title Case: Menu description for opening bookmark in Incognito window">
       Open in &amp;Incognito Window
+    </message>
+    <message name="IDS_BOOKMARK_BAR_OPEN_IN_SPLIT_VIEW" desc="In Title Case: Menu description for opening bookmark in a split view">
+      Open in &amp;Split View
     </message>
     <message name="IDS_BOOKMARK_BAR_EDIT" desc="In Title Case: Title of the bookmark context menu item that brings up the bookmark editor">
       &amp;Edit...
@@ -242,11 +248,14 @@
   </if>
   <!-- End of Bookmarks Bubble strings. -->
 
-  <!-- Begin of Bookmarks Sync Promo strings for Desktop Identity Consistency. -->
+  <!-- Begin of Bookmarks Promo strings for Desktop Identity Consistency. -->
   <message name="IDS_BOOKMARK_DICE_PROMO_SYNC_MESSAGE" desc="Text of the sync promo displayed at the bottom of the bookmark bubble asking the user to enable sync.">
     To get your bookmarks on all your devices, turn on sync.
   </message>
-  <!-- End of Bookmarks Sync Promo strings for Desktop Identity Consistency. -->
+  <message name="IDS_BOOKMARK_VERIFY_PROMO_SUBTITLE" desc="This is the body text of a confirmation message and means that the bookmark is in an account-pending storage. In other words, it's waiting to be uploaded to the user's Google Account. It appears when the user was signed in to Chrome with account storage for bookmarks enabled but their sign-in credentials have expired; now, they need to sign back in to Chrome. The string is after the 'Bookmark added' string. If the user wants to save this data to their Google Account, they can click the 'Verify it's you' button at the bottom of this message. The tone should be motivating.">
+    To get this bookmark on all your devices, verify it's you
+  </message>
+  <!-- End of Bookmarks Promo strings for Desktop Identity Consistency. -->
 
   <!-- Begin of Desktop to iOS Promo strings. -->
   <if expr="is_win">
@@ -439,6 +448,9 @@
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_INCOGNITO_WITH_COUNT" desc="Menu description for opening all urls in a bookmark folder in an Incognito window, which includes a count of urls">
     Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in Incognito window
   </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_TAB_GROUP" desc="Menu description for opening all urls in a bookmark folder in a new tab group">
+    Open all in new tab group
+  </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_ALL_NEW_TAB_GROUP_WITH_COUNT" desc="Menu description for opening all urls in a bookmark folder in a new tab group, which includes a count of urls">
     Open all (<ph name="URL_COUNT">$1<ex>5</ex></ph>) in new tab group
   </message>
@@ -453,6 +465,9 @@
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_NEW_TAB_GROUP" desc="Menu description for opening a bookmark in a new tab group">
     Open in new tab group
+  </message>
+  <message name="IDS_BOOKMARK_MANAGER_MENU_OPEN_IN_SPLIT_VIEW" desc="Menu description for opening a bookmark in a split view">
+    Open in split view
   </message>
   <message name="IDS_BOOKMARK_MANAGER_MENU_RENAME" desc="Title of the bookmark list dropdown menu item that renames folders.">
     Rename

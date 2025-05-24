@@ -10,8 +10,8 @@ DecoratedText::RangedAttribute::RangedAttribute(const gfx::Range& range,
                                                 const gfx::Font& font)
     : range(range), font(font), strike(false) {}
 
-DecoratedText::DecoratedText() {}
+DecoratedText::DecoratedText() = default;
 
-DecoratedText::~DecoratedText() {}
+DecoratedText::~DecoratedText() = default;
 
 }  // namespace gfx

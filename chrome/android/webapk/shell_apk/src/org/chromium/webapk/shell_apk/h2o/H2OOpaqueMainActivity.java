@@ -11,7 +11,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import org.chromium.webapk.shell_apk.R;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Launches {@link SplashActivity}. SplashActivity does not handle android.intent.action.MAIN
@@ -20,6 +21,7 @@ import org.chromium.webapk.shell_apk.R;
  * singleTask activity when a user taps the app icon in the app drawer. This bad behavior does not
  * occur if a non-root activity is singleTask.
  */
+@NullMarked
 public class H2OOpaqueMainActivity extends Activity {
     /** Returns whether {@link InitialSplashActivity} is enabled. */
     public static boolean checkComponentEnabled(Context context, boolean isNewStyleWebApk) {
@@ -29,16 +31,13 @@ public class H2OOpaqueMainActivity extends Activity {
 
         if (enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT) {
             // H2OOpaqueMainActivity is disabled by default for old-style WebAPKs.
-            // R.bool.opaque_main_activity_enabled_default is inaccurate for old-style WebAPKs.
-            return isNewStyleWebApk
-                    && context.getResources()
-                            .getBoolean(R.bool.opaque_main_activity_enabled_default);
+            return isNewStyleWebApk;
         }
         return enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         final long launchTimeMs = SystemClock.elapsedRealtime();
         super.onCreate(savedInstanceState);
         Context appContext = getApplicationContext();

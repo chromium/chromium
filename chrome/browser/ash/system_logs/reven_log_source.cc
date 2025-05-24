@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom-shared.h"
@@ -63,7 +64,7 @@ constexpr char kRevenWirelessIdKey[] = "chromeosflex_wireless_id";
 constexpr char kRevenWirelessNameKey[] = "chromeosflex_wireless_name";
 
 // Format a gradually-accumulated, comma-separated list.
-void StrListAppend(std::string* list, const std::string_view value) {
+void StrListAppend(std::string* list, std::string_view value) {
   if (!list->empty()) {
     base::StrAppend(list, {", "});
   }
@@ -88,10 +89,6 @@ std::string ToTpmVersionStr(uint32_t tpm_family) {
   } else {
     return "unknown";
   }
-}
-
-std::string FormatBool(bool value) {
-  return value ? "true" : "false";
 }
 
 void PopulateCpuInfo(SystemLogsResponse& psd, const TelemetryInfoPtr& info) {
@@ -148,20 +145,20 @@ void PopulateSystemInfo(SystemLogsResponse& psd, const TelemetryInfoPtr& info) {
 
   healthd::OsInfoPtr& os_info = info->system_result->get_system_info()->os_info;
   if (!os_info.is_null()) {
-    psd.emplace(
-        kRevenSecurebootKey,
-        FormatBool(os_info->boot_mode == healthd::BootMode::kCrosEfiSecure));
-    psd.emplace(
-        kRevenUefiKey,
-        FormatBool(os_info->boot_mode == healthd::BootMode::kCrosEfi ||
-                   os_info->boot_mode == healthd::BootMode::kCrosEfiSecure));
+    psd.emplace(kRevenSecurebootKey,
+                base::ToString(os_info->boot_mode ==
+                               healthd::BootMode::kCrosEfiSecure));
+    psd.emplace(kRevenUefiKey,
+                base::ToString(
+                    os_info->boot_mode == healthd::BootMode::kCrosEfi ||
+                    os_info->boot_mode == healthd::BootMode::kCrosEfiSecure));
   }
 }
 
 // Constructs key names based on the passed label. Collects data from all passed
 // devices into each value.
 void PopulateBusDevicesInfo(SystemLogsResponse& psd,
-                            const std::string_view label,
+                            std::string_view label,
                             const std::vector<healthd::BusDevicePtr>& devices) {
   if (devices.empty()) {
     return;
@@ -267,8 +264,8 @@ void PopulateTpmInfo(SystemLogsResponse& psd, const TelemetryInfoPtr& info) {
 
   psd.emplace(kRevenTpmDidVidKey, tpm_info->did_vid.value_or(kNotAvailable));
   psd.emplace(kRevenTpmAllowListedKey,
-              FormatBool(tpm_info->supported_features->is_allowed));
-  psd.emplace(kRevenTpmOwnedKey, FormatBool(tpm_info->status->owned));
+              base::ToString(tpm_info->supported_features->is_allowed));
+  psd.emplace(kRevenTpmOwnedKey, base::ToString(tpm_info->status->owned));
 
   const healthd::TpmVersionPtr& version = tpm_info->version;
   if (version.is_null()) {

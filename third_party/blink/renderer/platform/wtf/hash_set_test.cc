@@ -26,7 +26,10 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 #include <memory>
+#include <set>
+#include <unordered_set>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -425,6 +428,26 @@ TEST(HashSetTest, InitializerList) {
   EXPECT_TRUE(IsOneTwoThreeSet(ReturnOneTwoThreeSet()));
 }
 
+TEST(HashSetTest, EraseIf) {
+  HashSet<int> set{1, 2, 3, 5, 8};
+  set.erase(2);
+  int num_buckets_seen = 0;
+  set.erase_if([&num_buckets_seen](int key) {
+    ++num_buckets_seen;
+    EXPECT_TRUE(key == 1 || key == 3 || key == 5 || key == 8)
+        << "Saw unexpected bucket " << key;
+    return key == 5;
+  });
+  EXPECT_EQ(num_buckets_seen, 4) << "Should see all buckets";
+  EXPECT_EQ(set.size(), 3u);
+
+  EXPECT_TRUE(set.Contains(1));
+  EXPECT_FALSE(set.Contains(2));
+  EXPECT_TRUE(set.Contains(3));
+  EXPECT_FALSE(set.Contains(5));
+  EXPECT_TRUE(set.Contains(8));
+}
+
 enum TestEnum {
   kItem0,
 };
@@ -441,6 +464,29 @@ TEST(HashSetTest, HasTraitsForEnum) {
   set2.insert(TestEnumClass::kItem0);
   HashSet<std::pair<TestEnum, TestEnumClass>> set3;
   set3.insert(std::make_pair(TestEnum::kItem0, TestEnumClass::kItem0));
+}
+
+TEST(HashSetTest, ConstructFromOtherContainerIterators) {
+  auto convert_and_verify = [](const auto& container, const char* label) {
+    SCOPED_TRACE(label);
+    HashSet<int> hash_set(std::begin(container), std::end(container));
+    EXPECT_EQ(hash_set.size(), 3u);
+    EXPECT_TRUE(hash_set.Contains(3));
+    EXPECT_TRUE(hash_set.Contains(7));
+    EXPECT_TRUE(hash_set.Contains(11));
+  };
+
+  std::set<int> std_set = {3, 7, 11};
+  convert_and_verify(std_set, "std::set");
+
+  std::unordered_set<int> unordered_set = {3, 7, 11};
+  convert_and_verify(unordered_set, "std::unordered_set");
+
+  base::flat_set<int> flat_set = {3, 7, 11};
+  convert_and_verify(flat_set, "base::flat_set");
+
+  constexpr int kArray[] = {3, 7, 11};
+  convert_and_verify(base::span(kArray), "span");
 }
 
 static_assert(!IsTraceable<HashSet<int>>::value,

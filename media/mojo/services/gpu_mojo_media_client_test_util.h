@@ -12,12 +12,12 @@ namespace media {
 
 // Uses the standard MojoMediaClient logic to determine which additional
 // platform-dependent codecs are supported and registers them so that they are
-// considered in the answer provided by `IsSupportedAudioType()` and
-// `IsSupportedVideoType()`.
+// considered in the answer provided by `IsDecoderSupportedAudioType()` and
+// `IsDecoderSupportedVideoType()`.
 // Providing `gpu_preferences` might be necessary to get realistic results with
 // respect to video codecs. For example, if
 // `gpu_preferences.disable_accelerated_video_decode` is true, then
-// `IsSupportedVideoType()` will return false for all video types.
+// `IsDecoderSupportedVideoType()` will return false for all video types.
 void AddSupplementalCodecsForTesting(gpu::GpuPreferences gpu_preferences = {});
 
 }  // namespace media

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/media/audio_output_stream_observer_impl.h"
+#include "content/browser/renderer_host/media/preferred_audio_output_device_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/audio_stream_broker.h"
 #include "media/base/audio_parameters.h"
@@ -27,11 +28,14 @@ namespace content {
 // AudioOutputStreamBroker is used to broker a connection between a client
 // (typically renderer) and the audio service. It also sets up all objects
 // used for monitoring the stream.
-class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
+class CONTENT_EXPORT AudioOutputStreamBroker final
+    : public AudioStreamBroker,
+      public AudioOutputDeviceSwitcher {
  public:
   AudioOutputStreamBroker(
       int render_process_id,
       int render_frame_id,
+      const GlobalRenderFrameHostToken& main_frame_token,
       int stream_id,
       const std::string& output_device_id,
       const media::AudioParameters& params,
@@ -48,6 +52,19 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   // Creates the stream.
   void CreateStream(media::mojom::AudioStreamFactory* factory) final;
 
+  // AudioOutputDeviceSwitcher implementation.
+  void SwitchAudioOutputDeviceId(const std::string& device_id) final;
+
+  bool IsSwitchableStreamCreatedForTesting() const {
+    return device_switch_interface_.is_bound();
+  }
+
+  void SetDeviceSwichInterfaceForTesting(
+      mojo::Remote<media::mojom::DeviceSwitchInterface>
+          device_switch_interface) {
+    device_switch_interface_ = std::move(device_switch_interface);
+  }
+
  private:
   using DisconnectReason =
       media::mojom::AudioOutputStreamObserver::DisconnectReason;
@@ -61,7 +78,8 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
 
   SEQUENCE_CHECKER(owning_sequence_);
 
-  const std::string output_device_id_;
+  const GlobalRenderFrameHostToken main_frame_token_;
+  std::string output_device_id_;
   const media::AudioParameters params_;
   const base::UnguessableToken group_id_;
 
@@ -75,6 +93,7 @@ class CONTENT_EXPORT AudioOutputStreamBroker final : public AudioStreamBroker {
   AudioOutputStreamObserverImpl observer_;
   mojo::AssociatedReceiver<media::mojom::AudioOutputStreamObserver>
       observer_receiver_;
+  mojo::Remote<media::mojom::DeviceSwitchInterface> device_switch_interface_;
 
   DisconnectReason disconnect_reason_ = DisconnectReason::kDocumentDestroyed;
 

@@ -105,6 +105,9 @@ struct Capabilities {
   Status Parse(const base::Value::Dict& desired_caps,
                bool w3c_compliant = true);
 
+  // Migrate capabilities to maintain backward compatibility.
+  Status MigrateCapabilities();
+
   //
   // W3C defined capabilities
   //
@@ -151,6 +154,8 @@ struct Capabilities {
 
   int android_devtools_port = 0;
 
+  bool enable_extension_targets = false;
+
   base::FilePath binary;
 
   // If provided, the remote debugging address to connect to.
@@ -160,6 +165,9 @@ struct Capabilities {
   // bound to ChromeDriver's process. If true, Chrome will not quit if
   // ChromeDriver dies.
   bool detach;
+  // Whether to attempt terminating the browser process gracefully before
+  // resorting to SIGKILL.
+  bool quit_gracefully = false;
 
   std::optional<MobileDevice> mobile_device;
 

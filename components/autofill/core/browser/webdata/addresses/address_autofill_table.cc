@@ -12,13 +12,16 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/webdata/autofill_table_utils.h"
@@ -159,9 +162,11 @@ void AddLegacyAutofillProfileDetailsFromStatement(sql::Statement& s,
         ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE, ADDRESS_HOME_COUNTRY}) {
     profile->SetRawInfo(type, s.ColumnString16(index++));
   }
-  profile->set_use_count(s.ColumnInt64(index++));
-  profile->set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
-  profile->set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile->usage_history().set_use_count(s.ColumnInt64(index++));
+  profile->usage_history().set_use_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile->usage_history().set_modification_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile->set_language_code(s.ColumnString(index++));
   profile->set_profile_label(s.ColumnString(index++));
 }
@@ -179,14 +184,14 @@ bool AddLegacyAutofillProfileNamesToProfile(sql::Database* db,
            kConjunctionLastNameStatus, kSecondLastName, kSecondLastNameStatus,
            kLastName, kLastNameStatus, kFullName, kFullNameStatus},
           profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
 
     int index = 1;
     for (FieldType type :
          {NAME_FIRST, NAME_MIDDLE, NAME_LAST_FIRST, NAME_LAST_CONJUNCTION,
           NAME_LAST_SECOND, NAME_LAST, NAME_FULL}) {
-      profile->SetRawInfoWithVerificationStatusInt(
-          type, s.ColumnString16(index), s.ColumnInt(index + 1));
+      profile->SetRawInfoWithVerificationStatus(
+          type, s.ColumnString16(index), static_cast<VerificationStatus>(s.ColumnInt(index + 1)));
       index += 2;
     }
   }
@@ -226,7 +231,7 @@ bool AddLegacyAutofillProfileAddressesToProfile(sql::Database* db,
                     kFloor,
                     kFloorStatus},
                    profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
     std::u16string street_address = s.ColumnString16(1);
     std::u16string dependent_locality = s.ColumnString16(13);
     std::u16string city = s.ColumnString16(15);
@@ -264,8 +269,8 @@ bool AddLegacyAutofillProfileAddressesToProfile(sql::Database* db,
             ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
             ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
             ADDRESS_HOME_COUNTRY, ADDRESS_HOME_APT_NUM, ADDRESS_HOME_FLOOR}) {
-        profile->SetRawInfoWithVerificationStatusInt(
-            type, s.ColumnString16(index), s.ColumnInt(index + 1));
+        profile->SetRawInfoWithVerificationStatus(
+            type, s.ColumnString16(index), static_cast<VerificationStatus>(s.ColumnInt(index + 1)));
         index += 2;
       }
     } else {
@@ -288,7 +293,7 @@ bool AddLegacyAutofillProfileEmailsToProfile(sql::Database* db,
   sql::Statement s;
   if (SelectByGuid(db, s, kAutofillProfileEmailsTable, {kGuid, kEmail},
                    profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
     profile->SetRawInfo(EMAIL_ADDRESS, s.ColumnString16(1));
   }
   return s.Succeeded();
@@ -305,7 +310,7 @@ bool AddLegacyAutofillProfilePhonesToProfile(sql::Database* db,
   sql::Statement s;
   if (SelectByGuid(db, s, kAutofillProfilePhonesTable, {kGuid, kNumber},
                    profile->guid())) {
-    DCHECK_EQ(profile->guid(), s.ColumnString(0));
+    DCHECK_EQ(profile->guid(), s.ColumnStringView(0));
     profile->SetRawInfo(PHONE_HOME_WHOLE_NUMBER, s.ColumnString16(1));
   }
   return s.Succeeded();
@@ -366,16 +371,11 @@ bool AddProfileMetadataToTable(sql::Database* db,
   int index = 0;
   s.BindString(index++, profile.guid());
   s.BindInt(index++, static_cast<int>(profile.record_type()));
-  s.BindInt64(index++, profile.use_count());
-  s.BindInt64(index++, profile.use_date().ToTimeT());
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    bind_optional_time(index++, profile.use_date(2));
-    bind_optional_time(index++, profile.use_date(3));
-  } else {
-    s.BindNull(index++);
-    s.BindNull(index++);
-  }
-  s.BindInt64(index++, profile.modification_date().ToTimeT());
+  s.BindInt64(index++, profile.usage_history().use_count());
+  s.BindInt64(index++, profile.usage_history().use_date().ToTimeT());
+  bind_optional_time(index++, profile.usage_history().use_date(2));
+  bind_optional_time(index++, profile.usage_history().use_date(3));
+  s.BindInt64(index++, profile.usage_history().modification_date().ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
   s.BindInt(index++, profile.initial_creator_id());
@@ -387,18 +387,30 @@ bool AddProfileMetadataToTable(sql::Database* db,
 // if the write succeeded.
 bool AddProfileTypeTokensToTable(sql::Database* db,
                                  const AutofillProfile& profile) {
-  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
+    std::u16string value = profile.GetRawInfo(type);
     if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
       continue;
     }
+    // Alternative names should always be converted to Hiragana for
+    // storage.
+    if (IsAlternativeNameType(type)) {
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillSupportPhoneticNameForJP)) {
+        value = TransliterateAlternativeName(value);
+      } else {
+        continue;
+      }
+    }
+
     sql::Statement s;
     InsertBuilder(db, s, kAddressTypeTokensTable,
                   {kGuid, kType, kValue, kVerificationStatus, kObservations});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
-    s.BindString16(2, Truncate(profile.GetRawInfo(type)));
-    s.BindInt(3, profile.GetVerificationStatusInt(type));
+    s.BindString16(2, Truncate(value));
+    s.BindInt(3, static_cast<int>(profile.GetVerificationStatus(type)));
     s.BindBlob(
         4, profile.token_quality().SerializeObservationsForStoredType(type));
     if (!s.Run()) {
@@ -424,9 +436,9 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
                  kLabel, kInitialCreatorId, kLastModifierId});
   int index = 0;
   s.BindString(index++, profile.guid());
-  s.BindInt64(index++, profile.use_count());
-  s.BindInt64(index++, profile.use_date().ToTimeT());
-  s.BindInt64(index++, profile.modification_date().ToTimeT());
+  s.BindInt64(index++, profile.usage_history().use_count());
+  s.BindInt64(index++, profile.usage_history().use_date().ToTimeT());
+  s.BindInt64(index++, profile.usage_history().modification_date().ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
   s.BindInt(index++, profile.initial_creator_id());
@@ -434,16 +446,16 @@ bool AddAutofillProfileToTableVersion113(sql::Database* db,
   if (!s.Run()) {
     return false;
   }
-  // Note that `GetDatabaseStoredTypesOfAutofillProfile()` might change in
+  // Note that `AutofillProfile::kDatabaseStoredTypes` might change in
   // future versions. Due to the flexible layout of the type tokens table, this
   // is not a problem.
-  for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
+  for (FieldType type : AutofillProfile::kDatabaseStoredTypes) {
     InsertBuilder(db, s, GetLegacyProfileTypeTokensTable(profile.record_type()),
                   {kGuid, kType, kValue, kVerificationStatus});
     s.BindString(0, profile.guid());
     s.BindInt(1, type);
     s.BindString16(2, Truncate(profile.GetRawInfo(type)));
-    s.BindInt(3, profile.GetVerificationStatusInt(type));
+    s.BindInt(3, static_cast<int>(profile.GetVerificationStatus(type)));
     if (!s.Run()) {
       return false;
     }
@@ -478,7 +490,7 @@ std::optional<std::vector<FieldTypeData>> ReadProfileTypeTokens(
   // As `SelectByGuid()` already calls `s.Step()`, do-while is used here.
   do {
     FieldType type = ToSafeFieldType(s.ColumnInt(0), UNKNOWN_TYPE);
-    if (!GetDatabaseStoredTypesOfAutofillProfile().contains(type)) {
+    if (!AutofillProfile::kDatabaseStoredTypes.contains(type)) {
       // This is possible in two cases:
       // - The database was tampered with by external means.
       // - The type corresponding to `s.ColumnInt(0)` was deprecated. In this
@@ -533,15 +545,13 @@ std::optional<AutofillProfile> GetProfileFromMetadataTable(
     }
     return base::Time::FromTimeT(s.ColumnInt64(index));
   };
-  profile.set_use_count(s.ColumnInt64(index++));
-  profile.set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)), 1);
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    profile.set_use_date(as_optional_time(index++), 2);
-    profile.set_use_date(as_optional_time(index++), 3);
-  } else {
-    index += 2;
-  }
-  profile.set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
+  profile.usage_history().set_use_count(s.ColumnInt64(index++));
+  profile.usage_history().set_use_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)), 1);
+  profile.usage_history().set_use_date(as_optional_time(index++), 2);
+  profile.usage_history().set_use_date(as_optional_time(index++), 3);
+  profile.usage_history().set_modification_date(
+      base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile.set_language_code(s.ColumnString(index++));
   profile.set_profile_label(s.ColumnString(index++));
   profile.set_initial_creator_id(s.ColumnInt(index++));
@@ -557,7 +567,7 @@ AddressAutofillTable::~AddressAutofillTable() = default;
 
 // static
 AddressAutofillTable* AddressAutofillTable::FromWebDatabase(WebDatabase* db) {
-  return static_cast<AddressAutofillTable*>(db->GetTable(GetKey()));
+  return static_cast<AddressAutofillTable*>(CHECK_DEREF(db).GetTable(GetKey()));
 }
 
 WebDatabaseTable::TypeKey AddressAutofillTable::GetTypeKey() const {
@@ -713,8 +723,8 @@ std::optional<AutofillProfile> AddressAutofillTable::GetAutofillProfile(
     return std::nullopt;
   }
   for (const FieldTypeData& data : *field_type_data) {
-    profile->SetRawInfoWithVerificationStatusInt(data.type, data.value,
-                                                 data.status);
+    profile->SetRawInfoWithVerificationStatus(data.type, data.value,
+                                                 static_cast<VerificationStatus>(data.status));
     profile->token_quality().LoadSerializedObservationsForStoredType(
         data.type, data.serialized_data);
   }
@@ -815,19 +825,19 @@ bool AddressAutofillTable::GetAutofillProfilesFromLegacyTable(
 }
 
 bool AddressAutofillTable::MigrateToVersion88AddNewNameColumns() {
-  for (std::string_view column :
-       std::vector<std::string_view>{"honorific_prefix", kFirstLastName,
-                                     kConjunctionLastName, kSecondLastName}) {
+  for (std::string_view column : std::to_array<std::string_view>(
+           {"honorific_prefix", kFirstLastName, kConjunctionLastName,
+            kSecondLastName})) {
     if (!AddColumnIfNotExists(db(), kAutofillProfileNamesTable, column,
                               "VARCHAR")) {
       return false;
     }
   }
 
-  for (std::string_view column : std::vector<std::string_view>{
-           "honorific_prefix_status", kFirstNameStatus, kMiddleNameStatus,
-           kLastNameStatus, kFirstLastNameStatus, kConjunctionLastNameStatus,
-           kSecondLastNameStatus, kFullNameStatus}) {
+  for (std::string_view column : std::to_array<std::string_view>(
+           {"honorific_prefix_status", kFirstNameStatus, kMiddleNameStatus,
+            kLastNameStatus, kFirstLastNameStatus, kConjunctionLastNameStatus,
+            kSecondLastNameStatus, kFullNameStatus})) {
     // The default value of 0 corresponds to the verification status
     // |kNoStatus|.
     if (!AddColumnIfNotExists(db(), kAutofillProfileNamesTable, column,
@@ -1168,6 +1178,32 @@ bool AddressAutofillTable::InitAddressTypeTokensTable() {
                                  {kVerificationStatus, "INTEGER DEFAULT 0"},
                                  {kObservations, "BLOB"}},
                                 /*composite_primary_key=*/{kGuid, kType});
+}
+
+AddressAutofillTable::Dropper::Dropper() = default;
+AddressAutofillTable::Dropper::~Dropper() = default;
+
+WebDatabaseTable::TypeKey AddressAutofillTable::Dropper::GetTypeKey() const {
+  static int table_key = 0;
+  return reinterpret_cast<void*>(&table_key);
+}
+
+bool AddressAutofillTable::Dropper::CreateTablesIfNecessary() {
+  return true;
+}
+
+bool AddressAutofillTable::Dropper::MigrateToVersion(
+    int version,
+    bool* update_compatible_version) {
+  static constexpr auto kTables = std::to_array<std::string_view>(
+      {kAddressesTable, kAddressTypeTokensTable, kAutofillProfileAddressesTable,
+       kAutofillProfileBirthdatesTable, kAutofillProfileEmailsTable,
+       kAutofillProfileNamesTable, kAutofillProfilePhonesTable,
+       kAutofillProfilesTable, kContactInfoTable, kContactInfoTypeTokensTable,
+       kLocalAddressesTable, kLocalAddressesTypeTokensTable});
+  return std::ranges::all_of(kTables, [this](std::string_view table_name) {
+    return DropTableIfExists(db(), table_name);
+  });
 }
 
 }  // namespace autofill

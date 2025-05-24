@@ -235,6 +235,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.getBubbleMap = function() {
 
 /**
  * @return {goog.dom.DomHelper} The dom helper for the bubble window.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.AbstractBubblePlugin.prototype.getBubbleDom = function() {
   'use strict';
@@ -250,6 +251,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.getTrogClassId =
 /**
  * Returns the element whose properties the bubble manipulates.
  * @return {Element} The target element.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.AbstractBubblePlugin.prototype.getTargetElement =
     function() {
@@ -318,6 +320,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.handleSelectionChange =
  * @return {boolean} Always false, allowing every bubble plugin to handle the
  *     event.
  * @protected
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.AbstractBubblePlugin.prototype
     .handleSelectionChangeInternal = function(selectedElement) {
@@ -387,6 +390,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.getSharedBubble_ =
   'use strict';
   var bubbleParent = /** @type {!Element} */ (
       this.bubbleParent_ || this.getFieldObject().getAppWindow().document.body);
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.dom_ = goog.dom.getDomHelper(bubbleParent);
 
   var bubbleMap = this.getBubbleMap();
@@ -411,6 +415,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.createBubble = function(
   'use strict';
   var bubble = this.getSharedBubble_();
   if (!bubble.hasPanelOfType(this.getBubbleType())) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.targetElement_ = targetElement;
 
     this.panelId_ = bubble.addPanel(
@@ -519,7 +524,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.closeBubble = function() {
  * Override it to provide your own one.
  * @protected
  */
-goog.editor.plugins.AbstractBubblePlugin.prototype.onShow = goog.nullFunction;
+goog.editor.plugins.AbstractBubblePlugin.prototype.onShow = function() {};
 
 
 /**
@@ -528,7 +533,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.onShow = goog.nullFunction;
  * @protected
  */
 goog.editor.plugins.AbstractBubblePlugin.prototype.cleanOnBubbleClose =
-    goog.nullFunction;
+    function() {};
 
 
 /**
@@ -539,6 +544,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.cleanOnBubbleClose =
 goog.editor.plugins.AbstractBubblePlugin.prototype.handlePanelClosed_ =
     function() {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.targetElement_ = null;
   this.panelId_ = null;
   this.eventRegister.removeAll();
@@ -617,6 +623,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.reposition = function() {
  * @param {string} id String id for the span id.
  * @return {Element} The option link element.
  * @protected
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.plugins.AbstractBubblePlugin.prototype.createLinkOption = function(
     id) {
@@ -673,6 +680,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.createLink = function(
 goog.editor.plugins.AbstractBubblePlugin.prototype.createLinkHelper = function(
     linkId, linkText, isAnchor, opt_container) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   var link = this.dom_.createDom(
       isAnchor ? goog.dom.TagName.A : goog.dom.TagName.SPAN,
       {className: goog.editor.plugins.AbstractBubblePlugin.LINK_CLASSNAME_},
@@ -724,6 +732,7 @@ goog.editor.plugins.AbstractBubblePlugin.prototype.setupLink = function(
   if (opt_container) {
     opt_container.appendChild(/** @type {!Node} */ (link));
   } else {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var oldLink = this.dom_.getElement(linkId);
     if (oldLink) {
       goog.dom.replaceNode(link, oldLink);

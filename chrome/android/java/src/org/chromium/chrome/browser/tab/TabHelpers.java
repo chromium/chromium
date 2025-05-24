@@ -46,7 +46,7 @@ public final class TabHelpers {
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).
         if (!tab.isOffTheRecord()
                 && !((TabImpl) tab).isCustomTab()
-                && PriceTrackingFeatures.isPriceTrackingEligible(tab.getProfile())) {
+                && PriceTrackingFeatures.isPriceAnnotationsEligible(tab.getProfile())) {
             ShoppingPersistedTabData.initialize(tab);
         }
     }

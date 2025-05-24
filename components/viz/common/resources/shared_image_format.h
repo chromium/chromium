@@ -182,6 +182,8 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   // NOTE: Supported only for true single-plane formats.
   int BitsPerPixel() const;
 
+  static SharedImageFormat N32Format();
+
   bool operator==(const SharedImageFormat& o) const;
   std::weak_ordering operator<=>(const SharedImageFormat& o) const;
 
@@ -271,10 +273,6 @@ class SinglePlaneFormat {
       SharedImageFormat(mojom::SingleplanarFormat::BGRA_8888);
   static constexpr SharedImageFormat kALPHA_8 =
       SharedImageFormat(mojom::SingleplanarFormat::ALPHA_8);
-  static constexpr SharedImageFormat kLUMINANCE_8 =
-      SharedImageFormat(mojom::SingleplanarFormat::LUMINANCE_8);
-  static constexpr SharedImageFormat kRGB_565 =
-      SharedImageFormat(mojom::SingleplanarFormat::RGB_565);
   static constexpr SharedImageFormat kBGR_565 =
       SharedImageFormat(mojom::SingleplanarFormat::BGR_565);
   static constexpr SharedImageFormat kETC1 =
@@ -303,11 +301,10 @@ class SinglePlaneFormat {
       SharedImageFormat(mojom::SingleplanarFormat::R_F16);
 
   // All known singleplanar formats.
-  static constexpr SharedImageFormat kAll[19] = {
-      kRGBA_8888,     kRGBA_4444,    kBGRA_8888,    kALPHA_8, kLUMINANCE_8,
-      kRGB_565,       kBGR_565,      kETC1,         kR_8,     kRG_88,
-      kLUMINANCE_F16, kRGBA_F16,     kR_16,         kRG_1616, kRGBX_8888,
-      kBGRX_8888,     kRGBA_1010102, kBGRA_1010102, kR_F16};
+  static constexpr SharedImageFormat kAll[17] = {
+      kRGBA_8888, kRGBA_4444, kBGRA_8888,     kALPHA_8,      kBGR_565, kETC1,
+      kR_8,       kRG_88,     kLUMINANCE_F16, kRGBA_F16,     kR_16,    kRG_1616,
+      kRGBX_8888, kBGRX_8888, kRGBA_1010102,  kBGRA_1010102, kR_F16};
 };
 
 // Constants for common multi-planar formats.

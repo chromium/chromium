@@ -28,7 +28,7 @@ message Gazetteer {
   string language = 10;
 
   /*
-   * Natural Lanaguge framework's efficient representation of a gazetter.
+   * Natural Language framework's efficient representation of a gazetter.
    */
   bytes modelParameterData = 100;
 

@@ -38,7 +38,7 @@ void NoStatePrefetchProcessorImpl::Create(
     std::unique_ptr<NoStatePrefetchProcessorImplDelegate> delegate) {
   // NoStatePrefetchProcessorImpl is a self-owned object. This deletes itself on
   // the mojo disconnect handler.
-  new NoStatePrefetchProcessorImpl(frame_host->GetProcess()->GetID(),
+  new NoStatePrefetchProcessorImpl(frame_host->GetProcess()->GetDeprecatedID(),
                                    frame_host->GetRoutingID(),
                                    frame_host->GetLastCommittedOrigin(),
                                    std::move(receiver), std::move(delegate));
@@ -76,12 +76,14 @@ void NoStatePrefetchProcessorImpl::Start(
 
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return;
+  }
 
   auto* link_manager = GetNoStatePrefetchLinkManager();
-  if (!link_manager)
+  if (!link_manager) {
     return;
+  }
 
   DCHECK(!link_trigger_id_);
   link_trigger_id_ = link_manager->OnStartLinkTrigger(
@@ -91,18 +93,21 @@ void NoStatePrefetchProcessorImpl::Start(
 }
 
 void NoStatePrefetchProcessorImpl::Cancel() {
-  if (!link_trigger_id_)
+  if (!link_trigger_id_) {
     return;
+  }
   auto* link_manager = GetNoStatePrefetchLinkManager();
-  if (link_manager)
+  if (link_manager) {
     link_manager->OnCancelLinkTrigger(*link_trigger_id_);
+  }
 }
 
 void NoStatePrefetchProcessorImpl::Abandon() {
   if (link_trigger_id_) {
     auto* link_manager = GetNoStatePrefetchLinkManager();
-    if (link_manager)
+    if (link_manager) {
       link_manager->OnAbandonLinkTrigger(*link_trigger_id_);
+    }
   }
   delete this;
 }
@@ -111,8 +116,9 @@ NoStatePrefetchLinkManager*
 NoStatePrefetchProcessorImpl::GetNoStatePrefetchLinkManager() {
   auto* render_frame_host =
       content::RenderFrameHost::FromID(render_process_id_, render_frame_id_);
-  if (!render_frame_host)
+  if (!render_frame_host) {
     return nullptr;
+  }
   return delegate_->GetNoStatePrefetchLinkManager(
       render_frame_host->GetProcess()->GetBrowserContext());
 }

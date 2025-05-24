@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -19,7 +20,8 @@ CEReactionsScope* CEReactionsScope::Current() {
   return top_of_stack_;
 }
 
-CEReactionsScope::CEReactionsScope() : prev_(top_of_stack_) {
+CEReactionsScope::CEReactionsScope(v8::Isolate* isolate)
+    : prev_(top_of_stack_), try_catch_(isolate) {
   // For speed of the bindings we use a global variable to determine if
   // we have a CEReactionScope. We check that this is only on the main thread
   // otherwise this global variable will have collisions.
@@ -28,8 +30,12 @@ CEReactionsScope::CEReactionsScope() : prev_(top_of_stack_) {
 }
 
 CEReactionsScope::~CEReactionsScope() {
-  if (stack_)
+  if (stack_) {
     stack_->PopInvokingReactions();
+  }
+  if (try_catch_.HasCaught()) [[unlikely]] {
+    try_catch_.ReThrow();
+  }
   top_of_stack_ = top_of_stack_->prev_;
 }
 

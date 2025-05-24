@@ -20,7 +20,6 @@
 #ifndef BASE_WIN_WMI_H_
 #define BASE_WIN_WMI_H_
 
-#include <wbemidl.h>
 #include <wrl/client.h>
 
 #include <optional>
@@ -28,6 +27,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/win/wbemidl_shim.h"
 
 namespace base {
 namespace win {

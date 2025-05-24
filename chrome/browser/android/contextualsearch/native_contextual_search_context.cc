@@ -45,10 +45,8 @@ NativeContextualSearchContext::FromJavaContextualSearchContext(
 void NativeContextualSearchContext::SetResolveProperties(
     JNIEnv* env,
     jobject obj,
-    const base::android::JavaParamRef<jstring>& j_home_country,
+    std::string& home_country,
     jboolean j_may_send_base_page_url) {
-  std::string home_country =
-      base::android::ConvertJavaStringToUTF8(env, j_home_country);
   ContextualSearchContext::SetResolveProperties(home_country,
                                                 j_may_send_base_page_url);
 }
@@ -64,35 +62,24 @@ void NativeContextualSearchContext::PrepareToResolve(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     jboolean j_is_exact_resolve,
-    const base::android::JavaParamRef<jstring>& j_related_searches_stamp) {
-  std::string related_searches_stamp =
-      base::android::ConvertJavaStringToUTF8(env, j_related_searches_stamp);
+    std::string& related_searches_stamp) {
   ContextualSearchContext::PrepareToResolve(j_is_exact_resolve,
                                             related_searches_stamp);
 }
 
-base::android::ScopedJavaLocalRef<jstring>
-NativeContextualSearchContext::DetectLanguage(
+std::string NativeContextualSearchContext::DetectLanguage(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) const {
   std::string language = ContextualSearchContext::DetectLanguage();
-  base::android::ScopedJavaLocalRef<jstring> j_language =
-      base::android::ConvertUTF8ToJavaString(env, language);
-  return j_language;
+  return language;
 }
 
 void NativeContextualSearchContext::SetTranslationLanguages(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
-    const base::android::JavaParamRef<jstring>& j_detected_language,
-    const base::android::JavaParamRef<jstring>& j_target_language,
-    const base::android::JavaParamRef<jstring>& j_fluent_languages) {
-  std::string detected_language =
-      base::android::ConvertJavaStringToUTF8(env, j_detected_language);
-  std::string target_language =
-      base::android::ConvertJavaStringToUTF8(env, j_target_language);
-  std::string fluent_languages =
-      base::android::ConvertJavaStringToUTF8(env, j_fluent_languages);
+    std::string& detected_language,
+    std::string& target_language,
+    std::string& fluent_languages) {
   ContextualSearchContext::SetTranslationLanguages(
       detected_language, target_language, fluent_languages);
 }

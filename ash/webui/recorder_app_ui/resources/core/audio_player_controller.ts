@@ -8,7 +8,7 @@ import {
 } from 'chrome://resources/mwc/lit/index.js';
 
 import {useRecordingDataManager} from './lit/context.js';
-import {ScopedAsyncEffect} from './reactive/lit.js';
+import {ScopedAsyncEffect, ScopedEffect} from './reactive/lit.js';
 import {computed, ReadonlySignal, Signal, signal} from './reactive/signal.js';
 import {AnimationFrameController} from './utils/animation_frame_controller.js';
 import {assertInstanceof} from './utils/assert.js';
@@ -147,6 +147,7 @@ class ReactiveAudioImpl implements ReactiveAudio {
   revoke(): void {
     this.audio.pause();
     this.revokeAudio();
+    this.audio.src = '';
     this.animationFrameController.stop();
     this.recordingId = null;
   }
@@ -179,6 +180,8 @@ export class AudioPlayerController implements ReactiveController {
   // This is marked as protected to suppress the unused member error.
   protected readonly loadAudioData: ScopedAsyncEffect;
 
+  protected readonly setMediaSessionTitle: ScopedEffect;
+
   private audio = new ReactiveAudioImpl();
 
   constructor(
@@ -206,6 +209,20 @@ export class AudioPlayerController implements ReactiveController {
       if (autoPlay) {
         await this.audio.play();
       }
+    });
+
+    this.setMediaSessionTitle = new ScopedEffect(host, () => {
+      const id = this.recordingId.value;
+      if (id === null) {
+        return;
+      }
+      const metadata = this.recordingDataManager.getMetadata(id).value;
+      if (metadata === null) {
+        return;
+      }
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: metadata.title,
+      });
     });
   }
 

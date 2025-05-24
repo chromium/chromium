@@ -4,11 +4,10 @@
 
 Using third party code can save time and is consistent with our values - no need
 to reinvent the wheel! We put all code that isn't written by Chromium developers
-into `//third_party` (even if you end up modifying just a few functions). We do
-this to make it easy to track license compliance, security patches, and supply
-the right credit and attributions. It also makes it a lot easier for other
-projects that embed our code to track what is Chromium licensed and what is
-covered by other licenses.
+into `//third_party`. We do this to make it easy to track license compliance,
+security patches, and supply the right credit and attributions. It also makes it
+a lot easier for other projects that embed our code to track what is Chromium
+licensed and what is covered by other licenses.
 
 ## Put the code in //third_party
 
@@ -37,6 +36,9 @@ situations and need explicit approval; don't assume that because there's some
 other directory with third_party in the name it's okay to put new things
 there.
 
+Regardless of where you add a third party dependency, you should use the
+[recommended directory structure](#standard-dep-structure).
+
 ## Before you start
 
 To make sure the inclusion of a new third_party project makes sense for the
@@ -50,7 +52,9 @@ email to chrome-atls-discuss@google.com:
    files to be checked in?
 * Build time increase
    * This refers to building `chrome` or test targets in the critical
-     development path.
+     development path. The [compile-size](speed/binary_size/compile_size_builder.md)
+     builder in CQ is a good proxy for the whether the delta is acceptable
+     (caveat that it measures just `chrome` on Linux).
    * If the increase is significant (e.g., 30+ seconds), can we consider making
    this an optional build target?
 * Binary size increase on Android ([official](https://www.chromium.org/developers/gn-build-configuration) builds)
@@ -78,25 +82,15 @@ questions.
 
 ### Rust
 
-Rust is allowed for third-party libraries as long as there is a business need,
-which includes the following:
+Rust is allowed for third party libraries. Unlike C++ libraries, Rust third
+party libraries are [regularly rolled to updated versions by a
+rotation](https://chromium.googlesource.com/chromium/src/tools/+/HEAD/crates/create_update_cl.md)
+and can be audited for unsafety. The process for adding a Googler adding new Rust third-party
+dependencies is documented at go/chrome-rust. External contributors adding a new
+third party Rust dependency will be shepherded through the process as part of
+their ATL review.
 
-* The Rust implementation is the best (e.g., speed, memory, lack of bugs) or
-only existing implementation available for the third-party library.
-* The Rust implementation allows the operation to move to a higher privileged
-process, and this benefits the product by improving on guardrail metrics (e.g.
-through avoiding process startup, IPC overheads, or C++ memory-unsafety
-mitigations).
-* The Rust implementation can meaningfully reduce our expected risk of
-(memory/crashes/undefined behavior) bugs, when compared to the existing
-third-party library and related C++ code required to use the library. We realize
-assessing risk is quite complex and very nuanced. If this is the criteria by
-which the third-party library is being added, chrome-atls-discuss@google.com and
-chrome-rust@google.com may ask for more data.
-
-Support for third-party libraries written in Rust is in active development. If
-the library you wish to add is in Rust, reach out to chrome-rust@google.com
-first.
+Email rust-dev@chromium.org with any questions about the Rust toolchain.
 
 ### A note on size constraints
 
@@ -168,38 +162,19 @@ available during checkout.
 
 ### Pulling the code via DEPS
 
-If the code is in a Git repo that you want to mirror, please file an [infra git
-ticket](https://bugs.chromium.org/p/chromium/issues/entry?template=Infra-Git)
-to get the repo mirrored onto chromium.googlesource.com; we don't allow direct
-dependencies on non-Google-hosted repositories, so that we can still build
-if an external repository goes down.
-
-Once the mirror is set up, add an entry to [//DEPS](../DEPS) so that gclient
-will pull it in. If the code is only needed on some platforms, add a condition
-to the deps entry so that developers on other platforms don't pull in things
-they don't need.
-
-As for specifying the path where the library is fetched, a path like
-`//third_party/<project_name>/src` is highly recommended so that you can put
-the file like OWNERS or README.chromium at `//third_party/<project_name>`. If
-you have a wrong path in DEPS and want to change the path of the existing
-library in DEPS, please ask the infrastructure team before committing the
-change.
-
-Lastly, add the new directory to Chromium's `//third_party/.gitignore`, so that
-it won't show up as untracked files when you run `git status` on the main
-repository.
+See [here](/docs/dependencies.md#adding-dependencies).
 
 ### Checking in the code directly
 
-If you are checking in a snapshot, please describe the source in the
-README.chromium file, described below.  For security reasons, please retrieve
-the code as securely as you can, using HTTPS and GPG signatures if available.
+If you are checking in a snapshot, you should follow the [standard directory structure](#standard-dep-structure).
+For security reasons, please retrieve the code as securely as you can, using
+HTTPS and GPG signatures if available.
 If retrieving a tarball, please do not check the tarball itself into the tree,
 but do list the source and the SHA-512 hash (for verification) in the
 README.chromium and Change List. The SHA-512 hash can be computed via
 `sha512sum` or `openssl dgst -sha512`.  If retrieving from a git
-repository, please list the revision that the code was pulled from.
+repository, please list the upstream URL and revision that the code was pulled
+from.
 
 If you are checking the files in directly, you do not need an entry in DEPS
 and do not need to modify `//third_party/.gitignore`.
@@ -210,6 +185,52 @@ This is accessible to Googlers only. Non-Googlers can email one of the people
 in third_party/OWNERS for help.
 
 See [Moving large files to Google Storage](https://goto.google.com/checking-in-large-files)
+
+## Standard directory structure for dependencies {standard-dep-structure}
+
+Regardless of how you import a dependency, you should use the following
+directory structure. This folder layout enforces separation between first and
+third party code, making it easier to manage updates and dependency hygiene
+long term.
+
+Any first party code or files you need for dependency management or
+interoperability should be added to the top level dependency directory, and the
+dependency source imported into the child src directory.
+
+**Recommended directory structure:**
+```
+❯ //third_party/<dependency-name>
+├── BUILD.gn
+├── README.chromium
+├── OWNERS
+├── src <-- import third party code here
+│   ├── LICENSE
+│   ├── a.h
+│   └── b.cc
+```
+
+**What constitutes a dependency:**
+
+* A dependency should be sourced from a single upstream location. Putting code
+  from multiple upstream sources in a single `//third_party` directory makes it
+  difficult to reason about the origin of files and perform automated updates.
+* If your dependency has its own vendored dependencies, it's not necessary to
+  split these into additional directories.
+
+**Formatting:**
+
+Do not reformat or apply Chromium-style formatting to any code within the
+dependency `src` directory. Maintaining the original formatting is essential
+for generating clean diffs against upstream versions. This simplifies
+reviewing upstream changes, applying security patches, and performing updates.
+
+If you experience issues with submitting a CL due to Chromium formatting
+requirements which need to be disabled, or you need to format first party code
+in your top level dependency folder, you can add a language appropriate
+formatting config (e.g [.clang-format-ignore](https://clang.llvm.org/docs/ClangFormat.html#clang-format-ignore))
+to your top level dependency directory. Ensure it does not format the third
+party code.
+
 
 ## Document the code's context
 
@@ -248,6 +269,65 @@ into the product and does any of the following:
 * Collects new data
 * Influences or sets security-related policy (including the user experience)
 
+**Update Mechanism** {#update-mechanism}
+
+We aim to autoroll as many dependencies as is feasible, and track those
+that can't with an exception.
+
+The `Update Mechanism:` field specifies how this dependency is kept
+up-to-date. You will use one of the exact string formats listed below,
+replacing `(crbug.com/BUG_ID)` with the actual bug link where required.
+The format is `Primary[.SubsetSpecifier] (crbug.com/BUG_ID)`.
+
+**Accepted Values:**
+* `Autoroll`
+* `Manual (crbug.com/BUG_ID)`
+* `Static (crbug.com/BUG_ID)`
+* `Static.HardFork (crbug.com/BUG_ID)`
+
+See below for the meaning of each primary mechanism and subset specifier.
+
+**Primary Mechanisms:**
+
+* **`Autoroll`**
+  * Updated automatically by a service (e.g., Skia Autoroller,
+    Copybara).
+* **`Manual`**
+  * Updated manually by OWNERS (e.g., using `roll_deps`).
+* **`Static`**
+  * Changes are authored by Chromium Authors.
+  * **Security:** Some dependencies will lack vulnerability coverage. If sufficient
+    metadata is provided (e.g. closest point of divergence from an upstream,
+    or a cpe), vulnerabilities will still be filed.
+
+**Subset Specifiers**
+
+* **`Static`** (With no SubsetSpecifier)
+  * Origin: Not git or package manager upstream.
+    E.g. Blog post, [USENET](https://crsrc.org/c/third_party/webrtc/common_audio/third_party/spl_sqrt_floor/README.chromium;l=12) group.
+  * **`Static.HardFork`**
+    * Originated externally (git or package manager), but now updated and maintained
+      *internally by Chromium committers*, diverging from the original
+      upstream.
+
+**Bug Link Format and Purpose:**
+* **Format:** `(crbug.com/BUG_ID)`.
+* **Location:** File bugs using the linked template in [Autoroll Exceptions](#autoroll-exceptions).
+* **Purpose:** The bug is the official record for:
+  * **Manual:**
+    * Justification for not autorolling; *or*
+    * Tracking the work to enable autorolling.
+  * **Static**:
+    * Rationale for the static classification.
+    * Approval from ATL, and `chrome-security@` review outcome.
+
+#### Autoroll Exceptions
+
+If a dependency can't be autorolled, it needs an exception. OWNERS
+should file a bug using the template in
+[`Chromium > ThirdParty > Autoroll Exceptions`](https://issues.chromium.org/issues/new?component=1801247&template=2135097).
+This component has auto-assignment and will help you track the exception.
+
 **CPE Prefix**
 One of the fields is CPEPrefix. This is used by Chromium and Google systems to
 spot known upstream security vulnerabilities, and ensure we merge the fixes
@@ -281,15 +361,24 @@ false-negatives).
 Your README.chromium should also specify whether your third party dependency
 will be shipped as part of a final binary. The "Shipped" field replaces the now
 deprecated special value of "NOT_SHIPPED" which was previously allowed in the
-"License File" field. This use is no longer supported and if your third party
-dependency includes a license you should also use the "Licence File" field to
-reference it, regardless of whether it is shipped or not.
+"License File" field. This use is no longer supported and all third party
+dependencies must include a valid license regardless of whether it is shipped
+or not.
 
 
 **Multiple packages**
-Each package should have its own README.chromium. However, if this is not
-possible and the information for multiple packages must be placed in a single
-README.chromium, use the below line to separate the data for each package:
+Adding multiple packages in a single third party directory is not recommended,
+because it does not follow the best practices for [third party dependency structure](#standard-dep-structure)
+and complicates vulnerability scanning.
+
+Each dependency should have its own third party directory with a few very
+limited exceptions:
+* A package manager is used to manage dependencies in the directory via a lockfile.
+* Your third party dependency has its own vendored transitive dependencies
+
+If your dependency is covered by one of the above exceptions and the information
+for multiple packages must be placed in a single README.chromium, use the below
+line to separate the data for each package:
 ```
 -------------------- DEPENDENCY DIVIDER --------------------
 ```
@@ -298,7 +387,12 @@ README.chromium, use the below line to separate the data for each package:
 ### Add a LICENSE file and run related checks
 
 You need a LICENSE file. Example:
-[//third_party/libjpeg/LICENSE](../third_party/libjpeg/LICENSE).
+[//third_party/libjpeg/LICENSE](../third_party/libjpeg/LICENSE). Dependencies
+should not be added without a license file and license type, even if they are
+not shipped in a final product. Existing dependencies without a license file or
+license type are currently being cleaned up as part of the metadata uplift
+effort. If you are an OWNER of a dependency missing license fields, there will
+soon be a bug filed to fix it.
 
 Run `//tools/licenses/licenses.py scan`; this will complain about incomplete or missing
 data for third_party checkins. We use `licenses.py credits` to generate the
@@ -307,6 +401,80 @@ about:credits page in Google Chrome builds.
 If the library will never be shipped as a part of Chrome (e.g. build-time tools,
 testing tools), make sure to set the "Shipped" field to "no" so that the license
 is not included in about:credits page ([more on this below](#credits)).
+
+When a dependency allows a choice of license, OWNERS should choose the least
+restrictive license that meets Chromium's needs and document only the chosen
+license(s) in the README.chromium file.
+
+Multiple licenses apply when there are dependencies bundled together, or
+different parts have different restrictions, these are inherently 'and'. This is
+very different to a project allowing multiple license options.
+
+The `License:` field in README.chromium must use a _comma-separated list_ of licenses
+that are actively in use. Complex license expressions are not allowed or
+supported.
+
+Use SPDX license identifiers (https://spdx.org/licenses/) when possible e.g.
+['Apache-2.0'](https://spdx.org/licenses/Apache-2.0.html). You can find the full
+allowlist in
+[depot_tools/+/main:metadata/fields/custom/license_allowlist.py](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
+If the dependency uses a license that is not in the allowlist, you will need to
+add it to the
+[allowlist](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
+This requires approval from the ATLs who will check that the license
+classification is one of [unencumbered/permissive/notice/reciprocal]. If the
+license is more restrictive than reciprocal, engage with the ATLs to determine
+if the dependency is appropriate for Chromium. The license identifier will still
+need to be added to the restricted list
+['WITH_PERMISSION_ONLY'](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/main:metadata/fields/custom/license_allowlist.py).
+Do not use a license on that list without approval from the ATLs.
+
+#### License Classifications
+
+Licenses used in our codebase fall into several categories of increasing
+restrictiveness, with notice-level and less restrictive licenses being allowed
+in all projects:
+
+* **Public Domain/Unencumbered/Permissive Licenses** - These licenses allow
+  you to do almost anything with the code, they may require attribution e.g.:
+  * [CC0-1.0](https://spdx.org/licenses/CC0-1.0.html).
+  * [Unlicense](https://spdx.org/licenses/Unlicense.html).
+* **Notice Licenses** - (Most open source licenses fall into this category)
+  These licenses are similar to permissive but have additional notice
+  requirements e.g.:
+  * [Apache-2.0](https://spdx.org/licenses/Apache-2.0.html): [`Any modified files
+      must carry prominent notices stating that you changed the
+      files`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/third_party/coverage/LICENSE.txt;l=98).
+  * [BSD-3-Clause](https://spdx.org/licenses/BSD-3-Clause): [`3. Neither the
+     name of the copyright holder nor the names of its contributors may be
+     used to endorse or promote products derived from this software without
+     specific prior written
+     permission.`](https://source.chromium.org/chromium/chromium/src/+/main:ios/third_party/fishhook/LICENSE;drc=1308ce89bbb959047a73145a0ca4a2f5f7dde894;l=10).
+
+Additionally, open source projects like Chromium are also allowed to use reciprocal licenses:
+
+*   **Reciprocal Licenses** - These licenses require sharing modifications under
+    the same terms:
+
+    *   [MPL-1.1](https://spdx.org/licenses/MPL-1.1.html).
+    *   [APSL-2.0](https://spdx.org/licenses/APSL-2.0.html).
+
+*   **Restricted Licenses !Case-by-case Approval Required!** - These licenses
+    have stricter requirements but are allowed in some circumstances. These
+    licenses may require you to publish the code under the same terms and
+    conditions:
+
+    *   [LGPL-2.1](https://spdx.org/licenses/LGPL-2.1.html).
+    *   [GPL-2.0](https://spdx.org/licenses/GPL-2.0.html).
+
+Make sure you understand the license terms before checking in a dependency, and
+when making any local modifications or forks.
+
+The following restricted licenses are allowed under the following circumstances
+(this is not a definitive list):
+
+* GPL licenses are allowed for all non-shipped dependencies.
+* LGPLv2.1 is always okay as long as it is part of the Chromium binary.
 
 ## Get a review
 
@@ -318,11 +486,10 @@ Non-Googlers can email one of the people in
 * Make sure you have the approval from Chrome ATLs as mentioned
   [above](#before-you-start).
 * Get security@chromium.org (or chrome-security@google.com, Google-only)
-  approval. Email the list with relevant details and a link to the CL.
-  Third party code is a hot spot for security vulnerabilities.
-  When adding a new package that could potentially carry security risk, make
-  sure to highlight risk to security@chromium.org. You may be asked to add
-  a README.security or, in dangerous cases, README.SECURITY.URGENTLY file.
+  approval. Document all security considerations, concerns, and risks in the
+  `Description:` field of the README.chromium. Third party code is a hot spot
+  for security vulnerabilities. Help people make informed decisions about
+  relying on this package by highlighting security considerations.
 * Add chromium-third-party@google.com as a reviewer on your change. This
   will trigger an automatic round-robin assignment to a reviewer who will check
   licensing matters. These reviewers may not be able to +1 a change so look for

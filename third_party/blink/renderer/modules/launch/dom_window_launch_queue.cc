@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/launch/dom_window_launch_queue.h"
 
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/modules/launch/launch_params.h"
@@ -28,10 +29,13 @@ void DOMWindowLaunchQueue::UpdateLaunchFiles(
       MakeGarbageCollected<LaunchParams>(std::move(files)));
 }
 
-void DOMWindowLaunchQueue::EnqueueLaunchParams(LocalDOMWindow* window,
-                                               const KURL& launch_url) {
-  FromState(window)->launch_queue_->Enqueue(
-      MakeGarbageCollected<LaunchParams>(launch_url));
+void DOMWindowLaunchQueue::EnqueueLaunchParams(
+    LocalDOMWindow* window,
+    const KURL& launch_url,
+    base::TimeTicks time_navigation_started_in_browser,
+    bool navigation_started) {
+  FromState(window)->launch_queue_->Enqueue(MakeGarbageCollected<LaunchParams>(
+      launch_url, time_navigation_started_in_browser, navigation_started));
 }
 
 void DOMWindowLaunchQueue::Trace(Visitor* visitor) const {

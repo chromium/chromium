@@ -92,7 +92,6 @@ if (_build_ios_webkit || _build_mac_webkit) {
         "src/Source/WebKit/NetworkProcess/NetworkProcess.cpp",
         "src/Tools/CISupport/ews-build/steps_unittest.py",
         "src/Source/WebCore/DerivedSources.make",
-        "src/Source/WebCore/animation/CSSPropertyAnimation.cpp",
         "src/Source/WebKit/WebProcess/com.apple.WebProcess.sb.in",
         "src/Source/WebKit/WebProcess/WebPage/ios/WebPageIOS.mm",
         "src/Source/JavaScriptCore/JavaScriptCore.xcodeproj/project.pbxproj",

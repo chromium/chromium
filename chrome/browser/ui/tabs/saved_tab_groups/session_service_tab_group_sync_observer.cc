@@ -9,15 +9,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sessions/session_service_factory.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_proxy.h"
-#include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/types.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_group.h"
 
 namespace tab_groups {
 
@@ -27,54 +26,15 @@ SessionServiceTabGroupSyncObserver::SessionServiceTabGroupSyncObserver(
     SessionID session_id)
     : profile_(profile),
       tab_strip_model_(tab_strip_model),
-      session_id_(session_id) {
-  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
-  // observer in proxy.
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    TabGroupSyncService* tab_group_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-    CHECK(tab_group_service);
-    tab_group_service->AddObserver(this);
-  } else {
-    SavedTabGroupKeyedService* saved_tab_group_keyed_service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(profile_);
-    if (saved_tab_group_keyed_service) {
-      saved_tab_group_observation_.Observe(
-          saved_tab_group_keyed_service->model());
-    }
-  }
+      session_id_(session_id),
+      service_(tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_)) {
+  CHECK(service_);
+  service_->AddObserver(this);
 }
 
 SessionServiceTabGroupSyncObserver::~SessionServiceTabGroupSyncObserver() {
-  // TODO(crbug.com/361110303): Consider consolidating logic by forwarding
-  // observer in proxy.
-  if (tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
-    TabGroupSyncService* tab_group_service =
-        tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-    CHECK(tab_group_service);
-    tab_group_service->RemoveObserver(this);
-  } else {
-    saved_tab_group_observation_.Reset();
-  }
-}
-
-void SessionServiceTabGroupSyncObserver::SavedTabGroupAddedLocally(
-    const base::Uuid& guid) {
-  TabGroupSyncService* tab_group_service =
-      tab_groups::SavedTabGroupUtils::GetServiceForProfile(profile_);
-  CHECK(tab_group_service);
-
-  const std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(guid);
-  CHECK(saved_group);
-
-  UpdateTabGroupSessionMetadata(saved_group->local_group_id(),
-                                guid.AsLowercaseString());
-}
-
-void SessionServiceTabGroupSyncObserver::SavedTabGroupRemovedLocally(
-    const tab_groups::SavedTabGroup& removed_group) {
-  UpdateTabGroupSessionMetadata(removed_group.local_group_id(), std::nullopt);
+  CHECK(service_);
+  service_->RemoveObserver(this);
 }
 
 void SessionServiceTabGroupSyncObserver::OnTabGroupAdded(
@@ -100,6 +60,14 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupRemoved(
   UpdateTabGroupSessionMetadata(local_id, std::nullopt);
 }
 
+void SessionServiceTabGroupSyncObserver::OnTabGroupMigrated(
+    const tab_groups::SavedTabGroup& new_group,
+    const base::Uuid& old_sync_id,
+    tab_groups::TriggerSource source) {
+  UpdateTabGroupSessionMetadata(new_group.local_group_id(),
+                                new_group.saved_guid().AsLowercaseString());
+}
+
 void SessionServiceTabGroupSyncObserver::OnTabGroupLocalIdChanged(
     const base::Uuid& sync_id,
     const std::optional<LocalTabGroupID>& local_id) {
@@ -108,12 +76,12 @@ void SessionServiceTabGroupSyncObserver::OnTabGroupLocalIdChanged(
 
 void SessionServiceTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
     const std::optional<LocalTabGroupID> local_id,
-    const std::optional<std::string> sync_id) {
+    std::optional<std::string> sync_id) {
   if (!local_id.has_value()) {
     return;
   }
 
-  CHECK(tab_strip_model_->group_model());
+  CHECK(tab_strip_model_->SupportsTabGroups());
   if (!tab_strip_model_->group_model()->ContainsTabGroup(local_id.value())) {
     return;
   }
@@ -130,7 +98,7 @@ void SessionServiceTabGroupSyncObserver::UpdateTabGroupSessionMetadata(
           ->visual_data();
 
   session_service->SetTabGroupMetadata(session_id_, local_id.value(),
-                                       visual_data, sync_id);
+                                       visual_data, std::move(sync_id));
 }
 
 }  // namespace tab_groups

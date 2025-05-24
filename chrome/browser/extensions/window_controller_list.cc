@@ -4,9 +4,10 @@
 
 #include "chrome/browser/extensions/window_controller_list.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/extensions/api/tabs/windows_util.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/window_controller_list_observer.h"
@@ -25,11 +26,9 @@ WindowControllerList* WindowControllerList::GetInstance() {
   return base::Singleton<WindowControllerList>::get();
 }
 
-WindowControllerList::WindowControllerList() {
-}
+WindowControllerList::WindowControllerList() = default;
 
-WindowControllerList::~WindowControllerList() {
-}
+WindowControllerList::~WindowControllerList() = default;
 
 void WindowControllerList::AddExtensionWindow(WindowController* window) {
   windows_.push_back(window);
@@ -38,7 +37,7 @@ void WindowControllerList::AddExtensionWindow(WindowController* window) {
 }
 
 void WindowControllerList::RemoveExtensionWindow(WindowController* window) {
-  auto iter = base::ranges::find(windows_, window);
+  auto iter = std::ranges::find(windows_, window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
     for (auto& observer : observers_)
@@ -76,6 +75,9 @@ WindowController* WindowControllerList::FindWindowForFunctionByIdWithFilter(
   return nullptr;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/371432155): Support on Android, specifically when
+// windows_util::CalledFromChildWindow() is available on Android.
 WindowController* WindowControllerList::CurrentWindowForFunction(
     ExtensionFunction* function) const {
   return CurrentWindowForFunctionWithFilter(function,
@@ -113,5 +115,6 @@ WindowController* WindowControllerList::CurrentWindowForFunctionWithFilter(
 
   return parent_window ? parent_window : last_window;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

@@ -9,6 +9,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/network/network_state_test_helper.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -80,8 +81,8 @@ class NetworkFeatureTilePixelTest : public AshTestBase {
         views::BoxLayout::CrossAxisAlignment::kCenter);
     // The tile colors have transparency, so set a background color so they
     // render like in production.
-    contents->SetBackground(views::CreateThemedSolidBackground(
-        cros_tokens::kCrosSysSystemBaseElevated));
+    contents->SetBackground(
+        views::CreateSolidBackground(cros_tokens::kCrosSysSystemBaseElevated));
 
     feature_tile_ =
         widget_->GetContentsView()->AddChildView(std::move(feature_tile));
@@ -170,7 +171,7 @@ TEST_F(NetworkFeatureTilePixelTest, NoNetworks) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/3, tile_view));
+      /*revision_number=*/4, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Ethernet) {
@@ -182,7 +183,7 @@ TEST_F(NetworkFeatureTilePixelTest, Ethernet) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/2, tile_view));
+      /*revision_number=*/3, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Wifi) {
@@ -194,7 +195,7 @@ TEST_F(NetworkFeatureTilePixelTest, Wifi) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/2, tile_view));
+      /*revision_number=*/3, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, WifiSecurity) {
@@ -206,7 +207,7 @@ TEST_F(NetworkFeatureTilePixelTest, WifiSecurity) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/1, tile_view));
+      /*revision_number=*/2, tile_view));
 }
 
 TEST_F(NetworkFeatureTilePixelTest, Cellular) {
@@ -218,7 +219,7 @@ TEST_F(NetworkFeatureTilePixelTest, Cellular) {
   ASSERT_TRUE(tile_view);
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "check_tile_view",
-      /*revision_number=*/2, tile_view));
+      /*revision_number=*/3, tile_view));
 }
 
 }  // namespace ash

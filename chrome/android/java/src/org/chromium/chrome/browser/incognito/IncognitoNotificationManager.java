@@ -26,13 +26,11 @@ public class IncognitoNotificationManager {
     /** Shows the close all incognito notification. */
     public static void showIncognitoNotification() {
         Context context = ContextUtils.getApplicationContext();
-        String actionMessage =
-                context.getResources().getString(R.string.close_all_incognito_notification);
+        String actionMessage = context.getString(R.string.close_all_incognito_notification);
 
         // From Android N, notification by default has the app name and title should not be the same
         // as app name.
-        String title =
-                context.getResources().getString(R.string.close_all_incognito_notification_title);
+        String title = context.getString(R.string.close_all_incognito_notification_title);
 
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
@@ -54,7 +52,7 @@ public class IncognitoNotificationManager {
                         .setLocalOnly(true)
                         .setGroup(NotificationConstants.GROUP_INCOGNITO);
         NotificationWrapper notification = builder.buildNotificationWrapper();
-        BaseNotificationManagerProxyFactory.create(context).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
                         NotificationUmaTracker.SystemNotificationType.CLOSE_INCOGNITO,
@@ -63,8 +61,7 @@ public class IncognitoNotificationManager {
 
     /** Dismisses the incognito notification. */
     public static void dismissIncognitoNotification() {
-        Context context = ContextUtils.getApplicationContext();
-        BaseNotificationManagerProxyFactory.create(context)
+        BaseNotificationManagerProxyFactory.create()
                 .cancel(INCOGNITO_TABS_OPEN_TAG, INCOGNITO_TABS_OPEN_ID);
     }
 }

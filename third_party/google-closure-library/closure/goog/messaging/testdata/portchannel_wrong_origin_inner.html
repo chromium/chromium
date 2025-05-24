@@ -8,7 +8,11 @@ See the COPYING file for details.
 -->
 <head>
 <title>PortChannel test inner document</title>
-<script src="../../base.js"></script>
+<script>
+  var CLOSURE_DEFINES = CLOSURE_DEFINES || {};
+  CLOSURE_DEFINES["goog.ENABLE_DEBUG_LOADER"]=true;
+</script>
+<script src="../../../../../javascript/closure/base.js"></script>
 <script>
 goog.require('goog.messaging.PortChannel');
 </script>

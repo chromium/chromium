@@ -14,10 +14,13 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/shared_image_pool_client_interface.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
@@ -116,7 +119,8 @@ class GPU_EXPORT SharedImageInterface
   // tracing tools. Pick a name that is unique to the allocation site.
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
-      gpu::SurfaceHandle surface_handle) = 0;
+      gpu::SurfaceHandle surface_handle,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt) = 0;
 
   // Same behavior as the above, except that this version takes |pixel_data|
   // which is used to populate the SharedImage.  |pixel_data| should have the
@@ -142,7 +146,8 @@ class GPU_EXPORT SharedImageInterface
   virtual scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       gpu::SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage);
+      gfx::BufferUsage buffer_usage,
+      std::optional<SharedImagePoolId> pool_id = std::nullopt);
 
   // Creates a shared image out an existing buffer. The buffer described by
   // `buffer_handle` must hold all planes based on `format` and `size`. This
@@ -174,26 +179,24 @@ class GPU_EXPORT SharedImageInterface
       const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) = 0;
 
-  struct GPU_EXPORT SharedImageMapping {
-    SharedImageMapping(SharedImageMapping& mapped) = delete;
-    SharedImageMapping& operator=(SharedImageMapping& mapped) = delete;
-    SharedImageMapping();
-    SharedImageMapping(SharedImageMapping&& mapped);
-    SharedImageMapping(scoped_refptr<ClientSharedImage> shared_image,
-                       base::WritableSharedMemoryMapping mapping);
-    SharedImageMapping& operator=(SharedImageMapping&& mapped);
-    ~SharedImageMapping();
+  // Creates a shared image for an existing MLTensor.
+  // Tensors store numeric values in multiple dimensions.
+  // |size| is calculated from the tensor's shape: the product of all dimensions
+  // except the last determines the height, and the last dimension becomes the
+  // width. |usage| must include gpu::SHARED_IMAGE_USAGE_WEBNN_SHARED_TENSOR.
+  // |format| should be valid and correspond to the equivalent dataType.
+  virtual scoped_refptr<ClientSharedImage> CreateSharedImageForMLTensor(
+      std::string debug_label,
+      viz::SharedImageFormat format,
+      const gfx::Size& size,
+      gpu::SharedImageUsageSet usage) = 0;
 
-    scoped_refptr<ClientSharedImage> shared_image;
-    base::WritableSharedMemoryMapping mapping;
-  };
-
-  // Creates a shared image with the usage of gpu::SHARED_IMAGE_USAGE_CPU_WRITE
-  // only. A shared memory buffer is created internally and a shared image is
-  // created out this buffer. This method is used by the software compositor
-  // only.
-  virtual SharedImageMapping CreateSharedImage(
-      const SharedImageInfo& si_info) = 0;
+  // Creates a shared image with the usage of
+  // gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY only. A shared memory buffer is
+  // created internally and a shared image is created out of this buffer. This
+  // method is used by the software compositor only.
+  virtual scoped_refptr<ClientSharedImage>
+  CreateSharedImageForSoftwareCompositor(const SharedImageInfo& si_info) = 0;
 
   // Updates a shared image after its GpuMemoryBuffer (if any) was modified on
   // the CPU or through external devices, after |sync_token| has been released.
@@ -226,6 +229,28 @@ class GPU_EXPORT SharedImageInterface
       const Mailbox& mailbox,
       base::OnceCallback<void(bool)> callback);
 
+  // On windows, native GMB can not be mapped in any process other than the GPU
+  // process. So during GpuMemoryBuffer::Map() operation, an IPC to GPU process
+  // is done to copy the content of |buffer_handle| into a shared memory
+  // |memory_region| via below methods. This shared memory is mappable in any
+  // process and is used internally during GpuMemoryBuffer::Map().
+  // This will block on calling client thread.
+  virtual bool CopyNativeGmbToSharedMemorySync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region);
+
+  // This is non-blocking version of above method. The |callback| will be run
+  // when the copy is done.
+  virtual void CopyNativeGmbToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback);
+
+  // Checks if the GpuChannel is connected to this interface. This is
+  // used on windows to find if SII is still connected to the GPU service so
+  // that GpuMemoryBufferManager can use it.
+  virtual bool IsConnected();
+
   // Destroys the shared image, unregistering its mailbox, after |sync_token|
   // has been released. After this call, the mailbox can't be used to reference
   // the image any more, however if the image was imported into other APIs,
@@ -239,30 +264,11 @@ class GPU_EXPORT SharedImageInterface
       const SyncToken& sync_token,
       scoped_refptr<ClientSharedImage> client_shared_image) = 0;
 
-  // Adds another owning reference to the SharedImage. It must be released via
-  // DestroySharedImage in the same way as for SharedImages created via
-  // CreateSharedImage(). Note: The image must have been created on different
-  // gpu channel and each can have only single reference.
-  // Note: `usage` must be the same value as passed to CreateSharedImage call
-  // and is just stored without validation.
-  // Note: `texture_target` is the texture target that should be used for this
-  // SharedImage.
-  virtual scoped_refptr<ClientSharedImage> AddReferenceToSharedImage(
-      const SyncToken& sync_token,
-      const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      uint32_t texture_target);
-
   // Imports SharedImage to this interface and returns an owning reference. It
   // must be released via DestroySharedImage in the same way as for SharedImages
   // created via CreateSharedImage().
   virtual scoped_refptr<ClientSharedImage> ImportSharedImage(
-      const ExportedSharedImage& exported_shared_image) = 0;
+      ExportedSharedImage exported_shared_image) = 0;
 
   struct GPU_EXPORT SwapChainSharedImages {
     SwapChainSharedImages(scoped_refptr<gpu::ClientSharedImage> front_buffer,
@@ -340,25 +346,6 @@ class GPU_EXPORT SharedImageInterface
   // previous commands which will be sent to server on the next flush().
   virtual void WaitSyncToken(const gpu::SyncToken& sync_token) = 0;
 
-  // Flush the SharedImageInterface, issuing any deferred IPCs.
-  virtual void Flush() = 0;
-
-#if !BUILDFLAG(IS_NACL)
-  // Returns the NativePixmap backing |mailbox|. This is a privileged API. Only
-  // the callers living inside the GPU process are able to retrieve the
-  // NativePixmap; otherwise null is returned. Also returns null if the
-  // SharedImage doesn't exist or is not backed by a NativePixmap. The caller is
-  // not expected to read from or write into the provided NativePixmap because
-  // it can be modified at any time. The primary purpose of this method is to
-  // facilitate pageflip testing on the viz thread.
-  virtual scoped_refptr<gfx::NativePixmap> GetNativePixmap(
-      const gpu::Mailbox& mailbox) = 0;
-#endif
-
-  // Provides the usage flags supported by the given |mailbox|. This must have
-  // been created using a SharedImageInterface on the same channel.
-  virtual SharedImageUsageSet UsageForMailbox(const Mailbox& mailbox);
-
   // Informs that existing |mailbox| with the specified metadata can be passed
   // to DestroySharedImage().
   virtual scoped_refptr<ClientSharedImage> NotifyMailboxAdded(
@@ -383,9 +370,33 @@ class GPU_EXPORT SharedImageInterface
 
   void Release() const;
 
+  // Used by client side shared image pool aka SharedImagePool to
+  // create a service side pool. It also creates a new mojo IPC connection
+  // between the client and the service side pool so that service side pool
+  // can communicate with client side pool when needed.
+  virtual void CreateSharedImagePool(
+      const SharedImagePoolId& pool_id,
+      mojo::PendingRemote<mojom::SharedImagePoolClientInterface> client_remote);
+
+  // Called when client side SharedImagePool is destroyed. It will
+  // in turn destroy the corresponding GPU service side SharedImagePool.
+  virtual void DestroySharedImagePool(const SharedImagePoolId& pool_id);
+
  protected:
   friend class base::RefCountedThreadSafe<SharedImageInterface>;
   virtual ~SharedImageInterface();
+
+  // Creates a WritableSharedMemoryRegion corresponding to the format/size
+  // passed in `si_info` and populates `mapping` and `handle` from the created
+  // shmem region. Fails if the shmem region cannot be created or mapped. For
+  // usage in implementing APIs that create mappable SharedImages without
+  // holding on to a handle on the client side for usage with the software
+  // compositor. As such, verifies that `si_info`'s usage is
+  // `SHARED_IMAGE_USAGE_CPU_WRITE_ONLY`.
+  static void CreateSharedMemoryRegionFromSIInfo(
+      const SharedImageInfo& si_info,
+      base::WritableSharedMemoryMapping& mapping,
+      gfx::GpuMemoryBufferHandle& handle);
 
   scoped_refptr<SharedImageInterfaceHolder> holder_;
 

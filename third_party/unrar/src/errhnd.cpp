@@ -1,7 +1,7 @@
 // NOTE(vakh): The process.h file needs to be included first because "rar.hpp"
 // defines certain macros that cause symbol redefinition errors
 #if defined(UNRAR_NO_EXCEPTIONS)
-#include "base/check.h"
+#include "base/notreached.h"
 #include "base/process/process.h"
 #endif  // defined(UNRAR_NO_EXCEPTIONS)
 #include "rar.hpp"
@@ -345,7 +345,7 @@ void ErrorHandler::Throw(RAR_EXIT Code)
 #endif
   SetErrorCode(Code);
 #if defined(UNRAR_NO_EXCEPTIONS)
-  CHECK(false) << "Failed with RAR_EXIT code: " << Code;
+  NOTREACHED() << "Failed with RAR_EXIT code: " << Code;
 #else
   throw Code;
 #endif  // defined(UNRAR_NO_EXCEPTIONS)

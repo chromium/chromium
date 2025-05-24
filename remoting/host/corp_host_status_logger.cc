@@ -10,8 +10,10 @@
 #include "base/logging.h"
 #include "remoting/base/corp_auth_util.h"
 #include "remoting/base/corp_logging_service_client.h"
+#include "remoting/base/http_status.h"
+#include "remoting/base/internal_headers.h"
 #include "remoting/base/logging.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/oauth_token_getter_proxy.h"
 #include "remoting/base/session_policies.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/credentials_type.h"
@@ -22,17 +24,37 @@
 
 namespace remoting {
 
-CorpHostStatusLogger::CorpHostStatusLogger(
+// static
+std::unique_ptr<CorpHostStatusLogger>
+CorpHostStatusLogger::CreateForRemoteAccess(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store,
     const LocalSessionPoliciesProvider* local_session_policies_provider,
     const std::string& service_account_email,
-    const std::string& refresh_token)
-    : CorpHostStatusLogger(std::make_unique<CorpLoggingServiceClient>(
-                               url_loader_factory,
-                               CreateCorpTokenGetter(url_loader_factory,
-                                                     service_account_email,
-                                                     refresh_token)),
-                           local_session_policies_provider) {}
+    const std::string& refresh_token) {
+  return std::make_unique<CorpHostStatusLogger>(
+      std::make_unique<CorpLoggingServiceClient>(
+          url_loader_factory, std::move(client_cert_store),
+          CreateCorpTokenGetter(url_loader_factory, service_account_email,
+                                refresh_token),
+          internal::GetRemoteAccessLoggingPath()),
+      local_session_policies_provider);
+}
+
+// static
+std::unique_ptr<CorpHostStatusLogger>
+CorpHostStatusLogger::CreateForRemoteSupport(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<net::ClientCertStore> client_cert_store,
+    const LocalSessionPoliciesProvider* local_session_policies_provider,
+    base::WeakPtr<OAuthTokenGetter> oauth_token_getter) {
+  return std::make_unique<CorpHostStatusLogger>(
+      std::make_unique<CorpLoggingServiceClient>(
+          url_loader_factory, std::move(client_cert_store),
+          std::make_unique<OAuthTokenGetterProxy>(oauth_token_getter),
+          internal::GetRemoteSupportLoggingPath()),
+      local_session_policies_provider);
+}
 
 CorpHostStatusLogger::CorpHostStatusLogger(
     std::unique_ptr<LoggingServiceClient> service_client,
@@ -69,14 +91,14 @@ void CorpHostStatusLogger::OnSessionStateChange(
                  << "logged.";
     return;
   }
-  internal::ReportSessionDisconnectedRequestStruct request{
-      .session_authz_id = session_id,
-      .session_authz_reauth_token =
-          authenticator.reauthorizer()
-              ? authenticator.reauthorizer()->session_reauth_token()
-              : "",
-      .error_code = session.error(),
-  };
+  internal::ReportSessionDisconnectedRequestStruct request;
+  request.session_authz_id = session_id;
+  request.session_authz_reauth_token =
+      authenticator.reauthorizer()
+          ? authenticator.reauthorizer()->session_reauth_token()
+          : "";
+  request.host_token = authenticator.host_token();
+  request.error_code = session.error();
   // The effective session policies are technically held by ClientSession, but
   // it's difficult to plumb it through multiple layers of abstraction, so we
   // just figure out the effective session policies ourselves here.
@@ -92,7 +114,7 @@ void CorpHostStatusLogger::OnSessionStateChange(
             : local_session_policies_provider_->get_local_policies();
   };
   service_client_->ReportSessionDisconnected(
-      request, base::BindOnce([](const ProtobufHttpStatus& status) {
+      request, base::BindOnce([](const HttpStatus& status) {
         if (status.ok()) {
           HOST_LOG << "Disconnect event logged.";
         } else {

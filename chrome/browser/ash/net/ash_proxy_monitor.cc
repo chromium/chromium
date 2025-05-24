@@ -9,7 +9,6 @@
 #include "ash/constants/ash_pref_names.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -24,10 +23,6 @@
 #include "components/user_manager/user_manager.h"
 
 namespace {
-
-const char kPrefExtensionNameKey[] = "extension_name_key";
-const char kPrefExtensionIdKey[] = "extension_id_key";
-const char kPrefExtensionCanDisabledKey[] = "can_be_disabled_key";
 
 // TODO(acostinas,b/267158784) Remove this method after the new version of
 // Lacros, which sets the proxy via the mojo Prefs service, is deployed to Ash
@@ -83,12 +78,6 @@ void AshProxyMonitor::AddObserver(Observer* observer) {
 
 void AshProxyMonitor::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-// static
-void AshProxyMonitor::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(
-      ash::prefs::kLacrosProxyControllingExtension);
 }
 
 void AshProxyMonitor::DefaultNetworkChanged(const ash::NetworkState* network) {
@@ -154,9 +143,8 @@ void AshProxyMonitor::OnProfileAdded(Profile* profile) {
   CleanupPrefFromUserStore(primary_profile_);
   profile_prefs_registrar_ = std::make_unique<PrefChangeRegistrar>();
   profile_prefs_registrar_->Init(primary_profile_->GetPrefs());
-  // This can be triggered by user policy changes or extensions running in Ash
-  // or Lacros. The `wpad_url` can only be configured by DHCP and/or DNS
-  // discovery methods.
+  // This can be triggered by user policy changes or extensions. The `wpad_url`
+  // can only be configured by DHCP and/or DNS discovery methods.
   profile_prefs_registrar_->Add(
       proxy_config::prefs::kProxy,
       base::BindRepeating(&AshProxyMonitor::OnProxyChanged,
@@ -192,62 +180,6 @@ ProxyConfigDictionary* AshProxyMonitor::GetLatestProxyConfig() const {
 
 GURL AshProxyMonitor::GetLatestWpadUrl() const {
   return cached_wpad_url_.value_or(GURL());
-}
-
-bool AshProxyMonitor::IsLacrosExtensionControllingProxy() const {
-  if (!primary_profile_) {
-    return false;
-  }
-  auto* pref =
-      primary_profile_->GetPrefs()->FindPreference(proxy_config::prefs::kProxy);
-  return pref && pref->IsStandaloneBrowserControlled();
-}
-
-void AshProxyMonitor::SetLacrosExtensionControllingProxyInfo(
-    const std::string& name,
-    const std::string& id,
-    bool can_be_disabled) {
-  DCHECK(primary_profile_) << "The primary profile is not initialized";
-  CleanupPrefFromUserStore(primary_profile_);
-  primary_profile_->GetPrefs()->SetDict(
-      ash::prefs::kLacrosProxyControllingExtension,
-      base::Value::Dict()
-          .Set(kPrefExtensionNameKey, name)
-          .Set(kPrefExtensionIdKey, id)
-          .Set(kPrefExtensionCanDisabledKey, can_be_disabled));
-  NotifyObservers();
-}
-
-void AshProxyMonitor::ClearLacrosExtensionControllingProxyInfo() {
-  DCHECK(primary_profile_) << "The primary profile is not initialized";
-  CleanupPrefFromUserStore(primary_profile_);
-  primary_profile_->GetPrefs()->ClearPref(
-      ash::prefs::kLacrosProxyControllingExtension);
-  NotifyObservers();
-}
-
-std::optional<AshProxyMonitor::ExtensionMetadata>
-AshProxyMonitor::GetLacrosExtensionControllingTheProxy() const {
-  if (!IsLacrosExtensionControllingProxy()) {
-    return std::nullopt;
-  }
-  const base::Value::Dict& dictionary = primary_profile_->GetPrefs()->GetDict(
-      ash::prefs::kLacrosProxyControllingExtension);
-  const std::string* extension_name =
-      dictionary.FindString(kPrefExtensionNameKey);
-
-  if (!extension_name) {
-    // Ash received the proxy config from Lacros via the Prefs service but the
-    // metadata of the extension, which is sent from Lacros via the
-    // NetworkSettings service, is not yet received.
-    return std::nullopt;
-  }
-
-  const std::string* extension_id = dictionary.FindString(kPrefExtensionIdKey);
-  return ExtensionMetadata(
-      extension_name ? *extension_name : std::string(),
-      extension_id ? *extension_id : std::string(),
-      dictionary.FindBool(kPrefExtensionCanDisabledKey).value_or(false));
 }
 
 }  // namespace ash

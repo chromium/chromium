@@ -6,6 +6,7 @@
 #define URL_THIRD_PARTY_MOZILLA_URL_PARSE_H_
 
 #include <iosfwd>
+#include <optional>
 #include <string_view>
 
 #include "base/check.h"
@@ -26,25 +27,23 @@ enum class ParserMode { kSpecialURL, kNonSpecialURL };
 
 // Represents a substring for URL parsing.
 struct Component {
-  Component() : begin(0), len(-1) {}
+  constexpr Component() : begin(0), len(-1) {}
 
   // Normal constructor: takes an offset and a length.
-  Component(int b, int l) : begin(b), len(l) {}
+  constexpr Component(int b, int l) : begin(b), len(l) {}
 
-  int end() const {
-    return begin + len;
-  }
+  constexpr int end() const { return begin + len; }
 
   // Returns true if this component is valid, meaning the length is given.
   // Valid components may be empty to record the fact that they exist.
-  bool is_valid() const { return len >= 0; }
+  constexpr bool is_valid() const { return len >= 0; }
 
   // Determine if the component is empty or not. Empty means the length is
   // zero or the component is invalid.
-  bool is_empty() const { return len <= 0; }
-  bool is_nonempty() const { return len > 0; }
+  constexpr bool is_empty() const { return len <= 0; }
+  constexpr bool is_nonempty() const { return len > 0; }
 
-  void reset() {
+  constexpr void reset() {
     begin = 0;
     len = -1;
   }
@@ -57,6 +56,17 @@ struct Component {
   template <typename CharT>
   std::basic_string_view<CharT> as_string_view_on(const CharT* source) const {
     DCHECK(is_valid());
+    return std::basic_string_view(&source[begin], len);
+  }
+
+  // Returns a std::optional<string_view> using `source` as a backend.
+  // Returns std::nullopt if the component is invalid.
+  template <typename CharT>
+  std::optional<std::basic_string_view<CharT>> maybe_as_string_view_on(
+      const CharT* source) const {
+    if (!is_valid()) {
+      return std::nullopt;
+    }
     return std::basic_string_view(&source[begin], len);
   }
 

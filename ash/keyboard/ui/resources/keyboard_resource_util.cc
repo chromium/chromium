@@ -6,6 +6,7 @@
 
 #include "ash/keyboard/ui/grit/keyboard_resources.h"
 #include "ash/keyboard/ui/grit/keyboard_resources_map.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -15,11 +16,11 @@ namespace keyboard {
 const char kKeyboardURL[] = "chrome://keyboard";
 const char kKeyboardHost[] = "keyboard";
 
-const webui::ResourcePath* GetKeyboardExtensionResources(size_t* size) {
+base::span<const webui::ResourcePath> GetKeyboardExtensionResources() {
   // This looks a lot like the contents of a resource map; however it is
   // necessary to have a custom path for the extension path, so the resource
   // map cannot be used directly.
-  static const webui::ResourcePath kKeyboardResources[] = {
+  static constexpr webui::ResourcePath kKeyboardResources[] = {
       {"keyboard/locales/en.js", IDR_KEYBOARD_LOCALES_EN},
       {"keyboard/config/emoji.js", IDR_KEYBOARD_CONFIG_EMOJI},
       {"keyboard/config/hwt.js", IDR_KEYBOARD_CONFIG_HWT},
@@ -92,7 +93,7 @@ const webui::ResourcePath* GetKeyboardExtensionResources(size_t* size) {
       {"keyboard/sounds/keypress-standard.wav",
        IDR_KEYBOARD_SOUNDS_KEYPRESS_STANDARD},
   };
-  *size = std::size(kKeyboardResources);
+
   return kKeyboardResources;
 }
 

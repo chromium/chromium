@@ -46,6 +46,11 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
     return false;
 
   out->use_custom_colors = data.use_custom_colors();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  out->use_overlay_scrollbar = data.use_overlay_scrollbar();
+#endif
+
   out->enable_referrers = data.enable_referrers();
   out->allow_cross_origin_auth_prompt = data.allow_cross_origin_auth_prompt();
   out->enable_do_not_track = data.enable_do_not_track();
@@ -53,6 +58,10 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
 
   if (!data.ReadWebrtcIpHandlingPolicy(&out->webrtc_ip_handling_policy))
     return false;
+
+  if (!data.ReadWebrtcIpHandlingUrls(&out->webrtc_ip_handling_urls)) {
+    return false;
+  }
 
   out->webrtc_udp_min_port = data.webrtc_udp_min_port();
   out->webrtc_udp_max_port = data.webrtc_udp_max_port();
@@ -110,13 +119,18 @@ bool StructTraits<blink::mojom::RendererPreferencesDataView,
   out->plugin_fullscreen_allowed = data.plugin_fullscreen_allowed();
   out->caret_browsing_enabled = data.caret_browsing_enabled();
 
+#if BUILDFLAG(IS_ANDROID)
+  out->uses_platform_autofill = data.uses_platform_autofill();
+#endif  // BUILDFLAG(IS_ANDROID)
+
   if (!data.ReadExplicitlyAllowedNetworkPorts(
           &out->explicitly_allowed_network_ports)) {
     return false;
   }
 
-  out->prefixed_fullscreen_video_api_availability =
-      data.prefixed_fullscreen_video_api_availability();
+  out->canvas_noise_token = data.canvas_noise_token();
+
+  out->view_source_line_wrap_enabled = data.view_source_line_wrap_enabled();
 
   return true;
 }

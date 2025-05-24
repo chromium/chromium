@@ -18,6 +18,12 @@ enum WebPrintingSides {
   kTwoSidedShortEdge
 };
 
+enum WebPrintQuality {
+  kDraft,
+  kNormal,
+  kHigh
+};
+
 enum WebPrintColorMode {
   kColor,
   kMonochrome
@@ -154,6 +160,9 @@ struct WebPrinterAttributes {
   WebPrintColorMode print_color_mode_default;
   array<WebPrintColorMode> print_color_mode_supported;
 
+  WebPrintQuality print_quality_default;
+  array<WebPrintQuality> print_quality_supported;
+
   WebPrinterState printer_state;
   string printer_state_message;
   array<WebPrinterStateReason> printer_state_reasons;
@@ -190,6 +199,7 @@ struct WebPrintJobTemplateAttributes {
   WebPrintingOrientationRequested? orientation_requested;
   gfx.mojom.Size? printer_resolution;
   WebPrintColorMode? print_color_mode;
+  WebPrintQuality? print_quality;
   WebPrintingSides? sides;
 };
 

@@ -20,6 +20,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
@@ -29,7 +30,9 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
+#include "components/soda/mock_soda_installer.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #include "content/public/test/browser_task_environment.h"
@@ -50,37 +53,11 @@ constexpr char kS3FallbackReasonMetricName[] =
     "Ash.Projector.OnDeviceToServerSpeechRecognitionFallbackReason";
 
 inline void SetLocale(const std::string& locale) {
-  g_browser_process->SetApplicationLocale(locale);
+  TestingBrowserProcess::GetGlobal()
+      ->GetFeatures()
+      ->application_locale_storage()
+      ->Set(locale);
 }
-
-// A mocked version instance of SodaInstaller for testing purposes.
-class MockSodaInstaller : public speech::SodaInstaller {
- public:
-  MockSodaInstaller() = default;
-  MockSodaInstaller(const MockSodaInstaller&) = delete;
-  MockSodaInstaller& operator=(const MockSodaInstaller&) = delete;
-  ~MockSodaInstaller() override = default;
-
-  MOCK_METHOD(base::FilePath, GetSodaBinaryPath, (), (const, override));
-  MOCK_METHOD(base::FilePath,
-              GetLanguagePath,
-              (const std::string&),
-              (const, override));
-  MOCK_METHOD(void,
-              InstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(void,
-              UninstallLanguage,
-              (const std::string&, PrefService*),
-              (override));
-  MOCK_METHOD(std::vector<std::string>,
-              GetAvailableLanguages,
-              (),
-              (const, override));
-  MOCK_METHOD(void, InstallSoda, (PrefService*), (override));
-  MOCK_METHOD(void, UninstallSoda, (PrefService*), (override));
-};
 
 class MockLocaleUpdateController : public ash::LocaleUpdateController {
  public:
@@ -142,15 +119,18 @@ class ProjectorClientImplUnitTest
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
     ASSERT_TRUE(testing_profile_);
     SetLocale(kEnglishUS);
-    soda_installer_ = std::make_unique<MockSodaInstaller>();
+    soda_installer_ = std::make_unique<speech::MockSodaInstaller>();
     ON_CALL(*soda_installer_, GetAvailableLanguages)
         .WillByDefault(testing::Return(std::vector<std::string>({kEnglishUS})));
     soda_installer_->NotifySodaInstalledForTesting();
     soda_installer_->NotifySodaInstalledForTesting(speech::LanguageCode::kEnUs);
     mock_app_client_ = std::make_unique<MockAppClient>();
     mock_locale_controller_ = std::make_unique<MockLocaleUpdateController>();
-    projector_client_ =
-        std::make_unique<ProjectorClientImpl>(&projector_controller_);
+    projector_client_ = std::make_unique<ProjectorClientImpl>(
+        TestingBrowserProcess::GetGlobal()
+            ->GetFeatures()
+            ->application_locale_storage(),
+        &projector_controller_);
     CrosSpeechRecognitionServiceFactory::GetInstanceForTest()
         ->SetTestingFactoryAndUse(
             profile(), base::BindOnce(&ProjectorClientImplUnitTest::
@@ -230,7 +210,7 @@ class ProjectorClientImplUnitTest
 
   MockProjectorController projector_controller_;
   std::unique_ptr<ProjectorClient> projector_client_;
-  std::unique_ptr<MockSodaInstaller> soda_installer_;
+  std::unique_ptr<speech::MockSodaInstaller> soda_installer_;
   std::unique_ptr<MockAppClient> mock_app_client_;
   std::unique_ptr<MockLocaleUpdateController> mock_locale_controller_;
   raw_ptr<speech::FakeSpeechRecognitionService> fake_service_;
@@ -272,11 +252,13 @@ const char kEnglishNewZealand[] = "en-NZ";
 
 bool IsEqualAvailability(const SpeechRecognitionAvailability& first,
                          const SpeechRecognitionAvailability& second) {
-  if (first.use_on_device != second.use_on_device)
+  if (first.use_on_device != second.use_on_device) {
     return false;
+  }
 
-  if (first.use_on_device)
+  if (first.use_on_device) {
     return first.on_device_availability == second.on_device_availability;
+  }
 
   return first.server_based_availability == second.server_based_availability;
 }
@@ -285,7 +267,7 @@ bool IsEqualAvailability(const SpeechRecognitionAvailability& first,
 
 TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
   const bool force_enable_server_based =
-      features::ShouldForceEnableServerSideSpeechRecognitionForDev();
+      features::ShouldForceEnableServerSideSpeechRecognition();
   const bool server_based_available =
       features::IsInternalServerSideSpeechRecognitionEnabled();
 
@@ -353,7 +335,7 @@ TEST_P(ProjectorClientImplUnitTest, SpeechRecognitionAvailability) {
 
 TEST_P(ProjectorClientImplUnitTest, FallbackReasonMetric) {
   const bool force_enable_server_based =
-      features::ShouldForceEnableServerSideSpeechRecognitionForDev();
+      features::ShouldForceEnableServerSideSpeechRecognition();
   const bool server_based_available =
       features::IsInternalServerSideSpeechRecognitionEnabled();
 
@@ -411,18 +393,25 @@ TEST_P(ProjectorClientImplUnitTest, FallbackReasonMetric) {
 
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// TODO: dorianbrandon - Remove finch flag from disabled list. The finch
+// flag currently sets the experiment to true for all languages. This isn't a
+// problem since all ChromeOS languages are covered but it affects the
+// structure of the language disabled test.
 INSTANTIATE_TEST_SUITE_P(
     ProjectorClientTestScenarios,
     ProjectorClientImplUnitTest,
     ::testing::Values(
-        ProjectorClientTestScenario({features::kOnDeviceSpeechRecognition}, {}),
+        ProjectorClientTestScenario(
+            {features::kOnDeviceSpeechRecognition},
+            {features::kInternalServerSideSpeechRecognitionUSMModelFinch}),
         ProjectorClientTestScenario(
             {features::kOnDeviceSpeechRecognition,
-             features::kForceEnableServerSideSpeechRecognitionForDev},
-            {}),
+             features::kForceEnableServerSideSpeechRecognition},
+            {features::kInternalServerSideSpeechRecognitionUSMModelFinch}),
         ProjectorClientTestScenario(
             {features::kInternalServerSideSpeechRecognition,
              features::kOnDeviceSpeechRecognition},
-            {features::kForceEnableServerSideSpeechRecognitionForDev})));
+            {features::kForceEnableServerSideSpeechRecognition,
+             features::kInternalServerSideSpeechRecognitionUSMModelFinch})));
 
 }  // namespace ash

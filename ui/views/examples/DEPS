@@ -10,6 +10,7 @@ include_rules = [
   "+ui/message_center",  # For the notification example.
   "+ui/snapshot", # Enable Skia Gold testing
   "+ui/views_content_client",
+  "+ui/menus",
 ]
 
 specific_include_rules = {

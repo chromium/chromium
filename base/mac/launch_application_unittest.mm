@@ -9,6 +9,7 @@
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -69,7 +70,7 @@ void ReadLaunchEventsFromFifo(
       // No data was read, wait for the file descriptor to become readable
       // again.
       fd_set fds;
-      FD_ZERO(&fds);
+      UNSAFE_TODO(FD_ZERO(&fds));
       FD_SET(f.GetPlatformFile(), &fds);
       select(FD_SETSIZE, &fds, nullptr, nullptr, nullptr);
     }
@@ -255,7 +256,7 @@ class LaunchApplicationTest : public testing::Test {
       return;
     }
     base::RunLoop loop;
-    launch_event_callback_ = BindLambdaForTesting([&]() {
+    launch_event_callback_ = BindLambdaForTesting([&] {
       if (LaunchEventCount() >= expected_count) {
         launch_event_callback_ = NullCallback();
         loop.Quit();

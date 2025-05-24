@@ -6,8 +6,16 @@
 #define IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_
 
 #include "base/feature_list.h"
-#include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_constants.h"
+
+class PrefService;
+
+// Enum to represent arms of feature kFeedSwipeInProductHelp.
+enum class FeedSwipeIPHVariation {
+  kDisabled,
+  kStaticAfterFRE,
+  kStaticInSecondRun,
+  kAnimated,
+};
 
 #pragma mark - Feature declarations
 
@@ -17,9 +25,6 @@ BASE_DECLARE_FEATURE(kEnableDiscoverFeedStaticResourceServing);
 
 // Feature flag to enable discofeed endpoint for the Discover feed.
 BASE_DECLARE_FEATURE(kEnableDiscoverFeedDiscoFeedEndpoint);
-
-// Feature flag to enable the sync promo on top of the discover feed.
-BASE_DECLARE_FEATURE(kEnableDiscoverFeedTopSyncPromo);
 
 // Feature flag to fix the NTP view hierarchy if it is broken before applying
 // constraints.
@@ -47,6 +52,13 @@ BASE_DECLARE_FEATURE(kEnableiPadFeedGhostCards);
 // disc.
 BASE_DECLARE_FEATURE(kIdentityDiscAccountMenu);
 
+// Feature flag to enable in-product help for swipe action on the Feed.
+BASE_DECLARE_FEATURE(kFeedSwipeInProductHelp);
+
+// Feature flag to handle feed eligibility and state in the new Discover
+// eligibility service instead of the new tab page mediator.
+BASE_DECLARE_FEATURE(kUseFeedEligibilityService);
+
 #pragma mark - Feature parameters
 
 // A parameter to indicate whether Reconstructed Templates is enabled for static
@@ -58,9 +70,6 @@ extern const char kDiscoverFeedSRSReconstructedTemplatesEnabled[];
 // resource serving.
 // TODO(crbug.com/40246814): Remove this.
 extern const char kDiscoverFeedSRSPreloadTemplatesEnabled[];
-
-// Parameter for the feed top sync promo's style.
-extern const char kDiscoverFeedTopSyncPromoStyle[];
 
 // A parameter value for the feed's refresh threshold when the feed has already
 // been seen by the user.
@@ -79,6 +88,26 @@ extern const char kFeedSettingTimeoutThresholdAfterClearBrowsingData[];
 // A parameter value for the feed referrer.
 extern const char kFeedSettingDiscoverReferrerParameter[];
 
+// Parameters for the `kDeprecateFeedHeader` feature.
+//
+// A parameter to indicate whether the label should be removed from the discover
+// feed header.
+extern const char kDeprecateFeedHeaderParameterRemoveLabel[];
+// A parameter to indicate whether we should enlarge the Doodle and the fakebox.
+extern const char kDeprecateFeedHeaderParameterEnlargeLogoAndFakebox[];
+// Parameters controlling the padding/spacing between NTP elements.
+extern const char kDeprecateFeedHeaderParameterTopPadding[];
+extern const char kDeprecateFeedHeaderParameterSearchFieldTopMargin[];
+extern const char kDeprecateFeedHeaderParameterSpaceBetweenModules[];
+extern const char kDeprecateFeedHeaderParameterHeaderBottomPadding[];
+
+// Parameter to show the settings button in the account menu.
+extern const char kShowSettingsInAccountMenuParam[];
+
+// Parameter to indicate which arm of feature kFeedSwipeInProductHelp is
+// enabled.
+extern const char kFeedSwipeInProductHelpArmParam[];
+
 #pragma mark - Helpers
 
 // Whether the NTP view hierarchy repair is enabled.
@@ -86,16 +115,6 @@ bool IsNTPViewHierarchyRepairEnabled();
 
 // Whether the sync promo should be shown on top of the feed.
 bool IsDiscoverFeedTopSyncPromoEnabled();
-
-// Returns the feed top sync promo's UI style.
-SigninPromoViewStyle GetTopOfFeedPromoStyle();
-
-// Whether the feed top sync promo should only be shown to users who previously
-// engaged with the feed.
-bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo();
-
-// Returns the number of impressions before autodismissing the feed sync promo.
-int FeedSyncPromoAutodismissCount();
 
 // Whether content suggestions are enabled for supervised users.
 bool IsContentSuggestionsForSupervisedUserEnabled(PrefService* pref_service);
@@ -108,5 +127,25 @@ bool IsSignedOutViewDemotionEnabled();
 
 // Whether ghost cards are enabled on the iPad feeds.
 bool IsiPadFeedGhostCardsEnabled();
+
+// YES if the NTP and feed header elements should be re-positioned as described.
+bool ShouldRemoveDiscoverLabel(bool is_google_default_search_engine);
+bool ShouldEnlargeLogoAndFakebox();
+
+// If feed header should be deprecated, retrieve the value for `param_name` for
+// the `kDeprecateFeedHeader`. Otherwise, return the default value.
+double GetDeprecateFeedHeaderParameterValueAsDouble(
+    const std::string& param_name,
+    double default_value);
+
+// YES if the account menu is enabled with the settings button.
+bool IdentityDiscAccountMenuEnabledWithSettings();
+
+// Returns the enabled variation of feature kFeedSwipeInProductHelp.
+FeedSwipeIPHVariation GetFeedSwipeIPHVariation();
+
+// YES if the feed visibility is handled by the eligibility service instead of
+// the new tab page mediator.
+bool UseFeedEligibilityService();
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_FEATURE_H_

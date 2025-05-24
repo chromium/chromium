@@ -8,10 +8,15 @@
 
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/preview_badge.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/permissions_client.h"
+#include "components/permissions/request_type.h"
 #include "content/public/browser/context_factory.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/views/controls/throbber.h"
@@ -75,33 +80,41 @@ void VideoStreamCoordinator::ConnectToDevice(
     mojo::Remote<video_capture::mojom::VideoSource> video_source) {
   Stop();
 
-  if (video_stream_view_) {
-    // Wait till the preview is actually shown.
-    if (video_stream_view_->width() == 0) {
-      connect_to_device_params_.emplace(device_info, std::move(video_source));
-      return;
-    }
-
-    // Using double the view width when choosing preferred format. This provides
-    // more information to the interpolation algorithm, so scaled images appear
-    // sharper.
-    int requested_format_width = 2 * video_stream_view_->width();
-    video_frame_handler_ =
-        std::make_unique<capture_mode::CameraVideoFrameHandler>(
-            content::GetContextFactory(), std::move(video_source),
-            video_format_comparison::GetClosestVideoFormat(
-                device_info.supported_formats, requested_format_width),
-            // TODO: Add testing to check that we pass the right device id to
-            // CameraVideoFrameHandler.
-            device_info.descriptor.device_id);
-
-    video_frame_handler_->StartHandlingFrames(/*delegate=*/this);
-
-    has_requested_any_video_feed_ = true;
-    video_stream_request_time_ = base::TimeTicks::Now();
-
-    throbber_->Start();
+  if (!video_source) {
+    // This check is needed, because there is a chance for `video_source` to
+    // become unbound, while it is deferred at `connect_to_device_params_`.
+    return;
   }
+
+  if (!video_stream_view_) {
+    return;
+  }
+
+  // Wait till the preview is actually shown.
+  if (video_stream_view_->width() == 0) {
+    connect_to_device_params_.emplace(device_info, std::move(video_source));
+    return;
+  }
+
+  // Using double the view width when choosing preferred format. This provides
+  // more information to the interpolation algorithm, so scaled images appear
+  // sharper.
+  int requested_format_width = 2 * video_stream_view_->width();
+  video_frame_handler_ =
+      std::make_unique<capture_mode::CameraVideoFrameHandler>(
+          content::GetContextFactory(), std::move(video_source),
+          video_format_comparison::GetClosestVideoFormat(
+              device_info.supported_formats, requested_format_width),
+          // TODO: Add testing to check that we pass the right device id to
+          // CameraVideoFrameHandler.
+          device_info.descriptor.device_id);
+
+  video_frame_handler_->StartHandlingFrames(/*delegate=*/this);
+
+  has_requested_any_video_feed_ = true;
+  video_stream_request_time_ = base::TimeTicks::Now();
+
+  throbber_->Start();
 }
 
 // capture_mode::CameraVideoFrameHandler::Delegate implementation.
@@ -133,6 +146,16 @@ void VideoStreamCoordinator::OnFatalErrorOrDisconnection() {
     video_stream_view_->ClearFrame();
     preview_badge_view_->SetVisible(false);
   }
+  OnError(media::VideoCaptureError::kVideoCaptureManagerDeviceConnectionLost);
+}
+
+void VideoStreamCoordinator::OnError(media::VideoCaptureError error) {
+  if (error_received_callback_for_test_) {
+    error_received_callback_for_test_.Run();
+  }
+
+  media_preview_metrics::RecordVideoCaptureError(metrics_context_, error);
+  // TODO: Consider notifying CameraCoordinator to request new connection.
 }
 
 void VideoStreamCoordinator::StopAndCleanup(
@@ -164,6 +187,9 @@ void VideoStreamCoordinator::StopInternal(
     // to finish processing frames that are in progress. If this isn't done,
     // then allocated buffers can be left dangling until the video stream is
     // stopped.
+    if (video_source_provider) {
+      video_source_provider.set_disconnect_handler(base::DoNothing());
+    }
     auto* handler_ptr = video_frame_handler_.get();
     std::exchange(handler_ptr, nullptr)
         ->Close(base::DoNothingWithBoundArgs(std::move(video_source_provider),
@@ -177,12 +203,21 @@ void VideoStreamCoordinator::OnViewIsDeleting(views::View* observed_view) {
   video_stream_view_ = nullptr;
 }
 
+VideoStreamCoordinator::ConnectToDeviceParams::ConnectToDeviceParams(
+    const media::VideoCaptureDeviceInfo& device_info,
+    mojo::Remote<video_capture::mojom::VideoSource> video_source)
+    : device_info(device_info), video_source(std::move(video_source)) {}
+
+VideoStreamCoordinator::ConnectToDeviceParams::~ConnectToDeviceParams() =
+    default;
+
 void VideoStreamCoordinator::OnViewBoundsChanged(views::View* observed_view) {
   CHECK(scoped_observation_.IsObservingSource(observed_view));
   if (observed_view->width() > 0 && connect_to_device_params_) {
-    ConnectToDevice(connect_to_device_params_->first,
-                    std::move(connect_to_device_params_->second));
+    const auto device_info = std::move(connect_to_device_params_->device_info);
+    auto remote = std::move(connect_to_device_params_->video_source);
     connect_to_device_params_.reset();
+    ConnectToDevice(device_info, std::move(remote));
   }
 }
 
@@ -197,6 +232,25 @@ void VideoStreamCoordinator::OnClosing() {
   Stop();
   time_to_action_without_preview_ =
       base::TimeTicks::Now() - video_stream_construction_time_;
+
+  // We now know that the decision was made by the user.
+  // `time_to_action_without_preview_` is equivalent to "time to decision",
+  // since this is how much time has passed between the construction of the
+  // coordinator to the moment a decision was made.
+  if (metrics_context_.request) {
+    auto preview_params =
+        metrics_context_.request->get_preview_parameters().value_or(
+            permissions::PermissionHatsTriggerHelper::
+                PreviewParametersForHats{});
+    preview_params.MergeParameters(
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats(
+            /*was_visible=*/false, /*dropdown_was_interacted=*/false,
+            /*was_prompt_combined=*/metrics_context_.prompt_type ==
+                media_preview_metrics::PromptType::kCombined,
+            /*time_to_decision=*/*time_to_action_without_preview_,
+            /*time_to_visible=*/{}));
+    metrics_context_.request->set_preview_parameters(preview_params);
+  }
 }
 
 void VideoStreamCoordinator::OnReceivedFirstFrame() {
@@ -209,6 +263,24 @@ void VideoStreamCoordinator::OnReceivedFirstFrame() {
       *video_stream_start_time_ - *video_stream_request_time_;
   media_preview_metrics::RecordPreviewDelayTime(metrics_context_,
                                                 preview_delay_time);
+
+  // We now know that frames are being shown, so the preview was visible.
+  // We also now know how long it took for the preview to show.
+  if (metrics_context_.request) {
+    auto preview_params =
+        metrics_context_.request->get_preview_parameters().value_or(
+            permissions::PermissionHatsTriggerHelper::
+                PreviewParametersForHats{});
+    preview_params.MergeParameters(
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats(
+            /*was_visible=*/true, /*dropdown_was_interacted=*/false,
+            /*was_prompt_combined=*/metrics_context_.prompt_type ==
+                media_preview_metrics::PromptType::kCombined,
+            /*time_to_decision=*/{},
+            /*time_to_visible=*/preview_delay_time));
+    metrics_context_.request->set_preview_parameters(preview_params);
+  }
+
   video_stream_request_time_.reset();
 }
 

@@ -4,6 +4,7 @@
 
 #include <android/log.h>
 #include <unistd.h>
+
 #include <cstddef>
 #include <cstdlib>
 
@@ -16,8 +17,9 @@
 // it will load, only the linker binary itself.
 void* operator new(size_t size) {
   void* ptr = ::malloc(size);
-  if (ptr != nullptr)
+  if (ptr != nullptr) {
     return ptr;
+  }
 
   // Don't assume it is possible to call any C library function like
   // snprintf() here, since it might allocate heap memory and crash at

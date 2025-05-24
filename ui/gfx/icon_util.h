@@ -13,10 +13,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/win/scoped_gdi_object.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace base {
 class FilePath;
@@ -45,8 +45,8 @@ class SkBitmap;
 //   ...
 //
 //   // Convert the bitmap into a Windows HICON
-//   base::win::ScopedHICON icon(IconUtil::CreateHICONFromSkBitmap(bitmap));
-//   if (!icon.is_valid()) {
+//   base::win::ScopedGDIObject<HICON>
+//   icon(IconUtil::CreateHICONFromSkBitmap(bitmap)); if (!icon.is_valid()) {
 //     // Handle error
 //     ...
 //   }
@@ -56,7 +56,7 @@ class SkBitmap;
 //                 reinterpret_cast<LPARAM>(icon.get()));
 //
 ///////////////////////////////////////////////////////////////////////////////
-class GFX_EXPORT IconUtil {
+class COMPONENT_EXPORT(GFX) IconUtil {
  public:
   // ATOMIC_WRITE ensures that a partially written icon won't be created even if
   // Chrome crashes part way through, but ATOMIC_WRITE is more expensive than
@@ -87,7 +87,8 @@ class GFX_EXPORT IconUtil {
 
   // Given an SkBitmap object, the function converts the bitmap to a Windows
   // icon and returns the corresponding HICON handle if conversion succeeds.
-  static base::win::ScopedHICON CreateHICONFromSkBitmap(const SkBitmap& bitmap);
+  static base::win::ScopedGDIObject<HICON> CreateHICONFromSkBitmap(
+      const SkBitmap& bitmap);
 
   // Given a valid HICON handle representing an icon, this function converts
   // the icon into an SkBitmap object containing an ARGB bitmap using the
@@ -132,7 +133,7 @@ class GFX_EXPORT IconUtil {
 
   // Creates a cursor of the specified size from the SkBitmap passed in.
   // Returns the cursor on success or NULL on failure.
-  static base::win::ScopedHICON CreateCursorFromSkBitmap(
+  static base::win::ScopedGDIObject<HICON> CreateCursorFromSkBitmap(
       const SkBitmap& bitmap,
       const gfx::Point& hotspot);
 

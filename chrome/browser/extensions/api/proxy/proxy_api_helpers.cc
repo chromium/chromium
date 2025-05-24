@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Implementation of helper functions for the Chrome Extensions Proxy Settings
 // API.
 //
@@ -20,6 +15,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <iterator>
 #include <utility>
 
@@ -41,22 +37,6 @@ namespace extensions {
 
 namespace proxy_api_helpers {
 
-// The names of the schemes to be used to build the preference value string
-// for manual proxy settings.  These must be kept in sync with the SCHEME_*
-// constants.
-constexpr const char* scheme_name[] = {"*error*", "http", "https", "ftp",
-                                       "socks"};
-
-constexpr const char* field_name[] = {"singleProxy", "proxyForHttp",
-                                      "proxyForHttps", "proxyForFtp",
-                                      "fallbackProxy"};
-
-static_assert(SCHEME_MAX == SCHEME_FALLBACK, "SCHEME_MAX is incorrect");
-static_assert(std::size(field_name) == SCHEME_MAX + 1,
-              "field_name array size is incorrect");
-static_assert(std::size(scheme_name) == SCHEME_MAX + 1,
-              "scheme_name array size is incorrect");
-static_assert(SCHEME_ALL == 0, "SCHEME_ALL must be the first value");
 
 std::string CreateDataURLFromPACScript(const std::string& pac_script) {
   // Prefix that identifies PAC-script encoding urls.
@@ -253,15 +233,15 @@ bool GetProxyRulesStringFromExtensionPref(const base::Value::Dict& proxy_config,
   // Local data into which the parameters will be parsed. has_proxy describes
   // whether a setting was found for the scheme; proxy_server holds the
   // respective ProxyServer objects containing those descriptions.
-  bool has_proxy[SCHEME_MAX + 1];
-  net::ProxyServer proxy_server[SCHEME_MAX + 1];
+  std::array<bool, SCHEME_MAX + 1> has_proxy;
+  std::array<net::ProxyServer, SCHEME_MAX + 1> proxy_server;
 
   // Looking for all possible proxy types is inefficient if we have a
   // singleProxy that will supersede per-URL proxies, but it's worth it to keep
   // the code simple and extensible.
   for (size_t i = 0; i <= SCHEME_MAX; ++i) {
     const base::Value::Dict* proxy_dict =
-        proxy_rules->FindDictByDottedPath(field_name[i]);
+        proxy_rules->FindDictByDottedPath(kFieldNames[i]);
     has_proxy[i] = proxy_dict != nullptr;
     if (has_proxy[i]) {
       net::ProxyServer::Scheme default_scheme = net::ProxyServer::SCHEME_HTTP;
@@ -279,7 +259,7 @@ bool GetProxyRulesStringFromExtensionPref(const base::Value::Dict& proxy_config,
       if (has_proxy[i]) {
         *error = ErrorUtils::FormatErrorMessage(
             "Proxy rule for * and * cannot be set at the same time.",
-            field_name[SCHEME_ALL], field_name[i]);
+            kFieldNames[SCHEME_ALL], kFieldNames[i]);
         return false;
       }
     }
@@ -296,7 +276,7 @@ bool GetProxyRulesStringFromExtensionPref(const base::Value::Dict& proxy_config,
       // http=foopy:4010;ftp=socks5://foopy2:80
       if (!proxy_pref.empty())
         proxy_pref.append(";");
-      proxy_pref.append(scheme_name[i]);
+      proxy_pref.append(kSchemeNames[i]);
       proxy_pref.append("=");
       proxy_pref.append(net::ProxyServerToProxyUri(proxy_server[i]));
     }
@@ -397,7 +377,7 @@ std::optional<base::Value::Dict> CreateProxyConfigDict(
     case ProxyPrefs::MODE_SYSTEM:
       return ProxyConfigDictionary::CreateSystem();
     case ProxyPrefs::kModeCount:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return std::nullopt;
 }
@@ -424,29 +404,29 @@ std::optional<base::Value::Dict> CreateProxyRulesDict(
     case net::ProxyConfig::ProxyRules::Type::PROXY_LIST:
       if (!rules.single_proxies.IsEmpty()) {
         extension_proxy_rules.Set(
-            field_name[SCHEME_ALL],
+            kFieldNames[SCHEME_ALL],
             CreateProxyServerDict(rules.single_proxies.First()));
       }
       break;
     case net::ProxyConfig::ProxyRules::Type::PROXY_LIST_PER_SCHEME:
       if (!rules.proxies_for_http.IsEmpty()) {
         extension_proxy_rules.Set(
-            field_name[SCHEME_HTTP],
+            kFieldNames[SCHEME_HTTP],
             CreateProxyServerDict(rules.proxies_for_http.First()));
       }
       if (!rules.proxies_for_https.IsEmpty()) {
         extension_proxy_rules.Set(
-            field_name[SCHEME_HTTPS],
+            kFieldNames[SCHEME_HTTPS],
             CreateProxyServerDict(rules.proxies_for_https.First()));
       }
       if (!rules.proxies_for_ftp.IsEmpty()) {
         extension_proxy_rules.Set(
-            field_name[SCHEME_FTP],
+            kFieldNames[SCHEME_FTP],
             CreateProxyServerDict(rules.proxies_for_ftp.First()));
       }
       if (!rules.fallback_proxies.IsEmpty()) {
         extension_proxy_rules.Set(
-            field_name[SCHEME_FALLBACK],
+            kFieldNames[SCHEME_FALLBACK],
             CreateProxyServerDict(rules.fallback_proxies.First()));
       }
       break;
@@ -493,8 +473,7 @@ base::Value::Dict CreateProxyServerDict(const net::ProxyChain& proxy_chain) {
       scheme = "socks5";
       break;
     case net::ProxyServer::SCHEME_INVALID:
-      NOTREACHED_IN_MIGRATION();
-      return out;
+      NOTREACHED();
   }
   out.Set(proxy_api_constants::kProxyConfigRuleScheme, scheme);
   out.Set(proxy_api_constants::kProxyConfigRuleHost,

@@ -37,7 +37,7 @@ std::optional<size_t> ReadFile(base::File* file,
                                scoped_refptr<net::IOBuffer> buffer,
                                int buffer_length) {
   return file->ReadAtCurrentPosNoBestEffort(
-      buffer->span().first(base::checked_cast<size_t>(buffer_length)));
+      buffer->first(base::checked_cast<size_t>(buffer_length)));
 }
 
 // Seeks the file, returns 0 on success, or errno on an error.
@@ -47,13 +47,6 @@ int SeekFile(base::File* file, size_t offset) {
   // lseek() instead of |file|'s method for errno.
   off_t result = lseek(file->GetPlatformFile(), offset, SEEK_SET);
   return result < 0 ? errno : 0;
-}
-
-void OnGetSizeFromFileHandle(net::Int64CompletionOnceCallback callback,
-                             base::File::Error error,
-                             int64_t size) {
-  std::move(callback).Run(error == base::File::FILE_OK ? size
-                                                       : net::ERR_FAILED);
 }
 
 }  // namespace
@@ -147,16 +140,10 @@ void ArcContentFileSystemFileStreamReader::OnGetFileSize(
     net::Int64CompletionOnceCallback callback,
     int64_t size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  if (size == kUnknownFileSize) {
-    GetFileSizeFromOpenFileOnIOThread(
-        arc_url_,
-        base::BindOnce(&OnGetSizeFromFileHandle, std::move(callback)));
-  } else {
-    if (size < 0) {
-      CloseInternal(CloseStatus::kStatusError);
-    }
-    std::move(callback).Run(size < 0 ? net::ERR_FAILED : size);
+  if (size < 0) {
+    CloseInternal(CloseStatus::kStatusError);
   }
+  std::move(callback).Run(size < 0 ? net::ERR_FAILED : size);
 }
 
 void ArcContentFileSystemFileStreamReader::OnOpenFileSession(

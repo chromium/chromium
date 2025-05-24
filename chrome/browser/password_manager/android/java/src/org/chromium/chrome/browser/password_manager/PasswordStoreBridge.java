@@ -11,6 +11,7 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -18,6 +19,7 @@ import org.chromium.url.GURL;
  * Class handling communication with C++ password store from Java. It forwards messages to and from
  * its C++ counterpart.
  */
+@NullMarked
 public class PasswordStoreBridge {
     @CalledByNative
     private static PasswordStoreCredential createPasswordStoreCredential(

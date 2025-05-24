@@ -94,44 +94,6 @@ class FontMatchingMetrics {
   // successfully match.
   void ReportFailedLocalFontMatch(const AtomicString& font_name);
 
-  // Reports a local font was looked up by a name and font description. This
-  // only includes lookups where the name is allowed to match family names,
-  // PostScript names and full font names.
-  void ReportFontLookupByUniqueOrFamilyName(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data);
-
-  // Reports a local font was looked up by a name and font description. This
-  // only includes lookups where the name is allowed to match PostScript names
-  // and full font names, but not family names.
-  void ReportFontLookupByUniqueNameOnly(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false);
-
-  // Reports a font was looked up by a fallback character, fallback priority,
-  // and a font description.
-  void ReportFontLookupByFallbackCharacter(
-      UChar32 fallback_character,
-      FontFallbackPriority fallback_priority,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data);
-
-  // Reports a last-resort fallback font was looked up by a font description.
-  void ReportLastResortFallbackFontLookup(
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data);
-
-  // Reports a generic font family name was matched according to the script and
-  // the user's preferences to a font family name.
-  void ReportFontFamilyLookupByGenericFamily(
-      const AtomicString& generic_font_family_name,
-      UScriptCode script,
-      FontDescription::GenericFamilyType generic_family_type,
-      const AtomicString& resulting_font_name);
-
   // Reports for each shaped emoji segment the number of total clusters and the
   // number of clusters that either contain a .notdef/tofu glyph or that is
   // shaped as multiple glyphs, which means the emoji displays incorrectly.
@@ -166,21 +128,6 @@ class FontMatchingMetrics {
                                       IdentifiableToken,
                                       IdentifiableTokenKeyHashTraits>;
 
-  // Adds a digest of the |font_data|'s typeface to |hash_map| using the key
-  // |input_key|, unless that key is already present. If |font_data| is not
-  // nullptr, then the typeface digest will also be saved with its PostScript
-  // name in |font_load_postscript_name_|.
-  void InsertFontHashIntoMap(IdentifiableTokenKey input_key,
-                             const SimpleFontData* font_data,
-                             TokenToTokenHashMap& hash_map);
-
-  // Reports a local font's existence was looked up by a name, but its actual
-  // font data may or may not have been loaded. This only includes lookups where
-  // the name is allowed to match PostScript names and full font names, but not
-  // family names.
-  void ReportLocalFontExistenceByUniqueNameOnly(const AtomicString& font_name,
-                                                bool font_exists);
-
   // Reports a local font's existence was looked up by a name, but its actual
   // font data may or may not have been loaded. This includes lookups where the
   // name is allowed to match full font names or family names.
@@ -188,29 +135,7 @@ class FontMatchingMetrics {
       const AtomicString& font_name,
       bool font_exists);
 
-  // Constructs a builder with a hash of the FontSelectionRequest already added.
-  IdentifiableTokenBuilder GetTokenBuilderWithFontSelectionRequest(
-      const FontDescription& font_description);
-
-  // Get a hash that uniquely represents the font data. Returns 0 if |font_data|
-  // is nullptr.
-  int64_t GetHashForFontData(const SimpleFontData* font_data);
-
-  void Initialize();
-
-  // Get a token that uniquely represents the typeface's PostScript name. May
-  // represent the empty string if no PostScript name was found.
-  IdentifiableToken GetPostScriptNameTokenForFontData(
-      const SimpleFontData* font_data);
-
-  TokenToTokenHashMap font_lookups_by_unique_or_family_name_;
-  TokenToTokenHashMap font_lookups_by_unique_name_only_;
-  TokenToTokenHashMap font_lookups_by_fallback_character_;
-  TokenToTokenHashMap font_lookups_as_last_resort_;
-  TokenToTokenHashMap generic_font_lookups_;
-  TokenToTokenHashMap font_load_postscript_name_;
   TokenToTokenHashMap local_font_existence_by_unique_or_family_name_;
-  TokenToTokenHashMap local_font_existence_by_unique_name_only_;
 
   uint64_t total_emoji_clusters_shaped_ = 0;
   uint64_t total_broken_emoji_clusters_ = 0;

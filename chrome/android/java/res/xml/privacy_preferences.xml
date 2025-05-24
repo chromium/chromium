@@ -14,13 +14,7 @@ found in the LICENSE file.
         android:key="clear_browsing_data"
         android:title="@string/clear_browsing_data_title"
         android:summary="@string/clear_browsing_data_summary"
-        android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment" />
-    <Preference
-        android:key="clear_browsing_data_advanced"
-        android:title="@string/clear_browsing_data_title"
-        android:summary="@string/clear_browsing_data_summary"
-        android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentAdvanced"
-        app:isPreferenceVisible="false" />
+        android:fragment="org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment" />
     <Preference
         android:key="privacy_guide"
         android:title="@string/privacy_guide_pref_title"
@@ -32,19 +26,14 @@ found in the LICENSE file.
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <Preference
         android:key="tracking_protection"
-        android:title="@string/tracking_protection_title"
-        android:summary="@string/tracking_protection_summary"
+        android:title="@string/third_party_cookies_link_row_label"
         android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
         app:isPreferenceVisible="false" />
     <Preference
-        android:key="ip_protection"
-        android:title="@string/ip_protection_title"
-        android:fragment="org.chromium.components.privacy_sandbox.IpProtectionSettingsFragment"
-        app:isPreferenceVisible="false" />
-    <Preference
-        android:key="fp_protection"
-        android:title="@string/tracking_protection_fingerprinting_protection_title"
-        android:fragment="org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment"
+        android:key="incognito_tracking_protections"
+        android:title="@string/incognito_tracking_protections_page_title"
+        android:summary="@string/incognito_tracking_protections_page_entrypoint_description"
+        android:fragment="org.chromium.components.privacy_sandbox.IncognitoTrackingProtectionsFragment"
         app:isPreferenceVisible="false" />
     <Preference
         android:key="privacy_sandbox"
@@ -68,25 +57,39 @@ found in the LICENSE file.
 
     <PreferenceCategory
         android:key="security_section"
-        android:title="@string/security_section_title" />
+      android:title="@string/security_section_title" />
+     <org.chromium.chrome.browser.safety_hub.SafetyHubExpandablePreference
+            android:key="advanced_protection_info"
+            android:title="@string/settings_privacy_and_security_advanced_protection_section_title"/>
     <Preference
         android:key="safe_browsing"
         android:title="@string/prefs_safe_browsing_title"
         android:summary="@string/prefs_safe_browsing_summary"
         android:fragment="org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment" />
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="https_first_mode"
+        android:key="password_leak_detection"
+        android:title="@string/passwords_leak_detection_switch_title"
+        android:summary="@string/passwords_leak_detection_switch_summary"
+        android:persistent="false" />
+    <!-- Old HTTPS-First Mode toggle. Hidden if HttpsFirstBalancedMode flag is enabled.
+         TODO(crbug.com/349860796): Remove once new settings are fully rolled out. -->
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="https_first_mode_legacy"
         android:title="@string/settings_https_first_mode_title"
         android:summary="@string/settings_https_first_mode_summary" />
+    <!-- New HTTPS-First Mode settings sub-page. Hidden if HttpsFirstBalancedMode flag is disabled. -->
+    <Preference
+        android:key="https_first_mode"
+        android:title="@string/settings_https_first_mode_title"
+        android:fragment="org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment" />
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="secure_dns"
         android:title="@string/settings_secure_dns_title"
         android:fragment="org.chromium.chrome.browser.privacy.secure_dns.SecureDnsSettings" />
-    <Preference
-        android:key="phone_as_a_security_key"
-        android:title="@string/cablev2_paask_title"
-        android:summary="@string/cablev2_paask_body"
-        android:fragment="org.chromium.chrome.browser.webauthn.PrivacySettingsFragment" />
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="javascript_optimizer"
+        android:title="@string/website_settings_privacy_and_security_javascript_optimizer_row_label"
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings" />
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="can_make_payment"
         android:title="@string/can_make_payment_title"

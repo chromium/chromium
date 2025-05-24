@@ -12,6 +12,10 @@ class LocationBarModel;
 class OverlayPresenter;
 class WebStateList;
 
+namespace feature_engagement {
+class Tracker;
+}
+
 // A mediator object that updates state relating to the LocationBarSteadyView.
 // Mostly, this is any property that involves the WebState.
 @interface LocationBarSteadyViewMediator : NSObject
@@ -30,6 +34,9 @@ class WebStateList;
 // The consumer for this object. This can change during the lifetime of this
 // object and may be nil.
 @property(nonatomic, weak) id<LocationBarSteadyViewConsumer> consumer;
+
+// Feature engagement tracker.
+@property(nonatomic, assign) feature_engagement::Tracker* tracker;
 
 // Stops observing all objects.
 - (void)disconnect;

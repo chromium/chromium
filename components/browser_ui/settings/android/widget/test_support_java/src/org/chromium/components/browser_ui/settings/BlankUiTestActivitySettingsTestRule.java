@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.settings;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.Lifecycle.State;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
@@ -92,8 +93,13 @@ public class BlankUiTestActivitySettingsTestRule extends BaseActivityTestRule<Bl
     public void launchPreference(PreferenceFragmentCompat preference) {
         if (getActivity() == null) launchActivity(null);
 
-        ThreadUtils.runOnUiThreadBlocking(
+        CriteriaHelper.pollUiThread(
                 () -> {
+                    // NOTE: Address test flakiness by ensuring that the activity is ready for
+                    // fragment transactions. It otherwise may not be due to state changes which may
+                    // occur between activity creation and the fragment transaction attempt.
+                    final State state = getActivity().getLifecycle().getCurrentState();
+                    Criteria.checkThat(state.isAtLeast(State.RESUMED), Matchers.is(true));
                     mPreferenceFragment = preference;
                     getActivity()
                             .getSupportFragmentManager()

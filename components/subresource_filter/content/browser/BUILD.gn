@@ -71,17 +71,10 @@ static_library("browser") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (is_android) {
     sources += [
-      "ads_blocked_infobar.cc",
-      "ads_blocked_infobar.h",
-      "ads_blocked_infobar_delegate.cc",
-      "ads_blocked_infobar_delegate.h",
       "ads_blocked_message_delegate.cc",
       "ads_blocked_message_delegate.h",
     ]
     deps += [
-      "//components/infobars/android",
-      "//components/infobars/content",
-      "//components/infobars/core",
       "//components/messages/android",
       "//components/messages/android:feature_flags",
       "//components/resources:android_resources",

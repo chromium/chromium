@@ -17,12 +17,6 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
-namespace gpu {
-
-class GpuMemoryBufferManager;
-
-}  // namespace gpu
-
 namespace blink {
 
 class WebGraphicsContext3DProvider;
@@ -45,6 +39,10 @@ class PLATFORM_EXPORT SharedGpuContext {
   // May re-create context if context was lost
   static base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper();
+  // Returns an existing context and doesn't create one if none exists.
+  static base::WeakPtr<WebGraphicsContext3DProviderWrapper>
+  GetExistingContextProviderWrapper();
+
   static bool AllowSoftwareToAcceleratedCanvasUpgrade();
   static bool IsValidWithoutRestoring();
 
@@ -73,10 +71,6 @@ class PLATFORM_EXPORT SharedGpuContext {
   // to not interfere with the next test and when terminating web workers.
   static void Reset();
 
-  static gpu::GpuMemoryBufferManager* GetGpuMemoryBufferManager();
-  static void SetGpuMemoryBufferManagerForTesting(
-      gpu::GpuMemoryBufferManager* mgr);
-
  private:
   friend class WTF::ThreadSpecific<SharedGpuContext>;
 
@@ -96,10 +90,6 @@ class PLATFORM_EXPORT SharedGpuContext {
 
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_;
-
-  // RAW_PTR_EXCLUSION: #addr-of
-  RAW_PTR_EXCLUSION gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_ =
-      nullptr;
 };
 
 }  // blink

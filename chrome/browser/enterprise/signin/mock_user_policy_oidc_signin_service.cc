@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/signin/mock_user_policy_oidc_signin_service.h"
 
+#include <variant>
+
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 
@@ -13,7 +15,7 @@ MockUserPolicyOidcSigninService::MockUserPolicyOidcSigninService(
     Profile* profile,
     PrefService* local_state,
     DeviceManagementService* device_management_service,
-    absl::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
+    std::variant<UserCloudPolicyManager*, ProfileCloudPolicyManager*>
         policy_manager,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory)

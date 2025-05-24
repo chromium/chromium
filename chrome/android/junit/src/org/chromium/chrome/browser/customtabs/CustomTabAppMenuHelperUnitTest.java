@@ -13,17 +13,19 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 public class CustomTabAppMenuHelperUnitTest {
     private static final String PACKAGE_NAME = "org.foo.bar";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
     @Mock private Supplier<Profile> mProfileSupplier;
@@ -44,13 +47,12 @@ public class CustomTabAppMenuHelperUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Testing conditions other than version-specific/flag-controlled ones.
         CustomTabAppMenuHelper.setAppHistoryEnabledForTesting(true);
     }
 
-    private CustomTabHistoryIPHController maybeCreateHistoryIPHController() {
-        return CustomTabAppMenuHelper.maybeCreateHistoryIPHController(
+    private CustomTabHistoryIphController maybeCreateHistoryIphController() {
+        return CustomTabAppMenuHelper.maybeCreateHistoryIphController(
                 mAppMenuCoordinator,
                 mActivity,
                 mActivityTabProvider,
@@ -59,14 +61,14 @@ public class CustomTabAppMenuHelperUnitTest {
     }
 
     @Test
-    public void createIPH() {
+    public void createIph() {
         ChromeSharedPreferences.getInstance()
                 .writeBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true);
         when(mAppMenuCoordinator.getAppMenuHandler()).thenReturn(mAppMenuHandler);
-        assertNull(maybeCreateHistoryIPHController());
+        assertNull(maybeCreateHistoryIphController());
 
         when(mIntentDataProvider.getClientPackageNameIdentitySharing()).thenReturn(PACKAGE_NAME);
-        assertNotNull(maybeCreateHistoryIPHController());
+        assertNotNull(maybeCreateHistoryIphController());
     }
 
     @Test

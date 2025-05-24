@@ -33,7 +33,6 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
-#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -76,11 +75,6 @@ class CORE_EXPORT MutationRecord : public ScriptWrappable {
   virtual const AtomicString& attributeNamespace() { return g_null_atom; }
 
   virtual String oldValue() { return String(); }
-
-  probe::AsyncTaskContext* async_task_context() { return &async_task_context_; }
-
- private:
-  probe::AsyncTaskContext async_task_context_;
 };
 
 }  // namespace blink

@@ -4,13 +4,16 @@
 
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 
+#include <variant>
+
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -20,9 +23,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <initializer_list>
 
 #include "chrome/browser/ash/file_manager/volume_manager.h"
@@ -114,8 +116,7 @@ constexpr char kUrlAndSourceDestinationListSettings[] =
 })";
 
 // This string has a dummy field so that the service provider name is filled
-// in there and does not get set in the "service_provider" field.  This is
-// needed for the base::StringPrintf() in settings_value() to work correctly.
+// in there and does not overwrite the verification block.
 constexpr char kNoProviderSettings[] = R"({
   "dummy": "%s",
   %s
@@ -207,7 +208,7 @@ constexpr char kNoDlpDotCom[] = "https://no.dlp.com";
 constexpr char kNoMalwareDotCom[] = "https://no.malware.com";
 constexpr char kNoDlpOrMalwareDotCa[] = "https://no.dlp.or.malware.ca";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using VolumeInfo = SourceDestinationTestingHelper::VolumeInfo;
 
 struct SourceDestinationTestParam {
@@ -589,7 +590,7 @@ constexpr std::pair<VolumeInfo, VolumeInfo> kDlpNoMalwareVolumePair1 = {
     kMyFilesVolumeInfo, kRemovableVolumeInfo};
 constexpr std::pair<VolumeInfo, VolumeInfo> kDlpNoMalwareVolumePair2 = {
     kDriveVolumeInfo, kRemovableVolumeInfo};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // These URLs can't be added directly to the "expected" settings object, because
 // it's created statically and statically initializing GURLs is prohibited.
@@ -607,7 +608,7 @@ AnalysisSettings* OnlyDlpEnabledSettings() {
   return settings.get();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // These are only used for SourceDestination tests and are unused on non-ash
 // chrome.
 AnalysisSettings* OnlyMalwareEnabledSettings() {
@@ -627,7 +628,7 @@ AnalysisSettings* OnlyDlpAndMalwareEnabledSettings() {
   }());
   return settings.get();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 AnalysisSettings NormalSettingsWithTags(
     std::map<std::string, TagSettings> tags) {
@@ -711,7 +712,7 @@ AnalysisSettings* NoSettings() {
 class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
  public:
   GURL url() const { return GURL(GetParam().url); }
-  std::string settings_value() const {
+  std::string GetSettingsValue() const {
     const char* verification = is_cloud_ ? "" : R"(
       "verification": {
         "linux": ["key"],
@@ -720,9 +721,11 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
       },
     )";
 
-    return base::StringPrintfNonConstexpr(
-        GetParam().settings_value, is_cloud_ ? "google" : "local_user_agent",
-        verification);
+    std::string value = GetParam().settings_value;
+    base::ReplaceFirstSubstringAfterOffset(
+        &value, 0, "%s", is_cloud_ ? "google" : "local_user_agent");
+    base::ReplaceFirstSubstringAfterOffset(&value, 0, "%s", verification);
+    return value;
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
@@ -730,8 +733,8 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
       GURL regionalized_url =
           GURL(GetServiceProviderConfig()
                    ->at("google")
-                   .analysis->region_urls[static_cast<int>(data_region())]);
-      absl::get<CloudAnalysisSettings>(
+                   .analysis->region_urls[static_cast<size_t>(data_region())]);
+      std::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
           .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;
@@ -765,7 +768,7 @@ class AnalysisServiceSettingsTest : public testing::TestWithParam<TestParam> {
 };
 
 TEST_P(AnalysisServiceSettingsTest, CloudTest) {
-  auto settings = base::JSONReader::Read(settings_value(),
+  auto settings = base::JSONReader::Read(GetSettingsValue(),
                                          base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
 
@@ -813,7 +816,7 @@ TEST_P(AnalysisServiceSettingsTest, CloudTest) {
 
 TEST_P(AnalysisServiceSettingsTest, LocalTest) {
   is_cloud_ = false;
-  std::string json_string = settings_value();
+  std::string json_string = GetSettingsValue();
   auto settings =
       base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
@@ -941,7 +944,7 @@ INSTANTIATE_TEST_SUITE_P(
                   NormalDlpSettings(),
                   DataRegion::EUROPE)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class AnalysisServiceSourceDestinationSettingsTest
     : public testing::TestWithParam<SourceDestinationTestParam> {
@@ -969,9 +972,11 @@ class AnalysisServiceSourceDestinationSettingsTest
         GetParam().source_destination_pair.second);
   }
   content::BrowserContext* fs_context() const { return profile_; }
-  std::string settings_value() const {
-    return base::StringPrintfNonConstexpr(
-        GetParam().settings_value, is_cloud_ ? "google" : "local_user_agent");
+  std::string GetSettingsValue() const {
+    std::string value = GetParam().settings_value;
+    base::ReplaceFirstSubstringAfterOffset(
+        &value, 0, "%s", is_cloud_ ? "google" : "local_user_agent");
+    return value;
   }
   AnalysisSettings* expected_settings() const {
     // Set the GURL field dynamically to avoid static initialization issues.
@@ -980,7 +985,7 @@ class AnalysisServiceSourceDestinationSettingsTest
           GURL(GetServiceProviderConfig()
                    ->at("google")
                    .analysis->region_urls[static_cast<int>(data_region())]);
-      absl::get<CloudAnalysisSettings>(
+      std::get<CloudAnalysisSettings>(
           GetParam().expected_settings->cloud_or_local_settings)
           .analysis_url = regionalized_url;
       CloudAnalysisSettings cloud_settings;
@@ -1016,7 +1021,7 @@ class AnalysisServiceSourceDestinationSettingsTest
 };
 
 TEST_P(AnalysisServiceSourceDestinationSettingsTest, CloudTest) {
-  auto settings = base::JSONReader::Read(settings_value(),
+  auto settings = base::JSONReader::Read(GetSettingsValue(),
                                          base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
 
@@ -1064,7 +1069,7 @@ TEST_P(AnalysisServiceSourceDestinationSettingsTest, CloudTest) {
 
 TEST_P(AnalysisServiceSourceDestinationSettingsTest, LocalTest) {
   is_cloud_ = false;
-  auto settings = base::JSONReader::Read(settings_value(),
+  auto settings = base::JSONReader::Read(GetSettingsValue(),
                                          base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(settings.has_value());
 
@@ -1308,6 +1313,6 @@ INSTANTIATE_TEST_SUITE_P(
                                    NormalDlpSettings(),
                                    DataRegion::EUROPE)));
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace enterprise_connectors

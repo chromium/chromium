@@ -8,8 +8,8 @@ import android.net.Uri;
 import android.text.Spanned;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -19,6 +19,7 @@ import org.chromium.url.GURL;
 import java.util.Set;
 
 /** Encapsulates all data that is necessary for the URL bar to display its contents. */
+@NullMarked
 public class UrlBarData {
     /** The URL schemes that don't need to be displayed complete with path. */
     public static final Set<String> SCHEMES_TO_SPLIT =
@@ -45,21 +46,26 @@ public class UrlBarData {
                     UrlConstants.CHROME_SCHEME);
 
     /** Represents an empty URL bar. */
-    public static final UrlBarData EMPTY = forNonUrlText("");
+    public static final UrlBarData EMPTY = create(null, "", 0, 0, null);
 
     public static UrlBarData forUrl(GURL url) {
-        return forUrlAndText(url, url.isValid() ? url.getSpec() : "", null);
+        return forUrlAndText(url, null, null);
     }
 
-    public static UrlBarData forNonUrlText(String displayText) {
+    public static UrlBarData forNonUrlText(@Nullable CharSequence displayText) {
         return forNonUrlText(displayText, null);
     }
 
-    public static UrlBarData forNonUrlText(String displayText, String editingText) {
+    public static UrlBarData forNonUrlText(
+            @Nullable CharSequence displayText, @Nullable String editingText) {
+        if (TextUtils.isEmpty(displayText)) {
+            assert TextUtils.isEmpty(editingText) : "Attempt to create invalid UrlBarData.";
+            return EMPTY;
+        }
         return create(null, displayText, 0, 0, editingText);
     }
 
-    public static UrlBarData forUrlAndText(GURL url, String displayText) {
+    public static UrlBarData forUrlAndText(GURL url, @Nullable CharSequence displayText) {
         return forUrlAndText(url, displayText, null);
     }
 
@@ -68,12 +74,30 @@ public class UrlBarData {
         return !NativePage.isChromePageUrl(gurl, isOffTheRecord) && !UrlUtilities.isNtpUrl(gurl);
     }
 
+    /**
+     * Create a new instance of UrlBarData from supplied arguments.
+     *
+     * @param url the canonical URL of the page, or null, if empty UrlBarData is requested
+     * @param displayText the text that should be shown in the URL bar; this can be a {@link
+     *     Spanned} that contains formatting to highlight parts of the display text
+     * @param editingText the text that should replace the display text when editing the contents of
+     *     the URL bar, or null to use the {@link #displayText} when editing
+     * @returns new instance of UrlBarData, possibly UrlBarData.EMPTY if all supplied parameters are
+     *     null, empty, or invalid.
+     */
     public static UrlBarData forUrlAndText(
-            GURL url, CharSequence displayText, @Nullable String editingText) {
-        String displayTextStr = displayText == null ? "" : displayText.toString();
-        if (url == null || !url.isValid() || url.isEmpty()) {
-            return forNonUrlText(displayTextStr, editingText);
+            GURL url, @Nullable CharSequence displayText, @Nullable String editingText) {
+        if (GURL.isEmptyOrInvalid(url)) {
+            return forNonUrlText(displayText, editingText);
         }
+
+        // A valid URL should never be paired with an empty displayText; this likely represents an
+        // error and a security risk.
+        if (TextUtils.isEmpty(displayText)) {
+            displayText = url.getSpec();
+        }
+
+        String displayTextStr = displayText == null ? "" : displayText.toString();
 
         // The displayText may come with scheme stripped. In these cases, attempting to extract
         // scheme (e.g. via Uri.parse()) may return
@@ -117,7 +141,7 @@ public class UrlBarData {
 
         // If the '/' is the last character and the beginning of the path, then just drop
         // the path entirely.
-        if (!TextUtils.isEmpty(displayText) && pathOffset == displayTextStr.length() - 1) {
+        if (pathOffset == displayText.length() - 1) {
             return create(url, displayText.subSequence(0, pathOffset), 0, pathOffset, editingText);
         }
 

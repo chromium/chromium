@@ -4,8 +4,12 @@
 
 package org.chromium.chrome.browser.ui.messages.snackbar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 
 import java.util.Deque;
@@ -13,9 +17,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 
 /** A data structure that holds all the {@link Snackbar}s managed by {@link SnackbarManager}. */
+@NullMarked
 class SnackbarCollection {
-    private Deque<Snackbar> mSnackbars = new LinkedList<>();
-    private Deque<Snackbar> mPersistentSnackbars = new LinkedList<>();
+    private final Deque<Snackbar> mSnackbars = new LinkedList<>();
+    private final Deque<Snackbar> mPersistentSnackbars = new LinkedList<>();
 
     /**
      * Adds a new snackbar to the collection. If the new snackbar is of
@@ -143,13 +148,13 @@ class SnackbarCollection {
             if (!objectsAreEqual(snackbar.getActionData(), data)) continue;
 
             iter.remove();
-            controller.onDismissNoAction(snackbar.getActionData());
+            controller.onDismissNoAction(assumeNonNull(snackbar.getActionData()));
             snackbarRemoved = true;
         }
         return snackbarRemoved;
     }
 
-    private static boolean objectsAreEqual(Object a, Object b) {
+    private static boolean objectsAreEqual(@Nullable Object a, @Nullable Object b) {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
         return a.equals(b);

@@ -33,7 +33,7 @@ LOGGER = logging.getLogger(__name__)
 # https://source.chromium.org/chromium/infra/infra/+/main:go/src/go.chromium.org/luci/resultdb/proto/v1/test_result.proto;drc=ca12b9f52b27f064b0fa47c39baa3b011ffa5790;l=151-174
 VALID_STATUSES = {"PASS", "FAIL", "CRASH", "ABORT", "SKIP"}
 
-EXTENDED_PROPERTIES_KEY = 'extended_properties'
+EXTENDED_PROPERTIES_KEY = 'extendedProperties'
 
 def format_exception_stacktrace(e: Exception):
   exception_trace = traceback.format_exception(type(e), e, e.__traceback__)
@@ -108,15 +108,19 @@ def _compose_test_result(test_id,
       # serializable in order for the eventual json.dumps to succeed
       message = base64.b64encode(test_log.encode('utf-8')).decode('utf-8')
     test_result['summaryHtml'] = '<text-artifact artifact-id="Test Log" />'
-    if constants.CRASH_MESSAGE in test_log:
-      test_result['failureReason'] = {
-          'primaryErrorMessage': constants.CRASH_MESSAGE
-      }
     test_result['artifacts'].update({
         'Test Log': {
             'contents': message
         },
     })
+    # assign primary error message if the host app crashed
+    if constants.CRASH_MESSAGE in test_log:
+      primary_error_message = constants.CRASH_MESSAGE
+      if constants.ASAN_ERROR in test_log:
+        primary_error_message += f' {constants.ASAN_ERROR}'
+      test_result['failureReason'] = {
+          'primaryErrorMessage': primary_error_message
+      }
   if not test_result['artifacts']:
     test_result.pop('artifacts')
 
@@ -125,6 +129,12 @@ def _compose_test_result(test_id,
 
   return test_result
 
+
+def _to_camel_case(s):
+  """Converts the string s from snake_case to lowerCamelCase."""
+
+  elems = s.split('_')
+  return elems[0] + ''.join(elem.capitalize() for elem in elems[1:])
 
 
 class ResultSinkClient(object):
@@ -241,20 +251,25 @@ class ResultSinkClient(object):
     invocation = {EXTENDED_PROPERTIES_KEY: {}}
     paths = []
 
+    # Sink server by default decodes payload with protojson, i.e. codecJSONV2
+    # in https://source.chromium.org/search?q=f:server.go%20func:requestCodec
+    # which requires loweCamelCase names in the json request.
+    # For the value for update mask, see "JSON Encoding of Field Masks" in
+    # https://protobuf.dev/reference/protobuf/google.protobuf/#field-masks
     if exception_recorder.size() > 0:
       invocation[EXTENDED_PROPERTIES_KEY][
           exception_recorder.EXCEPTION_OCCURRENCES_KEY] = \
             exception_recorder.to_dict()
       paths.append('%s.%s' % (EXTENDED_PROPERTIES_KEY,
-                              exception_recorder.EXCEPTION_OCCURRENCES_KEY))
+                              _to_camel_case(exception_recorder.EXCEPTION_OCCURRENCES_KEY)))
 
     if measures.size() > 0:
       invocation[EXTENDED_PROPERTIES_KEY][measures.TEST_SCRIPT_METRICS_KEY] = \
         measures.to_dict()
       paths.append('%s.%s' %
-                   (EXTENDED_PROPERTIES_KEY, measures.TEST_SCRIPT_METRICS_KEY))
+                   (EXTENDED_PROPERTIES_KEY, _to_camel_case(measures.TEST_SCRIPT_METRICS_KEY)))
 
-    req = {'invocation': invocation, 'update_mask': {'paths': paths}}
+    req = {'invocation': invocation, 'updateMask': ','.join(paths)}
 
     inv_data = json.dumps(req, sort_keys=True)
 
@@ -269,3 +284,5 @@ class ResultSinkClient(object):
         data=inv_data,
     )
     res.raise_for_status()
+
+

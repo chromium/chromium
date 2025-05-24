@@ -80,7 +80,7 @@ class StringOrdinal {
   // time.
   bool IsValid() const;
 
-  // Returns true iff |*this| == |other| or |*this| and |other|
+  // Returns true iff `*this` == `other` or `*this` and `other`
   // are both invalid.
   bool EqualsOrBothInvalid(const StringOrdinal& other) const;
 
@@ -93,25 +93,25 @@ class StringOrdinal {
 
   // Order-related functions.
 
-  // Returns true iff |*this| < |other|.
+  // Returns true iff `*this` < `other`.
   bool LessThan(const StringOrdinal& other) const;
 
-  // Returns true iff |*this| > |other|.
+  // Returns true iff `*this` > `other`.
   bool GreaterThan(const StringOrdinal& other) const;
 
-  // Returns true iff |*this| == |other| (i.e. |*this| < |other| and
-  // |other| < |*this| are both false).
+  // Returns true iff `*this` == `other` (i.e. `*this` < `other` and
+  // `other` < `*this` are both false).
   bool Equals(const StringOrdinal& other) const;
 
-  // Given |*this| != |other|, returns a StringOrdinal x such that
-  // min(|*this|, |other|) < x < max(|*this|, |other|). It is an error
-  // to call this function when |*this| == |other|.
+  // Given `*this` != `other`, returns a StringOrdinal x such that
+  // min(`*this`, `other`) < x < max(`*this`, `other`). It is an error
+  // to call this function when `*this` == `other`.
   StringOrdinal CreateBetween(const StringOrdinal& other) const;
 
-  // Returns a StringOrdinal |x| such that |x| < |*this|.
+  // Returns a StringOrdinal `x` such that `x` < `*this`.
   StringOrdinal CreateBefore() const;
 
-  // Returns a StringOrdinal |x| such that |*this| < |x|.
+  // Returns a StringOrdinal `x` such that `*this` < `x`.
   StringOrdinal CreateAfter() const;
 
   // Returns the string of bytes representing the StringOrdinal.  It is
@@ -160,25 +160,25 @@ class StringOrdinal {
   // Returns the digit value at position i, padding with 0 if required.
   static int GetDigitValue(const std::string& bytes, size_t i);
 
-  // Adds the given value to |bytes| at position i, carrying when
+  // Adds the given value to `bytes` at position i, carrying when
   // necessary.  Returns the left-most carry.
   static int AddDigitValue(std::string* bytes, size_t i, int digit_value);
 
-  // Returns the proper length |bytes| should be resized to, i.e. the
-  // smallest length such that |bytes| is still greater than
-  // |lower_bound| and is still valid.  |bytes| should be greater than
-  // |lower_bound|.
+  // Returns the proper length `bytes` should be resized to, i.e. the
+  // smallest length such that `bytes` is still greater than
+  // `lower_bound` and is still valid.  `bytes` should be greater than
+  // `lower_bound`.
   static size_t GetProperLength(const std::string& lower_bound,
                                 const std::string& bytes);
 
-  // Compute the midpoint StringOrdinal byte string that is between |start|
-  // and |end|.
+  // Compute the midpoint StringOrdinal byte string that is between `start`
+  // and `end`.
   static std::string ComputeMidpoint(const std::string& start,
                                      const std::string& end);
 
-  // Create a StringOrdinal that is lexigraphically greater than |start| and
-  // lexigraphically less than |end|. The returned StringOrdinal will be roughly
-  // between |start| and |end|.
+  // Create a StringOrdinal that is lexicographically greater than `start` and
+  // lexicographically less than `end`. The returned StringOrdinal will be
+  // roughly between `start` and `end`.
   static StringOrdinal CreateOrdinalBetween(const StringOrdinal& start,
                                             const StringOrdinal& end);
 

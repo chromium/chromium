@@ -198,8 +198,6 @@ void SnapGroup::ShowDivider() {
   // windows is smaller than `kSplitviewDividerShortSideLength`. This adjustment
   // is necessary when restoring a snap group on Overview exit for example, as
   // the gap might have been created.
-  // TODO(michelefan): See if there are other conditions where we need to
-  // account for the divider.
   const bool account_for_divider_width =
       edge_gap < kSplitviewDividerShortSideLength;
   snap_group_divider_.SetDividerPosition(
@@ -213,35 +211,6 @@ void SnapGroup::HideDivider() {
 
 bool SnapGroup::IsSnapGroupLayoutHorizontal() const {
   return IsLayoutHorizontal(GetRootWindow());
-}
-
-void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
-  // `ToplevelWindowEventHandler` continues to process drag events in Overview
-  // mode, potentially leading to group removal and crashes in
-  // `OverviewGrid::RemoveItem()`. To prevent groups from being removed in
-  // Overview (forwarded from `ToplevelWindowEventHandler::HandleDrag()`) and
-  // subsequent crashes, early return here.
-  if (IsInOverviewSession()) {
-    return;
-  }
-
-  CHECK(event->type() == ui::EventType::kMouseDragged ||
-        event->type() == ui::EventType::kTouchMoved ||
-        event->type() == ui::EventType::kGestureScrollUpdate);
-
-  aura::Window* target = static_cast<aura::Window*>(event->target());
-  const int client_component =
-      window_util::GetNonClientComponent(target, event->location());
-  if (client_component != HTCAPTION && client_component != HTCLIENT) {
-    return;
-  }
-
-  // When the window is dragged via the caption bar to unsnap, we early break
-  // the group to avoid re-stacking the divider on top of the dragged window.
-  if (window1_->Contains(target) || window2_->Contains(target)) {
-    SnapGroupController::Get()->RemoveSnapGroup(
-        this, SnapGroupExitPoint::kDragWindowOut);
-  }
 }
 
 aura::Window* SnapGroup::GetTopMostWindowInGroup() const {
@@ -268,6 +237,10 @@ aura::Window* SnapGroup::GetTopMostWindowInGroup() const {
 }
 
 void SnapGroup::RefreshSnapGroup() {
+  if (is_shutting_down_) {
+    return;
+  }
+
   // `RefreshSnapGroup()` may be called during a work area change triggered by
   // other pre-window state type change events, during which the windows may no
   // longer be snapped. No-op until we receive the state type change, upon which
@@ -294,6 +267,10 @@ void SnapGroup::RefreshSnapGroup() {
 }
 
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
+  if (is_shutting_down_) {
+    return;
+  }
+
   DCHECK(window == window1_ || window == window2_);
   // `this` will be shut down and removed from the controller immediately, and
   // then destroyed asynchronously soon.
@@ -354,6 +331,10 @@ void SnapGroup::OnWindowParentChanged(aura::Window* window,
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
                                            chromeos::WindowStateType old_type) {
+  if (is_shutting_down_) {
+    return;
+  }
+
   if (swapping_windows_) {
     return;
   }
@@ -506,8 +487,9 @@ SnapPosition SnapGroup::GetPositionOfSnappedWindow(
 
 void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
                                         uint32_t metrics) {
-  if (window1_->GetRootWindow() !=
-      Shell::GetRootWindowForDisplayId(display.id())) {
+  aura::Window* display_root = Shell::GetRootWindowForDisplayId(display.id());
+  if (window1_->GetRootWindow() != display_root ||
+      window2_->GetRootWindow() != display_root) {
     return;
   }
 

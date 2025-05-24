@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/tab_list_from_android_view_controller_delegate.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
 class BringAndroidTabsToIOSService;
 class FaviconLoader;

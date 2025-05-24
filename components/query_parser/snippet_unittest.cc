@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/query_parser/snippet.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -233,19 +230,20 @@ TEST(Snippets, ExtractMatchPositions) {
   struct TestData {
     const std::string offsets_string;
     const size_t expected_match_count;
-    const size_t expected_matches[10];
-  } data[] = {
-    { "0 0 1 2 0 0 4 1 0 0 1 5",            1,     { 1, 6 } },
-    { "0 0 1 4 0 0 2 1",                    1,     { 1, 5 } },
-    { "0 0 4 1 0 0 2 1",                    2,     { 2, 3, 4, 5 } },
-    { "0 0 0 1",                            1,     { 0, 1 } },
-    { "0 0 0 1 0 0 0 2",                    1,     { 0, 2 } },
-    { "0 0 1 1 0 0 1 2",                    1,     { 1, 3 } },
-    { "0 0 1 2 0 0 4 3 0 0 3 1",            1,     { 1, 7 } },
-    { "0 0 1 4 0 0 2 5",                    1,     { 1, 7 } },
-    { "0 0 1 2 0 0 1 1",                    1,     { 1, 3 } },
-    { "0 0 1 1 0 0 5 2 0 0 10 1 0 0 3 10",  2,     { 1, 2, 3, 13 } },
+    const std::array<size_t, 10> expected_matches;
   };
+  auto data = std::to_array<TestData>({
+      {"0 0 1 2 0 0 4 1 0 0 1 5", 1, {1, 6}},
+      {"0 0 1 4 0 0 2 1", 1, {1, 5}},
+      {"0 0 4 1 0 0 2 1", 2, {2, 3, 4, 5}},
+      {"0 0 0 1", 1, {0, 1}},
+      {"0 0 0 1 0 0 0 2", 1, {0, 2}},
+      {"0 0 1 1 0 0 1 2", 1, {1, 3}},
+      {"0 0 1 2 0 0 4 3 0 0 3 1", 1, {1, 7}},
+      {"0 0 1 4 0 0 2 5", 1, {1, 7}},
+      {"0 0 1 2 0 0 1 1", 1, {1, 3}},
+      {"0 0 1 1 0 0 5 2 0 0 10 1 0 0 3 10", 2, {1, 2, 3, 13}},
+  });
   for (size_t i = 0; i < std::size(data); ++i) {
     Snippet::MatchPositions matches;
     Snippet::ExtractMatchPositions(data[i].offsets_string, "0", &matches);

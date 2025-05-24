@@ -14,10 +14,6 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/metadata/view_factory.h"
 
-namespace ash::input_method {
-struct TextFieldContextualInfo;
-}  // namespace ash::input_method
-
 namespace ui {
 namespace ime {
 
@@ -33,7 +29,7 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   // The object can be monitored by the observer.
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     // The function is called when a candidate is committed.
     virtual void OnCandidateCommitted(int index) = 0;
   };
@@ -95,11 +91,6 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
 
   void CandidateViewPressed(int index);
 
-  // Only used when ash::features::kImeKoreanModeSwitchDebug flag is enabled.
-  // TODO(b/302460634): Remove when no longer needed.
-  void OnTextFieldContextualInfoAvailable(
-      const ash::input_method::TextFieldContextualInfo& info);
-
   // The candidate window data model.
   ui::CandidateWindow candidate_window_;
 
@@ -122,10 +113,6 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   gfx::Size previous_shortcut_column_size_;
   gfx::Size previous_candidate_column_size_;
   gfx::Size previous_annotation_column_size_;
-
-  // Only used when ash::features::kImeKoreanModeSwitchDebug flag is enabled.
-  // TODO(b/302460634): Remove when no longer needed.
-  gfx::Rect pending_anchor_rect_;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

@@ -12,6 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/layout/fill_layout.h"
 
 using base::UserMetricsAction;
@@ -36,7 +37,7 @@ void ImportLockDialogView::Show(gfx::NativeWindow parent,
   views::DialogDelegate::CreateDialogWidget(
       new ImportLockDialogView(std::move(callback), importer_lock_title_id,
                                importer_lock_text_id),
-      nullptr, nullptr)
+      gfx::NativeWindow(), gfx::NativeView())
       ->Show();
   base::RecordAction(UserMetricsAction("ImportLockDialogView_Shown"));
 }
@@ -76,7 +77,7 @@ ImportLockDialogView::ImportLockDialogView(
           views::DialogContentType::kText, views::DialogContentType::kText)));
   description_label->SetMultiLine(true);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  AddChildView(description_label);
+  AddChildViewRaw(description_label);
 }
 
 ImportLockDialogView::~ImportLockDialogView() = default;

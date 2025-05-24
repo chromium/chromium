@@ -1,7 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
@@ -149,8 +149,7 @@ export class PolicyTestRowElement extends CustomElement {
         assertNotReached();
     }
     if (previousValueType === this.inputType_) {
-      this.getRequiredElement<HTMLInputElement>('.value')!.value =
-          previousValue;
+      this.getRequiredElement<HTMLInputElement>('.value').value = previousValue;
     }
   }
 

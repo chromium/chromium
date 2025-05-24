@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -22,7 +18,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_log_task_runner.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/common/chrome_constants.h"
@@ -34,6 +29,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -47,7 +44,7 @@ namespace {
 
 const char kExtensionId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
-const char* const kUrlApiCalls[] = {
+constexpr auto kUrlApiCalls = std::to_array<const char*>({
     "HTMLButtonElement.formAction", "HTMLEmbedElement.src",
     "HTMLFormElement.action",       "HTMLFrameElement.src",
     "HTMLHtmlElement.manifest",     "HTMLIFrameElement.src",
@@ -58,7 +55,8 @@ const char* const kUrlApiCalls[] = {
     "HTMLModElement.cite",          "HTMLObjectElement.data",
     "HTMLQuoteElement.cite",        "HTMLScriptElement.src",
     "HTMLSourceElement.src",        "HTMLTrackElement.src",
-    "HTMLVideoElement.poster"};
+    "HTMLVideoElement.poster",
+});
 
 }  // namespace
 
@@ -96,9 +94,10 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   }
   void CancelSuspendExtension(const std::string& extension_id) override {}
   void SetDeveloperMode(bool current_developer_mode) override {}
+  void SetUserScriptsAllowed(const std::string& extension_id,
+                             bool allowed) override {}
   void SetSessionInfo(version_info::Channel channel,
-                      mojom::FeatureSessionType session,
-                      bool is_lock_screen_context) override {}
+                      mojom::FeatureSessionType session) override {}
   void SetSystemFont(const std::string& font_family,
                      const std::string& font_size) override {}
   void SetWebViewPartitionID(const std::string& partition_id) override {}
@@ -157,9 +156,8 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
     }
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableExtensionActivityLogTesting);
-    extension_service_ = static_cast<TestExtensionSystem*>(
-        ExtensionSystem::Get(profile()))->CreateExtensionService
-            (&command_line, base::FilePath(), false);
+    static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()))
+        ->CreateExtensionService(&command_line, base::FilePath(), false);
 
     RendererStartupHelperFactory::GetForBrowserContext(profile())
         ->OnRenderProcessHostCreated(
@@ -291,8 +289,6 @@ class ActivityLogTest : public ChromeRenderViewHostTestHarness {
       ASSERT_EQ(DomActionType::SETTER, dom_verb);
     }
   }
-
-  raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
 };
 
 TEST_F(ActivityLogTest, Construct) {
@@ -330,7 +326,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
                            .Set("version", "1.0.0")
                            .Set("manifest_version", 2))
           .Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(extension);
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
   EXPECT_TRUE(activity_log->ShouldLog(extension->id()));
   ASSERT_TRUE(GetDatabaseEnabled());
@@ -494,8 +490,8 @@ TEST_F(ActivityLogTest, DeleteActivitiesByExtension) {
 
 class ActivityLogTestWithoutSwitch : public ActivityLogTest {
  public:
-  ActivityLogTestWithoutSwitch() {}
-  ~ActivityLogTestWithoutSwitch() override {}
+  ActivityLogTestWithoutSwitch() = default;
+  ~ActivityLogTestWithoutSwitch() override = default;
   bool enable_activity_logging_switch() const override { return false; }
 };
 
@@ -505,14 +501,14 @@ TEST_F(ActivityLogTestWithoutSwitch, TestShouldLog) {
   ActivityLog* activity_log = ActivityLog::GetInstance(profile());
   scoped_refptr<const Extension> empty_extension =
       ExtensionBuilder("Test").Build();
-  extension_service_->AddExtension(empty_extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(empty_extension);
   // Since the command line switch for logging isn't enabled and there's no
   // watchdog app active, the activity log shouldn't log anything.
   EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id()));
   const char kAllowlistedExtensionId[] = "eplckmlabaanikjjcgnigddmagoglhmp";
   scoped_refptr<const Extension> activity_log_extension =
       ExtensionBuilder("Test").SetID(kAllowlistedExtensionId).Build();
-  extension_service_->AddExtension(activity_log_extension.get());
+  ExtensionRegistrar::Get(profile())->AddExtension(activity_log_extension);
   // Loading a watchdog app means the activity log should log other extension
   // activities...
   EXPECT_TRUE(activity_log->ShouldLog(empty_extension->id()));
@@ -521,8 +517,8 @@ TEST_F(ActivityLogTestWithoutSwitch, TestShouldLog) {
   // ... or activities from the browser/extensions page, represented by an empty
   // extension ID.
   EXPECT_FALSE(activity_log->ShouldLog(std::string()));
-  extension_service_->DisableExtension(activity_log_extension->id(),
-                                       disable_reason::DISABLE_USER_ACTION);
+  ExtensionRegistrar::Get(profile())->DisableExtension(
+      activity_log_extension->id(), {disable_reason::DISABLE_USER_ACTION});
   // Disabling the watchdog app means that we're back to never logging anything.
   EXPECT_FALSE(activity_log->ShouldLog(empty_extension->id()));
 }

@@ -51,6 +51,10 @@
 // the omnibox to the top of the screen.
 - (CGFloat)pinnedOffsetY;
 
+// Sets the background image of the NTP. Removes the current background image
+// if nil is passed.
+- (void)setBackgroundImage:(UIImage*)backgroundImage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_CONSUMER_H_

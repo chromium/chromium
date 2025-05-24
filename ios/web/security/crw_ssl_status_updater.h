@@ -15,7 +15,7 @@
 namespace web {
 class NavigationItem;
 class NavigationManagerImpl;
-}
+}  // namespace web
 
 @protocol CRWSSLStatusUpdaterDataSource;
 @protocol CRWSSLStatusUpdaterDelegate;

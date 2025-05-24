@@ -67,7 +67,7 @@ class RasterShapeIntervals {
   std::unique_ptr<RasterShapeIntervals> ComputeShapeMarginIntervals(
       int shape_margin) const;
 
-  void BuildBoundsPath(Path&) const;
+  Path BuildBoundsPath() const;
 
  private:
   int size() const { return intervals_.size(); }
@@ -97,9 +97,12 @@ class RasterShape final : public Shape {
   LineSegment GetExcludedInterval(LayoutUnit logical_top,
                                   LayoutUnit logical_height) const override;
   void BuildDisplayPaths(DisplayPaths& paths) const override {
-    intervals_->BuildBoundsPath(paths.shape);
+    DCHECK(paths.shape.IsEmpty());
+    DCHECK(paths.margin_shape.IsEmpty());
+
+    paths.shape = intervals_->BuildBoundsPath();
     if (ShapeMargin())
-      MarginIntervals().BuildBoundsPath(paths.margin_shape);
+      paths.margin_shape = MarginIntervals().BuildBoundsPath();
   }
 
  private:

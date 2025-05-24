@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf;
 
@@ -41,7 +18,7 @@ import com.google.protobuf.FieldPresenceTestProto.TestAllTypes;
 import com.google.protobuf.FieldPresenceTestProto.TestOptionalFieldsOnly;
 import com.google.protobuf.FieldPresenceTestProto.TestRepeatedFieldsOnly;
 import com.google.protobuf.testing.proto.TestProto3Optional;
-import protobuf_unittest.UnittestProto;
+import proto2_unittest.UnittestProto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -125,6 +102,7 @@ public class FieldPresenceTest {
     assertThat(TestProto3Optional.getDefaultInstance().hasOptionalBool()).isFalse();
     assertThat(TestProto3Optional.getDefaultInstance().hasOptionalString()).isFalse();
     assertThat(TestProto3Optional.getDefaultInstance().hasOptionalBytes()).isFalse();
+    assertThat(TestProto3Optional.getDefaultInstance().hasOptionalNestedEnum()).isFalse();
 
     TestProto3Optional.Builder builder = TestProto3Optional.newBuilder().setOptionalInt32(0);
     assertThat(builder.hasOptionalInt32()).isTrue();
@@ -146,6 +124,67 @@ public class FieldPresenceTest {
     TestProto3Optional proto = TestProto3Optional.parseFrom(builder.build().toByteArray());
     assertThat(proto.hasOptionalInt32()).isTrue();
     assertThat(proto.toBuilder().hasOptionalInt32()).isTrue();
+  }
+
+  @Test
+  public void testMergeFrom_unknownExplicitOpenEnum() throws Exception {
+    TestProto3Optional.Builder builder =
+        TestProto3Optional.newBuilder().setOptionalNestedEnumValue(100);
+
+    TestProto3Optional.Builder mergedBuilder =
+        TestProto3Optional.newBuilder()
+            .setOptionalNestedEnum(TestProto3Optional.NestedEnum.FOO)
+            .mergeFrom(builder.build());
+
+    assertThat(builder.hasOptionalNestedEnum()).isTrue();
+    assertThat(builder.build().getOptionalNestedEnumValue()).isEqualTo(100);
+    assertThat(mergedBuilder.hasOptionalNestedEnum()).isTrue();
+    assertThat(mergedBuilder.getOptionalNestedEnumValue()).isEqualTo(100);
+  }
+
+  @Test
+  public void testParseFrom_unknownExplicitOpenEnum() throws Exception {
+    TestProto3Optional.Builder builder =
+        TestProto3Optional.newBuilder().setOptionalNestedEnumValue(100);
+
+    TestProto3Optional parsedProto =
+        TestProto3Optional.parseFrom(
+            builder.build().toByteArray(), ExtensionRegistry.getEmptyRegistry());
+
+    assertThat(parsedProto.hasOptionalNestedEnum()).isTrue();
+    assertThat(parsedProto.getOptionalNestedEnumValue()).isEqualTo(100);
+  }
+
+  @Test
+  public void testMergeFrom_defaultExplicitOpenEnum() throws Exception {
+    TestProto3Optional.Builder builder =
+        TestProto3Optional.newBuilder().setOptionalNestedEnumValue(0);
+
+    TestProto3Optional.Builder otherBuilder =
+        TestProto3Optional.newBuilder()
+            .setOptionalNestedEnum(TestProto3Optional.NestedEnum.FOO)
+            .mergeFrom(builder.build());
+
+    assertThat(builder.hasOptionalNestedEnum()).isTrue();
+    assertThat(builder.build().getOptionalNestedEnum())
+        .isEqualTo(TestProto3Optional.NestedEnum.UNSPECIFIED);
+    assertThat(otherBuilder.hasOptionalNestedEnum()).isTrue();
+    assertThat(otherBuilder.getOptionalNestedEnum())
+        .isEqualTo(TestProto3Optional.NestedEnum.UNSPECIFIED);
+  }
+
+  @Test
+  public void testParseFrom_defaultExplicitOpenEnum() throws Exception {
+    TestProto3Optional.Builder builder =
+        TestProto3Optional.newBuilder().setOptionalNestedEnumValue(0);
+
+    TestProto3Optional parsedProto =
+        TestProto3Optional.parseFrom(
+            builder.build().toByteArray(), ExtensionRegistry.getEmptyRegistry());
+
+    assertThat(parsedProto.hasOptionalNestedEnum()).isTrue();
+    assertThat(parsedProto.getOptionalNestedEnum())
+        .isEqualTo(TestProto3Optional.NestedEnum.UNSPECIFIED);
   }
 
   private static void assertProto3OptionalReflection(String name) throws Exception {
@@ -298,6 +337,28 @@ public class FieldPresenceTest {
   }
 
   @Test
+  public void testFieldPresence_mergeEmptyBytesValue() {
+    TestAllTypes mergeFrom =
+        TestAllTypes.newBuilder().setOptionalBytes(ByteString.copyFrom(new byte[0])).build();
+    TestAllTypes mergeTo =
+        TestAllTypes.newBuilder().setOptionalBytes(ByteString.copyFromUtf8("A")).build();
+
+    // An empty ByteString should be treated as "unset" and not override the value in mergeTo.
+    assertThat(mergeTo.toBuilder().mergeFrom(mergeFrom).build()).isEqualTo(mergeTo);
+  }
+
+  @Test
+  public void testFieldPresence_mergeNegativeZeroValue() {
+    TestAllTypes mergeFrom =
+        TestAllTypes.newBuilder().setOptionalFloat(-0.0F).setOptionalDouble(-0.0).build();
+    TestAllTypes mergeTo =
+        TestAllTypes.newBuilder().setOptionalFloat(42.23F).setOptionalDouble(23.42).build();
+
+    // Negative zero should be treated as "set" and override the value in mergeTo.
+    assertThat(mergeTo.toBuilder().mergeFrom(mergeFrom).build()).isEqualTo(mergeFrom);
+  }
+
+  @Test
   public void testFieldPresenceByReflection() {
     Descriptor descriptor = TestAllTypes.getDescriptor();
     FieldDescriptor optionalInt32Field = descriptor.findFieldByName("optional_int32");
@@ -379,8 +440,7 @@ public class FieldPresenceTest {
 
     // Field set to default value is seen as not present.
     message =
-        message
-            .toBuilder()
+        message.toBuilder()
             .setField(optionalInt32Field, 0)
             .setField(optionalStringField, "")
             .setField(optionalBytesField, ByteString.EMPTY)
@@ -500,5 +560,4 @@ public class FieldPresenceTest {
     assertThat(builder.isInitialized()).isTrue();
     assertThat(builder.buildPartial().isInitialized()).isTrue();
   }
-
 }

@@ -29,10 +29,11 @@ class OverlayHandler : public DevToolsDomainHandler, public Overlay::Backend {
   void SetRenderer(int process_host_id,
                    RenderFrameHostImpl* frame_host) override;
 
-  Response SetInspectMode(
-      const String& in_mode,
-      Maybe<protocol::Overlay::HighlightConfig> in_highlightConfig) override;
-  Response SetPausedInDebuggerMessage(Maybe<String> in_message) override;
+  Response SetInspectMode(const String& in_mode,
+                          std::unique_ptr<protocol::Overlay::HighlightConfig>
+                              in_highlightConfig) override;
+  Response SetPausedInDebuggerMessage(
+      std::optional<String> in_message) override;
   Response Disable() override;
 
  private:

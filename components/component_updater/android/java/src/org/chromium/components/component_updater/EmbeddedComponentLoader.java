@@ -19,6 +19,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +30,7 @@ import java.util.Set;
  * ComponentLoader that is used in embedded WebViews/WebLayers. It implements a ServiceConnection to
  * connect to the provider service to fetch components files.
  */
+@NullMarked
 public class EmbeddedComponentLoader implements ServiceConnection {
     private static final String TAG = "EmbedComponentLoader";
 

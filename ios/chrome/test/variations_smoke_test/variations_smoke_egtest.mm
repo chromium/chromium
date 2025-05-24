@@ -36,7 +36,7 @@ static const NSTimeInterval kWaitForFetchTimeout = 30.0;
       conditionWithName:@"Waiting for variations seed fetch."
                   block:^BOOL {
                     BOOL variationsSeedExists = [VariationsSmokeTestAppInterface
-                        variationsSeedInLocalStatePrefs];
+                        isVariationsSeedStored];
                     BOOL expectedLastFetchTimeCondition =
                         !verifyFetchedInCurrentLaunch ||
                         [VariationsSmokeTestAppInterface

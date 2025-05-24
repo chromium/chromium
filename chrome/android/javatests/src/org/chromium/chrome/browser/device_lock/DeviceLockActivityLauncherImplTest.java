@@ -46,7 +46,7 @@ public class DeviceLockActivityLauncherImplTest {
                         true,
                         mWindowAndroid,
                         mIntentCallback,
-                        DeviceLockActivityLauncher.Source.SYNC_CONSENT);
+                        DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);
         verify(mWindowAndroid, times(1))
                 .showIntent(any(Intent.class), eq(mIntentCallback), isNull());
     }
@@ -71,6 +71,6 @@ public class DeviceLockActivityLauncherImplTest {
                         true,
                         mWindowAndroid,
                         mIntentCallback,
-                        DeviceLockActivityLauncher.Source.SYNC_CONSENT);
+                        DeviceLockActivityLauncher.Source.ACCOUNT_PICKER);
     }
 }

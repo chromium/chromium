@@ -14,4 +14,23 @@ public class TabGroupUtil {
     public static String getNumberOfTabsString(int numberOfTabs) {
         return numberOfTabs != 1 ? String.format("%d tabs", numberOfTabs) : "1 tab";
     }
+
+    /**
+     * Returns the message shown on the snackbar when tabs get grouped, e.g. "3 tabs grouped".
+     *
+     * <p>English-specific, for testing.
+     */
+    public static String getUndoGroupTabsSnackbarMessageString(int numberOfTabs) {
+        return getNumberOfTabsString(numberOfTabs) + " grouped";
+    }
+
+    /**
+     * Returns the message shown on the snackbar when tab groups get closed (hidden). This assumes
+     * tab group sync is enabled.
+     *
+     * <p>English-specific, for testing.
+     */
+    public static String getUndoCloseGroupSnackbarMessageString(String groupTitle) {
+        return groupTitle + " tab group closed and saved";
+    }
 }

@@ -59,7 +59,7 @@ public class ProxyChangeListenerTest {
             }
         }
 
-        private List<RegisteredReceiver> mReceivers = new ArrayList<>();
+        private final List<RegisteredReceiver> mReceivers = new ArrayList<>();
 
         FakeContext() {
             super(
@@ -181,8 +181,8 @@ public class ProxyChangeListenerTest {
         mListener.stop();
         Assert.assertEquals(
                 "All receivers should have been unregistered",
-                mAppContext.getReceivers().size(),
-                0);
+                0,
+                mAppContext.getReceivers().size());
     }
 
     @Test

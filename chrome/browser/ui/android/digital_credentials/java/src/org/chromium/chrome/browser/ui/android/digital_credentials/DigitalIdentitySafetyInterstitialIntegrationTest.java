@@ -34,9 +34,9 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.digital_credentials.DigitalIdentityInterstitialClosedReason;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.webid.DigitalIdentityProvider;
+import org.chromium.chrome.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content.browser.webid.IdentityCredentialsDelegate;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -62,10 +62,10 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
      * ModalDialogProperties.MESSAGE_PARAGRAPH1} matches the parameter passed to the constructor.
      */
     private static class ModalDialogButtonPresser implements ModalDialogManagerObserver {
-        private String mSearchParagraph1;
+        private final String mSearchParagraph1;
         private boolean mWasDialogShown;
         private boolean mWasAnyDialogShown;
-        private boolean mPressButtonOnShow;
+        private final boolean mPressButtonOnShow;
         private PropertyModel mDialogPropertyModel;
 
         public ModalDialogButtonPresser(String searchParagraph1, boolean pressButtonOnShow) {
@@ -79,10 +79,6 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
 
         public boolean wasDialogShown() {
             return mWasDialogShown;
-        }
-
-        public PropertyModel getDialogPropertyModel() {
-            return mDialogPropertyModel;
         }
 
         @Override
@@ -105,12 +101,13 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
     private static class ReturnTokenIdentityCredentialsDelegate
             extends IdentityCredentialsDelegate {
         @Override
-        public Promise<byte[]> get(Activity activity, String origin, String request) {
-            return Promise.fulfilled("token".getBytes());
+        public Promise<DigitalCredential> get(Activity activity, String origin, String request) {
+            return Promise.fulfilled(
+                    new DigitalCredential("protocol", "{\"token\" : \"test_token\"}".getBytes()));
         }
     }
 
-    private static final String TEST_PAGE = "/chrome/test/data/android/fedcm_mdocs.html";
+    private static final String TEST_PAGE = "/chrome/test/data/android/dc_mdocs.html";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -202,7 +199,7 @@ public class DigitalIdentitySafetyInterstitialIntegrationTest {
 
         DOMUtils.clickNode(mActivityTestRule.getWebContents(), nodeIdToClick);
 
-        waitTillLogTextAreaHasTextContent("\"token\"");
+        waitTillLogTextAreaHasTextContent("\"test_token\"");
 
         if (expectedInterstitialParagraph1ResourceId >= 0) {
             assertTrue(mModalDialogObserver.wasDialogShown());

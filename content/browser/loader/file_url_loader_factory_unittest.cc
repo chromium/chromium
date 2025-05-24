@@ -217,6 +217,30 @@ TEST_F(FileURLLoaderFactoryTest, Status) {
   ASSERT_EQ("OK", ResponseInfo()->headers->GetStatusText());
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(FileURLLoaderFactoryTest, LoadingFileLargerThan4GB) {
+  // Prepare big file (ie bigger than 4GB).
+  base::File file;
+  base::FilePath file_path;
+  const int64_t kSize = 5'000'000'000;
+  {
+    const base::ScopedAllowBlockingForTesting allow_io;
+    ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
+
+    file.Initialize(file_path, (base::File::Flags::FLAG_CREATE_ALWAYS |
+                                base::File::Flags::FLAG_WRITE |
+                                base::File::Flags::FLAG_READ));
+    ASSERT_TRUE(file.IsValid());
+    ASSERT_TRUE(file.SetLength(kSize));
+  }
+
+  auto request = std::make_unique<network::ResourceRequest>();
+  request->url = net::FilePathToFileURL(file_path);
+  // Any result is OK, as long as it doesn't crash.
+  CreateLoaderAndRun(std::move(request));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 TEST_F(FileURLLoaderFactoryTest, MissedRequestInitiator) {
   // CORS-disabled requests can omit |request.request_initiator| though it is
   // discouraged not to set |request.request_initiator|.

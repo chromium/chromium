@@ -6,12 +6,13 @@
 
 #include "base/base64.h"
 #include "crypto/sha2.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace signin {
 
 TEST(GaiaIdHashTest, ShouldBeDeterministic) {
-  const std::string gaia_id = "user_gaia_id";
+  const GaiaId gaia_id("user_gaia_id");
   GaiaIdHash gaia_id_hash1 = GaiaIdHash::FromGaiaId(gaia_id);
   GaiaIdHash gaia_id_hash2 = GaiaIdHash::FromGaiaId(gaia_id);
   EXPECT_EQ(gaia_id_hash1.ToBinary(), gaia_id_hash2.ToBinary());
@@ -20,8 +21,8 @@ TEST(GaiaIdHashTest, ShouldBeDeterministic) {
 }
 
 TEST(GaiaIdHashTest, ShouldHash) {
-  const std::string gaia_id = "user_gaia_id";
-  const std::string gaia_id_hash = crypto::SHA256HashString(gaia_id);
+  const GaiaId gaia_id("user_gaia_id");
+  const std::string gaia_id_hash = crypto::SHA256HashString(gaia_id.ToString());
   std::string gaia_id_base64_hash = base::Base64Encode(gaia_id_hash);
 
   GaiaIdHash hash = GaiaIdHash::FromGaiaId(gaia_id);
@@ -30,7 +31,7 @@ TEST(GaiaIdHashTest, ShouldHash) {
 }
 
 TEST(GaiaIdHashTest, ShouldBase64EncodeDecode) {
-  const std::string gaia_id = "user_gaia_id";
+  const GaiaId gaia_id("user_gaia_id");
   GaiaIdHash hash1 = GaiaIdHash::FromGaiaId(gaia_id);
   GaiaIdHash hash2 = GaiaIdHash::FromBase64(hash1.ToBase64());
   EXPECT_EQ(hash1, hash2);

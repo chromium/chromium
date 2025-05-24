@@ -11,8 +11,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
-#include "skia/ext/skcolorspace_primaries.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -180,10 +180,8 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   ASSERT_TRUE(shared_memory_region.IsValid());
   ASSERT_TRUE(shared_memory_region.Map().IsValid());
 
-  gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
+  gfx::GpuMemoryBufferHandle handle(shared_memory_region.Duplicate());
   handle.id = kId;
-  handle.region = shared_memory_region.Duplicate();
   handle.offset = kOffset;
   handle.stride = kStride;
 
@@ -195,46 +193,46 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   EXPECT_EQ(kOffset, output.offset);
   EXPECT_EQ(kStride, output.stride);
 
-  base::UnsafeSharedMemoryRegion output_memory = std::move(output.region);
+  base::UnsafeSharedMemoryRegion output_memory = std::move(output).region();
   EXPECT_TRUE(output_memory.Map().IsValid());
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OZONE)
-  gfx::GpuMemoryBufferHandle handle2;
-  const uint64_t kSize = kOffset + kStride;
-  handle2.type = gfx::NATIVE_PIXMAP;
-  handle2.id = kId;
-  handle2.offset = kOffset;
-  handle2.stride = kStride;
+  gfx::NativePixmapHandle native_pixmap_handle;
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const uint64_t kModifier = 2;
   base::ScopedFD buffer_handle = CreateValidLookingBufferHandle();
-  handle2.native_pixmap_handle.modifier = kModifier;
+  native_pixmap_handle.modifier = kModifier;
 #elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo buffer_handle = CreateValidLookingBufferHandle();
   zx::eventpair client_handle, service_handle;
   auto status = zx::eventpair::create(0, &client_handle, &service_handle);
   DCHECK_EQ(status, ZX_OK);
   zx_koid_t handle_koid = base::GetKoid(client_handle).value();
-  handle2.native_pixmap_handle.buffer_collection_handle =
-      std::move(client_handle);
-  handle2.native_pixmap_handle.buffer_index = 4;
-  handle2.native_pixmap_handle.ram_coherency = true;
+  native_pixmap_handle.buffer_collection_handle = std::move(client_handle);
+  native_pixmap_handle.buffer_index = 4;
+  native_pixmap_handle.ram_coherency = true;
 #endif
-  handle2.native_pixmap_handle.planes.emplace_back(kOffset, kStride, kSize,
-                                                   std::move(buffer_handle));
+  const uint64_t kSize = kOffset + kStride;
+  native_pixmap_handle.planes.emplace_back(kOffset, kStride, kSize,
+                                           std::move(buffer_handle));
+  gfx::GpuMemoryBufferHandle handle2(std::move(native_pixmap_handle));
+  handle2.id = kId;
+  handle2.offset = kOffset;
+  handle2.stride = kStride;
   remote->EchoGpuMemoryBufferHandle(std::move(handle2), &output);
   EXPECT_EQ(gfx::NATIVE_PIXMAP, output.type);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(kModifier, output.native_pixmap_handle.modifier);
+  EXPECT_EQ(kModifier, output.native_pixmap_handle().modifier);
 #elif BUILDFLAG(IS_FUCHSIA)
-  EXPECT_EQ(handle_koid,
-            base::GetKoid(output.native_pixmap_handle.buffer_collection_handle)
-                .value());
-  EXPECT_EQ(4U, output.native_pixmap_handle.buffer_index);
-  EXPECT_EQ(true, output.native_pixmap_handle.ram_coherency);
+  EXPECT_EQ(
+      handle_koid,
+      base::GetKoid(output.native_pixmap_handle().buffer_collection_handle)
+          .value());
+  EXPECT_EQ(4U, output.native_pixmap_handle().buffer_index);
+  EXPECT_EQ(true, output.native_pixmap_handle().ram_coherency);
 #endif
-  ASSERT_EQ(1u, output.native_pixmap_handle.planes.size());
-  EXPECT_EQ(kSize, output.native_pixmap_handle.planes.back().size);
+  ASSERT_EQ(1u, output.native_pixmap_handle().planes.size());
+  EXPECT_EQ(kSize, output.native_pixmap_handle().planes.back().size);
 #endif
 }
 
@@ -343,21 +341,33 @@ TEST_F(StructTraitsTest, HDRMetadata) {
 
   // Include CTA 861.3.
   input.cta_861_3.emplace(123, 456);
+  EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 
   // Include SMPTE ST 2086.
-  input.smpte_st_2086.emplace(SkNamedPrimariesExt::kRec2020, 789, 123);
+  input.smpte_st_2086.emplace(SkNamedPrimaries::kRec2020, 789, 123);
+  EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 
   // Include SDR white level.
   input.ndwl.emplace(123.f);
+  EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 
   // Include extended range.
   input.extended_range.emplace(10.f, 4.f);
+  EXPECT_NE(input, output);
+  mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
+  EXPECT_EQ(input, output);
+
+  // Include agtm.
+  const size_t agtm_size = 4;
+  const uint8_t agtm_data[agtm_size] = {0xde, 0xad, 0xbe, 0xef};
+  input.agtm.emplace(agtm_data, agtm_size);
+  EXPECT_NE(input, output);
   mojo::test::SerializeAndDeserialize<gfx::mojom::HDRMetadata>(input, output);
   EXPECT_EQ(input, output);
 }

@@ -15,9 +15,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob_callback.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_encode_options.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_helper.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -52,21 +51,25 @@ class CORE_EXPORT CanvasAsyncBlobCreator
 
   void ScheduleAsyncBlobCreation(const double& quality);
 
-  CanvasAsyncBlobCreator(scoped_refptr<StaticBitmapImage>,
-                         const ImageEncodeOptions* options,
-                         ToBlobFunctionType function_type,
-                         base::TimeTicks start_time,
-                         ExecutionContext*,
-                         const IdentifiableToken& input_digest,
-                         ScriptPromiseResolver<Blob>*);
-  CanvasAsyncBlobCreator(scoped_refptr<StaticBitmapImage>,
-                         const ImageEncodeOptions*,
-                         ToBlobFunctionType,
-                         V8BlobCallback*,
-                         base::TimeTicks start_time,
-                         ExecutionContext*,
-                         const IdentifiableToken& input_digest,
-                         ScriptPromiseResolver<Blob>* = nullptr);
+  CanvasAsyncBlobCreator(
+      scoped_refptr<StaticBitmapImage>,
+      const ImageEncodeOptions* options,
+      ToBlobFunctionType function_type,
+      base::TimeTicks start_time,
+      ExecutionContext*,
+      const IdentifiableToken& input_digest,
+      CanvasInterventionsHelper::CanvasInterventionType intervention_type,
+      ScriptPromiseResolver<Blob>*);
+  CanvasAsyncBlobCreator(
+      scoped_refptr<StaticBitmapImage>,
+      const ImageEncodeOptions*,
+      ToBlobFunctionType,
+      V8BlobCallback*,
+      base::TimeTicks start_time,
+      ExecutionContext*,
+      const IdentifiableToken& input_digest,
+      CanvasInterventionsHelper::CanvasInterventionType intervention_type,
+      ScriptPromiseResolver<Blob>* = nullptr);
   virtual ~CanvasAsyncBlobCreator();
 
   // Methods are virtual for mocking in unit tests
@@ -119,6 +122,7 @@ class CORE_EXPORT CanvasAsyncBlobCreator
   base::TimeTicks schedule_idle_task_start_time_;
   bool static_bitmap_image_loaded_;
   IdentifiableToken input_digest_;
+  CanvasInterventionsHelper::CanvasInterventionType intervention_type_;
 
   // Used when CanvasAsyncBlobCreator runs on main thread only
   scoped_refptr<base::SingleThreadTaskRunner> parent_frame_task_runner_;

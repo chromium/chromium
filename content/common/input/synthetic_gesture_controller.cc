@@ -138,8 +138,7 @@ void SyntheticGestureController::StartOrUpdateTimer() {
       event_interval_ = vsync_interval * 2.0f;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (dispatch_timer_.IsRunning()) {

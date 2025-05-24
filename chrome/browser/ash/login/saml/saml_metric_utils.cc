@@ -58,7 +58,7 @@ const Provider kProviders[] = {
 void RecordSAMLProvider(const std::string& x509certificate) {
   net::CertificateList third_party_cert_list =
       net::X509Certificate::CreateCertificateListFromBytes(
-          base::as_bytes(base::make_span(x509certificate)),
+          base::as_byte_span(x509certificate),
           net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
 
   std::string provider_name;

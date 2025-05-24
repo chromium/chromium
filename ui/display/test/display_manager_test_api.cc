@@ -4,14 +4,13 @@
 
 #include "ui/display/test/display_manager_test_api.h"
 
+#include <algorithm>
 #include <cstdarg>
 #include <iterator>
 #include <vector>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -29,7 +28,7 @@ namespace {
 // Indicates the default maximum of displays that chrome device can support.
 constexpr size_t kDefaultMaxSupportDisplayTest = 10;
 
-DisplayInfoList CreateDisplayInfoListFromString(const std::string specs,
+DisplayInfoList CreateDisplayInfoListFromString(const std::string& specs,
                                                 DisplayManager* display_manager,
                                                 bool generate_new_ids) {
   Displays list = display_manager->IsInUnifiedMode()
@@ -50,7 +49,7 @@ bool GetDisplayModeForResolution(const ManagedDisplayInfo& info,
   const ManagedDisplayInfo::ManagedDisplayModeList& modes =
       info.display_modes();
   DCHECK_NE(0u, modes.size());
-  auto iter = base::ranges::find(modes, resolution, &ManagedDisplayMode::size);
+  auto iter = std::ranges::find(modes, resolution, &ManagedDisplayMode::size);
   if (iter == modes.end()) {
     DLOG(WARNING) << "Unsupported resolution was requested:"
                   << resolution.ToString();
@@ -190,9 +189,11 @@ void DisplayManagerTestApi::UpdateDisplayWithDisplayInfoList(
     }
   }
 
-  display_manager_->OnNativeDisplaysChanged(display_list_copy);
+  bool tasks = display_manager_->OnNativeDisplaysChanged(display_list_copy);
   display_manager_->UpdateInternalManagedDisplayModeListForTest();
-  display_manager_->RunPendingTasksForTest();
+  if (tasks) {
+    display_manager_->RunPendingTasksForTest();
+  }
 }
 
 int64_t DisplayManagerTestApi::SetFirstDisplayAsInternalDisplay() {
@@ -228,7 +229,7 @@ const Display& DisplayManagerTestApi::GetSecondaryDisplay() const {
   const int64_t primary_display_id =
       Screen::GetScreen()->GetPrimaryDisplay().id();
 
-  auto primary_display_iter = base::ranges::find(
+  auto primary_display_iter = std::ranges::find(
       display_manager_->active_display_list_, primary_display_id, &Display::id);
 
   CHECK(primary_display_iter != display_manager_->active_display_list_.end());

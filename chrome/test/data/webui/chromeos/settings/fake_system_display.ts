@@ -117,11 +117,12 @@ export class FakeSystemDisplay implements SystemDisplayApi {
     });
   }
 
-  async setDisplayLayout(layouts: DisplayLayout[]): Promise<void> {
+  setDisplayLayout(layouts: DisplayLayout[]): Promise<void> {
     this.fakeLayouts = layouts;
+    return Promise.resolve();
   }
 
-  async setMirrorMode(info: MirrorModeInfo): Promise<void> {
+  setMirrorMode(info: MirrorModeInfo): Promise<void> {
     let mirroringSourceId = '';
     let mirroringDestinationIds: string[] = [];
     if (info.mode === this.MirrorMode.NORMAL) {
@@ -142,26 +143,30 @@ export class FakeSystemDisplay implements SystemDisplayApi {
       fakeDisplay.mirroringSourceId = mirroringSourceId;
       fakeDisplay.mirroringDestinationIds = mirroringDestinationIds;
     }
+    return Promise.resolve();
   }
 
   // The below method is overridden to provide TS compatibility for tests.
   // But this is an unused method and hence doesn't have any implementation.
   overscanCalibrationAdjust(_id: string): void {}
 
-  async overscanCalibrationStart(): Promise<void> {
+  overscanCalibrationStart(): Promise<void> {
     this.overscanCalibrationStartCalled++;
+    return Promise.resolve();
   }
 
-  async overscanCalibrationReset(): Promise<void> {
+  overscanCalibrationReset(): Promise<void> {
     this.overscanCalibrationResetCalled++;
+    return Promise.resolve();
   }
 
-  async overscanCalibrationComplete(): Promise<void> {
+  overscanCalibrationComplete(): Promise<void> {
     this.overscanCalibrationCompleteCalled++;
+    return Promise.resolve();
   }
 
-  async showNativeTouchCalibration(_id: string): Promise<boolean> {
-    return true;
+  showNativeTouchCalibration(_id: string): Promise<boolean> {
+    return Promise.resolve(true);
   }
 
   private getFakeDisplay_(id: string): DisplayUnitInfo|undefined {

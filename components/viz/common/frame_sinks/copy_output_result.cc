@@ -70,11 +70,11 @@ CopyOutputResult::ReleaseCallbacks CopyOutputResult::TakeTextureOwnership() {
   return {};
 }
 
-bool CopyOutputResult::ReadI420Planes(uint8_t* y_out,
+bool CopyOutputResult::ReadI420Planes(base::span<uint8_t> y_out,
                                       int y_out_stride,
-                                      uint8_t* u_out,
+                                      base::span<uint8_t> u_out,
                                       int u_out_stride,
-                                      uint8_t* v_out,
+                                      base::span<uint8_t> v_out,
                                       int v_out_stride) const {
   auto scoped_sk_bitmap = ScopedAccessSkBitmap();
   const SkBitmap& bitmap = scoped_sk_bitmap.bitmap();
@@ -87,15 +87,16 @@ bool CopyOutputResult::ReadI420Planes(uint8_t* y_out,
   // a perfect conversion using gfx::ColorTransform would execute way too
   // slowly. See SoftwareRenderer for related comments on its lack of color
   // space management (due to performance concerns).
+  // TODO(crbug.com/384959115): Verify span size before calling into libyuv.
   if (bitmap.colorType() == kBGRA_8888_SkColorType) {
-    return 0 == libyuv::ARGBToI420(pixels, bitmap.rowBytes(), y_out,
-                                   y_out_stride, u_out, u_out_stride, v_out,
-                                   v_out_stride, bitmap.width(),
+    return 0 == libyuv::ARGBToI420(pixels, bitmap.rowBytes(), y_out.data(),
+                                   y_out_stride, u_out.data(), u_out_stride,
+                                   v_out.data(), v_out_stride, bitmap.width(),
                                    bitmap.height());
   } else if (bitmap.colorType() == kRGBA_8888_SkColorType) {
-    return 0 == libyuv::ABGRToI420(pixels, bitmap.rowBytes(), y_out,
-                                   y_out_stride, u_out, u_out_stride, v_out,
-                                   v_out_stride, bitmap.width(),
+    return 0 == libyuv::ABGRToI420(pixels, bitmap.rowBytes(), y_out.data(),
+                                   y_out_stride, u_out.data(), u_out_stride,
+                                   v_out.data(), v_out_stride, bitmap.width(),
                                    bitmap.height());
   }
 
@@ -106,9 +107,9 @@ bool CopyOutputResult::ReadI420Planes(uint8_t* y_out,
   return false;
 }
 
-bool CopyOutputResult::ReadNV12Planes(uint8_t* y_out,
+bool CopyOutputResult::ReadNV12Planes(base::span<uint8_t> y_out,
                                       int y_out_stride,
-                                      uint8_t* uv_out,
+                                      base::span<uint8_t> uv_out,
                                       int uv_out_stride) const {
   auto scoped_sk_bitmap = ScopedAccessSkBitmap();
   const SkBitmap& bitmap = scoped_sk_bitmap.bitmap();
@@ -121,13 +122,14 @@ bool CopyOutputResult::ReadNV12Planes(uint8_t* y_out,
   // a perfect conversion using gfx::ColorTransform would execute way too
   // slowly. See SoftwareRenderer for related comments on its lack of color
   // space management (due to performance concerns).
+  // TODO(crbug.com/384959115): Verify span size before calling into libyuv.
   if (bitmap.colorType() == kBGRA_8888_SkColorType) {
-    return 0 == libyuv::ARGBToNV12(pixels, bitmap.rowBytes(), y_out,
-                                   y_out_stride, uv_out, uv_out_stride,
+    return 0 == libyuv::ARGBToNV12(pixels, bitmap.rowBytes(), y_out.data(),
+                                   y_out_stride, uv_out.data(), uv_out_stride,
                                    bitmap.width(), bitmap.height());
   } else if (bitmap.colorType() == kRGBA_8888_SkColorType) {
-    return 0 == libyuv::ABGRToNV12(pixels, bitmap.rowBytes(), y_out,
-                                   y_out_stride, uv_out, uv_out_stride,
+    return 0 == libyuv::ABGRToNV12(pixels, bitmap.rowBytes(), y_out.data(),
+                                   y_out_stride, uv_out.data(), uv_out_stride,
                                    bitmap.width(), bitmap.height());
   }
 
@@ -138,7 +140,8 @@ bool CopyOutputResult::ReadNV12Planes(uint8_t* y_out,
   return false;
 }
 
-bool CopyOutputResult::ReadRGBAPlane(uint8_t* dest, int stride) const {
+bool CopyOutputResult::ReadRGBAPlane(base::span<uint8_t> dest,
+                                     int stride) const {
   auto scoped_sk_bitmap = ScopedAccessSkBitmap();
   const SkBitmap& bitmap = scoped_sk_bitmap.bitmap();
   if (!bitmap.readyToDraw())
@@ -148,7 +151,8 @@ bool CopyOutputResult::ReadRGBAPlane(uint8_t* dest, int stride) const {
   SkImageInfo image_info =
       SkImageInfo::MakeN32(bitmap.width(), bitmap.height(), kPremul_SkAlphaType,
                            bitmap.refColorSpace());
-  bitmap.readPixels(image_info, dest, stride, 0, 0);
+  CHECK_GE(dest.size(), image_info.computeByteSize(stride));
+  bitmap.readPixels(image_info, dest.data(), stride, 0, 0);
   return true;
 }
 

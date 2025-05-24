@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/partition.mojom.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -141,6 +142,10 @@ class CONTENT_EXPORT DOMStorageContextWrapper
 
   void MaybeBindSessionStorageControl();
   void MaybeBindLocalStorageControl();
+#if BUILDFLAG(IS_MAC)
+  void MaybeBindLocalStorageControlAndReportLifecycle(
+      storage::mojom::LocalStorageLifecycle lifecycle);
+#endif  // BUILDFLAG(IS_MAC)
   scoped_refptr<SessionStorageNamespaceImpl> MaybeGetExistingNamespace(
       const std::string& namespace_id) const;
 
@@ -183,8 +188,8 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // Profile wasn't destructed. This map allows the restored session to re-use
   // the SessionStorageNamespaceImpl objects that are still alive thanks to the
   // sessions component.
-  std::map<std::string, SessionStorageNamespaceImpl*> alive_namespaces_
-      GUARDED_BY(alive_namespaces_lock_);
+  std::map<std::string, raw_ptr<SessionStorageNamespaceImpl, CtnExperimental>>
+      alive_namespaces_ GUARDED_BY(alive_namespaces_lock_);
   mutable base::Lock alive_namespaces_lock_;
 
   // Unowned reference to our owning partition. This is always valid until it's

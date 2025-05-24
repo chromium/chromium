@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -26,6 +27,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -136,7 +138,7 @@ class AnnouncementNotificationServiceTest : public testing::Test {
     params.profile_path =
         test_profile_manager_->profiles_dir().AppendASCII(kProfileId);
     params.profile_name = u"dummy_name";
-    params.gaia_id = sign_in ? "dummy_gaia_id" : std::string();
+    params.gaia_id = sign_in ? GaiaId("dummy_gaia_id") : GaiaId();
     params.is_consented_primary_account = sign_in;
     test_profile_manager_->profile_attributes_storage()->AddProfile(
         std::move(params));
@@ -353,7 +355,7 @@ TEST_P(AnnouncementNotificationServiceVersionTest, VersionTest) {
   const auto& param = GetParam();
   auto now = SetNow("10 Feb 2020 13:00:00");
   std::map<std::string, std::string> parameters = {
-      {kSkipFirstRun, param.skip_first_run ? "true" : "false"},
+      {kSkipFirstRun, base::ToString(param.skip_first_run)},
       {kVersion, base::NumberToString(param.version)}};
   Init(parameters, param.enable_feature, false /*sign_in*/,
        param.current_version, false);

@@ -16,7 +16,6 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,7 +27,6 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.url.GURL;
 
 import java.io.ByteArrayInputStream;
@@ -46,14 +44,12 @@ public class NetworkFetcherTaskTest {
     private HttpURLConnection mConnection;
     private Context mContext;
     private File mTempDirectory;
-
-    @Rule public JniMocker jniMocker = new JniMocker();
     @Mock private NetworkFetcherTask.Natives mNativeMock;
 
     @Before
     public void setUp() throws IOException {
         MockitoAnnotations.initMocks(this);
-        jniMocker.mock(NetworkFetcherTaskJni.TEST_HOOKS, mNativeMock);
+        NetworkFetcherTaskJni.setInstanceForTesting(mNativeMock);
 
         mContext = ContextUtils.getApplicationContext();
         mTempDirectory = new File(mContext.getFilesDir(), "tmp/");
@@ -113,7 +109,7 @@ public class NetworkFetcherTaskTest {
 
         NetworkFetcherTask.downloadToFile(
                 mConnection,
-                /* nativeNetworkFetcherTask= */ 0,
+                /* nativeDownloadFileTask= */ 0,
                 /* mainTaskRunner= */ 0,
                 mock(GURL.class),
                 file.getAbsolutePath());

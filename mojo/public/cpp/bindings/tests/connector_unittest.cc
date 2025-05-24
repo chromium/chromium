@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "mojo/public/cpp/bindings/connector.h"
@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <array>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -204,7 +205,7 @@ TEST_F(ConnectorTest, Basic_TwoMessages) {
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  const char* kText[] = {"hello", "world"};
+  auto kText = std::to_array<const char*>({"hello", "world"});
   for (size_t i = 0; i < std::size(kText); ++i) {
     Message message = CreateMessage(kText[i]);
     connector0.Accept(&message);
@@ -236,7 +237,7 @@ TEST_F(ConnectorTest, Basic_TwoMessages_Synchronous) {
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  const char* kText[] = {"hello", "world"};
+  auto kText = std::to_array<const char*>({"hello", "world"});
   for (size_t i = 0; i < std::size(kText); ++i) {
     Message message = CreateMessage(kText[i]);
     connector0.Accept(&message);
@@ -386,7 +387,7 @@ TEST_F(ConnectorTest, WaitForIncomingMessageWithReentrancy) {
   Connector connector1(std::move(handle1_), Connector::SINGLE_THREADED_SEND,
                        base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  const char* kText[] = {"hello", "world"};
+  auto kText = std::to_array<const char*>({"hello", "world"});
   for (size_t i = 0; i < std::size(kText); ++i) {
     Message message = CreateMessage(kText[i]);
     connector0.Accept(&message);

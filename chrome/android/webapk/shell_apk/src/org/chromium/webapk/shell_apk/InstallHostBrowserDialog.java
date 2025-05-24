@@ -13,7 +13,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Shows the dialog to install a host browser for launching WebAPK. */
+@NullMarked
 public class InstallHostBrowserDialog {
     /**
      * A listener which is notified when user chooses to install the host browser, or dismiss the
@@ -45,7 +49,7 @@ public class InstallHostBrowserDialog {
             final DialogListener listener,
             String appName,
             final String hostBrowserPackageName,
-            String hostBrowserApplicationName,
+            @Nullable String hostBrowserApplicationName,
             int hostBrowserIconId) {
         View view = LayoutInflater.from(context).inflate(R.layout.host_browser_list_item, null);
         TextView title = new TextView(context);

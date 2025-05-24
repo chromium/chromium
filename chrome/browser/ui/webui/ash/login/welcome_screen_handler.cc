@@ -102,7 +102,7 @@ void WelcomeScreenHandler::ShowRemoraRequisitionDialog() {
 
 void WelcomeScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  if (policy::EnrollmentRequisitionManager::IsRemoraRequisition()) {
+  if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     builder->Add("welcomeScreenGreeting", IDS_REMORA_CONFIRM_MESSAGE);
     builder->Add("welcomeScreenGreetingSubtitle", IDS_EMPTY_STRING);
   } else if (switches::IsRevenBranding()) {
@@ -114,7 +114,7 @@ void WelcomeScreenHandler::DeclareLocalizedValues(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   } else if (features::IsBootAnimationEnabled()) {
     auto product_name =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_CROS_OOBE_PRODUCT_NAME);
     builder->AddF("welcomeScreenGreeting",
                   IDS_WELCOME_SCREEN_GREETING_CLOUD_READY,
@@ -261,7 +261,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(base::Value::Dict* dict) {
   }
 
   dict->Set("languageList", std::move(language_list));
-  dict->Set("inputMethodsList", GetAndActivateLoginKeyboardLayouts(
+  dict->Set("inputMethodsList", GetAndActivateOobeInputMethods(
                                     application_locale, selected_input_method,
                                     input_method_manager));
   dict->Set("timezoneList", GetTimezoneList());

@@ -40,9 +40,10 @@ content::BrowserContext* ShortcutsAppManagerFactory::GetBrowserContextToUse(
   return context;
 }
 
-KeyedService* ShortcutsAppManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ShortcutsAppManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ShortcutsAppManager(
+  return std::make_unique<ShortcutsAppManager>(
       local_search_service::LocalSearchServiceProxyFactory::
           GetForBrowserContext(context),
       user_prefs::UserPrefs::Get(context));

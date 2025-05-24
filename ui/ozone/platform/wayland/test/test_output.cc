@@ -18,12 +18,10 @@ namespace {
 constexpr uint32_t kOutputVersion = 2;
 }
 
-TestOutput::TestOutput(Delegate* delegate)
-    : TestOutput(delegate, TestOutputMetrics()) {}
+TestOutput::TestOutput() : TestOutput(TestOutputMetrics()) {}
 
-TestOutput::TestOutput(Delegate* delegate, TestOutputMetrics metrics)
+TestOutput::TestOutput(TestOutputMetrics metrics)
     : GlobalObject(&wl_output_interface, nullptr, kOutputVersion),
-      delegate_(delegate),
       metrics_(std::move(metrics)) {}
 
 TestOutput::~TestOutput() = default;
@@ -68,19 +66,6 @@ void TestOutput::SetPanelTransform(wl_output_transform wl_panel_transform) {
   metrics_.wl_panel_transform = wl_panel_transform;
 }
 
-void TestOutput::SetLogicalInsets(const gfx::Insets& aura_logical_insets) {
-  metrics_.aura_logical_insets = aura_logical_insets;
-}
-
-void TestOutput::SetDeviceScaleFactor(float aura_device_scale_factor) {
-  metrics_.aura_device_scale_factor = aura_device_scale_factor;
-}
-
-void TestOutput::SetLogicalTransform(
-    wl_output_transform aura_logical_transform) {
-  metrics_.aura_logical_transform = aura_logical_transform;
-}
-
 const gfx::Size& TestOutput::GetPhysicalSize() const {
   return metrics_.wl_physical_size;
 }
@@ -93,13 +78,7 @@ int32_t TestOutput::GetScale() const {
   return metrics_.wl_scale;
 }
 
-int64_t TestOutput::GetDisplayId() const {
-  return metrics_.aura_display_id;
-}
-
 void TestOutput::Flush() {
-  delegate_->OnTestOutputFlush(this, metrics_);
-
   constexpr char kUnknownMake[] = "unknown_make";
   constexpr char kUnknownModel[] = "unknown_model";
 
@@ -115,17 +94,7 @@ void TestOutput::Flush() {
   if (xdg_output_) {
     xdg_output_->Flush(metrics_);
   }
-
-  if (aura_output_) {
-    aura_output_->Flush(metrics_);
-  } else {
-    wl_output_send_done(resource());
-  }
-}
-
-void TestOutput::DestroyGlobal() {
-  GlobalObject::DestroyGlobal();
-  delegate_->OnTestOutputGlobalDestroy(this);
+  wl_output_send_done(resource());
 }
 
 // Notifies clients about the changes in the output configuration via server
@@ -138,26 +107,13 @@ void TestOutput::OnBind() {
   }
 }
 
-void TestOutput::SetAuraOutput(TestZAuraOutput* aura_output) {
-  aura_output_ = aura_output;
-  // Make sure to send the necessary information for a client that
-  // relies on the xdg and aura output information.
-  if (xdg_output_ && !suppress_implicit_flush_) {
-    Flush();
-  }
-}
-
 void TestOutput::SetXdgOutput(TestZXdgOutput* xdg_output) {
   xdg_output_ = xdg_output;
   // Make sure to send the necessary information for a client that
-  // relies on the xdg and aura output information.
-  if (aura_output_ && !suppress_implicit_flush_) {
+  // relies on the xdg information.
+  if (!suppress_implicit_flush_) {
     Flush();
   }
-}
-
-TestZAuraOutput* TestOutput::GetAuraOutput() {
-  return aura_output_;
 }
 
 }  // namespace wl

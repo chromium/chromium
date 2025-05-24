@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
+#include "base/pickle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/disk_cache.h"
@@ -270,12 +272,11 @@ void HttpCache::Writers::ProcessFailure(int error) {
 
 void HttpCache::Writers::TruncateEntry() {
   DCHECK(ShouldTruncate());
-  auto data = base::MakeRefCounted<PickledIOBuffer>();
-  response_info_truncation_.Persist(data->pickle(),
-                                    true /* skip_transient_headers*/,
-                                    true /* response_truncated */);
-  data->Done();
-  io_buf_len_ = data->pickle()->size();
+  auto data = base::MakeRefCounted<PickledIOBuffer>(
+      response_info_truncation_.MakePickle(
+          /*skip_transient_headers=*/true,
+          /*response_truncated=*/true));
+  io_buf_len_ = data->size();
   entry_->GetEntry()->WriteData(kResponseInfoIndex, 0, data.get(), io_buf_len_,
                                 base::DoNothing(), true);
 }
@@ -364,9 +365,7 @@ int HttpCache::Writers::DoLoop(int result) {
         rv = DoCacheWriteDataComplete(rv);
         break;
       case State::UNSET:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
       case State::NONE:
         // Do Nothing.
         break;
@@ -582,8 +581,8 @@ void HttpCache::Writers::CompleteWaitingForReadTransactions(int result) {
     if (result >= 0) {  // success
       // Save the data in the waiting transaction's read buffer.
       it->second.write_len = std::min(it->second.read_buf_len, result);
-      memcpy(it->second.read_buf->data(), read_buf_->data(),
-             it->second.write_len);
+      it->second.read_buf->span().copy_prefix_from(
+          read_buf_->first(it->second.write_len));
       callback_result = it->second.write_len;
     }
 

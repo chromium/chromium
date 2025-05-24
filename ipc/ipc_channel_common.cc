@@ -67,15 +67,15 @@ Channel::AssociatedInterfaceSupport* Channel::GetAssociatedInterfaceSupport() {
 }
 
 void Channel::Pause() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Channel::Unpause(bool flush) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Channel::Flush() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Channel::SetUrgentMessageObserver(UrgentMessageObserver* observer) {

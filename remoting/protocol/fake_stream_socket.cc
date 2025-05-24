@@ -84,7 +84,7 @@ int FakeStreamSocket::Read(const scoped_refptr<net::IOBuffer>& buf,
     input_pos_ += result;
     return result;
   } else if (next_read_error_.has_value()) {
-    int r = next_read_error_.value();
+    int r = *next_read_error_;
     next_read_error_.reset();
     return r;
   } else {

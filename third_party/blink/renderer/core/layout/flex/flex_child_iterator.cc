@@ -7,7 +7,7 @@
 namespace blink {
 
 FlexChildIterator::FlexChildIterator(const BlockNode node) {
-  bool is_deprecated_webkit_box = node.Style().IsDeprecatedWebkitBox();
+  bool is_deprecated_webkit_box = node.Style().IsDeprecatedFlexbox();
   int initial_order = is_deprecated_webkit_box
                           ? ComputedStyleInitialValues::InitialBoxOrdinalGroup()
                           : ComputedStyleInitialValues::InitialOrder();

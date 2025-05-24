@@ -15,18 +15,8 @@
 
 namespace viz {
 
-SkColorType ToClosestSkColorType(bool gpu_compositing,
-                                 SharedImageFormat format) {
+SkColorType ToClosestSkColorType(SharedImageFormat format) {
   CHECK(format.is_single_plane());
-
-  if (!gpu_compositing) {
-    // TODO(crbug.com/41472025): Remove this assumption and have clients tag
-    // resources with the correct format.
-    // In software compositing we lazily use RGBA_8888 throughout the system,
-    // but actual pixel encodings are the native skia bit ordering, which can be
-    // RGBA or BGRA.
-    return kN32_SkColorType;
-  }
 
   if (format == SinglePlaneFormat::kRGBA_4444) {
     return kARGB_4444_SkColorType;
@@ -36,11 +26,8 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
     return kBGRA_8888_SkColorType;
   } else if (format == SinglePlaneFormat::kALPHA_8) {
     return kAlpha_8_SkColorType;
-  } else if (format == SinglePlaneFormat::kBGR_565 ||
-             format == SinglePlaneFormat::kRGB_565) {
+  } else if (format == SinglePlaneFormat::kBGR_565) {
     return kRGB_565_SkColorType;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
-    return kGray_8_SkColorType;
   } else if (format == SinglePlaneFormat::kRGBX_8888 ||
              format == SinglePlaneFormat::kBGRX_8888 ||
              format == SinglePlaneFormat::kETC1) {
@@ -69,20 +56,10 @@ SkColorType ToClosestSkColorType(bool gpu_compositing,
   NOTREACHED();
 }
 
-SkColorType ToClosestSkColorType(bool gpu_compositing,
-                                 SharedImageFormat format,
-                                 int plane_index) {
+SkColorType ToClosestSkColorType(SharedImageFormat format, int plane_index) {
   CHECK(format.IsValidPlaneIndex(plane_index));
-  if (!gpu_compositing) {
-    // TODO(crbug.com/41472025): Remove this assumption and have clients tag
-    // resources with the correct format.
-    // In software compositing we lazily use RGBA_8888 throughout the system,
-    // but actual pixel encodings are the native skia bit ordering, which can be
-    // RGBA or BGRA.
-    return kN32_SkColorType;
-  }
   if (format.is_single_plane()) {
-    return ToClosestSkColorType(gpu_compositing, format);
+    return ToClosestSkColorType(format);
   }
 
   // No external sampling, format is per plane.
@@ -118,20 +95,22 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
       return SinglePlaneFormat::kALPHA_8;
     case kRGB_565_SkColorType:
       return SinglePlaneFormat::kBGR_565;
-    case kGray_8_SkColorType:
-      return SinglePlaneFormat::kLUMINANCE_8;
     case kRGB_888x_SkColorType:
       return SinglePlaneFormat::kRGBX_8888;
     case kRGBA_1010102_SkColorType:
       return SinglePlaneFormat::kRGBA_1010102;
     case kBGRA_1010102_SkColorType:
       return SinglePlaneFormat::kBGRA_1010102;
-    // These colortypes are just for reading from - not to render to.
     case kR8G8_unorm_SkColorType:
+      return SinglePlaneFormat::kRG_88;
     case kA16_float_SkColorType:
-    case kR16G16_float_SkColorType:
+      return SinglePlaneFormat::kR_F16;
     case kA16_unorm_SkColorType:
+      return SinglePlaneFormat::kR_16;
     case kR16G16_unorm_SkColorType:
+      return SinglePlaneFormat::kRG_1616;
+    // These colortypes are just for reading from - not to render to.
+    case kR16G16_float_SkColorType:
     case kR16G16B16A16_unorm_SkColorType:
     case kUnknown_SkColorType:
     // These colortypes are don't have an equivalent in SharedImageFormat.
@@ -151,14 +130,8 @@ bool CanCreateGpuMemoryBufferForSinglePlaneSharedImageFormat(
     SharedImageFormat format) {
   CHECK(format.is_single_plane());
   return (format == SinglePlaneFormat::kBGRA_8888 ||
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-          // TODO(crbug.com/40828687): On ARM devices LaCrOS can't create RED_8
-          // GpuMemoryBuffer Objects with GBM device. This capability should be
-          // plumbed and known by clients requesting shared images as overlay
-          // candidate.
           format == SinglePlaneFormat::kR_8 ||
           format == SinglePlaneFormat::kRG_88 ||
-#endif
 #if BUILDFLAG(IS_APPLE)
           format == SinglePlaneFormat::kBGRX_8888 ||
           format == SinglePlaneFormat::kRGBX_8888 ||
@@ -284,10 +257,7 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
     return GL_RGBA4;
   } else if (format == SinglePlaneFormat::kALPHA_8) {
     return GL_ALPHA8_EXT;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
-    return GL_LUMINANCE8_EXT;
-  } else if (format == SinglePlaneFormat::kBGR_565 ||
-             format == SinglePlaneFormat::kRGB_565) {
+  } else if (format == SinglePlaneFormat::kBGR_565) {
     return GL_RGB565;
   } else if (format == SinglePlaneFormat::kR_8) {
     return GL_R8_EXT;
@@ -310,8 +280,7 @@ SharedImageFormatRestrictedSinglePlaneUtils::ToGLTextureStorageFormat(
              format == SinglePlaneFormat::kBGRA_1010102) {
     return GL_RGB10_A2_EXT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return GL_RGBA8_OES;
+  NOTREACHED();
 }
 
 // static
@@ -331,7 +300,7 @@ SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
   } else if (format == MultiPlaneFormat::kP010) {
     return gfx::BufferFormat::P010;
   }
-  NOTREACHED_IN_MIGRATION() << "format=" << format.ToString();
+  DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();
   return gfx::BufferFormat::RGBA_8888;
 }
 

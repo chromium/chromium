@@ -30,7 +30,7 @@ _METRIC_TYPE = models.ObjectNodeType(
 _STUDY_TYPE = models.ObjectNodeType('study',
                                     attributes=[
                                         ('name', str,
-                                         r'^[A-Za-z][A-Za-z0-9_.]*$'),
+                                         r'^[A-Za-z][A-Za-z0-9_.-]*$'),
                                         ('semantic_type', str, None),
                                         ('enum', str, None),
                                         ('expires_after', str, None),

@@ -86,23 +86,6 @@ suite('Main', function() {
     Router.getInstance().navigateTo(routes.BASIC);
   });
 
-  test('ChromeRootStorePage', async function() {
-    // Chrome Root Store Help link should not be present since
-    // kEnableCertManagementUIV2 feature flag is enabled by
-    // SettingsSecurityPageTest constructor.
-    // TODO(crbug.com/40928765): remove this comment once the feature flag is
-    // set to default enabled.
-    const row =
-        page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
-    assertFalse(!!row, 'Chrome Root Store Help Center link unexpectedly found');
-  });
-
-  // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/40156980): This class directly calls
-  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
-  // moment and is never called from Lacros-Chrome. This should be revisited
-  // when there is a solution for the client certificates settings page on
-  // Lacros-Chrome.
   test('ManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
@@ -113,7 +96,6 @@ suite('Main', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('certManagementV2URL'));
   });
-  // </if>
 
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));
@@ -165,7 +147,7 @@ suite('Main', function() {
         '#httpsFirstModeEnabledStrict');
     assertTrue(!!radioButton);
     radioButton.click();
-    await eventToPromise('selected-changed', radioGroup);
+    await eventToPromise('change', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_FULL,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -175,7 +157,7 @@ suite('Main', function() {
         '#httpsFirstModeEnabledBalanced');
     assertTrue(!!radioButton);
     radioButton.click();
-    await eventToPromise('selected-changed', radioGroup);
+    await eventToPromise('change', radioGroup);
     assertEquals(
         HttpsFirstModeSetting.ENABLED_BALANCED,
         page.getPref('generated.https_first_mode_enabled').value);
@@ -297,7 +279,7 @@ suite('SecurityPageHappinessTrackingSurveys', function() {
   test('SecurityPageBeforeUnloadCallsHatsProxy', async function() {
     // Interact with the security page.
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     const t1 = 10000;
     testHatsBrowserProxy.setNow(t1);
@@ -344,59 +326,37 @@ suite('FlagsDisabled', function() {
       enableSecurityKeysSubpage: false,
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
-      enableCertManagementUIV2: false,
       extendedReportingRemovePrefDependency: false,
       hashPrefixRealTimeLookupsSamplePing: false,
     });
     resetRouterForTesting();
   });
 
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-
+  function createPage() {
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
     document.body.appendChild(page);
 
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
-    flush();
+    return flushTasks();
+  }
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    return createPage();
   });
 
   teardown(function() {
     page.remove();
   });
 
-  // <if expr="is_macosx or is_win">
-  test('NativeCertificateManager', function() {
-    page.shadowRoot!.querySelector<HTMLElement>(
-                        '#manageCertificatesLinkRow')!.click();
-    return testPrivacyBrowserProxy.whenCalled('showManageSslCertificates');
-  });
-  // </if>
-
-  test('ChromeRootStorePage', async function() {
-    const row =
-        page.shadowRoot!.querySelector<HTMLElement>('#chromeCertificates');
-    assertTrue(!!row);
-    row.click();
-    const url = await openWindowProxy.whenCalled('openUrl');
-    assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
-  });
-
-  // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/40156980): This class directly calls
-  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
-  // moment and is never called from Lacros-Chrome. This should be revisited
-  // when there is a solution for the client certificates settings page on
-  // Lacros-Chrome.
   test('LogManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
@@ -404,25 +364,43 @@ suite('FlagsDisabled', function() {
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
   });
-  // </if>
 
   test('ManageSecurityKeysSubpageHidden', function() {
     assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));
   });
 
-  // The element only exists on Windows.
+  // On modern versions of Windows the security keys subpage will be disabled
+  // because Windows manages that itself, but a link to the subpage for
+  // managing phones as security keys will be included when hybrid linking is
+  // enabled.
+  // TODO(crbug.com/372493822): remove these tests when hybrid linking flag is
+  // removed.
   // <if expr="is_win">
-  test('ManageSecurityKeysPhonesSubpageVisibleAndNavigates', function() {
-    // On modern versions of Windows the security keys subpage will be disabled
-    // because Windows manages that itself, but a link to the subpage for
-    // managing phones as security keys will be included.
-    const triggerId = '#security-keys-phones-subpage-trigger';
-    assertTrue(isChildVisible(page, triggerId));
-    page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
-    flush();
-    assertEquals(
-        routes.SECURITY_KEYS_PHONES, Router.getInstance().getCurrentRoute());
-  });
+  test(
+      'ManageSecurityKeysPhonesSubpage_HybridLinkingEnabled', async function() {
+        loadTimeData.overrideValues({enableSecurityKeysManagePhones: true});
+        await createPage();
+        resetRouterForTesting();
+
+        const triggerId = '#security-keys-phones-subpage-trigger';
+        assertTrue(isChildVisible(page, triggerId));
+        page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
+        flush();
+        assertEquals(
+            routes.SECURITY_KEYS_PHONES,
+            Router.getInstance().getCurrentRoute());
+      });
+
+  test(
+      'ManageSecurityKeysPhonesSubpage_HybridLinkingDisabled',
+      async function() {
+        loadTimeData.overrideValues({enableSecurityKeysManagePhones: false});
+        await createPage();
+        resetRouterForTesting();
+
+        const triggerId = '#security-keys-phones-subpage-trigger';
+        assertFalse(isChildVisible(page, triggerId));
+      });
   // </if>
 
   // Tests the old HTTPS-Only Mode toggle UI.
@@ -553,7 +531,7 @@ suite('FlagsDisabled', function() {
     page.$.safeBrowsingStandard.click();
     assertFalse(safeBrowsingReportingToggle.disabled);
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(safeBrowsingReportingToggle.disabled);
   });
@@ -594,6 +572,7 @@ suite('FlagsDisabled', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
+
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -641,8 +620,15 @@ suite('SafeBrowsing', function() {
     assertTrue(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('PasswordsLeakDetectionSubLabel', function() {
-    const toggle = page.$.passwordsLeakToggle;
+  test('PasswordsLeakDetectionText', function() {
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#passwordsLeakToggle');
+    assertTrue(!!toggle);
+
+    const passwordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabel');
+    assertEquals(passwordLeakLabel, toggle.label);
+
     const defaultSubLabel =
         loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
     const activeWhenSignedInSubLabel =
@@ -789,7 +775,7 @@ suite('SafeBrowsing', function() {
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
         page.prefs.safebrowsing.scout_reporting_enabled.value === previous);
@@ -800,7 +786,7 @@ suite('SafeBrowsing', function() {
     const previous = page.prefs.safebrowsing.scout_reporting_enabled.value;
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     // Previously selected option must remain opened.
     assertTrue(page.$.safeBrowsingStandard.expanded);
@@ -817,7 +803,7 @@ suite('SafeBrowsing', function() {
     const previous = page.prefs.profile.password_manager_leak_detection.value;
 
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
 
     assertTrue(
         page.prefs.profile.password_manager_leak_detection.value === previous);
@@ -859,7 +845,7 @@ suite('SafeBrowsing', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
     const [enhancedClickedResult, enhancedClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -912,7 +898,7 @@ suite('SafeBrowsing', function() {
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
     const [disableClickedResult, disableClickedAction] = await Promise.all([
       testMetricsBrowserProxy.whenCalled(
           'recordSafeBrowsingInteractionHistogram'),
@@ -947,7 +933,7 @@ suite('SafeBrowsing', function() {
     await flushTasks();
 
     page.$.safeBrowsingDisabled.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
     testMetricsBrowserProxy.resetResolver(
         'recordSafeBrowsingInteractionHistogram');
     testMetricsBrowserProxy.resetResolver('recordAction');
@@ -1001,7 +987,7 @@ suite('SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('StandardProtectionDropdown', async () => {
+  test('StandardProtectionText', async () => {
     loadTimeData.overrideValues({enableHashPrefixRealTimeLookups: false});
     resetRouterForTesting();
 
@@ -1009,30 +995,24 @@ suite('SafeBrowsing', function() {
     const standardProtection = page.$.safeBrowsingStandard;
     const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
     assertEquals(spSubLabel, standardProtection.subLabel);
-
-    const passwordsLeakToggle = page.$.passwordsLeakToggle;
-    const passwordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabel');
-    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
-
-    const passwordLeakSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
-    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 
   test('EnhancedProtectionText', async () => {
     const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
 
+    page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('change', page.$.safeBrowsingRadioGroup);
+    // Learn more label should be visible.
+    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
+
+  test('NoProtectionText', () => {
     const noProtection = page.$.safeBrowsingDisabled;
     const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
     assertEquals(npSubLabel, noProtection.subLabel);
-
-    page.$.safeBrowsingEnhanced.click();
-    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
-    // Learn more label should be visible.
-    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
   });
 
   test('LearnMoreLinkClickableWhenControlledByPolicy', async () => {
@@ -1054,7 +1034,7 @@ suite('SafeBrowsing', function() {
     // enforced.
     assertEquals(
         'auto',
-        (learnMoreLink!.computedStyleMap()!.get('pointer-events') as
+        (learnMoreLink!.computedStyleMap().get('pointer-events') as
          CSSKeywordValue)
             .value);
 

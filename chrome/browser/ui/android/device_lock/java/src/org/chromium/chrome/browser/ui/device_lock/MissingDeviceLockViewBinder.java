@@ -10,10 +10,12 @@ import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProper
 import static org.chromium.chrome.browser.ui.device_lock.MissingDeviceLockProperties.REMOVE_ALL_LOCAL_DATA_CHECKED;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Stateless Missing Device Lock page view binder. */
+@NullMarked
 public class MissingDeviceLockViewBinder {
     public static void bind(
             PropertyModel model, MissingDeviceLockView view, PropertyKey propertyKey) {

@@ -32,7 +32,7 @@ class PersistentPermanentEntity : public LoopbackServerEntity {
 
   ~PersistentPermanentEntity() override;
 
-  // Factory function for PersistentPermanentEntity. |server_tag| should be a
+  // Factory function for PersistentPermanentEntity. `server_tag` should be a
   // globally unique identifier.
   static std::unique_ptr<LoopbackServerEntity> CreateNew(
       const syncer::DataType& data_type,

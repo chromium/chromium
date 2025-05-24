@@ -76,13 +76,16 @@ exports.getPollingInterval = function() {
  * Matches Subdomains? Yes
  * Matches Third-party? Yes
  * Feature: FetchUploadStreaming
- * Expires: 7/14/2021, 8:59:59 AM
+ * Up to Chrome 95 (ends with the rollout of next Chrome release), no later
+ * than Nov 9, 2021
  *
  * Token for googleapis.com will be registered after google.com's is deployed.
  *
  */
 const OT_TOKEN_GOOGLE_COM =
-    "A70X6iKIlnS3U/OFBWYlZCJ6rRlXum75MZ6pvi68FKsnyeL+XPCA7KWBMeW75d2+xNHMEeFOWjfqMS+34jdvrw4AAAB/eyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkZldGNoVXBsb2FkU3RyZWFtaW5nIiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ==";
+    'A0eNbltY1nd4MP7XTHXnTxWogDL6mWTdgIIKfKOTJoUHNbFFMZQBoiHHjJ9UK9lgYndWFaxOWR7ld8uUjcWmcwIAAAB/eyJvcmlnaW4iOiJodHRwczovL2dvb2dsZS5jb206NDQzIiwiZmVhdHVyZSI6IkZldGNoVXBsb2FkU3RyZWFtaW5nIiwiZXhwaXJ5IjoxNjM2NTAyMzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ==';
+
+
 /**
  * Creates ReadableStream to upload
  * @return {!ReadableStream} ReadableStream to upload
@@ -117,7 +120,7 @@ function isChromeM90OrHigher() {
     return '';
   }();
 
-  const matchUserAgent = function (str) {
+  const matchUserAgent = function(str) {
     return userAgentStr.indexOf(str) != -1;
   };
 
@@ -141,7 +144,7 @@ function isUrlGoogle(url) {
     return false;
   }
   const origin = match[1];
-  return origin.endsWith("google.com");
+  return origin.endsWith('google.com');
 }
 
 /**
@@ -178,18 +181,18 @@ exports.startOriginTrials = function(path, logError) {
   }
 
   // Accept only only google.com and subdoamins.
-  if(!isUrlGoogle(path)) {
+  if (!isUrlGoogle(path)) {
     return;
   }
   // Since 3P OT is not supported yet, we should check the current page matches
   // the path (absolute one?) to disable this OT for cross-origin calls
-  if(!window || !window.document || !isUrlGoogle(window.document.URL)) {
+  if (!window || !window.document || !isUrlGoogle(window.document.URL)) {
     return;
   }
 
   // Enable origin trial by injecting OT <meta> tag
   const tokenElement =
-    /** @type {! HTMLMetaElement} */ (document.createElement('meta'));
+      /** @type {! HTMLMetaElement} */ (document.createElement('meta'));
   tokenElement.httpEquiv = 'origin-trial';
   tokenElement.content = OT_TOKEN_GOOGLE_COM;
   // appendChild() synchronously enables OT.
@@ -202,34 +205,11 @@ exports.startOriginTrials = function(path, logError) {
   // string "[object ReadableStream]" for fallback then it has "Content-Type:
   // text/plain;charset=UTF-8".
   const supportsRequestStreams = !new Request('', {
-    body: new ReadableStream(),
-    method: 'POST',
-  }).headers.has('Content-Type');
-  if (!supportsRequestStreams) {
-    return;
+                                    body: new ReadableStream(),
+                                    method: 'POST',
+                                  }).headers.has('Content-Type');
+
+  if (supportsRequestStreams) {
+    logError('OriginTrial unexpected.');
   }
-
-  // 1st req:  path?ot=1
-  // non-streaming upload request
-  goog.global.fetch(`${path}?ot=1`, {method: 'POST', body: 'test\r\n'})
-    .catch(logError);
-
-  // 2nd req:  path?ot=2
-  // h2-only streaming upload request
-  goog.global.fetch(`${path}?ot=2`, {
-    method: 'POST',
-    body: createStream(),
-    allowHTTP1ForStreamingUpload: false,
-  }).catch(logError);
-
-  // 3rd req:  path?ot=3
-  // h1-allowed streaming upload request
-  goog.global.fetch(`${path}?ot=3`, {
-    method: 'POST',
-    body: createStream(),
-    allowHTTP1ForStreamingUpload: true,
-  }).catch(logError);
-
-  // Example calling a Chrome API:
-  // goog.global.chrome.loadTimes().wasFetchedViaSpdy
 };

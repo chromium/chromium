@@ -8,7 +8,9 @@ import posixpath
 import web_idl
 
 from . import name_style
+from .union_name_mapper import UnionNameMapper
 from .blink_v8_bridge import blink_class_name
+from web_idl.composition_parts import WithExtendedAttributes
 
 
 class PathManager(object):
@@ -36,7 +38,8 @@ class PathManager(object):
     _is_initialized = False
 
     @classmethod
-    def init(cls, root_src_dir, root_gen_dir, component_reldirs):
+    def init(cls, root_src_dir, root_gen_dir, component_reldirs,
+             union_name_mapper):
         """
         Args:
             root_src_dir: Project's root directory, which corresponds to "//"
@@ -50,9 +53,7 @@ class PathManager(object):
         assert isinstance(root_src_dir, str)
         assert isinstance(root_gen_dir, str)
         assert isinstance(component_reldirs, dict)
-
-        cls._blink_path_prefix = posixpath.sep + posixpath.join(
-            "third_party", "blink", "renderer", "")
+        assert isinstance(union_name_mapper, UnionNameMapper)
 
         cls._root_src_dir = os.path.abspath(root_src_dir)
         cls._root_gen_dir = os.path.abspath(root_gen_dir)
@@ -60,6 +61,7 @@ class PathManager(object):
             component: posixpath.normpath(rel_dir)
             for component, rel_dir in component_reldirs.items()
         }
+        cls._union_name_mapper = union_name_mapper
         cls._is_initialized = True
 
     @classmethod
@@ -104,9 +106,22 @@ class PathManager(object):
             self._impl_component = default_component
         elif len(components) == 1:
             component = components[0]
-            self._is_cross_components = False
-            self._api_component = component
-            self._impl_component = component
+            # Global interfaces generally have exposed constructors, which we
+            # don't currently label with their component. If a global interface
+            # is defined in core, put the impl in modules even if no partial
+            # interfaces are defined in modules.
+            # TODO(japhet, caseq): Figure out why exposed constructors don't
+            # influence component calculations.
+            if (isinstance(idl_definition, WithExtendedAttributes)
+                    and "Global" in idl_definition.extended_attributes
+                    and component == "core"):
+                self._is_cross_components = True
+                self._api_component = web_idl.Component("core")
+                self._impl_component = web_idl.Component("modules")
+            else:
+                self._is_cross_components = False
+                self._api_component = component
+                self._impl_component = component
         elif len(components) == 2:
             assert components[0] == "core"
             assert components[1] == "modules"
@@ -136,6 +151,9 @@ class PathManager(object):
             self._blink_dir = None
             self._blink_basename = None
         elif isinstance(idl_definition, web_idl.Union):
+            # See if the name was overridden -- if not, generate one.
+            filename = self._union_name_mapper.file_name(idl_definition)
+
             # In case of IDL unions, underscore is used as a separator of union
             # members, so we don't want any underscore inside a union member.
             # For example, (Foo or Bar or Baz) and (FooBar or Baz) are defined
@@ -144,8 +162,10 @@ class PathManager(object):
             #
             # Avoid name_style.file not to make "Int32Array" into
             # "int_32_array".
-            filename = "v8_union_{}".format("_".join(
-                idl_definition.member_tokens)).lower()
+
+            if not filename:
+                filename = "v8_union_{}".format("_".join(
+                    idl_definition.member_tokens)).lower()
             self._api_basename = filename
             self._impl_basename = filename
             self._blink_dir = None

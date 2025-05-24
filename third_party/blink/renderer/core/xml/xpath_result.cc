@@ -54,7 +54,7 @@ XPathResult::XPathResult(xpath::EvaluationContext& context,
       dom_tree_version_ = document_->DomTreeVersion();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void XPathResult::Trace(Visitor* visitor) const {

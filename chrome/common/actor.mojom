@@ -1,0 +1,285 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module actor.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// This interface is meant to largely mirror the
+// BrowserAction::ActionInformation proto.
+
+// Tool-specific target.
+union ToolTarget {
+  // DOMNodeId for the node this invocation should be applied to.
+  int32 dom_node_id;
+
+  // An x,y pair representing a location relative to the origin at the top-left
+  // corner of the local root frame (i.e. the blink::WebWidget/RenderWidget). In
+  // physical pixels.
+  gfx.mojom.Point coordinate;
+};
+
+// Information specific to a click action.
+struct ClickAction {
+    // Corresponds to ClickAction.ClickType
+  enum Type {
+    kLeft = 1,
+    kRight = 2,
+  };
+
+  // Corresponds to ClickAction.ClickCount
+  enum Count {
+    kSingle = 1,
+    kDouble = 2,
+  };
+  Type type;
+  Count count;
+  ToolTarget target;
+};
+
+// Information specific to a mouse move action.
+struct MouseMoveAction {
+  ToolTarget target;
+};
+
+// Information specific to the type (keyboard input) action.  Note: TypeAction
+// may be implemented in multiple steps (e.g.  individual key events). In some
+// situations, part of the action may complete while another part fails.
+// TypeAction currently returns failure if any part of the action fails.
+// TODO(crbug.com/409333494): Consider how to handle partial success cases like
+// this.
+struct TypeAction {
+  // How the text should be inserted into the target.
+  enum Mode {
+    kDeleteExisting = 0,
+    kPrepend = 1,
+    kAppend = 2,
+  };
+
+  Mode mode;
+  ToolTarget target;
+  // text should be ASCII only for now.
+  string text;
+  bool follow_by_enter;
+};
+
+// Scroll action performs a scroll on the page's viewport or on a specified
+// target element.
+// It currently returns true even for a partial scroll to the given distance
+// and direction.
+// It will provide more precise information about how much it scrolls.
+struct ScrollAction {
+  // Corresponds to ScrollAction.ScrollDirection.
+  // This must be kept in sync with ScrollAction.ScrollDirection enum in
+  // components/optimization_guide/proto/features/actions_data.proto.
+  enum ScrollDirection {
+    // Scroll left.
+    kLeft = 1,
+    // Scroll right.
+    kRight = 2,
+    // Scroll up.
+    kUp = 3,
+    // Scroll down.
+    kDown = 4,
+  };
+
+  // This target is the element to scroll. A null target implies scrolling the
+  // page's viewport. If the scroll action returns failure, it means the target
+  // isn't scrollable.
+  ToolTarget? target;
+  ScrollDirection direction;
+  // Scroll distance in physical pixels, and it should always be positive.
+  float distance;
+};
+
+// Action for selecting an option from a <select> element.
+struct SelectAction {
+  ToolTarget target;
+
+  // The value of the option to set as the currently selected option. The action
+  // fails if the given value doesn't match the value of one of the element's
+  // <option> children. Case-sensitive.
+  string value;
+};
+
+// Performs a left mouse button down on the from_target, then moves to and
+// releases on the to_target.
+struct DragAndReleaseAction {
+  ToolTarget from_target;
+  ToolTarget to_target;
+};
+
+// Union of tool-specific actions.
+union ToolAction {
+  ClickAction click;
+  DragAndReleaseAction drag_and_release;
+  MouseMoveAction mouse_move;
+  ScrollAction scroll;
+  SelectAction select;
+  TypeAction type;
+};
+
+// Result codes for outcomes of an action.
+// kOk     - Action was successful.
+// 10-99   - An error occurred that is not specific to the tool.
+// X00-X99 - A tool-specific error; each tool gets a reserved range of values.
+//
+// These codes will be used in UMA histograms and in
+// optimization_guide.proto.BrowserActionResult.  New Codes may be added to
+// unused values, but existing codes should not be removed, reordered, or
+// renumbered.
+enum ActionResultCode {
+  kOk = 0,
+
+  // A generic error that does not have a more specific code. Avoid using this.
+  kError = 10,
+
+  // Actions are not allowed on the current URL.
+  kUrlBlocked = 11,
+
+  // The task requires opening a new tab, and we were unable to do so.
+  kNewTabCreationFailed = 12,
+
+  // The tab we were trying to act on no longer exists.
+  kTabWentAway = 13,
+
+  // The task for the action no longer exists.
+  kTaskWentAway = 14,
+
+  // The tab we were trying to act on performed a cross-origin navigation and is
+  // no longer able to be acted upon.
+  kCrossOriginNavigation = 15,
+
+  // An unknown tool was requested.
+  kToolUnknown = 16,
+
+  // The target frame in the renderer no longer exists or is shutting down.
+  kFrameWentAway = 17,
+
+  // The target DOMNodeId does not exist in the document.
+  kInvalidDomNodeId = 18,
+
+  // The targeted element cannot be modified because it is disabled.
+  kElementDisabled = 19,
+
+  // The target element is off screen or otherwise clipped by ancestor elements.
+  kElementOffscreen = 20,
+
+  // When using coordinate target, a supplied coordinate is outside the
+  // viewport.
+  kCoordinatesOutOfBounds = 21,
+
+  // Arguments supplied to the tool are invalid.
+  kArgumentsInvalid = 22,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
+  // as it's a browser-side tool.)
+
+  // The requested URL was not valid.
+  kNavigateInvalidUrl = 100,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 200-299: Errors for ClickAction.
+
+  // The click event was suppressed.
+  kClickSuppressed = 200,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 300-399: Errors for DragAndRelease.
+
+  // The `from` coordinate is outside of the viewport bounds.
+  kDragAndReleaseFromOffscreen = 300,
+
+  // The `to` coordinate is outside of the viewport bounds.
+  kDragAndReleaseToOffscreen = 301,
+
+  // The initial mouse move event was suppressed.
+  kDragAndReleaseFromMoveSuppressed = 302,
+
+  // The mouse down event was suppressed.
+  kDragAndReleaseDownSuppressed = 303,
+
+  // The mouse move event to the target was suppressed.
+  kDragAndReleaseToMoveSuppressed = 304,
+
+  // The mouse up event was suppressed.
+  kDragAndReleaseUpSuppressed = 305,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 400-499: Errors for MouseMoveAction.
+
+  // The mouse move event was suppressed.
+  kMouseMoveEventSuppressed = 400,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 500-599: Errors for ScrollAction.
+
+  // The tool is targeting the viewport but the document doesn't have a
+  // scrolling element for the viewport. (Note: this is a rare edge case in
+  // quirks mode. This does NOT mean that the viewport isn't scrollable.)
+  kScrollNoScrollingElement = 500,
+
+  // The targeted element either has no overflow or the overflow is not user
+  // scrollable.
+  kScrollTargetNotUserScrollable = 501,
+
+  // The offset of the target element didn't change after scrolling.
+  kScrollOffsetDidNotChange = 502,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 600-699: Errors for SelectAction.
+
+  // Target element was not a <select>.
+  kSelectInvalidElement = 600,
+
+  // Specified value to select does not exist as an <option> in the <select>.
+  kSelectNoSuchOption = 601,
+
+  // Specified value to select does exist but is disabled.
+  kSelectOptionDisabled = 602,
+
+  // The invoking the tool resulted in an unexpected value.
+  kSelectUnexpectedValue = 603,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 700-799: Errors for TypeAction.
+
+  // TODO(crbug.com/409558980): Add error codes for type tool
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 800-899: Errors for history tool. (Not part of the ToolAction union
+  // as it's a browser-side tool.)
+
+  // Calling GoBack/GoForward resulted in no navigations being created.
+  kHistoryNoNavigationsCreated = 800,
+
+  // Navigations were created but asynchronously cancelled before being started.
+  kHistoryCancelledBeforeStart = 801,
+
+  // Back traversal was requested when at beginning of session history.
+  kHistoryNoBackEntries = 802,
+
+  // Forward traversal was requested when at end of session history.
+  kHistoryNoForwardEntries = 803,
+
+  // History navigation was aborted before commit.
+  kHistoryFailedBeforeCommit = 804,
+
+  // History navigation committed to an error page.
+  kHistoryErrorPage = 805,
+};
+
+// All information required to invoke a tool in the renderer.
+struct ToolInvocation {
+  ToolAction action;
+};
+
+struct ActionResult {
+  // A code with the outcome of the tool invocation.
+  ActionResultCode code;
+
+  // If the code is not kOk, an English language message describing the error.
+  string message;
+};

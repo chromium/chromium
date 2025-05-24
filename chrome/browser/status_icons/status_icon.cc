@@ -9,11 +9,14 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/status_icons/status_icon_observer.h"
+#include "ui/gfx/paint_vector_icon.h"
 
-StatusIcon::StatusIcon() {
-}
+StatusIcon::StatusIcon() = default;
 
-StatusIcon::~StatusIcon() {
+StatusIcon::~StatusIcon() = default;
+
+void StatusIcon::SetIcon(const gfx::VectorIcon& icon) {
+  SetImage(gfx::CreateVectorIcon(icon, SK_ColorBLACK));
 }
 
 void StatusIcon::AddObserver(StatusIconObserver* observer) {
@@ -41,6 +44,17 @@ void StatusIcon::DispatchBalloonClickEvent() {
 #endif
 
 void StatusIcon::ForceVisible() {}
+
+#if BUILDFLAG(IS_MAC)
+void StatusIcon::SetOpenMenuWithSecondaryClick(
+    bool open_menu_with_secondary_click) {}
+
+void StatusIcon::SetImageTemplate(bool is_template) {}
+#endif
+
+StatusIconMenuModel* StatusIcon::GetContextMenuForTesting() {
+  return context_menu_contents_.get();
+}
 
 void StatusIcon::SetContextMenu(std::unique_ptr<StatusIconMenuModel> menu) {
   // The UI may been showing a menu for the current model, don't destroy it

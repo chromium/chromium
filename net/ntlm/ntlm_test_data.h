@@ -21,55 +21,57 @@
 namespace net::ntlm::test {
 
 // Common input values defined in [MS-NLMP] Section 4.2.1.
-constexpr char16_t kPassword[] = {'P', 'a', 's', 's', 'w', 'o', 'r', 'd', '\0'};
-constexpr char16_t kNtlmDomain[] = {'D', 'o', 'm', 'a', 'i', 'n', '\0'};
-constexpr uint8_t kNtlmDomainRaw[] = {'D', 0x00, 'o', 0x00, 'm', 0x00,
-                                      'a', 0x00, 'i', 0x00, 'n', 0x00};
-constexpr char16_t kUser[] = {'U', 's', 'e', 'r', '\0'};
-constexpr char16_t kDomainUserCombined[] = {'D',  'o', 'm', 'a', 'i', 'n',
-                                            '\\', 'U', 's', 'e', 'r', '\0'};
-constexpr char16_t kHostname[] = {'C', 'O', 'M', 'P', 'U', 'T', 'E', 'R', '\0'};
-constexpr char16_t kServer[] = {'S', 'e', 'r', 'v', 'e', 'r', '\0'};
-constexpr uint8_t kServerRaw[] = {'S', 0x00, 'e', 0x00, 'r', 0x00,
-                                  'v', 0x00, 'e', 0x00, 'r', 0x00};
+inline constexpr char16_t kPassword[] = {'P', 'a', 's', 's', 'w',
+                                         'o', 'r', 'd', '\0'};
+inline constexpr char16_t kNtlmDomain[] = {'D', 'o', 'm', 'a', 'i', 'n', '\0'};
+inline constexpr uint8_t kNtlmDomainRaw[] = {'D', 0x00, 'o', 0x00, 'm', 0x00,
+                                             'a', 0x00, 'i', 0x00, 'n', 0x00};
+inline constexpr char16_t kUser[] = {'U', 's', 'e', 'r', '\0'};
+inline constexpr char16_t kDomainUserCombined[] = {
+    'D', 'o', 'm', 'a', 'i', 'n', '\\', 'U', 's', 'e', 'r', '\0'};
+inline constexpr char16_t kHostname[] = {'C', 'O', 'M', 'P', 'U',
+                                         'T', 'E', 'R', '\0'};
+inline constexpr char16_t kServer[] = {'S', 'e', 'r', 'v', 'e', 'r', '\0'};
+inline constexpr uint8_t kServerRaw[] = {'S', 0x00, 'e', 0x00, 'r', 0x00,
+                                         'v', 0x00, 'e', 0x00, 'r', 0x00};
 
 // ASCII Versions of the above strings.
-constexpr char kNtlmDomainAscii[] = "Domain";
-constexpr char kUserAscii[] = "User";
-constexpr char kHostnameAscii[] = "COMPUTER";
+inline constexpr char kNtlmDomainAscii[] = "Domain";
+inline constexpr char kUserAscii[] = "User";
+inline constexpr char kHostnameAscii[] = "COMPUTER";
 
 // Test data obtained from [2].
-constexpr uint8_t kChannelBindings[] = {
+inline constexpr uint8_t kChannelBindings[] = {
     't',  'l',  's',  '-',  's',  'e',  'r',  'v',  'e',  'r',  '-',
     'e',  'n',  'd',  '-',  'p',  'o',  'i',  'n',  't',  ':',  0xea,
     0x05, 0xfe, 0xfe, 0xcc, 0x6b, 0x0b, 0xd5, 0x71, 0xdb, 0xbc, 0x5b,
     0xaa, 0x3e, 0xd4, 0x53, 0x86, 0xd0, 0x44, 0x68, 0x35, 0xf7, 0xb7,
     0x4c, 0x85, 0x62, 0x1b, 0x99, 0x83, 0x47, 0x5f, 0x95, '\0'};
 
-constexpr char kNtlmSpn[] = {'H', 'T', 'T', 'P', '/', 'S',
-                             'e', 'r', 'v', 'e', 'r', '\0'};
-constexpr uint8_t kNtlmSpnRaw[] = {'H', 0x00, 'T', 0x00, 'T', 0x00, 'P', 0x00,
-                                   '/', 0x00, 'S', 0x00, 'e', 0x00, 'r', 0x00,
-                                   'v', 0x00, 'e', 0x00, 'r', 0x00};
+inline constexpr char kNtlmSpn[] = {'H', 'T', 'T', 'P', '/', 'S',
+                                    'e', 'r', 'v', 'e', 'r', '\0'};
+inline constexpr uint8_t kNtlmSpnRaw[] = {
+    'H',  0x00, 'T',  0x00, 'T',  0x00, 'P',  0x00, '/',  0x00, 'S',
+    0x00, 'e',  0x00, 'r',  0x00, 'v',  0x00, 'e',  0x00, 'r',  0x00};
 
 // Input value defined in [MS-NLMP] Section 4.2.1.
-constexpr uint64_t kServerTimestamp = 0;
+inline constexpr uint64_t kServerTimestamp = 0;
 
 // Arbitrary value for client timestamp. The spec does not provide test data
 // or scenarios involving the client timestamp. The relevant thing is that it
 // is not equal to |kServerTimestamp| so it can be determined which timestamp
 // is within the message.
 // Tue, 23 May 2017 20:13:07 +0000
-constexpr uint64_t kClientTimestamp = 131400439870000000;
+inline constexpr uint64_t kClientTimestamp = 131400439870000000;
 
 // Challenge vectors defined in [MS-NLMP] Section 4.2.1.
-constexpr uint8_t kServerChallenge[kChallengeLen] = {0x01, 0x23, 0x45, 0x67,
-                                                     0x89, 0xab, 0xcd, 0xef};
-constexpr uint8_t kClientChallenge[kChallengeLen] = {0xaa, 0xaa, 0xaa, 0xaa,
-                                                     0xaa, 0xaa, 0xaa, 0xaa};
+inline constexpr uint8_t kServerChallenge[kChallengeLen] = {
+    0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
+inline constexpr uint8_t kClientChallenge[kChallengeLen] = {
+    0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa};
 
 // Test input defined in [MS-NLMP] Section 4.2.3.3.
-constexpr uint8_t kChallengeMsgV1[] = {
+inline constexpr uint8_t kChallengeMsgV1[] = {
     0x4e, 0x54, 0x4c, 0x4d, 0x53, 0x53, 0x50, 0x00, 0x02, 0x00, 0x00, 0x00,
     0x0c, 0x00, 0x0c, 0x00, 0x38, 0x00, 0x00, 0x00, 0x33, 0x82, 0x0a, 0x82,
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x00, 0x00, 0x00, 0x00,
@@ -78,7 +80,7 @@ constexpr uint8_t kChallengeMsgV1[] = {
     0x72, 0x00, 0x76, 0x00, 0x65, 0x00, 0x72, 0x00};
 
 // Test input defined in [MS-NLMP] Section 4.2.4.3.
-constexpr uint8_t kChallengeMsgFromSpecV2[] = {
+inline constexpr uint8_t kChallengeMsgFromSpecV2[] = {
     0x4e, 0x54, 0x4c, 0x4d, 0x53, 0x53, 0x50, 0x00, 0x02, 0x00, 0x00, 0x00,
     0x0c, 0x00, 0x0c, 0x00, 0x38, 0x00, 0x00, 0x00, 0x33, 0x82, 0x8a, 0xe2,
     0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef, 0x00, 0x00, 0x00, 0x00,
@@ -104,47 +106,47 @@ constexpr uint8_t kChallengeMsgFromSpecV2[] = {
 //
 // See [MS-NLMP] Section 2.2.2.2 for more information about the Challenge
 // message.
-constexpr uint8_t kMinChallengeMessage[kChallengeHeaderLen] = {
+inline constexpr uint8_t kMinChallengeMessage[kChallengeHeaderLen] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x02, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x07, 0x82,
     0x08, 0x00, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
 
 // The same message as |kMinChallengeMessage| but with the
 // NTLMSSP_NEGOTIATE_UNICODE flag cleared.
-constexpr uint8_t kMinChallengeMessageNoUnicode[kChallengeHeaderLen] = {
+inline constexpr uint8_t kMinChallengeMessageNoUnicode[kChallengeHeaderLen] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x02, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x06, 0x82,
     0x08, 0x00, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
 
 // The same message as |kMinChallengeMessage| but with the
 // NTLMSSP_NEGOTIATE_EXTENDED_SESSIONSECURITY flag cleared.
-constexpr uint8_t kMinChallengeMessageNoSS[kChallengeHeaderLen] = {
+inline constexpr uint8_t kMinChallengeMessageNoSS[kChallengeHeaderLen] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x02, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x07, 0x82,
     0x00, 0x00, 0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef};
 
 // Test result value for NTOWFv1() defined in [MS-NLMP] Section 4.2.2.1.2.
-constexpr uint8_t kExpectedNtlmHashV1[kNtlmHashLen] = {
+inline constexpr uint8_t kExpectedNtlmHashV1[kNtlmHashLen] = {
     0xa4, 0xf4, 0x9c, 0x40, 0x65, 0x10, 0xbd, 0xca,
     0xb6, 0x82, 0x4e, 0xe7, 0xc3, 0x0f, 0xd8, 0x52};
 
 // Test result value for NTOWFv2() defined in [MS-NLMP] Section 4.2.4.1.1.
-constexpr uint8_t kExpectedNtlmHashV2[kNtlmHashLen] = {
+inline constexpr uint8_t kExpectedNtlmHashV2[kNtlmHashLen] = {
     0x0c, 0x86, 0x8a, 0x40, 0x3b, 0xfd, 0x7a, 0x93,
     0xa3, 0x00, 0x1e, 0xf2, 0x2e, 0xf0, 0x2e, 0x3f};
 
 // Test result value defined in [MS-NLMP] Section 4.2.2.1.
-constexpr uint8_t kExpectedNtlmResponseV1[kResponseLenV1] = {
+inline constexpr uint8_t kExpectedNtlmResponseV1[kResponseLenV1] = {
     0x67, 0xc4, 0x30, 0x11, 0xf3, 0x02, 0x98, 0xa2, 0xad, 0x35, 0xec, 0xe6,
     0x4f, 0x16, 0x33, 0x1c, 0x44, 0xbd, 0xbe, 0xd9, 0x27, 0x84, 0x1f, 0x94};
 
 // Test result value defined in [MS-NLMP] Section 4.2.3.2.2.
-constexpr uint8_t kExpectedNtlmResponseWithV1SS[kResponseLenV1] = {
+inline constexpr uint8_t kExpectedNtlmResponseWithV1SS[kResponseLenV1] = {
     0x75, 0x37, 0xf8, 0x03, 0xae, 0x36, 0x71, 0x28, 0xca, 0x45, 0x82, 0x04,
     0xbd, 0xe7, 0xca, 0xf8, 0x1e, 0x97, 0xed, 0x26, 0x83, 0x26, 0x72, 0x32};
 
 // Test result value defined in [MS-NLMP] Section 4.2.3.2.1.
-constexpr uint8_t kExpectedLmResponseWithV1SS[kResponseLenV1] = {
+inline constexpr uint8_t kExpectedLmResponseWithV1SS[kResponseLenV1] = {
     0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
@@ -171,7 +173,7 @@ constexpr uint8_t kExpectedLmResponseWithV1SS[kResponseLenV1] = {
 // |kExpectedTempWithClientTimestampV2| below is used for end to end tests.
 // Having different test data for the server and client time allows testing
 // the logic more correctly.
-constexpr uint8_t kExpectedTempFromSpecV2[] = {
+inline constexpr uint8_t kExpectedTempFromSpecV2[] = {
     0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
     0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x0c, 0x00, 0x44, 0x00, 0x6f, 0x00,
@@ -181,7 +183,7 @@ constexpr uint8_t kExpectedTempFromSpecV2[] = {
 
 // This value is the same as |kExpectedTempFromSpecV2| but with the timestamp
 // field at bytes [8-15] populated with |kClientTimestamp|.
-constexpr uint8_t kExpectedTempWithClientTimestampV2[] = {
+inline constexpr uint8_t kExpectedTempWithClientTimestampV2[] = {
     0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x0b, 0xc8, 0xfd,
     0x00, 0xd4, 0xd2, 0x01, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa, 0xaa,
     0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x0c, 0x00, 0x44, 0x00, 0x6f, 0x00,
@@ -204,7 +206,7 @@ constexpr uint8_t kExpectedTempWithClientTimestampV2[] = {
 // NOTE: The real implementation in default settings would not have such a
 // simple set of AV Pairs since a flags field to indicate the presence of a
 // MIC, and a channel bindings field would also have been added.
-constexpr uint8_t kExpectedTargetInfoFromSpecV2[] = {
+inline constexpr uint8_t kExpectedTargetInfoFromSpecV2[] = {
     0x02, 0x00, 0x0c, 0x00, 0x44, 0x00, 0x6f, 0x00, 0x6d, 0x00, 0x61, 0x00,
     0x69, 0x00, 0x6e, 0x00, 0x01, 0x00, 0x0c, 0x00, 0x53, 0x00, 0x65, 0x00,
     0x72, 0x00, 0x76, 0x00, 0x65, 0x00, 0x72, 0x00, 0x00, 0x00, 0x00, 0x00};
@@ -212,7 +214,7 @@ constexpr uint8_t kExpectedTargetInfoFromSpecV2[] = {
 // This target info is to test the behavior when a server timestamp is
 // present. It is the same as |kExpectedTargetInfoFromSpecV2| but with
 // an additional timestamp AvPair.
-constexpr uint8_t kExpectedTargetInfoFromSpecPlusServerTimestampV2[] = {
+inline constexpr uint8_t kExpectedTargetInfoFromSpecPlusServerTimestampV2[] = {
     0x02, 0x00, 0x0c, 0x00, 0x44, 0x00, 0x6f, 0x00, 0x6d, 0x00, 0x61, 0x00,
     0x69, 0x00, 0x6e, 0x00, 0x01, 0x00, 0x0c, 0x00, 0x53, 0x00, 0x65, 0x00,
     0x72, 0x00, 0x76, 0x00, 0x65, 0x00, 0x72, 0x00, 0x07, 0x00, 0x08, 0x00,
@@ -250,7 +252,7 @@ constexpr uint8_t kExpectedTargetInfoFromSpecPlusServerTimestampV2[] = {
 //
 // AvPair 6 [86-87]  |TargetInfoAvId::kEol|             Av ID = 0x0000
 // AvPair 6 [88-89]                                     Av Length = 0x0000
-constexpr uint8_t kExpectedTargetInfoSpecResponseV2[] = {
+inline constexpr uint8_t kExpectedTargetInfoSpecResponseV2[] = {
     0x02, 0x00, 0x0c, 0x00, 'D',  0x00, 'o',  0x00, 'm',  0x00, 'a',  0x00,
     'i',  0x00, 'n',  0x00, 0x01, 0x00, 0x0c, 0x00, 'S',  0x00, 'e',  0x00,
     'r',  0x00, 'v',  0x00, 'e',  0x00, 'r',  0x00, 0x06, 0x00, 0x04, 0x00,
@@ -261,13 +263,13 @@ constexpr uint8_t kExpectedTargetInfoSpecResponseV2[] = {
     'r',  0x00, 0x00, 0x00, 0x00, 0x00};
 
 // Test result value defined in [MS-NLMP] Section 4.2.4.2.2.
-constexpr uint8_t kExpectedProofFromSpecV2[kNtlmProofLenV2] = {
+inline constexpr uint8_t kExpectedProofFromSpecV2[kNtlmProofLenV2] = {
     0x68, 0xcd, 0x0a, 0xb8, 0x51, 0xe5, 0x1c, 0x96,
     0xaa, 0xbc, 0x92, 0x7b, 0xeb, 0xef, 0x6a, 0x1c};
 
 // The value of the NTLMv2 proof when |kExpectedTargetInfoSpecResponseV2| is
 // the updated target info in the Authenticate message.
-constexpr uint8_t kExpectedProofSpecResponseV2[kNtlmProofLenV2] = {
+inline constexpr uint8_t kExpectedProofSpecResponseV2[kNtlmProofLenV2] = {
     0x01, 0x0c, 0x0b, 0xd1, 0x4e, 0xf7, 0xa2, 0x96,
     0x89, 0xc0, 0xc1, 0x9c, 0xea, 0xe8, 0xb7, 0xdf};
 
@@ -280,12 +282,13 @@ constexpr uint8_t
         0xaf, 0x9c, 0x42, 0xd5, 0x07, 0x82, 0xd2, 0xed};
 
 // Test result data obtained from [2].
-constexpr uint8_t kExpectedChannelBindingHashV2[kChannelBindingsHashLen] = {
-    0x65, 0x86, 0xE9, 0x9D, 0x81, 0xC2, 0xFC, 0x98,
-    0x4E, 0x47, 0x17, 0x2F, 0xD4, 0xDD, 0x03, 0x10};
+inline constexpr uint8_t
+    kExpectedChannelBindingHashV2[kChannelBindingsHashLen] = {
+        0x65, 0x86, 0xE9, 0x9D, 0x81, 0xC2, 0xFC, 0x98,
+        0x4E, 0x47, 0x17, 0x2F, 0xD4, 0xDD, 0x03, 0x10};
 
 // Test result value defined in [MS-NLMP] Section 4.2.4.1.2.
-constexpr uint8_t kExpectedSessionBaseKeyFromSpecV2[kSessionKeyLenV2] = {
+inline constexpr uint8_t kExpectedSessionBaseKeyFromSpecV2[kSessionKeyLenV2] = {
     0x8d, 0xe4, 0x0c, 0xca, 0xdb, 0xc1, 0x4a, 0x82,
     0xf1, 0x5c, 0xb0, 0xad, 0x0d, 0xe9, 0x5c, 0xa3};
 
@@ -302,7 +305,7 @@ constexpr uint8_t
 // |kExpectedAuthenticateMsgSpecResponseV2|.
 // The MIC field in |kExpectedAuthenticateMsgSpecResponseV2| is set to all
 // zeros while calculating the hash.
-constexpr uint8_t kExpectedMicV2[kMicLenV2] = {
+inline constexpr uint8_t kExpectedMicV2[kMicLenV2] = {
     0xf7, 0x36, 0x16, 0x33, 0xf0, 0xad, 0x9b, 0xdf,
     0x4a, 0x7c, 0x42, 0x1b, 0xc6, 0xb8, 0x24, 0xa3};
 
@@ -329,7 +332,7 @@ constexpr uint8_t kExpectedMicV2[kMicLenV2] = {
 //
 // See [MS-NLMP] Section 2.2.2.5 for more detail on flags and 2.2.2.1 for the
 // Negotiate message in general.
-constexpr uint8_t kExpectedNegotiateMsg[kNegotiateMessageLen] = {
+inline constexpr uint8_t kExpectedNegotiateMsg[kNegotiateMessageLen] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x01, 0x00, 0x00,
     0x00, 0x07, 0x82, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00};
@@ -364,7 +367,7 @@ constexpr uint8_t kExpectedNegotiateMsg[kNegotiateMessageLen] = {
 // prior) implementation uses a different payload order than the example.
 // 4) The version field is Windows specific and there is no provision for
 // non-Windows OS information. This message does not include a version field.
-constexpr uint8_t kExpectedAuthenticateMsgSpecResponseV1[] = {
+inline constexpr uint8_t kExpectedAuthenticateMsgSpecResponseV1[] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x03, 0x00, 0x00, 0x00,
     0x18, 0x00, 0x18, 0x00, 0x40, 0x00, 0x00, 0x00, 0x18, 0x00, 0x18, 0x00,
     0x58, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x0c, 0x00, 0x70, 0x00, 0x00, 0x00,
@@ -427,7 +430,7 @@ constexpr uint8_t kExpectedAuthenticateMsgSpecResponseV1[] = {
 // it's presence.
 // 7) Since the server does not provide a timestamp, the client should
 // provide one.
-constexpr uint8_t kExpectedAuthenticateMsgSpecResponseV2[] = {
+inline constexpr uint8_t kExpectedAuthenticateMsgSpecResponseV2[] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x03, 0x00, 0x00, 0x00,
     0x18, 0x00, 0x18, 0x00, 0x58, 0x00, 0x00, 0x00, 0x8a, 0x00, 0x8a, 0x00,
     0x70, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x0c, 0x00, 0xfa, 0x00, 0x00, 0x00,
@@ -495,7 +498,7 @@ constexpr uint8_t kExpectedAuthenticateMsgSpecResponseV2[] = {
 // the hash.
 // 4) As with the NTLMv2 Proof, the MIC is different because the message is
 // different.
-constexpr uint8_t kExpectedAuthenticateMsgToOldV1ChallegeV2[] = {
+inline constexpr uint8_t kExpectedAuthenticateMsgToOldV1ChallegeV2[] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x03, 0x00, 0x00, 0x00,
     0x18, 0x00, 0x18, 0x00, 0x58, 0x00, 0x00, 0x00, 0x6a, 0x00, 0x6a, 0x00,
     0x70, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x0c, 0x00, 0xda, 0x00, 0x00, 0x00,
@@ -537,7 +540,7 @@ constexpr uint8_t kExpectedAuthenticateMsgToOldV1ChallegeV2[] = {
 // [225]- The 's' in the  SPN AvPair is lowercase.
 // [200-215] - The channel binding AvPair in the target info is all zero. See
 //     |kExpectedTargetInfoSpecResponseV2| for more information.
-constexpr uint8_t kExpectedAuthenticateMsgEmptyChannelBindingsV2[] = {
+inline constexpr uint8_t kExpectedAuthenticateMsgEmptyChannelBindingsV2[] = {
     'N',  'T',  'L',  'M',  'S',  'S',  'P',  '\0', 0x03, 0x00, 0x00, 0x00,
     0x18, 0x00, 0x18, 0x00, 0x58, 0x00, 0x00, 0x00, 0x8a, 0x00, 0x8a, 0x00,
     0x70, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x0c, 0x00, 0xfa, 0x00, 0x00, 0x00,

@@ -56,7 +56,7 @@ api::cookies::CookieStore CreateCookieStore(Profile* profile,
                                             base::Value::List tab_ids);
 
 // Dispatch a request to the CookieManager for cookies associated with
-// |url| and |partition_key_collection|.
+// `url` and `partition_key_collection`.
 void GetCookieListFromManager(
     network::mojom::CookieManager* manager,
     const GURL& url,
@@ -122,7 +122,7 @@ ToNetCookiePartitionKey(
 
 // Returns empty collection if no partition_key.
 // Returns CookiePartitionKeyCollection::ContainsAll() if top_level_site has no
-// value. Returns CookiePartitionKeyCollection::FromOptional() if partition_key
+// value. Returns CookiePartitionKeyCollection(partition_key) if partition_key
 // and top_level_site are both present.
 //
 // If no value for partition_key->has_cross_site_ancestor is provided, keys with

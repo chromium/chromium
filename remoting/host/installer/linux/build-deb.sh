@@ -43,14 +43,15 @@ get_version_full() {
 }
 
 usage() {
-  echo "usage: $(basename $0) [-hp] [-o path] [-s path]"
+  echo "usage: $(basename $0) [-hp] [-o path] [-s path] [-O option]"
   echo "-h     this help message"
   echo "-p     just print the expected DEB filename that this will build."
   echo "-s     path to the top of the src tree."
   echo "-o     output directory path."
+  echo "-O     option (no options currently defined)"
 }
 
-while getopts ":s:o:ph" OPTNAME
+while getopts ":s:o:O:ph" OPTNAME
 do
   case $OPTNAME in
     s )
@@ -61,6 +62,9 @@ do
       ;;
     p )
       PRINTDEBNAME=1
+      ;;
+    O )
+      OPTION="$OPTARG"
       ;;
     h )
       usage

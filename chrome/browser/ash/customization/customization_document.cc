@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/customization/customization_document.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -21,7 +22,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -230,7 +230,7 @@ class ServicesCustomizationExternalLoader : public extensions::ExternalLoader {
   }
 
  protected:
-  ~ServicesCustomizationExternalLoader() override {}
+  ~ServicesCustomizationExternalLoader() override = default;
 
  private:
   bool is_apps_set_ = false;
@@ -246,7 +246,7 @@ CustomizationDocument::CustomizationDocument(
     const std::string& accepted_version)
     : accepted_version_(accepted_version) {}
 
-CustomizationDocument::~CustomizationDocument() {}
+CustomizationDocument::~CustomizationDocument() = default;
 
 bool CustomizationDocument::LoadManifestFromFile(
     const base::FilePath& manifest_path) {
@@ -262,14 +262,11 @@ bool CustomizationDocument::LoadManifestFromString(
       manifest,
       base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed_json.has_value()) {
-    LOG(ERROR) << parsed_json.error().message;
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED() << parsed_json.error().message;
   }
 
   if (!parsed_json->is_dict()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   root_ =
@@ -317,7 +314,7 @@ StartupCustomizationDocument::StartupCustomizationDocument(
   Init(statistics_provider);
 }
 
-StartupCustomizationDocument::~StartupCustomizationDocument() {}
+StartupCustomizationDocument::~StartupCustomizationDocument() = default;
 
 StartupCustomizationDocument* StartupCustomizationDocument::GetInstance() {
   return base::Singleton<
@@ -405,7 +402,7 @@ void StartupCustomizationDocument::Init(
       initial_locale_, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // Convert ICU locale to chrome ("en_US" to "en-US", etc.).
-  base::ranges::for_each(configured_locales_, base::i18n::GetCanonicalLocale);
+  std::ranges::for_each(configured_locales_, base::i18n::GetCanonicalLocale);
 
   // Let's always have configured_locales_.front() a valid entry.
   if (configured_locales_.size() == 0)
@@ -544,8 +541,7 @@ base::FilePath
 ServicesCustomizationDocument::GetCustomizedWallpaperDownloadedFileName() {
   const base::FilePath dir = GetCustomizedWallpaperCacheDir();
   if (dir.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return dir;
+    NOTREACHED();
   }
   return dir.Append(kCustomizationDefaultWallpaperDownloadedFile);
 }
@@ -859,9 +855,7 @@ void ServicesCustomizationDocument::StartOEMWallpaperDownload(
   const base::FilePath dir = GetCustomizedWallpaperCacheDir();
   const base::FilePath file = GetCustomizedWallpaperDownloadedFileName();
   if (dir.empty() || file.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    applying->Finished(false);
-    return;
+    NOTREACHED();
   }
 
   wallpaper_downloader_ = std::make_unique<CustomizationWallpaperDownloader>(

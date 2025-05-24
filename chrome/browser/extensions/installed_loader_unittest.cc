@@ -5,20 +5,24 @@
 #include "chrome/browser/extensions/installed_loader.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_service_user_test_base.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -71,7 +75,7 @@ struct HostPermissionsMetricsTestParams {
 
 class InstalledLoaderUnitTest : public ExtensionServiceUserTestBase {
  public:
-  InstalledLoaderUnitTest() {}
+  InstalledLoaderUnitTest() = default;
 
   InstalledLoaderUnitTest(const InstalledLoaderUnitTest&) = delete;
   InstalledLoaderUnitTest& operator=(const InstalledLoaderUnitTest&) = delete;
@@ -108,7 +112,7 @@ const Extension* InstalledLoaderUnitTest::AddExtension(
   PermissionsUpdater updater(profile());
   updater.InitializePermissions(extension.get());
   updater.GrantActivePermissions(extension.get());
-  service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
   return extension.get();
 }
@@ -132,7 +136,7 @@ void InstalledLoaderUnitTest::RunHostPermissionsMetricsTest(
   }
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   histograms.ExpectUniqueSample(kGrantedAccessHistogram,
@@ -164,13 +168,12 @@ void InstalledLoaderUnitTest::RunEmitUserHistogramsTest(
     int nonuser_expected_total_count,
     int user_expected_total_count) {
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
-  loader.RecordExtensionsIncrementedMetricsForTesting(testing_profile());
+  InstalledLoader loader(profile());
+  loader.RecordExtensionsIncrementedMetricsForTesting(profile());
 
   histograms.ExpectTotalCount("Extensions.LoadAllTime2", 1);
   histograms.ExpectTotalCount("Extensions.LoadAll", 1);
   histograms.ExpectTotalCount("Extensions.Disabled", 1);
-  histograms.ExpectTotalCount("Extensions.ManifestVersion", 1);
   histograms.ExpectTotalCount("Extensions.LoadAllTime2.NonUser",
                               nonuser_expected_total_count);
   histograms.ExpectTotalCount("Extensions.LoadAllTime2.User",
@@ -187,7 +190,7 @@ TEST_F(InstalledLoaderUnitTest,
   AddExtension({"<all_urls>"}, kManifestInternal);
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   // The extension didn't have withheld hosts, so a single `false` record
@@ -205,7 +208,7 @@ TEST_F(InstalledLoaderUnitTest,
       .SetWithholdHostPermissions(true);
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   // The extension had withheld hosts, so a single `true` record should be
@@ -227,7 +230,7 @@ TEST_F(InstalledLoaderUnitTest,
   modifier.GrantHostPermission(GURL("https://chromium.org/"));
 
   base::HistogramTester histograms;
-  InstalledLoader loader(service());
+  InstalledLoader loader(profile());
   loader.RecordExtensionsMetricsForTesting();
 
   histograms.ExpectUniqueSample(kHasWithheldHostsHistogram, true, 1);

@@ -269,7 +269,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // and metrics logging,
   virtual uint32_t GetBluetoothClass() const = 0;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Returns the transport type of the device. Some devices only support one
   // of BR/EDR or LE, and some support both.
   virtual BluetoothTransport GetType() const = 0;
@@ -653,6 +653,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // it hasn't been called yet.
   virtual base::Time GetLastUpdateTime() const;
 
+  // Update last_update_time_ so that the device appears as expired.
+  void SetAsExpiredForTesting();
+
 #if BUILDFLAG(IS_APPLE)
   // Returns true if this device is a Low Energy device.
   virtual bool IsLowEnergyDevice() = 0;
@@ -726,8 +729,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   FRIEND_TEST_ALL_PREFIXES(BluetoothTest,
                            BluetoothGattConnection_DisconnectGatt_Cleanup);
   FRIEND_TEST_ALL_PREFIXES(BluetoothTest, GetName_NullName);
-  FRIEND_TEST_ALL_PREFIXES(BluetoothTest, RemoveOutdatedDevices);
-  FRIEND_TEST_ALL_PREFIXES(BluetoothTest, RemoveOutdatedDeviceGattConnect);
 
   FRIEND_TEST_ALL_PREFIXES(
       BluetoothTestWinrt,
@@ -812,9 +813,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDevice {
   // at creation & deletion.
   void AddGattConnection(BluetoothGattConnection*);
   void RemoveGattConnection(BluetoothGattConnection*);
-
-  // Update last_update_time_ so that the device appears as expired.
-  void SetAsExpiredForTesting();
 
   // Raw pointer to adapter owning this device object. Subclasses use platform
   // specific pointers via adapter_.

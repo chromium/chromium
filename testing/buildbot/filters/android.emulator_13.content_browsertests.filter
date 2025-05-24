@@ -18,3 +18,8 @@
 
 # crbug.com/1428300
 -OpenCodec/WebRtcMediaRecorderTest.StartAndDataAvailable/2
+
+# crbug.com/343335591
+-FormControlsBrowserTest.Checkbox
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select

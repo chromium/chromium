@@ -54,9 +54,9 @@ class FakeConnectionFactoryTest : public ::testing::Test {
                                         kIpv6Address, kPort),
               nullptr);
 
-    int flags = ipv6 ? cricket::PORTALLOCATOR_ENABLE_IPV6 |
-                           cricket::PORTALLOCATOR_ENABLE_IPV6_ON_WIFI
-                     : cricket::kDefaultPortAllocatorFlags;
+    int flags = ipv6 ? webrtc::PORTALLOCATOR_ENABLE_IPV6 |
+                           webrtc::PORTALLOCATOR_ENABLE_IPV6_ON_WIFI
+                     : webrtc::kDefaultPortAllocatorFlags;
     factory->Prepare(flags);
     ready.Wait();
 
@@ -71,7 +71,7 @@ class FakeConnectionFactoryTest : public ::testing::Test {
 
 TEST_F(FakeConnectionFactoryTest, CreateConnectionIPv4) {
   std::unique_ptr<FakeConnectionFactory> factory = GetFactory();
-  const cricket::Connection* conn = factory->CreateConnection(
+  const webrtc::Connection* conn = factory->CreateConnection(
       webrtc::IceCandidateType::kHost, kIpv4Address, kPort);
   ASSERT_NE(conn, nullptr);
   EXPECT_EQ(conn->remote_candidate().address().ToString(), kIpv4AddressString);
@@ -85,9 +85,9 @@ TEST_F(FakeConnectionFactoryTest, CreateConnectionIPv4) {
 }
 
 TEST_F(FakeConnectionFactoryTest, CreateConnectionIPv6) {
-  if (rtc::HasIPv6Enabled()) {
+  if (webrtc::HasIPv6Enabled()) {
     std::unique_ptr<FakeConnectionFactory> factory = GetFactory(/*ipv6=*/true);
-    const cricket::Connection* conn = factory->CreateConnection(
+    const webrtc::Connection* conn = factory->CreateConnection(
         webrtc::IceCandidateType::kHost, kIpv6Address, kPort);
     ASSERT_NE(conn, nullptr);
     EXPECT_EQ(conn->remote_candidate().address().ToString(),
@@ -104,7 +104,7 @@ TEST_F(FakeConnectionFactoryTest, CreateConnectionIPv6) {
 
 TEST_F(FakeConnectionFactoryTest, ConvertToIceConnectionIPv4) {
   std::unique_ptr<FakeConnectionFactory> factory = GetFactory();
-  const cricket::Connection* conn = factory->CreateConnection(
+  const webrtc::Connection* conn = factory->CreateConnection(
       webrtc::IceCandidateType::kHost, kIpv4Address, kPort);
   ASSERT_NE(conn, nullptr);
   blink::IceConnection iceConn(conn);
@@ -115,9 +115,9 @@ TEST_F(FakeConnectionFactoryTest, ConvertToIceConnectionIPv4) {
 }
 
 TEST_F(FakeConnectionFactoryTest, ConvertToIceConnectionIPv6) {
-  if (rtc::HasIPv6Enabled()) {
+  if (webrtc::HasIPv6Enabled()) {
     std::unique_ptr<FakeConnectionFactory> factory = GetFactory(/*ipv6=*/true);
-    const cricket::Connection* conn = factory->CreateConnection(
+    const webrtc::Connection* conn = factory->CreateConnection(
         webrtc::IceCandidateType::kHost, kIpv6Address, kPort);
     ASSERT_NE(conn, nullptr);
     blink::IceConnection iceConn(conn);

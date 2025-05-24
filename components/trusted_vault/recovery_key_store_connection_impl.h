@@ -28,10 +28,14 @@ class RecoveryKeyStoreConnectionImpl : public RecoveryKeyStoreConnection {
       std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher);
   ~RecoveryKeyStoreConnectionImpl() override;
 
+  // RecoveryKeyStoreConnection:
   std::unique_ptr<Request> UpdateRecoveryKeyStore(
       const CoreAccountInfo& account_info,
       const trusted_vault_pb::Vault& request,
       UpdateRecoveryKeyStoreCallback callback) override;
+  std::unique_ptr<Request> ListRecoveryKeyStores(
+      const CoreAccountInfo& account_info,
+      ListRecoveryKeyStoresCallback callback) override;
 
  private:
   scoped_refptr<network::SharedURLLoaderFactory> URLLoaderFactory();

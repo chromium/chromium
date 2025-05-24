@@ -15,6 +15,7 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/combobox_model_observer.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/prefix_delegate.h"
@@ -33,7 +34,7 @@ namespace views {
 namespace test {
 class ComboboxTestApi;
 class InteractionTestUtilSimulatorViews;
-}
+}  // namespace test
 
 class MenuRunner;
 class PrefixSelector;
@@ -71,10 +72,8 @@ class VIEWS_EXPORT Combobox : public View,
     callback_ = std::move(callback);
   }
 
-  // Set menu model.
-  void SetMenuModel(std::unique_ptr<ui::MenuModel> menu_model) {
-    menu_model_ = std::move(menu_model);
-  }
+  // Gets the matching menu-model adapter for testing.
+  ui::MenuModel* menu_model_for_testing() const { return menu_model_.get(); }
 
   // Gets/Sets the selected index.
   std::optional<size_t> GetSelectedIndex() const { return selected_index_; }
@@ -181,7 +180,7 @@ class VIEWS_EXPORT Combobox : public View,
   void ArrowButtonPressed(const ui::Event& event);
 
   // Show the drop down list
-  void ShowDropDownMenu(ui::MenuSourceType source_type);
+  void ShowDropDownMenu(ui::mojom::MenuSourceType source_type);
 
   // Cleans up after the menu as closed
   void OnMenuClosed(Button::ButtonState original_button_state);

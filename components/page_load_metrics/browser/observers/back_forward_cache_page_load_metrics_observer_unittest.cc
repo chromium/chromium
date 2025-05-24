@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
@@ -28,7 +29,8 @@ class BackForwardCachePageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverContentTestHarness {
  public:
   void RegisterObservers(page_load_metrics::PageLoadTracker* tracker) override {
-    auto observer = std::make_unique<BackForwardCachePageLoadMetricsObserver>();
+    auto observer = std::make_unique<BackForwardCachePageLoadMetricsObserver>(
+        IsIncognito());
     observer_ = observer.get();
     // TODO(crbug.com/40203717): Remove this when removing the DCHECK for lack
     // of page end metric logging from the back forward page load metrics
@@ -46,7 +48,8 @@ class BackForwardCachePageLoadMetricsObserverTest
     NavigateAndCommit(GURL(kTestUrl1));
 
     observer_with_fake_delegate_ =
-        std::make_unique<BackForwardCachePageLoadMetricsObserver>();
+        std::make_unique<BackForwardCachePageLoadMetricsObserver>(
+            IsIncognito());
     fake_delegate_ = std::make_unique<FakePageLoadMetricsObserverDelegate>();
     fake_delegate_->web_contents_ = web_contents();
     observer_with_fake_delegate_->SetDelegate(fake_delegate_.get());
@@ -60,6 +63,8 @@ class BackForwardCachePageLoadMetricsObserverTest
     test_clock_ = std::make_unique<base::SimpleTestTickClock>();
     test_clock_->SetNowTicks(base::TimeTicks() + base::Milliseconds(25000));
   }
+
+  virtual bool IsIncognito() { return false; }
 
   void AssertHistoryNavigationRecordedAmpNavigation(bool was_amp) {
     auto entry_map = tester()->test_ukm_recorder().GetMergedEntriesByName(
@@ -448,7 +453,7 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 TEST_F(BackForwardCachePageLoadMetricsObserverTest,
        DoesNotLogForegroundDurationIfNeverEnteredBFCache) {
   auto never_in_bfcache_observer =
-      std::make_unique<BackForwardCachePageLoadMetricsObserver>();
+      std::make_unique<BackForwardCachePageLoadMetricsObserver>(false);
   never_in_bfcache_observer->SetDelegate(fake_delegate_.get());
   InvokeMeasureForegroundDuration(never_in_bfcache_observer.get(),
                                   /*simulate_app_backgrounding=*/false);
@@ -601,4 +606,221 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest, TestLogsUserInitiated) {
   EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
             result_metrics[3].begin()->first);
   EXPECT_FALSE(result_metrics[3].begin()->second);
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, RequestAnimationFrameTime) {
+  page_load_metrics::mojom::BackForwardCacheTiming bf_cache_timing;
+
+  bf_cache_timing.request_animation_frames_after_back_forward_cache_restore
+      .push_back(base::Milliseconds(50));
+  bf_cache_timing.request_animation_frames_after_back_forward_cache_restore
+      .push_back(base::Milliseconds(80));
+  bf_cache_timing.request_animation_frames_after_back_forward_cache_restore
+      .push_back(base::Milliseconds(100));
+
+  observer_with_fake_delegate_
+      ->OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
+          bf_cache_timing, 0);
+
+  std::vector<std::pair<std::string, int>> metrics = {
+      std::make_pair(
+          internal::
+              kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore,
+          48),
+      std::make_pair(
+          internal::
+              kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore,
+          75),
+      std::make_pair(
+          internal::
+              kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore,
+          94)};
+
+  for (auto metric : metrics) {
+    tester()->histogram_tester().ExpectTotalCount(metric.first, 1);
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(metric.first),
+                testing::ElementsAre(base::Bucket(metric.second, 1)));
+  }
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestoreIncognito,
+      0);
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, UserInteractionLatency) {
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+
+  page_load_metrics::mojom::UserInteractionLatenciesPtr
+      user_interaction_latencies_ptr = page_load_metrics::mojom::
+          UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& user_interaction_latencies =
+      user_interaction_latencies_ptr->get_user_interaction_latencies();
+  user_interaction_latencies.emplace_back(
+      page_load_metrics::mojom::UserInteractionLatency::New(
+          base::Milliseconds(3000), 0,
+          current_time + base::Milliseconds(1000)));
+  fake_delegate_->responsiveness_metrics_normalization_
+      .AddNewUserInteractionLatencies(1, *user_interaction_latencies_ptr);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+      1);
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::
+              kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore),
+      testing::ElementsAre(base::Bucket(2964, 1)));
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito,
+      0);
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverTest, MaxCumulativeShiftScore) {
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->normalized_cls_data_
+      .session_windows_gap1000ms_max5000ms_max_cls = 1.42;
+
+  observer_with_fake_delegate_->OnRestoreFromBackForwardCache(
+      timing_, &navigation_handle_);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore,
+      1);
+  EXPECT_THAT(
+      tester()->histogram_tester().GetAllSamples(
+          internal::
+              kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore),
+      testing::ElementsAre(base::Bucket(13439, 1)));
+
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::
+          kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito,
+      0);
+}
+
+class BackForwardCachePageLoadMetricsObserverIncognitoTest
+    : public BackForwardCachePageLoadMetricsObserverTest {
+ public:
+  bool IsIncognito() override { return true; }
+};
+
+TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
+       RequestAnimationFrameTimeIncognito) {
+  page_load_metrics::mojom::BackForwardCacheTiming bf_cache_timing;
+
+  bf_cache_timing.request_animation_frames_after_back_forward_cache_restore
+      .push_back(base::Milliseconds(50));
+  bf_cache_timing.request_animation_frames_after_back_forward_cache_restore
+      .push_back(base::Milliseconds(80));
+  bf_cache_timing.request_animation_frames_after_back_forward_cache_restore
+      .push_back(base::Milliseconds(100));
+
+  observer_with_fake_delegate_
+      ->OnRequestAnimationFramesAfterBackForwardCacheRestoreInPage(
+          bf_cache_timing, 0);
+
+  std::vector<std::pair<std::string, int>> metrics = {
+      std::make_pair(
+          internal::
+              kHistogramFirstRequestAnimationFrameAfterBackForwardCacheRestore,
+          48),
+      std::make_pair(
+          internal::
+              kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestore,
+          75),
+      std::make_pair(
+          internal::
+              kHistogramSecondRequestAnimationFrameAfterBackForwardCacheRestoreIncognito,
+          75),
+      std::make_pair(
+          internal::
+              kHistogramThirdRequestAnimationFrameAfterBackForwardCacheRestore,
+          94)};
+
+  for (auto metric : metrics) {
+    tester()->histogram_tester().ExpectTotalCount(metric.first, 1);
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(metric.first),
+                testing::ElementsAre(base::Bucket(metric.second, 1)));
+  }
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
+       UserInteractionLatencyIncognito) {
+  base::TimeTicks current_time = base::TimeTicks::Now();
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+
+  page_load_metrics::mojom::UserInteractionLatenciesPtr
+      user_interaction_latencies_ptr = page_load_metrics::mojom::
+          UserInteractionLatencies::NewUserInteractionLatencies({});
+  auto& user_interaction_latencies =
+      user_interaction_latencies_ptr->get_user_interaction_latencies();
+  user_interaction_latencies.emplace_back(
+      page_load_metrics::mojom::UserInteractionLatency::New(
+          base::Milliseconds(3000), 0,
+          current_time + base::Milliseconds(1000)));
+  fake_delegate_->responsiveness_metrics_normalization_
+      .AddNewUserInteractionLatencies(1, *user_interaction_latencies_ptr);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  for (
+      auto histogram :
+      {internal::
+           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore,
+       internal::
+           kUserInteractionLatencyHighPercentile2_MaxEventDuration_AfterBackForwardCacheRestore_Incognito}) {
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(histogram),
+                testing::ElementsAre(base::Bucket(2964, 1)));
+  }
+}
+
+TEST_F(BackForwardCachePageLoadMetricsObserverIncognitoTest,
+       MaxCumulativeShiftScoreIncognito) {
+  auto fake_bfcache_restore =
+      PageLoadMetricsObserverDelegate::BackForwardCacheRestore(
+          /*was_in_foreground=*/true, base::TimeTicks());
+
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->AddBackForwardCacheRestore(fake_bfcache_restore);
+  fake_delegate_->normalized_cls_data_
+      .session_windows_gap1000ms_max5000ms_max_cls = 1.42;
+
+  observer_with_fake_delegate_->OnRestoreFromBackForwardCache(
+      timing_, &navigation_handle_);
+
+  observer_with_fake_delegate_->OnComplete(timing_);
+
+  for (
+      auto histogram :
+      {internal::
+           kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore,
+       internal::
+           kLayoutInstability_MaxCumulativeShiftScore_AfterBackForwardCacheRestore_Incognito}) {
+    tester()->histogram_tester().ExpectTotalCount(histogram, 1);
+    EXPECT_THAT(tester()->histogram_tester().GetAllSamples(histogram),
+                testing::ElementsAre(base::Bucket(13439, 1)));
+  }
 }

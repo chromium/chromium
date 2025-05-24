@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/worker_devtools_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -49,113 +50,20 @@ DedicatedWorkerHostFactoryImpl::DedicatedWorkerHostFactoryImpl(
     const blink::StorageKey& creator_storage_key,
     const net::IsolationInfo& isolation_info,
     network::mojom::ClientSecurityStatePtr creator_client_security_state,
-    base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-    base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter)
+    base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter)
     : worker_process_id_(worker_process_id),
       creator_(creator),
       ancestor_render_frame_host_id_(ancestor_render_frame_host_id),
       creator_storage_key_(creator_storage_key),
       isolation_info_(isolation_info),
       creator_client_security_state_(std::move(creator_client_security_state)),
-      creator_coep_reporter_(std::move(creator_coep_reporter)),
-      ancestor_coep_reporter_(std::move(ancestor_coep_reporter)) {
+      creator_coep_reporter_(std::move(creator_coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(creator_client_security_state_);
 }
 
 DedicatedWorkerHostFactoryImpl::~DedicatedWorkerHostFactoryImpl() = default;
 
-void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
-    const blink::DedicatedWorkerToken& token,
-    const GURL& script_url,
-    const url::Origin& renderer_origin,
-    mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
-    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
-    CreateWorkerHostCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  // Always invoke the callback. If we don't, even if we exit with a
-  // mojo::ReportBadMessage, the callback will explode as it is torn down.
-  // Ideally we'd have a handle to our binding and we'd manually close it
-  // before returning, letting the callback die without being run.
-  DCHECK(callback);
-
-  if (base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    std::move(callback).Run(
-        creator_client_security_state_->cross_origin_embedder_policy,
-        /*back_forward_cache_controller_host=*/mojo::NullRemote());
-    mojo::ReportBadMessage("DWH_INVALID_WORKER_CREATION");
-    return;
-  }
-
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->HostsOrigin(worker_process_id_, renderer_origin)) {
-    std::move(callback).Run(
-        creator_client_security_state_->cross_origin_embedder_policy,
-        /*back_forward_cache_controller_host=*/mojo::NullRemote());
-    RenderFrameHostImpl* ancestor_render_frame_host =
-        RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
-    SCOPED_CRASH_KEY_STRING32(
-        "", "is_primary_main_frame",
-        (ancestor_render_frame_host &&
-         ancestor_render_frame_host->IsInPrimaryMainFrame())
-            ? "true"
-            : "false");
-    SCOPED_CRASH_KEY_STRING256(
-        "", "lifecycle_state",
-        ancestor_render_frame_host
-            ? RenderFrameHostImpl::LifecycleStateImplToString(
-                  ancestor_render_frame_host->lifecycle_state())
-            : "no_rfh");
-    SCOPED_CRASH_KEY_STRING256(
-        "", "browser_origin",
-        ancestor_render_frame_host
-            ? ancestor_render_frame_host->GetLastCommittedOrigin()
-                  .GetDebugString()
-            : "");
-    SCOPED_CRASH_KEY_STRING256("", "renderer_origin",
-                               renderer_origin.GetDebugString());
-    mojo::ReportBadMessage("DWH_INVALID_ORIGIN");
-    return;
-  }
-
-  // Get the dedicated worker service.
-  auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);
-  auto* service =
-      GetDedicatedWorkerServiceImplForRenderProcessHost(worker_process_host);
-  if (!service) {
-    std::move(callback).Run(
-        creator_client_security_state_->cross_origin_embedder_policy,
-        /*back_forward_cache_controller_host=*/mojo::NullRemote());
-    return;
-  }
-
-  if (service->HasToken(token)) {
-    std::move(callback).Run(
-        creator_client_security_state_->cross_origin_embedder_policy,
-        /*back_forward_cache_controller_host=*/mojo::NullRemote());
-    mojo::ReportBadMessage("DWH_INVALID_WORKER_TOKEN");
-    return;
-  }
-
-  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy =
-      creator_client_security_state_->cross_origin_embedder_policy;
-
-  auto* host = new DedicatedWorkerHost(
-      service, token, worker_process_host, creator_,
-      ancestor_render_frame_host_id_, creator_storage_key_, renderer_origin,
-      isolation_info_, std::move(creator_client_security_state_),
-      std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
-      std::move(host_receiver));
-  host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
-  host->MaybeCountWebFeature(script_url);
-
-  std::move(callback).Run(
-      cross_origin_embedder_policy,
-      host->BindAndPassRemoteForBackForwardCacheControllerHost());
-}
-
-// PlzDedicatedWorker:
 void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     const blink::DedicatedWorkerToken& token,
     const GURL& script_url,
@@ -170,10 +78,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       "DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad",
       "script_url", script_url);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
-    mojo::ReportBadMessage("DWH_BROWSER_SCRIPT_FETCH_DISABLED");
-    return;
-  }
+  base::TimeTicks start_time = base::TimeTicks::Now();
 
   // Get the dedicated worker service.
   auto* worker_process_host = RenderProcessHost::FromID(worker_process_id_);
@@ -193,9 +98,7 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     RenderFrameHostImpl* ancestor_render_frame_host =
         RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
     if (!ancestor_render_frame_host ||
-        ancestor_render_frame_host->GetPermissionStatus(
-            blink::PermissionType::STORAGE_ACCESS_GRANT) !=
-            blink::mojom::PermissionStatus::GRANTED) {
+        !ancestor_render_frame_host->DoesDocumentHaveStorageAccess()) {
       mojo::ReportBadMessage("DWH_STORAGE_ACCESS_NOT_GRANTED");
       return;
     }
@@ -217,8 +120,9 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       service, token, worker_process_host, creator_,
       ancestor_render_frame_host_id_, creator_storage_key_, renderer_origin,
       isolation_info_, std::move(creator_client_security_state_),
-      std::move(creator_coep_reporter_), std::move(ancestor_coep_reporter_),
-      pending_remote_host.InitWithNewPipeAndPassReceiver());
+      std::move(creator_coep_reporter_),
+      pending_remote_host.InitWithNewPipeAndPassReceiver(),
+      storage_access_api_status);
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(
       broker.InitWithNewPipeAndPassReceiver());
@@ -226,7 +130,10 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
       std::move(client));
   remote_client->OnWorkerHostCreated(
       std::move(broker), std::move(pending_remote_host), renderer_origin);
+  base::UmaHistogramTimes("Worker.BrowserProcess.WorkerHostCreateTime",
+                          base::TimeTicks::Now() - start_time);
 
+  base::TimeTicks host_created_time = base::TimeTicks::Now();
   auto devtools_throttle_handle =
       base::MakeRefCounted<DevToolsThrottleHandle>(base::BindOnce(
           &DedicatedWorkerHost::StartScriptLoad, host->GetWeakPtr(), script_url,
@@ -238,8 +145,12 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
   // devtools to be able to instrument the URLLoaderFactory. This call will
   // create a DevtoolsAgentHost.
   WorkerDevToolsManager::GetInstance().WorkerCreated(
-      host, worker_process_host->GetID(), ancestor_render_frame_host_id_,
-      std::move(devtools_throttle_handle));
+      host, worker_process_host->GetDeprecatedID(),
+      ancestor_render_frame_host_id_, std::move(devtools_throttle_handle));
+  base::UmaHistogramTimes("Worker.BrowserProcess.StartScriptLoadTime",
+                          base::TimeTicks::Now() - start_time);
+  base::UmaHistogramTimes("Worker.BrowserProcess.DevToolsCreateTime",
+                          base::TimeTicks::Now() - host_created_time);
 }
 
 }  // namespace content

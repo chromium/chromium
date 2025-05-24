@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/test/h264_decoder.h"
 
 #include <linux/v4l2-controls.h>
@@ -971,7 +976,7 @@ VideoDecoder::Result H264Decoder::DecodeNextFrame(const int frame_number,
   }
 
   if (slice_ready_queue_.empty()) {
-    NOTREACHED_IN_MIGRATION() << "Stream ended with |slice_ready_queue_| empty";
+    NOTREACHED() << "Stream ended with |slice_ready_queue_| empty";
   }
 
   H264SliceMetadata picture = slice_ready_queue_.front();

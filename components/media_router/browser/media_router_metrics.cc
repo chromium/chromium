@@ -51,21 +51,28 @@ std::string GetHistogramNameForProvider(
 }
 
 PresentationUrlType GetPresentationUrlType(const GURL& url) {
-  if (url.SchemeIs(kDialPresentationUrlScheme))
+  if (url.SchemeIs(kDialPresentationUrlScheme)) {
     return PresentationUrlType::kDial;
-  if (url.SchemeIs(kCastPresentationUrlScheme))
+  }
+  if (url.SchemeIs(kCastPresentationUrlScheme)) {
     return PresentationUrlType::kCast;
-  if (url.SchemeIs(kCastDialPresentationUrlScheme))
+  }
+  if (url.SchemeIs(kCastDialPresentationUrlScheme)) {
     return PresentationUrlType::kCastDial;
-  if (url.SchemeIs(kRemotePlaybackPresentationUrlScheme))
+  }
+  if (url.SchemeIs(kRemotePlaybackPresentationUrlScheme)) {
     return PresentationUrlType::kRemotePlayback;
+  }
   if (base::StartsWith(url.spec(), kLegacyCastPresentationUrlPrefix,
-                       base::CompareCase::INSENSITIVE_ASCII))
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     return PresentationUrlType::kCastLegacy;
-  if (url.SchemeIs(url::kHttpsScheme))
+  }
+  if (url.SchemeIs(url::kHttpsScheme)) {
     return PresentationUrlType::kHttps;
-  if (url.SchemeIs(url::kHttpScheme))
+  }
+  if (url.SchemeIs(url::kHttpScheme)) {
     return PresentationUrlType::kHttp;
+  }
   return PresentationUrlType::kOther;
 }
 
@@ -128,8 +135,7 @@ void MediaRouterMetrics::RecordGmcDialogLoaded(const base::TimeDelta& delta) {
 // static
 void MediaRouterMetrics::RecordMediaRouterFileFormat(
     const media::container_names::MediaContainerName format) {
-  base::UmaHistogramEnumeration(
-      kHistogramMediaRouterFileFormat, format);
+  base::UmaHistogramEnumeration(kHistogramMediaRouterFileFormat, format);
 }
 
 // static

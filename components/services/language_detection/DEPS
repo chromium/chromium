@@ -1,3 +1,0 @@
-include_rules = [
-    "+components/translate/core/language_detection",
-]

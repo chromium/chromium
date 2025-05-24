@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <limits>
+#include <variant>
 
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -16,9 +17,9 @@
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
-#include "gpu/GLES2/gl2extchromium.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gl/gl_bindings.h"
 
 namespace viz {
 
@@ -80,9 +81,11 @@ bool FilterOperationSupported(const cc::FilterOperation& operation) {
 gfx::CALayerResult FromRenderPassQuad(
     const DisplayResourceProvider* resource_provider,
     const AggregatedRenderPassDrawQuad* quad,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     OverlayCandidate* ca_layer_overlay) {
   if (render_pass_backdrop_filters.count(quad->render_pass_id)) {
@@ -142,11 +145,14 @@ gfx::CALayerResult FromTextureQuad(
     const DisplayResourceProvider* resource_provider,
     const TextureDrawQuad* quad,
     OverlayCandidate* ca_layer_overlay) {
-  ResourceId resource_id = quad->resource_id();
-  if (!resource_provider->IsOverlayCandidate(resource_id))
+  ResourceId resource_id = quad->resource_id;
+  if (!resource_provider->IsOverlayCandidate(resource_id)) {
     return gfx::kCALayerFailedTextureNotCandidate;
-  if (quad->y_flipped) {
-    auto transform = absl::get<gfx::Transform>(ca_layer_overlay->transform);
+  }
+  const bool y_flipped =
+      resource_provider->GetOrigin(resource_id) == kBottomLeft_GrSurfaceOrigin;
+  if (y_flipped) {
+    auto transform = std::get<gfx::Transform>(ca_layer_overlay->transform);
     // The anchor point is at the bottom-left corner of the CALayer. The
     // transformation that flips the contents of the layer without changing its
     // frame is the composition of a vertical flip about the anchor point, and a
@@ -171,7 +177,7 @@ gfx::CALayerResult FromTileQuad(
     const DisplayResourceProvider* resource_provider,
     const TileDrawQuad* quad,
     OverlayCandidate* ca_layer_overlay) {
-  ResourceId resource_id = quad->resource_id();
+  ResourceId resource_id = quad->resource_id;
   if (!resource_provider->IsOverlayCandidate(resource_id))
     return gfx::kCALayerFailedTileNotCandidate;
   ca_layer_overlay->resource_id = resource_id;
@@ -188,9 +194,11 @@ class CALayerOverlayProcessorInternal {
       const DisplayResourceProvider* resource_provider,
       const gfx::RectF& display_rect,
       const DrawQuad* quad,
-      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+      const base::flat_map<AggregatedRenderPassId,
+                           raw_ptr<cc::FilterOperations, CtnExperimental>>&
           render_pass_filters,
-      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+      const base::flat_map<AggregatedRenderPassId,
+                           raw_ptr<cc::FilterOperations, CtnExperimental>>&
           render_pass_backdrop_filters,
       OverlayCandidate* ca_layer_overlay,
       bool* skip,
@@ -246,9 +254,7 @@ class CALayerOverlayProcessorInternal {
       case DrawQuad::Material::kTextureContent: {
         const TextureDrawQuad* texture_draw_quad =
             TextureDrawQuad::MaterialCast(quad);
-        // Stream video and video frame counts as a yuv draw quad.
-        if (texture_draw_quad->is_stream_video ||
-            texture_draw_quad->is_video_frame) {
+        if (texture_draw_quad->is_video_frame) {
           yuv_draw_quad_count += 1;
         }
         return FromTextureQuad(resource_provider, texture_draw_quad,
@@ -351,9 +357,11 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
     AggregatedRenderPass* render_pass,
     const gfx::RectF& display_rect,
     QuadList* quad_list,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     OverlayCandidateList* ca_layer_overlays) const {
   bool failed = false;
@@ -376,7 +384,7 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
 
       // Put HDR videos into an underlay.
       if (enable_hdr_underlays_) {
-        if (resource_provider->GetColorSpace(texture_quad->resource_id())
+        if (resource_provider->GetColorSpace(texture_quad->resource_id)
                 .IsHDR()) {
           force_quad_to_overlay = true;
         }
@@ -401,9 +409,11 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
     AggregatedRenderPass* render_pass,
     const DisplayResourceProvider* resource_provider,
     const gfx::RectF& display_rect,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     OverlayCandidateList* ca_layer_overlays) {
   const QuadList& quad_list = render_pass->quad_list;
@@ -490,9 +500,11 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
     AggregatedRenderPass* render_pass,
     const gfx::RectF& display_rect,
     const DrawQuad* quad,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_filters,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters,
     gfx::ProtectedVideoType protected_video_type,
     OverlayCandidateList* ca_layer_overlays) const {
@@ -515,8 +527,7 @@ bool CALayerOverlayProcessor::PutQuadInSeparateOverlay(
     return true;
 
   ca_layer.protected_video_type = protected_video_type;
-  render_pass->ReplaceExistingQuadWithSolidColor(at, SkColors::kTransparent,
-                                                 SkBlendMode::kSrcOver);
+  render_pass->ReplaceExistingQuadWithHolePunch(at);
   ca_layer_overlays->push_back(ca_layer);
   return true;
 }

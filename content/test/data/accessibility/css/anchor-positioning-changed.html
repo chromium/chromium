@@ -1,0 +1,88 @@
+<!--
+@BLINK-ALLOW:details*
+@EXECUTE-AND-WAIT-FOR:addAriaControls()
+@EXECUTE-AND-WAIT-FOR:removeTooltip()
+@EXECUTE-AND-WAIT-FOR:addAnchor()
+@EXECUTE-AND-WAIT-FOR:changeAnchorId()
+@EXECUTE-AND-WAIT-FOR:changeTargetId()
+-->
+<html>
+<head><style>
+.anchor1 {
+  anchor-name: --anchor-1;
+  margin: 10dvh;
+}
+
+.anchor2 {
+  anchor-name: --anchor-2;
+}
+
+.target1 {
+  position: absolute;
+  position-anchor: --anchor-1;
+  top: anchor(bottom);
+  right: anchor(right);
+}
+
+.target2 {
+  position: absolute;
+  position-anchor: --anchor-2;
+  top: anchor(bottom);
+  left: anchor(left);
+}
+
+</style></head>
+<body>
+  <p class="target1" id="t1">target1</p>
+  <p role="tooltip" class="target2">target2</p>
+  <button class="anchor1">anchor1</button>
+  <button class="anchor2">anchor2</button>
+</body>
+</html>
+<script>
+// Before the functions below run, anchor1 has detailsId set. anchor2 does not.
+
+// Step 1: Adding aria-controls to anchor1 should remove the detailsId.
+// Expectation: Neither anchor1 nor anchor2 have detailsId set.
+function addAriaControls() {
+  document.querySelector('.anchor1').setAttribute("aria-controls", "t1");
+  document.title = "addAriaControls() done";
+  return "addAriaControls() done";
+}
+
+// Step 2: Removing role=tooltip from target2 should set detailsId on anchor2.
+// Expectation: Only anchor2 has detailsId set.
+function removeTooltip() {
+  document.querySelector('.target2').setAttribute("role", "checkbox");
+  document.title = "removeTooltip() done";
+  return "removeTooltip() done";
+}
+
+// Step 3: Add a header with the same name as anchor2. target2 should be anchored
+// to the heading instead of anchor2 now.
+// Expectation: Only heading has detailsId set.
+function addAnchor() {
+  let h1 = document.createElement("h1");
+  h1.innerText = "my-heading";
+  Object.assign(h1.style, {"anchor-name": "--anchor-2"});
+  document.body.appendChild(h1);
+  document.title = "addAnchor() done";
+  return "addAnchor() done";
+}
+
+// Step 4: Change the heading's id.
+// Expectation: The heading should still have detailsId set.
+function changeAnchorId() {
+  document.getElementsByTagName('h1').id = "abc";
+  document.title = "changeAnchorId() done";
+  return "changeAnchorId() done";
+}
+
+// Step 5: Change target2's id.
+// Expectation: The heading should still have detailsId set.
+function changeTargetId() {
+  document.querySelector('.target2').id = "abc";
+  document.title = "changeTargetId() done";
+  return "changeTargetId() done";
+}
+</script>

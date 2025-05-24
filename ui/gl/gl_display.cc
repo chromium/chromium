@@ -20,6 +20,8 @@
 #include "base/synchronization/atomic_flag.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
+#include "gl_display.h"
+#include "gl_switches.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gl/angle_platform_impl.h"
 #include "ui/gl/egl_util.h"
@@ -29,6 +31,7 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/startup_trace.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -127,8 +130,6 @@
 #define EGL_ANGLE_feature_control 1
 #define EGL_FEATURE_NAME_ANGLE 0x3460
 #define EGL_FEATURE_CATEGORY_ANGLE 0x3461
-#define EGL_FEATURE_DESCRIPTION_ANGLE 0x3462
-#define EGL_FEATURE_BUG_ANGLE 0x3463
 #define EGL_FEATURE_STATUS_ANGLE 0x3464
 #define EGL_FEATURE_COUNT_ANGLE 0x3465
 #define EGL_FEATURE_OVERRIDES_ENABLED_ANGLE 0x3466
@@ -163,6 +164,7 @@ EGLDisplay GetPlatformANGLEDisplay(
     const std::vector<std::string>& enabled_features,
     const std::vector<std::string>& disabled_features,
     const std::vector<EGLAttrib>& extra_display_attribs) {
+  GPU_STARTUP_TRACE_EVENT("gl_display::GetPlatformANGLEDisplay");
   std::vector<EGLAttrib> display_attribs(extra_display_attribs);
 
   display_attribs.push_back(EGL_PLATFORM_ANGLE_TYPE_ANGLE);
@@ -229,7 +231,7 @@ EGLDisplay GetPlatformANGLEDisplay(
         display_attribs.push_back(EGL_HIGH_POWER_ANGLE);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -283,6 +285,13 @@ EGLDisplay GetDisplayFromType(
           display, EGL_PLATFORM_ANGLE_TYPE_D3D9_ANGLE, enabled_angle_features,
           disabled_angle_features, extra_display_attribs);
     case ANGLE_D3D11:
+      return GetPlatformANGLEDisplay(
+          display, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE, enabled_angle_features,
+          disabled_angle_features, extra_display_attribs);
+    case ANGLE_D3D11_WARP:
+      extra_display_attribs.push_back(EGL_PLATFORM_ANGLE_DEVICE_TYPE_ANGLE);
+      extra_display_attribs.push_back(
+          EGL_PLATFORM_ANGLE_DEVICE_TYPE_D3D_WARP_ANGLE);
       return GetPlatformANGLEDisplay(
           display, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE, enabled_angle_features,
           disabled_angle_features, extra_display_attribs);
@@ -376,8 +385,7 @@ EGLDisplay GetDisplayFromType(
           display, EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE, enabled_angle_features,
           disabled_angle_features, extra_display_attribs);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return EGL_NO_DISPLAY;
+      NOTREACHED();
   }
 }
 
@@ -390,6 +398,8 @@ ANGLEImplementation GetANGLEImplementationFromDisplayType(
     case ANGLE_D3D11_NULL:
     case ANGLE_D3D11on12:
       return ANGLEImplementation::kD3D11;
+    case ANGLE_D3D11_WARP:
+      return ANGLEImplementation::kD3D11Warp;
     case ANGLE_OPENGL:
     case ANGLE_OPENGL_EGL:
     case ANGLE_OPENGL_NULL:
@@ -423,6 +433,8 @@ const char* DisplayTypeString(DisplayType display_type) {
       return "D3D9";
     case ANGLE_D3D11:
       return "D3D11";
+    case ANGLE_D3D11_WARP:
+      return "D3D11Warp";
     case ANGLE_D3D11_NULL:
       return "D3D11Null";
     case ANGLE_OPENGL:
@@ -452,8 +464,7 @@ const char* DisplayTypeString(DisplayType display_type) {
     case ANGLE_METAL_NULL:
       return "MetalNull";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "Err";
+      NOTREACHED();
   }
 }
 
@@ -536,8 +547,7 @@ GLDisplayPlatform* GLDisplay::GetAs() {
   bool type_checked = false;
   switch (type_) {
     case NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case EGL:
       type_checked = std::is_same<GLDisplayPlatform, GLDisplayEGL>::value;
@@ -709,6 +719,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
                                      std::vector<DisplayType> init_displays,
                                      EGLDisplayPlatform native_display,
                                      gl::GLDisplayEGL* existing_display) {
+  GPU_STARTUP_TRACE_EVENT("gl::GLDisplayEGL::InitializeDisplay");
   if (display_ != EGL_NO_DISPLAY)
     return true;
 
@@ -761,13 +772,16 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
       }
     }
 
-    if (!eglInitialize(display, nullptr, nullptr)) {
-      bool is_last = disp_index == init_displays.size() - 1;
+    {
+      GPU_STARTUP_TRACE_EVENT("eglInitializeFn display");
+      if (!eglInitialize(display, nullptr, nullptr)) {
+        bool is_last = disp_index == init_displays.size() - 1;
 
-      LOG(ERROR) << "eglInitialize " << DisplayTypeString(display_type)
-                 << " failed with error " << GetLastEGLErrorString()
-                 << (is_last ? "" : ", trying next display type");
-      continue;
+        LOG(ERROR) << "eglInitialize " << DisplayTypeString(display_type)
+                   << " failed with error " << GetLastEGLErrorString()
+                   << (is_last ? "" : ", trying next display type");
+        continue;
+      }
     }
 
     if (!existing_display) {
@@ -804,6 +818,7 @@ bool GLDisplayEGL::InitializeDisplay(bool supports_angle,
 }
 
 void GLDisplayEGL::InitializeCommon(bool for_testing) {
+  GPU_STARTUP_TRACE_EVENT("gl::GLDisplayEGL::InitializeCommon");
   // According to https://source.android.com/compatibility/android-cdd.html the
   // EGL_IMG_context_priority extension is mandatory for Virtual Reality High
   // Performance support, but due to a bug in Android Nougat the extension

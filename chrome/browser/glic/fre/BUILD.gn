@@ -1,0 +1,93 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_glic)
+
+source_set("fre") {
+  sources = [
+    "fre_util.cc",
+    "fre_util.h",
+    "fre_webui_contents_container.cc",
+    "fre_webui_contents_container.h",
+    "glic_fre_controller.cc",
+    "glic_fre_controller.h",
+    "glic_fre_dialog_view.cc",
+    "glic_fre_dialog_view.h",
+    "glic_fre_page_handler.cc",
+    "glic_fre_page_handler.h",
+    "glic_fre_ui.cc",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/background/glic",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/browser_ui",
+    "//chrome/browser/resources/glic/fre:resources_grit",
+    "//chrome/browser/themes",
+    "//components/language/core/common",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "glic_fre.mojom" ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  webui_module_path = "/"
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "glic_fre_controller_unittest.cc" ]
+  deps = [
+    ":fre",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/background/glic",
+    "//chrome/browser/glic",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//content/test:test_support",
+    "//testing/gtest:gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "glic_fre_controller_browsertest.cc" ]
+  deps = [
+    ":fre",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support:test_support",
+    "//chrome/browser/ui:ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest:gtest",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "glic_fre_controller_interactive_uitest.cc" ]
+  deps = [
+    ":fre",
+    "//chrome/browser",
+    "//chrome/browser/glic",
+    "//chrome/browser/glic/test_support:test_support",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//ui/base:test_support",
+  ]
+}

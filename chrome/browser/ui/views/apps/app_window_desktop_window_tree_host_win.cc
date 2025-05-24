@@ -20,15 +20,14 @@ AppWindowDesktopWindowTreeHostWin::AppWindowDesktopWindowTreeHostWin(
     views::DesktopNativeWidgetAura* desktop_native_widget_aura)
     : DesktopWindowTreeHostWin(app_window->widget(),
                                desktop_native_widget_aura),
-      app_window_(app_window) {
-}
+      app_window_(app_window) {}
 
-AppWindowDesktopWindowTreeHostWin::~AppWindowDesktopWindowTreeHostWin() {
-}
+AppWindowDesktopWindowTreeHostWin::~AppWindowDesktopWindowTreeHostWin() =
+    default;
 
 bool AppWindowDesktopWindowTreeHostWin::GetClientAreaInsets(
     gfx::Insets* insets,
-    HMONITOR monitor) const {
+    int frame_thickness) const {
   // The inset added below is only necessary for the native glass frame, i.e.
   // not for colored frames drawn by Chrome, or when DWM is disabled.
   // In fullscreen the frame is not visible.
@@ -36,7 +35,7 @@ bool AppWindowDesktopWindowTreeHostWin::GetClientAreaInsets(
     return false;
   }
 
-  *insets = app_window_->frame_view()->GetClientAreaInsets(monitor);
+  *insets = app_window_->frame_view()->GetClientAreaInsets(frame_thickness);
 
   return true;
 }

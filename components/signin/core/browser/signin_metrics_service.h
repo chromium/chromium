@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_METRICS_SERVICE_H_
 #define COMPONENTS_SIGNIN_CORE_BROWSER_SIGNIN_METRICS_SERVICE_H_
 
-#include <string>
-
 #include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -70,8 +68,12 @@ class SigninMetricsService : public KeyedService,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnRefreshTokenRemovedForAccount(
       const CoreAccountId& account_id) override;
+  void OnRefreshTokensLoaded() override;
 
  private:
+  // KeyedService.
+  void Shutdown() override;
+
   // Helper handling functions for error analysis for different sign in states.
   void HandleSyncErrors(
       const GoogleServiceAuthError& error,
@@ -86,9 +88,11 @@ class SigninMetricsService : public KeyedService,
       const CoreAccountId& account_id,
       signin_metrics::AccessPoint access_point);
   void RecordSigninInterceptionMetrics(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       signin_metrics::AccessPoint access_point);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  void UpdateIsManagedForAllAccounts();
 
   const raw_ref<signin::IdentityManager> identity_manager_;
   const raw_ref<PrefService> pref_service_;

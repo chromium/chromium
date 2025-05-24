@@ -5,13 +5,15 @@
 package org.chromium.android_webview;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.net.NetworkChangeNotifierAutoDetect;
 
 /**
- * Registration policy to make sure we only listen to network changes when
- * there are live webview instances.
+ * Registration policy to make sure we only listen to network changes when there are live webview
+ * instances.
  */
 @Lifetime.Singleton
+@NullMarked
 public class AwNetworkChangeNotifierRegistrationPolicy
         extends NetworkChangeNotifierAutoDetect.RegistrationPolicy
         implements AwContentsLifecycleNotifier.Observer {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <atomic>
 #include <iterator>
 #include <map>
@@ -13,20 +14,17 @@
 #include <vector>
 
 #include "base/base_switches.h"
-#include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -181,8 +179,8 @@ int NumTabs() {
 // Returns the total number of loading tabs across all Browsers, for all
 // Profiles.
 int NumLoadingTabs() {
-  return base::ranges::count_if(AllTabContentses(),
-                                &content::WebContents::IsLoading);
+  return std::ranges::count_if(AllTabContentses(),
+                               &content::WebContents::IsLoading);
 }
 
 bool IsLoginTab(WebContents* web_contents) {
@@ -360,7 +358,7 @@ class FailLoadsAfterLoginObserver : public LoadObserver::Observer {
 
 FailLoadsAfterLoginObserver::FailLoadsAfterLoginObserver()
     : waiting_for_navigation_(false) {
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       AllTabContentses(),
       std::inserter(tabs_needing_navigation_, tabs_needing_navigation_.end()),
       &content::WebContents::IsLoading);
@@ -946,7 +944,6 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
   std::unique_ptr<base::RunLoop> run_loop_;
   // Only accessed on the UI thread.
@@ -970,7 +967,6 @@ CaptivePortalBrowserTest::CaptivePortalBrowserTest()
       scoped_domain_(false),
 #endif
       browser_list_(BrowserList::GetInstance()) {
-  feature_list_.InitAndEnableFeature(kCaptivePortalInterstitial);
 }
 
 CaptivePortalBrowserTest::~CaptivePortalBrowserTest() = default;
@@ -1195,10 +1191,10 @@ CaptivePortalBrowserTest::GetStateOfTabReloaderAt(Browser* browser,
 
 int CaptivePortalBrowserTest::NumTabsWithState(
     captive_portal::CaptivePortalTabReloader::State state) const {
-  return base::ranges::count(AllTabContentses(), state,
-                             [this](content::WebContents* web_contents) {
-                               return GetStateOfTabReloader(web_contents);
-                             });
+  return std::ranges::count(AllTabContentses(), state,
+                            [this](content::WebContents* web_contents) {
+                              return GetStateOfTabReloader(web_contents);
+                            });
 }
 
 int CaptivePortalBrowserTest::NumBrokenTabs() const {
@@ -2954,11 +2950,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 #endif
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
   PrefService* pref_service = g_browser_process->local_state();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, the local_state is shared between all users so the user-set
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
   pref_service = browser()->profile()->GetPrefs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   pref_service->SetString(prefs::kDnsOverHttpsMode,
                           SecureDnsConfig::kModeSecure);
@@ -3005,11 +3001,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest, MAYBE_SecureDnsCaptivePortal) {
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                        MAYBE_SecureDnsErrorTriggersCheck) {
   PrefService* pref_service = g_browser_process->local_state();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, the local_state is shared between all users so the user-set
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
   pref_service = browser()->profile()->GetPrefs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   pref_service->SetString(prefs::kDnsOverHttpsTemplates,
                           "https://bar.test/dns-query{?dns}");
   pref_service->SetString(prefs::kDnsOverHttpsMode,
@@ -3058,11 +3054,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                        MAYBE_SlowLoadSecureDnsErrorWithCaptivePortal) {
   PrefService* pref_service = g_browser_process->local_state();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, the local_state is shared between all users so the user-set
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
   pref_service = browser()->profile()->GetPrefs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   pref_service->SetString(prefs::kDnsOverHttpsTemplates,
                           "https://bar.test/dns-query{?dns}");
   pref_service->SetString(prefs::kDnsOverHttpsMode,
@@ -3099,11 +3095,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
 IN_PROC_BROWSER_TEST_F(CaptivePortalBrowserTest,
                        MAYBE_SlowLoadSecureDnsErrorAfterLogin) {
   PrefService* pref_service = g_browser_process->local_state();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Chrome OS, the local_state is shared between all users so the user-set
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the local_state is shared between all users so the user-set
   // pref is stored in the profile's pref service.
   pref_service = browser()->profile()->GetPrefs();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   pref_service->SetString(prefs::kDnsOverHttpsTemplates,
                           "https://bar.test/dns-query{?dns}");
   pref_service->SetString(prefs::kDnsOverHttpsMode,

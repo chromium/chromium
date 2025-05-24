@@ -6,22 +6,23 @@
  * @fileoverview Handle tap on 'CHROME_ANNOTATION' elements.
  */
 
-import {TextDecoration} from '//ios/web/annotations/resources/text_decoration';
-import {LiveTaskTimer, TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
+import type {TextDecoration} from '//ios/web/annotations/resources/text_decoration.js';
+import type {TaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
+import {LiveTaskTimer} from '//ios/web/annotations/resources/text_tasks.js';
 
 // Consumer of CHROME_ANNOTATION `HTMLElement` taps.
-type AnnotationsTapConsumer = {
+export interface AnnotationsTapConsumer {
   (element: HTMLElement, cancel: boolean): void;
-};
+}
 
 // Delay while checking for DOM mutations.
-const DOM_MUTATION_DELAY_MS = 300;
+export const DOM_MUTATION_DELAY_MS = 300;
 
 // Monitors DOM mutations between instance construction until a call to
 // `stopObserving`.
 class MutationsTracker {
   // Returns true if DOM mutations occurred.
-  public hasMutations = false;
+  hasMutations = false;
 
   private mutationObserver: MutationObserver;
   private mutationExtendId = 0;
@@ -32,7 +33,7 @@ class MutationsTracker {
   // delayed/network action that will cause a mutation very soon after the
   // click).
   private mutationCallback = (mutationList: MutationRecord[]) => {
-    for (let mutation of mutationList) {
+    for (const mutation of mutationList) {
       if (this.strict ||
           mutation.target.contains(this.initialEvent.target as Node)) {
         this.hasMutations = true;
@@ -88,7 +89,7 @@ class MutationsTracker {
 }
 
 // Class to monitor taps on CHROME_ANNOTATION elements.
-class TextClick {
+export class TextClick {
   private mutationObserver: MutationsTracker|null = null;
 
   constructor(
@@ -138,8 +139,9 @@ class TextClick {
   // Sets all `pointerEvents` style in the decoration list to the given `value`.
   private toggleDecorationsPointerEvents(value: string): void {
     this.decorationsProvider()?.forEach((decoration) => {
-      if (!decoration.live)
+      if (!decoration.live) {
         return;
+      }
       decoration.replacements.forEach((replacement) => {
         if (replacement instanceof HTMLElement) {
           replacement.style.pointerEvents = value;
@@ -187,10 +189,4 @@ class TextClick {
       this.cancelObserver();
     }
   }
-}
-
-export {
-  DOM_MUTATION_DELAY_MS,
-  AnnotationsTapConsumer,
-  TextClick,
 }

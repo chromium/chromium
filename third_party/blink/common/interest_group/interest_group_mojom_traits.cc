@@ -22,7 +22,8 @@ bool StructTraits<
           &out->selectable_buyer_and_seller_reporting_ids) ||
       !data.ReadMetadata(&out->metadata) ||
       !data.ReadAdRenderId(&out->ad_render_id) ||
-      !data.ReadAllowedReportingOrigins(&out->allowed_reporting_origins)) {
+      !data.ReadAllowedReportingOrigins(&out->allowed_reporting_origins) ||
+      !data.ReadCreativeScanningMetadata(&out->creative_scanning_metadata)) {
     return false;
   }
   return true;
@@ -80,6 +81,8 @@ bool StructTraits<blink::mojom::InterestGroupDataView, blink::InterestGroup>::
       !data.ReadTrustedBiddingSignalsKeys(&out->trusted_bidding_signals_keys) ||
       !data.ReadTrustedBiddingSignalsCoordinator(
           &out->trusted_bidding_signals_coordinator) ||
+      !data.ReadViewAndClickCountsProviders(
+          &out->view_and_click_counts_providers) ||
       !data.ReadUserBiddingSignals(&out->user_bidding_signals) ||
       !data.ReadAds(&out->ads) || !data.ReadAdComponents(&out->ad_components) ||
       !data.ReadAdSizes(&out->ad_sizes) ||

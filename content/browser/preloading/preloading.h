@@ -36,20 +36,20 @@ namespace content_preloading_predictor {
 // might navigate to in order to perform preloading operations.
 // For more details please see:
 // https://wicg.github.io/nav-speculation/prerendering.html#speculation-rules
-static constexpr PreloadingPredictor kSpeculationRules(50, "SpeculationRules");
+inline constexpr PreloadingPredictor kSpeculationRules(50, "SpeculationRules");
 
 // When a mouse down of a mouse back button is seen.
-static constexpr PreloadingPredictor kMouseBackButton(51, "MouseBackButton");
+inline constexpr PreloadingPredictor kMouseBackButton(51, "MouseBackButton");
 
 // Same with the kSpeculationRules, but the rules are injected from an isolated
 // world, i.e. extensions or embedder's built-in features.
-static constexpr PreloadingPredictor kSpeculationRulesFromIsolatedWorld(
+inline constexpr PreloadingPredictor kSpeculationRulesFromIsolatedWorld(
     52,
     "SpeculationRulesFromIsolatedWorld");
 
 // Same with the kSpeculationRules, but the rules are injected by the browser
 // as part of the auto speculation rules feature.
-static constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
+inline constexpr PreloadingPredictor kSpeculationRulesFromAutoSpeculationRules(
     53,
     "SpeculationRulesFromAutoSpeculationRules");
 }  // namespace content_preloading_predictor

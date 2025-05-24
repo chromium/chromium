@@ -20,10 +20,6 @@ namespace enterprise_connectors {
 // interface to them.
 class ConnectorsManagerBase {
  public:
-  // Map used to cache reporting connectors settings.
-  using ReportingConnectorsSettings =
-      std::map<ReportingConnector, std::vector<ReportingServiceSettings>>;
-
   ConnectorsManagerBase(PrefService* pref_service,
                         const ServiceProviderConfig* config,
                         bool observe_prefs = true);
@@ -33,24 +29,22 @@ class ConnectorsManagerBase {
   // Validates which settings should be applied to a reporting event
   // against cached policies. Cache the policy value the first time this is
   // called for every different connector.
-  std::optional<ReportingSettings> GetReportingSettings(
-      ReportingConnector connector);
+  std::optional<ReportingSettings> GetReportingSettings();
 
   // Checks if the corresponding connector is enabled.
-  bool IsReportingConnectorEnabled(ReportingConnector connector) const;
+  bool IsReportingConnectorEnabled() const;
 
-  std::vector<std::string> GetReportingServiceProviderNames(
-      ReportingConnector connector);
+  std::vector<std::string> GetReportingServiceProviderNames();
 
   // Public testing function.
-  const ReportingConnectorsSettings& GetReportingConnectorsSettingsForTesting()
-      const;
+  const std::vector<ReportingServiceSettings>&
+  GetReportingConnectorsSettingsForTesting() const;
 
  protected:
   // Sets up |pref_change_registrar_|. Used by the constructor and
   // SetUpForTesting.
   virtual void StartObservingPrefs(PrefService* pref_service);
-  void StartObservingPref(ReportingConnector connector);
+  void StartObservingPref();
 
   const PrefService* prefs() const { return pref_change_registrar_.prefs(); }
 
@@ -58,7 +52,7 @@ class ConnectorsManagerBase {
   // the Connector policies have a valid provider.
   raw_ptr<const ServiceProviderConfig> service_provider_config_;
 
-  ReportingConnectorsSettings reporting_connector_settings_;
+  std::vector<ReportingServiceSettings> reporting_connector_settings_;
 
   // Used to track changes of connector policies and propagate them in
   // |connector_settings_|.
@@ -69,10 +63,10 @@ class ConnectorsManagerBase {
 
  private:
   // Read and cache the policy corresponding to the reporting connector.
-  void CacheReportingConnectorPolicy(ReportingConnector connector);
+  void CacheReportingConnectorPolicy();
 
   // Re-cache reporting connector policy.
-  void OnPrefChanged(ReportingConnector connector);
+  void OnPrefChanged();
 };
 
 }  // namespace enterprise_connectors

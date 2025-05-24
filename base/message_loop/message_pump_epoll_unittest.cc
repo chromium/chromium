@@ -99,17 +99,6 @@ class MessagePumpEpollTest : public testing::Test {
 
 namespace {
 
-// Concrete implementation of MessagePumpEpoll::FdWatcher that does
-// nothing useful.
-class StupidWatcher : public MessagePumpEpoll::FdWatcher {
- public:
-  ~StupidWatcher() override = default;
-
-  // base:MessagePumpEpoll::FdWatcher interface
-  void OnFileCanReadWithoutBlocking(int fd) override {}
-  void OnFileCanWriteWithoutBlocking(int fd) override {}
-};
-
 TEST_F(MessagePumpEpollTest, QuitOutsideOfRun) {
   auto pump = std::make_unique<MessagePumpEpoll>();
   ASSERT_DCHECK_DEATH(pump->Quit());
@@ -220,7 +209,7 @@ void FatalClosure() {
 
 class QuitWatcher : public BaseWatcher {
  public:
-  QuitWatcher(base::OnceClosure quit_closure)
+  explicit QuitWatcher(base::OnceClosure quit_closure)
       : quit_closure_(std::move(quit_closure)) {}
 
   void OnFileCanReadWithoutBlocking(int /* fd */) override {

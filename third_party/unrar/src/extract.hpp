@@ -37,7 +37,7 @@ class CmdExtract
     void ConvertDosPassword(Archive &Arc,SecPassword &DestPwd);
 #endif
     void ExtrCreateDir(Archive &Arc,const std::wstring &ArcFileName);
-    bool ExtrCreateFile(Archive &Arc,File &CurFile);
+    bool ExtrCreateFile(Archive &Arc,File &CurFile,bool WriteOnly);
     bool CheckUnpVer(Archive &Arc,const std::wstring &ArcFileName);
 #ifndef SFX_MODULE
     void AnalyzeArchive(const std::wstring &ArcName,bool Volume,bool NewNumbering);

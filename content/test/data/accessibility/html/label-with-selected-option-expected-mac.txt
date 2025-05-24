@@ -1,0 +1,42 @@
+AXWebArea
+++AXGroup
+++++AXCheckBox AXTitle='Test 1: Flash the screen 2 times.' AXValue=0
+++++AXGroup
+++++++AXStaticText AXValue='Test 1: Flash the screen '
+++++++AXPopUpButton AXValue='2'
+++++++++AXMenuItem AXValue='2'
+++++++AXStaticText AXValue=' times.'
+++AXGroup
+++++AXCheckBox AXTitle='Test 2: Flash the screen 2 times.' AXValue=0
+++++AXGroup
+++++++AXStaticText AXValue='Test 2: Flash the screen '
+++++++AXList
+++++++++AXMenuItem AXValue='1'
+++++++++AXMenuItem AXValue='2'
+++++++++AXMenuItem AXValue='3'
+++++++AXStaticText AXValue=' times.'
+++AXGroup
+++++AXCheckBox AXTitle='Test 3: Flash the screen two times.' AXValue=0
+++++AXGroup
+++++++AXStaticText AXValue='Test 3: Flash the screen '
+++++++AXPopUpButton AXValue='two'
+++++++++AXMenuItem AXValue='two'
+++++++AXStaticText AXValue=' times.'
+++AXGroup
+++++AXCheckBox AXTitle='Test 4: Flash the screen two times.' AXValue=0
+++++AXGroup
+++++++AXStaticText AXValue='Test 4: Flash the screen '
+++++++AXList
+++++++++AXMenuItem AXValue='1'
+++++++++AXMenuItem AXValue='two'
+++++++++AXMenuItem AXValue='3'
+++++++AXStaticText AXValue=' times.'
+++AXGroup
+++++AXCheckBox AXTitle='Test 5: Flash the screen two 3 times.' AXValue=0
+++++AXGroup
+++++++AXStaticText AXValue='Test 5: Flash the screen '
+++++++AXList
+++++++++AXMenuItem AXValue='1 not selected'
+++++++++AXMenuItem AXValue='two selected'
+++++++++AXMenuItem AXValue='3 selected'
+++++++AXStaticText AXValue=' times.'

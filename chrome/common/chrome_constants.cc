@@ -109,6 +109,8 @@ const base::FilePath::CharType kCRLSetFilename[] =
     FPL("Certificate Revocation Lists");
 const base::FilePath::CharType kCustomDictionaryFileName[] =
     FPL("Custom Dictionary.txt");
+const base::FilePath::CharType kDeviceBoundSessionsFilename[] =
+    FPL("Device Bound Sessions");
 const base::FilePath::CharType kDownloadServiceStorageDirname[] =
     FPL("Download Service");
 const base::FilePath::CharType kExtensionActivityLogFilename[] =

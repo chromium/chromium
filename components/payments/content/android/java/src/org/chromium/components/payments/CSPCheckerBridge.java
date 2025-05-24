@@ -4,12 +4,11 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
@@ -24,6 +23,7 @@ import org.chromium.url.GURL;
  *   bridge.destroy();
  */
 @JNINamespace("payments")
+@NullMarked
 public class CSPCheckerBridge {
     // Performs the CSP checks.
     private final CSPChecker mImpl;
@@ -35,7 +35,7 @@ public class CSPCheckerBridge {
      * Initializes the CSP checker bridge.
      * @param cspChecker The object that will perform the CSP checks.
      */
-    public CSPCheckerBridge(@NonNull CSPChecker cspChecker) {
+    public CSPCheckerBridge(CSPChecker cspChecker) {
         mImpl = cspChecker;
         mNativeBridge = CSPCheckerBridgeJni.get().createNativeCSPChecker(this);
     }

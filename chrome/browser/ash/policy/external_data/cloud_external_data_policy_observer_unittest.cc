@@ -33,12 +33,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/mock_cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -216,7 +216,8 @@ CloudExternalDataPolicyObserverTest::CloudExternalDataPolicyObserverTest()
           DeviceLocalAccountType::kPublicSession)),
       profile_manager_(TestingBrowserProcess::GetGlobal()) {}
 
-CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() {}
+CloudExternalDataPolicyObserverTest::~CloudExternalDataPolicyObserverTest() =
+    default;
 
 void CloudExternalDataPolicyObserverTest::SetUp() {
   ash::DeviceSettingsTestBase::SetUp();
@@ -233,6 +234,7 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
       std::make_unique<DeviceLocalAccountPolicyService>(
           &session_manager_client_, device_settings_service_.get(),
           ash::CrosSettings::Get(), &affiliated_invalidation_service_provider_,
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -289,8 +291,9 @@ void CloudExternalDataPolicyObserverTest::SetDeviceLocalAccountAvatarPolicy(
       dm_protocol::kChromePublicAccountPolicyType);
   builder.policy_data().set_settings_entity_id(account_id);
   builder.policy_data().set_username(account_id);
-  if (!value.empty())
+  if (!value.empty()) {
     builder.payload().mutable_useravatarimage()->set_value(value);
+  }
   builder.Build();
   session_manager_client_.set_device_local_account_policy(account_id,
                                                           builder.GetBlob());
@@ -314,14 +317,14 @@ void CloudExternalDataPolicyObserverTest::RemoveDeviceLocalAccount(
       device_policy_->payload().mutable_device_local_accounts();
   std::vector<std::string> account_ids;
   for (int i = 0; i < accounts->account_size(); ++i) {
-    if (accounts->account(i).account_id() != account_id)
+    if (accounts->account(i).account_id() != account_id) {
       account_ids.push_back(accounts->account(i).account_id());
+    }
   }
   accounts->clear_account();
-  for (std::vector<std::string>::const_iterator it = account_ids.begin();
-       it != account_ids.end(); ++it) {
+  for (const auto& id : account_ids) {
     em::DeviceLocalAccountInfoProto* account = accounts->add_account();
-    account->set_account_id(*it);
+    account->set_account_id(id);
     account->set_type(
         em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
   }

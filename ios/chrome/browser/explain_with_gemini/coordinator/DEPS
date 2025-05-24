@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/browser_container/ui_bundled",
+  "+ios/chrome/browser/web_selection/model",
+  "+ios/chrome/browser/explain_with_gemini/coordinator",
+  "+ios/chrome/browser/intelligence/features",
+  "+ios/chrome/browser/signin/model",
+]

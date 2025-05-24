@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client.h"
@@ -39,10 +38,6 @@ class RunLoop;
 
 namespace content {
 class SyntheticTrialSyncer;
-}
-
-namespace tracing {
-class TraceEventSystemStatsMonitor;
 }
 
 class ChromeBrowserMainParts : public content::BrowserMainParts {
@@ -175,11 +170,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Parts are deleted in the inverse order they are added.
   std::vector<std::unique_ptr<ChromeBrowserMainExtraParts>> chrome_extra_parts_;
 
-  // The system stats monitor used by chrome://tracing. This doesn't do anything
-  // until tracing of the |system_stats| category is enabled.
-  std::unique_ptr<tracing::TraceEventSystemStatsMonitor>
-      trace_event_system_stats_monitor_;
-
   std::unique_ptr<content::SyntheticTrialSyncer> synthetic_trial_syncer_;
 
   // ERP client instance, serving all reporting needs in the browser.
@@ -204,7 +194,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   downgrade::DowngradeManager downgrade_manager_;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // Android's first run is done in Java instead of native. Chrome OS does not
   // use master preferences.
   std::unique_ptr<first_run::MasterPrefs> master_prefs_;

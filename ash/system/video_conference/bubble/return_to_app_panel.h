@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/compositor/throughput_tracker.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/layout/flex_layout_view.h"

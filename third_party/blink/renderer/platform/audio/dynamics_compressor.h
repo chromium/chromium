@@ -29,7 +29,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DYNAMICS_COMPRESSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DYNAMICS_COMPRESSOR_H_
 
+#include <array>
 #include <memory>
+
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -44,7 +46,7 @@ class AudioBus;
 // volume of the loudest parts of the signal and raises the volume of the
 // softest parts, making the sound richer, fuller, and more controlled.
 
-class PLATFORM_EXPORT DynamicsCompressor {
+class PLATFORM_EXPORT DynamicsCompressor final {
   USING_FAST_MALLOC(DynamicsCompressor);
 
  public:
@@ -97,7 +99,7 @@ class PLATFORM_EXPORT DynamicsCompressor {
   unsigned number_of_channels_;
 
   // parameters_ holds the tweakable compressor parameters.
-  float parameters_[kParamLast];
+  std::array<float, kParamLast> parameters_;
 
   float sample_rate_;
 

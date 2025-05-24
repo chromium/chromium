@@ -4,6 +4,8 @@
 
 #include "content/test/test_aggregation_service_impl.h"
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 #include <utility>
@@ -41,16 +43,6 @@ AggregationServicePayloadContents::Operation ConvertToOperation(
   switch (operation) {
     case TestAggregationService::Operation::kHistogram:
       return AggregationServicePayloadContents::Operation::kHistogram;
-  }
-}
-
-blink::mojom::AggregationServiceMode ConvertToAggregationMode(
-    TestAggregationService::AggregationMode aggregation_mode) {
-  switch (aggregation_mode) {
-    case TestAggregationService::AggregationMode::kTeeBased:
-      return blink::mojom::AggregationServiceMode::kTeeBased;
-    case TestAggregationService::AggregationMode::kExperimentalPoplar:
-      return blink::mojom::AggregationServiceMode::kExperimentalPoplar;
   }
 }
 
@@ -123,16 +115,17 @@ void TestAggregationServiceImpl::SetPublicKeys(
 void TestAggregationServiceImpl::AssembleReport(
     AssembleRequest request,
     base::OnceCallback<void(base::Value::Dict)> callback) {
+  constexpr size_t kDefaultFilteringIdMaxBytes = 1;
+
   AggregationServicePayloadContents payload_contents(
       ConvertToOperation(request.operation),
       {blink::mojom::AggregatableReportHistogramContribution(
           /*bucket=*/request.bucket, /*value=*/request.value,
           /*filtering_id=*/std::nullopt)},
-      ConvertToAggregationMode(request.aggregation_mode),
       /*aggregation_coordinator_origin=*/std::nullopt,
       /*max_contributions_allowed=*/20u,
       // TODO(crbug.com/330744610): Allow setting.
-      /*filtering_id_max_bytes=*/std::nullopt);
+      /*filtering_id_max_bytes=*/kDefaultFilteringIdMaxBytes);
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),
@@ -146,7 +139,7 @@ void TestAggregationServiceImpl::AssembleReport(
 
   std::optional<AggregatableReportRequest> report_request =
       AggregatableReportRequest::CreateForTesting(
-          std::move(request.processing_urls), std::move(payload_contents),
+          std::move(request.processing_url), std::move(payload_contents),
           std::move(shared_info));
   if (!report_request.has_value()) {
     std::move(callback).Run(base::Value::Dict());

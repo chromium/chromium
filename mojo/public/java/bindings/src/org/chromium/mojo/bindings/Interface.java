@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.mojo.bindings.Interface.AbstractProxy.HandlerImpl;
 import org.chromium.mojo.bindings.interfacecontrol.QueryVersion;
 import org.chromium.mojo.bindings.interfacecontrol.RequireVersion;
@@ -22,6 +24,7 @@ import java.io.Closeable;
 import java.util.concurrent.Executor;
 
 /** Base class for mojo generated interfaces. */
+@NullMarked
 public interface Interface extends ConnectionErrorHandler, Closeable {
 
     /**
@@ -94,7 +97,7 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
             private final MessageReceiverWithResponder mMessageReceiver;
 
             /** The {@link ConnectionErrorHandler} that will be notified of errors. */
-            private ConnectionErrorHandler mErrorHandler;
+            private @Nullable ConnectionErrorHandler mErrorHandler;
 
             /** The currently known version of the interface. */
             private int mVersion;
@@ -204,8 +207,9 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
                 mVersion = version;
                 RunOrClosePipeMessageParams message = new RunOrClosePipeMessageParams();
                 message.input = new RunOrClosePipeInput();
-                message.input.setRequireVersion(new RequireVersion());
-                message.input.getRequireVersion().version = version;
+                RequireVersion requireVersion = new RequireVersion();
+                requireVersion.version = version;
+                message.input.setRequireVersion(requireVersion);
                 InterfaceControlMessagesHelper.sendRunOrClosePipeMessage(
                         getCore(), mMessageReceiver, message);
             }
@@ -445,13 +449,13 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
         }
 
         /** Binds the implementation to the given |router|. */
-        final void bind(Core core, I impl, Router router) {
+        final void bind(@Nullable Core core, I impl, Router router) {
             router.setErrorHandler(impl);
             router.setIncomingMessageReceiver(buildStub(core, impl));
         }
 
         /** Returns a Proxy that will send messages to the given |router|. */
-        final P attachProxy(Core core, Router router) {
+        final P attachProxy(@Nullable Core core, Router router) {
             return buildProxy(core, new AutoCloseableRouter(core, router));
         }
 
@@ -459,9 +463,10 @@ public interface Interface extends ConnectionErrorHandler, Closeable {
         protected abstract I[] buildArray(int size);
 
         /** Constructs a Stub delegating to the given implementation. */
-        protected abstract Stub<I> buildStub(Core core, I impl);
+        protected abstract Stub<I> buildStub(@Nullable Core core, I impl);
 
         /** Constructs a Proxy forwarding the calls to the given message receiver. */
-        protected abstract P buildProxy(Core core, MessageReceiverWithResponder messageReceiver);
+        protected abstract P buildProxy(
+                @Nullable Core core, MessageReceiverWithResponder messageReceiver);
     }
 }

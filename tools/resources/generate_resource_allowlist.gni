@@ -27,6 +27,8 @@ template("generate_resource_allowlist") {
 
     script = "//tools/resources/generate_resource_allowlist.py"
 
+    inputs += [ "//tools/resources/ar.py" ]
+
     outputs = [ invoker.output ]
 
     args = [

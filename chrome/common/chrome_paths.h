@@ -7,7 +7,6 @@
 
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
@@ -48,18 +47,17 @@ enum {
   DIR_INTERNAL_PLUGINS,        // Directory where internal plugins reside.
   DIR_COMPONENTS,              // Directory where built-in implementations of
                                // component-updated libraries or data reside.
+#if BUILDFLAG(IS_MAC)
+  DIR_OUTER_BUNDLE,  // Directory that is the outermost Chromium bundle.
+#endif
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   DIR_POLICY_FILES,  // Directory for system-wide read-only
                      // policy files that allow sys-admins
                      // to set policies for chrome. This directory
                      // contains subdirectories.
 #endif
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_CHROMEOS_ASH) ||                              \
-    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-     BUILDFLAG(CHROMIUM_BRANDING)) ||                          \
-    BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_LINUX) && BUILDFLAG(CHROMIUM_BRANDING)) || BUILDFLAG(IS_MAC)
   DIR_USER_EXTERNAL_EXTENSIONS,  // Directory for per-user external extensions
                                  // on Chrome Mac and Chromium Linux.
                                  // On Chrome OS, this path is used for OEM
@@ -98,22 +96,10 @@ enum {
                         // This includes data for internal pages (e.g., html
                         // files and images), unless these resources are
                         // purposefully split into a separate file.
-#if BUILDFLAG(IS_CHROMEOS)
-  FILE_RESOURCES_FOR_SHARING_PACK,  // Full path to the shared_resources.pak
-                                    // tile containing binary data. This
-                                    // includes mapping table from lacros
-                                    // resource id to ash resource id, and
-                                    // fallback resources info consists of
-                                    // resources not included in
-                                    // ASH_RESOURCES_PACK.
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  FILE_ASH_RESOURCES_PACK,  // Full path to ash resources.pak file.
-#endif
   FILE_DEV_UI_RESOURCES_PACK,  // Full path to the .pak file containing
                                // binary data for internal pages (e.g., html
                                // files and images).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DIR_CHROMEOS_WALLPAPERS,            // Directory where downloaded chromeos
                                       // wallpapers reside.
   DIR_CHROMEOS_WALLPAPER_THUMBNAILS,  // Directory where downloaded chromeos
@@ -141,7 +127,7 @@ enum {
   DIR_GEN_TEST_DATA,  // Directory where generated test data resides.
   DIR_TEST_DATA,      // Directory where unit test data resides.
   DIR_TEST_TOOLS,     // Directory where unit test tools reside.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // File containing the location of the updated TPM firmware binary in the file
   // system.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_LOCATION,
@@ -149,10 +135,13 @@ enum {
   // Flag file indicating SRK ROCA vulnerability status.
   FILE_CHROME_OS_TPM_FIRMWARE_UPDATE_SRK_VULNERABLE_ROCA,
 
+  // File containing the device refresh_token.
+  FILE_CHROME_OS_DEVICE_REFRESH_TOKEN,
+
   // Base directory where user cryptohome mount point (named as hash of
   // username) resides.
   DIR_CHROMEOS_HOMEDIR_MOUNT,
-#endif                                       // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif                                       // BUILDFLAG(IS_CHROMEOS)
   DIR_OPTIMIZATION_GUIDE_PREDICTION_MODELS,  // Directory where verified models
                                              // downloaded by the Optimization
                                              // Guide are stored.

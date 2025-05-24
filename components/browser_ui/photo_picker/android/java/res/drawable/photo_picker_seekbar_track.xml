@@ -22,8 +22,8 @@ that the videos are all readily available on disk and don't need to be downloade
             <size android:height="@dimen/photo_picker_seek_bar_thickness" />
             <gradient
                 android:angle="90"
-                android:startColor="@color/modern_grey_500"
-                android:endColor="@color/modern_grey_500" />
+                android:startColor="@color/baseline_neutral_50"
+                android:endColor="@color/baseline_neutral_50" />
         </shape>
     </item>
 

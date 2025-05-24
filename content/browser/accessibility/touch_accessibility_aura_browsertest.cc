@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <tuple>
 
 #include "base/strings/string_number_conversions.h"
@@ -13,6 +14,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
@@ -40,11 +42,13 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     SetupCrossSiteRedirector(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
+    accessibility_mode_.emplace(ui::kAXModeComplete);
   }
+
+  void TearDownOnMainThread() override { accessibility_mode_.reset(); }
 
   void NavigateToUrlAndWaitForAccessibilityTree(const GURL& url) {
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
                                            ax::mojom::Event::kLoadComplete);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     // TODO(crbug.com/40844856): Investigate why this does not return
@@ -63,6 +67,9 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
                            ui::EventTimeForNow(), flags, 0));
     std::ignore = sink->OnEventFromSource(mouse_move_event.get());
   }
+
+ private:
+  std::optional<ScopedAccessibilityModeOverride> accessibility_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
@@ -100,8 +107,8 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   // Loop over all of the cells in the table. For each one, send a simulated
   // touch exploration event in the center of that cell, and assert that we
   // get an accessibility hover event fired in the correct cell.
-  AccessibilityNotificationWaiter waiter(
-      shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kHover);
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ax::mojom::Event::kHover);
   for (int row = 0; row < 5; ++row) {
     for (int col = 0; col < 7; ++col) {
       std::string expected_cell_text = base::NumberToString(row * 7 + col);
@@ -146,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   // Send a touch exploration event to the button in the first iframe.
   // A touch exploration event is just a mouse move event with
   // the ui::EF_TOUCH_ACCESSIBILITY flag set.
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(), ui::AXMode(),
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ax::mojom::Event::kHover);
   SendTouchExplorationEvent(50, 350);
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -183,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   // Send a touch exploration event to the button in the first iframe.
   // A touch exploration event is just a mouse move event with
   // the ui::EF_TOUCH_ACCESSIBILITY flag set.
-  AccessibilityNotificationWaiter waiter(shell()->web_contents(), ui::AXMode(),
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                          ax::mojom::Event::kHover);
   SendTouchExplorationEvent(50, 350);
   ASSERT_TRUE(waiter.WaitForNotification());

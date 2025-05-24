@@ -1,0 +1,3 @@
+HTTP/1.1 200 OK
+Accept-CH: dpr,sec-ch-ua-full-version
+Critical-CH: dpr

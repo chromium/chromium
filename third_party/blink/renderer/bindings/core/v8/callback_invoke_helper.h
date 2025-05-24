@@ -77,12 +77,17 @@ class CallbackInvokeHelper final {
   v8::Maybe<ReturnType> Result() {
     DCHECK(!aborted_);
     v8::Isolate* isolate = callback_->GetIsolate();
-    ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                   class_like_name_, property_name_);
+    v8::TryCatch try_catch(isolate);
     auto&& result = NativeValueTraits<IDLReturnType>::NativeValue(
-        isolate, result_, exception_state);
-    if (exception_state.HadException())
+        isolate, result_, PassThroughException(isolate));
+    if (try_catch.HasCaught()) [[unlikely]] {
+      ApplyContextToException(
+          callback_->CallbackRelevantScriptState(), try_catch.Exception(),
+          ExceptionContext(v8::ExceptionContext::kOperation, class_like_name_,
+                           property_name_));
+      try_catch.ReThrow();
       return v8::Nothing<ReturnType>();
+    }
     return v8::Just<ReturnType>(result);
   }
 

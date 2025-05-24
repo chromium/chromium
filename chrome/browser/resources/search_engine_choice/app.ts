@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
+import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -69,13 +68,13 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  protected choiceList_: SearchEngineChoice[] =
+  protected accessor choiceList_: SearchEngineChoice[] =
       JSON.parse(loadTimeData.getString('choiceList'));
-  protected selectedChoice_: number = -1;
-  protected isActionButtonDisabled_: boolean = false;
-  protected hasUserScrolledToTheBottom_: boolean = false;
-  protected showInfoDialog_: boolean = false;
-  protected actionButtonText_: string = '';
+  protected accessor selectedChoice_: number = -1;
+  protected accessor isActionButtonDisabled_: boolean = false;
+  protected accessor hasUserScrolledToTheBottom_: boolean = false;
+  protected accessor showInfoDialog_: boolean = false;
+  protected accessor actionButtonText_: string = '';
   protected showGuestCheckbox_: boolean =
       loadTimeData.getBoolean('showGuestCheckbox');
   protected saveGuestModeSearchEngineChoice_: boolean = false;
@@ -96,7 +95,7 @@ export class AppElement extends AppElementBase {
         // Fetch the favicon from the Favicon Service for custom search
         // engines.
         searchEngine.iconPath =
-            getFaviconForPageURL(searchEngine.url!, false, '', 24);
+            getFaviconForPageURL(searchEngine.url, false, '', 24);
       } else {
         searchEngine.iconPath = 'image-set(url(' + searchEngine.iconPath +
             ') 1x, url(' + searchEngine.iconPath + '@2x) 2x)';

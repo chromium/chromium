@@ -13,8 +13,7 @@ Transform OverlayTransformToTransform(OverlayTransform overlay_transform,
                                       const SizeF& viewport_bounds) {
   switch (overlay_transform) {
     case OVERLAY_TRANSFORM_INVALID:
-      NOTREACHED_IN_MIGRATION();
-      return Transform();
+      NOTREACHED();
     case OVERLAY_TRANSFORM_NONE:
       return Transform();
     case OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
@@ -35,15 +34,13 @@ Transform OverlayTransformToTransform(OverlayTransform overlay_transform,
                                viewport_bounds.width());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return Transform();
+  NOTREACHED();
 }
 
 OverlayTransform InvertOverlayTransform(OverlayTransform transform) {
   switch (transform) {
     case OVERLAY_TRANSFORM_INVALID:
-      NOTREACHED_IN_MIGRATION();
-      return OVERLAY_TRANSFORM_NONE;
+      NOTREACHED();
     case OVERLAY_TRANSFORM_NONE:
       return OVERLAY_TRANSFORM_NONE;
     case OVERLAY_TRANSFORM_FLIP_HORIZONTAL:
@@ -61,8 +58,7 @@ OverlayTransform InvertOverlayTransform(OverlayTransform transform) {
     case OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
       return OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
   }
-  NOTREACHED_IN_MIGRATION();
-  return OVERLAY_TRANSFORM_NONE;
+  NOTREACHED();
 }
 
 OverlayTransform OverlayTransformsConcat(OverlayTransform t1,

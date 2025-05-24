@@ -4,16 +4,19 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {AppLanguageSelectionDialogElement, AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
-import {AppLanguageSelectionDialogEntryPoint, AppManagementStore, CrButtonElement, CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
-import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppLanguageSelectionDialogElement, AppLanguageSelectionItemElement} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement, CrSearchFieldElement, IronListElement} from 'chrome://os-settings/os_settings.js';
+import {AppLanguageSelectionDialogEntryPoint, AppManagementStore} from 'chrome://os-settings/os_settings.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {fakeMetricsPrivate, MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakePageHandler} from '../../app_management/fake_page_handler.js';
+import type {FakePageHandler} from '../../app_management/fake_page_handler.js';
 import {isHidden, setupFakeHandler} from '../../app_management/test_util.js';
 
 type AppConfig = Partial<App>;
@@ -24,9 +27,9 @@ enum ListType {
 }
 
 suite('<app-language-selection-dialog>', () => {
-  const appLanguageSelectionItemTag = 'app-language-selection-item' as const;
+  const appLanguageSelectionItemTag = 'app-language-selection-item';
   const listItemId = '#listItem';
-  const ironIconTag = 'iron-icon' as const;
+  const ironIconTag = 'iron-icon';
   const deviceLanguageLabel = 'Device language';
   const lastSetAppLocalePrefKey = 'arc.last_set_app_locale';
   const defaultPref: chrome.settingsPrivate.PrefObject = {
@@ -75,8 +78,7 @@ suite('<app-language-selection-dialog>', () => {
     const suggestedList = getSuggestedList();
     assertTrue(!!suggestedList, '#suggestedItemsList not found');
     const searchFieldTemp =
-        appLanguageSelectionDialog.shadowRoot!
-            .querySelector<CrSearchFieldElement>('cr-search-field');
+        appLanguageSelectionDialog.shadowRoot!.querySelector('cr-search-field');
     assertTrue(!!searchFieldTemp);
     searchField = searchFieldTemp;
 
@@ -140,8 +142,8 @@ suite('<app-language-selection-dialog>', () => {
     flush();
   }
 
-  function getNoSearchResultField(): HTMLDivElement|null {
-    return appLanguageSelectionDialog.shadowRoot!.querySelector<HTMLDivElement>(
+  function getNoSearchResultField(): HTMLElement|null {
+    return appLanguageSelectionDialog.shadowRoot!.querySelector<HTMLElement>(
         '#noSearchResults');
   }
 
@@ -307,8 +309,8 @@ suite('<app-language-selection-dialog>', () => {
         assertLanguageItem(
             suggestedItems, /* idx= */ 0, deviceLanguageLabel,
             /* isSelected= */ false, ListType.SUGGESTED);
-        suggestedItems[0]!.shadowRoot!
-            .querySelector<HTMLDivElement>(listItemId)!.click();
+        suggestedItems[0]!.shadowRoot!.querySelector<HTMLElement>(
+                                          listItemId)!.click();
         // Device language should be selected.
         assertLanguageItem(
             suggestedItems, /* idx= */ 0, deviceLanguageLabel,
@@ -394,7 +396,7 @@ suite('<app-language-selection-dialog>', () => {
 
         const filteredItems = getFilteredItems();
         assertEquals(1, filteredItems.length);
-        filteredItems[0]!.shadowRoot!.querySelector<HTMLDivElement>(
+        filteredItems[0]!.shadowRoot!.querySelector<HTMLElement>(
                                          listItemId)!.click();
         // Test language should be selected.
         assertLanguageItem(

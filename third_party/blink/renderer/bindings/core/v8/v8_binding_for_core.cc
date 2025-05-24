@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 
 #include "base/debug/dump_without_crashing.h"
@@ -95,7 +90,7 @@ void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
             .AddBoolean("enumerable", descriptor.enumerable())
             .AddV8Value("value", descriptor.value())
             .AddBoolean("writable", descriptor.writable())
-            .V8Value());
+            .V8Object());
     return;
   }
   // Accessor property
@@ -106,7 +101,7 @@ void V8SetReturnValue(const v8::PropertyCallbackInfo<v8::Value>& info,
           .AddBoolean("enumerable", descriptor.enumerable())
           .AddV8Value("get", descriptor.get())
           .AddV8Value("set", descriptor.set())
-          .V8Value());
+          .V8Object());
 }
 
 const int32_t kMaxInt32 = 0x7fffffff;
@@ -534,10 +529,10 @@ static bool HasUnmatchedSurrogates(const String& string) {
   if (string.empty() || string.Is8Bit())
     return false;
 
-  const UChar* characters = string.Characters16();
-  const unsigned length = string.length();
+  auto characters = string.Span16();
+  const size_t length = characters.size();
 
-  for (unsigned i = 0; i < length; ++i) {
+  for (size_t i = 0; i < length; ++i) {
     UChar c = characters[i];
     if (U16_IS_SINGLE(c))
       continue;
@@ -569,17 +564,17 @@ String ReplaceUnmatchedSurrogates(String string) {
   DCHECK(!string.Is8Bit());
 
   // 1. Let S be the DOMString value.
-  const UChar* s = string.Characters16();
+  const auto s = string.Span16();
 
   // 2. Let n be the length of S.
-  const unsigned n = string.length();
+  const size_t n = s.size();
 
   // 3. Initialize i to 0.
-  unsigned i = 0;
+  size_t i = 0;
 
   // 4. Initialize U to be an empty sequence of Unicode characters.
   StringBuffer<UChar> result(n);
-  UChar* u = result.Characters();
+  auto u = result.Span();
 
   // 5. While i < n:
   while (i < n) {
@@ -736,6 +731,7 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
   if (!frame->IsDetached() && frame->IsProvisional()) {
+    DCHECK(false);
     base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
   }
@@ -751,6 +747,7 @@ v8::Local<v8::Context> ToV8ContextMaybeEmpty(LocalFrame* frame,
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
   if (frame->IsProvisional()) {
+    DCHECK(false);
     base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
   }
@@ -799,107 +796,17 @@ ScriptState* ToScriptStateForMainWorld(ExecutionContext* context) {
                        DOMWrapperWorld::MainWorld(context->GetIsolate()));
 }
 
-bool IsValidEnum(const String& value,
-                 const char* const* valid_values,
-                 size_t length,
-                 const String& enum_name,
-                 ExceptionState& exception_state) {
-  for (size_t i = 0; i < length; ++i) {
-    // Avoid the strlen inside String::operator== (because of the StringView).
-    if (WTF::Equal(value.Impl(), valid_values[i]))
-      return true;
-  }
-  exception_state.ThrowTypeError("The provided value '" + value +
-                                 "' is not a valid enum value of type " +
-                                 enum_name + ".");
-  return false;
-}
-
-bool IsValidEnum(const Vector<String>& values,
-                 const char* const* valid_values,
-                 size_t length,
-                 const String& enum_name,
-                 ExceptionState& exception_state) {
-  for (auto value : values) {
-    if (!IsValidEnum(value, valid_values, length, enum_name, exception_state))
-      return false;
-  }
-  return true;
-}
-
-v8::Local<v8::Function> GetEsIteratorMethod(v8::Isolate* isolate,
-                                            v8::Local<v8::Object> object,
-                                            ExceptionState& exception_state) {
-  const v8::Local<v8::Value> key = v8::Symbol::GetIterator(isolate);
-
-  TryRethrowScope rethrow_scope(isolate, exception_state);
-  v8::Local<v8::Value> iterator_method;
-  if (!object->Get(isolate->GetCurrentContext(), key)
-           .ToLocal(&iterator_method)) {
-    return v8::Local<v8::Function>();
-  }
-
-  if (iterator_method->IsNullOrUndefined())
-    return v8::Local<v8::Function>();
-
-  if (!iterator_method->IsFunction()) {
-    exception_state.ThrowTypeError("Iterator must be callable function");
-    return v8::Local<v8::Function>();
-  }
-
-  return iterator_method.As<v8::Function>();
-}
-
-v8::Local<v8::Object> GetEsIteratorWithMethod(
-    v8::Isolate* isolate,
-    v8::Local<v8::Function> getter_function,
-    v8::Local<v8::Object> object,
-    ExceptionState& exception_state) {
-  TryRethrowScope rethrow_scope(isolate, exception_state);
-  v8::Local<v8::Value> iterator;
-  if (!V8ScriptRunner::CallFunction(
-           getter_function, ToExecutionContext(isolate->GetCurrentContext()),
-           object, 0, nullptr, isolate)
-           .ToLocal(&iterator)) {
-    return v8::Local<v8::Object>();
-  }
-  if (!iterator->IsObject()) {
-    exception_state.ThrowTypeError("Iterator is not an object.");
-    return v8::Local<v8::Object>();
-  }
-  return iterator.As<v8::Object>();
-}
-
-bool HasCallableIteratorSymbol(v8::Isolate* isolate,
-                               v8::Local<v8::Value> value,
-                               ExceptionState& exception_state) {
-  if (!value->IsObject())
-    return false;
-  v8::Local<v8::Function> iterator_method =
-      GetEsIteratorMethod(isolate, value.As<v8::Object>(), exception_state);
-  return !iterator_method.IsEmpty();
-}
-
 v8::Isolate* ToIsolate(const LocalFrame* frame) {
   DCHECK(frame);
   return frame->GetWindowProxyManager()->GetIsolate();
 }
 
-v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
-                                    v8::Local<v8::Context> context,
-                                    const String& stringified_json,
-                                    ExceptionState& exception_state) {
-  TryRethrowScope rethrow_scope(isolate, exception_state);
-  return FromJSONString(isolate, context, stringified_json, rethrow_scope);
-}
-
-v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
-                                    v8::Local<v8::Context> context,
-                                    const String& stringified_json,
-                                    TryRethrowScope&) {
+v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
+                                    const String& stringified_json) {
+  auto v8_string = V8String(script_state->GetIsolate(), stringified_json);
   v8::Local<v8::Value> parsed;
-  std::ignore = v8::JSON::Parse(context, V8String(isolate, stringified_json))
-                    .ToLocal(&parsed);
+  std::ignore =
+      v8::JSON::Parse(script_state->GetContext(), v8_string).ToLocal(&parsed);
   return parsed;
 }
 
@@ -961,11 +868,33 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
 void ApplyContextToException(ScriptState* script_state,
                              v8::Local<v8::Value> exception,
                              const ExceptionContext& exception_context) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  auto* dom_exception = V8DOMException::ToWrappable(isolate, exception);
-  // TODO(crbug.com/328104148): Support errors besides DOMExceptions.
-  CHECK(dom_exception);
-  dom_exception->AddContextToMessages(exception_context);
+  ApplyContextToException(
+      script_state->GetIsolate(), script_state->GetContext(), exception,
+      exception_context.GetType(), exception_context.GetClassName(),
+      exception_context.GetPropertyName());
+}
+
+void ApplyContextToException(v8::Isolate* isolate,
+                             v8::Local<v8::Context> context,
+                             v8::Local<v8::Value> exception,
+                             v8::ExceptionContext type,
+                             const char* class_name,
+                             const String& property_name) {
+  if (auto* dom_exception = V8DOMException::ToWrappable(isolate, exception)) {
+    dom_exception->AddContextToMessages(type, class_name, property_name);
+  } else if (exception->IsObject()) {
+    v8::TryCatch try_catch(isolate);
+    v8::Local<v8::String> message_key = V8String(isolate, "message");
+    auto exception_object = exception.As<v8::Object>();
+    String updated_message = ExceptionMessages::AddContextToMessage(
+        type, class_name, property_name,
+        ToCoreString(isolate, exception_object->Get(context, message_key)
+                                  .ToLocalChecked()
+                                  ->ToString(context)
+                                  .ToLocalChecked()));
+    std::ignore = exception_object->CreateDataProperty(
+        context, message_key, V8String(isolate, updated_message));
+  }
 }
 
 }  // namespace blink

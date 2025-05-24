@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service_factory.h"
 
+#import "base/memory/scoped_refptr.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_profile_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 
@@ -39,6 +43,17 @@ std::unique_ptr<KeyedService>
 PushNotificationProfileServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+
+  const scoped_refptr<base::SequencedTaskRunner> task_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  std::unique_ptr<PushNotificationClientManager> client_manager =
+      IsMultiProfilePushNotificationHandlingEnabled()
+          ? std::make_unique<PushNotificationClientManager>(task_runner,
+                                                            profile)
+          : nullptr;
+
   return std::make_unique<PushNotificationProfileService>(
-      IdentityManagerFactory::GetForProfile(profile), profile->GetStatePath());
+      IdentityManagerFactory::GetForProfile(profile), std::move(client_manager),
+      profile->GetStatePath());
 }

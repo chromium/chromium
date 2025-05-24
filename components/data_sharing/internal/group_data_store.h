@@ -17,15 +17,19 @@
 #include "base/types/strong_alias.h"
 #include "components/data_sharing/internal/protocol/group_data_db.pb.h"
 #include "components/data_sharing/public/group_data.h"
+#include "components/data_sharing/public/protocol/group_data.pb.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
 #include "components/sqlite_proto/proto_table_manager.h"
 #include "sql/database.h"
 
+namespace data_sharing_pb {
+class GroupData;
+}  // namespace data_sharing_pb
+
 namespace data_sharing {
 
-// TODO(crbug.com/301390275): figure out what precisely this should be
-// (ConsistencyToken, timestamp, etc.).
+// Opaque (at this level) token that represents the version of the GroupData.
 using VersionToken = base::StrongAlias<class VersionTokenTag, std::string>;
 
 // In-memory cache and persistent storage for GroupData.
@@ -41,7 +45,7 @@ class GroupDataStore {
 
   // Public methods must not be called until `db_loaded_callback` is invoked
   // with kSuccess.
-  GroupDataStore(const base::FilePath& db_path,
+  GroupDataStore(const base::FilePath& db_dir_path,
                  DBLoadedCallback db_loaded_callback);
 
   GroupDataStore(const GroupDataStore& other) = delete;
@@ -53,11 +57,13 @@ class GroupDataStore {
   ~GroupDataStore();
 
   void StoreGroupData(const VersionToken& version_token,
-                      const GroupData& group_data);
+                      const base::Time& last_updated_timestamp,
+                      const data_sharing_pb::GroupData& group_data_proto);
   void DeleteGroups(const std::vector<GroupId>& groups_ids);
 
   std::optional<VersionToken> GetGroupVersionToken(
       const GroupId& group_id) const;
+  base::Time GetGroupLastUpdatedTimestamp(const GroupId& group_id) const;
   std::optional<GroupData> GetGroupData(const GroupId& group_id) const;
   std::vector<GroupId> GetAllGroupIds() const;
 

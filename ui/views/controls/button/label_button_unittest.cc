@@ -231,10 +231,11 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
   for (bool is_multiline : {false, true}) {
     button()->SetMultiLine(is_multiline);
     for (bool set_image : {false, true}) {
-      if (set_image)
+      if (set_image) {
         button()->SetImageModel(Button::STATE_NORMAL,
                                 ui::ImageModel::FromImageSkia(
                                     gfx::test::CreateImageSkia(/*size=*/16)));
+      }
 
       bool preferred_size_is_sometimes_narrower_than_max = false;
       bool preferred_height_shrinks_as_max_width_grows = false;
@@ -249,17 +250,20 @@ TEST_F(LabelButtonTest, LabelPreferredSizeWithMaxWidth) {
           const gfx::Size preferred_size = button()->GetPreferredSize({});
           EXPECT_LE(preferred_size.width(), width_case);
 
-          if (preferred_size.width() < width_case)
+          if (preferred_size.width() < width_case) {
             preferred_size_is_sometimes_narrower_than_max = true;
+          }
 
-          if (preferred_size.height() < old_preferred_size.height())
+          if (preferred_size.height() < old_preferred_size.height()) {
             preferred_height_shrinks_as_max_width_grows = true;
+          }
         }
       }
 
       EXPECT_TRUE(preferred_size_is_sometimes_narrower_than_max);
-      if (is_multiline)
+      if (is_multiline) {
         EXPECT_TRUE(preferred_height_shrinks_as_max_width_grows);
+      }
     }
   }
 }
@@ -376,7 +380,7 @@ TEST_F(LabelButtonTest, AccessibleState) {
   EXPECT_EQ(label_text, accessible_node_data.GetString16Attribute(
                             ax::mojom::StringAttribute::kName));
   EXPECT_EQ(label_text, button()->GetText());
-  EXPECT_EQ(tooltip_text, button()->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip_text, button()->GetRenderedTooltipText(gfx::Point()));
 }
 
 // Test ViewAccessibility::GetAccessibleNodeData() for default buttons.
@@ -646,7 +650,7 @@ TEST_F(LabelButtonTest, TextSizeFromContext) {
 
   TestLabelButton* alternate_button =
       new TestLabelButton(text, kAlternateContext);
-  button()->parent()->AddChildView(alternate_button);
+  button()->parent()->AddChildViewRaw(alternate_button);
   EXPECT_EQ(alternate_delta,
             alternate_button->label()->font_list().GetFontSize() -
                 gfx::FontList().GetFontSize());
@@ -763,16 +767,17 @@ TEST_F(LabelButtonTest, SetEnabledTextColorIds) {
   ASSERT_NE(ui::kColorLabelForeground, ui::kColorAccent);
 
   // Initially the test should have the normal colors.
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorLabelForeground);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(),
+            ui::kColorLabelForeground);
 
   // Setting the enabled text colors should replace the label's enabled color.
-  button()->SetEnabledTextColorIds(ui::kColorAccent);
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  button()->SetEnabledTextColors(ui::kColorAccent);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
 
   // Toggle dark mode. This should not replace the enabled text color as it's
   // been manually overridden above.
   UseDarkColors();
-  EXPECT_EQ(button()->label()->GetEnabledColorId(), ui::kColorAccent);
+  EXPECT_EQ(button()->label()->GetRequestedEnabledColor(), ui::kColorAccent);
   EXPECT_EQ(button()->label()->GetEnabledColor(),
             button()->GetColorProvider()->GetColor(ui::kColorAccent));
 }
@@ -938,11 +943,6 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
     dummy_widget_ = CreateTopLevelPlatformWidget();
 
     MakeButtonAsContent(test_widget_)->SetID(1);
-
-    style_of_inactive_widget_ =
-        PlatformStyle::kInactiveWidgetControlsAppearDisabled
-            ? Button::STATE_DISABLED
-            : Button::STATE_NORMAL;
   }
 
   void TearDown() override {
@@ -975,7 +975,10 @@ class LabelButtonVisualStateTest : public test::WidgetTest {
 
   raw_ptr<Widget> test_widget_ = nullptr;
   raw_ptr<Widget> dummy_widget_ = nullptr;
-  Button::ButtonState style_of_inactive_widget_;
+  static constexpr Button::ButtonState style_of_inactive_widget_ =
+      PlatformStyle::kInactiveWidgetControlsAppearDisabled
+          ? Button::STATE_DISABLED
+          : Button::STATE_NORMAL;
 };
 
 TEST_F(LabelButtonVisualStateTest, IndependentWidget) {

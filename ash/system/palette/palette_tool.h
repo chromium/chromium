@@ -9,19 +9,18 @@
 #include "ash/system/palette/palette_ids.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/vector_icon_types.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace gfx {
 struct VectorIcon;
-}
+}  // namespace gfx
 
 namespace views {
 class View;
-}
+}  // namespace views
 
 namespace ash {
 
@@ -93,8 +92,6 @@ class ASH_EXPORT PaletteTool {
   // (per-group) should ever have an active icon at any given time. The icon
   // will be the same as that used in the palette tray on the left-most edge of
   // the tool i.e. CommonPaletteTool::GetPaletteIcon().
-  // TODO(michelefan): Consider using the same function to return
-  // icon for palette menu and palette tray at the status area.
   virtual const gfx::VectorIcon& GetActiveTrayIcon() const;
 
   void SetExternalDisplayForTest() { external_display_for_test_ = true; }

@@ -195,7 +195,8 @@ void TZRequest::StartRequestOnNetworkAvailable() {
       base::Seconds(kRefreshTimeZoneTimeoutSeconds),
       resolver_->ShouldSendWiFiGeolocationData(),
       resolver_->ShouldSendCellularGeolocationData(),
-      base::BindOnce(&TZRequest::OnLocationResolved, AsWeakPtr()));
+      base::BindOnce(&TZRequest::OnLocationResolved, AsWeakPtr()),
+      SimpleGeolocationProvider::ClientId::kTimezoneResolver);
 }
 
 void TZRequest::Start() {

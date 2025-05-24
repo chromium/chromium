@@ -17,6 +17,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/dir_reader_posix.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -198,8 +199,10 @@ int SynchronizedMinidumpManager::GetNumDumps(bool delete_all_dumps) {
   }
 
   while (reader.Next()) {
-    if (strcmp(reader.name(), ".") == 0 || strcmp(reader.name(), "..") == 0)
+    if (UNSAFE_TODO(strcmp(reader.name(), ".")) == 0 ||
+        UNSAFE_TODO(strcmp(reader.name(), "..")) == 0) {
       continue;
+    }
 
     const base::FilePath dump_file(dump_path_.Append(reader.name()));
     // If file cannot be found, skip.
@@ -457,9 +460,10 @@ bool SynchronizedMinidumpManager::CanUploadDump() {
 
 bool SynchronizedMinidumpManager::HasDumps() {
   // Check if lockfile has entries.
-  int64_t size = 0;
-  if (base::GetFileSize(lockfile_path_, &size) && size > 0)
+  std::optional<int64_t> size = base::GetFileSize(lockfile_path_);
+  if (size.has_value() && size.value() > 0) {
     return true;
+  }
 
   // Check if any files are in minidump directory
   base::DirReaderPosix reader(dump_path_.value().c_str());
@@ -469,9 +473,10 @@ bool SynchronizedMinidumpManager::HasDumps() {
   }
 
   while (reader.Next()) {
-    if (strcmp(reader.name(), ".") == 0 || strcmp(reader.name(), "..") == 0)
+    if (UNSAFE_TODO(strcmp(reader.name(), ".")) == 0 ||
+        UNSAFE_TODO(strcmp(reader.name(), "..")) == 0) {
       continue;
-
+    }
     const base::FilePath file_path = dump_path_.Append(reader.name());
     if (file_path != lockfile_path_ && file_path != metadata_path_)
       return true;

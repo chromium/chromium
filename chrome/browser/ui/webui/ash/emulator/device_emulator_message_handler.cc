@@ -248,8 +248,9 @@ void DeviceEmulatorMessageHandler::HandleRequestBluetoothInfo(
 
   // Get each device's properties.
   base::Value::List devices;
-  for (const dbus::ObjectPath& path : paths)
+  for (const dbus::ObjectPath& path : paths) {
     devices.Append(GetDeviceInfo(path));
+  }
 
   base::Value predefined_devices =
       fake_bluetooth_device_client_->GetBluetoothDevicesAsDictionaries();
@@ -424,8 +425,9 @@ void DeviceEmulatorMessageHandler::UpdatePowerSources(
     CHECK(device_type);
     bool dual_role = *device_type == "DualRoleUSB";
     source->set_active_by_default(!dual_role);
-    if (dual_role)
+    if (dual_role) {
       props.set_supports_dual_role_devices(true);
+    }
     std::optional<int> port = val.GetDict().FindInt("port");
     CHECK(port.has_value());
     source->set_port(
@@ -435,14 +437,16 @@ void DeviceEmulatorMessageHandler::UpdatePowerSources(
     CHECK(power_level);
     source->set_max_power(*power_level == "high" ? kPowerLevelHigh
                                                  : kPowerLevelLow);
-    if (*id == selected_id)
+    if (*id == selected_id) {
       selected_source = source;
+    }
   }
 
   // Emulate the device's source selection process.
   for (const auto& source : props.available_external_power_source()) {
-    if (!source.active_by_default())
+    if (!source.active_by_default()) {
       continue;
+    }
     if (selected_source && selected_source->active_by_default() &&
         source.max_power() < selected_source->max_power()) {
       continue;
@@ -613,8 +617,9 @@ base::Value::Dict DeviceEmulatorMessageHandler::GetDeviceInfo(
   device.Set("incoming", false);
 
   base::Value::List uuids;
-  for (const std::string& uuid : props->uuids.value())
+  for (const std::string& uuid : props->uuids.value()) {
     uuids.Append(uuid);
+  }
   device.Set("uuids", std::move(uuids));
 
   return device;
@@ -642,16 +647,18 @@ void DeviceEmulatorMessageHandler::ConnectToBluetoothDevice(
 }
 
 void DeviceEmulatorMessageHandler::TouchpadExists(bool exists) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
   FireWebUIListener("touchpad-exists-changed", base::Value(exists));
 }
 
 void DeviceEmulatorMessageHandler::HapticTouchpadExists(bool exists) {}
 
 void DeviceEmulatorMessageHandler::MouseExists(bool exists) {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
   FireWebUIListener("mouse-exists-changed", base::Value(exists));
 }
 

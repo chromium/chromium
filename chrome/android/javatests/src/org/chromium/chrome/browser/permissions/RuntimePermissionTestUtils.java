@@ -118,9 +118,13 @@ public class RuntimePermissionTestUtils {
         }
     }
 
-    public static void setupGeolocationSystemMock() {
-        LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
+    public static void setupGeolocationSystemMock(boolean enabled) {
+        LocationSettingsTestUtil.setSystemLocationSettingEnabled(enabled);
         LocationProviderOverrider.setLocationProviderImpl(new MockLocationProvider());
+    }
+
+    public static void setupGeolocationSystemMock() {
+        setupGeolocationSystemMock(true);
     }
 
     private static void waitUntilDifferentDialogIsShowing(
@@ -154,7 +158,6 @@ public class RuntimePermissionTestUtils {
      *     skip).
      * @param missingPermissionPromptTextId The resource string id that matches the text of the
      *     missing permission prompt dialog (0 if not applicable).
-     * @throws Exception
      */
     public static void runTest(
             final PermissionTestRule permissionTestRule,

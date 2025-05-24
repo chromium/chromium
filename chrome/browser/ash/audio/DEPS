@@ -16,7 +16,6 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/accessibility",
   "+chrome/browser/ash/hats",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/test/base",
@@ -26,5 +25,9 @@ specific_include_rules = {
   "cras_audio_handler_delegate_impl_unittest.cc": [
     "+chrome/browser/ui/chrome_pages.h",
     "+chrome/test/base/browser_with_test_window_test.h",
+  ],
+
+  ".*browsertest\.cc": [
+    "+chrome/browser/browser_process.h",
   ],
 }

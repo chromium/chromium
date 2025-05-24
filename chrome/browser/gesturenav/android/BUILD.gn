@@ -8,11 +8,13 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [
+    "java/src/org/chromium/chrome/browser/gesturenav/HardwareDraw.java",
     "java/src/org/chromium/chrome/browser/gesturenav/NativePageBitmapCapturer.java",
     "java/src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandler.java",
   ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/back_press/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/native_page:java",

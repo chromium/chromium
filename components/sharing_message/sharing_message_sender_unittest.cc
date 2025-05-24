@@ -59,7 +59,8 @@ class MockSharingFCMSender : public SharingFCMSender {
             /*gcm_driver=*/nullptr,
             device_info_tracker,
             local_device_info_provider,
-            /*sync_service=*/nullptr) {}
+            /*sync_service=*/nullptr,
+            /*start_sync_flare=*/base::DoNothing()) {}
   MockSharingFCMSender(const MockSharingFCMSender&) = delete;
   MockSharingFCMSender& operator=(const MockSharingFCMSender&) = delete;
   ~MockSharingFCMSender() override = default;
@@ -348,11 +349,9 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
             message.sender_device_name());
         ASSERT_TRUE(local_device->sharing_info().has_value());
         auto& fcm_ack_configuration = message.fcm_channel_configuration();
-        ASSERT_EQ(kSenderVapidFcmToken,
-                  fcm_ack_configuration.vapid_fcm_token());
-        ASSERT_EQ(kSenderVapidP256dh, fcm_ack_configuration.vapid_p256dh());
-        ASSERT_EQ(kSenderVapidAuthSecret,
-                  fcm_ack_configuration.vapid_auth_secret());
+        ASSERT_EQ("", fcm_ack_configuration.vapid_fcm_token());
+        ASSERT_EQ("", fcm_ack_configuration.vapid_p256dh());
+        ASSERT_EQ("", fcm_ack_configuration.vapid_auth_secret());
         ASSERT_EQ(kSenderSenderIdFcmToken,
                   fcm_ack_configuration.sender_id_fcm_token());
         ASSERT_EQ(kSenderSenderIdP256dh,

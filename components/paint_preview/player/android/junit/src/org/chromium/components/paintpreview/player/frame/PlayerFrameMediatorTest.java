@@ -85,10 +85,10 @@ public class PlayerFrameMediatorTest {
     }
 
     /** Used for keeping track of all bitmap requests that {@link PlayerFrameMediator} makes. */
-    private class RequestedBitmap {
-        UnguessableToken mFrameGuid;
-        Rect mClipRect;
-        float mScaleFactor;
+    private static class RequestedBitmap {
+        final UnguessableToken mFrameGuid;
+        final Rect mClipRect;
+        final float mScaleFactor;
         Callback<Bitmap> mBitmapCallback;
         Runnable mErrorCallback;
 
@@ -136,10 +136,10 @@ public class PlayerFrameMediatorTest {
      * Used for keeping track of all click events that {@link PlayerFrameMediator} sends to {@link
      * PlayerCompositorDelegate}.
      */
-    private class ClickedPoint {
-        UnguessableToken mFrameGuid;
-        int mX;
-        int mY;
+    private static class ClickedPoint {
+        final UnguessableToken mFrameGuid;
+        final int mX;
+        final int mY;
 
         public ClickedPoint(UnguessableToken frameGuid, int x, int y) {
             mFrameGuid = frameGuid;
@@ -176,9 +176,9 @@ public class PlayerFrameMediatorTest {
      * Mocks {@link PlayerCompositorDelegate}. Stores all bitmap requests as {@link
      * RequestedBitmap}s.
      */
-    private class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
-        List<RequestedBitmap> mRequestedBitmap = new ArrayList<>();
-        List<ClickedPoint> mClickedPoints = new ArrayList<>();
+    private static class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
+        final List<RequestedBitmap> mRequestedBitmap = new ArrayList<>();
+        final List<ClickedPoint> mClickedPoints = new ArrayList<>();
         Runnable mOnMemoryPressureRunnable;
         private int mNextRequestId;
 
@@ -238,8 +238,8 @@ public class PlayerFrameMediatorTest {
         }
     }
 
-    private class MatrixMatcher implements ArgumentMatcher<Matrix> {
-        private Matrix mLeft;
+    private static class MatrixMatcher implements ArgumentMatcher<Matrix> {
+        private final Matrix mLeft;
 
         MatrixMatcher(Matrix left) {
             mLeft = left;
@@ -341,9 +341,7 @@ public class PlayerFrameMediatorTest {
         // we should have only one column.
         Bitmap[][] bitmapMatrix = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
         Assert.assertTrue(Arrays.deepEquals(bitmapMatrix, new Bitmap[4][1]));
-        Assert.assertEquals(
-                new ArrayList<Pair<View, Rect>>(),
-                mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
+        Assert.assertEquals(List.of(), mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
     }
 
     /**

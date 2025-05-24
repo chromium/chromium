@@ -350,8 +350,9 @@ TEST_F(PdfPrinterHandlerGetCapabilityTest,
       expected_capability.GetDict().FindListByDottedPath(kPaperOptionPath);
   ASSERT_TRUE(expected_paper_options);
 
-  for (const PrinterSemanticCapsAndDefaults::Paper& paper : kTestPapers)
+  for (const PrinterSemanticCapsAndDefaults::Paper& paper : kTestPapers) {
     expected_paper_options->Append(GetValueFromCustomPaper(paper));
+  }
 
   SetMacCustomPaperSizesForTesting(kTestPapers);
 

@@ -28,8 +28,9 @@
 // empty, then the relying party accepts any passkey credential.
 - (NSArray<NSData*>*)allowedCredentials;
 
-// Whether the current request is a passkey related request.
-- (BOOL)isRequestingPasskey;
+// The relying party identifier for a passkey related request.
+// Nil for password requests.
+- (NSString*)relyingPartyIdentifier;
 
 @end
 

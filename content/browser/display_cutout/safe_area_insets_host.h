@@ -45,6 +45,7 @@ class CONTENT_EXPORT SafeAreaInsetsHost
 
   // blink::mojom::DisplayCutoutHost interface.
   void NotifyViewportFitChanged(blink::mojom::ViewportFit value) final;
+  void NotifyComplexSafeAreaConstraintChanged(bool value) final;
 
   // Called by WebContents when various events occur.
   virtual void DidAcquireFullscreen(RenderFrameHost* rfh) = 0;
@@ -69,6 +70,10 @@ class CONTENT_EXPORT SafeAreaInsetsHost
   // through the blink::mojom::DisplayCutoutclient interface.
   // Protected and virtual for testing only.
   virtual void SendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets);
+
+  // Notified that the complex safe-area-inset constraint state changed.
+  virtual void ComplexSafeAreaConstraintChangedForFrame(RenderFrameHost* rfh,
+                                                        bool has_constraint) {}
 
   // Weak pointer to the owning `WebContentsImpl` instance.
   raw_ptr<WebContentsImpl> web_contents_impl_;

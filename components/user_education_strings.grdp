@@ -7,6 +7,9 @@
       <message name="IDS_CLOSE_PROMO" desc="Accessible name used by a screen reader for the in-product-help bubble close button." is_accessibility_with_no_ui="true">
         Close help bubble
       </message>
+      <message name="IDS_HELP_BUBBLE" desc="Window title shown in Task Manager for some help bubbles" is_accessibility_with_no_ui="true">
+        Help bubble
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button for the user to acknowledge that they understand the message">
           Got It
@@ -19,6 +22,9 @@
         </message>
         <message name="IDS_TUTORIAL_RESTART_TUTORIAL" desc="The text shown on the button for restarting a tutorial">
           Restart Tutorial
+        </message>
+        <message name="IDS_PROMO_LEARN_MORE_BUTTON" desc="Text shown on the button for the user to learn more about the feature">
+          Learn More
         </message>
       </if>
       <if expr="not use_titlecase">
@@ -33,6 +39,9 @@
         </message>
         <message name="IDS_TUTORIAL_RESTART_TUTORIAL" desc="The text shown on the button for restarting a tutorial">
           Restart tutorial
+        </message>
+        <message name="IDS_PROMO_LEARN_MORE_BUTTON" desc="Text shown on the button for the user to learn more about the feature">
+          Learn more
         </message>
       </if>
       <message name="IDS_TUTORIAL_CLOSE_TUTORIAL" desc="The text shown on the button for closing a tutorial">

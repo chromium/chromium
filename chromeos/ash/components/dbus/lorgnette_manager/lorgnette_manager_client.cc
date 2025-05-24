@@ -1053,7 +1053,7 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
         discovery_sessions_.erase(session.session_id);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     if (discovery_sessions_.size() == 0) {

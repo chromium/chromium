@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme_mac.h"
 
+#include <variant>
+
 #include "skia/ext/skia_utils_mac.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
@@ -49,9 +51,10 @@ static bool s_jump_on_track_click = false;
 typedef HeapHashSet<WeakMember<Scrollbar>> ScrollbarSet;
 
 static ScrollbarSet& GetScrollbarSet() {
-  DEFINE_STATIC_LOCAL(Persistent<ScrollbarSet>, set,
-                      (MakeGarbageCollected<ScrollbarSet>()));
-  return *set;
+  using ScrollbarSetHolder = DisallowNewWrapper<ScrollbarSet>;
+  DEFINE_STATIC_LOCAL(Persistent<ScrollbarSetHolder>, holder,
+                      (MakeGarbageCollected<ScrollbarSetHolder>()));
+  return holder->Value();
 }
 
 // Values returned by NSScrollerImp's methods for querying sizes of various
@@ -205,7 +208,7 @@ void ScrollbarThemeMac::PaintTrackBackground(GraphicsContext& context,
   WebThemeEngine::ExtraParams params =
       GetPaintParams(scrollbar, UsesOverlayScrollbars());
   const auto& scrollbar_extra =
-      absl::get<WebThemeEngine::ScrollbarExtraParams>(params);
+      std::get<WebThemeEngine::ScrollbarExtraParams>(params);
   gfx::Rect bounds(0, 0, scrollbar.FrameRect().width(),
                    scrollbar.FrameRect().height());
   WebThemeEngine::Part track_part =
@@ -278,7 +281,7 @@ void ScrollbarThemeMac::PaintThumb(GraphicsContext& context,
   WebThemeEngine::ExtraParams params =
       GetPaintParams(scrollbar, UsesOverlayScrollbars());
   const auto& scrollbar_extra =
-      absl::get<WebThemeEngine::ScrollbarExtraParams>(params);
+      std::get<WebThemeEngine::ScrollbarExtraParams>(params);
 
   // Compute the bounds for the thumb, accounting for lack of engorgement.
   gfx::Rect bounds;

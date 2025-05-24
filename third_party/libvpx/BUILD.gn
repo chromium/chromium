@@ -30,14 +30,14 @@ if (current_cpu == "x86") {
   } else {
     cpu_arch_full = "arm"
   }
-} else if (current_cpu == "arm64") {
-  if (is_win || is_chromeos || is_mac) {
+} else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+  if (is_win || is_chromeos || is_mac || is_ios) {
     # This is necessary for CrOS and macOS as they reuse the Linux
     # configuration, of which there are two (see the later definition of
     # os_category).
     cpu_arch_full = "arm64-highbd"
   } else {
-    cpu_arch_full = current_cpu
+    cpu_arch_full = "arm64"
   }
 } else if (current_cpu == "riscv64") {
   cpu_arch_full = "generic"
@@ -315,7 +315,7 @@ if (current_cpu == "loong64") {
   }
 }
 
-if (current_cpu == "arm" || current_cpu == "arm64") {
+if (current_cpu == "arm" || current_cpu == "arm64" || current_cpu == "arm64e") {
   source_set("libvpx_intrinsics_neon") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -344,7 +344,7 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
   }
 }
 
-if (current_cpu == "arm64") {
+if (current_cpu == "arm64" || current_cpu == "arm64e") {
   source_set("libvpx_intrinsics_neon_dotprod") {
     check_includes = false
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -559,8 +559,8 @@ static_library("libvpx") {
       sources = libvpx_srcs_arm
       public_deps = [ ":libvpx_arm_headers" ]
     }
-  } else if (current_cpu == "arm64") {
-    if (is_chromeos || is_win || is_mac) {
+  } else if (current_cpu == "arm64" || current_cpu == "arm64e") {
+    if (is_chromeos || is_win || is_mac || is_ios) {
       sources = libvpx_srcs_arm64_highbd
       public_deps = [ ":libvpx_arm64_highbd_headers" ]
     } else {
@@ -595,10 +595,11 @@ static_library("libvpx") {
     ]
   }
   if (cpu_arch_full == "arm-neon-highbd" || cpu_arch_full == "arm-neon" ||
-      cpu_arch_full == "arm-neon-cpu-detect" || current_cpu == "arm64") {
+      cpu_arch_full == "arm-neon-cpu-detect" || current_cpu == "arm64" ||
+      current_cpu == "arm64e") {
     deps += [ ":libvpx_intrinsics_neon" ]
   }
-  if (current_cpu == "arm64") {
+  if (current_cpu == "arm64" || current_cpu == "arm64e") {
     deps += [ ":libvpx_intrinsics_neon_dotprod" ]
     deps += [ ":libvpx_intrinsics_neon_i8mm" ]
     if (!is_win) {

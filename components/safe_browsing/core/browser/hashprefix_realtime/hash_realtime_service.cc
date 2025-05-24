@@ -66,9 +66,8 @@ SBThreatType MapFullHashDetailToSbThreatType(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected ThreatType encountered: " << detail.threat_type();
-      return SBThreatType::SB_THREAT_TYPE_UNUSED;
+      NOTREACHED() << "Unexpected ThreatType encountered: "
+                   << detail.threat_type();
   }
 }
 
@@ -222,9 +221,8 @@ int HashRealTimeService::GetThreatSeverity(
     default:
       // Using "default" because exhaustive switch statements are not
       // recommended for proto3 enums.
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected ThreatType encountered: " << detail.threat_type();
-      return kLeastSeverity;
+      NOTREACHED() << "Unexpected ThreatType encountered: "
+                   << detail.threat_type();
   }
 }
 bool HashRealTimeService::IsHashDetailMoreSevere(
@@ -424,16 +422,6 @@ void HashRealTimeService::OnURLLoaderComplete(
   base::UmaHistogramTimes("SafeBrowsing.HPRT.Network.Time", network_time);
   RecordHttpResponseOrErrorCode("SafeBrowsing.HPRT.Network.Result", net_error,
                                 response_code);
-  if (net_error == net::ERR_INTERNET_DISCONNECTED) {
-    base::UmaHistogramSparse(
-        "SafeBrowsing.HPRT.Network.HttpResponseCode.InternetDisconnected",
-        response_code);
-  }
-  if (net_error == net::ERR_NETWORK_CHANGED) {
-    base::UmaHistogramSparse(
-        "SafeBrowsing.HPRT.Network.HttpResponseCode.NetworkChanged",
-        response_code);
-  }
   if (net_error == net::ERR_FAILED) {
     base::UmaHistogramBoolean(
         "SafeBrowsing.HPRT.FailedNetResultIsFromEarlyOhttpClientDestruct",

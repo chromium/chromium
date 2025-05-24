@@ -92,7 +92,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // properly transformed; however, coordinates received from an out-of-process
   // iframe renderer process require transformation.
   virtual gfx::PointF TransformPointToRootCoordSpaceF(
-      const gfx::PointF& point) = 0;
+      const gfx::PointF& point) const = 0;
 
   // A int point variant of the above. Use float version to transform,
   // then rounded back to int point.
@@ -195,6 +195,7 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // than the view size if a portion of the view is obstructed (e.g. by a
   // virtual keyboard).
   virtual gfx::Size GetVisibleViewportSize() = 0;
+  virtual gfx::Size GetVisibleViewportSizeDevicePx() = 0;
 
   // Set insets for the visible region of the root window. Used to compute the
   // visible viewport.
@@ -298,6 +299,10 @@ class CONTENT_EXPORT RenderWidgetHostView {
   // coordinates. No-op unless VirtualKeyboardMode is kOverlaysContent.
   virtual void NotifyVirtualKeyboardOverlayRect(
       const gfx::Rect& keyboard_rect) = 0;
+
+  virtual void NotifyContextMenuInsetsObservers(const gfx::Rect&) = 0;
+
+  virtual void ShowInterestInElement(int) = 0;
 
   // Returns true if this widget is a HTML popup, e.g. a <select> menu.
   virtual bool IsHTMLFormPopup() const = 0;

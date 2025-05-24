@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <array>
 #include <memory>
 #include <string>
 
@@ -28,6 +29,7 @@
 #include "gpu/config/gpu_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -39,6 +41,10 @@ const uint8_t GLTestHelper::kCheckClearValue;
 #endif
 
 gl::GLDisplay* GLTestHelper::InitializeGL(gl::GLImplementation gl_impl) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  gpu::TrySetNonSoftwareDevicePreferenceForTesting(gl::GpuPreference::kDefault);
+#endif
+
   gl::GLDisplay* display = nullptr;
   if (gl_impl == gl::GLImplementation::kGLImplementationNone) {
     display = gl::init::InitializeGLNoExtensionsOneOff(
@@ -204,13 +210,15 @@ GLuint GLTestHelper::SetupColorsForUnitQuad(
   GLuint vbo = 0;
   glGenBuffers(1, &vbo);
   glBindBuffer(GL_ARRAY_BUFFER, vbo);
-  GLfloat vertices[6 * 4];
+  std::array<GLfloat, 6 * 4> vertices;
   for (int ii = 0; ii < 6; ++ii) {
     for (int jj = 0; jj < 4; ++jj) {
       vertices[ii * 4 + jj] = color[jj];
     }
   }
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, usage);
+  glBufferData(GL_ARRAY_BUFFER,
+               (vertices.size() * sizeof(decltype(vertices)::value_type)),
+               vertices.data(), usage);
   glEnableVertexAttribArray(location);
   glVertexAttribPointer(location, 4, GL_FLOAT, GL_FALSE, 0, 0);
 

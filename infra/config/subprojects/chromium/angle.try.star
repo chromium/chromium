@@ -55,5 +55,6 @@ angle_ios_builder(
             "no_symbols",
         ],
     ),
-    pool = "luci.chromium.gpu.mac.mini.intel.try",
+    pool = "luci.chromium.gpu.try",
+    max_concurrent_builds = 1,
 )

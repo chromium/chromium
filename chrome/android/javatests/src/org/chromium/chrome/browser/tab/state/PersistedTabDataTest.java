@@ -17,14 +17,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -41,14 +41,13 @@ public class PersistedTabDataTest {
     private static final int INITIAL_VALUE = 42;
     private static final int CHANGED_VALUE = 51;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock ShoppingPersistedTabData mShoppingPersistedTabDataMock;
     @Mock Profile mProfile;
 
     @Mock private PersistedTabData.Natives mPersistedTabDataJni;
 
     @Mock Tab mTab;
-
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Before
     public void setUp() throws Exception {
@@ -57,14 +56,11 @@ public class PersistedTabDataTest {
         // ShoppingPersistedTabData must be mocked on the ui thread, otherwise a thread assert will
         // fail. An ObserverList is created when creating the mock. The same ObserverList is used
         // later in the test.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    MockitoAnnotations.initMocks(this);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> {});
 
-        PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
+        PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
+        PersistedTabDataJni.setInstanceForTesting(mPersistedTabDataJni);
     }
 
     @SmallTest
@@ -242,7 +238,7 @@ public class PersistedTabDataTest {
         ThreadVerifierMockPersistedTabData(Tab tab) {
             super(
                     tab, 0
-                    /** unused in ThreadVerifierMockPersistedTabData */
+                    /* unused in ThreadVerifierMockPersistedTabData */
                     );
         }
 
@@ -265,7 +261,7 @@ public class PersistedTabDataTest {
         OutOfMemoryMockPersistedTabDataGet(Tab tab) {
             super(
                     tab, 0
-                    /** unused in OutOfMemoryMockPersistedTabData */
+                    /* unused in OutOfMemoryMockPersistedTabData */
                     );
         }
 
@@ -282,7 +278,7 @@ public class PersistedTabDataTest {
         OutOfMemoryMockPersistedTabData(Tab tab) {
             super(
                     tab, 0
-                    /** unused in OutOfMemoryMockPersistedTabData */
+                    /* unused in OutOfMemoryMockPersistedTabData */
                     );
         }
 

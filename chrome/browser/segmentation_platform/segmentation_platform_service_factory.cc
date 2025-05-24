@@ -27,6 +27,7 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/embedder/input_delegate/shopping_service_input_delegate.h"
@@ -105,6 +106,16 @@ void InitTabDataCollection(
                        std::move(rank_dispatcher));
 }
 
+void InitializeUkmDatabaseIfNeeded(Profile* profile) {
+  // The client is initialized in
+  // `ChromeBrowserMainExtraPartsSegmentationPlatform::PreProfileInit()` for
+  // production scenarios. But unit tests do not initialize the browser process,
+  // so this code path initializes the UKM client. Use in-memory since only
+  // tests should use this path.
+  UkmDatabaseClientHolder::GetClientInstance(profile).PreProfileInit(
+      /*in_memory_database=*/true);
+}
+
 }  // namespace
 
 // static
@@ -143,13 +154,19 @@ SegmentationPlatformServiceFactory::SegmentationPlatformServiceFactory()
 SegmentationPlatformServiceFactory::~SegmentationPlatformServiceFactory() =
     default;
 
-KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
+void SegmentationPlatformServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  home_modules::HomeModulesCardRegistry::RegisterProfilePrefs(registry);
+}
+
+std::unique_ptr<KeyedService>
+SegmentationPlatformServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord())
     return nullptr;
 
   if (!base::FeatureList::IsEnabled(features::kSegmentationPlatformFeature))
-    return new DummySegmentationPlatformService();
+    return std::make_unique<DummySegmentationPlatformService>();
 
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_guide =
@@ -161,6 +178,8 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   auto home_modules_card_registry =
       std::make_unique<home_modules::HomeModulesCardRegistry>(
           profile->GetPrefs());
+
+  InitializeUkmDatabaseIfNeeded(profile);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   auto profile_path = profile->GetPath().value();
@@ -215,17 +234,19 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
       std::make_unique<ShoppingServiceInputDelegate>(
           shopping_service_callback));
 
-  auto* service = new SegmentationPlatformServiceImpl(std::move(params));
+  std::unique_ptr<SegmentationPlatformServiceImpl> service =
+      std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 
   // Profile manager can be null in unit tests.
   if (g_browser_process->profile_manager()) {
-    service->SetUserData(kSegmentationPlatformProfileObserverKey,
-                         std::make_unique<SegmentationPlatformProfileObserver>(
-                             service, g_browser_process->profile_manager()));
+    service->SetUserData(
+        kSegmentationPlatformProfileObserverKey,
+        std::make_unique<SegmentationPlatformProfileObserver>(
+            service.get(), g_browser_process->profile_manager()));
   }
   service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
                        std::make_unique<DeviceSwitcherResultDispatcher>(
-                           service,
+                           service.get(),
                            DeviceInfoSyncServiceFactory::GetForProfile(profile)
                                ->GetDeviceInfoTracker(),
                            profile->GetPrefs(), field_trial_register));
@@ -233,7 +254,8 @@ KeyedService* SegmentationPlatformServiceFactory::BuildServiceInstanceFor(
   service->SetUserData(kSegmentationHomeModulesCardRegistryDataKey,
                        std::move(home_modules_card_registry));
 
-  InitTabDataCollection(service, session_sync_service, std::move(tab_fetcher));
+  InitTabDataCollection(service.get(), session_sync_service,
+                        std::move(tab_fetcher));
 
   return service;
 }

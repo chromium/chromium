@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
+#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
@@ -82,7 +83,10 @@ class CustomizeChromeUI
   void ScrollToSection(CustomizeChromeSection section);
 
   // Passthrough that calls the CustomizeChromePage's AttachedTabStateUpdated.
-  void AttachedTabStateUpdated(bool is_source_tab_first_party_ntp);
+  void AttachedTabStateUpdated(const GURL& url);
+
+  // Passthrough that calls to CustomizeChromePage's UpdateThemeEditable.
+  void UpdateThemeEditable(bool is_theme_editable);
 
   // Gets a weak pointer to this object.
   base::WeakPtr<CustomizeChromeUI> GetWeakPtr();
@@ -177,13 +181,14 @@ class CustomizeChromeUI
   std::unique_ptr<CustomizeChromePageHandler> customize_chrome_page_handler_;
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
-  const std::vector<std::pair<const std::string, int>> module_id_names_;
+  const std::vector<ntp::ModuleIdDetail> module_id_details_;
   mojo::Receiver<side_panel::mojom::CustomizeChromePageHandlerFactory>
       page_factory_receiver_;
   // Caches a request to scroll to a section in case the request happens before
   // the front-end is ready to receive the request.
   std::optional<CustomizeChromeSection> section_;
-  std::optional<bool> is_source_tab_first_party_ntp_;
+  GURL source_tab_url_;
+  std::optional<bool> is_theme_editable_;
 
   std::unique_ptr<user_education::HelpBubbleHandler> help_bubble_handler_;
   mojo::Receiver<help_bubble::mojom::HelpBubbleHandlerFactory>

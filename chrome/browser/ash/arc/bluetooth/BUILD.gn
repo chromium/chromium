@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("bluetooth") {
   sources = [
@@ -21,14 +21,14 @@ static_library("bluetooth") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/bluetooth",
-    "//components/arc",
-    "//components/arc/common:arc_intent_helper_constants",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
     "//components/device_event_log",
     "//components/prefs",
     "//components/user_manager",
@@ -48,11 +48,11 @@ source_set("unit_tests") {
 
   deps = [
     ":bluetooth",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//device/bluetooth",
     "//device/bluetooth:fake_bluetooth",
     "//testing/gmock",

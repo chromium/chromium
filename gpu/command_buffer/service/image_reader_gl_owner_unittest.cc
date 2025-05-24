@@ -205,7 +205,7 @@ TEST_F(ImageReaderGLOwnerSecureSurfaceControlTest, MaxImageExpectation) {
     return;
   EXPECT_EQ(static_cast<ImageReaderGLOwner*>(image_reader_.get())
                 ->max_images_for_testing(),
-            3);
+            features::IncreaseBufferCountForHighFrameRate() ? 5 : 3);
 }
 
 class ImageReaderGLOwnerInsecureSurfaceControlTest
@@ -223,7 +223,7 @@ TEST_F(ImageReaderGLOwnerInsecureSurfaceControlTest, MaxImageExpectation) {
     return;
   EXPECT_EQ(static_cast<ImageReaderGLOwner*>(image_reader_.get())
                 ->max_images_for_testing(),
-            3);
+            features::IncreaseBufferCountForHighFrameRate() ? 5 : 3);
 }
 
 }  // namespace gpu

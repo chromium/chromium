@@ -20,7 +20,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/chromeos/test_util.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #endif
 
 class Profile;
@@ -49,12 +49,12 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
  public:
   WebAppBrowserTestBase();
   WebAppBrowserTestBase(const WebAppBrowserTestBase&) = delete;
-  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) =
-      delete;
+  WebAppBrowserTestBase& operator=(const WebAppBrowserTestBase&) = delete;
   ~WebAppBrowserTestBase() override = 0;
 
   WebAppProvider& provider();
 
+  // Returns the profile from the browser() object, during test set up.
   Profile* profile();
 
   webapps::AppId InstallPWA(const GURL& app_url);
@@ -75,11 +75,6 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
 
   // Launches the app as a tab and returns the browser.
   Browser* LaunchBrowserForWebAppInTab(const webapps::AppId&);
-
-  // Simulates a page calling window.open on an URL and waits for the
-  // navigation.
-  content::WebContents* OpenWindow(content::WebContents* contents,
-                                   const GURL& url);
 
   // Simulates a page navigating itself to an URL and waits for the
   // navigation.
@@ -114,6 +109,7 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
       content::BrowserContext* context) {}
 
   GURL GetInstallableAppURL();
+  GURL GetAppURLWithManifest(const std::string& manifest_url);
   static const char* GetInstallableAppName();
 
   // InProcessBrowserTest:
@@ -123,6 +119,7 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   void TearDownInProcessBrowserTestFixture() override;
   void TearDownOnMainThread() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
+  void PreRunTestOnMainThread() override;
   void SetUpOnMainThread() override;
 
  private:
@@ -136,6 +133,9 @@ class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
   // Similar to net::MockCertVerifier, but also updates the CertVerifier
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
+  // Store separately instead of accessing directly from `browser()`, as some
+  // tests close that browser (and thus make it a UAF).
+  base::WeakPtr<Profile> browser_profile_;
   base::AutoReset<std::optional<AppIdentityUpdate>> update_dialog_scope_;
 };
 

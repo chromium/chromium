@@ -21,7 +21,7 @@ float GetExtent(const UiElement& element, bool horizontal) {
 }  // namespace
 
 LinearLayout::LinearLayout(Direction direction) : direction_(direction) {}
-LinearLayout::~LinearLayout() {}
+LinearLayout::~LinearLayout() = default;
 
 void LinearLayout::LayOutContributingChildren() {
   float x_factor = 0.f;

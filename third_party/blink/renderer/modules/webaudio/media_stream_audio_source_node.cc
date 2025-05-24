@@ -136,7 +136,7 @@ bool MediaStreamAudioSourceNode::HasPendingActivity() const {
   // The node stays alive as long as the context is running. It also will not
   // be collected until the context is suspended or stopped.
   // (See https://crbug.com/937231)
-  return context()->ContextState() == BaseAudioContext::kRunning;
+  return context()->ContextState() == V8AudioContextState::Enum::kRunning;
 }
 
 void MediaStreamAudioSourceNode::Trace(Visitor* visitor) const {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
 
 #include <algorithm>
@@ -25,7 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/loading_params.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -136,7 +131,7 @@ void ReadFromDataPipeImpl(BodyReader& reader,
       reader.FinishedReading(/*has_error=*/true);
       return;
     }
-    const size_t chunk_size = network::features::GetLoaderChunkSize();
+    const size_t chunk_size = network::kMaxNumConsumedBytesInTask;
     DCHECK_LE(num_bytes_consumed, chunk_size);
     buffer = buffer.first(
         std::min<size_t>(buffer.size(), chunk_size - num_bytes_consumed));
@@ -388,7 +383,7 @@ NavigationBodyLoader::~NavigationBodyLoader() {
 void NavigationBodyLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnReceiveResponse(
@@ -396,21 +391,21 @@ void NavigationBodyLoader::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnUploadProgress(int64_t current_position,
                                             int64_t total_size,
                                             OnUploadProgressCallback callback) {
   // This has already happened in the browser process.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NavigationBodyLoader::OnTransferSizeUpdated(int32_t transfer_size_diff) {

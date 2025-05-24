@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -44,12 +45,15 @@ class RestoreDataCollector {
   ~RestoreDataCollector();
 
   // Captures the active desk and returns it as a `DeskTemplate` object via the
-  // `callback`.
-  void CaptureActiveDeskAsSavedDesk(GetDeskTemplateCallback callback,
-                                    DeskTemplateType template_type,
-                                    const std::string& template_name,
-                                    aura::Window* root_window_to_show,
-                                    AccountId current_account_id);
+  // `callback`. If `template_type` is coral, then we use a subset of the apps
+  // open on the active desk, identified by `coral_app_id_allowlist`.
+  void CaptureActiveDeskAsSavedDesk(
+      GetDeskTemplateCallback callback,
+      DeskTemplateType template_type,
+      const std::string& template_name,
+      aura::Window* root_window_to_show,
+      AccountId current_account_id,
+      const base::flat_set<std::string>& coral_app_id_allowlist);
 
  private:
   // Keeps the state for the asynchronous call for `AppLaunchData` to the apps.
@@ -66,7 +70,6 @@ class RestoreDataCollector {
     size_t non_persistable_window_count = 0;
     std::unique_ptr<app_restore::RestoreData> data;
     uint32_t pending_request_count = 0;
-    uint64_t lacros_profile_id = 0;
     GetDeskTemplateCallback callback;
   };
 

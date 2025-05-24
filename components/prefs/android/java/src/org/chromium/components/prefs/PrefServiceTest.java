@@ -12,7 +12,6 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -20,7 +19,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 /** Unit tests for {@link PrefService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -28,8 +26,6 @@ import org.chromium.base.test.util.JniMocker;
 public class PrefServiceTest {
     private static final String PREF = "42";
     private static final long NATIVE_HANDLE = 117;
-
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private PrefService.Natives mNativeMock;
 
     PrefService mPrefService;
@@ -37,7 +33,7 @@ public class PrefServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(PrefServiceJni.TEST_HOOKS, mNativeMock);
+        PrefServiceJni.setInstanceForTesting(mNativeMock);
         mPrefService = new PrefService(NATIVE_HANDLE);
     }
 

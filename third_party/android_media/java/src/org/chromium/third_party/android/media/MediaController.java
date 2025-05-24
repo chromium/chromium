@@ -16,6 +16,8 @@
 
 package org.chromium.third_party.android.media;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.util.AttributeSet;
@@ -29,7 +31,8 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.chromium.third_party.android.media.R;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -40,6 +43,7 @@ import java.util.Locale;
  * customize the look as we want. This file is taken directly from the public Android sample for
  * supportv4, with tiny bug fixes.
  */
+@NullMarked
 public class MediaController extends FrameLayout {
     /**
      * The interface that allows media controller to actually control media and provides some
@@ -83,26 +87,29 @@ public class MediaController extends FrameLayout {
         long getActionFlags();
     }
 
-    private Delegate mDelegate;
-    private Context mContext;
-    private ViewGroup mProgressGroup;
-    private SeekBar mProgressBar;
-    private TextView mEndTime;
-    private TextView mCurrentTime;
+    private @Nullable Delegate mDelegate;
+    private final Context mContext;
+    private @Nullable ViewGroup mProgressGroup;
+    private @Nullable SeekBar mProgressBar;
+    private @Nullable TextView mEndTime;
+    private @Nullable TextView mCurrentTime;
     private boolean mDragging;
-    private boolean mUseFastForward;
+    private final boolean mUseFastForward;
     private boolean mListenersSet;
     private boolean mShowNext;
     private boolean mShowPrev;
-    private View.OnClickListener mNextListener;
-    private View.OnClickListener mPrevListener;
-    private StringBuilder mFormatBuilder;
-    private Formatter mFormatter;
-    private ImageButton mPauseButton;
-    private ImageButton mFfwdButton;
-    private ImageButton mRewButton;
-    private ImageButton mNextButton;
-    private ImageButton mPrevButton;
+    private View.@Nullable OnClickListener mNextListener;
+    private View.@Nullable OnClickListener mPrevListener;
+
+    private @Nullable StringBuilder mFormatBuilder;
+
+    private @Nullable Formatter mFormatter;
+
+    private @Nullable ImageButton mPauseButton;
+    private @Nullable ImageButton mFfwdButton;
+    private @Nullable ImageButton mRewButton;
+    private @Nullable ImageButton mNextButton;
+    private @Nullable ImageButton mPrevButton;
 
     public MediaController(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -222,11 +229,13 @@ public class MediaController extends FrameLayout {
         int minutes = (totalSeconds / 60) % 60;
         int hours = totalSeconds / 3600;
 
-        mFormatBuilder.setLength(0);
+        assumeNonNull(mFormatBuilder).setLength(0);
         if (hours > 0) {
-            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+            return assumeNonNull(mFormatter)
+                    .format("%d:%02d:%02d", hours, minutes, seconds)
+                    .toString();
         } else {
-            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+            return assumeNonNull(mFormatter).format("%02d:%02d", minutes, seconds).toString();
         }
     }
 
@@ -252,12 +261,13 @@ public class MediaController extends FrameLayout {
         return position;
     }
 
-    private View.OnClickListener mPauseListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            doPauseResume();
-        }
-    };
+    private final View.OnClickListener mPauseListener =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    doPauseResume();
+                }
+            };
 
     private void updatePausePlay() {
         if (mDelegate == null || mPauseButton == null) return;
@@ -291,35 +301,37 @@ public class MediaController extends FrameLayout {
     // The second scenario involves the user operating the scroll ball, in this
     // case there WON'T BE onStartTrackingTouch/onStopTrackingTouch notifications,
     // we will simply apply the updated position without suspending regular updates.
-    private SeekBar.OnSeekBarChangeListener mSeekListener = new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onStartTrackingTouch(SeekBar bar) {
-            mDragging = true;
-        }
+    private final SeekBar.OnSeekBarChangeListener mSeekListener =
+            new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onStartTrackingTouch(SeekBar bar) {
+                    mDragging = true;
+                }
 
-        @Override
-        public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
-            if (mDelegate == null) return;
+                @Override
+                public void onProgressChanged(SeekBar bar, int progress, boolean fromuser) {
+                    if (mDelegate == null) return;
 
-            if (!fromuser) {
-                // We're not interested in programmatically generated changes to
-                // the progress bar's position.
-                return;
-            }
+                    if (!fromuser) {
+                        // We're not interested in programmatically generated changes to
+                        // the progress bar's position.
+                        return;
+                    }
 
-            long duration = mDelegate.getDuration();
-            long newposition = (duration * progress) / 1000L;
-            mDelegate.seekTo(newposition);
-            if (mCurrentTime != null) mCurrentTime.setText(stringForTime((int) newposition));
-        }
+                    long duration = mDelegate.getDuration();
+                    long newposition = (duration * progress) / 1000L;
+                    mDelegate.seekTo(newposition);
+                    if (mCurrentTime != null)
+                        mCurrentTime.setText(stringForTime((int) newposition));
+                }
 
-        @Override
-        public void onStopTrackingTouch(SeekBar bar) {
-            mDragging = false;
-            updateProgress();
-            updatePausePlay();
-        }
-    };
+                @Override
+                public void onStopTrackingTouch(SeekBar bar) {
+                    mDragging = false;
+                    updateProgress();
+                    updatePausePlay();
+                }
+            };
 
     @Override
     public void setEnabled(boolean enabled) {
@@ -339,29 +351,31 @@ public class MediaController extends FrameLayout {
         info.setClassName(MediaController.class.getName());
     }
 
-    private View.OnClickListener mRewListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (mDelegate == null) return;
+    private final View.OnClickListener mRewListener =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mDelegate == null) return;
 
-            long pos = mDelegate.getPosition();
-            pos -= 5000; // milliseconds
-            mDelegate.seekTo(pos);
-            updateProgress();
-        }
-    };
+                    long pos = mDelegate.getPosition();
+                    pos -= 5000; // milliseconds
+                    mDelegate.seekTo(pos);
+                    updateProgress();
+                }
+            };
 
-    private View.OnClickListener mFfwdListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            if (mDelegate == null) return;
+    private final View.OnClickListener mFfwdListener =
+            new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mDelegate == null) return;
 
-            long pos = mDelegate.getPosition();
-            pos += 15000; // milliseconds
-            mDelegate.seekTo(pos);
-            updateProgress();
-        }
-    };
+                    long pos = mDelegate.getPosition();
+                    pos += 15000; // milliseconds
+                    mDelegate.seekTo(pos);
+                    updateProgress();
+                }
+            };
 
     private void installPrevNextListeners() {
         if (mNextButton != null) {

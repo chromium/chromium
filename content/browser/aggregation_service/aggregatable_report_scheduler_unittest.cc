@@ -62,7 +62,7 @@ class AggregatableReportSchedulerTest : public testing::Test {
   }
 
  protected:
-  void VerifyHistograms(base::HistogramBase::Count timer_fired_count) {
+  void VerifyHistograms(base::HistogramBase::Count32 timer_fired_count) {
     histograms_.ExpectTotalCount(
         "PrivacySandbox.AggregationService.Scheduler.TimerFireDelay",
         timer_fired_count);

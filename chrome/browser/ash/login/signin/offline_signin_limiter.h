@@ -55,7 +55,6 @@ class OfflineSigninLimiter : public KeyedService,
 
  private:
   friend class OfflineSigninLimiterFactory;
-  friend class OfflineSigninLimiterTest;
 
   // Recalculates the amount of time remaining until online login should be
   // forced and sets the `offline_signin_limit_timer_` accordingly. If the limit

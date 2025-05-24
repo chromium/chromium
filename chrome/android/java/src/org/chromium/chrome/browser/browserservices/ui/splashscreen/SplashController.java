@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.browserservices.ui.splashscreen;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.graphics.PixelFormat;
 import android.os.SystemClock;
 import android.view.View;
@@ -14,10 +15,9 @@ import android.view.ViewTreeObserver;
 
 import androidx.annotation.Nullable;
 
-import dagger.Lazy;
-
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.TabCreationMode;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
@@ -36,10 +35,7 @@ import org.chromium.url.GURL;
 
 import java.lang.reflect.Method;
 
-import javax.inject.Inject;
-
 /** Shows and hides splash screen for Webapps, WebAPKs and TWAs. */
-@ActivityScope
 public class SplashController extends CustomTabTabObserver
         implements InflationObserver, DestroyObserver {
     private static class SingleShotOnDrawListener implements ViewTreeObserver.OnDrawListener {
@@ -72,7 +68,7 @@ public class SplashController extends CustomTabTabObserver
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final TwaFinishHandler mFinishHandler;
     private final CustomTabActivityTabProvider mTabProvider;
-    private final Lazy<CompositorViewHolder> mCompositorViewHolder;
+    private final Supplier<CompositorViewHolder> mCompositorViewHolder;
 
     private SplashDelegate mDelegate;
 
@@ -86,8 +82,6 @@ public class SplashController extends CustomTabTabObserver
     /** The duration of the splash hide animation. */
     private long mSplashHideAnimationDurationMs;
 
-    private boolean mDidPreInflationStartup;
-
     /** Whether the splash hide animation was started. */
     private boolean mWasSplashHideAnimationStarted;
 
@@ -95,22 +89,21 @@ public class SplashController extends CustomTabTabObserver
     private long mSplashShownTimestamp;
 
     /** Indicates whether translucency should be removed. */
-    private boolean mIsWindowInitiallyTranslucent;
+    private final boolean mIsWindowInitiallyTranslucent;
 
     /** Whether translucency was removed. */
     private boolean mRemovedTranslucency;
 
-    private ObserverList<SplashscreenObserver> mObservers;
+    private final ObserverList<SplashscreenObserver> mObservers;
 
-    @Inject
     public SplashController(
             Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             TabObserverRegistrar tabObserverRegistrar,
-            CustomTabOrientationController orientationController,
             TwaFinishHandler finishHandler,
             CustomTabActivityTabProvider tabProvider,
-            Lazy<CompositorViewHolder> compositorViewHolder) {
+            Supplier<CompositorViewHolder> compositorViewHolder,
+            CustomTabOrientationController customTabOrientationController) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabObserverRegistrar = tabObserverRegistrar;
@@ -122,7 +115,8 @@ public class SplashController extends CustomTabTabObserver
         mIsWindowInitiallyTranslucent =
                 BaseCustomTabActivity.isWindowInitiallyTranslucent(activity);
 
-        orientationController.delayOrientationRequestsIfNeeded(this, mIsWindowInitiallyTranslucent);
+        customTabOrientationController.delayOrientationRequestsIfNeeded(
+                this, mIsWindowInitiallyTranslucent);
 
         mLifecycleDispatcher.register(this);
         mTabObserverRegistrar.registerActivityTabObserver(this);
@@ -131,9 +125,7 @@ public class SplashController extends CustomTabTabObserver
     public void setConfig(SplashDelegate delegate, long splashHideAnimationDurationMs) {
         mDelegate = delegate;
         mSplashHideAnimationDurationMs = splashHideAnimationDurationMs;
-        if (mDidPreInflationStartup) {
-            showSplash();
-        }
+        showSplash();
     }
 
     /**
@@ -158,12 +150,7 @@ public class SplashController extends CustomTabTabObserver
     }
 
     @Override
-    public void onPreInflationStartup() {
-        mDidPreInflationStartup = true;
-        if (mDelegate != null) {
-            showSplash();
-        }
-    }
+    public void onPreInflationStartup() {}
 
     @Override
     public void onPostInflationStartup() {
@@ -293,6 +280,13 @@ public class SplashController extends CustomTabTabObserver
             method.setAccessible(true);
             method.invoke(mActivity);
         } catch (ReflectiveOperationException e) {
+        }
+
+        // When in desktop windowing mode (where Activities have a border and caption bar), we've
+        // got to update the task description for convertFromTranslucent to take effect. This was
+        // fixed in Android 16, see https://crbug.com/390368429.
+        if (android.os.Build.VERSION.SDK_INT <= android.os.Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            mActivity.setTaskDescription(new ActivityManager.TaskDescription());
         }
 
         notifyTranslucencyRemoved();

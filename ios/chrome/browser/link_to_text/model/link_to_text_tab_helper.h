@@ -75,8 +75,6 @@ class LinkToTextTabHelper : public web::WebStateObserver,
   raw_ptr<LinkToTextJavaScriptFeature> js_feature_for_testing_ = nullptr;
 
   base::WeakPtrFactory<LinkToTextTabHelper> weak_ptr_factory_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_LINK_TO_TEXT_MODEL_LINK_TO_TEXT_TAB_HELPER_H_

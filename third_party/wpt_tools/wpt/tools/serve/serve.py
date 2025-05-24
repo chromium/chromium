@@ -93,9 +93,7 @@ def inject_script(html, script_tag):
         return html[:offset] + script_tag + html[offset:]
 
 
-class WrapperHandler:
-
-    __meta__ = abc.ABCMeta
+class WrapperHandler(metaclass=abc.ABCMeta):
 
     headers: ClassVar[List[Tuple[str, str]]] = []
 
@@ -207,7 +205,6 @@ class WrapperHandler:
         # a specific metadata key: value pair.
         pass
 
-    @abc.abstractmethod
     def check_exposure(self, request):
         # Raise an exception if this handler shouldn't be exposed after all.
         pass
@@ -425,48 +422,34 @@ class ServiceWorkerModulesHandler(HtmlWrapperHandler):
 </script>
 """
 
-class ShadowRealmHandler(HtmlWrapperHandler):
-    global_type = "shadowrealm"
-    path_replace = [(".any.shadowrealm.html", ".any.js")]
+
+class ShadowRealmInWindowHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-window"
+    path_replace = [(".any.shadowrealm-in-window.html", ".any.js")]
 
     wrapper = """<!doctype html>
 <meta charset=utf-8>
 %(meta)s
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
 <script>
 (async function() {
   const r = new ShadowRealm();
-  r.evaluate("globalThis.self = globalThis; undefined;");
-  r.evaluate(`func => {
-    globalThis.fetch_json = (resource) => {
-      const thenMethod = func(resource);
-      return new Promise((resolve, reject) => thenMethod((s) => resolve(JSON.parse(s)), reject));
-    };
-  }`)((resource) => function (resolve, reject) {
-    fetch(resource).then(res => res.text(), String).then(resolve, reject);
-  });
-  r.evaluate(`s => {
-    globalThis.location = { search: s };
-  }`)(location.search);
-  await new Promise(r.evaluate(`
-    (resolve, reject) => {
-      (async () => {
-        globalThis.self.GLOBAL = {
-          isWindow: function() { return false; },
-          isWorker: function() { return false; },
-          isShadowRealm: function() { return true; },
-        };
-        await import("/resources/testharness.js");
-        %(script)s
-        await import("%(path)s");
-      })().then(resolve, (e) => reject(e.toString()));
-    }
-  `));
+  await shadowRealmEvalAsync(r, `
+    await import("/resources/testharness-shadowrealm-inner.js");
+    await import("/resources/testharness.js");
+  `);
+  r.evaluate("setShadowRealmGlobalProperties")(location.search, fetchAdaptor);
+
+  await shadowRealmEvalAsync(r, `
+    %(script)s
+    await import("%(path)s");
+  `);
 
   await fetch_tests_from_shadow_realm(r);
   done();
-})();
+})().catch(e => setup(() => { throw e; }));
 </script>
 """
 
@@ -474,6 +457,106 @@ class ShadowRealmHandler(HtmlWrapperHandler):
         if key == "script":
             return 'await import("%s");' % value
         return None
+
+
+class ShadowRealmInShadowRealmHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-shadowrealm"
+    path_replace = [(".any.shadowrealm-in-shadowrealm.html", ".any.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
+<script>
+(async function() {
+  const outer = new ShadowRealm();
+  outer.evaluate(`
+    var inner = new ShadowRealm();
+  `);
+  await shadowRealmEvalAsync(outer, `
+    await import("/resources/testharness-shadowrealm-outer.js");
+    await shadowRealmEvalAsync(inner, \\`
+      await import("/resources/testharness-shadowrealm-inner.js");
+      await import("/resources/testharness.js");
+    \\`);
+  `);
+
+  outer.evaluate(`
+    inner.evaluate("setShadowRealmGlobalProperties")
+  `)(location.search, fetchAdaptor);
+
+  await shadowRealmEvalAsync(outer, `
+    await shadowRealmEvalAsync(inner, \\`
+      %(script)s
+      await import("%(path)s");
+    \\`);
+  `);
+
+  outer.evaluate(`
+    function begin_shadow_realm_tests(windowCallback) {
+      inner.evaluate("begin_shadow_realm_tests")(windowCallback);
+    }
+  `);
+  await fetch_tests_from_shadow_realm(outer);
+  done();
+})().catch(e => setup(() => { throw e; }));
+</script>
+"""
+
+    def _script_replacement(self, key, value):
+        if key == "script":
+            return 'await import("%s");' % value
+        return None
+
+
+class ShadowRealmInDedicatedWorkerHandler(WorkersHandler):
+    global_type = "shadowrealm-in-dedicatedworker"
+    path_replace = [(".any.shadowrealm-in-dedicatedworker.html",
+                     ".any.js",
+                     ".any.worker-shadowrealm.js")]
+
+
+class ShadowRealmInSharedWorkerHandler(SharedWorkersHandler):
+    global_type = "shadowrealm-in-sharedworker"
+    path_replace = [(".any.shadowrealm-in-sharedworker.html",
+                     ".any.js",
+                     ".any.worker-shadowrealm.js")]
+
+
+class ShadowRealmInServiceWorkerHandler(ServiceWorkersHandler):
+    global_type = "shadowrealm-in-serviceworker"
+    path_replace = [(".https.any.shadowrealm-in-serviceworker.html",
+                     ".any.js",
+                     ".any.serviceworker-shadowrealm.js")]
+
+
+class ShadowRealmInAudioWorkletHandler(HtmlWrapperHandler):
+    global_type = "shadowrealm-in-audioworklet"
+    path_replace = [(".https.any.shadowrealm-in-audioworklet.html", ".any.js",
+                     ".any.audioworklet-shadowrealm.js")]
+
+    wrapper = """<!doctype html>
+<meta charset=utf-8>
+%(meta)s
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testharness-shadowrealm-outer.js"></script>
+<script>
+(async function() {
+  const context = new AudioContext();
+  await context.audioWorklet.addModule(
+    "/resources/testharness-shadowrealm-outer.js");
+  await context.audioWorklet.addModule(
+    "/resources/testharness-shadowrealm-audioworkletprocessor.js");
+  await context.audioWorklet.addModule("%(path)s%(query)s");
+  const node = new AudioWorkletNode(context, "test-runner");
+  setupFakeFetchOverMessagePort(node.port);
+  fetch_tests_from_worker(node.port);
+})();
+</script>
+"""
 
 
 class BaseWorkerHandler(WrapperHandler):
@@ -534,6 +617,110 @@ done();
         return 'import "%s";' % attribute
 
 
+class ShadowRealmWorkerWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.worker-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+importScripts("/resources/testharness-shadowrealm-outer.js");
+(async function() {
+  const postMessageFunc = await getPostMessageFunc();
+  try {
+    const r = new ShadowRealm();
+    await shadowRealmEvalAsync(r, `
+      await import("/resources/testharness-shadowrealm-inner.js");
+      await import("/resources/testharness.js");
+    `);
+    r.evaluate("setShadowRealmGlobalProperties")("%(query)s", fetchAdaptor);
+
+    await shadowRealmEvalAsync(r, `
+      %(script)s
+      await import("%(path)s");
+    `);
+
+    function forwardMessage(msgJSON) {
+      postMessageFunc(JSON.parse(msgJSON));
+    }
+    r.evaluate('begin_shadow_realm_tests')(forwardMessage);
+  } catch (e) {
+    postMessageFunc(createSetupErrorResult(e));
+  }
+})();
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await import("%s");' % attribute
+
+
+class ShadowRealmServiceWorkerWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.serviceworker-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+importScripts("/resources/testharness-shadowrealm-outer.js");
+
+(async function () {
+  const postMessageFunc = await getPostMessageFunc();
+  try {
+    const r = new ShadowRealm();
+    setupFakeDynamicImportInShadowRealm(r, fetchAdaptor);
+
+    await shadowRealmEvalAsync(r, `
+      await fakeDynamicImport("/resources/testharness-shadowrealm-inner.js");
+      await fakeDynamicImport("/resources/testharness.js");
+    `);
+    r.evaluate("setShadowRealmGlobalProperties")("%(query)s", fetchAdaptor);
+
+    await shadowRealmEvalAsync(r, `
+      %(script)s
+      await fakeDynamicImport("%(path)s");
+    `);
+
+    function forwardMessage(msgJSON) {
+      postMessageFunc(JSON.parse(msgJSON));
+    }
+    r.evaluate("begin_shadow_realm_tests")(forwardMessage);
+  } catch (e) {
+    postMessageFunc(createSetupErrorResult(e));
+  }
+})();
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await fakeDynamicImport("%s");' % attribute
+
+
+class ShadowRealmAudioWorkletWrapperHandler(BaseWorkerHandler):
+    path_replace = [(".any.audioworklet-shadowrealm.js", ".any.js")]
+    wrapper = """%(meta)s
+TestRunner.prototype.createShadowRealmAndStartTests = async function() {
+  try {
+    const queryPart = import.meta.url.split('?')[1];
+    const locationSearch = queryPart ? '?' + queryPart : '';
+
+    const r = new ShadowRealm();
+    const adaptor = this.fetchOverPortExecutor.bind(this);
+    setupFakeDynamicImportInShadowRealm(r, adaptor);
+
+    await shadowRealmEvalAsync(r, `
+      await fakeDynamicImport("/resources/testharness-shadowrealm-inner.js");
+      await fakeDynamicImport("/resources/testharness.js");
+    `);
+    r.evaluate("setShadowRealmGlobalProperties")(locationSearch, adaptor);
+
+    await shadowRealmEvalAsync(r, `
+      %(script)s
+      await fakeDynamicImport("%(path)s");
+    `);
+    const forwardMessage = (msgJSON) =>
+      this.port.postMessage(JSON.parse(msgJSON));
+    r.evaluate("begin_shadow_realm_tests")(forwardMessage);
+  } catch (e) {
+    this.port.postMessage(createSetupErrorResult(e));
+  }
+}
+"""
+
+    def _create_script_import(self, attribute):
+        return 'await fakeDynamicImport("%s");' % attribute
+
+
 rewrites = [("GET", "/resources/WebIDLParser.js", "/resources/webidl2/lib/webidl2.js")]
 
 
@@ -590,10 +777,18 @@ class RoutesBuilder:
             ("GET", "*.any.sharedworker-module.html", SharedWorkerModulesHandler),
             ("GET", "*.any.serviceworker.html", ServiceWorkersHandler),
             ("GET", "*.any.serviceworker-module.html", ServiceWorkerModulesHandler),
-            ("GET", "*.any.shadowrealm.html", ShadowRealmHandler),
+            ("GET", "*.any.shadowrealm-in-window.html", ShadowRealmInWindowHandler),
+            ("GET", "*.any.shadowrealm-in-shadowrealm.html", ShadowRealmInShadowRealmHandler),
+            ("GET", "*.any.shadowrealm-in-dedicatedworker.html", ShadowRealmInDedicatedWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-sharedworker.html", ShadowRealmInSharedWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-serviceworker.html", ShadowRealmInServiceWorkerHandler),
+            ("GET", "*.any.shadowrealm-in-audioworklet.html", ShadowRealmInAudioWorkletHandler),
             ("GET", "*.any.window-module.html", WindowModulesHandler),
             ("GET", "*.any.worker.js", ClassicWorkerHandler),
             ("GET", "*.any.worker-module.js", ModuleWorkerHandler),
+            ("GET", "*.any.serviceworker-shadowrealm.js", ShadowRealmServiceWorkerWrapperHandler),
+            ("GET", "*.any.worker-shadowrealm.js", ShadowRealmWorkerWrapperHandler),
+            ("GET", "*.any.audioworklet-shadowrealm.js", ShadowRealmAudioWorkletWrapperHandler),
             ("GET", "*.asis", handlers.AsIsHandler),
             ("*", "/.well-known/attribution-reporting/report-event-attribution", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/report-event-attribution", handlers.PythonScriptHandler),
@@ -602,7 +797,9 @@ class RoutesBuilder:
             ("*", "/.well-known/attribution-reporting/debug/report-aggregate-debug", handlers.PythonScriptHandler),
             ("*", "/.well-known/attribution-reporting/debug/verbose", handlers.PythonScriptHandler),
             ("GET", "/.well-known/interest-group/permissions/", handlers.PythonScriptHandler),
+            ("*", "/.well-known/interest-group/real-time-report", handlers.PythonScriptHandler),
             ("*", "/.well-known/private-aggregation/*", handlers.PythonScriptHandler),
+            ("GET", "/.well-known/shared-storage/trusted-origins", handlers.PythonScriptHandler),
             ("*", "/.well-known/web-identity", handlers.PythonScriptHandler),
             ("*", "*.py", handlers.PythonScriptHandler),
             ("GET", "*", handlers.FileHandler)
@@ -884,7 +1081,8 @@ def start_http2_server(logger, host, port, paths, routes, bind_address, config, 
 
 
 class WebSocketDaemon:
-    def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config):
+    def __init__(self, host, port, doc_root, handlers_root, bind_address, ssl_config,
+                 extra_handler_paths=None):
         logger = logging.getLogger()
         self.host = host
         cmd_args = ["-p", port,
@@ -902,6 +1100,9 @@ class WebSocketDaemon:
         opts.cgi_directories = []
         opts.is_executable_method = None
         self.server = pywebsocket.WebSocketServer(opts)
+        if extra_handler_paths:
+            for path in extra_handler_paths:
+                self.server.websocket_server_options.dispatcher._source_handler_files_in_dir(path, path, False, None)
         ports = [item[0].getsockname()[1] for item in self.server._sockets]
         if not ports:
             # TODO: Fix the logging configuration in WebSockets processes
@@ -945,7 +1146,8 @@ def start_ws_server(logger, host, port, paths, routes, bind_address, config, **k
                                repo_root,
                                config.paths["ws_doc_root"],
                                bind_address,
-                               ssl_config=None)
+                               ssl_config=None,
+                               extra_handler_paths=config.paths["ws_extra"])
     except Exception as error:
         logger.critical(f"start_ws_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
@@ -958,7 +1160,8 @@ def start_wss_server(logger, host, port, paths, routes, bind_address, config, **
                                repo_root,
                                config.paths["ws_doc_root"],
                                bind_address,
-                               config.ssl_config)
+                               config.ssl_config,
+                               extra_handler_paths=config.paths["ws_extra"])
     except Exception as error:
         logger.critical(f"start_wss_server: Caught exception from WebSocketDomain: {error}")
         startup_failed(logger)
@@ -1031,6 +1234,7 @@ class ConfigBuilder(config.ConfigBuilder):
         },
         "doc_root": repo_root,
         "ws_doc_root": os.path.join(repo_root, "websockets", "handlers"),
+        "ws_extra": None,
         "server_host": None,
         "ports": {
             "http": [8000, "auto"],
@@ -1099,6 +1303,7 @@ class ConfigBuilder(config.ConfigBuilder):
     def _get_paths(self, data):
         rv = super()._get_paths(data)
         rv["ws_doc_root"] = data["ws_doc_root"]
+        rv["ws_extra"] = data["ws_extra"]
         return rv
 
 
@@ -1148,23 +1353,25 @@ def get_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument("--latency", type=int,
                         help="Artificial latency to add before sending http responses, in ms")
-    parser.add_argument("--config", action="store", dest="config_path",
+    parser.add_argument("--config", dest="config_path",
                         help="Path to external config file")
-    parser.add_argument("--doc_root", action="store", dest="doc_root",
-                        help="Path to document root. Overrides config.")
-    parser.add_argument("--ws_doc_root", action="store", dest="ws_doc_root",
+    parser.add_argument("--doc_root", help="Path to document root. Overrides config.")
+    parser.add_argument("--ws_doc_root",
                         help="Path to WebSockets document root. Overrides config.")
-    parser.add_argument("--inject-script", default=None,
+    parser.add_argument("--ws_extra", action="append", default=[],
+                        help="Path to extra directory containing ws handlers. Overrides config.")
+    parser.add_argument("--inject-script",
                         help="Path to script file to inject, useful for testing polyfills.")
-    parser.add_argument("--alias_file", action="store", dest="alias_file",
+    parser.add_argument("--alias_file",
                         help="File with entries for aliases/multiple doc roots. In form of `/ALIAS_NAME/, DOC_ROOT\\n`")
-    parser.add_argument("--h2", action="store_true", dest="h2", default=None,
+    parser.add_argument("--h2", action="store_true", default=None,
                         help=argparse.SUPPRESS)
     parser.add_argument("--no-h2", action="store_false", dest="h2", default=None,
                         help="Disable the HTTP/2.0 server")
     parser.add_argument("--webtransport-h3", action="store_true",
                         help="Enable WebTransport over HTTP/3 server")
-    parser.add_argument("--exit-after-start", action="store_true", help="Exit after starting servers")
+    parser.add_argument("--exit-after-start", action="store_true",
+                        help="Exit after starting servers")
     parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
     parser.set_defaults(report=False)
     parser.set_defaults(is_wave=False)
@@ -1208,10 +1415,7 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
     logger = get_logger("INFO", log_handlers)
 
     if mp_context is None:
-        if hasattr(multiprocessing, "get_context"):
-            mp_context = multiprocessing.get_context()
-        else:
-            mp_context = MpContext()
+        mp_context = multiprocessing.get_context("spawn")
 
     with build_config(logger,
                       os.path.join(repo_root, "config.json"),
@@ -1268,6 +1472,11 @@ def run(config_cls=ConfigBuilder, route_builder=None, mp_context=None, log_handl
                 server.wait(timeout=1)
                 if server.proc.exitcode == 0:
                     logger.info('Status of subprocess "%s": exited correctly', server.proc.name)
+                elif server.proc.exitcode is None:
+                    logger.warning(
+                        'Status of subprocess "%s": shutdown timed out',
+                        server.proc.name)
+                    failed_subproc += 1
                 else:
                     subproc = server.proc
                     logger.warning('Status of subprocess "%s": failed. Exit with non-zero status: %d',

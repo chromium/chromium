@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import <optional>
+
 #import "ios/web/common/uikit_ui_util.h"
 
 // UI Util containing functions that require UIKit.
@@ -36,7 +38,20 @@ void SetUITextFieldScaledFont(UITextField* textField, UIFont* font);
 void MaybeSetUITextFieldScaledFont(BOOL maybe,
                                    UITextField* textField,
                                    UIFont* font);
+
+// Returns a UIFont for the given `style` and `weight` that can be used with
+// `adjustsFontForContentSizeCategory = YES` to allow a UILabel to
+// automatically adjust to changes in the `preferredContentSize` trait. When
+// `weight` is not provided, it will return the default for the given `style`.
+// If `max_size` is given, the font will not scale beyond the given point size.
+UIFont* PreferredFontForTextStyle(
+    UIFontTextStyle style,
+    std::optional<UIFontWeight> weight = std::nullopt,
+    std::optional<CGFloat> max_size = std::nullopt);
+
 // Creates a dynamically scablable custom font based on the given parameters.
+// Fonts returned do not automatically adjust when
+// `adjustsFontForContentSizeCategory` is set to `YES`.
 UIFont* CreateDynamicFont(UIFontTextStyle style, UIFontWeight weight);
 UIFont* CreateDynamicFont(UIFontTextStyle style,
                           UIFontWeight weight,
@@ -171,12 +186,6 @@ NSAttributedString* TextForTabCount(int count, CGFloat font_size);
 // Returns the attributed text for tabs count to be displayed in the bottom
 // trailing view of a group cell with the correct font.
 NSAttributedString* TextForTabGroupCount(int count, CGFloat font_size);
-
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-// Adds `item` to the global Edit Menu configuration (UIMenuController). No-op
-// if a UIMenuItem with the same selector as `item` has already been registered.
-void RegisterEditMenuItem(UIMenuItem* item);
-#endif
 
 // Finds the root of `view`'s view hierarchy -- its window if it has one, or
 // the first (recursive) superview with no superview.

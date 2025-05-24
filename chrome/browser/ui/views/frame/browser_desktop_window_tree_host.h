@@ -14,7 +14,7 @@ class DesktopWindowTreeHost;
 namespace internal {
 class NativeWidgetDelegate;
 }
-}
+}  // namespace views
 
 // Interface to a platform specific browser frame implementation. The object
 // implementing this interface will also implement views::DesktopWindowTreeHost.
@@ -34,7 +34,10 @@ class BrowserDesktopWindowTreeHost {
   // Returns true if the OS takes care of showing the system menu. Returning
   // false means BrowserFrame handles showing the system menu.
   virtual bool UsesNativeSystemMenu() const = 0;
-};
 
+  // A lifecycle hook invoked when the views::Widget associated with this window
+  // tree host was destroyed by the client.
+  virtual void ClientDestroyedWidget() = 0;
+};
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_DESKTOP_WINDOW_TREE_HOST_H_

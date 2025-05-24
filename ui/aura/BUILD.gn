@@ -106,7 +106,6 @@ component("aura") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//cc",
     "//cc/mojo_embedder",
     "//components/discardable_memory/client",
@@ -251,7 +250,7 @@ static_library("test_support") {
     sources += [ "test/ui_controls_aurawin.cc" ]
   }
 
-  if (use_ozone && (is_chromeos_ash || is_castos)) {
+  if (use_ozone && (is_chromeos || is_castos)) {
     sources += [
       "test/ui_controls_ozone.cc",
       "test/ui_controls_ozone.h",
@@ -310,15 +309,9 @@ test("aura_unittests") {
     "window_unittest.cc",
   ]
 
-  if (is_win) {
-    sources += [ "native_window_occlusion_tracker_unittest.cc" ]
-    libs = [ "dwmapi.lib" ]
-  }
-
   deps = [
     ":test_support",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc/mojo_embedder",
     "//components/viz/client",
     "//mojo/core/embedder",

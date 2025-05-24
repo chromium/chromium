@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <XCTest/XCTest.h>
+
 #import <map>
 
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"

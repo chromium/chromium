@@ -6,9 +6,9 @@
 #define ASH_STYLE_ROUNDED_LABEL_WIDGET_H_
 
 #include <string>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -33,7 +33,7 @@ class RoundedLabelWidget : public views::Widget {
     // A message string or the string ID.
     // TODO(zxdan): change back to message ID if test string is no longer
     // needed.
-    absl::variant<std::u16string, int> message;
+    std::variant<std::u16string, int> message;
     raw_ptr<aura::Window> parent;
     bool disable_default_visibility_animation = false;
   };

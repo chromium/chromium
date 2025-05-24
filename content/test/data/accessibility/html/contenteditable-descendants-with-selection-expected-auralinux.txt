@@ -1,4 +1,4 @@
-[document web] caret_offset=1 selection_start=0 selection_end=1
+[document web] caret_offset=0 selection_start=0 selection_end=1
 ++[section] editable multi-line selectable-text caret_offset=3 selection_start=0 selection_end=3
 ++++[paragraph] editable selection_start=0 selection_end=44
 ++++++[static] name='A contenteditable with a ' editable selection_start=0 selection_end=25

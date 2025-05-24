@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -56,6 +57,9 @@ class DeviceAuthenticatorCommon : public device_reauth::DeviceAuthenticator {
   void RecordAuthResultSkipped();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(ChromeDeviceAuthenticatorFactoryTest,
+                           NeedAuthentication);
+
   // Used to obtain/update the last successful authentication timestamp.
   base::WeakPtr<DeviceAuthenticatorProxy> device_authenticator_proxy_;
 

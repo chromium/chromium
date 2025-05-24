@@ -67,8 +67,9 @@ base::Value::Dict ContactMessageToDictionary(
   if (contacts) {
     base::Value::List contact_list;
     contact_list.reserve(contacts->size());
-    for (const auto& contact : *contacts)
+    for (const auto& contact : *contacts) {
       contact_list.Append(ContactRecordToReadableDictionary(contact));
+    }
 
     dictionary.Set(kContactMessageContactRecordKey,
                    FormatListAsJSON(contact_list));

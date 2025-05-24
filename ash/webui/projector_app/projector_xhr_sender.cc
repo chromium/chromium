@@ -12,6 +12,7 @@
 #include "ash/webui/projector_app/public/mojom/projector_types.mojom.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -105,8 +106,19 @@ const char* kUrlAllowlist[] = {
     "https://drive.google.com/u/0/get_video_info",
     "https://translation.googleapis.com/language/translate/v2"};
 
+bool IsDVSPlaybackUrl(const std::string& url) {
+  return base::MatchPattern(
+      url,
+      "https://workspacevideo-pa.googleapis.com/v1/drive/media/*/playback");
+}
+
 // Return true if the url matches the allowed URL prefix.
 bool IsUrlAllowlisted(const std::string& url) {
+  if (features::IsProjectorUseDVSPlaybackEndpointEnabled() &&
+      IsDVSPlaybackUrl(url)) {
+    return true;
+  }
+
   for (auto* urlPrefix : kUrlAllowlist) {
     if (base::StartsWith(url, urlPrefix, base::CompareCase::SENSITIVE))
       return true;

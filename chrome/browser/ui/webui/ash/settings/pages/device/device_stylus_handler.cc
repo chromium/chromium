@@ -25,7 +25,6 @@ namespace {
 constexpr char kAppNameKey[] = "name";
 constexpr char kAppIdKey[] = "value";
 constexpr char kAppPreferredKey[] = "preferred";
-constexpr char kAppLockScreenSupportKey[] = "lockScreenSupport";
 
 }  // namespace
 
@@ -49,11 +48,6 @@ void StylusHandler::RegisterMessages() {
       "setPreferredNoteTakingApp",
       base::BindRepeating(&StylusHandler::HandleSetPreferredNoteTakingApp,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
-      "setPreferredNoteTakingAppEnabledOnLockScreen",
-      base::BindRepeating(
-          &StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen,
-          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "showPlayStoreApps",
       base::BindRepeating(&StylusHandler::HandleShowPlayStoreApps,
@@ -101,9 +95,7 @@ void StylusHandler::UpdateNoteTakingApps() {
       apps_list.Append(base::Value::Dict()
                            .Set(kAppNameKey, info.name)
                            .Set(kAppIdKey, info.app_id)
-                           .Set(kAppPreferredKey, info.preferred)
-                           .Set(kAppLockScreenSupportKey,
-                                static_cast<int>(info.lock_screen_support)));
+                           .Set(kAppPreferredKey, info.preferred));
 
       note_taking_app_ids_.insert(info.app_id);
     }
@@ -131,16 +123,6 @@ void StylusHandler::HandleSetPreferredNoteTakingApp(
 
   NoteTakingHelper::Get()->SetPreferredApp(Profile::FromWebUI(web_ui()),
                                            app_id);
-}
-
-void StylusHandler::HandleSetPreferredNoteTakingAppEnabledOnLockScreen(
-    const base::Value::List& args) {
-  bool enabled = false;
-  CHECK(args[0].is_bool());
-  enabled = args[0].GetBool();
-
-  NoteTakingHelper::Get()->SetPreferredAppEnabledOnLockScreen(
-      Profile::FromWebUI(web_ui()), enabled);
 }
 
 void StylusHandler::HandleInitialize(const base::Value::List& args) {

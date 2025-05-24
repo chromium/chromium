@@ -11,7 +11,6 @@ import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicator.js';
 import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
-import '/shared/settings/prefs/prefs.js';
 import '/shared/settings/prefs/pref_util.js';
 import '../settings_shared.css.js';
 
@@ -27,9 +26,11 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
+import type {GoogleAssistantBrowserProxy} from './google_assistant_browser_proxy.js';
+import {GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
 import {getTemplate} from './google_assistant_subpage.html.js';
 
 /**
@@ -124,21 +125,6 @@ export class SettingsGoogleAssistantSubpageElement extends
       },
 
       dspHotwordState_: Number,
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kAssistantOnOff,
-          Setting.kAssistantRelatedInfo,
-          Setting.kAssistantOkGoogle,
-          Setting.kAssistantNotifications,
-          Setting.kAssistantVoiceInput,
-          Setting.kTrainAssistantVoiceModel,
-        ]),
-      },
     };
   }
 
@@ -153,8 +139,19 @@ export class SettingsGoogleAssistantSubpageElement extends
     ];
   }
 
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kAssistantOnOff,
+    Setting.kAssistantRelatedInfo,
+    Setting.kAssistantOkGoogle,
+    Setting.kAssistantNotifications,
+    Setting.kAssistantVoiceInput,
+    Setting.kTrainAssistantVoiceModel,
+  ]);
+
   private browserProxy_: GoogleAssistantBrowserProxy;
   private dspHotwordState_: DspHotwordState;
+  private hotwordDropdownList_: Array<{name: string, value: number}>;
   private hotwordDspAvailable_: boolean;
   private hotwordEnforced_: boolean;
   private hotwordEnforcedForChild_: boolean;

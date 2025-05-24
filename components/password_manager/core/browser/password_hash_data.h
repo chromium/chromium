@@ -50,6 +50,9 @@ bool AreUsernamesSame(const std::string& username1,
                       const std::string& username2,
                       bool is_username2_gaia_account);
 
+// Creates random salt.
+std::string CreateRandomSalt();
+
 }  // namespace password_manager
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_HASH_DATA_H_

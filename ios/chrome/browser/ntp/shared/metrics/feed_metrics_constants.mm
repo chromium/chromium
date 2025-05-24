@@ -95,6 +95,7 @@ const char kFollowingIndexWhenSwitchingFeed[] =
     "ContentSuggestions.Feed.WebFeed.CardIndexOnSwitch";
 const char kFeedSignInUI[] = "ContentSuggestions.Feed.FeedSignInUI";
 const char kFeedSyncPromo[] = "ContentSuggestions.Feed.FeedSyncPromo";
+const char kFeedHandlingErrorPrefix[] = "IOS.FeedHandlingError.";
 
 #pragma mark - User Actions
 

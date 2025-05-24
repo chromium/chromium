@@ -16,6 +16,8 @@ message PrivateKey {
     PRIVATE_UNEXPORTABLE_KEY = 1;
     // Chrome Browser with the key stored at OS level.
     PRIVATE_SOFTWARE_KEY = 2;
+    // Chrome Browser with the key stored in OS key storage.
+    PRIVATE_OS_SOFTWARE_KEY = 3;
   }
 
   // Represents the source of the private key, which will dictate how

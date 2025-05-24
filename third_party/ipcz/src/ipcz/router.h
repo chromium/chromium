@@ -168,9 +168,11 @@ class Router : public APIObjectImpl<Router, APIObject::kPortal> {
   // via Put or Get APIs.
   IpczResult MergeRoute(const Ref<Router>& other);
 
-  // Deserializes a new Router from `descriptor` received over `from_node_link`.
+  // Deserializes a new Router from `descriptor` received over `from_node_link`
+  // on `receiving_sublink`.
   static Ref<Router> Deserialize(const RouterDescriptor& descriptor,
-                                 NodeLink& from_node_link);
+                                 NodeLink& from_node_link,
+                                 SublinkId receiving_sublink);
 
   // Serializes a description of a new Router which will be used to extend this
   // Router's route across `to_node_link` by introducing a new Router on the

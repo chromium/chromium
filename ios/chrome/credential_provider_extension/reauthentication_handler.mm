@@ -25,14 +25,21 @@
   return self;
 }
 
-- (void)verifyUserWithCompletionHandler:
-            (void (^)(ReauthenticationResult))completionHandler
-        presentReminderOnViewController:(UIViewController*)viewController {
+- (void)verifyUserToAccessPasskeys:(BOOL)forPasskeys
+              withCompletionHandler:
+                  (void (^)(ReauthenticationResult))completionHandler
+    presentReminderOnViewController:(UIViewController*)viewController {
+  NSString* localizedReason =
+      forPasskeys
+          ? NSLocalizedString(
+                @"IDS_IOS_CREDENTIAL_PROVIDER_SCREENLOCK_REASON_PASSKEYS",
+                @"Access passkeys…")
+          : NSLocalizedString(
+                @"IDS_IOS_CREDENTIAL_PROVIDER_SCREENLOCK_REASON_PASSWORDS",
+                @"Accessing passwords…");
   if ([_weakReauthenticationModule canAttemptReauth]) {
     [_weakReauthenticationModule
-        attemptReauthWithLocalizedReason:
-            NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_SCREENLOCK_REASON",
-                              @"Access Passwords...")
+        attemptReauthWithLocalizedReason:localizedReason
                     canReusePreviousAuth:YES
                                  handler:completionHandler];
   } else {
@@ -83,6 +90,10 @@
   [viewController presentViewController:alertController
                                animated:YES
                              completion:nil];
+}
+
+- (BOOL)canAttemptReauthWithBiometrics {
+  return [_weakReauthenticationModule canAttemptReauthWithBiometrics];
 }
 
 #pragma mark - Private

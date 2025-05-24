@@ -6,7 +6,7 @@ import 'chrome://resources/polymer/v3_0/iron-pages/iron-pages.js';
 import './confirmation_page.js';
 import './search_page.js';
 import './share_data_page.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
@@ -19,7 +19,8 @@ import {ConfirmationPageElement} from './confirmation_page.js';
 import {getTemplate} from './feedback_flow.html.js';
 import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
-import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction, FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
+import type {FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './os_feedback_ui.mojom-webui.js';
+import {FeedbackAppExitPath, FeedbackAppHelpContentOutcome, FeedbackAppPreSubmitAction} from './os_feedback_ui.mojom-webui.js';
 import {SearchPageElement} from './search_page.js';
 import {ShareDataPageElement} from './share_data_page.js';
 
@@ -59,7 +60,8 @@ export const AdditionalContextQueryParam = {
   CATEGORY_TAG: 'category_tag',
   PAGE_URL: 'page_url',
   FROM_ASSISTANT: 'from_assistant',
-  FROM_SETTINGS_SEARCH: 'from_settings_search',
+  SETTINGS_SEARCH_DO_NOT_RECORD_METRICS:
+      'settings_search_do_not_record_metrics',
   FROM_AUTOFILL: 'from_autofill',
   AUTOFILL_METADATA: 'autofill_metadata',
 };
@@ -337,7 +339,8 @@ export class FeedbackFlowElement extends PolymerElement {
     assert(!!feedbackInfo);
     this.feedbackContext = {
       assistantDebugInfoAllowed: false,
-      fromSettingsSearch: feedbackInfo.fromSettingsSearch ?? false,
+      settingsSearchDoNotRecordMetrics:
+          feedbackInfo.settingsSearchDoNotRecordMetrics ?? false,
       isInternalAccount: feedbackInfo.isInternalAccount ?? false,
       wifiDebugLogsAllowed: false,
       traceId: feedbackInfo.traceId ?? 0,
@@ -368,10 +371,10 @@ export class FeedbackFlowElement extends PolymerElement {
       //   }
       // ].
       assert('EXTRA_DIAGNOSTICS' === feedbackInfo.systemInformation[0].key);
-      this.feedbackContext!.extraDiagnostics =
+      this.feedbackContext.extraDiagnostics =
           feedbackInfo.systemInformation[0].value;
     }
-    this.isUserLoggedIn = this.feedbackContext!.categoryTag !== 'Login';
+    this.isUserLoggedIn = this.feedbackContext.categoryTag !== 'Login';
     this.onFeedbackContextReceived();
   }
 
@@ -447,9 +450,11 @@ export class FeedbackFlowElement extends PolymerElement {
     const fromAssistant =
         params.get(AdditionalContextQueryParam.FROM_ASSISTANT);
     this.feedbackContext.fromAssistant = !!fromAssistant;
-    const fromSettingsSearch =
-        params.get(AdditionalContextQueryParam.FROM_SETTINGS_SEARCH);
-    this.set('feedbackContext.fromSettingsSearch', !!fromSettingsSearch);
+    const settingsSearchDoNotRecordMetrics = params.get(
+        AdditionalContextQueryParam.SETTINGS_SEARCH_DO_NOT_RECORD_METRICS);
+    this.set(
+        'feedbackContext.settingsSearchDoNotRecordMetrics',
+        !!settingsSearchDoNotRecordMetrics);
 
     const fromAutofill = params.get(AdditionalContextQueryParam.FROM_AUTOFILL);
     this.feedbackContext.fromAutofill = !!fromAutofill;

@@ -5,7 +5,7 @@ include_rules = [
   "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/net/model",
   "+ios/chrome/browser/optimization_guide/model",
-  "+ios/chrome/browser/page_info",
+  "+ios/chrome/browser/page_info/model",
   "+ios/chrome/browser/plus_addresses/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/prefs/model",
@@ -22,7 +22,6 @@ specific_include_rules = {
   # TODO(crbug.com/40820398): Remove this dependency.
   "^browser_state_keyed_service_factories.mm": [
     "+ios/chrome/browser",
-    "-ios/chrome/browser/ui",
     "+ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h",
   ],
 }

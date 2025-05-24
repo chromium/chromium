@@ -30,4 +30,9 @@ struct SharedWorkerInfo {
   array<network.mojom.ContentSecurityPolicy> content_security_policies;
   FetchClientSettingsObject outside_fetch_client_settings_object;
   SharedWorkerSameSiteCookies same_site_cookies = SharedWorkerSameSiteCookies.kNone;
+
+  // Indicates if SharedWorker should extend its lifetime on all clients
+  // have been destructed.
+  // See: https://github.com/whatwg/html/issues/10997
+  bool extended_lifetime;
 };

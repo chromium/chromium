@@ -1,0 +1,26 @@
+<style include="destination-dialog-style">
+</style>
+<cr-dialog id="dialog" on-close="onCloseOrCancel_">
+  <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
+  <div slot="body">
+    <print-preview-search-box id="searchBox"
+        label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
+        autofocus>
+    </print-preview-search-box>
+    <print-preview-destination-list id="printList"
+        destinations="[[destinations_]]"
+        loading-destinations="[[loadingDestinations_]]"
+        search-query="[[searchQuery_]]"
+        on-destination-selected="onDestinationSelected_">
+    </print-preview-destination-list>
+  </div>
+  <div slot="button-container">
+    <cr-button on-click="onManageButtonClick_">
+      $i18n{manage}
+      <cr-icon icon="cr:open-in-new" id="manageIcon"></cr-icon>
+    </cr-button>
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+  </div>
+</cr-dialog>

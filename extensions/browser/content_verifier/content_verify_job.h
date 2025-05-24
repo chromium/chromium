@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -73,7 +74,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   // This begins the process of getting expected hashes, so it should be called
   // as early as possible.
-  // The |failure_callback| will be called at most once if there was a failure.
+  // The `failure_callback` will be called at most once if there was a failure.
   void Start(ContentVerifier* verifier,
              const base::Version& extension_version,
              int manifest_version,
@@ -85,7 +86,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Make sure to call DoneReading so that any final bytes that were read that
   // didn't align exactly on a block size boundary get their hash checked as
   // well.
-  void BytesRead(const char* data, int count, MojoResult read_result);
+  void BytesRead(base::span<const char> data, MojoResult read_result);
 
   // Call once when finished adding bytes via OnDone.
   void DoneReading();
@@ -134,7 +135,7 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   void OnHashMismatch();
 
   // Same as BytesRead, but is run without acquiring lock.
-  void BytesReadImpl(const char* data, int count, MojoResult read_result);
+  void BytesReadImpl(base::span<const char> data, MojoResult read_result);
 
   // Called each time we're done adding bytes for the current block, and are
   // ready to finish the hash operation for those bytes and make sure it
@@ -167,13 +168,13 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // The index of the block we're currently on.
   int current_block_ = 0;
 
-  // The hash we're building up for the bytes of |current_block_|.
+  // The hash we're building up for the bytes of `current_block_`.
   std::unique_ptr<crypto::SecureHash> current_hash_;
 
-  // The number of bytes we've already input into |current_hash_|.
+  // The number of bytes we've already input into `current_hash_`.
   int current_hash_byte_count_ = 0;
 
-  // Valid and set after |hashes_ready_| is set to true.
+  // Valid and set after `hashes_ready_` is set to true.
   std::unique_ptr<const ContentHashReader> hash_reader_;
 
   // Resource info for this verify job.

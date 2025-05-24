@@ -295,7 +295,7 @@ void MagnifierSurfaceControl::CreateDisplayAndFrameSink() {
 
   layer_tree_->SetFrameSink(cc::slim::FrameSink::Create(
       std::move(sink_remote), std::move(client_receiver), nullptr,
-      GetUIThreadTaskRunner({BrowserTaskType::kUserInput}), nullptr,
+      GetUIThreadTaskRunner({BrowserTaskType::kUserInput}),
       base::kInvalidThreadId));
   layer_tree_->SetVisible(true);
 }

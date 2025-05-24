@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/media/common/media_pipeline_backend_manager.h"
 
 #include <algorithm>
@@ -82,8 +87,8 @@ MediaPipelineBackendManager::~MediaPipelineBackendManager() {
 std::unique_ptr<CmaBackend> MediaPipelineBackendManager::CreateBackend(
     const media::MediaPipelineDeviceParams& params) {
   DCHECK(media_task_runner_->BelongsToCurrentThread());
-  return std::make_unique<MediaPipelineBackendWrapper>(params, this,
-                                                       media_resource_tracker_);
+  return std::make_unique<MediaPipelineBackendWrapper>(
+      params, weak_factory_.GetWeakPtr(), media_resource_tracker_);
 }
 
 scoped_refptr<base::SequencedTaskRunner>

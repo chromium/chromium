@@ -18,7 +18,7 @@ namespace app_list::test {
 namespace {
 
 Results MakeResults(const std::vector<std::string>& ids,
-                    const std::vector<double> scores,
+                    const std::vector<double>& scores,
                     ResultType result_type) {
   Results res;
   CHECK_EQ(ids.size(), scores.size());

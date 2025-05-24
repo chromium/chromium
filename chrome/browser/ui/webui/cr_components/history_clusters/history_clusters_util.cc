@@ -7,7 +7,6 @@
 #include "base/feature_list.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/history_clusters/core/config.h"
@@ -19,6 +18,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/webui/webui_util.h"
 
 // Static
 void HistoryClustersUtil::PopulateSource(content::WebUIDataSource* source,

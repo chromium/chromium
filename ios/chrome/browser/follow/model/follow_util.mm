@@ -7,8 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -38,29 +36,22 @@ FollowActionState GetFollowActionState(web::WebState* webState) {
     return FollowActionStateHidden;
   }
 
-  ChromeBrowserState* browserState =
-      ChromeBrowserState::FromBrowserState(webState->GetBrowserState());
-
-  // Don't show follow option when feed is hidden due to DSE choice.
-  if (ShouldHideFeedWithSearchChoice(
-          ios::TemplateURLServiceFactory::GetForBrowserState(browserState))) {
-    return FollowActionStateHidden;
-  }
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(webState->GetBrowserState());
 
   // Don't show follow option when following feed is disabled by enterprise
   // policy.
-  if (!browserState->GetPrefs()->GetBoolean(
-          prefs::kNTPContentSuggestionsEnabled)) {
+  if (!profile->GetPrefs()->GetBoolean(prefs::kNTPContentSuggestionsEnabled)) {
     return FollowActionStateHidden;
   }
 
   // Don't show follow option if the user is not signed in.
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
 
   // Hide the follow action when users are in incognito mode or when users have
   // not signed in.
-  if (browserState->IsOffTheRecord() || !authenticationService ||
+  if (profile->IsOffTheRecord() || !authenticationService ||
       !authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     return FollowActionStateHidden;
@@ -71,7 +62,7 @@ FollowActionState GetFollowActionState(web::WebState* webState) {
   // 1. The page url is valid;
   // 2. Users are not on NTP or Chrome internal pages;
   if (URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL)) {
-    DCHECK(!browserState->IsOffTheRecord());
+    DCHECK(!profile->IsOffTheRecord());
     return FollowActionStateEnabled;
   }
   return FollowActionStateHidden;

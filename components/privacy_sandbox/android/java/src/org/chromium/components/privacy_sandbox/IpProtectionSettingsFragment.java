@@ -4,36 +4,27 @@
 
 package org.chromium.components.privacy_sandbox;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Browser;
-import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.customtabs.CustomTabsIntent;
-import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.Preference;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
-import org.chromium.components.browser_ui.settings.TextMessagePreference;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
-import org.chromium.ui.text.SpanApplier;
+import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
 
 /** Fragment to manage settings for ip protection. */
-public class IpProtectionSettingsFragment extends PreferenceFragmentCompat implements SettingsPage {
+@NullMarked
+public class IpProtectionSettingsFragment extends PrivacySandboxBaseFragment {
     // Must match key in ip_protection_preferences.xml.
     private static final String PREF_IP_PROTECTION_SWITCH = "ip_protection_switch";
-
-    private static final String PREF_IP_PROTECTION_SUMMARY = "ip_protection_summary";
-
-    public static final String LEARN_MORE_URL =
-            "https://support.google.com/chrome/?p=ip_protection";
 
     @VisibleForTesting
     protected static final String IP_PROTECTION_PREF_HISTOGRAM_NAME =
@@ -41,16 +32,48 @@ public class IpProtectionSettingsFragment extends PreferenceFragmentCompat imple
 
     private TrackingProtectionDelegate mDelegate;
 
-    private CustomTabIntentHelper mCustomTabIntentHelper;
-
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
-    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+    public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.ip_protection_preferences);
-        mPageTitle.set(getString(R.string.privacy_sandbox_ip_protection_title));
+        mPageTitle.set(
+                getString(R.string.incognito_tracking_protections_ip_protection_toggle_label));
 
-        setupPreferences();
+        ChromeSwitchPreference ipProtectionSwitch = findPreference(PREF_IP_PROTECTION_SWITCH);
+        if (mDelegate.isIpProtectionDisabledForEnterprise()) {
+            ipProtectionSwitch.setEnabled(false);
+            ipProtectionSwitch.setChecked(false);
+            ipProtectionSwitch.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            mDelegate
+                                    .getSiteSettingsDelegate(getContext())
+                                    .getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return true;
+                        }
+                    });
+        } else {
+            ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
+            ipProtectionSwitch.setManagedPreferenceDelegate(
+                    new ForwardingManagedPreferenceDelegate(
+                            mDelegate
+                                    .getSiteSettingsDelegate(getContext())
+                                    .getManagedPreferenceDelegate()) {
+                        @Override
+                        public boolean isPreferenceControlledByPolicy(Preference preference) {
+                            return mDelegate.isIpProtectionManaged();
+                        }
+                    });
+        }
+        ipProtectionSwitch.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    mDelegate.setIpProtection((boolean) newValue);
+                    RecordHistogram.recordBooleanHistogram(
+                            IP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
+                    return true;
+                });
     }
 
     @Override
@@ -64,62 +87,13 @@ public class IpProtectionSettingsFragment extends PreferenceFragmentCompat imple
      *
      * @param delegate {@link TrackingProtectionDelegate} to set.
      */
+    @Initializer
     public void setTrackingProtectionDelegate(TrackingProtectionDelegate delegate) {
         mDelegate = delegate;
     }
 
-    private void setupPreferences() {
-        ChromeSwitchPreference ipProtectionSwitch = findPreference(PREF_IP_PROTECTION_SWITCH);
-        TextMessagePreference ipProtectionSummary = findPreference(PREF_IP_PROTECTION_SUMMARY);
-
-        ipProtectionSwitch.setChecked(mDelegate.isIpProtectionEnabled());
-        ipProtectionSwitch.setOnPreferenceChangeListener(
-                (preference, newValue) -> {
-                    mDelegate.setIpProtection((boolean) newValue);
-                    RecordHistogram.recordBooleanHistogram(
-                            IP_PROTECTION_PREF_HISTOGRAM_NAME, (boolean) newValue);
-                    return true;
-                });
-
-        ipProtectionSummary.setSummary(
-                SpanApplier.applySpans(
-                        getResources().getString(R.string.privacy_sandbox_ip_protection_summary),
-                        new SpanApplier.SpanInfo(
-                                "<link>",
-                                "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
-    }
-
-    private void onLearnMoreClicked(View view) {
-        openUrlInCct(LEARN_MORE_URL);
-    }
-
-    /**
-     * Sets the {@link CustomTabIntentHelper} to handle urls in CCT.
-     *
-     * <p>TODO(b/329317221) Note: this logic will be refactored as a part of other effort. It's
-     * duplicated across two fragments right now.
-     *
-     * @param helper {@link CustomTabIntentHelper} helper for handling CCTs.
-     */
-    public void setCustomTabIntentHelper(CustomTabIntentHelper helper) {
-        mCustomTabIntentHelper = helper;
-    }
-
-    // TODO(b/329317221) This logic will be refactored as a part of other effort.
-    private void openUrlInCct(String url) {
-        assert (mCustomTabIntentHelper != null)
-                : "CCT helpers must be set on IpProtectionSettings before opening a link";
-        CustomTabsIntent customTabIntent =
-                new CustomTabsIntent.Builder().setShowTitle(true).build();
-        customTabIntent.intent.setData(Uri.parse(url));
-        Intent intent =
-                mCustomTabIntentHelper.createCustomTabActivityIntent(
-                        getContext(), customTabIntent.intent);
-        intent.setPackage(getContext().getPackageName());
-        intent.putExtra(Browser.EXTRA_APPLICATION_ID, getContext().getPackageName());
-        IntentUtils.addTrustedIntentExtras(intent);
-        IntentUtils.safeStartActivity(getContext(), intent);
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

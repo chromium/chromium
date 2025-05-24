@@ -228,7 +228,7 @@ class MockAudioOutputStream : public AudioOutputStream,
 
   void OnError(ErrorType type) override {
     // Fake stream doesn't send errors.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   raw_ptr<AudioOutputStream, DanglingUntriaged> impl_;

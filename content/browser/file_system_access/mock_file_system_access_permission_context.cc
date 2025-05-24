@@ -13,14 +13,13 @@ MockFileSystemAccessPermissionContext::
 
 void MockFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
-    PathType path_type,
-    const base::FilePath& path,
+    const PathInfo& path_info,
     HandleType handle_type,
     UserAction user_action,
     GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
-  ConfirmSensitiveEntryAccess_(origin, path_type, path, handle_type,
-                               user_action, frame_id, callback);
+  ConfirmSensitiveEntryAccess_(origin, path_info, handle_type, user_action,
+                               frame_id, callback);
 }
 
 void MockFileSystemAccessPermissionContext::PerformAfterWriteChecks(
@@ -28,6 +27,12 @@ void MockFileSystemAccessPermissionContext::PerformAfterWriteChecks(
     GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(AfterWriteCheckResult)> callback) {
   PerformAfterWriteChecks_(item.get(), frame_id, callback);
+}
+
+bool MockFileSystemAccessPermissionContext::IsFileTypeDangerous(
+    const base::FilePath& path,
+    const url::Origin& origin) {
+  return IsFileTypeDangerous_(path, origin);
 }
 
 }  // namespace content

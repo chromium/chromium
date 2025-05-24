@@ -23,6 +23,7 @@ import org.chromium.webapk.lib.common.WebApkCommonUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 
 /** Tests HostBrowserClassLoader. */
@@ -47,7 +48,7 @@ public class HostBrowserClassLoaderTest {
     private DexLoader mMockDexLoader;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         mContext = RuntimeEnvironment.application;
         mPackageManager = mContext.getPackageManager();
         setRemoteVersionCode(REMOTE_VERSION_CODE);
@@ -65,7 +66,7 @@ public class HostBrowserClassLoaderTest {
 
     /** Test upgrading to a new runtime dex version. */
     @Test
-    public void testNewRuntimeDexVersion() {
+    public void testNewRuntimeDexVersion() throws Exception {
         HostBrowserClassLoader.createClassLoader(mContext, mRemoteContext, mMockDexLoader, null);
 
         String expectedDexName = WebApkCommonUtils.getRuntimeDexName(REMOTE_DEX_VERSION);
@@ -139,13 +140,9 @@ public class HostBrowserClassLoaderTest {
      * Sets the version of the current runtime library dex stored in the remote host browser's
      * assets.
      */
-    public void setRemoteDexVersion(int dexVersion) {
-        try {
-            Mockito.when(mRemoteAssetManager.open("webapk_dex_version.txt"))
-                    .thenReturn(createIntInputStream(dexVersion));
-        } catch (Exception e) {
-            Assert.fail();
-        }
+    public void setRemoteDexVersion(int dexVersion) throws IOException {
+        Mockito.when(mRemoteAssetManager.open("webapk_dex_version.txt"))
+                .thenReturn(createIntInputStream(dexVersion));
     }
 
     /**

@@ -16,8 +16,8 @@ enum class GpuMode {
   HARDWARE_VULKAN,
   // The GPU process is running with hardware acceleration, using Graphite-Dawn.
   HARDWARE_GRAPHITE,
-  // The GPU process is running for SwiftShader WebGL.
-  SWIFTSHADER,
+  // The GPU process is running for software WebGL.
+  SOFTWARE_GL,
   // The GPU process is running for the display compositor.
   DISPLAY_COMPOSITOR,
 };

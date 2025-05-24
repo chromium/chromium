@@ -4,15 +4,16 @@
 
 #include "components/history/content/browser/visited_link_navigation_throttle.h"
 
+#include "base/notreached.h"
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "url/origin.h"
 
 VisitedLinkNavigationThrottle::VisitedLinkNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     history::HistoryService* history_service)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       history_service_(history_service) {}
 
 VisitedLinkNavigationThrottle::~VisitedLinkNavigationThrottle() = default;
@@ -52,7 +53,6 @@ void VisitedLinkNavigationThrottle::HistoryServiceBeingDeleted(
   // In the unexpected event of the HistoryService being deleted, this CHECK
   // helps us avoid dereferencing the now null raw_pointer, and helps us
   // identify potential lifetime issues.
-  CHECK(false)
-      << "The HistoryService owned by VisitedLinkNavigationThrottle is "
-         "being deleted";
+  NOTREACHED() << "The HistoryService owned by VisitedLinkNavigationThrottle "
+                  "is being deleted";
 }

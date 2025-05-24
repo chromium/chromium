@@ -4,14 +4,14 @@
 
 import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {AsyncJobQueue} from '../async_job_queue.js';
-import {PTZController} from '../device/ptz_controller.js';
+import {PtzController} from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
 import * as metrics from '../metrics.js';
 import * as state from '../state.js';
 import {ViewName} from '../type.js';
 import {DelayInterval} from '../util.js';
 
-import {EnterOptions, PTZPanelOptions, View} from './view.js';
+import {EnterOptions, PtzPanelOptions, View} from './view.js';
 
 /**
  * Detects hold gesture on UI and triggers corresponding handler.
@@ -91,8 +91,8 @@ function detectHoldGesture({
 /**
  * View controller for PTZ panel.
  */
-export class PTZPanel extends View {
-  private ptzController: PTZController|null = null;
+export class PtzPanel extends View {
+  private ptzController: PtzController|null = null;
 
   private readonly panel = dom.get('#ptz-panel', HTMLDivElement);
 
@@ -273,7 +273,7 @@ export class PTZPanel extends View {
   }
 
   override entering(options: EnterOptions): void {
-    const {ptzController} = assertInstanceof(options, PTZPanelOptions);
+    const {ptzController} = assertInstanceof(options, PtzPanelOptions);
     const {bottom, right} =
         dom.get('#open-ptz-panel', HTMLButtonElement).getBoundingClientRect();
     this.panel.style.bottom = `${window.innerHeight - bottom}px`;
@@ -313,7 +313,7 @@ export class PTZPanel extends View {
         this.tiltQueues.clear(),
         this.zoomQueues.clear(),
       ]);
-      await ptzController.resetPTZ();
+      await ptzController.resetPtz();
       this.checkDisabled();
     };
   }

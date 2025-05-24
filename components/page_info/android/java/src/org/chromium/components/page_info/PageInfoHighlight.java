@@ -4,9 +4,11 @@
 
 package org.chromium.components.page_info;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 
 /** Class for providing the page info highlight row information. */
+@NullMarked
 public class PageInfoHighlight {
     private final @ContentSettingsType.EnumType int mHighlightedPermission;
 

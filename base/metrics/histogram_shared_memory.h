@@ -11,6 +11,7 @@
 #include "base/base_export.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/shared_memory_switch.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/process/launch.h"
@@ -81,12 +82,12 @@ struct BASE_EXPORT HistogramSharedMemory {
 
 #if BUILDFLAG(IS_APPLE)
   // Exposed for testing.
-  static const MachPortsForRendezvous::key_type kRendezvousKey;
+  static const shared_memory::SharedMemoryMachPortRendezvousKey kRendezvousKey;
 #endif
 
   // Returns true if passing the shared memory handle via command-line arguments
-  // is enabled.
-  static bool PassOnCommandLineIsEnabled(std::string_view process_type);
+  // is enabled. |process_type| values should come from content:::ProcessType.
+  static bool PassOnCommandLineIsEnabled(int process_type);
 
   // Updates the launch parameters to share |unsafe_memory_region| to a
   // child process that is about to be launched. This should be called in the
@@ -97,7 +98,7 @@ struct BASE_EXPORT HistogramSharedMemory {
   // caller is expected to transmit the descriptor to the launch flow for the
   // zygote.
   static void AddToLaunchParameters(
-      UnsafeSharedMemoryRegion unsafe_memory_region,
+      const UnsafeSharedMemoryRegion& unsafe_memory_region,
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
       GlobalDescriptors::Key descriptor_key,
       ScopedFD& descriptor_to_share,

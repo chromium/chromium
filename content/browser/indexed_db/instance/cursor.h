@@ -44,21 +44,21 @@ class Cursor : public blink::mojom::IDBCursor {
   // blink::mojom::IDBCursor implementation
   void Advance(uint32_t count,
                blink::mojom::IDBCursor::AdvanceCallback callback) override;
-  void Continue(const blink::IndexedDBKey& key,
-                const blink::IndexedDBKey& primary_key,
+  void Continue(blink::IndexedDBKey key,
+                blink::IndexedDBKey primary_key,
                 blink::mojom::IDBCursor::ContinueCallback callback) override;
   void Prefetch(int32_t count,
                 blink::mojom::IDBCursor::PrefetchCallback callback) override;
   void PrefetchReset(int32_t used_prefetches) override;
 
-  const blink::IndexedDBKey& key() const { return cursor_->key(); }
+  const blink::IndexedDBKey& key() const { return cursor_->GetKey(); }
   const blink::IndexedDBKey& primary_key() const {
-    return cursor_->primary_key();
+    return cursor_->GetPrimaryKey();
   }
   IndexedDBValue* Value() const {
     return (cursor_type_ == indexed_db::CursorType::kKeyOnly)
                ? nullptr
-               : cursor_->value();
+               : &cursor_->GetValue();
   }
 
   void Close();
@@ -69,16 +69,14 @@ class Cursor : public blink::mojom::IDBCursor {
          blink::mojom::IDBTaskType task_type,
          base::WeakPtr<Transaction> transaction);
 
-  leveldb::Status ContinueOperation(
-      std::unique_ptr<blink::IndexedDBKey> key,
-      std::unique_ptr<blink::IndexedDBKey> primary_key,
-      blink::mojom::IDBCursor::ContinueCallback callback,
-      Transaction* transaction);
-  leveldb::Status AdvanceOperation(
-      uint32_t count,
-      blink::mojom::IDBCursor::AdvanceCallback callback,
-      Transaction* transaction);
-  leveldb::Status PrefetchIterationOperation(
+  Status ContinueOperation(blink::IndexedDBKey key,
+                           blink::IndexedDBKey primary_key,
+                           blink::mojom::IDBCursor::ContinueCallback callback,
+                           Transaction* transaction);
+  Status AdvanceOperation(uint32_t count,
+                          blink::mojom::IDBCursor::AdvanceCallback callback,
+                          Transaction* transaction);
+  Status PrefetchIterationOperation(
       int number_to_fetch,
       blink::mojom::IDBCursor::PrefetchCallback callback,
       Transaction* transaction);

@@ -14,9 +14,13 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
+
+namespace base {
+class DictValue;
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -46,7 +50,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValuesValue {
 
   uint64_t filtering_id() const { return filtering_id_; }
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
  private:
   AggregatableValuesValue(uint32_t value, uint64_t filtering_id);
@@ -80,7 +84,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableValues {
 
   const FilterPair& filters() const { return filters_; }
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const AggregatableValues&,
                          const AggregatableValues&) = default;

@@ -6,7 +6,8 @@ persistent=yes
 # List of plugins (as comma separated values of python modules names) to load,
 # usually to register additional checkers.
 load-plugins=
-    pylint_quotes
+    pylint_quotes,
+    pylint.extensions.no_self_use
 
 # Configure quote preferences.
 string-quote = single-avoid-escape

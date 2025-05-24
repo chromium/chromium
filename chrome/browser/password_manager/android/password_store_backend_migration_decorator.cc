@@ -11,11 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/android/built_in_backend_to_android_backend_migrator.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_data_type_controller_delegate.h"
 #include "components/sync/service/sync_service.h"
@@ -47,7 +44,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       base::BarrierCallback<bool>(
           /*num_callbacks=*/2,
           base::BindOnce([](const std::vector<bool>& results) {
-            return base::ranges::all_of(results, std::identity());
+            return std::ranges::all_of(results, std::identity());
           }).Then(std::move(completion)));
   auto remote_changes_callback = base::BindRepeating(
       &PasswordStoreBackendMigrationDecorator::OnRemoteFormChangesReceived,
@@ -63,11 +60,7 @@ void PasswordStoreBackendMigrationDecorator::InitBackend(
       base::BindRepeating(remote_changes_callback,
                           android_backend_->AsWeakPtr()),
       base::NullCallback(), pending_initialization_calls);
-  if (password_manager::features::kSimulateFailedMigration.Get()) {
-    // Don't try to migrate to simulate a failed migration. This causes the
-    // pref to remain 'kOffAndMigrationPending' and no passwords to be migrated.
-    return;
-  }
+
   metrics_util::LogLocalPwdMigrationProgressState(
       metrics_util::LocalPwdMigrationProgressState::kScheduled);
   // Post delayed task to start migration of local passwords to avoid extra load
@@ -120,12 +113,6 @@ void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
   active_backend()->GetAutofillableLoginsAsync(std::move(callback));
 }
 
-void PasswordStoreBackendMigrationDecorator::GetAllLoginsForAccountAsync(
-    std::string account,
-    LoginsOrErrorReply callback) {
-  NOTREACHED();
-}
-
 void PasswordStoreBackendMigrationDecorator::FillMatchingLoginsAsync(
     LoginsOrErrorReply callback,
     bool include_psl,
@@ -163,33 +150,19 @@ void PasswordStoreBackendMigrationDecorator::RemoveLoginAsync(
   }
 }
 
-void PasswordStoreBackendMigrationDecorator::RemoveLoginsByURLAndTimeAsync(
-    const base::Location& location,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> sync_completion,
-    PasswordChangesOrErrorReply callback) {
-  active_backend()->RemoveLoginsByURLAndTimeAsync(
-      location, url_filter, delete_begin, delete_end,
-      std::move(sync_completion), std::move(callback));
-  if (UsesSplitStoresAndUPMForLocal(prefs_)) {
-    built_in_backend_->RemoveLoginsByURLAndTimeAsync(
-        location, url_filter, delete_begin, delete_end, base::NullCallback(),
-        base::DoNothing());
-  }
-}
-
 void PasswordStoreBackendMigrationDecorator::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
   active_backend()->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end, std::move(callback));
+      location, delete_begin, delete_end, std::move(sync_completion),
+      std::move(callback));
   if (UsesSplitStoresAndUPMForLocal(prefs_)) {
     built_in_backend_->RemoveLoginsCreatedBetweenAsync(
-        location, delete_begin, delete_end, base::DoNothing());
+        location, delete_begin, delete_end, base::NullCallback(),
+        base::DoNothing());
   }
 }
 
@@ -217,16 +190,6 @@ void PasswordStoreBackendMigrationDecorator::OnSyncServiceInitialized(
   if (migrator_) {
     migrator_->OnSyncServiceInitialized(sync_service);
   }
-}
-
-void PasswordStoreBackendMigrationDecorator::
-    RecordAddLoginAsyncCalledFromTheStore() {
-  active_backend()->RecordAddLoginAsyncCalledFromTheStore();
-}
-
-void PasswordStoreBackendMigrationDecorator::
-    RecordUpdateLoginAsyncCalledFromTheStore() {
-  active_backend()->RecordUpdateLoginAsyncCalledFromTheStore();
 }
 
 base::WeakPtr<PasswordStoreBackend>

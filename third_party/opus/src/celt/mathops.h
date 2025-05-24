@@ -1,7 +1,7 @@
 /* Copyright (c) 2002-2008 Jean-Marc Valin
    Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
-   Written by Jean-Marc Valin */
+   Written by Jean-Marc Valin, and Yunho Huh */
 /**
    @file mathops.h
    @brief Various math functions
@@ -91,6 +91,26 @@ static OPUS_INLINE opus_val32 celt_maxabs16(const opus_val16 *x, int len)
 }
 #endif
 
+#ifdef ENABLE_RES24
+static OPUS_INLINE opus_res celt_maxabs_res(const opus_res *x, int len)
+{
+   int i;
+   opus_res maxval = 0;
+   opus_res minval = 0;
+   for (i=0;i<len;i++)
+   {
+      maxval = MAX32(maxval, x[i]);
+      minval = MIN32(minval, x[i]);
+   }
+   /* opus_res should never reach such amplitude, so we should be safe. */
+   celt_sig_assert(minval != -2147483648);
+   return MAX32(maxval,-minval);
+}
+#else
+#define celt_maxabs_res celt_maxabs16
+#endif
+
+
 #ifndef OVERRIDE_CELT_MAXABS32
 #ifdef FIXED_POINT
 static OPUS_INLINE opus_val32 celt_maxabs32(const opus_val32 *x, int len)
@@ -120,34 +140,88 @@ static OPUS_INLINE opus_val32 celt_maxabs32(const opus_val32 *x, int len)
 #define celt_rcp(x) (1.f/(x))
 #define celt_div(a,b) ((a)/(b))
 #define frac_div32(a,b) ((float)(a)/(b))
+#define frac_div32_q29(a,b) frac_div32(a,b)
 
 #ifdef FLOAT_APPROX
+/* Calculates the base-2 logarithm (log2(x)) of a number. It is designed for
+ * systems using radix-2 floating-point representation, with the exponent
+ * located at bits 23 to 30 and an offset of 127. Note that special cases like
+ * denormalized numbers, positive/negative infinity, and NaN are not handled.
+ * log2(x) = log2(x^exponent * mantissa)
+ *         = exponent + log2(mantissa) */
 
-/* Note: This assumes radix-2 floating point with the exponent at bits 23..30 and an offset of 127
-         denorm, +/- inf and NaN are *not* handled */
+/* Log2 x normalization single precision coefficients calculated by
+ * 1 / (1 + 0.125 * index).
+ * Coefficients in Double Precision
+ * double log2_x_norm_coeff[8] = {
+ *    1.0000000000000000000, 8.888888888888888e-01,
+ *    8.000000000000000e-01, 7.272727272727273e-01,
+ *    6.666666666666666e-01, 6.153846153846154e-01,
+ *    5.714285714285714e-01, 5.333333333333333e-01} */
+static const float log2_x_norm_coeff[8] = {
+   1.000000000000000000000000000f, 8.88888895511627197265625e-01f,
+   8.00000000000000000000000e-01f, 7.27272748947143554687500e-01f,
+   6.66666686534881591796875e-01f, 6.15384638309478759765625e-01f,
+   5.71428596973419189453125e-01f, 5.33333361148834228515625e-01f};
 
-/** Base-2 log approximation (log2(x)). */
+/* Log2 y normalization single precision coefficients calculated by
+ * log2(1 + 0.125 * index).
+ * Coefficients in Double Precision
+ * double log2_y_norm_coeff[8] = {
+ *    0.0000000000000000000, 1.699250014423124e-01,
+ *    3.219280948873623e-01, 4.594316186372973e-01,
+ *    5.849625007211562e-01, 7.004397181410922e-01,
+ *    8.073549220576041e-01, 9.068905956085185e-01}; */
+static const float log2_y_norm_coeff[8] = {
+   0.0000000000000000000000000000f, 1.699250042438507080078125e-01f,
+   3.219280838966369628906250e-01f, 4.594316184520721435546875e-01f,
+   5.849624872207641601562500e-01f, 7.004396915435791015625000e-01f,
+   8.073549270629882812500000e-01f, 9.068905711174011230468750e-01f};
+
 static OPUS_INLINE float celt_log2(float x)
 {
-   int integer;
-   float frac;
+   opus_int32 integer;
+   opus_int32 range_idx;
    union {
       float f;
       opus_uint32 i;
    } in;
    in.f = x;
-   integer = (in.i>>23)-127;
-   in.i -= (opus_uint32)integer<<23;
-   frac = in.f - 1.5f;
-   frac = -0.41445418f + frac*(0.95909232f
-          + frac*(-0.33951290f + frac*0.16541097f));
-   return 1+integer+frac;
+   integer = (opus_int32)(in.i>>23)-127;
+   in.i = (opus_int32)in.i - (opus_int32)((opus_uint32)integer<<23);
+
+   /* Normalize the mantissa range from [1, 2] to [1,1.125], and then shift x
+    * by 1.0625 to [-0.0625, 0.0625]. */
+   range_idx = (in.i >> 20) & 0x7;
+   in.f = in.f * log2_x_norm_coeff[range_idx] - 1.0625f;
+
+   /* Polynomial coefficients approximated in the [1, 1.125] range.
+    * Lolremez command: lolremez --degree 4 --range -0.0625:0.0625
+    *                   "log(x+1.0625)/log(2)"
+    * Coefficients in Double Precision
+    * A0: 8.7462840624502679e-2    A1: 1.3578296070972002
+    * A2: -6.3897703690210047e-1   A3: 4.0197125617419959e-1
+    * A4: -2.8415445877832832e-1 */
+   #define LOG2_COEFF_A0 8.74628424644470214843750000e-02f
+   #define LOG2_COEFF_A1 1.357829570770263671875000000000f
+   #define LOG2_COEFF_A2 -6.3897705078125000000000000e-01f
+   #define LOG2_COEFF_A3 4.01971250772476196289062500e-01f
+   #define LOG2_COEFF_A4 -2.8415444493293762207031250e-01f
+   in.f = LOG2_COEFF_A0 + in.f * (LOG2_COEFF_A1
+               + in.f * (LOG2_COEFF_A2
+               + in.f * (LOG2_COEFF_A3
+               + in.f * (LOG2_COEFF_A4))));
+   return integer + in.f + log2_y_norm_coeff[range_idx];
 }
 
-/** Base-2 exponential approximation (2^x). */
+/* Calculates an approximation of 2^x. The approximation was achieved by
+ * employing a base-2 exponential function and utilizing a Remez approximation
+ * of order 5, ensuring a controlled relative error.
+ * exp2(x) = exp2(integer + fraction)
+ *         = exp2(integer) * exp2(fraction) */
 static OPUS_INLINE float celt_exp2(float x)
 {
-   int integer;
+   opus_int32 integer;
    float frac;
    union {
       float f;
@@ -157,10 +231,23 @@ static OPUS_INLINE float celt_exp2(float x)
    if (integer < -50)
       return 0;
    frac = x-integer;
-   /* K0 = 1, K1 = log(2), K2 = 3-4*log(2), K3 = 3*log(2) - 2 */
-   res.f = 0.99992522f + frac * (0.69583354f
-           + frac * (0.22606716f + 0.078024523f*frac));
-   res.i = (res.i + ((opus_uint32)integer<<23)) & 0x7fffffff;
+
+   /* Polynomial coefficients approximated in the [0, 1] range.
+    * Lolremez command: lolremez --degree 5 --range 0:1
+    *                   "exp(x*0.693147180559945)" "exp(x*0.693147180559945)"
+    * NOTE: log(2) ~ 0.693147180559945 */
+   #define EXP2_COEFF_A0 9.999999403953552246093750000000e-01f
+   #define EXP2_COEFF_A1 6.931530833244323730468750000000e-01f
+   #define EXP2_COEFF_A2 2.401536107063293457031250000000e-01f
+   #define EXP2_COEFF_A3 5.582631751894950866699218750000e-02f
+   #define EXP2_COEFF_A4 8.989339694380760192871093750000e-03f
+   #define EXP2_COEFF_A5 1.877576694823801517486572265625e-03f
+   res.f = EXP2_COEFF_A0 + frac * (EXP2_COEFF_A1
+               + frac * (EXP2_COEFF_A2
+               + frac * (EXP2_COEFF_A3
+               + frac * (EXP2_COEFF_A4
+               + frac * (EXP2_COEFF_A5)))));
+   res.i = (opus_uint32)((opus_int32)res.i + (opus_int32)((opus_uint32)integer<<23)) & 0x7fffffff;
    return res.f;
 }
 
@@ -168,6 +255,9 @@ static OPUS_INLINE float celt_exp2(float x)
 #define celt_log2(x) ((float)(1.442695040888963387*log(x)))
 #define celt_exp2(x) ((float)exp(0.6931471805599453094*(x)))
 #endif
+
+#define celt_exp2_db celt_exp2
+#define celt_log2_db celt_log2
 
 #endif
 
@@ -204,13 +294,13 @@ static OPUS_INLINE opus_val16 celt_log2(opus_val32 x)
    opus_val16 n, frac;
    /* -0.41509302963303146, 0.9609890551383969, -0.31836011537636605,
        0.15530808010959576, -0.08556153059057618 */
-   static const opus_val16 C[5] = {-6801+(1<<(13-DB_SHIFT)), 15746, -5217, 2545, -1401};
+   static const opus_val16 C[5] = {-6801+(1<<(13-10)), 15746, -5217, 2545, -1401};
    if (x==0)
       return -32767;
    i = celt_ilog2(x);
    n = VSHR32(x,i-15)-32768-16384;
    frac = ADD16(C[0], MULT16_16_Q15(n, ADD16(C[1], MULT16_16_Q15(n, ADD16(C[2], MULT16_16_Q15(n, ADD16(C[3], MULT16_16_Q15(n, C[4]))))))));
-   return SHL16(i-13,DB_SHIFT)+SHR16(frac,14-DB_SHIFT);
+   return SHL32(i-13,10)+SHR32(frac,14-10);
 }
 
 /*
@@ -230,6 +320,12 @@ static OPUS_INLINE opus_val32 celt_exp2_frac(opus_val16 x)
    frac = SHL16(x, 4);
    return ADD16(D0, MULT16_16_Q15(frac, ADD16(D1, MULT16_16_Q15(frac, ADD16(D2 , MULT16_16_Q15(D3,frac))))));
 }
+
+#undef D0
+#undef D1
+#undef D2
+#undef D3
+
 /** Base-2 exponential approximation (2^x). (Q10 input, Q16 output) */
 static OPUS_INLINE opus_val32 celt_exp2(opus_val16 x)
 {
@@ -244,10 +340,103 @@ static OPUS_INLINE opus_val32 celt_exp2(opus_val16 x)
    return VSHR32(EXTEND32(frac), -integer-2);
 }
 
+#ifdef ENABLE_QEXT
+
+/* Calculates the base-2 logarithm of a Q14 input value. The result is returned
+ * in Q(DB_SHIFT). If the input value is 0, the function will output -32.0f. */
+static OPUS_INLINE opus_val32 celt_log2_db(opus_val32 x) {
+   /* Q30 */
+   static const opus_val32 log2_x_norm_coeff[8] = {
+      1073741824, 954437184, 858993472, 780903168,
+      715827904,  660764224, 613566784, 572662336};
+   /* Q24 */
+   static const opus_val32 log2_y_norm_coeff[8] = {
+      0,       2850868,  5401057,  7707983,
+      9814042, 11751428, 13545168, 15215099};
+   static const opus_val32 LOG2_COEFF_A0 = 1467383;     /* Q24 */
+   static const opus_val32 LOG2_COEFF_A1 = 182244800;   /* Q27 */
+   static const opus_val32 LOG2_COEFF_A2 = -21440512;   /* Q25 */
+   static const opus_val32 LOG2_COEFF_A3 = 107903336;   /* Q28 */
+   static const opus_val32 LOG2_COEFF_A4 = -610217024;  /* Q31 */
+
+   opus_int32 integer, norm_coeff_idx, tmp;
+   opus_val32 mantissa;
+   if (x==0) {
+      return -536870912; /* -32.0f */
+   }
+   integer =  SUB32(celt_ilog2(x), 14);  /* Q0 */
+   mantissa = VSHR32(x, integer + 14 - 29);  /* Q29 */
+   norm_coeff_idx = SHR32(mantissa, 29 - 3) & 0x7;
+   /* mantissa is in Q28 (29 + Q_NORM_CONST - 31 where Q_NORM_CONST is Q30)
+    * 285212672 (Q28) is 1.0625f. */
+   mantissa = SUB32(MULT32_32_Q31(mantissa, log2_x_norm_coeff[norm_coeff_idx]),
+                    285212672);
+
+   /* q_a3(Q28): q_mantissa + q_a4 - 31
+    * q_a2(Q25): q_mantissa + q_a3 - 31
+    * q_a1(Q27): q_mantissa + q_a2 - 31 + 5
+    * q_a0(Q24): q_mantissa + q_a1 - 31
+    * where  q_mantissa is Q28 */
+   /* Split evaluation in steps to avoid exploding macro expansion. */
+   tmp = MULT32_32_Q31(mantissa, LOG2_COEFF_A4);
+   tmp = MULT32_32_Q31(mantissa, ADD32(LOG2_COEFF_A3, tmp));
+   tmp = SHL32(MULT32_32_Q31(mantissa, ADD32(LOG2_COEFF_A2, tmp)), 5 /* SHL32 for LOG2_COEFF_A1 */);
+   tmp = MULT32_32_Q31(mantissa, ADD32(LOG2_COEFF_A1, tmp));
+   return ADD32(log2_y_norm_coeff[norm_coeff_idx],
+          ADD32(SHL32(integer, DB_SHIFT),
+          ADD32(LOG2_COEFF_A0, tmp)));
+}
+
+/* Calculates exp2 for Q28 within a specific range (0 to 1.0) using fixed-point
+ * arithmetic. The input number must be adjusted for Q DB_SHIFT. */
+static OPUS_INLINE opus_val32 celt_exp2_db_frac(opus_val32 x)
+{
+   /* Approximation constants. */
+   static const opus_int32 EXP2_COEFF_A0 = 268435440;   /* Q28 */
+   static const opus_int32 EXP2_COEFF_A1 = 744267456;   /* Q30 */
+   static const opus_int32 EXP2_COEFF_A2 = 1031451904;  /* Q32 */
+   static const opus_int32 EXP2_COEFF_A3 = 959088832;   /* Q34 */
+   static const opus_int32 EXP2_COEFF_A4 = 617742720;   /* Q36 */
+   static const opus_int32 EXP2_COEFF_A5 = 516104352;   /* Q38 */
+   opus_int32 tmp;
+   /* Converts input value from Q24 to Q29. */
+   opus_val32 x_q29 = SHL32(x, 29 - 24);
+   /* Split evaluation in steps to avoid exploding macro expansion. */
+   tmp = ADD32(EXP2_COEFF_A4, MULT32_32_Q31(x_q29, EXP2_COEFF_A5));
+   tmp = ADD32(EXP2_COEFF_A3, MULT32_32_Q31(x_q29, tmp));
+   tmp = ADD32(EXP2_COEFF_A2, MULT32_32_Q31(x_q29, tmp));
+   tmp = ADD32(EXP2_COEFF_A1, MULT32_32_Q31(x_q29, tmp));
+   return ADD32(EXP2_COEFF_A0, MULT32_32_Q31(x_q29, tmp));
+}
+
+/* Calculates exp2 for Q16 using fixed-point arithmetic. The input number must
+ * be adjusted for Q DB_SHIFT. */
+static OPUS_INLINE opus_val32 celt_exp2_db(opus_val32 x)
+{
+   int integer;
+   opus_val32 frac;
+   integer = SHR32(x,DB_SHIFT);
+   if (integer>14)
+      return 0x7f000000;
+   else if (integer <= -17)
+      return 0;
+   frac = celt_exp2_db_frac(x-SHL32(integer, DB_SHIFT));  /* Q28 */
+   return VSHR32(frac, -integer + 28 - 16);  /* Q16 */
+}
+#else
+
+#define celt_log2_db(x) SHL32(EXTEND32(celt_log2(x)), DB_SHIFT-10)
+#define celt_exp2_db_frac(x) SHL32(celt_exp2_frac(PSHR32(x, DB_SHIFT-10)), 14)
+#define celt_exp2_db(x) celt_exp2(PSHR32(x, DB_SHIFT-10))
+
+#endif
+
+
 opus_val32 celt_rcp(opus_val32 x);
 
 #define celt_div(a,b) MULT32_32_Q31((opus_val32)(a),celt_rcp(b))
 
+opus_val32 frac_div32_q29(opus_val32 a, opus_val32 b);
 opus_val32 frac_div32(opus_val32 a, opus_val32 b);
 
 #define M1 32767

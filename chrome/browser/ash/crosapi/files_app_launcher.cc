@@ -9,7 +9,7 @@
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/check.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 
 namespace crosapi {
 

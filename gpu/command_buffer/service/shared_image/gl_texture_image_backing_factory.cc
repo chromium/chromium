@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/gl_texture_image_backing.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
@@ -30,7 +31,7 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
     SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
     SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
+    SHARED_IMAGE_USAGE_OOP_RASTERIZATION |
     SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     kWebGPUUsages;
@@ -91,20 +92,6 @@ GLTextureImageBackingFactory::CreateSharedImage(
                                    usage, std::move(debug_label), pixel_data);
 }
 
-std::unique_ptr<SharedImageBacking>
-GLTextureImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED();
-}
-
 bool GLTextureImageBackingFactory::IsSupported(
     SharedImageUsageSet usage,
     viz::SharedImageFormat format,
@@ -131,24 +118,6 @@ bool GLTextureImageBackingFactory::IsSupported(
   if (usage.Has(SHARED_IMAGE_USAGE_CPU_UPLOAD)) {
     if (!supports_cpu_upload_ ||
         !GLTextureImageBacking::SupportsPixelUploadWithFormat(format)) {
-      return false;
-    }
-
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
-    // GLTextureImageBacking can't actually support scanout on any platform.
-    // Historically GLImageBacking did accept scanout usage for shared memory
-    // GpuMemoryBuffers which is still replied upon for the following:
-    // - Linux and Chrome OS on X11 have no real scanout support but clients add
-    //   the usage.
-    // - Windows can upload pixels directly from shared memory to a D3D swap
-    //   chain for overlays.
-    // TODO(kylechar): Stop allowing scanout usage here on all platforms.
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
-      return false;
-    }
-#endif
-  } else {
-    if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT)) {
       return false;
     }
   }
@@ -197,13 +166,17 @@ bool GLTextureImageBackingFactory::IsSupported(
     }
   }
 
-  // Only supports WebGPU usages on Dawn's OpenGLES backend.
+  // Only supports WebGPU usages on ANGLE/GL on a Skia/GL context
   if (usage.HasAny(kWebGPUUsages)) {
-    if (use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES ||
+#if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
+    if (gr_context_type != GrContextType::kGL ||
         gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE ||
         gl::GetANGLEImplementation() != gl::ANGLEImplementation::kOpenGL) {
       return false;
     }
+#else
+    return false;
+#endif
   }
 
   return CanCreateTexture(format, size, pixel_data, GL_TEXTURE_2D);

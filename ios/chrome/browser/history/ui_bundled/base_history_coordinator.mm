@@ -15,26 +15,24 @@
 #import "ios/chrome/browser/history/ui_bundled/history_mediator.h"
 #import "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver.h"
 #import "ios/chrome/browser/history/ui_bundled/ios_browsing_history_driver_delegate_bridge.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_coordinator.h"
+#import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
-#import "ios/chrome/browser/ui/sharing/sharing_params.h"
 
 namespace {
 
 history::WebHistoryService* WebHistoryServiceGetter(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state) {
-  DCHECK(weak_browser_state.get())
-      << "Getter should not be called after ChromeBrowserState destruction.";
-  return ios::WebHistoryServiceFactory::GetForBrowserState(
-      weak_browser_state.get());
+    base::WeakPtr<ProfileIOS> weak_profile) {
+  DCHECK(weak_profile.get())
+      << "Getter should not be called after ProfileIOS destruction.";
+  return ios::WebHistoryServiceFactory::GetForProfile(weak_profile.get());
 }
 
 }  // anonymous namespace
@@ -71,8 +69,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
       std::make_unique<BrowserObserverBridge>(self.browser, self);
 
   // Initialize and set HistoryMediator.
-  _mediator = [[HistoryMediator alloc]
-      initWithBrowserState:self.browser->GetBrowserState()];
+  _mediator = [[HistoryMediator alloc] initWithProfile:self.profile];
   self.viewController.imageDataSource = _mediator;
 
   // Initialize and configure HistoryServices.
@@ -80,14 +77,13 @@ history::WebHistoryService* WebHistoryServiceGetter(
       std::make_unique<IOSBrowsingHistoryDriverDelegateBridge>(
           self.viewController);
   _browsingHistoryDriver = std::make_unique<IOSBrowsingHistoryDriver>(
-      base::BindRepeating(&WebHistoryServiceGetter,
-                          self.browser->GetBrowserState()->AsWeakPtr()),
+      base::BindRepeating(&WebHistoryServiceGetter, self.profile->AsWeakPtr()),
       _browsingHistoryDriverDelegate.get());
   _browsingHistoryService = std::make_unique<history::BrowsingHistoryService>(
       _browsingHistoryDriver.get(),
-      ios::HistoryServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS),
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState()));
+      ios::HistoryServiceFactory::GetForProfile(
+          self.profile, ServiceAccessType::EXPLICIT_ACCESS),
+      SyncServiceFactory::GetForProfile(self.profile));
   self.viewController.historyService = _browsingHistoryService.get();
 
   self.viewController.presentationDelegate = self.presentationDelegate;
@@ -116,6 +112,10 @@ history::WebHistoryService* WebHistoryServiceGetter(
   NOTREACHED() << "This should be implemented in subclasses.";
 }
 
+- (MenuScenarioHistogram)scenario {
+  NOTREACHED() << "This should be implemented in subclasses.";
+}
+
 - (void)dismissWithCompletion:(ProceduralBlock)completionHandler {
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
@@ -136,6 +136,10 @@ history::WebHistoryService* WebHistoryServiceGetter(
   [self.delegate closeHistoryWithCompletion:completionHandler];
 }
 
+- (void)dismissViewController:(BaseHistoryViewController*)controller {
+  [self.delegate closeHistory];
+}
+
 #pragma mark - HistoryMenuProvider
 
 - (UIContextMenuConfiguration*)contextMenuConfigurationForItem:
@@ -154,11 +158,11 @@ history::WebHistoryService* WebHistoryServiceGetter(
     BaseHistoryCoordinator* strongSelf = weakSelf;
 
     // Record that this context menu was shown to the user.
-    RecordMenuShown(kMenuScenarioHistogramHistoryEntry);
+    RecordMenuShown(self.scenario);
 
-    BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
-        initWithBrowser:strongSelf.browser
-               scenario:kMenuScenarioHistogramHistoryEntry];
+    BrowserActionFactory* actionFactory =
+        [[BrowserActionFactory alloc] initWithBrowser:strongSelf.browser
+                                             scenario:self.scenario];
 
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];
@@ -175,7 +179,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
                                   completion:^{
                                     [weakSelf onOpenedURLInNewIncognitoTab];
                                   }];
-    if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+    if (IsIncognitoModeDisabled(self.profile->GetPrefs())) {
       // Disable the "Open in Incognito" option if the incognito mode is
       // disabled.
       incognitoAction.attributes = UIMenuElementAttributesDisabled;

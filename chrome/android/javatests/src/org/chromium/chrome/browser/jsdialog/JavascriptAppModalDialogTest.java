@@ -240,10 +240,12 @@ public class JavascriptAppModalDialogTest {
                 () -> {
                     ChromeTabbedActivity activity = sActivityTestRule.getActivity();
                     activity.getCurrentTabModel()
+                            .getTabRemover()
                             .closeTabs(
                                     TabClosureParams.closeTab(activity.getActivityTab())
                                             .allowUndo(false)
-                                            .build());
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         // Closing the tab should have dismissed the dialog.
@@ -293,7 +295,7 @@ public class JavascriptAppModalDialogTest {
     }
 
     private static class TapGestureStateListener extends GestureStateListener {
-        private CallbackHelper mCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
         public int getCallCount() {
             return mCallbackHelper.getCallCount();

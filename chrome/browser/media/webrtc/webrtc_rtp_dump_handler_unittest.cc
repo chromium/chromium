@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/media/webrtc/webrtc_rtp_dump_handler.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <utility>
@@ -127,7 +124,7 @@ class WebRtcRtpDumpHandlerTest : public testing::Test {
 TEST_F(WebRtcRtpDumpHandlerTest, StateTransition) {
   std::string error;
 
-  RtpDumpType types[3];
+  std::array<RtpDumpType, 3> types;
   types[0] = RTP_DUMP_INCOMING;
   types[1] = RTP_DUMP_OUTGOING;
   types[2] = RTP_DUMP_BOTH;
@@ -220,7 +217,7 @@ TEST_F(WebRtcRtpDumpHandlerTest, CannotStartMoreThanFiveDumps) {
 
   handler_.reset();
 
-  std::unique_ptr<WebRtcRtpDumpHandler> handlers[6];
+  std::array<std::unique_ptr<WebRtcRtpDumpHandler>, 6> handlers;
 
   for (size_t i = 0; i < std::size(handlers); ++i) {
     handlers[i] = std::make_unique<WebRtcRtpDumpHandler>(base::FilePath());

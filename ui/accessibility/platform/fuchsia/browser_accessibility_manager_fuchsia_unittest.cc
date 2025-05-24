@@ -28,7 +28,7 @@ class MockBrowserAccessibilityDelegate
     : public TestAXPlatformTreeManagerDelegate {
  public:
   void AccessibilityPerformAction(const AXActionData& data) override {
-    last_action_data_ = data;
+    last_action_datas_.push_back(data.action);
   }
 
   void AccessibilityHitTest(
@@ -41,8 +41,8 @@ class MockBrowserAccessibilityDelegate
     last_request_id_ = opt_request_id;
   }
 
-  const std::optional<AXActionData>& last_action_data() {
-    return last_action_data_;
+  const std::vector<ax::mojom::Action>& last_action_datas() {
+    return last_action_datas_;
   }
 
   const std::optional<int>& last_request_id() { return last_request_id_; }
@@ -51,7 +51,7 @@ class MockBrowserAccessibilityDelegate
   }
 
  private:
-  std::optional<AXActionData> last_action_data_;
+  std::vector<ax::mojom::Action> last_action_datas_;
   std::optional<int> last_request_id_;
   std::optional<gfx::Point> last_hit_test_point_;
 };
@@ -288,15 +288,11 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, TestLocationChange) {
   }
 
   // Send location update for node 2.
-  std::vector<AXLocationChanges> changes;
+  AXLocationAndScrollUpdates changes;
   AXRelativeBounds relative_bounds;
   relative_bounds.bounds =
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
-  AXLocationChanges change;
-  change.id = 2;
-  change.ax_tree_id = tree_id;
-  change.new_location = relative_bounds;
-  changes.push_back(change);
+  changes.location_changes.emplace_back(2, relative_bounds);
   manager_->OnLocationChanges(std::move(changes));
 
   {
@@ -560,11 +556,12 @@ TEST_F(BrowserAccessibilityManagerFuchsiaTest, PerformAction) {
   platform_node->PerformAction(action_data);
 
   {
-    const std::optional<AXActionData> last_action_data =
-        mock_browser_accessibility_delegate_.last_action_data();
-    ASSERT_TRUE(last_action_data);
-    EXPECT_EQ(last_action_data->action,
-              ax::mojom::Action::kScrollToMakeVisible);
+    const std::vector<ax::mojom::Action>& last_action_datas =
+        mock_browser_accessibility_delegate_.last_action_datas();
+    EXPECT_EQ(last_action_datas,
+              std::vector<ax::mojom::Action>(
+                  {ax::mojom::Action::kScrollToMakeVisible,
+                   ax::mojom::Action::kSetAccessibilityFocus}));
   }
 }
 

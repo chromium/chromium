@@ -8,17 +8,18 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "components/safe_browsing/content/renderer/websocket_sb_extensions_handshake_throttle.h"
 #endif
 
 WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker) {
   DETACH_FROM_THREAD(thread_checker_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   broker->GetInterface(
       pending_extension_web_request_reporter_.InitWithNewPipeAndPassReceiver());
 #endif
@@ -32,7 +33,7 @@ WebSocketHandshakeThrottleProviderImpl::
 WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
     const WebSocketHandshakeThrottleProviderImpl& other) {
   DETACH_FROM_THREAD(thread_checker_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   DCHECK(other.extension_web_request_reporter_);
   other.extension_web_request_reporter_->Clone(
       pending_extension_web_request_reporter_.InitWithNewPipeAndPassReceiver());
@@ -43,7 +44,7 @@ std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 WebSocketHandshakeThrottleProviderImpl::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (pending_extension_web_request_reporter_) {
     extension_web_request_reporter_.Bind(
         std::move(pending_extension_web_request_reporter_), task_runner);
@@ -58,7 +59,7 @@ WebSocketHandshakeThrottleProviderImpl::CreateThrottle(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (pending_extension_web_request_reporter_) {
     extension_web_request_reporter_.Bind(
         std::move(pending_extension_web_request_reporter_));

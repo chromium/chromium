@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/video_conference/video_conference_app_service_client.h"
 
+#include <variant>
+
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/containers/contains.h"
@@ -37,12 +39,10 @@ crosapi::mojom::VideoConferenceAppType ToVideoConferenceAppType(
     case apps::AppType::kArc:
       return crosapi::mojom::VideoConferenceAppType::kArcApp;
     case apps::AppType::kChromeApp:
-    case apps::AppType::kStandaloneBrowserChromeApp:
       return crosapi::mojom::VideoConferenceAppType::kChromeApp;
     case apps::AppType::kWeb:
       return crosapi::mojom::VideoConferenceAppType::kWebApp;
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
       return crosapi::mojom::VideoConferenceAppType::kChromeExtension;
     default:
       return crosapi::mojom::VideoConferenceAppType::kAppServiceUnknown;
@@ -50,8 +50,8 @@ crosapi::mojom::VideoConferenceAppType ToVideoConferenceAppType(
 }
 
 bool IsPermissionAsked(const apps::PermissionPtr& permission) {
-  return absl::holds_alternative<apps::TriState>(permission->value) &&
-         absl::get<apps::TriState>(permission->value) == apps::TriState::kAsk;
+  return std::holds_alternative<apps::TriState>(permission->value) &&
+         std::get<apps::TriState>(permission->value) == apps::TriState::kAsk;
 }
 
 }  // namespace

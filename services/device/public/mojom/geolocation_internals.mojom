@@ -121,6 +121,12 @@ struct GeolocationDiagnostics {
 
   // Internal state of Wi-Fi data polling policy.
   WifiPollingPolicyDiagnostics? wifi_polling_policy_diagnostics;
+
+  // The operational mode of the LocationProviderManager, which determines
+  // the provider used for geolocation requests. This influences provider
+  // initialization, fallback behavior, and error handling. See
+  // LocationProviderManagerMode enum for details on the specific modes.
+  LocationProviderManagerMode? location_provider_manager_mode;
 };
 
 // A position estimate parsed from a location service response.
@@ -134,15 +140,32 @@ struct NetworkLocationResponse {
   double? accuracy;
 };
 
-// Determines which type of location provider LocationProviderManager should
-// create and use for geolocation.
+// Defines the operational mode of the LocationProviderManager, determining
+// which location provider to use for geolocation. This influences provider
+// initialization, fallback behavior, and error handling.
 enum LocationProviderManagerMode {
+  // Always use NetworkLocationProvider, regardless of errors.
   kNetworkOnly = 0,
+
+  // Always use PlatformLocationProvider, regardless of errors.
   kPlatformOnly = 1,
+
+  // Always use CustomLocationProvider, regardless of errors.
   kCustomOnly = 2,
+
+  // Start with PlatformLocationProvider. If a `kWifiDisabledError` is
+  // encountered, fall back to NetworkLocationProvider. Currently used only on
+  // macOS.
   kHybridPlatform = 3,
+
+  // Indicates that NetworkLocationProvider is being used after a fallback has
+  // occurred.
   kHybridFallbackNetwork = 4,
 
+  // Start with PlatformLocationProvider. If any error is encountered, fall
+  // back to NetworkLocationProvider. Currently used only on macOS for
+  // MacPlatformLocationProvider studies.
+  kHybridPlatform2 = 5,
   // NOTE: Do not renumber these as that would confuse interpretation of
   // previously logged data. When making changes, also update the enum list
   // in tools/metrics/histograms/metadata/geolocation/enums.xml to keep it in

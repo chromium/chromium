@@ -1,0 +1,103 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("message_center") {
+  sources = [
+    "arc_notification_content_view.cc",
+    "arc_notification_content_view.h",
+    "arc_notification_delegate.cc",
+    "arc_notification_delegate.h",
+    "arc_notification_item.h",
+    "arc_notification_item_impl.cc",
+    "arc_notification_item_impl.h",
+    "arc_notification_manager.cc",
+    "arc_notification_manager.h",
+    "arc_notification_surface.h",
+    "arc_notification_surface_impl.cc",
+    "arc_notification_surface_impl.h",
+    "arc_notification_surface_manager.cc",
+    "arc_notification_surface_manager.h",
+    "arc_notification_surface_manager_impl.cc",
+    "arc_notification_surface_manager_impl.h",
+    "arc_notification_view.cc",
+    "arc_notification_view.h",
+    "metadata_utils.cc",
+    "metadata_utils.h",
+    "metrics_utils.cc",
+    "metrics_utils.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:arc_metrics_constants",
+    "//chromeos/ash/experiences/arc/mojom:notifications",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
+    "//components/account_id",
+    "//components/exo",
+    "//mojo/public/cpp/system",
+    "//ui/accessibility:accessibility",
+    "//ui/accessibility:ax_base",
+    "//ui/aura",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//ui/color",
+    "//ui/message_center",
+    "//ui/views",
+    "//ui/wm",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_arc_notification_item.cc",
+    "mock_arc_notification_item.h",
+    "mock_arc_notification_surface.cc",
+    "mock_arc_notification_surface.h",
+  ]
+  deps = [
+    ":message_center",
+    "//ash/public/cpp",
+    "//base",
+    "//ui/aura",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "arc_notification_content_view_unittest.cc",
+    "arc_notification_manager_unittest.cc",
+    "arc_notification_surface_manager_impl_unittest.cc",
+    "arc_notification_view_unittest.cc",
+    "metadata_utils_unittest.cc",
+  ]
+  public_deps = [ "//ash:test_support" ]
+  deps = [
+    ":message_center",
+    ":test_support",
+    "//ash",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/session:connection_holder",
+    "//components/exo",
+    "//components/exo:test_support",
+    "//testing/gmock",
+    "//ui/aura:test_support",
+    "//ui/base:test_support",
+    "//ui/compositor:test_support",
+    "//ui/events:test_support",
+    "//ui/message_center:test_support",
+    "//ui/views:test_support",
+  ]
+
+  assert_no_deps = [ "//ash/compponents/arc:arc_base" ]
+}

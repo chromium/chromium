@@ -31,7 +31,6 @@
 // noexcept needs to be routed to
 // allocator_shim::internal::PartitionMallocUnchecked through the shim layer.
 #include "partition_alloc/shim/allocator_shim_override_cpp_symbols.h"
-
 #include "partition_alloc/shim/allocator_shim_override_libc_symbols.h"
 
 // Some glibc versions (until commit 6c444ad6e953dbdf9c7be065308a0a777)

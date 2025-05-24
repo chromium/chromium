@@ -229,15 +229,15 @@ std::string GetTimezoneIDAsString() {
     return std::string();
   }
 
-  std::string timezone(buf, len);
+  std::string_view timezone(buf, len);
   // Remove kTimezoneFilesDir from the beginning.
-  if (!base::StartsWith(timezone, kTimezoneFilesDir,
-                        base::CompareCase::SENSITIVE)) {
+  auto remainder = base::RemovePrefix(timezone, kTimezoneFilesDir);
+  if (!remainder) {
     LOG(ERROR) << "GetTimezoneID: Timezone symlink is wrong " << timezone;
     return std::string();
   }
 
-  return timezone.substr(strlen(kTimezoneFilesDir));
+  return std::string(*remainder);
 }
 
 void SetTimezoneIDFromString(const std::string& id) {

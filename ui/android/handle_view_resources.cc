@@ -22,7 +22,7 @@ static SkBitmap CreateSkBitmapFromJavaBitmap(
 
 namespace ui {
 
-HandleViewResources::HandleViewResources() {}
+HandleViewResources::HandleViewResources() = default;
 
 void HandleViewResources::LoadIfNecessary(const JavaRef<jobject>& context) {
   if (loaded_)
@@ -59,9 +59,8 @@ const SkBitmap& HandleViewResources::GetBitmap(
     case ui::TouchHandleOrientation::CENTER:
       return center_bitmap_;
     case ui::TouchHandleOrientation::UNDEFINED:
-      NOTREACHED_IN_MIGRATION() << "Invalid touch handle orientation.";
+      NOTREACHED() << "Invalid touch handle orientation.";
   };
-  return center_bitmap_;
 }
 
 float HandleViewResources::GetDrawableHorizontalPaddingRatio() const {

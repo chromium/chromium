@@ -4,6 +4,8 @@
 
 #import "ios/web/common/web_view_creation_util.h"
 
+#import <WebKit/WebKit.h>
+
 #import "base/check.h"
 #import "ios/web/common/user_agent.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
@@ -17,7 +19,7 @@ WKWebView* BuildWKWebView(CGRect frame, BrowserState* browser_state) {
   WKWebViewConfigurationProvider& config_provider =
       WKWebViewConfigurationProvider::FromBrowserState(browser_state);
   return BuildWKWebView(frame, config_provider.GetWebViewConfiguration(),
-                        browser_state, UserAgentType::MOBILE, nil);
+                        browser_state, UserAgentType::MOBILE, nil, nil);
 }
 
 WKWebView* BuildWKWebViewForQueries(BrowserState* browser_state) {

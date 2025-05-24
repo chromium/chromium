@@ -115,7 +115,7 @@ TEST_P(VaapiWebPDecoderTest, DecodeAndExportAsNativePixmapDmaBuf) {
   std::string webp_data;
   ASSERT_TRUE(base::ReadFileToString(input_file, &webp_data))
       << "failed to read input data from " << input_file.value();
-  const auto encoded_image = base::as_bytes(base::make_span(webp_data));
+  const auto encoded_image = base::as_byte_span(webp_data);
 
   // Decode the image using the VA-API and wrap the decoded image in a
   // DecodedImage object.

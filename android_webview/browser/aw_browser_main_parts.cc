@@ -26,6 +26,7 @@
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/android/memory_pressure_listener_android.h"
+#include "base/android/path_utils.h"
 #include "base/base_paths_android.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -36,6 +37,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/task/current_thread.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/crash/content/browser/child_exit_observer_android.h"
 #include "components/crash/core/common/crash_key.h"
@@ -173,8 +175,7 @@ int AwBrowserMainParts::PreEarlyInitialization() {
         base::MessagePumpType::UI);
   }
 
-  browser_process_ = std::make_unique<AwBrowserProcess>(
-      browser_client_->aw_feature_list_creator());
+  browser_process_ = std::make_unique<AwBrowserProcess>(browser_client_);
 
   auto* origin_trials_settings_storage =
       browser_process_->GetOriginTrialsSettingsStorage();
@@ -182,6 +183,14 @@ int AwBrowserMainParts::PreEarlyInitialization() {
       browser_process_->local_state(), origin_trials_settings_storage);
   blink::OriginTrialsSettingsProvider::Get()->SetSettings(
       origin_trials_settings_storage->GetSettings());
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+        base::BindOnce(&AwBrowserProcess::FetchHostAppCacheQuota,
+                       base::Unretained(browser_process_.get())));
+  }
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
@@ -307,9 +316,21 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   bool use_webview_context = Java_AwBrowserMainParts_getUseWebViewContext(env);
+  bool partitioned_cookies_enablement_state =
+      Java_AwBrowserMainParts_getPartitionedCookiesDefaultState(env);
+  bool webview_startup_tasks_experiment_enabled =
+      isWebViewStartupTasksExperimentEnabled();
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       metrics, "WebViewSeparateResourceContextMetrics",
       use_webview_context ? "Enabled" : "Control",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewPartitionedCookiesMetrics",
+      partitioned_cookies_enablement_state ? "Control" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
+  AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+      metrics, "WebViewStartupTasksMetrics",
+      webview_startup_tasks_experiment_enabled ? "Enabled" : "Control",
       variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
@@ -321,13 +342,6 @@ int AwBrowserMainParts::PreMainMessageLoopRun() {
       AwWebUIControllerFactory::GetInstance());
   content::RenderFrameHost::AllowInjectingJavaScript();
   metrics_logger_ = std::make_unique<metrics::MemoryMetricsLogger>();
-
-  // Requesting the |OriginTrialsControllerDelegate| will initialize
-  // it if the feature is enabled.
-  //
-  // This should be done as soon as possible in the start-up process, in order
-  // to load the database from disk.
-  AwBrowserContext::GetDefault()->GetOriginTrialsControllerDelegate();
 
   Java_AwInterfaceRegistrar_registerMojoInterfaces(
       base::android::AttachCurrentThread());
@@ -350,6 +364,11 @@ void AwBrowserMainParts::PostCreateThreads() {
   tracing::SetupPresetTracingFromFieldTrial();
   base::trace_event::EmitNamedTrigger(
       base::trace_event::kStartupTracingTriggerName);
+}
+
+bool AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() {
+  return Java_AwBrowserMainParts_isWebViewStartupTasksLogicEnabled(
+      base::android::AttachCurrentThread());
 }
 
 }  // namespace android_webview

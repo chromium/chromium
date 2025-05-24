@@ -5,10 +5,14 @@
 // https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#tcp
 
 [
-    Exposed=(Window,DedicatedWorker),
+    Exposed(
+      Window DirectSockets,
+      DedicatedWorker DirectSockets,
+      SharedWorker DirectSocketsInSharedWorkers,
+      ServiceWorker DirectSocketsInServiceWorkers
+    ),
     ActiveScriptWrappable,
     SecureContext,
-    RuntimeEnabled=DirectSockets,
     IsolatedContext
 ] interface TCPSocket {
   [CallWith=ScriptState, RaisesException, MeasureAs=TCPSocketConstructor]

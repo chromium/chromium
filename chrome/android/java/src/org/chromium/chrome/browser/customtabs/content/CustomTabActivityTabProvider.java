@@ -8,30 +8,28 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-
-import javax.inject.Inject;
 
 /**
  * Holds the Tab currently shown in a Custom Tab activity. Unlike {@link ActivityTabProvider}, is
  * aware of early created tabs that are not yet attached. Is also aware of tab swapping when
- * navigating by links with target="_blank". Thus it is a single source of truth about
- * the current Tab of a Custom Tab activity.
+ * navigating by links with target="_blank". Thus it is a single source of truth about the current
+ * Tab of a Custom Tab activity.
  */
-@ActivityScope
-public class CustomTabActivityTabProvider {
+public class CustomTabActivityTabProvider implements Supplier<Tab> {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     @Nullable private Tab mTab;
     private @TabCreationMode int mTabCreationMode = TabCreationMode.NONE;
     @Nullable private String mSpeculatedUrl;
 
-    @Inject
-    CustomTabActivityTabProvider() {}
+    public CustomTabActivityTabProvider(String speculatedUrl) {
+        mSpeculatedUrl = speculatedUrl;
+    }
 
     /** Adds an {@link Observer} */
     public void addObserver(Observer observer) {
@@ -57,9 +55,14 @@ public class CustomTabActivityTabProvider {
         return mTab;
     }
 
+    @Override
+    public @Nullable Tab get() {
+        return getTab();
+    }
+
     /**
-     * Returns a {@link TabCreationMode} specifying how the initial tab was created.
-     * Returns {@link TabCreationMode#NONE} if and only if the initial tab has not been yet created.
+     * Returns a {@link TabCreationMode} specifying how the initial tab was created. Returns {@link
+     * TabCreationMode#NONE} if and only if the initial tab has not been yet created.
      */
     public @TabCreationMode int getInitialTabCreationMode() {
         return mTabCreationMode;
@@ -81,10 +84,6 @@ public class CustomTabActivityTabProvider {
         for (Observer observer : mObservers) {
             observer.onInitialTabCreated(tab, creationMode);
         }
-    }
-
-    void setSpeculatedUrl(@Nullable String url) {
-        mSpeculatedUrl = url;
     }
 
     void removeTab() {

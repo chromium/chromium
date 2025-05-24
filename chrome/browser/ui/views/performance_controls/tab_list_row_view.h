@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_TAB_LIST_ROW_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PERFORMANCE_CONTROLS_TAB_LIST_ROW_VIEW_H_
 
-#include <string>
+#include <string_view>
 
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
@@ -35,7 +35,7 @@ class TabListRowView : public views::View,
   TabListRowView(const TabListRowView&) = delete;
   TabListRowView& operator=(const TabListRowView&) = delete;
 
-  std::u16string GetTitleTextForTesting();
+  std::u16string_view GetTitleTextForTesting();
   views::ImageButton* GetCloseButtonForTesting();
   views::View* GetTextContainerForTesting();
 
@@ -48,7 +48,6 @@ class TabListRowView : public views::View,
   void RemovedFromWidget() override;
 
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* before, views::View* now) override {}
   void OnDidChangeFocus(views::View* before, views::View* now) override;
 
   // TabListModel::Observer:
@@ -57,7 +56,7 @@ class TabListRowView : public views::View,
   void RefreshInkDropAndCloseButton();
 
  private:
-  std::unique_ptr<views::View> CreateTextView(std::u16string title,
+  std::unique_ptr<views::View> CreateTextView(std::u16string_view title,
                                               GURL domain);
 
   // Focuses on the close button if we are currently focusing on a

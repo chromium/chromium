@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 
 #include <memory>
@@ -56,7 +51,7 @@ static void MixImages(const char* file_name,
   const Vector<char> file = ReadFile(file_name);
 
   scoped_refptr<SharedBuffer> partial_file =
-      SharedBuffer::Create(file.data(), bytes_for_first_frame);
+      SharedBuffer::Create(base::span(file).first(bytes_for_first_frame));
   std::unique_ptr<DeferredImageDecoder> decoder = DeferredImageDecoder::Create(
       partial_file, false, ImageDecoder::kAlphaPremultiplied,
       ColorBehavior::kIgnore);
@@ -64,7 +59,7 @@ static void MixImages(const char* file_name,
   sk_sp<SkImage> partial_image = CreateFrameAtIndex(decoder.get(), 0);
 
   scoped_refptr<SharedBuffer> almost_complete_file =
-      SharedBuffer::Create(file.data(), file.size() - 1);
+      SharedBuffer::Create(base::span(file).first(file.size() - 1));
   decoder->SetData(almost_complete_file, false);
   sk_sp<SkImage> image_with_more_data =
       CreateFrameAtIndex(decoder.get(), later_frame);
@@ -102,21 +97,21 @@ TEST(DeferredImageDecoderTestWoPlatform, mixImagesIco) {
 
 TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  const char* test_files[] = {
+  constexpr auto test_files = std::to_array<const char*>({
       "/images/resources/animated.gif",
       "/images/resources/mu.png",
       "/images/resources/2-dht.jpg",
       "/images/resources/webp-animated.webp",
       "/images/resources/gracehopper.bmp",
       "/images/resources/wrong-frame-dimensions.ico",
-  };
+  });
 
-  for (size_t i = 0; i < std::size(test_files); ++i) {
-    Vector<char> file_data = ReadFile(test_files[i]);
-    const char* data = file_data.data();
+  for (const auto* test_file : test_files) {
+    Vector<char> file_data = ReadFile(test_file);
+    auto [first_byte, rest_of_data] = base::span(file_data).split_at(1u);
 
     // Truncated signature (only 1 byte).  Decoder instantiation should fail.
-    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(data, 1u);
+    scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(first_byte);
     EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
     EXPECT_EQ(nullptr, DeferredImageDecoder::Create(
                            buffer, false, ImageDecoder::kAlphaPremultiplied,
@@ -124,14 +119,14 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
 
     // Append the rest of the data.  We should be able to sniff the signature
     // now, even if segmented.
-    buffer->Append<size_t>(data + 1, file_data.size() - 1);
+    buffer->Append(rest_of_data);
     EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
     std::unique_ptr<DeferredImageDecoder> decoder =
         DeferredImageDecoder::Create(buffer, false,
                                      ImageDecoder::kAlphaPremultiplied,
                                      ColorBehavior::kIgnore);
     ASSERT_NE(decoder, nullptr);
-    EXPECT_TRUE(String(test_files[i]).EndsWith(decoder->FilenameExtension()));
+    EXPECT_TRUE(String(test_file).EndsWith(decoder->FilenameExtension()));
   }
 }
 

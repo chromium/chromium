@@ -11,25 +11,33 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "net/base/net_export.h"
-#include "net/cookies/canonical_cookie.h"
-#include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
+#include "net/storage_access_api/status.h"
 #include "url/origin.h"
 
 class GURL;
 
 namespace net {
 
-class IsolationInfo;
-class SchemefulSite;
+class CanonicalCookie;
 class CookieAccessDelegate;
 class CookieInclusionStatus;
+class IsolationInfo;
 class ParsedCookie;
+class SchemefulSite;
+
+struct CookieAccessResult;
+struct CookieWithAccessResult;
+
+using CookieList = std::vector<CanonicalCookie>;
+using CookieAccessResultList = std::vector<CookieWithAccessResult>;
 
 namespace cookie_util {
 
@@ -39,13 +47,13 @@ const int kVlogSetCookies = 7;
 const int kVlogGarbageCollection = 5;
 
 // This enum must match the numbering for StorageAccessResult in
-// histograms/enums.xml. Do not reorder or remove items, only add new items
-// at the end.
+// histograms/metadata/storage/enums.xml. Do not reorder or remove items, only
+// add new items at the end.
 enum class StorageAccessResult {
   ACCESS_BLOCKED = 0,
   ACCESS_ALLOWED = 1,
   ACCESS_ALLOWED_STORAGE_ACCESS_GRANT = 2,
-  OBSOLETE_ACCESS_ALLOWED_FORCED = 3 /*(DEPRECATED)*/,
+  // OBSOLETE_ACCESS_ALLOWED_FORCED = 3 /*(DEPRECATED)*/,
   ACCESS_ALLOWED_TOP_LEVEL_STORAGE_ACCESS_GRANT = 4,
   ACCESS_ALLOWED_3PCD_TRIAL = 5,
   ACCESS_ALLOWED_3PCD_METADATA_GRANT = 6,
@@ -53,7 +61,8 @@ enum class StorageAccessResult {
   // ACCESS_ALLOWED_CORS_EXCEPTION = 8,  // Deprecated
   ACCESS_ALLOWED_TOP_LEVEL_3PCD_TRIAL = 9,
   ACCESS_ALLOWED_SCHEME = 10,
-  kMaxValue = ACCESS_ALLOWED_SCHEME,
+  ACCESS_ALLOWED_SANDBOX_VALUE = 11,
+  kMaxValue = ACCESS_ALLOWED_SANDBOX_VALUE,
 };
 
 // This enum's values correspond to the values of the HTTP request header
@@ -70,6 +79,92 @@ enum class StorageAccessStatus {
   kActive = 2
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The values of this enum correspond to possible reasons a request's
+// StorageAccessStatus may be absent (nullopt), as well as the possible values
+// when it is non-nullopt.
+//
+// LINT.IfChange(StorageAccessStatusOutcome)
+enum class StorageAccessStatusOutcome {
+  // The feature is disabled.
+  // kOmittedFeatureDisabled = 0, // Deprecated (feature is always enabled).
+  // The request is same-site.
+  kOmittedSameSite = 1,
+  // The storage access status is `none`.
+  kValueNone = 2,
+  // The storage access status is `inactive`.
+  kValueInactive = 3,
+  // The storage access status is `active`.
+  kValueActive = 4,
+  kMaxValue = kValueActive
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:StorageAccessStatusOutcome)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The values of this enum correspond to possible reasons the
+// `Sec-Fetch-Storage-Access` header may be omitted from a request, as well as
+// the possible values of the header when it is included.
+enum class SecFetchStorageAccessOutcome {
+  // The request's storage access status is nullopt.
+  kOmittedStatusMissing = 0,
+  // The request's credentials mode is not "include".
+  kOmittedRequestOmitsCredentials = 1,
+  // The `Sec-Fetch-Storage-Access` header is included and has the value `none`.
+  kValueNone = 2,
+  // The `Sec-Fetch-Storage-Access` header is included and has the value
+  // `inactive`.
+  kValueInactive = 3,
+  // The `Sec-Fetch-Storage-Access` header is included and has the value
+  // `active`.
+  kValueActive = 4,
+  kMaxValue = kValueActive
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The values of this enum correspond to the possible outcomes of a call to
+// URLRequest::ShouldSetLoadWithStorageAccess().
+//
+// LINT.IfChange(ActivateStorageAccessLoadOutcome)
+enum class ActivateStorageAccessLoadOutcome {
+  // Applies when the `Activate-Storage-Access` header behavior is not enabled
+  // under the existing feature flags or content settings.
+  // kFailureHeaderDisabled = 0, // Deprecated (feature is always enabled).
+  // Applies when a response includes the `Activate-Storage-Access: load`
+  // header, but its corresponding request either has an omitted storage access
+  // status, or has a storage access status of `none`.
+  kFailureInvalidStatus = 1,
+  // Applies when a response includes the `Activate-Storage-Access: load`
+  // header, and that header is honored by the browser.
+  kSuccess = 2,
+  kMaxValue = kSuccess
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:ActivateStorageAccessLoadOutcome)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// The values of this enum correspond to the possible outcomes of a call to
+// URLRequestHttpJob::NeedsRetryWithStorageAccess().
+//
+// LINT.IfChange(ActivateStorageAccessRetryOutcome)
+enum class ActivateStorageAccessRetryOutcome {
+  // Applies when the `Activate-Storage-Access` header behavior is not enabled
+  // under the existing feature flags or content settings.
+  // kFailureHeaderDisabled = 0, // Deprecated (feature is always enabled).
+  // Applies when a response includes a well-formed
+  // `Activate-Storage-Access: retry; ..." header, but the corresponding
+  // request's `Sec-Fetch-Storage-Access` header is not `inactive`.
+  kFailureIneffectiveRetry = 1,
+  // Applies when a response includes a well-formed
+  // "Activate-Storage-Access: retry; ..." header, and that header is honored
+  // by the browser.
+  kSuccess = 2,
+  kMaxValue = kSuccess
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:ActivateStorageAccessRetryOutcome)
+
 // Helper to fire telemetry indicating if a given request for storage was
 // allowed or not by the provided |result|.
 NET_EXPORT void FireStorageAccessHistogram(StorageAccessResult result);
@@ -82,15 +177,15 @@ NET_EXPORT std::string GetEffectiveDomain(const std::string& scheme,
 
 // Determine the actual cookie domain based on the domain string passed
 // (if any) and the URL from which the cookie came.
-// On success returns true, and sets cookie_domain to either a
+// On success returns either a
 //   -host cookie domain (ex: "google.com")
 //   -domain cookie domain (ex: ".google.com")
 // On success, DomainIsHostOnly(url.host()) is DCHECKed. The URL's host must not
 // begin with a '.' character.
-NET_EXPORT bool GetCookieDomainWithString(const GURL& url,
-                                          const std::string& domain_string,
-                                          CookieInclusionStatus& status,
-                                          std::string* result);
+NET_EXPORT std::optional<std::string> GetCookieDomainWithString(
+    const GURL& url,
+    const std::string& domain_string,
+    CookieInclusionStatus& status);
 
 // Returns true if a domain string represents a host-only cookie,
 // i.e. it doesn't begin with a leading '.' character.
@@ -177,11 +272,11 @@ bool IsCookiePrefixValid(CookiePrefix prefix,
 // As above. `secure`, `domain`, and `path` are the raw attribute values (i.e.
 // as taken from a ParsedCookie), NOT in normalized form as represented in
 // CookieBase.
-bool IsCookiePrefixValid(CookiePrefix prefix,
-                         const GURL& url,
-                         bool secure,
-                         const std::string& domain,
-                         const std::string& path);
+NET_EXPORT_PRIVATE bool IsCookiePrefixValid(CookiePrefix prefix,
+                                            const GURL& url,
+                                            bool secure,
+                                            const std::string& domain,
+                                            const std::string& path);
 
 // Returns true iff the cookie is a partitioned cookie with a nonce or that
 // does not violate the semantics of the Partitioned attribute:
@@ -316,9 +411,6 @@ NET_EXPORT bool IsOriginBoundCookiesPartiallyEnabled();
 
 NET_EXPORT bool IsTimeLimitedInsecureCookiesEnabled();
 
-// Returns whether the respective feature is enabled.
-NET_EXPORT bool IsSchemefulSameSiteEnabled();
-
 // Computes the First-Party Sets metadata and cache match information.
 // `isolation_info` must be fully populated.
 //
@@ -371,7 +463,14 @@ NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
 // --test-third-party-cookie-phaseout.
 NET_EXPORT bool IsForceThirdPartyCookieBlockingEnabled();
 
-NET_EXPORT bool PartitionedCookiesDisabledByCommandLine();
+// Indicates whether the first hop in a request should have the
+// kStorageAccessGrantEligible override.
+[[nodiscard]] NET_EXPORT bool ShouldAddInitialStorageAccessApiOverride(
+    const GURL& url,
+    StorageAccessApiStatus api_status,
+    base::optional_ref<const url::Origin> request_initiator,
+    bool emit_metrics,
+    bool credentials_mode_include);
 
 }  // namespace cookie_util
 

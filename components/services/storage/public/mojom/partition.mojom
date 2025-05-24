@@ -5,26 +5,35 @@
 module storage.mojom;
 
 import "components/services/storage/public/mojom/local_storage_control.mojom";
-import "components/services/storage/public/mojom/origin_context.mojom";
-import "components/services/storage/public/mojom/service_worker_storage_control.mojom";
 import "components/services/storage/public/mojom/session_storage_control.mojom";
-import "url/mojom/origin.mojom";
+
+// Mac only enum used as a crash key to help investigate Storage process
+// crashes.
+// TODO(crbug.com/396030877): Fix the bug and remove this enum.
+[EnableIf=is_mac]
+enum LocalStorageLifecycle {
+  kInitializing,
+  kInitializingWithUnboundStorageService,
+  kRecovering,
+  kRecoveringWithUnboundStorageService,
+};
 
 // Partition controls an isolated storage partition owned by the Storage
 // Service. This is analogous to the browser's own storage partition concept.
 interface Partition {
-  // Binds a new OriginContext scoped to |origin| within this Partition.
-  BindOriginContext(url.mojom.Origin origin,
-                    pending_receiver<OriginContext> receiver);
-
   // Binds the main control interface for Session Storage in this partition.
-  BindSessionStorageControl(pending_receiver<SessionStorageControl> receiver);
+  BindSessionStorageControl(
+      pending_receiver<SessionStorageControl> receiver);
 
   // Binds the main control interface for Local Storage in this partition.
   BindLocalStorageControl(pending_receiver<LocalStorageControl> receiver);
 
-  // Binds the main control interface for Service Worker Storage in this
-  // partition.
-  BindServiceWorkerStorageControl(
-      pending_receiver<ServiceWorkerStorageControl> receiver);
+  // Similar to the above method but with a `lifecycle` param. This is included
+  // as a crash key to help root cause a Storage process crash in LocalStorage
+  // code on macOS.
+  // TODO(crbug.com/396030877): Fix the bug and remove this param.
+  [EnableIf=is_mac]
+  BindLocalStorageControlAndReportLifecycle(
+      LocalStorageLifecycle lifecycle,
+      pending_receiver<LocalStorageControl> receiver);
 };

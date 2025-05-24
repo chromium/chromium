@@ -89,11 +89,11 @@ UIImage* LoadImage(const GURL& image_url) {
   }
   return image;
 }
-}
+}  // namespace
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 namespace test {
@@ -128,8 +128,9 @@ bool IsWebViewContainingTextInFrame(web::WebState* web_state,
         }));
   }
   bool success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    if (text_found)
+    if (text_found) {
       return true;
+    }
     return number_frames_processing == 0;
   });
   return text_found && success;
@@ -169,12 +170,14 @@ bool WaitForWebViewContainingImage(std::string image_id,
       base::StringPrintf("document.getElementById('%s').src", image_id.c_str());
   std::unique_ptr<base::Value> url_as_value =
       web::test::ExecuteJavaScript(web_state, get_url_script);
-  if (!url_as_value->is_string())
+  if (!url_as_value->is_string()) {
     return false;
+  }
 
   UIImage* image = LoadImage(GURL(url_as_value->GetString()));
-  if (!image)
+  if (!image) {
     return false;
+  }
 
   CGSize expected_size = image.size;
 
@@ -219,8 +222,9 @@ bool IsWebViewContainingElement(web::WebState* web_state,
 
   std::unique_ptr<base::Value> value =
       web::test::ExecuteJavaScript(web_state, script);
-  if (!value)
+  if (!value) {
     return false;
+  }
   return value->GetIfBool().value_or(false);
 }
 

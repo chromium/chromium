@@ -39,13 +39,7 @@ WebTextCheckingResult::operator TextCheckingResult() const {
   result.decoration = static_cast<TextDecorationType>(decoration);
   result.location = location;
   result.length = length;
-
-  // Convert from WebVector to Vector
-  Vector<String> replacements_vector;
-  for (const WebString& replacement : replacements) {
-    replacements_vector.push_back(replacement);
-  }
-  result.replacements = replacements_vector;
+  result.replacements = Vector<String>(replacements);
 
   if (result.decoration == kTextDecorationTypeGrammar) {
     GrammarDetail detail;

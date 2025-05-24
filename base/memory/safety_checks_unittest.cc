@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/memory/safety_checks.h"
 
 #include <new>
@@ -185,14 +190,16 @@ TEST(MemorySafetyCheckTest, SchedulerLoopQuarantine) {
   auto* ptr1 = new DefaultChecks();
   EXPECT_NE(ptr1, nullptr);
   delete ptr1;
-  EXPECT_FALSE(branch.IsQuarantinedForTesting(ptr1));
+  EXPECT_FALSE(
+      branch.GetInternalBranchForTesting().IsQuarantinedForTesting(ptr1));
 
   auto* ptr2 = new AdvancedChecks();
   EXPECT_NE(ptr2, nullptr);
   delete ptr2;
-  EXPECT_TRUE(branch.IsQuarantinedForTesting(ptr2));
+  EXPECT_TRUE(
+      branch.GetInternalBranchForTesting().IsQuarantinedForTesting(ptr2));
 
-  branch.Purge();
+  branch.GetInternalBranchForTesting().Purge();
 }
 
 TEST(MemorySafetyCheckTest, ZapOnFree) {
@@ -205,12 +212,14 @@ TEST(MemorySafetyCheckTest, ZapOnFree) {
   }
 
   static_assert(
-      !is_memory_safety_checked<DefaultChecks, MemorySafetyCheck::kZapOnFree>);
+      !is_memory_safety_checked<DefaultChecks,
+                                MemorySafetyCheck::kSchedulerLoopQuarantine>);
   static_assert(
-      is_memory_safety_checked<AdvancedChecks, MemorySafetyCheck::kZapOnFree>);
+      is_memory_safety_checked<AdvancedChecks,
+                               MemorySafetyCheck::kSchedulerLoopQuarantine>);
 
   {
-    // Without kZapOnFree.
+    // Without kSchedulerLoopQuarantine.
     auto* ptr = new DefaultChecks();
     EXPECT_NE(ptr, nullptr);
     delete ptr;
@@ -218,7 +227,7 @@ TEST(MemorySafetyCheckTest, ZapOnFree) {
   }
 
   {
-    // With kZapOnFree.
+    // With kSchedulerLoopQuarantine.
     auto* ptr = new AdvancedChecks();
     EXPECT_NE(ptr, nullptr);
     memset(ptr->data, 'A', sizeof(ptr->data));

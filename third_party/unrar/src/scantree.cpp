@@ -212,23 +212,36 @@ bool ScanTree::GetNextMask()
   UnixSlashToDos(CurMask,CurMask);
 #endif
 
+  // We shall set it before appending the path separator to \\server\share
+  // UNC mask below, so "rar a -ep1 arc \\server\share" includes paths
+  // starting from "share\".
+  SpecPathLength=GetNamePos(CurMask);
+
   // We prefer to scan entire disk if mask like \\server\share\ or c:\
-  // is specified regardless of recursion mode. Use \\server\share\*.*
-  // or c:\*.* mask to scan only the root directory.
-  if (CurMask.size()>2 && CurMask[0]=='\\' && CurMask[1]=='\\')
-  {
-    auto Slash=CurMask.find('\\',2);
-    if (Slash!=std::wstring::npos)
+  // is specified even without -r, but not with -r-. Use \\server\share\*.*,
+  // c:\*.* mask or -r- to scan only the root directory. Note that UNC names
+  // are possible both in Win32 and Unix, just with proper path separators.
+  if (Recurse!=RECURSE_DISABLE)
+    if (CurMask.size()>2 && CurMask[0]==CPATHDIVIDER && CurMask[1]==CPATHDIVIDER)
     {
-      Slash=CurMask.find('\\',Slash+1);
-      // If backslash is found and it is the last string character.
-      ScanEntireDisk=Slash!=std::wstring::npos && Slash+1==CurMask.size();
+      auto Slash=CurMask.find(CPATHDIVIDER,2);
+      if (Slash!=std::wstring::npos)
+      {
+        Slash=CurMask.find(CPATHDIVIDER,Slash+1);
+        // If path separator is mssing or it is the last string character.
+        ScanEntireDisk=Slash==std::wstring::npos || 
+                       Slash!=std::wstring::npos && Slash+1==CurMask.size();
+
+        // Win32 FindFirstFile fails for \\server\share names without
+        // the trailing backslash. So we add it here.
+        if (Slash==std::wstring::npos)
+          CurMask+=CPATHDIVIDER;
+      }
     }
-  }
-  else
-    ScanEntireDisk=IsDriveLetter(CurMask) && IsPathDiv(CurMask[2]) && CurMask[3]==0;
+    else
+      ScanEntireDisk=IsDriveLetter(CurMask) && IsPathDiv(CurMask[2]) && CurMask[3]==0;
 
-
+  // Calculate the name position again, because we could modify UNC path above.
   auto NamePos=GetNamePos(CurMask);
   std::wstring Name=CurMask.substr(NamePos);
   if (Name.empty())
@@ -238,7 +251,6 @@ bool ScanTree::GetNextMask()
     AddEndSlash(CurMask);
     CurMask+=MASKALL;
   }
-  SpecPathLength=NamePos;
   Depth=0;
 
   OrigCurMask=CurMask;

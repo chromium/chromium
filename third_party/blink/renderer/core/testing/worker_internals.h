@@ -11,6 +11,8 @@
 namespace blink {
 
 class ExceptionState;
+class CanvasImageSource;
+class CanvasRenderingContext;
 class OriginTrialsTest;
 class ScriptState;
 
@@ -26,6 +28,9 @@ class WorkerInternals final : public ScriptWrappable {
   void countDeprecation(ScriptState*, uint32_t feature, ExceptionState&);
 
   void collectGarbage(ScriptState*);
+
+  void forceLoseCanvasContext(CanvasRenderingContext* ctx);
+  bool isCanvasImageSourceAccelerated(const CanvasImageSource*) const;
 };
 
 }  // namespace blink

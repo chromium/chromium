@@ -8,6 +8,8 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/functional/bind.h"
+#import "base/functional/callback_forward.h"
+#import "base/functional/callback_helpers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/open_from_clipboard/clipboard_async_wrapper_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -16,10 +18,19 @@
 #import "url/gurl.h"
 
 void StoreURLInPasteboard(const GURL& url) {
-  StoreURLsInPasteboard({url});
+  StoreURLInPasteboard(url, base::DoNothing());
+}
+
+void StoreURLInPasteboard(const GURL& url, base::OnceClosure completion) {
+  StoreURLsInPasteboard({url}, std::move(completion));
 }
 
 void StoreURLsInPasteboard(const std::vector<GURL>& urls) {
+  StoreURLsInPasteboard(urls, base::DoNothing());
+}
+
+void StoreURLsInPasteboard(const std::vector<GURL>& urls,
+                           base::OnceClosure completion) {
   NSMutableArray* pasteboard_items = [[NSMutableArray alloc] init];
   for (const GURL& URL : urls) {
     // Invalid URLs arrive here in production. Prevent crashing by continuing
@@ -52,20 +63,26 @@ void StoreURLsInPasteboard(const std::vector<GURL>& urls) {
   GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
                        base::BindOnce(^(UIPasteboard* pasteboard) {
                          [pasteboard setItems:pasteboard_items];
-                       }));
+                       }).Then(std::move(completion)));
 }
 
-void StoreInPasteboard(NSString* text, const GURL& URL) {
+void StoreInPasteboard(NSString* text, const GURL& url) {
+  StoreInPasteboard(text, url, base::DoNothing());
+}
+
+void StoreInPasteboard(NSString* text,
+                       const GURL& url,
+                       base::OnceClosure completion) {
   DCHECK(text);
-  DCHECK(URL.is_valid());
-  if (!text || !URL.is_valid()) {
+  DCHECK(url.is_valid());
+  if (!text || !url.is_valid()) {
     return;
   }
 
-  NSData* plainText = [base::SysUTF8ToNSString(URL.spec())
+  NSData* plainText = [base::SysUTF8ToNSString(url.spec())
       dataUsingEncoding:NSUTF8StringEncoding];
   NSDictionary* copiedURL = @{
-    UTTypeURL.identifier : net::NSURLWithGURL(URL),
+    UTTypeURL.identifier : net::NSURLWithGURL(url),
     UTTypeUTF8PlainText.identifier : plainText,
   };
 
@@ -78,17 +95,27 @@ void StoreInPasteboard(NSString* text, const GURL& URL) {
   GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
                        base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items = @[ copiedURL, copiedText ];
-                       }));
+                       }).Then(std::move(completion)));
 }
 
 void StoreTextInPasteboard(NSString* text) {
+  StoreTextInPasteboard(text, base::DoNothing());
+}
+
+void StoreTextInPasteboard(NSString* text, base::OnceClosure completion) {
   GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
                        base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.string = text;
-                       }));
+                       }).Then(std::move(completion)));
 }
 
 ImageCopyResult StoreImageInPasteboard(NSData* data, NSURL* url) {
+  return StoreImageInPasteboard(data, url, base::DoNothing());
+}
+
+ImageCopyResult StoreImageInPasteboard(NSData* data,
+                                       NSURL* url,
+                                       base::OnceClosure completion) {
   // Copy image data to pasteboard. Don't copy the URL otherwise some apps
   // will paste the text and not the image. See crbug.com/1270239.
   NSMutableDictionary* item = [NSMutableDictionary dictionaryWithCapacity:1];
@@ -106,20 +133,28 @@ ImageCopyResult StoreImageInPasteboard(NSData* data, NSURL* url) {
                        base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items =
                              [NSMutableArray arrayWithObject:item];
-                       }));
+                       }).Then(std::move(completion)));
   return result;
 }
 
 void StoreItemInPasteboard(NSDictionary* item) {
+  StoreItemInPasteboard(item, base::DoNothing());
+}
+
+void StoreItemInPasteboard(NSDictionary* item, base::OnceClosure completion) {
   GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
                        base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items = [NSArray arrayWithObject:item];
-                       }));
+                       }).Then(std::move(completion)));
 }
 
 void ClearPasteboard() {
+  ClearPasteboard(base::DoNothing());
+}
+
+void ClearPasteboard(base::OnceClosure completion) {
   GetGeneralPasteboard(base::FeatureList::IsEnabled(kOnlyAccessClipboardAsync),
                        base::BindOnce(^(UIPasteboard* pasteboard) {
                          pasteboard.items = @[];
-                       }));
+                       }).Then(std::move(completion)));
 }

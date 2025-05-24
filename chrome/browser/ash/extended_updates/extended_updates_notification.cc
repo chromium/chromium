@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_dialog.h"
 #include "chrome/common/url_constants.h"
@@ -75,7 +76,7 @@ void ExtendedUpdatesNotification::Show(
       .SetMessageId(IDS_EXTENDED_UPDATES_NOTIFICATION_MESSAGE)
       .SetOptionalFields(data)
       .SetDelegate(std::move(delegate));
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       kNotificationType, builder.Build(/*keep_timestamp=*/false),
       /*metadata=*/nullptr);
   RecordExtendedUpdatesEntryPointEvent(
@@ -113,7 +114,7 @@ void ExtendedUpdatesNotification::Click(
   }
 
   if (profile_) {
-    NotificationDisplayService::GetForProfile(profile_.get())
+    NotificationDisplayServiceFactory::GetForProfile(profile_.get())
         ->Close(kNotificationType, std::string(kNotificationId));
   }
 }
@@ -139,7 +140,7 @@ void ExtendedUpdatesNotification::SubscribeToDeviceSettingsChanges() {
 
 void ExtendedUpdatesNotification::OnDeviceSettingsChanged() {
   if (profile_ && ExtendedUpdatesController::Get()->IsOptedIn()) {
-    NotificationDisplayService::GetForProfile(profile_.get())
+    NotificationDisplayServiceFactory::GetForProfile(profile_.get())
         ->Close(kNotificationType, std::string(kNotificationId));
   }
 }

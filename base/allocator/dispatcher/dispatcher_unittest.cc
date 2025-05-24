@@ -135,7 +135,8 @@ struct AllocatorShimAllocator {
   VerifyNotificationUsingAllocatorShim
 #endif
 
-TEST_F(BaseAllocatorDispatcherTest, MAYBE_VerifyNotificationUsingAllocatorShim) {
+TEST_F(BaseAllocatorDispatcherTest,
+       MAYBE_VerifyNotificationUsingAllocatorShim) {
   AllocatorShimAllocator allocator;
   DoBasicTest(allocator);
 }

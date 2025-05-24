@@ -16,6 +16,9 @@
 #include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_interfaces.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/requires_api.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 struct ifaddrs;
 
@@ -49,11 +52,13 @@ NET_EXPORT_PRIVATE bool IfaddrsToNetworkInterfaceList(
     NetworkInterfaceList* networks);
 
 #if BUILDFLAG(IS_ANDROID)
+#define GETIFADDRS_MIN_API 24
 // A version of GetNetworkList() that uses getifaddrs(). Only callable on
 // Android N+ where getifaddrs() was available.
 // Also, some devices are with buggy getifaddrs(). To work around,
 // Use Chromium's own getifaddrs() implementation if
 // use_alternative_getifaddrs is true.
+REQUIRES_ANDROID_API(GETIFADDRS_MIN_API)
 bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks,
                                    int policy,
                                    bool use_alternative_getifaddrs);

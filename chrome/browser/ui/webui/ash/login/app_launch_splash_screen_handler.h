@@ -21,6 +21,7 @@ class AppLaunchSplashScreenView {
     kWaitingAppWindow,
     kNetworkWaitTimeout,
     kShowingNetworkConfigureUI,
+    kChromeAppDeprecated,
   };
 
   inline constexpr static StaticOobeScreenId kScreenId{"app-launch-splash",
@@ -36,6 +37,8 @@ class AppLaunchSplashScreenView {
 
   // Sets whether configure network control is visible.
   virtual void ToggleNetworkConfig(bool visible) = 0;
+
+  virtual void HideThrobber() = 0;
 
   // Sets the contents of the screen with the given `data`.
   virtual void SetAppData(base::Value::Dict data) = 0;
@@ -66,6 +69,7 @@ class AppLaunchSplashScreenHandler : public BaseScreenHandler,
   void Show(base::Value::Dict data) override;
   void ToggleNetworkConfig(bool visible) override;
   void UpdateAppLaunchText(AppLaunchState state) override;
+  void HideThrobber() override;
   void SetAppData(base::Value::Dict data) override;
 
   // Gets a WeakPtr to the instance.

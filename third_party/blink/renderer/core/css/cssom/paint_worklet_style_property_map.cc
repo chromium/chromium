@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -176,7 +177,8 @@ CSSStyleValueVector PaintWorkletStylePropertyMap::getAll(
     ExceptionState& exception_state) const {
   CSSPropertyID property_id = CssPropertyID(execution_context, property_name);
   if (property_id == CSSPropertyID::kInvalid) {
-    exception_state.ThrowTypeError("Invalid propertyName: " + property_name);
+    exception_state.ThrowTypeError(
+        WTF::StrCat({"Invalid propertyName: ", property_name}));
     return CSSStyleValueVector();
   }
 

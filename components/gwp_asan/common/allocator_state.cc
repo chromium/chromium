@@ -21,7 +21,7 @@
 namespace gwp_asan {
 namespace internal {
 
-AllocatorState::AllocatorState() {}
+AllocatorState::AllocatorState() = default;
 
 AllocatorState::GetMetadataReturnType AllocatorState::GetMetadataForAddress(
     uintptr_t exception_address,

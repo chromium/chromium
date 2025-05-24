@@ -19,6 +19,7 @@ IsSupportedNonImageMimeType(std::string_view mime_type);
 bool BLINK_COMMON_EXPORT IsUnsupportedTextMimeType(std::string_view mime_type);
 bool BLINK_COMMON_EXPORT
 IsSupportedJavascriptMimeType(std::string_view mime_type);
+bool BLINK_COMMON_EXPORT IsWasmMIMEType(std::string_view mime_type);
 bool BLINK_COMMON_EXPORT IsJSONMimeType(std::string_view mime_type);
 bool BLINK_COMMON_EXPORT IsXMLMimeType(std::string_view mime_type);
 bool BLINK_COMMON_EXPORT IsSVGMimeType(std::string_view mime_type);

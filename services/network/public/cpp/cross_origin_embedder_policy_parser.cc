@@ -63,13 +63,14 @@ Parse(std::string_view header_value) {
 CrossOriginEmbedderPolicy ParseCrossOriginEmbedderPolicy(
     const net::HttpResponseHeaders& headers) {
   CrossOriginEmbedderPolicy coep;
-  std::string header_value;
-  if (headers.GetNormalizedHeader(kHeaderName, &header_value)) {
-    std::tie(coep.value, coep.reporting_endpoint) = Parse(header_value);
+  if (std::optional<std::string> header_value =
+          headers.GetNormalizedHeader(kHeaderName)) {
+    std::tie(coep.value, coep.reporting_endpoint) = Parse(*header_value);
   }
-  if (headers.GetNormalizedHeader(kReportOnlyHeaderName, &header_value)) {
+  if (std::optional<std::string> header_value =
+          headers.GetNormalizedHeader(kReportOnlyHeaderName)) {
     std::tie(coep.report_only_value, coep.report_only_reporting_endpoint) =
-        Parse(header_value);
+        Parse(*header_value);
   }
   return coep;
 }

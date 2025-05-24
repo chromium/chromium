@@ -1,5 +1,5 @@
 // META: title=test WebNN API subgraph with multiple operations
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -2464,11 +2464,70 @@ const subgraphTests = [
       }
     }
   },
+  {
+    'name': 'add + sub + mul + gather default',
+    'graph': {
+      'inputs': {
+        'addA': {
+          'data': [10],
+          'descriptor': {shape: [], dataType: 'int32'},
+          'constant': true
+        },
+        'addB': {
+          'data': [20],
+          'descriptor': {shape: [], dataType: 'int32'},
+          'constant': true
+        },
+        'subB': {
+          'data': [40],
+          'descriptor': {shape: [], dataType: 'int32'},
+        },
+        'divA': {
+          'data': [-20],
+          'descriptor': {shape: [], dataType: 'int32'},
+          'constant': true
+        },
+        'gatherInput': {
+          'data': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2],
+          'descriptor': {shape: [3, 4], dataType: 'float32'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'add',
+          'arguments': [{'a': 'addA'}, {'b': 'addB'}],
+          'outputs': 'addOutput'
+        },
+        {
+          'name': 'sub',
+          'arguments': [{'a': 'addOutput'}, {'b': 'subB'}],
+          'outputs': 'subOutput'
+        },
+        {
+          'name': 'div',
+          'arguments': [{'a': 'divA'}, {'b': 'subOutput'}],
+          'outputs': 'divOutput'
+        },
+        {
+          'name': 'gather',
+          'arguments': [{'input': 'gatherInput'}, {'indices': 'divOutput'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [0.9, 1.0, 1.1, 1.2],
+          'descriptor': {shape: [4], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {
   subgraphTests.forEach((test) => {
-    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
+    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

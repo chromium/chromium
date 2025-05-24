@@ -11,58 +11,37 @@ export function getHtml(this: BatchUploadAppElement) {
   return html`
 <div id="batchUploadDialog">
   <div id="header">
-    <div id="title">Save data to account</div>
-    <div id="subtitle">
-      ${this.getDialogSubtitle_()} and other items are saved only to this device. To use them on your other devices, save them in your account.
-    </div>
+    <h1 id="title">${this.i18n('batchUploadTitle')}</h1>
+    <div id="subtitle">${this.dialogSubtitle_}</div>
 
     <div id="account-info-row">
-      <img id="account-icon" alt="Account icon"
-        src="chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE">
-      <div id="email">elisa.g.beckett@gmail.com</div>
+      <img id="account-icon" alt=""
+          src="${this.accountInfo_.dataPictureUrl}">
+      <div id="email">${this.accountInfo_.email}</div>
     </div>
   </div>
 
-  <div id="data-sections">
-    ${this.dataSections_.map((section, sectionIndex) =>
-    html`
-    <div class="data-section">
-      <div class="data-section-header">
-        <div class="data-section-title">${this.getSectionTitle_(section)}</div>
-        <cr-expand-button class="expand-button" no-hover
-            @click="${this.onExpandClicked_}"
-            data-index="${sectionIndex}">
-        </cr-expand-button>
-        <div class="separator"></div>
-        <cr-toggle class="toggle" checked></cr-toggle>
-      </div>
-      <cr-collapse class="data-items-collapse"
-            data-index="${sectionIndex}"
-            .opened="${this.dataSectionsExpanded_[sectionIndex]}">
-        <div class="data-items-list">
-          ${section.dataItems.map((item, itemIndex) =>
-          html`
-          <div class="data-item">
-            <cr-checkbox class="item-checkbox" checked
-                data-index="${itemIndex}"
-                @change="${this.onCheckedChanged_}"/>
-            <div class="data-item-content">
-              <img class="item-icon" alt="Item icon" src="${item.iconUrl}">
-              <div class="item-title">${item.title}</div>
-              <div class="item-subtitle">${item.subtitle}</div>
-            </div>
-          </div>
-          `)}
-        </div>
-      </cr-collapse>
+  <div id="dataContainer" class="custom-scrollbar">
+    <div id="dataSections">
+      ${this.dataSections_.map((section, sectionIndex) =>
+      html`
+      <data-section .dataContainer="${section}" data-index="${sectionIndex}"
+          @update-view-height="${this.updateViewHeight_}"
+          @toggle-changed="${this.onSectionToggleChanged_}">
+      </data-section>
+      `)}
     </div>
-    `)}
   </div>
 
-  <div id="action-row" class="action-container">
-    <cr-button id='close-button' @click="${this.close_}">Close</cr-button>
-    <cr-button id='save-button' class="action-button" @click="${this.close_}">
-      Save in account
+  <div id="action-row">
+    <cr-button id='saveButton' class="action-button"
+        ?disabled="${!this.isSaveEnabled_}"
+        @click="${this.saveToAccount_}">
+      ${this.i18n('saveToAccount')}
+    </cr-button>
+    <cr-button id='cancelButton' class="tonal-button"
+        @click="${this.close_}">
+      ${this.i18n('cancel')}
     </cr-button>
   </div>
 

@@ -10,6 +10,7 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -19,18 +20,27 @@ namespace blink {
 
 // static
 base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
+    const webnn::ContextProperties& context_properties,
     MLGraphBuilder* builder,
-    V8MLOperandDataType::Enum data_type,
+    V8MLOperandDataType::Enum v8_data_type,
     Vector<uint32_t> dimensions,
     String name) {
-  ASSIGN_OR_RETURN(webnn::OperandDescriptor descriptor,
-                   webnn::OperandDescriptor::Create(
-                       FromBlinkDataType(data_type), dimensions),
-                   [](std::string error) { return String(error); });
-
   if (name.empty()) {
     return base::unexpected("The name is empty.");
   }
+
+  const webnn::OperandDataType data_type = FromBlinkDataType(v8_data_type);
+  if (!context_properties.data_type_limits.input.Has(data_type)) {
+    return base::unexpected(String(webnn::NotSupportedInputTypeError(
+        name.Utf8(), data_type, context_properties.data_type_limits.input)));
+  }
+
+  ASSIGN_OR_RETURN(
+      webnn::OperandDescriptor descriptor,
+      webnn::OperandDescriptor::Create(
+          context_properties, data_type, dimensions,
+          webnn::GetErrorLabelPrefix(base::StrCat({"input ", name.Utf8()}))),
+      [](std::string error) { return String(error); });
 
   auto* input = MakeGarbageCollected<MLOperand>(
       builder, webnn::mojom::blink::Operand::Kind::kInput,
@@ -42,7 +52,7 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
 // static
 MLOperand* MLOperand::CreateOutput(MLGraphBuilder* builder,
                                    webnn::OperandDescriptor descriptor,
-                                   const MLOperator* ml_operator) {
+                                   MLOperator* ml_operator) {
   CHECK(ml_operator);
 
   auto* output = MakeGarbageCollected<MLOperand>(
@@ -72,9 +82,13 @@ const String& MLOperand::Name() const {
   return name_;
 }
 
-const MLOperator* MLOperand::Operator() const {
+MLOperator* MLOperand::Operator() const {
   CHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kOutput);
   return operator_.Get();
+}
+
+HeapHashSet<Member<MLOperator>>& MLOperand::DependentOperators() {
+  return dependent_operators_;
 }
 
 const webnn::OperandDescriptor& MLOperand::Descriptor() const {
@@ -115,9 +129,14 @@ MLConstantOperand const* MLOperand::AsConstantOperand() const {
   return static_cast<MLConstantOperand const*>(this);
 }
 
+void MLOperand::AddDependentOperator(MLOperator* ml_operator) {
+  dependent_operators_.insert(ml_operator);
+}
+
 void MLOperand::Trace(Visitor* visitor) const {
   visitor->Trace(builder_);
   visitor->Trace(operator_);
+  visitor->Trace(dependent_operators_);
   ScriptWrappable::Trace(visitor);
 }
 

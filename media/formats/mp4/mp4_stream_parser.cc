@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -59,10 +60,8 @@ EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
     case FOURCC_CBCS:
       return EncryptionScheme::kCbcs;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return EncryptionScheme::kUnencrypted;
 }
 
 class ExternalMemoryAdapter : public DecoderBuffer::ExternalMemory {
@@ -143,7 +142,7 @@ MP4StreamParser::MP4StreamParser(
       highest_end_offset_(0),
       has_audio_(false),
       has_video_(false),
-      strict_audio_object_types_(strict_audio_object_types),
+      strict_audio_object_types_(std::move(strict_audio_object_types)),
       has_sbr_(has_sbr),
       has_flac_(has_flac),
       has_iamf_(has_iamf),
@@ -405,10 +404,10 @@ VideoTransformation MP4StreamParser::CalculateRotation(
   // 3x3 matrix: [ a b c ]
   //             [ d e f ]
   //             [ x y z ]
-  int32_t rotation_matrix[kDisplayMatrixDimension] = {0};
+  std::array<int32_t, kDisplayMatrixDimension> rotation_matrix = {};
 
   // Shift values for fixed point multiplications.
-  const int32_t shifts[kDisplayMatrixHeight] = {16, 16, 30};
+  const std::array<int32_t, kDisplayMatrixHeight> shifts = {16, 16, 30};
 
   // Matrix multiplication for
   // track.display_matrix * movie.display_matrix
@@ -516,9 +515,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       AudioCodecProfile profile = AudioCodecProfile::kUnknown;
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) ||
         // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-      std::vector<uint8_t> aac_extra_data;
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
       if (audio_format == FOURCC_OPUS) {
         codec = AudioCodec::kOpus;
@@ -619,10 +615,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           profile = aac.GetProfile();
           channel_layout = aac.GetChannelLayout(has_sbr_);
           sample_per_second = aac.GetOutputSamplesPerSecond(has_sbr_);
-          // Set `aac_extra_data` on all platforms. This is for backward
-          // compatibility until we have a better solution.
-          // See crbug.com/1245123 for details.
-          aac_extra_data = aac.codec_specific_data();
+          extra_data = aac.codec_specific_data();
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = AudioCodec::kAC3;
@@ -705,7 +698,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       if (codec == AudioCodec::kAAC) {
         audio_config.disable_discard_decoder_delay();
         audio_config.set_profile(profile);
-        audio_config.set_aac_extra_data(std::move(aac_extra_data));
       }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
@@ -1152,7 +1144,8 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
     // Skip using the ExternalMemoryAdapter if possible since it can have more
     // overhead in some applications. See https://crbug.com/353751208.
     if (frame_buf.empty() && heap_frame_buf.empty()) {
-      stream_buf = StreamParserBuffer::CopyFrom(buf, sample_size, is_keyframe,
+      auto buf_span = base::span(buf, base::checked_cast<size_t>(sample_size));
+      stream_buf = StreamParserBuffer::CopyFrom(buf_span, is_keyframe,
                                                 buffer_type, runs_->track_id());
     } else if (frame_buf.empty()) {
       stream_buf =

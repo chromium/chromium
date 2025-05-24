@@ -23,7 +23,7 @@ interface FilesToastData {
 export interface FilesToast {
   $: {
     container: CrToastElement,
-    text: HTMLDivElement,
+    text: HTMLElement,
     action: CrButtonElement,
   };
 }

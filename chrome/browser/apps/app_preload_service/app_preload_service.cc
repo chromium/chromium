@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_preload_service/app_preload_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_preload_service/app_preload_almanac_endpoint.h"
@@ -216,9 +216,9 @@ void AppPreloadService::OnGetAppsForFirstLoginCompleted(
     // Sort shelf pin ordering.
     std::vector<std::pair<apps::PackageId, uint32_t>> pins(
         shelf_pin_ordering.begin(), shelf_pin_ordering.end());
-    base::ranges::sort(pins, {}, &std::pair<apps::PackageId, uint32_t>::second);
-    base::ranges::transform(pins, std::back_inserter(pin_order_),
-                            &std::pair<apps::PackageId, uint32_t>::first);
+    std::ranges::sort(pins, {}, &std::pair<apps::PackageId, uint32_t>::second);
+    std::ranges::transform(pins, std::back_inserter(pin_order_),
+                           &std::pair<apps::PackageId, uint32_t>::first);
   }
   for (auto& callback : get_pin_apps_callbacks_) {
     std::move(callback).Run(pin_apps_, pin_order_);
@@ -252,7 +252,7 @@ void AppPreloadService::OnAppInstallationsCompleted(
     base::TimeTicks start_time,
     const std::vector<bool>& results) {
   OnFirstLoginFlowComplete(start_time,
-                           base::ranges::all_of(results, std::identity{}));
+                           std::ranges::all_of(results, std::identity{}));
 }
 
 void AppPreloadService::OnFirstLoginFlowComplete(base::TimeTicks start_time,

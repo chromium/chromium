@@ -18,7 +18,8 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
+#include "build/build_config.h"
 #include "components/crash/core/app/minidump_with_crashpad_info.h"
 
 namespace crash_reporter {
@@ -68,7 +69,7 @@ void AcquireMemoryMetrics(const base::Process& process,
 FallbackCrashHandler::FallbackCrashHandler()
     : thread_id_(base::kInvalidThreadId), exception_ptrs_(0UL) {}
 
-FallbackCrashHandler::~FallbackCrashHandler() {}
+FallbackCrashHandler::~FallbackCrashHandler() = default;
 
 bool FallbackCrashHandler::ParseCommandLine(const base::CommandLine& cmd_line) {
   // Retrieve the handle to the process to dump.
@@ -89,7 +90,8 @@ bool FallbackCrashHandler::ParseCommandLine(const base::CommandLine& cmd_line) {
   if (!base::StringToUint(cmd_line.GetSwitchValueASCII("thread"), &thread_id)) {
     return false;
   }
-  thread_id_ = thread_id;
+  thread_id_ = base::PlatformThreadId(
+      static_cast<base::PlatformThreadId::UnderlyingType>(thread_id));
 
   // Retrieve the "exception-pointers" argument.
   uint64_t uint_exc_ptrs = 0;
@@ -115,7 +117,7 @@ bool FallbackCrashHandler::GenerateCrashDump(const std::string& product,
                                              const std::string& channel,
                                              const std::string& process_type) {
   MINIDUMP_EXCEPTION_INFORMATION exc_info = {};
-  exc_info.ThreadId = thread_id_;
+  exc_info.ThreadId = thread_id_.raw();
   exc_info.ExceptionPointers =
       reinterpret_cast<EXCEPTION_POINTERS*>(exception_ptrs_);
   exc_info.ClientPointers = TRUE;  // ExceptionPointers in client.

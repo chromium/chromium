@@ -119,6 +119,14 @@ void VideoConferenceMediaListener::OnIsCapturingAudioChanged(
   }
 }
 
+void VideoConferenceMediaListener::OnIsCapturingTabChanged(
+    content::WebContents* contents,
+    bool is_capturing_tab) {
+  // We don't distinguish between tab and display capture and put them
+  // together into 'screen capturing'.
+  OnIsCapturingScreenChanged(contents, is_capturing_tab);
+}
+
 void VideoConferenceMediaListener::OnIsCapturingWindowChanged(
     content::WebContents* contents,
     bool is_capturing_window) {

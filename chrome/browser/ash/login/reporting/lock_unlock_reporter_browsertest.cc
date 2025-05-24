@@ -14,8 +14,7 @@
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
-#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
+#include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/lock_unlock_event.pb.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -69,10 +68,7 @@ class LockUnlockReporterBrowserTest
  protected:
   LockUnlockReporterBrowserTest() {
     login_manager_mixin_.AppendRegularUsers(1);
-
     login_manager_mixin_.set_session_restore_enabled();
-    scoped_testing_cros_settings_.device_settings()->SetBoolean(
-        kReportDeviceLoginLogout, true);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -98,6 +94,10 @@ class LockUnlockReporterBrowserTest
         kTestAffiliationId);
     user_policy_update->policy_data()->add_user_affiliation_ids(
         kTestAffiliationId);
+
+    device_policy_update->policy_payload()
+        ->mutable_device_reporting()
+        ->set_report_login_logout(true);
   }
 
   void LoginUser(LoginManagerMixin::TestUserInfo user) {
@@ -119,8 +119,6 @@ class LockUnlockReporterBrowserTest
 
   LoginManagerMixin login_manager_mixin_{
       &mixin_host_, LoginManagerMixin::UserList(), &fake_gaia_mixin_};
-
-  ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
 IN_PROC_BROWSER_TEST_P(LockUnlockReporterBrowserTest, ReportLockAndUnlockTest) {

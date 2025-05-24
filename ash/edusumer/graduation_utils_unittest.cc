@@ -63,6 +63,8 @@ TEST_F(GraduationUtilsTest, EnabledWithoutStartAndEndDates) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_TRUE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -77,6 +79,8 @@ TEST_F(GraduationUtilsTest, EnabledWithPastStartDate) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_TRUE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -91,6 +95,8 @@ TEST_F(GraduationUtilsTest, DisabledWithFutureStartDate) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_TRUE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -105,6 +111,8 @@ TEST_F(GraduationUtilsTest, DisabledWithPastEndDate) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -119,6 +127,24 @@ TEST_F(GraduationUtilsTest, EnabledWithFutureEndDate) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_TRUE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
+  EXPECT_TRUE(graduation::IsEligibleForGraduation(pref_service()));
+}
+
+TEST_F(GraduationUtilsTest, EnabledOnTheEndDate) {
+  base::Value::Dict dict;
+  dict.Set("is_enabled", true);
+  base::Value::Dict end_date;
+  end_date.Set("day", kFakeDayOfMonth);
+  end_date.Set("month", kFakeMonth);
+  end_date.Set("year", kFakeYear);
+  dict.Set("end_date", end_date.Clone());
+  pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
+                                 dict.Clone());
+
+  EXPECT_TRUE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_TRUE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -138,6 +164,8 @@ TEST_F(GraduationUtilsTest, DisabledWithPastStartAndEndDates) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -157,6 +185,8 @@ TEST_F(GraduationUtilsTest, DisabledWithFutureStartAndEndDates) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_TRUE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -174,6 +204,8 @@ TEST_F(GraduationUtilsTest, DisabledWithMissingDateFields) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -193,6 +225,8 @@ TEST_F(GraduationUtilsTest, EnabledWithStartAndEndDates) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_TRUE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_TRUE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -207,6 +241,8 @@ TEST_F(GraduationUtilsTest, DisabledWithInvalidStartDate) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -221,6 +257,8 @@ TEST_F(GraduationUtilsTest, EnabledWithInvalidEndDate) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -240,6 +278,8 @@ TEST_F(GraduationUtilsTest, DisabledWithInvalidDateRange) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
@@ -249,10 +289,14 @@ TEST_F(GraduationUtilsTest, Disabled) {
   pref_service()->SetManagedPref(prefs::kGraduationEnablementStatus,
                                  dict.Clone());
 
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 
 TEST_F(GraduationUtilsTest, EmptyPref) {
+  EXPECT_FALSE(
+      graduation::HasUpcomingGraduationEnablementChange(pref_service()));
   EXPECT_FALSE(graduation::IsEligibleForGraduation(pref_service()));
 }
 }  // namespace ash

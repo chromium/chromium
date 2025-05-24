@@ -8,19 +8,15 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace webauthn {
 class PasskeyModel;
 }  // namespace webauthn
 
-// Singleton that associates PasskeyModel to ChromeBrowserStates.
-class IOSPasskeyModelFactory : public BrowserStateKeyedServiceFactory {
+// Singleton that associates PasskeyModel to Profiles.
+class IOSPasskeyModelFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static webauthn::PasskeyModel* GetForBrowserState(ProfileIOS* profile);
-
   static webauthn::PasskeyModel* GetForProfile(ProfileIOS* profile);
 
   static IOSPasskeyModelFactory* GetInstance();

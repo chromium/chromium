@@ -23,7 +23,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ELEMENT_RULE_COLLECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_ELEMENT_RULE_COLLECTOR_H_
 
-#include "base/auto_reset.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
@@ -37,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -45,7 +45,6 @@ namespace blink {
 class Element;
 class ElementResolveContext;
 class ElementRuleCollector;
-class HTMLSlotElement;
 class RuleData;
 class SelectorFilter;
 class StyleRuleUsageTracker;
@@ -72,24 +71,51 @@ class MatchedRule {
               uint16_t layer_order,
               unsigned proximity,
               unsigned style_sheet_index)
-      : rule_data_(rule_data),
-        sort_key_((static_cast<uint64_t>(layer_order) << 48) |
-                  (static_cast<uint64_t>(GetRuleData()->Specificity()) << 16) |
+      : sort_key_((static_cast<uint64_t>(layer_order) << 48) |
+                  (static_cast<uint64_t>(rule_data->Specificity()) << 16) |
                   (65535 - ClampTo<uint16_t>(proximity))),
         position_((static_cast<uint64_t>(style_sheet_index)
                    << kBitsForPositionInRuleData) +
-                  rule_data->GetPosition()) {}
+                  rule_data->GetPosition()),
+        rule_(rule_data->Rule()),
+        link_match_type_(rule_data->LinkMatchType()),
+        valid_property_filter_(
+            static_cast<unsigned>(rule_data->GetValidPropertyFilter())),
+        selector_index_(rule_data->SelectorIndex()) {}
+
+  void Trace(Visitor* visitor) const { visitor->Trace(rule_); }
 
  private:
-  const RuleData* GetRuleData() const { return rule_data_; }
+  StyleRule* Rule() const { return rule_; }
   uint16_t LayerOrder() const { return sort_key_ >> 48; }
   uint64_t SortKey() const { return sort_key_; }
   uint64_t GetPosition() const { return position_; }  // Secondary sort key.
+  unsigned LinkMatchType() const { return link_match_type_; }
+  ValidPropertyFilter GetValidPropertyFilter(bool is_matching_ua_rules) const {
+    return is_matching_ua_rules
+               ? ValidPropertyFilter::kNoFilter
+               : static_cast<ValidPropertyFilter>(valid_property_filter_);
+  }
+  unsigned SelectorIndex() const { return selector_index_; }
+
+  // Used for tests only.
+  const CSSSelector& Selector() const {
+    return rule_->SelectorAt(selector_index_);
+  }
 
  private:
-  const RuleData* rule_data_;
   uint64_t sort_key_;
   uint64_t position_;
+
+  Member<StyleRule> rule_;
+
+  // NOTE: If we need some more spare bits, we can probably move some bits
+  // in position_ upwards and use some of the bottom. Right now, though,
+  // packing these better wouldn't make the struct any smaller, due to
+  // alignment/padding.
+  uint8_t link_match_type_;        // 2 bits needed.
+  uint8_t valid_property_filter_;  // ValidPropertyFilter, 3 bits needed.
+  uint16_t selector_index_;  // RuleData::kSelectorIndexBits (13) bits needed.
 
   friend class ElementRuleCollector;
   FRIEND_TEST_ALL_PREFIXES(ElementRuleCollectorTest, DirectNesting);
@@ -104,7 +130,7 @@ WTF_ALLOW_MOVE_AND_INIT_WITH_MEM_FUNCTIONS(blink::MatchedRule)
 
 namespace blink {
 
-using StyleRuleList = HeapVector<Member<StyleRule>>;
+using StyleRuleList = GCedHeapVector<Member<StyleRule>>;
 
 // Manages the process of finding what rules in a RuleSet apply to a given
 // Element. These tend to be used several times in different contexts and should
@@ -155,9 +181,7 @@ class CORE_EXPORT ElementRuleCollector {
   void CollectMatchingRules(const MatchRequest&, PartNames* part_names);
   void CollectMatchingShadowHostRules(const MatchRequest&);
   void CollectMatchingSlottedRules(const MatchRequest&);
-  void CollectMatchingPartPseudoRules(const MatchRequest&,
-                                      PartNames*,
-                                      bool for_shadow_pseudo);
+  void CollectMatchingPartPseudoRules(const MatchRequest&, PartNames*);
   void SortAndTransferMatchedRules(CascadeOrigin origin,
                                    bool is_vtt_embedded_style,
                                    StyleRuleUsageTracker* tracker);
@@ -176,7 +200,7 @@ class CORE_EXPORT ElementRuleCollector {
   // Return 'false' when we don't know if a StyleScope is in scope or not.
   //
   // [1] https://drafts.csswg.org/css-cascade-6/#in-scope
-  bool CanRejectScope(const StyleScope&);
+  bool CanRejectScope(const StyleScope&) const;
 
   void AddElementStyleProperties(const CSSPropertyValueSet*,
                                  CascadeOrigin,
@@ -208,46 +232,7 @@ class CORE_EXPORT ElementRuleCollector {
     return matched_rules_;
   }
 
-  // Temporarily swap the StyleRecalcContext with one which points to the
-  // closest query container for matching ::slotted rules for a given slot.
-  class SlottedRulesScope {
-    STACK_ALLOCATED();
-
-   public:
-    SlottedRulesScope(ElementRuleCollector& collector, HTMLSlotElement& slot)
-        : context_(&collector.style_recalc_context_,
-                   collector.style_recalc_context_.ForSlottedRules(slot)) {}
-
-   private:
-    base::AutoReset<StyleRecalcContext> context_;
-  };
-
-  // Temporarily swap the StyleRecalcContext with one which points to the
-  // closest query container for matching ::part rules for a given host.
-  class PartRulesScope {
-    STACK_ALLOCATED();
-
-   public:
-    PartRulesScope(ElementRuleCollector& collector, Element& host)
-        : context_(&collector.style_recalc_context_,
-                   collector.style_recalc_context_.ForPartRules(host)) {}
-
-   private:
-    base::AutoReset<StyleRecalcContext> context_;
-  };
-
  private:
-  // TODO(https://crbug.com/40280846): Remove PartRequest when removing the
-  // CSSCascadeCorrectScope flag.
-  struct PartRequest {
-    STACK_ALLOCATED();
-
-   public:
-    // If this is true, we're matching for a pseudo-element of the part, such as
-    // ::placeholder.
-    bool for_shadow_pseudo = false;
-  };
-
   // If stop_at_first_match = true, CollectMatchingRules*() will stop
   // whenever any rule matches, return true, and not store the result
   // anywhere nor update the match counters. Otherwise, these functions
@@ -270,8 +255,7 @@ class CORE_EXPORT ElementRuleCollector {
       const RuleSet*,
       int,
       const SelectorChecker&,
-      SelectorChecker::SelectorCheckingContext&,
-      PartRequest* = nullptr);
+      SelectorChecker::SelectorCheckingContext&);
 
   template <bool stop_at_first_match>
   bool CollectMatchingRulesForList(base::span<const RuleData>,
@@ -279,8 +263,7 @@ class CORE_EXPORT ElementRuleCollector {
                                    const RuleSet*,
                                    int,
                                    const SelectorChecker&,
-                                   SelectorChecker::SelectorCheckingContext&,
-                                   PartRequest* = nullptr);
+                                   SelectorChecker::SelectorCheckingContext&);
 
   bool Match(SelectorChecker&,
              const SelectorChecker::SelectorCheckingContext&,
@@ -293,8 +276,8 @@ class CORE_EXPORT ElementRuleCollector {
                     int style_sheet_index);
 
   void AppendCSSOMWrapperForRule(const TreeScope* tree_scope_containing_rule,
-                                 const RuleData*,
-                                 wtf_size_t);
+                                 const MatchedRule& matched_rule,
+                                 wtf_size_t position);
 
   void SortMatchedRules();
 
@@ -322,8 +305,8 @@ class CORE_EXPORT ElementRuleCollector {
   ContainerSelectorCache container_selector_cache_;
 
   // Output.
-  Member<RuleIndexList> css_rule_list_;
-  Member<StyleRuleList> style_rule_list_;
+  RuleIndexList* css_rule_list_ = nullptr;
+  StyleRuleList* style_rule_list_ = nullptr;
   MatchResult& result_;
 };
 

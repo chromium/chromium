@@ -70,8 +70,7 @@ GPU_EXPORT bool CopyDXGIBufferToShMem(
 // input texture size or format. Returns true if succeeded.
 GPU_EXPORT bool CopyD3D11TexToMem(
     ID3D11Texture2D* input_texture,
-    uint8_t* dst_buffer,
-    size_t buffer_size,
+    base::span<uint8_t> dst_buffer,
     ID3D11Device* d3d11_device,
     Microsoft::WRL::ComPtr<ID3D11Texture2D>* staging_texture);
 

@@ -25,7 +25,7 @@ import org.chromium.android_webview.settings.ForceDarkMode;
 public class DarkModeTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mRule;
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwContents mContents;
     private AwSettings mSettings;
 

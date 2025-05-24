@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -41,14 +42,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"
@@ -60,11 +59,9 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_based_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_background_fetch_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_index_event_init.h"
@@ -155,10 +152,6 @@ namespace {
 
 constexpr char kServiceWorkerGlobalScopeTraceScope[] =
     "ServiceWorkerGlobalScope";
-
-// The default timeout for offline events in a service worker. The  value is
-// the same as the update interval value in the event queue.
-constexpr int kDefaultTimeoutSecondsForOfflineEvent = 10;
 
 void DidSkipWaiting(ScriptPromiseResolver<IDLUndefined>* resolver,
                     bool success) {
@@ -266,8 +259,6 @@ ServiceWorkerGlobalScope::ServiceWorkerGlobalScope(
   // service workers, but basically that won't be big problem because we have
   // ping-pong timer and that will kill paused service workers.
   event_queue_ = std::make_unique<ServiceWorkerEventQueue>(
-      WTF::BindRepeating(&ServiceWorkerGlobalScope::OnBeforeStartEvent,
-                         WrapWeakPersistent(this)),
       WTF::BindRepeating(&ServiceWorkerGlobalScope::OnIdleTimeout,
                          WrapWeakPersistent(this)),
       GetTaskRunner(TaskType::kInternalDefault));
@@ -343,7 +334,7 @@ void ServiceWorkerGlobalScope::FetchAndRunClassicScript(
       WTF::BindOnce(&ServiceWorkerGlobalScope::DidFetchClassicScript,
                     WrapWeakPersistent(this),
                     WrapPersistent(classic_script_loader), stack_id),
-      RejectCoepUnsafeNone(false), {}, CreateUniqueIdentifier());
+      {});
 }
 
 void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
@@ -353,10 +344,8 @@ void ServiceWorkerGlobalScope::FetchAndRunModuleScript(
     std::unique_ptr<PolicyContainer> policy_container,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-    network::mojom::CredentialsMode credentials_mode,
-    RejectCoepUnsafeNone reject_coep_unsafe_none) {
+    network::mojom::CredentialsMode credentials_mode) {
   DCHECK(IsContextThread());
-  DCHECK(!reject_coep_unsafe_none);
 
   // policy_container_host could be null for registration restored from old DB
   if (policy_container)
@@ -836,7 +825,7 @@ int ServiceWorkerGlobalScope::GetOutstandingThrottledLimit() const {
 // Note that ServiceWorkers can be for cross-origin iframes, and that it might
 // look like an escape from the Permissions-Policy enforced on documents. It is
 // safe however, even on platforms without OOPIF  because a ServiceWorker
-// controlling a cross-origin iframe would be put in  a different process from
+// controlling a cross-origin iframe would be put in a different process from
 // the page, due to an origin mismatch in their cross-origin isolation.
 // See https://crbug.com/1290224 for details.
 bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
@@ -844,28 +833,36 @@ bool ServiceWorkerGlobalScope::CrossOriginIsolatedCapability() const {
 }
 
 bool ServiceWorkerGlobalScope::IsIsolatedContext() const {
-  // TODO(mkwst): Make a decision here, and spec it.
-  return false;
+  return Agent::IsIsolatedContext();
 }
 
-void ServiceWorkerGlobalScope::importScripts(const Vector<String>& urls) {
-  for (const String& string_url : urls) {
+void ServiceWorkerGlobalScope::importScripts(
+    const HeapVector<Member<V8UnionTrustedScriptURLOrUSVString>>& urls,
+    ExceptionState& exception_state) {
+  Vector<String> url_strings;
+  for (const auto& url : urls) {
+    url_strings.push_back(TrustedTypesCheckForScriptURL(
+        url, GetExecutionContext(), "WorkerGlobalScope", "importScripts",
+        exception_state));
+    if (exception_state.HadException()) {
+      return;
+    }
+  }
+
+  for (const String& string_url : url_strings) {
     KURL completed_url = CompleteURL(string_url);
     if (installed_scripts_manager_ &&
         !installed_scripts_manager_->IsScriptInstalled(completed_url)) {
       DCHECK(installed_scripts_manager_->IsScriptInstalled(Url()));
-      v8::Isolate* isolate = GetThread()->GetIsolate();
-      V8ThrowException::ThrowException(
-          isolate,
-          V8ThrowDOMException::CreateOrEmpty(
-              isolate, DOMExceptionCode::kNetworkError,
-              "Failed to import '" + completed_url.ElidedString() +
-                  "'. importScripts() of new scripts after service worker "
-                  "installation is not allowed."));
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNetworkError,
+          "Failed to import '" + completed_url.ElidedString() +
+              "'. importScripts() of new scripts after service worker "
+              "installation is not allowed.");
       return;
     }
   }
-  WorkerGlobalScope::importScripts(urls);
+  WorkerGlobalScope::ImportScriptsInternal(url_strings, exception_state);
 }
 
 CachedMetadataHandler*
@@ -892,13 +889,13 @@ void ServiceWorkerGlobalScope::CountCacheStorageInstalledScript(
 
   base::UmaHistogramCustomCounts(
       "ServiceWorker.CacheStorageInstalledScript.ScriptSize",
-      base::saturated_cast<base::Histogram::Sample>(script_size), 1000, 5000000,
+      base::saturated_cast<base::Histogram::Sample32>(script_size), 1000, 5000000,
       50);
 
   if (script_metadata_size) {
     base::UmaHistogramCustomCounts(
         "ServiceWorker.CacheStorageInstalledScript.CachedMetadataSize",
-        base::saturated_cast<base::Histogram::Sample>(script_metadata_size),
+        base::saturated_cast<base::Histogram::Sample32>(script_metadata_size),
         1000, 50000000, 50);
   }
 }
@@ -1352,18 +1349,18 @@ void ServiceWorkerGlobalScope::SetIsInstalling(bool is_installing) {
   // stored in Cache storage during installation.
   base::UmaHistogramCounts1000(
       "ServiceWorker.CacheStorageInstalledScript.Count",
-      base::saturated_cast<base::Histogram::Sample>(
+      base::saturated_cast<base::Histogram::Sample32>(
           cache_storage_installed_script_count_));
   base::UmaHistogramCustomCounts(
       "ServiceWorker.CacheStorageInstalledScript.ScriptTotalSize",
-      base::saturated_cast<base::Histogram::Sample>(
+      base::saturated_cast<base::Histogram::Sample32>(
           cache_storage_installed_script_total_size_),
       1000, 50000000, 50);
 
   if (cache_storage_installed_script_metadata_total_size_) {
     base::UmaHistogramCustomCounts(
         "ServiceWorker.CacheStorageInstalledScript.CachedMetadataTotalSize",
-        base::saturated_cast<base::Histogram::Sample>(
+        base::saturated_cast<base::Histogram::Sample32>(
             cache_storage_installed_script_metadata_total_size_),
         1000, 50000000, 50);
   }
@@ -1378,11 +1375,6 @@ mojom::blink::ServiceWorkerHost*
 ServiceWorkerGlobalScope::GetServiceWorkerHost() {
   DCHECK(service_worker_host_.is_bound());
   return service_worker_host_.get();
-}
-
-void ServiceWorkerGlobalScope::OnBeforeStartEvent(bool is_offline_event) {
-  DCHECK(IsContextThread());
-  SetIsOfflineMode(is_offline_event);
 }
 
 void ServiceWorkerGlobalScope::OnIdleTimeout() {
@@ -1422,7 +1414,7 @@ void ServiceWorkerGlobalScope::DispatchExtendableMessageEventInternal(
     int event_id,
     mojom::blink::ExtendableMessageEventPtr event) {
   BlinkTransferableMessage msg = std::move(event->message);
-  MessagePortArray* ports =
+  GCedMessagePortArray* ports =
       MessagePort::EntanglePorts(*this, std::move(msg.ports));
   String origin;
   if (!event->source_origin->IsOpaque())
@@ -1527,12 +1519,10 @@ void ServiceWorkerGlobalScope::AbortCallbackForFetchEvent(
 void ServiceWorkerGlobalScope::StartFetchEvent(
     mojom::blink::DispatchFetchEventParamsPtr params,
     base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker,
-    std::optional<base::TimeTicks> created_time,
+    base::TimeTicks created_time,
     int event_id) {
   DCHECK(IsContextThread());
-  if (created_time.has_value()) {
-    RecordQueuingTime(created_time.value());
-  }
+  RecordQueuingTime(created_time);
 
   // This TRACE_EVENT is used for perf benchmark to confirm if all of fetch
   // events have completed. (crbug.com/736697)
@@ -1560,41 +1550,15 @@ void ServiceWorkerGlobalScope::StartFetchEvent(
       wait_until_observer);
   FetchEventInit* event_init = FetchEventInit::Create();
   event_init->setCancelable(true);
-  // Note on how clientId / resultingClientID works.
+  // Note on how clientId / resultingClientID are set:
   //
-  // Legacy behavior:
-  // main resource load -> only resultingClientId.
+  // main resource, dedicatedworker script, or sharedworker script load
+  //   -> clientId and resultingClientId.
   // sub resource load -> only clientId.
-  // worker script load -> only clientId. (treated as subresource)
-  // * PlzDecicatedWorker makes this as main resource load.
-  //   We should fix this.
-  //
-  // Expected behavior:
-  // main resource load -> clientId and resultingClientId.
-  // sub resource load -> only clientId.
-  // worker script load -> clientId and resultingClientId.
-  //                       (treated as main resource)
-  // * We need to plumb a proper client ID to realize this.
-  if (base::FeatureList::IsEnabled(
-          features::kServiceWorkerClientIdAlignedWithSpec)) {
-    // TODO(crbug.com/1520512): set the meaningful client_id for main resource.
-    event_init->setClientId(params->client_id);
-    event_init->setResultingClientId(params->request->is_main_resource_load
-                                         ? params->resulting_client_id
-                                         : String());
-  } else {
-    bool is_main_resource_load = params->request->is_main_resource_load;
-    if (is_main_resource_load &&
-        params->request->destination ==
-            network::mojom::RequestDestination::kWorker) {
-      CHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
-      is_main_resource_load = false;
-    }
-    event_init->setClientId(is_main_resource_load ? String()
-                                                  : params->client_id);
-    event_init->setResultingClientId(
-        is_main_resource_load ? params->resulting_client_id : String());
-  }
+  event_init->setClientId(params->client_id);
+  event_init->setResultingClientId(params->request->is_main_resource_load
+                                       ? params->resulting_client_id
+                                       : String());
   event_init->setIsReload(params->request->is_reload);
 
   mojom::blink::FetchAPIRequest& fetch_request = *params->request;
@@ -1687,11 +1651,14 @@ void ServiceWorkerGlobalScope::Clone(
     mojo::PendingReceiver<mojom::blink::ControllerServiceWorker> receiver,
     const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     mojo::PendingRemote<
-        network::mojom::blink::CrossOriginEmbedderPolicyReporter>
-        coep_reporter) {
+        network::mojom::blink::CrossOriginEmbedderPolicyReporter> coep_reporter,
+    const network::DocumentIsolationPolicy& document_isolation_policy,
+    mojo::PendingRemote<network::mojom::blink::DocumentIsolationPolicyReporter>
+        dip_reporter) {
   DCHECK(IsContextThread());
   auto checker = std::make_unique<CrossOriginResourcePolicyChecker>(
-      cross_origin_embedder_policy, std::move(coep_reporter));
+      cross_origin_embedder_policy, std::move(coep_reporter),
+      document_isolation_policy, std::move(dip_reporter));
 
   controller_receivers_.Add(
       std::move(receiver), std::move(checker),
@@ -1708,8 +1675,6 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
     mojom::blink::ServiceWorkerRegistrationObjectInfoPtr registration_info,
     mojom::blink::ServiceWorkerObjectInfoPtr service_worker_info,
     mojom::blink::FetchHandlerExistence fetch_hander_existence,
-    mojo::PendingReceiver<mojom::blink::ReportingObserver>
-        reporting_observer_receiver,
     mojom::blink::AncestorFrameType ancestor_frame_type,
     const blink::BlinkStorageKey& storage_key) {
   DCHECK(IsContextThread());
@@ -1746,10 +1711,6 @@ void ServiceWorkerGlobalScope::InitializeGlobalScope(
   SetFetchHandlerExistence(fetch_hander_existence);
 
   ancestor_frame_type_ = ancestor_frame_type;
-
-  if (reporting_observer_receiver) {
-    ReportingContext::From(this)->Bind(std::move(reporting_observer_receiver));
-  }
 
   global_scope_initialized_ = true;
   if (!pause_evaluation_)
@@ -2060,25 +2021,14 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
 
   // We can use nullptr as a |corp_checker| for the main resource because it
   // must be the same origin.
-  if (params->is_offline_capability_check) {
-    event_queue_->EnqueueOffline(
-        event_id,
-        WTF::BindOnce(&ServiceWorkerGlobalScope::StartFetchEvent,
-                      WrapWeakPersistent(this), std::move(params),
-                      /*corp_checker=*/nullptr, std::nullopt),
-        WTF::BindOnce(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
-                      WrapWeakPersistent(this)),
-        base::Seconds(kDefaultTimeoutSecondsForOfflineEvent));
-  } else {
-    event_queue_->EnqueueNormal(
-        event_id,
-        WTF::BindOnce(&ServiceWorkerGlobalScope::StartFetchEvent,
-                      WrapWeakPersistent(this), std::move(params),
-                      /*corp_checker=*/nullptr, base::TimeTicks::Now()),
-        WTF::BindOnce(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
-                      WrapWeakPersistent(this)),
-        std::nullopt);
-  }
+  event_queue_->EnqueueNormal(
+      event_id,
+      WTF::BindOnce(&ServiceWorkerGlobalScope::StartFetchEvent,
+                    WrapWeakPersistent(this), std::move(params),
+                    /*corp_checker=*/nullptr, base::TimeTicks::Now()),
+      WTF::BindOnce(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
+                    WrapWeakPersistent(this)),
+      std::nullopt);
 }
 
 void ServiceWorkerGlobalScope::DispatchNotificationClickEvent(
@@ -2469,7 +2419,7 @@ void ServiceWorkerGlobalScope::StartPaymentRequestEvent(
   // Count standardized payment method identifiers, such as "basic-card" or
   // "tokenized-card". Omit counting the URL-based payment method identifiers,
   // such as "https://bobpay.xyz".
-  if (base::ranges::any_of(
+  if (std::ranges::any_of(
           event_data->method_data,
           [](const payments::mojom::blink::PaymentMethodDataPtr& datum) {
             return datum && !datum->supported_method.StartsWith("http");
@@ -2658,7 +2608,6 @@ void ServiceWorkerGlobalScope::ExecuteScriptForTest(
   }
 
   base::Value value;
-  String exception;
 
   // TODO(devlin): Is this thread-safe? Platform::Current() is set during
   // blink initialization and the created V8ValueConverter is constructed

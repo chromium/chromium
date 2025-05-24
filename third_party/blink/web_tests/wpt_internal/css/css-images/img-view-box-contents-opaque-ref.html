@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Image opaqueness with CSS object-view-box and object-position (ref)</title>
+<link rel="author" href="mailto:szager@chromium.org">
+<script src="/common/reftest-wait.js"></script>
+
+<body>
+<style>
+div {
+  margin: 5px;
+}
+
+.container_view_box_superset {
+  width: 100px;
+  height: 100px;
+  overflow: hidden;
+  display: inline-block;
+  background-color: grey;
+}
+
+.container_view_box_superset_with_scaling {
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  display: inline-block;
+  background-color: grey;
+}
+.view_box_superset_with_scaling {
+  width: 25px;
+  height: 50px;
+  object-fit: fill;
+}
+
+.container_view_box_intersection {
+  width: 25px;
+  height: 100px;
+  overflow: hidden;
+  display: inline-block;
+  background-color: grey;
+  clip-path: inset(0px 0px 1px 0px);
+}
+.view_box_intersection {
+  width: 50px;
+  height: 100px;
+  position: relative;
+  top: 50px;
+}
+
+.container_view_box_no_intersection {
+  width: 25px;
+  height: 50px;
+  overflow: hidden;
+  display: inline-block;
+  background-color: grey;
+}
+</style>
+<div class="container_view_box_superset">
+  <img></img>
+</div>
+<div class="container_view_box_superset_with_scaling">
+  <img class="view_box_superset_with_scaling"></img>
+</div>
+
+<div class="container_view_box_intersection">
+  <img class="view_box_intersection"></img>
+</div>
+
+<div class="container_view_box_no_intersection">
+</div>
+</body>
+<script>
+let url = "support/exif-orientation-6-ru.jpg";
+let decoder = document.createElement("img");
+decoder.src = url;
+decoder.decode().then(() => {
+  decoder = null;
+  let images = document.getElementsByTagName("img");
+  for (let i = 0; i < images.length; i++) {
+    images[i].src = url;
+  }
+  takeScreenshot();
+});
+</script>

@@ -12,9 +12,6 @@ NSString* const kNTPIncognitoViewIdentifier = @"kNTPIncognitoViewIdentifier";
 
 NSString* const kNTPFeedHeaderIdentifier = @"kNTPFeedHeaderIdentifier";
 
-NSString* const kNTPFeedHeaderManagementButtonIdentifier =
-    @"kNTPFeedHeaderManagementButtonIdentifier";
-
 NSString* const kNTPFeedHeaderSortButtonIdentifier =
     @"kNTPFeedHeaderSortButtonIdentifier";
 
@@ -33,6 +30,6 @@ const CGFloat kHomeModuleContainerCornerRadius = 24.0f;
 
 const CGFloat kHomeModuleMinimumPadding = 4;
 
-const CGFloat kSpaceBetweenModules = 14;
-
 const NSInteger kCustomizationNewBadgeMaxImpressionCount = 3;
+
+const float kBottomMagicStackPadding = 14.0f;

@@ -59,15 +59,15 @@ public class ModelListAdapterTest {
         }
     }
 
-    private class TestViewBuilder implements ModelListAdapter.ViewBuilder<View> {
+    private static class TestViewBuilder implements ModelListAdapter.ViewBuilder<View> {
         @Override
         public View buildView(ViewGroup parent) {
             return new View(parent.getContext());
         }
     }
 
-    private class TestObject {
-        private String mId;
+    private static class TestObject {
+        private final String mId;
 
         public TestObject(String id) {
             mId = id;

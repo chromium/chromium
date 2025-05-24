@@ -27,7 +27,7 @@ DriveUploaderOnWorker::DriveUploaderOnWorker(
   DETACH_FROM_SEQUENCE(sequece_checker_);
 }
 
-DriveUploaderOnWorker::~DriveUploaderOnWorker() {}
+DriveUploaderOnWorker::~DriveUploaderOnWorker() = default;
 
 void DriveUploaderOnWorker::StartBatchProcessing() {
 }
@@ -81,8 +81,7 @@ google_apis::CancelCallbackOnce DriveUploaderOnWorker::ResumeUploadFile(
     const std::string& content_type,
     drive::UploadCompletionCallback callback,
     google_apis::ProgressCallback progress_callback) {
-  NOTREACHED_IN_MIGRATION();
-  return google_apis::CancelCallbackOnce();
+  NOTREACHED();
 }
 
 }  // namespace drive_backend

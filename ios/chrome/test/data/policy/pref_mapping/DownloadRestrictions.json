@@ -1,0 +1,19 @@
+[
+  {
+    "can_be_recommended": true,
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "download_restrictions",
+      "default_value": 0,
+      "values_to_test": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    }
+  }
+]

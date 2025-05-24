@@ -118,7 +118,7 @@ class TableFilter {
     if (this.excludeFun != null) {
       for (const idx of this.filterCellIndices) {
         const text = row.cells[idx]?.textContent ?? '';
-        if (this !.excludeFun(text)) {
+        if (this.excludeFun(text)) {
           return false;
         }
       }
@@ -126,7 +126,7 @@ class TableFilter {
     if (this.includeFun != null) {
       for (const idx of this.filterCellIndices) {
         const text = row.cells[idx]?.textContent ?? '';
-        if (this !.includeFun(text)) {
+        if (this.includeFun(text)) {
           return true;
         }
       }
@@ -190,7 +190,7 @@ class TableFilter {
    * @param {!Event} e
    */
   triggerUpdate(e: Event) {
-    const elt = e!.target as HTMLElement;
+    const elt = e.target as HTMLElement;
     // Debounce: New trigger cancels an existing trigger's timeout.
     if (this.filterDelayTimeoutId != null) {
       clearTimeout(this.filterDelayTimeoutId);
@@ -241,7 +241,7 @@ function createChromiumSourceLink(
     return;
   }
   const fileName = sourceFile.slice(sourceFile.lastIndexOf('/') + 1);
-  if (fileName.length == 0) {
+  if (fileName.length === 0) {
     targetElement.textContent = `${sourceFile}(${sourceLine})`;
     return;
   }
@@ -260,29 +260,32 @@ function createChromiumSourceLink(
  * @returns string
  */
 function getLogSource(logSource: number) {
-  if (logSource == 0) {
+  if (logSource === 0) {
     return 'SERVICE_AND_SETTINGS';
   }
-  if (logSource == 1) {
+  if (logSource === 1) {
     return 'HINTS';
   }
-  if (logSource == 2) {
+  if (logSource === 2) {
     return 'MODEL_MANAGEMENT';
   }
-  if (logSource == 3) {
+  if (logSource === 3) {
     return 'PAGE_CONTENT_ANNOTATIONS';
   }
-  if (logSource == 4) {
+  if (logSource === 4) {
     return 'HINTS_NOTIFICATIONS';
   }
-  if (logSource == 5) {
+  if (logSource === 5) {
     return 'TEXT_CLASSIFIER';
   }
-  if (logSource == 6) {
+  if (logSource === 6) {
     return 'MODEL_EXECUTION';
   }
-  if (logSource == 7) {
+  if (logSource === 7) {
     return 'NTP_MODULE';
+  }
+  if (logSource === 8) {
+    return 'BUILT_IN_AI';
   }
   return logSource.toString();
 }

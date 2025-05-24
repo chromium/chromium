@@ -14,7 +14,4 @@ WorkerNode::~WorkerNode() = default;
 WorkerNodeObserver::WorkerNodeObserver() = default;
 WorkerNodeObserver::~WorkerNodeObserver() = default;
 
-WorkerNode::ObserverDefaultImpl::ObserverDefaultImpl() = default;
-WorkerNode::ObserverDefaultImpl::~ObserverDefaultImpl() = default;
-
 }  // namespace performance_manager

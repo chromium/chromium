@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf_view_test_api.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/test/ash_test_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 namespace ash {

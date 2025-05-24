@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.multiwindow;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Contains all the properties for each instance item listed in the target selector UI. */
+@NullMarked
 public class TargetSelectorItemProperties {
     public static final PropertyModel.WritableObjectPropertyKey<Drawable> FAVICON =
             new PropertyModel.WritableObjectPropertyKey<>();

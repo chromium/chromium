@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process_platform_part_ash.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
@@ -42,7 +43,8 @@ int64_t RemoteCommandsServiceMixin::AddPendingRemoteCommand(
 }
 
 void RemoteCommandsServiceMixin::SendDeviceRemoteCommandsRequest() {
-  remote_commands_service().FetchRemoteCommands();
+  remote_commands_service().FetchRemoteCommands(
+      policy::RemoteCommandsFetchReason::kTest);
 }
 
 enterprise_management::RemoteCommandResult

@@ -23,9 +23,6 @@ class StructTraits<storage::mojom::BucketInfoDataView, storage::BucketInfo> {
       const storage::BucketInfo& bucket) {
     return bucket.storage_key;
   }
-  static blink::mojom::StorageType type(const storage::BucketInfo& bucket) {
-    return bucket.type;
-  }
   static std::string_view name(const storage::BucketInfo& bucket) {
     return std::string_view(bucket.name.c_str(), bucket.name.length());
   }

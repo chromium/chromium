@@ -22,7 +22,7 @@ public class ScreenshotBoundsManager {
     private static final int NUM_VIEWPORTS_CAPTURE_ABOVE_FOR_FULL_CAPTURE = 2;
     private static final int NUM_VIEWPORTS_CAPTURE_BELOW_FOR_FULL_CAPTURE = 4;
 
-    private Tab mTab;
+    private final Tab mTab;
     private Rect mCaptureRect;
     private Size mContentSize;
     private Point mScrollOffset;
@@ -39,7 +39,7 @@ public class ScreenshotBoundsManager {
     }
 
     /** For testing only. */
-    private ScreenshotBoundsManager(Context context, Tab tab, int clipHeight) {
+    private ScreenshotBoundsManager(Tab tab, int clipHeight) {
         mTab = tab;
         mClipHeightScaled = clipHeight;
         calculateCaptureBounds();
@@ -48,13 +48,13 @@ public class ScreenshotBoundsManager {
     /**
      * To only be used for testing purposes.
      *
-     * @param context An instance of current Android {@link Context}.
      * @param tab Tab to generate the bitmap for.
      * @param clipHeight The height of the device.
      * @return an instance of ScreenshotBoundsManager.
      */
-    public static ScreenshotBoundsManager createForTests(Context context, Tab tab, int clipHeight) {
-        return new ScreenshotBoundsManager(context, tab, clipHeight);
+    public static ScreenshotBoundsManager createForTests(
+            Context unused_context, Tab tab, int clipHeight) {
+        return new ScreenshotBoundsManager(tab, clipHeight);
     }
 
     /** Calculates the height of the phone used to determine the height of the bitmaps. */

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/update_types.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/system/system_clock_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
@@ -22,18 +23,30 @@ struct LocaleInfo;
 class SystemTray;
 enum class LoginStatus;
 enum class NotificationStyle;
+
+namespace system {
+class SystemClock;
+}  // namespace system
 }  // namespace ash
+
+namespace policy {
+class BrowserPolicyConnectorAsh;
+}  // namespace policy
 
 class Profile;
 
 // Handles method calls delegated back to chrome from ash. Also notifies ash of
 // relevant state changes in chrome.
+// Note: Methods for the latter part should be moved into a dedicated class to
+// make responsibility clear and to make testing easy.
 class SystemTrayClientImpl : public ash::SystemTrayClient,
                              public ash::system::SystemClockObserver,
                              public policy::CloudPolicyStore::Observer,
                              public UpgradeObserver {
  public:
-  SystemTrayClientImpl();
+  SystemTrayClientImpl(
+      ash::system::SystemClock& system_clock,
+      policy::BrowserPolicyConnectorAsh& browser_policy_connector_ash);
 
   SystemTrayClientImpl(const SystemTrayClientImpl&) = delete;
   SystemTrayClientImpl& operator=(const SystemTrayClientImpl&) = delete;
@@ -45,7 +58,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   // Specifies if notification is recommended or required by administrator and
   // triggers the notification to be shown with the given body and title.
   // Only applies to OS updates.
-  virtual void SetRelaunchNotificationState(
+  void SetRelaunchNotificationState(
       const ash::RelaunchNotificationState& relaunch_notification_state);
 
   // Resets update state to hide notification.
@@ -126,10 +139,6 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowPointingStickSettings() override;
   void ShowNearbyShareSettings() override;
 
- protected:
-  // Used by mocks in tests.
-  explicit SystemTrayClientImpl(SystemTrayClientImpl* mock_instance);
-
  private:
   // Observes profile changed and profile's policy changed.
   class EnterpriseAccountObserver;
@@ -156,6 +165,10 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
 
   void UpdateDeviceEnterpriseInfo();
   void UpdateEnterpriseAccountDomainInfo(Profile* profile);
+
+  const raw_ref<ash::system::SystemClock> system_clock_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
 
   // The system tray model in ash.
   const raw_ptr<ash::SystemTray> system_tray_;

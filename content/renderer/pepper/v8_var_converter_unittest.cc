@@ -61,7 +61,7 @@ namespace {
 
 void FromV8ValueComplete(const ScopedPPVar& scoped_var,
                          bool success) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 class MockResourceConverter : public content::ResourceConverter {
@@ -69,9 +69,7 @@ class MockResourceConverter : public content::ResourceConverter {
   ~MockResourceConverter() override {}
   void Reset() override {}
   bool NeedsFlush() override { return false; }
-  void Flush(base::OnceCallback<void(bool)> callback) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void Flush(base::OnceCallback<void(bool)> callback) override { NOTREACHED(); }
   bool FromV8Value(v8::Local<v8::Object> val,
                    v8::Local<v8::Context> context,
                    PP_Var* result,

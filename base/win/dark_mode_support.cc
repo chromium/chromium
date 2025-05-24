@@ -54,38 +54,34 @@ struct DarkModeSupport {
 };
 
 const DarkModeSupport& GetDarkModeSupport() {
-  static const DarkModeSupport dark_mode_support =
-      [] {
-        DarkModeSupport dark_mode_support;
-        auto* os_info = base::win::OSInfo::GetInstance();
-        // Dark mode only works on WIN10_RS5 and up. uxtheme.dll depends on
-        // GDI32.dll which is not available under win32k lockdown sandbox.
-        if (os_info->version() >= base::win::Version::WIN10_RS5 &&
-            base::win::IsUser32AndGdi32Available()) {
-          base::NativeLibraryLoadError error;
-          HMODULE ux_theme_lib = base::PinSystemLibrary(L"uxtheme.dll", &error);
-          DCHECK(!error.code);
-          if (os_info->version() >= base::win::Version::WIN10_19H1) {
-            dark_mode_support.set_preferred_app_mode =
-                reinterpret_cast<UxThemeSetPreferredAppModeFunc>(
-                    ::GetProcAddress(
-                        ux_theme_lib,
-                        MAKEINTRESOURCEA(kUxThemeSetPreferredAppModeOrdinal)));
-          } else {
-            dark_mode_support.allow_dark_mode_for_app =
-                reinterpret_cast<UxThemeAllowDarkModeForAppFunc>(
-                    ::GetProcAddress(
-                        ux_theme_lib,
-                        MAKEINTRESOURCEA(kUxThemeAllowDarkModeForAppOrdinal)));
-          }
-          dark_mode_support.allow_dark_mode_for_window =
-              reinterpret_cast<UxThemeAllowDarkModeForWindowFunc>(
-                  ::GetProcAddress(
-                      ux_theme_lib,
-                      MAKEINTRESOURCEA(kUxThemeAllowDarkModeForWindowOrdinal)));
-        }
-        return dark_mode_support;
-      }();
+  static const DarkModeSupport dark_mode_support = [] {
+    DarkModeSupport dark_mode_support;
+    auto* os_info = base::win::OSInfo::GetInstance();
+    // Dark mode only works on WIN10_RS5 and up. uxtheme.dll depends on
+    // GDI32.dll which is not available under win32k lockdown sandbox.
+    if (os_info->version() >= base::win::Version::WIN10_RS5 &&
+        base::win::IsUser32AndGdi32Available()) {
+      base::NativeLibraryLoadError error;
+      HMODULE ux_theme_lib = base::PinSystemLibrary(L"uxtheme.dll", &error);
+      DCHECK(!error.code);
+      if (os_info->version() >= base::win::Version::WIN10_19H1) {
+        dark_mode_support.set_preferred_app_mode =
+            reinterpret_cast<UxThemeSetPreferredAppModeFunc>(::GetProcAddress(
+                ux_theme_lib,
+                MAKEINTRESOURCEA(kUxThemeSetPreferredAppModeOrdinal)));
+      } else {
+        dark_mode_support.allow_dark_mode_for_app =
+            reinterpret_cast<UxThemeAllowDarkModeForAppFunc>(::GetProcAddress(
+                ux_theme_lib,
+                MAKEINTRESOURCEA(kUxThemeAllowDarkModeForAppOrdinal)));
+      }
+      dark_mode_support.allow_dark_mode_for_window =
+          reinterpret_cast<UxThemeAllowDarkModeForWindowFunc>(::GetProcAddress(
+              ux_theme_lib,
+              MAKEINTRESOURCEA(kUxThemeAllowDarkModeForWindowOrdinal)));
+    }
+    return dark_mode_support;
+  }();
   return dark_mode_support;
 }
 
@@ -101,8 +97,9 @@ bool IsDarkModeAvailable() {
 }
 
 void AllowDarkModeForApp(bool allow) {
-  if (!IsDarkModeAvailable())
+  if (!IsDarkModeAvailable()) {
     return;
+  }
   auto& dark_mode_support = GetDarkModeSupport();
   if (dark_mode_support.set_preferred_app_mode) {
     dark_mode_support.set_preferred_app_mode(
@@ -113,8 +110,9 @@ void AllowDarkModeForApp(bool allow) {
 }
 
 bool AllowDarkModeForWindow(HWND hwnd, bool allow) {
-  if (!IsDarkModeAvailable())
+  if (!IsDarkModeAvailable()) {
     return false;
+  }
   return GetDarkModeSupport().allow_dark_mode_for_window(hwnd, allow);
 }
 

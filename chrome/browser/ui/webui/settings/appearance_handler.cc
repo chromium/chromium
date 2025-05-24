@@ -8,14 +8,12 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/web_ui.h"
 
@@ -49,17 +47,14 @@ void AppearanceHandler::RegisterMessages() {
       "openCustomizeChrome",
       base::BindRepeating(&AppearanceHandler::OpenCustomizeChrome,
                           base::Unretained(this)));
-  if (features::IsToolbarPinningEnabled()) {
-    web_ui()->RegisterMessageCallback(
-        "openCustomizeChromeToolbarSection",
-        base::BindRepeating(
-            &AppearanceHandler::OpenCustomizeChromeToolbarSection,
-            base::Unretained(this)));
-    web_ui()->RegisterMessageCallback(
-        "resetPinnedToolbarActions",
-        base::BindRepeating(&AppearanceHandler::ResetPinnedToolbarActions,
-                            base::Unretained(this)));
-  }
+  web_ui()->RegisterMessageCallback(
+      "openCustomizeChromeToolbarSection",
+      base::BindRepeating(&AppearanceHandler::OpenCustomizeChromeToolbarSection,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "resetPinnedToolbarActions",
+      base::BindRepeating(&AppearanceHandler::ResetPinnedToolbarActions,
+                          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "pinnedToolbarActionsAreDefault",
       base::BindRepeating(&AppearanceHandler::PinnedToolbarActionsAreDefault,
@@ -97,7 +92,6 @@ void AppearanceHandler::PinnedToolbarActionsAreDefault(
   CHECK_EQ(1U, args.size());
   const base::Value& callback_id = args[0];
   const bool are_default =
-      !features::IsToolbarPinningEnabled() ||
       PinnedToolbarActionsModel::Get(profile_)->IsDefault();
 
   AllowJavascript();

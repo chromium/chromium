@@ -5,9 +5,20 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+source_set("android") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "notification_feature_map.cc",
+  ]
+  deps = [
+    ":notification_jni_headers",
+    "//base",
+  ]
+}
+
 android_library("java") {
   sources = [
-    "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxy.java",
     "java/src/org/chromium/components/browser_ui/notifications/AsyncNotificationManagerProxyImpl.java",
     "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxy.java",
     "java/src/org/chromium/components/browser_ui/notifications/BaseNotificationManagerProxyFactory.java",
@@ -28,7 +39,9 @@ android_library("java") {
   ]
 
   deps = [
+    ":utils_java",
     "//base:base_java",
+    "//build/android:build_java",
     "//components/browser_ui/util/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -36,6 +49,27 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
   ]
+}
+
+generate_jni("notification_jni_headers") {
+  sources = [ "java/src/org/chromium/components/browser_ui/notifications/NotificationFeatureMap.java" ]
+}
+
+android_library("utils_java") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/notifications/NotificationFeatureMap.java",
+    "java/src/org/chromium/components/browser_ui/notifications/NotificationProxyUtils.java",
+  ]
+
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+
+  srcjar_deps = [ ":notification_jni_headers" ]
 }
 
 android_library("test_support_java") {

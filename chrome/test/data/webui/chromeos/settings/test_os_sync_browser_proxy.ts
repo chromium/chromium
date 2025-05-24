@@ -2,27 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChromeSigninUserChoice, ChromeSigninUserChoiceInfo, PageStatus, SignedInState, StatusAction, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://os-settings/os_settings.js';
+import type {ChromeSigninUserChoiceInfo, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://os-settings/os_settings.js';
+import {ChromeSigninUserChoice, PageStatus, SignedInState, StatusAction} from 'chrome://os-settings/os_settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestSyncBrowserProxy extends TestBrowserProxy implements
     SyncBrowserProxy {
-  private impressionCount_: number = 0;
   private storedAccounts_: StoredAccount[] = [];
+  private profileAvatarURL_: string = '';
   private syncStatus_: SyncStatus = {
     signedInState: SignedInState.SYNCING,
     signedInUsername: 'fakeUsername',
     statusAction: StatusAction.NO_ACTION,
   };
 
+
   constructor() {
     super([
       'didNavigateAwayFromSyncPage',
       'didNavigateToSyncPage',
-      'getPromoImpressionCount',
       'getStoredAccounts',
+      'getProfileAvatar',
       'getSyncStatus',
-      'incrementPromoImpressionCount',
       'pauseSync',
       'sendSyncPrefsChanged',
       'sendTrustedVaultBannerStateChanged',
@@ -50,6 +51,11 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     return Promise.resolve(this.storedAccounts_);
   }
 
+  getProfileAvatar() {
+    this.methodCalled('getProfileAvatar');
+    return Promise.resolve(this.profileAvatarURL_);
+  }
+
   signOut(deleteProfile: boolean): void {
     this.methodCalled('signOut', deleteProfile);
   }
@@ -66,25 +72,12 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('startSyncingWithEmail', [email, isDefaultPromoAccount]);
   }
 
-  setImpressionCount(count: number): void {
-    this.impressionCount_ = count;
-  }
-
   turnOnSync(): void {
     this.methodCalled('turnOnSync');
   }
 
   turnOffSync(): void {
     this.methodCalled('turnOffSync');
-  }
-
-  getPromoImpressionCount(): number {
-    this.methodCalled('getPromoImpressionCount');
-    return this.impressionCount_;
-  }
-
-  incrementPromoImpressionCount(): void {
-    this.methodCalled('incrementPromoImpressionCount');
   }
 
   didNavigateToSyncPage(): void {
@@ -140,4 +133,6 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
   openActivityControlsUrl(): void {}
 
   startKeyRetrieval(): void {}
+
+  showSyncPassphraseDialog(): void {}
 }

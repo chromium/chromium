@@ -157,5 +157,6 @@ int main(void){
       /*printf("\n");*/
     }
   }
+  RESTORE_STACK;
   return 0;
 }

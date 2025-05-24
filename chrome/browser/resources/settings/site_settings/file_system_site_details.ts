@@ -64,9 +64,9 @@ export class FileSystemSiteDetailsElement extends
       grantsPerOrigin: Object,
     };
   }
-  pageTitle: string;
-  private origin_: string;
-  grantsPerOrigin: OriginFileSystemGrants;
+  declare pageTitle: string;
+  declare private origin_: string;
+  declare grantsPerOrigin: OriginFileSystemGrants;
 
   override connectedCallback() {
     super.connectedCallback();

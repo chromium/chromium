@@ -18,11 +18,21 @@
 
 namespace content {
 
+AccessibilityContentBrowserTest::AccessibilityContentBrowserTest() = default;
+
+AccessibilityContentBrowserTest::~AccessibilityContentBrowserTest() = default;
+
+void AccessibilityContentBrowserTest::SetUpOnMainThread() {
+  accessibility_mode_.emplace(ui::kAXModeComplete);
+}
+
+void AccessibilityContentBrowserTest::TearDownOnMainThread() {
+  accessibility_mode_.reset();
+}
+
 void AccessibilityContentBrowserTest::LoadInitialAccessibilityTreeFromUrl(
-    const GURL& url,
-    ui::AXMode accessibility_mode) {
+    const GURL& url) {
   AccessibilityNotificationWaiter waiter(GetWebContentsAndAssertNonNull(),
-                                         accessibility_mode,
                                          ax::mojom::Event::kLoadComplete);
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -30,21 +40,19 @@ void AccessibilityContentBrowserTest::LoadInitialAccessibilityTreeFromUrl(
 
 void AccessibilityContentBrowserTest::
     LoadInitialAccessibilityTreeFromHtmlFilePath(
-        const std::string& html_file_path,
-        ui::AXMode accessibility_mode) {
-  if (!embedded_test_server()->Started())
+        const std::string& html_file_path) {
+  if (!embedded_test_server()->Started()) {
     ASSERT_TRUE(embedded_test_server()->Start());
+  }
   ASSERT_TRUE(embedded_test_server()->Started());
   LoadInitialAccessibilityTreeFromUrl(
-      embedded_test_server()->GetURL(html_file_path), accessibility_mode);
+      embedded_test_server()->GetURL(html_file_path));
 }
 
 void AccessibilityContentBrowserTest::LoadInitialAccessibilityTreeFromHtml(
-    const std::string& html,
-    ui::AXMode accessibility_mode) {
+    const std::string& html) {
   LoadInitialAccessibilityTreeFromUrl(
-      GURL("data:text/html," + base::EscapeQueryParamValue(html, false)),
-      accessibility_mode);
+      GURL("data:text/html," + base::EscapeQueryParamValue(html, false)));
 }
 
 WebContents* AccessibilityContentBrowserTest::GetWebContentsAndAssertNonNull()
@@ -129,8 +137,9 @@ ui::BrowserAccessibility* AccessibilityContentBrowserTest::FindNodeInSubtree(
   for (uint32_t i = 0; i < node->PlatformChildCount(); ++i) {
     ui::BrowserAccessibility* result =
         FindNodeInSubtree(node->PlatformGetChild(i), role, name_or_value);
-    if (result)
+    if (result) {
       return result;
+    }
   }
 
   return nullptr;

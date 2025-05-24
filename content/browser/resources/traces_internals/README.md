@@ -1,9 +1,9 @@
 # Trace Report UI
 
-This webui implements chrome://traces-internals which shows trace reports
-collected by background tracing. To test, simply navigating to the URL might be
-sufficient if traces are present. If no traces, chrome can be started with a
-trace config to force trace collection:
+This webui implements chrome://traces, which shows trace reports collected by
+background tracing. To test, simply navigating to the URL might be sufficient
+if traces are present. If no traces, chrome can be started with a trace config
+to force trace collection:
 
 1. Create a new config.pbtxt file anywhere on your desktop.
 Copy the config below and save the file.
@@ -44,9 +44,8 @@ Keep the < > around `config.pbtxt` from the command above.
 
 3. And run chrome with command line:
 ```
---enable-features=BackgroundTracingDatabase \
 --enable-background-tracing=config.pb
 ```
 
 You should be able to now collect trace reports on your computer and preview
-them on chrome://traces-internals.
+them on chrome://traces.

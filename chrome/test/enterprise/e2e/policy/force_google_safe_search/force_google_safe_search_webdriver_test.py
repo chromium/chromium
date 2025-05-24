@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from urllib.parse import unquote
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -19,8 +21,5 @@ search_box = driver.find_element(By.NAME, 'q')
 search_box.send_keys('searchTerm')
 search_box.submit()
 
-# wait for the search result page to be loaded
-wait.until(EC.visibility_of_element_located((By.ID, 'search')))
-
-print(driver.current_url)
+print(unquote(driver.current_url))
 driver.quit()

@@ -27,8 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_USE_COUNTER_IMPL_H_
 
 #include <bitset>
+
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature_tracker.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
@@ -76,6 +77,9 @@ class CORE_EXPORT UseCounterImpl final {
     kExtensionContext,
     // Context for file:// URLs.
     kFileContext,
+    // Counters for about:blank and about:srcdoc pages, which can host
+    // non-trivial html content.
+    kAboutBlankOrSrcdoc,
     // Context when counters should be disabled (eg, internal pages such as
     // about, devtools, etc).
     kDisabledContext
@@ -92,6 +96,8 @@ class CORE_EXPORT UseCounterImpl final {
     kHeader,     // Feature used in either Permissions-Policy or Feature-Policy
                  // HTTP header.
     kIframeAttribute,  // Feature used in 'allow' attribute on iframe element.
+    kEnabledPrivacySensitive,  // Feature enabled, but labeled privacy
+                               // sensitive.
   };
 
   explicit UseCounterImpl(Context = kDefaultContext, CommitState = kPreCommit);
@@ -115,7 +121,7 @@ class CORE_EXPORT UseCounterImpl final {
   void Count(CSSPropertyID, CSSPropertyType, const LocalFrame*);
   void Count(WebFeature, const LocalFrame*);
   void CountWebDXFeature(WebDXFeature, const LocalFrame*);
-  void CountPermissionsPolicyUsage(mojom::blink::PermissionsPolicyFeature,
+  void CountPermissionsPolicyUsage(network::mojom::PermissionsPolicyFeature,
                                    PermissionsPolicyUsageType,
                                    const LocalFrame&);
 
@@ -138,6 +144,11 @@ class CORE_EXPORT UseCounterImpl final {
 
   void ClearMeasurementForTesting(WebFeature);
   void ClearMeasurementForTesting(WebDXFeature);
+
+  // Record total taken time by recording UseCounter metrics. This is only
+  // recorded in the outermost main frame, not initial empty document, and the
+  // URL is HTTP or HTTPS.
+  void ReportTotalTakenTime(const LocalFrame* frame, bool did_commit_load);
 
   void Trace(Visitor*) const;
 
@@ -176,6 +187,10 @@ class CORE_EXPORT UseCounterImpl final {
   UseCounterFeatureTracker feature_tracker_;
 
   HeapHashSet<Member<Observer>> observers_;
+
+  // Stores the total time taken by `DidObserveNewFeatureUsage()` for the
+  // measurement purpose.
+  base::TimeDelta total_taken_time_for_reporting_;
 };
 
 }  // namespace blink

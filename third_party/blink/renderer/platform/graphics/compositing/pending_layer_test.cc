@@ -38,7 +38,7 @@ bool Merge(PendingLayer& home,
            LCDTextPreference lcd_text_preference = LCDTextPreference::kIgnored,
            PendingLayer::IsCompositedScrollFunction is_composited_scroll =
                DefaultIsCompositedScroll) {
-  return home.Merge(guest, lcd_text_preference, is_composited_scroll);
+  return home.Merge(guest, lcd_text_preference, 1.f, is_composited_scroll);
 }
 
 TEST(PendingLayerTest, Merge) {

@@ -20,13 +20,13 @@
 
   _deviceListViewController =
       [[ShellDeviceListViewController alloc] initWithTitle:title];
-  _deviceListViewController.modalPresentationStyle = UIModalPresentationPopover;
-  _deviceListViewController.popoverPresentationController.delegate =
+
+  // Set `modalPresentationStyle` to UIModalPresentationOverFullScreen available
+  // on iOS and tvOS.
+  _deviceListViewController.modalPresentationStyle =
+      UIModalPresentationOverFullScreen;
+  _deviceListViewController.presentationController.delegate =
       _deviceListViewController;
-  _deviceListViewController.popoverPresentationController.sourceView =
-      baseViewController.view;
-  _deviceListViewController.popoverPresentationController.sourceRect =
-      baseViewController.view.bounds;
 
   _bluetoothChooserMediator = [[ShellBluetoothChooserMediator alloc]
       initWithBluetoothChooser:bluetoothChooser];

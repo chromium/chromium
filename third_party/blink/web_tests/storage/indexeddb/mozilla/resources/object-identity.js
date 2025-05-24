@@ -27,7 +27,7 @@ function prepareDatabase()
 
 function testIdentitySomeMore()
 {
-    transaction = evalAndLog("transaction = db.transaction('foo', 'readonly', {durability: 'relaxed'});");
+    transaction = evalAndLog("transaction = db.transaction('foo', 'readonly');");
     objectStore3 = evalAndLog("objectStore3 = transaction.objectStore('foo');");
     evalAndLog("objectStore3.someProperty = 'xyz'");
     objectStore4 = evalAndLog("objectStore4 = transaction.objectStore('foo');");

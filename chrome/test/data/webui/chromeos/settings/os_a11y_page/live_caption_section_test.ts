@@ -19,6 +19,10 @@ import {clearBody} from '../utils.js';
 
 import {TestCaptionsBrowserProxy} from './test_captions_browser_proxy.js';
 
+async function completePendingMicrotasks() {
+  await new Promise(resolve => setTimeout(resolve, 0));
+}
+
 suite('LiveCaptionSection', () => {
   let liveCaptionSection: SettingsLiveCaptionElement;
   let browserProxy: TestCaptionsBrowserProxy;
@@ -35,6 +39,12 @@ suite('LiveCaptionSection', () => {
     // Set up test browser proxy.
     browserProxy = new TestCaptionsBrowserProxy();
     CaptionsBrowserProxyImpl.setInstance(browserProxy);
+  });
+
+  teardown(async () => {
+    await completePendingMicrotasks();
+    liveCaptionSection.setPrefValue(
+        'accessibility.captions.live_caption_enabled', false);
   });
 
   /** Sets up the element for test. Call this after overriding loadTimeData. */
@@ -87,6 +97,18 @@ suite('LiveCaptionSection', () => {
 
   test('add languages and display download progress', async () => {
     await setupLiveCaptionSection();
+    const settingsToggle =
+        liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+            '#liveCaptionToggleButton');
+    assertTrue(!!settingsToggle);
+    // Clicking on the toggle switches it to true.
+    settingsToggle.click();
+    const newToggleValue =
+        liveCaptionSection
+            .getPref('accessibility.captions.live_caption_enabled')
+            .value;
+    assertTrue(newToggleValue);
+
     const addLanguagesButton =
         liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
             '#addLanguage');
@@ -181,4 +203,29 @@ suite('LiveCaptionSection', () => {
         liveCaptionSection.shadowRoot!.querySelector('settings-live-translate');
     assertNull(liveTranslateSection);
   });
+
+  test(
+      'Download default language even if another language is already installed',
+      async () => {
+        browserProxy.setInstalledLanguagePacks([{
+          displayName: 'Japanese',
+          nativeDisplayName: 'Japanese',
+          code: 'ja-JP',
+          downloadProgress: '100%',
+        }]);
+        await setupLiveCaptionSection();
+        const settingsToggle =
+            liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+                '#liveCaptionToggleButton');
+        assertTrue(!!settingsToggle);
+        // Clicking on the toggle switches it to true.
+        settingsToggle.click();
+        const newToggleValue =
+            liveCaptionSection
+                .getPref('accessibility.captions.live_caption_enabled')
+                .value;
+        assertTrue(newToggleValue);
+
+        await browserProxy.whenCalled('installLanguagePacks');
+      });
 });

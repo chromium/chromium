@@ -17,7 +17,7 @@ GuestModePolicyHandler::GuestModePolicyHandler()
     : TypeCheckingPolicyHandler(key::kBrowserGuestModeEnabled,
                                 base::Value::Type::BOOLEAN) {}
 
-GuestModePolicyHandler::~GuestModePolicyHandler() {}
+GuestModePolicyHandler::~GuestModePolicyHandler() = default;
 
 void GuestModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                  PrefValueMap* prefs) {
@@ -28,7 +28,6 @@ void GuestModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                       guest_mode_value->GetBool());
     return;
   }
-#if !BUILDFLAG(IS_CHROMEOS)
   // Disable guest mode by default if force signin is enabled.
   const base::Value* browser_signin_value =
       policies.GetValue(key::kBrowserSignin, base::Value::Type::INTEGER);
@@ -38,16 +37,13 @@ void GuestModePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     prefs->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
     return;
   }
-#endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   const base::Value* force_signin_value =
       policies.GetValue(key::kForceBrowserSignin, base::Value::Type::BOOLEAN);
   if (!browser_signin_value && force_signin_value &&
       force_signin_value->GetBool()) {
     prefs->SetBoolean(prefs::kBrowserGuestModeEnabled, false);
   }
-#endif
 }
 
 }  // namespace policy

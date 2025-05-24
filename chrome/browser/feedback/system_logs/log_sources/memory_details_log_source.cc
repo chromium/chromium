@@ -33,7 +33,7 @@ class SystemLogsMemoryHandler : public MemoryDetails {
   }
 
  private:
-  ~SystemLogsMemoryHandler() override {}
+  ~SystemLogsMemoryHandler() override = default;
   SysLogsSourceCallback callback_;
 };
 
@@ -41,8 +41,7 @@ MemoryDetailsLogSource::MemoryDetailsLogSource()
     : SystemLogsSource("MemoryDetails") {
 }
 
-MemoryDetailsLogSource::~MemoryDetailsLogSource() {
-}
+MemoryDetailsLogSource::~MemoryDetailsLogSource() = default;
 
 void MemoryDetailsLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

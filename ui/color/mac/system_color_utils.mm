@@ -15,8 +15,9 @@ bool graphite_tint_test_override = false;
 namespace ui {
 
 bool IsSystemGraphiteTinted() {
-  if (graphite_tint_test_override)
+  if (graphite_tint_test_override) {
     return true;
+  }
 
   return NSColor.currentControlTint == NSGraphiteControlTint;
 }

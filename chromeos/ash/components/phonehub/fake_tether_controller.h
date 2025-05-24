@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/components/phonehub/tether_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeTetherController : public TetherController {
  public:
@@ -36,7 +35,6 @@ class FakeTetherController : public TetherController {
   size_t num_scan_for_available_connection_calls_ = 0;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_TETHER_CONTROLLER_H_

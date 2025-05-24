@@ -8,8 +8,6 @@
 #include <memory>
 
 #include "ash/wm/desks/desks_controller.h"
-#include "base/memory/weak_ptr.h"
-#include "chromeos/crosapi/mojom/desk.mojom.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -27,28 +25,20 @@ class BrowserContext;
 namespace extensions {
 class EventRouter;
 
-class WMDesksEventsRouter : public crosapi::mojom::DeskEventObserver {
+class WMDesksEventsRouter {
  public:
   explicit WMDesksEventsRouter(Profile* profile);
   WMDesksEventsRouter(const WMDesksEventsRouter&) = delete;
   WMDesksEventsRouter& operator=(const WMDesksEventsRouter&) = delete;
-  ~WMDesksEventsRouter() override;
+  ~WMDesksEventsRouter();
 
-  // mojom::DeskEventObserver override
-  void OnDeskAdded(const base::Uuid& desk_id, bool from_undo = false) override;
-  void OnDeskRemoved(const base::Uuid& desk_id) override;
+  void OnDeskAdded(const base::Uuid& desk_id, bool from_undo = false);
+  void OnDeskRemoved(const base::Uuid& desk_id);
   void OnDeskSwitched(const base::Uuid& activated,
-                      const base::Uuid& deactivated) override;
-
-  mojo::PendingRemote<crosapi::mojom::DeskEventObserver> BindDeskClient() {
-    return receiver_.BindNewPipeAndPassRemoteWithVersion();
-  }
-  bool is_receiver_bound() { return receiver_.is_bound(); }
+                      const base::Uuid& deactivated);
 
  private:
   raw_ptr<EventRouter> event_router_;
-  mojo::Receiver<crosapi::mojom::DeskEventObserver> receiver_{this};
-  base::WeakPtrFactory<WMDesksEventsRouter> weak_factory_{this};
 };
 
 class WMDesksPrivateEventsAPI : public BrowserContextKeyedAPI,
@@ -88,7 +78,6 @@ class WMDesksPrivateEventsAPI : public BrowserContextKeyedAPI,
   bool HasDeskEventsListener();
   raw_ptr<Profile> profile_;
   std::unique_ptr<WMDesksEventsRouter> desk_events_router_;
-  base::WeakPtrFactory<WMDesksPrivateEventsAPI> weak_factory_{this};
 };
 
 template <>

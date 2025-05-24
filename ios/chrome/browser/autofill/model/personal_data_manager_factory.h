@@ -8,8 +8,9 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace autofill {
 
@@ -17,17 +18,10 @@ class PersonalDataManager;
 
 // Singleton that owns all PersonalDataManagers and associates them with
 // profiles.
-class PersonalDataManagerFactory : public BrowserStateKeyedServiceFactory {
+class PersonalDataManagerFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static PersonalDataManager* GetForBrowserState(ProfileIOS* profile);
-
   static PersonalDataManager* GetForProfile(ProfileIOS* profile);
   static PersonalDataManagerFactory* GetInstance();
-
-  PersonalDataManagerFactory(const PersonalDataManagerFactory&) = delete;
-  PersonalDataManagerFactory& operator=(const PersonalDataManagerFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<PersonalDataManagerFactory>;

@@ -458,8 +458,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -477,8 +476,7 @@ class VideoDecoderStreamTest
       // This is only interesting to test during VideoDecoderStream destruction.
       // There's no need to satisfy a callback.
       case DECRYPTOR_NO_KEY:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
 
       case DECODER_REINIT:
         decoder_->SatisfyInit();
@@ -493,8 +491,7 @@ class VideoDecoderStreamTest
         break;
 
       case NOT_PENDING:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     base::RunLoop().RunUntilIdle();
@@ -623,9 +620,8 @@ TEST_P(VideoDecoderStreamTest, Read_AfterReset) {
   Read();
 }
 
-// Tests that the decoder stream will switch from a software decoder to a
-// hardware decoder if the config size increases
-TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
+// Tests config changes with increasing sizes work correctly.
+TEST_P(VideoDecoderStreamTest, ConfigChangeIncreasingSize) {
   if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
       GetParam().parallel_decoding != 1) {
     // Fake demuxer allows reading over different configs when batch decoding is
@@ -646,12 +642,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
 
   // Initially we should be using a software decoder
   EXPECT_TRUE(decoder_);
-  EXPECT_FALSE(decoder_->IsPlatformDecoder());
 
   ReadAllFrames();
-
-  // We should end up on a hardware decoder
-  EXPECT_TRUE(decoder_->IsPlatformDecoder());
 
   // Test goes through 3 size changes from the initial kHDSize, each
   // step increases by [width_delta, height_delta].
@@ -671,9 +663,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
   EXPECT_TRUE(decoder_->eos_next_configs().back().Matches(expected_config));
 }
 
-// Tests that the decoder stream will stay on a hardware decoder when the config
-// size decreases.
-TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
+// Tests config changes with decreasing sizes work correctly.
+TEST_P(VideoDecoderStreamTest, ConfigChangeDecreasingSize) {
   if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
       GetParam().parallel_decoding != 1) {
     // Fake demuxer allows reading over different configs when batch decoding is
@@ -691,13 +682,40 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
                       gfx::Vector2dF(-width_delta, -height_delta));
   Initialize();
 
-  // We should initially be using a hardware decoder
   EXPECT_TRUE(decoder_);
-  EXPECT_TRUE(decoder_->IsPlatformDecoder());
+  ReadAllFrames();
+}
+
+// Tests that the decoder stream will remain on the same decoder when elided
+// EOS processing is enabled.
+TEST_P(VideoDecoderStreamTest, ConfigChangeElidedEOS) {
+  if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
+      GetParam().parallel_decoding != 1) {
+    // Fake demuxer allows reading over different configs when batch decoding is
+    // enabled, so we need to skip this test.
+    return;
+  }
+  EnablePlatformDecoders({1});
+
+  // Create a demuxer stream with a config that increases in size
+  auto const size_delta =
+      TestVideoConfig::LargeCodedSize() - TestVideoConfig::NormalCodedSize();
+  auto const width_delta = size_delta.width() / (kNumConfigs - 1);
+  auto const height_delta = size_delta.height() / (kNumConfigs - 1);
+  CreateDemuxerStream(TestVideoConfig::NormalCodedSize(),
+                      gfx::Vector2dF(width_delta, height_delta));
+  auto base_config = demuxer_stream_->video_decoder_config();
+  Initialize();
+
+  auto initial_decoder = decoder_;
+  decoder_->enable_eliding_eos();
+  EXPECT_TRUE(decoder_);
+
   ReadAllFrames();
 
-  // We should remain on a hardware decoder.
-  EXPECT_TRUE(decoder_->IsPlatformDecoder());
+  // Ensure no matter how the config changes we stay on the same decoder.
+  EXPECT_EQ(initial_decoder, decoder_);
+  EXPECT_FALSE(decoder_->eos_next_configs().empty());
 }
 
 TEST_P(VideoDecoderStreamTest, Read_ProperMetadata) {
@@ -1101,6 +1119,25 @@ TEST_P(VideoDecoderStreamTest, Destroy_AfterRead_AfterReset) {
 
 TEST_P(VideoDecoderStreamTest, FallbackDecoder_DecodeError) {
   Initialize();
+  decoder_->SimulateError();
+  ReadOneFrame();
+
+  // |video_decoder_stream_| should have fallen back to a new decoder.
+  ASSERT_EQ(GetDecoderId(1), decoder_->GetDecoderId());
+
+  ASSERT_FALSE(pending_read_);
+  ASSERT_EQ(last_read_status_code_, DecoderStatus::Codes::kOk);
+
+  // Check that we fell back to Decoder2.
+  ASSERT_GT(decoder_->total_bytes_decoded(), 0);
+
+  // Verify no frame was dropped.
+  ReadAllFrames();
+}
+
+TEST_P(VideoDecoderStreamTest, FallbackDecoderDecodeErrorAfterReset) {
+  Initialize();
+  Reset();
   decoder_->SimulateError();
   ReadOneFrame();
 

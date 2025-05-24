@@ -6,13 +6,15 @@ package org.chromium.chrome.browser.toolbar;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
  * Simple enum for the types of toolbar bitmap captures. Treat this list as append only and keep it
  * in sync with ToolbarCaptureType in enums.xml.
- **/
+ */
 @IntDef({
     ToolbarCaptureType.UNKNOWN,
     ToolbarCaptureType.TOP,
@@ -20,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
     ToolbarCaptureType.NUM_ENTRIES
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface ToolbarCaptureType {
     int UNKNOWN = 0;
     int TOP = 1;

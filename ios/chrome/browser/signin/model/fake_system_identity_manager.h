@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "ios/chrome/browser/signin/model/system_identity_interaction_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager.h"
 #include "ios/chrome/browser/signin/model/system_identity_manager_observer.h"
 
@@ -66,11 +67,28 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Returns the list of account capabilities associated with the identity.
   AccountCapabilities GetVisibleCapabilities(id<SystemIdentity> identity);
 
+  // Sets whether the hosted domain for each identity will be automatically and
+  // immediately available via GetCachedHostedDomainForIdentity(). If false, the
+  // hosted domain must first be queried (asynchronously) via GetHostedDomain().
+  // True by default.
+  void SetInstantlyFillHostedDomainCache(bool instantly_fill);
+
+  // Sets the error to be returned from all GetHostedDomain() calls. If nil, the
+  // calls will succeed.
+  void SetGetHostedDomainError(NSError* error);
+
+  // Returns the number of hosted domain requests that have been answered with
+  // an error (as set by SetGetHostedDomainError()).
+  size_t GetNumHostedDomainErrorsReturned() const;
+
   // Simulates reloading the identities from the keychain.
   void FireSystemIdentityReloaded();
 
   // Simulates an updated notification for `identity`.
   void FireIdentityUpdatedNotification(id<SystemIdentity> identity);
+
+  // Simulates a refresh token updated notification for `identity`.
+  void FireIdentityRefreshTokenUpdatedNotification(id<SystemIdentity> identity);
 
   // Waits until all asynchronous callbacks have been completed.
   void WaitForServiceCallbacksToComplete();
@@ -104,7 +122,12 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
       PresentDialogConfiguration configuration) final;
   DismissViewCallback PresentLinkedServicesSettingsDetailsController(
       PresentDialogConfiguration configuration) final;
+
+  // Sets the factory for creating SystemIdentityInteractionManager instances.
+  void SetInteractionManagerFactory(
+      base::RepeatingCallback<id<SystemIdentityInteractionManager>()> factory);
   id<SystemIdentityInteractionManager> CreateInteractionManager() final;
+
   void IterateOverIdentities(IdentityIteratorCallback callback) final;
   void ForgetIdentity(id<SystemIdentity> identity,
                       ForgetIdentityCallback callback) final;
@@ -122,13 +145,16 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
                        HostedDomainCallback callback) final;
   NSString* GetCachedHostedDomainForIdentity(id<SystemIdentity> identity) final;
   void FetchCapabilities(id<SystemIdentity> identity,
-                         const std::set<std::string>& names,
+                         const std::vector<std::string>& names,
                          FetchCapabilitiesCallback callback) final;
   bool HandleMDMNotification(id<SystemIdentity> identity,
                              NSArray<id<SystemIdentity>>* active_identities,
                              id<RefreshAccessTokenError> error,
                              HandleMDMCallback callback) final;
   bool IsMDMError(id<SystemIdentity> identity, NSError* error) final;
+  void FetchTokenAuthURL(id<SystemIdentity> identity,
+                         NSURL* target_url,
+                         AuthenticatedURLCallback callback) final;
 
  private:
   // Returns a weak pointer to the current instance.
@@ -152,7 +178,7 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
 
   // Helper used to implement the asynchronous part of `GetHostedDomain`.
   void FetchCapabilitiesAsync(id<SystemIdentity> identity,
-                              const std::set<std::string>& names,
+                              const std::vector<std::string>& names,
                               FetchCapabilitiesCallback callback);
 
   // Posts `closure` to be executed asynchronously on the current sequence
@@ -165,6 +191,11 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // reaches 0.
   void ExecuteClosure(base::OnceClosure closure);
 
+  bool instantly_fill_hosted_domain_cache_ = true;
+  NSMutableSet<id<SystemIdentity>>* hosted_domain_cache_ = [NSMutableSet set];
+  NSError* get_hosted_domain_error_ = nil;
+  size_t num_hosted_domain_errors_returned_ = 0;
+
   // Counter of pending callback and closure used to resume the execution
   // of `WaitForServiceCallbacksToComplete()` when the counter reaches 0.
   size_t pending_callbacks_ = 0;
@@ -175,6 +206,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // List of gaia ids for identities that has been removed by calling
   // `ForgetIdentity()` (instead of `ForgetIdentityFromOtherApplication()`).
   __strong NSMutableSet<NSString*>* gaia_ids_removed_by_user_ = nil;
+
+  base::RepeatingCallback<id<SystemIdentityInteractionManager>()>
+      interaction_manager_factory_;
 
   base::WeakPtrFactory<FakeSystemIdentityManager> weak_ptr_factory_{this};
 };

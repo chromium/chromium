@@ -29,7 +29,7 @@ class StubPolicyConversionsClient : public PolicyConversionsClient {
   base::Value::List GetExtensionPolicies(PolicyDomain policy_domain) override {
     return base::Value::List();
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::Value::List GetDeviceLocalAccountPolicies() override {
     return base::Value::List();
   }

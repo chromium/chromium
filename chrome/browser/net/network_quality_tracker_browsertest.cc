@@ -120,8 +120,8 @@ class TestNetworkQualityObserver
 
 class NetworkQualityTrackerBrowserTest : public InProcessBrowserTest {
  public:
-  NetworkQualityTrackerBrowserTest() {}
-  ~NetworkQualityTrackerBrowserTest() override {}
+  NetworkQualityTrackerBrowserTest() = default;
+  ~NetworkQualityTrackerBrowserTest() override = default;
 
   // Simulates a network quality change.
   void SimulateNetworkQualityChange(net::EffectiveConnectionType type) {

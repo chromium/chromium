@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <unordered_set>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -64,46 +62,42 @@ bool WebSocketHandshakeStreamBase::ValidateSubProtocol(
     std::string* sub_protocol,
     std::string* failure_message) {
   size_t iter = 0;
-  std::string value;
-  std::unordered_set<std::string> requested_set(requested_sub_protocols.begin(),
-                                                requested_sub_protocols.end());
-  int count = 0;
-  bool has_multiple_protocols = false;
-  bool has_invalid_protocol = false;
-
-  while (!has_invalid_protocol || !has_multiple_protocols) {
-    std::string temp_value;
-    if (!headers->EnumerateHeader(&iter, websockets::kSecWebSocketProtocol,
-                                  &temp_value))
-      break;
-    value = temp_value;
-    if (requested_set.count(value) == 0)
-      has_invalid_protocol = true;
-    if (++count > 1)
-      has_multiple_protocols = true;
+  std::optional<std::string> value;
+  while (std::optional<std::string_view> maybe_value = headers->EnumerateHeader(
+             &iter, websockets::kSecWebSocketProtocol)) {
+    if (value) {
+      *failure_message =
+          MultipleHeaderValuesMessage(websockets::kSecWebSocketProtocol);
+      return false;
+    }
+    if (requested_sub_protocols.empty()) {
+      *failure_message =
+          base::StrCat({"Response must not include 'Sec-WebSocket-Protocol' "
+                        "header if not present in request: ",
+                        *maybe_value});
+      return false;
+    }
+    auto it = std::ranges::find(requested_sub_protocols, *maybe_value);
+    if (it == requested_sub_protocols.end()) {
+      *failure_message =
+          base::StrCat({"'Sec-WebSocket-Protocol' header value '", *maybe_value,
+                        "' in response does not match any of sent values"});
+      return false;
+    }
+    value = *maybe_value;
   }
 
-  if (has_multiple_protocols) {
-    *failure_message =
-        MultipleHeaderValuesMessage(websockets::kSecWebSocketProtocol);
-    return false;
-  } else if (count > 0 && requested_sub_protocols.size() == 0) {
-    *failure_message =
-        base::StrCat({"Response must not include 'Sec-WebSocket-Protocol' "
-                      "header if not present in request: ",
-                      value});
-    return false;
-  } else if (has_invalid_protocol) {
-    *failure_message = "'Sec-WebSocket-Protocol' header value '" + value +
-                       "' in response does not match any of sent values";
-    return false;
-  } else if (requested_sub_protocols.size() > 0 && count == 0) {
+  if (!requested_sub_protocols.empty() && !value.has_value()) {
     *failure_message =
         "Sent non-empty 'Sec-WebSocket-Protocol' header "
         "but no response was received";
     return false;
   }
-  *sub_protocol = value;
+  if (value) {
+    *sub_protocol = *value;
+  } else {
+    sub_protocol->clear();
+  }
   return true;
 }
 
@@ -114,20 +108,20 @@ bool WebSocketHandshakeStreamBase::ValidateExtensions(
     std::string* failure_message,
     WebSocketExtensionParams* params) {
   size_t iter = 0;
-  std::string header_value;
   std::vector<std::string> header_values;
   // TODO(ricea): If adding support for additional extensions, generalise this
   // code.
   bool seen_permessage_deflate = false;
-  while (headers->EnumerateHeader(&iter, websockets::kSecWebSocketExtensions,
-                                  &header_value)) {
+  while (std::optional<std::string_view> header_value =
+             headers->EnumerateHeader(&iter,
+                                      websockets::kSecWebSocketExtensions)) {
     WebSocketExtensionParser parser;
-    if (!parser.Parse(header_value)) {
+    if (!parser.Parse(*header_value)) {
       // TODO(yhirano) Set appropriate failure message.
       *failure_message =
-          "'Sec-WebSocket-Extensions' header value is "
-          "rejected by the parser: " +
-          header_value;
+          base::StrCat({"'Sec-WebSocket-Extensions' header value is "
+                        "rejected by the parser: ",
+                        *header_value});
       return false;
     }
 
@@ -149,7 +143,7 @@ bool WebSocketHandshakeStreamBase::ValidateExtensions(
         // here because we send a request compatible with any valid responses.
         // TODO(yhirano): Place a DCHECK here.
 
-        header_values.push_back(header_value);
+        header_values.emplace_back(*header_value);
       } else {
         *failure_message = "Found an unsupported extension '" +
                            extension.name() +

@@ -24,6 +24,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_source.h"
 #include "net/nqe/network_quality_estimator_test_util.h"
@@ -320,6 +321,29 @@ TEST_P(TCPClientSocketTest, DnsAliasesPersistForReuse) {
               testing::ElementsAre("alias1", "alias2", "host"));
 }
 
+TEST_P(TCPClientSocketTest, BlockRestrictedAddress) {
+  base::test::ScopedFeatureList feature_list;
+  IPAddress lo_address = IPAddress::IPv4Localhost();
+  TCPServerSocket server(nullptr, NetLogSource());
+  ASSERT_THAT(
+      server.Listen(IPEndPoint(lo_address, 0), 1, /*ipv6_only=*/std::nullopt),
+      IsOk());
+  IPEndPoint server_address;
+  ASSERT_THAT(server.GetLocalAddress(&server_address), IsOk());
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRestrictAbusePortsOnLocalhost,
+      {{"localhost_restrict_ports",
+        base::NumberToString(server_address.port())}});
+  ReloadLocalhostRestrictedPortsForTesting();
+  TCPClientSocket socket(AddressList(server_address), nullptr, nullptr, nullptr,
+                         NetLogSource());
+
+  TestCompletionCallback connect_callback;
+  int connect_result = socket.Connect(connect_callback.callback());
+  EXPECT_THAT(connect_callback.GetResult(connect_result),
+              IsError(ERR_UNSAFE_PORT));
+}
+
 class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
  public:
   TestSocketPerformanceWatcher() = default;
@@ -410,26 +434,24 @@ TEST_P(TCPClientSocketTest, Tag) {
   old_traffic = GetTaggedBytes(tag_val2);
   SocketTag tag2(getuid(), tag_val2);
   s.ApplySocketTag(tag2);
-  const char kRequest1[] = "GET / HTTP/1.0";
+  const std::string kRequest1 = "GET / HTTP/1.0";
   auto write_buffer1 = base::MakeRefCounted<StringIOBuffer>(kRequest1);
   TestCompletionCallback write_callback1;
-  EXPECT_EQ(s.Write(write_buffer1.get(), strlen(kRequest1),
+  EXPECT_EQ(s.Write(write_buffer1.get(), write_buffer1->size(),
                     write_callback1.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
-            static_cast<int>(strlen(kRequest1)));
+            static_cast<int>(kRequest1.size()));
   EXPECT_GT(GetTaggedBytes(tag_val2), old_traffic);
 
   // Verify socket can be retagged with a new value and the current process's
   // UID.
   old_traffic = GetTaggedBytes(tag_val1);
   s.ApplySocketTag(tag1);
-  const char kRequest2[] = "\n\n";
-  scoped_refptr<IOBufferWithSize> write_buffer2 =
-      base::MakeRefCounted<IOBufferWithSize>(strlen(kRequest2));
-  memmove(write_buffer2->data(), kRequest2, strlen(kRequest2));
+  const std::string kRequest2 = "\n\n";
+  auto write_buffer2 = base::MakeRefCounted<StringIOBuffer>(kRequest2);
   TestCompletionCallback write_callback2;
-  EXPECT_EQ(s.Write(write_buffer2.get(), strlen(kRequest2),
+  EXPECT_EQ(s.Write(write_buffer2.get(), write_buffer2->size(),
                     write_callback2.callback(), TRAFFIC_ANNOTATION_FOR_TESTS),
-            static_cast<int>(strlen(kRequest2)));
+            static_cast<int>(kRequest2.size()));
   EXPECT_GT(GetTaggedBytes(tag_val1), old_traffic);
 
   s.Disconnect();
@@ -694,8 +716,8 @@ TEST_P(TCPClientSocketTest, SuspendDuringWrite) {
 
   // Write to the socket until a write doesn't complete synchronously.
   const int kBufferSize = 4096;
-  auto write_buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
-  memset(write_buffer->data(), '1', kBufferSize);
+  auto write_buffer = base::MakeRefCounted<VectorIOBuffer>(
+      std::vector<uint8_t>(kBufferSize, '1'));
   TestCompletionCallback callback;
   while (true) {
     int rv =
@@ -777,8 +799,8 @@ TEST_P(TCPClientSocketTest, SuspendDuringReadAndWrite) {
 
     // Write to the socket until a write doesn't complete synchronously.
     const int kBufferSize = 4096;
-    auto write_buffer = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
-    memset(write_buffer->data(), '1', kBufferSize);
+    auto write_buffer = base::MakeRefCounted<VectorIOBuffer>(
+        std::vector<uint8_t>(kBufferSize, '1'));
     TestCompletionCallback write_callback;
     while (true) {
       int rv = client_socket->Write(write_buffer.get(), kBufferSize,

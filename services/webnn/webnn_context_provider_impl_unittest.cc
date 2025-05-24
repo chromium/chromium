@@ -89,9 +89,8 @@ TEST_F(WebNNContextProviderImplTest, CPUIsSupported) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kCpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault,
-          /*thread_count_hint=*/0),
+          mojom::Device::kCpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_success());
@@ -111,9 +110,8 @@ TEST_F(WebNNContextProviderImplTest, GPUNotSupported) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kGpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault,
-          /*thread_count_hint=*/0),
+          mojom::Device::kGpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
@@ -133,9 +131,8 @@ TEST_F(WebNNContextProviderImplTest, NPUNotSupported) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kNpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault,
-          /*thread_count_hint=*/0),
+          mojom::Device::kNpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
@@ -155,16 +152,15 @@ TEST_F(WebNNContextProviderImplTest, GpuFeatureStatusDisabled) {
   base::test::TestFuture<mojom::CreateContextResultPtr> future;
   provider_remote->CreateWebNNContext(
       mojom::CreateContextOptions::New(
-          mojom::CreateContextOptions::Device::kNpu,
-          mojom::CreateContextOptions::PowerPreference::kDefault,
-          /*thread_count_hint=*/0),
+          mojom::Device::kNpu,
+          mojom::CreateContextOptions::PowerPreference::kDefault),
       future.GetCallback());
   mojom::CreateContextResultPtr result = future.Take();
   ASSERT_TRUE(result->is_error());
   const mojom::ErrorPtr& create_context_error = result->get_error();
   EXPECT_EQ(create_context_error->code, mojom::Error::Code::kNotSupportedError);
   EXPECT_EQ(create_context_error->message,
-            "WebNN is not compatible with device.");
+            "DirectML: WebNN is not compatible with device.");
 }
 
 #endif

@@ -57,13 +57,6 @@ namespace viz {
 
 namespace {
 
-// Allow skipping Begin/EndDraw on the shared image backing for non-root render
-// passes if the computed update rect would mean nothing would be drawn.
-// This is a kill switch in case something depends on an empty update.
-BASE_FEATURE(kAllowSkipEmptyNonrootRenderPassDraws,
-             "AllowSkipEmptyNonrootRenderPassDraws",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enum used for UMA histogram. These enum values must not be changed or
 // reused.
 enum class RenderPassDrawRectAssign {
@@ -101,9 +94,7 @@ DirectRenderer::DirectRenderer(const RendererSettings* settings,
       resource_provider_(resource_provider),
       overlay_processor_(overlay_processor),
       allow_undamaged_nonroot_render_pass_to_skip_(base::FeatureList::IsEnabled(
-          features::kAllowUndamagedNonrootRenderPassToSkip)),
-      use_render_pass_drawn_rect_(
-          base::FeatureList::IsEnabled(features::kRenderPassDrawnRect)) {
+          features::kAllowUndamagedNonrootRenderPassToSkip)) {
   DCHECK(output_surface_);
 }
 
@@ -112,21 +103,6 @@ DirectRenderer::~DirectRenderer() = default;
 void DirectRenderer::Initialize() {
   use_partial_swap_ = settings_->partial_swap_enabled && CanPartialSwap();
   initialized_ = true;
-}
-
-// static
-gfx::RectF DirectRenderer::QuadVertexRect() {
-  return gfx::RectF(-0.5f, -0.5f, 1.f, 1.f);
-}
-
-// static
-void DirectRenderer::QuadRectTransform(gfx::Transform* quad_rect_transform,
-                                       const gfx::Transform& quad_transform,
-                                       const gfx::RectF& quad_rect) {
-  *quad_rect_transform = quad_transform;
-  quad_rect_transform->Translate(0.5 * quad_rect.width() + quad_rect.x(),
-                                 0.5 * quad_rect.height() + quad_rect.y());
-  quad_rect_transform->Scale(quad_rect.width(), quad_rect.height());
 }
 
 gfx::AxisTransform2d DirectRenderer::CalculateTargetToDeviceTransform(
@@ -148,10 +124,10 @@ gfx::Rect DirectRenderer::MoveFromDrawToWindowSpace(
   return window_rect;
 }
 
-const DrawQuad* DirectRenderer::CanPassBeDrawnDirectly(
+std::optional<const DrawQuad*> DirectRenderer::CanPassBeDrawnDirectly(
     const AggregatedRenderPass* pass,
     const RenderPassRequirements& requirements) {
-  return nullptr;
+  return std::nullopt;
 }
 
 void DirectRenderer::SetOutputSurfaceClipRect(const gfx::Rect& clip_rect) {
@@ -213,11 +189,11 @@ void DirectRenderer::DecideRenderPassAllocationsForFrame(
     // If there's a copy request, we need an explicit renderpass backing so
     // only try to draw directly if there are no copy requests.
     if (!is_root && pass->copy_requests.empty()) {
-      if (const DrawQuad* quad =
+      if (std::optional<const DrawQuad*> quad =
               CanPassBeDrawnDirectly(pass.get(), requirements)) {
         // If the render pass is drawn directly, it will not be drawn from as
         // a render pass so it's not added to the map.
-        render_pass_bypass_quads_[pass->id] = quad;
+        render_pass_bypass_quads_[pass->id] = quad.value();
         continue;
       }
     }
@@ -252,21 +228,17 @@ void DirectRenderer::DrawFrame(
     current_frame()->root_damage_rect.Union(
         overlay_processor_->GetAndResetOverlayDamage());
   }
+
   if (auto* ink_renderer =
           GetDelegatedInkPointRenderer(/*create_if_necessary=*/false)) {
-    // The path must be finalized before GetDamageRect() can return an accurate
-    // rect that will allow the old trail to be removed and the new trail to
-    // be drawn at the same time.
+    // The path must be finalized before GetDamageRect() can return an
+    // accurate rect that will allow the old trail to be removed and the new
+    // trail to be drawn at the same time.
     ink_renderer->FinalizePathForDraw();
-    gfx::Rect delegated_ink_damage_rect = ink_renderer->GetDamageRect();
-
-    // The viewport could have changed size since the presentation area was
-    // created and propagated, such as if is window was resized. Intersect the
-    // viewport here to ensure the damage rect doesn't extend beyond the current
-    // viewport.
-    delegated_ink_damage_rect.Intersect(gfx::Rect(device_viewport_size));
-    current_frame()->root_damage_rect.Union(delegated_ink_damage_rect);
   }
+  AddInkDamageToRenderPass(current_frame()->root_render_pass,
+                           current_frame()->root_damage_rect);
+
   current_frame()->root_damage_rect.Intersect(gfx::Rect(device_viewport_size));
   current_frame()->device_viewport_size = device_viewport_size;
   current_frame()->display_color_spaces = display_color_spaces;
@@ -385,7 +357,7 @@ void DirectRenderer::DrawFrame(
     // TODO(penghuang): verify this logic with SkiaRenderer.
     if (!output_surface_->capabilities().supports_surfaceless)
       needs_full_frame_redraw = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN)
     // If compositing is delegated, then there will be no output_surface_plane,
     // and we should not trigger a redraw of the root render pass.
     // Pixel tests will not be displayed as overlay planes, so they need redraw.
@@ -441,7 +413,7 @@ void DirectRenderer::DrawFrame(
                               kMaxPixelCount, kNumBucketsPixelCount);
 
   // Data focused on pixel counts closer to screen resolution sizes.
-  constexpr base::Histogram::Sample kHistogramScale = 100 * 1024;
+  constexpr base::Histogram::Sample32 kHistogramScale = 100 * 1024;
   constexpr uint64_t kNumberOfBucketsLinear = 100;
   UMA_HISTOGRAM_SCALED_EXACT_LINEAR(
       "Compositing.DirectRenderer.TotalPixelsRenderedNarrow",
@@ -458,16 +430,6 @@ void DirectRenderer::DrawFrame(
 
   if (overlay_processor_)
     overlay_processor_->ScheduleOverlays(resource_provider_);
-
-  // Total non-root render pass count, excluding root render pass and bypassed
-  // render passes.
-  auto nonroot_render_pass_count = render_passes_in_draw_order->size() - 1 -
-                                   render_pass_bypass_quads_.size();
-  if (nonroot_render_pass_count > 0) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Compositing.DirectRenderer.SkipAllNonRootRenderPassesPerFrame",
-        skipped_render_pass_ids_.size() == nonroot_render_pass_count);
-  }
 
   // The current drawing frame is valid only during the duration of this
   // function. Clear the pointers held inside to avoid holding dangling
@@ -491,16 +453,7 @@ gfx::Rect DirectRenderer::GetCurrentFramebufferDamage() const {
 }
 
 gfx::Rect DirectRenderer::GetTargetDamageBoundingRect() const {
-  if (use_render_pass_drawn_rect_) {
     return gfx::Rect();
-  }
-
-  gfx::Rect bounding_rect = GetCurrentFramebufferDamage();
-  if (overlay_processor_) {
-    bounding_rect.Union(
-        overlay_processor_->GetPreviousFrameOverlaysBoundingRect());
-  }
-  return bounding_rect;
 }
 
 gfx::Rect DirectRenderer::DeviceViewportRectInDrawSpace() const {
@@ -532,7 +485,8 @@ bool DirectRenderer::ShouldSkipQuad(const DrawQuad& quad,
     // visible bounds.
     auto filter_it = render_pass_filters_.find(rpdq->render_pass_id);
     if (filter_it != render_pass_filters_.end()) {
-      target_rect = filter_it->second->ExpandRectForPixelMovement(target_rect);
+      target_rect =
+          GetExpandedRectForPixelMovingFilters(*rpdq, *filter_it->second);
     }
   }
 
@@ -603,11 +557,11 @@ const cc::FilterOperations* DirectRenderer::BackdropFiltersForPass(
   return it == render_pass_backdrop_filters_.end() ? nullptr : it->second;
 }
 
-const std::optional<gfx::RRectF> DirectRenderer::BackdropFilterBoundsForPass(
+const std::optional<SkPath> DirectRenderer::BackdropFilterBoundsForPass(
     AggregatedRenderPassId render_pass_id) const {
   auto it = render_pass_backdrop_filter_bounds_.find(render_pass_id);
   return it == render_pass_backdrop_filter_bounds_.end()
-             ? std::optional<gfx::RRectF>()
+             ? std::optional<SkPath>()
              : it->second;
 }
 
@@ -687,17 +641,47 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
   }
 }
 
+void DirectRenderer::AddInkDamageToRenderPass(
+    const AggregatedRenderPass* render_pass,
+    gfx::Rect& output_damage_rect) {
+  if (auto* ink_renderer =
+          GetDelegatedInkPointRenderer(/*create_if_necessary=*/false)) {
+    auto pass_id = ink_renderer->GetLatestMetadataRenderPassId();
+    // Apply damage rect to target render pass.
+    // If the targeted render pass changes or there's no target, it is still
+    // important to apply the new damage rect to the old render pass with
+    // delegated ink, so that the region with ink can be invalidated and the ink
+    // be cleared.
+    if (render_pass->id == pass_id ||
+        render_pass->id == last_pass_with_delegated_ink_) {
+      // Ink damage rect is in root target space, and will need to be
+      // transformed to the current render pass space.
+      gfx::Transform root_target_to_render_pass_draw_transform;
+      if (render_pass->transform_to_root_target.GetInverse(
+              &root_target_to_render_pass_draw_transform)) {
+        const gfx::Rect delegated_ink_damage_rect =
+            ink_renderer->GetDamageRect();
+        // Damage rect is initially in root space. Transform to render pass
+        // space, even for a root render pass.
+        gfx::Rect delegated_ink_damage_rect_in_draw_space =
+            root_target_to_render_pass_draw_transform.MapRect(
+                delegated_ink_damage_rect);
+        // Make sure the damage rect is not larger than the render pass output
+        // rect.
+        delegated_ink_damage_rect_in_draw_space.Intersect(
+            gfx::Rect(render_pass->output_rect));
+        output_damage_rect.Union(delegated_ink_damage_rect_in_draw_space);
+      }
+    }
+    last_pass_with_delegated_ink_ = pass_id;
+  }
+}
+
 void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   TRACE_EVENT1("viz", "DirectRenderer::DrawRenderPass", "NumberOfQuads",
                render_pass->quad_list.size());
 
-  bool can_skip_rp = CanSkipRenderPass(render_pass);
-  if (render_pass != current_frame()->root_render_pass) {
-    UMA_HISTOGRAM_BOOLEAN("Compositing.DirectRenderer.SkipNonRootRenderPass",
-                          can_skip_rp);
-  }
-
-  if (can_skip_rp) {
+  if (CanSkipRenderPass(render_pass)) {
     skipped_render_pass_ids_.insert(render_pass->id);
     return;
   }
@@ -713,12 +697,14 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
         ComputeScissorRectForRenderPass(current_frame()->current_render_pass));
   }
 
+  AddInkDamageToRenderPass(current_frame()->current_render_pass,
+                           render_pass_scissor_in_draw_space);
+
   if (is_root_render_pass && output_surface_clip_rect_) {
     render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
   }
 
-  if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty() &&
-      base::FeatureList::IsEnabled(kAllowSkipEmptyNonrootRenderPassDraws)) {
+  if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty()) {
     // If the scissor rect is empty, we will end up skipping all the draw quads,
     // so there is no work to do.
     return;
@@ -800,7 +786,7 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
                 render_pass_is_clipped);
   FinishDrawingRenderPass();
 
-  if (use_render_pass_drawn_rect_ && !is_root_render_pass) {
+  if (!is_root_render_pass) {
     const gfx::Rect drawn_rect = GetRenderPassBackingDrawnRect(render_pass->id);
     constexpr char kDrawnRectAssignmentType[] =
         "Compositing.DirectRenderer.DrawnRectAssignmentType";
@@ -860,17 +846,19 @@ DirectRenderer::CalculateRenderPassRequirements(
   // All root render pass backings allocated by the renderer needs to eventually
   // go into some composition tree. Other things that own/allocate the root pass
   // backing include the output device and buffer queue.
-  // Windows also can support scanout backings for non-root passes to optimize
-  // partially delegated compositing iff they will not be read in Viz.
-  requirements.is_scanout =
-      is_root || (features::IsDelegatedCompositingEnabled() &&
-                  render_pass->is_from_surface_root_pass &&
-                  !render_pass->will_backing_be_read_by_viz);
+  requirements.is_scanout = is_root;
+  if (IsDelegatedCompositingSupportedAndEnabled(
+          output_surface_->capabilities().dc_support_level)) {
+    // Windows also can support scanout backings for non-root passes to optimize
+    // partially delegated compositing iff they will not be read in Viz.
+    requirements.is_scanout |= render_pass->is_from_surface_root_pass &&
+                               !render_pass->will_backing_be_read_by_viz;
+  }
 
   requirements.scanout_dcomp_surface =
       requirements.is_scanout && render_pass->needs_synchronous_dcomp_commit;
 #else
-  // On macOS and Lacros, the root render pass is handled by |BufferQueue| and
+  // On macOS the root render pass is handled by |BufferQueue| and
   // RPDQ overlays are handled by |PrepareRenderPassOverlay|.
   requirements.is_scanout = is_root;
 #endif
@@ -1001,7 +989,7 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
             if (foreground_filters &&
                 foreground_filters->HasFilterThatMovesPixels()) {
               gfx::Rect expanded_rect =
-                  GetExpandedRectWithPixelMovingForegroundFilter(
+                  GetTargetExpandedRectForPixelMovingFilters(
                       *rpdq, *foreground_filters);
 
               // Expanding damage outside of the 'clip_rect' can cause parts of
@@ -1042,53 +1030,24 @@ gfx::Rect DirectRenderer::ComputeScissorRectForRenderPass(
   DCHECK(render_pass->copy_requests.empty() ||
          (render_pass->damage_rect == render_pass->output_rect));
 
-  if (use_render_pass_drawn_rect_) {
-    if (GetRenderPassBackingDrawnRect(render_pass->id) ==
-        render_pass->output_rect) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.DirectRenderer.RenderPassDrawnRectMatch", true);
-      return render_pass->damage_rect;
-    } else {
-      // This is the first time we are drawing to this backing but it might not
-      // be the first time we are drawing this render pass. If the render pass
-      // backing has been deallocated we must conservatively redraw the entire
-      // 'output_rect' as we have lost the accumulated damaged for this pass.
-      // TODO(crbug.com/332562242): We should move to better tracking of
-      // the drawn area by only fully drawing the visible portion of this render
-      // pass and not the entire output rect. This information is available in
-      // surface aggregator as root parent clip for render passes.
-      UMA_HISTOGRAM_BOOLEAN(
-          "Compositing.DirectRenderer.RenderPassDrawnRectMatch", false);
-      return render_pass->output_rect;
-    }
-  }
-  // If the root damage rect has been expanded due to overlays, all the other
-  // damage rect calculations are incorrect. If the root damage rect was shrunk
-  // to an empty rect (i.e. during overlay processing for delegated compositing)
-  // then |Contains()| no longer works as expected so it must be checked
-  // separately.
-  if (!root_damage_rect.IsEmpty() &&
-      !root_render_pass->damage_rect.Contains(root_damage_rect)) {
+  if (GetRenderPassBackingDrawnRect(render_pass->id) ==
+      render_pass->output_rect) {
+    UMA_HISTOGRAM_BOOLEAN("Compositing.DirectRenderer.RenderPassDrawnRectMatch",
+                          true);
+    return render_pass->damage_rect;
+  } else {
+    // This is the first time we are drawing to this backing but it might not
+    // be the first time we are drawing this render pass. If the render pass
+    // backing has been deallocated we must conservatively redraw the entire
+    // 'output_rect' as we have lost the accumulated damaged for this pass.
+    // TODO(crbug.com/332562242): We should move to better tracking of
+    // the drawn area by only fully drawing the visible portion of this render
+    // pass and not the entire output rect. This information is available in
+    // surface aggregator as root parent clip for render passes.
+    UMA_HISTOGRAM_BOOLEAN("Compositing.DirectRenderer.RenderPassDrawnRectMatch",
+                          false);
     return render_pass->output_rect;
   }
-
-  // For the non-root render pass.
-  // This is a repeated computation of target damage to render pass damage that
-  // already occurs in surface aggregator.
-  gfx::Rect damage_rect = render_pass->damage_rect;
-  if (!frame_buffer_damage.IsEmpty()) {
-    gfx::Transform inverse_transform;
-    if (render_pass->transform_to_root_target.GetInverse(&inverse_transform)) {
-      // |frame_buffer_damage| is in the root target space. Transform the damage
-      // from the root to the non-root space before it's added.
-      gfx::Rect frame_buffer_damage_in_render_pass_space =
-          cc::MathUtil::MapEnclosingClippedRect(inverse_transform,
-                                                frame_buffer_damage);
-      damage_rect.Union(frame_buffer_damage_in_render_pass_space);
-    }
-  }
-
-  return damage_rect;
 }
 
 gfx::Size DirectRenderer::CalculateTextureSizeForRenderPass(
@@ -1214,31 +1173,15 @@ SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
   gpu::Capabilities caps;
   caps.texture_format_bgra8888 = SupportsBGRA();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto gfx_hdr_format =
-      current_frame()->display_color_spaces.GetOutputBufferFormat(
-          gfx::ContentColorUsage::kHDR, /*needs_alpha=*/true);
-  auto viz_hdr_format = gfx_hdr_format == gfx::BufferFormat::RGBA_F16
-                            ? SinglePlaneFormat::kRGBA_F16
-                            : SinglePlaneFormat::kRGBA_1010102;
-  auto format = color_space.IsHDR()
-                    ? viz_hdr_format
-                    : PlatformColor::BestSupportedTextureFormat(caps);
-#else
   auto format = color_space.IsHDR()
                     ? SinglePlaneFormat::kRGBA_F16
                     : PlatformColor::BestSupportedTextureFormat(caps);
-#endif
   return format;
 }
 
 DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer(
     bool create_if_necessary) {
   return nullptr;
-}
-
-void DirectRenderer::DrawDelegatedInkTrail() {
-  NOTREACHED();
 }
 
 bool DirectRenderer::CompositeTimeTracingEnabled() {
@@ -1257,8 +1200,7 @@ gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
 }
 
 gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
-  NOTREACHED_IN_MIGRATION();
-  return gpu::Mailbox();
+  NOTREACHED();
 }
 
 }  // namespace viz

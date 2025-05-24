@@ -40,7 +40,7 @@ using RetrievePolicyResponseType =
 SessionManagerOperation::SessionManagerOperation(Callback callback)
     : callback_(std::move(callback)) {}
 
-SessionManagerOperation::~SessionManagerOperation() {}
+SessionManagerOperation::~SessionManagerOperation() = default;
 
 void SessionManagerOperation::Start(
     SessionManagerClient* session_manager_client,
@@ -236,7 +236,7 @@ LoadSettingsOperation::LoadSettingsOperation(bool force_key_load,
   force_immediate_load_ = force_immediate_load;
 }
 
-LoadSettingsOperation::~LoadSettingsOperation() {}
+LoadSettingsOperation::~LoadSettingsOperation() = default;
 
 void LoadSettingsOperation::Run() {
   if (force_immediate_load_)
@@ -254,7 +254,7 @@ StoreSettingsOperation::StoreSettingsOperation(
     force_key_load_ = true;
 }
 
-StoreSettingsOperation::~StoreSettingsOperation() {}
+StoreSettingsOperation::~StoreSettingsOperation() = default;
 
 void StoreSettingsOperation::Run() {
   session_manager_client()->StoreDevicePolicy(

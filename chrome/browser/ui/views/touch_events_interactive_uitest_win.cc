@@ -11,9 +11,9 @@
 #include "ui/aura/test/env_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/gestures/gesture_recognizer_impl.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
 namespace {
@@ -30,7 +30,7 @@ class TouchEventHandler : public ui::EventHandler {
   TouchEventHandler(const TouchEventHandler&) = delete;
   TouchEventHandler& operator=(const TouchEventHandler&) = delete;
 
-  ~TouchEventHandler() override {}
+  ~TouchEventHandler() override = default;
 
   // OnTouchEvent will simulate a second touch event (at |touch_point|) to force
   // recursion in event handling.
@@ -205,7 +205,7 @@ VIEW_TEST(TouchEventsViewTest, MAYBE_CheckWindowsNativeMessageForTouchEvents)
 
 class TouchEventsRecursiveViewTest : public TouchEventsViewTest {
  public:
-  TouchEventsRecursiveViewTest() {}
+  TouchEventsRecursiveViewTest() = default;
 
   TouchEventsRecursiveViewTest(const TouchEventsRecursiveViewTest&) = delete;
   TouchEventsRecursiveViewTest& operator=(const TouchEventsRecursiveViewTest&) =

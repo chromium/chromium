@@ -5,6 +5,7 @@
 #include "net/http/http_auth_handler_digest.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -683,27 +684,23 @@ TEST(HttpAuthHandlerDigest, HandleAnotherChallenge) {
       host_resolver.get(), &handler);
   EXPECT_THAT(rv, IsOk());
   ASSERT_TRUE(handler.get() != nullptr);
-  HttpAuthChallengeTokenizer tok_default(default_challenge.begin(),
-                                         default_challenge.end());
+  HttpAuthChallengeTokenizer tok_default(default_challenge);
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_REJECT,
             handler->HandleAnotherChallenge(&tok_default));
 
   std::string stale_challenge = default_challenge + ", stale=true";
-  HttpAuthChallengeTokenizer tok_stale(stale_challenge.begin(),
-                                       stale_challenge.end());
+  HttpAuthChallengeTokenizer tok_stale(stale_challenge);
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_STALE,
             handler->HandleAnotherChallenge(&tok_stale));
 
   std::string stale_false_challenge = default_challenge + ", stale=false";
-  HttpAuthChallengeTokenizer tok_stale_false(stale_false_challenge.begin(),
-                                             stale_false_challenge.end());
+  HttpAuthChallengeTokenizer tok_stale_false(stale_false_challenge);
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_REJECT,
             handler->HandleAnotherChallenge(&tok_stale_false));
 
   std::string realm_change_challenge =
       "Digest realm=\"SomethingElse\", nonce=\"nonce-value2\"";
-  HttpAuthChallengeTokenizer tok_realm_change(realm_change_challenge.begin(),
-                                              realm_change_challenge.end());
+  HttpAuthChallengeTokenizer tok_realm_change(realm_change_challenge);
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_DIFFERENT_REALM,
             handler->HandleAnotherChallenge(&tok_realm_change));
 }

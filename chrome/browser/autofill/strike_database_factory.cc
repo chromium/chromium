@@ -38,7 +38,8 @@ StrikeDatabaseFactory::StrikeDatabaseFactory()
 
 StrikeDatabaseFactory::~StrikeDatabaseFactory() = default;
 
-KeyedService* StrikeDatabaseFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+StrikeDatabaseFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -48,7 +49,7 @@ KeyedService* StrikeDatabaseFactory::BuildServiceInstanceFor(
   // Note: This instance becomes owned by an object that never gets destroyed,
   // effectively leaking it until browser close. Only one is created per
   // profile, and closing-then-opening a profile returns the same instance.
-  return new StrikeDatabase(db_provider, profile->GetPath());
+  return std::make_unique<StrikeDatabase>(db_provider, profile->GetPath());
 }
 
 }  // namespace autofill

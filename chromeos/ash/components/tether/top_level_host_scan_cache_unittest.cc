@@ -58,7 +58,7 @@ class TestTimerFactory : public ash::timer_factory::TimerFactory {
   TestTimerFactory() = default;
   ~TestTimerFactory() override = default;
 
-  std::unordered_map<std::string, ExtendedMockTimer*>&
+  std::unordered_map<std::string, raw_ptr<ExtendedMockTimer, CtnExperimental>>&
   tether_network_guid_to_timer_map() {
     return tether_network_guid_to_timer_map_;
   }
@@ -95,7 +95,7 @@ class TestTimerFactory : public ash::timer_factory::TimerFactory {
   }
 
   std::vector<std::string> tether_network_guids_for_upcoming_timers_;
-  std::unordered_map<std::string, ExtendedMockTimer*>
+  std::unordered_map<std::string, raw_ptr<ExtendedMockTimer, CtnExperimental>>
       tether_network_guid_to_timer_map_;
 };
 

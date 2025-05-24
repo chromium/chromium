@@ -8,13 +8,15 @@ import android.content.Context;
 import android.view.View.MeasureSpec;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
-/** Coordinator used to fetch and load logo image for Start surface and NTP.*/
+/** Coordinator used to fetch and load logo image for Start surface and NTP. */
+@NullMarked
 public class LogoCoordinator {
     private final LogoMediator mMediator;
     private final PropertyModel mLogoModel;
@@ -35,31 +37,25 @@ public class LogoCoordinator {
      * @param context Used to load colors and resources.
      * @param logoClickedCallback Supplies the StartSurface's parent tab.
      * @param logoView The view that shows the search provider logo.
-     * @param shouldFetchDoodle Whether to fetch doodle if there is.
      * @param onLogoAvailableCallback The callback for when logo is available.
      * @param visibilityObserver Observer object monitoring logo visibility.
-     * @param isLogoPolishFlagEnabled True if logo polish flag is enabled.
      */
     public LogoCoordinator(
             Context context,
             Callback<LoadUrlParams> logoClickedCallback,
             LogoView logoView,
-            boolean shouldFetchDoodle,
             Callback<Logo> onLogoAvailableCallback,
-            VisibilityObserver visibilityObserver,
-            boolean isLogoPolishFlagEnabled) {
+            VisibilityObserver visibilityObserver) {
         // TODO(crbug.com/40881870): This is weird that we're passing in our view,
         //  and we have to expose our view via getView. We shouldn't only have to do one of these.
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
         mLogoView = logoView;
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
-        mLogoModel.set(LogoProperties.LOGO_POLISH_FLAG_ENABLED, isLogoPolishFlagEnabled);
         mMediator =
                 new LogoMediator(
                         context,
                         logoClickedCallback,
                         mLogoModel,
-                        shouldFetchDoodle,
                         onLogoAvailableCallback,
                         visibilityObserver,
                         sDefaultGoogleLogo);
@@ -92,6 +88,7 @@ public class LogoCoordinator {
     /**
      * @see LogoMediator#destroy
      */
+    @SuppressWarnings("NullAway")
     public void destroy() {
         mMediator.destroy();
         mLogoView.destroy();
@@ -141,12 +138,12 @@ public class LogoCoordinator {
     }
 
     /**
-     * Updates the logo size to use when logo polish is enabled.
+     * Updates the logo size to use when logo is a google doodle.
      *
-     * @param logoSizeForLogoPolish The logo size to use when logo polish is enabled.
+     * @param doodleSize The logo size to use when logo is a google doodle.
      */
-    public void setLogoSizeForLogoPolish(int logoSizeForLogoPolish) {
-        mLogoModel.set(LogoProperties.LOGO_SIZE_FOR_LOGO_POLISH, logoSizeForLogoPolish);
+    public void setDoodleSize(int doodleSize) {
+        mLogoModel.set(LogoProperties.DOODLE_SIZE, doodleSize);
     }
 
     /**

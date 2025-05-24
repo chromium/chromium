@@ -37,7 +37,7 @@ gfx::NativeWindow ChromeWebContentsViewDelegateViews::GetNativeWindow() {
 }
 
 content::WebDragDestDelegate*
-    ChromeWebContentsViewDelegateViews::GetDragDestDelegate() {
+ChromeWebContentsViewDelegateViews::GetDragDestDelegate() {
   // We install a chrome specific handler to intercept bookmark drags for the
   // bookmark manager/extension API.
   bookmark_handler_ = std::make_unique<WebDragBookmarkHandlerAura>();
@@ -85,8 +85,9 @@ ChromeWebContentsViewDelegateViews::BuildMenu(
 void ChromeWebContentsViewDelegateViews::ShowMenu(
     std::unique_ptr<RenderViewContextMenuBase> menu) {
   context_menu_ = std::move(menu);
-  if (!context_menu_)
+  if (!context_menu_) {
     return;
+  }
 
   context_menu_->Show();
 }

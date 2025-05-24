@@ -34,7 +34,7 @@ class DiagnosticsMetricsTest : public testing::Test {
 }  // namespace
 
 // DiagnosticsMetricsTest is part of the ash_unittests and will only be called
-// when is_chromeos_ash is true. Eligible and enabled currently will always be
+// when is_chromeos is true. Eligible and enabled currently will always be
 // true.
 TEST_F(DiagnosticsMetricsTest, IsEligibleAndEnabled) {
   DiagnosticsMetrics metrics;

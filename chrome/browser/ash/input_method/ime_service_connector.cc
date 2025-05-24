@@ -59,10 +59,8 @@ bool IsDownloadPathValid(const base::FilePath& file_path) {
 }
 
 bool IsDownloadURLValid(const GURL& url) {
-  // TODO(https://crbug.com/837156): Allowlist all URLs instead of some general
-  // checks below.
   return url.SchemeIs(url::kHttpsScheme) &&
-         url.DomainIs(ime::kGoogleKeyboardDownloadDomain);
+         (url.DomainIs("dl.google.com") || url.DomainIs("edgedl.me.gvt1.com"));
 }
 
 bool ShouldUseUpdatedDownloadLogic() {

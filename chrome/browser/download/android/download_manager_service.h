@@ -198,8 +198,9 @@ class DownloadManagerService
   enum DownloadAction { RESUME, PAUSE, CANCEL, REMOVE, UNKNOWN };
 
   using PendingDownloadActions = std::map<std::string, DownloadAction>;
-  using Coordinators =
-      std::map<ProfileKey*, download::SimpleDownloadManagerCoordinator*>;
+  using Coordinators = std::map<
+      ProfileKey*,
+      raw_ptr<download::SimpleDownloadManagerCoordinator, CtnExperimental>>;
 
   // Helper function to start the download resumption.
   void ResumeDownloadInternal(const std::string& download_guid,

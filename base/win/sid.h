@@ -128,9 +128,6 @@ class BASE_EXPORT Sid {
   // Is this Sid equal to another Sid?
   bool operator==(const Sid& sid) const;
 
-  // Is this Sid not equal to another Sid?
-  bool operator!=(const Sid& sid) const;
-
  private:
   Sid(const void* sid, size_t length);
   std::vector<char> sid_;

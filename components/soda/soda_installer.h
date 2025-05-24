@@ -123,11 +123,17 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
-  // Method for checking in-progress downloads.
+  // Returns whether the given SODA language pack is currently downloading or
+  // the SODA language pack is installed but the SODA library is still
+  // downloading.
+  bool IsSodaLanguageDownloading(LanguageCode language_code) const;
+
+  // Returns whether the SODA library is downloading or the given SODA language
+  // pack is downloading.
   bool IsSodaDownloading(LanguageCode language_code) const;
 
-  // Returns the error encountered while installing soda for the language code
-  // or soda binary.
+  // Returns the error encountered while installing SODA for the language code
+  // or SODA binary.
   std::optional<ErrorCode> GetSodaInstallErrorCode(
       LanguageCode language_code) const;
 
@@ -137,7 +143,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
     never_download_soda_for_testing_ = true;
   }
 
-  // The soda binary is encoded as LanguageCode::kNone.
+  // The SODA binary is encoded as LanguageCode::kNone.
   void NotifySodaInstalledForTesting(
       LanguageCode language_code = LanguageCode::kNone);
   void NotifySodaErrorForTesting(
@@ -146,7 +152,7 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   void UninstallSodaForTesting();
   void NotifySodaProgressForTesting(
       int progress,
-      LanguageCode language_code = LanguageCode::kNone);
+      LanguageCode language_code = LanguageCode::kEnUs);
   bool IsAnyLanguagePackInstalledForTesting() const;
 
   const std::set<LanguageCode> InstalledLanguages() const;
@@ -159,6 +165,8 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   void UnregisterLanguage(const std::string& language,
                           PrefService* global_prefs);
+
+  bool IsLanguageEnabled(const std::string& language);
 
  protected:
   // Initializes language and installs the per-language components.

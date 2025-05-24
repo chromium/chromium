@@ -35,11 +35,11 @@ static const char kLegacyGoogleApisHost[] = "www.googleapis.com";
 // The legacy host is needed when the host is set to the new OAuth2 host which
 // doesn't support the User Info API anymore. This is needed on iOS, which is
 // the only platform that uses the new OAuth2 host at the moment.
-GURL SwitchBackToLegacyHostIfNeeded(GURL url) {
+GURL SwitchBackToLegacyHostIfNeeded(const GURL& url) {
   if (url.host() == "oauth2.googleapis.com") {
     GURL::Replacements replace_host;
     replace_host.SetHostStr(kLegacyGoogleApisHost);
-    url = url.ReplaceComponents(replace_host);
+    return url.ReplaceComponents(replace_host);
   }
   return url;
 }

@@ -30,7 +30,7 @@
   #ifdef __va_copy
     #define va_copy(dest, src) __va_copy(dest, src)
   #else
-    #define va_copy(dest, src) memcpy(dest, src, sizeof(va_list))
+    #define va_copy(dest, src) memcpy(&(dest), &(src), sizeof(va_list))
   #endif
 #endif
 
@@ -54,7 +54,7 @@ xmlStrndup(const xmlChar *cur, int len) {
     xmlChar *ret;
 
     if ((cur == NULL) || (len < 0)) return(NULL);
-    ret = (xmlChar *) xmlMallocAtomic((size_t) len + 1);
+    ret = xmlMalloc((size_t) len + 1);
     if (ret == NULL) {
         return(NULL);
     }
@@ -98,7 +98,7 @@ xmlCharStrndup(const char *cur, int len) {
     xmlChar *ret;
 
     if ((cur == NULL) || (len < 0)) return(NULL);
-    ret = (xmlChar *) xmlMallocAtomic((size_t) len + 1);
+    ret = xmlMalloc((size_t) len + 1);
     if (ret == NULL) {
         return(NULL);
     }
@@ -994,7 +994,8 @@ xmlUTF8Strsize(const xmlChar *utf, int len) {
     while ( len-- > 0) {
         if ( !*ptr )
             break;
-        if ( (ch = *ptr++) & 0x80)
+        ch = *ptr++;
+        if ((ch & 0x80))
             while ((ch<<=1) & 0x80 ) {
 		if (*ptr == 0) break;
                 ptr++;
@@ -1021,7 +1022,7 @@ xmlUTF8Strndup(const xmlChar *utf, int len) {
 
     if ((utf == NULL) || (len < 0)) return(NULL);
     i = xmlUTF8Strsize(utf, len);
-    ret = (xmlChar *) xmlMallocAtomic((size_t) i + 1);
+    ret = xmlMalloc((size_t) i + 1);
     if (ret == NULL) {
         return(NULL);
     }
@@ -1048,7 +1049,9 @@ xmlUTF8Strpos(const xmlChar *utf, int pos) {
     if (pos < 0)
         return(NULL);
     while (pos--) {
-        if ((ch=*utf++) == 0) return(NULL);
+        ch = *utf++;
+        if (ch == 0)
+            return(NULL);
         if ( ch & 0x80 ) {
             /* if not simple ascii, verify proper format */
             if ( (ch & 0xc0) != 0xc0 )
@@ -1175,7 +1178,7 @@ xmlEscapeFormatString(xmlChar **msg)
     if ((count > INT_MAX) || (msgLen > INT_MAX - count))
         return(NULL);
     resultLen = msgLen + count + 1;
-    result = (xmlChar *) xmlMallocAtomic(resultLen);
+    result = xmlMalloc(resultLen);
     if (result == NULL) {
         /* Clear *msg to prevent format string vulnerabilities in
            out-of-memory situations. */

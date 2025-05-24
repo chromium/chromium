@@ -5,9 +5,9 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_MANAGER_JAVA_SCRIPT_FEATURE_H_
 #define COMPONENTS_PASSWORD_MANAGER_IOS_PASSWORD_MANAGER_JAVA_SCRIPT_FEATURE_H_
 
-#include "base/functional/callback.h"
-#include "base/no_destructor.h"
-#include "components/autofill/core/common/unique_ids.h"
+#import "base/functional/callback.h"
+#import "base/no_destructor.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
 namespace web {

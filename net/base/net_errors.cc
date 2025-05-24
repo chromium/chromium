@@ -92,6 +92,17 @@ bool IsRequestBlockedError(int error) {
   }
 }
 
+bool IsOkOrDefinedError(int error) {
+  switch (error) {
+    case OK:
+#define NET_ERROR(label, value) case value:
+#include "net/base/net_error_list.h"
+#undef NET_ERROR
+      return true;
+  }
+  return false;
+}
+
 Error FileErrorToNetError(base::File::Error file_error) {
   switch (file_error) {
     case base::File::FILE_OK:
@@ -117,8 +128,7 @@ Error FileErrorToNetError(base::File::Error file_error) {
     case base::File::FILE_ERROR_SECURITY:
       return ERR_ACCESS_DENIED;
     case base::File::FILE_ERROR_MAX:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case base::File::FILE_ERROR_NOT_A_DIRECTORY:
     case base::File::FILE_ERROR_NOT_A_FILE:
     case base::File::FILE_ERROR_NOT_EMPTY:
@@ -128,8 +138,7 @@ Error FileErrorToNetError(base::File::Error file_error) {
     case base::File::FILE_ERROR_FAILED:
       return ERR_FAILED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ERR_FAILED;
+  NOTREACHED();
 }
 
 }  // namespace net

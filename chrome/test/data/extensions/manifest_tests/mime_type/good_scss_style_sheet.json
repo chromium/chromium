@@ -1,0 +1,11 @@
+{
+  "name": "scss style sheet",
+  "manifest_version": 3,
+  "version": "1",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "css": ["files/good.scss"]
+    }
+  ]
+}

@@ -7,8 +7,9 @@
  * #import=../cr_shared_vars.css.js
  * #import=../cr_icons_lit.css.js
  * #import=../cr_shared_style_lit.css.js
+ * #import=../cr_spinner_style_lit.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit cr-icons-lit
+ * #include=cr-shared-style-lit cr-icons-lit cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -81,24 +82,18 @@ cr-icon-button {
 }
 
 .spinner {
-  mask-image: url(//resources/images/throbber_small.svg);
-  mask-position: center;
-  mask-repeat: no-repeat;
-  mask-size: var(--cr-icon-size) var(--cr-icon-size);
-  background-color:
-      var(--cr-toolbar-search-field-input-icon-color,
-          var(--google-grey-700));
-  height: var(--cr-icon-size);
+  --cr-spinner-color: var(--cr-toolbar-search-field-input-icon-color,
+      var(--google-grey-700));
+  --cr-spinner-size: var(--cr-icon-size);
   margin: 0;
   opacity: 1;
   padding: 2px;
   position: absolute;
-  width: var(--cr-icon-size);
 }
 
 @media (prefers-color-scheme: dark) {
   .spinner {
-    background-color: var(
+    --cr-spinner-color: var(
         --cr-toolbar-search-field-input-icon-color, white);
   }
 }

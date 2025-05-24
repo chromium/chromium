@@ -748,7 +748,7 @@ goog.log.LogRegistry_ = class LogRegistry_ {
 
       // Get its parent first.
       const lastDotIndex = name.lastIndexOf('.');
-      const parentName = name.substr(0, lastDotIndex);
+      const parentName = name.slice(0, Math.max(lastDotIndex, 0));
       const parentLogRegistryEntry = this.getLogRegistryEntry(parentName);
 
       // Now create the new entry, linking it with its parent.

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {AnnotatorBrowserProxyImpl, browserProxy} from './annotator_browser_proxy.js';
-import {UntrustedAnnotatorPageCallbackRouter} from './ash/webui/annotator/mojom/untrusted_annotator.mojom-webui.js';
 
 /**
  * Returns the projector app element inside this current DOM.

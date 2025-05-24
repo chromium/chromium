@@ -11,9 +11,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Simple proxy for querying input device properties from C++. */
 @JNINamespace("ui")
+@NullMarked
 public class TouchDevice {
 
     /** Static methods only so make constructor private. */
@@ -77,10 +79,7 @@ public class TouchDevice {
             if (isFinePointer) {
                 pointerTypes |= PointerType.FINE;
             }
-            if (hasSource(sources, InputDevice.SOURCE_TOUCHSCREEN)
-                    && (UiAndroidFeatureMap.isEnabled(
-                                    UiAndroidFeatures.REPORT_ALL_AVAILABLE_POINTER_TYPES)
-                            || !isFinePointer)) {
+            if (hasSource(sources, InputDevice.SOURCE_TOUCHSCREEN)) {
                 pointerTypes |= PointerType.COARSE;
             }
 

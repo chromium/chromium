@@ -5,7 +5,7 @@
 // Tests preference.onChange API for an incognito split extension in case the
 // extension's incognito instance is not expected to be brought up.
 
-var allowCookies = chrome.privacy.websites.thirdPartyCookiesAllowed;
+var hyperlinkAuditing = chrome.privacy.websites.hyperlinkAuditingEnabled;
 
 function PreferenceChangeListener() {
   this.encounteredEvents = [];
@@ -51,7 +51,7 @@ PreferenceChangeListener.prototype.onPrefChanged_ = function(pref) {
     callbacks.forEach(callback => callback());
 };
 
-var allowCookiesChangeListener = null;
+var hyperlinkAuditingChangeListener = null;
 
 // The incognito background is not expected to be run - send a message to the
 // test runner, and bail out.
@@ -60,14 +60,14 @@ if (chrome.extension.inIncognitoContext) {
 } else {
   chrome.test.runTests([
     function setupPreferenceListener() {
-      chrome.test.assertFalse(!!allowCookiesChangeListener);
-      allowCookiesChangeListener = new PreferenceChangeListener();
-      allowCookiesChangeListener.start(allowCookies.onChange);
+      chrome.test.assertFalse(!!hyperlinkAuditingChangeListener);
+      hyperlinkAuditingChangeListener = new PreferenceChangeListener();
+      hyperlinkAuditingChangeListener.start(hyperlinkAuditing.onChange);
       chrome.test.succeed();
     },
 
     function getInitialValue() {
-      allowCookies.get({}, chrome.test.callbackPass(pref => {
+      hyperlinkAuditing.get({}, chrome.test.callbackPass(pref => {
         chrome.test.assertEq(
             {levelOfControl: 'controllable_by_this_extension', value: false},
             pref);
@@ -75,10 +75,10 @@ if (chrome.extension.inIncognitoContext) {
     },
 
     function listenForUserChange() {
-      allowCookiesChangeListener.listenForValue(
+      hyperlinkAuditingChangeListener.listenForValue(
           true, chrome.test.callbackPass(function() {
             var events =
-                allowCookiesChangeListener.getAndClearEncounteredEvents();
+                hyperlinkAuditingChangeListener.getAndClearEncounteredEvents();
             chrome.test.assertEq(events, [
               {levelOfControl: 'controllable_by_this_extension', value: true}
             ]);
@@ -88,41 +88,41 @@ if (chrome.extension.inIncognitoContext) {
     },
 
     function changeDefault() {
-      allowCookiesChangeListener.listenForValue(
+      hyperlinkAuditingChangeListener.listenForValue(
           false, chrome.test.callbackPass(function() {
             var events =
-                allowCookiesChangeListener.getAndClearEncounteredEvents();
+                hyperlinkAuditingChangeListener.getAndClearEncounteredEvents();
             chrome.test.assertEq(events, [
               {value: false, levelOfControl: 'controlled_by_this_extension'}
             ]);
           }));
 
-      allowCookies.set({value: false}, chrome.test.callbackPass());
+      hyperlinkAuditing.set({value: false}, chrome.test.callbackPass());
     },
 
     function changeIncognitoOnly() {
-      allowCookies.set(
+      hyperlinkAuditing.set(
           {value: true, scope: 'incognito_session_only'},
           chrome.test.callbackFail(
               'You do not have permission to access incognito preferences.'));
     },
 
     function clearControl() {
-      allowCookiesChangeListener.listenForValue(
+      hyperlinkAuditingChangeListener.listenForValue(
           true, chrome.test.callbackPass(function() {
             var events =
-                allowCookiesChangeListener.getAndClearEncounteredEvents();
+                hyperlinkAuditingChangeListener.getAndClearEncounteredEvents();
             chrome.test.assertEq(events, [
               {levelOfControl: 'controllable_by_this_extension', value: true}
             ]);
           }));
 
-      allowCookies.clear({}, chrome.test.callbackPass());
+      hyperlinkAuditing.clear({}, chrome.test.callbackPass());
     },
 
     function stopPreferenceListener() {
-      var listener = allowCookiesChangeListener;
-      allowCookiesChangeListener = null;
+      var listener = hyperlinkAuditingChangeListener;
+      hyperlinkAuditingChangeListener = null;
       listener.stop(chrome.test.callbackPass());
     }
   ]);

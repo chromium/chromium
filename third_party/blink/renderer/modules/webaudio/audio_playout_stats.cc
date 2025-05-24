@@ -59,7 +59,7 @@ void AudioPlayoutStats::resetLatency(ScriptState* script_state) {
   temp_stats.Absorb(stats_);
 }
 
-ScriptValue AudioPlayoutStats::toJSON(ScriptState* script_state) {
+ScriptObject AudioPlayoutStats::toJSON(ScriptState* script_state) {
   V8ObjectBuilder result(script_state);
   result.AddNumber("fallbackFramesDuration",
                    fallbackFramesDuration(script_state));
@@ -68,7 +68,7 @@ ScriptValue AudioPlayoutStats::toJSON(ScriptState* script_state) {
   result.AddNumber("averageLatency", averageLatency(script_state));
   result.AddNumber("minimumLatency", minimumLatency(script_state));
   result.AddNumber("maximumLatency", maximumLatency(script_state));
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void AudioPlayoutStats::Trace(Visitor* visitor) const {

@@ -26,6 +26,10 @@ class LegacyChromeTableViewControllerTest : public BlockCleanupTest {
   // Tests should call this function to create their controller for testing.
   void CreateController();
 
+  // Creates the controller without forcing the view to be built, for tests that
+  // require that.
+  void CreateControllerWithoutView();
+
   // Will call CreateController() if `controller_` is nil.
   LegacyChromeTableViewController* controller();
 

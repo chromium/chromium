@@ -12,8 +12,8 @@
 namespace ash {
 namespace system {
 
-DeviceDisablingManagerDefaultDelegate::DeviceDisablingManagerDefaultDelegate() {
-}
+DeviceDisablingManagerDefaultDelegate::DeviceDisablingManagerDefaultDelegate() =
+    default;
 
 void DeviceDisablingManagerDefaultDelegate::RestartToLoginScreen() {
   chrome::AttemptUserExit();

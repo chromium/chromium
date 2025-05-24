@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AccessibilityFeatures, AccessibilityFeaturesInterface} from './accessibility_features.mojom-webui.js';
-import {ScanService, ScanServiceInterface} from './scanning.mojom-webui.js';
+import type {AccessibilityFeaturesInterface} from './accessibility_features.mojom-webui.js';
+import {AccessibilityFeatures} from './accessibility_features.mojom-webui.js';
+import type {ScanServiceInterface} from './scanning.mojom-webui.js';
+import {ScanService} from './scanning.mojom-webui.js';
 
 let scanService: ScanServiceInterface|null = null;
 

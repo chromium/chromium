@@ -117,11 +117,13 @@ class WaylandCanvasSurface::SharedMemoryBuffer {
     const size_t stride = CalculateStride(sk_surface_->width());
     auto dst_span = base::span(shm_mapping_);
     for (SkRegion::Iterator i(dirty_region_); !i.done(); i.next()) {
-      auto offset = i.rect().x() * SkColorTypeBytesPerPixel(kN32_SkColorType) +
-                    i.rect().y() * stride;
+      size_t offset =
+          i.rect().x() * SkColorTypeBytesPerPixel(kN32_SkColorType) +
+          i.rect().y() * stride;
       auto dst_subspan = dst_span.subspan(
-          offset, i.rect().width() * i.rect().height() *
-                      SkColorTypeBytesPerPixel(kN32_SkColorType));
+          offset,
+          static_cast<size_t>(i.rect().width() * i.rect().height() *
+                              SkColorTypeBytesPerPixel(kN32_SkColorType)));
 
       UNSAFE_TODO(buffer->sk_surface_->readPixels(
           SkImageInfo::MakeN32Premul(i.rect().width(), i.rect().height()),

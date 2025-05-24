@@ -28,6 +28,12 @@ const replacements = new Map([
     '//resources/polymer/v3_0/polymer/polymer_bundled.min.js',
     '//resources/lit/v3_0/lit.rollup.js',
   ],
+
+  // Print Preview Mixins
+  ['SettingsMixin', 'SettingsMixinLit'],
+  ['SelectMixin', 'SelectMixinLit'],
+  ['settings_mixin.js', 'settings_mixin_lit.js'],
+  ['select_mixin.js', 'select_mixin_lit.js'],
 ]);
 
 const OLD_GET_TEMPLATE = `static get template() {
@@ -78,7 +84,11 @@ module.exports = function transformer(file, api) {
   // Step5: Update 'reflectToAttribute' attribute
   source = source.replaceAll('reflectToAttribute: true', 'reflect: true');
 
-  // Step6: Update ready() callbacks.
+  // Step6: Replace 'declare' keywords with 'accessor'
+  source = source.replaceAll(' declare ', ' accessor ');
+  source = source.replaceAll(' accessor private ', ' private accessor ');
+
+  // Step7: Update ready() callbacks.
   source = source.replace('override ready() {', 'override firstUpdated() {');
   source = source.replace(/\s+super.ready\(\);\n/, '');
 

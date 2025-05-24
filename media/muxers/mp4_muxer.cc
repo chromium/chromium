@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <variant>
 
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -44,7 +45,7 @@ Mp4Muxer::~Mp4Muxer() = default;
 bool Mp4Muxer::PutFrame(EncodedFrame frame,
                         base::TimeDelta relative_timestamp) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  AudioParameters* audio_params = absl::get_if<AudioParameters>(&frame.params);
+  AudioParameters* audio_params = std::get_if<AudioParameters>(&frame.params);
   if (audio_params) {
     CHECK(has_audio_);
     // The first audio sample should have code description.
@@ -58,7 +59,7 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
       MaybeForceFragmentFlush();
     }
   } else {
-    auto* video_params = absl::get_if<VideoParameters>(&frame.params);
+    auto* video_params = std::get_if<VideoParameters>(&frame.params);
     CHECK(video_params);
     CHECK(has_video_);
 
@@ -67,12 +68,12 @@ bool Mp4Muxer::PutFrame(EncodedFrame frame,
     // exact number of sample entries. The unit of the `trun` box is per
     // fragment, which is based on the video key frame. So, it checks flush
     // only when the next key frame arrives.
-    if (frame.is_keyframe) {
+    if (frame.data->is_key_frame()) {
       MaybeForceFragmentFlush();
     }
-    mp4_muxer_delegate_->AddVideoFrame(
-        *video_params, std::move(frame.data), frame.codec_description,
-        base::TimeTicks() + relative_timestamp, frame.is_keyframe);
+    mp4_muxer_delegate_->AddVideoFrame(*video_params, std::move(frame.data),
+                                       frame.codec_description,
+                                       base::TimeTicks() + relative_timestamp);
   }
   return true;
 }

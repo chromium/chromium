@@ -13,26 +13,30 @@ namespace blink {
 class BLINK_COMMON_EXPORT IndexedDBKeyRange {
  public:
   IndexedDBKeyRange();
-  explicit IndexedDBKeyRange(const blink::IndexedDBKey& key);
-  IndexedDBKeyRange(const blink::IndexedDBKey& lower,
-                    const blink::IndexedDBKey& upper,
+  IndexedDBKeyRange(IndexedDBKey lower,
+                    IndexedDBKey upper,
                     bool lower_open,
                     bool upper_open);
-  IndexedDBKeyRange(const IndexedDBKeyRange& other);
   ~IndexedDBKeyRange();
-  IndexedDBKeyRange& operator=(const IndexedDBKeyRange& other);
+  IndexedDBKeyRange& operator=(IndexedDBKeyRange&& other);
+  IndexedDBKeyRange(IndexedDBKeyRange&& other);
 
-  const blink::IndexedDBKey& lower() const { return lower_; }
-  const blink::IndexedDBKey& upper() const { return upper_; }
+  IndexedDBKeyRange(const IndexedDBKeyRange& other) = delete;
+  IndexedDBKeyRange& operator=(const IndexedDBKeyRange& other) = delete;
+
+  const IndexedDBKey& lower() const { return lower_; }
+  const IndexedDBKey& upper() const { return upper_; }
+
   bool lower_open() const { return lower_open_; }
   bool upper_open() const { return upper_open_; }
 
   bool IsOnlyKey() const;
   bool IsEmpty() const;
+  IndexedDBKey TakeOnlyKey() &&;
 
  private:
-  blink::IndexedDBKey lower_ = blink::IndexedDBKey(mojom::IDBKeyType::None);
-  blink::IndexedDBKey upper_ = blink::IndexedDBKey(mojom::IDBKeyType::None);
+  IndexedDBKey lower_{mojom::IDBKeyType::None};
+  IndexedDBKey upper_{mojom::IDBKeyType::None};
   bool lower_open_ = false;
   bool upper_open_ = false;
 };

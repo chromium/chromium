@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/policy_dialog_base.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
@@ -103,7 +102,6 @@ class FilesPolicyDialog : public PolicyDialogBase {
     Info& operator=(Info&& other);
 
     bool operator==(const Info& other) const;
-    bool operator!=(const Info& other) const;
 
     const std::vector<DlpConfidentialFile>& GetFiles() const;
 

@@ -4,24 +4,29 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
 
 /** LinearLayout for the tab group specific color picker component. */
+@NullMarked
 public class TabGroupColorPickerContainer extends ColorPickerContainer {
     private final LinearLayout.LayoutParams mParams;
-    private Boolean mIsDoubleRow;
+    private @Nullable Boolean mIsDoubleRow;
     private boolean mSkipOnMeasure;
-    // The following variables become @NonNull post-inflation, before the UI is shown.
-    private List<FrameLayout> mColorViews;
+    // The following variables become  post-inflation, before the UI is shown.
+    private @Nullable List<FrameLayout> mColorViews;
     private LinearLayout mFirstRow;
     private LinearLayout mSecondRow;
     private @ColorPickerLayoutType int mLayoutType;
@@ -91,6 +96,7 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
     }
 
     private void addColorsToSingleRow() {
+        assumeNonNull(mColorViews);
         mFirstRow.removeAllViews();
         mSecondRow.removeAllViews();
 
@@ -101,6 +107,7 @@ public class TabGroupColorPickerContainer extends ColorPickerContainer {
     }
 
     private void addColorsToDoubleRow() {
+        assumeNonNull(mColorViews);
         mFirstRow.removeAllViews();
         mSecondRow.removeAllViews();
 

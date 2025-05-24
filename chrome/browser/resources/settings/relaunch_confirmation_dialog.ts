@@ -65,9 +65,9 @@ export class RelaunchConfirmationDialogElement extends PolymerElement {
     };
   }
 
-  relaunchConfirmationDialogDesc: string|null;
-  restartType: RestartType;
-  isVersionUpdate: boolean;
+  declare relaunchConfirmationDialogDesc: string|null;
+  declare restartType: RestartType;
+  declare isVersionUpdate: boolean;
 
   override async connectedCallback() {
     super.connectedCallback();

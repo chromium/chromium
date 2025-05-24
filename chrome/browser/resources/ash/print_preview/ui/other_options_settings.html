@@ -1,0 +1,20 @@
+<style include="print-preview-shared cr-hidden-style">
+  print-preview-settings-section:not(.first-visible) .title {
+    display: none;
+  }
+</style>
+<template is="dom-repeat" items="[[options_]]">
+  <print-preview-settings-section hidden$="[[!item.available]]"
+      class$="[[getClass_(index, firstIndex_)]]">
+    <div slot="title">
+      <span class="title">$i18n{optionsLabel}</span>
+    </div>
+    <div slot="controls" class="checkbox">
+      <cr-checkbox id$="[[item.name]]"
+          disabled$="[[getDisabled_(item.managed, disabled)]]"
+          on-change="onChange_" checked$="[[item.value]]">
+        <span>[[i18n(item.label)]]</span>
+      </cr-checkbox>
+    </div>
+  </print-preview-settings-section>
+</template>

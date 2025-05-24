@@ -121,8 +121,7 @@ int BackgroundSyncDelegateImpl::GetSiteEngagementPenalty(const GURL& url) {
       return kEngagementLevelHighOrMaxPenalty;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kEngagementLevelNonePenalty;
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_ANDROID)

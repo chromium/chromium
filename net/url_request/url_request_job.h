@@ -25,11 +25,9 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
-#include "net/filter/source_stream.h"
 #include "net/http/http_raw_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/socket/connection_attempts.h"
-#include "net/url_request/redirect_info.h"
 #include "net/url_request/referrer_policy.h"
 #include "net/url_request/url_request.h"
 #include "url/gurl.h"
@@ -44,6 +42,7 @@ class HttpResponseInfo;
 class IOBuffer;
 struct LoadTimingInfo;
 class ProxyChain;
+class SourceStream;
 class SSLCertRequestInfo;
 class SSLInfo;
 class SSLPrivateKey;
@@ -129,6 +128,12 @@ class NET_EXPORT URLRequestJob {
   // doesn't have a charset will return false.
   virtual bool GetCharset(std::string* charset);
 
+  // Get the content encoding types (e.g., gzip, deflate) that were specified
+  // in the Content-Encoding response header but not decoded by the net stack,
+  // indicating how the response body needs to be decoded on the client side.
+  virtual void GetClientSideContentDecodingTypes(
+      std::vector<net::SourceStreamType>* types) const;
+
   // Called to get response info.
   virtual void GetResponseInfo(HttpResponseInfo* info);
 
@@ -136,6 +141,10 @@ class NET_EXPORT URLRequestJob {
   // each event blocked the request.  See FixupLoadTimingInfo in url_request.h
   // for more information on the difference.
   virtual void GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
+
+  // Populates load timing internal information.
+  virtual void PopulateLoadTimingInternalInfo(
+      LoadTimingInternalInfo* load_timing_internal_info) const;
 
   // Gets the remote endpoint that the network stack is currently fetching the
   // URL from. Returns true and fills in |endpoint| if it is available; returns
@@ -198,10 +207,6 @@ class NET_EXPORT URLRequestJob {
 
   // Continue processing the request ignoring the last error.
   virtual void ContinueDespiteLastError();
-
-  void FollowDeferredRedirect(
-      const std::optional<std::vector<std::string>>& removed_headers,
-      const std::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Returns true if the Job is done producing response data and has called
   // NotifyDone on the request.
@@ -287,8 +292,6 @@ class NET_EXPORT URLRequestJob {
       const GURL& original_referrer,
       const GURL& destination,
       bool* same_origin_out_for_metrics = nullptr);
-
-  virtual cookie_util::StorageAccessStatus StorageAccessStatus() const;
 
  protected:
   // Notifies the job that we are connected.
@@ -379,10 +382,6 @@ class NET_EXPORT URLRequestJob {
   // On return, |this| may be deleted.
   void ReadRawDataComplete(int bytes_read);
 
-  const std::optional<net::SchemefulSite>& request_initiator_site() const {
-    return request_initiator_site_;
-  }
-
   // The request that initiated this job. This value will never be nullptr.
   const raw_ptr<URLRequest> request_;
 
@@ -403,14 +402,6 @@ class NET_EXPORT URLRequestJob {
   // Returns OK if |new_url| is a valid redirect target and an error code
   // otherwise.
   int CanFollowRedirect(const GURL& new_url);
-
-  // Called in response to a redirect that was not canceled to follow the
-  // redirect. The current job will be replaced with a new job loading the
-  // given redirect destination.
-  void FollowRedirect(
-      const RedirectInfo& redirect_info,
-      const std::optional<std::vector<std::string>>& removed_headers,
-      const std::optional<net::HttpRequestHeaders>& modified_headers);
 
   // Called after every raw read. If |bytes_read| is > 0, this indicates
   // a successful read of |bytes_read| unfiltered bytes. If |bytes_read|
@@ -464,15 +455,6 @@ class NET_EXPORT URLRequestJob {
 
   // Expected content size
   int64_t expected_content_size_ = -1;
-
-  // Set when a redirect is deferred. Redirects are deferred after validity
-  // checks are performed, so this field must not be modified.
-  std::optional<RedirectInfo> deferred_redirect_info_;
-
-  // The request's initiator never changes, so we store it in format of
-  // SchemefulSite so that we don't recompute (including looking up the
-  // registrable domain) it during every redirect.
-  std::optional<net::SchemefulSite> request_initiator_site_;
 
   // Non-null if ReadRawData() returned ERR_IO_PENDING, and the read has not
   // completed.

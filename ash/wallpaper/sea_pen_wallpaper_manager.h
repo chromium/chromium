@@ -19,8 +19,6 @@
 #include "ui/gfx/image/image_skia.h"
 
 class AccountId;
-class PrefRegistrySimple;
-class PrefService;
 
 namespace base {
 class SequencedTaskRunner;
@@ -32,28 +30,13 @@ namespace ash {
 // Accessible via a singleton getter.
 class ASH_EXPORT SeaPenWallpaperManager {
  public:
-  // The result of migrating SeaPen images from global wallpaper directory to
-  // user cryptohome. This enum is used for metrics, so enum values should not
-  // be changed or reordered. This should be kept in sync with
-  // //tools/metrics/histograms/metadata/ash/enums.xml entry
-  // `SeaPenWallpaperManagerMigrationStatus`.
-  enum class MigrationStatus {
-    kNotStarted = 0,
-    kCrashed = 1,
-    kFailed = 2,
-    kSuccess = 3,
-    kMaxValue = kSuccess,
-  };
-
-  // A useful indirection layer for testing. Allows supplying testing pref
-  // services and storage directories.
+  // A useful indirection layer for testing. Allows supplying testing storage
+  // directories.
   class SessionDelegate {
    public:
     virtual ~SessionDelegate() = default;
 
     virtual base::FilePath GetStorageDirectory(const AccountId& account_id) = 0;
-
-    virtual PrefService* GetPrefService(const AccountId& account_id) = 0;
   };
 
   SeaPenWallpaperManager();
@@ -67,8 +50,6 @@ class ASH_EXPORT SeaPenWallpaperManager {
   // `WallpaperController`, so it should exist very early after `Shell` init and
   // last until `Shell` teardown.
   static SeaPenWallpaperManager* GetInstance();
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* pref_registry_simple);
 
   using SaveSeaPenImageCallback = base::OnceCallback<void(bool success)>;
 
@@ -132,15 +113,6 @@ class ASH_EXPORT SeaPenWallpaperManager {
                 uint32_t image_id,
                 GetImageCallback callback);
 
-  bool ShouldMigrate(const AccountId& account_id);
-
-  using MigrateSeaPenFilesIfNecessaryCallback =
-      base::OnceCallback<void(bool success)>;
-
-  void Migrate(const AccountId& account_id,
-               const base::FilePath& current_directory,
-               MigrateSeaPenFilesIfNecessaryCallback callback);
-
   void SetSessionDelegateForTesting(
       std::unique_ptr<SessionDelegate> session_delegate);
 
@@ -151,13 +123,6 @@ class ASH_EXPORT SeaPenWallpaperManager {
  private:
   base::FilePath GetFilePathForImageId(const AccountId& account_id,
                                        uint32_t image_id) const;
-
-  void BeginMigration(base::OnceCallback<bool()> migration_task,
-                      MigrateSeaPenFilesIfNecessaryCallback callback);
-
-  void OnMigrationComplete(const AccountId& account_id,
-                           MigrateSeaPenFilesIfNecessaryCallback callback,
-                           bool success);
 
   void OnSeaPenImageDecoded(
       const AccountId& account_id,

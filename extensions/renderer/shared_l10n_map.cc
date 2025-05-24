@@ -77,6 +77,9 @@ const SharedL10nMap::L10nMessagesMap* SharedL10nMap::GetMapForExtension(
   // TODO(devlin): Wait, what?! A synchronous call to the browser to perform
   // potentially blocking work reading files from disk? That's Bad.
   base::flat_map<std::string, std::string> table;
+  // TODO(crbug.com/414486674): upgrade to CHECK once we ensure that validation
+  // is always working.
+  DCHECK(!extension_id.empty());
   ipc_target->GetMessageBundle(extension_id, &table);
   l10n_messages = L10nMessagesMap(table.begin(), table.end());
 

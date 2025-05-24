@@ -14,6 +14,8 @@ std::string ContentFrameIntervalTypeToString(ContentFrameIntervalType type) {
       return "animating_image";
     case ContentFrameIntervalType::kScrollBarFadeOutAnimation:
       return "scrollbar_fade_out";
+    case ContentFrameIntervalType::kCompositorScroll:
+      return "compositor_scroll";
   }
 }
 

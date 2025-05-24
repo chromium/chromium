@@ -38,6 +38,31 @@ NSString* GetBundleIdForDefaultAppForScheme(NSString* scheme) {
   return default_app_bundle.bundleIdentifier;
 }
 
+// Returns the bundle ID of the default client application for `type`, or nil on
+// failure.
+NSString* GetBundleIdForDefaultAppForUTType(NSString* type) {
+  UTType* uttype = [UTType typeWithIdentifier:type];
+  if (!uttype) {
+    return nil;
+  }
+  NSURL* default_app_url = nil;
+  if (@available(macOS 12, *)) {
+    default_app_url =
+        [NSWorkspace.sharedWorkspace URLForApplicationToOpenContentType:uttype];
+  } else {
+    CFURLRef default_app_url_cf = LSCopyDefaultApplicationURLForContentType(
+        base::apple::NSToCFPtrCast(type), kLSRolesAll, nil);
+    if (!default_app_url_cf) {
+      return nil;
+    }
+    default_app_url = base::apple::CFToNSOwnershipCast(default_app_url_cf);
+  }
+  if (!default_app_url) {
+    return nil;
+  }
+  return [NSBundle bundleWithURL:default_app_url].bundleIdentifier;
+}
+
 }  // namespace
 
 bool SetAsDefaultBrowser() {
@@ -148,6 +173,40 @@ bool SetAsDefaultClientForScheme(const std::string& scheme) {
   }
 }
 
+bool SetAsDefaultHandlerForUTType(const std::string& type) {
+  if (type.empty()) {
+    return false;
+  }
+  UTType* uttype = [UTType typeWithIdentifier:base::SysUTF8ToNSString(type)];
+  if (!uttype) {
+    return false;
+  }
+  if (@available(macOS 12, *)) {
+    NSURL* app_bundle = base::apple::OuterBundleURL();
+    if (!app_bundle) {
+      return false;
+    }
+    [NSWorkspace.sharedWorkspace setDefaultApplicationAtURL:app_bundle
+                                          toOpenContentType:uttype
+                                          completionHandler:^(NSError*){
+                                          }];
+    return true;
+  } else {
+    NSString* identifier = base::apple::OuterBundle().bundleIdentifier;
+    if (!identifier) {
+      return false;
+    }
+    NSString* type_ns = base::SysUTF8ToNSString(type);
+    // Set the default handler for `kLSRolesAll`, as being default
+    // `kLSRolesViewer` alone is not necessarily enough to make double-clicking
+    // in Finder open the file in Chrome for all file types.
+    OSStatus return_code = LSSetDefaultRoleHandlerForContentType(
+        base::apple::NSToCFPtrCast(type_ns), kLSRolesAll,
+        base::apple::NSToCFPtrCast(identifier));
+    return return_code == noErr;
+  }
+}
+
 std::u16string GetApplicationNameForScheme(const GURL& url) {
   NSURL* ns_url = net::NSURLWithGURL(url);
   if (!ns_url) {
@@ -202,6 +261,30 @@ bool CanApplicationHandleURL(const base::FilePath& app_path, const GURL& url) {
   return result;
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Returns true if `other_identifier` is another instance (or channel) of
+// Chrome, given Chrome bundle ID `chrome_identifier`.
+bool IsAnotherChromeChannel(NSString* chrome_identifier,
+                            NSString* other_identifier) {
+  // Flavors of Chrome are of the constructions "com.google.Chrome" and
+  // "com.google.Chrome.beta". If the first three components match, then these
+  // are variant flavors.
+  auto three_components_only_lopper = [](NSString* bundle_id) {
+    NSMutableArray<NSString*>* parts =
+        [[bundle_id componentsSeparatedByString:@"."] mutableCopy];
+    while (parts.count > 3) {
+      [parts removeLastObject];
+    }
+    return [parts componentsJoinedByString:@"."];
+  };
+  NSString* chrome_identifier_lopped =
+      three_components_only_lopper(chrome_identifier);
+  NSString* other_identifier_lopped =
+      three_components_only_lopper(other_identifier);
+  return [chrome_identifier_lopped isEqualToString:other_identifier_lopped];
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 // Attempt to determine if this instance of Chrome is the default browser and
 // return the appropriate state. (Defined as being the handler for HTTP/HTTPS
 // schemes; we don't want to report "no" here if the user has simply chosen
@@ -220,23 +303,7 @@ DefaultWebClientState GetDefaultBrowser() {
   }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Flavors of Chrome are of the constructions "com.google.Chrome" and
-  // "com.google.Chrome.beta". If the first three components match, then these
-  // are variant flavors.
-  auto three_components_only_lopper = [](NSString* bundle_id) {
-    NSMutableArray<NSString*>* parts =
-        [[bundle_id componentsSeparatedByString:@"."] mutableCopy];
-    while (parts.count > 3) {
-      [parts removeLastObject];
-    }
-    return [parts componentsJoinedByString:@"."];
-  };
-
-  NSString* my_identifier_lopped = three_components_only_lopper(my_identifier);
-  NSString* default_browser_lopped =
-      three_components_only_lopper(default_browser);
-
-  if ([my_identifier_lopped isEqualToString:default_browser_lopped]) {
+  if (IsAnotherChromeChannel(my_identifier, default_browser)) {
     return OTHER_MODE_IS_DEFAULT;
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -267,6 +334,30 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
       GetBundleIdForDefaultAppForScheme(base::SysUTF8ToNSString(scheme));
   return [default_browser isEqualToString:my_identifier] ? IS_DEFAULT
                                                          : NOT_DEFAULT;
+}
+
+DefaultWebClientState IsDefaultHandlerForUTType(const std::string& type) {
+  if (type.empty()) {
+    return UNKNOWN_DEFAULT;
+  }
+  NSString* my_identifier = base::apple::OuterBundle().bundleIdentifier;
+  if (!my_identifier) {
+    return UNKNOWN_DEFAULT;
+  }
+  NSString* default_app =
+      GetBundleIdForDefaultAppForUTType(base::SysUTF8ToNSString(type));
+  if (!default_app) {
+    return UNKNOWN_DEFAULT;
+  }
+  if ([default_app isEqualToString:my_identifier]) {
+    return IS_DEFAULT;
+  }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (IsAnotherChromeChannel(my_identifier, default_app)) {
+    return OTHER_MODE_IS_DEFAULT;
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return NOT_DEFAULT;
 }
 
 namespace internal {

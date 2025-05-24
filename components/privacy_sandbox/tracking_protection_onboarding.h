@@ -36,43 +36,6 @@ class TrackingProtectionOnboarding : public KeyedService {
     kMaxValue = kOnboarded,
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // Enum value to indicate the state of onboarding on startup.
-  enum class OnboardingStartupState {
-    // User was ineligible on startup.
-    kIneligible = 0,
-    // User was eligible on startup but hasn't been onboarded yet on startup.
-    kEligibleWaitingToOnboard = 1,
-    // User was onboarded but has not yet acknowledged the notice on startup.
-    kOnboardedWaitingToAck = 2,
-    // User acknowledged with the GotIt button on startup.
-    kAckedGotIt = 3,
-    // User acknowledged with the Settings button on startup
-    kAckedSettings = 4,
-    // User acknowledged with the closed button on startup.
-    kAckedClosed = 5,
-    // User acknowledged with the learn more button (only on Clank) on startup.
-    kAckedLearnMore = 6,
-    // User acknowledged the notice by dismissing due to other actions on
-    // startup.
-    kAckedOther = 7,
-    kMaxValue = kAckedOther,
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  // Enum value to indicate the state of silent onboarding on startup.
-  enum class SilentOnboardingStartupState {
-    // User was ineligible on startup.
-    kIneligible = 0,
-    // User was eligible on startup but hasn't been onboarded yet on startup.
-    kEligibleWaitingToOnboard = 1,
-    // User was onboarded on startup.
-    kOnboarded = 2,
-    kMaxValue = kOnboarded,
-  };
-
   explicit TrackingProtectionOnboarding(PrefService* pref_service);
   ~TrackingProtectionOnboarding() override;
 

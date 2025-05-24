@@ -8,13 +8,14 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "third_party/smhasher/src/MurmurHash3.h"
+#include "base/containers/span.h"
+#include "third_party/smhasher/src/src/MurmurHash3.h"
 
 namespace optimization_guide {
 
 namespace {
 
-uint64_t MurmurHash3(const std::string& str, uint32_t seed) {
+uint64_t MurmurHash3(std::string_view str, uint32_t seed) {
   // Uses MurmurHash3 in coordination with server as it is a fast hashing
   // function with compatible public client and private server implementations.
   // DO NOT CHANGE this hashing function without coordination and migration
@@ -28,19 +29,13 @@ uint64_t MurmurHash3(const std::string& str, uint32_t seed) {
 }  // namespace
 
 BloomFilter::BloomFilter(uint32_t num_hash_functions, uint32_t num_bits)
-
-    : num_hash_functions_(num_hash_functions),
-      num_bits_(num_bits),
-      bytes_(((num_bits + 7) / 8), 0) {
-  // May be created on one thread but used on another. The first call to
-  // CalledOnValidSequence() will re-bind it.
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+    : BloomFilter(num_hash_functions,
+                  num_bits,
+                  std::string(((num_bits + 7) / 8), 0)) {}
 
 BloomFilter::BloomFilter(uint32_t num_hash_functions,
                          uint32_t num_bits,
-                         std::string filter_data)
-
+                         const std::string& filter_data)
     : num_hash_functions_(num_hash_functions),
       num_bits_(num_bits),
       bytes_(filter_data.size()) {
@@ -48,19 +43,20 @@ BloomFilter::BloomFilter(uint32_t num_hash_functions,
   // CalledOnValidSequence() will re-bind it.
   DETACH_FROM_SEQUENCE(sequence_checker_);
   CHECK_GE(filter_data.size() * 8, num_bits);
-  memcpy(&bytes_[0], filter_data.data(), filter_data.size());
+  base::span(bytes_).copy_from(base::as_byte_span(filter_data));
 }
 
 BloomFilter::~BloomFilter() = default;
 
-bool BloomFilter::Contains(const std::string& str) const {
+bool BloomFilter::Contains(std::string_view str) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (size_t i = 0; i < num_hash_functions_; ++i) {
     uint64_t n = MurmurHash3(str, i) % num_bits_;
     uint32_t byte_index = (n / 8);
     uint32_t bit_index = n % 8;
-    if ((bytes_[byte_index] & (1 << bit_index)) == 0)
+    if ((bytes_[byte_index] & (1 << bit_index)) == 0) {
       return false;
+    }
   }
   return true;
 }

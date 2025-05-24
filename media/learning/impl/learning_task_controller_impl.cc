@@ -88,7 +88,7 @@ void LearningTaskControllerImpl::CancelObservation(base::UnguessableToken id) {
 void LearningTaskControllerImpl::UpdateDefaultTarget(
     base::UnguessableToken id,
     const std::optional<TargetValue>& default_target) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const LearningTask& LearningTaskControllerImpl::GetLearningTask() {

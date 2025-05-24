@@ -31,8 +31,6 @@ class NetExportTabHelper
 
   explicit NetExportTabHelper(web::WebState* web_state);
   __weak id<NetExportTabHelperDelegate> delegate_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEBUI_MODEL_NET_EXPORT_TAB_HELPER_H_

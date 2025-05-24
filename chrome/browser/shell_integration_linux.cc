@@ -48,7 +48,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -123,7 +122,7 @@ const int EXIT_XDG_SETTINGS_SYNTAX_ERROR = 1;
 // If |scheme| is empty this function sets Chrome as the default browser,
 // otherwise it sets Chrome as the default handler application for |scheme|.
 bool SetDefaultWebClient(const std::string& scheme) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -156,7 +155,7 @@ bool SetDefaultWebClient(const std::string& scheme) {
 // |scheme|.
 shell_integration::DefaultWebClientState GetIsDefaultWebClient(
     const std::string& scheme) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return shell_integration::UNKNOWN_DEFAULT;
 #else
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -205,12 +204,8 @@ shell_integration::DefaultWebClientState GetIsDefaultWebClient(
 // desktop file is google-chrome.desktop.
 std::string GetDesktopBaseName(const std::string& desktop_file_name) {
   static const char kDesktopExtension[] = ".desktop";
-  if (base::EndsWith(desktop_file_name, kDesktopExtension,
-                     base::CompareCase::SENSITIVE)) {
-    return desktop_file_name.substr(
-        0, desktop_file_name.length() - strlen(kDesktopExtension));
-  }
-  return desktop_file_name;
+  auto remainder = base::RemoveSuffix(desktop_file_name, kDesktopExtension);
+  return remainder ? std::string(*remainder) : desktop_file_name;
 }
 
 namespace {
@@ -399,8 +394,10 @@ std::string GetWMClassFromAppName(std::string app_name) {
 
 std::string GetXdgAppIdForWebApp(std::string app_name,
                                  const base::FilePath& profile_path) {
-  if (base::StartsWith(app_name, web_app::kCrxAppPrefix))
-    app_name = app_name.substr(strlen(web_app::kCrxAppPrefix));
+  auto remainder = base::RemovePrefix(app_name, web_app::kCrxAppPrefix);
+  if (remainder) {
+    app_name = std::string(*remainder);
+  }
   return GetDesktopBaseName(
       web_app::GetAppDesktopShortcutFilename(profile_path, app_name)
           .AsUTF8Unsafe());
@@ -430,9 +427,11 @@ bool GetNoDisplayFromDesktopFile(const std::string& shortcut_contents) {
 base::FilePath GetChromeExePath() {
   // Try to get the name of the wrapper script that launched Chrome.
   std::unique_ptr<base::Environment> environment(base::Environment::Create());
-  std::string wrapper_script;
-  if (environment->GetVar("CHROME_WRAPPER", &wrapper_script))
-    return base::FilePath(wrapper_script);
+  std::optional<std::string> wrapper_script =
+      environment->GetVar("CHROME_WRAPPER");
+  if (wrapper_script.has_value()) {
+    return base::FilePath(wrapper_script.value());
+  }
 
   // Just return the name of the executable path for Chrome.
   base::FilePath chrome_exe_path;

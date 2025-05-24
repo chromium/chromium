@@ -21,7 +21,7 @@ namespace stats {
 // Most of the fields maps to |ConditionValidator::Result|.
 // The failure reasons are not mutually exclusive.
 // Out-dated entries shouldn't be deleted but marked as obselete.
-// Keep this synced with the enum in //tools/metrics/histograms/enums.xml.
+// LINT.IfChange(TriggerHelpUIResult)
 enum class TriggerHelpUIResult {
   // The help UI is triggered.
   SUCCESS = 0,
@@ -71,6 +71,7 @@ enum class TriggerHelpUIResult {
   // Last entry for the enum.
   COUNT = 15,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:TriggerHelpUIResult)
 
 // Used in metrics to track database states. Each type will match to a suffix
 // in the histograms to identify the database.

@@ -4,22 +4,22 @@
 
 #import <UIKit/UIKit.h>
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#import "base/functional/bind.h"
+#import "base/run_loop.h"
+#import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments/legal_message_line.h"
+#import "components/autofill/core/browser/payments/legal_message_line.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/test_legal_message_line.h"
-#include "ios/web/public/test/web_task_environment.h"
+#import "components/autofill/core/browser/payments/test_legal_message_line.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_internal.h"
 #import "ios/web_view/internal/autofill/cwv_credit_card_saver_internal.h"
-#include "ios/web_view/test/test_with_locale_and_resources.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "testing/gtest_mac.h"
+#import "ios/web_view/test/test_with_locale_and_resources.h"
+#import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 using base::test::ios::kWaitForActionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;

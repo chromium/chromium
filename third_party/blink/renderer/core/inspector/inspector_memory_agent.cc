@@ -90,13 +90,13 @@ void InspectorMemoryAgent::Trace(Visitor* visitor) const {
 
 void InspectorMemoryAgent::Restore() {
   // The action below won't start sampling if the sampling_interval is zero.
-  startSampling(protocol::Maybe<int>(sampling_profile_interval_.Get()),
-                protocol::Maybe<bool>());
+  startSampling(std::optional<int>(sampling_profile_interval_.Get()),
+                std::nullopt);
 }
 
 protocol::Response InspectorMemoryAgent::startSampling(
-    protocol::Maybe<int> in_sampling_interval,
-    protocol::Maybe<bool> in_suppressRandomness) {
+    std::optional<int> in_sampling_interval,
+    std::optional<bool> in_suppressRandomness) {
   int interval =
       in_sampling_interval.value_or(kDefaultNativeMemorySamplingInterval);
   if (interval <= 0)
@@ -191,7 +191,7 @@ InspectorMemoryAgent::GetSamplingProfileById(uint32_t id) {
 }
 
 Vector<String> InspectorMemoryAgent::Symbolize(
-    const WebVector<const void*>& addresses) {
+    const std::vector<const void*>& addresses) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // TODO(alph): Move symbolization to the client.
   Vector<const void*> addresses_to_symbolize;

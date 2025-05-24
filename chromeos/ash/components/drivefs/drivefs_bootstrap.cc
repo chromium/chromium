@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"
@@ -47,6 +48,9 @@ void DriveFsBootstrapListener::AcceptMojoConnection(base::ScopedFD handle) {
 }
 
 void DriveFsBootstrapListener::SendInvitationOverPipe(base::ScopedFD handle) {
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    invitation_.set_extra_flags(MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(
       std::move(invitation_), base::kNullProcessHandle,
       mojo::PlatformChannelEndpoint(mojo::PlatformHandle(std::move(handle))));

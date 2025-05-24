@@ -41,7 +41,7 @@ LayoutCustomScrollbarPart::LayoutCustomScrollbarPart(
     CustomScrollbar* scrollbar,
     ScrollbarPart part,
     bool suppress_use_counters)
-    : LayoutReplaced(nullptr, PhysicalSize()),
+    : LayoutReplaced(nullptr),
       scrollable_area_(scrollable_area),
       scrollbar_(scrollbar),
       part_(part),
@@ -112,7 +112,7 @@ int LayoutCustomScrollbarPart::ComputeSize(const Length& length,
                                            int container_size) const {
   NOT_DESTROYED();
   if (!length.HasAutoOrContentOrIntrinsic() && !length.HasStretch()) {
-    CHECK(length.IsSpecified());
+    CHECK(length.HasOnlyFixedAndPercent());
     return MinimumValueForLength(length, LayoutUnit(container_size)).ToInt();
   }
   return CustomScrollbarTheme::GetCustomScrollbarTheme()->ScrollbarThickness(
@@ -179,7 +179,8 @@ void LayoutCustomScrollbarPart::SetOverriddenSize(const PhysicalSize& size) {
   overridden_size_ = size;
 }
 
-LayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
+DeprecatedLayoutPoint LayoutCustomScrollbarPart::DeprecatedLocationInternal()
+    const {
   NOT_DESTROYED();
   NOTREACHED();
 }
@@ -187,6 +188,22 @@ LayoutPoint LayoutCustomScrollbarPart::LocationInternal() const {
 PhysicalSize LayoutCustomScrollbarPart::Size() const {
   NOT_DESTROYED();
   return overridden_size_;
+}
+
+PhysicalNaturalSizingInfo LayoutCustomScrollbarPart::GetNaturalDimensions()
+    const {
+  NOT_DESTROYED();
+  if (RuntimeEnabledFeatures::
+          LayoutReplacedReturnExplicitDefaultNaturalSizeEnabled()) {
+    // 300x150, no aspect ratio. (Should probably be none.)
+    PhysicalSize natural_size{LayoutUnit(kDefaultWidth),
+                              LayoutUnit(kDefaultHeight)};
+    natural_size.Scale(StyleRef().EffectiveZoom());
+    PhysicalNaturalSizingInfo sizing_info;
+    sizing_info.size = natural_size;
+    return sizing_info;
+  }
+  return PhysicalNaturalSizingInfo::None();
 }
 
 static LayoutUnit ComputeMargin(const Length& style_margin) {

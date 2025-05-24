@@ -27,7 +27,7 @@ public class PriceTrackingNotificationConfig {
         int defaultTimeout = (int) TimeUnit.HOURS.toMillis(3);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    ChromeFeatureList.PRICE_ANNOTATIONS,
                     NOTIFICATION_TIMEOUT_PARAM,
                     defaultTimeout);
         }
@@ -39,7 +39,7 @@ public class PriceTrackingNotificationConfig {
         int defaultWindow = (int) TimeUnit.DAYS.toMillis(1);
         if (FeatureList.isInitialized()) {
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
+                    ChromeFeatureList.PRICE_ANNOTATIONS,
                     NOTIFICATION_TIMESTAMPS_STORE_WINDOW_PARAM,
                     defaultWindow);
         }
@@ -60,7 +60,7 @@ public class PriceTrackingNotificationConfig {
                 return defaultNumber;
             }
             return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING, param, defaultNumber);
+                    ChromeFeatureList.PRICE_ANNOTATIONS, param, defaultNumber);
         }
         return defaultNumber;
     }

@@ -4,12 +4,12 @@
 
 #include "components/permissions/permission_actions_history.h"
 
+#include <algorithm>
 #include <optional>
 #include <vector>
 
 #include "base/containers/adapters.h"
 #include "base/json/json_reader.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -163,7 +163,7 @@ TEST_F(PermissionActionHistoryTest, GetHistorySortedOrder) {
       base::Time::Now() - base::Days(1),
       PermissionActionsHistory::EntryFilter::WANT_ALL_PROMPTS);
 
-  EXPECT_TRUE(base::ranges::equal(
+  EXPECT_TRUE(std::ranges::equal(
       entries_1_day, std::vector<PermissionActionsHistory::Entry>(
                          all_entries.begin() + 5, all_entries.end())));
 }

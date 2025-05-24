@@ -26,16 +26,16 @@ constexpr int kLiveLabelCornerRadius = 4;
 MediaLiveStatusView::MediaLiveStatusView(ui::ColorId foreground_color_id,
                                          ui::ColorId background_color_id) {
   line_view_ = AddChildView(std::make_unique<views::View>());
-  line_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+  line_view_->SetBackground(views::CreateRoundedRectBackground(
       background_color_id, kLineViewHeight / 2));
 
   live_label_ = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_MEDIA_LIVE_TEXT),
       views::style::CONTEXT_LABEL, views::style::STYLE_CAPTION_BOLD));
   live_label_->SetAutoColorReadabilityEnabled(false);
-  live_label_->SetEnabledColorId(foreground_color_id);
+  live_label_->SetEnabledColor(foreground_color_id);
   live_label_->SetBorder(views::CreateEmptyBorder(kLiveLabelPadding));
-  live_label_->SetBackground(views::CreateThemedRoundedRectBackground(
+  live_label_->SetBackground(views::CreateRoundedRectBackground(
       background_color_id, kLiveLabelCornerRadius));
   live_label_->SetPaintToLayer();
   live_label_->layer()->SetFillsBoundsOpaquely(false);

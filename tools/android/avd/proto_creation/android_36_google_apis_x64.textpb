@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for an Android 16 AVD on google_apis on x86_64
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "zbW-DiZAD3fm8BoSXv4L6FYVN79w8r_wMrqWZZ7azxwC"  # 35.4.9 (Stable)
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-36/google_apis/x86_64"
+  version: "nS1z3ppjuBsshStsL6WRWB4FwUaUN9zjMA7M5baTrxwC"  # (v6) BP22.250325.006
+}
+system_image_name: "system-images;android-36;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-36/google_apis/x86_64"
+}
+avd_name: "android_36_google_apis_x64"
+
+avd_settings {
+  screen {
+    density: 480
+    height: 1920
+    width: 1080
+  }
+  advanced_features {
+    key: "GLESDynamicVersion"
+    value: "on"
+  }
+  # 4GB RAM for 34+ API AVDs
+  ram_size: 4096
+}
+avd_variants {
+  key: "swarming"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "local"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}
+min_sdk: 36
+additional_apk {
+  package_name: "chrome_internal/third_party/google3/apks/gmscore/x86_64"
+  version: "7mVKXdcmxohe1QaWUiYV47oHeioRAWJ6_s_LxYbd9I0C" # 25.07.33
+}

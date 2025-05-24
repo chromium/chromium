@@ -5,14 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_POINTER_EVENT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_POINTER_EVENT_MANAGER_H_
 
+#include <array>
+
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -23,13 +25,12 @@ class WebPointerProperties;
 // This class takes care of dispatching all pointer events and keeps track of
 // properties of active pointer events.
 class CORE_EXPORT PointerEventManager final
-    : public GarbageCollected<PointerEventManager>,
-      public SynchronousMutationObserver {
+    : public GarbageCollected<PointerEventManager> {
  public:
   PointerEventManager(LocalFrame&, MouseEventManager&);
   PointerEventManager(const PointerEventManager&) = delete;
   PointerEventManager& operator=(const PointerEventManager&) = delete;
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
   // This is the unified path for handling all input device events. This may
   // cause firing DOM pointerevents, mouseevent, and touch events accordingly.
@@ -76,10 +77,11 @@ class CORE_EXPORT PointerEventManager final
 
   void ElementRemoved(Element*);
 
+  void NodeWillBeRemoved(Node& node_to_be_removed);
+
   // Starts capturing of all events with the given |PointerId| to the given
-  // |Element|.  The paramenter |explicit_capture| identifies if this call was
-  // triggered by an explicit |elem.setPointerCapture()| call from JS.
-  bool SetPointerCapture(PointerId, Element*, bool explicit_capture);
+  // |Element|.
+  bool SetPointerCapture(PointerId, Element*);
   bool ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
 
@@ -238,9 +240,6 @@ class CORE_EXPORT PointerEventManager final
   bool HandleResizerDrag(const WebPointerEvent&,
                          const event_handling_util::PointerEventTarget&);
 
-  // Implementations of |SynchronousMutationObserver|
-  void NodeWillBeRemoved(Node& node_to_be_removed) final;
-
   // NOTE: If adding a new field to this class please ensure that it is
   // cleared in |PointerEventManager::clear()|.
 
@@ -248,13 +247,16 @@ class CORE_EXPORT PointerEventManager final
 
   WeakMember<PaintLayerScrollableArea> resize_scrollable_area_;
   gfx::Vector2d offset_from_resize_corner_;
+  gfx::Transform resize_position_to_size_transform_;
 
   // Prevents firing mousedown, mousemove & mouseup in-between a canceled
   // pointerdown and next pointerup/pointercancel.
   // See "PREVENT MOUSE EVENT flag" in the spec:
   //   https://w3c.github.io/pointerevents/#compatibility-mapping-with-mouse-events
-  bool prevent_mouse_event_for_pointer_type_
-      [static_cast<size_t>(WebPointerProperties::PointerType::kMaxValue) + 1];
+  std::array<bool,
+             static_cast<size_t>(WebPointerProperties::PointerType::kMaxValue) +
+                 1>
+      prevent_mouse_event_for_pointer_type_;
 
   // Set upon scrolling starts when sending a pointercancel, prevents PE
   // dispatches for non-hovering pointers until all of them become inactive.
@@ -282,10 +284,6 @@ class CORE_EXPORT PointerEventManager final
   PointerEventFactory pointer_event_factory_;
   Member<TouchEventManager> touch_event_manager_;
   Member<MouseEventManager> mouse_event_manager_;
-
-  // The pointerId of the PointerEvent currently being dispatched within this
-  // frame or 0 if none.
-  PointerId dispatching_pointer_id_ = 0;
 
   // These flags are set for the SkipTouchEventFilter experiment. The
   // experiment either skips filtering discrete (touch start/end) events to the

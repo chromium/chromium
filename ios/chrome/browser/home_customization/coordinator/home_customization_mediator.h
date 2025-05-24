@@ -9,17 +9,26 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_mutator.h"
 
+class DiscoverFeedVisibilityBrowserAgent;
 @protocol HomeCustomizationDiscoverConsumer;
 @protocol HomeCustomizationMagicStackConsumer;
 @protocol HomeCustomizationMainConsumer;
 @protocol HomeCustomizationNavigationDelegate;
 class PrefService;
 
+namespace image_fetcher {
+class ImageFetcherService;
+}
+
 // The mediator for the Home surface's customization menu.
 @interface HomeCustomizationMediator : NSObject <HomeCustomizationMutator>
 
 // Initializes this mediator with a pref service.
 - (instancetype)initWithPrefService:(PrefService*)prefService
+    discoverFeedVisibilityBrowserAgent:
+        (DiscoverFeedVisibilityBrowserAgent*)discoverFeedVisibilityBrowserAgent
+                   imageFetcherService:
+                       (image_fetcher::ImageFetcherService*)imageFetcherService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

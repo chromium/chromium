@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Test penpointer capture in same-origin frame: Pointer down at outer frame body and set pointer capture.
-  assert_equals: Expected pointerup event, but got lostpointercapture event instead expected "pointerup" but got "lostpointercapture"
-Harness: the test ran to completion.
-

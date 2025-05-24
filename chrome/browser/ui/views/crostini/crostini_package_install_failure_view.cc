@@ -6,7 +6,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -16,6 +15,7 @@
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace crostini {
 
@@ -55,7 +55,7 @@ CrostiniPackageInstallFailureView::CrostiniPackageInstallFailureView(
 
   views::MessageBoxView* error_box =
       new views::MessageBoxView(base::UTF8ToUTF16(error_message));
-  AddChildView(error_box);
+  AddChildViewRaw(error_box);
 
   set_close_on_deactivate(true);
 }

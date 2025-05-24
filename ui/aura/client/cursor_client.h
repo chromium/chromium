@@ -5,6 +5,7 @@
 #ifndef UI_AURA_CLIENT_CURSOR_CLIENT_H_
 #define UI_AURA_CLIENT_CURSOR_CLIENT_H_
 
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/aura_export.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/native_widget_types.h"
@@ -54,6 +55,18 @@ class AURA_EXPORT CursorClient {
 
   // Gets the type of the mouse cursor icon.
   virtual ui::CursorSize GetCursorSize() const = 0;
+
+  // Sets the large cursor size in dip.
+  virtual void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) = 0;
+
+  // Gets the large curssor size in dip.
+  virtual int GetLargeCursorSizeInDip() const = 0;
+
+  // Sets the color of the cursor.
+  virtual void SetCursorColor(SkColor color) = 0;
+
+  // Gets the color of the cursor.
+  virtual SkColor GetCursorColor() const = 0;
 
   // Gets whether the cursor is visible.
   virtual bool IsCursorVisible() const = 0;

@@ -21,9 +21,9 @@ import java.util.concurrent.TimeoutException;
 /** This class is a AwContentsClient for full screen video test. */
 public class FullScreenVideoTestAwContentsClient extends TestAwContentsClient {
     public static final long WAITING_SECONDS = 20L;
-    private CallbackHelper mOnShowCustomViewCallbackHelper = new CallbackHelper();
-    private CallbackHelper mOnHideCustomViewCallbackHelper = new CallbackHelper();
-    private CallbackHelper mOnUnhandledKeyUpEventCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mOnShowCustomViewCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mOnHideCustomViewCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mOnUnhandledKeyUpEventCallbackHelper = new CallbackHelper();
 
     private Runnable mOnHideCustomViewRunnable;
     private final Activity mActivity;

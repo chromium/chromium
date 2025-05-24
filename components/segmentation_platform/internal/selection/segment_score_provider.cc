@@ -19,8 +19,9 @@ namespace {
 class SegmentScoreProviderImpl : public SegmentScoreProvider {
  public:
   SegmentScoreProviderImpl(SegmentInfoDatabase* segment_database,
-                           const base::flat_set<proto::SegmentId> segment_ids)
-      : segment_database_(segment_database), segment_ids_(segment_ids) {}
+                           base::flat_set<proto::SegmentId> segment_ids)
+      : segment_database_(segment_database),
+        segment_ids_(std::move(segment_ids)) {}
 
   ~SegmentScoreProviderImpl() override = default;
 
@@ -93,7 +94,7 @@ std::unique_ptr<SegmentScoreProvider> SegmentScoreProvider::Create(
     SegmentInfoDatabase* segment_database,
     base::flat_set<proto::SegmentId> segment_ids) {
   return std::make_unique<SegmentScoreProviderImpl>(segment_database,
-                                                    segment_ids);
+                                                    std::move(segment_ids));
 }
 
 }  // namespace segmentation_platform

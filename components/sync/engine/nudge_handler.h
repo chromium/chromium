@@ -15,9 +15,9 @@ class NudgeHandler {
   NudgeHandler() = default;
   virtual ~NudgeHandler() = default;
 
-  // Schedules initial sync for |type| and returns.
+  // Schedules initial sync for `type` and returns.
   virtual void NudgeForInitialDownload(DataType type) = 0;
-  // Schedules a commit for |type| and returns.
+  // Schedules a commit for `type` and returns.
   virtual void NudgeForCommit(DataType type) = 0;
   // This method is called whenever pending invalidations have been updated
   // (added or removed).

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
-import("//build/config/locales.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -162,6 +161,7 @@ android_library("content_view_java") {
 android_library("view_java") {
   deps = [
     "//build/android:build_java",
+    "//components/input/android:java",
     "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
@@ -177,9 +177,6 @@ generate_jni("view_jni_headers") {
 
 java_strings_grd("web_contents_delegate_strings_grd") {
   grd_file = "java/strings/web_contents_delegate_android_strings.grd"
-  outputs = [ "values/web_contents_delegate_android_strings.xml" ] + process_file_template(
-                android_bundle_locales_as_resources,
-                [ "values-{{source_name_part}}/web_contents_delegate_android_strings.xml" ])
 }
 
 static_library("web_contents_delegate") {
@@ -213,6 +210,9 @@ android_resources("web_contents_delegate_java_resources") {
     "java/res/drawable-xhdpi/color_picker_advanced_select_handle.png",
     "java/res/drawable/color_button_background.xml",
     "java/res/drawable/color_picker_border.xml",
+    "java/res/drawable/ic_content_copy.xml",
+    "java/res/drawable/ic_link.xml",
+    "java/res/drawable/ic_open_in_new.xml",
     "java/res/layout/color_picker_advanced_component.xml",
     "java/res/layout/color_picker_dialog_view.xml",
     "java/res/layout/color_picker_suggestion_view.xml",
@@ -288,9 +288,12 @@ java_cpp_enum("context_menu_image_format_enum_javagen") {
 }
 
 android_library("context_menu_java") {
+  public_deps = [ "//ui/base/mojom:ui_base_types_java" ]
+
   deps = [
     "//base:base_java",
     "//content/public/android:content_java",
+    "//content/public/common:common_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/blink/public:blink_headers_java",
     "//third_party/jni_zero:jni_zero_java",
@@ -310,7 +313,9 @@ android_library("context_menu_java") {
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulator.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulatorFactory.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuSwitches.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUi.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUtils.java",
   ]
 }
 
@@ -322,14 +327,20 @@ android_library("native_java_unittests_java") {
     "//third_party/junit",
   ]
   srcjar_deps = [ ":native_j_unittests_jni_headers" ]
-  sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
+  sources = [
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java",
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/WebResourceResponseUnittest.java",
+  ]
 }
 
 # See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we
 # can't put 'java' in the name here.
 generate_jni("native_j_unittests_jni_headers") {
   testonly = true
-  sources = [ "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java" ]
+  sources = [
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/InputStreamUnittest.java",
+    "native_java_unittests/src/org/chromium/components/embedder_support/util/WebResourceResponseUnittest.java",
+  ]
 }
 
 robolectric_library("junit_test_support") {
@@ -339,19 +350,24 @@ robolectric_library("junit_test_support") {
 
 robolectric_library("components_embedder_support_junit_tests") {
   sources = [
+    "junit/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUtilsUnitTest.java",
     "junit/src/org/chromium/components/embedder_support/util/OriginTest.java",
     "junit/src/org/chromium/components/embedder_support/view/ContentViewTest.java",
   ]
   deps = [
     ":content_view_java",
     ":util_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/embedder_support/android:context_menu_java",
     "//content/public/android:content_java",
     "//third_party/android_deps:org_mockito_mockito_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/blink/public:blink_headers_java",
     "//third_party/junit",
     "//ui/android:ui_java",
+    "//url:url_java",
   ]
 }
 

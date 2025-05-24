@@ -122,7 +122,6 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void SetIsLoading(bool is_loading);
   void OnPageLoaded(const GURL& url, bool load_success);
   void OnFaviconUrlUpdated(const std::vector<FaviconURL>& candidates);
-  void OnUnderPageBackgroundColorChanged();
   void CreateWebUI(const GURL& url);
   void ClearWebUI();
   bool HasWebUI() const;
@@ -145,15 +144,15 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void HandleContextMenu(const ContextMenuParams& params);
   void ShowRepostFormWarningDialog(FormWarningType warning_type,
                                    base::OnceCallback<void(bool)> callback);
-  void RunJavaScriptAlertDialog(const GURL& origin_url,
+  void RunJavaScriptAlertDialog(const url::Origin& origin,
                                 NSString* message_text,
                                 base::OnceClosure callback);
   void RunJavaScriptConfirmDialog(
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       base::OnceCallback<void(bool success)> callback);
   void RunJavaScriptPromptDialog(
-      const GURL& origin_url,
+      const url::Origin& origin,
       NSString* message_text,
       NSString* default_prompt_text,
       base::OnceCallback<void(NSString* user_input)> callback);

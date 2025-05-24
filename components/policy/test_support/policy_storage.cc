@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/policy/test_support/policy_storage.h"
+
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace policy {
 
@@ -113,13 +114,10 @@ std::vector<std::string> PolicyStorage::GetMatchingSerialHashes(
     uint64_t remainder) const {
   std::vector<std::string> hashes;
   for (const auto& [serial, enrollment_state] : initial_enrollment_states_) {
-    uint64_t hash = 0UL;
-    uint8_t hash_bytes[sizeof(hash)];
-    crypto::SHA256HashString(serial, hash_bytes, sizeof(hash));
-    hash = base::U64FromBigEndian(hash_bytes);
-    if (hash % modulus == remainder) {
-      hashes.emplace_back(reinterpret_cast<const char*>(hash_bytes),
-                          sizeof(hash));
+    auto hash = crypto::hash::Sha256(serial);
+    auto hash_first8 = base::span<uint8_t>(hash).first<8>();
+    if (base::U64FromBigEndian(hash_first8) % modulus == remainder) {
+      hashes.emplace_back(base::as_string_view(hash_first8));
     }
   }
   return hashes;

@@ -13,7 +13,7 @@ LanguageModelManager::LanguageModelManager(PrefService* prefs,
     : primary_model_type_(ModelType::BASELINE) {
 }
 
-LanguageModelManager::~LanguageModelManager() {}
+LanguageModelManager::~LanguageModelManager() = default;
 
 void LanguageModelManager::AddModel(const ModelType type,
                                     std::unique_ptr<LanguageModel> model) {

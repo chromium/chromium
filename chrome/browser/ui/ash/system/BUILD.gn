@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("system") {
   sources = [
@@ -18,7 +16,6 @@ static_library("system") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser:browser_process",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/eol",
@@ -36,6 +33,7 @@ static_library("system") {
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/webui/access_code_cast",
     "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/multidevice_setup",

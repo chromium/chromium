@@ -59,7 +59,7 @@ const char kNetworkLoadHistogramName[] =
 
 class CachedImageFetcherTest : public testing::Test {
  public:
-  CachedImageFetcherTest() {}
+  CachedImageFetcherTest() = default;
 
   CachedImageFetcherTest(const CachedImageFetcherTest&) = delete;
   CachedImageFetcherTest& operator=(const CachedImageFetcherTest&) = delete;
@@ -129,7 +129,7 @@ class CachedImageFetcherTest : public testing::Test {
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
   FakeDB<CachedImageMetadataProto>* db() { return db_; }
 
-  MOCK_METHOD2(OnImageLoaded, void(bool, std::string));
+  MOCK_METHOD(void, OnImageLoaded, (bool, std::string), ());
 
  private:
   std::unique_ptr<ImageFetcher> image_fetcher_;

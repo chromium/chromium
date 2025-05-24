@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ImageWriterPrivateApiTest, TestWriteFromFile) {
   auto reset_options =
       FileSystemChooseEntryFunction::SetOptionsForTesting(test_options);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto set_up_utility_client_callbacks = [](FakeImageWriterClient* client) {
     std::vector<int> progress_list{0, 50, 100};
     client->SimulateProgressOnWrite(progress_list, true);

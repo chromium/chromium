@@ -1,0 +1,76 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GenAiLensOverlaySettings": 0
+        },
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiLensOverlaySettings": 1
+        },
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GenAiLensOverlaySettings": 2
+        },
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 2
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users via GenAiDefaultSettings",
+        "policies": {},
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  },
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default is changed by default_for_enterprise_users via GenAiDefaultSettings",
+        "policies": {},
+        "prefs": {
+          "lens.policy.gen_ai_lens_overlay_settings": {
+            "default_value": 0
+          }
+        }
+      }
+    ]
+  }
+]

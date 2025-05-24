@@ -25,9 +25,9 @@ BrowserPrintingContextFactoryForTest::~BrowserPrintingContextFactoryForTest() =
 std::unique_ptr<PrintingContext>
 BrowserPrintingContextFactoryForTest::CreatePrintingContext(
     PrintingContext::Delegate* delegate,
-    PrintingContext::ProcessBehavior process_behavior) {
-  auto context =
-      MakeDefaultTestPrintingContext(delegate, process_behavior, printer_name_);
+    PrintingContext::OutOfProcessBehavior out_of_process_behavior) {
+  auto context = MakeDefaultTestPrintingContext(
+      delegate, out_of_process_behavior, printer_name_);
 
   if (new_document_job_id_.has_value()) {
     context->SetNewDocumentJobId(new_document_job_id_.value());
@@ -169,10 +169,10 @@ void BrowserPrintingContextFactoryForTest::SetOnNewDocumentCallback(
 std::unique_ptr<TestPrintingContext>
 BrowserPrintingContextFactoryForTest::MakeDefaultTestPrintingContext(
     PrintingContext::Delegate* delegate,
-    PrintingContext::ProcessBehavior process_behavior,
+    PrintingContext::OutOfProcessBehavior out_of_process_behavior,
     const std::string& printer_name) {
   auto context =
-      std::make_unique<TestPrintingContext>(delegate, process_behavior);
+      std::make_unique<TestPrintingContext>(delegate, out_of_process_behavior);
 
   std::unique_ptr<PrintSettings> settings =
       test::MakeDefaultPrintSettings(printer_name);

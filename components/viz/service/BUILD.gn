@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
@@ -17,6 +16,11 @@ config("viz_service_implementation") {
 
 source_set("viz_service_export") {
   sources = [ "viz_service_export.h" ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
 }
 
 static_library("viz_debugger") {
@@ -25,6 +29,11 @@ static_library("viz_debugger") {
     "debugger/rwlock.h",
     "debugger/viz_debugger.cc",
     "debugger/viz_debugger.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
   ]
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
@@ -124,7 +133,6 @@ viz_component("service") {
     "display/resolved_frame_data.h",
     "display/resource_fence.cc",
     "display/resource_fence.h",
-    "display/shared_bitmap_manager.h",
     "display/skia_output_surface.cc",
     "display/skia_output_surface.h",
     "display/skia_renderer.cc",
@@ -149,8 +157,6 @@ viz_component("service") {
     "display_embedder/output_surface_provider.h",
     "display_embedder/output_surface_provider_impl.cc",
     "display_embedder/output_surface_provider_impl.h",
-    "display_embedder/server_shared_bitmap_manager.cc",
-    "display_embedder/server_shared_bitmap_manager.h",
     "display_embedder/skia_output_device.cc",
     "display_embedder/skia_output_device.h",
     "display_embedder/skia_output_device_buffer_queue.cc",
@@ -182,10 +188,6 @@ viz_component("service") {
     "frame_sinks/compositor_frame_sink_impl.h",
     "frame_sinks/compositor_frame_sink_support.cc",
     "frame_sinks/compositor_frame_sink_support.h",
-    "frame_sinks/eviction_handler.cc",
-    "frame_sinks/eviction_handler.h",
-    "frame_sinks/external_begin_frame_source_mojo.cc",
-    "frame_sinks/external_begin_frame_source_mojo.h",
     "frame_sinks/frame_counter.cc",
     "frame_sinks/frame_counter.h",
     "frame_sinks/frame_sink_bundle_impl.cc",
@@ -219,6 +221,8 @@ viz_component("service") {
     "frame_sinks/video_capture/video_frame_pool.h",
     "frame_sinks/video_detector.cc",
     "frame_sinks/video_detector.h",
+    "gl/exit_code.cc",
+    "gl/exit_code.h",
     "gl/gpu_service_impl.cc",
     "gl/gpu_service_impl.h",
     "hit_test/hit_test_aggregator.cc",
@@ -228,6 +232,16 @@ viz_component("service") {
     "hit_test/hit_test_manager.h",
     "input/input_manager.cc",
     "input/input_manager.h",
+    "input/peak_gpu_memory_tracker_impl.cc",
+    "input/peak_gpu_memory_tracker_impl.h",
+    "input/render_input_router_delegate_impl.cc",
+    "input/render_input_router_delegate_impl.h",
+    "input/render_input_router_iterator_impl.cc",
+    "input/render_input_router_iterator_impl.h",
+    "input/render_input_router_support_base.cc",
+    "input/render_input_router_support_base.h",
+    "input/render_input_router_support_child_frame.cc",
+    "input/render_input_router_support_child_frame.h",
     "layers/layer_context_impl.cc",
     "layers/layer_context_impl.h",
     "performance_hint/boost_manager.cc",
@@ -264,9 +278,14 @@ viz_component("service") {
 
   defines = [ "VIZ_SERVICE_IMPLEMENTATION" ]
 
+  configs = [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   deps = [
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
+    "//cc/animation",
     "//cc/base",
     "//cc/paint",
     "//components/crash/core/common:crash_key",
@@ -277,6 +296,7 @@ viz_component("service") {
     # Note that dependency on //gpu/ipc/client is for GpuMemoryBufferImpl. This
     # dependency should not be in public_deps.
     "//components/version_info:version_info",
+    "//components/viz/client",
     "//components/viz/common",
     "//gpu/command_buffer/client",
     "//gpu/config",
@@ -287,6 +307,7 @@ viz_component("service") {
     "//gpu/skia_bindings:skia_bindings",
     "//gpu/vulkan:buildflags",
     "//media",
+    "//media:media_buildflags",
     "//media/capture:capture_lib",
     "//media/mojo/services",
     "//services/metrics/public/mojom",
@@ -296,9 +317,11 @@ viz_component("service") {
     "//services/webnn/public/mojom",
     "//skia",
     "//skia:skcms",
+    "//third_party/blink/public/common",
     "//third_party/libyuv",
     "//ui/base:ozone_buildflags",
     "//ui/display/types",
+    "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",
   ]
 
@@ -307,7 +330,6 @@ viz_component("service") {
     ":viz_service_export",
     "//base",
     "//cc",
-    "//cc/animation",
     "//cc/debug",
     "//components/viz/common",
     "//gpu/command_buffer/service:gles2",
@@ -327,7 +349,7 @@ viz_component("service") {
     "//ui/latency",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "display_embedder/output_surface_unified.cc",
       "display_embedder/output_surface_unified.h",
@@ -341,7 +363,7 @@ viz_component("service") {
     ]
 
     if (use_v4l2_codec || use_vaapi) {
-      deps += [ "//ash/components/arc/video_accelerator" ]
+      deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
 
@@ -357,20 +379,24 @@ viz_component("service") {
 
     deps += [ "//ui/accelerated_widget_mac" ]
     frameworks = [ "IOSurface.framework" ]
-    if (is_ios) {
-      sources += [
-        "frame_sinks/external_begin_frame_source_ios.h",
-        "frame_sinks/external_begin_frame_source_ios.mm",
-      ]
-
-      frameworks += [ "CoreGraphics.framework" ]
-    }
     if (is_mac) {
       sources += [
         "frame_sinks/external_begin_frame_source_mac.cc",
         "frame_sinks/external_begin_frame_source_mac.h",
       ]
     }
+  }
+
+  if (is_ios) {
+    sources += [
+      "frame_sinks/external_begin_frame_source_mojo_ios.cc",
+      "frame_sinks/external_begin_frame_source_mojo_ios.h",
+    ]
+  } else {
+    sources += [
+      "frame_sinks/external_begin_frame_source_mojo.cc",
+      "frame_sinks/external_begin_frame_source_mojo.h",
+    ]
   }
 
   if (is_android || use_ozone) {
@@ -411,9 +437,19 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
+      "input/android_state_transfer_handler.cc",
+      "input/android_state_transfer_handler.h",
+      "input/fling_scheduler_android.cc",
+      "input/fling_scheduler_android.h",
+      "input/render_input_router_support_android.cc",
+      "input/render_input_router_support_android.h",
     ]
 
-    deps += [ ":service_jni_headers" ]
+    deps += [
+      ":service_jni_headers",
+      "//ui/events:gesture_detection",
+      "//ui/events/blink",
+    ]
   }
 
   if (use_ozone) {
@@ -445,10 +481,26 @@ viz_component("service") {
       "display_embedder/skia_output_device_dcomp.h",
       "display_embedder/software_output_device_win.cc",
       "display_embedder/software_output_device_win.h",
+      "display_embedder/software_output_device_win_base.cc",
+      "display_embedder/software_output_device_win_base.h",
+      "display_embedder/software_output_device_win_swapchain.cc",
+      "display_embedder/software_output_device_win_swapchain.h",
       "frame_sinks/external_begin_frame_source_win.cc",
       "frame_sinks/external_begin_frame_source_win.h",
       "gl/info_collection_gpu_service_impl.cc",
       "gl/info_collection_gpu_service_impl.h",
+    ]
+
+    libs = [
+      "d3d11.lib",
+      "dxgi.lib",
+      "dcomp.lib",
+    ]
+
+    ldflags = [
+      "/DELAYLOAD:d3d11.dll",
+      "/DELAYLOAD:dxgi.dll",
+      "/DELAYLOAD:dcomp.dll",
     ]
 
     # SkiaOutputDeviceBufferQueue doesn't support Windows.
@@ -559,10 +611,11 @@ viz_source_set("unit_tests") {
     "display/software_renderer_unittest.cc",
     "display/surface_aggregator_pixeltest.cc",
     "display/surface_aggregator_unittest.cc",
+    "display/test_resource_factory.cc",
+    "display/test_resource_factory.h",
     "display/viz_pixel_test.cc",
     "display/viz_pixel_test.h",
     "display_embedder/buffer_queue_unittest.cc",
-    "display_embedder/server_shared_bitmap_manager_unittest.cc",
     "display_embedder/skia_output_device_buffer_queue_unittest.cc",
     "display_embedder/skia_output_surface_impl_unittest.cc",
     "display_embedder/software_output_surface_unittest.cc",
@@ -578,6 +631,8 @@ viz_source_set("unit_tests") {
     "frame_sinks/video_capture/video_capture_overlay_unittest.cc",
     "frame_sinks/video_detector_unittest.cc",
     "gl/gpu_service_impl_unittest.cc",
+    "gl/mock_gpu_service_impl.cc",
+    "gl/mock_gpu_service_impl.h",
     "hit_test/hit_test_aggregator_unittest.cc",
     "input/mock_input_manager.cc",
     "input/mock_input_manager.h",
@@ -597,7 +652,6 @@ viz_source_set("unit_tests") {
     ":viz_debugger",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/input",
@@ -651,7 +705,10 @@ viz_source_set("unit_tests") {
     sources += [
       "display/overlay_dc_unittest.cc",
       "display_embedder/output_device_backing_unittest.cc",
+      "display_embedder/software_output_device_win_swapchain_unittest.cc",
       "display_embedder/software_output_device_win_unittest.cc",
+      "display_embedder/test_support/dcomp_mocks.cc",
+      "display_embedder/test_support/dcomp_mocks.h",
     ]
 
     deps += [
@@ -671,7 +728,10 @@ viz_source_set("unit_tests") {
       "display/overlay_processor_surface_control_unittest.cc",
       "display/overlay_unittest.cc",
       "frame_sinks/external_begin_frame_source_android_unittest.cc",
+      "frame_sinks/fling_scheduler_android_unittest.cc",
+      "input/android_state_transfer_handler_unittest.cc",
     ]
+    deps += [ "//ui/events:motionevent_jni_headers" ]
   }
 
   if (enable_vulkan) {
@@ -726,6 +786,7 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//build/android:build_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
     ]
@@ -734,6 +795,7 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
       "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
+      "java/src/org/chromium/components/viz/service/input/InputTransferHandlerViz.java",
     ]
   }
 
@@ -741,14 +803,12 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/components/viz/service/frame_sinks/ExternalBeginFrameSourceAndroid.java",
       "java/src/org/chromium/components/viz/service/gl/ThrowUncaughtException.java",
+      "java/src/org/chromium/components/viz/service/input/InputTransferHandlerViz.java",
     ]
   }
 }
 
 group("viz_service_fuzzers") {
   testonly = true
-  deps = [
-    ":hit_test_manager_fuzzer",
-    "compositor_frame_fuzzer:compositor_frame_fuzzer",
-  ]
+  deps = [ ":hit_test_manager_fuzzer" ]
 }

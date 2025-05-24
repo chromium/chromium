@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/android/jni_android.h"
-#include "chrome/android/modules/dev_ui/provider/dev_ui_install_listener.h"
+#include "base/android/jni_callback.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/modules/dev_ui/provider/jni_headers/DevUiModuleProvider_jni.h"
@@ -45,11 +45,11 @@ bool DevUiModuleProvider::ModuleInstalled() {
 
 void DevUiModuleProvider::InstallModule(
     base::OnceCallback<void(bool)> on_complete) {
-  auto* listener = DevUiInstallListener::Create(std::move(on_complete));
+  JNIEnv* env = base::android::AttachCurrentThread();
   // This should always return, since there is no InfoBar UI to retry (thus
   // avoiding crbug.com/996925 and crbug.com/996959).
-  Java_DevUiModuleProvider_installModule(base::android::AttachCurrentThread(),
-                                         listener->j_listener());
+  Java_DevUiModuleProvider_installModule(
+      env, base::android::ToJniCallback(env, std::move(on_complete)));
 }
 
 void DevUiModuleProvider::EnsureLoaded() {

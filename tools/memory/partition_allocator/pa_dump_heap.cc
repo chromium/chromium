@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/in_slot_metadata.h"
 #include "partition_alloc/partition_alloc_config.h"
@@ -36,7 +37,6 @@
 
 namespace partition_alloc::tools {
 
-using partition_alloc::internal::kInvalidBucketSize;
 using partition_alloc::internal::kSuperPageSize;
 using partition_alloc::internal::MetadataKind;
 using partition_alloc::internal::PartitionPageSize;
@@ -381,9 +381,6 @@ class HeapDumper {
   base::Value::List DumpBuckets() {
     base::Value::List ret;
     for (const auto& bucket : root_.get()->buckets) {
-      if (bucket.slot_size == kInvalidBucketSize)
-        continue;
-
       base::Value::Dict bucket_value;
       bucket_value.Set("slot_size", static_cast<int>(bucket.slot_size));
       ret.Append(std::move(bucket_value));
@@ -469,8 +466,7 @@ int main(int argc, char** argv) {
 
   std::string json_string;
   bool ok = base::JSONWriter::WriteWithOptions(
-      overall_dump, base::JSONWriter::Options::OPTIONS_PRETTY_PRINT,
-      &json_string);
+      overall_dump, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_string);
 
   if (ok) {
     base::FilePath json_filename = command_line->GetSwitchValuePath("json");

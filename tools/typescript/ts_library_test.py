@@ -20,10 +20,16 @@ class TsLibraryTest(unittest.TestCase):
   def setUp(self):
     self._out_folder = None
     self._additional_flags = []
+    self.maxDiff = None
 
   def tearDown(self):
     if self._out_folder:
       shutil.rmtree(self._out_folder)
+
+  def _read_file(self, parent_dir, file_name):
+    file_path = os.path.join(parent_dir, file_name)
+    with open(file_path, 'r', newline='') as f:
+      return f.read()
 
   def _build_project1(self, enable_source_maps=False):
     gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
@@ -189,6 +195,11 @@ class TsLibraryTest(unittest.TestCase):
     self.assertFalse(
         os.path.exists(os.path.join(gen_dir, 'build_ts_manifest.json')))
 
+    # Check that 'skipLibCheck=true' was *not* automatically added.
+    tsconfig_contents = self._read_file(gen_dir, 'tsconfig_build_ts.json')
+    tsconfig = json.loads(tsconfig_contents)
+    self.assertFalse('skipLibCheck' in tsconfig['compilerOptions'])
+
   def _build_project4(self):
     gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
                            'project4')
@@ -225,6 +236,11 @@ class TsLibraryTest(unittest.TestCase):
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
+
+    # Check that 'skipLibCheck=true' was automatically added.
+    tsconfig_contents = self._read_file(gen_dir, 'tsconfig_build_ts.json')
+    tsconfig = json.loads(tsconfig_contents)
+    self.assertTrue(tsconfig['compilerOptions']['skipLibCheck'])
 
     # Check that the generated manifest file doesn't include exclude.js.
     manifest = os.path.join(gen_dir, 'build_ts_manifest.json')
@@ -434,7 +450,46 @@ class TsLibraryTest(unittest.TestCase):
       ])
     except AssertionError as err:
       self.assertTrue(
-          str(err).startswith('Invalid |composite| flag detected in '))
+          str(err).replace('\\', '/').startswith(
+              'Invalid |composite| flag detected in '
+              'tools/typescript/tests/project5/tsconfig_base.json.'
+          ))
+    else:
+      self.fail('Failed to detect error')
+
+  # Test error case where the project's tsconfig file inherits from another
+  # tsconfig file that should fail validation.
+  def testTsConfigValidationErrorInParent(self):
+    self._out_folder = tempfile.mkdtemp(dir=_CWD)
+    root_dir = os.path.join(_HERE_DIR, 'tests', 'project5')
+    gen_dir = os.path.join(self._out_folder, 'tools', 'typescript', 'tests',
+                           'project5')
+    try:
+      ts_library.main([
+          '--output_suffix',
+          'build_ts',
+          '--root_gen_dir',
+          os.path.relpath(self._out_folder, gen_dir),
+          '--root_src_dir',
+          os.path.relpath(os.path.join(_HERE_DIR, 'tests'), gen_dir),
+          '--root_dir',
+          os.path.relpath(root_dir, _CWD),
+          '--gen_dir',
+          os.path.relpath(gen_dir, _CWD),
+          '--out_dir',
+          os.path.relpath(gen_dir, _CWD),
+          '--in_files',
+          'bar.ts',
+          '--tsconfig_base',
+          os.path.relpath(os.path.join(root_dir, 'tsconfig_base2.json'),
+                          gen_dir),
+      ])
+    except AssertionError as err:
+      self.assertTrue(
+          str(err).replace('\\', '/').startswith(
+              'Invalid |composite| flag detected in '
+              'tools/typescript/tests/project5/tsconfig_base.json.'
+          ))
     else:
       self.fail('Failed to detect error')
 
@@ -447,16 +502,15 @@ class TsLibraryTest(unittest.TestCase):
     # Build project1 which source maps enabled.
     gen_dir = self._build_project1(enable_source_maps=True)
 
-    # Assert output is as expected.
-    def _read_file(parent_dir, file_name):
-      file_path = os.path.join(gen_dir, file_name)
+    # Assert output contains a source map.
+    SOURCE_MAP_TOKEN = '//# sourceMappingURL=data:application/json;base64,'
+
+    def _assert_source_map_exists(file_path):
       with open(file_path, 'r', newline='') as f:
-        return f.read()
+        lines = f.readlines()
+        self.assertTrue(lines[-1].startswith(SOURCE_MAP_TOKEN))
 
-    actual_js = _read_file(gen_dir, 'foo.js')
-    expected_js = _read_file(expectations_dir, 'foo.js')
-    self.assertMultiLineEqual(expected_js, actual_js)
-
+    _assert_source_map_exists(os.path.join(gen_dir, 'foo.js'))
 
 if __name__ == '__main__':
   unittest.main()

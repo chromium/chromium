@@ -274,10 +274,8 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
 
   switch (new_display_state) {
     case MULTIPLE_DISPLAY_STATE_INVALID:
-      NOTREACHED_IN_MIGRATION()
-          << "Ignoring request to enter invalid state with " << displays.size()
-          << " connected display(s)";
-      return false;
+      NOTREACHED() << "Ignoring request to enter invalid state with "
+                   << displays.size() << " connected display(s)";
     case MULTIPLE_DISPLAY_STATE_HEADLESS:
       if (displays.size() != 0) {
         LOG(WARNING) << "Ignoring request to enter headless mode with "
@@ -726,12 +724,19 @@ void DisplayConfigurator::RelinquishControl(DisplayControlCallback callback) {
 
   display_control_changing_ = true;
 
-  // Turn off the displays before releasing control since we're no longer using
-  // them for output.
-  SetDisplayPowerInternal(
-      chromeos::DISPLAY_POWER_ALL_OFF, kSetDisplayPowerNoFlags,
-      base::BindOnce(&DisplayConfigurator::SendRelinquishDisplayControl,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (display::features::IsFastDrmMasterDropEnabled()) {
+    // Fast DRM drop forgoes turning off displays in favor of detaching all the
+    // planes and turning the screen black as part of the relinquish display
+    // process.
+    SendRelinquishDisplayControl(std::move(callback), /*success=*/true);
+  } else {
+    // Turn off the displays before releasing control since we're no longer
+    // using them for output.
+    SetDisplayPowerInternal(
+        chromeos::DISPLAY_POWER_ALL_OFF, kSetDisplayPowerNoFlags,
+        base::BindOnce(&DisplayConfigurator::SendRelinquishDisplayControl,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 }
 
 void DisplayConfigurator::GetSeamlessRefreshRates(
@@ -770,7 +775,17 @@ void DisplayConfigurator::OnDisplayControlRelinquished(
 
   display_control_changing_ = false;
   display_externally_controlled_ = success;
-  if (!success) {
+  if (success) {
+    if (display::features::IsFastDrmMasterDropEnabled()) {
+      // Emit a fake power-off signal call to Ash so it treats all displays as
+      // disconnected.
+      OnConfigured(/*success=*/true,
+                   /*displays=*/cached_displays_,
+                   /*unassociated_displays=*/{},
+                   /*new_display_state=*/current_display_state_,
+                   /*new_power_state=*/chromeos::DISPLAY_POWER_ALL_OFF);
+    }
+  } else {
     force_configure_ = true;
     RunPendingConfiguration();
   }
@@ -939,9 +954,7 @@ void DisplayConfigurator::OnConfigurationChanged() {
 void DisplayConfigurator::OnDisplaySnapshotsInvalidated() {
   VLOG(1) << "Display snapshots invalidated.";
   cached_displays_.clear();
-  for (Observer& observer : observers_) {
-    observer.OnDisplaySnapshotsInvalidated();
-  }
+  observers_.Notify(&Observer::OnDisplaySnapshotsInvalidated);
 }
 
 void DisplayConfigurator::AddObserver(Observer* observer) {
@@ -1161,18 +1174,16 @@ void DisplayConfigurator::NotifyDisplayStateObservers(
     bool success,
     MultipleDisplayState attempted_state) {
   if (success) {
-    for (Observer& observer : observers_)
-      observer.OnDisplayConfigurationChanged(cached_displays_);
+    observers_.Notify(&Observer::OnDisplayConfigurationChanged,
+                      cached_displays_);
   } else {
-    for (Observer& observer : observers_)
-      observer.OnDisplayConfigurationChangeFailed(cached_displays_,
-                                                  attempted_state);
+    observers_.Notify(&Observer::OnDisplayConfigurationChangeFailed,
+                      cached_displays_, attempted_state);
   }
 }
 
 void DisplayConfigurator::NotifyPowerStateObservers() {
-  for (Observer& observer : observers_)
-    observer.OnPowerStateChanged(current_power_state_);
+  observers_.Notify(&Observer::OnPowerStateChanged, current_power_state_);
 }
 
 bool DisplayConfigurator::IsDisplayOn() const {

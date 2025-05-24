@@ -14,11 +14,13 @@
 #include "base/logging.h"
 #include "base/not_fatal_until.h"
 #include "base/trace_event/trace_event.h"
+#include "components/sync/base/data_type.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/events/get_updates_response_event.h"
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/nigori/keystore_keys_handler.h"
+#include "components/sync/engine/syncer_error.h"
 #include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/engine/update_handler.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
@@ -80,7 +82,7 @@ bool HandleGetEncryptionKeyResponse(
 // Given a GetUpdates response, iterates over all the returned items and
 // divides them according to their type.  Outputs a map from data types to
 // received SyncEntities.  The output map will have entries (possibly empty)
-// for all types in |requested_types|.
+// for all types in `requested_types`.
 void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
                             DataTypeSet requested_types,
                             TypeSyncEntityMap* updates_by_type) {
@@ -90,8 +92,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
   for (const sync_pb::SyncEntity& update : gu_response.entries()) {
     DataType type = GetDataTypeFromSpecifics(update.specifics());
     if (!IsRealDataType(type)) {
-      NOTREACHED_IN_MIGRATION() << "Received update with invalid type.";
-      continue;
+      NOTREACHED() << "Received update with invalid type.";
     }
 
     auto it = updates_by_type->find(type);
@@ -107,7 +108,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
 }
 
 // Builds a map of DataTypes to indices to progress markers in the given
-// |gu_response| message.  The map is returned in the |index_map| parameter.
+// `gu_response` message.  The map is returned in the `index_map` parameter.
 void PartitionProgressMarkersByType(
     const sync_pb::GetUpdatesResponse& gu_response,
     const DataTypeSet& request_types,
@@ -320,9 +321,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   PartitionProgressMarkersByType(gu_response, gu_types,
                                  &progress_index_by_type);
   if (gu_types.size() != progress_index_by_type.size()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Missing progress markers in GetUpdates response.";
-    return SyncerError::ProtocolViolationError();
+    NOTREACHED() << "Missing progress markers in GetUpdates response.";
   }
 
   TypeToIndexMap context_by_type;
@@ -362,11 +361,31 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   return SyncerError::Success();
 }
 
-void GetUpdatesProcessor::ApplyUpdates(const DataTypeSet& gu_types,
-                                       StatusController* status_controller) {
+void GetUpdatesProcessor::ApplyUpdates(
+    const DataTypeSet& gu_types,
+    const DataTypeSet& data_types_with_failure,
+    StatusController* status_controller) {
   for (const auto& [type, update_handler] : *update_handler_map_) {
     if (gu_types.Has(type)) {
       update_handler->ApplyUpdates(status_controller, /*cycle_done=*/true);
+    }
+  }
+
+  RecordDownloadFailure(
+      data_types_with_failure,
+      UpdateHandler::NudgedUpdateResult::kDownloadPartialFailure);
+}
+
+void GetUpdatesProcessor::RecordDownloadFailure(
+    const DataTypeSet& gu_types,
+    UpdateHandler::NudgedUpdateResult failure_result) {
+  if (gu_types.empty()) {
+    return;
+  }
+
+  for (const auto& [type, update_handler] : *update_handler_map_) {
+    if (gu_types.Has(type)) {
+      update_handler->RecordDownloadFailure(failure_result);
     }
   }
 }

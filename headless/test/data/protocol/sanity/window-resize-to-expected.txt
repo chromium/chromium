@@ -1,0 +1,9 @@
+Tests window outer size is properly adjusted by `window.resizeTo()`.
+Outer window size (initial): {
+    outerHeight : 600
+    outerWidth : 800
+}
+Outer window size (final): {
+    outerHeight : 500
+    outerWidth : 700
+}

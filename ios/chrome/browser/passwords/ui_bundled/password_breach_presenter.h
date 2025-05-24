@@ -16,8 +16,8 @@
 // Informs the presenter that the feature should dismiss.
 - (void)stop;
 
-// Informs the presenter that the Password page should be open.
-- (void)openSavedPasswordsSettings;
+// Informs the presenter that the Password Checkup homepage should be opened.
+- (void)openPasswordCheckup;
 
 @end
 

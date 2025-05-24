@@ -42,6 +42,10 @@ rootWebArea focusable
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
 ++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++menu ignored invisible
+++++++++++++menuItem ignored invisible
+++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible
 ++++++++++++menuItem ignored invisible

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 import {Context, ContextChecker} from '../context_checker.js';
-import {InputController} from '../input_controller.js';
+import type {InputController} from '../input_controller.js';
 
-import {Macro, MacroError, RunMacroResult} from './macro.js';
+import type {RunMacroResult} from './macro.js';
+import {Macro, MacroError} from './macro.js';
 import {MacroName} from './macro_names.js';
 
 /** Implements a macro that sets selection between two words or phrases. */

@@ -12,6 +12,6 @@ UNKNOWN_TYPE | anonPassword | create password |  | ADDRESS<>country_cd_1
 UNKNOWN_TYPE | anonPasswordConfirm | confirm password |  | ADDRESS<>country_cd_1
 UNKNOWN_TYPE | anonPasswordHint | create password hint |  | ADDRESS<>country_cd_1
 
-UNKNOWN_TYPE | emailID | enter email | enter email | emailID_1
+EMAIL_ADDRESS | emailID | enter email | enter email | emailID_1
 
 UNKNOWN_TYPE | searchTerm | search keyword or item # | search keyword or item # | searchTerm_1

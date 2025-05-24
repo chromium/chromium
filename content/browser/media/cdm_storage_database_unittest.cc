@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/media/cdm_storage_database.h"
+
 #include <stdint.h>
+
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "content/browser/media/cdm_storage_database.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
@@ -93,7 +96,8 @@ class MockCdmStorageDatabaseV1 {
  public:
   // The database will be in-memory if `path` is empty.
   explicit MockCdmStorageDatabaseV1()
-      : db_(sql::DatabaseOptions{.page_size = 32768, .cache_size = 8}) {}
+      : db_(sql::DatabaseOptions().set_page_size(32768).set_cache_size(8),
+            sql::test::kTestTag) {}
   ~MockCdmStorageDatabaseV1() = default;
 
   void OpenDatabase(const base::FilePath& path) {

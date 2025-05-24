@@ -64,8 +64,8 @@ function clearSelectionAndRestoreSaved(saved) {
 }
 
 function manualSplitText(node, pos) {
-  const newNodeString = node.nodeValue.substr(pos);
-  node.nodeValue = node.nodeValue.substr(0, pos);
+  const newNodeString = node.nodeValue.slice(pos);
+  node.nodeValue = node.nodeValue.slice(0, pos);
   dom.insertSiblingAfter(document.createTextNode(newNodeString), node);
 }
 

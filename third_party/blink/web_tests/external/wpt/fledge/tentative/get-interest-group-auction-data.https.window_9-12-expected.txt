@@ -1,11 +1,11 @@
 This is a testharness.js-based test.
 [FAIL] getInterestGroupAdAuctionData() all IG data fields, with omit-user-bidding-signals
-  assert_true: valid key Id expected true got false
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
 [FAIL] getInterestGroupAdAuctionData() browserSignals
-  assert_true: valid key Id expected true got false
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
 [FAIL] getInterestGroupAdAuctionData() browserSignals with include-full-ads
-  assert_true: valid key Id expected true got false
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
 [FAIL] getInterestGroupAdAuctionData() with multiple interest groups
-  assert_true: valid key Id expected true got false
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'getInterestGroupAdAuctionData' on 'Navigator': Invalid Coordinator"
 Harness: the test ran to completion.
 

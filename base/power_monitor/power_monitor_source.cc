@@ -26,12 +26,6 @@ int PowerMonitorSource::GetInitialSpeedLimit() const {
 void PowerMonitorSource::SetCurrentThermalState(
     PowerThermalObserver::DeviceThermalState state) {}
 
-#if BUILDFLAG(IS_ANDROID)
-int PowerMonitorSource::GetRemainingBatteryCapacity() const {
-  return 0;
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // static
 void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
   auto* power_monitor = base::PowerMonitor::GetInstance();
@@ -44,12 +38,12 @@ void PowerMonitorSource::ProcessPowerEvent(PowerEvent event_id) {
       power_monitor->NotifyPowerStateChange(
           power_monitor->Source()->GetBatteryPowerStatus());
       break;
-      case RESUME_EVENT:
-        power_monitor->NotifyResume();
-        break;
-      case SUSPEND_EVENT:
-        power_monitor->NotifySuspend();
-        break;
+    case RESUME_EVENT:
+      power_monitor->NotifyResume();
+      break;
+    case SUSPEND_EVENT:
+      power_monitor->NotifySuspend();
+      break;
   }
 }
 

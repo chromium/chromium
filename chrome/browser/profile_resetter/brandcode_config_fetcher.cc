@@ -99,7 +99,7 @@ BrandcodeConfigFetcher::BrandcodeConfigFetcher(
                         &BrandcodeConfigFetcher::OnDownloadTimeout);
 }
 
-BrandcodeConfigFetcher::~BrandcodeConfigFetcher() {}
+BrandcodeConfigFetcher::~BrandcodeConfigFetcher() = default;
 
 void BrandcodeConfigFetcher::SetCallback(FetchCallback callback) {
   fetch_callback_ = std::move(callback);

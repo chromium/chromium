@@ -18,6 +18,8 @@
 const depGraph = require('./depgraph');
 const path = require('path');
 
+const {normalizePath} = require('./normalize');
+
 /**
  * Gets the text of a dependency file for the given dependencies.
  *
@@ -34,7 +36,7 @@ const getDepFileText = exports.getDepFileText = (
   for (const dep of dependencies) {
     const args = [];
 
-    args.push(`'${path.posix.relative(pathToClosure, dep.path)}'`);
+    args.push(`'${normalizePath(path.relative(pathToClosure, dep.path))}'`);
     args.push(`[${dep.closureSymbols.map(s => `'${s}'`).join(', ')}]`);
     const requires = [];
     for (const imported of dep.imports) {
@@ -44,7 +46,7 @@ const getDepFileText = exports.getDepFileText = (
         const requiredFilePath =
             moduleResolver.resolve(dep.path, imported.symOrPath);
         const relativePath = path.relative(pathToClosure, requiredFilePath);
-        requires.push(relativePath);
+        requires.push(normalizePath(relativePath));
       }
     }
     args.push(`[${requires.map(s => `'${s}'`).join(', ')}]`);

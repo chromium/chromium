@@ -62,8 +62,9 @@ InterpolableLength* InterpolableLength::MaybeConvertCSSValue(
     return nullptr;
 
   if (!primitive_value->IsLength() && !primitive_value->IsPercentage() &&
-      !primitive_value->IsCalculatedPercentageWithLength())
+      primitive_value->IsResolvableBeforeLayout()) {
     return nullptr;
+  }
 
   CSSLengthArray length_array;
   if (primitive_value->AccumulateLengthArray(length_array))
@@ -93,6 +94,8 @@ CSSValueID InterpolableLength::LengthTypeToCSSValueID(Length::Type lt) {
       return CSSValueID::kMaxContent;
     case Length::Type::kFitContent:
       return CSSValueID::kFitContent;
+    case Length::Type::kStretch:
+      return CSSValueID::kStretch;
     case Length::Type::kFillAvailable:
       return CSSValueID::kWebkitFillAvailable;
     case Length::Type::kContent:  // only valid for flex-basis.
@@ -115,13 +118,14 @@ Length::Type InterpolableLength::CSSValueIDToLengthType(CSSValueID id) {
     case CSSValueID::kFitContent:
     case CSSValueID::kWebkitFitContent:
       return Length::Type::kFitContent;
+    case CSSValueID::kStretch:
+      return Length::Type::kStretch;
     case CSSValueID::kWebkitFillAvailable:
       return Length::Type::kFillAvailable;
     case CSSValueID::kContent:  // only valid for flex-basis.
       return Length::Type::kContent;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Length::Type::kFixed;
+      NOTREACHED();
   }
 }
 
@@ -131,10 +135,7 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(
     const CSSProperty& property,
     float zoom,
     std::optional<EInterpolateSize> interpolate_size) {
-  if (!length.IsSpecified()) {
-    if (!RuntimeEnabledFeatures::CSSCalcSizeFunctionEnabled()) {
-      return nullptr;
-    }
+  if (!length.CanConvertToCalculation()) {
     CSSValueID keyword = LengthTypeToCSSValueID(length.GetType());
     if (keyword == CSSValueID::kInvalid ||
         !LengthPropertyFunctions::CanAnimateKeyword(property, keyword)) {
@@ -371,8 +372,7 @@ bool InterpolableLength::HasPercentage() const {
     case Type::kExpression:
       return expression_->HasPercentage();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void InterpolableLength::SetHasPercentage() {
@@ -413,6 +413,10 @@ void InterpolableLength::SubtractFromOneHundredPercent() {
   SetExpression(
       *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           hundred_percent, expression_, CSSMathOperator::kSubtract));
+}
+
+bool InterpolableLength::IsNeutralValue() const {
+  return IsLengthArray() && length_array_.type_flags.none();
 }
 
 static double ClampToRange(double x, Length::ValueRange range) {
@@ -592,7 +596,7 @@ void InterpolableLength::Add(const InterpolableValue& other) {
     return;
   }
 
-  CSSMathExpressionNode* result =
+  const CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_length.AsExpression(), CSSMathOperator::kAdd);
   CHECK(result)
@@ -612,10 +616,10 @@ void InterpolableLength::ScaleAndAdd(double scale,
     return;
   }
 
-  CSSMathExpressionNode* scaled =
+  const CSSMathExpressionNode* scaled =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(scale), CSSMathOperator::kMultiply);
-  CSSMathExpressionNode* result =
+  const CSSMathExpressionNode* result =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           scaled, &other_length.AsExpression(), CSSMathOperator::kAdd);
   CHECK(result)
@@ -654,15 +658,15 @@ void InterpolableLength::Interpolate(const InterpolableValue& to,
     return;
   }
 
-  CSSMathExpressionNode* blended_from =
+  const CSSMathExpressionNode* blended_from =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(1 - progress),
           CSSMathOperator::kMultiply);
-  CSSMathExpressionNode* blended_to =
+  const CSSMathExpressionNode* blended_to =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &to_length.AsExpression(), NumberNode(progress),
           CSSMathOperator::kMultiply);
-  CSSMathExpressionNode* result_expression =
+  const CSSMathExpressionNode* result_expression =
       CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
   CHECK(result_expression)

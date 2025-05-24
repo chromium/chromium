@@ -64,9 +64,11 @@ class DeviceLoginScreenPolicyBrowsertest : public DevicePolicyCrosBrowserTest {
   raw_ptr<Profile, DanglingUntriaged> login_profile_ = nullptr;
 };
 
-DeviceLoginScreenPolicyBrowsertest::DeviceLoginScreenPolicyBrowsertest() {}
+DeviceLoginScreenPolicyBrowsertest::DeviceLoginScreenPolicyBrowsertest() =
+    default;
 
-DeviceLoginScreenPolicyBrowsertest::~DeviceLoginScreenPolicyBrowsertest() {}
+DeviceLoginScreenPolicyBrowsertest::~DeviceLoginScreenPolicyBrowsertest() =
+    default;
 
 void DeviceLoginScreenPolicyBrowsertest::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();

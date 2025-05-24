@@ -49,6 +49,10 @@ void FakeLocalFrame::NotifyUserActivation(
 
 void FakeLocalFrame::NotifyVirtualKeyboardOverlayRect(const gfx::Rect&) {}
 
+void FakeLocalFrame::NotifyContextMenuInsetsObservers(const gfx::Rect&) {}
+
+void FakeLocalFrame::ShowInterestInElement(int) {}
+
 void FakeLocalFrame::AddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message,
@@ -240,6 +244,10 @@ void FakeLocalFrame::BindFrameHostReceiver(
 void FakeLocalFrame::UpdatePrerenderURL(const ::GURL& matched_url,
                                         UpdatePrerenderURLCallback callback) {
   std::move(callback).Run();
+}
+
+void FakeLocalFrame::GetScrollPosition(GetScrollPositionCallback callback) {
+  std::move(callback).Run(gfx::Point(0, 0));
 }
 
 }  // namespace content

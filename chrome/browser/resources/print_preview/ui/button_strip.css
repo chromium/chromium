@@ -1,0 +1,31 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  padding-bottom: var(--print-preview-sidebar-margin);
+  padding-inline-end: var(--print-preview-sidebar-margin);
+  padding-top: 16px;
+}
+
+@media (prefers-color-scheme: light) {
+  :host {
+    background-color: white;
+  }
+}
+
+:host cr-button:not(:last-child) {
+  margin-inline-end: 8px;
+}
+
+:host cr-button:last-child {
+  margin-inline-end: 0;
+}

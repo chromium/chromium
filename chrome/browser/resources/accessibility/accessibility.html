@@ -73,15 +73,28 @@ found in the LICENSE file.
       <div class="checkbox-row">
         <label>
           <span class="checkbox-wrapper">
-            <input type="checkbox" id="screenreader"
-                   aria-describedby="screenreader_secondary">
+            <input type="checkbox" id="extendedProperties"
+                   aria-describedby="extended_properties_secondary">
           </span>
-          Screen reader support
+          Extended properties
         </label>
       </div>
-      <div id="screenreader_secondary" class="secondary">
-        Exposes accessibility APIs typically needed only by
-        screen readers.
+      <div id="extended_properties_secondary" class="secondary">
+        Exposes accessibility APIs needed only by advanced assistive
+        technologies.
+      </div>
+
+        <div class="checkbox-row">
+        <label>
+          <span class="checkbox-wrapper">
+            <input type="checkbox" id="screenReader"
+                   aria-describedby="screen_reader_secondary">
+          </span>
+          Screen reader
+        </label>
+      </div>
+      <div id="screen_reader_secondary" class="secondary">
+        Exposes accessibility APIs needed only by screen readers.
       </div>
 
       <div class="checkbox-row">
@@ -97,7 +110,73 @@ found in the LICENSE file.
         Exposes HTML tag names and attributes via accessibility APIs.
       </div>
 
+    <div class="column">
+      <h2>Active assistive technology</h2>
+      <div>
+        Active assistive technology:
+        <span id="active_at_name"></span>
+      </div>
+      <div>
+        Is the active AT a screen reader:
+        <span id="active_at_is_screen_reader"></span>
+      </div>
     </div>
+  </div>
+    <div class="column">
+      <h2>
+        Locking the accessibility mode from being changed by other
+        applications:
+      </h2>
+      <p>
+        Accessibility features in Chrome are off by default and enabled
+        automatically on-demand.
+      </p>
+      <div class="checkbox-row">
+        <label>
+          <span class="checkbox-wrapper">
+            <input type="checkbox" id="isolate"
+                   aria-describedby="isolate_secondary">
+          </span>
+          Suppress automatic accessibility enablement from platform API
+          consumers such as assistive tech.
+        </label>
+      </div>
+      <div id="isolate_secondary" class="secondary">Changes to this setting will
+      persist until the browser is restarted. This setting is the same as
+      running with --disable-platform-accessibility-integration.</div>
+
+      <div class="checkbox-row">
+        <label>
+          <span class="checkbox-wrapper">
+            <input type="checkbox" id="locked"
+                   aria-describedby="locked_secondary">
+          </span>
+          Lock the current accessibility mode from being changed
+          except by this page.
+        </label>
+      </div>
+      <p>
+        To force accessibility to be enabled at launch, run Chrome with this
+        flag:
+        <pre>--force-renderer-accessibility</pre>
+      </p>
+      <p>
+        To force the accessibility AXMode to one of the predefined bundles, run
+        Chrome with the --force-renderer-accessibility flag and optional
+        argument:
+        <pre>--force-renderer-accessibility=[basic|complete|form-controls]</pre>
+
+        If the optional parameter is absent, the AXMode bundle will default to
+        complete.
+      </p>
+      <p>
+        To disable accessibility, run Chrome with this flag:
+        <pre>--disable-renderer-accessibility</pre>
+      </p>
+    </div>
+  </div>
+
+  <div class="columns">
     <div class="column">
       <h2>Accessibility tree viewing options:</h2>
       <div class="api-type-wrapper">
@@ -144,48 +223,6 @@ found in the LICENSE file.
       <div id="deny_secondary" class="secondary">
         Exclude these attributes.
       </div>
-    </div>
-  </div>
-
-  <div class="columns">
-    <div class="column">
-      <h2>
-        Locking the accessibility mode from being changed by other
-        applications:
-      </h2>
-      <p>
-        Accessibility features in Chrome are off by default and enabled
-        automatically on-demand. Changes to these modes only take effect
-        until the next time Chrome is restarted.
-      </p>
-      <div class="checkbox-row">
-        <label>
-          <span class="checkbox-wrapper">
-            <input type="checkbox" id="locked"
-                   aria-describedby="locked_secondary">
-          </span>
-          Lock the current accessibility mode from being changed
-          except by this page.
-        </label>
-      </div>
-      <p>
-        To force accessibility to be enabled at launch, run Chrome with this
-        flag:
-        <pre>--force-renderer-accessibility</pre>
-      </p>
-      <p>
-        To force the accessibility AXMode to one of the three predefined bundles
-        (basic, form-controls, or complete), run Chrome with the
-        --force-renderer-accessibility flag and optional argument:
-        <pre>--force-renderer-accessibility=[basic|form-controls|complete]</pre>
-
-        If the optional parameter is absent, the AXMode bundle will default to
-        complete.
-      </p>
-      <p>
-        To disable accessibility, run Chrome with this flag:
-        <pre>--disable-renderer-accessibility</pre>
-      </p>
     </div>
   </div>
 

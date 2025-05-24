@@ -44,7 +44,7 @@
 namespace ash {
 
 using ::chromeos::WindowStateType;
-using Sample = base::HistogramBase::Sample;
+using Sample32 = base::HistogramBase::Sample32;
 
 class PipWindowResizerTest : public AshTestBase,
                              public ::testing::WithParamInterface<
@@ -663,7 +663,7 @@ TEST_P(PipWindowResizerTest, PipStartAndFinishFreeResizeUmaMetrics) {
   ASSERT_TRUE(resizer.get());
 
   EXPECT_EQ(1, histograms().GetBucketCount(kAshPipEventsHistogramName,
-                                           Sample(AshPipEvents::FREE_RESIZE)));
+                                           Sample32(AshPipEvents::FREE_RESIZE)));
   histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
 
   resizer->Drag(CalculateDragPoint(*resizer, 100, 0), 0);
@@ -686,7 +686,7 @@ TEST_P(PipWindowResizerTest, PipPinchResizeTriggersResizeUmaMetrics) {
   Shell::Get()->toplevel_window_event_handler()->OnGestureEvent(&event);
 
   EXPECT_EQ(1, histograms().GetBucketCount(kAshPipEventsHistogramName,
-                                           Sample(AshPipEvents::FREE_RESIZE)));
+                                           Sample32(AshPipEvents::FREE_RESIZE)));
   histograms().ExpectTotalCount(kAshPipEventsHistogramName, 1);
 }
 
@@ -705,6 +705,22 @@ TEST_P(PipWindowResizerTest, DragDetailsAreDestroyed) {
     EXPECT_NE(nullptr, window_state->drag_details());
   }
   EXPECT_EQ(nullptr, window_state->drag_details());
+}
+
+TEST_P(PipWindowResizerTest, PipPinchResizeWithNoMaximumSizeRestrinction) {
+  PreparePipWindow(gfx::Rect(200, 200, 100, 100));
+
+  auto* custom_frame = static_cast<TestNonClientFrameViewAsh*>(
+      NonClientFrameViewAsh::Get(window()));
+  // This means there is no maximum size limit.
+  custom_frame->SetMaximumSize(gfx::Size(0, 0));
+  window()->SetProperty(aura::client::kAspectRatio, gfx::SizeF(3.f, 2.f));
+
+  auto resizer =
+      std::unique_ptr<PipWindowResizer>(CreateResizerForTest(HTCAPTION));
+  ASSERT_TRUE(resizer.get());
+
+  resizer->Pinch(CalculateDragPoint(*resizer, 0, 0), /*scale=*/0.5f);
 }
 
 // TODO: UpdateDisplay() doesn't support different layouts of multiple displays.

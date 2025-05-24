@@ -8,11 +8,7 @@
 #include <stdint.h>
 #include <cmath>
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/ash_interfaces.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 #include "base/functional/bind.h"
 #include "chrome/browser/extensions/system_display/display_info_provider.h"
@@ -439,8 +435,6 @@ void DisplayInfoProviderChromeOS::OnDisplayConfigChanged() {
   DispatchOnDisplayChangedEvent();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
   mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
       display_config;
@@ -449,26 +443,5 @@ std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
   return std::make_unique<DisplayInfoProviderChromeOS>(
       std::move(display_config));
 }
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-
-std::unique_ptr<DisplayInfoProvider> CreateChromeDisplayInfoProvider() {
-  // Assume that LacrosService has already been initialized.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service &&
-      lacros_service
-          ->IsAvailable<crosapi::mojom::CrosDisplayConfigController>()) {
-    auto& remote =
-        lacros_service
-            ->GetRemote<crosapi::mojom::CrosDisplayConfigController>();
-    return std::make_unique<DisplayInfoProviderChromeOS>(remote.Unbind());
-  }
-
-  LOG(ERROR) << "Cannot create a DisplayInfoProvider instance in Lacros. "
-                "CrosDisplayConfigController interface is not available.";
-  return nullptr;
-}
-
-#endif
 
 }  // namespace extensions

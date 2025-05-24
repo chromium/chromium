@@ -17,7 +17,6 @@ import 'chrome://resources/ash/common/network/network_ip_config.js';
 import 'chrome://resources/ash/common/network/network_nameservers.js';
 import 'chrome://resources/ash/common/network/network_property_list_mojo.js';
 import 'chrome://resources/ash/common/network/network_siminfo.js';
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
@@ -37,38 +36,48 @@ import './passpoint_remove_dialog.js';
 import './settings_traffic_counters.js';
 import './tether_connection_dialog.js';
 
-import {PrefsMixin, PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
-import {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
-import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import type {PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {getApnDisplayName, isActiveSim, isCarrierLockedActiveSim, processDeviceState, shouldDisallowNetworkModifications} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import type {CrPolicyNetworkBehaviorMojoInterface} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo} from 'chrome://resources/ash/common/network/cr_policy_network_behavior_mojo.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {TrafficCountersAdapter} from 'chrome://resources/ash/common/traffic_counters/traffic_counters_adapter.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ActivationStateType, ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, HiddenSsidMode, IPConfigProperties, ManagedProperties, MatchType, NetworkStateProperties, ProxySettings, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {ApnProperties, ConfigProperties, CrosNetworkConfigInterface, GlobalPolicy, IPConfigProperties, ManagedProperties, NetworkStateProperties, ProxySettings} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, HiddenSsidMode, MatchType, SecurityType, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {afterNextRender, flush, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {assertExists, castExists} from '../assert_extras.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
-import {Constructor} from '../common/types.js';
+import type {DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {Constructor} from '../common/types.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
-import {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
-import {Route, Router, routes} from '../router.js';
+import type {OsSyncBrowserProxy, OsSyncPrefs} from '../os_people_page/os_sync_browser_proxy.js';
+import {OsSyncBrowserProxyImpl} from '../os_people_page/os_sync_browser_proxy.js';
+import type {OsSettingsSubpageElement} from '../os_settings_page/os_settings_subpage.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './internet_detail_subpage.html.js';
-import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
-import {PasspointRemoveDialogElement} from './passpoint_remove_dialog.js';
-import {TetherConnectionDialogElement} from './tether_connection_dialog.js';
+import type {InternetPageBrowserProxy} from './internet_page_browser_proxy.js';
+import {InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
+import type {PasspointRemoveDialogElement} from './passpoint_remove_dialog.js';
+import type {TetherConnectionDialogElement} from './tether_connection_dialog.js';
 
 const SettingsInternetDetailPageElementBase =
     mixinBehaviors(
@@ -251,14 +260,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      showMeteredToggle_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.valueExists('showMeteredToggle') &&
-              loadTimeData.getBoolean('showMeteredToggle');
-        },
-      },
-
       /**
        * Whether to show the Hidden toggle on configured wifi networks (flag).
        */
@@ -312,15 +313,6 @@ export class SettingsInternetDetailPageElement extends
         },
       },
 
-      isPasspointSettingsEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.valueExists('isPasspointSettingsEnabled') &&
-              loadTimeData.getBoolean('isPasspointSettingsEnabled');
-        },
-      },
-
       isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
         value() {
@@ -336,13 +328,6 @@ export class SettingsInternetDetailPageElement extends
         notify: true,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
       advancedExpanded_: Boolean,
 
       networkExpanded_: Boolean,
@@ -350,38 +335,6 @@ export class SettingsInternetDetailPageElement extends
       proxyExpanded_: Boolean,
 
       dataUsageExpanded_: Boolean,
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kConfigureEthernet,
-          Setting.kEthernetAutoConfigureIp,
-          Setting.kEthernetDns,
-          Setting.kEthernetProxy,
-          Setting.kDisconnectWifiNetwork,
-          Setting.kPreferWifiNetwork,
-          Setting.kForgetWifiNetwork,
-          Setting.kWifiAutoConfigureIp,
-          Setting.kWifiDns,
-          Setting.kWifiHidden,
-          Setting.kWifiProxy,
-          Setting.kWifiAutoConnectToNetwork,
-          Setting.kCellularSimLock,
-          Setting.kCellularRoaming,
-          Setting.kCellularApn,
-          Setting.kDisconnectCellularNetwork,
-          Setting.kCellularAutoConfigureIp,
-          Setting.kCellularDns,
-          Setting.kCellularProxy,
-          Setting.kCellularAutoConnectToNetwork,
-          Setting.kDisconnectTetherNetwork,
-          Setting.kWifiMetered,
-          Setting.kCellularMetered,
-        ]),
-      },
     };
   }
 
@@ -403,6 +356,34 @@ export class SettingsInternetDetailPageElement extends
   globalPolicy?: GlobalPolicy;
   guid: string;
   managedNetworkAvailable: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kConfigureEthernet,
+    Setting.kEthernetAutoConfigureIp,
+    Setting.kEthernetDns,
+    Setting.kEthernetProxy,
+    Setting.kDisconnectWifiNetwork,
+    Setting.kPreferWifiNetwork,
+    Setting.kForgetWifiNetwork,
+    Setting.kWifiAutoConfigureIp,
+    Setting.kWifiDns,
+    Setting.kWifiHidden,
+    Setting.kWifiProxy,
+    Setting.kWifiAutoConnectToNetwork,
+    Setting.kCellularSimLock,
+    Setting.kCellularRoaming,
+    Setting.kCellularApn,
+    Setting.kDisconnectCellularNetwork,
+    Setting.kCellularAutoConfigureIp,
+    Setting.kCellularDns,
+    Setting.kCellularProxy,
+    Setting.kCellularAutoConnectToNetwork,
+    Setting.kDisconnectTetherNetwork,
+    Setting.kWifiMetered,
+    Setting.kCellularMetered,
+  ]);
+
   private advancedExpanded_: boolean;
   private alwaysOnVpn_: chrome.settingsPrivate.PrefObject<boolean>;
   private applyingChanges_: boolean;
@@ -416,9 +397,7 @@ export class SettingsInternetDetailPageElement extends
   private ipAddress_: string;
   private isApnRevampEnabled_: boolean;
   private suppressTextMessagesOverride_: boolean;
-  private isPasspointSettingsEnabled_: boolean;
   private isApnRevampAndAllowApnModificationPolicyEnabled_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private isSecondaryUser_: boolean;
   private isTrafficCountersEnabled_: boolean;
   private isTrafficCountersForWifiTestingEnabled_: boolean;
@@ -480,10 +459,8 @@ export class SettingsInternetDetailPageElement extends
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
 
-    if (this.isPasspointSettingsEnabled_) {
-      this.passpointService_ =
-          MojoConnectivityProvider.getInstance().getPasspointService();
-    }
+    this.passpointService_ =
+        MojoConnectivityProvider.getInstance().getPasspointService();
 
     this.osSyncBrowserProxy_ = OsSyncBrowserProxyImpl.getInstance();
 
@@ -728,9 +705,9 @@ export class SettingsInternetDetailPageElement extends
     this.updateHiddenPref_();
 
     if (this.isCellular_(this.managedProperties_) &&
-        this.managedProperties_!.typeProperties.cellular!.allowTextMessages) {
+        this.managedProperties_.typeProperties.cellular!.allowTextMessages) {
       this.suppressTextMessagesOverride_ = !!OncMojo.getActiveValue(
-          this.managedProperties_!.typeProperties.cellular!.allowTextMessages);
+          this.managedProperties_.typeProperties.cellular!.allowTextMessages);
     }
 
     const metered = this.managedProperties_.metered;
@@ -974,8 +951,8 @@ export class SettingsInternetDetailPageElement extends
       textMessageAllowState: {
         allowTextMessages: e.detail.value,
       },
-      roaming: undefined,
-      apn: undefined,
+      roaming: null,
+      apn: null,
     };
     this.networkConfig_.setProperties(this.guid, config).then(response => {
       if (!response.success) {
@@ -1047,8 +1024,7 @@ export class SettingsInternetDetailPageElement extends
 
     const response = await this.networkConfig_.getManagedProperties(this.guid);
     this.getPropertiesCallback_(response.result);
-    if (this.isPasspointSettingsEnabled_ &&
-        this.isPasspointWifi_(this.managedProperties_)) {
+    if (this.isPasspointWifi_(this.managedProperties_)) {
       const response = await this.passpointService_.getPasspointSubscription(
           this.managedProperties_!.typeProperties.wifi!.passpointId!);
       this.passpointSubscription_ = response.result;
@@ -1444,8 +1420,7 @@ export class SettingsInternetDetailPageElement extends
          ConnectionStateType.kNotConnected)) {
       return false;
     }
-    if (this.isPasspointSettingsEnabled_ &&
-        this.isPasspointWifi_(managedProperties)) {
+    if (this.isPasspointWifi_(managedProperties)) {
       // Passpoint networks are automatically configured using Passpoint
       // subscriptions. We don't want the user to change the configuration
       // (b/282114074).
@@ -1833,7 +1808,7 @@ export class SettingsInternetDetailPageElement extends
     const config = this.getDefaultConfigProperties_();
     const apn = event.detail;
     config.typeConfig
-        .cellular = {apn, roaming: undefined, textMessageAllowState: undefined};
+        .cellular = {apn, roaming: null, textMessageAllowState: null};
     this.setMojoNetworkProperties_(config);
   }
 
@@ -2015,8 +1990,7 @@ export class SettingsInternetDetailPageElement extends
 
   private showMetered_(): boolean {
     const managedProperties = this.managedProperties_;
-    return this.showMeteredToggle_ && !!managedProperties &&
-        this.isRemembered_(managedProperties) &&
+    return !!managedProperties && this.isRemembered_(managedProperties) &&
         (managedProperties.type === NetworkType.kCellular ||
          managedProperties.type === NetworkType.kWiFi);
   }
@@ -2313,8 +2287,7 @@ export class SettingsInternetDetailPageElement extends
 
   private shouldShowPasspointProviderRow_(managedProperties: ManagedProperties|
                                           undefined): boolean {
-    return this.isPasspointSettingsEnabled_ &&
-        this.isPasspointWifi_(managedProperties);
+    return this.isPasspointWifi_(managedProperties);
   }
 
   private getPasspointSubscriptionName_(subscription: PasspointSubscription|
@@ -2337,15 +2310,8 @@ export class SettingsInternetDetailPageElement extends
 
   private onPasspointRemovalDialogConfirm_(): void {
     this.getPasspointRemovalDialog_().close();
-
-    if (this.isPasspointSettingsEnabled_) {
-      // When Passpoint settings page is enabled, the removal dialog leads the
-      // user to the subscription page.
-      this.onPasspointRowClicked_();
-      return;
-    }
-
-    this.forgetNetwork_();
+    // The removal dialog leads the user to the subscription page.
+    this.onPasspointRowClicked_();
   }
 
   private showCellularChooseNetwork_(managedProperties: ManagedProperties):

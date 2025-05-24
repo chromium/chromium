@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.content.Context;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -12,18 +14,21 @@ import android.util.AttributeSet;
 
 import androidx.preference.DialogPreference;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.DirectoryOption;
 import org.chromium.chrome.browser.download.R;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.DownloadLocationHelper;
 
 /** The preference used to save the download directory in download settings page. */
+@NullMarked
 public class DownloadLocationPreference extends DialogPreference
         implements DownloadDirectoryAdapter.Delegate {
     /**
      * Provides data for the list of available download directories options. Uses an asynchronous
      * operation to query the directory options.
      */
-    private DownloadLocationPreferenceAdapter mAdapter;
+    private final DownloadLocationPreferenceAdapter mAdapter;
 
     private DownloadLocationHelper mLocationHelper;
 
@@ -36,6 +41,7 @@ public class DownloadLocationPreference extends DialogPreference
     }
 
     /** Set the helper to access and update the default download location. */
+    @Initializer
     public void setDownloadLocationHelper(DownloadLocationHelper helper) {
         mLocationHelper = helper;
     }
@@ -46,15 +52,18 @@ public class DownloadLocationPreference extends DialogPreference
 
         DirectoryOption directoryOption =
                 (DirectoryOption) mAdapter.getItem(mAdapter.getSelectedItemId());
+        assertNonNull(directoryOption);
         final SpannableStringBuilder summaryBuilder = new SpannableStringBuilder();
         summaryBuilder.append(directoryOption.name);
         summaryBuilder.append(" ");
         summaryBuilder.append(directoryOption.location);
-        summaryBuilder.setSpan(
-                new StyleSpan(android.graphics.Typeface.BOLD),
-                0,
-                directoryOption.name.length(),
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        if (directoryOption.name != null) {
+            summaryBuilder.setSpan(
+                    new StyleSpan(android.graphics.Typeface.BOLD),
+                    0,
+                    directoryOption.name.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
 
         setSummary(summaryBuilder);
     }

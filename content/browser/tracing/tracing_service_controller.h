@@ -73,6 +73,8 @@ class TracingServiceController {
 
   TracingServiceController();
 
+  // Handles disconnection by the tracing service.
+  void OnTracingServiceDisconnected();
   void RegisterClientOnUIThread(base::ProcessId pid,
                                 EnableTracingCallback callback);
   void RemoveClient(base::ProcessId pid);

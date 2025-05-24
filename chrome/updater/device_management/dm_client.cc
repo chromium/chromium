@@ -30,6 +30,7 @@
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util/util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/update_client/network.h"
 #include "url/gurl.h"
 
@@ -72,8 +73,6 @@ class DefaultConfigurator : public DMClient::Configurator {
       : server_url_(server_url),
         policy_service_proxy_configuration_(
             std::move(policy_service_proxy_configuration)) {}
-
-  ~DefaultConfigurator() override = default;
 
   GURL GetDMServerUrl() const override { return server_url_; }
 
@@ -124,7 +123,7 @@ class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
 
   using Callback =
       base::OnceCallback<void(DMClient::RequestResult result,
-                              std::unique_ptr<std::string> response_body)>;
+                              std::optional<std::string> response_body)>;
 
   DMFetch(std::unique_ptr<DMClient::Configurator> config,
           scoped_refptr<device_management_storage::DMStorage> storage);
@@ -159,10 +158,11 @@ class DMFetch : public base::RefCountedThreadSafe<DMFetch> {
   // Callback functions for the URLFetcher.
   void OnRequestStarted(int response_code, int64_t content_length);
   void OnRequestProgress(int64_t current);
-  void OnRequestComplete(std::unique_ptr<std::string> response_body,
+  void OnRequestComplete(std::optional<std::string> response_body,
                          int net_error,
                          const std::string& header_etag,
                          const std::string& header_x_cup_server_proof,
+                         const std::string& header_cookie,
                          int64_t xheader_retry_after_sec);
 
   std::unique_ptr<DMClient::Configurator> config_;
@@ -249,7 +249,7 @@ void DMFetch::PostRequest(const std::string& request_type,
     VLOG(1) << "DM request not sent: " << result;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback_), result,
-                                  std::make_unique<std::string>()));
+                                  std::optional<std::string>()));
     return;
   }
   network_fetcher_->PostRequest(
@@ -272,10 +272,11 @@ void DMFetch::OnRequestProgress(int64_t current) {
   VLOG(3) << "DM request progress made, current bytes: " << current;
 }
 
-void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
+void DMFetch::OnRequestComplete(std::optional<std::string> response_body,
                                 int net_error,
                                 const std::string& header_etag,
                                 const std::string& header_x_cup_server_proof,
+                                const std::string& header_cookie,
                                 int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(2) << __func__;
@@ -308,7 +309,7 @@ void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
 void OnDMRegisterRequestComplete(scoped_refptr<DMFetch> dm_fetch,
                                  DMClient::RegisterCallback callback,
                                  DMClient::RequestResult result,
-                                 std::unique_ptr<std::string> response_body) {
+                                 std::optional<std::string> response_body) {
   VLOG(2) << __func__ << ": result=" << result;
   if (result == DMClient::RequestResult::kSuccess) {
     const std::string dm_token =
@@ -333,7 +334,7 @@ void OnDMPolicyFetchRequestComplete(
     DMClient::PolicyFetchCallback callback,
     std::unique_ptr<device_management_storage::CachedPolicyInfo> cached_info,
     DMClient::RequestResult result,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   VLOG(2) << __func__ << ": result=" << result;
   std::vector<PolicyValidationResult> validation_results;
   scoped_refptr<device_management_storage::DMStorage> storage =
@@ -365,7 +366,7 @@ void OnDMPolicyValidationReportRequestComplete(
     scoped_refptr<DMFetch> dm_fetch,
     DMClient::PolicyValidationReportCallback callback,
     DMClient::RequestResult result,
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   VLOG(2) << __func__ << ": result=" << result;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -387,6 +388,7 @@ void DMClient::RegisterDevice(
 }
 
 void DMClient::FetchPolicy(
+    policy::PolicyFetchReason reason,
     std::unique_ptr<Configurator> config,
     scoped_refptr<device_management_storage::DMStorage> storage,
     PolicyFetchCallback callback) {
@@ -403,8 +405,8 @@ void DMClient::FetchPolicy(
   auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
   std::unique_ptr<device_management_storage::CachedPolicyInfo> cached_info =
       dm_fetch->storage()->GetCachedPolicyInfo();
-  const std::string request_data =
-      GetPolicyFetchRequestData(kGoogleUpdateMachineLevelApps, *cached_info);
+  const std::string request_data = GetPolicyFetchRequestData(
+      reason, kGoogleUpdateMachineLevelApps, *cached_info);
   dm_fetch->PostRequest(
       kPolicyFetchRequestType, DMFetch::TokenType::kDMToken, request_data,
       base::BindOnce(&OnDMPolicyFetchRequestComplete, dm_fetch,

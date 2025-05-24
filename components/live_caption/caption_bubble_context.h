@@ -17,6 +17,7 @@ class WebContents;
 }
 
 namespace captions {
+class CaptionBubble;
 
 using OpenCaptionSettingsCallback = base::RepeatingCallback<void()>;
 
@@ -59,6 +60,11 @@ class CaptionBubbleContext {
   // in child classes, the child classes must set this to be true.
   virtual bool IsActivatable() const = 0;
 
+  // Whether the caption bubble should be positioned to avoid covering too much
+  // of the context area. For Live Caption, this should only be true for
+  // non-browser web contents.
+  virtual bool ShouldAvoidOverlap() const = 0;
+
   // Gets a session observer for the caption bubble context. On Chrome
   // browser, a caption bubble session is per-tab and resets when a user
   // navigates away or reloads the page.
@@ -76,6 +82,14 @@ class CaptionBubbleContext {
   // //components/live_caption:live_caption can't directly use the WebContents
   // to trigger a navigation due to dependency restrictions.
   virtual OpenCaptionSettingsCallback GetOpenCaptionSettingsCallback() = 0;
+
+  // Sets the caption bubble observer that will be notified when the
+  // activatability of the context changes.
+  virtual void SetContextActivatabilityObserver(CaptionBubble* caption_bubble) {
+  }
+
+  // Clears the caption bubble observer.
+  virtual void RemoveContextActivatabilityObserver() {}
 };
 
 }  // namespace captions

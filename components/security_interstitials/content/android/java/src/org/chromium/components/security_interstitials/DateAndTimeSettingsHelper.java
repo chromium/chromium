@@ -10,9 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Helper for opening date and time settings. */
 @JNINamespace("security_interstitials")
+@NullMarked
 public abstract class DateAndTimeSettingsHelper {
     private DateAndTimeSettingsHelper() {}
 

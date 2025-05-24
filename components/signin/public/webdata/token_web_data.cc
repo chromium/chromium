@@ -58,7 +58,7 @@ class TokenWebDataBackend
   }
 
  protected:
-  virtual ~TokenWebDataBackend() {}
+  virtual ~TokenWebDataBackend() = default;
 
  private:
   friend class base::RefCountedDeleteOnSequence<TokenWebDataBackend>;
@@ -105,4 +105,4 @@ WebDataServiceBase::Handle TokenWebData::GetAllTokens(
       consumer);
 }
 
-TokenWebData::~TokenWebData() {}
+TokenWebData::~TokenWebData() = default;

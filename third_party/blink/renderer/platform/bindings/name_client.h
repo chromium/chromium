@@ -20,7 +20,7 @@ namespace blink {
 // a given website.
 //
 // NameClient should be inherited for classes which:
-// - is likely to be in a reference chain that is likely to hold a consierable
+// - is likely to be in a reference chain that is likely to hold a considerable
 //   amount of memory,
 // - Web developers would have a rough idea what it would mean, and
 //   (The name is exposed to DevTools)

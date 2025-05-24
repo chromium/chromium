@@ -15,8 +15,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-#include "chrome/browser/ui/views/tabs/tab_organization_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -27,12 +27,14 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/test/views_test_utils.h"
 
 class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchContainerBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kTabOrganization, features::kTabstripDeclutter}, {});
+        {features::kTabOrganization, features::kTabstripDeclutter},
+        {features::kTabstripComboButton});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
 
@@ -45,14 +47,35 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
   TabStrip* tab_strip() { return browser_view()->tabstrip(); }
 
   TabSearchContainer* tab_search_container() {
-    return browser_view()->tab_strip_region_view()->tab_search_container();
+    return browser_view()
+        ->tab_strip_region_view()
+        ->tab_search_container_for_testing();
+  }
+
+ protected:
+  void ResetAnimation(int value) {
+    if (tab_search_container()->animation_session_for_testing()) {
+      tab_search_container()
+          ->animation_session_for_testing()
+          ->ResetOpacityAnimationForTesting(value);
+    }
+    if (tab_search_container()->animation_session_for_testing()) {
+      tab_search_container()
+          ->animation_session_for_testing()
+          ->ResetExpansionAnimationForTesting(value);
+    }
+    if (tab_search_container()->animation_session_for_testing()) {
+      tab_search_container()
+          ->animation_session_for_testing()
+          ->ResetFlatEdgeAnimationForTesting(value);
+    }
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TogglesActionUIState DISABLED_TogglesActionUIState
 #else
@@ -76,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsShowing());
 }
 
-// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_TogglesActionUIStateOnlyInCorrectBrowser \
   DISABLED_TogglesActionUIStateOnlyInCorrectBrowser
@@ -90,7 +113,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   TabSearchContainer* const second_search_container =
       BrowserView::GetBrowserViewForBrowser(second_browser)
           ->tab_strip_region_view()
-          ->tab_search_container();
+          ->tab_search_container_for_testing();
 
   ASSERT_FALSE(second_search_container->animation_session_for_testing());
 
@@ -115,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   EXPECT_FALSE(second_search_container->animation_session_for_testing());
 }
 
-// TODO(crbug.com/338649929): Flaky on Windows 10 builds.
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_DoesntShowIfTabStripModalUIExists \
   DISABLED_DoesntShowIfTabStripModalUIExists
@@ -145,18 +168,25 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsShowing());
 }
 
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_BlocksTabStripModalUIWhileShown \
+  DISABLED_BlocksTabStripModalUIWhileShown
+#else
+#define MAYBE_BlocksTabStripModalUIWhileShown BlocksTabStripModalUIWhileShown
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       BlocksTabStripModalUIWhileShown) {
+                       MAYBE_BlocksTabStripModalUIWhileShown) {
   ASSERT_TRUE(browser()->tab_strip_model()->CanShowModalUI());
 
+  tab_search_container()->SetLockedExpansionModeForTesting(
+      LockedExpansionMode::kNone, nullptr);
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
 
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -167,9 +197,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 
   EXPECT_FALSE(browser()->tab_strip_model()->CanShowModalUI());
 
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(0);
+  ResetAnimation(0);
 
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -201,9 +229,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, DelaysHide) {
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
@@ -229,9 +255,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonClicked) {
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -250,9 +274,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                        ImmediatelyHidesWhenOrganizeButtonDismissed) {
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -267,13 +289,22 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsClosing());
 }
 
+// TODO(crbug.com/414839512): Fix flaky test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DelayedHidesWhenOrganizeButtonTimesOut \
+  DISABLED_DelayedHidesWhenOrganizeButtonTimesOut
+#else
+#define MAYBE_DelayedHidesWhenOrganizeButtonTimesOut \
+  DelayedHidesWhenOrganizeButtonTimesOut
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       DelayedHidesWhenOrganizeButtonTimesOut) {
+                       MAYBE_DelayedHidesWhenOrganizeButtonTimesOut) {
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(tab_search_container());
+
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   tab_search_container()->SetLockedExpansionModeForTesting(
@@ -296,14 +327,12 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsSuccessWhenButtonClicked) {
+                       LogsSuccessWhenAutoTabGroupsButtonClicked) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
@@ -321,14 +350,12 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsFailureWhenButtonDismissed) {
+                       LogsFailureWhenAutoTabGroupsButtonDismissed) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
@@ -343,15 +370,21 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
   histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 1, 1);
 }
 
+// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LogsFailureWhenAutoTabGroupsButtonTimeout \
+  DISABLED_LogsFailureWhenAutoTabGroupsButtonTimeout
+#else
+#define MAYBE_LogsFailureWhenAutoTabGroupsButtonTimeout \
+  LogsFailureWhenAutoTabGroupsButtonTimeout
+#endif
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsFailureWhenButtonTimeout) {
+                       MAYBE_LogsFailureWhenAutoTabGroupsButtonTimeout) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
       tab_search_container()->auto_tab_group_button());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   TabOrganizationService* service =
@@ -366,6 +399,54 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                                       false, 1);
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 2, 1);
+}
+
+// TODO(crbug.com/409311762): This test is flaky, fix and re-enable if work on
+// declutter resumes.
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       DISABLED_LogsWhenDeclutterButtonClicked) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  tab_search_container()->OnTabDeclutterButtonClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 0, 1);
+  // Bucketed CTR metric should reflect one show and one click, with fewer than
+  // 15 total tabs.
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 10, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsWhenDeclutterButtonDismissed) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  tab_search_container()->OnTabDeclutterButtonDismissed();
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsWhenDeclutterButtonTimeout) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  tab_search_container()->OnOrganizeButtonTimeout(
+      tab_search_container()->tab_declutter_button());
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
@@ -408,7 +489,14 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
             expanded_value);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest, ShowsDeclutterChip) {
+// TODO(crbug.com/414839512): Fix flaky test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowsDeclutterChip DISABLED_ShowsDeclutterChip
+#else
+#define MAYBE_ShowsDeclutterChip ShowsDeclutterChip
+#endif
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       MAYBE_ShowsDeclutterChip) {
   ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 
   tab_search_container()->ShowTabOrganization(
@@ -433,9 +521,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->IsShowing());
 
   // Finish showing declutter chip.
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Hide the declutter chip.
@@ -460,9 +546,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                   ->animation_session_for_testing()
                   ->expansion_animation()
                   ->IsShowing());
-  tab_search_container()
-      ->animation_session_for_testing()
-      ->ResetAnimationForTesting(1);
+  ResetAnimation(1);
   tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
 
   // Try to show the declutter chip while auto-tab group chip is already shown.

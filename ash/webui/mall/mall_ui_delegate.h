@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_MALL_MALL_UI_DELEGATE_H_
 #define ASH_WEBUI_MALL_MALL_UI_DELEGATE_H_
 
+#include <string_view>
+
 #include "base/functional/callback_forward.h"
 
 class GURL;
@@ -19,6 +21,7 @@ class MallUIDelegate {
   // Calls `callback` with a URL which can be used to embed the Mall website
   // into the WebUI.
   virtual void GetMallEmbedUrl(
+      std::string_view path,
       base::OnceCallback<void(const GURL&)> callback) = 0;
 };
 

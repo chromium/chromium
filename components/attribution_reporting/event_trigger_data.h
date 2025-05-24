@@ -11,39 +11,15 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
 
+namespace base {
+class DictValue;
+class Value;
+}  // namespace base
+
 namespace attribution_reporting {
-
-class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerValue {
- public:
-  static base::expected<EventTriggerValue, mojom::TriggerRegistrationError>
-  Parse(const base::Value::Dict&);
-
-  EventTriggerValue() = default;
-
-  // `CHECK()`s that the given value is non-zero.
-  explicit EventTriggerValue(uint32_t);
-
-  EventTriggerValue(const EventTriggerValue&) = default;
-  EventTriggerValue& operator=(const EventTriggerValue&) = default;
-
-  EventTriggerValue(EventTriggerValue&&) = default;
-  EventTriggerValue& operator=(EventTriggerValue&&) = default;
-
-  // This implicit conversion is allowed to ease drop-in use of
-  // this type in places currently requiring `uint32_t` with prior validation.
-  operator uint32_t() const {  // NOLINT
-    return value_;
-  }
-
-  void Serialize(base::Value::Dict&) const;
-
- private:
-  uint32_t value_ = 1;
-};
 
 struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
   static base::expected<EventTriggerData, mojom::TriggerRegistrationError>
@@ -68,8 +44,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
   // are used.
   FilterPair filters;
 
-  // TODO(crbug.com/40287976): Add an `EventTriggerValue` field called `value`.
-
   EventTriggerData();
 
   EventTriggerData(uint64_t data,
@@ -77,7 +51,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventTriggerData {
                    std::optional<uint64_t> dedup_key,
                    FilterPair);
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const EventTriggerData&,
                          const EventTriggerData&) = default;

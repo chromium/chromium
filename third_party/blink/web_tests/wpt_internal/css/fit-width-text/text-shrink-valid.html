@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<title>Parsing text-shrink with valid values</title>
+<link rel="help" href="https://github.com/explainers-by-googlers/css-fit-text/blob/main/README.md">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/parsing-testcommon.js"></script>
+<body>
+<script>
+test_valid_value('text-shrink', 'none');
+test_valid_value('text-shrink', 'per-line');
+test_valid_value('text-shrink', 'consistent');
+
+test_valid_value('text-shrink', 'per-line scale', 'per-line');
+test_valid_value('text-shrink', 'consistent font-size');
+
+test_valid_value('text-shrink', 'per-line 32px');
+test_valid_value('text-shrink', 'consistent 3em');
+
+test_valid_value('text-shrink', 'per-line scale 4ch', 'per-line 4ch');
+test_valid_value('text-shrink', 'consistent scale-inline 2lh');
+</script>
+</body>

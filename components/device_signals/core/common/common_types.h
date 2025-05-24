@@ -18,6 +18,12 @@ namespace device_signals {
 // indicate a reason for not being able to find it.
 enum class PresenceValue { kUnspecified, kAccessDenied, kNotFound, kFound };
 
+enum class SettingValue {
+  UNKNOWN,
+  DISABLED,
+  ENABLED,
+};
+
 struct ExecutableMetadata {
   ExecutableMetadata();
 

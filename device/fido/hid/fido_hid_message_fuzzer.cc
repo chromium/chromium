@@ -20,7 +20,7 @@ namespace device {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   constexpr size_t kHidPacketSize = 64;
-  auto span = base::make_span(data, size);
+  auto span = base::span(data, size);
 
   auto packet = span.first(std::min(kHidPacketSize, span.size()));
   auto msg = FidoHidMessage::CreateFromSerializedData(

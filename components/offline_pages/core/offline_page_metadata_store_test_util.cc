@@ -39,7 +39,7 @@ int64_t GetPageCountSync(sql::Database* db) {
 OfflinePageMetadataStoreTestUtil::OfflinePageMetadataStoreTestUtil()
     : store_ptr_(nullptr) {}
 
-OfflinePageMetadataStoreTestUtil::~OfflinePageMetadataStoreTestUtil() {}
+OfflinePageMetadataStoreTestUtil::~OfflinePageMetadataStoreTestUtil() = default;
 
 void OfflinePageMetadataStoreTestUtil::BuildStore() {
   if (!temp_directory_.IsValid() && !temp_directory_.CreateUniqueTempDir()) {

@@ -51,12 +51,12 @@ class ComponentUpdaterServiceProvider
    public:
     using LoadCallback = base::OnceCallback<void(const base::FilePath&)>;
 
-    Delegate() {}
+    Delegate() = default;
 
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual void LoadComponent(const std::string& name,
                                bool mount,

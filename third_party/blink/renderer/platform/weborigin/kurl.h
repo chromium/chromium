@@ -169,8 +169,7 @@ class PLATFORM_EXPORT KURL {
   String ElidedString() const;
 
   String Protocol() const;
-  String Host() const;
-  StringView HostView() const LIFETIME_BOUND;
+  StringView Host() const LIFETIME_BOUND;
 
   // Returns 0 when there is no port or the default port was specified, or the
   // URL is invalid.
@@ -179,16 +178,18 @@ class PLATFORM_EXPORT KURL {
   // will be rejected by the canonicalizer.
   uint16_t Port() const;
   bool HasPort() const;
-  String User() const;
-  String Pass() const;
+  StringView User() const LIFETIME_BOUND;
+  StringView Pass() const LIFETIME_BOUND;
   StringView GetPath() const LIFETIME_BOUND;
   // This method handles "parameters" separated by a semicolon.
-  String LastPathComponent() const;
-  String Query() const;
-  String FragmentIdentifier() const;
+  StringView LastPathComponent() const LIFETIME_BOUND;
+  StringView Query() const LIFETIME_BOUND;
+  StringView QueryWithLeadingQuestionMark() const LIFETIME_BOUND;
+  StringView FragmentIdentifier() const LIFETIME_BOUND;
+  StringView FragmentIdentifierWithLeadingNumberSign() const LIFETIME_BOUND;
   bool HasFragmentIdentifier() const;
 
-  String BaseAsString() const;
+  StringView BaseAsString() const LIFETIME_BOUND;
 
   // Returns true if the current URL's protocol is the same as the StringView
   // argument. The argument must be lower-case.
@@ -255,8 +256,6 @@ class PLATFORM_EXPORT KURL {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
-  bool HasIDNA2008DeviationCharacter() const;
-
  private:
   friend struct WTF::HashTraits<blink::KURL>;
 
@@ -292,11 +291,6 @@ class PLATFORM_EXPORT KURL {
 
   bool is_valid_;
   bool protocol_is_in_http_family_;
-  // Set to true if any part of the URL string contains an IDNA 2008 deviation
-  // character. Only used for logging. The hostname is decoded to IDN and
-  // checked for deviation characters again before logging.
-  // TODO(crbug.com/1396475): Remove once Non-Transitional mode is shipped.
-  bool has_idna2008_deviation_character_;
 
   // Keep a separate string for the protocol to avoid copious copies for
   // protocol().

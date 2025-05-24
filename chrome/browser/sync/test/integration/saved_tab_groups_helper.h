@@ -11,9 +11,10 @@
 #include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sync/base/data_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -29,6 +30,10 @@ MATCHER_P2(HasSpecificsSavedTabGroup, title, color, "") {
 
 MATCHER_P2(HasSpecificsSavedTab, title, url, "") {
   return arg.tab().title() == title && arg.tab().url() == url;
+}
+
+MATCHER_P2(HasSavedGroupMetadata, title, color, "") {
+  return arg.title() == title && arg.color() == color;
 }
 
 // Checks that a tab or group with a particular uuid exists in the service.
@@ -51,6 +56,9 @@ class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
                        TriggerSource source) override;
   void OnTabGroupUpdated(const SavedTabGroup& group,
                          TriggerSource source) override;
+  void OnTabGroupMigrated(const SavedTabGroup& shared_group,
+                          const base::Uuid& old_sync_id,
+                          TriggerSource source) override;
 
  private:
   const base::Uuid uuid_;

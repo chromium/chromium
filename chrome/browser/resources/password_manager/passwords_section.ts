@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './password_list_item.js';
 import './dialogs/add_password_dialog.js';
 import './dialogs/auth_timed_out_dialog.js';
-import './dialogs/move_passwords_dialog.js';
 import './user_utils_mixin.js';
 import './promo_cards/promo_card.js';
 import './promo_cards/promo_cards_browser_proxy.js';
@@ -25,7 +23,6 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MoveToAccountStoreTrigger} from './dialogs/move_passwords_dialog.js';
 import type {FocusConfig} from './focus_config.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import {getTemplate} from './passwords_section.html.js';
@@ -89,7 +86,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showAddPasswordDialog_: Boolean,
       showAuthTimedOutDialog_: Boolean,
-      showMovePasswordsDialog_: Boolean,
 
       movePasswordsText_: String,
 
@@ -102,12 +98,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
       passwordsOnDevice_: {
         type: Array,
         computed: 'computePasswordsOnDevice_(groups_)',
-      },
-
-      showMovePasswords_: {
-        type: Boolean,
-        computed: 'computeShowMovePasswords_(isAccountStoreUser, ' +
-            'passwordsOnDevice_, searchTerm_)',
       },
 
       showPasswordsDescription_: {
@@ -147,18 +137,25 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     ];
   }
 
-  focusConfig: FocusConfig;
+  declare focusConfig: FocusConfig;
 
-  private groups_: chrome.passwordsPrivate.CredentialGroup[] = [];
-  private searchTerm_: string;
-  private shownGroupsCount_: number;
-  private showAddPasswordDialog_: boolean;
-  private showAuthTimedOutDialog_: boolean;
-  private showMovePasswordsDialog_: boolean;
-  private movePasswordsText_: string;
-  private promoCard_: PromoCard|null;
-  private passwordManagerDisabled_: boolean;
-  private activeListItem_: HTMLElement|null;
+  declare private groups_: chrome.passwordsPrivate.CredentialGroup[];
+  declare private searchTerm_: string;
+  declare private shownGroupsCount_: number;
+  declare private showAddPasswordDialog_: boolean;
+  declare private showAuthTimedOutDialog_: boolean;
+  declare private importPasswordsText_: string;
+  // TODO(crbug.com/410001569): This should check for localPasswordCount
+  // instead, coming from the SyncHandler that queries the batch uploader. This
+  // is needed to align the showing of the trigger and the content (which now
+  // uses the BatchUpload data).
+  declare private passwordsOnDevice_: chrome.passwordsPrivate.PasswordUiEntry[];
+  declare private showPasswordsDescription_: boolean;
+  declare private movePasswordsText_: string;
+  declare private promoCard_: PromoCard|null;
+  declare private passwordManagerDisabled_: boolean;
+  declare private shouldShowPromoCard_: boolean;
+  declare private activeListItem_: HTMLElement|null;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -283,16 +280,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     return sanitizeInnerHtml(this.movePasswordsText_);
   }
 
-
-  private onMovePasswordsClicked_(e: Event) {
-    e.preventDefault();
-    this.showMovePasswordsDialog_ = true;
-  }
-
-  private onMovePasswordsDialogClose_() {
-    this.showMovePasswordsDialog_ = false;
-  }
-
   private showImportPasswordsOption_(): boolean {
     if (!this.groups_ || this.passwordManagerDisabled_) {
       return false;
@@ -319,7 +306,7 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
     const importLink = this.$.importPasswords.querySelector('a');
     // Add an event listener to the import link, points to the import flow.
     assert(importLink);
-    importLink!.addEventListener('click', (event: Event) => {
+    importLink.addEventListener('click', (event: Event) => {
       // The action is triggered from a dummy anchor element poining to "#".
       // For that case preventing the default behaviour is required here.
       event.preventDefault();
@@ -356,11 +343,6 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
 
   private showNoPasswordsFound_(): boolean {
     return this.hideGroupsList_() && this.groups_.length > 0;
-  }
-
-  private getMovePasswordsDialogTrigger_(): MoveToAccountStoreTrigger {
-    return MoveToAccountStoreTrigger
-        .EXPLICITLY_TRIGGERED_FOR_MULTIPLE_PASSWORDS_IN_SETTINGS;
   }
 
   private onPasswordDetailsShown_(e: CustomEvent) {

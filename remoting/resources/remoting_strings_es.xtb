@@ -28,6 +28,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="2329392777730037872">No se ha podido abrir <ph name="URL" /> en el cliente.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2366718077645204424">No se puede establecer conexión con el host. Es probable que el error se deba a la configuración de la red que se está utilizando.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Todos los derechos reservados.</translation>
 <translation id="2504109125669302160">Conceder permiso de accesibilidad a <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">¿Quieres compartir este ordenador para que otro usuario pueda acceder a él y controlarlo?</translation>
@@ -39,6 +40,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="2758123043070977469">No se ha podido completar la autenticación. Vuelve a iniciar sesión.</translation>
 <translation id="2803375539583399270">Introducir PIN</translation>
 <translation id="2919669478609886916">Actualmente estás compartiendo este ordenador con otro usuario. ¿Quieres seguir compartiéndolo?</translation>
+<translation id="2929683002824598593">Compartir dispositivo</translation>
 <translation id="2939145106548231838">Autenticarse en host</translation>
 <translation id="3027681561976217984">Modo táctil</translation>
 <translation id="3106379468611574572">El ordenador remoto no responde a las solicitudes de conexión. Comprueba que esté conectado y vuelve a intentarlo.</translation>
@@ -91,6 +93,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="4987330545941822761">Escritorio Remoto de Chrome no puede identificar el navegador que debe abrir las URLs localmente. Selecciónalo en la lista de abajo.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (sin conexión)</translation>
 <translation id="507204348399810022">¿Seguro que quieres inhabilitar las conexiones remotas a <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Informes sobre fallos</translation>
 <translation id="5170982930780719864">Identificador del host no válido</translation>
 <translation id="5204575267916639804">Preguntas frecuentes</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
@@ -116,10 +119,12 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="6178645564515549384">Host de mensajería nativa para asistencia remota</translation>
 <translation id="618120821413932081">Actualiza la resolución del escritorio remoto para que se ajuste a la ventana</translation>
 <translation id="6223301979382383752">Abrir preferencias de Grabación de la pantalla</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> ha solicitado acceso para ver tu pantalla y controlar tu teclado y ratón. ¿Quieres compartir tu dispositivo?</translation>
 <translation id="6284412385303060032">Se ha cerrado el host que se ejecuta en la pantalla de inicio de sesión de la consola para poder admitir el modo de cortina. Para ello, se ha cambiado a un host que se ejecuta en una sesión específica de usuario.</translation>
 <translation id="6542902059648396432">Notificar un problema…</translation>
 <translation id="6583902294974160967">Ayuda</translation>
 <translation id="6612717000975622067">Enviar Ctrl-Alt-Supr</translation>
+<translation id="6625262630437221505">{0,plural, =1{Si no haces nada, tu dispositivo empezará a compartir automáticamente dentro de # segundo.}other{Si no haces nada, tu dispositivo empezará a compartir automáticamente dentro de # segundos.}}</translation>
 <translation id="6654753848497929428">Compartir</translation>
 <translation id="677755392401385740">Host iniciado para usuario: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Aplicación de ayuda para abrir una URL en el cliente de <ph name="PRODUCT_NAME" /></translation>
@@ -133,6 +138,7 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="7067321367069083429">La pantalla hace de pantalla táctil</translation>
 <translation id="7116737094673640201">Te damos la bienvenida a Escritorio Remoto de Chrome</translation>
 <translation id="7144878232160441200">Reintentar</translation>
+<translation id="7298392173540380852">Copyright 2025 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="7312846573060934304">El host no tiene conexión.</translation>
 <translation id="7319983568955948908">Dejar de compartir</translation>
 <translation id="7359298090707901886">El navegador elegido no se puede usar para abrir URLs en el equipo local.</translation>
@@ -149,7 +155,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="7693372326588366043">Actualiza la lista de hosts</translation>
 <translation id="7714222945760997814">Informar de este error</translation>
 <translation id="7868137160098754906">Introduce tu código PIN para el ordenador remoto.</translation>
-<translation id="7881455334687220899">Copyright 2024 The Chromium Authors. Todos los derechos reservados.</translation>
 <translation id="7895403300744144251">Las políticas de seguridad del ordenador remoto no permiten conexiones desde tu cuenta.</translation>
 <translation id="7936528439960309876">Anclar a la derecha</translation>
 <translation id="7970576581263377361">Error de autenticación. Vuelve a iniciar sesión en Chromium.</translation>
@@ -181,7 +186,6 @@ Si la casilla <ph name="SERVICE_SCRIPT_NAME" /> ya está marcada, desmárcala y 
 <translation id="8747048596626351634">La sesión ha fallado o no se ha podido iniciar. Si hay una secuencia de comandos ~/.chrome-remote-desktop-session en el ordenador remoto, esta debe iniciar un proceso largo en primer plano, como un entorno de escritorio o un administrador de ventanas.</translation>
 <translation id="8804164990146287819">Política de Privacidad</translation>
 <translation id="8906511416443321782">Se necesita acceso al micrófono para capturar audio y emitirlo en el cliente de Escritorio Remoto de Chrome.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Todos los derechos reservados.</translation>
 <translation id="9111855907838866522">Estás conectado al dispositivo remoto. Para abrir el menú, toca la pantalla con cuatro dedos.</translation>
 <translation id="9126115402994542723">No volver a pedir un PIN al conectarse a este host desde este dispositivo.</translation>
 <translation id="916856682307586697">Iniciar la XSession predeterminada</translation>

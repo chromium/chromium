@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.TooltipCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -25,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /** View class for the Creator Toolbar section */
+@NullMarked
 public class CreatorToolbarView extends LinearLayout {
     private static final int ANIMATION_DURATION_MS = 300;
     private TextView mCreatorTitleToolbar;

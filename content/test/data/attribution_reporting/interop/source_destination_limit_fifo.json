@@ -1,7 +1,6 @@
 {
   "description": "Source destination limit FIFO",
   "api_config": {
-    "needs_source_destination_limit": true,
     "max_destinations_per_source_site_reporting_site": "3",
     "rate_limit_max_attributions": "1"
   },

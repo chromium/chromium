@@ -1,0 +1,11 @@
+{
+  "name": "content script with bad mime type",
+  "manifest_version": 3,
+  "version": "1",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*"],
+      "js": ["files/bad_script.json"]
+    }
+  ]
+}

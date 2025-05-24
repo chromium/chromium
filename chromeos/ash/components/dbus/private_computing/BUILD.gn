@@ -4,7 +4,7 @@
 
 import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
 component("private_computing") {
   defines = [ "IS_PRIVATE_COMPUTING_IMPL" ]

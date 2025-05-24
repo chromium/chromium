@@ -1,0 +1,115 @@
+<!--
+@BLINK-ALLOW:role*
+@BLINK-ALLOW:name=*
+@BLINK-ALLOW:value*
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <style>
+    .combo {
+      display: block;
+      position: relative;
+    }
+
+    .combo-menu {
+      display: none;
+      position: absolute;
+    }
+
+    .open .combo-menu {
+      display: block;
+    }
+  </style>
+
+</head>
+
+<body>
+
+  <div class="combo js-select">
+    <div id="combo1-label" class="combo-label">Favorite Fruit</div>
+    <button aria-controls="listbox1" aria-expanded="false" aria-haspopup="listbox" aria-labelledby="combo1-label"
+      id="combo1" class="combo-input" role="combobox" disabled></button>
+    <div class="combo-menu" role="listbox" id="listbox1" aria-labelledby="combo1-label" tabindex="-1">
+    </div>
+  </div>
+
+  <label for="pet-select">Choose a pet:</label>
+  <select name="pets" id="pet-select" disabled>
+    <option value="">--Please choose an option--</option>
+    <option value="dog">Dog</option>
+    <option value="cat">Cat</option>
+    <option value="hamster">Hamster</option>
+    <option value="parrot">Parrot</option>
+    <option value="spider">Spider</option>
+    <option value="goldfish">Goldfish</option>
+  </select>
+
+
+</body>
+
+<script>
+  'use strict';
+
+    const Select = function (el, options = []) {
+      this.el = el;
+    this.comboEl = el.querySelector('[role=combobox]');
+    this.listboxEl = el.querySelector('[role=listbox]');
+
+    this.idBase = this.comboEl.id || 'combo';
+    this.options = options;
+
+    if (this.el && this.comboEl && this.listboxEl) {
+      this.init();
+    }
+  };
+
+    Select.prototype.init = function () {
+    this.comboEl.innerHTML = this.options[0];
+
+    this.options.map((option, index) => {
+      const optionEl = this.createOption(option, index);
+      this.listboxEl.appendChild(optionEl);
+    });
+  };
+
+  Select.prototype.createOption = function (optionText, index) {
+    const optionEl = document.createElement('div');
+    optionEl.setAttribute('role', 'option');
+    optionEl.id = `${this.idBase}-${index}`;
+    optionEl.className =
+      index === 0 ? 'combo-option option-current' : 'combo-option';
+    optionEl.setAttribute('aria-selected', `${index === 0}`);
+    optionEl.innerText = optionText;
+
+    return optionEl;
+  };
+
+  window.addEventListener('load', function () {
+    const options = [
+      'Choose a Fruit',
+      'Apple',
+      'Banana',
+      'Blueberry',
+      'Boysenberry',
+      'Cherry',
+      'Cranberry',
+      'Durian',
+      'Eggplant',
+      'Fig',
+      'Grape',
+      'Guava',
+      'Huckleberry',
+    ];
+    const selectEls = document.querySelectorAll('.js-select');
+
+    selectEls.forEach((el) => {
+      new Select(el, options);
+    });
+  });
+
+</script>
+
+</html>

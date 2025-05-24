@@ -1,0 +1,89 @@
+<style include="cr-shared-style cros-color-overrides">
+  html,
+  body {
+    height: 100%;
+  }
+
+  #graduationDiv {
+    background-color: var(--cros-sys-app_base_shaded);
+    height: 100vh;
+  }
+
+  .back-button-container {
+    align-content: center;
+    height: 10%;
+    margin-inline-start: 40px;
+  }
+
+  #backButton {
+    background-color: transparent;
+    border-radius: 18px;
+  }
+
+  #webview {
+    border-radius: 20px;
+    display: flex;
+    height: 80%;
+    margin: 0 40px;
+    overflow: hidden;
+  }
+
+  #webview[hidden],
+  #doneButton[hidden],
+  .spinner-container[hidden] {
+    display: none;
+  }
+
+  paper-spinner-lite {
+    display: none;
+    height: 38px;
+    margin-bottom: 28px;
+    width: 38px;
+  }
+
+  paper-spinner-lite[active] {
+    display: inline-block;
+  }
+
+  .spinner-container {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    height: 80%;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .done-button-container {
+    align-content: center;
+    float: inline-end;
+    height: 10%;
+    margin-inline-end: 40px;
+  }
+
+  #doneButton {
+    border-radius: 18px;
+  }
+</style>
+<div id="graduationDiv" role="application">
+  <div class="back-button-container">
+    <cr-button id="backButton" class="cancel-button" on-click="onBackClicked">
+      <iron-icon icon="[[getBackButtonIcon()]]"></iron-icon>
+      $i18n{backButtonLabel}
+    </cr-button>
+  </div>
+  <webview id="webview" hidden$="[[showLoadingScreen]]"></webview>
+  <div class="spinner-container" hidden$="[[!showLoadingScreen]]">
+    <paper-spinner-lite class="spinner" active="[[showLoadingScreen]]">
+    </paper-spinner-lite>
+    <div aria-live="polite" aria-label$="$i18n{webviewLoadingMessage}">
+      $i18n{webviewLoadingMessage}
+    </div>
+  </div>
+  <div class="done-button-container">
+    <cr-button id="doneButton" class="action-button" on-click="onDoneClicked"
+        hidden$="[[showLoadingScreen]]" disabled$="[[!takeoutFlowCompleted]]">
+      $i18n{doneButtonLabel}
+    </cr-button>
+  </div>
+</div>

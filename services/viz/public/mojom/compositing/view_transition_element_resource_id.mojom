@@ -27,4 +27,5 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 struct ViewTransitionElementResourceId {
   blink.mojom.ViewTransitionToken? transition_token;
   uint32 local_id;
+  bool for_subframe_snapshot;
 };

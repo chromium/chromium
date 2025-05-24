@@ -33,7 +33,7 @@ struct BackForwardCacheDisabledDestructiveScriptTestPassToString {
 
 }  // namespace
 
-using ContextType = ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExecuteScriptApiTestBase : public ExtensionApiTest {
  public:
@@ -85,6 +85,10 @@ IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBasic) {
 
 IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadEncoding) {
   ASSERT_TRUE(RunExtensionTest("executescript/bad_encoding")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(ExecuteScriptApiTest, ExecuteScriptBadMimeType) {
+  ASSERT_TRUE(RunExtensionTest("executescript/bad_mime_type")) << message_;
 }
 
 // If failing, mark disabled and update http://crbug.com/92105.

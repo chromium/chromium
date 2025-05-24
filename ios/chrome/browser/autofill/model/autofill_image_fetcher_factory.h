@@ -8,8 +8,9 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace autofill {
 
@@ -17,17 +18,10 @@ class AutofillImageFetcherImpl;
 
 // Singleton that owns all AutofillImageFetcherImpls and associates them with
 // profiles.
-class AutofillImageFetcherFactory : public BrowserStateKeyedServiceFactory {
+class AutofillImageFetcherFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AutofillImageFetcherImpl* GetForBrowserState(ProfileIOS* profile);
-
   static AutofillImageFetcherImpl* GetForProfile(ProfileIOS* profile);
   static AutofillImageFetcherFactory* GetInstance();
-
-  AutofillImageFetcherFactory(const AutofillImageFetcherFactory&) = delete;
-  AutofillImageFetcherFactory& operator=(const AutofillImageFetcherFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<AutofillImageFetcherFactory>;

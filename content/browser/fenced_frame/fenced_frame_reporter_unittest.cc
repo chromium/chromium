@@ -46,32 +46,28 @@ namespace {
 
 using ::testing::_;
 
-using PrivateAggregationRequests =
-    FencedFrameReporter::PrivateAggregationRequests;
+using FinalizedPrivateAggregationRequests =
+    FencedFrameReporter::FinalizedPrivateAggregationRequests;
 
-const auction_worklet::mojom::PrivateAggregationRequestPtr
+const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
     kPrivateAggregationRequest =
-        auction_worklet::mojom::PrivateAggregationRequest::New(
-            auction_worklet::mojom::AggregatableReportContribution::
-                NewHistogramContribution(
-                    blink::mojom::AggregatableReportHistogramContribution::New(
-                        /*bucket=*/1,
-                        /*value=*/2,
-                        /*filtering_id=*/std::nullopt)),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New());
+        auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+            blink::mojom::AggregatableReportHistogramContribution::New(
+                /*bucket=*/1,
+                /*value=*/2,
+                /*filtering_id=*/std::nullopt),
+            blink::mojom::DebugModeDetails::New(),
+            /*error_event=*/std::nullopt);
 
-const auction_worklet::mojom::PrivateAggregationRequestPtr
+const auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
     kPrivateAggregationRequest2 =
-        auction_worklet::mojom::PrivateAggregationRequest::New(
-            auction_worklet::mojom::AggregatableReportContribution::
-                NewHistogramContribution(
-                    blink::mojom::AggregatableReportHistogramContribution::New(
-                        /*bucket=*/3,
-                        /*value=*/4,
-                        /*filtering_id=*/1)),
-            blink::mojom::AggregationServiceMode::kDefault,
-            blink::mojom::DebugModeDetails::New());
+        auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+            blink::mojom::AggregatableReportHistogramContribution::New(
+                /*bucket=*/3,
+                /*value=*/4,
+                /*filtering_id=*/1),
+            blink::mojom::DebugModeDetails::New(),
+            /*error_event=*/std::nullopt);
 
 // Helper to avoid excess boilerplate.
 template <typename... Ts>
@@ -79,7 +75,8 @@ auto ElementsAreRequests(Ts&... requests) {
   static_assert(
       std::conjunction<std::is_same<
           std::remove_const_t<Ts>,
-          auction_worklet::mojom::PrivateAggregationRequestPtr>...>::value);
+          auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>...>::
+          value);
   // Need to use `std::ref` as `mojo::StructPtr`s are move-only.
   return testing::UnorderedElementsAre(testing::Eq(std::ref(requests))...);
 }
@@ -93,8 +90,7 @@ class InterestGroupEnabledContentBrowserClient
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api,
-      bool post_impression_reporting) override {
+      content::PrivacySandboxInvokingAPI invoking_api) override {
     return true;
   }
 };
@@ -138,7 +134,10 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
     EXPECT_TRUE(request.trusted_params->isolation_info.network_isolation_key()
                     .IsTransient());
     EXPECT_EQ(request.referrer, main_frame_origin_.GetURL());
-    EXPECT_EQ(request.referrer_policy, net::ReferrerPolicy::ORIGIN);
+    EXPECT_NE(request.referrer, main_frame_url_);
+    EXPECT_EQ(
+        request.referrer_policy,
+        net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN);
 
     // Checks specific to DestinationURL events.
     if (!event_data.has_value()) {
@@ -182,7 +181,7 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  const GURL main_frame_url_{"https://main_frame.test/"};
+  const GURL main_frame_url_{"https://main_frame.test/mypage.html"};
   const GURL report_url_declarer_{"https://report_declarer.test/"};
   const GURL report_destination_{"https://report_destination.test"};
   const GURL report_destination2_{"https://report_destination2.test"};
@@ -1132,14 +1131,14 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedAfterRequestsReady) {
           /*winner_aggregation_coordinator_origin=*/std::nullopt);
 
   // Receive all non-reserved private aggregation requests.
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       private_aggregation_event_map;
   private_aggregation_event_map["event_type"].push_back(
       kPrivateAggregationRequest.Clone());
   private_aggregation_event_map["event_type2"].push_back(
       kPrivateAggregationRequest2.Clone());
 
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       private_aggregation_event_map2;
   private_aggregation_event_map2["event_type"].push_back(
       kPrivateAggregationRequest2.Clone());
@@ -1231,7 +1230,7 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
       private_aggregation_manager_.TakePrivateAggregationRequests().empty());
 
   // Receive all non-reserved private aggregation requests.
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       private_aggregation_event_map;
   private_aggregation_event_map["event_type"].push_back(
       kPrivateAggregationRequest.Clone());
@@ -1275,7 +1274,7 @@ TEST_F(FencedFrameReporterTest, FledgeEventsReceivedBeforeRequestsReady) {
   // Receive more non-reserved private aggregation requests. It happens when
   // reportWin() completes and then
   // OnForEventPrivateAggregationRequestsReceived() is called.
-  std::map<std::string, PrivateAggregationRequests>
+  std::map<std::string, FinalizedPrivateAggregationRequests>
       private_aggregation_event_map2;
   private_aggregation_event_map2["event_type"].push_back(
       kPrivateAggregationRequest2.Clone());

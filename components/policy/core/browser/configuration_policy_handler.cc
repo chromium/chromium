@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema.h"
@@ -32,14 +33,14 @@
 
 namespace policy {
 
-const size_t kMaxUrlFiltersPerPolicy = 1000;
+const size_t kMaxUrlFiltersPerPolicy = 1500;
 
 // ConfigurationPolicyHandler implementation
 // -----------------------------------
 
-ConfigurationPolicyHandler::ConfigurationPolicyHandler() {}
+ConfigurationPolicyHandler::ConfigurationPolicyHandler() = default;
 
-ConfigurationPolicyHandler::~ConfigurationPolicyHandler() {}
+ConfigurationPolicyHandler::~ConfigurationPolicyHandler() = default;
 
 void ConfigurationPolicyHandler::PrepareForDisplaying(
     PolicyMap* policies) const {}
@@ -68,7 +69,7 @@ TypeCheckingPolicyHandler::TypeCheckingPolicyHandler(
     base::Value::Type value_type)
     : NamedPolicyHandler(policy_name), value_type_(value_type) {}
 
-TypeCheckingPolicyHandler::~TypeCheckingPolicyHandler() {}
+TypeCheckingPolicyHandler::~TypeCheckingPolicyHandler() = default;
 
 bool TypeCheckingPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
@@ -117,7 +118,7 @@ ListPolicyHandler::ListPolicyHandler(const char* policy_name,
     : TypeCheckingPolicyHandler(policy_name, base::Value::Type::LIST),
       list_entry_type_(list_entry_type) {}
 
-ListPolicyHandler::~ListPolicyHandler() {}
+ListPolicyHandler::~ListPolicyHandler() = default;
 
 bool ListPolicyHandler::CheckPolicySettings(const policy::PolicyMap& policies,
                                             policy::PolicyErrorMap* errors) {
@@ -196,7 +197,7 @@ bool IntRangePolicyHandlerBase::CheckPolicySettings(const PolicyMap& policies,
          EnsureInRange(value, nullptr, errors);
 }
 
-IntRangePolicyHandlerBase::~IntRangePolicyHandlerBase() {}
+IntRangePolicyHandlerBase::~IntRangePolicyHandlerBase() = default;
 
 bool IntRangePolicyHandlerBase::EnsureInRange(const base::Value* input,
                                               int* output,
@@ -227,11 +228,11 @@ bool IntRangePolicyHandlerBase::EnsureInRange(const base::Value* input,
 // StringMappingListPolicyHandler implementation -----------------------------
 
 StringMappingListPolicyHandler::MappingEntry::MappingEntry(
-    const char* policy_value,
+    std::string_view policy_value,
     std::unique_ptr<base::Value> map)
     : enum_value(policy_value), mapped_value(std::move(map)) {}
 
-StringMappingListPolicyHandler::MappingEntry::~MappingEntry() {}
+StringMappingListPolicyHandler::MappingEntry::~MappingEntry() = default;
 
 StringMappingListPolicyHandler::StringMappingListPolicyHandler(
     const char* policy_name,
@@ -241,7 +242,7 @@ StringMappingListPolicyHandler::StringMappingListPolicyHandler(
       pref_path_(pref_path),
       map_getter_(callback) {}
 
-StringMappingListPolicyHandler::~StringMappingListPolicyHandler() {}
+StringMappingListPolicyHandler::~StringMappingListPolicyHandler() = default;
 
 bool StringMappingListPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -322,7 +323,7 @@ IntRangePolicyHandler::IntRangePolicyHandler(const char* policy_name,
     : IntRangePolicyHandlerBase(policy_name, min, max, clamp),
       pref_path_(pref_path) {}
 
-IntRangePolicyHandler::~IntRangePolicyHandler() {}
+IntRangePolicyHandler::~IntRangePolicyHandler() = default;
 
 void IntRangePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                 PrefValueMap* prefs) {
@@ -346,7 +347,8 @@ IntPercentageToDoublePolicyHandler::IntPercentageToDoublePolicyHandler(
     : IntRangePolicyHandlerBase(policy_name, min, max, clamp),
       pref_path_(pref_path) {}
 
-IntPercentageToDoublePolicyHandler::~IntPercentageToDoublePolicyHandler() {}
+IntPercentageToDoublePolicyHandler::~IntPercentageToDoublePolicyHandler() =
+    default;
 
 void IntPercentageToDoublePolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -368,7 +370,7 @@ SimplePolicyHandler::SimplePolicyHandler(const char* policy_name,
     : TypeCheckingPolicyHandler(policy_name, value_type),
       pref_path_(pref_path) {}
 
-SimplePolicyHandler::~SimplePolicyHandler() {}
+SimplePolicyHandler::~SimplePolicyHandler() = default;
 
 void SimplePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                               PrefValueMap* prefs) {
@@ -432,7 +434,7 @@ bool PolicyWithDependencyHandler::CheckPolicySettings(const PolicyMap& policies,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported dependency requirement";
+      NOTREACHED() << "Unsupported dependency requirement";
   }
 
   return handler_->CheckPolicySettings(policies, errors);
@@ -448,7 +450,7 @@ void PolicyWithDependencyHandler::ApplyPolicySettingsWithParameters(
 void PolicyWithDependencyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 // SchemaValidatingPolicyHandler implementation --------------------------------
 
@@ -460,7 +462,7 @@ SchemaValidatingPolicyHandler::SchemaValidatingPolicyHandler(
   DCHECK(schema_.valid());
 }
 
-SchemaValidatingPolicyHandler::~SchemaValidatingPolicyHandler() {}
+SchemaValidatingPolicyHandler::~SchemaValidatingPolicyHandler() = default;
 
 bool SchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -532,7 +534,8 @@ SimpleSchemaValidatingPolicyHandler::SimpleSchemaValidatingPolicyHandler(
       allow_recommended_(recommended_permission == RECOMMENDED_ALLOWED),
       allow_mandatory_(mandatory_permission == MANDATORY_ALLOWED) {}
 
-SimpleSchemaValidatingPolicyHandler::~SimpleSchemaValidatingPolicyHandler() {}
+SimpleSchemaValidatingPolicyHandler::~SimpleSchemaValidatingPolicyHandler() =
+    default;
 
 bool SimpleSchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -585,7 +588,7 @@ SimpleJsonStringSchemaValidatingPolicyHandler::
 }
 
 SimpleJsonStringSchemaValidatingPolicyHandler::
-    ~SimpleJsonStringSchemaValidatingPolicyHandler() {}
+    ~SimpleJsonStringSchemaValidatingPolicyHandler() = default;
 
 bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -740,7 +743,7 @@ LegacyPoliciesDeprecatingPolicyHandler::LegacyPoliciesDeprecatingPolicyHandler(
       new_policy_handler_(std::move(new_policy_handler)) {}
 
 LegacyPoliciesDeprecatingPolicyHandler::
-    ~LegacyPoliciesDeprecatingPolicyHandler() {}
+    ~LegacyPoliciesDeprecatingPolicyHandler() = default;
 
 bool LegacyPoliciesDeprecatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -778,7 +781,7 @@ void LegacyPoliciesDeprecatingPolicyHandler::ApplyPolicySettingsWithParameters(
 void LegacyPoliciesDeprecatingPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // SimpleDeprecatingPolicyHandler implementation -----------------------
@@ -823,7 +826,55 @@ void SimpleDeprecatingPolicyHandler::ApplyPolicySettingsWithParameters(
 void SimpleDeprecatingPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
+
+// SingleDeprecatedPolicyToMultipleNewPolicyHandler implementation
+// -----------------------
+
+SingleDeprecatedPolicyToMultipleNewPolicyHandler::
+    SingleDeprecatedPolicyToMultipleNewPolicyHandler(
+        std::unique_ptr<NamedPolicyHandler> legacy_policy_handler,
+        std::vector<std::string> new_policy_names)
+    : legacy_policy_handler_(std::move(legacy_policy_handler)),
+      new_policy_names_(std::move(new_policy_names)) {}
+
+SingleDeprecatedPolicyToMultipleNewPolicyHandler::
+    ~SingleDeprecatedPolicyToMultipleNewPolicyHandler() = default;
+
+// ConfigurationPolicyHandler:
+bool SingleDeprecatedPolicyToMultipleNewPolicyHandler::CheckPolicySettings(
+    const PolicyMap& policies,
+    PolicyErrorMap* errors) {
+  bool new_policy_set = false;
+  for (const auto& new_policy_name : new_policy_names_) {
+    if (!policies.Get(new_policy_name)) {
+      continue;
+    }
+    new_policy_set = true;
+    if (errors && policies.Get(legacy_policy_handler_->policy_name())) {
+      errors->AddError(legacy_policy_handler_->policy_name(),
+                       IDS_POLICY_OVERRIDDEN, new_policy_name);
+    }
+  }
+
+  // If none of the policies is set, fall back to legacy one.
+  return !new_policy_set &&
+         legacy_policy_handler_->CheckPolicySettings(policies, errors);
+}
+
+void SingleDeprecatedPolicyToMultipleNewPolicyHandler::
+    ApplyPolicySettingsWithParameters(const PolicyMap& policies,
+                                      const PolicyHandlerParameters& parameters,
+                                      PrefValueMap* prefs) {
+  legacy_policy_handler_->ApplyPolicySettingsWithParameters(policies,
+                                                            parameters, prefs);
+}
+
+void SingleDeprecatedPolicyToMultipleNewPolicyHandler::ApplyPolicySettings(
+    const policy::PolicyMap& /* policies */,
+    PrefValueMap* /* prefs */) {
+  NOTREACHED();
 }
 
 // CloudOnlyPolicyHandler implementation ---------------------------------------
@@ -853,6 +904,13 @@ bool CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(
   if (!policy) {
     return true;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  // For development and testing without a policy server.
+  if (policy->source == policy::POLICY_SOURCE_COMMAND_LINE) {
+    return true;
+  }
+#endif
 
   // If the policy source is POLICY_SOURCE_MERGED, it is still cloud-only if all
   // policy values merged into it are cloud-only.
@@ -931,7 +989,7 @@ void CloudUserOnlyPolicyHandler::ApplyPolicySettingsWithParameters(
 void CloudUserOnlyPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 URLPolicyHandler::URLPolicyHandler(const char* policy_name,

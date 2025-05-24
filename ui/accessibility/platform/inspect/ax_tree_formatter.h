@@ -50,12 +50,20 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeFormatter {
   // |root| must be non-null and must be in web content.
   virtual std::string Format(AXPlatformNodeDelegate* root) const = 0;
 
+  // Formats an accessible tree identified by the given selector.
+  virtual std::string Format(const AXTreeSelector&) const = 0;
+
   // Formats a given web node (i.e. without children).
   virtual std::string FormatNode(AXPlatformNodeDelegate* node) const = 0;
+
+  // Formats an accessible element specified by the given selector.
+  virtual std::string FormatNode(const AXTreeSelector&) const = 0;
 
   // Similar to BuildTree, but generates a dictionary just for the current
   // web node (i.e. without children).
   virtual base::Value::Dict BuildNode(AXPlatformNodeDelegate* node) const = 0;
+  virtual base::Value::Dict BuildNodeForSelector(
+      const AXTreeSelector&) const = 0;
 
   // Build an accessibility tree for any window or pattern supplied by
   // the selector object.

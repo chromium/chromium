@@ -23,9 +23,7 @@
 
 namespace unexportable_keys {
 
-namespace {
 class MaybePendingUnexportableKeyId;
-}
 
 class UnexportableKeyTaskManager;
 
@@ -59,6 +57,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyServiceImpl
       const UnexportableKeyId& key_id,
       base::span<const uint8_t> data,
       BackgroundTaskPriority priority,
+      size_t max_retries,
       base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback)
       override;
   ServiceErrorOr<std::vector<uint8_t>> GetSubjectPublicKeyInfo(

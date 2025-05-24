@@ -7,14 +7,16 @@ package org.chromium.chrome.browser.invalidation;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -31,6 +33,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SessionsInvalidationManagerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ResumableDelayedTaskRunner mResumableDelayedTaskRunner;
 
     @Mock private Profile mProfile;
@@ -41,7 +44,6 @@ public class SessionsInvalidationManagerTest {
 
     @Before
     public void setup() {
-        initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
     }
 

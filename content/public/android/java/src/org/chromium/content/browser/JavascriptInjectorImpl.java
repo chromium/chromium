@@ -4,27 +4,30 @@
 
 package org.chromium.content.browser;
 
-import android.util.Pair;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.DoNotInline;
-import org.chromium.content.browser.webcontents.WebContentsImpl;
-import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.JavascriptInjector;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContents.UserDataFactory;
 
 import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /** Implementation class of the interface {@link JavascriptInjector}. */
 @JNINamespace("content")
+@NullMarked
 public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     private static final class UserDataFactoryLazyHolder {
         private static final UserDataFactory<JavascriptInjectorImpl> INSTANCE =
@@ -34,7 +37,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     // The set is passed to native and stored in a weak reference, so ensure this
     // strong reference is not optimized away by R8.
     @DoNotInline private final Set<Object> mRetainedObjects = new HashSet<>();
-    private final Map<String, Pair<Object, Class>> mInjectedObjects = new HashMap<>();
+    private final Map<String, InjectedInterface> mInjectedObjects = new HashMap<>();
     private long mNativePtr;
 
     /**
@@ -42,11 +45,10 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
      * @return {@link JavascriptInjector} object used for the give WebContents. Creates one if not
      *     present.
      */
-    public static JavascriptInjector fromWebContents(WebContents webContents) {
+    public static @Nullable JavascriptInjector fromWebContents(WebContents webContents) {
         JavascriptInjectorImpl javascriptInjector =
-                ((WebContentsImpl) webContents)
-                        .getOrSetUserData(
-                                JavascriptInjectorImpl.class, UserDataFactoryLazyHolder.INSTANCE);
+                webContents.getOrSetUserData(
+                        JavascriptInjectorImpl.class, UserDataFactoryLazyHolder.INSTANCE);
         return javascriptInjector;
     }
 
@@ -62,7 +64,7 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     }
 
     @Override
-    public Map<String, Pair<Object, Class>> getInterfaces() {
+    public Map<String, InjectedInterface> getInterfaces() {
         return mInjectedObjects;
     }
 
@@ -75,20 +77,25 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
     }
 
     @Override
-    public void addPossiblyUnsafeInterface(
-            Object object, String name, Class<? extends Annotation> requiredAnnotation) {
-        if (object == null) return;
-
-        if (mNativePtr != 0) {
-            mInjectedObjects.put(name, new Pair<Object, Class>(object, requiredAnnotation));
-            JavascriptInjectorImplJni.get()
-                    .addInterface(
-                            mNativePtr,
-                            JavascriptInjectorImpl.this,
-                            object,
-                            name,
-                            requiredAnnotation);
+    public List<String> addPossiblyUnsafeInterface(
+            @Nullable Object object,
+            String name,
+            @Nullable Class<? extends Annotation> requiredAnnotation,
+            List<String> originAllowlist) {
+        if (object == null || mNativePtr == 0) {
+            return Collections.emptyList();
         }
+
+        mInjectedObjects.put(
+                name, new InjectedInterface(object, requiredAnnotation, originAllowlist));
+        return JavascriptInjectorImplJni.get()
+                .addInterface(
+                        mNativePtr,
+                        JavascriptInjectorImpl.this,
+                        object,
+                        name,
+                        requiredAnnotation,
+                        originAllowlist);
     }
 
     @Override
@@ -107,12 +114,14 @@ public class JavascriptInjectorImpl implements JavascriptInjector, UserData {
         void setAllowInspection(
                 long nativeJavascriptInjector, JavascriptInjectorImpl caller, boolean allow);
 
-        void addInterface(
+        @JniType("std::vector<std::string>")
+        List<String> addInterface(
                 long nativeJavascriptInjector,
                 JavascriptInjectorImpl caller,
                 Object object,
                 String name,
-                Class requiredAnnotation);
+                @Nullable Class requiredAnnotation,
+                @JniType("std::vector<std::string>") List<String> originAllowlist);
 
         void removeInterface(
                 long nativeJavascriptInjector, JavascriptInjectorImpl caller, String name);

@@ -4,10 +4,10 @@
 
 package org.chromium.base.supplier;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
 
@@ -24,18 +24,16 @@ import java.util.function.Function;
  * @param <P> The parent object that's holding a reference to the target.
  * @param <T> The target type that the client wants to observe.
  */
-public class TransitiveObservableSupplier<P, T> implements ObservableSupplier<T> {
+@NullMarked
+public class TransitiveObservableSupplier<P extends @Nullable Object, T extends @Nullable Object>
+        implements ObservableSupplier<T> {
     // Used to hold observers and current state. However the current value is only valid when there
     // are observers, otherwise is may be stale.
-    private final @NonNull ObservableSupplierImpl<T> mDelegateSupplier =
-            new ObservableSupplierImpl<>();
-
-    private final @NonNull Callback<P> mOnParentSupplierChangeCallback =
-            this::onParentSupplierChange;
-    private final @NonNull Callback<T> mOnTargetSupplierChangeCallback =
-            this::onTargetSupplierChange;
-    private final @NonNull ObservableSupplier<P> mParentSupplier;
-    private final @NonNull Function<P, ObservableSupplier<T>> mUnwrapFunction;
+    private final ObservableSupplierImpl<T> mDelegateSupplier = new ObservableSupplierImpl<>();
+    private final Callback<P> mOnParentSupplierChangeCallback = this::onParentSupplierChange;
+    private final Callback<T> mOnTargetSupplierChangeCallback = this::onTargetSupplierChange;
+    private final ObservableSupplier<P> mParentSupplier;
+    private final Function<P, ObservableSupplier<T>> mUnwrapFunction;
 
     // When this is set, then mOnTargetSupplierChangeCallback is an observer of the object
     // referenced by mCurrentTargetSupplier. When this value is changed, the observer must be
@@ -50,11 +48,12 @@ public class TransitiveObservableSupplier<P, T> implements ObservableSupplier<T>
     }
 
     @Override
-    public T addObserver(Callback<T> obs) {
+    public @Nullable T addObserver(Callback<T> obs, @NotifyBehavior int behavior) {
         if (!mDelegateSupplier.hasObservers()) {
-            onParentSupplierChange(mParentSupplier.addObserver(mOnParentSupplierChangeCallback));
+            onParentSupplierChange(
+                    mParentSupplier.addSyncObserver(mOnParentSupplierChangeCallback));
         }
-        return mDelegateSupplier.addObserver(obs);
+        return mDelegateSupplier.addObserver(obs, behavior);
     }
 
     @Override
@@ -70,6 +69,7 @@ public class TransitiveObservableSupplier<P, T> implements ObservableSupplier<T>
     }
 
     @Override
+    @SuppressWarnings("NullAway") // https://github.com/uber/NullAway/issues/1209
     public @Nullable T get() {
         if (mDelegateSupplier.hasObservers()) {
             return mDelegateSupplier.get();
@@ -92,6 +92,7 @@ public class TransitiveObservableSupplier<P, T> implements ObservableSupplier<T>
      * sure we keep our delegate supplier's value up to date, which is also what drives client
      * observations.
      */
+    @NullUnmarked // Needs to work where P is non-null or nullable.
     private void onParentSupplierChange(@Nullable P parentValue) {
         if (mCurrentTargetSupplier != null) {
             mCurrentTargetSupplier.removeObserver(mOnTargetSupplierChangeCallback);
@@ -101,20 +102,20 @@ public class TransitiveObservableSupplier<P, T> implements ObservableSupplier<T>
         // remove our observer from it.
         mCurrentTargetSupplier = parentValue == null ? null : mUnwrapFunction.apply(parentValue);
 
-        if (mCurrentTargetSupplier == null) {
-            onTargetSupplierChange(null);
-        } else {
+        @Nullable T targetValue = null;
+        if (mCurrentTargetSupplier != null) {
             // While addObserver will call us if a value is already set, we do not want to depend on
             // that for two reasons. If there is no value set, we need to null out our supplier now.
             // And if there is a value set, we're going to get invoked asynchronously, which means
             // our delegate supplier could be in an intermediately incorrect state. By just setting
             // our delegate eagerly we avoid both problems.
-            onTargetSupplierChange(
-                    mCurrentTargetSupplier.addObserver(mOnTargetSupplierChangeCallback));
+            targetValue = mCurrentTargetSupplier.addSyncObserver(mOnTargetSupplierChangeCallback);
         }
+        onTargetSupplierChange(targetValue);
     }
 
-    private void onTargetSupplierChange(@Nullable T targetValue) {
+    @NullUnmarked // Needs to work where T is non-null or nullable.
+    private void onTargetSupplierChange(T targetValue) {
         mDelegateSupplier.set(targetValue);
     }
 }

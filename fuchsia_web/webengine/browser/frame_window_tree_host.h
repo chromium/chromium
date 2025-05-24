@@ -7,6 +7,7 @@
 
 #include <fuchsia/ui/views/cpp/fidl.h>
 
+#include "base/memory/raw_ptr.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/platform_window/fuchsia/scenic_window_delegate.h"
@@ -56,7 +57,7 @@ class WEB_ENGINE_EXPORT FrameWindowTreeHost final
 
   const fuchsia::ui::views::ViewRef view_ref_;
   std::unique_ptr<WindowParentingClientImpl> window_parenting_client_;
-  content::WebContents* const web_contents_;
+  const raw_ptr<content::WebContents> web_contents_;
   float scenic_pixel_scale_ = 1.0;
   OnPixelScaleUpdateCallback on_pixel_scale_update_;
 };

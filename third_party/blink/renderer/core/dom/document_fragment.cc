@@ -97,10 +97,30 @@ void DocumentFragment::ParseHTML(const String& source,
 
 bool DocumentFragment::ParseXML(const String& source,
                                 Element* context_element,
-                                ParserContentPolicy parser_content_policy,
-                                ExceptionState* exception_state) {
+                                ExceptionState& exception_state,
+                                ParserContentPolicy parser_content_policy) {
   return XMLDocumentParser::ParseDocumentFragment(
       source, this, context_element, parser_content_policy, exception_state);
+}
+
+void DocumentFragment::ForgetChildren() {
+  DCHECK(HoldsUnnotifiedChildren());
+
+  if (!hasChildren()) {
+    return;
+  }
+
+  Node* next_child = firstChild();
+  do {
+    Node* child = next_child;
+    child->SetParentNode(nullptr);
+    child->SetPreviousSibling(nullptr);
+    next_child = child->nextSibling();
+    child->SetNextSibling(nullptr);
+  } while (next_child);
+
+  SetFirstChild(nullptr);
+  SetLastChild(nullptr);
 }
 
 void DocumentFragment::Trace(Visitor* visitor) const {

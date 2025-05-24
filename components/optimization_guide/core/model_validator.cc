@@ -68,8 +68,7 @@ std::optional<float> ModelValidatorExecutor::Postprocess(
   absl::Status status =
       tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
   if (!status.ok()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
   return data[0];
 }

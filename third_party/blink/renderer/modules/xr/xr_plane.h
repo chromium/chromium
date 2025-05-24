@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class V8XRPlaneOrientation;
 class XRSession;
 class XRSpace;
 
@@ -41,7 +42,7 @@ class XRPlane : public ScriptWrappable {
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 
-  String orientation() const;
+  std::optional<V8XRPlaneOrientation> orientation() const;
   const FrozenArray<DOMPointReadOnly>& polygon() const;
   double lastChangedTime() const;
 

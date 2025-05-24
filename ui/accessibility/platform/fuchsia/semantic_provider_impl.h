@@ -16,6 +16,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
 
 namespace ui {
@@ -167,7 +168,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFuchsiaSemanticProviderImpl
       OnSemanticsModeChangedRequest& request,
       OnSemanticsModeChangedCompleter::Sync& completer) override;
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   std::optional<
       fidl::ServerBinding<fuchsia_accessibility_semantics::SemanticListener>>

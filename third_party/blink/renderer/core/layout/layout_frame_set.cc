@@ -27,11 +27,13 @@ bool LayoutFrameSet::IsChildAllowed(LayoutObject* child,
 
 void LayoutFrameSet::AddChild(LayoutObject* new_child,
                               LayoutObject* before_child) {
+  NOT_DESTROYED();
   LayoutBlock::AddChild(new_child, before_child);
   To<HTMLFrameSetElement>(GetNode())->DirtyEdgeInfoAndFullPaintInvalidation();
 }
 
 void LayoutFrameSet::RemoveChild(LayoutObject* child) {
+  NOT_DESTROYED();
   LayoutBlock::RemoveChild(child);
   if (DocumentBeingDestroyed()) {
     return;

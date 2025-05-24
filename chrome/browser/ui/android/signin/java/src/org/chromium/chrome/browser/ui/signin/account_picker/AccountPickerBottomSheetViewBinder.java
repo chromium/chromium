@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Stateless AccountPickerBottomSheet view binder. */
+@NullMarked
 class AccountPickerBottomSheetViewBinder {
     static void bind(
             PropertyModel model, AccountPickerBottomSheetView view, PropertyKey propertyKey) {

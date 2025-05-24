@@ -5,6 +5,7 @@
 #include "ui/linux/linux_ui_factory.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -43,44 +44,58 @@ std::vector<raw_ptr<LinuxUiTheme, VectorExperimental>>& GetLinuxUiThemesImpl() {
   return *themes;
 }
 
-std::unique_ptr<LinuxUiAndTheme> CreateGtkUi() {
-#if BUILDFLAG(USE_GTK)
-  auto gtk_ui = BuildGtkUi();
-  if (gtk_ui->Initialize()) {
-    GetLinuxUiThemesImpl().push_back(gtk_ui.get());
-    return gtk_ui;
+template <typename CreateLinuxUiFunc>
+LinuxUiAndTheme* GetLinuxUi(CreateLinuxUiFunc&& create_linux_ui) {
+  // LinuxUi creation will fail without a delegate.
+  if (!ui::LinuxUiDelegate::GetInstance()) {
+    return nullptr;
   }
-#endif
-  return nullptr;
+
+  static base::NoDestructor<std::optional<std::unique_ptr<LinuxUiAndTheme>>>
+      linux_ui;
+
+  if (linux_ui->has_value()) {
+    return linux_ui->value().get();
+  }
+
+  linux_ui->emplace(create_linux_ui());
+  LinuxUiAndTheme* ui_and_theme = linux_ui->value().get();
+  if (!ui_and_theme) {
+    return nullptr;
+  }
+
+  // This function is reentrant: it may be called while Initialize() is running.
+  // In that case, return `linux_ui`. However, if Initialize() fails,
+  // `linux_ui` is reset and future calls will not try to initialize again.
+  if (!ui_and_theme->Initialize()) {
+    linux_ui->value().reset();
+    return nullptr;
+  }
+
+  GetLinuxUiThemesImpl().push_back(ui_and_theme);
+  return ui_and_theme;
 }
 
 LinuxUiAndTheme* GetGtkUi() {
-  // LinuxUi creation will fail without a delegate.
-  if (!ui::LinuxUiDelegate::GetInstance()) {
+  auto create_gtk_ui = []() {
+#if BUILDFLAG(USE_GTK)
+    return BuildGtkUi();
+#else
     return nullptr;
-  }
-  static LinuxUiAndTheme* gtk_ui = CreateGtkUi().release();
-  return gtk_ui;
-}
-
-std::unique_ptr<LinuxUiAndTheme> CreateQtUi() {
-#if BUILDFLAG(USE_QT)
-  auto qt_ui = qt::CreateQtUi(GetGtkUi());
-  if (qt_ui->Initialize()) {
-    GetLinuxUiThemesImpl().push_back(qt_ui.get());
-    return qt_ui;
-  }
 #endif
-  return nullptr;
+  };
+  return GetLinuxUi(create_gtk_ui);
 }
 
 LinuxUiAndTheme* GetQtUi() {
-  // LinuxUi creation will fail without a delegate.
-  if (!ui::LinuxUiDelegate::GetInstance()) {
+  auto create_qt_ui = []() {
+#if BUILDFLAG(USE_QT)
+    return qt::CreateQtUi(GetGtkUi());
+#else
     return nullptr;
-  }
-  static LinuxUiAndTheme* qt_ui = CreateQtUi().release();
-  return qt_ui;
+#endif
+  };
+  return GetLinuxUi(create_qt_ui);
 }
 
 std::unique_ptr<LinuxUiAndTheme> CreateFallbackUi() {

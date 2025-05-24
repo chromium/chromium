@@ -11,21 +11,21 @@ package account_manager.internal;
 enum AccountType {
   ACCOUNT_TYPE_UNSPECIFIED = 0;  // Proto best practice for enums.
   ACCOUNT_TYPE_GAIA = 1;
-  ACCOUNT_TYPE_ACTIVE_DIRECTORY = 2;
+
+  reserved 2;  // Deprecated ACCOUNT_TYPE_ACTIVE_DIRECTORY.
 }
 
 message Account {
   // The tuple <id, account_type> uniquely identifies an Account.
-  // For |ACCOUNT_TYPE_GAIA|, |id| is the obfuscated GAIA id.
-  // For |ACCOUNT_TYPE_ACTIVE_DIRECTORY|, |id| is the Object GUID.
+  // For `ACCOUNT_TYPE_GAIA`, `id` is the obfuscated GAIA id.
   optional string id = 1;
   optional AccountType account_type = 2;
 
-  // An authentication token for this |Account|. It is a login scoped refresh
-  // token for Gaia accounts and a dummy token for Active Directory accounts.
+  // An authentication token for this `Account`. It is a login scoped refresh
+  // token for Gaia accounts.
   optional string token = 3;
 
-  // Raw, un-canonicalized email id for this |Account|. This is guaranteed to be
+  // Raw, un-canonicalized email id for this `Account`. This is guaranteed to be
   // present for Gaia accounts.
   optional string raw_email = 4;
 }

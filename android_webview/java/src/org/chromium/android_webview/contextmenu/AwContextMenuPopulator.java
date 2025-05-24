@@ -10,12 +10,13 @@ import static org.chromium.android_webview.contextmenu.AwContextMenuItemProperti
 import android.content.Context;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.contextmenu.AwContextMenuCoordinator.ListItemType;
 import org.chromium.android_webview.contextmenu.AwContextMenuItem.Item;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** A {@link ContextMenuPopulator} used for showing the WebView context menu. */
+@NullMarked
 public class AwContextMenuPopulator implements ContextMenuPopulator {
     private final Context mContext;
     private final ContextMenuItemDelegate mItemDelegate;
@@ -54,11 +56,11 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
 
         ModelList items = new ModelList();
 
-        items.add(createListItem(Item.COPY_LINK_TEXT));
         items.add(createListItem(Item.COPY_LINK_ADDRESS));
-        items.add(createListItem(Item.OPEN_IN_BROWSER));
+        items.add(createListItem(Item.COPY_LINK_TEXT));
+        items.add(createListItem(Item.OPEN_LINK));
 
-        groupedItems.add(new Pair<>(R.string.context_menu_copy_link_text, items));
+        groupedItems.add(new Pair<>(R.string.context_menu_link_title, items));
 
         return groupedItems;
     }
@@ -82,7 +84,7 @@ public class AwContextMenuPopulator implements ContextMenuPopulator {
         } else if (itemId == R.id.contextmenu_copy_link_text) {
             mItemDelegate.onSaveToClipboard(
                     mParams.getLinkText(), ContextMenuItemDelegate.ClipboardType.LINK_TEXT);
-        } else if (itemId == R.id.contextmenu_open_in_browser_id) {
+        } else if (itemId == R.id.contextmenu_open_link_id) {
             mItemDelegate.onOpenInDefaultBrowser(mParams.getUrl());
         } else {
             assert false;

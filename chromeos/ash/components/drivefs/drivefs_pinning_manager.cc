@@ -1188,9 +1188,6 @@ void PinningManager::StartPinning() {
     is_first_sync_ = false;
   }
 
-  base::UmaHistogramSparse("FileBrowser.GoogleDrive.BulkPinning.QueueSize",
-                           queue_size_);
-
   timer_ = base::ElapsedTimer();
   progress_.stage = Stage::kSyncing;
   NotifyProgress();

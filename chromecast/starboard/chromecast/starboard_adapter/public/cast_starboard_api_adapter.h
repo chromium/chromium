@@ -26,22 +26,20 @@ namespace chromecast {
 // which is a C-style interface implemented in an external library. The primary
 // purpose of CastStarboardApiAdapter is to managage the lifecycle of the
 // external library, which expects to always be initialized before use and only
-// have a single instance.
+// have a single instance. The API is only guaranteed to be initialized if
+// there are non-zero subscribers.
 class __attribute__((visibility("default"))) CastStarboardApiAdapter {
  public:
   static CastStarboardApiAdapter* GetInstance();
 
   virtual ~CastStarboardApiAdapter() = default;
 
-  // Ensures that the CastStarboardApi is initialized. Callers should invoke
-  // this before any other functions.
-  virtual bool EnsureInitialized() = 0;
-
   // When Starboard events occur, `callback` will be called with `context`, an
   // integer corresponding to the SbEventType, and a void* containing the data
   // for the event (which may be null, since some events do not contain data).
   // The `callback` must be thread safe, i.e. it will not automatically be
-  // posted to the same thread on which Subscribe was called.
+  // posted to the same thread on which Subscribe was called. The `callback`
+  // may be `nullptr` if the consumer does not wish to receive callbacks.
   virtual void Subscribe(void* context,
                          void (*callback)(void* context,
                                           const SbEvent* event)) = 0;

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include <cstdint>
-#include <string>
 
 #include "components/reporting/resources/resource_managed_buffer.h"
+
+#include <array>
+#include <cstdint>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/thread_pool.h"
@@ -74,11 +71,12 @@ TEST_F(ResourceManagedBufferTest, SuccessfulAllocAndFillIn) {
   ASSERT_OK(buffer.Allocate(1024LLu));
   EXPECT_THAT(buffer.size(), Eq(1024LLu));
   EXPECT_THAT(buffer, Not(IsEmpty()));
-  static constexpr char kData[] = "ABCDEF 0123456789";
+  constexpr static std::array<char, 18> kData{"ABCDEF 0123456789"};
   for (size_t i = 0; kData[i]; ++i) {
     *buffer.at(512u + i) = kData[i];
   }
-  EXPECT_THAT(std::string(buffer.at(512u), std::strlen(kData)), StrEq(kData));
+  EXPECT_THAT(std::string(buffer.at(512u), std::strlen(kData.data())),
+              StrEq(kData.data()));
 }
 
 TEST_F(ResourceManagedBufferTest, MultipleAllocations) {

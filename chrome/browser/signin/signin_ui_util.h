@@ -11,10 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/callback_forward.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/signin/reauth_result.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/signin/signin_reauth_view_controller.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 
@@ -101,13 +98,13 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 // |restrict_to_accounts_eligible_for_sync| is true, removes the account that
 // are not suitable for sync promos.
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
-    signin::IdentityManager* identity_manager,
+    const signin::IdentityManager* identity_manager,
     bool restrict_to_accounts_eligible_for_sync);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Returns single account to use in promos.
 AccountInfo GetSingleAccountForPromos(
-    signin::IdentityManager* identity_manager);
+    const signin::IdentityManager* identity_manager);
 
 #endif
 
@@ -134,16 +131,18 @@ std::u16string GetShortProfileIdentityToDisplay(
 std::string GetAllowedDomain(std::string signin_pattern);
 
 // Returns whether Chrome should show the identity of the user (using a brief
-// animation) on opening a new window. IdentityManager's refresh tokens must be
-// loaded when this function gets called.
-bool ShouldShowAnimatedIdentityOnOpeningWindow(
-    const ProfileAttributesStorage& profile_attributes_storage,
-    Profile* profile);
+// animation) on opening a new window.
+bool ShouldShowAnimatedIdentityOnOpeningWindow(Profile& profile);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// Creates a scoped override that makes the delay for cross window animation
+// replay zero.
+base::AutoReset<std::optional<base::TimeDelta>>
+CreateZeroOverrideDelayForCrossWindowAnimationReplayForTesting();
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 base::AutoReset<SigninUiDelegate*> SetSigninUiDelegateForTesting(
     SigninUiDelegate* delegate);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Records that the animated identity was shown for the given profile. This is
 // used for metrics and to decide whether/when the animation can be shown again.
@@ -154,17 +153,6 @@ void RecordProfileMenuViewShown(Profile* profile);
 
 // Called when a button/link in the profile menu was clicked.
 void RecordProfileMenuClick(Profile* profile);
-
-// Records the result of a re-auth challenge to finish a transaction (like
-// unlocking the account store for passwords).
-void RecordTransactionalReauthResult(
-    signin_metrics::ReauthAccessPoint access_point,
-    signin::ReauthResult result);
-
-// Records user action performed in a transactional reauth dialog/tab.
-void RecordTransactionalReauthUserAction(
-    signin_metrics::ReauthAccessPoint access_point,
-    SigninReauthViewController::UserAction user_action);
 
 }  // namespace signin_ui_util
 

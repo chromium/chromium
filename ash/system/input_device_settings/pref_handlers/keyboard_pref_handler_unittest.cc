@@ -4,7 +4,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
@@ -319,7 +318,7 @@ class KeyboardPrefHandlerTest : public AshTestBase {
     keyboard->device_key = device_key;
     keyboard->meta_key = ui::mojom::MetaKey::kLauncherRefresh;
     keyboard->modifier_keys = {ui::mojom::ModifierKey::kFunction,
-                               ui::mojom::ModifierKey::kRightAlt};
+                               ui::mojom::ModifierKey::kQuickInsert};
 
     pref_handler_->UpdateDefaultSplitModifierKeyboardSettings(
         pref_service_.get(),
@@ -1322,10 +1321,6 @@ TEST_F(KeyboardPrefHandlerTest,
        InitializeSplitModifierKeyboardPostFeatureEnable) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices(
       {kSampleSplitModifierKeyboard});

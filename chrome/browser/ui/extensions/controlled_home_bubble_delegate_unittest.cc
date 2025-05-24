@@ -4,12 +4,16 @@
 
 #include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -18,6 +22,7 @@
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "content/public/browser/storage_partition.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
@@ -51,8 +56,9 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
                 "chrome_settings_overrides",
                 base::Value::Dict().Set("homepage", "http://www.google.com"))
             .Build();
-    extension_service_->GrantPermissions(extension.get());
-    extension_service_->AddExtension(extension.get());
+    extensions::PermissionsUpdater(profile()).GrantActivePermissions(
+        extension.get());
+    extension_registrar()->AddExtension(extension);
 
     return extension;
   }
@@ -68,7 +74,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
       const extensions::ExtensionId& id,
       extensions::disable_reason::DisableReason disable_reason) {
     return extension_registry_->disabled_extensions().GetByID(id) &&
-           extension_prefs_->GetDisableReasons(id) == disable_reason;
+           extension_prefs_->HasOnlyDisableReason(id, disable_reason);
   }
 
   // Returns true if the extension has been acknowledged by the user.
@@ -87,8 +93,8 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
         base::Value(true));
   }
 
-  extensions::ExtensionService* extension_service() {
-    return extension_service_.get();
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extension_registrar_.get();
   }
 
  private:
@@ -108,9 +114,7 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
                                  base::FilePath(), false);
 
     // Set up the rest of the necessary systems.
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
-    extension_service_->Init();
+    extensions::ExtensionSystem::Get(profile())->extension_service()->Init();
 
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
         ->SetTestingFactory(profile(),
@@ -119,12 +123,13 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
         profile());
 
     extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
+    extension_registrar_ = extensions::ExtensionRegistrar::Get(profile());
     extension_registry_ = extensions::ExtensionRegistry::Get(profile());
   }
 
   void TearDown() override {
-    extension_service_ = nullptr;
     extension_prefs_ = nullptr;
+    extension_registrar_ = nullptr;
     extension_registry_ = nullptr;
     WaitForStorageCleanup();
     // Clean up global state for the delegates. Since profiles are stored in
@@ -145,8 +150,8 @@ class ControlledHomeBubbleDelegateTest : public BrowserWithTestWindowTest {
 
   base::AutoReset<bool> ignore_learn_more_{
       ControlledHomeBubbleDelegate::IgnoreLearnMoreForTesting()};
-  raw_ptr<extensions::ExtensionService> extension_service_;
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
+  raw_ptr<extensions::ExtensionRegistrar> extension_registrar_;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
   std::unique_ptr<base::CommandLine> command_line_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
@@ -293,8 +298,8 @@ TEST_F(ControlledHomeBubbleDelegateTest, DisablingTheExtensionClosesTheBubble) {
   bubble_delegate->PendingShow();
   bubble_delegate->OnBubbleShown(std::move(close_callback));
 
-  extension_service()->DisableExtension(
-      extension->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   // The bubble should close as part of the extension being unloaded.
   EXPECT_TRUE(did_close_programmatically);
@@ -313,6 +318,30 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   auto bubble_delegate =
       std::make_unique<ControlledHomeBubbleDelegate>(browser());
   EXPECT_FALSE(bubble_delegate->ShouldShow());
+}
+
+TEST_F(ControlledHomeBubbleDelegateTest, LongExtensionNameIsTruncated) {
+  const std::u16string long_name =
+      u"This extension name should be longer than our truncation threshold "
+      "to test that the bubble can handle long names";
+  const std::u16string truncated_name =
+      extensions::util::GetFixupExtensionNameForUIDisplay(long_name);
+  ASSERT_LT(truncated_name.size(), long_name.size());
+
+  scoped_refptr<const extensions::Extension> extension =
+      LoadExtensionOverridingHome(base::UTF16ToUTF8(long_name));
+  ASSERT_TRUE(extension);
+
+  auto bubble_delegate =
+      std::make_unique<ControlledHomeBubbleDelegate>(browser());
+  EXPECT_TRUE(bubble_delegate->ShouldShow());
+
+  // Extension name is only shown if the dialog is not anchored to an action.
+  std::u16string bubble_text =
+      bubble_delegate->GetBodyText(/*anchored_to_action=*/false);
+
+  EXPECT_FALSE(base::Contains(bubble_text, long_name));
+  EXPECT_TRUE(base::Contains(bubble_text, truncated_name));
 }
 
 TEST_F(ControlledHomeBubbleDelegateTest,
@@ -403,8 +432,8 @@ TEST_F(ControlledHomeBubbleDelegateTest,
   }
 
   // Disable the extension that was acknowledged.
-  extension_service()->DisableExtension(
-      extension2->id(), extensions::disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension2->id(), {extensions::disable_reason::DISABLE_USER_ACTION});
 
   {
     auto bubble_delegate =

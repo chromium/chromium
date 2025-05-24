@@ -4,15 +4,17 @@
 
 #include "services/passage_embeddings/passage_embedder.h"
 
-#include "base/containers/heap_array.h"
+#include <utility>
+
 #include "base/files/file.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
-#include "components/history_embeddings/history_embeddings_features.h"
-#include "components/optimization_guide/core/tflite_op_resolver.h"
+#include "build/build_config.h"
+#include "services/passage_embeddings/passage_embeddings_op_resolver.h"
 #include "third_party/sentencepiece/src/src/sentencepiece_model.pb.h"
 
 namespace {
@@ -57,33 +59,37 @@ void RecordEmbeddingsDurationMetrics(
 namespace passage_embeddings {
 
 PassageEmbedder::PassageEmbedder(
-    mojo::PendingReceiver<mojom::PassageEmbedder> receiver)
+    mojo::PendingReceiver<mojom::PassageEmbedder> receiver,
+    mojom::PassageEmbedderParamsPtr embedder_params,
+    base::OnceCallback<void()> on_disconnect)
     : receiver_(this, std::move(receiver)),
-      embeddings_cache_(history_embeddings::kEmbedderCacheSize.Get()) {}
+      embeddings_cache_(embedder_params->embedder_cache_size),
+      user_initiated_priority_num_threads_(
+          embedder_params->user_initiated_priority_num_threads),
+      urgent_priority_num_threads_(
+          embedder_params->urgent_priority_num_threads),
+      passive_priority_num_threads_(
+          embedder_params->passive_priority_num_threads),
+      allow_gpu_execution_(embedder_params->allow_gpu_execution) {
+  receiver_.set_disconnect_handler(std::move(on_disconnect));
+}
 
 PassageEmbedder::~PassageEmbedder() = default;
 
 bool PassageEmbedder::LoadModels(
-    base::File* embeddings_model_file,
-    base::File* sp_file,
+    base::File embeddings_model_file,
+    base::File sp_file,
+    uint32_t embeddings_input_window_size,
     std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
   UnloadModelFiles();
 
-  base::ElapsedTimer embeddings_timer;
-  bool embeddings_load_success =
-      LoadEmbeddingsModelFile(embeddings_model_file, std::move(tflite_engine));
-  base::UmaHistogramBoolean(
-      "History.Embeddings.Embedder.EmbeddingsModelLoadSucceeded",
-      embeddings_load_success);
-  if (!embeddings_load_success) {
-    return false;
-  }
-  base::UmaHistogramMediumTimes(
-      "History.Embeddings.Embedder.EmbeddingsModelLoadDuration",
-      embeddings_timer.Elapsed());
+  embeddings_model_file_ = std::move(embeddings_model_file);
+
+  tflite_engine_overridden_ = !!tflite_engine;
+  override_tflite_engine_ = std::move(tflite_engine);
 
   base::ElapsedTimer sp_timer;
-  bool sp_load_success = LoadSentencePieceModelFile(sp_file);
+  bool sp_load_success = LoadSentencePieceModelFile(std::move(sp_file));
   base::UmaHistogramBoolean(
       "History.Embeddings.Embedder.SentencePieceModelLoadSucceeded",
       sp_load_success);
@@ -94,44 +100,25 @@ bool PassageEmbedder::LoadModels(
       "History.Embeddings.Embedder.SentencePieceModelLoadDuration",
       sp_timer.Elapsed());
 
+  embeddings_input_window_size_ = embeddings_input_window_size;
+
   return true;
 }
 
-void PassageEmbedder::SetEmbeddingsModelInputWindowSize(uint32_t size) {
-  embeddings_input_window_size_ = size;
-}
-
-bool PassageEmbedder::LoadSentencePieceModelFile(base::File* sp_file) {
-  auto sp_file_contents =
-      base::HeapArray<uint8_t>::Uninit(sp_file->GetLength());
-  std::optional<size_t> bytes_read = sp_file->Read(0, sp_file_contents);
-  if (!bytes_read.has_value()) {
+bool PassageEmbedder::LoadSentencePieceModelFile(base::File sp_file) {
+  base::MemoryMappedFile sp_model;
+  bool was_mapped = sp_model.Initialize(std::move(sp_file));
+  if (!was_mapped) {
     return false;
   }
 
   auto model_proto = std::make_unique<sentencepiece::ModelProto>();
-  model_proto->ParseFromArray(sp_file_contents.data(), sp_file_contents.size());
+  model_proto->ParseFromArray(sp_model.data(), sp_model.length());
   sp_processor_ = std::make_unique<sentencepiece::SentencePieceProcessor>();
   if (!(sp_processor_->Load(std::move(model_proto)).ok())) {
     sp_processor_.reset();
     return false;
   }
-  return true;
-}
-
-bool PassageEmbedder::LoadEmbeddingsModelFile(
-    base::File* embeddings_file,
-    std::unique_ptr<tflite::task::core::TfLiteEngine> tflite_engine) {
-  embeddings_model_buffer_ =
-      base::HeapArray<uint8_t>::Uninit(embeddings_file->GetLength());
-  std::optional<size_t> bytes_read =
-      embeddings_file->Read(0, embeddings_model_buffer_);
-  if (!bytes_read.has_value()) {
-    return false;
-  }
-
-  tflite_engine_overridden_ = !!tflite_engine;
-  override_tflite_engine_ = std::move(tflite_engine);
   return true;
 }
 
@@ -154,22 +141,36 @@ bool PassageEmbedder::BuildExecutionTask() {
 
   // Build a new task from the model bytes and the task priority.
   auto tflite_engine = std::make_unique<tflite::task::core::TfLiteEngine>(
-      std::make_unique<optimization_guide::TFLiteOpResolver>());
+      std::make_unique<PassageEmbeddingsOpResolver>(allow_gpu_execution_));
 
-  absl::Status model_load_status = tflite_engine->BuildModelFromFlatBuffer(
-      reinterpret_cast<const char*>(embeddings_model_buffer_.data()),
-      embeddings_model_buffer_.size());
+  base::ElapsedTimer embeddings_timer;
+#if BUILDFLAG(IS_WIN)
+  absl::Status model_load_status = tflite_engine->BuildModelFromFileHandle(
+      embeddings_model_file_.GetPlatformFile());
+#else
+  absl::Status model_load_status = tflite_engine->BuildModelFromFileDescriptor(
+      embeddings_model_file_.GetPlatformFile());
+#endif
+  base::UmaHistogramBoolean(
+      "History.Embeddings.Embedder.EmbeddingsModelLoadSucceeded",
+      model_load_status.ok());
   if (!model_load_status.ok()) {
     return false;
   }
+  base::UmaHistogramMediumTimes(
+      "History.Embeddings.Embedder.EmbeddingsModelLoadDuration",
+      embeddings_timer.Elapsed());
 
   int num_threads;
   switch (current_priority_) {
     case mojom::PassagePriority::kUserInitiated:
-      num_threads = history_embeddings::kEmbedderNumThreads.Get();
+      num_threads = user_initiated_priority_num_threads_;
+      break;
+    case mojom::PassagePriority::kUrgent:
+      num_threads = urgent_priority_num_threads_;
       break;
     case mojom::PassagePriority::kPassive:
-      num_threads = 1;
+      num_threads = passive_priority_num_threads_;
       break;
     case mojom::PassagePriority::kUnknown:
       return false;
@@ -189,7 +190,7 @@ bool PassageEmbedder::BuildExecutionTask() {
 void PassageEmbedder::UnloadModelFiles() {
   sp_processor_.reset();
   loaded_model_.reset();
-  embeddings_model_buffer_ = base::HeapArray<uint8_t>();
+  embeddings_model_file_.Close();
 }
 
 std::optional<OutputType> PassageEmbedder::Execute(InputType input) {
@@ -219,7 +220,6 @@ void PassageEmbedder::GenerateEmbeddings(
   for (const std::string& input : inputs) {
     mojom::PassageEmbeddingsResultPtr result =
         mojom::PassageEmbeddingsResult::New();
-    result->passage = input;
 
     auto cache_value = embeddings_cache_.Get(input);
     bool cache_hit = cache_value != embeddings_cache_.end();

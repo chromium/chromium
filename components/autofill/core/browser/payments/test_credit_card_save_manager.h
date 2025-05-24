@@ -50,19 +50,21 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   void set_upload_request_card(const CreditCard& card);
 
-  payments::PaymentsNetworkInterface::UploadCardRequestDetails*
-  upload_request();
+  payments::UploadCardRequestDetails* upload_request();
+
+  bool should_request_expiration_date_from_user();
+
+  bool should_request_name_from_user();
 
   void InitVirtualCardEnroll(
       const CreditCard& credit_card,
-      std::optional<payments::PaymentsNetworkInterface::
-                        GetDetailsForEnrollmentResponseDetails>
+      std::optional<payments::GetDetailsForEnrollmentResponseDetails>
           get_details_for_enrollment_response_details);
 
   void OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
-          upload_card_response_details) override;
+      const payments::UploadCardResponseDetails& upload_card_response_details)
+      override;
 
  private:
   bool credit_card_upload_enabled_ = false;

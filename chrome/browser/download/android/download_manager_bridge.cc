@@ -39,34 +39,28 @@ void DownloadManagerBridge::AddCompletedDownload(
     download::DownloadItem* download,
     AddCompletedDownloadCallback callback) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jfile_name =
-      ConvertUTF8ToJavaString(env, download->GetFileNameToReportUser().value());
-  ScopedJavaLocalRef<jstring> jmime_type =
-      ConvertUTF8ToJavaString(env, download->GetMimeType());
-  ScopedJavaLocalRef<jstring> jfile_path =
-      ConvertUTF8ToJavaString(env, download->GetTargetFilePath().value());
+  std::string file_name = download->GetFileNameToReportUser().value();
+  std::string mime_type = download->GetMimeType();
+  std::string file_path = download->GetTargetFilePath().value();
   int64_t file_size = download->GetReceivedBytes();
   ScopedJavaLocalRef<jobject> joriginal_url =
       url::GURLAndroid::FromNativeGURL(env, download->GetOriginalUrl());
   ScopedJavaLocalRef<jobject> jreferer =
       url::GURLAndroid::FromNativeGURL(env, download->GetReferrerUrl());
-  ScopedJavaLocalRef<jstring> jdownload_guid =
-      base::android::ConvertUTF8ToJavaString(env, download->GetGuid());
+  std::string download_guid = download->GetGuid();
 
   // Make copy on the heap so we can pass the pointer through JNI.
   intptr_t callback_id = reinterpret_cast<intptr_t>(
       new AddCompletedDownloadCallback(std::move(callback)));
 
   Java_DownloadManagerBridge_addCompletedDownload(
-      env, jfile_name, jfile_name, jmime_type, jfile_path, file_size,
-      joriginal_url, jreferer, jdownload_guid, callback_id);
+      env, file_name, file_name, mime_type, file_path, file_size, joriginal_url,
+      jreferer, download_guid, callback_id);
 }
 
 void DownloadManagerBridge::RemoveCompletedDownload(
     download::DownloadItem* download) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> jdownload_guid =
-      base::android::ConvertUTF8ToJavaString(env, download->GetGuid());
   Java_DownloadManagerBridge_removeCompletedDownload(
-      env, jdownload_guid, download->GetFileExternallyRemoved());
+      env, download->GetGuid(), download->GetFileExternallyRemoved());
 }

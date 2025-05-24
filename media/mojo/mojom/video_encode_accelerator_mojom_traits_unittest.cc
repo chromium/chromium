@@ -54,10 +54,10 @@ TEST(VideoEncoderInfoStructTraitTest, RoundTrip) {
   for (size_t i = 0; i < ::media::VideoEncoderInfo::kMaxSpatialLayers; ++i)
     input.fps_allocation[i] = {5, 5, 10};
   // Resolution bitrate limits.
-  input.resolution_bitrate_limits.push_back(::media::ResolutionBitrateLimit(
-      gfx::Size(123, 456), 123456, 123456, 789012));
-  input.resolution_bitrate_limits.push_back(::media::ResolutionBitrateLimit(
-      gfx::Size(789, 1234), 1234567, 1234567, 7890123));
+  input.resolution_rate_limits.push_back(::media::ResolutionRateLimit(
+      gfx::Size(123, 456), 123456, 123456, 789012, 30, 1));
+  input.resolution_rate_limits.push_back(::media::ResolutionRateLimit(
+      gfx::Size(789, 1234), 1234567, 1234567, 7890123, 30, 1));
   // Other bool values.
   input.supports_native_handle = true;
   input.has_trusted_rate_controller = true;
@@ -270,6 +270,20 @@ TEST(BitstreamBufferMetadataTraitTest, RoundTrip) {
           input_metadata, output_metadata));
   EXPECT_EQ(input_metadata, output_metadata);
   input_metadata.vp8.reset();
+
+  SVCGenericMetadata svc_generic;
+  svc_generic.follow_svc_spec = true;
+  svc_generic.temporal_idx = 2;
+  svc_generic.spatial_idx = 1;
+  svc_generic.refresh_flags = 0b11111111;
+  svc_generic.reference_flags = 0b00000001;
+  input_metadata.svc_generic = svc_generic;
+  output_metadata = ::media::BitstreamBufferMetadata();
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::BitstreamBufferMetadata>(
+          input_metadata, output_metadata));
+  EXPECT_EQ(input_metadata, output_metadata);
+  input_metadata.svc_generic.reset();
 
   Vp9Metadata vp9;
   vp9.inter_pic_predicted = true;

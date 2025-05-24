@@ -4,16 +4,16 @@
 
 #import "ios/chrome/browser/badges/ui_bundled/badge_overflow_menu_util.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/badges/ui_bundled/badges_histograms.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-
-#import <UIKit/UIKit.h>
 
 namespace {
 
@@ -84,24 +84,12 @@ UIAction* GetOverflowMenuElementForBadgeType(
                                                  kInfobarSymbolPointSize);
       histogram_type = MobileMessagesInfobarType::Permissions;
       break;
-    case kBadgeTypeParcelTracking:
-      action_identifier = kBadgeButtonParcelTrackingActionIdentifier;
-      title = l10n_util::GetNSString(
-          IDS_IOS_PARCEL_TRACKING_INFOBAR_NEW_PACKAGE_TRACKED_TITLE);
-      image = DefaultSymbolWithPointSize(kShippingBoxSymbol,
-                                         kInfobarSymbolPointSize);
-      break;
     case kBadgeTypeIncognito:
-      NOTREACHED_IN_MIGRATION()
-          << "An overflow menu badge should not be an Incognito badge";
-      break;
+      NOTREACHED() << "An overflow menu badge should not be an Incognito badge";
     case kBadgeTypeOverflow:
-      NOTREACHED_IN_MIGRATION()
-          << "A overflow menu badge should not be an overflow badge";
-      break;
+      NOTREACHED() << "A overflow menu badge should not be an overflow badge";
     case kBadgeTypeNone:
-      NOTREACHED_IN_MIGRATION() << "A badge should not have kBadgeTypeNone";
-      break;
+      NOTREACHED() << "A badge should not have kBadgeTypeNone";
   }
 
   UIActionHandler handler = ^(UIAction* action) {

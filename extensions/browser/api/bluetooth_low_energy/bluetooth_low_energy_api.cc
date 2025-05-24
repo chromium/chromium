@@ -139,12 +139,10 @@ std::string StatusToString(BluetoothLowEnergyEventRouter::Status status) {
     case BluetoothLowEnergyEventRouter::kStatusErrorWakelock:
       return kErrorWakelock;
     case BluetoothLowEnergyEventRouter::kStatusSuccess:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       return kErrorOperationFailed;
   }
-  return "";
 }
 
 extensions::BluetoothLowEnergyEventRouter* GetEventRouter(

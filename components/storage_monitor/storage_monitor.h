@@ -10,16 +10,16 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/storage_monitor/storage_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "services/device/public/mojom/mtp_manager.mojom-forward.h"
 #endif
 
@@ -48,7 +48,7 @@ class TransientDeviceIds;
 // duplicates. This is because there's no tracking between when listeners were
 // registered and the state of initialization, and the fact that platforms
 // behave differently in how these notifications are provided.
-class StorageMonitor {
+class COMPONENT_EXPORT(STORAGE_MONITOR) StorageMonitor {
  public:
   // This interface is provided to generators of storage notifications.
   class Receiver {
@@ -120,7 +120,7 @@ class StorageMonitor {
       std::wstring* storage_object_id) const = 0;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   virtual device::mojom::MtpManager* media_transfer_protocol_manager() = 0;
 #endif
 

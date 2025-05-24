@@ -9,7 +9,11 @@ import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.util.Size;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** API of the PlayerFrameMediator to helper classes. */
+@NullMarked
 public interface PlayerFrameMediatorDelegate {
     /** Gets the visual viewport of the player. */
     public PlayerFrameViewport getViewport();
@@ -57,7 +61,7 @@ public interface PlayerFrameMediatorDelegate {
     void forceRedrawVisibleSubframes();
 
     /** Updates the bitmap matrix in the model. */
-    void updateBitmapMatrix(Bitmap[][] bitmapMatrix);
+    void updateBitmapMatrix(Bitmap @Nullable [][] bitmapMatrix);
 
     /** Update the model when the bitmap state is swapped. */
     void onSwapState();

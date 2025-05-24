@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "dbus/values_util.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 #include <utility>
@@ -333,8 +330,10 @@ TEST(ValuesUtilTest, PopDictionaryWithDottedStringKey) {
 
 TEST(ValuesUtilTest, PopDoubleToIntDictionary) {
   // Create test data.
-  const int32_t kValues[] = {0, 1, 1, 2, 3, 5, 8, 13, 21};
-  const std::vector<int32_t> values(kValues, kValues + std::size(kValues));
+  const auto kValues = std::to_array<int32_t>({0, 1, 1, 2, 3, 5, 8, 13, 21});
+  const std::vector<int32_t> values(
+      kValues.data(),
+      base::span<const int32_t>(kValues).subspan(std::size(kValues)).data());
   std::vector<double> keys(values.size());
   for (size_t i = 0; i != values.size(); ++i)
     keys[i] = std::sqrt(values[i]);

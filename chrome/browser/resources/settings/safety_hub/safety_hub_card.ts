@@ -40,7 +40,7 @@ export class SettingsSafetyHubCardElement extends PolymerElement {
     };
   }
 
-  data: CardInfo;
+  declare data: CardInfo;
 
   // Returns the icon for the card state.
   private getStatusIcon(state: CardState): string {

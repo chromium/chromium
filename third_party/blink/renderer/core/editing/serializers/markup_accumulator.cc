@@ -49,19 +49,60 @@
 
 namespace blink {
 
+namespace {
+
+enum class DefaultNsDeclarationMatchType {
+  kLocalName,
+  kNamespaceUri,
+  kBoth,
+};
+
+// Check if the attribute matches a default namespace declaration (xmlns="...").
+//
+// We allow just matching on the local name here because xmlns attributes in
+// HTML documents don't a have namespace URI. Some web tests serialize HTML
+// documents with XMLSerializer, and Firefox has the same behavior.
+bool MatchesDefaultNsDeclaration(const Attribute& attribute,
+                                 DefaultNsDeclarationMatchType match_type) {
+  if (!attribute.Prefix().empty()) {
+    return false;
+  }
+  if (RuntimeEnabledFeatures::
+          XMLSerializerConsistentDefaultNsDeclMatchingEnabled()) {
+    match_type = DefaultNsDeclarationMatchType::kBoth;
+  }
+  if (match_type != DefaultNsDeclarationMatchType::kNamespaceUri &&
+      attribute.LocalName() == g_xmlns_atom) {
+    return true;
+  }
+  if (match_type != DefaultNsDeclarationMatchType::kLocalName &&
+      attribute.NamespaceURI() == xmlns_names::kNamespaceURI) {
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
 class MarkupAccumulator::NamespaceContext final {
   USING_FAST_MALLOC(MarkupAccumulator::NamespaceContext);
 
  public:
   // https://w3c.github.io/DOM-Parsing/#dfn-add
   //
-  // This function doesn't accept empty prefix and empty namespace URI.
-  //  - The default namespace is managed separately.
-  //  - Namespace URI never be empty if the prefix is not empty.
+  // This function doesn't accept empty prefixes because the default namespace
+  // is managed separately.
+  //
+  // Empty namespace URIs represent "no namespace", and while it wouldn't be
+  // possible to bind a prefix to "no namespace" during parsing, it can be set
+  // via DOM mutation so they are accepted (and mapped to null on lookup).
+  //
+  // https://w3c.github.io/DOM-Parsing/#dfn-recording-the-namespace-information
+  // step 2.3.4.2
   void Add(const AtomicString& prefix, const AtomicString& namespace_uri) {
     DCHECK(!prefix.empty())
         << " prefix=" << prefix << " namespace_uri=" << namespace_uri;
-    DCHECK(!namespace_uri.empty())
+    DCHECK(!namespace_uri.IsNull())
         << " prefix=" << prefix << " namespace_uri=" << namespace_uri;
     prefix_ns_map_.Set(prefix, namespace_uri);
     auto result =
@@ -75,17 +116,15 @@ class MarkupAccumulator::NamespaceContext final {
     // 2. For each attribute attr in element's attributes, in the order they are
     // specified in the element's attribute list:
     for (const auto& attr : element.Attributes()) {
-      // We don't check xmlns namespace of attr here because xmlns attributes in
-      // HTML documents don't have namespace URI. Some web tests serialize
-      // HTML documents with XMLSerializer, and Firefox has the same behavior.
-      if (attr.Prefix().empty() && attr.LocalName() == g_xmlns_atom) {
+      if (MatchesDefaultNsDeclaration(
+              attr, DefaultNsDeclarationMatchType::kLocalName)) {
         // 3.1. If attribute prefix is null, then attr is a default namespace
         // declaration. Set the default namespace attr value to attr's value
         // and stop running these steps, returning to Main to visit the next
         // attribute.
         local_default_namespace = attr.Value();
       } else if (attr.Prefix() == g_xmlns_atom) {
-        Add(attr.Prefix() ? attr.LocalName() : g_empty_atom, attr.Value());
+        Add(attr.LocalName(), attr.Value());
       }
     }
     // 3. Return the value of default namespace attr value.
@@ -94,7 +133,8 @@ class MarkupAccumulator::NamespaceContext final {
 
   AtomicString LookupNamespaceURI(const AtomicString& prefix) const {
     auto it = prefix_ns_map_.find(prefix ? prefix : g_empty_atom);
-    return it != prefix_ns_map_.end() ? it->value : g_null_atom;
+    return it != prefix_ns_map_.end() && !it->value.empty() ? it->value
+                                                            : g_null_atom;
   }
 
   const AtomicString& ContextNamespace() const { return context_namespace_; }
@@ -111,7 +151,7 @@ class MarkupAccumulator::NamespaceContext final {
                             : local_default_namespace);
   }
 
-  const Vector<AtomicString> PrefixList(const AtomicString& ns) const {
+  Vector<AtomicString> PrefixList(const AtomicString& ns) const {
     auto it = ns_prefixes_map_.find(ns ? ns : g_empty_atom);
     return it != ns_prefixes_map_.end() ? it->value : Vector<AtomicString>();
   }
@@ -167,8 +207,7 @@ void MarkupAccumulator::AppendStartMarkup(const Node& node) {
       formatter_.AppendText(markup_, To<Text>(node));
       break;
     case Node::kElementNode:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case Node::kAttributeNode:
       // Only XMLSerializer can pass an Attr.  So, |documentIsHTML| flag is
       // false.
@@ -183,15 +222,15 @@ void MarkupAccumulator::AppendStartMarkup(const Node& node) {
 
 void MarkupAccumulator::AppendCustomAttributes(const Element&) {}
 
-MarkupAccumulator::EmitChoice MarkupAccumulator::WillProcessAttribute(
+MarkupAccumulator::EmitAttributeChoice MarkupAccumulator::WillProcessAttribute(
     const Element& element,
     const Attribute& attribute) const {
-  return EmitChoice::kEmit;
+  return EmitAttributeChoice::kEmit;
 }
 
-MarkupAccumulator::EmitChoice MarkupAccumulator::WillProcessElement(
+MarkupAccumulator::EmitElementChoice MarkupAccumulator::WillProcessElement(
     const Element& element) {
-  return EmitChoice::kEmit;
+  return EmitElementChoice::kEmit;
 }
 
 AtomicString MarkupAccumulator::AppendElement(const Element& element) {
@@ -210,7 +249,8 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
       AppendAttribute(element, Attribute(html_names::kIsAttr, is_value));
     }
     for (const auto& attribute : attributes) {
-      if (EmitChoice::kEmit == WillProcessAttribute(element, attribute)) {
+      if (EmitAttributeChoice::kEmit ==
+          WillProcessAttribute(element, attribute)) {
         AppendAttribute(element, attribute);
       }
     }
@@ -219,14 +259,15 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
 
     for (const auto& attribute : attributes) {
       if (data.ignore_namespace_definition_attribute_ &&
-          attribute.NamespaceURI() == xmlns_names::kNamespaceURI &&
-          attribute.Prefix().empty()) {
+          MatchesDefaultNsDeclaration(
+              attribute, DefaultNsDeclarationMatchType::kNamespaceUri)) {
         // Drop xmlns= only if it's inconsistent with element's namespace.
         // https://github.com/w3c/DOM-Parsing/issues/47
         if (!EqualIgnoringNullity(attribute.Value(), element.namespaceURI()))
           continue;
       }
-      if (EmitChoice::kEmit == WillProcessAttribute(element, attribute)) {
+      if (EmitAttributeChoice::kEmit ==
+          WillProcessAttribute(element, attribute)) {
         AppendAttribute(element, attribute);
       }
     }
@@ -564,8 +605,6 @@ bool MarkupAccumulator::SerializeAsHTML() const {
 // is controlled by shadow_root_inclusion_:
 //  - If behavior is kIncludeSerializableShadowRoots, then any open shadow
 //    root that also has its `serializable` bit set will be serialized.
-//  - If behavior is kIncludeAllOpenShadowRoots, then any open shadow root
-//    will be serialized, *regardless* of the state of its `serializable` bit.
 //  - Any shadow root included in the `include_shadow_roots` collection will be
 //    serialized.
 using Behavior = ShadowRootInclusion::Behavior;
@@ -581,11 +620,6 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
     switch (shadow_root_inclusion_.behavior) {
       case Behavior::kOnlyProvidedShadowRoots:
         return no_serialization;
-      case Behavior::kIncludeAllOpenShadowRoots:
-        if (shadow_root->GetMode() == ShadowRootMode::kClosed) {
-          return no_serialization;
-        }
-        break;
       case Behavior::kIncludeAnySerializableShadowRoots:
         if (!shadow_root->serializable()) {
           return no_serialization;
@@ -631,7 +665,8 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
   }
 
   const auto& target_element = To<Element>(target_node);
-  if (WillProcessElement(target_element) == EmitChoice::kIgnore) {
+  EmitElementChoice emit_choice = WillProcessElement(target_element);
+  if (emit_choice == EmitElementChoice::kIgnore) {
     return;
   }
 
@@ -644,33 +679,37 @@ void MarkupAccumulator::SerializeNodesWithNamespaces(
   bool has_end_tag =
       !(SerializeAsHTML() && ElementCannotHaveEndTag(target_element));
   if (has_end_tag) {
-    const Node* parent = &target_element;
-    if (auto* template_element =
-            DynamicTo<HTMLTemplateElement>(target_element)) {
-      // Declarative shadow roots that are currently being parsed will have a
-      // null content() - don't serialize contents in this case.
-      parent = template_element->content();
-    }
-
-    // Traverses the shadow tree.
-    std::pair<ShadowRoot*, Element*> auxiliary_pair =
-        GetShadowTree(target_element);
-    if (ShadowRoot* auxiliary_tree = auxiliary_pair.first) {
-      Element* enclosing_element = auxiliary_pair.second;
-      AtomicString enclosing_element_prefix;
-      if (enclosing_element)
-        enclosing_element_prefix = AppendElement(*enclosing_element);
-      for (const Node& child : Strategy::ChildrenOf(*auxiliary_tree))
-        SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
-      if (enclosing_element) {
-        WillCloseSyntheticTemplateElement(*auxiliary_tree);
-        AppendEndTag(*enclosing_element, enclosing_element_prefix);
+    if (emit_choice != EmitElementChoice::kEmitButIgnoreChildren) {
+      const Node* parent = &target_element;
+      if (auto* template_element =
+              DynamicTo<HTMLTemplateElement>(target_element)) {
+        // Declarative shadow roots that are currently being parsed will have a
+        // null content() - don't serialize contents in this case.
+        parent = template_element->content();
       }
-    }
 
-    if (parent) {
-      for (const Node& child : Strategy::ChildrenOf(*parent)) {
-        SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+      // Traverses the shadow tree.
+      std::pair<ShadowRoot*, Element*> auxiliary_pair =
+          GetShadowTree(target_element);
+      if (ShadowRoot* auxiliary_tree = auxiliary_pair.first) {
+        Element* enclosing_element = auxiliary_pair.second;
+        AtomicString enclosing_element_prefix;
+        if (enclosing_element) {
+          enclosing_element_prefix = AppendElement(*enclosing_element);
+        }
+        for (const Node& child : Strategy::ChildrenOf(*auxiliary_tree)) {
+          SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+        }
+        if (enclosing_element) {
+          WillCloseSyntheticTemplateElement(*auxiliary_tree);
+          AppendEndTag(*enclosing_element, enclosing_element_prefix);
+        }
+      }
+
+      if (parent) {
+        for (const Node& child : Strategy::ChildrenOf(*parent)) {
+          SerializeNodesWithNamespaces<Strategy>(child, kIncludeNode);
+        }
       }
     }
 

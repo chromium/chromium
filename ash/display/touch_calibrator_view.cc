@@ -583,8 +583,11 @@ void TouchCalibratorView::InitViewContents(bool is_for_touchscreen_mapping) {
   tap_label_ = touch_point_view_->AddChildView(std::make_unique<views::Label>(
       rb.GetLocalizedString(IDS_DISPLAY_TOUCH_CALIBRATION_TAP_HERE_LABEL),
       views::Label::CustomFont{rb.GetFontListWithDelta(6)}));
-  tap_label_->SetBounds(0, kThrobberCircleViewWidth, kTapLabelWidth,
-                        kTapLabelHeight);
+  gfx::Size preferred_label_size = tap_label_->GetPreferredSize();
+  const int x = std::max(
+      (touch_point_view_->width() - preferred_label_size.width()) / 2, 0);
+  tap_label_->SetBounds(x, kThrobberCircleViewWidth,
+                        preferred_label_size.width(), kTapLabelHeight);
   tap_label_->SetEnabledColor(kTapHereLabelColor);
   tap_label_->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   tap_label_->SetAutoColorReadabilityEnabled(false);

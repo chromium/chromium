@@ -14,7 +14,7 @@ using extensions::ErrorUtils;
 using ContentSecurityPolicyManifestTest = ChromeManifestTest;
 
 TEST_F(ContentSecurityPolicyManifestTest, InsecureContentSecurityPolicy) {
-  Testcase testcases[] = {
+  const Testcase testcases[] = {
       Testcase("insecure_contentsecuritypolicy_1.json",
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidCSPInsecureValueIgnored,
@@ -29,5 +29,5 @@ TEST_F(ContentSecurityPolicyManifestTest, InsecureContentSecurityPolicy) {
                ErrorUtils::FormatErrorMessage(
                    errors::kInvalidCSPMissingSecureSrc,
                    keys::kContentSecurityPolicy, "object-src"))};
-  RunTestcases(testcases, std::size(testcases), EXPECT_TYPE_WARNING);
+  RunTestcases(testcases, EXPECT_TYPE_WARNING);
 }

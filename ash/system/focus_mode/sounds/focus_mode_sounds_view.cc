@@ -5,6 +5,7 @@
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
 
 #include <memory>
+#include <variant>
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -25,9 +26,12 @@
 #include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/chromeos/devicetype_utils.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -45,7 +49,7 @@ namespace {
 constexpr auto kDisconnectedContainerMargins = gfx::Insets::TLBR(8, 0, 0, 0);
 
 constexpr auto kSoundViewBottomPadding = 22;
-constexpr auto kSoundTabSliderInsets = gfx::Insets::VH(16, 0);
+constexpr auto kSoundTabSliderInsets = gfx::Insets::VH(16, 24);
 constexpr auto kFocusSoundsLabelInsets = gfx::Insets::VH(18, 24);
 
 constexpr int kNonPremiumChildViewsSpacing = 16;
@@ -88,12 +92,12 @@ std::unique_ptr<views::BoxLayoutView> CreateYouTubeMusicAlternateViewBase(
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   label->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosBody2));
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
 
   auto* button = box_view->AddChildView(std::make_unique<PillButton>(
       std::move(callback), l10n_util::GetStringUTF16(button_message_id),
       PillButton::Type::kSecondaryWithoutIcon));
-  button->SetBackgroundColorId(cros_tokens::kCrosSysHighlightShape);
+  button->SetBackgroundColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
   button->SetButtonTextColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
   return box_view;
 }
@@ -139,7 +143,7 @@ std::unique_ptr<views::Label> CreateOfflineLabel(const int message_id) {
       std::make_unique<views::Label>(l10n_util::GetStringUTF16(message_id));
   label->SetFontList(ash::TypographyProvider::Get()->ResolveTypographyToken(
       ash::TypographyToken::kCrosBody2));
-  label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  label->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   return label;
@@ -156,6 +160,11 @@ std::unique_ptr<views::BoxLayoutView> CreateOfflineStateView() {
   box_view->AddChildView(CreateOfflineLabel(
       IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_OFFLINE_LABEL_TWO));
   return box_view;
+}
+
+// Display the about page so a user can start an OS update.
+void ShowAboutChromeOS() {
+  ash::Shell::Get()->system_tray_model()->client()->ShowAboutChromeOS();
 }
 
 }  // namespace
@@ -264,47 +273,119 @@ void FocusModeSoundsView::OnPlayerError() {
     return;
   }
 
-  const bool is_soundscape_type =
-      selected_playlist.type == focus_mode_util::SoundType::kSoundscape;
-  ShowErrorMessageForType(
-      /*is_soundscape_type=*/is_soundscape_type,
-      is_soundscape_type
+  ToastData data;
+  data.source = selected_playlist.type;
+  data.message =
+      selected_playlist.type == focus_mode_util::SoundType::kSoundscape
           ? IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_FAILED_PLAYING_SOUNDS
-          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC,
-      ErrorMessageToast::ButtonActionType::kDismiss);
+          : IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC;
+  data.action_type = ErrorMessageToast::ButtonActionType::kDismiss;
+  data.fatal = false;
+  ProcessError(data);
 }
 
-void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
-  auto* sounds_controller =
-      FocusModeController::Get()->focus_mode_sounds_controller();
+// static
+FocusModeSoundsView::ToastData
+FocusModeSoundsView::ToastData::CreateYouTubeMusicUpdateToast() {
+  FocusModeSoundsView::ToastData data;
+  data.source = focus_mode_util::SoundType::kYouTubeMusic;
+  data.message = l10n_util::GetStringFUTF16(
+      IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_UPDATE,
+      ui::GetChromeOSDeviceName());
+  data.action_type = ErrorMessageToast::ButtonActionType::kSettings;
+  data.fatal = true;
+  return data;
+}
+
+FocusModeSoundsView::ToastData::ToastData() = default;
+FocusModeSoundsView::ToastData::ToastData(const ToastData&) = default;
+FocusModeSoundsView::ToastData::~ToastData() = default;
+
+constexpr std::partial_ordering FocusModeSoundsView::ToastData::operator<=>(
+    const ToastData& other) const {
+  if (source != other.source) {
+    return std::partial_ordering::unordered;
+  }
+
+  if (fatal) {
+    if (!other.fatal) {
+      return std::partial_ordering::greater;
+    }
+  } else {
+    if (other.fatal) {
+      return std::partial_ordering::less;
+    }
+  }
+
+  if (action_type != other.action_type) {
+    constexpr auto kActionValue =
+        base::MakeFixedFlatMap<ErrorMessageToast::ButtonActionType, int>(
+            {{ErrorMessageToast::ButtonActionType::kReload, 0},
+             {ErrorMessageToast::ButtonActionType::kDismiss, 1},
+             {ErrorMessageToast::ButtonActionType::kSettings, 2}});
+    return kActionValue.at(action_type) <=> kActionValue.at(other.action_type);
+  }
+
+  if (std::holds_alternative<int>(message)) {
+    if (std::holds_alternative<std::u16string>(other.message)) {
+      return std::partial_ordering::less;
+    }
+  } else {
+    if (std::holds_alternative<int>(other.message)) {
+      return std::partial_ordering::greater;
+    }
+  }
+
+  if (message != other.message) {
+    // `ToastData` that is otherwise equivalent but only differs in the content
+    // of `message` are not ordered but not equal.
+    return std::partial_ordering::unordered;
+  }
+
+  return std::partial_ordering::equivalent;
+}
+
+void FocusModeSoundsView::UpdateSoundsView(
+    bool is_soundscape_type,
+    const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
+        playlists) {
   if (is_soundscape_type) {
     if (!soundscape_container_) {
       return;
     }
-    const auto& playlists = sounds_controller->soundscape_playlists();
-    if (playlists.size() != kFocusModePlaylistViewsNum) {
-      ShowErrorMessageForType(
-          is_soundscape_type,
-          IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_FOCUS_SOUNDS,
-          ErrorMessageToast::ButtonActionType::kReload);
+    if (playlists.size() == kFocusModePlaylistViewsNum) {
+      soundscape_container_->UpdateContents(playlists);
       return;
     }
-    soundscape_container_->UpdateContents(playlists);
-  } else {
-    if (!youtube_music_container_) {
-      return;
-    }
-    const auto& playlists = sounds_controller->youtube_music_playlists();
-    if (playlists.size() != kFocusModePlaylistViewsNum) {
-      if (!youtube_music_container_->IsAlternateViewVisible()) {
-        ShowErrorMessageForType(
-            is_soundscape_type,
-            IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC,
-            ErrorMessageToast::ButtonActionType::kReload);
-      }
-      return;
-    }
+
+    ToastData data;
+    data.source = focus_mode_util::SoundType::kSoundscape;
+    data.message =
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_FOCUS_SOUNDS;
+    data.action_type = ErrorMessageToast::ButtonActionType::kReload;
+    data.fatal = false;
+    ProcessError(data);
+    return;
+  }
+
+  if (!youtube_music_container_) {
+    return;
+  }
+
+  if (playlists.size() == kFocusModePlaylistViewsNum) {
     youtube_music_container_->UpdateContents(playlists);
+    return;
+  }
+
+  if (!youtube_music_container_->IsAlternateViewVisible()) {
+    ToastData data;
+    data.source = focus_mode_util::SoundType::kYouTubeMusic;
+    data.message =
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC;
+    data.action_type = ErrorMessageToast::ButtonActionType::kReload;
+    data.fatal = false;
+    ProcessError(data);
+    return;
   }
 }
 
@@ -328,6 +409,16 @@ void FocusModeSoundsView::CreateHeader(
 
   auto* sounds_container_header =
       AddChildView(std::make_unique<views::BoxLayoutView>());
+
+  // Stretch children views to take full width. This is needed because otherwise
+  // TabSlider's preferred width will become zero.
+  // TODO(crbug.com/400028865): this should be no longer needed once Label's
+  // preferred size respects its eliding mode.
+  sounds_container_header->SetOrientation(
+      views::BoxLayout::Orientation::kVertical);
+  sounds_container_header->SetCrossAxisAlignment(
+      views::BoxLayout::CrossAxisAlignment::kStretch);
+
   sounds_container_header->SetInsideBorderInsets(
       contains_youtube_music ? kSoundTabSliderInsets : kFocusSoundsLabelInsets);
   sounds_container_header->SetMainAxisAlignment(
@@ -342,8 +433,7 @@ void FocusModeSoundsView::CreateHeader(
         IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_SOUNDSCAPE_BUTTON));
     focus_sounds_label->SetHorizontalAlignment(
         gfx::HorizontalAlignment::ALIGN_LEFT);
-    focus_sounds_label->SetEnabledColorId(
-        cros_tokens::kCrosSysOnSurfaceVariant);
+    focus_sounds_label->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                           *focus_sounds_label);
     return;
@@ -438,12 +528,43 @@ void FocusModeSoundsView::ToggleYouTubeMusicAlternateView(bool show) {
   MaybeDismissErrorMessage();
 }
 
+void FocusModeSoundsView::YouTubeMusicError(
+    const FocusModeApiError& api_error) {
+  const std::string& error_message = api_error.error_message;
+  if (api_error.type == FocusModeApiError::Type::kUpdate) {
+    ProcessError(ToastData::CreateYouTubeMusicUpdateToast());
+    return;
+  }
+
+  ToastData data;
+  data.source = focus_mode_util::SoundType::kYouTubeMusic;
+  if (error_message.empty()) {
+    data.message =
+        IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_DISCONNECTED_WITH_YOUTUBE_MUSIC;
+  } else {
+    data.message = base::UTF8ToUTF16(error_message);
+  }
+
+  data.action_type = ErrorMessageToast::ButtonActionType::kDismiss;
+  data.fatal = api_error.IsFatal();
+
+  ProcessError(data);
+}
+
 void FocusModeSoundsView::OnSoundscapeButtonToggled() {
   MayShowSoundscapeContainer(true);
 }
 
 void FocusModeSoundsView::OnYouTubeMusicButtonToggled() {
   MayShowSoundscapeContainer(false);
+  const std::optional<FocusModeApiError>& api_error =
+      FocusModeController::Get()
+          ->focus_mode_sounds_controller()
+          ->last_youtube_music_error();
+  if (api_error) {
+    // Show the error if it's still available.
+    YouTubeMusicError(*api_error);
+  }
 }
 
 void FocusModeSoundsView::MayShowSoundscapeContainer(bool show) {
@@ -465,11 +586,16 @@ void FocusModeSoundsView::DownloadPlaylistsForType(bool is_soundscape_type) {
   auto* sounds_controller =
       FocusModeController::Get()->focus_mode_sounds_controller();
 
-  // Set the no premium callback only if we start downloading the YTM playlists.
+  // Set the no premium callback and error callback for YTM only if we start
+  // downloading the YTM playlists.
   if (!is_soundscape_type) {
     sounds_controller->SetYouTubeMusicNoPremiumCallback(base::BindRepeating(
         &FocusModeSoundsView::ToggleYouTubeMusicAlternateView,
         weak_factory_.GetWeakPtr(), /*show=*/true));
+    sounds_controller->SetErrorCallback(
+        is_soundscape_type,
+        base::BindRepeating(&FocusModeSoundsView::YouTubeMusicError,
+                            weak_factory_.GetWeakPtr()));
   }
 
   sounds_controller->DownloadPlaylistsForType(
@@ -485,9 +611,37 @@ void FocusModeSoundsView::MaybeDismissErrorMessage() {
   RemoveChildViewT(std::exchange(error_message_, nullptr));
 }
 
+void FocusModeSoundsView::ProcessError(const ToastData& data) {
+  focus_mode_util::SoundType backend = data.source;
+  if (backend == focus_mode_util::SoundType::kNone) {
+    return;
+  }
+
+  // Check if this error is more severe than the previous error.
+  // Only YTM handles persistent errors currently.
+  if (backend == focus_mode_util::SoundType::kYouTubeMusic) {
+    if (youtube_music_api_error_.has_value() &&
+        data < *youtube_music_api_error_) {
+      // If the previous error is more severe, skip this error.
+      return;
+    }
+
+    // This is the first error or a more severe error.
+    youtube_music_api_error_ = data;
+  }
+
+  const std::u16string& message =
+      std::holds_alternative<std::u16string>(data.message)
+          ? std::get<std::u16string>(data.message)
+          : l10n_util::GetStringUTF16(std::get<int>(data.message));
+  ShowErrorMessageForType(
+      data.source == focus_mode_util::SoundType::kSoundscape, message,
+      data.action_type);
+}
+
 void FocusModeSoundsView::ShowErrorMessageForType(
     bool is_soundscape_type,
-    const int message_id,
+    const std::u16string& message,
     ErrorMessageToast::ButtonActionType type) {
   MaybeDismissErrorMessage();
 
@@ -503,11 +657,13 @@ void FocusModeSoundsView::ShowErrorMessageForType(
           base::BindRepeating(&FocusModeSoundsView::DownloadPlaylistsForType,
                               weak_factory_.GetWeakPtr(), is_soundscape_type);
       break;
+    case ErrorMessageToast::ButtonActionType::kSettings:
+      callback = base::BindRepeating(&ShowAboutChromeOS);
+      break;
   }
 
   error_message_ = AddChildView(std::make_unique<ErrorMessageToast>(
-      std::move(callback), l10n_util::GetStringUTF16(message_id), type,
-      cros_tokens::kCrosSysSystemBase));
+      std::move(callback), message, type, cros_tokens::kCrosSysSystemBase));
   error_message_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   error_message_->layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kErrorMessageRoundedCornerRadius));

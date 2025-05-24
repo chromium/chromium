@@ -12,7 +12,6 @@
 #include "base/types/pass_key.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "ui/gfx/image/image.h"
 
 class Profile;
 

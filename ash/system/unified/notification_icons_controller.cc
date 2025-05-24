@@ -118,7 +118,7 @@ void NotificationIconTrayItemView::MaybeReset() {
 void NotificationIconTrayItemView::Reset() {
   notification_id_ = std::string();
   notification_.reset();
-  image_view()->SetImage(gfx::ImageSkia());
+  image_view()->SetImage(ui::ImageModel());
   image_view()->SetTooltipText(std::u16string());
 }
 
@@ -175,7 +175,7 @@ void NotificationIconTrayItemView::UpdateImageViewColor() {
       color_provider->GetColor(ui::kColorNotificationIconBackground),
       color_provider->GetColor(ui::kColorNotificationIconForeground));
   if (!masked_small_icon.IsEmpty()) {
-    image_view()->SetImage(masked_small_icon.AsImageSkia());
+    image_view()->SetImage(ui::ImageModel::FromImage(masked_small_icon));
   } else {
     image_view()->SetImage(ui::ImageModel::FromVectorIcon(
         message_center::kProductIcon, color_id, kUnifiedTrayIconSize));
@@ -208,9 +208,11 @@ NotificationIconsController::~NotificationIconsController() {
 void NotificationIconsController::AddNotificationTrayItems(
     TrayContainer* tray_container) {
   for (int i = 0; i < kMaxNotificationIconsShown; ++i) {
-    tray_items_.push_back(tray_container->AddChildView(
+    NotificationIconTrayItemView* tray_item = tray_container->AddChildView(
         std::make_unique<NotificationIconTrayItemView>(shelf_,
-                                                       /*controller=*/this)));
+                                                       /*controller=*/this));
+    tray_items_.push_back(tray_item);
+    notification_center_tray_->AddTooltipChangedCallbackToNotificationIcon(tray_item);
   }
 
   notification_counter_view_ = tray_container->AddChildView(
@@ -236,8 +238,13 @@ NotificationIconsController::GetAccessibleNameString() const {
     return quiet_mode_view_->GetAccessibleNameString();
   }
 
-  if (!TrayItemHasNotification())
+  if (!notification_counter_view_) {
+    return std::nullopt;
+  }
+
+  if (!TrayItemHasNotification()) {
     return notification_counter_view_->GetAccessibleNameString();
+  }
 
   std::vector<std::u16string> status;
   status.push_back(l10n_util::GetPluralStringFUTF16(
@@ -274,6 +281,7 @@ void NotificationIconsController::UpdateNotificationIcons() {
   }
 
   first_unused_item_index_ = std::distance(tray_items_.rbegin(), tray_it);
+  notification_center_tray_->UpdateAccessibleName();
 
   for (; tray_it != tray_items_.rend(); ++tray_it) {
     // Note: It is important to set the visibility before resetting so that the

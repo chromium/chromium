@@ -2,23 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth.h"
 
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -97,7 +91,7 @@ bool IsRequestDenied(LocalDOMWindow* window, ExceptionState& exception_state) {
 // Bluetooth API methods.
 bool IsFeatureEnabled(LocalDOMWindow* window) {
   return window->IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature::kBluetooth,
+      network::mojom::PermissionsPolicyFeature::kBluetooth,
       ReportOptions::kReportOnFailure);
 }
 
@@ -105,8 +99,8 @@ bool IsFeatureEnabled(LocalDOMWindow* window) {
 // TODO(https://crbug.com/570344): Remove this method when all platforms are
 // supported.
 void AddUnsupportedPlatformConsoleMessage(ExecutionContext* context) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && \
+    !BUILDFLAG(IS_WIN)
   context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kJavaScript,
       mojom::blink::ConsoleMessageLevel::kInfo,
@@ -174,29 +168,25 @@ void CanonicalizeFilter(
     }
     canonicalized_filter->manufacturer_data.emplace();
     for (const auto& manufacturer_data : filter->manufacturerData()) {
-      DOMArrayPiece mask_buffer = manufacturer_data->hasMask()
-                                      ? DOMArrayPiece(manufacturer_data->mask())
-                                      : DOMArrayPiece();
-      DOMArrayPiece data_prefix_buffer =
-          manufacturer_data->hasDataPrefix()
-              ? DOMArrayPiece(manufacturer_data->dataPrefix())
-              : DOMArrayPiece();
+      std::optional<base::span<const uint8_t>> data_prefix_buffer;
+      if (manufacturer_data->hasDataPrefix()) {
+        data_prefix_buffer =
+            DOMArrayPiece(manufacturer_data->dataPrefix()).ByteSpan();
+      }
 
+      std::optional<base::span<const uint8_t>> mask_buffer;
       if (manufacturer_data->hasMask()) {
-        if (mask_buffer.IsDetached()) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kInvalidStateError,
-              "'mask' value buffer has been detached.");
-          return;
-        }
+        mask_buffer = DOMArrayPiece(manufacturer_data->mask()).ByteSpan();
+      }
 
-        if (!manufacturer_data->hasDataPrefix()) {
+      if (mask_buffer.has_value()) {
+        if (!data_prefix_buffer.has_value()) {
           exception_state.ThrowTypeError(
               "'dataPrefix' must be non-empty when 'mask' is present.");
           return;
         }
 
-        if (data_prefix_buffer.ByteLength() != mask_buffer.ByteLength()) {
+        if (data_prefix_buffer->size() != mask_buffer->size()) {
           exception_state.ThrowTypeError(
               "'mask' size must be equal to 'dataPrefix' size.");
           return;
@@ -204,25 +194,18 @@ void CanonicalizeFilter(
       }
 
       Vector<mojom::blink::WebBluetoothDataFilterPtr> data_filters_vector;
-      if (manufacturer_data->hasDataPrefix()) {
-        if (data_prefix_buffer.IsDetached()) {
-          exception_state.ThrowDOMException(
-              DOMExceptionCode::kInvalidStateError,
-              "'dataPrefix' value buffer has been detached.");
-          return;
-        }
-
-        if (data_prefix_buffer.ByteLength() == 0) {
+      if (data_prefix_buffer.has_value()) {
+        if (data_prefix_buffer->size() == 0) {
           exception_state.ThrowTypeError(
               "'dataPrefix', if present, must be non-empty.");
           return;
         }
 
         // Iterate by index here since we're iterating through two arrays.
-        for (wtf_size_t i = 0; i < data_prefix_buffer.ByteLength(); ++i) {
-          uint8_t data = data_prefix_buffer.Bytes()[i];
-          uint8_t mask =
-              manufacturer_data->hasMask() ? mask_buffer.Bytes()[i] : 0xff;
+        for (size_t i = 0; i < data_prefix_buffer->size(); ++i) {
+          const uint8_t data = (*data_prefix_buffer)[i];
+          const uint8_t mask =
+              mask_buffer.has_value() ? (*mask_buffer)[i] : 0xff;
           data_filters_vector.push_back(
               mojom::blink::WebBluetoothDataFilter::New(data, mask));
         }
@@ -406,6 +389,12 @@ ScriptPromise<IDLSequence<BluetoothDevice>> Bluetooth::getDevices(
     return ScriptPromise<IDLSequence<BluetoothDevice>>();
   }
 
+  LocalFrame* frame = window->GetFrame();
+  if (frame && frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnBluetooth);
+  }
+
   AddUnsupportedPlatformConsoleMessage(window);
   CHECK(window->IsSecureContext());
 
@@ -447,6 +436,11 @@ ScriptPromise<BluetoothDevice> Bluetooth::requestDevice(
   if (!LocalFrame::HasTransientUserActivation(frame)) {
     exception_state.ThrowSecurityError(kHandleGestureForPermissionRequest);
     return EmptyPromise();
+  }
+
+  if (frame->IsAdScriptInStack()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnBluetooth);
   }
 
   EnsureServiceConnection(window);

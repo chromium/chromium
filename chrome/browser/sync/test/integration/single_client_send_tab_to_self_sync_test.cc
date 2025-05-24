@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSendTabToSelfSyncTest,
   // because it may simply not have reached the server yet. So let's send
   // something else through the system that we can wait on before checking.
   ASSERT_TRUE(
-      bookmarks_helper::AddURL(0, "What are you syncing about?",
+      bookmarks_helper::AddURL(0, u"What are you syncing about?",
                                GURL("https://google.com/synced-bookmark-1")));
   ASSERT_TRUE(ServerCountMatchStatusChecker(syncer::BOOKMARKS, 1).Wait());
 

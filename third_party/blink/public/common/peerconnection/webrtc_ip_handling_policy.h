@@ -5,7 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PEERCONNECTION_WEBRTC_IP_HANDLING_POLICY_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PEERCONNECTION_WEBRTC_IP_HANDLING_POLICY_H_
 
+#include <string_view>
+
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/mojom/peerconnection/webrtc_ip_handling_policy.mojom-shared.h"
 
 namespace blink {
 
@@ -27,6 +30,14 @@ BLINK_COMMON_EXPORT extern const char
 // WebRTC should only use TCP to contact peers or servers unless the proxy
 // server supports UDP. This doesn't expose any local addresses either.
 BLINK_COMMON_EXPORT extern const char kWebRTCIPHandlingDisableNonProxiedUdp[];
+
+// Returns a blink::mojom::WebRtcIpHandlingPolicy enum value given a string.
+BLINK_COMMON_EXPORT blink::mojom::WebRtcIpHandlingPolicy
+ToWebRTCIPHandlingPolicy(std::string_view preference);
+
+// Returns a string given a blink::mojom::WebRtcIpHandlingPolicy.
+BLINK_COMMON_EXPORT const char* ToString(
+    blink::mojom::WebRtcIpHandlingPolicy policy);
 
 }  // namespace blink
 

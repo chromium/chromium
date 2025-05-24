@@ -24,6 +24,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -38,6 +39,8 @@
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/skia_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -59,7 +62,7 @@ class ExtensionInstallPromptUnitTest : public testing::Test {
   ExtensionInstallPromptUnitTest& operator=(
       const ExtensionInstallPromptUnitTest&) = delete;
 
-  ~ExtensionInstallPromptUnitTest() override {}
+  ~ExtensionInstallPromptUnitTest() override = default;
 
   // testing::Test:
   void SetUp() override { profile_ = std::make_unique<TestingProfile>(); }

@@ -10,6 +10,7 @@
 
 #include <list>
 #include <optional>
+#include <variant>
 
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
@@ -22,7 +23,6 @@
 #include "net/cert/nss_cert_database.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace ash::client_cert {

@@ -27,6 +27,7 @@
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -201,7 +202,7 @@ TEST_P(AppListItemViewPixelTest, AppListItemView) {
 
   ShowAppList();
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/5, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/6, GetItemViewAt(0),
       GetItemViewAt(1)));
 }
 
@@ -225,7 +226,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderItemsLayoutInIcon) {
   ShowAppList();
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/9, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/10, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 }
 
@@ -262,7 +263,7 @@ TEST_P(AppListItemViewPixelTest, AppListFolderIconExtendedState) {
   }
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      GenerateScreenshotName(), /*revision_number=*/10, GetItemViewAt(0),
+      GenerateScreenshotName(), /*revision_number=*/12, GetItemViewAt(0),
       GetItemViewAt(1), GetItemViewAt(2), GetItemViewAt(3), GetItemViewAt(4)));
 
   // Reset the states.
@@ -399,7 +400,7 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppWaiting) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::JoinString({"promise_app_waiting", GenerateScreenshotName()}, "."),
-      /*revision_number=*/3, GetItemViewAt(0), GetItemViewAt(1)));
+      /*revision_number=*/4, GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
@@ -427,7 +428,7 @@ TEST_P(AppListViewPromiseAppPixelTest, PromiseAppInstalling) {
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       base::JoinString({"promise_app_installing", GenerateScreenshotName()},
                        "."),
-      /*revision_number=*/3, GetItemViewAt(0), GetItemViewAt(1)));
+      /*revision_number=*/4, GetItemViewAt(0), GetItemViewAt(1)));
 }
 
 }  // namespace ash

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <curl/curl.h>
 #include <curl/system.h>
 #include <dlfcn.h>
@@ -17,7 +12,9 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -158,7 +155,7 @@ void LibcurlNetworkFetcherImpl::PostRequest(
   }
 
   base::flat_map<std::string, std::string> response_headers;
-  std::unique_ptr<std::string> response_body = std::make_unique<std::string>();
+  std::optional<std::string> response_body = std::string();
 
   base::WeakPtr<LibcurlNetworkFetcherImpl> weak_ptr =
       weak_factory_.GetWeakPtr();
@@ -174,7 +171,8 @@ void LibcurlNetworkFetcherImpl::PostRequest(
       curl_easy_setopt(curl_.get(), CURLOPT_HEADERDATA, &response_headers) ||
       curl_easy_setopt(curl_.get(), CURLOPT_WRITEFUNCTION,
                        &LibcurlNetworkFetcherImpl::CurlWriteStringCallback) ||
-      curl_easy_setopt(curl_.get(), CURLOPT_WRITEDATA, response_body.get()) ||
+      curl_easy_setopt(curl_.get(), CURLOPT_WRITEDATA,
+                       &response_body.value()) ||
       curl_easy_setopt(curl_.get(), CURLOPT_NOPROGRESS, 0) ||
       curl_easy_setopt(curl_.get(), CURLOPT_XFERINFOFUNCTION,
                        &LibcurlNetworkFetcherImpl::CurlTransferCallback) ||
@@ -213,6 +211,8 @@ void LibcurlNetworkFetcherImpl::PostRequest(
                          update_client::NetworkFetcher::kHeaderEtag),
           GetHeaderValue(response_headers,
                          update_client::NetworkFetcher::kHeaderXCupServerProof),
+          GetHeaderValue(response_headers,
+                         update_client::NetworkFetcher::kHeaderCookie),
           x_retry_after));
 
   curl_slist_free_all(headers);
@@ -352,15 +352,20 @@ size_t LibcurlNetworkFetcherImpl::CurlWriteFileCallback(void* data,
                                                         size_t member_size,
                                                         size_t num_members,
                                                         void* userp) {
-  base::CheckedNumeric<size_t> write_size =
+  // SAFETY: libcurl guarantees that `member_size` and `num_members` describe a
+  // valid readable portion of `data`. `userp` is a pointer to a stack
+  // allocated `base::File` guaranteed to be valid throughout the libcurl
+  // operation by `DownloadToFile`.
+  const base::CheckedNumeric<size_t> write_size =
       base::CheckedNumeric<size_t>(member_size) *
       base::CheckedNumeric<size_t>(num_members);
-  base::File* file = static_cast<base::File*>(userp);
-
-  int bytes_written = file->WriteAtCurrentPos(
-      static_cast<const char*>(data), write_size.Cast<int>().ValueOrDefault(0));
-
-  return bytes_written > 0 ? bytes_written : 0;
+  CHECK_LE(size_t{write_size.ValueOrDie()}, size_t{CURL_MAX_WRITE_SIZE});
+  CHECK(data);
+  const auto data_span = UNSAFE_BUFFERS(base::span<uint8_t>(
+      static_cast<uint8_t*>(data), write_size.ValueOrDie()));
+  auto* file = static_cast<base::File*>(userp);
+  const std::optional<int> bytes_written = file->WriteAtCurrentPos(data_span);
+  return bytes_written.value_or(0);
 }
 
 int LibcurlNetworkFetcherImpl::CurlTransferCallback(void* userp,
@@ -401,7 +406,6 @@ class LibcurlNetworkFetcher : public update_client::NetworkFetcher {
   LibcurlNetworkFetcher() = delete;
   LibcurlNetworkFetcher(const LibcurlNetworkFetcher&) = delete;
   LibcurlNetworkFetcher& operator=(const LibcurlNetworkFetcher&) = delete;
-  ~LibcurlNetworkFetcher() override = default;
 
   explicit LibcurlNetworkFetcher(CurlUniquePtr curl);
 

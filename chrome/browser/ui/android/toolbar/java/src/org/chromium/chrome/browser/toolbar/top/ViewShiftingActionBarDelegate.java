@@ -9,9 +9,12 @@ import android.view.ViewGroup;
 
 import androidx.appcompat.app.ActionBar;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An {@link ActionModeController.ActionBarDelegate} that shifts a view as the action bar appears.
  */
+@NullMarked
 public class ViewShiftingActionBarDelegate implements ActionModeController.ActionBarDelegate {
     /** The action bar which this delegate works for. */
     private final ActionBar mActionBar;

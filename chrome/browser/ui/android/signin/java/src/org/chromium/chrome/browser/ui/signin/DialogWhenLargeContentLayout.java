@@ -15,19 +15,27 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.annotation.AnyRes;
+import androidx.annotation.ColorInt;
 
 import org.chromium.base.BuildInfo;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 /**
  * Layout that sizes itself with constraints similar to DialogWhenLarge: on large screens and
  * automotive, the view is shown in a dialog-like style and takes a fixed percentage of the screen,
  * given by the constants below.
  */
+@NullMarked
 public class DialogWhenLargeContentLayout extends FrameLayout {
-    private TypedValue mFixedWidthMajor = new TypedValue();
-    private TypedValue mFixedWidthMinor = new TypedValue();
-    private TypedValue mFixedHeightMajor = new TypedValue();
-    private TypedValue mFixedHeightMinor = new TypedValue();
+    private final TypedValue mFixedWidthMajor = new TypedValue();
+    private final TypedValue mFixedWidthMinor = new TypedValue();
+    private final TypedValue mFixedHeightMajor = new TypedValue();
+    private final TypedValue mFixedHeightMinor = new TypedValue();
+
+    private static boolean sShouldShowAsDialogForTesting;
 
     /**
      * Wraps contentView into layout that resembles DialogWhenLarge. The layout centers the content
@@ -56,17 +64,38 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
     }
 
     /**
+     * Returns the color of the background upon which the dialog is showing. This logic should
+     * correspond to the logic set up in #wrapInDialogWhenLargeLayout().
+     */
+    public static @ColorInt int getDialogBackgroundColor(Context context) {
+        @ColorInt int defaultBgColor = SemanticColorUtils.getDefaultBgColor(context);
+        @ColorInt
+        int dialogScrimColor =
+                context.getResources()
+                        .getColor(R.color.modal_dialog_scrim_color, context.getTheme());
+        return ColorUtils.overlayColor(defaultBgColor, dialogScrimColor);
+    }
+
+    /**
      * @return True if DialogWhenLargeContentLayout should show as a dialog instead of fullscreen in
      *     the given context.
      */
     public static boolean shouldShowAsDialog(Context context) {
         Configuration configuration = context.getResources().getConfiguration();
+        if (sShouldShowAsDialogForTesting) {
+            return true;
+        }
         return configuration.isLayoutSizeAtLeast(Configuration.SCREENLAYOUT_SIZE_LARGE);
+    }
+
+    public static void enableShouldShowAsDialogForTesting(boolean shouldShowAsDialog) {
+        sShouldShowAsDialogForTesting = shouldShowAsDialog;
+        ResettersForTesting.register(() -> sShouldShowAsDialogForTesting = false);
     }
 
     private DialogWhenLargeContentLayout(Context context) {
         super(context);
-        fetchConstraints();
+        updateConstraints();
     }
 
     /**
@@ -82,7 +111,7 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
         }
     }
 
-    private void fetchConstraints() {
+    private void updateConstraints() {
         // Fetch size constraints. These are copies of corresponding abc_* AppCompat values,
         // because abc_* values are private, and even though corresponding theme attributes
         // are public in AppCompat (e.g. windowFixedWidthMinor), there is no guarantee that
@@ -149,5 +178,12 @@ public class DialogWhenLargeContentLayout extends FrameLayout {
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
+    protected void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        updateConstraints();
+        setClipToOutline(shouldShowAsDialog(getContext()));
     }
 }

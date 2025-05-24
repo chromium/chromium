@@ -5,16 +5,16 @@
 import 'chrome://personalization/strings.m.js';
 
 import {SeaPenFreeformElement, SeaPenImagesElement, SeaPenInputQueryElement, SeaPenIntroductionDialogElement, SeaPenOptionsElement, SeaPenPaths, SeaPenRecentWallpapersElement, SeaPenRouterElement, SeaPenTemplateQueryElement, SeaPenTemplatesElement, SeaPenZeroStateSvgElement, setTransitionsEnabled, WallpaperGridItemElement} from 'chrome://personalization/js/personalization_app.js';
-import {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
-import {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
+import type {CrInputElement} from 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {SeaPenQuery} from 'chrome://resources/ash/common/sea_pen/sea_pen.mojom-webui.js';
 import {SeaPenTemplateId} from 'chrome://resources/ash/common/sea_pen/sea_pen_generated.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
-import {TestPersonalizationStore} from './test_personalization_store.js';
-import {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
+import type {TestPersonalizationStore} from './test_personalization_store.js';
+import type {TestSeaPenProvider} from './test_sea_pen_interface_provider.js';
 
 suite('SeaPenRouterElementTest', function() {
   let personalizationStore: TestPersonalizationStore;
@@ -26,9 +26,9 @@ suite('SeaPenRouterElementTest', function() {
                             .querySelector<SeaPenIntroductionDialogElement>(
                                 SeaPenIntroductionDialogElement.is);
     assertTrue(!!introDialog, 'dialog element must exist to click button');
-    const button = introDialog!.shadowRoot!.getElementById('close');
+    const button = introDialog.shadowRoot!.getElementById('close');
     assertTrue(!!button, `close button must exist`);
-    button!.click();
+    button.click();
     await waitAfterNextRender(routerElement!);
   }
 
@@ -117,7 +117,7 @@ suite('SeaPenRouterElementTest', function() {
     assertTrue(!!inputElement, 'input text box exists');
 
     // Set a freeform query.
-    inputElement!.value = 'a cool castle';
+    inputElement.value = 'a cool castle';
 
     // Start freeform query search.
     seaPenInputQuery.shadowRoot!.getElementById('searchButton')!.click();
@@ -135,14 +135,14 @@ suite('SeaPenRouterElementTest', function() {
     // Sea Pen images should be present and visible as the search activates
     // Results tab.
     const seaPenImagesElement =
-        seaPenFreeformElement!.shadowRoot!.querySelector<HTMLElement>(
+        seaPenFreeformElement.shadowRoot!.querySelector<HTMLElement>(
             SeaPenImagesElement.is);
     assertTrue(!!seaPenImagesElement, 'sea-pen-images is available');
     assertFalse(seaPenImagesElement.hidden, 'sea-pen-images is visible');
 
     // Recent images element is no longer available.
     assertFalse(
-        !!seaPenFreeformElement!.shadowRoot!.querySelector(
+        !!seaPenFreeformElement.shadowRoot!.querySelector(
             SeaPenRecentWallpapersElement.is),
         'sea-pen-recent-wallpapers is not shown in Results tab');
   });
@@ -279,7 +279,7 @@ suite('SeaPenRouterElementTest', function() {
     const chips =
         seaPenTemplateQueryElement.shadowRoot!.querySelectorAll('.chip-text');
     const chip = chips[0] as HTMLElement;
-    chip!.click();
+    chip.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const seaPenOptionsElement =
@@ -289,15 +289,15 @@ suite('SeaPenRouterElementTest', function() {
         !!seaPenOptionsElement,
         'the options chips should show after clicking a chip');
 
-    const seaPenImages = routerElement.shadowRoot!.querySelector(
-                             'sea-pen-images') as HTMLElement;
+    const seaPenImages =
+        routerElement.shadowRoot!.querySelector<HTMLElement>('sea-pen-images');
     assertTrue(!!seaPenImages);
     seaPenImages.click();
     await waitAfterNextRender(seaPenTemplateQueryElement);
 
     const selectedOption =
-        seaPenOptionsElement.shadowRoot!.querySelector(
-            '#options cr-button[aria-selected]') as HTMLElement;
+        seaPenOptionsElement.shadowRoot!.querySelector<HTMLElement>(
+            '#options cr-button[aria-selected]');
     assertTrue(
         !selectedOption,
         'Clicking anywhere else on the router container will hide options.');
@@ -364,6 +364,157 @@ suite('SeaPenRouterElementTest', function() {
             'path remains the same');
       });
 
+  test(
+      'shows introduction dialog for freeform if user never accepted any terms',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        personalizationStore.setReducersEnabled(true);
+        routerElement = initElement(SeaPenRouterElement, {
+          basePath: '/base',
+        });
+        routerElement.goToRoute(SeaPenPaths.FREEFORM);
+        await waitAfterNextRender(routerElement);
+
+        await seaPenProvider.whenCalled(
+            'shouldShowSeaPenFreeformIntroductionDialog');
+        await seaPenProvider.whenCalled('shouldShowSeaPenIntroductionDialog');
+        await waitAfterNextRender(routerElement);
+
+        let seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertTrue(
+            !!seaPenIntroDialog, 'SeaPen introduction dialog is displayed');
+
+        await clickSeaPenIntroDialogCloseButton();
+
+        seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertFalse(
+            !!seaPenIntroDialog, 'Sea Pen introduction dialog is closed');
+
+        assertTrue(
+            window.location.href.endsWith(SeaPenPaths.FREEFORM),
+            'remains in the same Freeform page');
+      });
+
+  test(
+      'shows introduction dialog for templates if user never accepted terms',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        personalizationStore.setReducersEnabled(true);
+        routerElement = initElement(SeaPenRouterElement, {
+          basePath: '/base',
+        });
+        routerElement.goToRoute(SeaPenPaths.TEMPLATES);
+        await waitAfterNextRender(routerElement);
+
+        await seaPenProvider.whenCalled(
+            'shouldShowSeaPenFreeformIntroductionDialog');
+        await seaPenProvider.whenCalled('shouldShowSeaPenIntroductionDialog');
+        await waitAfterNextRender(routerElement);
+
+        let seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertTrue(
+            !!seaPenIntroDialog, 'SeaPen introduction dialog is displayed');
+
+        await clickSeaPenIntroDialogCloseButton();
+
+        seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertFalse(
+            !!seaPenIntroDialog, 'Sea Pen introduction dialog is closed');
+
+        assertEquals(
+            '/base',
+            routerElement.shadowRoot?.querySelector('iron-location')?.path,
+            'path remains the same');
+      });
+
+  test(
+      'does not show dialog for templates if user has accepted sea pen terms',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        personalizationStore.setReducersEnabled(true);
+        routerElement = initElement(SeaPenRouterElement, {
+          basePath: '/base',
+        });
+        routerElement.goToRoute(SeaPenPaths.TEMPLATES);
+        await seaPenProvider.whenCalled(
+            'shouldShowSeaPenFreeformIntroductionDialog');
+        await seaPenProvider.whenCalled('shouldShowSeaPenIntroductionDialog');
+
+        personalizationStore.data.wallpaper.seaPen
+            .shouldShowSeaPenIntroductionDialog = false;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(routerElement);
+
+        const seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertFalse(
+            !!seaPenIntroDialog, 'SeaPen introduction dialog is displayed');
+      });
+
+  test(
+      'does not show dialog for templates if user has accepted freeform terms',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        personalizationStore.setReducersEnabled(true);
+        routerElement = initElement(SeaPenRouterElement, {
+          basePath: '/base',
+        });
+        routerElement.goToRoute(SeaPenPaths.TEMPLATES);
+        await seaPenProvider.whenCalled(
+            'shouldShowSeaPenFreeformIntroductionDialog');
+        await seaPenProvider.whenCalled('shouldShowSeaPenIntroductionDialog');
+
+        personalizationStore.data.wallpaper.seaPen
+            .shouldShowSeaPenFreeformIntroductionDialog = false;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(routerElement);
+
+        const seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertFalse(
+            !!seaPenIntroDialog, 'SeaPen introduction dialog is displayed');
+      });
+
+  test(
+      'shows intro dialog for freeform if user has accepted sea pen terms',
+      async () => {
+        loadTimeData.overrideValues({isSeaPenTextInputEnabled: true});
+        personalizationStore.setReducersEnabled(true);
+        routerElement = initElement(SeaPenRouterElement, {
+          basePath: '/base',
+        });
+        routerElement.goToRoute(SeaPenPaths.FREEFORM);
+        await waitAfterNextRender(routerElement);
+        await seaPenProvider.whenCalled(
+            'shouldShowSeaPenFreeformIntroductionDialog');
+        await seaPenProvider.whenCalled('shouldShowSeaPenIntroductionDialog');
+
+        personalizationStore.data.wallpaper.seaPen
+            .shouldShowSeaPenIntroductionDialog = false;
+        personalizationStore.notifyObservers();
+        await waitAfterNextRender(routerElement);
+
+        let seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertTrue(
+            !!seaPenIntroDialog, 'SeaPen introduction dialog is displayed');
+
+        await clickSeaPenIntroDialogCloseButton();
+
+        seaPenIntroDialog = routerElement.shadowRoot!.querySelector(
+            SeaPenIntroductionDialogElement.is);
+        assertFalse(
+            !!seaPenIntroDialog, 'Sea Pen introduction dialog is closed');
+
+        assertTrue(
+            window.location.href.endsWith(SeaPenPaths.FREEFORM),
+            'remains in the same Freeform page');
+      });
+
   test('supports transition animation', async () => {
     const routerElement = initElement(SeaPenRouterElement, {basePath: '/base'});
     setTransitionsEnabled(true);
@@ -405,7 +556,7 @@ suite('SeaPenRouterElementTest', function() {
             'sea-pen-images should have pointer-events');
 
         assertEquals(
-            'none', window.getComputedStyle(seaPenImages, '::after')!.content,
+            'none', window.getComputedStyle(seaPenImages, '::after').content,
             'sea-pen-images has no after style content ');
 
         // Click on a chip in sea-pen-template-query. This should disable
@@ -413,17 +564,17 @@ suite('SeaPenRouterElementTest', function() {
         const chips =
             seaPenTemplateQuery.shadowRoot!.querySelectorAll('.chip-text');
         const chip = chips[0] as HTMLElement;
-        chip!.click();
+        chip.click();
         await waitAfterNextRender(routerElement);
 
         // an overlay shadow displays for sea-pen-images.
         assertEquals(
-            '""', window.getComputedStyle(seaPenImages, '::after')!.content,
+            '""', window.getComputedStyle(seaPenImages, '::after').content,
             'after style content should match');
 
         // Click on the prior selected chip again. Chip state should be cleared
         // and pointer events are enabled again for sea-pen-images.
-        chip!.click();
+        chip.click();
         await waitAfterNextRender(routerElement);
 
         assertEquals(
@@ -432,7 +583,7 @@ suite('SeaPenRouterElementTest', function() {
 
         // The overlay shadow is no longer shown.
         assertEquals(
-            'none', window.getComputedStyle(seaPenImages, '::after')!.content,
+            'none', window.getComputedStyle(seaPenImages, '::after').content,
             'sea-pen-images no longer has after style content');
       });
 });

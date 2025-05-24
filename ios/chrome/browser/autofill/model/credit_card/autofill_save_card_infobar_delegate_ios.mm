@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/browser/credit_card_save_metrics_ios.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/infobars/core/infobar_manager.h"
 
@@ -16,7 +17,13 @@ AutofillSaveCardInfoBarDelegateIOS::AutofillSaveCardInfoBarDelegateIOS(
     AutofillSaveCardUiInfo ui_info,
     std::unique_ptr<AutofillSaveCardDelegate> common_delegate)
     : AutofillSaveCardInfoBarDelegateMobile(std::move(ui_info),
-                                            std::move(common_delegate)) {}
+                                            std::move(common_delegate)) {
+  // `AutofillSaveCardInfoBarDelegateIOS` is created when the banner is to be
+  // shown, so record the metric from here.
+  LogSaveCreditCardInfoBarResultMetric(
+      autofill_metrics::SaveCreditCardPromptResultIOS::kShown,
+      autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+}
 
 AutofillSaveCardInfoBarDelegateIOS::~AutofillSaveCardInfoBarDelegateIOS() {
   // By convention, ensure all pending callbacks have been run.
@@ -93,9 +100,7 @@ void AutofillSaveCardInfoBarDelegateIOS::CreditCardUploadCompleted(
 }
 
 void AutofillSaveCardInfoBarDelegateIOS::OnConfirmationClosed() {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation) &&
-      on_confirmation_closed_callback_) {
+  if (on_confirmation_closed_callback_) {
     (*std::exchange(on_confirmation_closed_callback_, std::nullopt)).Run();
   }
 }
@@ -117,6 +122,14 @@ void AutofillSaveCardInfoBarDelegateIOS::SetCreditCardUploadCompletionCallback(
 void AutofillSaveCardInfoBarDelegateIOS::SetInfobarIsPresenting(
     bool is_presenting) {
   infobar_is_presenting_ = is_presenting;
+}
+
+void AutofillSaveCardInfoBarDelegateIOS::LogSaveCreditCardInfoBarResultMetric(
+    autofill_metrics::SaveCreditCardPromptResultIOS metric,
+    autofill_metrics::SaveCreditCardPromptOverlayType overlay_type) {
+  autofill_metrics::LogSaveCreditCardPromptResultIOS(
+      metric, delegate()->is_for_upload(),
+      delegate()->GetSaveCreditCardOptions(), overlay_type);
 }
 
 }  // namespace autofill

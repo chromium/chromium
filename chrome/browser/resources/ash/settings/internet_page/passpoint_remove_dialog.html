@@ -5,14 +5,11 @@
 </style>
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">
-    [[getDialogTitle_()]]
+    $i18n{networkSectionPasspointGoToSubscriptionTitle}
   </div>
   <div slot="body">
-    <div id="description" hidden$="[[!hasDescription_()]]">
-      $i18n{networkSectionPasspointRemovalDescription}
-    </div>
     <span id="information">
-      [[getDialogInformation_()]]
+      $i18n{networkSectionPasspointGoToSubscriptionInformation}
       <a href="$i18nRaw{wifiPasspointLearnMoreUrl}" target="_blank"
           aria-label="$i18n{passpointLearnMoreA11yLabel}">
         $i18n{learnMoreLabel}
@@ -26,9 +23,9 @@
       $i18n{cancel}
     </cr-button>
     <cr-button id="confirmButton" class="action-button"
-        aria-label="[[getConfirmButtonA11yLabel_()]]"
+        aria-label="$i18n{passpointRemoveGoToSubscriptionButtonA11yLabel}"
         on-click="onConfirmClick_">
-      [[getConfirmButtonLabel_()]]
+      $i18n{networkSectionPasspointGoToSubscriptionButtonLabel}
     </cr-button>
   </div>
 </cr-dialog>

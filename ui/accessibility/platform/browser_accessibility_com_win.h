@@ -23,7 +23,6 @@
 #include "third_party/isimpledom/ISimpleDOMNode.h"
 #include "third_party/isimpledom/ISimpleDOMText.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 // This nonstandard GUID is taken directly from the Mozilla sources
@@ -345,9 +344,6 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
 
  private:
   // Private accessors.
-  const std::vector<std::wstring>& ia2_attributes() const {
-    return win_attributes_->ia2_attributes;
-  }
   std::wstring name() const { return win_attributes_->name; }
   std::wstring description() const { return win_attributes_->description; }
   std::wstring value() const { return win_attributes_->value; }
@@ -414,9 +410,6 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
     // IAccessible2 role and state.
     int32_t ia2_role;
     int32_t ia2_state;
-
-    // IAccessible2 attributes.
-    std::vector<std::wstring> ia2_attributes;
 
     // Maps each style span to its start offset in hypertext.
     TextAttributeMap offset_to_text_attributes;

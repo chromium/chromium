@@ -43,8 +43,9 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
         extension_id_(extension_id),
         is_anonymous_(is_anonymous),
         registry_(registry),
-        render_process_id_(
-            target_contents->GetPrimaryMainFrame()->GetProcess()->GetID()),
+        render_process_id_(target_contents->GetPrimaryMainFrame()
+                               ->GetProcess()
+                               ->GetDeprecatedID()),
         render_frame_id_(
             target_contents->GetPrimaryMainFrame()->GetRoutingID()) {
     DCHECK(web_contents());
@@ -54,7 +55,7 @@ class TabCaptureRegistry::LiveRequest : public content::WebContentsObserver {
   LiveRequest(const LiveRequest&) = delete;
   LiveRequest& operator=(const LiveRequest&) = delete;
 
-  ~LiveRequest() override {}
+  ~LiveRequest() override = default;
 
   // Accessors.
   const ExtensionId& extension_id() const { return extension_id_; }
@@ -256,8 +257,7 @@ void TabCaptureRegistry::OnRequestUpdate(
       return;
     case content::MEDIA_REQUEST_STATE_REQUESTED:
     case content::MEDIA_REQUEST_STATE_NOT_REQUESTED:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   if (next_state == tab_capture::TabCaptureState::kPending &&
@@ -322,7 +322,7 @@ void TabCaptureRegistry::KillRequest(LiveRequest* request) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace extensions

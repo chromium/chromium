@@ -5,6 +5,7 @@
 #include "ash/system/unified/date_tray.h"
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "ash/api/tasks/fake_tasks_client.h"
@@ -20,7 +21,9 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_focus_cycler.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/combobox.h"
+#include "ash/system/model/clock_model.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/system/time/calendar_view.h"
@@ -37,10 +40,14 @@
 #include "base/time/time_override.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/mouse_constants.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -210,6 +217,10 @@ class DateTrayTest
     return date_tray_->bubble_.get();
   }
 
+  TimeTrayItemView* GetTimeTrayItemView() {
+    return date_tray_->time_tray_item_view_;
+  }
+
   bool IsBubbleShown() {
     if (IsGlanceablesClassroomEnabled()) {
       return !!GetGlanceableTrayBubble();
@@ -233,10 +244,15 @@ class DateTrayTest
 
   void LeftClickOnOpenBubble() { LeftClickOn(GetBubbleView()); }
 
-  std::u16string GetTimeViewText() {
-    return date_tray_->time_view_->time_view()
+  std::u16string_view GetTimeViewText() {
+    return GetTimeTrayItemView()
+        ->time_view()
         ->GetHorizontalDateLabelForTesting()
         ->GetText();
+  }
+
+  void UpdateTimeViewText() {
+    GetTimeTrayItemView()->time_view()->UpdateText();
   }
 
   void ImmediatelyCloseBubbleOnActivation() {
@@ -268,17 +284,23 @@ class DateTrayTest
                          .classroom_client = nullptr, .tasks_client = nullptr});
   }
 
+  static base::Time FakeTimeNow() { return fake_time_; }
+  static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   AccountId account_id_ =
-      AccountId::FromUserEmailGaiaId("test_user@gmail.com", "123456");
+      AccountId::FromUserEmailGaiaId("test_user@gmail.com", GaiaId("123456"));
   std::unique_ptr<TestGlanceablesClassroomClient> glanceables_classroom_client_;
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   bool observering_activation_changes_ = false;
+  static base::Time fake_time_;
 
   // Owned by status area widget.
   raw_ptr<DateTray> date_tray_ = nullptr;
 };
+
+base::Time DateTrayTest::fake_time_;
 
 INSTANTIATE_TEST_SUITE_P(GlanceablesClassroom, DateTrayTest, testing::Bool());
 
@@ -421,7 +443,7 @@ TEST_P(DateTrayTest, DontActivateBubbleIfShownByTap) {
     EXPECT_TRUE(
         GetGlanceableTrayBubble()->GetCalendarView()->Contains(focused_view));
   }
-  EXPECT_STREQ("CalendarDateCellView", focused_view->GetClassName());
+  EXPECT_EQ("CalendarDateCellView", focused_view->GetClassName());
 }
 
 TEST_P(DateTrayTest, ActivateBubbleIfShownByKeyboard) {
@@ -456,7 +478,7 @@ TEST_P(DateTrayTest, ActivateBubbleIfShownByKeyboard) {
     EXPECT_TRUE(
         GetGlanceableTrayBubble()->GetCalendarView()->Contains(focused_view));
   }
-  EXPECT_STREQ("CalendarDateCellView", focused_view->GetClassName());
+  EXPECT_EQ("CalendarDateCellView", focused_view->GetClassName());
 }
 
 // Tests the behavior when clicking on different areas.
@@ -611,11 +633,59 @@ TEST_P(DateTrayTest, RendersClassroomBubblesForActiveRoles) {
   // Both calendar and the `TimeManagementContainer` should be rendered in
   // `GlanceableTrayBubbleView`.
   EXPECT_EQ(GetGlanceableTrayBubble()->GetBubbleView()->children().size(), 2u);
-  EXPECT_STREQ("TimeManagementContainer", GetGlanceableTrayBubble()
-                                              ->GetBubbleView()
-                                              ->children()
-                                              .at(0)
-                                              ->GetClassName());
+  EXPECT_EQ("TimeManagementContainer", GetGlanceableTrayBubble()
+                                           ->GetBubbleView()
+                                           ->children()
+                                           .at(0)
+                                           ->GetClassName());
+}
+
+TEST_P(DateTrayTest, AccessibleName) {
+  // Expect that the current time matches the time_override used in Setup(), and
+  // that the accessible name of the tray matches that time.
+  base::Time test_now;
+  ASSERT_TRUE(base::Time::FromString("24 Aug 2021 10:00 GMT", &test_now));
+  EXPECT_EQ(u"Aug 24", GetTimeViewText());
+
+  {
+    ui::AXNodeData node_data;
+    GetDateTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_DATE_TRAY_ACCESSIBLE_DESCRIPTION,
+            base::TimeFormatFriendlyDate(test_now),
+            base::TimeFormatTimeOfDayWithHourClockType(
+                test_now,
+                Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+                base::kKeepAmPm)));
+  }
+
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+
+  // Mock changing the current time, in order to test that the tray's accessible
+  // name will be updated.
+  ASSERT_TRUE(base::Time::FromString("23 Nov 2021 02:40 GMT", &test_now));
+  SetFakeNow(test_now);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &DateTrayTest::FakeTimeNow,
+      /*time_ticks_override=*/nullptr, /*thread_ticks_override=*/nullptr);
+  UpdateTimeViewText();
+
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged, GetDateTray()));
+  {
+    ui::AXNodeData node_data;
+    GetDateTray()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+    EXPECT_EQ(
+        node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+        l10n_util::GetStringFUTF16(
+            IDS_ASH_DATE_TRAY_ACCESSIBLE_DESCRIPTION,
+            base::TimeFormatFriendlyDate(test_now),
+            base::TimeFormatTimeOfDayWithHourClockType(
+                test_now,
+                Shell::Get()->system_tray_model()->clock()->hour_clock_type(),
+                base::kKeepAmPm)));
+  }
 }
 
 TEST_P(GlanceablesDateTrayTest,

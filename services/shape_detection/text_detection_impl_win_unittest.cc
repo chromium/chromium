@@ -66,12 +66,10 @@ TEST_F(TextDetectionImplWinTest, ScanOnce) {
                    .Append(FILE_PATH_LITERAL("data"))
                    .Append(FILE_PATH_LITERAL("text_detection.png"));
   ASSERT_TRUE(base::PathExists(image_path));
-  std::string image_data;
-  ASSERT_TRUE(base::ReadFileToString(image_path, &image_data));
 
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(reinterpret_cast<const uint8_t*>(image_data.data()),
-                        image_data.size(), &bitmap);
+  SkBitmap bitmap =
+      gfx::PNGCodec::Decode(base::ReadFileToBytes(image_path).value());
+  ASSERT_FALSE(bitmap.isNull());
 
   const gfx::Size size(bitmap.width(), bitmap.height());
   const uint32_t num_bytes = size.GetArea() * 4 /* bytes per pixel */;

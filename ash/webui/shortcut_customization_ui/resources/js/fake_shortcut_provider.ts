@@ -6,9 +6,10 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
+import type {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, EditDialogCompletedActions, PolicyUpdatedObserverRemote, Subactions, UserAction} from '../mojom-webui/shortcut_customization.mojom-webui.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorConfigResult, AcceleratorSource, MetaKey, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import type {Accelerator, AcceleratorCategory, MetaKey, MojoAcceleratorConfig, MojoLayoutInfo, ShortcutProviderInterface} from './shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorSource} from './shortcut_types.js';
 
 
 /**
@@ -46,6 +47,7 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
     this.methods.register('getAccelerators');
     this.methods.register('getAcceleratorLayoutInfos');
     this.methods.register('isMutable');
+    this.methods.register('hasCustomAccelerators');
     this.methods.register('isCustomizationAllowedByPolicy');
     this.methods.register('getMetaKeyToDisplay');
     this.methods.register('addAccelerator');
@@ -90,6 +92,10 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
 
   getAccelerators(): Promise<{config: MojoAcceleratorConfig}> {
     return this.methods.resolveMethod('getAccelerators');
+  }
+
+  hasCustomAccelerators(): Promise<{hasCustomAccelerators: boolean}> {
+    return this.methods.resolveMethod('hasCustomAccelerators');
   }
 
   isMutable(source: AcceleratorSource): Promise<{isMutable: boolean}> {
@@ -266,6 +272,11 @@ export class FakeShortcutProvider implements ShortcutProviderInterface {
    */
   setFakeAcceleratorLayoutInfos(layoutInfos: MojoLayoutInfo[]): void {
     this.methods.setResult('getAcceleratorLayoutInfos', {layoutInfos});
+  }
+
+  setHasCustomAccelerators(enabled: boolean): void {
+    this.methods.setResult(
+        'hasCustomAccelerators', {hasCustomAccelerators: enabled});
   }
 
   getRestoreDefaultCallCount(): number {

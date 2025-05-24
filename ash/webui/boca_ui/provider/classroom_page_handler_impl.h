@@ -20,6 +20,8 @@ using ListCoursesCallback =
     base::OnceCallback<void(std::vector<mojom::CoursePtr>)>;
 using ListStudentsCallback =
     base::OnceCallback<void(std::vector<mojom::IdentityPtr>)>;
+using ListAssignmentsCallback =
+    base::OnceCallback<void(std::vector<mojom::AssignmentPtr>)>;
 
 namespace google_apis {
 class RequestSender;
@@ -27,6 +29,7 @@ class RequestSender;
 namespace classroom {
 class Courses;
 class Students;
+class CourseWork;
 }  // namespace classroom
 }  // namespace google_apis
 
@@ -34,11 +37,13 @@ namespace ash::boca {
 
 using StudentList = std::vector<mojom::IdentityPtr>;
 using CourseList = std::vector<mojom::CoursePtr>;
+using AssignmentList = std::vector<mojom::AssignmentPtr>;
 
 class ClassroomPageHandlerImpl {
  public:
   ClassroomPageHandlerImpl();
-  ClassroomPageHandlerImpl(std::unique_ptr<google_apis::RequestSender> sender);
+  explicit ClassroomPageHandlerImpl(
+      std::unique_ptr<google_apis::RequestSender> sender);
 
   ClassroomPageHandlerImpl(const ClassroomPageHandlerImpl&) = delete;
   ClassroomPageHandlerImpl& operator=(const ClassroomPageHandlerImpl&) = delete;
@@ -48,6 +53,9 @@ class ClassroomPageHandlerImpl {
   void ListCourses(const std::string& teacherId, ListCoursesCallback callback);
 
   void ListStudents(const std::string& courseId, ListStudentsCallback callback);
+
+  void ListAssignments(const std::string& courseId,
+                       ListAssignmentsCallback callback);
 
  private:
   void ListCoursesHelper(const std::string& teacher_id,
@@ -72,6 +80,19 @@ class ClassroomPageHandlerImpl {
       std::unique_ptr<StudentList> fetched_students,
       ListStudentsCallback callback,
       base::expected<std::unique_ptr<google_apis::classroom::Students>,
+                     google_apis::ApiErrorCode> result);
+
+  void ListAssignmentsHelper(
+      const std::string& course_id,
+      const std::string& page_token,
+      std::unique_ptr<AssignmentList> fetched_assignments,
+      ListAssignmentsCallback callback);
+
+  void OnListAssignmentsFetched(
+      const std::string& course_id,
+      std::unique_ptr<AssignmentList> fetched_assignments,
+      ListAssignmentsCallback callback,
+      base::expected<std::unique_ptr<google_apis::classroom::CourseWork>,
                      google_apis::ApiErrorCode> result);
 
   static std::unique_ptr<google_apis::RequestSender> CreateRequestSender();

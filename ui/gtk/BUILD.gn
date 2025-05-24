@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/linux/pkg_config.gni")
@@ -125,6 +124,7 @@ component("gtk") {
     "//ui/base",
     "//ui/base:buildflags",
     "//ui/base:ozone_buildflags",
+    "//ui/base/glib",
     "//ui/base/ime",
     "//ui/base/ime/linux",
     "//ui/color",
@@ -154,8 +154,8 @@ component("gtk") {
 
   if (ozone_platform_x11) {
     sources += [
-      "x/gtk_event_loop_x11.cc",
-      "x/gtk_event_loop_x11.h",
+      "ime_compat_check.cc",
+      "ime_compat_check.h",
       "x/gtk_ui_platform_x11.cc",
       "x/gtk_ui_platform_x11.h",
     ]

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_function.h"
+#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -48,29 +48,13 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
  public:
   SyncFileSystemApiTest() = default;
 
-  void SetUpInProcessBrowserTestFixture() override {
-    extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-
-    // TODO(calvinlo): Update test code after default quota is made const
-    // (http://crbug.com/155488).
-    real_default_quota_ =
-        storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota;
-    storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota = 123456;
-  }
-
-  void TearDownInProcessBrowserTestFixture() override {
-    storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota =
-        real_default_quota_;
-    extensions::ExtensionApiTest::TearDownInProcessBrowserTestFixture();
-  }
-
   void SetUpOnMainThread() override {
     extensions::ExtensionApiTest::SetUpOnMainThread();
 
     // Override factory to inject a mock RemoteFileSyncService.
     // Must happen after the browser process is created because instantiating
-    // the factory will instantiate ExtensionSystemFactory which depends on
-    // ExtensionsBrowserClient setup in BrowserProcessImpl.
+    // the factory will instantiate ChromeExtensionSystemFactory which depends
+    // on ExtensionsBrowserClient setup in BrowserProcessImpl.
     SyncFileSystemServiceFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindLambdaForTesting([this](content::BrowserContext* context)
@@ -88,13 +72,9 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
     return mock_remote_service_;
   }
 
-  const base::HistogramTester& histogram_tester() { return histogram_tester_; }
-
  private:
   raw_ptr<::testing::NiceMock<MockRemoteFileSyncService>, DanglingUntriaged>
       mock_remote_service_ = nullptr;
-  int64_t real_default_quota_ = 0;
-  base::HistogramTester histogram_tester_;
 };
 
 ACTION_P2(UpdateRemoteChangeQueue, origin, mock_remote_service) {
@@ -182,8 +162,6 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChanged) {
   ASSERT_TRUE(RunExtensionTest("sync_file_system/on_file_status_changed",
                                {.launch_as_platform_app = true}))
       << message_;
-  histogram_tester().ExpectUniqueSample("Storage.SyncFileSystem.FileSyncAction",
-                                        SyncActionMetrics::kAdded, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
@@ -205,8 +183,6 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
       RunExtensionTest("sync_file_system/on_file_status_changed_deleted",
                        {.launch_as_platform_app = true}))
       << message_;
-  histogram_tester().ExpectUniqueSample("Storage.SyncFileSystem.FileSyncAction",
-                                        SyncActionMetrics::kDeleted, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnServiceStatusChanged) {

@@ -42,7 +42,6 @@ generate_grd("build_grdp") {
     "shared/nearby_device_icon_test.js",
     "shared/nearby_device_test.js",
     "shared/nearby_onboarding_one_page_test.js",
-    "shared/nearby_onboarding_page_test.js",
     "shared/nearby_page_template_test.js",
     "shared/nearby_preview_test.js",
     "shared/nearby_progress_test.js",

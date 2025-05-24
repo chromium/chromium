@@ -9,9 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -176,53 +173,18 @@ void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
 }
 
 void ApkWebAppInstaller::DoInstall() {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    GURL start_url = web_app_install_info_->start_url();
-
-    std::unique_ptr<web_app::WebAppInstallInfo> web_app_install_info =
-        std::move(web_app_install_info_);
-    auto arc_install_info = crosapi::mojom::ArcWebAppInstallInfo::New();
-    arc_install_info->title = std::move(web_app_install_info->title);
-    arc_install_info->start_url = std::move(web_app_install_info->start_url());
-    arc_install_info->scope = std::move(web_app_install_info->scope);
-    arc_install_info->theme_color = web_app_install_info->theme_color;
-    arc_install_info->additional_policy_ids =
-        std::move(web_app_install_info->additional_policy_ids);
-    // Take the first icon (there should only be one).
-    if (web_app_install_info->icon_bitmaps.any.size() > 0) {
-      auto& [sizePx, bitmap] =
-          *std::begin(web_app_install_info->icon_bitmaps.any);
-      arc_install_info->icon = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-    }
-
-    crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-        crosapi::CrosapiManager::Get()
-            ->crosapi_ash()
-            ->web_app_service_ash()
-            ->GetWebAppProviderBridge();
-    if (!web_app_provider_bridge) {
-      CompleteInstallation(webapps::AppId(),
-                           webapps::InstallResultCode::kWebAppProviderNotReady);
-      return;
-    }
-    web_app_provider_bridge->WebAppInstalledInArc(
-        std::move(arc_install_info),
-        base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
-                       base::Unretained(this), std::move(start_url)));
-  } else {
-    auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
-    DCHECK(provider);
-    // Doesn't overwrite already existing web app with manifest fields from the
-    // apk.
-    GURL start_url = web_app_install_info_->start_url();
-    provider->scheduler().InstallFromInfoWithParams(
-        std::move(web_app_install_info_),
-        /*overwrite_existing_manifest_fields=*/false,
-        webapps::WebappInstallSource::ARC,
-        base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
-                       base::Unretained(this), std::move(start_url)),
-        web_app::WebAppInstallParams());
-  }
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile_);
+  DCHECK(provider);
+  // Doesn't overwrite already existing web app with manifest fields from the
+  // apk.
+  GURL start_url = web_app_install_info_->start_url();
+  provider->scheduler().InstallFromInfoWithParams(
+      std::move(web_app_install_info_),
+      /*overwrite_existing_manifest_fields=*/false,
+      webapps::WebappInstallSource::ARC,
+      base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
+                     base::Unretained(this), std::move(start_url)),
+      web_app::WebAppInstallParams());
 }
 
 }  // namespace ash

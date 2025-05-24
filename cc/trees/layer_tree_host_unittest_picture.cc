@@ -192,7 +192,7 @@ class LayerTreeHostPictureTestResizeViewportWithGpuRaster
     }
   }
 
-  void DidCommit() override {
+  void DidCommitAndDrawFrame() override {
     switch (layer_tree_host()->SourceFrameNumber()) {
       case 1:
         // Change the picture layer's size along with the viewport, so it will

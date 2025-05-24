@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/image_view.h"
 
@@ -21,17 +22,17 @@ class VIEWS_EXPORT ThemeTrackingImageView : public ImageView {
   METADATA_HEADER(ThemeTrackingImageView, ImageView)
 
  public:
-  ThemeTrackingImageView(
-      const ui::ImageModel& light_image_model,
-      const ui::ImageModel& dark_image_model,
-      const base::RepeatingCallback<SkColor()>& get_background_color_callback);
+  ThemeTrackingImageView(const ui::ImageModel& light_image_model,
+                         const ui::ImageModel& dark_image_model,
+                         const base::RepeatingCallback<ui::ColorVariant()>&
+                             get_background_color_callback);
 
   // TODO(crbug.com/40239900): Remove this constructor and migrate existing
   // callers to `ImageModel`.
-  ThemeTrackingImageView(
-      const gfx::ImageSkia& light_image,
-      const gfx::ImageSkia& dark_image,
-      const base::RepeatingCallback<SkColor()>& get_background_color_callback);
+  ThemeTrackingImageView(const gfx::ImageSkia& light_image,
+                         const gfx::ImageSkia& dark_image,
+                         const base::RepeatingCallback<ui::ColorVariant()>&
+                             get_background_color_callback);
 
   ThemeTrackingImageView(const ThemeTrackingImageView&) = delete;
   ThemeTrackingImageView& operator=(const ThemeTrackingImageView&) = delete;
@@ -48,7 +49,7 @@ class VIEWS_EXPORT ThemeTrackingImageView : public ImageView {
   ui::ImageModel light_image_model_;
   ui::ImageModel dark_image_model_;
 
-  base::RepeatingCallback<SkColor()> get_background_color_callback_;
+  base::RepeatingCallback<ui::ColorVariant()> get_background_color_callback_;
 };
 
 }  // namespace views

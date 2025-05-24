@@ -16,6 +16,8 @@
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync/service/sync_token_status.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace syncer {
 
@@ -36,7 +38,7 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
 CoreAccountInfo GetDefaultAccountInfo() {
   CoreAccountInfo account;
   account.email = "foo@bar.com";
-  account.gaia = "foo-gaia-id";
+  account.gaia = GaiaId("foo-gaia-id");
   account.account_id = CoreAccountId::FromGaiaId(account.gaia);
   return account;
 }
@@ -77,13 +79,13 @@ void TestSyncService::SetSignedOut() {
 }
 
 void TestSyncService::MimicDashboardClear() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Clearing sync from the dashboard results in
   // IsSyncFeatureDisabledViaDashboard() returning true.
-  user_settings_.SetSyncFeatureDisabledViaDashboard(true);
+  user_settings_.SetSyncFeatureDisabledViaDashboard();
 #else
   SetSignedIn(signin::ConsentLevel::kSignin);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void TestSyncService::SetAllowedByEnterprisePolicy(bool allowed) {
@@ -195,12 +197,6 @@ base::android::ScopedJavaLocalRef<jobject> TestSyncService::GetJavaObject() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void TestSyncService::SetSyncFeatureRequested() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_settings_.SetSyncFeatureDisabledViaDashboard(false);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
 TestSyncUserSettings* TestSyncService::GetUserSettings() {
   return &user_settings_;
 }
@@ -251,7 +247,15 @@ bool TestSyncService::HasSyncConsent() const {
 }
 
 GoogleServiceAuthError TestSyncService::GetAuthError() const {
-  return GoogleServiceAuthError();
+  return has_persistent_auth_error_
+             ? GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                   GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                       CREDENTIALS_REJECTED_BY_SERVER)
+             : GoogleServiceAuthError::AuthErrorNone();
+}
+
+bool TestSyncService::HasCachedPersistentAuthErrorForMetrics() const {
+  return GetTransportState() == TransportState::PAUSED;
 }
 
 base::Time TestSyncService::GetAuthErrorTime() const {
@@ -279,16 +283,27 @@ DataTypeSet TestSyncService::GetPreferredDataTypes() const {
   return user_settings_.GetPreferredDataTypes();
 }
 
+DataTypeSet TestSyncService::GetDataTypesForTransportOnlyMode() const {
+  return DataTypeSet::All();
+}
+
 DataTypeSet TestSyncService::GetActiveDataTypes() const {
   if (GetTransportState() != TransportState::ACTIVE) {
     return DataTypeSet();
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (user_settings_.IsSyncFeatureDisabledViaDashboard()) {
     return DataTypeSet();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  return Difference(GetPreferredDataTypes(), failed_data_types_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  DataTypeSet types_with_encryption_error =
+      (user_settings_.IsPassphraseRequired() ||
+       user_settings_.IsTrustedVaultKeyRequired())
+          ? user_settings_.GetAllEncryptedDataTypes()
+          : DataTypeSet();
+  return Difference(GetPreferredDataTypes(),
+                    Union(failed_data_types_, types_with_encryption_error));
 }
 
 DataTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync() const {
@@ -340,8 +355,9 @@ SyncCycleSnapshot TestSyncService::GetLastCycleSnapshotForDebugging() const {
   return last_cycle_snapshot_;
 }
 
-base::Value::List TestSyncService::GetTypeStatusMapForDebugging() const {
-  return base::Value::List();
+TypeStatusMapForDebugging TestSyncService::GetTypeStatusMapForDebugging()
+    const {
+  return TypeStatusMapForDebugging();
 }
 
 void TestSyncService::GetEntityCountsForDebugging(
@@ -397,8 +413,12 @@ void TestSyncService::SetTypesWithUnsyncedData(const DataTypeSet& types) {
 
 void TestSyncService::GetTypesWithUnsyncedData(
     DataTypeSet requested_types,
-    base::OnceCallback<void(DataTypeSet)> cb) const {
-  std::move(cb).Run(base::Intersection(requested_types, unsynced_types_));
+    base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> cb) const {
+  absl::flat_hash_map<DataType, size_t> unsynced_data_counts;
+  for (auto type : base::Intersection(requested_types, unsynced_types_)) {
+    unsynced_data_counts[type] = 1;
+  }
+  std::move(cb).Run(std::move(unsynced_data_counts));
 }
 
 void TestSyncService::SetLocalDataDescriptions(
@@ -427,6 +447,13 @@ void TestSyncService::GetLocalDataDescriptions(
 }
 
 void TestSyncService::TriggerLocalDataMigration(DataTypeSet types) {}
+
+void TestSyncService::TriggerLocalDataMigrationForItems(
+    std::map<DataType, std::vector<LocalDataItemModel::DataId>> items) {}
+
+void TestSyncService::SelectTypeAndMigrateLocalDataItemsWhenActive(
+    DataType data_type,
+    std::vector<LocalDataItemModel::DataId> items) {}
 
 void TestSyncService::SetTriggerRefreshCallback(
     const base::RepeatingCallback<void(syncer::DataTypeSet)>&

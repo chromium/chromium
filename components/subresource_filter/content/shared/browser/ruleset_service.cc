@@ -30,10 +30,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/subresource_filter/content/shared/browser/ruleset_publisher.h"
 #include "components/subresource_filter/content/shared/browser/unindexed_ruleset_stream_generator.h"
-#include "components/subresource_filter/core/common/copying_file_stream.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
+#include "components/subresource_filter/core/common/copying_file_stream.h"
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 #include "components/subresource_filter/core/common/ruleset_config.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
@@ -53,7 +53,10 @@ void RecordIndexAndWriteRulesetResult(
     RulesetService::IndexAndWriteRulesetResult result) {
   base::UmaHistogramEnumeration(
       base::StrCat({uma_tag, ".WriteRuleset.Result"}), result,
-      RulesetService::IndexAndWriteRulesetResult::MAX);
+      static_cast<RulesetService::IndexAndWriteRulesetResult>(
+          static_cast<int>(
+              RulesetService::IndexAndWriteRulesetResult::kMaxValue) +
+          1));
 }
 
 // Implements operations on a `sentinel file`, which is used as a safeguard to
@@ -134,8 +137,9 @@ void IndexedRulesetLocator::DeleteObsoleteRulesets(
                                    base::FileEnumerator::DIRECTORIES);
   for (base::FilePath format_dir = format_dirs.Next(); !format_dir.empty();
        format_dir = format_dirs.Next()) {
-    if (format_dir != current_format_dir)
+    if (format_dir != current_format_dir) {
       base::DeletePathRecursively(format_dir);
+    }
   }
 
   base::FilePath most_recent_version_dir =
@@ -150,10 +154,12 @@ void IndexedRulesetLocator::DeleteObsoleteRulesets(
                                     base::FileEnumerator::DIRECTORIES);
   for (base::FilePath version_dir = version_dirs.Next(); !version_dir.empty();
        version_dir = version_dirs.Next()) {
-    if (SentinelFile(version_dir).IsPresent())
+    if (SentinelFile(version_dir).IsPresent()) {
       continue;
-    if (version_dir == most_recent_version_dir)
+    }
+    if (version_dir == most_recent_version_dir) {
       continue;
+    }
     base::DeletePathRecursively(version_dir);
   }
 }
@@ -231,12 +237,13 @@ RulesetService::RulesetService(
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-RulesetService::~RulesetService() {}
+RulesetService::~RulesetService() = default;
 
 void RulesetService::IndexAndStoreAndPublishRulesetIfNeeded(
     const UnindexedRulesetInfo& unindexed_ruleset_info) {
-  if (unindexed_ruleset_info.content_version.empty())
+  if (unindexed_ruleset_info.content_version.empty()) {
     return;
+  }
 
   // Trying to store a ruleset with the same version for a second time would
   // not only be futile, but would fail on Windows due to "File System
@@ -282,7 +289,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!unindexed_ruleset_stream_generator.ruleset_stream()) {
     RecordIndexAndWriteRulesetResult(
         config.uma_tag,
-        IndexAndWriteRulesetResult::FAILED_OPENING_UNINDEXED_RULESET);
+        IndexAndWriteRulesetResult::kFailedOpeningUnindexedRuleset);
     return IndexedRulesetVersion(config.filter_tag);
   }
 
@@ -295,8 +302,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
 
   if (!base::CreateDirectory(indexed_ruleset_version_dir)) {
     RecordIndexAndWriteRulesetResult(
-        config.uma_tag,
-        IndexAndWriteRulesetResult::FAILED_CREATING_VERSION_DIR);
+        config.uma_tag, IndexAndWriteRulesetResult::kFailedCreatingVersionDir);
     return IndexedRulesetVersion(config.filter_tag);
   }
 
@@ -304,14 +310,14 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (sentinel_file.IsPresent()) {
     RecordIndexAndWriteRulesetResult(
         config.uma_tag,
-        IndexAndWriteRulesetResult::ABORTED_BECAUSE_SENTINEL_FILE_PRESENT);
+        IndexAndWriteRulesetResult::kAbortedBecauseSentinelFilePresent);
     return IndexedRulesetVersion(config.filter_tag);
   }
 
   if (!sentinel_file.Create()) {
     RecordIndexAndWriteRulesetResult(
         config.uma_tag,
-        IndexAndWriteRulesetResult::FAILED_CREATING_SENTINEL_FILE);
+        IndexAndWriteRulesetResult::kFailedCreatingSentinelFile);
     return IndexedRulesetVersion(config.filter_tag);
   }
 
@@ -325,7 +331,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
                                &indexer)) {
     RecordIndexAndWriteRulesetResult(
         config.uma_tag,
-        IndexAndWriteRulesetResult::FAILED_PARSING_UNINDEXED_RULESET);
+        IndexAndWriteRulesetResult::kFailedParsingUnindexedRuleset);
     return IndexedRulesetVersion(config.filter_tag);
   }
 
@@ -334,7 +340,7 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
   if (!sentinel_file.Remove()) {
     RecordIndexAndWriteRulesetResult(
         config.uma_tag,
-        IndexAndWriteRulesetResult::FAILED_DELETING_SENTINEL_FILE);
+        IndexAndWriteRulesetResult::kFailedDeletingSentinelFile);
     return IndexedRulesetVersion(config.filter_tag);
   }
 
@@ -342,8 +348,9 @@ IndexedRulesetVersion RulesetService::IndexAndWriteRuleset(
       WriteRuleset(indexed_ruleset_version_dir,
                    unindexed_ruleset_info.license_path, indexer.data());
   RecordIndexAndWriteRulesetResult(config.uma_tag, result);
-  if (result != IndexAndWriteRulesetResult::SUCCESS)
+  if (result != IndexAndWriteRulesetResult::kSuccess) {
     return IndexedRulesetVersion(config.filter_tag);
+  }
 
   CHECK(indexed_version.IsValid(), base::NotFatalUntil::M129);
   return indexed_version;
@@ -361,8 +368,9 @@ bool RulesetService::IndexRuleset(
 
   int64_t unindexed_ruleset_size =
       unindexed_ruleset_stream_generator->ruleset_size();
-  if (unindexed_ruleset_size < 0)
+  if (unindexed_ruleset_size < 0) {
     return false;
+  }
   UnindexedRulesetReader reader(
       unindexed_ruleset_stream_generator->ruleset_stream());
 
@@ -370,8 +378,9 @@ bool RulesetService::IndexRuleset(
   url_pattern_index::proto::FilteringRules ruleset_chunk;
   while (reader.ReadNextChunk(&ruleset_chunk)) {
     for (const auto& rule : ruleset_chunk.url_rules()) {
-      if (!indexer->AddUrlRule(rule))
+      if (!indexer->AddUrlRule(rule)) {
         ++num_unsupported_rules;
+      }
     }
   }
   indexer->Finish();
@@ -391,21 +400,21 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
   base::ScopedTempDir scratch_dir;
   if (!scratch_dir.CreateUniqueTempDirUnderPath(
           indexed_ruleset_version_dir.DirName())) {
-    return IndexAndWriteRulesetResult::FAILED_CREATING_SCRATCH_DIR;
+    return IndexAndWriteRulesetResult::kFailedCreatingScratchDir;
   }
 
   static_assert(sizeof(uint8_t) == sizeof(char), "Expected char = byte.");
   if (!base::WriteFile(
           IndexedRulesetLocator::GetRulesetDataFilePath(scratch_dir.GetPath()),
           indexed_ruleset_data)) {
-    return IndexAndWriteRulesetResult::FAILED_WRITING_RULESET_DATA;
+    return IndexAndWriteRulesetResult::kFailedWritingRulesetData;
   }
 
   if (base::PathExists(license_source_path) &&
       !base::CopyFile(
           license_source_path,
           IndexedRulesetLocator::GetLicenseFilePath(scratch_dir.GetPath()))) {
-    return IndexAndWriteRulesetResult::FAILED_WRITING_LICENSE;
+    return IndexAndWriteRulesetResult::kFailedWritingLicense;
   }
 
   // Creating a temporary directory also makes sure the path (except for the
@@ -418,18 +427,19 @@ RulesetService::IndexAndWriteRulesetResult RulesetService::WriteRuleset(
   // Due to the same-version check in IndexAndStoreAndPublishRulesetIfNeeded, we
   // would not normally find a pre-existing copy at this point unless the
   // previous write was interrupted.
-  if (!base::DeletePathRecursively(indexed_ruleset_version_dir))
-    return IndexAndWriteRulesetResult::FAILED_DELETE_PREEXISTING;
+  if (!base::DeletePathRecursively(indexed_ruleset_version_dir)) {
+    return IndexAndWriteRulesetResult::kFailedDeletePreexisting;
+  }
 
   base::FilePath scratch_dir_with_new_indexed_ruleset = scratch_dir.Take();
   base::File::Error error;
   if (!(*g_replace_file_func)(scratch_dir_with_new_indexed_ruleset,
                               indexed_ruleset_version_dir, &error)) {
     base::DeletePathRecursively(scratch_dir_with_new_indexed_ruleset);
-    return IndexAndWriteRulesetResult::FAILED_REPLACE_FILE;
+    return IndexAndWriteRulesetResult::kFailedReplaceFile;
   }
 
-  return IndexAndWriteRulesetResult::SUCCESS;
+  return IndexAndWriteRulesetResult::kSuccess;
 }
 
 void RulesetService::FinishInitialization() {
@@ -467,8 +477,9 @@ void RulesetService::IndexAndStoreRuleset(
 void RulesetService::OnWrittenRuleset(WriteRulesetCallback result_callback,
                                       const IndexedRulesetVersion& version) {
   CHECK(!result_callback.is_null(), base::NotFatalUntil::M129);
-  if (!version.IsValid())
+  if (!version.IsValid()) {
     return;
+  }
   version.SaveToPrefs(local_state_);
   std::move(result_callback).Run(version);
 }

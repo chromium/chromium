@@ -11,7 +11,7 @@ class KeepAliveStateObserver {
   virtual void OnKeepAliveRestartStateChanged(bool can_restart) = 0;
 
  protected:
-  virtual ~KeepAliveStateObserver() {}
+  virtual ~KeepAliveStateObserver() = default;
 };
 
 #endif  // COMPONENTS_KEEP_ALIVE_REGISTRY_KEEP_ALIVE_STATE_OBSERVER_H_

@@ -77,8 +77,8 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/http2/test_tools/spdy_test_utils.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -103,12 +103,25 @@ using testing::Eq;
 
 const int32_t kBufferSize = SpdyHttpStream::kRequestBodyBufferSize;
 
+struct TestParams {
+  explicit TestParams(bool happy_eyeballs_v3_enabled)
+      : happy_eyeballs_v3_enabled(happy_eyeballs_v3_enabled) {}
+
+  bool happy_eyeballs_v3_enabled;
+};
+
+std::vector<TestParams> GetTestParams() {
+  return {TestParams(/*happy_eyeballs_v3_enabled=*/false),
+          TestParams(/*happy_eyeballs_v3_enabled=*/true)};
+}
+
 }  // namespace
 
 const char kPushedUrl[] = "https://www.example.org/foo.dat";
 
-class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
-                                   public ::testing::WithParamInterface<bool> {
+class SpdyNetworkTransactionTest
+    : public TestWithTaskEnvironment,
+      public ::testing::WithParamInterface<TestParams> {
  protected:
   SpdyNetworkTransactionTest()
       : TestWithTaskEnvironment(
@@ -116,11 +129,16 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
         default_url_(kDefaultUrl),
         host_port_pair_(HostPortPair::FromURL(default_url_)),
         spdy_util_(/*use_priority_header=*/true) {
-    if (PriorityHeaderEnabled()) {
-      feature_list_.InitAndEnableFeature(net::features::kPriorityHeader);
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (HappyEyeballsV3Enabled()) {
+      enabled_features.emplace_back(features::kHappyEyeballsV3);
     } else {
-      feature_list_.InitAndDisableFeature(net::features::kPriorityHeader);
+      disabled_features.emplace_back(features::kHappyEyeballsV3);
     }
+
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ~SpdyNetworkTransactionTest() override {
@@ -284,14 +302,15 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
         SocketDataProvider* data,
         std::unique_ptr<SSLSocketDataProvider> ssl_provider) {
       data_vector_.push_back(data);
-      if (ssl_provider->next_proto == kProtoUnknown) {
-        ssl_provider->next_proto = kProtoHTTP2;
+      if (ssl_provider->next_proto == NextProto::kProtoUnknown) {
+        ssl_provider->next_proto = NextProto::kProtoHTTP2;
       }
       // Even when next_protos only includes HTTP1, `application_settions`
       // always includes the full list from the HttpNetworkSession. The
       // SSLClientSocket layer, which is mocked out in these tests, is the layer
       // responsible for only sending the relevant settings.
-      ssl_provider->expected_application_settings = {{{kProtoHTTP2, {}}}};
+      ssl_provider->expected_application_settings = {
+          {{NextProto::kProtoHTTP2, {}}}};
 
       session_deps_->socket_factory->AddSSLSocketDataProvider(
           ssl_provider.get());
@@ -394,9 +413,10 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
 
   void UseComplexPostRequest() {
     ASSERT_FALSE(upload_data_stream_);
-    const int kFileRangeOffset = 1;
-    const int kFileRangeLength = 3;
-    CHECK_LT(kFileRangeOffset + kFileRangeLength, kUploadDataSize);
+    static constexpr size_t kFileRangeOffset = 1;
+    static constexpr size_t kFileRangeLength = 3;
+    CHECK_LT(static_cast<int>(kFileRangeOffset + kFileRangeLength),
+             kUploadDataSize);
 
     base::FilePath file_path;
     CHECK(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &file_path));
@@ -404,14 +424,13 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
 
     std::vector<std::unique_ptr<UploadElementReader>> element_readers;
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
-        base::byte_span_from_cstring(kUploadData)
-            .first(base::checked_cast<size_t>(kFileRangeOffset))));
+        base::byte_span_from_cstring(kUploadData).first<kFileRangeOffset>()));
     element_readers.push_back(std::make_unique<UploadFileElementReader>(
         base::SingleThreadTaskRunner::GetCurrentDefault().get(), file_path,
         kFileRangeOffset, kFileRangeLength, base::Time()));
     element_readers.push_back(std::make_unique<UploadBytesElementReader>(
         base::byte_span_from_cstring(kUploadData)
-            .subspan(kFileRangeOffset + kFileRangeLength)));
+            .subspan<kFileRangeOffset + kFileRangeLength>()));
     upload_data_stream_ = std::make_unique<ElementsUploadDataStream>(
         std::move(element_readers), 0);
 
@@ -507,7 +526,9 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
                                base::Unretained(this), delta);
   }
 
-  bool PriorityHeaderEnabled() const { return GetParam(); }
+  bool HappyEyeballsV3Enabled() const {
+    return GetParam().happy_eyeballs_v3_enabled;
+  }
 
   const GURL default_url_;
   const HostPortPair host_port_pair_;
@@ -524,7 +545,7 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SpdyNetworkTransactionTest,
-                         testing::Values(true, false));
+                         testing::ValuesIn(GetTestParams()));
 
 // Verify HttpNetworkTransaction constructor.
 TEST_P(SpdyNetworkTransactionTest, Constructor) {
@@ -2371,7 +2392,7 @@ TEST_P(SpdyNetworkTransactionTest, RedirectGetRequest) {
   const char kRedirectUrl[] = "https://www.foo.com:8080/index.php";
 
   SSLSocketDataProvider ssl_provider0(ASYNC, OK);
-  ssl_provider0.next_proto = kProtoHTTP2;
+  ssl_provider0.next_proto = NextProto::kProtoHTTP2;
   socket_factory.AddSSLSocketDataProvider(&ssl_provider0);
 
   quiche::HttpHeaderBlock headers0(
@@ -2394,7 +2415,7 @@ TEST_P(SpdyNetworkTransactionTest, RedirectGetRequest) {
   socket_factory.AddSocketDataProvider(&data0);
 
   SSLSocketDataProvider ssl_provider1(ASYNC, OK);
-  ssl_provider1.next_proto = kProtoHTTP2;
+  ssl_provider1.next_proto = NextProto::kProtoHTTP2;
   socket_factory.AddSSLSocketDataProvider(&ssl_provider1);
 
   SpdyTestUtil spdy_util1(/*use_priority_header=*/true);
@@ -2821,6 +2842,12 @@ TEST_P(SpdyNetworkTransactionTest,
 // SpdySession with two different SocketTags, only one request gets the session,
 // while the other makes a new SPDY session.
 TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingMultipleSocketTags) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  if (HappyEyeballsV3Enabled()) {
+    return;
+  }
+
   const SocketTag kSocketTag1(SocketTag::UNSET_UID, 1);
   const SocketTag kSocketTag2(SocketTag::UNSET_UID, 2);
   const SocketTag kSocketTag3(SocketTag::UNSET_UID, 3);
@@ -2981,6 +3008,12 @@ TEST_P(SpdyNetworkTransactionTest, ConnectionPoolingMultipleSocketTags) {
 }
 
 TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  if (HappyEyeballsV3Enabled()) {
+    return;
+  }
+
   SocketTag socket_tag_1(SocketTag::UNSET_UID, 1);
   SocketTag socket_tag_2(SocketTag::UNSET_UID, 2);
   request_.socket_tag = socket_tag_1;
@@ -3103,6 +3136,12 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
 
 TEST_P(SpdyNetworkTransactionTest,
        SocketTagChangeFromIPAliasedSessionWithDnsAliases) {
+  // SocketTag is not supported yet for HappyEyeballsV3.
+  // TODO(crbug.com/346835898): Support SocketTag.
+  if (HappyEyeballsV3Enabled()) {
+    return;
+  }
+
   SocketTag socket_tag_1(SocketTag::UNSET_UID, 1);
   SocketTag socket_tag_2(SocketTag::UNSET_UID, 2);
   request_.socket_tag = socket_tag_1;
@@ -3573,7 +3612,7 @@ TEST_P(SpdyNetworkTransactionTest, PartialWrite) {
       MockRead(ASYNC, 0, kChunks + 2)  // EOF
   };
 
-  SequencedSocketData data(reads, base::make_span(writes.get(), kChunks));
+  SequencedSocketData data(reads, base::span(writes.get(), kChunks));
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
   helper.RunToCompletion(&data);
   TransactionHelperResult out = helper.output();
@@ -3648,11 +3687,7 @@ TEST_P(SpdyNetworkTransactionTest, NetLog) {
   ASSERT_TRUE(entries[pos].HasParams());
   auto* header_list = entries[pos].params.FindList("headers");
   ASSERT_TRUE(header_list);
-  if (base::FeatureList::IsEnabled(net::features::kPriorityHeader)) {
-    ASSERT_EQ(6u, header_list->size());
-  } else {
-    ASSERT_EQ(5u, header_list->size());
-  }
+  ASSERT_EQ(6u, header_list->size());
 
   ASSERT_TRUE((*header_list)[0].is_string());
   EXPECT_EQ(":method: GET", (*header_list)[0].GetString());
@@ -3801,7 +3836,7 @@ TEST_P(SpdyNetworkTransactionTest, BufferFull) {
     if (rv > 0) {
       content.append(buf->data(), rv);
     } else if (rv < 0) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } while (rv > 0);
 
@@ -4218,11 +4253,13 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
                      SecureDnsPolicy::kAllow,
                      /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(
-      spdy_session_pool->HasAvailableSession(key, /* is_websocket = */ false));
+      spdy_session_pool->HasAvailableSession(key,
+                                             /*enable_ip_based_pooling=*/true,
+                                             /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session =
-      spdy_session_pool->FindAvailableSession(
-          key, /* enable_ip_based_pooling = */ true,
-          /* is_websocket = */ false, log_);
+      spdy_session_pool->FindAvailableSession(key,
+                                              /*enable_ip_based_pooling=*/true,
+                                              /*is_websocket=*/false, log_);
   EXPECT_TRUE(spdy_session);
 
   // Start second transaction.
@@ -4255,7 +4292,9 @@ TEST_P(SpdyNetworkTransactionTest, GracefulGoaway) {
 
   // Graceful GOAWAY was received, SpdySession should be unavailable.
   EXPECT_FALSE(
-      spdy_session_pool->HasAvailableSession(key, /* is_websocket = */ false));
+      spdy_session_pool->HasAvailableSession(key,
+                                             /*enable_ip_based_pooling=*/true,
+                                             /*is_websocket=*/false));
   spdy_session = spdy_session_pool->FindAvailableSession(
       key, /* enable_ip_based_pooling = */ true,
       /* is_websocket = */ false, log_);
@@ -4382,9 +4421,9 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredRetry) {
   auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect HTTP/2 protocols too in SSLConfig.
   ssl_provider0->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
   // Force SPDY.
-  ssl_provider0->next_proto = kProtoHTTP2;
+  ssl_provider0->next_proto = NextProto::kProtoHTTP2;
   helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider0));
 
   // Second socket: falling back to HTTP/1.1.
@@ -4401,9 +4440,9 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredRetry) {
   auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect only HTTP/1.1 protocol in SSLConfig.
   ssl_provider1->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP11};
   // Force HTTP/1.1.
-  ssl_provider1->next_proto = kProtoHTTP11;
+  ssl_provider1->next_proto = NextProto::kProtoHTTP11;
   helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
 
   HttpServerProperties* http_server_properties =
@@ -4480,9 +4519,9 @@ TEST_P(SpdyNetworkTransactionTest,
     auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
     // Expect HTTP/2 protocols too in SSLConfig.
     ssl_provider0->next_protos_expected_in_ssl_config =
-        NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+        NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
     // Force SPDY.
-    ssl_provider0->next_proto = kProtoHTTP2;
+    ssl_provider0->next_proto = NextProto::kProtoHTTP2;
     helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider0));
 
     // Second socket: falling back to HTTP/1.1.
@@ -4499,9 +4538,9 @@ TEST_P(SpdyNetworkTransactionTest,
     auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
     // Expect only HTTP/1.1 protocol in SSLConfig.
     ssl_provider1->next_protos_expected_in_ssl_config =
-        NextProtoVector{kProtoHTTP11};
+        NextProtoVector{NextProto::kProtoHTTP11};
     // Force HTTP/1.1.
-    ssl_provider1->next_proto = kProtoHTTP11;
+    ssl_provider1->next_proto = NextProto::kProtoHTTP11;
     helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
 
     HttpServerProperties* http_server_properties =
@@ -4574,9 +4613,9 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredProxyRetry) {
   auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect HTTP/2 protocols too in SSLConfig.
   ssl_provider0->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
   // Force SPDY.
-  ssl_provider0->next_proto = kProtoHTTP2;
+  ssl_provider0->next_proto = NextProto::kProtoHTTP2;
   helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider0));
 
   // Second socket: retry using HTTP/1.1.
@@ -4604,9 +4643,9 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredProxyRetry) {
   auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect only HTTP/1.1 protocol in SSLConfig.
   ssl_provider1->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP11};
   // Force HTTP/1.1.
-  ssl_provider1->next_proto = kProtoHTTP11;
+  ssl_provider1->next_proto = NextProto::kProtoHTTP11;
   helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
 
   // A third socket is needed for the tunnelled connection.
@@ -4691,9 +4730,9 @@ TEST_P(SpdyNetworkTransactionTest,
     auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
     // Expect HTTP/2 protocols too in SSLConfig.
     ssl_provider0->next_protos_expected_in_ssl_config =
-        NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+        NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
     // Force SPDY.
-    ssl_provider0->next_proto = kProtoHTTP2;
+    ssl_provider0->next_proto = NextProto::kProtoHTTP2;
     helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider0));
 
     // Second socket: retry using HTTP/1.1.
@@ -4721,9 +4760,9 @@ TEST_P(SpdyNetworkTransactionTest,
     auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
     // Expect only HTTP/1.1 protocol in SSLConfig.
     ssl_provider1->next_protos_expected_in_ssl_config =
-        NextProtoVector{kProtoHTTP11};
+        NextProtoVector{NextProto::kProtoHTTP11};
     // Force HTTP/1.1.
-    ssl_provider1->next_proto = kProtoHTTP11;
+    ssl_provider1->next_proto = NextProto::kProtoHTTP11;
     helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
 
     // A third socket is needed for the tunnelled connection.
@@ -4818,9 +4857,9 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
   auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect HTTP/2 protocols too in SSLConfig.
   ssl_provider0->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
   // Force SPDY.
-  ssl_provider0->next_proto = kProtoHTTP2;
+  ssl_provider0->next_proto = NextProto::kProtoHTTP2;
   helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider0));
 
   // Second socket: retry using HTTP/1.1.
@@ -4854,16 +4893,16 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxyFirstProxyRetry) {
   auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect only HTTP/1.1 protocol in SSLConfig.
   ssl_provider1->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP11};
   // Force HTTP/1.1.
-  ssl_provider1->next_proto = kProtoHTTP11;
+  ssl_provider1->next_proto = NextProto::kProtoHTTP11;
   helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider1));
 
   // A third and fourth socket are needed for the connection to the second hop
   // and for the tunnelled GET request.
   auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   ssl_provider2->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
   helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
       ssl_provider2.get());
   auto ssl_provider3 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
@@ -4971,16 +5010,16 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
   auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect HTTP/2 protocols too in SSLConfig.
   ssl_provider0->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
-  ssl_provider0->next_proto = kProtoHTTP2;
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+  ssl_provider0->next_proto = NextProto::kProtoHTTP2;
   helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
       ssl_provider0.get());
 
   auto ssl_provider1 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   ssl_provider1->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
   // Force SPDY.
-  ssl_provider1->next_proto = kProtoHTTP2;
+  ssl_provider1->next_proto = NextProto::kProtoHTTP2;
   helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider1));
 
   // Second socket: retry using HTTP/1.1.
@@ -5016,8 +5055,8 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
   auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Force HTTP/1.1 for the reconnection to the first proxy for simplicity.
   ssl_provider2->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP2, kProtoHTTP11};
-  ssl_provider2->next_proto = kProtoHTTP11;
+      NextProtoVector{NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+  ssl_provider2->next_proto = NextProto::kProtoHTTP11;
   helper.AddDataWithSSLSocketDataProvider(&data1, std::move(ssl_provider2));
 
   // Create a new SSLSocketDataProvider for the new connection to the second
@@ -5025,9 +5064,9 @@ TEST_P(SpdyNetworkTransactionTest, HTTP11RequiredNestedProxySecondProxyRetry) {
   auto ssl_provider3 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Expect only HTTP/1.1 protocol in the SSLConfig for the second proxy.
   ssl_provider3->next_protos_expected_in_ssl_config =
-      NextProtoVector{kProtoHTTP11};
+      NextProtoVector{NextProto::kProtoHTTP11};
   // Force HTTP/1.1.
-  ssl_provider3->next_proto = kProtoHTTP11;
+  ssl_provider3->next_proto = NextProto::kProtoHTTP11;
   helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
       ssl_provider3.get());
 
@@ -5289,8 +5328,7 @@ TEST_P(SpdyNetworkTransactionTest, VerifyRetryOnConnectionReset) {
 
   for (size_t variant = VARIANT_RST_DURING_SEND_COMPLETION;
        variant <= VARIANT_RST_DURING_READ_COMPLETION; ++variant) {
-    SequencedSocketData data1(reads,
-                              base::make_span(writes1).first(1u + variant));
+    SequencedSocketData data1(reads, base::span(writes1).first(variant + 1));
 
     SequencedSocketData data2(reads2, writes2);
 
@@ -6839,7 +6877,7 @@ class SpdyNetworkTransactionTLSUsageCheckTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SpdyNetworkTransactionTLSUsageCheckTest,
-                         testing::Values(true, false));
+                         testing::ValuesIn(GetTestParams()));
 
 TEST_P(SpdyNetworkTransactionTLSUsageCheckTest, TLSVersionTooOld) {
   auto ssl_provider = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
@@ -6962,9 +7000,9 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketOpensNewConnection) {
 
   auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Test that the request has HTTP/2 disabled.
-  ssl_provider2->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider2->next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // Force socket to use HTTP/1.1, the default protocol without ALPN.
-  ssl_provider2->next_proto = kProtoHTTP11;
+  ssl_provider2->next_proto = NextProto::kProtoHTTP11;
   ssl_provider2->ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   helper.AddDataWithSSLSocketDataProvider(&data2, std::move(ssl_provider2));
@@ -7085,9 +7123,9 @@ TEST_P(SpdyNetworkTransactionTest,
                             writes2);
   auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Test that the request has HTTP/2 disabled.
-  ssl_provider2->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider2->next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // Force socket to use HTTP/1.1, the default protocol without ALPN.
-  ssl_provider2->next_proto = kProtoHTTP11;
+  ssl_provider2->next_proto = NextProto::kProtoHTTP11;
   helper.AddDataWithSSLSocketDataProvider(&data2, std::move(ssl_provider2));
 
   TestCompletionCallback callback1;
@@ -7358,9 +7396,9 @@ TEST_P(SpdyNetworkTransactionTest,
 
   auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Test that the request has HTTP/2 disabled.
-  ssl_provider2->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider2->next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // Force socket to use HTTP/1.1, the default protocol without ALPN.
-  ssl_provider2->next_proto = kProtoHTTP11;
+  ssl_provider2->next_proto = NextProto::kProtoHTTP11;
   helper.AddDataWithSSLSocketDataProvider(&data2, std::move(ssl_provider2));
 
   TestCompletionCallback callback1;
@@ -7530,7 +7568,7 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
-      key1, /* is_websocket = */ false));
+      key1, /*enable_ip_based_pooling=*/true, /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session1 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
           key1, /* enable_ip_based_pooling = */ true,
@@ -7548,7 +7586,9 @@ TEST_P(SpdyNetworkTransactionTest,
                       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                       /*disable_cert_verification_network_fetches=*/false);
   EXPECT_TRUE(helper.session()->spdy_session_pool()->HasAvailableSession(
-      key2, /* is_websocket = */ true));
+      key2, /*enable_ip_based_pooling=*/true, /*is_websocket=*/true));
+  EXPECT_FALSE(helper.session()->spdy_session_pool()->HasAvailableSession(
+      key2, /*enable_ip_based_pooling=*/false, /*is_websocket=*/false));
   base::WeakPtr<SpdySession> spdy_session2 =
       helper.session()->spdy_session_pool()->FindAvailableSession(
           key1, /* enable_ip_based_pooling = */ true,
@@ -7632,9 +7672,9 @@ TEST_P(SpdyNetworkTransactionTest,
   StaticSocketDataProvider data2(reads2, writes2);
   auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Test that the request has HTTP/2 disabled.
-  ssl_provider2->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider2->next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // Force socket to use HTTP/1.1, the default protocol without ALPN.
-  ssl_provider2->next_proto = kProtoHTTP11;
+  ssl_provider2->next_proto = NextProto::kProtoHTTP11;
   ssl_provider2->ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   helper.AddDataWithSSLSocketDataProvider(&data2, std::move(ssl_provider2));
@@ -7746,11 +7786,11 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketNegotiatesHttp2) {
 
   auto ssl_provider = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Test that the request has HTTP/2 disabled.
-  ssl_provider->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider->next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // Force socket to use HTTP/2, which should never happen (TLS implementation
   // should fail TLS handshake if server chooses HTTP/2 without client
   // advertising support).
-  ssl_provider->next_proto = kProtoHTTP2;
+  ssl_provider->next_proto = NextProto::kProtoHTTP2;
   ssl_provider->ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   helper.AddDataWithSSLSocketDataProvider(&data, std::move(ssl_provider));
@@ -7836,9 +7876,9 @@ TEST_P(SpdyNetworkTransactionTest, WebSocketHttp11Required) {
   StaticSocketDataProvider data2(reads2, writes2);
   auto ssl_provider2 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   // Test that the request has HTTP/2 disabled.
-  ssl_provider2->next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider2->next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // Force socket to use HTTP/1.1, the default protocol without ALPN.
-  ssl_provider2->next_proto = kProtoHTTP11;
+  ssl_provider2->next_proto = NextProto::kProtoHTTP11;
   ssl_provider2->ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "spdy_pooling.pem");
   helper.AddDataWithSSLSocketDataProvider(&data2, std::move(ssl_provider2));
@@ -8045,19 +8085,19 @@ TEST_P(SpdyNetworkTransactionTest, SecureWebSocketOverH2OverH2Proxy) {
   auto proxy_ssl_provider = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
   proxy_ssl_provider->ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  proxy_ssl_provider->next_protos_expected_in_ssl_config = {kProtoHTTP2,
-                                                            kProtoHTTP11};
-  proxy_ssl_provider->next_proto = kProtoHTTP2;
+  proxy_ssl_provider->next_protos_expected_in_ssl_config = {
+      NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
+  proxy_ssl_provider->next_proto = NextProto::kProtoHTTP2;
   helper.AddDataWithSSLSocketDataProvider(&data, std::move(proxy_ssl_provider));
 
   // Add SSL data for the tunneled connection.
   SSLSocketDataProvider origin_ssl_provider(ASYNC, OK);
   origin_ssl_provider.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
-  origin_ssl_provider.next_protos_expected_in_ssl_config = {kProtoHTTP2,
-                                                            kProtoHTTP11};
+  origin_ssl_provider.next_protos_expected_in_ssl_config = {
+      NextProto::kProtoHTTP2, NextProto::kProtoHTTP11};
   // This test uses WebSocket over HTTP/2.
-  origin_ssl_provider.next_proto = kProtoHTTP2;
+  origin_ssl_provider.next_proto = NextProto::kProtoHTTP2;
   helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
       &origin_ssl_provider);
 
@@ -8169,9 +8209,9 @@ TEST_P(SpdyNetworkTransactionTest, SecureWebSocketOverHttp2Proxy) {
   ssl_provider.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
   // A WebSocket request should not advertise HTTP/2 support.
-  ssl_provider.next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider.next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // This test uses WebSocket over HTTP/1.1.
-  ssl_provider.next_proto = kProtoHTTP11;
+  ssl_provider.next_proto = NextProto::kProtoHTTP11;
   helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
       &ssl_provider);
 
@@ -8228,10 +8268,10 @@ TEST_P(SpdyNetworkTransactionTest,
   ssl_provider.ssl_info.cert =
       ImportCertFromFile(GetTestCertsDirectory(), "wildcard.pem");
   // A WebSocket request should not advertise HTTP/2 support.
-  ssl_provider.next_protos_expected_in_ssl_config = {kProtoHTTP11};
+  ssl_provider.next_protos_expected_in_ssl_config = {NextProto::kProtoHTTP11};
   // The server should not negotiate HTTP/2 over the tunnelled connection,
   // but it must be handled gracefully if it does.
-  ssl_provider.next_proto = kProtoHTTP2;
+  ssl_provider.next_proto = NextProto::kProtoHTTP2;
   helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
       &ssl_provider);
 
@@ -9160,12 +9200,12 @@ TEST_P(SpdyNetworkTransactionTest, DoNotGreaseFrameTypeWithConnect) {
 
   // HTTP/2 connection to proxy.
   auto ssl_provider0 = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
-  ssl_provider0->next_proto = kProtoHTTP2;
+  ssl_provider0->next_proto = NextProto::kProtoHTTP2;
   helper.AddDataWithSSLSocketDataProvider(&data0, std::move(ssl_provider0));
 
   // HTTP/1.1 to destination.
   SSLSocketDataProvider ssl_provider1(ASYNC, OK);
-  ssl_provider1.next_proto = kProtoHTTP11;
+  ssl_provider1.next_proto = NextProto::kProtoHTTP11;
   helper.session_deps()->socket_factory->AddSSLSocketDataProvider(
       &ssl_provider1);
 

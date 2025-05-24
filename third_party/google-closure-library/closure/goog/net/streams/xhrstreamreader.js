@@ -50,7 +50,6 @@ class XhrStreamReader {
    * be handled by NodeReadableStream.
    */
   constructor(xhr) {
-    'use strict';
     /**
      * @const
      * @private {?googLog.Logger} the logger.
@@ -122,7 +121,6 @@ class XhrStreamReader {
    * @return {boolean} false if response streaming is not supported.
    */
   static isStreamingSupported() {
-    'use strict';
     if (googUserAgent.IE && !googUserAgent.isDocumentModeOrHigher(10)) {
       // No active-x due to security issues.
       return false;
@@ -138,7 +136,6 @@ class XhrStreamReader {
    * @private
    */
   onReadyStateChanged_() {
-    'use strict';
     const readyState = this.xhr_.getReadyState();
     const errorCode = this.xhr_.getLastErrorCode();
     const statusCode = this.xhr_.getStatus();
@@ -242,7 +239,7 @@ class XhrStreamReader {
         return;
       }
     } else if (responseText.length > this.pos_) {
-      const newData = responseText.substr(this.pos_);
+      const newData = responseText.slice(this.pos_);
       this.pos_ = responseText.length;
       try {
         const messages = this.parser_.parse(newData);
@@ -278,7 +275,6 @@ class XhrStreamReader {
    * @return {?XhrIo}
    */
   getXhr() {
-    'use strict';
     return this.xhr_;
   }
 
@@ -289,7 +285,6 @@ class XhrStreamReader {
    * @private
    */
   updateStatus_(status) {
-    'use strict';
     const current = this.status_;
     if (current != status) {
       this.status_ = status;
@@ -306,7 +301,6 @@ class XhrStreamReader {
    * @private
    */
   clear_() {
-    'use strict';
     this.eventHandler_.removeAll();
 
     if (this.xhr_) {
@@ -324,7 +318,6 @@ class XhrStreamReader {
    * @return {!XhrStreamReaderStatus} The stream status.
    */
   getStatus() {
-    'use strict';
     return this.status_;
   }
 
@@ -334,7 +327,6 @@ class XhrStreamReader {
    * @param {function()} handler The handler for any status change.
    */
   setStatusHandler(handler) {
-    'use strict';
     this.statusHandler_ = handler;
   }
 
@@ -344,7 +336,6 @@ class XhrStreamReader {
    * @param {function(!Array<!Object>)} handler The handler for new data.
    */
   setDataHandler(handler) {
-    'use strict';
     this.dataHandler_ = handler;
   }
 
@@ -357,7 +348,6 @@ class XhrStreamReader {
    * @private
    */
   readyStateChangeHandler_(event) {
-    'use strict';
     const xhr = /** @type {!XhrIo} */ (event.target);
     try {
       if (xhr == this.xhr_) {

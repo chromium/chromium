@@ -212,7 +212,7 @@ class ContentSettingsAgentImplBrowserTest
     void FetchCachedCode(blink::mojom::CodeCacheType cache_type,
                          const GURL& url,
                          FetchCachedCodeCallback callback) override {
-      std::move(callback).Run(base::Time(), std::vector<uint8_t>());
+      std::move(callback).Run(base::Time(), {});
     }
     void ClearCodeCacheEntry(blink::mojom::CodeCacheType cache_type,
                              const GURL& url) override {}

@@ -47,16 +47,13 @@ ScreenResolution MakeResolution(int width, int height) {
 DesktopDisplayInfo ToDisplayInfo(const Monitors& monitors) {
   DesktopDisplayInfo result;
   for (const auto& [id, resolution] : monitors) {
-    DisplayGeometry geo = {
-        .id = id,
-        .x = 0,
-        .y = 0,
-        .width = static_cast<uint32_t>(resolution.dimensions().width()),
-        .height = static_cast<uint32_t>(resolution.dimensions().height()),
-        .dpi = static_cast<uint32_t>(resolution.dpi().x()),
-        .bpp = 32,
-        .is_default = false};
-    result.AddDisplay(geo);
+    result.AddDisplay({id, /* x */ 0, /* y */ 0,
+                       static_cast<uint32_t>(resolution.dimensions().width()),
+                       static_cast<uint32_t>(resolution.dimensions().height()),
+                       /* dpi */ static_cast<uint32_t>(resolution.dpi().x()),
+                       /* bpp */ 32,
+                       /* is_default */ false,
+                       /* display_name */ "test display"});
   }
   return result;
 }

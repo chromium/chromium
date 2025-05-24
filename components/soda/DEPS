@@ -8,6 +8,7 @@ include_rules = [
   "+components/prefs",
   "+components/strings/grit/components_strings.h",
   "+media/base",
+  "+media/mojo/mojom",
   "+ui/base",
 ]
 

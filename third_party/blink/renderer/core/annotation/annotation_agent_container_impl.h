@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/annotation/annotation.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -96,18 +97,23 @@ class CORE_EXPORT AnnotationAgentContainerImpl final
       mojom::blink::AnnotationType type);
 
   // Use from within Blink to create an agent in this container.
-  AnnotationAgentImpl* CreateUnboundAgent(mojom::blink::AnnotationType type,
-                                          AnnotationSelector& selector);
+  AnnotationAgentImpl* CreateUnboundAgent(
+      mojom::blink::AnnotationType type,
+      AnnotationSelector& selector,
+      std::optional<DOMNodeId> search_range_start_node_id = std::nullopt);
 
   // mojom::blink::AnnotationAgentContainer
   void CreateAgent(
       mojo::PendingRemote<mojom::blink::AnnotationAgentHost> host_remote,
       mojo::PendingReceiver<mojom::blink::AnnotationAgent> agent_receiver,
       mojom::blink::AnnotationType type,
-      const String& serialized_selector) override;
+      mojom::blink::SelectorPtr selector,
+      std::optional<DOMNodeId> search_range_start_node_id =
+          std::nullopt) override;
   void CreateAgentFromSelection(
       mojom::blink::AnnotationType type,
       CreateAgentFromSelectionCallback callback) override;
+  void RemoveAgentsOfType(mojom::blink::AnnotationType type) override;
 
   void OpenedContextMenuOverSelection();
 

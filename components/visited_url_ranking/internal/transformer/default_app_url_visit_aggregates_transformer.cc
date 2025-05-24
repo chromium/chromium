@@ -4,6 +4,8 @@
 
 #include "components/visited_url_ranking/internal/transformer/default_app_url_visit_aggregates_transformer.h"
 
+#include <utility>
+
 #include "components/visited_url_ranking/public/url_visit.h"
 
 namespace {
@@ -31,7 +33,7 @@ namespace visited_url_ranking {
 DefaultAppURLVisitAggregatesTransformer::
     DefaultAppURLVisitAggregatesTransformer(
         base::flat_set<std::string_view> default_app_blocklist)
-    : default_app_blocklist_(default_app_blocklist) {}
+    : default_app_blocklist_(std::move(default_app_blocklist)) {}
 
 DefaultAppURLVisitAggregatesTransformer::
     ~DefaultAppURLVisitAggregatesTransformer() = default;

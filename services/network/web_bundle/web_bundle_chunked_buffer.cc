@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "services/network/web_bundle/web_bundle_chunked_buffer.h"
 
@@ -72,22 +68,6 @@ WebBundleChunkedBuffer::Chunk::~Chunk() = default;
 WebBundleChunkedBuffer::Chunk::Chunk(const WebBundleChunkedBuffer::Chunk&) =
     default;
 WebBundleChunkedBuffer::Chunk::Chunk(WebBundleChunkedBuffer::Chunk&&) = default;
-
-uint64_t WebBundleChunkedBuffer::Chunk::start_pos() const {
-  return start_pos_;
-}
-
-uint64_t WebBundleChunkedBuffer::Chunk::end_pos() const {
-  return start_pos_ + bytes_->size();
-}
-
-size_t WebBundleChunkedBuffer::Chunk::size() const {
-  return bytes_->size();
-}
-
-const uint8_t* WebBundleChunkedBuffer::Chunk::data() const {
-  return bytes_->data();
-}
 
 WebBundleChunkedBuffer::WebBundleChunkedBuffer() = default;
 

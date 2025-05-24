@@ -14,7 +14,7 @@ CSSAlternateValue::CSSAlternateValue(const CSSFunctionValue& function,
 
 String CSSAlternateValue::CustomCSSText() const {
   StringBuilder builder;
-  builder.Append(getValueName(function_->FunctionType()));
+  builder.Append(GetCSSValueNameAs<StringView>(function_->FunctionType()));
   builder.Append('(');
   builder.Append(aliases_->CssText());
   builder.Append(')');

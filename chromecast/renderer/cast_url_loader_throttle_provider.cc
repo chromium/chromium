@@ -40,13 +40,13 @@ CastURLLoaderThrottleProvider::Clone() {
   return base::WrapUnique(new CastURLLoaderThrottleProvider(*this));
 }
 
-blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
+std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
 CastURLLoaderThrottleProvider::CreateThrottles(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     const network::ResourceRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
 
   if (cast_activity_url_filter_manager_ && local_frame_token.has_value()) {
     auto* activity_url_filter = cast_activity_url_filter_manager_

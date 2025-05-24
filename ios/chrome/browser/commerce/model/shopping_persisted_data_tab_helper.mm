@@ -46,8 +46,7 @@ const char* GetLogIdString(PriceDropLogId& log_id) {
     case NAVIGATION_COMPLETE:
       return kFinishNavigationMetricsString;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown PriceDropLogId " << log_id;
-  return "";
+  NOTREACHED() << "Unknown PriceDropLogId " << log_id;
 }
 
 const char* GetTabStatusString(base::Time time_last_accessed) {
@@ -279,5 +278,3 @@ void ShoppingPersistedDataTabHelper::ParseProto(
 void ShoppingPersistedDataTabHelper::ResetPriceDrop() {
   price_drop_ = nullptr;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ShoppingPersistedDataTabHelper)

@@ -67,23 +67,34 @@ class FmRegistrationTokenUploader::CloudPolicyCoreConnectionObserver
  public:
   CloudPolicyCoreConnectionObserver(
       CloudPolicyCore* core,
-      base::OnceCallback<void()> on_connected_callback)
-      : on_connected_callback_(std::move(on_connected_callback)) {
+      base::OnceCallback<void()> on_connected_callback,
+      base::OnceCallback<void()> on_disconnected_callback)
+      : on_connected_callback_(std::move(on_connected_callback)),
+        on_disconnected_callback_(std::move(on_disconnected_callback)) {
     observation.Observe(core);
   }
 
   void OnCoreConnected(CloudPolicyCore* core) override {
-    std::move(on_connected_callback_).Run();
+    if (on_connected_callback_) {
+      std::move(on_connected_callback_).Run();
+    }
+    observation.Reset();
   }
 
   void OnRefreshSchedulerStarted(CloudPolicyCore* core) override {}
 
-  void OnCoreDisconnecting(CloudPolicyCore* core) override {}
+  void OnCoreDisconnecting(CloudPolicyCore* core) override {
+    if (on_disconnected_callback_) {
+      std::move(on_disconnected_callback_).Run();
+    }
+    observation.Reset();
+  }
 
  private:
   base::ScopedObservation<CloudPolicyCore, CloudPolicyCoreConnectionObserver>
       observation{this};
   base::OnceCallback<void()> on_connected_callback_;
+  base::OnceCallback<void()> on_disconnected_callback_;
 };
 
 // Observes a cloud policy client registration event and is destroyed
@@ -98,15 +109,14 @@ class FmRegistrationTokenUploader::CloudPolicyClientRegistrationObserver
     observation.Observe(client);
   }
 
-  void OnPolicyFetched(CloudPolicyClient* client) override {}
-
   void OnRegistrationStateChanged(CloudPolicyClient* client) override {
     if (client->is_registered()) {
       std::move(on_connected_callback_).Run();
+      observation.Reset();
     }
   }
 
-  void OnClientError(CloudPolicyClient* client) override {}
+  void Reset() { observation.Reset(); }
 
  private:
   base::ScopedObservation<CloudPolicyClient,
@@ -152,9 +162,6 @@ FmRegistrationTokenUploader::FmRegistrationTokenUploader(
   CHECK_NE(scope_, PolicyInvalidationScope::kDeviceLocalAccount)
       << "Registration token is not expected for device local "
          "accounts";
-  LOG_POLICY(WARNING, REMOTE_COMMANDS)
-      << "Starting FmRegistrationTokenUploader for " << ToString(scope_)
-      << " scope";
   invalidation_listener_->Start(this);
 }
 
@@ -183,22 +190,24 @@ void FmRegistrationTokenUploader::DoUploadRegistrationToken(
   CloudPolicyClient* client = core_->client();
 
   if (!client) {
-    LOG_POLICY(ERROR, REMOTE_COMMANDS)
+    VLOG_POLICY(1, REMOTE_COMMANDS)
         << "Client is missing for " << ToString(scope_) << " scope";
 
     // Async task is required as it will destroy the observer that will call
     // this callback and remove it from the observers list.
     core_observer_ = std::make_unique<CloudPolicyCoreConnectionObserver>(
-        core_, base::BindOnce(
-                   &FmRegistrationTokenUploader::DoAsyncUploadRegistrationToken,
-                   base::Unretained(this), std::move(token_data),
-                   /*delay=*/base::TimeDelta()));
+        core_,
+        base::BindOnce(
+            &FmRegistrationTokenUploader::DoAsyncUploadRegistrationToken,
+            base::Unretained(this), std::move(token_data),
+            /*delay=*/base::TimeDelta()),
+        /*on_disconnected_callback=*/base::OnceClosure());
 
     return;
   }
 
   if (!client->is_registered()) {
-    LOG_POLICY(ERROR, REMOTE_COMMANDS)
+    VLOG_POLICY(1, REMOTE_COMMANDS)
         << "Client is not registered for " << ToString(scope_) << " scope";
 
     // Async upload task is required as it will destroy the observer that will
@@ -209,6 +218,12 @@ void FmRegistrationTokenUploader::DoUploadRegistrationToken(
             &FmRegistrationTokenUploader::DoAsyncUploadRegistrationToken,
             base::Unretained(this), std::move(token_data),
             /*delay=*/base::TimeDelta()));
+    // In case profile became unmanaged/deleted before fully intializated.
+    core_observer_ = std::make_unique<CloudPolicyCoreConnectionObserver>(
+        core_, /*on_connected_callback=*/base::OnceClosure(),
+        base::BindOnce(&FmRegistrationTokenUploader::
+                           CloudPolicyClientRegistrationObserver::Reset,
+                       base::Unretained(client_observer_.get())));
     return;
   }
 
@@ -217,6 +232,7 @@ void FmRegistrationTokenUploader::DoUploadRegistrationToken(
   request.set_protocol_version(
       invalidation::InvalidationListener::kInvalidationProtocolVersion);
   request.set_token_type(ScopeToTokenType(scope_));
+  request.set_project_number(invalidation_listener_->project_number());
   request.set_expiration_timestamp_ms(
       token_data.token_end_of_life.InMillisecondsSinceUnixEpoch());
 
@@ -247,8 +263,9 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
 
   if (!result.IsSuccess()) {
     LOG_POLICY(ERROR, REMOTE_COMMANDS)
-        << "Upload failed for " << ToString(scope_)
-        << " scope: " << result.GetDMServerError();
+        << "Upload failed for " << ToString(scope_) << " scope, "
+        << invalidation_listener_->project_number()
+        << " project: " << result.GetDMServerError();
 
     invalidation_listener_->SetRegistrationUploadStatus(
         invalidation::InvalidationListener::RegistrationTokenUploadStatus::
@@ -261,9 +278,6 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
     upload_retry_backoff_.InformOfRequest(/*succeeded=*/false);
     return;
   }
-
-  LOG_POLICY(ERROR, REMOTE_COMMANDS)
-      << "Registration token uploaded for " << ToString(scope_) << " scope";
 
   invalidation_listener_->SetRegistrationUploadStatus(
       invalidation::InvalidationListener::RegistrationTokenUploadStatus::

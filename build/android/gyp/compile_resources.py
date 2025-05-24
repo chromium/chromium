@@ -748,6 +748,7 @@ def _PackageApk(options, build):
       'link',
       '--auto-add-overlay',
       '--no-version-vectors',
+      '--no-xml-namespaces',
       '--output-text-symbols',
       build.r_txt_path,
   ]
@@ -764,9 +765,6 @@ def _PackageApk(options, build):
   #       can be used with recent versions of aapt2.
   if options.shared_resources:
     link_command.append('--shared-lib')
-
-  if int(options.min_sdk_version) > 21:
-    link_command.append('--no-xml-namespaces')
 
   if options.package_id:
     link_command += [

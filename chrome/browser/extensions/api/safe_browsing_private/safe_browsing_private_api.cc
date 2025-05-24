@@ -12,31 +12,36 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#endif
+
 using safe_browsing::SafeBrowsingNavigationObserverManager;
 
 namespace extensions {
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 namespace {
 
 // The number of user gestures we trace back for the referrer chain.
 const int kReferrerUserGestureLimit = 2;
 
 }  // namespace
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // SafeBrowsingPrivateGetReferrerChainFunction
 
 SafeBrowsingPrivateGetReferrerChainFunction::
-    SafeBrowsingPrivateGetReferrerChainFunction() {}
+    SafeBrowsingPrivateGetReferrerChainFunction() = default;
 
 SafeBrowsingPrivateGetReferrerChainFunction::
-    ~SafeBrowsingPrivateGetReferrerChainFunction() {}
+    ~SafeBrowsingPrivateGetReferrerChainFunction() = default;
 
 ExtensionFunction::ResponseAction
 SafeBrowsingPrivateGetReferrerChainFunction::Run() {
@@ -53,6 +58,7 @@ SafeBrowsingPrivateGetReferrerChainFunction::Run() {
         base::StringPrintf("Could not find tab with id %d.", params->tab_id)));
   }
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (!SafeBrowsingNavigationObserverManager::IsEnabledAndReady(
           profile->GetPrefs(), g_browser_process->safe_browsing_service()))
@@ -89,6 +95,9 @@ SafeBrowsingPrivateGetReferrerChainFunction::Run() {
   return RespondNow(ArgumentList(
       api::safe_browsing_private::GetReferrerChain::Results::Create(
           referrer_entries)));
+#else
+  return RespondNow(NoArguments());
+#endif
 }
 
 }  // namespace extensions

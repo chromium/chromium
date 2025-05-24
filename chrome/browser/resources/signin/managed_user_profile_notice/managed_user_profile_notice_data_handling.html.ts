@@ -12,9 +12,7 @@ export function getHtml(this: ManagedUserProfileNoticeDataHandlingElement) {
 <main class="tangible-sync-style">
   <img class="success-icon" alt="">
   <div id="text-container">
-    <h1 class="title">
-      ${this.title}
-    </h1>
+    <h1 class="title" tabindex="-1">${this.title}</h1>
   </div>
   <cr-radio-group .selected="${this.selectedDataHandling}"
       @selected-changed="${this.onSelectedRadioOptionChanged_}">

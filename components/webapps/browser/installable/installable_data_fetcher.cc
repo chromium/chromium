@@ -15,19 +15,6 @@
 
 namespace webapps {
 
-namespace {
-
-// Minimum dimension size in pixels for screenshots.
-const int kMinimumScreenshotSizeInPx = 320;
-
-// Maximum dimension size in pixels for screenshots.
-const int kMaximumScreenshotSizeInPx = 3840;
-
-// Maximum number of screenshots allowed, the rest will be ignored.
-const int kMaximumNumOfScreenshots = 8;
-
-}  // namespace
-
 InstallableDataFetcher::InstallableDataFetcher(
     content::WebContents* web_contents,
     InstallablePageData& data)

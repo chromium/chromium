@@ -29,6 +29,10 @@
 #include "private/entities.h"
 #include "private/error.h"
 
+#ifndef SIZE_MAX
+  #define SIZE_MAX ((size_t) -1)
+#endif
+
 /*
  * The XML predefined entities.
  */
@@ -513,23 +517,277 @@ xmlGetDocEntity(const xmlDoc *doc, const xmlChar *name) {
 }
 
 /*
- * Macro used to grow the current buffer.
+ * xmlSerializeHexCharRef:
+ * @buf:  a char buffer
+ * @val:  a codepoint
+ *
+ * Serializes a hex char ref like &#xA0;
+ *
+ * Writes at most 9 bytes. Does not include a terminating zero byte.
+ *
+ * Returns the number of bytes written.
  */
-#define growBufferReentrant() {						\
-    xmlChar *tmp;                                                       \
-    size_t new_size = buffer_size * 2;                                  \
-    if (new_size < buffer_size) goto mem_error;                         \
-    tmp = (xmlChar *) xmlRealloc(buffer, new_size);	                \
-    if (tmp == NULL) goto mem_error;                                    \
-    buffer = tmp;							\
-    buffer_size = new_size;						\
+int
+xmlSerializeHexCharRef(char *buf, int val) {
+    char *out = buf;
+    int shift = 0, bits;
+
+    *out++ = '&';
+    *out++ = '#';
+    *out++ = 'x';
+
+    bits = val;
+    if (bits & 0xFF0000) {
+        shift = 16;
+        bits &= 0xFF0000;
+    } else if (bits & 0x00FF00) {
+        shift = 8;
+        bits &= 0x00FF00;
+    }
+    if (bits & 0xF0F0F0) {
+        shift += 4;
+    }
+
+    do {
+        int d = (val >> shift) & 0x0F;
+
+        if (d < 10)
+            *out++ = '0' + d;
+        else
+            *out++ = 'A' + (d - 10);
+
+	shift -= 4;
+    } while (shift >= 0);
+
+    *out++ = ';';
+
+    return(out - buf);
+}
+
+/*
+ * xmlSerializeDecCharRef:
+ * @buf:  a char buffer
+ * @val:  a codepoint
+ *
+ * Serializes a decimal char ref like &#38;
+ *
+ * Writes at most 10 bytes. Does not include a terminating zero byte.
+ *
+ * Returns the number of bytes written.
+ */
+int
+xmlSerializeDecCharRef(char *buf, int val) {
+    char *out = buf;
+    int len, i;
+
+    *out++ = '&';
+    *out++ = '#';
+
+    if (val < 100) {
+        len = (val < 10) ? 1 : 2;
+    } else if (val < 10000) {
+        len = (val < 1000) ? 3 : 4;
+    } else if (val < 1000000) {
+        len = (val < 100000) ? 5 : 6;
+    } else {
+        len = 7;
+    }
+
+    for (i = len - 1; i >= 0; i--) {
+        out[i] = '0' + val % 10;
+        val /= 10;
+    }
+
+    out[len] = ';';
+
+    return(len + 3);
+}
+
+static const char xmlEscapeSafe[128] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+};
+
+/*
+ * xmlEscapeText:
+ * @text:  input text
+ * @flags:  XML_ESCAPE flags
+ *
+ * Escapes certain characters with char refs.
+ *
+ * XML_ESCAPE_ATTR: for attribute content.
+ * XML_ESCAPE_NON_ASCII: escape non-ASCII chars.
+ * XML_ESCAPE_HTML: for HTML content.
+ * XML_ESCAPE_QUOT: escape double quotes.
+ * XML_ESCAPE_ALLOW_INVALID: allow invalid characters.
+ *
+ * Returns an escaped string or NULL if a memory allocation failed.
+ */
+xmlChar *
+xmlEscapeText(const xmlChar *text, int flags) {
+    const xmlChar *cur;
+    xmlChar *buffer;
+    xmlChar *out;
+    const xmlChar *unescaped;
+    size_t size = 50;
+
+    buffer = xmlMalloc(size + 1);
+    if (buffer == NULL)
+        return(NULL);
+    out = buffer;
+
+    cur = text;
+    unescaped = cur;
+
+    while (*cur != '\0') {
+        char buf[12];
+	const xmlChar *end;
+        const xmlChar *repl;
+        size_t used;
+        size_t replSize;
+        size_t unescapedSize;
+        size_t totalSize;
+        int chunkSize = 1;
+        int c;
+
+        /* accelerator */
+	while (1) {
+            c = *cur;
+
+            if (c < 0x80) {
+                if (!xmlEscapeSafe[*cur])
+                    break;
+            } else {
+               if (flags & XML_ESCAPE_NON_ASCII)
+                   break;
+            }
+            cur += 1;
+        }
+
+        if (c == 0) {
+            chunkSize = 0;
+            repl = BAD_CAST "";
+            replSize = 0;
+        } else if (c == '<') {
+	    /*
+	     * Special handling of server side include in HTML attributes
+	     */
+	    if ((flags & XML_ESCAPE_HTML) && (flags & XML_ESCAPE_ATTR) &&
+	        (cur[1] == '!') && (cur[2] == '-') && (cur[3] == '-') &&
+	        ((end = xmlStrstr(cur, BAD_CAST "-->")) != NULL)) {
+                chunkSize = (end - cur) + 3;
+                repl = cur;
+                replSize = chunkSize;
+	    } else {
+                repl = BAD_CAST "&lt;";
+                replSize = 4;
+            }
+	} else if (c == '>') {
+            repl = BAD_CAST "&gt;";
+            replSize = 4;
+	} else if (c == '&') {
+	    /*
+	     * Special handling of &{...} construct from HTML 4, see
+	     * http://www.w3.org/TR/html401/appendix/notes.html#h-B.7.1
+	     */
+	    if ((flags & XML_ESCAPE_HTML) && (flags & XML_ESCAPE_ATTR) &&
+                (cur[1] == '{') && (end = xmlStrchr(cur, '}'))) {
+                chunkSize = (end - cur) + 1;
+                repl = cur;
+                replSize = chunkSize;
+	    } else {
+                repl = BAD_CAST "&amp;";
+                replSize = 5;
+            }
+	} else if ((flags & XML_ESCAPE_QUOT) && (c == '"')) {
+            repl = BAD_CAST "&quot;";
+            replSize = 6;
+	} else if (((flags & XML_ESCAPE_HTML) == 0) && (c == '\r')) {
+	    repl = BAD_CAST "&#13;";
+            replSize = 5;
+	} else if ((flags & XML_ESCAPE_NON_ASCII) && (c >= 0x80)) {
+            int val;
+
+            chunkSize = 4;
+            val = xmlGetUTF8Char(cur, &chunkSize);
+            if (val < 0) {
+                val = 0xFFFD;
+                chunkSize = 1;
+            } else if (((flags & XML_ESCAPE_ALLOW_INVALID) == 0) &&
+                       (!IS_CHAR(val))) {
+                val = 0xFFFD;
+            }
+
+            replSize = xmlSerializeHexCharRef(buf, val);
+            repl = BAD_CAST buf;
+	} else if ((flags & (XML_ESCAPE_ALLOW_INVALID | XML_ESCAPE_HTML)) ||
+                   (c >= 0x20) ||
+	           (c == '\n') || (c == '\t') || (c == '\r')) {
+	    /* default case, just copy */
+            cur += 1;
+            if (*cur != 0)
+                continue;
+
+            chunkSize = 0;
+            repl = BAD_CAST "";
+            replSize = 0;
+	} else {
+            /* ignore */
+            repl = BAD_CAST "";
+            replSize = 0;
+        }
+
+        used = out - buffer;
+        unescapedSize = cur - unescaped;
+        totalSize = unescapedSize + replSize;
+
+	cur += chunkSize;
+
+        if (totalSize > size - used) {
+            xmlChar *tmp;
+            int newSize;
+
+            if ((size > (SIZE_MAX - 1) / 2) ||
+                (totalSize > (SIZE_MAX - 1) / 2 - size)) {
+                xmlFree(buffer);
+                return(NULL);
+            }
+            newSize = size + totalSize;
+            if (*cur != 0)
+                newSize *= 2;
+            tmp = xmlRealloc(buffer, newSize + 1);
+            if (tmp == NULL) {
+                xmlFree(buffer);
+                return(NULL);
+            }
+            buffer = tmp;
+            size = newSize;
+            out = buffer + used;
+        }
+
+        memcpy(out, unescaped, unescapedSize);
+        out += unescapedSize;
+        memcpy(out, repl, replSize);
+        out += replSize;
+
+        unescaped = cur;
+    }
+
+    *out = 0;
+    return(buffer);
 }
 
 /**
  * xmlEncodeEntitiesInternal:
  * @doc:  the document containing the string
  * @input:  A string to convert to XML.
- * @attr: are we handling an attribute value
+ * @flags:  XML_ESCAPE flags
  *
  * Do a global encoding of a string, replacing the predefined entities
  * and non ASCII values with their entities and CharRef counterparts.
@@ -538,178 +796,18 @@ xmlGetDocEntity(const xmlDoc *doc, const xmlChar *name) {
  *
  * Returns A newly allocated string with the substitution done.
  */
-static xmlChar *
-xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input, int attr) {
-    const xmlChar *cur = input;
-    xmlChar *buffer = NULL;
-    xmlChar *out = NULL;
-    size_t buffer_size = 0;
-    int html = 0;
-
-    if (input == NULL) return(NULL);
-    if (doc != NULL)
-        html = (doc->type == XML_HTML_DOCUMENT_NODE);
-
-    /*
-     * allocate an translation buffer.
-     */
-    buffer_size = 1000;
-    buffer = (xmlChar *) xmlMalloc(buffer_size);
-    if (buffer == NULL)
-	return(NULL);
-    out = buffer;
-
-    while (*cur != '\0') {
-        size_t indx = out - buffer;
-        if (indx + 100 > buffer_size) {
-
-	    growBufferReentrant();
-	    out = &buffer[indx];
-	}
-
-	/*
-	 * By default one have to encode at least '<', '>', '"' and '&' !
-	 */
-	if (*cur == '<') {
-	    const xmlChar *end;
-
-	    /*
-	     * Special handling of server side include in HTML attributes
-	     */
-	    if (html && attr &&
-	        (cur[1] == '!') && (cur[2] == '-') && (cur[3] == '-') &&
-	        ((end = xmlStrstr(cur, BAD_CAST "-->")) != NULL)) {
-	        while (cur != end) {
-		    *out++ = *cur++;
-		    indx = out - buffer;
-		    if (indx + 100 > buffer_size) {
-			growBufferReentrant();
-			out = &buffer[indx];
-		    }
-		}
-		*out++ = *cur++;
-		*out++ = *cur++;
-		*out++ = *cur++;
-		continue;
-	    }
-	    *out++ = '&';
-	    *out++ = 'l';
-	    *out++ = 't';
-	    *out++ = ';';
-	} else if (*cur == '>') {
-	    *out++ = '&';
-	    *out++ = 'g';
-	    *out++ = 't';
-	    *out++ = ';';
-	} else if (*cur == '&') {
-	    /*
-	     * Special handling of &{...} construct from HTML 4, see
-	     * http://www.w3.org/TR/html401/appendix/notes.html#h-B.7.1
-	     */
-	    if (html && attr && (cur[1] == '{') &&
-	        (strchr((const char *) cur, '}'))) {
-	        while (*cur != '}') {
-		    *out++ = *cur++;
-		    indx = out - buffer;
-		    if (indx + 100 > buffer_size) {
-			growBufferReentrant();
-			out = &buffer[indx];
-		    }
-		}
-		*out++ = *cur++;
-		continue;
-	    }
-	    *out++ = '&';
-	    *out++ = 'a';
-	    *out++ = 'm';
-	    *out++ = 'p';
-	    *out++ = ';';
-	} else if (((*cur >= 0x20) && (*cur < 0x80)) ||
-	    (*cur == '\n') || (*cur == '\t') || ((html) && (*cur == '\r'))) {
-	    /*
-	     * default case, just copy !
-	     */
-	    *out++ = *cur;
-	} else if (*cur >= 0x80) {
-	    if (((doc != NULL) && (doc->encoding != NULL)) || (html)) {
-		/*
-		 * Bjørn Reese <br@sseusa.com> provided the patch
-	        xmlChar xc;
-	        xc = (*cur & 0x3F) << 6;
-	        if (cur[1] != 0) {
-		    xc += *(++cur) & 0x3F;
-		    *out++ = xc;
-	        } else
-		 */
-		*out++ = *cur;
-	    } else {
-		/*
-		 * We assume we have UTF-8 input.
-		 * It must match either:
-		 *   110xxxxx 10xxxxxx
-		 *   1110xxxx 10xxxxxx 10xxxxxx
-		 *   11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
-		 * That is:
-		 *   cur[0] is 11xxxxxx
-		 *   cur[1] is 10xxxxxx
-		 *   cur[2] is 10xxxxxx if cur[0] is 111xxxxx
-		 *   cur[3] is 10xxxxxx if cur[0] is 1111xxxx
-		 *   cur[0] is not 11111xxx
-		 */
-		char buf[13], *ptr;
-		int val, l;
-
-                l = 4;
-                val = xmlGetUTF8Char(cur, &l);
-                if (val < 0) {
-                    val = 0xFFFD;
-                    cur++;
-                } else {
-                    if (!IS_CHAR(val))
-                        val = 0xFFFD;
-                    cur += l;
-		}
-		/*
-		 * We could do multiple things here. Just save as a char ref
-		 */
-		snprintf(buf, sizeof(buf), "&#x%X;", val);
-		buf[sizeof(buf) - 1] = 0;
-		ptr = buf;
-		while (*ptr != 0) *out++ = *ptr++;
-		continue;
-	    }
-	} else if (IS_BYTE_CHAR(*cur)) {
-	    char buf[11], *ptr;
-
-	    snprintf(buf, sizeof(buf), "&#%d;", *cur);
-	    buf[sizeof(buf) - 1] = 0;
-            ptr = buf;
-	    while (*ptr != 0) *out++ = *ptr++;
-	}
-	cur++;
-    }
-    *out = 0;
-    return(buffer);
-
-mem_error:
-    xmlFree(buffer);
-    return(NULL);
-}
-
-/**
- * xmlEncodeAttributeEntities:
- * @doc:  the document containing the string
- * @input:  A string to convert to XML.
- *
- * Do a global encoding of a string, replacing the predefined entities
- * and non ASCII values with their entities and CharRef counterparts for
- * attribute values.
- *
- * Returns A newly allocated string with the substitution done.
- */
 xmlChar *
-xmlEncodeAttributeEntities(xmlDocPtr doc, const xmlChar *input) {
-    return xmlEncodeEntitiesInternal(doc, input, 1);
+xmlEncodeEntitiesInternal(xmlDocPtr doc, const xmlChar *input,
+                          unsigned flags) {
+    if (input == NULL)
+        return(NULL);
+
+    if ((doc != NULL) && (doc->type == XML_HTML_DOCUMENT_NODE))
+        flags |= XML_ESCAPE_HTML;
+    else if ((doc == NULL) || (doc->encoding == NULL))
+        flags |= XML_ESCAPE_NON_ASCII;
+
+    return(xmlEscapeText(input, flags));
 }
 
 /**
@@ -722,6 +820,10 @@ xmlEncodeAttributeEntities(xmlDocPtr doc, const xmlChar *input) {
  * Contrary to xmlEncodeEntities, this routine is reentrant, and result
  * must be deallocated.
  *
+ * This escapes '<', '>', '&' and '\r'. If the document has no encoding,
+ * non-ASCII codepoints are escaped. There is some special handling for
+ * HTML documents.
+ *
  * Returns A newly allocated string with the substitution done.
  */
 xmlChar *
@@ -731,86 +833,23 @@ xmlEncodeEntitiesReentrant(xmlDocPtr doc, const xmlChar *input) {
 
 /**
  * xmlEncodeSpecialChars:
- * @doc:  the document containing the string
+ * @doc:  unused
  * @input:  A string to convert to XML.
  *
  * Do a global encoding of a string, replacing the predefined entities
  * this routine is reentrant, and result must be deallocated.
  *
+ * This escapes '<', '>', '&', '"' and '\r' chars.
+ *
  * Returns A newly allocated string with the substitution done.
  */
 xmlChar *
-xmlEncodeSpecialChars(const xmlDoc *doc ATTRIBUTE_UNUSED, const xmlChar *input) {
-    const xmlChar *cur = input;
-    xmlChar *buffer = NULL;
-    xmlChar *out = NULL;
-    size_t buffer_size = 0;
-    if (input == NULL) return(NULL);
+xmlEncodeSpecialChars(const xmlDoc *doc ATTRIBUTE_UNUSED,
+                      const xmlChar *input) {
+    if (input == NULL)
+        return(NULL);
 
-    /*
-     * allocate an translation buffer.
-     */
-    buffer_size = 1000;
-    buffer = (xmlChar *) xmlMalloc(buffer_size);
-    if (buffer == NULL)
-	return(NULL);
-    out = buffer;
-
-    while (*cur != '\0') {
-        size_t indx = out - buffer;
-        if (indx + 10 > buffer_size) {
-
-	    growBufferReentrant();
-	    out = &buffer[indx];
-	}
-
-	/*
-	 * By default one have to encode at least '<', '>', '"' and '&' !
-	 */
-	if (*cur == '<') {
-	    *out++ = '&';
-	    *out++ = 'l';
-	    *out++ = 't';
-	    *out++ = ';';
-	} else if (*cur == '>') {
-	    *out++ = '&';
-	    *out++ = 'g';
-	    *out++ = 't';
-	    *out++ = ';';
-	} else if (*cur == '&') {
-	    *out++ = '&';
-	    *out++ = 'a';
-	    *out++ = 'm';
-	    *out++ = 'p';
-	    *out++ = ';';
-	} else if (*cur == '"') {
-	    *out++ = '&';
-	    *out++ = 'q';
-	    *out++ = 'u';
-	    *out++ = 'o';
-	    *out++ = 't';
-	    *out++ = ';';
-	} else if (*cur == '\r') {
-	    *out++ = '&';
-	    *out++ = '#';
-	    *out++ = '1';
-	    *out++ = '3';
-	    *out++ = ';';
-	} else {
-	    /*
-	     * Works because on UTF-8, all extended sequences cannot
-	     * result in bytes in the ASCII range.
-	     */
-	    *out++ = *cur;
-	}
-	cur++;
-    }
-    *out = 0;
-    return(buffer);
-
-mem_error:
-    xmlFree(buffer);
-    return(NULL);
+    return(xmlEscapeText(input, XML_ESCAPE_QUOT | XML_ESCAPE_ALLOW_INVALID));
 }
 
 /**
@@ -850,7 +889,6 @@ xmlFreeEntitiesTable(xmlEntitiesTablePtr table) {
     xmlHashFree(table, xmlFreeEntityWrapper);
 }
 
-#ifdef LIBXML_TREE_ENABLED
 /**
  * xmlCopyEntity:
  * @ent:  An entity
@@ -920,7 +958,6 @@ xmlEntitiesTablePtr
 xmlCopyEntitiesTable(xmlEntitiesTablePtr table) {
     return(xmlHashCopySafe(table, xmlCopyEntity, xmlFreeEntityWrapper));
 }
-#endif /* LIBXML_TREE_ENABLED */
 
 #ifdef LIBXML_OUTPUT_ENABLED
 

@@ -526,6 +526,9 @@ void SharedProtoDatabase::CommitUpdatedGlobalMetadata(
 }
 
 SharedProtoDatabase::~SharedProtoDatabase() {
+  // Need to release `db_wrapper_` now since it holds an unowned pointer to
+  // `db_`.
+  db_wrapper_.reset();
   task_runner_->DeleteSoon(FROM_HERE, std::move(db_));
   task_runner_->DeleteSoon(FROM_HERE, std::move(metadata_db_wrapper_));
 }

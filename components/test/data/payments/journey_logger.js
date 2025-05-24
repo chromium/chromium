@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var request = null;
-var showPromise = null;
+let request = null;
+let showPromise = null;
 
 const TEST_DETAILS = {
   total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
@@ -40,7 +40,7 @@ function testBasicCard() {
 async function abort() {
   await request.abort();
   return await showPromise.catch((e) => {
-    return e.name == 'AbortError';
+    return e.name === 'AbortError';
   });
 }
 

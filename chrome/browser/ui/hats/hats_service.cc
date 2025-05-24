@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/hats/hats_service.h"
 
+#include "content/public/browser/navigation_handle.h"
+
 HatsService::SurveyMetadata::SurveyMetadata() = default;
 
 HatsService::SurveyMetadata::~SurveyMetadata() = default;
@@ -21,3 +23,28 @@ HatsService::HatsService(Profile* profile) : profile_(profile) {
 }
 
 HatsService::~HatsService() = default;
+
+hats::SurveyConfigs& HatsService::GetSurveyConfigsByTriggersForTesting() {
+  return survey_configs_by_triggers_;
+}
+
+bool HatsService::IsNavigationAllowed(
+    content::NavigationHandle* navigation_handle,
+    HatsService::NavigationBehaviour navigation_behaviour) {
+  if (navigation_behaviour == NavigationBehaviour::ALLOW_ANY ||
+      !navigation_handle || !navigation_handle->IsInPrimaryMainFrame()) {
+    return true;
+  }
+
+  if (navigation_behaviour == NavigationBehaviour::REQUIRE_SAME_DOCUMENT &&
+      navigation_handle->IsSameDocument()) {
+    return true;
+  }
+
+  if (navigation_behaviour == NavigationBehaviour::REQUIRE_SAME_ORIGIN &&
+      navigation_handle->HasCommitted() && navigation_handle->IsSameOrigin()) {
+    return true;
+  }
+
+  return false;
+}

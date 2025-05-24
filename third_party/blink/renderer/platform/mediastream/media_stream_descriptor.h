@@ -110,6 +110,8 @@ class PLATFORM_EXPORT MediaStreamDescriptor final
   bool Active() const { return active_; }
   void SetActive(bool active);
 
+  void NotifyEnabledStateChangeForWebRtcAudio(bool enabled);
+
   void AddObserver(WebMediaStreamObserver*);
   void RemoveObserver(WebMediaStreamObserver*);
 
@@ -125,7 +127,9 @@ class PLATFORM_EXPORT MediaStreamDescriptor final
   bool active_;
 };
 
-typedef HeapVector<Member<MediaStreamDescriptor>> MediaStreamDescriptorVector;
+using MediaStreamDescriptorVector = HeapVector<Member<MediaStreamDescriptor>>;
+using GCedMediaStreamDescriptorVector =
+    GCedHeapVector<Member<MediaStreamDescriptor>>;
 
 }  // namespace blink
 

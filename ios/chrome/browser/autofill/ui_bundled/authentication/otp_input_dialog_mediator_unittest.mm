@@ -6,6 +6,7 @@
 
 #import "base/memory/weak_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #import "components/autofill/core/browser/ui/payments/card_unmask_otp_input_dialog_controller_impl.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_consumer.h"
@@ -44,7 +45,9 @@ class MockOtpUnmaskDelegate : public autofill::OtpUnmaskDelegate {
   base::WeakPtrFactory<MockOtpUnmaskDelegate> weak_ptr_factory_{this};
 };
 
-class OtpInputDialogMediatorTest : public PlatformTest {
+class OtpInputDialogMediatorTest
+    : public PlatformTest,
+      public ::testing::WithParamInterface<autofill::CreditCard::RecordType> {
  protected:
   OtpInputDialogMediatorTest() {
     consumer_ = OCMProtocolMock(@protocol(OtpInputDialogConsumer));
@@ -54,9 +57,10 @@ class OtpInputDialogMediatorTest : public PlatformTest {
         autofill::CardUnmaskChallengeOptionType::kSmsOtp,
         /*challenge_info=*/u"xxx-xxx-3547",
         /*challenge_input_length=*/6U);
+    autofill::CreditCard::RecordType card_type = GetParam();
     model_controller_ =
         std::make_unique<autofill::CardUnmaskOtpInputDialogControllerImpl>(
-            option, unmask_delegate_.GetWeakPtr());
+            card_type, option, unmask_delegate_.GetWeakPtr());
     mediator_ = std::make_unique<OtpInputDialogMediator>(
         model_controller_->GetImplWeakPtr(), delegate_);
   }
@@ -70,7 +74,7 @@ class OtpInputDialogMediatorTest : public PlatformTest {
 };
 
 // Tests consumer receives the correct contents.
-TEST_F(OtpInputDialogMediatorTest, SetConsumer) {
+TEST_P(OtpInputDialogMediatorTest, SetConsumer) {
   OCMExpect([consumer_
       setContent:[OCMArg checkWithBlock:^BOOL(OtpInputDialogContent* content) {
         EXPECT_NSEQ(
@@ -90,7 +94,7 @@ TEST_F(OtpInputDialogMediatorTest, SetConsumer) {
   EXPECT_OCMOCK_VERIFY((id)consumer_);
 }
 
-TEST_F(OtpInputDialogMediatorTest, DidTapConfirmButton) {
+TEST_P(OtpInputDialogMediatorTest, DidTapConfirmButton) {
   NSString* otp = @"123456";
   OCMExpect([consumer_ showPendingState]);
   EXPECT_CALL(unmask_delegate_,
@@ -99,7 +103,7 @@ TEST_F(OtpInputDialogMediatorTest, DidTapConfirmButton) {
   [mediator_->AsMutator() didTapConfirmButton:otp];
 }
 
-TEST_F(OtpInputDialogMediatorTest, DidTapCancelButton) {
+TEST_P(OtpInputDialogMediatorTest, DidTapCancelButton) {
   OCMExpect([delegate_ dismissDialog]);
   EXPECT_CALL(unmask_delegate_,
               OnUnmaskPromptClosed(/*user_closed_dialog=*/true));
@@ -107,7 +111,7 @@ TEST_F(OtpInputDialogMediatorTest, DidTapCancelButton) {
   [mediator_->AsMutator() didTapCancelButton];
 }
 
-TEST_F(OtpInputDialogMediatorTest, OnOtpInputChanges) {
+TEST_P(OtpInputDialogMediatorTest, OnOtpInputChanges) {
   OCMExpect([consumer_ setConfirmButtonEnabled:NO]);
 
   [mediator_->AsMutator() onOtpInputChanges:@"12345"];
@@ -117,7 +121,7 @@ TEST_F(OtpInputDialogMediatorTest, OnOtpInputChanges) {
   [mediator_->AsMutator() onOtpInputChanges:@"123456"];
 }
 
-TEST_F(OtpInputDialogMediatorTest, Dismiss) {
+TEST_P(OtpInputDialogMediatorTest, Dismiss) {
   OCMExpect([delegate_ dismissDialog]);
   EXPECT_CALL(unmask_delegate_,
               OnUnmaskPromptClosed(/*user_closed_dialog=*/true));
@@ -126,8 +130,14 @@ TEST_F(OtpInputDialogMediatorTest, Dismiss) {
                      /*user_closed_dialog=*/true);
 }
 
-TEST_F(OtpInputDialogMediatorTest, NewCodeRequested) {
+TEST_P(OtpInputDialogMediatorTest, NewCodeRequested) {
   EXPECT_CALL(unmask_delegate_, OnNewOtpRequested());
 
   [mediator_->AsMutator() didTapNewCodeLink];
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    /* No InstantiationName */,
+    OtpInputDialogMediatorTest,
+    testing::Values(autofill::CreditCard::RecordType::kLocalCard,
+                    autofill::CreditCard::RecordType::kMaskedServerCard));

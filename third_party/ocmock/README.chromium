@@ -2,7 +2,7 @@ Name: ocmock
 URL: https://github.com/erikdoe/ocmock
 Version: 3.9.1
 Revision: afd2c6924e8a36cb872bc475248b978f743c6050
-License: Apache Version 2.0
+License: Apache-2.0
 License File: License.txt
 Security Critical: no
 Shipped: no

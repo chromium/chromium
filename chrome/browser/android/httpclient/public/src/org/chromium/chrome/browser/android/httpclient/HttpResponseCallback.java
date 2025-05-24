@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.android.httpclient;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.Map;
 
 /** HttpClient callback interface. */
+@NullMarked
 public interface HttpResponseCallback {
     void accept(int status, byte[] body, Map<String, String> headers);
 }

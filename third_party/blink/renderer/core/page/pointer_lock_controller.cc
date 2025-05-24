@@ -114,8 +114,7 @@ void PointerLockController::RequestPointerLock(
     return;
   }
 
-  bool unadjusted_movement_requested =
-      options ? options->unadjustedMovement() : false;
+  bool unadjusted_movement_requested = options && options->unadjustedMovement();
   if (element_) {
     if (element_->GetDocument() != target->GetDocument()) {
       EnqueueEvent(event_type_names::kPointerlockerror, target);

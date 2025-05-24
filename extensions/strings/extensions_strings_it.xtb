@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Il valore di input per la chiave privata deve essere un percorso valido.</translation>
 <translation id="388442998277590542">Impossibile caricare la pagina delle opzioni "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Errore durante la firma dell'estensione.</translation>
-<translation id="4115165561519362854">L'amministratore di questo computer richiede che <ph name="EXTENSION_NAME" /> abbia almeno la versione <ph name="EXTENSION_VERSION" />. L'attivazione potrà essere completata solo dopo che è stato eseguito l'aggiornamento a questa versione o a una versione successiva.</translation>
 <translation id="4233778200880751280">Impossibile caricare la pagina di informazioni "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">Operazione di output della chiave privata non riuscita.</translation>
 <translation id="4811956658694082538">Impossibile installare il pacchetto perché un processo dell'utility si è arrestato in modo anomalo. Riavvia Chrome e riprova.</translation>
@@ -50,12 +49,14 @@
 <translation id="7068383018033524534">File manifest non valido</translation>
 <translation id="7217838517480956708">L'amministratore di questo computer richiede che l'estensione <ph name="EXTENSION_NAME" /> sia installata. Non è possibile rimuovere o modificare l'estensione.</translation>
 <translation id="7612608473764576263">Il valore da inserire per la chiave privata deve essere in un formato valido (chiave RSA con codifica PEM in formato PKCS#8).</translation>
+<translation id="7876803335449432072">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per lo script di contenuti. I fogli di stile degli script di contenuti possono essere caricati solo dai file di fogli di stile supportati, ad esempio i file .css.</translation>
 <translation id="7939686037314084444">Impossibile caricare correttamente l'estensione. L'estensione potrebbe non riuscire a intercettare le richieste di rete.</translation>
 <translation id="7972881773422714442">Opzioni: <ph name="EXTENSIONOPTIONS_TAG_NAME" /></translation>
 <translation id="8035920974645200807">Fotocamera anteriore</translation>
 <translation id="8047248493720652249">Questa estensione non è riuscita a denominare il download "<ph name="ATTEMPTED_FILENAME" />" perché un'altra estensione (<ph name="EXTENSION_NAME" />) ha determinato un nome di file diverso "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> di <ph name="VENDOR_NAME" /></translation>
 <translation id="8517576857589387417">File manifest mancante o illeggibile</translation>
+<translation id="8621383749470166852">Impossibile caricare il file "<ph name="RELATIVE_PATH" />" per lo script di contenuti. Gli script di contenuti possono essere caricati solo da file JavaScript supportati, come i file .js.</translation>
 <translation id="8636666366616799973">Il pacchetto non è valido. Dettagli: "<ph name="ERROR_MESSAGE" />".</translation>
 <translation id="8761756413268424715">"<ph name="APP_NAME" />" richiede l'accesso a un dispositivo:</translation>
 <translation id="8885905466771744233">Esiste già una chiave privata per l'estensione specificata. Riutilizza tale chiave o prima eliminala.</translation>

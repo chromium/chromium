@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/cert/ct_objects_extractor.h"
 
 #include <string_view>
@@ -96,9 +101,8 @@ TEST_F(CTObjectsExtractorTest, ExtractPrecert) {
   // Should have empty leaf cert for this log entry type.
   ASSERT_TRUE(entry.leaf_certificate.empty());
   // Compare hash values of issuer spki.
-  SHA256HashValue expected_issuer_key_hash;
-  memcpy(expected_issuer_key_hash.data, GetDefaultIssuerKeyHash().data(), 32);
-  ASSERT_EQ(expected_issuer_key_hash, entry.issuer_key_hash);
+  ASSERT_EQ(base::as_byte_span(GetDefaultIssuerKeyHash()),
+            entry.issuer_key_hash);
 }
 
 TEST_F(CTObjectsExtractorTest, ExtractOrdinaryX509Cert) {

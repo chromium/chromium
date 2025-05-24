@@ -29,8 +29,9 @@ void ConfirmInfobarBannerInteractionHandler::MainButtonTapped(
 void ConfirmInfobarBannerInteractionHandler::BannerVisibilityChanged(
     InfoBarIOS* infobar,
     bool visible) {
-  if (!visible)
+  if (!visible) {
     GetInfobarDelegate(infobar)->InfoBarDismissed();
+  }
 }
 
 #pragma mark - Private

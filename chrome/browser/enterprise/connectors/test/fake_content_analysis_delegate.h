@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/fake_files_request_handler.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -90,6 +91,13 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
   static bool WasDialogCanceled();
   static int GetTotalAnalysisRequestsCount();
 
+  ContentAnalysisResponse GetStatus(const std::string& contents,
+                                    const base::FilePath& path);
+
+  virtual void FakeUploadClipboardDataForDeepScanning(
+      ClipboardRequestHandler::Type type,
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
+
  protected:
   // Simulates a response from the binary upload service.  the |path|
   // argument is used to call |status_callback_| to determine if the path
@@ -103,15 +111,6 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       bool is_image_request);
 
   // ContentAnalysisDelegate overrides.
-  void UploadTextForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override;
-  void UploadImageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override;
-  void UploadPageForDeepScanning(
-      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
-      override;
   bool ShowFinalResultInDialog() override;
   bool CancelDialog() override;
   safe_browsing::BinaryUploadService* GetBinaryUploadService() override;
@@ -123,6 +122,8 @@ class FakeContentAnalysisDelegate : public ContentAnalysisDelegate {
       const base::FilePath& path,
       std::unique_ptr<safe_browsing::BinaryUploadService::Request> request,
       FakeFilesRequestHandler::FakeFileRequestCallback callback);
+  void FakeUploadPageForDeepScanning(
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request);
 
   static safe_browsing::BinaryUploadService::Result result_;
   static bool dialog_shown_;

@@ -1,0 +1,244 @@
+This is a testharness.js-based test.
+Found 120 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Element.setAttribute applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] Element.setAttribute applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] Element.setAttribute applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] Element.setAttribute applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Element.setAttribute applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] Element.setAttribute applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Element.setAttribute does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttribute"
+[FAIL] Element.setAttributeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttributeNS"
+[FAIL] Element.setAttributeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNS"
+[FAIL] Element.setAttributeNS applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNS"
+[FAIL] Element.setAttributeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNS"
+[FAIL] Element.setAttributeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNS"
+[FAIL] Element.setAttributeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNS"
+[FAIL] Element.setAttributeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNS"
+[FAIL] Element.setAttributeNS does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttributeNS"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected (undefined) undefined but got (string) "Element setAttributeNode"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Attr.value does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected "unsafe_input" but got ""
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.nodeValue does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected "unsafe_input" but got ""
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV, attrName=onclick
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/2000/svg, element=g, attrName=ondblclick
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow, attrName=onmousedown
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME, attrName=srcdoc
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT, attrName=src
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink, attrName=href
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.textContent does not apply default policy for elementNS=https://example.com/namespace, element=foo, attrName=onmouseup
+  assert_equals: expected "unsafe_input" but got ""
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV,  attrName=onclick and a TrustedScript input.
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/2000/svg, element=g,  attrName=ondblclick and a TrustedScript input.
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow,  attrName=onmousedown and a TrustedScript input.
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME,  attrName=srcdoc and a TrustedHTML input.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT,  attrName=src and a TrustedScriptURL input.
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/2000/svg, element=script,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNode applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV,  attrName=onclick and a TrustedScript input.
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=g,  attrName=ondblclick and a TrustedScript input.
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow,  attrName=onmousedown and a TrustedScript input.
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME,  attrName=srcdoc and a TrustedHTML input.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT,  attrName=src and a TrustedScriptURL input.
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Element.setAttributeNodeNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV,  attrName=onclick and a TrustedScript input.
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/2000/svg, element=g,  attrName=ondblclick and a TrustedScript input.
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow,  attrName=onmousedown and a TrustedScript input.
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME,  attrName=srcdoc and a TrustedHTML input.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT,  attrName=src and a TrustedScriptURL input.
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/2000/svg, element=script,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItem applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV,  attrName=onclick and a TrustedScript input.
+  assert_equals: expected "Element onclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=g,  attrName=ondblclick and a TrustedScript input.
+  assert_equals: expected "Element ondblclick" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow,  attrName=onmousedown and a TrustedScript input.
+  assert_equals: expected "Element onmousedown" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME,  attrName=srcdoc and a TrustedHTML input.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT,  attrName=src and a TrustedScriptURL input.
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] NamedNodeMap.setNamedItemNS applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttributeNode"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV,  attrName=onclick and a TrustedScript input.
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/2000/svg, element=g,  attrName=ondblclick and a TrustedScript input.
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow,  attrName=onmousedown and a TrustedScript input.
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME,  attrName=srcdoc and a TrustedHTML input.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT,  attrName=src and a TrustedScriptURL input.
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/2000/svg, element=script,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Attr.value applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV,  attrName=onclick and a TrustedScript input.
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/2000/svg, element=g,  attrName=ondblclick and a TrustedScript input.
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow,  attrName=onmousedown and a TrustedScript input.
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME,  attrName=srcdoc and a TrustedHTML input.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT,  attrName=src and a TrustedScriptURL input.
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/2000/svg, element=script,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.nodeValue applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=DIV,  attrName=onclick and a TrustedScript input.
+  assert_equals: expected "Element onclick" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/2000/svg, element=g,  attrName=ondblclick and a TrustedScript input.
+  assert_equals: expected "Element ondblclick" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1998/Math/MathML, element=mrow,  attrName=onmousedown and a TrustedScript input.
+  assert_equals: expected "Element onmousedown" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=IFRAME,  attrName=srcdoc and a TrustedHTML input.
+  assert_equals: expected "HTMLIFrameElement srcdoc" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/1999/xhtml, element=SCRIPT,  attrName=src and a TrustedScriptURL input.
+  assert_equals: expected "HTMLScriptElement src" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/2000/svg, element=script,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+[FAIL] Node.textContent applies default policy for elementNS=http://www.w3.org/2000/svg, element=script, attrNS=http://www.w3.org/1999/xlink,  attrName=href and a TrustedScriptURL input.
+  assert_equals: expected "SVGScriptElement href" but got "Element setAttribute"
+Harness: the test ran to completion.
+

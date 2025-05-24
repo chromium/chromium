@@ -5,13 +5,17 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
@@ -23,13 +27,13 @@ import org.chromium.chrome.browser.omnibox.UrlBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
-import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.widget.Toast;
 
@@ -38,6 +42,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     private boolean mPendingSearchPromoDecision;
     private boolean mPendingBeginQuery;
     private boolean mInteractionFromWidget;
+    private boolean mIsIncognito;
 
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
@@ -54,6 +59,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
                 urlCoordinator,
                 statusCoordinator,
                 locationBarDataProvider);
+        mIsIncognito = locationBarDataProvider.isIncognitoBranded();
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
@@ -61,17 +67,24 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         GradientDrawable backgroundDrawable =
                 ToolbarPhone.createModernLocationBarBackground(getContext());
         backgroundDrawable.setTint(
-                ChromeColors.getSurfaceColor(
-                        getContext(), R.dimen.omnibox_suggestion_bg_elevation));
+                ContextCompat.getColor(getContext(), R.color.omnibox_suggestion_bg));
         backgroundDrawable.setCornerRadius(
                 getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_bg_round_corner_radius));
 
-        setBackground(backgroundDrawable);
+        // Replicate LocationBarBackground bounds from ToolbarPhone.
+        int verticalInsets =
+                getResources().getDimensionPixelSize(R.dimen.location_bar_vertical_margin)
+                        - OmniboxResourceProvider.getToolbarOnFocusHeightIncrease(getContext()) / 2;
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[] {backgroundDrawable});
+        layerDrawable.setLayerInset(0, 0, verticalInsets, 0, verticalInsets); // Adjust padding
+
+        setBackground(layerDrawable);
 
         // Expand status view's left and right space, and expand the vertical padding of the
         // location bar to match the expanded interface on the regular omnibox.
         setUrlFocusChangePercent(1f, 1f, /* isUrlFocusChangeInProgress= */ false);
+        requestOmniboxFocus();
     }
 
     @Override
@@ -113,18 +126,28 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
             @Nullable String optionalText,
             @NonNull WindowAndroid windowAndroid) {
 
+        // TODO(crbug.com/372036449): Move setting the hint text from the layout to using the URL
+        // bar view binder and model properties.
         if (origin == IntentOrigin.CUSTOM_TAB) {
             mUrlBar.setHint(R.string.omnibox_on_cct_empty_hint);
+        } else if (origin == IntentOrigin.HUB) {
+            @StringRes
+            int hintTextRes =
+                    mIsIncognito
+                            ? R.string.hub_search_empty_hint_incognito
+                            : R.string.hub_search_empty_hint;
+            mUrlBar.setHint(hintTextRes);
         } else {
             mUrlBar.setHint(R.string.omnibox_empty_hint);
         }
+
         // Clear the text regardless of the promo decision.  This allows the user to enter text
         // before native has been initialized and have it not be cleared one the delayed beginQuery
         // logic is performed.
         mUrlCoordinator.setUrlBarData(
                 UrlBarData.forNonUrlText(optionalText == null ? "" : optionalText),
                 UrlBar.ScrollType.NO_SCROLL,
-                SelectionState.SELECT_ALL);
+                SelectionState.SELECT_END);
 
         if (mPendingSearchPromoDecision || (searchType != SearchType.TEXT && !mNativeInitialized)) {
             mPendingBeginQuery = true;
@@ -149,7 +172,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         } else if (searchType == SearchType.LENS) {
             runGoogleLens();
         }
-        requestOmniboxFocus();
         mInteractionFromWidget = false;
     }
 
@@ -179,21 +201,17 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         }
     }
 
-    /** Focus the Omnibox and present the cached suggestions. */
     void requestOmniboxFocus() {
-        mUrlBar.post(
-                () -> {
-                    if (mUrlCoordinator == null || mAutocompleteCoordinator == null) {
-                        return;
-                    }
-
-                    mUrlBar.requestFocus();
-                    mUrlCoordinator.setKeyboardVisibility(true, false);
-                });
+        mUrlBar.requestFocus();
     }
 
     void clearOmniboxFocus() {
-        mUrlBar.post(() -> mUrlBar.clearFocus());
+        mUrlBar.clearFocus();
+    }
+
+    @Override
+    public boolean shouldClearTextOnFocus() {
+        return false;
     }
 
     @Override

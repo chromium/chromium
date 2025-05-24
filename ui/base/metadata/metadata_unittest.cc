@@ -116,18 +116,18 @@ class ClassPropertyMetaDataTestClass : public MetadataTestBaseClass {
 struct MetadataTestClassNoMetadata : public MetadataTestBaseClass {};
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kIntKey, -1)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey1, nullptr)
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Insets, kOwnedInsetsKey2, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey1, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Insets*, kInsetsKey2, nullptr)
-DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Insets*)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Point, kOwnedInsetsKey1)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Point, kOwnedInsetsKey2)
+DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Point*, kInsetsKey1, nullptr)
+DEFINE_UI_CLASS_PROPERTY_KEY(gfx::Point*, kInsetsKey2, nullptr)
+DEFINE_UI_CLASS_PROPERTY_TYPE(gfx::Point*)
 
 BEGIN_METADATA(ClassPropertyMetaDataTestClass)
 ADD_CLASS_PROPERTY_METADATA(int, kIntKey)
-ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kOwnedInsetsKey1)
-ADD_CLASS_PROPERTY_METADATA(gfx::Insets*, kOwnedInsetsKey2)
-ADD_CLASS_PROPERTY_METADATA(gfx::Insets, kInsetsKey1)
-ADD_CLASS_PROPERTY_METADATA(gfx::Insets*, kInsetsKey2)
+ADD_CLASS_PROPERTY_METADATA(gfx::Point, kOwnedInsetsKey1)
+ADD_CLASS_PROPERTY_METADATA(gfx::Point*, kOwnedInsetsKey2)
+ADD_CLASS_PROPERTY_METADATA(gfx::Point, kInsetsKey1)
+ADD_CLASS_PROPERTY_METADATA(gfx::Point*, kInsetsKey2)
 END_METADATA
 
 TEST_F(MetadataTest, TestFloatMetadataPropertyAccess) {
@@ -225,7 +225,7 @@ TEST_F(MetadataTest, TestMetaDataFile) {
 
 TEST_F(MetadataTest, TestClassPropertyMetaData) {
   ClassPropertyMetaDataTestClass test_class;
-  gfx::Insets insets1(8), insets2 = insets1;
+  gfx::Point insets1(8, 10), insets2 = insets1;
 
   std::map<std::string, std::u16string> expected_kv = {
       {"kIntKey", u"-1"},
@@ -239,7 +239,8 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
     for (auto member = metadata->begin(); member != metadata->end(); member++) {
       std::string key = (*member)->member_name();
       if (expected_kv.count(key)) {
-        EXPECT_EQ((*member)->GetValueAsString(&test_class), expected_kv[key]);
+        EXPECT_EQ((*member)->GetValueAsString(&test_class), expected_kv[key])
+            << "Key: " << key;
         expected_kv.erase(key);
       }
     }
@@ -255,10 +256,10 @@ TEST_F(MetadataTest, TestClassPropertyMetaData) {
   test_class.SetProperty(kInsetsKey2, &insets2);
 
   expected_kv = {{"kIntKey", u"1"},
-                 {"kOwnedInsetsKey1", u"8,8,8,8"},
-                 {"kOwnedInsetsKey2", u"(assigned)"},
-                 {"kInsetsKey1", u"8,8,8,8"},
-                 {"kInsetsKey2", u"(assigned)"}};
+                 {"kOwnedInsetsKey1", u"8,10"},
+                 {"kOwnedInsetsKey2", u"&{8,10}"},
+                 {"kInsetsKey1", u"8,10"},
+                 {"kInsetsKey2", u"&{8,10}"}};
 
   verify();
 }

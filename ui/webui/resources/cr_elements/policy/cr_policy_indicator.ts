@@ -43,9 +43,9 @@ export class CrPolicyIndicatorElement extends CrLitElement {
     };
   }
 
-  iconAriaLabel: string = '';
-  indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
-  indicatorSourceName: string = '';
+  accessor iconAriaLabel: string = '';
+  accessor indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
+  accessor indicatorSourceName: string = '';
 
   /**
    * @return True if the indicator should be shown.
@@ -96,7 +96,7 @@ export class CrPolicyIndicatorElement extends CrLitElement {
             CrPolicyStrings.controlledSettingExtension!.replace(
                 '$1', this.indicatorSourceName) :
             CrPolicyStrings.controlledSettingExtensionWithoutName!;
-      // <if expr="chromeos_ash">
+      // <if expr="is_chromeos">
       case CrPolicyIndicatorType.PRIMARY_USER:
         return CrPolicyStrings.controlledSettingShared!.replace(
             '$1', this.indicatorSourceName);

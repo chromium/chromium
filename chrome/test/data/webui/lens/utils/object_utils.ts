@@ -10,8 +10,8 @@ import type {Polygon} from 'chrome-untrusted://lens-overlay/polygon.mojom-webui.
 import {Polygon_CoordinateType, Polygon_VertexOrdering} from 'chrome-untrusted://lens-overlay/polygon.mojom-webui.js';
 import {assertEquals, assertLT, assertNotEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-export function assertWithinThreshold(value1: number, value2: number): void {
-  const threshold: number = 1e-6;
+export function assertWithinThreshold(
+    value1: number, value2: number, threshold: number = 1e-6): void {
   assertLT(
       Math.abs(value1 - value2), threshold,
       `Expected ${value1} and ${value2} to be within ${threshold}`);

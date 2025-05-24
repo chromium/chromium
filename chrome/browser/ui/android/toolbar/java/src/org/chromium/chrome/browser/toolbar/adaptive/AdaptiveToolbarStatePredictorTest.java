@@ -11,10 +11,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -37,13 +39,13 @@ import java.util.List;
 @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AdaptiveToolbarStatePredictorTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private AndroidPermissionDelegate mAndroidPermissionDelegate;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.setupActivity(Activity.class);
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
@@ -232,7 +234,8 @@ public class AdaptiveToolbarStatePredictorTest {
             boolean toolbarSettingsToggleEnabled,
             Integer manualOverride,
             Integer segmentationResult) {
-        return new AdaptiveToolbarStatePredictor(mActivity, mProfile, mAndroidPermissionDelegate) {
+        return new AdaptiveToolbarStatePredictor(
+                mActivity, mProfile, mAndroidPermissionDelegate, /* behavior= */ null) {
             @Override
             int readManualOverrideFromPrefs() {
                 return manualOverride;

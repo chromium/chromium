@@ -55,7 +55,7 @@ class DeepScanningUtilsUMATest
     : public testing::TestWithParam<
           std::tuple<bool, DeepScanAccessPoint, BinaryUploadService::Result>> {
  public:
-  DeepScanningUtilsUMATest() {}
+  DeepScanningUtilsUMATest() = default;
 
   bool is_cloud() const { return std::get<0>(GetParam()); }
 

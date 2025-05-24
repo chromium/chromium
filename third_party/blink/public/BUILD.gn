@@ -121,9 +121,6 @@ source_set("test_headers") {
   ]
 }
 
-# Depend on this target to use public blink API headers for things like enums
-# and public structures without actually linking against any Blink libraries.
-#
 # See public/common/BUILD.gn for the headers that can be referenced both from
 # the browser- and renderer-side components.
 source_set("blink_headers") {
@@ -134,6 +131,7 @@ source_set("blink_headers") {
     "platform/cross_variant_mojo_util.h",
     "platform/file_path_conversion.h",
     "platform/interface_registry.h",
+    "platform/media/video_capture.h",
     "platform/media/web_media_player_delegate.h",
     "platform/modules/mediastream/media_stream_types.h",
     "platform/modules/mediastream/secure_display_link_tracker.h",
@@ -144,7 +142,6 @@ source_set("blink_headers") {
     "platform/modules/mediastream/web_media_stream_track.h",
     "platform/modules/mediastream/web_platform_media_stream_source.h",
     "platform/modules/remoteplayback/remote_playback_source.h",
-    "platform/modules/remoteplayback/web_remote_playback_client.h",
     "platform/modules/service_worker/web_service_worker_error.h",
     "platform/modules/service_worker/web_service_worker_fetch_context.h",
     "platform/modules/service_worker/web_service_worker_network_provider.h",
@@ -178,7 +175,6 @@ source_set("blink_headers") {
     "platform/web_cache.h",
     "platform/web_callbacks.h",
     "platform/web_common.h",
-    "platform/web_computed_ax_tree.h",
     "platform/web_connection_type.h",
     "platform/web_content_decryption_module.h",
     "platform/web_content_decryption_module_access.h",
@@ -259,7 +255,6 @@ source_set("blink_headers") {
     "platform/web_url_request_util.h",
     "platform/web_url_response.h",
     "platform/web_v8_value_converter.h",
-    "platform/web_vector.h",
     "platform/web_video_frame_submitter.h",
     "platform/web_worker_fetch_context.h",
     "platform/websocket_handshake_throttle.h",
@@ -271,7 +266,6 @@ source_set("blink_headers") {
     "web/modules/media/audio/audio_device_factory.h",
     "web/modules/media/audio/audio_input_ipc_factory.h",
     "web/modules/media/audio/audio_output_ipc_factory.h",
-    "web/modules/media/web_media_player_util.h",
     "web/modules/mediastream/encoded_video_frame.h",
     "web/modules/mediastream/media_stream_video_sink.h",
     "web/modules/mediastream/media_stream_video_source.h",
@@ -292,6 +286,7 @@ source_set("blink_headers") {
     "web/web_ax_enums.h",
     "web/web_ax_object.h",
     "web/web_blob.h",
+    "web/web_bundled_code_cache_generator.h",
     "web/web_console_message.h",
     "web/web_content_capture_client.h",
     "web/web_content_holder.h",
@@ -378,7 +373,6 @@ source_set("blink_headers") {
     "web/web_searchable_form_data.h",
     "web/web_security_policy.h",
     "web/web_select_element.h",
-    "web/web_select_list_element.h",
     "web/web_selector.h",
     "web/web_serialized_script_value.h",
     "web/web_serialized_script_value_version.h",
@@ -416,6 +410,7 @@ source_set("blink_headers") {
     sources += [
       "platform/web_font_prewarmer.h",
       "platform/web_font_rendering_client.h",
+      "platform/win/web_sandbox_support.h",
       "web/win/web_font_family_names.h",
       "web/win/web_font_rendering.h",
     ]
@@ -483,12 +478,14 @@ blink_python_runner("runtime_features_for_public") {
         "../renderer/build/scripts/make_runtime_features_utilities.py",
         "../renderer/build/scripts/make_runtime_features.py",
         "../renderer/build/scripts/templates/features_generated.h.tmpl",
+        "../renderer/build/scripts/templates/web_origin_trials.h.tmpl",
         "../renderer/build/scripts/templates/web_runtime_features_base.h.tmpl",
       ]
 
   outputs = [
     "$blink_public_output_dir/common/features_generated.h",
     "$blink_public_output_dir/platform/web_runtime_features_base.h",
+    "$blink_public_output_dir/web/web_origin_trials.h",
   ]
 
   args = [

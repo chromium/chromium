@@ -28,7 +28,7 @@ class PaymentRequest;
 
 class PaymentRequestBaseDelegate {
  public:
-  virtual ~PaymentRequestBaseDelegate() {}
+  virtual ~PaymentRequestBaseDelegate() = default;
 
   // Gets the PersonalDataManager associated with this PaymentRequest flow.
   // Cannot be null.

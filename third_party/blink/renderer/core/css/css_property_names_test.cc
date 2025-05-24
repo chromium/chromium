@@ -5,27 +5,9 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
-
-TEST(CSSPropertyNamesTest, AlternativeAnimationWithTimeline) {
-  {
-    ScopedScrollTimelineForTest scroll_timeline_enabled(false);
-    ScopedScrollTimelineCurrentTimeForTest current_time_enabled(false);
-    EXPECT_EQ(
-        CSSPropertyID::kAnimation,
-        UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
-  }
-
-  {
-    ScopedScrollTimelineForTest scroll_timeline_enabled(true);
-    EXPECT_EQ(
-        CSSPropertyID::kAlternativeAnimationWithTimeline,
-        UnresolvedCSSPropertyID(/* execution_context */ nullptr, "animation"));
-  }
-}
 
 TEST(CSSPropertyNamesTest, WebkitMaskSize) {
   CSSPropertyID property_id = UnresolvedCSSPropertyID(

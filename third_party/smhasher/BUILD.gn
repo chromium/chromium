@@ -6,15 +6,15 @@
 # that cannot migrate to a more modern hash.
 static_library("murmurhash2") {
   sources = [
-    "src/MurmurHash2.cpp",
-    "src/MurmurHash2.h",
+    "src/src/MurmurHash2.cpp",
+    "src/src/MurmurHash2.h",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
   visibility = [
     "//chrome/browser/android/webapk:webapk_sources",
     "//chrome/browser/apps/app_service",
-    "//components/language_detection/core",
+    "//components/language_detection/core:internals",
     "//components/translate/core/language_detection",
     "//components/webapps/browser",
   ]
@@ -24,8 +24,8 @@ static_library("murmurhash2") {
 # that cannot migrate to a more modern hash.
 static_library("murmurhash3") {
   sources = [
-    "src/MurmurHash3.cpp",
-    "src/MurmurHash3.h",
+    "src/src/MurmurHash3.cpp",
+    "src/src/MurmurHash3.h",
   ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]

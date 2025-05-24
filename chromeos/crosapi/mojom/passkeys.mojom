@@ -6,7 +6,7 @@ module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/account_manager.mojom";
 
-[Stable, Extensible]
+[Extensible]
 // Represents a WebAuthn UserVerificationRequirement. For semantics, compare
 // https://www.w3.org/TR/webauthn-3/#enum-userVerificationRequirement.
 enum UserVerificationRequirement {
@@ -15,7 +15,6 @@ enum UserVerificationRequirement {
   kRequired,
 };
 
-[Stable]
 // A request to create a new passkey with the given RP ID and credential ID.
 struct PasskeyCreationRequest {
   string rp_id;
@@ -25,7 +24,7 @@ struct PasskeyCreationRequest {
   UserVerificationRequirement user_verification;
 };
 
-[Stable, Extensible]
+[Extensible]
 // Response status for a `PasskeyCreationRequest`.
 enum PasskeyCreationError {
   // Catch-all for all unexpected error conditions.
@@ -39,7 +38,6 @@ enum PasskeyCreationError {
   kSecurityDomainSecretUnavailable,
 };
 
-[Stable]
 // The response for a successful `PasskeyCreationRequest`.
 struct PasskeyCreationResponse {
   // The WebAuthn Authenticator Data, as defined in
@@ -47,7 +45,6 @@ struct PasskeyCreationResponse {
   array<uint8> authenticator_data;
 };
 
-[Stable]
 // The result of a `PasskeyCreationRequest`.
 union PasskeyCreationResult {
   // Set on success.
@@ -57,7 +54,6 @@ union PasskeyCreationResult {
   PasskeyCreationError error;
 };
 
-[Stable]
 // A request to generate a WebAuthn assertion for a passkey with the given RP
 // ID and credential ID.
 struct PasskeyAssertionRequest {
@@ -68,7 +64,7 @@ struct PasskeyAssertionRequest {
   UserVerificationRequirement user_verification;
 };
 
-[Stable, Extensible]
+[Extensible]
 // Response status for a `PasskeyAssertionRequest`.
 enum PasskeyAssertionError {
   // Catch-all for all unexpected error conditions.
@@ -84,7 +80,6 @@ enum PasskeyAssertionError {
   kSecurityDomainSecretUnavailable,
 };
 
-[Stable]
 // The response for a successful PasskeyAssertionRequest. Contains a WebAuthn
 // signature for the chosen credential.
 struct PasskeyAssertionResponse {
@@ -96,7 +91,6 @@ struct PasskeyAssertionResponse {
   [MinVersion=1] array<uint8>? authenticator_data;
 };
 
-[Stable]
 // The result of a PasskeyAssertionRequest.
 union PasskeyAssertionResult {
   // Set on success.
@@ -106,7 +100,7 @@ union PasskeyAssertionResult {
   PasskeyAssertionError error;
 };
 
-[Stable, Uuid="43bd6bb3-ca9e-4625-b05a-6353ab22847a"]
+[Uuid="43bd6bb3-ca9e-4625-b05a-6353ab22847a"]
 // Defines an API for accessing passkeys (implemented in ash-chrome).
 //
 // This can trigger OS-level UI, for example to verify the user with a local

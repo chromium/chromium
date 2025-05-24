@@ -8,26 +8,24 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class ExceptionState;
 class Internals;
 class ScriptState;
 class ScriptValue;
+class V8PermissionState;
 
 class InternalsPermission {
   STATIC_ONLY(InternalsPermission);
 
  public:
-  static ScriptPromise<IDLUndefined> setPermission(ScriptState*,
-                                                   Internals&,
-                                                   const ScriptValue&,
-                                                   const WTF::String& state,
-                                                   ExceptionState&);
+  static ScriptPromise<IDLUndefined> setPermission(
+      ScriptState*,
+      Internals&,
+      const ScriptValue&,
+      const V8PermissionState& state,
+      ExceptionState&);
 };
 
 }  // namespace blink

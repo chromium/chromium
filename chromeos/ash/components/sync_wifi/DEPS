@@ -1,17 +1,24 @@
 include_rules = [
-  "+ash/public/cpp",
   "+chromeos/ash/components/browser_context_helper",
   "+chromeos/ash/components/dbus/shill",
   "+chromeos/ash/components/login/login_state",
   "+chromeos/ash/components/network",
+  "+chromeos/ash/components/timer_factory",
+  "+chromeos/ash/services/network_config/in_process_instance.h",
+  "+chromeos/ash/services/network_config/cros_network_config.h",
+  "+chromeos/ash/services/network_config/public",
+  "+chromeos/services/network_config/public",
   "+components/keyed_service/core",
   "+components/onc",
   "+components/prefs",
   "+components/proxy_config",
-  "+components/user_manager",
-  "+components/version_info",
   "+components/sync",
   "+components/sync_preferences",
-  "+chromeos/ash/components/timer_factory",
+  "+components/user_manager",
+  "+components/version_info",
   "+dbus",
+
+  # TODO(crbug.com/402346171): Components should not have dependencies to //ash.
+  # Resolve it.
+  "+ash/public/cpp/network_config_service.h",
 ]

@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API gru operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -300,8 +300,8 @@ tests.forEach(
             options);
         assert_equals(outputs.length, test.outputs.length);
         for (let i = 0; i < outputs.length; ++i) {
-          assert_equals(outputs[i].dataType(), test.outputs[i].dataType);
-          assert_array_equals(outputs[i].shape(), test.outputs[i].shape);
+          assert_equals(outputs[i].dataType, test.outputs[i].dataType);
+          assert_array_equals(outputs[i].shape, test.outputs[i].shape);
         }
       } else {
         const label = 'gru_xxx';

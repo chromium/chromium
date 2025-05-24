@@ -13,13 +13,13 @@
 
 namespace extensions {
 
-// Returns true if the |feature_flag| with the given name is enabled. This
-// CHECKs to validate that |feature_flag| corresponds to a base::Feature of the
+// Returns true if the `feature_flag` with the given name is enabled. This
+// CHECKs to validate that `feature_flag` corresponds to a base::Feature of the
 // same name.
 bool IsFeatureFlagEnabled(const std::string& feature_flag);
 
 // Used to override the set of base::Feature flags while the returned scoper is
-// alive. Clients must ensure that pointers in |features| remain valid
+// alive. Clients must ensure that pointers in `features` remain valid
 // (non-dangling) while the returned scoper is alive (note that features are
 // generally global variables, so this should always be trivially true...).
 using ScopedFeatureFlagsOverride =

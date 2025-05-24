@@ -51,6 +51,7 @@ for (const id of ['defaultbutton', 'custombutton']) {
 
   async function closeListbox() {
     await test_driver.click(select);
+    select.focus();
     await new Promise(requestAnimationFrame);
   }
 
@@ -68,15 +69,7 @@ for (const id of ['defaultbutton', 'custombutton']) {
 
   promise_test(async t => {
     addCloseCleanup(t);
-    // TODO(http://crbug.com/1350299): When focus for custom buttons is fixed,
-    // then we shouldn't need to explicitly focus the custom button like this
-    // anymore.
-    const customButton = select.querySelector('button');
-    if (customButton) {
-      customButton.focus();
-    } else {
-      select.focus();
-    }
+    select.focus();
     assert_false(select.matches(':open'),
       'The select should initially be closed.');
     await test_driver.send_keys(document.activeElement, Space);
@@ -85,7 +78,7 @@ for (const id of ['defaultbutton', 'custombutton']) {
       'The select should be open after pressing space.');
 
     await test_driver.send_keys(document.activeElement, Escape);
-    assert_equals(document.activeElement, customButton ? customButton : select,
+    assert_equals(document.activeElement, select,
       'After dismissing the popover, the invoker button should be focused again.');
   }, `${id}: When the listbox is closed, spacebar should open the listbox.`);
 
@@ -131,15 +124,7 @@ for (const id of ['defaultbutton', 'custombutton']) {
   promise_test(async t => {
     addCloseCleanup(t);
 
-    // TODO(http://crbug.com/1350299): When focus for custom buttons is fixed,
-    // then we shouldn't need to explicitly use the custom button like this
-    // anymore.
-    const customButton = select.querySelector('button');
-    if (customButton) {
-      await test_driver.send_keys(customButton, Enter);
-    } else {
-      await test_driver.send_keys(select, Enter);
-    }
+    await test_driver.send_keys(select, Enter);
     await new Promise(requestAnimationFrame);
     assert_false(select.matches(':open'),
       'Enter should not open the listbox when outside a form.');
@@ -150,11 +135,7 @@ for (const id of ['defaultbutton', 'custombutton']) {
       event.preventDefault();
       formWasSubmitted = true;
     }, {once: true});
-    if (customButton) {
-      await test_driver.send_keys(customButton, Enter);
-    } else {
-      await test_driver.send_keys(select, Enter);
-    }
+    await test_driver.send_keys(select, Enter);
     await new Promise(requestAnimationFrame);
     assert_true(formWasSubmitted,
       'Enter should submit the form when the listbox is closed.');
@@ -197,25 +178,25 @@ for (const id of ['defaultbutton', 'custombutton']) {
     assert_equals(select.value, 'two',
       'The selects value should not change when focusing another option.');
 
+    let firedInput = false;
+    let firedChange = false;
+    select.addEventListener('input', () => firedInput = true);
+    select.addEventListener('change', () => firedChange = true);
     await test_driver.send_keys(document.activeElement, Enter);
     await new Promise(requestAnimationFrame);
     assert_false(select.matches(':open'),
       'The listbox should be closed after pressing enter.');
     assert_equals(select.value, 'one',
       'The selects value should change after pressing enter on a different option.');
+    assert_true(firedInput, 'The input event should be fired when choosing an option.');
+    assert_true(firedChange, 'The change event should be fired when choosing an option.');
   }, `${id}: When the listbox is open, the enter key should commit the selected option.`);
 
   promise_test(async t => {
     addCloseCleanup(t);
 
-    const customButton = select.querySelector('button');
-    if (customButton) {
-      customButton.focus();
-      await test_driver.send_keys(customButton, Space);
-    } else {
-      select.focus();
-      await test_driver.send_keys(select, Space);
-    }
+    select.focus();
+    await test_driver.send_keys(select, Space);
     assert_true(select.matches(':open'),
       'Space should open the listbox.');
     assert_equals(document.activeElement, select.querySelector('.one'),
@@ -228,12 +209,7 @@ for (const id of ['defaultbutton', 'custombutton']) {
     // TODO(crbug.com/40263709): Remove this blur when focus on close is improved.
     document.activeElement.blur();
 
-    if (customButton) {
-      customButton.focus();
-      await test_driver.send_keys(customButton, Space);
-    } else {
-      await test_driver.send_keys(select, Space);
-    }
+    await test_driver.send_keys(select, Space);
     assert_true(select.matches(':open'),
       'Second space should open the listbox.');
     assert_equals(document.activeElement, select.querySelector('.one'),

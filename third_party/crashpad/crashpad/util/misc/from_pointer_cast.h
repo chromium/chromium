@@ -15,6 +15,7 @@
 #ifndef CRASHPAD_UTIL_MISC_FROM_POINTER_CAST_H_
 #define CRASHPAD_UTIL_MISC_FROM_POINTER_CAST_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <cstddef>

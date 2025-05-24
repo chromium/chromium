@@ -16,7 +16,7 @@
 
 - (void)handleDisplay {
   DCHECK(self.handler);
-  [self.handler maybeDisplayDefaultBrowserPromo];
+  [self.handler showDefaultBrowserPromo];
 }
 
 #pragma mark - PromoProtocol

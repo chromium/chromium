@@ -14,7 +14,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
@@ -106,8 +105,7 @@ HistoryClustersService::HistoryClustersService(
     TemplateURLService* template_url_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
     PrefService* prefs)
-    : persist_caches_to_prefs_(GetConfig().persist_caches_to_prefs),
-      is_journeys_feature_flag_enabled_(
+    : is_journeys_feature_flag_enabled_(
           GetConfig().is_journeys_enabled_no_locale_check &&
           IsApplicationLocaleSupportedByJourneys(application_locale)),
       history_service_(history_service),
@@ -215,14 +213,9 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
       visit_context_annotations.status.navigation_end_signals &&
       (visit_context_annotations.status.ukm_page_end_signals ||
        !visit_context_annotations.status.expect_ukm_page_end_signals)) {
-    // If the main Journeys feature is enabled, we want to persist visits.
-    // And if the persist-only switch is enabled, we also want to persist them.
-    if (IsJourneysEnabledAndVisible() ||
-        GetConfig().persist_context_annotations_in_history_db) {
-      history_service_->SetOnCloseContextAnnotationsForVisit(
-          visit_context_annotations.visit_row.visit_id,
-          visit_context_annotations.context_annotations);
-    }
+    history_service_->SetOnCloseContextAnnotationsForVisit(
+        visit_context_annotations.visit_row.visit_id,
+        visit_context_annotations.context_annotations);
     incomplete_visit_context_annotations_.erase(nav_id);
   }
 }
@@ -467,7 +460,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       continue;
     }
     const size_t visible_visits =
-        base::ranges::count_if(cluster.visits, [](const auto& cluster_visit) {
+        std::ranges::count_if(cluster.visits, [](const auto& cluster_visit) {
           // Hidden visits shouldn't contribute to the keyword bag, but Done
           // visits still can, since they are searchable.
           return cluster_visit.score > 0 &&
@@ -557,7 +550,7 @@ void HistoryClustersService::PopulateClusterKeywordCache(
 }
 
 void HistoryClustersService::LoadCachesFromPrefs() {
-  if (!pref_service_ || !persist_caches_to_prefs_) {
+  if (!pref_service_) {
     return;
   }
 
@@ -592,7 +585,7 @@ void HistoryClustersService::LoadCachesFromPrefs() {
 }
 
 void HistoryClustersService::WriteShortCacheToPrefs() {
-  if (!pref_service_ || !persist_caches_to_prefs_) {
+  if (!pref_service_) {
     return;
   }
 
@@ -610,7 +603,7 @@ void HistoryClustersService::WriteShortCacheToPrefs() {
 }
 
 void HistoryClustersService::WriteAllCacheToPrefs() {
-  if (!pref_service_ || !persist_caches_to_prefs_) {
+  if (!pref_service_) {
     return;
   }
 

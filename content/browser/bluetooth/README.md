@@ -106,7 +106,7 @@ Bug tracker: [Blink>Bluetooth]
 * [Web Bluetooth Persistent Permissions]
 
 [Class Diagram of Web Bluetooth through Bluetooth Android]:
-https://sites.google.com/a/chromium.org/dev/developers/design-documents/bluetooth-design-docs/web-bluetooth-through-bluetooth-android-class-diagram
+https://www.chromium.org/developers/design-documents/bluetooth-design-docs/web-bluetooth-through-bluetooth-android-class-diagram/
 [Web Bluetooth Testing]:
 https://docs.google.com/document/d/1Nhv_oVDCodd1pEH_jj9k8gF4rPGb_84VYaZ9IG8M_WY/edit?usp=sharing
 [Web Bluetooth Test Scanning]:

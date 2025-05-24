@@ -8,11 +8,14 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/live_caption/caption_bubble_context.h"
 #include "components/live_caption/caption_bubble_controller.h"
+#include "components/live_caption/caption_controller_base.h"
 #include "components/live_caption/caption_util.h"
+#include "components/live_caption/live_caption_bubble_settings.h"
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/views/caption_bubble.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -21,20 +24,6 @@
 #include "components/soda/soda_installer.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "media/base/media_switches.h"
-#include "ui/native_theme/native_theme.h"
-
-namespace {
-
-const char* const kCaptionStylePrefsToObserve[] = {
-    prefs::kAccessibilityCaptionsTextSize,
-    prefs::kAccessibilityCaptionsTextFont,
-    prefs::kAccessibilityCaptionsTextColor,
-    prefs::kAccessibilityCaptionsTextOpacity,
-    prefs::kAccessibilityCaptionsBackgroundColor,
-    prefs::kAccessibilityCaptionsTextShadow,
-    prefs::kAccessibilityCaptionsBackgroundOpacity};
-
-}  // namespace
 
 namespace captions {
 
@@ -42,11 +31,15 @@ LiveCaptionController::LiveCaptionController(
     PrefService* profile_prefs,
     PrefService* global_prefs,
     const std::string& application_locale,
-    content::BrowserContext* browser_context)
-    : profile_prefs_(profile_prefs),
+    content::BrowserContext* browser_context,
+    std::unique_ptr<CaptionControllerBase::Delegate> delegate)
+    : CaptionControllerBase(profile_prefs,
+                            application_locale,
+                            std::move(delegate)),
       global_prefs_(global_prefs),
       browser_context_(browser_context),
-      application_locale_(application_locale) {
+      caption_bubble_settings_(
+          std::make_unique<LiveCaptionBubbleSettings>(profile_prefs)) {
   base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled2",
                             IsLiveCaptionFeatureSupported());
 
@@ -54,27 +47,23 @@ LiveCaptionController::LiveCaptionController(
   if (!IsLiveCaptionFeatureSupported()) {
     return;
   }
-
-  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-  pref_change_registrar_->Init(profile_prefs_);
   auto* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line &&
       command_line->HasSwitch(switches::kEnableLiveCaptionPrefForTesting)) {
-    profile_prefs_->SetBoolean(prefs::kLiveCaptionEnabled, true);
+    profile_prefs->SetBoolean(prefs::kLiveCaptionEnabled, true);
   }
 
-  pref_change_registrar_->Add(
+  pref_change_registrar()->Add(
       prefs::kLiveCaptionEnabled,
       base::BindRepeating(&LiveCaptionController::OnLiveCaptionEnabledChanged,
                           base::Unretained(this)));
-  pref_change_registrar_->Add(
+  pref_change_registrar()->Add(
       prefs::kLiveCaptionLanguageCode,
       base::BindRepeating(&LiveCaptionController::OnLiveCaptionLanguageChanged,
                           base::Unretained(this)));
 
   enabled_ = IsLiveCaptionEnabled();
   base::UmaHistogramBoolean("Accessibility.LiveCaption2", enabled_);
-
   MaybeSetLiveCaptionLanguage();
 
   if (enabled_) {
@@ -96,14 +85,13 @@ void LiveCaptionController::RegisterProfilePrefs(
       prefs::kLiveCaptionBubbleExpanded, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      prefs::kLiveCaptionBubblePinned, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
       prefs::kLiveCaptionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kLiveCaptionMaskOffensiveWords, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterBooleanPref(prefs::kHeadlessCaptionEnabled, false,
+                                /*flags=*/0);
 
   // Initially default the language to en-US. The language
   // preference value will be set to a default language when Live Caption is
@@ -115,14 +103,6 @@ void LiveCaptionController::RegisterProfilePrefs(
   registry->RegisterListPref(
       prefs::kLiveCaptionMediaFoundationRendererErrorSilenced,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Flags for User Microphone Captioning are only available on ash.
-  registry->RegisterBooleanPref(prefs::kLiveCaptionUserMicrophoneEnabled,
-                                false);
-  registry->RegisterStringPref(prefs::kUserMicrophoneCaptionLanguageCode,
-                               speech::kUsEnglishLocale);
-#endif
 }
 
 void LiveCaptionController::OnLiveCaptionEnabledChanged() {
@@ -136,15 +116,14 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
     StartLiveCaption();
   } else {
     StopLiveCaption();
-    speech::SodaInstaller::GetInstance()->SetUninstallTimer(profile_prefs_,
+    speech::SodaInstaller::GetInstance()->SetUninstallTimer(profile_prefs(),
                                                             global_prefs_);
   }
 }
 
 void LiveCaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_) {
-    const auto language_code =
-        prefs::GetLiveCaptionLanguageCode(profile_prefs_);
+    const auto language_code = GetLanguageCode();
     auto* soda_installer = speech::SodaInstaller::GetInstance();
     // Only trigger an install when the language is not already installed.
     if (!soda_installer->IsSodaInstalled(
@@ -155,7 +134,7 @@ void LiveCaptionController::OnLiveCaptionLanguageChanged() {
 }
 
 bool LiveCaptionController::IsLiveCaptionEnabled() {
-  return profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
+  return profile_prefs()->GetBoolean(prefs::kLiveCaptionEnabled);
 }
 
 void LiveCaptionController::StartLiveCaption() {
@@ -165,12 +144,11 @@ void LiveCaptionController::StartLiveCaption() {
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
   // that time.
   if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-          speech::GetLanguageCode(
-              prefs::GetLiveCaptionLanguageCode(profile_prefs_)))) {
+          speech::GetLanguageCode(GetLanguageCode()))) {
     CreateUI();
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
-    speech::SodaInstaller::GetInstance()->Init(profile_prefs_, global_prefs_);
+    speech::SodaInstaller::GetInstance()->Init(profile_prefs(), global_prefs_);
   }
 }
 
@@ -180,17 +158,23 @@ void LiveCaptionController::StopLiveCaption() {
   DestroyUI();
 }
 
+CaptionBubbleSettings* LiveCaptionController::caption_bubble_settings() {
+  return caption_bubble_settings_.get();
+}
+
 void LiveCaptionController::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_)) {
-    return;
-  }
   // Live Caption should always be enabled when this is called. If Live Caption
   // has been disabled, then this should not be observing the SodaInstaller
   // anymore.
   DCHECK(enabled_);
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-  CreateUI();
+  bool is_language_code_for_live_caption =
+      prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs());
+
+  if (is_language_code_for_live_caption) {
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+    CreateUI();
+  }
 }
 
 void LiveCaptionController::OnSodaInstallError(
@@ -198,65 +182,17 @@ void LiveCaptionController::OnSodaInstallError(
     speech::SodaInstaller::ErrorCode error_code) {
   // Check that language code matches the selected language for Live Caption or
   // is LanguageCode::kNone (signifying the SODA binary failed).
-  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_) &&
+  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs()) &&
       language_code != speech::LanguageCode::kNone) {
     return;
   }
   if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
-    profile_prefs_->SetBoolean(prefs::kLiveCaptionEnabled, false);
+    profile_prefs()->SetBoolean(prefs::kLiveCaptionEnabled, false);
   }
 }
 
-void LiveCaptionController::CreateUI() {
-  if (is_ui_constructed_) {
-    return;
-  }
-
-  is_ui_constructed_ = true;
-
-  caption_bubble_controller_ =
-      CaptionBubbleController::Create(profile_prefs_, application_locale_);
-  caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
-
-  // Observe native theme changes for caption style updates.
-  ui::NativeTheme::GetInstanceForWeb()->AddObserver(this);
-
-  // Observe caption style prefs.
-  for (const char* const pref_name : kCaptionStylePrefsToObserve) {
-    DCHECK(!pref_change_registrar_->IsObserved(pref_name));
-    pref_change_registrar_->Add(
-        pref_name,
-        base::BindRepeating(&LiveCaptionController::OnCaptionStyleUpdated,
-                            base::Unretained(this)));
-  }
-  OnCaptionStyleUpdated();
-}
-
-void LiveCaptionController::DestroyUI() {
-  if (!is_ui_constructed_) {
-    return;
-  }
-  is_ui_constructed_ = false;
-  caption_bubble_controller_.reset(nullptr);
-
-  // Remove native theme observer.
-  ui::NativeTheme::GetInstanceForWeb()->RemoveObserver(this);
-
-  // Remove prefs to observe.
-  for (const char* const pref_name : kCaptionStylePrefsToObserve) {
-    DCHECK(pref_change_registrar_->IsObserved(pref_name));
-    pref_change_registrar_->Remove(pref_name);
-  }
-}
-
-bool LiveCaptionController::DispatchTranscription(
-    CaptionBubbleContext* caption_bubble_context,
-    const media::SpeechRecognitionResult& result) {
-  if (!caption_bubble_controller_) {
-    return false;
-  }
-  return caption_bubble_controller_->OnTranscription(caption_bubble_context,
-                                                     result);
+const std::string LiveCaptionController::GetLanguageCode() const {
+  return prefs::GetLiveCaptionLanguageCode(profile_prefs());
 }
 
 void LiveCaptionController::OnError(
@@ -264,30 +200,12 @@ void LiveCaptionController::OnError(
     CaptionBubbleErrorType error_type,
     OnErrorClickedCallback error_clicked_callback,
     OnDoNotShowAgainClickedCallback error_silenced_callback) {
-  if (!caption_bubble_controller_) {
+  if (!caption_bubble_controller()) {
     CreateUI();
   }
-  caption_bubble_controller_->OnError(caption_bubble_context, error_type,
-                                      std::move(error_clicked_callback),
-                                      std::move(error_silenced_callback));
-}
-
-void LiveCaptionController::OnAudioStreamEnd(
-    CaptionBubbleContext* caption_bubble_context) {
-  if (!caption_bubble_controller_) {
-    return;
-  }
-  caption_bubble_controller_->OnAudioStreamEnd(caption_bubble_context);
-}
-
-void LiveCaptionController::OnLanguageIdentificationEvent(
-    CaptionBubbleContext* caption_bubble_context,
-    const media::mojom::LanguageIdentificationEventPtr& event) {
-  // TODO(crbug.com/40167928): Implement the UI for language identification.
-  if (caption_bubble_controller_) {
-    return caption_bubble_controller_->OnLanguageIdentificationEvent(
-        caption_bubble_context, event);
-  }
+  caption_bubble_controller()->OnError(caption_bubble_context, error_type,
+                                       std::move(error_clicked_callback),
+                                       std::move(error_silenced_callback));
 }
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
@@ -304,34 +222,26 @@ void LiveCaptionController::OnToggleFullscreen(
 }
 #endif
 
-void LiveCaptionController::OnCaptionStyleUpdated() {
-  // Metrics are recorded when passing the caption prefs to the browser, so do
-  // not duplicate them here.
-  caption_style_ = GetCaptionStyleFromUserSettings(profile_prefs_,
-                                                   false /* record_metrics */);
-  caption_bubble_controller_->UpdateCaptionStyle(caption_style_);
-}
-
 void LiveCaptionController::MaybeSetLiveCaptionLanguage() {
   // If the current Live Caption language is not installed,
   // reset the Live Caption language code to the application locale or preferred
   // language if available.
   if (speech::SodaInstaller::GetInstance() &&
-      profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode) ==
+      profile_prefs()->GetString(prefs::kLiveCaptionLanguageCode) ==
           speech::kUsEnglishLocale &&
       speech::SodaInstaller::GetInstance()
           ->GetLanguagePath(
-              profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode))
+              profile_prefs()->GetString(prefs::kLiveCaptionLanguageCode))
           .empty()) {
     speech::SodaInstaller::GetInstance()->UnregisterLanguage(
         speech::kUsEnglishLocale, global_prefs_);
     speech::SodaInstaller::GetInstance()->RegisterLanguage(
-        speech::GetDefaultLiveCaptionLanguage(application_locale_,
-                                              profile_prefs_),
+        speech::GetDefaultLiveCaptionLanguage(application_locale(),
+                                              profile_prefs()),
         global_prefs_);
-    profile_prefs_->SetString(prefs::kLiveCaptionLanguageCode,
-                              speech::GetDefaultLiveCaptionLanguage(
-                                  application_locale_, profile_prefs_));
+    profile_prefs()->SetString(prefs::kLiveCaptionLanguageCode,
+                               speech::GetDefaultLiveCaptionLanguage(
+                                   application_locale(), profile_prefs()));
   }
 }
 

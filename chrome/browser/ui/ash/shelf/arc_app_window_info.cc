@@ -7,6 +7,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/intent.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 
 namespace {
 
@@ -18,12 +19,14 @@ constexpr char kLogicalWindowIntentPrefix[] =
 
 std::string GetLogicalWindowIdFromIntent(const std::string& launch_intent) {
   auto intent = arc::Intent::Get(launch_intent);
-  if (!intent)
+  if (!intent) {
     return std::string();
+  }
   const std::string prefix(kLogicalWindowIntentPrefix);
   for (const auto& param : intent->extra_params()) {
-    if (base::StartsWith(param, prefix, base::CompareCase::SENSITIVE))
+    if (base::StartsWith(param, prefix, base::CompareCase::SENSITIVE)) {
       return param.substr(prefix.length());
+    }
   }
   return std::string();
 }
@@ -52,8 +55,9 @@ void ArcAppWindowInfo::SetDescription(const std::string& title,
   title_ = title;
 
   // Chrome has custom Play Store icon. Don't overwrite it.
-  if (app_shelf_id_.app_id() == arc::kPlayStoreAppId)
+  if (app_shelf_id_.app_id() == arc::kPlayStoreAppId) {
     return;
+  }
   icon_ = icon;
 }
 
@@ -66,8 +70,9 @@ void ArcAppWindowInfo::set_window_hidden_from_shelf(bool hidden) {
 
 void ArcAppWindowInfo::UpdateWindowProperties() {
   aura::Window* const win = window();
-  if (!win)
+  if (!win) {
     return;
+  }
   bool hidden = window_hidden_from_shelf_ || task_hidden_from_shelf_;
   win->SetProperty(ash::kHideInDeskMiniViewKey, hidden);
   win->SetProperty(ash::kHideInOverviewKey, hidden);
@@ -75,8 +80,9 @@ void ArcAppWindowInfo::UpdateWindowProperties() {
 }
 
 void ArcAppWindowInfo::set_window(aura::Window* window) {
-  if (window_ == window)
+  if (window_ == window) {
     return;
+  }
 
   if (window_ && observed_window_.IsObservingSource(window_.get())) {
     observed_window_.Reset();
@@ -85,8 +91,9 @@ void ArcAppWindowInfo::set_window(aura::Window* window) {
   window_ = window;
   UpdateWindowProperties();
 
-  if (window && !observed_window_.IsObservingSource(window))
+  if (window && !observed_window_.IsObservingSource(window)) {
     observed_window_.Observe(window);
+  }
 }
 
 aura::Window* ArcAppWindowInfo::ArcAppWindowInfo::window() {

@@ -5,9 +5,9 @@
 #ifndef UI_GFX_CA_LAYER_PARAMS_H_
 #define UI_GFX_CA_LAYER_PARAMS_H_
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include "ui/gfx/mac/io_surface.h"
@@ -17,7 +17,7 @@ namespace gfx {
 
 // The parameters required to add a composited frame to a CALayer. This
 // is used only on macOS.
-struct GFX_EXPORT CALayerParams {
+struct COMPONENT_EXPORT(GFX) CALayerParams {
   CALayerParams();
   CALayerParams(CALayerParams&& params);
   CALayerParams(const CALayerParams& params);

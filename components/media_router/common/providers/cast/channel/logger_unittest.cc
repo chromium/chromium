@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/media_router/common/providers/cast/channel/logger.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
 #include <string>
 
 #include "components/media_router/common/providers/cast/channel/cast_auth_util.h"
-#include "components/media_router/common/providers/cast/channel/logger.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

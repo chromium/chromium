@@ -5,17 +5,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
-#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "chrome/test/user_education/interactive_feature_promo_test_common.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/data_sharing/public/features.h"
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/prefs/pref_service.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/interactive_test.h"
@@ -28,13 +27,14 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
             {feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature})) {
     if (GetParam()) {
       feature_list_.InitWithFeatures(
-          {{tab_groups::kTabGroupSyncServiceDesktopMigration,
-            tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
-          {});
+          {tab_groups::kTabGroupSyncServiceDesktopMigration,
+           data_sharing::features::kDataSharingFeature},
+          {data_sharing::features::kDataSharingJoinOnly});
     } else {
       feature_list_.InitWithFeatures(
-          {{tab_groups::kTabGroupsSaveV2, tab_groups::kTabGroupsSaveUIUpdate}},
-          {});
+          {}, {tab_groups::kTabGroupSyncServiceDesktopMigration,
+               data_sharing::features::kDataSharingFeature,
+               data_sharing::features::kDataSharingJoinOnly});
     }
   }
 
@@ -47,7 +47,6 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
               tab_groups::SavedTabGroupUtils::GetServiceForProfile(
                   browser()->profile());
           ASSERT_TRUE(service);
-          service->SetIsInitializedForTesting(true);
 
           chrome::AddTabAt(browser(), GURL(), 0, true);
           chrome::AddTabAt(browser(), GURL(), 1, true);
@@ -58,7 +57,7 @@ class SavedTabGroupV2PromoTest : public InteractiveFeaturePromoTest,
                                                                   group_id);
         }),
         WaitForPromo(feature_engagement::kIPHTabGroupsSaveV2CloseGroupFeature));
-    AddDescription(steps, "SaveAndCloseGroup( %s )");
+    AddDescriptionPrefix(steps, "SaveAndCloseGroup()");
     return steps;
   }
 

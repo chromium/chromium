@@ -3,16 +3,18 @@
 # found in the LICENSE file.
 
 import("///build/config/ozone.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")  # For `target_platform`
+}
 
 component("clipboard_types") {
   output_name = "ui_base_clipboard_types"
   sources = [
     "clipboard_buffer.h",
-    "clipboard_constants.cc",
     "clipboard_constants.h",
   ]
 
@@ -90,6 +92,8 @@ component("clipboard") {
   sources = [
     "clipboard.cc",
     "clipboard.h",
+    "clipboard_change_notifier.cc",
+    "clipboard_change_notifier.h",
     "clipboard_metrics.cc",
     "clipboard_metrics.h",
     "clipboard_monitor.cc",
@@ -129,10 +133,14 @@ component("clipboard") {
   }
 
   if (is_ios) {
-    sources += [
-      "clipboard_ios.h",
-      "clipboard_ios.mm",
-    ]
+    if (target_platform == "tvos") {
+      sources += [ "clipboard_tvos.mm" ]
+    } else {
+      sources += [
+        "clipboard_ios.h",
+        "clipboard_ios.mm",
+      ]
+    }
   }
 
   if (is_win) {
@@ -148,7 +156,6 @@ component("clipboard") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//mojo/public/cpp/base",
     "//net",
     "//ui/base:features",
@@ -216,7 +223,6 @@ source_set("clipboard_test_support") {
   deps = [
     "//base/test:test_support",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//ui/base:features",
     "//ui/gfx",
   ]
@@ -277,7 +283,7 @@ source_set("clipboard_test") {
     deps += [ ":url_file_parser" ]
   }
 
-  if ((use_aura && !is_chromeos_lacros) || is_mac) {
+  if (use_aura || is_mac) {
     sources += [
       "clipboard_data_unittest.cc",
       "clipboard_non_backed_unittest.cc",

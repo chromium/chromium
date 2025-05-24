@@ -27,7 +27,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/aura/window.h"
@@ -48,7 +48,6 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -146,7 +145,7 @@ class ClosePromoButton : public views::ImageButton {
   METADATA_HEADER(ClosePromoButton, views::ImageButton)
 
  public:
-  ClosePromoButton(const std::u16string accessible_name,
+  ClosePromoButton(const std::u16string& accessible_name,
                    PressedCallback callback) {
     SetCallback(std::move(callback));
     views::ConfigureVectorImageButton(this);
@@ -283,6 +282,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
                                TranslateArrow(params.arrow),
                                views::BubbleBorder::STANDARD_SHADOW),
       id_(id) {
+  SetBackgroundColor(cros_tokens::kCrosSysDialogContainer);
   SetCanActivate(true);
 
   // When hosted within a `views::ScrollView`, the anchor view may be
@@ -386,7 +386,7 @@ HelpBubbleViewAsh::HelpBubbleViewAsh(
   // Add the body icon (optional).
   constexpr int kBodyIconSize = 20;
   constexpr int kBodyIconBackgroundSize = 24;
-  if (body_icon && (body_icon != &gfx::kNoneIcon)) {
+  if (body_icon && (body_icon != &gfx::VectorIcon::EmptyIcon())) {
     icon_view_ = top_text_container->AddChildViewAt(
         views::Builder<views::ImageView>()
             .SetAccessibleName(params.body_icon_alt_text)
@@ -740,7 +740,8 @@ void HelpBubbleViewAsh::OnWidgetActivationChanged(views::Widget* widget,
   if (widget == GetWidget()) {
     if (active) {
       ++activate_count_;
-      auto_close_timer_.AbandonAndStop();
+      auto_close_timer_.Stop();
+      GetWidget()->UpdateAccessibleNameForRootView();
     } else {
       MaybeStartAutoCloseTimer();
     }
@@ -757,10 +758,6 @@ void HelpBubbleViewAsh::OnThemeChanged() {
   views::BubbleDialogDelegateView::OnThemeChanged();
 
   const auto* color_provider = GetColorProvider();
-  const SkColor background_color =
-      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
-  set_color(background_color);
-
   const SkColor foreground_color =
       color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
   if (icon_view_) {
@@ -768,6 +765,8 @@ void HelpBubbleViewAsh::OnThemeChanged() {
         foreground_color, icon_view_->GetPreferredSize().height() / 2));
   }
 
+  const SkColor background_color =
+      color_provider->GetColor(cros_tokens::kCrosSysDialogContainer);
   for (views::Label* label : labels_) {
     label->SetBackgroundColor(background_color);
     label->SetEnabledColor(foreground_color);
@@ -902,7 +901,7 @@ void HelpBubbleViewAsh::UpdateRoundedCorners() {
   const float lower_left = dx < 0 && dy > 0 ? kSmall : kDefault;
 
   // Update rounded corners.
-  GetBubbleFrameView()->bubble_border()->set_rounded_corners(
+  GetBubbleFrameView()->SetRoundedCorners(
       gfx::RoundedCornersF(upper_left, upper_right, lower_right, lower_left));
 }
 

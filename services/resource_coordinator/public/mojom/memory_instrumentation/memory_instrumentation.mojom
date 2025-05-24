@@ -9,24 +9,23 @@ import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // Common structs:
-
 enum DumpType {
   PERIODIC_INTERVAL,
   EXPLICITLY_TRIGGERED,
-  SUMMARY_ONLY
+  SUMMARY_ONLY,
 };
 
 enum LevelOfDetail {
   BACKGROUND,
   LIGHT,
-  DETAILED
+  DETAILED,
 };
 
 // Tells the MemoryDumpProvider(s) if they should try to make the result
 // more deterministic by forcing garbage collection.
 enum Determinism {
   NONE,
-  FORCE_GC
+  FORCE_GC,
 };
 
 enum ProcessType {
@@ -36,7 +35,7 @@ enum ProcessType {
   GPU,
   UTILITY,
   PLUGIN,
-  ARC
+  ARC,
 };
 
 enum MemoryMapOption {
@@ -49,13 +48,22 @@ enum MemoryMapOption {
   MODULES,
 
   // Fetch information for every single mapped region.
-  FULL
+  FULL,
+};
+
+enum MemDumpFlags {
+  // On Linux platforms, populate the mappings_count field of RawOSMemDump.
+  MEM_DUMP_COUNT_MAPPINGS = 0,
+  // On Linux platforms, populate the pss_kb and swap_pss_kb fields of
+  // RawOSMemDump.
+  MEM_DUMP_PSS = 1,
+  // On Android, populate the native_library_pages_bitmap field of RawOSMemDump.
+  MEM_DUMP_PAGES_BITMAP = 2,
 };
 
 // These structs are internal only (only for the communication between
 // the service and the ClientProcess library).
 // See corresponding types in //base/trace_event for comments.
-
 struct RequestArgs {
   uint64 dump_guid;
   DumpType dump_type;
@@ -158,10 +166,22 @@ struct RawOSMemDump {
   // Each bit corresponds to a page. The bit is set if the page
   // is mapped and resident in memory.
   array<uint8> native_library_pages_bitmap;
+
+  // How many memory mappings exist in the process. 0 is an invalid value, ie
+  // that collection failed.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 mappings_count = 0;
+
+  // PSS for the process. 0 indicates that collection failed.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 pss_kb = 0;
+
+  // Swap PSS for the process. 0 indicates that collection failed.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 swap_pss_kb = 0;
 };
 
 // These structs are public:
-
 struct OSMemDump {
   uint32 resident_set_kb = 0;
 
@@ -182,10 +202,28 @@ struct OSMemDump {
   // in kilobytes. For more details, see https://goo.gl/3kPb9S.
   uint32 shared_footprint_kb = 0;
 
-  // This is private swapped memory in kilobytes reported on Linux and Android
-  // only.
-  [EnableIf=private_swap_info]
+  // This is private swapped memory in kilobytes reported on Linux, ChromeOS and
+  // Android only.
+  [EnableIf=is_android|is_chromeos|is_linux]
   uint32 private_footprint_swap_kb = 0;
+
+  // How many memory mappings exist in the process. 0 is an invalid value
+  // (collection failed)
+  //
+  // The number of VMAs a process is allowed to have is limited by the kernel,
+  // by default to a bit less than 2^16 (see DEFAULT_MAX_MAP_COUNT in
+  // include/linux/mm.h in the kernel), and Chromium occasionally bumps into the
+  // limit. Report it.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 mappings_count = 0;
+
+  // PSS for the process. 0 is recorded when collection fails.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 pss_kb = 0;
+
+  // Swap PSS for the process. 0 is recorded when collection fails.
+  [EnableIf=is_android|is_chromeos|is_linux]
+  uint32 swap_pss_kb = 0;
 };
 
 // This struct contains information about a particular allocator dump
@@ -247,8 +285,10 @@ interface ClientProcess {
   // When |success| == true the dump is appended in the process-local trace
   // buffer of the target process and an ACK. A summary of the dump is also
   // returned in case of success.
-  RequestChromeMemoryDump(RequestArgs args) =>
-      (bool success, uint64 dump_id, RawProcessMemoryDump? raw_process_memory_dump);
+  RequestChromeMemoryDump(RequestArgs args)
+      => (bool success,
+          uint64 dump_id,
+          RawProcessMemoryDump? raw_process_memory_dump);
 
   // Requests an OSMemDump for each pid in |pids|.
   // The Memory-infra service deals with two kinds of information:
@@ -264,8 +304,11 @@ interface ClientProcess {
   // On Linux we call this once on the browser process ClientProcess passing
   // the pids for all processes.
   // See crbug.com/461788
-  RequestOSMemoryDump(MemoryMapOption option, array<mojo_base.mojom.ProcessId> pids) =>
-      (bool success, map<mojo_base.mojom.ProcessId, RawOSMemDump> dumps);
+  RequestOSMemoryDump(
+      MemoryMapOption option,
+      array<MemDumpFlags> flags,
+      array<mojo_base.mojom.ProcessId> pids)
+      => (bool success, map<mojo_base.mojom.ProcessId, RawOSMemDump> dumps);
 };
 
 struct HeapProfileResult {
@@ -291,9 +334,9 @@ interface HeapProfiler {
   // uploaded to the crash servers - this strips potential PII, but prevents
   // symbolization of local builds.
   // |write_proto| will additionally write proto heap profiles to traces.
-  DumpProcessesForTracing(bool strip_path_from_mapped_files,
-                          bool write_proto) =>
-      (array<HeapProfileResult> results);
+  DumpProcessesForTracing(
+      bool strip_path_from_mapped_files, bool write_proto)
+      => (array<HeapProfileResult> results);
 };
 
 // Implemented by resource_coordinator to provide additional information needed
@@ -301,8 +344,8 @@ interface HeapProfiler {
 interface HeapProfilerHelper {
   // Broadcasts a RequestOSMemoryDump-only request for all registered client
   // processes and retrieves only their memory maps.
-  GetVmRegionsForHeapProfiler(array<mojo_base.mojom.ProcessId> pids) =>
-      (map<mojo_base.mojom.ProcessId, array<VmRegion>> vm_regions);
+  GetVmRegionsForHeapProfiler(array<mojo_base.mojom.ProcessId> pids)
+      => (map<mojo_base.mojom.ProcessId, array<VmRegion>> vm_regions);
 };
 
 // The memory-infra service implements this interface. There is one instance for
@@ -321,27 +364,28 @@ interface Coordinator {
   RequestGlobalMemoryDump(DumpType dump_type,
                           LevelOfDetail level_of_detail,
                           Determinism determinism,
-                          array<string> allocator_dump_names) =>
-      (bool success, GlobalMemoryDump? global_memory_dump);
+                          array<string> allocator_dump_names)
+      => (bool success, GlobalMemoryDump? global_memory_dump);
 
   // Sends a dump request to the client process given by the specified pid and
   // returns a summarized dump back or null if there was a failure.
-  RequestGlobalMemoryDumpForPid(mojo_base.mojom.ProcessId pid,
-                                array<string> allocator_dump_names) =>
-      (bool success, GlobalMemoryDump? global_memory_dump);
+  RequestGlobalMemoryDumpForPid(
+      mojo_base.mojom.ProcessId pid, array<string> allocator_dump_names)
+      => (bool success, GlobalMemoryDump? global_memory_dump);
 
   // Requesting a null pid is the same as requesting all pids.
   // The returned dump only contains OS metrics. |chrome_allocator_dumps| will
   // be empty.
-  RequestPrivateMemoryFootprint(mojo_base.mojom.ProcessId pid) =>
-      (bool success, GlobalMemoryDump? global_memory_dump);
+  RequestPrivateMemoryFootprint(mojo_base.mojom.ProcessId pid)
+      => (bool success, GlobalMemoryDump? global_memory_dump);
 
-  // Broadcasts a dump request to all registered client processes and injects the
+  // Broadcasts a dump request to all registered client processes and injects
+  // the
   // dump in the trace buffer (if tracing is enabled).
   RequestGlobalMemoryDumpAndAppendToTrace(DumpType dump_type,
                                           LevelOfDetail level_of_detail,
-                                          Determinism determinism) =>
-      (bool success, uint64 dump_id);
+                                          Determinism determinism)
+      => (bool success, uint64 dump_id);
 };
 
 // An interface used by client processes to register themselves with a

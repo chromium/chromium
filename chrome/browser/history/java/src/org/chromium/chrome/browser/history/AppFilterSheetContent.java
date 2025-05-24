@@ -5,14 +5,18 @@
 package org.chromium.chrome.browser.history;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** BottomSheetContent implementation for app filter bottom sheet. */
+@NullMarked
 class AppFilterSheetContent implements BottomSheetContent {
     private final View mContentView;
     private final View mToolbarView;
@@ -60,11 +64,6 @@ class AppFilterSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getHalfHeightRatio() {
         return BottomSheetContent.HeightMode.DISABLED;
     }
@@ -75,22 +74,22 @@ class AppFilterSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.history_app_filter_sheet_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.history_app_filter_sheet_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
-        return 0; // disabled
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
+        return Resources.ID_NULL; // disabled
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.history_app_filter_sheet_opened;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.history_app_filter_sheet_closed;
     }
 }

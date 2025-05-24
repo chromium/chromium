@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://customize-chrome-side-panel.top-chrome/app.js';
+import 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
+import 'chrome://customize-chrome-side-panel.top-chrome/strings.m.js';
 
 import type {ThemeHueSliderDialogElement} from 'chrome://resources/cr_components/theme_color_picker/theme_hue_slider_dialog.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -124,19 +125,24 @@ suite('CrComponentsThemeHueSliderDialogTest', () => {
 
   test('HidesWhenClickingOutsideDialog', () => {
     const anchor = document.createElement('div');
+    anchor.style.position = 'fixed';
+    anchor.style.top = `400px`;
+    anchor.style.left = `400px`;
     document.body.appendChild(anchor);
     element.showAt(anchor);
 
     // Clicks within dialog should do nothing.
-    element.$.dialog.dispatchEvent(
-        new PointerEvent('pointerdown', {composed: true, bubbles: true}));
+    element.$.contentsWrapper.dispatchEvent(new PointerEvent('pointerdown', {
+      composed: true,
+      bubbles: true,
+    }));
     assertTrue(element.$.dialog.open);
 
     // Clicking anywhere outside dialog should close the dialog.
-    const externalElement = document.createElement('div');
-    document.body.appendChild(externalElement);
-    externalElement.dispatchEvent(
-        new PointerEvent('pointerdown', {composed: true, bubbles: true}));
+    element.$.dialog.dispatchEvent(new PointerEvent('pointerdown', {
+      composed: true,
+      bubbles: true,
+    }));
     assertFalse(element.$.dialog.open);
   });
 });

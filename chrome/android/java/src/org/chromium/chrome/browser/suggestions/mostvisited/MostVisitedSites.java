@@ -15,7 +15,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** Methods to provide most recent urls, titles and thumbnails. */
-public interface MostVisitedSites {
+public interface MostVisitedSites extends CustomLinkOperations {
     /** An interface for handling events in {@link MostVisitedSites}. */
     interface Observer {
         /** This is called when the list of most visited URLs is initially available or updated. */
@@ -52,6 +52,7 @@ public interface MostVisitedSites {
     /**
      * Sets the recipient for events from {@link MostVisitedSites}. The observer may be notified
      * synchronously or asynchronously.
+     *
      * @param observer The observer to be notified.
      * @param numSites The maximum number of sites to return.
      */

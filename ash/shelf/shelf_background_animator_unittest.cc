@@ -352,7 +352,7 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromLogin) {
   NotifySessionStateChanged(session_manager::SessionState::LOGIN_PRIMARY);
   EXPECT_EQ(test_api.shelf_background_target_color(), SK_ColorTRANSPARENT);
 
-  SimulateUserLogin("user1@test.com");
+  SimulateUserLogin({"user1@test.com"});
 
   NotifySessionStateChanged(session_manager::SessionState::ACTIVE);
   EXPECT_EQ(test_api.shelf_background_target_color(),
@@ -371,7 +371,7 @@ TEST_F(ShelfBackgroundTargetColorTest, ShelfBackgroundColorUpdatedFromOOBE) {
   NotifySessionStateChanged(session_manager::SessionState::OOBE);
   EXPECT_EQ(test_api.shelf_background_target_color(), SK_ColorTRANSPARENT);
 
-  SimulateUserLogin("user1@test.com");
+  SimulateUserLogin({"user1@test.com"});
 
   NotifySessionStateChanged(
       session_manager::SessionState::LOGGED_IN_NOT_ACTIVE);

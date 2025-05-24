@@ -11,7 +11,7 @@ namespace blink {
 
 class CSSPathInterpolationType : public CSSInterpolationType {
  public:
-  CSSPathInterpolationType(PropertyHandle property)
+  explicit CSSPathInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   void ApplyStandardPropertyValue(const InterpolableValue&,
@@ -30,7 +30,7 @@ class CSSPathInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
       const ComputedStyle&) const final;

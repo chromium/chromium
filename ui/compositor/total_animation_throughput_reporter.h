@@ -13,8 +13,8 @@
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "ui/compositor/compositor_export.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/compositor_observer.h"
-#include "ui/compositor/throughput_tracker.h"
 
 namespace ash {
 class LoginUnlockThroughputRecorderTestBase;
@@ -96,7 +96,9 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
 
   base::WeakPtr<ui::TotalAnimationThroughputReporter> GetWeakPtr();
 
-  bool IsMeasuringForTesting() const { return bool{throughput_tracker_}; }
+  bool IsMeasuringForTesting() const {
+    return compositor_metrics_tracker_.has_value();
+  }
 
   // The returned scope will delay the animation report until the next
   // |OnFirstNonAnimatedFrameStarted| received after it is destructed. See
@@ -120,11 +122,11 @@ class COMPOSITOR_EXPORT TotalAnimationThroughputReporter
   ReportRepeatingCallback report_repeating_callback_;
   ReportOnceCallback report_once_callback_;
   bool should_delete_ = false;
-  std::optional<ThroughputTracker> throughput_tracker_;
+  std::optional<CompositorMetricsTracker> compositor_metrics_tracker_;
 
-  // These are always recorderd in pairs. Specifically,
+  // These are always recorded in pairs. Specifically,
   // `timestamp_first_animation_started_at_` is recorded when
-  // `throughput_tracker_` is created/started, and
+  // `compositor_metrics_tracker_` is created/started, and
   // `timestamp_last_animation_finished_at_` is recorded when the tracker is
   // stopped/destructed.
   base::TimeTicks timestamp_first_animation_started_at_;

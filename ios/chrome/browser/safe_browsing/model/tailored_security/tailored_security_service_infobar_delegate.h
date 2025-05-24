@@ -5,13 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_TAILORED_SECURITY_TAILORED_SECURITY_SERVICE_INFOBAR_DELEGATE_H_
 
-#import "components/infobars/core/confirm_infobar_delegate.h"
-
 #import <Foundation/Foundation.h>
 
 #import <string>
 
 #import "base/memory/weak_ptr.h"
+#import "components/infobars/core/confirm_infobar_delegate.h"
 
 namespace web {
 class WebState;

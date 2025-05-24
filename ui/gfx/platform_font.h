@@ -8,18 +8,19 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace gfx {
 
-class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
+class COMPONENT_EXPORT(GFX) PlatformFont
+    : public base::RefCounted<PlatformFont> {
  public:
 // The size of the font returned by CreateDefault() on a "default" platform
 // configuration. This allows UI that wants to target a particular size of font

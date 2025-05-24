@@ -9,16 +9,14 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/media_record_id.h"
+#include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
-
-namespace viz {
-struct FrameTimingDetails;
-}
 
 namespace blink {
 
@@ -26,7 +24,7 @@ class ImageResourceContent;
 class PropertyTreeStateOrAlias;
 class StyleFetchedImage;
 class StyleImage;
-
+struct DOMPaintTimingInfo;
 // ImageElementTiming is responsible for tracking the paint timings for <img>
 // elements for a given window.
 class CORE_EXPORT ImageElementTiming final
@@ -42,7 +40,7 @@ class CORE_EXPORT ImageElementTiming final
   explicit ImageElementTiming(LocalDOMWindow&);
   ImageElementTiming(const ImageElementTiming&) = delete;
   ImageElementTiming& operator=(const ImageElementTiming&) = delete;
-  virtual ~ImageElementTiming() = default;
+  ~ImageElementTiming() = default;
 
   static ImageElementTiming& From(LocalDOMWindow&);
 
@@ -70,8 +68,14 @@ class CORE_EXPORT ImageElementTiming final
 
   void Trace(Visitor*) const override;
 
+  std::optional<base::OnceCallback<void(const base::TimeTicks&,
+                                        const DOMPaintTimingInfo&)>>
+  TakePaintTimingCallback();
+
  private:
   friend class ImageElementTimingTest;
+
+  void EnsureContainerTiming();
 
   void NotifyImagePaintedInternal(
       Node&,
@@ -80,10 +84,6 @@ class CORE_EXPORT ImageElementTiming final
       const PropertyTreeStateOrAlias& current_paint_chunk_properties,
       base::TimeTicks load_time,
       const gfx::Rect& image_border);
-
-  // Callback for the presentation promise. Reports paint timestamps.
-  void ReportImagePaintPresentationTime(
-      const viz::FrameTimingDetails& presentation_details);
 
   // Class containing information about image element timing.
   class ElementTimingInfo final : public GarbageCollected<ElementTimingInfo> {
@@ -119,7 +119,7 @@ class CORE_EXPORT ImageElementTiming final
 
   // Vector containing the element timing infos that will be reported during the
   // next presentation promise callback.
-  HeapVector<Member<ElementTimingInfo>> element_timings_;
+  Member<GCedHeapVector<Member<ElementTimingInfo>>> element_timings_;
   struct ImageInfo {
     ImageInfo() {}
 
@@ -139,6 +139,8 @@ class CORE_EXPORT ImageElementTiming final
   // of the background image.
   HeapHashMap<WeakMember<const StyleImage>, base::TimeTicks>
       background_image_timestamps_;
+
+  Member<ContainerTiming> container_timing_;
 };
 
 }  // namespace blink

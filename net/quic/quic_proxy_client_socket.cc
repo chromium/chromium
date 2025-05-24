@@ -135,7 +135,7 @@ bool QuicProxyClientSocket::WasEverUsed() const {
 NextProto QuicProxyClientSocket::GetNegotiatedProtocol() const {
   // Do not delegate to `session_`. While `session_` negotiates ALPN with the
   // proxy, this object represents the tunneled TCP connection to the origin.
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool QuicProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
@@ -306,9 +306,7 @@ int QuicProxyClientSocket::DoLoop(int last_io_result) {
             NetLogEventType::HTTP_TRANSACTION_TUNNEL_READ_HEADERS, rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_DISCONNECTED &&
            next_state_ != STATE_CONNECT_COMPLETE);

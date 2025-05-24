@@ -32,7 +32,6 @@ source_set("encoder") {
 
   deps = [
     ":vpx_codec",
-    "//build:chromeos_buildflags",
     "//remoting/base:base",
     "//remoting/proto",
     "//remoting/protocol:session_config",

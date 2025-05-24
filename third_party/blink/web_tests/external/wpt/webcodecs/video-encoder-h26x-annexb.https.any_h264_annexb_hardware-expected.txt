@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Verify stream compliance h26x annexb
+  Unsupported config: {"codec":"avc1.42001E","avc":{"format":"annexb"},"hardwareAcceleration":"prefer-hardware","width":320,"height":200,"bitrate":1000000,"framerate":30}
+Harness: the test ran to completion.

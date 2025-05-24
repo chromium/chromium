@@ -10,9 +10,10 @@
 namespace ash {
 
 AppIcon::AppIcon(const gfx::Image& icon, int size) {
-  SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-      icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
-      gfx::Size(size, size)));
+  SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkiaOperations::CreateResizedImage(
+          icon.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
+          gfx::Size(size, size))));
 }
 
 BEGIN_METADATA(AppIcon)

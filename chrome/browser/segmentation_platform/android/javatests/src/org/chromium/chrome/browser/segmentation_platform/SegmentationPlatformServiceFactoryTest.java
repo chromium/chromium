@@ -47,7 +47,7 @@ public class SegmentationPlatformServiceFactoryTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    private CallbackHelper mCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
     @Test
     @MediumTest

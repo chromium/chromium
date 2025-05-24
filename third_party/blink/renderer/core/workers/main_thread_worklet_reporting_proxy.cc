@@ -31,7 +31,7 @@ void MainThreadWorkletReportingProxy::CountWebDXFeature(
 
 void MainThreadWorkletReportingProxy::DidTerminateWorkerThread() {
   // MainThreadWorklet does not start and terminate a thread.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace blink

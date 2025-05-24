@@ -32,7 +32,6 @@ class HatsHandler : public SettingsPageUIHandler {
 
  private:
   friend class HatsHandlerTest;
-  friend class HatsHandlerParamTest;
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySettingsHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacyGuideHats);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerTest, PrivacySandboxHats);
@@ -52,7 +51,6 @@ class HatsHandler : public SettingsPageUIHandler {
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest, PrivacySettings);
   FRIEND_TEST_ALL_PREFIXES(HatsHandlerNoSandboxTest,
                            TrustSafetySentimentInteractions);
-  FRIEND_TEST_ALL_PREFIXES(HatsHandlerParamTest, AdPrivacyHats);
 
   // All Trust & Safety based interactions which may result in a HaTS survey.
   // Must be kept in sync with the enum of the same name in
@@ -64,10 +62,10 @@ class HatsHandler : public SettingsPageUIHandler {
     OPENED_PASSWORD_MANAGER = 3,
     COMPLETED_PRIVACY_GUIDE = 4,
     RAN_PASSWORD_CHECK = 5,
-    OPENED_AD_PRIVACY = 6,
-    OPENED_TOPICS_SUBPAGE = 7,
-    OPENED_FLEDGE_SUBPAGE = 8,
-    OPENED_AD_MEASUREMENT_SUBPAGE = 9,
+    // OPENED_AD_PRIVACY = 6, // DEPRECATED
+    // OPENED_TOPICS_SUBPAGE = 7, // DEPRECATED
+    // OPENED_FLEDGE_SUBPAGE = 8, // DEPRECATED
+    // OPENED_AD_MEASUREMENT_SUBPAGE = 9, // DEPRECATED
     // OPENED_GET_MOST_CHROME = 10, // DEPRECATED
   };
 

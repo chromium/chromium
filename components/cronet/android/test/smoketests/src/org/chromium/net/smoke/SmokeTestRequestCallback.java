@@ -22,7 +22,7 @@ class SmokeTestRequestCallback extends UrlRequest.Callback {
     private static final int READ_BUFFER_SIZE = 10000;
 
     // An executor that is used to execute {@link UrlRequest.Callback UrlRequest callbacks}.
-    private ExecutorService mExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService mExecutor = Executors.newSingleThreadExecutor();
 
     // Signals when the request is done either successfully or not.
     private final ConditionVariable mDone = new ConditionVariable();

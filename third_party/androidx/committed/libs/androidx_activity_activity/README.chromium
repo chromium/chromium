@@ -1,0 +1,16 @@
+Name: Activity
+Short Name: activity
+URL: https://developer.android.com/jetpack/androidx/releases/activity#1.12.0-SNAPSHOT
+Version: 1.12.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Provides the base Activity subclass and the relevant hooks to build a composable structure on top.
+
+Local Modifications:
+No modifications.

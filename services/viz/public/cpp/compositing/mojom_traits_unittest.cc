@@ -176,8 +176,7 @@ void ExpectEqual(const cc::FilterOperation& input,
       break;
     }
     case cc::FilterOperation::ALPHA_THRESHOLD:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case cc::FilterOperation::OFFSET:
       EXPECT_EQ(input.offset(), output.offset());
       break;
@@ -608,7 +607,7 @@ TEST_F(StructTraitsTest, CompositorFrameTransitionDirective) {
   CompositorFrameTransitionDirective::SharedElement element;
   element.render_pass_id = frame.render_pass_list.front()->id;
   element.view_transition_element_resource_id =
-      ViewTransitionElementResourceId(transition_token, 1);
+      ViewTransitionElementResourceId(transition_token, 1, false);
   uint32_t sequence_id = 1u;
   frame.metadata.transition_directives.push_back(
       CompositorFrameTransitionDirective::CreateSave(
@@ -649,7 +648,8 @@ TEST_F(StructTraitsTest, ViewTransitionElementResourceId) {
           mojom::ViewTransitionElementResourceId>(empty_id, empty_output_id));
   ASSERT_FALSE(empty_output_id.IsValid());
 
-  ViewTransitionElementResourceId valid_id(blink::ViewTransitionToken(), 2u);
+  ViewTransitionElementResourceId valid_id(blink::ViewTransitionToken(), 2u,
+                                           false);
   ASSERT_TRUE(valid_id.IsValid());
   ViewTransitionElementResourceId valid_output_id;
   ASSERT_TRUE(
@@ -818,8 +818,8 @@ TEST_F(StructTraitsTest, RenderPass) {
   constexpr gfx::Transform kTransformToRoot =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
   constexpr gfx::Rect kDamageRect(56, 123, 19, 43);
-  const std::optional<gfx::RRectF> kBackdropFilterBounds(
-      {10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8});
+  const std::optional<SkPath> kBackdropFilterBounds = SkPath::RRect(
+      SkRRect(gfx::RRectF{10, 20, 130, 140, 1, 2, 3, 4, 5, 6, 7, 8}));
   constexpr SubtreeCaptureId kSubtreeCaptureId(base::Token(0u, 22u));
   constexpr bool kHasTransparentBackground = true;
   constexpr bool kCacheRenderPass = true;
@@ -973,6 +973,10 @@ TEST_F(StructTraitsTest, RenderPass) {
             out_surface_quad->stretch_content_to_fill_bounds);
   EXPECT_EQ(surface_quad->allow_merge, out_surface_quad->allow_merge);
   EXPECT_EQ(surface_quad->is_reflection, out_surface_quad->is_reflection);
+  EXPECT_EQ(surface_quad->override_child_filter_quality,
+            out_surface_quad->override_child_filter_quality);
+  EXPECT_EQ(surface_quad->override_child_dynamic_range_limit,
+            out_surface_quad->override_child_dynamic_range_limit);
 }
 
 TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
@@ -981,7 +985,7 @@ TEST_F(StructTraitsTest, RenderPassWithEmptySharedQuadStateList) {
   constexpr gfx::Rect kDamageRect(56, 123, 19, 43);
   constexpr gfx::Transform kTransformToRoot =
       gfx::Transform::Affine(1.0, 0.5, 0.5, -0.5, -1.0, 0.0);
-  const std::optional<gfx::RRectF> kBackdropFilterBounds;
+  const std::optional<SkPath> kBackdropFilterBounds;
   constexpr SubtreeCaptureId kEmptySubtreeCaptureId;
   constexpr bool kHasTransparentBackground = true;
   constexpr bool kCacheRenderPass = false;
@@ -1051,6 +1055,10 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   primary_surface_quad->SetNew(
       sqs, rect3, rect3, SurfaceRange(fallback_surface_id, primary_surface_id),
       SkColors::kBlue, false);
+  primary_surface_quad->override_child_filter_quality =
+      cc::PaintFlags::FilterQuality::kHigh;
+  primary_surface_quad->override_child_dynamic_range_limit =
+      cc::PaintFlags::DynamicRangeLimitMixture(0.25f, 0.5f);
 
   const gfx::Rect rect4(1234, 5678, 91012, 13141);
   const bool needs_blending = true;
@@ -1074,51 +1082,35 @@ TEST_F(StructTraitsTest, QuadListBasic) {
 
   const gfx::Rect rect5(123, 567, 91011, 13141);
   const ResourceId resource_id5(1337);
-  const bool premultiplied_alpha = true;
 
   const gfx::PointF uv_top_left(12.1f, 34.2f);
   const gfx::PointF uv_bottom_right(56.3f, 78.4f);
   const SkColor4f background_color = SkColors::kGreen;
-  const bool y_flipped = true;
   const bool nearest_neighbor = true;
   const bool secure_output_only = true;
   const gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
-  const gfx::Size resource_size_in_pixels5(1234, 5678);
   TextureDrawQuad* texture_draw_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  texture_draw_quad->SetAll(
-      sqs, rect5, rect5, needs_blending, resource_id5, resource_size_in_pixels5,
-      premultiplied_alpha, uv_top_left, uv_bottom_right, background_color,
-      y_flipped, nearest_neighbor, secure_output_only, protected_video_type);
-  // Create a stream video TextureDrawQuad.
-  const gfx::Rect rect6(321, 765, 11109, 151413);
-  const bool needs_blending6 = false;
-  const ResourceId resource_id6(1234);
-  const gfx::Size resource_size_in_pixels6(1234, 5678);
-  TextureDrawQuad* stream_video_draw_quad =
-      render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  stream_video_draw_quad->SetAll(
-      sqs, rect6, rect6, needs_blending6, resource_id6,
-      resource_size_in_pixels6, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, false, false, false, protected_video_type);
-  stream_video_draw_quad->is_stream_video = true;
+  texture_draw_quad->SetAll(sqs, rect5, rect5, needs_blending, resource_id5,
+                            uv_top_left, uv_bottom_right, background_color,
+                            nearest_neighbor, secure_output_only,
+                            protected_video_type);
 
   // Create a TextureDrawQuad with rounded-display masks.
   const gfx::Rect rect7(421, 865, 11109, 151413);
   const bool needs_blending7 = false;
   const ResourceId resource_id7(4834);
-  const gfx::Size resource_size_in_pixels7(12894, 8878);
   const int origin_rounded_display_mask_radius = 10;
   const int other_rounded_display_mask_radius = 15;
   const bool is_horizontally_positioned = false;
 
   TextureDrawQuad* rounded_display_mask_quad =
       render_pass->CreateAndAppendDrawQuad<TextureDrawQuad>();
-  rounded_display_mask_quad->SetAll(
-      sqs, rect7, rect7, needs_blending7, resource_id7,
-      resource_size_in_pixels7, false, uv_top_left, uv_bottom_right,
-      SkColors::kTransparent, false, false, false, protected_video_type);
+  rounded_display_mask_quad->SetAll(sqs, rect7, rect7, needs_blending7,
+                                    resource_id7, uv_top_left, uv_bottom_right,
+                                    SkColors::kTransparent, false, false,
+                                    protected_video_type);
   rounded_display_mask_quad->rounded_display_masks_info =
       TextureDrawQuad::RoundedDisplayMasksInfo::CreateRoundedDisplayMasksInfo(
           origin_rounded_display_mask_radius, other_rounded_display_mask_radius,
@@ -1152,6 +1144,10 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect3, out_primary_surface_draw_quad->rect);
   EXPECT_EQ(rect3, out_primary_surface_draw_quad->visible_rect);
   EXPECT_TRUE(out_primary_surface_draw_quad->needs_blending);
+  EXPECT_EQ(primary_surface_quad->override_child_filter_quality,
+            out_primary_surface_draw_quad->override_child_filter_quality);
+  EXPECT_EQ(primary_surface_quad->override_child_dynamic_range_limit,
+            out_primary_surface_draw_quad->override_child_dynamic_range_limit);
   EXPECT_EQ(primary_surface_id,
             out_primary_surface_draw_quad->surface_range.end());
   EXPECT_EQ(SkColors::kBlue,
@@ -1183,38 +1179,19 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(rect5, out_texture_draw_quad->rect);
   EXPECT_EQ(rect5, out_texture_draw_quad->visible_rect);
   EXPECT_EQ(needs_blending, out_texture_draw_quad->needs_blending);
-  EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id());
-  EXPECT_EQ(resource_size_in_pixels5,
-            out_texture_draw_quad->resource_size_in_pixels());
-  EXPECT_EQ(premultiplied_alpha, out_texture_draw_quad->premultiplied_alpha);
+  EXPECT_EQ(resource_id5, out_texture_draw_quad->resource_id);
   EXPECT_EQ(uv_top_left, out_texture_draw_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_texture_draw_quad->uv_bottom_right);
   EXPECT_EQ(background_color, out_texture_draw_quad->background_color);
-  EXPECT_EQ(y_flipped, out_texture_draw_quad->y_flipped);
   EXPECT_EQ(nearest_neighbor, out_texture_draw_quad->nearest_neighbor);
   EXPECT_EQ(secure_output_only, out_texture_draw_quad->secure_output_only);
 
-  const TextureDrawQuad* out_stream_video_draw_quad =
-      TextureDrawQuad::MaterialCast(output->quad_list.ElementAt(5));
-  EXPECT_TRUE(out_stream_video_draw_quad->is_stream_video);
-  EXPECT_EQ(rect6, out_stream_video_draw_quad->rect);
-  EXPECT_EQ(rect6, out_stream_video_draw_quad->visible_rect);
-  EXPECT_EQ(needs_blending6, out_stream_video_draw_quad->needs_blending);
-  EXPECT_EQ(resource_id6, out_stream_video_draw_quad->resource_id());
-  EXPECT_EQ(resource_size_in_pixels6,
-            out_stream_video_draw_quad->resource_size_in_pixels());
-  EXPECT_EQ(uv_top_left, out_stream_video_draw_quad->uv_top_left);
-  EXPECT_EQ(uv_bottom_right, out_stream_video_draw_quad->uv_bottom_right);
-
   const TextureDrawQuad* out_rounded_display_mask_quad =
-      TextureDrawQuad::MaterialCast(output->quad_list.ElementAt(6));
-  EXPECT_FALSE(out_rounded_display_mask_quad->is_stream_video);
+      TextureDrawQuad::MaterialCast(output->quad_list.ElementAt(5));
   EXPECT_EQ(rect7, out_rounded_display_mask_quad->rect);
   EXPECT_EQ(rect7, out_rounded_display_mask_quad->visible_rect);
   EXPECT_EQ(needs_blending7, out_rounded_display_mask_quad->needs_blending);
-  EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id());
-  EXPECT_EQ(resource_size_in_pixels7,
-            out_rounded_display_mask_quad->resource_size_in_pixels());
+  EXPECT_EQ(resource_id7, out_rounded_display_mask_quad->resource_id);
   EXPECT_EQ(uv_top_left, out_rounded_display_mask_quad->uv_top_left);
   EXPECT_EQ(uv_bottom_right, out_rounded_display_mask_quad->uv_bottom_right);
   EXPECT_EQ(origin_rounded_display_mask_radius,
@@ -1311,6 +1288,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   input.synchronization_type = sync_type;
   input.is_software = is_software;
   input.is_overlay_candidate = is_overlay_candidate;
+  input.origin = kBottomLeft_GrSurfaceOrigin;
 
   TransferableResource output;
   mojo::test::SerializeAndDeserialize<mojom::TransferableResource>(input,
@@ -1325,6 +1303,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   EXPECT_EQ(sync_type, output.synchronization_type);
   EXPECT_EQ(is_software, output.is_software);
   EXPECT_EQ(is_overlay_candidate, output.is_overlay_candidate);
+  EXPECT_EQ(kBottomLeft_GrSurfaceOrigin, output.origin);
 }
 
 TEST_F(StructTraitsTest, SharedImageFormatWithSinglePlane) {

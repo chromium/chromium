@@ -771,59 +771,6 @@ TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSession) {
   provider2.ShutdownOnUIThread();
 }
 
-// If a setting is constrained to a non-restorable session scope and a provider
-// is made with the `restore_Session` flag, the setting should be restored.
-// TODO(b/344678400): Non-restorable grants are temporarily restored as part of
-// b/338367663 to migrate them to DURABLE SessionModel. This test needs to be
-// deleted once NON_RESTORABLE_USER_SESSION is removed.
-TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSessionNonRestorable) {
-  TestingProfile testing_profile;
-  PrefProvider provider(testing_profile.GetPrefs(), /*off_the_record=*/false,
-                        /*store_last_modified=*/true,
-                        /*restore_session=*/false);
-
-  GURL primary_url("http://example.com/");
-  ContentSettingsPattern primary_pattern =
-      ContentSettingsPattern::FromString("[*.]example.com");
-
-  EXPECT_EQ(
-      CONTENT_SETTING_DEFAULT,
-      TestUtils::GetContentSetting(&provider, primary_url, primary_url,
-                                   ContentSettingsType::STORAGE_ACCESS, false));
-
-  ContentSettingConstraints constraints;
-  constraints.set_session_model(
-      mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
-
-  provider.SetWebsiteSetting(
-      primary_pattern, primary_pattern, ContentSettingsType::STORAGE_ACCESS,
-      base::Value(CONTENT_SETTING_BLOCK), constraints,
-      content_settings::PartitionKey::GetDefaultForTesting());
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      TestUtils::GetContentSetting(&provider, primary_url, primary_url,
-                                   ContentSettingsType::STORAGE_ACCESS, false));
-  base::Value value(TestUtils::GetContentSettingValue(
-      &provider, primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
-      false));
-  EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value.GetIfInt().value_or(-1)));
-
-  // Now if we create a new provider, it should be able to read our setting
-  // back.
-  provider.ShutdownOnUIThread();
-
-  PrefProvider provider2(testing_profile.GetPrefs(), /*off_the_record=*/false,
-                         /*store_last_modified=*/true,
-                         /*restore_session=*/true);
-
-  EXPECT_EQ(
-      CONTENT_SETTING_BLOCK,
-      TestUtils::GetContentSetting(&provider2, primary_url, primary_url,
-                                   ContentSettingsType::STORAGE_ACCESS, false));
-  provider2.ShutdownOnUIThread();
-}
-
 // Validate our settings will properly store our expiry time if specified.
 TEST_F(PrefProviderTest, GetContentSettingsExpiry) {
   TestingProfile testing_profile;

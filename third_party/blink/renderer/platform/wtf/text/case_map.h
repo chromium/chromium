@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_CASE_MAP_H_
 
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace WTF {
@@ -32,6 +33,7 @@ class WTF_EXPORT CaseMap {
     static const char* turkic_or_azeri_;
     static const char* greek_;
     static const char* lithuanian_;
+    static const char* dutch_;
 
     friend class CaseMap;
   };
@@ -47,6 +49,9 @@ class WTF_EXPORT CaseMap {
                  TextOffsetMap* offset_map = nullptr) const;
   String ToUpper(const String& source,
                  TextOffsetMap* offset_map = nullptr) const;
+  String ToTitle(const String& source,
+                 TextOffsetMap* offset_map = nullptr,
+                 UChar previous_character = 0) const;
 
   // Fast code path for simple cases, only for root locale.
   // TODO(crbug.com/627682): This should move to private, once

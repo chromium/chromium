@@ -1,7 +1,9 @@
 # Primary reviewers:
-bialpio@chromium.org
 bryantchandler@chromium.org
 
 # Secondary reviewers (use if primary reviewer is unavailable):
 ahmedmoussa@google.com
 mfoltz@chromium.org
+
+per-file video_effects_sandbox_hook_linux.*=set noparent
+per-file video_effects_sandbox_hook_linux.*=file://sandbox/linux/OWNERS

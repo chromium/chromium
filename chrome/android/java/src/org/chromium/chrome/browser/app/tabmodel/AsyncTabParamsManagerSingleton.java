@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManagerFactory;
 
 /** Holds a singleton {@link AsyncTabParamsManager} */
+@NullMarked
 public class AsyncTabParamsManagerSingleton {
     /** Singleton instance. */
     private static final AsyncTabParamsManager INSTANCE =

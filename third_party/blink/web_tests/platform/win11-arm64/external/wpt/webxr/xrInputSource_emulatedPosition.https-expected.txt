@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Poses from XRInputSource.gripSpace have emulatedPosition set properly - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Poses from XRInputSource.gripSpace have emulatedPosition set properly - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

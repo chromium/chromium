@@ -30,10 +30,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
-#endif
-
 using global_media_controls::test::MockDevicePickerProvider;
 using testing::_;
 using testing::AtLeast;

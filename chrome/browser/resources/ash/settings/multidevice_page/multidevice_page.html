@@ -3,8 +3,8 @@
     padding: 0 var(--cr-controlled-by-spacing);
   }
 
-  :host-context(body.revamp-wayfinding-enabled) #betterTogetherSuiteIcon,
-  :host-context(body.revamp-wayfinding-enabled) #nearbyShareIcon {
+  #betterTogetherSuiteIcon,
+  #nearbyShareIcon {
     --iron-icon-fill-color: var(--cros-sys-primary);
   }
 </style>
@@ -24,7 +24,7 @@
           <div class="middle settings-box-text"
               aria-hidden$="[[getTextAriaHidden_(pageContentData)]]">
             <div id="multideviceLabel">
-              [[getLabelText_(pageContentData)]]
+              $i18n{multideviceSetupItemHeading}
             </div>
             <localized-link id="multideviceSubLabel"
                 class="secondary"
@@ -194,14 +194,12 @@
   <template is="dom-if" route-path="/multidevice/features" restamp>
     <os-settings-subpage
         page-title="[[getMultideviceSubpageTitle_(pageContentData)]]">
-      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-        <div slot="subpage-title-extra">
-          <cr-button id="forgetDeviceButton" on-click="showForgetDeviceDialog_"
-              deep-link-focus-id$="[[Setting.kForgetPhone]]">
-            $i18n{multideviceForgetDeviceDisconnect}
-          </cr-button>
-        </div>
-      </template>
+      <div slot="subpage-title-extra">
+        <cr-button id="forgetDeviceButton" on-click="showForgetDeviceDialog_"
+            deep-link-focus-id$="[[Setting.kForgetPhone]]">
+          $i18n{multideviceForgetDeviceDisconnect}
+        </cr-button>
+      </div>
       <div id="settingsMultideviceSubpageWrapper" tabindex="-1">
         <settings-multidevice-subpage
             page-content-data="[[pageContentData]]">
@@ -254,11 +252,8 @@
   </settings-multidevice-permissions-setup-dialog>
 </template>
 
-<template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-  <template is="dom-if"
-      if="[[shouldShowForgetDeviceDialog_]]" restamp>
-    <settings-multidevice-forget-device-dialog
-        on-close="closeForgetDeviceDialog_">
-    </settings-multidevice-forget-device-dialog>
-  </template>
+<template is="dom-if" if="[[shouldShowForgetDeviceDialog_]]" restamp>
+  <settings-multidevice-forget-device-dialog
+      on-close="closeForgetDeviceDialog_">
+  </settings-multidevice-forget-device-dialog>
 </template>

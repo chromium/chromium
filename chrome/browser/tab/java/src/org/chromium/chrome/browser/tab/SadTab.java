@@ -20,10 +20,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
 import org.chromium.components.ui_metrics.SadTabEvent;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -34,12 +36,13 @@ import org.chromium.url.GURL;
  * |show()| request from a Tab, and destroyed together with it. TODO(crbug.com/40162422): Consider
  * moving this to its own target.
  */
+@NullMarked
 public class SadTab extends EmptyTabObserver implements UserData, TabViewProvider {
     private static final Class<SadTab> USER_DATA_KEY = SadTab.class;
 
     private final Tab mTab;
 
-    private View mView;
+    private @Nullable View mView;
 
     /**
      * Counts the number of successive refreshes on the sad tab page. The count is is reset after a
@@ -55,7 +58,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
         return sadTab;
     }
 
-    public static SadTab get(Tab tab) {
+    public static @Nullable SadTab get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 
@@ -204,15 +207,16 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
 
     /**
      * Construct and return help message to be displayed on R.id.sad_tab_message.
+     *
      * @param context Context of the resulting Sad Tab view. This is needed to load the strings.
-     * @param suggestionAction Action to be executed when user clicks "try these suggestions"
-     *                         or "learn more".
+     * @param suggestionAction Action to be executed when user clicks "try these suggestions" or
+     *     "learn more".
      * @return Help message to be displayed on R.id.sad_tab_message.
      */
     private static CharSequence getHelpMessage(
             Context context, final Runnable suggestionAction, final boolean showSendFeedback) {
-        NoUnderlineClickableSpan linkSpan =
-                new NoUnderlineClickableSpan(
+        ChromeClickableSpan linkSpan =
+                new ChromeClickableSpan(
                         context,
                         (view) -> {
                             recordEvent(showSendFeedback, SadTabEvent.HELP_LINK_CLICKED);
@@ -301,7 +305,7 @@ public class SadTab extends EmptyTabObserver implements UserData, TabViewProvide
     }
 
     @Override
-    public View getView() {
+    public @Nullable View getView() {
         return mView;
     }
 }

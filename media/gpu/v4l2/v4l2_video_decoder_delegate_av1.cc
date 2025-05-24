@@ -7,10 +7,12 @@
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
 
+#include "base/memory/scoped_refptr.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/v4l2/v4l2_decode_surface.h"
 #include "media/gpu/v4l2/v4l2_decode_surface_handler.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
+#include "third_party/libgav1/src/src/utils/common.h"
 #include "third_party/libgav1/src/src/warp_prediction.h"
 
 namespace media {
@@ -33,7 +35,7 @@ class V4L2AV1Picture : public AV1Picture {
   ~V4L2AV1Picture() override = default;
 
   scoped_refptr<AV1Picture> CreateDuplicate() override {
-    return new V4L2AV1Picture(dec_surface_);
+    return base::MakeRefCounted<V4L2AV1Picture>(dec_surface_);
   }
 
   scoped_refptr<V4L2DecodeSurface> dec_surface_;
@@ -387,7 +389,7 @@ struct v4l2_av1_loop_restoration FillLoopRestorationParams(
         v4l2_lr.frame_restoration_type[i] = V4L2_AV1_FRAME_RESTORE_SWITCHABLE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid loop restoration type";
+        NOTREACHED() << "Invalid loop restoration type";
     }
 
     if (v4l2_lr.frame_restoration_type[i] != V4L2_AV1_FRAME_RESTORE_NONE) {
@@ -452,8 +454,8 @@ struct v4l2_av1_global_motion FillGlobalMotionParams(
         v4l2_gm.flags[i] |= V4L2_AV1_WARP_MODEL_AFFINE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Invalid global motion transformation type, " << v4l2_gm.type[i];
+        NOTREACHED() << "Invalid global motion transformation type, "
+                     << v4l2_gm.type[i];
     }
 
     if (gm.type != libgav1::kGlobalMotionTransformationTypeIdentity)
@@ -563,8 +565,7 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
       v4l2_frame_params.frame_type = V4L2_AV1_SWITCH_FRAME;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid frame type, " << frame_header.frame_type;
+      NOTREACHED() << "Invalid frame type, " << frame_header.frame_type;
   }
 
   v4l2_frame_params.order_hint = frame_header.order_hint;
@@ -593,8 +594,8 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
           V4L2_AV1_INTERPOLATION_FILTER_SWITCHABLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid interpolation filter, "
-                                << frame_header.interpolation_filter;
+      NOTREACHED() << "Invalid interpolation filter, "
+                   << frame_header.interpolation_filter;
   }
 
   switch (frame_header.tx_mode) {
@@ -608,7 +609,7 @@ struct v4l2_ctrl_av1_frame SetupFrameParams(
       v4l2_frame_params.tx_mode = V4L2_AV1_TX_MODE_SELECT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid tx mode, " << frame_header.tx_mode;
+      NOTREACHED() << "Invalid tx mode, " << frame_header.tx_mode;
   }
 
   v4l2_frame_params.frame_width_minus_1 = frame_header.width - 1;
@@ -759,7 +760,7 @@ scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1Picture(
   if (!dec_surface)
     return nullptr;
 
-  return new V4L2AV1Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2AV1Picture>(std::move(dec_surface));
 }
 
 scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1PictureSecure(
@@ -771,7 +772,7 @@ scoped_refptr<AV1Picture> V4L2VideoDecoderDelegateAV1::CreateAV1PictureSecure(
     return nullptr;
   }
 
-  return new V4L2AV1Picture(std::move(dec_surface));
+  return base::MakeRefCounted<V4L2AV1Picture>(std::move(dec_surface));
 }
 
 DecodeStatus V4L2VideoDecoderDelegateAV1::SubmitDecode(

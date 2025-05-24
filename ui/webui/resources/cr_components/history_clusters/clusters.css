@@ -92,7 +92,7 @@ history-cluster:focus-visible {
 }
 
 :host([in-side-panel_]) cr-dialog::part(dialog) {
-  --scroll-border-color:
+  --cr-scrollable-border-color:
       var(--color-history-clusters-side-panel-dialog-divider);
   border-radius: 12px;
   box-shadow: var(--cr-elevation-3);

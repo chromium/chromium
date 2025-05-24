@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {CompanionAppInfo, CompanionAppState, CrAutoImgElement, PerDeviceInstallRowElement} from 'chrome://os-settings/os_settings.js';
+import {PerDeviceInstallRowElement} from 'chrome://os-settings/lazy_load.js';
+import type {CompanionAppInfo, CrAutoImgElement} from 'chrome://os-settings/os_settings.js';
+import {CompanionAppState} from 'chrome://os-settings/os_settings.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';

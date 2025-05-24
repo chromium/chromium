@@ -3,3 +3,5 @@ sideyilmaz@chromium.org
 fsenra@google.com
 
 per-file media_picker*=file://chrome/browser/ui/views/media_preview/OWNERS
+per-file notifications_page.*=lyf@chromium.org
+per-file geolocation_page.*=lyf@chromium.org

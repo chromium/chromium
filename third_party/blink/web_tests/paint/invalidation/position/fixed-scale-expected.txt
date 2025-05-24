@@ -10,8 +10,10 @@
     {
       "name": "LayoutBlockFlow (positioned) DIV id='t' class='green translated'",
       "bounds": [50, 50],
-      "contentsOpaque": true,
       "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 50, 50]
+      ],
       "transform": 3
     },
     {

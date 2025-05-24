@@ -12,6 +12,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "base/containers/contains.h"
+#import "base/debug/dump_without_crashing.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
@@ -27,12 +28,14 @@
 #import "ios/chrome/browser/sessions/model/session_window_ios.h"
 #import "ios/chrome/browser/sessions/model/tab_group_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller.h"
 #import "ios/chrome/browser/shared/model/web_state_list/order_controller_source_from_web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/removing_indexes.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
+#import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
@@ -43,30 +46,53 @@ using tab_group_util::DeserializedGroup;
 
 namespace {
 
-// Whether a particular web state should be kept or filtered out. This checks
-// for empty tabs (i.e. without navigation), and duplicates.
-bool ShouldKeepWebState(const web::WebState* web_state,
-                        const std::set<web::WebStateID>& seen_identifiers,
-                        int& duplicate_count) {
+// Represents what decision should be made on keeping a web state.
+enum class KeepWebStateDecision {
+  kKeep,
+  kKeepNTP,
+  kDiscard,
+  kDiscardDuplicate,
+  kDiscardNTP,
+};
+
+// Holds the relevent information for a tab group for NTP cleanup.
+struct GroupNTPInfo {
+  int last_empty_ntp_index = -1;
+  bool has_non_empty_ntp = false;
+};
+
+// Returns a decision on whether a web state should be kept or filtered out.
+// This checks for empty tabs (i.e. without navigation), duplicates, and NTPs.
+KeepWebStateDecision ShouldKeepWebState(
+    const web::WebState* web_state,
+    const std::set<web::WebStateID>& seen_identifiers) {
   if (seen_identifiers.contains(web_state->GetUniqueIdentifier())) {
-    duplicate_count++;
-    return false;
+    return KeepWebStateDecision::kDiscardDuplicate;
   }
 
-  if (web_state->GetNavigationItemCount()) {
+  const int navigation_item_count = web_state->GetNavigationItemCount();
+
+  if (IsAvoidNTPCleanupOnBackgroundEnabled()) {
+    if (IsUrlNtp(web_state->GetVisibleURL())) {
+      return navigation_item_count <= 1 ? KeepWebStateDecision::kDiscardNTP
+                                        : KeepWebStateDecision::kKeepNTP;
+    }
+  }
+
+  if (navigation_item_count) {
     // WebState has navigation history, keep.
-    return true;
+    return KeepWebStateDecision::kKeep;
   }
 
   if (web_state->IsRealized()) {
     const web::NavigationManager* manager = web_state->GetNavigationManager();
-    if (manager->IsRestoreSessionInProgress() || manager->GetPendingItem()) {
-      // WebState has restoration or navigation pending, keep.
-      return true;
+    if (manager->GetPendingItem()) {
+      // WebState has navigation pending, keep.
+      return KeepWebStateDecision::kKeep;
     }
   }
 
-  return false;
+  return KeepWebStateDecision::kDiscard;
 }
 
 // Creates a RemovingIndexes that records the indexes of the WebStates that
@@ -82,18 +108,63 @@ bool ShouldKeepWebState(const web::WebState* web_state,
 RemovingIndexes GetIndexOfWebStatesToDrop(const WebStateList& web_state_list) {
   std::vector<int> web_state_to_skip_indexes;
   std::set<web::WebStateID> seen_identifiers;
-  // Count the number of dropped tabs because they are duplicates, for
-  // reporting.
+  std::map<const TabGroup*, GroupNTPInfo> groups_to_ntp_info;
+
   int duplicate_count = 0;
+
   for (int index = 0; index < web_state_list.count(); ++index) {
     const web::WebState* web_state = web_state_list.GetWebStateAt(index);
-    if (ShouldKeepWebState(web_state, seen_identifiers, duplicate_count)) {
-      seen_identifiers.insert(web_state->GetUniqueIdentifier());
+    switch (ShouldKeepWebState(web_state, seen_identifiers)) {
+        // Increment the number of duplicate founds.
+      case KeepWebStateDecision::kDiscardDuplicate:
+        duplicate_count++;
+        [[fallthrough]];
+
+        // Add the tab to the list of tabs to close.
+      case KeepWebStateDecision::kDiscard:
+        web_state_to_skip_indexes.push_back(index);
+        break;
+
+        // Record the identifier of the tab, and keep it.
+      case KeepWebStateDecision::kKeep:
+        seen_identifiers.insert(web_state->GetUniqueIdentifier());
+        break;
+
+      // Record the identifier of the tab and update `groups_to_ntp_info`.
+      case KeepWebStateDecision::kKeepNTP: {
+        const TabGroup* tab_group = web_state_list.GetGroupOfWebStateAt(index);
+        groups_to_ntp_info[tab_group].has_non_empty_ntp = true;
+        seen_identifiers.insert(web_state->GetUniqueIdentifier());
+        break;
+      }
+        // Add the tab to the map of groups to NTPs and update
+        // `groups_to_ntp_info`.
+      case KeepWebStateDecision::kDiscardNTP: {
+        const TabGroup* tab_group = web_state_list.GetGroupOfWebStateAt(index);
+        groups_to_ntp_info[tab_group].last_empty_ntp_index = index;
+        web_state_to_skip_indexes.push_back(index);
+        break;
+      }
+    }
+  }
+
+  // For each tab group, if there are only empty NTPs, keep the last one by
+  // removing it from `web_state_to_skip_indexes`.
+  for (const auto& pair : groups_to_ntp_info) {
+    const GroupNTPInfo& ntp_info = pair.second;
+    if (ntp_info.has_non_empty_ntp) {
       continue;
     }
-
-    web_state_to_skip_indexes.push_back(index);
+    if (ntp_info.last_empty_ntp_index != -1) {
+      auto index = std::find(web_state_to_skip_indexes.begin(),
+                             web_state_to_skip_indexes.end(),
+                             ntp_info.last_empty_ntp_index);
+      if (index != web_state_to_skip_indexes.end()) {
+        web_state_to_skip_indexes.erase(index);
+      }
+    }
   }
+
   base::UmaHistogramCounts100("Tabs.DroppedDuplicatesCountOnSessionSave",
                               duplicate_count);
 

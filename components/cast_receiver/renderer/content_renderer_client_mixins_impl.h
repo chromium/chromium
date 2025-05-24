@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "components/cast_receiver/renderer/public/content_renderer_client_mixins.h"
 #include "components/cast_receiver/renderer/wrapping_url_loader_throttle_provider.h"
 
@@ -70,6 +71,8 @@ class ContentRendererClientMixinsImpl
   base::flat_map<blink::LocalFrameToken /* frame_token */,
                  std::unique_ptr<UrlRewriteRulesProvider>>
       url_rewrite_rules_providers_;
+
+  base::WeakPtrFactory<ContentRendererClientMixinsImpl> weak_factory_{this};
 };
 
 }  // namespace cast_receiver

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -212,8 +213,13 @@ class PopupTest_AdditionalWindowingControls : public PopupTest {
 
 // Ensure that moving a popup by moveTo/moveBy generates a `move` event.
 // Note: window.moveTo/moveBy API is enabled only for popups and web apps.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MoveCallFiresMoveEvent DISABLED_MoveCallFiresMoveEvent
+#else
+#define MAYBE_MoveCallFiresMoveEvent MoveCallFiresMoveEvent
+#endif
 IN_PROC_BROWSER_TEST_F(PopupTest_AdditionalWindowingControls,
-                       MoveCallFiresMoveEvent) {
+                       MAYBE_MoveCallFiresMoveEvent) {
   const char popup_script[] =
       R"(var command = "%s";
       var coordString = (x, y) => `(X: ${x}, Y: ${y})`;

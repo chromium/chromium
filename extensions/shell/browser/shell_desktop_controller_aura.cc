@@ -4,19 +4,21 @@
 
 #include "extensions/shell/browser/shell_desktop_controller_aura.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "build/chromeos_buildflags.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/shell/browser/shell_app_window_client.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/window.h"
@@ -37,7 +39,7 @@
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "extensions/shell/browser/shell_screen.h"
@@ -51,7 +53,7 @@
 #include "ui/ozone/public/ozone_platform.h"  // nogncheck
 #else
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -112,11 +114,30 @@ class ShellNativeCursorManager : public wm::NativeCursorManager {
       SetCursor(delegate->GetCursor(), delegate);
   }
 
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      ::wm::NativeCursorManagerDelegate* delegate) override {
+    cursor_loader_.SetLargeCursorSizeInDip(large_cursor_size_in_dip);
+    delegate->CommitLargeCursorSizeInDip(large_cursor_size_in_dip);
+    if (delegate->IsCursorVisible()) {
+      SetCursor(delegate->GetCursor(), delegate);
+    }
+  }
+
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override {
     delegate->CommitMouseEventsEnabled(enabled);
     SetVisibility(delegate->IsCursorVisible(), delegate);
+  }
+
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override {
+    cursor_loader_.SetColor(color);
+    delegate->CommitCursorColor(color);
+    if (delegate->IsCursorVisible()) {
+      SetCursor(delegate->GetCursor(), delegate);
+    }
   }
 
  private:
@@ -154,7 +175,7 @@ ShellDesktopControllerAura::ShellDesktopControllerAura(
       app_window_client_(new ShellAppWindowClient) {
   extensions::AppWindowClient::Set(app_window_client_.get());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   display_configurator_ = std::make_unique<display::DisplayConfigurator>();
   display_configurator_->Init(
@@ -168,7 +189,7 @@ ShellDesktopControllerAura::ShellDesktopControllerAura(
 
 ShellDesktopControllerAura::~ShellDesktopControllerAura() {
   TearDownWindowManager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chromeos::PowerManagerClient::Get()->RemoveObserver(this);
 #endif
   extensions::AppWindowClient::Set(nullptr);
@@ -210,7 +231,7 @@ void ShellDesktopControllerAura::CloseAppWindows() {
 
 void ShellDesktopControllerAura::CloseRootWindowController(
     RootWindowController* root_window_controller) {
-  const auto it = base::ranges::find(
+  const auto it = std::ranges::find(
       root_window_controllers_, root_window_controller,
       [](const auto& candidate_pair) { return candidate_pair.second.get(); });
   CHECK(it != root_window_controllers_.end(), base::NotFatalUntil::M130);
@@ -220,7 +241,7 @@ void ShellDesktopControllerAura::CloseRootWindowController(
   MaybeQuit();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ShellDesktopControllerAura::PowerButtonEventReceived(
     bool down,
     base::TimeTicks timestamp) {
@@ -326,7 +347,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
 
   // Screen may be initialized in tests.
   if (!display::Screen::GetScreen()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     screen_ = std::make_unique<ShellScreen>(this, GetStartingWindowSize());
     // TODO(pkasting): Make ShellScreen() call SetScreenInstance() as the
     // classes in CreateDesktopScreen() do, and remove this.
@@ -345,7 +366,7 @@ void ShellDesktopControllerAura::InitWindowManager() {
       display::Screen::GetScreen()->GetPrimaryDisplay());
   cursor_manager_->SetCursor(ui::mojom::CursorType::kPointer);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_activity_notifier_ =
       std::make_unique<ui::UserActivityPowerManagerNotifier>(
           ui::UserActivityDetector::Get(), /*fingerprint=*/mojo::NullRemote());
@@ -357,13 +378,13 @@ void ShellDesktopControllerAura::TearDownWindowManager() {
     TearDownRootWindowController(pair.second.get());
   root_window_controllers_.clear();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_activity_notifier_.reset();
 #endif
   cursor_manager_.reset();
   focus_controller_.reset();
   if (screen_) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     display::Screen::SetScreenInstance(nullptr);
 #endif
     screen_.reset();
@@ -415,7 +436,7 @@ void ShellDesktopControllerAura::MaybeQuit() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Size ShellDesktopControllerAura::GetStartingWindowSize() {
   gfx::Size size = GetPrimaryDisplaySize();
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -423,7 +444,8 @@ gfx::Size ShellDesktopControllerAura::GetStartingWindowSize() {
     const std::string size_str =
         command_line->GetSwitchValueASCII(switches::kAppShellHostWindowSize);
     int width, height;
-    CHECK_EQ(2, sscanf(size_str.c_str(), "%dx%d", &width, &height));
+    CHECK_EQ(2,
+             UNSAFE_TODO(sscanf(size_str.c_str(), "%dx%d", &width, &height)));
     size = gfx::Size(width, height);
   }
   return size.IsEmpty() ? gfx::Size(1920, 1080) : size;

@@ -18,7 +18,7 @@ namespace ui {
 namespace {
 
 int32_t GetSwValue(int fd, unsigned int code) {
-  unsigned long bitmask[EVDEV_BITS_TO_LONGS(SW_MAX)] = {0};
+  unsigned long bitmask[EVDEV_BITS_TO_LONGS(SW_MAX)] = {};
   if (ioctl(fd, EVIOCGSW(sizeof(bitmask)), bitmask) < 0) {
     PLOG(ERROR) << "Failed EVIOCGSW";
     return 0;

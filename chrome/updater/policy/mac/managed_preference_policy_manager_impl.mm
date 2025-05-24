@@ -235,8 +235,7 @@ int TranslateUpdatePolicyValue(int update_policy_from_managed_preferences) {
 }
 
 - (NSString*)source {
-  return [NSString
-      stringWithUTF8String:updater::kSourceManagedPreferencePolicyManager];
+  return [NSString stringWithUTF8String:updater::kSourcePlatformPolicyManager];
 }
 
 - (NSString*)downloadPreference {

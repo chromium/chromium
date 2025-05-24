@@ -29,7 +29,7 @@ import org.robolectric.shadows.ShadowUserManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
-import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -138,27 +138,32 @@ public class NotificationPermissionControllerTest {
             Boolean alwaysShowRationale,
             Integer permissionRequestMaxCount,
             Integer requestIntervalDays) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
         if (alwaysShowRationale != null) {
-            testValues.addFieldTrialParamOverride(
-                    ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
-                    NotificationPermissionController
-                            .FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION,
-                    Boolean.toString(alwaysShowRationale));
+            overrides =
+                    overrides.param(
+                            ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                            NotificationPermissionController
+                                    .FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION,
+                            alwaysShowRationale);
         }
         if (permissionRequestMaxCount != null) {
-            testValues.addFieldTrialParamOverride(
-                    ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
-                    NotificationPermissionController.FIELD_TRIAL_PERMISSION_REQUEST_MAX_COUNT,
-                    Integer.toString(permissionRequestMaxCount));
+            overrides =
+                    overrides.param(
+                            ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                            NotificationPermissionController
+                                    .FIELD_TRIAL_PERMISSION_REQUEST_MAX_COUNT,
+                            permissionRequestMaxCount);
         }
         if (requestIntervalDays != null) {
-            testValues.addFieldTrialParamOverride(
-                    ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
-                    NotificationPermissionController.FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS,
-                    Integer.toString(requestIntervalDays));
+            overrides =
+                    overrides.param(
+                            ChromeFeatureList.NOTIFICATION_PERMISSION_VARIANT,
+                            NotificationPermissionController
+                                    .FIELD_TRIAL_PERMISSION_REQUEST_INTERVAL_DAYS,
+                            requestIntervalDays);
         }
-        FeatureList.setTestValues(testValues);
+        overrides.apply();
     }
 
     private static class TestAndroidPermissionDelegate extends ActivityAndroidPermissionDelegate {

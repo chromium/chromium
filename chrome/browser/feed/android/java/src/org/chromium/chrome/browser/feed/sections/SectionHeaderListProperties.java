@@ -8,6 +8,7 @@ import android.view.View;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -15,6 +16,7 @@ import org.chromium.ui.modelutil.PropertyListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties for a list of {@link SectionHeaderProperties} models. */
+@NullMarked
 public class SectionHeaderListProperties {
     public static final PropertyModel.WritableBooleanPropertyKey IS_SECTION_ENABLED_KEY =
             new PropertyModel.WritableBooleanPropertyKey();

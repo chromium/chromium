@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 namespace {
@@ -40,7 +41,7 @@ constexpr char kEnrollmentUI[] = "enterprise-enrollment";
 const test::UIPath kWebview = {kEnrollmentUI, "step-signin", "signin-frame"};
 
 constexpr char kTestUserEmail[] = "testuser@test.com";
-constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_user_gaia_id");
 constexpr char kTestUserPassword[] = "test_user_password";
 
 }  // namespace

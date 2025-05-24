@@ -6,6 +6,7 @@ attribution-reporting
 autoplay
 browsing-topics
 camera
+captured-surface-control
 ch-device-memory
 ch-downlink
 ch-dpr
@@ -33,6 +34,8 @@ clipboard-read
 clipboard-write
 compute-pressure
 cross-origin-isolated
+deferred-fetch
+deferred-fetch-minimal
 display-capture
 encrypted-media
 fullscreen
@@ -45,6 +48,7 @@ idle-detection
 interest-cohort
 join-ad-interest-group
 keyboard-map
+language-detector
 local-fonts
 magnetometer
 microphone
@@ -57,15 +61,19 @@ private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
+rewriter
 run-ad-auction
 screen-wake-lock
 serial
 shared-storage
 shared-storage-select-url
 storage-access
+summarizer
 sync-xhr
+translator
 unload
 usb
 window-management
+writer
 xr-spatial-tracking
 

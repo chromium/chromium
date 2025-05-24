@@ -25,6 +25,7 @@ class MockKeyboardReplacingSurfaceVisibilityController final
                    frame_driver),
               (override));
   MOCK_METHOD(void, SetShown, (), (override));
+  MOCK_METHOD(void, SetCanBeShown, (), (override));
   MOCK_METHOD(void, Reset, (), (override));
 
   base::WeakPtr<KeyboardReplacingSurfaceVisibilityController> AsWeakPtr()

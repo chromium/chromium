@@ -36,7 +36,6 @@ class ViewSourceBrowserAgent : public BrowserUserData<ViewSourceBrowserAgent> {
 
  private:
   friend class BrowserUserData<ViewSourceBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit ViewSourceBrowserAgent(Browser* browser);
 
@@ -47,9 +46,6 @@ class ViewSourceBrowserAgent : public BrowserUserData<ViewSourceBrowserAgent> {
   // the result of the javascript evaluation started in
   // ViewSourceForActiveWebState.
   void OnHandleViewSourceForActiveWebStateResult(const base::Value* value);
-
-  // The browser this agent is associated with.
-  raw_ptr<Browser> browser_;
 
   base::WeakPtrFactory<ViewSourceBrowserAgent> weak_ptr_factory_{this};
 };

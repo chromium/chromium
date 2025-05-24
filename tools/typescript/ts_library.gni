@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/node/node.gni")
 
 template("ts_library") {
@@ -106,8 +105,10 @@ template("ts_library") {
       args += [ "--deps" ]
       foreach(dep, deps) {
         name = get_label_info(dep, "name")
-        args += [ rebase_path(get_label_info(dep, "dir"), ".") +
-                  "/tsconfig_$name.json" ]
+        tsconfig_dep =
+            get_label_info(dep, "target_gen_dir") + "/tsconfig_$name.json"
+        inputs += [ tsconfig_dep ]
+        args += [ rebase_path(tsconfig_dep, target_gen_dir) ]
       }
     }
 
@@ -160,7 +161,7 @@ template("ts_library") {
         "--platform",
         platform,
       ]
-    } else if (is_chromeos_ash) {
+    } else if (is_chromeos) {
       platform = "chromeos_ash"
       args += [
         "--platform",

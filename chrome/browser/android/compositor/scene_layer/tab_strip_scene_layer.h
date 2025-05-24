@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "cc/input/android/offset_tag_android.h"
 #include "chrome/browser/ui/android/layouts/scene_layer.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "ui/android/resources/resource_manager.h"
 
 namespace cc::slim {
@@ -24,6 +24,7 @@ class UIResourceLayer;
 
 namespace android {
 
+class GroupIndicatorLayer;
 class LayerTitleCache;
 class TabHandleLayer;
 
@@ -37,6 +38,13 @@ class TabStripSceneLayer : public SceneLayer {
   TabStripSceneLayer& operator=(const TabStripSceneLayer&) = delete;
 
   ~TabStripSceneLayer() override;
+
+  void SetConstants(JNIEnv* env,
+                    jint reorder_background_top_margin,
+                    jint reorder_background_bottom_margin,
+                    jint reorder_background_padding_short,
+                    jint reorder_background_padding_long,
+                    jint reorder_background_corner_radius);
 
   void SetContentTree(
       JNIEnv* env,
@@ -73,13 +81,15 @@ class TabStripSceneLayer : public SceneLayer {
       jint bg_resource_id,
       jfloat x,
       jfloat y,
-      jfloat top_padding,
       jfloat touch_target_offset,
       jboolean visible,
       jboolean should_apply_hover_highlight,
       jint tint,
       jint background_tint,
       jfloat button_alpha,
+      jboolean is_keyboard_focused,
+      jint keyboard_focus_ring_resource_id,
+      jint keyboard_focus_ring_color,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void UpdateModelSelectorButton(
@@ -94,6 +104,9 @@ class TabStripSceneLayer : public SceneLayer {
       jint tint,
       jint background_tint,
       jfloat button_alpha,
+      jboolean is_keyboard_focused,
+      jint keyboard_focus_ring_resource_id,
+      jint keyboard_focus_ring_color,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
   void UpdateTabStripLeftFade(
@@ -120,6 +133,8 @@ class TabStripSceneLayer : public SceneLayer {
       jint id,
       jint close_resource_id,
       jint close_hover_bg_resource_id,
+      jboolean is_close_keyboard_focused,
+      jint close_keyboard_focus_ring_resource_id,
       jint divider_resource_id,
       jint handle_resource_id,
       jint handle_outline_resource_id,
@@ -147,6 +162,12 @@ class TabStripSceneLayer : public SceneLayer {
       jboolean is_loading,
       jfloat spinner_rotation,
       jfloat opacity,
+      jboolean is_keyboard_focused,
+      jint keyboard_focus_ring_resource_id,
+      jint keyboard_focus_ring_color,
+      jint keyboard_focus_ring_offset,
+      jint stroke_width,
+      jfloat folio_foot_length,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
@@ -154,27 +175,41 @@ class TabStripSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
       jboolean incognito,
-      jint id,
+      jboolean foreground,
+      jboolean collapsed,
+      jboolean show_bubble,
+      const base::android::JavaParamRef<jobject>& jgroup_token,
       jint tint,
+      jint reorder_background_tint,
+      jint bubble_tint,
       jfloat x,
       jfloat y,
       jfloat width,
       jfloat height,
-      jfloat title_text_padding,
+      jfloat title_start_padding,
+      jfloat title_end_padding,
       jfloat corner_radius,
       jfloat bottom_indicator_width,
       jfloat bottom_indicator_height,
-      const base::android::JavaParamRef<jobject>& jlayer_title_cache);
+      jfloat bubble_padding,
+      jfloat bubble_size,
+      jboolean is_keyboard_focused,
+      jint keyboard_focus_ring_resource_id,
+      jint keyboard_focus_ring_color,
+      jint keyboard_focus_ring_offset,
+      jint keyboard_focus_ring_width,
+      const base::android::JavaParamRef<jobject>& jlayer_title_cache,
+      const base::android::JavaParamRef<jobject>& jresource_manager);
 
   bool ShouldShowBackground() override;
   SkColor GetBackgroundColor() override;
 
  private:
-  scoped_refptr<TabHandleLayer> GetNextLayer(
+  scoped_refptr<TabHandleLayer> GetNextTabLayer(
       LayerTitleCache* layer_title_cache);
 
-  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupTitleLayer();
-  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupBottomLayer();
+  scoped_refptr<GroupIndicatorLayer> GetNextGroupIndicatorLayer(
+      LayerTitleCache* layer_title_cache);
 
   void UpdateCompositorButton(
       scoped_refptr<cc::slim::UIResourceLayer> button,
@@ -185,15 +220,23 @@ class TabStripSceneLayer : public SceneLayer {
       float y,
       bool visible,
       bool should_apply_hover_highlight,
-      float button_alpha);
+      float button_alpha,
+      scoped_refptr<cc::slim::UIResourceLayer> keyboard_focus_ring_layer,
+      bool is_keyboard_focused,
+      ui::Resource* keyboard_focus_ring_drawable);
 
   typedef std::vector<scoped_refptr<TabHandleLayer>> TabHandleLayerList;
 
+  scoped_refptr<cc::slim::SolidColorLayer> background_layer_;
   scoped_refptr<cc::slim::SolidColorLayer> tab_strip_layer_;
-  scoped_refptr<cc::slim::Layer> scrollable_strip_layer_;
-  scoped_refptr<cc::slim::Layer> group_indicator_layer_;
+  scoped_refptr<cc::slim::Layer> group_ui_parent_layer_;
+  scoped_refptr<cc::slim::Layer> tab_ui_parent_layer_;
+  scoped_refptr<cc::slim::Layer> foreground_layer_;
+  scoped_refptr<cc::slim::Layer> foreground_tabs_;
+  scoped_refptr<cc::slim::Layer> foreground_group_titles_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_;
   scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_background_;
+  scoped_refptr<cc::slim::UIResourceLayer> new_tab_button_keyboard_focus_ring_;
   scoped_refptr<cc::slim::UIResourceLayer> left_fade_;
   scoped_refptr<cc::slim::UIResourceLayer> right_fade_;
 
@@ -204,13 +247,14 @@ class TabStripSceneLayer : public SceneLayer {
 
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_;
   scoped_refptr<cc::slim::UIResourceLayer> model_selector_button_background_;
+  scoped_refptr<cc::slim::UIResourceLayer>
+      model_selector_button_keyboard_focus_ring_;
   scoped_refptr<cc::slim::SolidColorLayer> scrim_layer_;
 
   unsigned write_index_ = 0;
   TabHandleLayerList tab_handle_layers_;
   unsigned group_write_index_ = 0;
-  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_title_layers_;
-  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_bottom_layers_;
+  std::vector<scoped_refptr<GroupIndicatorLayer>> group_title_layers_;
   raw_ptr<SceneLayer> content_tree_;
 };
 

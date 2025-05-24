@@ -73,11 +73,11 @@ source_set("startup") {
     "//base",
     "//components/crash/core/app",
     "//components/password_manager/core/browser",
-    "//components/search_engines:search_engines",
+    "//components/search_engines",
     "//ios/chrome/app",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/first_run/model",
-    "//ios/chrome/browser/net/model:model",
+    "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/web/model:web_internal",
@@ -91,6 +91,14 @@ source_set("startup") {
     "//ios/web/public",
     "//ios/web/public/init",
   ]
+}
+
+source_set("utils") {
+  sources = [
+    "app_startup_utils.h",
+    "app_startup_utils.mm",
+  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -132,11 +140,12 @@ group("chrome_app_startup_parameters_fuzzers_deps") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//ios/chrome/app:app_internal",
     "//ios/chrome/app:tests_fake_hook",
     "//ios/chrome/browser/providers:chromium_providers",
+    "//ios/chrome/browser/settings/ui_bundled",
+    "//ios/chrome/browser/sharing/ui_bundled:sharing_internal",
     "//ios/chrome/browser/tabs/model:tabs_internal",
-    "//ios/chrome/browser/ui/settings",
-    "//ios/chrome/browser/ui/sharing:sharing_internal",
   ]
 }
 

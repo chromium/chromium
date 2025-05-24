@@ -8,10 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
@@ -19,6 +19,7 @@ import org.chromium.url.GURL;
 import java.util.List;
 
 /** A delegate for {@link ExternalNavigationHandler}. */
+@NullMarked
 public interface ExternalNavigationDelegate {
     /**
      * Returns the Context with which this delegate is associated, or null if there is no such
@@ -131,8 +132,7 @@ public interface ExternalNavigationDelegate {
      * Returns the scheme (or null) used by web pages to start up the browser (Chrome Stable for
      * Chrome) without an explicit Intent.
      */
-    @Nullable
-    String getSelfScheme();
+    @Nullable String getSelfScheme();
 
     /** Returns whether all the external intents are supposed to be disabled per embedder. */
     boolean shouldDisableAllExternalIntents();
@@ -150,4 +150,20 @@ public interface ExternalNavigationDelegate {
      * @param url The {@link GURL} to return as activtiy result.
      */
     void returnAsActivityResult(GURL url);
+
+    /**
+     * Records the scheme of the external navigation if this is likely a CCT launched for auth
+     * purposes.
+     *
+     * @param url The {@link GURL} of the external navigation.
+     */
+    void maybeRecordExternalNavigationSchemeHistogram(GURL url);
+
+    /**
+     * Records metrics relevant to password saving in CCTs if the recorder exists. A recorder might
+     * not exist if there was no form submission preceding the external navigation.
+     */
+    void notifyCctPasswordSavingRecorderOfExternalNavigation();
+
+    void reportIntentToSafeBrowsing(Intent intent);
 }

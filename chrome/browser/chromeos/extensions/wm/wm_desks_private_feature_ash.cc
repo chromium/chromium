@@ -45,11 +45,12 @@ api::wm_desks_private::SavedDeskType GetSavedDeskTypeFromDeskTemplateType(
       return api::wm_desks_private::SavedDeskType::kTemplate;
     case ash::DeskTemplateType::kSaveAndRecall:
       return api::wm_desks_private::SavedDeskType::kSaveAndRecall;
+    case ash::DeskTemplateType::kCoral:
     case ash::DeskTemplateType::kFloatingWorkspace:
-      // Desk API does not save/restore Floating Workspace.
+    case ash::DeskTemplateType::kUnknown: {
+      // Desk API does not save/restore for Coral or Floating Workspace.
       return api::wm_desks_private::SavedDeskType::kUnknown;
-    case ash::DeskTemplateType::kUnknown:
-      return api::wm_desks_private::SavedDeskType::kUnknown;
+    }
   }
 }
 

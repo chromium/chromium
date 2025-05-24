@@ -110,6 +110,18 @@ class LocalPasswordSetupPageActor : public OobePageActor {
   void Submit();
 };
 
+class PinSetupPageActor : public OobePageActor {
+ public:
+  PinSetupPageActor();
+  ~PinSetupPageActor() override;
+
+  void TapNext();
+  void TapDone();
+  void EnterPin(const std::string& pin);
+  void InsertAndConfirmPin(const std::string& pin);
+  void WaitUntilBackButtonVisible();
+};
+
 class LocalAuthenticationDialogActor {
  public:
   LocalAuthenticationDialogActor();
@@ -118,6 +130,7 @@ class LocalAuthenticationDialogActor {
   bool IsVisible();
   void CancelDialog();
   void SubmitPassword(const std::string& password);
+  void SubmitPin(const std::string& pin);
   void WaitUntilDismissed();
 };
 
@@ -140,6 +153,7 @@ std::unique_ptr<FullScreenAuthSurface> OnLoginScreen();
 AwaitPasswordChangedUI();
 [[nodiscard]] std::unique_ptr<PasswordUpdatedPageActor>
 AwaitPasswordUpdatedUI();
+[[nodiscard]] std::unique_ptr<PinSetupPageActor> AwaitPinSetupUI();
 [[nodiscard]] std::unique_ptr<UserSelectionPageActor> AwaitNewUserSelectionUI();
 [[nodiscard]] std::unique_ptr<LocalPasswordSetupPageActor>
 AwaitLocalPasswordSetupUI();
@@ -175,6 +189,7 @@ void LocalPasswordSetupExpectNextButton();
 void LocalPasswordSetupNextAction();
 void LocalPasswordSetupExpectBackButton();
 void LocalPasswordSetupBackAction();
+UIPath LocalPasswordSetupBackActionPath();
 void LocalPasswordSetupExpectFirstInput();
 void LocalPasswordSetupTypeFirstPassword(const std::string& pw);
 void LocalPasswordSetupExpectConfirmInput();

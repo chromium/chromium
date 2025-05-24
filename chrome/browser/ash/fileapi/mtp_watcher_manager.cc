@@ -16,8 +16,7 @@ MTPWatcherManager::MTPWatcherManager(
   DCHECK(device_media_async_file_util != nullptr);
 }
 
-MTPWatcherManager::~MTPWatcherManager() {
-}
+MTPWatcherManager::~MTPWatcherManager() = default;
 
 void MTPWatcherManager::AddWatcher(const storage::FileSystemURL& url,
                                    bool recursive,

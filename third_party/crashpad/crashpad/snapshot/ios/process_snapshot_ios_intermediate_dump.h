@@ -99,6 +99,11 @@ class ProcessSnapshotIOSIntermediateDump final : public ProcessSnapshot {
   std::vector<const MemorySnapshot*> ExtraMemory() const override;
   const ProcessMemory* Memory() const override;
 
+  // Returns ModuleSnapshotIOSIntermediateDump::IntermediateDumpExtraMemory
+  // stored in the intermediate dump. This is used by UserExtensionStreams for
+  // processing the snapshot. This memory will not be written to a minidump
+  std::vector<const MemorySnapshot*> IntermediateDumpExtraMemory() const;
+
  private:
   // Retain the reader for the lifetime of the ProcessSnapshot so large chunks
   // of data do not need to be copied around (such as MemorySnapshot
@@ -121,6 +126,8 @@ class ProcessSnapshotIOSIntermediateDump final : public ProcessSnapshot {
   UUID client_id_;
   std::map<std::string, std::string> annotations_simple_map_;
   timeval snapshot_time_;
+  std::vector<std::unique_ptr<internal::MemorySnapshotIOSIntermediateDump>>
+      extra_memory_;
   InitializationStateDcheck initialized_;
 };
 

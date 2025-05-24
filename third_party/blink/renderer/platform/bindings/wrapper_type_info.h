@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_WRAPPER_TYPE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_WRAPPER_TYPE_INFO_H_
 
+#include <type_traits>
+
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "gin/public/wrapper_info.h"
@@ -47,6 +49,25 @@ class ScriptWrappable;
 
 static constexpr v8::CppHeapPointerTag kDOMWrappersTag =
     v8::CppHeapPointerTag::kDefaultTag;
+
+// LINT.IfChange(ScriptWrappableStartTag)
+constexpr std::underlying_type_t<v8::CppHeapPointerTag>
+    kScriptWrappableStartTag = 256;
+// LINT.ThenChange(third_party/blink/renderer/bindings/scripts/web_idl/idl_compiler.py:ScriptWrappableStartTag)
+
+constexpr v8::CppHeapPointerTagRange kScriptWrappableTagRange(
+    static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
+    v8::CppHeapPointerTag::kLastTag);
+
+enum class CppHeapExternalTag : std::underlying_type_t<v8::CppHeapPointerTag> {
+  kFirst = 1,
+  kWrappableTaskStateTag = kFirst,
+
+  kLastTag = kWrappableTaskStateTag
+};
+
+static_assert(static_cast<std::underlying_type_t<v8::CppHeapPointerTag>>(
+                  CppHeapExternalTag::kLastTag) < kScriptWrappableStartTag);
 
 // This struct provides a way to store a bunch of information that is helpful
 // when unwrapping v8 objects. Each v8 bindings class has exactly one static
@@ -70,25 +91,12 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
     kCustomWrappableId,
   };
 
-  enum ActiveScriptWrappableInheritance {
-    kNotInheritFromActiveScriptWrappable,
-    kInheritFromActiveScriptWrappable,
-  };
-
   enum IdlDefinitionKind {
-    kIdlInterface,
+    kIdlInterface,  // includes callback interfaces
     kIdlNamespace,
-    kIdlCallbackInterface,
-    kIdlBufferSourceType,
-    kIdlObservableArray,
-    kIdlAsyncOrSyncIterator,
-    kCustomWrappableKind,
+    // iterators, observably arrays, buffer sources, internal script functions.
+    kIdlOtherType,
   };
-
-  static const WrapperTypeInfo* Unwrap(v8::Local<v8::Value> type_info_wrapper) {
-    return reinterpret_cast<const WrapperTypeInfo*>(
-        v8::External::Cast(*type_info_wrapper)->Value());
-  }
 
   bool Equals(const WrapperTypeInfo* that) const { return this == that; }
 
@@ -111,11 +119,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
   //
   // - kIdlInterface: v8::FunctionTemplate of interface object
   // - kIdlNamespace: v8::ObjectTemplate of namespace object
-  // - kIdlCallbackInterface: v8::FunctionTemplate of legacy callback
-  //       interface object
-  // - kIdlAsyncOrSyncIterator: v8::FunctionTemplate of default (asynchronous
-  //       or synchronous) iterator object
-  // - kCustomWrappableKind: v8::FunctionTemplate
+  // - kIdlOtherType: v8::FunctionTemplate
   v8::Local<v8::Template> GetV8ClassTemplate(
       v8::Isolate* isolate,
       const DOMWrapperWorld& world) const;
@@ -133,11 +137,6 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
     install_context_dependent_props_func(
         context, world, instance_object, prototype_object, interface_object,
         interface_template, bindings::V8InterfaceBridgeBase::FeatureSelector());
-  }
-
-  bool IsActiveScriptWrappable() const {
-    return active_script_wrappable_inheritance ==
-           kInheritFromActiveScriptWrappable;
   }
 
   static bool HasLegacyInternalFieldsSet(v8::Local<v8::Object> object) {
@@ -171,9 +170,7 @@ struct PLATFORM_EXPORT WrapperTypeInfo final {
 
   unsigned wrapper_type_prototype : 2;  // WrapperTypePrototype
   unsigned wrapper_class_id : 2;        // WrapperClassId
-  unsigned                              // ActiveScriptWrappableInheritance
-      active_script_wrappable_inheritance : 1;
-  unsigned idl_definition_kind : 3;  // IdlDefinitionKind
+  unsigned idl_definition_kind : 2;     // IdlDefinitionKind
 
   // This is a special case only used by V8WindowProperties::WrapperTypeInfo().
   // WindowProperties is part of Window's prototype object's prototype chain,
@@ -192,13 +189,13 @@ inline ScriptWrappable* ToAnyScriptWrappable(
     v8::Isolate* isolate,
     const v8::TracedReference<v8::Object>& wrapper) {
   return v8::Object::Unwrap<ScriptWrappable>(isolate, wrapper,
-                                             v8::kAnyCppHeapPointer);
+                                             kScriptWrappableTagRange);
 }
 
 inline ScriptWrappable* ToAnyScriptWrappable(v8::Isolate* isolate,
                                              v8::Local<v8::Object> wrapper) {
   return v8::Object::Unwrap<ScriptWrappable>(isolate, wrapper,
-                                             v8::kAnyCppHeapPointer);
+                                             kScriptWrappableTagRange);
 }
 
 PLATFORM_EXPORT const WrapperTypeInfo* ToWrapperTypeInfo(

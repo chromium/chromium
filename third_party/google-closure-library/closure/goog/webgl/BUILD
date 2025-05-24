@@ -7,4 +7,5 @@ licenses(["notice"])
 closure_js_library(
     name = "webgl",
     srcs = ["webgl.js"],
+    lenient = True,
 )

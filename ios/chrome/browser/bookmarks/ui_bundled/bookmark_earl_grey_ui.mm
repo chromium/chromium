@@ -12,9 +12,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_storage_type.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_constants.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -172,10 +172,10 @@ id<GREYMatcher> SearchIconButton() {
   switch (kindOfTest) {
     case chrome_test_util::KindOfTest::kSignedOut:
     case chrome_test_util::KindOfTest::kAccount:
-      label = @"Mobile Bookmarks";
+      label = @"Mobile bookmarks";
       break;
     case chrome_test_util::KindOfTest::kLocal:
-      label = @"Mobile Bookmarks. Only on this device.";
+      label = @"Mobile bookmarks. Only on this device.";
       break;
   }
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
@@ -187,7 +187,7 @@ id<GREYMatcher> SearchIconButton() {
       selectElementWithMatcher:grey_allOf(
                                    grey_kindOfClassName(@"UITableViewCell"),
                                    grey_descendant(
-                                       grey_text(@"Mobile Bookmarks")),
+                                       grey_text(@"Mobile bookmarks")),
                                    nil)] performAction:grey_tap()];
 }
 

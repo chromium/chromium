@@ -116,19 +116,21 @@ SegmentedBuffer::Iterator SegmentedBuffer::GetIteratorAtInternal(
   return Iterator(it, position - it->start_position(), this);
 }
 
-bool SegmentedBuffer::GetBytesInternal(void* dest, size_t dest_size) const {
-  if (!dest)
+bool SegmentedBuffer::GetBytes(base::span<uint8_t> buffer) const {
+  if (!buffer.data()) {
     return false;
-
-  size_t offset = 0;
-  for (const auto& span : *this) {
-    if (offset >= dest_size)
-      break;
-    size_t to_be_written = std::min(span.size(), dest_size - offset);
-    memcpy(static_cast<char*>(dest) + offset, span.data(), to_be_written);
-    offset += to_be_written;
   }
-  return offset == dest_size;
+
+  for (const auto& span : *this) {
+    if (buffer.empty()) {
+      break;
+    }
+    const size_t to_be_written = std::min(span.size(), buffer.size());
+    auto [buffer_fragment, rest] = buffer.split_at(to_be_written);
+    buffer_fragment.copy_from(base::as_bytes(span.first(to_be_written)));
+    buffer = rest;
+  }
+  return buffer.empty();
 }
 
 void SegmentedBuffer::GetMemoryDumpNameAndSize(String& dump_name,

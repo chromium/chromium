@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import { openTab, getInjectedElementIds } from '/_test_resources/test_util/tabs_util.js';
+import {getInjectedElementIds, openTab} from '/_test_resources/test_util/tabs_util.js';
+import {waitForUserScriptsAPIAllowed} from '/_test_resources/test_util/user_script_test_util.js';
 
 // Navigates to an url requested by the extension and returns the opened tab.
 async function navigateToRequestedUrl() {
@@ -13,6 +14,8 @@ async function navigateToRequestedUrl() {
 }
 
 chrome.test.runTests([
+  waitForUserScriptsAPIAllowed,
+
   // Tests that calling unregister with specific ids unregisters such scripts
   // and does not inject them into a (former) matching frame.
   async function unregister_Filter() {

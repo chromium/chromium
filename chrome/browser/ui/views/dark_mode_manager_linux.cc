@@ -18,21 +18,9 @@
 
 namespace ui {
 
-namespace {
-
-scoped_refptr<dbus::Bus> CreateBus() {
-  dbus::Bus::Options options;
-  options.bus_type = dbus::Bus::SESSION;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = dbus_thread_linux::GetTaskRunner();
-  return base::MakeRefCounted<dbus::Bus>(options);
-}
-
-}  // namespace
-
 DarkModeManagerLinux::DarkModeManagerLinux()
     : DarkModeManagerLinux(
-          CreateBus(),
+          dbus_thread_linux::GetSharedSessionBus(),
           ui::GetDefaultLinuxUiTheme(),
           &ui::GetLinuxUiThemes(),
           std::vector<raw_ptr<ui::NativeTheme, VectorExperimental>>{
@@ -96,16 +84,7 @@ DarkModeManagerLinux::DarkModeManagerLinux(
   }
 }
 
-DarkModeManagerLinux::~DarkModeManagerLinux() {
-  settings_proxy_ = nullptr;
-  dbus::Bus* const bus_ptr = bus_.get();
-  // `task_runner` may be nullptr in testing.
-  if (auto* task_runner = bus_ptr->GetDBusTaskRunner()) {
-    task_runner->PostTask(
-        FROM_HERE,
-        base::BindOnce(&dbus::Bus::ShutdownAndBlock, std::move(bus_)));
-  }
-}
+DarkModeManagerLinux::~DarkModeManagerLinux() = default;
 
 void DarkModeManagerLinux::OnNativeThemeUpdated(
     ui::NativeTheme* observed_theme) {

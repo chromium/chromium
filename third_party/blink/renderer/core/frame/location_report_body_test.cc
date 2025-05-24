@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 
 namespace blink {
 namespace {
@@ -87,6 +88,25 @@ TEST(LocationReportBodyMatchIdTest,
                   .MatchId(),
               empty_hash);
   }
+}
+
+TEST(LocationReportBodyTest, ExtensionURLsAreIdentified) {
+  const char* kExtensionUrl =
+      "chrome-extension://abcdefghijklmnopabcdefghijklmnop/scripts/"
+      "script.js";
+  const char* kAboutBlankUrl = "about:blank";
+  const char* kHttpsUrl = "https://example.com/";
+
+  EXPECT_FALSE(TestLocationReportBody(kExtensionUrl, 1, 1).IsExtensionSource());
+  EXPECT_FALSE(
+      TestLocationReportBody(kAboutBlankUrl, 1, 1).IsExtensionSource());
+  EXPECT_FALSE(TestLocationReportBody(kHttpsUrl, 1, 1).IsExtensionSource());
+
+  CommonSchemeRegistry::RegisterURLSchemeAsExtension("chrome-extension");
+  EXPECT_TRUE(TestLocationReportBody(kExtensionUrl, 1, 1).IsExtensionSource());
+  EXPECT_FALSE(
+      TestLocationReportBody(kAboutBlankUrl, 1, 1).IsExtensionSource());
+  EXPECT_FALSE(TestLocationReportBody(kHttpsUrl, 1, 1).IsExtensionSource());
 }
 
 }  // namespace

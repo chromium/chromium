@@ -54,6 +54,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "storage/browser/quota/quota_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
@@ -95,12 +96,7 @@ enum class SetStorageKey { kYes, kNo };
 // ClearSiteData.
 class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
  public:
-  // TODO(crbug.com/328043119): Remove code associated with
-  // kAncestorChainBitEnabledInPartitionedCookies after it's enabled by default.
-  TestBrowsingDataRemoverDelegate() {
-    feature_list_.InitAndEnableFeature(
-        net::features::kAncestorChainBitEnabledInPartitionedCookies);
-  }
+  TestBrowsingDataRemoverDelegate() = default;
   // Sets a test expectation that a Clear-Site-Data header call from |origin|
   // (under |top_level_site|) instructing to delete |cookies|, |storage|, and
   // |cache|, will schedule the corresponding BrowsingDataRemover deletion
@@ -133,7 +129,8 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
     if (cookies) {
       uint64_t data_type_mask =
           BrowsingDataRemover::DATA_TYPE_COOKIES |
-          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS;
+          BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS |
+          BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
       net::CookiePartitionKey::AncestorChainBit ancestor_chain_bit =
           net::CookiePartitionKey::BoolToAncestorChainBit(
               partition_key_cross_site);
@@ -142,7 +139,7 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
       filter_builder.AddRegisterableDomain(origin.host());
       filter_builder.SetStoragePartitionConfig(storage_partition_config);
       filter_builder.SetCookiePartitionKeyCollection(
-          net::CookiePartitionKeyCollection::FromOptional(
+          net::CookiePartitionKeyCollection(
               net::CookiePartitionKey::FromStorageKeyComponents(
                   top_level_site, ancestor_chain_bit, /*nonce=*/std::nullopt)));
 
@@ -152,11 +149,14 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
     if (storage || cache) {
       uint64_t data_type_mask =
           (storage ? BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
-                         BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX
+                         BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX |
+                         BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS
                    : 0) |
           (cache ? BrowsingDataRemover::DATA_TYPE_CACHE : 0);
       data_type_mask &=
           ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX_INTERNAL;
+      data_type_mask &=
+          ~BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
 
       BrowsingDataFilterBuilderImpl filter_builder(
           BrowsingDataFilterBuilder::Mode::kDelete);
@@ -199,9 +199,6 @@ class TestBrowsingDataRemoverDelegate : public MockBrowsingDataRemoverDelegate {
                             /*storage=*/false,
                             /*cache=*/false, override_partition_key_cross_site);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
@@ -755,10 +752,10 @@ IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, MAYBE_Credentials) {
 // Tests that the credentials flag is correctly taken into account when it
 // interpretation changes after redirect.
 IN_PROC_BROWSER_TEST_F(ClearSiteDataHandlerBrowserTest, CredentialsOnRedirect) {
-  GURL urls[2] = {
+  auto urls = std::to_array<GURL, 2>({
       https_server()->GetURL("origin1.com", "/image.png"),
       https_server()->GetURL("origin2.com", "/image.png"),
-  };
+  });
 
   AddQuery(&urls[0], "header", kClearCookiesHeader);
   AddQuery(&urls[1], "header", kClearCookiesHeader);
@@ -1151,7 +1148,7 @@ class ClearSiteDataHandlerSharedStorageBrowserTest
     : public ClearSiteDataHandlerBrowserTest {
  public:
   ClearSiteDataHandlerSharedStorageBrowserTest() {
-    feature_list_.InitAndEnableFeature(blink::features::kSharedStorageAPI);
+    feature_list_.InitAndEnableFeature(network::features::kSharedStorageAPI);
   }
 
  private:

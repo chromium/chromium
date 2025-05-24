@@ -67,8 +67,8 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSingleUser) {
 
   auto* user_manager = GetFakeUserManager();
   user_manager->AddSamlUser(saml_login_account1_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -91,8 +91,8 @@ TEST_F(UserOnlineSigninNotifierTest, OfflineLimiteOutOfSessionSAMLAndNonSAML) {
 
   auto* user_manager = GetFakeUserManager();
   user_manager->AddUser(saml_login_account1_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -120,8 +120,8 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthTwoSamlUsers) {
   auto* user_manager = GetFakeUserManager();
   user_manager->AddSamlUser(saml_login_account1_id_);
   user_manager->AddSamlUser(saml_login_account2_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -151,8 +151,8 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSamlAndNonSamlUsers) {
   auto* user_manager = GetFakeUserManager();
   user_manager->AddSamlUser(saml_login_account1_id_);
   user_manager->AddUser(saml_login_account2_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -176,8 +176,8 @@ TEST_F(UserOnlineSigninNotifierTest, SamlOnlineAuthSamlPolicyNotSet) {
 
   auto* user_manager = GetFakeUserManager();
   user_manager->AddSamlUser(saml_login_account1_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -201,8 +201,8 @@ TEST_F(UserOnlineSigninNotifierTest,
 
   auto* user_manager = GetFakeUserManager();
   user_manager->AddUser(gaia_login_account1_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -221,8 +221,8 @@ TEST_F(UserOnlineSigninNotifierTest,
   // which is done often in OfflineSigninLimiter::SignedIn.
   user_manager->SaveForceOnlineSignin(gaia_login_account1_id_, false);
 
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -253,8 +253,8 @@ TEST_F(UserOnlineSigninNotifierTest, GaiaOnlineAuthSingleUserLastOnlineSignin) {
 
   auto* user_manager = GetFakeUserManager();
   user_manager->AddUser(gaia_login_account1_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -284,8 +284,8 @@ TEST_F(UserOnlineSigninNotifierTest, GaiaOnlineAuthTwoGaiaUsers) {
   auto* user_manager = GetFakeUserManager();
   user_manager->AddUser(gaia_login_account1_id_);
   user_manager->AddUser(gaia_login_account2_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,
@@ -318,8 +318,8 @@ TEST_F(UserOnlineSigninNotifierTest, GaiaOnlineAuthGaiaPolicyNotSet) {
   auto* user_manager = GetFakeUserManager();
   user_manager->AddUser(gaia_login_account1_id_);
   user_manager->AddUser(gaia_login_account2_id_);
-  user_online_signin_notifier_ =
-      std::make_unique<UserOnlineSigninNotifier>(user_manager->GetUsers());
+  user_online_signin_notifier_ = std::make_unique<UserOnlineSigninNotifier>(
+      user_manager->GetPersistedUsers());
   user_online_signin_notifier_->AddObserver(
       mock_online_signin_notifier_observer_.get());
   EXPECT_CALL(*mock_online_signin_notifier_observer_,

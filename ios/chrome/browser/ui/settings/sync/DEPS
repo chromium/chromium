@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/ui/scoped_ui_blocker",
-]

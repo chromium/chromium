@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -16,12 +17,12 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/browser_ui/device_lock/android/device_lock_bridge.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,10 +115,10 @@ class AutofillSaveCardInfoBarDelegateMobileTest
 };
 
 AutofillSaveCardInfoBarDelegateMobileTest::
-    AutofillSaveCardInfoBarDelegateMobileTest() {}
+    AutofillSaveCardInfoBarDelegateMobileTest() = default;
 
 AutofillSaveCardInfoBarDelegateMobileTest::
-    ~AutofillSaveCardInfoBarDelegateMobileTest() {}
+    ~AutofillSaveCardInfoBarDelegateMobileTest() = default;
 
 void AutofillSaveCardInfoBarDelegateMobileTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
@@ -203,8 +204,8 @@ AutofillSaveCardInfoBarDelegateMobileTest::
   }
 
   credit_card_to_save_ = credit_card;
-  absl::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
-                payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
+  std::variant<payments::PaymentsAutofillClient::LocalSaveCardPromptCallback,
+               payments::PaymentsAutofillClient::UploadSaveCardPromptCallback>
       save_card_callback;
   AutofillSaveCardUiInfo ui_info;
   if (is_uploading) {

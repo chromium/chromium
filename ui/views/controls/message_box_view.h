@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
@@ -34,6 +35,8 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
   METADATA_HEADER(MessageBoxView, BoxLayoutView)
 
  public:
+  using MessageLabels = std::vector<raw_ptr<views::Label, VectorExperimental>>;
+
   // |detect_directionality| indicates whether |message|'s directionality is
   // auto-detected.
   // For a message from a web page (not from Chrome's UI), such as script
@@ -51,12 +54,15 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
 
   ~MessageBoxView() override;
 
+  // Updates the message label shown in the message box.
+  void SetMessageLabel(std::u16string_view message);
+
   // Returns the visible prompt field, returns nullptr otherwise.
   views::Textfield* GetVisiblePromptField();
 
   // Returns user entered data in the prompt field, returns an empty string if
   // no visible prompt field.
-  std::u16string GetInputText();
+  std::u16string_view GetInputText();
 
   // Returns true if this message box has a visible checkbox, false otherwise.
   bool HasVisibleCheckBox() const;
@@ -83,6 +89,8 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
   // Adds a prompt field with |default_prompt| as the displayed text.
   void SetPromptField(const std::u16string& default_prompt);
 
+  const std::u16string& label_text_for_testing() const { return label_text_; }
+
  protected:
   // View:
   gfx::Size CalculatePreferredSize(
@@ -104,8 +112,17 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
   // Return the proper horizontal insets based on the given layout provider.
   gfx::Insets GetHorizontalInsets(const LayoutProvider* provider);
 
+  // Should auto-detect directionality of message label.
+  const bool detect_directionality_;
+
+  // Text set/updated in the message box.
+  std::u16string label_text_;
+
+  // View of the message box contents.
+  raw_ptr<BoxLayoutView> message_contents_ = nullptr;
+
   // Message for the message box.
-  std::vector<raw_ptr<Label, VectorExperimental>> message_labels_;
+  MessageLabels message_labels_;
 
   // Scrolling view containing the message labels.
   raw_ptr<ScrollView> scroll_view_ = nullptr;

@@ -1,0 +1,127 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<body></body>
+
+<script>
+
+assert_true(!!window.chrome && !!chrome.gpuBenchmarking,
+            'This test requires chrome.gpuBenchmarking.');
+
+function getHTMLElementCanvas(contextAttributes) {
+  const canvas = document.createElement('canvas');
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d', contextAttributes);
+  ctx.fillStyle = 'red';
+  ctx.fillRect(0, 0, 100, 100);
+  return canvas;
+}
+
+function getOffscreenCanvas(contextAttributes) {
+  const offscreen = new OffscreenCanvas(300, 150);
+  const ctx = offscreen.getContext('2d', contextAttributes);
+  ctx.fillStyle = 'green';
+  ctx.fillRect(0, 0, 100, 100);
+  return offscreen;
+}
+
+const canvas = {name: 'HTMLCanvasElement', create: getHTMLElementCanvas};
+const offscreen = {name: 'OffscreenCanvas', create: getOffscreenCanvas};
+
+// Test that drawing an accelerated canvas to another preserves acceleration.
+for (const src of [canvas, offscreen]) {
+  for (const dst of [canvas, offscreen]) {
+    promise_test(async () => {
+      const srcCanvas = src.create();
+      const dstCanvas = dst.create();
+
+      // Wait a frame to make sure the canvas locks into using GPU acceleration.
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      assert_true(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(srcCanvas),
+          'Source canvas should be accelerated before drawImage.');
+      assert_true(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(dstCanvas),
+          'Destination canvas should be accelerated before drawImage.');
+
+      const dstCtx = dstCanvas.getContext('2d');
+      dstCtx.drawImage(srcCanvas, 0, 0);
+
+      assert_true(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(srcCanvas),
+          'Source canvas should be accelerated after drawImage.');
+      assert_true(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(dstCanvas),
+          'Destination canvas should be accelerated after drawImage.');
+
+    }, `Drawing an ${src.name} to an ${dst.name} preserves acceleration.`);
+  }
+}
+
+// Test that drawing a CPU canvas to an GPU canvas preserves acceleration.
+for (const src of [canvas, offscreen]) {
+  for (const dst of [canvas, offscreen]) {
+    promise_test(async () => {
+      const srcCanvas = src.create({willReadFrequently: true});
+      const dstCanvas = dst.create();
+
+      // Wait a frame to make sure the canvas locks into using GPU acceleration.
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      assert_false(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(srcCanvas),
+          'Source canvas should be unaccelerated before drawImage.');
+      assert_true(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(dstCanvas),
+          'Destination canvas should be accelerated before drawImage.');
+
+      const dstCtx = dstCanvas.getContext('2d');
+      dstCtx.drawImage(srcCanvas, 0, 0);
+
+      assert_false(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(srcCanvas),
+          'Source canvas should be unaccelerated after drawImage.');
+      assert_true(
+          chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(dstCanvas),
+          'Destination canvas should be accelerated after drawImage.');
+
+    }, `Drawing a CPU ${src.name} to GPU ${dst.name} preserves acceleration.`);
+  }
+}
+
+// Test that drawing a GPU canvas to a CPU HTMLCanvasElement upgrades the
+// HTMLCanvasElement to GPU rasterization.
+// Note that this is not yet implemented for OffscreenCanvas.
+for (const src of [canvas, offscreen]) {
+  const dst = canvas;
+
+  promise_test(async () => {
+    const srcCanvas = src.create();
+    const dstCanvas = dst.create({willReadFrequently: true});
+
+    // Wait a frame to make sure the canvas locks into using GPU acceleration.
+    await new Promise(resolve => requestAnimationFrame(resolve));
+
+    assert_true(
+        chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(srcCanvas),
+        'Source canvas should be accelerated before drawImage.');
+    assert_false(
+        chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(dstCanvas),
+        'Destination canvas should be unaccelerated before drawImage.');
+
+    const dstCtx = dstCanvas.getContext('2d');
+    dstCtx.drawImage(srcCanvas, 0, 0);
+
+    assert_true(
+        chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(srcCanvas),
+        'Source canvas should be accelerated after drawImage.');
+    assert_true(
+        chrome.gpuBenchmarking.isAcceleratedCanvasImageSource(dstCanvas),
+        'Destination canvas should be accelerated after drawImage.');
+
+  }, `Drawing a GPU ${src.name} to a CPU ${dst.name} enables acceleration.`);
+}
+
+</script>

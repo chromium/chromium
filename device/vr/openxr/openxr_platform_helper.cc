@@ -7,7 +7,9 @@
 #include <set>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
@@ -97,9 +99,9 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
                     version_info::GetMajorVersionNumber()});
   size_t dest_size =
       std::size(instance_create_info.applicationInfo.applicationName);
-  size_t src_size =
+  size_t src_size = UNSAFE_TODO(
       base::strlcpy(instance_create_info.applicationInfo.applicationName,
-                    application_name.c_str(), dest_size);
+                    application_name.c_str(), dest_size));
   DCHECK_LT(src_size, dest_size);
 
   base::Version version = version_info::GetVersion();
@@ -110,14 +112,14 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
   instance_create_info.applicationInfo.applicationVersion = build;
 
   dest_size = std::size(instance_create_info.applicationInfo.engineName);
-  src_size = base::strlcpy(instance_create_info.applicationInfo.engineName,
-                           "Chromium", dest_size);
+  src_size = UNSAFE_TODO(base::strlcpy(
+      instance_create_info.applicationInfo.engineName, "Chromium", dest_size));
   DCHECK_LT(src_size, dest_size);
 
   // engine version should be the build number of chromium
   instance_create_info.applicationInfo.engineVersion = build;
 
-  instance_create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
+  instance_create_info.applicationInfo.apiVersion = XR_API_VERSION_1_0;
 
   // xrCreateInstance validates the list of extensions and returns
   // XR_ERROR_EXTENSION_NOT_PRESENT if an extension is not supported,
@@ -144,6 +146,10 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
                               factory_extensions.end());
   }
 
+  for (const auto& extension : OpenXrGraphicsBinding::GetOptionalExtensions()) {
+    handled_extensions.insert(extension);
+  }
+
   // Enable the required extensions for any controllers that both we and the
   // runtime support.
   for (const auto& interaction_profile :
@@ -163,6 +169,15 @@ XrResult OpenXrPlatformHelper::CreateInstance(XrInstance* instance,
           XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME)) {
     EnableExtensionIfSupported(XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME);
   }
+
+  const bool local_floor_ext_supported =
+      GetExtensionEnumeration()->ExtensionSupported(
+          XR_EXT_LOCAL_FLOOR_EXTENSION_NAME);
+  if (local_floor_ext_supported) {
+    extensions.push_back(XR_EXT_LOCAL_FLOOR_EXTENSION_NAME);
+  }
+  UMA_HISTOGRAM_BOOLEAN("XR.OpenXR.LocalFloorExtAvailable",
+                        local_floor_ext_supported);
 
   // Enable any other platform-specific extensions that we don't just enable or
   // try to enable across the board.

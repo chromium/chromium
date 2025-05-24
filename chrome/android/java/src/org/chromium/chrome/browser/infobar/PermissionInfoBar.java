@@ -12,8 +12,8 @@ import android.text.Spanned;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.infobars.ConfirmInfoBar;
@@ -21,7 +21,7 @@ import org.chromium.components.infobars.InfoBarCompactLayout;
 import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 
 /** An infobar used for prompting the user to grant a web API permission. */
 public class PermissionInfoBar extends ConfirmInfoBar
@@ -45,16 +45,16 @@ public class PermissionInfoBar extends ConfirmInfoBar
     private boolean mIsExpanded;
 
     /** The text of the link shown in the compact state. */
-    private String mCompactLinkText;
+    private final String mCompactLinkText;
 
     /** The message text in the compact state. */
-    private String mCompactMessage;
+    private final String mCompactMessage;
 
     /** The secondary text shown below the message in the expanded state. */
-    private String mDescription;
+    private final String mDescription;
 
     /** The text of the `Learn more` link shown in the expanded state after the description. */
-    private String mLearnMoreLinkText;
+    private final String mLearnMoreLinkText;
 
     protected PermissionInfoBar(
             WindowAndroid window,
@@ -147,7 +147,7 @@ public class PermissionInfoBar extends ConfirmInfoBar
         if (mLearnMoreLinkText != null && !mLearnMoreLinkText.isEmpty()) {
             SpannableString link = new SpannableString(mLearnMoreLinkText);
             link.setSpan(
-                    new NoUnderlineClickableSpan(layout.getContext(), view -> onLinkClicked()),
+                    new ChromeClickableSpan(layout.getContext(), view -> onLinkClicked()),
                     0,
                     link.length(),
                     Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
@@ -176,8 +176,9 @@ public class PermissionInfoBar extends ConfirmInfoBar
         fragmentArguments.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(
                 getContext(), SingleCategorySettings.class, fragmentArguments);
     }
 

@@ -93,7 +93,7 @@ Status AlgorithmImplementation::ExportKey(blink::WebCryptoKeyFormat format,
 
 Status AlgorithmImplementation::SerializeKeyForClone(
     const blink::WebCryptoKey& key,
-    blink::WebVector<uint8_t>* key_data) const {
+    std::vector<uint8_t>* key_data) const {
   switch (key.GetType()) {
     case blink::kWebCryptoKeyTypeSecret:
       *key_data = GetSymmetricKeyData(key);
@@ -117,8 +117,7 @@ Status AlgorithmImplementation::SerializeKeyForClone(
       return status;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return Status::ErrorUnexpected();
+  NOTREACHED();
 }
 
 Status AlgorithmImplementation::DeserializeKeyForClone(

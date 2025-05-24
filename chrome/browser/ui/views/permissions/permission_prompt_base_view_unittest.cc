@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/permissions/permission_prompt_base_view.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
@@ -64,13 +66,11 @@ class PermissionPromptBaseViewTest : public ChromeViewsTestBase {
 TEST_F(PermissionPromptBaseViewTest,
        DisablesButtonsWhenOccludedByPictureInPictureWindows) {
   // Set up a permission delegate with a request.
-  permissions::MockPermissionRequest request(
-      permissions::RequestType::kGeolocation);
   TestPermissionBubbleViewDelegate delegate;
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      raw_requests;
-  raw_requests.push_back(&request);
-  delegate.set_requests(raw_requests);
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> raw_requests;
+  raw_requests.push_back(std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kGeolocation));
+  delegate.set_requests(std::move(raw_requests));
 
   // Create a widget to parent the bubble.
   std::unique_ptr<views::Widget> parent =
@@ -110,13 +110,11 @@ TEST_F(PermissionPromptBaseViewTest,
 
 TEST_F(PermissionPromptBaseViewTest, IncludedInTrackedPictureInPictureWidgets) {
   // Set up a permission delegate with a request.
-  permissions::MockPermissionRequest request(
-      permissions::RequestType::kGeolocation);
   TestPermissionBubbleViewDelegate delegate;
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      raw_requests;
-  raw_requests.push_back(&request);
-  delegate.set_requests(raw_requests);
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> raw_requests;
+  raw_requests.push_back(std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kGeolocation));
+  delegate.set_requests(std::move(raw_requests));
 
   // Create a widget to parent the bubble.
   std::unique_ptr<views::Widget> parent =

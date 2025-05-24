@@ -1,1 +1,0 @@
-CONSOLE ERROR: Blocked script execution in 'transfer_encoding_8bit.mht' because the document's frame is sandboxed and the 'allow-scripts' permission is not set.

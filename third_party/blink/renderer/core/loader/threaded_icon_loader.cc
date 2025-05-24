@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_gfx.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -36,13 +37,11 @@ namespace {
 
 void DecodeSVGOnMainThread(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    scoped_refptr<SegmentReader> data,
+    SegmentedBuffer data_buffer,
     gfx::Size resize_dimensions,
     CrossThreadOnceFunction<void(SkBitmap, double)> done_callback) {
   DCHECK(IsMainThread());
-  blink::WebData buffer(
-      reinterpret_cast<const char*>(std::move(data->GetAsSkData()->bytes())),
-      data->size());
+  blink::WebData buffer(SharedBuffer::Create(std::move(data_buffer)));
   SkBitmap icon = blink::WebImage::DecodeSVG(buffer, resize_dimensions);
   if (icon.drawsNothing()) {
     PostCrossThreadTask(
@@ -57,7 +56,7 @@ void DecodeSVGOnMainThread(
 
 void DecodeAndResizeImage(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    scoped_refptr<SegmentReader> data,
+    SegmentedBuffer data_buffer,
     gfx::Size resize_dimensions,
     CrossThreadOnceFunction<void(SkBitmap, double)> done_callback) {
   auto notify_complete = [&](SkBitmap icon, double resize_scale) {
@@ -68,6 +67,8 @@ void DecodeAndResizeImage(
                                             std::move(icon), resize_scale));
   };
 
+  scoped_refptr<SegmentReader> data = SegmentReader::CreateFromSharedBuffer(
+      SharedBuffer::Create(std::move(data_buffer)));
   std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
       std::move(data), /*data_complete=*/true,
       ImageDecoder::kAlphaPremultiplied, ImageDecoder::kDefaultBitDepth,
@@ -163,16 +164,14 @@ void ThreadedIconLoader::DidReceiveResponse(uint64_t,
 }
 
 void ThreadedIconLoader::DidReceiveData(base::span<const char> data) {
-  if (!data_)
-    data_ = SharedBuffer::Create();
-  data_->Append(data.data(), data.size());
+  data_.Append(data);
 }
 
 void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
   if (stopped_)
     return;
 
-  if (!data_) {
+  if (data_.empty()) {
     std::move(icon_callback_).Run(SkBitmap(), -1);
     return;
   }
@@ -185,8 +184,7 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
         *Thread::MainThread()->GetTaskRunner(MainThreadTaskRunnerRestricted()),
         FROM_HERE,
         CrossThreadBindOnce(
-            &DecodeSVGOnMainThread, std::move(task_runner),
-            SegmentReader::CreateFromSharedBuffer(std::move(data_)),
+            &DecodeSVGOnMainThread, std::move(task_runner), std::move(data_),
             resize_dimensions_ ? *resize_dimensions_ : gfx::Size(),
             CrossThreadBindOnce(&ThreadedIconLoader::OnBackgroundTaskComplete,
                                 MakeUnwrappingCrossThreadWeakHandle(this))));
@@ -196,8 +194,7 @@ void ThreadedIconLoader::DidFinishLoading(uint64_t resource_identifier) {
   worker_pool::PostTask(
       FROM_HERE,
       CrossThreadBindOnce(
-          &DecodeAndResizeImage, std::move(task_runner),
-          SegmentReader::CreateFromSharedBuffer(std::move(data_)),
+          &DecodeAndResizeImage, std::move(task_runner), std::move(data_),
           resize_dimensions_ ? *resize_dimensions_ : gfx::Size(),
           CrossThreadBindOnce(&ThreadedIconLoader::OnBackgroundTaskComplete,
                               MakeUnwrappingCrossThreadWeakHandle(this))));

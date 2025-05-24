@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_MP4_BOX_READER_H_
 #define MEDIA_FORMATS_MP4_BOX_READER_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <limits>
@@ -79,7 +80,7 @@ class MEDIA_EXPORT BufferReader {
 
   // Reads a sequence of bytes verbatim from the buffer into `t` after clearing
   // `t`, and advances the stream pointer.
-  [[nodiscard]] bool ReadVec(std::vector<uint8_t>* t, uint64_t count);
+  [[nodiscard]] bool ReadVec(std::vector<uint8_t>* t, size_t count);
 
   // Advance the stream by this many bytes.
   [[nodiscard]] bool SkipBytes(uint64_t nbytes);

@@ -15,12 +15,13 @@ import '../../settings_shared.css.js';
 import './app_setup_pin_keyboard.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
+import type {PinKeyboardElement} from 'chrome://resources/ash/common/quick_unlock/pin_keyboard.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {AppParentalControlsHandlerInterface, PinValidationResult} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import type {AppParentalControlsHandlerInterface} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import {PinValidationResult} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 
 import {getTemplate} from './app_verify_pin_dialog.html.js';
 import {ParentalControlsPinDialogError, recordPinDialogError} from './metrics_utils.js';

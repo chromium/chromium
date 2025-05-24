@@ -1,0 +1,17 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/webmachinelearning/prompt-api
+
+[
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
+  SecureContext
+]
+interface LanguageModelParams {
+  readonly attribute unsigned long defaultTopK;
+  readonly attribute unsigned long maxTopK;
+  readonly attribute float defaultTemperature;
+  readonly attribute float maxTemperature;
+};

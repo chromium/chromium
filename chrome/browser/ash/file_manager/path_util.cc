@@ -8,8 +8,6 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_switches.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
@@ -32,15 +30,16 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -52,6 +51,8 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/drive/file_system_core_util.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -114,12 +115,12 @@ constexpr FilePath::CharType kArcExternalFilesRoot[] =
 constexpr char kArcStorageContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/";
 // A predefined removable media UUID for testing. Defined in
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/1274481): Move ash-wide constants to a common place.
 constexpr char kArcRemovableMediaUuidForTesting[] =
     "00000000000000000000000000000000DEADBEEF";
 // The dummy UUID of the MyFiles volume is taken from
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 // TODO(crbug.com/929031): Move MyFiles constants to a common place.
 constexpr char kArcMyFilesContentUrlPrefix[] =
     "content://org.chromium.arc.volumeprovider/"
@@ -285,6 +286,21 @@ std::optional<int> MyFilesFolderToMessageId(std::string folder) {
   return std::nullopt;
 }
 
+std::string GetMountPointNameForProfile(Profile* profile,
+                                        const std::string& folder_name) {
+  // To distinguish profiles in multi-profile session, we append user name hash
+  // to folder_name. Note that some profiles (like login or test profiles)
+  // are not associated with an user account. In that case, no suffix is added
+  // because such a profile never belongs to a multi-profile session.
+  const user_manager::User* const user =
+      user_manager::UserManager::IsInitialized()
+          ? ash::ProfileHelper::Get()->GetUserByProfile(
+                profile->GetOriginalProfile())
+          : nullptr;
+  const std::string id = user ? "-" + user->username_hash() : "";
+  return base::EscapeQueryParamValue(folder_name + id, false);
+}
+
 }  // namespace
 
 const FilePath::CharType kFuseBoxMediaPath[] =
@@ -448,17 +464,11 @@ bool MigrateToDriveFs(Profile* profile,
 }
 
 std::string GetDownloadsMountPointName(Profile* profile) {
-  // To distinguish profiles in multi-profile session, we append user name hash
-  // to "Downloads". Note that some profiles (like login or test profiles)
-  // are not associated with an user account. In that case, no suffix is added
-  // because such a profile never belongs to a multi-profile session.
-  const user_manager::User* const user =
-      user_manager::UserManager::IsInitialized()
-          ? ash::ProfileHelper::Get()->GetUserByProfile(
-                profile->GetOriginalProfile())
-          : nullptr;
-  const std::string id = user ? "-" + user->username_hash() : "";
-  return base::EscapeQueryParamValue(kFolderNameDownloads + id, false);
+  return GetMountPointNameForProfile(profile, kFolderNameDownloads);
+}
+
+std::string GetShareCacheMountPointName(Profile* profile) {
+  return GetMountPointNameForProfile(profile, kFolderNameShareCache);
 }
 
 std::string GetAndroidFilesMountPointName() {
@@ -470,7 +480,7 @@ std::string GetAndroidFilesMountPointName() {
 bool IsBruschettaMountPointName(const std::string& name,
                                 Profile* profile,
                                 guest_os::GuestId* guest_id) {
-  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
   if (!service) {
     return false;
   }
@@ -587,8 +597,8 @@ bool ConvertFileSystemURLToPathInsideVM(
     // Crostini.
     if (map_crostini_home) {
       auto container_info =
-          guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
-              crostini::DefaultContainerId());
+          guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)
+              ->GetInfo(crostini::DefaultContainerId());
       if (!container_info) {
         return false;
       }
@@ -600,7 +610,7 @@ bool ConvertFileSystemURLToPathInsideVM(
     // Bruschetta: use path to homedir, which is currently the empty string
     // because sftp-server inside the VM runs in the homedir.
     auto container_info =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetInfo(
             guest_id);
     if (!container_info) {
       return false;
@@ -672,7 +682,7 @@ bool ConvertPathInsideVMToFileSystemURL(
 
   if (map_crostini_home) {
     auto container_info =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetInfo(
             crostini::DefaultContainerId());
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
@@ -1022,8 +1032,8 @@ void ConvertToContentUrls(
 }
 
 bool ReplacePrefix(std::string* const s,
-                   const std::string_view prefix,
-                   const std::string_view replacement) {
+                   std::string_view prefix,
+                   std::string_view replacement) {
   DCHECK(s);
   if (s->starts_with(prefix) &&
       (prefix.ends_with('/') || s->size() <= prefix.size() ||
@@ -1036,7 +1046,7 @@ bool ReplacePrefix(std::string* const s,
 }
 
 std::string GetPathDisplayTextForSettings(Profile* const profile,
-                                          const std::string_view path) {
+                                          std::string_view path) {
   std::string result(path);
   DriveIntegrationService* service =
       DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -1285,8 +1295,7 @@ std::optional<FilePath> GetDisplayablePath(Profile* profile, FilePath path) {
     case VOLUME_TYPE_SYSTEM_INTERNAL:
       return std::nullopt;
     case NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
   while (cur_component != path_components.end()) {
     result = result.Append(*cur_component);

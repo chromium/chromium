@@ -4,16 +4,26 @@
 
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 
+#import "components/image_fetcher/core/image_fetcher_service.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
+#import "ios/chrome/browser/home_customization/coordinator/home_customization_background_picker_action_sheet_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_mediator.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_view_controller.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_background_picker_presentation_delegate.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_discover_view_controller.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_logo_vendor_provider.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_magic_stack_view_controller.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_main_view_controller.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
+#import "ios/chrome/browser/image_fetcher/model/image_fetcher_service_factory.h"
+#import "ios/chrome/browser/ntp/ui_bundled/logo_vendor.h"
+#import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
+#import "ios/public/provider/chrome/browser/ui_utils/ui_utils_api.h"
 
 namespace {
 
@@ -27,7 +37,13 @@ CGFloat const kSheetCornerRadius = 30;
 }  // namespace
 
 @interface HomeCustomizationCoordinator () <
-    UISheetPresentationControllerDelegate>
+    UISheetPresentationControllerDelegate,
+    HomeCustomizationBackgroundPickerPresentationDelegate,
+    HomeCustomizationLogoVendorProvider> {
+  // Displays the background picker action sheet.
+  HomeCustomizationBackgroundPickerActionSheetCoordinator*
+      _backgroundPickerActionSheetCoordinator;
+}
 
 // The main page of the customization menu.
 @property(nonatomic, strong)
@@ -58,19 +74,26 @@ CGFloat const kSheetCornerRadius = 30;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  image_fetcher::ImageFetcherService* imageFetcherService =
+      ImageFetcherServiceFactory::GetForProfile(self.browser->GetProfile());
+
   _mediator = [[HomeCustomizationMediator alloc]
-      initWithPrefService:ChromeBrowserState::FromBrowserState(
-                              self.browser->GetBrowserState())
-                              ->GetPrefs()];
+                     initWithPrefService:self.profile->GetPrefs()
+      discoverFeedVisibilityBrowserAgent:DiscoverFeedVisibilityBrowserAgent::
+                                             FromBrowser(self.browser)
+                     imageFetcherService:imageFetcherService];
   _mediator.navigationDelegate = self;
 
+  // The Customization menu consists of a stack of presenting view controllers.
+  // Since the `baseViewController` is at the root of this stack, it is set as
+  // the first page.
   _currentPageViewController = self.baseViewController;
 
   [super start];
 }
 
 - (void)stop {
-  [self.baseViewController dismissViewControllerAnimated:NO completion:nil];
+  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
 
   _mainViewController = nil;
   _magicStackViewController = nil;
@@ -107,16 +130,14 @@ CGFloat const kSheetCornerRadius = 30;
     self.firstPageViewController = menuPage;
   }
 
-  [self.currentPageViewController
-      presentViewController:menuPage
-                   animated:YES
-                 completion:^{
-                   UIAccessibilityPostNotification(
-                       UIAccessibilityScreenChangedNotification, menuPage);
-                 }];
+  [self.currentPageViewController presentViewController:menuPage
+                                               animated:YES
+                                             completion:nil];
 
-  self.currentPageViewController.view.accessibilityElementsHidden = YES;
   self.currentPageViewController = menuPage;
+
+  // Set the currently presented modal as the interactable one for voiceover.
+  self.currentPageViewController.view.accessibilityViewIsModal = YES;
 }
 
 - (void)dismissMenuPage {
@@ -130,7 +151,10 @@ CGFloat const kSheetCornerRadius = 30;
                                                        completion:nil];
     self.currentPageViewController =
         self.currentPageViewController.presentingViewController;
-    self.currentPageViewController.view.accessibilityElementsHidden = NO;
+
+    // The presented page was closed, so the presenting page should become
+    // interactable.
+    self.currentPageViewController.view.accessibilityViewIsModal = YES;
   }
 }
 
@@ -142,9 +166,10 @@ CGFloat const kSheetCornerRadius = 30;
 
 #pragma mark - UISheetPresentationControllerDelegate
 
-- (void)presentationControllerWillDismiss:
+- (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   [self dismissMenuPage];
+  [self dismissBackgroundPickerActionSheet];
 }
 
 #pragma mark - Private
@@ -158,7 +183,9 @@ CGFloat const kSheetCornerRadius = 30;
     case CustomizationMenuPage::kMain: {
       self.mainViewController =
           [[HomeCustomizationMainViewController alloc] init];
+      self.mainViewController.backgroundPickerPresentationDelegate = self;
       self.mainViewController.mutator = _mediator;
+      self.mainViewController.logoVendorProvider = self;
       self.mediator.mainPageConsumer = self.mainViewController;
       [self.mediator configureMainPageData];
       menuPage = self.mainViewController;
@@ -183,7 +210,7 @@ CGFloat const kSheetCornerRadius = 30;
       break;
     }
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Configure the navigation controller.
@@ -215,6 +242,30 @@ CGFloat const kSheetCornerRadius = 30;
       kBottomSheetDetentIdentifier;
 
   return navigationController;
+}
+
+// Dismisses the background picker action sheet and clears its reference.
+- (void)dismissBackgroundPickerActionSheet {
+  [_backgroundPickerActionSheetCoordinator stop];
+  _backgroundPickerActionSheetCoordinator = nil;
+}
+
+#pragma mark - HomeCustomizationBackgroundPickerPresentationDelegate
+
+- (void)showBackgroundPickerOptions {
+  _backgroundPickerActionSheetCoordinator =
+      [[HomeCustomizationBackgroundPickerActionSheetCoordinator alloc]
+          initWithBaseViewController:self.mainViewController
+                             browser:self.browser];
+
+  [_backgroundPickerActionSheetCoordinator start];
+}
+
+#pragma mark - HomeCustomizationLogoVendorProvider
+
+- (id<LogoVendor>)provideLogoVendor {
+  return ios::provider::CreateLogoVendor(
+      self.browser, self.browser->GetWebStateList()->GetActiveWebState());
 }
 
 @end

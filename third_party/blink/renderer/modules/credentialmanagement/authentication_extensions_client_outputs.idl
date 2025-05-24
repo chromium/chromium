@@ -18,7 +18,7 @@ dictionary AuthenticationExtensionsClientOutputs {
   CredentialPropertiesOutput credProps;
 
   // https://w3c.github.io/webauthn/#sctn-large-blob-extension
-  [RuntimeEnabled=WebAuthenticationLargeBlobExtension] AuthenticationExtensionsLargeBlobOutputs largeBlob;
+  AuthenticationExtensionsLargeBlobOutputs largeBlob;
 
   // https://fidoalliance.org/specs/fido-v2.1-rd-20201208/fido-client-to-authenticator-protocol-v2.1-rd-20201208.html#sctn-credBlob-extension
   boolean credBlob;
@@ -26,6 +26,9 @@ dictionary AuthenticationExtensionsClientOutputs {
 
   // https://w3c.github.io/webauthn/#sctn-supplemental-public-keys-extension
   [RuntimeEnabled=WebAuthenticationSupplementalPubKeys] AuthenticationExtensionsSupplementalPubKeysOutputs supplementalPubKeys;
+
+  // Payment extension outputs support.
+  [RuntimeEnabled=SecurePaymentConfirmationBrowserBoundKeys] AuthenticationExtensionsPaymentOutputs payment;
 
   // Pseudo-random function support.
   // https://w3c.github.io/webauthn/#prf-extension

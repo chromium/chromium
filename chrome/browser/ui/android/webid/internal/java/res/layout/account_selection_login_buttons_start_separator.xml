@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<View
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/login_button_divider"
+    android:background="@macro/divider_line_bg_color"
+    android:layout_height="1dp"
+    android:layout_width="match_parent"
+    android:layout_marginStart="@dimen/account_selection_separator_margin_start"
+    android:layout_marginEnd="@dimen/account_selection_separator_margin_end" />

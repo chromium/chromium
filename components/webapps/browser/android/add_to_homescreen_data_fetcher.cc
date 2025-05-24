@@ -19,7 +19,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
-#include "build/android_buildflags.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/favicon/content/large_icon_service_getter.h"
 #include "components/favicon/core/large_icon_service.h"
@@ -64,8 +63,7 @@ InstallableParams ParamsToFetchInstallableData() {
 InstallableParams ParamsToFetchPrimaryIcon() {
   InstallableParams params;
   params.valid_primary_icon = true;
-  params.prefer_maskable_icon =
-      WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.prefer_maskable_icon = true;
   params.fetch_favicon = true;
   return params;
 }
@@ -214,16 +212,11 @@ void AddToHomescreenDataFetcher::OnDidPerformInstallableCheck(
 
   installable_status_code_ = data.GetFirstError();
 
-#if BUILDFLAG(IS_DESKTOP_ANDROID)
-  constexpr bool is_desktop_android = true;
-#else
-  constexpr bool is_desktop_android = false;
-#endif
-
   // Desktop Android is allowed to install incompatible sites as apps.
   // Regular Android installs them as shortcuts.
   // TODO(b/362975239): Fix the compatibility check on desktop Android.
-  if (!webapk_compatible && !is_desktop_android) {
+  if (!webapk_compatible &&
+      !base::android::BuildInfo::GetInstance()->is_desktop()) {
     PrepareToAddShortcut();
     return;
   }

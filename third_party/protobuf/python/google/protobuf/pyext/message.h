@@ -1,32 +1,9 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: anuraag@google.com (Anuraag Agrawal)
 // Author: tibell@google.com (Johan Tibell)
@@ -42,7 +19,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <google/protobuf/stubs/common.h>
+#include "absl/strings/string_view.h"
 
 namespace google {
 namespace protobuf {
@@ -71,7 +48,8 @@ struct CMessageClass;
 // don't store any data, and always refer to their parent message.
 
 struct ContainerBase {
-  PyObject_HEAD;
+  // clang-format off
+  PyObject_HEAD
 
   // Strong reference to a parent message object. For a CMessage there are three
   // cases:
@@ -82,6 +60,7 @@ struct ContainerBase {
   // For all other types: repeated containers, maps, it always point to a
   // valid parent CMessage.
   struct CMessage* parent;
+  // clang-format on
 
   // If this object belongs to a parent message, describes which field it comes
   // from.
@@ -124,9 +103,6 @@ typedef struct CMessage : public ContainerBase {
   typedef std::unordered_map<const Message*, CMessage*> SubMessagesMap;
   SubMessagesMap* child_submessages;
 
-  // A reference to PyUnknownFields.
-  PyObject* unknown_field_set;
-
   // Implements the "weakref" protocol for this object.
   PyObject* weakreflist;
 
@@ -165,9 +141,7 @@ struct CMessageClass {
   // This reference must stay alive until all message pointers are destructed.
   PyMessageFactory* py_message_factory;
 
-  PyObject* AsPyObject() {
-    return reinterpret_cast<PyObject*>(this);
-  }
+  PyObject* AsPyObject() { return reinterpret_cast<PyObject*>(this); }
 };
 
 extern PyTypeObject* CMessageClass_Type;
@@ -188,20 +162,23 @@ const FieldDescriptor* GetExtensionDescriptor(PyObject* extension);
 // submessage as the result is cached in composite_fields.
 //
 // Corresponds to reflection api method GetMessage.
-CMessage* InternalGetSubMessage(
-    CMessage* self, const FieldDescriptor* field_descriptor);
+CMessage* InternalGetSubMessage(CMessage* self,
+                                const FieldDescriptor* field_descriptor);
+
+// Delete the last n items in a repeated field.
+void DeleteLastRepeatedWithSize(CMessage* self,
+                                const FieldDescriptor* field_descriptor,
+                                Py_ssize_t n);
 
 // Deletes a range of items in a repeated field (following a
 // removal in a RepeatedCompositeContainer).
 //
 // Corresponds to reflection api method RemoveLast.
-int DeleteRepeatedField(CMessage* self,
-                        const FieldDescriptor* field_descriptor,
+int DeleteRepeatedField(CMessage* self, const FieldDescriptor* field_descriptor,
                         PyObject* slice);
 
 // Sets the specified scalar value to the message.
-int InternalSetScalar(CMessage* self,
-                      const FieldDescriptor* field_descriptor,
+int InternalSetScalar(CMessage* self, const FieldDescriptor* field_descriptor,
                       PyObject* value);
 
 // Sets the specified scalar value to the message.  Requires it is not a Oneof.
@@ -252,10 +229,6 @@ int InitAttributes(CMessage* self, PyObject* args, PyObject* kwargs);
 
 PyObject* MergeFrom(CMessage* self, PyObject* arg);
 
-// This method does not do anything beyond checking that no other extension
-// has been registered with the same field number on this class.
-PyObject* RegisterExtension(PyObject* cls, PyObject* extension_handle);
-
 // Get a field from a message.
 PyObject* GetFieldValue(CMessage* self,
                         const FieldDescriptor* field_descriptor);
@@ -280,72 +253,68 @@ PyObject* SetAllowOversizeProtos(PyObject* m, PyObject* arg);
 
 }  // namespace cmessage
 
-
 /* Is 64bit */
 #define IS_64BIT (SIZEOF_LONG == 8)
 
 #define FIELD_IS_REPEATED(field_descriptor) \
   ((field_descriptor)->label() == FieldDescriptor::LABEL_REPEATED)
 
-#define GOOGLE_CHECK_GET_INT32(arg, value, err)  \
-  int32_t value;                          \
-  if (!CheckAndGetInteger(arg, &value)) { \
-    return err;                           \
+#define PROTOBUF_CHECK_GET_INT32(arg, value, err) \
+  int32_t value;                                  \
+  if (!CheckAndGetInteger(arg, &value)) {         \
+    return err;                                   \
   }
 
-#define GOOGLE_CHECK_GET_INT64(arg, value, err)  \
-  int64_t value;                          \
-  if (!CheckAndGetInteger(arg, &value)) { \
-    return err;                           \
+#define PROTOBUF_CHECK_GET_INT64(arg, value, err) \
+  int64_t value;                                  \
+  if (!CheckAndGetInteger(arg, &value)) {         \
+    return err;                                   \
   }
 
-#define GOOGLE_CHECK_GET_UINT32(arg, value, err) \
-  uint32_t value;                         \
-  if (!CheckAndGetInteger(arg, &value)) { \
-    return err;                           \
+#define PROTOBUF_CHECK_GET_UINT32(arg, value, err) \
+  uint32_t value;                                  \
+  if (!CheckAndGetInteger(arg, &value)) {          \
+    return err;                                    \
   }
 
-#define GOOGLE_CHECK_GET_UINT64(arg, value, err) \
-  uint64_t value;                         \
-  if (!CheckAndGetInteger(arg, &value)) { \
-    return err;                           \
+#define PROTOBUF_CHECK_GET_UINT64(arg, value, err) \
+  uint64_t value;                                  \
+  if (!CheckAndGetInteger(arg, &value)) {          \
+    return err;                                    \
   }
 
-#define GOOGLE_CHECK_GET_FLOAT(arg, value, err) \
-  float value;                           \
-  if (!CheckAndGetFloat(arg, &value)) {  \
-    return err;                          \
+#define PROTOBUF_CHECK_GET_FLOAT(arg, value, err) \
+  float value;                                    \
+  if (!CheckAndGetFloat(arg, &value)) {           \
+    return err;                                   \
   }
 
-#define GOOGLE_CHECK_GET_DOUBLE(arg, value, err) \
-  double value;                           \
-  if (!CheckAndGetDouble(arg, &value)) {  \
-    return err;                           \
+#define PROTOBUF_CHECK_GET_DOUBLE(arg, value, err) \
+  double value;                                    \
+  if (!CheckAndGetDouble(arg, &value)) {           \
+    return err;                                    \
   }
 
-#define GOOGLE_CHECK_GET_BOOL(arg, value, err) \
-  bool value;                           \
-  if (!CheckAndGetBool(arg, &value)) {  \
-    return err;                         \
+#define PROTOBUF_CHECK_GET_BOOL(arg, value, err) \
+  bool value;                                    \
+  if (!CheckAndGetBool(arg, &value)) {           \
+    return err;                                  \
   }
 
 #define FULL_MODULE_NAME "google.protobuf.pyext._message"
 
 void FormatTypeError(PyObject* arg, const char* expected_types);
-template<class T>
+template <class T>
 bool CheckAndGetInteger(PyObject* arg, T* value);
 bool CheckAndGetDouble(PyObject* arg, double* value);
 bool CheckAndGetFloat(PyObject* arg, float* value);
 bool CheckAndGetBool(PyObject* arg, bool* value);
 PyObject* CheckString(PyObject* arg, const FieldDescriptor* descriptor);
-bool CheckAndSetString(
-    PyObject* arg, Message* message,
-    const FieldDescriptor* descriptor,
-    const Reflection* reflection,
-    bool append,
-    int index);
+bool CheckAndSetString(PyObject* arg, Message* message,
+                       const FieldDescriptor* descriptor,
+                       const Reflection* reflection, bool append, int index);
 PyObject* ToStringObject(const FieldDescriptor* descriptor,
-                         const std::string& value);
+                         absl::string_view value);
 
 // Check if the passed field descriptor belongs to the given message.
 // If not, return false and set a Python exception (a KeyError)
@@ -361,14 +330,14 @@ Message* PyMessage_GetMutableMessagePointer(PyObject* msg);
 PyObject* PyMessage_NewMessageOwnedExternally(Message* message,
                                               PyObject* py_message_factory);
 
-bool InitProto2MessageModule(PyObject *m);
+bool InitProto2MessageModule(PyObject* m);
 
 // These are referenced by repeated_scalar_container, and must
 // be explicitly instantiated.
-extern template bool CheckAndGetInteger<int32>(PyObject*, int32*);
-extern template bool CheckAndGetInteger<int64>(PyObject*, int64*);
-extern template bool CheckAndGetInteger<uint32>(PyObject*, uint32*);
-extern template bool CheckAndGetInteger<uint64>(PyObject*, uint64*);
+extern template bool CheckAndGetInteger<int32_t>(PyObject*, int32_t*);
+extern template bool CheckAndGetInteger<int64_t>(PyObject*, int64_t*);
+extern template bool CheckAndGetInteger<uint32_t>(PyObject*, uint32_t*);
+extern template bool CheckAndGetInteger<uint64_t>(PyObject*, uint64_t*);
 
 }  // namespace python
 }  // namespace protobuf

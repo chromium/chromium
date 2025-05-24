@@ -97,10 +97,8 @@ void IconDecodeRequest::StartWithOptions(
       OnDecodeImageFailed();
       return;
     }
-    SkBitmap bitmap;
-    if (!gfx::PNGCodec::Decode(
-            reinterpret_cast<const unsigned char*>(image_data.data()),
-            image_data.size(), &bitmap)) {
+    SkBitmap bitmap = gfx::PNGCodec::Decode(image_data);
+    if (bitmap.isNull()) {
       OnDecodeImageFailed();
       return;
     }

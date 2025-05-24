@@ -8,17 +8,20 @@ import android.graphics.Rect;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 
 /**
  * An interface for outside packages to interact with the top toolbar. Other than for testing
- * purposes this interface should be used rather than {@link TopToolbarCoordinator} or
- * {@link ToolbarLayout} and extending classes.
+ * purposes this interface should be used rather than {@link TopToolbarCoordinator} or {@link
+ * ToolbarLayout} and extending classes.
  */
+@NullMarked
 public interface Toolbar {
     /**
-     * Calculates the {@link Rect} that represents the content area of the location bar.  This
-     * rect will be relative to the toolbar.
+     * Calculates the {@link Rect} that represents the content area of the location bar. This rect
+     * will be relative to the toolbar.
+     *
      * @param outRect The Rect that represents the content area of the location bar.
      */
     void getLocationBarContentRect(Rect outRect);
@@ -55,18 +58,9 @@ public interface Toolbar {
     CaptureReadinessResult isReadyForTextureCapture();
 
     /**
-     * Sets whether or not the toolbar should force itself to draw for a texture capture regardless
-     * of other criteria used in isReadyForTextureCapture(). A texture capture will only be forced
-     * if the toolbar drawables tint is changing.
-     *
-     * @param forceTextureCapture Whether the toolbar should force itself to draw.
-     * @return True if a texture capture will be forced on the next draw.
-     */
-    boolean setForceTextureCapture(boolean forceTextureCapture);
-
-    /**
      * Returns the height of the tab strip, iff the toolbar has one. Returns 0 for toolbars that do
      * not have a tabstrip.
+     *
      * @return height of the tab strip in px.
      */
     int getTabStripHeight();
@@ -95,8 +89,9 @@ public interface Toolbar {
 
     /**
      * Updates the visibility of the toolbar hairline.
+     *
      * @param isVisible whether or not the hairline should be visible.
-     * */
+     */
     void setBrowsingModeHairlineVisibility(boolean isVisible);
 
     /**
@@ -104,4 +99,14 @@ public interface Toolbar {
      * surface's toolbar is showing.
      */
     boolean isBrowsingModeToolbarVisible();
+
+    /**
+     * Removes the location bar view from the toolbar (if it exists) and returns it. If there is no
+     * location bar, returns null. The appearance/behavior of the toolbar is not well-defined after
+     * this has been done, so it should only be used in cases where the toolbar is not visible.
+     */
+    View removeLocationBarView();
+
+    /** Add the location bar view back to the toolbar. */
+    void restoreLocationBarView();
 }

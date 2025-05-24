@@ -5,6 +5,11 @@ local.properties
 buildSrc/.gradle/
 buildSrc/build/
 
+# Android Studio creates these during gradle sync.
+/gradle/
+/gradlew
+/gradlew.bat
+
 # JAR and AAR files will be fetched via CIPD.
 cipd/
 

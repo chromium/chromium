@@ -26,8 +26,6 @@ OverlayPresenter* OverlayPresenter::FromBrowser(Browser* browser,
 
 #pragma mark - OverlayPresenterImpl::Container
 
-OVERLAY_USER_DATA_SETUP_IMPL(OverlayPresenterImpl::Container);
-
 OverlayPresenterImpl::Container::Container(Browser* browser)
     : browser_(browser) {
   DCHECK(browser_);
@@ -174,8 +172,9 @@ void OverlayPresenterImpl::SetActiveWebState(web::WebState* web_state,
 
 OverlayRequestQueueImpl* OverlayPresenterImpl::GetQueueForWebState(
     web::WebState* web_state) const {
-  if (!web_state)
+  if (!web_state) {
     return nullptr;
+  }
   OverlayRequestQueueImpl::Container::CreateForWebState(web_state);
   return OverlayRequestQueueImpl::Container::FromWebState(web_state)
       ->QueueForModality(modality_);
@@ -198,16 +197,17 @@ OverlayRequest* OverlayPresenterImpl::GetActiveRequest() const {
 #pragma mark UI Presentation and Dismissal helpers
 
 void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
-
   // Overlays cannot be shown without a presentation context or if the
   // presentation context is already showing overlay UI.
-  if (!presentation_context_ || presentation_context_->IsShowingOverlayUI())
+  if (!presentation_context_ || presentation_context_->IsShowingOverlayUI()) {
     return;
+  }
 
   // No presentation is necessary if there is no active reqeust.
   OverlayRequest* request = GetActiveRequest();
-  if (!request)
+  if (!request) {
     return;
+  }
 
   // If the UI is disabled, no presentation nor preparation should occur.
   // `PrepareToShowOverlayUI()` is dismissing the keyboard, so do an early
@@ -233,8 +233,9 @@ void OverlayPresenterImpl::PresentOverlayForActiveRequest() {
   bool initial_presentation =
       !base::Contains(previously_presented_requests_, request);
   for (auto& observer : observers_) {
-    if (observer.GetRequestSupport(this)->IsRequestSupported(request))
+    if (observer.GetRequestSupport(this)->IsRequestSupported(request)) {
       observer.WillShowOverlay(this, request, initial_presentation);
+    }
   }
 
   // Record that the request was shown, and add the completion callback to
@@ -263,8 +264,9 @@ void OverlayPresenterImpl::OverlayWasPresented(
   DCHECK_EQ(presentation_context_, presentation_context);
   DCHECK_EQ(presented_request_, request);
   for (auto& observer : observers_) {
-    if (observer.GetRequestSupport(this)->IsRequestSupported(request))
+    if (observer.GetRequestSupport(this)->IsRequestSupported(request)) {
       observer.DidShowOverlay(this, request);
+    }
   }
 }
 
@@ -277,8 +279,9 @@ void OverlayPresenterImpl::OverlayWasDismissed(
   // be cancelled and dismissed.  The presenter is now using the new UI
   // delegate's presentation context, so this dismissal should not trigger
   // presentation logic.
-  if (presentation_context_ != presentation_context)
+  if (presentation_context_ != presentation_context) {
     return;
+  }
 
   // When the presenter has been replaced as the delegate of the active
   // OverlayRequestQueue, observers are notified of DidHideOverlay() and
@@ -318,8 +321,9 @@ void OverlayPresenterImpl::OverlayWasDismissed(
 
   // Notify the observers that the overlay UI was hidden.
   for (auto& observer : observers_) {
-    if (observer.GetRequestSupport(this)->IsRequestSupported(request))
+    if (observer.GetRequestSupport(this)->IsRequestSupported(request)) {
       observer.DidHideOverlay(this, request);
+    }
   }
 
   // Now that observers have been notified that the UI for `request` was hidden,
@@ -330,8 +334,9 @@ void OverlayPresenterImpl::OverlayWasDismissed(
   // Only show the next overlay if the active request has changed, either
   // because the frontmost request was popped or because the active WebState has
   // changed.
-  if (GetActiveRequest() != request)
+  if (GetActiveRequest() != request) {
     PresentOverlayForActiveRequest();
+  }
 }
 
 void OverlayPresenterImpl::OverlayWasCompleted(OverlayRequest* request,
@@ -342,8 +347,9 @@ void OverlayPresenterImpl::OverlayWasCompleted(OverlayRequest* request,
 #pragma mark UI Cancellation helpers
 
 void OverlayPresenterImpl::CancelOverlayUIForRequest(OverlayRequest* request) {
-  if (!presentation_context_ || !request)
+  if (!presentation_context_ || !request) {
     return;
+  }
   presentation_context_->CancelOverlayUI(request);
 }
 
@@ -418,14 +424,16 @@ void OverlayPresenterImpl::OverlayRequestRemoved(
       queue->SetDelegate(nullptr);
     }
   }
-  if (cancelled)
+  if (cancelled) {
     CancelOverlayUIForRequest(removed_request);
+  }
 }
 
 void OverlayPresenterImpl::OverlayRequestQueueWillReplaceDelegate(
     OverlayRequestQueueImpl* queue) {
-  if (!presented_request_ || presented_request_ != queue->front_request())
+  if (!presented_request_ || presented_request_ != queue->front_request()) {
     return;
+  }
   // If `presented_request_` is in the queue that is replacing this presenter
   // as the delegate, it is no longer possible to extend the lifetime of
   // `presented_request_`. Thus, call DidHideOverlay while it is still valid
@@ -447,8 +455,9 @@ void OverlayPresenterImpl::RequestAddedToQueue(OverlayRequestQueueImpl* queue,
                                                OverlayRequest* request,
                                                size_t index) {
   // If `request` is not active, there is no need to trigger any presentation.
-  if (request != GetActiveRequest())
+  if (request != GetActiveRequest()) {
     return;
+  }
 
   // If the added request is active and there is no presentation occurring,
   // present the overlay UI immediately.
@@ -474,8 +483,9 @@ void OverlayPresenterImpl::RequestAddedToQueue(OverlayRequestQueueImpl* queue,
   bool should_dismiss_for_inserted_request =
       presented_request_ && queue->size() > 1 &&
       queue->GetRequest(/*index=*/1) == presented_request_;
-  if (should_dismiss_for_inserted_request)
+  if (should_dismiss_for_inserted_request) {
     presentation_context_->HideOverlayUI(presented_request_);
+  }
 }
 
 void OverlayPresenterImpl::OverlayRequestQueueDestroyed(
@@ -503,8 +513,9 @@ void OverlayPresenterImpl::
     OverlayPresentationContextDidChangePresentationCapabilities(
         OverlayPresentationContext* presentation_context) {
   DCHECK_EQ(presentation_context_, presentation_context);
-  if (!presenting_)
+  if (!presenting_) {
     PresentOverlayForActiveRequest();
+  }
 }
 
 void OverlayPresenterImpl::OverlayPresentationContextDidEnableUI(
@@ -519,8 +530,9 @@ void OverlayPresenterImpl::OverlayPresentationContextDidMoveToWindow(
     OverlayPresentationContext* presentation_context,
     UIWindow* window) {
   DCHECK_EQ(presentation_context_, presentation_context);
-  if (!presenting_ && window)
+  if (!presenting_ && window) {
     PresentOverlayForActiveRequest();
+  }
 }
 
 #pragma mark - WebStateListObserver

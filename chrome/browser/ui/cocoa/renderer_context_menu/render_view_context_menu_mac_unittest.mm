@@ -12,7 +12,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/cocoa/text_services_context_menu.h"
+#include "ui/menus/cocoa/text_services_context_menu.h"
 
 namespace {
 
@@ -49,11 +49,13 @@ bool MenuHasItemWithCommand(const ui::MenuModel& menu, int command) {
   for (size_t i = 0; i < menu.GetItemCount(); ++i) {
     if (menu.GetTypeAt(i) == ui::MenuModel::TYPE_SUBMENU) {
       ui::MenuModel* submenu = menu.GetSubmenuModelAt(i);
-      if (MenuHasItemWithCommand(*submenu, command))
+      if (MenuHasItemWithCommand(*submenu, command)) {
         return true;
+      }
     }
-    if (menu.GetCommandIdAt(i) == command)
+    if (menu.GetCommandIdAt(i) == command) {
       return true;
+    }
   }
   return false;
 }

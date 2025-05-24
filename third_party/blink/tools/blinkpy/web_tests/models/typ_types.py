@@ -29,6 +29,7 @@ def _uri_decode_spaces(s):
 # Adds symbols from typ that are used in blinkpy
 Result = json_results.Result
 ResultType = json_results.ResultType
+FailureReason = json_results.FailureReason
 # Automatically apply Blink's encoding/decoding to test names.
 Expectation = functools.partial(expectations_parser.Expectation,
                                 encode_func=_uri_encode_spaces)

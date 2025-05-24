@@ -25,11 +25,9 @@ class CORE_EXPORT CSSURLImageValue final : public CSSStyleImageValue {
 
   // CanvasImageSource
   ResourceStatus Status() const final;
-  scoped_refptr<Image> GetSourceImageForCanvas(
-      FlushReason,
-      SourceImageStatus*,
-      const gfx::SizeF&,
-      const AlphaDisposition alpha_disposition) final;
+  scoped_refptr<Image> GetSourceImageForCanvas(FlushReason,
+                                               SourceImageStatus*,
+                                               const gfx::SizeF&) final;
   bool IsAccelerated() const final;
 
   // CSSStyleValue

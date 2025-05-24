@@ -12,6 +12,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/features.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -23,9 +24,9 @@ class SyncTransportDataPrefsTest : public testing::Test {
   SyncTransportDataPrefsTest() {
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
     sync_prefs_ = std::make_unique<SyncTransportDataPrefs>(
-        &pref_service_, signin::GaiaIdHash::FromGaiaId("gaia_id"));
+        &pref_service_, signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id")));
     sync_prefs_2_ = std::make_unique<SyncTransportDataPrefs>(
-        &pref_service_, signin::GaiaIdHash::FromGaiaId("gaia_id_2"));
+        &pref_service_, signin::GaiaIdHash::FromGaiaId(GaiaId("gaia_id_2")));
   }
 
   TestingPrefServiceSimple pref_service_;

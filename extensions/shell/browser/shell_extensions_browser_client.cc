@@ -16,7 +16,6 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
-#include "content/public/common/user_agent.h"
 #include "extensions/browser/api/core_extensions_browser_api_provider.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
@@ -35,7 +34,7 @@
 #include "extensions/shell/browser/shell_navigation_ui_data.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #endif
 
@@ -95,21 +94,18 @@ BrowserContext* ShellExtensionsBrowserClient::GetOriginalContext(
 
 content::BrowserContext*
 ShellExtensionsBrowserClient::GetContextRedirectedToOriginal(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
 content::BrowserContext* ShellExtensionsBrowserClient::GetContextOwnInstance(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
 content::BrowserContext*
 ShellExtensionsBrowserClient::GetContextForOriginalOnly(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
@@ -118,20 +114,17 @@ bool ShellExtensionsBrowserClient::AreExtensionsDisabledForContext(
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+bool ShellExtensionsBrowserClient::IsActiveContext(
+    content::BrowserContext* browser_context) const {
+  return true;
+}
+
 std::string ShellExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   if (!ash::LoginState::IsInitialized())
     return "";
   return ash::LoginState::Get()->primary_user_hash();
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShellExtensionsBrowserClient::IsFromMainProfile(
-    content::BrowserContext* context) {
-  // AppShell only supports single context.
-  return true;
 }
 #endif
 
@@ -167,7 +160,7 @@ void ShellExtensionsBrowserClient::LoadResourceFromResourceBundle(
     int resource_id,
     scoped_refptr<net::HttpResponseHeaders> headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  NOTREACHED_IN_MIGRATION() << "Load resources from bundles not supported.";
+  NOTREACHED() << "Load resources from bundles not supported.";
 }
 
 bool ShellExtensionsBrowserClient::AllowCrossRendererResourceLoad(
@@ -326,19 +319,9 @@ KioskDelegate* ShellExtensionsBrowserClient::GetKioskDelegate() {
   return kiosk_delegate_.get();
 }
 
-bool ShellExtensionsBrowserClient::IsLockScreenContext(
-    content::BrowserContext* context) {
-  return false;
-}
-
 std::string ShellExtensionsBrowserClient::GetApplicationLocale() {
   // TODO(michaelpg): Use system locale.
   return "en-US";
-}
-
-std::string ShellExtensionsBrowserClient::GetUserAgent() const {
-  return content::BuildUserAgentFromProduct(
-      std::string(version_info::GetProductNameAndVersionForUserAgent()));
 }
 
 void ShellExtensionsBrowserClient::InitWithBrowserContext(

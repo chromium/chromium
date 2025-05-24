@@ -74,12 +74,12 @@ bool Task::IsKillable() {
   return true;
 }
 
-void Task::Kill() {
+bool Task::Kill() {
   if (!IsKillable())
-    return;
+    return false;
   DCHECK_NE(process_id(), base::GetCurrentProcId());
   base::Process process = base::Process::Open(process_id());
-  process.Terminate(content::RESULT_CODE_KILLED, false);
+  return process.Terminate(content::RESULT_CODE_KILLED, false);
 }
 
 void Task::Refresh(const base::TimeDelta& update_interval,
@@ -128,6 +128,10 @@ void Task::OnNetworkBytesSent(int64_t bytes_sent) {
   cumulative_bytes_sent_ += bytes_sent;
 }
 
+Task::SubType Task::GetSubType() const {
+  return Task::SubType::kNoSubType;
+}
+
 void Task::GetTerminationStatus(base::TerminationStatus* out_status,
                                 int* out_error_code) const {
   DCHECK(out_status);
@@ -149,7 +153,7 @@ bool Task::HasParentTask() const {
   return GetParentTask() != nullptr;
 }
 
-const Task* Task::GetParentTask() const {
+base::WeakPtr<Task> Task::GetParentTask() const {
   return nullptr;
 }
 
@@ -202,6 +206,10 @@ gfx::ImageSkia* Task::FetchIcon(int id, gfx::ImageSkia** result_image) {
       (*result_image)->MakeThreadSafe();
   }
   return *result_image;
+}
+
+base::WeakPtr<Task> Task::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace task_manager

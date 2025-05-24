@@ -8,10 +8,12 @@
 #include <string>
 
 #include "components/commerce/core/account_checker.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/sync/base/data_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class PrefService;
+class TestingPrefServiceSimple;
 
 namespace commerce {
 
@@ -25,12 +27,12 @@ class MockAccountChecker : public AccountChecker {
 
   MOCK_METHOD(bool, IsSignedIn, (), (override));
 
-  MOCK_METHOD(bool, IsSyncingBookmarks, (), (override));
-
   MOCK_METHOD(bool,
               IsSyncTypeEnabled,
               (syncer::UserSelectableType type),
               (override));
+
+  MOCK_METHOD(bool, IsSyncAvailable, (), (override));
 
   MOCK_METHOD(bool, IsAnonymizedUrlDataCollectionEnabled, (), (override));
 
@@ -46,7 +48,9 @@ class MockAccountChecker : public AccountChecker {
 
   void SetSignedIn(bool signed_in);
 
-  void SetSyncingBookmarks(bool syncing);
+  void SetAllSyncTypesEnabled(bool enabled);
+
+  void SetSyncAvailable(bool available);
 
   void SetAnonymizedUrlDataCollectionEnabled(bool enabled);
 
@@ -59,6 +63,17 @@ class MockAccountChecker : public AccountChecker {
   void SetLocale(std::string locale);
 
   void SetPrefs(PrefService* prefs);
+
+  // Register all preference names that are relevant to commerce features,
+  // regardless of whether they are defined in this class or not.
+  //
+  // Please note that this should only be used in testing, as this call is also
+  // registering some prefs that might be registered by other components in
+  // prod, which would lead to multiple-registering error.
+  static void RegisterCommercePrefs(PrefRegistrySimple* registry);
+
+ private:
+  std::unique_ptr<TestingPrefServiceSimple> default_pref_service_;
 };
 
 }  // namespace commerce

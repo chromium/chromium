@@ -49,10 +49,10 @@ TEST_F(HealthModuleDelegateImplTest, TestInit) {
   const std::string file_name = base::StrCat({kBaseFileOne, "0"});
   auto call = AddEnqueueRecordCall();
   *ref_data.add_history() = call;
-  ASSERT_TRUE(AppendLine(temp_dir_.GetPath().AppendASCII(file_name),
-                         base::HexEncode(base::as_bytes(
-                             base::make_span(call.SerializeAsString()))))
-                  .ok());
+  ASSERT_TRUE(
+      AppendLine(temp_dir_.GetPath().AppendASCII(file_name),
+                 base::HexEncode(base::as_byte_span(call.SerializeAsString())))
+          .ok());
 
   HealthModuleDelegateImpl delegate(temp_dir_.GetPath(), kMaxStorage,
                                     kBaseFileOne);

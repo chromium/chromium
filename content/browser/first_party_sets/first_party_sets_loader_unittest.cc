@@ -103,14 +103,13 @@ TEST_F(FirstPartySetsLoaderTest, AcceptsMultipleSets) {
       WaitAndGetResult().FindEntries({example, associated1, foo, associated2},
                                      net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)),
+          Pair(example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)),
           Pair(associated1,
-               net::FirstPartySetEntry(example, net::SiteType::kAssociated, 0)),
-          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            std::nullopt)),
+               net::FirstPartySetEntry(example, net::SiteType::kAssociated)),
+          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
           Pair(associated2,
-               net::FirstPartySetEntry(foo, net::SiteType::kAssociated, 0))));
+               net::FirstPartySetEntry(foo, net::SiteType::kAssociated))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
@@ -139,10 +138,9 @@ TEST_F(FirstPartySetsLoaderTest, SetComponentSets_Idempotent) {
       WaitAndGetResult().FindEntries({example, foo, example2, foo2},
                                      net::FirstPartySetsContextConfig()),
       UnorderedElementsAre(
-          Pair(example, net::FirstPartySetEntry(
-                            example, net::SiteType::kPrimary, std::nullopt)),
-          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary,
-                                            std::nullopt))));
+          Pair(example,
+               net::FirstPartySetEntry(example, net::SiteType::kPrimary)),
+          Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary))));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
@@ -153,20 +151,21 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified) {
   SetComponentSets(loader(), base::Version("1.2.3"),
                    R"({"primary": "https://example.test", "associatedSites": )"
                    R"(["https://associatedsite1.test"]})");
-  loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/base::flat_map<net::SchemefulSite,
-                                     net::FirstPartySetEntry>({
-          {bar,
-           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
-          {associated2,
-           net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      }),
-      /*aliases=*/{}));
+  loader().SetManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                         net::FirstPartySetEntry>({
+              {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(bar, net::SiteType::kAssociated)},
+          }),
+          /*aliases=*/{})
+          .value());
 
   EXPECT_THAT(
       WaitAndGetResult().FindEntry(associated2,
                                    net::FirstPartySetsContextConfig()),
-      Optional(net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)));
+      Optional(net::FirstPartySetEntry(bar, net::SiteType::kAssociated)));
 }
 
 TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
@@ -174,26 +173,28 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
   const net::SchemefulSite associated1(GURL("https://associatedsite1.test"));
   const net::SchemefulSite associated2(GURL("https://associatedsite2.test"));
 
-  loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/base::flat_map<net::SchemefulSite,
-                                     net::FirstPartySetEntry>({
-          {bar,
-           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
-          {associated1,
-           net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      }),
-      /*aliases=*/{}));
+  loader().SetManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                         net::FirstPartySetEntry>({
+              {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary)},
+              {associated1,
+               net::FirstPartySetEntry(bar, net::SiteType::kAssociated)},
+          }),
+          /*aliases=*/{})
+          .value());
 
   // All but the first SetManuallySpecifiedSet call should be ignored.
-  loader().SetManuallySpecifiedSet(net::LocalSetDeclaration(
-      /*set_entries=*/base::flat_map<net::SchemefulSite,
-                                     net::FirstPartySetEntry>({
-          {bar,
-           net::FirstPartySetEntry(bar, net::SiteType::kPrimary, std::nullopt)},
-          {associated2,
-           net::FirstPartySetEntry(bar, net::SiteType::kAssociated, 0)},
-      }),
-      /*aliases=*/{}));
+  loader().SetManuallySpecifiedSet(
+      net::LocalSetDeclaration::Create(
+          /*set_entries=*/base::flat_map<net::SchemefulSite,
+                                         net::FirstPartySetEntry>({
+              {bar, net::FirstPartySetEntry(bar, net::SiteType::kPrimary)},
+              {associated2,
+               net::FirstPartySetEntry(bar, net::SiteType::kAssociated)},
+          }),
+          /*aliases=*/{})
+          .value());
 
   SetComponentSets(loader(), base::Version(), "");
 
@@ -203,9 +204,9 @@ TEST_F(FirstPartySetsLoaderTest, SetsManuallySpecified_Idempotent) {
                       associated2,
                   },
                   net::FirstPartySetsContextConfig()),
-              UnorderedElementsAre(
-                  Pair(associated1, net::FirstPartySetEntry(
-                                        bar, net::SiteType::kAssociated, 0))));
+              UnorderedElementsAre(Pair(
+                  associated1,
+                  net::FirstPartySetEntry(bar, net::SiteType::kAssociated))));
 }
 
 }  // namespace content

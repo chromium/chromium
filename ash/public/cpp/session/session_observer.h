@@ -33,9 +33,6 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
   // Called when the first user session finishes post login works.
   virtual void OnFirstSessionReady() {}
 
-  // Called when a user session is updated, such as avatar change.
-  virtual void OnUserSessionUpdated(const AccountId& account_id) {}
-
   // Called when the session state is changed.
   virtual void OnSessionStateChanged(session_manager::SessionState state) {}
 
@@ -60,6 +57,9 @@ class ASH_PUBLIC_EXPORT SessionObserver : public base::CheckedObserver {
   // OnActiveUserSessionChanged() because the PrefService is asynchronously
   // initialized. Never called with null.
   virtual void OnActiveUserPrefServiceChanged(PrefService* pref_service) {}
+
+  // Called when the user is going to be removed soon.
+  virtual void OnUserToBeRemoved(const AccountId& account_id) {}
 
  protected:
   ~SessionObserver() override {}

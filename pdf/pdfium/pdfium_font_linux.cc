@@ -70,7 +70,7 @@ bool GetFontTable(int fd,
       return false;
     }
     // Font data is stored in net (big-endian) order.
-    uint16_t num_tables = base::numerics::U16FromBigEndian(bytes);
+    uint16_t num_tables = base::U16FromBigEndian(bytes);
 
     // Read the table directory.
     static const size_t kTableEntrySize = 16u;
@@ -86,12 +86,11 @@ bool GetFontTable(int fd,
     for (uint16_t i = 0u; i < num_tables; ++i) {
       auto entry = table_entries.subspan(i * kTableEntrySize, kTableEntrySize);
       // The `table_tag` is encoded in the same endian as the tag in the table.
-      auto tag = base::numerics::U32FromNativeEndian(entry.first<4u>());
+      auto tag = base::U32FromNativeEndian(entry.first<4u>());
       if (tag == table_tag) {
         // Font data is stored in net (big-endian) order.
-        data_offset = base::numerics::U32FromBigEndian(entry.subspan<8u, 4u>());
-        data_length =
-            base::numerics::U32FromBigEndian(entry.subspan<12u, 4u>());
+        data_offset = base::U32FromBigEndian(entry.subspan<8u, 4u>());
+        data_length = base::U32FromBigEndian(entry.subspan<12u, 4u>());
         break;
       }
     }
@@ -252,8 +251,15 @@ void DeleteFont(FPDF_SYSFONTINFO*, void* font_id) {
   GetBlinkFontMapper().DeleteFont(font_id);
 }
 
-FPDF_SYSFONTINFO g_font_info = {1,           0, EnumFonts, MapFont,   0,
-                                GetFontData, 0, 0,         DeleteFont};
+FPDF_SYSFONTINFO g_font_info = {.version = 1,
+                                .Release = nullptr,
+                                .EnumFonts = EnumFonts,
+                                .MapFont = MapFont,
+                                .GetFont = nullptr,
+                                .GetFontData = GetFontData,
+                                .GetFaceName = nullptr,
+                                .GetFontCharset = nullptr,
+                                .DeleteFont = DeleteFont};
 
 }  // namespace
 

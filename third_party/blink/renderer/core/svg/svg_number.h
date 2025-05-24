@@ -48,7 +48,6 @@ class SVGNumber : public SVGListablePropertyBase {
   explicit SVGNumber(float = 0.0f);
 
   virtual SVGNumber* Clone() const;
-  SVGPropertyBase* CloneForAnimation(const String&) const override;
 
   float Value() const { return value_; }
   void SetValue(float value) { value_ = value; }

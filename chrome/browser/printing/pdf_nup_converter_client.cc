@@ -26,7 +26,7 @@ PdfNupConverterClient::PdfNupConverterClient(content::WebContents* web_contents)
   }
 }
 
-PdfNupConverterClient::~PdfNupConverterClient() {}
+PdfNupConverterClient::~PdfNupConverterClient() = default;
 
 void PdfNupConverterClient::DoNupPdfConvert(
     int document_cookie,

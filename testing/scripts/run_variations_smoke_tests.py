@@ -20,13 +20,16 @@ from functools import partial
 from http.server import SimpleHTTPRequestHandler
 from threading import Thread
 
-import packaging.version
+# vpython-provided modules.
+import packaging.version  # pylint: disable=import-error
 
+# //third_party/webdriver/pylib imports.
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import WebDriverException
 
+# //testing/scripts imports.
 import common
 import variations_seed_access_helper as seed_helper
 from skia_gold_infra import finch_skia_gold_utils
@@ -35,7 +38,7 @@ _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _CHROMIUM_SRC_DIR = os.path.realpath(os.path.join(_THIS_DIR, '..', '..'))
 
 sys.path.append(os.path.join(_CHROMIUM_SRC_DIR, 'build'))
-# //build/skia_gold_common imports.
+# //build imports.
 from skia_gold_common.skia_gold_properties import SkiaGoldProperties
 
 _VARIATIONS_TEST_DATA = 'variations_smoke_test_data'
@@ -189,9 +192,7 @@ def _inject_seed(user_data_dir, path_chromedriver, chrome_options):
       'variations_seed_beta_%s.json' % _get_platform())
   seed, signature = seed_helper.load_test_seed_from_file(hardcoded_seed_path)
   if not seed or not signature:
-    logging.error('Ill-formed test seed json file: "%s" and "%s" are required',
-                  seed_helper.LOCAL_STATE_SEED_NAME,
-                  seed_helper.LOCAL_STATE_SEED_SIGNATURE_NAME)
+    logging.error(seed_helper.ILL_FORMED_TEST_SEED_ERROR_MESSAGE)
     return 1
 
   if not seed_helper.inject_test_seed(seed, signature, user_data_dir):

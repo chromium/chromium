@@ -4,13 +4,13 @@
 
 #include "content/browser/find_request_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "content/browser/find_in_page_client.h"
@@ -19,6 +19,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -91,7 +92,7 @@ RenderFrameHostImpl* GetPreviousSibling(RenderFrameHostImpl* rfh) {
   // The previous sibling may be in another WebContents.
   if (RenderFrameHostImpl* parent = GetAncestor(rfh)) {
     auto children = GetChildren(parent);
-    auto it = base::ranges::find(children, rfh);
+    auto it = std::ranges::find(children, rfh);
     // It is odd that this rfh may not be a child of its parent, but this is
     // actually possible during teardown, hence the need for the check for
     // "it != children.end()".
@@ -111,7 +112,7 @@ RenderFrameHostImpl* GetNextSibling(RenderFrameHostImpl* rfh) {
   // The next sibling may be in another WebContents.
   if (RenderFrameHostImpl* parent = GetAncestor(rfh)) {
     auto children = GetChildren(parent);
-    auto it = base::ranges::find(children, rfh);
+    auto it = std::ranges::find(children, rfh);
     // It is odd that this RenderFrameHost may not be a child of its parent, but
     // this is actually possible during teardown, hence the need for the check
     // for "it != children.end()".
@@ -169,12 +170,18 @@ bool IsFindInPageDisabled(RenderFrameHost* rfh) {
 }
 
 bool IsUnattachedGuestView(RenderFrameHost* rfh) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
-  if (!web_contents->IsGuest())
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    NOTIMPLEMENTED();
     return false;
+  } else {
+    WebContentsImpl* web_contents =
+        static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
+    if (!web_contents->IsGuest()) {
+      return false;
+    }
 
-  return !web_contents->GetOuterWebContents();
+    return !web_contents->GetOuterWebContents();
+  }
 }
 
 // kMinKeystrokesWithoutDelay should be high enough that script in the page
@@ -363,7 +370,7 @@ void FindRequestManager::EmitFindRequest(int request_id,
 
 void FindRequestManager::ForEachAddedFindInPageRenderFrameHost(
     base::FunctionRef<void(RenderFrameHostImpl*)> func_ref) {
-  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
       [this, func_ref](RenderFrameHostImpl* rfh) {
         if (!CheckFrame(rfh))
           return;
@@ -689,10 +696,10 @@ void FindRequestManager::FindInternal(const FindRequest& request) {
   Reset(request);
 
   // Add and observe eligible RFHs in the WebContents. And, use
-  // ForEachRenderFrameHost instead of ForEachAddedFindInPageRenderFrameHost
+  // ForEachRenderFrameHostImpl instead of ForEachAddedFindInPageRenderFrameHost
   // because that calls CheckFrame() which will only be true if we've called
   // AddFrame() for the frame.
-  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHost(
+  contents_->GetPrimaryMainFrame()->ForEachRenderFrameHostImpl(
       [this](RenderFrameHostImpl* rfh) {
         auto* wc = WebContents::FromRenderFrameHost(rfh);
         // Make sure each WebContents is only added once.
@@ -734,8 +741,7 @@ void FindRequestManager::SendFindRequest(const FindRequest& request,
 
 void FindRequestManager::NotifyFindReply(int request_id, bool final_update) {
   if (request_id == kInvalidId) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Ensure that replies are not reported with IDs lower than the ID of the

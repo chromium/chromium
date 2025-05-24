@@ -21,10 +21,10 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps {
 
@@ -117,11 +117,9 @@ std::vector<uint8_t> WebAppIconTestHelper::GenerateWebAppCompressedIcon(
   CHECK_EQ(image_skia_rep.scale(), scale);
 
   const SkBitmap& bitmap = image_skia_rep.GetBitmap();
-  const bool discard_transparency = false;
-  std::vector<uint8_t> result;
-  CHECK(
-      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency, &result));
-  return result;
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                           /*discard_transparency=*/false)
+      .value();
 }
 
 std::vector<uint8_t> WebAppIconTestHelper::GenerateWebAppCompressedIcon(
@@ -149,11 +147,9 @@ std::vector<uint8_t> WebAppIconTestHelper::GenerateWebAppCompressedIcon(
   CHECK_EQ(image_skia_rep.scale(), scale);
 
   const SkBitmap& bitmap = image_skia_rep.GetBitmap();
-  const bool discard_transparency = false;
-  std::vector<uint8_t> result;
-  CHECK(
-      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency, &result));
-  return result;
+  return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                           /*discard_transparency=*/false)
+      .value();
 }
 
 void WebAppIconTestHelper::RegisterApp(

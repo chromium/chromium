@@ -12,6 +12,7 @@
 #include <string.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -62,7 +63,7 @@ class WTF_EXPORT PartitionAllocator {
   template <typename T, typename HashTable>
   static T* AllocateZeroedHashTableBacking(size_t size) {
     void* result = AllocateBacking(size, WTF_HEAP_PROFILER_TYPE_NAME(T));
-    memset(result, 0, size);
+    UNSAFE_TODO(memset(result, 0, size));
     return reinterpret_cast<T*>(result);
   }
 

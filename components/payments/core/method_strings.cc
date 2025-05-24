@@ -10,7 +10,6 @@ namespace methods {
 // Please keep the list alphabetized.
 
 const char kAndroidPay[] = "https://android.com/pay";
-const char kBasicCard[] = "basic-card";
 const char kGooglePay[] = "https://google.com/pay";
 const char kGooglePayAuthentication[] = "https://pay.google.com/authentication";
 const char kGooglePlayBilling[] = "https://play.google.com/billing";

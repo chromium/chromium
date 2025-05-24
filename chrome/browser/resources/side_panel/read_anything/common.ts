@@ -29,6 +29,10 @@ export enum ToolbarEvent {
   VOICE = 'select-voice',
   LANGUAGE_TOGGLE = 'voice-language-toggle',
   PLAY_PREVIEW = 'preview-voice',
+  LANGUAGE_MENU_OPEN = 'language-menu-open',
+  LANGUAGE_MENU_CLOSE = 'language-menu-close',
+  VOICE_MENU_OPEN = 'voice-menu-open',
+  VOICE_MENU_CLOSE = 'voice-menu-close',
 }
 
 // The user settings stored in preferences and restored on re-opening Reading
@@ -60,7 +64,7 @@ export function emitEvent(
 
 export function openMenu(
     menuToOpen: CrActionMenuElement, target: HTMLElement,
-    showAtConfig?: {minX: number, maxX: number}) {
+    showAtConfig?: {minX: number, maxX: number}, onShow?: () => void) {
   // The button should stay active while the menu is open and deactivate when
   // the menu closes.
   menuToOpen.addEventListener('close', () => {
@@ -68,7 +72,7 @@ export function openMenu(
   });
   target.classList.add(ACTIVE_CSS_CLASS);
 
-  // TODO(b/337058857): We shouldn't need to wrap this twice in
+  // TODO: crbug.com/337058857 - We shouldn't need to wrap this twice in
   // requestAnimationFrame in order to get an accessible label to be read by
   // ChromeVox. We should investigate more in what's going on with
   // cr-action-menu to find a better long-term solution. This is sufficient
@@ -86,6 +90,26 @@ export function openMenu(
                 noOffset: true,
               },
               showAtConfig));
+      if (onShow) {
+        onShow();
+      }
     });
   });
+}
+
+// Returns true is the given string can be considered whitespace.
+export function isWhitespace(s: string): boolean {
+  return /\s+/g.test(s);
+}
+
+export function isRectVisible(rect: DOMRect): boolean {
+  return (rect.top <= 0 && rect.bottom >= window.innerHeight) ||
+      isPointVisible(rect.top) || isPointVisible(rect.bottom);
+}
+
+function isPointVisible(point: number) {
+  return (
+      (point >= 0) &&
+      ((point <= window.innerHeight) ||
+       (point <= document.documentElement.clientHeight)));
 }

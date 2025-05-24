@@ -37,8 +37,9 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.started = YES;
   // Create the presentation context view controller and present it over the
   // base view's presentation context.
@@ -54,8 +55,9 @@
   // support overlay UI presentation.
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^{
-    if (!weakSelf)
+    if (!weakSelf) {
       return;
+    }
     __typeof(self) strongSelf = weakSelf;
     strongSelf.presentationContext->SetPresentationContextViewController(
         strongSelf.viewController);
@@ -66,8 +68,9 @@
 }
 
 - (void)stop {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   self.started = NO;
   self.presentationContext->SetPresentationContextViewController(nil);
   // Dismiss the presentation context view controller.

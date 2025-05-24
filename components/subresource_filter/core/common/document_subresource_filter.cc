@@ -5,11 +5,15 @@
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
@@ -23,10 +27,12 @@ namespace subresource_filter {
 DocumentSubresourceFilter::DocumentSubresourceFilter(
     url::Origin document_origin,
     mojom::ActivationState activation_state,
-    scoped_refptr<const MemoryMappedRuleset> ruleset)
+    scoped_refptr<const MemoryMappedRuleset> ruleset,
+    std::string_view uma_tag)
     : activation_state_(activation_state),
       ruleset_(std::move(ruleset)),
-      ruleset_matcher_(ruleset_->data()) {
+      ruleset_matcher_(ruleset_->data()),
+      uma_tag_(uma_tag) {
   CHECK_NE(activation_state_.activation_level,
            mojom::ActivationLevel::kDisabled, base::NotFatalUntil::M129);
   if (!activation_state_.filtering_disabled_for_document) {
@@ -46,10 +52,12 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
 
   ++statistics_.num_loads_total;
 
-  if (activation_state_.filtering_disabled_for_document)
+  if (activation_state_.filtering_disabled_for_document) {
     return LoadPolicy::ALLOW;
-  if (subresource_url.SchemeIs(url::kDataScheme))
+  }
+  if (subresource_url.SchemeIs(url::kDataScheme)) {
     return LoadPolicy::ALLOW;
+  }
 
   // If ThreadTicks is not supported, then no CPU time measurements have been
   // collected. Don't report both CPU and wall duration to be consistent.
@@ -58,14 +66,20 @@ LoadPolicy DocumentSubresourceFilter::GetLoadPolicy(
           ScopedThreadTimers::IsSupported(),
       [this](base::TimeDelta delta) {
         statistics_.evaluation_total_wall_duration += delta;
-        UMA_HISTOGRAM_MICRO_TIMES(
-            "SubresourceFilter.SubresourceLoad.Evaluation.WallDuration", delta);
+        // Here we use custom histograms to maintain subresource filter
+        // metrics, which used UMA_HISTOGRAM_MICRO_TIMES prior to introducing
+        // support for fingerprinting protection filter counterpart.
+        UmaHistogramCustomMicrosecondsTimes(
+            base::StrCat(
+                {uma_tag_, ".SubresourceLoad.Evaluation.WallDuration"}),
+            delta, base::Microseconds(1), base::Seconds(1), 50);
       });
   auto cpu_duration_timer = ScopedThreadTimers::StartIf(
       activation_state_.measure_performance, [this](base::TimeDelta delta) {
         statistics_.evaluation_total_cpu_duration += delta;
-        UMA_HISTOGRAM_MICRO_TIMES(
-            "SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration", delta);
+        UmaHistogramCustomMicrosecondsTimes(
+            base::StrCat({uma_tag_, ".SubresourceLoad.Evaluation.CPUDuration"}),
+            delta, base::Microseconds(1), base::Seconds(1), 50);
       });
 
   ++statistics_.num_loads_evaluated;
@@ -92,10 +106,12 @@ const url_pattern_index::flat::UrlRule*
 DocumentSubresourceFilter::FindMatchingUrlRule(
     const GURL& subresource_url,
     url_pattern_index::proto::ElementType subresource_type) {
-  if (activation_state_.filtering_disabled_for_document)
+  if (activation_state_.filtering_disabled_for_document) {
     return nullptr;
-  if (subresource_url.SchemeIs(url::kDataScheme))
+  }
+  if (subresource_url.SchemeIs(url::kDataScheme)) {
     return nullptr;
+  }
 
   return ruleset_matcher_.MatchedUrlRule(
       subresource_url, *document_origin_, subresource_type,

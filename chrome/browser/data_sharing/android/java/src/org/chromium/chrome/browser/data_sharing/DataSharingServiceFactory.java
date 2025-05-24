@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.data_sharing;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.data_sharing.DataSharingService;
 
 /** This factory creates DataSharingService for the given {@link Profile}. */
+@NullMarked
 public final class DataSharingServiceFactory {
-    private static DataSharingService sDataSharingServiceForTesting;
+    private static @Nullable DataSharingService sDataSharingServiceForTesting;
 
     // Don't instantiate me.
     private DataSharingServiceFactory() {}

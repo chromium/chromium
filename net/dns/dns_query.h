@@ -62,6 +62,10 @@ class NET_EXPORT_PRIVATE DnsQuery {
   DnsQuery(const DnsQuery& query);
   DnsQuery& operator=(const DnsQuery& query);
 
+  // Moves do not clone an independent buffer.
+  DnsQuery(DnsQuery&& query);
+  DnsQuery& operator=(DnsQuery&& query);
+
   ~DnsQuery();
 
   // Clones |this| verbatim, with ID field of the header set to |id|.

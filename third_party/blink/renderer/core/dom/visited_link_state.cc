@@ -69,6 +69,7 @@ static inline const AtomicString& LinkAttribute(const Element& element) {
 static inline LinkHash UnpartitionedLinkHashForElement(
     const Element& element,
     const AtomicString& attribute) {
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   if (auto* anchor = DynamicTo<HTMLAnchorElement>(element))
     return anchor->VisitedLinkHash();
   return VisitedLinkHash(
@@ -79,6 +80,7 @@ static inline LinkHash UnpartitionedLinkHashForElement(
 static inline LinkHash PartitionedLinkHashForElement(
     const Element& element,
     const AtomicString& attribute) {
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   if (auto* anchor = DynamicTo<HTMLAnchorElement>(element)) {
     return anchor->PartitionedVisitedLinkFingerprint();
   }
@@ -125,6 +127,8 @@ static void InvalidateStyleForAllLinksRecursively(
     bool invalidate_visited_link_hashes) {
   for (Node& node : NodeTraversal::StartsAt(root_node)) {
     if (node.IsLink()) {
+      // TODO(crbug.com/369219144): Should this be
+      // DynamicTo<HTMLAnchorElementBase>?
       auto* html_anchor_element = DynamicTo<HTMLAnchorElement>(node);
       if (invalidate_visited_link_hashes && html_anchor_element)
         html_anchor_element->InvalidateCachedVisitedLinkHash();
@@ -206,13 +210,8 @@ EInsideLink VisitedLinkState::DetermineLinkStateSlowCase(
     // inside Fenced Frames or any frame which has a Fenced Frame in its
     // FrameTree.
     if (GetDocument().GetFrame()->IsInFencedFrameTree()) {
-      UMA_HISTOGRAM_BOOLEAN("Blink.History.VisitedLinks.InFencedFrameTree",
-                            true);
       return EInsideLink::kNotInsideLink;
     }
-    // Record in our histogram that we are not in or a child of a Fenced Frame.
-    UMA_HISTOGRAM_BOOLEAN("Blink.History.VisitedLinks.InFencedFrameTree",
-                          false);
   }
 
   // An empty attribute refers to the document itself which is always

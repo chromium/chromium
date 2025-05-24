@@ -8,11 +8,9 @@
 #include <string>
 
 #include "base/test/gmock_expected_support.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -134,11 +132,7 @@ TEST(AggregatableTriggerConfigTest, ParseTriggerContextId) {
   }
 }
 
-TEST(AggregatableTriggerConfigTest,
-     ParseAggregatableFilteringIdMaxByte_FilteringIdsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
+TEST(AggregatableTriggerConfigTest, ParseAggregatableFilteringIdMaxByte) {
   const struct {
     const char* desc;
     const char* json;
@@ -186,53 +180,6 @@ TEST(AggregatableTriggerConfigTest,
 
     base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
     EXPECT_THAT(AggregatableTriggerConfig::Parse(input), test_case.matches);
-  }
-}
-
-TEST(AggregatableTriggerConfigTest,
-     ParseAggregatableFilteringIdMaxByte_FilteringIdsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
-  const struct {
-    const char* desc;
-    const char* json;
-  } kTestCases[] = {
-      {
-          "aggregatable_filtering_id_max_bytes",
-          R"json({"aggregatable_filtering_id_max_bytes": 3})json",
-      },
-      {
-          "aggregatable_filtering_id_max_bytes_wrong_type",
-          R"json({"aggregatable_filtering_id_max_bytes": "3"})json",
-      },
-      {
-          "aggregatable_filtering_id_max_bytes_disallowed",
-          R"json({
-            "aggregatable_source_registration_time": "include",
-            "aggregatable_filtering_id_max_bytes": 3
-          })json",
-      },
-      {
-          "aggregatable_filtering_id_default_max_bytes_allowed",
-          R"json({
-            "aggregatable_source_registration_time": "include",
-            "aggregatable_filtering_id_max_bytes": 1
-          })json",
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.desc);
-
-    base::Value::Dict input = base::test::ParseJsonDict(test_case.json);
-    // It should never return an error and it should always set the value to the
-    // default.
-    EXPECT_THAT(
-        AggregatableTriggerConfig::Parse(input),
-        ValueIs(Property(
-            &AggregatableTriggerConfig::aggregatable_filtering_id_max_bytes,
-            AggregatableFilteringIdsMaxBytes())));
   }
 }
 
@@ -353,10 +300,7 @@ TEST(AggregatableTriggerConfigTest, Parse_TriggerContextIdLength) {
               ErrorIs(TriggerRegistrationError::kTriggerContextIdInvalidValue));
 }
 
-TEST(AggregatableTriggerConfigTest, Serialize_FilteringIdsEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
+TEST(AggregatableTriggerConfigTest, Serialize) {
   const struct {
     AggregatableTriggerConfig input;
     const char* expected_json;
@@ -386,48 +330,6 @@ TEST(AggregatableTriggerConfigTest, Serialize_FilteringIdsEnabled) {
             "aggregatable_source_registration_time":"exclude",
             "aggregatable_filtering_id_max_bytes": 3,
             "trigger_context_id": "123"
-          })json",
-      },
-  };
-
-  for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.input);
-
-    base::Value::Dict dict;
-    test_case.input.Serialize(dict);
-    EXPECT_THAT(dict, base::test::IsJson(test_case.expected_json));
-  }
-}
-
-TEST(AggregatableTriggerConfigTest, Serialize_FilteringIdsDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
-  const struct {
-    AggregatableTriggerConfig input;
-    const char* expected_json;
-  } kTestCases[] = {
-      {
-          AggregatableTriggerConfig(),
-          R"json({
-            "aggregatable_source_registration_time":"exclude"
-          })json",
-      },
-      {
-          *AggregatableTriggerConfig::Create(
-              SourceRegistrationTimeConfig::kInclude,
-              /*trigger_context_id=*/std::nullopt, kFilteringIdMaxBytes),
-          R"json({
-            "aggregatable_source_registration_time":"include"
-          })json",
-      },
-      {
-          *AggregatableTriggerConfig::Create(
-              SourceRegistrationTimeConfig::kExclude,
-              /*trigger_context_id=*/"123", kFilteringIdMaxBytes),
-          R"json({
-            "aggregatable_source_registration_time":"exclude",
-            "trigger_context_id":"123"
           })json",
       },
   };

@@ -1,0 +1,121 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_resources("java_resources") {
+  sources = [ "java/res/layout/price_history_layout_v2.xml" ]
+
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+    "//components/strings:components_strings_grd",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/price_history/PriceHistoryBottomSheetContentCoordinator.java",
+    "java/src/org/chromium/chrome/browser/price_history/PriceHistoryBottomSheetContentMediator.java",
+    "java/src/org/chromium/chrome/browser/price_history/PriceHistoryBottomSheetContentProperties.java",
+    "java/src/org/chromium/chrome/browser/price_history/PriceHistoryBottomSheetContentViewBinder.java",
+  ]
+
+  resources_package = "org.chromium.chrome.browser.price_history"
+
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_insights/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/notifications:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/browser_ui/styles/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//ui/android:ui_java",
+    "//url:url_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "javatests/src/org/chromium/chrome/browser/price_history/PriceHistoryBottomSheetContentMediatorTest.java" ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_insights/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/bookmarks/common/android:bookmarks_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/browser_ui/styles/android:java",
+    "//components/commerce/core/android:core_java",
+    "//components/webapps/browser/android:webapps_jni_headers_java",
+    "//content/public/android:content_full_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/jni_zero:gendeps_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "javatests/src/org/chromium/chrome/browser/price_history/PriceHistoryBottomSheetContentRenderTest.java" ]
+
+  resources_package = "org.chromium.chrome.browser.price_history"
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java_test_support",
+    "//base:callback_java",
+    "//base:supplier_java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/commerce/price_insights/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_unit_test_support",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/notifications/android:utils_java",
+    "//components/commerce/core/android:core_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+    "//url:gurl_junit_test_support",
+    "//url:url_java",
+  ]
+}

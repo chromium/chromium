@@ -8,11 +8,9 @@
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_bridge.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_test_util.h"
 #include "components/plus_addresses/settings/plus_address_setting_sync_util.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/mock_data_type_local_change_processor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -52,19 +50,23 @@ class PlusAddressSettingServiceImplTest : public testing::Test {
   TestPlusAddressSettingSyncBridge& bridge() { return *bridge_; }
 
  private:
-  base::test::ScopedFeatureList feature_{syncer::kSyncPlusAddressSetting};
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<PlusAddressSettingService> service_;
   raw_ptr<TestPlusAddressSettingSyncBridge> bridge_;  // Owned by the `service_`
 };
 
+// For settings that the client knows about, the correct values are returned.
 TEST_F(PlusAddressSettingServiceImplTest, GetValue) {
   ON_CALL(bridge(), GetSetting("has_feature_enabled"))
       .WillByDefault(
           Return(CreateSettingSpecifics("has_feature_enabled", true)));
-  // For settings that the client knows about, the correct values are returned.
   EXPECT_TRUE(service().GetIsPlusAddressesEnabled());
-  // For settings that the client hasn't received, defaults are returned.
+}
+
+// For settings that the client doesn't know about, setting-specific defaults
+// are returned.
+TEST_F(PlusAddressSettingServiceImplTest, GetValue_Defaults) {
+  EXPECT_TRUE(service().GetIsPlusAddressesEnabled());
   EXPECT_FALSE(service().GetHasAcceptedNotice());
 }
 

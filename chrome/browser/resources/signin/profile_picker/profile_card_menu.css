@@ -113,7 +113,7 @@ cr-dialog::part(dialog) {
 
 .count {
   align-self: center;
-  color: var(--google-grey-500);
+  color: var(--color-sys-on-surface-subtle);
   text-align: end;
 }
 

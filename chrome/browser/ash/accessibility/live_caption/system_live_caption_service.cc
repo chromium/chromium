@@ -21,6 +21,7 @@
 #include "components/live_caption/pref_names.h"
 #include "components/live_caption/translation_util.h"
 #include "components/live_caption/views/caption_bubble_model.h"
+#include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
@@ -35,7 +36,8 @@ static constexpr base::TimeDelta kStopDelay = base::Seconds(5);
 
 namespace ash {
 
-SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
+SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile,
+                                                   AudioSource source)
     : profile_(profile),
       controller_(
           ::captions::LiveCaptionControllerFactory::GetForProfile(profile)),
@@ -43,16 +45,19 @@ SystemLiveCaptionService::SystemLiveCaptionService(Profile* profile)
       // caption bubble that uses this callback.
       context_(
           base::BindRepeating(&SystemLiveCaptionService::OpenCaptionSettings,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      source_(source) {
   DCHECK_EQ(ProfileManager::GetPrimaryUserProfile(), profile);
   // The controller handles all SODA installation / languages etc. for us. We
   // just subscribe to the interface that informs us when we're ready to go.
-  SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
-      ->BindSpeechRecognitionBrowserObserver(
-          browser_observer_receiver_.BindNewPipeAndPassRemote());
-  source_language_ =
-      profile_->GetPrefs()->GetString(prefs::kLiveCaptionLanguageCode);
-  CrasAudioHandler::Get()->AddAudioObserver(this);
+  BindToBrowserInterface();
+  source_language_ = GetPrimaryLanguageCode();
+
+  // Ignore these events when listening to mic audio.  When the session
+  // begins OnNonChromeOutputStarted gets called automatically.
+  if (source_ == AudioSource::kLoopback) {
+    CrasAudioHandler::Get()->AddAudioObserver(this);
+  }
 }
 
 SystemLiveCaptionService::~SystemLiveCaptionService() {
@@ -101,11 +106,12 @@ void SystemLiveCaptionService::OnSpeechResult(
                              target_language, result->is_final));
     } else {
       exec_result = controller_->DispatchTranscription(
-          &context_,
+          /*web_contents=*/nullptr, &context_,
           media::SpeechRecognitionResult(cached_translation, result->is_final));
     }
   } else {
-    exec_result = controller_->DispatchTranscription(&context_, *result);
+    exec_result = controller_->DispatchTranscription(
+        /*web_contents=*/nullptr, &context_, *result);
   }
 
   if (!exec_result) {
@@ -125,7 +131,8 @@ void SystemLiveCaptionService::OnLanguageIdentificationEvent(
       media::mojom::AsrSwitchResult::kSwitchSucceeded) {
     source_language_ = event->language;
   }
-  controller_->OnLanguageIdentificationEvent(&context_, std::move(event));
+  controller_->OnLanguageIdentificationEvent(
+      /*web_contents=*/nullptr, &context_, std::move(event));
 }
 
 void SystemLiveCaptionService::OnSpeechSoundLevelChanged(int16_t level) {}
@@ -169,14 +176,13 @@ void SystemLiveCaptionService::OnSpeechRecognitionStateChanged(
       base::RepeatingClosure(),
       base::BindRepeating(
           [](::captions::CaptionBubbleErrorType error_type, bool checked) {}));
-
   StopRecognizing();
   client_.reset();
 }
 
 void SystemLiveCaptionService::OnSpeechRecognitionStopped() {
   if (controller_) {
-    controller_->OnAudioStreamEnd(&context_);
+    controller_->OnAudioStreamEnd(/*web_contents=*/nullptr, &context_);
   }
   client_.reset();
 }
@@ -274,6 +280,11 @@ void SystemLiveCaptionService::OnNonChromeOutputStopped() {
   output_running_ = false;
 }
 
+media::mojom::RecognizerClientType
+SystemLiveCaptionService::GetRecognizerClientType() {
+  return media::mojom::RecognizerClientType::kLiveCaption;
+}
+
 void SystemLiveCaptionService::StopTimeoutFinished() {
   StopRecognizing();
   // At this point, we can count the number of chars translated for this
@@ -287,17 +298,24 @@ void SystemLiveCaptionService::StopTimeoutFinished() {
 }
 
 void SystemLiveCaptionService::CreateClient() {
+  std::string device_desc;
+  switch (source_) {
+    case AudioSource::kLoopback:
+      device_desc = media::AudioDeviceDescription::kLoopbackWithoutChromeId;
+      break;
+    case AudioSource::kUserMicrophone:
+      device_desc = media::AudioDeviceDescription::kDefaultDeviceId;
+      break;
+  }
+
   // We must reset to detach everything first, and then reattach.
   client_.reset();
   client_ = std::make_unique<SpeechRecognitionRecognizerClientImpl>(
-      weak_ptr_factory_.GetWeakPtr(), profile_,
-      media::AudioDeviceDescription::kLoopbackWithoutChromeId,
+      weak_ptr_factory_.GetWeakPtr(), profile_, device_desc,
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
-          /*enable_formatting=*/true,
-          prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs()),
-          /*is_server_based=*/false,
-          media::mojom::RecognizerClientType::kLiveCaption,
+          /*enable_formatting=*/true, GetPrimaryLanguageCode(),
+          /*is_server_based=*/false, GetRecognizerClientType(),
           /*skip_continuously_empty_audio=*/true));
 }
 
@@ -307,8 +325,13 @@ void SystemLiveCaptionService::OnTranslationCallback(
     const std::string& source_language,
     const std::string& target_language,
     bool is_final,
-    const std::string& result) {
-  std::string formatted_result = result;
+    const ::captions::TranslateEvent& event) {
+  // TODO(384019306) Maybe record dispatcher error metric?
+  if (!event.has_value()) {
+    return;
+  }
+
+  std::string formatted_result = event.value();
   // Don't cache the translation if the source language is an ideographic
   // language but the target language is not. This avoids translate
   // sentence by sentence because the Cloud Translation API does not properly
@@ -318,7 +341,7 @@ void SystemLiveCaptionService::OnTranslationCallback(
     if (is_final) {
       translation_cache_.Clear();
     } else {
-      translation_cache_.InsertIntoCache(original_transcription, result,
+      translation_cache_.InsertIntoCache(original_transcription, event.value(),
                                          source_language, target_language);
     }
   } else {
@@ -334,11 +357,31 @@ void SystemLiveCaptionService::OnTranslationCallback(
   }
 
   auto text = base::StrCat({cached_translation, formatted_result});
+  AttemptDispatch(text, is_final);
+}
 
+void SystemLiveCaptionService::AttemptDispatch(const std::string& text,
+                                               bool is_final) {
   if (!controller_->DispatchTranscription(
-          &context_, media::SpeechRecognitionResult(text, is_final))) {
+          /*web_contents=*/nullptr, &context_,
+          media::SpeechRecognitionResult(text, is_final))) {
     StopRecognizing();
   }
+}
+
+void SystemLiveCaptionService::BindToBrowserInterface() {
+  // The UserMicrophone source will ignore events from the
+  // RecognitionClientBrowserInterface. The BabelOrcaSpeechRecognizerImpl
+  // handles SODA installation itself.
+  if (source_ == AudioSource::kLoopback) {
+    SpeechRecognitionClientBrowserInterfaceFactory::GetForProfile(profile_)
+        ->BindSpeechRecognitionBrowserObserver(
+            browser_observer_receiver_.BindNewPipeAndPassRemote());
+  }
+}
+
+std::string SystemLiveCaptionService::GetPrimaryLanguageCode() const {
+  return prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs());
 }
 
 void SystemLiveCaptionService::OpenCaptionSettings() {
@@ -349,6 +392,14 @@ void SystemLiveCaptionService::OpenCaptionSettings() {
 uint32_t SystemLiveCaptionService::GetNumberOfNonChromeOutputStreams() {
   if (num_output_streams_for_testing_.has_value()) {
     return num_output_streams_for_testing_.value();
+  }
+
+  // If we're listening to non loopback source then we always have to assume
+  // there is some sort of interesting audio.  Babel Orca which utilizes
+  // the microphone audio and therefore triggers this condition notifies
+  // users of the impact it will have on their battery and cpu.
+  if (source_ != AudioSource::kLoopback) {
+    return 1;
   }
 
   return CrasAudioHandler::Get()->NumberOfNonChromeOutputStreams();

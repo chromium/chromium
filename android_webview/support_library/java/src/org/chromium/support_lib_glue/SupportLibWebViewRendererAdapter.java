@@ -21,7 +21,7 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 @Lifetime.Renderer
 class SupportLibWebViewRendererAdapter extends IsomorphicAdapter
         implements WebViewRendererBoundaryInterface {
-    private AwRenderProcess mRenderer;
+    private final AwRenderProcess mRenderer;
 
     SupportLibWebViewRendererAdapter(AwRenderProcess renderer) {
         mRenderer = renderer;

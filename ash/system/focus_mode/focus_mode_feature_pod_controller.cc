@@ -26,7 +26,6 @@ namespace ash {
 FocusModeFeaturePodController::FocusModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
     : tray_controller_(tray_controller) {
-  CHECK(features::IsFocusModeEnabled());
   FocusModeController::Get()->AddObserver(this);
 }
 

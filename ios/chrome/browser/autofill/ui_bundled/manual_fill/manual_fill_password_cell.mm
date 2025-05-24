@@ -62,7 +62,7 @@ CGFloat GetFaviconSize() {
 // The part of the cell's accessibility label that is used to indicate the index
 // at which the password represented by this item is positioned in the list of
 // passwords to show.
-@property(nonatomic, strong) NSString* cellIndexAccessibilityLabel;
+@property(nonatomic, copy) NSString* cellIndexAccessibilityLabel;
 
 @end
 
@@ -97,7 +97,7 @@ CGFloat GetFaviconSize() {
     _contentInjector = contentInjector;
     _menuActions = menuActions;
     _cellIndex = cellIndex;
-    _cellIndexAccessibilityLabel = cellIndexAccessibilityLabel;
+    _cellIndexAccessibilityLabel = [cellIndexAccessibilityLabel copy];
     _showAutofillFormButton = showAutofillFormButton;
     _fromAllPasswordsContext = fromAllPasswordsContext;
     self.cellClass = [ManualFillPasswordCell class];
@@ -396,7 +396,7 @@ static const CGFloat kOffsetForConnectedCell = 16;
   ];
 
   self.siteNameLabel = CreateLabel();
-  self.overflowMenuButton = CreateOverflowMenuButton();
+  self.overflowMenuButton = CreateOverflowMenuButton(_cellIndex);
   self.headerView = CreateHeaderView(self.faviconView, self.siteNameLabel,
                                      self.overflowMenuButton);
   [self.contentView addSubview:self.headerView];
@@ -424,14 +424,14 @@ static const CGFloat kOffsetForConnectedCell = 16;
       kChipsHorizontalMargin,
       AppendConstraintsHorizontalEqualOrSmallerThanGuide);
 
-    self.autofillFormButton = CreateAutofillFormButton();
-    [self.contentView addSubview:self.autofillFormButton];
-    [self.autofillFormButton addTarget:self
-                                action:@selector(onAutofillFormButtonTapped)
-                      forControlEvents:UIControlEventTouchUpInside];
-    [accessibilityElements addObject:self.autofillFormButton];
-    AppendHorizontalConstraintsForViews(
-        staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
+  self.autofillFormButton = CreateAutofillFormButton();
+  [self.contentView addSubview:self.autofillFormButton];
+  [self.autofillFormButton addTarget:self
+                              action:@selector(onAutofillFormButtonTapped)
+                    forControlEvents:UIControlEventTouchUpInside];
+  [accessibilityElements addObject:self.autofillFormButton];
+  AppendHorizontalConstraintsForViews(
+      staticConstraints, @[ self.autofillFormButton ], self.layoutGuide);
 
   [NSLayoutConstraint activateConstraints:staticConstraints];
 

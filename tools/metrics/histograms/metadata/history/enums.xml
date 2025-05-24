@@ -63,6 +63,8 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="kSharedStorage"/>
   <int value="16" label="kPreflightCache"/>
   <int value="17" label="kSharedDictionary"/>
+  <int value="18" label="kPrefetchCache"/>
+  <int value="19" label="kPrerenderCache"/>
 </enum>
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.Task.Task) -->
@@ -122,11 +124,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//tools/metrics/histograms/metadata/history/histograms.xml:History.ClearBrowsingData.Duration.ChromeTask.Task) -->
 
-<enum name="ClearBrowsingDataTab">
-  <int value="0" label="Basic"/>
-  <int value="1" label="Advanced"/>
-</enum>
-
 <enum name="ClusterFilterReason">
   <int value="0" label="Not filtered"/>
   <int value="1" label="Not enough visits with images"/>
@@ -138,6 +135,24 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Contains content that should not be visible"/>
   <int value="8" label="Contains blocked category"/>
   <int value="9" label="Not enough non-hidden visits"/>
+</enum>
+
+<enum name="ComputeAnswerStatus">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="Loading"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Unanswerable"/>
+  <int value="4" label="ModelUnavailable"/>
+  <int value="5" label="ExecutionFailure"/>
+  <int value="6" label="ExecutionCancelled"/>
+  <int value="7" label="Filtered"/>
+</enum>
+
+<enum name="ComputeEmbeddingsStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model Unavailable"/>
+  <int value="2" label="Execution Failure"/>
+  <int value="3" label="Execution Canceled"/>
 </enum>
 
 <enum name="CookieOrCacheDeletion">
@@ -182,6 +197,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Embeddings search"/>
   <int value="2" label="Embeddings non-empty results shown"/>
   <int value="3" label="Embeddings result clicked"/>
+  <int value="4" label="Answer shown"/>
+  <int value="5" label="Answer citation clicked"/>
+  <int value="6" label="Other history result clicked"/>
 </enum>
 
 <enum name="HistoryClustersInitialState">
@@ -280,6 +298,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="kPrivateAggregation"/>
   <int value="13" label="kInterestGroups"/>
   <int value="14" label="kCdmStorage"/>
+  <int value="15" label="kDeviceBoundSessions"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/storage_partition_impl.cc:TracingDataType) -->

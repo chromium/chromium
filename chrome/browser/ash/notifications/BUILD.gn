@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("notifications") {
   sources = [
@@ -59,10 +59,12 @@ static_library("notifications") {
     "//chromeos/ash/components/dbus/gnubby",
     "//chromeos/ash/components/dbus/system_proxy:system_proxy_proto",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/demo_mode",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/settings",
     "//chromeos/dbus/power",
     "//components/prefs",
+    "//components/webapps/isolated_web_apps",
     "//content/public/browser",
     "//extensions/common",
     "//ui/accessibility",
@@ -122,6 +124,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network:test_support",
     "//components/user_manager:test_support",
+    "//components/webapps/isolated_web_apps",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

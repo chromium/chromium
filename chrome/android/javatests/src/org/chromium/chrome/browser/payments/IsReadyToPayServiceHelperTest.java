@@ -17,7 +17,6 @@ import android.os.Looper;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,17 +37,12 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.payments.intent.IsReadyToPayServiceHelper;
 
 /** Tests for IsReadyToPayServiceHelper. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IsReadyToPayServiceHelperTest {
-    @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule public final ExpectedException mExpectedExceptionRule = ExpectedException.none();
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -63,9 +57,6 @@ public class IsReadyToPayServiceHelperTest {
     public void setUp() throws Throwable {
         Looper.prepare();
     }
-
-    @After
-    public void tearDown() throws Throwable {}
 
     private interface ServiceCallbackHandler {
         void handle(IsReadyToPayServiceCallback callback);
@@ -331,10 +322,11 @@ public class IsReadyToPayServiceHelperTest {
                                             mErrorReceived = true;
                                         }
                                     });
+                    helper.setTimeoutsMsForTesting(10);
                     helper.query();
                 });
         // Assuming CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL >
-        // IsReadyToPayServiceHelper.SERVICE_CONNECTION_TIMEOUT_MS.
+        // IsReadyToPayServiceHelper.mServiceConnectionTimeoutMs.
         CriteriaHelper.pollInstrumentationThread(() -> mErrorReceived);
     }
 }

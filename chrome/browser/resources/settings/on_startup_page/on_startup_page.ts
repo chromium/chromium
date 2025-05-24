@@ -7,7 +7,6 @@
  * 'settings-on-startup-page' is a settings page.
  */
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../controls/controlled_radio_button.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../controls/settings_radio_group.js';
@@ -52,12 +51,12 @@ export class SettingsOnStartupPageElement extends
 
       ntpExtension_: Object,
 
-      prefValues_: {readOnly: true, type: Object, value: PrefValues},
+      prefValuesEnum_: {readOnly: true, type: Object, value: PrefValues},
     };
   }
 
-  prefs: Object;
-  private ntpExtension_: NtpExtension|null;
+  declare prefs: Object;
+  declare private ntpExtension_: NtpExtension|null;
 
   override connectedCallback() {
     super.connectedCallback();

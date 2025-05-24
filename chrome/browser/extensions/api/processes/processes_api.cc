@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -14,10 +15,8 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram.h"
 #include "base/process/process.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
@@ -111,14 +110,10 @@ api::processes::ProcessType GetProcessType(
     case task_manager::Task::PLUGIN_VM:
     case task_manager::Task::SANDBOX_HELPER:
     case task_manager::Task::ZYGOTE:
-    // TODO(crbug.com/40172498): Do not expose lacros tasks for now. Defer
-    // the decision until further discussion is made.
-    case task_manager::Task::LACROS:
       return api::processes::ProcessType::kOther;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown task type.";
-  return api::processes::ProcessType::kNone;
+  NOTREACHED() << "Unknown task type.";
 }
 
 // Fills |out_process| with the data of the process in which the task with |id|
@@ -194,8 +189,7 @@ ProcessesEventRouter::ProcessesEventRouter(content::BrowserContext* context)
       browser_context_(context),
       listeners_(0) {}
 
-ProcessesEventRouter::~ProcessesEventRouter() {
-}
+ProcessesEventRouter::~ProcessesEventRouter() = default;
 
 void ProcessesEventRouter::ListenerAdded() {
   UpdateRefreshTypesFlagsBasedOnListeners();
@@ -468,13 +462,14 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
   if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
                                     include_incognito_information(),
                                     &contents)) {
-    return RespondNow(
-        Error(tabs_constants::kTabNotFoundError, base::NumberToString(tab_id)));
+    return RespondNow(Error(ExtensionTabUtil::kTabNotFoundError,
+                            base::NumberToString(tab_id)));
   }
 
   // TODO(crbug.com/41345944): chrome.processes.getProcessIdForTab API
   // incorrectly assumes a *single* renderer process per tab.
-  const int process_id = contents->GetPrimaryMainFrame()->GetProcess()->GetID();
+  const int process_id =
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
   return RespondNow(ArgumentList(
       api::processes::GetProcessIdForTab::Results::Create(process_id)));
 }
@@ -618,7 +613,7 @@ ProcessesGetProcessInfoFunction::OnTasksRefreshedWithBackgroundCalculations(
   GatherDataAndRespond(task_ids);
 }
 
-ProcessesGetProcessInfoFunction::~ProcessesGetProcessInfoFunction() {}
+ProcessesGetProcessInfoFunction::~ProcessesGetProcessInfoFunction() = default;
 
 void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
     const task_manager::TaskIdList& task_ids) {
@@ -645,7 +640,7 @@ void ProcessesGetProcessInfoFunction::GatherDataAndRespond(
     if (specific_processes_requested) {
       // Note: we can't use |!process_host_ids_.empty()| directly in the above
       // condition as we will erase from |process_host_ids_| below.
-      auto itr = base::ranges::find(process_host_ids_, child_process_host_id);
+      auto itr = std::ranges::find(process_host_ids_, child_process_host_id);
       if (itr == process_host_ids_.end())
         continue;
 

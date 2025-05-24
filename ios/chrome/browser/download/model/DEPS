@@ -3,12 +3,13 @@ include_rules = [
   "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/optimization_guide/model",
   "+ios/chrome/browser/drive/model",
+  "+ios/chrome/browser/signin/model",
 ]
 
 specific_include_rules = {
   # TODO(crbug.com/40820398): Remove this dependency.
   "^browser_download_service.mm": [
-    "+ios/chrome/browser/download/ui_bundled/features.h",
+    "+ios/chrome/browser/download/ui/features.h",
   ],
 }
 

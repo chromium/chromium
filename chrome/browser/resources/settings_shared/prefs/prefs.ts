@@ -104,7 +104,7 @@ export class SettingsPrefsElement extends PolymerElement {
     ];
   }
 
-  prefs: {[key: string]: any}|undefined;
+  declare prefs: {[key: string]: any}|undefined;
 
   /**
    * Map of pref keys to values representing the state of the Chrome

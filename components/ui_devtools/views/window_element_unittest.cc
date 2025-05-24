@@ -17,12 +17,12 @@ using ::testing::_;
 
 class WindowElementTest : public views::ViewsTestBase {
  public:
-  WindowElementTest() {}
+  WindowElementTest() = default;
 
   WindowElementTest(const WindowElementTest&) = delete;
   WindowElementTest& operator=(const WindowElementTest&) = delete;
 
-  ~WindowElementTest() override {}
+  ~WindowElementTest() override = default;
 
   void SetUp() override {
     views::ViewsTestBase::SetUp();

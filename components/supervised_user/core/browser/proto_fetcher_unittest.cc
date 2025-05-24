@@ -22,6 +22,7 @@
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "google_apis/common/api_key_request_test_util.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -194,10 +195,10 @@ class Receiver {
 
 // Base of the test fixture for proto fetcher.
 // Defines required runtime environment, and a collection of helper methods
-// which are used to build initial test state and define behaviours.
+// which are used to build initial test state and define behaviors.
 //
 // Simulate* methods are short-hands to put response with specific property in
-// test url environmnent's queue;
+// test url environment's queue;
 //
 // FastForward is important for retrying feature tests: make sure that the time
 // skipped is greater than possible retry timeouts.
@@ -255,6 +256,14 @@ class ProtoFetcherTestBase {
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         GetUrlOfPendingRequest(index).spec(), "malformed-response");
   }
+  void SimulateResponseForPendingRequestWithHttpAuthError(size_t index) {
+    net::HttpStatusCode error = net::HTTP_UNAUTHORIZED;
+    ASSERT_FALSE(
+        ProtoFetcherStatus::HttpStatusOrNetError(error).IsTransientError());
+
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        GetUrlOfPendingRequest(index).spec(), /*content=*/"", error);
+  }
 
   // Some tests check backoff strategies which introduce delays, this method is
   // forwarding the time so that all operations scheduled in the future are
@@ -295,6 +304,13 @@ class ProtoFetcherTest : public ProtoFetcherTestBase,
  public:
   ProtoFetcherTest() : ProtoFetcherTestBase(GetConfig()) {}
   static const FetcherConfig& GetConfig() { return GetParam(); }
+
+  void SetUp() override {
+    CHECK(GetConfig().access_token_config.credentials_requirement ==
+          AccessTokenConfig::CredentialsRequirement::kStrict)
+        << "To test other credential requirements than strict mode (eg.: best "
+           "effort mode), use BestEffortProtoFetcherTest suite below.";
+  }
 };
 
 // Test whether the outgoing request has correctly set endpoint and method.
@@ -465,9 +481,50 @@ TEST_P(ProtoFetcherTest, HandlesServerError) {
       ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_BAD_REQUEST));
 }
 
+// Tests a flow where the remote server responds with an auth error (401).
+TEST_P(ProtoFetcherTest, HandlesRepeatedServerAuthError) {
+  MakePrimaryAccountAvailable();
+  SetAutomaticIssueOfAccessTokens();
+  std::unique_ptr<Receiver> receiver = MakeReceiver();
+  std::unique_ptr<Fetcher> fetcher = MakeFetcher(*receiver.get());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  SimulateResponseForPendingRequestWithHttpAuthError(0);
+
+  // The request is failed.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(receiver->GetResult().has_value());
+  EXPECT_EQ(receiver->GetResult().error().state(),
+            ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+  EXPECT_EQ(
+      receiver->GetResult().error().http_status_or_net_error(),
+      ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_UNAUTHORIZED));
+}
+
+// Tests a flow where the remote server responds with an auth error (401), and
+// then the request succeeds on retry.
+TEST_P(ProtoFetcherTest, HandlesServerAuthErrorThenSuccess) {
+  MakePrimaryAccountAvailable();
+  SetAutomaticIssueOfAccessTokens();
+  std::unique_ptr<Receiver> receiver = MakeReceiver();
+  std::unique_ptr<Fetcher> fetcher = MakeFetcher(*receiver.get());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  SimulateResponseForPendingRequestWithHttpAuthError(0);
+
+  // The request is failed.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(receiver->GetResult().has_value());
+  EXPECT_EQ(receiver->GetResult().error().state(),
+            ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR);
+  EXPECT_EQ(
+      receiver->GetResult().error().http_status_or_net_error(),
+      ProtoFetcherStatus::HttpStatusOrNetErrorType(net::HTTP_UNAUTHORIZED));
+}
+
 // The fetchers are recording various metrics for the basic flow with default
-// empty proto response. This test is checking whether all metrics receive right
-// values.
+// empty proto response. This test is checking whether all metrics receive
+// right values.
 TEST_P(ProtoFetcherTest, RecordsMetrics) {
   MakePrimaryAccountAvailable();
   SetAutomaticIssueOfAccessTokens();
@@ -481,8 +538,8 @@ TEST_P(ProtoFetcherTest, RecordsMetrics) {
   ASSERT_TRUE(receiver->GetResult().has_value());
 
   if (MetricsAreExpected()) {
-    // The actual latency of mocked fetch is variable, so only expect that some
-    // value was recorded.
+    // The actual latency of mocked fetch is variable, so only expect that
+    // some value was recorded.
     histogram_tester.ExpectTotalCount(
         base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
         /*expected_count(grew by)*/ 1);
@@ -542,8 +599,8 @@ TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
                     {*GetConfig().histogram_basename, ".RetryCount"})),
                 base::BucketsInclude(base::Bucket(3, 1)));
 
-    // The actual latency of mocked fetch is variable, so only expect that some
-    // value was recorded.
+    // The actual latency of mocked fetch is variable, so only expect that
+    // some value was recorded.
     histogram_tester.ExpectTotalCount(
         base::StrCat({*GetConfig().histogram_basename, ".OverallLatency"}),
         /*expected_count(grew by)*/ 1);
@@ -558,8 +615,8 @@ TEST_P(ProtoFetcherTest, RetryingFetcherTerminatesOnOkStatusAndRecordsMetrics) {
     // individual metrics grew by the number related to number of responses
     // used.
 
-    // The actual latency of mocked fetch is variable, so only expect that some
-    // value was recorded.
+    // The actual latency of mocked fetch is variable, so only expect that
+    // some value was recorded.
     histogram_tester.ExpectTotalCount(
         base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
         /*expected_count(grew by)*/ 3);
@@ -621,8 +678,8 @@ TEST_P(ProtoFetcherTest,
                     {*GetConfig().histogram_basename, ".RetryCount"})),
                 base::BucketsInclude(base::Bucket(2, 1)));
 
-    // The actual latency of mocked fetch is variable, so only expect that some
-    // value was recorded.
+    // The actual latency of mocked fetch is variable, so only expect that
+    // some value was recorded.
     histogram_tester.ExpectTotalCount(
         base::StrCat({*GetConfig().histogram_basename, ".OverallLatency"}),
         /*expected_count(grew by)*/ 1);
@@ -637,8 +694,8 @@ TEST_P(ProtoFetcherTest,
     // individual metrics grew by the number related to number of responses
     // used.
 
-    // The actual latency of mocked fetch is variable, so only expect that some
-    // value was recorded.
+    // The actual latency of mocked fetch is variable, so only expect that
+    // some value was recorded.
     histogram_tester.ExpectTotalCount(
         base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
         /*expected_count(grew by)*/ 2);
@@ -666,8 +723,9 @@ TEST_P(ProtoFetcherTest,
 // decisive status is received (OK or permanent error, see
 // RetryingFetcherImpl::ShouldRetry for details). This tests assumes only
 // transient error responses from the server (eg. those that are expect to go
-// away on their own soon). This means that no response will be received, and no
-// extra retrying metrics recording, because the process is still not finished.
+// away on their own soon). This means that no response will be received, and
+// no extra retrying metrics recording, because the process is still not
+// finished.
 TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
   if (!GetConfig().backoff_policy.has_value()) {
     GTEST_SKIP() << "Tests retrying features.";
@@ -704,8 +762,8 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
     // individual metrics grew by the number related to number of responses
     // used.
 
-    // The actual latency of mocked fetch is variable, so only expect that some
-    // value was recorded.
+    // The actual latency of mocked fetch is variable, so only expect that
+    // some value was recorded.
     histogram_tester.ExpectTotalCount(
         base::StrCat({*GetConfig().histogram_basename, ".Latency"}),
         /*expected_count(grew by)*/ 2);
@@ -714,28 +772,28 @@ TEST_P(ProtoFetcherTest, RetryingFetcherContinuesOnTransientError) {
             {*GetConfig().histogram_basename, ".HttpStatusOrNetError.Latency"}),
         /*expected_count(grew by)*/ 2);
 
-    EXPECT_THAT(
-        histogram_tester.GetAllSamples(
-            base::StrCat({*GetConfig().histogram_basename, ".Status"})),
-        base::BucketsInclude(base::Bucket(
-            ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR, /*count=*/2)));
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    base::StrCat({*GetConfig().histogram_basename, ".Status"})),
+                base::BucketsInclude(base::Bucket(
+                    ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR,
+                    /*count=*/2)));
   }
 }
 
-// Instead of /0, /1... print human-readable description of the test: status of
-// the retrying feature followed by http method.
+// Instead of /0, /1... print human-readable description of the test: status
+// of the retrying feature followed by http method.
 std::string PrettyPrintFetcherTestCaseName(
     const ::testing::TestParamInfo<FetcherConfig>& info) {
-  std::string base = info.param.GetHttpMethod();
-  if (info.param.backoff_policy.has_value()) {
+  const FetcherConfig& fetcher_config = info.param;
+  std::string base = fetcher_config.GetHttpMethod();
+  if (fetcher_config.backoff_policy.has_value()) {
     base += "Retrying";
   }
-  if (info.param.histogram_basename.has_value()) {
+  if (fetcher_config.histogram_basename.has_value()) {
     base += "WithMetrics";
   } else {
     base += "WithoutMetrics";
   }
-
   return base;
 }
 
@@ -794,5 +852,34 @@ TEST_F(BestEffortProtoFetcherTest, NoAccessToken) {
       base::StrCat({*GetConfig().histogram_basename, ".AuthError"}),
       GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);
 }
+
+// Tests a flow where the caller is denied access token.
+//
+// Since the fetcher config specifies best effort as the credentials
+// requirement, the request proceeds.
+TEST_F(BestEffortProtoFetcherTest, RetryAfterHttpAuthError) {
+  MakePrimaryAccountAvailable();
+  SetAutomaticIssueOfAccessTokens();
+  std::unique_ptr<Receiver> receiver = MakeReceiver();
+  std::unique_ptr<Fetcher> fetcher = MakeFetcher(*receiver.get());
+
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ASSERT_FALSE(google_apis::test_util::HasAPIKey(
+      test_url_loader_factory_.GetPendingRequest(0)->request));
+
+  SimulateResponseForPendingRequestWithHttpAuthError(0);
+
+  // The request is retried without EUC.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+  ASSERT_TRUE(google_apis::test_util::HasAPIKey(
+      test_url_loader_factory_.GetPendingRequest(0)->request));
+
+  // The server responds OK.
+  SimulateDefaultResponseForPendingRequest(0);
+
+  // The response is successful.
+  EXPECT_TRUE(receiver->GetResult().has_value());
+}
+
 }  // namespace
 }  // namespace supervised_user

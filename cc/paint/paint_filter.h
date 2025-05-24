@@ -424,7 +424,7 @@ class CC_PAINT_EXPORT MatrixConvolutionPaintFilter final
  public:
   static constexpr Type kType = Type::kMatrixConvolution;
   MatrixConvolutionPaintFilter(const SkISize& kernel_size,
-                               const SkScalar* kernel,
+                               base::span<const SkScalar> kernel,
                                SkScalar gain,
                                SkScalar bias,
                                const SkIPoint& kernel_offset,
@@ -570,9 +570,8 @@ class CC_PAINT_EXPORT RecordPaintFilter final : public PaintFilter {
 class CC_PAINT_EXPORT MergePaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kMerge;
-  MergePaintFilter(const sk_sp<PaintFilter>* const filters,
-                   int count,
-                   const CropRect* crop_rect = nullptr);
+  explicit MergePaintFilter(base::span<const sk_sp<PaintFilter>> filters,
+                            const CropRect* crop_rect = nullptr);
   ~MergePaintFilter() override;
 
   size_t input_count() const { return inputs_.size(); }
@@ -591,8 +590,7 @@ class CC_PAINT_EXPORT MergePaintFilter final : public PaintFilter {
       ImageProvider* image_provider) const override;
 
  private:
-  MergePaintFilter(const sk_sp<PaintFilter>* const filters,
-                   int count,
+  MergePaintFilter(base::span<const sk_sp<PaintFilter>> filters,
                    const CropRect* crop_rect,
                    ImageProvider* image_provider);
   absl::InlinedVector<sk_sp<PaintFilter>, 2> inputs_;

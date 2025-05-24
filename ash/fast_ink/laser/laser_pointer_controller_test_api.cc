@@ -36,6 +36,14 @@ bool LaserPointerControllerTestApi::IsFadingAway() const {
          !instance_->GetLaserPointerView()->fadeout_done_.is_null();
 }
 
+bool LaserPointerControllerTestApi::HasLaserPointerView() const {
+  return instance_->GetLaserPointerView();
+}
+
+views::View* LaserPointerControllerTestApi::GetLaserPointerView() const {
+  return instance_->GetLaserPointerView();
+}
+
 PaletteTray* LaserPointerControllerTestApi::GetPaletteTrayOnDisplay(
     int64_t display_id) const {
   aura::Window* window = Shell::GetRootWindowForDisplayId(display_id);

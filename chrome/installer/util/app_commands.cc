@@ -13,9 +13,9 @@ using base::win::RegKey;
 
 namespace installer {
 
-AppCommands::AppCommands() {}
+AppCommands::AppCommands() = default;
 
-AppCommands::~AppCommands() {}
+AppCommands::~AppCommands() = default;
 
 bool AppCommands::Initialize(const base::win::RegKey& key, REGSAM wow64access) {
   if (!key.Valid()) {

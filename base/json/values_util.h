@@ -44,7 +44,7 @@ BASE_EXPORT std::optional<Time> ValueToTime(const Value& value);
 
 // Converts between a FilePath (a std::string or std::u16string) and a
 // string-flavored Value (the UTF-8 representation).
-BASE_EXPORT Value FilePathToValue(FilePath file_path);
+BASE_EXPORT Value FilePathToValue(const FilePath& file_path);
 BASE_EXPORT std::optional<FilePath> ValueToFilePath(const Value* value);
 BASE_EXPORT std::optional<FilePath> ValueToFilePath(const Value& value);
 

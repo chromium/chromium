@@ -8,10 +8,8 @@
 #include <oleacc.h>
 #include <wrl/client.h>
 
-#include <set>
 #include <vector>
 
-#include "base/component_export.h"
 #include "base/win/atl.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_text_utils.h"

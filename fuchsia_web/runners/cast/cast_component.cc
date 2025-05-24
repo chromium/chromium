@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "fuchsia_web/runners/cast/cast_component.h"
 
 #include <fuchsia/ui/views/cpp/fidl.h>
@@ -312,6 +317,11 @@ void CastComponent::Stop() {
   constexpr base::TimeDelta kStopTimeout = base::Minutes(1u);
   frame()->Close(std::move(fuchsia::web::FrameCloseRequest().set_timeout(
       kStopTimeout.ToZxDuration())));
+}
+
+void CastComponent::handle_unknown_method(uint64_t ordinal,
+                                          bool method_has_response) {
+  LOG(ERROR) << "Unknown method called on CastComponent. Ordinal: " << ordinal;
 }
 
 void CastComponent::OnZxHandleSignalled(zx_handle_t handle,

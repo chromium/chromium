@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/fetch_retry_options.h"
 #include "services/network/public/mojom/attribution.mojom-blink.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
@@ -205,6 +206,16 @@ class CORE_EXPORT FetchRequestData final
     service_worker_race_network_request_token_ = token;
   }
 
+  bool HasRetryOptions() const { return retry_options_.has_value(); }
+
+  const std::optional<network::FetchRetryOptions>& RetryOptions() const {
+    return retry_options_;
+  }
+
+  void SetRetryOptions(network::FetchRetryOptions retry_options) {
+    retry_options_ = retry_options;
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -260,6 +271,7 @@ class CORE_EXPORT FetchRequestData final
           network::mojom::AttributionReportingEligibility::kUnset;
   network::mojom::AttributionSupport attribution_reporting_support_ =
       network::mojom::AttributionSupport::kUnset;
+  std::optional<network::FetchRetryOptions> retry_options_;
   // A specific factory that should be used for this request instead of whatever
   // the system would otherwise decide to use to load this request.
   // Currently used for blob: URLs, to ensure they can still be loaded even if

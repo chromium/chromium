@@ -8,6 +8,7 @@ include_rules = [
   "+components/prefs",
   "+components/language/core/browser",
   "+components/tab_groups",
+  "+components/search_engines",
   "+components/sync_device_info",
   "+components/user_manager",
   "+services/data_decoder/public",

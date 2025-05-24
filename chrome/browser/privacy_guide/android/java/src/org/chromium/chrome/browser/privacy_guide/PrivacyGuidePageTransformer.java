@@ -8,6 +8,9 @@ import android.view.View;
 
 import androidx.viewpager2.widget.ViewPager2;
 
+import org.chromium.build.annotations.NullMarked;
+
+@NullMarked
 public class PrivacyGuidePageTransformer implements ViewPager2.PageTransformer {
     private static final float TRANSLATION_COEFFICIENT = 0.85f;
 

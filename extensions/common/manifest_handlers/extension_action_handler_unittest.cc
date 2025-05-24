@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/api/extension_action/action_info.h"
@@ -16,12 +17,14 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_paths.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_test.h"
 #include "extensions/common/warnings_test_util.h"
 #include "extensions/test/test_extension_dir.h"
@@ -92,6 +95,38 @@ TEST(ExtensionActionHandlerTest, InvalidActionIcon_ManifestV3) {
 
 using ExtensionActionHandlerManifestTest = ManifestTest;
 
+// An extension using the "action" key correctly does not have any warnings.
+TEST_F(ExtensionActionHandlerManifestTest, NoWarnings) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "Test",
+        "version": "1",
+        "manifest_version": 3,
+        "action": {}
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  EXPECT_TRUE(extension->install_warnings().empty());
+}
+
+// Don't enable the icon variants feature. Load a valid "action.icon_variants"
+// value. Warn if the key is used, but don't create an error.
+TEST_F(ExtensionActionHandlerManifestTest, IconVariantsNotEnabled) {
+  ManifestData manifest_data = ManifestData::FromJSON(
+      R"({
+        "name": "Test",
+        "version": "1",
+        "manifest_version": 3,
+        "action": {"icon_variants": [{
+          "16": "icon_variants.16.png"
+        }]}
+      })");
+  scoped_refptr<extensions::Extension> extension(
+      LoadAndExpectSuccess(manifest_data));
+  warnings_test_util::HasInstallWarning(extension,
+                                        "'icon_variants' not enabled.");
+}
+
 TEST_F(ExtensionActionHandlerManifestTest, NoActionSpecified_ManifestV2) {
   constexpr char kManifest[] =
       R"({
@@ -143,11 +178,11 @@ class ExtensionActionManifestTest
 
   // Constructs and returns a ManifestData object with the provided
   // |action_spec|.
-  ManifestData GetManifestData(const char* action_spec) {
+  ManifestData GetManifestData(const char* action_spec, int manifest_version) {
     constexpr char kManifestStub[] =
         R"({
              "name": "Test",
-             "manifest_version": 2,
+             "manifest_version": %d,
              "version": "0.1",
              "%s": %s
            })";
@@ -155,14 +190,15 @@ class ExtensionActionManifestTest
     const char* action_key =
         ActionInfo::GetManifestKeyForActionType(GetParam());
 
-    return ManifestData::FromJSON(
-        base::StringPrintf(kManifestStub, action_key, action_spec));
+    return ManifestData::FromJSON(base::StringPrintf(
+        kManifestStub, manifest_version, action_key, action_spec));
   }
 
   scoped_refptr<Extension> LoadExtensionWithDefaultPopup(
       const char* popup_file_name,
       int manifest_version,
-      TestExtensionDir* test_extension_dir) {
+      TestExtensionDir* test_extension_dir,
+      std::string* error) {
     const char* action_key =
         ActionInfo::GetManifestKeyForActionType(GetParam());
 
@@ -176,17 +212,11 @@ class ExtensionActionManifestTest
         manifest_version, action_key, popup_file_name));
     test_extension_dir->WriteFile(FILE_PATH_LITERAL("popup.html"), "");
 
-    std::string error;
     scoped_refptr<Extension> extension(file_util::LoadExtension(
         test_extension_dir->UnpackedPath(), mojom::ManifestLocation::kUnpacked,
-        Extension::NO_FLAGS, &error));
-    EXPECT_EQ(error, "");
+        Extension::NO_FLAGS, error));
     return extension;
   }
-
- private:
-  // The "action" key is restricted to trunk.
-  ScopedCurrentChannel scoped_channel_{version_info::Channel::UNKNOWN};
 };
 
 // Tests that parsing an action succeeds and properly populates the given
@@ -198,8 +228,9 @@ TEST_P(ExtensionActionManifestTest, Basic) {
            "default_title": "Title",
            "default_icon": "icon.png"
          })";
+  int manifest_version = GetManifestVersionForActionType(GetParam());
   scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(GetManifestData(kValidAllFields));
+      LoadAndExpectSuccess(GetManifestData(kValidAllFields, manifest_version));
   ASSERT_TRUE(extension);
   const ActionInfo* action_info = GetActionInfoOfType(*extension, GetParam());
   ASSERT_TRUE(action_info);
@@ -218,8 +249,9 @@ TEST_P(ExtensionActionManifestTest, Basic) {
 // with empty defaults.
 TEST_P(ExtensionActionManifestTest, TestEmptyAction) {
   constexpr char kValidNoFields[] = "{}";
+  int manifest_version = GetManifestVersionForActionType(GetParam());
   scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(GetManifestData(kValidNoFields));
+      LoadAndExpectSuccess(GetManifestData(kValidNoFields, manifest_version));
   ASSERT_TRUE(extension);
   const ActionInfo* action_info = GetActionInfoOfType(*extension, GetParam());
   ASSERT_TRUE(action_info);
@@ -242,8 +274,9 @@ TEST_P(ExtensionActionManifestTest, ValidIconDictionary) {
            }
          })";
 
-  scoped_refptr<const Extension> extension =
-      LoadAndExpectSuccess(GetManifestData(kValidIconDictionary));
+  int manifest_version = GetManifestVersionForActionType(GetParam());
+  scoped_refptr<const Extension> extension = LoadAndExpectSuccess(
+      GetManifestData(kValidIconDictionary, manifest_version));
   ASSERT_TRUE(extension);
   const ActionInfo* action_info = GetActionInfoOfType(*extension, GetParam());
   ASSERT_TRUE(action_info);
@@ -278,19 +311,20 @@ TEST_P(ExtensionActionManifestTest, Invalid) {
       break;
   }
 
+  int manifest_version = GetManifestVersionForActionType(GetParam());
   for (const char* spec :
        {kInvalidTopLevel1, kInvalidTopLevel2, kInvalidTopLevel3}) {
-    LoadAndExpectError(GetManifestData(spec), expected_error);
+    LoadAndExpectError(GetManifestData(spec, manifest_version), expected_error);
   }
 
   constexpr char kInvalidPopup[] = R"({ "default_popup": {} })";
-  LoadAndExpectError(GetManifestData(kInvalidPopup),
+  LoadAndExpectError(GetManifestData(kInvalidPopup, manifest_version),
                      manifest_errors::kInvalidActionDefaultPopup);
   constexpr char kInvalidTitle[] = R"({ "default_title": {} })";
-  LoadAndExpectError(GetManifestData(kInvalidTitle),
+  LoadAndExpectError(GetManifestData(kInvalidTitle, manifest_version),
                      manifest_errors::kInvalidActionDefaultTitle);
   constexpr char kInvalidIcon[] = R"({ "default_icon": [] })";
-  LoadAndExpectError(GetManifestData(kInvalidIcon),
+  LoadAndExpectError(GetManifestData(kInvalidIcon, manifest_version),
                      manifest_errors::kInvalidActionDefaultIcon);
 }
 
@@ -299,11 +333,25 @@ TEST_P(ExtensionActionManifestTest, ValidDefaultPopup) {
   constexpr char valid_popup_file_name[] = "popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
+  std::string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
-      valid_popup_file_name, manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kInvalidExtensionOriginPopup));
+      valid_popup_file_name, manifest_version, &test_extension_dir, &error);
+  ASSERT_TRUE(test_extension) << error;
+
+  std::vector<InstallWarning> warnings;
+  if (GetParam() == ActionInfo::Type::kBrowser) {
+    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+  }
+  if (manifest_version == 2) {
+    warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
+  }
+  EXPECT_EQ(warnings, test_extension->install_warnings());
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*test_extension, GetParam());
+  ASSERT_TRUE(action_info);
+  EXPECT_EQ(test_extension->GetResourceURL("popup.html"),
+            action_info->default_popup_url);
 }
 
 // Tests success when default_popup is empty.
@@ -311,11 +359,24 @@ TEST_P(ExtensionActionManifestTest, EmptyDefaultPopup) {
   constexpr char empty_popup_file_name[] = "";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
+  std::string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
-      empty_popup_file_name, manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_FALSE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kInvalidExtensionOriginPopup));
+      empty_popup_file_name, manifest_version, &test_extension_dir, &error);
+  ASSERT_TRUE(test_extension) << error;
+
+  std::vector<InstallWarning> warnings;
+  if (GetParam() == ActionInfo::Type::kBrowser) {
+    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+  }
+  if (manifest_version == 2) {
+    warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
+  }
+  EXPECT_EQ(warnings, test_extension->install_warnings());
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*test_extension, GetParam());
+  ASSERT_TRUE(action_info);
+  EXPECT_TRUE(action_info->default_popup_url.is_empty());
 }
 
 // Tests warning when the default_popup seems to be for another extension.
@@ -324,12 +385,13 @@ TEST_P(ExtensionActionManifestTest, OtherExtensionSpecifiedDefaultPopup) {
       "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
-  scoped_refptr<Extension> test_extension =
-      LoadExtensionWithDefaultPopup(other_extension_specified_popup_file_name,
-                                    manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kInvalidExtensionOriginPopup));
+  std::string error;
+  scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
+      other_extension_specified_popup_file_name, manifest_version,
+      &test_extension_dir, &error);
+  ASSERT_FALSE(test_extension);
+  ASSERT_EQ(base::UTF16ToUTF8(manifest_errors::kInvalidActionDefaultPopup),
+            error);
 }
 
 // Tests warning when the default_popup doesn't exist on file system.
@@ -337,11 +399,27 @@ TEST_P(ExtensionActionManifestTest, NonexistentDefaultPopup) {
   constexpr char nonexistent_popup_file_name[] = "nonexistent_popup.html";
   TestExtensionDir test_extension_dir = TestExtensionDir();
   int manifest_version = GetManifestVersionForActionType(GetParam());
+  std::string error;
   scoped_refptr<Extension> test_extension = LoadExtensionWithDefaultPopup(
-      nonexistent_popup_file_name, manifest_version, &test_extension_dir);
-  ASSERT_TRUE(test_extension);
-  EXPECT_TRUE(warnings_test_util::HasInstallWarning(
-      test_extension, manifest_errors::kNonexistentDefaultPopup));
+      nonexistent_popup_file_name, manifest_version, &test_extension_dir,
+      &error);
+  ASSERT_TRUE(test_extension) << error;
+
+  std::vector<InstallWarning> warnings;
+  if (GetParam() == ActionInfo::Type::kBrowser) {
+    warnings.emplace_back("Unrecognized manifest key 'browser_action'.");
+  }
+  if (manifest_version == 2) {
+    warnings.emplace_back(manifest_errors::kManifestV2IsDeprecatedWarning);
+  }
+  warnings.emplace_back(manifest_errors::kNonexistentDefaultPopup);
+  EXPECT_EQ(warnings, test_extension->install_warnings());
+
+  const ActionInfo* action_info =
+      GetActionInfoOfType(*test_extension, GetParam());
+  ASSERT_TRUE(action_info);
+  EXPECT_EQ(test_extension->GetResourceURL("nonexistent_popup.html"),
+            action_info->default_popup_url);
 }
 
 // Test the handling of the default_state key.
@@ -381,13 +459,14 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
        std::nullopt},
   };
 
+  int manifest_version = GetManifestVersionForActionType(GetParam());
   for (const auto& test_case : test_cases) {
     SCOPED_TRACE(test_case.spec);
 
     if (test_case.expected_error == nullptr) {
       ASSERT_TRUE(test_case.expected_state);
-      scoped_refptr<const Extension> extension =
-          LoadAndExpectSuccess(GetManifestData(test_case.spec));
+      scoped_refptr<const Extension> extension = LoadAndExpectSuccess(
+          GetManifestData(test_case.spec, manifest_version));
       ASSERT_TRUE(extension);
       const ActionInfo* action_info =
           GetActionInfoOfType(*extension, GetParam());
@@ -395,7 +474,7 @@ TEST_P(ExtensionActionManifestTest, DefaultState) {
       EXPECT_EQ(*test_case.expected_state, action_info->default_state);
     } else {
       ASSERT_FALSE(test_case.expected_state);
-      LoadAndExpectError(GetManifestData(test_case.spec),
+      LoadAndExpectError(GetManifestData(test_case.spec, manifest_version),
                          test_case.expected_error);
     }
   }
@@ -406,5 +485,85 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::Values(ActionInfo::Type::kBrowser,
                                          ActionInfo::Type::kPage,
                                          ActionInfo::Type::kAction));
+
+// Enable the icon variants feature.
+class ExtensionActionIconVariantsTest : public ManifestTest {
+ public:
+  ExtensionActionIconVariantsTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionIconVariants);
+  }
+
+ private:
+  const ScopedCurrentChannel current_channel_{version_info::Channel::CANARY};
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ExtensionActionIconVariantsTest, All) {
+  // Warn, don't error, if manifest.json has an empty action.icon_variants.
+  {
+    ManifestData manifest_data = ManifestData::FromJSON(
+        R"({
+          "name": "Test",
+          "version": "1",
+          "manifest_version": 3,
+          "action": {"icon_variants": {}}
+        })");
+    scoped_refptr<extensions::Extension> extension(
+        LoadAndExpectSuccess(manifest_data));
+    warnings_test_util::HasInstallWarning(extension,
+                                          "'icon_variants' must be a list.");
+  }
+
+  // Warn, don't error, if manifest.json has an icon with an invalid mime type.
+  {
+    ManifestData manifest_data = ManifestData::FromJSON(
+        R"({
+          "name": "Test",
+          "version": "1",
+          "manifest_version": 3,
+          "action": {"icon_variants": [{
+            "16": "icon_variants.16.txt"
+          }]}
+        })");
+    scoped_refptr<extensions::Extension> extension(
+        LoadAndExpectSuccess(manifest_data));
+    warnings_test_util::HasInstallWarning(
+        extension, "'icon_variants' file path unsupported mime type.");
+
+    const ActionInfo* action_info =
+        GetActionInfoOfType(*extension, ActionInfo::Type::kAction);
+    ASSERT_TRUE(action_info);
+    // TODO(crbug.com/344639840): Get() using filters to avoid manual retrieval.
+    const std::vector<ExtensionIconVariant>& icon_variants =
+        action_info->icon_variants->GetList();
+    EXPECT_TRUE(icon_variants.empty());
+  }
+
+  // Valid "action.icon_variants" value.
+  {
+    ManifestData manifest_data = ManifestData::FromJSON(
+        R"({
+          "name": "Test",
+          "version": "1",
+          "manifest_version": 3,
+          "action": {"icon_variants": [{
+            "16": "icon_variants.16.png"
+          }]}
+        })");
+    scoped_refptr<extensions::Extension> extension(
+        LoadAndExpectSuccess(manifest_data));
+
+    const ActionInfo* action_info =
+        GetActionInfoOfType(*extension, ActionInfo::Type::kAction);
+    ASSERT_TRUE(action_info);
+    // TODO(crbug.com/344639840): Get() using filters to avoid manual retrieval.
+    const std::vector<ExtensionIconVariant>& icon_variants =
+        action_info->icon_variants->GetList();
+    EXPECT_EQ(1u, icon_variants.size());
+    EXPECT_EQ("icon_variants.16.png",
+              icon_variants[0].GetSizes().find(16)->second);
+  }
+}
 
 }  // namespace extensions

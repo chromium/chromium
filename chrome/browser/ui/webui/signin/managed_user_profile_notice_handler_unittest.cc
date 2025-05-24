@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -28,6 +29,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -70,22 +72,18 @@ class ManagedUserProfileNoticeHandlerTestBase
         browser()->tab_strip_model()->GetActiveWebContents());
 
     account_info_.email = user_manager::kStubUserEmail;
-    account_info_.gaia = user_manager::kStubUserId;
+    account_info_.gaia = GaiaId(user_manager::kStubUserId);
     account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
   }
 
   void InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType screen_type,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback) {
+      std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+          dialog_params) {
     message_handler_.reset();
 
     message_handler_ = std::make_unique<ManagedUserProfileNoticeHandler>(
-        /*browser=*/nullptr, screen_type, profile_creation_required_by_policy,
-        show_link_data_option, account_info_,
-        std::move(process_user_choice_callback), std::move(done_callback));
+        /*browser=*/nullptr, screen_type, std::move(dialog_params));
     message_handler_->set_web_ui_for_test(web_ui());
     message_handler_->RegisterMessages();
   }
@@ -98,6 +96,7 @@ class ManagedUserProfileNoticeHandlerTestBase
   }
 
   content::TestWebUI* web_ui() { return web_ui_.get(); }
+  AccountInfo& account_info() { return account_info_; }
   ManagedUserProfileNoticeHandler* handler() { return message_handler_.get(); }
 
  private:
@@ -176,9 +175,14 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest, HandleProceed) {
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(GetParam().state);
@@ -197,9 +201,14 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/true,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(GetParam().state);
@@ -228,28 +237,35 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::test::ScopedFeatureList feature_list(
       profile_management::features::kOidcAuthProfileManagement);
 
-  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+  base::MockCallback<signin::SigninChoiceWithConfirmAndRetryCallback>
       mock_process_user_choice_callback;
-  base::MockCallback<base::OnceClosure> mock_done_callback;
+  base::MockCallback<base::RepeatingClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
-              Run(GetParam().expected_choice, ::testing::_))
-      .WillOnce([&run_loop](
-                    signin::SigninChoice choice,
-                    signin::SigninChoiceOperationDoneCallback done_callback) {
-        std::move(done_callback)
-            .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
-        run_loop.Quit();
-      });
+              Run(GetParam().expected_choice, ::testing::_, ::testing::_))
+      .WillOnce(
+          [&run_loop](signin::SigninChoice choice,
+                      signin::SigninChoiceOperationDoneCallback done_callback,
+                      signin::SigninChoiceOperationRetryCallback) {
+            std::move(done_callback)
+                .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS,
+                     signin::SigninChoiceErrorType::kNoError);
+            run_loop.Quit();
+          });
   EXPECT_CALL(mock_done_callback, Run());
   web_ui()->HandleReceivedMessage("proceed", args);
   run_loop.Run();
@@ -260,28 +276,35 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
   base::test::ScopedFeatureList feature_list(
       profile_management::features::kOidcAuthProfileManagement);
 
-  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+  base::MockCallback<signin::SigninChoiceWithConfirmAndRetryCallback>
       mock_process_user_choice_callback;
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
-              Run(GetParam().expected_choice, ::testing::_))
-      .WillOnce([&run_loop](
-                    signin::SigninChoice choice,
-                    signin::SigninChoiceOperationDoneCallback done_callback) {
-        std::move(done_callback)
-            .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
-        run_loop.Quit();
-      });
+              Run(GetParam().expected_choice, ::testing::_, ::testing::_))
+      .WillOnce(
+          [&run_loop](signin::SigninChoice choice,
+                      signin::SigninChoiceOperationDoneCallback done_callback,
+                      signin::SigninChoiceOperationRetryCallback) {
+            std::move(done_callback)
+                .Run(signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS,
+                     signin::SigninChoiceErrorType::kNoError);
+            run_loop.Quit();
+          });
   EXPECT_CALL(mock_done_callback, Run());
   web_ui()->HandleReceivedMessage("proceed", args);
 
@@ -301,25 +324,33 @@ TEST_P(ManagedUserProfileNoticeHandleProceedTest,
        HandleProceedWithSuccessConfirmationCallback) {
   base::test::ScopedFeatureList feature_list(
       profile_management::features::kOidcAuthProfileManagement);
-  base::MockCallback<signin::SigninChoiceWithConfirmationCallback>
+  base::MockCallback<signin::SigninChoiceWithConfirmAndRetryCallback>
       mock_process_user_choice_callback;
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      GetParam().profile_creation_required_by_policy,
-      /*show_link_data_option=*/false, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
+          GetParam().profile_creation_required_by_policy,
+          /*show_link_data_option=*/false,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   base::Value::List args;
   args.Append(ManagedUserProfileNoticeHandler::State::kDisclosure);
   args.Append(GetParam().should_link_data);
   base::RunLoop run_loop;
   EXPECT_CALL(mock_process_user_choice_callback,
-              Run(GetParam().expected_choice, ::testing::_))
+              Run(GetParam().expected_choice, ::testing::_, ::testing::_))
       .WillOnce(
           [&run_loop](signin::SigninChoice choice,
-                      signin::SigninChoiceOperationDoneCallback done_callback) {
-            std::move(done_callback).Run(GetParam().choice_operation_result);
+                      signin::SigninChoiceOperationDoneCallback done_callback,
+                      signin::SigninChoiceOperationRetryCallback) {
+            std::move(done_callback)
+                .Run(GetParam().choice_operation_result,
+                     signin::SigninChoiceErrorType::kNoError);
             run_loop.Quit();
           });
   web_ui()->HandleReceivedMessage("proceed", args);
@@ -365,7 +396,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -380,7 +411,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, existing device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -395,7 +426,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -410,7 +441,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager and device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -449,7 +480,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -464,7 +495,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // No account manager, existing device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -479,7 +510,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager, no device manager
   {
     const std::string unknown_device_manager = "";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -492,7 +523,7 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
   // Existing account manager and device manager
   {
     const std::string device_manager = "devicemanager.com";
-    chrome::ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
+    ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         device_manager.c_str());
     std::string title =
         ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
@@ -552,9 +583,14 @@ TEST_F(ManagedUserProfileNoticeHandleCancelTest, HandleCancelNoUseAfterFree) {
   base::MockCallback<base::OnceClosure> mock_done_callback;
   InitializeHandler(
       ManagedUserProfileNoticeUI::ScreenType::kEntepriseAccountSyncEnabled,
-      /*profile_creation_required_by_policy=*/true,
-      /*show_link_data_option=*/true, mock_process_user_choice_callback.Get(),
-      mock_done_callback.Get());
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info(),
+          /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/false,
+          /*profile_creation_required_by_policy=*/true,
+          /*show_link_data_option=*/true,
+          /*process_user_choice_callback=*/
+          mock_process_user_choice_callback.Get(), mock_done_callback.Get()));
 
   EXPECT_CALL(mock_process_user_choice_callback,
               Run(signin::SIGNIN_CHOICE_CANCEL))

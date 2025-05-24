@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/attribution_reporting/attribution_internals_ui.h"
 
 #include "base/containers/span.h"
@@ -32,8 +27,7 @@ AttributionInternalsUI::AttributionInternalsUI(WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIAttributionInternalsHost);
 
-  source->AddResourcePaths(base::make_span(kAttributionInternalsResources,
-                                           kAttributionInternalsResourcesSize));
+  source->AddResourcePaths(kAttributionInternalsResources);
 
   source->SetDefaultResource(
       IDR_ATTRIBUTION_INTERNALS_ATTRIBUTION_INTERNALS_HTML);

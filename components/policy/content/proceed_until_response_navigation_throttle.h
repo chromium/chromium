@@ -11,10 +11,6 @@
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/navigation_throttle.h"
 
-namespace content {
-class NavigationHandle;
-}  // namespace content
-
 // This class can be used to wrap internal throttles that trigger asynchronous
 // tasks on WillStartRequest or WillRedirectRequest and need to make a final
 // decision based on the result of the asynchronous tasks, but are actually OK
@@ -36,12 +32,12 @@ class ProceedUntilResponseNavigationThrottle
   // asynchronous tasks are done.
   class Client : public content::NavigationThrottle {
    public:
-    explicit Client(content::NavigationHandle* navigation_handle);
+    explicit Client(content::NavigationThrottleRegistry& registry);
     virtual void SetDeferredResultCallback(
         const DeferredResultCallback& deferred_result_callback) = 0;
   };
   ProceedUntilResponseNavigationThrottle(
-      content::NavigationHandle* navigation_handle,
+      content::NavigationThrottleRegistry& registry,
       std::unique_ptr<Client> client,
       std::optional<DeferredResultCallback> deferred_result_callback);
   ProceedUntilResponseNavigationThrottle(

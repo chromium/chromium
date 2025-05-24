@@ -2,19 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/lazy_instance.h"
+
 #include <stddef.h>
 
+#include <atomic>
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/at_exit.h"
 #include "base/atomic_sequence_num.h"
-#include "base/atomicops.h"
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
@@ -31,20 +32,16 @@ base::AtomicSequenceNumber destructed_seq_;
 
 class ConstructAndDestructLogger {
  public:
-  ConstructAndDestructLogger() {
-    constructed_seq_.GetNext();
-  }
+  ConstructAndDestructLogger() { constructed_seq_.GetNext(); }
   ConstructAndDestructLogger(const ConstructAndDestructLogger&) = delete;
   ConstructAndDestructLogger& operator=(const ConstructAndDestructLogger&) =
       delete;
-  ~ConstructAndDestructLogger() {
-    destructed_seq_.GetNext();
-  }
+  ~ConstructAndDestructLogger() { destructed_seq_.GetNext(); }
 };
 
 class SlowConstructor {
  public:
-  SlowConstructor() : some_int_(0) {
+  SlowConstructor() {
     // Sleep for 1 second to try to cause a race.
     base::PlatformThread::Sleep(base::Seconds(1));
     ++constructed;
@@ -55,8 +52,9 @@ class SlowConstructor {
   int some_int() const { return some_int_; }
 
   static int constructed;
+
  private:
-  int some_int_;
+  int some_int_ = 0;
 };
 
 // static
@@ -136,9 +134,7 @@ class DeleteLogger {
   DeleteLogger() : deleted_(nullptr) {}
   ~DeleteLogger() { *deleted_ = true; }
 
-  void SetDeletedPtr(bool* deleted) {
-    deleted_ = deleted;
-  }
+  void SetDeletedPtr(bool* deleted) { deleted_ = deleted; }
 
  private:
   raw_ptr<bool> deleted_;
@@ -163,8 +159,8 @@ TEST(LazyInstanceTest, LeakyLazyInstance) {
   bool deleted2 = false;
   {
     base::ShadowingAtExitManager shadow;
-    static base::LazyInstance<DeleteLogger>::Leaky
-        test = LAZY_INSTANCE_INITIALIZER;
+    static base::LazyInstance<DeleteLogger>::Leaky test =
+        LAZY_INSTANCE_INITIALIZER;
     test.Get().SetDeletedPtr(&deleted2);
   }
   EXPECT_FALSE(deleted2);
@@ -208,36 +204,37 @@ class BlockingConstructor {
  public:
   BlockingConstructor() {
     EXPECT_FALSE(WasConstructorCalled());
-    base::subtle::NoBarrier_Store(&constructor_called_, 1);
+    constructor_called_.store(true, std::memory_order_relaxed);
     EXPECT_TRUE(WasConstructorCalled());
-    while (!base::subtle::NoBarrier_Load(&complete_construction_))
+    while (!complete_construction_.load(std::memory_order_relaxed)) {
       base::PlatformThread::YieldCurrentThread();
+    }
     done_construction_ = true;
   }
   BlockingConstructor(const BlockingConstructor&) = delete;
   BlockingConstructor& operator=(const BlockingConstructor&) = delete;
   ~BlockingConstructor() {
     // Restore static state for the next test.
-    base::subtle::NoBarrier_Store(&constructor_called_, 0);
-    base::subtle::NoBarrier_Store(&complete_construction_, 0);
+    constructor_called_.store(false, std::memory_order_relaxed);
+    complete_construction_.store(false, std::memory_order_relaxed);
   }
 
   // Returns true if BlockingConstructor() was entered.
   static bool WasConstructorCalled() {
-    return base::subtle::NoBarrier_Load(&constructor_called_);
+    return constructor_called_.load(std::memory_order_relaxed);
   }
 
   // Instructs BlockingConstructor() that it may now unblock its construction.
   static void CompleteConstructionNow() {
-    base::subtle::NoBarrier_Store(&complete_construction_, 1);
+    complete_construction_.store(true, std::memory_order_relaxed);
   }
 
   bool done_construction() const { return done_construction_; }
 
  private:
   // Use Atomic32 instead of AtomicFlag for them to be trivially initialized.
-  static base::subtle::Atomic32 constructor_called_;
-  static base::subtle::Atomic32 complete_construction_;
+  static std::atomic<bool> constructor_called_;
+  static std::atomic<bool> complete_construction_;
 
   bool done_construction_ = false;
 };
@@ -258,8 +255,9 @@ class BlockingConstructorThread : public base::SimpleThread {
       delete;
 
   void Run() override {
-    if (before_get_)
+    if (before_get_) {
       std::move(before_get_).Run();
+    }
     EXPECT_TRUE(lazy_->Get().done_construction());
   }
 
@@ -269,9 +267,9 @@ class BlockingConstructorThread : public base::SimpleThread {
 };
 
 // static
-base::subtle::Atomic32 BlockingConstructor::constructor_called_ = 0;
+std::atomic<bool> BlockingConstructor::constructor_called_ = false;
 // static
-base::subtle::Atomic32 BlockingConstructor::complete_construction_ = 0;
+std::atomic<bool> BlockingConstructor::complete_construction_ = false;
 
 base::LazyInstance<BlockingConstructor>::DestructorAtExit lazy_blocking =
     LAZY_INSTANCE_INITIALIZER;
@@ -290,8 +288,9 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
       base::ThreadType::kBackground, &lazy_blocking, base::OnceClosure());
   background_getter.Start();
 
-  while (!BlockingConstructor::WasConstructorCalled())
+  while (!BlockingConstructor::WasConstructorCalled()) {
     base::PlatformThread::Sleep(base::Milliseconds(1));
+  }
 
   // Spin 4 foreground thread per core contending to get the already under
   // construction LazyInstance. When they are all running and poking at it :
@@ -312,8 +311,9 @@ TEST(LazyInstanceTest, PriorityInversionAtInitializationResolves) {
   // This test will hang if the foreground threads become stuck in
   // LazyInstance::Get() per the background thread never being scheduled to
   // complete construction.
-  for (auto& foreground_thread : foreground_threads)
+  for (auto& foreground_thread : foreground_threads) {
     foreground_thread->Join();
+  }
   background_getter.Join();
 
   // Fail if this test takes more than 5 seconds (it takes 5-10 seconds on a

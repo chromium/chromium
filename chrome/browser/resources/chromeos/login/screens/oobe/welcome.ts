@@ -18,7 +18,7 @@ import '../../components/dialogs/oobe_adaptive_dialog.js';
 import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {assert} from '//resources/js/assert.js';
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OobeModalDialog} from '../../components/dialogs/oobe_modal_dialog.js';
@@ -27,7 +27,7 @@ import {MultiStepMixin} from '../../components/mixins/multi_step_mixin.js';
 import {OobeI18nMixin} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeA11yOption} from '../../components/oobe_a11y_option.js';
 import {getSelectedTitle} from '../../components/oobe_select.js';
-import {OobeTypes} from '../../components/oobe_types.js';
+import type {OobeTypes} from '../../components/oobe_types.js';
 import {Oobe} from '../../cr_ui.js';
 import {traceWelcomeAnimationPlay} from '../../oobe_trace.js';
 

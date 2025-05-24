@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Algorithms supported by Content Security Policy and Subresource Integrity:
+//
+// Note: We're intentionally not using `network.mojom.HashAlgorithm` (or
+// `net::ct::DigitallySigned::HashAlgorithm`) as we want to be able to
+// extend this enum in the future to include non-hashing integrity mechanisms,
+// while at the same time limiting the set of hashing algorithms we support to
+// exclude known-bad algrithms like SHA-1 or MD5 (both of which are included
+// in the broader algorithm.
+enum IntegrityAlgorithm {
+  // Hashing algorithms:
+  //
+  // https://w3c.github.io/webappsec-csp/#grammardef-hash-algorithm
+  // and
+  // https://w3c.github.io/webappsec-subresource-integrity/#valid-sri-hash-algorithm-token-set
+  kSha256,
+  kSha384,
+  kSha512,
+
+  // Signature algorithms:
+  //
+  // https://wicg.github.io/signature-based-sri/#valid-sri-signature-algorithm-token-set
+  kEd25519,
+};

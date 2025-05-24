@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//chrome/browser/buildflags.gni")
-
 assert(is_chromeos)
 
 source_set("quick_answers") {
@@ -107,6 +104,7 @@ source_set("unit_tests") {
 
   deps = [
     ":quick_answers",
+    ":quick_answers_state_unittest",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -127,10 +125,6 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/color:color_headers",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ ":quick_answers_state_unittest" ]
-  }
 }
 
 source_set("test_support") {
@@ -149,29 +143,25 @@ source_set("test_support") {
   ]
 }
 
-# quick_answers_state_unittest depends on
-# //components/user_manager:test_support, which is not available from lacros
-# build. quick_answers_state_unittest is independent from lacros/ash. Testing
-# only in ash should be enough.
-if (is_chromeos_ash) {
-  source_set("quick_answers_state_unittest") {
-    testonly = true
+source_set("quick_answers_state_unittest") {
+  testonly = true
 
-    sources = [ "public/cpp/quick_answers_state_unittest.cc" ]
-    deps = [
-      ":quick_answers",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//chromeos/components/kiosk:test_support",
-      "//chromeos/components/magic_boost/public/cpp:cpp",
-      "//chromeos/components/magic_boost/test:fake_magic_boost_state",
-      "//chromeos/components/quick_answers/public/cpp:cpp",
-      "//chromeos/components/quick_answers/public/cpp:prefs",
-      "//chromeos/constants:constants",
-      "//components/user_manager:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  sources = [ "public/cpp/quick_answers_state_unittest.cc" ]
+
+  deps = [
+    ":quick_answers",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/components/kiosk:test_support",
+    "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/components/magic_boost/test:fake_magic_boost_state",
+    "//chromeos/components/quick_answers/public/cpp:cpp",
+    "//chromeos/components/quick_answers/public/cpp:prefs",
+    "//chromeos/constants:constants",
+    "//components/prefs:test_support",
+    "//components/user_manager:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

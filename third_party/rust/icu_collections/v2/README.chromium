@@ -1,0 +1,10 @@
+Name: icu_collections
+URL: https://crates.io/crates/icu_collections
+Version: 2.0.0
+Revision: 5e404744dd6c9dd7f86aac82586e3fa98ea75f7f
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/icu_collections-v2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Collection of API for use in ICU libraries.

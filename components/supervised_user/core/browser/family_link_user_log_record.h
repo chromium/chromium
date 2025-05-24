@@ -30,22 +30,24 @@ class FamilyLinkUserLogRecord {
   // numeric values should never be reused. Please keep in sync with
   // "FamilyLinkUserLogSegment" in src/tools/metrics/histograms/enums.xml.
   enum class Segment {
-    // User is not supervised by FamilyLink.
+    // User is not a supervised child or parent in FamilyLink.
     kUnsupervised = 0,
-    // User that is required to be supervised by FamilyLink due to child account
-    // policies (maps to Unicorn and Griffin accounts).
+    // Profile list contains only users that are required to be supervised
+    // by FamilyLink due to child account policies (maps to Unicorn and
+    // Griffin accounts).
     kSupervisionEnabledByPolicy = 1,
-    // User that has chosen to be supervised by FamilyLink (maps to Geller
-    // accounts).
+    // Profile list contains only users that have chosen to be supervised by
+    // FamilyLink (maps to Geller accounts).
     kSupervisionEnabledByUser = 2,
-    // Profile contains users with multiple different supervision status
-    // used only when ExtendFamilyLinkUserLogSegmentToAllPlatforms flag is
-    // enabled
+    // Profile list contains at least one primary account that is supervised.
     kMixedProfile = 3,
+    // Profile list contains only primary accounts identified as parents in
+    // Family Link.
+    kParent = 4,
     // Add future entries above this comment, in sync with
     // "FamilyLinkUserLogSegment" in src/tools/metrics/histograms/enums.xml.
     // Update kMaxValue to the last value.
-    kMaxValue = kMixedProfile
+    kMaxValue = kParent
   };
 
   // Returns an immutable FamilyLinkUserLogRecord.

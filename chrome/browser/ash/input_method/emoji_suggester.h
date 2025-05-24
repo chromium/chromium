@@ -22,7 +22,7 @@ class Profile;
 namespace ash {
 namespace input_method {
 
-constexpr int kEmojiSuggesterShowSettingMaxCount = 10;
+inline constexpr int kEmojiSuggesterShowSettingMaxCount = 10;
 
 // An agent to suggest emoji when the user types, and adopt or
 // dismiss the suggestion according to the user action.

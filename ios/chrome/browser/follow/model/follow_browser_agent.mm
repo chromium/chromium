@@ -76,8 +76,6 @@ bool IsFollowSourceFromMenu(FollowSource source) {
 
 }  // namespace
 
-BROWSER_USER_DATA_KEY_IMPL(FollowBrowserAgent)
-
 FollowBrowserAgent::~FollowBrowserAgent() = default;
 
 bool FollowBrowserAgent::IsWebSiteFollowed(WebPageURLs* web_page_urls) {
@@ -153,7 +151,8 @@ base::WeakPtr<FollowBrowserAgent> FollowBrowserAgent::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-FollowBrowserAgent::FollowBrowserAgent(Browser* browser) : browser_(browser) {}
+FollowBrowserAgent::FollowBrowserAgent(Browser* browser)
+    : BrowserUserData(browser), browser_(browser) {}
 
 void FollowBrowserAgent::ShowOverlayMessage(FollowSource source,
                                             NSString* message,
@@ -239,12 +238,10 @@ void FollowBrowserAgent::OnFollowSuccess(WebPageURLs* web_page_urls,
 
   // Enable the feed prefs to show the feed and to expand it if they
   // are disabled.
-  PrefService* const pref_service = browser_->GetBrowserState()->GetPrefs();
-  if (!pref_service->GetBoolean(prefs::kArticlesForYouEnabled))
+  PrefService* const pref_service = browser_->GetProfile()->GetPrefs();
+  if (!pref_service->GetBoolean(prefs::kArticlesForYouEnabled)) {
     pref_service->SetBoolean(prefs::kArticlesForYouEnabled, true);
-
-  if (!pref_service->GetBoolean(feed::prefs::kArticlesListVisible))
-    pref_service->SetBoolean(feed::prefs::kArticlesListVisible, true);
+  }
 
   // Display the First Follow modal UI if needed.
   const bool is_overflow_menu_source = source == FollowSource::OverflowMenu;
@@ -307,8 +304,9 @@ void FollowBrowserAgent::OnFollowFailure(WebPageURLs* web_page_urls,
                           FollowSnackbarActionType::kSnackbarActionRetryFollow];
 
     // Retry following the website.
-    if (weak_ptr)
+    if (weak_ptr) {
       weak_ptr->FollowWebSite(web_page_urls, FollowSource::Retry);
+    }
   };
 
   auto completion_action = ^(BOOL success) {
@@ -345,8 +343,9 @@ void FollowBrowserAgent::OnUnfollowSuccess(WebPageURLs* web_page_urls,
                           FollowSnackbarActionType::kSnackbarActionUndo];
 
     // Undo unfollowing the website.
-    if (weak_ptr)
+    if (weak_ptr) {
       weak_ptr->FollowWebSite(web_page_urls, FollowSource::Undo);
+    }
   };
 
   auto completion_action = ^(BOOL success) {
@@ -378,8 +377,9 @@ void FollowBrowserAgent::OnUnfollowFailure(WebPageURLs* web_page_urls,
                                                  kSnackbarActionRetryUnfollow];
 
     // Retry unfollowing the website.
-    if (weak_ptr)
+    if (weak_ptr) {
       weak_ptr->UnfollowWebSite(web_page_urls, FollowSource::Retry);
+    }
   };
 
   auto completion_action = ^(BOOL success) {
@@ -395,8 +395,8 @@ void FollowBrowserAgent::OnUnfollowFailure(WebPageURLs* web_page_urls,
 
 raw_ptr<FollowService> FollowBrowserAgent::GetFollowService() {
   if (!service_) {
-    ChromeBrowserState* browser_state = browser_->GetBrowserState();
-    service_ = FollowServiceFactory::GetForBrowserState(browser_state);
+    ProfileIOS* profile = browser_->GetProfile();
+    service_ = FollowServiceFactory::GetForProfile(profile);
     DCHECK(service_);
   }
   return service_;

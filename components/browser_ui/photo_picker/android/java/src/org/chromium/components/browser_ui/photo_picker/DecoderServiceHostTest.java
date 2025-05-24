@@ -359,6 +359,7 @@ public class DecoderServiceHostTest
     @Test
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
+    @DisabledTest(message = "crbug.com/40276077")
     public void testDecodingSizes() throws Throwable {
         DecoderServiceHost host = new DecoderServiceHost(this, mContext);
         host.bind();

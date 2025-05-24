@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/safety_hub/abusive_notification_permissions_manager.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
@@ -97,6 +99,11 @@ void AbusiveNotificationPermissionsManager::
   if (!permission_types.contains(ContentSettingsType::NOTIFICATIONS)) {
     return;
   }
+  base::Value stored_value(hcsm_->GetWebsiteSetting(
+      url, url, ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS));
+  if (stored_value.is_none()) {
+    return;
+  }
   // Set this to true to prevent removal of revoked setting values.
   is_abusive_site_revocation_running_ = true;
   UpdateNotificationPermission(hcsm_.get(), url,
@@ -127,6 +134,14 @@ void AbusiveNotificationPermissionsManager::
       ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS, {});
 }
 
+void AbusiveNotificationPermissionsManager::RestoreDeletedRevokedPermission(
+    const ContentSettingsPattern& primary_pattern,
+    content_settings::ContentSettingConstraints constraints) {
+  safety_hub_util::SetRevokedAbusiveNotificationPermission(
+      hcsm_.get(), primary_pattern.ToRepresentativeUrl(), /*is_ignored=*/false,
+      constraints);
+}
+
 const base::Clock* AbusiveNotificationPermissionsManager::GetClock() {
   if (clock_for_testing_) {
     return clock_for_testing_;
@@ -141,6 +156,8 @@ bool AbusiveNotificationPermissionsManager::IsRevocationRunning() {
 
 AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
     SafeBrowsingCheckClient(
+        base::PassKey<safe_browsing::SafeBrowsingDatabaseManager::Client>
+            pass_key,
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>
@@ -149,7 +166,8 @@ AbusiveNotificationPermissionsManager::SafeBrowsingCheckClient::
         GURL url,
         int safe_browsing_check_delay,
         const base::Clock* clock)
-    : database_manager_(database_manager),
+    : safe_browsing::SafeBrowsingDatabaseManager::Client(std::move(pass_key)),
+      database_manager_(database_manager),
       safe_browsing_request_clients_(safe_browsing_request_clients),
       hcsm_(hcsm),
       url_(url),
@@ -238,6 +256,7 @@ void AbusiveNotificationPermissionsManager::PerformSafeBrowsingChecks(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(database_manager_);
   auto new_sb_check = std::make_unique<SafeBrowsingCheckClient>(
+      safe_browsing::SafeBrowsingDatabaseManager::Client::GetPassKey(),
       database_manager_.get(), &safe_browsing_request_clients_, hcsm_.get(),
       url, safe_browsing_check_delay_, GetClock());
   auto new_sb_check_ptr = new_sb_check.get();

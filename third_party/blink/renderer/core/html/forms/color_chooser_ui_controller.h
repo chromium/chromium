@@ -59,6 +59,7 @@ class CORE_EXPORT ColorChooserUIController
   void SetSelectedColor(const Color&) final;
   void EndChooser() override;
   AXObject* RootAXObject(Element* popup_owner) override;
+  bool IsPickerVisible() const override;
 
   // mojom::blink::ColorChooserClient functions:
   void DidChooseColor(uint32_t color) final;

@@ -5,9 +5,9 @@
 #define BLAKE2_DIGEST_SIZE 32
 #define BLAKE2_THREADS_NUMBER 8
 
+// Use constexpr instead of enums for -std=c++20 compatibility.
 constexpr size_t BLAKE2S_BLOCKBYTES = 64;
 constexpr size_t BLAKE2S_OUTBYTES = 32;
-
 
 // Alignment to 64 improves performance of both SSE and non-SSE versions.
 // Alignment to n*16 is required for SSE version, so we selected 64.

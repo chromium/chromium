@@ -268,6 +268,16 @@ testSuite({
     assertEquals(original.f, clone.f);
   },
 
+  testUnsafeCloneDates() {
+    const original = {d: new Date(5000)};
+    const clone = googObject.unsafeClone(original);
+
+    assertNotEquals(original, clone);
+    assertNotEquals(original.d, clone.d);
+    assertTrue(clone.d instanceof Date);
+    assertEquals(5000, clone.d.getTime());
+  },
+
   testForEach() {
     const m = getObject();
     let s = '';
@@ -576,8 +586,6 @@ testSuite({
   },
 
   testImmutableViewStrict() {
-    'use strict';
-
     // IE9 supports isFrozen, but does not support strict mode. Exit early if we
     // are not actually running in strict mode.
     const isStrict = (function() {

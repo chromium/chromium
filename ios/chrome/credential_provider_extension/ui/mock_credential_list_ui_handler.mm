@@ -7,14 +7,14 @@
 @implementation MockCredentialListUIHandler
 
 @synthesize allowedCredentials = _allowedCredentials;
-@synthesize isRequestingPasskey = _isRequestingPasskey;
+@synthesize relyingPartyIdentifier = _relyingPartyIdentifier;
 
 - (instancetype)initWithAllowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                       isRequestingPasskey:(BOOL)isRequestingPasskey {
+                    relyingPartyIdentifier:(NSString*)relyingPartyIdentifier {
   self = [super init];
   if (self) {
     _allowedCredentials = allowedCredentials;
-    _isRequestingPasskey = isRequestingPasskey;
+    _relyingPartyIdentifier = relyingPartyIdentifier;
   }
   return self;
 }

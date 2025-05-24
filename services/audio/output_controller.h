@@ -354,6 +354,9 @@ class OutputController : public media::AudioOutputStream::AudioSourceCallback,
   // and destroyed when a stream stops. Also reset every time there is a stream
   // being created due to device changes.
   std::optional<ErrorStatisticsTracker> stats_tracker_;
+
+  // Request and read data in the same OnMoreData call, to reduce latency.
+  const bool request_before_read_;
 };
 
 }  // namespace audio

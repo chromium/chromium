@@ -14,9 +14,9 @@ using jni_zero::JavaParamRef;
 
 namespace ui {
 
-InputDeviceObserverAndroid::InputDeviceObserverAndroid() {}
+InputDeviceObserverAndroid::InputDeviceObserverAndroid() = default;
 
-InputDeviceObserverAndroid::~InputDeviceObserverAndroid() {}
+InputDeviceObserverAndroid::~InputDeviceObserverAndroid() = default;
 
 InputDeviceObserverAndroid* InputDeviceObserverAndroid::GetInstance() {
   return base::Singleton<
@@ -46,10 +46,10 @@ static void JNI_InputDeviceObserver_InputConfigurationChanged(
 }
 
 void InputDeviceObserverAndroid::NotifyObserversDeviceConfigurationChanged() {
-  for (ui::InputDeviceEventObserver& observer : observers_)
-    observer.OnInputDeviceConfigurationChanged(
-        InputDeviceEventObserver::kMouse | InputDeviceEventObserver::kKeyboard |
-        InputDeviceEventObserver::kTouchpad);
+  observers_.Notify(
+      &ui::InputDeviceEventObserver::OnInputDeviceConfigurationChanged,
+      InputDeviceEventObserver::kMouse | InputDeviceEventObserver::kKeyboard |
+          InputDeviceEventObserver::kTouchpad);
 }
 
 }  // namespace ui

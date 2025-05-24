@@ -72,7 +72,7 @@ TEST_F(TypingCommandTest, insertLineBreakWithIllFormedHTML) {
   tr->AppendChild(input2);
   tr->AppendChild(rbc);
 
-  Element* div = GetDocument().QuerySelector(AtomicString("div"));
+  Element* div = QuerySelector("div");
   div->AppendChild(input1);
   div->AppendChild(tr);
 
@@ -129,7 +129,7 @@ TEST_F(TypingCommandTest, ForwardDeleteInvalidatesSelection) {
 // crbug.com/1382250
 TEST_F(TypingCommandTest, ForwardDeleteAtTableEnd) {
   SetBodyContent("<table contenteditable></table>");
-  Element* table = GetDocument().QuerySelector(AtomicString("table"));
+  Element* table = QuerySelector("table");
   table->setTextContent("a");
   UpdateAllLifecyclePhasesForTest();
   Selection().SetSelection(SelectionInDOMTree::Builder()
@@ -146,7 +146,7 @@ TEST_F(TypingCommandTest, ForwardDeleteAtTableEnd) {
 
 TEST_F(TypingCommandTest, TypedCharactersInContentEditable) {
   SetBodyContent("<table contenteditable></table>");
-  Element* table = GetDocument().QuerySelector(AtomicString("table"));
+  Element* table = QuerySelector("table");
   table->setTextContent("a");
   MockChromeClient* chrome_client = MakeGarbageCollected<MockChromeClient>();
   table->GetDocument().GetPage()->SetChromeClientForTesting(chrome_client);
@@ -167,7 +167,7 @@ TEST_F(TypingCommandTest, TypedCharactersInContentEditable) {
 
 TEST_F(TypingCommandTest, FirstTypedCharactersInContentEditable) {
   SetBodyContent("<table contenteditable></table>");
-  Element* table = GetDocument().QuerySelector(AtomicString("table"));
+  Element* table = QuerySelector("table");
   table->setTextContent("a");
   MockChromeClient* chrome_client = MakeGarbageCollected<MockChromeClient>();
   table->GetDocument().GetPage()->SetChromeClientForTesting(chrome_client);

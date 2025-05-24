@@ -67,6 +67,7 @@ export const NetworkConfigElementBehavior = {
   /**
    * It can be overridden by the elements to implement their own validation
    * logic.
+   * @return {boolean}
    */
   isPrefilledValueValid() {
     return true;
@@ -95,4 +96,59 @@ export const NetworkConfigElementBehavior = {
     this.readonly = true;
     this.extraSetupForPrefilledValue();
   },
+};
+
+/** @interface */
+export class NetworkConfigElementBehaviorInterface {
+  constructor() {
+    /**
+     * @type {boolean}
+     */
+    this.disabled;
+
+    /**
+     * Network managed property associated with the config element.
+     * @type {?OncMojo.ManagedProperty}
+     */
+    this.property;
+
+    /**
+     * @type {string|number|null}
+     */
+    this.value;
+
+    /**
+     * If set, the field will be filled and the element will be disabled for
+     * user input.
+     * @type {string|number|null}
+     */
+    this.prefilledValue;
+  }
+
+  /**
+   * @param {boolean} disabled
+   * @param {?OncMojo.ManagedProperty} property
+   * @return {boolean} True if the element should be disabled.
+   * @protected
+   */
+  getDisabled_(disabled, property) {}
+
+  /**
+   * It can be overridden by the elements to implement their own validation
+   * logic.
+   * @return {boolean}
+   */
+  isPrefilledValueValid() {}
+
+  /**
+   * It can be overridden by the elements to implement their extra logic for
+   * prefilled value.
+   */
+  extraSetupForPrefilledValue() {}
+
+  /**
+   * If the prefilled value is defined always use the value and mark the input
+   * as readonly.
+   */
+  maybeLockByPrefilledValue() {}
 };

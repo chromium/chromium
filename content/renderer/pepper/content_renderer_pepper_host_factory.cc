@@ -93,8 +93,7 @@ ContentRendererPepperHostFactory::CreateResourceHost(
       std::string internal_path;
       if (!UnpackMessage<PpapiHostMsg_FileRef_CreateForFileAPI>(
               message, &file_system, &internal_path)) {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
       }
       return std::make_unique<PepperFileRefRendererHost>(
           host_, instance, resource, file_system, internal_path);
@@ -103,8 +102,7 @@ ContentRendererPepperHostFactory::CreateResourceHost(
       PP_FileSystemType file_system_type;
       if (!UnpackMessage<PpapiHostMsg_FileSystem_Create>(message,
                                                          &file_system_type)) {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
       }
       return std::make_unique<PepperFileSystemHost>(host_, instance, resource,
                                                     file_system_type);
@@ -114,8 +112,7 @@ ContentRendererPepperHostFactory::CreateResourceHost(
       PP_Bool is_always_opaque;
       if (!UnpackMessage<PpapiHostMsg_Graphics2D_Create>(
               message, &size, &is_always_opaque)) {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
       }
       ppapi::PPB_ImageData_Shared::ImageDataType image_type =
           ppapi::PPB_ImageData_Shared::PLATFORM;

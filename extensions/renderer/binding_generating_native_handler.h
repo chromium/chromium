@@ -17,12 +17,12 @@ namespace extensions {
 class ScriptContext;
 
 // Generates API bindings based on the JSON/IDL schemas. This is done by
-// creating a |Binding| (from binding.js) for the schema and generating the
+// creating a `Binding` (from binding.js) for the schema and generating the
 // bindings from that.
 class BindingGeneratingNativeHandler : public NativeHandler {
  public:
-  // Generates binding for |api_name|, and sets the |bind_to| property on the
-  // Object returned by |NewInstance| to the generated binding.
+  // Generates binding for `api_name`, and sets the `bind_to` property on the
+  // Object returned by `NewInstance` to the generated binding.
   BindingGeneratingNativeHandler(ScriptContext* context,
                                  const std::string& api_name,
                                  const std::string& bind_to);

@@ -34,6 +34,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/invalidation/test_support/fake_invalidation_listener.h"
@@ -42,7 +43,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -258,6 +258,7 @@ void DeviceLocalAccountPolicyServiceTestBase::CreatePolicyService() {
   service_ = std::make_unique<DeviceLocalAccountPolicyService>(
       &session_manager_client_, device_settings_service_.get(),
       ash::CrosSettings::Get(), GetInvalidationServiceProviderOrListener(),
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       extension_cache_task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
@@ -971,8 +972,8 @@ class DeviceLocalAccountPolicyProviderTest
   MockConfigurationPolicyObserver provider_observer_;
 };
 
-DeviceLocalAccountPolicyProviderTest::DeviceLocalAccountPolicyProviderTest()
-    : DeviceLocalAccountPolicyServiceTestBase() {}
+DeviceLocalAccountPolicyProviderTest::DeviceLocalAccountPolicyProviderTest() =
+    default;
 
 void DeviceLocalAccountPolicyProviderTest::SetUp() {
   DeviceLocalAccountPolicyServiceTestBase::SetUp();
@@ -1253,7 +1254,7 @@ class DeviceLocalAccountPolicyProviderLoadImmediateTest
 };
 
 DeviceLocalAccountPolicyProviderLoadImmediateTest::
-    DeviceLocalAccountPolicyProviderLoadImmediateTest() {}
+    DeviceLocalAccountPolicyProviderLoadImmediateTest() = default;
 
 void DeviceLocalAccountPolicyProviderLoadImmediateTest::SetUp() {
   DeviceLocalAccountPolicyServiceTestBase::SetUp();

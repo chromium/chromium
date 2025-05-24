@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.feed.feedmanagement;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class FeedManagementItemViewBinder {
     public static void bind(
             PropertyModel model, FeedManagementItemView view, PropertyKey propertyKey) {

@@ -209,10 +209,6 @@ goog.html.sanitizer.CssSanitizer.sanitizeStyleSheetString = function(
 goog.html.sanitizer.CssSanitizer.safeParseHtmlAndGetInertElement = function(
     html) {
   'use strict';
-  if ((goog.userAgent.IE && !goog.userAgent.isVersionOrHigher(10)) ||
-      typeof goog.global.DOMParser != 'function') {
-    return null;
-  }
   var safeHtml = goog.html.uncheckedconversions
                      .safeHtmlFromStringKnownToSatisfyTypeContract(
                          goog.string.Const.from('Never attached to DOM.'),
@@ -318,13 +314,27 @@ goog.html.sanitizer.CssSanitizer.inlineStyleRules = function(element) {
         goog.html.sanitizer.noclobber.getElementStyleSheet(styleTag).cssRules);
   });
   cssRules = goog.html.sanitizer.CssSanitizer.getOnlyStyleRules_(cssRules);
-  // Sort the rules by descending specificity.
-  cssRules.sort(function(a, b) {
+
+  let sortedMap = [];
+  for (var i = 0; i < cssRules.length; i++) {
+    sortedMap[i] = {index: i, rule: /** @type {!CSSStyleRule} */ (cssRules[i])};
+  }
+  // Sorts the array in ascending order of specificity. Preserves the initial
+  // order of appearance if two rules have the same specificity.
+  sortedMap.sort(function(a, b) {
     'use strict';
-    var aSpecificity = goog.html.CssSpecificity.getSpecificity(a.selectorText);
-    var bSpecificity = goog.html.CssSpecificity.getSpecificity(b.selectorText);
-    return -goog.array.compare3(aSpecificity, bSpecificity);
+    var aSpecificity =
+        goog.html.CssSpecificity.getSpecificity(a.rule.selectorText);
+    var bSpecificity =
+        goog.html.CssSpecificity.getSpecificity(b.rule.selectorText);
+    return goog.array.compare3(aSpecificity, bSpecificity) || a.index - b.index;
   });
+  for (var i = 0; i < sortedMap.length; i++) {
+    cssRules[i] = sortedMap[i].rule;
+  }
+  // Reverse the array so we can match elements to the most specific rules
+  // first.
+  cssRules.reverse();
   // For each element, apply the matching rules to the element style attribute.
   // If a property is already explicitly defined, do not update it. This
   // guarantees that the rule with selectors with the highest priority (or the

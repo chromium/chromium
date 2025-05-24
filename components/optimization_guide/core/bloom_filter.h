@@ -30,7 +30,7 @@ class BloomFilter {
   // type) and using |num_hash_functions| per entry.
   BloomFilter(uint32_t num_hash_functions,
               uint32_t num_bits,
-              std::string filter_data);
+              const std::string& filter_data);
 
   BloomFilter(const BloomFilter&) = delete;
   BloomFilter& operator=(const BloomFilter&) = delete;
@@ -38,7 +38,7 @@ class BloomFilter {
   ~BloomFilter();
 
   // Returns whether this Bloom filter contains |str|.
-  bool Contains(const std::string& str) const;
+  bool Contains(std::string_view str) const;
 
   // Adds |str| to this Bloom filter.
   void Add(const std::string& str);

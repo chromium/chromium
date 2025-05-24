@@ -85,17 +85,15 @@ void ClientConnectionParameters::NotifyConnectionRequestCanceled() {
 void ClientConnectionParameters::VerifyDelegateWaitingForResponse(
     const std::string& function_name) {
   if (has_invoked_delegate_function_) {
-    PA_LOG(ERROR) << "ClientConnectionParameters::" << function_name << "(): "
-                  << "Attempted to notify ConnectionDelegate when a delegate "
-                  << "function had already been invoked. Cannot proceed.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "ClientConnectionParameters::" << function_name << "(): "
+                 << "Attempted to notify ConnectionDelegate when a delegate "
+                 << "function had already been invoked. Cannot proceed.";
   }
 
   if (HasClientCanceledRequest()) {
-    PA_LOG(ERROR) << "ClientConnectionParameters::" << function_name << "(): "
-                  << "Attempted to notify ConnectionDelegate when the client "
-                  << "had already canceled the connection. Cannot proceed.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "ClientConnectionParameters::" << function_name << "(): "
+                 << "Attempted to notify ConnectionDelegate when the client "
+                 << "had already canceled the connection. Cannot proceed.";
   }
 }
 

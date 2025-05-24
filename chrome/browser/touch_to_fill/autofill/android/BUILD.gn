@@ -26,6 +26,7 @@ source_set("android") {
     ":public",
     "//chrome/browser/autofill",
     "//chrome/browser/profiles",
+    "//components/autofill/android:main_autofill_jni_headers",
     "//components/autofill/core/common:features",
     "//content/public/browser:browser",
     "//third_party/libaddressinput:util",

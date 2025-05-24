@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Error, Formatter};
 
 /// Privilege group for a crate. They are ordered with higher values being
 /// higher privilege.
-#[derive(Copy, Clone, Debug, Deserialize, Hash, PartialEq, Eq, Ord, PartialOrd)]
+#[derive(Copy, Clone, Debug, Deserialize, Hash, PartialEq, Eq, Ord, PartialOrd, Serialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Group {
     /// Test-only code (or for tools that don't contribute directly to the
@@ -18,6 +19,14 @@ pub enum Group {
     /// Crates that satisfy the Rule of Two, and can be used without
     /// restriction from any process.
     Safe,
+}
+
+impl Display for Group {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error> {
+        // Using `gnrt_config.toml` syntax/formatting when displaying a `Group`.
+        let s = toml::to_string(self).unwrap();
+        f.write_str(&s)
+    }
 }
 
 #[derive(Debug)]

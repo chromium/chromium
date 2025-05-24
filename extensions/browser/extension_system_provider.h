@@ -19,7 +19,7 @@ class ExtensionSystem;
 // An ExtensionSystemProvider maps a BrowserContext to its ExtensionSystem.
 // Different applications may use this to provide differing implementations
 // of ExtensionSystem.
-// TODO(yoz): Rename to ExtensionSystemFactory.
+// TODO(yoz): Rename to ChromeExtensionSystemFactory.
 class ExtensionSystemProvider : public BrowserContextKeyedServiceFactory {
  public:
   ExtensionSystemProvider(const char* name,

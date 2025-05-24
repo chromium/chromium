@@ -31,19 +31,23 @@ bool IsLoading(PageNode::LoadingState loading_state) {
 // static
 const char LoadingPageVoter::kPageIsLoadingReason[] = "Page is loading.";
 
-LoadingPageVoter::LoadingPageVoter(VotingChannel voting_channel)
-    : voting_channel_(std::move(voting_channel)) {}
+LoadingPageVoter::LoadingPageVoter() = default;
 
 LoadingPageVoter::~LoadingPageVoter() = default;
 
-void LoadingPageVoter::InitializeOnGraph(Graph* graph) {
+void LoadingPageVoter::InitializeOnGraph(Graph* graph,
+                                         VotingChannel voting_channel) {
+  voting_channel_ = std::move(voting_channel);
+
   graph->AddPageNodeObserver(this);
-  graph->AddInitializingFrameNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
 }
 
 void LoadingPageVoter::TearDownOnGraph(Graph* graph) {
+  graph->RemoveFrameNodeObserver(this);
   graph->RemovePageNodeObserver(this);
-  graph->RemoveInitializingFrameNodeObserver(this);
+
+  voting_channel_.Reset();
 }
 
 void LoadingPageVoter::OnPageNodeAdded(const PageNode* page_node) {
@@ -76,17 +80,22 @@ void LoadingPageVoter::OnLoadingStateChanged(
   }
 }
 
-void LoadingPageVoter::OnFrameNodeInitializing(const FrameNode* frame_node) {
-  if (!IsLoading(frame_node->GetPageNode()->GetLoadingState())) {
+void LoadingPageVoter::OnBeforeFrameNodeAdded(
+    const FrameNode* frame_node,
+    const FrameNode* pending_parent_frame_node,
+    const PageNode* pending_page_node,
+    const ProcessNode* pending_process_node,
+    const FrameNode* pending_parent_or_outer_document_or_embedder) {
+  if (!IsLoading(pending_page_node->GetLoadingState())) {
     return;
   }
 
   voting_channel_.SubmitVote(
       GetExecutionContext(frame_node),
-      Vote(base::TaskPriority::USER_BLOCKING, kPageIsLoadingReason));
+      Vote(base::TaskPriority::USER_VISIBLE, kPageIsLoadingReason));
 }
 
-void LoadingPageVoter::OnFrameNodeTearingDown(const FrameNode* frame_node) {
+void LoadingPageVoter::OnBeforeFrameNodeRemoved(const FrameNode* frame_node) {
   if (!IsLoading(frame_node->GetPageNode()->GetLoadingState())) {
     return;
   }
@@ -109,7 +118,7 @@ void LoadingPageVoter::OnPageNodeStoppedLoading(const PageNode* page_node) {
 void LoadingPageVoter::SubmitVoteForSubtree(const FrameNode* frame_node) {
   voting_channel_.SubmitVote(
       GetExecutionContext(frame_node),
-      Vote(base::TaskPriority::USER_BLOCKING, kPageIsLoadingReason));
+      Vote(base::TaskPriority::USER_VISIBLE, kPageIsLoadingReason));
 
   // Recurse through subtree.
   for (const FrameNode* child_frame_node : frame_node->GetChildFrameNodes()) {

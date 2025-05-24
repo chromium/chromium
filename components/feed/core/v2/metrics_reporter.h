@@ -78,6 +78,7 @@ class MetricsReporter {
   void PageLoaded();
   void OtherUserAction(const StreamType& stream_type,
                        FeedUserActionType action_type);
+  void OtherUserAction(FeedUserActionType action_type);
   // Report a period of time during which at least one content slice was visible
   // enough or covering enough of the viewport.
   void ReportStableContentSliceVisibilityTimeForGoodVisits(
@@ -222,7 +223,6 @@ class MetricsReporter {
   raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
   StreamStats for_you_stats_;
-  StreamStats supervised_feed_stats_;
   StreamStats web_feed_stats_;
   StreamStats combined_stats_;
 

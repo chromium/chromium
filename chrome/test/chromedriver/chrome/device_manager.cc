@@ -4,6 +4,7 @@
 
 #include "chrome/test/chromedriver/chrome/device_manager.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/check.h"
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -33,7 +33,7 @@ Device::~Device() {
 
 // Only allow completely alpha exec names.
 bool IsValidExecName(const std::string& exec_name) {
-  return base::ranges::all_of(exec_name, &base::IsAsciiAlpha<char>);
+  return std::ranges::all_of(exec_name, &base::IsAsciiAlpha<char>);
 }
 
 Status Device::SetUp(const std::string& package,
@@ -44,7 +44,11 @@ Status Device::SetUp(const std::string& package,
                      const std::string& args,
                      bool use_running_app,
                      bool keep_app_data_dir,
-                     int* devtools_port) {
+                     int* devtools_port,
+                     const std::string& prefs_file,
+                     const base::Value::Dict* custom_prefs,
+                     const std::string& local_state_file,
+                     const base::Value::Dict* custom_local_state) {
   if (!active_package_.empty())
     return Status(kUnknownError,
         active_package_ + " was launched and has not been quit");
@@ -138,6 +142,27 @@ Status Device::SetUp(const std::string& package,
             status);
     }
 
+    if (custom_prefs) {
+      status = adb_->SetPreferences(serial_, prefs_file, custom_prefs);
+
+      if (status.IsError())
+        return Status(kUnknownError,
+                      "Failed to set Chrome's preferences file on device " +
+                          serial_,
+                      status);
+    }
+
+    if (custom_local_state) {
+      status =
+          adb_->SetLocalState(serial_, local_state_file, custom_local_state);
+
+      if (status.IsError())
+        return Status(kUnknownError,
+                      "Failed to set Chrome's local state file on device " +
+                          serial_,
+                      status);
+    }
+
     status = adb_->Launch(serial_, package,
                           known_activity.empty() ? activity : known_activity);
     if (status.IsError())
@@ -218,7 +243,7 @@ DeviceManager::DeviceManager(Adb* adb) : adb_(adb) {
   CHECK(adb_);
 }
 
-DeviceManager::~DeviceManager() {}
+DeviceManager::~DeviceManager() = default;
 
 Status DeviceManager::AcquireDevice(std::unique_ptr<Device>* device) {
   std::vector<std::string> devices;

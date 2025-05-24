@@ -17,6 +17,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 
@@ -73,7 +74,7 @@ IN_PROC_BROWSER_TEST_F(InteractionTestUtilInteractiveUitest,
 
   auto open_context_menu = base::BindLambdaForTesting([&]() {
     tab->ShowContextMenu(tab->bounds().CenterPoint(),
-                         ui::MenuSourceType::MENU_SOURCE_MOUSE);
+                         ui::mojom::MenuSourceType::kMouse);
   });
 
   auto set_up = base::BindLambdaForTesting(

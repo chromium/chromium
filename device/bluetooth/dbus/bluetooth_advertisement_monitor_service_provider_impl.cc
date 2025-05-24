@@ -97,9 +97,14 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::Release(
     dbus::ExportedObject::ResponseSender response_sender) {
   if (!delegate_) {
     DVLOG(2) << "Could not forward D-Bus callback: Invalid delegate";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 "Invalid delegate."));
     return;
   }
+
   delegate_->OnRelease();
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void BluetoothAdvertisementMonitorServiceProviderImpl::Activate(
@@ -107,9 +112,14 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::Activate(
     dbus::ExportedObject::ResponseSender response_sender) {
   if (!delegate_) {
     DVLOG(2) << "Could not forward D-Bus callback: Invalid delegate";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 "Invalid delegate."));
     return;
   }
+
   delegate_->OnActivate();
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void BluetoothAdvertisementMonitorServiceProviderImpl::DeviceFound(
@@ -117,6 +127,9 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::DeviceFound(
     dbus::ExportedObject::ResponseSender response_sender) {
   if (!delegate_) {
     DVLOG(2) << "Could not forward D-Bus callback: Invalid delegate";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 "Invalid delegate."));
     return;
   }
 
@@ -125,9 +138,14 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::DeviceFound(
   if (!reader.PopObjectPath(&device_path)) {
     LOG(WARNING) << "DeviceFound called with incorrect parameters: "
                  << method_call->ToString();
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
     return;
   }
+
   delegate_->OnDeviceFound(device_path);
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void BluetoothAdvertisementMonitorServiceProviderImpl::DeviceLost(
@@ -135,16 +153,25 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::DeviceLost(
     dbus::ExportedObject::ResponseSender response_sender) {
   if (!delegate_) {
     DVLOG(2) << "Could not forward D-Bus callback: Invalid delegate";
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
+                                                 "Invalid delegate."));
     return;
   }
+
   dbus::MessageReader reader(method_call);
   dbus::ObjectPath device_path;
   if (!reader.PopObjectPath(&device_path)) {
     LOG(WARNING) << "DeviceLost called with incorrect paramters: "
                  << method_call->ToString();
+    std::move(response_sender)
+        .Run(dbus::ErrorResponse::FromMethodCall(
+            method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
     return;
   }
+
   delegate_->OnDeviceLost(device_path);
+  std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
 void BluetoothAdvertisementMonitorServiceProviderImpl::WriteProperties(

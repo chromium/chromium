@@ -13,9 +13,10 @@
 #include <intrin.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <memory>
 
+#include <memory>
 #include <optional>
+
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "sandbox/win/src/nt_internals.h"
@@ -208,8 +209,7 @@ class AutoProtectMemory {
 
  private:
   bool changed_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
+  // RAW_PTR_EXCLUSION: not managed by PartitionAlloc.
   RAW_PTR_EXCLUSION void* address_;
   size_t bytes_;
   ULONG old_protect_;

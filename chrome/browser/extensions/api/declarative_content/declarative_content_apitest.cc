@@ -5,6 +5,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -32,8 +33,10 @@
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/browser/extension_action_manager.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/rules_registry_ids.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/api/extension_action/action_info_test_util.h"
@@ -131,7 +134,7 @@ constexpr char kBackgroundHelpers[] =
          });
        };)";
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class DeclarativeContentApiTest : public ExtensionApiTest {
  public:
@@ -258,7 +261,7 @@ void DeclarativeContentApiTest::CheckBookmarkEvents(bool match_is_bookmarked) {
             ExecuteScriptInBackgroundPage(
                 extension->id(),
                 base::StringPrintf(kSetIsBookmarkedRule,
-                                   match_is_bookmarked ? "true" : "false")));
+                                   base::ToString(match_is_bookmarked))));
   EXPECT_EQ(!match_is_bookmarked, action->GetIsVisible(tab_id));
 
   // Check rule evaluation on add/remove bookmark.
@@ -500,7 +503,7 @@ class ParameterizedShowActionDeclarativeContentApiTest
   ParameterizedShowActionDeclarativeContentApiTest& operator=(
       const ParameterizedShowActionDeclarativeContentApiTest&) = delete;
 
-  ~ParameterizedShowActionDeclarativeContentApiTest() override {}
+  ~ParameterizedShowActionDeclarativeContentApiTest() override = default;
 
   void TestShowAction(std::optional<ActionInfo::Type> action_type);
 };
@@ -583,7 +586,7 @@ void ParameterizedShowActionDeclarativeContentApiTest::TestShowAction(
       action_type.value_or(ActionInfo::Type::kPage);
   EXPECT_EQ(expected_type, action->action_type());
   EXPECT_EQ(expected_type == ActionInfo::Type::kPage ? 1u : 0u,
-            extension_action_test_util::GetVisiblePageActionCount(tab));
+            extension_action_test_util::GetActivePageActionCount(tab));
 }
 
 IN_PROC_BROWSER_TEST_P(ParameterizedShowActionDeclarativeContentApiTest,
@@ -721,8 +724,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 constexpr char kRulesExtensionName[] =
     "Declarative content persistence apitest";
 
-// TODO(crbug.com/41189874): Flaky on Windows release builds and on LACROS.
-#if (BUILDFLAG(IS_WIN) && defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/41189874): Flaky on Windows release builds.
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_PRE_RulesPersistence DISABLED_PRE_RulesPersistence
 #else
 #define MAYBE_PRE_RulesPersistence PRE_RulesPersistence
@@ -746,8 +749,8 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   ASSERT_TRUE(ready_split.WaitUntilSatisfied());
 }
 
-// TODO(crbug.com/41189874): Flaky on Windows release builds and on LACROS.
-#if (BUILDFLAG(IS_WIN) && defined(NDEBUG)) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/41189874): Flaky on Windows release builds.
+#if BUILDFLAG(IS_WIN) && defined(NDEBUG)
 #define MAYBE_RulesPersistence DISABLED_RulesPersistence
 #else
 #define MAYBE_RulesPersistence RulesPersistence
@@ -846,7 +849,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
 
   EXPECT_TRUE(action->GetIsVisible(tab_id));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(1));
-  EXPECT_EQ(1u, extension_action_test_util::GetVisiblePageActionCount(tab));
+  EXPECT_EQ(1u, extension_action_test_util::GetActivePageActionCount(tab));
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));
 
   ExtensionTestMessageListener reload_ready_listener("ready");
@@ -859,7 +862,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   // navigation.
   EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test/")));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(1));
-  EXPECT_EQ(1u, extension_action_test_util::GetVisiblePageActionCount(tab));
+  EXPECT_EQ(1u, extension_action_test_util::GetActivePageActionCount(tab));
   EXPECT_EQ(1u, extension_action_test_util::GetTotalPageActionCount(tab));
 
   UnloadExtension(extension_id);
@@ -867,7 +870,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
   EXPECT_FALSE(NavigateInRenderer(tab, GURL("http://test/")));
   EXPECT_TRUE(WaitForPageActionVisibilityChangeTo(0));
-  EXPECT_EQ(0u, extension_action_test_util::GetVisiblePageActionCount(tab));
+  EXPECT_EQ(0u, extension_action_test_util::GetActivePageActionCount(tab));
   EXPECT_EQ(0u, extension_action_test_util::GetTotalPageActionCount(tab));
 }
 
@@ -1097,14 +1100,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
   EXPECT_EQ("add_rule",
             ExecuteScriptInBackgroundPage(extension->id(), kAddTestRule));
 
-  ExtensionService* extension_service = extensions::ExtensionSystem::Get(
-      browser()->profile())->extension_service();
-
   std::u16string error;
-  ASSERT_TRUE(extension_service->UninstallExtension(
-      extension->id(),
-      UNINSTALL_REASON_FOR_TESTING,
-      &error));
+  ASSERT_TRUE(extensions::ExtensionRegistrar::Get(browser()->profile())
+                  ->UninstallExtension(extension->id(),
+                                       UNINSTALL_REASON_FOR_TESTING, &error));
   ASSERT_EQ(u"", error);
 
   // Reload the extension, then add and remove a rule.
@@ -1162,7 +1161,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeContentApiTestWithContextType,
       extensions::RulesRegistryService::Get(browser()->profile());
   scoped_refptr<RulesRegistry> rules_registry =
       rules_registry_service->GetRulesRegistry(
-          RulesRegistryService::kDefaultRulesRegistryID,
+          rules_registry_ids::kDefaultRulesRegistryID,
           "declarativeContent.onPageChanged");
   DCHECK(rules_registry);
 

@@ -14,7 +14,7 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
@@ -64,17 +64,18 @@ void AutofillObserverImpl::OnFormSubmitted(autofill::AutofillManager&,
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::OnAfterSelectControlDidChange(
+void AutofillObserverImpl::OnAfterSelectControlSelectionChanged(
     autofill::AutofillManager&,
     autofill::FormGlobalId,
     autofill::FieldGlobalId) {
   OnFormInteraction();
 }
 
-void AutofillObserverImpl::OnAfterTextFieldDidChange(autofill::AutofillManager&,
-                                                     autofill::FormGlobalId,
-                                                     autofill::FieldGlobalId,
-                                                     const std::u16string&) {
+void AutofillObserverImpl::OnAfterTextFieldValueChanged(
+    autofill::AutofillManager&,
+    autofill::FormGlobalId,
+    autofill::FieldGlobalId,
+    const std::u16string&) {
   OnFormInteraction();
 }
 

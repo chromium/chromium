@@ -86,7 +86,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
       .SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kVertical, gfx::Insets(),
           2 * layout_provider->GetDistanceMetric(
-                  DISTANCE_CONTROL_LIST_VERTICAL)))
+                  views::DISTANCE_CONTROL_LIST_VERTICAL)))
       .AddChildren(
           views::Builder<views::Label>()
               .SetID(VIEW_ID_APP_IDENTITY_UPDATE_HEADER)
@@ -137,7 +137,7 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
                           IDS_WEBAPP_UPDATE_NEW_ICON)))
               .AddPaddingRow(views::TableLayout::kFixedSize,
                              layout_provider->GetDistanceMetric(
-                                 DISTANCE_CONTROL_LIST_VERTICAL))
+                                 views::DISTANCE_CONTROL_LIST_VERTICAL))
               .AddRows(1, views::TableLayout::kFixedSize, 0)
               .AddChildren(
                   views::Builder<views::Label>()

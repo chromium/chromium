@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/kerberos/kerberos_in_browser_ui.h"
 
 #include <memory>
@@ -15,7 +10,6 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/kerberos_resources.h"
@@ -23,6 +17,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "net/base/features.h"
+#include "ui/webui/webui_util.h"
 
 namespace ash {
 
@@ -42,9 +37,8 @@ KerberosInBrowserUI::KerberosInBrowserUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIKerberosInBrowserHost);
 
-  webui::SetupWebUIDataSource(
-      source, base::make_span(kKerberosResources, kKerberosResourcesSize),
-      IDR_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_HTML);
+  webui::SetupWebUIDataSource(source, kKerberosResources,
+                              IDR_KERBEROS_KERBEROS_IN_BROWSER_DIALOG_HTML);
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"kerberosInBrowserTitle", IDS_SETTINGS_KERBEROS_IN_BROWSER_DIALOG_TITLE},

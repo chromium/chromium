@@ -31,8 +31,7 @@ class StoredPage : public SiteInstanceGroup::Observer {
  public:
   using RenderFrameProxyHostMap =
       std::unordered_map<SiteInstanceGroupId,
-                         std::unique_ptr<RenderFrameProxyHost>,
-                         SiteInstanceGroupId::Hasher>;
+                         std::unique_ptr<RenderFrameProxyHost>>;
 
   using RenderViewHostImplSafeRefSet =
       std::set<base::SafeRef<RenderViewHostImpl>>;

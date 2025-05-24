@@ -237,7 +237,7 @@ class GaiaOAuthClientTest : public testing::Test {
 
  protected:
   void TestAccountCapabilitiesUploadData(
-      const std::vector<std::string>& capabilities_names,
+      base::span<const std::string_view> capabilities_names,
       const std::string& expected_body) {
     ResponseInjector injector(&url_loader_factory_);
     injector.set_complete_immediately(false);

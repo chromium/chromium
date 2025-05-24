@@ -175,15 +175,16 @@ void AnimationExample::CreateExampleView(View* container) {
       BoxLayout::Orientation::kVertical, gfx::Insets(), 10));
 
   View* squares_container = container->AddChildView(std::make_unique<View>());
-  squares_container->SetBackground(CreateThemedSolidBackground(
+  squares_container->SetBackground(CreateSolidBackground(
       ExamplesColorIds::kColorAnimationExampleBackground));
   squares_container->SetPaintToLayer();
   squares_container->layer()->SetMasksToBounds(true);
   squares_container->layer()->SetFillsBoundsOpaquely(true);
 
   squares_container->SetLayoutManager(std::make_unique<SquaresLayoutManager>());
-  for (size_t i = 0; i < 5; ++i)
+  for (size_t i = 0; i < 5; ++i) {
     squares_container->AddChildView(std::make_unique<AnimatingSquare>(i));
+  }
 
   {
     gfx::RoundedCornersF rounded_corners(12.0f, 12.0f, 12.0f, 12.0f);

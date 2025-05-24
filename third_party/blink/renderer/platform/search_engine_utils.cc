@@ -15,7 +15,7 @@ bool IsKnownSearchEngine(const String& url) {
     return false;
   }
 
-  return SearchEngineUtils::GetEngineType(gurl) > 0;
+  return search_engine_utils::GetEngineType(gurl) > 0;
 }
 
 }  // namespace blink

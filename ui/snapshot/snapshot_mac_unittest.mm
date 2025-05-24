@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/snapshot/snapshot_mac.h"
 
 namespace ui {
@@ -69,7 +70,8 @@ TEST_P(GrabWindowSnapshotTest, TestGrabWindowSnapshot) {
   // Take the snapshot.
   base::test::TestFuture<gfx::Image> future;
   gfx::Rect bounds = gfx::Rect(0, 0, window_size, window_size);
-  ui::GrabWindowSnapshot(window, bounds, future.GetCallback());
+  ui::GrabWindowSnapshot(gfx::NativeWindow(window), bounds,
+                         future.GetCallback());
 
   gfx::Image image = future.Take();
   ASSERT_TRUE(!image.IsEmpty());

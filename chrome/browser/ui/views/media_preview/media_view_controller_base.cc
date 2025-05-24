@@ -7,12 +7,16 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "chrome/browser/ui/views/media_preview/media_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/permission_hats_trigger_helper.h"
+#include "components/permissions/permission_request.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -60,9 +64,9 @@ MediaViewControllerBase::MediaViewControllerBase(
     const int kBorderThickness =
         provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_VERTICAL);
 
-    base_view_->SetBorder(views::CreateThemedRoundedRectBorder(
+    base_view_->SetBorder(views::CreateRoundedRectBorder(
         kBorderThickness, kRoundedRadius, ui::kColorMenuBackground));
-    base_view_->SetBackground(views::CreateThemedRoundedRectBackground(
+    base_view_->SetBackground(views::CreateRoundedRectBackground(
         ui::kColorMenuBackground, kRoundedRadius));
   }
 
@@ -112,8 +116,7 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
     live_feed_container_->SetVisible(false);
     no_devices_found_label_->SetVisible(true);
     device_name_label_->SetText(no_devices_found_combobox_text_);
-    device_name_label_->SetEnabledColorId(
-        ui::ColorIds::kColorSysOnSurfaceSubtle);
+    device_name_label_->SetEnabledColor(ui::ColorIds::kColorSysOnSurfaceSubtle);
     device_name_label_->SetVisible(true);
     device_selector_combobox_->SetVisible(false);
     AnnounceDynamicChangeIfNeeded(no_devices_found_label_->GetText());
@@ -129,7 +132,7 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   device_selector_combobox_->SetVisible(allow_device_selection_);
   AnnounceDynamicChangeIfNeeded(l10n_util::GetStringFUTF16(
       IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
-      device_name_label_->GetText()));
+      std::u16string(device_name_label_->GetText())));
   OnComboboxSelection(/*due_to_user_action=*/false);
   base_view_->RefreshSize();
 }
@@ -157,11 +160,11 @@ void MediaViewControllerBase::UpdateDeviceNameLabel() {
   CHECK(index);
   device_name_label_->SetText(
       device_selector_combobox_->GetModel()->GetItemAt(index.value()));
-  device_name_label_->SetEnabledColorId(ui::ColorIds::kColorSysOnSurface);
+  device_name_label_->SetEnabledColor(ui::ColorIds::kColorSysOnSurface);
 }
 
 void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
-    std::u16string announcement) {
+    std::u16string_view announcement) {
   if (!has_device_list_changed_before_) {
     has_device_list_changed_before_ = true;
     return;
@@ -183,5 +186,19 @@ void MediaViewControllerBase::OnComboboxMenuWillShow() {
       media_preview_metrics::MediaPreviewDeviceSelectionUserAction::kNoAction) {
     user_action_ =
         media_preview_metrics::MediaPreviewDeviceSelectionUserAction::kOpened;
+  }
+
+  if (metrics_context_.request) {
+    auto preview_params =
+        metrics_context_.request->get_preview_parameters().value_or(
+            permissions::PermissionHatsTriggerHelper::
+                PreviewParametersForHats{});
+    preview_params.MergeParameters(
+        permissions::PermissionHatsTriggerHelper::PreviewParametersForHats(
+            /*was_visible=*/false, /*dropdown_was_interacted=*/true,
+            /*was_prompt_combined=*/metrics_context_.prompt_type ==
+                media_preview_metrics::PromptType::kCombined,
+            /*time_to_decision=*/{}, /*time_to_visible=*/{}));
+    metrics_context_.request->set_preview_parameters(preview_params);
   }
 }

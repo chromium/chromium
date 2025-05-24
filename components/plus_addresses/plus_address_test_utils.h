@@ -6,15 +6,21 @@
 #define COMPONENTS_PLUS_ADDRESSES_PLUS_ADDRESS_TEST_UTILS_H_
 
 #include <string>
+#include <vector>
 
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace plus_addresses::test {
 
+inline constexpr char kAffiliatedFacet[] = "https://facet.affiliated";
+inline constexpr char16_t kAffiliatedFacetWithoutSchemeU16[] =
+    u"facet.affiliated";
 inline constexpr char kFakeManagementUrl[] = "https://manage.example/";
 inline constexpr char kFakeOauthScope[] = "https://foo.example";
 inline constexpr char kReservePath[] = "/v1/profiles/reserve";
@@ -26,6 +32,10 @@ inline constexpr char kFakePlusAddressRefresh[] = "plus-refresh@plus.plus";
 inline constexpr char16_t kFakePlusAddressU16[] = u"plus@plus.plus";
 inline constexpr char16_t kFakePlusAddressRefreshU16[] =
     u"plus-refresh@plus.plus";
+inline constexpr char kFakeAffiliatedPlusAddress[] =
+    "plus-affiliated@plus.plus";
+inline constexpr char16_t kFakeAffiliatedPlusAddressU16[] =
+    u"plus-affiliated@plus.plus";
 
 // Returns a fully populated, confirmed PlusProfile.
 PlusProfile CreatePlusProfile(std::string plus_address, bool is_confirmed);
@@ -61,6 +71,18 @@ HandleRequestToPlusAddressWithSuccess(
 base::Value CreatePreallocatedPlusAddress(
     base::Time end_of_life,
     std::string address = "some@plus.com");
+
+// Matches a fill plus address suggestion.
+testing::Matcher<autofill::Suggestion> EqualsFillPlusAddressSuggestion(
+    std::string_view address);
+
+// Matches a one-item vector with a standalone creation suggestion.
+testing::Matcher<std::vector<autofill::Suggestion>>
+IsSingleCreatePlusAddressSuggestion();
+
+// Matches a one-item vector with a fill plus address suggestion.
+testing::Matcher<std::vector<autofill::Suggestion>>
+IsSingleFillPlusAddressSuggestion(std::string_view address);
 
 }  // namespace plus_addresses::test
 

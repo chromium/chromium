@@ -292,8 +292,7 @@ class PaintPreviewCompositorBeginCompositeTest
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -497,9 +496,7 @@ TEST_P(PaintPreviewCompositorBeginCompositeTest, InvalidProto) {
   {
     testing::internal::CaptureStdout();
     request->preview = mojo_base::ProtoWrapper(
-        base::make_span(reinterpret_cast<const uint8_t*>(test_data.c_str()),
-                        test_data.size()),
-        "paint_preview.PaintPreviewProto",
+        base::as_byte_span(test_data), "paint_preview.PaintPreviewProto",
         mojo_base::ProtoWrapperBytes::GetPassKey());
     BeginCompositeAndValidate(
         std::move(request),

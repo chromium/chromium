@@ -5,6 +5,7 @@
 #include "components/viz/service/display/overlay_candidate_factory.h"
 
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include "base/dcheck_is_on.h"
@@ -27,6 +28,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/overlay_transform_utils.h"
 #include "ui/gfx/video_types.h"
 
@@ -65,7 +67,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     child_resource_provider_.ReleaseAllExportedResources(true);
   }
 
-  ResourceId CreateResource(bool is_overlay_candidate) {
+  ResourceId CreateResource(bool is_overlay_candidate, GrSurfaceOrigin origin) {
     scoped_refptr<RasterContextProvider> child_context_provider =
         TestContextProvider::Create();
 
@@ -74,6 +76,7 @@ class OverlayCandidateFactoryTestBase : public testing::Test {
     auto resource = TransferableResource::MakeGpu(
         gpu::Mailbox::Generate(), GL_TEXTURE_2D, gpu::SyncToken(),
         gfx::Size(1, 1), SinglePlaneFormat::kRGBA_8888, is_overlay_candidate);
+    resource.origin = origin;
 
     ResourceId resource_id =
         child_resource_provider_.ImportResource(resource, base::DoNothing());
@@ -247,13 +250,17 @@ AggregatedRenderPassDrawQuad* AddRenderPassQuad(
   return rpdq;
 }
 
-OverlayCandidate CreateCandidate(float left,
-                                 float top,
-                                 float right,
-                                 float bottom) {
-  OverlayCandidate candidate;
-  candidate.display_rect.SetRect(left, top, right - left, bottom - top);
-  return candidate;
+const SolidColorDrawQuad& CreateDrawQuadWithBounds(
+    float left,
+    float top,
+    float right,
+    float bottom,
+    AggregatedRenderPass* render_pass) {
+  const gfx::Rect quad_rect(1, 1);
+  const gfx::RectF target_rect(left, top, right - left, bottom - top);
+  return *AddQuad(
+      quad_rect, gfx::TransformBetweenRects(gfx::RectF(quad_rect), target_rect),
+      render_pass);
 }
 
 using OverlayCandidateFactoryTest = OverlayCandidateFactoryTestBase;
@@ -275,24 +282,27 @@ TEST_F(OverlayCandidateFactoryTest, IsOccluded) {
   AddQuad(gfx::Rect(10, 0, 1, 10), identity, &render_pass);
   AddQuad(gfx::Rect(0, 10, 10, 1), identity, &render_pass);
 
-  EXPECT_FALSE(factory.IsOccluded(CreateCandidate(0.5f, 0.5f, 10.49f, 10.49f),
-                                  render_pass.quad_list.begin(),
-                                  render_pass.quad_list.end()));
-
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(0.49f, 0.5f, 10.49f, 10.49f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
-
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(0.5f, 0.49f, 10.50f, 10.5f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(0.5f, 0.5f, 10.5f, 10.49f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
-
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(0.5f, 0.5f, 10.49f, 10.5f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
+  AggregatedRenderPass test_quad_render_pass;
+  EXPECT_FALSE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(0.5f, 0.5f, 10.49f, 10.49f,
+                               &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(0.49f, 0.5f, 10.49f, 10.49f,
+                               &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(0.5f, 0.49f, 10.50f, 10.5f,
+                               &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(0.5f, 0.5f, 10.5f, 10.49f,
+                               &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(0.5f, 0.5f, 10.49f, 10.5f,
+                               &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
 }
 
 TEST_F(OverlayCandidateFactoryTest, IsOccludedScaled) {
@@ -312,21 +322,22 @@ TEST_F(OverlayCandidateFactoryTest, IsOccludedScaled) {
   AddQuad(gfx::Rect(9, 0, 1, 10), quad_to_target_transform, &render_pass);
   AddQuad(gfx::Rect(0, 11, 10, 1), quad_to_target_transform, &render_pass);
 
-  EXPECT_FALSE(factory.IsOccluded(CreateCandidate(2.f, 3.f, 14.f, 17.f),
-                                  render_pass.quad_list.begin(),
-                                  render_pass.quad_list.end()));
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(1.f, 3.f, 14.f, 17.f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(2.f, 2.f, 14.f, 17.f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(2.f, 3.f, 15.f, 17.f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
-  EXPECT_TRUE(factory.IsOccluded(CreateCandidate(2.f, 3.f, 15.f, 18.f),
-                                 render_pass.quad_list.begin(),
-                                 render_pass.quad_list.end()));
+  AggregatedRenderPass test_quad_render_pass;
+  EXPECT_FALSE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(2.f, 3.f, 14.f, 17.f, &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(1.f, 3.f, 14.f, 17.f, &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(2.f, 2.f, 14.f, 17.f, &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(2.f, 3.f, 15.f, 17.f, &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
+  EXPECT_TRUE(OverlayCandidateFactory::IsOccluded(
+      CreateDrawQuadWithBounds(2.f, 3.f, 15.f, 18.f, &test_quad_render_pass),
+      render_pass.quad_list.begin(), render_pass.quad_list.end()));
 }
 
 TEST_F(OverlayCandidateFactoryTest, RoundedCorner) {
@@ -343,15 +354,15 @@ class OverlayCandidateFactoryArbitraryTransformTest
   TextureDrawQuad CreateUnclippedDrawQuad(
       AggregatedRenderPass& render_pass,
       const gfx::Rect& quad_rect,
-      const gfx::Transform& quad_to_target_transform) {
+      const gfx::Transform& quad_to_target_transform,
+      GrSurfaceOrigin origin = kTopLeft_GrSurfaceOrigin) {
     SharedQuadState* sqs = render_pass.CreateAndAppendSharedQuadState();
     sqs->quad_to_target_transform = quad_to_target_transform;
     TextureDrawQuad quad;
     quad.SetNew(sqs, quad_rect, quad_rect, false,
-                CreateResource(/*is_overlay_candidate=*/true), false,
+                CreateResource(/*is_overlay_candidate=*/true, origin),
                 gfx::PointF(), gfx::PointF(1, 1), SkColors::kTransparent, false,
-                false, false, gfx::ProtectedVideoType::kClear);
-
+                false, gfx::ProtectedVideoType::kClear);
     return quad;
   }
 };
@@ -378,8 +389,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
       factory.FromDrawQuad(&quad, candidate);
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
   ASSERT_TRUE(
-      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+      std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
             gfx::OverlayTransform::OVERLAY_TRANSFORM_NONE);
   EXPECT_EQ(candidate.display_rect, gfx::RectF(1, 2, 3, 4));
 }
@@ -404,8 +415,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, SupportsNonAxisAligned) {
   OverlayCandidate::CandidateStatus result =
       factory.FromDrawQuad(&quad, candidate);
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
-  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform), transform);
+  ASSERT_TRUE(std::holds_alternative<gfx::Transform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::Transform>(candidate.transform), transform);
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
 }
 
@@ -424,8 +435,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   // Use a non-axis aligned transform so it can't be converted to an
   // OverlayTransform.
   transform.SkewX(45.0);
-  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform);
-  quad.y_flipped = true;
+  auto quad = CreateUnclippedDrawQuad(render_pass, gfx::Rect(1, 1), transform,
+                                      /*origin=*/kBottomLeft_GrSurfaceOrigin);
 
   OverlayCandidate candidate;
   OverlayCandidate::CandidateStatus result =
@@ -436,11 +447,10 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest, TransformIncludesYFlip) {
   transform_y_flipped.SkewX(45.0);
   transform_y_flipped.Translate(0, 1);
   transform_y_flipped.Scale(1, -1);
-  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform),
-            transform_y_flipped);
+  ASSERT_TRUE(std::holds_alternative<gfx::Transform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::Transform>(candidate.transform), transform_y_flipped);
   gfx::PointF display_rect_origin =
-      absl::get<gfx::Transform>(candidate.transform)
+      std::get<gfx::Transform>(candidate.transform)
           .MapPoint(candidate.display_rect.origin());
   // Flip moves the origin to 0,1. The skew slides it out to 1,1.
   EXPECT_EQ(display_rect_origin, gfx::PointF(1, 1));
@@ -471,8 +481,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
   ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
 
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0, 0, 1, 1));
-  ASSERT_TRUE(absl::holds_alternative<gfx::Transform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::Transform>(candidate.transform), transform);
+  ASSERT_TRUE(std::holds_alternative<gfx::Transform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::Transform>(candidate.transform), transform);
 }
 
 TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
@@ -499,8 +509,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
 
   EXPECT_EQ(candidate.display_rect, gfx::RectF(0.5, 0.5, 1, 1));
   ASSERT_TRUE(
-      absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+      std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
             gfx::OVERLAY_TRANSFORM_NONE);
 }
 
@@ -650,7 +660,9 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
                gfx::Vector2dF(1, 1), gfx::PointF(0, 0), gfx::RectF(), false,
                1.0);
 
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*> filter_map;
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
+      filter_map;
   // The actual filter operation doesn't matter in this case.
   cc::FilterOperations filter_op;
   filter_map.insert({render_pass_id, &filter_op});
@@ -666,8 +678,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
     OverlayCandidate::CandidateStatus result =
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
-    EXPECT_FALSE(factory.IsOccludedByFilteredQuad(candidate, quad_list.begin(),
-                                                  quad_list.end(), filter_map));
+    EXPECT_FALSE(OverlayCandidateFactory::IsOccludedByFilteredQuad(
+        quad, quad_list.begin(), quad_list.end(), filter_map));
   }
 
   // Check that a transformed 1x1 quad intersects with the filtered RPDQ.
@@ -681,8 +693,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
     OverlayCandidate::CandidateStatus result =
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
-    EXPECT_TRUE(factory.IsOccludedByFilteredQuad(candidate, quad_list.begin(),
-                                                 quad_list.end(), filter_map));
+    EXPECT_TRUE(OverlayCandidateFactory::IsOccludedByFilteredQuad(
+        quad, quad_list.begin(), quad_list.end(), filter_map));
   }
 }
 
@@ -756,11 +768,11 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
     sqs->quad_to_target_transform = quad_to_target_transform;
     sqs->clip_rect = clip_rect;
     TextureDrawQuad quad;
-    quad.SetNew(sqs, quad_rect, quad_rect, false,
-                CreateResource(/*is_overlay_candidate=*/true), false,
-                quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
-                SkColors::kTransparent, false, false, false,
-                gfx::ProtectedVideoType::kClear);
+    quad.SetNew(
+        sqs, quad_rect, quad_rect, false,
+        CreateResource(/*is_overlay_candidate=*/true, kTopLeft_GrSurfaceOrigin),
+        quad_uv_rect.origin(), quad_uv_rect.bottom_right(),
+        SkColors::kTransparent, false, false, gfx::ProtectedVideoType::kClear);
 
     return quad;
   }
@@ -795,8 +807,8 @@ class TransformedOverlayClipRectTest : public OverlayCandidateFactoryTestBase {
         factory.FromDrawQuad(&quad, candidate);
     ASSERT_EQ(result, OverlayCandidate::CandidateStatus::kSuccess);
     ASSERT_TRUE(
-        absl::holds_alternative<gfx::OverlayTransform>(candidate.transform));
-    EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidate.transform),
+        std::holds_alternative<gfx::OverlayTransform>(candidate.transform));
+    EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
               overlay_transform);
     EXPECT_EQ(candidate.display_rect, gfx::RectF(50, 50, 50, 50));
     EXPECT_TRUE(

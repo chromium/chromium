@@ -4,27 +4,28 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
-import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,6 +35,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * coordinators, running most of the business logic associated with the bottom controls component,
  * and updating the model accordingly.
  */
+@NullMarked
 class BottomControlsMediator
         implements BrowserControlsStateProvider.Observer,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
@@ -61,16 +63,16 @@ class BottomControlsMediator
     private final Supplier<Boolean> mReadAloudRestoringSupplier;
 
     /** The height of the bottom bar in pixels, not including the top shadow. */
-    private int mBottomControlsHeight;
+    private final int mBottomControlsHeight;
+
+    /** The height of the top shadow. */
+    private final int mBottomControlsShadowHeight;
 
     /** A {@link WindowAndroid} for watching keyboard visibility events. */
     private final WindowAndroid mWindowAndroid;
 
     /** The bottom controls visibility. */
     private boolean mIsBottomControlsVisible;
-
-    /** The background color for the bottom controls. */
-    private @ColorInt int mBottomControlsColor;
 
     /** Whether any overlay panel is showing. */
     private boolean mIsOverlayPanelShowing;
@@ -81,9 +83,9 @@ class BottomControlsMediator
     /** Whether the soft keyboard is visible. */
     private boolean mIsKeyboardVisible;
 
-    private LayoutStateProvider mLayoutStateProvider;
+    private @Nullable LayoutStateProvider mLayoutStateProvider;
 
-    @Nullable private ChangeObserver mEdgeToEdgeChangeObserver;
+    private @Nullable ChangeObserver mEdgeToEdgeChangeObserver;
     private int mEdgeToEdgePaddingPx;
 
     /**
@@ -111,6 +113,7 @@ class BottomControlsMediator
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
             int bottomControlsHeight,
+            int bottomControlsShadowHeight,
             ObservableSupplier<Boolean> overlayPanelVisibilitySupplier,
             ObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             Supplier<Boolean> readAloudRestoringSupplier) {
@@ -124,6 +127,7 @@ class BottomControlsMediator
         tabObscuringHandler.addObserver(this);
 
         mBottomControlsHeight = bottomControlsHeight;
+        mBottomControlsShadowHeight = bottomControlsShadowHeight;
         mCallbackController = new CallbackController();
         overlayPanelVisibilitySupplier.addObserver(
                 mCallbackController.makeCancelable(
@@ -164,10 +168,6 @@ class BottomControlsMediator
         }
     }
 
-    void setBottomControlsColor(@ColorInt int color) {
-        mBottomControlsColor = color;
-    }
-
     /** Clean up anything that needs to be when the bottom controls component is destroyed. */
     void destroy() {
         mCallbackController.destroy();
@@ -189,9 +189,11 @@ class BottomControlsMediator
     public void onControlsOffsetChanged(
             int topOffset,
             int topControlsMinHeightOffset,
+            boolean topControlsMinHeightChanged,
             int bottomOffset,
             int bottomControlsMinHeightOffset,
-            boolean needsAnimate,
+            boolean bottomControlsMinHeightChanged,
+            boolean requestNewFrame,
             boolean isVisibilityForced) {
         // Method call routed to onBrowserControlsOffsetUpdate.
         if (BottomControlsStacker.isDispatchingYOffset()) return;
@@ -212,11 +214,6 @@ class BottomControlsMediator
             mModel.set(
                     BottomControlsProperties.ANDROID_VIEW_TRANSLATE_Y,
                     mModel.get(BottomControlsProperties.Y_OFFSET));
-        }
-        // A min height greater than 0 suggests the presence of some other UI component underneath
-        // the bottom controls.
-        if (bottomControlsMinHeight == 0) {
-            mBottomControlsStacker.notifyBackgroundColor(mBottomControlsColor);
         }
     }
 
@@ -340,7 +337,9 @@ class BottomControlsMediator
 
     @Override
     public int getType() {
-        return LayerType.BOTTOM_TOOLBAR;
+        return ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
+                ? LayerType.TABSTRIP_TOOLBAR_BELOW_READALOUD
+                : LayerType.TABSTRIP_TOOLBAR;
     }
 
     @Override
@@ -350,7 +349,9 @@ class BottomControlsMediator
 
     @Override
     public @LayerScrollBehavior int getScrollBehavior() {
-        return LayerScrollBehavior.ALWAYS_SCROLL_OFF;
+        return ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
+                ? LayerScrollBehavior.DEFAULT_SCROLL_OFF
+                : LayerScrollBehavior.ALWAYS_SCROLL_OFF;
     }
 
     @Override
@@ -364,7 +365,14 @@ class BottomControlsMediator
         setYOffset(layerYOffset);
     }
 
-    ChangeObserver getEdgeToEdgeChangeObserverForTesting() {
+    @Override
+    public int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        mModel.set(
+                BottomControlsProperties.OFFSET_TAG, offsetTagsInfo.getBottomControlsOffsetTag());
+        return mBottomControlsShadowHeight;
+    }
+
+    @Nullable ChangeObserver getEdgeToEdgeChangeObserverForTesting() {
         return mEdgeToEdgeChangeObserver;
     }
 

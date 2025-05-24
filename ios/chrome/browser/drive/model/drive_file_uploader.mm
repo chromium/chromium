@@ -7,4 +7,3 @@
 DriveFileUploader::DriveFileUploader() = default;
 
 DriveFileUploader::~DriveFileUploader() = default;
-

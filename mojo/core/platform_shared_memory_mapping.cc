@@ -6,11 +6,13 @@
 
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace mojo {
@@ -46,16 +48,16 @@ PlatformSharedMemoryMapping::PlatformSharedMemoryMapping(
       return;
     }
   }
-  CHECK(false);
+  NOTREACHED();
 }
 
 PlatformSharedMemoryMapping::~PlatformSharedMemoryMapping() = default;
 
 bool PlatformSharedMemoryMapping::IsValid() const {
-  return absl::visit(
+  return std::visit(
       [](const auto& member) {
         using T = std::decay_t<decltype(member)>;
-        if constexpr (std::is_same_v<T, absl::monostate>) {
+        if constexpr (std::is_same_v<T, std::monostate>) {
           return false;
         } else {
           return member.IsValid();
@@ -65,10 +67,10 @@ bool PlatformSharedMemoryMapping::IsValid() const {
 }
 
 void* PlatformSharedMemoryMapping::GetBase() const {
-  return absl::visit(
+  return std::visit(
       [](const auto& member) -> void* {
         using T = std::decay_t<decltype(member)>;
-        if constexpr (std::is_same_v<T, absl::monostate>) {
+        if constexpr (std::is_same_v<T, std::monostate>) {
           return nullptr;
         } else {
           return const_cast<void*>(member.memory());
@@ -78,10 +80,10 @@ void* PlatformSharedMemoryMapping::GetBase() const {
 }
 
 size_t PlatformSharedMemoryMapping::GetLength() const {
-  return absl::visit(
+  return std::visit(
       [](const auto& member) -> size_t {
         using T = std::decay_t<decltype(member)>;
-        if constexpr (std::is_same_v<T, absl::monostate>) {
+        if constexpr (std::is_same_v<T, std::monostate>) {
           return 0;
         } else {
           return member.size();

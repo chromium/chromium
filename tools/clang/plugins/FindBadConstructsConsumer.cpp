@@ -301,12 +301,9 @@ bool FindBadConstructsConsumer::TraverseDecl(Decl* decl) {
 
 bool FindBadConstructsConsumer::VisitCXXConstructExpr(
     clang::CXXConstructExpr* expr) {
-  if (options_.span_ctor_from_string_literal) {
-    CheckConstructingSpanFromStringLiteral(
-        expr->getConstructor(),
-        llvm::ArrayRef(expr->getArgs(), expr->getNumArgs()),
-        expr->getExprLoc());
-  }
+  CheckConstructingSpanFromStringLiteral(
+      expr->getConstructor(),
+      llvm::ArrayRef(expr->getArgs(), expr->getNumArgs()), expr->getExprLoc());
   return true;
 }
 
@@ -827,12 +824,10 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       if (hasName(record_decl, "base", "raw_ptr")) {
         return TypeClassification::kTrivialTemplate;
       }
-      if (options_.raw_ref_template_as_trivial_member &&
-          hasName(record_decl, "base", "raw_ref")) {
+      if (hasName(record_decl, "base", "raw_ref")) {
         return TypeClassification::kTrivialTemplate;
       }
-      if (options_.raw_span_template_as_trivial_member &&
-          hasName(record_decl, "base", "span")) {
+      if (hasName(record_decl, "base", "span")) {
         return TypeClassification::kTrivialTemplate;
       }
 
@@ -926,8 +921,7 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       return ClassifyType(decl->getUnderlyingType().getTypePtr());
     }
     default: {
-      // Stupid assumption: anything we see that isn't the above is a POD
-      // or reference type.
+      // Assume that anything that isn't the above is a POD or reference type.
       return TypeClassification::kTrivial;
     }
   }

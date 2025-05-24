@@ -11,6 +11,7 @@
 #include "ash/webui/boca_ui/url_constants.h"
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/system_apps/public/system_web_app_ui_config.h"
+#include "chromeos/ash/components/boca/spotlight/spotlight_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -20,6 +21,10 @@
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 
+namespace content {
+class WebUIDataSource;
+}  // namespace content
+
 namespace ui {
 class ColorChangeHandler;
 }  // namespace ui
@@ -28,12 +33,23 @@ namespace ash::boca {
 class BocaUI;
 class BocaAppHandler;
 
+// A delegate used during data source creation to expose some //chrome
+// functionality to the data source
+class BocaUIDelegate {
+ public:
+  virtual ~BocaUIDelegate() = default;
+  // Takes a WebUIDataSource, and populates its load-time data.
+  virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
+};
+
 // The WebUI for chrome-untrusted://boca-app/. Boca app is directly served in
 // main frame.
 class BocaUI : public ui::UntrustedWebUIController,
                public boca::mojom::BocaPageHandlerFactory {
  public:
-  explicit BocaUI(content::WebUI* web_ui);
+  BocaUI(content::WebUI* web_ui,
+         std::unique_ptr<BocaUIDelegate> delegate,
+         bool is_producer);
   BocaUI(const BocaUI&) = delete;
   BocaUI& operator=(const BocaUI&) = delete;
   ~BocaUI() override;
@@ -51,9 +67,10 @@ class BocaUI : public ui::UntrustedWebUIController,
               mojo::PendingRemote<boca::mojom::Page> page) override;
 
  private:
-  raw_ptr<content::WebUI> web_ui_;
+  const bool is_producer_;
   mojo::Receiver<boca::mojom::BocaPageHandlerFactory> receiver_{this};
   std::unique_ptr<BocaAppHandler> page_handler_impl_;
+  SpotlightService spotlight_service_;
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
 

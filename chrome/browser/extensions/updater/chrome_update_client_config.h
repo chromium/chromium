@@ -15,21 +15,22 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/configurator.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
-
-namespace base {
-class FilePath;
-}  // namespace base
 
 namespace content {
 class BrowserContext;
 }
 
 namespace update_client {
+class CrxCache;
 class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class ProtocolHandlerFactory;
@@ -74,7 +75,6 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -84,7 +84,7 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   GetProtocolHandlerFactory() const override;
   std::optional<bool> IsMachineExternallyManaged() const override;
   update_client::UpdaterStateProvider GetUpdaterStateProvider() const override;
-  std::optional<base::FilePath> GetCrxCachePath() const override;
+  scoped_refptr<update_client::CrxCache> GetCrxCache() const override;
   bool IsConnectionMetered() const override;
 
  protected:
@@ -99,15 +99,17 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
       FactoryCallback factory);
 
  private:
-  raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> context_ = nullptr;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtr<content::BrowserContext> context_ = nullptr;
   component_updater::ConfiguratorImpl impl_;
-  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
   std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
   std::optional<GURL> url_override_;
+  scoped_refptr<update_client::CrxCache> crx_cache_;
 };
 
 }  // namespace extensions

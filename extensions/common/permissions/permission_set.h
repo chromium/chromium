@@ -67,9 +67,9 @@ class PermissionSet {
   // Returns a copy of this PermissionSet.
   std::unique_ptr<PermissionSet> Clone() const;
 
-  // Returns true if every API or host permission available to |set| is also
-  // available to this. In other words, if the API permissions of |set| are a
-  // subset of this, and the host permissions in this encompass those in |set|.
+  // Returns true if every API or host permission available to `set` is also
+  // available to this. In other words, if the API permissions of `set` are a
+  // subset of this, and the host permissions in this encompass those in `set`.
   bool Contains(const PermissionSet& set) const;
 
   // Gets the API permissions in this set as a set of strings.
@@ -81,8 +81,8 @@ class PermissionSet {
   // Returns true if the set has the specified API permission.
   bool HasAPIPermission(mojom::APIPermissionID permission) const;
 
-  // Returns true if the |extension| explicitly requests access to the given
-  // |permission_name|. Note this does not include APIs without no corresponding
+  // Returns true if the `extension` explicitly requests access to the given
+  // `permission_name`. Note this does not include APIs without no corresponding
   // permission, like "runtime" or "browserAction".
   bool HasAPIPermission(const std::string& permission_name) const;
 
@@ -95,7 +95,7 @@ class PermissionSet {
       mojom::APIPermissionID permission,
       const APIPermission::CheckParam* param) const;
 
-  // Returns true if this includes permission to access |origin|.
+  // Returns true if this includes permission to access `origin`.
   bool HasExplicitAccessToOrigin(const GURL& origin) const;
 
   // Returns true if this permission set includes effective access to all
@@ -105,12 +105,12 @@ class PermissionSet {
   // Returns true if this permission set has access to so many hosts, that we
   // should treat it as all hosts for warning purposes.
   // For example, '*://*.com/*'.
-  // If |include_api_permissions| is true, this will look at both host
+  // If `include_api_permissions` is true, this will look at both host
   // permissions and API permissions. Otherwise, this only looks at
   // host permissions.
   bool ShouldWarnAllHosts(bool include_api_permissions = true) const;
 
-  // Returns true if this permission set includes effective access to |url|.
+  // Returns true if this permission set includes effective access to `url`.
   bool HasEffectiveAccessToURL(const GURL& url) const;
 
   // Sets the different permissions on the PermissionSet.

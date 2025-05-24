@@ -4,6 +4,7 @@
 
 #include "components/performance_manager/execution_context_priority/boosting_vote_aggregator.h"
 
+#include "base/notreached.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/test_support/voting.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,6 +29,7 @@ class DummyExecutionContext : public ExecutionContext {
     return blink::ExecutionContextToken();
   }
   Graph* GetGraph() const override { return nullptr; }
+  NodeState GetNodeState() const override { NOTREACHED(); }
   const GURL& GetUrl() const override { return url_; }
   const ProcessNode* GetProcessNode() const override { return nullptr; }
   const PriorityAndReason& GetPriorityAndReason() const override {

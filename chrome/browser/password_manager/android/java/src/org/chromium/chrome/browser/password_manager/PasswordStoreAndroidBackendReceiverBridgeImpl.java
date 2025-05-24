@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,10 +20,11 @@ import java.lang.annotation.Target;
  * password store backend that forwards operation callbacks to the native password manager.
  */
 @JNINamespace("password_manager")
+@NullMarked
 class PasswordStoreAndroidBackendReceiverBridgeImpl {
     /**
-     * Each operation sent to the passwords API will be assigned a JobId. The native side uses
-     * this ID to map an API response to the job that invoked it.
+     * Each operation sent to the passwords API will be assigned a JobId. The native side uses this
+     * ID to map an API response to the job that invoked it.
      */
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)

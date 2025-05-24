@@ -36,7 +36,7 @@ class RenderProcessHostProxy {
   bool is_valid() const { return !render_process_host_id_.is_null(); }
 
   // Returns the routing id of the render process (from
-  // RenderProcessHost::GetID).
+  // RenderProcessHost::GetID()).
   RenderProcessHostId render_process_host_id() const {
     return render_process_host_id_;
   }
@@ -50,8 +50,7 @@ class RenderProcessHostProxy {
   explicit RenderProcessHostProxy(RenderProcessHostId render_process_host_id);
 
  private:
-  RenderProcessHostId render_process_host_id_ =
-      RenderProcessHostId(content::ChildProcessHost::kInvalidUniqueID);
+  RenderProcessHostId render_process_host_id_;
 };
 
 }  // namespace performance_manager

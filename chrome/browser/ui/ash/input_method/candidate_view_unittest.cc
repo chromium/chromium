@@ -11,9 +11,10 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -56,7 +57,8 @@ class CandidateViewTest : public views::ViewsTestBase {
         CreateParams(views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
                      views::Widget::InitParams::TYPE_WINDOW));
 
-    init_params.delegate = new views::WidgetDelegateView();
+    init_params.delegate = new views::WidgetDelegateView(
+        views::WidgetDelegateView::CreatePassKey());
 
     container_ = init_params.delegate->GetContentsView();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -67,7 +69,7 @@ class CandidateViewTest : public views::ViewsTestBase {
       ui::CandidateWindow::Entry entry;
       entry.value = base::UTF8ToUTF16(kDummyCandidates[i]);
       candidate->SetEntry(entry);
-      container_->AddChildView(candidate);
+      container_->AddChildViewRaw(candidate);
     }
 
     widget_ = new views::Widget();
@@ -92,13 +94,13 @@ class CandidateViewTest : public views::ViewsTestBase {
 
   size_t GetHighlightedCount() const {
     const auto& children = container_->children();
-    return base::ranges::count_if(
+    return std::ranges::count_if(
         children, [](const views::View* v) { return !!v->background(); });
   }
 
   int GetHighlightedIndex() const {
     const auto& children = container_->children();
-    const auto it = base::ranges::find_if(
+    const auto it = std::ranges::find_if(
         children, [](const views::View* v) { return !!v->background(); });
     return (it == children.cend()) ? -1 : std::distance(children.cbegin(), it);
   }
@@ -191,7 +193,7 @@ TEST_F(CandidateViewTest, SetEntryChangesAccessibleName) {
 }
 
 TEST_F(CandidateViewTest, SetEntryNotifiesAccessibilityEvent) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   CandidateView* view = GetCandidateAt(1);
 
   // Calling SetEntry affects the accessible name, so it should notify twice:

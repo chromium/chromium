@@ -23,6 +23,11 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/task_features.h"
 #include "base/time/time_override.h"
+#include "build/blink_buildflags.h"
+
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+#include <BrowserEngineCore/BEkevent.h>
+#endif
 
 namespace base {
 
@@ -56,8 +61,21 @@ bool KqueueTimersSpuriouslyWakeUp() {
 }
 #endif
 
+int platform_kevent64(int kq,
+                      const struct kevent64_s* changelist,
+                      int nchanges,
+                      struct kevent64_s* eventlist,
+                      int nevents,
+                      unsigned int flags) {
+#if BUILDFLAG(IS_IOS) && BUILDFLAG(USE_BLINK)
+  return be_kevent64(kq, changelist, nchanges, eventlist, nevents, flags);
+#else
+  return kevent64(kq, changelist, nchanges, eventlist, nevents, flags, nullptr);
+#endif
+}
+
 int ChangeOneEvent(const ScopedFD& kqueue, kevent64_s* event) {
-  return HANDLE_EINTR(kevent64(kqueue.get(), event, 1, nullptr, 0, 0, nullptr));
+  return HANDLE_EINTR(platform_kevent64(kqueue.get(), event, 1, nullptr, 0, 0));
 }
 
 }  // namespace
@@ -71,8 +89,9 @@ MessagePumpKqueue::FdWatchController::~FdWatchController() {
 }
 
 bool MessagePumpKqueue::FdWatchController::StopWatchingFileDescriptor() {
-  if (!pump_)
+  if (!pump_) {
     return true;
+  }
   return pump_->StopWatchingFileDescriptor(this);
 }
 
@@ -106,8 +125,9 @@ MessagePumpKqueue::MachPortWatchController::~MachPortWatchController() {
 }
 
 bool MessagePumpKqueue::MachPortWatchController::StopWatchingMachPort() {
-  if (!pump_)
+  if (!pump_) {
     return true;
+  }
   return pump_->StopWatchingMachPort(this);
 }
 
@@ -155,7 +175,7 @@ MessagePumpKqueue::MessagePumpKqueue()
   PCHECK(rv == 0) << "kevent64";
 }
 
-MessagePumpKqueue::~MessagePumpKqueue() {}
+MessagePumpKqueue::~MessagePumpKqueue() = default;
 
 void MessagePumpKqueue::InitializeFeatures() {
   g_use_batched_version.store(
@@ -175,20 +195,24 @@ void MessagePumpKqueue::Run(Delegate* delegate) {
       apple::ScopedNSAutoreleasePool pool;
 
       bool do_more_work = DoInternalWork(delegate, nullptr);
-      if (!keep_running_)
+      if (!keep_running_) {
         break;
+      }
 
       Delegate::NextWorkInfo next_work_info = delegate->DoWork();
       do_more_work |= next_work_info.is_immediate();
-      if (!keep_running_)
+      if (!keep_running_) {
         break;
+      }
 
-      if (do_more_work)
+      if (do_more_work) {
         continue;
+      }
 
       delegate->DoIdleWork();
-      if (!keep_running_)
+      if (!keep_running_) {
         break;
+      }
 
       DoInternalWork(delegate, &next_work_info);
     }
@@ -205,14 +229,16 @@ void MessagePumpKqueue::RunBatched(Delegate* delegate) {
     apple::ScopedNSAutoreleasePool pool;
 
     Delegate::NextWorkInfo next_work_info = delegate->DoWork();
-    if (!keep_running_)
+    if (!keep_running_) {
       break;
+    }
 
     if (!next_work_info.is_immediate()) {
       delegate->DoIdleWork();
     }
-    if (!keep_running_)
+    if (!keep_running_) {
       break;
+    }
 
     int batch_size = 0;
     if (DoInternalWork(delegate, &next_work_info)) {
@@ -335,9 +361,9 @@ bool MessagePumpKqueue::WatchFileDescriptor(int fd,
     events.push_back(base_event);
   }
 
-  int rv = HANDLE_EINTR(kevent64(kqueue_.get(), events.data(),
-                                 checked_cast<int>(events.size()), nullptr, 0,
-                                 0, nullptr));
+  int rv = HANDLE_EINTR(platform_kevent64(kqueue_.get(), events.data(),
+                                          checked_cast<int>(events.size()),
+                                          nullptr, 0, 0));
   if (rv < 0) {
     DPLOG(ERROR) << "WatchFileDescriptor kevent64";
     return false;
@@ -409,8 +435,9 @@ bool MessagePumpKqueue::StopWatchingFileDescriptor(
   int mode = controller->mode();
   controller->Reset();
 
-  if (fd < 0)
+  if (fd < 0) {
     return true;
+  }
 
   std::vector<kevent64_s> events;
 
@@ -427,9 +454,9 @@ bool MessagePumpKqueue::StopWatchingFileDescriptor(
     events.push_back(base_event);
   }
 
-  int rv = HANDLE_EINTR(kevent64(kqueue_.get(), events.data(),
-                                 checked_cast<int>(events.size()), nullptr, 0,
-                                 0, nullptr));
+  int rv = HANDLE_EINTR(platform_kevent64(kqueue_.get(), events.data(),
+                                          checked_cast<int>(events.size()),
+                                          nullptr, 0, 0));
   DPLOG_IF(ERROR, rv < 0) << "StopWatchingFileDescriptor kevent64";
 
   // The keys for the IDMap aren't recorded anywhere (they're attached to the
@@ -463,8 +490,8 @@ bool MessagePumpKqueue::DoInternalWork(Delegate* delegate,
   }
 
   int rv =
-      HANDLE_EINTR(kevent64(kqueue_.get(), nullptr, 0, events_.data(),
-                            checked_cast<int>(events_.size()), flags, nullptr));
+      HANDLE_EINTR(platform_kevent64(kqueue_.get(), nullptr, 0, events_.data(),
+                                     checked_cast<int>(events_.size()), flags));
   if (rv == 0) {
     // No events to dispatch so no need to call ProcessEvents().
     return false;
@@ -500,14 +527,16 @@ bool MessagePumpKqueue::ProcessEvents(Delegate* delegate, size_t count) {
         --event_count_;
       }
 
-      auto scoped_do_work_item = delegate->BeginWorkItem();
-      // WatchFileDescriptor() originally upcasts event->ident from an int.
-      if (event->filter == EVFILT_READ) {
-        fd_watcher->OnFileCanReadWithoutBlocking(
-            static_cast<int>(event->ident));
-      } else if (event->filter == EVFILT_WRITE) {
-        fd_watcher->OnFileCanWriteWithoutBlocking(
-            static_cast<int>(event->ident));
+      if (fd_watcher) {
+        auto scoped_do_work_item = delegate->BeginWorkItem();
+        // WatchFileDescriptor() originally upcasts event->ident from an int.
+        if (event->filter == EVFILT_READ) {
+          fd_watcher->OnFileCanReadWithoutBlocking(
+              static_cast<int>(event->ident));
+        } else if (event->filter == EVFILT_WRITE) {
+          fd_watcher->OnFileCanWriteWithoutBlocking(
+              static_cast<int>(event->ident));
+        }
       }
     } else if (event->filter == EVFILT_MACHPORT) {
       // WatchMachReceivePort() originally sets event->ident from a mach_port_t.
@@ -580,8 +609,9 @@ void MessagePumpKqueue::MaybeUpdateWakeupTimer(
     PCHECK(rv == 0) << "kevent64, set timer";
 
     // Bump the event count if we just added the timer.
-    if (scheduled_wakeup_time_ == base::TimeTicks::Max())
+    if (scheduled_wakeup_time_ == base::TimeTicks::Max()) {
       ++event_count_;
+    }
   }
 
   scheduled_wakeup_time_ = wakeup_time;

@@ -33,7 +33,6 @@ void BindToInProcessInstance(
     mojo::PendingReceiver<ash::mojom::HidPreservingBluetoothStateController>
         pending_receiver) {
   BLUETOOTH_LOG(DEBUG) << "Binding to HidPreservingBluetoothStateController";
-  CHECK(ash::features::IsBluetoothDisconnectWarningEnabled());
   if (g_instance_override) {
     GetOverrideReceivers().Add(g_instance_override,
                                std::move(pending_receiver));

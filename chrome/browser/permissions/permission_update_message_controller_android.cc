@@ -120,7 +120,7 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
                    ContentSettingsType::HAND_TRACKING) {
           message_id = IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TEXT;
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
         break;
       case IDS_MESSAGE_MISSING_CAMERA_PERMISSION_TEXT:
@@ -137,8 +137,7 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE,
             IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSIONS_TEXT);
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -168,10 +167,8 @@ PermissionUpdateMessageController::GetPermissionUpdateUiResourcesId(
                              IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TITLE,
                              IDS_MESSAGE_MISSING_HAND_TRACKING_PERMISSION_TEXT);
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return std::make_tuple(-1, -1, -1);
 }
 
 PermissionUpdateMessageController::PermissionUpdateMessageController(

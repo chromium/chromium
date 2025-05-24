@@ -20,11 +20,7 @@
 
 #else  // !defined(WIN32)
 
-#if defined(DISPLAY_TYPES_IMPLEMENTATION)
 #define DISPLAY_TYPES_EXPORT __attribute__((visibility("default")))
-#else
-#define DISPLAY_TYPES_EXPORT
-#endif
 
 #endif
 

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import './number_settings_section.js';
-import './print_preview_shared.css.js';
 import './settings_section.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getCss as getMdSelectLitCss} from 'chrome://resources/cr_elements/md_select_lit.css.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Settings} from '../data/model.js';
 import {ScalingType} from '../data/scaling.js';
 
-import {getTemplate} from './scaling_settings.html.js';
+import {getCss as getPrintPreviewSharedCss} from './print_preview_shared.css.js';
+import {getHtml} from './scaling_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -24,7 +25,7 @@ import {SettingsMixin} from './settings_mixin.js';
  */
 
 const PrintPreviewScalingSettingsElementBase =
-    SettingsMixin(SelectMixin(PolymerElement));
+    SettingsMixin(SelectMixin(CrLitElement));
 
 export class PrintPreviewScalingSettingsElement extends
     PrintPreviewScalingSettingsElementBase {
@@ -32,65 +33,40 @@ export class PrintPreviewScalingSettingsElement extends
     return 'print-preview-scaling-settings';
   }
 
-  static get template() {
-    return getTemplate();
-  }
-
-  static get properties() {
-    return {
-      disabled: {
-        type: Boolean,
-        observer: 'onDisabledChanged_',
-      },
-
-      isPdf: Boolean,
-
-      currentValue_: {
-        type: String,
-      },
-
-      customSelected_: {
-        type: Boolean,
-        computed: 'computeCustomSelected_(settingKey_, ' +
-            'settings.scalingType.*, settings.scalingTypePdf.*)',
-      },
-
-      inputValid_: Boolean,
-
-      dropdownDisabled_: {
-        type: Boolean,
-        value: false,
-      },
-
-      settingKey_: {
-        type: String,
-        computed: 'computeSettingKey_(isPdf)',
-      },
-
-      /** Mirroring the enum so that it can be used from HTML bindings. */
-      ScalingValue: {
-        type: Object,
-        value: ScalingType,
-      },
-    };
-  }
-
-  static get observers() {
+  static override get styles() {
     return [
-      'onScalingTypeSettingChanged_(settingKey_, settings.scalingType.value, ' +
-          'settings.scalingTypePdf.value)',
-      'onScalingSettingChanged_(settings.scaling.value)',
-      'onInputFieldChanged_(inputValid_, currentValue_)',
+      getPrintPreviewSharedCss(),
+      getMdSelectLitCss(),
     ];
   }
 
-  disabled: boolean;
-  isPdf: boolean;
-  private currentValue_: string;
-  private customSelected_: boolean;
-  private dropdownDisabled_: boolean;
-  private inputValid_: boolean;
-  private settingKey_: keyof Settings;
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
+    return {
+      disabled: {type: Boolean},
+      isPdf: {type: Boolean},
+      currentValue_: {type: String},
+      customSelected_: {type: Boolean},
+      scalingTypeValue_: {type: Number},
+      scalingTypePdfValue_: {type: Number},
+      inputValid_: {type: Boolean},
+      dropdownDisabled_: {type: Boolean},
+      settingKey_: {type: String},
+    };
+  }
+
+  accessor disabled: boolean = false;
+  accessor isPdf: boolean = false;
+  protected accessor currentValue_: string = '';
+  protected accessor customSelected_: boolean = false;
+  protected accessor dropdownDisabled_: boolean = false;
+  protected accessor inputValid_: boolean = false;
+  private accessor settingKey_: keyof Settings = 'scalingType';
+  private accessor scalingTypeValue_: ScalingType = ScalingType.DEFAULT;
+  private accessor scalingTypePdfValue_: ScalingType = ScalingType.DEFAULT;
 
   private lastValidScaling_: string = '';
 
@@ -107,6 +83,57 @@ export class PrintPreviewScalingSettingsElement extends
    * auto-focus the custom input.
    */
   private userSelectedCustomScaling_: boolean = false;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver(
+        'scaling.value', this.onScalingSettingChanged_.bind(this));
+    this.onScalingSettingChanged_();
+
+    this.addSettingObserver('scalingType.*', () => {
+      this.scalingTypeValue_ = this.getSettingValue('scalingType');
+    });
+    this.addSettingObserver('scalingTypePdf.*', () => {
+      this.scalingTypePdfValue_ = this.getSettingValue('scalingTypePdf');
+    });
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('isPdf')) {
+      this.settingKey_ = this.isPdf ? 'scalingTypePdf' : 'scalingType';
+    }
+
+    if (changedPrivateProperties.has('settingKey_') ||
+        changedPrivateProperties.has('scalingTypeValue_') ||
+        changedPrivateProperties.has('scalingTypePdfValue_')) {
+      this.customSelected_ = this.computeCustomSelected_();
+      this.onScalingTypeSettingChanged_();
+    }
+
+    if (changedProperties.has('disabled') ||
+        changedPrivateProperties.has('inputValid_')) {
+      this.dropdownDisabled_ = this.disabled && this.inputValid_;
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('inputValid_') ||
+        changedPrivateProperties.has('currentValue_')) {
+      this.onInputFieldChanged_();
+    }
+  }
+
 
   override onProcessSelectChange(value: string) {
     const isCustom = value === ScalingType.CUSTOM.toString();
@@ -176,14 +203,10 @@ export class PrintPreviewScalingSettingsElement extends
     }
   }
 
-  private onDisabledChanged_() {
-    this.dropdownDisabled_ = this.disabled && this.inputValid_;
-  }
-
   /**
    * @return Whether the input should be disabled.
    */
-  private inputDisabled_(): boolean {
+  protected inputDisabled_(): boolean {
     return !this.customSelected_ || this.dropdownDisabled_;
   }
 
@@ -195,23 +218,30 @@ export class PrintPreviewScalingSettingsElement extends
         this.getSettingValue(this.settingKey_) === ScalingType.CUSTOM;
   }
 
-  /**
-   * @return The key of the appropriate scaling setting.
-   */
-  private computeSettingKey_(): string {
-    return this.isPdf ? 'scalingTypePdf' : 'scalingType';
-  }
-
-  private onCollapseChanged_() {
+  protected onCollapseChanged_() {
     if (this.customSelected_ && this.userSelectedCustomScaling_) {
-      this.shadowRoot!.querySelector('print-preview-number-settings-section')!
+      this.shadowRoot.querySelector('print-preview-number-settings-section')!
           .getInput()
           .focus();
     }
     this.customScalingSettingSet_ = false;
     this.userSelectedCustomScaling_ = false;
   }
+
+  protected onCurrentValueChanged_(e: CustomEvent<{value: string}>) {
+    this.currentValue_ = e.detail.value;
+  }
+
+  protected onInputValidChanged_(e: CustomEvent<{value: boolean}>) {
+    this.inputValid_ = e.detail.value;
+  }
+
+  protected isSelected_(value: ScalingType): boolean {
+    return this.selectedValue === value.toString();
+  }
 }
+
+export type ScalingSettingsElement = PrintPreviewScalingSettingsElement;
 
 declare global {
   interface HTMLElementTagNameMap {

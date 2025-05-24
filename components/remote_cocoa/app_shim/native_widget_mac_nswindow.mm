@@ -26,8 +26,10 @@
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
 #import "components/remote_cocoa/app_shim/window_touch_bar_delegate.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
+#include "ui/accessibility/platform/ax_platform_node.h"
 #import "ui/base/cocoa/user_interface_item_command_handler.h"
 #import "ui/base/cocoa/window_size_constants.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace {
 
@@ -124,6 +126,17 @@ void OrderChildWindow(NSWindow* child_window,
 - (BOOL)_isConsideredOpenForPersistentState;
 - (void)_zoomToScreenEdge:(NSUInteger)edge;
 - (void)_removeFromGroups:(NSWindow*)window;
+- (BOOL)_isNonactivatingPanel;
+@end
+
+struct NSEdgeAndCornerThicknesses {
+  double top, topLeft, left, bottomLeft, bottom, bottomRight, right, topRight;
+};
+
+@interface NSWindow (NSWindowResizing)
++ (void)_getExteriorResizeEdgeThicknesses:
+            (NSEdgeAndCornerThicknesses*)outThicknesses
+                             forStyleMask:(NSWindowStyleMask)styleMask;
 @end
 
 // Private API as of at least macOS 13.
@@ -197,6 +210,7 @@ void OrderChildWindow(NSWindow* child_window,
   BOOL _willSaveRestorableStateAfterDelay;
   BOOL _isEnforcingNeverMadeVisible;
   BOOL _preventKeyWindow;
+  BOOL _activationIndependence;
   BOOL _isTooltip;
   BOOL _isHeadless;
   BOOL _isShufflingForOrdering;
@@ -265,6 +279,12 @@ void OrderChildWindow(NSWindow* child_window,
 - (void)removeChildWindow:(NSWindow*)childWin {
   if (self != childWin.parentWindow) {
     return;
+  }
+  // Handle ordering groups for AppKit native windows. For instance, the
+  // `TUINSWindow` is added and removed by AppKit when caps lock is active.
+  // See https://crbug.com/369970893 for more details.
+  if (![childWin isKindOfClass:[NativeWidgetMacNSWindow class]]) {
+    [self maybeRemoveTreeFromOrderingGroups];
   }
   [super removeChildWindow:childWin];
   if (self.childWindowRemovedHandler) {
@@ -399,6 +419,39 @@ void OrderChildWindow(NSWindow* child_window,
   return NO;
 }
 
+// This override, if it returns YES, allows the window to take input events
+// without activating the owning app. This is functionally equivalent to having
+// the window style NSWindowStyleMaskNonactivatingPanel set; see the
+// documentation for that constant for more details.
+//
+// The NSWindowStyleMaskNonactivatingPanel constant is only valid for NSPanels,
+// not NSWindows, so the window style cannot be directly set. In addition, even
+// if it were valid to set that style for windows, setting the window style
+// recalculates and re-caches a bunch of stuff, so a surgical override is the
+// cleanest approach.
+- (BOOL)_isNonactivatingPanel {
+  if (_activationIndependence) {
+    return YES;
+  }
+  return [super _isNonactivatingPanel];
+}
+
++ (void)_getExteriorResizeEdgeThicknesses:
+            (NSEdgeAndCornerThicknesses*)outThicknesses
+                             forStyleMask:(NSWindowStyleMask)styleMask {
+  // Ensure non-titled resizable windows have a reasonable exterior resize area.
+  // By default, they might have none, making resizing difficult.
+  // Override to titled window's resize edge thickness (4px on macOS 15).
+  if (styleMask & NSWindowStyleMaskResizable) {
+    return [super
+        _getExteriorResizeEdgeThicknesses:outThicknesses
+                             forStyleMask:styleMask | NSWindowStyleMaskTitled];
+  }
+
+  return [super _getExteriorResizeEdgeThicknesses:outThicknesses
+                                     forStyleMask:styleMask];
+}
+
 // Ignore [super canBecome{Key,Main}Window]. The default is NO for windows with
 // NSWindowStyleMaskBorderless, which is not the desired behavior.
 // Note these can be called via -[NSWindow close] while the widget is being torn
@@ -512,6 +565,15 @@ void OrderChildWindow(NSWindow* child_window,
   }
 
   [[self viewsNSWindowDelegate] onWindowOrderChanged:nil];
+}
+
+- (void)setActivationIndependence:(BOOL)independence {
+  self.canHide = !independence;
+  _activationIndependence = independence;
+}
+
+- (bool)activationIndependence {
+  return _activationIndependence;
 }
 
 // Override window order functions to intercept other visibility changes. This
@@ -713,7 +775,7 @@ void OrderChildWindow(NSWindow* child_window,
 // the window's styleMask. Views assumes that Widgets can always be minimized,
 // regardless of their window style, so override that behavior here.
 - (BOOL)_canMiniaturize {
-  return YES;
+  return ![self immersiveFullscreen];
 }
 
 - (BOOL)respondsToSelector:(SEL)aSelector {
@@ -769,6 +831,16 @@ void OrderChildWindow(NSWindow* child_window,
 }
 
 // NSWindow overrides (NSAccessibility informal protocol implementation).
+
+- (NSString*)accessibilityDocument {
+  if (id<NSAccessibility> root = [self rootAccessibilityObject]) {
+    if (auto* cocoaNode = ui::AXPlatformNode::FromNativeViewAccessible(
+            gfx::NativeViewAccessible(root))) {
+      return [NSString stringWithUTF8String:cocoaNode->GetRootURL().c_str()];
+    }
+  }
+  return nil;
+}
 
 - (id)accessibilityFocusedUIElement {
   if (![self delegate])

@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_RENDERER_RENDER_ACCESSIBILITY_H_
 #define CONTENT_PUBLIC_RENDERER_RENDER_ACCESSIBILITY_H_
 
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node.h"
@@ -27,7 +26,6 @@ class CONTENT_EXPORT RenderAccessibility {
  public:
   virtual bool HasActiveDocument() const = 0;
   virtual ui::AXMode GetAXMode() const = 0;
-  virtual void RecordInaccessiblePdfUkm() = 0;
   virtual void SetPluginAXTreeActionTargetAdapter(
       PluginAXTreeActionTargetAdapter* adapter) = 0;
 #if BUILDFLAG(IS_CHROMEOS)

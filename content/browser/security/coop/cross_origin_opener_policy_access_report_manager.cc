@@ -21,15 +21,6 @@ namespace content {
 
 namespace {
 
-// A map of virtual browsing context groups to the coop related groups they
-// belong to. This mimics the real behavior of BrowsingInstance and
-// CoopRelatedGroup. It is useful to restrict access in a more granular manner
-// and to account for browsing context group reuse.
-std::map<int, int>& GetVirtualBrowsingContextGroupToCoopRelatedGroupMap() {
-  static auto& bcg_to_coop_group_map = *new std::map<int, int>();
-  return bcg_to_coop_group_map;
-}
-
 std::optional<blink::FrameToken> GetFrameToken(
     FrameTreeNode* frame,
     SiteInstanceGroup* site_instance_group) {
@@ -47,22 +38,18 @@ std::optional<blink::FrameToken> GetFrameToken(
 }
 
 // Find all the related windows that might try to access the new document in
-// `frame`, but are in a different virtual browsing context group. The
-// associated boolean indicates whether they are in the same virtual
-// CoopRelatedGroup.
-std::vector<std::pair<FrameTreeNode*, bool>> CollectOtherWindowForCoopAccess(
+// `frame`, but are in a different virtual browsing context group.
+std::vector<FrameTreeNode*> CollectOtherWindowForCoopAccess(
     FrameTreeNode* frame) {
   DCHECK(frame->IsMainFrame());
-  std::map<int, int>& bcg_to_coop_group_map =
-      GetVirtualBrowsingContextGroupToCoopRelatedGroupMap();
   int virtual_browsing_context_group =
       frame->current_frame_host()->virtual_browsing_context_group();
 
-  std::vector<std::pair<FrameTreeNode*, bool>> out;
+  std::vector<FrameTreeNode*> out;
   for (RenderFrameHostImpl* rfh :
        frame->current_frame_host()
            ->delegate()
-           ->GetActiveTopLevelDocumentsInCoopRelatedGroup(
+           ->GetActiveTopLevelDocumentsInBrowsingContextGroup(
                frame->current_frame_host())) {
     // Filter out windows from the same virtual browsing context group.
     if (rfh->virtual_browsing_context_group() ==
@@ -70,18 +57,7 @@ std::vector<std::pair<FrameTreeNode*, bool>> CollectOtherWindowForCoopAccess(
       continue;
     }
 
-    // Every virtual browsing context group should have an associated virtual
-    // CoopRelatedGroup.
-    CHECK(bcg_to_coop_group_map.find(rfh->virtual_browsing_context_group()) !=
-          bcg_to_coop_group_map.end());
-    CHECK(bcg_to_coop_group_map.find(virtual_browsing_context_group) !=
-          bcg_to_coop_group_map.end());
-
-    bool is_in_same_virtual_coop_related_group =
-        bcg_to_coop_group_map[rfh->virtual_browsing_context_group()] ==
-        bcg_to_coop_group_map[virtual_browsing_context_group];
-    out.emplace_back(rfh->frame_tree_node(),
-                     is_in_same_virtual_coop_related_group);
+    out.emplace_back(rfh->frame_tree_node());
   }
   return out;
 }
@@ -102,42 +78,35 @@ void CrossOriginOpenerPolicyAccessReportManager::InstallAccessMonitorsIfNeeded(
 
   // Find all the related windows that might try to access the new document,
   // but are from a different virtual browsing context group.
-  std::vector<std::pair<FrameTreeNode*, bool>> other_main_frames =
+  std::vector<FrameTreeNode*> other_main_frames =
       CollectOtherWindowForCoopAccess(frame);
 
-  // Fenced frame roots are in their own browsing context group in a separate
-  // coop related group and shouldn't be joined with any other main frames.
+  // Fenced frame roots are in their own BrowsingInstance and shouldn't be
+  // joined with any other main frames.
   DCHECK(!frame->IsInFencedFrameTree() || other_main_frames.empty());
 
   CrossOriginOpenerPolicyAccessReportManager* access_manager_frame =
       frame->current_frame_host()->coop_access_report_manager();
 
-  for (const std::pair<FrameTreeNode*, bool>& other : other_main_frames) {
-    FrameTreeNode* other_ftn = other.first;
-    bool is_in_same_virtual_coop_related_group = other.second;
+  for (FrameTreeNode* other_ftn : other_main_frames) {
     CrossOriginOpenerPolicyAccessReportManager* access_manager_other =
         other_ftn->current_frame_host()->coop_access_report_manager();
 
     // If the current frame has a reporter, install the access monitors to
     // monitor the accesses between this frame and the other frame.
-    access_manager_frame->MonitorAccesses(
-        frame, other_ftn, is_in_same_virtual_coop_related_group);
-    access_manager_frame->MonitorAccesses(
-        other_ftn, frame, is_in_same_virtual_coop_related_group);
+    access_manager_frame->MonitorAccesses(frame, other_ftn);
+    access_manager_frame->MonitorAccesses(other_ftn, frame);
 
     // If the other frame has a reporter, install the access monitors to monitor
     // the accesses between this frame and the other frame.
-    access_manager_other->MonitorAccesses(
-        frame, other_ftn, is_in_same_virtual_coop_related_group);
-    access_manager_other->MonitorAccesses(
-        other_ftn, frame, is_in_same_virtual_coop_related_group);
+    access_manager_other->MonitorAccesses(frame, other_ftn);
+    access_manager_other->MonitorAccesses(other_ftn, frame);
   }
 }
 
 void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
     FrameTreeNode* accessing_node,
-    FrameTreeNode* accessed_node,
-    bool is_in_same_virtual_coop_related_group) {
+    FrameTreeNode* accessed_node) {
   DCHECK_NE(accessing_node, accessed_node);
   DCHECK(accessing_node->current_frame_host()->coop_access_report_manager() ==
              this ||
@@ -172,69 +141,12 @@ void CrossOriginOpenerPolicyAccessReportManager::MonitorAccesses(
       ->InstallCoopAccessMonitor(
           *accessed_window_token,
           coop_reporter_->CreateReporterParams(access_from_coop_page,
-                                               accessing_node, accessed_node),
-          is_in_same_virtual_coop_related_group);
-}
-
-// static
-int CrossOriginOpenerPolicyAccessReportManager::
-    GetNewVirtualBrowsingContextGroup() {
-  std::map<int, int>& bcg_to_coop_group_map =
-      GetVirtualBrowsingContextGroupToCoopRelatedGroupMap();
-
-  // Assign the newly created virtual browsing context group to a new virtual
-  // CoopRelatedGroup.
-  int virtual_browsing_context_group_id = NextVirtualBrowsingContextGroup();
-  bcg_to_coop_group_map[virtual_browsing_context_group_id] =
-      NextVirtualCoopRelatedGroup();
-  return virtual_browsing_context_group_id;
-}
-
-// static
-int CrossOriginOpenerPolicyAccessReportManager::GetVirtualBrowsingContextGroup(
-    CoopSwapResult enforce_result,
-    CoopSwapResult report_only_result,
-    int current_virtual_browsing_context_group) {
-  // This function should only ever be called if we require a different virtual
-  // browsing context group.
-  CHECK(enforce_result != CoopSwapResult::kNoSwap ||
-        report_only_result != CoopSwapResult::kNoSwap);
-
-  int next_browsing_context_group_id = NextVirtualBrowsingContextGroup();
-  std::map<int, int>& bcg_to_coop_group_map =
-      GetVirtualBrowsingContextGroupToCoopRelatedGroupMap();
-
-  // If a swap in a different CoopRelatedGroup would be required, simply create
-  // a new virtual browsing context group in a new virtual CoopRelatedGroup.
-  if (enforce_result == CoopSwapResult::kSwap ||
-      report_only_result == CoopSwapResult::kSwap) {
-    bcg_to_coop_group_map[next_browsing_context_group_id] =
-        NextVirtualCoopRelatedGroup();
-    return next_browsing_context_group_id;
-  }
-
-  // If a swap in the same CoopRelatedGroup would be required, create a new
-  // virtual browsing context group in the current virtual CoopRelatedGroup.
-  // TODO(crbug.com/40276687): This is not strictly correct, because
-  // browsing context groups can be reused when navigating in the same
-  // CoopRelatedGroup. Pass in the isolation information to make it as close
-  // to reality as possible.
-  int current_virtual_coop_related_group =
-      bcg_to_coop_group_map[current_virtual_browsing_context_group];
-  bcg_to_coop_group_map[next_browsing_context_group_id] =
-      current_virtual_coop_related_group;
-  return next_browsing_context_group_id;
+                                               accessing_node, accessed_node));
 }
 
 // static
 int CrossOriginOpenerPolicyAccessReportManager::
     NextVirtualBrowsingContextGroup() {
-  static int id = -1;
-  return ++id;
-}
-
-// static
-int CrossOriginOpenerPolicyAccessReportManager::NextVirtualCoopRelatedGroup() {
   static int id = -1;
   return ++id;
 }

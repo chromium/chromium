@@ -1,0 +1,11 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("glic_api") {
+  sources = [ "glic_api.h" ]
+  public_deps = [
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//services/network/public/cpp:cpp_base",
+  ]
+}

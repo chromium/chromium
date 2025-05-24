@@ -5,6 +5,7 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_FUCHSIA_CDM_PROVIDER_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_FUCHSIA_CDM_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/cdm/fuchsia/fuchsia_cdm_provider.h"
 #include "media/mojo/mojom/fuchsia_media.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -33,7 +34,7 @@ class MojoFuchsiaCdmProvider : public FuchsiaCdmProvider {
           cdm_request) override;
 
  private:
-  const blink::BrowserInterfaceBrokerProxy* const interface_broker_;
+  const raw_ptr<const blink::BrowserInterfaceBrokerProxy> interface_broker_;
   mojo::Remote<media::mojom::FuchsiaMediaCdmProvider> cdm_provider_;
 };
 

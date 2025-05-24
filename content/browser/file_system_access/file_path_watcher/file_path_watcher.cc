@@ -13,8 +13,12 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
+#include "content/browser/file_system_access/features.h"
 
 namespace content {
+
+// static
+size_t FilePathWatcher::quota_limit_override_for_testing_ = 0;
 
 FilePathWatcher::ChangeInfo::ChangeInfo() = default;
 
@@ -69,6 +73,10 @@ FilePathWatcher::PlatformDelegate::~PlatformDelegate() {
   DCHECK(is_cancelled());
 }
 
+size_t FilePathWatcher::PlatformDelegate::current_usage() const {
+  return 0;
+}
+
 bool FilePathWatcher::Watch(const base::FilePath& path,
                             Type type,
                             const Callback& callback) {
@@ -85,13 +93,17 @@ bool FilePathWatcher::WatchWithOptions(const base::FilePath& path,
   return impl_->WatchWithOptions(path, options, callback);
 }
 
-bool FilePathWatcher::WatchWithChangeInfo(
+std::optional<size_t> FilePathWatcher::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const CallbackWithChangeInfo& callback) {
+    const CallbackWithChangeInfo& callback,
+    const UsageChangeCallback& usage_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(path.IsAbsolute());
-  return impl_->WatchWithChangeInfo(path, options, callback);
+  if (impl_->WatchWithChangeInfo(path, options, callback, usage_callback)) {
+    return impl_->current_usage();
+  }
+  return std::nullopt;
 }
 
 bool FilePathWatcher::PlatformDelegate::WatchWithOptions(
@@ -104,7 +116,8 @@ bool FilePathWatcher::PlatformDelegate::WatchWithOptions(
 bool FilePathWatcher::PlatformDelegate::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const CallbackWithChangeInfo& callback) {
+    const CallbackWithChangeInfo& callback,
+    const UsageChangeCallback& usage_callback) {
   return Watch(path, options.type, base::BindRepeating(callback, ChangeInfo()));
 }
 
@@ -118,5 +131,23 @@ base::Lock& FilePathWatcher::GetWatchThreadLockForTest() {
   return impl_->GetWatchThreadLockForTest();  // IN-TEST
 }
 #endif
+
+size_t FilePathWatcher::current_usage() const {
+  return impl_->current_usage();
+}
+
+// static
+size_t FilePathWatcher::quota_limit() {
+  if (FilePathWatcher::quota_limit_override_for_testing_ > 0) {
+    return FilePathWatcher::quota_limit_override_for_testing_;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kFileSystemAccessObserverQuotaLimit)) {
+    return GetQuotaLimitImpl();
+  }
+
+  return std::numeric_limits<size_t>::max();
+}
 
 }  // namespace content

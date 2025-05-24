@@ -68,29 +68,25 @@ export const UserUtilMixin = dedupingMixin(
               value: '',
               computed: 'computeAvatarImage_(accountInfo_)',
             },
+
+            syncInfo_: Object,
+            accountInfo_: Object,
           };
         }
 
-      isAccountStorageEnabled:
-        boolean;
-      isEligibleForAccountStorage:
-        boolean;
-      // Whether account storage is enabled and the default storage is account.
-      isAccountStoreUser:
-        boolean;
-      isSyncingPasswords:
-        boolean;
-      accountEmail:
-        string;
-      avatarImage:
-        string;
-      private syncInfo_:
-        SyncInfo;
-      private accountInfo_:
-        AccountInfo;
+        declare isAccountStorageEnabled: boolean;
+        declare isEligibleForAccountStorage: boolean;
+        // Whether account storage is enabled and the default storage is
+        // account.
+        declare isAccountStoreUser: boolean;
+        declare isSyncingPasswords: boolean;
+        declare accountEmail: string;
+        declare avatarImage: string;
+        declare private syncInfo_: SyncInfo;
+        declare private accountInfo_: AccountInfo;
 
-      private setIsAccountStorageEnabledListener_:
-        ((enabled: boolean) => void)|null = null;
+        private setIsAccountStorageEnabledListener_:
+            ((enabled: boolean) => void)|null = null;
 
         override connectedCallback() {
           super.connectedCallback();
@@ -138,19 +134,19 @@ export const UserUtilMixin = dedupingMixin(
         }
 
         private computeIsEligibleForAccountStorage_(): boolean {
-          return !!this.syncInfo_ && this.syncInfo_.isEligibleForAccountStorage;
+          return !!(this.syncInfo_?.isEligibleForAccountStorage);
         }
 
         private computeIsSyncingPasswords_(): boolean {
-          return !!this.syncInfo_ && this.syncInfo_.isSyncingPasswords;
+          return !!(this.syncInfo_?.isSyncingPasswords);
         }
 
         private computeAccountEmail_(): string {
-          return (this.accountInfo_ ? this.accountInfo_.email : '');
+          return this.accountInfo_?.email || '';
         }
 
         private computeAvatarImage_(): string {
-          return this.accountInfo_.avatarImage || '';
+          return this.accountInfo_?.avatarImage || '';
         }
 
         private computeIsAccountStoreUser_(): boolean {

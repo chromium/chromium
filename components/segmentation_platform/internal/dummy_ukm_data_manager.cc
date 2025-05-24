@@ -25,13 +25,11 @@ void DummyUkmDataManager::StartObservingUkm(const UkmConfig& config) {}
 void DummyUkmDataManager::PauseOrResumeObservation(bool pause) {}
 
 UrlSignalHandler* DummyUkmDataManager::GetOrCreateUrlHandler() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 UkmDatabase* DummyUkmDataManager::GetUkmDatabase() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool DummyUkmDataManager::HasUkmDatabase() {

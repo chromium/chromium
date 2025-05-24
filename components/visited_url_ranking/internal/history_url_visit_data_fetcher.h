@@ -45,6 +45,7 @@ class HistoryURLVisitDataFetcher : public URLVisitDataFetcher {
   void OnGotAnnotatedVisits(
       FetchResultCallback callback,
       FetchOptions::FetchSources requested_fetch_sources,
+      const FetchOptions::ResultSourceOptions& result_sources,
       const FetcherConfig& config,
       std::vector<history::AnnotatedVisit> annotated_visits);
 

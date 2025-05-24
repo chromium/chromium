@@ -1,0 +1,18 @@
+<!--
+@BLINK-ALLOW:details*
+@BLINK-ALLOW:haspopup*
+@BLINK-ALLOW:expanded*
+@BLINK-ALLOW:nameFrom*
+@BLINK-ALLOW:description*
+-->
+
+<!-- Rich hint should be associated with details instead of description -->
+<div popover="hint" id="popover">
+  Test rich hint <a href="#">popover<a>
+</div>
+
+<button popovertarget="popover">hover me</button>
+
+<script>
+  popover.showPopover();
+</script>

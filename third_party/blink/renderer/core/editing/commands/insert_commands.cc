@@ -173,8 +173,7 @@ bool InsertCommands::ExecuteInsertLineBreak(LocalFrame& frame,
       DCHECK(frame.GetDocument());
       return TypingCommand::InsertLineBreak(*frame.GetDocument());
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool InsertCommands::ExecuteInsertNewline(LocalFrame& frame,

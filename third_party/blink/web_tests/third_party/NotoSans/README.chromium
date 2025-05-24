@@ -1,22 +1,19 @@
-Noto Sans Font:
-License: Apache 2.0
+Name: Noto Sans Font
+URL: https://code.google.com/p/noto/
+Version: 1.040
+Date: 2014-05-20
+License: Apache-2.0
 License File: LICENSE.txt
 Shipped: no
+Security Critical: no
 
-1. Source Origin
-Google's Internationalisation team's:
-    a) https://code.google.com/p/noto/
-    b) https://code.google.com/p/noto/source/browse/trunk/fonts/individual/
+Description:
+Noto Sans Devanagari font subset, subsetted font file included as a
+real-world example for testing fonts with same script but different language,
+Devanagari and Nepali in this case with
+LayoutTests/fast/text/shaping/same_script_different_lang.html test case.
 
-2. LICENSE AND OPENSOURCE
-	For license information, see the LICENSE.txt file
-
-3. Reason:
-Font file included as a real-world example for testing fonts with same script but different language, Devanagari and Nepali in this case 
-with LayoutTests/fast/text/shaping/same_script_different_lang.html test case
-
-Command to generate subset font:
+Local Modifications:
+Generated a subset using the following command:
 $ pyftsubset ./NotoSansDevanagari-Regular.ttf uni091D
-
-where pyftsubset comes from https://github.com/behdad/fonttools
-
+where pyftsubset comes from https://github.com/fonttools/fonttools

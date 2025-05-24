@@ -6,10 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/buildflag.h"
 #include "content/browser/file_system_access/file_system_access_change_source.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
@@ -38,27 +40,27 @@ namespace content {
 namespace {
 
 FileSystemAccessPermissionContext::HandleType GetHandleType(
-    const absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                        std::unique_ptr<FileSystemAccessFileHandleImpl>>&
+    const std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                       std::unique_ptr<FileSystemAccessFileHandleImpl>>&
         handle) {
-  return absl::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
+  return std::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
              &handle)
              ? FileSystemAccessPermissionContext::HandleType::kDirectory
              : FileSystemAccessPermissionContext::HandleType::kFile;
 }
 
 FileSystemAccessHandleBase& AsHandleBase(
-    const absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                        std::unique_ptr<FileSystemAccessFileHandleImpl>>&
+    const std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                       std::unique_ptr<FileSystemAccessFileHandleImpl>>&
         handle) {
   auto* dir_handle_ptr =
-      absl::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
+      std::get_if<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>>(
           &handle);
   if (dir_handle_ptr) {
     return *static_cast<FileSystemAccessHandleBase*>(dir_handle_ptr->get());
   }
 
-  return *absl::get<std::unique_ptr<FileSystemAccessFileHandleImpl>>(handle);
+  return *std::get<std::unique_ptr<FileSystemAccessFileHandleImpl>>(handle);
 }
 
 // TODO(crbug.com/40105284): Move this to a helper shared with
@@ -92,7 +94,9 @@ blink::mojom::FileSystemAccessEntryPtr CreateEntryForUrl(
     case FileSystemAccessPermissionContext::HandleType::kFile:
       return blink::mojom::FileSystemAccessEntry::New(
           blink::mojom::FileSystemAccessHandle::NewFile(
-              manager.CreateFileHandle(binding_context, url, handle_state)),
+              manager.CreateFileHandle(
+                  binding_context, url,
+                  url.virtual_path().BaseName().AsUTF8Unsafe(), handle_state)),
           url.virtual_path().BaseName().AsUTF8Unsafe());
     case FileSystemAccessPermissionContext::HandleType::kDirectory:
       return blink::mojom::FileSystemAccessEntry::New(
@@ -140,10 +144,10 @@ bool RenderFrameHostIsActive(
 
 FileSystemAccessObserverObservation::FileSystemAccessObserverObservation(
     FileSystemAccessObserverHost* host,
-    std::unique_ptr<FileSystemAccessWatcherManager::Observation> observation,
+    std::unique_ptr<FileSystemAccessObservationGroup::Observer> observation,
     mojo::PendingRemote<blink::mojom::FileSystemAccessObserver> remote,
-    absl::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
-                  std::unique_ptr<FileSystemAccessFileHandleImpl>> handle)
+    std::variant<std::unique_ptr<FileSystemAccessDirectoryHandleImpl>,
+                 std::unique_ptr<FileSystemAccessFileHandleImpl>> handle)
     : WebContentsObserver(
           WebContents::FromRenderFrameHost(RenderFrameHostImpl::FromID(
               AsHandleBase(handle).context().frame_id))),
@@ -185,10 +189,14 @@ const storage::FileSystemURL& FileSystemAccessObserverObservation::handle_url()
 }
 
 void FileSystemAccessObserverObservation::OnChanges(
-    const std::optional<
-        std::list<FileSystemAccessWatcherManager::Observation::Change>>&
+    const std::optional<std::list<FileSystemAccessObservationGroup::Change>>&
         changes_or_error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // We should never receive changes for an observation with
+  // `WatchType::kAllBucketFileSystems`.
+  CHECK(observation_->scope().GetWatchType() !=
+        FileSystemAccessWatchScope::WatchType::kAllBucketFileSystems);
 
   if (received_error_while_in_bf_cache_) {
     return;
@@ -222,6 +230,7 @@ void FileSystemAccessObserverObservation::OnChanges(
   FileSystemAccessManagerImpl* manager = handle_base.manager();
   const storage::FileSystemURL& handle_url = handle_base.url();
   std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
+  bool observation_root_disappeared = false;
   for (const auto& change : changes_or_error.value()) {
     // TODO(crbug.com/40105284): Consider refactoring to keep the "scope"
     // concept within the WatcherManager and its associated classes. This method
@@ -249,6 +258,9 @@ void FileSystemAccessObserverObservation::OnChanges(
             FileSystemAccessPermissionContext::HandleType::kFile;
         break;
     }
+    // TODO(crbug.com/377903461): Don't send a changedHandle for `kDisappeared`
+    // or `kUnknown` events. Renderer side, changedHandle() getter returns null
+    // for these cases.
     blink::mojom::FileSystemAccessEntryPtr changed_entry =
         CreateEntryForUrl(*manager, binding_context, handle_state, change.url,
                           changed_entry_handle_type);
@@ -317,11 +329,19 @@ void FileSystemAccessObserverObservation::OnChanges(
         break;
     }
 
+    observation_root_disappeared =
+        mojo_change_type->is_disappeared() &&
+        observation_->scope().root_url() == change.url;
+
     mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
         blink::mojom::FileSystemAccessChangeMetadata::New(
             std::move(root_entry), std::move(changed_entry),
             GetRelativePathAsVectorOfStrings(relative_modified_path.value())),
         std::move(mojo_change_type)));
+
+    if (observation_root_disappeared) {
+      break;
+    }
   }
 
   // Report the number of events in a 1s time window.
@@ -336,6 +356,12 @@ void FileSystemAccessObserverObservation::OnChanges(
   callback_count_++;
 
   remote_->OnFileChanges(std::move(mojo_changes));
+
+  // Send an "errored" event and destruct if the root of the observation
+  // disappeared.
+  if (observation_root_disappeared) {
+    HandleError();
+  }
 }
 
 void FileSystemAccessObserverObservation::HandleError() {
@@ -356,6 +382,8 @@ void FileSystemAccessObserverObservation::HandleError() {
       handle_base.handle_state();
   FileSystemAccessManagerImpl* manager = handle_base.manager();
   const storage::FileSystemURL& handle_url = handle_base.url();
+  // TODO(crbug.com/377903461): Don't send changedHandle for `kErrored` events.
+  // Renderer side, changedHandle() getter returns null for this case.
   mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
       blink::mojom::FileSystemAccessChangeMetadata::New(
           CreateEntryForUrl(*manager, binding_context, handle_state, handle_url,

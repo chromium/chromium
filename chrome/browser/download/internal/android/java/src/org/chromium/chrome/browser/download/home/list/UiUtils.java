@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.text.format.DateUtils;
@@ -14,6 +16,8 @@ import androidx.annotation.DrawableRes;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.StringUtils;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.list.view.CircularProgressView;
@@ -35,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 /** A set of helper utility methods for the UI. */
+@NullMarked
 public final class UiUtils {
     // Limit file name to 25 characters.
     public static final int MAX_FILE_NAME_LENGTH_FOR_TITLE = 33;
@@ -53,7 +58,7 @@ public final class UiUtils {
      * @param itemCount The number of items being shown on the given chip.
      * @return The content description to be used for the chip.
      */
-    public static String getChipContentDescription(
+    public static @Nullable String getChipContentDescription(
             Resources resources, @Filters.FilterType int filter, int itemCount) {
         switch (filter) {
             case Filters.FilterType.NONE:
@@ -364,7 +369,7 @@ public final class UiUtils {
                 if (item.timeRemainingMs > 0) {
                     return StringUtils.timeLeftForUi(context, item.timeRemainingMs);
                 } else {
-                    return StringUtils.getProgressTextForUi(item.progress);
+                    return StringUtils.getProgressTextForUi(assumeNonNull(item.progress));
                 }
             case OfflineItemState.FAILED: // Intentional fallthrough.
             case OfflineItemState.CANCELLED: // Intentional fallthrough.

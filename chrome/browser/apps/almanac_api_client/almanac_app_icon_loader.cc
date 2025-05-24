@@ -51,7 +51,7 @@ class AlmanacAppIconLoader::SvgLoader : public content::WebContentsObserver {
     // Logic continues in DidStopLoading().
   }
 
-  ~SvgLoader() override {}
+  ~SvgLoader() override = default;
 
   // content::WebContentsObserver:
   void DidStopLoading() override {

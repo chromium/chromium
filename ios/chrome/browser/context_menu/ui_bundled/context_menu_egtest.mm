@@ -10,13 +10,13 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/data_sharing/public/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -91,6 +91,23 @@ const char kInitialPageDestinationLinkText[] = "link";
 const char kInitialPageDestinationLongLinkID[] = "LongLink";
 // The text of the long link to the destination page.
 const char kInitialPageDestinationLongLinkText[] = "LongLink";
+
+// Returns an ElementSelector for the chromium image on the logo page.
+ElementSelector* LogoPageChromiumImageIdSelector() {
+  return [ElementSelector selectorWithElementID:kLogoPageChromiumImageId];
+}
+
+// Returns an ElementSelector for the link to the destination page on the
+// initial page.
+ElementSelector* InitialPageDestinationLinkIdSelector() {
+  return [ElementSelector selectorWithElementID:kInitialPageDestinationLinkId];
+}
+
+// Returns an ElementSelector for the long link to the destination page.
+ElementSelector* InitialPageDestinationLongLinkIDSelector() {
+  return
+      [ElementSelector selectorWithElementID:kInitialPageDestinationLongLinkID];
+}
 
 // URL to a page with a link with a javascript: scheme.
 const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
@@ -204,6 +221,12 @@ id<GREYMatcher> OpenLinkInGroupButton() {
       IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP);
 }
 
+// Matcher for the open link in group button in the context menu.
+id<GREYMatcher> CopyImageButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
+}
+
 // Matcher for the open link in an existing tab group (a group containing one
 // tab) button in the context menu.
 id<GREYMatcher> OpenLinkInOneTabGroupButton() {
@@ -257,14 +280,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Long presses on `element_id` to trigger context menu.
-void LongPressElement(const char* element_id) {
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::LongPressElementForContextMenu(
-                        [ElementSelector selectorWithElementID:element_id],
-                        true /* menu should appear */)];
-}
-
 // Taps on the web view to dismiss the context menu without using anything on
 // it.
 void ClearContextMenu() {
@@ -280,13 +295,9 @@ void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
       performAction:grey_tap()];
 }
 
-void RelaunchAppWithInactiveTabs2WeeksEnabled() {
+void RelaunchApp() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdTwoWeeksParam);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -304,9 +315,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsIPad);
-  config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kShareInWebContextMenuIOS);
+  config.features_enabled.push_back(
+      data_sharing::features::kDataSharingFeature);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   return config;
 }
@@ -321,17 +332,39 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 }
 
 - (void)setUpHistogramTester {
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   _setUpHistogramTesterCalled = true;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   if (_setUpHistogramTesterCalled) {
-    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                  @"Failed to release histogram tester.");
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseHistogramTester]);
   }
-  [super tearDown];
+  [super tearDownHelper];
+}
+
+// Tests that selecting "Copy Image" from the context menu properly copies the
+// image in the pasteboard.
+- (void)testCopyImageIntoPasteboard {
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [ChromeEarlGrey pasteboardHasImages];
+                                 }];
+
+  // Wait for the image to be copied.
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+  [ChromeEarlGrey clearPasteboard];
 }
 
 // Tests that selecting "Open Image" from the context menu properly opens the
@@ -341,7 +374,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -358,7 +393,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   TapOnContextMenuButton(OpenImageInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -383,7 +420,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -435,12 +474,16 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   // Links get prefixed with the hostname, so check for partial text match
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
                                           kShortLinkHref)]
@@ -452,12 +495,15 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   [[EarlGrey selectElementWithMatcher:grey_text(kLongImgTitle)]
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // But expect that some of the link is visible in the title.
   NSString* startOfTitle = [kLongLinkHref substringToIndex:30];
@@ -472,7 +518,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -492,7 +540,10 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kDestinationPageTextId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:
+          [ElementSelector selectorWithElementID:kDestinationPageTextId]];
+
   // TODO(crbug.com/40191349): Xcode 13 gesture recognizers seem to get stuck
   // when the user longs presses on plain text.  For this test, disable EG
   // synchronization.
@@ -523,7 +574,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
   // Display the context menu twice.
   for (NSInteger i = 0; i < 2; i++) {
-    LongPressElement(kInitialPageDestinationLinkId);
+    [ChromeEarlGreyUI
+        longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
     // Make sure the context menu appeared.
     [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
@@ -552,7 +604,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   }
 
   // Display the context menu one last time.
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Make sure the context menu appeared.
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
@@ -567,17 +620,21 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey
       selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContextMenuItemWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if (@available(iOS 17, *)) {
+    // Tab group is only available on iOS 17+ on iPad.
+    [[EarlGrey selectElementWithMatcher:
+                   ContextMenuItemWithAccessibilityLabelId(
+                       IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
   [[EarlGrey
       selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
                                    IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)]
@@ -603,8 +660,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // Checks that "open in new window" shows up on a long press of a url link
 // and that it actually opens in a new window.
 - (void)testOpenLinkInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // Loads url in first window.
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
@@ -615,7 +673,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   // Display the context menu.
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Open link in new window.
   [[EarlGrey
@@ -632,8 +691,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // and that it actually opens in a new window, and that when the link is in an
 // incognito webstate, the newly opened webstate is also incognito.
 - (void)testOpenIncognitoLinkInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   [ChromeEarlGrey openNewIncognitoTab];
 
@@ -646,7 +706,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   // Display the context menu.
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Open link in new window.
   [[EarlGrey
@@ -669,7 +730,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   const GURL initialURL = self.testServer->GetURL(kJavaScriptPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
@@ -687,7 +749,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   const GURL initialURL = self.testServer->GetURL(kMagnetPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
@@ -706,7 +769,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -719,7 +784,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
                  @"Inactive tab count should be 0");
 
-  RelaunchAppWithInactiveTabs2WeeksEnabled();
+  RelaunchApp();
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
@@ -738,13 +803,19 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // exists in the tab grid, the option `Open in group` will become a submenu,
 // tapping it will result in listing all the existing tab groups.
 - (void)testContextMenuOpenInGroup {
+  if (@available(iOS 17, *)) {
+  } else if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Only available on iOS 17+ on iPad.");
+  }
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInNewGroupButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -766,7 +837,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInGroupButton());
   TapOnContextMenuButton(OpenLinkInOneTabGroupButton());
 
@@ -794,7 +867,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   [ChromeEarlGrey verifyShareActionWithURL:pageURL pageTitle:pageTitle];
 
@@ -822,7 +896,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLongLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLongLinkID);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLongLinkIDSelector()];
 
   std::u16string formattedURL = url_formatter::FormatUrl(longURL);
   NSString* stringURL = base::SysUTF16ToNSString(formattedURL);
@@ -835,7 +910,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
                                               @"AlertAccessibilityIdentifier")),
-                                          grey_text(stringURL), nil)]
+                                          chrome_test_util::ContainsPartialText(
+                                              stringURL),
+                                          nil)]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -851,7 +928,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   [ChromeEarlGrey waitForForegroundWindowCount:1];
   [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
       assertWithMatcher:grey_notNil()];

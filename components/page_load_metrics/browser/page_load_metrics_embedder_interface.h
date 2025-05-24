@@ -6,6 +6,7 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_PAGE_LOAD_METRICS_EMBEDDER_INTERFACE_H_
 
 #include <memory>
+#include <string_view>
 
 class GURL;
 
@@ -15,6 +16,7 @@ class OneShotTimer;
 
 namespace content {
 class BrowserContext;
+class NavigationHandle;
 class WebContents;
 }  // namespace content
 
@@ -27,14 +29,17 @@ class PageLoadTracker;
 // Impl version is defined in components/page_load_metrics/browser.
 class PageLoadMetricsEmbedderInterface {
  public:
-  virtual ~PageLoadMetricsEmbedderInterface() {}
+  virtual ~PageLoadMetricsEmbedderInterface() = default;
   virtual bool IsNewTabPageUrl(const GURL& url) = 0;
-  virtual void RegisterObservers(PageLoadTracker* metrics) = 0;
+  virtual void RegisterObservers(
+      PageLoadTracker* metrics,
+      content::NavigationHandle* navigation_handle) = 0;
   virtual std::unique_ptr<base::OneShotTimer> CreateTimer() = 0;
   virtual bool IsNoStatePrefetch(content::WebContents* web_contents) = 0;
   virtual bool IsExtensionUrl(const GURL& url) = 0;
-  virtual bool IsSidePanel(content::WebContents* web_contents) = 0;
-  virtual bool IsNonTabWebUI() = 0;
+  virtual bool IsNonTabWebUI(const GURL& url) = 0;
+  virtual bool ShouldObserveScheme(std::string_view scheme) = 0;
+  virtual bool IsIncognito(content::WebContents* web_contents) = 0;
 
   // Returns the PageLoadMetricsMemoryTracker for the given BrowserContext if
   // tracking is enabled.

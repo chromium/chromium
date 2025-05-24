@@ -27,6 +27,7 @@ void ProxyInfo::Use(const ProxyInfo& other) {
   proxy_list_ = other.proxy_list_;
   proxy_retry_info_ = other.proxy_retry_info_;
   did_bypass_proxy_ = other.did_bypass_proxy_;
+  prt_header_value_ = other.prt_header_value_;
 }
 
 void ProxyInfo::UseDirect() {
@@ -105,6 +106,7 @@ void ProxyInfo::Reset() {
   proxy_list_.Clear();
   proxy_retry_info_.clear();
   did_bypass_proxy_ = false;
+  prt_header_value_ = std::nullopt;
 }
 
 bool ProxyInfo::AllChainProxiesAreHttps() const {

@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
+#include "build/buildflag.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
@@ -32,31 +34,20 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/application_status_listener.h"
+#endif
 
 namespace content {
 
 namespace {
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(Status)
-enum class Status {
-  kOk = 0,
-  // Corresponds to a non-zero NET_ERROR.
-  kInternalError = 1,
-  // Corresponds to a non-200 HTTP response code from the reporting endpoint.
-  kExternalError = 2,
-  kMaxValue = kExternalError
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/attribution_reporting/enums.xml:ConversionReportStatus)
-
 template <typename T>
 void NetworkHistogram(std::string_view suffix,
-                      void (*hist_func)(const std::string&, T value),
+                      void (*hist_func)(std::string_view, T value),
                       bool is_debug_report,
                       std::optional<bool> has_trigger_context_id,
                       T value) {
@@ -78,11 +69,35 @@ void NetworkHistogram(std::string_view suffix,
 
 AttributionReportNetworkSender::AttributionReportNetworkSender(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {
+    : url_loader_factory_(std::move(url_loader_factory))
+#if BUILDFLAG(IS_ANDROID)
+      ,
+      application_status_listener_(
+          base::android::ApplicationStatusListener::New(base::BindRepeating(
+              &AttributionReportNetworkSender::OnApplicationStateChanged,
+              // Listener is destroyed at destructor, and
+              // object will be alive for any callback.
+              base::Unretained(this)))) {
   DCHECK(url_loader_factory_);
+  OnApplicationStateChanged(
+      base::android::ApplicationStatusListener::GetState());
 }
 
+void AttributionReportNetworkSender::OnApplicationStateChanged(
+    base::android::ApplicationState state) {
+  app_state_ = state;
+}
+#else
+{
+  DCHECK(url_loader_factory_);
+}
+#endif
+
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
+
+void AttributionReportNetworkSender::SetInFirstBatch(bool in_first_batch) {
+  in_first_batch_ = in_first_batch;
+}
 
 void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
@@ -106,7 +121,7 @@ void AttributionReportNetworkSender::SendReport(
   }
 
   url::Origin origin(report.reporting_origin());
-  SendReport(std::move(url), std::move(origin), body,
+  SendReport(std::move(url), std::move(origin), std::move(body),
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                             base::Unretained(this), std::move(report),
                             is_debug_report, std::move(sent_callback)));
@@ -119,7 +134,7 @@ void AttributionReportNetworkSender::SendReport(
   url::Origin origin(report.reporting_origin());
   std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
-      std::move(url), std::move(origin), body,
+      std::move(url), std::move(origin), std::move(body),
       base::BindOnce(&AttributionReportNetworkSender::OnVerboseDebugReportSent,
                      base::Unretained(this),
                      base::BindOnce(std::move(callback), std::move(report))));
@@ -132,7 +147,7 @@ void AttributionReportNetworkSender::SendReport(
   GURL url(report.ReportUrl());
   url::Origin origin(report.reporting_origin());
   std::string body = SerializeAttributionJson(report_body);
-  SendReport(std::move(url), std::move(origin), body,
+  SendReport(std::move(url), std::move(origin), std::move(body),
              base::BindOnce(
                  &AttributionReportNetworkSender::OnAggregatableDebugReportSent,
                  base::Unretained(this),
@@ -142,7 +157,7 @@ void AttributionReportNetworkSender::SendReport(
 
 void AttributionReportNetworkSender::SendReport(GURL url,
                                                 url::Origin origin,
-                                                const std::string& body,
+                                                std::string body,
                                                 UrlLoaderCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(url);
@@ -154,7 +169,7 @@ void AttributionReportNetworkSender::SendReport(GURL url,
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
   resource_request->trusted_params = network::ResourceRequest::TrustedParams();
   resource_request->trusted_params->isolation_info =
-      net::IsolationInfo::CreateTransient();
+      net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
 
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("conversion_measurement_report", R"(
@@ -198,7 +213,8 @@ void AttributionReportNetworkSender::SendReport(GURL url,
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
-  simple_url_loader_ptr->AttachStringForUpload(body, "application/json");
+  simple_url_loader_ptr->AttachStringForUpload(std::move(body),
+                                               "application/json");
 
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in
@@ -214,83 +230,101 @@ void AttributionReportNetworkSender::SendReport(GURL url,
 
 void AttributionReportNetworkSender::OnReportSent(
     const AttributionReport& report,
-    bool is_debug_report,
+    const bool is_debug_report,
     ReportSentCallback sent_callback,
     UrlLoaderList::iterator it,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   network::SimpleURLLoader* loader = it->get();
 
-  // Consider a non-200 HTTP code as a non-internal error.
-  int net_error = loader->NetError();
-  bool internal_ok =
+  const int net_error = loader->NetError();
+  const bool net_ok =
       net_error == net::OK || net_error == net::ERR_HTTP_RESPONSE_CODE_FAILURE;
 
-  int response_code = headers ? headers->response_code() : -1;
-  bool external_ok = response_code >= 200 && response_code <= 299;
+  // Use the analogous net error if headers are absent; previously this used -1
+  // as the value, but that is a legitimate net error value
+  // (`net::ERR_IO_PENDING`), which would be misleading/erroneous if ever
+  // stringified, either in the internals UI or in metrics.
+  const int response_code =
+      headers ? headers->response_code() : net::ERR_INVALID_HTTP_RESPONSE;
+  const bool http_ok = response_code >= 200 && response_code <= 299;
 
-  Status status = internal_ok && external_ok ? Status::kOk
-                  : !internal_ok             ? Status::kInternalError
-                                             : Status::kExternalError;
+  const bool net_ok_and_http_ok = net_ok && http_ok;
+
   // Since net errors are always negative and HTTP errors are always positive,
   // it is fine to combine these in a single histogram.
-  int response_or_net_error = internal_ok ? response_code : net_error;
+  const int response_or_net_error = net_ok ? response_code : net_error;
+
   std::optional<bool> retry_succeed =
-      loader->GetNumRetries() > 0
-          ? std::make_optional<bool>(status == Status::kOk)
-          : std::nullopt;
+      loader->GetNumRetries() > 0 ? std::make_optional<bool>(net_ok_and_http_ok)
+                                  : std::nullopt;
 
-  std::optional<bool> has_trigger_context_id;
+  if (in_first_batch_) {
+    base::UmaHistogramSparse(
+        "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
+        response_or_net_error);
+  }
 
-  absl::visit(
+#if BUILDFLAG(IS_ANDROID)
+  std::string_view suffix;
+  switch (app_state_) {
+    case base::android::APPLICATION_STATE_HAS_RUNNING_ACTIVITIES:
+      suffix = "AppRunning";
+      break;
+    case base::android::APPLICATION_STATE_HAS_PAUSED_ACTIVITIES:
+      suffix = "AppPaused";
+      break;
+    case base::android::APPLICATION_STATE_HAS_STOPPED_ACTIVITIES:
+      suffix = "AppBackgrounded";
+      break;
+    case base::android::APPLICATION_STATE_HAS_DESTROYED_ACTIVITIES:
+      suffix = "AppDestroyed";
+      break;
+    case base::android::APPLICATION_STATE_UNKNOWN:
+      suffix = "AppStateUnknown";
+      break;
+  }
+  base::UmaHistogramSparse(
+      base::StrCat({"Conversions.HttpResponseOrNetErrorCode.", suffix}),
+      response_or_net_error);
+#endif
+
+  std::visit(
       base::Overloaded{
           [&](const AttributionReport::EventLevelData&) {
-            NetworkHistogram("ReportStatusEventLevel",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
             NetworkHistogram("HttpResponseOrNetErrorCodeEventLevel",
                              &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
+                             /*has_trigger_context_id=*/std::nullopt,
+                             response_or_net_error);
+
             if (retry_succeed.has_value()) {
               NetworkHistogram("ReportRetrySucceedEventLevel",
                                &base::UmaHistogramBoolean, is_debug_report,
-                               has_trigger_context_id, *retry_succeed);
+                               /*has_trigger_context_id=*/std::nullopt,
+                               *retry_succeed);
             }
           },
-          [&](const AttributionReport::AggregatableAttributionData& data) {
-            has_trigger_context_id =
-                data.common_data.aggregatable_trigger_config
+          [&](const AttributionReport::AggregatableData& data) {
+            const bool has_trigger_context_id =
+                data.aggregatable_trigger_config()
                     .trigger_context_id()
                     .has_value();
-            NetworkHistogram("ReportStatusAggregatable",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
-            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable",
+
+            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable2",
                              &base::UmaHistogramSparse, is_debug_report,
                              has_trigger_context_id, response_or_net_error);
+
             if (retry_succeed.has_value()) {
-              NetworkHistogram("ReportRetrySucceedAggregatable",
+              NetworkHistogram("ReportRetrySucceedAggregatable2",
                                &base::UmaHistogramBoolean, is_debug_report,
                                has_trigger_context_id, *retry_succeed);
             }
-          },
-          [&](const AttributionReport::NullAggregatableData& data) {
-            has_trigger_context_id =
-                data.common_data.aggregatable_trigger_config
-                    .trigger_context_id()
-                    .has_value();
-            NetworkHistogram("ReportStatusAggregatableNull",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
-            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatableNull",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
           },
       },
       report.data());
 
   loaders_in_progress_.erase(it);
 
-  if (status == Status::kOk) {
+  if (net_ok_and_http_ok) {
     std::move(sent_callback)
         .Run(report,
              SendResult::Sent(SendResult::Sent::Result::kSent, response_code));
@@ -311,7 +345,7 @@ void AttributionReportNetworkSender::OnReportSent(
              SendResult::Sent(should_retry
                                   ? SendResult::Sent::Result::kTransientFailure
                                   : SendResult::Sent::Result::kFailure,
-                              net_error));
+                              response_or_net_error));
   }
 }
 

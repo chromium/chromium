@@ -9,6 +9,7 @@ import androidx.collection.ArraySet;
 
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
+import org.chromium.components.omnibox.SuggestTemplateInfoProto.SuggestTemplateInfo;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -26,18 +27,17 @@ public class AutocompleteMatchBuilder {
     private @OmniboxSuggestionType int mType;
     private Set<Integer> mSubtypes;
     private boolean mIsSearchType;
+    private int mIconType;
     private String mDisplayText;
     private List<AutocompleteMatch.MatchClassification> mDisplayTextClassifications;
     private String mDescription;
     private List<AutocompleteMatch.MatchClassification> mDescriptionClassifications;
-    private SuggestionAnswer mAnswer;
     private byte[] mSerializedAnswerTemplate;
     private AnswerType mAnswerType;
     private String mFillIntoEdit;
     private GURL mUrl;
     private GURL mImageUrl;
     private String mImageDominantColor;
-    private int mRelevance;
     private int mTransition;
     private boolean mIsDeletable;
     private String mPostContentType;
@@ -49,6 +49,7 @@ public class AutocompleteMatchBuilder {
     private boolean mAllowedToBeDefaultMatch;
     private String mInlineAutocompletion;
     private String mAdditionalText;
+    private String mTabGroupUuid;
 
     /**
      * Create a suggestion builder for a search suggestion.
@@ -82,14 +83,12 @@ public class AutocompleteMatchBuilder {
         mDisplayTextClassifications = new ArrayList<>();
         mDescription = null;
         mDescriptionClassifications = new ArrayList<>();
-        mAnswer = null;
         mSerializedAnswerTemplate = null;
         mAnswerType = AnswerType.ANSWER_TYPE_UNSPECIFIED;
         mFillIntoEdit = null;
         mUrl = GURL.emptyGURL();
         mImageUrl = GURL.emptyGURL();
         mImageDominantColor = null;
-        mRelevance = 0;
         mTransition = 0;
         mIsDeletable = false;
         mPostContentType = null;
@@ -101,6 +100,7 @@ public class AutocompleteMatchBuilder {
         mAllowedToBeDefaultMatch = false;
         mInlineAutocompletion = null;
         mAdditionalText = null;
+        mTabGroupUuid = null;
 
         mDisplayTextClassifications.add(
                 new AutocompleteMatch.MatchClassification(0, MatchClassificationStyle.NONE));
@@ -119,13 +119,12 @@ public class AutocompleteMatchBuilder {
                 mType,
                 mSubtypes,
                 mIsSearchType,
-                mRelevance,
+                mIconType,
                 mTransition,
                 mDisplayText,
                 mDisplayTextClassifications,
                 mDescription,
                 mDescriptionClassifications,
-                mAnswer,
                 mSerializedAnswerTemplate,
                 mAnswerType.getNumber(),
                 mFillIntoEdit,
@@ -141,7 +140,8 @@ public class AutocompleteMatchBuilder {
                 mActions,
                 mAllowedToBeDefaultMatch,
                 mInlineAutocompletion,
-                mAdditionalText);
+                mAdditionalText,
+                mTabGroupUuid);
     }
 
     /**
@@ -235,11 +235,11 @@ public class AutocompleteMatchBuilder {
     }
 
     /**
-     * @param answer The answer in the Omnibox suggestion.
+     * @param iconType The icon type to apply to newly built suggestion.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setAnswer(SuggestionAnswer answer) {
-        mAnswer = answer;
+    public AutocompleteMatchBuilder setIconType(SuggestTemplateInfo.IconType iconType) {
+        mIconType = iconType.getNumber();
         return this;
     }
 
@@ -267,15 +267,6 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setHasTabMatch(boolean hasTabMatch) {
         mHasTabMatch = hasTabMatch;
-        return this;
-    }
-
-    /**
-     * @param relevance Relevance score for newly constructed suggestion.
-     * @return Omnibox suggestion builder.
-     */
-    public AutocompleteMatchBuilder setRelevance(int relevance) {
-        mRelevance = relevance;
         return this;
     }
 
@@ -350,6 +341,15 @@ public class AutocompleteMatchBuilder {
      */
     public AutocompleteMatchBuilder setSerializedAnswerTemplate(byte[] serializedAnswerTemplate) {
         mSerializedAnswerTemplate = serializedAnswerTemplate;
+        return this;
+    }
+
+    /**
+     * @param tabGroupUuid Matching tab group's uuid.
+     * @return Omnibox suggestion builder.
+     */
+    public AutocompleteMatchBuilder setTabGroupUuid(String tabGroupUuid) {
+        mTabGroupUuid = tabGroupUuid;
         return this;
     }
 }

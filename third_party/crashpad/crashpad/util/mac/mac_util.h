@@ -52,8 +52,6 @@ int MacOSVersionNumber();
 //!     for macOS 10.12.1.
 //! \param[out] build The operating system’s build string, such as `"16B2657"`
 //!     for macOS 10.12.1.
-//! \param[out] server `true` for a macOS Server installation, `false` otherwise
-//!     (for a desktop/laptop, client, or workstation system).
 //! \param[out] version_string A string representing the full operating system
 //!     version, such as `"macOS 10.12.1 (16B2657)"`.
 //!
@@ -69,10 +67,10 @@ bool MacOSVersionComponents(int* major,
 
 //! \brief Returns the model name and board ID of the running system.
 //!
-//! \param[out] model The system’s model name. A mid-2012 15" MacBook Pro would
+//! \param[out] model The system’s model name. A mid-2012 15\" MacBook Pro would
 //!     report “MacBookPro10,1”.
-//! \param[out] board_id The system’s board ID. A mid-2012 15" MacBook Pro would
-//!     report “Mac-C3EC7CD22292981F”.
+//! \param[out] board_id The system’s board ID. A mid-2012 15\" MacBook Pro
+//!     would report “Mac-C3EC7CD22292981F”.
 //!
 //! If a value cannot be determined, its string is cleared.
 void MacModelAndBoard(std::string* model, std::string* board_id);

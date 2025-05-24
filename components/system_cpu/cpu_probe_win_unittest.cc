@@ -38,9 +38,13 @@ TEST_F(CpuProbeWinTest, ProductionDataNoCrash) {
   base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
   std::optional<CpuSample> sample = probe_->UpdateAndWaitForSample();
-  ASSERT_TRUE(sample.has_value());
-  EXPECT_GE(sample->cpu_utilization, 0.0);
-  EXPECT_LE(sample->cpu_utilization, 1.0);
+  if (sample.has_value()) {
+    EXPECT_GE(sample->cpu_utilization, 0.0);
+    EXPECT_LE(sample->cpu_utilization, 1.0);
+  } else {
+    // Mark test skipped: the sample couldn't be tested due to an OS error.
+    GTEST_SKIP() << "Failed to get sample";
+  }
 }
 
 }  // namespace system_cpu

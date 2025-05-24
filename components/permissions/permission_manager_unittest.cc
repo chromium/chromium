@@ -11,7 +11,6 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_context_base.h"
@@ -21,6 +20,7 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/common/content_client.h"
@@ -29,14 +29,15 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "services/network/public/cpp/permissions_policy/origin_with_possible_wildcards.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/origin.h"
 
 using blink::PermissionType;
-using blink::mojom::PermissionsPolicyFeature;
+using network::mojom::PermissionsPolicyFeature;
 
 namespace permissions {
 namespace {
@@ -100,7 +101,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     EXPECT_EQ(expected,
               GetPermissionManager()
                   ->GetPermissionStatusInternal(
-                      PermissionUtil::PermissionTypeToContentSettingType(type),
+                      content::PermissionDescriptorUtil::
+                          CreatePermissionDescriptorForPermissionType(type),
                       /*render_process_host=*/nullptr,
                       /*render_frame_host=*/nullptr, url_, url_,
                       should_include_device_status)
@@ -113,7 +115,9 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       content::PermissionStatusSource expected_status_source) {
     content::PermissionResult result =
         GetPermissionManager()->GetPermissionResultForOriginWithoutContext(
-            type, url::Origin::Create(url_), url::Origin::Create(url_));
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(type),
+            url::Origin::Create(url_), url::Origin::Create(url_));
     EXPECT_EQ(expected_status, result.status);
     EXPECT_EQ(expected_status_source, result.source);
   }
@@ -134,7 +138,7 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                      PermissionStatus value) {
     GetHostContentSettingsMap()->SetContentSettingDefaultScope(
         requesting_origin, embedding_origin,
-        permissions::PermissionUtil::PermissionTypeToContentSettingType(type),
+        permissions::PermissionUtil::PermissionTypeToContentSettingsType(type),
         permissions::PermissionUtil::PermissionStatusToContentSetting(value));
   }
 
@@ -145,7 +149,8 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
         rfh,
         std::move(content::PermissionRequestDescription(
-            std::vector(1, type),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(type),
             /*user_gesture=*/true, rfh->GetLastCommittedOrigin().GetURL())),
         base::BindOnce(
             [](base::OnceCallback<void(PermissionStatus)> callback,
@@ -164,8 +169,9 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     GetPermissionManager()->RequestPermissionsFromCurrentDocument(
         rfh,
         content::PermissionRequestDescription(
-            type, /*user_gesture=*/true,
-            rfh->GetLastCommittedOrigin().GetURL()),
+            content::PermissionDescriptorUtil::
+                CreatePermissionDescriptorForPermissionType(type),
+            /*user_gesture=*/true, rfh->GetLastCommittedOrigin().GetURL()),
         base::BindOnce(
             [](base::OnceCallback<void(PermissionStatus)> callback,
                const std::vector<PermissionStatus>& state) {
@@ -180,14 +186,18 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       PermissionType permission,
       content::RenderFrameHost* render_frame_host) {
     return GetPermissionManager()->GetPermissionStatusForCurrentDocument(
-        permission, render_frame_host, /*should_include_device_status*/ false);
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(permission),
+        render_frame_host, /*should_include_device_status*/ false);
   }
 
   content::PermissionResult GetPermissionResultForCurrentDocument(
       PermissionType permission,
       content::RenderFrameHost* render_frame_host) {
     return GetPermissionManager()->GetPermissionResultForCurrentDocument(
-        permission, render_frame_host, /*should_include_device_status*/ false);
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(permission),
+        render_frame_host, /*should_include_device_status*/ false);
   }
 
   PermissionStatus GetPermissionStatusForWorker(
@@ -195,7 +205,9 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       content::RenderProcessHost* render_process_host,
       const GURL& worker_origin) {
     return GetPermissionManager()->GetPermissionStatusForWorker(
-        permission, render_process_host, worker_origin);
+        content::PermissionDescriptorUtil::
+            CreatePermissionDescriptorForPermissionType(permission),
+        render_process_host, worker_origin);
   }
 
   bool IsPermissionOverridable(PermissionType permission,
@@ -242,10 +254,10 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
     content::RenderFrameHost* current = *rfh;
     auto navigation = content::NavigationSimulator::CreateRendererInitiated(
         current->GetLastCommittedURL(), current);
-    std::vector<blink::OriginWithPossibleWildcards> parsed_origins;
+    std::vector<network::OriginWithPossibleWildcards> parsed_origins;
     for (const std::string& origin : origins)
       parsed_origins.emplace_back(
-          *blink::OriginWithPossibleWildcards::FromOrigin(
+          *network::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(GURL(origin))));
     navigation->SetPermissionsPolicyHeader(
         {{feature, parsed_origins, /*self_if_matches=*/std::nullopt,
@@ -259,11 +271,11 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
       content::RenderFrameHost* parent,
       const GURL& origin,
       PermissionsPolicyFeature feature = PermissionsPolicyFeature::kNotFound) {
-    blink::ParsedPermissionsPolicy frame_policy = {};
+    network::ParsedPermissionsPolicy frame_policy = {};
     if (feature != PermissionsPolicyFeature::kNotFound) {
       frame_policy.emplace_back(
           feature,
-          std::vector{*blink::OriginWithPossibleWildcards::FromOrigin(
+          std::vector{*network::OriginWithPossibleWildcards::FromOrigin(
               url::Origin::Create(origin))},
           /*self_if_matches=*/std::nullopt,
           /*matches_all_origins=*/false,
@@ -645,7 +657,16 @@ TEST_F(PermissionManagerTest, RequestPermissionInDifferentStoragePartition) {
                 partitioned_child->GetLastCommittedOrigin().GetURL()));
 }
 
-TEST_F(PermissionManagerTest, UpdatePermissionStatusWithDeviceStatus) {
+// TODO(crbug.com/377264243): Enable the test when device permission is
+// supported in Android
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_UpdatePermissionStatusWithDeviceStatus \
+  DISABLED_UpdatePermissionStatusWithDeviceStatus
+#else
+#define MAYBE_UpdatePermissionStatusWithDeviceStatus \
+  UpdatePermissionStatusWithDeviceStatus
+#endif
+TEST_F(PermissionManagerTest, MAYBE_UpdatePermissionStatusWithDeviceStatus) {
   struct {
     blink::mojom::PermissionStatus initial_status;
     bool has_device_permission;

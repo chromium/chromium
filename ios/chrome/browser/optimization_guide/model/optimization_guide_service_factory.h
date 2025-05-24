@@ -8,10 +8,10 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class OptimizationGuideService;
+class ProfileIOS;
 
 // Singleton that owns all OptimizationGuideService objects and associates them
 // with Profiles.
@@ -24,7 +24,7 @@ class OptimizationGuideServiceFactory : public ProfileKeyedServiceFactoryIOS {
   static void InitializePredictionModelStore();
 
   // Returns the default factory used to build OptimizationGuideService. Can be
-  // registered with SetTestingFactory to use real instances during testing.
+  // registered with AddTestingFactory to use real instances during testing.
   static TestingFactory GetDefaultFactory();
 
  private:

@@ -57,6 +57,8 @@ class PLATFORM_EXPORT ThreadState final {
 
   void AttachToIsolate(v8::Isolate* isolate, V8BuildEmbedderGraphCallback);
   void DetachFromIsolate();
+  // Releases ownership of the CppHeap which is transferred to the v8::Isolate.
+  std::unique_ptr<v8::CppHeap> ReleaseCppHeap();
 
   ALWAYS_INLINE cppgc::HeapHandle& heap_handle() const { return heap_handle_; }
   ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return *cpp_heap_; }
@@ -95,6 +97,10 @@ class PLATFORM_EXPORT ThreadState final {
   static ThreadState* AttachMainThreadForTesting(v8::Platform*);
   static ThreadState* AttachCurrentThreadForTesting(v8::Platform*);
 
+  void RecoverCppHeapAfterIsolateTearDown();
+
+  void SetCppHeap(std::unique_ptr<v8::CppHeap> cpp_heap);
+
   // Takes a heap snapshot that can be loaded into DevTools. Requires that
   // `ThreadState` is attached to a `v8::Isolate`.
   //
@@ -114,7 +120,12 @@ class PLATFORM_EXPORT ThreadState final {
   explicit ThreadState(v8::Platform*);
   ~ThreadState();
 
-  std::unique_ptr<v8::CppHeap> cpp_heap_;
+  // During setup of a page ThreadState owns CppHeap. The ownership is
+  // transferred to the v8::Isolate on its creation.
+  std::unique_ptr<v8::CppHeap> owning_cpp_heap_;
+  // Even when not owning the CppHeap (as the heap is owned by a v8::Isolate),
+  // this pointer will keep a reference to the current CppHeap.
+  v8::CppHeap* cpp_heap_;
   std::unique_ptr<v8::EmbedderRootsHandler> embedder_roots_handler_;
   cppgc::HeapHandle& heap_handle_;
   v8::Isolate* isolate_ = nullptr;

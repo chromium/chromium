@@ -12,8 +12,6 @@
 
 namespace blink {
 
-class PNGImageDecoder;
-
 // This class decodes the ICO and CUR image formats.
 class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
  public:
@@ -146,7 +144,7 @@ class PLATFORM_EXPORT ICOImageDecoder final : public ImageDecoder {
   // The image decoders for the various frames.
   typedef Vector<std::unique_ptr<BMPImageReader>> BMPReaders;
   BMPReaders bmp_readers_;
-  typedef Vector<std::unique_ptr<PNGImageDecoder>> PNGDecoders;
+  typedef Vector<std::unique_ptr<ImageDecoder>> PNGDecoders;
   PNGDecoders png_decoders_;
 
   // Valid only while a BMPImageReader is decoding, this holds the size

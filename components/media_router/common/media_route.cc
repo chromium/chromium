@@ -17,8 +17,10 @@ constexpr char kRouteIdPrefix[] = "urn:x-org.chromium:media:route:";
 namespace {
 
 bool IsValidMediaRouteId(const MediaRoute::Id route_id) {
-  if (!base::StartsWith(route_id, kRouteIdPrefix, base::CompareCase::SENSITIVE))
+  if (!base::StartsWith(route_id, kRouteIdPrefix,
+                        base::CompareCase::SENSITIVE)) {
     return false;
+  }
   // return false if there are not at least two slashes in |route_id|.
   size_t pos;
   return ((pos = route_id.find("/")) != std::string::npos &&

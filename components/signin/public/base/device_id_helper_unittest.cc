@@ -7,7 +7,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,7 +14,7 @@
 namespace signin {
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 TEST(DeviceIdHelper, GenerateSigninScopedDeviceId) {
   EXPECT_FALSE(GenerateSigninScopedDeviceId().empty());

@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace {
 
@@ -19,7 +20,8 @@ bool ParseResponse(std::string json) {
 namespace ash::boca {
 
 UploadTokenRequest::UploadTokenRequest(google_apis::RequestSender* sender,
-                                       std::string gaia_id,
+                                       std::string base_url,
+                                       GaiaId gaia_id,
                                        std::string token,
                                        UploadTokenCallback callback)
     : UrlFetchRequestBase(sender,
@@ -27,14 +29,14 @@ UploadTokenRequest::UploadTokenRequest(google_apis::RequestSender* sender,
                           google_apis::ProgressCallback()),
       gaia_id_(gaia_id),
       token_(token),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(base_url)),
       callback_(std::move(callback)) {}
 
 UploadTokenRequest ::~UploadTokenRequest() = default;
 
 GURL UploadTokenRequest::GetURL() const {
   auto url = GURL(url_base_).Resolve(base::ReplaceStringPlaceholders(
-      kUploadFCMTokenTemplate, {gaia_id_}, nullptr));
+      kUploadFCMTokenTemplate, {gaia_id_.ToString()}, nullptr));
   return url;
 }
 

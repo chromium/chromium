@@ -2,40 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FittingType, record, recordFitTo, resetForTesting as resetMetricsForTesting, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {FittingType, record, recordFitTo, UserAction} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+
+import {setupMockMetricsPrivate} from './test_util.js';
 
 chrome.test.runTests(function() {
   'use strict';
 
-  const originalMetricTypeType = chrome.metricsPrivate.MetricTypeType;
-
-  class MockMetricsPrivate {
-    actionCounter: Map<UserAction, number> = new Map();
-    MetricTypeType: typeof chrome.metricsPrivate.MetricTypeType;
-
-    constructor() {
-      this.MetricTypeType = originalMetricTypeType;
-    }
-
-    recordValue(metric: chrome.metricsPrivate.MetricType, value: number) {
-      chrome.test.assertEq('PDF.Actions', metric.metricName);
-      chrome.test.assertEq(
-          chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG, metric.type);
-      chrome.test.assertEq(1, metric.min);
-      chrome.test.assertEq(UserAction.NUMBER_OF_ACTIONS, metric.max);
-      chrome.test.assertEq(UserAction.NUMBER_OF_ACTIONS + 1, metric.buckets);
-
-      const counter = this.actionCounter.get(value) || 0;
-      this.actionCounter.set(value, counter + 1);
-    }
-  }
-
   return [
     function testMetricsDocumentOpened() {
-      resetMetricsForTesting();
-      const mockMetricsPrivate = new MockMetricsPrivate();
-      chrome.metricsPrivate =
-          mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+      const mockMetricsPrivate = setupMockMetricsPrivate();
 
       record(UserAction.DOCUMENT_OPENED);
 
@@ -48,10 +24,7 @@ chrome.test.runTests(function() {
     // Test that for every UserAction.<action> recorded an equivalent
     // UserAction.<action>_FIRST is recorded only once.
     function testMetricsFirstRecorded() {
-      resetMetricsForTesting();
-      const mockMetricsPrivate = new MockMetricsPrivate();
-      chrome.metricsPrivate =
-          mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+      const mockMetricsPrivate = setupMockMetricsPrivate();
 
       const keys = (Object.keys(UserAction) as Array<keyof typeof UserAction>)
                        .filter(key => Number.isInteger(UserAction[key]))
@@ -80,10 +53,7 @@ chrome.test.runTests(function() {
     },
 
     function testMetricsFitTo() {
-      resetMetricsForTesting();
-      const mockMetricsPrivate = new MockMetricsPrivate();
-      chrome.metricsPrivate =
-          mockMetricsPrivate as unknown as typeof chrome.metricsPrivate;
+      const mockMetricsPrivate = setupMockMetricsPrivate();
 
       record(UserAction.DOCUMENT_OPENED);
       recordFitTo(FittingType.FIT_TO_HEIGHT);

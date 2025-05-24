@@ -6,7 +6,9 @@ package org.chromium.components.search_engines;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.build.annotations.MockedInTests;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.url.GURL;
 
 import java.util.Locale;
 
@@ -15,9 +17,10 @@ import java.util.Locale;
  * from native side. Any class uses this need to register a {@link TemplateUrlServiceObserver} on
  * {@link TemplatUrlService} to listen the native changes in case the native pointer is destroyed.
  */
-@MockedInTests
+@NullMarked
 public class TemplateUrl {
     private final long mTemplateUrlPtr;
+    private @Nullable GURL mFaviconUrl;
 
     @CalledByNative
     private static TemplateUrl create(long templateUrlPtr) {
@@ -49,6 +52,16 @@ public class TemplateUrl {
     /** @return The keyword of the search engine. */
     public String getKeyword() {
         return TemplateUrlJni.get().getKeyword(mTemplateUrlPtr);
+    }
+
+    /**
+     * @return The URL of the Search Engine favicon.
+     */
+    public GURL getFaviconURL() {
+        if (mFaviconUrl == null) {
+            mFaviconUrl = TemplateUrlJni.get().getFaviconURL(mTemplateUrlPtr);
+        }
+        return mFaviconUrl;
     }
 
     /**
@@ -111,5 +124,7 @@ public class TemplateUrl {
         String getURL(long templateUrlPtr);
 
         String getNewTabURL(long templateUrlPtr);
+
+        GURL getFaviconURL(long templateUrlPtr);
     }
 }

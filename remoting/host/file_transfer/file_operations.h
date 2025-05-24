@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -45,7 +46,7 @@ class FileOperations {
 
   class Reader {
    public:
-    using OpenResult = protocol::FileTransferResult<absl::monostate>;
+    using OpenResult = protocol::FileTransferResult<std::monostate>;
     using OpenCallback = base::OnceCallback<void(OpenResult result)>;
 
     // On success, |result| will contain the read data, or an empty vector on
@@ -71,7 +72,7 @@ class FileOperations {
 
   class Writer {
    public:
-    using Result = protocol::FileTransferResult<absl::monostate>;
+    using Result = protocol::FileTransferResult<std::monostate>;
     using Callback = base::OnceCallback<void(Result result)>;
 
     // Destructing before the file is completely written and closed will

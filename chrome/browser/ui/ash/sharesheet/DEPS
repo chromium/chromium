@@ -21,8 +21,14 @@ include_rules = [
   "+chrome/browser/ui/ash/thumbnail_loader",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/color",
-  "+chrome/browser/ui/views",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  # Allow access for tests.
+  "sharesheet_bubble_view_browsertest\\.cc": [
+    "+chrome/browser/ui/views/frame/browser_view.h",
+  ],
+}

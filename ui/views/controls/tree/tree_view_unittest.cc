@@ -5,6 +5,7 @@
 #include "ui/views/controls/tree/tree_view.h"
 
 #include <numeric>
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -96,13 +97,15 @@ class TreeViewTest : public ViewsTestBase {
   void TearDown() override;
 
  protected:
-  using AccessibilityEventsVector = std::vector<
+  using AccessibilityEventsSet = std::set<
       std::pair<const ui::AXPlatformNodeDelegate*, const ax::mojom::Event>>;
 
-  const AccessibilityEventsVector accessibility_events() const {
+  const AccessibilityEventsSet accessibility_events() const {
     return accessibility_events_;
   }
 
+  bool FiredAccessibilityEvent(std::pair<const ui::AXPlatformNodeDelegate*,
+                                         const ax::mojom::Event> event) const;
   void ClearAccessibilityEvents();
 
   TestNode* Add(TestNode* parent, size_t index, const std::string& title);
@@ -165,7 +168,7 @@ class TreeViewTest : public ViewsTestBase {
 
   // Keeps a record of all accessibility events that have been fired on the tree
   // view.
-  AccessibilityEventsVector accessibility_events_;
+  AccessibilityEventsSet accessibility_events_;
 };
 
 void TreeViewTest::SetUp() {
@@ -181,13 +184,12 @@ void TreeViewTest::SetUp() {
 
   ViewAccessibility::AccessibilityEventsCallback accessibility_events_callback =
       base::BindRepeating(
-          [](std::vector<std::pair<const ui::AXPlatformNodeDelegate*,
-                                   const ax::mojom::Event>>*
-                 accessibility_events,
+          [](std::set<std::pair<const ui::AXPlatformNodeDelegate*,
+                                const ax::mojom::Event>>* accessibility_events,
              const ui::AXPlatformNodeDelegate* delegate,
              const ax::mojom::Event event_type) {
             DCHECK(accessibility_events);
-            accessibility_events->push_back({delegate, event_type});
+            accessibility_events->insert(std::make_pair(delegate, event_type));
           },
           &accessibility_events_);
   tree()->GetViewAccessibility().set_accessibility_events_callback(
@@ -215,10 +217,17 @@ std::string TreeViewTest::TreeViewContentsAsString() {
   return InternalNodeAsString(&tree()->root_);
 }
 
+bool TreeViewTest::FiredAccessibilityEvent(
+    std::pair<const ui::AXPlatformNodeDelegate*, const ax::mojom::Event> event)
+    const {
+  return accessibility_events_.find(event) != accessibility_events_.end();
+}
+
 std::string TreeViewTest::TreeViewAccessibilityContentsAsString() const {
   AXVirtualView* ax_view = GetRootAccessibilityView();
-  if (!ax_view)
+  if (!ax_view) {
     return "Empty";
+  }
   return AccessibilityViewAsString(*ax_view);
 }
 
@@ -256,8 +265,9 @@ std::string TreeViewTest::GetSelectedAccessibilityViewName() const {
       parent_view = parent_view->virtual_parent_view();
     }
 
-    if (!parent_view)
+    if (!parent_view) {
       break;
+    }
   }
 
   return {};
@@ -288,7 +298,7 @@ AXVirtualView* TreeViewTest::GetRootAccessibilityView() const {
 }
 
 ViewAXPlatformNodeDelegate* TreeViewTest::GetTreeAccessibilityView() const {
-#if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
   return nullptr;  // ViewAXPlatformNodeDelegate is not used on this platform.
 #else
   return static_cast<ViewAXPlatformNodeDelegate*>(
@@ -332,8 +342,9 @@ const AXVirtualView* TreeViewTest::GetAccessibilityViewByName(
       parent_view = parent_view->virtual_parent_view();
     }
 
-    if (!parent_view)
+    if (!parent_view) {
       break;
+    }
   }
 
   return nullptr;
@@ -358,12 +369,14 @@ size_t TreeViewTest::GetRowCount() {
 
 TestNode* TreeViewTest::GetNodeByTitleImpl(TestNode* node,
                                            const std::u16string& title) {
-  if (node->GetTitle() == title)
+  if (node->GetTitle() == title) {
     return node;
+  }
   for (auto& child : node->children()) {
     TestNode* matching_node = GetNodeByTitleImpl(child.get(), title);
-    if (matching_node)
+    if (matching_node) {
       return matching_node;
+    }
   }
   return nullptr;
 }
@@ -420,18 +433,12 @@ TEST_F(TreeViewTest, SetModel) {
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
 
-  EXPECT_EQ(
-      (AccessibilityEventsVector{
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kChildrenChanged),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kChildrenChanged),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kChildrenChanged),
-          std::make_pair(GetRootAccessibilityView(), ax::mojom::Event::kFocus),
-          std::make_pair(GetRootAccessibilityView(),
-                         ax::mojom::Event::kSelection)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(GetRootAccessibilityView(), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetRootAccessibilityView(), ax::mojom::Event::kSelection)));
 }
 
 // Verifies that SetSelectedNode works.
@@ -450,12 +457,10 @@ TEST_F(TreeViewTest, SetSelectedNode) {
   tree()->SetSelectedNode(GetNodeByTitle("c"));
   EXPECT_EQ("c", GetSelectedNodeTitle());
   EXPECT_EQ("c", GetSelectedAccessibilityViewName());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{std::make_pair(GetAccessibilityViewByName("c"),
-                                                ax::mojom::Event::kFocus),
-                                 std::make_pair(GetAccessibilityViewByName("c"),
-                                                ax::mojom::Event::kSelection)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("c"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("c"), ax::mojom::Event::kSelection)));
 
   // Select 'b1', which should expand 'b'.
   ClearAccessibilityEvents();
@@ -465,20 +470,18 @@ TEST_F(TreeViewTest, SetSelectedNode) {
   EXPECT_EQ("b1", GetSelectedNodeTitle());
   EXPECT_EQ("b1", GetSelectedAccessibilityViewName());
   // Node "b" must have been expanded.
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kExpandedChanged),
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kRowExpanded),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kRowCountChanged),
-                std::make_pair(GetAccessibilityViewByName("b1"),
-                               ax::mojom::Event::kFocus),
-                std::make_pair(GetAccessibilityViewByName("b1"),
-                               ax::mojom::Event::kSelection)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kExpandedChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kRowExpanded)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b1"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b1"), ax::mojom::Event::kSelection)));
 }
 
 // Makes sure SetRootShown doesn't blow up.
@@ -492,14 +495,12 @@ TEST_F(TreeViewTest, HideRoot) {
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
   EXPECT_EQ(3u, GetRowCount());
 
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetAccessibilityViewByName("a"),
-                               ax::mojom::Event::kFocus),
-                std::make_pair(GetAccessibilityViewByName("a"),
-                               ax::mojom::Event::kSelection),
-                std::make_pair(GetRootAccessibilityView(),
-                               ax::mojom::Event::kStateChanged)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetRootAccessibilityView(), ax::mojom::Event::kStateChanged)));
 }
 
 // Expands a node and verifies the children are loaded correctly.
@@ -513,16 +514,14 @@ TEST_F(TreeViewTest, Expand) {
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(5u, GetRowCount());
 
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetAccessibilityViewByName("b1"),
-                               ax::mojom::Event::kExpandedChanged),
-                std::make_pair(GetAccessibilityViewByName("b1"),
-                               ax::mojom::Event::kRowExpanded),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kRowCountChanged)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b1"), ax::mojom::Event::kExpandedChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b1"), ax::mojom::Event::kRowExpanded)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
 }
 
 // Collapse a node and verifies state.
@@ -545,18 +544,16 @@ TEST_F(TreeViewTest, Collapse) {
   EXPECT_EQ("b", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
 
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kFocus),
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kSelection),
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kExpandedChanged),
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kRowCollapsed),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kRowCountChanged)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kExpandedChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kRowCollapsed)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
 }
 
 // Verifies that adding nodes works.
@@ -573,12 +570,11 @@ TEST_F(TreeViewTest, TreeNodesAdded) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(5u, GetRowCount());
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kRowCountChanged)}),
-            accessibility_events());
+
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
 
   // Add a child of b1, which hasn't been loaded and shouldn't do anything.
   ClearAccessibilityEvents();
@@ -588,8 +584,6 @@ TEST_F(TreeViewTest, TreeNodesAdded) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(5u, GetRowCount());
-  // Added node is not visible, hence no accessibility event needed.
-  EXPECT_EQ(AccessibilityEventsVector(), accessibility_events());
 
   // Add a child of b, which isn't expanded yet, so it shouldn't effect
   // anything.
@@ -600,8 +594,6 @@ TEST_F(TreeViewTest, TreeNodesAdded) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(5u, GetRowCount());
-  // Added node is not visible, hence no accessibility event needed.
-  EXPECT_EQ(AccessibilityEventsVector(), accessibility_events());
 
   // Expand b and make sure b2 is there.
   ClearAccessibilityEvents();
@@ -613,18 +605,14 @@ TEST_F(TreeViewTest, TreeNodesAdded) {
   EXPECT_EQ(7u, GetRowCount());
   // Since the added node was not visible when it was added, no extra events
   // other than the ones for expanding a node are needed.
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kExpandedChanged),
-                std::make_pair(GetAccessibilityViewByName("b"),
-                               ax::mojom::Event::kRowExpanded),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kRowCountChanged)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kExpandedChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kRowExpanded)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
 }
 
 // Verifies that removing nodes works.
@@ -712,10 +700,8 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{std::make_pair(
-          GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
 
   // Remove 'b'.
   root_children_set_size = 2;
@@ -727,14 +713,12 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(3u, GetRowCount());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{
-          std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kChildrenChanged),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kRowCountChanged)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
   data = GetAccessibilityViewByName("root")->GetData();
   EXPECT_EQ(data.GetIntAttribute(ax::mojom::IntAttribute::kSetSize),
             root_set_size);
@@ -780,7 +764,7 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
             c_pos_in_set);
 
   // Node "c11" is not visible, hence no accessibility event needed.
-  EXPECT_EQ(AccessibilityEventsVector(), accessibility_events());
+  EXPECT_EQ(AccessibilityEventsSet(), accessibility_events());
 
   // Select 'c1', remove 'c' and make sure selection changes.
   tree()->SetSelectedNode(GetNodeByTitle("c1"));
@@ -793,18 +777,16 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
   EXPECT_EQ("a", GetSelectedNodeTitle());
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
   EXPECT_EQ(2u, GetRowCount());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{
-          std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kChildrenChanged),
-          std::make_pair(GetAccessibilityViewByName("a"),
-                         ax::mojom::Event::kFocus),
-          std::make_pair(GetAccessibilityViewByName("a"),
-                         ax::mojom::Event::kSelection),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kRowCountChanged)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
 
   // Add 'c1', 'c2', 'c3', select 'c2', remove it and 'c3" should be selected.
   Add(GetNodeByTitle("a"), 0, "c1");
@@ -826,18 +808,16 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
   EXPECT_EQ("c1", GetSelectedNodeTitle());
   EXPECT_EQ("c1", GetSelectedAccessibilityViewName());
   EXPECT_EQ(3u, GetRowCount());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{
-          std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kChildrenChanged),
-          std::make_pair(GetAccessibilityViewByName("c1"),
-                         ax::mojom::Event::kFocus),
-          std::make_pair(GetAccessibilityViewByName("c1"),
-                         ax::mojom::Event::kSelection),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kRowCountChanged)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("c1"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("c1"), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
 
   // Finally delete 'c1' and then 'a' should be selected.
   ClearAccessibilityEvents();
@@ -847,18 +827,16 @@ TEST_F(TreeViewTest, TreeNodesRemoved) {
   EXPECT_EQ("a", GetSelectedNodeTitle());
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
   EXPECT_EQ(2u, GetRowCount());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{
-          std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kChildrenChanged),
-          std::make_pair(GetAccessibilityViewByName("a"),
-                         ax::mojom::Event::kFocus),
-          std::make_pair(GetAccessibilityViewByName("a"),
-                         ax::mojom::Event::kSelection),
-          std::make_pair(GetTreeAccessibilityView(),
-                         ax::mojom::Event::kRowCountChanged)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kRowCountChanged)));
 
   tree()->SetRootShown(false);
   // Add 'b' and 'c', select 'b' and remove it. Selection should change to 'c'.
@@ -923,7 +901,7 @@ TEST_F(TreeViewTest, TreeNodeChanged) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
-  EXPECT_EQ(AccessibilityEventsVector(), accessibility_events());
+  EXPECT_EQ(AccessibilityEventsSet(), accessibility_events());
 
   // Change 'b1', shouldn't do anything.
   ClearAccessibilityEvents();
@@ -933,7 +911,7 @@ TEST_F(TreeViewTest, TreeNodeChanged) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
-  EXPECT_EQ(AccessibilityEventsVector(), accessibility_events());
+  EXPECT_EQ(AccessibilityEventsSet(), accessibility_events());
 
   // Change 'b'.
   ClearAccessibilityEvents();
@@ -943,10 +921,9 @@ TEST_F(TreeViewTest, TreeNodeChanged) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetAccessibilityViewByName("b.new"),
-                               ax::mojom::Event::kLocationChanged)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(GetAccessibilityViewByName("b.new"),
+                     ax::mojom::Event::kLocationChanged)));
 }
 
 // Verifies that IncrementSelection() works.
@@ -957,12 +934,10 @@ TEST_F(TreeViewTest, IncrementSelection) {
   IncrementSelection(true);
   EXPECT_EQ("a", GetSelectedNodeTitle());
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{std::make_pair(GetAccessibilityViewByName("a"),
-                                                ax::mojom::Event::kFocus),
-                                 std::make_pair(GetAccessibilityViewByName("a"),
-                                                ax::mojom::Event::kSelection)}),
-      accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kSelection)));
 
   IncrementSelection(true);
   EXPECT_EQ("b", GetSelectedNodeTitle());
@@ -1183,24 +1158,18 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   EXPECT_EQ("root", GetSelectedNodeTitle());
   EXPECT_EQ("root", GetSelectedAccessibilityViewName());
   EXPECT_EQ(4u, GetRowCount());
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetRootAccessibilityView(),
-                               ax::mojom::Event::kSelection)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetRootAccessibilityView(), ax::mojom::Event::kSelection)));
 
   // The initial focus should fire a focus event for the active node
   // (in this case, the root node).
   ClearAccessibilityEvents();
   tree()->RequestFocus();
   EXPECT_TRUE(tree()->HasFocus());
-  EXPECT_EQ((AccessibilityEventsVector{std::make_pair(
-                GetRootAccessibilityView(), ax::mojom::Event::kFocus)}),
+  EXPECT_EQ((AccessibilityEventsSet{std::make_pair(GetRootAccessibilityView(),
+                                                   ax::mojom::Event::kFocus)}),
             accessibility_events());
 
   // Focus clear and restore should fire a focus event for the active node.
@@ -1219,17 +1188,12 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   EXPECT_EQ("a", GetActiveAccessibilityViewName());
   EXPECT_EQ("b", GetSelectedNodeTitle());
   EXPECT_EQ("b", GetSelectedAccessibilityViewName());
-  EXPECT_EQ(
-      (AccessibilityEventsVector{std::make_pair(GetAccessibilityViewByName("b"),
-                                                ax::mojom::Event::kFocus),
-                                 std::make_pair(GetAccessibilityViewByName("b"),
-                                                ax::mojom::Event::kSelection),
-                                 std::make_pair(GetAccessibilityViewByName("a"),
-                                                ax::mojom::Event::kFocus),
-                                 std::make_pair(GetAccessibilityViewByName("a"),
-                                                ax::mojom::Event::kFocus)}),
-      accessibility_events());
-
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("b"), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kFocus)));
   // Without keyboard focus, selection should not fire focus events.
   ClearAccessibilityEvents();
   tree()->GetFocusManager()->ClearFocus();
@@ -1238,8 +1202,8 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   EXPECT_EQ("a", GetSelectedNodeTitle());
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
   EXPECT_EQ(
-      (AccessibilityEventsVector{std::make_pair(GetAccessibilityViewByName("a"),
-                                                ax::mojom::Event::kSelection)}),
+      (AccessibilityEventsSet{std::make_pair(GetAccessibilityViewByName("a"),
+                                             ax::mojom::Event::kSelection)}),
       accessibility_events());
 
   // A direct focus action on a tree item should give focus to the tree view but
@@ -1258,12 +1222,12 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
     EXPECT_EQ(name, GetActiveAccessibilityViewName());
     EXPECT_EQ(name, GetSelectedNodeTitle());
     EXPECT_EQ(name, GetSelectedAccessibilityViewName());
-    EXPECT_EQ((AccessibilityEventsVector{
-                  std::make_pair(GetAccessibilityViewByName(name),
-                                 ax::mojom::Event::kSelection),
-                  std::make_pair(GetAccessibilityViewByName(name),
-                                 ax::mojom::Event::kFocus)}),
-              accessibility_events());
+    EXPECT_EQ(
+        (AccessibilityEventsSet{std::make_pair(GetAccessibilityViewByName(name),
+                                               ax::mojom::Event::kSelection),
+                                std::make_pair(GetAccessibilityViewByName(name),
+                                               ax::mojom::Event::kFocus)}),
+        accessibility_events());
   }
 
   // A direct focus action on the tree view itself with an active node should
@@ -1280,8 +1244,8 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   EXPECT_EQ("b", GetSelectedNodeTitle());
   EXPECT_EQ("b", GetSelectedAccessibilityViewName());
   EXPECT_EQ(
-      (AccessibilityEventsVector{std::make_pair(GetAccessibilityViewByName("b"),
-                                                ax::mojom::Event::kSelection)}),
+      (AccessibilityEventsSet{std::make_pair(GetAccessibilityViewByName("b"),
+                                             ax::mojom::Event::kSelection)}),
       accessibility_events());
 
   // A direct focus action on a tree view without an active node (i.e. empty
@@ -1300,16 +1264,14 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   EXPECT_EQ(std::string(), GetActiveAccessibilityViewName());
   EXPECT_EQ(std::string(), GetSelectedNodeTitle());
   EXPECT_EQ(std::string(), GetSelectedAccessibilityViewName());
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetRootAccessibilityView(),
-                               ax::mojom::Event::kSelection),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kSelection),
-                std::make_pair(GetRootAccessibilityView(),
-                               ax::mojom::Event::kStateChanged),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kFocus)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetRootAccessibilityView(), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kSelection)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetRootAccessibilityView(), ax::mojom::Event::kStateChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(
+      std::make_pair(GetTreeAccessibilityView(), ax::mojom::Event::kFocus)));
 
   // When a focused empty tree is populated with nodes, it should immediately
   // hand off focus to one of them and select it.
@@ -1319,18 +1281,12 @@ TEST_F(TreeViewTest, OnFocusAccessibilityEvents) {
   EXPECT_EQ("a", GetActiveAccessibilityViewName());
   EXPECT_EQ("a", GetSelectedNodeTitle());
   EXPECT_EQ("a", GetSelectedAccessibilityViewName());
-  EXPECT_EQ((AccessibilityEventsVector{
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetTreeAccessibilityView(),
-                               ax::mojom::Event::kChildrenChanged),
-                std::make_pair(GetAccessibilityViewByName("a"),
-                               ax::mojom::Event::kFocus),
-                std::make_pair(GetAccessibilityViewByName("a"),
-                               ax::mojom::Event::kSelection)}),
-            accessibility_events());
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetTreeAccessibilityView(), ax::mojom::Event::kChildrenChanged)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kFocus)));
+  EXPECT_TRUE(FiredAccessibilityEvent(std::make_pair(
+      GetAccessibilityViewByName("a"), ax::mojom::Event::kSelection)));
 }
 
 }  // namespace views

@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_switches.h"
@@ -26,6 +28,7 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/sockets_udp/test_udp_echo_server.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_constants.h"
@@ -33,10 +36,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -47,13 +50,17 @@
 #include "extensions/test/test_extension_dir.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 
 constexpr char kHostname[] = "direct-sockets.com";
 constexpr char kPrivateAddress[] = "10.8.0.1";
 
 constexpr std::string_view kTcpReadWriteScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     try {
       const socket = new TCPSocket($1, $2);
 
@@ -78,36 +85,33 @@ constexpr std::string_view kTcpReadWriteScript = R"(
       const readUntil = async () => {
         const { value, done } = await reader.read();
         if (done) {
-          console.log("ReadableStream must not be exhausted at this point.");
-          return false;
+          reject("ReadableStream must not be exhausted at this point.");
         }
 
         const message = (new TextDecoder()).decode(value);
         tcpResponse += message;
         if (tcpResponse.length >= kTcpMinExpectedResponseLength) {
           if (!tcpResponse.match(kTcpResponsePattern)) {
-            console.log("The data returned must match the data sent.");
-            return false;
+            reject("The data returned must match the data sent.");
           }
 
-          return true;
+          resolve();
         } else {
-          return await readUntil();
+          readUntil();
         }
       };
 
       writer.write((new TextEncoder()).encode(kTcpPacket));
 
-      return await readUntil();
+      readUntil();
     } catch (err) {
-      console.log(err);
-      return false;
+      reject(err);
     }
-  })();
+  });
 )";
 
 constexpr std::string_view kUdpConnectedReadWriteScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     try {
       const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
       const { readable, writable } = await socket.opened;
@@ -119,23 +123,22 @@ constexpr std::string_view kUdpConnectedReadWriteScript = R"(
       return await readable.getReader().read().then(packet => {
         const { value, done } = packet;
         if (done) {
-          return false;
+          reject("ReadableStream must not be exhausted at this point.");
         }
         const { data } = value;
         if ((new TextDecoder()).decode(data) !== kUdpMessage) {
-          return false;
+          reject("The data returned must match the data sent.");
         }
-        return true;
+        resolve();
       });
     } catch (err) {
-      console.log(err);
-      return false;
+      reject(err);
     }
-  })();
+  });
 )";
 
 constexpr std::string_view kUdpBoundReadWriteScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     try {
       const socket = new UDPSocket({ localAddress: "127.0.0.1" });
       const { readable, writable } = await socket.opened;
@@ -149,33 +152,32 @@ constexpr std::string_view kUdpBoundReadWriteScript = R"(
       return await readable.getReader().read().then(packet => {
         const { value, done } = packet;
         if (done) {
-          return false;
+          reject("ReadableStream must not be exhausted at this point.");
         }
         const { data, remoteAddress, remotePort } = value;
         if ((new TextDecoder()).decode(data) !== kUdpMessage) {
-          return false;
+          reject("The data returned must match the data sent.");
         }
         if (remoteAddress !== "127.0.0.1") {
-          return false;
+          reject(`Expected remoteAddress = 127.0.0.1, got ${remoteAddress}`);
         }
         if (remotePort !== $2) {
-          return false;
+          reject(`Expected remotePort = $2, got ${remotePort}`);
         }
-        return true;
+        resolve();
       });
     } catch (err) {
-      console.log(err);
-      return false;
+      reject(err);
     }
-  })();
+  });
 )";
 
 static constexpr std::string_view kTcpServerExchangePacketWithTcpScript = R"(
-  (async () => {
+  new Promise(async (resolve, reject) => {
     const assertEq = (actual, expected) => {
       const jf = e => JSON.stringify(e);
       if (actual !== expected) {
-        throw `Expected ${jf(expected)}, got ${jf(actual)}`;
+        reject(`Expected ${jf(expected)}, got ${jf(actual)}`);
       }
     };
 
@@ -232,7 +234,9 @@ static constexpr std::string_view kTcpServerExchangePacketWithTcpScript = R"(
     await clientSocket.close();
     await acceptedSocket.close();
     await serverSocket.close();
-  })();
+
+    resolve();
+  });
 )";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -258,20 +262,19 @@ base::Value::Dict GenerateManifest(
 }
 
 auto AccessBlocked() {
-  return testing::HasSubstr("Access to the requested host is blocked");
+  return testing::HasSubstr("Access to the requested host or port is blocked");
 }
 
 auto PrivateNetworkAccessBlocked() {
   return testing::HasSubstr("Access to private network is blocked");
 }
 
-auto NotDefined(std::string_view symbol) {
-  return testing::HasSubstr(
-      base::StringPrintf("%s is not defined", symbol.data()));
-}
-
 auto ErrorIs(const auto& matcher) {
   return testing::Field(&content::EvalJsResult::error, matcher);
+}
+
+auto IsOk() {
+  return content::EvalJsResult::IsOk();
 }
 
 #endif
@@ -382,20 +385,61 @@ class ChromeDirectSocketsUdpTest : public ChromeDirectSocketsTest<TestHarness> {
 
 class ChromeAppApiTest : public extensions::ExtensionApiTest {
  public:
+  static constexpr std::string_view kWorkerScriptTemplate = R"(
+    self.onmessage = async e => {
+      try {
+        await %s;
+        self.postMessage(null);
+      } catch (err) {
+        self.postMessage({ error: err });
+      }
+    };
+  )";
+
+  static constexpr std::string_view kWorkerConnect = R"(
+    new Promise((resolve, reject) => {
+      const policy = trustedTypes.createPolicy("default", {
+        createScriptURL: (url) => url,
+      });
+      const worker = new Worker(
+        policy.createScriptURL('/worker.js')
+      );
+      worker.onmessage = e => {
+        if (e.data) {
+          reject(e.data.error);
+        } else {
+          resolve();
+        }
+      };
+      worker.postMessage(null);
+    });
+  )";
   content::RenderFrameHost* InstallAndOpenChromeApp(
       const base::Value::Dict& manifest) {
-    dir.WriteManifest(manifest);
-    dir.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+    dir_.WriteManifest(manifest);
+    dir_.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+    return InstallAndOpenChromeApp();
+  }
 
+  content::RenderFrameHost* InstallAndOpenChromeAppWithWorkerScript(
+      const base::Value::Dict& manifest,
+      std::string_view worker_script) {
+    dir_.WriteManifest(manifest);
+    dir_.WriteFile(FILE_PATH_LITERAL("background.js"), "");
+    dir_.WriteFile(FILE_PATH_LITERAL("worker.js"), worker_script);
+    return InstallAndOpenChromeApp();
+  }
+
+ private:
+  content::RenderFrameHost* InstallAndOpenChromeApp() {
     const extensions::Extension& extension =
-        CHECK_DEREF(LoadExtension(dir.UnpackedPath()));
+        CHECK_DEREF(LoadExtension(dir_.UnpackedPath()));
     return CHECK_DEREF(extensions::ProcessManager::Get(profile())
                            ->GetBackgroundHostForExtension(extension.id()))
         .main_frame_host();
   }
 
- private:
-  extensions::TestExtensionDir dir;
+  extensions::TestExtensionDir dir_;
 };
 
 using ChromeDirectSocketsTcpApiTest =
@@ -407,10 +451,23 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWrite) {
                        base::Value::Dict().Set(
                            "tcp", base::Value::Dict().Set("connect", "*"))));
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest, TcpReadWriteFromWorker) {
+  const std::string worker_script = base::StringPrintf(
+      kWorkerScriptTemplate, content::JsReplace(kTcpReadWriteScript, kHostname,
+                                                test_server()->port()));
+
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeAppWithWorkerScript(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
+          "tcp", base::Value::Dict().Set("connect", "*"))),
+      worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
@@ -420,11 +477,14 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
       InstallAndOpenChromeApp(GenerateManifest());
 
   static constexpr std::string_view kScript = R"(
-    const socket = new TCPSocket($1, $2);
+    (async () => {
+      const socket = new TCPSocket($1, $2);
+      await socket.opened;
+    })();
   )";
 
   EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
-              ErrorIs(NotDefined("TCPSocket")));
+              ErrorIs(AccessBlocked()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
@@ -453,10 +513,24 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWrite) {
       GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
           "udp", base::Value::Dict().Set("send", "*"))));
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
-                                           kHostname, test_server()->port()))
-          .ExtractBool());
+                                           kHostname, test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpReadWriteFromWorker) {
+  const std::string worker_script =
+      base::StringPrintf(kWorkerScriptTemplate,
+                         content::JsReplace(kUdpConnectedReadWriteScript,
+                                            kHostname, test_server()->port()));
+
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeAppWithWorkerScript(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
+          "udp", base::Value::Dict().Set("send", "*"))),
+      worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -466,11 +540,14 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
       InstallAndOpenChromeApp(GenerateManifest());
 
   static constexpr std::string_view kScript = R"(
-    const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
+    (async () => {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
+      await socket.opened;
+    })();
   )";
 
   EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
-              ErrorIs(NotDefined("UDPSocket")));
+              ErrorIs(AccessBlocked()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -514,10 +591,31 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest, UdpServerReadWrite) {
       GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
           "udp", base::Value::Dict().Set("bind", "*").Set("send", "*"))));
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
+                       UdpServerNotAffectedByPNAContentSettingInChromeApps) {
+  content::RenderFrameHost* app_frame = InstallAndOpenChromeApp(
+      GenerateManifest(/*socket_permissions=*/base::Value::Dict().Set(
+          "udp", base::Value::Dict().Set("bind", "*").Set("send", "*"))));
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(
+          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+          ContentSetting::CONTENT_SETTING_BLOCK);
+
+  constexpr std::string_view kUdpBoundPna = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "0.0.0.0" });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPna), IsOk());
 }
 
 using ChromeDirectSocketsTcpServerApiTest = ChromeAppApiTest;
@@ -529,11 +627,13 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
       InstallAndOpenChromeApp(GenerateManifest());
 
   static constexpr std::string_view kScript = R"(
-    const socket = new TCPServerSocket("::");
+    (async () => {
+      const socket = new TCPServerSocket("::");
+      await socket.opened;
+    })();
   )";
 
-  EXPECT_THAT(EvalJs(app_frame, kScript),
-              ErrorIs(NotDefined("TCPServerSocket")));
+  EXPECT_THAT(EvalJs(app_frame, kScript), ErrorIs(AccessBlocked()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
@@ -561,8 +661,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
               .Set("tcpServer", base::Value::Dict().Set("listen", "*"))
               .Set("tcp", base::Value::Dict().Set("connect", "*"))));
 
-  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript),
-              content::EvalJsResult::IsOk());
+  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
 }
 
 #endif
@@ -571,7 +670,7 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
   content::RenderFrameHost* InstallAndOpenIsolatedWebApp(
       bool with_pna = false) {
-    using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
 
     auto manifest_builder =
         web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
@@ -582,35 +681,190 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
     }
     auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .BuildBundle();
-    app->TrustSigningKey();
+    web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
+    return OpenApp(url_info.app_id());
+  }
+};
+
+class IsolatedWebAppSharedWorkerApiTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  static constexpr std::string_view kSharedWorkerScriptTemplate = R"(
+    onconnect = async e => {
+      const port = e.ports[0];
+      port.start();
+      try {
+        await %s;
+        port.postMessage(null);
+      } catch (err) {
+        port.postMessage({ 'error': err });
+      }
+    };
+  )";
+
+  static constexpr std::string_view kSharedWorkerConnect = R"(
+    new Promise((resolve, reject) => {
+      const policy = trustedTypes.createPolicy("default", {
+        createScriptURL: (url) => url,
+      });
+      const worker = new SharedWorker(
+        policy.createScriptURL('/shared_worker.js')
+      );
+      worker.port.onmessage = e => {
+        if (e.data) {
+          reject(e.data.error);
+        } else {
+          resolve();
+        }
+      };
+    });
+  )";
+
+  content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithSharedWorkerScript(
+      std::string_view shared_worker_script,
+      bool with_pna = false) {
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
+
+    auto manifest_builder =
+        web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+            PermissionsPolicyFeature::kDirectSockets);
+    if (with_pna) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kDirectSocketsPrivate);
+    }
+    auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
+                   .AddJs("/shared_worker.js", shared_worker_script)
+                   .BuildBundle();
     web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
     return OpenApp(url_info.app_id());
   }
 
  private:
-  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
+  base::test::ScopedFeatureList features_{
+      blink::features::kDirectSocketsInSharedWorkers};
 };
 
-class IsolatedWebAppApiTestWithDirectSocketsEnabled
-    : public IsolatedWebAppApiTest {
+class IsolatedWebAppServiceWorkerApiTest
+    : public web_app::IsolatedWebAppBrowserTestHarness {
+ public:
+  static constexpr std::string_view kServiceWorkerScriptTemplate = R"(
+    addEventListener('message', async (e) => {
+      try {
+        await %s;
+        e.source.postMessage(null);
+      } catch (err) {
+        e.source.postMessage({ 'error': err });
+      }
+    });
+  )";
+
+  static constexpr std::string_view kServiceWorkerConnect = R"(
+    new Promise(async (resolve, reject) => {
+      const policy = trustedTypes.createPolicy("default", {
+        createScriptURL: (url) => url,
+      });
+      await navigator.serviceWorker.register(
+        policy.createScriptURL('/service_worker.js')
+      );
+      navigator.serviceWorker.addEventListener('message', e => {
+        if (e.data) {
+          reject(e.data.error);
+        } else {
+          resolve();
+        }
+      });
+      const reg = await navigator.serviceWorker.ready;
+      reg.active.postMessage(null);
+    });
+  )";
+
+  content::RenderFrameHost* InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+      std::string_view service_worker_script,
+      bool with_pna = false) {
+    using PermissionsPolicyFeature = network::mojom::PermissionsPolicyFeature;
+
+    auto manifest_builder =
+        web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+            PermissionsPolicyFeature::kDirectSockets);
+    if (with_pna) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kDirectSocketsPrivate);
+    }
+    auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
+                   .AddJs("/service_worker.js", service_worker_script)
+                   .BuildBundle();
+    web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
+    return OpenApp(url_info.app_id());
+  }
+
  private:
-  base::test::ScopedFeatureList features_{blink::features::kDirectSockets};
+  base::test::ScopedFeatureList features_{
+      blink::features::kDirectSocketsInServiceWorkers};
+};
+
+template <typename T>
+class ChromeDirectSocketsTcpIsolatedWebAppTestBase
+    : public ChromeDirectSocketsTcpTest<T> {
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_MAC)
+    if (base::mac::MacOSMajorVersion() == 13) {
+      GTEST_SKIP()
+          << "Skipping flaky test on MacOS 13, see crbug.com/397993345";
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    ChromeDirectSocketsTcpTest<T>::SetUpOnMainThread();
+  }
 };
 
 using ChromeDirectSocketsTcpIsolatedWebAppTest =
-    ChromeDirectSocketsTcpTest<IsolatedWebAppApiTestWithDirectSocketsEnabled>;
+    ChromeDirectSocketsTcpIsolatedWebAppTestBase<IsolatedWebAppApiTest>;
+
+using ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest =
+    ChromeDirectSocketsTcpIsolatedWebAppTestBase<
+        IsolatedWebAppSharedWorkerApiTest>;
+
+using ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest =
+    ChromeDirectSocketsTcpIsolatedWebAppTestBase<
+        IsolatedWebAppServiceWorkerApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kTcpReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppSharedWorkerTest,
+                       TcpReadWrite) {
+  const std::string shared_worker_script =
+      base::StringPrintf(kSharedWorkerScriptTemplate,
+                         content::JsReplace(kTcpReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppServiceWorkerTest,
+                       TcpReadWrite) {
+  const std::string service_worker_script =
+      base::StringPrintf(kServiceWorkerScriptTemplate,
+                         content::JsReplace(kTcpReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
-                       TcpReadWriteFailsWithoutPNAPermission) {
+                       TcpConnectionToPrivateFailsWithoutPNAPermission) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/false);
 
@@ -625,22 +879,113 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
+                       TcpConnectionToPrivateFailsWithoutPNAContentSetting) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(
+          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+          ContentSetting::CONTENT_SETTING_BLOCK);
+
+  constexpr std::string_view kTcpPna = R"(
+    (async () => {
+      const socket = new TCPSocket($1, 459);
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kTcpPna, kPrivateAddress)),
+              ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
+template <typename T>
+class ChromeDirectSocketsUdpIsolatedWebAppTestBase
+    : public ChromeDirectSocketsUdpTest<T> {
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_MAC)
+    if (base::mac::MacOSMajorVersion() == 13) {
+      GTEST_SKIP()
+          << "Skipping flaky test on MacOS 13, see crbug.com/397993345";
+    }
+#endif  // BUILDFLAG(IS_MAC)
+    ChromeDirectSocketsUdpTest<T>::SetUpOnMainThread();
+  }
+};
+
 using ChromeDirectSocketsUdpIsolatedWebAppTest =
-    ChromeDirectSocketsUdpTest<IsolatedWebAppApiTestWithDirectSocketsEnabled>;
+    ChromeDirectSocketsUdpIsolatedWebAppTestBase<IsolatedWebAppApiTest>;
+
+using ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest =
+    ChromeDirectSocketsUdpIsolatedWebAppTestBase<
+        IsolatedWebAppSharedWorkerApiTest>;
+
+using ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest =
+    ChromeDirectSocketsUdpIsolatedWebAppTestBase<
+        IsolatedWebAppServiceWorkerApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpConnectedReadWriteScript,
-                                           kHostname, test_server()->port()))
-          .ExtractBool());
+                                           kHostname, test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
+                       UdpReadWrite) {
+  const std::string shared_worker_script =
+      base::StringPrintf(kSharedWorkerScriptTemplate,
+                         content::JsReplace(kUdpConnectedReadWriteScript,
+                                            kHostname, test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
+                       UdpReadWrite) {
+  const std::string service_worker_script =
+      base::StringPrintf(kServiceWorkerScriptTemplate,
+                         content::JsReplace(kUdpConnectedReadWriteScript,
+                                            kHostname, test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
-                       UdpReadWriteFailsWithoutPNAPermission) {
+                       UdpConnectionToPrivateFailsWithoutPNAPermission) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/false);
+
+  constexpr std::string_view kUdpPna = R"(
+    (async () => {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: 459 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kUdpPna, kPrivateAddress)),
+              ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
+                       UdpConnectionToPrivateFailsWithoutPNAContentSetting) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(
+          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+          ContentSetting::CONTENT_SETTING_BLOCK);
 
   constexpr std::string_view kUdpPna = R"(
     (async () => {
@@ -659,14 +1004,41 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
-  ASSERT_TRUE(
+  ASSERT_THAT(
       EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
-                                           test_server()->port()))
-          .ExtractBool());
+                                           test_server()->port())),
+      IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppSharedWorkerTest,
+                       UdpServerReadWrite) {
+  const std::string shared_worker_script =
+      base::StringPrintf(kSharedWorkerScriptTemplate,
+                         content::JsReplace(kUdpBoundReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppServiceWorkerTest,
+                       UdpServerReadWrite) {
+  const std::string service_worker_script =
+      base::StringPrintf(kServiceWorkerScriptTemplate,
+                         content::JsReplace(kUdpBoundReadWriteScript, kHostname,
+                                            test_server()->port()));
+
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
+
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
-                       UdpServerReadWriteFailsWithoutPNAPermission) {
+                       UdpServerFailsWithoutPNAPermission) {
   content::RenderFrameHost* app_frame =
       InstallAndOpenIsolatedWebApp(/*with_pna=*/false);
 
@@ -681,143 +1053,113 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
               ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
-using ChromeDirectSocketsTcpServerIsolatedWebAppTest =
-    IsolatedWebAppApiTestWithDirectSocketsEnabled;
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
+                       UdpServerFailsWithoutPNAContentSetting) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  HostContentSettingsMapFactory::GetForProfile(profile())
+      ->SetDefaultContentSetting(
+          ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+          ContentSetting::CONTENT_SETTING_BLOCK);
+
+  constexpr std::string_view kUdpBoundPna = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "0.0.0.0" });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPna),
+              ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
+                       UdpServerPortRestrictions) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  constexpr std::string_view kUdpBoundPortBelow1024 = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "0.0.0.0", localPort: 455 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPortBelow1024),
+              ErrorIs(AccessBlocked()));
+
+  constexpr std::string_view kUdpBoundPortNumberHighEnough = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "0.0.0.0", localPort: 2558 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPortNumberHighEnough), IsOk());
+}
+
+using ChromeDirectSocketsTcpServerIsolatedWebAppTest = IsolatedWebAppApiTest;
+using ChromeDirectSocketsTcpServerIsolatedWebAppSharedWorkerTest =
+    IsolatedWebAppSharedWorkerApiTest;
+using ChromeDirectSocketsTcpServerIsolatedWebAppServiceWorkerTest =
+    IsolatedWebAppServiceWorkerApiTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
                        TcpServerExchangePacketWithTcpSocket) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
 
-  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript),
-              content::EvalJsResult::IsOk());
+  EXPECT_THAT(EvalJs(app_frame, kTcpServerExchangePacketWithTcpScript), IsOk());
 }
 
-enum class FeatureState {
-  kDefault,
-  kEnabled,
-  kDisabled,
-};
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsTcpServerIsolatedWebAppSharedWorkerTest,
+    TcpServerExchangePacketWithTcpSocket) {
+  const std::string shared_worker_script = base::StringPrintf(
+      kSharedWorkerScriptTemplate, kTcpServerExchangePacketWithTcpScript);
 
-template <typename TestHarness>
-class ChromeDirectSocketsApiAvailabilityTest
-    : public TestHarness,
-      public testing::WithParamInterface<FeatureState> {
- public:
-  ChromeDirectSocketsApiAvailabilityTest() {
-    switch (feature_state()) {
-      case FeatureState::kDefault:
-        break;
-      case FeatureState::kEnabled:
-        features_.InitAndEnableFeature(blink::features::kDirectSockets);
-        break;
-      case FeatureState::kDisabled:
-        features_.InitAndDisableFeature(blink::features::kDirectSockets);
-        break;
-    }
-  }
-
- protected:
-  FeatureState feature_state() const { return GetParam(); }
-
-  bool IsTCPSocketExposed(content::RenderFrameHost* rfh) {
-    return IsJsObjectDefined(rfh, "TCPSocket");
-  }
-  bool IsUDPSocketExposed(content::RenderFrameHost* rfh) {
-    return IsJsObjectDefined(rfh, "UDPSocket");
-  }
-  bool IsTCPServerSocketExposed(content::RenderFrameHost* rfh) {
-    return IsJsObjectDefined(rfh, "TCPServerSocket");
-  }
-
- private:
-  bool IsJsObjectDefined(content::RenderFrameHost* rfh,
-                         const std::string& object_name) {
-    return content::EvalJs(
-               rfh, base::ReplaceStringPlaceholders("typeof $1 !== 'undefined'",
-                                                    {object_name}, nullptr))
-        .ExtractBool();
-  }
-
-  base::test::ScopedFeatureList features_;
-};
-
-using ChromeDirectSocketsApiAvailabilityChromeAppsTest =
-    ChromeDirectSocketsApiAvailabilityTest<ChromeAppApiTest>;
-
-IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityChromeAppsTest,
-                       WithFeatureState) {
-  // The exact socket permissions do not matter here since the API behavior
-  // itself is not tested -- the only important piece is to have an entry named
-  // "sockets" in the manifest.
   content::RenderFrameHost* app_frame =
-      InstallAndOpenChromeApp(GenerateManifest(
-          /*socket_permissions=*/base::Value::Dict()));
+      InstallAndOpenIsolatedWebAppWithSharedWorkerScript(shared_worker_script);
 
-  // `kDirectSockets` is enabled by default or when the flag is forcefully set.
-  EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kDirectSockets),
-            feature_state() != FeatureState::kDisabled);
-
-  // The API symbols in Chrome Apps are supposed to be exposed unless they're
-  // force disabled.
-  EXPECT_EQ(IsTCPSocketExposed(app_frame),
-            feature_state() != FeatureState::kDisabled);
-  EXPECT_EQ(IsUDPSocketExposed(app_frame),
-            feature_state() != FeatureState::kDisabled);
-  EXPECT_EQ(IsTCPServerSocketExposed(app_frame),
-            feature_state() != FeatureState::kDisabled);
+  ASSERT_THAT(EvalJs(app_frame, kSharedWorkerConnect), IsOk());
 }
 
-INSTANTIATE_TEST_SUITE_P(/**/,
-                         ChromeDirectSocketsApiAvailabilityChromeAppsTest,
-                         testing::Values(FeatureState::kDefault,
-                                         FeatureState::kEnabled,
-                                         FeatureState::kDisabled),
-                         [](const auto& info) {
-                           switch (info.param) {
-                             case FeatureState::kDefault:
-                               return "FeatureDefault";
-                             case FeatureState::kEnabled:
-                               return "FeatureEnabled";
-                             case FeatureState::kDisabled:
-                               return "FeatureDisabled";
-                           }
-                         });
+IN_PROC_BROWSER_TEST_F(
+    ChromeDirectSocketsTcpServerIsolatedWebAppServiceWorkerTest,
+    TcpServerExchangePacketWithTcpSocket) {
+  const std::string service_worker_script = base::StringPrintf(
+      kServiceWorkerScriptTemplate, kTcpServerExchangePacketWithTcpScript);
 
-using ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest =
-    ChromeDirectSocketsApiAvailabilityTest<IsolatedWebAppApiTest>;
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebAppWithServiceWorkerScript(
+          service_worker_script);
 
-IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest,
-                       WithFeatureState) {
-  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
-
-  // `kDirectSockets` is enabled by default or when the flag is forcefully set.
-  EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kDirectSockets),
-            feature_state() != FeatureState::kDisabled);
-
-  // However, the API symbols in Isolated Web Apps are only supposed to be
-  // exposed when the flag is force-enabled (and not in the default state).
-  EXPECT_EQ(IsTCPSocketExposed(app_frame),
-            feature_state() == FeatureState::kEnabled);
-  EXPECT_EQ(IsUDPSocketExposed(app_frame),
-            feature_state() == FeatureState::kEnabled);
-  EXPECT_EQ(IsTCPServerSocketExposed(app_frame),
-            feature_state() == FeatureState::kEnabled);
+  ASSERT_THAT(EvalJs(app_frame, kServiceWorkerConnect), IsOk());
 }
 
-INSTANTIATE_TEST_SUITE_P(/**/,
-                         ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest,
-                         testing::Values(FeatureState::kDefault,
-                                         FeatureState::kEnabled,
-                                         FeatureState::kDisabled),
-                         [](const auto& info) {
-                           switch (info.param) {
-                             case FeatureState::kDefault:
-                               return "FeatureDefault";
-                             case FeatureState::kEnabled:
-                               return "FeatureEnabled";
-                             case FeatureState::kDisabled:
-                               return "FeatureDisabled";
-                           }
-                         });
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
+                       TcpServerPortRestrictions) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
+
+  constexpr std::string_view kTcpServerPortBelow32678 = R"(
+    (async () => {
+      const socket = new TCPServerSocket("0.0.0.0", { localPort: 7845 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kTcpServerPortBelow32678),
+              ErrorIs(AccessBlocked()));
+
+  constexpr std::string_view kTcpServerPortNumberHighEnough = R"(
+    (async () => {
+      const socket = new TCPServerSocket("0.0.0.0", { localPort: 35588 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kTcpServerPortNumberHighEnough), IsOk());
+}
 
 }  // namespace

@@ -14,11 +14,7 @@
 #endif  // defined(HOST_IMPLEMENTATION)
 
 #else  // !defined(WIN32)
-#if defined(HOST_IMPLEMENTATION)
 #define HOST_EXPORT __attribute__((visibility("default")))
-#else
-#define HOST_EXPORT
-#endif  // defined(HOST_IMPLEMENTATION)
 #endif  // !defined(WIN32)
 
 #endif  // REMOTING_HOST_HOST_EXPORT_H_

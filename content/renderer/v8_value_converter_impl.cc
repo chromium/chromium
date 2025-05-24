@@ -2,27 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/v8_value_converter_impl.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-container.h"
@@ -251,7 +248,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToV8ValueImpl(
     raw_ptr<v8::Isolate> isolate;
     v8::Local<v8::Object> creation_context;
 
-    v8::Local<v8::Value> operator()(absl::monostate value) {
+    v8::Local<v8::Value> operator()(std::monostate value) {
       return v8::Null(isolate);
     }
 
@@ -347,12 +344,12 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const base::Value::BlobStorage& value) const {
-  DCHECK(creation_context->GetCreationContextChecked() ==
+  DCHECK(creation_context->GetCreationContextChecked(isolate) ==
          isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value.size());
-  base::ranges::copy(value,
-                     static_cast<uint8_t*>(buffer->GetBackingStore()->Data()));
+  std::ranges::copy(value,
+                    static_cast<uint8_t*>(buffer->GetBackingStore()->Data()));
   return buffer;
 }
 
@@ -421,7 +418,11 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ValueImpl(
     if (!reg_exp_allowed_)
       // JSON.stringify converts to an object.
       return FromV8Object(val.As<v8::Object>(), state, isolate);
-    return std::make_unique<base::Value>(*v8::String::Utf8Value(isolate, val));
+    auto utf8_value = v8::String::Utf8Value(isolate, val);
+    if (!*utf8_value) {
+      return FromV8Object(val.As<v8::Object>(), state, isolate);
+    }
+    return std::make_unique<base::Value>(*utf8_value);
   }
 
   // v8::Value doesn't have a ToArray() method for some reason.
@@ -457,9 +458,10 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Array(
   // If val was created in a different context than our current one, change to
   // that context, but change back after val is converted.
   v8::Local<v8::Context> creation_context;
-  if (val->GetCreationContext().ToLocal(&creation_context) &&
-      creation_context != isolate->GetCurrentContext())
+  if (val->GetCreationContext(isolate).ToLocal(&creation_context) &&
+      creation_context != isolate->GetCurrentContext()) {
     scope = std::make_unique<v8::Context::Scope>(creation_context);
+  }
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -513,7 +515,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
     const auto* data = static_cast<const uint8_t*>(array_buffer->Data());
     const size_t byte_length = array_buffer->ByteLength();
     return base::Value::ToUniquePtrValue(
-        base::Value(base::make_span(data, byte_length)));
+        base::Value(UNSAFE_TODO(base::span(data, byte_length))));
   }
   if (val->IsArrayBufferView()) {
     v8::Local<v8::ArrayBufferView> view = val.As<v8::ArrayBufferView>();
@@ -523,9 +525,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
     return std::make_unique<base::Value>(std::move(buffer));
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Only ArrayBuffer and ArrayBufferView should get here.";
-  return nullptr;
+  NOTREACHED() << "Only ArrayBuffer and ArrayBufferView should get here.";
 }
 
 std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
@@ -540,9 +540,10 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
   // If val was created in a different context than our current one, change to
   // that context, but change back after val is converted.
   v8::Local<v8::Context> creation_context;
-  if (val->GetCreationContext().ToLocal(&creation_context) &&
-      creation_context != isolate->GetCurrentContext())
+  if (val->GetCreationContext(isolate).ToLocal(&creation_context) &&
+      creation_context != isolate->GetCurrentContext()) {
     scope = std::make_unique<v8::Context::Scope>(creation_context);
+  }
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -581,11 +582,9 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
     // Extend this test to cover more types as necessary and if sensible.
     if (!key->IsString() &&
         !key->IsNumber()) {
-      NOTREACHED_IN_MIGRATION()
-          << "Key \"" << *v8::String::Utf8Value(isolate, key)
-          << "\" "
-             "is neither a string nor a number";
-      continue;
+      NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
+                   << "\" "
+                      "is neither a string nor a number";
     }
 
     v8::String::Utf8Value name_utf8(isolate, key);

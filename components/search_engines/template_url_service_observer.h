@@ -20,7 +20,7 @@ class TemplateURLServiceObserver : public base::CheckedObserver {
   virtual void OnTemplateURLServiceShuttingDown() {}
 
  protected:
-  ~TemplateURLServiceObserver() override {}
+  ~TemplateURLServiceObserver() override = default;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_OBSERVER_H_

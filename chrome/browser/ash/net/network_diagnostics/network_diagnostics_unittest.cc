@@ -39,7 +39,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
   TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;
   TestDebugDaemonClient& operator=(const TestDebugDaemonClient&) = delete;
 
-  ~TestDebugDaemonClient() override {}
+  ~TestDebugDaemonClient() override = default;
 
   void TestICMP(const std::string& ip_address,
                 TestICMPCallback callback) override {

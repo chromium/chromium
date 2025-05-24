@@ -2,16 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 #define CC_TEST_TASK_GRAPH_RUNNER_TEST_TEMPLATE_H_
 
-#include "cc/raster/task_graph_runner.h"
-
+#include <array>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -19,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_category.h"
+#include "cc/raster/task_graph_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -31,13 +26,15 @@ class TaskGraphRunnerTestBase {
              unsigned dependent_id,
              unsigned dependent_count,
              unsigned category,
-             unsigned priority)
+             unsigned priority,
+             bool has_external_dependency)
         : namespace_index(namespace_index),
           id(id),
           dependent_id(dependent_id),
           dependent_count(dependent_count),
           category(category),
-          priority(priority) {}
+          priority(priority),
+          has_external_dependency(has_external_dependency) {}
 
     int namespace_index;
     unsigned id;
@@ -45,20 +42,24 @@ class TaskGraphRunnerTestBase {
     unsigned dependent_count;
     unsigned category;
     unsigned priority;
+    bool has_external_dependency;
   };
 
-  TaskGraphRunnerTestBase() {}
+  TaskGraphRunnerTestBase();
+  ~TaskGraphRunnerTestBase();
 
   void SetTaskGraphRunner(TaskGraphRunner* task_graph_runner);
   void ResetIds(int namespace_index);
   void RunAllTasks(int namespace_index);
+  void RunUntilIdle();
   void RunTaskOnWorkerThread(int namespace_index, unsigned id);
   void OnTaskCompleted(int namespace_index, unsigned id);
   const std::vector<unsigned>& run_task_ids(int namespace_index);
   const std::vector<unsigned>& on_task_completed_ids(int namespace_index);
   void ScheduleTasks(int namespace_index, const std::vector<TaskInfo>& tasks);
+  void ExternalDependencyCompletedForTask(int namespace_index, int task_index);
 
-  static const int kNamespaceCount = 3;
+  static constexpr int kNamespaceCount = 3;
 
  protected:
   class FakeTaskImpl : public Task {
@@ -100,13 +101,13 @@ class TaskGraphRunnerTestBase {
     ~FakeDependentTaskImpl() override {}
   };
 
-  raw_ptr<TaskGraphRunner> task_graph_runner_;
-  NamespaceToken namespace_token_[kNamespaceCount];
-  Task::Vector tasks_[kNamespaceCount];
-  Task::Vector dependents_[kNamespaceCount];
-  std::vector<unsigned> run_task_ids_[kNamespaceCount];
+  raw_ptr<TaskGraphRunner> task_graph_runner_ = nullptr;
+  std::array<NamespaceToken, kNamespaceCount> namespace_token_;
+  std::array<Task::Vector, kNamespaceCount> tasks_;
+  std::array<Task::Vector, kNamespaceCount> dependents_;
+  std::array<std::vector<unsigned int>, kNamespaceCount> run_task_ids_;
   base::Lock run_task_ids_lock_;
-  std::vector<unsigned> on_task_completed_ids_[kNamespaceCount];
+  std::array<std::vector<unsigned int>, kNamespaceCount> on_task_completed_ids_;
 };
 
 template <typename TaskRunnerTestDelegate>
@@ -118,8 +119,9 @@ class TaskGraphRunnerTest : public TaskGraphRunnerTestBase,
     delegate_.StartTaskGraphRunner();
     SetTaskGraphRunner(delegate_.GetTaskGraphRunner());
 
-    for (int i = 0; i < kNamespaceCount; ++i)
-      namespace_token_[i] = task_graph_runner_->GenerateNamespaceToken();
+    for (NamespaceToken& namespace_token : namespace_token_) {
+      namespace_token = task_graph_runner_->GenerateNamespaceToken();
+    }
   }
   void TearDown() override {
     delegate_.StopTaskGraphRunner();
@@ -141,7 +143,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Basic) {
     EXPECT_EQ(0u, this->on_task_completed_ids(i).size());
 
     this->ScheduleTasks(
-        i, std::vector<TaskInfo>(1, TaskInfo(i, 0u, 0u, 0u, 0u, 0u)));
+        i, std::vector<TaskInfo>(1, TaskInfo(i, 0u, 0u, 0u, 0u, 0u, false)));
   }
 
   for (int i = 0; i < kNamespaceCount; ++i) {
@@ -153,7 +155,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Basic) {
 
   for (int i = 0; i < kNamespaceCount; ++i)
     this->ScheduleTasks(
-        i, std::vector<TaskInfo>(1, TaskInfo(i, 0u, 0u, 1u, 0u, 0u)));
+        i, std::vector<TaskInfo>(1, TaskInfo(i, 0u, 0u, 1u, 0u, 0u, false)));
 
   for (int i = 0; i < kNamespaceCount; ++i) {
     this->RunAllTasks(i);
@@ -164,7 +166,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Basic) {
 
   for (int i = 0; i < kNamespaceCount; ++i)
     this->ScheduleTasks(
-        i, std::vector<TaskInfo>(1, TaskInfo(i, 0u, 0u, 2u, 0u, 0u)));
+        i, std::vector<TaskInfo>(1, TaskInfo(i, 0u, 0u, 2u, 0u, 0u, false)));
 
   for (int i = 0; i < kNamespaceCount; ++i) {
     this->RunAllTasks(i);
@@ -181,7 +183,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Dependencies) {
   for (int i = 0; i < kNamespaceCount; ++i) {
     this->ScheduleTasks(i, std::vector<TaskInfo>(1, TaskInfo(i, 0u, 1u,
                                                              1u,  // 1 dependent
-                                                             0u, 0u)));
+                                                             0u, 0u, false)));
   }
 
   for (int i = 0; i < kNamespaceCount; ++i) {
@@ -199,7 +201,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Dependencies) {
     this->ScheduleTasks(i,
                         std::vector<TaskInfo>(1, TaskInfo(i, 2u, 3u,
                                                           2u,  // 2 dependents
-                                                          0u, 0u)));
+                                                          0u, 0u, false)));
   }
 
   for (int i = 0; i < kNamespaceCount; ++i) {
@@ -215,6 +217,38 @@ TYPED_TEST_P(TaskGraphRunnerTest, Dependencies) {
   }
 }
 
+TYPED_TEST_P(TaskGraphRunnerTest, ExternalDependency) {
+  using TaskInfo = TaskGraphRunnerTestBase::TaskInfo;
+
+  // Set up one task with an external dependent and one task witthout.
+  std::vector<TaskInfo> tasks;
+  tasks.emplace_back(0u, 0u, 1u,
+                     1u,  // 1 dependent
+                     0u, 0u, true /*has_external_dependency*/);
+  tasks.emplace_back(0u, 2u, 3u,
+                     1u,  // 1 dependent
+                     0u, 0u, false /*has_external_dependency*/);
+  this->ScheduleTasks(0, tasks);
+
+  this->RunUntilIdle();
+
+  // Only the tasks without an external dependency should have run.
+  ASSERT_EQ(2u, this->run_task_ids(0).size());
+  EXPECT_EQ(2u, this->run_task_ids(0)[0]);
+  EXPECT_EQ(3u, this->run_task_ids(0)[1]);
+  ASSERT_EQ(1u, this->on_task_completed_ids(0).size());
+  EXPECT_EQ(2u, this->on_task_completed_ids(0)[0]);
+
+  this->ExternalDependencyCompletedForTask(0, 0);
+
+  this->RunAllTasks(0u);
+  ASSERT_EQ(4u, this->run_task_ids(0).size());
+  EXPECT_EQ(0u, this->run_task_ids(0)[2]);
+  EXPECT_EQ(1u, this->run_task_ids(0)[3]);
+  ASSERT_EQ(2u, this->on_task_completed_ids(0).size());
+  EXPECT_EQ(0u, this->on_task_completed_ids(0)[1]);
+}
+
 TYPED_TEST_P(TaskGraphRunnerTest, Categories) {
   const int kNamespaceCount = TaskGraphRunnerTestBase::kNamespaceCount;
   const unsigned kCategoryCount = LAST_TASK_CATEGORY + 1;
@@ -225,7 +259,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Categories) {
     EXPECT_EQ(0u, this->on_task_completed_ids(i).size());
     std::vector<TaskInfo> tasks;
     for (unsigned j = 0; j < kCategoryCount; ++j) {
-      tasks.emplace_back(i, 0u, 0u, 0u, j, 0u);
+      tasks.emplace_back(i, 0u, 0u, 0u, j, 0u, false);
     }
     this->ScheduleTasks(i, tasks);
   }
@@ -240,7 +274,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Categories) {
   for (int i = 0; i < kNamespaceCount; ++i) {
     std::vector<TaskInfo> tasks;
     for (unsigned j = 0; j < kCategoryCount; ++j) {
-      tasks.emplace_back(i, 0u, 0u, 1u, j, 0u);
+      tasks.emplace_back(i, 0u, 0u, 1u, j, 0u, false);
     }
     this->ScheduleTasks(i, tasks);
   }
@@ -255,7 +289,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Categories) {
   for (int i = 0; i < kNamespaceCount; ++i) {
     std::vector<TaskInfo> tasks;
     for (unsigned j = 0; j < kCategoryCount; ++j) {
-      tasks.emplace_back(i, 0u, 0u, 2u, j, 0u);
+      tasks.emplace_back(i, 0u, 0u, 2u, j, 0u, false);
     }
     this->ScheduleTasks(i, tasks);
   }
@@ -271,6 +305,7 @@ TYPED_TEST_P(TaskGraphRunnerTest, Categories) {
 REGISTER_TYPED_TEST_SUITE_P(TaskGraphRunnerTest,
                             Basic,
                             Dependencies,
+                            ExternalDependency,
                             Categories);
 
 template <typename TaskRunnerTestDelegate>
@@ -285,11 +320,11 @@ TYPED_TEST_P(SingleThreadTaskGraphRunnerTest, Priority) {
 
   for (int i = 0; i < kNamespaceCount; ++i) {
     TaskInfo tasks[] = {
-        TaskInfo(i, 0u, 2u, 1u, 0u, 1u),  // Priority 1
-        TaskInfo(i, 1u, 3u, 1u, 0u, 0u)   // Priority 0
+        TaskInfo(i, 0u, 2u, 1u, 0u, 1u, false),  // Priority 1
+        TaskInfo(i, 1u, 3u, 1u, 0u, 0u, false)   // Priority 0
     };
-    this->ScheduleTasks(i,
-                        std::vector<TaskInfo>(tasks, tasks + std::size(tasks)));
+    this->ScheduleTasks(
+        i, std::vector<TaskInfo>(std::begin(tasks), std::end(tasks)));
   }
 
   for (int i = 0; i < kNamespaceCount; ++i) {

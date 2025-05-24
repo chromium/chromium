@@ -5,6 +5,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
 #include "components/input/native_web_keyboard_event.h"
+#include "ui/gfx/native_widget_types.h"
 #import "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
 namespace views {
@@ -18,8 +19,8 @@ bool UnhandledKeyboardEventHandler::HandleNativeKeyboardEvent(
   }
 
   NSEvent* ns_event = event.os_event.Get();
-  auto* host =
-      views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(ns_event.window);
+  auto* host = views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
+      gfx::NativeWindow(ns_event.window));
   if (host) {
     return host->RedispatchKeyEvent(ns_event);
   }

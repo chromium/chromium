@@ -8,21 +8,8 @@
 
 namespace blink {
 
-namespace {
-
-const String MapOverlayType(XRDOMOverlayState::DOMOverlayType type) {
-  switch (type) {
-    case XRDOMOverlayState::DOMOverlayType::kScreen:
-      return "screen";
-    case XRDOMOverlayState::DOMOverlayType::kFloating:
-      return "floating";
-  }
-}
-
-}  // namespace
-
-XRDOMOverlayState::XRDOMOverlayState(DOMOverlayType type)
-    : type_string_(MapOverlayType(type)) {}
+XRDOMOverlayState::XRDOMOverlayState(V8XRDOMOverlayType::Enum type)
+    : type_(type) {}
 
 void XRDOMOverlayState::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);

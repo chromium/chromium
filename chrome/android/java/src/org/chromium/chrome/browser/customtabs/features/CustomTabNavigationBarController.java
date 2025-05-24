@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs.features;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.view.Window;
 
@@ -26,9 +27,26 @@ public class CustomTabNavigationBarController {
 
     private CustomTabNavigationBarController() {}
 
-    /** Sets the navigation bar color and navigation divider color according to intent extras. */
+    /**
+     * Sets the navigation bar color and navigation divider color according to intent extras, or
+     * whether CCT is drawing edge to edge
+     *
+     * @param window The activity window.
+     * @param intentDataProvider The {@link BrowserServicesIntentDataProvider} used in CCT.
+     * @param context The current Android context.
+     * @param isEdgeToEdge Whether CCT is drawing edge to edge.
+     */
     public static void update(
-            Window window, BrowserServicesIntentDataProvider intentDataProvider, Context context) {
+            Window window,
+            BrowserServicesIntentDataProvider intentDataProvider,
+            Context context,
+            boolean isEdgeToEdge) {
+        // When drawing edge to edge, always use transparent color for the navigation bar.
+        if (isEdgeToEdge) {
+            updateBarColor(window, Color.TRANSPARENT, false, false);
+            return;
+        }
+
         Integer navigationBarColor = intentDataProvider.getColorProvider().getNavigationBarColor();
         Integer navigationBarDividerColor =
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor();

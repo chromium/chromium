@@ -32,7 +32,10 @@ class CORE_EXPORT CreateMarkupOptions final {
   }
   bool IsForMarkupSanitization() const { return is_for_markup_sanitization_; }
   bool IgnoresCSSTextTransformsForRenderedText() const {
-    return ignores_css_text_transforms_for_rendered_text;
+    return ignores_css_text_transforms_for_rendered_text_;
+  }
+  bool ShouldSkipUnselectableContent() const {
+    return should_skip_unselectable_content_;
   }
 
  private:
@@ -41,7 +44,8 @@ class CORE_EXPORT CreateMarkupOptions final {
   bool should_annotate_for_interchange_ = false;
   bool should_convert_blocks_to_inlines_ = false;
   bool is_for_markup_sanitization_ = false;
-  bool ignores_css_text_transforms_for_rendered_text = false;
+  bool ignores_css_text_transforms_for_rendered_text_ = false;
+  bool should_skip_unselectable_content_ = false;
 };
 
 class CORE_EXPORT CreateMarkupOptions::Builder final {
@@ -60,6 +64,7 @@ class CORE_EXPORT CreateMarkupOptions::Builder final {
   Builder& SetIsForMarkupSanitization(bool is_for_sanitization);
   Builder& SetIgnoresCSSTextTransformsForRenderedText(
       bool text_without_transforms);
+  Builder& SetShouldSkipUnselectableContent(bool skip_unselectable_content);
 
  private:
   CreateMarkupOptions data_;

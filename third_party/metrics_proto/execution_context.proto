@@ -40,14 +40,11 @@ enum Thread {
   // The 'main thread' in various processes. In browser process, this is
   // sometimes also called the 'ui thread'.
   MAIN_THREAD = 1;
-
   FILE_THREAD = 2;                // Deprecated.
   FILE_USER_BLOCKING_THREAD = 3;  // Deprecated.
   PROCESS_LAUNCHER_THREAD = 4;    // Deprecated.
   CACHE_THREAD = 5;               // Deprecated.
-
   IO_THREAD = 6;
-
   DB_THREAD = 7;        // Deprecated.
   GPU_MAIN_THREAD = 8;  // Deprecated.
   RENDER_THREAD = 9;    // Deprecated.
@@ -58,9 +55,7 @@ enum Thread {
 
   // Task scheduler thread.
   SCHEDULER_WORKER_THREAD = 13;
-
   COMPOSITOR_TILE_WORKER_THREAD = 14;
-
   SERVICE_WORKER_THREAD = 15;
 
   // DedicatedWorker thread in the renderer process.

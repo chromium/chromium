@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -36,7 +37,7 @@ class NET_EXPORT HttpUtil {
  public:
   // Generates a request line that is used for text-based HTTP messaging.
   static std::string GenerateRequestLine(std::string_view method,
-                                         GURL url,
+                                         const GURL& url,
                                          bool is_for_get_to_http_proxy);
 
   // Returns the absolute URL, to be used for the http request. This url is
@@ -60,7 +61,7 @@ class NET_EXPORT HttpUtil {
   // content_type_str contains a mime type and charset value, respectively.  If
   // |boundary| is not null, then |*boundary| will be assigned the (unquoted)
   // value of the boundary parameter, if any.
-  static void ParseContentType(const std::string& content_type_str,
+  static void ParseContentType(std::string_view content_type_str,
                                std::string* mime_type,
                                std::string* charset,
                                bool* had_charset,
@@ -143,6 +144,12 @@ class NET_EXPORT HttpUtil {
   static void TrimLWS(std::string::const_iterator* begin,
                       std::string::const_iterator* end);
   static std::string_view TrimLWS(std::string_view string);
+  // This operates on the substring of `string` between `begin_offset` and
+  // `end_offset`, for consumers that need to know offsets relative to the
+  // original string.
+  static void TrimLWS(std::string_view string,
+                      size_t& begin_offset,
+                      size_t& end_offset);
 
   // Whether the character is a valid |tchar| as defined in RFC 7230 Sec 3.2.6.
   static bool IsTokenChar(char c);
@@ -241,19 +248,28 @@ class NET_EXPORT HttpUtil {
 
   // Returns true if the parameters describe a response with a strong etag or
   // last-modified header.  See section 13.3.3 of RFC 2616.
-  // An empty string should be passed for missing headers.
-  static bool HasStrongValidators(HttpVersion version,
-                                  const std::string& etag_header,
-                                  const std::string& last_modified_header,
-                                  const std::string& date_header);
+  //
+  // Non-nullopt times will be converted to std::strings and parsed, which can
+  // be somewhat expensive.
+  //
+  // Note that HasStringValidators() being true for a set of headers implies
+  // HasValidators() is also true.
+  static bool HasStrongValidators(
+      HttpVersion version,
+      std::optional<std::string_view> etag_header,
+      std::optional<std::string_view> last_modified_header,
+      std::optional<std::string_view> date_header);
 
   // Returns true if this response has any validator (either a Last-Modified or
   // an ETag) regardless of whether it is strong or weak.  See section 13.3.3 of
   // RFC 2616.
-  // An empty string should be passed for missing headers.
-  static bool HasValidators(HttpVersion version,
-                            const std::string& etag_header,
-                            const std::string& last_modified_header);
+  //
+  // Non-nullopt times will be converted to std::strings and parsed, which can
+  // be somewhat expensive.
+  static bool HasValidators(
+      HttpVersion version,
+      std::optional<std::string_view> etag_header,
+      std::optional<std::string_view> last_modified_header);
 
   // Gets a vector of common HTTP status codes for histograms of status
   // codes.  Currently returns everything in the range [100, 600), plus 0
@@ -291,8 +307,9 @@ class NET_EXPORT HttpUtil {
   // does not expect any).
   class NET_EXPORT HeadersIterator {
    public:
-    HeadersIterator(std::string::const_iterator headers_begin,
-                    std::string::const_iterator headers_end,
+    // The data `headers` points to must outlive `this`. GetNext() must be
+    // called before any other method.
+    HeadersIterator(std::string_view headers,
                     const std::string& line_delimiter);
     ~HeadersIterator();
 
@@ -301,50 +318,35 @@ class NET_EXPORT HttpUtil {
     // header name and values.
     bool GetNext();
 
-    // Iterates through the list of headers, starting with the current position
-    // and looks for the specified header.  Note that the name _must_ be
-    // lower cased.
-    // If the header was found, the return value will be true and the current
-    // position points to the header.  If the return value is false, the
-    // current position will be at the end of the headers.
-    bool AdvanceTo(const char* lowercase_name);
+    void Reset() { lines_.Reset(); }
 
-    void Reset() {
-      lines_.Reset();
-    }
-
-    std::string::const_iterator name_begin() const {
-      return name_begin_;
-    }
-    std::string::const_iterator name_end() const {
-      return name_end_;
-    }
-    std::string name() const {
-      return std::string(name_begin_, name_end_);
-    }
+    size_t name_begin() const { return name_begin_; }
+    size_t name_end() const { return name_end_; }
+    std::string name() const { return std::string(name_piece()); }
     std::string_view name_piece() const {
-      return base::MakeStringPiece(name_begin_, name_end_);
+      return headers_.substr(name_begin_, name_end_ - name_begin_);
     }
 
-    std::string::const_iterator values_begin() const {
-      return values_begin_;
-    }
-    std::string::const_iterator values_end() const {
-      return values_end_;
-    }
-    std::string values() const {
-      return std::string(values_begin_, values_end_);
-    }
+    size_t values_begin() const { return values_begin_; }
+    size_t values_end() const { return values_end_; }
+    std::string values() const { return std::string(values_piece()); }
     std::string_view values_piece() const {
-      return base::MakeStringPiece(values_begin_, values_end_);
+      return headers_.substr(values_begin_, values_end_ - values_begin_);
     }
 
    private:
-    base::StringTokenizer lines_;
-    std::string::const_iterator name_begin_;
-    std::string::const_iterator name_end_;
-    std::string::const_iterator values_begin_;
-    std::string::const_iterator values_end_;
+    // The full set of input headers.
+    const std::string_view headers_;
+
+    // Tokenizer over `headers_`.
+    base::StringViewTokenizer lines_;
+
+    // Start/end of the corresponding fields, relative to the start of
+    // `headers_`.
+    size_t name_begin_ = 0;
+    size_t name_end_ = 0;
+    size_t values_begin_ = 0;
+    size_t values_end_ = 0;
   };
 
   // Iterates over delimited values in an HTTP header.  HTTP LWS is
@@ -359,10 +361,10 @@ class NET_EXPORT HttpUtil {
   // quoted string.
   class NET_EXPORT ValuesIterator {
    public:
-    ValuesIterator(std::string::const_iterator values_begin,
-                   std::string::const_iterator values_end,
+    ValuesIterator(std::string_view values,
                    char delimiter,
                    bool ignore_empty_values = true);
+
     ValuesIterator(const ValuesIterator& other);
     ~ValuesIterator();
 
@@ -370,24 +372,28 @@ class NET_EXPORT HttpUtil {
     // is a next value.  Use value* methods to access the resultant value.
     bool GetNext();
 
-    std::string::const_iterator value_begin() const {
-      return value_begin_;
-    }
-    std::string::const_iterator value_end() const {
-      return value_end_;
-    }
-    std::string value() const {
-      return std::string(value_begin_, value_end_);
-    }
-    std::string_view value_piece() const {
-      return base::MakeStringPiece(value_begin_, value_end_);
+    std::string_view value() const {
+      return values_.substr(value_begin_, value_end_ - value_begin_);
     }
 
+    // The begin/end offsets of the current value, relative to the start of
+    // `values`.
+    size_t value_begin() const { return value_begin_; }
+    size_t value_end() const { return value_end_; }
+
    private:
-    base::StringTokenizer values_;
-    std::string::const_iterator value_begin_;
-    std::string::const_iterator value_end_;
+    // The original input value.
+    std::string_view values_;
+
     bool ignore_empty_values_;
+
+    base::StringViewTokenizer tokenizer_;
+
+    // These internally track the range of the current value withint `values_`,
+    // to can provide begin/end indices for the current value for
+    // HttpResponseHeaders, the only consumer that needs them.
+    size_t value_begin_ = 0u;
+    size_t value_end_ = 0u;
   };
 
   // Iterates over a delimited sequence of name-value pairs in an HTTP header.
@@ -411,69 +417,53 @@ class NET_EXPORT HttpUtil {
     // mismatched or otherwise invalid quotes is considered a parse error.
     enum class Quotes { STRICT_QUOTES, NOT_STRICT };
 
-    NameValuePairsIterator(std::string::const_iterator begin,
-                           std::string::const_iterator end,
+    NameValuePairsIterator(std::string_view value,
                            char delimiter,
-                           Values optional_values,
-                           Quotes strict_quotes);
-
-    // Treats values as not optional by default (Values::REQUIRED) and
-    // treats quotes as not strict.
-    NameValuePairsIterator(std::string::const_iterator begin,
-                           std::string::const_iterator end,
-                           char delimiter);
+                           Values optional_values = Values::REQUIRED,
+                           Quotes strict_quotes = Quotes::NOT_STRICT);
 
     NameValuePairsIterator(const NameValuePairsIterator& other);
 
     ~NameValuePairsIterator();
 
     // Advances the iterator to the next pair, if any.  Returns true if there
-    // is a next pair.  Use name* and value* methods to access the resultant
-    // value.
+    // is a next pair. Returns false on completion or on error. In the error
+    // case, `valid()` will return false. Once GetNext() returns false, whether
+    // due to error or completion, it should not be called again. Use name() and
+    // value() methods to access the resultant value.
+    //
+    // Each call will invalidate the string views obtained through the previous
+    // GetNext() call, as they may point to temporary buffers.
     bool GetNext();
 
     // Returns false if there was a parse error.
     bool valid() const { return valid_; }
 
     // The name of the current name-value pair.
-    std::string::const_iterator name_begin() const { return name_begin_; }
-    std::string::const_iterator name_end() const { return name_end_; }
-    std::string name() const { return std::string(name_begin_, name_end_); }
-    std::string_view name_piece() const {
-      return base::MakeStringPiece(name_begin_, name_end_);
-    }
+    std::string_view name() const { return name_; }
 
-    // The value of the current name-value pair.
-    std::string::const_iterator value_begin() const {
-      return value_is_quoted_ ? unquoted_value_.begin() : value_begin_;
-    }
-    std::string::const_iterator value_end() const {
-      return value_is_quoted_ ? unquoted_value_.end() : value_end_;
-    }
-    std::string value() const {
-      return value_is_quoted_ ? unquoted_value_ : std::string(value_begin_,
-                                                              value_end_);
-    }
-    std::string_view value_piece() const {
-      return value_is_quoted_ ? unquoted_value_
-                              : base::MakeStringPiece(value_begin_, value_end_);
+    // The value of the current name-value pair. Note that the returned
+    // string_view will be invalidated by the next GetNext() call.
+    std::string_view value() const LIFETIME_BOUND {
+      return value_is_quoted_ ? unquoted_value_ : value_;
     }
 
     bool value_is_quoted() const { return value_is_quoted_; }
 
     // The value before unquoting (if any).
-    std::string raw_value() const { return std::string(value_begin_,
-                                                       value_end_); }
+    std::string_view raw_value() const LIFETIME_BOUND { return value_; }
 
    private:
+    // Attempts to parse `name_value_pair`, populating `name_`, `value_`, and
+    // `unquoted_value_`. returns false on failure. On failure, the caller
+    // should clear those values, to ensure consistent behavior.
+    bool ParseNameValuePair(std::string_view name_value_pair);
+
     HttpUtil::ValuesIterator props_;
     bool valid_ = true;
 
-    std::string::const_iterator name_begin_;
-    std::string::const_iterator name_end_;
-
-    std::string::const_iterator value_begin_;
-    std::string::const_iterator value_end_;
+    std::string_view name_;
+    std::string_view value_;
 
     // Do not store iterators into this string. The NameValuePairsIterator
     // is copyable/assignable, and if copied the copy's iterators would point

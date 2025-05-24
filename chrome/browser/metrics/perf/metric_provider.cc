@@ -276,7 +276,7 @@ void MetricProvider::AddProfileToCache(
   collector_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MetricCollector::AddCachedDataDelta,
                                 base::Unretained(metric_collector_.get()),
-                                sampled_profile->ByteSize()));
+                                sampled_profile->ByteSizeLong()));
   cached_profile_data_.resize(cached_profile_data_.size() + 1);
   cached_profile_data_.back().Swap(sampled_profile.get());
 

@@ -5,13 +5,12 @@ rootWebArea
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'
-++++++++genericContainer
-++++++++++menuItemCheckBox name='Active descendant' checkedState=false
-++++++++++++staticText name='Active descendant'
-++++++++++++++inlineTextBox name='Active descendant'
-++++++++++menuItemRadio name='Other descendant' checkedState=false
-++++++++++++staticText name='Other descendant'
-++++++++++++++inlineTextBox name='Other descendant'
+++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++staticText name='Active descendant'
+++++++++++++inlineTextBox name='Active descendant'
+++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++staticText name='Other descendant'
+++++++++++++inlineTextBox name='Other descendant'
 === Start Continuation ===
 rootWebArea name='switch-active-descendant-away'
 ++genericContainer ignored
@@ -20,13 +19,12 @@ rootWebArea name='switch-active-descendant-away'
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'
-++++++++genericContainer
-++++++++++menuItemCheckBox name='Active descendant' checkedState=false
-++++++++++++staticText name='Active descendant'
-++++++++++++++inlineTextBox name='Active descendant'
-++++++++++menuItemRadio name='Other descendant' checkedState=false
-++++++++++++staticText name='Other descendant'
-++++++++++++++inlineTextBox name='Other descendant'
+++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++staticText name='Active descendant'
+++++++++++++inlineTextBox name='Active descendant'
+++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++staticText name='Other descendant'
+++++++++++++inlineTextBox name='Other descendant'
 === Start Continuation ===
 rootWebArea name='switch-active-descendant-back'
 ++genericContainer ignored
@@ -35,28 +33,26 @@ rootWebArea name='switch-active-descendant-back'
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'
-++++++++genericContainer
-++++++++++menuItemCheckBox name='Active descendant' checkedState=false
-++++++++++++staticText name='Active descendant'
-++++++++++++++inlineTextBox name='Active descendant'
-++++++++++menuItemRadio name='Other descendant' checkedState=false
-++++++++++++staticText name='Other descendant'
-++++++++++++++inlineTextBox name='Other descendant'
+++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++staticText name='Active descendant'
+++++++++++++inlineTextBox name='Active descendant'
+++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++staticText name='Other descendant'
+++++++++++++inlineTextBox name='Other descendant'
 === Start Continuation ===
 rootWebArea name='switch-referenced-element-id-away'
 ++genericContainer ignored
 ++++genericContainer
-++++++menu name='parent node' activedescendantId=genericContainer
+++++++menu name='parent node'
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'
-++++++++genericContainer
-++++++++++menuItemCheckBox name='Active descendant' checkedState=false
-++++++++++++staticText name='Active descendant'
-++++++++++++++inlineTextBox name='Active descendant'
-++++++++++menuItemRadio name='Other descendant' checkedState=false
-++++++++++++staticText name='Other descendant'
-++++++++++++++inlineTextBox name='Other descendant'
+++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++staticText name='Active descendant'
+++++++++++++inlineTextBox name='Active descendant'
+++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++staticText name='Other descendant'
+++++++++++++inlineTextBox name='Other descendant'
 === Start Continuation ===
 rootWebArea name='switch-referenced-element-id-back'
 ++genericContainer ignored
@@ -65,13 +61,12 @@ rootWebArea name='switch-referenced-element-id-back'
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'
-++++++++genericContainer
-++++++++++menuItemCheckBox name='Active descendant' checkedState=false
-++++++++++++staticText name='Active descendant'
-++++++++++++++inlineTextBox name='Active descendant'
-++++++++++menuItemRadio name='Other descendant' checkedState=false
-++++++++++++staticText name='Other descendant'
-++++++++++++++inlineTextBox name='Other descendant'
+++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++staticText name='Active descendant'
+++++++++++++inlineTextBox name='Active descendant'
+++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++staticText name='Other descendant'
+++++++++++++inlineTextBox name='Other descendant'
 === Start Continuation ===
 rootWebArea name='switch-reference-target'
 ++genericContainer ignored
@@ -80,10 +75,9 @@ rootWebArea name='switch-reference-target'
 ++++++++menuItem name='Inactive descendant'
 ++++++++++staticText name='Inactive descendant'
 ++++++++++++inlineTextBox name='Inactive descendant'
-++++++++genericContainer
-++++++++++menuItemCheckBox name='Active descendant' checkedState=false
-++++++++++++staticText name='Active descendant'
-++++++++++++++inlineTextBox name='Active descendant'
-++++++++++menuItemRadio name='Other descendant' checkedState=false
-++++++++++++staticText name='Other descendant'
-++++++++++++++inlineTextBox name='Other descendant'
+++++++++menuItemCheckBox name='Active descendant' checkedState=false
+++++++++++staticText name='Active descendant'
+++++++++++++inlineTextBox name='Active descendant'
+++++++++menuItemRadio name='Other descendant' checkedState=false
+++++++++++staticText name='Other descendant'
+++++++++++++inlineTextBox name='Other descendant'

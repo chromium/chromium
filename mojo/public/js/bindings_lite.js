@@ -9,6 +9,12 @@ mojo.internal.kArrayHeaderSize = 8;
 mojo.internal.kStructHeaderSize = 8;
 
 /** @const {number} */
+mojo.internal.kStructHeaderSizeOffset = 0;
+
+/** @const {number} */
+mojo.internal.kStructHeaderVersionOffset = 4;
+
+/** @const {number} */
 mojo.internal.kUnionHeaderSize = 8;
 
 /** @const {number} */
@@ -160,6 +166,36 @@ mojo.internal.getUint64 = function(dataView, byteOffset) {
 mojo.internal.MessageDimensions;
 
 /**
+ * Gets the field in mojo type for a given value. Note that this method
+ * could be relatively expensive if the value is typemapped and its field
+ * needs to be converted to mojo types.
+ *
+ * @param {!*} value
+ * @param {!mojo.internal.StructFieldSpec} fieldSpec
+ * @returns
+ */
+mojo.internal.getMojoFieldValue = function(value, fieldSpec) {
+  if (!!fieldSpec.fieldGetter) {
+    return fieldSpec.fieldGetter(value);
+  }
+
+  if (value && mojo.internal.isNullableValueKindField(fieldSpec)) {
+    const props = fieldSpec.nullableValueKindProperties;
+    const hasValue =
+        !mojo.internal.isNullOrUndefined(value[props.originalFieldName]);
+    if (props.isPrimary) {
+      return hasValue;
+    } else if (hasValue) {
+      return value[props.originalFieldName];
+    } else {
+      // Use `defaultValue` to cover the enum case.
+      return fieldSpec.defaultValue;
+    }
+  }
+  return value[fieldSpec.name];
+};
+
+/**
  * This computes the total amount of buffer space required to hold a struct
  * value and all its fields, including indirect objects like arrays, structs,
  * and nullable unions.
@@ -172,7 +208,7 @@ mojo.internal.computeStructDimensions = function(structSpec, value) {
   let size = structSpec.packedSize;
   let numInterfaceIds = 0;
   for (const field of structSpec.fields) {
-    let fieldValue = value[field.name];
+    let fieldValue = mojo.internal.getMojoFieldValue(value, field);
     if (mojo.internal.isNullOrUndefined(fieldValue)) {
       fieldValue = field.defaultValue;
     }
@@ -184,7 +220,11 @@ mojo.internal.computeStructDimensions = function(structSpec, value) {
       const fieldDimensions =
           field.type.$.computeDimensions(fieldValue, field.nullable);
       size += mojo.internal.align(fieldDimensions.size, 8);
-      numInterfaceIds += fieldDimensions.numInterfaceIds;
+      // Only update numInterfaceIds if field.type.$.computeDimensions returns a
+      // numInterfaceIds
+      if (fieldDimensions.numInterfaceIds) {
+        numInterfaceIds += fieldDimensions.numInterfaceIds;
+      }
     } else if (field.type.$.hasInterfaceId) {
       numInterfaceIds++;
     }
@@ -224,7 +264,11 @@ mojo.internal.computeUnionDimensions = function(unionSpec, nullable, value) {
       const fieldDimensions =
           field['type'].$.computeDimensions(fieldValue, nullable);
       size += mojo.internal.align(fieldDimensions.size, 8);
-      numInterfaceIds += fieldDimensions.numInterfaceIds;
+      // Only update numInterfaceIds if field['type'].$.computeDimensions
+      // returns a numInterfaceIds
+      if (fieldDimensions.numInterfaceIds) {
+        numInterfaceIds += fieldDimensions.numInterfaceIds;
+      }
     } else if (field['type'].$.hasInterfaceId) {
       numInterfaceIds++;
     }
@@ -627,7 +671,7 @@ mojo.internal.Encoder = class {
 
   /**
    * @param {!mojo.internal.StructSpec} structSpec
-   * @param {!Object} value
+   * @param {!*} value
    */
   encodeStructInline(structSpec, value) {
     const versions = structSpec.versions;
@@ -641,25 +685,15 @@ mojo.internal.Encoder = class {
                             field.packedBitOffset, field.nullable);
       };
 
-      // Encode a single optional numeric field into a flag field
-      // or a value field.
-      if (value && mojo.internal.isNullableValueKindField(field)) {
-        const props = field.nullableValueKindProperties;
-        const hasValue =
-          !mojo.internal.isNullOrUndefined(value[props.originalFieldName]);
-        if (props.isPrimary) {
-          encodeStructField(hasValue);
-        } else if (hasValue) {
-          encodeStructField(value[props.originalFieldName]);
-        } else {
-          // Use `defaultValue` to cover the enum case.
-          encodeStructField(field.defaultValue);
-        }
-        continue;
-      }
+      // Pre-emptively read the field value because typemapping might require
+      // us to convert the entire field to the mojo type.
+      const fieldValue = mojo.internal.isNullOrUndefined(value) ?
+          undefined :
+          mojo.internal.getMojoFieldValue(value, field);
 
-      if (value && !mojo.internal.isNullOrUndefined(value[field.name])) {
-        encodeStructField(value[field.name]);
+      if (!mojo.internal.isNullOrUndefined(value) &&
+          !mojo.internal.isNullOrUndefined(fieldValue)) {
+        encodeStructField(fieldValue);
         continue;
       }
 
@@ -674,8 +708,8 @@ mojo.internal.Encoder = class {
       }
 
       throw new Error(
-        structSpec.name + ' missing value for non-nullable ' +
-        'field "' + field.name + '"');
+          structSpec.name + ' missing value for non-nullable ' +
+          'field "' + field.name + `", got: "${fieldValue}"...`);
     }
   }
 
@@ -984,67 +1018,128 @@ mojo.internal.Decoder = class {
   }
 
   /**
+   * Wraps a data buffer into a data view that can decode each field as needed.
+   * @param {!mojo.internal.StructSpec} structSpec
+   * @param {!number} byteOffset
+   * @param {?} dataViewType
+   * @returns {*} instance of dataViewType
+   */
+  wrapStructInDataView(structSpec, byteOffset, dataViewType) {
+    const structOffset = this.decodeOffset(byteOffset);
+    if (!structOffset)
+      return null;
+
+    const decoder = new mojo.internal.Decoder(
+        new DataView(this.data_.buffer, structOffset), this.handles_,
+        this.context_);
+
+    const size = decoder.decodeUint32(mojo.internal.kStructHeaderSizeOffset);
+    const version =
+        decoder.decodeUint32(mojo.internal.kStructHeaderVersionOffset);
+    if (!decoder.isStructHeaderValid(structSpec, size, version)) {
+      throw new Error(
+          `Received ${structSpec.name} of invalid size (${size}) and/or ` +
+          `version (${version})`);
+    }
+    return new dataViewType(decoder, version, structSpec.fields);
+  }
+
+  /**
    * @param {!mojo.internal.StructSpec} structSpec
    * @return {!Object}
    */
   decodeStructInline(structSpec) {
-    const size = this.decodeUint32(0);
-    const version = this.decodeUint32(4);
+    const size = this.decodeUint32(mojo.internal.kStructHeaderSizeOffset);
+    const version = this.decodeUint32(mojo.internal.kStructHeaderVersionOffset);
     if (!this.isStructHeaderValid(structSpec, size, version)) {
       throw new Error(
           `Received ${structSpec.name} of invalid size (${size}) and/or ` +
           `version (${version})`);
     }
 
-    const decodeStructField = (structField) => {
-      const byteOffset =
-        mojo.internal.kStructHeaderSize + structField.packedOffset;
-      const value = structField.type.$.decode(
-        this, byteOffset, structField.packedBitOffset, !!structField.nullable);
-
-      if (value === null && !structField.nullable) {
-        throw new Error(
-          `Received ${structSpec.name} with invalid null field ` +
-          `"${structField.name}"`)
-      }
-      return value;
-    };
-
     const result = {};
-    for (const field of structSpec.fields) {
-      // Decode an optional numeric pair into a single
-      // field.
+    for (let i = 0; i < structSpec.fields.length; ++i) {
+      const field = structSpec.fields[i];
       if (mojo.internal.isNullableValueKindField(field)) {
         const props = field.nullableValueKindProperties;
-        if (props.isPrimary && field.minVersion > version) {
-          result[props.originalFieldName] = null;
-        } else if (props.isPrimary) {
-          const hasValue = decodeStructField(field);
-          // If the field is null, set it here. If it isn't,
-          // the value will be decoded as part of decoding
-          // the non-primary field below.
-          if (!hasValue) {
-            result[props.originalFieldName] = null;
-          }
+        // We only need to decode the two nullable value fields once. Use the
+        // primary.
+        if (props.isPrimary) {
+          const flagFieldSpec = field;
+          result[props.originalFieldName] = this.decodeStructNullableValueField(
+              flagFieldSpec, structSpec.fields, version);
         } else {
-          // If the field hasn't been set yet, then it's not
-          // null and we need to decode the value.
-          if (!(props.originalFieldName in result)) {
-            result[props.originalFieldName] =
-              decodeStructField(field);
-          }
+          // Skip deserializing for non-primary.
+          continue;
         }
-        continue;
+      } else {
+        result[field.name] = this.decodeStructField(field, version);
       }
-
-      if (field.minVersion > version) {
-        result[field.name] = field.defaultValue;
-        continue;
-      }
-      result[field.name] = decodeStructField(field);
     }
 
     return result;
+  }
+
+  /**
+   * Decodes a struct field for a given version
+   * @param {!mojo.internal.StructFieldSpec} structField
+   * @param {!number} version
+   * @return {*}
+   */
+  decodeStructField(structField, version) {
+    const decode =
+        (field) => {
+          const byteOffset =
+              mojo.internal.kStructHeaderSize + field.packedOffset;
+          const value = field.type.$.decode(
+              this, byteOffset, field.packedBitOffset, !!field.nullable);
+
+          if (value === null && !field.nullable) {
+            throw new Error(
+                `Received ${field.name} with invalid null field ` +
+                `"${field.name}"`)
+          }
+          return value;
+        }
+
+    if (structField.minVersion > version) {
+      return structField.defaultValue;
+    }
+
+    return decode(structField);
+  }
+
+  /**
+   * Decodes a struct nullable value field for a given version
+   * Nullable value kinds are encoded as two fields on the wire. One for
+   * flag and one for value. decodeStructField will decode both then
+   * combine them for the correct result. The two fields are linked
+   * together by the field properties.
+   * @param {!mojo.internal.StructFieldSpec} flagFieldSpec
+   * @param {!Array<mojo.internal.StructFieldSpec>} fieldSpecs the full list
+   * of specs are needed in order to find the associated value field spec.
+   * @param {!number} version
+   * @return {*}
+   */
+  decodeStructNullableValueField(flagFieldSpec, fieldSpecs, version) {
+    if (flagFieldSpec.minVersion > version) {
+      return null;
+    }
+
+    const flagValue = this.decodeStructField(flagFieldSpec, version);
+    if (!flagValue) {
+      return null;
+    }
+
+    const props = flagFieldSpec.nullableValueKindProperties;
+    const valueFieldSpec =
+        fieldSpecs.find(spec => spec.name === props.linkedValueFieldName);
+    if (!valueFieldSpec) {
+      throw new Error(
+          'could not find the expected value field spec: ' +
+          props.linkedValueFieldName);
+    }
+    return this.decodeStructField(valueFieldSpec, version);
   }
 
   /**
@@ -1233,6 +1328,11 @@ mojo.internal.NullableValueKindProperties = class {
 };
 
 /**
+ * Getter is a function that returns the value of the field in mojo format. Its
+ * only provided parameter should be a non-nullable struct instance. If a getter
+ * method is not provided, the field will be retrieved through the field name
+ * on the struct instance.
+ *
  * @typedef {{
  *   name: string,
  *   packedOffset: number,
@@ -1243,7 +1343,7 @@ mojo.internal.NullableValueKindProperties = class {
  *   minVersion: number,
  *   nullableValueKindProperties:
  *      (mojo.internal.NullableValueKindProperties|undefined),
- * }}
+ *   fieldGetter: ((function(!*): *)|undefined)}}
  */
 mojo.internal.StructFieldSpec;
 
@@ -1682,12 +1782,14 @@ mojo.internal.Enum = function() {
  * @param {number=} minVersion
  * @param {mojo.internal.NullableValueKindProperties=}
      nullableValueKindProperties
+ * @param {(function(*): *)=} fieldGetter
  * @return {!mojo.internal.StructFieldSpec}
  * @export
  */
 mojo.internal.StructField = function(
-  name, packedOffset, packedBitOffset, type, defaultValue, nullable,
-  minVersion = 0, nullableValueKindProperties = undefined) {
+    name, packedOffset, packedBitOffset, type, defaultValue, nullable,
+    minVersion = 0, nullableValueKindProperties = undefined,
+    fieldGetter = undefined) {
   return {
     name: name,
     packedOffset: packedOffset,
@@ -1697,6 +1799,7 @@ mojo.internal.StructField = function(
     nullable: nullable,
     minVersion: minVersion,
     nullableValueKindProperties: nullableValueKindProperties,
+    fieldGetter: fieldGetter,
   };
 };
 
@@ -1730,47 +1833,36 @@ mojo.internal.Struct = function(
 };
 
 /**
- * Bridges typemapped types to mojo types. The adapter includes a function which
- * will convert a mapped type to mojo type and vice versa.
- * @export
- */
-mojo.internal.TypemapAdapter = class {
-  constructor(toMojoTypeFn, toMappedTypeFn) {
-    this.toMojoTypeFn = toMojoTypeFn;
-    this.toMappedTypeFn = toMappedTypeFn;
-  }
-}
-
-/**
+ * Represents a struct that has been typemapped.
  * @param {!Object} objectToBlessAsType
  * @param {string} name
- * @param {!mojo.internal.TypemapAdapter} typemapAdapter
+ * @param {!typeof Object} dataViewType
+ * @param {*} converter
  * @param {!Array<!mojo.internal.StructFieldSpec>} fields
  * @param {Array<!Array<number>>=} versionData
  * @export
  */
 mojo.internal.TypemappedStruct = function(
-    objectToBlessAsType, name, typemapAdapter, fields, versionData) {
+    objectToBlessAsType, name, dataViewType, converter, fields, versionData) {
   const versions = versionData.map(v => ({version: v[0], packedSize: v[1]}));
   const packedSize = versions[versions.length - 1].packedSize;
   const structSpec = {name, packedSize, fields, versions};
   objectToBlessAsType.$ = {
     structSpec: structSpec,
     encode: function(value, encoder, byteOffset, bitOffset, nullable) {
-      const mojoType = typemapAdapter.toMojoTypeFn(value);
-      encoder.encodeStruct(structSpec, byteOffset, mojoType);
+      encoder.encodeStruct(structSpec, byteOffset, value);
     },
     encodeNull: function(encoder, byteOffset) {},
     decode: function(decoder, byteOffset, bitOffset, nullable) {
-      const mojoType = decoder.decodeStruct(structSpec, byteOffset);
-      if (mojoType === null || mojoType === undefined) {
-        return mojoType;
-      }
-      return typemapAdapter.toMappedTypeFn(mojoType);
+      const view =
+          decoder.wrapStructInDataView(structSpec, byteOffset, dataViewType);
+      // Property access here is used to prevent Closure Compiler from mangling
+      // the method name.
+      return mojo.internal.isNullOrUndefined(view) ? null :
+                                                     converter['convert'](view);
     },
     computeDimensions: function(value, nullable) {
-      const mojoType = typemapAdapter.toMojoTypeFn(value);
-      return mojo.internal.computeStructDimensions(structSpec, mojoType);
+      return mojo.internal.computeStructDimensions(structSpec, value);
     },
     arrayElementSize: nullable => 8,
     isValidObjectKeyType: false,
@@ -1937,4 +2029,36 @@ mojo.internal.AssociatedInterfaceRequest = function(type) {
       isValueType: false,
     },
   };
+};
+
+/**
+ * A helper function to avoid having to export many of the types and
+ * functions in this class. This is used by typemapping.
+ * @param {!mojo.internal.Decoder} decoder
+ * @param {!mojo.internal.StructFieldSpec} fieldSpec
+ * @param {!number} version
+ * @return {*}
+ * @export
+ */
+mojo.internal.decodeStructField = function(decoder, fieldSpec, version) {
+  return decoder.decodeStructField(fieldSpec, version);
+};
+
+/**
+ * A helper function to avoid having to export many of the types and
+ * functions in this class. This is used by typemapping.
+ * The linked value lookup is done here to avoid Closure name mangling.
+ * @param {!mojo.internal.Decoder} decoder
+ * @param {!mojo.internal.StructFieldSpec} flagFieldSpec
+ * @param {!Array<mojo.internal.StructFieldSpec>} fieldSpecs
+ * @param {!number} version
+ * @return {*}
+ * @export
+ */
+mojo.internal.decodeStructNullableValueField = function(
+    decoder, flagFieldSpec, fieldSpecs, version) {
+  const linkedValueFieldName =
+      flagFieldSpec.nullableValueKindProperties.linkedValueFieldName;
+  return decoder.decodeStructNullableValueField(
+      flagFieldSpec, fieldSpecs, version);
 };

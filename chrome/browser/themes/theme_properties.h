@@ -81,12 +81,7 @@ class ThemeProperties {
   };
 
   // Background tiling choices.
-  enum Tiling {
-    NO_REPEAT = 0,
-    REPEAT_X = 1,
-    REPEAT_Y = 2,
-    REPEAT = 3
-  };
+  enum Tiling { NO_REPEAT = 0, REPEAT_X = 1, REPEAT_Y = 2, REPEAT = 3 };
 
   // --------------------------------------------------------------------------
   // The int value of the properties in NotOverwritableByUserThemeProperties

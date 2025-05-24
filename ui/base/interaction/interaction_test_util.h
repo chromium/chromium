@@ -13,6 +13,7 @@
 
 #if !BUILDFLAG(IS_IOS)
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #endif
 
 namespace ui::test {
@@ -152,10 +153,14 @@ class InteractionTestUtil {
 
     // Tries to select tab `index` in `tab_collection`. The collection could be
     // a tabbed pane, browser/tabstrip, or similar. Note that `index` is
-    // zero-indexed.
-    virtual ActionResult SelectTab(TrackedElement* tab_collection,
-                                   size_t index,
-                                   InputType input_type);
+    // zero-indexed. The index after the selection is verified; if for whatever
+    // reason it should not be `index`, specify
+    // `expected_index_after_selection`.
+    virtual ActionResult SelectTab(
+        TrackedElement* tab_collection,
+        size_t index,
+        InputType input_type,
+        std::optional<size_t> expected_index_after_selection);
 
     // Tries to select item `index` in `dropdown`. The collection could be
     // a listbox, combobox, or similar. Note that `index` is zero-indexed.
@@ -171,11 +176,23 @@ class InteractionTestUtil {
     // Activates the surface containing `element`.
     virtual ActionResult ActivateSurface(TrackedElement* element);
 
+    // Focuses `element` within its surface. Does not necessarily activate the
+    // surface. Note that on some platforms, `element` may not actually report
+    // as focused until its surface is subsequently activated.
+    virtual ActionResult FocusElement(TrackedElement* element);
+
 #if !BUILDFLAG(IS_IOS)
+
     // Sends the given accelerator to the surface containing the element.
     virtual ActionResult SendAccelerator(TrackedElement* element,
                                          Accelerator accelerator);
-#endif
+
+    // Sends keypress with `key` and `flags` to `element` or its surface.
+    virtual ActionResult SendKeyPress(TrackedElement* element,
+                                      KeyboardCode key,
+                                      int flags);
+
+#endif  // !BUILDFLAG(IS_IOS)
 
     // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
     virtual ActionResult Confirm(TrackedElement* element);
@@ -206,10 +223,14 @@ class InteractionTestUtil {
 
   // Simulate selecting the `index`-th tab (zero-indexed) of `tab_collection`.
   // Will fail if the target object is not a supported type, if `index` is out
-  // of bounds, or if `input_type` is not supported.
-  ActionResult SelectTab(TrackedElement* tab_collection,
-                         size_t index,
-                         InputType input_type = InputType::kDontCare);
+  // of bounds, or if `input_type` is not supported. The index after the
+  // selection will be verified; if for whatever reason it should not be
+  // `index`, specify `expected_index_after_selection`.
+  ActionResult SelectTab(
+      TrackedElement* tab_collection,
+      size_t index,
+      InputType input_type = InputType::kDontCare,
+      std::optional<size_t> expected_index_after_selection = std::nullopt);
 
   // Simulate selecting item `index` in `dropdown`. The collection could be
   // a listbox, combobox, or similar. Will fail if the target object is not a
@@ -245,14 +266,26 @@ class InteractionTestUtil {
   // very aggressive system calls in certain cases and on certain platforms).
   ActionResult ActivateSurface(TrackedElement* element);
 
+  // Focuses `element` within its surface. Does not necessarily activate the
+  // surface. Note that on some platforms, `element` may not actually report as
+  // focused until its surface is subsequently activated.
+  virtual ActionResult FocusElement(TrackedElement* element);
+
 #if !BUILDFLAG(IS_IOS)
+
   // Sends `accelerator` to the surface containing `element`. May not work if
   // the surface is not active. Prefer to use only in single-process test
   // fixtures like interactive_ui_tests, especially for app/browser
   // accelerators.
   ActionResult SendAccelerator(TrackedElement* element,
                                Accelerator accelerator);
-#endif
+
+  // Sends key press `key` with `flags` to `element` or its surface.
+  ActionResult SendKeyPress(TrackedElement* element,
+                            KeyboardCode key,
+                            int flags);
+
+#endif  // !BUILDFLAG(IS_IOS)
 
   // Sends a "confirm" input to `element`, e.g. a RETURN keypress.
   ActionResult Confirm(TrackedElement* element);

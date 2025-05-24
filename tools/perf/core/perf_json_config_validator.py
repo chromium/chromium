@@ -117,10 +117,17 @@ def _ValidateBrowserType(builder_name, test_config):
       raise ValueError('%s must use one of the following browsers: %s' %
                        (builder_name, ', '.join(_VALID_WEBVIEW_BROWSERS)))
   elif 'Android' in builder_name or 'android' in builder_name:
-    android_browsers = ('android-chromium', 'android-chrome',
-                        'android-chrome-bundle', 'android-chrome-64-bundle',
-                        'android-trichrome-chrome-google-64-32-bundle',
-                        'android-trichrome-bundle', 'exact')
+    android_browsers = (
+        'android-chromium',
+        'android-chrome',
+        'android-chrome-bundle',
+        'android-chrome-64-bundle',
+        'android-trichrome-chrome-bundle',
+        'android-trichrome-chrome-google-bundle',
+        'android-trichrome-chrome-64-32-bundle',
+        'android-trichrome-chrome-google-64-32-bundle',
+        'exact',
+    )
     if browser_options.browser not in android_browsers:
       raise ValueError( 'The browser type for %s must be one of %s' % (
           builder_name, ', '.join(android_browsers)))
@@ -132,20 +139,11 @@ def _ValidateBrowserType(builder_name, test_config):
     if browser_options.browser != 'lacros-chrome':
       raise ValueError("%s must use 'lacros-chrome' browser type" %
                        builder_name)
-  elif builder_name in ('win-10-perf', 'win-10-perf-pgo',
-                        'win-11-perf', 'win-11-perf-pgo',
-                        'Win 7 Nvidia GPU Perf',
-                        'win-10_laptop_low_end-perf_HP-Candidate',
-                        'win-10_laptop_low_end-perf',
-                        'win-10_laptop_low_end-perf-pgo',
-                        'win-10_amd_laptop-perf', 'win-10_amd_laptop-perf-pgo'):
-    if browser_options.browser != 'release_x64':
-      raise ValueError("%s must use 'release_x64' browser type" %
-                       builder_name)
-  else:  # The rest must be desktop/laptop builders
-    if browser_options.browser != 'release':
-      raise ValueError("%s must use 'release' browser type" %
-                       builder_name)
+  else:  # The rest, including win, must be desktop/laptop builders
+    if browser_options.browser not in ['release', 'builder']:
+      raise ValueError(
+          "%s must use 'release' or 'builder' browser type. Current: %s" %
+          (builder_name, browser_options.browser))
 
 
 def ValidateTestingBuilder(builder_name, builder_data):

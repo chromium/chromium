@@ -19,7 +19,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/constants/child_account_constants.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_activity_registry.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_service_wrapper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_utils.h"
@@ -28,10 +28,12 @@
 #include "chrome/browser/ash/child_accounts/time_limits/app_types.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -99,8 +101,7 @@ std::u16string GetNotificationTitleFor(const std::u16string& app_name,
       return l10n_util::GetStringUTF16(
           IDS_APP_TIME_LIMIT_APP_TIME_LIMIT_SET_SYSTEM_NOTIFICATION_TITLE);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -134,8 +135,7 @@ std::u16string GetNotificationMessageFor(
       return l10n_util::GetStringFUTF16(
           IDS_APP_TIME_LIMIT_APP_AVAILABLE_NOTIFICATION_MESSAGE, app_name);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -153,9 +153,7 @@ std::string GetNotificationIdFor(const std::string& app_name,
       notification_id = kAppTimeLimitUpdateNotificationId;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      notification_id = "";
-      break;
+      NOTREACHED();
   }
   return base::StrCat({notification_id, app_name});
 }
@@ -444,7 +442,7 @@ base::Time AppTimeController::GetNextResetTime() const {
 
 void AppTimeController::ScheduleForTimeLimitReset() {
   if (reset_timer_.IsRunning())
-    reset_timer_.AbandonAndStop();
+    reset_timer_.Stop();
 
   base::TimeDelta time_until_reset = GetNextResetTime() - base::Time::Now();
   reset_timer_.Start(FROM_HERE, time_until_reset,
@@ -513,8 +511,8 @@ bool AppTimeController::HasTimeCrossedResetBoundary() const {
 }
 
 void AppTimeController::OpenFamilyLinkApp() {
-  const std::string app_id = arc::ArcPackageNameToAppId(
-      ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
+  const std::string app_id =
+      arc::ArcPackageNameToAppId(kFamilyLinkHelperAppPackageName, profile_);
 
   if (app_service_wrapper_->IsAppInstalled(app_id)) {
     // Launch Family Link Help app since it is available.
@@ -526,8 +524,7 @@ void AppTimeController::OpenFamilyLinkApp() {
   DCHECK(
       apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_));
   apps::AppServiceProxyFactory::GetForProfile(profile_)->LaunchAppWithUrl(
-      arc::kPlayStoreAppId, ui::EF_NONE,
-      GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
+      arc::kPlayStoreAppId, ui::EF_NONE, GURL(kFamilyLinkHelperAppPlayStoreURL),
       apps::LaunchSource::kFromChromeInternal);
 }
 
@@ -584,7 +581,7 @@ void AppTimeController::ShowNotificationForApp(
   }
 
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   if (!notification_display_service)
     return;
 

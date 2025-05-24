@@ -21,6 +21,9 @@ struct IndexedDBReturnValue : public IndexedDBValue {
   static blink::mojom::IDBReturnValuePtr ConvertReturnValue(
       IndexedDBReturnValue* value);
 
+  IndexedDBReturnValue();
+  IndexedDBReturnValue(IndexedDBValue value);
+
   blink::IndexedDBKey
       primary_key;  // primary key (only when using key generator)
   blink::IndexedDBKeyPath key_path;

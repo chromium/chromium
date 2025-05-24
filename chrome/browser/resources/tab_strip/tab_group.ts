@@ -106,13 +106,17 @@ export class TabGroupElement extends CustomElement {
 
     // Content strings are empty for the label and are instead replaced by
     // the aria-describedby attribute on the chip.
+    // TODO(crbug.com/413733034) Support share tab group for thumbnail tab
+    // strip.
     if (visualData.title) {
       this.chip_.setAttribute(
           'aria-label',
-          loadTimeData.getStringF('namedGroupLabel', visualData.title, ''));
+          loadTimeData.getStringF(
+              'namedGroupLabel', '', visualData.title, '', ''));
     } else {
       this.chip_.setAttribute(
-          'aria-label', loadTimeData.getStringF('unnamedGroupLabel', ''));
+          'aria-label',
+          loadTimeData.getStringF('unnamedGroupLabel', '', '', ''));
     }
   }
 }

@@ -36,7 +36,7 @@ base::Value::Dict LogMessageToDictionary(
 }
 }  // namespace
 
-NearbyInternalsLogsHandler::NearbyInternalsLogsHandler() {}
+NearbyInternalsLogsHandler::NearbyInternalsLogsHandler() = default;
 
 NearbyInternalsLogsHandler::~NearbyInternalsLogsHandler() = default;
 

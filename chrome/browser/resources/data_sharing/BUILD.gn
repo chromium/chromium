@@ -14,6 +14,7 @@ html_to_wrapper_template = "native"
 build_webui("build") {
   grd_prefix = "data_sharing"
   ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
 
   ts_deps = [
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
@@ -33,26 +34,33 @@ build_webui("build") {
   static_files = [
     "data_sharing.html",
     "data_sharing_api.html",
-    "data_sharing_dev.css",
   ]
 
   web_component_files = [ "data_sharing_app.ts" ]
 
-  non_web_component_files = [
+  ts_files = [
     "browser_proxy.ts",
     "data_sharing_api.ts",
     "mojom_conversion_utils.ts",
-    "data_sharing_sdk_types.ts",
   ]
 
   if (is_chrome_branded) {
+    ts_path_mappings = [ "/data_sharing_sdk.js|" +
+                         rebase_path("${preprocess_folder}/data_sharing_sdk.js",
+                                     target_gen_dir) ]
     ts_extra_deps = [ ":copy_data_sharing_sdk" ]
     extra_grdp_deps = [ ":build_data_sharing_sdk_grdp" ]
     extra_grdp_files = [ "$target_gen_dir/data_sharing_sdk.grdp" ]
+
+    # Use the mojo_files rules to copy the ts type file to the preprocess dir.
+    # This helps to make sure third_party code is in sync with Chrome.
+    mojo_files += [ "//third_party/data_sharing_sdk/data_sharing_sdk_types.ts" ]
   } else {
     static_files += [ "data_sharing_sdk.css" ]
-
-    non_web_component_files += [ "dummy_data_sharing_sdk.ts" ]
+    ts_files += [
+      "data_sharing_sdk_types.ts",
+      "dummy_data_sharing_sdk.ts",
+    ]
   }
 
   webui_context_type = "untrusted"

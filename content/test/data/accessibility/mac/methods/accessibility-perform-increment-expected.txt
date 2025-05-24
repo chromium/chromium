@@ -1,0 +1,5 @@
+slider.accessibilityValue=1
+slider.accessibilityPerformIncrement=1
+AXValueChanged on AXSlider AXValue=2
+slider.accessibilityValue=2
+text.accessibilityPerformIncrement=ERROR:FAILED_TO_PARSE

@@ -41,10 +41,8 @@
 
 namespace blink {
 
-CSSImageValue::CSSImageValue(CSSUrlData url_data, StyleImage* image)
-    : CSSValue(kImageClass),
-      url_data_(std::move(url_data)),
-      cached_image_(image) {}
+CSSImageValue::CSSImageValue(const CSSUrlData& url_data, StyleImage* image)
+    : CSSValue(kImageClass), url_data_(url_data), cached_image_(image) {}
 
 CSSImageValue::~CSSImageValue() = default;
 
@@ -52,13 +50,14 @@ FetchParameters CSSImageValue::PrepareFetch(
     const Document& document,
     FetchParameters::ImageRequestBehavior image_request_behavior,
     CrossOriginAttributeValue cross_origin) const {
-  const Referrer& referrer = url_data_.GetReferrer();
-  ResourceRequest resource_request(url_data_.ResolveUrl(document));
+  const CSSUrlData& url_data = UrlData();
+  const Referrer& referrer = url_data.GetReferrer();
+  ResourceRequest resource_request(url_data.ResolveUrl(document));
   resource_request.SetReferrerPolicy(
       ReferrerUtils::MojoReferrerPolicyResolveDefault(
           referrer.referrer_policy));
   resource_request.SetReferrerString(referrer.referrer);
-  if (url_data_.IsAdRelated()) {
+  if (url_data.IsAdRelated()) {
     resource_request.SetIsAdResource();
   }
   ExecutionContext* execution_context = document.GetExecutionContext();
@@ -81,7 +80,7 @@ FetchParameters CSSImageValue::PrepareFetch(
     params.SetLazyImageDeferred();
   }
 
-  if (!url_data_.IsFromOriginCleanStyleSheet()) {
+  if (!url_data.IsFromOriginCleanStyleSheet()) {
     params.SetFromOriginDirtyStyleSheet(true);
   }
 
@@ -94,8 +93,9 @@ StyleImage* CSSImageValue::CacheImage(
     CrossOriginAttributeValue cross_origin,
     const float override_image_resolution) {
   if (!cached_image_) {
-    if (url_data_.ResolvedUrl().empty()) {
-      url_data_.ReResolveUrl(document);
+    const CSSUrlData& url_data = UrlData();
+    if (url_data.ResolvedUrl().empty()) {
+      url_data.ReResolveUrl(document);
     }
 
     FetchParameters params =
@@ -103,10 +103,10 @@ StyleImage* CSSImageValue::CacheImage(
     ImageResourceContent* image_content =
         document.GetStyleEngine().CacheImageContent(params);
     cached_image_ = MakeGarbageCollected<StyleFetchedImage>(
-        image_content, document,
+        image_content, *url_data.MakeResolvedIfDanglingMarkup(document),
+        document,
         params.GetImageRequestBehavior() ==
             FetchParameters::ImageRequestBehavior::kDeferImageLoad,
-        url_data_.IsFromOriginCleanStyleSheet(), url_data_.IsAdRelated(),
         params.Url(), override_image_resolution);
   }
   return cached_image_.Get();
@@ -115,7 +115,7 @@ StyleImage* CSSImageValue::CacheImage(
 void CSSImageValue::RestoreCachedResourceIfNeeded(
     const Document& document) const {
   if (!cached_image_ || !document.Fetcher() ||
-      url_data_.ResolvedUrl().IsNull()) {
+      UrlData().ResolvedUrl().IsNull()) {
     return;
   }
 
@@ -149,40 +149,34 @@ bool CSSImageValue::HasFailedOrCanceledSubresources() const {
 }
 
 bool CSSImageValue::Equals(const CSSImageValue& other) const {
-  return url_data_ == other.url_data_;
+  return *url_data_ == *other.url_data_;
 }
 
 String CSSImageValue::CustomCSSText() const {
-  return url_data_.CssText();
+  return UrlData().CssText();
 }
 
 void CSSImageValue::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(url_data_);
   visitor->Trace(cached_image_);
   visitor->Trace(svg_resource_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 
 bool CSSImageValue::IsLocal(const Document& document) const {
-  return url_data_.IsLocal(document);
-}
-
-CSSImageValue* CSSImageValue::ComputedCSSValueMaybeLocal() const {
-  if (url_data_.UnresolvedUrl().StartsWith('#')) {
-    return Clone();
-  }
-  return ComputedCSSValue();
+  return UrlData().IsLocal(document);
 }
 
 AtomicString CSSImageValue::NormalizedFragmentIdentifier() const {
   // Always use KURL's FragmentIdentifier to ensure that we're handling the
   // fragment in a consistent manner.
   return AtomicString(DecodeURLEscapeSequences(
-      KURL(url_data_.ResolvedUrl()).FragmentIdentifier(),
+      KURL(UrlData().ResolvedUrl()).FragmentIdentifier(),
       DecodeURLMode::kUTF8OrIsomorphic));
 }
 
 void CSSImageValue::ReResolveURL(const Document& document) const {
-  if (url_data_.ReResolveUrl(document)) {
+  if (UrlData().ReResolveUrl(document)) {
     cached_image_.Clear();
     svg_resource_.Clear();
   }

@@ -9,7 +9,8 @@
 
 #include "components/omnibox/browser/shortcuts_provider_test_util.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,7 +51,7 @@ TestShortcutData::TestShortcutData(
   this->number_of_hits = number_of_hits;
 }
 
-TestShortcutData::~TestShortcutData() {}
+TestShortcutData::~TestShortcutData() = default;
 
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,
@@ -118,7 +119,7 @@ void RunShortcutsProviderTest(
   EXPECT_EQ(expected_urls.size(), ac_matches.size()) << debug;
 
   for (const auto& expected_url : expected_urls) {
-    EXPECT_TRUE(base::ranges::any_of(
+    EXPECT_TRUE(std::ranges::any_of(
         ac_matches,
         [&expected_url](const AutocompleteMatch& match) {
           return expected_url.first == match.destination_url.spec() &&

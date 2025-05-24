@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/signin/inline_login_ui.h"
+
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -26,7 +29,6 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/sync/one_click_signin_dialog_view.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_impl.h"
-#include "chrome/browser/ui/webui/signin/inline_login_ui.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
@@ -60,6 +62,7 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "google_apis/gaia/fake_gaia.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/base/url_util.h"
@@ -113,7 +116,7 @@ ContentInfo NavigateAndGetInfo(Browser* browser,
       browser->tab_strip_model()->GetActiveWebContents();
   content::RenderProcessHost* process =
       contents->GetPrimaryMainFrame()->GetProcess();
-  return ContentInfo(contents, process->GetID(),
+  return ContentInfo(contents, process->GetDeprecatedID(),
                      process->GetStoragePartition());
 }
 
@@ -124,7 +127,7 @@ ACTION(ReturnNewWebUI) {
 
 GURL GetSigninPromoURL() {
   return signin::GetEmbeddedPromoURL(
-      signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE,
+      signin_metrics::AccessPoint::kStartPage,
       signin_metrics::Reason::kForcedSigninPrimaryAccount, false);
 }
 
@@ -159,7 +162,7 @@ class MockInlineSigninHelper : public InlineSigninHelper {
       Profile* profile,
       const GURL& current_url,
       const std::string& email,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& password,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id,
@@ -187,7 +190,7 @@ MockInlineSigninHelper::MockInlineSigninHelper(
     Profile* profile,
     const GURL& current_url,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     const std::string& signin_scoped_device_id,
@@ -214,7 +217,7 @@ class MockSyncStarterInlineSigninHelper : public InlineSigninHelper {
       Profile* profile,
       const GURL& current_url,
       const std::string& email,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       const std::string& password,
       const std::string& auth_code,
       const std::string& signin_scoped_device_id,
@@ -235,7 +238,7 @@ MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
     Profile* profile,
     const GURL& current_url,
     const std::string& email,
-    const std::string& gaia_id,
+    const GaiaId& gaia_id,
     const std::string& password,
     const std::string& auth_code,
     const std::string& signin_scoped_device_id,
@@ -257,7 +260,7 @@ MockSyncStarterInlineSigninHelper::MockSyncStarterInlineSigninHelper(
 
 class InlineLoginUIBrowserTest : public InProcessBrowserTest {
  public:
-  InlineLoginUIBrowserTest() {}
+  InlineLoginUIBrowserTest() = default;
   void EnableSigninAllowed(bool enable);
   void AddEmailToOneClickRejectedList(const std::string& email);
   void AllowSigninCookies(bool enable);
@@ -310,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, MAYBE_DifferentStorageId) {
   content::WebContents* webview_contents = *set.begin();
   content::RenderProcessHost* process =
       webview_contents->GetPrimaryMainFrame()->GetProcess();
-  ASSERT_NE(info.pid, process->GetID());
+  ASSERT_NE(info.pid, process->GetDeprecatedID());
   ASSERT_NE(info.storage_partition, process->GetStoragePartition());
 }
 
@@ -339,14 +342,16 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoProfile) {
-  SigninUIError error = CanOfferSignin(nullptr, "12345", "user@gmail.com");
+  SigninUIError error =
+      CanOfferSignin(nullptr, GaiaId("12345"), "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOffer) {
   EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com").IsOk());
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com")
+          .IsOk());
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
@@ -357,10 +362,12 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferProfileConnected) {
   EnableSigninAllowed(true);
 
   EXPECT_TRUE(
-      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com").IsOk());
-  EXPECT_TRUE(CanOfferSignin(browser()->profile(), "12345", "foo").IsOk());
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo@gmail.com")
+          .IsOk());
+  EXPECT_TRUE(
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo").IsOk());
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com");
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::WrongReauthAccount("user@gmail.com",
                                                      "foo@gmail.com"));
@@ -370,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferUsernameNotAllowed) {
   SetAllowedUsernamePattern("*.google.com");
 
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), "12345", "foo@gmail.com");
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "foo@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::UsernameNotAllowedByPatternFromPrefs(
                        "foo@gmail.com"));
@@ -381,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoSigninCookies) {
   EnableSigninAllowed(true);
 
   SigninUIError error =
-      CanOfferSignin(browser()->profile(), "12345", "user@gmail.com");
+      CanOfferSignin(browser()->profile(), GaiaId("12345"), "user@gmail.com");
   EXPECT_FALSE(error.IsOk());
   EXPECT_EQ(error, SigninUIError::Other("user@gmail.com"));
 }
@@ -488,7 +495,7 @@ class InlineLoginHelperBrowserTest : public DialogBrowserTest {
     MockSyncStarterInlineSigninHelper* helper =
         new MockSyncStarterInlineSigninHelper(
             handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-            "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+            "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
             /*signin_scoped_device_id=*/std::string(),
             /*confirm_untrusted_signin=*/true,
             /*is_force_sign_in_with_usermanager=*/true);
@@ -519,7 +526,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest, WithAuthCode) {
   InlineLoginHandlerImpl handler;
   MockInlineSigninHelper helper(
       handler.GetWeakPtr(), test_shared_loader_factory(), profile(), GURL(),
-      "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+      "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
       /*signin_scoped_device_id=*/std::string(),
       /*confirm_untrusted_signin=*/false);
   base::RunLoop run_loop;
@@ -553,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
           profile()
               ->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess(),
-          profile(), url, "foo@gmail.com", "gaiaid-12345", "password",
+          profile(), url, "foo@gmail.com", GaiaId("gaiaid-12345"), "password",
           "auth_code", /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/false);
@@ -588,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/false);
@@ -611,7 +618,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/true,
           /*is_force_sign_in_with_usermanager=*/true);
@@ -636,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/true,
           /*is_force_sign_in_with_usermanager=*/true);
@@ -664,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/false);
@@ -687,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginHelperBrowserTest,
   MockSyncStarterInlineSigninHelper* helper =
       new MockSyncStarterInlineSigninHelper(
           handler.GetWeakPtr(), test_shared_loader_factory(), profile(), url,
-          "foo@gmail.com", "gaiaid-12345", "password", "auth_code",
+          "foo@gmail.com", GaiaId("gaiaid-12345"), "password", "auth_code",
           /*signin_scoped_device_id=*/std::string(),
           /*confirm_untrusted_signin=*/false,
           /*is_force_sign_in_with_usermanager=*/true);
@@ -845,9 +852,9 @@ class HtmlRequestTracker {
       return false;
     }
 
-    return base::ranges::all_of(
+    return std::ranges::all_of(
         it->second, [&required_params](const QueryParamSet& request_params) {
-          return base::ranges::includes(request_params, required_params);
+          return std::ranges::includes(request_params, required_params);
         });
   }
 
@@ -900,7 +907,7 @@ class InlineLoginCorrectGaiaUrlBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForSignin) {
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
+      signin_metrics::AccessPoint::kMachineLogon;
   signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
   auto signin_url = signin::GetEmbeddedPromoURL(access_point, reason, false);
@@ -923,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
 IN_PROC_BROWSER_TEST_F(InlineLoginCorrectGaiaUrlBrowserTest,
                        FetchLstOnlyEndpointForReauth) {
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
+      signin_metrics::AccessPoint::kMachineLogon;
   signin_metrics::Reason reason = signin_metrics::Reason::kFetchLstOnly;
 
   static const std::string email = "foo@gmail.com";

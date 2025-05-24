@@ -18,7 +18,6 @@ PASS: typeof window.moveTo should be function and is.
 PASS: typeof window.resizeBy should be function and is.
 PASS: typeof window.resizeTo should be function and is.
 PASS: typeof window.getComputedStyle should be function and is.
-PASS: typeof window.openDatabase should be function and is.
 PASS: typeof window.postMessage should be function and is.
 PASS: typeof window.atob should be function and is.
 PASS: typeof window.btoa should be function and is.

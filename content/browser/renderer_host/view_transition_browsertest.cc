@@ -4,6 +4,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "build/buildflag.h"
+#include "cc/base/features.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
@@ -42,6 +44,8 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
       return Result::kDefer;
     }
 
+    const char* TraceEventName() const override { return "TestCondition"; }
+
    private:
     raw_ptr<base::RunLoop> run_loop_;
   };
@@ -49,8 +53,7 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
   ViewTransitionBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kViewTransitionOnNavigation,
-         viz::mojom::EnableVizTestApis},
+        {viz::mojom::EnableVizTestApis},
         /*disabled_features=*/{});
   }
 
@@ -395,9 +398,17 @@ INSTANTIATE_TEST_SUITE_P(P,
 
 class ViewTransitionCaptureTest
     : public ContentBrowserTest,
-      public ::testing::WithParamInterface<std::string> {
+      public ::testing::WithParamInterface<std::pair<bool, std::string>> {
  public:
-  ViewTransitionCaptureTest() { EnablePixelOutput(); }
+  ViewTransitionCaptureTest() {
+    EnablePixelOutput(1.f);
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {viz::mojom::EnableVizTestApis,
+         features::kViewTransitionCaptureAndDisplay},
+        /*disabled_features=*/
+        {blink::features::kPaintHolding});
+  }
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
@@ -410,11 +421,20 @@ class ViewTransitionCaptureTest
 
  protected:
   SkBitmap TakeScreenshot() {
-    WaitForCopyableViewInWebContents(shell()->web_contents());
     base::test::TestFuture<const SkBitmap&> future_bitmap;
     shell()->web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
         gfx::Rect(), gfx::Size(), future_bitmap.GetCallback());
     return future_bitmap.Take();
+  }
+
+  void WaitForSurfaceAnimationManager(RenderFrameHost* render_frame_host) {
+    mojo::ScopedAllowSyncCallForTesting sync_scope;
+    GetHostFrameSinkManager()
+        ->GetFrameSinkManagerTestApi()
+        .WaitForSurfaceAnimationManager(
+            static_cast<RenderFrameHostImpl*>(render_frame_host)
+                ->GetRenderWidgetHost()
+                ->GetFrameSinkId());
   }
 
  private:
@@ -423,40 +443,72 @@ class ViewTransitionCaptureTest
 
 IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
                        ViewTransitionNoArtifactDuringCapture) {
-  GURL test_url(embedded_test_server()->GetURL(GetParam()));
+  const auto& [frametest, url] = GetParam();
+  GURL test_url(embedded_test_server()->GetURL(url));
   auto* web_contents = shell()->web_contents();
-  web_contents->Resize({0, 0, 20, 20});
   ASSERT_TRUE(NavigateToURL(web_contents, test_url));
+  shell()->ResizeWebContentForTests(gfx::Size(100, 100));
+
   ASSERT_EQ(EvalJs(web_contents, JsReplace(R"(
             new Promise(resolve => {
-              requestAnimationFrame(() => resolve("ok"));
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => resolve("ok"));
+              });
             }))")),
             "ok");
+  WaitForCopyableViewInWebContents(shell()->web_contents());
   SkBitmap before_bitmap = TakeScreenshot();
 
   // Sanity to see that we've captured something.
   ASSERT_NE(before_bitmap.getColor(5, 5), 0u);
-  // This starts a view transition with a "hanging" promise that never resolves.
-  // When the view-transition callback is called, we resolve the external
-  // promise that signals us that it's time to capture.
-  ASSERT_EQ(EvalJs(web_contents, JsReplace(R"(
-              new Promise(ready_to_capture => {
-                document.startViewTransition(() => new Promise(() => {
-                    ready_to_capture('ok');
-                }));
-              }))")),
-            "ok");
+  // This starts a view transition with a callback that signals that we're ok
+  // to capture, but otherwise never finishes running the callback.
+  if (frametest) {
+    ASSERT_EQ(EvalJs(web_contents, JsReplace(R"(
+                new Promise(dom_callback_started => {
+                  frame.contentDocument.startViewTransition(async () => {
+                    dom_callback_started('ok');
+                    await new Promise(() => {});
+                  });
+                }))")),
+              "ok");
+  } else {
+    ASSERT_EQ(EvalJs(web_contents, JsReplace(R"(
+                new Promise(dom_callback_started => {
+                  document.startViewTransition(async () => {
+                    dom_callback_started('ok');
+                    await new Promise(() => {});
+                  });
+                }))")),
+              "ok");
+  }
+  WaitForSurfaceAnimationManager(
+      shell()->web_contents()->GetPrimaryMainFrame());
   auto after_bitmap = TakeScreenshot();
   ASSERT_EQ(before_bitmap.width(), after_bitmap.width());
   ASSERT_EQ(before_bitmap.height(), after_bitmap.height());
-  EXPECT_TRUE(cc::MatchesBitmap(before_bitmap, after_bitmap,
-                                cc::ExactPixelComparator()));
+
+  cc::FuzzyPixelComparator comparator;
+  // Allow 50% of pixels to different by at most 3 in all channels.
+  // The small differences on some platforms seem to be noise, and don't
+  // invalidate the test intent.
+  comparator.SetAbsErrorLimit(255, 3);
+  comparator.SetErrorPixelsPercentageLimit(0, 50);
+  EXPECT_TRUE(cc::MatchesBitmap(after_bitmap, before_bitmap, comparator));
 }
 
 INSTANTIATE_TEST_SUITE_P(
     P,
     ViewTransitionCaptureTest,
-    testing::Values("/view_transitions/parent-child.html",
-                    "/view_transitions/parent-child-opacity.html"));
+    // The pair parameter has the following meaning:
+    //  - The first boolean indicates whether this test should invoke
+    //    startViewTransition() on the `frame` DOM element's contentDocument (if
+    //    true) or on the main frame's document (if false).
+    //    - The second string indicates the location of the test to load.
+    testing::Values(
+        std::make_pair(false, "/view_transitions/parent-child.html"),
+        std::make_pair(false, "/view_transitions/parent-child-opacity.html"),
+        std::make_pair(true,
+                       "/view_transitions/parent-child-opacity-iframe.html")));
 
 }  // namespace content

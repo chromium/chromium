@@ -8,11 +8,13 @@
 #include <linux/rtnetlink.h>
 #include <sched.h>
 
+#include <array>
 #include <memory>
 #include <unordered_set>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -53,17 +55,17 @@ const int kTestInterfaceAp = 456;
 
 const char kIgnoredInterfaceName[] = "uap0";
 
-char* TestGetInterfaceName(int interface_index, char* buf) {
-  if (interface_index == kTestInterfaceEth) {
-    snprintf(buf, IFNAMSIZ, "%s", "eth0");
-  } else if (interface_index == kTestInterfaceTun) {
-    snprintf(buf, IFNAMSIZ, "%s", "tun0");
-  } else if (interface_index == kTestInterfaceAp) {
-    snprintf(buf, IFNAMSIZ, "%s", kIgnoredInterfaceName);
-  } else {
-    snprintf(buf, IFNAMSIZ, "%s", "");
+std::string TestGetInterfaceName(int interface_index) {
+  switch (interface_index) {
+    case kTestInterfaceEth:
+      return "eth0";
+    case kTestInterfaceTun:
+      return "tun0";
+    case kTestInterfaceAp:
+      return kIgnoredInterfaceName;
+    default:
+      return std::string();
   }
-  return buf;
 }
 
 }  // namespace
@@ -379,13 +381,13 @@ TEST_F(AddressTrackerLinuxTest, IgnoredMessage) {
 
   // Valid message after ignored messages.
   NetlinkMessage nlmsg(RTM_NEWADDR);
-  struct ifaddrmsg msg = {};
+  ifaddrmsg msg = {};
   msg.ifa_family = AF_INET;
-  nlmsg.AddPayload(msg);
+  nlmsg.AddPayload(base::byte_span_from_ref(msg));
   // Ignored attribute.
-  struct ifa_cacheinfo cache_info = {};
-  nlmsg.AddAttribute(IFA_CACHEINFO, &cache_info, sizeof(cache_info));
-  nlmsg.AddAttribute(IFA_ADDRESS, kAddr0.bytes().data(), kAddr0.size());
+  ifa_cacheinfo cache_info = {};
+  nlmsg.AddAttribute(IFA_CACHEINFO, base::byte_span_from_ref(cache_info));
+  nlmsg.AddAttribute(IFA_ADDRESS, kAddr0.bytes().span());
   nlmsg.AppendTo(&buffer);
 
   EXPECT_TRUE(HandleAddressMessage(buffer));
@@ -584,13 +586,12 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterface) {
 }
 
 // Check AddressTrackerLinux::get_interface_name_ original implementation
-// doesn't crash or return NULL.
+// doesn't crash.
 TEST_F(AddressTrackerLinuxTest, GetInterfaceName) {
   InitializeAddressTracker(true);
 
   for (int i = 0; i < 10; i++) {
-    char buf[IFNAMSIZ] = {0};
-    EXPECT_NE((const char*)nullptr, original_get_interface_name_(i, buf));
+    original_get_interface_name_(i);
   }
 }
 
@@ -807,7 +808,7 @@ TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackersInPidNamespaces) {
   for (const Child& child : children) {
     ASSERT_TRUE(child.process.IsValid());
 
-    uint8_t message[] = {0};
+    auto message = std::to_array<uint8_t>({0});
     ASSERT_TRUE(parent_reader.ReadAtCurrentPosAndCheck(message));
     ASSERT_EQ(message[0], kChildInitializedAndWaiting);
   }
@@ -851,7 +852,7 @@ MULTIPROCESS_TEST_MAIN(ChildProcessInitializeTrackerForTesting) {
     return 1;
 
   // Block until the parent says all children have initialized their trackers.
-  uint8_t message[] = {0};
+  auto message = std::to_array<uint8_t>({0});
   if (!reader.ReadAtCurrentPosAndCheck(message) || message[0] != kChildMayExit)
     return 1;
   return 0;

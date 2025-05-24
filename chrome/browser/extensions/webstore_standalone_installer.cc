@@ -15,7 +15,7 @@
 #include "base/version.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/scoped_active_install.h"
 #include "chrome/browser/extensions/webstore_data_fetcher.h"
@@ -25,8 +25,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
 #include "url/gurl.h"
@@ -81,8 +81,7 @@ void WebstoreStandaloneInstaller::BeginInstall() {
 // Private interface implementation.
 //
 
-WebstoreStandaloneInstaller::~WebstoreStandaloneInstaller() {
-}
+WebstoreStandaloneInstaller::~WebstoreStandaloneInstaller() = default;
 
 void WebstoreStandaloneInstaller::RunCallback(bool success,
                                               const std::string& error,
@@ -166,11 +165,11 @@ WebstoreStandaloneInstaller::CreateInstallUI() {
   return std::make_unique<ExtensionInstallPrompt>(GetWebContents());
 }
 
-std::unique_ptr<WebstoreInstaller::Approval>
-WebstoreStandaloneInstaller::CreateApproval() const {
-  std::unique_ptr<WebstoreInstaller::Approval> approval(
-      WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
-          profile_, id_, manifest_->Clone(), true));
+std::unique_ptr<InstallApproval> WebstoreStandaloneInstaller::CreateApproval()
+    const {
+  std::unique_ptr<InstallApproval> approval(
+      InstallApproval::CreateWithNoInstallPrompt(profile_, id_,
+                                                 manifest_->Clone(), true));
   approval->skip_post_install_ui = !ShouldShowPostInstallUI();
   approval->installing_icon = gfx::ImageSkia::CreateFrom1xBitmap(icon_);
   return approval;
@@ -192,7 +191,7 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
 
   DCHECK(payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
 
-  std::unique_ptr<WebstoreInstaller::Approval> approval = CreateApproval();
+  std::unique_ptr<InstallApproval> approval = CreateApproval();
 
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(profile_);
   const Extension* installed_extension =
@@ -201,17 +200,16 @@ void WebstoreStandaloneInstaller::OnInstallPromptDone(
     std::string install_message;
     webstore_install::Result install_result = webstore_install::SUCCESS;
 
-    ExtensionService* extension_service =
-        ExtensionSystem::Get(profile_)->extension_service();
+    auto* extension_registrar = ExtensionRegistrar::Get(profile_);
     if (blocklist_prefs::IsExtensionBlocklisted(
             id_, ExtensionPrefs::Get(profile_))) {
       // Don't install a blocklisted extension.
       install_result = webstore_install::BLOCKLISTED;
       install_message = webstore_install::kExtensionIsBlocklisted;
-    } else if (!extension_service->IsExtensionEnabled(id_)) {
+    } else if (!extension_registrar->IsExtensionEnabled(id_)) {
       // If the extension is installed but disabled, and not blocklisted,
       // enable it.
-      extension_service->EnableExtension(id_);
+      extension_registrar->EnableExtension(id_);
     }  // else extension is installed and enabled; no work to be done.
 
     CompleteInstall(install_result, install_message);
@@ -233,99 +231,6 @@ void WebstoreStandaloneInstaller::OnWebstoreRequestFailure(
   OnWebStoreDataFetcherDone();
   CompleteInstall(webstore_install::WEBSTORE_REQUEST_ERROR,
                   webstore_install::kWebstoreRequestError);
-}
-
-void WebstoreStandaloneInstaller::OnWebstoreItemJSONAPIResponseParseSuccess(
-    const std::string& extension_id,
-    const base::Value::Dict& webstore_data) {
-  OnWebStoreDataFetcherDone();
-
-  if (!CheckRequestorAlive()) {
-    CompleteInstall(webstore_install::ABORTED, std::string());
-    return;
-  }
-
-  std::optional<double> average_rating_setting =
-      webstore_data.FindDouble(kAverageRatingKey);
-  std::optional<int> rating_count_setting =
-      webstore_data.FindInt(kRatingCountKey);
-
-  // Manifest, number of users, average rating and rating count are required.
-  const std::string* manifest = webstore_data.FindString(kManifestKey);
-  const std::string* localized_user_count = webstore_data.FindString(kUsersKey);
-  if (!manifest || !localized_user_count || !average_rating_setting ||
-      !rating_count_setting) {
-    CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
-                    webstore_install::kInvalidWebstoreResponseError);
-    return;
-  }
-  localized_user_count_ = *localized_user_count;
-
-  average_rating_ = *average_rating_setting;
-  rating_count_ = *rating_count_setting;
-  localized_rating_count_ = base::NumberToString(rating_count_);
-
-  // Showing user count is optional.
-  std::optional<bool> show_user_count_opt =
-      webstore_data.FindBool(kShowUserCountKey);
-  show_user_count_ = show_user_count_opt.value_or(true);
-
-  if (average_rating_ < ExtensionInstallPrompt::kMinExtensionRating ||
-      average_rating_ > ExtensionInstallPrompt::kMaxExtensionRating) {
-    CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
-                    webstore_install::kInvalidWebstoreResponseError);
-    return;
-  }
-
-  // Localized name and description are optional.
-  bool ok = true;
-  if (const base::Value* localized_name_in =
-          webstore_data.Find(kLocalizedNameKey)) {
-    if (localized_name_in->is_string())
-      localized_name_ = localized_name_in->GetString();
-    else
-      ok = false;
-  }
-
-  if (const base::Value* localized_description_in =
-          webstore_data.Find(kLocalizedDescriptionKey)) {
-    if (localized_description_in->is_string())
-      localized_description_ = localized_description_in->GetString();
-    else
-      ok = false;
-  }
-
-  if (!ok) {
-    CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
-                    webstore_install::kInvalidWebstoreResponseError);
-    return;
-  }
-
-  // Icon URL is optional.
-  GURL icon_url;
-  if (const base::Value* icon_url_val = webstore_data.Find(kIconUrlKey)) {
-    const std::string* icon_url_string = icon_url_val->GetIfString();
-    if (!icon_url_string) {
-      CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
-                      webstore_install::kInvalidWebstoreResponseError);
-      return;
-    }
-    icon_url = extension_urls::GetWebstoreLaunchURL().Resolve(*icon_url_string);
-    if (!icon_url.is_valid()) {
-      CompleteInstall(webstore_install::INVALID_WEBSTORE_RESPONSE,
-                      webstore_install::kInvalidWebstoreResponseError);
-      return;
-    }
-  }
-
-  auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
-      this, id_, *manifest, icon_url);
-
-  // The helper will call us back via OnWebstoreParseSuccess() or
-  // OnWebstoreParseFailure().
-  helper->Start(profile_->GetDefaultStoragePartition()
-                    ->GetURLLoaderFactoryForBrowserProcess()
-                    .get());
 }
 
 void WebstoreStandaloneInstaller::OnFetchItemSnippetParseSuccess(

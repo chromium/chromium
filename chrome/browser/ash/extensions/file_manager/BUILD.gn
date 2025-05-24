@@ -5,7 +5,7 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("file_manager") {
   sources = [
@@ -18,8 +18,6 @@ static_library("file_manager") {
     "event_router_factory.cc",
     "event_router_factory.h",
     "file_manager_private_api_functions.h",
-    "file_stream_md5_digester.cc",
-    "file_stream_md5_digester.h",
     "file_system_provider_metrics_util.cc",
     "file_system_provider_metrics_util.h",
     "fmpi_get_volume_root_function.cc",
@@ -70,13 +68,12 @@ static_library("file_manager") {
 
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/sharesheet",
     "//third_party/ced",
   ]
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//ash/webui/settings/public/constants",
     "//base",
@@ -85,7 +82,9 @@ static_library("file_manager") {
     "//chrome/browser/ash/app_list/search",
     "//chrome/browser/ash/app_list/search/local_image_search",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/fileapi",
+    "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/exo",
@@ -111,6 +110,7 @@ static_library("file_manager") {
     "//chrome/browser/pdf",
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/pdf:pdf_service",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/multi_user",
@@ -127,12 +127,14 @@ static_library("file_manager") {
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/components/disks:prefs",
     "//chromeos/components/sharesheet:constants",
     "//chromeos/dbus/dlp",
     "//chromeos/dbus/power",
     "//components/account_id",
-    "//components/arc",
     "//components/drive",
     "//components/drive:drive_chromeos",
     "//components/enterprise/data_controls/core/browser",
@@ -148,6 +150,7 @@ static_library("file_manager") {
     "//google_apis/drive",
     "//mojo/public/cpp/bindings",
     "//net",
+    "//skia",
     "//storage/browser",
     "//storage/common",
     "//third_party/nearby:presence_types",
@@ -181,7 +184,6 @@ source_set("unit_tests") {
 
   deps = [
     ":file_manager",
-    "//ash/components/arc",
     "//ash/webui/file_manager:constants",
     "//base",
     "//chrome/browser",
@@ -194,6 +196,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/experiences/arc",
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//storage/browser",
@@ -222,6 +225,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",
     "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/policy/dlp",
     "//chrome/browser/ash/policy/dlp/dialogs",
     "//chrome/browser/ash/policy/dlp/test:test_support",
@@ -251,7 +255,6 @@ fuzzer_test("create_fnmatch_query_fuzzer") {
     ":file_manager",
     "//base",
     "//chrome/browser",
-    "//components/exo/wayland:test_controller",
     "//components/exo/wayland:ui_controls_protocol",
   ]
 }
@@ -263,7 +266,6 @@ fuzzer_test("search_by_pattern_fuzzer") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/fileapi",
-    "//components/exo/wayland:test_controller",
     "//components/exo/wayland:ui_controls_protocol",
   ]
 }

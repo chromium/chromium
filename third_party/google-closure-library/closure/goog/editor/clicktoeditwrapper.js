@@ -142,6 +142,7 @@ goog.editor.ClickToEditWrapper.prototype.disposeInternal = function() {
 /**
  * Initialize listeners when the uneditable field is added to the document.
  * Also sets up lorem ipsum text.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.ClickToEditWrapper.prototype.enterDocument = function() {
   'use strict';
@@ -149,8 +150,10 @@ goog.editor.ClickToEditWrapper.prototype.enterDocument = function() {
     return;
   }
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.isInDocument_ = true;
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.mouseEventTriggeredLoad_ = false;
   var field = this.fieldObj_.getOriginalElement();
 
@@ -162,6 +165,7 @@ goog.editor.ClickToEditWrapper.prototype.enterDocument = function() {
   // rare cases where we don't need it. But these cases are highly
   // implementation-specific, and computationally hard to detect (bidi
   // and ig modules both set innerHTML), so we just do it in all cases.
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.savedAnchorClicked_ = null;
   this.mouseEventHandler_
       .listen(field, goog.events.EventType.MOUSEUP, this.handleMouseUp_)
@@ -178,6 +182,7 @@ goog.editor.ClickToEditWrapper.prototype.enterDocument = function() {
 goog.editor.ClickToEditWrapper.prototype.exitDocument = function() {
   'use strict';
   this.mouseEventHandler_.removeAll();
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.isInDocument_ = false;
 };
 
@@ -224,6 +229,9 @@ goog.editor.ClickToEditWrapper.prototype.handleClick_ = function(e) {
     e.preventDefault();
 
     if (!goog.editor.BrowserFeature.HAS_ACTIVE_ELEMENT) {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       this.savedAnchorClicked_ = anchorAncestor;
     }
   }
@@ -273,6 +281,7 @@ goog.editor.ClickToEditWrapper.prototype.finishMouseUp_ = function() {
   }
 
   this.exitDocument();
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.savedAnchorClicked_ = null;
 };
 
@@ -285,6 +294,7 @@ goog.editor.ClickToEditWrapper.prototype.finishMouseUp_ = function() {
 goog.editor.ClickToEditWrapper.prototype.ensureFieldEditable_ = function() {
   'use strict';
   if (!this.fieldObj_.isLoaded()) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     this.mouseEventTriggeredLoad_ = true;
     this.makeFieldEditable(this.fieldObj_);
   }
@@ -295,6 +305,7 @@ goog.editor.ClickToEditWrapper.prototype.ensureFieldEditable_ = function() {
  * Once the field has loaded in an iframe, re-create the selection
  * as marked by the carets.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.editor.ClickToEditWrapper.prototype.renderSelection_ = function() {
   'use strict';
@@ -335,6 +346,7 @@ goog.editor.ClickToEditWrapper.prototype.renderSelection_ = function() {
     this.savedCaretRange_ = null;
   }
 
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   this.mouseEventTriggeredLoad_ = false;
 };
 
@@ -410,6 +422,9 @@ goog.editor.ClickToEditWrapper.prototype.insertCarets_ = function() {
       specialNodeClicked =
           goog.dom.getActiveElement(this.originalDomHelper_.getDocument());
     } else {
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       specialNodeClicked = this.savedAnchorClicked_;
     }
 

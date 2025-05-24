@@ -38,6 +38,7 @@
 #include "components/embedder_support/origin_trials/pref_names.h"
 #include "components/metrics/android_metrics_helper.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/persistent_histograms.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -71,6 +72,9 @@ bool g_signature_verification_enabled = true;
 const char* const kPersistentPrefsAllowlist[] = {
     // Restricted content blocking.
     android_webview::prefs::kShouldBlockRestrictedContent,
+
+    // Last known value of the app's cache quota.
+    android_webview::prefs::kLastKnownAppCacheQuota,
 
     // Origin Trial config overrides.
     embedder_support::prefs::kOriginTrialPublicKey,
@@ -175,6 +179,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   AwBrowserProcess::RegisterNetworkContextLocalStatePrefs(pref_registry.get());
   AwBrowserProcess::RegisterEnterpriseAuthenticationAppLinkPolicyPref(
       pref_registry.get());
+  AwBrowserProcess::RegisterAppCacheQuotaLocalStatePref(pref_registry.get());
   AwTracingDelegate::RegisterPrefs(pref_registry.get());
   AwBrowserContextStore::RegisterPrefs(pref_registry.get());
   AwSupervisedUserUrlClassifier::RegisterPrefs(pref_registry.get());
@@ -240,7 +245,10 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       local_state_.get(), /*initial_seed=*/std::move(seed),
       /*signature_verification_enabled=*/g_signature_verification_enabled,
       std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
-          local_state_.get()),
+          local_state_.get(), client_->GetVariationsSeedFileDir(),
+          client_->GetChannelForVariations(), /*entropy_providers=*/nullptr),
+      client_->GetChannelForVariations(), client_->GetVariationsSeedFileDir(),
+      /*entropy_providers=*/nullptr,
       /*use_first_run_prefs=*/false);
 
   if (!seed_date.is_null())
@@ -290,7 +298,9 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       std::move(feature_list), metrics_client->metrics_state_manager(),
       metrics_client->GetSyntheticTrialRegistry(), aw_field_trials_.get(),
       &ignored_safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false);
+      /*add_entropy_source_to_variations_ids=*/false,
+      *metrics_client->metrics_state_manager()->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false));
 }
 
 }  // namespace android_webview

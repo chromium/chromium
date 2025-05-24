@@ -7,10 +7,12 @@
 
 #include "ash/webui/help_app_ui/help_app_ui.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 class GURL;
+class PrefService;
 
 namespace ash {
 
@@ -22,7 +24,8 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
  public:
   HelpAppPageHandler(
       HelpAppUI* help_app_ui,
-      mojo::PendingReceiver<help_app::mojom::PageHandler> receiver);
+      mojo::PendingReceiver<help_app::mojom::PageHandler> receiver,
+      base::raw_ref<PrefService> pref_service);
   ~HelpAppPageHandler() override;
 
   HelpAppPageHandler(const HelpAppPageHandler&) = delete;
@@ -34,7 +37,6 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void ShowParentalControls() override;
   void TriggerWelcomeTipCallToAction(
       help_app::mojom::ActionTypeId action_type_id) override;
-  void IsLssEnabled(IsLssEnabledCallback callback) override;
   void IsLauncherSearchEnabled(
       IsLauncherSearchEnabledCallback callback) override;
   void LaunchMicrosoft365Setup() override;
@@ -42,12 +44,14 @@ class HelpAppPageHandler : public help_app::mojom::PageHandler {
   void GetDeviceInfo(GetDeviceInfoCallback callback) override;
   void OpenUrlInBrowserAndTriggerInstallDialog(const GURL& url) override;
   void OpenSettings(help_app::mojom::SettingsComponent component) override;
+  void SetHasCompletedNewDeviceChecklist() override;
+  void SetHasVisitedHowToPage() override;
 
  private:
   mojo::Receiver<help_app::mojom::PageHandler> receiver_;
   raw_ptr<HelpAppUI> help_app_ui_;  // Owns |this|.
-  bool is_lss_enabled_;
   bool is_launcher_search_enabled_;
+  raw_ref<PrefService> pref_service_;
 };
 
 }  // namespace ash

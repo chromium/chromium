@@ -4,6 +4,8 @@
 
 #include "components/sync_device_info/local_device_info_provider_impl.h"
 
+#include <variant>
+
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/sync_util.h"
 #include "components/sync_device_info/device_info_sync_client.h"
@@ -60,14 +62,14 @@ const DeviceInfo* LocalDeviceInfoProviderImpl::GetLocalDeviceInfo() const {
 
   DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo paask_status =
       sync_client_->GetPhoneAsASecurityKeyInfo();
-  if (absl::get_if<DeviceInfo::PhoneAsASecurityKeyInfo::NotReady>(
+  if (std::get_if<DeviceInfo::PhoneAsASecurityKeyInfo::NotReady>(
           &paask_status)) {
     // `sync_client_` will call `RefreshLocalDeviceInfo` when it's ready.
-  } else if (absl::get_if<DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport>(
+  } else if (std::get_if<DeviceInfo::PhoneAsASecurityKeyInfo::NoSupport>(
                  &paask_status)) {
     local_device_info_->set_paask_info(std::nullopt);
   } else if (DeviceInfo::PhoneAsASecurityKeyInfo* info =
-                 absl::get_if<DeviceInfo::PhoneAsASecurityKeyInfo>(
+                 std::get_if<DeviceInfo::PhoneAsASecurityKeyInfo>(
                      &paask_status)) {
     local_device_info_->set_paask_info(std::move(*info));
   } else {

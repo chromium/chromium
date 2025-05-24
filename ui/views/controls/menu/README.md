@@ -201,8 +201,8 @@ TODO(ellyjones): How does this work?
 
 Unlike most other UI code, menus decouple their lifetimes from that of the
 Widgets containing them as best they can by marking the members displayed
-in Widgets by using `View::set_owned_by_client(true)`. The below diagram
-gives an overview of the ownership relationships between the key menu classes.
+in Widgets by using `View::set_owned_by_client()`. The below diagram gives an
+overview of the ownership relationships between the key menu classes.
 
 ```
                                                                                     ┌──────────────────────────┐

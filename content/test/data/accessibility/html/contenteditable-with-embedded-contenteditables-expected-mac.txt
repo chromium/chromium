@@ -1,10 +1,10 @@
 AXWebArea
-++AXGroup AXValue='This is editable.<newline>This is not editable.<newline>But this one is.<newline>So is this one.'
+++AXTextArea AXValue='This is editable.<newline>This is not editable.<newline>But this one is.<newline>So is this one.'
 ++++AXGroup
 ++++++AXStaticText AXValue='This is editable.'
 ++++AXStaticText AXValue='This is not editable.'
 ++++AXGroup AXTitle='<newline>'
-++++AXGroup AXValue='But this one is.'
+++++AXTextArea AXValue='But this one is.'
 ++++++AXStaticText AXValue='But this one is.'
-++++AXGroup AXValue='So is this one.'
+++++AXTextArea AXValue='So is this one.'
 ++++++AXStaticText AXValue='So is this one.'

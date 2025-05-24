@@ -7,20 +7,14 @@
 
 #include <string>
 
-#include "build/chromeos_buildflags.h"
 #include "ui/views/views_export.h"
 
 namespace aura {
 class Window;
 }
 
-namespace base {
-class TimeDelta;
-}
-
 namespace gfx {
 class Point;
-class Rect;
 }  // namespace gfx
 
 namespace wm {
@@ -54,18 +48,6 @@ class VIEWS_EXPORT Tooltip {
                       const gfx::Point& position,
                       const TooltipTrigger trigger) = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Sets show/hide delay. Only used for Lacros.
-  virtual void SetDelay(const base::TimeDelta& show_delay,
-                        const base::TimeDelta& hide_delay) {}
-
-  // Called when tooltip is shown/hidden on server.
-  // Only used by Lacros.
-  virtual void OnTooltipShownOnServer(const std::u16string& text,
-                                      const gfx::Rect& bounds) {}
-  virtual void OnTooltipHiddenOnServer() {}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Shows the tooltip at the specified location (in screen coordinates).
   virtual void Show() = 0;
 
@@ -74,11 +56,6 @@ class VIEWS_EXPORT Tooltip {
 
   // Is the tooltip visible?
   virtual bool IsVisible() = 0;
-
- protected:
-  // Max visual tooltip width. If a tooltip is greater than this width, it will
-  // be wrapped.
-  static constexpr int kTooltipMaxWidth = 800;
 };
 
 }  // namespace views::corewm

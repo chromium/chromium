@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Verify that postmessage tasks can be properly tracked.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="resources/task-ids.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  const frame = document.createElement("iframe");
+  frame.srcdoc = `
+    <script>
+      window.onmessage = function() {
+        parent.postMessage({taskId: scheduler.taskId}, "*");
+      }
+      </scr`+`ipt>
+    `;
+  const p = new Promise(resolve => frame.onload = resolve);
+  document.body.appendChild(frame);
+  await p;
+
+  const originatingTaskId = initializeTaskId();
+  const message = new Promise((resolve) => {
+    window.onmessage = (e) => {
+      resolve(e.data.taskId);
+    };
+  });
+
+  frame.contentWindow.postMessage("start", "*");
+  let frameTaskId = await message;
+
+  assert_not_equals(originatingTaskId, frameTaskId);
+  assert_equals(frameTaskId, 0);
+}, "Cross-frame window.postMessage does not propagate task state.");
+
+</script>
+</body>
+</html>

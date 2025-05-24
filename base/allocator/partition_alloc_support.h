@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/allocator/partition_alloc_features.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "partition_alloc/buildflags.h"
+#include "partition_alloc/lightweight_quarantine_support.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/thread_cache.h"
 
@@ -37,12 +39,21 @@ BASE_EXPORT std::map<std::string, std::string> ProposeSyntheticFinchTrials();
 BASE_EXPORT void InstallDanglingRawPtrChecks();
 BASE_EXPORT void InstallUnretainedDanglingRawPtrChecks();
 
+// Once called, makes `free()` do nothing. This is done to reduce
+// shutdown hangs on CrOS.
+// Does nothing if Dangling Pointer Detector (`docs/dangling_ptr.md`)
+// is not active.
+// Does nothing if allocator shim support is not built.
+BASE_EXPORT void MakeFreeNoOp();
+
 // Allows to re-configure PartitionAlloc at run-time.
 class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
-    bool process_affected_by_brp_flag = false;
+
+    // TODO(https://crbug.com/371135823): Remove after the investigation.
+    size_t extra_extras_size = 0;
   };
 
   // Reconfigure* functions re-configure PartitionAlloc. It is impossible to
@@ -103,6 +114,12 @@ class BASE_EXPORT PartitionAllocSupport {
   static bool ShouldEnablePartitionAllocWithAdvancedChecks(
       const std::string& process_type);
 
+  // Returns quarantine configuration for `process_name` and `branch_type`.
+  static ::partition_alloc::internal::SchedulerLoopQuarantineConfig
+  GetSchedulerLoopQuarantineConfiguration(
+      const std::string& process_type,
+      features::internal::SchedulerLoopQuarantineBranchType branch_type);
+
  private:
   PartitionAllocSupport();
 
@@ -148,6 +165,15 @@ class BASE_EXPORT MemoryReclaimerSupport {
   bool in_foreground_ = true;
   bool has_pending_task_ = false;
 };
+
+// Utility function to detect Double-Free or Out-of-Bounds writes.
+// This function can be called to memory assumed to be valid.
+// If not, this may crash (not guaranteed).
+// This is useful if you want to investigate crashes at `free()`,
+// to know which point at execution it goes wrong.
+BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
+
+using partition_alloc::ScopedSchedulerLoopQuarantineExclusion;
 
 }  // namespace base::allocator
 

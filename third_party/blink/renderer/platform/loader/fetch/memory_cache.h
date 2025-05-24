@@ -149,11 +149,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   size_t size() const { return size_; }
 
-  // Releases reconstructable data (e.g. decoded image, parsed style sheet...)
-  // associated with resources in the cache. Also releases all strong references
-  // held by the cache.
-  void PruneAll();
-
   // Called by the loader to notify that a new page is being loaded.
   // The strong references the memory cache is holding for the current page
   // will be moved to the previous generation.
@@ -172,7 +167,7 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   // freshest version of objects that are currently being referenced by a Web
   // page). removeFragmentIdentifierIfNeeded() should be called for the url
   // before using it as a key for the map.
-  using ResourceMap = HeapHashMap<String, Member<MemoryCacheEntry>>;
+  using ResourceMap = GCedHeapHashMap<String, Member<MemoryCacheEntry>>;
   using ResourceMapIndex = HeapHashMap<String, Member<ResourceMap>>;
   ResourceMap* EnsureResourceMap(const String& cache_identifier);
   ResourceMapIndex resource_maps_;
@@ -182,8 +177,6 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
 
   void PruneStrongReferences();
   void ClearStrongReferences();
-
-  bool in_prune_resources_ = false;
 
   // The number of bytes currently consumed by resources in the cache.
   size_t size_ = 0;
@@ -202,7 +195,7 @@ class PLATFORM_EXPORT MemoryCache final : public GarbageCollected<MemoryCache>,
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, ResourceTimeout);
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest, LRU);
   FRIEND_TEST_ALL_PREFIXES(MemoryCacheStrongReferenceTest,
-                           PruneAllClearsStrongReferences);
+                           ClearStrongReferences);
 };
 
 // Sets the global cache, used to swap in a test instance. Returns the old

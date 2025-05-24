@@ -123,12 +123,8 @@ class PLATFORM_EXPORT VideoFrameSinkBundle
       std::optional<viz::HitTestRegionList> hit_test_region_list,
       uint64_t submit_time);
   void DidNotProduceFrame(uint32_t sink_id, const viz::BeginFrameAck& ack);
-  void DidAllocateSharedBitmap(uint32_t sink_id,
-                               base::ReadOnlySharedMemoryRegion region,
-                               const viz::SharedBitmapId& id);
-  void DidDeleteSharedBitmap(uint32_t sink_id, const viz::SharedBitmapId& id);
 #if BUILDFLAG(IS_ANDROID)
-  void SetThreadIds(uint32_t sink_id, const WTF::Vector<int32_t>& thread_ids);
+  void SetThreads(uint32_t sink_id, const WTF::Vector<viz::Thread>& threads);
 #endif
 
   // viz::mojom::blink::FrameSinkBundleClient implementation:

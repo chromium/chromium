@@ -199,7 +199,9 @@ std::string AutomationInternalBindings::GetEventTypeString(
 void AutomationInternalBindings::DispatchEvent(
     const std::string& event_name,
     const base::Value::List& event_args) const {
-  v8::HandleScope handle_scope(GetIsolate());
+  v8::Isolate* isolate = GetIsolate();
+  v8::Isolate::Scope isolate_scope(isolate);
+  v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = GetContext();
   v8::Context::Scope context_scope(context);
 
@@ -207,7 +209,7 @@ void AutomationInternalBindings::DispatchEvent(
   // object that contains all the listeners. Then, we dispatch the event to all
   // listeners.
   v8::Local<v8::String> func_name =
-      v8::String::NewFromUtf8(GetIsolate(), kJSAutomationInternalV8Listeners)
+      v8::String::NewFromUtf8(isolate, kJSAutomationInternalV8Listeners)
           .ToLocalChecked();
   v8::Local<v8::Value> func_value =
       context->Global()->Get(context, func_name).ToLocalChecked();
@@ -216,8 +218,7 @@ void AutomationInternalBindings::DispatchEvent(
 
   // Prepare the argument for the 'getEventListenersFromName' call
   v8::Local<v8::Value> args[] = {
-      v8::String::NewFromUtf8(GetIsolate(), event_name.c_str())
-          .ToLocalChecked()};
+      v8::String::NewFromUtf8(isolate, event_name.c_str()).ToLocalChecked()};
 
   // Call the 'getEventListenersFromName' function using the event that needs to
   // be dispatched. The return value is an object containing all listeners to
@@ -231,7 +232,7 @@ void AutomationInternalBindings::DispatchEvent(
       v8::Local<v8::Object>::Cast(result);
 
   v8::Local<v8::String> method_name =
-      v8::String::NewFromUtf8(GetIsolate(), kJSCallListeners).ToLocalChecked();
+      v8::String::NewFromUtf8(isolate, kJSCallListeners).ToLocalChecked();
   v8::Local<v8::Value> method_value =
       event_listeners_object->Get(context, method_name).ToLocalChecked();
   v8::Local<v8::Function> method = v8::Local<v8::Function>::Cast(method_value);

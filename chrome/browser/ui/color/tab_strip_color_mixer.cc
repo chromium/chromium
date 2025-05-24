@@ -202,6 +202,7 @@ void AddTabStripColorMixer(ui::ColorProvider* provider,
       kColorToolbarButtonIcon};
   mixer[kColorTabSearchButtonCRForegroundFrameInactive] = {
       kColorToolbarButtonIconInactive};
+  mixer[kColorTabStripComboButtonSeparator] = {ui::kColorSeparator};
   mixer[kColorTabStripControlButtonInkDrop] = ui::SetAlpha(
       kColorNewTabButtonInkDropFrameActive, std::ceil(0.16f * 255.0f));
   mixer[kColorTabStripControlButtonInkDropRipple] = ui::SetAlpha(

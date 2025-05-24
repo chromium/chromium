@@ -16,7 +16,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_tokenizer.h"
@@ -51,9 +53,8 @@ const uint64_t kMaxMergedHeaderAndBodySize = 1400;
 const size_t kRequestBodyBufferSize = 1 << 14;  // 16KB
 
 std::string GetResponseHeaderLines(const HttpResponseHeaders& headers) {
-  std::string raw_headers = headers.raw_headers();
   std::string cr_separated_headers;
-  base::StringTokenizer tokenizer(raw_headers, std::string(1, '\0'));
+  base::StringTokenizer tokenizer(headers.raw_headers(), std::string(1, '\0'));
   while (tokenizer.GetNext()) {
     base::StrAppend(&cr_separated_headers, {tokenizer.token_piece(), "\n"});
   }
@@ -92,6 +93,15 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 // storage. The motivation is to avoid repeated allocations of
 // DrainableIOBuffer.
 //
+// Tracks both bytes written to the buffer (`bytes_written_`) and bytes
+// subsequently consumed and sent over the network (`bytes_consumed_`). The way
+// this class is used is that it's populated with some data, which updates
+// `bytes_written_`, and then that data is consumed until `bytes_consumed_`
+// matches `bytes_written_`, which while point both values are cleared and the
+// process repeats. The IOBuffer's accessors always reflects the offset of
+// `bytes_consumed_` relative to the underlying buffer, and extends to the
+// end of the full buffer.
+//
 // Example:
 //
 // scoped_refptr<SeekableIOBuffer> buf =
@@ -121,61 +131,50 @@ bool ShouldTryReadingOnUploadError(int error_code) {
 class HttpStreamParser::SeekableIOBuffer : public IOBufferWithSize {
  public:
   explicit SeekableIOBuffer(int capacity)
-      : IOBufferWithSize(capacity), real_data_(data_), capacity_(capacity) {}
+      : IOBufferWithSize(capacity), full_span_(span()) {}
 
   // DidConsume() changes the |data_| pointer so that |data_| always points
   // to the first unconsumed byte.
-  void DidConsume(int bytes) {
-    SetOffset(used_ + bytes);
-  }
+  void DidConsume(int bytes) { SetOffset(bytes_consumed_ + bytes); }
 
   // Returns the number of unconsumed bytes.
-  int BytesRemaining() const {
-    return size_ - used_;
-  }
+  int BytesRemaining() const { return bytes_written_ - bytes_consumed_; }
 
   // Seeks to an arbitrary point in the buffer. The notion of bytes consumed
   // and remaining are updated appropriately.
   void SetOffset(int bytes) {
-    DCHECK_GE(bytes, 0);
-    DCHECK_LE(bytes, size_);
-    used_ = bytes;
-    data_ = real_data_ + used_;
+    CHECK_LE(bytes, bytes_written_);
+    bytes_consumed_ = bytes;
+    SetSpan(full_span_.subspan(base::checked_cast<size_t>(bytes_consumed_)));
   }
 
   // Called after data is added to the buffer. Adds |bytes| added to
   // |size_|. data() is unaffected.
   void DidAppend(int bytes) {
-    DCHECK_GE(bytes, 0);
-    DCHECK_GE(size_ + bytes, 0);
-    DCHECK_LE(size_ + bytes, capacity_);
-    size_ += bytes;
+    CHECK_GE(bytes, 0);
+    CHECK_GE(bytes_written_ + bytes, 0);
+    CHECK_LE(bytes_written_ + bytes, capacity());
+    bytes_written_ += bytes;
   }
 
   // Changes the logical size to 0, and the offset to 0.
   void Clear() {
-    size_ = 0;
+    bytes_written_ = 0;
     SetOffset(0);
   }
 
-  // Returns the logical size of the buffer (i.e the number of bytes of data
-  // in the buffer).
-  int size() const { return size_; }
-
   // Returns the capacity of the buffer. The capacity is the size used when
   // the object is created.
-  int capacity() const { return capacity_; }
+  int capacity() const { return full_span_.size(); }
 
  private:
-  ~SeekableIOBuffer() override {
-    // data_ will be deleted in IOBuffer::~IOBuffer().
-    data_ = real_data_;
-  }
+  // No need to do anything here. The IOBufferWithSize parent class owned the
+  // underlying buffer, and takes care of freeing it.
+  ~SeekableIOBuffer() override = default;
 
-  raw_ptr<char, AllowPtrArithmetic> real_data_;
-  const int capacity_;
-  int size_ = 0;
-  int used_ = 0;
+  const base::raw_span<uint8_t> full_span_;
+  int bytes_written_ = 0;
+  int bytes_consumed_ = 0;
 };
 
 // 2 CRLFs + max of 8 hex chars.
@@ -263,18 +262,17 @@ int HttpStreamParser::SendRequest(
     request_headers_ = base::MakeRefCounted<DrainableIOBuffer>(
         merged_request_headers_and_body, merged_size);
 
-    memcpy(request_headers_->data(), request.data(), request_headers_length_);
-    request_headers_->DidConsume(request_headers_length_);
+    request_headers_->span().copy_prefix_from(base::as_byte_span(request));
+    // Size of IOBuffers always fits within an int, so if `request` can't fit
+    // within an int, the above copy_prefix_from() would have triggered a CHECK.
+    request_headers_->DidConsume(static_cast<int>(request.size()));
 
-    uint64_t todo = upload_data_stream_->size();
-    while (todo) {
-      int consumed = upload_data_stream_->Read(request_headers_.get(),
-                                               static_cast<int>(todo),
-                                               CompletionOnceCallback());
+    while (int remaining = request_headers_->BytesRemaining() > 0) {
+      int consumed = upload_data_stream_->Read(
+          request_headers_.get(), remaining, CompletionOnceCallback());
       // Read() must succeed synchronously if not chunked and in memory.
-      DCHECK_GT(consumed, 0);
+      CHECK_GT(consumed, 0);
       request_headers_->DidConsume(consumed);
-      todo -= consumed;
     }
     DCHECK(upload_data_stream_->IsEOF());
     // Reset the offset, so the buffer can be read from the beginning.
@@ -316,7 +314,7 @@ int HttpStreamParser::ReadResponseHeaders(CompletionOnceCallback callback) {
   DCHECK(io_state_ == STATE_NONE || io_state_ == STATE_DONE);
   DCHECK(callback_.is_null());
   DCHECK(!callback.is_null());
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
   DCHECK(SendRequestBuffersEmpty());
 
   // This function can be called with io_state_ == STATE_DONE if the
@@ -357,7 +355,7 @@ int HttpStreamParser::ReadResponseBody(IOBuffer* buf,
     return OK;
 
   user_read_buf_ = buf;
-  user_read_buf_len_ = buf_len;
+  user_read_buf_len_ = base::checked_cast<size_t>(buf_len);
   io_state_ = STATE_READ_BODY;
 
   int result = DoLoop(OK);
@@ -428,8 +426,7 @@ int HttpStreamParser::DoLoop(int result) {
         result = DoReadBodyComplete(result);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } while (result != ERR_IO_PENDING &&
            (io_state_ != STATE_DONE && io_state_ != STATE_NONE));
@@ -455,7 +452,7 @@ int HttpStreamParser::DoSendHeaders() {
 int HttpStreamParser::DoSendHeadersComplete(int result) {
   if (result < 0) {
     // In the unlikely case that the headers and body were merged, all the
-    // the headers were sent, but not all of the body way, and |result| is
+    // the headers were sent, but not all of the body was, and |result| is
     // an error that this should try reading after, stash the error for now and
     // act like the request was successfully sent.
     io_state_ = STATE_SEND_REQUEST_COMPLETE;
@@ -666,20 +663,23 @@ int HttpStreamParser::DoReadBody() {
   // There may be additional data after the end of the body waiting in
   // the socket, but in order to find out, we need to read as much as possible.
   // If there is additional data, discard it and close the connection later.
-  int64_t remaining_read_len = user_read_buf_len_;
-  int64_t remaining_body = 0;
+  uint64_t remaining_read_len = user_read_buf_len_;
+  uint64_t remaining_body = 0;
   if (truncate_to_content_length_enabled_ && !chunked_decoder_.get() &&
       response_body_length_ >= 0) {
-    remaining_body = response_body_length_ - response_body_read_;
+    remaining_body = base::checked_cast<uint64_t>(response_body_length_ -
+                                                  response_body_read_);
     remaining_read_len = std::min(remaining_read_len, remaining_body);
   }
 
   // There may be some data left over from reading the response headers.
   if (read_buf_->offset()) {
-    int64_t available = read_buf_->offset() - read_buf_unused_offset_;
+    const auto read_offset_s = base::checked_cast<size_t>(read_buf_->offset());
+    CHECK_GE(read_offset_s, read_buf_unused_offset_);
+    const size_t available = read_offset_s - read_buf_unused_offset_;
     if (available) {
-      CHECK_GT(available, 0);
-      int64_t bytes_from_buffer = std::min(available, remaining_read_len);
+      const auto bytes_from_buffer = static_cast<size_t>(
+          std::min(uint64_t{available}, remaining_read_len));
       user_read_buf_->span().copy_prefix_from(read_buf_->everything().subspan(
           read_buf_unused_offset_, bytes_from_buffer));
       read_buf_unused_offset_ += bytes_from_buffer;
@@ -695,10 +695,9 @@ int HttpStreamParser::DoReadBody() {
         read_buf_unused_offset_ = 0;
       }
       return bytes_from_buffer;
-    } else {
-      read_buf_->SetCapacity(0);
-      read_buf_unused_offset_ = 0;
     }
+    read_buf_->SetCapacity(0);
+    read_buf_unused_offset_ = 0;
   }
 
   // Check to see if we're done reading.
@@ -708,7 +707,8 @@ int HttpStreamParser::DoReadBody() {
   // DoReadBodyComplete will truncate the amount read if necessary whether the
   // read completes synchronously or asynchronously.
   DCHECK_EQ(0, read_buf_->offset());
-  return stream_socket_->Read(user_read_buf_.get(), user_read_buf_len_,
+  return stream_socket_->Read(user_read_buf_.get(),
+                              base::checked_cast<int>(user_read_buf_len_),
                               io_callback_);
 }
 
@@ -720,12 +720,13 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
       response_body_length_ >= 0) {
     // Calculate how much we should have been allowed to read to not go beyond
     // the Content-Length.
-    int64_t remaining_body = response_body_length_ - response_body_read_;
-    int64_t remaining_read_len =
-        std::min(static_cast<int64_t>(user_read_buf_len_), remaining_body);
-    if (result > remaining_read_len) {
+    const auto remaining_body = base::checked_cast<uint64_t>(
+        response_body_length_ - response_body_read_);
+    uint64_t remaining_read_len =
+        std::min(uint64_t{user_read_buf_len_}, remaining_body);
+    if (result > 0 && static_cast<uint64_t>(result) > remaining_read_len) {
       // Truncate to only what is in the body.
-      result = remaining_read_len;
+      result = base::checked_cast<int>(remaining_read_len);
       discarded_extra_data_ = true;
     }
   }
@@ -770,7 +771,8 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
 
   // Filter incoming data if appropriate.  FilterBuf may return an error.
   if (result > 0 && chunked_decoder_.get()) {
-    result = chunked_decoder_->FilterBuf(user_read_buf_->data(), result);
+    result = chunked_decoder_->FilterBuf(
+        user_read_buf_->first(static_cast<size_t>(result)));
     if (result == 0 && !chunked_decoder_->reached_eof()) {
       // Don't signal completion of the Read call yet or else it'll look like
       // we received end-of-file.  Wait for more data.
@@ -790,7 +792,10 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
     // in |read_buf_|.  But the part left over in |user_read_buf_| must have
     // come from the |read_buf_|, so there's room to put it back at the
     // start first.
-    int additional_save_amount = read_buf_->offset() - read_buf_unused_offset_;
+    const auto read_offset_s = base::checked_cast<size_t>(read_buf_->offset());
+    CHECK_GE(read_offset_s, read_buf_unused_offset_);
+    const size_t additional_save_amount =
+        read_offset_s - read_buf_unused_offset_;
     int save_amount = 0;
     if (chunked_decoder_.get()) {
       save_amount = chunked_decoder_->bytes_after_eof();
@@ -803,21 +808,24 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
       }
     }
 
-    CHECK_LE(save_amount + additional_save_amount, kMaxBufSize);
-    if (read_buf_->capacity() < save_amount + additional_save_amount) {
-      read_buf_->SetCapacity(save_amount + additional_save_amount);
+    const auto new_capacity =
+        base::checked_cast<int>(save_amount + additional_save_amount);
+    CHECK_LE(new_capacity, kMaxBufSize);
+    if (read_buf_->capacity() < new_capacity) {
+      read_buf_->SetCapacity(new_capacity);
     }
 
     if (save_amount) {
       received_bytes_ -= save_amount;
-      read_buf_->everything().copy_prefix_from(
-          user_read_buf_->span().subspan(result, save_amount));
+      read_buf_->everything().copy_prefix_from(user_read_buf_->span().subspan(
+          base::checked_cast<size_t>(result),
+          base::checked_cast<size_t>(save_amount)));
     }
     read_buf_->set_offset(save_amount);
     if (additional_save_amount) {
       read_buf_->span().copy_prefix_from(read_buf_->everything().subspan(
           read_buf_unused_offset_, additional_save_amount));
-      read_buf_->set_offset(save_amount + additional_save_amount);
+      read_buf_->set_offset(new_capacity);
     }
     read_buf_unused_offset_ = 0;
   } else {
@@ -830,7 +838,7 @@ int HttpStreamParser::DoReadBodyComplete(int result) {
 }
 
 int HttpStreamParser::HandleReadHeaderResult(int result) {
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
 
   if (result == 0)
     result = ERR_CONNECTION_CLOSED;
@@ -899,7 +907,8 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
   // Record our best estimate of the 'response time' as the time when we read
   // the first bytes of the response headers.
   if (read_buf_->offset() == 0) {
-    response_->response_time = base::Time::Now();
+    response_->response_time = response_->original_response_time =
+        base::Time::Now();
     // Also keep the time as base::TimeTicks for `first_response_start_time_`
     // and `non_informational_response_start_time_`.
     current_response_start_time_ = base::TimeTicks::Now();
@@ -943,9 +952,11 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
     // If the body is zero length, the caller may not call ReadResponseBody,
     // which is where any extra data is copied to read_buf_, so we move the
     // data here.
+    const auto end_of_header_offset_s =
+        static_cast<size_t>(end_of_header_offset);
     if (response_body_length_ == 0) {
       base::span<uint8_t> extra_bytes =
-          read_buf_->span_before_offset().subspan(end_of_header_offset);
+          read_buf_->span_before_offset().subspan(end_of_header_offset_s);
       if (!extra_bytes.empty()) {
         read_buf_->everything().copy_prefix_from(extra_bytes);
       }
@@ -979,7 +990,7 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
     response_is_keep_alive_ = response_->headers->IsKeepAlive();
 
     // Note where the headers stop.
-    read_buf_unused_offset_ = end_of_header_offset;
+    read_buf_unused_offset_ = end_of_header_offset_s;
     // Now waiting for the body to be read.
   }
   return OK;
@@ -991,7 +1002,7 @@ void HttpStreamParser::RunConfirmHandshakeCallback(int rv) {
 
 int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
   DCHECK_GT(new_bytes, 0);
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
   size_t end_offset = std::string::npos;
 
   // Look for the start of the status line, if it hasn't been found yet.
@@ -1030,7 +1041,7 @@ int HttpStreamParser::FindAndParseResponseHeaders(int new_bytes) {
 
 int HttpStreamParser::ParseResponseHeaders(size_t end_offset) {
   scoped_refptr<HttpResponseHeaders> headers;
-  DCHECK_EQ(0, read_buf_unused_offset_);
+  DCHECK_EQ(0u, read_buf_unused_offset_);
 
   if (response_header_start_offset_ != std::string::npos) {
     received_bytes_ += end_offset;
@@ -1166,7 +1177,8 @@ bool HttpStreamParser::CanFindEndOfResponse() const {
 }
 
 bool HttpStreamParser::IsMoreDataBuffered() const {
-  return read_buf_->offset() > read_buf_unused_offset_;
+  return read_buf_->offset() > 0 &&
+         static_cast<size_t>(read_buf_->offset()) > read_buf_unused_offset_;
 }
 
 bool HttpStreamParser::CanReuseConnection() const {

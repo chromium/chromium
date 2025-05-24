@@ -130,7 +130,7 @@ class ReportingServiceTest : public testing::Test {
   ReportingServiceTest(const ReportingServiceTest&) = delete;
   ReportingServiceTest& operator=(const ReportingServiceTest&) = delete;
 
-  ~ReportingServiceTest() override {}
+  ~ReportingServiceTest() override = default;
 
   PrefService* GetLocalState() { return &testing_local_state_; }
 

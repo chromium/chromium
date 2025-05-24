@@ -29,14 +29,15 @@ FederatedIdentityAutoReauthnPermissionContext::
 
 bool FederatedIdentityAutoReauthnPermissionContext::
     IsAutoReauthnSettingEnabled() {
-  return host_content_settings_map_->GetDefaultContentSetting(
+  password_manager::PasswordManagerSettingsService* settings_service =
+      PasswordManagerSettingsServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_));
+  return settings_service &&
+         settings_service->IsSettingEnabled(
+             password_manager::PasswordManagerSetting::kAutoSignIn) &&
+         host_content_settings_map_->GetDefaultContentSetting(
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION,
-             /*provider_id=*/nullptr) !=
-             ContentSetting::CONTENT_SETTING_BLOCK &&
-         PasswordManagerSettingsServiceFactory::GetForProfile(
-             Profile::FromBrowserContext(browser_context_))
-             ->IsSettingEnabled(
-                 password_manager::PasswordManagerSetting::kAutoSignIn);
+             /*provider_id=*/nullptr) != ContentSetting::CONTENT_SETTING_BLOCK;
 }
 
 bool FederatedIdentityAutoReauthnPermissionContext::IsAutoReauthnEmbargoed(

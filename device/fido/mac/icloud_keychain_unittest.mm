@@ -4,6 +4,7 @@
 
 #include "device/fido/mac/icloud_keychain.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -148,7 +148,7 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
       fake_ = base::MakeRefCounted<FakeSystemInterface>();
       SetSystemInterfaceForTesting(fake_);
 
-      discovery_ = NewDiscovery(kFakeNSWindowForTesting);
+      discovery_ = NewDiscovery(base::apple::WeakNSWindow());
       discovery_->set_observer(this);
       discovery_->Start();
       task_environment_.RunUntilIdle();
@@ -175,12 +175,12 @@ class iCloudKeychainTest : public testing::Test, FidoDiscoveryBase::Observer {
 
   void AuthenticatorAdded(FidoDiscoveryBase* discovery,
                           FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void AuthenticatorRemoved(FidoDiscoveryBase* discovery,
                             FidoAuthenticator* authenticator) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  protected:
@@ -335,7 +335,7 @@ TEST_F(iCloudKeychainTest, MakeCredential) {
 
       const std::vector<uint8_t> returned_credential_id =
           response.attestation_object.authenticator_data().GetCredentialId();
-      EXPECT_TRUE(base::ranges::equal(returned_credential_id, kCredentialID));
+      EXPECT_TRUE(std::ranges::equal(returned_credential_id, kCredentialID));
       EXPECT_FALSE(response.enterprise_attestation_returned);
       EXPECT_TRUE(response.is_resident_key.value_or(false));
       EXPECT_FALSE(response.enterprise_attestation_returned);
@@ -450,9 +450,9 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
 
       AuthenticatorGetAssertionResponse response =
           std::move(std::get<1>(result)[0]);
-      EXPECT_TRUE(base::ranges::equal(response.signature, kSignature));
-      EXPECT_TRUE(base::ranges::equal(response.user_entity->id, kUserID));
-      EXPECT_TRUE(base::ranges::equal(response.credential->id, kCredentialID));
+      EXPECT_TRUE(std::ranges::equal(response.signature, kSignature));
+      EXPECT_TRUE(std::ranges::equal(response.user_entity->id, kUserID));
+      EXPECT_TRUE(std::ranges::equal(response.credential->id, kCredentialID));
       EXPECT_TRUE(response.user_selected);
       EXPECT_EQ(response.transport_used, FidoTransportProtocol::kInternal);
     }
@@ -505,14 +505,14 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
   }
 }
 
-// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
-TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadata) {
+TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", std::nullopt}}};
+         {{4, 3, 2, 1}, "name", std::nullopt},
+         "Example provider"}};
     fake_->SetCredentials(creds);
     base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,
                            FidoRequestHandlerBase::RecognizedCredential>
@@ -533,18 +533,19 @@ TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadata) {
   }
 }
 
-// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
-TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadataWithAllowlist) {
+TEST_F(iCloudKeychainTest, FetchCredentialMetadataWithAllowlist) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 4},
-         {{4, 3, 2, 1}, "name", std::nullopt}},
+         {{4, 3, 2, 1}, "name", std::nullopt},
+         "Example provider"},
         {AuthenticatorType::kICloudKeychain,
          "example.com",
          {1, 2, 3, 5},
-         {{4, 3, 2, 2}, "name", std::nullopt}},
+         {{4, 3, 2, 2}, "name", std::nullopt},
+         "Example provider"},
     };
     fake_->SetCredentials(creds);
     base::test::TestFuture<std::vector<DiscoverableCredentialMetadata>,

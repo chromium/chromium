@@ -6,7 +6,11 @@ package org.chromium.chrome.browser;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+
+import androidx.annotation.CallSuper;
 
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -23,14 +27,33 @@ public abstract class SnackbarActivity extends SynchronousInitializationActivity
 
     private SnackbarManager mSnackbarManager;
 
+    @CallSuper
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    protected void onCreateInternal(Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         }
-        mSnackbarManager = new SnackbarManager(this, findViewById(android.R.id.content), null);
+        // TODO(crbug.com/399495650): Add render tests for snackbar padding in edge-to-edge mode.
+        mSnackbarManager = new SnackbarManager(this, getContentView(), null);
+    }
+
+    @Override
+    public void setContentView(int layoutResId) {
+        super.setContentView(layoutResId);
+        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
+    }
+
+    @Override
+    public void setContentView(View view) {
+        super.setContentView(view);
+        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
+    }
+
+    @Override
+    public void setContentView(View view, ViewGroup.LayoutParams params) {
+        super.setContentView(view, params);
+        mSnackbarManager.pushParentViewToOverrideStack(getContentView());
     }
 
     @Override

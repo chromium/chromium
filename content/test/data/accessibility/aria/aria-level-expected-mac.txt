@@ -19,7 +19,7 @@ AXWebArea
 ++++++AXGroup AXSubrole=AXApplicationGroup
 ++++++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=1 AXIndex=1 AXTitle='Tree item at level 2'
 ++++++++++AXStaticText AXValue='Tree item at level 2'
-++++++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=1 AXIndex=2 AXTitle='Tree item at level 2, aria-level is 0'
+++++++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=0 AXIndex=2 AXTitle='Tree item at level 2, aria-level is 0'
 ++++++++++AXStaticText AXValue='Tree item at level 2, aria-level is 0'
 ++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=2 AXIndex=3 AXTitle='Tree item at level 3'
 ++++++AXStaticText AXValue='Tree item at level 3'
@@ -32,10 +32,10 @@ AXWebArea
 ++++AXRow AXSubrole=AXOutlineRow AXDisclosing=0 AXDisclosureLevel=0 AXIndex=7 AXTitle='Tree item at level 1'
 ++++++AXStaticText AXValue='Tree item at level 1'
 ++AXTable
-++++AXRow AXDisclosureLevel=0 AXIndex=0 AXTitle='Cell at level 1'
+++++AXRow AXDisclosing=0 AXDisclosureLevel=0 AXIndex=0 AXTitle='Cell at level 1'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Cell at level 1'
-++++AXRow AXDisclosureLevel=1 AXIndex=1 AXTitle='Cell at level 2'
+++++AXRow AXDisclosing=0 AXDisclosureLevel=1 AXIndex=1 AXTitle='Cell at level 2'
 ++++++AXCell
 ++++++++AXStaticText AXValue='Cell at level 2'
 ++++AXColumn AXIndex=0

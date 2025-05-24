@@ -30,26 +30,26 @@ namespace subtle {
 inline AtomicWord NoBarrier_CompareAndSwap(volatile AtomicWord* ptr,
                                            AtomicWord old_value,
                                            AtomicWord new_value) {
-  return NoBarrier_CompareAndSwap(
-      reinterpret_cast<volatile Atomic32*>(ptr), old_value, new_value);
+  return NoBarrier_CompareAndSwap(reinterpret_cast<volatile Atomic32*>(ptr),
+                                  old_value, new_value);
 }
 
 inline AtomicWord NoBarrier_AtomicExchange(volatile AtomicWord* ptr,
                                            AtomicWord new_value) {
-  return NoBarrier_AtomicExchange(
-      reinterpret_cast<volatile Atomic32*>(ptr), new_value);
+  return NoBarrier_AtomicExchange(reinterpret_cast<volatile Atomic32*>(ptr),
+                                  new_value);
 }
 
 inline AtomicWord NoBarrier_AtomicIncrement(volatile AtomicWord* ptr,
                                             AtomicWord increment) {
-  return NoBarrier_AtomicIncrement(
-      reinterpret_cast<volatile Atomic32*>(ptr), increment);
+  return NoBarrier_AtomicIncrement(reinterpret_cast<volatile Atomic32*>(ptr),
+                                   increment);
 }
 
 inline AtomicWord Barrier_AtomicIncrement(volatile AtomicWord* ptr,
                                           AtomicWord increment) {
-  return Barrier_AtomicIncrement(
-      reinterpret_cast<volatile Atomic32*>(ptr), increment);
+  return Barrier_AtomicIncrement(reinterpret_cast<volatile Atomic32*>(ptr),
+                                 increment);
 }
 
 inline AtomicWord Acquire_CompareAndSwap(volatile AtomicWord* ptr,
@@ -66,19 +66,17 @@ inline AtomicWord Release_CompareAndSwap(volatile AtomicWord* ptr,
       reinterpret_cast<volatile Atomic32*>(ptr), old_value, new_value);
 }
 
-inline void NoBarrier_Store(volatile AtomicWord *ptr, AtomicWord value) {
-  NoBarrier_Store(
-      reinterpret_cast<volatile Atomic32*>(ptr), value);
+inline void NoBarrier_Store(volatile AtomicWord* ptr, AtomicWord value) {
+  NoBarrier_Store(reinterpret_cast<volatile Atomic32*>(ptr), value);
 }
 
 inline void Release_Store(volatile AtomicWord* ptr, AtomicWord value) {
-  return base::subtle::Release_Store(
-      reinterpret_cast<volatile Atomic32*>(ptr), value);
+  return base::subtle::Release_Store(reinterpret_cast<volatile Atomic32*>(ptr),
+                                     value);
 }
 
-inline AtomicWord NoBarrier_Load(volatile const AtomicWord *ptr) {
-  return NoBarrier_Load(
-      reinterpret_cast<volatile const Atomic32*>(ptr));
+inline AtomicWord NoBarrier_Load(volatile const AtomicWord* ptr) {
+  return NoBarrier_Load(reinterpret_cast<volatile const Atomic32*>(ptr));
 }
 
 inline AtomicWord Acquire_Load(volatile const AtomicWord* ptr) {

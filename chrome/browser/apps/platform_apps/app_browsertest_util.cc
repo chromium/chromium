@@ -9,7 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -27,12 +27,13 @@
 #include "extensions/browser/app_window/app_window_contents.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
+#include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "components/media_router/browser/media_routes_observer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,10 +58,14 @@ PlatformAppBrowserTest::PlatformAppBrowserTest()
   ChromeAppDelegate::DisableExternalOpenForTesting();
 }
 
-PlatformAppBrowserTest::~PlatformAppBrowserTest() {}
+PlatformAppBrowserTest::~PlatformAppBrowserTest() = default;
 
 void PlatformAppBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
-  // Skips ExtensionApiTest::SetUpCommandLine.
+  // Skip ExtensionApiTest::SetUpCommandLine.
+  // MixinBasedExtensionApiTest::SetUpCommandLine is inlined here, but instead
+  // of calling ExtensionApiTest::SetUpCommandLine, we call
+  // ExtensionBrowserTest::SetUpCommandLine directly.
+  mixin_host_.SetUpCommandLine(command_line);
   ExtensionBrowserTest::SetUpCommandLine(command_line);
 
   // Make event pages get suspended quicker.
@@ -69,8 +74,8 @@ void PlatformAppBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void PlatformAppBrowserTest::SetUpOnMainThread() {
-  ExtensionApiTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MixinBasedExtensionApiTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS)
   // Mock the Media Router in extension api tests. Several of the
   // PlatformAppBrowserTest suites call RunAllPendingInMessageLoop() when there
   // are mojo messages that will call back into Profile creation through the
@@ -84,10 +89,10 @@ void PlatformAppBrowserTest::SetUpOnMainThread() {
 }
 
 void PlatformAppBrowserTest::TearDownOnMainThread() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CastConfigControllerMediaRouter::SetMediaRouterForTest(nullptr);
 #endif
-  ExtensionApiTest::TearDownOnMainThread();
+  MixinBasedExtensionApiTest::TearDownOnMainThread();
 }
 
 // static
@@ -219,7 +224,8 @@ bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(
   function->set_extension(extension);
   utils::RunFunction(function.get(), base::StringPrintf("[%u]", window_id),
                      browser()->profile(), api_test_utils::FunctionMode::kNone);
-  return *function->response_type() == ExtensionFunction::SUCCEEDED;
+  return *function->response_type() ==
+         ExtensionFunction::ResponseType::kSucceeded;
 }
 
 size_t PlatformAppBrowserTest::GetAppWindowCount() {

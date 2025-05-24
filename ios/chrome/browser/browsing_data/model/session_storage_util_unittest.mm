@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
-
 #import "testing/platform_test.h"
 
 // Test fixture for the session storage utility functions.

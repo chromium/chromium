@@ -9,7 +9,6 @@
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -21,11 +20,14 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/update_user_activation_state_interceptor.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -50,8 +52,8 @@ class PixelTestUi : public TestBrowserUi {
   ~PixelTestUi() override = default;
 
   // TestBrowserUi:
-  void ShowUi(const std::string& name) override { NOTREACHED_IN_MIGRATION(); }
-  void WaitForUserDismissal() override { NOTREACHED_IN_MIGRATION(); }
+  void ShowUi(const std::string& name) override { NOTREACHED(); }
+  void WaitForUserDismissal() override { NOTREACHED(); }
 
   bool VerifyUi() override {
     return VerifyUiWithResult() != ui::test::ActionResult::kFailed;
@@ -165,6 +167,26 @@ class InteractionTestUtilSimulatorBrowser
     return ui::test::ActionResult::kNotAttempted;
   }
 
+  // Handle sending key presses to web contents. All other cases are handled by
+  // the Views simulator.
+  ui::test::ActionResult SendKeyPress(ui::TrackedElement* element,
+                                      ui::KeyboardCode key,
+                                      int flags) override {
+    if (auto* const tracked_contents =
+            element->AsA<TrackedElementWebContents>()) {
+      auto native_window =
+          tracked_contents->owner()->web_contents()->GetTopLevelNativeWindow();
+      const bool result = ui_test_utils::SendKeyPressToWindowSync(
+          native_window, key, flags & ui::EF_CONTROL_DOWN,
+          flags & ui::EF_SHIFT_DOWN, flags & ui::EF_ALT_DOWN,
+          flags & ui::EF_COMMAND_DOWN);
+      return result ? ui::test::ActionResult::kSucceeded
+                    : ui::test::ActionResult::kFailed;
+    }
+
+    return ui::test::ActionResult::kNotAttempted;
+  }
+
   // Chrome has better and more thorough functionality for bringing a browser
   // window to the front, but it's expensive, so only actually use it for
   // browser windows on platforms where activation requires extra steps.
@@ -221,9 +243,53 @@ class InteractionTestUtilSimulatorBrowser
     return ui::test::ActionResult::kNotAttempted;
   }
 
-  ui::test::ActionResult SelectTab(ui::TrackedElement* tab_collection,
-                                   size_t index,
-                                   InputType input_type) override {
+  ui::test::ActionResult FocusElement(ui::TrackedElement* element) override {
+    auto* const instrumented = element->AsA<TrackedElementWebContents>();
+    if (!instrumented) {
+      return ui::test::ActionResult::kNotAttempted;
+    }
+
+    auto* const contents = instrumented->owner()->web_contents();
+    if (!contents) {
+      LOG(ERROR) << "WebContents not present.";
+      return ui::test::ActionResult::kFailed;
+    }
+
+    // Focus the renderer.
+    if (!contents->GetRenderWidgetHostView()) {
+      LOG(ERROR) << "No render widget host.";
+      return ui::test::ActionResult::kFailed;
+    }
+    contents->GetRenderWidgetHostView()->Focus();
+
+    // Prepare the renderer for input.
+    if (!contents->GetPrimaryMainFrame()) {
+      LOG(ERROR) << "No main frame.";
+      return ui::test::ActionResult::kFailed;
+    }
+    content::UpdateUserActivationStateInterceptor user_activation_interceptor(
+        contents->GetPrimaryMainFrame());
+    user_activation_interceptor.UpdateUserActivationState(
+        blink::mojom::UserActivationUpdateType::kNotifyActivation,
+        blink::mojom::UserActivationNotificationType::kTest);
+
+    // Ensure the correct WebView is focused before returning.
+    auto* web_view = instrumented->owner()->GetWebView();
+    if (!web_view) {
+      LOG(ERROR) << "No web view.";
+      return ui::test::ActionResult::kFailed;
+    }
+    views::test::ViewFocusedWaiter focus_waiter(*web_view);
+    focus_waiter.Wait();
+
+    return ui::test::ActionResult::kSucceeded;
+  }
+
+  ui::test::ActionResult SelectTab(
+      ui::TrackedElement* tab_collection,
+      size_t index,
+      InputType input_type,
+      std::optional<size_t> expected_index_after_selection) override {
     // This handler *explicitly* only handles Browser and TabStrip; it will
     // reject any other element or View type.
     if (!tab_collection->IsA<views::TrackedElementViews>())
@@ -253,7 +319,10 @@ class InteractionTestUtilSimulatorBrowser
     Tab* const tab = tab_strip->tab_at(index);
     views::test::InteractionTestUtilSimulatorViews::DoDefaultAction(tab,
                                                                     input_type);
-    if (static_cast<int>(index) != tab_strip->GetActiveIndex()) {
+
+    const int expected =
+        static_cast<int>(expected_index_after_selection.value_or(index));
+    if (expected != tab_strip->GetActiveIndex()) {
       LOG(ERROR) << "Failed to select tabstrip tab " << index;
       return ui::test::ActionResult::kFailed;
     }

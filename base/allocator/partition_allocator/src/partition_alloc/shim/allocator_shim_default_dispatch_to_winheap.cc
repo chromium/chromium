@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/shim/allocator_shim.h"
-
 #include <ostream>
 
 #include "partition_alloc/partition_alloc_check.h"
+#include "partition_alloc/shim/allocator_shim.h"
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
 namespace {
@@ -24,7 +23,7 @@ void* DefaultWinHeapCallocImpl(size_t n, size_t elem_size, void* context) {
     return nullptr;
   }
 
-  void* result = DefaultWinHeapMallocImpl(self, size, context);
+  void* result = DefaultWinHeapMallocImpl(size, context);
   if (result) {
     memset(result, 0, size);
   }
@@ -41,6 +40,23 @@ void* DefaultWinHeapReallocImpl(void* address, size_t size, void* context) {
 }
 
 void DefaultWinHeapFreeImpl(void* address, void* context) {
+  allocator_shim::WinHeapFree(address);
+}
+
+void DefaultWinHeapFreeWithSizeImpl(void* address, size_t size, void* context) {
+  allocator_shim::WinHeapFree(address);
+}
+
+void DefaultWinHeapFreeWithAlignmentImpl(void* address,
+                                         size_t alignment,
+                                         void* context) {
+  allocator_shim::WinHeapFree(address);
+}
+
+void DefaultWinHeapFreeWithSizeAndAlignmentImpl(void* address,
+                                                size_t size,
+                                                size_t alignment,
+                                                void* context) {
   allocator_shim::WinHeapFree(address);
 }
 
@@ -78,12 +94,14 @@ constexpr AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &DefaultWinHeapReallocImpl,
     &DefaultWinHeapReallocImpl, /* realloc_unchecked_function */
     &DefaultWinHeapFreeImpl,
+    &DefaultWinHeapFreeWithSizeImpl,
+    &DefaultWinHeapFreeWithAlignmentImpl,
+    &DefaultWinHeapFreeWithSizeAndAlignmentImpl,
     &DefaultWinHeapGetSizeEstimateImpl,
     nullptr, /* good_size */
     nullptr, /* claimed_address */
     nullptr, /* batch_malloc_function */
     nullptr, /* batch_free_function */
-    nullptr, /* free_definite_size_function */
     nullptr, /* try_free_default_function */
     &DefaultWinHeapAlignedMallocImpl,
     &DefaultWinHeapAlignedMallocImpl, /* aligned_malloc_unchecked_function */

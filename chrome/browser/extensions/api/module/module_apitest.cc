@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "content/public/test/browser_test.h"
 
@@ -9,7 +11,7 @@ namespace extensions {
 
 namespace {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionModuleApiTest : public ExtensionApiTest,
                                public testing::WithParamInterface<ContextType> {
@@ -20,9 +22,12 @@ class ExtensionModuleApiTest : public ExtensionApiTest,
   ExtensionModuleApiTest& operator=(const ExtensionModuleApiTest&) = delete;
 };
 
+// Android only supports service worker.
+#if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
                          ExtensionModuleApiTest,
                          ::testing::Values(ContextType::kPersistentBackground));
+#endif
 INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionModuleApiTest,
                          ::testing::Values(ContextType::kServiceWorker));

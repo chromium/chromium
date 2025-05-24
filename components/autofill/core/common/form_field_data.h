@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <variant>
 #include <vector>
 
 #include "base/i18n/rtl.h"
@@ -53,19 +54,16 @@ enum FieldPropertiesFlags : uint32_t {
   // A value was autofilled on pageload. This means that at least one character
   // of the field value comes from being autofilled.
   kAutofilledOnPageLoad = 1u << 5,
+  // Whether a field was filled because the user used the password manual
+  // fallbacks feature.
+  kAutofilledPasswordFormFilledViaManualFallback = 1u << 6,
+  // Whether a change password filled was autofilled as part of change password
+  // process. Filling happens on page-load although it's initiated by a user.
+  kAutofilledChangePasswordFormOnPageLoad = 1u << 7,
   // A value was autofilled on any of the triggers.
-  kAutofilled = kAutofilledOnUserTrigger | kAutofilledOnPageLoad,
-};
-
-// Autofill supports assigning <label for=x> tags to inputs if x is id/name,
-// or the id/name of a shadow host element containing the input.
-// This enum is used to track how often each case occurs in practice.
-enum class AssignedLabelSource {
-  kId = 0,
-  kName = 1,
-  kShadowHostId = 2,
-  kShadowHostName = 3,
-  kMaxValue = kShadowHostName,
+  kAutofilled = kAutofilledOnUserTrigger | kAutofilledOnPageLoad |
+                kAutofilledPasswordFormFilledViaManualFallback |
+                kAutofilledChangePasswordFormOnPageLoad,
 };
 
 // FieldPropertiesMask is used to contain combinations of FieldPropertiesFlags
@@ -103,7 +101,7 @@ class Section {
     HtmlFieldMode mode = HtmlFieldMode::kNone;
   };
 
-  using Default = absl::monostate;
+  using Default = std::monostate;
 
   struct FieldIdentifier {
     FieldIdentifier() = default;
@@ -133,11 +131,7 @@ class Section {
   Section(const Section& section);
   ~Section();
 
-  // `absl::variant` does not implement `operator<=>` - therefore the ordering
-  // needs to be specified manually. Once `absl::variant` is `std::variant`,
-  // this return type can become `auto`.
-  friend std::strong_ordering operator<=>(const Section& lhs,
-                                          const Section& rhs) = default;
+  friend auto operator<=>(const Section& lhs, const Section& rhs) = default;
   friend bool operator==(const Section& lhs, const Section& rhs) = default;
   explicit operator bool() const;
 
@@ -158,7 +152,7 @@ class Section {
   //     attribute,
   //  - `FieldIdentifier` represents a section generated based on the first
   //     field in the section.
-  using SectionValue = absl::variant<Default, Autocomplete, FieldIdentifier>;
+  using SectionValue = std::variant<Default, Autocomplete, FieldIdentifier>;
 
   friend struct mojo::StructTraits<autofill::mojom::SectionDataView,
                                    autofill::Section>;
@@ -250,7 +244,6 @@ class FormFieldData {
 
   bool IsPasswordInputElement() const;
 
-  // <select> and <selectlist> are treated the same in Autofill except that
   // <select> gets special handling when it comes to unfocusable fields. The
   // motivation for this exception is that synthetic select fields often come
   // with an unfocusable <select> element.
@@ -262,18 +255,12 @@ class FormFieldData {
   // support synthetic select fields, Autofill intentionally fills unfocusable
   // <select> elements.
   bool IsSelectElement() const;
-  bool IsSelectListElement() const;
-  bool IsSelectOrSelectListElement() const;
 
   // Returns true if the field is focusable to the user.
   // This is an approximation of visibility with false positives.
   bool IsFocusable() const {
     return is_focusable() && role() != RoleAttribute::kPresentation;
   }
-
-  bool DidUserType() const;
-  bool HadFocus() const;
-  bool WasPasswordAutofilled() const;
 
   // NOTE: Update `SameFieldAs()` and `FormFieldDataAndroid::SimilarFieldAs()`
   // if needed when adding new a member.
@@ -302,7 +289,7 @@ class FormFieldData {
   // FormFieldData::form_control_type().
   //
   // To get a field's initial value or the value for submission, see
-  // AutofillField::value() and AutofillField::value_for_import().
+  // AutofillField::initial_value() and AutofillField::value_for_import().
   //
   // A note on FormFieldData objects of type FormControlType::kSelect*, i.e.,
   // <select> elements:
@@ -331,7 +318,7 @@ class FormFieldData {
   // mismatch all `options()`, e.g., when JavaScript set the value to a
   // different value or when the number or string length of the options exceeded
   // limits during extraction.
-  base::optional_ref<const SelectOption> selected_option() const;
+  base::optional_ref<const SelectOption> selected_option() const LIFETIME_BOUND;
 
   // The selected text, or the empty string if no text is selected.
   // Truncated at `50 * kMaxStringLength`.
@@ -361,6 +348,13 @@ class FormFieldData {
       std::optional<AutocompleteParsingResult> parsed_autocomplete) {
     parsed_autocomplete_ = std::move(parsed_autocomplete);
   }
+
+  // The value of the form control element's "pattern" attribute. The string
+  // comes from the renderer without any further validation. There are no
+  // guarantees about the format of the string.
+  const std::u16string& pattern() const { return pattern_; }
+  void set_pattern(std::u16string pattern) { pattern_ = std::move(pattern); }
+
   const std::u16string& placeholder() const { return placeholder_; }
   void set_placeholder(std::u16string placeholder) {
     placeholder_ = std::move(placeholder);
@@ -444,8 +438,7 @@ class FormFieldData {
   // overflows when doing arithmetic with FormFieldData::max_length.
   //
   // Changes to the default value also must be reflected in
-  // form_autofill_util.cc's GetMaxLength() and
-  // FormFieldData::has_no_max_length().
+  // form_autofill_util.cc's GetMaxLength().
   //
   // We use uint64_t instead of size_t because this struct is sent over IPC
   // which could span 32 & 64 bit processes. We chose uint64_t instead of
@@ -575,6 +568,7 @@ class FormFieldData {
   FormControlType form_control_type_ = FormControlType::kInputText;
   std::string autocomplete_attribute_;
   std::optional<AutocompleteParsingResult> parsed_autocomplete_;
+  std::u16string pattern_;
   std::u16string placeholder_;
   std::u16string css_classes_;
   std::u16string aria_label_;
@@ -652,19 +646,11 @@ std::string_view FormControlTypeToString(FormControlType type);
 
 // Consider using the FormControlType enum instead.
 //
-// The fallback value is returned if `type_string` has no corresponding enum
-// value in `FormControlType`. Regular use-cases should not need to pass a
-// fallback value because `FormControlType` reflects all autofillable form
-// control types.
-//
-// An exception where a fallback is needed is deserialization code. For legacy
-// reasons, form control types are serialized as strings. The fallback value
-// handles cases where the serialized data is corrupted or perhaps refers to an
-// old form control type that has been removed from the HTML spec or from
-// Autofill since.
-FormControlType StringToFormControlTypeDiscouraged(
-    std::string_view type_string,
-    std::optional<FormControlType> fallback = std::nullopt);
+// Callers may have to handle `std::nullopt` in case the `type_string` they
+// handle may be an invalid type string, e.g., when the function is called in
+// deserializiation code.
+std::optional<FormControlType> StringToFormControlTypeDiscouraged(
+    std::string_view type_string);
 
 // Serialize and deserialize FormFieldData. These are used when FormData objects
 // are serialized and deserialized.
@@ -675,30 +661,6 @@ bool DeserializeFormFieldData(base::PickleIterator* pickle_iterator,
 
 // So we can compare FormFieldDatas with EXPECT_EQ().
 std::ostream& operator<<(std::ostream& os, const FormFieldData& field);
-
-// Prefer to use this macro in place of |EXPECT_EQ()| for comparing
-// |FormFieldData|s in test code.
-// TODO(crbug.com/40765988): Replace this with FormData::DeepEqual().
-#define EXPECT_FORM_FIELD_DATA_EQUALS(expected, actual)                      \
-  do {                                                                       \
-    EXPECT_EQ(expected.label(), actual.label());                             \
-    EXPECT_EQ(expected.name(), actual.name());                               \
-    EXPECT_EQ(expected.value(), actual.value());                             \
-    EXPECT_EQ(expected.form_control_type(), actual.form_control_type());     \
-    EXPECT_EQ(expected.autocomplete_attribute(),                             \
-              actual.autocomplete_attribute());                              \
-    EXPECT_EQ(expected.parsed_autocomplete(), actual.parsed_autocomplete()); \
-    EXPECT_EQ(expected.placeholder(), actual.placeholder());                 \
-    EXPECT_EQ(expected.max_length(), actual.max_length());                   \
-    EXPECT_EQ(expected.css_classes(), actual.css_classes());                 \
-    EXPECT_EQ(expected.is_autofilled(), actual.is_autofilled());             \
-    EXPECT_EQ(expected.is_user_edited(), actual.is_user_edited());           \
-    EXPECT_EQ(expected.section(), actual.section());                         \
-    EXPECT_EQ(expected.check_status(), actual.check_status());               \
-    EXPECT_EQ(expected.properties_mask(), actual.properties_mask());         \
-    EXPECT_EQ(expected.id_attribute(), actual.id_attribute());               \
-    EXPECT_EQ(expected.name_attribute(), actual.name_attribute());           \
-  } while (0)
 
 // Produces a <table> element with information about the form.
 LogBuffer& operator<<(LogBuffer& buffer, const FormFieldData& form);

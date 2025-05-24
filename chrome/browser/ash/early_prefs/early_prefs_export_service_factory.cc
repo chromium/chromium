@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/early_prefs/early_prefs_export_service_factory.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
@@ -54,10 +53,6 @@ EarlyPrefsExportServiceFactory::BuildServiceInstanceForBrowserContext(
 
 content::BrowserContext* EarlyPrefsExportServiceFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(features::kEnableEarlyPrefs)) {
-    return nullptr;
-  }
-
   if (!context || context->IsOffTheRecord()) {
     return nullptr;
   }

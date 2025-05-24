@@ -40,12 +40,15 @@ class MediaTrackConstraints;
 class MediaStream;
 class MediaTrackSettings;
 class ScriptState;
+class SpeechRecognitionMediaStreamAudioSink;
+class V8MediaStreamTrackState;
 class V8UnionMediaStreamTrackAudioStatsOrMediaStreamTrackVideoStats;
 
 String ContentHintToString(
     const WebMediaStreamTrack::ContentHintType& content_hint);
 
-String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state);
+V8MediaStreamTrackState ReadyStateToV8TrackState(
+    const MediaStreamSource::ReadyState& ready_state);
 
 class MODULES_EXPORT MediaStreamTrack
     : public EventTarget,
@@ -97,7 +100,7 @@ class MODULES_EXPORT MediaStreamTrack
   virtual void setEnabled(bool) = 0;
   virtual bool muted() const = 0;
   virtual String ContentHint() const = 0;
-  virtual String readyState() const = 0;
+  virtual V8MediaStreamTrackState readyState() const = 0;
   virtual void SetContentHint(const String&) = 0;
   virtual void stopTrack(ExecutionContext*) = 0;
   virtual MediaStreamTrack* clone(ExecutionContext*) = 0;
@@ -129,6 +132,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   virtual void RegisterMediaStream(MediaStream*) = 0;
   virtual void UnregisterMediaStream(MediaStream*) = 0;
+  virtual void RegisterSink(SpeechRecognitionMediaStreamAudioSink* sink) = 0;
 
   // EventTarget
   const AtomicString& InterfaceName() const override = 0;

@@ -5,6 +5,8 @@
 #ifndef CHROME_ENTERPRISE_COMPANION_TEST_TEST_UTILS_H_
 #define CHROME_ENTERPRISE_COMPANION_TEST_TEST_UTILS_H_
 
+#include <optional>
+
 #include "base/functional/function_ref.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
@@ -26,6 +28,13 @@ int WaitForProcess(base::Process&);
 #if BUILDFLAG(IS_WIN)
 // Asserts that the application has been properly registered with the updater.
 void ExpectUpdaterRegistration();
+
+// Sets the given proxy settings via Group Policy.
+void SetLocalProxyPolicies(
+    std::optional<std::string> proxy_mode,
+    std::optional<std::string> pac_url,
+    std::optional<std::string> proxy_server,
+    std::optional<bool> cloud_policy_overrides_platform_policy);
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -40,6 +49,9 @@ class TestMethods {
   TestMethods() = default;
   virtual ~TestMethods() = default;
 
+  // Returns the path to the application under test's binary.
+  virtual base::FilePath GetTestExePath() = 0;
+
   // Removes traces of the application from the system.
   virtual void Clean();
 
@@ -52,8 +64,8 @@ class TestMethods {
   // Installs the application under test via the bundled installer.
   virtual void Install();
 
-  // Runs the "install if needed" command on the application under test.
-  virtual void InstallIfNeeded();
+ private:
+  void RunAppUnderTest(const std::string& switch_string);
 };
 
 TestMethods& GetTestMethods();

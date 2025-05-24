@@ -1,0 +1,23 @@
+caption: Relaunch fast if outdated
+desc: |-
+  Specifies the minimum release age beyond which relaunch notifications are more aggressive. The age is calculated from the time the currently-running version was last served to clients.
+
+  If a browser relaunch or device restart is needed to finalize a pending update and the current version has been outdated for more than the number of days specified by this setting, the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy is overridden to 2 hours. If the <ph name="RELAUNCH_NOTIFICATION_POLICY_NAME">RelaunchNotification</ph> policy is set to 1 ('Required'), users will be forced to relaunch or restart at the end of the period.
+
+  If not set, or if the release age cannot be determined, the <ph name="RELAUNCH_NOTIFICATION_PERIOD_POLICY_NAME">RelaunchNotificationPeriod</ph> policy will be used for all updates.
+example_value: 7
+features:
+  dynamic_refresh: true
+  per_profile: false
+supported_on:
+- chrome.*:137-
+- chrome_os:137-
+label: Time period (days)
+owners:
+- nicolaso@chromium.org
+- cbe-eng@google.com
+schema:
+  minimum: 7
+  type: integer
+tags: []
+type: int

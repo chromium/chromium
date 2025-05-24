@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/services/secure_channel/fake_secure_channel_connection.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/services/secure_channel/file_transfer_update_callback.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/ash/services/secure_channel/register_payload_file_request.h"
@@ -125,7 +125,7 @@ void FakeSecureChannelConnection::AddObserver(Observer* observer) {
 }
 
 void FakeSecureChannelConnection::RemoveObserver(Observer* observer) {
-  observers_.erase(base::ranges::find(observers_, observer), observers_.end());
+  observers_.erase(std::ranges::find(observers_, observer), observers_.end());
 }
 
 void FakeSecureChannelConnection::GetConnectionRssi(

@@ -143,30 +143,29 @@ void CSSImageGeneratorValue::PutImage(const gfx::SizeF& size,
 
 scoped_refptr<Image> CSSImageGeneratorValue::GetImage(
     const ImageResourceObserver& client,
-    const Document& document,
+    const Node& node,
     const ComputedStyle& style,
     const ContainerSizes& container_sizes,
     const gfx::SizeF& target_size) {
   switch (GetClassType()) {
     case kLinearGradientClass:
       return To<CSSLinearGradientValue>(this)->GetImage(
-          client, document, style, container_sizes, target_size);
+          client, node, style, container_sizes, target_size);
     case kPaintClass:
-      return To<CSSPaintValue>(this)->GetImage(client, document, style,
+      return To<CSSPaintValue>(this)->GetImage(client, node, style,
                                                target_size);
     case kRadialGradientClass:
       return To<CSSRadialGradientValue>(this)->GetImage(
-          client, document, style, container_sizes, target_size);
+          client, node, style, container_sizes, target_size);
     case kConicGradientClass:
       return To<CSSConicGradientValue>(this)->GetImage(
-          client, document, style, container_sizes, target_size);
+          client, node, style, container_sizes, target_size);
     case kConstantGradientClass:
       return To<CSSConstantGradientValue>(this)->GetImage(
-          client, document, style, container_sizes, target_size);
+          client, node, style, container_sizes, target_size);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 bool CSSImageGeneratorValue::IsUsingCustomProperty(
@@ -222,9 +221,8 @@ bool CSSImageGeneratorValue::KnownToBeOpaque(const Document& document,
       return To<CSSConstantGradientValue>(this)->KnownToBeOpaque(document,
                                                                  style);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 }  // namespace blink

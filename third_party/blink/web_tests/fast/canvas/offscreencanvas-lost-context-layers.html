@@ -29,7 +29,7 @@ async_test(t => {
   });
 
   ctx.beginLayer();
-  internals.forceLoseCanvasContext(canvas, '2d');
+  internals.forceLoseCanvasContext(ctx);
 }, 'Test losing context while layers are opened.');
 
 </script>

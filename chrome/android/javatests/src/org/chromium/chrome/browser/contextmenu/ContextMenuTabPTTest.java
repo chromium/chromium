@@ -9,7 +9,6 @@ import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestinati
 import androidx.test.filters.MediumTest;
 
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,13 +20,13 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BlankCTATabInitialStatePublicTransitRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabGroupUiFacility;
 import org.chromium.chrome.test.transit.testhtmls.TopBottomLinksPageStation;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Public transit test for opening new tabs using context menu, and test the interactions around the
@@ -41,21 +40,16 @@ import org.chromium.ui.test.util.UiRestriction;
 @Batch(Batch.PER_CLASS)
 // On tablets, the context is showing using a popup window. This currently doesn't work well with
 // the espresso matching in the public transit framework. See https://crbug.com/363047177.
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 public class ContextMenuTabPTTest {
-
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @BeforeClass
     public static void setupBeforeClass() {
         ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
     }
 
     @Rule
-    public BlankCTATabInitialStatePublicTransitRule mInitialStateRule =
-            new BlankCTATabInitialStatePublicTransitRule(sActivityTestRule);
+    public AutoResetCtaTransitTestRule mCtaTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     /**
      * Assert open tab in new tab group. This test is greatly in common with
@@ -64,10 +58,10 @@ public class ContextMenuTabPTTest {
     @Test
     @MediumTest
     public void openNewTabFromContextMenu() {
-        PageStation blankPage = mInitialStateRule.startOnBlankPage();
+        PageStation blankPage = mCtaTestRule.startOnBlankPage();
 
         var topBottomLinkPageAndTop =
-                TopBottomLinksPageStation.loadPage(sActivityTestRule, blankPage);
+                TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), blankPage);
         TopBottomLinksPageStation contextMenuPage = topBottomLinkPageAndTop.first;
         TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPageAndTop.second;
 
@@ -79,10 +73,10 @@ public class ContextMenuTabPTTest {
     @Test
     @MediumTest
     public void openNewTabInGroupFromContextMenu() {
-        PageStation blankPage = mInitialStateRule.startOnBlankPage();
+        PageStation blankPage = mCtaTestRule.startOnBlankPage();
 
         var topBottomLinkPageAndTop =
-                TopBottomLinksPageStation.loadPage(sActivityTestRule, blankPage);
+                TopBottomLinksPageStation.loadPage(mCtaTestRule.getActivityTestRule(), blankPage);
         TopBottomLinksPageStation contextMenuPage = topBottomLinkPageAndTop.first;
         TopBottomLinksPageStation.TopFacility topFacility = topBottomLinkPageAndTop.second;
 

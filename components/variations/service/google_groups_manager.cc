@@ -21,6 +21,18 @@
 #include "components/variations/service/google_groups_manager_prefs.h"
 #include "components/variations/variations_seed_processor.h"
 
+namespace {
+
+std::string GetGoogleGroupsParam(const base::Feature& feature) {
+  // The `FeatureParam` is created on the fly because `feature` is only known
+  // at runtime.
+  return base::FeatureParam<std::string>(
+             &feature, variations::internal::kGoogleGroupFeatureParamName, "")
+      .Get();
+}
+
+}  // namespace
+
 GoogleGroupsManager::GoogleGroupsManager(
     PrefService& target_prefs,
     const std::string& key,
@@ -29,7 +41,7 @@ GoogleGroupsManager::GoogleGroupsManager(
   // Register for preference changes.
   pref_change_registrar_.Init(&source_prefs_.get());
   pref_change_registrar_.Add(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       variations::kOsDogfoodGroupsSyncPrefName,
 #else
       variations::kDogfoodGroupsSyncPrefName,
@@ -47,7 +59,7 @@ GoogleGroupsManager::~GoogleGroupsManager() = default;
 void GoogleGroupsManager::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       variations::kOsDogfoodGroupsSyncPrefName,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF
 #else
@@ -57,16 +69,19 @@ void GoogleGroupsManager::RegisterProfilePrefs(
   );
 }
 
+// static
+bool GoogleGroupsManager::IsFeatureGroupControlled(
+    const base::Feature& feature) {
+  return !GetGoogleGroupsParam(feature).empty();
+}
+
 bool GoogleGroupsManager::IsFeatureEnabledForProfile(
     const base::Feature& feature) const {
   if (!base::FeatureList::IsEnabled(feature)) {
     return false;
   }
 
-  const std::string google_groups_param =
-      base::FeatureParam<std::string>(
-          &feature, variations::internal::kGoogleGroupFeatureParamName, "")
-          .Get();
+  const std::string google_groups_param = GetGoogleGroupsParam(feature);
   const std::vector<std::string_view> group_strings = base::SplitStringPiece(
       google_groups_param,
       variations::internal::kGoogleGroupFeatureParamSeparator,
@@ -75,8 +90,8 @@ bool GoogleGroupsManager::IsFeatureEnabledForProfile(
     // No required Google Group for this experiment.
     return true;
   }
-  return base::ranges::any_of(group_strings, [&user_groups = google_group_ids_](
-                                                 std::string_view group) {
+  return std::ranges::any_of(group_strings, [&user_groups = google_group_ids_](
+                                                std::string_view group) {
     return user_groups.contains(group);
   });
 }
@@ -114,7 +129,7 @@ void GoogleGroupsManager::OnSyncShutdown(syncer::SyncService* sync) {
 
 void GoogleGroupsManager::ClearSigninScopedState() {
   source_prefs_->ClearPref(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       variations::kOsDogfoodGroupsSyncPrefName
 #else
       variations::kDogfoodGroupsSyncPrefName
@@ -132,7 +147,7 @@ void GoogleGroupsManager::UpdateGoogleGroups() {
   base::Value::Dict& target_prefs_dict = target_prefs_update.Get();
 
   const base::Value::List& source_list = source_prefs_->GetList(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       variations::kOsDogfoodGroupsSyncPrefName
 #else
       variations::kDogfoodGroupsSyncPrefName

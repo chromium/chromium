@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.test.transit.ntp;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.transit.page.PageAppMenuFacility;
 
 /** The app menu shown when pressing ("...") in a Incognito NTP. */
@@ -15,6 +16,12 @@ public class IncognitoNewTabPageAppMenuFacility
         mNewIncognitoTab =
                 declareMenuItemToStation(
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            mAddToGroup =
+                    declareMenuItemToFacility(
+                            items, ADD_TO_GROUP_ID, this::createTabGroupListBottomSheetFacility);
+        }
+        mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID, this::handleOpenNewWindow);
 
         declareStubMenuItem(items, HISTORY_ID);
         declareAbsentMenuItem(items, DELETE_BROWSING_DATA_ID);

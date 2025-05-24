@@ -10,8 +10,6 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace chrome {
-
 // This object is instantiated during startup, before the first Browser object
 // is added to the list and deleted during shutdown. It watches for loads and
 // creates histograms of some global object counts.
@@ -64,7 +62,5 @@ class UMABrowsingActivityObserver {
   const TabStripModelStatsRecorder tab_recorder_;
   base::CallbackListSubscription subscription_;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_UMA_BROWSING_ACTIVITY_OBSERVER_H_

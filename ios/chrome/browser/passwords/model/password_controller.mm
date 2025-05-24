@@ -23,7 +23,7 @@
 #import "base/time/time.h"
 #import "base/timer/timer.h"
 #import "base/values.h"
-#import "components/autofill/core/browser/ui/suggestion_type.h"
+#import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/form_data.h"
 #import "components/autofill/core/common/password_form_fill_data.h"
@@ -69,8 +69,6 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -195,7 +193,9 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     PasswordFormHelper* formHelper =
         [[PasswordFormHelper alloc] initWithWebState:webState];
     PasswordSuggestionHelper* suggestionHelper =
-        [[PasswordSuggestionHelper alloc] initWithWebState:_webState];
+        [[PasswordSuggestionHelper alloc]
+            initWithWebState:_webState
+             passwordManager:_passwordManager.get()];
     PasswordControllerDriverHelper* driverHelper =
         [[PasswordControllerDriverHelper alloc] initWithWebState:_webState];
     _sharedPasswordController = [[SharedPasswordController alloc]
@@ -278,9 +278,8 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   return _webState;
 }
 
-- (ChromeBrowserState*)browserState {
-  return _webState ? ChromeBrowserState::FromBrowserState(
-                         _webState->GetBrowserState())
+- (ProfileIOS*)profile {
+  return _webState ? ProfileIOS::FromBrowserState(_webState->GetBrowserState())
                    : nullptr;
 }
 
@@ -438,10 +437,10 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
     return;
   }
 
-  CHECK(self.browserState);
-  PrefService* prefs = self.browserState->GetPrefs();
+  CHECK(self.profile);
+  PrefService* prefs = self.profile->GetPrefs();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browserState);
+      SyncServiceFactory::GetForProfile(self.profile);
   const std::optional<std::string> accountToStorePassword =
       password_manager::sync_util::GetAccountForSaving(prefs, syncService);
   const password_manager::features_util::PasswordAccountStorageUserState
@@ -507,11 +506,13 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 - (void)sharedPasswordController:(SharedPasswordController*)controller
     showGeneratedPotentialPassword:(NSString*)generatedPotentialPassword
                          proactive:(BOOL)proactive
+                             frame:(base::WeakPtr<web::WebFrame>)frame
                    decisionHandler:(void (^)(BOOL accept))decisionHandler {
   [self.passwordSuggestionDispatcher
       showPasswordSuggestion:generatedPotentialPassword
                    proactive:proactive
                     webState:_webState
+                       frame:frame
              decisionHandler:decisionHandler];
 }
 

@@ -61,7 +61,7 @@ enum class MinimumFlexSizeRule {
 // there is extra size available for that view to occupy.
 enum class MaximumFlexSizeRule {
   kPreferred,       // Don't resize above preferred size.
-  kScaleToMaximum,  // Allow resize up to the maximum size.
+  kScaleToMaximum,  // Allow resize up to the child view's `GetMaximumSize()`.
   kUnbounded        // Allow resize to arbitrary size.
 };
 
@@ -212,9 +212,8 @@ class VIEWS_EXPORT Inset1D {
   void Expand(int delta_leading, int delta_trailing);
 
   constexpr bool is_empty() const { return leading_ == 0 && trailing_ == 0; }
-  bool operator==(const Inset1D& other) const;
-  bool operator!=(const Inset1D& other) const;
-  bool operator<(const Inset1D& other) const;
+  friend bool operator==(const Inset1D&, const Inset1D&) = default;
+  friend auto operator<=>(const Inset1D&, const Inset1D&) = default;
 
   std::string ToString() const;
 
@@ -260,9 +259,9 @@ class VIEWS_EXPORT Span {
              const Inset1D& margins = Inset1D());
 
   constexpr bool is_empty() const { return length_ == 0; }
-  bool operator==(const Span& other) const;
-  bool operator!=(const Span& other) const;
-  bool operator<(const Span& other) const;
+
+  friend bool operator==(const Span&, const Span&) = default;
+  friend auto operator<=>(const Span&, const Span&) = default;
 
   std::string ToString() const;
 

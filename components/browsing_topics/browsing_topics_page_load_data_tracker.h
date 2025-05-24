@@ -35,10 +35,11 @@ class BrowsingTopicsPageLoadDataTracker
                                history::HistoryService* history_service,
                                bool observe);
 
-  int redirect_count() const { return redirect_count_; }
-  int redirect_with_topics_invoked_count() const {
-    return redirect_with_topics_invoked_count_;
+  const std::set<HashedHost>& redirect_hosts_with_topics_invoked() const {
+    return redirect_hosts_with_topics_invoked_;
   }
+
+  HashedHost hashed_main_frame_host() const { return hashed_main_frame_host_; }
 
   ukm::SourceId source_id_before_redirects() const {
     return source_id_before_redirects_;
@@ -51,10 +52,10 @@ class BrowsingTopicsPageLoadDataTracker
 
   explicit BrowsingTopicsPageLoadDataTracker(content::Page& page);
 
-  BrowsingTopicsPageLoadDataTracker(content::Page& page,
-                                    int redirect_count,
-                                    int redirect_with_topics_invoked_count,
-                                    ukm::SourceId source_id_before_redirects);
+  BrowsingTopicsPageLoadDataTracker(
+      content::Page& page,
+      std::set<HashedHost> redirect_hosts_with_topics_invoked,
+      ukm::SourceId source_id_before_redirects);
 
   // Whether this page is eligible to observe topics (i.e. IP was publicly
   // routable AND permissions policy is "allow").
@@ -62,17 +63,15 @@ class BrowsingTopicsPageLoadDataTracker
 
   HashedHost hashed_main_frame_host_;
 
+  // Main frame hosts from the redirect chain that invoked the Topics API.
+  // Initialized with the *previous* redirect chain's hosts, and may be
+  // expanded to include the current host when Topics is called. The size is
+  // limited to 5 to prevent unbounded growth.
+  std::set<HashedHost> redirect_hosts_with_topics_invoked_;
+
   ukm::SourceId source_id_;
 
   base::flat_set<HashedDomain> observed_hashed_context_domains_;
-
-  // The number of previous pages that were loaded via client-side redirects
-  // (without user activation).
-  int redirect_count_;
-
-  // The number of previous pages that were loaded via client-side redirects
-  // (without user activation) that also invoked the Topics API.
-  int redirect_with_topics_invoked_count_;
 
   // The UKM source ID of the page before the client-side redirects.
   ukm::SourceId source_id_before_redirects_;

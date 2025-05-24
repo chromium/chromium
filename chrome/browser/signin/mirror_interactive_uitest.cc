@@ -13,7 +13,6 @@
 #include "base/metrics/histogram_base.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -32,10 +31,6 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/account_manager/fake_account_manager_ui_dialog_waiter.h"
-#endif
 
 // Tests the behavior of Chrome when it receives a Mirror response from Gaia:
 // - listens to all network responses coming from Gaia with
@@ -118,42 +113,6 @@ class MirrorResponseBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer https_server_;
   net::test_server::EmbeddedTestServerHandle https_server_handle_;
 };
-
-// Following tests try to display the ChromeOS account manager dialogs. They can
-// currently be tested only on Lacros which injects a `FakeAccountManagerUI`.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Tests that the "Add Account" dialog is shown when receiving "ADDSESSION" from
-// Gaia.
-IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, AddSession) {
-  FakeAccountManagerUIDialogWaiter dialog_waiter(
-      GetFakeAccountManagerUI(),
-      FakeAccountManagerUIDialogWaiter::Event::kAddAccount);
-  ReceiveManageAccountsHeader({{"action", "ADDSESSION"}});
-  dialog_waiter.Wait();
-}
-
-// Tests that the "Settings"" dialog is shown when receiving "DEFAULT" from
-// Gaia.
-IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Settings) {
-  FakeAccountManagerUIDialogWaiter dialog_waiter(
-      GetFakeAccountManagerUI(),
-      FakeAccountManagerUIDialogWaiter::Event::kSettings);
-  ReceiveManageAccountsHeader({{"action", "DEFAULT"}});
-  dialog_waiter.Wait();
-}
-
-// Tests that the "Reauth" dialog is shown when receiving an email from Gaia.
-IN_PROC_BROWSER_TEST_F(MirrorResponseBrowserTest, Reauth) {
-  FakeAccountManagerUIDialogWaiter dialog_waiter(
-      GetFakeAccountManagerUI(),
-      FakeAccountManagerUIDialogWaiter::Event::kReauth);
-  ReceiveManageAccountsHeader(
-      {{"action", "ADDSESSION"}, {"email", "user@example.com"}});
-  dialog_waiter.Wait();
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // When receiving "INCOGNITO" from Gaia and the request is initiated by a Google
 // domain - an incognito tab should be opened.

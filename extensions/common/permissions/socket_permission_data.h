@@ -45,19 +45,23 @@ class SocketPermissionData {
   SocketPermissionData();
   ~SocketPermissionData();
 
-  // operators <, == are needed by container std::set and algorithms
-  // std::set_includes and std::set_differences.
-  bool operator<(const SocketPermissionData& rhs) const;
-  bool operator==(const SocketPermissionData& rhs) const;
+  friend auto operator<=>(const SocketPermissionData& a,
+                          const SocketPermissionData& b) {
+    return a.entry_ <=> b.entry_;
+  }
+  friend bool operator==(const SocketPermissionData& a,
+                         const SocketPermissionData& b) {
+    return a.entry_ == b.entry_;
+  }
 
-  // Check if |param| (which must be a SocketPermissionData::CheckParam)
-  // matches the spec of |this|.
+  // Check if `param` (which must be a SocketPermissionData::CheckParam)
+  // matches the spec of `this`.
   bool Check(const APIPermission::CheckParam* param) const;
 
-  // Convert |this| into a base::Value.
+  // Convert `this` into a base::Value.
   std::unique_ptr<base::Value> ToValue() const;
 
-  // Populate |this| from a base::Value.
+  // Populate `this` from a base::Value.
   bool FromValue(const base::Value* value);
 
   // TODO(bryeung): SocketPermissionData should be encoded as a base::Value

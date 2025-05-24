@@ -32,7 +32,7 @@ class CORE_EXPORT ModuleImportMeta final {
   const v8::Local<v8::Function> MakeResolveV8Function(Modulator*) const;
 
  private:
-  class Resolve final : public ScriptFunction::Callable {
+  class Resolve final : public ScriptFunction {
    public:
     explicit Resolve(Modulator* modulator, String url)
         : modulator_(modulator), url_(url) {}

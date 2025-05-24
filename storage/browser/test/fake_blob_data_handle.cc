@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "storage/browser/test/fake_blob_data_handle.h"
 
 #include "base/containers/span.h"
@@ -29,7 +34,7 @@ void FakeBlobDataHandle::Read(mojo::ScopedDataPipeProducerHandle producer,
   }
 
   base::span<const uint8_t> bytes = base::as_byte_span(body_data_);
-  bytes = bytes.subspan(src_offset);
+  bytes = bytes.subspan(static_cast<size_t>(src_offset));
   bytes = bytes.first(base::checked_cast<size_t>(bytes_to_read));
   MojoResult result = producer->WriteAllData(bytes);
 

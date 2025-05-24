@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_CONTENT_CONTENT_BROWSER_CONTEXT_H_
 #define IOS_WEB_CONTENT_CONTENT_BROWSER_CONTEXT_H_
 
+#import "base/memory/raw_ptr.h"
 #import "build/blink_buildflags.h"
 #import "content/public/browser/browser_context.h"
 #import "ios/web/public/browser_state.h"
@@ -76,7 +77,7 @@ class ContentBrowserContext : public content::BrowserContext {
   // allowed on the current thread.
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
-  web::BrowserState* browser_state_ = nullptr;
+  raw_ptr<web::BrowserState> browser_state_ = nullptr;
 };
 
 }  // namespace web

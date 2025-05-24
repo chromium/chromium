@@ -50,8 +50,7 @@ ASH_EXPORT base::Value::Dict SeaPenQueryToDict(
 // the extracted portion into a new return string. Returns empty string on
 // failure. Note that failure may happen in normal operation, as VC Background
 // metadata should not be wrapped in XML after M124.
-ASH_EXPORT std::string ExtractDcDescriptionContents(
-    const std::string_view data);
+ASH_EXPORT std::string ExtractDcDescriptionContents(std::string_view data);
 
 // Prepare SeaPen metadata for writing into a jpg file header by wrapping it in
 // XML.

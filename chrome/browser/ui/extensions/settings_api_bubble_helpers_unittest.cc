@@ -8,11 +8,11 @@
 
 #include "base/functional/bind.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 
@@ -54,7 +54,7 @@ TEST_F(SettingsApiBubbleHelpersUnitTest, TestAcknowledgeExistingExtensions) {
 
   // Create an extension overriding the NTP.
   scoped_refptr<const Extension> first = GetNtpExtension("first");
-  service()->AddExtension(first.get());
+  registrar()->AddExtension(first);
 
   auto is_acknowledged = [this](const ExtensionId& id) {
     bool is_acked = false;
@@ -72,7 +72,7 @@ TEST_F(SettingsApiBubbleHelpersUnitTest, TestAcknowledgeExistingExtensions) {
   // Install a second NTP-overriding extension. The new extension should not be
   // acknowledged.
   scoped_refptr<const Extension> second = GetNtpExtension("second");
-  service()->AddExtension(second.get());
+  registrar()->AddExtension(second);
   EXPECT_FALSE(is_acknowledged(second->id()));
 
   // Try acknowledging existing extensions. Since we already did this once for

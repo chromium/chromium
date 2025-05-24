@@ -1,0 +1,5 @@
+CONSOLE WARNING: Listener added for a 'DOMNodeInsertedIntoDocument' mutation event. This event type is no longer supported, and will be removed from this browser VERY soon. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
+This page contains the following errors:
+error on line 14 at column 1: Premature end of data in tag svg line 1
+
+Below is a rendering of the page up to the first error.

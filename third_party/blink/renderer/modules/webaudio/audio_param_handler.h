@@ -40,7 +40,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // if warnings or other messages need to be printed. It's useful to know what
   // the AudioParam represents.  The name should include the node type and the
   // name of the AudioParam.
-  enum AudioParamType {
+  enum class AudioParamType {
     kParamTypeAudioBufferSourcePlaybackRate,
     kParamTypeAudioBufferSourceDetune,
     kParamTypeBiquadFilterFrequency,
@@ -161,7 +161,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // Calculates numberOfValues parameter values starting at the context's
   // current time.
   // Must be called in the context's render thread.
-  void CalculateSampleAccurateValues(float* values, unsigned number_of_values);
+  void CalculateSampleAccurateValues(base::span<float> values);
 
   float IntrinsicValue() const {
     return intrinsic_value_.load(std::memory_order_relaxed);
@@ -180,10 +180,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web
   // Audio specification.
-  void CalculateFinalValues(float* values,
-                            unsigned number_of_values,
-                            bool sample_accurate);
-  void CalculateTimelineValues(float* values, unsigned number_of_values);
+  void CalculateFinalValues(base::span<float> values, bool sample_accurate);
+  void CalculateTimelineValues(base::span<float> values);
 
   // The type of AudioParam, indicating what this AudioParam represents and what
   // node it belongs to.  Mostly for informational purposes and doesn't affect

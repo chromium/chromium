@@ -1,0 +1,22 @@
+{
+  "name": "Manifest test app with Shortcuts",
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "share_target": {
+    "url_template": "https://whatever.test/share?title={title}",
+    "action": "share/blah/",
+    "enctype": "application/x-www-form-urlencoded",
+    "method": "POST",
+    "params": {
+      "text": "foo",
+      "title": "bar",
+      "url": "baz"
+    }
+  }
+}

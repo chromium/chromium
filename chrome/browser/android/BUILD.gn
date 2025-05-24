@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tabs_public") {
+  public = [ "tab_features.h" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//content/public/browser" ]
+}
+
+source_set("tabs_impl") {
+  sources = [ "tab_features.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  deps = [
+    ":tabs_public",
+    "//chrome/browser/privacy_sandbox/incognito:tab_observer",
+    "//chrome/browser/sync",
+    "//components/external_intents/android",
+    "//components/favicon/content",
+    "//components/metrics:content",
+    "//content/public/browser",
+  ]
+}
+
+source_set("keyboard_shortcuts") {
+  sources = [
+    "keyboard_shortcuts.cc",
+    "keyboard_shortcuts.h",
+  ]
+  deps = [
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser:browser_public_dependencies",
+  ]
+}

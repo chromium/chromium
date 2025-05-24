@@ -52,8 +52,7 @@ class TestOAuthTokenGetter final : public OAuthTokenGetter {
   // OAuthTokenGetter implementations
   void CallWithToken(TokenCallback on_access_token) override;
   void InvalidateCache() override;
-
-  base::WeakPtr<TestOAuthTokenGetter> GetWeakPtr();
+  base::WeakPtr<OAuthTokenGetter> GetWeakPtr() override;
 
  private:
   std::unique_ptr<OAuthTokenGetter> CreateWithRefreshToken(

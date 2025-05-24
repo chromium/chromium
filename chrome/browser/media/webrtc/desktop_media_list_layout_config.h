@@ -8,7 +8,7 @@
 namespace desktopcapture {
 
 // The fixed size to generate and render tab previews in eg the tab picker view.
-constexpr const gfx::Size kPreviewSize = gfx::Size(218, 135);
+inline constexpr const gfx::Size kPreviewSize = gfx::Size(218, 135);
 
 }  // namespace desktopcapture
 

@@ -218,7 +218,7 @@ void EsParserH264::Flush() {
   // TODO(crbug.com/40204179): Consider plumbing parse failure for this push
   // failure case, instead of what used to OOM but now instead would fail this
   // CHECK.
-  CHECK(es_queue_->Push(base::make_span(aud, sizeof(aud))));
+  CHECK(es_queue_->Push(base::span(aud)));
 
   ParseFromEsQueue();
   es_adapter_.Flush();
@@ -444,9 +444,10 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
 
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple video tracks. See https://crbug.com/341581.
+  auto es_span = base::span(es, base::checked_cast<size_t>(access_unit_size));
   scoped_refptr<StreamParserBuffer> stream_parser_buffer =
-      StreamParserBuffer::CopyFrom(es, access_unit_size, is_key_frame,
-                                   DemuxerStream::VIDEO, kMp2tVideoTrackId);
+      StreamParserBuffer::CopyFrom(es_span, is_key_frame, DemuxerStream::VIDEO,
+                                   kMp2tVideoTrackId);
   stream_parser_buffer->SetDecodeTimestamp(current_timing_desc.dts);
   stream_parser_buffer->set_timestamp(current_timing_desc.pts);
   if (base_decrypt_config) {
@@ -454,8 +455,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
       case EncryptionScheme::kUnencrypted:
         // As |base_decrypt_config| is specified, the stream is encrypted,
         // so this shouldn't happen.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case EncryptionScheme::kCenc:
         stream_parser_buffer->set_decrypt_config(
             DecryptConfig::CreateCencConfig(base_decrypt_config->key_id(),

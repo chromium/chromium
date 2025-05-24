@@ -8,9 +8,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class TargetSelectorItemViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (TargetSelectorItemProperties.FAVICON == propertyKey) {
@@ -31,7 +33,7 @@ class TargetSelectorItemViewBinder {
         } else if (TargetSelectorItemProperties.CHECK_TARGET == propertyKey) {
             // TODO: Let the talkback relay the checked status.
             boolean visible = model.get(TargetSelectorItemProperties.CHECK_TARGET);
-            ImageView checkmark = (ImageView) view.findViewById(R.id.check_mark);
+            ImageView checkmark = view.findViewById(R.id.check_mark);
             checkmark.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         }
     }

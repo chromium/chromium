@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
@@ -46,7 +47,7 @@ constexpr std::string_view kFakeSpki = "spki";
 constexpr std::string kFakeDMToken = "dm_token";
 
 std::vector<uint8_t> ToBytes(std::string_view str) {
-  auto bytes = base::as_bytes(base::make_span(str));
+  auto bytes = base::as_byte_span(str);
   return std::vector<uint8_t>(bytes.begin(), bytes.end());
 }
 

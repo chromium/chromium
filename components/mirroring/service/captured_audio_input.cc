@@ -24,7 +24,7 @@ CapturedAudioInput::CapturedAudioInput(
   DCHECK(!stream_creator_callback_.is_null());
 }
 
-CapturedAudioInput::~CapturedAudioInput() {}
+CapturedAudioInput::~CapturedAudioInput() = default;
 
 void CapturedAudioInput::CreateStream(media::AudioInputIPCDelegate* delegate,
                                       const media::AudioParameters& params,
@@ -67,13 +67,13 @@ void CapturedAudioInput::CloseStream() {
 
 void CapturedAudioInput::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CapturedAudioInput::StreamCreated(
     mojo::PendingRemote<media::mojom::AudioInputStream> stream,
     mojo::PendingReceiver<media::mojom::AudioInputStreamClient> client_receiver,
-    media::mojom::ReadOnlyAudioDataPipePtr data_pipe) {
+    media::mojom::ReadWriteAudioDataPipePtr data_pipe) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
   DCHECK(!stream_);
@@ -85,7 +85,7 @@ void CapturedAudioInput::StreamCreated(
   DCHECK(data_pipe->socket.is_valid_platform_file());
   base::ScopedPlatformFile socket_handle = data_pipe->socket.TakePlatformFile();
 
-  base::ReadOnlySharedMemoryRegion& shared_memory_region =
+  base::UnsafeSharedMemoryRegion& shared_memory_region =
       data_pipe->shared_memory;
   DCHECK(shared_memory_region.IsValid());
 

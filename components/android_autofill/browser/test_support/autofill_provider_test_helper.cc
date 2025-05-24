@@ -2,21 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
+#include <algorithm>
 #include <iterator>
 #include <string>
 
 #include "base/android/jni_array.h"
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "components/android_autofill/browser/autofill_provider.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory_test_api.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_manager_test_api.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -50,11 +49,6 @@ AutofillManager* ToMainFrameAutofillManager(
 }
 
 }  // namespace
-
-static void JNI_AutofillProviderTestHelper_DisableCrowdsourcingForTesting(
-    JNIEnv* env_md_ctx_st) {
-  AutofillProvider::set_is_crowdsourcing_manager_disabled_for_testing();
-}
 
 static jboolean
 JNI_AutofillProviderTestHelper_SimulateMainFrameAutofillServerResponseForTesting(
@@ -141,7 +135,7 @@ JNI_AutofillProviderTestHelper_SimulateMainFramePredictionsAutofillServerRespons
         if (form_field_data.id_attribute() == field_ids[i]) {
           std::vector<FieldType> field_types;
           field_types.reserve(raw_field_types[i].size());
-          base::ranges::transform(
+          std::ranges::transform(
               raw_field_types[i], std::back_inserter(field_types),
               [](int type) -> FieldType { return FieldType(type); });
           autofill::test::AddFieldPredictionsToForm(

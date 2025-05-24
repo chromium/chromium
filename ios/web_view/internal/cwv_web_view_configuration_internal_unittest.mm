@@ -6,9 +6,11 @@
 
 #import <memory>
 
+#import "ios/components/security_interstitials/safe_browsing/safe_browsing_service.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/browser_state_keyed_service_factories.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 #import "ios/web_view/test/test_with_locale_and_resources.h"
@@ -22,6 +24,10 @@ class CWVWebViewConfigurationTest : public TestWithLocaleAndResources {
   CWVWebViewConfigurationTest()
       : web_client_(std::make_unique<web::WebClient>()) {
     EnsureBrowserStateKeyedServiceFactoriesBuilt();
+  }
+
+  ~CWVWebViewConfigurationTest() override {
+    ApplicationContext::GetInstance()->GetSafeBrowsingService()->ShutDown();
   }
 
   web::WebTaskEnvironment task_environment_;

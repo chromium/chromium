@@ -59,7 +59,7 @@ void KSInstallApp::Uninstall(base::OnceCallback<void(int)> callback) {
                                                    : UpdaterScope::kUser);
         if (!keystone_path ||
             !base::DeletePathRecursively(
-                keystone_path->AppendASCII(KEYSTONE_NAME ".bundle"))) {
+                keystone_path->Append(KEYSTONE_NAME ".bundle"))) {
           PLOG(ERROR) << "Couldn't find/delete Keystone path.";
           return false;
         }

@@ -11,10 +11,12 @@ closure_js_library(
         "dispose.js",
         "disposeall.js",
     ],
+    lenient = True,
     deps = [":idisposable"],
 )
 
 closure_js_library(
     name = "idisposable",
     srcs = ["idisposable.js"],
+    lenient = True,
 )

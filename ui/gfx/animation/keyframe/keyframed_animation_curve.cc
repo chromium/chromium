@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve-inl.h"
 #include "ui/gfx/animation/tween.h"
-#include "ui/gfx/geometry/box_f.h"
 
 namespace gfx {
 namespace {

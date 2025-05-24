@@ -66,24 +66,13 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
   EXPECT_FALSE(bubble_manager()->GetBubbleWidget()->IsVisible());
   EXPECT_TRUE(tab_search_bubble_host()->bubble_created_time_for_testing());
 
-  // Showing the bubble should reset the timestamp.
   bubble_manager()->bubble_view_for_testing()->ShowUI();
   EXPECT_TRUE(bubble_manager()->GetBubbleWidget()->IsVisible());
-  EXPECT_FALSE(tab_search_bubble_host()->bubble_created_time_for_testing());
 
+  // Closing the bubble should reset the timestamp.
   tab_search_bubble_host()->CloseTabSearchBubble();
+  EXPECT_FALSE(tab_search_bubble_host()->bubble_created_time_for_testing());
   RunUntilBubbleWidgetDestroyed();
-}
-
-IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
-                       TabDeclutterControllerAttachedToTabSearchUIOnShow) {
-  ASSERT_EQ(nullptr, bubble_manager()->GetBubbleWidget());
-  tab_search_bubble_host()->ShowTabSearchBubble();
-  content::WebUI* web_ui =
-      bubble_manager()->GetContentsWrapper()->web_contents()->GetWebUI();
-  EXPECT_EQ(
-      web_ui->GetController()->GetAs<TabSearchUI>()->tab_declutter_controller(),
-      browser()->GetFeatures().tab_declutter_controller());
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,

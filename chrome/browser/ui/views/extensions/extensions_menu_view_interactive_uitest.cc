@@ -6,15 +6,12 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,10 +36,12 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -58,6 +57,16 @@ using ::testing::ElementsAre;
 
 class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
  public:
+  ExtensionsMenuViewInteractiveUITest() {
+    // kExtensionsMenuAccessControl uses a different menu. Thus, disable the
+    // feature while it's being rolled out so we make sure existent behaver is
+    // still being tested.
+    // TODO(crbug.com/40857680): Remove all these tests once
+    // kExtensionsMenuAccessControl is fully enabled.
+    scoped_feature_list_.InitAndDisableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+
   static base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>>
   GetExtensionMenuItemViews() {
     return ExtensionsMenuView::GetExtensionsMenuViewForTesting()
@@ -65,9 +74,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
   }
 
   void ShowUi(const std::string& name) override {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
     // The extensions menu can appear offscreen on Linux, so verifying bounds
     // makes the tests flaky.
     set_should_verify_dialog_bounds(false);
@@ -77,36 +84,6 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
     if (name == "ReloadPageBubble") {
       ClickExtensionsMenuButton();
       TriggerSingleExtensionButton();
-    } else if (ui_test_name_ == "UninstallDialog_Accept" ||
-               ui_test_name_ == "UninstallDialog_Cancel") {
-      ExtensionsToolbarContainer* const container =
-          GetExtensionsToolbarContainer();
-
-      LoadTestExtension("extensions/uitest/long_name");
-      LoadTestExtension("extensions/uitest/window_open");
-
-      // Without the uninstall dialog the icon should now be invisible.
-      EXPECT_FALSE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
-      EXPECT_FALSE(
-          container->GetViewForId(extensions()[0]->id())->GetVisible());
-
-      // Trigger uninstall dialog.
-      views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                           "ExtensionUninstallDialog");
-      extensions::ExtensionContextMenuModel menu_model(
-          extensions()[0].get(), browser(),
-          /*is_pinned=*/true, nullptr,
-          /*can_show_icon_in_toolbar=*/false,
-          extensions::ExtensionContextMenuModel::ContextMenuSource::kMenuItem);
-      menu_model.ExecuteCommand(
-          extensions::ExtensionContextMenuModel::UNINSTALL, 0);
-      ASSERT_TRUE(waiter.WaitIfNeededAndGet());
-    } else if (ui_test_name_ == "InstallDialog") {
-      LoadTestExtension("extensions/uitest/long_name");
-      LoadTestExtension("extensions/uitest/window_open");
-
-      // Trigger post-install dialog.
-      ExtensionInstallUI::ShowBubble(extensions()[0], browser(), SkBitmap());
     } else {
       ClickExtensionsMenuButton();
       ASSERT_TRUE(ExtensionsMenuView::GetExtensionsMenuViewForTesting());
@@ -129,79 +106,9 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
           extensions()[0]->id()));
       EXPECT_EQ(std::nullopt, container->GetPoppedOutActionId());
       EXPECT_FALSE(ExtensionsMenuView::IsShowing());
-    } else if (ui_test_name_ == "UninstallDialog_Accept" ||
-               ui_test_name_ == "UninstallDialog_Cancel" ||
-               ui_test_name_ == "InstallDialog") {
-      ExtensionsToolbarContainer* const container =
-          GetExtensionsToolbarContainer();
-      EXPECT_TRUE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
-      EXPECT_TRUE(container->GetViewForId(extensions()[0]->id())->GetVisible());
     }
 
     return true;
-  }
-
-  void DismissUi() override {
-    if (ui_test_name_ == "UninstallDialog_Accept" ||
-        ui_test_name_ == "UninstallDialog_Cancel") {
-      DismissUninstallDialog();
-      return;
-    }
-
-    if (ui_test_name_ == "InstallDialog") {
-      ExtensionsToolbarContainer* const container =
-          GetExtensionsToolbarContainer();
-      views::DialogDelegate* const install_bubble =
-          container->GetViewForId(extensions()[0]->id())
-              ->GetProperty(views::kAnchoredDialogKey);
-      ASSERT_TRUE(install_bubble);
-      install_bubble->GetWidget()->Close();
-      return;
-    }
-
-    // Use default implementation for other tests.
-    ExtensionsToolbarUITest::DismissUi();
-  }
-
-  void DismissUninstallDialog() {
-    ExtensionsToolbarContainer* const container =
-        GetExtensionsToolbarContainer();
-    // Accept or cancel the dialog.
-    views::DialogDelegate* const uninstall_bubble =
-        container->GetViewForId(extensions()[0]->id())
-            ->GetProperty(views::kAnchoredDialogKey);
-    ASSERT_TRUE(uninstall_bubble);
-    views::test::WidgetDestroyedWaiter destroyed_waiter(
-        uninstall_bubble->GetWidget());
-    if (ui_test_name_ == "UninstallDialog_Accept") {
-      uninstall_bubble->AcceptDialog();
-    } else {
-      uninstall_bubble->CancelDialog();
-    }
-    destroyed_waiter.Wait();
-
-    if (ui_test_name_ == "UninstallDialog_Accept") {
-      // Accepting the dialog should remove the item from the container and the
-      // ExtensionRegistry.
-      EXPECT_EQ(nullptr, container->GetActionForId(extensions()[0]->id()));
-      EXPECT_EQ(nullptr, extensions::ExtensionRegistry::Get(profile())
-                             ->GetInstalledExtension(extensions()[0]->id()));
-    } else {
-      // After dismissal the icon should become invisible.
-      // Wait for animations to finish.
-      views::test::WaitForAnimatingLayoutManager(
-          GetExtensionsToolbarContainer());
-
-      // The extension should still be present in the ExtensionRegistry (not
-      // uninstalled) when the uninstall dialog is dismissed.
-      EXPECT_NE(nullptr, extensions::ExtensionRegistry::Get(profile())
-                             ->GetInstalledExtension(extensions()[0]->id()));
-      // Without the uninstall dialog present the icon should now be
-      // invisible.
-      EXPECT_FALSE(container->IsActionVisibleOnToolbar(extensions()[0]->id()));
-      EXPECT_FALSE(
-          container->GetViewForId(extensions()[0]->id())->GetVisible());
-    }
   }
 
   void TriggerSingleExtensionButton() {
@@ -213,7 +120,7 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
   void TriggerExtensionButton(const std::string& id) {
     auto menu_items = GetExtensionMenuItemViews();
     auto iter =
-        base::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
+        std::ranges::find(menu_items, id, [](ExtensionMenuItemView* view) {
           return view->view_controller()->GetId();
         });
     ASSERT_TRUE(iter != menu_items.end());
@@ -235,14 +142,15 @@ class ExtensionsMenuViewInteractiveUITest : public ExtensionsToolbarUITest {
   }
 
   void ClickExtensionsMenuButton(Browser* browser) {
-    ClickButton(BrowserView::GetBrowserViewForBrowser(browser)
-                    ->toolbar()
-                    ->GetExtensionsButton());
+    ClickButton(browser->GetBrowserView().toolbar()->GetExtensionsButton());
   }
 
   void ClickExtensionsMenuButton() { ClickExtensionsMenuButton(browser()); }
 
+ private:
   std::string ui_test_name_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, InvokeUi_default) {
@@ -307,9 +215,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        ExtensionsMenuButtonHighlight) {
   LoadTestExtension("extensions/uitest/window_open");
   ClickExtensionsMenuButton();
-  EXPECT_EQ(views::InkDrop::Get(BrowserView::GetBrowserViewForBrowser(browser())
-                                    ->toolbar()
-                                    ->GetExtensionsButton())
+  EXPECT_EQ(views::InkDrop::Get(
+                browser()->GetBrowserView().toolbar()->GetExtensionsButton())
                 ->GetInkDrop()
                 ->GetTargetInkDropState(),
             views::InkDropState::ACTIVATED);
@@ -394,18 +301,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   TriggerSingleExtensionButton();
 
   ExtensionsContainer* const extensions_container =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->extensions_container();
+      browser()->GetBrowserView().toolbar()->extensions_container();
   std::optional<extensions::ExtensionId> action_id =
       extensions_container->GetPoppedOutActionId();
   ASSERT_NE(std::nullopt, action_id);
   ASSERT_EQ(1u, GetVisibleToolbarActionViews().size());
 
-  extensions::ExtensionSystem::Get(browser()->profile())
-      ->extension_service()
+  extensions::ExtensionRegistrar::Get(browser()->profile())
       ->DisableExtension(action_id.value(),
-                         extensions::disable_reason::DISABLE_USER_ACTION);
+                         {extensions::disable_reason::DISABLE_USER_ACTION});
 
   EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
@@ -421,19 +325,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   TriggerExtensionButton(id1);
 
   ExtensionsContainer* const extensions_container =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->extensions_container();
+      browser()->GetBrowserView().toolbar()->extensions_container();
   ASSERT_NE(std::nullopt, extensions_container->GetPoppedOutActionId());
 
-  auto* extension_service =
-      extensions::ExtensionSystem::Get(browser()->profile())
-          ->extension_service();
-
-  extension_service->DisableExtension(
-      id1, extensions::disable_reason::DISABLE_USER_ACTION);
-  extension_service->DisableExtension(
-      id2, extensions::disable_reason::DISABLE_USER_ACTION);
+  auto* extension_registrar =
+      extensions::ExtensionRegistrar::Get(browser()->profile());
+  extension_registrar->DisableExtension(
+      id1, {extensions::disable_reason::DISABLE_USER_ACTION});
+  extension_registrar->DisableExtension(
+      id2, {extensions::disable_reason::DISABLE_USER_ACTION});
 
   EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
 }
@@ -453,9 +353,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
   destroyed_waiter.Wait();
 
   ExtensionsContainer* const extensions_container =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
-          ->extensions_container();
+      browser()->GetBrowserView().toolbar()->extensions_container();
 
   // This test should not use a popped-out action, as we want to make sure that
   // the menu closes on its own and not because a popup dialog replaces it.
@@ -539,7 +437,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 
   // Verify extension is pinned but not stored as the popped out action.
   auto visible_icons = GetVisibleToolbarActionViews();
-  visible_icons = GetVisibleToolbarActionViews();
   ASSERT_EQ(1u, visible_icons.size());
   EXPECT_EQ(std::nullopt, extensions_container->GetPoppedOutActionId());
 
@@ -659,35 +556,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       InvokeUi_InstallDialog) {
-  ShowAndVerifyUi();
-}
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40740852): Flaky on Linux and Lacros.
-#define MAYBE_InvokeUi_UninstallDialog_Accept \
-  DISABLED_InvokeUi_UninstallDialog_Accept
-#else
-#define MAYBE_InvokeUi_UninstallDialog_Accept InvokeUi_UninstallDialog_Accept
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       MAYBE_InvokeUi_UninstallDialog_Accept) {
-  ShowAndVerifyUi();
-}
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40746111): Flaky on Linux.
-#define MAYBE_InvokeUi_UninstallDialog_Cancel \
-  DISABLED_InvokeUi_UninstallDialog_Cancel
-#else
-#define MAYBE_InvokeUi_UninstallDialog_Cancel InvokeUi_UninstallDialog_Cancel
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
-                       MAYBE_InvokeUi_UninstallDialog_Cancel) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        InvocationSourceMetrics) {
   base::HistogramTester histogram_tester;
   LoadTestExtension("extensions/uitest/extension_with_action_and_command");
@@ -702,8 +570,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
       kHistogramName, ToolbarActionViewController::InvocationSource::kMenuEntry,
       1);
 
-  // TODO(devlin): Add a test for command invocation once
-  // https://crbug.com/1070305 is fixed.
+  // TODO(crbug.com/40684492): Add a test for command invocation once triggering
+  // an action via command with extensions menu opened is fixed.
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
@@ -838,8 +706,9 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
   TriggerSingleExtensionButton();
 
   auto* const action_bubble =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->toolbar()
+      browser()
+          ->GetBrowserView()
+          .toolbar()
           ->extensions_container()
           ->GetAnchoredWidgetForExtensionForTesting(extensions()[0]->id())
           ->widget_delegate()

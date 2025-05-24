@@ -7,8 +7,9 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_breach_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/password_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_checkup/password_checkup_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -25,8 +26,8 @@ id<GREYMatcher> PasswordBreachMatcher() {
   return grey_accessibilityID(kPasswordBreachViewAccessibilityIdentifier);
 }
 
-id<GREYMatcher> PasswordListMatcher() {
-  return grey_accessibilityID(kPasswordsTableViewID);
+id<GREYMatcher> PasswordCheckupHomepageMatcher() {
+  return grey_accessibilityID(password_manager::kPasswordCheckupTableViewId);
 }
 
 id<GREYMatcher> CheckPasswordButton() {
@@ -50,8 +51,8 @@ id<GREYMatcher> CheckPasswordButton() {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests that Check password button redirects to the Passwords List.
-- (void)testPasswordBreachRedirectToPasswords {
+// Tests that Check password button redirects to the Password Checkup homepage.
+- (void)testPasswordBreachRedirectToPasswordCheckup {
   [PasswordBreachAppInterface showPasswordBreachWithCheckButton:YES];
   [[EarlGrey selectElementWithMatcher:PasswordBreachMatcher()]
       assertWithMatcher:grey_notNil()];
@@ -64,7 +65,7 @@ id<GREYMatcher> CheckPasswordButton() {
   [[EarlGrey selectElementWithMatcher:CheckPasswordButton()]
       performAction:grey_tap()];
 
-  [[EarlGrey selectElementWithMatcher:PasswordListMatcher()]
+  [[EarlGrey selectElementWithMatcher:PasswordCheckupHomepageMatcher()]
       assertWithMatcher:grey_notNil()];
 
   // Cleanup mock reauth module.

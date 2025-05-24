@@ -82,6 +82,10 @@
 // This API can be used to show custom input views in the web view.
 - (id<CRWResponderInputView>)webStateInputViewProvider:(web::WebState*)webState;
 
+// Provides an opportunity to the delegate to react to the creation of the web
+// view.
+- (void)webStateDidCreateWebView:(web::WebState*)webState;
+
 @end
 
 namespace web {
@@ -129,11 +133,13 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
 
   id<CRWResponderInputView> GetResponderInputView(WebState* source) override;
 
+  void OnNewWebViewCreated(WebState* source) override;
+
  private:
   // CRWWebStateDelegate which receives forwarded calls.
   __weak id<CRWWebStateDelegate> delegate_ = nil;
 };
 
-}  // web
+}  // namespace web
 
 #endif  // IOS_WEB_PUBLIC_WEB_STATE_DELEGATE_BRIDGE_H_

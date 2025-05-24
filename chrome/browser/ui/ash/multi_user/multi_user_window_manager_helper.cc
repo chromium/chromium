@@ -46,8 +46,9 @@ MultiUserWindowManagerHelper* MultiUserWindowManagerHelper::CreateInstance() {
 bool MultiUserWindowManagerHelper::ShouldShowAvatar(aura::Window* window) {
   // Session restore can open a window for the first user before the instance
   // is created.
-  if (!g_multi_user_window_manager_instance)
+  if (!g_multi_user_window_manager_instance) {
     return false;
+  }
 
   // Show the avatar icon if the window is on a different desktop than the
   // window's owner's desktop. The stub implementation does the right thing
@@ -66,8 +67,9 @@ void MultiUserWindowManagerHelper::DeleteInstance() {
 // static
 void MultiUserWindowManagerHelper::CreateInstanceForTest(
     const AccountId& account_id) {
-  if (g_multi_user_window_manager_instance)
+  if (g_multi_user_window_manager_instance) {
     DeleteInstance();
+  }
   g_multi_user_window_manager_instance =
       new MultiUserWindowManagerHelper(account_id);
   g_multi_user_window_manager_instance->Init();
@@ -76,21 +78,24 @@ void MultiUserWindowManagerHelper::CreateInstanceForTest(
 // static
 void MultiUserWindowManagerHelper::CreateInstanceForTest(
     std::unique_ptr<ash::MultiUserWindowManager> window_manager) {
-  if (g_multi_user_window_manager_instance)
+  if (g_multi_user_window_manager_instance) {
     DeleteInstance();
+  }
   g_multi_user_window_manager_instance =
       new MultiUserWindowManagerHelper(std::move(window_manager));
   g_multi_user_window_manager_instance->Init();
 }
 
 void MultiUserWindowManagerHelper::Init() {
-  if (multi_profile_support_)
+  if (multi_profile_support_) {
     multi_profile_support_->Init();
+  }
 }
 
 void MultiUserWindowManagerHelper::AddUser(content::BrowserContext* profile) {
-  if (multi_profile_support_)
+  if (multi_profile_support_) {
     multi_profile_support_->AddUser(profile);
+  }
 }
 
 bool MultiUserWindowManagerHelper::IsWindowOnDesktopOfUser(
@@ -104,8 +109,7 @@ bool MultiUserWindowManagerHelper::IsWindowOnDesktopOfUser(
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper(
     const AccountId& account_id)
     : multi_profile_support_(
-          std::make_unique<MultiProfileSupport>(account_id)) {
-}
+          std::make_unique<MultiProfileSupport>(account_id)) {}
 
 MultiUserWindowManagerHelper::MultiUserWindowManagerHelper(
     std::unique_ptr<ash::MultiUserWindowManager> window_manager)

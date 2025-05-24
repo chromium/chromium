@@ -7,7 +7,15 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
+
+namespace {
+
+constexpr char kRpId[] = "touhou.example.com";
 
 class PasskeyNotAcceptedBubbleViewTest : public PasswordBubbleViewTestBase {
  public:
@@ -17,8 +25,8 @@ class PasskeyNotAcceptedBubbleViewTest : public PasswordBubbleViewTestBase {
   void CreateViewAndShow() {
     CreateAnchorViewAndShow();
     view_ = new PasskeyNotAcceptedBubbleView(
-        web_contents(), anchor_view(),
-        LocationBarBubbleDelegateView::AUTOMATIC);
+        web_contents(), anchor_view(), LocationBarBubbleDelegateView::AUTOMATIC,
+        kRpId);
     views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
   }
 
@@ -40,3 +48,5 @@ TEST_F(PasskeyNotAcceptedBubbleViewTest, ShowsTitle) {
   EXPECT_TRUE(view()->ShouldShowWindowTitle());
   EXPECT_FALSE(view()->GetWindowTitle().empty());
 }
+
+}  // namespace

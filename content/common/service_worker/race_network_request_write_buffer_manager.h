@@ -28,6 +28,7 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
 
   bool is_data_pipe_created() const { return is_data_pipe_created_; }
   mojo::ScopedDataPipeConsumerHandle ReleaseConsumerHandle();
+  mojo::ScopedDataPipeProducerHandle ReleaseProducerHandle();
   void Abort();
   void ResetProducer();
   void Watch(mojo::SimpleWatcher::ReadyCallbackWithState callback);

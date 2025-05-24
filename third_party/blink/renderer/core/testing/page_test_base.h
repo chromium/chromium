@@ -94,6 +94,7 @@ class PageTestBase : public testing::Test, public ScopedMockOverlayScrollbars {
   DummyPageHolder& GetDummyPageHolder() const { return *dummy_page_holder_; }
   StyleEngine& GetStyleEngine();
   Element* GetElementById(const char* id) const;
+  Element* QuerySelector(const char* selector) const;
   AnimationClock& GetAnimationClock();
   PendingAnimations& GetPendingAnimations();
   FocusController& GetFocusController() const;

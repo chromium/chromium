@@ -30,7 +30,6 @@
 #include "base/containers/span.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
-#include "partition_alloc/page_allocator.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -59,16 +58,29 @@ class CORE_EXPORT ArrayBufferContents {
     kShared,
   };
 
+  // Behavior of a constructor on memory allocation failure.
+  enum class AllocationFailureBehavior {
+    // Construct an object for which `!IsValid()`.
+    kInvalid,
+    // Generate an OOM crash. The cause of the OOM (excessive size, mapping
+    // failure, commit failure) can be derived from the crash stack, so this is
+    // preferred to having custom logic in the caller to crash if `!IsValid()`.
+    kCrash,
+  };
+
   ArrayBufferContents() = default;
   ArrayBufferContents(size_t num_elements,
                       size_t element_byte_size,
                       SharingType is_shared,
-                      InitializationPolicy policy)
+                      InitializationPolicy policy,
+                      AllocationFailureBehavior allocation_failure_behavior =
+                          AllocationFailureBehavior::kInvalid)
       : ArrayBufferContents(num_elements,
                             std::nullopt,
                             element_byte_size,
                             is_shared,
-                            policy) {}
+                            policy,
+                            allocation_failure_behavior) {}
   // If max_num_elements has a value, a backing store for a resizable
   // ArrayBuffer is created. Otherwise a backing store for a fixed-length
   // ArrayBuffer is created.
@@ -76,7 +88,9 @@ class CORE_EXPORT ArrayBufferContents {
                       std::optional<size_t> max_num_elements,
                       size_t element_byte_size,
                       SharingType is_shared,
-                      InitializationPolicy);
+                      InitializationPolicy policy,
+                      AllocationFailureBehavior allocation_failure_behavior =
+                          AllocationFailureBehavior::kInvalid);
 
   ArrayBufferContents(
       const base::subtle::PlatformSharedMemoryRegion& shared_memory_region,
@@ -117,12 +131,9 @@ class CORE_EXPORT ArrayBufferContents {
   size_t MaxDataLength() const {
     return backing_store_ ? backing_store_->MaxByteLength() : 0;
   }
-  bool IsShared() const {
-    return backing_store_ ? backing_store_->IsShared() : false;
-  }
+  bool IsShared() const { return backing_store_ && backing_store_->IsShared(); }
   bool IsResizableByUserJavaScript() const {
-    return backing_store_ ? backing_store_->IsResizableByUserJavaScript()
-                          : false;
+    return backing_store_ && backing_store_->IsResizableByUserJavaScript();
   }
   bool IsValid() const { return backing_store_ && backing_store_->Data(); }
   base::span<uint8_t> ByteSpan() const {

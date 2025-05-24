@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BRANDING_BRANDING_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BRANDING_BRANDING_MEDIATOR_H_
 
-#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller_delegate.h"
-
 #import <Foundation/Foundation.h>
+
+#import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller_delegate.h"
 
 @protocol BrandingConsumer;
 class PrefService;

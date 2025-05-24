@@ -19,8 +19,9 @@ std::string CountryCodeForCurrentTimezone() {
   // only for Etc/GMT while returning an empty string for Etc/UTC and
   // Etc/UCT because they're less likely to be chosen by mistake in UK in
   // place of Europe/London (Briitish Time).
-  if (zone->getID(id) == UNICODE_STRING_SIMPLE("Etc/GMT"))
+  if (zone->getID(id) == UNICODE_STRING_SIMPLE("Etc/GMT")) {
     return "GB";
+  }
   char region_code[4];
   UErrorCode status = U_ZERO_ERROR;
   int length = zone->getRegion(id, region_code, 4, status);

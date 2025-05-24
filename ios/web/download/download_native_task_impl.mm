@@ -10,12 +10,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/web/download/download_native_task_bridge.h"
+#import "net/base/apple/url_conversions.h"
 
 namespace web {
 
 DownloadNativeTaskImpl::DownloadNativeTaskImpl(
     WebState* web_state,
     const GURL& original_url,
+    NSString* originating_host,
     NSString* http_method,
     const std::string& content_disposition,
     int64_t total_bytes,
@@ -25,6 +27,7 @@ DownloadNativeTaskImpl::DownloadNativeTaskImpl(
     DownloadNativeTaskBridge* download)
     : DownloadTaskImpl(web_state,
                        original_url,
+                       originating_host,
                        http_method,
                        content_disposition,
                        total_bytes,
@@ -83,11 +86,15 @@ void DownloadNativeTaskImpl::OnDownloadProgress(int64_t bytes_received,
 }
 
 void DownloadNativeTaskImpl::OnResponseReceived(int http_error_code,
-                                                NSString* mime_type) {
+                                                NSString* mime_type,
+                                                NSURL* redirected_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   http_code_ = http_error_code;
   if (mime_type.length) {
     mime_type_ = base::SysNSStringToUTF8(mime_type);
+  }
+  if (redirected_url) {
+    OnRedirected(net::GURLWithNSURL(redirected_url));
   }
 }
 

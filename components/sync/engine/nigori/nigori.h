@@ -7,14 +7,13 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/time/tick_clock.h"
-
-namespace crypto {
-class SymmetricKey;
-}  // namespace crypto
+#include "crypto/subtle_passkey.h"
 
 namespace syncer {
 
@@ -24,8 +23,8 @@ class KeyDerivationParams;
 // the cloud. This implementation does not support server authentication or
 // assisted key derivation.
 //
-// To store secrets securely, use the |GetKeyName| method to derive a lookup
-// name for your secret (basically a map key), and |Encrypt| and |Decrypt| to
+// To store secrets securely, use the `GetKeyName` method to derive a lookup
+// name for your secret (basically a map key), and `Encrypt` and `Decrypt` to
 // store and retrieve the secret.
 //
 // https://www.cl.cam.ac.uk/~drt24/nigori/nigori-overview.pdf
@@ -37,8 +36,8 @@ class Nigori {
 
   virtual ~Nigori();
 
-  // Initialize by deriving keys based on the given |key_derivation_params| and
-  // |password|. The key derivation method must not be UNSUPPORTED. The return
+  // Initialize by deriving keys based on the given `key_derivation_params` and
+  // `password`. The key derivation method must not be UNSUPPORTED. The return
   // value is guaranteed to be non-null.
   static std::unique_ptr<Nigori> CreateByDerivation(
       const KeyDerivationParams& key_derivation_params,
@@ -51,15 +50,15 @@ class Nigori {
       const std::string& encryption_key,
       const std::string& mac_key);
 
-  // Derives a secure lookup name for |this|, computed as
+  // Derives a secure lookup name for `this`, computed as
   // Permute[Kenc,Kmac](Nigori::Password || "nigori-key") as per Nigori
   // protocol. The return value will be Base64 encoded.
   std::string GetKeyName() const;
 
-  // Encrypts |value|. Note that the returned value is Base64 encoded.
+  // Encrypts `value`. Note that the returned value is Base64 encoded.
   std::string Encrypt(const std::string& value) const;
 
-  // Decrypts |value| into |decrypted|. It is assumed that |value| is Base64
+  // Decrypts `value` into `decrypted`. It is assumed that `value` is Base64
   // encoded.
   bool Decrypt(const std::string& value, std::string* decrypted) const;
 
@@ -87,13 +86,15 @@ class Nigori {
     Keys();
     ~Keys();
 
+    static inline constexpr size_t kKeySizeBytes = 16;
+
     // TODO(vitaliii): user_key isn't used any more, but legacy clients will
     // fail to import a nigori node without one. We preserve it for the sake of
     // those clients, but it should be removed once enough clients have upgraded
     // to code that doesn't enforce its presence.
-    std::unique_ptr<crypto::SymmetricKey> user_key;
-    std::unique_ptr<crypto::SymmetricKey> encryption_key;
-    std::unique_ptr<crypto::SymmetricKey> mac_key;
+    std::optional<std::array<uint8_t, kKeySizeBytes>> user_key;
+    std::array<uint8_t, kKeySizeBytes> encryption_key;
+    std::array<uint8_t, kKeySizeBytes> mac_key;
 
     void InitByDerivationUsingPbkdf2(const std::string& password);
     void InitByDerivationUsingScrypt(const std::string& salt,
@@ -109,6 +110,8 @@ class Nigori {
       const KeyDerivationParams& key_derivation_params,
       const std::string& password,
       const base::TickClock* tick_clock);
+
+  static crypto::SubtlePassKey MakeCryptoPassKey();
 
   Keys keys_;
 };

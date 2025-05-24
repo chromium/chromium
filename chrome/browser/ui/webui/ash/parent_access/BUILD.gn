@@ -2,15 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
-import("//third_party/protobuf/proto_library.gni")
 
-assert(is_chromeos_ash)
-
-proto_library("proto") {
-  sources = [ "parent_access_callback.proto" ]
-}
+assert(is_chromeos)
 
 mojom("mojo_bindings") {
   sources = [ "parent_access_ui.mojom" ]
@@ -38,12 +32,12 @@ static_library("parent_access") {
 
   public_deps = [
     ":mojo_bindings",
-    ":proto",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common",
     "//components/signin/public/identity_manager",
+    "//components/supervised_user/core/browser/proto",
     "//content/public/browser",
     "//content/public/common",
     "//mojo/public/cpp/bindings",
@@ -62,9 +56,9 @@ static_library("parent_access") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/parent_access:resources",
     "//chrome/browser/resources/chromeos/supervision:resources",
-    "//chrome/browser/ui/webui:webui_util",
     "//components/google/core/common",
     "//components/signin/public/base",
+    "//components/supervised_user/core/browser",
     "//google_apis",
     "//services/network/public/mojom:url_loader_base",
     "//ui/aura",

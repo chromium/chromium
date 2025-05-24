@@ -15,20 +15,19 @@ namespace autofill {
 std::unique_ptr<FormFieldParser> IbanFieldParser::Parse(
     ParsingContext& context,
     AutofillScanner* scanner) {
-  raw_ptr<AutofillField> field;
-  base::span<const MatchPatternRef> iban_patterns =
-      GetMatchPatterns(IBAN_VALUE, context.page_language, context.pattern_file);
-  if (ParseField(context, scanner, iban_patterns, &field, "IBAN_VALUE")) {
-    return std::make_unique<IbanFieldParser>(field);
+  std::optional<FieldAndMatchInfo> match;
+  if (ParseField(context, scanner, "IBAN_VALUE", &match)) {
+    return std::make_unique<IbanFieldParser>(std::move(*match));
   }
   return nullptr;
 }
 
-IbanFieldParser::IbanFieldParser(const AutofillField* field) : field_(field) {}
+IbanFieldParser::IbanFieldParser(FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 void IbanFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, IBAN_VALUE, kBaseIbanParserScore, field_candidates);
+  AddClassification(match_, IBAN_VALUE, kBaseIbanParserScore, field_candidates);
 }
 
 }  // namespace autofill

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/segmentation_platform/internal/service_proxy_impl.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
@@ -10,6 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/execution/model_executor.h"
@@ -25,6 +27,7 @@
 
 using testing::_;
 using testing::Invoke;
+using testing::Return;
 
 namespace segmentation_platform {
 
@@ -119,9 +122,11 @@ class ServiceProxyImplTest : public testing::Test,
         std::make_unique<FakeSegmentSelectorImpl>(&pref_service_,
                                                   configs_.at(0).get());
     service_proxy_impl_ = std::make_unique<ServiceProxyImpl>(
-        segment_db_.get(), nullptr, &configs_, PlatformOptions(false),
-        &segment_selectors_);
+        segment_db_.get(), &signal_storage_config_, &configs_,
+        PlatformOptions(false), &segment_selectors_);
     service_proxy_impl_->AddObserver(this);
+    ON_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_, _))
+        .WillByDefault(Return(true));
   }
 
   void TearDown() override {
@@ -149,6 +154,7 @@ class ServiceProxyImplTest : public testing::Test,
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_db_;
   std::unique_ptr<MockModelManager> mock_model_manager_;
   ExecutionService execution_;
+  MockSignalStorageConfig signal_storage_config_;
   std::unique_ptr<ServiceProxyImpl> service_proxy_impl_;
   std::vector<ServiceProxy::ClientInfo> client_info_;
   std::vector<std::unique_ptr<Config>> configs_;
@@ -192,8 +198,9 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDefaultModel) {
   ServiceProxy::SegmentStatus status = client_info_.at(0).segment_status.at(0);
   ASSERT_EQ(status.segment_id,
             SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
-  ASSERT_EQ(status.can_execute_segment, false);
-  ASSERT_EQ(status.segment_metadata, "model_metadata: { time_unit:DAY }");
+  ASSERT_EQ(status.can_execute_segment, true);
+  ASSERT_EQ(status.segment_metadata,
+            "model_metadata: { time_unit:DAY }, model_version: 0");
   ASSERT_TRUE(status.prediction_result.empty());
 }
 
@@ -215,8 +222,9 @@ TEST_F(ServiceProxyImplTest, GetSegmentationInfoFromDB) {
   ServiceProxy::SegmentStatus status = client_info_.at(0).segment_status.at(0);
   ASSERT_EQ(status.segment_id,
             SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
-  ASSERT_EQ(status.can_execute_segment, false);
-  ASSERT_EQ(status.segment_metadata, "model_metadata: { time_unit:DAY }");
+  ASSERT_EQ(status.can_execute_segment, true);
+  ASSERT_EQ(status.segment_metadata,
+            "model_metadata: { time_unit:DAY }, model_version: 0");
   ASSERT_TRUE(status.prediction_result.empty());
 }
 
@@ -244,8 +252,26 @@ TEST_F(ServiceProxyImplTest, ExecuteModel) {
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 
+  EXPECT_EQ(client_info_.size(), 1u);
   service_proxy_impl_->SetExecutionService(&execution_);
-  EXPECT_CALL(*mock_executor, ExecuteModel(_)).Times(1);
+  EXPECT_CALL(*mock_executor, ExecuteModel(_))
+      .Times(1)
+      .WillOnce(Invoke([this](std::unique_ptr<ExecutionRequest> req) {
+        configs_.at(0)->segments.insert(
+            {SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+             std::make_unique<Config::SegmentMetadata>("UmaName")});
+
+        auto* info2 =
+            AddSegmentInfo(segment_db_.get(), configs_.at(0).get(),
+                           SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+                           proto::ModelSource::DEFAULT_MODEL_SOURCE);
+        segment_db_->UpdateSegment(
+            SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB,
+            ModelSource::SERVER_MODEL_SOURCE, *info2, base::DoNothing());
+        std::move(req->callback)
+            .Run(std::make_unique<ModelExecutionResult>(
+                ModelExecutionStatus::kExecutionError));
+      }));
   service_proxy_impl_->ExecuteModel(
       SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB);
 

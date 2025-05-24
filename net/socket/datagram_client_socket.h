@@ -5,7 +5,6 @@
 #ifndef NET_SOCKET_DATAGRAM_CLIENT_SOCKET_H_
 #define NET_SOCKET_DATAGRAM_CLIENT_SOCKET_H_
 
-#include "net/base/datagram_buffer.h"
 #include "net/base/net_export.h"
 #include "net/base/network_handle.h"
 #include "net/socket/datagram_socket.h"
@@ -87,6 +86,17 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
   // Set iOS Network Service Type for socket option SO_NET_SERVICE_TYPE.
   // No-op by default.
   virtual void SetIOSNetworkServiceType(int ios_network_service_type) {}
+
+  // Register a QUIC UDP payload that can close a QUIC connection and the
+  // underlying socket to the Android system server. When the app loses network
+  // access, the system server destroys the registered socket and sends the
+  // registered UDP payload to the server.
+  virtual void RegisterQuicConnectionClosePayload(base::span<uint8_t> payload) {
+  }
+
+  // Unregister the underlying socket and its associated UDP payload that were
+  // previously registered by RegisterQuicConnectionClosePayload
+  virtual void UnregisterQuicConnectionClosePayload() {}
 };
 
 }  // namespace net

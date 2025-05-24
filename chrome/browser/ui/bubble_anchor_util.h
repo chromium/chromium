@@ -18,7 +18,7 @@ namespace bubble_anchor_util {
 
 // Indicates which browser component to use as an anchor.
 // Used as a parameter of GetPageInfoAnchorView().
-enum Anchor {
+enum class Anchor {
   kLocationBar,
   kAppMenuButton,
   kCustomTabBar,
@@ -27,7 +27,7 @@ enum Anchor {
 // Offset from the window edge to show bubbles when there is no location bar.
 // E.g., when in fullscreen or in a Hosted App window. Don't center, since that
 // could obscure a fullscreen bubble.
-constexpr int kNoToolbarLeftOffset = 40;
+inline constexpr int kNoToolbarLeftOffset = 40;
 
 // Returns the Rect appropriate for anchoring a bubble to |browser|'s Page Info
 // icon, or an appropriate fallback when that is not visible. This is used only

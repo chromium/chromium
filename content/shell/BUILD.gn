@@ -33,8 +33,8 @@ if (is_android) {
   import("//third_party/fuchsia-gn-sdk/src/component.gni")
   import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
   import("//build/config/apple/swift_source_set.gni")
-  import("//build/config/ios/config.gni")
   import("//content/shell/app/ios/extensions.gni")
 }
 
@@ -49,9 +49,9 @@ declare_args() {
 }
 
 config("content_shell_lib_warnings") {
-  if (is_clang) {
-    # TODO(thakis): Remove this once http://crbug.com/383820 is figured out
-    cflags = [ "-Wno-nonnull" ]
+  if (is_clang && is_mac) {
+    # TODO(thakis): Remove this once http://crbug.com/40370188 is figured out
+    cflags_objcc = [ "-Wno-nonnull" ]
   }
 }
 
@@ -188,8 +188,6 @@ static_library("content_shell_lib") {
     "browser/shell_javascript_dialog.h",
     "browser/shell_javascript_dialog_manager.cc",
     "browser/shell_javascript_dialog_manager.h",
-    "browser/shell_paths.cc",
-    "browser/shell_paths.h",
     "browser/shell_permission_manager.cc",
     "browser/shell_permission_manager.h",
     "browser/shell_platform_data_aura.cc",
@@ -208,6 +206,8 @@ static_library("content_shell_lib") {
     "common/shell_content_client.h",
     "common/shell_origin_trial_policy.cc",
     "common/shell_origin_trial_policy.h",
+    "common/shell_paths.cc",
+    "common/shell_paths.h",
     "common/shell_switches.cc",
     "common/shell_switches.h",
     "gpu/shell_content_gpu_client.cc",
@@ -311,11 +311,12 @@ static_library("content_shell_lib") {
     ":shell_controller_mojom",
     "//base",
     "//base:base_static",
-    "//build:chromeos_buildflags",
     "//cc/base",
     "//components/cdm/renderer",
     "//components/custom_handlers",
     "//components/custom_handlers:test_support",
+    "//components/embedder_support",
+    "//components/embedder_support:user_agent",
     "//components/input",
     "//components/keyed_service/content",
     "//components/metrics",
@@ -447,6 +448,7 @@ static_library("content_shell_lib") {
         "browser/shell_platform_delegate_views.cc",
         "browser/shell_web_contents_view_delegate_views.cc",
       ]
+      public_deps += [ "//ui/base/mojom:ui_base_types" ]
       deps += [
         "//ui/color:color_headers",
         "//ui/native_theme",
@@ -468,15 +470,8 @@ static_library("content_shell_lib") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/dbus" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/dbus/constants",
-      "//chromeos/lacros/dbus",
-    ]
   }
 
   if (is_linux || is_chromeos) {
@@ -539,12 +534,14 @@ repack("pak") {
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
     "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
+    "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.pak",
+    "$root_gen_dir/third_party/blink/public/strings/permission_element_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/auto_image_annotation_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
 
   deps = [
@@ -562,8 +559,11 @@ repack("pak") {
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//third_party/blink/public/strings",
+    "//third_party/blink/public/strings:permission_element_generated_strings",
+    "//third_party/blink/public/strings:permission_element_strings",
     "//ui/resources",
     "//ui/strings",
+    "//ui/webui/resources",
   ]
 
   if (enable_vr) {
@@ -650,8 +650,22 @@ if (is_android) {
 
     # Path to an entitlements file used in ios_content_shell. Can be overridden
     # to provide an alternative.
-    ios_content_shell_entitlements_path =
-        "//content/app/ios/appex/app.entitlements"
+    if (target_platform == "iphoneos") {
+      ios_content_shell_entitlements_path =
+          "//content/app/ios/appex/app.entitlements"
+    } else {
+      ios_content_shell_entitlements_path =
+          "//build/config/ios/entitlements.plist"
+    }
+  }
+
+  declare_args() {
+    ios_content_process_bundle_identifier =
+        "$ios_content_shell_bundle_identifier.ContentProcessExtension"
+    ios_network_process_bundle_identifier =
+        "$ios_content_shell_bundle_identifier.NetworkProcessExtension"
+    ios_gpu_process_bundle_identifier =
+        "$ios_content_shell_bundle_identifier.GPUProcessExtension"
   }
 
   ios_app_bundle("content_shell") {
@@ -660,12 +674,16 @@ if (is_android) {
 
     sources = [ "app/ios/shell_main_trampoline.cc" ]
 
-    deps = [
-      ":content_process_bundle",
-      ":content_shell_framework+link",
-      ":gpu_process_bundle",
-      ":network_process_bundle",
-    ]
+    deps = [ ":content_shell_framework+link" ]
+
+    if (target_platform == "iphoneos") {
+      deps += [
+        ":content_process_bundle",
+        ":gpu_process_bundle",
+        ":network_process_bundle",
+      ]
+    }
+
     bundle_deps = [
       ":content_shell_framework+bundle",
       ":content_shell_framework_resources",
@@ -685,27 +703,29 @@ if (is_android) {
     deps = [
       ":content_shell_app",
       ":content_shell_lib",
-      "//content/app/ios/appex:child_process_bridge",
       "//content/public/app",
       "//content/public/common",
       "//third_party/icu:icudata",
     ]
+    if (target_platform == "iphoneos") {
+      deps += [ "//content/app/ios/appex:child_process_bridge" ]
+    }
     info_plist = "app/ios/ios-app.plist"
   }
 
   browserkit_extension("gpu_process") {
     testonly = true
-    bundle_identifier = "$shared_bundle_id_for_test_apps.GPUProcess"
+    bundle_identifier = ios_gpu_process_bundle_identifier
   }
 
   browserkit_extension("network_process") {
     testonly = true
-    bundle_identifier = "$shared_bundle_id_for_test_apps.NetworkProcess"
+    bundle_identifier = ios_network_process_bundle_identifier
   }
 
   browserkit_extension("content_process") {
     testonly = true
-    bundle_identifier = "$shared_bundle_id_for_test_apps.ContentProcess"
+    bundle_identifier = ios_content_process_bundle_identifier
   }
 } else {
   executable("content_shell") {
@@ -971,14 +991,16 @@ if (is_mac) {
 
       if (is_component_build) {
         ldflags = [
-          # The helper is in Content Shell.app/Contents/Frameworks/
-          #     Content Shell Framework.framework/Versions/C/Helpers/
-          #     Content Shell Helper.app/Contents/MacOS/
-          # so set rpath up to the base.
-          "-Wl,-rpath,@executable_path/../../../../../../../../../..",
+          # The helper is in Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Helpers/Content Shell Helper.app/Contents/MacOS
 
-          # ... and up to Contents/Frameworks.
+          # Set up an rpath to the Contents/Frameworks/ directory so that
+          # Content Shell Framework.framework will be found there. This matches
+          # the path that app_shell_main.cc uses with `dlopen` and avoids
+          # loading the framework into memory twice.
           "-Wl,-rpath,@executable_path/../../../../../../..",
+
+          # Add an rpath up to the base for all other libraries.
+          "-Wl,-rpath,@executable_path/../../../../../../../../../..",
         ]
 
         # In a component build, the framework is directly linked to the

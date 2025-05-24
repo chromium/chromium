@@ -12,10 +12,14 @@
 
 #include "base/component_export.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/attribution_scopes_set.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
+
+namespace base {
+class DictValue;
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -53,7 +57,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AttributionScopesData {
 
   uint32_t max_event_states() const { return max_event_states_; }
 
-  base::Value::Dict ToJson() const;
+  base::DictValue ToJson() const;
 
   friend bool operator==(const AttributionScopesData&,
                          const AttributionScopesData&) = default;

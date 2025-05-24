@@ -43,6 +43,7 @@ class UserPermissionServiceImpl : public UserPermissionService {
       const UserContext& user_context) const override;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX
   UserPermission CanCollectSignals() const override;
+  UserPermission CanCollectReportSignals() const override;
   bool HasUserConsented() const override;
 
  protected:

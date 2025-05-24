@@ -29,6 +29,12 @@ class FormStructureTestApi {
     return *form_structure_->fields_.back();
   }
 
+  AutofillField& PushField(FormFieldData field) {
+    form_structure_->fields_.push_back(
+        std::make_unique<AutofillField>(std::move(field)));
+    return *form_structure_->fields_.back();
+  }
+
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params = {},
                                     LogManager* log_manager = nullptr) {
     return form_structure_->ShouldBeParsed(params, log_manager);
@@ -60,20 +66,7 @@ class FormStructureTestApi {
                   /*server_types=*/overall_types);
   }
 
-  mojom::SubmissionIndicatorEvent get_submission_event() const {
-    return form_structure_->submission_event_;
-  }
-
-  // Returns a vote type if a field contains a vote relating USERNAME correction
-  // (CREDENTIALS_REUSED, USERNAME_OVERWRITTEN, USERNAME_EDITED). If none,
-  // returns NO_INFORMATION.
-  AutofillUploadContents::Field::VoteType get_username_vote_type();
-
   void AssignSections() { autofill::AssignSections(form_structure_->fields_); }
-
-  bool phone_rationalized(const Section& section) const {
-    return base::Contains(form_structure_->phone_rationalized_, section);
-  }
 
   FieldCandidatesMap ParseFieldTypesWithPatterns(
       ParsingContext& context) const {

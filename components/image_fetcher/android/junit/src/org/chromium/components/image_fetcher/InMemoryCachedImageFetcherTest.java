@@ -142,7 +142,8 @@ public class InMemoryCachedImageFetcherTest {
                     ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
             mInMemoryCachedImageFetcher.fetchImage(params, (Bitmap bitmap) -> {});
         } catch (Exception e) {
-            Assert.fail("Destroy called in the middle of execution shouldn't throw");
+            throw new AssertionError(
+                    "Destroy called in the middle of execution shouldn't throw", e);
         }
     }
 
@@ -184,7 +185,7 @@ public class InMemoryCachedImageFetcherTest {
         Assert.assertEquals(
                 "url/1/100/200",
                 mInMemoryCachedImageFetcher.encodeCacheKey(
-                        "url", /* shouldResize= */ true, 100, 200));
+                        "url", /* wasResized= */ true, 100, 200));
     }
 
     @Test

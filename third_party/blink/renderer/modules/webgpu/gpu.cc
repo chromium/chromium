@@ -23,6 +23,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_format.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -71,14 +72,28 @@ wgpu::PowerPreference AsDawnType(V8GPUPowerPreference power_preference) {
   }
 }
 
+wgpu::FeatureLevel AsDawnFeatureLevel(const String& feature_level) {
+  CHECK(feature_level == "core" || feature_level == "compatibility");
+
+  if (feature_level == "compatibility") {
+    return wgpu::FeatureLevel::Compatibility;
+  }
+
+  return wgpu::FeatureLevel::Core;
+}
+
 wgpu::RequestAdapterOptions AsDawnType(
     const GPURequestAdapterOptions* webgpu_options) {
   DCHECK(webgpu_options);
 
-  wgpu::RequestAdapterOptions dawn_options = {
-      .forceFallbackAdapter = webgpu_options->forceFallbackAdapter(),
-      .compatibilityMode = webgpu_options->compatibilityMode(),
-  };
+  wgpu::RequestAdapterOptions dawn_options;
+  dawn_options.forceFallbackAdapter = webgpu_options->forceFallbackAdapter();
+
+  if (RuntimeEnabledFeatures::WebGPUFeatureLevelEnabled()) {
+    dawn_options.featureLevel =
+        AsDawnFeatureLevel(webgpu_options->featureLevel());
+  }
+
   if (webgpu_options->hasPowerPreference()) {
     dawn_options.powerPreference =
         AsDawnType(webgpu_options->powerPreference());
@@ -113,8 +128,7 @@ WebGPUExecutionContextToken GetExecutionContextToken(
   if (execution_context->IsWindow()) {
     return To<LocalDOMWindow>(execution_context)->document()->Token();
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebGPUExecutionContextToken();
+  NOTREACHED();
 }
 
 }  // anonymous namespace
@@ -135,8 +149,8 @@ GPU* GPU::gpu(NavigatorBase& navigator) {
 GPU::GPU(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
-      wgsl_language_features_(
-          MakeGarbageCollected<WGSLLanguageFeatures>(GatherWGSLFeatures())),
+      wgsl_language_features_(MakeGarbageCollected<WGSLLanguageFeatures>(
+          GatherWGSLLanguageFeatures())),
       mappable_buffer_handles_(
           base::MakeRefCounted<BoxedMappableWGPUBufferHandles>()) {}
 
@@ -187,7 +201,7 @@ void GPU::OnRequestAdapterCallback(
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
     wgpu::RequestAdapterStatus status,
     wgpu::Adapter adapter,
-    const char* error_message) {
+    wgpu::StringView error_message) {
   GPUAdapter* gpu_adapter = nullptr;
   switch (status) {
     case wgpu::RequestAdapterStatus::Success:
@@ -199,11 +213,10 @@ void GPU::OnRequestAdapterCallback(
     // there are error messages.
     case wgpu::RequestAdapterStatus::Unavailable:
     case wgpu::RequestAdapterStatus::Error:
-    case wgpu::RequestAdapterStatus::Unknown:
-    case wgpu::RequestAdapterStatus::InstanceDropped:
+    case wgpu::RequestAdapterStatus::CallbackCancelled:
       break;
   }
-  if (error_message) {
+  if (error_message.length != 0) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering,
@@ -229,8 +242,8 @@ void GPU::RecordAdapterForIdentifiability(
 
   IdentifiableTokenBuilder input_builder;
   if (options && options->hasPowerPreference()) {
-    input_builder.AddToken(
-        IdentifiabilityBenignStringToken(options->powerPreference()));
+    input_builder.AddToken(IdentifiabilityBenignStringToken(
+        options->powerPreference().AsString()));
   }
   const auto surface =
       IdentifiableSurface::FromTypeAndToken(type, input_builder.GetToken());
@@ -280,9 +293,11 @@ void GPU::RequestAdapterImpl(
     ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
 
-  // Validate that the featureLevel is undefined. If not return a null adapter.
-  // This logic will evolve as feature levels are added in the future.
-  if (options->hasFeatureLevel()) {
+  // Validate that the featureLevel is an allowed feature level string value. If
+  // not return a null adapter. This logic will evolve as feature levels are
+  // added in the future.
+  if (options->featureLevel() != "core" &&
+      options->featureLevel() != "compatibility") {
     OnRequestAdapterCallback(script_state, options, resolver,
                              wgpu::RequestAdapterStatus::Error, nullptr,
                              "Unknown feature level");
@@ -361,6 +376,30 @@ void GPU::RequestAdapterImpl(
 
   DCHECK_NE(dawn_control_client_, nullptr);
 
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/369219127): Chrome always uses the same GPU adapter that's
+  // been allocated for other Chrome workloads on Windows, which for laptops is
+  // generally the integrated graphics card, due to the power usage aspect (ie:
+  // power saving).
+  if (options->hasPowerPreference()) {
+    AddConsoleWarning(
+        execution_context,
+        "The powerPreference option is currently ignored when calling "
+        "requestAdapter() on Windows. See https://crbug.com/369219127");
+  }
+#endif
+
+  if (options->featureLevel() == "compatibility" &&
+      !RuntimeEnabledFeatures::WebGPUCompatibilityModeEnabled()) {
+    AddConsoleWarning(
+        execution_context,
+        "Beware! featureLevel was set to \"compatibility\", but this request "
+        "is being ignored. Compatibility restrictions will start being "
+        "enforced as soon as Chromium ships Compatibility Mode, potentially "
+        "breaking this webpage. See "
+        "https://github.com/gpuweb/gpuweb/issues/4266");
+  }
+
   wgpu::RequestAdapterOptions dawn_options = AsDawnType(options);
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPU::OnRequestAdapterCallback, WrapPersistent(this),
@@ -398,11 +437,11 @@ ScriptPromise<IDLNullable<GPUAdapter>> GPU::requestAdapter(
   return promise;
 }
 
-String GPU::getPreferredCanvasFormat() {
-  return FromDawnEnum(preferred_canvas_format());
+V8GPUTextureFormat GPU::getPreferredCanvasFormat() {
+  return FromDawnEnum(GetPreferredCanvasFormat());
 }
 
-wgpu::TextureFormat GPU::preferred_canvas_format() {
+wgpu::TextureFormat GPU::GetPreferredCanvasFormat() {
 #if BUILDFLAG(IS_ANDROID)
   return wgpu::TextureFormat::RGBA8Unorm;
 #else

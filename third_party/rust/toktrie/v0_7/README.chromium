@@ -1,0 +1,10 @@
+Name: toktrie
+URL: https://crates.io/crates/toktrie
+Version: 0.7.21
+Revision: 5f43908e1cbebdb713a83f309e807f37fc1b4ed4
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/toktrie-v0_7/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: LLM Token Trie library

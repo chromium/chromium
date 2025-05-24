@@ -53,7 +53,7 @@ void GeolocationContext::OnPermissionRevoked(const url::Origin& origin) {
 
 void GeolocationContext::OnConnectionError(GeolocationImpl* impl) {
   auto it =
-      base::ranges::find(impls_, impl, &std::unique_ptr<GeolocationImpl>::get);
+      std::ranges::find(impls_, impl, &std::unique_ptr<GeolocationImpl>::get);
   CHECK(it != impls_.end(), base::NotFatalUntil::M130);
   impls_.erase(it);
 }

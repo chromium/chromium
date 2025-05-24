@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("network_ui") {
   sources = [
@@ -34,7 +32,6 @@ static_library("network_ui") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/network_ui:resources",
     "//chrome/browser/ui/ash/system",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/internet",
     "//chromeos/ash/components/dbus/debug_daemon",
@@ -46,6 +43,7 @@ static_library("network_ui") {
     "//components/device_event_log",
     "//components/onc",
     "//components/policy/core/browser",
+    "//components/server_certificate_database",
     "//content/public/browser",
     "//ui/chromeos/strings:strings_provider",
     "//ui/webui",

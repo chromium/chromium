@@ -62,10 +62,12 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
   properties->is_web_feed_follow_intro_debug_enabled =
       IsWebFeedFollowIntroDebugEnabled();
   properties->use_feed_query_requests = ShouldUseFeedQueryRequests();
-  if (debug_data.fetch_info)
+  if (debug_data.fetch_info) {
     properties->feed_fetch_url = debug_data.fetch_info->base_request_url;
-  if (debug_data.upload_info)
+  }
+  if (debug_data.upload_info) {
     properties->feed_actions_url = debug_data.upload_info->base_request_url;
+  }
 
   properties->load_stream_status = debug_data.load_stream_status;
 

@@ -12,9 +12,12 @@
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "base/values.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -40,14 +43,9 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
       mojom::SourceType);
 
   static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  FromJSON(const base::Value::Dict& registration,
+  FromJSON(const base::DictValue& registration,
            base::TimeDelta expiry,
            mojom::SourceType);
-
-  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  ParseWindows(const base::Value::Dict&,
-               base::TimeDelta expiry,
-               const EventReportWindows& default_if_absent);
 
   // Creates a single report window at `kMaxSourceExpiry`.
   EventReportWindows();
@@ -79,7 +77,7 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
 
   WindowResult FallsWithin(base::TimeDelta trigger_moment) const;
 
-  void Serialize(base::Value::Dict& dict) const;
+  void Serialize(base::DictValue& dict) const;
 
   friend bool operator==(const EventReportWindows&,
                          const EventReportWindows&) = default;
@@ -89,9 +87,6 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
                      base::flat_set<base::TimeDelta> end_times);
 
   EventReportWindows(base::TimeDelta report_window, mojom::SourceType);
-
-  static base::expected<EventReportWindows, mojom::SourceRegistrationError>
-  ParseWindowsJSON(const base::Value&, base::TimeDelta expiry);
 
   base::TimeDelta start_time_;
   base::flat_set<base::TimeDelta> end_times_;

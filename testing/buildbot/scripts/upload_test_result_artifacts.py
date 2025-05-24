@@ -26,9 +26,9 @@ import tempfile
 root_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-# //build/android imports.
-sys.path.append(os.path.join(root_dir, 'build', 'android'))
-from pylib.utils import google_storage_helper
+# //build/util imports.
+sys.path.append(os.path.join(root_dir, 'build', 'util'))
+from lib.common import google_storage_helper
 
 
 def get_file_digest(filepath):

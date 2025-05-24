@@ -5,6 +5,8 @@
 import {CrButtonElement, CrDialogElement} from 'chrome://os-settings/os_settings.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 
+import {retry, sleep} from '../utils.js';
+
 import {SetLocalPasswordInputApi} from './set_local_password_input_api.js';
 
 // The test API for a dialog that setting up new password.
@@ -33,6 +35,14 @@ export class PasswordDialogApi {
 
   canSubmit(): boolean {
     return !this.submitButton().disabled;
+  }
+
+  async submit(): Promise<void> {
+    // This sleep shouldn't be here, but appears to be necessary because
+    // Password dialogs can't immediately submit.
+    // TODO(b/379816278): Investigate this.
+    await sleep(10);
+    (await retry(() => this.submitButton())).click();
   }
 
   private shadowRoot(): ShadowRoot {

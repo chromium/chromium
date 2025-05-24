@@ -53,7 +53,7 @@ class DecoderBufferReaderTest : public testing::Test {
   }
 
   void WriteBufferData() {
-    writer_->Write(serialized_data_.data(), serialized_data_.size(),
+    writer_->Write(serialized_data_,
                    base::BindOnce(&DecoderBufferReaderTest::OnWriteDone,
                                   base::Unretained(this)));
   }
@@ -68,7 +68,7 @@ class DecoderBufferReaderTest : public testing::Test {
 
     // Set the data size to that of the new data so it will be properly
     // deserialized.
-    buffer->data_size = serialized_data_.size();
+    buffer->get_data()->data_size = serialized_data_.size();
     buffer_reader_->ProvideBuffer(std::move(buffer));
   }
 

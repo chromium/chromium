@@ -109,30 +109,24 @@ void SVGPatternElement::ClearResourceReferences() {
 void SVGPatternElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
-  bool is_length_attr =
-      attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
-      attr_name == svg_names::kWidthAttr || attr_name == svg_names::kHeightAttr;
 
   if (attr_name == svg_names::kPatternTransformAttr) {
     UpdatePresentationAttributeStyle(*pattern_transform_);
   }
 
-  if (is_length_attr || attr_name == svg_names::kPatternUnitsAttr ||
+  if (attr_name == svg_names::kXAttr || attr_name == svg_names::kYAttr ||
+      attr_name == svg_names::kWidthAttr ||
+      attr_name == svg_names::kHeightAttr ||
+      attr_name == svg_names::kPatternUnitsAttr ||
       attr_name == svg_names::kPatternContentUnitsAttr ||
       attr_name == svg_names::kPatternTransformAttr ||
       SVGFitToViewBox::IsKnownAttribute(attr_name) ||
       SVGTests::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
-    if (is_length_attr)
-      UpdateRelativeLengthsInformation();
-
     InvalidatePattern();
     return;
   }
 
   if (SVGURIReference::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     BuildPendingResource();
     return;
   }
@@ -331,7 +325,7 @@ void SVGPatternElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGPatternElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*pattern_transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }

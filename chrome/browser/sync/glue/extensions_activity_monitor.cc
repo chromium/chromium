@@ -8,7 +8,7 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"
+#include "chrome/browser/extensions/api/bookmarks/bookmarks_api_watcher.h"  // nogncheck
 #include "extensions/browser/extension_function.h"  // nogncheck
 #include "extensions/browser/extension_function_histogram_value.h"
 #endif

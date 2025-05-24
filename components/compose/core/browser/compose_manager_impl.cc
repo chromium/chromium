@@ -12,11 +12,11 @@
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/compose/core/browser/compose_client.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_metrics.h"
@@ -98,10 +98,9 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kComposeTextSelection) &&
-      IsWordCountWithinBounds(
+  // Select all text if the current selection is one or zero words.
+  if (IsWordCountWithinBounds(
           base::UTF16ToUTF8(form_field_data->selected_text()), 0, 1)) {
-    // Select all words.
     driver->ApplyFieldAction(autofill::mojom::FieldActionType::kSelectAll,
                              autofill::mojom::ActionPersistence::kFill,
                              field_id, u"");

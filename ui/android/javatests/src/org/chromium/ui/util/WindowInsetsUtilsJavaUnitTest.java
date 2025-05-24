@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 
@@ -40,7 +41,7 @@ public class WindowInsetsUtilsJavaUnitTest {
         List<Rect> blocks = List.of(new Rect(0, 0, 100, 800), new Rect(400, 0, 600, 800));
         assertEquals(
                 new Rect(100, 0, 400, 800),
-                WindowInsetsUtils.getWidestUnoccludedRect((region), blocks));
+                WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
     }
 
     @Test
@@ -50,7 +51,7 @@ public class WindowInsetsUtilsJavaUnitTest {
         List<Rect> blocks = List.of(new Rect(0, 0, 100, 300), new Rect(400, 400, 600, 800));
         assertEquals(
                 new Rect(0, 300, 600, 400),
-                WindowInsetsUtils.getWidestUnoccludedRect((region), blocks));
+                WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
     }
 
     @Test
@@ -100,6 +101,7 @@ public class WindowInsetsUtilsJavaUnitTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
+    @DisabledTest(message = "crbug.com/362337139")
     public void testGetBoundingRects_PostV() {
         var boundingRects = List.of(new Rect(0, 0, 100, 100), new Rect(800, 0, 1600, 100));
         var insets =
@@ -111,5 +113,13 @@ public class WindowInsetsUtilsJavaUnitTest {
                 boundingRects,
                 WindowInsetsUtils.getBoundingRectsFromInsets(
                         insets, WindowInsetsCompat.Type.captionBar()));
+    }
+
+    @Test
+    @SmallTest
+    public void testGetWidestUnoccludedRect_NoBlockedRects() {
+        Rect region = new Rect(0, 0, 600, 800);
+        List<Rect> blocks = List.of();
+        assertEquals(new Rect(), WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
     }
 }

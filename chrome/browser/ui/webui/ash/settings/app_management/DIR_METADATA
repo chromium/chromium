@@ -1,8 +1,5 @@
-monorail: {
-  component: "Platform>Apps>Foundation>AppManagement"
-}
-team_email: "chromeos-apps-foundation-team@google.com"
+team_email: "cros-web-apps-team@google.com"
 os: CHROME_OS
-buganizer_public: {
-  component_id: 1456708
+buganizer: {
+  component_id: 1389907
 }

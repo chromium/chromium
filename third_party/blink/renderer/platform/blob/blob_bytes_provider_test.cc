@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/platform/blob/blob_bytes_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -12,7 +18,6 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -208,7 +213,7 @@ TEST_P(RequestAsFile, OffsetInEmptyFile) {
 
 TEST_P(RequestAsFile, OffsetInNonEmptyFile) {
   FileTestData test = GetParam();
-  int file_offset = 23;
+  size_t file_offset = 23;
 
   Vector<uint8_t> expected_data(1024, 42);
 
@@ -272,7 +277,7 @@ TEST_F(BlobBytesProviderTest, RequestAsFile_MultipleChunks) {
         base::BindOnce([](std::optional<base::Time> last_modified) {
           EXPECT_TRUE(last_modified);
         }));
-    auto combined_bytes_chunk = base::span(combined_bytes_).subspan(i, 16);
+    auto combined_bytes_chunk = base::span(combined_bytes_).subspan(i, 16u);
     expected_data.insert(0, combined_bytes_chunk.data(),
                          combined_bytes_chunk.size());
   }

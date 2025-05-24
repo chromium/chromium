@@ -59,6 +59,9 @@ message EnclaveLocalState {
 
   // User contains state for a specific GAIA ID.
   message User {
+    reserved "pin_public_key";
+    reserved 12;
+
     // The not-user-verification-interlocked device key:
     //
     // These three members are either all empty or all non-empty.
@@ -101,9 +104,6 @@ message EnclaveLocalState {
 
     // The wrapped Google Password Manager PIN.
     optional WrappedPIN wrapped_pin = 11;
-
-    // The public key of the GPM PIN member of the security domain.
-    optional bytes pin_public_key = 12;
 
     // Flag set when the device is in a newly-registered state but the UV key
     // has not yet been created, and should be created at the time of the first

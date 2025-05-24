@@ -9,35 +9,37 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 
 /** Handles showing and hiding a scrim when url bar focus changes. */
+@NullMarked
 public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     /** The params used to control how the scrim behaves when shown for the omnibox. */
-    private PropertyModel mScrimModel;
+    private final PropertyModel mScrimModel;
 
-    private final ScrimCoordinator mScrimCoordinator;
+    private final ScrimManager mScrimManager;
 
     /** Whether the scrim was shown on focus. */
     private boolean mScrimShown;
 
     /** The light color to use for the scrim on the NTP. */
-    private int mLightScrimColor;
+    private final int mLightScrimColor;
 
     private final LocationBarDataProvider mLocationBarDataProvider;
     private final Runnable mClickDelegate;
     private final Context mContext;
-    private ObservableSupplier<Integer> mTabStripHeightSupplier;
-    private Callback<Integer> mTabStripHeightChangeCallback;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final Callback<Integer> mTabStripHeightChangeCallback;
 
     /**
-     * @param scrimCoordinator Coordinator responsible for showing and hiding the scrim view.
+     * @param scrimManager Coordinator responsible for showing and hiding the scrim view.
      * @param visibilityChangeCallback Callback used to obscure/unobscure tabs when the scrim is
      *     shown/hidden.
      * @param context Context for retrieving resources.
@@ -47,14 +49,14 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
      * @param tabStripHeightSupplier Supplier for the tab strip height.
      */
     public LocationBarFocusScrimHandler(
-            ScrimCoordinator scrimCoordinator,
+            ScrimManager scrimManager,
             Callback<Boolean> visibilityChangeCallback,
             Context context,
             LocationBarDataProvider locationBarDataProvider,
             Runnable clickDelegate,
             View scrimTarget,
             ObservableSupplier<Integer> tabStripHeightSupplier) {
-        mScrimCoordinator = scrimCoordinator;
+        mScrimManager = scrimManager;
         mLocationBarDataProvider = locationBarDataProvider;
         mClickDelegate = clickDelegate;
         mContext = context;
@@ -65,11 +67,9 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                 new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                         .with(ScrimProperties.ANCHOR_VIEW, scrimTarget)
                         .with(ScrimProperties.SHOW_IN_FRONT_OF_ANCHOR_VIEW, true)
-                        .with(ScrimProperties.AFFECTS_STATUS_BAR, false)
                         .with(ScrimProperties.TOP_MARGIN, topMargin)
                         .with(ScrimProperties.CLICK_DELEGATE, mClickDelegate)
                         .with(ScrimProperties.VISIBILITY_CALLBACK, visibilityChangeCallback)
-                        .with(ScrimProperties.BACKGROUND_COLOR, ScrimProperties.INVALID_COLOR)
                         .build();
 
         mTabStripHeightSupplier = tabStripHeightSupplier;
@@ -90,10 +90,10 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
                 useLightColor ? mLightScrimColor : ScrimProperties.INVALID_COLOR);
 
         if (hasFocus && !showScrimAfterAnimationCompletes()) {
-            mScrimCoordinator.showScrim(mScrimModel);
+            mScrimManager.showScrim(mScrimModel);
             mScrimShown = true;
         } else if (!hasFocus && mScrimShown) {
-            mScrimCoordinator.hideScrim(true);
+            mScrimManager.hideScrim(mScrimModel, /* animate= */ true);
             mScrimShown = false;
         }
     }
@@ -101,7 +101,7 @@ public class LocationBarFocusScrimHandler implements UrlFocusChangeListener {
     @Override
     public void onUrlAnimationFinished(boolean hasFocus) {
         if (hasFocus && showScrimAfterAnimationCompletes()) {
-            mScrimCoordinator.showScrim(mScrimModel);
+            mScrimManager.showScrim(mScrimModel);
             mScrimShown = true;
         }
     }

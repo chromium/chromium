@@ -5,9 +5,11 @@
 package org.chromium.components.payments;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** Checks the Content-Security-Policy (CSP). */
+@NullMarked
 public interface CSPChecker {
     /**
      * Checks whether CSP connect-src directive allows the given URL. The parameters match

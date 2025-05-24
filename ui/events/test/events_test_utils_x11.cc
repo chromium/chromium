@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/events/test/events_test_utils_x11.h"
 
 #include <stddef.h>
+
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -52,8 +50,7 @@ x11::KeyEvent::Opcode XKeyEventType(ui::EventType type) {
     case ui::EventType::kKeyReleased:
       return x11::KeyEvent::Release;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
   }
 }
 
@@ -78,8 +75,7 @@ int XIButtonEventType(ui::EventType type) {
     case ui::EventType::kMouseReleased:
       return x11::Input::DeviceEvent::ButtonRelease;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -233,15 +229,13 @@ void ScopedXI2Event::InitScrollEvent(int deviceid,
                                      int finger_count) {
   event_ = CreateXInput2Event(deviceid, x11::Input::DeviceEvent::Motion, 0,
                               gfx::Point());
-
-  Valuator valuators[] = {
+  std::vector<Valuator> valuators = {
       Valuator(DeviceDataManagerX11::DT_CMT_SCROLL_X, x_offset),
       Valuator(DeviceDataManagerX11::DT_CMT_SCROLL_Y, y_offset),
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_offset_ordinal),
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_offset_ordinal),
       Valuator(DeviceDataManagerX11::DT_CMT_FINGER_COUNT, finger_count)};
-  SetUpValuators(
-      std::vector<Valuator>(valuators, valuators + std::size(valuators)));
+  SetUpValuators(valuators);
 }
 
 void ScopedXI2Event::InitFlingScrollEvent(int deviceid,
@@ -252,16 +246,13 @@ void ScopedXI2Event::InitFlingScrollEvent(int deviceid,
                                           bool is_cancel) {
   event_ = CreateXInput2Event(deviceid, x11::Input::DeviceEvent::Motion,
                               deviceid, gfx::Point());
-
-  Valuator valuators[] = {
+  std::vector<Valuator> valuators = {
       Valuator(DeviceDataManagerX11::DT_CMT_FLING_STATE, is_cancel ? 1 : 0),
       Valuator(DeviceDataManagerX11::DT_CMT_FLING_Y, y_velocity),
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_Y, y_velocity_ordinal),
       Valuator(DeviceDataManagerX11::DT_CMT_FLING_X, x_velocity),
       Valuator(DeviceDataManagerX11::DT_CMT_ORDINAL_X, x_velocity_ordinal)};
-
-  SetUpValuators(
-      std::vector<Valuator>(valuators, valuators + std::size(valuators)));
+  SetUpValuators(valuators);
 }
 
 void ScopedXI2Event::InitTouchEvent(int deviceid,

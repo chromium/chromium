@@ -10,6 +10,7 @@
 #include "ui/gfx/linux/gbm_wrapper.h"
 
 #include <gbm.h>
+#include <sys/mman.h>
 
 #include <memory>
 #include <utility>
@@ -17,7 +18,6 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "skia/ext/legacy_display_globals.h"
@@ -205,12 +205,13 @@ class Buffer final : public ui::GbmBuffer {
   sk_sp<SkSurface> GetSurface() override {
     DCHECK(!mmap_data_);
     uint32_t stride;
-    void* addr;
-    addr = gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
-                      GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_);
+    void* addr = gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_),
+                            gbm_bo_get_height(bo_), GBM_BO_TRANSFER_READ_WRITE,
+                            &stride, &mmap_data_.AsEphemeralRawAddr());
 
-    if (!addr)
+    if (addr == nullptr || addr == MAP_FAILED) {
       return nullptr;
+    }
     SkImageInfo info =
         SkImageInfo::MakeN32Premul(size_.width(), size_.height());
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
@@ -226,9 +227,7 @@ class Buffer final : public ui::GbmBuffer {
   }
 
   raw_ptr<gbm_bo> bo_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION void* mmap_data_ = nullptr;
+  raw_ptr<void> mmap_data_ = nullptr;
 
   const uint32_t format_;
   const uint64_t format_modifier_;

@@ -6,8 +6,8 @@
 #define MEDIA_GPU_MAC_VIDEO_TOOLBOX_H264_ACCELERATOR_H_
 
 #include <CoreMedia/CoreMedia.h>
-
 #include <stdint.h>
+
 #include <memory>
 #include <vector>
 
@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/h264_decoder.h"
 #include "media/gpu/mac/video_toolbox_decompression_metadata.h"
@@ -82,7 +83,8 @@ class MEDIA_GPU_EXPORT VideoToolboxH264Accelerator
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
 
   // Accumulated slice data for the current frame.
-  std::vector<base::span<const uint8_t>> slice_nalu_data_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION std::vector<base::span<const uint8_t>> slice_nalu_data_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

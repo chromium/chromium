@@ -141,8 +141,9 @@ std::optional<SkColor> CalculateLightVibrantColor(const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui",
                "app_icon_color_cache::{anonynous}::CalculateLightVibrantColor");
   const SkBitmap* source = image.bitmap();
-  if (!source || source->empty() || source->isNull())
+  if (!source || source->empty() || source->isNull()) {
     return std::nullopt;
+  }
 
   std::vector<color_utils::ColorProfile> color_profiles;
   color_profiles.emplace_back(color_utils::LumaRange::LIGHT,
@@ -155,8 +156,9 @@ std::optional<SkColor> CalculateLightVibrantColor(const gfx::ImageSkia& image) {
 
   // If the best swatch color is transparent, then
   // CalculateProminentColorsOfBitmap() failed to find a suitable color.
-  if (best_swatches.empty() || best_swatches[0].color == SK_ColorTRANSPARENT)
+  if (best_swatches.empty() || best_swatches[0].color == SK_ColorTRANSPARENT) {
     return std::nullopt;
+  }
 
   return best_swatches[0].color;
 }

@@ -68,7 +68,7 @@ AuraTestHelper::AuraTestHelper(ui::ContextFactory* context_factory) {
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
-#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if BUILDFLAG(IS_OZONE) && BUILDFLAG(IS_CHROMEOS) && \
     !BUILDFLAG(IS_CHROMEOS_DEVICE)
   ui::DisableNativeUiEventDispatchForTest();
 #endif

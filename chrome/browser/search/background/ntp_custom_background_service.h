@@ -11,13 +11,13 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/search/background/ntp_background_service.h"
-#include "chrome/browser/search/background/ntp_background_service_observer.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_observer.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/themes/ntp_background_service.h"
+#include "components/themes/ntp_background_service_observer.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_utils.h"
@@ -81,12 +81,6 @@ class NtpCustomBackgroundService : public KeyedService,
 
   // Virtual for testing.
   virtual void RefreshBackgroundIfNeeded();
-
-  // Reverts any changes to the background when a background preview
-  // is cancelled.
-  void RevertBackgroundChanges();
-  // Confirms that background has been changed.
-  void ConfirmBackgroundChanges();
 
   // Virtual for testing.
   virtual std::optional<CustomBackground> GetCustomBackground();
@@ -170,11 +164,6 @@ class NtpCustomBackgroundService : public KeyedService,
   base::TimeTicks background_updated_timestamp_;
   base::ObserverList<NtpCustomBackgroundServiceObserver> observers_;
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
-
-  // Used to track information for previous background when a background is
-  // being previewed.
-  std::optional<base::Value> previous_background_info_;
-  bool previous_local_background_ = false;
 
   base::WeakPtrFactory<NtpCustomBackgroundService> weak_ptr_factory_{this};
 };

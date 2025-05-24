@@ -5,9 +5,13 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_DATA_TYPES_H_
 
+#include <cstdint>
 #include <optional>
+#include <string>
+#include <vector>
 
 #include "base/time/time.h"
+#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 
 namespace ip_protection {
 
@@ -86,22 +90,21 @@ struct GeoHint {
   bool operator==(const GeoHint& geo_hint) const = default;
 };
 
-// GeoId is a string representation of a ip_protection::GeoHint. A GeoId is
-// constructed by concatenating values of the ip_protection::GeoHint in order of
+// GeoId is a string representation of a GeoHint. A GeoId is
+// constructed by concatenating values of the GeoHint in order of
 // increasing granularity. If a finer granularity is missing, a trailing commas
 // is not appended.
 // Ex. GeoHint{"US", "US-CA", "MOUNTAIN VIEW"} => "US,US-CA,MOUNTAIN VIEW"
 // Ex. GeoHint{"US"} => "US"
 //
-// Returns a formatted version of the ip_protection::GeoHint. In the case
+// Returns a formatted version of the GeoHint. In the case
 // of a nullptr or empty `GeoHintPtr`, an empty string will be returned.
-std::string GetGeoIdFromGeoHint(std::optional<ip_protection::GeoHint> geo_hint);
+std::string GetGeoIdFromGeoHint(std::optional<GeoHint> geo_hint);
 
-// Constructs a ip_protection::GeoHint from a GeoId string. The function
+// Constructs a GeoHint from a GeoId string. The function
 // requires a correctly formatted GeoId string. It DOES NOT handle invalid
 // formats.
-std::optional<ip_protection::GeoHint> GetGeoHintFromGeoIdForTesting(
-    const std::string& geo_id);
+std::optional<GeoHint> GetGeoHintFromGeoIdForTesting(const std::string& geo_id);
 
 // A blind-signed auth token, suitable for use with IP protection proxies.
 struct BlindSignedAuthToken {
@@ -122,6 +125,109 @@ struct BlindSignedAuthToken {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ProxyLayer { kProxyA = 0, kProxyB = 1, kMaxValue = kProxyB };
+
+// The type of MDL that is being represented. This is used to determine which
+// MDL to use for a given matching request.
+enum class MdlType {
+  // The MDL type for IPP in incognito browsing. This is the default MDL type.
+  kIncognito,
+
+  // The MDL type for IPP experiments within regular browsing.
+  kRegularBrowsing,
+};
+
+// Returns all MDL types that are represented by the given MDL resource.
+//
+// A given MDL resource may represent multiple MDL types. For example, a
+// resource that is in the default MDL group and the regular browsing MDL group
+// would return both kIncognito and kRegularBrowsing. Also, an empty vector
+// indicates that the resource does not represent any MDL types which is
+// unexpected and will be logged as such.
+std::vector<MdlType> FromMdlResourceProto(
+    const masked_domain_list::Resource& resource);
+
+struct ProbabilisticRevealToken {
+  ProbabilisticRevealToken();
+  ProbabilisticRevealToken(std::int32_t version,
+                           std::string u,
+                           std::string e);
+  ProbabilisticRevealToken(const ProbabilisticRevealToken&);
+  ProbabilisticRevealToken(ProbabilisticRevealToken&&);
+  ProbabilisticRevealToken& operator=(const ProbabilisticRevealToken&);
+  ProbabilisticRevealToken& operator=(ProbabilisticRevealToken&&);
+  ~ProbabilisticRevealToken();
+
+  bool operator==(const ProbabilisticRevealToken& token) const = default;
+  std::optional<std::string> SerializeAndEncode(std::string epoch_id) const;
+
+  std::int32_t version = 0;
+  std::string u = "";
+  std::string e = "";
+};
+
+// Declares possible return status for TryGetProbabilisticRevealTokens().
+// LINT.IfChange(TryGetProbabilisticRevealTokensStatus)
+enum class TryGetProbabilisticRevealTokensStatus {
+  kSuccess = 0,
+  kNetNotOk = 1,
+  kNetOkNullResponse = 2,
+  kNullResponse = 3,
+  kResponseParsingFailed = 4,
+  kInvalidTokenVersion = 5,
+  kInvalidTokenSize = 6,
+  kTooFewTokens = 7,
+  kTooManyTokens = 8,
+  kExpirationTooSoon = 9,
+  kExpirationTooLate = 10,
+  kInvalidPublicKey = 11,
+  kInvalidNumTokensWithSignal = 12,
+  kRequestBackedOff = 13,
+  kNoGoogleChromeBranding = 14,
+  kInvalidEpochIdSize = 15,
+  kMaxValue = kInvalidEpochIdSize,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:ProbabilisticRevealTokensResult)
+
+// Stores return status of TryGetProbabilisticRevealTokens() together with
+// NetError() returned by url loader.
+struct TryGetProbabilisticRevealTokensResult {
+  // Stores return status of TryGetProbabilisticRevealTokens().
+  TryGetProbabilisticRevealTokensStatus status;
+  // Stores url_loader->NetError() after calling url_loader->DownloadToString()
+  // in Retriever::RetrieveProbabilisticRevealTokens(). `network_error_code` is
+  // not net::OK if `result` is kNetNotOk. `network_error_code` is net::OK for
+  // all other `result` values. `network_error_code` is net::OK if
+  // url_loader->DownloadToString() is not called yet, for example when
+  // `status` is kProxyDisabled and TryGetProbabilisticRevealTokens returned
+  // before making a network call.
+  int network_error_code;
+  // Stores the time when the next TryGetProbabilisticRevealTokens() call should
+  // be made. `try_again_after` is set on network errors (i.e. when `status` is
+  // kNetNotOk or kNetOkNullResponse), nullopt otherwise.
+  std::optional<base::Time> try_again_after;
+};
+
+// Stores parsed TryGetProbabilisticRevealTokensResponse for successfully parsed
+// responses.
+struct TryGetProbabilisticRevealTokensOutcome {
+  TryGetProbabilisticRevealTokensOutcome();
+  TryGetProbabilisticRevealTokensOutcome(
+      const TryGetProbabilisticRevealTokensOutcome&);
+  TryGetProbabilisticRevealTokensOutcome(
+      TryGetProbabilisticRevealTokensOutcome&&);
+  TryGetProbabilisticRevealTokensOutcome& operator=(
+      const TryGetProbabilisticRevealTokensOutcome&);
+  TryGetProbabilisticRevealTokensOutcome& operator=(
+      TryGetProbabilisticRevealTokensOutcome&&);
+  ~TryGetProbabilisticRevealTokensOutcome();
+
+  std::vector<ProbabilisticRevealToken> tokens;
+  std::string public_key;
+  std::uint64_t expiration_time_seconds;
+  std::uint64_t next_epoch_start_time_seconds;
+  std::int32_t num_tokens_with_signal;
+  std::string epoch_id;
+};
 
 }  // namespace ip_protection
 

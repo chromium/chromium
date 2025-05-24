@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "ui/events/velocity_tracker/bitset_32.h"
 
@@ -139,7 +140,7 @@ class COMPONENT_EXPORT(VELOCITY_TRACKER) VelocityTracker {
   // id_bits.
   void AddMovement(const base::TimeTicks& event_time,
                    BitSet32 id_bits,
-                   const Position* positions);
+                   base::span<const Position> positions);
 
   // Gets an estimator for the recent movements of the specified pointer id.
   // Returns false if the pointer velocity is unknown.

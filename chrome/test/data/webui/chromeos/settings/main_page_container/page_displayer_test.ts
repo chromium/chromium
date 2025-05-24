@@ -4,8 +4,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {PageDisplayerElement, routesMojom} from 'chrome://os-settings/os_settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {PageDisplayerElement} from 'chrome://os-settings/os_settings.js';
+import {routesMojom} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 
@@ -21,45 +21,19 @@ suite('<page-displayer>', () => {
     flush();
   }
 
+  setup(() => {
+    createElement();
+  });
+
   teardown(() => {
     pageDisplayer.remove();
   });
 
-  suite('When OsSettingsRevampWayfinding feature flag is disabled', () => {
-    setup(() => {
-      // Simulate feature disabled
-      loadTimeData.overrideValues({isRevampWayfindingEnabled: false});
-      document.body.classList.remove('revamp-wayfinding-enabled');
+  test('should display only when active', () => {
+    pageDisplayer.active = false;
+    assertEquals('none', getComputedStyle(pageDisplayer).display);
 
-      createElement();
-    });
-
-    test('should display when active', () => {
-      pageDisplayer.active = true;
-      assertNotEquals('none', getComputedStyle(pageDisplayer).display);
-    });
-
-    test('should display when inactive', () => {
-      pageDisplayer.active = false;
-      assertNotEquals('none', getComputedStyle(pageDisplayer).display);
-    });
-  });
-
-  suite('When OsSettingsRevampWayfinding feature flag is enabled', () => {
-    setup(() => {
-      // Simulate feature enabled
-      loadTimeData.overrideValues({isRevampWayfindingEnabled: true});
-      document.body.classList.add('revamp-wayfinding-enabled');
-
-      createElement();
-    });
-
-    test('should display only when active', () => {
-      pageDisplayer.active = false;
-      assertEquals('none', getComputedStyle(pageDisplayer).display);
-
-      pageDisplayer.active = true;
-      assertNotEquals('none', getComputedStyle(pageDisplayer).display);
-    });
+    pageDisplayer.active = true;
+    assertNotEquals('none', getComputedStyle(pageDisplayer).display);
   });
 });

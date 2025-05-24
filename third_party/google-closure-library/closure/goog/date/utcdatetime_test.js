@@ -16,7 +16,7 @@ const weekDay = goog.require('goog.date.weekDay');
 testSuite({
   /** @suppress {checkTypes} suppression added to enable type checking */
   testConstructor() {
-    goog.now = () => new Date(2001, 2, 3, 4).getTime();
+    Date.now = () => new Date(2001, 2, 3, 4).getTime();
 
     let d = new UtcDateTime();
     assertTrue('default constructor', d.equals(new Date(goog.now())));
@@ -107,6 +107,24 @@ testSuite({
     exp = new UtcDateTime(489, month.JAN, 2, 3, 4, 5);
     exp.setUTCFullYear(89);
     assertTrue('parsed ISO date/time', exp.equals(dateTimeZone2));
+
+    // See https://github.com/google/closure-library/issues/1143
+    assertEquals(
+        '0000-10-15T23:50:58.165Z',
+        UtcDateTime.fromIsoString('0000-10-15T23:50:58.165Z')
+            .toUTCRfc3339String());
+    assertEquals(
+        '0009-10-15T23:50:58.165Z',
+        UtcDateTime.fromIsoString('0009-10-15T23:50:58.165Z')
+            .toUTCRfc3339String());
+    assertEquals(
+        '0099-10-15T23:50:58.165Z',
+        UtcDateTime.fromIsoString('0099-10-15T23:50:58.165Z')
+            .toUTCRfc3339String());
+    assertEquals(
+        '0999-10-15T23:50:58.165Z',
+        UtcDateTime.fromIsoString('0999-10-15T23:50:58.165Z')
+            .toUTCRfc3339String());
   },
 
   testToIsoString() {

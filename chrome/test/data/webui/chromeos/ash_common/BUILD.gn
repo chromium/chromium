@@ -27,8 +27,6 @@ webui_ts_library("build_ts") {
     "navigation_selector_test.js",
     "navigation_view_panel_test.js",
     "page_toolbar_test.js",
-    "post_message_api/post_message_api_client_test.ts",
-    "post_message_api/post_message_api_test.ts",
     "shortcut_input_key_test.ts",
     "shortcut_input_test.ts",
     "shortcut_utils_test.ts",
@@ -49,10 +47,7 @@ generate_grd("build_grdp") {
   grd_prefix = "webui_chromeos_ash_common"
   out_grd = "$target_gen_dir/resources.grdp"
 
-  input_files = [
-    "post_message_api/iframe.html",
-    "cr_test.html",
-  ]
+  input_files = [ "cr_test.html" ]
   input_files_base_dir = rebase_path(".", "//")
 
   deps = [ ":build_ts" ]

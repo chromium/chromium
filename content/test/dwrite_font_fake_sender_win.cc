@@ -8,10 +8,10 @@
 #include <shlobj.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace content {
 

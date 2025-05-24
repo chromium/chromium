@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_WEB_FLOW_VIEW_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_PAYMENTS_PAYMENT_HANDLER_WEB_FLOW_VIEW_CONTROLLER_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/payments/payment_handler_modal_dialog_manager_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
@@ -13,8 +14,8 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/view.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -59,12 +60,15 @@ class PaymentHandlerWebFlowViewController
   ~PaymentHandlerWebFlowViewController() override;
 
  private:
+  class RoundedCornerViewClipper;
+
   // PaymentRequestSheetController:
   std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
   bool ShouldShowPrimaryButton() override;
   bool ShouldShowSecondaryButton() override;
   void PopulateSheetHeaderView(views::View* view) override;
+  views::View* GetFirstFocusedView() override;
   bool GetSheetId(DialogViewID* sheet_id) override;
   bool DisplayDynamicBorderForHiddenContents() override;
   bool CanContentViewBeScrollable() override;
@@ -101,6 +105,7 @@ class PaymentHandlerWebFlowViewController
   GURL target_;
   raw_ptr<views::ProgressBar, DanglingUntriaged> progress_bar_ = nullptr;
   raw_ptr<views::View, DanglingUntriaged> separator_ = nullptr;
+  base::WeakPtr<views::View> close_button_;
   PaymentHandlerOpenWindowCallback first_navigation_complete_callback_;
   // Used to present modal dialog triggered from the payment handler web view,
   // e.g. an authenticator dialog.
@@ -108,6 +113,12 @@ class PaymentHandlerWebFlowViewController
   // A handler to handle unhandled keyboard messages coming back from the
   // renderer process.
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
+
+  // Helper which clips the views::WebView created by this class so that it has
+  // rounded corners matching its parent dialog.
+  //
+  // TODO(crbug.com/344626785): Remove once WebViews obey parent clips.
+  std::unique_ptr<RoundedCornerViewClipper> rounded_corner_clipper_;
 
   // Must be the last member of a leaf class.
   base::WeakPtrFactory<PaymentHandlerWebFlowViewController> weak_ptr_factory_{

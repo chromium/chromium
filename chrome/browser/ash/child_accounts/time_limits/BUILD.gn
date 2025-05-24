@@ -4,19 +4,17 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("time_limits") {
   sources = [
     "app_activity_registry.cc",
     "app_activity_registry.h",
-    "app_activity_report_interface.cc",
     "app_activity_report_interface.h",
     "app_service_wrapper.cc",
     "app_service_wrapper.h",
     "app_time_controller.cc",
     "app_time_controller.h",
-    "app_time_limit_interface.cc",
     "app_time_limit_interface.h",
     "app_time_limit_utils.cc",
     "app_time_limit_utils.h",
@@ -44,9 +42,10 @@ static_library("time_limits") {
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/child_accounts/constants",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui:browser_list",
     "//chrome/common",
+    "//chromeos/ash/experiences/arc:arc_app_constants",
     "//chromeos/crosapi/mojom",
     "//chromeos/ui/vector_icons",
     "//components/app_constants",
@@ -87,7 +86,6 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     ":time_limits",
-    "//ash/components/arc:arc_test_support",
     "//base/test:test_support",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
@@ -96,6 +94,7 @@ source_set("unit_tests") {
     "//chrome/browser/web_applications:web_applications_test_support",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_constants",
     "//extensions/common",
     "//testing/gtest",
@@ -113,11 +112,9 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     ":time_limits",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc:notification_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/login/test:test_support",
@@ -127,6 +124,9 @@ source_set("browser_tests") {
     "//chrome/browser/ui",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:notification_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/services/app_service/public/cpp:app_types",
     "//components/user_manager",
     "//content/test:test_support",

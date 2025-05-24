@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/logging.h"
@@ -106,14 +107,15 @@ void NamedMojoMessagePipeServer::OnClientConnected(
     mojo::PlatformChannelEndpoint endpoint,
     std::unique_ptr<ConnectionInfo> info) {
   base::ProcessId peer_pid = info->pid;
-  ValidationResult result = validator_.Run(std::move(info));
+  ValidationResult result = validator_.Run(*info);
   if (!result.is_valid) {
     LOG(ERROR) << "Process " << peer_pid
                << " is not a trusted mojo endpoint. Connection refused.";
     return;
   }
 
-  bool is_isolated = !options_.message_pipe_id.has_value();
+  bool is_isolated =
+      std::holds_alternative<std::monostate>(options_.message_pipe_id);
 
   base::Process peer_process;
   // A peer process is not needed to open a non-MojoIpcz isolated connection,
@@ -146,7 +148,7 @@ void NamedMojoMessagePipeServer::OnClientConnected(
     auto connection = std::make_unique<mojo::IsolatedConnection>();
     mojo::ScopedMessagePipeHandle message_pipe =
         connection->Connect(std::move(endpoint), std::move(peer_process));
-    on_message_pipe_ready_.Run(std::move(message_pipe), peer_pid,
+    on_message_pipe_ready_.Run(std::move(message_pipe), std::move(info),
                                result.context, std::move(connection));
     return;
   }
@@ -155,11 +157,15 @@ void NamedMojoMessagePipeServer::OnClientConnected(
   mojo::OutgoingInvitation invitation;
   invitation.set_extra_flags(options_.extra_send_invitation_flags);
   mojo::ScopedMessagePipeHandle message_pipe =
-      invitation.AttachMessagePipe(*options_.message_pipe_id);
+      std::holds_alternative<uint64_t>(options_.message_pipe_id)
+          ? invitation.AttachMessagePipe(
+                std::get<uint64_t>(options_.message_pipe_id))
+          : invitation.AttachMessagePipe(
+                std::get<std::string>(options_.message_pipe_id));
   mojo::OutgoingInvitation::Send(std::move(invitation), peer_process.Handle(),
                                  std::move(endpoint));
-  on_message_pipe_ready_.Run(std::move(message_pipe), peer_pid, result.context,
-                             nullptr);
+  on_message_pipe_ready_.Run(std::move(message_pipe), std::move(info),
+                             result.context, nullptr);
 }
 
 void NamedMojoMessagePipeServer::OnServerEndpointCreated() {

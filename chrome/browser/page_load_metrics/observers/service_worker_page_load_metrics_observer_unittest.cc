@@ -14,6 +14,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace {
 
 const char kDefaultTestUrl[] = "https://google.com/";
@@ -253,12 +257,12 @@ TEST_F(ServiceWorkerPageLoadMetricsObserverTest, WithServiceWorkerBackground) {
   metadata.behavior_flags |=
       blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
 
+  // Background the tab, then foreground it (see below).
+  web_contents()->WasHidden();
   NavigateAndCommit(GURL(kDefaultTestUrl));
   tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
 
-  // Background the tab, then foreground it.
-  web_contents()->WasHidden();
-  web_contents()->WasShown();
+  web_contents()->WasShown();  // Foreground the tab.
 
   InitializeTestPageLoadTiming(&timing);
   tester()->SimulateTimingAndMetadataUpdate(timing, metadata);

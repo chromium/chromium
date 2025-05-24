@@ -4,11 +4,12 @@
 
 import 'chrome://personalization/strings.m.js';
 
-import {beginLoadSelectedImageAction, beginSelectImageAction, cancelPreviewWallpaper, DailyRefreshType, DefaultImageSymbol, DisplayableImage, endSelectImageAction, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, FullscreenPreviewState, getDefaultImageThumbnail, GooglePhotosEnablementState, GooglePhotosPhoto, initializeBackdropData, isDefaultImage, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setAttributionAction, setDailyRefreshCollectionId, setFullscreenStateAction, setSelectedImageAction, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
+import type {DefaultImageSymbol, DisplayableImage, GooglePhotosPhoto} from 'chrome://personalization/js/personalization_app.js';
+import {beginLoadSelectedImageAction, beginSelectImageAction, cancelPreviewWallpaper, DailyRefreshType, endSelectImageAction, fetchCollections, fetchGooglePhotosAlbum, fetchGooglePhotosAlbums, fetchGooglePhotosEnabled, fetchGooglePhotosPhotos, fetchLocalData, FullscreenPreviewState, getDefaultImageThumbnail, GooglePhotosEnablementState, initializeBackdropData, isDefaultImage, isGooglePhotosPhoto, isWallpaperImage, kDefaultImageSymbol, selectGooglePhotosAlbum, selectWallpaper, setAttributionAction, setDailyRefreshCollectionId, setFullscreenStateAction, setSelectedImageAction, updateDailyRefreshWallpaper, WallpaperLayout, WallpaperObserver, WallpaperType} from 'chrome://personalization/js/personalization_app.js';
 import {isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup, filterAndFlattenState} from './personalization_app_test_utils.js';
@@ -909,6 +910,7 @@ suite('does not respond to re-selecting the current wallpaper', () => {
     personalizationStore.data.wallpaper.currentSelected = {
       descriptionContent: '',
       descriptionTitle: '',
+      actionUrl: null,
       key: getImageKey(image)!,
       layout: WallpaperLayout.kCenterCropped,
       type: getImageType(image),
@@ -1156,6 +1158,7 @@ suite('daily refresh loading', () => {
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
         key: getImageKey(mockPhotos[0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
@@ -1187,6 +1190,7 @@ suite('daily refresh loading', () => {
       personalizationStore.data.wallpaper.currentSelected = {
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
         key: mockPhotos[0]!.dedupKey!,
         layout: WallpaperLayout.kCenter,
         type: WallpaperType.kOnceGooglePhotos,
@@ -1250,6 +1254,7 @@ suite('daily refresh loading', () => {
       wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged({
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
         key: getImageKey(wallpaperProvider.images![0]!)!,
         layout: WallpaperLayout.kCenterCropped,
         type: WallpaperType.kDailyGooglePhotos,
@@ -1281,6 +1286,7 @@ suite('daily refresh loading', () => {
         key: getImageKey(wallpaperProvider.images![0]!)!,
         descriptionContent: '',
         descriptionTitle: '',
+        actionUrl: null,
       };
 
       await setDailyRefreshCollectionId(

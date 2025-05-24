@@ -44,6 +44,9 @@ class CC_EXPORT RecordingSource {
 
   void SetNeedsDisplayRect(const gfx::Rect& layer_rect);
 
+  // Forces an update even without invalidation.
+  void set_force_update() { force_update_ = true; }
+
   scoped_refptr<RasterSource> CreateRasterSource() const;
 
   const gfx::Rect& recorded_bounds() const { return recorded_bounds_; }
@@ -61,6 +64,7 @@ class CC_EXPORT RecordingSource {
   bool requires_clear_ = false;
   bool is_solid_color_ = false;
   bool can_use_recorded_bounds_ = false;
+  bool force_update_ = false;
   SkColor4f solid_color_ = SkColors::kTransparent;
   SkColor4f background_color_ = SkColors::kTransparent;
   scoped_refptr<DisplayItemList> display_list_;

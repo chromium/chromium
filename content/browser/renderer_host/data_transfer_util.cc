@@ -13,7 +13,6 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -39,18 +38,17 @@ namespace {
 // the correct file system backend. This method checks if this is the case, and
 // updates `entry_path` to the path that should be used by the File System
 // Access implementation.
-content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
-    base::FilePath* entry_path) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+content::PathType MaybeRemapPath(base::FilePath* entry_path) {
+#if BUILDFLAG(IS_CHROMEOS)
   base::FilePath virtual_path;
   auto* external_mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   if (external_mount_points->GetVirtualPath(*entry_path, &virtual_path)) {
     *entry_path = std::move(virtual_path);
-    return content::FileSystemAccessEntryFactory::PathType::kExternal;
+    return content::PathType::kExternal;
   }
 #endif
-  return content::FileSystemAccessEntryFactory::PathType::kLocal;
+  return content::PathType::kLocal;
 }
 
 }  // namespace
@@ -68,11 +66,16 @@ std::vector<blink::mojom::DataTransferFilePtr> FileInfosToDataTransferFiles(
     mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
         pending_token;
     base::FilePath entry_path = file_info.path;
-    FileSystemAccessManagerImpl::PathType path_type =
-        MaybeRemapPath(&entry_path);
+    content::PathType path_type = MaybeRemapPath(&entry_path);
+    base::FilePath display_name = !file_info.display_name.empty()
+                                      ? file_info.display_name
+                                      : entry_path.BaseName();
+    if (entry_path.empty() || display_name.empty()) {
+      continue;
+    }
     file_system_access_manager->CreateFileSystemAccessDataTransferToken(
-        path_type, entry_path, file_info.display_name, child_id,
-        pending_token.InitWithNewPipeAndPassReceiver());
+        content::PathInfo(path_type, entry_path, display_name.AsUTF8Unsafe()),
+        child_id, pending_token.InitWithNewPipeAndPassReceiver());
     file->file_system_access_token = std::move(pending_token);
     result.push_back(std::move(file));
   }
@@ -103,21 +106,18 @@ FileSystemFileInfosToDragItemFileSystemFilePtr(
 
     std::string content_type;
 
-    base::FilePath::StringType extension = file_system_url.path().Extension();
-    if (!extension.empty()) {
-      std::string mime_type;
-      // TODO(crbug.com/40291155): Historically for blobs created from
-      // file system URLs we've only considered well known content types to
-      // avoid leaking the presence of locally installed applications when
-      // creating blobs from files in the sandboxed file system. However, since
-      // this code path should only deal with real/"trusted" paths, we could
-      // consider taking platform defined mime type mappings into account here
-      // as well. Note that the approach used here must not block or else it
-      // can't be called from the UI thread (for example, calls to
-      // GetMimeTypeFromExtension can block).
-      if (net::GetWellKnownMimeTypeFromExtension(extension.substr(1),
-                                                 &mime_type))
-        content_type = std::move(mime_type);
+    std::string mime_type;
+    // TODO(crbug.com/40291155): Historically for blobs created from
+    // file system URLs we've only considered well known content types to
+    // avoid leaking the presence of locally installed applications when
+    // creating blobs from files in the sandboxed file system. However, since
+    // this code path should only deal with real/"trusted" paths, we could
+    // consider taking platform defined mime type mappings into account here
+    // as well. Note that the approach used here must not block or else it
+    // can't be called from the UI thread (for example, calls to
+    // GetMimeTypeFromExtension can block).
+    if (net::GetWellKnownMimeTypeFromFile(file_system_url.path(), &mime_type)) {
+      content_type = std::move(mime_type);
     }
     // TODO(crbug.com/41458368): Consider some kind of fallback type when
     // the above mime type detection fails.
@@ -155,20 +155,20 @@ blink::mojom::DragDataPtr DropDataToDragData(
   std::vector<blink::mojom::DragItemPtr> items;
   if (drop_data.text) {
     blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
-    item->string_type = ui::kMimeTypeText;
+    item->string_type = ui::kMimeTypePlainText;
     item->string_data = *drop_data.text;
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
   }
   if (!drop_data.url.is_empty()) {
     blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
-    item->string_type = ui::kMimeTypeURIList;
+    item->string_type = ui::kMimeTypeUriList;
     item->string_data = base::UTF8ToUTF16(drop_data.url.spec());
     item->title = drop_data.url_title;
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
   }
   if (drop_data.html) {
     blink::mojom::DragItemStringPtr item = blink::mojom::DragItemString::New();
-    item->string_type = ui::kMimeTypeHTML;
+    item->string_type = ui::kMimeTypeHtml;
     item->string_data = *drop_data.html;
     item->base_url = drop_data.html_base_url;
     items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
@@ -190,8 +190,8 @@ blink::mojom::DragDataPtr DropDataToDragData(
   }
   if (drop_data.file_contents_source_url.is_valid()) {
     blink::mojom::DragItemBinaryPtr item = blink::mojom::DragItemBinary::New();
-    item->data = mojo_base::BigBuffer(
-        base::as_bytes(base::make_span(drop_data.file_contents)));
+    item->data =
+        mojo_base::BigBuffer(base::as_byte_span(drop_data.file_contents));
     item->is_image_accessible = drop_data.file_contents_image_accessible;
     item->source_url = drop_data.file_contents_source_url;
     item->filename_extension =
@@ -235,7 +235,7 @@ blink::mojom::DragDataPtr DropMetaDataToDragData(
       // DropData::MetaData --> WebDragData-->DropData. In the end, DropData
       // will contain an empty URL (which means no URL is dragged) if the URL in
       // WebDragData is empty.
-      if (base::EqualsASCII(meta_data_item.mime_type, ui::kMimeTypeURIList)) {
+      if (base::EqualsASCII(meta_data_item.mime_type, ui::kMimeTypeUriList)) {
         item->string_data = u"about:dragdrop-placeholder";
       }
       items.push_back(blink::mojom::DragItem::NewString(std::move(item)));
@@ -286,16 +286,16 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
       case blink::mojom::DragItemDataView::Tag::kString: {
         const blink::mojom::DragItemStringPtr& string_item = item->get_string();
         std::string str_type = string_item->string_type;
-        if (str_type == ui::kMimeTypeText) {
+        if (str_type == ui::kMimeTypePlainText) {
           result.text = string_item->string_data;
-        } else if (str_type == ui::kMimeTypeURIList) {
+        } else if (str_type == ui::kMimeTypeUriList) {
           result.url = GURL(string_item->string_data);
           if (string_item->title)
             result.url_title = *string_item->title;
-        } else if (str_type == ui::kMimeTypeDownloadURL) {
+        } else if (str_type == ui::kMimeTypeDownloadUrl) {
           result.download_metadata = string_item->string_data;
           result.referrer_policy = drag_data.referrer_policy;
-        } else if (str_type == ui::kMimeTypeHTML) {
+        } else if (str_type == ui::kMimeTypeHtml) {
           result.html = string_item->string_data;
           if (string_item->base_url)
             result.html_base_url = *string_item->base_url;
@@ -310,7 +310,7 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         DCHECK(result.file_contents.empty());
 
         const blink::mojom::DragItemBinaryPtr& binary_item = item->get_binary();
-        base::span<const uint8_t> contents = base::make_span(binary_item->data);
+        base::span<const uint8_t> contents(binary_item->data);
         result.file_contents.assign(contents.begin(), contents.end());
         result.file_contents_image_accessible =
             binary_item->is_image_accessible;

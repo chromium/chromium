@@ -61,7 +61,7 @@ static NSString* kPostMessageWithReplyHandlerScriptFormat =
     @"} catch (err) {"
     @"  return err.message;"
     @"}";
-}
+}  // namespace
 
 namespace web {
 

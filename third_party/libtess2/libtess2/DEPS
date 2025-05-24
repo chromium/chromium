@@ -1,0 +1,4 @@
+include_rules = [
+  # Allow only the local modifications in this directory to use //base code.
+  '+base/check.h',
+]

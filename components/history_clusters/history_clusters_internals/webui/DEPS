@@ -2,7 +2,9 @@ include_rules = [
   "+components/grit/history_clusters_internals_resources.h",
   "+components/grit/history_clusters_internals_resources_map.h",
   "+components/history/core/browser",
+  "+content/public/browser",
   "+mojo/public/cpp/bindings",
   "+ui/base/webui/resource_path.h",
   "+ui/webui/mojo_web_ui_controller.h",
+  "+ui/webui/webui_util.h",
 ]

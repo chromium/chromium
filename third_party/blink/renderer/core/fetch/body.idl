@@ -10,6 +10,7 @@
     readonly attribute boolean bodyUsed;
     [CallWith=ScriptState, NewObject, RaisesException] Promise<ArrayBuffer> arrayBuffer();
     [CallWith=ScriptState, NewObject, RaisesException] Promise<Blob> blob();
+    [RuntimeEnabled=FetchBodyBytes, CallWith=ScriptState, NewObject, RaisesException] Promise<Uint8Array> bytes();
     [CallWith=ScriptState, NewObject, RaisesException] Promise<FormData> formData();
     [CallWith=ScriptState, NewObject, RaisesException] Promise<any> json();
     [CallWith=ScriptState, NewObject, RaisesException] Promise<USVString> text();

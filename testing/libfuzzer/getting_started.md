@@ -31,6 +31,10 @@ single binary blob of data - then instead use our older fuzzing technology
 will work a little better in these cases because if the fuzzer finds a problem,
 the test case will exactly match the binary format.)
 
+See
+[http://go/chrome-fuzzing-dashboard](https://analysis.chromium.org/coverage/p/chromium?platform=fuzz&test_suite_type=any&path=%2F%2F&project=chromium%2Fsrc&path=%2F%2F&host=chromium.googlesource.com&ref=refs%2Fheads%2Fmain&modifier_id=0)
+for which directories lack fuzz coverage.
+
 ## How to fuzz
 
 1. Find your existing unit test target. Create a new similar target
@@ -73,13 +77,7 @@ You may also need to add `third_party/fuzztest` to your DEPS file.
 
 ## Adding `FUZZ_TEST` support to a target
 
-*** note
-**Note:** Currently, you must create a **new** unit test target.
-While the FuzzTest framework supports mixed unit and fuzz tests,
-we don't yet support this option in Chromium.
-***
-
-In the near future we'll support adding `FUZZ_TEST`s alongside existing
+We also support adding `FUZZ_TEST`s alongside existing
 unit tests, even in the same .cc file.
 
 ```
@@ -110,7 +108,8 @@ unit test target they may need to explicitly depend upon `//third_party/fuzztest
 too.)
 
 *** note
-**Note:** Again, this is not yet supported!
+**Note:** This may not yet work reliably in `browser_test`s. We're working on
+it.
 ***
 
 ## Adding `FUZZ_TEST`s in the code
@@ -211,12 +210,7 @@ Nothing special is required here!
 
 After a day or two, we should see [ClusterFuzz] starting to run your new fuzzer,
 and it should be visible on [ClusterFuzz Fuzzer Stats]. Look for fuzzers starting
-with `centipede_` and your test target's name.
-
-*** note
-**Note:** This is all very new, and ClusterFuzz isn't reliably spotting these
-new fuzztests yet. We're working on it!
-***
+with `centipede_` or 'libfuzzer_' and your test target's name.
 
 Thanks very much for doing your part in making Chromium more secure!
 

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -178,7 +179,7 @@ class BASE_EXPORT TaskQueue {
   //
   // Wall-time related methods (start_time, end_time, wall_duration) can be
   // called only when |has_wall_time()| is true.
-  // Thread-time related mehtods (start_thread_time, end_thread_time,
+  // Thread-time related methods (start_thread_time, end_thread_time,
   // thread_duration) can be called only when |has_thread_time()| is true.
   //
   // start_* should be called after RecordTaskStart.
@@ -188,7 +189,7 @@ class BASE_EXPORT TaskQueue {
     enum class State { NotStarted, Running, Finished };
     enum class TimeRecordingPolicy { DoRecord, DoNotRecord };
 
-    TaskTiming(bool has_wall_time, bool has_thread_time);
+    explicit TaskTiming(bool has_wall_time, bool has_thread_time = false);
 
     bool has_wall_time() const { return has_wall_time_; }
     bool has_thread_time() const { return has_thread_time_; }
@@ -222,6 +223,11 @@ class BASE_EXPORT TaskQueue {
 
     void RecordTaskStart(LazyNow* now);
     void RecordTaskEnd(LazyNow* now);
+
+    // Records on-CPU duration, off-CPU duration and on-CPU percentage for this
+    // task timing object prefixed with the provided string. These metrics are
+    // only captured if both |has_wall_time| and |has_thread_time()| are true.
+    void RecordUmaOnCpuMetrics(const std::string_view& prefix) const;
 
     // Protected for tests.
    protected:
@@ -302,7 +308,8 @@ class BASE_EXPORT TaskQueue {
   virtual void SetQueuePriority(QueuePriority priority) = 0;
 
   // Same as above but with an enum value as the priority.
-  template <typename T, typename = typename std::enable_if_t<std::is_enum_v<T>>>
+  template <typename T>
+    requires(std::is_enum_v<T>)
   void SetQueuePriority(T priority) {
     static_assert(std::is_same_v<std::underlying_type_t<T>, QueuePriority>,
                   "Enumerated priorites must have the same underlying type as "
@@ -435,6 +442,12 @@ class BASE_EXPORT TaskQueue {
   // Set a callback to fill trace event arguments associated with the task
   // execution.
   virtual void SetTaskExecutionTraceLogger(TaskExecutionTraceLogger logger) = 0;
+
+  // Removes immediate cancelled tasks from the queue. Call this method when the
+  // queue is expected to contain a significant number of canceled tasks
+  // (>1000), making it worthwhile to traverse it to reclaim memory. Should only
+  // be called in a context where it's safe to call the destructor of tasks.
+  virtual void RemoveCancelledTasks() = 0;
 
  protected:
   TaskQueue() = default;

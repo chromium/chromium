@@ -27,11 +27,10 @@ found in the LICENSE file.
             android:paddingTop="@dimen/recent_tabs_group_view_vertical_padding"
             android:layout_height="match_parent"
             android:layout_width="match_parent"
-            android:cacheColorHint="@macro/default_bg_color"
             android:childDivider="@null"
             android:divider="@null"
             android:background="@macro/default_bg_color"
-            android:listSelector="@android:color/transparent"
+            android:listSelector="?attr/selectableItemBackground"
             android:scrollbarStyle="outsideOverlay" />
 
     </org.chromium.chrome.browser.ntp.NativePageRootFrameLayout>

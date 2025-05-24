@@ -9,10 +9,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A class to update motion event offset while dragging. This is needed to compensate the change
  * caused by top control.
  */
+@NullMarked
 public class EventOffsetHandler {
     /** A delegate for EventOffsetHandler. */
     public interface EventOffsetHandlerDelegate {

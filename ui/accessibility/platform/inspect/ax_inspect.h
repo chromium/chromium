@@ -19,12 +19,17 @@ namespace ui {
 struct COMPONENT_EXPORT(AX_PLATFORM) AXTreeSelector {
   enum Type {
     None = 0,
-    ActiveTab = 1 << 0,
-    Chrome = 1 << 1,
-    Chromium = 1 << 2,
-    Edge = 1 << 3,
-    Firefox = 1 << 4,
-    Safari = 1 << 5,
+
+    // Browsers
+    Chrome = 1 << 0,
+    Chromium = 1 << 1,
+    Edge = 1 << 2,
+    Firefox = 1 << 3,
+    Safari = 1 << 4,
+
+    // Tree selectors
+    ActiveTab = 1 << 5,
+    IDOrClass = 1 << 6,
   };
   int types{None};
   std::string pattern;
@@ -32,6 +37,8 @@ struct COMPONENT_EXPORT(AX_PLATFORM) AXTreeSelector {
 
   AXTreeSelector() = default;
   explicit AXTreeSelector(gfx::AcceleratedWidget widget) : widget(widget) {}
+  AXTreeSelector(gfx::AcceleratedWidget widget, int filter)
+      : types(filter), widget(widget) {}
   AXTreeSelector(int types, const std::string& pattern)
       : types(types), pattern(pattern) {}
   AXTreeSelector(int types,

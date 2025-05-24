@@ -2,13 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# [VPYTHON:BEGIN]
-# python_version: "3.8"
-# wheel: <
-#   name: "infra/python/wheels/pywin32/${vpython_platform}"
-#    version: "version:300"
-# >
-# [VPYTHON:END]
 """Run the given command as the standard user.
 
 All arguments provided to this program will be used to reconstruct the command
@@ -26,6 +19,8 @@ import logging
 import os
 import subprocess
 import sys
+import threading
+import time
 
 import rpc_client
 import updater_test_service_control
@@ -55,23 +50,19 @@ def LogToSTDERR(title, output):
     logging.error('%s  %s ends  %s', '=' * 30, title, '=' * 30)
 
 
-def ExcludeUpdaterPathsFromWindowsDefender():
-    """Put Updater paths into the Windows Defender exclusion list.
+def KeepAliveThread():
+    """Function logs periodically to notify parent this process is still alive.
 
-    Once in a while, Windows Defender flags the updater binaries as malware,
-    which leads to test failures. Stop Windows Defender scanning the paths that
-    updater could work on.
+    Swarming test infra monitors test sub-process console activities. If there
+    is no console output for the extended period of time, it infers that the
+    test is not responding and kills the process. Note only STDERR will be
+    actually output to the console with current setup.
     """
-    paths_to_exclude = [
-        '%ProgramFiles%', '%ProgramFiles(x86)%', '%LocalAppData%'
-    ]
-    logging.info('Excluding %s from Windows Defender.', paths_to_exclude)
-
-    quote_path_if_needed = lambda p: p if p.startswith('"') else '"' + p + '"'
-    subprocess.call([
-        'powershell.exe', 'Add-MpPreference', '-ExclusionPath',
-        ', '.join([quote_path_if_needed(p) for p in paths_to_exclude])
-    ])
+    for i in range(180):
+        time.sleep(60)
+        logging.error(
+            "%s: still waiting for test sub-process to complete, sleep 60s ...",
+            i)
 
 
 def main():
@@ -101,7 +92,10 @@ def main():
     command_line = subprocess.list2cmdline([command] + remaining_args)
     logging.error('Full command line: %s', command_line)
 
-    ExcludeUpdaterPathsFromWindowsDefender()
+    keep_alive_thread = threading.Thread(target=KeepAliveThread)
+    keep_alive_thread.setDaemon(True)  # Do not block process on exit.
+    keep_alive_thread.start()
+
     with updater_test_service_control.OpenService():
         pid, exit_code, stdout, stderr = rpc_client.RunAsStandardUser(
             command_line)

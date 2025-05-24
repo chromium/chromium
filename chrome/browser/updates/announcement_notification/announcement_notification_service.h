@@ -24,41 +24,41 @@ BASE_DECLARE_FEATURE(kAnnouncementNotification);
 
 // The Finch parameter name for a boolean value that whether to show
 // notification on first run.
-constexpr char kSkipFirstRun[] = "skip_first_run";
+inline constexpr char kSkipFirstRun[] = "skip_first_run";
 
 // The Finch parameter name for a string value that represents a time.
 // If first run happens after this time, notification will not show.
 // The string defined in Finch config should specify the time zone.
 // e.g. 02 Feb 2020 13:00:00 GMT.
-constexpr char kSkipFirstRunAfterTime[] = "skip_first_run_after_time";
+inline constexpr char kSkipFirstRunAfterTime[] = "skip_first_run_after_time";
 
 // The Finch parameter name for a boolean value that whether to show
 // notification for new profile.
-constexpr char kSkipNewProfile[] = "skip_new_profile";
+inline constexpr char kSkipNewProfile[] = "skip_new_profile";
 
 // The Finch parameter to control whether to skip notification display.
-constexpr char kSkipDisplay[] = "skip_display";
+inline constexpr char kSkipDisplay[] = "skip_display";
 
 // The Finch parameter to define the latest version number of the notification.
-constexpr char kVersion[] = "version";
+inline constexpr char kVersion[] = "version";
 
 // The Finch parameter to define whether to show the announcement to users not
 // signed in.
-constexpr char kRequireSignout[] = "require_sign_out";
+inline constexpr char kRequireSignout[] = "require_sign_out";
 
 // The Finch parameter to define whether to show the announcement to users not
 // signed in.
-constexpr char kShowOneAllProfiles[] = "show_one_all_profiles";
+inline constexpr char kShowOneAllProfiles[] = "show_one_all_profiles";
 
 // The Finch parameter to define the announcement URL.
-constexpr char kAnnouncementUrl[] = "announcement_url";
+inline constexpr char kAnnouncementUrl[] = "announcement_url";
 
 // Preference name to persist the current version sent from Finch parameter.
-constexpr char kCurrentVersionPrefName[] =
+inline constexpr char kCurrentVersionPrefName[] =
     "announcement_notification_service_current_version";
 
 // Preference name to persist the time of Chrome first run.
-constexpr char kAnnouncementFirstRunTimePrefName[] =
+inline constexpr char kAnnouncementFirstRunTimePrefName[] =
     "announcement_notification_service_first_run_time";
 
 // Used to show a notification when the version defined in Finch parameter is

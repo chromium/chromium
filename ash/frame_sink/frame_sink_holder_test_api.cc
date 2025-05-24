@@ -28,7 +28,7 @@ bool FrameSinkHolderTestApi::IsPendingFrame() const {
 }
 
 bool FrameSinkHolderTestApi::IsFirstFrameRequested() const {
-  return frame_sink_holder_->first_frame_requested_;
+  return frame_sink_holder_->first_frame_requested();
 }
 
 bool FrameSinkHolderTestApi::IsObservingBeginFrameSource() const {

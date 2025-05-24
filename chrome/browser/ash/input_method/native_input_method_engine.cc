@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/lobster/lobster_controller.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
@@ -17,6 +18,8 @@
 #include "chrome/browser/ash/input_method/grammar_service_client.h"
 #include "chrome/browser/ash/input_method/native_input_method_engine_observer.h"
 #include "chrome/browser/ash/input_method/suggestions_service_client.h"
+#include "chrome/browser/ash/lobster/lobster_event_sink.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
@@ -85,15 +88,20 @@ void NativeInputMethodEngine::Initialize(
           ? EditorMediatorFactory::GetInstance()->GetForProfile(profile)
           : nullptr;
 
+  LobsterEventSink* lobster_event_sink =
+      ash::features::IsLobsterEnabled()
+          ? LobsterServiceProvider::GetForProfile(profile)
+          : nullptr;
+
   chrome_keyboard_controller_client_observer_.Observe(
       ChromeKeyboardControllerClient::Get());
 
   // Wrap the given observer in our observer that will decide whether to call
   // Mojo directly or forward to the extension.
   auto native_observer = std::make_unique<NativeInputMethodEngineObserver>(
-      profile->GetPrefs(), editor_event_sink, std::move(observer),
-      std::move(assistive_suggester), std::move(autocorrect_manager),
-      std::move(suggestions_collector),
+      profile->GetPrefs(), editor_event_sink, lobster_event_sink,
+      std::move(observer), std::move(assistive_suggester),
+      std::move(autocorrect_manager), std::move(suggestions_collector),
       std::make_unique<GrammarManager>(
           profile, std::make_unique<GrammarServiceClient>(), this),
       use_ime_service_);

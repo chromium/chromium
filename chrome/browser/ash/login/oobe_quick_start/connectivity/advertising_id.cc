@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/advertising_id.h"
 
+#include <algorithm>
+
 #include "base/base64url.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/quick_start/logging.h"
 #include "crypto/random.h"
@@ -47,7 +48,7 @@ AdvertisingId::AdvertisingId() {
 }
 
 AdvertisingId::AdvertisingId(base::span<const uint8_t, kLength> bytes) {
-  base::ranges::copy(bytes, bytes_.begin());
+  std::ranges::copy(bytes, bytes_.begin());
 }
 
 std::string AdvertisingId::ToString() const {

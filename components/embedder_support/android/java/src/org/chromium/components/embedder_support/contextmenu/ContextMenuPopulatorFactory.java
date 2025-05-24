@@ -6,7 +6,10 @@ package org.chromium.components.embedder_support.contextmenu;
 
 import android.content.Context;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Factory interface for creating {@link ContextMenuPopulator}s. */
+@NullMarked
 public interface ContextMenuPopulatorFactory {
     /**
      * Creates a {@ContextMenuPopulator}.

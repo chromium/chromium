@@ -14,6 +14,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Delegates calls out to various tasks that need to run in the background. */
+@NullMarked
 public class BackgroundTaskJobService extends JobService {
     private static final String TAG = "BkgrdTaskJS";
 

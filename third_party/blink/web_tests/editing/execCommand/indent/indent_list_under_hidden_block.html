@@ -1,0 +1,41 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<div id="log"></div>
+<script>
+test(() => assert_selection(
+    [
+      '<div contenteditable>',
+      '^<article style="visibility:hidden">',
+        '<ul>',
+          '<li>',
+            '<textarea style="visibility:visible"></textarea>',
+          '</li>',
+        '</ul>',
+        '<br>',
+        '<select style="visibility:visible"></select>',
+      '</article>|',
+      '</div>'
+    ].join(''),
+    'indent',
+    [
+      '<div contenteditable>',
+      '<article style="visibility:hidden">',
+        '<ul>',
+          '<ul>',
+            '<ul>',
+              '<li>',
+                '^<textarea style="visibility:visible"></textarea>',
+              '</li>',
+            '</ul>',
+          '</ul>',
+        '</ul>',
+        '<br>',
+        '<select style="visibility:visible"></select>|',
+      '</article>',
+      '</div>'
+    ].join('')),
+    'Indent the list under the hidden block.');
+</script>
+

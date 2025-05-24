@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "content/public/browser/web_contents.h"
 
@@ -51,6 +51,9 @@ class UrlCheckerDelegateImpl : public UrlCheckerDelegate {
           web_contents_getter) override;
   void SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
       std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
+      const base::RepeatingCallback<content::WebContents*()>&
+          web_contents_getter) override;
+  bool AreBackgroundHashRealTimeSampleLookupsAllowed(
       const base::RepeatingCallback<content::WebContents*()>&
           web_contents_getter) override;
   const SBThreatTypeSet& GetThreatTypes() override;

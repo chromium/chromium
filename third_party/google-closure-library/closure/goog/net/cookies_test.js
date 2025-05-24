@@ -9,11 +9,11 @@ goog.setTestOnly();
 
 const Cookies = goog.require('goog.net.Cookies');
 const PropertyReplacer = goog.require('goog.testing.PropertyReplacer');
-const cookies = goog.require('goog.net.cookies');
 const googArray = goog.require('goog.array');
 const testSuite = goog.require('goog.testing.testSuite');
 
 let baseCount = 0;
+const cookies = Cookies.getInstance();
 const stubs = new PropertyReplacer();
 
 function checkForCookies() {

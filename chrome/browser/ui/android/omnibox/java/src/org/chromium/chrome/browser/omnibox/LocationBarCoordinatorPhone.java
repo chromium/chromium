@@ -8,11 +8,13 @@ import android.animation.Animator;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 
 import java.util.List;
 
 /** A supplement to {@link LocationBarCoordinator} with methods specific to smaller devices. */
+@NullMarked
 public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCoordinator {
     private LocationBarPhone mLocationBarPhone;
     private StatusCoordinator mStatusCoordinator;
@@ -23,6 +25,7 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
         mStatusCoordinator = statusCoordinator;
     }
 
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         mLocationBarPhone = null;
@@ -156,17 +159,6 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
     }
 
     /**
-     * Returns true if this view has focus itself, or is the ancestor of the view that has focus.
-     *
-     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
-     *
-     * @see View#hasFocus()
-     */
-    public boolean hasFocus() {
-        return mLocationBarPhone.hasFocus();
-    }
-
-    /**
      * Invalidate the whole view.
      *
      * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
@@ -186,17 +178,6 @@ public class LocationBarCoordinatorPhone implements LocationBarCoordinator.SubCo
      */
     public void setAlpha(float alpha) {
         mLocationBarPhone.setAlpha(alpha);
-    }
-
-    /**
-     * Sets the padding.
-     *
-     * <p>TODO(crbug.com/40151029): Hide this View interaction if possible.
-     *
-     * @see View#setPadding(int, int, int, int)
-     */
-    public void setPadding(int left, int top, int right, int bottom) {
-        mLocationBarPhone.setPadding(left, top, right, bottom);
     }
 
     /**

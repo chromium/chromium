@@ -64,9 +64,6 @@ class EmergencyTraceFinalisationCoordinator {
     if (!tracing_started_.IsSet())
       return;
 
-    base::trace_event::TraceLog::GetInstance()
-        ->SetCurrentThreadBlocksMessageLoop();
-
     base::OnceClosure stop_tracing;
     scoped_refptr<base::SequencedTaskRunner> task_runner;
     {
@@ -129,8 +126,7 @@ class StartupTracingController::BackgroundTracer {
       OpenFile(output_file_);
       tracing_session_->Setup(trace_config, file_.TakePlatformFile());
 #else
-      NOTREACHED_IN_MIGRATION()
-          << "Streaming to file is not supported on Windows yet";
+      NOTREACHED() << "Streaming to file is not supported on Windows yet";
 #endif
     } else {
       tracing_session_->Setup(trace_config);

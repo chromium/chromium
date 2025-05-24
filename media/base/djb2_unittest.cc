@@ -11,7 +11,7 @@
 uint8_t kTestData[] = {1, 2, 3};
 
 TEST(DJB2HashTest, HashTest) {
-  EXPECT_EQ(DJB2Hash(NULL, 0, 0u), 0u);
+  EXPECT_EQ(DJB2Hash(nullptr, 0, 0u), 0u);
   EXPECT_EQ(DJB2Hash(kTestData, sizeof(kTestData), 5381u),
                      ((5381u * 33u + 1u) * 33u + 2u) * 33u + 3u);
 }

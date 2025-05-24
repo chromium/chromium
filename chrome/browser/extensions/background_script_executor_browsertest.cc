@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "extensions/browser/background_script_executor.h"
+
 #include "base/test/bind.h"
 #include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
-#include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/script_executor.h"
+#include "extensions/common/extension.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -59,6 +61,8 @@ IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,
   }
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// Only manifest V3 and above is supported on desktop android.
 // Tests the ability to run JS in an extension background page.
 IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,
                        ExecuteScriptInBackgroundPage) {
@@ -140,5 +144,6 @@ IN_PROC_BROWSER_TEST_F(BackgroundScriptExecutorBrowserTest,
         value, base::test::IsJson(R"({"testFlag":"flag","userGesture":true})"));
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions

@@ -40,15 +40,16 @@
 #include "chrome/common/pref_names.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/compose/core/browser/compose_features.h"
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
@@ -110,19 +111,19 @@ ChromeComposeClient::FieldChangeObserver::~FieldChangeObserver() = default;
 
 void ChromeComposeClient::FieldChangeObserver::OnSuggestionsShown(
     autofill::AutofillManager& manager) {
-  text_field_change_event_count_ = 0;
+  text_field_value_change_event_count_ = 0;
 }
 
-void ChromeComposeClient::FieldChangeObserver::OnAfterTextFieldDidChange(
+void ChromeComposeClient::FieldChangeObserver::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
     const std::u16string& text_value) {
-  ++text_field_change_event_count_;
-  if (text_field_change_event_count_ >=
+  ++text_field_value_change_event_count_;
+  if (text_field_value_change_event_count_ >=
       compose::GetComposeConfig().nudge_field_change_event_max) {
     HideComposeNudges();
-    text_field_change_event_count_ = 0;
+    text_field_value_change_event_count_ = 0;
   }
 }
 
@@ -205,7 +206,8 @@ void ChromeComposeClient::BindComposeDialog(
   if (origin ==
       url::Origin::Create(GURL(chrome::kChromeUIUntrustedComposeUrl))) {
     debug_session_ = std::make_unique<ComposeSession>(
-        &GetWebContents(), GetModelExecutor(), GetSessionId(),
+        &GetWebContents(), GetModelExecutor(),
+        GetModelQualityLogsUploaderService(), GetSessionId(),
         GetInnerTextProvider(),
         autofill::FieldGlobalId{{}, autofill::FieldRendererId(-1)},
         IsPageLanguageSupported(), this);
@@ -470,7 +472,8 @@ void ChromeComposeClient::CreateNewSession(
   }
 
   auto new_session = std::make_unique<ComposeSession>(
-      &GetWebContents(), GetModelExecutor(), GetSessionId(),
+      &GetWebContents(), GetModelExecutor(),
+      GetModelQualityLogsUploaderService(), GetSessionId(),
       GetInnerTextProvider(), trigger_field.global_id(),
       IsPageLanguageSupported(), this, std::move(callback));
   current_session = new_session.get();
@@ -798,7 +801,7 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
       break;
   }
 
-  chrome::ShowSettingsSubPage(browser, chrome::kOfferWritingHelpSubpage);
+  chrome::ShowSettingsSubPage(browser, chrome::kAiHelpMeWriteSubpage);
 }
 
 void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {
@@ -861,6 +864,14 @@ ChromeComposeClient::GetModelExecutor() {
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext())));
 }
 
+optimization_guide::ModelQualityLogsUploaderService*
+ChromeComposeClient::GetModelQualityLogsUploaderService() {
+  return logs_uploader_service_for_test_.value_or(
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()))
+          ->GetModelQualityLogsUploaderService());
+}
+
 base::Token ChromeComposeClient::GetSessionId() {
   return session_id_for_test_.value_or(base::Token::CreateRandom());
 }
@@ -877,6 +888,12 @@ InnerTextProvider* ChromeComposeClient::GetInnerTextProvider() {
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
+}
+
+void ChromeComposeClient::SetModelQualityLogsUploaderServiceForTest(
+    optimization_guide::ModelQualityLogsUploaderService*
+        logs_uploader_service) {
+  logs_uploader_service_for_test_ = logs_uploader_service;
 }
 
 void ChromeComposeClient::SetSkipShowDialogForTest(bool should_skip) {

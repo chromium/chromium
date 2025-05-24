@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("login_screen_ui") {
   sources = [
@@ -40,8 +40,6 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/settings:test_support",
-    "//chrome/browser/ui/ash",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/login/login_screen_extension_ui",
     "//chrome/common",
     "//chrome/test:test_support",

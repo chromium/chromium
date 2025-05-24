@@ -9,6 +9,7 @@
 
 #include "media/gpu/test/video_test_helpers.h"
 
+#include <array>
 #include <limits>
 #include <numeric>
 
@@ -22,7 +23,9 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/stl_util.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
@@ -33,12 +36,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
+// These includes are used for non-ChromeOS platforms as well.
+// TODO(crbug.com/414455717): Consider renaming them.
 #include "media/gpu/chromeos/platform_video_frame_utils.h"
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif
 
-namespace media {
-namespace test {
+namespace media::test {
+
 namespace {
 constexpr uint16_t kIvfFileHeaderSize = 32;
 constexpr size_t kIvfFrameHeaderSize = 12;
@@ -67,7 +72,8 @@ uint32_t GetReadFrameIndex(uint32_t frame_index,
   frame_index -= num_frames;
   return num_frames - 2 - frame_index;
 }
-}  // namespace
+
+}  // anonymous namespace
 
 IvfFileHeader GetIvfFileHeader(base::span<const uint8_t> data) {
   LOG_ASSERT(data.size_bytes() == 32u);
@@ -134,7 +140,7 @@ bool IvfWriter::WriteFileHeader(VideoCodec codec,
 bool IvfWriter::WriteFrame(uint32_t data_size,
                            uint64_t timestamp,
                            const uint8_t* data) {
-  char ivf_frame_header[kIvfFrameHeaderSize] = {};
+  std::array<char, kIvfFrameHeaderSize> ivf_frame_header = {};
   memcpy(&ivf_frame_header[0], &data_size, sizeof(data_size));
   memcpy(&ivf_frame_header[4], &timestamp, sizeof(timestamp));
   if (!output_file_.WriteAtCurrentPosAndCheck(
@@ -169,12 +175,11 @@ std::unique_ptr<EncodedDataHelper> EncodedDataHelper::Create(
 }
 
 // static
-bool EncodedDataHelper::HasConfigInfo(const uint8_t* data,
-                                      size_t size,
+bool EncodedDataHelper::HasConfigInfo(base::span<const uint8_t> data,
                                       VideoCodec codec) {
   CHECK(codec == media::VideoCodec::kH264 || codec == media::VideoCodec::kHEVC)
       << "Unsupported codec " << GetCodecName(codec);
-  return EncodedDataHelperH26x::HasConfigInfo(data, size, codec);
+  return EncodedDataHelperH26x::HasConfigInfo(data, codec);
 }
 
 EncodedDataHelper::EncodedDataHelper(base::span<const uint8_t> stream,
@@ -200,22 +205,23 @@ EncodedDataHelperH26x::EncodedDataHelperH26x(base::span<const uint8_t> stream,
     : EncodedDataHelper(std::move(stream), codec) {}
 
 // static
-bool EncodedDataHelperH26x::HasConfigInfo(const uint8_t* data,
-                                          size_t size,
+bool EncodedDataHelperH26x::HasConfigInfo(base::span<const uint8_t> data,
                                           VideoCodec codec) {
   // Check if this is an H264 SPS NALU w/ a kNALUReducedHeaderSize or
   // kNALUHeaderSize byte start code.
   if (codec == media::VideoCodec::kH264) {
-    return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-            data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
-           (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+    return (data.size() > kNALUReducedHeaderSize && data[0] == 0x0 &&
+            data[1] == 0x0 && data[2] == 0x1 &&
+            (data[kNALUReducedHeaderSize] & 0x1f) == 0x7) ||
+           (data.size() > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
             data[2] == 0x0 && data[3] == 0x1 &&
             (data[kNALUHeaderSize] & 0x1f) == 0x7);
   }
   CHECK_EQ(codec, media::VideoCodec::kHEVC);
-  return (size > kNALUReducedHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
-          data[2] == 0x1 && (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
-         (size > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
+  return (data.size() > kNALUReducedHeaderSize && data[0] == 0x0 &&
+          data[1] == 0x0 && data[2] == 0x1 &&
+          (data[kNALUReducedHeaderSize] & 0x7e) == 0x42) ||
+         (data.size() > kNALUHeaderSize && data[0] == 0x0 && data[1] == 0x0 &&
           data[2] == 0x0 && data[3] == 0x1 &&
           (data[kNALUHeaderSize] & 0x7e) == 0x42);
 }
@@ -606,18 +612,20 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
       visible_rect_(video_->VisibleRect()),
       natural_size_(natural_size),
       time_stamp_interval_(base::Seconds(/*secs=*/0u)),
-      elapsed_frame_time_(base::Seconds(/*secs=*/0u)) {
+      elapsed_frame_time_(base::Seconds(/*secs=*/0u)),
+      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()) {
   // If the frame_rate is passed in, then use that timing information
   // to generate timestamps that increment according the frame_rate.
   // Otherwise timestamps will be generated when GetNextFrame() is called
   UpdateFrameRate(frame_rate);
 
   if (storage_type_ == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     layout_ = GetPlatformVideoFrameLayout(
         video_->PixelFormat(), aligned_coded_size,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   } else {
     layout_ = CreateVideoFrameLayout(video_->PixelFormat(), aligned_coded_size,
                                      kPlatformBufferAlignment);
@@ -630,8 +638,9 @@ AlignedDataHelper::AlignedDataHelper(const RawVideo* video,
 
   video_frame_data_.resize(num_frames_);
   for (size_t i = 0; i < num_frames_; i++) {
-    video_frame_data_[i] = CreateVideoFrameData(
-        storage_type_, video->GetFrame(i), video_->FrameLayout(), *layout_);
+    video_frame_data_[i] =
+        CreateVideoFrameData(storage_type_, video->GetFrame(i),
+                             video_->FrameLayout(), *layout_, test_sii_.get());
   }
 
   LOG_ASSERT(video_frame_data_.size() == num_frames_)
@@ -675,8 +684,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::GetNextFrame() {
       GetReadFrameIndex(frame_index_++, reverse_, num_frames_);
   if (create_frame_mode_ == CreateFrameMode::kOnDemand) {
     auto frame_data = video_->GetFrame(read_frame_index);
-    VideoFrameData video_frame_data = CreateVideoFrameData(
-        storage_type_, frame_data, video_->FrameLayout(), *layout_);
+    VideoFrameData video_frame_data =
+        CreateVideoFrameData(storage_type_, frame_data, video_->FrameLayout(),
+                             *layout_, test_sii_.get());
     return CreateVideoFrameFromVideoFrameData(video_frame_data,
                                               frame_timestamp);
   } else {
@@ -703,21 +713,22 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
-    // Create GpuMemoryBuffer from GpuMemoryBufferHandle.
-    gpu::GpuMemoryBufferSupport support;
-    auto gpu_memory_buffer = support.CreateGpuMemoryBufferImplFromHandle(
-        std::move(dup_handle), layout_->coded_size(), *buffer_format,
+    const auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY |
+                          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = test_sii_->CreateSharedImage(
+        {viz::GetSharedImageFormat(*buffer_format), layout_->coded_size(),
+         gfx::ColorSpace(), gpu::SharedImageUsageSet(si_usage),
+         "AlignedDataHelper"},
+        gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE,
-        base::DoNothing());
-    if (!gpu_memory_buffer) {
-      LOG(ERROR) << "Failed to create GpuMemoryBuffer from "
-                 << "GpuMemoryBufferHandle";
+        std::move(dup_handle));
+    if (!shared_image) {
+      LOG(ERROR) << "Failed to create a mappable shared image.";
       return nullptr;
     }
-
-    return media::VideoFrame::WrapExternalGpuMemoryBuffer(
-        visible_rect_, natural_size_, std::move(gpu_memory_buffer),
-        frame_timestamp);
+    return media::VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), test_sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), visible_rect_, natural_size_, frame_timestamp);
   } else {
     const auto& shmem_region = video_frame_data.shmem_region;
     auto dup_region = shmem_region.Duplicate();
@@ -727,7 +738,7 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
     }
     base::ReadOnlySharedMemoryMapping mapping = shmem_region.Map();
     uint8_t* buf = const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>());
-    uint8_t* data[3] = {};
+    std::array<uint8_t*, 3> data = {};
     for (size_t i = 0; i < layout_->planes().size(); i++)
       data[i] = buf + layout_->planes()[i].offset;
 
@@ -745,7 +756,8 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
     VideoFrame::StorageType storage_type,
     const RawVideo::FrameData& src_frame,
     const VideoFrameLayout& src_layout,
-    const VideoFrameLayout& dst_layout) {
+    const VideoFrameLayout& dst_layout,
+    gpu::TestSharedImageInterface* test_sii) {
   LOG_ASSERT(gfx::Rect(dst_layout.coded_size())
                  .Contains(gfx::Rect(src_layout.coded_size())))
       << "The destination buffer resolution must not be smaller than the "
@@ -753,7 +765,8 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
   const VideoPixelFormat pixel_format = src_layout.format();
   const gfx::Size& resolution = src_layout.coded_size();
   if (storage_type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+// TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
     // First write into on-memory frame.
     auto memory_frame =
         VideoFrame::CreateFrame(pixel_format, resolution, gfx::Rect(resolution),
@@ -767,9 +780,10 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
           VideoFrame::Rows(i, pixel_format, resolution.height()));
     }
     // Create GpuMemoryBuffer VideoFrame from the on-memory VideoFrame.
-    auto frame = CloneVideoFrame(
-        memory_frame.get(), dst_layout, VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
-        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
+    auto frame =
+        CloneVideoFrame(memory_frame.get(), dst_layout, test_sii,
+                        VideoFrame::STORAGE_GPU_MEMORY_BUFFER,
+                        gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
     LOG_ASSERT(!!frame) << "Failed creating GpuMemoryBuffer VideoFrame";
 
     auto gmb_handle = CreateGpuMemoryBufferHandle(frame.get());
@@ -777,9 +791,8 @@ AlignedDataHelper::VideoFrameData AlignedDataHelper::CreateVideoFrameData(
         << "Failed creating GpuMemoryBufferHandle";
     return VideoFrameData(std::move(gmb_handle));
 #else
-    NOTREACHED_IN_MIGRATION();
-    return VideoFrameData();
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+    NOTREACHED();
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   } else {
     const size_t dst_video_frame_size =
         dst_layout.planes().back().offset + dst_layout.planes().back().size;
@@ -811,7 +824,7 @@ RawDataHelper::~RawDataHelper() = default;
 scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   uint32_t read_frame_index =
       GetReadFrameIndex(index, reverse_, video_->NumFrames());
-  uint8_t* frame_data[VideoFrame::kMaxPlanes] = {};
+  std::array<uint8_t*, VideoFrame::kMaxPlanes> frame_data = {};
   const size_t num_planes = VideoFrame::NumPlanes(video_->PixelFormat());
   RawVideo::FrameData src_frame = video_->GetFrame(read_frame_index);
   for (size_t i = 0; i < num_planes; ++i) {
@@ -830,5 +843,4 @@ scoped_refptr<const VideoFrame> RawDataHelper::GetFrame(size_t index) const {
   return video_frame;
 }
 
-}  // namespace test
-}  // namespace media
+}  // namespace media::test

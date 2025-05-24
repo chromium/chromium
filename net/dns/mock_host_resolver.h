@@ -15,6 +15,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -37,7 +38,6 @@
 #include "net/dns/public/mdns_listener_update_type.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace base {
@@ -99,8 +99,8 @@ class MockHostResolverBase : public HostResolver {
   class RuleResolver {
    public:
     struct RuleKey {
-      struct WildcardScheme : absl::monostate {};
-      struct NoScheme : absl::monostate {};
+      struct WildcardScheme : std::monostate {};
+      struct NoScheme : std::monostate {};
       using Scheme = std::string;
 
       RuleKey();
@@ -125,7 +125,7 @@ class MockHostResolverBase : public HostResolver {
       // queries will only match if made using HostPortPair. Else, queries will
       // only match if made using url::SchemeHostPort with matching scheme
       // value.
-      absl::variant<WildcardScheme, NoScheme, Scheme> scheme = WildcardScheme();
+      std::variant<WildcardScheme, NoScheme, Scheme> scheme = WildcardScheme();
 
       // Pattern matched via `base::MatchPattern()`.
       std::string hostname_pattern = "*";
@@ -154,7 +154,7 @@ class MockHostResolverBase : public HostResolver {
     };
 
     using ErrorResult = Error;
-    using RuleResultOrError = absl::variant<RuleResult, ErrorResult>;
+    using RuleResultOrError = std::variant<RuleResult, ErrorResult>;
 
     // If `default_result` is nullopt, every resolve must match an added rule.
     explicit RuleResolver(
@@ -207,7 +207,7 @@ class MockHostResolverBase : public HostResolver {
     std::optional<RuleResultOrError> default_result_;
   };
 
-  using RequestMap = std::map<size_t, RequestBase*>;
+  using RequestMap = std::map<size_t, raw_ptr<RequestBase, CtnExperimental>>;
 
   // A set of states in MockHostResolver. This is used to observe the internal
   // state variables after destructing a MockHostResolver.
@@ -298,11 +298,12 @@ class MockHostResolverBase : public HostResolver {
       DnsQueryType query_type) override;
   HostCache* GetHostCache() override;
   void SetRequestContext(URLRequestContext* request_context) override {}
+  bool IsHappyEyeballsV3Enabled() const override;
 
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.
   int LoadIntoCache(
-      absl::variant<url::SchemeHostPort, HostPortPair> endpoint,
+      std::variant<url::SchemeHostPort, HostPortPair> endpoint,
       const NetworkAnonymizationKey& network_anonymization_key,
       const std::optional<ResolveHostParameters>& optional_parameters);
   int LoadIntoCache(
@@ -512,12 +513,14 @@ class MockHostResolverFactory : public HostResolver::Factory {
   std::unique_ptr<HostResolver> CreateResolver(
       HostResolverManager* manager,
       std::string_view host_mapping_rules,
-      bool enable_caching) override;
+      bool enable_caching,
+      bool enable_stale) override;
   std::unique_ptr<HostResolver> CreateStandaloneResolver(
       NetLog* net_log,
       const HostResolver::ManagerOptions& options,
       std::string_view host_mapping_rules,
-      bool enable_caching) override;
+      bool enable_caching,
+      bool enable_stale) override;
 
  private:
   const MockHostResolverBase::RuleResolver rules_;
@@ -713,6 +716,8 @@ class HangingHostResolver : public HostResolver {
   std::unique_ptr<ProbeRequest> CreateDohProbeRequest() override;
 
   void SetRequestContext(URLRequestContext* url_request_context) override;
+
+  bool IsHappyEyeballsV3Enabled() const override;
 
   // Use to detect cancellations since there's otherwise no externally-visible
   // differentiation between a cancelled and a hung task.

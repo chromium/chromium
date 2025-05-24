@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace web {
 
@@ -33,10 +34,9 @@ class WebFrame : public base::SupportsUserData {
   // application's lifetime.
   virtual std::string GetFrameId() const = 0;
   // Whether or not the receiver represents the main frame of the webpage.
-  // TODO(crbug.com/40216361): Rename IsMainFrame to IsAnyMainFrame
   virtual bool IsMainFrame() const = 0;
   // The security origin associated with this frame.
-  virtual GURL GetSecurityOrigin() const = 0;
+  virtual url::Origin GetSecurityOrigin() const = 0;
 
   // Returns the BrowserState associated with this WebFrame.
   virtual BrowserState* GetBrowserState() = 0;

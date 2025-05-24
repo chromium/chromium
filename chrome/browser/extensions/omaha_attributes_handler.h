@@ -9,7 +9,10 @@
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class Value;
@@ -17,7 +20,7 @@ class Value;
 
 namespace extensions {
 class ExtensionPrefs;
-class ExtensionService;
+class ExtensionRegistrar;
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -43,7 +46,7 @@ class OmahaAttributesHandler {
  public:
   OmahaAttributesHandler(ExtensionPrefs* extension_prefs,
                          ExtensionRegistry* registry,
-                         ExtensionService* extension_service);
+                         ExtensionRegistrar* registrar);
   OmahaAttributesHandler(const OmahaAttributesHandler&) = delete;
   OmahaAttributesHandler& operator=(const OmahaAttributesHandler&) = delete;
   ~OmahaAttributesHandler() = default;
@@ -71,7 +74,7 @@ class OmahaAttributesHandler {
 
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  raw_ptr<ExtensionRegistrar> registrar_ = nullptr;
 };
 
 }  // namespace extensions

@@ -19,7 +19,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils.DefaultBrowserState;
+import org.chromium.chrome.browser.util.DefaultBrowserInfo.DefaultBrowserState;
 
 import java.util.ArrayList;
 import java.util.List;

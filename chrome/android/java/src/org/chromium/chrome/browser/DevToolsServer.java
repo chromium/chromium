@@ -4,20 +4,24 @@
 
 package org.chromium.chrome.browser;
 
+
 import android.content.pm.PackageManager;
 
 import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Controller for Remote Web Debugging (Developer Tools). */
+@NullMarked
 public class DevToolsServer {
     private static final String DEBUG_PERMISSION_SIFFIX = ".permission.DEBUG";
 
@@ -71,7 +75,8 @@ public class DevToolsServer {
 
     @NativeMethods
     interface Natives {
-        long initRemoteDebugging(DevToolsServer caller, String socketNamePrefix);
+        long initRemoteDebugging(
+                DevToolsServer caller, @JniType("std::string") String socketNamePrefix);
 
         void destroyRemoteDebugging(DevToolsServer caller, long devToolsServer);
 

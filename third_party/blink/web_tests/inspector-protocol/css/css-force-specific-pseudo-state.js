@@ -1,8 +1,8 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startHTML(`
    <link rel='stylesheet' href='${testRunner.url('resources/css-force-specific-pseudo-state.css')}'/>
-    <div id="div">t1</div>
-    <div id="editableDiv" contenteditable="true">t2</div>`,
+    <div class="testcase" id="div">t1</div>
+    <div class="testcase" id="editableDiv" contenteditable="true">t2</div>`,
    'Test CSS.forcePseudoStates method for specific pseudo states');
 
   await dp.DOM.enable();
@@ -21,11 +21,10 @@
     }, id, property);
   }
 
-  // TODO(crbug.com/332914922): Also add :link and tests for :visited when the bug is fixed.
   const pseudoClasses = ['enabled', 'disabled',
     'valid', 'invalid', 'user-valid', 'user-invalid', 'required', 'optional', 'read-only',
     'read-write', 'in-range', 'out-of-range', 'checked', 'indeterminate',
-    'placeholder-shown', 'autofill'];
+    'placeholder-shown', 'autofill', 'open'];
   const pseudoClassProps = pseudoClasses.map(x => `--${x}-applied`);
 
   const logAllPseudoClassPropsForDiv = async () => {

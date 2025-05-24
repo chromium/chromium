@@ -3,4 +3,5 @@ dictionary SharedStorageRunOperationMethodOptions {
   boolean resolveToConfig = false;
   boolean keepAlive = false;
   SharedStoragePrivateAggregationConfig privateAggregationConfig;
+  DOMString savedQuery = "";
 };

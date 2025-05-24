@@ -148,9 +148,6 @@ TEST_F(PrefetchProxyConfiguratorTest, FallbackDoesRandomBackoff_ErrOK) {
 
 TEST_F(PrefetchProxyConfiguratorTest, Fallback_DifferentProxy) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPrefetchUseContentRefactor);
 
   net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),
@@ -165,9 +162,6 @@ TEST_F(PrefetchProxyConfiguratorTest, Fallback_DifferentProxy) {
 
 TEST_F(PrefetchProxyConfiguratorTest, TunnelHeaders_200OK) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kPrefetchUseContentRefactor);
 
   net::ProxyChain proxy_chain(
       net::GetSchemeFromUriScheme(prefetch_proxy_url().scheme()),

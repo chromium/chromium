@@ -26,12 +26,12 @@
 [
     Exposed=Window
 ] interface GeolocationCoordinates {
-    readonly attribute double latitude;
-    readonly attribute double longitude;
-    readonly attribute double? altitude;
-    readonly attribute double accuracy;
-    readonly attribute double? altitudeAccuracy;
-    readonly attribute double? heading;
-    readonly attribute double? speed;
+    [Measure] readonly attribute double latitude;
+    [Measure] readonly attribute double longitude;
+    [Measure] readonly attribute double? altitude;
+    [Measure] readonly attribute double accuracy;
+    [Measure] readonly attribute double? altitudeAccuracy;
+    [Measure] readonly attribute double? heading;
+    [Measure] readonly attribute double? speed;
     [CallWith=ScriptState] object toJSON();
 };

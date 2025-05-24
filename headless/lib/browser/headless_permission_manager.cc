@@ -5,7 +5,6 @@
 #include "headless/lib/browser/headless_permission_manager.h"
 
 #include "base/functional/callback.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -14,9 +13,7 @@
 
 namespace headless {
 
-HeadlessPermissionManager::HeadlessPermissionManager(
-    content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+HeadlessPermissionManager::HeadlessPermissionManager() = default;
 
 HeadlessPermissionManager::~HeadlessPermissionManager() = default;
 
@@ -52,7 +49,7 @@ void HeadlessPermissionManager::RequestPermissionsFromCurrentDocument(
 }
 
 blink::mojom::PermissionStatus HeadlessPermissionManager::GetPermissionStatus(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   return blink::mojom::PermissionStatus::ASK;
@@ -60,11 +57,12 @@ blink::mojom::PermissionStatus HeadlessPermissionManager::GetPermissionStatus(
 
 content::PermissionResult
 HeadlessPermissionManager::GetPermissionResultForOriginWithoutContext(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status = GetPermissionStatus(
-      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
+                          embedding_origin.GetURL());
 
   return content::PermissionResult(
       status, content::PermissionStatusSource::UNSPECIFIED);
@@ -72,7 +70,7 @@ HeadlessPermissionManager::GetPermissionResultForOriginWithoutContext(
 
 blink::mojom::PermissionStatus
 HeadlessPermissionManager::GetPermissionStatusForCurrentDocument(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
   return blink::mojom::PermissionStatus::ASK;
@@ -80,7 +78,7 @@ HeadlessPermissionManager::GetPermissionStatusForCurrentDocument(
 
 blink::mojom::PermissionStatus
 HeadlessPermissionManager::GetPermissionStatusForWorker(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
   return blink::mojom::PermissionStatus::ASK;
@@ -88,7 +86,7 @@ HeadlessPermissionManager::GetPermissionStatusForWorker(
 
 blink::mojom::PermissionStatus
 HeadlessPermissionManager::GetPermissionStatusForEmbeddedRequester(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& overridden_origin) {
   return blink::mojom::PermissionStatus::ASK;

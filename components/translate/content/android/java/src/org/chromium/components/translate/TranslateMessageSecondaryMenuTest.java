@@ -46,7 +46,6 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageScopeType;
@@ -101,7 +100,6 @@ public final class TranslateMessageSecondaryMenuTest {
     private static ViewGroup sContentView;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock TranslateMessage.Natives mMockJni;
     @Mock WebContents mWebContents;
@@ -122,7 +120,7 @@ public final class TranslateMessageSecondaryMenuTest {
 
     @Before
     public void setupTest() throws Exception {
-        mJniMocker.mock(TranslateMessageJni.TEST_HOOKS, mMockJni);
+        TranslateMessageJni.setInstanceForTesting(mMockJni);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -21,7 +21,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -64,8 +63,8 @@ void RunOrPostGetMostVisitedURLsCallback(
 // Checks if the titles stored in `old_list` and `new_list` have changes.
 bool DoTitlesDiffer(const MostVisitedURLList& old_list,
                     const MostVisitedURLList& new_list) {
-  return !base::ranges::equal(old_list, new_list, std::equal_to<>(),
-                              &MostVisitedURL::title, &MostVisitedURL::title);
+  return !std::ranges::equal(old_list, new_list, std::equal_to<>(),
+                             &MostVisitedURL::title, &MostVisitedURL::title);
 }
 
 // Transforms |number| in the range given by |max| and |min| to a number in the
@@ -229,6 +228,11 @@ void TopSitesImpl::ClearBlockedUrls() {
   pref_service_->SetDict(kBlockedUrlsPrefsKey, base::Value::Dict());
   ResetThreadSafeCache();
   NotifyTopSitesChanged(TopSitesObserver::ChangeReason::BLOCKED_URLS);
+}
+
+int TopSitesImpl::NumBlockedSites() const {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  return pref_service_->GetDict(kBlockedUrlsPrefsKey).size();
 }
 
 bool TopSitesImpl::IsFull() {
@@ -415,7 +419,7 @@ void TopSitesImpl::SetTopSites(MostVisitedURLList top_sites,
 int TopSitesImpl::num_results_to_request_from_history() const {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  return kTopSitesNumber + pref_service_->GetDict(kBlockedUrlsPrefsKey).size();
+  return kTopSitesNumber + NumBlockedSites();
 }
 
 void TopSitesImpl::MoveStateToLoaded() {

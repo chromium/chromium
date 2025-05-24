@@ -12,8 +12,9 @@
 namespace web_app {
 
 bool HasPinnedHomeTab(const TabStripModel* tab_strip_model) {
-  if (!tab_strip_model->ContainsIndex(0))
+  if (!tab_strip_model->ContainsIndex(0)) {
     return false;
+  }
   return tab_strip_model->delegate()->IsForWebApp() &&
          tab_strip_model->IsTabPinned(0);
 }

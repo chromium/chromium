@@ -27,7 +27,7 @@ import org.chromium.ui.util.ColorUtils;
 /** This class represents a bar to display at the top of the payment request UI. */
 public class PaymentRequestHeader extends FrameLayout {
     private final @ColorInt int mBackgroundColor;
-    private Context mContext;
+    private final Context mContext;
 
     /** Constructor for when the PaymentRequestHeader is inflated from XML. */
     public PaymentRequestHeader(Context context, AttributeSet attrs) {
@@ -74,7 +74,7 @@ public class PaymentRequestHeader extends FrameLayout {
                 chromeAutocompleteSchemeClassifier,
                 securityLevel,
                 useDarkColors,
-                /* emphasizeHttpsScheme= */ true);
+                /* emphasizeScheme= */ true);
         chromeAutocompleteSchemeClassifier.destroy();
         hostName.setText(url);
 
@@ -82,7 +82,7 @@ public class PaymentRequestHeader extends FrameLayout {
             // Add a lock icon.
             hostName.setCompoundDrawablesRelativeWithIntrinsicBounds(
                     TintedDrawable.constructTintedDrawable(
-                            mContext, R.drawable.omnibox_https_valid, R.color.default_green),
+                            mContext, R.drawable.omnibox_https_valid_lock, R.color.default_green),
                     null,
                     null,
                     null);

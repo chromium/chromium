@@ -38,7 +38,7 @@ import {
   CameraConfig,
   CameraConfigCandidate,
   CameraInfo,
-  CameraViewUI,
+  CameraViewUi,
   ModeConstraints,
 } from './type.js';
 
@@ -76,7 +76,7 @@ class Reconfigurer {
 
   private readonly failedDevices = new Set<string>();
 
-  private failedBySWPrivacySwitch = false;
+  private failedBySwPrivacySwitch = false;
 
   constructor(
       private readonly preview: Preview,
@@ -206,31 +206,31 @@ class Reconfigurer {
   /**
    * Checks if PTZ can be enabled.
    */
-  private async checkEnablePTZ(
-      c: ConfigureCandidate, builtinPTZSupport: boolean): Promise<void> {
-    const enablePTZ = await (async () => {
-      if (!this.preview.isSupportPTZ()) {
+  private async checkEnablePtz(
+      c: ConfigureCandidate, builtinPtzSupport: boolean): Promise<void> {
+    const enablePtz = await (async () => {
+      if (!this.preview.isSupportPtz()) {
         return false;
       }
       // In case of digital zoom PTZ or fake camera, PTZ is supported in all
       // capture and preview resolutions.
-      if (!builtinPTZSupport) {
+      if (!builtinPtzSupport) {
         return true;
       }
       const modeSupport = state.get(state.State.USE_FAKE_CAMERA) ||
           (c.captureCandidate.resolution !== null &&
-           this.modes.isSupportPTZ(
+           this.modes.isSupportPtz(
                c.mode,
                c.captureCandidate.resolution,
                this.preview.getResolution(),
                ));
       if (!modeSupport) {
-        await this.preview.resetPTZ();
+        await this.preview.resetPtz();
         return false;
       }
       return true;
     })();
-    state.set(state.State.ENABLE_PTZ, enablePTZ);
+    state.set(state.State.ENABLE_PTZ, enablePtz);
   }
 
   async start(cameraInfo: CameraInfo): Promise<void> {
@@ -245,7 +245,7 @@ class Reconfigurer {
    */
 
   resetConfigurationFailure(): void {
-    this.failedBySWPrivacySwitch = false;
+    this.failedBySwPrivacySwitch = false;
     this.failedDevices.clear();
   }
 
@@ -256,7 +256,7 @@ class Reconfigurer {
     // CCA should attempt to open device at least once, even if the SW privacy
     // switch is on, to ensure the user receives a notification about the SW
     // privacy setting.
-    if (this.failedBySWPrivacySwitch && util.isSWPrivacySwitchOn()) {
+    if (this.failedBySwPrivacySwitch && util.isSWPrivacySwitchOn()) {
       // If a previous configuration failed due to the SW privacy switch being
       // on, and the switch is still on, skip this configuration attempt.
       throw new NoCameraError();
@@ -309,8 +309,8 @@ class Reconfigurer {
         facing = this.preview.getFacing();
         const deviceId = assertString(this.preview.getDeviceId());
 
-        const builtinPTZSupport = cameraInfo.hasBuiltinPTZSupport(c.deviceId);
-        await this.checkEnablePTZ(c, builtinPTZSupport);
+        const builtinPtzSupport = cameraInfo.hasBuiltinPtzSupport(c.deviceId);
+        await this.checkEnablePtz(c, builtinPtzSupport);
         factory.setPreviewVideo(this.preview.getVideo());
         factory.setFacing(facing);
         await this.modes.updateMode(factory);
@@ -351,7 +351,7 @@ class Reconfigurer {
             // TODO(b/187879603): Remove this hacked once we understand more
             // about such error.
             if (util.isSWPrivacySwitchOn()) {
-              this.failedBySWPrivacySwitch = true;
+              this.failedBySwPrivacySwitch = true;
               break;
             }
             let facing: Facing|null = null;
@@ -469,7 +469,7 @@ export class OperationScheduler {
     this.capturer = new Capturer(this.modes);
   }
 
-  async initialize(cameraViewUI: CameraViewUI): Promise<void> {
+  async initialize(cameraViewUI: CameraViewUi): Promise<void> {
     this.modes.initialize(cameraViewUI);
     await this.deviceMonitor.deviceUpdate();
     await this.firstInfoUpdate.wait();

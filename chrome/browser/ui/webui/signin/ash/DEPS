@@ -1,7 +1,5 @@
 include_rules = [
-  # //chrome/browser/ui/webui/signin/ash is conceptually part of "ash". See the
-  # "Lacros: ChromeOS source code directory migration" design doc at
-  # https://docs.google.com/document/d/1g-98HpzA8XcoGBWUv1gQNr4rbnD5yfvbtYZyPDDbkaE
+  # //chrome/browser/ui/webui/signin/ash is conceptually part of "ash".
   "+ash/system/session",
   "+ash/style",
 
@@ -35,3 +33,10 @@ include_rules = [
   "+chrome/common",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  ".*browsertest\.cc": [
+    "+chrome/browser/ash/test",
+    "+chrome/browser/policy/profile_policy_connector.h",
+  ]
+}

@@ -8,28 +8,18 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/event_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/events_api_converters.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/chromeos/extensions/api/events.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/profiles/profile.h"             // nogncheck
-#include "chrome/browser/ui/browser_navigator.h"         // nogncheck
-#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
-#include "ui/base/page_transition_types.h"               // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
-#include "chromeos/crosapi/mojom/url_handler.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace chromeos {
 
@@ -42,20 +32,10 @@ namespace cx_events = ::chromeos::api::os_events;
 namespace crosapi = ::crosapi::mojom;
 
 void OpenDiagnosticsKeyboardPage(content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   NavigateParams navigate_params(Profile::FromBrowserContext(browser_context),
                                  GURL(kKeyboardDiagnosticsUrl),
                                  ui::PAGE_TRANSITION_FIRST);
   Navigate(&navigate_params);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = LacrosService::Get();
-  DCHECK(lacros_service);
-  DCHECK(lacros_service->IsAvailable<crosapi::UrlHandler>());
-
-  lacros_service->GetRemote<crosapi::UrlHandler>()->OpenUrl(
-      GURL(kKeyboardDiagnosticsUrl));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace
@@ -65,12 +45,6 @@ void OpenDiagnosticsKeyboardPage(content::BrowserContext* browser_context) {
 EventsApiFunctionBase::EventsApiFunctionBase() = default;
 
 EventsApiFunctionBase::~EventsApiFunctionBase() = default;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool EventsApiFunctionBase::IsCrosApiAvailable() {
-  return LacrosService::Get()->IsAvailable<crosapi::TelemetryEventService>();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 template <class Params>
 std::optional<Params> EventsApiFunctionBase::GetParams() {

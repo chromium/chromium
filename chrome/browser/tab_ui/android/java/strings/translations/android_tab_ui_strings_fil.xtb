@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fil">
+<translation id="1293272072740285747">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o i-delete ito kung hindi mo na ito kailangan.
+
+Kung ide-delete mo ito, mawawalan kaagad ang lahat ng access sa grupo ng tab na "<ph name="TITLE_OF_GROUP" />," at made-delete ito sa lahat ng device.</translation>
+<translation id="1340839264183302272">Umalis sa grupo</translation>
+<translation id="1419023007528516122">Permanente nitong ide-delete ang grupo sa iyong device</translation>
+<translation id="1501480321619201731">I-delete ang pangkat</translation>
+<translation id="2677748264148917807">Umalis</translation>
+<translation id="3547352561153509682">Ide-delete nito ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">I-ungroup ang grupo ng tab?</translation>
+<translation id="4139634748112164403">Mananatiling nakabukas ang mga tab sa device na ito pero permanenteng made-delete ang grupo</translation>
+<translation id="4431937619879060901">Mawawalan ka kaagad ng access sa grupo ng tab na "<ph name="GROUP_NAME" />," at ide-delete ito sa lahat ng device mo</translation>
+<translation id="4460014764210899310">I-ungroup</translation>
+<translation id="4777866634702576038">I-delete ang grupo ng tab?</translation>
+<translation id="5094423602314093681">Alisin ang (mga) tab at i-delete ang grupo?</translation>
+<translation id="5647702255748985085">Umalis sa grupo?</translation>
+<translation id="742664698522525515">Panatilihin ang grupo?</translation>
+<translation id="750886945254958667">Panatilihin ang grupong ito para magdagdag ng mga tab dito sa ibang pagkakataon, o umalis sa grupo kung ayaw mo na itong ma-access</translation>
+<translation id="8261506727792406068">I-delete</translation>
+<translation id="870736955561925754">Isara ang tab at i-delete ang grupo?</translation>
+<translation id="8804742093141782941">Panatilihin ang grupo</translation>
+<translation id="9169141410816678175">Mawawalan kaagad ng access ang lahat sa grupo ng tab na "<ph name="GROUP_NAME" />," at made-delete ito sa lahat ng device</translation>
+<translation id="9216898458513705996">Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">I-delete ang grupo?</translation>
+</translationbundle>

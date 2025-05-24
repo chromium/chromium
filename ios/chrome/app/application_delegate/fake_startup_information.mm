@@ -14,6 +14,7 @@
 @synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
 @synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
+@synthesize isTerminating = _isTerminating;
 
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   // Stub.

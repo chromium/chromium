@@ -23,6 +23,7 @@
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/render_message_filter.mojom.h"
+#include "content/public/browser/preload_pipeline_info.h"
 #include "content/public/common/referrer_type_converters.h"
 #include "content/public/common/url_utils.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -121,7 +122,19 @@ int TestWebContents::DownloadImage(const GURL& url,
   return g_next_image_download_id;
 }
 
-const GURL& TestWebContents::GetLastCommittedURL() {
+int TestWebContents::DownloadImageInFrame(
+    const GlobalRenderFrameHostId& initiator_frame_routing_id,
+    const GURL& url,
+    bool is_favicon,
+    const gfx::Size& preferred_size,
+    uint32_t max_bitmap_size,
+    bool bypass_cache,
+    ImageDownloadCallback callback) {
+  return DownloadImage(url, is_favicon, preferred_size, max_bitmap_size,
+                       bypass_cache, std::move(callback));
+}
+
+const GURL& TestWebContents::GetLastCommittedURL() const {
   if (last_committed_url_.is_valid()) {
     return last_committed_url_;
   }
@@ -133,6 +146,11 @@ const std::u16string& TestWebContents::GetTitle() {
     return title_.value();
 
   return WebContentsImpl::GetTitle();
+}
+
+int TestWebContents::GetCurrentlyPlayingVideoCount() const {
+  return playing_video_count_.value_or(
+      WebContentsImpl::GetCurrentlyPlayingVideoCount());
 }
 
 void TestWebContents::SetTabSwitchStartTime(base::TimeTicks start_time,
@@ -264,12 +282,14 @@ bool TestWebContents::CrossProcessNavigationPending() {
 bool TestWebContents::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
     const std::optional<blink::FrameToken>& opener_frame_token,
-    RenderFrameProxyHost* proxy_host) {
+    RenderFrameProxyHost* proxy_host,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token) {
   const auto proxy_routing_id =
       proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
   // This will go to a TestRenderViewHost.
   static_cast<RenderViewHostImpl*>(render_view_host)
-      ->CreateRenderView(opener_frame_token, proxy_routing_id, false);
+      ->CreateRenderView(opener_frame_token, proxy_routing_id, false,
+                         navigation_metrics_token);
   return true;
 }
 
@@ -340,6 +360,11 @@ void TestWebContents::SetOpener(WebContents* opener) {
       static_cast<WebContentsImpl*>(opener)->GetPrimaryFrameTree().root());
 }
 
+void TestWebContents::SetOriginalOpener(WebContents* opener) {
+  primary_frame_tree_.root()->SetOriginalOpener(
+      static_cast<WebContentsImpl*>(opener)->GetPrimaryFrameTree().root());
+}
+
 void TestWebContents::SetIsCrashed(base::TerminationStatus status,
                                    int error_code) {
   SetPrimaryMainFrameProcessStatus(status, error_code);
@@ -350,7 +375,7 @@ void TestWebContents::AddPendingContents(
     const GURL& target_url) {
   // This is normally only done in WebContentsImpl::CreateNewWindow.
   GlobalRoutingID key(
-      contents->GetRenderViewHost()->GetProcess()->GetID(),
+      contents->GetRenderViewHost()->GetProcess()->GetDeprecatedID(),
       contents->GetRenderViewHost()->GetWidget()->GetRoutingID());
   AddWebContentsDestructionObserver(contents.get());
   pending_contents_[key] = CreatedWindow(std::move(contents), target_url);
@@ -375,12 +400,14 @@ RenderWidgetHostImpl* TestWebContents::CreateNewPopupWidget(
   return nullptr;
 }
 
-void TestWebContents::ShowCreatedWindow(
+WebContents* TestWebContents::ShowCreatedWindow(
     RenderFrameHostImpl* opener,
     int route_id,
     WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
-    bool user_gesture) {}
+    bool user_gesture) {
+  return nullptr;
+}
 
 void TestWebContents::ShowCreatedWidget(int process_id,
                                         int route_id,
@@ -474,16 +501,15 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
   TestRenderFrameHost* rfhi = GetPrimaryMainFrame();
   return GetPrerenderHostRegistry()->CreateAndStartHost(PrerenderAttributes(
       url, PreloadingTriggerType::kSpeculationRule,
-      /*embedder_histogram_suffix=*/"",
-      blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
-      blink::mojom::SpeculationEagerness::kEager,
-      /*no_vary_search_expected=*/std::nullopt, rfhi->GetLastCommittedOrigin(),
-      rfhi->GetProcess()->GetID(), GetWeakPtr(), rfhi->GetFrameToken(),
-      rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
+      /*embedder_histogram_suffix=*/"", SpeculationRulesParams(), Referrer(),
+      /*no_vary_search_hint=*/std::nullopt, rfhi, GetWeakPtr(),
       ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},
-      /*prerender_navigation_handle_callback=*/{}));
+      /*prerender_navigation_handle_callback=*/{},
+      PreloadPipelineInfoImpl::Create(
+          /*planned_max_preloading_type=*/PreloadingType::kPrerender)));
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
@@ -597,6 +623,18 @@ void TestWebContents::SetMediaCaptureRawDeviceIdsOpened(
     blink::mojom::MediaStreamType type,
     std::vector<std::string> ids) {
   media_capture_raw_device_ids_opened_[type] = std::move(ids);
+}
+
+void TestWebContents::SetCurrentlyPlayingVideoCount(int count) {
+  playing_video_count_ = count;
+}
+
+void TestWebContents::OnIgnoredUIEvent() {
+  ignored_ui_event_called_ = true;
+}
+
+bool TestWebContents::GetIgnoredUIEventCalled() const {
+  return ignored_ui_event_called_;
 }
 
 }  // namespace content

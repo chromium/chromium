@@ -4,7 +4,6 @@
 
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 
-#include "base/auto_reset.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/observer_list.h"

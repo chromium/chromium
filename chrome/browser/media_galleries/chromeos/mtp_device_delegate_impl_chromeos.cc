@@ -10,6 +10,8 @@
 
 #include <algorithm>
 #include <limits>
+#include <ostream>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -17,8 +19,11 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -84,8 +89,7 @@ MTPDeviceTaskHelper* GetDeviceTaskHelperForStorage(
     const bool read_only) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return MTPDeviceTaskHelperMapService::GetInstance()->GetDeviceTaskHelper(
-      storage_name,
-      read_only);
+      storage_name, read_only);
 }
 
 // Opens the storage device for communication.
@@ -130,8 +134,9 @@ void CreateDirectoryOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->CreateDirectory(parent_id, directory_name,
                                std::move(success_callback),
                                std::move(error_callback));
@@ -156,8 +161,9 @@ void ReadDirectoryOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->ReadDirectory(directory_id, success_callback,
                              std::move(error_callback));
 }
@@ -181,8 +187,9 @@ void CheckDirectoryEmptyOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->CheckDirectoryEmpty(directory_id, std::move(success_callback),
                                    std::move(error_callback));
 }
@@ -205,8 +212,9 @@ void GetFileInfoOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->GetFileInfo(file_id, std::move(success_callback),
                            std::move(error_callback));
 }
@@ -232,8 +240,9 @@ void WriteDataIntoSnapshotFileOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->WriteDataIntoSnapshotFile(std::move(request_info),
                                          snapshot_file_info);
 }
@@ -251,8 +260,9 @@ void ReadBytesOnUIThread(const std::string& storage_name,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->ReadBytes(std::move(request));
 }
 
@@ -275,8 +285,9 @@ void RenameObjectOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->RenameObject(object_id, new_name, std::move(success_callback),
                             std::move(error_callback));
 }
@@ -303,8 +314,9 @@ void CopyFileFromLocalOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->CopyFileFromLocal(
       storage_name, source_file_descriptor, parent_id, file_name,
       std::move(success_callback), std::move(error_callback));
@@ -329,8 +341,9 @@ void DeleteObjectOnUIThread(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->DeleteObject(object_id, std::move(success_callback),
                             std::move(error_callback));
 }
@@ -339,14 +352,14 @@ void DeleteObjectOnUIThread(
 // MTPDeviceTaskHelper object associated with the device storage.
 //
 // Called on the UI thread to dispatch the request to the MTPDeviceTaskHelper.
-void CloseStorageAndDestroyTaskHelperOnUIThread(
-    const std::string& storage_name,
-    const bool read_only) {
+void CloseStorageAndDestroyTaskHelperOnUIThread(const std::string& storage_name,
+                                                const bool read_only) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   MTPDeviceTaskHelper* task_helper =
       GetDeviceTaskHelperForStorage(storage_name, read_only);
-  if (!task_helper)
+  if (!task_helper) {
     return;
+  }
   task_helper->CloseStorage();
   MTPDeviceTaskHelperMapService::GetInstance()->DestroyDeviceTaskHelper(
       storage_name, read_only);
@@ -365,13 +378,16 @@ std::pair<int, base::File::Error> OpenFileDescriptor(
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (base::DirectoryExists(file_path))
+  if (base::DirectoryExists(file_path)) {
     return std::make_pair(-1, base::File::FILE_ERROR_NOT_A_FILE);
+  }
   int file_descriptor = open(file_path.value().c_str(), flags);
-  if (file_descriptor >= 0)
+  if (file_descriptor >= 0) {
     return std::make_pair(file_descriptor, base::File::FILE_OK);
-  if (errno == ENOENT)
+  }
+  if (errno == ENOENT) {
     return std::make_pair(file_descriptor, base::File::FILE_ERROR_NOT_FOUND);
+  }
   return std::make_pair(file_descriptor, base::File::FILE_ERROR_FAILED);
 }
 
@@ -417,7 +433,7 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
   MTPFileNode(uint32_t file_id,
               const std::string& file_name,
               MTPFileNode* parent,
-              FileIdToMTPFileNodeMap* file_id_to_node_map);
+              MTPFileNodesById& nodes_by_id);
 
   MTPFileNode(const MTPFileNode&) = delete;
   MTPFileNode& operator=(const MTPFileNode&) = delete;
@@ -429,8 +445,7 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
   void EnsureChildExists(const std::string& name, uint32_t id);
 
   // Clears all the children, except those in |children_to_keep|.
-  void ClearNonexistentChildren(
-      const std::set<std::string>& children_to_keep);
+  void ClearNonexistentChildren(const std::set<std::string>& children_to_keep);
 
   bool DeleteChild(uint32_t file_id);
 
@@ -445,32 +460,45 @@ class MTPDeviceDelegateImplLinux::MTPFileNode {
   using ChildNodes =
       std::unordered_map<std::string, std::unique_ptr<MTPFileNode>>;
 
+  friend std::ostream& operator<<(std::ostream& out, const ChildNodes& nodes) {
+    if (nodes.empty()) {
+      return out << "no children";
+    }
+
+    out << nodes.size() << " children: ";
+    for (std::string_view sep; const ChildNodes::value_type& v : nodes) {
+      out << sep << "'" << v.first << "'";
+      sep = ", ";
+    }
+
+    return out;
+  }
+
   const uint32_t file_id_;
   const std::string file_name_;
 
   ChildNodes children_;
   const raw_ptr<MTPFileNode> parent_;
-  raw_ptr<FileIdToMTPFileNodeMap> file_id_to_node_map_;
+  const raw_ref<MTPFileNodesById> nodes_by_id_;
 };
 
 MTPDeviceDelegateImplLinux::MTPFileNode::MTPFileNode(
     uint32_t file_id,
     const std::string& file_name,
     MTPFileNode* parent,
-    FileIdToMTPFileNodeMap* file_id_to_node_map)
+    MTPFileNodesById& nodes_by_id)
     : file_id_(file_id),
       file_name_(file_name),
       parent_(parent),
-      file_id_to_node_map_(file_id_to_node_map) {
+      nodes_by_id_(nodes_by_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  DCHECK(file_id_to_node_map_);
-  DCHECK(!base::Contains(*file_id_to_node_map_, file_id_));
-  (*file_id_to_node_map_)[file_id_] = this;
+  const bool ok = nodes_by_id_->try_emplace(file_id_, this).second;
+  DCHECK(ok);
 }
 
 MTPDeviceDelegateImplLinux::MTPFileNode::~MTPFileNode() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  size_t erased = file_id_to_node_map_->erase(file_id_);
+  const size_t erased = nodes_by_id_->erase(file_id_);
   DCHECK_EQ(1U, erased);
 }
 
@@ -478,47 +506,46 @@ const MTPDeviceDelegateImplLinux::MTPFileNode*
 MTPDeviceDelegateImplLinux::MTPFileNode::GetChild(
     const std::string& name) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  auto it = children_.find(name);
-  if (it == children_.end())
-    return nullptr;
-  return it->second.get();
+  const ChildNodes::const_iterator it = children_.find(name);
+  return it != children_.cend() ? it->second.get() : nullptr;
 }
 
 void MTPDeviceDelegateImplLinux::MTPFileNode::EnsureChildExists(
     const std::string& name,
     uint32_t id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  const MTPFileNode* child = GetChild(name);
-  if (child && child->file_id() == id)
-    return;
-
-  children_[name] =
-      std::make_unique<MTPFileNode>(id, name, this, file_id_to_node_map_);
+  std::unique_ptr<MTPFileNode>& child = children_[name];
+  if (!child || child->file_id() != id) {
+    child = std::make_unique<MTPFileNode>(id, name, this, *nodes_by_id_);
+  }
 }
 
 void MTPDeviceDelegateImplLinux::MTPFileNode::ClearNonexistentChildren(
     const std::set<std::string>& children_to_keep) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::vector<std::string> children_to_erase;
-  for (const auto& child : children_) {
-    if (base::Contains(children_to_keep, child.first))
-      continue;
-    children_to_erase.push_back(child.first);
-  }
-  for (const auto& child : children_to_erase)
-    children_.erase(child);
+  std::erase_if(children_,
+                [&children_to_keep](const ChildNodes::value_type& child) {
+                  return !children_to_keep.contains(child.first);
+                });
 }
 
 bool MTPDeviceDelegateImplLinux::MTPFileNode::DeleteChild(uint32_t file_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  for (auto it = children_.begin(); it != children_.end(); ++it) {
-    if (it->second->file_id() == file_id) {
-      DCHECK(!it->second->HasChildren());
-      children_.erase(it);
-      return true;
-    }
+  const ChildNodes::const_iterator it = std::ranges::find_if(
+      children_, [file_id](const ChildNodes::value_type& child) {
+        return child.second->file_id() == file_id;
+      });
+
+  if (it == children_.cend()) {
+    VLOG(1) << "Cannot find MTP node with file ID " << file_id;
+    return false;
   }
-  return false;
+
+  VLOG_IF(1, !it->second->children_.empty())
+      << "Deleting MTP node '" << it->first << "' which has "
+      << it->second->children_;
+  children_.erase(it);
+  return true;
 }
 
 bool MTPDeviceDelegateImplLinux::MTPFileNode::HasChildren() const {
@@ -535,7 +562,7 @@ MTPDeviceDelegateImplLinux::MTPDeviceDelegateImplLinux(
       root_node_(std::make_unique<MTPFileNode>(mtpd::kRootFileId,
                                                "",  // Root node has no name.
                                                nullptr,  // And no parent node.
-                                               &file_id_to_node_map_)) {
+                                               nodes_by_id_)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!device_path_.empty());
   DCHECK(!storage_name_.empty());
@@ -849,8 +876,9 @@ void MTPDeviceDelegateImplLinux::RemoveWatcher(
     return;
   }
 
-  if (it->second.empty())
+  if (it->second.empty()) {
     subscribers_.erase(it);
+  }
 
   std::move(callback).Run(base::File::FILE_OK);
 }
@@ -1223,9 +1251,8 @@ void MTPDeviceDelegateImplLinux::DeleteDirectoryInternal(
 
   // Checks the cache first. If it has children in cache, the directory cannot
   // be empty.
-  FileIdToMTPFileNodeMap::const_iterator it =
-      file_id_to_node_map_.find(*directory_id);
-  if (it != file_id_to_node_map_.end() && it->second->HasChildren()) {
+  const MTPFileNodesById::const_iterator it = nodes_by_id_.find(*directory_id);
+  if (it != nodes_by_id_.end() && it->second->HasChildren()) {
     std::move(error_callback).Run(base::File::FILE_ERROR_NOT_EMPTY);
     return;
   }
@@ -1298,8 +1325,9 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectoryToCreateDirectory(
     const bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (has_more)
+  if (has_more) {
     return;  // Wait until all entries have been read.
+  }
 
   base::OnceClosure closure =
       base::BindOnce(&MTPDeviceDelegateImplLinux::CreateDirectoryInternal,
@@ -1361,10 +1389,11 @@ void MTPDeviceDelegateImplLinux::EnsureInitAndRunTask(
 
   // Only *Internal functions have empty paths. Since they are the continuation
   // of the current running task, they get to cut in line.
-  if (task_info.path.empty())
+  if (task_info.path.empty()) {
     pending_tasks_.push_front(std::move(task_info));
-  else
+  } else {
     pending_tasks_.push_back(std::move(task_info));
+  }
 
   if (init_state_ == UNINITIALIZED) {
     init_state_ = PENDING_INIT;
@@ -1406,7 +1435,7 @@ void MTPDeviceDelegateImplLinux::RunTask(PendingTaskInfo task_info) {
                                                    std::move(task_info.task));
       break;
     case content::BrowserThread::ID_COUNT:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1443,8 +1472,9 @@ void MTPDeviceDelegateImplLinux::PendingRequestDone() {
 void MTPDeviceDelegateImplLinux::ProcessNextPendingRequest() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(!task_in_progress_);
-  if (pending_tasks_.empty())
+  if (pending_tasks_.empty()) {
     return;
+  }
 
   PendingTaskInfo task_info = std::move(pending_tasks_.front());
   pending_tasks_.pop_front();
@@ -1472,10 +1502,11 @@ void MTPDeviceDelegateImplLinux::OnPathAlreadyExistsForCreateSingleDirectory(
     const base::File::Info& file_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (!file_info.is_directory || exclusive)
+  if (!file_info.is_directory || exclusive) {
     std::move(error_callback).Run(base::File::FILE_ERROR_EXISTS);
-  else
+  } else {
     std::move(success_callback).Run();
+  }
 }
 
 void MTPDeviceDelegateImplLinux::OnPathDoesNotExistForCreateSingleDirectory(
@@ -1544,11 +1575,12 @@ void MTPDeviceDelegateImplLinux::OnDidGetFileInfoToCreateSnapshotFile(
   DCHECK(snapshot_request_info.get());
   DCHECK(task_in_progress_);
   base::File::Error error = base::File::FILE_OK;
-  if (file_info.is_directory)
+  if (file_info.is_directory) {
     error = base::File::FILE_ERROR_NOT_A_FILE;
-  else if (file_info.size < 0 ||
-           file_info.size > std::numeric_limits<uint32_t>::max())
+  } else if (file_info.size < 0 ||
+             file_info.size > std::numeric_limits<uint32_t>::max()) {
     error = base::File::FILE_ERROR_FAILED;
+  }
 
   if (error != base::File::FILE_OK) {
     return HandleDeviceFileError(
@@ -1575,10 +1607,11 @@ void MTPDeviceDelegateImplLinux::OnDidGetDestFileInfoToCopyFileFromLocal(
     const base::File::Info& file_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  if (file_info.is_directory)
+  if (file_info.is_directory) {
     std::move(error_callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
-  else
+  } else {
     std::move(error_callback).Run(base::File::FILE_ERROR_FAILED);
+  }
 }
 
 void MTPDeviceDelegateImplLinux::OnGetDestFileInfoErrorToCopyFileFromLocal(
@@ -1658,9 +1691,9 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
     bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
-  FileIdToMTPFileNodeMap::iterator it = file_id_to_node_map_.find(dir_id);
-  CHECK(it != file_id_to_node_map_.end(), base::NotFatalUntil::M130);
-  MTPFileNode* dir_node = it->second;
+  const MTPFileNodesById::iterator it = nodes_by_id_.find(dir_id);
+  CHECK(it != nodes_by_id_.end());
+  MTPFileNode* const dir_node = it->second;
 
   // Traverse the MTPFileNode tree to reconstuct the full path for |dir_id|.
   base::circular_deque<std::string> dir_path_parts;
@@ -1670,13 +1703,16 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
     parent_node = parent_node->parent();
   }
   base::FilePath dir_path = device_path_;
-  for (const auto& dir_path_part : dir_path_parts)
+  for (const auto& dir_path_part : dir_path_parts) {
     dir_path = dir_path.Append(dir_path_part);
+  }
 
   storage::AsyncFileUtil::EntryList file_list;
   for (const auto& mtp_entry : mtp_entries) {
     filesystem::mojom::DirectoryEntry entry;
-    entry.name = base::FilePath(mtp_entry.name);
+    auto name = base::SafeBaseName::Create(mtp_entry.name);
+    CHECK(name) << mtp_entry.name;
+    entry.name = *name;
     entry.type = mtp_entry.file_info.is_directory
                      ? filesystem::mojom::FsFileType::DIRECTORY
                      : filesystem::mojom::FsFileType::REGULAR_FILE;
@@ -1691,8 +1727,9 @@ void MTPDeviceDelegateImplLinux::OnDidReadDirectory(
   }
 
   success_callback.Run(file_list, has_more);
-  if (has_more)
+  if (has_more) {
     return;  // Wait to be called again.
+  }
 
   // Last call, finish book keeping and continue with the next request.
   dir_node->ClearNonexistentChildren(child_nodes_seen_);
@@ -1737,8 +1774,9 @@ void MTPDeviceDelegateImplLinux::OnDidFillFileCache(
     bool has_more) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   DCHECK(path.IsParent(pending_tasks_.front().path));
-  if (has_more)
+  if (has_more) {
     return;  // Wait until all entries have been read.
+  }
   pending_tasks_.front().cached_path = path;
 }
 
@@ -1930,8 +1968,9 @@ base::FilePath MTPDeviceDelegateImplLinux::NextUncachedPathComponent(
       }
       uncached_path = uncached_path.Append(component);
     }
-    if (all_components_cached)
+    if (all_components_cached) {
       uncached_path.clear();
+    }
   }
   return uncached_path;
 }
@@ -1954,8 +1993,9 @@ void MTPDeviceDelegateImplLinux::FillFileCache(
 std::optional<uint32_t> MTPDeviceDelegateImplLinux::CachedPathToId(
     const base::FilePath& path) const {
   std::string device_relpath = GetDeviceRelativePath(device_path_, path);
-  if (device_relpath.empty())
+  if (device_relpath.empty()) {
     return {};
+  }
   std::vector<std::string> device_relpath_components;
   if (device_relpath != kRootPath) {
     device_relpath_components = base::SplitString(
@@ -1964,22 +2004,23 @@ std::optional<uint32_t> MTPDeviceDelegateImplLinux::CachedPathToId(
   const MTPFileNode* current_node = root_node_.get();
   for (const std::string& component : device_relpath_components) {
     current_node = current_node->GetChild(component);
-    if (!current_node)
+    if (!current_node) {
       return {};
+    }
   }
   return current_node->file_id();
 }
 
 void MTPDeviceDelegateImplLinux::EvictCachedPathToId(uint32_t id) {
-  FileIdToMTPFileNodeMap::iterator it = file_id_to_node_map_.find(id);
-  if (it == file_id_to_node_map_.end())
+  const MTPFileNodesById::const_iterator it = nodes_by_id_.find(id);
+  if (it == nodes_by_id_.cend()) {
+    VLOG(1) << "Cannot find MTP node with file ID " << id;
     return;
+  }
 
-  DCHECK(!it->second->HasChildren());
-  MTPFileNode* parent = it->second->parent();
-  if (parent) {
-    bool ret = parent->DeleteChild(id);
-    DCHECK(ret);
+  if (MTPFileNode* const parent = it->second->parent()) {
+    const bool ok = parent->DeleteChild(id);
+    DCHECK(ok);
   }
 }
 

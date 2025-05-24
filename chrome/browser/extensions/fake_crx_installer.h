@@ -6,7 +6,14 @@
 #define CHROME_BROWSER_EXTENSIONS_FAKE_CRX_INSTALLER_H_
 
 #include "chrome/browser/extensions/crx_installer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+namespace content {
+class BrowserContext;
+}
 
 namespace extensions {
 
@@ -17,7 +24,7 @@ namespace extensions {
 // completion.
 class FakeCrxInstaller : public CrxInstaller {
  public:
-  explicit FakeCrxInstaller(ExtensionService* frontend);
+  explicit FakeCrxInstaller(content::BrowserContext* context);
 
   void InstallCrxFile(const CRXFileInfo& info) override;
 

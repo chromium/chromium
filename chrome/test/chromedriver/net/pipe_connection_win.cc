@@ -21,6 +21,8 @@
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/net/command_id.h"
@@ -135,12 +137,15 @@ class PipeReader {
       if (!bytes_read) {
         break;
       }
-      read_buffer_->set_offset(read_buffer_->offset() + bytes_read);
+      const auto old_offset =
+          base::checked_cast<size_t>(read_buffer_->offset());
+      const size_t new_offset =
+          base::CheckAdd(old_offset, bytes_read).ValueOrDie();
+      read_buffer_->set_offset(base::checked_cast<int>(new_offset));
 
       // Go over the last read chunk, look for \0, extract messages.
-      int offset = 0;
-      for (int i = read_buffer_->offset() - bytes_read;
-           i < read_buffer_->offset(); ++i) {
+      size_t offset = 0;
+      for (size_t i = old_offset; i < new_offset; ++i) {
         if (read_buffer_->everything()[i] == '\0') {
           OnMessageReceivedOnIOThread(
               std::string(base::as_string_view(read_buffer_->everything())
@@ -207,7 +212,7 @@ class PipeReader {
     DetermineRecipient(message, &send_to_chromedriver);
     if (send_to_chromedriver) {
       notification_is_needed = received_queue_.empty();
-      received_queue_.push_back(message);
+      received_queue_.push_back(std::move(message));
     }
     on_update_event_.Signal();
 
@@ -416,6 +421,7 @@ PipeConnectionWin::PipeConnectionWin(base::ScopedPlatformFile read_file,
 }
 
 PipeConnectionWin::~PipeConnectionWin() {
+  notify_ = base::RepeatingClosure();
   Shutdown();
 }
 
@@ -485,6 +491,9 @@ void PipeConnectionWin::Shutdown() {
 
   PipeWriter::Shutdown(std::move(pipe_writer_));
   PipeReader::Shutdown(std::move(pipe_reader_));
+  if (notify_) {
+    notify_.Run();
+  }
 }
 
 bool PipeConnectionWin::IsNull() const {

@@ -4,25 +4,25 @@
 
 package org.chromium.chrome.browser.device;
 
-import android.content.Context;
-
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * This class is used to turn on and off certain features for different types of
  * devices.
  */
+@NullMarked
 public class DeviceClassManager {
-    private static DeviceClassManager sInstance;
+    private static @Nullable DeviceClassManager sInstance;
 
     // Set of features that can be enabled/disabled
-    private boolean mEnableLayerDecorationCache;
-    private boolean mEnableAnimations;
-    private boolean mEnablePrerendering;
-    private boolean mEnableToolbarSwipe;
+    private final boolean mEnableLayerDecorationCache;
+    private final boolean mEnableAnimations;
+    private final boolean mEnablePrerendering;
+    private final boolean mEnableToolbarSwipe;
 
     private final boolean mEnableFullscreen;
 
@@ -89,10 +89,6 @@ public class DeviceClassManager {
      */
     public static boolean enableToolbarSwipe() {
         return getInstance().mEnableToolbarSwipe;
-    }
-
-    private static boolean isPhone(Context context) {
-        return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }
 
     /** Reset the instance for testing. */

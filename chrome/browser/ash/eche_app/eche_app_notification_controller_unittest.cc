@@ -6,7 +6,6 @@
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,12 +48,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
  protected:
-  EcheAppNotificationControllerTest() {
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
-  }
+  EcheAppNotificationControllerTest() = default;
 
   ~EcheAppNotificationControllerTest() override = default;
   EcheAppNotificationControllerTest(const EcheAppNotificationControllerTest&) =
@@ -93,10 +87,8 @@ class EcheAppNotificationControllerTest : public BrowserWithTestWindowTest {
     notification->delegate()->Click(0, std::nullopt);
   }
 
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
-
  private:
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(EcheAppNotificationControllerTest, ShowNotificationFromWebUI) {

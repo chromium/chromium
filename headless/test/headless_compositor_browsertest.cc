@@ -31,8 +31,8 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
         // Animation-only BeginFrames are only supported when updates from the
         // impl-thread are disabled. See
         // https://goo.gle/chrome-headless-rendering.
-        cc::switches::kDisableThreadedAnimation,
-        cc::switches::kDisableCheckerImaging,
+        switches::kDisableThreadedAnimation,
+        switches::kDisableCheckerImaging,
 
         // Ensure that image animations don't resync their animation timestamps
         // when looping back around.

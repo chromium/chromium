@@ -55,11 +55,11 @@ def _clean_line(line: str) -> str:
       line = result.group(1)
   # For Android tests:
   if line[:2] == 'I ' or line[:2] == 'E ':
-    if result := re.search('[I|E].*run_tests_on_device\([^\)]+\)\s+(.*)', line):
+    if result := re.search(r'[IE].*run_tests_on_device\([^\)]+\)\s+(.*)', line):
       line = result.group(1)
   # For Android content_shell_test_apk tests:
   elif line[:2] == 'C ':
-    if result := re.search('C\s+\d+\.\d+s Main\s+([T|E|A|a|W|\+](.*))', line):
+    if result := re.search(r'C\s+\d+\.\d+s Main\s+([TEAaW+](.*))', line):
       line = result.group(1)
   return line
 
@@ -140,7 +140,8 @@ def get_trybot_log(patch_set: Optional[int]) -> List:
       capture_output=True,
       text=True,
   ).stdout):
-    raise ValueError('Did not find an issue attached to the current branch.')
+    raise ValueError('Did not find an issue attached to the current branch. '
+                     'Note for Googlers: you might just need to run gcert.')
   return json.loads(output)
 
 

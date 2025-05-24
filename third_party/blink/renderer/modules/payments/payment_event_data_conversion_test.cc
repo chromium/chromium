@@ -107,12 +107,10 @@ TEST(PaymentEventDataConversionTest, ToCanMakePaymentEventData) {
   ASSERT_TRUE(data->methodData().front()->hasSupportedMethod());
   ASSERT_EQ("foo", data->methodData().front()->supportedMethod());
   ASSERT_TRUE(data->methodData().front()->hasData());
-  ASSERT_TRUE(data->methodData().front()->data().IsObject());
   String stringified_data = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(
-          scope.GetContext(),
-          data->methodData().front()->data().V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(),
+                          data->methodData().front()->data().V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
   EXPECT_EQ("{\"merchantId\":\"12345\"}", stringified_data);
@@ -141,12 +139,10 @@ TEST(PaymentEventDataConversionTest, ToPaymentRequestEventData) {
   ASSERT_TRUE(data->methodData().front()->hasSupportedMethod());
   ASSERT_EQ("foo", data->methodData().front()->supportedMethod());
   ASSERT_TRUE(data->methodData().front()->hasData());
-  ASSERT_TRUE(data->methodData().front()->data().IsObject());
   String stringified_data = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(
-          scope.GetContext(),
-          data->methodData().front()->data().V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(),
+                          data->methodData().front()->data().V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
   EXPECT_EQ("{\"merchantId\":\"12345\"}", stringified_data);

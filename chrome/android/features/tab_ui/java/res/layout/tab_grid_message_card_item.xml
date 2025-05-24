@@ -6,7 +6,6 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.tasks.tab_management.MessageCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/tab_grid_message_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -27,8 +26,7 @@ found in the LICENSE file.
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
-        android:layout_marginTop="14dp"
-        android:layout_marginBottom="14dp"
+        android:layout_marginVertical="@dimen/message_card_description_vertical_margin"
         android:layout_weight="1"
         android:textAlignment="viewStart"
         android:textAppearance="@style/TextAppearance.TextMedium.Primary" />

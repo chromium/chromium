@@ -43,6 +43,8 @@ std::unique_ptr<DisplayMode> DisplayMode::CopyWithSize(
 }
 
 bool DisplayMode::operator<(const DisplayMode& other) const {
+  if (is_interlaced_ && !other.is_interlaced_)
+    return true;
   if (size_.GetArea() < other.size_.GetArea())
     return true;
   if (size_.GetArea() > other.size_.GetArea())

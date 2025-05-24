@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Generated test cases from cl/480876614.
+// Generated test cases from
+// chromeos/ash/components/audio/device_selection_test_gen/gen.py.
 // DO NOT EDIT.
 
 #include "chromeos/ash/components/audio/audio_device_selection_test_base.h"
@@ -1024,6 +1025,38 @@ TEST_F(AudioDeviceSelectionGeneratedTest, DiscussionIssue2Output) {
   EXPECT_EQ(ActiveOutputNodeId(), usb3.id);
 }
 
+TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment10Output) {
+  AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
+  AudioNode hdmi2 = NewOutputNode("HDMI");
+  AudioNode hdmi3 = NewOutputNode("HDMI");
+  AudioNode usb4 = NewOutputNode("USB");
+
+  Plug(internal1);
+  // Devices: [internal1*] hdmi2 hdmi3 usb4
+  // List: internal1
+  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
+
+  Plug(hdmi2);
+  // Devices: [internal1 hdmi2*] hdmi3 usb4
+  // List: internal1 < hdmi2
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
+
+  Plug(hdmi3);
+  // Devices: [internal1 hdmi2 hdmi3*] usb4
+  // List: internal1 < hdmi2 < hdmi3
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
+
+  Plug(usb4);
+  // Devices: [internal1 hdmi2 hdmi3 usb4*]
+  // List: internal1 < hdmi2 < hdmi3 < usb4
+  EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
+
+  Unplug(usb4);
+  // Devices: [internal1 hdmi2 hdmi3*] usb4
+  // List: internal1 < hdmi2 < hdmi3 < usb4
+  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
+}
+
 TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment3Output) {
   AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
   AudioNode hdmi2 = NewOutputNode("HDMI");
@@ -1156,38 +1189,6 @@ TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment8Output) {
   // Devices: [internal1* hdmi2] headphone3
   // List: hdmi2 < internal1 < headphone3
   EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
-}
-
-TEST_F(AudioDeviceSelectionGeneratedTest, FeedbackComment10Output) {
-  AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
-  AudioNode hdmi2 = NewOutputNode("HDMI");
-  AudioNode hdmi3 = NewOutputNode("HDMI");
-  AudioNode usb4 = NewOutputNode("USB");
-
-  Plug(internal1);
-  // Devices: [internal1*] hdmi2 hdmi3 usb4
-  // List: internal1
-  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
-
-  Plug(hdmi2);
-  // Devices: [internal1 hdmi2*] hdmi3 usb4
-  // List: internal1 < hdmi2
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi2.id);
-
-  Plug(hdmi3);
-  // Devices: [internal1 hdmi2 hdmi3*] usb4
-  // List: internal1 < hdmi2 < hdmi3
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
-
-  Plug(usb4);
-  // Devices: [internal1 hdmi2 hdmi3 usb4*]
-  // List: internal1 < hdmi2 < hdmi3 < usb4
-  EXPECT_EQ(ActiveOutputNodeId(), usb4.id);
-
-  Unplug(usb4);
-  // Devices: [internal1 hdmi2 hdmi3*] usb4
-  // List: internal1 < hdmi2 < hdmi3 < usb4
-  EXPECT_EQ(ActiveOutputNodeId(), hdmi3.id);
 }
 
 TEST_F(AudioDeviceSelectionGeneratedTest, GreendocH4Output) {
@@ -1543,42 +1544,6 @@ TEST_F(AudioDeviceSelectionGeneratedTest, SimpleOutput) {
   EXPECT_EQ(ActiveOutputNodeId(), usb1.id);
 }
 
-TEST_F(AudioDeviceSelectionGeneratedTest,
-       PersistActiveUsbHeadphoneAcrossRebootUsbComeLater) {
-  AudioNode internal1 = NewOutputNode("INTERNAL_SPEAKER");
-  AudioNode usb2 = NewOutputNode("USB");
-  AudioNode headphone3 = NewOutputNode("HEADPHONE");
-
-  Plug(internal1);
-  // Devices: [internal1*] usb2 headphone3
-  // List: internal1
-  EXPECT_EQ(ActiveOutputNodeId(), internal1.id);
-
-  Plug(usb2);
-  // Devices: [internal1 usb2*] headphone3
-  // List: internal1 < usb2
-  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
-
-  Plug(headphone3);
-  // Devices: [internal1 usb headphone3*]
-  // List: internal1 < usb2 < headphone3
-  EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
-
-  Select(usb2);
-  // Devices: [internal1 usb2* headphone3]
-  // List: internal1 <  headphone3 < usb2
-  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
-
-  Unplug(usb2);
-  // Devices: [internal1 headphone3*] usb2*
-  // List: internal1 <  headphone3 < usb2
-  EXPECT_EQ(ActiveOutputNodeId(), headphone3.id);
-
-  Plug(usb2);
-  // Devices: [internal1 usb2* headphone3]
-  // List: internal1 <  headphone3 < usb2
-  EXPECT_EQ(ActiveOutputNodeId(), usb2.id);
-}
 
 }  // namespace
 }  // namespace ash

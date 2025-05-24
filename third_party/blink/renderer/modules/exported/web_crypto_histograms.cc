@@ -54,8 +54,7 @@ static WebFeature AlgorithmIdToFeature(WebCryptoAlgorithmId id) {
       return WebFeature::kCryptoAlgorithmX25519;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return static_cast<WebFeature>(0);
+  NOTREACHED();
 }
 
 static void HistogramAlgorithmId(ExecutionContext* context,

@@ -11,6 +11,7 @@
 #include "content/browser/installedapp/installed_app_provider_impl.h"
 #include "content/browser/installedapp/test/installed_app_provider_impl_test_utils.h"
 #include "content/common/features.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
@@ -41,6 +42,14 @@ const std::vector<std::string> kInstalledWebAppIds = {
     "http://bar.com"};
 }  // namespace
 
+class RelatedAppsTestWebContentsDelegate : public WebContentsDelegate {
+ public:
+  MOCK_METHOD(std::vector<blink::mojom::RelatedApplicationPtr>,
+              GetSavedRelatedApplications,
+              (content::WebContents*),
+              (override));
+};
+
 class InstalledAppProviderImplTest : public RenderViewHostImplTestHarness {
  public:
   explicit InstalledAppProviderImplTest()
@@ -69,6 +78,7 @@ class InstalledAppProviderImplTest : public RenderViewHostImplTestHarness {
         base::BindRepeating(&CreateFakeNativeWinAppFetcherForTesting,
                             std::move(kInstalledWinAppIds)));
 #endif  // BUILDFLAG(IS_WIN)
+    web_contents()->SetDelegate(&web_contents_delegate_);
   }
 
   void TearDown() override {
@@ -80,6 +90,10 @@ class InstalledAppProviderImplTest : public RenderViewHostImplTestHarness {
 
   mojo::Remote<blink::mojom::InstalledAppProvider>& remote() { return remote_; }
 
+  RelatedAppsTestWebContentsDelegate* web_contents_delegate() {
+    return &web_contents_delegate_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 
@@ -87,6 +101,7 @@ class InstalledAppProviderImplTest : public RenderViewHostImplTestHarness {
   FakeContentBrowserClientForQueryInstalledWebApps content_browser_client_;
   raw_ptr<InstalledAppProviderImpl> provider_;
   raw_ptr<content::ContentBrowserClient> old_content_browser_client_ = nullptr;
+  RelatedAppsTestWebContentsDelegate web_contents_delegate_;
 };
 
 MATCHER_P(RelatedAppById, app_id, "") {
@@ -112,9 +127,9 @@ TEST_F(InstalledAppProviderImplTest, GetRelatedApps) {
   base::test::TestFuture<std::vector<blink::mojom::RelatedApplicationPtr>>
       future;
 
-  remote()->FilterInstalledApps(std::move(related_applications),
-                                GURL("http://foo.com/manifest.json"),
-                                future.GetCallback());
+  remote()->FilterInstalledApps(
+      std::move(related_applications), GURL("http://foo.com/manifest.json"),
+      /*add_saved_related_applications=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   const std::vector<blink::mojom::RelatedApplicationPtr>& result = future.Get();
@@ -147,7 +162,8 @@ TEST_F(InstalledAppProviderImplTest,
   // Empty related apps list
   remote()->FilterInstalledApps(
       std::vector<blink::mojom::RelatedApplicationPtr>(),
-      GURL("http://foo.com/manifest.json"), future.GetCallback());
+      GURL("http://foo.com/manifest.json"),
+      /*add_saved_related_applications=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(future.Get(), IsEmpty());
@@ -162,9 +178,9 @@ TEST_F(InstalledAppProviderImplTest,
 
   base::test::TestFuture<std::vector<blink::mojom::RelatedApplicationPtr>>
       future;
-  remote()->FilterInstalledApps(std::move(related_applications),
-                                GURL("http://foo.com/manifest.json"),
-                                future.GetCallback());
+  remote()->FilterInstalledApps(
+      std::move(related_applications), GURL("http://foo.com/manifest.json"),
+      /*add_saved_related_applications=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   EXPECT_THAT(future.Get(), IsEmpty());
@@ -186,13 +202,38 @@ TEST_F(InstalledAppProviderImplTest, LimitNumberOfMatchedApps) {
 
   base::test::TestFuture<std::vector<blink::mojom::RelatedApplicationPtr>>
       future;
-  remote()->FilterInstalledApps(std::move(related_applications),
-                                GURL("http://foo.com/manifest.json"),
-                                future.GetCallback());
+  remote()->FilterInstalledApps(
+      std::move(related_applications), GURL("http://foo.com/manifest.json"),
+      /*add_saved_related_applications=*/false, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   const std::vector<blink::mojom::RelatedApplicationPtr>& result = future.Get();
   EXPECT_EQ(result.size(), 10u);
+}
+
+TEST_F(InstalledAppProviderImplTest, UseSavedRelatedAppsIfManifestFetchFailed) {
+  std::vector<blink::mojom::RelatedApplicationPtr> related_applications;
+
+  std::vector<blink::mojom::RelatedApplicationPtr> saved_related_apps;
+  saved_related_apps.push_back(
+      CreateRelatedApplicationFromPlatformAndId("webapp", kInstalledWebAppId));
+
+  EXPECT_CALL(*web_contents_delegate(), GetSavedRelatedApplications(testing::_))
+      .WillOnce(
+          testing::Return(testing::ByMove(std::move(saved_related_apps))));
+
+  base::test::TestFuture<std::vector<blink::mojom::RelatedApplicationPtr>>
+      future;
+
+  remote()->FilterInstalledApps(
+      std::move(related_applications), GURL("http://foo.com/manifest.json"),
+      /*add_saved_related_applications=*/true, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const std::vector<blink::mojom::RelatedApplicationPtr>& result = future.Get();
+
+  EXPECT_EQ(result.size(), 1u);
+  EXPECT_THAT(result, Contains(RelatedAppById(kInstalledWebAppId)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

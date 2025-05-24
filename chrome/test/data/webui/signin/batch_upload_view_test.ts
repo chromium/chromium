@@ -6,12 +6,10 @@ import 'chrome://batch-upload/batch_upload.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_collapse.js';
-import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
-import type {BatchUploadAppElement} from 'chrome://batch-upload/batch_upload.js';
+import {assert} from '//resources/js/assert.js';
 import {BatchUploadBrowserProxyImpl} from 'chrome://batch-upload/batch_upload.js';
-import type {PageRemote} from 'chrome://batch-upload/batch_upload.js';
-import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {BatchUploadAppElement, BatchUploadData, DataContainer, DataItem, DataSectionElement, PageRemote} from 'chrome://batch-upload/batch_upload.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertLT, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBatchUploadBrowserProxy} from './test_batch_upload_browser_proxy.js';
@@ -20,6 +18,77 @@ suite('BatchUploadViewTest', function() {
   let batchUploadApp: BatchUploadAppElement;
   let testBatchUploadProxy: TestBatchUploadBrowserProxy;
   let callbackRouterRemote: PageRemote;
+
+  // Input of data displayed in the Ui containing account info, data sections
+  // and dialog subtitles. In each section, some data items are pushed; check
+  // `prepareDataInput()`.
+  const TEST_DATA: BatchUploadData = prepareDataInput();
+
+  // Prepare data for testing, simulating information coming from the browser.
+  function prepareDataInput(): BatchUploadData {
+    // Create passwords section.
+    const password1: DataItem = {
+      id: 1,
+      iconUrl: 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE',
+      title: 'password1',
+      subtitle: 'username1',
+    };
+    const password2: DataItem = {
+      id: 2,
+      iconUrl: 'chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE',
+      title: 'password2',
+      subtitle: 'username2',
+    };
+    const passwordSection: DataContainer = {
+      dataItems: [],
+      // Keep empty not to request string of unavailable id.
+      sectionTitle: '',
+      isTheme: false,
+    };
+    passwordSection.dataItems.push(password1);
+    passwordSection.dataItems.push(password2);
+
+    // Create addresses section
+    const address: DataItem = {
+      id: 1,
+      iconUrl: '',
+      title: 'address',
+      subtitle: 'street',
+    };
+    const addressSection: DataContainer = {
+      dataItems: [],
+      // Keep empty not to request string of unavailable id.
+      sectionTitle: '',
+      isTheme: false,
+    };
+    addressSection.dataItems.push(address);
+
+    const dataContainers: DataContainer[] = [];
+    dataContainers.push(passwordSection);
+    dataContainers.push(addressSection);
+
+    const dataInput: BatchUploadData = {
+      accountInfo: {email: 'test@test.com', dataPictureUrl: ''},
+      dialogSubtitle: '2 passwords and other items ...',
+      dataContainers: dataContainers,
+    };
+
+    return dataInput;
+  }
+
+  function getTotalNumberOfItemsInSection(index: number): number {
+    assert(TEST_DATA);
+    assert(TEST_DATA.dataContainers[index]);
+    return TEST_DATA.dataContainers[index].dataItems.length;
+  }
+
+  function getSectionElement(index: number): DataSectionElement {
+    const dataSections =
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
+    assertEquals(TEST_DATA.dataContainers.length, dataSections.length);
+    assertLT(index, TEST_DATA.dataContainers.length);
+    return dataSections[index]!;
+  }
 
   setup(function() {
     testBatchUploadProxy = new TestBatchUploadBrowserProxy();
@@ -30,9 +99,7 @@ suite('BatchUploadViewTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     batchUploadApp = document.createElement('batch-upload-app');
     document.body.append(batchUploadApp);
-    // TODO(b/363204445): should send test data created for the test and replace
-    // current dummy data.
-    callbackRouterRemote.sendData('1');
+    callbackRouterRemote.sendBatchUploadData(TEST_DATA);
     return testBatchUploadProxy.handler.whenCalled('updateViewHeight');
   });
 
@@ -43,106 +110,209 @@ suite('BatchUploadViewTest', function() {
     assertTrue(isChildVisible(batchUploadApp, '#header'));
     assertTrue(isChildVisible(batchUploadApp, '#title'));
     assertTrue(isChildVisible(batchUploadApp, '#subtitle'));
-    // TODO(b/363204445): check based on the test data.
-    assertTrue(
-        batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                      '#subtitle')!.textContent!.trim()
-            .includes('2 passwords and other items'));
+    assertGT(TEST_DATA.dataContainers.length, 1);
+    assertEquals(
+        TEST_DATA.dialogSubtitle,
+        batchUploadApp.shadowRoot.querySelector<CrButtonElement>(
+                                     '#subtitle')!.textContent!.trim());
 
     // Account info.
     assertTrue(isChildVisible(batchUploadApp, '#account-info-row'));
     assertTrue(isChildVisible(batchUploadApp, '#account-icon'));
     assertTrue(isChildVisible(batchUploadApp, '#email'));
-    // TODO(b/363204445): check based on the test data.
     assertEquals(
-        batchUploadApp.shadowRoot!
+        TEST_DATA.accountInfo.email,
+        batchUploadApp.shadowRoot
             .querySelector<CrButtonElement>(
-                '#account-info-row')!.textContent!.trim(),
-        'elisa.g.beckett@gmail.com');
+                '#account-info-row')!.textContent!.trim());
   });
 
-  test('ClickSave', function() {
+  test('ClickSave', async function() {
     assertTrue(isVisible(batchUploadApp));
-    assertTrue(isChildVisible(batchUploadApp, '#save-button'));
-    batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                  '#save-button')!.click();
-    // TODO(b/359797313): when implemented should check a different callback.
-    return testBatchUploadProxy.handler.whenCalled('close');
+
+    batchUploadApp.$.saveButton.click();
+
+    const idsToMove =
+        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
+    // By default all items are selected and should be part of the result.
+    const expectedSelectedItemsIds = [[1, 2], [1]];
+    assertDeepEquals(expectedSelectedItemsIds, idsToMove);
   });
 
-  test('ClickClose', function() {
+  test('ClickCancel', function() {
     assertTrue(isVisible(batchUploadApp));
-    assertTrue(isChildVisible(batchUploadApp, '#close-button'));
-    batchUploadApp.shadowRoot!.querySelector<CrButtonElement>(
-                                  '#close-button')!.click();
+    assertTrue(isChildVisible(batchUploadApp, '#cancelButton'));
+    batchUploadApp.$.cancelButton.click();
     return testBatchUploadProxy.handler.whenCalled('close');
   });
 
   test('DataSections', function() {
     assertTrue(isVisible(batchUploadApp));
-    assertTrue(isChildVisible(batchUploadApp, '#data-sections'));
+    assertTrue(isChildVisible(batchUploadApp, '#dataSections'));
 
     const dataSections =
-        batchUploadApp.shadowRoot!.querySelectorAll('.data-section');
-    // TODO(b/363204445): check based on the test data.
-    assertEquals(dataSections.length, 2);
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
+    assertEquals(TEST_DATA.dataContainers.length, dataSections.length);
   });
 
-  test('SectionTitles', function() {
-    assertTrue(isVisible(batchUploadApp));
-    assertTrue(isChildVisible(batchUploadApp, '.data-section-header'));
-
-    const sectionTitles =
-        batchUploadApp.shadowRoot!.querySelectorAll('.data-section-title');
-    // TODO(b/363204445): check based on the test data.
-    assertEquals(sectionTitles.length, 2);
-
-    const firstSectionTitle = sectionTitles[0]!;
-    // TODO(b/363204445): check based on the test data of the first section.
-    const sectionItemCount = 2;
-    // All items are selected by default and should be shown in the title.
-    assertTrue(firstSectionTitle.textContent!.trim().includes(
-        '(' + sectionItemCount + ')'));
-
-    // Uncheck the first item of the first section.
-    const itemCheckboxes =
-        batchUploadApp.shadowRoot!.querySelectorAll('.item-checkbox');
-    assertGT(itemCheckboxes.length, 0);
-    (itemCheckboxes[0] as CrCheckboxElement).checked = false;
-
-    // TODO(b/359797313): adapt this when the output implementation is set.
-    // Selected items items count should show, so 1 less.
-    assertTrue(firstSectionTitle.textContent!.trim().includes(
-        '(' + sectionItemCount + ')'));
-  });
-
-  test('ExpandingSections', async function() {
+  test('ClickSaveWithUnselectingItems', async function() {
     assertTrue(isVisible(batchUploadApp));
 
-    const expandButtons =
-        batchUploadApp.shadowRoot!.querySelectorAll('.expand-button');
-    const collapseSections =
-        batchUploadApp.shadowRoot!.querySelectorAll('.data-items-collapse');
-    // TODO(b/363204445): check based on the test data.
-    assertEquals(expandButtons.length, 2);
-    assertEquals(collapseSections.length, 2);
+    const firstIndex = 0;
+    const firstSection = getSectionElement(firstIndex);
+    assertTrue(isVisible(firstSection));
 
-    const firstCollapseSection = collapseSections[0] as CrCollapseElement;
-    const firstExpandButton = expandButtons[0]! as CrExpandButtonElement;
-    // Section is collapsed by default.
-    assertFalse(firstCollapseSection.opened);
+    // Get all checkboxes for each sections ordered.
+    const firstSectionCheckboxes =
+        firstSection.shadowRoot.querySelectorAll<CrCheckboxElement>(
+            '.item-checkbox');
+    assertEquals(
+        getTotalNumberOfItemsInSection(firstIndex),
+        firstSectionCheckboxes.length);
 
-    // Expanding the section on click.
-    firstExpandButton.click();
+    // Unselect the second item.
+    const secondCheckbox = firstSectionCheckboxes[1]!;
+    assertTrue(secondCheckbox.checked);
+    secondCheckbox.click();
     await microtasksFinished();
-    assertTrue(firstCollapseSection.opened);
 
-    // Collapsing the section second click.
-    firstExpandButton.click();
-    await microtasksFinished();
-    assertFalse(firstCollapseSection.opened);
+    // Click Save.
+    batchUploadApp.$.saveButton.click();
+
+    const idsToMove =
+        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
+    // Expected result does not contain the removed Id.
+    const expectedSelectedItemsIds = [[1], [1]];
+    assertDeepEquals(expectedSelectedItemsIds, idsToMove);
   });
 
-  // TODO(b/359797313): Add more tests related to clicking save and the expected
-  // output based on the selected items.
+  test('ClickSaveWithUnselectingAFullSection', async function() {
+    assertTrue(isVisible(batchUploadApp));
+
+    const firstIndex = 0;
+    const firstSection = getSectionElement(firstIndex);
+    assertTrue(isVisible(firstSection));
+
+    // Get the section checkboxes ordered.
+    const firstSectionCheckboxes =
+        firstSection.shadowRoot.querySelectorAll<CrCheckboxElement>(
+            '.item-checkbox');
+    assertEquals(
+        getTotalNumberOfItemsInSection(firstIndex),
+        firstSectionCheckboxes.length);
+
+    const firstToggle = firstSection.$.toggle;
+    // First toggle is enabled by default.
+    assertTrue(firstToggle.checked);
+
+    // Unselect the first and second item, making the first section completely
+    // unselected.
+    const firstCheckbox = firstSectionCheckboxes[0]!;
+    const secondCheckbox = firstSectionCheckboxes[1]!;
+    assertTrue(firstCheckbox.checked);
+    assertTrue(secondCheckbox.checked);
+    firstCheckbox.click();
+    secondCheckbox.click();
+    await microtasksFinished();
+
+    // First section should now be marked as disabled.
+    assertFalse(firstToggle.checked);
+
+    // Click Save.
+    batchUploadApp.$.saveButton.click();
+
+    const idsToMove =
+        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    assertEquals(TEST_DATA.dataContainers.length, idsToMove.length);
+    // A section with no element selected should still appear as empty to
+    // keep the consistency of the input/output.
+    const expectedSelectedItemsIds = [[], [1]];
+    assertDeepEquals(expectedSelectedItemsIds, idsToMove);
+  });
+
+  test('ClickSaveWithToggledOffSections', async function() {
+    assertTrue(isVisible(batchUploadApp));
+
+    const firstIndex = 0;
+    const firstSection = getSectionElement(firstIndex);
+    assertTrue(isVisible(firstSection));
+
+    const firstToggle = firstSection.$.toggle;
+    // First toggle is enabled by default.
+    assertTrue(firstToggle.checked);
+
+    // Disable first section.
+    assertTrue(firstToggle.checked);
+    firstToggle.click();
+    await microtasksFinished();
+
+    // Click Save.
+    batchUploadApp.$.saveButton.click();
+    const idsToMove =
+        await testBatchUploadProxy.handler.whenCalled('saveToAccount');
+    assertEquals(idsToMove.length, TEST_DATA.dataContainers.length);
+    // A section with the toggle off should still appear as empty even if
+    // it had some selected items before the toggle off.
+    const expectedSelectedItemsIds = [[], [1]];
+    assertDeepEquals(expectedSelectedItemsIds, idsToMove);
+  });
+
+  test('TogglingOffAllSectionsShouldDisableSave', async function() {
+    assertTrue(isVisible(batchUploadApp));
+
+    const saveButton = batchUploadApp.$.saveButton;
+    // By default save is enabled.
+    assertFalse(saveButton.disabled);
+
+    const dataSections =
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
+    assertEquals(dataSections.length, TEST_DATA.dataContainers.length);
+
+    // Disable all toggles.
+    for (let i = 0; i < dataSections.length; ++i) {
+      const toggle = dataSections[i]!.$.toggle;
+      assertTrue(toggle.checked);
+      toggle.click();
+    }
+    await microtasksFinished();
+
+    // After updates the button should now be disabled.
+    assertTrue(saveButton.disabled);
+  });
+
+  test('UncheckingAllCheckboxesShouldDisableSave', async function() {
+    assertTrue(isVisible(batchUploadApp));
+
+    const saveButton = batchUploadApp.$.saveButton;
+    // By default save is enabled.
+    assertFalse(saveButton.disabled);
+
+    const dataSections =
+        batchUploadApp.shadowRoot.querySelectorAll('data-section');
+    assertEquals(dataSections.length, TEST_DATA.dataContainers.length);
+
+    // Unckeck all checkboxes of each section to toggle the sections off.
+    for (let i = 0; i < dataSections.length; ++i) {
+      const section = getSectionElement(i);
+
+      const toggle = section.$.toggle;
+      assertTrue(toggle.checked);
+
+      const checkboxes = section.shadowRoot.querySelectorAll<CrCheckboxElement>(
+          '.item-checkbox');
+      for (let j = 0; j < checkboxes.length; ++j) {
+        const checkbox = checkboxes[j]!;
+        assertTrue(checkbox.checked);
+        checkbox.click();
+      }
+      await microtasksFinished();
+      assertFalse(toggle.checked);
+    }
+
+    // With all section toggled off by unchecking the inner checkboxes, the
+    // button should be disabled.
+    assertTrue(saveButton.disabled);
+  });
 });

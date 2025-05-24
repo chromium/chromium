@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
@@ -186,8 +185,8 @@ class FakeWebBluetoothCharacteristicClient : WebBluetoothCharacteristicClient {
  protected:
   // WebBluetoothCharacteristicClient implementation:
   void RemoteCharacteristicValueChanged(
-      const std::vector<uint8_t>& value) override {
-    NOTREACHED_IN_MIGRATION();
+      base::span<const uint8_t> value) override {
+    NOTREACHED();
   }
 
  private:
@@ -586,6 +585,18 @@ class WebBluetoothServiceImplTest : public RenderViewHostImplTestHarness,
     // Use Wait() instead of Get() because we don't care about the result.
     EXPECT_TRUE(future_1.Wait());
     EXPECT_TRUE(future_2.Wait());
+
+    // WebBluetoothServiceImpl assumes one of GetDevices, RequestDevice, or
+    // RequestScanningStart will be called before device objects and their IDs
+    // are available. This assumption may be violated in tests when a simulated
+    // device is added and its IDs are used to invoke service methods without
+    // first invoking one of the entry point methods.
+    //
+    // To satisfy this requirement, call GetDevices before the test case runs.
+    TestFuture<std::vector<blink::mojom::WebBluetoothDevicePtr>>
+        get_devices_future;
+    service_ptr_->GetDevices(get_devices_future.GetCallback());
+    ASSERT_TRUE(get_devices_future.IsReady());
   }
 
   void TearDown() override {
@@ -933,12 +944,12 @@ TEST_F(WebBluetoothServiceImplTest,
       characteristic_instance_id,
       base::BindLambdaForTesting(
           [&callback_called](blink::mojom::WebBluetoothResult result,
-                             const std::optional<std::vector<uint8_t>>& value) {
+                             base::span<const uint8_t> value) {
             callback_called = true;
             EXPECT_EQ(
                 blink::mojom::WebBluetoothResult::GATT_OPERATION_IN_PROGRESS,
                 result);
-            EXPECT_FALSE(value.has_value());
+            EXPECT_TRUE(value.empty());
           }),
       device::BluetoothGattService::GattErrorCode::kInProgress,
       read_error_value);
@@ -968,13 +979,12 @@ TEST_F(WebBluetoothServiceImplTest, ReadCharacteristicValueNotAuthorized) {
   service_ptr_->OnCharacteristicReadValue(
       test_characteristic.GetIdentifier(),
       base::BindLambdaForTesting(
-          [&read_value_callback_called](
-              blink::mojom::WebBluetoothResult result,
-              const std::optional<std::vector<uint8_t>>& value) {
+          [&read_value_callback_called](blink::mojom::WebBluetoothResult result,
+                                        base::span<const uint8_t> value) {
             read_value_callback_called = true;
             EXPECT_EQ(blink::mojom::WebBluetoothResult::GATT_NOT_AUTHORIZED,
                       result);
-            EXPECT_FALSE(value.has_value());
+            EXPECT_TRUE(value.empty());
           }),
       device::BluetoothGattService::GattErrorCode::kNotAuthorized,
       read_error_value);

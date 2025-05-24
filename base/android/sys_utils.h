@@ -12,12 +12,8 @@ namespace android {
 
 class BASE_EXPORT SysUtils {
  public:
-  // Returns true iff this is a low-end device.
-  static bool IsLowEndDeviceFromJni();
   // Returns true if system has low available memory.
   static bool IsCurrentlyLowMemory();
-  // Returns amount of physical ram detected in KB, or 0 if detection failed.
-  static int AmountOfPhysicalMemoryKB();
 };
 
 }  // namespace android

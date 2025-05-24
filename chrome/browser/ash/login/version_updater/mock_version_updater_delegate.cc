@@ -6,8 +6,8 @@
 
 namespace ash {
 
-MockVersionUpdaterDelegate::MockVersionUpdaterDelegate() {}
+MockVersionUpdaterDelegate::MockVersionUpdaterDelegate() = default;
 
-MockVersionUpdaterDelegate::~MockVersionUpdaterDelegate() {}
+MockVersionUpdaterDelegate::~MockVersionUpdaterDelegate() = default;
 
 }  // namespace ash

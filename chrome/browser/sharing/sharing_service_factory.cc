@@ -19,6 +19,7 @@
 #include "chrome/browser/sharing/sharing_handler_registry_impl.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
@@ -58,8 +59,9 @@ constexpr char kServiceName[] = "SharingService";
 void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
   gcm::GCMEncryptionProvider* encryption_provider =
       gcm_driver->GetEncryptionProviderInternal();
-  if (!encryption_provider)
+  if (!encryption_provider) {
     return;
+  }
 
   encryption_provider->RemoveEncryptionInfo(kSharingFCMAppID,
                                             /*authorized_entity=*/std::string(),
@@ -113,8 +115,9 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
 
-  if (!sync_service)
+  if (!sync_service) {
     return nullptr;
+  }
 
 #if BUILDFLAG(ENABLE_CLICK_TO_CALL)
   PrecompilePhoneNumberRegexesAsync();
@@ -150,7 +153,8 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   auto fcm_sender = std::make_unique<SharingFCMSender>(
       std::move(web_push_sender), message_bridge, sync_prefs.get(),
       vapid_key_manager.get(), gcm_driver, device_info_tracker,
-      local_device_info_provider, sync_service);
+      local_device_info_provider, sync_service,
+      sync_start_util::GetFlareForSyncableService(profile->GetPath()));
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       content::GetUIThreadTaskRunner({base::TaskPriority::USER_VISIBLE});

@@ -60,6 +60,9 @@ class BASE_EXPORT ScopedCOMInitializer : public ScopedWindowsThreadEnvironment {
   // ScopedWindowsThreadEnvironment:
   bool Succeeded() const override;
 
+  // Returns the value returned by `CoInitializeEx` at initialization.
+  HRESULT hr() const { return hr_; }
+
   // Used for testing. Returns the COM balancer's apartment thread ref count.
   DWORD GetCOMBalancerReferenceCountForTesting() const;
 

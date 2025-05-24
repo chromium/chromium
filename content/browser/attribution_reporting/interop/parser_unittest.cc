@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/overloaded.h"
@@ -27,7 +28,6 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -469,7 +469,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
   typedef void (*MakeInteropConfigFunc)(AttributionInteropConfig&);
 
   using MakeExpectedFunc =
-      absl::variant<MakeAttributionConfigFunc, MakeInteropConfigFunc>;
+      std::variant<MakeAttributionConfigFunc, MakeInteropConfigFunc>;
 
   const struct {
     const char* json;
@@ -576,6 +576,10 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.aggregatable_debug_rate_limit.max_reports_per_source = 3;
        }},
+      {R"json({"max_aggregatable_reports_per_source":"3"})json", false,
+       [](AttributionConfig& c) {
+         c.aggregate_limit.max_aggregatable_reports_per_source = 3;
+       }},
       {R"json({
         "max_sources_per_origin":"10",
         "max_destinations_per_source_site_reporting_site":"10",
@@ -601,7 +605,8 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "aggregatable_report_delay_span":"20",
         "aggregation_coordinator_origins":["https://c.test/123"],
         "max_aggregatable_debug_budget_per_context_site": "1024",
-        "max_aggregatable_debug_reports_per_source": "10"
+        "max_aggregatable_debug_reports_per_source": "10",
+        "max_aggregatable_reports_per_source": "12"
       })json",
        true, [](AttributionInteropConfig& config) {
          AttributionConfig& c = config.attribution_config;
@@ -627,6 +632,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
          c.aggregate_limit.max_reports_per_destination = 10;
          c.aggregate_limit.min_delay = base::Minutes(10);
          c.aggregate_limit.delay_span = base::Minutes(20);
+         c.aggregate_limit.max_aggregatable_reports_per_source = 12;
 
          c.destination_rate_limit = {
              .max_total = 2,
@@ -646,13 +652,13 @@ TEST(AttributionInteropParserTest, ValidConfig) {
     SCOPED_TRACE(test_case.json);
 
     AttributionInteropConfig expected;
-    absl::visit(base::Overloaded{
-                    [&](MakeAttributionConfigFunc f) {
-                      f(expected.attribution_config);
-                    },
-                    [&](MakeInteropConfigFunc f) { f(expected); },
-                },
-                test_case.make_expected);
+    std::visit(base::Overloaded{
+                   [&](MakeAttributionConfigFunc f) {
+                     f(expected.attribution_config);
+                   },
+                   [&](MakeInteropConfigFunc f) { f(expected); },
+               },
+               test_case.make_expected);
 
     base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
     if (test_case.required) {
@@ -683,7 +689,9 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       "max_event_level_reports_per_destination",
       "max_aggregatable_reports_per_destination",
       "max_aggregatable_debug_budget_per_context_site",
-      "max_aggregatable_debug_reports_per_source"};
+      "max_aggregatable_debug_reports_per_source",
+      "max_aggregatable_reports_per_source",
+  };
 
   {
     auto result = ParseAttributionInteropConfig(base::Value::Dict());

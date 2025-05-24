@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="de">
+<translation id="1293272072740285747">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie löschen, wenn du sie nicht mehr benötigst.
+
+Wenn du die Tabgruppe „<ph name="TITLE_OF_GROUP" />“ löschst, verlieren alle Mitglieder sofort den Zugriff darauf und sie wird von allen Geräten gelöscht.</translation>
+<translation id="1340839264183302272">Gruppe verlassen</translation>
+<translation id="1419023007528516122">Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht</translation>
+<translation id="1501480321619201731">Gruppe löschen</translation>
+<translation id="2677748264148917807">Verlassen</translation>
+<translation id="3547352561153509682">Dadurch wird die Gruppe von allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
+<translation id="381219490185664296">Tabgruppe aufheben?</translation>
+<translation id="4139634748112164403">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird endgültig gelöscht</translation>
+<translation id="4431937619879060901">Du verlierst dann sofort den Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ und sie wird von allen deinen Geräten gelöscht</translation>
+<translation id="4460014764210899310">Gruppierung aufheben</translation>
+<translation id="4777866634702576038">Tabgruppe löschen?</translation>
+<translation id="5094423602314093681">Tab(s) entfernen und Gruppe löschen?</translation>
+<translation id="5647702255748985085">Gruppe verlassen?</translation>
+<translation id="742664698522525515">Gruppe beibehalten?</translation>
+<translation id="750886945254958667">Du kannst diese Gruppe beibehalten, um später Tabs hinzuzufügen, oder sie verlassen, wenn du keinen Zugriff mehr darauf haben möchtest</translation>
+<translation id="8261506727792406068">Löschen</translation>
+<translation id="870736955561925754">Tab schließen und Gruppe löschen?</translation>
+<translation id="8804742093141782941">Gruppe beibehalten</translation>
+<translation id="9169141410816678175">Alle Nutzer mit Zugriff auf die Tabgruppe „<ph name="GROUP_NAME" />“ verlieren dann sofort den Zugriff auf diese und die Tabgruppe wird von allen Geräten gelöscht</translation>
+<translation id="9216898458513705996">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird auf allen Geräten gelöscht, die mit <ph name="USER_EMAIL" /> angemeldet sind</translation>
+<translation id="94870150074703282">Gruppe löschen?</translation>
+</translationbundle>

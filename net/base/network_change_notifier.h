@@ -332,19 +332,10 @@ class NET_EXPORT NetworkChangeNotifier {
         observer_list_;
   };
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40232923): Remove this section and align the behavior
-  // with other platforms or confirm that Lacros needs to be separated.
-  static constexpr ConnectionType kDefaultInitialConnectionType =
-      CONNECTION_UNKNOWN;
-  static constexpr ConnectionSubtype kDefaultInitialConnectionSubtype =
-      SUBTYPE_UNKNOWN;
-#else
   static constexpr ConnectionType kDefaultInitialConnectionType =
       CONNECTION_NONE;
   static constexpr ConnectionSubtype kDefaultInitialConnectionSubtype =
       SUBTYPE_NONE;
-#endif
 
   NetworkChangeNotifier(const NetworkChangeNotifier&) = delete;
   NetworkChangeNotifier& operator=(const NetworkChangeNotifier&) = delete;

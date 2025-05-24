@@ -63,7 +63,6 @@ void SVGFEGaussianBlurElement::SvgAttributeChanged(
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kInAttr ||
       attr_name == svg_names::kStdDeviationAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

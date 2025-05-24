@@ -32,21 +32,20 @@ ProtobufHttpRequestBase::CreateScopedRequest() {
       &ProtobufHttpRequestBase::Invalidate, weak_factory_.GetWeakPtr()));
 }
 
-ProtobufHttpStatus ProtobufHttpRequestBase::GetUrlLoaderStatus() const {
+HttpStatus ProtobufHttpRequestBase::GetUrlLoaderStatus() const {
   net::Error net_error = static_cast<net::Error>(url_loader_->NetError());
   if (net_error != net::Error::OK &&
       net_error != net::Error::ERR_HTTP_RESPONSE_CODE_FAILURE) {
-    return ProtobufHttpStatus(net_error);
+    return HttpStatus(net_error);
   }
   // Depending on the configuration, url_loader_->NetError() can be OK even if
   // the error code is 4xx or 5xx.
   if (!url_loader_->ResponseInfo() || !url_loader_->ResponseInfo()->headers ||
       url_loader_->ResponseInfo()->headers->response_code() <= 0) {
-    return ProtobufHttpStatus(
-        ProtobufHttpStatus::Code::INTERNAL,
-        "Failed to get HTTP status from the response header.");
+    return HttpStatus(HttpStatus::Code::INTERNAL,
+                      "Failed to get HTTP status from the response header.");
   }
-  return ProtobufHttpStatus(static_cast<net::HttpStatusCode>(
+  return HttpStatus(static_cast<net::HttpStatusCode>(
       url_loader_->ResponseInfo()->headers->response_code()));
 }
 

@@ -2,8 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader_impl.h"
 
+#include <map>
 #include <string>
 #include <utility>
 
@@ -18,8 +24,10 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/variations/net/variations_http_headers.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -93,7 +101,8 @@ bool GetStyleSheet(const base::Value::Dict& dict,
 
 }  // namespace safe_html
 
-std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
+std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value,
+                                              bool expect_async_bar_parts) {
   if (!value.is_dict()) {
     DVLOG(1) << "Parse error: top-level dictionary not found";
     return std::nullopt;
@@ -112,16 +121,19 @@ std::optional<OneGoogleBarData> JsonToOGBData(const base::Value& value) {
     language_code = *maybe_language;
   }
 
-  const base::Value::Dict* one_google_bar = update->FindDict("ogb");
+  OneGoogleBarData result;
+  result.language_code = language_code;
+
+  const base::Value::Dict* one_google_bar =
+      update->FindDict(expect_async_bar_parts ? "ogb_parts" : "ogb");
   if (!one_google_bar) {
     DVLOG(1) << "Parse error: no ogb";
     return std::nullopt;
   }
 
-  OneGoogleBarData result;
-  result.language_code = language_code;
-
-  if (!safe_html::GetHtml(*one_google_bar, "html", &result.bar_html)) {
+  if (!safe_html::GetHtml(*one_google_bar,
+                          expect_async_bar_parts ? "right_html" : "html",
+                          &result.bar_html)) {
     DVLOG(1) << "Parse error: no html";
     return std::nullopt;
   }
@@ -215,7 +227,7 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
       chrome_connected_header_helper.BuildRequestHeader(
           /*is_header_request=*/true, api_url_,
           // Gaia ID is only needed for (drive|docs).google.com.
-          /*gaia_id=*/std::string(),
+          GaiaId(),
           /*is_child_account=*/signin::Tribool::kUnknown, profile_mode,
           signin::kChromeMirrorHeaderSource,
           /*force_account_consistency=*/false);
@@ -283,8 +295,14 @@ OneGoogleBarLoaderImpl::OneGoogleBarLoaderImpl(
     bool account_consistency_mirror_required)
     : url_loader_factory_(url_loader_factory),
       application_locale_(application_locale),
-      account_consistency_mirror_required_(
-          account_consistency_mirror_required) {}
+      account_consistency_mirror_required_(account_consistency_mirror_required),
+      async_bar_parts_(base::FeatureList::IsEnabled(
+          ntp_features::kNtpOneGoogleBarAsyncBarParts)),
+      additional_query_params_(
+          {{"async", base::FeatureList::IsEnabled(
+                         ntp_features::kNtpOneGoogleBarAsyncBarParts)
+                         ? "fixed:0,abp:1"
+                         : "fixed:0"}}) {}
 
 OneGoogleBarLoaderImpl::~OneGoogleBarLoaderImpl() = default;
 
@@ -305,13 +323,9 @@ GURL OneGoogleBarLoaderImpl::GetLoadURLForTesting() const {
   return GetApiUrl();
 }
 
-bool OneGoogleBarLoaderImpl::SetAdditionalQueryParams(
-    const std::string& value) {
-  if (additional_query_params_ == value) {
-    return false;
-  }
-  additional_query_params_ = value;
-  return true;
+void OneGoogleBarLoaderImpl::SetAdditionalQueryParams(
+    const std::map<std::string, std::string>& params) {
+  additional_query_params_ = params;
 }
 
 GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
@@ -324,23 +338,30 @@ GURL OneGoogleBarLoaderImpl::GetApiUrl() const {
   api_url = google_base_url.Resolve(kNewTabOgbApiPath);
 
   // Add the "hl=" parameter.
-  if (additional_query_params_.find("&hl=") == std::string::npos) {
+  if (additional_query_params_.find("hl") == additional_query_params_.end()) {
     api_url = net::AppendQueryParameter(api_url, "hl", application_locale_);
   }
 
-  // Add the "async=" parameter. We can't use net::AppendQueryParameter for
-  // this because we need the ":" to remain unescaped.
-  GURL::Replacements replacements;
-  std::string query = api_url.query();
-  query += additional_query_params_;
-  if (additional_query_params_.find("&async=") == std::string::npos) {
-    query += "&async=fixed:0";
+  for (const auto& param_pair : additional_query_params_) {
+    // Add the "async=" parameter. We can't use net::AppendQueryParameter for
+    // this because we need the ":" to remain unescaped.
+    if (param_pair.first == "async") {
+      std::string query = api_url.query() + "&async=" + param_pair.second;
+      if (query.at(0) == '&') {
+        query = query.substr(1);
+      }
+      GURL::Replacements replacements;
+      replacements.SetQueryStr(query);
+      api_url = api_url.ReplaceComponents(replacements);
+
+      continue;
+    }
+
+    api_url =
+        net::AppendQueryParameter(api_url, param_pair.first, param_pair.second);
   }
-  if (query.at(0) == '&') {
-    query = query.substr(1);
-  }
-  replacements.SetQueryStr(query);
-  return api_url.ReplaceComponents(replacements);
+
+  return api_url;
 }
 
 void OneGoogleBarLoaderImpl::LoadDone(
@@ -361,11 +382,10 @@ void OneGoogleBarLoaderImpl::LoadDone(
   response.swap(*response_body);
 
   // The response may start with )]}'. Ignore this.
-  if (base::StartsWith(response, kResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kResponsePreamble));
+  auto remainder = base::RemovePrefix(response, kResponsePreamble);
+  if (remainder) {
+    response = std::string(*remainder);
   }
-
   data_decoder::DataDecoder::ParseJsonIsolated(
       response, base::BindOnce(&OneGoogleBarLoaderImpl::JsonParsed,
                                weak_ptr_factory_.GetWeakPtr()));
@@ -379,7 +399,8 @@ void OneGoogleBarLoaderImpl::JsonParsed(
     return;
   }
 
-  std::optional<OneGoogleBarData> data = JsonToOGBData(*result);
+  std::optional<OneGoogleBarData> data =
+      JsonToOGBData(*result, async_bar_parts_);
   Respond(data.has_value() ? Status::OK : Status::FATAL_ERROR, data);
 }
 

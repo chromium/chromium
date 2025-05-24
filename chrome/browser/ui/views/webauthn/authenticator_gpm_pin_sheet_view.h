@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class View;
@@ -21,6 +22,8 @@ class View;
 // user to enter GPM pin code used in passkeys flow.
 class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
                                      public AuthenticatorGPMPinView::Delegate {
+  METADATA_HEADER(AuthenticatorGpmPinSheetView, AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorGpmPinSheetView(
       std::unique_ptr<AuthenticatorGpmPinSheetModel> sheet_model);

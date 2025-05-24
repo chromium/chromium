@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/utility/importer/bookmark_html_reader.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -151,7 +147,8 @@ TEST(BookmarkHTMLReaderTest, CanImportURLAsSearchEngineTest) {
     const std::string url;
     const bool can_be_imported_as_search_engine;
     const std::string expected_search_engine_url;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       {"http://www.example.%s.com", true,
        "http://www.example.{searchTerms}.com/"},
       {"http://www.example.%S.com", true,
@@ -195,7 +192,7 @@ TEST(BookmarkHTMLReaderTest, CanImportURLAsSearchEngineTest) {
       // Invalid characters that should be auto-encoded.
       {"http://www.example.com/{search}?q=%s", true,
        "http://www.example.com/%7Bsearch%7D?q={searchTerms}"},
-  };
+  });
 
   std::string search_engine_url;
   for (size_t i = 0; i < std::size(test_cases); ++i) {
@@ -223,9 +220,9 @@ class BookmarkHTMLReaderTestWithData : public testing::Test {
   void ExpectSecondFirefox23Bookmark(const ImportedBookmarkEntry& entry);
   void ExpectThirdFirefox23Bookmark(const ImportedBookmarkEntry& entry);
   void ExpectFirstFirefoxBookmarkWithKeyword(
-      const importer::SearchEngineInfo& info);
+      const user_data_importer::SearchEngineInfo& info);
   void ExpectSecondFirefoxBookmarkWithKeyword(
-      const importer::SearchEngineInfo& info);
+      const user_data_importer::SearchEngineInfo& info);
   void ExpectFirstEmptyFolderBookmark(const ImportedBookmarkEntry& entry);
   void ExpectSecondEmptyFolderBookmark(const ImportedBookmarkEntry& entry);
 
@@ -313,14 +310,14 @@ void BookmarkHTMLReaderTestWithData::ExpectThirdFirefox23Bookmark(
 }
 
 void BookmarkHTMLReaderTestWithData::ExpectFirstFirefoxBookmarkWithKeyword(
-    const importer::SearchEngineInfo& info) {
+    const user_data_importer::SearchEngineInfo& info) {
   EXPECT_EQ(u"http://example.{searchTerms}.com/", info.url);
   EXPECT_EQ(u"keyword", info.keyword);
   EXPECT_EQ(u"Bookmark Keyword", info.display_name);
 }
 
 void BookmarkHTMLReaderTestWithData::ExpectSecondFirefoxBookmarkWithKeyword(
-    const importer::SearchEngineInfo& info) {
+    const user_data_importer::SearchEngineInfo& info) {
   EXPECT_EQ(u"http://example.com/?q={searchTerms}", info.url);
   EXPECT_EQ(u"keyword", info.keyword);
   EXPECT_EQ(u"BookmarkName", info.display_name);
@@ -394,7 +391,7 @@ TEST_F(BookmarkHTMLReaderTestWithData, FirefoxBookmarkFileWithKeywordImport) {
   base::FilePath path = test_data_path_.AppendASCII(
       "firefox_bookmark_keyword.html");
 
-  std::vector<importer::SearchEngineInfo> search_engines;
+  std::vector<user_data_importer::SearchEngineInfo> search_engines;
   ImportBookmarksFile(base::RepeatingCallback<bool(void)>(),
                       base::RepeatingCallback<bool(const GURL&)>(), path,
                       nullptr, &search_engines, nullptr);

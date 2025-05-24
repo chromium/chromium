@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -18,11 +20,12 @@ import android.graphics.drawable.Icon;
 import android.os.Bundle;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.drawable.IconCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
@@ -36,6 +39,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /** Abstract base class for building a notification. Stores all given arguments for later use. */
+@NullMarked
 public abstract class NotificationBuilderBase {
     protected static class Action {
         @IntDef({Type.BUTTON, Type.TEXT})
@@ -52,14 +56,14 @@ public abstract class NotificationBuilderBase {
         }
 
         public int iconId;
-        public Bitmap iconBitmap;
-        public CharSequence title;
+        public @Nullable Bitmap iconBitmap;
+        public @Nullable CharSequence title;
         public PendingIntentProvider intent;
         public @Type int type;
         public @NotificationUmaTracker.ActionType int umaActionType;
 
         /** If the action.type is TEXT, this corresponds to the placeholder text for the input. */
-        public String placeholder;
+        public @Nullable String placeholder;
 
         Action(
                 int iconId,
@@ -78,10 +82,10 @@ public abstract class NotificationBuilderBase {
 
         Action(
                 int iconId,
-                CharSequence title,
+                @Nullable CharSequence title,
                 PendingIntentProvider intent,
                 @Type int type,
-                String placeholder,
+                @Nullable String placeholder,
                 @NotificationUmaTracker.ActionType int umaActionType) {
             this.iconId = iconId;
             this.title = title;
@@ -92,11 +96,11 @@ public abstract class NotificationBuilderBase {
         }
 
         Action(
-                Bitmap iconBitmap,
-                CharSequence title,
+                @Nullable Bitmap iconBitmap,
+                @Nullable CharSequence title,
                 PendingIntentProvider intent,
                 @Type int type,
-                String placeholder) {
+                @Nullable String placeholder) {
             this.iconBitmap = iconBitmap;
             this.title = title;
             this.intent = intent;
@@ -129,31 +133,31 @@ public abstract class NotificationBuilderBase {
     private final int mLargeIconHeightPx;
     private final RoundedIconGenerator mIconGenerator;
 
-    protected CharSequence mTitle;
-    protected CharSequence mBody;
-    protected CharSequence mOrigin;
-    protected String mChannelId;
-    protected CharSequence mTickerText;
-    protected Bitmap mImage;
+    protected @Nullable CharSequence mTitle;
+    protected @Nullable CharSequence mBody;
+    protected @Nullable CharSequence mOrigin;
+    protected @Nullable String mChannelId;
+    protected @Nullable CharSequence mTickerText;
+    protected @Nullable Bitmap mImage;
 
     protected int mSmallIconId;
-    @Nullable protected Bitmap mSmallIconBitmapForStatusBar;
-    @Nullable protected Bitmap mSmallIconBitmapForContent;
-    @Nullable protected Bundle mExtras;
+    protected @Nullable Bitmap mSmallIconBitmapForStatusBar;
+    protected @Nullable Bitmap mSmallIconBitmapForContent;
+    protected @Nullable Bundle mExtras;
 
-    protected PendingIntentProvider mContentIntent;
-    protected PendingIntentProvider mDeleteIntent;
+    protected @Nullable PendingIntentProvider mContentIntent;
+    protected @Nullable PendingIntentProvider mDeleteIntent;
     protected @NotificationUmaTracker.ActionType int mDeleteIntentActionType =
             NotificationUmaTracker.ActionType.UNKNOWN;
     protected List<Action> mActions = new ArrayList<>(MAX_AUTHOR_PROVIDED_ACTION_BUTTONS);
     protected List<Action> mSettingsActions = new ArrayList<>(1);
     protected int mDefaults;
-    protected long[] mVibratePattern;
+    protected long @Nullable [] mVibratePattern;
     protected boolean mSilent;
     protected long mTimestamp;
     protected boolean mRenotify;
     protected int mPriority;
-    private Bitmap mLargeIcon;
+    private @Nullable Bitmap mLargeIcon;
     private boolean mSuppressShowingLargeIcon;
     protected long mTimeoutAfterMs;
 
@@ -257,7 +261,7 @@ public abstract class NotificationBuilderBase {
     private static @Nullable Bitmap applyWhiteOverlay(@Nullable Bitmap icon) {
         Bitmap whitened = null;
         if (icon != null) {
-            whitened = icon.copy(icon.getConfig(), /* isMutable= */ true);
+            whitened = icon.copy(assumeNonNull(icon.getConfig()), /* isMutable= */ true);
             applyWhiteOverlayToBitmap(whitened);
         }
         return whitened;
@@ -330,7 +334,7 @@ public abstract class NotificationBuilderBase {
     }
 
     /** Sets the channel id of the notification. */
-    public NotificationBuilderBase setChannelId(String channelId) {
+    public NotificationBuilderBase setChannelId(@Nullable String channelId) {
         mChannelId = channelId;
         return this;
     }
@@ -455,7 +459,7 @@ public abstract class NotificationBuilderBase {
      *
      * <p>See {@link NotificationBuilderBase#ensureNormalizedIcon} for more details.
      */
-    protected Bitmap getNormalizedLargeIcon() {
+    protected @Nullable Bitmap getNormalizedLargeIcon() {
         if (mSuppressShowingLargeIcon) {
             return null;
         }
@@ -474,7 +478,8 @@ public abstract class NotificationBuilderBase {
      * @return An appropriately sized icon to use for the notification.
      */
     @VisibleForTesting
-    public Bitmap ensureNormalizedIcon(Bitmap icon, CharSequence origin) {
+    public @Nullable Bitmap ensureNormalizedIcon(
+            @Nullable Bitmap icon, @Nullable CharSequence origin) {
         if (icon == null || icon.getWidth() == 0) {
             return origin != null
                     ? mIconGenerator.generateIconForUrl(origin.toString(), true)
@@ -491,7 +496,8 @@ public abstract class NotificationBuilderBase {
      * Creates a public version of the notification to be displayed in sensitive contexts, such as
      * on the lockscreen, displaying just the site origin and badge or generated icon.
      */
-    protected Notification createPublicNotification(Context context) {
+    protected @Nullable Notification createPublicNotification(Context context) {
+        assumeNonNull(mChannelId);
         NotificationWrapperBuilder builder =
                 NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(mChannelId)
                         .setContentText(context.getString(R.string.notification_hidden_text))
@@ -503,7 +509,7 @@ public abstract class NotificationBuilderBase {
             // The Icon class was added in Android M.
             Bitmap publicIcon =
                     mSmallIconBitmapForStatusBar.copy(
-                            mSmallIconBitmapForStatusBar.getConfig(), true);
+                            assumeNonNull(mSmallIconBitmapForStatusBar.getConfig()), true);
             builder.setSmallIcon(Icon.createWithBitmap(publicIcon));
         }
         return builder.build();
@@ -565,7 +571,8 @@ public abstract class NotificationBuilderBase {
      * this notification is built and posted, a further summary notification must be posted for
      * notifications in the group to appear grouped in the notification shade.
      */
-    static void setGroupOnBuilder(NotificationWrapperBuilder builder, CharSequence origin) {
+    static void setGroupOnBuilder(
+            NotificationWrapperBuilder builder, @Nullable CharSequence origin) {
         if (origin == null) return;
         builder.setGroup(NotificationConstants.GROUP_WEB_PREFIX + origin);
         // TODO(crbug.com/40498483) Post a group summary notification.

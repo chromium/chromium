@@ -6,20 +6,19 @@
 #define COMPONENTS_MESSAGES_ANDROID_MESSAGES_FEATURE_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace messages {
 
-// Feature that controls whether "ads blocked" messages use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidAdsBlocked);
+// Feature that allows for AccessibilityEvents to be sent in Java-side impl to
+// test possible crash solutions.
+BASE_DECLARE_FEATURE(kMessagesAccessibilityEventInvestigations);
 
-// Feature that controls whether "save card" prompts use Messages or
-// Infobars infrastructure.
-BASE_DECLARE_FEATURE(kMessagesForAndroidSaveCard);
-
-// Feature that controls whether Messages for Android should use
-// new Stacking Animation.
-BASE_DECLARE_FEATURE(kMessagesForAndroidStackingAnimation);
+// A feature param of type int that corresponds to the possible approaches for
+// fixing the crash.
+const base::FeatureParam<int> kMessagesAccessibilityEventInvestigationsParam{
+    &kMessagesAccessibilityEventInvestigations,
+    "messages_accessibility_events_investigations_param", 0};
 
 // Feature that exposes a listener to notify whether the current message
 // is fully visible.
@@ -28,19 +27,8 @@ BASE_DECLARE_FEATURE(kMessagesForAndroidFullyVisibleCallback);
 // Feature that enables extra histogram recordings.
 BASE_DECLARE_FEATURE(kMessagesAndroidExtraHistograms);
 
-bool IsAdsBlockedMessagesUiEnabled();
-
-bool IsPermissionUpdateMessagesUiEnabled();
-
-bool IsSafetyTipMessagesUiEnabled();
-
-bool IsSaveCardMessagesUiEnabled();
-
-bool UseFollowupButtonTextForSaveCardMessage();
-
-bool UseGPayIconForSaveCardMessage();
-
-bool UseDialogV2ForSaveCardMessage();
+// Feature that enables a close button when mouses hovers over.
+BASE_DECLARE_FEATURE(kMessagesCloseButton);
 
 }  // namespace messages
 

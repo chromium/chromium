@@ -18,6 +18,7 @@
 #include "tools/tool_support.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <stdlib.h>
 #include <windows.h>
 #endif
 

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/script_processor_handler.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -41,7 +37,7 @@ ScriptProcessorHandler::ScriptProcessorHandler(
     uint32_t number_of_output_channels,
     const HeapVector<Member<AudioBuffer>>& input_buffers,
     const HeapVector<Member<AudioBuffer>>& output_buffers)
-    : AudioHandler(kNodeTypeScriptProcessor, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeScriptProcessor, node, sample_rate),
       buffer_size_(buffer_size),
       number_of_input_channels_(number_of_input_channels),
       number_of_output_channels_(number_of_output_channels),
@@ -57,7 +53,7 @@ ScriptProcessorHandler::ScriptProcessorHandler(
   AddOutput(number_of_output_channels);
 
   channel_count_ = number_of_input_channels;
-  SetInternalChannelCountMode(kExplicit);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
 
   if (Context()->GetExecutionContext()) {
     task_runner_ = Context()->GetExecutionContext()->GetTaskRunner(
@@ -181,8 +177,9 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     for (uint32_t i = 0; i < number_of_input_channels; ++i) {
       internal_input_bus_->SetChannelMemory(
           i,
-          static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
-              buffer_read_write_index_,
+          UNSAFE_TODO(
+              static_cast<float*>(shared_input_buffer->channels()[i].Data()) +
+              buffer_read_write_index_),
           frames_to_process);
     }
 
@@ -192,10 +189,11 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
 
     for (uint32_t i = 0; i < number_of_output_channels; ++i) {
       float* destination = output_bus->Channel(i)->MutableData();
-      const float* source =
+      const float* source = UNSAFE_TODO(
           static_cast<float*>(shared_output_buffer->channels()[i].Data()) +
-          buffer_read_write_index_;
-      memcpy(destination, source, sizeof(float) * frames_to_process);
+          buffer_read_write_index_);
+      UNSAFE_TODO(
+          memcpy(destination, source, sizeof(float) * frames_to_process));
     }
   }
 
@@ -315,15 +313,17 @@ void ScriptProcessorHandler::SetChannelCount(uint32_t channel_count,
 }
 
 void ScriptProcessorHandler::SetChannelCountMode(
-    const String& mode,
+    V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  if ((mode == "max") || (mode == "clamped-max")) {
+  if ((mode == V8ChannelCountMode::Enum::kMax) ||
+      (mode == V8ChannelCountMode::Enum::kClampedMax)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "channelCountMode cannot be changed from 'explicit' to '" + mode + "'");
+        "channelCountMode cannot be changed from 'explicit' to '" +
+            V8ChannelCountMode(mode).AsString() + "'");
   }
 }
 

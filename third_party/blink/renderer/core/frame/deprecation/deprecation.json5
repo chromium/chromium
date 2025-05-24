@@ -80,6 +80,15 @@
       chrome_status_feature: 5735596811091968,
     },
     {
+      name: "CharsetAutoDetectionISO2022JP",
+      message: "Auto-detection of ISO-2022-JP character set is deprecated and it will be disabled in the near future. Please specify character set in the Content Type header or by using a meta tag (https://developer.mozilla.org/en-US/docs/Glossary/Character_encoding).",
+      translation_note: "Warning displayed to developers that they did not specify character encoding for HTML document, and that auto-detection of specific character set (i.e. ISO-2022-JP) used by the webiste won't be supported in the near futre.",
+      web_features: [
+        "kCharsetAutoDetectionISO2022JP",
+      ],
+      chrome_status_feature: 6576566521561088,
+    },
+    {
       name: "ChromeLoadTimesConnectionInfo",
       message: "`chrome.loadTimes()` is deprecated, instead use standardized API: Navigation Timing 2.",
       translation_note: "This warning occurs when the website attempts to invoke the deprecated `chrome.loadTimes().connectionInfo` API.",
@@ -149,26 +158,6 @@
       web_features: [
         "kCrossOriginWindowConfirm",
       ],
-    },
-    {
-      name: "CSSCustomStateDeprecatedSyntax",
-      message: "`:--customstatename` is deprecated. Please use the `:state(customstatename)` syntax instead.",
-      translation_note: "Warning displayed to developers when their website uses `:--customstatename` in CSS. They can simply switch their CSS to `:state(customstatename)` and it will be the same.",
-      web_features: [
-        "kCSSCustomStateDeprecatedSyntax",
-      ],
-      milestone: 122,
-      chrome_status_feature: 5140610730426368,
-    },
-    {
-      name: "CSSInsetAreaProperty",
-      message: "The `inset-area` property is deprecated. Please use the `position-area` property instead.",
-      translation_note: "Warning displayed to developers when their website uses `inset-area` in CSS. They can simply switch their CSS to `position-area` and it will function in the same way.",
-      web_features: [
-        "kCSSInsetAreaProperty",
-      ],
-      milestone: 129,
-      chrome_status_feature: 5142143019253760,
     },
     {
       name: "CSSSelectorInternalMediaControlsOverlayCastButton",
@@ -254,15 +243,6 @@
       ],
     },
     {
-      name: "GetInnerHTML",
-      message: "The getInnerHTML() function is deprecated, and will be removed from this browser very soon. Please use getHTML() instead.",
-      translation_note: "Warning displayed to developers when non-standard getInnerHTML function is called. This function is deprecated and will be removed.",
-      web_features: [
-        "kElementGetInnerHTML",
-      ],
-      chrome_status_feature: 5081733588582400,
-    },
-    {
       name: "GetUserMediaInsecureOrigin",
       message: "`getUserMedia()` no longer works on insecure origins. To use this feature, you should consider switching your application to a secure origin, such as HTTPS. See https://goo.gle/chrome-insecure-origins for more details.",
       translation_note: "This warning occurs when the `getUserMedia()` API is invoked on an insecure (e.g., HTTP) site. This is only permitted on secure sites (e.g., HTTPS).",
@@ -272,12 +252,31 @@
       ],
     },
     {
+      name: "H1UserAgentFontSizeInSection",
+      message: "Found an <h1> tag within an <article>, <aside>, <nav>, or <section> which does not have a specified font-size. The size of this heading text will be changing in this browser in the near future. See https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements#specifying_a_uniform_font_size_for_h1 for more information.",
+      translation_note: "This warning occurs when a site uses <h1> inside <article>, <aside>, <nav>, or <section>. It means the behavior (font size) may change in a future Chrome release, when some special rules are removed from the browser.",
+      web_features: [
+        "kH1UserAgentFontSizeInSectionApplied",
+      ],
+      chrome_status_feature: 6192419898654720,
+      milestone: 136,
+    },
+    {
       name: "HostCandidateAttributeGetter",
       message: "`RTCPeerConnectionIceErrorEvent.hostCandidate` is deprecated. Please use `RTCPeerConnectionIceErrorEvent.address` or `RTCPeerConnectionIceErrorEvent.port` instead.",
       translation_note: "A deprecation warning shown to developers in the DevTools Issues tab when code tries to use the deprecated hostCandidate field, guiding developers to use the equivalent information in the .address and .port fields instead.",
       web_features: [
         "kHostCandidateAttributeGetter",
       ],
+    },
+    {
+      name: "IdentityDigitalCredentials",
+      message: "This format for the navigator.credentials.get() request for digital credentials is deprecated, please update your call to use the new format.",
+      translation_note: "A deprecation warning shown in the DevTools Issues tab, when a request for digital credentials API is formatted using a deprecated format.",
+      web_features: [
+        "kIdentityDigitalCredentials",
+      ],
+      chrome_status_feature: 5166035265650688,
     },
     {
       name: "IdentityInCanMakePaymentEvent",
@@ -306,6 +305,14 @@
       translation_note: "This is a deprecated warning to developers that a field in a structure has been renamed.",
       web_features: [
         "kDeprecatedInterestGroupDailyUpdateUrl",
+      ],
+    },
+    {
+      name: "IntlV8BreakIterator",
+      message: "`Intl.v8BreakIterator` is deprecated. Please use `Intl.Segmenter` instead.",
+      translation_note: "Warning displayed to developers that instead of calling the `Intl.v8BreakIterator` constructor, which is not a standard JavaScript API, use ECMA402 standard API Intl.Segmenter shipped in end of 2020 instead.",
+      web_features: [
+        "kBreakIterator",
       ],
     },
     {
@@ -377,7 +384,7 @@
     },
     {
       name: "ObsoleteCreateImageBitmapImageOrientationNone",
-      message: "Option `imageOrientation: 'none'` in createImageBitmap is deprecated. Please use createImageBitmap with option {imageOrientation: 'from-image'} instead.",
+      message: "Option `imageOrientation: 'none'` in createImageBitmap is deprecated. Please use createImageBitmap with option '{imageOrientation: 'from-image'}' instead.",
       translation_note: "Warning displayed to developers when CreateImageBitmap is used with the newly deprecated option imageOrientation: 'none'.",
       web_features: [
         "kObsoleteCreateImageBitmapImageOrientationNone",
@@ -586,24 +593,6 @@
       milestone: 71,
     },
     {
-      name: "ThirdPartyCookieAccessError",
-      message: "Cookies marked with `SameSite=None; Secure` and not `Partitioned` are blocked in cross-site contexts.",
-      translation_note: "This error occurs when the website attempts to access third-party cookies and the browser blocks them.",
-      web_features: [
-        // This deprecation is used for Legacy Technology Report generation only.
-      ],
-      chrome_status_feature: 5133113939722240,
-    },
-    {
-      name: "ThirdPartyCookieAccessWarning",
-      message: "In a future version of the browser, cookies marked with `SameSite=None; Secure` and not `Partitioned` will be blocked in cross-site context.",
-      translation_note: "This warning occurs when the website attempts to access third-party cookies but the browser does not block them yet.",
-      web_features: [
-        // This deprecation is used for Legacy Technology Report generation only.
-      ],
-      chrome_status_feature: 5133113939722240,
-    },
-    {
       name: "UnloadHandler",
       message: "Unload event listeners are deprecated and will be removed.",
       translation_note: "A deprecation warning shown in the DevTools Issues tab. It's shown when a listener for the `unload` event is added.",
@@ -611,15 +600,6 @@
         "kDocumentUnloadRegistered",
       ],
       chrome_status_feature: 5579556305502208,
-    },
-    {
-      name: "V8GPUAdapter_RequestAdapterInfo_Method",
-      message: "The GPUAdapter `requestAdapterInfo()` method is deprecated, instead use the GPUAdapter `info` attribute.",
-      translation_note: "This warning occurs when the website attempts to invoke the deprecated GPUAdapter `requestAdapterInfo()` method.",
-      web_features: [
-        "kV8GPUAdapter_RequestAdapterInfo_Method",
-      ],
-      chrome_status_feature: 5140787340509184,
     },
     {
       name: "V8SharedArrayBufferConstructedInExtensionWithoutIsolation",
@@ -631,14 +611,13 @@
       milestone: 96,
     },
     {
-      name: "WebSQL",
-      message: "Web SQL is deprecated. Please use SQLite WebAssembly or Indexed Database",
-      translation_note: "Warning displayed to developers when the Web SQL API is used to let them know this API is deprecated.",
+      name: "WebGPUAdapterIsFallbackAdapter",
+      message: "The GPUAdapter `isFallbackAdapter` attribute is deprecated, instead use the GPUAdapterInfo `isFallbackAdapter` attribute.",
+      translation_note: "This warning occurs when the website attempts to use the deprecated GPUAdapter `isFallbackAdapter` attribute.",
       web_features: [
-        "kOpenWebDatabase",
+        "kV8GPUAdapter_IsFallbackAdapter_AttributeGetter",
       ],
-      chrome_status_feature: 5134293578285056,
-      milestone: 115,
+      chrome_status_feature: 4870179714236416,
     },
     {
       name: "XHRJSONEncodingDetection",
@@ -656,15 +635,6 @@
       web_features: [
         "kXMLHttpRequestSynchronousInNonWorkerOutsideBeforeUnload",
       ],
-    },
-    {
-      name: "XRSupportsSession",
-      message: "`supportsSession()` is deprecated. Please use `isSessionSupported()` and check the resolved boolean value instead.",
-      translation_note: "Warning displayed to developers that instead of using `supportsSession()`, which returns a promise that resolves if the XR session can be supported and rejects if not, they should use `isSessionSupported()` which will return a promise which resolves to a boolean indicating if the XR session can be supported or not, but may reject to throw an exception.",
-      web_features: [
-        "kXRSupportsSession",
-      ],
-      milestone: 80,
     },
   ],
 }

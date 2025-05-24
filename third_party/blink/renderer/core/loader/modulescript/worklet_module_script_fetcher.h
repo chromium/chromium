@@ -35,7 +35,8 @@ class CORE_EXPORT WorkletModuleScriptFetcher final
              ModuleType,
              ResourceFetcher*,
              ModuleGraphLevel,
-             ModuleScriptFetcher::Client*) override;
+             ModuleScriptFetcher::Client*,
+             ModuleImportPhase) override;
 
   void Trace(Visitor* visitor) const override;
 

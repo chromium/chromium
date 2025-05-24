@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -67,7 +66,6 @@ TEST(CSSPageRule, selectorText) {
 }
 
 TEST(CSSPageRule, MarginRules) {
-  ScopedPageMarginBoxesForTest enabled(true);
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
@@ -83,7 +81,6 @@ TEST(CSSPageRule, MarginRules) {
 }
 
 TEST(CSSPageRule, MarginRulesInvalidPrelude) {
-  ScopedPageMarginBoxesForTest enabled(true);
   test::TaskEnvironment task_environment;
   css_test_helpers::TestStyleSheet sheet;
 
@@ -94,24 +91,6 @@ TEST(CSSPageRule, MarginRulesInvalidPrelude) {
   EXPECT_EQ(1u, sheet.CssRules()->length());
   EXPECT_EQ("@page { size: auto; }", sheet.CssRules()->item(0)->cssText());
   EXPECT_EQ(CSSRule::kPageRule, sheet.CssRules()->item(0)->GetType());
-}
-
-TEST(CSSPageRule, MarginRulesIgnoredWhenDisabled) {
-  ScopedPageMarginBoxesForTest enabled(false);
-  test::TaskEnvironment task_environment;
-  css_test_helpers::TestStyleSheet sheet;
-
-  const char* css_rule =
-      "@page { size: auto; @top-right { content: \"fisk\"; margin-bottom: 1cm; "
-      "} margin-top: 2cm; }";
-  sheet.AddCSSRules(css_rule);
-  ASSERT_TRUE(sheet.CssRules());
-  EXPECT_EQ(1u, sheet.CssRules()->length());
-  EXPECT_EQ("@page { size: auto; margin-top: 2cm; }",
-            sheet.CssRules()->item(0)->cssText());
-  EXPECT_EQ(CSSRule::kPageRule, sheet.CssRules()->item(0)->GetType());
-  auto* page_rule = To<CSSPageRule>(sheet.CssRules()->item(0));
-  EXPECT_EQ("", page_rule->selectorText());
 }
 
 class CSSPageRuleTest : public PageTestBase {};

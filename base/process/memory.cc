@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/process/memory.h"
 
 #include <string.h>
@@ -14,7 +19,7 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC)
-#include "partition_alloc/page_allocator.h"
+#include "partition_alloc/page_allocator.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -39,8 +44,9 @@ bool UncheckedCalloc(size_t num_items, size_t size, void** result) {
     return false;
   }
 
-  if (!UncheckedMalloc(alloc_size, result))
+  if (!UncheckedMalloc(alloc_size, result)) {
     return false;
+  }
 
   memset(*result, 0, alloc_size);
   return true;

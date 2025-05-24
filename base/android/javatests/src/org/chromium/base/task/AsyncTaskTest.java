@@ -4,10 +4,13 @@
 
 package org.chromium.base.task;
 
+import android.os.Process;
+
 import androidx.annotation.NonNull;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -18,13 +21,15 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Tests for our AsyncTask modifications
  *
- * Not a robolectric test because the reflection doesn't work with ShadowAsyncTask.
+ * <p>Not a robolectric test because the reflection doesn't work with ShadowAsyncTask.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class AsyncTaskTest {
@@ -159,6 +164,59 @@ public class AsyncTaskTest {
             }
             // Calling onPostExecute on this class causes failure.
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Checks that Android's AsyncTasks do not permanently reset their thread pool thread priority.
+     */
+    @Test
+    @SmallTest
+    @SuppressWarnings("NoAndroidAsyncTaskCheck")
+    public void testAsyncTaskThreadPriority() throws Exception {
+        AsyncTask.takeOverAndroidThreadPool();
+        var waitSemaphore = new Semaphore(0);
+        final var threadPoolTid = new AtomicInteger(0);
+        int invalidThreadPriority = Process.THREAD_PRIORITY_LOWEST - 1;
+        final var backgroundThreadPriority = new AtomicInteger(invalidThreadPriority);
+        final var threadPriorityAfterTask = new AtomicInteger(invalidThreadPriority);
+
+        new android.os.AsyncTask<Void, Void, Void>() {
+            @Override
+            public Void doInBackground(Void... params) {
+                backgroundThreadPriority.set(Process.getThreadPriority(Process.myTid()));
+                threadPoolTid.set(Process.myTid());
+                return null;
+            }
+
+            @Override
+            public void onPostExecute(Void result) {
+                // Releasing the semaphore here, to make sure that AsyncTask's code that executes in
+                // the background thread after our code is finished.
+                waitSemaphore.release();
+            }
+        }.execute();
+        waitSemaphore.acquire();
+
+        // Need to get the thread priority from a task running on the same thread, to check that the
+        // priority is set correctly. Cannot be done from another thread, as the thread pool may be
+        // currently running another AsyncTask.
+        while (threadPriorityAfterTask.get() == invalidThreadPriority) {
+            // Using the same executor, but not an AsyncTask, so that it doesn't interfere with
+            // priorities.
+            AsyncTask.THREAD_POOL_EXECUTOR.execute(
+                    () -> {
+                        if (threadPoolTid.get() == Process.myTid()) {
+                            threadPriorityAfterTask.set(Process.getThreadPriority(Process.myTid()));
+                        }
+                        waitSemaphore.release();
+                    });
+            waitSemaphore.acquire();
+        }
+
+        // The thread priority is lowered while inside the task.
+        Assert.assertEquals(Process.THREAD_PRIORITY_BACKGROUND, backgroundThreadPriority.get());
+        // But restored afterwards.
+        Assert.assertEquals(Process.THREAD_PRIORITY_DEFAULT, threadPriorityAfterTask.get());
     }
 
     // TODO(ksolt): do we need any post execution tests here?

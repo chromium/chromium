@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_coordinator.h"
 
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_mediator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/branding/branding_view_controller.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
 @implementation BrandingCoordinator {
   // Mediator that handles branding visibility and animation.

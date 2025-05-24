@@ -64,28 +64,28 @@ class CONTENT_EXPORT PrivateAggregationBudgetKey {
   static std::optional<PrivateAggregationBudgetKey> Create(
       url::Origin origin,
       base::Time api_invocation_time,
-      PrivateAggregationCallerApi api);
+      PrivateAggregationCallerApi caller_api);
 
   // Skips validity checks
   static PrivateAggregationBudgetKey CreateForTesting(
       url::Origin origin,
       base::Time api_invocation_time,
-      PrivateAggregationCallerApi api);
+      PrivateAggregationCallerApi caller_api);
 
   const url::Origin& origin() const { return origin_; }
   TimeWindow time_window() const { return time_window_; }
-  PrivateAggregationCallerApi api() const { return api_; }
+  PrivateAggregationCallerApi caller_api() const { return caller_api_; }
 
  private:
   PrivateAggregationBudgetKey(url::Origin origin,
                               base::Time api_invocation_time,
-                              PrivateAggregationCallerApi api);
+                              PrivateAggregationCallerApi caller_api);
 
   // `origin_` must be potentially trustworthy. Even though the budget is scoped
   // per-site, we store the origin to support deleting the data by origin later.
   url::Origin origin_;
   TimeWindow time_window_;
-  PrivateAggregationCallerApi api_;
+  PrivateAggregationCallerApi caller_api_;
 
   // When adding new members, the corresponding `operator==()` definition in
   // `private_aggregation_test_utils.h` should also be updated.

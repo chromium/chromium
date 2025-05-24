@@ -28,7 +28,6 @@
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/input_router.h"
 #include "components/input/mouse_wheel_event_queue.h"
@@ -103,9 +102,9 @@
 #include "ui/base/ime/mock_input_method.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -127,7 +126,11 @@
 #include "ui/wm/core/window_util.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "components/stylus_handwriting/win/features.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_win_test_helper.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
+#include "third_party/blink/public/mojom/page/widget.mojom.h"
+#include "ui/base/ime/text_input_client.h"
 #include "ui/base/view_prop.h"
 #include "ui/base/win/window_event_target.h"
 #endif
@@ -160,6 +163,24 @@ using viz::FrameEvictionManager;
   }
 
 namespace content {
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+blink::mojom::StylusWritingFocusResultPtr
+CreateStylusWritingFocusResultForTesting() {
+  blink::mojom::StylusWritingFocusResultPtr result =
+      blink::mojom::StylusWritingFocusResult::New();
+  result->focused_edit_bounds = gfx::Rect(0, 0, 100, 10);
+  result->caret_bounds = gfx::Rect(0, 0, 0, 10);
+  // Intentionally skipping [0] because this simulates the "proximate" behavior,
+  // where the range provided may not include the entire text.
+  result->proximate_bounds = blink::mojom::ProximateCharacterRangeBounds::New(
+      gfx::Range(1, 3), std::vector<gfx::Rect>{gfx::Rect(10, 0, 10, 10),
+                                               gfx::Rect(20, 0, 10, 10)});
+  return result;
+}
+}  // namespace
+#endif  // BUILDFLAG(IS_WIN)
 
 void ParentHostView(RenderWidgetHostView* host_view,
                     RenderWidgetHostView* parent_host_view,
@@ -215,7 +236,7 @@ class TestWindowObserver : public aura::WindowObserver {
   raw_ptr<aura::Window> window_;
 
   // Was |window_| destroyed?
-  bool destroyed_;
+  bool destroyed_ = false;
 };
 
 class FakeWindowEventDispatcher : public aura::WindowEventDispatcher {
@@ -725,9 +746,6 @@ class RenderWidgetHostViewAuraTest : public testing::Test {
     view->TextInputStateChanged(state_with_type_text);
   }
 
-  void RunTimerBasedWheelEventPhaseInfoTest(
-      bool percent_based_scrolling_enabled);
-
   BrowserTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<aura::test::AuraTestHelper> aura_test_helper_;
@@ -1192,7 +1210,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ParentMovementUpdatesScreenRect) {
             widget_host_->screen_rects().at(0).second);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Checks that a popup view is destroyed when a user clicks outside of the popup
 // view and focus does not change. This is the case when the user clicks on the
 // desktop background on Chrome OS.
@@ -1246,7 +1264,7 @@ TEST_F(RenderWidgetHostViewAuraTest, DestroyPopupTapOutsidePopup) {
 }
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // On Desktop Linux, select boxes need mouse capture in order to work. Test that
 // when a select box is opened via a mouse press that it retains mouse capture
 // after the mouse is released.
@@ -1296,6 +1314,31 @@ TEST_F(RenderWidgetHostViewAuraTest, PopupClosesWhenParentLosesFocus) {
   ASSERT_TRUE(wm::IsActiveWindow(dialog_window.get()));
   EXPECT_TRUE(observer.destroyed());
 }
+
+#if !BUILDFLAG(IS_FUCHSIA)
+// Test that select boxes close when their parent window position changes.
+// This test is not relevant for Fuchsia, as the window bounds on Fuchsia does
+// not contain an offset.
+TEST_F(RenderWidgetHostViewAuraTest, PopupClosesWhenParentMoves) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->Focus();
+  EXPECT_TRUE(parent_view_->HasFocus());
+
+  InitViewForPopup(parent_view_, gfx::Rect(10, 10, 100, 100));
+
+  aura::Window* popup_window = view_->GetNativeView();
+  TestWindowObserver observer(popup_window);
+  widget_host_ = nullptr;  // Owned by `view_`.
+  view_ = nullptr;         // Self destroying during `SetBounds` below:
+
+  aura::WindowTreeHost* host = parent_view_->GetNativeView()->GetHost();
+  gfx::Rect bounds = host->GetBoundsInPixels();
+  bounds.Offset(10, 10);
+  host->SetBoundsInPixels(bounds);
+
+  EXPECT_TRUE(observer.destroyed());
+}
+#endif
 
 // Checks that IME-composition-event state is maintained correctly.
 TEST_F(RenderWidgetHostViewAuraTest, SetCompositionText) {
@@ -1756,22 +1799,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 }
 
 TEST_F(RenderWidgetHostViewAuraTest, TimerBasedWheelEventPhaseInfo) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kWindowsScrollingPersonality);
-  RunTimerBasedWheelEventPhaseInfoTest(false);
-}
-
-TEST_F(RenderWidgetHostViewAuraTest,
-       TimerBasedWheelEventPhaseInfoWithPercentBasedScrolling) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWindowsScrollingPersonality);
-  RunTimerBasedWheelEventPhaseInfoTest(true);
-}
-
-void RenderWidgetHostViewAuraTest::RunTimerBasedWheelEventPhaseInfoTest(
-    bool percent_based_scrolling_enabled) {
   InitViewForFrame(nullptr);
   view_->Show();
   sink_->ClearMessages();
@@ -1804,11 +1831,7 @@ void RenderWidgetHostViewAuraTest::RunTimerBasedWheelEventPhaseInfoTest(
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
             gesture_event->GetType());
   EXPECT_EQ(0U, gesture_event->data.scroll_update.delta_x);
-  EXPECT_EQ(percent_based_scrolling_enabled
-                ? 5 * ui::kScrollPercentPerLineOrChar /
-                      ui::MouseWheelEvent::kWheelDelta
-                : 5U,
-            gesture_event->data.scroll_update.delta_y);
+  EXPECT_EQ(gesture_event->data.scroll_update.delta_y, 5U);
   events[1]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
 
@@ -2618,7 +2641,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
 
   view_->SetSize(gfx::Size(100, 100));
 
-  // Physical pixel size.
+  // Device pixel size.
   EXPECT_EQ(gfx::Size(100, 100), view_->GetCompositorViewportPixelSize());
   // Update to the renderer.
   base::RunLoop().RunUntilIdle();
@@ -2626,9 +2649,9 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    // DIP size.
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    // Physical pixel size.
+    // Device pixel size.
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
+    // Device pixel size.
     EXPECT_EQ(gfx::Size(100, 100),
               visual_properties.compositor_viewport_pixel_rect.size());
   }
@@ -2643,11 +2666,11 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
   sink_->ClearMessages();
   widget_host_->ClearVisualProperties();
 
-  // Device scale factor changes to 2, so the physical pixel sizes should
+  // Device scale factor changes to 2, so the device pixel sizes should
   // change, while the DIP sizes do not.
 
   aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(2.0f);
-  // Physical pixel size.
+  // Device pixel size.
   EXPECT_EQ(gfx::Size(200, 200), view_->GetCompositorViewportPixelSize());
   // Update to the renderer.
   base::RunLoop().RunUntilIdle();
@@ -2655,9 +2678,9 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    // DIP size.
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    // Physical pixel size.
+    // Device pixel size.
+    EXPECT_EQ(gfx::Size(200, 200), visual_properties.new_size_device_px);
+    // Device pixel size.
     EXPECT_EQ(gfx::Size(200, 200),
               visual_properties.compositor_viewport_pixel_rect.size());
   }
@@ -2673,7 +2696,7 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
 
   aura_test_helper_->GetTestScreen()->SetDeviceScaleFactor(1.0f);
 
-  // Physical pixel size.
+  // Device pixel size.
   EXPECT_EQ(gfx::Size(100, 100), view_->GetCompositorViewportPixelSize());
   // Update to the renderer.
   base::RunLoop().RunUntilIdle();
@@ -2682,8 +2705,8 @@ TEST_F(RenderWidgetHostViewAuraTest, CompositorViewportPixelSizeWithScale) {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
     // DIP size.
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    // Physical pixel size.
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
+    // Device pixel size.
     EXPECT_EQ(gfx::Size(100, 100),
               visual_properties.compositor_viewport_pixel_rect.size());
   }
@@ -2782,7 +2805,7 @@ TEST_F(RenderWidgetHostViewAuraTest,
   EXPECT_EQ(1u, widget_host_->visual_properties().size());
   const auto& received_property = widget_host_->visual_properties()[0];
   EXPECT_EQ(false, received_property.auto_resize_enabled);
-  EXPECT_EQ(size_after_disabling, received_property.new_size);
+  EXPECT_EQ(size_after_disabling, received_property.new_size_device_px);
 }
 
 // This test verifies that in AutoResize mode a new
@@ -2839,7 +2862,7 @@ TEST_F(RenderWidgetHostViewAuraTest, AutoResizeWithBrowserInitiatedResize) {
     // Auto-resizve limits sent to the renderer.
     EXPECT_EQ(gfx::Size(50, 50), visual_properties.min_size_for_auto_resize);
     EXPECT_EQ(gfx::Size(100, 100), visual_properties.max_size_for_auto_resize);
-    EXPECT_EQ(gfx::Size(120, 120), visual_properties.new_size);
+    EXPECT_EQ(gfx::Size(120, 120), visual_properties.new_size_device_px);
     EXPECT_EQ(1, visual_properties.screen_infos.current().device_scale_factor);
     // A newly generated LocalSurfaceId is sent.
     EXPECT_TRUE(visual_properties.local_surface_id.has_value());
@@ -3100,7 +3123,7 @@ TEST_F(RenderWidgetHostViewAuraTest, ZeroSizeStillGetsLocalSurfaceId) {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
     // Empty size is sent.
-    EXPECT_EQ(gfx::Size(), visual_properties.new_size);
+    EXPECT_EQ(gfx::Size(), visual_properties.new_size_device_px);
     // A LocalSurfaceId is sent too.
     ASSERT_TRUE(visual_properties.local_surface_id.has_value());
     EXPECT_TRUE(visual_properties.local_surface_id->is_valid());
@@ -3177,7 +3200,7 @@ TEST_F(RenderWidgetHostViewAuraTest, Resize) {
   EXPECT_TRUE(widget_host_->visual_properties_ack_pending_for_testing());
   base::RunLoop().RunUntilIdle();
   ASSERT_EQ(1u, widget_host_->visual_properties().size());
-  EXPECT_EQ(size2, widget_host_->visual_properties().at(0).new_size);
+  EXPECT_EQ(size2, widget_host_->visual_properties().at(0).new_size_device_px);
   // Render should send back RenderFrameMetadata with new size.
   {
     cc::RenderFrameMetadata metadata;
@@ -3435,8 +3458,9 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.visible_viewport_size);
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
+    EXPECT_EQ(gfx::Size(100, 100),
+              visual_properties.visible_viewport_size_device_px);
   }
 
   // Get back the UpdateVisualProperties ack.
@@ -3457,8 +3481,9 @@ TEST_F(RenderWidgetHostViewAuraTest, VisibleViewportTest) {
   {
     blink::VisualProperties visual_properties =
         widget_host_->visual_properties().at(0);
-    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size);
-    EXPECT_EQ(gfx::Size(100, 60), visual_properties.visible_viewport_size);
+    EXPECT_EQ(gfx::Size(100, 100), visual_properties.new_size_device_px);
+    EXPECT_EQ(gfx::Size(100, 60),
+              visual_properties.visible_viewport_size_device_px);
   }
 }
 
@@ -4949,7 +4974,7 @@ TEST_F(RenderWidgetHostViewAuraOverscrollTest, OverscrollResetsOnBlur) {
   ReleaseAndResetDispatchedMessages();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Check that when accessibility virtual keyboard is enabled, windows are
 // shifted up when focused and restored when focus is lost.
 TEST_F(RenderWidgetHostViewAuraTest, VirtualKeyboardFocusEnsureCaretInRect) {
@@ -5042,7 +5067,7 @@ TEST_F(RenderWidgetHostViewAuraTest, UpdateInsetsWithVirtualKeyboardEnabled) {
   EXPECT_EQ(view_->insets_, resized_view_insets);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Tests that invalid touch events are consumed and handled
 // synchronously.
@@ -5413,7 +5438,6 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
     return S_OK;
   }
 
-  void HandleParentChanged() override {}
   void ApplyPinchZoomScale(float scale) override {}
   void ApplyPinchZoomBegin() override {}
   void ApplyPinchZoomEnd() override {}
@@ -5650,7 +5674,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
 
   InitViewForFrame(nullptr);
   ParentHostView(view_, parent_view_);
-  widget_host_->set_new_content_rendering_delay_for_testing(kTimeout);
+  widget_host_->SetNewContentRenderingTimeoutForTesting(kTimeout);
 
   viz::LocalSurfaceId id0 = view_->GetLocalSurfaceId();
   EXPECT_TRUE(id0.is_valid());
@@ -5661,7 +5685,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
   // No new LocalSurfaceId should be allocated for the first navigation and the
   // timer should not fire.
   widget_host_->DidNavigate();
-  widget_host_->StartNewContentRenderingTimeout();
+  widget_host_->InitializePaintHolding(true);
   viz::LocalSurfaceId id1 = view_->GetLocalSurfaceId();
   EXPECT_EQ(id0, id1);
   {
@@ -5676,7 +5700,7 @@ TEST_F(RenderWidgetHostViewAuraTest, MAYBE_NewContentRenderingTimeout) {
 
   // Start the timer. Verify that a new LocalSurfaceId is allocated.
   widget_host_->DidNavigate();
-  widget_host_->StartNewContentRenderingTimeout();
+  widget_host_->InitializePaintHolding(true);
   viz::LocalSurfaceId id2 = view_->GetLocalSurfaceId();
   EXPECT_TRUE(id2.is_valid());
   EXPECT_LT(id1.parent_sequence_number(), id2.parent_sequence_number());
@@ -5856,7 +5880,7 @@ class MockWebContentsViewDelegate : public WebContentsViewDelegate {
     return context_menu_request_received_;
   }
 
-  ui::MenuSourceType context_menu_source_type() const {
+  ui::mojom::MenuSourceType context_menu_source_type() const {
     return context_menu_params_.source_type;
   }
 
@@ -5869,7 +5893,7 @@ class MockWebContentsViewDelegate : public WebContentsViewDelegate {
 
   void ClearState() {
     context_menu_request_received_ = false;
-    context_menu_params_.source_type = ui::MENU_SOURCE_NONE;
+    context_menu_params_.source_type = ui::mojom::MenuSourceType::kNone;
   }
 
  private:
@@ -5891,45 +5915,46 @@ TEST_F(RenderWidgetHostViewAuraWithViewHarnessTest,
 
   RenderViewHostFactory::set_is_real_render_view_host(true);
 
-  // A context menu request with the MENU_SOURCE_MOUSE source type should
+  // A context menu request with the `MenuSourceType::kMouse` source type should
   // result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called. This means that the request worked correctly.
   ContextMenuParams context_menu_params;
-  context_menu_params.source_type = ui::MENU_SOURCE_MOUSE;
+  context_menu_params.source_type = ui::mojom::MenuSourceType::kMouse;
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate_ptr->context_menu_request_received());
-  EXPECT_EQ(delegate_ptr->context_menu_source_type(), ui::MENU_SOURCE_MOUSE);
+  EXPECT_EQ(delegate_ptr->context_menu_source_type(),
+            ui::mojom::MenuSourceType::kMouse);
 
-  // A context menu request with the MENU_SOURCE_TOUCH source type should
+  // A context menu request with the `MenuSourceType::kTouch` source type should
   // result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on all platforms. This means that the request worked
   // correctly.
   delegate_ptr->ClearState();
-  context_menu_params.source_type = ui::MENU_SOURCE_TOUCH;
+  context_menu_params.source_type = ui::mojom::MenuSourceType::kTouch;
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate_ptr->context_menu_request_received());
 
-  // A context menu request with the MENU_SOURCE_LONG_TAP source type should
-  // result in the MockWebContentsViewDelegate::ShowContextMenu method
+  // A context menu request with the `MenuSourceType::kLongTap` source type
+  // should result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on all platforms. This means that the request worked
   // correctly.
   delegate_ptr->ClearState();
-  context_menu_params.source_type = ui::MENU_SOURCE_LONG_TAP;
+  context_menu_params.source_type = ui::mojom::MenuSourceType::kLongTap;
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
   EXPECT_TRUE(delegate_ptr->context_menu_request_received());
 
-  // A context menu request with the MENU_SOURCE_LONG_PRESS source type should
-  // result in the MockWebContentsViewDelegate::ShowContextMenu method
+  // A context menu request with the `MenuSourceType::kLongPress` source type
+  // should result in the MockWebContentsViewDelegate::ShowContextMenu method
   // getting called on non Windows platforms. This means that the request
   //  worked correctly.
   delegate_ptr->ClearState();
-  context_menu_params.source_type = ui::MENU_SOURCE_LONG_PRESS;
+  context_menu_params.source_type = ui::mojom::MenuSourceType::kLongPress;
   contents()->ShowContextMenu(
       *contents()->GetRenderViewHost()->GetMainRenderFrameHost(),
       mojo::NullAssociatedRemote(), context_menu_params);
@@ -6364,7 +6389,7 @@ TEST_F(InputMethodStateAuraTest, GetCompositionCharacterBounds) {
     ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
     // Simulate an IPC to set character bounds for the view.
     views_[index]->ImeCompositionRangeChanged(
-        gfx::Range(), {{gfx::Rect(1, 2, 3, 4 + index)}}, std::nullopt);
+        gfx::Range(), {{gfx::Rect(1, 2, 3, 4 + index)}});
 
     // No bounds at index 1.
     EXPECT_FALSE(text_input_client()->GetCompositionCharacterBounds(1, &bound));
@@ -6906,6 +6931,202 @@ TEST_F(RenderWidgetHostViewAuraKeyboardTest,
   EXPECT_EQ(keyboard_controller_observer_count(), 0u);
 }
 
+class InputMethodStateAuraHandwritingTest : public InputMethodStateAuraTest {
+ public:
+  InputMethodStateAuraHandwritingTest() = default;
+
+  InputMethodStateAuraHandwritingTest(
+      const InputMethodStateAuraHandwritingTest&) = delete;
+  InputMethodStateAuraHandwritingTest& operator=(
+      const InputMethodStateAuraHandwritingTest&) = delete;
+
+  ~InputMethodStateAuraHandwritingTest() override = default;
+
+  void SetUp() override {
+    InputMethodStateAuraTest::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(
+        stylus_handwriting::win::kStylusHandwritingWin);
+    stylus_handwriting_win_test_helper_.SetUpDefaultMockInfrastructure();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  StylusHandwritingWinTestHelper stylus_handwriting_win_test_helper_;
+};
+
+// This test is for "proximate" character bounds GetTextExt behavior.
+TEST_F(InputMethodStateAuraHandwritingTest, GetProximateCharacterBounds) {
+  std::optional<gfx::Rect> bound;
+  // If there isn't an active view, there should be no bounds.
+  bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 2));
+  EXPECT_FALSE(bound.has_value());
+  for (auto index : active_view_sequence_) {
+    ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
+
+    // If the cache hasn't been populated, there should be no bounds.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 2));
+    EXPECT_FALSE(bound.has_value());
+
+    // Simulate an IPC to set character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(
+        CreateStylusWritingFocusResultForTesting());
+    const bool cache_available_for_view = views_[index] == tab_view();
+
+    // No bounds for empty range.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 1));
+    EXPECT_FALSE(bound);
+
+    // No bounds for reversed range.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(2, 1));
+    EXPECT_FALSE(bound);
+
+    // No bounds at [0].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(0, 1));
+    EXPECT_FALSE(bound);
+
+    // Valid bounds at [1].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 2));
+    EXPECT_EQ(bound.has_value(), cache_available_for_view);
+    if (cache_available_for_view) {
+      EXPECT_EQ(bound.value(), gfx::Rect(10, 0, 10, 10));
+    }
+
+    // Valid bounds at [2].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(2, 3));
+    EXPECT_EQ(bound.has_value(), cache_available_for_view);
+    if (cache_available_for_view) {
+      EXPECT_EQ(bound.value(), gfx::Rect(20, 0, 10, 10));
+    }
+
+    // Valid bounds for the range [1, 3), joins both [1] and [2].
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 3));
+    EXPECT_EQ(bound.has_value(), cache_available_for_view);
+    if (cache_available_for_view) {
+      EXPECT_EQ(bound.value(), gfx::Rect(10, 0, 20, 10));
+    }
+
+    // No bounds when range extends beyond "proximate" cache.
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(0, 3));
+    EXPECT_FALSE(bound);
+    bound = text_input_client()->GetProximateCharacterBounds(gfx::Range(1, 4));
+    EXPECT_FALSE(bound);
+
+    // Simulate an IPC to clear character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(nullptr);
+  }
+}
+
+// This test is for "proximate" character bounds GetACPFromPoint behavior.
+TEST_F(InputMethodStateAuraHandwritingTest,
+       GetProximateCharacterIndexFromPoint) {
+  constexpr gfx::Point kMissLeft(0, 0);
+  constexpr gfx::Point kMissRight(100, 0);
+  constexpr gfx::Point kHit1(15, 5);
+  constexpr gfx::Point kHit2(25, 5);
+  constexpr gfx::Point kHit1Right(18, 5);
+  constexpr gfx::Point kHit2Left(21, 5);
+  constexpr ui::IndexFromPointFlags kNoFlags = ui::IndexFromPointFlags::kNone;
+  constexpr ui::IndexFromPointFlags kNearestToContainedPoint =
+      ui::IndexFromPointFlags::kNearestToContainedPoint;
+  constexpr ui::IndexFromPointFlags kNearestToUncontainedPoint =
+      ui::IndexFromPointFlags::kNearestToUncontainedPoint;
+  constexpr ui::IndexFromPointFlags kNearestToPoint =
+      ui::IndexFromPointFlags::kNearestToPoint;
+  std::optional<size_t> acp_index;
+  // If there isn't an active view, there should be no bounds.
+  acp_index = text_input_client()->GetProximateCharacterIndexFromPoint(
+      kHit1, ui::IndexFromPointFlags::kNone);
+  EXPECT_FALSE(acp_index.has_value());
+  for (auto index : active_view_sequence_) {
+    ActivateViewForTextInputManager(views_[index], ui::TEXT_INPUT_TYPE_TEXT);
+
+    // If the cache hasn't been populated, there should be no bounds.
+    acp_index = text_input_client()->GetProximateCharacterIndexFromPoint(
+        kHit1, ui::IndexFromPointFlags::kNone);
+    EXPECT_FALSE(acp_index.has_value());
+
+    // Simulate an IPC to set character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(
+        CreateStylusWritingFocusResultForTesting());
+    const bool cache_available_for_view = views_[index] == tab_view();
+
+    constexpr struct {
+      gfx::Point point;
+      const ui::IndexFromPointFlags flags;
+      const std::optional<size_t> expect_index;
+    } kTestCases[] = {
+        // [kNone] cases
+        {kMissLeft, kNoFlags, std::nullopt},
+        {kHit1, kNoFlags, {1}},
+        {kHit2, kNoFlags, {2}},
+        {kHit1Right, kNoFlags, {1}},
+        {kHit2Left, kNoFlags, {2}},
+        // [kNearestToContainedPoint] cases
+        {kMissLeft, kNearestToContainedPoint, std::nullopt},
+        {kHit1, kNearestToContainedPoint, {1}},
+        {kHit2, kNearestToContainedPoint, {2}},
+        {kHit1Right, kNearestToContainedPoint, {2}},  // Rounds to [2].
+        {kHit2Left, kNearestToContainedPoint, {2}},   // Closer to [2].
+        // [kNearestToUncontainedPoint] cases
+        {kMissLeft, kNearestToUncontainedPoint, {1}},
+        {kMissRight, kNearestToUncontainedPoint, {2}},
+        {kHit1, kNearestToUncontainedPoint, {1}},
+        {kHit2, kNearestToUncontainedPoint, {2}},
+        {kHit1Right, kNearestToUncontainedPoint, {1}},
+        {kHit2Left, kNearestToUncontainedPoint, {2}},
+        // [kNearestToPoint] cases
+        {kMissLeft, kNearestToPoint, {1}},
+        {kMissRight, kNearestToPoint, {2}},
+        {kHit1, kNearestToPoint, {1}},
+        {kHit2, kNearestToPoint, {2}},
+        {kHit1Right, kNearestToPoint, {2}},  // Rounds to [2].
+        {kHit2Left, kNearestToPoint, {2}},   // Closer to [2].
+    };
+
+    size_t iteration = 0;
+    for (const auto& test : kTestCases) {
+      acp_index = text_input_client()->GetProximateCharacterIndexFromPoint(
+          test.point, test.flags);
+      EXPECT_EQ(acp_index.has_value(),
+                cache_available_for_view && test.expect_index.has_value())
+          << "[" << index << ":" << iteration << "]";
+      if (cache_available_for_view) {
+        EXPECT_EQ(acp_index, test.expect_index)
+            << "[" << index << ":" << iteration << "]"
+            << " point: " << test.point.ToString() << ", flags: " << test.flags;
+      }
+      ++iteration;
+    }
+
+    // Simulate an IPC to clear character bounds for the view.
+    views_[index]->OnEditElementFocusedForStylusWriting(nullptr);
+  }
+}
+
+TEST(IndexFromPointFlagsTest, OStreamOperator) {
+  std::stringstream none;
+  none << ui::IndexFromPointFlags::kNone;
+  std::stringstream nearest_to_contained_point;
+  nearest_to_contained_point
+      << ui::IndexFromPointFlags::kNearestToContainedPoint;
+  std::stringstream nearest_to_uncontained_point;
+  nearest_to_uncontained_point
+      << ui::IndexFromPointFlags::kNearestToUncontainedPoint;
+  std::stringstream nearest_to_point;
+  nearest_to_point << ui::IndexFromPointFlags::kNearestToPoint;
+  std::stringstream oob_bit;
+  oob_bit << static_cast<ui::IndexFromPointFlags>(0x04);
+  std::stringstream all_bits;
+  all_bits << static_cast<ui::IndexFromPointFlags>(~static_cast<size_t>(0));
+  EXPECT_STREQ(none.str().c_str(), "None");
+  EXPECT_STREQ(nearest_to_contained_point.str().c_str(),
+               "NearestToContainedPoint");
+  EXPECT_STREQ(nearest_to_uncontained_point.str().c_str(),
+               "NearestToUncontainedPoint");
+  EXPECT_STREQ(nearest_to_point.str().c_str(), "NearestToPoint");
+  EXPECT_STREQ(oob_bit.str().c_str(), "Unknown(0x04)");
+  EXPECT_STREQ(all_bits.str().c_str(), "Unknown(0xff)");
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

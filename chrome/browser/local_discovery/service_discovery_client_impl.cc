@@ -32,8 +32,7 @@ ServiceDiscoveryClientImpl::ServiceDiscoveryClientImpl(
     net::MDnsClient* mdns_client) : mdns_client_(mdns_client) {
 }
 
-ServiceDiscoveryClientImpl::~ServiceDiscoveryClientImpl() {
-}
+ServiceDiscoveryClientImpl::~ServiceDiscoveryClientImpl() = default;
 
 std::unique_ptr<ServiceWatcher>
 ServiceDiscoveryClientImpl::CreateServiceWatcher(
@@ -78,8 +77,7 @@ void ServiceWatcherImpl::Start() {
     ReadCachedServices();
 }
 
-ServiceWatcherImpl::~ServiceWatcherImpl() {
-}
+ServiceWatcherImpl::~ServiceWatcherImpl() = default;
 
 void ServiceWatcherImpl::DiscoverNewServices() {
   DCHECK(started_);
@@ -139,8 +137,7 @@ void ServiceWatcherImpl::OnRecordUpdate(
         AddService(rdata->ptrdomain());
         break;
       case net::MDnsListener::RECORD_CHANGED:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case net::MDnsListener::RECORD_REMOVED:
         RemovePTR(rdata->ptrdomain());
         break;
@@ -199,8 +196,7 @@ ServiceWatcherImpl::ServiceListeners::ServiceListeners(
       net::dns_protocol::kTypeTXT, service_name, watcher);
 }
 
-ServiceWatcherImpl::ServiceListeners::~ServiceListeners() {
-}
+ServiceWatcherImpl::ServiceListeners::~ServiceListeners() = default;
 
 bool ServiceWatcherImpl::ServiceListeners::Start() {
   return srv_listener_->Start() && txt_listener_->Start();
@@ -350,8 +346,7 @@ void ServiceResolverImpl::StartResolving() {
   }
 }
 
-ServiceResolverImpl::~ServiceResolverImpl() {
-}
+ServiceResolverImpl::~ServiceResolverImpl() = default;
 
 bool ServiceResolverImpl::CreateTxtTransaction() {
   txt_transaction_ = mdns_client_->CreateTransaction(
@@ -460,8 +455,7 @@ ServiceResolver::RequestStatus ServiceResolverImpl::MDnsStatusToRequestStatus(
       return ServiceResolver::STATUS_KNOWN_NONEXISTENT;
     case net::MDnsTransaction::RESULT_DONE:  // Pass through.
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ServiceResolver::STATUS_REQUEST_TIMEOUT;
+      NOTREACHED();
   }
 }
 

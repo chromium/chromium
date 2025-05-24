@@ -17,7 +17,7 @@ struct UrlLoadParams;
 // -dismissModalsAndOpenMultipleTabsInMode:URLs:dismissOmnibox:completion:.
 // This mock assumes the Incognito interstitial setting is disabled, so it
 // falls back to `NORMAL` mode if `targetMode` is `UNDETERMINED`.
-@interface MockTabOpener : NSObject<TabOpening>
+@interface MockTabOpener : NSObject <TabOpening>
 // Arguments for
 // -dismissModalsAndMaybeOpenSelectedTabInMode:withUrlLoadParams:dismissOmnibox:
 //  completion:.

@@ -19,7 +19,7 @@ class MetricsUploadScheduler : public MetricsScheduler {
   // callback to call when uploading should happen.  The callback must
   // arrange to call either UploadFinished or UploadCancelled on completion.
   MetricsUploadScheduler(const base::RepeatingClosure& upload_callback,
-                         bool fast_startup_for_testing);
+                         bool fast_startup);
 
   MetricsUploadScheduler(const MetricsUploadScheduler&) = delete;
   MetricsUploadScheduler& operator=(const MetricsUploadScheduler&) = delete;

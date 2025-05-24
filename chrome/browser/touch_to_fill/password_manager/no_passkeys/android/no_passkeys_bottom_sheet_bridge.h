@@ -6,15 +6,14 @@
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_NO_PASSKEYS_ANDROID_NO_PASSKEYS_BOTTOM_SHEET_BRIDGE_H_
 
 #include <jni.h>
+
 #include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
 #include "base/types/pass_key.h"
-
-namespace ui {
-class WindowAndroid;
-}
+#include "ui/android/window_android.h"
+#include "ui/gfx/native_widget_types.h"
 
 class NoPasskeysBottomSheetBridge {
  public:
@@ -28,7 +27,7 @@ class NoPasskeysBottomSheetBridge {
     virtual ~JniDelegate() = 0;
 
     // Creates a new java object.
-    virtual void Create(ui::WindowAndroid* window_android) = 0;
+    virtual void Create(ui::WindowAndroid& window_android) = 0;
 
     // Triggers the JNI call to show the sheet.
     virtual void Show(const std::string& origin) = 0;
@@ -50,7 +49,7 @@ class NoPasskeysBottomSheetBridge {
   ~NoPasskeysBottomSheetBridge();
 
   // Shows the bottom sheet and calls `on_dismissed_callback` once it's gone.
-  void Show(ui::WindowAndroid* window_android,
+  void Show(const gfx::NativeWindow window_android,
             const std::string& origin,
             base::OnceClosure on_dismissed_callback,
             base::OnceClosure on_click_use_another_device_callback);

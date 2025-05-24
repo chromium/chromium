@@ -40,7 +40,7 @@ class LazyEventDispatcher {
 
   ~LazyEventDispatcher();
 
-  // Dispatches the lazy |event| to |dispatch_context|.
+  // Dispatches the lazy `event` to `dispatch_context`.
   //
   // If [dispatch_context| is for an event page, it ensures all of the pages
   // interested in the event are loaded and queues the event if any pages are
@@ -52,7 +52,7 @@ class LazyEventDispatcher {
                 const LazyContextId& dispatch_context,
                 const base::Value::Dict* listener_filter);
 
-  // Returns whether or not an event listener identical for |dispatch_context|
+  // Returns whether or not an event listener identical for `dispatch_context`
   // is already queued for dispatch.
   bool HasAlreadyDispatched(const LazyContextId& dispatch_context) const;
 

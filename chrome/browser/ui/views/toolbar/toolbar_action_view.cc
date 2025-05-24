@@ -6,13 +6,13 @@
 
 #include <string>
 
-#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/view_ids.h"
@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/image_model_utils.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/compositor/paint_recorder.h"
@@ -61,6 +62,7 @@ ToolbarActionView::ToolbarActionView(
   SetHideInkDropWhenShowingContextMenu(false);
   SetShowInkDropWhenHotTracked(true);
   SetID(VIEW_ID_BROWSER_ACTION);
+  SetProperty(views::kElementIdentifierKey, kToolbarActionViewElementId);
   view_controller_->SetDelegate(this);
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   set_drag_controller(delegate_);
@@ -115,8 +117,8 @@ bool ToolbarActionView::IsTriggerableEvent(const ui::Event& event) {
 
 bool ToolbarActionView::OnKeyPressed(const ui::KeyEvent& event) {
   if (event.key_code() == ui::VKEY_DOWN) {
-    context_menu_controller()->ShowContextMenuForView(this, gfx::Point(),
-                                                      ui::MENU_SOURCE_KEYBOARD);
+    context_menu_controller()->ShowContextMenuForView(
+        this, gfx::Point(), ui::mojom::MenuSourceType::kKeyboard);
     return true;
   }
   return MenuButton::OnKeyPressed(event);
@@ -135,8 +137,9 @@ void ToolbarActionView::OnMouseEntered(const ui::MouseEvent& event) {
 
 void ToolbarActionView::MaybeUpdateHoverCardStatus(
     const ui::MouseEvent& event) {
-  if (!GetWidget()->IsMouseEventsEnabled())
+  if (!GetWidget()->IsMouseEventsEnabled()) {
     return;
+  }
 
   view_controller_->UpdateHoverCard(this,
                                     ToolbarActionHoverCardUpdateType::kHover);
@@ -150,8 +153,9 @@ void ToolbarActionView::UpdateState() {
   content::WebContents* web_contents = GetCurrentWebContents();
   GetViewAccessibility().SetName(
       view_controller_->GetAccessibleName(web_contents));
-  if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid())
+  if (!sessions::SessionTabHelper::IdForTab(web_contents).is_valid()) {
     return;
+  }
 
   ui::ImageModel icon =
       view_controller_->GetIcon(web_contents, GetPreferredSize());
@@ -215,16 +219,18 @@ void ToolbarActionView::OnMouseReleased(const ui::MouseEvent& event) {
   // of |suppress_next_release_| so it can be updated now.
   const bool suppress_next_release = suppress_next_release_;
   suppress_next_release_ = false;
-  if (!suppress_next_release)
+  if (!suppress_next_release) {
     MenuButton::OnMouseReleased(event);
+  }
 }
 
 void ToolbarActionView::OnGestureEvent(ui::GestureEvent* event) {
   // While the dropdown menu is showing, the button should not handle gestures.
-  if (context_menu_controller_->IsMenuRunning())
+  if (context_menu_controller_->IsMenuRunning()) {
     event->StopPropagation();
-  else
+  } else {
     MenuButton::OnGestureEvent(event);
+  }
 }
 
 void ToolbarActionView::OnDragDone() {
@@ -266,7 +272,7 @@ views::Button* ToolbarActionView::GetReferenceButtonForPopup() {
 
 void ToolbarActionView::ShowContextMenuAsFallback() {
   context_menu_controller()->ShowContextMenuForView(
-      this, GetKeyboardContextMenuLocation(), ui::MENU_SOURCE_NONE);
+      this, GetKeyboardContextMenuLocation(), ui::mojom::MenuSourceType::kNone);
 }
 
 void ToolbarActionView::OnPopupShown(bool by_user) {
@@ -294,8 +300,8 @@ void ToolbarActionView::ButtonPressed() {
         ToolbarActionViewController::InvocationSource::kToolbarButton);
   } else {
     // If the action isn't enabled, show the context menu as a fallback.
-    context_menu_controller()->ShowContextMenuForView(this, GetMenuPosition(),
-                                                      ui::MENU_SOURCE_NONE);
+    context_menu_controller()->ShowContextMenuForView(
+        this, GetMenuPosition(), ui::mojom::MenuSourceType::kNone);
   }
 }
 

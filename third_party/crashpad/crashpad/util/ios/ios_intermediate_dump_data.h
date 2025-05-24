@@ -35,8 +35,7 @@ class IOSIntermediateDumpData : public IOSIntermediateDumpObject {
 
   //! \brief Constructs a new data object which owns a std::vector<uint8_t>.
   //!
-  //! \param[in] data An array of uint8_t.
-  //! \param[in] length The length of \a data.
+  //! \param[in] data A vector of uint8_t.
   IOSIntermediateDumpData(std::vector<uint8_t> data) : data_(std::move(data)) {}
 
   // IOSIntermediateDumpObject:

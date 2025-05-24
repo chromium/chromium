@@ -4,6 +4,8 @@
 
 package org.chromium.webapk.shell_apk.h2o;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -15,6 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.webapk.lib.common.WebApkCommonUtils;
 import org.chromium.webapk.shell_apk.WebApkSharedPreferences;
 
@@ -24,6 +28,7 @@ import java.io.OutputStream;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** ContentProvider for screenshot of splash screen. */
+@NullMarked
 public class SplashContentProvider extends ContentProvider
         implements ContentProvider.PipeDataWriter<Void> {
     /** Holds value which gets cleared after {@link ExpiringData#CLEAR_DATA_INTERVAL_MS}. */
@@ -31,8 +36,8 @@ public class SplashContentProvider extends ContentProvider
         /** Time in milliseconds after constructing the object to clear the cached data. */
         private static final int CLEAR_CACHED_DATA_INTERVAL_MS = 10000;
 
-        private byte[] mCachedData;
-        private Handler mHandler;
+        private final byte[] mCachedData;
+        private final Handler mHandler;
 
         public ExpiringData(byte[] cachedData, Runnable expiryTask) {
             mCachedData = cachedData;
@@ -57,9 +62,9 @@ public class SplashContentProvider extends ContentProvider
     public static final int MAX_TRANSFER_SIZE_BYTES = 1024 * 1024 * 12;
 
     /** The encoding type of the last image vended by the ContentProvider. */
-    private static Bitmap.CompressFormat sEncodingFormat;
+    private static Bitmap.@Nullable CompressFormat sEncodingFormat;
 
-    private static AtomicReference<ExpiringData> sCachedSplashBytes = new AtomicReference<>();
+    private static final AtomicReference<ExpiringData> sCachedSplashBytes = new AtomicReference<>();
 
     /** The URI handled by this content provider. */
     private String mContentProviderUri;
@@ -70,7 +75,7 @@ public class SplashContentProvider extends ContentProvider
      */
     public static void cache(
             Context context,
-            byte[] splashBytes,
+            byte @Nullable [] splashBytes,
             Bitmap.CompressFormat encodingFormat,
             int splashWidth,
             int splashHeight) {
@@ -91,7 +96,7 @@ public class SplashContentProvider extends ContentProvider
      * Sets the cached splash screen screenshot and returns the old one. Thread safety: Can be
      * called from any thread.
      */
-    private static byte[] getAndSetCachedData(byte[] newSplashBytes) {
+    private static byte @Nullable [] getAndSetCachedData(byte @Nullable [] newSplashBytes) {
         ExpiringData newData = null;
         if (newSplashBytes != null) {
             newData = new ExpiringData(newSplashBytes, SplashContentProvider::clearCache);
@@ -111,16 +116,22 @@ public class SplashContentProvider extends ContentProvider
     }
 
     @Override
-    public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
+    public @Nullable ParcelFileDescriptor openFile(Uri uri, String mode)
+            throws FileNotFoundException {
         if (uri != null && uri.toString().equals(mContentProviderUri)) {
-            return openPipeHelper(null, null, null, null, this);
+            String mimeType = assumeNonNull(null); // TODO: Set this properly.
+            return openPipeHelper(uri, mimeType, null, null, this);
         }
         return null;
     }
 
     @Override
     public void writeDataToPipe(
-            ParcelFileDescriptor output, Uri uri, String mimeType, Bundle opts, Void unused) {
+            ParcelFileDescriptor output,
+            Uri uri,
+            String mimeType,
+            @Nullable Bundle opts,
+            @Nullable Void unused) {
         try (OutputStream out = new FileOutputStream(output.getFileDescriptor())) {
             byte[] cachedSplashBytes = getAndSetCachedData(null);
             if (cachedSplashBytes != null) {
@@ -143,7 +154,7 @@ public class SplashContentProvider extends ContentProvider
     }
 
     @Override
-    public String getType(Uri uri) {
+    public @Nullable String getType(Uri uri) {
         if (uri != null && uri.toString().equals(mContentProviderUri)) {
             if (sEncodingFormat == null) {
                 Context context = getContext().getApplicationContext();
@@ -162,32 +173,36 @@ public class SplashContentProvider extends ContentProvider
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String where, String[] whereArgs) {
+    public int update(
+            Uri uri,
+            @Nullable ContentValues values,
+            @Nullable String where,
+            String @Nullable [] whereArgs) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(Uri uri, @Nullable String selection, String @Nullable [] selectionArgs) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(Uri uri, @Nullable ContentValues values) {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public Cursor query(
             Uri uri,
-            String[] projection,
-            String selection,
-            String[] selectionArgs,
-            String sortOrder) {
+            String @Nullable [] projection,
+            @Nullable String selection,
+            String @Nullable [] selectionArgs,
+            @Nullable String sortOrder) {
         throw new UnsupportedOperationException();
     }
 
     /** Builds splashscreen at size that it was last displayed and screenshots it. */
-    private Bitmap recreateAndScreenshotSplash() {
+    private @Nullable Bitmap recreateAndScreenshotSplash() {
         Context context = getContext().getApplicationContext();
         SharedPreferences prefs = WebApkSharedPreferences.getPrefs(context);
         int splashWidth = prefs.getInt(WebApkSharedPreferences.PREF_SPLASH_WIDTH, -1);

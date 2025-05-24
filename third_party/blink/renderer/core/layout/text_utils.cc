@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/text_utils.h"
 
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
@@ -16,9 +17,13 @@ float ComputeTextWidth(const StringView& text, const ComputedStyle& style) {
   }
   // TODO(crbug.com/1229581): Re-implement this without TextRun.
   bool directional_override = style.RtlOrdering() == EOrder::kVisual;
-  return style.GetFont().Width(
-      TextRun(text, BidiParagraph::BaseDirectionForStringOrLtr(text),
-              directional_override));
+  TextRun text_run(text, BidiParagraph::BaseDirectionForStringOrLtr(text),
+                   directional_override);
+  if (RuntimeEnabledFeatures::PlainTextPainterEnabled()) {
+    return PlainTextPainter::Shared().ComputeInlineSize(text_run,
+                                                        *style.GetFont());
+  }
+  return style.GetFont()->DeprecatedWidth(text_run);
 }
 
 }  // namespace blink

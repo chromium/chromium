@@ -26,19 +26,19 @@ export class DisplayPanel extends HTMLElement {
    * Collection of PanelItems hosted in this DisplayPanel.
    */
   private items_: PanelItem[] = [];
-  private summary_: HTMLDivElement;
-  private separator_: HTMLDivElement;
-  private panels_: HTMLDivElement;
+  private summary_: HTMLElement;
+  private separator_: HTMLElement;
+  private panels_: HTMLElement;
 
   private toggleSummaryBound_ = this.toggleSummary_.bind(this);
 
   constructor() {
     super();
     this.createElement_();
-    this.summary_ = this.shadowRoot!.querySelector<HTMLDivElement>('#summary')!;
+    this.summary_ = this.shadowRoot!.querySelector<HTMLElement>('#summary')!;
     this.separator_ =
-        this.shadowRoot!.querySelector<HTMLDivElement>('#separator')!;
-    this.panels_ = this.shadowRoot!.querySelector<HTMLDivElement>('#panels')!;
+        this.shadowRoot!.querySelector<HTMLElement>('#separator')!;
+    this.panels_ = this.shadowRoot!.querySelector<HTMLElement>('#panels')!;
   }
 
   /**

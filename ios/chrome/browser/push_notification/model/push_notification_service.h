@@ -62,22 +62,21 @@ class PushNotificationService {
                      bool enabled);
 
   // Registers the new account to the push notification server. In a multi
-  // BrowserState environment, the PushNotificationService tracks the signed in
-  // account across BrowserStates.
+  // Profile environment, the PushNotificationService tracks the signed in
+  // account across Profiles.
   void RegisterAccount(NSString* account_id,
                        CompletionHandler completion_handler);
 
   // Unregisters the account from the push notification server. In a multi
-  // BrowserState environment, the account will not be signed out until it's
-  // signed out across BrowserStates.
+  // Profile environment, the account will not be signed out until it's
+  // signed out across Profiles.
   void UnregisterAccount(NSString* account_id,
                          CompletionHandler completion_handler);
 
   // Registers each PushNotificationClient's prefs. Each
   // PushNotificationClient's ability to send push notifications to the user is
   // disabled by default.
-  static void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Registers the push notification settings status stored in the device's iOS
   // settings.
@@ -110,7 +109,7 @@ class PushNotificationService {
   // Stores a mapping of each account's GAIA ID signed into the device to its
   // context object. This object contains the account's pref service values
   // pertaining to push notification supported features and the number of times
-  // the given account is signed in across multiple browser states.
+  // the given account is signed in across multiple profiles.
   __strong PushNotificationAccountContextManager* context_manager_;
 };
 

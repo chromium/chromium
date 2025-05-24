@@ -9,10 +9,7 @@
 
 @class HistoryOverlayView;
 
-enum HistoryOverlayMode {
-  kHistoryOverlayModeBack,
-  kHistoryOverlayModeForward
-};
+enum HistoryOverlayMode { kHistoryOverlayModeBack, kHistoryOverlayModeForward };
 
 // The HistoryOverlayController manages a view that is inserted atop the web
 // contents to provide visual feedback when the user is performing history

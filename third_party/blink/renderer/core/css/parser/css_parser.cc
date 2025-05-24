@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -56,13 +57,12 @@ base::span<CSSSelector> CSSParser::ParseSelector(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
-    bool is_within_scope,
     StyleSheetContents* style_sheet_contents,
     const String& selector,
     HeapVector<CSSSelector>& arena) {
   CSSParserTokenStream stream(selector);
   return CSSSelectorParser::ParseSelector(
-      stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
+      stream, context, nesting_type, parent_rule_for_nesting,
       /* semicolon_aborts_nested_selector */ false, style_sheet_contents,
       arena);
 }
@@ -94,9 +94,11 @@ StyleRuleBase* CSSParser::ParseRule(const CSSParserContext* context,
                                     CSSNestingType nesting_type,
                                     StyleRule* parent_rule_for_nesting,
                                     const String& rule) {
+  AllowedRules allowed_rules = CSSParserImpl::kTopLevelRules;
+  allowed_rules.Remove(CSSAtRuleID::kCSSAtRuleCharset);
   return CSSParserImpl::ParseRule(rule, context, nesting_type,
                                   parent_rule_for_nesting, style_sheet,
-                                  CSSParserImpl::kAllowImportRules);
+                                  allowed_rules);
 }
 
 ParseSheetResult CSSParser::ParseSheet(
@@ -211,6 +213,53 @@ MutableCSSPropertyValueSet::SetResult CSSParser::ParseValue(
                     context);
 }
 
+// NOTE: This follows pretty much the exact same structure as ParseValue(),
+// above.ParseValue(), above.ParseValue(), above.ParseValue(), above.
+unsigned CSSParser::ParseForPresentationStyle(
+    HeapVector<CSSPropertyValue, 8>& result,
+    CSSPropertyID resolved_property,
+    StringView string,
+    CSSParserMode parser_mode,
+    StyleSheetContents* context_sheet,
+    const ExecutionContext* execution_context) {
+  DCHECK(ThreadState::Current()->IsAllocationAllowed());
+  if (string.empty()) {
+    return 0;
+  }
+
+  SecureContextMode secure_context_mode =
+      execution_context ? execution_context->GetSecureContextMode()
+                        : SecureContextMode::kInsecureContext;
+  const CSSParserContext* context = GetParserContext(
+      secure_context_mode, context_sheet, execution_context, parser_mode);
+
+  // Fast-path parser.
+  const CSSValue* value =
+      CSSParserFastPaths::MaybeParseValue(resolved_property, string, context);
+  if (value) {
+    result.emplace_back(CSSPropertyName(resolved_property), *value);
+    return 1;
+  }
+
+  // Longhand parsing.
+  const CSSProperty& property = CSSProperty::Get(resolved_property);
+  if (parser_mode == kHTMLStandardMode && property.IsProperty() &&
+      !property.IsShorthand()) {
+    CSSParserTokenStream stream(string);
+    value =
+        CSSPropertyParser::ParseSingleValue(resolved_property, stream, context);
+    if (value) {
+      result.emplace_back(CSSPropertyName(resolved_property), *value);
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  // Full-blown parser, for shorthands and SVG.
+  return CSSParserImpl::ParseValue(result, resolved_property, string, context);
+}
+
 MutableCSSPropertyValueSet::SetResult CSSParser::ParseValueForCustomProperty(
     MutableCSSPropertyValueSet* declaration,
     const AtomicString& property_name,
@@ -302,7 +351,7 @@ bool CSSParser::ParseSupportsCondition(
     const String& condition,
     const ExecutionContext* execution_context) {
   // window.CSS.supports requires to parse as-if it was wrapped in parenthesis.
-  String wrapped_condition = "(" + condition + ")";
+  String wrapped_condition = WTF::StrCat({"(", condition, ")"});
   CSSParserTokenStream stream(wrapped_condition);
   DCHECK(execution_context);
   // Create parser context using document so it can check for origin trial

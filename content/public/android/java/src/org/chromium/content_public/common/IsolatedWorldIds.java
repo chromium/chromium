@@ -6,6 +6,8 @@ package org.chromium.content_public.common;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -22,6 +24,7 @@ import java.lang.annotation.RetentionPolicy;
     IsolatedWorldIds.ISOLATED_WORLD_ID_MAX
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface IsolatedWorldIds {
     int ISOLATED_WORLD_ID_GLOBAL = 0;
     int ISOLATED_WORLD_ID_CONTENT_END = 1;

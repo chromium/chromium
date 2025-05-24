@@ -21,8 +21,9 @@
 import argparse
 import os
 import sys
+import time
 
-from subprocess import CompletedProcess
+from subprocess import CompletedProcess, Popen
 from typing import List
 
 import run_test
@@ -75,6 +76,19 @@ def setup_env(mypid: int = 0) -> int:
     # pylint: disable=protected-access
     run_test._get_test_runner = get_test_runner
     return run_test.main()
+
+
+def wait_for_env_setup(proc: Popen, logs_dir: str) -> bool:
+    """ Waits for the test_env_setup.py process to be ready, returns false if
+        the process terminated unexpected. """
+    pid_file = os.path.join(logs_dir,
+                            'test_env_setup.' + str(proc.pid) + '.pid')
+    while not os.path.isfile(pid_file):
+        proc.poll()
+        if proc.returncode:
+            return False
+        time.sleep(1)
+    return True
 
 
 if __name__ == '__main__':

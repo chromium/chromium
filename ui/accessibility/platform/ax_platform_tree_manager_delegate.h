@@ -133,6 +133,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformTreeManagerDelegate {
   virtual content::WebContentsAccessibility*
   AccessibilityGetWebContentsAccessibility() = 0;
 
+  // Returns true if the current accessibility tree is for web content, false if
+  // it's for Views.
+  virtual bool AccessibilityIsWebContentSource() = 0;
+
  protected:
   AXPlatformTreeManagerDelegate() = default;
 };

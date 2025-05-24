@@ -5,6 +5,7 @@ apk_path=lib/armeabi-v7a/libcrashpad_handler_trampoline.so, compress=False, alig
 apk_path=lib/armeabi-v7a/libmonochrome_64.so, compress=False, alignment=4096
 apk_path=assets/chrome_100_percent.pak, compress=False, alignment=4
 apk_path=assets/icudtl.dat, compress=False, alignment=4
+apk_path=assets/images/black_skybox_android_xr_scenecore.exr, compress=True, alignment=0
 apk_path=assets/locales/af.pak, compress=False, alignment=4
 apk_path=assets/locales/am.pak, compress=False, alignment=4
 apk_path=assets/locales/ar.pak, compress=False, alignment=4
@@ -86,6 +87,7 @@ apk_path=assets/locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/locales/zu.pak, compress=False, alignment=4
+apk_path=assets/privacy_sandbox_attestations/privacy-sandbox-attestations.dat, compress=False, alignment=4
 apk_path=assets/resources.pak, compress=False, alignment=4
 apk_path=assets/snapshot_blob_32.bin, compress=False, alignment=4
 apk_path=assets/snapshot_blob_64.bin, compress=False, alignment=4
@@ -170,7 +172,6 @@ apk_path=assets/stored-locales/zh-CN.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-HK.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zh-TW.pak, compress=False, alignment=4
 apk_path=assets/stored-locales/zu.pak, compress=False, alignment=4
-apk_path=assets/v8_context_snapshot_32.bin, compress=False, alignment=4
 apk_path=assets/v8_context_snapshot_64.bin, compress=False, alignment=4
 apk_path=assets/webapk8.dex, compress=True, alignment=0
 apk_path=assets/webapk_dex_version.txt, compress=True, alignment=0

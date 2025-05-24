@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/assistant/ui/main_stage/assistant_onboarding_view.h"
 
+#include <array>
 #include <memory>
 #include <queue>
 #include <string>
@@ -300,7 +296,8 @@ TEST_F(DISABLED_AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
   };
 
   auto get_color = [](int index) {
-    constexpr SkColor kForegroundColors[6][3] = {
+    constexpr std::array<std::array<SkColor, 3>, 6> kForegroundColors = {{
+
         // Colors of dark/light mode is disabled, dark mode, light mode.
         {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800},
         {gfx::kGoogleRed800, gfx::kGoogleRed200, gfx::kGoogleRed800},
@@ -309,7 +306,7 @@ TEST_F(DISABLED_AssistantOnboardingViewTest, ShouldHaveExpectedSuggestions) {
         {gfx::kGoogleGreen800, gfx::kGoogleGreen200, gfx::kGoogleGreen800},
         {SkColorSetRGB(0x8A, 0x0E, 0x9E), SkColorSetRGB(0xf8, 0x82, 0xff),
          SkColorSetRGB(0xaa, 0x00, 0xb8)},
-        {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}};
+        {gfx::kGoogleBlue800, gfx::kGoogleBlue200, gfx::kGoogleBlue800}}};
     const int color_index =
         DarkLightModeControllerImpl::Get()->IsDarkModeEnabled() ? 1 : 2;
     return kForegroundColors[index][color_index];

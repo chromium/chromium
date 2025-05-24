@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/web_app_header_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@macro/default_bg_color"
+    android:minHeight="@dimen/web_app_header_min_height">
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/back_button"
+        style="@style/HeaderButton"
+        android:src="@drawable/btn_back"
+        android:contentDescription="@string/accessibility_toolbar_btn_back"
+        android:tooltipText="@string/accessibility_toolbar_btn_back"
+        android:visibility="gone"
+        android:layout_gravity="start|center_vertical"
+        app:tint="@color/default_icon_color_tint_list" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/refresh_button"
+        style="@style/HeaderButton"
+        android:src="@drawable/btn_reload_stop"
+        android:layout_marginStart="@dimen/header_button_width"
+        android:contentDescription="@string/accessibility_btn_refresh"
+        android:tooltipText="@string/accessibility_btn_refresh"
+        android:visibility="gone"
+        android:layout_gravity="start|center_vertical"
+        app:tint="@color/default_icon_color_tint_list" />
+</org.chromium.chrome.browser.ui.web_app_header.WebAppHeaderLayout>

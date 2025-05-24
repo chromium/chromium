@@ -24,7 +24,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
   DeviceRestrictionScheduleControllerDelegateImpl();
 
   // DeviceRestrictionScheduleController::Delegate:
-  void BlockLogin(bool enabled) override;
   bool IsUserLoggedIn() const override;
   void ShowUpcomingLogoutNotification(base::Time logout_time) override;
   void ShowPostLogoutNotification() override;

@@ -26,6 +26,7 @@ class OpenXrGraphicsBinding;
 struct OpenXrCreateInfo {
   int render_process_id;
   int render_frame_id;
+  bool needs_separate_activity = true;
 };
 
 // This class exists to help provide an interface for working with OpenXR
@@ -84,6 +85,15 @@ class DEVICE_VR_EXPORT OpenXrPlatformHelper {
   // Convenience method for the above without any OpenXrCreateInfo. Platforms
   // that require additional information via this mechanism will fail creation.
   XrResult CreateInstance(XrInstance* instance);
+
+  // Run any platform-specific shutdown that has to happen before the OpenXr
+  // session can be ended. E.g. On Android, if there is a separate activity, it
+  // needs to be destroyed before the session is shutdown so that the system
+  // rendering takes over.
+  // If a `shutdown_callback` was previously passed in, it will not be run, in
+  // favor of this callback.
+  virtual void PrepareForSessionShutdown(
+      base::OnceClosure shutdown_ready_callback) = 0;
 
   void CreateInstanceWithCreateInfo(
       std::optional<OpenXrCreateInfo> create_info,

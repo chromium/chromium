@@ -47,7 +47,7 @@ class Commit {
 
   ~Commit();
 
-  // |extensions_activity| may be null.
+  // `extensions_activity` may be null.
   static std::unique_ptr<Commit> Init(
       DataTypeSet enabled_types,
       size_t max_entries,
@@ -58,7 +58,7 @@ class Commit {
       CommitProcessor* commit_processor,
       ExtensionsActivity* extensions_activity);
 
-  // |extensions_activity| may be null.
+  // `extensions_activity` may be null.
   SyncerError PostAndProcessResponse(NudgeTracker* nudge_tracker,
                                      SyncCycle* cycle,
                                      StatusController* status,

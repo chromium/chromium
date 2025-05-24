@@ -38,13 +38,13 @@ function DebugError(msg = undefined, cause = undefined) {
   } else {
     const stack = new Error().stack;
     if (stack) {
-      /** @override */
+      /** @override @type {string} */
       this.stack = stack;
     }
   }
 
   if (msg) {
-    /** @override */
+    /** @override @type {string} */
     this.message = String(msg);
   }
 

@@ -10,6 +10,7 @@
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/features.h"
+#include "net/base/network_isolation_partition.h"
 #include "services/network/public/mojom/network_anonymization_key.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -27,6 +28,13 @@ TEST(NetworkAnonymizationKeyMojomTraitsTest,
       net::NetworkAnonymizationKey::CreateFromParts(
           net::SchemefulSite(GURL("http://a.test/")), /*is_cross_site=*/true,
           token),
+      net::NetworkAnonymizationKey::CreateFromParts(
+          net::SchemefulSite(GURL("http://a.test/")), /*is_cross_site=*/true,
+          /*nonce=*/std::nullopt,
+          net::NetworkIsolationPartition::kProtectedAudienceSellerWorklet),
+      net::NetworkAnonymizationKey::CreateFromParts(
+          net::SchemefulSite(GURL("http://a.test/")), /*is_cross_site=*/true,
+          /*nonce=*/std::nullopt, net::NetworkIsolationPartition::kGeneral),
       net::NetworkAnonymizationKey::CreateCrossSite(
           net::SchemefulSite(GURL("http://a.test/"))),
   };

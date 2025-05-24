@@ -26,7 +26,7 @@ class ProductSpecificationsDisclosureDialogBrowserTest
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    DialogArgs args({}, "", true);
+    DialogArgs args({}, "", "", true);
     ProductSpecificationsDisclosureDialog::ShowDialog(profile_, web_contents(),
                                                       std::move(args));
   }
@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsDisclosureDialogBrowserTest,
                        CheckDialogAttribute) {
   ASSERT_EQ(nullptr, commerce::ProductSpecificationsDisclosureDialog::
                          current_instance_for_testing());
-  DialogArgs args({}, "", true);
+  DialogArgs args({}, "", "", true);
   commerce::ProductSpecificationsDisclosureDialog::ShowDialog(
       profile_, web_contents(), std::move(args));
   auto* dialog = commerce::ProductSpecificationsDisclosureDialog::

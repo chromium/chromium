@@ -28,17 +28,20 @@ namespace web_app {
 namespace {
 
 bool g_disable_auto_retry_for_testing = false;
-
-bool IsEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kWebAppSyncGeneratedIconBackgroundFix);
-}
+bool g_disable_generated_icon_fixes_for_testing = false;
 
 }  // namespace
 
 // static
-void GeneratedIconFixManager::DisableAutoRetryForTesting() {
-  g_disable_auto_retry_for_testing = true;
+base::AutoReset<bool> GeneratedIconFixManager::DisableAutoRetryForTesting() {
+  return base::AutoReset<bool>(&g_disable_auto_retry_for_testing, true);
+}
+
+// static
+base::AutoReset<bool>
+GeneratedIconFixManager::DisableGeneratedIconFixesForTesting() {
+  return base::AutoReset<bool>(&g_disable_generated_icon_fixes_for_testing,
+                               true);
 }
 
 GeneratedIconFixManager::GeneratedIconFixManager() = default;
@@ -51,10 +54,9 @@ void GeneratedIconFixManager::SetProvider(base::PassKey<WebAppProvider>,
 }
 
 void GeneratedIconFixManager::Start() {
-  if (!IsEnabled()) {
+  if (g_disable_generated_icon_fixes_for_testing) {
     return;
   }
-
   provider_->scheduler().ScheduleCallback(
       "GeneratedIconFixManager::Start", AllAppsLockDescription(),
       base::BindOnce(&GeneratedIconFixManager::ScheduleFixes,
@@ -79,7 +81,7 @@ void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
 
     ++started_attempt_count;
     const WebApp* app = all_apps_lock.registrar().GetAppById(app_id);
-    const std::optional<GeneratedIconFix>& generated_icon_fix =
+    const std::optional<proto::GeneratedIconFix>& generated_icon_fix =
         app->generated_icon_fix();
     base::UmaHistogramCounts100("WebApp.GeneratedIconFix.AttemptCount",
                                 generated_icon_fix.has_value()
@@ -94,8 +96,6 @@ void GeneratedIconFixManager::ScheduleFixes(AllAppsLock& all_apps_lock,
 bool GeneratedIconFixManager::MaybeScheduleFix(const webapps::AppId& app_id,
                                                WithAppResources& resources,
                                                base::Value::Dict& debug_value) {
-  CHECK(IsEnabled());
-
   const WebApp* app = resources.registrar().GetAppById(app_id);
   GeneratedIconFixScheduleDecision decision = MakeScheduleDecision(app);
 
@@ -156,7 +156,7 @@ GeneratedIconFixScheduleDecision GeneratedIconFixManager::MakeScheduleDecision(
 void GeneratedIconFixManager::StartFix(const webapps::AppId& app_id) {
   provider_->command_manager().ScheduleCommand(
       std::make_unique<GeneratedIconFixCommand>(
-          app_id, GeneratedIconFixSource_RETROACTIVE,
+          app_id, proto::GENERATED_ICON_FIX_SOURCE_RETROACTIVE,
           base::BindOnce(&GeneratedIconFixManager::FixCompleted,
                          weak_ptr_factory_.GetWeakPtr(), app_id)));
 }

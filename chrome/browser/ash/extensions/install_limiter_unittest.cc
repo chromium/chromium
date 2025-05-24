@@ -125,7 +125,7 @@ class InstallLimiterTest : public extensions::ExtensionServiceTestBase {
     install_limiter_ = InstallLimiter::Get(profile());
 
     mock_installer_ =
-        base::MakeRefCounted<extensions::MockCrxInstaller>(service());
+        base::MakeRefCounted<extensions::MockCrxInstaller>(profile());
   }
 
   extensions::CRXFileInfo CreateTestExtensionCrx(const base::FilePath& path,

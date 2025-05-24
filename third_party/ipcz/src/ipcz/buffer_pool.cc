@@ -70,7 +70,6 @@ bool BufferPool::AddBlockBuffer(
     absl::MutexLock lock(&mutex_);
     auto [it, inserted] = mappings_.insert({id, std::move(mapping)});
     if (!inserted) {
-      ABSL_ASSERT(buffer_callbacks_.empty());
       return false;
     }
 
@@ -203,6 +202,15 @@ void BufferPool::WaitForBufferAsync(BufferId id,
   }
 
   callback();
+}
+
+void BufferPool::DropPendingBufferCallbacks() {
+  // Dropping callbacks may have side-effects, so do it outside of a lock.
+  BufferCallbackMap buffer_callbacks;
+  {
+    absl::MutexLock lock(&mutex_);
+    buffer_callbacks.swap(buffer_callbacks_);
+  }
 }
 
 }  // namespace ipcz

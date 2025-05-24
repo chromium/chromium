@@ -4,8 +4,9 @@
 
 /// <reference path="media_app.d.ts" />
 
-import {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
-import {ReceivedFileList, TEST_ONLY} from './receiver.js';
+import type {FileSnapshot, LastLoadedFilesResponse, TestMessageQueryData, TestMessageResponseData, TestMessageRunTestCase} from './driver_api.js';
+import type {ReceivedFileList} from './receiver.js';
+import {TEST_ONLY} from './receiver.js';
 
 interface GenericErrorResponse {
   name: string;

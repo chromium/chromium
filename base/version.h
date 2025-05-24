@@ -69,7 +69,6 @@ class BASE_EXPORT Version {
 };
 
 BASE_EXPORT bool operator==(const Version& v1, const Version& v2);
-BASE_EXPORT bool operator!=(const Version& v1, const Version& v2);
 BASE_EXPORT bool operator<(const Version& v1, const Version& v2);
 BASE_EXPORT bool operator<=(const Version& v1, const Version& v2);
 BASE_EXPORT bool operator>(const Version& v1, const Version& v2);

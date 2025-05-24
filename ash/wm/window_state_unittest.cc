@@ -85,22 +85,9 @@ class AlwaysMaximizeTestState : public WindowState::State {
   WindowStateType state_type_;
 };
 
-class WindowStateTest : public AshTestBase {
- public:
-  WindowStateTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
-  WindowStateTest(const WindowStateTest&) = delete;
-  WindowStateTest& operator=(const WindowStateTest&) = delete;
-  ~WindowStateTest() override = default;
+using WindowStateTest = AshTestBase;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-using Sample = base::HistogramBase::Sample;
+using Sample32 = base::HistogramBase::Sample32;
 
 // Test that a window gets properly snapped to the display's edges in a
 // multi monitor environment.
@@ -331,19 +318,19 @@ TEST_F(WindowStateTest, ChromePipWindowUmaMetrics) {
   window_state->OnWMEvent(&enter_pip);
 
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::PIP_START)));
+                                         Sample32(AshPipEvents::PIP_START)));
   EXPECT_EQ(1,
             histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                      Sample(AshPipEvents::CHROME_PIP_START)));
+                                      Sample32(AshPipEvents::CHROME_PIP_START)));
   histograms.ExpectTotalCount(kAshPipEventsHistogramName, 2);
 
   const WMEvent enter_normal(WM_EVENT_NORMAL);
   window_state->OnWMEvent(&enter_normal);
 
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::PIP_END)));
+                                         Sample32(AshPipEvents::PIP_END)));
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::CHROME_PIP_END)));
+                                         Sample32(AshPipEvents::CHROME_PIP_END)));
   histograms.ExpectTotalCount(kAshPipEventsHistogramName, 4);
 }
 
@@ -358,20 +345,20 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetrics) {
   window_state->OnWMEvent(&enter_pip);
 
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::PIP_START)));
+                                         Sample32(AshPipEvents::PIP_START)));
   EXPECT_EQ(1,
             histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                      Sample(AshPipEvents::ANDROID_PIP_START)));
+                                      Sample32(AshPipEvents::ANDROID_PIP_START)));
   histograms.ExpectTotalCount(kAshPipEventsHistogramName, 2);
 
   const WMEvent enter_normal(WM_EVENT_NORMAL);
   window_state->OnWMEvent(&enter_normal);
 
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::PIP_END)));
+                                         Sample32(AshPipEvents::PIP_END)));
   EXPECT_EQ(1,
             histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                      Sample(AshPipEvents::ANDROID_PIP_END)));
+                                      Sample32(AshPipEvents::ANDROID_PIP_END)));
   histograms.ExpectTotalCount(kAshPipEventsHistogramName, 4);
 
   // Check time count:
@@ -391,9 +378,9 @@ TEST_F(WindowStateTest, ChromePipWindowUmaMetricsCountsExitOnDestroy) {
   window.reset();
 
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::PIP_END)));
+                                         Sample32(AshPipEvents::PIP_END)));
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::CHROME_PIP_END)));
+                                         Sample32(AshPipEvents::CHROME_PIP_END)));
   histograms.ExpectTotalCount(kAshPipEventsHistogramName, 4);
 }
 
@@ -411,10 +398,10 @@ TEST_F(WindowStateTest, AndroidPipWindowUmaMetricsCountsExitOnDestroy) {
   window.reset();
 
   EXPECT_EQ(1, histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                         Sample(AshPipEvents::PIP_END)));
+                                         Sample32(AshPipEvents::PIP_END)));
   EXPECT_EQ(1,
             histograms.GetBucketCount(kAshPipEventsHistogramName,
-                                      Sample(AshPipEvents::ANDROID_PIP_END)));
+                                      Sample32(AshPipEvents::ANDROID_PIP_END)));
   histograms.ExpectTotalCount(kAshPipEventsHistogramName, 4);
 }
 
@@ -2355,9 +2342,6 @@ TEST_F(WindowStateMetricsTest, PartialSplitDuration) {
   window2.reset();
   histogram_tester.ExpectBucketCount(kHistogramName, 2, 1);
   histogram_tester.ExpectBucketCount(kHistogramName, 1, 1);
-
-  // TODO(sophiewen): Determine whether to stop recording if a partial split
-  // window swaps sides, e.g. from one third to two thirds.
 }
 
 // TODO(skuhne): Add more unit test to verify the correctness for the restore

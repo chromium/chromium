@@ -133,8 +133,14 @@ test(() => {
 
 // This tests that once `Observable.from()` detects a non-null and non-undefined
 // `[Symbol.iterator]` property, we've committed to converting as an iterable.
-// If the value of that property is not callable, we don't silently move on to
-// the next conversion type — we throw a TypeError;
+// If the value of that property is then not callable, we don't silently move on
+// to the next conversion type — we throw a TypeError.
+//
+// That's because that's what TC39's `GetMethod()` [1] calls for, which is what
+// `Observable.from()` first uses in the iterable conversion branch [2].
+//
+// [1]: https://tc39.es/ecma262/multipage/abstract-operations.html#sec-getmethod
+// [2]: http://wicg.github.io/observable/#from-iterable-conversion
 test(() => {
   let results = [];
   const iterable = {
@@ -149,10 +155,80 @@ test(() => {
   }
 
   assert_true(errorThrown instanceof TypeError);
-  assert_equals(errorThrown.message,
-      "Failed to execute 'from' on 'Observable': @@iterator must be a " +
-      "callable.");
 }, "from(): [Symbol.iterator] not callable");
+
+test(() => {
+  let results = [];
+  const iterable = {
+    calledOnce: false,
+    get [Symbol.iterator]() {
+      if (this.calledOnce) {
+        // Return a non-callable primitive the second time `@@iterator` is
+        // called.
+        return 10;
+      }
+
+      this.calledOnce = true;
+      return this.validImplementation;
+    },
+    validImplementation: () => {
+      return {
+        next() { return {done: true}; }
+      }
+    }
+  };
+
+  let errorThrown = null;
+
+  const observable = Observable.from(iterable);
+  observable.subscribe({
+    next: v => results.push("should not be called"),
+    error: e => {
+      errorThrown = e;
+      results.push(e);
+    },
+  });
+
+  assert_array_equals(results, [errorThrown],
+      "An error was plumbed through the Observable");
+  assert_true(errorThrown instanceof TypeError);
+}, "from(): [Symbol.iterator] not callable AFTER SUBSCRIBE throws");
+
+test(() => {
+  let results = [];
+  const iterable = {
+    calledOnce: false,
+    validImplementation: () => {
+      return {
+        next() { return {done: true}; }
+      }
+    },
+    get [Symbol.iterator]() {
+      if (this.calledOnce) {
+        // Return null the second time `@@iterator` is called.
+        return null;
+      }
+
+      this.calledOnce = true;
+      return this.validImplementation;
+    }
+  };
+
+  let errorThrown = null;
+
+  const observable = Observable.from(iterable);
+  observable.subscribe({
+    next: v => results.push("should not be called"),
+    error: e => {
+      errorThrown = e;
+      results.push(e);
+    },
+  });
+
+  assert_array_equals(results, [errorThrown],
+      "An error was plumbed through the Observable");
+  assert_true(errorThrown instanceof TypeError);
+}, "from(): [Symbol.iterator] returns null AFTER SUBSCRIBE throws");
 
 test(() => {
   let results = [];
@@ -520,24 +596,6 @@ test(() => {
 }, "from(): Rethrows the error when Converting an object whose @@iterator " +
    "method *getter* throws an error");
 
-test(() => {
-  const obj = {};
-  // Non-undefined & non-null values of the `@@iterator` property are not
-  // allowed. Specifically they fail the the `IsCallable()` test, which fails
-  // Observable conversion.
-  obj[Symbol.iterator] = 10;
-
-  try {
-    Observable.from(obj);
-    assert_unreached("from() conversion throws");
-  } catch(e) {
-    assert_true(e instanceof TypeError);
-    assert_equals(e.message,
-        "Failed to execute 'from' on 'Observable': @@iterator must be a callable.");
-  }
-}, "from(): Throws 'callable' error when @@iterator property is a " +
-   "non-callable primitive");
-
 // This test exercises the line of spec prose that says:
 //
 // "If |asyncIteratorMethodRecord|'s [[Value]] is undefined or null, then jump
@@ -616,28 +674,11 @@ promise_test(async t => {
 
 // This test is a more chaotic version of the above. It ensures that a single
 // Observable can handle multiple in-flight subscriptions to the same underlying
-// async iterable without the two subscriptions competing.
-//
-// This test is added because it is easy to imagine an implementation whereby
-// upon subscription, the Observable's internal subscribe callback takes the
-// underlying async iterable object, and simply pulls the async iterator off of
-// it (by invoking `@@asyncIterator`), and saves it alongside the underlying
-// async iterable. This async iterator would be used to manage values as they
-// are asynchronously emitted from the underlying object, but this value can get
-// OVERWRITTEN by a brand new subscription that comes in before the first
-// subscription has completed. In a broken implementation, this overwriting
-// would prevent the first subscription from ever completing.
+// async iterable without the two subscriptions competing. It asserts that the
+// asynchronous values are pushed to the observers in the correct order.
 promise_test(async t => {
   const async_iterable = {
-    slow: true,
     [Symbol.asyncIterator]() {
-      // The first time @@asyncIterator is called, `shouldBeSlow` is true, and
-      // when the return object takes closure of it, all values are emitted
-      // SLOWLY asynchronously. The second time, `shouldBeSlow` is false, and
-      // all values are emitted FAST but still asynchronous.
-      const shouldBeSlow = this.slow;
-      this.slow = false;
-
       return {
         val: 0,
         next() {
@@ -645,9 +686,9 @@ promise_test(async t => {
           // than a second.
           return new Promise(resolve => {
             t.step_timeout(() => resolve({
-              value: `${this.val}-${shouldBeSlow ? 'slow' : 'fast'}`,
+              value: this.val,
               done: this.val++ === 4 ? true : false,
-            }), shouldBeSlow ? 200 : 0);
+            }), 200);
           });
         },
       };
@@ -657,30 +698,79 @@ promise_test(async t => {
   const results = [];
   const source = Observable.from(async_iterable);
 
-  const subscribeFunction = function(resolve, reject) {
+  const promise = new Promise(resolve => {
     source.subscribe({
-      next: v => results.push(v),
-      complete: () => resolve(),
+      next: v => {
+        results.push(`${v}-first-sub`);
+
+        // Half-way through the first subscription, start another subscription.
+        if (v === 0) {
+          source.subscribe({
+            next: v => results.push(`${v}-second-sub`),
+            complete: () => {
+              results.push('complete-second-sub');
+              resolve();
+            }
+          });
+        }
+      },
+      complete: () => {
+        results.push('complete-first-sub');
+        resolve();
+      }
     });
+  });
 
-    // A broken implementation will rely on this timeout.
-    t.step_timeout(() => reject('TIMEOUT'), 3000);
-  }
-
-  const slow_promise = new Promise(subscribeFunction);
-  const fast_promise = new Promise(subscribeFunction);
-  await Promise.all([slow_promise, fast_promise]);
+  await promise;
   assert_array_equals(results, [
-    '0-fast',
-    '1-fast',
-    '2-fast',
-    '3-fast',
-    '0-slow',
-    '1-slow',
-    '2-slow',
-    '3-slow',
+    '0-first-sub',
+
+    '1-first-sub',
+    '1-second-sub',
+
+    '2-first-sub',
+    '2-second-sub',
+
+    '3-first-sub',
+    '3-second-sub',
+
+    'complete-first-sub',
+    'complete-second-sub',
   ]);
-}, "from(): Asynchronous iterable multiple in-flight subscriptions competing");
+}, "from(): Asynchronous iterable multiple in-flight subscriptions");
+// This test is like the above, ensuring that multiple subscriptions to the same
+// sync-iterable-converted-Observable can exist at a time. Since sync iterables
+// push all of their values to the Observable synchronously, the way to do this
+// is subscribe to the sync iterable Observable *inside* the next handler of the
+// same Observable.
+test(() => {
+  const results = [];
+
+  const array = [1, 2, 3, 4, 5];
+  const source = Observable.from(array);
+  source.subscribe({
+    next: v => {
+      results.push(`${v}-first-sub`);
+      if (v === 3) {
+        // Pushes all 5 values to `results` right after the first instance of `3`.
+        source.subscribe({
+          next: v => results.push(`${v}-second-sub`),
+          complete: () => results.push('complete-second-sub'),
+        });
+      }
+    },
+    complete: () => results.push('complete-first-sub'),
+  });
+
+  assert_array_equals(results, [
+    // These values are pushed when there is only a single subscription.
+    '1-first-sub', '2-first-sub', '3-first-sub',
+    // These values are pushed in the correct order, for two subscriptions.
+    '4-first-sub', '4-second-sub',
+    '5-first-sub', '5-second-sub',
+    'complete-first-sub', 'complete-second-sub',
+  ]);
+}, "from(): Sync iterable multiple in-flight subscriptions");
 
 promise_test(async () => {
   const async_generator = async function*() {
@@ -776,7 +866,7 @@ test(() => {
 }, "from(): Errors thrown in Symbol.asyncIterator() are propagated synchronously");
 
 // AsyncIterable: next() throws exception instead of return Promise. Any errors
-// that occur during the the retrieval of `next()` always result in a rejected
+// that occur during the retrieval of `next()` always result in a rejected
 // Promise. Therefore, the error makes it to the Observer with microtask timing.
 promise_test(async () => {
   const nextError = new Error('next error');
@@ -865,6 +955,126 @@ test(() => {
   ]);
 }, "from(): Aborting sync iterable midway through iteration both stops iteration " +
    "and invokes `IteratorRecord#return()");
+// Like the above test, but for async iterables.
+promise_test(async t => {
+  const results = [];
+  const iterable = {
+    [Symbol.asyncIterator]() {
+      return {
+        val: 0,
+        next() {
+          results.push(`IteratorRecord#next() pushing ${this.val}`);
+          return {
+            value: this.val,
+            done: this.val++ === 10 ? true : false,
+          };
+        },
+        return(reason) {
+          results.push(`IteratorRecord#return() called with reason=${reason}`);
+          return {done: true};
+        },
+      };
+    },
+  };
+
+  const ac = new AbortController();
+  await new Promise(resolve => {
+    Observable.from(iterable).subscribe(v => {
+      results.push(`Observing ${v}`);
+      if (v === 3) {
+        ac.abort(`Aborting because v=${v}`);
+        resolve();
+      }
+    }, {signal: ac.signal});
+  });
+
+  assert_array_equals(results, [
+    "IteratorRecord#next() pushing 0",
+    "Observing 0",
+    "IteratorRecord#next() pushing 1",
+    "Observing 1",
+    "IteratorRecord#next() pushing 2",
+    "Observing 2",
+    "IteratorRecord#next() pushing 3",
+    "Observing 3",
+    "IteratorRecord#return() called with reason=Aborting because v=3",
+  ]);
+}, "from(): Aborting async iterable midway through iteration both stops iteration " +
+   "and invokes `IteratorRecord#return()");
+
+test(() => {
+  const iterable = {
+    [Symbol.iterator]() {
+      return {
+        val: 0,
+        next() {
+          return {value: this.val, done: this.val++ === 10 ? true : false};
+        },
+        // Not returning an Object results in a TypeError being thrown.
+        return(reason) {},
+      };
+    },
+  };
+
+  let thrownError = null;
+  const ac = new AbortController();
+  Observable.from(iterable).subscribe(v => {
+    if (v === 3) {
+      try {
+        ac.abort(`Aborting because v=${v}`);
+      } catch (e) {
+        thrownError = e;
+      }
+    }
+  }, {signal: ac.signal});
+
+  assert_not_equals(thrownError, null, "abort() threw an Error");
+  assert_true(thrownError instanceof TypeError);
+  assert_true(thrownError.message.includes('return()'));
+  assert_true(thrownError.message.includes('Object'));
+}, "from(): Sync iterable: `Iterator#return()` must return an Object, or an " +
+   "error is thrown");
+// This test is just like the above but for async iterables. It asserts that a
+// Promise is rejected when `return()` does not return an Object.
+promise_test(async t => {
+  const iterable = {
+    [Symbol.asyncIterator]() {
+      return {
+        val: 0,
+        next() {
+          return {value: this.val, done: this.val++ === 10 ? true : false};
+        },
+        // Not returning an Object results in a rejected Promise.
+        return(reason) {},
+      };
+    },
+  };
+
+  const unhandled_rejection_promise = new Promise((resolve, reject) => {
+    const unhandled_rejection_handler = e => resolve(e.reason);
+    self.addEventListener("unhandledrejection", unhandled_rejection_handler);
+    t.add_cleanup(() =>
+        self.removeEventListener("unhandledrejection", unhandled_rejection_handler));
+
+    t.step_timeout(() => reject('Timeout'), 3000);
+  });
+
+  const ac = new AbortController();
+  await new Promise(resolve => {
+    Observable.from(iterable).subscribe(v => {
+      if (v === 3) {
+        ac.abort(`Aborting because v=${v}`);
+        resolve();
+      }
+    }, {signal: ac.signal});
+  });
+
+  const reason = await unhandled_rejection_promise;
+  assert_true(reason instanceof TypeError);
+  assert_true(reason.message.includes('return()'));
+  assert_true(reason.message.includes('Object'));
+}, "from(): Async iterable: `Iterator#return()` must return an Object, or a " +
+   "Promise rejects asynchronously");
 
 // This test exercises the logic of `GetIterator()` async->sync fallback
 // logic. Specifically, we have an object that is an async iterable — that is,
@@ -1116,3 +1326,416 @@ promise_test(async t => {
   assert_array_equals(results, [0, 1, 2, 3, "from the async generator"]);
   assert_true(generatorFinalized);
 }, "from(): Async generator finally block run when Observable errors");
+
+// Test what happens when `return()` throws an error upon abort.
+test(() => {
+  const results = [];
+  const iterable = {
+    [Symbol.iterator]() {
+      return {
+        val: 0,
+        next() {
+          results.push('next() called');
+          return {value: this.val, done: this.val++ === 10 ? true : false};
+        },
+        return() {
+          results.push('return() about to throw an error');
+          throw new Error('return() error');
+        },
+      };
+    }
+  };
+
+  const ac = new AbortController();
+  const source = Observable.from(iterable);
+  source.subscribe(v => {
+    if (v === 3) {
+      try {
+        ac.abort();
+      } catch (e) {
+        results.push(`AbortController#abort() threw an error: ${e.message}`);
+      }
+    }
+  }, {signal: ac.signal});
+
+  assert_array_equals(results, [
+    'next() called',
+    'next() called',
+    'next() called',
+    'next() called',
+    'return() about to throw an error',
+    'AbortController#abort() threw an error: return() error',
+  ]);
+}, "from(): Sync iterable: error thrown from IteratorRecord#return() can be " +
+   "synchronously caught");
+promise_test(async t => {
+  const results = [];
+  const iterable = {
+    [Symbol.asyncIterator]() {
+      return {
+        val: 0,
+        next() {
+          results.push('next() called');
+          return {value: this.val, done: this.val++ === 10 ? true : false};
+        },
+        return() {
+          results.push('return() about to throw an error');
+          // For async iterables, errors thrown in `return()` end up in a
+          // returned rejected Promise, so no error appears on the stack
+          // immediately. See [1].
+          //
+          // [1]: https://whatpr.org/webidl/1397.html#async-iterator-close.
+          throw new Error('return() error');
+        },
+      };
+    }
+  };
+
+  const unhandled_rejection_promise = new Promise((resolve, reject) => {
+    const unhandled_rejection_handler = e => resolve(e.reason);
+    self.addEventListener("unhandledrejection", unhandled_rejection_handler);
+    t.add_cleanup(() =>
+        self.removeEventListener("unhandledrejection", unhandled_rejection_handler));
+
+    t.step_timeout(() => reject('Timeout'), 1500);
+  });
+
+  const ac = new AbortController();
+  const source = Observable.from(iterable);
+  await new Promise((resolve, reject) => {
+    source.subscribe(v => {
+      if (v === 3) {
+        try {
+          ac.abort();
+          results.push('No error thrown synchronously');
+          resolve('No error thrown synchronously');
+        } catch (e) {
+          results.push(`AbortController#abort() threw an error: ${e.message}`);
+          reject(e);
+        }
+      }
+    }, {signal: ac.signal});
+  });
+
+  assert_array_equals(results, [
+    'next() called',
+    'next() called',
+    'next() called',
+    'next() called',
+    'return() about to throw an error',
+    'No error thrown synchronously',
+  ]);
+
+  const reason = await unhandled_rejection_promise;
+  assert_true(reason instanceof Error);
+  assert_equals(reason.message, "return() error",
+      "Custom error text passed through rejected Promise");
+}, "from(): Async iterable: error thrown from IteratorRecord#return() is " +
+   "wrapped in rejected Promise");
+
+test(() => {
+  const results = [];
+  const iterable = {
+    getter() {
+      results.push('GETTER called');
+      return () => {
+        results.push('Obtaining iterator');
+        return {
+          next() {
+            results.push('next() running');
+            return {done: true};
+          }
+        };
+      };
+    }
+  };
+
+  Object.defineProperty(iterable, Symbol.iterator, {
+    get: iterable.getter
+  });
+  {
+    const source = Observable.from(iterable);
+    assert_array_equals(results, ["GETTER called"]);
+    source.subscribe({}, {signal: AbortSignal.abort()});
+    assert_array_equals(results, ["GETTER called"]);
+  }
+  iterable[Symbol.iterator] = undefined;
+  Object.defineProperty(iterable, Symbol.asyncIterator, {
+    get: iterable.getter
+  });
+  {
+    const source = Observable.from(iterable);
+    assert_array_equals(results, ["GETTER called", "GETTER called"]);
+    source.subscribe({}, {signal: AbortSignal.abort()});
+    assert_array_equals(results, ["GETTER called", "GETTER called"]);
+  }
+}, "from(): Subscribing to an iterable Observable with an aborted signal " +
+   "does not call next()");
+
+test(() => {
+  let results = [];
+
+  const iterable = {
+    controller: null,
+    calledOnce: false,
+    getter() {
+      results.push('GETTER called');
+      if (!this.calledOnce) {
+        this.calledOnce = true;
+        return () => {
+          results.push('NOT CALLED');
+          // We don't need to return anything here. The only time this path is
+          // hit is during `Observable.from()` which doesn't actually obtain an
+          // iterator. It just samples the iterable protocol property to ensure
+          // that it's valid.
+        };
+      }
+
+      // This path is only called the second time the iterator protocol getter
+      // is run.
+      this.controller.abort();
+      return () => {
+        results.push('iterator obtained');
+        return {
+          val: 0,
+          next() {
+            results.push('next() called');
+            return {done: true};
+          },
+          return() {
+            results.push('return() called');
+          }
+        };
+      };
+    }
+  };
+
+  // Test for sync iterators.
+  {
+    const ac = new AbortController();
+    iterable.controller = ac;
+    Object.defineProperty(iterable, Symbol.iterator, {
+      get: iterable.getter,
+    });
+
+    const source = Observable.from(iterable);
+    assert_false(ac.signal.aborted, "[Sync iterator]: signal is not yet aborted after from() conversion");
+    assert_array_equals(results, ["GETTER called"]);
+
+    source.subscribe({
+      next: n => results.push(n),
+      complete: () => results.push('complete'),
+    }, {signal: ac.signal});
+    assert_true(ac.signal.aborted, "[Sync iterator]: signal is aborted during subscription");
+    assert_array_equals(results, ["GETTER called", "GETTER called", "iterator obtained"]);
+  }
+
+  results = [];
+
+  // Test for async iterators.
+  {
+    // Reset `iterable` so it can be reused.
+    const ac = new AbortController();
+    iterable.controller = ac;
+    iterable.calledOnce = false;
+    iterable[Symbol.iterator] = undefined;
+    Object.defineProperty(iterable, Symbol.asyncIterator, {
+      get: iterable.getter
+    });
+
+    const source = Observable.from(iterable);
+    assert_false(ac.signal.aborted, "[Async iterator]: signal is not yet aborted after from() conversion");
+    assert_array_equals(results, ["GETTER called"]);
+
+    source.subscribe({
+      next: n => results.push(n),
+      complete: () => results.push('complete'),
+    }, {signal: ac.signal});
+    assert_true(ac.signal.aborted, "[Async iterator]: signal is aborted during subscription");
+    assert_array_equals(results, ["GETTER called", "GETTER called", "iterator obtained"]);
+  }
+}, "from(): When iterable conversion aborts the subscription, next() is " +
+   "never called");
+
+// This test asserts some very subtle behavior with regard to async iterables
+// and a mid-subscription signal abort. Specifically it detects that a signal
+// abort ensures that the `next()` method is not called again on the iterator
+// again, BUT detects that pending Promise from the *previous* `next()` call
+// still has its IteratorResult object examined. I.e., the implementation
+// inspecting the `done` attribute on the resolved IteratorResult is observable
+// event after abort() takes place.
+promise_test(async () => {
+  const results = [];
+  let resolveNext = null;
+
+  const iterable = {
+    [Symbol.asyncIterator]() {
+      return {
+        next() {
+          results.push('next() called');
+          return new Promise(resolve => {
+            resolveNext = resolve;
+          });
+        },
+        return() {
+          results.push('return() called');
+        }
+      };
+    }
+  };
+
+  const ac = new AbortController();
+  const source = Observable.from(iterable);
+  source.subscribe({
+    next: v => results.push(v),
+    complete: () => results.push('complete'),
+  }, {signal: ac.signal});
+
+  assert_array_equals(results, [
+    "next() called",
+  ]);
+
+  // First abort, ensuring `return()` is called.
+  ac.abort();
+
+  assert_array_equals(results, [
+    "next() called",
+    "return() called",
+  ]);
+
+  // Then resolve the pending `next()` Promise to an object whose `done` getter
+  // reports to the test whether it was accessed. We have to wait one microtask
+  // for the internal Observable implementation to finish "reacting" to said
+  // `next()` promise resolution, for it to grab the `done` attribute.
+  await new Promise(resolveOuter => {
+    resolveNext({
+      get done() {
+        results.push('IteratorResult.done GETTER');
+        resolveOuter();
+        return true;
+      }
+    });
+  });
+
+  assert_array_equals(results, [
+    "next() called",
+    "return() called",
+    "IteratorResult.done GETTER",
+    // Note that "next() called" does not make another appearance.
+  ]);
+}, "from(): Aborting an async iterable subscription stops subsequent next() " +
+   "calls, but old next() Promise reactions are web-observable");
+
+test(() => {
+  const results = [];
+  const iterable = {
+    [Symbol.iterator]() {
+      return {
+        val: 0,
+        next() {
+          return {value: this.val, done: this.val++ === 4 ? true : false};
+        },
+        return() {
+          results.push('return() called');
+        },
+      };
+    }
+  };
+
+  const source = Observable.from(iterable);
+  const ac = new AbortController();
+  source.subscribe({
+    next: v => results.push(v),
+    complete: () => results.push('complete'),
+  }, {signal: ac.signal});
+
+  ac.abort(); // Must do nothing!
+  assert_array_equals(results, [0, 1, 2, 3, 'complete']);
+}, "from(): Abort after complete does NOT call IteratorRecord#return()");
+
+test(() => {
+  const controller = new AbortController();
+  // Invalid @@asyncIterator protocol that also aborts the subscription. By the
+  // time the invalid-ness of the protocol is detected, the controller has been
+  // aborted, meaning that invalid-ness cannot manifest itself in the form of an
+  // error that goes to the Observable's subscriber. Instead, it gets reported
+  // to the global.
+  const asyncIterable = {
+    calledOnce: false,
+    get[Symbol.asyncIterator]() {
+      // This `calledOnce` path is to ensure the Observable first converts
+      // correctly via `Observable.from()`, but *later* fails in the path where
+      // `@@asyncIterator` is null.
+      if (this.calledOnce) {
+        controller.abort();
+        return null;
+      } else {
+        this.calledOnce = true;
+        return this.validImplementation;
+      }
+    },
+    validImplementation() {
+      controller.abort();
+      return null;
+    }
+  };
+
+  let reportedError = null;
+  self.addEventListener("error", e => reportedError = e.error, {once: true});
+
+  let errorThrown = null;
+  const observable = Observable.from(asyncIterable);
+  observable.subscribe({
+    error: e => errorThrown = e,
+  }, {signal: controller.signal});
+
+  assert_equals(errorThrown, null, "Protocol error is not surfaced to the Subscriber");
+
+  assert_not_equals(reportedError, null, "Protocol error is reported to the global");
+  assert_true(reportedError instanceof TypeError);
+}, "Invalid async iterator protocol error is surfaced before Subscriber#signal is consulted");
+
+test(() => {
+  const controller = new AbortController();
+  const iterable = {
+    calledOnce: false,
+    get[Symbol.iterator]() {
+      if (this.calledOnce) {
+        controller.abort();
+        return null;
+      } else {
+        this.calledOnce = true;
+        return this.validImplementation;
+      }
+    },
+    validImplementation() {
+      controller.abort();
+      return null;
+    }
+  };
+
+  let reportedError = null;
+  self.addEventListener("error", e => reportedError = e.error, {once: true});
+
+  let errorThrown = null;
+  const observable = Observable.from(iterable);
+  observable.subscribe({
+    error: e => errorThrown = e,
+  }, {signal: controller.signal});
+
+  assert_equals(errorThrown, null, "Protocol error is not surfaced to the Subscriber");
+
+  assert_not_equals(reportedError, null, "Protocol error is reported to the global");
+  assert_true(reportedError instanceof TypeError);
+}, "Invalid iterator protocol error is surfaced before Subscriber#signal is consulted");
+
+// Regression test for https://github.com/WICG/observable/issues/208.
+promise_test(async () => {
+  let errorReported = false;
+  self.onerror = e => errorReported = true;
+
+  // `first()` aborts the subscription after the first item is encountered.
+  const value = await Observable.from([1, 2, 3]).first();
+  assert_false(errorReported);
+}, "No error is reported when aborting a subscription to a sync iterator " +
+   "that has no `return()` implementation");

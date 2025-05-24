@@ -15,11 +15,13 @@ import static org.hamcrest.Matchers.anything;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -27,7 +29,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -35,7 +37,11 @@ import java.util.Arrays;
 /** Unit tests for {@link TargetSelectorCoordinatorTest}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
+public class TargetSelectorCoordinatorTest {
+    @Rule
+    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
     private LargeIconBridge mIconBridge;
 
     private ModalDialogManager mModalDialogManager;
@@ -43,11 +49,11 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
 
     @Before
     public void setUp() throws Exception {
-        super.setUpTest();
+        mActivityTestRule.launchActivity(null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mAppModalPresenter = new AppModalPresenter(getActivity());
+                    mAppModalPresenter = new AppModalPresenter(mActivityTestRule.getActivity());
                     mModalDialogManager =
                             new ModalDialogManager(
                                     mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
@@ -70,9 +76,11 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
         InstanceInfo[] instances =
                 new InstanceInfo[] {
                     new InstanceInfo(
-                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false),
-                    new InstanceInfo(1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false),
-                    new InstanceInfo(2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false)
+                            0, 57, InstanceInfo.Type.CURRENT, "url0", "title0", 1, 0, false, 0),
+                    new InstanceInfo(
+                            1, 58, InstanceInfo.Type.OTHER, "ur11", "title1", 2, 0, false, 0),
+                    new InstanceInfo(
+                            2, 59, InstanceInfo.Type.OTHER, "url2", "title2", 1, 1, false, 0)
                 };
         final CallbackHelper itemClickCallbackHelper = new CallbackHelper();
         final int itemClickCount = itemClickCallbackHelper.getCallCount();
@@ -80,7 +88,7 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TargetSelectorCoordinator.showDialog(
-                            getActivity(),
+                            mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
                             moveCallback,
@@ -91,7 +99,11 @@ public class TargetSelectorCoordinatorTest extends BlankUiTestActivityTestCase {
         onData(anything()).inRoot(isDialog()).atPosition(1).perform(click());
 
         // Click 'move tab'.
-        String moveTab = getActivity().getResources().getString(R.string.target_selector_move);
+        String moveTab =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getString(R.string.target_selector_move);
         onView(withText(moveTab)).perform(click());
         itemClickCallbackHelper.waitForCallback(itemClickCount);
     }

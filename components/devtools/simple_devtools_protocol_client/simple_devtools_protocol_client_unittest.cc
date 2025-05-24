@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_task_environment.h"
@@ -98,8 +99,7 @@ class SimpleDevToolsProtocolClientEventHandlerTest
 
     std::string json;
     base::JSONWriter::Write(base::Value(std::move(params)), &json);
-    DispatchProtocolMessage(agent_host_.get(),
-                            base::as_bytes(base::make_span(json)));
+    DispatchProtocolMessage(agent_host_.get(), base::as_byte_span(json));
     RunUntilIdle();
   }
 };
@@ -354,7 +354,7 @@ class SelfDestructingSimpleDevToolsProtocolClient
   void TryIt() {
     std::string json_message = "{}";
     SimpleDevToolsProtocolClient::DispatchProtocolMessage(
-        agent_host_.get(), base::as_bytes(base::make_span(json_message)));
+        agent_host_.get(), base::as_byte_span(json_message));
 
     // Delete self so that the task posted by the previous call has nowhere to
     // go.
@@ -362,7 +362,7 @@ class SelfDestructingSimpleDevToolsProtocolClient
   }
 
   void DispatchProtocolMessageTask(base::Value::Dict message) override {
-    CHECK(false) << "use-after-free";
+    NOTREACHED() << "use-after-free";
   }
 };
 

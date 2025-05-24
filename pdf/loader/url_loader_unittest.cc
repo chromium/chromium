@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -151,21 +152,23 @@ class UrlLoaderTest : public testing::Test {
     UrlRequest request;
     request.buffer_lower_threshold = lower;
     request.buffer_upper_threshold = upper;
-    loader_->Open(request, mock_callback_.Get());
+    loader_->Open(request, mock_open_callback_.Get());
     loader_->DidReceiveResponse(blink::WebURLResponse());
   }
 
-  int32_t DidFailWithError(const blink::WebURLError& error) {
-    int32_t result = 0;
-    loader_->Open(UrlRequest(), mock_callback_.Get());
-    EXPECT_CALL(mock_callback_, Run).WillOnce(SaveArg<0>(&result));
+  Result DidFailWithError(const blink::WebURLError& error) {
+    Result result = Result::kSuccess;
+    loader_->Open(UrlRequest(), mock_open_callback_.Get());
+    EXPECT_CALL(mock_open_callback_, Run).WillOnce(SaveArg<0>(&result));
 
     loader_->DidFail(error);
     return result;
   }
 
   FakeUrlLoaderClient fake_client_;
-  NiceMock<base::MockCallback<base::OnceCallback<void(int)>>> mock_callback_;
+  NiceMock<base::MockCallback<UrlLoader::OpenCallback>> mock_open_callback_;
+  NiceMock<base::MockCallback<base::OnceCallback<void(int)>>>
+      mock_read_callback_;
   std::unique_ptr<UrlLoader> loader_;
 
   // Becomes invalid if `loader_` is closed or destructed.
@@ -177,12 +180,12 @@ class UrlLoaderTest : public testing::Test {
 
 TEST_F(UrlLoaderTest, Open) {
   EXPECT_CALL(*mock_url_loader_, LoadAsynchronously);
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_open_callback_, Run).Times(0);
 
   UrlRequest request;
   request.url = "http://example.com/fake.pdf";
   request.method = "FAKE";
-  loader_->Open(request, mock_callback_.Get());
+  loader_->Open(request, mock_open_callback_.Get());
 
   EXPECT_TRUE(fake_client_.saved_options().grant_universal_access);
   EXPECT_EQ(GURL("http://example.com/fake.pdf"), GURL(saved_request_.Url()));
@@ -199,24 +202,24 @@ TEST_F(UrlLoaderTest, Open) {
 
 TEST_F(UrlLoaderTest, OpenWithInvalidatedClientWeakPtr) {
   EXPECT_CALL(*mock_url_loader_, LoadAsynchronously).Times(0);
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
+  EXPECT_CALL(mock_open_callback_, Run(Result::kErrorFailed));
 
   fake_client_.InvalidateWeakPtrs();
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, OpenWithInvalidatedClient) {
   EXPECT_CALL(*mock_url_loader_, LoadAsynchronously).Times(0);
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
+  EXPECT_CALL(mock_open_callback_, Run(Result::kErrorFailed));
 
   fake_client_.Invalidate();
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, OpenWithRelativeUrl) {
   UrlRequest request;
   request.url = "relative.pdf";
-  loader_->Open(request, mock_callback_.Get());
+  loader_->Open(request, mock_open_callback_.Get());
 
   EXPECT_EQ(GURL(kDocumentUrl).Resolve("relative.pdf"),
             GURL(saved_request_.Url()));
@@ -231,7 +234,7 @@ TEST_F(UrlLoaderTest, OpenWithHeaders) {
           "Non-ASCII-Value: 🙃",
       },
       "\n");
-  loader_->Open(request, mock_callback_.Get());
+  loader_->Open(request, mock_open_callback_.Get());
 
   EXPECT_EQ(3u, GetRequestHeaderCount(saved_request_));
   EXPECT_EQ("123", saved_request_.HttpHeaderField("Content-Length").Utf8());
@@ -241,9 +244,10 @@ TEST_F(UrlLoaderTest, OpenWithHeaders) {
 }
 
 TEST_F(UrlLoaderTest, OpenWithBody) {
+  static constexpr char kBodyData[] = "fake body";
   UrlRequest request;
-  request.body = "fake body";
-  loader_->Open(request, mock_callback_.Get());
+  request.body = kBodyData;
+  loader_->Open(request, mock_open_callback_.Get());
 
   blink::WebHTTPBody request_body = saved_request_.HttpBody();
   EXPECT_EQ(1u, request_body.ElementCount());
@@ -252,26 +256,26 @@ TEST_F(UrlLoaderTest, OpenWithBody) {
   EXPECT_TRUE(request_body.ElementAt(0, element));
   EXPECT_EQ(blink::HTTPBodyElementType::kTypeData, element.type);
 
-  std::string data;
+  auto data = base::HeapArray<uint8_t>::Uninit(element.data.size());
   element.data.ForEachSegment(
-      [&](const char* segment, size_t length, size_t pos) {
-        data.append(segment, length);
+      [&](base::span<const uint8_t> segment, size_t segment_offset) {
+        data.subspan(segment_offset).copy_prefix_from(segment);
         return true;
       });
-  EXPECT_EQ("fake body", data);
+  EXPECT_EQ(base::byte_span_from_cstring(kBodyData), data.as_span());
 }
 
 TEST_F(UrlLoaderTest, OpenWithCustomReferrerUrl) {
   UrlRequest request;
   request.custom_referrer_url = "http://example.com/referrer";
-  loader_->Open(request, mock_callback_.Get());
+  loader_->Open(request, mock_open_callback_.Get());
 
   EXPECT_EQ("http://example.com/referrer",
             saved_request_.ReferrerString().Utf8());
 }
 
 TEST_F(UrlLoaderTest, WillFollowRedirect) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
 
   EXPECT_TRUE(loader_->WillFollowRedirect(GURL("http://example.com/login"),
                                           blink::WebURLResponse()));
@@ -280,15 +284,15 @@ TEST_F(UrlLoaderTest, WillFollowRedirect) {
 TEST_F(UrlLoaderTest, WillFollowRedirectWhileIgnoringRedirects) {
   UrlRequest request;
   request.ignore_redirects = true;
-  loader_->Open(request, mock_callback_.Get());
+  loader_->Open(request, mock_open_callback_.Get());
 
   EXPECT_FALSE(loader_->WillFollowRedirect(GURL("http://example.com/login"),
                                            blink::WebURLResponse()));
 }
 
 TEST_F(UrlLoaderTest, DidReceiveResponse) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(Result::kSuccess));
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
+  EXPECT_CALL(mock_open_callback_, Run(Result::kSuccess));
 
   blink::WebURLResponse response;
   response.SetHttpStatusCode(204);
@@ -299,7 +303,7 @@ TEST_F(UrlLoaderTest, DidReceiveResponse) {
 }
 
 TEST_F(UrlLoaderTest, DidReceiveResponseWithHeaders) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
 
   blink::WebURLResponse response;
   response.AddHttpHeaderField("Content-Length", "123");
@@ -319,10 +323,10 @@ TEST_F(UrlLoaderTest, DidReceiveResponseWithHeaders) {
 
 TEST_F(UrlLoaderTest, DidReceiveData) {
   char buffer[kFakeData.size()] = {};
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   loader_->DidReceiveData(kFakeData);
 
@@ -331,10 +335,10 @@ TEST_F(UrlLoaderTest, DidReceiveData) {
 
 TEST_F(UrlLoaderTest, DidReceiveDataWithZeroLength) {
   char buffer[kFakeData.size()] = {};
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run).Times(0);
 
   loader_->DidReceiveData(kFakeData.first(0u));
 
@@ -353,11 +357,11 @@ TEST_F(UrlLoaderTest, DidReceiveDataCrossUpperThreshold) {
   StartLoadWithThresholds(/*lower=*/2, /*upper=*/4);
 
   char read_buffer[1];
-  loader_->ReadResponseBody(read_buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(read_buffer, mock_read_callback_.Get());
   {
     InSequence defer_before_read_callback;
     EXPECT_CALL(*mock_url_loader_, SetDefersLoading(true));
-    EXPECT_CALL(mock_callback_, Run);
+    EXPECT_CALL(mock_read_callback_, Run);
   }
 
   char buffer[4] = {};
@@ -375,119 +379,119 @@ TEST_F(UrlLoaderTest, DidReceiveDataAboveUpperThreshold) {
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBody) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidReceiveData(kFakeData);
-  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
+  EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
 
   // Verify no more data returned on next call.
-  EXPECT_CALL(mock_callback_, Run).Times(0);
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run).Times(0);
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWithoutData) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_read_callback_, Run).Times(0);
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, Each(0));
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWithEmptyBuffer) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorBadArgument));
+  EXPECT_CALL(mock_read_callback_, Run(Result::kErrorBadArgument));
 
-  loader_->ReadResponseBody(base::span<char>(), mock_callback_.Get());
+  loader_->ReadResponseBody(base::span<char>(), mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWithSmallerBuffer) {
   static constexpr size_t kTailSize = 1;
   static constexpr size_t kBufferSize = kFakeData.size() - kTailSize;
 
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidReceiveData(kFakeData);
-  EXPECT_CALL(mock_callback_, Run(kBufferSize));
+  EXPECT_CALL(mock_read_callback_, Run(kBufferSize));
 
   char buffer[kBufferSize] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData.first(kBufferSize)));
 
   // Verify remaining data returned on next call.
   char tail_buffer[kTailSize];
-  EXPECT_CALL(mock_callback_, Run(kTailSize));
-  loader_->ReadResponseBody(tail_buffer, mock_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run(kTailSize));
+  loader_->ReadResponseBody(tail_buffer, mock_read_callback_.Get());
   EXPECT_THAT(tail_buffer, ElementsAreArray(kFakeData.subspan(kBufferSize)));
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWithBiggerBuffer) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidReceiveData(kFakeData);
-  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
+  EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size() + 1] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 
   base::span<char> buffer_span = buffer;
   EXPECT_THAT(buffer_span.first(kFakeData.size()), ElementsAreArray(kFakeData));
   EXPECT_THAT(buffer_span.subspan(kFakeData.size()), Each(0));
 
   // Verify no more data returned on next call.
-  EXPECT_CALL(mock_callback_, Run).Times(0);
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run).Times(0);
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadComplete) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidReceiveData(kFakeData);
   loader_->DidFinishLoading();
-  EXPECT_CALL(mock_callback_, Run(kFakeData.size()));
+  EXPECT_CALL(mock_read_callback_, Run(kFakeData.size()));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, ElementsAreArray(kFakeData));
 
   // Verify no more data returned on next call.
   char tail_buffer[kFakeData.size()] = {};
-  EXPECT_CALL(mock_callback_, Run(0));
-  loader_->ReadResponseBody(tail_buffer, mock_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run(0));
+  loader_->ReadResponseBody(tail_buffer, mock_read_callback_.Get());
   EXPECT_THAT(tail_buffer, Each(0));
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithoutData) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidFinishLoading();
-  EXPECT_CALL(mock_callback_, Run(0));
+  EXPECT_CALL(mock_read_callback_, Run(0));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, Each(0));
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyWhileLoadCompleteWithError) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidReceiveData(kFakeData);
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
+  EXPECT_CALL(mock_read_callback_, Run(Result::kErrorFailed));
 
   char buffer[kFakeData.size()] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 
   EXPECT_THAT(buffer, Each(0));
 }
@@ -500,7 +504,7 @@ TEST_F(UrlLoaderTest, ReadResponseBodyAboveLowerThreshold) {
   EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
 
   char buffer[2] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyCrossLowerThreshold) {
@@ -511,11 +515,11 @@ TEST_F(UrlLoaderTest, ReadResponseBodyCrossLowerThreshold) {
   {
     InSequence resume_before_read_callback;
     EXPECT_CALL(*mock_url_loader_, SetDefersLoading(false));
-    EXPECT_CALL(mock_callback_, Run);
+    EXPECT_CALL(mock_read_callback_, Run);
   }
 
   char buffer[3] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, ReadResponseBodyBelowLowerThreshold) {
@@ -525,55 +529,55 @@ TEST_F(UrlLoaderTest, ReadResponseBodyBelowLowerThreshold) {
   loader_->DidReceiveData(write_buffer);
 
   char buffer[3] = {};
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
   EXPECT_CALL(*mock_url_loader_, SetDefersLoading).Times(0);
 
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
 }
 
 TEST_F(UrlLoaderTest, DidFinishLoading) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_open_callback_, Run).Times(0);
 
   loader_->DidFinishLoading();
 }
 
 TEST_F(UrlLoaderTest, DidFinishLoadingWithPendingCallback) {
   char buffer[1];
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(0));  // Result represents read bytes.
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run(0));  // Result represents read bytes.
 
   loader_->DidFinishLoading();
 }
 
 TEST_F(UrlLoaderTest, DidFailWhileOpening) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
+  EXPECT_CALL(mock_open_callback_, Run(Result::kErrorFailed));
 
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
 }
 
 TEST_F(UrlLoaderTest, DidFailWhileStreamingData) {
   char buffer[1];
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorFailed));
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run(Result::kErrorFailed));
 
   loader_->DidFail(MakeWebURLError(net::ERR_FAILED));
 }
 
 TEST_F(UrlLoaderTest, DidFailWithErrorAccessDenied) {
-  int32_t result = DidFailWithError(MakeWebURLError(net::ERR_ACCESS_DENIED));
+  Result result = DidFailWithError(MakeWebURLError(net::ERR_ACCESS_DENIED));
 
   EXPECT_EQ(Result::kErrorNoAccess, result);
 }
 
 TEST_F(UrlLoaderTest, DidFailWithErrorNetworkAccessDenied) {
-  int32_t result =
+  Result result =
       DidFailWithError(MakeWebURLError(net::ERR_NETWORK_ACCESS_DENIED));
 
   EXPECT_EQ(Result::kErrorNoAccess, result);
@@ -585,55 +589,55 @@ TEST_F(UrlLoaderTest, DidFailWithWebSecurityViolationError) {
       blink::WebURLError::HasCopyInCache::kFalse, GURL());
   ASSERT_TRUE(error.is_web_security_violation());
 
-  int32_t result = DidFailWithError(error);
+  Result result = DidFailWithError(error);
 
   EXPECT_EQ(Result::kErrorNoAccess, result);
 }
 
 TEST_F(UrlLoaderTest, CloseWhileWaitingToOpen) {
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_open_callback_, Run).Times(0);
 
   loader_->Close();
 }
 
 TEST_F(UrlLoaderTest, CloseWhileOpening) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorAborted));
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
+  EXPECT_CALL(mock_open_callback_, Run(Result::kErrorAborted));
 
   loader_->Close();
 }
 
 TEST_F(UrlLoaderTest, CloseWhileStreamingData) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_open_callback_, Run).Times(0);
 
   loader_->Close();
 }
 
 TEST_F(UrlLoaderTest, CloseWhileStreamingDataWithPendingCallback) {
   char buffer[1];
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
-  loader_->ReadResponseBody(buffer, mock_callback_.Get());
-  EXPECT_CALL(mock_callback_, Run(Result::kErrorAborted));
+  loader_->ReadResponseBody(buffer, mock_read_callback_.Get());
+  EXPECT_CALL(mock_read_callback_, Run(Result::kErrorAborted));
 
   loader_->Close();
 }
 
 TEST_F(UrlLoaderTest, CloseWhileLoadComplete) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->DidReceiveResponse(blink::WebURLResponse());
   loader_->DidFinishLoading();
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_open_callback_, Run).Times(0);
 
   loader_->Close();
 }
 
 TEST_F(UrlLoaderTest, CloseAgain) {
-  loader_->Open(UrlRequest(), mock_callback_.Get());
+  loader_->Open(UrlRequest(), mock_open_callback_.Get());
   loader_->Close();
-  EXPECT_CALL(mock_callback_, Run).Times(0);
+  EXPECT_CALL(mock_open_callback_, Run).Times(0);
 
   loader_->Close();
 }

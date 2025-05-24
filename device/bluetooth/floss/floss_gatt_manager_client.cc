@@ -24,13 +24,7 @@ constexpr char kWriteType[] = "write_type";
 namespace {
 // Randomly generated UUID for use in this client.
 constexpr char kDefaultGattManagerClientUuid[] =
-// Ash and LaCrOS should use the different APP UUID, otherwise the latter one
-// (usually LaCrOS) fails on registering.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     "e060b902508c485f8b0e27639c7f2d41";
-#else
-    "58523f357dbc4390ab78ed075b15a634";
-#endif
 
 // Default to not requesting eatt support with gatt client.
 constexpr bool kDefaultEattSupport = false;
@@ -284,11 +278,7 @@ GattService::GattService(const GattService&) = default;
 GattService::~GattService() = default;
 
 const char FlossGattManagerClient::kExportedCallbacksPath[] =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "/org/chromium/bluetooth/gatt/callback/lacros";
-#else
     "/org/chromium/bluetooth/gatt/callback";
-#endif
 
 // static
 std::unique_ptr<FlossGattManagerClient> FlossGattManagerClient::Create() {
@@ -415,7 +405,7 @@ void FlossGattManagerClient::WriteCharacteristic(
     const int32_t handle,
     const WriteType write_type,
     const AuthRequired auth_required,
-    const std::vector<uint8_t> data) {
+    base::span<const uint8_t> data) {
   CallGattMethod(std::move(callback), gatt::kWriteCharacteristic, client_id_,
                  remote_device, handle, write_type, auth_required, data);
 }
@@ -432,7 +422,7 @@ void FlossGattManagerClient::WriteDescriptor(ResponseCallback<Void> callback,
                                              const std::string& remote_device,
                                              const int32_t handle,
                                              const AuthRequired auth_required,
-                                             const std::vector<uint8_t> data) {
+                                             base::span<const uint8_t> data) {
   CallGattMethod<Void>(std::move(callback), gatt::kWriteDescriptor, client_id_,
                        remote_device, handle, auth_required, data);
 }

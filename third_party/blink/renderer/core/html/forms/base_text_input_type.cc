@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -114,14 +115,14 @@ bool BaseTextInputType::PatternMismatchPerValue(const String& value) const {
           MakeGarbageCollected<ConsoleMessage>(
               mojom::blink::ConsoleMessageSource::kRendering,
               mojom::blink::ConsoleMessageLevel::kError,
-              "Pattern attribute value " + raw_pattern +
-                  " is not a valid regular expression: " +
-                  raw_regexp->ExceptionMessage()));
+              WTF::StrCat({"Pattern attribute value ", raw_pattern,
+                           " is not a valid regular expression: ",
+                           raw_regexp->ExceptionMessage()})));
       regexp_ = raw_regexp;
       pattern_for_regexp_ = raw_pattern;
       return false;
     }
-    String pattern = "^(?:" + raw_pattern + ")$";
+    String pattern = WTF::StrCat({"^(?:", raw_pattern, ")$"});
     regexp_ = MakeGarbageCollected<ScriptRegexp>(
         isolate, pattern, kTextCaseSensitive, MultilineMode::kMultilineDisabled,
         unicode_mode);

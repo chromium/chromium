@@ -59,8 +59,8 @@ class CORE_EXPORT InspectorMemoryAgent final
 
   // Memory protocol domain:
   protocol::Response startSampling(
-      protocol::Maybe<int> in_samplingInterval,
-      protocol::Maybe<bool> in_suppressRandomness) override;
+      std::optional<int> in_samplingInterval,
+      std::optional<bool> in_suppressRandomness) override;
   protocol::Response stopSampling() override;
   protocol::Response getSamplingProfile(
       std::unique_ptr<protocol::Memory::SamplingProfile>*) override;
@@ -68,7 +68,7 @@ class CORE_EXPORT InspectorMemoryAgent final
       std::unique_ptr<protocol::Memory::SamplingProfile>*) override;
 
  private:
-  Vector<String> Symbolize(const WebVector<const void*>& addresses);
+  Vector<String> Symbolize(const std::vector<const void*>& addresses);
   std::unique_ptr<protocol::Memory::SamplingProfile> GetSamplingProfileById(
       uint32_t id);
 

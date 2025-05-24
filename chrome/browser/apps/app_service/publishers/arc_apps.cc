@@ -9,16 +9,6 @@
 #include <optional>
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/mojom/app_permissions.mojom.h"
-#include "ash/components/arc/mojom/compatibility_mode.mojom.h"
-#include "ash/components/arc/mojom/file_system.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "base/containers/contains.h"
@@ -56,11 +46,21 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/mojom/app_permissions.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/compatibility_mode.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
-#include "components/arc/intent_helper/intent_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -250,6 +250,8 @@ std::optional<arc::UserInteractionType> GetUserInterationType(
     case apps::LaunchSource::kFromWelcomeTour:
     case apps::LaunchSource::kFromFocusMode:
     case apps::LaunchSource::kFromSparky:
+    case apps::LaunchSource::kFromNavigationCapturing:
+    case apps::LaunchSource::kFromWebInstallApi:
       // These LaunchSources do not launch ARC apps. When adding a new
       // LaunchSource, if it is expected to launch ARC apps, add a new
       // UserInteractionType above. Otherwise, add it here.
@@ -441,7 +443,7 @@ bool IntentHasFilesAndMimeTypes(const apps::IntentPtr& intent) {
   if (intent->files.empty()) {
     return false;
   }
-  bool all_files_have_mime_type = base::ranges::all_of(
+  bool all_files_have_mime_type = std::ranges::all_of(
       intent->files,
       [](apps::IntentFilePtr& file) { return file->mime_type.has_value(); });
   return all_files_have_mime_type || intent->mime_type.has_value();
@@ -468,12 +470,13 @@ bool PackageShouldDefaultHandleLinksInBrowser(const std::string& package_name) {
   return allowlist.contains(package_name);
 }
 
-// Returns true if the given `profile` is managed, and therefore should open
-// supported links inside the app by default.
-bool IsProfileManaged(Profile* profile) {
-  // TODO(crbug.com/40272292): Remove once we have policy control over link
-  // capturing behavior.
-  return profile->GetProfilePolicyConnector()->IsManaged();
+// Returns the value of the policy ArcOpenLinksInBrowserByDefault.
+// For managed users it is false by default, for consumer accounts it is always
+// true.
+bool IsArcOpenLinksInBrowserByDefault(Profile* profile) {
+  return !profile->GetProfilePolicyConnector()->IsManaged() ||
+         profile->GetPrefs()->GetBoolean(
+             arc::prefs::kArcOpenLinksInBrowserByDefault);
 }
 
 // Returns the hard-coded Play Store intent filters. This is a stop-gap solution
@@ -488,15 +491,15 @@ std::vector<apps::IntentFilterPtr> GetHardcodedPlayStoreIntentFilters() {
   authorities.emplace_back("play.google.com", -1);
 
   std::vector<arc::IntentFilter::PatternMatcher> paths;
-  paths.emplace_back("", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/store", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/redeem", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/wishlist", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/apps/test/", arc::mojom::PatternType::PATTERN_PREFIX);
-  paths.emplace_back("/apps", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/apps/launch", arc::mojom::PatternType::PATTERN_LITERAL);
-  paths.emplace_back("/protect/home", arc::mojom::PatternType::PATTERN_PREFIX);
+  paths.emplace_back("", arc::PatternType::kLiteral);
+  paths.emplace_back("/", arc::PatternType::kLiteral);
+  paths.emplace_back("/store", arc::PatternType::kPrefix);
+  paths.emplace_back("/redeem", arc::PatternType::kPrefix);
+  paths.emplace_back("/wishlist", arc::PatternType::kPrefix);
+  paths.emplace_back("/apps/test/", arc::PatternType::kPrefix);
+  paths.emplace_back("/apps", arc::PatternType::kLiteral);
+  paths.emplace_back("/apps/launch", arc::PatternType::kLiteral);
+  paths.emplace_back("/protect/home", arc::PatternType::kPrefix);
 
   std::vector<apps::IntentFilterPtr> intent_filters;
   apps::IntentFilterPtr filter = apps_util::CreateIntentFilterForArc(
@@ -816,12 +819,6 @@ void ArcApps::LaunchAppWithParams(AppLaunchParams&& params,
     // TODO(crbug.com/40787924): Add launch return value.
     std::move(callback).Run(LaunchResult());
   }
-}
-
-void ArcApps::LaunchShortcut(const std::string& app_id,
-                             const std::string& shortcut_id,
-                             int64_t display_id) {
-  arc::ExecuteArcShortcutCommand(profile_, app_id, shortcut_id, display_id);
 }
 
 void ArcApps::SetPermission(const std::string& app_id,
@@ -1293,11 +1290,12 @@ void ArcApps::OnArcSupportedLinksChanged(
         // If the app is specifically allowed to handle links by default.
         AppShouldDefaultHandleLinksInApp(app_id);
 
-    // Managed users are temporarily opted out of this behavior (b/280056133)
-    // and always apply updates from the ARC side, except for an allowlist of
-    // apps which handle links in the browser to improve the user experience.
-    if (IsProfileManaged(profile_) && !PackageShouldDefaultHandleLinksInBrowser(
-                                          supported_link->package_name)) {
+    // Managed users apply updates from the ARC side by default, except for an
+    // allowlist of apps which handle links in the browser to improve the user
+    // experience. This policy that can be changed by enterprise admin.
+    if (!IsArcOpenLinksInBrowserByDefault(profile_) &&
+        !PackageShouldDefaultHandleLinksInBrowser(
+            supported_link->package_name)) {
       allow_update = true;
     }
 

@@ -66,23 +66,26 @@ std::optional<Vote> GetVoteFromClient(const WorkerNode* client_worker_node) {
 const char InheritClientPriorityVoter::kPriorityInheritedReason[] =
     "Priority inherited from client(s).";
 
-InheritClientPriorityVoter::InheritClientPriorityVoter(
-    VotingChannel voting_channel) {
-  DCHECK(voting_channel.IsValid());
-  voter_id_ = voting_channel.voter_id();
-  max_vote_aggregator_.SetUpstreamVotingChannel(std::move(voting_channel));
-}
+InheritClientPriorityVoter::InheritClientPriorityVoter() = default;
 
 InheritClientPriorityVoter::~InheritClientPriorityVoter() = default;
 
-void InheritClientPriorityVoter::InitializeOnGraph(Graph* graph) {
+void InheritClientPriorityVoter::InitializeOnGraph(
+    Graph* graph,
+    VotingChannel voting_channel) {
+  voter_id_ = voting_channel.voter_id();
+  max_vote_aggregator_.SetUpstreamVotingChannel(std::move(voting_channel));
+
   graph->AddFrameNodeObserver(this);
   graph->AddWorkerNodeObserver(this);
 }
 
 void InheritClientPriorityVoter::TearDownOnGraph(Graph* graph) {
-  graph->RemoveFrameNodeObserver(this);
   graph->RemoveWorkerNodeObserver(this);
+  graph->RemoveFrameNodeObserver(this);
+
+  voter_id_ = VoterId();
+  max_vote_aggregator_.ResetUpstreamVotingChannel();
 }
 
 void InheritClientPriorityVoter::OnFrameNodeAdded(const FrameNode* frame_node) {

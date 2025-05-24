@@ -1,0 +1,13 @@
+Tests that unsafe headers results in an error
+{
+    error : {
+        code : -32602
+        message : Unsafe header: Cookie2
+    }
+    id : <number>
+    sessionId : <string>
+}
+Cookie2 after redirect:unset
+Cookie2: <not set>
+
+

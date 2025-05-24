@@ -17,10 +17,6 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace base {
-class Time;
-}  // namespace base
-
 namespace content {
 class BrowserContext;
 }  // namespace content

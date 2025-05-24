@@ -36,7 +36,7 @@ constexpr auto kManagedGuestSessionAllowlist = base::MakeFixedFlatSet<
     "cjanmonomjogheabiocdamfpknlpdehm",  // HP printer driver
     "ioofdkhojeeimmagbjbknkejkgbphdfl",  // RICOH Print for Chrome
     "pmnllmkmjilbojkpgplbdmckghmaocjh",  // Scan app by François Beaufort
-    "haeblkpifdemlfnkogkipmghfcbonief",  // Charismathics Smart Card Middleware
+    "haeblkpifdemlfnkogkipmghfcbonief",  // DriveLock Smart Card Middleware
     "mpnkhdpphjiihmlmkcamhpogecnnfffa",  // Service NSW Kiosk Utility
     "npilppbicblkkgjfnbmibmhhgjhobpll",  // QwickACCESS
     // TODO(isandrk): Only on the allowlist for the purpose of getting the soft
@@ -265,7 +265,7 @@ void ExtensionsPermissionsTracker::OnExtensionLoaded(
 }
 
 void ExtensionsPermissionsTracker::UpdateLocalState() {
-  bool any_unsafe = base::ranges::any_of(
+  bool any_unsafe = std::ranges::any_of(
       extension_safety_ratings_,
       [](const auto& key_value) { return !key_value.second; });
 

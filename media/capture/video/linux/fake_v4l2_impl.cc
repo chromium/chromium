@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/capture/video/linux/fake_v4l2_impl.h"
 
 #include <string.h>
@@ -9,6 +14,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <bit>
 #include <queue>
 #include <vector>
@@ -18,7 +24,6 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
@@ -157,7 +162,7 @@ class FakeV4L2Impl::OpenedDevice {
 
   FakeV4L2Buffer* LookupBufferFromOffset(off_t offset) {
     auto buffer_iter =
-        base::ranges::find(device_buffers_, offset, &FakeV4L2Buffer::offset);
+        std::ranges::find(device_buffers_, offset, &FakeV4L2Buffer::offset);
     if (buffer_iter == device_buffers_.end())
       return nullptr;
     return &(*buffer_iter);
@@ -248,7 +253,9 @@ class FakeV4L2Impl::OpenedDevice {
   int s_fmt(v4l2_format* format) {
     if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
         format->fmt.pix.width > kMaxWidth ||
-        format->fmt.pix.height > kMaxHeight) {
+        format->fmt.pix.height > kMaxHeight || format->fmt.pix.width == 0 ||
+        format->fmt.pix.height == 0 || format->fmt.pix.width % 2 == 1 ||
+        format->fmt.pix.height % 2 == 1) {
       return Error(EINVAL);
     }
     v4l2_pix_format& pix_format = format->fmt.pix;

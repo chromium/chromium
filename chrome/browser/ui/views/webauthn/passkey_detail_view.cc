@@ -4,19 +4,25 @@
 
 #include "chrome/browser/ui/views/webauthn/passkey_detail_view.h"
 
+#include <cstddef>
+#include <memory>
+#include <string>
+
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/layout_types.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -41,10 +47,9 @@ PasskeyDetailView::PasskeyDetailView(
   layout->set_minimum_cross_axis_size(kHeight);
   layout->set_between_child_spacing(kMargin);
 
-  AddChildView(
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kPasskeyIcon, ui::kColorAccent,
-          /*icon_size=*/24)));
+  AddChildView(std::make_unique<views::ImageView>(
+      ui::ImageModel::FromVectorIcon(vector_icons::kPasskeyIcon, ui::kColorIcon,
+                                     /*icon_size=*/24)));
 
   auto* label = AddChildView(std::make_unique<views::Label>(
       GetUserNameForDisplay(user), views::style::CONTEXT_DIALOG_BODY_TEXT));

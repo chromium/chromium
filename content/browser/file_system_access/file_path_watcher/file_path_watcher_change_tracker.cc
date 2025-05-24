@@ -165,6 +165,7 @@ void FilePathWatcherChangeTracker::AddChange(base::FilePath path,
 }
 
 void FilePathWatcherChangeTracker::MayHaveMissedChanges() {
+  last_deleted_change_ = std::nullopt;
   target_status_ =
       GetFilePathType(target_path_) == FilePathWatcher::FilePathType::kUnknown
           ? ExistenceStatus::kGone
@@ -182,10 +183,6 @@ FilePathWatcherChangeTracker::PopChanges(bool next_change_soon) {
                                    : ExistenceStatus::kExists;
 
       HandleChangeEffect(status, status);
-    }
-
-    if (last_deleted_change_) {
-      changes_.push_back(*std::exchange(last_deleted_change_, std::nullopt));
     }
   }
   return std::move(changes_);

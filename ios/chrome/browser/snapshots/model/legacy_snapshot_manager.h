@@ -18,13 +18,8 @@ class SnapshotID;
 // written in Swift is used by default.
 @interface LegacySnapshotManager : NSObject
 
-// Strong reference to the snapshot generator which is used to generate
-// snapshots.
-@property(nonatomic, readonly) LegacySnapshotGenerator* snapshotGenerator;
-
-// Weak reference to the snapshot storage which is used to store and retrieve
-// snapshots. SnapshotStorage is owned by SnapshotBrowserAgent.
-@property(nonatomic, weak) SnapshotStorageWrapper* snapshotStorage;
+// The snapshot storage which is used to store and retrieve snapshots.
+@property(nonatomic) SnapshotStorageWrapper* snapshotStorage;
 
 // The snapshot ID.
 @property(nonatomic, readonly) SnapshotID snapshotID;
@@ -58,6 +53,9 @@ class SnapshotID;
 // Sets the delegate to SnapshotGenerator. Generating snapshots before setting a
 // delegate will fail. The delegate is not owned by the tab helper.
 - (void)setDelegate:(id<SnapshotGeneratorDelegate>)delegate;
+
+// Updates the snapshot storage with `snapshot`.
+- (void)updateSnapshotStorageWithImage:(UIImage*)snapshot;
 
 @end
 

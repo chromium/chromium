@@ -38,7 +38,7 @@ class CORE_EXPORT HTMLLabelElement final : public HTMLElement {
 
   HTMLElement* controlForBinding() const;
   HTMLElement* Control() const;
-  HTMLFormElement* form() const;
+  HTMLElement* formForBinding() const override;
 
   bool WillRespondToMouseClickEvents() override;
 
@@ -54,7 +54,7 @@ class CORE_EXPORT HTMLLabelElement final : public HTMLElement {
 
   // Overridden to either click() or focus() the corresponding control.
   void DefaultEventHandler(Event&) override;
-  bool DefaultEventHandlerInternal(Event&);
+  void DefaultEventHandlerInternal(Event&);
   bool HasActivationBehavior() const override;
 
   void Focus(const FocusParams&) override;

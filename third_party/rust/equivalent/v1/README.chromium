@@ -1,0 +1,10 @@
+Name: equivalent
+URL: https://crates.io/crates/equivalent
+Version: 1.0.2
+Revision: 44cdd44f8b8ebb5f9ae096c7550a5e74ffb7d6ae
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/equivalent-v1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: Traits for key comparison in maps.

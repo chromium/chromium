@@ -55,7 +55,8 @@ class CORE_EXPORT DisplayLockUtilities {
         DocumentUpdateReason reason);
     friend void Document::UpdateStyleAndLayoutTreeForElement(
         const Element* node,
-        DocumentUpdateReason reason);
+        DocumentUpdateReason reason,
+        bool only_cv_auto);
     friend void Document::UpdateStyleAndLayoutTreeForSubtree(
         const Element* node,
         DocumentUpdateReason reason);
@@ -337,6 +338,14 @@ class CORE_EXPORT DisplayLockUtilities {
   static bool IsLockedForAccessibility(const Node& node);
 
   static LockCheckMemoizationScope* memoizer_;
+};
+
+template <typename T>
+struct ThreadingTrait<
+    T,
+    std::enable_if_t<
+        std::is_base_of_v<DisplayLockUtilities::ScopedForcedUpdate::Impl, T>>> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
 };
 
 }  // namespace blink

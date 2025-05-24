@@ -17,7 +17,8 @@ PaymentRequestUpdateEventListener::PaymentRequestUpdateEventListener(
     const base::android::JavaParamRef<jobject>& listener)
     : listener_(listener) {}
 
-PaymentRequestUpdateEventListener::~PaymentRequestUpdateEventListener() {}
+PaymentRequestUpdateEventListener::~PaymentRequestUpdateEventListener() =
+    default;
 
 base::WeakPtr<PaymentRequestUpdateEventListener>
 PaymentRequestUpdateEventListener::AsWeakPtr() {

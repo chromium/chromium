@@ -4,6 +4,8 @@
 
 #include "components/viz/common/surfaces/video_capture_target.h"
 
+#include <variant>
+
 #include "base/logging.h"
 
 namespace viz {
@@ -13,10 +15,10 @@ bool SubTargetIsValid(const VideoCaptureSubTarget& sub_target) {
   if (IsEntireTabCapture(sub_target)) {
     return true;
   }
-  if (const auto* crop_id = absl::get_if<RegionCaptureCropId>(&sub_target)) {
+  if (const auto* crop_id = std::get_if<RegionCaptureCropId>(&sub_target)) {
     return !crop_id->is_zero();
   }
-  const auto* capture_id = absl::get_if<SubtreeCaptureId>(&sub_target);
+  const auto* capture_id = std::get_if<SubtreeCaptureId>(&sub_target);
   DCHECK(capture_id);
   return capture_id->is_valid();
 }

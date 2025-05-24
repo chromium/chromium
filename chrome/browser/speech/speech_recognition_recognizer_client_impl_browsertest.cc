@@ -36,7 +36,7 @@ static constexpr int kDefaultPollingTimesPerSecond = 10;
 
 class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
  public:
-  MockSpeechRecognizerDelegate() {}
+  MockSpeechRecognizerDelegate() = default;
 
   base::WeakPtr<MockSpeechRecognizerDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();

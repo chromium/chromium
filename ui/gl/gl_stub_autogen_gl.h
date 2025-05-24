@@ -91,6 +91,9 @@ void glBlitFramebufferFn(GLint srcX0,
                          GLint dstY1,
                          GLbitfield mask,
                          GLenum filter) override {}
+void glBlobCacheCallbacksANGLEFn(GLSETBLOBPROCANGLE set,
+                                 GLGETBLOBPROCANGLE get,
+                                 const void* userData) override {}
 void glBufferDataFn(GLenum target,
                     GLsizeiptr size,
                     const void* data,
@@ -1615,4 +1618,4 @@ void glWindowRectanglesEXTFn(GLenum mode,
                              GLsizei n,
                              const GLint* box) override {}
 
-#endif  //  UI_GL_GL_STUB_AUTOGEN_GL_H_
+#endif  // UI_GL_GL_STUB_AUTOGEN_GL_H_

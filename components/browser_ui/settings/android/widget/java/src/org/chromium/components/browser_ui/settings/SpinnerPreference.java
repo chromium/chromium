@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.settings;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
@@ -16,10 +18,14 @@ import android.widget.TextView;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** A preference that takes value from a specified list of objects, presented as a dropdown. */
-public class SpinnerPreference extends Preference {
-    private Spinner mSpinner;
-    private ArrayAdapter<Object> mAdapter;
+@NullMarked
+public class SpinnerPreference extends Preference implements Preference.OnPreferenceClickListener {
+    private @Nullable Spinner mSpinner;
+    private @Nullable ArrayAdapter<Object> mAdapter;
     private int mSelectedIndex;
     private final boolean mSingleLine;
 
@@ -34,6 +40,7 @@ public class SpinnerPreference extends Preference {
         } else {
             setLayoutResource(R.layout.preference_spinner);
         }
+        setOnPreferenceClickListener(this);
     }
 
     /**
@@ -56,7 +63,7 @@ public class SpinnerPreference extends Preference {
     }
 
     /** Returns the Spinner instance for introspection during tests. */
-    public Spinner getSpinnerForTesting() {
+    public @Nullable Spinner getSpinnerForTesting() {
         return mSpinner;
     }
 
@@ -75,10 +82,10 @@ public class SpinnerPreference extends Preference {
     }
 
     /** @return The currently selected option. */
-    public Object getSelectedOption() {
+    public @Nullable Object getSelectedOption() {
         if (mSpinner == null) {
             // Use the adapter directly if the view hasn't been created yet.
-            return mAdapter.getItem(mSelectedIndex);
+            return assumeNonNull(mAdapter).getItem(mSelectedIndex);
         }
         return mSpinner.getSelectedItem();
     }
@@ -89,6 +96,14 @@ public class SpinnerPreference extends Preference {
 
         ((TextView) holder.findViewById(R.id.title)).setText(getTitle());
         mSpinner = (Spinner) holder.findViewById(R.id.spinner);
+        assert mSpinner != null;
+        // Set the inner spinner to non-focusable/clickable, this allows the screen reader to
+        // include the content description of all the Preference's inner elements in a single
+        // announcement. The click action of the inner spinner will instead be handled by
+        // onPreferenceClick().
+        mSpinner.setFocusable(false);
+        mSpinner.setClickable(false);
+        mSpinner.setLongClickable(false);
         mSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
@@ -115,5 +130,13 @@ public class SpinnerPreference extends Preference {
             mSpinner.setAdapter(mAdapter);
         }
         mSpinner.setSelection(mSelectedIndex);
+    }
+
+    @Override
+    public boolean onPreferenceClick(Preference preference) {
+        if (mSpinner != null) {
+            mSpinner.performClick();
+        }
+        return true;
     }
 }

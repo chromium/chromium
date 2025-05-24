@@ -20,6 +20,10 @@ enum class ProfileInitStage;
 - (void)profileState:(ProfileState*)profileState
       sceneConnected:(SceneState*)sceneState;
 
+// Called when a scene is disconnected.
+- (void)profileState:(ProfileState*)profileState
+    sceneDisconnected:(SceneState*)sceneState;
+
 // Called when the first scene initializes its UI.
 - (void)profileState:(ProfileState*)profileState
     firstSceneHasInitializedUI:(SceneState*)sceneState;

@@ -75,16 +75,18 @@ TabHoverCardBubbleView* TabHoverCardTestUtil::SimulateHoverTab(Browser* browser,
 TabHoverCardTestUtil::HoverCardDestroyedWaiter::HoverCardDestroyedWaiter(
     TabStrip* tab_strip) {
   auto* const hover_card = GetHoverCard(tab_strip);
-  if (hover_card && hover_card->GetWidget())
+  if (hover_card && hover_card->GetWidget()) {
     observation_.Observe(hover_card->GetWidget());
+  }
 }
 
 TabHoverCardTestUtil::HoverCardDestroyedWaiter::~HoverCardDestroyedWaiter() =
     default;
 
 void TabHoverCardTestUtil::HoverCardDestroyedWaiter::Wait() {
-  if (!observation_.IsObserving())
+  if (!observation_.IsObserving()) {
     return;
+  }
   DCHECK(quit_closure_.is_null());
   quit_closure_ = run_loop_.QuitClosure();
   run_loop_.Run();
@@ -94,8 +96,9 @@ void TabHoverCardTestUtil::HoverCardDestroyedWaiter::Wait() {
 void TabHoverCardTestUtil::HoverCardDestroyedWaiter::OnWidgetDestroyed(
     views::Widget* widget) {
   observation_.Reset();
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     std::move(quit_closure_).Run();
+  }
 }
 
 }  // namespace test

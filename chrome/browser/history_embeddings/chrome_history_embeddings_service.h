@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_HISTORY_EMBEDDINGS_SERVICE_H_
 #define CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_HISTORY_EMBEDDINGS_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "content/public/browser/browser_context.h"
+
+class Profile;
 
 namespace history_embeddings {
 
@@ -18,23 +21,29 @@ namespace history_embeddings {
 class ChromeHistoryEmbeddingsService : public HistoryEmbeddingsService {
  public:
   ChromeHistoryEmbeddingsService(
+      Profile* profile,
       history::HistoryService* history_service,
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
-      OptimizationGuideKeyedService* optimization_guide_service,
-      PassageEmbeddingsServiceController* service_controller);
+      optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+      passage_embeddings::Embedder* embedder,
+      std::unique_ptr<Answerer> answerer,
+      std::unique_ptr<IntentClassifier> intent_classifier);
   explicit ChromeHistoryEmbeddingsService(const HistoryEmbeddingsService&) =
       delete;
   ChromeHistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) =
       delete;
   ~ChromeHistoryEmbeddingsService() override;
 
- private:
   // HistoryEmbeddingsService:
+  bool IsAnswererUseAllowed() const override;
+
+ private:
   QualityLogEntry PrepareQualityLogEntry() override;
 
-  // Outlives this because of service factory dependency.
-  raw_ptr<OptimizationGuideKeyedService> optimization_guide_service_;
+  // Owns `this`. ChromeHistoryEmbeddingsService is a profile-keyed service.
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace history_embeddings

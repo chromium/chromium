@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <set>
 #include <string>
@@ -15,7 +16,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -89,8 +89,7 @@ void InitializeOverridesList(base::Value::List& list) {
       new_dict.Set(kEntry, entry_name);
       new_dict.Set(kActive, true);
     } else {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     // |entry_name| will be set by this point.
@@ -114,8 +113,7 @@ void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
       entry = dict->FindString(kEntry);
     }
     if (!entry) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     if (*entry == spec) {
       dict->Set(kActive, true);
@@ -123,8 +121,7 @@ void AddOverridesToList(base::Value::List& list, const GURL& override_url) {
     }
     GURL entry_url(*entry);
     if (!entry_url.is_valid()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     if (entry_url.host() == override_url.host()) {
       dict->Set(kActive, true);
@@ -152,8 +149,7 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
       entry = val.GetDict().FindString(kEntry);
     }
     if (!entry) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     GURL override_url(*entry);
     if (!override_url.is_valid())
@@ -205,7 +201,7 @@ enum UpdateBehavior {
 bool UpdateOverridesList(base::Value::List& overrides_list,
                          const std::string& override_url,
                          UpdateBehavior behavior) {
-  auto iter = base::ranges::find_if(
+  auto iter = std::ranges::find_if(
       overrides_list, [&override_url](const base::Value& value) {
         if (!value.is_dict())
           return false;
@@ -259,6 +255,7 @@ void UpdateOverridesLists(Profile* profile,
       base::RepeatingCallback<void(WebContents*)> callback =
           base::BindRepeating(&UnregisterAndReplaceOverrideForWebContents,
                               page_override_pair.first, profile);
+      // Apply to all existing tabs.
       extensions::ExtensionTabUtil::ForEachTab(callback);
     }
   }
@@ -273,19 +270,21 @@ void RunFaviconCallbackAsync(favicon_base::FaviconResultsCallback callback,
   const std::vector<gfx::ImageSkiaRep>& image_reps =
       image.AsImageSkia().image_reps();
   for (const gfx::ImageSkiaRep& image_rep : image_reps) {
-    auto bitmap_data = base::MakeRefCounted<base::RefCountedBytes>();
-    if (gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.GetBitmap(), false,
-                                          &bitmap_data->as_vector())) {
+    std::optional<std::vector<uint8_t>> png_data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(image_rep.GetBitmap(),
+                                          /*discard_transparency=*/false);
+    if (png_data) {
       favicon_base::FaviconRawBitmapResult bitmap_result;
-      bitmap_result.bitmap_data = bitmap_data;
-      bitmap_result.pixel_size = gfx::Size(image_rep.pixel_width(),
-                                            image_rep.pixel_height());
+      bitmap_result.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
+          std::move(png_data.value()));
+      bitmap_result.pixel_size =
+          gfx::Size(image_rep.pixel_width(), image_rep.pixel_height());
       // Leave |bitmap_result|'s icon URL as the default of GURL().
       bitmap_result.icon_type = favicon_base::IconType::kFavicon;
 
       favicon_bitmap_results.push_back(bitmap_result);
     } else {
-      NOTREACHED_IN_MIGRATION() << "Could not encode extension favicon";
+      NOTREACHED() << "Could not encode extension favicon";
     }
   }
 
@@ -588,10 +587,10 @@ void ExtensionWebUI::GetFaviconForURL(
     if (!icon_resource.empty()) {
       ui::ResourceScaleFactor resource_scale_factor =
           ui::GetSupportedResourceScaleFactor(scale);
-      info_list.push_back(extensions::ImageLoader::ImageRepresentation(
+      info_list.emplace_back(
           icon_resource,
           extensions::ImageLoader::ImageRepresentation::ALWAYS_RESIZE,
-          gfx::Size(pixel_size, pixel_size), resource_scale_factor));
+          gfx::Size(pixel_size, pixel_size), resource_scale_factor);
     }
   }
 

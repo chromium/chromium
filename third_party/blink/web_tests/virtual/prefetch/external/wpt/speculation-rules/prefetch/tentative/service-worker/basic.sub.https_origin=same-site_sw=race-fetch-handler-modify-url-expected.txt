@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Prefetch with ServiceWorker (race-fetch-handler-modify-url)
+  assert_equals: a prefetch request without Sec-Purpose should be sent to the server. expected 1 but got 2
+Harness: the test ran to completion.
+

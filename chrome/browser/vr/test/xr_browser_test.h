@@ -199,6 +199,9 @@ class XrBrowserTestBase : public PlatformBrowserTest {
   }
 
  protected:
+  // Called at the start of |LoadFileAndAwaitInitialization| to allow base
+  // classes to manage any logic that they may want to manage.
+  virtual void OnBeforeLoadFile() {}
   std::unique_ptr<base::Environment> env_;
   std::vector<base::test::FeatureRef> enable_features_;
   std::vector<base::test::FeatureRef> disable_features_;

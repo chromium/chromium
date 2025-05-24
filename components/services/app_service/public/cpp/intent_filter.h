@@ -107,8 +107,8 @@ struct COMPONENT_EXPORT(APP_TYPES) ConditionValue {
   ConditionValue& operator=(const ConditionValue&) = delete;
   ~ConditionValue();
 
-  bool operator==(const ConditionValue& other) const;
-  bool operator!=(const ConditionValue& other) const;
+  friend bool operator==(const ConditionValue&,
+                         const ConditionValue&) = default;
 
   std::string ToString() const;
 
@@ -130,7 +130,6 @@ struct COMPONENT_EXPORT(APP_TYPES) Condition {
   ~Condition();
 
   bool operator==(const Condition& other) const;
-  bool operator!=(const Condition& other) const;
 
   std::unique_ptr<Condition> Clone() const;
 
@@ -154,7 +153,6 @@ struct COMPONENT_EXPORT(APP_TYPES) IntentFilter {
   ~IntentFilter();
 
   bool operator==(const IntentFilter& other) const;
-  bool operator!=(const IntentFilter& other) const;
 
   std::unique_ptr<IntentFilter> Clone() const;
 

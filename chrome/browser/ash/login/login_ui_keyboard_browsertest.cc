@@ -45,6 +45,7 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace ash {
 
@@ -54,11 +55,11 @@ namespace em = ::enterprise_management;
 
 constexpr char kTestUser1[] = "test-user1@gmail.com";
 constexpr char kTestUser1NonCanonicalDisplayEmail[] = "test-us.e.r1@gmail.com";
-constexpr char kTestUser1GaiaId[] = "1111111111";
+constexpr GaiaId::Literal kTestUser1GaiaId("1111111111");
 constexpr char kTestUser2[] = "test-user2@gmail.com";
-constexpr char kTestUser2GaiaId[] = "2222222222";
+constexpr GaiaId::Literal kTestUser2GaiaId("2222222222");
 constexpr char kTestUser3[] = "test-user3@gmail.com";
-constexpr char kTestUser3GaiaId[] = "3333333333";
+constexpr GaiaId::Literal kTestUser3GaiaId("3333333333");
 
 void Append_en_US_InputMethod(std::vector<std::string>* out) {
   out->push_back("xkb:us::eng");
@@ -90,7 +91,7 @@ class LoginUIKeyboardTest : public LoginManagerTest {
     test_users_.push_back(
         AccountId::FromUserEmailGaiaId(kTestUser2, kTestUser2GaiaId));
   }
-  ~LoginUIKeyboardTest() override {}
+  ~LoginUIKeyboardTest() override = default;
 
   void SetUpOnMainThread() override {
     user_input_methods.push_back("xkb:fr::fra");
@@ -243,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(LoginUIKeyboardTest, CheckPODScreenWithUsers) {
 class LoginUIKeyboardTestWithUsersAndOwner : public LoginManagerTest {
  public:
   LoginUIKeyboardTestWithUsersAndOwner() = default;
-  ~LoginUIKeyboardTestWithUsersAndOwner() override {}
+  ~LoginUIKeyboardTestWithUsersAndOwner() override = default;
 
   void SetUp() override {
     LoginManagerTest::SetUp();

@@ -13,6 +13,7 @@
 #import "base/sequence_checker.h"
 #import "base/test/bind.h"
 #import "base/test/gmock_callback_support.h"
+#import "base/test/task_environment.h"
 #import "base/uuid.h"
 #import "components/download/internal/background_service/test/background_download_test_base.h"
 #import "components/download/public/background_service/download_params.h"
@@ -31,7 +32,7 @@ namespace download {
 class BackgroundDownloadTaskHelperTest
     : public test::BackgroundDownloadTestBase {
  protected:
-  BackgroundDownloadTaskHelperTest() {}
+  BackgroundDownloadTaskHelperTest() = default;
   ~BackgroundDownloadTaskHelperTest() override = default;
 
   void SetUp() override {
@@ -56,6 +57,7 @@ class BackgroundDownloadTaskHelperTest
   BackgroundDownloadTaskHelper* helper() { return helper_.get(); }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<BackgroundDownloadTaskHelper> helper_;
 };
 

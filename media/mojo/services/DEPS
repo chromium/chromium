@@ -8,10 +8,10 @@ specific_include_rules = {
   "mojo_cdm_service_context\.h": [
     "+chromeos/components/cdm_factory_daemon/remote_cdm_context.h",
   ],
-  "stable_video_decoder_service\.h": [
+  "oop_video_decoder_service\.h": [
     "+chromeos/components/cdm_factory_daemon/remote_cdm_context.h",
   ],
-  "stable_video_decoder_factory_service\.cc": [
+  "oop_video_decoder_factory_service\.cc": [
     "+components/viz/common/switches.h",
   ],
   "webrtc_video_perf_mojolpm_fuzzer\.cc": [

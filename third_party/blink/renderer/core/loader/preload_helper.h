@@ -25,14 +25,37 @@ class PreloadHelper final {
   STATIC_ONLY(PreloadHelper);
 
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(LoadLinksFromHeaderMode)
   enum class LoadLinksFromHeaderMode {
-    kDocumentBeforeCommit,
-    kDocumentAfterCommitWithoutViewport,
-    kDocumentAfterCommitWithViewport,
-    kDocumentAfterLoadCompleted,
-    kSubresourceFromMemoryCache,
-    kSubresourceNotFromMemoryCache,
+    kDocumentBeforeCommit = 0,
+    kDocumentAfterCommitWithoutViewport = 1,
+    kDocumentAfterCommitWithViewport = 2,
+    kDocumentAfterLoadCompleted = 3,
+    kSubresourceFromMemoryCache = 4,
+    kSubresourceNotFromMemoryCache = 5,
+    kMaxValue = kSubresourceNotFromMemoryCache,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:LoadLinksFromHeaderMode)
+
+  // Distinguishes whether a preloading request is initiated by a resource from
+  // 'Same-' or 'Cross-' origin from the document's origin, and whether the
+  // request refers to the resource from 'Same-' or 'Cross-' origin from the
+  // documents's one as well.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OriginStatusOnSubresource)
+  enum class OriginStatusOnSubresource {
+    kFromSameOriginToSameOrigin = 0,
+    kFromSameOriginToCrossOrigin = 1,
+    kFromCrossOriginToSameOrigin = 2,
+    kFromCrossOriginToCrossOrigin = 3,
+    kMaxValue = kFromCrossOriginToCrossOrigin,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:OriginStatusOnSubresource)
 
   static void LoadLinksFromHeader(
       const String& header_value,

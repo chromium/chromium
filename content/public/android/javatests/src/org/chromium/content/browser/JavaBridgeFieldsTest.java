@@ -41,17 +41,17 @@ public class JavaBridgeFieldsTest {
             return mStringValue;
         }
 
-        public boolean booleanField = true;
-        public byte byteField = 42;
-        public char charField = '\u002A';
-        public short shortField = 42;
-        public int intField = 42;
-        public long longField = 42L;
-        public float floatField = 42.0f;
-        public double doubleField = 42.0;
-        public String stringField = "foo";
-        public Object objectField = new Object();
-        public CustomType customTypeField = new CustomType();
+        public final boolean booleanField = true;
+        public final byte byteField = 42;
+        public final char charField = '\u002A';
+        public final short shortField = 42;
+        public final int intField = 42;
+        public final long longField = 42L;
+        public final float floatField = 42.0f;
+        public final double doubleField = 42.0;
+        public final String stringField = "foo";
+        public final Object objectField = new Object();
+        public final CustomType customTypeField = new CustomType();
     }
 
     // A custom type used when testing passing objects.

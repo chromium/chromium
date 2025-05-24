@@ -5,32 +5,16 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/fake_chrome_lens_overlay_result.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
 #import "url/gurl.h"
-
-/// ChromeLensOverlayResult test object.
-@interface TestChromeLensOverlayResult : NSObject <ChromeLensOverlayResult>
-
-/// The result URL that is meant to be loaded in the LRP.
-@property(nonatomic, assign) GURL searchResultURL;
-/// The selected portion of the original snapshot.
-@property(nonatomic, strong) UIImage* selectionPreviewImage;
-/// Data containing the suggest signals.
-@property(nonatomic, strong) NSData* suggestSignals;
-/// Query text.
-@property(nonatomic, strong) NSString* queryText;
-/// Whether the result represents a text selection.
-@property(nonatomic, readonly) BOOL isTextSelection;
-
-@end
-
-@implementation TestChromeLensOverlayResult
-@end
 
 @implementation FakeChromeLensOverlay {
   NSString* _currentQueryText;
   BOOL _started;
 }
+
+@synthesize visibleAreaLayoutGuide = _visibleAreaLayoutGuide;
 
 - (instancetype)init {
   self = [super init];
@@ -47,10 +31,6 @@
   return NO;
 }
 
-- (BOOL)isPanningSelectionUI {
-  return NO;
-}
-
 - (void)setQueryText:(NSString*)text clearSelection:(BOOL)clearSelection {
   _currentQueryText = text;
   [self sendNewResult];
@@ -63,8 +43,8 @@
 - (void)reloadResult:(id<ChromeLensOverlayResult>)result {
   self.lastReload = result;
   // Reload the result.
-  TestChromeLensOverlayResult* resultObject =
-      base::apple::ObjCCastStrict<TestChromeLensOverlayResult>(result);
+  FakeChromeLensOverlayResult* resultObject =
+      base::apple::ObjCCastStrict<FakeChromeLensOverlayResult>(result);
   // Reloading a result generates new URL and Image, so they are not copied.
   _currentQueryText = resultObject.queryText;
   [self sendNewResult];
@@ -83,17 +63,55 @@
   // NO-OP
 }
 
+// Resets the selection area to the initial position.
+- (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
+  // NO-OP
+}
+
+- (void)hideUserSelection {
+  // NO-OP
+}
+
+- (void)setTopIconsHidden:(BOOL)hidden {
+  // NO-OP
+}
+
+- (void)disableFlyoutMenu:(BOOL)disable {
+  // NO-OP
+}
+
+- (void)setGuidanceRestHeight:(CGFloat)height {
+  // NO-OP
+}
+
+- (CGRect)selectionRect {
+  return CGRectZero;
+}
+
+- (CGSize)imageSize {
+  return CGSizeZero;
+}
+
 #pragma mark - Public
 
 - (void)simulateSelectionUpdate {
   [self sendNewResult];
 }
 
+- (void)simulateSuggestSignalsUpdate:(NSData*)signals {
+  FakeChromeLensOverlayResult* mutableResult =
+      base::apple::ObjCCastStrict<FakeChromeLensOverlayResult>(self.lastResult);
+
+  mutableResult.suggestSignals = signals;
+  [self.lensOverlayDelegate lensOverlay:self
+      hasSuggestSignalsAvailableOnResult:self.lastResult];
+}
+
 #pragma mark - Private
 
 - (void)sendNewResult {
-  TestChromeLensOverlayResult* result =
-      [[TestChromeLensOverlayResult alloc] init];
+  FakeChromeLensOverlayResult* result =
+      [[FakeChromeLensOverlayResult alloc] init];
   result.queryText = _currentQueryText;
   result.searchResultURL = self.resultURL;
   result.selectionPreviewImage = [[UIImage alloc] init];

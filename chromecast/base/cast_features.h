@@ -26,6 +26,7 @@ BASE_DECLARE_FEATURE(kEnableGeneralAudienceBrowsing);
 BASE_DECLARE_FEATURE(kEnableSideGesturePassThrough);
 BASE_DECLARE_FEATURE(kEnableChromeAudioManagerAndroid);
 BASE_DECLARE_FEATURE(kEnableCastAudioOutputDevice);
+BASE_DECLARE_FEATURE(kEnableStarboardMimeChecks);
 
 // Get an iterable list of all of the cast features for checking all features as
 // a collection.

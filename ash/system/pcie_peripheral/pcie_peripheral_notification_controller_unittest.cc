@@ -14,7 +14,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/message_center/fake_message_center.h"
@@ -54,13 +53,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class PciePeripheralNotificationControllerTest : public AshTestBase {
  public:
-  PciePeripheralNotificationControllerTest() {
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    delegate_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
-  }
+  PciePeripheralNotificationControllerTest() = default;
   PciePeripheralNotificationControllerTest(
       const PciePeripheralNotificationControllerTest&) = delete;
   PciePeripheralNotificationControllerTest& operator=(
@@ -71,9 +64,7 @@ class PciePeripheralNotificationControllerTest : public AshTestBase {
     return Shell::Get()->pcie_peripheral_notification_controller();
   }
 
-  MockNewWindowDelegate& new_window_delegate_primary() {
-    return *new_window_delegate_primary_;
-  }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
   message_center::Notification* GetLimitedPerformanceNotification() {
     return MessageCenter::Get()->FindVisibleNotificationById(
@@ -144,9 +135,7 @@ class PciePeripheralNotificationControllerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtOnly) {
@@ -166,7 +155,7 @@ TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtOnly) {
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -191,7 +180,7 @@ TEST_F(PciePeripheralNotificationControllerTest, GuestNotificationTbtAltMode) {
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -214,7 +203,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   EXPECT_EQ(0u, notification->buttons().size());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -240,7 +229,7 @@ TEST_F(PciePeripheralNotificationControllerTest, BillboardDeviceNotification) {
   EXPECT_EQ(1u, MessageCenter::Get()->NotificationCount());
 
   // Click on the notification and expect the Learn More page to appear.
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -265,7 +254,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   // Ensure this notification has the two correct buttons.
   EXPECT_EQ(2u, notification->buttons().size());
 
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -274,7 +263,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   EXPECT_EQ(2, GetPrefNotificationCount());
   EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
 
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -283,7 +272,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
   EXPECT_EQ(1, GetPrefNotificationCount());
   EXPECT_EQ(0u, MessageCenter::Get()->NotificationCount());
 
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -370,7 +359,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
 
   // We will always show guest notifications, expect that the pref did not
   // decrement.
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));
@@ -399,7 +388,7 @@ TEST_F(PciePeripheralNotificationControllerTest,
 
   // We will always show guest notifications, expect that the pref did not
   // decrement.
-  EXPECT_CALL(new_window_delegate_primary(),
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL(kLearnMoreHelpUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
                       NewWindowDelegate::Disposition::kNewForegroundTab));

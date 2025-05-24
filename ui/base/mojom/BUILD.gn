@@ -11,26 +11,32 @@ mojom("mojom") {
     "ui_base_types.mojom",
     "window_open_disposition.mojom",
   ]
+  cpp_typemaps = []
 
   if (is_mac) {
-    sources += [ "attributed_string.mojom" ]
+    sources += [
+      "attributed_string.mojom",
+      "color_mode.mojom",
+    ]
     public_deps = [
       "//mojo/public/mojom/base",
       "//ui/gfx/range/mojom",
     ]
+    cpp_typemaps += [
+      {
+        types = [
+          {
+            mojom = "ui.mojom.ColorMode"
+            cpp = "::ui::ColorProviderKey::ColorMode"
+          },
+        ]
+        traits_headers = [ "color_mode_mojom_traits.h" ]
+        traits_public_deps = [ "//ui/color:color_provider_key" ]
+      },
+    ]
   }
 
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "ui.mojom.MenuSourceType"
-          cpp = "::ui::MenuSourceType"
-        },
-      ]
-      traits_headers = [ "ui_base_types_mojom_traits.h" ]
-      traits_public_deps = [ "//ui/base" ]
-    },
+  cpp_typemaps += [
     {
       types = [
         {
@@ -54,10 +60,12 @@ mojom("mojom") {
 
 # TODO(crbug.com/359910414): Move back DialogButton enum to ui_base_types.mojom.
 # TODO(crbug.com/361008605): Move back `WindowShowState` enum to ui_base_types.mojom.
+# TODO(crbug.com/370252254): Move back `MenuSourceType` enum to ui_base_types.mojom.
 mojom("ui_base_types") {
   generate_java = true
   sources = [
     "dialog_button.mojom",
+    "menu_source_type.mojom",
     "window_show_state.mojom",
   ]
 }

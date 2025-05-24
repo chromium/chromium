@@ -161,5 +161,5 @@ Things *not* to do:
   clobbering a deterministic bot might make it green, it's papering over issues
   that the deterministic bots are supposed to catch.
 
-- Don't add entries to `src/tools/determinism/deterministic_build_ignorelist.py`.
+- Don't add entries to `src/tools/determinism/deterministic_build_ignorelist.pyl`.
   Instead, try to revert commits introducing nondeterminism.

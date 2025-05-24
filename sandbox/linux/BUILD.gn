@@ -96,9 +96,9 @@ source_set("sandbox_linux_unittests_sources") {
   deps = [
     ":sandbox",
     ":sandbox_linux_test_utils",
+    ":sandbox_services_headers",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//testing/gtest",
   ]
 
@@ -250,7 +250,6 @@ component("seccomp_bpf") {
   deps = [
     ":sandbox_services",
     "//base",
-    "//build:chromeos_buildflags",
     "//sandbox:sandbox_buildflags",
   ]
 
@@ -295,15 +294,6 @@ if (is_linux || is_chromeos) {
       "suid/process_util.h",
       "suid/process_util_linux.c",
       "suid/sandbox.c",
-    ]
-
-    cflags = [
-      # For ULLONG_MAX
-      "-std=gnu99",
-
-      # These files have a suspicious comparison.
-      # TODO fix this and re-enable this warning.
-      "-Wno-sign-compare",
     ]
   }
 }
@@ -387,9 +377,9 @@ source_set("sandbox_services_headers") {
     "system_headers/arm_linux_syscalls.h",
     "system_headers/arm_linux_ucontext.h",
     "system_headers/i386_linux_ucontext.h",
-    "system_headers/landlock.h",
     "system_headers/linux_filter.h",
     "system_headers/linux_futex.h",
+    "system_headers/linux_landlock.h",
     "system_headers/linux_prctl.h",
     "system_headers/linux_ptrace.h",
     "system_headers/linux_seccomp.h",

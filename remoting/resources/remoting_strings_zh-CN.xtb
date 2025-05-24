@@ -28,6 +28,7 @@
 <translation id="2329392777730037872">未能在客户端上打开 <ph name="URL" />。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2366718077645204424">无法连接到主机，这可能是由您所使用网络的配置导致的。</translation>
+<translation id="242591256144136845">版权所有 2025 Google LLC。保留所有权利。</translation>
 <translation id="2504109125669302160">向 <ph name="PRODUCT_NAME" />授予“无障碍”权限</translation>
 <translation id="2509394361235492552">已连接到“<ph name="HOSTNAME" />”</translation>
 <translation id="2540992418118313681">您要与其他用户共享此计算机的查看和控制权限吗？</translation>
@@ -39,6 +40,7 @@
 <translation id="2758123043070977469">验证您的身份时出问题了，请重新登录。</translation>
 <translation id="2803375539583399270">输入 PIN 码</translation>
 <translation id="2919669478609886916">您目前正在与其他用户共享此计算机。您希望继续共享吗？</translation>
+<translation id="2929683002824598593">共用设备</translation>
 <translation id="2939145106548231838">向主机验证身份</translation>
 <translation id="3027681561976217984">触摸模式</translation>
 <translation id="3106379468611574572">远程计算机没有对连接请求做出响应。请确保其在线，然后重试。</translation>
@@ -91,6 +93,7 @@
 <translation id="4987330545941822761">Chrome 远程桌面无法确定应使用哪款浏览器在本地打开网址。请从下面的列表中选择。</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" />（离线）</translation>
 <translation id="507204348399810022">确定要停用与“<ph name="HOSTNAME" />”的远程连接吗？</translation>
+<translation id="5095424396646120601">崩溃报告</translation>
 <translation id="5170982930780719864">主机 ID 无效。</translation>
 <translation id="5204575267916639804">常见问题解答</translation>
 <translation id="5222676887888702881">退出</translation>
@@ -116,10 +119,12 @@
 <translation id="6178645564515549384">用于远程协助的本地消息传递主机</translation>
 <translation id="618120821413932081">更新远程桌面的分辨率以适合浏览器窗口的大小</translation>
 <translation id="6223301979382383752">打开“屏幕录制”偏好设置</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> 已请求获权查看您的屏幕并控制您的键盘和鼠标。您想共用设备吗？</translation>
 <translation id="6284412385303060032">在控制台逻辑屏幕运行的主机已关闭。这是为了切换到在用户特定会话中运行的主机，以便为 Curtain 模式提供支持。</translation>
 <translation id="6542902059648396432">报告问题…</translation>
 <translation id="6583902294974160967">支持</translation>
 <translation id="6612717000975622067">发送Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{如果您不采取行动，您的设备将在 # 秒后自动开始共用。}other{如果您不采取行动，您的设备将在 # 秒后自动开始共用。}}</translation>
 <translation id="6654753848497929428">共享</translation>
 <translation id="677755392401385740">已为用户<ph name="HOST_USERNAME" />启动主机。</translation>
 <translation id="6902524959760471898">助手应用，用于在 <ph name="PRODUCT_NAME" />客户端打开网址</translation>
@@ -133,6 +138,7 @@
 <translation id="7067321367069083429">屏幕充当触摸屏</translation>
 <translation id="7116737094673640201">欢迎使用 Chrome 远程桌面</translation>
 <translation id="7144878232160441200">重试</translation>
+<translation id="7298392173540380852">版权所有 2025 The Chromium Authors。保留所有权利。</translation>
 <translation id="7312846573060934304">主机未连接到网络。</translation>
 <translation id="7319983568955948908">停止共享</translation>
 <translation id="7359298090707901886">无法使用所选浏览器在本地计算机上打开网址。</translation>
@@ -149,7 +155,6 @@
 <translation id="7693372326588366043">刷新主机列表</translation>
 <translation id="7714222945760997814">报告此问题</translation>
 <translation id="7868137160098754906">请为远程计算机输入PIN码。</translation>
-<translation id="7881455334687220899">版权所有 2024 The Chromium Authors。保留所有权利。</translation>
 <translation id="7895403300744144251">这台远程计算机的安全政策不允许从您的账号进行连接。</translation>
 <translation id="7936528439960309876">固定到右侧</translation>
 <translation id="7970576581263377361">身份验证失败。请重新登录 Chromium。</translation>
@@ -181,7 +186,6 @@
 <translation id="8747048596626351634">会话已崩溃或未能顺利启动。如果远程计算机上存在 ~/.chrome-remote-desktop-session，请确保它会启动一个能长时间运行的前台进程（例如桌面环境或窗口管理器）。</translation>
 <translation id="8804164990146287819">隐私权政策</translation>
 <translation id="8906511416443321782">必须具备麦克风使用权限，才能捕获音频并将其流式传输到 Chrome 远程桌面客户端。</translation>
-<translation id="9042277333359847053">版权所有 2024 Google LLC。保留所有权利。</translation>
 <translation id="9111855907838866522">您已连接到远程设备。要打开菜单，请用四根手指点按屏幕。</translation>
 <translation id="9126115402994542723">从这台设备连接到此主机时不再要求输入PIN码。</translation>
 <translation id="916856682307586697">启动默认的 XSession</translation>

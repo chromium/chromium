@@ -48,8 +48,7 @@ class ClipboardExtensionHelper::ClipboardImageDataDecoder
         codec = ImageDecoder::DEFAULT_CODEC;
         break;
       case clipboard::ImageType::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     has_request_pending_ = true;
@@ -82,7 +81,7 @@ ClipboardExtensionHelper::ClipboardExtensionHelper() {
       std::make_unique<ClipboardImageDataDecoder>(this);
 }
 
-ClipboardExtensionHelper::~ClipboardExtensionHelper() {}
+ClipboardExtensionHelper::~ClipboardExtensionHelper() = default;
 
 void ClipboardExtensionHelper::DecodeAndSaveImageData(
     std::vector<uint8_t> data,
@@ -99,7 +98,7 @@ void ClipboardExtensionHelper::DecodeAndSaveImageData(
   if (clipboard_image_data_decoder_->has_request_pending())
     clipboard_image_data_decoder_->Cancel();
 
-  // Cache additonal items.
+  // Cache additional items.
   additonal_items_ = std::move(additional_items);
 
   image_save_success_callback_ = std::move(success_callback);

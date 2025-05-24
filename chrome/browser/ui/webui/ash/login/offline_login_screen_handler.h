@@ -29,7 +29,7 @@ class OfflineLoginView {
   virtual void Reset() = 0;
 
   // Proceeds to the password input dialog.
-  virtual void ShowPasswordPage() = 0;
+  virtual void ShowPasswordPage(bool authenticate_by_pin) = 0;
 
   // Shows error pop-up when the user cannot login offline.
   virtual void ShowOnlineRequiredDialog() = 0;
@@ -60,7 +60,7 @@ class OfflineLoginScreenHandler final : public BaseScreenHandler,
   void Show(base::Value::Dict params) override;
   void Hide() override;
   void Reset() override;
-  void ShowPasswordPage() override;
+  void ShowPasswordPage(bool authenticate_by_pin) override;
   void ShowOnlineRequiredDialog() override;
   void ShowPasswordMismatchMessage() override;
   base::WeakPtr<OfflineLoginView> AsWeakPtr() override;

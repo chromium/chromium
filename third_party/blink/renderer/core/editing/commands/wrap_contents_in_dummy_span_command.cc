@@ -78,6 +78,10 @@ void WrapContentsInDummySpanCommand::DoReapply() {
   ExecuteApply();
 }
 
+String WrapContentsInDummySpanCommand::ToString() const {
+  return "WrapContentsInDummySpanCommand";
+}
+
 void WrapContentsInDummySpanCommand::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(dummy_span_);

@@ -17,16 +17,16 @@ import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /** Settings fragment containing preferences aimed at Chrome and web developers. */
-public class DeveloperSettings extends PreferenceFragmentCompat implements SettingsPage {
+public class DeveloperSettings extends PreferenceFragmentCompat implements EmbeddableSettingsPage {
     private static final String UI_PREF_BETA_STABLE_HINT = "beta_stable_hint";
 
     // Non-translated strings:
     private static final String MSG_DEVELOPER_OPTIONS_TITLE = "Developer options";
-    private static final ObservableSupplier<String> sPageTitle =
+    private final ObservableSupplier<String> mPageTitle =
             new ObservableSupplierImpl<>(MSG_DEVELOPER_OPTIONS_TITLE);
 
     private static Boolean sIsEnabledForTests;
@@ -62,6 +62,11 @@ public class DeveloperSettings extends PreferenceFragmentCompat implements Setti
 
     @Override
     public ObservableSupplier<String> getPageTitle() {
-        return sPageTitle;
+        return mPageTitle;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

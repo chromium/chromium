@@ -37,7 +37,8 @@ const GRIT_REMOVED_LINES_REGEX = /grit-removed-lines:(\d+)/g;
  */
 function processAllFiles(
     originals, inputs, outputs, verbose, sourceRoot, inlineSourcemaps) {
-  if (originals.length != inputs.length || originals.length != outputs.length) {
+  if (originals.length !== inputs.length ||
+      originals.length !== outputs.length) {
     console.error(
         `The original files count(${originals.length}), ` +
         `the input files count(${inputs.length}) and the ` +

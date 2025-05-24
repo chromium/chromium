@@ -31,6 +31,7 @@ TEST(SerializeAuctionConfigTest, SerializeComponents) {
    },
    "componentAuctions": [ "https://example.org", "https://example.com" ],
    "decisionLogicURL": "https://seller.test/foo",
+   "executionMode": "compatibility",
    "deprecatedRenderURLReplacements": {
       "pending": false,
       "value": [ ]
@@ -62,6 +63,8 @@ TEST(SerializeAuctionConfigTest, SerializeComponents) {
       "pending": false,
       "value": null
    },
+   "perBuyerTKVSignals": {
+   },
    "perBuyerTimeouts": {
       "pending": false,
       "value": {
@@ -70,6 +73,10 @@ TEST(SerializeAuctionConfigTest, SerializeComponents) {
    "requiredSellerCapabilities": [  ],
    "seller": "https://seller.test",
    "sellerSignals": {
+      "pending": false,
+      "value": null
+   },
+   "sellerTKVSignals": {
       "pending": false,
       "value": null
    }
@@ -120,6 +127,7 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
    "expectsDirectFromSellerSignalsHeaderAdSlot": false,
    "maxTrustedScoringSignalsURLLength": 2560,
    "trustedScoringSignalsCoordinator": "https://example.test",
+   "executionMode": "group-by-origin",
    "deprecatedRenderURLReplacements" : {
       "pending": false,
       "value": [ {
@@ -172,6 +180,12 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
          "https://buyer.test": "[7]"
       }
    },
+   "perBuyerTKVSignals": {
+      "https://buyer.test": {
+         "pending": false,
+         "value": "[8]"
+      }
+   },
    "perBuyerTimeouts": {
       "pending": false,
       "value": {
@@ -191,13 +205,18 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
       "pending": false,
       "value": "[5]"
    },
+   "sellerTKVSignals": {
+      "pending": false,
+      "value": "[6]"
+   },
    "sellerTimeout": 6000.0,
    "reportingTimeout": 7000.0,
    "trustedScoringSignalsURL": "https://seller.test/bar",
    "sellerRealTimeReportingType": "default-local-reporting",
    "perBuyerRealTimeReportingTypes": {
       "https://buyer.test": "default-local-reporting"
-   }
+   },
+   "sendCreativeScanningMetadata": true
 }
 )";
 
@@ -205,12 +224,45 @@ TEST(SerializeAuctionConfigTest, FullConfig) {
               base::test::IsJson(kExpected));
 }
 
-TEST(SerializeAuctionConfigTest, PendingPromise) {
+TEST(SerializeAuctionConfigTest, AuctionSignalsPendingPromise) {
+  AuctionConfig config = CreateBasicAuctionConfig();
+  config.non_shared_params.auction_signals =
+      AuctionConfig::MaybePromiseJson::FromPromise();
+  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
+  const base::Value::Dict* signal_dict = serialized.FindDict("auctionSignals");
+  ASSERT_TRUE(signal_dict);
+
+  const char kExpected[] = R"({
+   "pending": true
+}
+)";
+
+  EXPECT_THAT(*signal_dict, base::test::IsJson(kExpected));
+}
+
+TEST(SerializeAuctionConfigTest, SellerSignalsPendingPromise) {
   AuctionConfig config = CreateBasicAuctionConfig();
   config.non_shared_params.seller_signals =
       AuctionConfig::MaybePromiseJson::FromPromise();
   base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
   const base::Value::Dict* signal_dict = serialized.FindDict("sellerSignals");
+  ASSERT_TRUE(signal_dict);
+
+  const char kExpected[] = R"({
+   "pending": true
+}
+)";
+
+  EXPECT_THAT(*signal_dict, base::test::IsJson(kExpected));
+}
+
+TEST(SerializeAuctionConfigTest, SellerTKVSignalsPendingPromise) {
+  AuctionConfig config = CreateBasicAuctionConfig();
+  config.non_shared_params.seller_tkv_signals =
+      AuctionConfig::MaybePromiseJson::FromPromise();
+  base::Value::Dict serialized = SerializeAuctionConfigForDevtools(config);
+  const base::Value::Dict* signal_dict =
+      serialized.FindDict("sellerTKVSignals");
   ASSERT_TRUE(signal_dict);
 
   const char kExpected[] = R"({
@@ -264,13 +316,16 @@ TEST(SerializeInterestGroupTest, Basic) {
   ig.max_trusted_bidding_signals_url_length = 100;
   ig.trusted_bidding_signals_coordinator =
       url::Origin::Create(GURL("https://example.test"));
+  ig.view_and_click_counts_providers = {
+      {url::Origin::Create(GURL("https://example.test"))}};
   ig.user_bidding_signals = "hello";
   ig.ads = {
       {blink::InterestGroup::Ad(
            GURL("https://example.com/train"), "metadata", "sizegroup", "bid",
            "bsid", std::vector<std::string>{"selectable_id1", "selectable_id2"},
            "ad_render_id",
-           {{url::Origin::Create(GURL("https://reporting.example.org"))}}),
+           {{url::Origin::Create(GURL("https://reporting.example.org"))}},
+           "please scan creative for bad stuff"),
        blink::InterestGroup::Ad(GURL("https://example.com/plane"), "meta2")}};
   ig.ad_components = {{
       {GURL("https://example.com/locomotive"), "meta3"},
@@ -307,6 +362,7 @@ TEST(SerializeInterestGroupTest, Basic) {
     "trustedBiddingSignalsSlotSizeMode": "all-slots-requested-sizes",
     "maxTrustedBiddingSignalsURLLength": 100,
     "trustedBiddingSignalsCoordinator": "https://example.test",
+    "viewAndClickCountsProviders": ["https://example.test"],
     "userBiddingSignals": "hello",
     "ads": [ {
       "adRenderId": "ad_render_id",
@@ -315,7 +371,8 @@ TEST(SerializeInterestGroupTest, Basic) {
       "selectableBuyerAndSellerReportingIds": [ "selectable_id1", "selectable_id2" ],
       "buyerReportingId": "bid",
       "metadata": "metadata",
-      "renderURL": "https://example.com/train"
+      "renderURL": "https://example.com/train",
+      "creativeScanningMetadata": "please scan creative for bad stuff"
     }, {
       "metadata": "meta2",
       "renderURL": "https://example.com/plane"

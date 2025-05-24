@@ -71,7 +71,7 @@ goog.net.XmlHttp.getOptions = function() {
  */
 goog.net.XmlHttp.OptionType = {
   /**
-   * Whether a goog.nullFunction should be used to clear the onreadystatechange
+   * Whether a no-op function should be used to clear the onreadystatechange
    * handler instead of null.
    */
   USE_NULL_FUNCTION: 0,

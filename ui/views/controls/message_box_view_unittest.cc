@@ -172,4 +172,14 @@ TEST_F(MessageBoxViewTest, CheckIsCheckBoxSelected) {
   EXPECT_TRUE(message_box_->IsCheckBoxSelected());
 }
 
+TEST_F(MessageBoxViewTest, CanUpdateMessageLabel) {
+  static constexpr std::u16string_view kUpdatedMessageLabel =
+      u"This is updated text label";
+
+  ASSERT_NE(kUpdatedMessageLabel, message_box_->label_text_for_testing());
+  message_box_->SetMessageLabel(kUpdatedMessageLabel);
+
+  EXPECT_EQ(kUpdatedMessageLabel, message_box_->label_text_for_testing());
+}
+
 }  // namespace views

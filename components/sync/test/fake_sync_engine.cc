@@ -145,6 +145,8 @@ bool FakeSyncEngine::IsNextPollTimeInThePast() const {
   return is_next_poll_time_in_the_past_;
 }
 
+void FakeSyncEngine::ClearNigoriDataForMigration() {}
+
 void FakeSyncEngine::GetNigoriNodeForDebugging(AllNodesCallback callback) {}
 
 void FakeSyncEngine::RecordNigoriMemoryUsageAndCountsHistograms() {}

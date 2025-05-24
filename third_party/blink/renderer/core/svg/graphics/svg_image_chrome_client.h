@@ -52,16 +52,12 @@ class IsolatedSVGChromeClient : public EmptyChromeClient {
 
 class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
  public:
-  explicit SVGImageChromeClient();
+  explicit SVGImageChromeClient(SVGImage*);
 
   void InitAnimationTimer(
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner);
 
   SVGImage* GetImage() const { return image_; }
-  void SetImage(SVGImage* image) {
-    CHECK(!image_);
-    image_ = image;
-  }
 
   void SuspendAnimation();
   void ResumeAnimation();
@@ -75,7 +71,8 @@ class CORE_EXPORT SVGImageChromeClient final : public IsolatedSVGChromeClient {
   void ChromeDestroyed() override;
   void InvalidateContainer() override;
   void ScheduleAnimation(const LocalFrameView*,
-                         base::TimeDelta = base::TimeDelta()) override;
+                         base::TimeDelta,
+                         bool urgent) override;
 
   void SetTimerForTesting(
       DisallowNewWrapper<HeapTaskRunnerTimer<SVGImageChromeClient>>*);

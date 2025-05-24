@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- LINT.IfChange -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+  android:shape="rectangle">
+  <solid android:color="@color/menu_bg_color"/>
+  <corners android:radius="@dimen/popup_bg_corner_radius_24dp" />
+  <padding
+      android:top="@dimen/popup_bg_padding"
+      android:bottom="@dimen/popup_bg_padding" />
+</shape>
+<!-- LINT.ThenChange(//components/browser_ui/widget/android/java/res/values-night/dimens.xml) -->

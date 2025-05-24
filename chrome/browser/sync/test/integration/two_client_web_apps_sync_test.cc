@@ -8,7 +8,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
@@ -19,6 +19,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -28,16 +29,10 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_constants.h"
-#include "components/sync/service/sync_service_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 
@@ -57,7 +52,7 @@ class DisplayModeChangeWaiter : public WebAppRegistrarObserver {
 
   void Wait() { run_loop_.Run(); }
 
-  void OnAppRegistrarDestroyed() override { NOTREACHED_IN_MIGRATION(); }
+  void OnAppRegistrarDestroyed() override { NOTREACHED(); }
 
  private:
   base::RunLoop run_loop_;
@@ -78,18 +73,18 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
 
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
-    ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings.
-    // We need to enable the Apps toggle for both Client
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    }
-#endif
     ASSERT_TRUE(SetupSync());
     ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
+    override_registration_ =
+        web_app::OsIntegrationTestOverrideImpl::OverrideForTesting();
+  }
+
+  void TearDownOnMainThread() override {
+    for (Profile* profile : GetAllProfiles()) {
+      test::UninstallAllWebApps(profile);
+    }
+    override_registration_.reset();
+    SyncTest::TearDownOnMainThread();
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
@@ -113,7 +108,10 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
  private:
-  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  // OS integration is needed to be able to launch web applications. This
+  // override ensures OS integration doesn't leave any traces.
+  std::unique_ptr<web_app::OsIntegrationTestOverrideImpl::BlockingRegistration>
+      override_registration_;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
@@ -200,7 +198,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   EXPECT_TRUE(AllProfilesHaveSameWebAppIds());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
+// TODO(crbug.com/399407539): Gardening. This test has been very flaky.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_AppFieldsChangeDoesNotSync DISABLED_AppFieldsChangeDoesNotSync
+#else
+#define MAYBE_AppFieldsChangeDoesNotSync AppFieldsChangeDoesNotSync
+#endif
+IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest,
+                       MAYBE_AppFieldsChangeDoesNotSync) {
   const WebAppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
   const WebAppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
 
@@ -444,6 +449,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
             SK_ColorBLUE);
 }
 
+// TODO(crbug.com/352333561): Fix test once user display mode stops syncing.
+// On non ChromeOS platforms, synced apps will always return kBrowser if install
+// state is anything except `INSTALLED_WITH_OS_INTEGRATION`.
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
@@ -463,68 +471,26 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   auto* provider0 = WebAppProvider::GetForTest(GetProfile(0));
   auto* provider1 = WebAppProvider::GetForTest(GetProfile(1));
   WebAppRegistrar& registrar1 = provider1->registrar_unsafe();
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kStandalone);
+#else
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
+            mojom::UserDisplayMode::kBrowser);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   DisplayModeChangeWaiter display_mode_change_waiter(registrar1);
   provider0->sync_bridge_unsafe().SetAppUserDisplayModeForTesting(
       app_id, mojom::UserDisplayMode::kTabbed);
   display_mode_change_waiter.Wait();
 
+#if BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kTabbed);
+#else
+  EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
+            mojom::UserDisplayMode::kBrowser);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// On Lacros, syncing of Apps is only enabled in the "main" profile.
-// TwoClientWebAppsSyncTest (via WebAppsSyncTestBase) bypasses the "main profile"
-// check, so that syncing actually happens. This class does not, so that the
-// Lacros restriction (Apps sync only in main profile) applies.
-class TwoClientLacrosWebAppsSyncTest : public SyncTest {
- public:
-  TwoClientLacrosWebAppsSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientLacrosWebAppsSyncTest() override = default;
-
-  // SyncTest:
-  base::FilePath GetProfileBaseName(int index) override {
-    if (index == 0)
-      return base::FilePath(chrome::kInitialProfile);
-    return SyncTest::GetProfileBaseName(index);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(TwoClientLacrosWebAppsSyncTest,
-                       SyncDisabledUnlessPrimary) {
-  ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Apps sync is controlled by a dedicated preference on Lacros,
-  // corresponding to the Apps toggle in OS Sync settings.
-  // Enable the Apps toggle for both clients.
-  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-    GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-  }
-#endif
-  ASSERT_TRUE(SetupSync());
-
-  {
-    EXPECT_TRUE(GetProfile(0)->IsMainProfile());
-    syncer::SyncServiceImpl* service = GetSyncService(0);
-    syncer::DataTypeSet types = service->GetActiveDataTypes();
-    EXPECT_TRUE(types.Has(syncer::APPS));
-    EXPECT_TRUE(types.Has(syncer::APP_SETTINGS));
-    EXPECT_TRUE(types.Has(syncer::WEB_APPS));
-  }
-
-  {
-    EXPECT_FALSE(GetProfile(1)->IsMainProfile());
-    syncer::SyncServiceImpl* service = GetSyncService(1);
-    syncer::DataTypeSet types = service->GetActiveDataTypes();
-    EXPECT_FALSE(types.Has(syncer::APPS));
-    EXPECT_FALSE(types.Has(syncer::APP_SETTINGS));
-    EXPECT_FALSE(types.Has(syncer::WEB_APPS));
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

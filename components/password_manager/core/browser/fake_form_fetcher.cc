@@ -89,7 +89,7 @@ base::span<const PasswordForm> FakeFormFetcher::GetAllRelevantMatches() const {
 }
 
 base::span<const PasswordForm> FakeFormFetcher::GetBestMatches() const {
-  return base::make_span(best_matches_);
+  return base::span(best_matches_);
 }
 
 const PasswordForm* FakeFormFetcher::GetPreferredMatch() const {
@@ -110,7 +110,7 @@ std::unique_ptr<FormFetcher> FakeFormFetcher::Clone() {
 
 void FakeFormFetcher::SetNonFederated(
     const std::vector<PasswordForm>& non_federated) {
-  CHECK(base::ranges::all_of(
+  CHECK(std::ranges::all_of(
       non_federated, [this](auto& form) { return form.scheme == scheme_; }));
   SetNonFederated(non_federated, non_federated);
 }

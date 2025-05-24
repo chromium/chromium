@@ -68,7 +68,7 @@ struct NotAdvertisedDecoder {
 
 }  // namespace
 
-rtc::scoped_refptr<webrtc::AudioEncoderFactory>
+webrtc::scoped_refptr<webrtc::AudioEncoderFactory>
 CreateWebrtcAudioEncoderFactory() {
   return webrtc::CreateAudioEncoderFactory<
       webrtc::AudioEncoderOpus, webrtc::AudioEncoderG722,
@@ -76,7 +76,7 @@ CreateWebrtcAudioEncoderFactory() {
       NotAdvertisedEncoder<webrtc::AudioEncoderMultiChannelOpus>>();
 }
 
-rtc::scoped_refptr<webrtc::AudioDecoderFactory>
+webrtc::scoped_refptr<webrtc::AudioDecoderFactory>
 CreateWebrtcAudioDecoderFactory() {
   return webrtc::CreateAudioDecoderFactory<
       webrtc::AudioDecoderOpus, webrtc::AudioDecoderG722,

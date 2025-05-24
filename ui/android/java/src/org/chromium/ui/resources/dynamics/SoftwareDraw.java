@@ -12,15 +12,13 @@ import android.view.View;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Simple bitmap capture approach simply calling {@link View#draw(Canvas)}. */
+@NullMarked
 public class SoftwareDraw implements ViewResourceAdapter.CaptureMechanism {
-    private Bitmap mBitmap;
-
-    @Override
-    public boolean shouldRemoveResourceOnNullBitmap() {
-        return false;
-    }
+    private @Nullable Bitmap mBitmap;
 
     @Override
     public void onViewSizeChange(View view, float scale) {}

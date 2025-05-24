@@ -40,6 +40,17 @@ struct MyExampleStatusTraits {
   static uint32_t PackExtraData(const internal::StatusData& data) {
     return 0;
   }
+
+  // [OPTIONAL] When a status doesn't include a message, the only source of
+  // information about the failure reason is the numeric code. This can be
+  // somewhat annoying to look up in the correct enum, so creating this method
+  // allows a default message with a string representation of the code.
+  static constexpr std::string ReadableCodeName(Codes code) {
+    switch(code) {
+      case Codes::kSomething: return "Something";
+      ...
+    }
+  }
 };
 
 // Typically, you'd want to redefine your template instantiation, like this.

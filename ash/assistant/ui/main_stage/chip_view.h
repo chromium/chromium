@@ -5,6 +5,8 @@
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_CHIP_VIEW_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_CHIP_VIEW_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image_skia.h"
@@ -41,7 +43,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) ChipView : public views::Button {
   gfx::ImageSkia GetIcon() const;
 
   void SetText(const std::u16string& text);
-  const std::u16string& GetText() const;
+  std::u16string_view GetText() const;
 
  private:
   const Type type_;

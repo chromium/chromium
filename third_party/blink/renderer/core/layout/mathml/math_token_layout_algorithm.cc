@@ -4,11 +4,16 @@
 
 #include "third_party/blink/renderer/core/layout/mathml/math_token_layout_algorithm.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_align.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_canvas_text_baseline.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/canvas/text_metrics.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/mathml/math_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/out_of_flow_layout_part.h"
 #include "third_party/blink/renderer/core/mathml/mathml_token_element.h"
+#include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
 namespace blink {
 
@@ -28,12 +33,19 @@ const LayoutResult* MathTokenLayoutAlgorithm::Layout() {
   DCHECK(!child.NextSibling());
   DCHECK(!child.IsOutOfFlowPositioned());
 
+  PlainTextPainter* text_painter = nullptr;
+  auto* execution_context = Node().GetDocument().GetExecutionContext();
+  if (RuntimeEnabledFeatures::CanvasTextNgEnabled(execution_context)) {
+    text_painter = &PlainTextPainter::Shared();
+    UseCounter::Count(execution_context, WebFeature::kCanvasTextNg);
+  }
   TextMetrics* metrics = MakeGarbageCollected<TextMetrics>(
-      Style().GetFont(), Style().Direction(), kAlphabeticTextBaseline,
-      kStartTextAlign,
+      Style().GetFont(), Style().Direction(),
+      V8CanvasTextBaseline::Enum::kAlphabetic, V8CanvasTextAlign::Enum::kStart,
       DynamicTo<MathMLTokenElement>(Node().GetDOMNode())
           ->GetTokenContent()
-          .characters);
+          .characters,
+      text_painter);
   LayoutUnit ink_ascent(metrics->actualBoundingBoxAscent());
   LayoutUnit ink_descent(metrics->actualBoundingBoxDescent());
   LayoutUnit ascent = BorderScrollbarPadding().block_start + ink_ascent;

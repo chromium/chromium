@@ -7,36 +7,66 @@
 
 #include <optional>
 
+#include "base/types/expected.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_manager_base.h"
 #include "components/policy/core/common/policy_types.h"
 
 class PrefService;
 
+namespace policy {
+class CloudPolicyManager;
+}  // namespace policy
+
 namespace enterprise_connectors {
 
 // Abstract class to access Connector policy values and related information.
 class ConnectorsServiceBase {
  public:
+  enum class NoDMTokenForRealTimeUrlCheckReason {
+    // Connectors are not enabled, such as for incognito mode.
+    kConnectorsDisabled = 0,
+    // Connectors are enabled, but the `kEnterpriseRealTimeUrlCheckMode` policy
+    // is disabled.
+    kPolicyDisabled = 1,
+    // Connectors and the `kEnterpriseRealTimeUrlCheckMode` policy are enabled,
+    // but there is still no token found.
+    kNoDmToken = 2,
+    kMaxValue = kNoDmToken,
+  };
+
   // DM token accessor function for real-time URL checks. Returns a profile or
-  // browser DM token depending on the policy scope, and std::nullopt if there
-  // is no token to use.
-  std::optional<std::string> GetDMTokenForRealTimeUrlCheck() const;
+  // browser DM token depending on the policy scope. If there is no token to
+  // use, returns the reason why.
+  base::expected<std::string, NoDMTokenForRealTimeUrlCheckReason>
+  GetDMTokenForRealTimeUrlCheck() const;
 
   // Returns the value to used by the enterprise real-time URL check Connector
   // if it is set and if the scope it's set at has a valid browser-profile
   // affiliation.
   EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck() const;
 
+  // Returns the policy scope of enterprise real-time URL check
+  std::optional<policy::PolicyScope> GetRealtimeUrlCheckScope() const;
+
   // Returns whether the Connectors are enabled.
   virtual bool IsConnectorEnabled(AnalysisConnector connector) const = 0;
-  bool IsConnectorEnabled(ReportingConnector connector) const;
 
-  std::vector<std::string> GetReportingServiceProviderNames(
-      ReportingConnector connector);
+  std::vector<std::string> GetReportingServiceProviderNames();
 
-  virtual std::optional<ReportingSettings> GetReportingSettings(
-      ReportingConnector connector);
+  virtual std::optional<ReportingSettings> GetReportingSettings();
+
+  virtual std::optional<std::string> GetBrowserDmToken() const = 0;
+
+  // Obtain a ClientMetadata instance corresponding to the current
+  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
+  // based service provider and false when using a local service provider.
+  virtual std::unique_ptr<ClientMetadata> BuildClientMetadata(
+      bool is_cloud) = 0;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  std::optional<std::string> GetProfileDmToken() const;
+#endif
 
  protected:
   struct DmToken {
@@ -72,6 +102,17 @@ class ConnectorsServiceBase {
   // return reporting connector related settings. Should never return nullptr.
   virtual ConnectorsManagerBase* GetConnectorsManagerBase() = 0;
   virtual const ConnectorsManagerBase* GetConnectorsManagerBase() const = 0;
+
+  // Returns a `policy::CloudPolicyManager` corresponding to a managed user, if
+  // one exists.
+  virtual policy::CloudPolicyManager* GetManagedUserCloudPolicyManager()
+      const = 0;
+
+  void PopulateBrowserMetadata(bool include_device_info,
+                               ClientMetadata::Browser* browser_proto);
+  void PopulateDeviceMetadata(const ReportingSettings& reporting_settings,
+                              const std::string& client_id,
+                              ClientMetadata::Device* device_proto);
 };
 
 }  // namespace enterprise_connectors

@@ -1,0 +1,2 @@
+tablist.accessibilityTabs=[:3]
+tab.accessibilityTabs=[:3]

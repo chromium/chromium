@@ -32,10 +32,18 @@ class BLINK_COMMON_EXPORT IndexedDBKey {
   explicit IndexedDBKey(std::u16string string);
   IndexedDBKey(double number,
                mojom::IDBKeyType type);  // must be date or number
-  IndexedDBKey(const IndexedDBKey& other);
-  IndexedDBKey(IndexedDBKey&& other);
   ~IndexedDBKey();
-  IndexedDBKey& operator=(const IndexedDBKey& other);
+
+  // Move allowed.
+  IndexedDBKey(IndexedDBKey&& other);
+  IndexedDBKey& operator=(IndexedDBKey&& other);
+
+  // "Subtle" copy not allowed, as it's most often a mistake.
+  IndexedDBKey(const IndexedDBKey& other) = delete;
+  IndexedDBKey& operator=(const IndexedDBKey& other) = delete;
+
+  // Explicit copy OK.
+  IndexedDBKey Clone() const;
 
   bool IsValid() const;
 

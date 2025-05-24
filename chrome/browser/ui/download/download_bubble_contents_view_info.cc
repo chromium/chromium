@@ -8,7 +8,7 @@
 
 DownloadBubbleContentsViewInfo::DownloadBubbleContentsViewInfo(
     std::vector<DownloadUIModel::DownloadUIModelPtr> models)
-    : row_list_view_info_(std::move(models)), security_view_info_() {}
+    : row_list_view_info_(std::move(models)) {}
 
 DownloadBubbleContentsViewInfo::~DownloadBubbleContentsViewInfo() = default;
 

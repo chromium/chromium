@@ -67,6 +67,12 @@ class BASE_EXPORT BatteryStateSampler {
   // Returns true if a sampler has been created using `CreateInstanceForTesting`
   static bool HasTestingInstance();
 
+  // Returns the expected time between each sample. The actual time can vary
+  // slighly, but a large discrepancy to this value indicates that the sample
+  // is not to be trusted. For example, the machine might have gone to sleep,
+  // skewing the data.
+  base::TimeDelta GetSampleInterval();
+
  private:
   // Returns a platform specific SamplingEventSource.
   static std::unique_ptr<SamplingEventSource> CreateSamplingEventSource();

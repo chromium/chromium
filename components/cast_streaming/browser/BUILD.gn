@@ -26,6 +26,7 @@ source_set("browser") {
     "cast_message_port_converter.h",
     "cast_streaming_session.cc",
     "cast_streaming_session.h",
+    "cast_streaming_switches.h",
     "receiver_config_conversions.cc",
     "receiver_config_conversions.h",
     "receiver_session_impl.cc",

@@ -46,7 +46,7 @@ void TraceEventImpl::AddTraceEvent(int8_t phase,
   base::trace_event::TraceArguments args(
       num_args, arg_names, arg_types,
       reinterpret_cast<const unsigned long long*>(arg_values));
-  base::trace_event::TraceLog::GetInstance()->AddTraceEvent(
+  trace_event_internal::AddTraceEvent(
       phase, static_cast<const unsigned char*>(category_enabled), name,
       trace_event_internal::kGlobalScope, id, &args, flags);
 }
@@ -68,12 +68,11 @@ void TraceEventImpl::AddTraceEventWithThreadIdAndTimestamp(
   base::trace_event::TraceArguments args(
       num_args, arg_names, arg_types,
       reinterpret_cast<const unsigned long long*>(arg_values));
-  base::trace_event::TraceLog::GetInstance()
-      ->AddTraceEventWithThreadIdAndTimestamp(
-          phase, static_cast<const unsigned char*>(category_enabled), name,
-          trace_event_internal::kGlobalScope, id, trace_event_internal::kNoId,
-          thread_id, base::TimeTicks::FromInternalValue(timestamp), &args,
-          flags);
+  trace_event_internal::AddTraceEventWithThreadIdAndTimestamp(
+      phase, static_cast<const unsigned char*>(category_enabled), name,
+      trace_event_internal::kGlobalScope, id, trace_event_internal::kNoId,
+      base::PlatformThreadId(thread_id),
+      base::TimeTicks::FromInternalValue(timestamp), &args, flags);
 }
 
 // static

@@ -50,8 +50,8 @@ message SyncCycleCompletedEventInfo {
   // TODO(crbug.com/40833583): Deprecated in M103.
   optional int32 num_reflected_updates_downloaded = 9 [deprecated = true];
 
-  // |caller_info| was mostly replaced by |get_updates_origin|; now it only
-  // contains the |notifications_enabled| flag.
+  // `caller_info` was mostly replaced by `get_updates_origin`; now it only
+  // contains the `notifications_enabled` flag.
   optional GetUpdatesCallerInfo caller_info = 10;
 
   // Deprecated in M67.

@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sessions/core/session_id.h"
 
 namespace sync_sessions {
@@ -18,7 +19,7 @@ class SyncedWindowDelegate;
 class SyncedWindowDelegatesGetter {
  public:
   using SyncedWindowDelegateMap =
-      std::map<SessionID, const SyncedWindowDelegate*>;
+      std::map<SessionID, raw_ptr<const SyncedWindowDelegate, CtnExperimental>>;
 
   SyncedWindowDelegatesGetter();
 

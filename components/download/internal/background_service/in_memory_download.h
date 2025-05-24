@@ -19,6 +19,7 @@
 #include "components/download/internal/background_service/blob_task_proxy.h"
 #include "components/download/public/background_service/blob_context_getter_factory.h"
 #include "components/download/public/background_service/download_params.h"
+#include "components/download/public/background_service/url_loader_factory_getter.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -58,6 +59,9 @@ class InMemoryDownload {
     // Retrieves the blob storage context getter.
     virtual void RetrieveBlobContextGetter(
         BlobContextGetterCallback callback) = 0;
+    // Retrieves browser context specific URLLoaderFactory
+    virtual void RetrievedURLLoaderFactory(
+        URLLoaderFactoryGetterCallback callback) = 0;
 
    protected:
     virtual ~Delegate() = default;
@@ -80,6 +84,9 @@ class InMemoryDownload {
   enum class State {
     // The object is just created.
     INITIAL,
+
+    // Waiting to retrieve URLLoaderFactory.
+    RETRIEVE_URL_LOADER_FACTIORY,
 
     // Waiting to retrieve BlobStorageContextGetter.
     RETRIEVE_BLOB_CONTEXT,
@@ -172,7 +179,6 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
       scoped_refptr<network::ResourceRequestBody> request_body,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Delegate* delegate,
-      network::mojom::URLLoaderFactory* url_loader_factory,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
 
   InMemoryDownloadImpl(const InMemoryDownloadImpl&) = delete;
@@ -185,6 +191,10 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   void Start() override;
   void Pause() override;
   void Resume() override;
+
+  // Called when browser context specific URLLoaderFactory is ready to use.
+  void OnRetrievedURLLoaderFactory(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   // Called when the BlobStorageContextGetter is ready to use.
   void OnRetrievedBlobContextGetter(BlobContextGetter blob_context_getter);
@@ -239,7 +249,7 @@ class InMemoryDownloadImpl : public network::SimpleURLLoaderStreamConsumer,
   std::unique_ptr<network::SimpleURLLoader> loader_;
 
   // Used to handle network response.
-  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   // Worker that does blob related task on IO thread.
   std::unique_ptr<BlobTaskProxy> blob_task_proxy_;

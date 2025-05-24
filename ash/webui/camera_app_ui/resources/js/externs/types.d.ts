@@ -5,9 +5,6 @@
 // TODO(pihsun): Remove this once we fully specify all the types.
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-// ESLint doesn't like "declare class" without jsdoc.
-/* eslint-disable require-jsdoc */
-
 // File System Access API: This is currently a Chrome only API, and the spec is
 // still in working draft stage.
 // https://wicg.github.io/file-system-access/
@@ -30,10 +27,6 @@ interface FileSystemFileHandle {
   // definitions. Ref:
   // https://chromestatus.com/feature/5640802622504960
   move(dir: FileSystemDirectoryHandle, name: string): Promise<void>;
-}
-
-interface FileSystemDirectoryHandle {
-  values(): IterableIterator<FileSystemHandle>;
 }
 
 interface StorageManager {
@@ -60,9 +53,7 @@ interface PressureRecord {
   readonly time: number;
 }
 
-interface PressureObserverCallback {
-  (records: PressureRecord[]): void;
-}
+type PressureObserverCallback = (records: PressureRecord[]) => void;
 
 declare class PressureObserver {
   constructor(
@@ -145,6 +136,8 @@ interface VideoFrameMetadata {
   rtpTimestamp?: number;
 }
 
+// This is a builtin name.
+// eslint-disable-next-line @typescript-eslint/naming-convention
 interface HTMLVideoElement {
   requestVideoFrameCallback(callback: VideoFrameRequestCallback): number;
   cancelVideoFrameCallback(handle: number): undefined;

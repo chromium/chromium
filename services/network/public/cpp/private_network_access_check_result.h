@@ -19,6 +19,8 @@ namespace network {
 //
 // Please keep in sync with "PrivateNetworkAccessCheckResult" in
 // src/tools/metrics/histograms/metadata/security/enums.xml.
+//
+// LINT.IfChange(PrivateNetworkAccessCheckResult)
 enum class PrivateNetworkAccessCheckResult {
   // Request is allowed because it is missing a client security state.
   kAllowedMissingClientSecurityState = 0,
@@ -67,9 +69,16 @@ enum class PrivateNetworkAccessCheckResult {
   // Private network request: allowed because same origin.
   kAllowedPotentiallyTrustworthySameOrigin = 12,
 
+  // Local network access request: blocked unless user grants permission.
+  kLNAPermissionRequired = 13,
+
+  // Local network access request: allowed with warning in devtools.
+  kLNAAllowedByPolicyWarn = 14,
+
   // Required for UMA histogram logging.
-  kMaxValue = kAllowedPotentiallyTrustworthySameOrigin,
+  kMaxValue = kLNAAllowedByPolicyWarn,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/security/enums.xml:PrivateNetworkAccessCheckResult)
 
 // Returns a human-readable string representing `result`, suitable for logging.
 std::string_view COMPONENT_EXPORT(NETWORK_CPP)

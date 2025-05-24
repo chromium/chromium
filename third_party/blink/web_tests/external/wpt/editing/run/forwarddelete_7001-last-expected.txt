@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p><font size=3>foo[]</font><p><font size=5>bar</font>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p><font size=\\"3\\">foo</font><font size=\\"5\\">bar</font></p>" but got "<p><font size=\\"3\\">foo</font><span style=\\"font-size:x-large\\">bar</span></p>"
 [FAIL] [["styleWithCSS","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p><font size=4>foo[]</font><p><font size=5>bar</font>" compare innerHTML
@@ -22,5 +22,8 @@ Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><span style=\\"display:list-item\\">abcdef</span></div>" but got "<span style=\\"display:list-item\\">abcdef</span>"
 [FAIL] [["forwarddelete",""]] "<div>{abc</div><div>def</div>}" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><br></div>" but got "<br>"
+[FAIL] [["forwarddelete",""]] "<table><tr><td>a<td><b>[b</b><td><b>c</b><td><b>d]</b><td>e</table>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>a</td><td><br></td><td><br></td><td><br></td><td>e</td></tr></tbody></table>" but got "<table><tbody><tr><td>a</td><td><br></td><td></td><td></td><td>e</td></tr></tbody></table>"
+[FAIL] [["forwarddelete",""]] "<table><tr><th>a<th><b>[b</b><th><b>c</b><th><b>d]</b><th>e</table>" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><th>a</th><th><br></th><th><br></th><th><br></th><th>e</th></tr></tbody></table>" but got "<table><tbody><tr><th>a</th><th><br></th><th></th><th></th><th>e</th></tr></tbody></table>"
 Harness: the test ran to completion.
-

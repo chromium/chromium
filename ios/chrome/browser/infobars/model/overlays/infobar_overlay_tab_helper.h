@@ -22,7 +22,6 @@ class InfobarOverlayTabHelper
  private:
   friend class web::WebStateUserData<InfobarOverlayTabHelper>;
   InfobarOverlayTabHelper(web::WebState* web_state);
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // Getter for the request inserter.
   InfobarOverlayRequestInserter* request_inserter() {

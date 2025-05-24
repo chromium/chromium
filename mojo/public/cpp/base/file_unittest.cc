@@ -13,7 +13,6 @@
 #include "mojo/public/cpp/base/read_only_file_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/file.mojom.h"
-#include "mojo/public/mojom/base/read_only_file.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace mojo_base {
@@ -138,7 +137,7 @@ TEST(FileTest, NonPhysicalFileDeath) {
 #if defined(OFFICIAL_BUILD)
   const char kPhysicalFileCheckFailedRegex[] = "";
 #else
-  const char kPhysicalFileCheckFailedRegex[] = "Check failed: IsPhysicalFile";
+  const char kPhysicalFileCheckFailedRegex[] = "DCHECK failed: IsPhysicalFile";
 #endif
 
   base::SyncSocket sync_a;

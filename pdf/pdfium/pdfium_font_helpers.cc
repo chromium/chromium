@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "pdf/pdfium/pdfium_font_helpers.h"
 
 #include <algorithm>
@@ -91,11 +96,6 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
       // MS Mincho in Shift_JIS encoding.
       {"\x82\x6C\x82\x72\x96\xBE\x92\xA9", "MS Mincho", false, false},
   };
-
-  // Similar logic exists in PDFium's CFX_FolderFontInfo::FindFont().
-  if (charset == FXFONT_ANSI_CHARSET && (pitch_family & FXFONT_FF_FIXEDPITCH)) {
-    face = "Courier New";
-  }
 
   // Map from the standard PDF fonts to TrueType font names.
   bool found_substitution = false;

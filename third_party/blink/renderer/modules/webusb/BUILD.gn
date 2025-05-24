@@ -27,6 +27,4 @@ blink_modules_sources("webusb") {
     "usb_isochronous_out_transfer_result.h",
     "usb_out_transfer_result.h",
   ]
-
-  deps = [ "//build:chromeos_buildflags" ]
 }

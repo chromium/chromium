@@ -36,13 +36,10 @@ struct OobeScreenId {
   // to make StaticOobeScreenId act more like OobeScreenId.
   OobeScreenId(const StaticOobeScreenId& id);
 
-  OobeScreenId(const std::string& id, const std::string& api_prefix);
-
   std::string name;
   std::string external_api_prefix;
 
   bool operator==(const OobeScreenId& rhs) const;
-  bool operator!=(const OobeScreenId& rhs) const;
   bool operator<(const OobeScreenId& rhs) const;
   friend std::ostream& operator<<(std::ostream& stream, const OobeScreenId& id);
 };

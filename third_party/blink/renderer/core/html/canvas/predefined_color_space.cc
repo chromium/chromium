@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_canvas_smpte_st_2086_metadata.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_predefined_color_space.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/skia/include/core/SkData.h"
 
 namespace blink {
 
@@ -97,6 +98,11 @@ void ParseCanvasHighDynamicRangeOptions(
     };
     smpte_st_2086.luminance_min = v8_metadata->minimumLuminance();
     smpte_st_2086.luminance_max = v8_metadata->maximumLuminance();
+  }
+  if (options->hasAgtm()) {
+    auto span = options->agtm().RawByteSpan();
+    auto data = SkData::MakeWithCopy(span.data(), span.size());
+    hdr_metadata.agtm.emplace(std::move(data));
   }
 }
 

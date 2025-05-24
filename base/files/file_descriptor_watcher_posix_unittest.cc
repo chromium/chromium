@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/files/file_descriptor_watcher_posix.h"
 
@@ -251,7 +247,7 @@ TEST_P(FileDescriptorWatcherTest, WatchReadableOneByte) {
   WriteByte();
   RunLoop run_loop;
   EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this, &run_loop]() {
+      .WillOnce(testing::Invoke([this, &run_loop] {
         ReadByte();
         run_loop.Quit();
       }));
@@ -271,8 +267,8 @@ TEST_P(FileDescriptorWatcherTest, WatchReadableTwoBytes) {
   WriteByte();
   RunLoop run_loop;
   EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this]() { ReadByte(); }))
-      .WillOnce(testing::Invoke([this, &run_loop]() {
+      .WillOnce(testing::Invoke([this] { ReadByte(); }))
+      .WillOnce(testing::Invoke([this, &run_loop] {
         ReadByte();
         run_loop.Quit();
       }));
@@ -292,11 +288,11 @@ TEST_P(FileDescriptorWatcherTest, WatchReadableByteWrittenFromCallback) {
   WriteByte();
   RunLoop run_loop;
   EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this]() {
+      .WillOnce(testing::Invoke([this] {
         ReadByte();
         WriteByte();
       }))
-      .WillOnce(testing::Invoke([this, &run_loop]() {
+      .WillOnce(testing::Invoke([this, &run_loop] {
         ReadByte();
         run_loop.Quit();
       }));
@@ -315,7 +311,7 @@ TEST_P(FileDescriptorWatcherTest, DeleteControllerFromCallback) {
   WriteByte();
   RunLoop run_loop;
   EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([&run_loop, &controller]() {
+      .WillOnce(testing::Invoke([&run_loop, &controller] {
         controller = nullptr;
         run_loop.Quit();
       }));
@@ -385,14 +381,14 @@ TEST_P(FileDescriptorWatcherTest,
 
   RunLoop run_loop;
   EXPECT_CALL(mock_, ReadableCallback())
-      .WillOnce(testing::Invoke([this, &controller]() {
+      .WillOnce(testing::Invoke([this, &controller] {
         ReadByte();
         CloseWriteFd2();
         controller.reset();
       }));
   EXPECT_CALL(mock_, ReadableCallback2())
-      .WillOnce(testing::Invoke([this]() { ReadByte2(); }))
-      .WillOnce(testing::Invoke([this, &controller2, &run_loop]() {
+      .WillOnce(testing::Invoke([this] { ReadByte2(); }))
+      .WillOnce(testing::Invoke([this, &controller2, &run_loop] {
         ReadByte2();
         controller2.reset();
         run_loop.Quit();

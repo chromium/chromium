@@ -60,10 +60,10 @@ class WindowsSpellChecker : public PlatformSpellChecker {
 
   void IgnoreWordForAllLanguages(const std::u16string& word);
 
-  void RecordChromeLocalesStats(const std::vector<std::string> chrome_locales);
+  void RecordChromeLocalesStats(std::vector<std::string> chrome_locales);
 
   void RecordSpellcheckLocalesStats(
-      const std::vector<std::string> spellcheck_locales);
+      std::vector<std::string> spellcheck_locales);
 
   void IsLanguageSupported(const std::string& lang_tag,
                            base::OnceCallback<void(bool)> callback);

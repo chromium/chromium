@@ -6,8 +6,7 @@
 
 #include "chromeos/ash/components/phonehub/notification.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 NotificationInteractionHandler::NotificationInteractionHandler() = default;
 NotificationInteractionHandler::~NotificationInteractionHandler() = default;
@@ -29,5 +28,4 @@ void NotificationInteractionHandler::NotifyNotificationClicked(
     handler.HandleNotificationClick(notification_id, app_metadata);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

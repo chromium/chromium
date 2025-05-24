@@ -45,12 +45,12 @@ class CORE_EXPORT HTMLFieldSetElement final : public HTMLFormControlElement {
  protected:
   void DisabledAttributeChanged() override;
   void AncestorDisabledStateWasChanged() override;
+  void DidMoveToNewDocument(Document& old_document) override;
 
  private:
   bool IsEnumeratable() const override { return true; }
   FocusableState SupportsFocus(UpdateBehavior update_behavior) const override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
-  LayoutBox* GetLayoutBoxForScrolling() const override;
   void DidRecalcStyle(const StyleRecalcChange change) override;
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;

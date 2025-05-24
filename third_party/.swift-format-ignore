@@ -1,0 +1,7 @@
+# Ignore all vendored third-party code. If any first-party code need to be
+# formatted, please put a config under your own directory to void this one.
+# NOTE: until https://github.com/swiftlang/swift-format/issues/870 is done,
+# this file will NOT have effect. Also swiftfmt has to be updated. At this
+# stage (2025-Q1) there is no easy way for swiftfmt to ignore files.
+
+*

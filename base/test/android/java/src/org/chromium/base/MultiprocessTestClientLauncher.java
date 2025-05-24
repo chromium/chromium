@@ -18,15 +18,14 @@ import org.jni_zero.JNINamespace;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.ChildProcessLauncher;
-import org.chromium.base.process_launcher.FileDescriptorInfo;
 import org.chromium.base.process_launcher.IChildProcessService;
+import org.chromium.base.process_launcher.IFileDescriptorInfo;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
@@ -136,7 +135,7 @@ public final class MultiprocessTestClientLauncher {
     private Integer mMainReturnCode;
 
     private MultiprocessTestClientLauncher(
-            String[] commandLine, FileDescriptorInfo[] filesToMap, IBinder binderBox) {
+            String[] commandLine, IFileDescriptorInfo[] filesToMap, IBinder binderBox) {
         assert isRunningOnLauncherThread();
 
         if (sConnectionAllocator == null) {
@@ -150,7 +149,9 @@ public final class MultiprocessTestClientLauncher {
                             "org.chromium.native_test.NUM_TEST_CLIENT_SERVICES",
                             /* bindToCaller= */ false,
                             /* bindAsExternalService= */ false,
-                            /* useStrongBinding= */ false);
+                            /* useStrongBinding= */ false,
+                            /* fallbackToNextSlot= */ false,
+                            /* isSandboxedForHistograms= */ false);
         }
 
         mLauncher =
@@ -217,7 +218,7 @@ public final class MultiprocessTestClientLauncher {
     @CalledByNative
     private static int launchClient(
             final String[] commandLine,
-            final FileDescriptorInfo[] filesToMap,
+            final IFileDescriptorInfo[] filesToMap,
             final IBinder binderBox) {
         assert Looper.myLooper() != Looper.getMainLooper();
 
@@ -246,7 +247,7 @@ public final class MultiprocessTestClientLauncher {
     }
 
     private static MultiprocessTestClientLauncher createAndStartLauncherOnLauncherThread(
-            String[] commandLine, FileDescriptorInfo[] filesToMap, final IBinder binderBox) {
+            String[] commandLine, IFileDescriptorInfo[] filesToMap, final IBinder binderBox) {
         assert isRunningOnLauncherThread();
 
         MultiprocessTestClientLauncher launcher =
@@ -350,10 +351,10 @@ public final class MultiprocessTestClientLauncher {
 
     /** Does not take ownership of of fds. */
     @CalledByNative
-    private static FileDescriptorInfo[] makeFdInfoArray(int[] keys, int[] fds) {
-        FileDescriptorInfo[] fdInfos = new FileDescriptorInfo[keys.length];
+    private static IFileDescriptorInfo[] makeFdInfoArray(int[] keys, int[] fds) {
+        IFileDescriptorInfo[] fdInfos = new IFileDescriptorInfo[keys.length];
         for (int i = 0; i < keys.length; i++) {
-            FileDescriptorInfo fdInfo = makeFdInfo(keys[i], fds[i]);
+            IFileDescriptorInfo fdInfo = makeFdInfo(keys[i], fds[i]);
             if (fdInfo == null) {
                 Log.e(TAG, "Failed to make file descriptor (" + keys[i] + ", " + fds[i] + ").");
                 return null;
@@ -363,7 +364,7 @@ public final class MultiprocessTestClientLauncher {
         return fdInfos;
     }
 
-    private static FileDescriptorInfo makeFdInfo(int id, int fd) {
+    private static IFileDescriptorInfo makeFdInfo(int id, int fd) {
         ParcelFileDescriptor parcelableFd = null;
         try {
             parcelableFd = ParcelFileDescriptor.fromFd(fd);
@@ -371,22 +372,14 @@ public final class MultiprocessTestClientLauncher {
             Log.e(TAG, "Invalid FD provided for process connection, aborting connection.", e);
             return null;
         }
-        return new FileDescriptorInfo(id, parcelableFd, /* offset= */ 0, /* size= */ 0);
+        IFileDescriptorInfo fdInfo = new IFileDescriptorInfo();
+        fdInfo.id = id;
+        fdInfo.fd = parcelableFd;
+        return fdInfo;
     }
 
     private static boolean isRunningOnLauncherThread() {
         return sLauncherHandler.getLooper() == Looper.myLooper();
-    }
-
-    private static void runOnLauncherThreadBlocking(final Runnable runnable) {
-        assert !isRunningOnLauncherThread();
-        final Semaphore done = new Semaphore(0);
-        sLauncherHandler.post(
-                () -> {
-                    runnable.run();
-                    done.release();
-                });
-        done.acquireUninterruptibly();
     }
 
     private static <RT> RT runOnLauncherAndGetResult(Callable<RT> callable) {

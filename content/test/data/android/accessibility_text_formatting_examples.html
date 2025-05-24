@@ -1,0 +1,123 @@
+<html lang="en">
+<head>
+    <style>
+        .font-serif {
+            font-family: serif;
+        }
+
+        .font-sans-serif {
+            font-family: sans-serif;
+        }
+
+        .font-monospace {
+            font-family: monospace;
+        }
+
+        .font-size-small {
+            font-size: 0.8em;
+        }
+
+        .font-size-large {
+            font-size: 1.5em;
+        }
+
+        .font-size-pixels {
+            font-size: 20px;
+        }
+
+        .color-red {
+            color: red;
+        }
+
+        .color-hex {
+            color: #008000;
+        }
+
+        .color-blue {
+            color: rgb(0, 0, 255);
+        }
+
+        .color-rgba {
+            color: rgba(0, 0, 255, 0.7);
+        }
+
+        .bg-color-yellow {
+            background-color: yellow;
+        }
+
+        .bg-color-hex {
+            background-color: #FFFF00;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+
+        .underline {
+            text-decoration: underline;
+        }
+
+        .strikethrough {
+            text-decoration: line-through;
+        }
+
+        .strikethrough_underlined {
+            text-decoration: line-through underline;
+        }
+
+        .superscript {
+            vertical-align: super;
+            font-size: smaller;
+        }
+
+        .subscript {
+            vertical-align: sub;
+            font-size: smaller;
+        }
+    </style>
+</head>
+<body>
+
+    <p class="font-serif">Example Text 1 - Serif Font</p>
+    <p class="font-sans-serif">Example Text 2 - Sans-Serif Font</p>
+    <p class="font-monospace">Example Text 3 - Monospace Font</p>
+
+    <p class="font-size-small">Example Text 4 - Small Font Size</p>
+    <p class="font-size-large">Example Text 5 - Large Font Size</p>
+    <p class="font-size-pixels">Example Text 6 - Font Size in Pixels</p>
+
+    <p class="color-red">Example Text 7 - Red Text Color</p>
+    <p class="color-hex">Example Text 8 - Hex Code Text Color</p>
+    <p class="color-rgba">Example Text 9 - RGBA Text Color</p>
+
+    <p class="bg-color-yellow">Example Text 10 - Yellow Background Color</p>
+    <p class="bg-color-hex">Example Text 11 - Yellow Background Color (Hex)</p>
+
+    <p class="bold">Example Text 12 - Bold Text</p>
+    <p class="italic">Example Text 13 - Italic Text</p>
+    <p class="underline">Example Text 14 - Underlined Text</p>
+    <p class="strikethrough">Example Text 15 - Strikethrough Text</p>
+
+    <p>Example Text 16 - Superscript: Normal Text<sup class="superscript">Superscripted Text</sup></p>
+    <p>Example Text 17 - Subscript: Normal Text<sub class="subscript">Subscripted Text</sub></p>
+
+    <p class="bold italic">Example Text 18 - Bold and Italic</p>
+    <p class="strikethrough_underlined">Example Text 19 - Underline and Strikethrough</p>
+    <p class="color-red bold">Example Text 20 - Red and Bold</p>
+    <p class="font-sans-serif font-size-large color-blue">Example Text 21 - Sans-Serif, Large, Blue</p>
+    <p class="bg-color-yellow bold italic">Example Text 22 - Yellow Background, Bold, Italic</p>
+    <p class="font-monospace color-rgba bg-color-hex bold">Example Text 23 - Monospace, RGBA, BG Hex, Bold</p>
+
+    <div class="contenteditable-test" contenteditable="true">
+        <p class="font-monospace">Example Text 24 - Monospace Font inside a contenteditable</p>
+        <p class="bold">Example Text 25 - Bold Text  inside a contenteditable</p>
+        <p class="color-red"><sup class="superscript">Example Text 26 - Small red superscript inside content editable</sup></p>
+        <p class="font-serif strikethrough_underlined bold italic font-size-large">Example Text 27 - Large bold italic strikethrough underlined serif in contenteditable</p>
+    </div>
+
+</body>
+</html>

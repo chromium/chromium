@@ -6,12 +6,12 @@ package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.base.WindowAndroid;
@@ -23,24 +23,22 @@ import java.util.List;
 
 /** JNI Bridge for {@link AuthenticatorSelectionDialog} */
 @JNINamespace("autofill")
+@NullMarked
 public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectionDialog.Listener {
     private final long mNativeCardUnmaskAuthenticationSelectionDialogView;
-    private final Context mContext;
-    private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
+    private final AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
 
     public AuthenticatorSelectionDialogBridge(
             long nativeAuthenticatorSelectionDialogView,
             Context context,
             ModalDialogManager modalDialogManager) {
         mNativeCardUnmaskAuthenticationSelectionDialogView = nativeAuthenticatorSelectionDialogView;
-        mContext = context;
         mAuthenticatorSelectionDialog =
                 new AuthenticatorSelectionDialog(context, this, modalDialogManager);
     }
 
-    @Nullable
     @CalledByNative
-    public static AuthenticatorSelectionDialogBridge create(
+    public static @Nullable AuthenticatorSelectionDialogBridge create(
             long nativeAuthenticatorSelectionDialogView, WindowAndroid windowAndroid) {
         Context context = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();

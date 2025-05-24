@@ -7,6 +7,7 @@
 
 #include <list>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -57,6 +58,9 @@ namespace exo {
 // Occluded surfaces can be detected and not emitted as a quad in the
 // corresponding compositor frame.
 BASE_DECLARE_FEATURE(kExoPerSurfaceOcclusion);
+// TODO(crbug.com/369003507): Remove this feature flag once we found the root
+// cause of crash on specific hatch platform.
+BASE_DECLARE_FEATURE(kDisableNonYUVOverlaysFromExo);
 
 class Buffer;
 class SecurityDelegate;
@@ -460,7 +464,7 @@ class Surface final : public ui::PropertyHandler {
   void ThrottleFrameRate(bool on);
 
   // Informs tooltip is shown.
-  void OnTooltipShown(const std::u16string& text, const gfx::Rect& bounds);
+  void OnTooltipShown(std::u16string_view text, const gfx::Rect& bounds);
 
   // Informs tooltip is hidden.
   void OnTooltipHidden();
@@ -510,7 +514,6 @@ class Surface final : public ui::PropertyHandler {
     ~State();
 
     bool operator==(const State& other) const;
-    bool operator!=(const State& other) const { return !(*this == other); }
 
     cc::Region opaque_region;
     std::optional<cc::Region> input_region;

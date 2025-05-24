@@ -7,6 +7,7 @@
 
 #include <list>
 
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "ios/web/public/web_state_observer.h"
 
@@ -54,7 +55,7 @@ class WebViewWebStateMap : public base::SupportsUserData::Data,
     ~WebViewWebStateAssociation();
     WebViewWebStateAssociation(const WebViewWebStateAssociation&) = default;
     __weak WKWebView* web_view;
-    WebState* web_state;
+    raw_ptr<WebState> web_state;
   };
   std::list<WebViewWebStateAssociation> mappings_;
 };

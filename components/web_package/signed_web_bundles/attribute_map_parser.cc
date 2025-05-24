@@ -4,6 +4,8 @@
 
 #include "components/web_package/signed_web_bundles/attribute_map_parser.h"
 
+#include <variant>
+
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
 #include "base/functional/overloaded.h"
@@ -137,7 +139,7 @@ void AttributeMapParser::ReadAttributeValueCborHeader(
   }
 
   RETURN_IF_ERROR(
-      absl::visit(
+      std::visit(
           base::Overloaded{
               [&](bool value) -> base::expected<void, std::string> {
                 attributes_map_.emplace(std::move(attribute_name), value);

@@ -12,7 +12,11 @@ include_rules = [
   "+net/base",
   "+net/cookies",
   "+ppapi/buildflags",
+  "+services/network/public/cpp/permissions_policy",
   "+services/preferences/public",
   "+services/tracing/public",
   "+third_party/perfetto/protos/perfetto/trace/track_event",
+
+  # TODO(crbug.com/382291442): Remove once launched.
+  "+services/network/public/cpp/features.h",
 ]

@@ -1,0 +1,41 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=./pdf_shared.css.js
+ * #import=./shared_vars.css.js
+ * #import=./side_panel_shared.css.js
+ * #include=md-select-lit side-panel-shared pdf-shared
+ * #css_wrapper_metadata_end */
+
+/* Different styling for margin vs the ink side panel. */
+h2 {
+  margin-inline-start: 0;
+  margin-bottom: 8px;
+}
+
+.md-select {
+  --md-select-width: 240px;
+  margin-top: 8px;
+}
+
+text-styles-selector {
+  padding-top: 8px;
+}
+
+text-alignment-selector {
+  padding-top: 16px;
+}
+
+ink-color-selector {
+  padding-top: 4px;
+}
+
+.side-panel-content:not(:first-child) {
+  /* 8px + 24px bottom padding from first item to make 32px total spacing */
+  padding-top: 8px;
+}

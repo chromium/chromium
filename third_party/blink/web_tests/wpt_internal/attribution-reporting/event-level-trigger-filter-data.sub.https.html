@@ -37,7 +37,6 @@ attribution_reporting_promise_test(async t => {
   registerAttributionSrc({
     source,
     method: inputJSON.method === undefined ? 'open' : inputJSON.method,
-    cookie: attributionDebugCookie,
   });
   await waitForSourceToBeRegistered(source.source_event_id);
 
@@ -51,7 +50,6 @@ attribution_reporting_promise_test(async t => {
       event_trigger_data: inputJSON.event_trigger_data,
       debug_reporting: inputJSON.debug_reporting,
     },
-    cookie: inputJSON.cookie,
   });
 
   if (inputJSON.expected_trigger_data) {

@@ -6,7 +6,7 @@ import 'chrome://manage-mirrorsync/components/manage_mirrorsync.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {BrowserProxy} from 'chrome://manage-mirrorsync/browser_proxy.js';
-import {FolderSelector} from 'chrome://manage-mirrorsync/components/folder_selector.js';
+import type {FolderSelector} from 'chrome://manage-mirrorsync/components/folder_selector.js';
 import {PageHandlerRemote} from 'chrome://manage-mirrorsync/manage_mirrorsync.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertArrayEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -62,7 +62,7 @@ function sanitizePath(path: string): string {
 
 suite('<manage-mirrorsync>', () => {
   /* Holds the <manage-mirrorsync> app */
-  let appHolder: HTMLDivElement;
+  let appHolder: HTMLElement;
   /* The <manage-mirrorsync> app, this gets cleared before every test */
   let manageMirrorSyncApp: HTMLElement;
   /* The BrowserProxy element to make assertions on when methods are called */
@@ -154,7 +154,7 @@ suite('<manage-mirrorsync>', () => {
       if (!dataFullPath || !isVisible(element)) {
         continue;
       }
-      paths.push(dataFullPath!);
+      paths.push(dataFullPath);
     }
     return paths;
   }

@@ -171,5 +171,37 @@ TEST_F(SchemeRegistryTest, CodeCacheWithHashing) {
       SchemeRegistry::SchemeSupportsCodeCacheWithHashing(kChromeUIScheme));
 }
 
+TEST_F(SchemeRegistryTest, BundledWebUIBytecode) {
+  const char* kChromeUIScheme = "chrome";
+  EXPECT_FALSE(SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kTestScheme));
+  EXPECT_FALSE(
+      SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kChromeUIScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(kTestScheme);
+
+  EXPECT_TRUE(SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kTestScheme));
+  EXPECT_FALSE(
+      SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kChromeUIScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode(kChromeUIScheme);
+
+  EXPECT_TRUE(SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kTestScheme));
+  EXPECT_TRUE(
+      SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kChromeUIScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting(kTestScheme);
+
+  EXPECT_FALSE(SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kTestScheme));
+  EXPECT_TRUE(
+      SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kChromeUIScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTesting(
+      kChromeUIScheme);
+
+  EXPECT_FALSE(SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kTestScheme));
+  EXPECT_FALSE(
+      SchemeRegistry::SchemeSupportsWebUIBundledBytecode(kChromeUIScheme));
+}
+
 }  // namespace
 }  // namespace blink

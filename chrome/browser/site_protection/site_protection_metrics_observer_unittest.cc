@@ -7,6 +7,7 @@
 #include "base/metrics/statistics_recorder.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -24,6 +25,10 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_testing_local_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace site_protection {
 namespace {
@@ -82,23 +87,14 @@ class SiteProtectionMetricsObserverTest
     safe_browsing_factory_->SetTestDatabaseManager(
         safe_browsing_database_manager_.get());
 
-    auto* global_browser_process = TestingBrowserProcess::GetGlobal();
-    global_browser_process->SetSafeBrowsingService(
+    browser_process_->SetSafeBrowsingService(
         safe_browsing_factory_->CreateSafeBrowsingService());
-    global_browser_process->safe_browsing_service()->Initialize();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Local state is needed to construct ProxyConfigService, which is a
-    // dependency of PingManager on ChromeOS.
-    global_browser_process->SetLocalState(profile()->GetPrefs());
-#endif
+    browser_process_->safe_browsing_service()->Initialize();
   }
 
   void TearDown() override {
-    auto* global_browser_process = TestingBrowserProcess::GetGlobal();
-    global_browser_process->SetLocalState(nullptr);
-    global_browser_process->safe_browsing_service()->ShutDown();
-    global_browser_process->SetSafeBrowsingService(nullptr);
+    browser_process_->safe_browsing_service()->ShutDown();
+    browser_process_->SetSafeBrowsingService(nullptr);
 
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -110,11 +106,6 @@ class SiteProtectionMetricsObserverTest
   }
 
   void SetIncognito() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    auto* global_browser_process = TestingBrowserProcess::GetGlobal();
-    global_browser_process->SetLocalState(nullptr);
-#endif
-
     Profile* const otr_profile =
         profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     EXPECT_TRUE(otr_profile->IsIncognitoProfile());
@@ -124,10 +115,6 @@ class SiteProtectionMetricsObserverTest
         otr_profile, std::move(site_instance)));
 
     SetUpForNewWebContents();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    global_browser_process->SetLocalState(profile()->GetPrefs());
-#endif
   }
 
   void SetUpForNewWebContents() {
@@ -153,8 +140,8 @@ class SiteProtectionMetricsObserverTest
     base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
         histogram_name,
         base::BindLambdaForTesting(
-            [&](const char* histogram_name, uint64_t name_hash,
-                base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+            [&](std::string_view histogram_name, uint64_t name_hash,
+                base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
     NavigateAndCommit(url);
     run_loop.Run();
   }
@@ -177,11 +164,28 @@ class SiteProtectionMetricsObserverTest
     }
   }
 
+  void NavigateAndCheckCandidate1HeuristicHistogram(const GURL& url,
+                                                    bool expected_value) {
+    const char kCandidate1HeuristicHistogramName[] =
+        "SafeBrowsing.SiteProtection.FamiliarityHeuristic."
+        "Engagement15OrVisitedBeforeTodayOrHighConfidence";
+    base::HistogramTester histogram_tester;
+    NavigateAndWaitForHistogram(url, kCandidate1HeuristicHistogramName);
+    histogram_tester.ExpectUniqueSample(kCandidate1HeuristicHistogramName,
+                                        expected_value, 1);
+  }
+
   int64_t GetUkmFamiliarityHeuristicValue(ukm::TestUkmRecorder& ukm_recorder,
                                           const std::string& metric_name) {
     std::vector<int64_t> values = ukm_recorder.GetMetricsEntryValues(
         "SiteFamiliarityHeuristicResult", metric_name);
     return values.size() == 1u ? values[0] : -1;
+  }
+
+  int64_t GetUkmHistoryFamiliarityHeuristicValue(
+      ukm::TestUkmRecorder& ukm_recorder) {
+    return GetUkmFamiliarityHeuristicValue(ukm_recorder,
+                                           "SiteFamiliarityHistoryHeuristic");
   }
 
   void NavigateAndCheckRecordedHeuristicUkm(const GURL& url,
@@ -200,6 +204,14 @@ class SiteProtectionMetricsObserverTest
 
  protected:
   raw_ptr<TestingBrowserProcess> browser_process_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Local state is needed to construct ProxyConfigService, which is a
+  // dependency of PingManager on ChromeOS.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   scoped_refptr<TestSafeBrowsingDatabaseManager>
       safe_browsing_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
@@ -222,8 +234,7 @@ TEST_F(SiteProtectionMetricsObserverTest, NoHistoryOlderThanADayAgo) {
       {SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo});
   EXPECT_EQ(static_cast<int>(SiteFamiliarityHistoryHeuristicName::
                                  kNoVisitsToAnySiteMoreThanADayAgo),
-            GetUkmFamiliarityHeuristicValue(ukm_recorder,
-                                            "SiteFamiliarityHistoryHeuristic"));
+            GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
 }
 
 // Test the histograms and UKM which are logged by SiteProtectionMetricsObserver
@@ -250,8 +261,7 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
          SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
     EXPECT_EQ(static_cast<int>(
                   SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo),
-              GetUkmFamiliarityHeuristicValue(
-                  ukm_recorder, "SiteFamiliarityHistoryHeuristic"));
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
   }
 
   {
@@ -262,8 +272,7 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
     EXPECT_EQ(
         static_cast<int>(
             SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanFourHoursAgo),
-        GetUkmFamiliarityHeuristicValue(ukm_recorder,
-                                        "SiteFamiliarityHistoryHeuristic"));
+        GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
   }
 
   {
@@ -272,8 +281,7 @@ TEST_F(SiteProtectionMetricsObserverTest, VisitInHistoryMoreThanADayAgo) {
         kUrlVisited1HourAgo, {SiteFamiliarityHeuristicName::kNoHeuristicMatch});
     EXPECT_EQ(static_cast<int>(
                   SiteFamiliarityHistoryHeuristicName::kNoHeuristicMatch),
-              GetUkmFamiliarityHeuristicValue(
-                  ukm_recorder, "SiteFamiliarityHistoryHeuristic"));
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
   }
 }
 
@@ -323,8 +331,8 @@ TEST_F(SiteProtectionMetricsObserverTest, IgnoreCurrentNavigationEngagement) {
   base::StatisticsRecorder::ScopedHistogramSampleObserver observer(
       "SafeBrowsing.SiteProtection.FamiliarityHeuristic",
       base::BindLambdaForTesting(
-          [&](const char* histogram_name, uint64_t name_hash,
-              base::HistogramBase::Sample sample) { run_loop.Quit(); }));
+          [&](std::string_view histogram_name, uint64_t name_hash,
+              base::HistogramBase::Sample32 sample) { run_loop.Quit(); }));
 
   NavigateAndCommit(kUrl, ui::PAGE_TRANSITION_TYPED);
   run_loop.Run();
@@ -381,6 +389,87 @@ TEST_F(SiteProtectionMetricsObserverTest, GlobalAllowlistMatch) {
     EXPECT_EQ(false, GetUkmFamiliarityHeuristicValue(
                          ukm_recorder, "OnHighConfidenceAllowlist"));
   }
+}
+
+// Test that SiteProtectionMetricsObserver logs the correct histograms and UKM
+// if the SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo heuristic
+// applies for the current visit to the site but the heuristic did not apply
+// to the previous visit to the site.
+TEST_F(SiteProtectionMetricsObserverTest, SiteFamiliarWasPreviouslyUnfamiliar) {
+  GURL kPageUrl("https://bar.com");
+  GURL kOtherUrl("https://baz.com");
+
+  base::Time now = base::Time::Now();
+  base::Time kPageVisitTime1 = now - base::Hours(25);
+  base::Time kPageVisitTime2 = kPageVisitTime1 - base::Hours(25);
+  base::Time kOtherVisitTime = kPageVisitTime2 - base::Hours(25);
+
+  GetRegularProfileHistoryService()->AddPage(kPageUrl, kPageVisitTime1,
+                                             history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(kOtherUrl, kOtherVisitTime,
+                                             history::SOURCE_BROWSED);
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kPageUrl,
+        {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+         SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo,
+         SiteFamiliarityHeuristicName::kFamiliarLikelyPreviouslyUnfamiliar});
+    EXPECT_EQ(static_cast<int>(SiteFamiliarityHistoryHeuristicName::
+                                   kVisitedMoreThanADayAgoPreviouslyUnfamiliar),
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
+  }
+
+  GetRegularProfileHistoryService()->AddPage(kPageUrl, kPageVisitTime2,
+                                             history::SOURCE_BROWSED);
+
+  {
+    ukm::TestAutoSetUkmRecorder ukm_recorder;
+    NavigateAndCheckRecordedHeuristicHistograms(
+        kPageUrl, {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+                   SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
+    EXPECT_EQ(static_cast<int>(
+                  SiteFamiliarityHistoryHeuristicName::kVisitedMoreThanADayAgo),
+              GetUkmHistoryFamiliarityHeuristicValue(ukm_recorder));
+  }
+}
+
+// Test that SiteProtectionMetricsObserver logs the correct histograms
+// if:
+// - SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo heuristic
+//   applies for the current visit.
+// AND
+// -  SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo heuristic
+//   does not apply to the previous visit.
+// AND
+// - SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo
+//   applies to the previous visit.
+TEST_F(SiteProtectionMetricsObserverTest,
+       SiteFamiliarWasPreviouslyUnfamiliarDueToNoOldHistory) {
+  GURL kPageUrl("https://bar.com");
+  GURL kOtherUrl("https://baz.com");
+
+  base::Time now = base::Time::Now();
+  base::Time kPageVisitTime = now - base::Hours(25);
+  base::Time kOtherVisitTime1 = kPageVisitTime - base::Hours(1);
+  base::Time kOtherVisitTime2 = kOtherVisitTime1 - base::Hours(100);
+
+  GetRegularProfileHistoryService()->AddPage(kPageUrl, kPageVisitTime,
+                                             history::SOURCE_BROWSED);
+  GetRegularProfileHistoryService()->AddPage(kOtherUrl, kOtherVisitTime1,
+                                             history::SOURCE_BROWSED);
+
+  NavigateAndCheckRecordedHeuristicHistograms(
+      kPageUrl, {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+                 SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo});
+
+  GetRegularProfileHistoryService()->AddPage(kOtherUrl, kOtherVisitTime2,
+                                             history::SOURCE_BROWSED);
+  NavigateAndCheckRecordedHeuristicHistograms(
+      kPageUrl,
+      {SiteFamiliarityHeuristicName::kVisitedMoreThanFourHoursAgo,
+       SiteFamiliarityHeuristicName::kVisitedMoreThanADayAgo,
+       SiteFamiliarityHeuristicName::kFamiliarLikelyPreviouslyUnfamiliar});
 }
 
 // Test that SiteProtectionMetricsObserver logs whether any heuristics matched
@@ -440,6 +529,47 @@ TEST_F(SiteProtectionMetricsObserverTest, Incognito) {
       kOffTheRecordHistogramName,
       SiteFamiliarityHeuristicName::kNoVisitsToAnySiteMoreThanADayAgo, 1);
   histogram_tester.ExpectTotalCount(kRegularProfileHistogramName, 0u);
+}
+
+// Test that
+// SafeBrowsing.SiteProtection.FamiliarityHeuristic
+//     .Engagement15OrVisitedBeforeTodayOrHighConfidence
+// is properly recorded.
+TEST_F(SiteProtectionMetricsObserverTest, MatchesHeuristicCandidate) {
+  history::HistoryService* history_service = GetRegularProfileHistoryService();
+  site_engagement::SiteEngagementService* site_engagement_service =
+      site_engagement::SiteEngagementServiceFactory::GetForProfile(profile());
+  const base::Time kTimeNow = base::Time::Now();
+  const base::Time kTimeHourAgo = kTimeNow - base::Hours(1);
+  const base::Time kTimeYesterday = kTimeNow - base::Days(1);
+
+  GURL kUrlVisitedTodayEngagement5("https://bar.com");
+  history_service->AddPage(kUrlVisitedTodayEngagement5, kTimeHourAgo,
+                           history::SOURCE_BROWSED);
+  site_engagement_service->ResetBaseScoreForURL(kUrlVisitedTodayEngagement5, 5);
+  NavigateAndCheckCandidate1HeuristicHistogram(kUrlVisitedTodayEngagement5,
+                                               /*expected_value=*/false);
+
+  GURL kUrlVisitedTodayEngagement15("https://baz.com");
+  history_service->AddPage(kUrlVisitedTodayEngagement15, kTimeHourAgo,
+                           history::SOURCE_BROWSED);
+  site_engagement_service->ResetBaseScoreForURL(kUrlVisitedTodayEngagement15,
+                                                15);
+  NavigateAndCheckCandidate1HeuristicHistogram(kUrlVisitedTodayEngagement15,
+                                               /*expected_value=*/true);
+
+  GURL kUrlVisitedYesterday("https://foo.com");
+  history_service->AddPage(kUrlVisitedYesterday, kTimeYesterday,
+                           history::SOURCE_BROWSED);
+  NavigateAndCheckCandidate1HeuristicHistogram(kUrlVisitedYesterday,
+                                               /*expected_value=*/true);
+
+  GURL kUrlVisitedNeverHighConfidenceAllowlist("https://hi.com");
+  safe_browsing_database_manager_->SetUrlOnHighConfidenceAllowlist(
+      kUrlVisitedNeverHighConfidenceAllowlist);
+  NavigateAndCheckCandidate1HeuristicHistogram(
+      kUrlVisitedNeverHighConfidenceAllowlist,
+      /*expected_value=*/true);
 }
 
 }  // namespace site_protection

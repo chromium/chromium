@@ -8,31 +8,109 @@
     display: flex;
     justify-content: space-between;
   }
-</style>
 
-<cr-expand-button expanded="{{expanded_}}" class="cr-row">
-  [[dict.name]]
-</cr-expand-button>
+  .button-container {
+    display: flex;
+    gap: 8px;
+  }
+
+  .bottom-border {
+    border-bottom: 1px solid var(--cros-separator-color);
+    height: 64px;
+  }
+
+  cr-expand-button {
+    flex-grow: 1;
+    padding-inline-end: 8px;
+  }
+
+  .separator {
+    border-inline-start: var(--cr-separator-line);
+    flex-shrink: 0;
+    height: 32px;
+    margin: 0 16px;
+  }
+
+  .indented {
+    margin: 0 var(--cr-section-padding);
+  }
+
+  iron-collapse {
+    padding-block: 22px;
+  }
+
+  #status-message {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+
+</style>
+<!-- hidden element used by screen reader to make announcements -->
+<div aria-live="polite" aria-atomic="true" id="status-message">
+  [[statusMessage_]]
+</div>
+<div class="cr-row bottom-border">
+  <cr-expand-button expanded="{{expanded_}}" >
+    <div id="dict-name">[[dict.name]]</div>
+  </cr-expand-button>
+  <div class="separator"></div>
+  <cr-icon-button class="icon-clear"
+    on-click="showDeleteDialog_"
+    aria-label="$i18n{japaneseDeleteDictionaryLabel}"
+    aria-describedby="dict-name"
+  >
+  </cr-icon-button>
+</div>
 <iron-collapse class="" opened="[[expanded_]]">
   <div class="cr-row continuation dict-info-row">
     <cr-input value="[[dict.name]]"
-    label="Dictionary name"
+    label="$i18n{japaneseDictionaryName}"
     type="text"
     on-change="saveName_"></cr-input>
-    <cr-icon-button class="delete-icon"
-      iron-icon="cr:delete"
-      on-click="deleteDictionary_"
-      title="DeleteDictionary"></cr-icon-button>
+    <div class="button-container">
+      <cr-button on-click="importDictionary_" aria-describedby="dict-name">
+        <span>
+          $i18n{japaneseDictionaryImport}
+        </span>
+      </cr-button>
+      <cr-button on-click="exportDictionary_" aria-describedby="dict-name">
+        <span>
+          $i18n{japaneseDictionaryExport}
+        </span>
+      </cr-button>
+    </div>
+    <!-- hidden element used by importDictionary_ to trigger file upload. -->
+    <input id="selectFileDialog"
+      type="file" on-change="handleFileSelectChange_" hidden>
   </div>
   <template is="dom-repeat" items="[[dict.entries]]" as="entry">
     <os-japanese-dictionary-entry-row
       dict-id="[[dict.id]]" index="[[index]]"
-      entry="[[entry]]" locally-added="[[locallyAdded_(index)]]">
+      entry="[[entry]]" locally-added="[[locallyAdded_(index)]]"
+      is-last-entry="[[isLastEntry_(index)]]">
     </os-japanese-dictionary-entry-row>
   </template>
-  <template is="dom-if" if="[[shouldShowAddButton_(dict.entries.length)]]">
-    <cr-icon-button iron-icon="cr:add" on-click="addEntry_"
-      title="AddEntry">
-    </cr-icon-button>
-  </template>
+  <cr-button id="newEntryButton" class="indented"
+    hidden$="[[!shouldShowAddButton_(dict.entries.length)]]"
+    on-click="addEntry_" aria-describedby="dict-name">
+      <iron-icon slot="prefix-icon" icon="cr:add" ></iron-icon>
+      $i18n{japaneseDictionaryNewEntry}
+  </cr-button>
 </iron-collapse>
+
+<template is="dom-if" if="[[showingDeleteDialog_]]" restamp>
+  <cr-dialog close-text="delete" show-on-attach>
+    <div slot="title">$i18n{japaneseDeleteDictionary}</div>
+    <div slot="body">[[i18nDialogString_(dict.name)]]</div>
+    <div slot="button-container">
+        <cr-button class="cancel-button" on-click="hideDeleteDialog_">$i18n{cancel}</cr-button>
+        <cr-button class="action-button" on-click="deleteDictionary_">$i18n{japaneseDeleteDictionaryButton}</cr-button>
+    </div>
+  </cr-dialog>
+</template>

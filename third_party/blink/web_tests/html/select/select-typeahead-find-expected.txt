@@ -1,0 +1,10 @@
+Verify type ahead selection fires onchange event.
+Set focus to select element
+Type "c"
+You see "cherry" in select element and "PASS" below select element.
+apple
+banana
+cherry
+
+
+PASS

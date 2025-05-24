@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "VC Background is ash-chrome only")
+assert(is_chromeos, "VC Background is ChromeOS only")
 
 static_library("vc_background_ui") {
   sources = [
@@ -21,7 +19,6 @@ static_library("vc_background_ui") {
     "//ash/webui/common/mojom:sea_pen",
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
-    "//chromeos/crosapi/cpp:cpp",
     "//chromeos/strings",
     "//components/manta",
     "//content/public/browser",

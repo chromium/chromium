@@ -22,7 +22,7 @@ class MessageLite;
 
 namespace remoting {
 
-class ProtobufHttpStatus;
+class HttpStatus;
 
 // Helper class to send responses to Protobuf HTTP requests.
 class ProtobufHttpTestResponder final {
@@ -49,19 +49,20 @@ class ProtobufHttpTestResponder final {
   // be resolved with the same response/error.
   void AddResponse(const std::string& url,
                    const google::protobuf::MessageLite& response_message);
+  void AddResponse(const std::string& url, const std::string& response);
   void AddResponseToMostRecentRequestUrl(
       const google::protobuf::MessageLite& response_message);
-  void AddError(const std::string& url, const ProtobufHttpStatus& error_status);
-  void AddErrorToMostRecentRequestUrl(const ProtobufHttpStatus& error_status);
+  void AddError(const std::string& url, const HttpStatus& error_status);
+  void AddErrorToMostRecentRequestUrl(const HttpStatus& error_status);
 
   // Adds response to a pending stream then immediately closes it with |status|.
   void AddStreamResponse(
       const std::string& url,
       const std::vector<const google::protobuf::MessageLite*>& messages,
-      const ProtobufHttpStatus& status);
+      const HttpStatus& status);
   void AddStreamResponseToMostRecentRequestUrl(
       const std::vector<const google::protobuf::MessageLite*>& messages,
-      const ProtobufHttpStatus& status);
+      const HttpStatus& status);
 
   // Gets the most recent request message matching the URL and writes it to
   // |out_message|. Returns true if the request message is successfully

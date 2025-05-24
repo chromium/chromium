@@ -74,7 +74,6 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
   // Progress of test can be examined via LOG(INFO) << GetAndClearDebugLog();
 }
 
-
 // Individual tests for each pair of state and event ---------------------------
 
 // An "empty" test is included as part of each "TEST_EVENT" because it makes
@@ -108,7 +107,6 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
 
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller_state_tests.h"
 
-
 // Specific one-off tests for known issues -------------------------------------
 
 // Used manually to determine what happens on a platform.
@@ -124,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerStateInteractiveTest,
   ASSERT_TRUE(InvokeEvent(WINDOW_CHANGE)) << GetAndClearDebugLog();
 
   // Wait, allowing human operator to observe the result.
-  scoped_refptr<content::MessageLoopRunner> message_loop
-      = new content::MessageLoopRunner();
+  scoped_refptr<content::MessageLoopRunner> message_loop =
+      new content::MessageLoopRunner();
   message_loop->Run();
 }

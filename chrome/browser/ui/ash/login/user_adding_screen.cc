@@ -48,7 +48,9 @@ class UserAddingScreenImpl : public UserAddingScreen {
 
 void UserAddingScreenImpl::Start() {
   CHECK(!IsRunning());
-  display_host_ = new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN);
+  display_host_ =
+      new LoginDisplayHostMojo(DisplayedScreen::USER_ADDING_SCREEN,
+                               /*update_geolocation_usage_allowed=*/false);
 
   // This triggers input method manager to filter login screen methods. This
   // should happen before setting user input method, which happens when focusing
@@ -107,12 +109,12 @@ UserAddingScreenImpl* UserAddingScreenImpl::GetInstance() {
 UserAddingScreenImpl::UserAddingScreenImpl()
     : display_host_(nullptr), im_controller_(this) {}
 
-UserAddingScreenImpl::~UserAddingScreenImpl() {}
+UserAddingScreenImpl::~UserAddingScreenImpl() = default;
 
 }  // anonymous namespace
 
-UserAddingScreen::UserAddingScreen() {}
-UserAddingScreen::~UserAddingScreen() {}
+UserAddingScreen::UserAddingScreen() = default;
+UserAddingScreen::~UserAddingScreen() = default;
 
 UserAddingScreen* UserAddingScreen::Get() {
   return UserAddingScreenImpl::GetInstance();

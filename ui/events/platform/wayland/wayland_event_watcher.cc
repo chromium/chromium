@@ -87,9 +87,10 @@ void RecordCrashKeys(const std::string& error_string) {
   error.Set(error_string);
 
   static crash_reporter::CrashKeyString<32> compositor("wayland_compositor");
-  std::string compositor_name("Unknown");
-  base::Environment::Create()->GetVar(base::nix::kXdgCurrentDesktopEnvVar,
-                                      &compositor_name);
+  std::string compositor_name =
+      base::Environment::Create()
+          ->GetVar(base::nix::kXdgCurrentDesktopEnvVar)
+          .value_or("Unknown");
   compositor.Set(compositor_name);
 }
 

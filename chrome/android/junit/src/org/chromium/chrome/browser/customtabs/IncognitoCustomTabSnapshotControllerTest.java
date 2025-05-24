@@ -18,10 +18,12 @@ import android.view.WindowManager;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.supplier.Supplier;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 @Config(manifest = Config.NONE)
 public class IncognitoCustomTabSnapshotControllerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Window mWindowMock;
 
     @Mock private Activity mActivityMock;
@@ -47,7 +50,6 @@ public class IncognitoCustomTabSnapshotControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mParams = new WindowManager.LayoutParams();
         doReturn(mParams).when(mWindowMock).getAttributes();
         doReturn(mWindowMock).when(mActivityMock).getWindow();

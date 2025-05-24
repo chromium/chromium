@@ -2,18 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../select_to_speak/select_to_speak_e2e_test_base.js']);
+GEN_INCLUDE(['../select_to_speak/mv2/select_to_speak_e2e_test_base.js']);
 
 /**
  * Test fixture for sentence_utils.js.
  */
-SelectToSpeakSentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {
-  /** @override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await importModule('SentenceUtils', '/common/sentence_utils.js');
-  }
-};
+SelectToSpeakSentenceUtilsUnitTest = class extends SelectToSpeakE2ETest {};
 
 AX_TEST_F(
     'SelectToSpeakSentenceUtilsUnitTest', 'getNextSentenceStart', function() {

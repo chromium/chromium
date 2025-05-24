@@ -15,7 +15,9 @@ always be accepted in code reviews.
 You can propose changes to this style guide by sending an email to
 `cxx@chromium.org`. Ideally, the list will arrive at some consensus and you can
 request review for a change to this file. If there's no consensus,
-`src/styleguide/c++/OWNERS` get to decide.
+`src/styleguide/c++/OWNERS` get to decide. For further details on how style
+changes are handled and communicated, see the C++ Style Changes
+[process documentation](https://chromium.googlesource.com/chromium/src/+/main/docs/process/c++_style_changes.md).
 
 Blink code in `third_party/blink` uses [Blink style](blink-c++.md).
 
@@ -298,6 +300,16 @@ by value, reference, or pointer, or types stored as pointer members or in most
 STL containers. However, if it would otherwise make sense to use a type as a
 member by-value, don't convert it to a pointer just to be able to
 forward-declare the type.
+
+Headers that contain only forward declarations, such as
+[`callback_forward.h`](../../base/functional/callback_forward.h), satisfy the
+spirit of this rule. Note that the [Mojo bindings
+generator](../../mojo/public/cpp/bindings/README.md#Getting-Started)
+creates a `.mojom-forward.h` file along with every generated `.mojom.h` file
+that can be included for forward declarations of Mojo types.
+
+See [these tips](c++-dos-and-donts.md#minimize-code-in-headers) for more advice
+on minimizing code in headers.
 
 ## File headers
 

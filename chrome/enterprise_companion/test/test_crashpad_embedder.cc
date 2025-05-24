@@ -6,9 +6,11 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/enterprise_companion/crash_client.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
+#include "chrome/enterprise_companion/flags.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -30,14 +32,13 @@ int TestCrashpadEmbedderMain(int argc, const char* const* argv) {
   }
 
   if (!command_line->HasSwitch(kCrashDatabaseSwitch)) {
-    LOG(ERROR) << "Missing switch: " << kCrashDatabaseSwitch;
+    VLOG(1) << "Missing switch: " << kCrashDatabaseSwitch;
     return 1;
   }
 
   enterprise_companion::InitializeCrashReporting(
       command_line->GetSwitchValuePath(kCrashDatabaseSwitch));
-  CHECK(false) << "Intentional crash for testing";
-  return 0;
+  NOTREACHED() << "Intentional crash for testing";
 }
 
 }  // namespace

@@ -64,7 +64,7 @@ TEST(ClientHintsTest, ParseClientHintsHeader) {
 
 TEST(ClientHintsTest,
      ParseClientHintToDelegatedThirdPartiesHeader_HttpEquivAcceptCH) {
-  EXPECT_DCHECK_DEATH(ParseClientHintToDelegatedThirdPartiesHeader(
+  EXPECT_NOTREACHED_DEATH(ParseClientHintToDelegatedThirdPartiesHeader(
       "", MetaCHType::HttpEquivAcceptCH));
 }
 

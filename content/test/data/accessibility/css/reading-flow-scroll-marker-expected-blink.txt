@@ -1,0 +1,17 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer focusable
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++genericContainer focusable
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++genericContainer focusable
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'
+++++++tabList horizontal setSize=3 controlsIds=genericContainer
+++++++++tab focusable name='Two' setSize=3 posInSet=1 selected=false detailsIds=genericContainer
+++++++++tab focusable name='Three' setSize=3 posInSet=2 selected=false detailsIds=genericContainer
+++++++++tab focusable name='One' setSize=3 posInSet=3 selected=true detailsIds=genericContainer

@@ -37,7 +37,7 @@ scoped_refptr<SharedBuffer> ReadFile(const char* name) {
     perror(name);
     exit(2);
   }
-  return SharedBuffer::Create(file.data(), file.size());
+  return SharedBuffer::Create(file);
 }
 
 struct ImageMeta {

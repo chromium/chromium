@@ -4,13 +4,17 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.lang.reflect.InvocationHandler;
 import java.util.List;
 
+@NullMarked
 public interface ProfileStoreBoundaryInterface {
     /* ProfileBoundaryInterface */ InvocationHandler getOrCreateProfile(String name);
 
-    /* ProfileBoundaryInterface */ InvocationHandler getProfile(String name);
+    /* ProfileBoundaryInterface */ @Nullable InvocationHandler getProfile(String name);
 
     List<String> getAllProfileNames();
 

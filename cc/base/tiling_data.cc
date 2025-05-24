@@ -283,8 +283,7 @@ int TilingData::TileSizeX(int x_index) const {
     return tiling_rect_.right() - TilePositionX(x_index);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int TilingData::TileSizeY(int y_index) const {
@@ -304,8 +303,7 @@ int TilingData::TileSizeY(int y_index) const {
     return tiling_rect_.bottom() - TilePositionY(y_index);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 gfx::RectF TilingData::TexelExtent(int i, int j) const {

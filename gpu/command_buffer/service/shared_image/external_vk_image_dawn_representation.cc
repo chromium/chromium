@@ -66,28 +66,18 @@ wgpu::Texture ExternalVkImageDawnImageRepresentation::BeginAccess(
   GrBackendTextures::GetVkImageInfo(backend_texture, &image_info);
 
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage;
+  internalDesc.internalUsage = internal_usage;
 
-    if (image_info.fImageLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
-      // We pass `image_info.fImageLayout` to Dawn in the
-      // ExternalImageDescriptor below as the old/new layout for it to use. For
-      // a Vulkan-backed Dawn texture to be usable with the Vulkan color
-      // attachment layout, it must have RenderAttachment usage.
-      // TODO(crbug.com/339171225): Determine if it is possible to eliminate the
-      // need for this workaround, which turns these Dawn accesses into write
-      // accesses regardless of whether the client has specified any write
-      // usages.
-      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
-    }
-  } else {
-    // We need to have internal usages of CopySrc for copies,
-    // RenderAttachment for clears, and TextureBinding for
-    // copyTextureForBrowser.
-    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::RenderAttachment |
-                                 wgpu::TextureUsage::TextureBinding;
+  if (image_info.fImageLayout == VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL) {
+    // We pass `image_info.fImageLayout` to Dawn in the
+    // ExternalImageDescriptor below as the old/new layout for it to use. For
+    // a Vulkan-backed Dawn texture to be usable with the Vulkan color
+    // attachment layout, it must have RenderAttachment usage.
+    // TODO(crbug.com/339171225): Determine if it is possible to eliminate the
+    // need for this workaround, which turns these Dawn accesses into write
+    // accesses regardless of whether the client has specified any write
+    // usages.
+    internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
   }
 
   texture_descriptor.nextInChain = &internalDesc;

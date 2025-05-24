@@ -14,8 +14,8 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
-#include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/flags_storage.h"
+#include "components/webui/flags/flags_state.h"
+#include "components/webui/flags/flags_storage.h"
 #include "ui/display/display_observer.h"
 
 class ChromeBrowserMainParts;
@@ -37,6 +37,10 @@ class PressureMetricsReporter;
 bool IsBundleForMixedDeviceAccordingToVersionCode(
     const std::string& version_code);
 #endif
+
+namespace web_app {
+class SamplingMetricsProvider;
+}  // namespace web_app
 
 namespace chrome {
 void AddMetricsExtraParts(ChromeBrowserMainParts* main_parts);
@@ -117,6 +121,9 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
 
   std::unique_ptr<PerformanceInterventionMetricsReporter>
       performance_intervention_metrics_reporter_;
+
+  // Reports PWA metrics.
+  std::unique_ptr<web_app::SamplingMetricsProvider> web_app_metrics_provider_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)

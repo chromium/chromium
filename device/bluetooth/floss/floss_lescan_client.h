@@ -28,11 +28,7 @@ class ObjectPath;
 namespace floss {
 
 const char kScannerCallbackPath[] =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "/org/chromium/bluetooth/scanner/callback/lacros";
-#else
     "/org/chromium/bluetooth/scanner/callback";
-#endif
 const char kScannerCallbackInterfaceName[] =
     "org.chromium.bluetooth.ScannerCallback";
 const char kEmptyUuidStr[] = "00000000-0000-0000-0000-000000000000";

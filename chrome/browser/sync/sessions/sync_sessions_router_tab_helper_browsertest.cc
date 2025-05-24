@@ -37,6 +37,8 @@ class TestLocalSessionEventHandler
     }
   }
 
+  void OnLocalTabClosed() override { OnLocalTabModified(nullptr); }
+
   bool local_tab_updated() { return local_tab_updated_; }
   void reset_local_tab_updated() { local_tab_updated_ = false; }
 

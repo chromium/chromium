@@ -5,10 +5,13 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
-generate_jni("variations_jni") {
+generate_jni("variations_seed_jni") {
+  sources = [ "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java" ]
+}
+
+generate_jni("variations_data_jni") {
   sources = [
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
-    "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",
   ]
 }
 
@@ -24,7 +27,10 @@ android_library("variations_java") {
     "//third_party/jni_zero:jni_zero_java",
   ]
 
-  srcjar_deps = [ ":variations_jni" ]
+  srcjar_deps = [
+    ":variations_data_jni",
+    ":variations_seed_jni",
+  ]
   sources = [
     "java/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProvider.java",
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",

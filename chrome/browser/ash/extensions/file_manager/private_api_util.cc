@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/extensions/file_manager/private_api_util.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -23,7 +24,6 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router.h"
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,8 +87,7 @@ void GetFileNativeLocalPathForSaving(Profile* profile,
                                      const base::FilePath& path,
                                      LocalPathCallback callback) {
   // TODO(kinaba): For now, there are no writable non-local volumes.
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(base::FilePath());
+  NOTREACHED();
 }
 
 // Forward declarations of helper functions for GetSelectedFileInfo().
@@ -247,8 +247,7 @@ fmp::VmType VmTypeToJs(guest_os::VmType vm_type) {
     case guest_os::VmType::UNKNOWN:
     case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
     case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
-      NOTREACHED_IN_MIGRATION();
-      return fmp::VmType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -279,8 +278,7 @@ fmp::BulkPinStage DrivefsPinStageToJs(drivefs::pinning::Stage stage) {
       return fmp::BulkPinStage::kCannotEnableDocsOffline;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return fmp::BulkPinStage::kNone;
+  NOTREACHED();
 }
 
 bool IsBulkPinningEnabledForProfile(Profile* profile) {
@@ -672,8 +670,7 @@ void VolumeToVolumeMetadata(Profile* profile,
       volume_metadata->volume_type = fmp::VolumeType::kGuestOs;
       break;
     case NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Fill device_type iff the volume is removable partition.
@@ -776,7 +773,7 @@ drive::EventLogger* GetLogger(Profile* profile) {
 }
 
 std::vector<fmp::MountableGuest> CreateMountableGuestList(Profile* profile) {
-  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
   if (!service) {
     return {};
   }
@@ -826,8 +823,7 @@ bool ToRecentSourceFileType(fmp::FileCategory input_category,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 fmp::BulkPinProgress BulkPinProgressToJs(

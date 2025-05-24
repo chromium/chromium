@@ -105,11 +105,6 @@ BleV2GattServer::BleV2GattServer(
 
 BleV2GattServer::~BleV2GattServer() = default;
 
-BluetoothAdapter& BleV2GattServer::GetBlePeripheral() {
-  CHECK(bluetooth_adapter_);
-  return *bluetooth_adapter_;
-}
-
 std::optional<api::ble_v2::GattCharacteristic>
 BleV2GattServer::CreateCharacteristic(
     const Uuid& service_uuid,

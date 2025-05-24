@@ -26,7 +26,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/printing/print_backend_service_manager.h"
 #include "chrome/browser/printing/print_backend_service_test_impl.h"
 #include "chrome/browser/printing/print_test_utils.h"
@@ -76,15 +75,11 @@ const PrinterBasicInfo kDefaultPrinterInfo(
     /*printer_name=*/kDefaultPrinterName,
     /*display_name=*/"default test printer",
     /*printer_description=*/"Default printer for testing.",
-    /*printer_status=*/0,
-    /*is_default=*/true,
     kDefaultPrintInfoOptions);
 const PrinterBasicInfo kAnotherPrinterInfo(
     /*printer_name=*/kAnotherPrinterName,
     /*display_name=*/"another test printer",
     /*printer_description=*/"Another printer for testing.",
-    /*printer_status=*/5,
-    /*is_default=*/false,
     /*options=*/{});
 
 constexpr int32_t kCopiesMax = 123;
@@ -108,7 +103,7 @@ bool LoadMetafileDataFromFile(const std::string& file_name,
     if (!base::ReadFileToString(data_file, &data))
       return false;
   }
-  return metafile.InitFromData(base::as_bytes(base::make_span(data)));
+  return metafile.InitFromData(base::as_byte_span(data));
 }
 
 }  // namespace
@@ -162,6 +157,7 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
     test_print_backend_->AddValidPrinter(
         kDefaultPrinterName, std::move(default_caps),
         std::make_unique<PrinterBasicInfo>(kDefaultPrinterInfo));
+    test_print_backend_->SetDefaultPrinterName(kDefaultPrinterName);
   }
 
   // Load the test backend with another (non-default) printer.
@@ -412,9 +408,10 @@ class PrintBackendBrowserTest : public InProcessBrowserTest {
    public:
     std::unique_ptr<PrintingContext> CreatePrintingContext(
         PrintingContext::Delegate* delegate,
-        PrintingContext::ProcessBehavior process_behavior) override {
-      auto context =
-          std::make_unique<TestPrintingContext>(delegate, process_behavior);
+        PrintingContext::OutOfProcessBehavior out_of_process_behavior)
+        override {
+      auto context = std::make_unique<TestPrintingContext>(
+          delegate, out_of_process_behavior);
 
       auto settings = std::make_unique<PrintSettings>();
       settings->set_copies(kPrintSettingsCopies);
@@ -486,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, GetDefaultPrinterName) {
             kDefaultPrinterName);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
                        GetPrinterSemanticCapsAndDefaults) {
   AddDefaultPrinter();
@@ -534,7 +531,7 @@ IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest,
   ASSERT_TRUE(printer_caps->is_result_code());
   EXPECT_EQ(printer_caps->get_result_code(), mojom::ResultCode::kAccessDenied);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(PrintBackendBrowserTest, FetchCapabilities) {
   AddDefaultPrinter();

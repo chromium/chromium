@@ -2,39 +2,26 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
-import("//tools/polymer/html_to_wrapper.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "js_module_root=" + rebase_path(
-                            "//chrome/browser/resources/chromeos/crostini_upgrader/",
-                            root_build_dir),
-                    "js_module_root=./gen/chrome/browser/resources/chromeos/crostini_upgrader/",
-                  ]
-  deps = [
-    ":app",
-    ":browser_proxy",
+build_webui("build") {
+  grd_prefix = "crostini_upgrader"
+
+  static_files = [ "index.html" ]
+
+  web_component_files = [ "app.js" ]
+  ts_files = [ "browser_proxy.js" ]
+
+  mojo_files = [ "${root_gen_dir}\chrome\browser\ui\webui\ash\crostini_upgrader\crostini_upgrader.mojom-webui.ts" ]
+  mojo_files_deps = [ "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_ts__generator" ]
+
+  webui_context_type = "trusted"
+  html_to_wrapper_template = "polymer"
+
+  ts_deps = [
+    "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
-}
-
-js_library("app") {
-  deps = [
-    ":browser_proxy",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("browser_proxy") {
-  deps = [
-    "//ash/webui/common/resources:cr_deprecated",
-    "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_js_library_for_compile",
-  ]
-}
-
-html_to_wrapper("html_wrapper_files") {
-  in_files = [ "app.html" ]
-  use_js = true
 }

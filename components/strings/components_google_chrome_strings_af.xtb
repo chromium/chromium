@@ -10,8 +10,12 @@
 <translation id="2447485272386224171">Chrome word moontlik gemaak deur die <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-oopbronprojek en ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Hierdie bladsy wys net inligting oor jou onlangse omvalle as jy <ph name="BEGIN_LINK" />omvalrapportering aktiveer<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Hierdie bladsye is bedoel vir gebruik deur Chrome-ontwikkelaars en word dalk nie aktief onderhou of getoets nie. As jy hulle wil aktiveer, navigeer na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klik die knoppie om ontfoutbladsye te aktiveer en navigeer dan terug na hierdie bladsy toe.</translation>
 <translation id="3875312571075912821">Laat Chrome in jou brandmuur- of antivirusinstellings toe om by jou netwerk
           in te gaan.</translation>
+<translation id="4949828774841497663">Gaan na Apps &gt; Stelselinstellings &gt; Netwerk, kies die
+          aktiewe netwerk, klik die Besonderhedeknoppie, en ontkies enige instaanbedieners
+          wat dalk gekies is.</translation>
 <translation id="5005121315113832363">Hierdie bladsy is deur Chrome geblokkeer</translation>
 <translation id="6011049234605203654">Gaan na
           die Chrome-kieslys &gt;
@@ -40,9 +44,6 @@
           LAN-instellings
           en ontmerk "Gebruik 'n instaanbediener vir jou LAN".</translation>
 <translation id="7230956101631259640">Jy bekyk tans 'n veilige Chrome-bladsy</translation>
-<translation id="8187289872471304532">Gaan na
-          Programme &gt; Stelselvoorkeure &gt; Netwerk &gt; Gevorderd &gt; Instaanbedieners
-          en ontkies enige instaanbedieners wat gekies is.</translation>
 <translation id="8232971017369963250">Chrome word moontlik gemaak deur die <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-oopbronprojek.</translation>
 <translation id="8279509328145658601">Chrome word ook moontlik gemaak deur ander <ph name="BEGIN_LINK_OSS" />oopbronsagteware<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome probeer tans instellings vir die invul van betaalmetodes wysig.</translation>

@@ -4,9 +4,13 @@
 
 #include "components/password_manager/core/browser/passkey_credential.h"
 
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -93,9 +97,15 @@ PasskeyCredential::PasskeyCredential(PasskeyCredential&&) = default;
 PasskeyCredential& PasskeyCredential::operator=(PasskeyCredential&&) = default;
 
 std::u16string PasskeyCredential::GetAuthenticatorLabel() const {
-  if (authenticator_label_) {
-    return *authenticator_label_;
-  }
+  return authenticator_label_.value_or(GetAuthenticatorLabelBySourceType());
+}
+
+void PasskeyCredential::SetAuthenticatorLabel(
+    const std::u16string& authenticator_label) {
+  authenticator_label_ = authenticator_label;
+}
+
+std::u16string PasskeyCredential::GetAuthenticatorLabelBySourceType() const {
   int id;
   switch (source_) {
     case Source::kWindowsHello:

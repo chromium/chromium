@@ -108,8 +108,7 @@ Dispatcher* TopLevelDispatcher::OnMessageReady(IPCParams* ipc,
 
   Dispatcher* dispatcher = GetDispatcher(ipc->ipc_tag);
   if (!dispatcher) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   return dispatcher->OnMessageReady(ipc, callback);
 }
@@ -122,8 +121,7 @@ bool TopLevelDispatcher::SetupService(InterceptionManager* manager,
 
   Dispatcher* dispatcher = GetDispatcher(service);
   if (!dispatcher) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   return dispatcher->SetupService(manager, service);
 }

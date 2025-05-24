@@ -14,6 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "cc/paint/deferred_paint_record.h"
 #include "cc/paint/element_id.h"
+#include "cc/paint/paint_image.h"
+#include "cc/paint/paint_record.h"
 
 namespace cc {
 
@@ -101,7 +103,7 @@ class CC_PAINT_EXPORT PaintWorkletInput : public DeferredPaintRecord {
 // the PaintWorklet to enable efficient invalidation of dirty PaintWorklets.
 using PaintWorkletRecordMap =
     base::flat_map<scoped_refptr<const PaintWorkletInput>,
-                   std::pair<int, std::optional<PaintRecord>>>;
+                   std::pair<PaintImage::Id, std::optional<PaintRecord>>>;
 
 }  // namespace cc
 

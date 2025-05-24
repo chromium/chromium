@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 [
-  Exposed=Window,
-  RuntimeEnabled=ViewTransitionOnNavigation
+  Exposed=Window
 ] interface CSSViewTransitionRule : CSSRule {
   [SetterCallWith=ExecutionContext] readonly attribute CSSOMString navigation;
-  [RuntimeEnabled=ViewTransitionTypes, SameObject, SaveSameObject] readonly attribute FrozenArray<CSSOMString> types;
+  [SameObject, SaveSameObject] readonly attribute FrozenArray<CSSOMString> types;
 };

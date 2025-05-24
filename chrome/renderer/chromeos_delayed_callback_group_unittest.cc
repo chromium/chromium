@@ -4,11 +4,11 @@
 
 #include "chrome/renderer/chromeos_delayed_callback_group.h"
 
-#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,135 +21,87 @@ TEST(DelayedCallbackGroup, RunEmpty) {
 }
 
 TEST(DelayedCallbackGroup, RunSimple) {
-  const base::TimeDelta kTimeout = base::Milliseconds(500);
+  const base::TimeDelta kTimeout = base::Seconds(1);
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
+      kTimeout, base::SequencedTaskRunner::GetCurrentDefault());
 
   base::Time time_before_add = base::Time::Now();
-  base::Time callback_time;
-  base::RunLoop run_loop;
-  callback_group->Add(
-      base::BindLambdaForTesting([&](DelayedCallbackGroup::RunReason reason) {
-        callback_time = base::Time::Now();
-        EXPECT_EQ(DelayedCallbackGroup::RunReason::NORMAL, reason);
-        run_loop.Quit();
-      }));
+  base::test::TestFuture<DelayedCallbackGroup::RunReason> future;
+  callback_group->Add(future.GetCallback());
   callback_group->RunAll();
-  run_loop.Run();
+  DelayedCallbackGroup::RunReason reason = future.Get();
 
-  base::TimeDelta delta = callback_time - time_before_add;
+  base::TimeDelta delta = base::Time::Now() - time_before_add;
   EXPECT_LT(delta, kTimeout);
+  EXPECT_EQ(DelayedCallbackGroup::RunReason::NORMAL, reason);
 }
 
 TEST(DelayedCallbackGroup, TimeoutSimple) {
-  const base::TimeDelta kTimeout = base::Milliseconds(500);
-  base::test::TaskEnvironment task_environment;
+  const base::TimeDelta kTimeout = base::Seconds(1);
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
+      kTimeout, base::SequencedTaskRunner::GetCurrentDefault());
 
-  base::Time time_before_add = base::Time::Now();
-  base::Time callback_time;
-  base::RunLoop run_loop;
-  callback_group->Add(
-      base::BindLambdaForTesting([&](DelayedCallbackGroup::RunReason reason) {
-        callback_time = base::Time::Now();
-        EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  base::test::TestFuture<DelayedCallbackGroup::RunReason> future;
+  callback_group->Add(future.GetCallback());
+  task_environment.FastForwardBy(kTimeout);
 
-  base::TimeDelta delta = callback_time - time_before_add;
-  EXPECT_GE(delta, kTimeout);
+  EXPECT_TRUE(future.IsReady());
+  DelayedCallbackGroup::RunReason reason = future.Get();
+  EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason);
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Failing on CrOS ASAN: crbug.com/1290874
-#define MAYBE_TimeoutAndRun DISABLED_TimeoutAndRun
-#else
-#define MAYBE_TimeoutAndRun TimeoutAndRun
-#endif
-
-
-TEST(DelayedCallbackGroup, MAYBE_TimeoutAndRun) {
-  const base::TimeDelta kTimeout = base::Milliseconds(500);
-  base::test::TaskEnvironment task_environment;
+TEST(DelayedCallbackGroup, DISABLED_TimeoutAndRun) {
+  const base::TimeDelta kTimeout = base::Seconds(1);
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
+      kTimeout, base::SequencedTaskRunner::GetCurrentDefault());
 
-  base::Time start_time = base::Time::Now();
-  base::Time callback_time_1;
-  base::Time callback_time_2;
-  base::RunLoop run_loop_1;
-  bool callback_1_called = false;
-  callback_group->Add(
-      base::BindLambdaForTesting([&](DelayedCallbackGroup::RunReason reason) {
-        EXPECT_FALSE(callback_1_called);
-        callback_1_called = true;
-        callback_time_1 = base::Time::Now();
-        EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason);
-        run_loop_1.Quit();
-      }));
-  base::PlatformThread::Sleep(kTimeout + base::Milliseconds(100));
-  base::RunLoop run_loop_2;
-  bool callback_2_called = false;
-  callback_group->Add(
-      base::BindLambdaForTesting([&](DelayedCallbackGroup::RunReason reason) {
-        EXPECT_FALSE(callback_2_called);
-        callback_2_called = true;
-        callback_time_2 = base::Time::Now();
-        EXPECT_EQ(DelayedCallbackGroup::RunReason::NORMAL, reason);
-        run_loop_2.Quit();
-      }));
-  run_loop_1.Run();
+  base::test::TestFuture<DelayedCallbackGroup::RunReason> future1;
+  callback_group->Add(future1.GetCallback());
+  task_environment.FastForwardBy(kTimeout + base::Milliseconds(100));
+  EXPECT_TRUE(future1.IsReady());
 
-  base::TimeDelta delta = callback_time_1 - start_time;
-  EXPECT_GE(delta, kTimeout);
-  // Only the first callback should have timed out.
-  EXPECT_TRUE(callback_time_2.is_null());
+  base::test::TestFuture<DelayedCallbackGroup::RunReason> future2;
+  callback_group->Add(future2.GetCallback());
+  DelayedCallbackGroup::RunReason reason1 = future1.Get();
+
+  EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason1);
+  EXPECT_FALSE(future2.IsReady());
+
   callback_group->RunAll();
-  run_loop_2.Run();
-  delta = callback_time_2 - start_time;
-  EXPECT_GE(delta, kTimeout + base::Milliseconds(100));
+  DelayedCallbackGroup::RunReason reason2 = future2.Get();
+
+  EXPECT_EQ(DelayedCallbackGroup::RunReason::NORMAL, reason2);
 }
 
 TEST(DelayedCallbackGroup, DoubleExpiration) {
-  const base::TimeDelta kTimeout = base::Milliseconds(500);
-  base::test::TaskEnvironment task_environment;
+  const base::TimeDelta kTimeout = base::Seconds(1);
+  const base::TimeDelta kTimeDiff = base::Milliseconds(100);
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(
-      base::Seconds(1), base::SequencedTaskRunner::GetCurrentDefault());
+      kTimeout, base::SequencedTaskRunner::GetCurrentDefault());
 
-  base::Time start_time = base::Time::Now();
-  base::Time callback_time_1;
-  base::Time callback_time_2;
-  base::RunLoop run_loop_1;
-  bool callback_1_called = false;
-  callback_group->Add(
-      base::BindLambdaForTesting([&](DelayedCallbackGroup::RunReason reason) {
-        EXPECT_FALSE(callback_1_called);
-        callback_1_called = true;
-        callback_time_1 = base::Time::Now();
-        EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason);
-        run_loop_1.Quit();
-      }));
-  base::PlatformThread::Sleep(base::Milliseconds(100));
-  base::RunLoop run_loop_2;
-  bool callback_2_called = false;
-  callback_group->Add(
-      base::BindLambdaForTesting([&](DelayedCallbackGroup::RunReason reason) {
-        EXPECT_FALSE(callback_2_called);
-        callback_2_called = true;
-        callback_time_2 = base::Time::Now();
-        EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason);
-        run_loop_2.Quit();
-      }));
-  run_loop_1.Run();
+  base::test::TestFuture<DelayedCallbackGroup::RunReason> future1;
+  callback_group->Add(future1.GetCallback());
+  task_environment.FastForwardBy(kTimeDiff);
+  base::test::TestFuture<DelayedCallbackGroup::RunReason> future2;
+  callback_group->Add(future2.GetCallback());
+  task_environment.FastForwardBy(kTimeout - kTimeDiff);
 
-  base::TimeDelta delta = callback_time_1 - start_time;
-  EXPECT_GE(delta, kTimeout);
-  // Only the first callback should have timed out.
-  EXPECT_TRUE(callback_time_2.is_null());
-  run_loop_2.Run();
-  delta = callback_time_2 - start_time;
-  EXPECT_GE(delta, kTimeout + base::Milliseconds(100));
+  EXPECT_TRUE(future1.IsReady());
+  EXPECT_FALSE(future2.IsReady());
+  DelayedCallbackGroup::RunReason reason1 = future1.Get();
+  EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason1);
+
+  task_environment.FastForwardBy(kTimeDiff);
+
+  EXPECT_TRUE(future2.IsReady());
+  DelayedCallbackGroup::RunReason reason2 = future2.Get();
+  EXPECT_EQ(DelayedCallbackGroup::RunReason::TIMEOUT, reason2);
 }

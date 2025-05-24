@@ -37,7 +37,7 @@ const CC_BY_LICENSE_REGEXES = [
   /Documentation licensed under CC BY 4\.0/,
   /License available at https:\/\/creativecommons\.org\/licenses\/by\/4\.0\//
 ];
-const CONFORMANCE_ALLOWLIST_REGEX = /whitelist: \'(?!closurei\/)/i; // nocheck
+const CONFORMANCE_ALLOWLIST_REGEX = /whitelist: \'(?!closurei\/)/i;
 const CLOSURE_AUTHORS_COPYRIGHT_REGEX =
     /Copyright( 20\d\d)? The Closure Library Authors/;
 const DOC_FILE_REGEX = /(?:^doc\/.*\.html|\.md)$/;

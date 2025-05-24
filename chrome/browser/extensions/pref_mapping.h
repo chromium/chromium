@@ -12,11 +12,10 @@
 #include "base/containers/span.h"
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/permissions/api_permission.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/prefs.mojom-shared.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -30,12 +29,12 @@ struct PrefMappingEntry {
   const char* browser_pref;
 
   // Permission required to read and observe this preference.
-  // Use APIPermissionID::kInvalid for |read_permission| to express that
+  // Use APIPermissionID::kInvalid for `read_permission` to express that
   // the read permission should not be granted.
   extensions::mojom::APIPermissionID read_permission;
 
   // Permission required to write this preference.
-  // Use APIPermissionID::kInvalid for |write_permission| to express that
+  // Use APIPermissionID::kInvalid for `write_permission` to express that
   // the write permission should not be granted.
   extensions::mojom::APIPermissionID write_permission;
 };
@@ -66,14 +65,6 @@ class PrefMapping {
   void RegisterPrefTransformer(
       const std::string& browser_pref,
       std::unique_ptr<PrefTransformerInterface> transformer);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Given a pref name for an extension-controlled pref where the underlying
-  // pref is controlled by ash, returns the PrefPath used by the crosapi to set
-  // the pref in ash, or nullptr if no pref exists.
-  crosapi::mojom::PrefPath GetPrefPathForPrefName(
-      const std::string& pref_name) const;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
  private:
   friend struct base::DefaultSingletonTraits<PrefMapping>;

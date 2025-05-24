@@ -4,23 +4,17 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/user_manager/user.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -28,10 +22,14 @@
 #include "components/prefs/pref_service.h"
 #endif
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
 using safe_browsing::BinaryUploadService;
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -56,17 +54,6 @@ bool ContentAnalysisActionAllowsDataUse(TriggeredRule::Action action) {
   }
 }
 
-bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
-    BinaryUploadService::Result result,
-    bool block_large_files,
-    bool block_password_protected_files) {
-  return (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
-          !block_large_files) ||
-         (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
-          !block_password_protected_files);
-}
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 std::string EventResultToString(
     extensions::api::enterprise_reporting_private::EventResult event_result) {
@@ -90,46 +77,23 @@ std::string DetectorTypeToString(
   return ToString(detector_type);
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+bool ShouldAllowDeepScanOnLargeOrEncryptedFiles(
+    BinaryUploadService::Result result,
+    bool block_large_files,
+    bool block_password_protected_files) {
+  return (result == BinaryUploadService::Result::FILE_TOO_LARGE &&
+          !block_large_files) ||
+         (result == BinaryUploadService::Result::FILE_ENCRYPTED &&
+          !block_password_protected_files);
+}
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
 }  // namespace
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
-                              BinaryUploadService::Result upload_result) {
-  bool default_action_allow_data_use =
-      settings.default_action == DefaultAction::kAllow;
-
-  // Keep this implemented as a switch instead of a simpler if statement so that
-  // new values added to BinaryUploadService::Result cause a compiler error.
-  switch (upload_result) {
-    case BinaryUploadService::Result::SUCCESS:
-    // UNAUTHORIZED allows data usage since it's a result only obtained if the
-    // browser is not authorized to perform deep scanning. It does not make
-    // sense to block data in this situation since no actual scanning of the
-    // data was performed, so it's allowed.
-    case BinaryUploadService::Result::UNAUTHORIZED:
-      return true;
-
-    case BinaryUploadService::Result::UPLOAD_FAILURE:
-    case BinaryUploadService::Result::TIMEOUT:
-    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
-    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
-    case BinaryUploadService::Result::UNKNOWN:
-    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
-      DVLOG(1) << __func__
-               << ": handled by fail-closed settings, "
-                  "default_action_allow_data_use="
-               << default_action_allow_data_use;
-      return default_action_allow_data_use;
-
-    case BinaryUploadService::Result::FILE_TOO_LARGE:
-      return !settings.block_large_files;
-
-    case BinaryUploadService::Result::FILE_ENCRYPTED:
-      return !settings.block_password_protected_files;
-  }
-}
-
 RequestHandlerResult CalculateRequestHandlerResult(
     const AnalysisSettings& settings,
     BinaryUploadService::Result upload_result,
@@ -179,18 +143,6 @@ RequestHandlerResult CalculateRequestHandlerResult(
   }
   return result;
 }
-
-safe_browsing::EventResult CalculateEventResult(
-    const AnalysisSettings& settings,
-    bool allowed_by_scan_result,
-    bool should_warn) {
-  bool wait_for_verdict =
-      settings.block_until_verdict == BlockUntilVerdict::kBlock;
-  return (allowed_by_scan_result || !wait_for_verdict)
-             ? safe_browsing::EventResult::ALLOWED
-             : (should_warn ? safe_browsing::EventResult::WARNED
-                            : safe_browsing::EventResult::BLOCKED);
-}
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 const char SavePackageScanningData::kKey[] =
@@ -211,12 +163,10 @@ void RunSavePackageScanningCallback(download::DownloadItem* item,
 }
 
 bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user && user->IsAffiliated();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return policy::PolicyLoaderLacros::IsMainUserAffiliated();
 #else
   // A browser managed through the device can send device info.
   if (!per_profile) {
@@ -234,6 +184,112 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 #endif
 }
 
+std::string GetProfileEmail(Profile* profile) {
+  if (!profile) {
+    return std::string();
+  }
+
+  std::string email =
+      GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  if (email.empty()) {
+    email = profile->GetPrefs()->GetString(
+        enterprise_signin::prefs::kProfileUserEmail);
+  }
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
+  return email;
+}
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool IsResumableUpload(
+    const safe_browsing::BinaryUploadService::Request& request) {
+  // Currently resumable upload doesn't support paste or LBUS. If one day we do,
+  // we should update the logic here as well.
+  return !safe_browsing::IsConsumerScanRequest(request) &&
+         request.cloud_or_local_settings().is_cloud_analysis() &&
+         request.content_analysis_request().analysis_connector() !=
+             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY;
+}
+#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+bool CloudMultipartResultIsFailure(BinaryUploadService::Result result) {
+  return result != BinaryUploadService::Result::SUCCESS;
+}
+
+bool CloudResumableResultIsFailure(BinaryUploadService::Result result,
+                                   bool block_large_files,
+                                   bool block_password_protected_files) {
+  return result != BinaryUploadService::Result::SUCCESS &&
+         !ShouldAllowDeepScanOnLargeOrEncryptedFiles(
+             result, block_large_files, block_password_protected_files);
+}
+
+bool LocalResultIsFailure(BinaryUploadService::Result result) {
+  return result != BinaryUploadService::Result::SUCCESS &&
+         result != BinaryUploadService::Result::FILE_TOO_LARGE &&
+         result != BinaryUploadService::Result::FILE_ENCRYPTED;
+}
+
+bool ResultIsFailClosed(BinaryUploadService::Result result) {
+  return result == BinaryUploadService::Result::UPLOAD_FAILURE ||
+         result == BinaryUploadService::Result::TIMEOUT ||
+         result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
+         result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
+         result == BinaryUploadService::Result::UNKNOWN ||
+         result == BinaryUploadService::Result::INCOMPLETE_RESPONSE;
+}
+
+bool ResultShouldAllowDataUse(const AnalysisSettings& settings,
+                              BinaryUploadService::Result upload_result) {
+  bool default_action_allow_data_use =
+      settings.default_action == DefaultAction::kAllow;
+
+  // Keep this implemented as a switch instead of a simpler if statement so that
+  // new values added to BinaryUploadService::Result cause a compiler error.
+  switch (upload_result) {
+    case BinaryUploadService::Result::SUCCESS:
+    // UNAUTHORIZED allows data usage since it's a result only obtained if the
+    // browser is not authorized to perform deep scanning. It does not make
+    // sense to block data in this situation since no actual scanning of the
+    // data was performed, so it's allowed.
+    case BinaryUploadService::Result::UNAUTHORIZED:
+      return true;
+
+    case BinaryUploadService::Result::UPLOAD_FAILURE:
+    case BinaryUploadService::Result::TIMEOUT:
+    case BinaryUploadService::Result::FAILED_TO_GET_TOKEN:
+    case BinaryUploadService::Result::TOO_MANY_REQUESTS:
+    case BinaryUploadService::Result::UNKNOWN:
+    case BinaryUploadService::Result::INCOMPLETE_RESPONSE:
+      DVLOG(1) << __func__
+               << ": handled by fail-closed settings, "
+                  "default_action_allow_data_use="
+               << default_action_allow_data_use;
+      return default_action_allow_data_use;
+
+    case BinaryUploadService::Result::FILE_TOO_LARGE:
+      return !settings.block_large_files;
+
+    case BinaryUploadService::Result::FILE_ENCRYPTED:
+      return !settings.block_password_protected_files;
+  }
+}
+
+EventResult CalculateEventResult(const AnalysisSettings& settings,
+                                 bool allowed_by_scan_result,
+                                 bool should_warn) {
+  bool wait_for_verdict =
+      settings.block_until_verdict == BlockUntilVerdict::kBlock;
+  return (allowed_by_scan_result || !wait_for_verdict)
+             ? EventResult::ALLOWED
+             : (should_warn ? EventResult::WARNED : EventResult::BLOCKED);
+}
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 bool ShouldPromptReviewForDownload(
     Profile* profile,
     const download::DownloadItem* download_item) {
@@ -258,35 +314,6 @@ bool ShouldPromptReviewForDownload(
   return false;
 }
 
-std::string GetProfileEmail(Profile* profile) {
-  if (!profile) {
-    return std::string();
-  }
-
-  std::string email =
-      GetProfileEmail(IdentityManagerFactory::GetForProfile(profile));
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  if (email.empty()) {
-    email = profile->GetPrefs()->GetString(
-        enterprise_signin::prefs::kProfileUserEmail);
-  }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-  return email;
-}
-
-std::string GetProfileEmail(signin::IdentityManager* identity_manager) {
-  // If the profile is not signed in, GetPrimaryAccountInfo() returns an
-  // empty account info.
-  return identity_manager
-             ? identity_manager
-                   ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-                   .email
-             : std::string();
-}
-
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 void ShowDownloadReviewDialog(const std::u16string& filename,
                               Profile* profile,
                               download::DownloadItem* download_item,
@@ -326,7 +353,7 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
 
   // This dialog opens itself, and is thereafter owned by constrained window
   // code.
-  new ContentAnalysisDialog(
+  new ContentAnalysisDialogController(
       std::make_unique<ContentAnalysisDownloadsDelegate>(
           filename, custom_message, learn_more_url,
           bypass_justification_required, std::move(keep_closure),
@@ -338,57 +365,6 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
       web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
       /* file_count */ 1, state, download_item);
 }
-
-bool IsResumableUpload(const BinaryUploadService::Request& request) {
-  // Currently resumable upload doesn't support paste or LBUS. If one day we do,
-  // we should update the logic here as well.
-  return !safe_browsing::IsConsumerScanRequest(request) &&
-         request.cloud_or_local_settings().is_cloud_analysis() &&
-         request.content_analysis_request().analysis_connector() !=
-             enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY &&
-         IsResumableUploadEnabled();
-}
-
-bool CloudMultipartResultIsFailure(BinaryUploadService::Result result) {
-  return result != BinaryUploadService::Result::SUCCESS;
-}
-
-bool CloudResumableResultIsFailure(BinaryUploadService::Result result,
-                                   bool block_large_files,
-                                   bool block_password_protected_files) {
-  return result != BinaryUploadService::Result::SUCCESS &&
-         !ShouldAllowDeepScanOnLargeOrEncryptedFiles(
-             result, block_large_files, block_password_protected_files);
-}
-
-bool LocalResultIsFailure(BinaryUploadService::Result result) {
-  return result != BinaryUploadService::Result::SUCCESS &&
-         result != BinaryUploadService::Result::FILE_TOO_LARGE &&
-         result != BinaryUploadService::Result::FILE_ENCRYPTED;
-}
-
-bool ResultIsFailClosed(BinaryUploadService::Result result) {
-  return result == BinaryUploadService::Result::UPLOAD_FAILURE ||
-         result == BinaryUploadService::Result::TIMEOUT ||
-         result == BinaryUploadService::Result::FAILED_TO_GET_TOKEN ||
-         result == BinaryUploadService::Result::TOO_MANY_REQUESTS ||
-         result == BinaryUploadService::Result::UNKNOWN ||
-         result == BinaryUploadService::Result::INCOMPLETE_RESPONSE;
-}
-#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-Profile* GetMainProfileLacros() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  if (!profile_manager)
-    return nullptr;
-  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
-  const auto main_it = base::ranges::find_if(profiles, &Profile::IsMainProfile);
-  if (main_it == profiles.end())
-    return nullptr;
-  return *main_it;
-}
-#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 void ReportDataMaskingEvent(
@@ -448,5 +424,6 @@ void ReportDataMaskingEvent(
       std::move(settings.value()), std::move(event));
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
 }  // namespace enterprise_connectors

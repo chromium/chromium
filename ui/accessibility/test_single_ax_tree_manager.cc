@@ -7,6 +7,7 @@
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_manager_map.h"
+#include "ui/accessibility/test_ax_tree_update.h"
 
 namespace ui {
 
@@ -70,6 +71,10 @@ AXTree* TestSingleAXTreeManager::Init(AXTreeUpdate tree_update) {
   }
   SetTree(std::make_unique<AXTree>(tree_update));
   return ax_tree_.get();
+}
+
+AXTree* TestSingleAXTreeManager::Init(const std::string& tree_update) {
+  return Init(TestAXTreeUpdate(tree_update));
 }
 
 AXTree* TestSingleAXTreeManager::Init(
@@ -189,8 +194,7 @@ AXNode* TestSingleAXTreeManager::GetParentNodeFromParentTree() const {
       parent_manager->GetTree()->GetNodeIdsForChildTreeId(GetTreeID());
 
   for (AXNodeID host_node_id : host_node_ids) {
-    AXNode* parent_node =
-        parent_manager->GetNodeFromTree(parent_tree_id, host_node_id);
+    AXNode* parent_node = parent_manager->GetNode(host_node_id);
     if (parent_node) {
       return parent_node;
     }

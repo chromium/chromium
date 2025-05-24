@@ -110,6 +110,20 @@ promise_test(t => {
   }));
 }, "Test that decodingInfo rejects if the video configuration contentType doesn't parse");
 
+// See https://mimesniff.spec.whatwg.org/#example-valid-mime-type-string
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+    type: 'file',
+    video: {
+      contentType: 'video/webm;',
+      width: 800,
+      height: 600,
+      bitrate: 3000,
+      framerate: 24,
+    },
+  }));
+}, "Test that decodingInfo rejects if the video configuration contentType is not a valid MIME type string");
+
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
@@ -127,7 +141,7 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'application/ogg; codec=vorbis',
+      contentType: 'application/ogg; codecs=vorbis',
       width: 800,
       height: 600,
       bitrate: 3000,
@@ -140,7 +154,7 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     audio: {
-      contentType: 'application/ogg; codec=theora',
+      contentType: 'application/ogg; codecs=theora',
       channels: 2,
     },
   }));
@@ -176,99 +190,55 @@ promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
+      contentType: 'video/webm',
       width: 800,
       height: 600,
       bitrate: 3000,
-      framerate: '24000/1001',
-    }
+      framerate: 24,
+    },
   }));
-}, "Test that decodingInfo() rejects framerate in the form of x/y");
+}, "Test that decodingInfo rejects if the video configuration contentType does not imply a single media codec but has no codecs parameter");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
+      contentType: 'video/webm; codecs="vp09.00.10.08, vp8"',
       width: 800,
       height: 600,
       bitrate: 3000,
-      framerate: '24000/0',
+      framerate: 24,
     }
   }));
-}, "Test that decodingInfo() rejects framerate in the form of x/0");
+}, "Test that decodingInfo rejects if the video configuration contentType has a codecs parameter that indicates multiple video codecs");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
+      contentType: 'video/webm; codecs="vp09.00.10.08, opus"',
       width: 800,
       height: 600,
       bitrate: 3000,
-      framerate: '0/10001',
+      framerate: 24,
     }
   }));
-}, "Test that decodingInfo() rejects framerate in the form of 0/y");
-
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
-    type: 'file',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: '-24000/10001',
-    }
-  }));
-}, "Test that decodingInfo() rejects framerate in the form of -x/y");
-
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
-    type: 'file',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: '24000/-10001',
-    }
-  }));
-}, "Test that decodingInfo() rejects framerate in the form of x/-y");
-
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
-    type: 'file',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: '24000/',
-    }
-  }));
-}, "Test that decodingInfo() rejects framerate in the form of x/");
-
-promise_test(t => {
-  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
-    type: 'file',
-    video: {
-      contentType: 'video/webm; codecs="vp09.00.10.08"',
-      width: 800,
-      height: 600,
-      bitrate: 3000,
-      framerate: '1/3x',
-    }
-  }));
-}, "Test that decodingInfo() rejects framerate with trailing unallowed characters");
+}, "Test that decodingInfo rejects if the video configuration contentType has a codecs parameter that indicates both an audio and a video codec");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
     type: 'file',
     audio: { contentType: 'fgeoa' },
   }));
-}, "Test that decodingInfo rejects if the audio configuration contenType doesn't parse");
+}, "Test that decodingInfo rejects if the audio configuration contentType doesn't parse");
+
+// See https://mimesniff.spec.whatwg.org/#example-valid-mime-type-string
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+    type: 'file',
+    audio: { contentType: 'audio/mpeg;' },
+  }));
+}, "Test that decodingInfo rejects if the audio configuration contentType is not a valid MIME type string");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -282,7 +252,7 @@ promise_test(t => {
     type: 'file',
     audio: { contentType: 'audio/webm; codecs="opus"; foo="bar"' },
   }));
-}, "Test that decodingInfo rejects if the audio configuration contentType has more than one parameters");
+}, "Test that decodingInfo rejects if the audio configuration contentType has more than one parameter");
 
 promise_test(t => {
   return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
@@ -290,6 +260,27 @@ promise_test(t => {
     audio: { contentType: 'audio/webm; foo="bar"' },
   }));
 }, "Test that decodingInfo rejects if the audio configuration contentType has one parameter that isn't codecs");
+
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+    type: 'file',
+    audio: { contentType: 'audio/webm' },
+  }));
+}, "Test that decodingInfo rejects if the audio configuration contentType does not imply a single media codec but has no codecs parameter");
+
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+    type: 'file',
+    audio: { contentType: 'audio/webm; codecs="vorbis, opus"' },
+  }));
+}, "Test that decodingInfo rejects if the audio configuration contentType has a codecs parameter that indicates multiple audio codecs");
+
+promise_test(t => {
+  return promise_rejects_js(t, TypeError, navigator.mediaCapabilities.decodingInfo({
+    type: 'file',
+    audio: { contentType: 'audio/webm; codecs="vp09.00.10.08, opus"' },
+  }));
+}, "Test that decodingInfo rejects if the audio configuration contentType has a codecs parameter that indicates both an audio and a video codec");
 
 promise_test(t => {
   return navigator.mediaCapabilities.decodingInfo({

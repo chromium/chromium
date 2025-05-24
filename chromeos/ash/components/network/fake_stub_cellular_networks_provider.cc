@@ -4,8 +4,9 @@
 
 #include "chromeos/ash/components/network/fake_stub_cellular_networks_provider.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "base/uuid.h"
 #include "chromeos/ash/components/network/cellular_utils.h"
 
@@ -69,7 +70,7 @@ bool FakeStubCellularNetworksProvider::AddOrRemoveStubCellularNetworks(
       continue;
     }
 
-    if (base::ranges::none_of(
+    if (std::ranges::none_of(
             network_list, [&iccid](const std::unique_ptr<ManagedState>& state) {
               const NetworkState* network = state->AsNetworkState();
               return !network->IsNonShillCellularNetwork() &&

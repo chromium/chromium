@@ -21,7 +21,7 @@ ArImageTransport::ArImageTransport(
 
 ArImageTransport::~ArImageTransport() = default;
 
-void ArImageTransport::DoRuntimeInitialization(int texture_taget) {
+void ArImageTransport::DoRuntimeInitialization() {
   renderer_ = std::make_unique<XrRenderer>();
   glGenTextures(1, &camera_texture_arcore_.id);
   camera_texture_arcore_.target = GL_TEXTURE_EXTERNAL_OES;
@@ -38,7 +38,6 @@ WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
   DCHECK(IsOnGlThread());
-  DCHECK(UseSharedBuffer());
 
   if (!webxr->GetAnimatingFrame()->camera_image_shared_buffer) {
     webxr->GetAnimatingFrame()->camera_image_shared_buffer = CreateBuffer();
@@ -63,7 +62,7 @@ WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
   // Sanity checks for the camera image buffer.
   DCHECK(camera_image_shared_buffer->shared_image);
   DCHECK(camera_image_shared_buffer->local_eglimage.is_valid());
-  DCHECK_EQ(camera_image_shared_buffer->size, frame_size);
+  DCHECK_EQ(camera_image_shared_buffer->shared_image->size(), frame_size);
 
   // Temporarily change drawing buffer to the camera image buffer.
   if (!camera_image_fbo_) {
@@ -106,24 +105,6 @@ void ArImageTransport::CopyCameraImageToFramebuffer(
   glDisable(GL_BLEND);
   CopyTextureToFramebuffer(camera_texture_arcore_, framebuffer, frame_size,
                            uv_transform);
-}
-
-void ArImageTransport::CopyDrawnImageToFramebuffer(
-    WebXrPresentationState* webxr,
-    GLuint framebuffer,
-    const gfx::Size& frame_size,
-    const gfx::Transform& uv_transform) {
-  DVLOG(2) << __func__;
-
-  // Set the blend mode for combining the drawn image (source) with the camera
-  // image (destination). WebXR assumes that the canvas has premultiplied alpha,
-  // so the source blend function is GL_ONE. The destination blend function is
-  // (1 - src_alpha) as usual. (Setting that to GL_ONE would simulate an
-  // additive AR headset that can't draw opaque black.)
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-  auto texture = GetRenderingTexture(webxr);
-  CopyTextureToFramebuffer(texture, framebuffer, frame_size, uv_transform);
 }
 
 void ArImageTransport::CopyTextureToFramebuffer(

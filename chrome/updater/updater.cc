@@ -4,6 +4,7 @@
 
 #include "chrome/updater/updater.h"
 
+#include <algorithm>
 #include <iterator>
 
 #include "base/at_exit.h"
@@ -15,7 +16,6 @@
 #include "base/logging.h"
 #include "base/process/memory.h"
 #include "base/process/process_handle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_executor.h"
@@ -51,7 +51,7 @@
 #include "base/win/process_startup_helper.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
-#include "chrome/updater/app/server/win/service_main.h"
+#include "chrome/updater/app/server/win/updater_service_delegate.h"
 #include "chrome/updater/util/win_util.h"
 #endif
 
@@ -79,22 +79,14 @@ void ReinitializeLoggingAfterCrashHandler(UpdaterScope updater_scope) {
   InitLogging(updater_scope);
 }
 
-void InitializeCrashKeys(const base::CommandLine& command_line) {
-  crash_reporter::InitializeCrashKeys();
-  static crash_reporter::CrashKeyString<16> crash_key_process_type(
-      "process_type");
-  crash_key_process_type.Set("updater");
-  crash_keys::SetSwitchesFromCommandLine(command_line, nullptr);
-}
-
 void InitializeCrashReporting(UpdaterScope updater_scope) {
   if (!CrashClient::GetInstance()->InitializeCrashReporting(updater_scope)) {
     VLOG(1) << "Crash reporting is not available.";
     return;
   }
-  if (AreRawUsageStatsEnabled(updater_scope)) {
-    CrashClient::GetInstance()->SetUploadsEnabled(true);
-  }
+  crash_reporter::InitializeCrashKeys();
+  crash_keys::SetSwitchesFromCommandLine(
+      *base::CommandLine::ForCurrentProcess(), nullptr);
   VLOG(1) << "Crash reporting initialized.";
 }
 
@@ -165,6 +157,15 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
   // Only tasks and timers are supported on the main sequence.
   base::SingleThreadTaskExecutor main_task_executor;
 
+  if (command_line->HasSwitch(kForceInstallSwitch)) {
+    const int recover_result = MakeAppRecover()->Run();
+    return recover_result == kErrorOk &&
+                   (command_line->HasSwitch(kInstallSwitch) ||
+                    command_line->HasSwitch(kHandoffSwitch))
+               ? MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run()
+               : recover_result;
+  }
+
   if (command_line->HasSwitch(kInstallSwitch) ||
       command_line->HasSwitch(kHandoffSwitch)) {
     return MakeAppInstall(command_line->HasSwitch(kSilentSwitch))->Run();
@@ -180,7 +181,7 @@ int HandleUpdaterCommands(UpdaterScope updater_scope,
 
 #if BUILDFLAG(IS_WIN)
   if (command_line->HasSwitch(kWindowsServiceSwitch)) {
-    return ServiceMain::RunWindowsService(command_line);
+    return UpdaterServiceDelegate::RunWindowsService();
   }
 
   if (command_line->HasSwitch(kHealthCheckSwitch)) {
@@ -242,7 +243,7 @@ const char* GetUpdaterCommand(const base::CommandLine* command_line) {
       kHandoffSwitch,
       kNetWorkerSwitch,
   };
-  const auto it = base::ranges::find_if(commands, [command_line](auto cmd) {
+  const auto it = std::ranges::find_if(commands, [command_line](auto cmd) {
     return command_line->HasSwitch(cmd);
   });
   // Return the command. As a workaround for recovery component invocations
@@ -262,10 +263,12 @@ constexpr const char* BuildFlavor() {
 }
 
 constexpr const char* BuildArch() {
-#if defined(ARCH_CPU_64_BITS)
-  return "64 bits";
-#elif defined(ARCH_CPU_32_BITS)
-  return "32 bits";
+#if defined(ARCH_CPU_ARM64)
+  return "64 bit (ARM)";
+#elif defined(ARCH_CPU_X86_64)
+  return "64 bit (x64)";
+#elif defined(ARCH_CPU_X86)
+  return "32 bit (x86)";
 #else
 #error CPU architecture is unknown.
 #endif
@@ -298,8 +301,8 @@ void EnableLoggingByDefault() {
     command_line->AppendSwitch(kEnableLoggingSwitch);
   }
   if (!command_line->HasSwitch(kLoggingModuleSwitch)) {
-    command_line->AppendSwitchASCII(kLoggingModuleSwitch,
-                                    kLoggingModuleSwitchValue);
+    command_line->AppendSwitchUTF8(kLoggingModuleSwitch,
+                                   kLoggingModuleSwitchValue);
   }
 }
 
@@ -320,7 +323,6 @@ int UpdaterMain(int argc, const char* const* argv) {
   *command_line = GetCommandLineLegacyCompatible();
 #endif
   EnableLoggingByDefault();
-  InitializeCrashKeys(*command_line);
   const UpdaterScope updater_scope = GetUpdaterScope();
   InitLogging(updater_scope);
   VLOG(1) << "Version: " << kUpdaterVersion << ", " << BuildFlavor() << ", "

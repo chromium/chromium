@@ -4,9 +4,9 @@
 
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 
-#include <utility>
-
 #include <google/protobuf/message_lite.h>
+
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -355,6 +356,14 @@ class UserDataAuthClientImpl : public UserDataAuthClient {
       const ::user_data_auth::SetUserDataStorageWriteEnabledRequest& request,
       SetUserDataStorageWriteEnabledCallback callback) override {
     CallProtoMethod(::user_data_auth::kSetUserDataStorageWriteEnabled,
+                    ::user_data_auth::kUserDataAuthInterface, request,
+                    std::move(callback));
+  }
+
+  void LockFactorUntilReboot(
+      const ::user_data_auth::LockFactorUntilRebootRequest& request,
+      LockFactorUntilRebootCallback callback) override {
+    CallProtoMethod(::user_data_auth::kLockFactorUntilReboot,
                     ::user_data_auth::kUserDataAuthInterface, request,
                     std::move(callback));
   }

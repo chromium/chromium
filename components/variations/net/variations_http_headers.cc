@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -14,7 +13,6 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/google/core/common/google_util.h"
-#include "components/variations/net/omnibox_http_headers.h"
 #include "components/variations/variations_features.h"
 #include "components/variations/variations_ids_provider.h"
 #include "net/base/isolation_info.h"
@@ -250,8 +248,6 @@ class VariationsHeaderHelper {
   VariationsHeaderHelper& operator=(const VariationsHeaderHelper&) = delete;
 
   bool AppendHeaderIfNeeded(const GURL& url, InIncognito incognito) {
-    AppendOmniboxOnDeviceSuggestionsHeaderIfNeeded(url, resource_request_);
-
     // Note the criteria for attaching client experiment headers:
     // 1. We only transmit to Google owned domains which can evaluate
     // experiments.
@@ -398,11 +394,6 @@ bool ShouldAppendVariationsHeaderForTesting(
 void UpdateCorsExemptHeaderForVariations(
     network::mojom::NetworkContextParams* params) {
   params->cors_exempt_header_list.push_back(kClientDataHeader);
-
-  if (base::FeatureList::IsEnabled(kReportOmniboxOnDeviceSuggestionsHeader)) {
-    params->cors_exempt_header_list.push_back(
-        kOmniboxOnDeviceSuggestionsHeader);
-  }
 }
 
 }  // namespace variations

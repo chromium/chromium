@@ -42,8 +42,8 @@ MATCHER(OKStatus, "Equality matcher for type OK leveldb::Status") {
 
 class MockListener : public SessionStorageDataMap::Listener {
  public:
-  MockListener() {}
-  ~MockListener() override {}
+  MockListener() = default;
+  ~MockListener() override = default;
   MOCK_METHOD2(OnDataMapCreation,
                void(const std::vector<uint8_t>& map_id,
                     SessionStorageDataMap* map));
@@ -64,7 +64,7 @@ class SessionStorageNamespaceImplTest
   void RunBatch(std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks) {
     base::RunLoop loop(base::RunLoop::Type::kNestableTasksAllowed);
     database_->RunBatchDatabaseTasks(
-        std::move(tasks),
+        RunBatchTasksContext::kTest, std::move(tasks),
         base::BindLambdaForTesting([&](leveldb::Status) { loop.Quit(); }));
     loop.Run();
   }
@@ -457,16 +457,19 @@ TEST_F(SessionStorageNamespaceImplTest, PurgeUnused) {
   mojo::Remote<blink::mojom::StorageArea> leveldb_1;
   namespace_impl->OpenArea(test_storage_key1_,
                            leveldb_1.BindNewPipeAndPassReceiver());
-  EXPECT_TRUE(namespace_impl->HasAreaForStorageKey(test_storage_key1_));
+  EXPECT_TRUE(
+      namespace_impl->HasAreaForStorageKeyForTesting(test_storage_key1_));
 
   EXPECT_CALL(listener_, OnDataMapDestruction(StdStringToUint8Vector("0")))
       .Times(1);
   leveldb_1.reset();
-  EXPECT_TRUE(namespace_impl->HasAreaForStorageKey(test_storage_key1_));
+  EXPECT_TRUE(
+      namespace_impl->HasAreaForStorageKeyForTesting(test_storage_key1_));
 
   namespace_impl->FlushAreasForTesting();
   namespace_impl->PurgeUnboundAreas();
-  EXPECT_FALSE(namespace_impl->HasAreaForStorageKey(test_storage_key1_));
+  EXPECT_FALSE(
+      namespace_impl->HasAreaForStorageKeyForTesting(test_storage_key1_));
 
   namespaces_.clear();
 }
@@ -498,7 +501,8 @@ TEST_F(SessionStorageNamespaceImplTest, ReopenClonedAreaAfterPurge) {
   leveldb_1.reset();
   namespace_impl->FlushAreasForTesting();
   namespace_impl->PurgeUnboundAreas();
-  EXPECT_FALSE(namespace_impl->HasAreaForStorageKey(test_storage_key1_));
+  EXPECT_FALSE(
+      namespace_impl->HasAreaForStorageKeyForTesting(test_storage_key1_));
 
   namespace_impl->OpenArea(test_storage_key1_,
                            leveldb_1.BindNewPipeAndPassReceiver());

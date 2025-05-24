@@ -1,0 +1,14 @@
+{
+  "android-14-arm64-fyi-rel": {
+    "scripts": [
+      {
+        "name": "check_network_annotations",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "script": "check_network_annotations.py"
+      }
+    ]
+  }
+}

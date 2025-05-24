@@ -19,11 +19,11 @@ import {ElementsTestRunner} from 'elements_test_runner';
   function step1() {
     var treeElement = ElementsTestRunner.getElementStylePropertyTreeItem('background');
     TestRunner.addResult('Viewing \'background\' value in Styles:');
-    TestRunner.addResult(treeElement.valueElement.textContent);
+    TestRunner.addResult(treeElement.valueElement.innerText);
 
     treeElement.startEditingValue();
     TestRunner.addResult('Editing \'background\' value in Styles:');
-    TestRunner.addResult(treeElement.valueElement.textContent);
+    TestRunner.addResult(treeElement.valueElement.innerText);
     TestRunner.completeTest();
   }
 })();

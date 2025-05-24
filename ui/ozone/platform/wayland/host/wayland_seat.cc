@@ -93,6 +93,8 @@ void WaylandSeat::HandleCapabilities(void* data,
                                      uint32_t capabilities) {
   DCHECK(connection_->event_source());
 
+  bool prev_keyboard_available = !!keyboard_;
+
   if (capabilities & WL_SEAT_CAPABILITY_KEYBOARD) {
     if (!RefreshKeyboard()) {
       LOG(ERROR) << "Failed to get wl_keyboard from seat";
@@ -126,6 +128,14 @@ void WaylandSeat::HandleCapabilities(void* data,
   connection_->UpdateInputDevices();
   connection_->UpdateCursor();
   connection_->Flush();
+
+  bool keyboard_available = !!keyboard_;
+
+  if (keyboard_available != prev_keyboard_available) {
+    // Keyboard focus can be used to determine window active state depending on
+    // keyboard availability.
+    connection_->window_manager()->UpdateActivationState();
+  }
 }
 
 }  // namespace ui

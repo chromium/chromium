@@ -23,14 +23,14 @@ namespace {
 // accesses resources.
 class SpellingOptionsSubMenuObserverTest : public InProcessBrowserTest {
  public:
-  SpellingOptionsSubMenuObserverTest() {}
+  SpellingOptionsSubMenuObserverTest() = default;
 
   SpellingOptionsSubMenuObserverTest(
       const SpellingOptionsSubMenuObserverTest&) = delete;
   SpellingOptionsSubMenuObserverTest& operator=(
       const SpellingOptionsSubMenuObserverTest&) = delete;
 
-  ~SpellingOptionsSubMenuObserverTest() override {}
+  ~SpellingOptionsSubMenuObserverTest() override = default;
 
   void SetUpOnMainThread() override {
     menu_ = std::make_unique<MockRenderViewContextMenu>(false);
@@ -112,8 +112,17 @@ IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest, ToggleSpelling) {
   EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_CHECK_SPELLING_WHILE_TYPING));
 }
 
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ToggleSpellingWithEnhancedSpellCheck \
+  DISABLED_ToggleSpellingWithEnhancedSpellCheck
+#else
+#define MAYBE_ToggleSpellingWithEnhancedSpellCheck \
+  ToggleSpellingWithEnhancedSpellCheck
+#endif
 IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
-                       ToggleSpellingWithEnhancedSpellCheck) {
+                       MAYBE_ToggleSpellingWithEnhancedSpellCheck) {
   InitMenu(true, true, "en-US,es", std::vector<std::string>(1, "en-US"));
 
   // Verify that because 'Use Enhanced spell check' is checked, the
@@ -133,7 +142,15 @@ IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
 // Single accept language is selected based on the dictionaries preference.
 // Consequently selecting multilingual spellcheck should copy all accept
 // languages into spellcheck dictionaries preference.
-IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest, SelectMultilingual) {
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SelectMultilingual DISABLED_SelectMultilingual
+#else
+#define MAYBE_SelectMultilingual SelectMultilingual
+#endif
+IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
+                       MAYBE_SelectMultilingual) {
   InitMenu(true, false, "en-US,es", std::vector<std::string>(1, "en-US"));
   EXPECT_FALSE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_MULTI_LINGUAL));
   EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST));
@@ -149,8 +166,15 @@ IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest, SelectMultilingual) {
 // Multilingual spellcheck is selected when all dictionaries are used for
 // spellcheck. Consequently selecting "English (United States)" should set
 // spellcheck dictionaries preferences to ["en-US"].
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SelectFirstLanguage DISABLED_SelectFirstLanguage
+#else
+#define MAYBE_SelectFirstLanguage SelectFirstLanguage
+#endif
 IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
-                       SelectFirstLanguage) {
+                       MAYBE_SelectFirstLanguage) {
   std::vector<std::string> dictionaries;
   dictionaries.push_back("en-US");
   dictionaries.push_back("es");
@@ -164,8 +188,15 @@ IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
 }
 
 // Single dictionary should be selected based on preferences.
+// TODO(https://crbug.com/410751413): Deleting temporary directories using
+// test_file_util is flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SingleLanguageSelected DISABLED_SingleLanguageSelected
+#else
+#define MAYBE_SingleLanguageSelected SingleLanguageSelected
+#endif
 IN_PROC_BROWSER_TEST_F(SpellingOptionsSubMenuObserverTest,
-                       SingleLanguageSelected) {
+                       MAYBE_SingleLanguageSelected) {
   InitMenu(true, false, "en-US", std::vector<std::string>(1, "en-US"));
   EXPECT_TRUE(menu()->IsCommandIdChecked(IDC_SPELLCHECK_LANGUAGES_FIRST));
 }

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -100,20 +100,20 @@ export class ViewerToolbarDropdownElement extends PolymerElement {
     };
   }
 
-  closedIcon: string;
-  dropdownCentered: boolean;
-  dropdownOpen: boolean;
-  header: string;
-  hideHeader: boolean;
-  lowerBound: number;
-  openAfterSelect: boolean;
-  openIcon: string;
-  selected: boolean;
+  declare closedIcon: string;
+  declare dropdownCentered: boolean;
+  declare dropdownOpen: boolean;
+  declare header: string;
+  declare hideHeader: boolean;
+  declare lowerBound: number;
+  declare openAfterSelect: boolean;
+  declare openIcon: string;
+  declare selected: boolean;
 
   /** Current animation being played, or null if there is none. */
   private animation_: Animation|null = null;
 
-  private dropdownIcon_: string;
+  declare private dropdownIcon_: string;
 
   /**
    * True if the max-height CSS property for the dropdown scroll container is

@@ -48,6 +48,7 @@
 namespace blink {
 
 class AudioNodeOutput;
+class V8AutomationRate;
 
 // AudioParam class represents web-exposed AudioParam interface.
 class AudioParam final : public ScriptWrappable, public InspectorHelperMixin {
@@ -92,8 +93,8 @@ class AudioParam final : public ScriptWrappable, public InspectorHelperMixin {
   void setValue(float, ExceptionState&);
   void setValue(float);
 
-  String automationRate() const;
-  void setAutomationRate(const String&, ExceptionState&);
+  V8AutomationRate automationRate() const;
+  void setAutomationRate(const V8AutomationRate&, ExceptionState&);
 
   float defaultValue() const;
 

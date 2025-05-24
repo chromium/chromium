@@ -27,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -110,6 +111,52 @@ void FillDefaultSessionInfo(SessionInfo* info) {
   info->state = SessionState::LOGIN_PRIMARY;
 }
 
+namespace {
+
+class FakeSessionControllerClient : public SessionControllerClient {
+ public:
+  FakeSessionControllerClient() {
+    RegisterUserProfilePrefs(pref_service_.registry(), /*country=*/"",
+                             /**for_test=*/true);
+  }
+
+  FakeSessionControllerClient(const FakeSessionControllerClient&) = delete;
+  FakeSessionControllerClient& operator=(const FakeSessionControllerClient&) =
+      delete;
+
+  ~FakeSessionControllerClient() override = default;
+
+  // SessionControllerClient:
+  void RequestLockScreen() override {}
+  void RequestHideLockScreen() override {}
+  void RequestSignOut() override {}
+  void RequestRestartForUpdate() override {}
+  void AttemptRestartChrome() override {}
+  void SwitchActiveUser(const AccountId& account_id) override {}
+  void CycleActiveUser(CycleUserDirection direction) override {}
+  void ShowMultiProfileLogin() override {}
+  void EmitAshInitialized() override {}
+  PrefService* GetSigninScreenPrefService() override { return nullptr; }
+  PrefService* GetUserPrefService(const AccountId& account_id) override {
+    return &pref_service_;
+  }
+  base::FilePath GetProfilePath(const AccountId& account_id) override {
+    return base::FilePath();
+  }
+  std::tuple<bool, bool> IsEligibleForSeaPen(
+      const AccountId& account_id) override {
+    return {false, false};
+  }
+  std::optional<int> GetExistingUsersCount() const override {
+    return std::nullopt;
+  }
+
+ private:
+  TestingPrefServiceSimple pref_service_;
+};
+
+}  // namespace
+
 class SessionControllerImplTest : public testing::Test {
  public:
   SessionControllerImplTest() = default;
@@ -124,9 +171,13 @@ class SessionControllerImplTest : public testing::Test {
   void SetUp() override {
     controller_ = std::make_unique<SessionControllerImpl>();
     controller_->AddObserver(&observer_);
+    controller_->SetClient(&client_);
   }
 
-  void TearDown() override { controller_->RemoveObserver(&observer_); }
+  void TearDown() override {
+    controller_->SetClient(nullptr);
+    controller_->RemoveObserver(&observer_);
+  }
 
   void SetSessionInfo(const SessionInfo& info) {
     controller_->SetSessionInfo(info);
@@ -157,6 +208,7 @@ class SessionControllerImplTest : public testing::Test {
 
  private:
   std::unique_ptr<SessionControllerImpl> controller_;
+  FakeSessionControllerClient client_;
   TestSessionObserver observer_;
 };
 
@@ -477,6 +529,31 @@ TEST_F(SessionControllerImplTest, IsUserChild) {
   EXPECT_TRUE(controller()->IsUserChild());
 }
 
+// Tests that Ash.Login.Lock.SessionStateChange is populated properly
+// when user session state is toggled between LOCKED and ACTIVE.
+TEST_F(SessionControllerImplTest, UserSessionLockMetrics) {
+  base::HistogramTester histograms;
+  SessionInfo info;
+  FillDefaultSessionInfo(&info);
+
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*lock=*/0, 0);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*unlock=*/1, 0);
+  info.state = SessionState::LOCKED;
+  controller()->SetSessionInfo(info);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*lock=*/0, 1);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*unlock=*/1, 0);
+  info.state = SessionState::ACTIVE;
+  controller()->SetSessionInfo(info);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*lock=*/0, 1);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*unlock=*/1, 1);
+}
+
 class SessionControllerImplPrefsTest : public NoSessionAshTestBase {
  public:
   SessionControllerImplPrefsTest()
@@ -496,49 +573,18 @@ TEST_F(SessionControllerImplPrefsTest, Observer) {
   controller->AddObserver(&observer);
 
   // Setup 2 users.
+  SimulateUserLogin({kUser1});
+  SimulateUserLogin({kUser2});
+
   TestSessionControllerClient* session = GetSessionControllerClient();
-  // Disable auto-provision of PrefService for each user.
-  constexpr bool kProvidePrefService = false;
-  session->AddUserSession(kUser1, user_manager::UserType::kRegular,
-                          kProvidePrefService);
-  session->AddUserSession(kUser2, user_manager::UserType::kRegular,
-                          kProvidePrefService);
-
-  // The observer is not notified because the PrefService for kUser1 is not yet
-  // ready.
   session->SwitchActiveUser(kUserAccount1);
-  EXPECT_EQ(nullptr, observer.last_user_pref_service());
 
-  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                           /*for_test=*/true);
-  session->SetUserPrefService(kUserAccount1, std::move(pref_service));
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
             observer.last_user_pref_service());
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
             controller->GetLastActiveUserPrefService());
 
   observer.clear_last_user_pref_service();
-
-  // Switching to a user for which prefs are not ready does not notify and
-  // GetLastActiveUserPrefService() returns the old PrefService.
-  session->SwitchActiveUser(kUserAccount2);
-  EXPECT_EQ(nullptr, observer.last_user_pref_service());
-  EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
-            controller->GetLastActiveUserPrefService());
-
-  session->SwitchActiveUser(kUserAccount1);
-  EXPECT_EQ(nullptr, observer.last_user_pref_service());
-  EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
-            controller->GetLastActiveUserPrefService());
-
-  // There should be no notification about a PrefService for an inactive user
-  // becoming initialized.
-  pref_service = std::make_unique<TestingPrefServiceSimple>();
-  RegisterUserProfilePrefs(pref_service->registry(), /*country=*/"",
-                           /*for_text=*/true);
-  session->SetUserPrefService(kUserAccount2, std::move(pref_service));
-  EXPECT_EQ(nullptr, observer.last_user_pref_service());
 
   session->SwitchActiveUser(kUserAccount2);
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount2),
@@ -561,12 +607,12 @@ TEST_F(SessionControllerImplPrefsTest, NotifyOnce) {
   controller->AddObserver(&observer);
   ASSERT_EQ(0, observer.user_prefs_changed_count());
 
-  SimulateUserLogin(kUser1);
+  SimulateUserLogin({kUser1});
   EXPECT_EQ(1, observer.user_prefs_changed_count());
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount1),
             observer.last_user_pref_service());
 
-  SimulateUserLogin(kUser2);
+  SimulateUserLogin({kUser2});
   EXPECT_EQ(2, observer.user_prefs_changed_count());
   EXPECT_EQ(controller->GetUserPrefServiceForUser(kUserAccount2),
             observer.last_user_pref_service());
@@ -579,6 +625,8 @@ TEST_F(SessionControllerImplPrefsTest, NotifyOnce) {
   controller->RemoveObserver(&observer);
 }
 
+namespace {
+
 // Base class for a session observer which can be mocked.
 class MockSessionObserver : public SessionObserver {
  public:
@@ -586,6 +634,8 @@ class MockSessionObserver : public SessionObserver {
   MOCK_METHOD(void, OnActiveUserSessionChanged, (const AccountId&), (override));
   MOCK_METHOD(void, OnSessionStateChanged, (SessionState), (override));
 };
+
+}  // namespace
 
 // Verifies that time of last session activation is stored to synced user prefs.
 TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
@@ -600,13 +650,12 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
   controller->AddObserver(&mock_session_observer);
 
   // Switch to test user.
-  TestSessionControllerClient* session = GetSessionControllerClient();
-  session->AddUserSession(kUser1Email, user_manager::UserType::kRegular);
-  session->SwitchActiveUser(kUser1AccountId);
+  SimulateUserLogin({.display_email = kUser1Email, .activate_session = false});
 
   // Initially time of last session activation is expected to be `base::Time()`.
   base::Time expected_time_of_last_session_activation;
 
+  TestSessionControllerClient* session = GetSessionControllerClient();
   // Iterate over all possible session states.
   for (auto expected_session_state : std::vector<SessionState>{
            SessionState::OOBE, SessionState::LOGIN_PRIMARY,
@@ -694,8 +743,7 @@ TEST_F(SessionControllerImplPrefsTest, SetsTimeOfLastSessionActivation) {
             *base::ValueToTime(time_of_last_session_activation->GetValue()),
             expected_time_of_last_session_activation);
       }));
-  session->AddUserSession(kUser2Email, user_manager::UserType::kRegular);
-  session->SwitchActiveUser(kUser2AccountId);
+  SimulateUserLogin({kUser2Email});
   testing::Mock::VerifyAndClearExpectations(&mock_session_observer);
 
   {
@@ -1019,7 +1067,7 @@ TEST_F(SessionControllerImplUnblockTest, ActiveWindowAfterUnblocking) {
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   // |widget| should not be active as it is blocked by SessionControllerImpl.
   EXPECT_FALSE(widget->IsActive());
-  SimulateUserLogin("user@test.com");
+  SimulateUserLogin({"user@test.com"});
   EXPECT_FALSE(Shell::Get()->session_controller()->IsUserSessionBlocked());
 
   // |widget| should now be active as SessionControllerImpl no longer is

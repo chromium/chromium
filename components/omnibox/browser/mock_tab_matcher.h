@@ -12,8 +12,13 @@
 // with tests.
 class MockTabMatcher : public TabMatcher {
  public:
-  MOCK_CONST_METHOD2(IsTabOpenWithURL,
-                     bool(const GURL&, const AutocompleteInput*));
+  MOCK_CONST_METHOD3(IsTabOpenWithURL,
+                     bool(const GURL&, const AutocompleteInput*, bool));
+  MOCK_CONST_METHOD4(IsTabOpenWithSameTitleOrSimilarURL,
+                     bool(const std::u16string&,
+                          const GURL& url,
+                          const GURL::Replacements&,
+                          bool));
   MockTabMatcher();
   ~MockTabMatcher() override;
 };

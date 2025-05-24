@@ -26,9 +26,7 @@ void WebAppTask::UpdateTitle() {
 }
 
 void WebAppTask::UpdateFavicon() {
-  const gfx::ImageSkia* icon =
-      RendererTask::GetFaviconFromWebContents(web_contents());
-  set_icon(icon ? *icon : gfx::ImageSkia());
+  DefaultUpdateFaviconImpl();
 }
 
 std::u16string WebAppTask::GetPrefixedTitle(

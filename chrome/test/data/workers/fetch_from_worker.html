@@ -1,14 +1,23 @@
 <script>
   const params = new URLSearchParams(location.search);
-  const worker = new Worker(
+  const start_worker_manually = params.has('start_worker_manually');
+
+  let worker;
+  let resolve;
+  function start_worker() {
+    worker = new Worker(
       params.has('script') ? params.get('script') : 'fetch_from_worker.js');
 
-  let resolve;
-  worker.onmessage = e => { resolve(e.data); };
+    worker.onmessage = e => { resolve(e.data); };
+  }
 
   function fetch_from_worker(url) {
     let p = new Promise(r => { resolve = r; });
     worker.postMessage({url});
     return p;
+  }
+
+  if (!start_worker_manually) {
+    start_worker();
   }
 </script>

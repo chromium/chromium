@@ -21,51 +21,54 @@ import static org.chromium.chrome.browser.notifications.channels.ChromeChannelDe
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browserservices.ui.TrustedWebActivityModel;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 /** Tests for {@link DisclosureNotification}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Config(manifest = Config.NONE)
 public class DisclosureNotificationTest {
     private static final String SCOPE = "https://www.example.com";
     private static final String PACKAGE = "com.example.twa";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock public TrustedWebActivityModel.DisclosureEventsCallback mCallback;
     @Mock public NotificationManagerProxy mNotificationManager;
 
-    private TrustedWebActivityModel mModel = new TrustedWebActivityModel();
+    private final TrustedWebActivityModel mModel = new TrustedWebActivityModel();
     private DisclosureNotification mNotification;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mModel.set(DISCLOSURE_EVENTS_CALLBACK, mCallback);
         mModel.set(DISCLOSURE_SCOPE, SCOPE);
         mModel.set(PACKAGE_NAME, PACKAGE);
         mModel.set(DISCLOSURE_FIRST_TIME, true);
 
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManager);
+
         Context context = RuntimeEnvironment.application;
         mNotification =
-                new DisclosureNotification(
-                        context,
-                        context.getResources(),
-                        mNotificationManager,
-                        mModel,
-                        mLifecycleDispatcher);
+                new DisclosureNotification(context.getResources(), mModel, mLifecycleDispatcher);
     }
 
     @Test

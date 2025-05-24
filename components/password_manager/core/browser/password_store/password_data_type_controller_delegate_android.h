@@ -32,7 +32,7 @@ class PasswordDataTypeControllerDelegateAndroid
                       StartCallback callback) override;
   void OnSyncStopping(syncer::SyncStopMetadataFate metadata_fate) override;
   void GetAllNodesForDebugging(AllNodesCallback callback) override;
-  void HasUnsyncedData(base::OnceCallback<void(bool)> callback) override;
+  void GetUnsyncedDataCount(base::OnceCallback<void(size_t)> callback) override;
   void GetTypeEntitiesCountForDebugging(
       base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback)
       const override;

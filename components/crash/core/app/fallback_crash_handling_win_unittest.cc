@@ -4,11 +4,14 @@
 
 #include "components/crash/core/app/fallback_crash_handling_win.h"
 
+#include <windows.h>
+
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
 #include "base/test/multiprocess_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -39,10 +42,7 @@ MULTIPROCESS_TEST_MAIN(FallbackCrashHandlingWinRunHandler) {
   RaiseException(kExceptionCode, 0, 0, nullptr);
 
   // This process should never return from the exception.
-  CHECK(false) << "Unexpected return from RaiseException";
-
-  // Should never get here.
-  return 0;
+  NOTREACHED() << "Unexpected return from RaiseException";
 }
 
 class FallbackCrashHandlingTest : public base::MultiProcessTest {

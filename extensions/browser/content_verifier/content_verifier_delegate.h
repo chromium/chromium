@@ -42,7 +42,7 @@ class ContentVerifierDelegate {
 
   virtual ~ContentVerifierDelegate() {}
 
-  // Returns verification source type for |extension|.
+  // Returns verification source type for `extension`.
   virtual VerifierSourceType GetVerifierSourceType(
       const Extension& extension) = 0;
 

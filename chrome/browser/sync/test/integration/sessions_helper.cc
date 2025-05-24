@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -114,7 +114,17 @@ bool CompareSyncedSessions(const sync_sessions::SyncedSession* lhs,
 }
 
 void SortSyncedSessions(SyncedSessionVector* sessions) {
-  base::ranges::sort(*sessions, CompareSyncedSessions);
+  std::ranges::sort(*sessions, CompareSyncedSessions);
+}
+
+std::vector<sync_pb::SessionSpecifics> SyncEntitiesToSessionSpecifics(
+    std::vector<sync_pb::SyncEntity> entities) {
+  std::vector<sync_pb::SessionSpecifics> sessions;
+  for (sync_pb::SyncEntity& entity : entities) {
+    DCHECK(entity.specifics().has_session());
+    sessions.push_back(std::move(entity.specifics().session()));
+  }
+  return sessions;
 }
 
 }  // namespace
@@ -262,7 +272,7 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
       std::unique_ptr<sessions::SessionTab> new_tab =
           std::make_unique<sessions::SessionTab>();
       new_tab->navigations.resize(tab->navigations.size());
-      base::ranges::copy(tab->navigations, new_tab->navigations.begin());
+      std::ranges::copy(tab->navigations, new_tab->navigations.begin());
       new_window->wrapped_window.tabs.push_back(std::move(new_tab));
     }
     SessionID id = new_window->wrapped_window.window_id;
@@ -424,6 +434,23 @@ bool ForeignSessionsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   *os << "Can't match sessions for profile " << foreign_profile_index_ << ".";
   return false;
+}
+
+SessionEntitiesChecker::SessionEntitiesChecker(const Matcher& matcher)
+    : matcher_(matcher) {}
+
+SessionEntitiesChecker::~SessionEntitiesChecker() = default;
+
+bool SessionEntitiesChecker::IsExitConditionSatisfied(std::ostream* os) {
+  std::vector<sync_pb::SessionSpecifics> entities =
+      SyncEntitiesToSessionSpecifics(
+          fake_server()->GetSyncEntitiesByDataType(syncer::SESSIONS));
+
+  testing::StringMatchResultListener result_listener;
+  const bool matches =
+      testing::ExplainMatchResult(matcher_, entities, &result_listener);
+  *os << result_listener.str();
+  return matches;
 }
 
 }  // namespace sessions_helper

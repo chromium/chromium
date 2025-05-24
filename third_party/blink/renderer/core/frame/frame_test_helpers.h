@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/display/screen_info.h"
 
 namespace base {
 class TickClock;
@@ -192,7 +193,9 @@ class TestWebFrameWidgetHost : public mojom::blink::WidgetHost,
       mojo::PendingReceiver<viz::mojom::blink::CompositorFrameSink>
           compositor_frame_sink_receiver,
       mojo::PendingRemote<viz::mojom::blink::CompositorFrameSinkClient>
-          compositor_frame_sink_client) override;
+          compositor_frame_sink_client,
+      mojo::PendingRemote<blink::mojom::blink::RenderInputRouterClient>
+          viz_rir_client_remote) override;
   void RegisterRenderFrameMetadataObserver(
       mojo::PendingReceiver<cc::mojom::blink::RenderFrameMetadataObserverClient>
           render_frame_metadata_observer_client_receiver,
@@ -250,6 +253,8 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   cc::FakeLayerTreeFrameSink* LastCreatedFrameSink();
 
   virtual display::ScreenInfo GetInitialScreenInfo();
+  void SetInitialScreenInfo(const display::ScreenInfo&);
+
   virtual std::unique_ptr<TestWebFrameWidgetHost> CreateWidgetHost();
 
   void BindWidgetChannels(
@@ -275,6 +280,10 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
     return last_overscroll_;
   }
 
+  void RequestDecode(const cc::DrawImage&,
+                     base::OnceCallback<void(bool)>,
+                     bool speculative) override;
+
   using WebFrameWidgetImpl::GetOriginalScreenInfo;
 
  protected:
@@ -298,6 +307,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<TestWebFrameWidgetHost> widget_host_;
   mojom::blink::DidOverscrollParamsPtr last_overscroll_;
+  display::ScreenInfo initial_screen_info_;
 };
 
 using CreateTestWebFrameWidgetCallback =
@@ -517,7 +527,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
             std::unique_ptr<TestWebFrameClient> self_owned = nullptr);
 
   // WebLocalFrameClient:
-  void FrameDetached() override;
+  void FrameDetached(DetachReason detach_reason) override;
   WebLocalFrame* CreateChildFrame(
       blink::mojom::blink::TreeScopeType,
       const WebString& name,
@@ -548,6 +558,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
       const WebURLRequest&,
       const WebWindowFeatures&,
       const WebString& name,
+      const gfx::Rect& requested_screen_rect,
       WebNavigationPolicy,
       network::mojom::blink::WebSandboxFlags,
       const SessionStorageNamespaceId&,
@@ -616,8 +627,7 @@ class TestWidgetInputHandlerHost : public mojom::blink::WidgetInputHandlerHost {
   void ImeCancelComposition() override;
   void ImeCompositionRangeChanged(
       const gfx::Range& range,
-      const std::optional<WTF::Vector<gfx::Rect>>& character_bounds,
-      const std::optional<WTF::Vector<gfx::Rect>>& line_bounds) override;
+      const std::optional<WTF::Vector<gfx::Rect>>& character_bounds) override;
   void SetMouseCapture(bool capture) override;
   void SetAutoscrollSelectionActiveInMainFrame(
       bool autoscroll_selection) override;

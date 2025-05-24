@@ -1,0 +1,39 @@
+<!--
+@BLINK-ALLOW:actions*
+-->
+<select>
+  <button>
+    <selectedcontent></selectedcontent>
+  </button>
+  <option>
+    <button type="button">hello world</button>
+  </option>
+  <option>
+    <a href="google.com">search engine</a>
+  </option>
+  <option>
+    <button type="button">my-first-button</button>
+    <button type="button">my-second-button</button>
+    <a href="google.com">my-link</a>
+  </option>
+</select>
+
+<div role="listbox">
+  <div tabIndex="0" role="option">Item 1<button type="button">hello world</button></div>
+  <div tabIndex="1" role="option">Item 2<a href="google.com">search engine</a></div>
+</div>
+
+<div role="menu">
+  <div tabindex="0" role="menuitem">File1<button type="button">hello world</button></div>
+  <div tabindex="1" role="menuitem">File2<a href="google.com">search engine</a></div>
+</div>
+
+<style>
+selectedcontent .description {
+  display: none;
+}
+select, ::picker(select) {
+  appearance: base-select;
+}
+</style>
+

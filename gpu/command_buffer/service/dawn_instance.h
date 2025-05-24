@@ -38,8 +38,7 @@ class DawnInstance : public dawn::native::Instance {
       dawn::platform::Platform* platform,
       const GpuPreferences& gpu_preferences,
       SafetyLevel safety,
-      WGPULoggingCallback logging_callback,
-      void* logging_callback_userdata);
+      dawn::native::DawnInstanceDescriptor* dawn_instance_descriptor = nullptr);
 
  private:
   using dawn::native::Instance::Instance;

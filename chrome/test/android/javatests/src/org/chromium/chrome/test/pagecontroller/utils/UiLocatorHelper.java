@@ -50,7 +50,7 @@ public class UiLocatorHelper {
             };
 
     private final UiDevice mDevice;
-    private long mTimeout;
+    private final long mTimeout;
 
     /** Create a UiLocatorHelper with default timeout. */
     UiLocatorHelper() {

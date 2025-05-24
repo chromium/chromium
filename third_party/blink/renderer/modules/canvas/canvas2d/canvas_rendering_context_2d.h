@@ -35,7 +35,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/canvas_interventions/canvas_interventions_enums.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -49,11 +49,10 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -79,23 +78,20 @@ class PaintCanvas;
 namespace blink {
 
 class CanvasImageSource;
-class CanvasRenderingContext2DSettings;
 class ComputedStyle;
 class Element;
 class ExceptionState;
 class ExecutionContext;
-class FontSelector;
 class ImageData;
 class ImageDataSettings;
 class MemoryManagedPaintRecorder;
 class Path2D;
 class SVGResource;
-class TimerBase;
 enum class FlushReason;
 enum class PredefinedColorSpace;
 
 class MODULES_EXPORT CanvasRenderingContext2D final
-    : public CanvasRenderingContext,
+    : public ScriptWrappable,
       public BaseRenderingContext2D,
       public SVGResourceClient {
   DEFINE_WRAPPERTYPEINFO();
@@ -130,37 +126,22 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
   V8RenderingContext* AsV8RenderingContext() final;
 
-  bool isContextLost() const final {
-    return context_lost_mode_ != kNotLostContext;
-  }
-
   bool ShouldAntialias() const;
-  void SetShouldAntialias(bool) override;
-
-  void clearRect(double x, double y, double width, double height);
-  void ClearRect(double x, double y, double width, double height) override {
-    clearRect(x, y, width, height);
-  }
-
-  void Reset() override;
+  void SetShouldAntialias(bool);
 
   void setFontForTesting(const String& new_font) override;
-
-  CanvasRenderingContext2DSettings* getContextAttributes() const;
 
   void drawFocusIfNeeded(Element*);
   void drawFocusIfNeeded(Path2D*, Element*);
 
   void LoseContext(LostContextMode) override;
-  void DidSetSurfaceSize() override;
-
-  void RestoreCanvasMatrixClipStack(cc::PaintCanvas*) const override;
 
   // TaskObserver implementation
   void DidProcessTask(const base::PendingTask&) final;
 
   void StyleDidChange(const ComputedStyle* old_style,
                       const ComputedStyle& new_style) override;
+  void LangAttributeChanged() override;
 
   // SVGResourceClient implementation
   void ResourceContentChanged(SVGResource*) override;
@@ -191,21 +172,27 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void WillDraw(const SkIRect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
 
-  SkColorInfo CanvasRenderingContextSkColorInfo() const override {
-    return color_params_.GetSkColorInfo();
-  }
   scoped_refptr<StaticBitmapImage> GetImage(FlushReason) final;
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
   void FinalizeFrame(FlushReason) override;
 
+  void drawElement(Element* element,
+                   double x,
+                   double y,
+                   ExceptionState& exceptionState);
+  void drawElement(Element* element,
+                   double x,
+                   double y,
+                   double dwidth,
+                   double dheight,
+                   ExceptionState& exceptionState);
+
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() const override;
   ExecutionContext* GetTopExecutionContext() const override;
 
-  bool IsPaintable() const final {
-    return canvas() && canvas()->GetCanvas2DLayerBridge();
-  }
+  bool IsPaintable() const final;
 
   void WillDrawImage(CanvasImageSource*) const final;
 
@@ -238,21 +225,23 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return identifiability_study_helper_.encountered_partially_digested_image();
   }
 
-  int LayerCount() const override;
+  bool ShouldTriggerIntervention() const override {
+    return HasTriggerForIntervention();
+  }
+
+  CanvasOperationType GetCanvasTriggerOperations() const override {
+    return GetTriggersForIntervention();
+  }
 
  protected:
   HTMLCanvasElement* HostAsHTMLCanvasElement() const final;
-  FontSelector* GetFontSelector() const final;
+  UniqueFontSelector* GetFontSelector() const final;
 
-  PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
-    return color_params_.ColorSpace();
-  }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
                    int x,
                    int y) override;
-  void TryRestoreContextEvent(TimerBase*) override;
 
   bool WillSetFont() const final;
   bool CurrentFontResolvedAndUpToDate() const final;
@@ -260,10 +249,19 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
  private:
   friend class CanvasRenderingContext2DAutoRestoreSkCanvas;
-  FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTest,
+  friend class CanvasRenderingContext2DTestBase;
+  FRIEND_TEST_ALL_PREFIXES(CanvasRenderingContext2DTestAccelerated,
                            PrepareMailboxWhenContextIsLostWithFailedRestore);
 
-  bool Restore();
+  void DrawElementInternal(Element* element,
+                           double x,
+                           double y,
+                           std::optional<double> dwidth,
+                           std::optional<double> dheight,
+                           ExceptionState& exceptionState);
+  // Handles a page visibility change that occurs when the canvas is paintable.
+  // TODO(crbug.com/40280152): Fold this method into PageVisibilityChanged().
+  void OnPageVisibilityChangeWhenPaintable();
 
   void PruneLocalFontCache(size_t target_size);
 
@@ -278,7 +276,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void UpdateElementAccessibility(const Path&, Element*);
 
   bool IsComposited() const override;
-  bool IsOriginTopLeft() const override;
   bool HasAlpha() const override { return CreationAttributes().alpha; }
   bool IsDesynchronized() const override {
     return CreationAttributes().desynchronized;
@@ -291,12 +288,12 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ColorSchemeMayHaveChanged() override;
 
+  CanvasResourceProvider* GetOrCreateCanvas2DResourceProvider() override;
+
   FilterOperations filter_operations_;
   HashMap<String, FontDescription> fonts_resolved_using_current_style_;
   bool should_prune_local_font_cache_;
   LinkedHashSet<String> font_lru_list_;
-
-  CanvasColorParams color_params_;
 
   // For privacy reasons we need to delay contextLost events until the page is
   // visible. In order to do this we will hold on to a bool here

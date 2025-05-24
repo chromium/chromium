@@ -1,0 +1,89 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package collaboration_pb;
+
+enum EventType {
+  UNSPECIFIED = 0;
+  TAB_ADDED = 1;
+  TAB_UPDATED = 2;
+  TAB_REMOVED = 3;
+
+  TAB_GROUP_ADDED = 4;
+  TAB_GROUP_REMOVED = 5;
+  TAB_GROUP_NAME_UPDATED = 6;
+  TAB_GROUP_COLOR_UPDATED = 7;
+
+  COLLABORATION_ADDED = 8;
+  COLLABORATION_REMOVED = 9;
+  COLLABORATION_MEMBER_ADDED = 10;
+  COLLABORATION_MEMBER_REMOVED = 11;
+}
+
+// Tab message related data.
+message TabData {
+  // The sync ID of the corresponding SavedTabGroup.
+  optional string sync_tab_group_id = 1;
+
+  // The sync ID of the corresponding SavedTabGroupTab.
+  optional string sync_tab_id = 2;
+
+  // Store the last url before user deleted the tab.
+  // Only set for TAB_REMOVED message.
+  // By default, we use the URL from the corresponding SavedTabGroupTab from
+  // TabGroupSyncService. But in case the tab was already removed, we use
+  // this field.
+  optional string last_url = 3;
+}
+
+// Tab group message related data.
+message TabGroupData {
+  // The sync ID of the corresponding SavedTabGroup.
+  optional string sync_tab_group_id = 1;
+
+  // The title of the tab group.
+  optional string title = 2;
+}
+
+// Collaboration message related data.
+message CollaborationData {
+  reserved 1, 2;
+}
+
+message Message {
+  // Unique identifier of the event.
+  // Also used for database key.
+  optional string uuid = 1;
+
+  // Event type.
+  optional EventType event_type = 2;
+
+  // Event timestamp.
+  optional int64 event_timestamp = 3;
+
+  // The collaboration id of the event as data_sharing::GroupId.
+  optional string collaboration_id = 4;
+
+  // Dirty bits for the message.
+  optional int32 dirty = 5;
+
+  // Gaia id of the user who triggers the event.
+  optional string triggering_user_gaia_id = 6;
+
+  // Gaia id of the user who is affected by the event.
+  optional string affected_user_gaia_id = 7;
+
+  // Oneof data for specific types of event.
+  oneof data {
+    TabData tab_data = 8;
+    TabGroupData tab_group_data = 9;
+    CollaborationData collaboration_data = 10;
+  }
+
+  // Next id: 11
+}

@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.privacy_sandbox;
 
-import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
@@ -17,27 +14,29 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modaldialog.SimpleModalDialogController;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.HashSet;
 import java.util.List;
 
 /** Fragment for managing all the topics. */
+@NullMarked
 public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     private static final String MANAGE_TOPICS_PREFERENCE = "topics_list";
 
     private PreferenceCategory mTopicsCategory;
 
-    private Dialog mConfirmationDialog;
-
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
@@ -55,8 +54,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
 
         populateTopics();
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.PageOpened");
@@ -72,7 +70,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
      * AutofillDeleteCreditCardConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
@@ -89,7 +87,7 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
     }
 
     private boolean onToggleChange(Preference preference, Object newValue) {
-        var topicPreference = (TopicSwitchPreference) (preference);
+        var topicPreference = (TopicSwitchPreference) preference;
         if (!((boolean) newValue)) {
             return handleBlockTopic(topicPreference);
         }
@@ -156,6 +154,12 @@ public class TopicsManageFragment extends PrivacySandboxSettingsBaseFragment {
 
     private void onLearnMoreClicked(View view) {
         RecordUserAction.record("Settings.PrivacySandbox.Topics.Manage.LearnMoreClicked");
-        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+        getCustomTabLauncher()
+                .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

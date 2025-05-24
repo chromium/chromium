@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <iterator>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cbor/values.h"
@@ -19,15 +21,52 @@
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
-#include "device/fido/enclave/transact.h"
 #include "device/fido/enclave/types.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/public_key_credential_descriptor.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace device::enclave {
 
 namespace {
+
+constexpr std::string_view kMetricPrefix =
+    "WebAuthentication.EnclaveRequestResult.";
+
+// Error codes from the service on per-request failures. These can be returned
+// alongside success responses in some cases.
+// Needs to match `RequestError` in
+// //third_party/cloud_authenticator/processor/src/lib.rs.
+enum {
+  kNoSupportedAlgorithm = 1,
+  kDuplicate = 2,
+  kIncorrectPIN = 3,
+  kPINLocked = 4,
+  kPINOutdated = 5,
+  kRecoveryKeyStoreDowngrade = 6,
+};
+
+// This is used for metrics and must be kept in sync with the corresponding
+// entry in tools/metrics/histograms/metadata/webauthn/enums.xml.
+// Entries should not be renumbered or reused.
+enum class EnclaveRequestResult {
+  kSuccess = 0,
+  kNoSupportedAlgorithm = 1,
+  kDuplicate = 2,
+  kIncorrectPIN = 3,
+  kPINLocked = 4,
+  kPINOutdated = 5,
+  kRecoveryKeyStoreDowngrade = 6,
+  kFailedTransaction = 7,
+  kOtherError = 8,
+
+  kMaxValue = kOtherError,
+};
+
+void RecordRequestResult(std::string_view request_type,
+                         EnclaveRequestResult result) {
+  base::UmaHistogramEnumeration(base::StrCat({kMetricPrefix, request_type}),
+                                result);
+}
 
 AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
   AuthenticatorSupportedOptions options;
@@ -46,16 +85,24 @@ std::array<uint8_t, 8> RandomId() {
   return ret;
 }
 
-// Needs to match `RequestError` in
-// //third_party/cloud_authenticator/processor/src/lib.rs.
-enum {
-  kNoSupportedAlgorithm = 1,
-  kDuplicate = 2,
-  kIncorrectPIN = 3,
-  kPINLocked = 4,
-  kPINOutdated = 5,
-  kRecoveryKeyStoreDowngrade = 6,
-};
+EnclaveRequestResult EnclaveErrorToEnclaveRequestResult(int enclave_code) {
+  switch (enclave_code) {
+    case kNoSupportedAlgorithm:
+      return EnclaveRequestResult::kNoSupportedAlgorithm;
+    case kIncorrectPIN:
+      return EnclaveRequestResult::kIncorrectPIN;
+    case kPINLocked:
+      return EnclaveRequestResult::kPINLocked;
+    case kPINOutdated:
+      return EnclaveRequestResult::kPINOutdated;
+    case kDuplicate:
+      return EnclaveRequestResult::kDuplicate;
+    case kRecoveryKeyStoreDowngrade:
+      return EnclaveRequestResult::kRecoveryKeyStoreDowngrade;
+    default:
+      return EnclaveRequestResult::kOtherError;
+  }
+}
 
 GetAssertionStatus EnclaveErrorToGetAssertionStatus(int enclave_code) {
   switch (enclave_code) {
@@ -68,7 +115,7 @@ GetAssertionStatus EnclaveErrorToGetAssertionStatus(int enclave_code) {
       // This is a temporary error. Allow the request to fail.
     case kDuplicate:
     case kRecoveryKeyStoreDowngrade:
-      // These are not a valid error for a passkey request.
+      // These are not valid errors for a passkey request.
     default:
       return GetAssertionStatus::kEnclaveError;
   }
@@ -85,7 +132,7 @@ MakeCredentialStatus EnclaveErrorToMakeCredentialStatus(int enclave_code) {
       // This is a temporary error. Allow the request to fail.
     case kDuplicate:
     case kRecoveryKeyStoreDowngrade:
-      // These are not a valid error for a passkey request, deliberate
+      // These are not valid errors for a passkey request, deliberate
       // fallthrough.
     default:
       return MakeCredentialStatus::kEnclaveError;
@@ -137,11 +184,11 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
         ui_request_->secret.has_value());
   CHECK(ui_request_->key_version.has_value());
 
-  if (base::ranges::any_of(request.exclude_list, [this](const auto& excluded) {
-        return base::ranges::any_of(ui_request_->existing_cred_ids,
-                                    [&excluded](const auto& existing_cred_id) {
-                                      return existing_cred_id == excluded.id;
-                                    });
+  if (std::ranges::any_of(request.exclude_list, [this](const auto& excluded) {
+        return std::ranges::any_of(ui_request_->existing_cred_ids,
+                                   [&excluded](const auto& existing_cred_id) {
+                                     return existing_cred_id == excluded.id;
+                                   });
       })) {
     std::move(callback).Run(
         MakeCredentialStatus::kUserConsentButCredentialExcluded, std::nullopt);
@@ -264,19 +311,39 @@ void EnclaveAuthenticator::DispatchGetAssertionWithNewUVKey(
 }
 
 void EnclaveAuthenticator::ProcessMakeCredentialResponse(
-    std::optional<cbor::Value> response) {
-  if (!response) {
-    CompleteRequestWithError(MakeCredentialStatus::kEnclaveCancel);
+    base::expected<cbor::Value, TransactError> maybe_response) {
+  if (!maybe_response.has_value()) {
+    if (includes_new_uv_key_) {
+      RecordRequestResult("DeferredUvKeySubmission",
+                          EnclaveRequestResult::kFailedTransaction);
+    }
+    TransactError error = maybe_response.error();
+    // Failure to submit a new UV key, or learning that this is unrecognized, is
+    // an unrecoverable state for the current registration. This client needs to
+    // be re-registered.
+    if (includes_new_uv_key_ || error == TransactError::kMissingKey ||
+        error == TransactError::kUnknownClient) {
+      std::move(ui_request_->unregister_callback).Run();
+    }
+    MakeCredentialStatus return_status = MakeCredentialStatus::kEnclaveError;
+    if (error == TransactError::kSigningFailed) {
+      return_status = MakeCredentialStatus::kEnclaveCancel;
+    }
+    RecordRequestResult("MakeCredential",
+                        EnclaveRequestResult::kFailedTransaction);
+    CompleteRequestWithError(return_status);
     return;
   }
+
+  cbor::Value& response = maybe_response.value();
   std::optional<AuthenticatorMakeCredentialResponse> opt_response;
   std::optional<sync_pb::WebauthnCredentialSpecifics> opt_entity;
   std::string error_description;
   auto parse_result = ParseMakeCredentialResponse(
-      std::move(*response), pending_make_credential_request_->request,
-      *ui_request_->key_version, ui_request_->user_verified);
-  if (absl::holds_alternative<ErrorResponse>(parse_result)) {
-    auto& error_details = absl::get<ErrorResponse>(parse_result);
+      std::move(response), pending_make_credential_request_->request,
+      *ui_request_->key_version, ui_request_->up_and_uv_bits);
+  if (std::holds_alternative<ErrorResponse>(parse_result)) {
+    auto& error_details = std::get<ErrorResponse>(parse_result);
     ProcessErrorResponse(error_details);
     return;
   }
@@ -286,26 +353,46 @@ void EnclaveAuthenticator::ProcessMakeCredentialResponse(
         .Run(PINValidationResult::kSuccess);
   }
   auto& success_result =
-      absl::get<std::pair<AuthenticatorMakeCredentialResponse,
-                          sync_pb::WebauthnCredentialSpecifics>>(parse_result);
+      std::get<std::pair<AuthenticatorMakeCredentialResponse,
+                         sync_pb::WebauthnCredentialSpecifics>>(parse_result);
   std::move(ui_request_->save_passkey_callback)
       .Run(std::move(success_result.second));
+  RecordRequestResult("MakeCredential", EnclaveRequestResult::kSuccess);
   CompleteMakeCredentialRequest(MakeCredentialStatus::kSuccess,
                                 std::move(success_result.first));
 }
 
 void EnclaveAuthenticator::ProcessGetAssertionResponse(
-    std::optional<cbor::Value> response) {
-  if (!response) {
-    CompleteRequestWithError(GetAssertionStatus::kEnclaveCancel);
+    base::expected<cbor::Value, TransactError> maybe_response) {
+  if (!maybe_response.has_value()) {
+    if (includes_new_uv_key_) {
+      RecordRequestResult("DeferredUvKeySubmission",
+                          EnclaveRequestResult::kFailedTransaction);
+    }
+    TransactError error = maybe_response.error();
+    // Failure to submit a new UV key, or learning that this is unrecognized, is
+    // an unrecoverable state for the current registration. This client needs to
+    // be re-registered.
+    if (includes_new_uv_key_ || error == TransactError::kMissingKey ||
+        error == TransactError::kUnknownClient) {
+      std::move(ui_request_->unregister_callback).Run();
+    }
+    GetAssertionStatus return_status = GetAssertionStatus::kEnclaveError;
+    if (error == TransactError::kSigningFailed) {
+      return_status = GetAssertionStatus::kEnclaveCancel;
+    }
+    RecordRequestResult("GetAssertion",
+                        EnclaveRequestResult::kFailedTransaction);
+    CompleteRequestWithError(return_status);
     return;
   }
 
+  cbor::Value& response = maybe_response.value();
   const std::string& cred_id_str = ui_request_->entity->credential_id();
   auto parse_result = ParseGetAssertionResponse(
-      std::move(*response), base::as_bytes(base::make_span(cred_id_str)));
-  if (absl::holds_alternative<ErrorResponse>(parse_result)) {
-    auto& error_details = absl::get<ErrorResponse>(parse_result);
+      std::move(response), base::as_byte_span(cred_id_str));
+  if (std::holds_alternative<ErrorResponse>(parse_result)) {
+    auto& error_details = std::get<ErrorResponse>(parse_result);
     ProcessErrorResponse(error_details);
     return;
   }
@@ -315,21 +402,22 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   }
   std::vector<AuthenticatorGetAssertionResponse> responses;
   responses.emplace_back(
-      std::move(absl::get<AuthenticatorGetAssertionResponse>(parse_result)));
+      std::move(std::get<AuthenticatorGetAssertionResponse>(parse_result)));
+  RecordRequestResult("GetAssertion", EnclaveRequestResult::kSuccess);
   CompleteGetAssertionRequest(GetAssertionStatus::kSuccess,
                               std::move(responses));
 }
 
 void EnclaveAuthenticator::CompleteRequestWithError(
-    absl::variant<GetAssertionStatus, MakeCredentialStatus> error) {
-  if (absl::holds_alternative<GetAssertionStatus>(error)) {
+    std::variant<GetAssertionStatus, MakeCredentialStatus> error) {
+  if (std::holds_alternative<GetAssertionStatus>(error)) {
     CHECK(pending_get_assertion_request_);
-    CompleteGetAssertionRequest(absl::get<GetAssertionStatus>(error), {});
+    CompleteGetAssertionRequest(std::get<GetAssertionStatus>(error), {});
     return;
   }
 
   CHECK(pending_make_credential_request_);
-  CompleteMakeCredentialRequest(absl::get<MakeCredentialStatus>(error),
+  CompleteMakeCredentialRequest(std::get<MakeCredentialStatus>(error),
                                 std::nullopt);
 }
 
@@ -363,8 +451,12 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
              "server: "
           << *error.error_string;
       if (pending_get_assertion_request_) {
+        RecordRequestResult("DeferredUvKeySubmission",
+                            EnclaveRequestResult::kOtherError);
         CompleteRequestWithError(GetAssertionStatus::kEnclaveError);
       } else {
+        RecordRequestResult("DeferredUvKeySubmission",
+                            EnclaveRequestResult::kOtherError);
         CompleteRequestWithError(MakeCredentialStatus::kEnclaveError);
       }
     } else {
@@ -374,9 +466,15 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
              "enclave: "
           << *error.error_code;
       if (pending_get_assertion_request_) {
+        RecordRequestResult(
+            "DeferredUvKeySubmission",
+            EnclaveErrorToEnclaveRequestResult(*error.error_code));
         CompleteRequestWithError(
             EnclaveErrorToGetAssertionStatus(*error.error_code));
       } else {
+        RecordRequestResult(
+            "DeferredUvKeySubmission",
+            EnclaveErrorToEnclaveRequestResult(*error.error_code));
         CompleteRequestWithError(
             EnclaveErrorToMakeCredentialStatus(*error.error_code));
       }
@@ -387,8 +485,10 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
     FIDO_LOG(ERROR) << base::StrCat(
         {"Error in registration response from server: ", *error.error_string});
     if (pending_get_assertion_request_) {
+      RecordRequestResult("GetAssertion", EnclaveRequestResult::kOtherError);
       CompleteRequestWithError(GetAssertionStatus::kEnclaveError);
     } else {
+      RecordRequestResult("MakeCredential", EnclaveRequestResult::kOtherError);
       CompleteRequestWithError(MakeCredentialStatus::kEnclaveError);
     }
     return;
@@ -406,8 +506,12 @@ void EnclaveAuthenticator::ProcessErrorResponse(const ErrorResponse& error) {
       {"Received an error response from the enclave: ",
        base::NumberToString(code)});
   if (pending_get_assertion_request_) {
+    RecordRequestResult("GetAssertion",
+                        EnclaveErrorToEnclaveRequestResult(code));
     CompleteRequestWithError(EnclaveErrorToGetAssertionStatus(code));
   } else {
+    RecordRequestResult("MakeCredential",
+                        EnclaveErrorToEnclaveRequestResult(code));
     CompleteRequestWithError(EnclaveErrorToMakeCredentialStatus(code));
   }
 }

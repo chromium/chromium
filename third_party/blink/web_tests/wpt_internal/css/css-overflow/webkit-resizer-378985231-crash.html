@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<title>Crash not loading image for ::-webkit-resizer display:none</title>
+<link rel="help" href="https://crbug.com/378985231">
+<style>
+  div {
+    width: 100px;
+    height: 100px;
+    resize: both;
+    overflow: scroll;
+  }
+  div::-webkit-resizer {
+    display: none;
+    background-image: url('');
+  }
+</style>
+<p>PASS if no crash.</p>
+<div></div>

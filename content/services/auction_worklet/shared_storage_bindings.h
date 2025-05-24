@@ -29,8 +29,8 @@ class CONTENT_EXPORT SharedStorageBindings : public Bindings {
   SharedStorageBindings& operator=(const SharedStorageBindings&) = delete;
   ~SharedStorageBindings() override;
 
-  // Add privateAggregation object to global context. `this` must outlive the
-  // context.
+  // Add `sharedStorage` object and modifier method constructors to global
+  // context. `this` must outlive the context.
   void AttachToContext(v8::Local<v8::Context> context) override;
   void Reset() override;
 
@@ -39,6 +39,16 @@ class CONTENT_EXPORT SharedStorageBindings : public Bindings {
   static void Append(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Delete(const v8::FunctionCallbackInfo<v8::Value>& args);
   static void Clear(const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void BatchUpdate(const v8::FunctionCallbackInfo<v8::Value>& args);
+
+  static void SetMethodConstructor(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void AppendMethodConstructor(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void DeleteMethodConstructor(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
+  static void ClearMethodConstructor(
+      const v8::FunctionCallbackInfo<v8::Value>& args);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
 

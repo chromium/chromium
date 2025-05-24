@@ -9,11 +9,12 @@
 
 #include "base/containers/flat_set.h"
 
+class GaiaId;
 class PrefService;
 
 namespace signin {
 
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 class IdentityManager;
 
 // Returns true if the username is allowed based on a pattern registered
@@ -23,11 +24,12 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
                                          const std::string& username);
 
 // Returns true:
-// - if `switches::kExplicitBrowserSigninUIOnDesktop` feature is disabled.
+// - if BUILDFLAG(ENABLE_DICE_SUPPORT) is enabled.
 // - The user is signed in to the browser implicitly by signing in on the
 //   web.
 // It will return false if the feature is enabled and the user is either signed
 // out or signed in explicitly.
+
 bool IsImplicitBrowserSigninOrExplicitDisabled(
     const IdentityManager* identity_manager,
     const PrefService* prefs);
@@ -47,8 +49,8 @@ bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(IdentityManager& manager,
 // rebuilt immediately, and in that case it is very important to not clear the
 // preferences.
 // `identity_manager` may be nullptr.
-// `accounts_in_cookie_jar_info.accounts_are_fresh` must be true.
-base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
+// `accounts_in_cookie_jar_info.AreAccountsFresh()` must be true.
+base::flat_set<GaiaId> GetAllGaiaIdsForKeyedPreferences(
     const IdentityManager* identity_manager,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
 

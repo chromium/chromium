@@ -15,6 +15,7 @@
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/update_service.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 
@@ -32,7 +33,8 @@ class UpdateServiceImplInactive : public UpdateService {
         FROM_HERE, base::BindOnce(std::move(callback), base::Version()));
   }
 
-  void FetchPolicies(base::OnceCallback<void(int)> callback) override {
+  void FetchPolicies(policy::PolicyFetchReason reason,
+                     base::OnceCallback<void(int)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
     std::move(callback).Run(-1);
   }
@@ -61,6 +63,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*app_id*/,
       Priority /*priority*/,
       PolicySameVersionUpdate /*policy_same_version_update*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
@@ -74,6 +77,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*install_data_index*/,
       Priority /*priority*/,
       PolicySameVersionUpdate /*policy_same_version_update*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
@@ -96,6 +100,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*client_install_data*/,
       const std::string& /*install_data_index*/,
       Priority /*priority*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";
@@ -114,6 +119,7 @@ class UpdateServiceImplInactive : public UpdateService {
       const std::string& /*install_args*/,
       const std::string& /*install_data*/,
       const std::string& /*install_settings*/,
+      const std::string& /*language*/,
       base::RepeatingCallback<void(const UpdateState&)> /*state_update*/,
       base::OnceCallback<void(Result)> callback) override {
     VLOG(1) << __func__ << " (Inactive)";

@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
 #include "content/public/browser/preloading.h"
@@ -262,6 +263,16 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   bool PrerenderCanBeStartedWhenInitiatorIsInBackground();
 
+  // Returns true when prerendering can be triggered for embedders without
+  // hitting the number limit of running prerenders.
+  bool IsAllowedToStartPrerenderingForEmbedder();
+
+  // Cancels the existing hosts for the given origin filter.
+  // Currently used for browsing data removal and Clear-Site-Data header.
+  void CancelHostsByOriginFilter(
+      const StoragePartition::StorageKeyMatcherFunction& storage_key_filter,
+      PrerenderFinalStatus final_status);
+
  private:
   // WebContentsObserver implementation:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -279,10 +290,13 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // Returns true if `navigation_request` can activate `host`.
   bool CanNavigationActivateHost(NavigationRequest& navigation_request,
                                  PrerenderHost& host);
-
+  void DeletePendingDeletionHosts(FrameTreeNodeId prerender_host_id);
   void ScheduleToDeleteAbandonedHost(
       std::unique_ptr<PrerenderHost> prerender_host,
       const PrerenderCancellationReason& cancellation_reason);
+  void SchedulePendingDeletionPrerenderNewTabHandle(
+      std::unique_ptr<PrerenderNewTabHandle> handle);
+
   void DeleteAbandonedHosts();
 
   void NotifyTrigger(const GURL& url);
@@ -375,6 +389,18 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
   // could let the hosts and their FrameTrees outlive WebContentsImpl (the owner
   // of the registry) and results in UAF.
   std::vector<std::unique_ptr<PrerenderHost>> to_be_deleted_hosts_;
+
+  // The list of hosts which are scheduled to be deleted when
+  // `DeletePendingDeletionHosts` is called. This list is for avoiding
+  // the PrerenderHost being deleted prematurely before IPC calls are completed.
+  base::flat_map<FrameTreeNodeId, std::unique_ptr<PrerenderHost>>
+      pending_deletion_hosts_;
+
+  // PrerenderNewTabHandle that is scheduled to be deleted asynchronously. When
+  // unload related events are dispatched, PrerenderNewTabHandle deletion needs
+  // to be delayed until the dispatch of the events.
+  std::unique_ptr<PrerenderNewTabHandle>
+      pending_deletion_new_tab_prerender_handle_;
 
   // Starts running the timers when prerendering gets hidden.
   base::OneShotTimer timeout_timer_for_embedder_;

@@ -20,8 +20,10 @@ constexpr float kTopOffset = 12.f;
 
 }  // namespace
 
-CalendarUpNextViewBackground::CalendarUpNextViewBackground(ui::ColorId color_id)
-    : color_id_(color_id) {}
+CalendarUpNextViewBackground::CalendarUpNextViewBackground(
+    ui::ColorId color_id) {
+  SetColor(color_id);
+}
 
 CalendarUpNextViewBackground::~CalendarUpNextViewBackground() = default;
 
@@ -80,7 +82,7 @@ void CalendarUpNextViewBackground::Paint(gfx::Canvas* canvas,
   flags.setBlendMode(SkBlendMode::kSrcOver);
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(view->GetColorProvider()->GetColor(color_id_));
+  flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
 
   // Get the path to draw on the canvas.
   SkPath path = GetPath(view->GetLocalBounds().size());
@@ -90,7 +92,6 @@ void CalendarUpNextViewBackground::Paint(gfx::Canvas* canvas,
 }
 
 void CalendarUpNextViewBackground::OnViewThemeChanged(views::View* view) {
-  SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
   view->SchedulePaint();
 }
 

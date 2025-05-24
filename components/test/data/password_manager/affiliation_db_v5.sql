@@ -3,7 +3,7 @@ BEGIN TRANSACTION;
 
 CREATE TABLE meta(key LONGVARCHAR NOT NULL UNIQUE PRIMARY KEY, value LONGVARCHAR);
 INSERT INTO "meta" VALUES('last_compatible_version','1');
-INSERT INTO "meta" VALUES('version','4');
+INSERT INTO "meta" VALUES('version','5');
 
 CREATE TABLE eq_classes(
   id INTEGER,

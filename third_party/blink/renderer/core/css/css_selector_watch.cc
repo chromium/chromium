@@ -155,7 +155,8 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
   watched_callback_selectors_.clear();
 
   CSSPropertyValueSet* callback_property_set =
-      ImmutableCSSPropertyValueSet::Create(nullptr, 0, kUASheetMode);
+      ImmutableCSSPropertyValueSet::Create(base::span<CSSPropertyValue>(),
+                                           kUASheetMode);
 
   // UA stylesheets always parse in the insecure context mode.
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -164,7 +165,7 @@ void CSSSelectorWatch::WatchCSSSelectors(const Vector<String>& selectors) {
   for (const auto& selector : selectors) {
     base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
         context, CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-        /*is_within_scope=*/false, nullptr, selector, arena);
+        nullptr, selector, arena);
     if (selector_vector.empty()) {
       continue;
     }

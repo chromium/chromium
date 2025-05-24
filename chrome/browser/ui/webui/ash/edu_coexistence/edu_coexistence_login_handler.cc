@@ -73,15 +73,17 @@ std::string GetEduCoexistenceURL() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   // This should only be set during local development tests.
-  if (command_line->HasSwitch(kEduCoexistenceLoginURLSwitch))
+  if (command_line->HasSwitch(kEduCoexistenceLoginURLSwitch)) {
     return command_line->GetSwitchValueASCII(kEduCoexistenceLoginURLSwitch);
+  }
 
   return kEduCoexistenceLoginDefaultURL;
 }
 
 std::string GetSourceUI() {
-  if (session_manager::SessionManager::Get()->IsUserSessionBlocked())
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return kOobe;
+  }
   return kInSession;
 }
 
@@ -113,17 +115,20 @@ std::string GetDeviceIdForActiveUserProfile() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
   const policy::UserCloudPolicyManagerAsh* policy_manager =
       profile->GetUserCloudPolicyManagerAsh();
-  if (!policy_manager)
+  if (!policy_manager) {
     return std::string();
+  }
 
   const policy::CloudPolicyCore* core = policy_manager->core();
   const policy::CloudPolicyStore* store = core->store();
-  if (!store)
+  if (!store) {
     return std::string();
+  }
 
   const enterprise_management::PolicyData* policy = store->policy();
-  if (!policy)
+  if (!policy) {
     return std::string();
+  }
 
   return policy->device_id();
 }
@@ -209,8 +214,9 @@ void EduCoexistenceLoginHandler::OnJavascriptDisallowed() {
 
 void EduCoexistenceLoginHandler::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  if (edu_account_email_.empty() || account_info.email != edu_account_email_)
+  if (edu_account_email_.empty() || account_info.email != edu_account_email_) {
     return;
+  }
 
   AllowJavascript();
 
@@ -329,8 +335,9 @@ void EduCoexistenceLoginHandler::ConsentValid(const base::Value::List& args) {
 }
 
 void EduCoexistenceLoginHandler::ConsentLogged(const base::Value::List& args) {
-  if (args.size() == 0)
+  if (args.size() == 0) {
     return;
+  }
 
   DCHECK(!in_error_state_);
 
@@ -348,8 +355,9 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::Value::List& args) {
 
 void EduCoexistenceLoginHandler::OnError(const base::Value::List& args) {
   AllowJavascript();
-  if (args.size() == 0)
+  if (args.size() == 0) {
     return;
+  }
   in_error_state_ = true;
   for (const base::Value& message : args) {
     DCHECK(message.is_string());

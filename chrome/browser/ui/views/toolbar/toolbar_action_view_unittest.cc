@@ -20,7 +20,9 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 
 namespace {
@@ -53,7 +55,9 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
   }
   bool CanStartDragForView(views::View* sender,
                            const gfx::Point& press_pt,
-                           const gfx::Point& p) override { return false; }
+                           const gfx::Point& p) override {
+    return false;
+  }
 
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
@@ -67,20 +71,17 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
 
 class OpenMenuListener : public views::ContextMenuController {
  public:
-  explicit OpenMenuListener(views::View* view)
-      : view_(view),
-        opened_menu_(false) {
+  explicit OpenMenuListener(views::View* view) : view_(view) {
     view_->set_context_menu_controller(this);
   }
   OpenMenuListener(const OpenMenuListener&) = delete;
   OpenMenuListener& operator=(const OpenMenuListener&) = delete;
-  ~OpenMenuListener() override {
-    view_->set_context_menu_controller(nullptr);
-  }
+  ~OpenMenuListener() override { view_->set_context_menu_controller(nullptr); }
 
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
     opened_menu_ = true;
   }
 
@@ -89,7 +90,7 @@ class OpenMenuListener : public views::ContextMenuController {
  private:
   raw_ptr<views::View> view_;
 
-  bool opened_menu_;
+  bool opened_menu_ = false;
 };
 
 }  // namespace
@@ -140,7 +141,7 @@ class TestToolbarActionView : public ToolbarActionView {
       : ToolbarActionView(view_controller, delegate) {}
   TestToolbarActionView(const TestToolbarActionView&) = delete;
   TestToolbarActionView& operator=(const TestToolbarActionView&) = delete;
-  ~TestToolbarActionView() override {}
+  ~TestToolbarActionView() override = default;
 };
 
 // Verifies there is no crash when a ToolbarActionView with an InkDrop is
@@ -220,9 +221,9 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
 
   // Check that the tooltip and accessible state of the view match the
   // controller's.
-  EXPECT_EQ(tooltip, view->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip, view->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData ax_node_data;
-  view->GetAccessibleNodeData(&ax_node_data);
+  view->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data);
   EXPECT_EQ(name, ax_node_data.GetString16Attribute(
                       ax::mojom::StringAttribute::kName));
 

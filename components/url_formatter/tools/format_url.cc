@@ -68,9 +68,8 @@ std::string SpoofCheckResultToString(IDNSpoofChecker::Result result) {
     case IDNSpoofChecker::Result::kDangerousPattern:
       return "kDangerousPattern";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   };
-  return std::string();
 }
 
 // Returns the spoof check result as a string. |ascii_domain| must contain

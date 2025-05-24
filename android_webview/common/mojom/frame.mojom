@@ -86,13 +86,6 @@ interface LocalMainFrame {
   // Text Autosizing.
   SetTextZoomFactor(float zoom_factor);
 
-  // Do hit test at the given webview coordinate. "Webview" coordinates are
-  // physical pixel values with the 0,0 at the top left of the current displayed
-  // view (ie 0,0 is not the top left of the page if the page is scrolled).
-  // AwRenderViewHostExt::OnUpdateHitTestData receives the result of the hit
-  // test via AwViewHostMsg_UpdateHitTestData IPC message.
-  HitTest(gfx.mojom.PointF touch_center, gfx.mojom.SizeF touch_area);
-
   // Requests for the renderer to determine if the document contains any image
   // elements.
   DocumentHasImage() => (bool has_images);

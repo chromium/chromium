@@ -68,4 +68,36 @@ TEST_F(HTMLEmbedElementTest, FallbackState) {
       static_cast<Element*>(embed)->LayoutObjectIsNeeded(*initial_style));
 }
 
+TEST_F(HTMLEmbedElementTest, NotEnforceLayoutImageType) {
+  SetHtmlInnerHTML(R"HTML(
+    <object type="text/plain" id="object">
+      <embed id="embed" type="image/png">
+    </object>)HTML");
+  auto* object_element = GetElementById("object");
+  auto* object = To<HTMLObjectElement>(object_element);
+  auto* embed_element = GetElementById("embed");
+  auto* embed = To<HTMLEmbedElement>(embed_element);
+
+  EXPECT_TRUE(object->HasFallbackContent());
+  EXPECT_FALSE(object->UseFallbackContent());
+  EXPECT_FALSE(object->WillUseFallbackContentAtLayout());
+
+  UpdateAllLifecyclePhasesForTest();
+
+  const ComputedStyle* initial_style =
+      GetDocument().GetStyleResolver().InitialStyleForElement();
+
+  EXPECT_FALSE(
+      static_cast<Element*>(embed)->LayoutObjectIsNeeded(*initial_style));
+
+  object->UpdatePlugin();
+
+  EXPECT_TRUE(object->HasFallbackContent());
+  EXPECT_TRUE(object->UseFallbackContent());
+  EXPECT_FALSE(object->WillUseFallbackContentAtLayout());
+
+  EXPECT_TRUE(
+      static_cast<Element*>(embed)->LayoutObjectIsNeeded(*initial_style));
+}
+
 }  // namespace blink

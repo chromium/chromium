@@ -15,11 +15,7 @@
 #endif  // defined(PPAPI_HOST_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(PPAPI_HOST_IMPLEMENTATION)
 #define PPAPI_HOST_EXPORT __attribute__((visibility("default")))
-#else
-#define PPAPI_HOST_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

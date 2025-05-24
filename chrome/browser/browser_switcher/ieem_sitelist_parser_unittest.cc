@@ -8,9 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/browser_switcher/browser_switcher_features.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,19 +34,11 @@ void OnXmlParsed(base::RepeatingClosure quit_run_loop,
 
 }  // namespace
 
-class IeemSitelistParserTest
-    : public testing::TestWithParam<std::tuple<ParsingMode, bool>> {
+class IeemSitelistParserTest : public testing::TestWithParam<ParsingMode> {
  public:
-  IeemSitelistParserTest() {
-    parsing_mode_ = std::get<0>(GetParam());
-    none_is_greylist_ = std::get<1>(GetParam());
-    feature_list_.InitWithFeatureState(kBrowserSwitcherNoneIsGreylist,
-                                       none_is_greylist());
-  }
   ~IeemSitelistParserTest() override = default;
 
-  ParsingMode parsing_mode() { return parsing_mode_; }
-  bool none_is_greylist() { return none_is_greylist_; }
+  ParsingMode parsing_mode() { return GetParam(); }
 
   void TestParseXml(const std::string& xml, ParsedXml expected) {
     base::RunLoop run_loop;
@@ -59,10 +49,6 @@ class IeemSitelistParserTest
   }
 
  private:
-  ParsingMode parsing_mode_;
-  bool none_is_greylist_;
-
-  base::test::ScopedFeatureList feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder data_decoder_;
 };
@@ -130,7 +116,7 @@ TEST_P(IeemSitelistParserTest, V1Full) {
       "<domain doNotTransition=\"true\">no.com</domain></docMode></rules>";
   std::vector<std::string> expected_sitelist;
   std::vector<std::string> expected_greylist;
-  if (none_is_greylist() && parsing_mode() == ParsingMode::kIESiteListMode) {
+  if (parsing_mode() == ParsingMode::kIESiteListMode) {
     expected_sitelist = {
         "inside.com",
         "inside.com/in_domain",
@@ -221,7 +207,7 @@ TEST_P(IeemSitelistParserTest, V2Full) {
       "</trailing>-->";
   std::vector<std::string> expected_sitelist;
   std::vector<std::string> expected_greylist;
-  if (none_is_greylist() && parsing_mode() == ParsingMode::kIESiteListMode) {
+  if (parsing_mode() == ParsingMode::kIESiteListMode) {
     expected_sitelist = {"!www.cpandl.com"};
     expected_greylist = {
         "google.com",    "good.site",           "contoso.com",
@@ -237,13 +223,11 @@ TEST_P(IeemSitelistParserTest, V2Full) {
                               std::move(expected_greylist), std::nullopt));
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ParsingMode,
-    IeemSitelistParserTest,
-    testing::Combine(testing::Values(ParsingMode::kDefault,
-                                     ParsingMode::kIESiteListMode,
-                                     // 999 should behave like kDefault.
-                                     static_cast<ParsingMode>(999)),
-                     testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(ParsingMode,
+                         IeemSitelistParserTest,
+                         testing::Values(ParsingMode::kDefault,
+                                         ParsingMode::kIESiteListMode,
+                                         // 999 should behave like kDefault.
+                                         static_cast<ParsingMode>(999)));
 
 }  // namespace browser_switcher

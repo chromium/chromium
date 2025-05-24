@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("custom_tab") {
+  sources = [
+    "arc_custom_tab_modal_dialog_host.cc",
+    "arc_custom_tab_modal_dialog_host.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//components/web_modal",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+}

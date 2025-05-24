@@ -68,11 +68,13 @@ void AuctionV8DevToolsAgent::AttachDevToolsSession(
         session_receiver,
     mojo::PendingReceiver<blink::mojom::DevToolsSession> io_session_receiver,
     blink::mojom::DevToolsSessionStatePtr reattach_session_state,
+    const std::string& script_to_evaluate_on_load,
     bool client_expects_binary_responses,
     bool client_is_trusted,
     const std::string& session_id,
     bool session_waits_for_debugger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  CHECK(script_to_evaluate_on_load.empty());  // This is for frames only so far.
   int context_group_id = receivers_.current_context();
   ContextGroupInfo& context_group_info = context_groups_[context_group_id];
 

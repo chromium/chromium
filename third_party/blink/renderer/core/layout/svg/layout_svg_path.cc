@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
+#include "third_party/blink/renderer/core/svg/svg_line_element.h"
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 
 namespace blink {
@@ -100,11 +101,19 @@ void LayoutSVGPath::WillBeDestroyed() {
   LayoutSVGShape::WillBeDestroyed();
 }
 
+bool LayoutSVGPath::CalculateGeometryDependsOnViewport() const {
+  if (auto* line = DynamicTo<SVGLineElement>(*GetElement())) {
+    return line->PathDependsOnViewport();
+  }
+  return false;
+}
+
 gfx::RectF LayoutSVGPath::UpdateShapeFromElement() {
   NOT_DESTROYED();
   CreatePath();
   UpdateMarkerPositions();
   SetGeometryType(DeterminePathGeometry(GetPath()));
+  SetGeometryDependsOnViewport(CalculateGeometryDependsOnViewport());
 
   return GetPath().TightBoundingRect();
 }

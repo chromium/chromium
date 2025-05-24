@@ -49,13 +49,7 @@ IN_PROC_BROWSER_TEST_F(WebAudioBrowserTest,
   // NOTE: Changes to Web Audio code that alter the below fingerprints are
   // fine, and are cause for updating these expectations -- the issue is if
   // different devices return different fingerprints.
-#if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)) && defined(ARCH_CPU_ARM64)
-  // TODO(crbug.com/40160543): Investigate why this fingerprint is different.
-  EXPECT_EQ("13.13046550525678", fingerprint);
-#else
   EXPECT_EQ("13.130926895706125", fingerprint);
-#endif  // (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)) &&
-        // defined(ARCH_CPU_ARM64)
 }
 
 }  // namespace

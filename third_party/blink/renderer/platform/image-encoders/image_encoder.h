@@ -7,7 +7,6 @@
 
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -27,7 +26,9 @@ class VectorWStream : public SkWStream {
 
   bool write(const void* buffer, size_t size) override {
     DCHECK_LE(size, std::numeric_limits<wtf_size_t>::max());
-    dst_->Append((const unsigned char*)buffer, static_cast<wtf_size_t>(size));
+    // SAFETY: Skia encoders guarantees `buffer` and `size` are safe.
+    dst_->AppendSpan(UNSAFE_BUFFERS(
+        base::span(reinterpret_cast<const unsigned char*>(buffer), size)));
     return true;
   }
 
@@ -36,6 +37,12 @@ class VectorWStream : public SkWStream {
  private:
   // Does not have ownership.
   raw_ptr<Vector<unsigned char>> dst_;
+};
+
+enum ImageEncodingMimeType {
+  kMimeTypePng,
+  kMimeTypeJpeg,
+  kMimeTypeWebp,
 };
 
 class PLATFORM_EXPORT ImageEncoder {
@@ -53,6 +60,11 @@ class PLATFORM_EXPORT ImageEncoder {
   static bool Encode(Vector<unsigned char>* dst,
                      const SkPixmap& src,
                      const SkWebpEncoder::Options&);
+
+  static bool Encode(Vector<unsigned char>* dst,
+                     const SkPixmap& src,
+                     ImageEncodingMimeType mime_type,
+                     double quality);
 
   static int MaxDimension(ImageEncodingMimeType mime_type);
 

@@ -26,6 +26,7 @@ found in the LICENSE file.
     li.tabIndex = 0;
     li.innerText = 'New';
     document.getElementById('list').appendChild(li);
+    li.focus();
   });
   document.getElementById('remove').addEventListener('click', function() {
     var list = document.getElementById('list');

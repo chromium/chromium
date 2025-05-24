@@ -32,7 +32,7 @@ class MockTextureOwner : public TextureOwner {
   MOCK_CONST_METHOD0(GetContext, gl::GLContext*());
   MOCK_CONST_METHOD0(GetSurface, gl::GLSurface*());
   MOCK_CONST_METHOD0(CreateJavaSurface, gl::ScopedJavaSurface());
-  MOCK_METHOD0(UpdateTexImage, void());
+  MOCK_METHOD1(UpdateTexImage, bool(bool));
   MOCK_METHOD0(ReleaseBackBuffers, void());
   MOCK_METHOD0(ReleaseResources, void());
   MOCK_METHOD1(SetFrameAvailableCallback, void(const base::RepeatingClosure&));

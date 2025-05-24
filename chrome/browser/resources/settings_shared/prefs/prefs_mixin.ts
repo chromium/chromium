@@ -28,7 +28,7 @@ export const PrefsMixin = dedupingMixin(
           };
         }
 
-        prefs: any;
+        declare prefs: any;
 
         /**
          * Gets the pref at the given prefPath. Throws if the pref is not found.
@@ -111,6 +111,14 @@ export const PrefsMixin = dedupingMixin(
               pref && pref.type === chrome.settingsPrivate.PrefType.DICTIONARY);
           delete pref.value[key];
           this.set('prefs.' + prefPath + '.value', {...pref.value});
+        }
+
+        /**
+         * Helper to assign a pref as a computed property from a string
+         * constant. Usage: computed: `computePref(prefs.${PREF_NAME})`,
+         */
+        computePref(pref: chrome.settingsPrivate.PrefObject) {
+          return pref;
         }
       }
 

@@ -23,6 +23,10 @@ PrefService* ReportSchedulerAndroid::GetPrefService() {
   return prefs_;
 }
 
+void ReportSchedulerAndroid::OnInitializationCompleted() {
+  // No-op.
+}
+
 void ReportSchedulerAndroid::StartWatchingUpdatesIfNeeded(
     base::Time last_upload,
     base::TimeDelta upload_interval) {
@@ -35,6 +39,20 @@ void ReportSchedulerAndroid::StopWatchingUpdates() {
 
 void ReportSchedulerAndroid::OnBrowserVersionUploaded() {
   // No-op because in-app auto-update is not supported on Android.
+}
+
+bool ReportSchedulerAndroid::AreSecurityReportsEnabled() {
+  // Not supported.
+  return false;
+}
+
+bool ReportSchedulerAndroid::UseCookiesInUploads() {
+  // Not supported.
+  return false;
+}
+
+void ReportSchedulerAndroid::OnSecuritySignalsUploaded() {
+  // No-op because signals reporting is not supported on Android.
 }
 
 policy::DMToken ReportSchedulerAndroid::GetProfileDMToken() {

@@ -21,19 +21,6 @@ ContentId::ContentId(const std::string& name_space, const std::string& id)
 
 ContentId::~ContentId() = default;
 
-bool ContentId::operator==(const ContentId& content_id) const {
-  return name_space == content_id.name_space && id == content_id.id;
-}
-
-bool ContentId::operator!=(const ContentId& content_id) const {
-  return !(content_id == *this);
-}
-
-bool ContentId::operator<(const ContentId& content_id) const {
-  return std::tie(name_space, id) <
-         std::tie(content_id.name_space, content_id.id);
-}
-
 // -----------------------------------------------------------------------------
 // OfflineItem.
 OfflineItem::Progress::Progress()
@@ -69,6 +56,7 @@ OfflineItem::OfflineItem()
       allow_metered(false),
       received_bytes(0),
       time_remaining_ms(0),
+      danger_type(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS),
       is_dangerous(false) {}
 
 OfflineItem::OfflineItem(const OfflineItem& other) = default;
@@ -113,6 +101,7 @@ bool OfflineItem::operator==(const OfflineItem& offline_item) const {
          received_bytes == offline_item.received_bytes &&
          progress == offline_item.progress &&
          time_remaining_ms == offline_item.time_remaining_ms &&
+         danger_type == offline_item.danger_type &&
          is_dangerous == offline_item.is_dangerous;
 }
 

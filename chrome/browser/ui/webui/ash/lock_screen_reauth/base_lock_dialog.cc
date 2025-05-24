@@ -24,8 +24,6 @@ gfx::Size FitSizeToDisplay(const gfx::Size& desired) {
 
 }  // namespace
 
-constexpr gfx::Size BaseLockDialog::kBaseLockDialogSize;
-
 BaseLockDialog::BaseLockDialog(const GURL& url, const gfx::Size& desired_size)
     : SystemWebDialogDelegate(url, /*title=*/std::u16string()),
       desired_size_(desired_size) {}

@@ -10,6 +10,8 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 namespace content {
 class WebContents;
@@ -38,11 +40,18 @@ class ContextMenuNativeDelegateImpl {
       jint j_image_type);
   void StartDownload(JNIEnv* env,
                      const base::android::JavaParamRef<jobject>& obj,
-                     jboolean jis_link);
+                     const GURL& gurl,
+                     jboolean jis_media);
   void SearchForImage(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& jrender_frame_host);
+  void InspectElement(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jrender_frame_host,
+      jint x,
+      jint y);
 
  protected:
   using ImageRetrieveCallback = base::OnceCallback<void(

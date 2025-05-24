@@ -106,4 +106,6 @@ void PasskeyAffiliationSourceAdapter::OnPasskeyModelShuttingDown() {
   passkey_model_ = nullptr;
 }
 
+void PasskeyAffiliationSourceAdapter::OnPasskeyModelIsReady(bool is_ready) {}
+
 }  // namespace password_manager

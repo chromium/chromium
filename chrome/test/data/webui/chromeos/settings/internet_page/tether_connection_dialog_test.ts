@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {TetherConnectionDialogElement} from 'chrome://os-settings/lazy_load.js';
+import type {TetherConnectionDialogElement} from 'chrome://os-settings/lazy_load.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';

@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/proto/autofill_sync.pb.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_difference_tracker.h"
@@ -26,6 +26,7 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/webdata/common/web_database.h"
 
 using sync_pb::AutofillProfileSpecifics;
 using syncer::EntityData;
@@ -102,22 +103,17 @@ std::optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
     syncer::EntityChangeList entity_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   AutofillProfileInitialSyncDifferenceTracker initial_sync_tracker(
       GetAutofillTable());
 
   for (const auto& change : entity_data) {
-    DCHECK(change->data().specifics.has_autofill_profile());
-    std::optional<AutofillProfile> remote = CreateAutofillProfileFromSpecifics(
+    CHECK(IsEntityDataValid(change->data()));
+    AutofillProfile remote = CreateAutofillProfileFromValidSpecifics(
         change->data().specifics.autofill_profile());
-    if (!remote) {
-      DVLOG(2)
-          << "[AUTOFILL SYNC] Invalid remote specifics "
-          << change->data().specifics.autofill_profile().SerializeAsString()
-          << " received from the server in an initial sync.";
-      continue;
-    }
     RETURN_IF_ERROR(
-        initial_sync_tracker.IncorporateRemoteProfile(std::move(*remote)));
+        initial_sync_tracker.IncorporateRemoteProfile(std::move(remote)));
   }
 
   RETURN_IF_ERROR(
@@ -125,7 +121,14 @@ std::optional<syncer::ModelError> AutofillProfileSyncBridge::MergeFullSyncData(
   RETURN_IF_ERROR(
       FlushSyncTracker(std::move(metadata_change_list), &initial_sync_tracker));
 
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   return std::nullopt;
 }
 
@@ -135,29 +138,30 @@ AutofillProfileSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto transaction = web_data_backend_->GetDatabase()->AcquireTransaction();
+
   AutofillProfileSyncDifferenceTracker tracker(GetAutofillTable());
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     if (change->type() == syncer::EntityChange::ACTION_DELETE) {
       RETURN_IF_ERROR(tracker.IncorporateRemoteDelete(change->storage_key()));
     } else {
-      DCHECK(change->data().specifics.has_autofill_profile());
-      std::optional<AutofillProfile> remote =
-          CreateAutofillProfileFromSpecifics(
-              change->data().specifics.autofill_profile());
-      if (!remote) {
-        DVLOG(2)
-            << "[AUTOFILL SYNC] Invalid remote specifics "
-            << change->data().specifics.autofill_profile().SerializeAsString()
-            << " received from the server in an initial sync.";
-        continue;
-      }
-      RETURN_IF_ERROR(tracker.IncorporateRemoteProfile(std::move(*remote)));
+      CHECK(IsEntityDataValid(change->data()));
+      AutofillProfile remote = CreateAutofillProfileFromValidSpecifics(
+          change->data().specifics.autofill_profile());
+      RETURN_IF_ERROR(tracker.IncorporateRemoteProfile(std::move(remote)));
     }
   }
 
   RETURN_IF_ERROR(FlushSyncTracker(std::move(metadata_change_list), &tracker));
 
+  // Commits changes through CommitChanges(...) or through the scoped
+  // sql::Transaction `transaction` depending on the
+  // 'SqlScopedTransactionWebDatabase' Finch experiment.
   web_data_backend_->CommitChanges();
+  if (transaction) {
+    transaction->Commit();
+  }
+
   return std::nullopt;
 }
 
@@ -227,6 +231,9 @@ void AutofillProfileSyncBridge::ActOnLocalChange(
                                  syncer::DeletionOrigin::Unspecified(),
                                  metadata_change_list.get());
       break;
+    case AutofillProfileChange::HIDE_IN_AUTOFILL:
+      // `HIDE_IN_AUTOFILL` is not supported for local or syncable profiles.
+      NOTIMPLEMENTED();
   }
 
   // We do not need to commit any local changes (written by the processor via
@@ -281,7 +288,7 @@ void AutofillProfileSyncBridge::LoadMetadata() {
 }
 
 std::string AutofillProfileSyncBridge::GetClientTag(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_profile());
   // Must equal to guid of the entry. This is to maintain compatibility with the
   // previous sync integration (Directory and SyncableService).
@@ -289,9 +296,16 @@ std::string AutofillProfileSyncBridge::GetClientTag(
 }
 
 std::string AutofillProfileSyncBridge::GetStorageKey(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   DCHECK(entity_data.specifics.has_autofill_profile());
   return GetStorageKeyFromAutofillProfileSpecifics(
+      entity_data.specifics.autofill_profile());
+}
+
+bool AutofillProfileSyncBridge::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  CHECK(entity_data.specifics.has_autofill_profile());
+  return IsAutofillProfileSpecificsValid(
       entity_data.specifics.autofill_profile());
 }
 

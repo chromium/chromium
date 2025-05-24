@@ -14,6 +14,11 @@ source_set("system") {
 
   sources = [ "system_permission_settings.cc" ]
 
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//build/config/compiler:wglobal_constructors",
+  ]
+
   public_deps = [
     "//base",
     "//components/content_settings/core/common",
@@ -35,7 +40,7 @@ source_set("system") {
       "system_permission_settings_mac.cc",
     ]
     deps += [ "//chrome//browser/web_applications" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     sources += [ "system_permission_settings_chromeos.cc" ]
     deps += [
       "//chrome/browser:browser_public_dependencies",
@@ -43,7 +48,11 @@ source_set("system") {
       "//chrome/browser/web_applications:web_applications",
     ]
   } else if (is_win) {
-    sources += [ "system_permission_settings_win.cc" ]
+    sources += [
+      "system_media_source_win.cc",
+      "system_media_source_win.h",
+      "system_permission_settings_win.cc",
+    ]
     deps += [ "//chrome/browser:browser_public_dependencies" ]
   } else {
     sources += [ "system_permission_settings_default.cc" ]

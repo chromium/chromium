@@ -183,7 +183,7 @@ void FingerprintStorage::OnAuthScanDone(
                                     msg->get_fingerprint_error());
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FingerprintStorage::OnSessionFailed() {}

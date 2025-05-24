@@ -10,7 +10,7 @@
 
 namespace arc {
 
-constexpr char kArcCpuThrottleObserverName[] = "ArcCpuThrottleObserver";
+inline constexpr char kArcCpuThrottleObserverName[] = "ArcCpuThrottleObserver";
 
 // This class observes ARCVM's instance throttle and sets the state to active
 // whenever ARCVM is NOT being throttled.

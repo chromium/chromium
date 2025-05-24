@@ -41,7 +41,7 @@ std::unique_ptr<views::Label> CreateTimerLabel(
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(alignment);
   TypographyProvider::Get()->StyleLabel(token, *label);
-  label->SetEnabledColorId(color_id);
+  label->SetEnabledColor(color_id);
   return label;
 }
 

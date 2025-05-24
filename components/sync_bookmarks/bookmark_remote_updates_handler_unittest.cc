@@ -21,6 +21,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/hash_util.h"
+#include "components/sync/base/previously_syncing_gaia_id_info_for_metrics.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
@@ -245,8 +246,10 @@ class BookmarkRemoteUpdatesHandlerWithInitialMergeTest : public testing::Test {
   BookmarkRemoteUpdatesHandlerWithInitialMergeTest()
       : tracker_(SyncedBookmarkTracker::CreateEmpty(sync_pb::DataTypeState())),
         updates_handler_(&bookmark_model_, &favicon_service_, tracker_.get()) {
-    BookmarkModelMerger(CreatePermanentFoldersUpdateData(), &bookmark_model_,
-                        &favicon_service_, tracker_.get())
+    BookmarkModelMerger(
+        CreatePermanentFoldersUpdateData(), &bookmark_model_, &favicon_service_,
+        tracker_.get(),
+        syncer::PreviouslySyncingGaiaIdInfoForMetrics::kUnspecified)
         .Merge();
   }
 
@@ -1965,7 +1968,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 
 TEST(BookmarkRemoteUpdatesHandlerTest,
      ShouldComputeRightChildNodeIndexForEmptyParent) {
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   const syncer::UniquePosition pos1 =
       syncer::UniquePosition::InitialPosition(suffix);
 
@@ -1987,7 +1991,8 @@ TEST(BookmarkRemoteUpdatesHandlerTest, ShouldComputeRightChildNodeIndex) {
 
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model.bookmark_bar_node();
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
 
   const syncer::UniquePosition pos1 =
       syncer::UniquePosition::InitialPosition(suffix);

@@ -92,6 +92,17 @@ class PlusAddressHttpClientImpl : public PlusAddressHttpClient {
       PreallocatePlusAddressesCallback callback,
       std::optional<std::string> auth_token);
 
+  // Removes the UrlLoader at `it` from the internal loaders, and, after
+  // verifying that the response did not time out or return an error, emits a
+  // metric for the response size.
+  // If either the client timed out or there was an error on the server, it
+  // returns with error.
+  base::expected<void, PlusAddressRequestError> ProcessNetworkResponse(
+      UrlLoaderList::iterator it,
+      PlusAddressNetworkRequestType type,
+      base::TimeTicks request_start,
+      base::optional_ref<const std::string> response);
+
   // This is shared by the `ReservePlusAddress` and `ConfirmPlusAddress` methods
   // since they both use `loaders_for_creation_` and have the same return type.
   void OnReserveOrConfirmPlusAddressComplete(

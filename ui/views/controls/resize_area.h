@@ -32,6 +32,11 @@ class VIEWS_EXPORT ResizeArea : public View {
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnMouseCaptureLost() override;
 
+  // Returns true if a resize has been reported to the delegate but the
+  // |last_update| resize has not yet been reported. For example, if a mouse
+  // drag has happened but the mouse has not yet been released.
+  bool is_resizing() { return is_resizing_; }
+
  private:
   // Report the amount the user resized by to the delegate, accounting for
   // directionality.
@@ -43,6 +48,8 @@ class VIEWS_EXPORT ResizeArea : public View {
 
   // The delegate to notify when we have updates.
   raw_ptr<ResizeAreaDelegate> delegate_;
+
+  bool is_resizing_ = false;
 
   // The event's x-position at the start of the resize operation. The resize
   // area will move while being dragged, so |initial_position_| is represented

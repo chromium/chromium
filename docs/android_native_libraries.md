@@ -132,7 +132,7 @@ Builds on | Variant | Chrome | Library | WebView
 **How we use them:**
  * We disable unwind information (search for [`exclude_unwind_tables`](https://cs.chromium.org/search/?q=exclude_unwind_tables+file:%5C.gn&type=cs)).
  * For all architectures except arm64, we disable frame pointers in order to reduce binary size (search for [`enable_frame_pointers`](https://cs.chromium.org/search/?q=enable_frame_pointers+file:%5C.gn&type=cs)).
- * Crashes are unwound offline using `minidump_stackwalk`, which can create a stack trace given a snapshot of stack memory and the unstripped library (see [//docs/testing/using_breakpad_with_content_shell.md](testing/using_breakpad_with_content_shell.md))
+ * Crashes are unwound offline using `minidump_stackwalk`, which can create a stack trace given a snapshot of stack memory and the unstripped library (see [//docs/testing/using_crashpad_with_content_shell.md](testing/using_crashpad_with_content_shell.md))
  * To facilitate heap profiling, we ship unwind information to arm32 canary & dev channels as a separate file: `assets/unwind_cfi_32`
 
 ## JNI Native Methods Resolution

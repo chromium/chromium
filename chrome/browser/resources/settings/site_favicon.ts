@@ -37,9 +37,9 @@ export class SiteFaviconElement extends PolymerElement {
     };
   }
 
-  faviconUrl: string;
-  url: string;
-  iconPath: string;
+  declare faviconUrl: string;
+  declare url: string;
+  declare iconPath: string;
 
   private getBackgroundImage_() {
     let backgroundImage = getFavicon('');

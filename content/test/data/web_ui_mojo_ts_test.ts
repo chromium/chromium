@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
-import {OptionalNumericsStruct, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
+import {MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestEnum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
   { url: 'https://google.com/', contents: 'i am in fact feeling lucky' },
@@ -35,10 +36,13 @@ async function doTest(): Promise<boolean> {
   const cache = WebUITsMojoTestCache.getRemote();
   for (const entry of TEST_DATA) {
     cache.put({ url: entry.url }, entry.contents);
+    let stringWrapper = StringWrapper.getRemote();
+    stringWrapper.putString(entry.contents);
+    cache.addStringWrapper(stringWrapper);
   }
 
   const {items} = await cache.getAll();
-  if (items.length != TEST_DATA.length) {
+  if (items.length !== TEST_DATA.length) {
     return false;
   }
 
@@ -52,6 +56,23 @@ async function doTest(): Promise<boolean> {
       return false;
     }
     if (entries[entry.url] != entry.contents) {
+      return false;
+    }
+  }
+
+  const {stringWrapperList} = await cache.getStringWrapperList();
+  if (stringWrapperList.length !== TEST_DATA.length) {
+    return false;
+  }
+
+  let stringsInList = [];
+  for (const stringWrapper of stringWrapperList) {
+    let {item} = await stringWrapper.getString();
+    stringsInList.push(item);
+  }
+
+  for (const entry of TEST_DATA) {
+    if (!stringsInList.includes(entry.contents)) {
       return false;
     }
   }
@@ -225,6 +246,154 @@ async function doTest(): Promise<boolean> {
     }
   }
 
+  {
+    const token = '0123456789ABCDEFBEEFDEADDEADBEEF';
+    const result = await cache.echoTypemaps(
+        new Date(12321),
+        token,
+    );
+    assert(
+        result.time.getTime() === new Date(12321).getTime(),
+        `unexpected date received ${result.time.getTime()}`);
+    assert(result.token === token, `unexpected token ${token}`);
+  }
+
+  const assertTypemapContainerEquals =
+      (expected: MappedOptionalContainer, result: MappedOptionalContainer,
+       msg: string) => {
+        assert(expected.optionalInt === result.optionalInt, msg);
+        assertArrayEquals(expected.bools, result.bools, msg);
+        assertObjectEquals(expected.optionalMap, result.optionalMap, msg);
+      };
+
+  {
+    const withNulls = {
+      optionalInt: null,
+      bools: [null, null, null],
+      optionalMap: {'foo': null}
+    };
+    const result = await cache.echoOptionalTypemaps(withNulls);
+    assertTypemapContainerEquals(
+        withNulls, result.result,
+        `unexpected object ${JSON.stringify(result)}, expected: ${
+            JSON.stringify(withNulls)}`);
+  }
+
+  {
+    const withValues = {
+      optionalInt: 6,
+      bools: [null, false, null, true, null],
+      optionalMap: {'foo': null, 'bear': true}
+    };
+    const result = await cache.echoOptionalTypemaps(withValues);
+    assertTypemapContainerEquals(
+        withValues, result.result,
+        `unexpected object ${JSON.stringify(result.result)}, expected: ${
+            JSON.stringify(withValues)}`);
+  }
+
+  // Loopback test for result types.
+  {
+    // Test general success case.
+    const listener = {
+      testResult:
+          (():
+               Promise<Result> => {
+                 return Promise.resolve({secretMessage: `it's all for naught`});
+               })
+    };
+    const service = new MojoResultTestReceiver(listener);
+    const client: MojoResultTestRemote = service.$.bindNewPipeAndPassRemote();
+
+    await client.testResult().then(result => {
+      assert(
+          result.secretMessage === `it's all for naught`,
+          `got unexpected msg: ${JSON.stringify(result)}`);
+    });
+  }
+
+  {
+    // Tests listener pattern.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.resolve({secretMessage: 'I listen'}));
+
+    await client.testResult().then(result => {
+      assert(
+          result.secretMessage === 'I listen',
+          `got unexpected msg: ${JSON.stringify(result)}`);
+    });
+  }
+
+  {
+    // Tests rejection.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.reject(new Error('cannot go on')));
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'cannot go on', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests loose js error encoding for JsError.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(
+        () => Promise.reject({message: 'cannot go on'}));
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'cannot go on', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests throwing.
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(() => {
+      throw new Error('oh noes');
+    });
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(error.message === 'oh noes', JSON.stringify(error));
+        });
+  }
+
+  {
+    // Tests unknown object to JsError mapping.
+    class Potato {}
+    const callbacks = new MojoResultTestCallbackRouter();
+    const client = callbacks.$.bindNewPipeAndPassRemote();
+    callbacks.testResult.addListener(() => {
+      throw new Potato();
+    });
+
+    await client.testResult()
+        .then(() => {
+          assert(false, 'should have failed');
+        })
+        .catch((error: Error) => {
+          assert(
+              error.message === 'unknown error has occured',
+              JSON.stringify(error));
+        });
+  }
   return true;
 }
 

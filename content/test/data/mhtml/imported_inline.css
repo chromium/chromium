@@ -1,0 +1,15 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@import url("imported_imported.css");
+/*
+This style won't serialize correctly because the spec does not allow it, see
+crbug.com/40804066. Because this style element is not modified by JS, Chrome
+should leave it alone rather than serialize a replacement.
+*/
+#font-b {
+    --font-sans: sans;
+    font: normal 600 60px var(--font-sans);
+    line-height: 30px;
+}

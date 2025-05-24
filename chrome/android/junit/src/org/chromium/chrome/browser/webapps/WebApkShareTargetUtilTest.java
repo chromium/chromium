@@ -29,8 +29,8 @@ import java.util.List;
         shadows = {WebApkShareTargetUtilTest.WebApkShareTargetUtilShadow.class})
 public class WebApkShareTargetUtilTest {
     /** Builder class for {@link WebApkShareTarget} */
-    public class ShareTargetBuilder {
-        private String mAction;
+    public static class ShareTargetBuilder {
+        private final String mAction;
         private @ShareTarget.RequestMethod String mMethod;
         private @ShareTarget.EncodingType String mEncodingType;
         private String mParamTitle;

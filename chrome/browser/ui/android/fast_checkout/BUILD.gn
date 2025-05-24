@@ -8,6 +8,8 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   deps = [
     "//chrome/browser/flags:java",
+    "//components/autofill/android:autofill_browser_resources",
+    "//components/autofill/android:autofill_java_resources",
     "//components/autofill/android:autofill_payments_java_resources",
     "//components/autofill/android:main_autofill_java",
     "//components/browser_ui/bottomsheet/android:java",

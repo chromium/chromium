@@ -62,7 +62,8 @@
           "builder": "win10-updater-tester-rel-uac",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win10-updater-tester-rel-uac/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

@@ -17,6 +17,12 @@
 # or a security vulnerability report). Enabled features must provide benefits
 # that outweigh these costs.
 sqlite_chromium_configuration_flags = [
+  # Disable support for double-quoted string literals
+  #
+  # https://www.sqlite.org/quirks.html#dblquote
+  # https://www.sqlite.org/compile.html#dqs
+  "SQLITE_DQS=0",
+
   # Chrome doesn't use the ANALYZE SQLite extension.
   #
   # ANALYZE [1] is non-standard, and currently performs a table scan to
@@ -81,9 +87,6 @@ sqlite_chromium_configuration_flags = [
   # [2] https://www.sqlite.org/datatype3.html#collating_sequences
   # [3] https://www.sqlite.org/c3ref/create_collation.html
   "SQLITE_OMIT_REINDEX",
-
-  # Chrome doesn't use sqlite3_{profile,trace}().
-  "SQLITE_OMIT_TRACE",
 
   # Chrome doesn't use UPSERT.
   "SQLITE_OMIT_UPSERT",

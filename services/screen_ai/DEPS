@@ -1,9 +1,9 @@
 include_rules = [
   "+google/protobuf",
   '+components/crash/core/common/crash_key.h',
-  "+components/ukm",
   "+sandbox/policy",
   "+services/metrics/public/cpp",
+  "+services/screen_ai/buildflags",
   "+third_party/skia/include/core/SkBitmap.h",
   "+ui/accessibility/accessibility_features.h",
   "+ui/accessibility/ax_enum_util.h",

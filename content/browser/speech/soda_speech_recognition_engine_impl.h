@@ -23,11 +23,10 @@ class SpeechRecognitionManagerDelegate;
 //
 // This class establishes a connection to the on-device speech recognition
 // service using the content::SpeechRecognitionManagerDelegate. It will bind to
-// the speech::CrosSpeechRecognitionService in ChromeOS-Ash. On LaCrOS, it will
-// forward to Ash. On other platforms, it will bind to the
-// speech::ChromeSpeechRecognitionService if the on-device speech recognition
-// service is available. This class will be in the speech recognition available
-// state when successfully bound.
+// the speech::CrosSpeechRecognitionService in ChromeOS-Ash. On other platforms,
+// it will bind to the speech::ChromeSpeechRecognitionService if the on-device
+// speech recognition service is available. This class will be in the speech
+// recognition available state when successfully bound.
 
 class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
     : public SpeechRecognitionEngine,
@@ -53,6 +52,9 @@ class CONTENT_EXPORT SodaSpeechRecognitionEngineImpl
 
   // content::SodaSpeechRecognitionEngineImpl:
   void StartRecognition() override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
   void EndRecognition() override;
   void TakeAudioChunk(const AudioChunk& data) override;
   void AudioChunksEnded() override;

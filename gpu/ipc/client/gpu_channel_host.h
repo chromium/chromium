@@ -39,7 +39,6 @@ namespace gpu {
 class ClientSharedImageInterface;
 struct SyncToken;
 class GpuChannelHost;
-class GpuMemoryBufferManager;
 
 using GpuChannelEstablishedCallback =
     base::OnceCallback<void(scoped_refptr<GpuChannelHost>)>;
@@ -50,7 +49,6 @@ class GPU_EXPORT GpuChannelEstablishFactory {
 
   virtual void EstablishGpuChannel(GpuChannelEstablishedCallback callback) = 0;
   virtual scoped_refptr<GpuChannelHost> EstablishGpuChannelSync() = 0;
-  virtual GpuMemoryBufferManager* GetGpuMemoryBufferManager() = 0;
 };
 
 // Encapsulates an IPC channel between the client and one GPU process.
@@ -114,6 +112,11 @@ class GPU_EXPORT GpuChannelHost
   // flushed.
   virtual void EnsureFlush(uint32_t deferred_message_id);
 
+  // Ensure that the all deferred messages prior up to |deferred_message_id|
+  // have been flushed after a delay of `kDelayForEnsuringFlush`. Pass
+  // UINT32_MAX to force all pending deferred messages to be flushed.
+  virtual void DelayedEnsureFlush(uint32_t deferred_message_id);
+
   // Verify that the all deferred messages prior upto |deferred_message_id| have
   // reached the service. Pass UINT32_MAX to force all pending deferred messages
   // to be verified.
@@ -148,6 +151,15 @@ class GPU_EXPORT GpuChannelHost
       std::vector<SyncToken> sync_token_dependencies,
       uint64_t release_count,
       base::OnceCallback<void(bool)> callback);
+  void CopyNativeGmbToSharedMemorySync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      bool* status);
+  void CopyNativeGmbToSharedMemoryAsync(
+      gfx::GpuMemoryBufferHandle buffer_handle,
+      base::UnsafeSharedMemoryRegion memory_region,
+      base::OnceCallback<void(bool)> callback);
+  bool IsConnected();
 #endif
 
   // Crashes the GPU process. This functionality is added here because
@@ -177,6 +189,9 @@ class GPU_EXPORT GpuChannelHost
  protected:
   friend class base::RefCountedThreadSafe<GpuChannelHost>;
   virtual ~GpuChannelHost();
+
+  // Clears its SharedAssociatedRemote.
+  void ResetChannelRemoteForTesting();
 
  private:
   // Establishes shared memory communication with the GPU process. This memory
@@ -323,6 +338,12 @@ class GPU_EXPORT GpuChannelHost
   uint32_t enqueued_deferred_message_id_ GUARDED_BY(deferred_message_lock_) = 0;
   // Highest deferred message id sent to the channel.
   uint32_t flushed_deferred_message_id_ GUARDED_BY(deferred_message_lock_) = 0;
+
+  // Optional deferred message id up to which the deferred messages are flushed.
+  // Reset in the delayed task.
+  std::optional<uint32_t> delayed_flush_deferred_message_id_
+      GUARDED_BY(deferred_message_lock_);
+  static constexpr base::TimeDelta kDelayForEnsuringFlush = base::Seconds(1);
 
   const bool sync_point_graph_validation_enabled_;
 };

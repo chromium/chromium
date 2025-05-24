@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal_processor.h"
 
+#include <array>
+
 #include "chrome/browser/safe_browsing/extension_telemetry/declarative_net_request_action_signal.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -13,11 +15,13 @@ namespace {
 
 using SignalInfo = ExtensionTelemetryReportRequest_SignalInfo;
 
-constexpr const char* kExtensionIds[] = {"aaaaaaaabbbbbbbbccccccccdddddddd",
-                                         "eeeeeeeeffffffffgggggggghhhhhhhh",
-                                         "aaaaeeeebbbbffffccccggggddddhhhh"};
-constexpr const char* kUrls[] = {"http://www.example1.com/",
-                                 "https://www.example2.com/"};
+constexpr const auto kExtensionIds = std::to_array<const char*>({
+    "aaaaaaaabbbbbbbbccccccccdddddddd",
+    "eeeeeeeeffffffffgggggggghhhhhhhh",
+    "aaaaeeeebbbbffffccccggggddddhhhh",
+});
+constexpr const auto kUrls = std::to_array<const char*>(
+    {"http://www.example1.com/", "https://www.example2.com/"});
 
 class DeclarativeNetRequestActionSignalProcessorTest : public ::testing::Test {
  protected:

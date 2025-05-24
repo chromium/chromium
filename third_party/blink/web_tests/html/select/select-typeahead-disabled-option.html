@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<select id="select" tabindex="0">
+    <option>Canada</option>
+    <option>Spain</option>
+    <option disabled>United Arab Emirates</option>
+    <option>United States</option>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+<script>
+description('Typeahead does not select disabled select option');
+
+window.jsTestIsAsync = true;
+
+function keyDown(key)
+{
+    if (!window.eventSender)
+      debug("No event sender");
+    eventSender.keyDown(key);
+}
+
+var select = document.getElementById("select");
+
+select.focus();
+select.value = "Canada";
+// Should skip disabled "United Arab Emirates" <option>
+keyDown('U');
+shouldBeFalse('select.matches(":open")');
+shouldBeEqualToString('select.value', 'United States');
+finishJSTest();
+</script>
+</body>

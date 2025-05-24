@@ -160,6 +160,7 @@ class HttpStreamFactory::Job
       quic::ParsedQuicVersion quic_version,
       bool is_websocket,
       bool enable_ip_based_pooling,
+      std::optional<ConnectionManagementConfig> management_config,
       NetLog* net_log);
 
   Job(const Job&) = delete;
@@ -357,7 +358,16 @@ class HttpStreamFactory::Job
   // proxy. This differs from `using_ssl_`, which only describes the origin.
   bool using_spdy() const;
 
+  // Calculates SchemeHostPort for HttpServerProperties::{Set,Get}SupportsSpdy()
+  // calls.
+  url::SchemeHostPort SchemeHostPortForSupportsSpdy() const;
+
   bool disable_cert_verification_network_fetches() const;
+
+  void RecordPreconnectHistograms(int result);
+
+  // Records histograms required at the end of the execution.
+  void RecordCompletionHistograms(int result);
 
   const StreamRequestInfo request_info_;
   RequestPriority priority_;
@@ -447,7 +457,7 @@ class HttpStreamFactory::Job
   std::unique_ptr<BidirectionalStreamImpl> bidirectional_stream_impl_;
 
   // Protocol negotiated with the server.
-  NextProto negotiated_protocol_ = kProtoUnknown;
+  NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
 
   // 0 if we're not preconnecting. Otherwise, the number of streams to
   // preconnect.
@@ -476,6 +486,9 @@ class HttpStreamFactory::Job
 
   std::unique_ptr<SpdySessionPool::SpdySessionRequest> spdy_session_request_;
 
+  // Keeps track of the connection management config.
+  std::optional<ConnectionManagementConfig> management_config_;
+
   base::WeakPtrFactory<Job> ptr_factory_{this};
 };
 
@@ -499,9 +512,9 @@ class HttpStreamFactory::JobFactory {
       bool is_websocket,
       bool enable_ip_based_pooling,
       NetLog* net_log,
-      NextProto alternative_protocol = kProtoUnknown,
-      quic::ParsedQuicVersion quic_version =
-          quic::ParsedQuicVersion::Unsupported());
+      NextProto alternative_protocol,
+      quic::ParsedQuicVersion quic_version,
+      std::optional<ConnectionManagementConfig> management_config);
 };
 
 }  // namespace net

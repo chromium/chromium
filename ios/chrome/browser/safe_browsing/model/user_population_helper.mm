@@ -31,6 +31,5 @@ safe_browsing::ChromeUserPopulation GetUserPopulationForProfile(
       /*is_under_advanced_protection=*/false,
       GetApplicationContext()->GetBrowserPolicyConnector(),
       /*num_profiles=*/std::nullopt,
-      /*num_loaded_profiles=*/std::nullopt,
-      /*num_open_profiles=*/std::nullopt);
+      /*num_loaded_profiles=*/std::nullopt);
 }

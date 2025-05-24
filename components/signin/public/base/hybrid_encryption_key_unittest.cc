@@ -21,7 +21,7 @@ TEST(HybridEncryptionKeyTest, EncryptAndDecrypt) {
   HybridEncryptionKey key = CreateHybridEncryptionKeyForTesting();
   std::string plaintext = "test";
   std::vector<uint8_t> ciphertext =
-      key.EncryptForTesting(base::as_bytes(base::make_span(plaintext)));
+      key.EncryptForTesting(base::as_byte_span(plaintext));
   std::optional<std::vector<uint8_t>> maybe_plaintext = key.Decrypt(ciphertext);
   ASSERT_TRUE(maybe_plaintext.has_value());
   std::string decrypted_plaintext(maybe_plaintext->begin(),
@@ -33,7 +33,7 @@ TEST(HybridEncryptionKeyTest, EncryptAndDecryptEmpty) {
   HybridEncryptionKey key = CreateHybridEncryptionKeyForTesting();
   std::string plaintext = "";
   std::vector<uint8_t> ciphertext =
-      key.EncryptForTesting(base::as_bytes(base::make_span(plaintext)));
+      key.EncryptForTesting(base::as_byte_span(plaintext));
   std::optional<std::vector<uint8_t>> maybe_plaintext = key.Decrypt(ciphertext);
   ASSERT_TRUE(maybe_plaintext.has_value());
   std::string decrypted_plaintext(maybe_plaintext->begin(),

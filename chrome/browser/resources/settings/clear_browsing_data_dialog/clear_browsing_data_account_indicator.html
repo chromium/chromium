@@ -1,0 +1,24 @@
+<style include="cr-shared-style settings-shared">
+  :host {
+    --cr-section-padding: 0;
+    --shown-avatar-size: 40px;
+  }
+
+  .account-icon {
+    border-radius: 50%;
+    flex-shrink: 0;
+    height: var(--shown-avatar-size);
+    width: var(--shown-avatar-size);
+  }
+</style>
+
+<template is="dom-if" if="[[shouldShowAccountIndicator_]]" restamp>
+  <div id="avatarRow" class="cr-row first two-line">
+    <img class="account-icon" alt=""
+        src="[[getProfileImageSrc_(shownAccount_.avatarImage)]]">
+    <div id="userInfo" class="cr-row-gap cr-padded-text flex no-min-width">
+      <div class="text-elide">[[shownAccount_.fullName]]</div>
+      <div class="secondary">[[shownAccount_.email]]</div>
+    </div>
+  </div>
+</template>

@@ -45,6 +45,7 @@ source_set("impl_for_embedder") {
     "ipcz_api.h",
     "ipcz_driver/base_shared_memory_service.h",
     "ipcz_driver/driver.h",
+    "ipcz_driver/envelope.h",
     "ipcz_driver/invitation.h",
     "ipcz_driver/mojo_message.h",
     "ipcz_driver/object.h",
@@ -69,6 +70,7 @@ source_set("impl_for_embedder") {
     "ipcz_driver/data_pipe.cc",
     "ipcz_driver/data_pipe.h",
     "ipcz_driver/driver.cc",
+    "ipcz_driver/envelope.cc",
     "ipcz_driver/invitation.cc",
     "ipcz_driver/mojo_message.cc",
     "ipcz_driver/mojo_trap.cc",
@@ -79,6 +81,7 @@ source_set("impl_for_embedder") {
     "ipcz_driver/shared_buffer_mapping.cc",
     "ipcz_driver/transmissible_platform_handle.cc",
     "ipcz_driver/transport.cc",
+    "ipcz_driver/validate_enum.h",
     "ipcz_driver/wrapped_platform_handle.cc",
     "platform_handle_in_transit.cc",
     "platform_handle_in_transit.h",
@@ -318,7 +321,7 @@ if (is_mac) {
     args = [
       "--encode=mojo_fuzzer.ChannelMac",
       "-I",
-      rebase_path("//"),
+      rebase_path("//", root_build_dir),
       "mojo/core/test/data/channel_mac/channel_mac.proto",
     ]
   }

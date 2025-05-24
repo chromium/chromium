@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_SERVICE_SYNC_CLIENT_H_
 #define COMPONENTS_SYNC_SERVICE_SYNC_CLIENT_H_
 
-#include <map>
-
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -25,7 +23,6 @@ class TrustedVaultClient;
 
 namespace syncer {
 
-struct LocalDataDescription;
 class SyncEngineFactory;
 class SyncInvalidationsService;
 class TrustedVaultAutoUpgradeSyntheticFieldTrialGroup;
@@ -73,27 +70,6 @@ class SyncClient {
   // most once.
   virtual void SetPasswordSyncAllowedChangeCb(
       const base::RepeatingClosure& cb) = 0;
-
-  // Queries the count and description/preview of existing local data for
-  // `types` data types. This is an asynchronous method which returns the result
-  // via the callback `callback` once the information for all the data types in
-  // `types` is available.
-  // Note: Only data types that are enabled and support this functionality are
-  // part of the response.
-  // TODO(crbug.com/40065374): Mark as pure virtual once all implementations
-  // have overridden this.
-  virtual void GetLocalDataDescriptions(
-      DataTypeSet types,
-      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
-          callback);
-
-  // Requests the client to move all local data to account for `types` data
-  // types. This is an asynchronous method which moves the local data for all
-  // `types` to the account store locally. Upload to the server will happen as
-  // part of the regular commit process, and is NOT part of this method.
-  // TODO(crbug.com/40065374): Mark as pure virtual once all implementations
-  // have overridden this.
-  virtual void TriggerLocalDataMigration(DataTypeSet types);
 
   // Registers synthetic field trials corresponding to autoupgrading users to
   // trusted vault passphrase type. `group` must be valid. Must be invoked at

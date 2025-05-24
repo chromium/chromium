@@ -4,11 +4,14 @@
 
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 
+#include <memory>
+
 #include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
 #include "content/public/test/browser_test.h"
@@ -20,26 +23,20 @@ namespace {
 const std::string& kWebAppIdentity = "https://foo.com/index";
 const std::string& kInvalidFileUrl = "https://a.com";
 const std::string& kValidAppUrl = "https://b.com";
-const std::string& kValidAndInvalidAppsUrl = "https://c.com";
+const std::string& kValidAndInvalidAppsUrl = "https://c.com/search";
 
 constexpr char kInvalidFileContent[] = "invalid";
 constexpr char kValidAppFileContent[] =
-    "{\"web_apps\": ["
-    "  {"
-    "    \"web_app_identity\": \"https://foo.com/index\""
-    "  }"
-    "]}";
+    R"({
+      "https://foo.com/index": {}
+    })";
 constexpr char kValidAndInvalidAppsFileContent[] =
-    "{\"web_apps\": ["
+    R"({
     // 1st app is valid.
-    "  {"
-    "    \"web_app_identity\": \"https://foo.com/index\""
-    "  },"
+      "https://foo.com/index": { "scope": "/search?q=some+text#frag"},
     // 2nd app is invalid since kWebAppIdentity doesn't match.
-    "  {"
-    "    \"web_app_identity\": \"https://bar.com/\""
-    "  }"
-    "]}";
+      "https://bar.com/": {}
+    })";
 }  // namespace
 
 namespace web_app {
@@ -69,11 +66,17 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
   }
 
   void CreateScopeExtensions() {
-    invalid_file_scope_extension_.origin =
-        url::Origin::Create(GURL(kInvalidFileUrl));
-    valid_app_scope_extension_.origin = url::Origin::Create(GURL(kValidAppUrl));
-    valid_and_invalid_app_scope_extension_.origin =
-        url::Origin::Create(GURL(kValidAndInvalidAppsUrl));
+    invalid_file_scope_extension_ = std::make_unique<ScopeExtensionInfo>(
+        ScopeExtensionInfo::CreateForOrigin(
+            url::Origin::Create(GURL(kInvalidFileUrl))));
+
+    valid_app_scope_extension_ = std::make_unique<ScopeExtensionInfo>(
+        ScopeExtensionInfo::CreateForOrigin(
+            url::Origin::Create(GURL(kValidAppUrl))));
+
+    valid_and_invalid_app_scope_extension_ =
+        std::make_unique<ScopeExtensionInfo>(
+            ScopeExtensionInfo::CreateForScope(GURL(kValidAndInvalidAppsUrl)));
   }
 
   void VerifyValidAndInvalidAppsResult(int expected_callback_count,
@@ -82,11 +85,13 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
     callback_count_++;
     ASSERT_EQ(result.size(), 2u);
 
-    ScopeExtensionInfo valid_app_scope_extension{
-        valid_app_scope_extension_.origin};
-    ScopeExtensionInfo valid_and_invalid_app_scope_extension{
-        valid_and_invalid_app_scope_extension_.origin,
-        valid_and_invalid_app_scope_extension_.has_origin_wildcard};
+    auto valid_app_scope_extension =
+        ScopeExtensionInfo::CreateForOrigin(valid_app_scope_extension_->origin);
+    auto valid_and_invalid_app_scope_extension =
+        ScopeExtensionInfo::CreateForScope(
+            valid_and_invalid_app_scope_extension_->scope,
+            /*has_origin_wildcard*/ valid_and_invalid_app_scope_extension_
+                ->has_origin_wildcard);
 
     EXPECT_TRUE(base::Contains(result, std::move(valid_app_scope_extension)));
     EXPECT_TRUE(base::Contains(
@@ -104,9 +109,9 @@ class WebAppOriginAssociationManagerTest : public WebAppBrowserTestBase {
   // Number of times the callback function is called.
   int callback_count_ = 0;
 
-  ScopeExtensionInfo invalid_file_scope_extension_;
-  ScopeExtensionInfo valid_app_scope_extension_;
-  ScopeExtensionInfo valid_and_invalid_app_scope_extension_;
+  std::unique_ptr<ScopeExtensionInfo> invalid_file_scope_extension_;
+  std::unique_ptr<ScopeExtensionInfo> valid_app_scope_extension_;
+  std::unique_ptr<ScopeExtensionInfo> valid_and_invalid_app_scope_extension_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, NoHandlers) {
@@ -120,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, NoHandlers) {
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
                        InvalidAssociationFile) {
   base::test::TestFuture<ScopeExtensions> future;
-  ScopeExtensions scope_extensions{std::move(invalid_file_scope_extension_)};
+  ScopeExtensions scope_extensions{*invalid_file_scope_extension_};
   manager_->GetWebAppOriginAssociations(
       GURL(kWebAppIdentity), std::move(scope_extensions), future.GetCallback());
   const ScopeExtensions result = future.Get<0>();
@@ -129,23 +134,23 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, OneValidApp) {
   base::test::TestFuture<ScopeExtensions> future;
-  ScopeExtensions scope_extensions{valid_app_scope_extension_};
+  ScopeExtensions scope_extensions{*valid_app_scope_extension_};
   manager_->GetWebAppOriginAssociations(
       GURL(kWebAppIdentity), std::move(scope_extensions), future.GetCallback());
   const ScopeExtensions result = future.Get<0>();
   ASSERT_TRUE(result.size() == 1);
   auto scope_extension = std::move(*result.begin());
-  EXPECT_EQ(scope_extension.origin, valid_app_scope_extension_.origin);
+  EXPECT_EQ(scope_extension.origin, valid_app_scope_extension_->origin);
   EXPECT_EQ(scope_extension.has_origin_wildcard,
-            valid_app_scope_extension_.has_origin_wildcard);
+            valid_app_scope_extension_->has_origin_wildcard);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
                        ValidAndInvalidApps) {
   base::test::TestFuture<void> future;
 
-  ScopeExtensions scope_extensions{valid_app_scope_extension_,
-                                   valid_and_invalid_app_scope_extension_};
+  ScopeExtensions scope_extensions{*valid_app_scope_extension_,
+                                   *valid_and_invalid_app_scope_extension_};
   callback_count_ = 0;
   manager_->GetWebAppOriginAssociations(
       GURL(kWebAppIdentity), std::move(scope_extensions),
@@ -157,8 +162,8 @@ IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(WebAppOriginAssociationManagerTest, RunTasks) {
   base::test::TestFuture<void> future;
-  ScopeExtensions scope_extensions{valid_app_scope_extension_,
-                                   valid_and_invalid_app_scope_extension_};
+  ScopeExtensions scope_extensions{*valid_app_scope_extension_,
+                                   *valid_and_invalid_app_scope_extension_};
 
   // Set status as running temporarily to queue up tasks.
   manager_->task_in_progress_ = true;

@@ -93,7 +93,7 @@ declare namespace drawings {
      * Returns a copy of the currently-edited PDF with the Ink annotations
      * serialized into it.
      */
-    getPDF(): Promise<Uint8Array>;
+    getPDF(): Promise<Uint8Array<ArrayBuffer>>;
 
     /**
      * Returns the currently-edited PDF with the Ink annotations serialized into
@@ -101,7 +101,7 @@ declare namespace drawings {
      * engine should not be issued any further strokes or functions calls until
      * setPDF is called again.
      */
-    getPDFDestructive(): Promise<Uint8Array>;
+    getPDFDestructive(): Promise<Uint8Array<ArrayBuffer>>;
 
     /**
      * Set the camera to the provided box in PDF coordinates.

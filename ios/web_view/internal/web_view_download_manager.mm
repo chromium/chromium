@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/web_view_download_manager.h"
+#import "ios/web_view/internal/web_view_download_manager.h"
 
-#include "ios/web/public/download/download_controller.h"
+#import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/download/download_task.h"
 #import "ios/web_view/internal/cwv_download_task_internal.h"
 #import "ios/web_view/internal/cwv_web_view_internal.h"

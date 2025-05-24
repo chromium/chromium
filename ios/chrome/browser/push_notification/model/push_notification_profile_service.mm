@@ -9,6 +9,7 @@
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_account_context_manager.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client_manager.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -21,7 +22,7 @@ void OnPrimaryAccountCleared(CoreAccountInfo primary_account) {
   PushNotificationService* service =
       GetApplicationContext()->GetPushNotificationService();
 
-  NSString* gaia = base::SysUTF8ToNSString(primary_account.gaia);
+  NSString* gaia = primary_account.gaia.ToNSString();
   service->UnregisterAccount(gaia, nullptr);
 }
 
@@ -34,7 +35,7 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
         registerDeviceWithAPNSWithProvisionalNotificationsAvailable:NO];
   }
 
-  NSString* gaia = base::SysUTF8ToNSString(primary_account.gaia);
+  NSString* gaia = primary_account.gaia.ToNSString();
   service->RegisterAccount(gaia, nullptr);
 }
 
@@ -42,8 +43,10 @@ void OnPrimaryAccountSet(CoreAccountInfo primary_account) {
 
 PushNotificationProfileService::PushNotificationProfileService(
     signin::IdentityManager* identity_manager,
+    std::unique_ptr<PushNotificationClientManager> client_manager,
     base::FilePath profile_state_path)
     : identity_manager_(identity_manager),
+      client_manager_(std::move(client_manager)),
       profile_state_path_(profile_state_path) {
   identity_manager->AddObserver(this);
 }
@@ -52,6 +55,11 @@ PushNotificationProfileService::~PushNotificationProfileService() = default;
 
 void PushNotificationProfileService::Shutdown() {
   identity_manager_->RemoveObserver(this);
+}
+
+PushNotificationClientManager*
+PushNotificationProfileService::GetPushNotificationClientManager() {
+  return client_manager_.get();
 }
 
 void PushNotificationProfileService::OnPrimaryAccountChanged(
@@ -77,9 +85,9 @@ void PushNotificationProfileService::OnPrimaryAccountChanged(
       // The PostTask function must be used for the OnPrimaryAccountSet to
       // ensure that the appropriate Profile has been updated with the newly
       // signed in account's gaia id. The class that is responsible for updating
-      // the Profile's gaia ID is SigninBrowserStateInfoUpdater.
+      // the Profile's gaia ID is SigninProfileInfoUpdater.
       //
-      // Since SigninBrowserStateInfoUpdater is also a
+      // Since SigninProfileInfoUpdater is also a
       // signin::IdentityManager::Observer. Thus, the PostTask() function
       // guarantees that the Profile's gaia id will have been updated by the
       // time OnPrimaryAccountSet() method is invoked.

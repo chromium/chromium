@@ -5,37 +5,18 @@
 
 import logging
 import os
-import socket
 import sys
 import subprocess
 
 from typing import List, Optional, Tuple
 
-from common import DIR_SRC_ROOT, get_ssh_address
+from common import DIR_SRC_ROOT, get_free_local_port, get_ssh_address
 from compatible_utils import get_ssh_prefix
 
 sys.path.append(os.path.join(DIR_SRC_ROOT, 'build', 'util', 'lib', 'common'))
 # pylint: disable=import-error,wrong-import-position
 import chrome_test_server_spawner
 # pylint: enable=import-error,wrong-import-position
-
-
-def _get_free_local_port() -> int:
-    """Returns an ipv4 port available locally. It does not reserve the port and
-    may cause race condition. Copied from catapult
-    https://crsrc.org/c/third_party/catapult/telemetry/telemetry/core/util.py;drc=e3f9ae73db5135ad998108113af7ef82a47efc51;l=61"""
-    # AF_INET restricts port to IPv4 addresses.
-    # SOCK_STREAM means that it is a TCP socket.
-    tmp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # Setting SOL_SOCKET + SO_REUSEADDR to 1 allows the reuse of local
-    # addresses, this is so sockets do not fail to bind for being in the
-    # CLOSE_WAIT state.
-    tmp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-    tmp.bind(('', 0))
-    port = tmp.getsockname()[1]
-    tmp.close()
-
-    return port
 
 
 def _run_ssh_tunnel(target_addr: str, command: str,
@@ -135,7 +116,7 @@ def port_backward(target_addr: str,
     Returns the local port number."""
 
     if not host_port:
-        host_port = _get_free_local_port()
+        host_port = get_free_local_port()
     ports_backward(target_addr, [(fuchsia_port, host_port)])
     logging.debug('Reverse port forwarding established (local=%d, device=%d)',
                   host_port, fuchsia_port)

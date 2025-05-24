@@ -7,12 +7,15 @@ package org.chromium.base.jank_tracker;
 import android.os.Handler;
 
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This runnable receives a FrameMetricsStore instance and starts/stops tracking a given scenario.
  * When a scenario stops it takes its metrics and sends them to native to be recorded in UMA.
  * This is executed by JankReportingScheduler on its own thread.
  */
+@NullMarked
 class JankReportingRunnable implements Runnable {
     private final FrameMetricsStore mMetricsStore;
     private final JankScenario mScenario;
@@ -21,7 +24,7 @@ class JankReportingRunnable implements Runnable {
     private final Handler mHandler;
     // If metrics should be collected based on the state (scrolling) specify a
     // JankEndScenarioTime.
-    private final JankEndScenarioTime mJankEndScenarioTime;
+    private final @Nullable JankEndScenarioTime mJankEndScenarioTime;
 
     // When a JankEndScenarioTime is specified we don't immediately collect the metrics but instead
     // post a task (this runnable). However to keep code reuse the same between delay/no-delay we
@@ -67,7 +70,7 @@ class JankReportingRunnable implements Runnable {
             JankScenario scenario,
             boolean isStartingTracking,
             Handler handler,
-            JankEndScenarioTime endScenarioTime) {
+            @Nullable JankEndScenarioTime endScenarioTime) {
         mMetricsStore = metricsStore;
         mScenario = scenario;
         mIsStartingTracking = isStartingTracking;
@@ -92,13 +95,10 @@ class JankReportingRunnable implements Runnable {
                 mMetricsStore.startTrackingScenario(mScenario);
                 return;
             }
-            boolean dataIsReady =
-                    mJankEndScenarioTime == null
-                            || (mJankEndScenarioTime != null
-                                    && mMetricsStore.hasReceivedMetricsPast(
-                                            mJankEndScenarioTime.endScenarioTimeNs));
-
-            if (dataIsReady) {
+            if (mJankEndScenarioTime == null
+                    || mMetricsStore.hasReceivedMetricsPast(
+                            mJankEndScenarioTime.endScenarioTimeNs)) {
+                // Data is ready.
                 new FinalReportingRunnable().run();
             } else {
                 mHandler.postDelayed(

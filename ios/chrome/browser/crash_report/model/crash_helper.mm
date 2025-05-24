@@ -29,6 +29,7 @@
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/reporter_running_ios.h"
+#import "components/gwp_asan/crash_handler/crash_handler.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_upload_list.h"
@@ -135,7 +136,10 @@ void ClearMainThreadFreezeDetectorCache() {
 // Tells crashpad to start processing previously created intermediate dumps and
 // begin uploading when possible.
 void ProcessIntermediateDumps() {
-  crash_reporter::ProcessIntermediateDumps();
+  crashpad::UserStreamDataSources user_stream_data_sources;
+  user_stream_data_sources.push_back(
+      std::make_unique<gwp_asan::UserStreamDataSource>());
+  crash_reporter::ProcessIntermediateDumps({}, &user_stream_data_sources);
   crash_reporter::StartProcessingPendingReports();
 
   // Remove this after a few milestones.

@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <utility>
+
 #include "base/check.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -39,52 +41,64 @@ bool IsNegative(int32_t num) {
 
 PaintAggregator::PaintUpdate::PaintUpdate() = default;
 
-PaintAggregator::PaintUpdate::PaintUpdate(const PaintUpdate& that) = default;
+PaintAggregator::PaintUpdate::PaintUpdate(
+    PaintAggregator::PaintUpdate&&) noexcept = default;
+
+PaintAggregator::PaintUpdate& PaintAggregator::PaintUpdate::operator=(
+    PaintAggregator::PaintUpdate&&) noexcept = default;
 
 PaintAggregator::PaintUpdate::~PaintUpdate() = default;
 
-PaintAggregator::InternalPaintUpdate::InternalPaintUpdate()
-    : synthesized_scroll_damage_rect_(false) {}
+PaintAggregator::InternalPaintUpdate::InternalPaintUpdate() = default;
+
+PaintAggregator::InternalPaintUpdate::InternalPaintUpdate(
+    PaintAggregator::InternalPaintUpdate&&) noexcept = default;
+
+PaintAggregator::InternalPaintUpdate&
+PaintAggregator::InternalPaintUpdate::operator=(
+    PaintAggregator::InternalPaintUpdate&&) noexcept = default;
 
 PaintAggregator::InternalPaintUpdate::~InternalPaintUpdate() = default;
 
-gfx::Rect PaintAggregator::InternalPaintUpdate::GetScrollDamage() const {
+gfx::Rect PaintAggregator::GetScrollDamage() const {
   // Should only be scrolling in one direction at a time.
-  DCHECK(!(scroll_delta.x() && scroll_delta.y()));
+  DCHECK(!(update_.scroll_delta.x() && update_.scroll_delta.y()));
 
   gfx::Rect damaged_rect;
 
   // Compute the region we will expose by scrolling, and paint that into a
   // shared memory section.
-  if (scroll_delta.x()) {
-    int32_t dx = scroll_delta.x();
-    damaged_rect.set_y(scroll_rect.y());
-    damaged_rect.set_height(scroll_rect.height());
+  if (update_.scroll_delta.x()) {
+    int32_t dx = update_.scroll_delta.x();
+    damaged_rect.set_y(update_.scroll_rect.y());
+    damaged_rect.set_height(update_.scroll_rect.height());
     if (dx > 0) {
-      damaged_rect.set_x(scroll_rect.x());
+      damaged_rect.set_x(update_.scroll_rect.x());
       damaged_rect.set_width(dx);
     } else {
-      damaged_rect.set_x(scroll_rect.right() + dx);
+      damaged_rect.set_x(update_.scroll_rect.right() + dx);
       damaged_rect.set_width(-dx);
     }
   } else {
-    int32_t dy = scroll_delta.y();
-    damaged_rect.set_x(scroll_rect.x());
-    damaged_rect.set_width(scroll_rect.width());
+    int32_t dy = update_.scroll_delta.y();
+    damaged_rect.set_x(update_.scroll_rect.x());
+    damaged_rect.set_width(update_.scroll_rect.width());
     if (dy > 0) {
-      damaged_rect.set_y(scroll_rect.y());
+      damaged_rect.set_y(update_.scroll_rect.y());
       damaged_rect.set_height(dy);
     } else {
-      damaged_rect.set_y(scroll_rect.bottom() + dy);
+      damaged_rect.set_y(update_.scroll_rect.bottom() + dy);
       damaged_rect.set_height(-dy);
     }
   }
 
   // In case the scroll offset exceeds the width/height of the scroll rect
-  return gfx::IntersectRects(scroll_rect, damaged_rect);
+  return gfx::IntersectRects(update_.scroll_rect, damaged_rect);
 }
 
 PaintAggregator::PaintAggregator() = default;
+
+PaintAggregator::~PaintAggregator() = default;
 
 bool PaintAggregator::HasPendingUpdate() const {
   return !update_.scroll_rect.IsEmpty() || !update_.paint_rects.empty();
@@ -105,10 +119,10 @@ PaintAggregator::PaintUpdate PaintAggregator::GetPendingUpdate() {
   // Include the scroll damage (if any) in the paint rects.
   // Code invalidates damaged rect here, it pick it up from the list of paint
   // rects in the next block.
-  if (ret.has_scroll && !update_.synthesized_scroll_damage_rect_) {
-    update_.synthesized_scroll_damage_rect_ = true;
-    gfx::Rect scroll_damage = update_.GetScrollDamage();
-    InvalidateRectInternal(scroll_damage, false);
+  if (ret.has_scroll && !update_.synthesized_scroll_damage_rect) {
+    update_.synthesized_scroll_damage_rect = true;
+    gfx::Rect scroll_damage = GetScrollDamage();
+    InvalidateRectInternal(scroll_damage, /*check_scroll=*/false);
   }
 
   ret.paint_rects.reserve(update_.paint_rects.size() + 1);
@@ -118,20 +132,20 @@ PaintAggregator::PaintUpdate PaintAggregator::GetPendingUpdate() {
   return ret;
 }
 
-void PaintAggregator::SetIntermediateResults(
-    const std::vector<PaintReadyRect>& ready,
-    const std::vector<gfx::Rect>& pending) {
-  update_.ready_rects.insert(update_.ready_rects.end(), ready.begin(),
-                             ready.end());
-  update_.paint_rects = pending;
+void PaintAggregator::SetIntermediateResults(std::vector<PaintReadyRect> ready,
+                                             std::vector<gfx::Rect> pending) {
+  for (auto& rect : ready) {
+    update_.ready_rects.insert(update_.ready_rects.end(), std::move(rect));
+  }
+  update_.paint_rects = std::move(pending);
 }
 
-std::vector<PaintReadyRect> PaintAggregator::GetReadyRects() const {
-  return update_.ready_rects;
+std::vector<PaintReadyRect> PaintAggregator::TakeReadyRects() {
+  return std::move(update_.ready_rects);
 }
 
 void PaintAggregator::InvalidateRect(const gfx::Rect& rect) {
-  InvalidateRectInternal(rect, true);
+  InvalidateRectInternal(rect, /*check_scroll=*/true);
 }
 
 void PaintAggregator::ScrollRect(const gfx::Rect& clip_rect,
@@ -181,7 +195,7 @@ void PaintAggregator::ScrollRect(const gfx::Rect& clip_rect,
   update_.scroll_delta += amount;
 
   // We might have just wiped out a pre-existing scroll.
-  if (update_.scroll_delta == gfx::Vector2d()) {
+  if (update_.scroll_delta.IsZero()) {
     update_.scroll_rect = gfx::Rect();
     return;
   }
@@ -202,8 +216,8 @@ void PaintAggregator::ScrollRect(const gfx::Rect& clip_rect,
       gfx::Rect leftover = gfx::SubtractRects(rect, intersection);
       if (leftover.IsEmpty())
         break;
-      // Don't want to call InvalidateRectInternal now since it'll modify
-      // update_.paint_rects, so keep track of this and do it below.
+      // Don't want to call InvalidateRectInternal() now since it'll modify
+      // `update_.paint_rects`, so keep track of this and do it below.
       leftover_rects.push_back(leftover);
       rect.Subtract(leftover);
     }
@@ -218,15 +232,15 @@ void PaintAggregator::ScrollRect(const gfx::Rect& clip_rect,
   }
 
   for (const auto& leftover_rect : leftover_rects)
-    InvalidateRectInternal(leftover_rect, false);
+    InvalidateRectInternal(leftover_rect, /*check_scroll=*/false);
 
   for (auto& update_rect : update_.ready_rects) {
     if (update_.scroll_rect.Contains(update_rect.rect()))
       update_rect.set_rect(ScrollPaintRect(update_rect.rect(), amount));
   }
 
-  if (update_.synthesized_scroll_damage_rect_) {
-    InvalidateRect(update_.GetScrollDamage());
+  if (update_.synthesized_scroll_damage_rect) {
+    InvalidateRect(GetScrollDamage());
   }
 }
 
@@ -263,8 +277,10 @@ void PaintAggregator::InvalidateRectInternal(const gfx::Rect& rect_old,
   // Combine overlapping paints using smallest bounding box.
   for (size_t i = 0; i < update_.paint_rects.size(); ++i) {
     const gfx::Rect& existing_rect = update_.paint_rects[i];
-    if (existing_rect.Contains(rect))  // Optimize out redundancy.
+    // Optimize out redundancy.
+    if (existing_rect.Contains(rect)) {
       add_paint = false;
+    }
     if (rect.Intersects(existing_rect) || rect.SharesEdgeWith(existing_rect)) {
       // Re-invalidate in case the union intersects other paint rects.
       gfx::Rect combined_rect = gfx::UnionRects(rect, existing_rect);
@@ -283,7 +299,8 @@ void PaintAggregator::InvalidateRectInternal(const gfx::Rect& rect_old,
   // its new position.
   if (check_scroll && !update_.scroll_rect.IsEmpty() &&
       update_.scroll_rect.Intersects(rect)) {
-    InvalidateRectInternal(ScrollPaintRect(rect, update_.scroll_delta), false);
+    InvalidateRectInternal(ScrollPaintRect(rect, update_.scroll_delta),
+                           /*check_scroll=*/false);
   }
 }
 

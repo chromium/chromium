@@ -4,9 +4,9 @@
 
 #include "components/url_rewrite/browser/url_request_rewrite_rules_validation.h"
 
+#include <algorithm>
 #include <string_view>
 
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "net/http/http_util.h"
 #include "url/url_constants.h"
@@ -24,7 +24,7 @@ bool ValidateAddHeaders(
     LOG(ERROR) << "Add headers is missing";
     return false;
   }
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       add_headers->headers, [](const mojom::UrlHeaderPtr& header) {
         if (!net::HttpUtil::IsValidHeaderName(header->name)) {
           LOG(ERROR) << "Invalid header name: " << header->name;

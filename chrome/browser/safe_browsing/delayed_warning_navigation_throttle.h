@@ -5,13 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_DELAYED_WARNING_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_SAFE_BROWSING_DELAYED_WARNING_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "content/public/browser/navigation_throttle.h"
-
-namespace content {
-class NavigationHandle;
-}  // namespace content
 
 namespace safe_browsing {
 
@@ -21,11 +15,9 @@ namespace safe_browsing {
 // security moment such as a download or permission request occurs.
 class DelayedWarningNavigationThrottle : public content::NavigationThrottle {
  public:
-  explicit DelayedWarningNavigationThrottle(content::NavigationHandle* handle);
+  explicit DelayedWarningNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~DelayedWarningNavigationThrottle() override;
-
-  static std::unique_ptr<DelayedWarningNavigationThrottle>
-  MaybeCreateNavigationThrottle(content::NavigationHandle* navigation_handle);
 
   // content::NavigationThrottle:
   ThrottleCheckResult WillProcessResponse() override;

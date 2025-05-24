@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -218,7 +219,7 @@ static void TestEncodingRects(VideoEncoder* encoder,
 }
 
 void TestVideoEncoder(VideoEncoder* encoder, bool strict) {
-  const int kSizes[] = {80, 79, 77, 54};
+  const auto kSizes = std::to_array<int>({80, 79, 77, 54});
 
   VideoEncoderTester tester(nullptr);
 

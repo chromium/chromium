@@ -88,6 +88,11 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // prepended automatically.
   virtual base::CommandLine::StringVector GetChromiumCommandLineArguments();
 
+  // Override if (unusually) your fuzzer should use Chromium in multi-
+  // process mode. This can make results more realistic, but impedes
+  // collection of coverage from the renderer.
+  virtual bool UseSingleProcessMode();
+
  protected:
   // Callback to actually do your fuzzing. This is called from the UI thread,
   // so you should take care not to block the thread too long. If you need
@@ -111,6 +116,10 @@ class InProcessFuzzer : virtual public InProcessBrowserTest {
   // If the test case turns out not actually to be infinite, step 3 could
   // cause a UaF, so this pattern can probably be improved in future.
   void DeclareInfiniteLoop() { exit_after_fuzz_case_ = true; }
+
+  // Whether we're in corpus merging mode. Some fuzzers behave specially
+  // in this mode for efficiency reasons.
+  bool InMergeMode() const;
 
  private:
   int DoFuzz(const uint8_t* data, size_t size);

@@ -1,9 +1,0 @@
-# set twofold prefix stripping
-# Coptic example by Moheb Mekhaiel
-COMPLEXPREFIXES
-
-PFX A Y 1
-PFX A 0 tek .
-
-PFX B Y 1
-PFX B 0 met/A .

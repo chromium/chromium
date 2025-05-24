@@ -10,6 +10,7 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -52,10 +53,10 @@ struct InterceptedRequestInfo {
   std::unique_ptr<protocol::Network::Request> network_request;
   std::unique_ptr<net::AuthChallengeInfo> auth_challenge;
   scoped_refptr<net::HttpResponseHeaders> response_headers;
-  protocol::Maybe<bool> is_download;
-  protocol::Maybe<protocol::String> redirect_url;
-  protocol::Maybe<protocol::String> renderer_request_id;
-  protocol::Maybe<protocol::String> redirected_request_id;
+  std::optional<bool> is_download;
+  std::optional<protocol::String> redirect_url;
+  std::optional<protocol::String> renderer_request_id;
+  std::optional<protocol::String> redirected_request_id;
 };
 
 class DevToolsURLLoaderInterceptor {
@@ -98,19 +99,19 @@ class DevToolsURLLoaderInterceptor {
         std::unique_ptr<AuthChallengeResponse> auth_challenge_response);
     Modifications(scoped_refptr<net::HttpResponseHeaders> response_headers,
                   scoped_refptr<base::RefCountedMemory> response_body);
-    Modifications(protocol::Maybe<std::string> modified_url,
-                  protocol::Maybe<std::string> modified_method,
-                  protocol::Maybe<protocol::Binary> modified_post_data,
+    Modifications(std::optional<std::string> modified_url,
+                  std::optional<std::string> modified_method,
+                  std::optional<protocol::Binary> modified_post_data,
                   std::unique_ptr<HeadersVector> modified_headers,
-                  protocol::Maybe<bool> intercept_response);
+                  std::optional<bool> intercept_response);
     Modifications(
         std::optional<net::Error> error_reason,
         scoped_refptr<net::HttpResponseHeaders> response_headers,
         scoped_refptr<base::RefCountedMemory> response_body,
         size_t body_offset,
-        protocol::Maybe<std::string> modified_url,
-        protocol::Maybe<std::string> modified_method,
-        protocol::Maybe<protocol::Binary> modified_post_data,
+        std::optional<std::string> modified_url,
+        std::optional<std::string> modified_method,
+        std::optional<protocol::Binary> modified_post_data,
         std::unique_ptr<HeadersVector> modified_headers,
         std::unique_ptr<AuthChallengeResponse> auth_challenge_response);
     ~Modifications();
@@ -125,11 +126,11 @@ class DevToolsURLLoaderInterceptor {
     size_t body_offset = 0;
 
     // Optionally modify before sending to network.
-    protocol::Maybe<std::string> modified_url;
-    protocol::Maybe<std::string> modified_method;
-    protocol::Maybe<protocol::Binary> modified_post_data;
+    std::optional<std::string> modified_url;
+    std::optional<std::string> modified_method;
+    std::optional<protocol::Binary> modified_post_data;
     std::unique_ptr<HeadersVector> modified_headers;
-    protocol::Maybe<bool> intercept_response;
+    std::optional<bool> intercept_response;
     // AuthChallengeResponse is mutually exclusive with the above.
     std::unique_ptr<AuthChallengeResponse> auth_challenge_response;
   };
@@ -252,7 +253,7 @@ class DevToolsURLLoaderInterceptor {
 
   std::vector<Pattern> patterns_;
   bool handle_auth_ = false;
-  std::map<std::string, InterceptionJob*> jobs_;
+  std::map<std::string, raw_ptr<InterceptionJob, CtnExperimental>> jobs_;
 
   base::WeakPtrFactory<DevToolsURLLoaderInterceptor> weak_factory_;
 };

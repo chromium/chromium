@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
@@ -41,8 +42,8 @@ source_set("utility") {
   deps = [
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/optimization_guide/core:features",
+    "//components/services/on_device_translation/buildflags",
     "//components/services/storage",
     "//components/services/storage/public/mojom",
     "//content:export",
@@ -81,6 +82,10 @@ source_set("utility") {
 
   if (enable_video_effects) {
     deps += [ "//services/video_effects:service" ]
+
+    if (is_linux) {
+      deps += [ "//services/video_effects:sandbox_hook" ]
+    }
   }
 
   # When library CDMs are supported, we support running the CDM in the utility
@@ -93,34 +98,43 @@ source_set("utility") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/components/assistant:buildflags",
       "//chromeos/ash/services/ime:sandbox_hook",
       "//chromeos/services/tts:sandbox_hook",
     ]
-    if (use_vaapi || use_v4l2_codec) {
-      deps += [ "//ash/components/arc/video_accelerator" ]
+    if (use_linux_video_acceleration) {
+      deps += [ "//chromeos/ash/experiences/arc/video_accelerator" ]
     }
   }
 
   if (is_linux || is_chromeos) {
     deps += [
-      "//gpu/config",
+      "//content/utility/speech:speech_recognition_sandbox_hook",
       "//media/gpu/sandbox",
       "//media/mojo/services",
-      "//third_party/angle:angle_gpu_info_util",
+      "//services/network:network_sandbox_hook",
     ]
+    if (use_linux_video_acceleration) {
+      deps += [
+        "//gpu/config",
+        "//third_party/angle:angle_gpu_info_util",
+      ]
+    }
+    if (enable_oop_printing) {
+      deps += [ "//printing:printing_sandbox_hook" ]
+    }
   }
 
-  if (is_chromeos_ash && is_chrome_branded) {
+  if (is_chromeos && is_chrome_branded) {
     deps += [
       "//services/shape_detection:lib",
       "//services/shape_detection/public/mojom",
     ]
   }
 
-  if (is_chromeos_ash && enable_cros_libassistant) {
+  if (is_chromeos && enable_cros_libassistant) {
     deps += [
       "//chromeos/ash/services/libassistant:sandbox_hook",
       "//chromeos/assistant/internal:libassistant",
@@ -132,22 +146,16 @@ source_set("utility") {
     deps += [ "//services/proxy_resolver:lib" ]
   }
 
-  if (is_linux || is_chromeos) {
-    deps += [
-      "//content/utility/speech:speech_recognition_sandbox_hook",
-      "//services/network:network_sandbox_hook",
-    ]
-    if (enable_oop_printing) {
-      deps += [ "//printing:printing_sandbox_hook" ]
-    }
-  }
-
   if (enable_screen_ai_service && (is_linux || is_chromeos)) {
     deps += [ "//services/screen_ai:screen_ai_sandbox_hook" ]
   }
 
   if (enable_accessibility_service) {
     deps += [ "//services/accessibility:lib" ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//components/services/on_device_translation:on_device_translation_service" ]
   }
 
   if (enable_vr && !is_android) {

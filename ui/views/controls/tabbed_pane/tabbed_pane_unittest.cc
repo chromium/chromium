@@ -170,7 +170,8 @@ class TabbedPaneWithWidgetTest : public ViewsTestBase {
   }
 
   View* GetSelectedTabContentView() {
-    return tabbed_pane_->GetSelectedTabContentView();
+    return tabbed_pane_->GetTabContentsForTesting(
+        tabbed_pane_->GetSelectedTabIndex());
   }
 
   void SendKeyPressToSelectedTab(ui::KeyboardCode keyboard_code) {
@@ -382,12 +383,13 @@ TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsRoleIsTabPanel) {
 TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
   tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
   tabbed_pane_->AddTab(u"Tab2", std::make_unique<View>());
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
 
   // This is needed for FocusManager::SetFocusedViewWithReason to notify
   // observers observers of focus changes.
-  if (widget_ && !widget_->IsActive())
+  if (widget_ && !widget_->IsActive()) {
     widget_->Activate();
+  }
 
   EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
 
@@ -457,6 +459,38 @@ TEST_F(TabbedPaneWithWidgetTest, AccessibleNameTest) {
   GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(u"", data.GetString16Attribute(ax::mojom::StringAttribute::kName));
   EXPECT_EQ(ax::mojom::NameFrom::kAttributeExplicitlyEmpty, data.GetNameFrom());
+}
+
+TEST_F(TabbedPaneWithWidgetTest, AccessibleNameWithMultipleTabsTest) {
+  tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
+  tabbed_pane_->AddTab(u"Tab2", std::make_unique<View>());
+  ui::AXNodeData tabbed_pane_data, tab_data;
+
+  tabbed_pane_->SelectTabAt(0);
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&tab_data);
+  EXPECT_TRUE(tab_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  tabbed_pane_->GetViewAccessibility().GetAccessibleNodeData(&tabbed_pane_data);
+  EXPECT_EQ(u"Tab1", tabbed_pane_data.GetString16Attribute(
+                         ax::mojom::StringAttribute::kName));
+
+  tabbed_pane_data = ui::AXNodeData();
+  tab_data = ui::AXNodeData();
+  tabbed_pane_->GetTabAt(0)->SetTitleText(u"Updated Tab1");
+  GetTabAt(0)->GetViewAccessibility().GetAccessibleNodeData(&tab_data);
+  tabbed_pane_->GetViewAccessibility().GetAccessibleNodeData(&tabbed_pane_data);
+  EXPECT_EQ(u"Updated Tab1", tabbed_pane_data.GetString16Attribute(
+                                 ax::mojom::StringAttribute::kName));
+
+  tabbed_pane_data = ui::AXNodeData();
+  tab_data = ui::AXNodeData();
+  tabbed_pane_->SelectTabAt(1);
+  GetTabAt(1)->GetViewAccessibility().GetAccessibleNodeData(&tab_data);
+  EXPECT_TRUE(tab_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  tabbed_pane_->GetViewAccessibility().GetAccessibleNodeData(&tabbed_pane_data);
+  EXPECT_EQ(u"Tab2", tabbed_pane_data.GetString16Attribute(
+                         ax::mojom::StringAttribute::kName));
 }
 
 TEST_F(TabbedPaneWithWidgetTest, AccessibleSelected) {

@@ -34,7 +34,7 @@ package CoreML.Specification;
  *                        Intersection         Union
  *      IOU: 0.16      =       12       /       73
  *
- * All IOU scores are fractions betwen 0.0 (fully disjoint) and 1.0 (perfect
+ * All IOU scores are fractions between 0.0 (fully disjoint) and 1.0 (perfect
  * overlap). The standard algorithm (PickTop) is defined as follows:
  *
  *  1. Sort boxes by descending order of confidence

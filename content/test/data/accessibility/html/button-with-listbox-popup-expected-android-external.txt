@@ -2,4 +2,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
 ++View viewIdResName:"test1" actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
 ++++TextView text:"Choose one:" viewIdResName:"span" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
 ++++Button text:"Choose one: Foo" viewIdResName:"test" canOpenPopUp clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="popUpButton", clickableScore="300", roleDescription="pop up button"]
-++++ListView text:"Choose one:" viewIdResName:"options" clickable focusable CollectionInfo:[rows=3, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
+++++ListView text:"Choose one:" viewIdResName:"options" clickable focusable CollectionInfo:[selection_mode_single, rows=3, cols=1] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBox", clickableScore="300", roleDescription="list box"]
+++++++View text:"Baz" viewIdResName:"option1" clickable CollectionItemInfo:[rowIndex=0, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
+++++++View text:"Bar" viewIdResName:"option2" clickable CollectionItemInfo:[rowIndex=1, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]
+++++++View text:"Foo" viewIdResName:"option3" clickable CollectionItemInfo:[rowIndex=2, colIndex=0] actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="listBoxOption", clickableScore="200"]

@@ -16,8 +16,8 @@
 #include "base/metrics/field_trial.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/ui_string_overrider.h"
@@ -53,11 +53,11 @@ namespace variations {
 struct StudyGroupNames;
 class SyntheticTrialRegistry;
 class VariationsSeed;
-}
+}  // namespace variations
 
 namespace variations {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class DeviceVariationsRestrictionByPolicyApplicator;
 #endif
 
@@ -82,7 +82,7 @@ class VariationsService
     virtual void OnExperimentChangesDetected(Severity severity) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   VariationsService(const VariationsService&) = delete;
@@ -152,7 +152,8 @@ class VariationsService
 
   // Returns the permanent country code stored for this client.
   // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example: us,
-  // br, in.
+  // br, in. This can only be called after field trials have been initialized or
+  // if OverrideStoredPermanentCountry() has been called.
   std::string GetStoredPermanentCountry() const;
 
   // Forces an override of the stored permanent country. Returns true
@@ -182,9 +183,21 @@ class VariationsService
   // Register Variations related prefs in the Profile prefs.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Factory method for creating a VariationsService. Does not take ownership of
-  // |state_manager|. Caller should ensure that |state_manager| is valid for the
-  // lifetime of this class.
+  // Creates a VariationsService instance. Does not take ownership of
+  // |state_manager|, so callers should ensure that |state_manager| is valid for
+  // the lifetime of this class.
+  //
+  // |client| provides some platform-specific operations for variations. Must
+  // not be null.
+  // |local_state| provides access to Local State prefs. Must not be null.
+  // |state_manager| provides access to metrics state info. Must not be null.
+  // |disable_network_switch| is a command-line switch that can be used to
+  // disable network communication.
+  // |ui_string_overrider| provides overrides for UI strings.
+  // |network_connection_tracker_getter| allows the VariationsService to
+  // observe network state changes.
+  // |synthetic_trial_registry| provides an interface to register synthetic
+  // trials. Must not be null.
   static std::unique_ptr<VariationsService> Create(
       std::unique_ptr<VariationsServiceClient> client,
       PrefService* local_state,
@@ -249,6 +262,9 @@ class VariationsService
   void OverridePlatform(Study::Platform platform,
                         const std::string& osname_server_param_override);
 
+  // Returns the seed store. Exposed for testing.
+  VariationsSeedStore* GetSeedStoreForTesting();
+
  protected:
   // Gets the serial number of the most recent Finch seed. Virtual for testing.
   virtual const std::string& GetLatestSerialNumber();
@@ -277,10 +293,8 @@ class VariationsService
                          bool store_success,
                          VariationsSeed seed);
 
-  // Creates the VariationsService with the given |local_state| prefs service
-  // and |state_manager|. Does not take ownership of |state_manager|. Caller
-  // should ensure that |state_manager| is valid for the lifetime of this class.
-  // Use the |Create| factory method to create a VariationsService.
+  // Use the |Create| factory method to create a VariationsService. See |Create|
+  // for more details.
   VariationsService(
       std::unique_ptr<VariationsServiceClient> client,
       std::unique_ptr<web_resource::ResourceRequestAllowedNotifier> notifier,
@@ -323,8 +337,6 @@ class VariationsService
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedStoredWhenOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, SeedNotStoredWhenNonOKStatus);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, InstanceManipulations);
-  FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
-                           LoadPermanentConsistencyCountry);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, CountryHeader);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, GetVariationsServerURL);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, VariationsURLHasParams);
@@ -340,11 +352,6 @@ class VariationsService
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest, DoNotRetryAfterARetry);
   FRIEND_TEST_ALL_PREFIXES(VariationsServiceTest,
                            DoNotRetryIfInsecureURLIsHTTPS);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // For the test to access |limited_entropy_synthetic_trial_|.
-  FRIEND_TEST_ALL_PREFIXES(VariationsServiceBrowserTest,
-                           LimitedEntropySyntheticTrialSeedTransfer);
-#endif
 
   void InitResourceRequestedAllowedNotifier();
 
@@ -380,15 +387,6 @@ class VariationsService
   // |encrypted|. Returns true on success, false on failure. The encryption can
   // be done in-place.
   bool EncryptString(const std::string& plaintext, std::string* encrypted);
-
-  // Loads the country code to use for filtering permanent consistency studies,
-  // updating the stored country code if the stored value was for a different
-  // Chrome version. The country used for permanent consistency studies is kept
-  // consistent between Chrome upgrades in order to avoid annoying the user due
-  // to experiment churn while traveling.
-  std::string LoadPermanentConsistencyCountry(
-      const base::Version& version,
-      const std::string& latest_country);
 
   std::unique_ptr<VariationsServiceClient> client_;
 
@@ -454,6 +452,9 @@ class VariationsService
   // The main entry point for managing safe mode state.
   SafeSeedManager safe_seed_manager_;
 
+  // Used to provide entropy to field trials.
+  std::unique_ptr<const EntropyProviders> entropy_providers_;
+
   // Member responsible for creating trials from a variations seed.
   VariationsFieldTrialCreator field_trial_creator_;
 
@@ -464,7 +465,7 @@ class VariationsService
   // server url.
   std::string osname_server_param_override_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<DeviceVariationsRestrictionByPolicyApplicator>
       device_variations_restrictions_by_policy_applicator_;
 #endif

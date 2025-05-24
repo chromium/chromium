@@ -7,46 +7,72 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.util.Pair;
 
-import androidx.test.filters.SmallTest;
-
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
+import org.chromium.chrome.browser.ntp.RecentlyClosedBridgeJni;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
+import org.chromium.chrome.browser.tabmodel.TabModelJniBridgeJni;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.DataInputStream;
 import java.util.List;
 
-/** Tests for TabbedModeTabModelOrchestrator */
+/** Tests for {@link TabbedModeTabModelOrchestrator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabbedModeTabModelOrchestratorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ChromeTabbedActivity mChromeActivity;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ProfileProvider mProfileProvider;
+    @Mock private Profile mProfile;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
     @Mock private MismatchedIndicesHandler mMismatchedIndicesHandler;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+    @Mock private ArchivedTabModelOrchestrator mArchivedTabModelOrchestrator;
+    @Mock private TabContentManager mTabContentManager;
+    @Mock private DeferredStartupHandler mDeferredStartupHandler;
+    @Mock private TabModelJniBridge.Natives mTabModelJniBridgeJni;
+    @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
+    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
+    @Captor private ArgumentCaptor<Supplier<TabModel>> mSupplierCaptor;
 
-    private OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
+    private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
     private CipherFactory mCipherFactory;
 
@@ -65,9 +91,12 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mProfileProviderSupplier.set(mProfileProvider);
+        when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
         mCipherFactory = new CipherFactory();
+        TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
+        RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
+        when(mRecentlyClosedBridgeJni.init(any(), any())).thenReturn(1L);
     }
 
     @After
@@ -80,7 +109,6 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     }
 
     @Test
-    @SmallTest
     @Feature({"TabPersistentStore"})
     public void testMergeTabsOnStartupAfterUpgradeToMultiInstanceSupport() {
         // If there is no instance, this is the first startup since upgrading to multi-instance-
@@ -90,6 +118,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
                 mChromeActivity,
+                mModalDialogManager,
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
@@ -106,6 +135,7 @@ public class TabbedModeTabModelOrchestratorUnitTest {
         orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
                 mChromeActivity,
+                mModalDialogManager,
                 mProfileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
@@ -113,5 +143,30 @@ public class TabbedModeTabModelOrchestratorUnitTest {
                 1);
         tabStatesToMerge = orchestrator.getTabPersistentStore().getTabListToMergeTasksForTesting();
         assertTrue("Should not have any tab state file to merge", tabStatesToMerge.isEmpty());
+    }
+
+    @Test
+    public void testDestroy() {
+        ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
+        DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
+        TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
+        orchestrator.createTabModels(
+                mChromeActivity,
+                mModalDialogManager,
+                mProfileProviderSupplier,
+                mTabCreatorManager,
+                mNextTabPolicySupplier,
+                mMismatchedIndicesHandler,
+                0);
+        orchestrator.onNativeLibraryReady(mTabContentManager);
+        verify(mDeferredStartupHandler).addDeferredTask(mRunnableCaptor.capture());
+
+        mRunnableCaptor.getValue().run();
+        verify(mArchivedTabModelOrchestrator)
+                .initializeHistoricalTabModelObserver(mSupplierCaptor.capture());
+
+        orchestrator.destroy();
+        verify(mArchivedTabModelOrchestrator)
+                .removeHistoricalTabModelObserver(mSupplierCaptor.getValue());
     }
 }

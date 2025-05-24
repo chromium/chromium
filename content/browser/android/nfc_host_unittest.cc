@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/test/mock_permission_controller.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/test_render_view_host.h"
@@ -54,14 +55,18 @@ class NFCHostTest : public RenderViewHostImplTestHarness {
 
 TEST_F(NFCHostTest, GetNFCTwice) {
   constexpr MockPermissionController::SubscriptionId kSubscriptionId(42);
+  blink::mojom::PermissionDescriptorPtr descriptor;
 
   NavigateAndCommit(GURL(kTestUrl));
 
   EXPECT_CALL(mock_permission_controller(),
-              GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
-                                                    main_rfh()))
-      .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED))
-      .WillOnce(Return(blink::mojom::PermissionStatus::GRANTED));
+              GetPermissionStatusForCurrentDocument(testing::_, main_rfh()))
+      .WillRepeatedly([&](const blink::mojom::PermissionDescriptorPtr&
+                              permission_descriptor,
+                          content::RenderFrameHost* render_frame_host) {
+        descriptor = permission_descriptor->Clone();
+        return blink::mojom::PermissionStatus::GRANTED;
+      });
   EXPECT_CALL(mock_permission_controller(),
               SubscribeToPermissionStatusChange(
                   blink::PermissionType::NFC, /*render_process_host=*/nullptr,
@@ -76,6 +81,8 @@ TEST_F(NFCHostTest, GetNFCTwice) {
 
   nfc1.FlushForTesting();
   nfc2.FlushForTesting();
+  EXPECT_EQ(blink::PermissionDescriptorToPermissionType(descriptor),
+            blink::PermissionType::NFC);
   EXPECT_TRUE(nfc1.is_bound());
   EXPECT_TRUE(nfc2.is_bound());
 

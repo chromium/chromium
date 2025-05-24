@@ -9,8 +9,11 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/url_pattern_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class GURL;
 class URLPattern;
@@ -45,7 +48,7 @@ class ScriptingPermissionsModifier {
   // which CanAffectExtension() returns true). Anything else will DCHECK.
   void SetWithholdHostPermissions(bool withhold);
 
-  // Grants the extension permission to run on the origin of |url|.
+  // Grants the extension permission to run on the origin of `url`.
   // This may only be called for extensions that can be affected (i.e., for
   // which CanAffectExtension() returns true). Anything else will CHECK.
   void GrantHostPermission(const GURL& url);
@@ -56,10 +59,10 @@ class ScriptingPermissionsModifier {
   void GrantHostPermission(const URLPattern& site,
                            base::OnceClosure done_callback);
 
-  // Revokes permission to run on the origin of |url|, including any permissions
+  // Revokes permission to run on the origin of `url`, including any permissions
   // that match or overlap with the origin. For instance, removing access to
   // https://google.com will remove access to *://*.com/* as well.
-  // DCHECKs if |url| has not been granted.
+  // DCHECKs if `url` has not been granted.
   // This may only be called for extensions that can be affected (i.e., for
   // which CanAffectExtension() returns true). Anything else will CHECK.
   void RemoveGrantedHostPermission(const GURL& url);
@@ -83,9 +86,9 @@ class ScriptingPermissionsModifier {
   void RemoveAllGrantedHostPermissions();
 
   // Takes in a set of permissions and withholds any permissions that should not
-  // be granted for the given |extension|, returning a permission set with all
+  // be granted for the given `extension`, returning a permission set with all
   // of the permissions that can be granted.
-  // Note: we pass in |permissions| explicitly here, as this is used during
+  // Note: we pass in `permissions` explicitly here, as this is used during
   // permission initialization, where the active permissions on the extension
   // may not be the permissions to compare against.
   std::unique_ptr<const PermissionSet> WithholdPermissionsIfNecessary(

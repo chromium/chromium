@@ -37,9 +37,7 @@ blink::mojom::PermissionDescriptorPtr MediaPermissionTypeToPermissionDescriptor(
       descriptor->name = blink::mojom::PermissionName::VIDEO_CAPTURE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << base::to_underlying(type);
-      descriptor->name =
-          blink::mojom::PermissionName::PROTECTED_MEDIA_IDENTIFIER;
+      NOTREACHED() << base::to_underlying(type);
   }
   return descriptor;
 }

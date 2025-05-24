@@ -47,11 +47,12 @@ TabModalConfirmDialogViews::TabModalConfirmDialogViews(
   SetCloseCallback(base::BindOnce(&TabModalConfirmDialogDelegate::Close,
                                   base::Unretained(delegate_.get())));
   SetModalType(ui::mojom::ModalType::kChild);
-  SetOwnedByWidget(true);
+  SetOwnedByWidget(OwnedByWidgetPassKey());
 
   std::optional<int> default_button = delegate_->GetDefaultDialogButton();
-  if (bool(default_button))
+  if (bool(default_button)) {
     SetDefaultButton(*default_button);
+  }
 
   message_box_view_ = new views::MessageBoxView(delegate_->GetDialogMessage());
   message_box_view_->SetInterRowVerticalSpacing(

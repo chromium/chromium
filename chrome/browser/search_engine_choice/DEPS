@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "search_engine_choice_dialog_service\.cc": [
+    "+components/regional_capabilities/access/country_access_reason.h",
+  ],
+}

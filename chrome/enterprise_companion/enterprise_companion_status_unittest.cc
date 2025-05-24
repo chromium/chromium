@@ -4,7 +4,8 @@
 
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom-forward.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
@@ -104,54 +105,38 @@ TEST(EnterpriseCompanionStatusTest, FromMojomStatusEqualsOtherType) {
   EXPECT_EQ(status1, status2);
 }
 
-TEST(EnterpriseCompanionStatusTest, FromProtoStatusSuccess) {
-  proto::Status proto_status;
-  proto_status.set_space(0);
-  proto_status.set_code(0);
+TEST(EnterpriseCompanionStatusTest, FromPersistedErrorStatusSuccess) {
   EnterpriseCompanionStatus status =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status);
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(0, 0, {}));
   EXPECT_TRUE(status.ok());
 }
 
 TEST(EnterpriseCompanionStatusTest, FromProtoStatusError) {
-  proto::Status proto_status;
-  proto_status.set_space(2);
-  proto_status.set_code(0);
   EnterpriseCompanionStatus status =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status);
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(2, 0, {}));
   EXPECT_FALSE(status.ok());
   EXPECT_EQ(status.space(), 2);
   EXPECT_EQ(status.code(), 0);
 }
 
-TEST(EnterpriseCompanionStatusTest, FromProtoStatusEqual) {
-  proto::Status proto_status_1;
-  proto_status_1.set_space(777);
-  proto_status_1.set_code(42);
-  EnterpriseCompanionStatus status1 =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status_1);
-
-  proto::Status proto_status_2;
-  proto_status_2.set_space(777);
-  proto_status_2.set_code(42);
-  EnterpriseCompanionStatus status2 =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status_2);
-
-  EXPECT_EQ(status1, status2);
+TEST(EnterpriseCompanionStatusTest, FromPersistedErrorEqual) {
+  EnterpriseCompanionStatus status_1 =
+      EnterpriseCompanionStatus::FromPersistedError(
+          PersistedError(777, 42, {}));
+  EnterpriseCompanionStatus status_2 =
+      EnterpriseCompanionStatus::FromPersistedError(
+          PersistedError(777, 42, {}));
+  EXPECT_EQ(status_1, status_2);
 }
 
-TEST(EnterpriseCompanionStatusTest, FromProtoStatusEqualsOtherType) {
-  proto::Status proto_status_1;
-  proto_status_1.set_space(3);
-  proto_status_1.set_code(
-      static_cast<int>(ApplicationError::kCannotAcquireLock));
-  EnterpriseCompanionStatus status1 =
-      EnterpriseCompanionStatus::FromProtoStatus(proto_status_1);
-
-  EnterpriseCompanionStatus status2 =
-      EnterpriseCompanionStatus(ApplicationError::kCannotAcquireLock);
-
-  EXPECT_EQ(status1, status2);
+TEST(EnterpriseCompanionStatusTest, FromPersistedErrorEqualsOtherType) {
+  EnterpriseCompanionStatus status_1 =
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(
+          3, static_cast<int>(ApplicationError::kCannotAcquireLock), {}));
+  EnterpriseCompanionStatus status_2 =
+      EnterpriseCompanionStatus::FromPersistedError(PersistedError(
+          3, static_cast<int>(ApplicationError::kCannotAcquireLock), {}));
+  EXPECT_EQ(status_1, status_2);
 }
 
 TEST(EnterpriseCompanionStatusTest, FromPosixErrno) {
@@ -179,7 +164,7 @@ TEST(EnterpriseCompanionStatusTest, DifferentSuccessesEqual) {
       EnterpriseCompanionStatus::FromMojomStatus(mojom::Status::New(
           /*space=*/0, /*code=*/0, /*description=*/"Success"))};
 
-  ASSERT_TRUE(base::ranges::all_of(
+  ASSERT_TRUE(std::ranges::all_of(
       successes,
       [](const EnterpriseCompanionStatus& status) { return status.ok(); }));
   for (const auto& lhs : successes) {
@@ -211,6 +196,13 @@ TEST(EnterpriseCompanionStatusTest, SuccessAndErrorNotEqual) {
 
   EXPECT_NE(success, error1);
   EXPECT_NE(success, error2);
+}
+
+TEST(EnterpriseCompanionStatusTest, ConstantsCorrect) {
+  EXPECT_EQ(EnterpriseCompanionStatus::Success().space(), kStatusOk);
+  EXPECT_EQ(
+      EnterpriseCompanionStatus(ApplicationError::kInstallationFailed).space(),
+      kStatusApplicationError);
 }
 
 }  // namespace enterprise_companion

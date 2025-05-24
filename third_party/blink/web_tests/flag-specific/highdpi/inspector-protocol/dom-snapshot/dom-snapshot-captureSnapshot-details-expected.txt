@@ -20,13 +20,13 @@ Tests that DOMSnapshot.captureSnapshot fills document details: title, size, etc.
                     [1] : [
                         [0] : 0
                         [1] : 0
-                        [2] : 1178
+                        [2] : 1177
                         [3] : 3000
                     ]
                     [2] : [
                         [0] : 0
                         [1] : 0
-                        [2] : 1178
+                        [2] : 1177
                         [3] : 3000
                     ]
                     [3] : [

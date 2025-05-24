@@ -97,7 +97,7 @@ MojoMjpegDecodeAcceleratorService::MojoMjpegDecodeAcceleratorService()
 
 MojoMjpegDecodeAcceleratorService::~MojoMjpegDecodeAcceleratorService() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+#if defined(ARCH_CPU_X86_FAMILY)
   if (base::FeatureList::IsEnabled(media::kVSyncMjpegDecoding)) {
     set_begin_frame_cb_.Run(std::nullopt);
     vsync_driven_decoding_ = false;
@@ -142,7 +142,7 @@ void MojoMjpegDecodeAcceleratorService::InitializeInternal(
     return;
   }
 
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+#if defined(ARCH_CPU_X86_FAMILY)
   if (base::FeatureList::IsEnabled(media::kVSyncMjpegDecoding)) {
     vsync_driven_decoding_ = true;
     set_begin_frame_cb_.Run(base::BindRepeating(

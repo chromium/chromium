@@ -28,13 +28,13 @@ class RulesRegistry;
 
 // RulesCacheDelegate implements the part of the RulesRegistry which works on
 // the UI thread. It should only be used on the UI thread.
-// If |log_storage_init_delay| is set, the delay caused by loading and
+// If `log_storage_init_delay` is set, the delay caused by loading and
 // registering rules on initialization will be logged with UMA.
 class RulesCacheDelegate {
  public:
   class Observer {
    public:
-    // Called when |UpdateRules| is called on the |RulesCacheDelegate|.
+    // Called when `UpdateRules` is called on the `RulesCacheDelegate`.
     virtual void OnUpdateRules() = 0;
 
    protected:
@@ -107,25 +107,25 @@ class RulesCacheDelegate {
   void ReadFromStorageCallback(const ExtensionId& extension_id,
                                std::optional<base::Value> value);
 
-  // Check the preferences whether the extension with |extension_id| has some
+  // Check the preferences whether the extension with `extension_id` has some
   // rules stored on disk. If this information is not in the preferences, true
   // is returned as a safe default value.
   bool GetDeclarativeRulesStored(const ExtensionId& extension_id) const;
-  // Modify the preference to |rules_stored|.
+  // Modify the preference to `rules_stored`.
   void SetDeclarativeRulesStored(const ExtensionId& extension_id,
                                  bool rules_stored);
 
   raw_ptr<content::BrowserContext> browser_context_;
 
-  // Indicates whether the ruleset is non-empty. Valid for both |kEphemeral| and
-  // |kPersistent| cache types.
+  // Indicates whether the ruleset is non-empty. Valid for both `kEphemeral` and
+  // `kPersistent` cache types.
   bool has_nonempty_ruleset_ = false;
 
-  // The key under which rules are stored. Only used for |kPersistent| caches.
+  // The key under which rules are stored. Only used for `kPersistent` caches.
   std::string storage_key_;
 
   // The key under which we store whether the rules have been stored. Only used
-  // for |kPersistent| caches.
+  // for `kPersistent` caches.
   std::string rules_stored_key_;
 
   // A set of extension IDs that have rules we are reading from storage.
@@ -134,7 +134,7 @@ class RulesCacheDelegate {
   // Weak pointer to post tasks to the owning rules registry.
   base::WeakPtr<RulesRegistry> registry_;
 
-  // The thread |registry_| lives on.
+  // The thread `registry_` lives on.
   content::BrowserThread::ID rules_registry_thread_;
 
   // We notified the RulesRegistry that the rules are loaded.

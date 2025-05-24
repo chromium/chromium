@@ -1,0 +1,14 @@
+Typeahead does not select disabled select option
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS select.matches(":open") is false
+PASS select.value is "United States"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Canada
+Spain
+United Arab Emirates
+United States

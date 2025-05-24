@@ -159,8 +159,8 @@ void FirstMeaningfulPaintDetector::RegisterNotifyPresentationTime(
     PaintEvent event) {
   ++outstanding_presentation_promise_count_;
   paint_timing_->RegisterNotifyPresentationTime(
-      CrossThreadBindOnce(&FirstMeaningfulPaintDetector::ReportPresentationTime,
-                          WrapCrossThreadWeakPersistent(this), event));
+      WTF::BindOnce(&FirstMeaningfulPaintDetector::ReportPresentationTime,
+                    WrapCrossThreadWeakPersistent(this), event));
 }
 
 void FirstMeaningfulPaintDetector::ReportPresentationTime(

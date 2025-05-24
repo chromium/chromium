@@ -100,7 +100,7 @@ TEST_F(AsanServiceTest, MAYBE_ShouldExitCleanly) {
 
 class AsanTaskTraceTest {
  public:
-  AsanTaskTraceTest() {}
+  AsanTaskTraceTest() = default;
 
   void Run() {
     task_runner_->PostTask(

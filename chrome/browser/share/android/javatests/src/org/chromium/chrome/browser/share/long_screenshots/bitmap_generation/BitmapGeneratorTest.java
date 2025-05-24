@@ -28,7 +28,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.paintpreview.player.CompositorStatus;
 import org.chromium.net.test.EmbeddedTestServer;
 
@@ -37,21 +39,22 @@ import org.chromium.net.test.EmbeddedTestServer;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class BitmapGeneratorTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
     private Tab mTab;
     private BitmapGenerator mGenerator;
     private boolean mBitmapCreated;
+    private WebPageStation mInitialPage;
 
     @Before
     public void setUp() throws Exception {
         EmbeddedTestServer testServer = mActivityTestRule.getTestServer();
         final String url = testServer.getURL("/chrome/test/data/android/about.html");
-        mActivityTestRule.startMainActivityWithURL(url);
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mInitialPage = mActivityTestRule.startOnUrl(url);
+        mTab = mInitialPage.loadedTabElement.get();
     }
 
     @After

@@ -21,14 +21,14 @@ namespace {
 // A helper class that updates the title of Chrome OS Settings browser windows.
 class AuraWindowSettingsTitleTracker : public aura::WindowTracker {
  public:
-  AuraWindowSettingsTitleTracker() {}
+  AuraWindowSettingsTitleTracker() = default;
 
   AuraWindowSettingsTitleTracker(const AuraWindowSettingsTitleTracker&) =
       delete;
   AuraWindowSettingsTitleTracker& operator=(
       const AuraWindowSettingsTitleTracker&) = delete;
 
-  ~AuraWindowSettingsTitleTracker() override {}
+  ~AuraWindowSettingsTitleTracker() override = default;
 
   // aura::WindowTracker:
   void OnWindowTitleChanged(aura::Window* window) override {

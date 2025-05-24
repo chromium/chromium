@@ -55,12 +55,16 @@ PopupTracker::PopupTracker(content::WebContents* contents,
   if (auto* popup_opener = PopupOpenerTabHelper::FromWebContents(opener))
     popup_opener->OnOpenedPopup(this);
 
-  auto* observation_manager =
+  // A popup tracker may be constructed before `contents` has been added to its
+  // owning tab strip, and as such tab helpers for `contents` may not yet have
+  // been initialized. Explicitly instantiate SubresourceFilterObserverManager
+  // if necessary for `contents` if necessary to ensure the popup registers the
+  // observation.
+  subresource_filter::SubresourceFilterObserverManager::CreateForWebContents(
+      contents);
+  scoped_observation_.Observe(
       subresource_filter::SubresourceFilterObserverManager::FromWebContents(
-          contents);
-  if (observation_manager) {
-    scoped_observation_.Observe(observation_manager);
-  }
+          contents));
 }
 
 void PopupTracker::WebContentsDestroyed() {

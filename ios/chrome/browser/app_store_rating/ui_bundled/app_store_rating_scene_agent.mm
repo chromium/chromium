@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 
+#import <algorithm>
+
 #import "base/metrics/histogram_functions.h"
-#import "base/ranges/algorithm.h"
 #import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/prefs/pref_service.h"
 #import "components/variations/service/variations_service.h"

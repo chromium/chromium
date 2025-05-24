@@ -7,10 +7,12 @@ package org.chromium.content_public.browser.util;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 public class DialogTypeRecorder {
     private static final String HISTOGRAM_NAME = "Android.UIDialogShown";
 

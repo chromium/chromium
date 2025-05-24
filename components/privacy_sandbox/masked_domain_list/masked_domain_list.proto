@@ -10,7 +10,7 @@ message Resource {
 
   enum Experiment {
     EXPERIMENT_UNKNOWN = 0;
-    EXPERIMENT_AFP = 1;
+    EXPERIMENT_EXTERNAL_REGULAR = 1;
   }
 
   optional string domain = 1;
@@ -20,7 +20,7 @@ message Resource {
   optional bool exclude_default_group = 4;
 
   // Non-zero IDs of experiment groups that include this Resource.
-  repeated int64 experiment_group_ids = 5;
+  repeated int64 experiment_group_ids = 5 [deprecated = true];
 }
 
 // Contains ownership information about resources that are used in a 3rd party
@@ -47,5 +47,11 @@ message PublicSuffixListRule {
 message MaskedDomainList {
   repeated ResourceOwner resource_owners = 1;
   // Public Suffix List rules that modify the MDL.
-  repeated PublicSuffixListRule public_suffix_list_rules = 2;
+  // This field is deprecated and will be removed in the future.
+  //
+  // NOTE: As of Chrome Stable M134, this field is ignored in the Chrome client,
+  // but it is still used by prior versions. Thus, it should not be removed from
+  // the proto until it is safe to do so
+  repeated PublicSuffixListRule public_suffix_list_rules = 2
+      [deprecated = true];
 }

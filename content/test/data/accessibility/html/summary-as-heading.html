@@ -1,0 +1,32 @@
+<!--
+@MAC-ALLOW:AXRoleDescription
+@MAC-ALLOW:AXExpanded=*
+@MAC-ALLOW:AXDisclosureLevel
+@UIA-WIN-ALLOW:LocalizedControlType='details'
+@WIN-ALLOW:EXPANDED
+@WIN-ALLOW:COLLAPSED
+@WIN-ALLOW:level:*
+@WIN-ALLOW:localized_extended_role=*
+@AURALINUX-ALLOW:expand*
+@AURALINUX-ALLOW:focus*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:level:*
+@BLINK-ALLOW:hierarchicalLevel*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <details>
+    <summary>details tag</summary>
+    <p>The details tag specifies additional details that the user can view or hide on demand.</p>
+  </details>
+
+  <details open>
+    <summary aria-level="3">details tag open</summary>
+    <p>The details tag with open specifies that the details should be visible (open) to the user.</p>
+  </details>
+</body>
+</html>

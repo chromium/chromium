@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API expand operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -17,7 +17,7 @@ multi_builder_test(async (t, builder, otherBuilder) => {
 }, '[expand] throw if input is from another builder');
 
 const label = 'xxx_expand';
-
+const regrexp = new RegExp('\\[' + label + '\\]');
 const tests = [
   {
     name: '[expand] Test with 0-D scalar to 3-D tensor.',
@@ -71,12 +71,11 @@ tests.forEach(
 
       if (test.output) {
         const output = builder.expand(input, test.newShape);
-        assert_equals(output.dataType(), test.output.dataType);
-        assert_array_equals(output.shape(), test.output.shape);
+        assert_equals(output.dataType, test.output.dataType);
+        assert_array_equals(output.shape, test.output.shape);
       } else {
         const options = {...test.options};
         if (options.label) {
-          const regrexp = new RegExp('\\[' + label + '\\]');
           assert_throws_with_label(
               () => builder.expand(input, test.newShape, options), regrexp);
         } else {
@@ -97,10 +96,22 @@ promise_test(async t => {
     const input = builder.input(`input`, {dataType, shape});
     if (context.opSupportLimits().expand.input.dataTypes.includes(dataType)) {
       const output = builder.expand(input, newShape);
-      assert_equals(output.dataType(), dataType);
-      assert_array_equals(output.shape(), newShape);
+      assert_equals(output.dataType, dataType);
+      assert_array_equals(output.shape, newShape);
     } else {
       assert_throws_js(TypeError, () => builder.expand(input, newShape));
     }
   }
 }, `[expand] Test expand with all of the data types.`);
+
+promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
+
+  const input = builder.input('input', {
+      dataType: 'float32', shape: [1, 2, 1, 1]});
+  const newShape = [1, 2, context.opSupportLimits().maxTensorByteLength, 1];
+
+  const options = {label};
+  assert_throws_with_label(
+      () => builder.expand(input, newShape, options), regrexp);
+}, '[expand] throw if the output tensor byte length exceeds limit');

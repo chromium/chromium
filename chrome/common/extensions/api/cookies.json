@@ -66,6 +66,16 @@
           "storeId": {"type": "string", "optional": true, "description": "The ID of the cookie store in which to look for the cookie. By default, the current execution context's cookie store will be used."},
           "partitionKey": {"$ref": "CookiePartitionKey", "optional": true, "description": "The partition key for reading or modifying cookies with the Partitioned attribute."}
         }
+      },
+      {
+        "id": "FrameDetails",
+        "type": "object",
+        "description": "Details to identify the frame.",
+        "properties": {
+          "tabId": {"type": "integer", "optional": true, "description": "The unique identifier for the tab containing the frame."},
+          "frameId": {"type": "integer", "optional": true, "description": "The unique identifier for the frame within the tab."},
+          "documentId": {"type": "string", "optional":true, "description": "The unique identifier for the document. If the frameId and/or tabId are provided they will be validated to match the document found by provided document ID."}
+        }
       }
     ],
     "functions": [
@@ -193,6 +203,34 @@
           "parameters": [
             {
               "name": "cookieStores", "type": "array", "items": {"$ref": "CookieStore"}, "description": "All the existing cookie stores."
+            }
+          ]
+        }
+      },
+      {
+        "name": "getPartitionKey",
+        "type": "function",
+        "description": "The partition key for the frame indicated.",
+        "parameters": [
+          {
+          "name": "details",
+            "$ref": "FrameDetails"
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "details",
+              "type": "object",
+              "description": "Contains details about the partition key that's been retrieved.",
+              "properties": {
+                "partitionKey": {
+                  "$ref": "CookiePartitionKey",
+                  "description": "The partition key for reading or modifying cookies with the Partitioned attribute."
+                }
+              }
             }
           ]
         }

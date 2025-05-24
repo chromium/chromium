@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 import {durationToString, maybeMakePlural} from 'chrome://discards/discards.js';
-import {compareTabDiscardsInfos} from 'chrome://discards/discards_tab.js';
+import type {TabDiscardsInfo} from 'chrome://discards/discards.mojom-webui.js';
+import {CanFreeze} from 'chrome://discards/discards.mojom-webui.js';
+import {getSortFunctionForKey} from 'chrome://discards/discards_tab.js';
+import {LifecycleUnitDiscardReason, LifecycleUnitLoadingState} from 'chrome://discards/lifecycle_unit_state.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('discards', function() {
-  test('CompareTabDiscardsInfo', function() {
-    const dummy1 = {
+  test('GetSortFunctionForKey', function() {
+    const dummy1: TabDiscardsInfo = {
       title: 'title 1',
       tabUrl: 'http://urlone.com',
       visibility: 0,  // hidden
@@ -17,8 +20,19 @@ suite('discards', function() {
       discardCount: 0,
       utilityRank: 0,
       lastActiveSeconds: 0,
+      // Dummy default values.
+      loadingState: LifecycleUnitLoadingState.UNLOADED,
+      canDiscard: false,
+      hasFocus: false,
+      cannotDiscardReasons: [],
+      canFreeze: CanFreeze.YES,
+      cannotFreezeReasons: [],
+      discardReason: LifecycleUnitDiscardReason.EXTERNAL,
+      id: 0,
+      siteEngagementScore: 0,
+      stateChangeTime: {microseconds: 0n},
     };
-    const dummy2 = {
+    const dummy2: TabDiscardsInfo = {
       title: 'title 2',
       tabUrl: 'http://urltwo.com',
       visibility: 1,  // occluded
@@ -27,15 +41,26 @@ suite('discards', function() {
       discardCount: 1,
       utilityRank: 1,
       lastActiveSeconds: 1,
+      // Dummy default values.
+      loadingState: LifecycleUnitLoadingState.UNLOADED,
+      canDiscard: false,
+      hasFocus: false,
+      cannotDiscardReasons: [],
+      canFreeze: CanFreeze.YES,
+      cannotFreezeReasons: [],
+      discardReason: LifecycleUnitDiscardReason.EXTERNAL,
+      id: 0,
+      siteEngagementScore: 0,
+      stateChangeTime: {microseconds: 0n},
     };
 
     ['title', 'tabUrl', 'visibility', 'state', 'isAutoDiscardable',
      'discardCount', 'utilityRank', 'lastActiveSeconds']
         .forEach((sortKey) => {
-          assertTrue(compareTabDiscardsInfos(sortKey, dummy1, dummy2) < 0);
-          assertTrue(compareTabDiscardsInfos(sortKey, dummy2, dummy1) > 0);
-          assertTrue(compareTabDiscardsInfos(sortKey, dummy1, dummy1) === 0);
-          assertTrue(compareTabDiscardsInfos(sortKey, dummy2, dummy2) === 0);
+          assertTrue(getSortFunctionForKey(sortKey)(dummy1, dummy2) < 0);
+          assertTrue(getSortFunctionForKey(sortKey)(dummy2, dummy1) > 0);
+          assertTrue(getSortFunctionForKey(sortKey)(dummy1, dummy1) === 0);
+          assertTrue(getSortFunctionForKey(sortKey)(dummy2, dummy2) === 0);
         });
   });
 

@@ -6,12 +6,14 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 #include "url/url_util.h"
@@ -188,8 +190,9 @@ bool StructTraits<blink::mojom::ManifestLaunchHandlerDataView,
                   ::blink::Manifest::LaunchHandler>::
     Read(blink::mojom::ManifestLaunchHandlerDataView data,
          ::blink::Manifest::LaunchHandler* out) {
-  if (!data.ReadClientMode(&out->client_mode))
+  if (!data.ReadClientMode(&out->client_mode_)) {
     return false;
+  }
 
   return true;
 }
@@ -240,7 +243,7 @@ blink::mojom::HomeTabUnionDataView::Tag
 UnionTraits<blink::mojom::HomeTabUnionDataView,
             ::blink::Manifest::TabStrip::HomeTab>::
     GetTag(const ::blink::Manifest::TabStrip::HomeTab& value) {
-  if (absl::holds_alternative<blink::mojom::TabStripMemberVisibility>(value)) {
+  if (std::holds_alternative<blink::mojom::TabStripMemberVisibility>(value)) {
     return blink::mojom::HomeTabUnion::Tag::kVisibility;
   } else {
     return blink::mojom::HomeTabUnion::Tag::kParams;
@@ -252,18 +255,20 @@ bool UnionTraits<blink::mojom::HomeTabUnionDataView,
     Read(blink::mojom::HomeTabUnionDataView data,
          blink::Manifest::TabStrip::HomeTab* out) {
   switch (data.tag()) {
-    case blink::mojom::HomeTabUnionDataView::Tag::kVisibility:
+    case blink::mojom::HomeTabUnionDataView::Tag::kVisibility: {
       ::blink::mojom::TabStripMemberVisibility visibility;
       if (!data.ReadVisibility(&visibility))
         return false;
       *out = visibility;
       return true;
-    case blink::mojom::HomeTabUnionDataView::Tag::kParams:
+    }
+    case blink::mojom::HomeTabUnionDataView::Tag::kParams: {
       ::blink::Manifest::HomeTabParams params;
       if (!data.ReadParams(&params))
         return false;
       *out = params;
       return true;
+    }
   }
   return false;
 }

@@ -14,14 +14,15 @@ import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
 
 /** Animates children of a vertical {@link LinearLayout} expanding/collapsing when focused. */
+@NullMarked
 public class FocusAnimator {
     private static final int ANIMATION_LENGTH_MS = 225;
 
@@ -29,7 +30,7 @@ public class FocusAnimator {
     private final LinearLayout mLayout;
 
     /** Child that is being focused. */
-    private final View mFocusedChild;
+    private final @Nullable View mFocusedChild;
 
     /** Number of children initially set when the {@link FocusAnimator} was created. */
     private final int mInitialNumberOfChildren;

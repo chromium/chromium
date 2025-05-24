@@ -59,7 +59,6 @@ DisallowedFeatures AdjustDisallowedFeatures(
 class GPU_GLES2_EXPORT ContextGroup : public base::RefCounted<ContextGroup> {
  public:
   ContextGroup(const GpuPreferences& gpu_preferences,
-               bool supports_passthrough_command_decoders,
                std::unique_ptr<MemoryTracker> memory_tracker,
                ShaderTranslatorCache* shader_translator_cache,
                FramebufferCompletenessCache* framebuffer_completeness_cache,

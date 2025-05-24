@@ -94,4 +94,11 @@ web::WebStateID GetTabIDFromActivity(NSUserActivity* activity);
 // flag set.
 BOOL GetIncognitoFromTabMoveActivity(NSUserActivity* activity);
 
+// Attaches the name of the profile to the activity, and retrieves it out again.
+// This is used for activities that open a new window, to ensure the profile in
+// the new window matches the originating profile/window.
+void AttachProfileNameToActivity(NSUserActivity* activity,
+                                 std::string_view profile_name);
+std::string GetProfileNameFromActivity(NSUserActivity* activity);
+
 #endif  // IOS_CHROME_BROWSER_WINDOW_ACTIVITIES_MODEL_WINDOW_ACTIVITY_HELPERS_H_

@@ -15,7 +15,9 @@ namespace ash {
 // Structure to hold FwupdDevice data received from fwupd.
 struct COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdDevice {
   FwupdDevice();
-  FwupdDevice(const std::string& id, const std::string& device_name);
+  FwupdDevice(const std::string& id,
+              const std::string& device_name,
+              bool needs_reboot);
   FwupdDevice(const FwupdDevice& other);
   FwupdDevice& operator=(const FwupdDevice& other);
   ~FwupdDevice();
@@ -24,6 +26,7 @@ struct COMPONENT_EXPORT(ASH_DBUS_FWUPD) FwupdDevice {
 
   std::string id;
   std::string device_name;
+  bool needs_reboot;
 };
 
 using FwupdDeviceList = std::vector<FwupdDevice>;

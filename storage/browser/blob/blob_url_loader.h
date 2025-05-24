@@ -50,13 +50,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoader
  private:
   BlobURLLoader(
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      const network::ResourceRequest& request,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      std::unique_ptr<BlobDataHandle> blob_handle);
-  BlobURLLoader(
-      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      const std::string& method,
-      const net::HttpRequestHeaders& headers,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       std::unique_ptr<BlobDataHandle> blob_handle);
 
@@ -70,8 +63,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   // MojoBlobReader::Delegate implementation:
   RequestSideData DidCalculateSize(uint64_t total_size,

@@ -9,6 +9,8 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -18,6 +20,7 @@ import org.chromium.url.Origin;
  * components/payments/core/payment_manifest_downloader.h
  */
 @JNINamespace("payments")
+@NullMarked
 public class PaymentManifestDownloader {
     /** Interface for the callback to invoke when finished downloading. */
     public interface ManifestDownloadCallback {
@@ -54,7 +57,7 @@ public class PaymentManifestDownloader {
     }
 
     private long mNativeObject;
-    private CSPCheckerBridge mCSPCheckerBridge;
+    private @Nullable CSPCheckerBridge mCSPCheckerBridge;
 
     /**
      * Initializes the native downloader.

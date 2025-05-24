@@ -8,8 +8,8 @@
 
 namespace settings {
 
-SettingsPageUIHandler::SettingsPageUIHandler() {}
+SettingsPageUIHandler::SettingsPageUIHandler() = default;
 
-SettingsPageUIHandler::~SettingsPageUIHandler() {}
+SettingsPageUIHandler::~SettingsPageUIHandler() = default;
 
 }  // namespace settings

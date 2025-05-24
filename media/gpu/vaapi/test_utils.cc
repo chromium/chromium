@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/vaapi/test_utils.h"
 
@@ -24,14 +20,14 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "media/gpu/test/local_gpu_memory_buffer_manager.h"
 #endif
 
 namespace media {
 namespace vaapi_test_utils {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -128,7 +124,7 @@ std::string TestParamToString(
   return param_info.param.test_name;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 DecodedImage ScopedVAImageToDecodedImage(const ScopedVAImage* scoped_va_image) {
   DecodedImage decoded_image{};

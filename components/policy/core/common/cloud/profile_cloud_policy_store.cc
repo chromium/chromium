@@ -84,6 +84,7 @@ ProfileCloudPolicyStore::CreateValidator(
 void ProfileCloudPolicyStore::Validate(
     std::unique_ptr<enterprise_management::PolicyFetchResponse> policy,
     std::unique_ptr<enterprise_management::PolicySigningKey> key,
+    bool validate_in_background,
     UserCloudPolicyValidator::CompletionCallback callback) {
   if (is_dasherless_) {
     VLOG_POLICY(2, OIDC_ENROLLMENT)
@@ -94,8 +95,13 @@ void ProfileCloudPolicyStore::Validate(
 
   ValidateKeyAndSignature(validator.get(), key.get(), std::string());
 
-  validator->RunValidation();
-  std::move(callback).Run(validator.get());
+  if (validate_in_background) {
+    UserCloudPolicyValidator::StartValidation(std::move(validator),
+                                              std::move(callback));
+  } else {
+    validator->RunValidation();
+    std::move(callback).Run(validator.get());
+  }
 }
 
 }  // namespace policy

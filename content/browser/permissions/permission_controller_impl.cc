@@ -4,6 +4,8 @@
 
 #include "content/browser/permissions/permission_controller_impl.h"
 
+#include <string>
+
 #include "base/functional/bind.h"
 #include "content/browser/permissions/permission_service_context.h"
 #include "content/browser/permissions/permission_util.h"
@@ -12,7 +14,7 @@
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
-#include "content/public/browser/permission_request_description.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -30,16 +32,6 @@
 namespace content {
 
 namespace {
-
-constexpr char kPermissionBlockedFencedFrameMessage[] =
-    "%s permission has been blocked because it was requested inside a fenced "
-    "frame. Fenced frames don't currently support permission requests.";
-
-#if !BUILDFLAG(IS_ANDROID)
-const char kPermissionBlockedPermissionsPolicyMessage[] =
-    "%s permission has been blocked because of a permissions policy applied to"
-    " the current document. See https://goo.gl/EuHzyv for more details.";
-#endif
 
 std::optional<blink::scheduler::WebSchedulerTrackedFeature>
 PermissionToSchedulingFeature(PermissionType permission_name) {
@@ -68,7 +60,6 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
           kRequestedStorageAccessGrant;
     case PermissionType::PROTECTED_MEDIA_IDENTIFIER:
     case PermissionType::DURABLE_STORAGE:
-    case PermissionType::ACCESSIBILITY_EVENTS:
     case PermissionType::CLIPBOARD_READ_WRITE:
     case PermissionType::CLIPBOARD_SANITIZED_WRITE:
     case PermissionType::PAYMENT_HANDLER:
@@ -95,17 +86,9 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::POINTER_LOCK:
     case PermissionType::AUTOMATIC_FULLSCREEN:
     case PermissionType::WEB_APP_INSTALLATION:
+    case PermissionType::LOCAL_NETWORK_ACCESS:
       return std::nullopt;
   }
-}
-
-void LogPermissionBlockedMessage(PermissionType permission,
-                                 RenderFrameHost* rfh,
-                                 const char* message) {
-  rfh->GetOutermostMainFrame()->AddMessageToConsole(
-      blink::mojom::ConsoleMessageLevel::kWarning,
-      base::StringPrintfNonConstexpr(
-          message, blink::GetPermissionString(permission).c_str()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -152,7 +135,7 @@ PermissionResult VerifyContextOfCurrentDocument(
 }
 
 bool IsRequestAllowed(
-    const std::vector<blink::PermissionType>& permissions,
+    const std::vector<blink::mojom::PermissionDescriptorPtr>& permissions,
     RenderFrameHost* render_frame_host,
     base::OnceCallback<void(const std::vector<PermissionStatus>&)>& callback) {
   if (!render_frame_host) {
@@ -173,21 +156,30 @@ bool IsRequestAllowed(
 
   // Verify each permission independently to generate proper warning messages.
   bool is_permission_allowed = true;
-  for (PermissionType permission : permissions) {
+  for (const auto& permission : permissions) {
+    PermissionType permission_type =
+        blink::PermissionDescriptorToPermissionType(permission);
     PermissionResult result =
-        VerifyContextOfCurrentDocument(permission, render_frame_host);
+        VerifyContextOfCurrentDocument(permission_type, render_frame_host);
 
     if (result.status == PermissionStatus::DENIED) {
       switch (result.source) {
         case PermissionStatusSource::FENCED_FRAME:
-          LogPermissionBlockedMessage(permission, render_frame_host,
-                                      kPermissionBlockedFencedFrameMessage);
+          render_frame_host->GetOutermostMainFrame()->AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kWarning,
+              blink::GetPermissionString(permission_type) +
+                  " permission has been blocked because it was requested "
+                  "inside a fenced frame. Fenced frames don't currently "
+                  "support permission requests.");
           break;
 #if !BUILDFLAG(IS_ANDROID)
         case PermissionStatusSource::FEATURE_POLICY:
-          LogPermissionBlockedMessage(
-              permission, render_frame_host,
-              kPermissionBlockedPermissionsPolicyMessage);
+          render_frame_host->GetOutermostMainFrame()->AddMessageToConsole(
+              blink::mojom::ConsoleMessageLevel::kWarning,
+              blink::GetPermissionString(permission_type) +
+                  " permission has been blocked because of a permissions "
+                  "policy applied to the current document. See "
+                  "https://crbug.com/414348233 for more details.");
           break;
 #endif
         default:
@@ -263,14 +255,16 @@ std::vector<std::optional<blink::mojom::PermissionStatus>> OverridePermissions(
     PermissionRequestDescription& description,
     RenderFrameHost* render_frame_host,
     const PermissionOverrides& permission_overrides) {
-  std::vector<blink::PermissionType> permissions_without_overrides;
+  std::vector<blink::mojom::PermissionDescriptorPtr>
+      permissions_without_overrides;
   std::vector<std::optional<blink::mojom::PermissionStatus>> results;
   const url::Origin& origin = render_frame_host->GetLastCommittedOrigin();
   for (const auto& permission : description.permissions) {
     std::optional<blink::mojom::PermissionStatus> override_status =
-        permission_overrides.Get(origin, permission);
+        permission_overrides.Get(
+            origin, blink::PermissionDescriptorToPermissionType(permission));
     if (!override_status) {
-      permissions_without_overrides.push_back(permission);
+      permissions_without_overrides.push_back(permission.Clone());
     }
     results.push_back(override_status);
   }
@@ -303,20 +297,23 @@ PermissionStatus PermissionControllerImpl::GetSubscriptionCurrentValue(
   // The RFH may be null if the request is for a worker.
   RenderFrameHost* rfh = RenderFrameHost::FromID(subscription.render_process_id,
                                                  subscription.render_frame_id);
+  // TODO(crbug.com/408965890): Add support for multi-state permissions. The
+  // following won't work for detecting changes in permission options.
+  const auto descriptor =
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          subscription.permission);
   if (rfh) {
-    return GetPermissionStatusForCurrentDocument(subscription.permission, rfh);
+    return GetPermissionStatusForCurrentDocument(descriptor, rfh);
   }
 
   RenderProcessHost* rph =
       RenderProcessHost::FromID(subscription.render_process_id);
   if (rph) {
     return GetPermissionStatusForWorker(
-        subscription.permission, rph,
-        url::Origin::Create(subscription.requesting_origin));
+        descriptor, rph, url::Origin::Create(subscription.requesting_origin));
   }
 
-  return GetPermissionStatusInternal(subscription.permission,
-                                     subscription.requesting_origin,
+  return GetPermissionStatusInternal(descriptor, subscription.requesting_origin,
                                      subscription.embedding_origin);
 }
 
@@ -354,8 +351,9 @@ void PermissionControllerImpl::NotifyChangedSubscriptions(
                                          /*ignore_status_override=*/true));
     }
   }
-  for (auto& callback : callbacks)
+  for (auto& callback : callbacks) {
     std::move(callback).Run();
+  }
 }
 
 PermissionControllerImpl::OverrideStatus
@@ -438,8 +436,11 @@ void PermissionControllerImpl::RequestPermissions(
     return;
   }
 
-  for (PermissionType permission : request_description.permissions) {
-    NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
+  for (const blink::mojom::PermissionDescriptorPtr& permission :
+       request_description.permissions) {
+    NotifySchedulerAboutPermissionRequest(
+        render_frame_host,
+        blink::PermissionDescriptorToPermissionType(permission));
   }
 
   std::vector<std::optional<blink::mojom::PermissionStatus>> override_results =
@@ -485,8 +486,10 @@ void PermissionControllerImpl::RequestPermissionsFromCurrentDocument(
     return;
   }
 
-  for (PermissionType permission : request_description.permissions) {
-    NotifySchedulerAboutPermissionRequest(render_frame_host, permission);
+  for (const auto& permission : request_description.permissions) {
+    NotifySchedulerAboutPermissionRequest(
+        render_frame_host,
+        blink::PermissionDescriptorToPermissionType(permission));
   }
 
   request_description.requesting_origin =
@@ -522,11 +525,12 @@ void PermissionControllerImpl::ResetPermission(blink::PermissionType permission,
 }
 
 PermissionStatus PermissionControllerImpl::GetPermissionStatusInternal(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   std::optional<PermissionStatus> status = permission_overrides_.Get(
-      url::Origin::Create(requesting_origin), permission);
+      url::Origin::Create(requesting_origin),
+      blink::PermissionDescriptorToPermissionType(permission_descriptor));
   if (status) {
     return *status;
   }
@@ -536,18 +540,19 @@ PermissionStatus PermissionControllerImpl::GetPermissionStatusInternal(
   if (!delegate) {
     return PermissionStatus::DENIED;
   }
-
-  return delegate->GetPermissionStatus(permission, requesting_origin,
+  return delegate->GetPermissionStatus(permission_descriptor, requesting_origin,
                                        embedding_origin);
 }
 
 PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForCurrentDocumentInternal(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission_descriptor);
   std::optional<PermissionStatus> status = permission_overrides_.Get(
-      render_frame_host->GetLastCommittedOrigin(), permission);
+      render_frame_host->GetLastCommittedOrigin(), permission_type);
   if (status) {
     return *status;
   }
@@ -556,20 +561,22 @@ PermissionControllerImpl::GetPermissionStatusForCurrentDocumentInternal(
   if (!delegate) {
     return PermissionStatus::DENIED;
   }
-  if (VerifyContextOfCurrentDocument(permission, render_frame_host).status ==
-      PermissionStatus::DENIED) {
+  if (VerifyContextOfCurrentDocument(permission_type, render_frame_host)
+          .status == PermissionStatus::DENIED) {
     return PermissionStatus::DENIED;
   }
   return delegate->GetPermissionStatusForCurrentDocument(
-      permission, render_frame_host, should_include_device_status);
+      permission_descriptor, render_frame_host, should_include_device_status);
 }
 
 PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderProcessHost* render_process_host,
     const url::Origin& worker_origin) {
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission_descriptor);
   std::optional<PermissionStatus> status =
-      permission_overrides_.Get(worker_origin, permission);
+      permission_overrides_.Get(worker_origin, permission_type);
   if (status.has_value()) {
     return *status;
   }
@@ -580,24 +587,26 @@ PermissionStatus PermissionControllerImpl::GetPermissionStatusForWorker(
     return PermissionStatus::DENIED;
   }
 
-  return delegate->GetPermissionStatusForWorker(permission, render_process_host,
-                                                worker_origin.GetURL());
+  return delegate->GetPermissionStatusForWorker(
+      permission_descriptor, render_process_host, worker_origin.GetURL());
 }
 
 PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForCurrentDocument(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host) {
-  return GetPermissionStatusForCurrentDocumentInternal(permission,
+  return GetPermissionStatusForCurrentDocumentInternal(permission_descriptor,
                                                        render_frame_host);
 }
 
 PermissionResult
 PermissionControllerImpl::GetPermissionResultForCurrentDocument(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host) {
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission_descriptor);
   std::optional<PermissionStatus> status = permission_overrides_.Get(
-      render_frame_host->GetLastCommittedOrigin(), permission);
+      render_frame_host->GetLastCommittedOrigin(), permission_type);
   if (status) {
     return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
   }
@@ -610,29 +619,33 @@ PermissionControllerImpl::GetPermissionResultForCurrentDocument(
   }
 
   PermissionResult result =
-      VerifyContextOfCurrentDocument(permission, render_frame_host);
+      VerifyContextOfCurrentDocument(permission_type, render_frame_host);
   if (result.status == PermissionStatus::DENIED) {
     return result;
   }
 
   return delegate->GetPermissionResultForCurrentDocument(
-      permission, render_frame_host, /*should_include_device_status=*/false);
+      permission_descriptor, render_frame_host,
+      /*should_include_device_status=*/false);
 }
 
 PermissionResult
 PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& origin) {
-  return GetPermissionResultForOriginWithoutContext(permission, origin, origin);
+  return GetPermissionResultForOriginWithoutContext(permission_descriptor,
+                                                    origin, origin);
 }
 
 PermissionResult
 PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission_descriptor);
   std::optional<PermissionStatus> status =
-      permission_overrides_.Get(requesting_origin, permission);
+      permission_overrides_.Get(requesting_origin, permission_type);
   if (status) {
     return PermissionResult(*status, PermissionStatusSource::UNSPECIFIED);
   }
@@ -645,24 +658,27 @@ PermissionControllerImpl::GetPermissionResultForOriginWithoutContext(
   }
 
   return delegate->GetPermissionResultForOriginWithoutContext(
-      permission, requesting_origin, embedding_origin);
+      permission_descriptor, requesting_origin, embedding_origin);
 }
 
 PermissionStatus
 PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     RenderFrameHost* render_frame_host,
     const url::Origin& requesting_origin) {
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission_descriptor);
+
   // This API is suited only for `TOP_LEVEL_STORAGE_ACCESS`. Do not use it for
   // other permissions unless discussed with `permissions-core@`.
-  DCHECK(permission == blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS);
+  DCHECK(permission_type == blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS);
 
-  if (permission != blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
+  if (permission_type != blink::PermissionType::TOP_LEVEL_STORAGE_ACCESS) {
     return PermissionStatus::DENIED;
   }
 
   std::optional<PermissionStatus> status =
-      permission_overrides_.Get(requesting_origin, permission);
+      permission_overrides_.Get(requesting_origin, permission_type);
   if (status) {
     return *status;
   }
@@ -673,21 +689,24 @@ PermissionControllerImpl::GetPermissionStatusForEmbeddedRequester(
     return PermissionStatus::DENIED;
   }
 
-  if (VerifyContextOfCurrentDocument(permission, render_frame_host).status ==
-      PermissionStatus::DENIED) {
+  if (VerifyContextOfCurrentDocument(permission_type, render_frame_host)
+          .status == PermissionStatus::DENIED) {
     return PermissionStatus::DENIED;
   }
 
   return delegate->GetPermissionStatusForEmbeddedRequester(
-      permission, render_frame_host, requesting_origin);
+      permission_descriptor, render_frame_host, requesting_origin);
 }
 
 PermissionStatus PermissionControllerImpl::GetCombinedPermissionAndDeviceStatus(
-    PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission,
     RenderFrameHost* render_frame_host) {
-  CHECK(permission == blink::PermissionType::VIDEO_CAPTURE ||
-        permission == blink::PermissionType::AUDIO_CAPTURE ||
-        permission == blink::PermissionType::GEOLOCATION);
+  auto permission_type =
+      blink::PermissionDescriptorToPermissionType(permission);
+
+  CHECK(permission_type == blink::PermissionType::VIDEO_CAPTURE ||
+        permission_type == blink::PermissionType::AUDIO_CAPTURE ||
+        permission_type == blink::PermissionType::GEOLOCATION);
   return GetPermissionStatusForCurrentDocumentInternal(
       permission, render_frame_host, /*should_include_device_status=*/true);
 }
@@ -757,12 +776,13 @@ PermissionControllerImpl::SubscribeToPermissionStatusChange(
         PermissionUtil::GetLastCommittedOriginAsURL(
             render_frame_host->GetMainFrame());
     subscription->render_frame_id = render_frame_host->GetRoutingID();
-    subscription->render_process_id = render_frame_host->GetProcess()->GetID();
+    subscription->render_process_id =
+        render_frame_host->GetProcess()->GetDeprecatedID();
   } else {
     subscription->embedding_origin = requesting_origin;
     subscription->render_frame_id = -1;
     subscription->render_process_id =
-        render_process_host ? render_process_host->GetID() : -1;
+        render_process_host ? render_process_host->GetDeprecatedID() : -1;
   }
   subscriptions_.AddWithID(std::move(subscription), id);
 

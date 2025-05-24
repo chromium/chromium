@@ -169,11 +169,21 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsTypeSet content_type_set) override;
 
+  // Fires the `pushsubscriptionchange` event to the service worker with
+  // `service_worker_registration_id` and `origin`. The two subscriptions
+  // `old_subscription` and `new_subscription` can be null.
+  void FirePushSubscriptionChange(
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      base::OnceClosure completed_closure,
+      blink::mojom::PushSubscriptionPtr new_subscription,
+      blink::mojom::PushSubscriptionPtr old_subscription);
+
   // Fires the `pushsubscriptionchange` event to the associated service worker
   // of |app_identifier|, which is the app identifier for |old_subscription|
   // whereas |new_subscription| can be either null e.g. when a subscription is
   // lost due to permission changes or a new subscription when it was refreshed.
-  void FirePushSubscriptionChange(
+  void FirePushSubscriptionChangeForAppIdentifier(
       const PushMessagingAppIdentifier& app_identifier,
       base::OnceClosure completed_closure,
       blink::mojom::PushSubscriptionPtr new_subscription,
@@ -193,6 +203,11 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
                                 const std::string& sender_id) override;
   void OnRefreshFinished(
       const PushMessagingAppIdentifier& app_identifier) override;
+
+  // Sets a callback that can be used to listen for service worker
+  // subscription events.
+  void SetSubscribeFromWorkerCallback(
+      base::RepeatingCallback<void(/*registration id=*/int64_t)> callback);
 
   void SetMessageCallbackForTesting(const base::RepeatingClosure& callback);
   void SetUnsubscribeCallbackForTesting(base::OnceClosure callback);
@@ -399,12 +414,15 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
       UnregisterCallback callback,
       const std::string& sender_id);
 
-  void FirePushSubscriptionChangeCallback(
-      const PushMessagingAppIdentifier& app_identifier,
-      blink::mojom::PushEventStatus status);
-
   // Checks if a given origin is allowed to use Push.
-  bool IsPermissionSet(const GURL& origin, bool user_visible = true);
+  //
+  // `user_visible` is the userVisibleOnly value provided to the push
+  // registration.
+  //
+  // For most origins this checks if the origin has the notifications
+  // permission. An exception is for extensions that use service workers where
+  // `user_visible` is false.
+  bool IsPermissionSet(const GURL& origin, bool user_visible);
 
   // Wrapper around {GCMDriver, InstanceID}::GetEncryptionInfo.
   void GetEncryptionInfoForAppId(
@@ -485,6 +503,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
 
   base::CallbackListSubscription on_app_terminating_subscription_;
 
+  // Callback used to be alerted of a new service worker subscription.
+  std::optional<base::RepeatingCallback<void(int64_t)>>
+      subscribe_from_worker_callback_;
+
   // True when shutdown has started. Do not allow processing of incoming
   // messages when this is true.
   bool shutdown_started_ = false;
@@ -494,7 +516,7 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // Tracks those that are attempting to bypass the user visible
   // requirement on push notifications. E.g. they set userVisibleOnly to false
   // on push registration.
-  std::set<GURL> origins_bypassing_user_visible_requirement;
+  std::set<GURL> origins_requesting_user_visible_requirement_bypass;
 
   base::WeakPtrFactory<PushMessagingServiceImpl> weak_factory_{this};
 };

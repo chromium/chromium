@@ -88,15 +88,17 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
 #endif
 
   if (fullscreen_controller_.IsWindowFullscreenForTabOrPending()) {
-    if (!fullscreen_controller_.IsTabFullscreen())
+    if (!fullscreen_controller_.IsTabFullscreen()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION;
+    }
 
     if (pointer_lock_controller_.IsPointerLockedSilently()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
     }
 
-    if (keyboard_lock_controller_.RequiresPressAndHoldEscToExit())
+    if (keyboard_lock_controller_.RequiresPressAndHoldEscToExit()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION;
+    }
 
     if (pointer_lock_controller_.IsPointerLocked()) {
       return EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION;
@@ -113,11 +115,13 @@ ExclusiveAccessManager::GetExclusiveAccessExitBubbleType() const {
     return EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION;
   }
 
-  if (fullscreen_controller_.IsExtensionFullscreenOrPending())
+  if (fullscreen_controller_.IsExtensionFullscreenOrPending()) {
     return EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION;
+  }
 
-  if (fullscreen_controller_.IsControllerInitiatedFullscreen() && !app_mode)
+  if (fullscreen_controller_.IsControllerInitiatedFullscreen() && !app_mode) {
     return EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION;
+  }
 
   return EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
 }
@@ -126,16 +130,18 @@ void ExclusiveAccessManager::UpdateBubble(
     ExclusiveAccessBubbleHideCallback first_hide_callback,
     bool force_update) {
   exclusive_access_context_->UpdateExclusiveAccessBubble(
-      {.url = GetExclusiveAccessBubbleURL(),
+      {.origin = GetExclusiveAccessBubbleOrigin(),
        .type = GetExclusiveAccessExitBubbleType(),
        .force_update = force_update},
       std::move(first_hide_callback));
 }
 
-GURL ExclusiveAccessManager::GetExclusiveAccessBubbleURL() const {
-  GURL result = fullscreen_controller_.GetURLForExclusiveAccessBubble();
-  if (!result.is_valid())
-    result = pointer_lock_controller_.GetURLForExclusiveAccessBubble();
+url::Origin ExclusiveAccessManager::GetExclusiveAccessBubbleOrigin() const {
+  url::Origin result =
+      fullscreen_controller_.GetOriginForExclusiveAccessBubble();
+  if (result.opaque()) {
+    result = pointer_lock_controller_.GetOriginForExclusiveAccessBubble();
+  }
   return result;
 }
 

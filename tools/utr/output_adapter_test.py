@@ -6,6 +6,7 @@
 
 import io
 import logging
+import sys
 import unittest
 from unittest import mock
 
@@ -13,6 +14,12 @@ import output_adapter
 
 
 class PassthroughAdapterTests(unittest.TestCase):
+
+  def setUp(self):
+    patch_terminal_size = mock.patch('os.get_terminal_size')
+    mock_terminal_size = patch_terminal_size.start()
+    mock_terminal_size.return_value = (128, 1)
+    self.addCleanup(patch_terminal_size.stop)
 
   def testBasic(self):
     adapter = output_adapter.PassthroughAdapter()
@@ -34,6 +41,12 @@ fake std_out text"""
 
 class LegacyOutputAdapterTests(unittest.TestCase):
 
+  def setUp(self):
+    patch_terminal_size = mock.patch('os.get_terminal_size')
+    mock_terminal_size = patch_terminal_size.start()
+    mock_terminal_size.return_value = (128, 1)
+    self.addCleanup(patch_terminal_size.stop)
+
   def testNoRecipeEngineOutput(self):
     adapter = output_adapter.LegacyOutputAdapter()
     with self.assertLogs('', level=logging.INFO) as root_log:
@@ -46,13 +59,17 @@ class LegacyOutputAdapterTests(unittest.TestCase):
 @@@STEP_LOG_END@run_recipe@@@
 @@@STEP_LOG_END@memory_profile@@@
 fake std_out text
+@@@STEP_LOG_LINE@utr_log@utr-specific log line@@@
+@@@STEP_LOG_END@utr_log@@@
 @@@STEP_CLOSED@@@"""
         for line in fake_output.split('\n'):
           adapter.ProcessLine(line)
         self.assertEqual(root_log.output,
                          ['INFO:root:\n[cyan]Running: fake_step[/]'])
-        self.assertEqual(info_log.output,
-                         ['INFO:basic_logger:fake std_out text'])
+        self.assertEqual(info_log.output, [
+            'INFO:basic_logger:fake std_out text',
+            'INFO:basic_logger:utr-specific log line'
+        ])
 
   def testStepNameProcessor(self):
     adapter = output_adapter.LegacyOutputAdapter()
@@ -220,9 +237,48 @@ RBE Stats: down 0 B, up 0 B,
           ])
           # The ninja statuses are sent to another logger to remove new lines
           self.assertEqual(compile_steps_log.output, [
-              'INFO:single_line_logger:\x1b[2K\r[1/2] ACTION fake_action',
-              'INFO:single_line_logger:\x1b[2K\r[2/2] ACTION fake_action'
+              'INFO:single_line_logger:\x1b[2K',
+              'INFO:single_line_logger:\r[1/2] ACTION fake_action',
+              'INFO:single_line_logger:\x1b[2K',
+              'INFO:single_line_logger:\r[2/2] ACTION fake_action'
           ])
+
+  def testDownloadOutputs(self):
+    if sys.version_info[:2] < (3, 10):
+      # 'assertNoLogs' was added in 3.10. Seems difficult to assert on no
+      # logging without it, so skip this test if it's not available.
+      # TODO(crbug.com/40942322): Remove the disable after Chromium's on 3.11.
+      return
+    # pylint: disable=no-member
+    adapter = output_adapter.LegacyOutputAdapter()
+    with self.assertLogs('', level=logging.DEBUG) as root_log:
+      with self.assertNoLogs('single_line_logger'):
+        fake_output = """@@@SEED_STEP@download compilation outputs@@@
+@@@SEED_STEP@download compilation outputs.read sql_unittests.runtime_deps@@@
+@@@STEP_CURSOR@download compilation outputs.read sql_unittests.runtime_deps@@@
+@@@STEP_STARTED@@@
+@@@STEP_NEST_LEVEL@1@@@
+@@@STEP_CLOSED@@@
+@@@SEED_STEP@download compilation outputs.fetch sql_unittests@@@
+@@@STEP_CURSOR@download compilation outputs.fetch sql_unittests@@@
+@@@STEP_STARTED@@@
+@@@STEP_NEST_LEVEL@1@@@
+file1 ...exists
+file2 ...exists
+@@@STEP_CLOSED@@@
+@@@STEP_CURSOR@download compilation outputs@@@
+@@@STEP_STARTED@@@
+@@@STEP_CLOSED@@@"""
+        for line in fake_output.split('\n'):
+          adapter.ProcessLine(line)
+        # Should just print the step name but none of the step's stdout.
+        nest_name = 'download compilation outputs'
+        self.assertEqual(root_log.output, [
+            f'INFO:root:\n[cyan]Running: {nest_name}[/]',
+            f'INFO:root:\n[cyan]Running: {nest_name}.read sql_unittests.'
+            'runtime_deps[/]',
+            f'INFO:root:\n[cyan]Running: {nest_name}.fetch sql_unittests[/]',
+        ])
 
 
 if __name__ == '__main__':

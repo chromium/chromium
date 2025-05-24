@@ -6,7 +6,9 @@ licenses(["notice"])
 
 closure_js_library(
     name = "dom",
+    testonly = True,
     srcs = ["dom.js"],
+    lenient = True,
     deps = [
         "//closure/goog/dom:abstractrange",
         "//closure/goog/dom:nodetype",
@@ -19,7 +21,9 @@ closure_js_library(
 
 closure_js_library(
     name = "fieldmock",
+    testonly = True,
     srcs = ["fieldmock.js"],
+    lenient = True,
     deps = [
         "//closure/goog/dom",
         "//closure/goog/dom:abstractrange",
@@ -32,7 +36,9 @@ closure_js_library(
 
 closure_js_library(
     name = "testhelper",
+    testonly = True,
     srcs = ["testhelper.js"],
+    lenient = True,
     deps = [
         "//closure/goog/disposable",
         "//closure/goog/dom",

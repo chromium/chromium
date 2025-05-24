@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 component("ukm_recorder") {
@@ -166,10 +165,8 @@ source_set("unit_tests") {
     deps += [
       "//chromeos/components/kiosk:test_support",
       "//chromeos/components/mgs:test_support",
+      "//components/user_manager:test_support",
     ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//components/user_manager:test_support" ]
   }
 }
 

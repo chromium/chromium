@@ -6,11 +6,12 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import './auto_tab_groups_new_badge.js';
 import './auto_tab_groups_results_actions.js';
 import '../tab_search_item.js';
 
+import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
@@ -19,10 +20,11 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
-import {getCss} from './auto_tab_groups_group.css.js';
-import {getHtml} from './auto_tab_groups_group.html.js';
 import type {Tab} from '../tab_search.mojom-webui.js';
 import type {TabSearchItemElement} from '../tab_search_item.js';
+
+import {getCss} from './auto_tab_groups_group.css.js';
+import {getHtml} from './auto_tab_groups_group.html.js';
 
 function getEventTargetIndex(e: Event): number {
   return Number((e.currentTarget as HTMLElement).dataset['index']);
@@ -44,7 +46,6 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
       tabs: {type: Array},
       firstNewTabIndex: {type: Number},
       name: {type: String},
-      multiTabOrganization: {type: Boolean},
       organizationId: {type: Number},
 
       showReject: {
@@ -59,17 +60,16 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     };
   }
 
-  tabs: Tab[] = [];
-  firstNewTabIndex: number = 0;
-  name: string = '';
-  multiTabOrganization: boolean = false;
-  organizationId: number = -1;
-  showReject: boolean = false;
+  accessor tabs: Tab[] = [];
+  accessor firstNewTabIndex: number = 0;
+  accessor name: string = '';
+  accessor organizationId: number = -1;
+  accessor showReject: boolean = false;
 
-  private lastFocusedIndex_: number = 0;
-  protected showInput_: boolean = false;
-  protected tabDatas_: TabData[] = [];
-  private changedName_: boolean = false;
+  private accessor lastFocusedIndex_: number = 0;
+  protected accessor showInput_: boolean = false;
+  protected accessor tabDatas_: TabData[] = [];
+  private accessor changedName_: boolean = false;
 
   static override get styles() {
     return getCss();
@@ -81,7 +81,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
-    this.showInput_ = !this.multiTabOrganization;
+    this.showInput_ = false;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -118,9 +118,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     if (!this.showInput_) {
       return null;
     }
-    const id = this.multiTabOrganization ? '#multiOrganizationInput' :
-                                           '#singleOrganizationInput';
-    return this.shadowRoot!.querySelector<CrInputElement>(id);
+    return this.shadowRoot.querySelector<CrInputElement>('#input');
   }
 
   private computeTabDatas_(): TabData[] {
@@ -147,8 +145,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
   }
 
   protected showNewTabSectionHeader_(index: number): boolean {
-    return loadTimeData.getBoolean('tabReorganizationDividerEnabled') &&
-        this.firstNewTabIndex > 0 && this.firstNewTabIndex === index;
+    return this.firstNewTabIndex > 0 && this.firstNewTabIndex === index;
   }
 
   protected onInputFocus_() {
@@ -159,7 +156,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
   }
 
   protected onInputBlur_() {
-    if (this.multiTabOrganization && !!this.getInput_()) {
+    if (this.getInput_()) {
       this.showInput_ = false;
     }
     this.maybeRenameGroup_();
@@ -177,11 +174,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
   protected onInputKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.stopPropagation();
-      if (this.multiTabOrganization) {
-        this.showInput_ = false;
-      } else {
-        this.getInput_()!.blur();
-      }
+      this.showInput_ = false;
     }
   }
 
@@ -196,12 +189,8 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
       // Explicitly focus the element prior to the list in focus order and
       // override the default behavior, which would be to focus the row that
       // the currently focused close button is in.
-      if (this.multiTabOrganization) {
-        this.shadowRoot!.querySelector<CrIconButtonElement>(
-                            `#rejectButton`)!.focus();
-      } else {
-        this.getInput_()!.focus();
-      }
+      this.shadowRoot.querySelector<CrIconButtonElement>(
+                         `#rejectButton`)!.focus();
       handled = true;
     } else if (!event.shiftKey) {
       if (event.key === 'ArrowUp') {
@@ -223,7 +212,7 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     if (this.$.selector.selectedItem) {
       const selectedItem = this.$.selector.selectedItem as TabSearchItemElement;
       const selectedItemCloseButton =
-          selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
+          selectedItem.shadowRoot.querySelector(`cr-icon-button`)!;
       selectedItemCloseButton.focus();
       this.lastFocusedIndex_ =
           Number.parseInt(selectedItem.dataset['index']!, 10);
@@ -234,6 +223,8 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     const index = getEventTargetIndex(e);
     const tab = this.tabs[index];
     this.fire('remove-tab', {organizationId: this.organizationId, tab});
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('a11yTabExcludedFromGroup'));
   }
 
   protected onTabFocus_(e: Event) {
@@ -248,6 +239,11 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     // selection should move to another element in the list, this will be done
     // in onTabFocus_.
     this.$.selector.select(-1);
+  }
+
+  protected getCloseButtonAriaLabel_(tabData: TabData): string {
+    return loadTimeData.getStringF(
+        'tabOrganizationCloseTabAriaLabel', tabData.tab.title);
   }
 
   protected onEditClick_() {

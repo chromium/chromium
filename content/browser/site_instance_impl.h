@@ -13,7 +13,6 @@
 #include "content/browser/browsing_instance.h"
 #include "content/browser/isolation_context.h"
 #include "content/browser/process_reuse_policy.h"
-#include "content/browser/security/coop/coop_related_group.h"
 #include "content/browser/site_info.h"
 #include "content/browser/web_exposed_isolation_info.h"
 #include "content/common/content_export.h"
@@ -141,12 +140,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   scoped_refptr<SiteInstanceImpl> GetRelatedSiteInstanceImpl(
       const UrlInfo& url_info);
 
-  // This function is used during navigation to get a SiteInstance in the same
-  // CoopRelatedGroup. If the provided `url_info` matches one of the existing
-  // BrowsingInstance of that group, a new or already existing SiteInstance in
-  // that BrowsingInstance, will be picked. Therefore returning the same
-  // SiteInstance is possible, if called with perfectly matching `url_info`.
-  scoped_refptr<SiteInstanceImpl> GetCoopRelatedSiteInstanceImpl(
+  // Returns a SiteInstance in the same SiteInstanceGroup as `this` if possible.
+  // This function may return an existing SiteInstance (possibly in a different
+  // group), or create a SiteInstance in `site_instance_group_`.
+  scoped_refptr<SiteInstanceImpl> GetMaybeGroupRelatedSiteInstanceImpl(
       const UrlInfo& url_info);
 
   bool IsSameSiteWithURLInfo(const UrlInfo& url_info);
@@ -154,6 +151,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // Returns an AgentSchedulingGroupHost, or creates one if
   // `site_instance_group_` doesn't have one.
   AgentSchedulingGroupHost& GetOrCreateAgentSchedulingGroup();
+
+  // Set the group this SiteInstance belongs in.
+  void SetSiteInstanceGroup(SiteInstanceGroup* group);
 
   // Resets the `site_instance_group_` refptr, and must be called when its
   // RenderProcessHost goes away. `site_instance_group_` can be reassigned later
@@ -165,6 +165,7 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   BrowsingInstanceId GetBrowsingInstanceId() override;
   bool HasProcess() override;
   RenderProcessHost* GetProcess() override;
+  RenderProcessHost* GetOrCreateProcess() override;
   SiteInstanceGroupId GetSiteInstanceGroupId() override;
   BrowserContext* GetBrowserContext() override;
   const GURL& GetSiteURL() override;
@@ -180,6 +181,19 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   SiteInstanceProcessAssignment GetLastProcessAssignmentOutcome() override;
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) override;
   int EstimateOriginAgentClusterOverheadForMetrics() override;
+
+  // Returns the current RenderProcessHost being used to render pages for this
+  // SiteInstance. If there is no RenderProcessHost (because either none has
+  // yet been created or there was one but it was cleanly destroyed (e.g. when
+  // it is not actively being used)), this method will create a new
+  // RenderProcessHost (and a new ID).  Note that renderer process crashes leave
+  // the current RenderProcessHost (and ID) in place.
+  //
+  // For sites that require process-per-site mode (e.g., NTP), this will
+  // ensure only one RenderProcessHost for the site exists within the
+  // BrowserContext.
+  RenderProcessHost* GetOrCreateProcess(
+      const ProcessAllocationContext& context);
 
   // Return true if the StoragePartition should be preserved across future
   // navigations in the frames belonging to this SiteInstance. For <webview>
@@ -336,6 +350,16 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // logic is run.
   void ConvertToDefaultOrSetSite(const UrlInfo& url_info);
 
+  // If `browsing_instance_` does not have a default SiteInstanceGroup set and
+  // if `site_instance_group_` is eligible to become the default
+  // SiteInstanceGroup, this function makes `site_instance_group_` the new
+  // default SiteInstanceGroup. Otherwise, this is a no-op.
+  void MaybeSetDefaultSiteInstanceGroup();
+
+  // Checks if the default SiteInstanceGroup feature is enabled, and if the
+  // SiteInstance can be placed in the default SiteInstanceGroup.
+  bool CanPutSiteInstanceInDefaultGroup();
+
   // Returns whether SetSite() has been called.
   //
   // In some cases, the "site" is not set at SiteInstance creation time, and
@@ -363,15 +387,16 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // that, unlike active_frame_count, this does not count pending RFHs.
   void DecrementRelatedActiveContentsCount();
 
-  // Whether GetProcess() method (when it needs to find a new process to
+  // Whether GetOrCreateProcess() method (when it needs to find a new process to
   // associate with the current SiteInstanceImpl) can return a spare process.
   bool CanAssociateWithSpareProcess();
 
   // Has no effect if the SiteInstanceImpl already has a |process_|.
-  // Otherwise, prevents GetProcess() from associating this SiteInstanceImpl
-  // with the spare RenderProcessHost - instead GetProcess will either need to
-  // create a new, not-yet-initialized/spawned RenderProcessHost or will need to
-  // reuse one of existing RenderProcessHosts.
+  // Otherwise, prevents GetOrCreateProcess() from associating this
+  // SiteInstanceImpl with the spare RenderProcessHost - instead
+  // GetOrCreateProcess will either need to create a new,
+  // not-yet-initialized/spawned RenderProcessHost or will need to reuse one of
+  // existing RenderProcessHosts.
   //
   // See also:
   // - https://crbug.com/840409.
@@ -407,19 +432,15 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // about the current BrowsingInstance.
   const IsolationContext& GetIsolationContext();
 
-  // Returns a process suitable for this SiteInstance if the
-  // SiteInstanceGroupManager has one available. A null pointer will be returned
-  // if this SiteInstance's group does not have a process yet or the
-  // SiteInstanceGroupManager does not have a default process that can be reused
-  // by this SiteInstance.
-  RenderProcessHost* GetSiteInstanceGroupProcessIfAvailable();
-
   // Returns true if this object was constructed as a default site instance.
   bool IsDefaultSiteInstance() const;
 
   // Returns true if |site_url| is a site url that the BrowsingInstance has
   // associated with its default SiteInstance.
   bool IsSiteInDefaultSiteInstance(const GURL& site_url) const;
+
+  // Returns the default SiteInstanceGroup of the BrowsingInstance `this` is in.
+  SiteInstanceGroup* DefaultSiteInstanceGroupForBrowsingInstance() const;
 
   // Returns true if the SiteInfo for |url_info| matches the SiteInfo for this
   // instance (i.e. GetSiteInfo()). Otherwise returns false.
@@ -440,31 +461,12 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // is_cross_origin_isolated property of the AgentClusterKey::IsolationKey.
   bool IsCrossOriginIsolated() const;
 
-  // Returns whether the two SiteInstances belong to the same CoopRelatedGroup.
-  // If so, a subset of JavaScript interactions that are permitted across
-  // origins (window.postMessage() and window.closed) should be supported. This
-  // is weaker than IsRelatedSiteInstance: if two SiteInstances belong to the
-  // same BrowsingInstance, they are related and COOP related.
-  bool IsCoopRelatedSiteInstance(const SiteInstanceImpl* instance) const;
-
   // Returns the token uniquely identifying the BrowsingInstance this
   // SiteInstance belongs to. Can safely be sent to the renderer unlike the
   // BrowsingInstanceID.
   base::UnguessableToken browsing_instance_token() const {
     return browsing_instance_->token();
   }
-
-  // Returns the token uniquely identifying the CoopRelatedGroup this
-  // SiteInstance belongs to. Can safely be sent to the renderer.
-  base::UnguessableToken coop_related_group_token() const {
-    return browsing_instance_->coop_related_group_token();
-  }
-
-  // Returns the unique origin of all top-level documents in this
-  // BrowsingInstance. This is only guaranteed by the use of a unique COOP value
-  // across the BrowsingInstance. It is empty if the BrowsingInstance does not
-  // contain COOP: same-origin or COOP: restrict-properties documents.
-  const std::optional<url::Origin>& GetCommonCoopOrigin() const;
 
   // Finds an existing SiteInstance in this SiteInstance's BrowsingInstance that
   // matches this `url_info` but with the `is_sandboxed_` flag true. It's
@@ -504,6 +506,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // still within the same BrowsingInstance.
   size_t GetActiveDocumentCount(const SiteInfo& url_derived_site_info);
 
+  void SetCOOPReuseProcessFailed() { coop_reuse_process_failed_ = true; }
+
   // Set a callback to be run from this SiteInstance's destructor. Used only in
   // tests.
   void set_destruction_callback_for_testing(base::OnceClosure callback) {
@@ -512,7 +516,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
 
  private:
   friend class BrowsingInstance;
-  friend class SiteInstanceGroupManager;
   friend class SiteInstanceTestBrowserClient;
 
   // Friend tests that need direct access to IsSameSite().
@@ -536,13 +539,6 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // "lock_to_site" lock.
   void LockProcessIfNeeded();
 
-  // If kProcessSharingWithStrictSiteInstances is enabled, this will check
-  // whether both a site and a process have been assigned to this SiteInstance,
-  // and if this doesn't require a dedicated process, will offer process_ to
-  // BrowsingInstance as the default process for SiteInstances that don't need
-  // a dedicated process.
-  void MaybeSetBrowsingInstanceDefaultProcess();
-
   // Sets the SiteInfo and other fields so that this instance becomes a
   // default SiteInstance.
   void SetSiteInfoToDefault(
@@ -559,6 +555,8 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // where it is safe. It is not generally safe to change the process of a
   // SiteInstance, unless the RenderProcessHost itself is entirely destroyed and
   // a new one later replaces it.
+  // Before creating a process and calling this method, check if `this` can be
+  // placed in the default SiteInstanceGroup.
   void SetProcessInternal(RenderProcessHost* process);
 
   // Returns true if |original_url()| is the same site as
@@ -590,20 +588,22 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
                          bool should_compare_effective_urls);
 
   // Returns true if |url| and its |site_url| can be placed inside a default
-  // SiteInstance.
+  // SiteInstance or default SiteInstanceGroup.
   //
   // Note: |url| and |site_info| must be consistent with each other. In contexts
   // where the caller only has |url| it can use
   // SiteInfo::Create() to generate |site_info|. This call is
   // intentionally not set as a default value to encourage the caller to reuse
   // a SiteInfo computation if they already have one.
-  static bool CanBePlacedInDefaultSiteInstance(
+  static bool CanBePlacedInDefaultSiteInstanceOrGroup(
       const IsolationContext& isolation_context,
       const GURL& url,
       const SiteInfo& site_info);
 
   // This getter is only used to construct SiteInstanceGroups.
-  BrowsingInstance* browsing_instance() { return browsing_instance_.get(); }
+  BrowsingInstance* browsing_instance() const {
+    return browsing_instance_.get();
+  }
 
   // A unique ID for this SiteInstance.
   SiteInstanceId id_;
@@ -621,10 +621,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // BrowsingInstance to which this SiteInstance belongs.
   scoped_refptr<BrowsingInstance> browsing_instance_;
 
-  // Describes the desired behavior when GetProcess() method needs to find a new
-  // process to associate with the current SiteInstanceImpl.  If |false|, then
-  // prevents the spare RenderProcessHost from being taken and stored in
-  // |process_|.
+  // Describes the desired behavior when GetOrCreateProcess() method needs to
+  // find a new process to associate with the current SiteInstanceImpl.  If
+  // |false|, then prevents the spare RenderProcessHost from being taken and
+  // stored in |process_|.
   bool can_associate_with_spare_process_;
 
   // The SiteInfo that this SiteInstance is rendering pages for.
@@ -662,6 +662,10 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // fully implemented, as at that point the SiteInstance's SiteInfo will be the
   // same as the URL-derived SiteInfo.
   std::map<SiteInfo, size_t> active_document_counts_;
+
+  // Tracks whether the site instance failed to reuse an existing process if the
+  // site instance is created because of a COOP swap.
+  bool coop_reuse_process_failed_ = false;
 
   // Test-only callback to run when this SiteInstance is destroyed.
   base::OnceClosure destruction_callback_for_testing_;

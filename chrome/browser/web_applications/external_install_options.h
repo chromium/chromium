@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -19,7 +19,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #endif
 
@@ -147,15 +147,10 @@ struct ExternalInstallOptions {
   // is used.
   bool require_manifest = false;
 
-  // The web app should be installed as a shortcut, where only limited
+  // The web app should be installed as a DIY, where only limited
   // values from the manifest are used (like theme color) and all extra
   // capabilities are not used (like file handlers).
-  // Note: This is different behavior than using the "Create Shortcut..."
-  // option in the GUI.
-  // TODO(crbug.com/339718933): This is a deprecated feature. To install a site
-  // as an app, install it as a 'diy' app instead, or use
-  // shortcuts::CreateShortcutForWebContents.
-  bool install_as_shortcut = false;
+  bool install_as_diy = false;
 
   // Whether the app should be reinstalled even if it is already installed.
   bool force_reinstall = false;
@@ -215,7 +210,7 @@ struct ExternalInstallOptions {
   // as the app's installation metadata.
   WebAppInstallInfoFactory app_info_factory;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The type of SystemWebApp, if this app is a System Web App.
   std::optional<ash::SystemWebAppType> system_app_type = std::nullopt;
 #endif

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/config/buildflags_paint_preview.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 import("//components/nacl/features.gni")
@@ -42,9 +41,6 @@ grit("resources") {
     "//url/mojom:url_mojom_origin_js",
   ]
   if (is_chromeos) {
-    deps += [ "//chromeos/components/remote_apps/mojom:mojom_js" ]
-  }
-  if (is_chromeos_ash) {
     deps += [
       # The JS binding files of seal.mojom will be imported to Google3 via
       # copybara.
@@ -53,6 +49,7 @@ grit("resources") {
       "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js",
       "//chromeos/ash/services/ime/public/mojom:mojom_js",
       "//chromeos/ash/services/orca/public/mojom:mojom_js",
+      "//chromeos/components/remote_apps/mojom:mojom_js",
       "//chromeos/services/tts/public/mojom:mojom_js",
     ]
   }
@@ -71,8 +68,6 @@ static_library("renderer") {
     "benchmarking_extension.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
-    "cart/commerce_hint_agent.cc",
-    "cart/commerce_hint_agent.h",
     "chrome_content_renderer_client.cc",
     "chrome_content_renderer_client.h",
     "chrome_content_settings_agent_delegate.cc",
@@ -130,6 +125,7 @@ static_library("renderer") {
 
   public_deps = [
     "//components/contextual_search:buildflags",
+    "//components/fingerprinting_protection_filter/renderer",
     "//components/signin/public/base:signin_buildflags",
   ]
 
@@ -141,19 +137,14 @@ static_library("renderer") {
     "//chrome:strings",
     "//chrome/common",
     "//chrome/common:mojo_bindings",
-    "//chrome/common/cart:mojo_bindings",
     "//chrome/common/net",
     "//chrome/common/search:mojo_bindings",
-    "//chrome/renderer/companion/visual_query",
     "//chrome/services/speech/buildflags",
     "//components/autofill/content/renderer",
     "//components/autofill/core/common:features",
     "//components/base32",
     "//components/cdm/renderer",
     "//components/commerce/content/renderer",
-    "//components/commerce/core:commerce_heuristics_data",
-    "//components/commerce/core:feature_list",
-    "//components/commerce/core:heuristics_provider",
     "//components/content_capture/common",
     "//components/content_capture/renderer",
     "//components/content_settings/common:mojom",
@@ -161,11 +152,11 @@ static_library("renderer") {
     "//components/continuous_search/renderer",
     "//components/country_codes",
     "//components/dom_distiller/content/renderer",
-    "//components/facilitated_payments/content/renderer",
-    "//components/facilitated_payments/core/features",
     "//components/feed:feature_list",
     "//components/feed/content/renderer:feed_renderer",
+    "//components/fingerprinting_protection_filter/browser",
     "//components/google/core/common",
+    "//components/guest_view/buildflags",
     "//components/heap_profiling/in_process",
     "//components/history_clusters/core",
     "//components/language/core/common",
@@ -299,11 +290,6 @@ static_library("renderer") {
   }
 
   if (enable_pdf) {
-    sources += [
-      "pdf/chrome_pdf_internal_plugin_delegate.cc",
-      "pdf/chrome_pdf_internal_plugin_delegate.h",
-    ]
-
     deps += [
       "//components/pdf/renderer",
       "//pdf:features",
@@ -368,8 +354,6 @@ static_library("renderer") {
 
   if (is_android) {
     sources += [
-      "net/available_offline_content_helper.cc",
-      "net/available_offline_content_helper.h",
       "net/page_auto_fetcher_helper_android.cc",
       "net/page_auto_fetcher_helper_android.h",
       "sandbox_status_extension_android.cc",
@@ -385,16 +369,16 @@ static_library("renderer") {
     sources += [
       "accessibility/ax_tree_distiller.cc",
       "accessibility/ax_tree_distiller.h",
-      "accessibility/read_aloud_app_model.cc",
-      "accessibility/read_aloud_app_model.h",
-      "accessibility/read_aloud_traversal_utils.cc",
-      "accessibility/read_aloud_traversal_utils.h",
-      "accessibility/read_anything_app_controller.cc",
-      "accessibility/read_anything_app_controller.h",
-      "accessibility/read_anything_app_model.cc",
-      "accessibility/read_anything_app_model.h",
-      "accessibility/read_anything_node_utils.cc",
-      "accessibility/read_anything_node_utils.h",
+      "accessibility/read_anything/read_aloud_app_model.cc",
+      "accessibility/read_anything/read_aloud_app_model.h",
+      "accessibility/read_anything/read_aloud_traversal_utils.cc",
+      "accessibility/read_anything/read_aloud_traversal_utils.h",
+      "accessibility/read_anything/read_anything_app_controller.cc",
+      "accessibility/read_anything/read_anything_app_controller.h",
+      "accessibility/read_anything/read_anything_app_model.cc",
+      "accessibility/read_anything/read_anything_app_model.h",
+      "accessibility/read_anything/read_anything_node_utils.cc",
+      "accessibility/read_anything/read_anything_node_utils.h",
       "media/chrome_speech_recognition_client.cc",
       "media/chrome_speech_recognition_client.h",
       "searchbox/searchbox.cc",
@@ -404,7 +388,8 @@ static_library("renderer") {
     ]
 
     deps += [
-      "//chrome/common/accessibility:mojo_bindings",
+      "//chrome/common/read_anything:mojo_bindings",
+      "//chrome/renderer/actor",
       "//components/crx_file",
       "//components/trusted_vault",
       "//services/screen_ai/buildflags",
@@ -445,7 +430,7 @@ static_library("renderer") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "ash_merge_session_loader_throttle.cc",
       "ash_merge_session_loader_throttle.h",

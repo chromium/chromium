@@ -5,3 +5,5 @@ include_rules = [
   "+dbus",
   "+ui/base/glib",
 ]
+# Prefer using //components/os_crypt/async to the sync interface for new code.
+new_usages_require_review = True

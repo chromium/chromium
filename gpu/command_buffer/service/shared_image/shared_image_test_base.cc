@@ -10,6 +10,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/copy_image_plane.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -64,16 +65,16 @@ void OnReadPixelsDone(
 
 void InsertRecordingAndSubmit(gpu::SharedContextState* context,
                               bool sync_cpu = false) {
-  CHECK(context->graphite_context());
+  CHECK(context->graphite_shared_context());
   auto recording = context->gpu_main_graphite_recorder()->snap();
   if (recording) {
     skgpu::graphite::InsertRecordingInfo info = {};
     info.fRecording = recording.get();
-    context->graphite_context()->insertRecording(info);
+    context->graphite_shared_context()->insertRecording(info);
   }
-  context->graphite_context()->submit(sync_cpu
-                                          ? skgpu::graphite::SyncToCpu::kYes
-                                          : skgpu::graphite::SyncToCpu::kNo);
+  context->graphite_shared_context()->submit(
+      sync_cpu ? skgpu::graphite::SyncToCpu::kYes
+               : skgpu::graphite::SyncToCpu::kNo);
 }
 
 }  // namespace
@@ -104,7 +105,7 @@ std::vector<SkBitmap> SharedImageTestBase::AllocateRedBitmaps(
   std::vector<SkBitmap> bitmaps(num_planes);
 
   for (int plane = 0; plane < num_planes; ++plane) {
-    SkColorType color_type = ToClosestSkColorType(true, format, plane);
+    SkColorType color_type = ToClosestSkColorType(format, plane);
     gfx::Size plane_size = format.GetPlaneSize(plane, size);
     bitmaps[plane] = MakeRedBitmap(color_type, plane_size, added_stride);
   }
@@ -124,8 +125,7 @@ std::vector<SkPixmap> SharedImageTestBase::GetSkPixmaps(
 SharedImageTestBase::SharedImageTestBase() {
   gpu_preferences_.use_passthrough_cmd_decoder =
       gles2::UsePassthroughCommandDecoder(
-          base::CommandLine::ForCurrentProcess()) &&
-      gles2::PassthroughCommandDecoderSupported();
+          base::CommandLine::ForCurrentProcess());
 }
 
 SharedImageTestBase::~SharedImageTestBase() {
@@ -239,7 +239,7 @@ void SharedImageTestBase::VerifyPixelsWithReadback(
   if (gr_context()) {
     VerifyPixelsWithReadbackGanesh(mailbox, expected_bitmaps);
   } else {
-    CHECK(context_state_->graphite_context());
+    CHECK(context_state_->graphite_shared_context());
     VerifyPixelsWithReadbackGraphite(mailbox, expected_bitmaps);
   }
 }
@@ -268,8 +268,7 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGanesh(
 
   int num_planes = format.NumberOfPlanes();
   for (int plane = 0; plane < num_planes; ++plane) {
-    SkColorType plane_color_type =
-        viz::ToClosestSkColorType(true, format, plane);
+    SkColorType plane_color_type = viz::ToClosestSkColorType(format, plane);
     gfx::Size plane_size = format.GetPlaneSize(plane, size);
     SkImageInfo dst_info = SkImageInfo::Make(
         plane_size.width(), plane_size.height(), plane_color_type,
@@ -315,8 +314,7 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
 
   int num_planes = format.NumberOfPlanes();
   for (int plane = 0; plane < num_planes; ++plane) {
-    SkColorType plane_color_type =
-        viz::ToClosestSkColorType(true, format, plane);
+    SkColorType plane_color_type = viz::ToClosestSkColorType(format, plane);
     gfx::Size plane_size = format.GetPlaneSize(plane, size);
     SkImageInfo dst_info = SkImageInfo::Make(
         plane_size.width(), plane_size.height(), plane_color_type,
@@ -333,12 +331,13 @@ void SharedImageTestBase::VerifyPixelsWithReadbackGraphite(
         plane_color_type, skia_representation->alpha_type(), nullptr);
     ASSERT_TRUE(sk_image) << "plane_index=" << plane;
 
-    ASSERT_TRUE(context_state_->graphite_context());
+    ASSERT_TRUE(context_state_->graphite_shared_context());
     ReadPixelsContext context;
     const SkIRect src_rect = dst_info.bounds();
-    context_state_->graphite_context()->asyncRescaleAndReadPixels(
+    context_state_->graphite_shared_context()->asyncRescaleAndReadPixels(
         sk_image.get(), dst_info, src_rect, SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedLinear, &OnReadPixelsDone, &context);
+        SkImage::RescaleMode::kRepeatedLinear,
+        base::BindOnce(&OnReadPixelsDone), &context);
     InsertRecordingAndSubmit(context_state_.get(), /*sync_cpu=*/true);
     ASSERT_TRUE(context.finished) << "plane_index=" << plane;
     if (context.async_result) {

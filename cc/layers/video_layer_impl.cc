@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "cc/base/features.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -33,8 +32,6 @@ std::unique_ptr<VideoLayerImpl> VideoLayerImpl::Create(
     int id,
     VideoFrameProvider* provider,
     const media::VideoTransformation& video_transform) {
-  DCHECK(tree_impl->task_runner_provider()->IsMainThreadBlocked() ||
-         base::FeatureList::IsEnabled(features::kNonBlockingCommit));
   DCHECK(tree_impl->task_runner_provider()->IsImplThread());
 
   scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl =
@@ -53,18 +50,11 @@ VideoLayerImpl::VideoLayerImpl(
     : LayerImpl(tree_impl, id),
       provider_client_impl_(std::move(provider_client_impl)),
       video_transform_(video_transform) {
-  set_may_contain_video(true);
+  SetMayContainVideo(true);
 }
 
 VideoLayerImpl::~VideoLayerImpl() {
   if (!provider_client_impl_->Stopped()) {
-    // In impl side painting, we may have a pending and active layer
-    // associated with the video provider at the same time. Both have a ref
-    // on the VideoFrameProviderClientImpl, but we stop when the first
-    // LayerImpl (the one on the pending tree) is destroyed since we know
-    // the main thread is blocked for this commit.
-    DCHECK(layer_tree_impl()->task_runner_provider()->IsMainThreadBlocked() ||
-           base::FeatureList::IsEnabled(features::kNonBlockingCommit));
     DCHECK(layer_tree_impl()->task_runner_provider()->IsImplThread());
     provider_client_impl_->Stop();
   }
@@ -115,10 +105,8 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
     const LayerTreeSettings& settings = layer_tree_impl()->settings();
     updater_ = std::make_unique<media::VideoResourceUpdater>(
         layer_tree_impl()->context_provider(),
-        layer_tree_impl()->layer_tree_frame_sink(),
         layer_tree_impl()->resource_provider(),
         layer_tree_impl()->layer_tree_frame_sink()->shared_image_interface(),
-        settings.use_stream_video_draw_quad,
         settings.use_gpu_memory_buffer_resources,
         layer_tree_impl()->max_texture_size());
   }
@@ -126,7 +114,8 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
   return true;
 }
 
-void VideoLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
+void VideoLayerImpl::AppendQuads(const AppendQuadsContext& context,
+                                 viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data) {
   DCHECK(frame_);
 
@@ -221,14 +210,11 @@ void VideoLayerImpl::SetNeedsRedraw() {
 
 DamageReasonSet VideoLayerImpl::GetDamageReasons() const {
   // Treat all update_rect() as kVideoLayer updates. However keep
-  // LayerPropertyChanged() as kUntracked because it probably has nothing to do
-  // with the video itself.
-  DamageReasonSet reasons;
+  // LayerPropertyChanged() as default behavior because it probably has nothing
+  // to do with the video itself.
+  DamageReasonSet reasons = GetDamageReasonsFromLayerPropertyChange();
   if (!update_rect().IsEmpty()) {
     reasons.Put(DamageReason::kVideoLayer);
-  }
-  if (LayerPropertyChanged()) {
-    reasons.Put(DamageReason::kUntracked);
   }
   return reasons;
 }

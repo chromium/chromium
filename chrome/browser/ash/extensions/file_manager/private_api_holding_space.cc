@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -74,16 +73,14 @@ FileManagerPrivateInternalToggleAddedToHoldingSpaceFunction::Run() {
         [holding_space](const storage::FileSystemURL& file_system_url) {
           return holding_space->ContainsPinnedFile(file_system_url);
         });
-    holding_space->AddPinnedFiles(
-        file_system_urls, ash::holding_space_metrics::EventSource::kFilesApp);
+    holding_space->AddPinnedFiles(file_system_urls);
   } else {
     std::erase_if(
         file_system_urls,
         [holding_space](const storage::FileSystemURL& file_system_url) {
           return !holding_space->ContainsPinnedFile(file_system_url);
         });
-    holding_space->RemovePinnedFiles(
-        file_system_urls, ash::holding_space_metrics::EventSource::kFilesApp);
+    holding_space->RemovePinnedFiles(file_system_urls);
   }
 
   // Also send the data to the File Index.

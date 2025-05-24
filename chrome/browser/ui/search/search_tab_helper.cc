@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -50,6 +51,7 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -83,11 +85,12 @@ enum class NewTabPageConcretePage {
 // Returns true if |contents| are rendered inside an Instant process.
 bool InInstantProcess(const InstantService* instant_service,
                       content::WebContents* contents) {
-  if (!instant_service || !contents)
+  if (!instant_service || !contents) {
     return false;
+  }
 
   return instant_service->IsInstantProcess(
-      contents->GetPrimaryMainFrame()->GetProcess()->GetID());
+      contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID());
 }
 
 // Called when an NTP finishes loading. If the load start time was noted,
@@ -95,10 +98,12 @@ bool InInstantProcess(const InstantService* instant_service,
 void RecordNewTabLoadTime(content::WebContents* contents) {
   CoreTabHelper* core_tab_helper = CoreTabHelper::FromWebContents(contents);
   // CoreTabHelper can be null in unittests.
-  if (!core_tab_helper)
+  if (!core_tab_helper) {
     return;
-  if (core_tab_helper->new_tab_start_time().is_null())
+  }
+  if (core_tab_helper->new_tab_start_time().is_null()) {
     return;
+  }
 
   core_tab_helper->set_new_tab_start_time(base::TimeTicks());
 }
@@ -139,18 +144,21 @@ SearchTabHelper::SearchTabHelper(content::WebContents* web_contents)
   DCHECK(search::IsInstantExtendedAPIEnabled());
 
   instant_service_ = InstantServiceFactory::GetForProfile(profile());
-  if (instant_service_)
+  if (instant_service_) {
     instant_service_->AddObserver(this);
+  }
 
   OmniboxTabHelper::CreateForWebContents(web_contents);
   OmniboxTabHelper::FromWebContents(web_contents)->AddObserver(this);
 }
 
 SearchTabHelper::~SearchTabHelper() {
-  if (instant_service_)
+  if (instant_service_) {
     instant_service_->RemoveObserver(this);
-  if (auto* helper = OmniboxTabHelper::FromWebContents(&GetWebContents()))
+  }
+  if (auto* helper = OmniboxTabHelper::FromWebContents(&GetWebContents())) {
     helper->RemoveObserver(this);
+  }
 }
 
 void SearchTabHelper::BindEmbeddedSearchConnecter(
@@ -158,19 +166,22 @@ void SearchTabHelper::BindEmbeddedSearchConnecter(
         receiver,
     content::RenderFrameHost* rfh) {
   auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
   auto* tab_helper = SearchTabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
+  if (!tab_helper) {
     return;
+  }
   tab_helper->ipc_router_.BindEmbeddedSearchConnecter(std::move(receiver), rfh);
 }
 
 void SearchTabHelper::OnTabActivated() {
   ipc_router_.OnTabActivated();
 
-  if (search::IsInstantNTP(web_contents()) && instant_service_)
+  if (search::IsInstantNTP(web_contents()) && instant_service_) {
     instant_service_->OnNewTabPageOpened();
+  }
 
   CloseNTPCustomizeChromeFeaturePromo();
 }
@@ -181,11 +192,13 @@ void SearchTabHelper::OnTabDeactivated() {
 
 void SearchTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
-  if (navigation_handle->IsSameDocument())
+  if (navigation_handle->IsSameDocument()) {
     return;
+  }
 
   if (web_contents()->GetVisibleURL().DeprecatedGetOriginAsURL() ==
       GURL(chrome::kChromeUINewTabURL).DeprecatedGetOriginAsURL()) {
@@ -207,8 +220,9 @@ void SearchTabHelper::DidStartNavigation(
 }
 
 void SearchTabHelper::TitleWasSet(content::NavigationEntry* entry) {
-  if (is_setting_title_ || !entry)
+  if (is_setting_title_ || !entry) {
     return;
+  }
 
   // Always set the title on the new tab page to be the one from our UI
   // resources. This check ensures that the title is properly set to the string
@@ -238,14 +252,17 @@ void SearchTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,
 
 void SearchTabHelper::NavigationEntryCommitted(
     const content::LoadCommittedDetails& load_details) {
-  if (!load_details.is_main_frame)
+  if (!load_details.is_main_frame) {
     return;
+  }
 
-  if (search::IsInstantNTP(web_contents()))
+  if (search::IsInstantNTP(web_contents())) {
     ipc_router_.SetInputInProgress(IsInputInProgress());
+  }
 
-  if (InInstantProcess(instant_service_, web_contents()))
+  if (InInstantProcess(instant_service_, web_contents())) {
     ipc_router_.OnNavigationEntryCommitted();
+  }
 }
 
 void SearchTabHelper::NtpThemeChanged(NtpTheme theme) {
@@ -269,19 +286,22 @@ void SearchTabHelper::FocusOmnibox(bool focus) {
 
 void SearchTabHelper::OnDeleteMostVisitedItem(const GURL& url) {
   DCHECK(!url.is_empty());
-  if (instant_service_)
+  if (instant_service_) {
     instant_service_->DeleteMostVisitedItem(url);
+  }
 }
 
 void SearchTabHelper::OnUndoMostVisitedDeletion(const GURL& url) {
   DCHECK(!url.is_empty());
-  if (instant_service_)
+  if (instant_service_) {
     instant_service_->UndoMostVisitedDeletion(url);
+  }
 }
 
 void SearchTabHelper::OnUndoAllMostVisitedDeletions() {
-  if (instant_service_)
+  if (instant_service_) {
     instant_service_->UndoAllMostVisitedDeletions();
+  }
 }
 
 void SearchTabHelper::OnOmniboxInputStateChanged() {
@@ -295,8 +315,9 @@ void SearchTabHelper::OnOmniboxFocusChanged(OmniboxFocusState state,
   // Don't send oninputstart/oninputend updates in response to focus changes
   // if there's a navigation in progress. This prevents Chrome from sending
   // a spurious oninputend when the user accepts a match in the omnibox.
-  if (web_contents()->GetController().GetPendingEntry() == nullptr)
+  if (web_contents()->GetController().GetPendingEntry() == nullptr) {
     ipc_router_.SetInputInProgress(IsInputInProgress());
+  }
 }
 
 Profile* SearchTabHelper::profile() const {
@@ -314,12 +335,14 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
       GURL(chrome::kChromeUINewTabPageURL)) {
     return;
   }
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser && browser->window() &&
-      browser->tab_strip_model()->GetActiveWebContents() == web_contents()) {
-    browser->window()->CloseFeaturePromo(
-        customize_chrome_feature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
+  auto* const tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab || !tab->IsActivated()) {
+    return;
+  }
+  if (auto* const interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents())) {
+    interface->AbortFeaturePromo(customize_chrome_feature);
   }
 }
 

@@ -58,7 +58,6 @@ class WebNavigationBrowserAgent
 
  private:
   friend class BrowserUserData<WebNavigationBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit WebNavigationBrowserAgent(Browser* browser);
 
@@ -73,8 +72,6 @@ class WebNavigationBrowserAgent
   raw_ptr<WebStateList> web_state_list_;
   // The delegate, if assigned. This may be nil.
   id<WebNavigationNTPDelegate> delegate_;
-  // The associated browser.
-  raw_ptr<Browser> browser_;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_WEB_NAVIGATION_BROWSER_AGENT_H_

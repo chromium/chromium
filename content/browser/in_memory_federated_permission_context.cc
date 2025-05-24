@@ -10,7 +10,12 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
+#include "content/browser/webid/flags.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/message.h"
+#include "third_party/blink/public/common/webid/login_status_account.h"
+#include "third_party/blink/public/common/webid/login_status_options.h"
+#include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
 namespace content {
 
@@ -45,6 +50,9 @@ void InMemoryFederatedPermissionContext::RemoveEmbargoAndResetCounts(
   embargoed_origins_.erase(relying_party_embedder);
 }
 
+void InMemoryFederatedPermissionContext::RecordIgnoreAndEmbargo(
+    const url::Origin& relying_party_embedder) {}
+
 bool InMemoryFederatedPermissionContext::ShouldCompleteRequestImmediately()
     const {
   return base::CommandLine::ForCurrentProcess()->HasSwitch("run-web-tests");
@@ -60,6 +68,11 @@ bool InMemoryFederatedPermissionContext::HasThirdPartyCookiesAccess(
                return provider_url.spec() == std::get<0>(entry) &&
                       relying_party_embedder.Serialize() == std::get<1>(entry);
              }) != has_third_party_cookies_access_.end();
+}
+
+bool InMemoryFederatedPermissionContext::AreThirdPartyCookiesEnabledInSettings()
+    const {
+  return true;
 }
 
 void InMemoryFederatedPermissionContext::
@@ -229,12 +242,55 @@ std::optional<bool> InMemoryFederatedPermissionContext::GetIdpSigninStatus(
   }
 }
 
+base::Value::List InMemoryFederatedPermissionContext::GetAccounts(
+    const url::Origin& idp_origin) {
+  base::Value::List result;
+
+  auto options = idp_login_status_options_.find(idp_origin.Serialize());
+  if (options == idp_login_status_options_.end()) {
+    return result;
+  }
+
+  for (const auto& account : options->second.accounts) {
+    base::Value::Dict new_account = base::Value::Dict()
+                                        .Set("id", account.id)
+                                        .Set("email", account.email)
+                                        .Set("name", account.name);
+
+    if (account.given_name.has_value()) {
+      new_account.Set("given_name", account.given_name.value());
+    }
+
+    if (account.picture.has_value()) {
+      new_account.Set("picture", account.picture.value().spec());
+    }
+    result.Append(std::move(new_account));
+  }
+
+  return result;
+}
+
 void InMemoryFederatedPermissionContext::SetIdpSigninStatus(
     const url::Origin& idp_origin,
-    bool idp_signin_status) {
+    bool idp_signin_status,
+    base::optional_ref<const blink::common::webid::LoginStatusOptions>
+        options) {
+  if (idp_origin.opaque()) {
+    mojo::ReportBadMessage("Bad IdP Origin from renderer.");
+    return;
+  }
+
   idp_signin_status_[idp_origin.Serialize()] = idp_signin_status;
   for (IdpSigninStatusObserver& observer : idp_signin_status_observer_list_) {
     observer.OnIdpSigninStatusReceived(idp_origin, idp_signin_status);
+  }
+
+  if (options && IsFedCmLightweightModeEnabled()) {
+    if (idp_signin_status) {
+      idp_login_status_options_[idp_origin.Serialize()] = options.value();
+    } else {
+      idp_login_status_options_.erase(idp_origin.Serialize());
+    }
   }
 
   // TODO(crbug.com/40245925): Replace this with AddIdpSigninStatusObserver.
@@ -249,9 +305,7 @@ void InMemoryFederatedPermissionContext::RegisterIdP(const ::GURL& configURL) {
 
 void InMemoryFederatedPermissionContext::UnregisterIdP(
     const ::GURL& configURL) {
-  idp_registry_.erase(
-      std::remove(idp_registry_.begin(), idp_registry_.end(), configURL),
-      idp_registry_.end());
+  std::erase(idp_registry_, configURL);
 }
 
 std::vector<GURL> InMemoryFederatedPermissionContext::GetRegisteredIdPs() {

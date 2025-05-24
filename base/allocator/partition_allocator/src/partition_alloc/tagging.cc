@@ -107,7 +107,7 @@ bool ChangeMemoryTaggingModeForAllThreadsPerProcess(
   // int mallopt(int param, int value);
   using MalloptSignature = int (*)(int, int);
 
-  static MalloptSignature mallopt_fnptr = []() {
+  static MalloptSignature mallopt_fnptr = [] {
     base::FilePath module_path;
     base::NativeLibraryLoadError load_error;
     base::FilePath library_path = module_path.Append("libc.so");

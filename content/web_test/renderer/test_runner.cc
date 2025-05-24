@@ -265,7 +265,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
   void CapturePrintingPixelsThen(v8::Local<v8::Function> callback);
 #endif
   void CheckForLeakedWindows();
-  void ClearAllDatabases();
   void ClearTrustTokenState(v8::Local<v8::Function> callback);
   void CopyImageThen(int x, int y, v8::Local<v8::Function> callback);
   void DisableMockScreenOrientation();
@@ -338,7 +337,6 @@ class TestRunnerBindings : public gin::Wrappable<TestRunnerBindings> {
                        v8::Local<v8::Function> callback);
   void SetCustomPolicyDelegate(gin::Arguments* args);
   void SetCustomTextOutput(const std::string& output);
-  void SetDatabaseQuota(int quota);
   void SetDisallowedSubresourcePathSuffixes(std::vector<std::string> suffixes,
                                             bool block_subresources);
   void SetDomainRelaxationForbiddenForURLScheme(bool forbidden,
@@ -563,8 +561,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       // checker.
       .SetMethod("checkForLeakedWindows",
                  &TestRunnerBindings::CheckForLeakedWindows)
-      // Clears WebSQL databases.
-      .SetMethod("clearAllDatabases", &TestRunnerBindings::ClearAllDatabases)
       .SetMethod("clearBackForwardList", &TestRunnerBindings::NotImplemented)
       // Clears persistent Trust Tokens state in the browser. See
       // https://github.com/wicg/trust-token-api.
@@ -749,9 +745,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
                  &TestRunnerBindings::SetCustomPolicyDelegate)
       .SetMethod("setCustomTextOutput",
                  &TestRunnerBindings::SetCustomTextOutput)
-      // Setting quota to kDefaultDatabaseQuota will reset it to the default
-      // value.
-      .SetMethod("setDatabaseQuota", &TestRunnerBindings::SetDatabaseQuota)
       .SetMethod("setDomainRelaxationForbiddenForURLScheme",
                  &TestRunnerBindings::SetDomainRelaxationForbiddenForURLScheme)
       .SetMethod("setDumpConsoleMessages",
@@ -1128,7 +1121,7 @@ void TestRunnerBindings::SetEffectiveConnectionType(
   else if (connection_type == "Type4G")
     web_type = blink::WebEffectiveConnectionType::kType4G;
   else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 
   if (runner_)
     runner_->SetEffectiveConnectionType(web_type);
@@ -1844,20 +1837,6 @@ void TestRunnerBindings::DumpNavigationPolicy() {
   runner_->DumpNavigationPolicy(*frame_);
 }
 
-void TestRunnerBindings::ClearAllDatabases() {
-  if (!frame_) {
-    return;
-  }
-  frame_->GetWebTestControlHostRemote()->ClearAllDatabases();
-}
-
-void TestRunnerBindings::SetDatabaseQuota(int quota) {
-  if (!frame_) {
-    return;
-  }
-  frame_->GetWebTestControlHostRemote()->SetDatabaseQuota(quota);
-}
-
 void TestRunnerBindings::SetBlockThirdPartyCookies(bool block) {
   if (!frame_) {
     return;
@@ -2196,8 +2175,7 @@ void TestRunnerBindings::CopyImageThen(int x,
 
   mojo_base::BigBuffer png_data;
   remote_clipboard->ReadPng(ui::ClipboardBuffer::kCopyPaste, &png_data);
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(png_data.data(), png_data.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data);
 
   blink::WebLocalFrame* web_frame = GetWebFrame();
   v8::Isolate* isolate = web_frame->GetAgentGroupScheduler()->Isolate();
@@ -2595,8 +2573,7 @@ bool TestRunner::WorkQueue::ProcessWorkItemInternal(
       source.GetWebTestControlHostRemote()->Reload();
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TestRunner::WorkQueue::ReplicateStates(const base::Value::Dict& values,
@@ -2894,7 +2871,7 @@ SkBitmap TestRunner::PrintFrameToBitmap(blink::WebLocalFrame* frame) {
   uint32_t page_count = frame->PrintBegin(print_params, blink::WebNode());
 
   const printing::PageRanges& page_ranges = GetPrintingPageRanges(frame);
-  blink::WebVector<uint32_t> pages(
+  std::vector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));
   gfx::Size spool_size = frame->SpoolSizeInPixelsForTesting(pages);
 
@@ -2946,8 +2923,7 @@ SkBitmap TestRunner::DumpPixelsInRenderer(blink::WebLocalFrame* main_frame) {
 
   return PrintFrameToBitmap(target_frame);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return SkBitmap();
+  NOTREACHED();
 #endif
 }
 

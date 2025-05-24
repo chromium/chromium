@@ -24,7 +24,7 @@ XdgShellSurface::XdgShellSurface(Surface* surface,
                                  int container)
     : ShellSurface(surface, origin, can_minimize, container) {}
 
-XdgShellSurface::~XdgShellSurface() {}
+XdgShellSurface::~XdgShellSurface() = default;
 
 void XdgShellSurface::OverrideInitParams(views::Widget::InitParams* params) {
   DCHECK(params);

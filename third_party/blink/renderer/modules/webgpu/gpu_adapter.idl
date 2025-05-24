@@ -11,10 +11,7 @@
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
     [SameObject] readonly attribute GPUAdapterInfo info;
-    readonly attribute boolean isFallbackAdapter;
-    [RuntimeEnabled=WebGPUExperimentalFeatures] readonly attribute boolean isCompatibilityMode;
+    [DeprecateAs=V8GPUAdapter_IsFallbackAdapter_AttributeGetter] readonly attribute boolean isFallbackAdapter;
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
-    // TODO(crbug.com/335383516): Remove this once synchronous info attribute is implemented.
-    [RuntimeEnabled=DeprecatedRequestAdapterInfo, DeprecateAs=V8GPUAdapter_RequestAdapterInfo_Method, CallWith=ScriptState, Measure] Promise<GPUAdapterInfo> requestAdapterInfo();
 };

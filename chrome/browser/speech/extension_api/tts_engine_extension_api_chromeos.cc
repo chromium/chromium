@@ -7,13 +7,12 @@
 #include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api_constants.h"
 #include "chrome/common/extensions/api/speech/tts_engine_manifest_handler.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -69,7 +68,7 @@ void TtsExtensionEngineChromeOS::Speak(content::TtsUtterance* utterance,
   // audio params.
   playback_tts_stream_.reset();
 
-  TtsEngineExtensionObserverChromeOS::GetInstance(profile)
+  TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile)
       ->BindPlaybackTtsStream(
           playback_tts_stream_.BindNewPipeAndPassReceiver(),
           audio_parameters_.Clone(),
@@ -116,13 +115,9 @@ void TtsExtensionEngineChromeOS::LoadBuiltInTtsEngine(
   if (disable_built_in_tts_engine_for_testing_)
     return;
 
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-
   // Load the component extensions into this profile.
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-  DCHECK(extension_service);
-  extension_service->component_loader()->AddChromeOsSpeechSynthesisExtensions();
+  extensions::ComponentLoader::Get(browser_context)
+      ->AddChromeOsSpeechSynthesisExtensions();
 }
 
 bool TtsExtensionEngineChromeOS::IsBuiltInTtsEngineInitialized(

@@ -36,11 +36,12 @@ class HeadlessHandler : public DomainHandler,
 
   // Headless::Backend implementation
   Response Enable() override;
-  void BeginFrame(Maybe<double> in_frame_time_ticks,
-                  Maybe<double> in_interval,
-                  Maybe<bool> no_display_updates,
-                  Maybe<HeadlessExperimental::ScreenshotParams> screenshot,
-                  std::unique_ptr<BeginFrameCallback> callback) override;
+  void BeginFrame(
+      std::optional<double> in_frame_time_ticks,
+      std::optional<double> in_interval,
+      std::optional<bool> no_display_updates,
+      std::unique_ptr<HeadlessExperimental::ScreenshotParams> screenshot,
+      std::unique_ptr<BeginFrameCallback> callback) override;
 
   raw_ptr<HeadlessBrowserImpl> browser_;
   raw_ptr<content::WebContents> web_contents_;

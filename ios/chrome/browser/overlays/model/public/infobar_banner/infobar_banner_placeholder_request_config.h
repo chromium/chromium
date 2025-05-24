@@ -5,9 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_BANNER_INFOBAR_BANNER_PLACEHOLDER_REQUEST_CONFIG_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_MODEL_PUBLIC_INFOBAR_BANNER_INFOBAR_BANNER_PLACEHOLDER_REQUEST_CONFIG_H_
 
-#import "ios/chrome/browser/overlays/model/public/common/placeholder_request_config.h"
-
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/overlays/model/public/common/placeholder_request_config.h"
 
 namespace infobars {
 class InfoBar;
@@ -21,7 +20,7 @@ class InfobarBannerPlaceholderRequestConfig
   ~InfobarBannerPlaceholderRequestConfig() override;
 
  private:
-  OVERLAY_USER_DATA_SETUP(InfobarBannerPlaceholderRequestConfig);
+  friend class OverlayUserData<InfobarBannerPlaceholderRequestConfig>;
   explicit InfobarBannerPlaceholderRequestConfig(infobars::InfoBar* infobar);
 
   // OverlayUserData:

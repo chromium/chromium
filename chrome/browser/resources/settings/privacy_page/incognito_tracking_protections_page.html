@@ -1,0 +1,115 @@
+<style include="settings-shared settings-columned-section">
+  #description {
+    padding: 0 var(--cr-section-padding) 16px;
+  }
+
+  #explanationText,
+  .settings-columned-section {
+    padding: 16px var(--cr-section-padding) 0;
+  }
+
+  settings-toggle-button,
+  .settings-columned-section .column {
+    padding: 0 var(--cr-section-padding);
+  }
+
+</style>
+<div id="explanationText" class="secondary">
+  $i18n{incognitoTrackingProtectionsPageDescription}
+</div>
+<div id="generalControls">
+  <div id="description" class="secondary">
+    <h2>$i18n{incognitoTrackingProtectionsHeader}</h2>
+    <div>$i18nRaw{incognitoTrackingProtectionsDescription}</div>
+  </div>
+  <settings-toggle-button id="block3pcsToggle" disabled checked
+      label="$i18n{incognitoTrackingProtectionsBlock3pcsToggleLabel}"
+      sub-label="$i18n{incognitoTrackingProtectionsBlock3pcsToggleSublabel}">
+  </settings-toggle-button>
+  <template is="dom-if" if="[[isIpProtectionAvailable_]]">
+    <template is="dom-if" if="[[!isIpProtectionDisabledForEnterprise_]]">
+      <settings-toggle-button id="ipProtectionToggle"
+          pref="{{prefs.tracking_protection.ip_protection_enabled}}"
+          label="$i18n{incognitoTrackingProtectionsIpProtectionToggleLabel}"
+          sub-label="$i18n{incognitoTrackingProtectionsIpProtectionToggleSublabel}"
+          on-settings-boolean-control-change="onIpProtectionChanged_">
+      </settings-toggle-button>
+    </template>
+    <template is="dom-if" if="[[isIpProtectionDisabledForEnterprise_]]">
+      <settings-toggle-button id="ipProtectionToggle" disabled
+          pref="[[ipProtectionDisabledForEnterprisePref_]]"
+          label="$i18n{incognitoTrackingProtectionsIpProtectionToggleLabel}"
+          sub-label="$i18n{incognitoTrackingProtectionsIpProtectionToggleSublabel}">
+      </settings-toggle-button>
+    </template>
+    <div class="settings-columned-section">
+      <div class="column">
+        <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:network-ping" aria-hidden="true"></cr-icon>
+            <div class="secondary">
+              $i18n{incognitoTrackingProtectionsIpProtectionWhenOn}
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="column">
+        <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:preview" aria-hidden="true"></cr-icon>
+            <div class="secondary">
+              $i18n{incognitoTrackingProtectionsIpProtectionThingsToConsiderBulletOne}
+            </div>
+          </li>
+          <li>
+            <cr-icon icon="settings20:account-circle" aria-hidden="true"></cr-icon>
+            <div class="secondary">
+              $i18n{incognitoTrackingProtectionsIpProtectionThingsToConsiderBulletTwo}
+            </div>
+          </li>
+          <li>
+            <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+            <div class="secondary">
+              $i18n{incognitoTrackingProtectionsIpProtectionThingsToConsiderBulletThree}
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </template>
+  <template is="dom-if" if="[[isFingerprintingProtectionAvailable_]]">
+    <settings-toggle-button id="fingerprintingProtectionToggle"
+        pref="{{prefs.tracking_protection.fingerprinting_protection_enabled}}"
+        label="$i18n{incognitoTrackingProtectionsFingerprintingProtectionToggleLabel}"
+        sub-label="
+          $i18n{incognitoTrackingProtectionsFingerprintingProtectionToggleSublabel}"
+        on-settings-boolean-control-change="onFpProtectionChanged_">
+    </settings-toggle-button>
+    <div class="settings-columned-section">
+      <div class="column">
+        <h3 class="description-header">$i18n{columnHeadingWhenOn}</h3>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:privacy-screen" aria-hidden="true"></cr-icon>
+            <div class="secondary">
+              $i18n{incognitoTrackingProtectionsFingerprintingProtectionWhenOn}
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div class="column">
+        <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
+        <ul class="icon-bulleted-list">
+          <li>
+            <cr-icon icon="settings20:preview" aria-hidden="true"></cr-icon>
+            <div class="secondary">
+              $i18n{incognitoTrackingProtectionsFingerprintingProtectionThingsToConsider}
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </template>
+</div>

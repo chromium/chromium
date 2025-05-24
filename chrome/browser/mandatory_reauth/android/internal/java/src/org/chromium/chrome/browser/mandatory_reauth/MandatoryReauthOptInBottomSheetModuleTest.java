@@ -34,8 +34,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
-import org.chromium.components.autofill.PaymentsBubbleClosedReason;
+import org.chromium.components.autofill.PaymentsUiClosedReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -52,7 +51,6 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
             ArgumentCaptor.forClass(BottomSheetObserver.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private BottomSheetController mController;
     @Mock private MandatoryReauthOptInBottomSheetControllerBridge.Natives mControllerBridgeJniMock;
@@ -62,8 +60,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mJniMocker.mock(
-                MandatoryReauthOptInBottomSheetControllerBridgeJni.TEST_HOOKS,
+        MandatoryReauthOptInBottomSheetControllerBridgeJni.setInstanceForTesting(
                 mControllerBridgeJniMock);
         setUpBottomSheetController();
         mViewBridge =
@@ -98,12 +95,12 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         TextView explanationView = (TextView) getView(R.id.mandatory_reauth_opt_in_explanation);
 
         // Check that the custom view contains the expected title and explanation.
-        assertThat(titleView.getText(), is("Turn on manual verification?"));
+        assertThat(titleView.getText(), is("Verify it's you to autofill payment methods?"));
         assertThat(
                 explanationView.getText(),
                 is(
-                        "If you share this device, Chromium can ask you to verify every time you"
-                                + " pay using autofill"));
+                        "For added protection, always use your fingerprint, face, or other screen"
+                                + " lock when you pay using autofill"));
 
         Button acceptButton = (Button) getView(R.id.mandatory_reauth_opt_in_accept_button);
         Button cancelButton = (Button) getView(R.id.mandatory_reauth_opt_in_cancel_button);
@@ -127,7 +124,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the accept button is clicked, user acceptance is relayed via the
         // delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.ACCEPTED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.ACCEPTED);
     }
 
     @Test
@@ -144,7 +141,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the cancel button is clicked, user cancellation is relayed via the
         // delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.CANCELLED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.CANCELLED);
     }
 
     @Test
@@ -157,7 +154,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the bottom sheet is closed without explicit user selection, the close
         // event is relayed via the delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.CLOSED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.CLOSED);
     }
 
     @Test
@@ -170,7 +167,7 @@ public class MandatoryReauthOptInBottomSheetModuleTest {
         // Verify that when the bottom sheet is closed without user interaction, the close
         // event is relayed via the delegate.
         verify(mControllerBridgeJniMock)
-                .onClosed(sPlaceholderNativePointer, PaymentsBubbleClosedReason.NOT_INTERACTED);
+                .onClosed(sPlaceholderNativePointer, PaymentsUiClosedReason.NOT_INTERACTED);
     }
 
     private View getView(int viewId) {

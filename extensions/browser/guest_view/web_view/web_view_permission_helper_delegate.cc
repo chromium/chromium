@@ -23,4 +23,16 @@ bool WebViewPermissionHelperDelegate::
   return false;
 }
 
+bool WebViewPermissionHelperDelegate::
+    ForwardEmbeddedMediaPermissionChecksAsEmbedder(
+        const url::Origin& embedder_origin) {
+  return false;
+}
+
+std::optional<content::PermissionResult>
+WebViewPermissionHelperDelegate::OverridePermissionResult(
+    ContentSettingsType type) {
+  return std::nullopt;
+}
+
 }  // namespace extensions

@@ -11,10 +11,13 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 using extensions::Extension;
 
@@ -71,8 +74,8 @@ void ExtensionSettingsTestBase::SetAutoConfirmUninstall() {
 }
 
 void ExtensionSettingsTestBase::SetDevModeEnabled(bool enabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kExtensionsUIDeveloperMode, enabled);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode,
+                                       enabled);
 }
 
 void ExtensionSettingsTestBase::SetSilenceDeprecatedManifestVersionWarnings(
@@ -83,7 +86,7 @@ void ExtensionSettingsTestBase::SetSilenceDeprecatedManifestVersionWarnings(
 
 const Extension* ExtensionSettingsTestBase::InstallExtension(
     const base::FilePath& path) {
-  extensions::ChromeTestExtensionLoader loader(browser()->profile());
+  extensions::ChromeTestExtensionLoader loader(GetProfile());
   loader.set_ignore_manifest_warnings(true);
   return loader.LoadExtension(path).get();
 }

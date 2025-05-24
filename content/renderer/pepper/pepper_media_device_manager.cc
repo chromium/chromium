@@ -45,8 +45,7 @@ PP_DeviceType_Dev FromMediaDeviceType(MediaDeviceType type) {
     case MediaDeviceType::kMediaAudioOutput:
       return PP_DEVICETYPE_DEV_AUDIOOUTPUT;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return PP_DEVICETYPE_DEV_INVALID;
+      NOTREACHED();
   }
 }
 
@@ -59,8 +58,7 @@ MediaDeviceType ToMediaDeviceType(PP_DeviceType_Dev type) {
     case PP_DEVICETYPE_DEV_AUDIOOUTPUT:
       return MediaDeviceType::kMediaAudioOutput;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return MediaDeviceType::kMediaAudioOutput;
+      NOTREACHED();
   }
 }
 
@@ -214,8 +212,7 @@ base::UnguessableToken PepperMediaDeviceManager::GetSessionID(
       return GetMediaStreamDeviceObserver()->GetVideoSessionId(
           blink::WebString::FromUTF8(label));
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::UnguessableToken();
+      NOTREACHED();
   }
 }
 
@@ -230,8 +227,7 @@ blink::mojom::MediaStreamType PepperMediaDeviceManager::FromPepperDeviceType(
     case PP_DEVICETYPE_DEV_VIDEOCAPTURE:
       return blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return blink::mojom::MediaStreamType::NO_SERVICE;
+      NOTREACHED();
   }
 }
 

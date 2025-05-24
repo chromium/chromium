@@ -13,6 +13,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/files/file_path.h"
+#include "base/strings/to_string.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -120,8 +121,7 @@ class LauncherContinueSectionTest
   LauncherContinueSectionTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{ash::features::kLauncherContinueSectionWithRecentsRollout,
-          {{"mix_local_and_drive",
-            MixLocalAndDriveFiles() ? "true" : "false"}}},
+          {{"mix_local_and_drive", base::ToString(MixLocalAndDriveFiles())}}},
          {ash::features::kShowSharingUserInLauncherContinueSection, {}}},
         {});
   }

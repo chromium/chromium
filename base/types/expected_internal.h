@@ -10,10 +10,9 @@
 #include <functional>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 // This header defines type traits and aliases used for the implementation of
 // base::expected.
@@ -105,20 +104,20 @@ inline constexpr bool IsValidVoidConversion =
 template <typename T, typename E, typename U>
 inline constexpr bool IsValidValueConstruction =
     std::is_constructible_v<T, U> &&
-    !std::is_same_v<std::remove_cvref_t<U>, absl::in_place_t> &&
+    !std::is_same_v<std::remove_cvref_t<U>, std::in_place_t> &&
     !std::is_same_v<std::remove_cvref_t<U>, expected<T, E>> && !IsOk<U> &&
     !IsUnexpected<U>;
 
 template <typename T, typename U>
 inline constexpr bool IsOkValueConstruction =
     !std::is_same_v<std::remove_cvref_t<U>, ok<T>> &&
-    !std::is_same_v<std::remove_cvref_t<U>, absl::in_place_t> &&
+    !std::is_same_v<std::remove_cvref_t<U>, std::in_place_t> &&
     std::is_constructible_v<T, U>;
 
 template <typename T, typename U>
 inline constexpr bool IsUnexpectedValueConstruction =
     !std::is_same_v<std::remove_cvref_t<U>, unexpected<T>> &&
-    !std::is_same_v<std::remove_cvref_t<U>, absl::in_place_t> &&
+    !std::is_same_v<std::remove_cvref_t<U>, std::in_place_t> &&
     std::is_constructible_v<T, U>;
 
 template <typename T, typename E, typename U>
@@ -132,8 +131,8 @@ class ExpectedImpl {
  public:
   static constexpr size_t kValIdx = 1;
   static constexpr size_t kErrIdx = 2;
-  static constexpr absl::in_place_index_t<1> kValTag{};
-  static constexpr absl::in_place_index_t<2> kErrTag{};
+  static constexpr std::in_place_index_t<1> kValTag{};
+  static constexpr std::in_place_index_t<2> kErrTag{};
 
   template <typename U, typename G>
   friend class ExpectedImpl;
@@ -235,17 +234,13 @@ class ExpectedImpl {
     return data_.index() == kValIdx;
   }
 
-  // Note: No `CHECK()` here and below, since absl::get already checks that
+  // Note: No `CHECK()` here and below, since std::get already checks that
   // the passed in index is active.
-  constexpr T& value() noexcept { return absl::get<kValIdx>(data_); }
-  constexpr const T& value() const noexcept {
-    return absl::get<kValIdx>(data_);
-  }
+  constexpr T& value() noexcept { return std::get<kValIdx>(data_); }
+  constexpr const T& value() const noexcept { return std::get<kValIdx>(data_); }
 
-  constexpr E& error() noexcept { return absl::get<kErrIdx>(data_); }
-  constexpr const E& error() const noexcept {
-    return absl::get<kErrIdx>(data_);
-  }
+  constexpr E& error() noexcept { return std::get<kErrIdx>(data_); }
+  constexpr const E& error() const noexcept { return std::get<kErrIdx>(data_); }
 
  private:
   static constexpr size_t kNulIdx = 0;
@@ -260,7 +255,7 @@ class ExpectedImpl {
     data_.template emplace<kNulIdx>();
   }
 
-  absl::variant<absl::monostate, T, E> data_;
+  std::variant<std::monostate, T, E> data_;
 };
 
 template <typename Exp, typename F>
@@ -329,9 +324,9 @@ constexpr auto Transform(Exp&& exp, F&& f) noexcept {
     static_assert(!std::is_array_v<U>,
                   "expected<T, E>::transform: Result of f() should "
                   "not be an Array");
-    static_assert(!std::is_same_v<U, absl::in_place_t>,
+    static_assert(!std::is_same_v<U, std::in_place_t>,
                   "expected<T, E>::transform: Result of f() should "
-                  "not be absl::in_place_t");
+                  "not be std::in_place_t");
     static_assert(!std::is_same_v<U, unexpect_t>,
                   "expected<T, E>::transform: Result of f() should "
                   "not be unexpect_t");
@@ -367,9 +362,9 @@ constexpr auto TransformError(Exp&& exp, F&& f) noexcept {
   static_assert(
       !std::is_array_v<G>,
       "expected<T, E>::transform_error: Result of f() should not be an Array");
-  static_assert(!std::is_same_v<G, absl::in_place_t>,
+  static_assert(!std::is_same_v<G, std::in_place_t>,
                 "expected<T, E>::transform_error: Result of f() should not be "
-                "absl::in_place_t");
+                "std::in_place_t");
   static_assert(!std::is_same_v<G, unexpect_t>,
                 "expected<T, E>::transform_error: Result of f() should not be "
                 "unexpect_t");

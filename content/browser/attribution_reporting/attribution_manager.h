@@ -70,6 +70,8 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
 
   virtual void HandleOsRegistration(OsRegistration) = 0;
 
+  virtual void UpdateLastNavigationTime(base::Time navigation_time) = 0;
+
   // Get all sources that are currently stored in this partition. Used for
   // populating WebUI.
   virtual void GetActiveSourcesForWebUI(
@@ -113,7 +115,7 @@ class CONTENT_EXPORT AttributionManager : public AttributionDataModel {
   // Report errors from header validation.
   virtual void ReportRegistrationHeaderError(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError&,
+      attribution_reporting::RegistrationHeaderError,
       const attribution_reporting::SuitableOrigin& context_origin,
       bool is_within_fenced_frame,
       GlobalRenderFrameHostId render_frame_id) = 0;

@@ -15,7 +15,6 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/version.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,6 +30,7 @@
 
 namespace ui {
 
+class DrmSyncobjIoctlWrapper;
 class WaylandBufferBacking;
 class WaylandBufferHandle;
 class WaylandConnection;
@@ -69,14 +69,11 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // Returns supported buffer formats either from zwp_linux_dmabuf or wl_drm.
   wl::BufferFormatsWithModifiersMap GetSupportedBufferFormats() const;
 
-  base::Version GetServerVersion() const;
   bool SupportsDmabuf() const;
   bool SupportsAcquireFence() const;
   bool SupportsViewporter() const;
   bool SupportsOverlays() const;
-  bool SupportsNonBackedSolidColorBuffers() const;
   bool SupportsSinglePixelBuffer() const;
-  uint32_t GetSurfaceAugmentorVersion() const;
 
   // ozone::mojom::WaylandBufferManagerHost overrides:
   //
@@ -104,13 +101,6 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                             uint64_t length,
                             const gfx::Size& size,
                             uint32_t buffer_id) override;
-  // Called by the GPU and asks to create a solid color wl_buffer. Check
-  // comments in the
-  // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom. The
-  // availability of this depends on existence of surface-augmenter protocol.
-  void CreateSolidColorBuffer(const gfx::Size& size,
-                              const SkColor4f& color,
-                              uint32_t buffer_id) override;
   // Called by the GPU and asks to create a single pixel wl_buffer. Check
   // comments in the
   // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom. The
@@ -174,6 +164,12 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
 
   static bool SupportsImplicitSyncInterop();
 
+  DrmSyncobjIoctlWrapper* drm_syncobj_wrapper() {
+    return drm_syncobj_wrapper_.get();
+  }
+
+  void SetDrmSyncobjWrapper(std::unique_ptr<DrmSyncobjIoctlWrapper> wrapper);
+
  private:
   // Validates data sent from GPU. If invalid, returns false and sets an error
   // message to |error_message_|.
@@ -209,6 +205,17 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   // A callback, which is used to terminate a GPU process in case of invalid
   // data sent by the GPU to the browser process.
   base::OnceCallback<void(std::string)> terminate_gpu_cb_;
+
+  // This needs to be before |buffer_backings_| so that it is deleted after
+  // buffer handles which need this at the time of destruction when explicit
+  // sync is available.
+  // TODO(crbug.com/367623923) If DrmRenderNodePathFinder could cache the path
+  // we could initialize this in the constructor for this class using a
+  // DrmRenderNodeHandle, passing it the path obtained from the
+  // DrmRenderNodePathFinder and remove SetDrm() instead of doing this in
+  // OzonePlatformWayland::InitializeUI() which is where it is done currently to
+  // limit the number of path lookups.
+  std::unique_ptr<DrmSyncobjIoctlWrapper> drm_syncobj_wrapper_;
 
   // Maps buffer_id's to corresponding WaylandBufferBacking objects.
   base::flat_map<uint32_t, std::unique_ptr<WaylandBufferBacking>>

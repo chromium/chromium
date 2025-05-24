@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.download;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -15,7 +14,6 @@ import android.app.Activity;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -27,7 +25,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.ConnectionType;
@@ -49,8 +46,6 @@ public class DownloadDialogBridgeUnitTest {
 
     private DownloadDialogBridge mBridge;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private DownloadDialogBridge.Natives mNativeMock;
 
     @Mock ModalDialogManager mModalDialogManager;
@@ -67,7 +62,7 @@ public class DownloadDialogBridgeUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
-        mJniMocker.mock(DownloadDialogBridgeJni.TEST_HOOKS, mNativeMock);
+        DownloadDialogBridgeJni.setInstanceForTesting(mNativeMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mBridge = new DownloadDialogBridge(FAKE_NATIVE_HOLDER, mLocationDialog);
     }
@@ -87,17 +82,6 @@ public class DownloadDialogBridgeUnitTest {
                 LOCATION_DIALOG_TYPE,
                 SUGGESTED_PATH,
                 mProfile);
-    }
-
-    private void locationDialogWillReturn(String newPath) {
-        doAnswer(
-                        invocation -> {
-                            mBridge.onDownloadLocationDialogComplete(newPath);
-                            return null;
-                        })
-                .when(mLocationDialog)
-                .showDialog(
-                        any(), any(), eq(TOTAL_BYTES), anyInt(), eq(SUGGESTED_PATH), eq(mProfile));
     }
 
     @Test

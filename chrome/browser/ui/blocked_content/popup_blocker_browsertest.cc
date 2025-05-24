@@ -10,7 +10,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -101,12 +100,12 @@ class CloseObserver : public content::WebContentsObserver {
 
 class PopupBlockerBrowserTest : public InProcessBrowserTest {
  public:
-  PopupBlockerBrowserTest() {}
+  PopupBlockerBrowserTest() = default;
 
   PopupBlockerBrowserTest(const PopupBlockerBrowserTest&) = delete;
   PopupBlockerBrowserTest& operator=(const PopupBlockerBrowserTest&) = delete;
 
-  ~PopupBlockerBrowserTest() override {}
+  ~PopupBlockerBrowserTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
@@ -219,8 +218,9 @@ class PopupBlockerBrowserTest : public InProcessBrowserTest {
       new_browser = BrowserList::GetInstance()->GetLastActive();
       EXPECT_NE(browser, new_browser);
       web_contents = new_browser->tab_strip_model()->GetActiveWebContents();
-      if (what_to_expect == kExpectNewWindow)
+      if (what_to_expect == kExpectNewWindow) {
         EXPECT_TRUE(new_browser->is_type_normal());
+      }
     } else {
       tab_add.Wait();
       new_browser = browser;
@@ -249,8 +249,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, BlockWebContentsCreation) {
 }
 
 // TODO(crbug.com/40144522): Flaky on Mac ASAN and Chrome OS.
-#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
+#if (BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_BlockWebContentsCreationIncognito \
   DISABLED_BlockWebContentsCreationIncognito
 #else
@@ -602,8 +601,9 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, ModalPopUnder) {
       ui_test_utils::WaitForAppModalDialog();
   ASSERT_TRUE(dialog);
 #if !BUILDFLAG(IS_MAC)
-  if (chrome::FindLastActive() != browser())
+  if (chrome::FindLastActive() != browser()) {
     alert_waiter.WaitForActivation();
+  }
 #endif
 
 // Verify that after the dialog is closed, the popup is in front again.
@@ -792,7 +792,7 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, PopupsDisableBackForwardCache) {
                                           ->tab_strip_model()
                                           ->GetActiveWebContents()
                                           ->GetPrimaryMainFrame());
-  int process_id = rfh->GetProcess()->GetID();
+  int process_id = rfh->GetProcess()->GetDeprecatedID();
   int frame_routing_id = rfh->GetRoutingID();
 
   // Navigate to another page on the same domain. This will trigger a check on
@@ -848,8 +848,19 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest,
   // before we perform the checks further down. Since we have no control over
   // that script we just run some more (that we do control) and wait for it to
   // finish.
-  EXPECT_TRUE(
-      content::ExecJs(tab_2, "", content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  //
+  // crbug.com/368578515: The ExecJs script here runs out of the renderer's
+  // default task queue, which has a different task deferral policy with
+  // DeferRendererTasksAfterInput than the queue that runs the loading script
+  // task we're waiting for. This means the ExecJs task might run before the
+  // loading script task, depending on rendering timing. To get around this, use
+  // a lower priority task queue that has the same task deferral policy.
+  EXPECT_TRUE(content::ExecJs(tab_2, R"(
+    (() => {
+      return scheduler.postTask(() => {}, {priority: 'background'});
+    })();
+  )",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
   EXPECT_FALSE(content_settings::PageSpecificContentSettings::GetForFrame(
                    tab_1->GetPrimaryMainFrame())

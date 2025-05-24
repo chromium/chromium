@@ -252,7 +252,7 @@ class SubscriptionsManagerTest : public testing::Test,
   SubscriptionsManagerTest()
       : mock_server_proxy_(std::make_unique<MockSubscriptionsServerProxy>()),
         mock_storage_(std::make_unique<MockSubscriptionsStorage>()) {
-    test_features_.InitAndEnableFeature(commerce::kShoppingList);
+    test_features_.InitAndEnableFeature(commerce::kSubscriptionsApi);
   }
   ~SubscriptionsManagerTest() override = default;
 

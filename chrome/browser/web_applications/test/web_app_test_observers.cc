@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 
+#include <sstream>
+
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -25,6 +27,22 @@ bool IsAnyIdEmpty(const std::set<webapps::AppId>& app_ids) {
 }
 #endif
 
+template <typename Container>
+std::string ContainerToString(const Container& container) {
+  std::ostringstream ss;
+  ss << "[";
+  bool first_item = true;
+  for (const auto& item : container) {
+    if (!first_item) {
+      ss << ", ";
+    }
+    ss << base::ToString(item);
+    first_item = false;
+  }
+  ss << "]";
+  return ss.str();
+}
+
 }  // namespace
 
 WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
@@ -35,7 +53,7 @@ WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
 WebAppInstallManagerObserverAdapter::WebAppInstallManagerObserverAdapter(
     Profile* profile)
     : WebAppInstallManagerObserverAdapter(
-          &WebAppProvider::GetForTest(profile)->install_manager()) {}
+          &WebAppProvider::GetForWebApps(profile)->install_manager()) {}
 
 WebAppInstallManagerObserverAdapter::~WebAppInstallManagerObserverAdapter() =
     default;
@@ -207,6 +225,10 @@ void WebAppTestInstallObserver::BeginListening(
 
 webapps::AppId WebAppTestInstallObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 
@@ -237,6 +259,10 @@ void WebAppTestInstallWithOsHooksObserver::BeginListening(
 
 webapps::AppId WebAppTestInstallWithOsHooksObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 
@@ -267,6 +293,10 @@ void WebAppTestManifestUpdatedObserver::BeginListening(
 
 webapps::AppId WebAppTestManifestUpdatedObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 
@@ -296,6 +326,10 @@ void WebAppTestUninstallObserver::BeginListening(
 
 webapps::AppId WebAppTestUninstallObserver::Wait() {
   wait_loop_.Run();
+  if (last_app_id_.empty()) {
+    LOG(ERROR) << "Could not find any of "
+               << ContainerToString(optional_app_ids_);
+  }
   return last_app_id_;
 }
 

@@ -15,8 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace blink {
 struct IndexedDBDatabaseMetadata;
@@ -39,8 +39,8 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
  public:
   // This function should fetch all database metadata for the origin. The
   // returned status signifies if the metadata was read successfully.
-  using MetadataFetcher = base::OnceCallback<leveldb::Status(
-      std::vector<blink::IndexedDBDatabaseMetadata>*)>;
+  using MetadataFetcher = base::OnceCallback<Status(
+      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*)>;
 
   // Defines a task that will be run after closing an IndexedDB backing store
   // instance. Instances of this class are sequence-hostile. Each instance must
@@ -59,7 +59,8 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
 
     // Called before RunRound. |metadata| is guaranteed to outlive this task.
     virtual void SetMetadata(
-        const std::vector<blink::IndexedDBDatabaseMetadata>* metadata);
+        const std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>*
+            metadata);
 
     // Runs a round of work. Tasks are expected to keep round execution time
     // small. Returns if the task is complete and can be destroyed.
@@ -73,12 +74,12 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
     const raw_ptr<leveldb::DB> database_;
   };
 
-  // |on_complete| must not contain a refptr to the BackingStore, as this would
-  // create a cycle.
+  // |on_complete| is guaranteed to be run after Start() is called.
+  // MetadataFetcher is expected to load the metadata from the database on disk.
   BackingStorePreCloseTaskQueue(std::list<std::unique_ptr<PreCloseTask>> tasks,
                                 base::OnceClosure on_complete,
                                 base::TimeDelta max_run_time,
-                                std::unique_ptr<base::OneShotTimer> timer);
+                                MetadataFetcher metadata_fetcher);
 
   BackingStorePreCloseTaskQueue(const BackingStorePreCloseTaskQueue&) = delete;
   BackingStorePreCloseTaskQueue& operator=(
@@ -95,15 +96,16 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   // immediately called.
   void Stop();
 
-  // Starts running tasks. Can only be called once. MetadataFetcher is expected
-  // to load the metadata from the database on disk.
-  void Start(MetadataFetcher metadata_fetcher);
+  // Starts running tasks. Can only be called once.
+  void Start();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(BackingStorePreCloseTaskQueueTest, StopForTimeout);
+
   void OnComplete();
 
-  void StopForTimout();
-  void StopForMetadataError(const leveldb::Status& status);
+  void StopForTimeout();
+  void StopForMetadataError(const Status& status);
 
   void RunLoop();
 
@@ -112,7 +114,7 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   // pre-close task requires metadata (see RequiresMetadata). This happens
   // before that task is run.
   MetadataFetcher metadata_fetcher_;
-  std::vector<blink::IndexedDBDatabaseMetadata> metadata_;
+  std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>> metadata_;
 
   bool started_ = false;
   bool done_ = false;
@@ -120,7 +122,7 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   base::OnceClosure on_done_;
 
   base::TimeDelta timeout_time_;
-  std::unique_ptr<base::OneShotTimer> timeout_timer_;
+  base::OneShotTimer timeout_timer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   base::WeakPtrFactory<BackingStorePreCloseTaskQueue> ptr_factory_{this};

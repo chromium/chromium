@@ -51,79 +51,79 @@ void ZoomModeToZoomSettings(zoom::ZoomController::ZoomMode zoom_mode,
 
 // Windows
 class WindowsGetFunction : public ExtensionFunction {
-  ~WindowsGetFunction() override {}
+  ~WindowsGetFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.get", WINDOWS_GET)
 };
 class WindowsGetCurrentFunction : public ExtensionFunction {
-  ~WindowsGetCurrentFunction() override {}
+  ~WindowsGetCurrentFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.getCurrent", WINDOWS_GETCURRENT)
 };
 class WindowsGetLastFocusedFunction : public ExtensionFunction {
-  ~WindowsGetLastFocusedFunction() override {}
+  ~WindowsGetLastFocusedFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.getLastFocused", WINDOWS_GETLASTFOCUSED)
 };
 class WindowsGetAllFunction : public ExtensionFunction {
-  ~WindowsGetAllFunction() override {}
+  ~WindowsGetAllFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.getAll", WINDOWS_GETALL)
 };
 class WindowsCreateFunction : public ExtensionFunction {
-  ~WindowsCreateFunction() override {}
+  ~WindowsCreateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.create", WINDOWS_CREATE)
 };
 class WindowsUpdateFunction : public ExtensionFunction {
-  ~WindowsUpdateFunction() override {}
+  ~WindowsUpdateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.update", WINDOWS_UPDATE)
 };
 class WindowsRemoveFunction : public ExtensionFunction {
-  ~WindowsRemoveFunction() override {}
+  ~WindowsRemoveFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("windows.remove", WINDOWS_REMOVE)
 };
 
 // Tabs
 class TabsGetFunction : public ExtensionFunction {
-  ~TabsGetFunction() override {}
+  ~TabsGetFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.get", TABS_GET)
 };
 class TabsGetCurrentFunction : public ExtensionFunction {
-  ~TabsGetCurrentFunction() override {}
+  ~TabsGetCurrentFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.getCurrent", TABS_GETCURRENT)
 };
 class TabsGetSelectedFunction : public ExtensionFunction {
-  ~TabsGetSelectedFunction() override {}
+  ~TabsGetSelectedFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.getSelected", TABS_GETSELECTED)
 };
 class TabsGetAllInWindowFunction : public ExtensionFunction {
-  ~TabsGetAllInWindowFunction() override {}
+  ~TabsGetAllInWindowFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.getAllInWindow", TABS_GETALLINWINDOW)
 };
 class TabsQueryFunction : public ExtensionFunction {
-  ~TabsQueryFunction() override {}
+  ~TabsQueryFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.query", TABS_QUERY)
 };
 class TabsCreateFunction : public ExtensionFunction {
-  ~TabsCreateFunction() override {}
+  ~TabsCreateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.create", TABS_CREATE)
 };
 class TabsDuplicateFunction : public ExtensionFunction {
-  ~TabsDuplicateFunction() override {}
+  ~TabsDuplicateFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.duplicate", TABS_DUPLICATE)
 };
 class TabsHighlightFunction : public ExtensionFunction {
-  ~TabsHighlightFunction() override {}
+  ~TabsHighlightFunction() override = default;
   ResponseAction Run() override;
   bool HighlightTab(TabStripModel* tabstrip,
                     ui::ListSelectionModel* selection,
@@ -137,7 +137,7 @@ class TabsUpdateFunction : public ExtensionFunction {
   TabsUpdateFunction();
 
  protected:
-  ~TabsUpdateFunction() override {}
+  ~TabsUpdateFunction() override = default;
   bool UpdateURL(const std::string& url,
                  int tab_id,
                  std::string* error);
@@ -151,7 +151,7 @@ class TabsUpdateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("tabs.update", TABS_UPDATE)
 };
 class TabsMoveFunction : public ExtensionFunction {
-  ~TabsMoveFunction() override {}
+  ~TabsMoveFunction() override = default;
   ResponseAction Run() override;
   bool MoveTab(int tab_id,
                int* new_index,
@@ -161,7 +161,7 @@ class TabsMoveFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("tabs.move", TABS_MOVE)
 };
 class TabsReloadFunction : public ExtensionFunction {
-  ~TabsReloadFunction() override {}
+  ~TabsReloadFunction() override = default;
   ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tabs.reload", TABS_RELOAD)
 };
@@ -198,7 +198,7 @@ class TabsDetectLanguageFunction
       public content::WebContentsObserver,
       public translate::TranslateDriver::LanguageDetectionObserver {
  private:
-  ~TabsDetectLanguageFunction() override {}
+  ~TabsDetectLanguageFunction() override = default;
   ResponseAction Run() override;
 
   // content::WebContentsObserver:
@@ -207,10 +207,11 @@ class TabsDetectLanguageFunction
   void WebContentsDestroyed() override;
 
   // translate::TranslateDriver::LanguageDetectionObserver:
+  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
-  // Resolves the API call with the detected |language|.
+  // Resolves the API call with the detected `language`.
   void RespondWithLanguage(const std::string& language);
 
   // Indicates if this instance is observing the tabs' WebContents and the
@@ -243,7 +244,7 @@ class TabsCaptureVisibleTabFunction
   bool ShouldSkipQuotaLimiting() const override;
 
  protected:
-  ~TabsCaptureVisibleTabFunction() override {}
+  ~TabsCaptureVisibleTabFunction() override = default;
 
  private:
   ChromeExtensionFunctionDetails chrome_details_;
@@ -260,7 +261,7 @@ class TabsCaptureVisibleTabFunction
   void EncodeBitmapOnWorkerThread(
       scoped_refptr<base::TaskRunner> reply_task_runner,
       const SkBitmap& bitmap);
-  void OnBitmapEncodedOnUIThread(bool success, std::string base64_result);
+  void OnBitmapEncodedOnUIThread(std::optional<std::string> base64_result);
 
  private:
   DECLARE_EXTENSION_FUNCTION("tabs.captureVisibleTab", TABS_CAPTUREVISIBLETAB)
@@ -278,13 +279,14 @@ class ExecuteCodeInTabFunction : public ExecuteCodeFunction {
  protected:
   ~ExecuteCodeInTabFunction() override;
 
-  // Initializes |execute_tab_id_| and |details_|.
+  // Initializes `execute_tab_id_` and `details_`.
   InitResult Init() override;
   bool ShouldInsertCSS() const override;
   bool ShouldRemoveCSS() const override;
   bool CanExecuteScriptOnPage(std::string* error) override;
   ScriptExecutor* GetScriptExecutor(std::string* error) override;
   bool IsWebView() const override;
+  int GetRootFrameId() const override;
   const GURL& GetWebViewSrc() const override;
 
  private:
@@ -296,14 +298,14 @@ class ExecuteCodeInTabFunction : public ExecuteCodeFunction {
 
 class TabsExecuteScriptFunction : public ExecuteCodeInTabFunction {
  private:
-  ~TabsExecuteScriptFunction() override {}
+  ~TabsExecuteScriptFunction() override = default;
 
   DECLARE_EXTENSION_FUNCTION("tabs.executeScript", TABS_EXECUTESCRIPT)
 };
 
 class TabsInsertCSSFunction : public ExecuteCodeInTabFunction {
  private:
-  ~TabsInsertCSSFunction() override {}
+  ~TabsInsertCSSFunction() override = default;
 
   bool ShouldInsertCSS() const override;
 
@@ -320,7 +322,7 @@ class TabsInsertCSSFunction : public ExecuteCodeInTabFunction {
 // ... hence, it could just go straight to the ScriptExecutor.
 class TabsRemoveCSSFunction : public ExecuteCodeInTabFunction {
  private:
-  ~TabsRemoveCSSFunction() override {}
+  ~TabsRemoveCSSFunction() override = default;
 
   bool ShouldRemoveCSS() const override;
 
@@ -329,7 +331,7 @@ class TabsRemoveCSSFunction : public ExecuteCodeInTabFunction {
 
 class TabsSetZoomFunction : public ExtensionFunction {
  private:
-  ~TabsSetZoomFunction() override {}
+  ~TabsSetZoomFunction() override = default;
 
   ResponseAction Run() override;
 
@@ -338,7 +340,7 @@ class TabsSetZoomFunction : public ExtensionFunction {
 
 class TabsGetZoomFunction : public ExtensionFunction {
  private:
-  ~TabsGetZoomFunction() override {}
+  ~TabsGetZoomFunction() override = default;
 
   ResponseAction Run() override;
 
@@ -347,7 +349,7 @@ class TabsGetZoomFunction : public ExtensionFunction {
 
 class TabsSetZoomSettingsFunction : public ExtensionFunction {
  private:
-  ~TabsSetZoomSettingsFunction() override {}
+  ~TabsSetZoomSettingsFunction() override = default;
 
   ResponseAction Run() override;
 
@@ -356,7 +358,7 @@ class TabsSetZoomSettingsFunction : public ExtensionFunction {
 
 class TabsGetZoomSettingsFunction : public ExtensionFunction {
  private:
-  ~TabsGetZoomSettingsFunction() override {}
+  ~TabsGetZoomSettingsFunction() override = default;
 
   ResponseAction Run() override;
 
@@ -383,13 +385,13 @@ class TabsGoForwardFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("tabs.goForward", TABS_GOFORWARD)
 
-  TabsGoForwardFunction() {}
+  TabsGoForwardFunction() = default;
 
   TabsGoForwardFunction(const TabsGoForwardFunction&) = delete;
   TabsGoForwardFunction& operator=(const TabsGoForwardFunction&) = delete;
 
  private:
-  ~TabsGoForwardFunction() override {}
+  ~TabsGoForwardFunction() override = default;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;
@@ -399,13 +401,13 @@ class TabsGoBackFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("tabs.goBack", TABS_GOBACK)
 
-  TabsGoBackFunction() {}
+  TabsGoBackFunction() = default;
 
   TabsGoBackFunction(const TabsGoBackFunction&) = delete;
   TabsGoBackFunction& operator=(const TabsGoBackFunction&) = delete;
 
  private:
-  ~TabsGoBackFunction() override {}
+  ~TabsGoBackFunction() override = default;
 
   // ExtensionFunction:
   ExtensionFunction::ResponseAction Run() override;

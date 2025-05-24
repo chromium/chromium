@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -43,12 +43,12 @@ export class InitialGradientElement extends PolymerElement {
   }
 
   // Whether or not the gradient scrim is visible.
-  private scrimVisible: boolean;
+  declare private scrimVisible: boolean;
 
   // Whether or not to prevent rendering the scrim. This uses CSS to
   // set the visibility to 0 which is required because transitioning the
   // opacity to 0 does not always completely fade out the gradient.
-  private shouldHideScrim: boolean;
+  declare private shouldHideScrim: boolean;
 
   setScrimVisible() {
     this.scrimVisible = true;

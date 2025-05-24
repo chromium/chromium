@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "ios/chrome/browser/promos_manager/model/constants.h"
 
 @class ImpressionLimit;
@@ -28,7 +29,7 @@ struct PromoConfig {
 
   // The feature engagement tracker feature for this promo. May be null if
   // this promo doesn't have a corresponding feature.
-  const base::Feature* feature_engagement_feature;
+  raw_ptr<const base::Feature> feature_engagement_feature;
 
   // The custom impression limits for this promo. May be null if this feature
   // has no custom limits.

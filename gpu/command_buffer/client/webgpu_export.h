@@ -15,11 +15,7 @@
 #endif  // defined(WEBGPU_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(WEBGPU_IMPLEMENTATION)
 #define WEBGPU_EXPORT __attribute__((visibility("default")))
-#else
-#define WEBGPU_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

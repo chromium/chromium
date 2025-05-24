@@ -128,7 +128,7 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
 }
 
 - (void)encodeWithCoder:(NSCoder*)coder {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (NSString*)description {
@@ -155,7 +155,7 @@ NSString* const kCRUTicketTagKey = @"KSChannelID";
 }
 
 - (void)encodeWithCoder:(NSCoder*)coder {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (NSString*)description {

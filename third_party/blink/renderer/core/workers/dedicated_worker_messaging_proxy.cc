@@ -5,10 +5,8 @@
 #include "third_party/blink/renderer/core/workers/dedicated_worker_messaging_proxy.h"
 
 #include <memory>
-#include "base/feature_list.h"
 #include "base/trace_event/typed_macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink-forward.h"
@@ -81,8 +79,6 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     const KURL& script_url,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     const v8_inspector::V8StackTraceId& stack_id,
-    const String& source_code,
-    RejectCoepUnsafeNone reject_coep_unsafe_none,
     const blink::DedicatedWorkerToken& token,
     mojo::PendingRemote<mojom::blink::DedicatedWorkerHost>
         dedicated_worker_host,
@@ -112,29 +108,23 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     // destination, and inside settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kClassicDedicatedWorker);
-    if (base::FeatureList::IsEnabled(features::kPlzDedicatedWorker)) {
-      auto* resource_timing_notifier =
-          WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
-              *GetExecutionContext());
-      // TODO(crbug.com/1177199): pass a proper policy container
-      GetWorkerThread()->FetchAndRunClassicScript(
-          script_url, std::move(worker_main_script_load_params),
-          /*policy_container=*/nullptr, outside_settings_object.CopyData(),
-          resource_timing_notifier, stack_id);
-    } else {
-      // Legacy code path (to be deprecated, see https://crbug.com/835717):
-      GetWorkerThread()->EvaluateClassicScript(
-          script_url, source_code, nullptr /* cached_meta_data */, stack_id);
-    }
+    auto* resource_timing_notifier =
+        WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
+            *GetExecutionContext());
+    // TODO(crbug.com/1177199): pass a proper policy container
+    GetWorkerThread()->FetchAndRunClassicScript(
+        script_url, std::move(worker_main_script_load_params),
+        /*policy_container=*/nullptr, outside_settings_object.CopyData(),
+        resource_timing_notifier, stack_id);
   } else if (options->type() == script_type_names::kModule) {
     // "module: Fetch a module worker script graph given url, outside settings,
     // destination, the value of the credentials member of options, and inside
     // settings."
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kModuleDedicatedWorker);
-    std::optional<network::mojom::CredentialsMode> credentials_mode =
-        Request::ParseCredentialsMode(options->credentials());
-    DCHECK(credentials_mode);
+    network::mojom::CredentialsMode credentials_mode =
+        Request::V8RequestCredentialsToCredentialsMode(
+            options->credentials().AsEnum());
 
     auto* resource_timing_notifier =
         WorkerResourceTimingNotifierImpl::CreateForOutsideResourceFetcher(
@@ -143,9 +133,9 @@ void DedicatedWorkerMessagingProxy::StartWorkerGlobalScope(
     GetWorkerThread()->FetchAndRunModuleScript(
         script_url, std::move(worker_main_script_load_params),
         /*policy_container=*/nullptr, outside_settings_object.CopyData(),
-        resource_timing_notifier, *credentials_mode, reject_coep_unsafe_none);
+        resource_timing_notifier, credentials_mode);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -278,7 +268,7 @@ void DedicatedWorkerMessagingProxy::PostMessageToWorkerObject(
 
   ThreadDebugger* debugger =
       ThreadDebugger::From(GetExecutionContext()->GetIsolate());
-  MessagePortArray* ports = MessagePort::EntanglePorts(
+  GCedMessagePortArray* ports = MessagePort::EntanglePorts(
       *GetExecutionContext(), std::move(message.ports));
   debugger->ExternalAsyncTaskStarted(message.sender_stack_trace_id);
   if (message.message->CanDeserializeIn(GetExecutionContext())) {

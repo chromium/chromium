@@ -5,6 +5,7 @@
 #include "components/viz/service/display/delegated_ink_handler.h"
 
 #include <utility>
+#include <variant>
 
 #include "components/viz/common/switches.h"
 #include "components/viz/service/display/delegated_ink_point_renderer_skia.h"
@@ -22,7 +23,7 @@ DelegatedInkHandler::~DelegatedInkHandler() = default;
 
 void DelegatedInkHandler::SetDelegatedInkMetadata(MetadataUniquePtr metadata) {
   if (use_delegated_ink_renderer_) {
-    absl::get<RendererUniquePtr>(ink_data_)->SetDelegatedInkMetadata(
+    std::get<RendererUniquePtr>(ink_data_)->SetDelegatedInkMetadata(
         std::move(metadata));
   } else {
     ink_data_ = std::move(metadata);
@@ -31,14 +32,14 @@ void DelegatedInkHandler::SetDelegatedInkMetadata(MetadataUniquePtr metadata) {
 
 DelegatedInkHandler::MetadataUniquePtr DelegatedInkHandler::TakeMetadata() {
   if (!use_delegated_ink_renderer_)
-    return std::move(absl::get<MetadataUniquePtr>(ink_data_));
+    return std::move(std::get<MetadataUniquePtr>(ink_data_));
 
   return nullptr;
 }
 
 DelegatedInkPointRendererSkia* DelegatedInkHandler::GetInkRenderer() {
   if (use_delegated_ink_renderer_)
-    return absl::get<RendererUniquePtr>(ink_data_).get();
+    return std::get<RendererUniquePtr>(ink_data_).get();
 
   return nullptr;
 }

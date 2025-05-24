@@ -1,0 +1,26 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ad_auction") {
+  visibility = [
+    ":*",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//services/network:tests",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+  sources = [
+    "event_record_request_helper.cc",
+    "event_record_request_helper.h",
+  ]
+  deps = [
+    "//base",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:ad_auction_support",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}

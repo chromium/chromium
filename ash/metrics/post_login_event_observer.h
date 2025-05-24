@@ -32,6 +32,7 @@ class ASH_EXPORT PostLoginEventObserver : public base::CheckedObserver {
       base::TimeTicks ts,
       const cc::FrameSequenceMetrics::CustomReportData& data) {}
   virtual void OnArcUiReady(base::TimeTicks ts) {}
+  virtual void OnDeferredTasksStarted(base::TimeTicks ts) {}
 
   // Helper event. Triggered when both of `OnAllExpectedShelfIconLoaded` and
   // `OnAllBrowserWindowsPresented` are done.

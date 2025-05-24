@@ -22,7 +22,7 @@ This package implements a shared library for encoding and decoding raw Opus
 bitstreams. Raw Opus bitstreams should be used over RTP according to
  https://tools.ietf.org/html/rfc7587
 
-The package also includes a number of test  tools used for testing the
+The package also includes a number of test tools used for testing the
 correct operation of the library. The bitstreams read/written by these
 tools should not be used for Opus file distribution: They include
 additional debugging data and cannot support seeking.
@@ -38,6 +38,28 @@ Opus-tools can be found at:
  https://gitlab.xiph.org/xiph/opus-tools.git
 or on the main Opus website:
  https://opus-codec.org/
+
+== Deep Learning and Opus ==
+
+Lossy networks continue to be a challenge for real-time communications.
+While the original implementation of Opus provides an excellent packet loss
+concealment mechanism, the team has continued to advance the methodology used
+to improve audio quality in challenge network environments.
+
+In Opus 1.5, we added a deep learning based redundancy encoder that enhances
+audio in lossy networks by embedding one second of recovery data in the padding
+data of each packet. The underlying algorithm behind encoding and decoding the
+recovery data is called the deep redundancy (DRED) algorithm. By leveraging
+the padding data within the packet, Opus 1.5 is fully backward compatible with
+prior revisions of Opus. Please see the README under the "dnn" subdirectory to
+understand DRED.
+
+DRED was developed by a team that Amazon Web Services initially sponsored,
+who open-sourced the implementation as well as began the
+standardization process at the IETF:
+  https://datatracker.ietf.org/doc/draft-ietf-mlcodec-opus-extension/
+The license behind Opus or the intellectual property position of Opus does
+not change with Opus 1.5.
 
 == Compiling libopus ==
 
@@ -76,6 +98,8 @@ On Apple macOS, install Xcode and brew.sh, then in the Terminal enter:
     % ./autogen.sh
     % ./configure
     % make
+
+On x86, it's a good idea to use a -march= option that allows the use of AVX2.
 
 3) Install the codec libraries (optional)
 
@@ -132,6 +156,10 @@ To run compare the code to these test vectors:
     % curl -OL https://opus-codec.org/docs/opus_testvectors-rfc8251.tar.gz
     % tar -zxf opus_testvectors-rfc8251.tar.gz
     % ./tests/run_vectors.sh ./ opus_newvectors 48000
+
+== Compiling libopus for Windows and alternative build systems ==
+
+See cmake/README.md or meson/README.md.
 
 == Portability notes ==
 

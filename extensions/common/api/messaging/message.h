@@ -27,7 +27,7 @@ struct Message {
         from_privileged_context(from_privileged_context) {}
 
   bool operator==(const Message& other) const {
-    // Skipping the equality check for |from_privileged_context| here
+    // Skipping the equality check for `from_privileged_context` here
     // because this field is used only for histograms.
     return data == other.data && user_gesture == other.user_gesture &&
            format == other.format;

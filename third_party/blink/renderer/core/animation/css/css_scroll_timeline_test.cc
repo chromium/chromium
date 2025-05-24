@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -23,11 +22,8 @@
 
 namespace blink {
 
-class CSSScrollTimelineTest : public PageTestBase,
-                              private ScopedScrollTimelineForTest {
+class CSSScrollTimelineTest : public PageTestBase {
  public:
-  CSSScrollTimelineTest() : ScopedScrollTimelineForTest(true) {}
-
   DocumentAnimations& GetDocumentAnimations() const {
     return GetDocument().GetDocumentAnimations();
   }

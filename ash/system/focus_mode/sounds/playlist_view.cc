@@ -12,7 +12,9 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/focus_mode/sounds/playlist_image_button.h"
+#include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -54,9 +56,8 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   // Set the `playlist_image_button_` background color and the opacity for the
   // initial loading state.
   SetCanProcessEventsWithinSubtree(false);
-  playlist_image_button_->SetBackground(
-      views::CreateThemedRoundedRectBackground(cros_tokens::kCrosSysOnSurface,
-                                               kLoadingBackgroundCornerRadius));
+  playlist_image_button_->SetBackground(views::CreateRoundedRectBackground(
+      cros_tokens::kCrosSysOnSurface, kLoadingBackgroundCornerRadius));
   playlist_image_button_->SetPaintToLayer();
   playlist_image_button_->layer()->SetFillsBoundsOpaquely(false);
   playlist_image_button_->layer()->SetOpacity(kLoadingLayerOpacity);
@@ -66,14 +67,14 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
   title_label_->SetMaximumWidthSingleLine(kSinglePlaylistViewWidth);
   title_label_->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
       TypographyToken::kCrosAnnotation2));
-  title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  title_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   title_label_->SetLineHeight(kPlaylistTitleLineHeight);
   title_label_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 
   // Set the `title_label_` background color and the opacity for the initial
   // loading state.
-  title_label_->SetBackground(views::CreateThemedRoundedRectBackground(
+  title_label_->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysOnSurface, kLoadingBackgroundCornerRadius));
   title_label_->SetPaintToLayer();
   title_label_->layer()->SetFillsBoundsOpaquely(false);
@@ -83,10 +84,13 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
 PlaylistView::~PlaylistView() = default;
 
 void PlaylistView::UpdateContents(
+    uint8_t position,
     const FocusModeSoundsController::Playlist& playlist) {
+  CHECK_LT(position, kFocusModePlaylistViewsNum);
   playlist_data_.id = playlist.playlist_id;
   playlist_data_.title = playlist.title;
   playlist_data_.thumbnail = playlist.thumbnail;
+  playlist_data_.list_position = position;
 
   // Remove the loading state styling.
   playlist_image_button_->SetBackground(nullptr);
@@ -98,7 +102,7 @@ void PlaylistView::UpdateContents(
   if (const auto text = base::UTF8ToUTF16(playlist_data_.title);
       !text.empty()) {
     title_label_->SetText(text);
-    title_label_->SetTooltipText(text);
+    title_label_->SetCustomTooltipText(text);
     title_label_->GetViewAccessibility().SetName(text);
     playlist_image_button_->SetTooltipText(text);
     playlist_image_button_->GetViewAccessibility().SetName(

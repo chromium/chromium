@@ -9,15 +9,17 @@
 namespace mojo {
 
 // static
-bool StructTraits<media::mojom::ResolutionBitrateLimitDataView,
-                  media::ResolutionBitrateLimit>::
-    Read(media::mojom::ResolutionBitrateLimitDataView data,
-         media::ResolutionBitrateLimit* out) {
+bool StructTraits<media::mojom::ResolutionRateLimitDataView,
+                  media::ResolutionRateLimit>::
+    Read(media::mojom::ResolutionRateLimitDataView data,
+         media::ResolutionRateLimit* out) {
   if (!data.ReadFrameSize(&out->frame_size))
     return false;
   out->min_start_bitrate_bps = data.min_start_bitrate_bps();
   out->min_bitrate_bps = data.min_bitrate_bps();
   out->max_bitrate_bps = data.max_bitrate_bps();
+  out->max_framerate_numerator = data.max_framerate_numerator();
+  out->max_framerate_denominator = data.max_framerate_denominator();
   return true;
 }
 
@@ -53,8 +55,9 @@ bool StructTraits<
   if (!data.ReadFpsAllocation(&fps_allocation))
     return false;
 
-  if (!data.ReadResolutionBitrateLimits(&out->resolution_bitrate_limits))
+  if (!data.ReadResolutionRateLimits(&out->resolution_rate_limits)) {
     return false;
+  }
 
   return true;
 }

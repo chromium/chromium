@@ -50,6 +50,8 @@ class SequenceManagerImpl;
 }
 }  // namespace sequence_manager
 
+class IOWatcher;
+
 // CurrentThread is a proxy to a subset of Task related APIs bound to the
 // current thread
 //
@@ -216,6 +218,9 @@ class BASE_EXPORT CurrentThread {
       const char* thread_name,
       bool wall_time_based_metrics_enabled_for_testing = false);
 
+  // Returns the IOWatcher instance exposed by this thread, if any.
+  IOWatcher* GetIOWatcher();
+
  protected:
   explicit CurrentThread(
       sequence_manager::internal::SequenceManagerImpl* sequence_manager)
@@ -306,7 +311,8 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
 
 #if BUILDFLAG(IS_WIN)
   // Please see MessagePumpWin for definitions of these methods.
-  HRESULT RegisterIOHandler(HANDLE file, MessagePumpForIO::IOHandler* handler);
+  [[nodiscard]] bool RegisterIOHandler(HANDLE file,
+                                       MessagePumpForIO::IOHandler* handler);
   bool RegisterJobObject(HANDLE job, MessagePumpForIO::IOHandler* handler);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Please see WatchableIOMessagePumpPosix for definition.
@@ -318,7 +324,8 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
                            MessagePumpForIO::FdWatcher* delegate);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD))
+#if BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_IOS) && !BUILDFLAG(CRONET_BUILD) && !BUILDFLAG(IS_IOS_TVOS))
   bool WatchMachReceivePort(
       mach_port_t port,
       MessagePumpForIO::MachPortWatchController* controller,

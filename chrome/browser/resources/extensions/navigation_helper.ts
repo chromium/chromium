@@ -51,7 +51,7 @@ const CANONICAL_PATH_REGEX: RegExp = /(^\/)([\/-\w]+)(\/$)/;
 export class NavigationHelper {
   private nextListenerId_: number = 1;
   private listeners_: Map<number, Listener> = new Map();
-  private previousPage_: PageState;
+  private previousPage_?: PageState;
 
   constructor() {
     this.processRoute_();

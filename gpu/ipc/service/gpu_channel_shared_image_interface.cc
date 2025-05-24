@@ -4,7 +4,6 @@
 
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 
-#include "base/process/memory.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -15,7 +14,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_factory.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/ref_counted_lock.h"
@@ -134,7 +132,6 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
           si_info.debug_label, texture, /*dcomp_texture=*/nullptr,
           std::move(dxgi_shared_handle_state), caps, GL_TEXTURE_EXTERNAL_OES,
           array_slice, /*use_update_subresource1=*/false, is_thread_safe);
-
   if (!backing) {
     return nullptr;
   }
@@ -142,7 +139,6 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
   // Need to clear the backing since the D3D11 Video Decoder will initialize
   // the textures.
   backing->SetCleared();
-
   DCHECK(shared_image_stub_->channel()
              ->gpu_channel_manager()
              ->shared_image_manager());
@@ -166,7 +162,8 @@ bool GpuChannelSharedImageInterface::MakeContextCurrent(bool needs_gl) {
 scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
-    gpu::SurfaceHandle surface_handle) {
+    gpu::SurfaceHandle surface_handle,
+    std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
   {
@@ -246,7 +243,8 @@ scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    gfx::BufferUsage buffer_usage) {
+    gfx::BufferUsage buffer_usage,
+    std::optional<SharedImagePoolId> pool_id) {
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
   auto mailbox = Mailbox::Generate();
   {
@@ -382,43 +380,22 @@ GpuChannelSharedImageInterface::CreateSharedImage(
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox, si_info.meta, GenVerifiedSyncToken(), holder_, gmb_type);
 }
-SharedImageInterface::SharedImageMapping
-GpuChannelSharedImageInterface::CreateSharedImage(
+
+scoped_refptr<ClientSharedImage>
+GpuChannelSharedImageInterface::CreateSharedImageForMLTensor(
+    std::string debug_label,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    gpu::SharedImageUsageSet usage) {
+  NOTREACHED();
+}
+
+scoped_refptr<ClientSharedImage>
+GpuChannelSharedImageInterface::CreateSharedImageForSoftwareCompositor(
     const SharedImageInfo& si_info) {
-  DCHECK(gpu::IsValidClientUsage(si_info.meta.usage));
-  DCHECK(si_info.meta.usage ==
-         gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_WRITE));
-
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN)
-  CHECK(!si_info.meta.format.PrefersExternalSampler());
-#endif
-
-  SharedImageInterface::SharedImageMapping shared_image_mapping;
-  gfx::BufferFormat buffer_format =
-      viz::SinglePlaneSharedImageFormatToBufferFormat(si_info.meta.format);
-  const size_t buffer_size =
-      gfx::BufferSizeForBufferFormat(si_info.meta.size, buffer_format);
-  auto shared_memory_region =
-      base::UnsafeSharedMemoryRegion::Create(buffer_size);
-  if (!shared_memory_region.IsValid()) {
-    DLOG(ERROR) << "base::UnsafeSharedMemoryRegion::Create() for SharedImage "
-                   "with SHARED_IMAGE_USAGE_CPU_WRITE fails!";
-    base::TerminateBecauseOutOfMemory(buffer_size);
-  }
-
-  shared_image_mapping.mapping = shared_memory_region.Map();
-  if (!shared_image_mapping.mapping.IsValid()) {
-    DLOG(ERROR)
-        << "shared_memory_region.Map() for SHARED_IMAGE_USAGE_CPU_WRITE fails!";
-    base::TerminateBecauseOutOfMemory(buffer_size);
-  }
-
+  base::WritableSharedMemoryMapping mapping;
   gfx::GpuMemoryBufferHandle handle;
-  handle.type = gfx::SHARED_MEMORY_BUFFER;
-  handle.offset = 0;
-  handle.stride = static_cast<int32_t>(
-      gfx::RowSizeForBufferFormat(si_info.meta.size.width(), buffer_format, 0));
-  handle.region = std::move(shared_memory_region);
+  CreateSharedMemoryRegionFromSIInfo(si_info, mapping, handle);
 
   auto mailbox = Mailbox::Generate();
   {
@@ -429,11 +406,10 @@ GpuChannelSharedImageInterface::CreateSharedImage(
                     /*sync_token_fences=*/{},
                     MakeSyncToken(next_fence_sync_release_++));
   }
-  shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenVerifiedSyncToken(), holder_,
-      gfx::SHARED_MEMORY_BUFFER);
 
-  return shared_image_mapping;
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
+                                                 GenVerifiedSyncToken(),
+                                                 holder_, std::move(mapping));
 }
 
 void GpuChannelSharedImageInterface::CreateSharedImageWithBufferOnGpuThread(
@@ -464,15 +440,13 @@ GpuChannelSharedImageInterface::CreateSwapChain(
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
     SharedImageUsageSet usage) {
-  NOTREACHED_IN_MIGRATION();
-  return GpuChannelSharedImageInterface::SwapChainSharedImages(nullptr,
-                                                               nullptr);
+  NOTREACHED();
 }
 
 void GpuChannelSharedImageInterface::PresentSwapChain(
     const SyncToken& sync_token,
     const Mailbox& mailbox) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -482,7 +456,7 @@ void GpuChannelSharedImageInterface::RegisterSysmemBufferCollection(
     const viz::SharedImageFormat& format,
     gfx::BufferUsage usage,
     bool register_with_image_pipe) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_FUCHSIA)
 
@@ -575,16 +549,6 @@ void GpuChannelSharedImageInterface::WaitSyncToken(
                   MakeSyncToken(next_fence_sync_release_++));
 }
 
-void GpuChannelSharedImageInterface::Flush() {
-  // No need to flush in this implementation.
-}
-
-scoped_refptr<gfx::NativePixmap>
-GpuChannelSharedImageInterface::GetNativePixmap(const gpu::Mailbox& mailbox) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
-}
-
 void GpuChannelSharedImageInterface::ScheduleGpuTask(
     base::OnceClosure task,
     std::vector<SyncToken> sync_token_fences,
@@ -595,9 +559,8 @@ void GpuChannelSharedImageInterface::ScheduleGpuTask(
 
 scoped_refptr<ClientSharedImage>
 GpuChannelSharedImageInterface::ImportSharedImage(
-    const ExportedSharedImage& exported_shared_image) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+    ExportedSharedImage exported_shared_image) {
+  NOTREACHED();
 }
 
 }  // namespace gpu

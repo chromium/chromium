@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/not_fatal_until.h"
 #include "media/cdm/api/content_decryption_module_ext.h"
 
 namespace media {
@@ -57,7 +58,7 @@ CdmHostFile::CdmHostFile(const base::FilePath& file_path,
     : file_path_(file_path),
       file_(std::move(file)),
       sig_file_(std::move(sig_file)) {
-  DCHECK(!file_path_.empty());
+  CHECK(!file_path_.empty(), base::NotFatalUntil::M140);
 }
 
 }  // namespace media

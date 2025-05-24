@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_PERMISSION_REQUEST_MANAGER_H_
 
 #include "base/containers/circular_deque.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/file_system_access_permission_context.h"
@@ -56,17 +55,17 @@ class FileSystemAccessPermissionRequestManager
 
   struct FileRequestData {
     FileRequestData(
-        const base::FilePath& path,
+        const content::PathInfo& path_info,
         content::FileSystemAccessPermissionContext::HandleType handle_type,
         Access access)
-        : path(path), handle_type(handle_type), access(access) {}
+        : path_info(path_info), handle_type(handle_type), access(access) {}
     ~FileRequestData() = default;
     FileRequestData(FileRequestData&&) = default;
     FileRequestData(const FileRequestData&) = default;
     FileRequestData& operator=(FileRequestData&&) = default;
     FileRequestData& operator=(const FileRequestData&) = default;
 
-    base::FilePath path;
+    content::PathInfo path_info;
     content::FileSystemAccessPermissionContext::HandleType handle_type;
     Access access;
   };

@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <link id="favicon" rel="icon" href="/test.ico" type="image/x-icon"/>
+  </head>
   <body>
     <video src="../tulip2.webm" loop=true />
   </body>
@@ -122,6 +125,27 @@
         video.src = "../tulip2.webm";
         video.play();
       });
+    }
+
+    function setMediaSessionSeekToActionHandler() {
+      navigator.mediaSession.setActionHandler("seekto", (details) => {
+        video.currentTime = details.seekTime;
+        document.title = 'seekto ' + details.seekTime.toString();
+      });
+    }
+
+    // Sets the title to represent current video time, and keeps it updated as
+    // the time changes.
+    function setTitleToVideoCurrentTime() {
+      const setTitle = function() {
+        document.title = 'currentTime ' + video.currentTime;
+      };
+      setTitle();
+      video.addEventListener('timeupdate', setTitle);
+    }
+
+    function updateFaviconSrc(url) {
+      document.getElementById('favicon').setAttribute('href', url);
     }
   </script>
 </html>

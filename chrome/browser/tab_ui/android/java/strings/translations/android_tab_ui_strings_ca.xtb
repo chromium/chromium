@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ca">
+<translation id="1293272072740285747">Conserva aquest grup per afegir-hi pestanyes més tard o suprimeix-lo si ja no el necessites.
+
+Si el suprimeixes, tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="TITLE_OF_GROUP" />" i se suprimirà de tots els dispositius.</translation>
+<translation id="1340839264183302272">Surt del grup</translation>
+<translation id="1419023007528516122">Amb aquesta acció, el grup se suprimirà permanentment del dispositiu</translation>
+<translation id="1501480321619201731">Suprimeix el grup</translation>
+<translation id="2677748264148917807">Surt</translation>
+<translation id="3547352561153509682">Aquesta acció suprimirà el grup de tots els dispositius amb què s'hagi iniciat la sessió a <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Vols desagrupar el grup de pestanyes?</translation>
+<translation id="4139634748112164403">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà permanentment</translation>
+<translation id="4431937619879060901">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els teus dispositius</translation>
+<translation id="4460014764210899310">Desagrupa</translation>
+<translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>
+<translation id="5094423602314093681">Vols suprimir les pestanyes i el grup?</translation>
+<translation id="5647702255748985085">Vols sortir del grup?</translation>
+<translation id="742664698522525515">Vols conservar el grup?</translation>
+<translation id="750886945254958667">Conserva aquest grup per afegir-hi pestanyes més endavant o surt-ne si ja no vols accedir-hi més</translation>
+<translation id="8261506727792406068">Suprimeix</translation>
+<translation id="870736955561925754">Vols tancar la pestanya i suprimir el grup?</translation>
+<translation id="8804742093141782941">Conserva el grup</translation>
+<translation id="9169141410816678175">Tothom perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els dispositius</translation>
+<translation id="9216898458513705996">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Vols suprimir el grup?</translation>
+</translationbundle>

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("system") {
   sources = [
@@ -63,9 +63,11 @@ static_library("system") {
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/profiles",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/policy",
     "//chromeos/ash/components/system",
     "//components/policy/core/common:common_constants",
     "//components/policy/proto",

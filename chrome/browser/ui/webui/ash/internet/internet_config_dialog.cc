@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/internet/internet_config_dialog.h"
 
 #include "ash/public/cpp/network_config_service.h"
@@ -14,7 +9,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -32,6 +26,7 @@
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/chromeos/strings/network/network_element_localized_strings_provider.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -203,9 +198,7 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
   source->AddLocalizedString("title", IDS_SETTINGS_INTERNET_CONFIG);
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kInternetConfigDialogResources,
-                      kInternetConfigDialogResourcesSize),
+      source, kInternetConfigDialogResources,
       IDR_INTERNET_CONFIG_DIALOG_INTERNET_CONFIG_DIALOG_CONTAINER_HTML);
   // Enabling trusted types via trusted_types_util must be done after
   // webui::SetupWebUIDataSource to override the trusted type CSP with correct
@@ -213,7 +206,7 @@ InternetConfigDialogUI::InternetConfigDialogUI(content::WebUI* web_ui)
   ash::EnableTrustedTypesCSP(source);
 }
 
-InternetConfigDialogUI::~InternetConfigDialogUI() {}
+InternetConfigDialogUI::~InternetConfigDialogUI() = default;
 
 void InternetConfigDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::network_config::mojom::CrosNetworkConfig>

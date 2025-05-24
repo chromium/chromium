@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.common.services;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Defines constants containing the fully-qualified names of WebView services.
  *
@@ -11,6 +13,7 @@ package org.chromium.android_webview.common.services;
  * that it is safe to launch a Service just by its name: Service names can never be obfuscated so we
  * can rely on the full name to stay the same.
  */
+@NullMarked
 public class ServiceNames {
     public static final String AW_MINIDUMP_UPLOAD_JOB_SERVICE =
             "org.chromium.android_webview.services.AwMinidumpUploadJobService";

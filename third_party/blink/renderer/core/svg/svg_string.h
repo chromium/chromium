@@ -48,9 +48,6 @@ class SVGString final : public SVGPropertyBase {
   explicit SVGString(const String& value) : value_(value) {}
 
   SVGString* Clone() const { return MakeGarbageCollected<SVGString>(value_); }
-  SVGPropertyBase* CloneForAnimation(const String& value) const override {
-    return MakeGarbageCollected<SVGString>(value);
-  }
 
   String ValueAsString() const override { return value_; }
   SVGParsingError SetValueAsString(const String& value) {

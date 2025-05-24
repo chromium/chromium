@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import <Cocoa/Cocoa.h>
 #include <stddef.h>
 
 #import "base/apple/scoped_objc_class_swizzler.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/time/time.h"
 #include "ui/display/screen.h"
@@ -70,10 +69,12 @@ NSEventType PickMouseEventType(int flags,
                                NSEventType left,
                                NSEventType right,
                                NSEventType other) {
-  if (flags & ui::EF_LEFT_MOUSE_BUTTON)
+  if (flags & ui::EF_LEFT_MOUSE_BUTTON) {
     return left;
-  if (flags & ui::EF_RIGHT_MOUSE_BUTTON)
+  }
+  if (flags & ui::EF_RIGHT_MOUSE_BUTTON) {
     return right;
+  }
   return other;
 }
 
@@ -82,8 +83,9 @@ NSEventType PickMouseEventType(int flags,
 NSEventType EventTypeToNative(ui::EventType ui_event_type,
                               int flags,
                               NSUInteger* modifiers) {
-  if (modifiers)
+  if (modifiers) {
     *modifiers = EventFlagsToModifiers(flags);
+  }
   switch (ui_event_type) {
     case ui::EventType::kKeyPressed:
       return NSEventTypeKeyDown;
@@ -197,12 +199,13 @@ NSEvent* CreateMouseEventInWindow(NSWindow* window,
   NSUInteger click_count = 0;
   if (event_type == ui::EventType::kMousePressed ||
       event_type == ui::EventType::kMouseReleased) {
-    if (flags & ui::EF_IS_TRIPLE_CLICK)
+    if (flags & ui::EF_IS_TRIPLE_CLICK) {
       click_count = 3;
-    else if (flags & ui::EF_IS_DOUBLE_CLICK)
+    } else if (flags & ui::EF_IS_DOUBLE_CLICK) {
       click_count = 2;
-    else
+    } else {
       click_count = 1;
+    }
   }
   NSPoint point = ConvertRootPointToTarget(window, point_in_root);
   NSUInteger modifiers = 0;
@@ -387,8 +390,9 @@ EventGeneratorDelegateMac::EventGeneratorDelegateMac(
   // constructor was used, it should be the actual |target_window|.
   // TODO(tluk) fix use of the API so this doesn't have to be assumed.
   // (crbug.com/1071628)
-  if (!target_window)
+  if (!target_window) {
     target_window = root_window;
+  }
 
   swizzle_pressed_.reset();
   swizzle_location_.reset();
@@ -456,7 +460,7 @@ void EventGeneratorDelegateMac::OnKeyEvent(ui::KeyEvent* event) {
   NSEvent* ns_event = cocoa_test_event_utils::SynthesizeKeyEvent(
       target_window_, event->type() == ui::EventType::kKeyPressed,
       event->key_code(), modifiers,
-      event->is_char() ? event->GetDomKey() : ui::DomKey::NONE);
+      event->is_char() ? event->GetDomKey() : ui::DomKey(ui::DomKey::NONE));
 
   using Target = ui::test::EventGenerator::Target;
   switch (owner_->target()) {
@@ -476,8 +480,9 @@ void EventGeneratorDelegateMac::OnKeyEvent(ui::KeyEvent* event) {
       [target_window_ sendEvent:ns_event];
       break;
     case Target::WIDGET:
-      if ([fake_menu_ performKeyEquivalent:ns_event])
+      if ([fake_menu_ performKeyEquivalent:ns_event]) {
         return;
+      }
 
       EmulateSendEvent(target_window_, ns_event);
       break;
@@ -533,8 +538,9 @@ void EventGeneratorDelegateMac::OnScrollEvent(ui::ScrollEvent* event) {
     in_trackpad_scroll = false;
 
     // Assume a zero time delta means no fling. Just end the event phase.
-    if (event->time_stamp() == last_scroll_timestamp_)
+    if (event->time_stamp() == last_scroll_timestamp_) {
       return;
+    }
 
     // Otherwise, switch phases for the "fling".
     std::swap(event_phase, momentum_phase);
@@ -635,25 +641,30 @@ CreateEventGeneratorDelegateMac(ui::test::EventGenerator* owner,
 // active generator.
 + (NSUInteger)pressedMouseButtons {
   ui::test::EventGenerator* generator = GetActiveGenerator();
-  if (!generator)
+  if (!generator) {
     return [NSEventDonor pressedMouseButtons];  // Call original implementation.
+  }
 
   int flags = generator->flags();
   NSUInteger bitmask = 0;
-  if (flags & ui::EF_LEFT_MOUSE_BUTTON)
+  if (flags & ui::EF_LEFT_MOUSE_BUTTON) {
     bitmask |= 1;
-  if (flags & ui::EF_RIGHT_MOUSE_BUTTON)
+  }
+  if (flags & ui::EF_RIGHT_MOUSE_BUTTON) {
     bitmask |= 1 << 1;
-  if (flags & ui::EF_MIDDLE_MOUSE_BUTTON)
+  }
+  if (flags & ui::EF_MIDDLE_MOUSE_BUTTON) {
     bitmask |= 1 << 2;
+  }
   return bitmask;
 }
 
 // Donate +[NSEvent mouseLocation] by retrieving the current position on screen.
 + (NSPoint)mouseLocation {
   ui::test::EventGenerator* generator = GetActiveGenerator();
-  if (!generator)
+  if (!generator) {
     return [NSEventDonor mouseLocation];  // Call original implementation.
+  }
 
   // The location is the point in the root window which, for desktop widgets, is
   // the widget itself.
@@ -668,8 +679,9 @@ CreateEventGeneratorDelegateMac(ui::test::EventGenerator* owner,
 @implementation NSApplicationDonor
 
 - (NSEvent*)currentEvent {
-  if (g_current_event)
+  if (g_current_event) {
     return g_current_event;
+  }
 
   // Find the original implementation and invoke it.
   return EventGeneratorDelegateMac::instance()->OriginalCurrentEvent(self,

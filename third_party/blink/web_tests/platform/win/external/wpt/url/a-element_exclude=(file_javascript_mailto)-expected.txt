@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 55 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
 [FAIL] Parsing: <a:	 foo.com> against <http://example.org/foo/bar>
@@ -18,6 +18,16 @@ Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://GOO 　goo.com> against <http://other.com/>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
+[FAIL] Parsing: <non-special:opaque  ?hi> against <about:blank>
+  assert_equals: href expected "non-special:opaque %20?hi" but got "non-special:opaque  ?hi"
+[FAIL] Parsing: <non-special:opaque  #hi> against <about:blank>
+  assert_equals: href expected "non-special:opaque %20#hi" but got "non-special:opaque  #hi"
+[FAIL] Parsing: <non-special:opaque 		  	#hi> against <about:blank>
+  assert_equals: href expected "non-special:opaque  %20#hi" but got "non-special:opaque   #hi"
+[FAIL] Parsing: <non-special:opaque 		  #hi> against <about:blank>
+  assert_equals: href expected "non-special:opaque  %20#hi" but got "non-special:opaque   #hi"
+[FAIL] Parsing: <non-special:opaque		  \r #hi> against <about:blank>
+  assert_equals: href expected "non-special:opaque  %20#hi" but got "non-special:opaque   #hi"
 [FAIL] Parsing: <http://a.b.c.xn--pokxncvks> against <about:blank>
   assert_unreached: Expected URL to fail parsing Reached unreachable code
 [FAIL] Parsing: <http://10.0.0.xn--pokxncvks> against <about:blank>
@@ -79,9 +89,9 @@ Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Parsing: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank>
   assert_equals: href expected "wss://!\\"$&'()*+,-.;=_`{}~/" but got "wss://!\\"$&'()%2A+,-.;=_`{}~/"
 [FAIL] Parsing: <foo://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
-  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]^_%60%7B|%7D~" but got "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B%7C%7D~"
+  assert_equals: href expected "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B|%7D~" but got "foo://host/%20!%22$%&'()*+,-./:;%3C=%3E@[\\\\]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <wss://host/ !"$%&'()*+,-./:;<=>@[\\]^_`{|}~> against <about:blank>
-  assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]^_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
+  assert_equals: href expected "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B|%7D~" but got "wss://host/%20!%22$%&'()*+,-./:;%3C=%3E@[/]%5E_%60%7B%7C%7D~"
 [FAIL] Parsing: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\\]^_`{|}~> against <about:blank>
   assert_equals: href expected "foo://host/dir/?%20!%22$%&'()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~" but got "foo://host/dir/?%20!%22$%&%27()*+,-./:;%3C=%3E?@[\\\\]^_`{|}~"
 [FAIL] Parsing: <https://xn--/> against <about:blank>

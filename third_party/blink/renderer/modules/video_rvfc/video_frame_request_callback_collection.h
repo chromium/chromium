@@ -88,7 +88,7 @@ class MODULES_EXPORT VideoFrameRequestCallbackCollection final
 
   bool IsEmpty() const { return !frame_callbacks_.size(); }
 
-  virtual void Trace(Visitor*) const;
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {
     return "VideoFrameRequestCallbackCollection";
   }

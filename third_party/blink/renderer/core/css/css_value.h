@@ -21,6 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_H_
 
+#include <concepts>
+
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -43,6 +45,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   static CSSValue* Create(const Length& value, float zoom);
 
   WTF::String CssText() const;
+  unsigned Hash() const;
 
   bool IsNumericLiteralValue() const {
     return class_type_ == kNumericLiteralClass;
@@ -136,6 +139,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsPaletteMixValue() const { return class_type_ == kPaletteMixClass; }
   bool IsPathValue() const { return class_type_ == kPathClass; }
+  bool IsShapeValue() const { return class_type_ == kShapeClass; }
   bool IsQuadValue() const { return class_type_ == kQuadClass; }
   bool IsRayValue() const { return class_type_ == kRayClass; }
   bool IsRadialGradientValue() const {
@@ -147,9 +151,11 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsConstantGradientValue() const {
     return class_type_ == kConstantGradientClass;
   }
+  bool IsProgressValue() const { return class_type_ == kProgressClass; }
   bool IsReflectValue() const { return class_type_ == kReflectClass; }
   bool IsShadowValue() const { return class_type_ == kShadowClass; }
   bool IsStringValue() const { return class_type_ == kStringClass; }
+  bool IsSuperellipseValue() const { return class_type_ == kSuperellipseClass; }
   bool IsURIValue() const { return class_type_ == kURIClass; }
   bool IsLinearTimingFunctionValue() const {
     return class_type_ == kLinearTimingFunctionClass;
@@ -179,6 +185,9 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsGridIntegerRepeatValue() const {
     return class_type_ == kGridIntegerRepeatClass;
   }
+  bool IsGridRepeatValue() const {
+    return IsGridAutoRepeatValue() || IsGridIntegerRepeatValue();
+  }
   bool IsPendingSubstitutionValue() const {
     return class_type_ == kPendingSubstitutionValueClass;
   }
@@ -204,9 +213,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsLightDarkValuePair() const {
     return class_type_ == kLightDarkValuePairClass;
   }
-  bool IsAppearanceAutoBaseSelectValuePair() const {
-    return class_type_ == kAppearanceAutoBaseSelectValuePairClass;
-  }
 
   bool IsScrollValue() const { return class_type_ == kScrollClass; }
   bool IsViewValue() const { return class_type_ == kViewClass; }
@@ -217,6 +223,14 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   bool IsRelativeColorValue() const {
     return class_type_ == kRelativeColorClass;
   }
+
+  // NOTE: Relative colors can also be unresolved; this is about
+  // the specific case of unresolved absolute colors.
+  bool IsUnresolvedColorValue() const {
+    return class_type_ == kUnresolvedColorClass;
+  }
+
+  bool IsRepeatValue() const { return class_type_ == kRepeatClass; }
 
   bool HasFailedOrCanceledSubresources() const;
   bool MayContainUrl() const;
@@ -235,8 +249,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   }
   bool IsScopedValue() const { return !needs_tree_scope_population_; }
 
-  const CSSValue* UntaintedCopy() const;
-
 #if DCHECK_IS_ON()
   WTF::String ClassTypeToString() const;
 #endif
@@ -254,6 +266,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kIdentifierClass,
     kScopedKeywordClass,
     kColorClass,
+    kUnresolvedColorClass,
     kColorMixClass,
     kCounterClass,
     kQuadClass,
@@ -262,7 +275,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kURIClass,
     kValuePairClass,
     kLightDarkValuePairClass,
-    kAppearanceAutoBaseSelectValuePairClass,
     kScrollClass,
     kViewClass,
     kRatioClass,
@@ -294,6 +306,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kCubicBezierTimingFunctionClass,
     kStepsTimingFunctionClass,
 
+    kProgressClass,
+
     // Other class types.
     kBorderImageSliceClass,
     kDynamicRangeLimitMixClass,
@@ -316,6 +330,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kGridTemplateAreasClass,
     kPaletteMixClass,
     kPathClass,
+    kShapeClass,
     kRayClass,
     kUnparsedDeclarationClass,
     kPendingSubstitutionValueClass,
@@ -335,6 +350,8 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
 
     kRepeatStyleClass,
 
+    kSuperellipseClass,
+
     // List class types must appear after ValueListClass.
     kValueListClass,
     kFunctionClass,
@@ -343,6 +360,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
     kGridAutoRepeatClass,
     kGridIntegerRepeatClass,
     kAxisClass,
+    kRepeatClass,
     // Do not append non-list class types here.
   };
 
@@ -388,9 +406,6 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
   // the functionality).
   uint8_t was_quirky_ : 1 = false;
 
-  // See css_attr_value_tainting.h.
-  uint8_t attr_tainted_ : 1 = false;
-
  private:
   const uint8_t class_type_;  // ClassType
 };
@@ -417,9 +432,8 @@ inline bool CompareCSSValueVector(
 namespace cppgc {
 // Assign CSSValue to be allocated on custom CSSValueSpace.
 template <typename T>
-struct SpaceTrait<
-    T,
-    std::enable_if_t<std::is_base_of<blink::CSSValue, T>::value>> {
+  requires(std::derived_from<T, blink::CSSValue>)
+struct SpaceTrait<T> {
   using Space = blink::CSSValueSpace;
 };
 }  // namespace cppgc

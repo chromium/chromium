@@ -7,10 +7,29 @@
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
+
+PaintPropertyChangeType ComputeFilterChange(
+    const EffectPaintPropertyNode::FilterInfo* a,
+    const EffectPaintPropertyNode::FilterInfo* b,
+    bool is_running_filter_animation_on_compositor) {
+  if (!a && !b) {
+    return PaintPropertyChangeType::kUnchanged;
+  }
+  if (!a || !b || a->output_bounds != b->output_bounds) {
+    return PaintPropertyChangeType::kChangedOnlyValues;
+  }
+  if (a->operations != b->operations) {
+    return is_running_filter_animation_on_compositor
+               ? PaintPropertyChangeType::kChangedOnlyCompositedValues
+               : PaintPropertyChangeType::kChangedOnlyValues;
+  }
+  return PaintPropertyChangeType::kUnchanged;
+}
 
 PaintPropertyChangeType ComputeBackdropFilterChange(
     const EffectPaintPropertyNode::BackdropFilterInfo* a,
@@ -50,17 +69,21 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
     DCHECK(!animation_state.is_running_opacity_animation_on_compositor);
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
-  bool filter_changed = filter != other.filter;
-  if (filter_changed &&
-      !animation_state.is_running_filter_animation_on_compositor) {
+
+  auto filter_changed = ComputeFilterChange(
+      filter_info.get(), other.filter_info.get(),
+      animation_state.is_running_filter_animation_on_compositor);
+  if (filter_changed == PaintPropertyChangeType::kChangedOnlyValues) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
+
   auto backdrop_filter_changed = ComputeBackdropFilterChange(
       backdrop_filter_info.get(), other.backdrop_filter_info.get(),
       animation_state.is_running_backdrop_filter_animation_on_compositor);
   if (backdrop_filter_changed == PaintPropertyChangeType::kChangedOnlyValues) {
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
+
   bool non_reraster_values_changed =
       direct_compositing_reasons != other.direct_compositing_reasons ||
       compositor_element_id != other.compositor_element_id;
@@ -79,7 +102,8 @@ PaintPropertyChangeType EffectPaintPropertyNode::State::ComputeChange(
   if (simple_values_changed)
     return PaintPropertyChangeType::kChangedOnlySimpleValues;
 
-  if (opacity_changed || filter_changed ||
+  if (opacity_changed ||
+      filter_changed != PaintPropertyChangeType::kUnchanged ||
       backdrop_filter_changed != PaintPropertyChangeType::kUnchanged) {
     return PaintPropertyChangeType::kChangedOnlyCompositedValues;
   }
@@ -196,10 +220,15 @@ PaintPropertyChangeType EffectPaintPropertyNode::DirectlyUpdateOpacity(
   return change;
 }
 
-gfx::RectF EffectPaintPropertyNode::MapRect(const gfx::RectF& rect) const {
-  if (state_.filter.IsEmpty())
-    return rect;
-  return state_.filter.MapRect(rect);
+gfx::Rect EffectPaintPropertyNode::MapRect(const gfx::Rect& input_rect) const {
+  if (!state_.filter_info) {
+    return input_rect;
+  }
+  if (RuntimeEnabledFeatures::ReferenceFilterOutputBoundsEnabled() &&
+      state_.filter_info->operations.HasReferenceFilter()) {
+    return state_.filter_info->output_bounds;
+  }
+  return state_.filter_info->operations.MapRect(input_rect);
 }
 
 std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
@@ -207,8 +236,9 @@ std::unique_ptr<JSONObject> EffectPaintPropertyNode::ToJSON() const {
   json->SetString("localTransformSpace",
                   String::Format("%p", state_.local_transform_space.Get()));
   json->SetString("outputClip", String::Format("%p", state_.output_clip.Get()));
-  if (!state_.filter.IsEmpty())
-    json->SetString("filter", state_.filter.ToString());
+  if (state_.filter_info) {
+    json->SetString("filter", state_.filter_info->operations.ToString());
+  }
   if (auto* backdrop_filter = BackdropFilter())
     json->SetString("backdrop_filter", backdrop_filter->ToString());
   if (state_.opacity != 1.0f)

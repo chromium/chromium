@@ -17,13 +17,13 @@ namespace crash_reporter {
 
 class CrashMetricsReporterObserver : public CrashMetricsReporter::Observer {
  public:
-  CrashMetricsReporterObserver() {}
+  CrashMetricsReporterObserver() = default;
 
   CrashMetricsReporterObserver(const CrashMetricsReporterObserver&) = delete;
   CrashMetricsReporterObserver& operator=(const CrashMetricsReporterObserver&) =
       delete;
 
-  ~CrashMetricsReporterObserver() {}
+  ~CrashMetricsReporterObserver() = default;
 
   // CrashMetricsReporter::Observer:
   void OnCrashDumpProcessed(int rph_id,
@@ -59,10 +59,8 @@ class CrashMetricsReporterTest : public testing::Test {
   blink::OomInterventionMetrics InterventionMetrics(bool allocation_failed) {
     blink::OomInterventionMetrics metrics;
     metrics.allocation_failed = allocation_failed;
-    metrics.current_private_footprint_kb = 100;
-    metrics.current_swap_kb = 0;
-    metrics.current_vm_size_kb = 0;
-    metrics.current_blink_usage_kb = 0;
+    metrics.current_available_memory_kb = 100;
+    metrics.current_swap_free_kb = 0;
     return metrics;
   }
 
@@ -196,6 +194,165 @@ TEST_F(CrashMetricsReporterTest, RendererForegroundCrash) {
            CrashMetricsReporter::ProcessedCrashCounts::kRendererCrashAll}),
       crash_dump_observer.recorded_crash_types());
   CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+}
+
+TEST_F(CrashMetricsReporterTest, SpareRendererAvailabilityHistograms) {
+  using SpareRendererAvailabilityWhenKilled =
+      CrashMetricsReporter::SpareRendererAvailabilityWhenKilled;
+  constexpr char kKillSpareRendererAvailabilityIntentionalKillUMAName[] =
+      "Stability.Android.KillSpareRendererAvailability.IntentionalKill";
+  constexpr char kKillSpareRendererAvailabilityOOMUMAName[] =
+      "Stability.Android.KillSpareRendererAvailability.OOM";
+
+  base::HistogramTester histogram_tester;
+
+  // Nothing recorded if the termination is not intentional kill or OOM.
+  {
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info.normal_termination = true;
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectTotalCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName, 0);
+    histogram_tester.ExpectTotalCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                      0);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // Intentional Kill - Spare killed
+  {
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info = ChildExitObserver::TerminationInfo{};
+    term_info.was_killed_intentionally_by_browser = true;
+    term_info.is_spare_renderer = true;
+    term_info.has_spare_renderer = true;
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectBucketCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName,
+        SpareRendererAvailabilityWhenKilled::kKillSpareRenderer, 1);
+    histogram_tester.ExpectTotalCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName, 1);
+    histogram_tester.ExpectTotalCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                      0);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // Intentional Kill - Non-spare killed, spare available
+  {
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info = ChildExitObserver::TerminationInfo{};
+    term_info.was_killed_intentionally_by_browser = true;
+    term_info.is_spare_renderer = false;
+    term_info.has_spare_renderer = true;
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectBucketCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName,
+        SpareRendererAvailabilityWhenKilled::
+            kKillNonSpareRendererWithSpareRender,
+        1);
+    histogram_tester.ExpectTotalCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName, 2);
+    histogram_tester.ExpectTotalCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                      0);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // Intentional Kill - Non-spare killed, No spare available
+  {
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info = ChildExitObserver::TerminationInfo{};
+    term_info.was_killed_intentionally_by_browser = true;
+    term_info.is_spare_renderer = false;
+    term_info.has_spare_renderer = false;
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectBucketCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName,
+        SpareRendererAvailabilityWhenKilled::
+            kKillNonSpareRendererWithoutSpareRenderer,
+        1);
+    histogram_tester.ExpectTotalCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName, 3);
+    histogram_tester.ExpectTotalCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                      0);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // OOM Kill - Non-spare killed, spare available
+  {
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info = ChildExitObserver::TerminationInfo{};
+    term_info.was_killed_intentionally_by_browser = false;
+    term_info.is_spare_renderer = false;
+    term_info.has_spare_renderer = true;
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectBucketCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                       SpareRendererAvailabilityWhenKilled::
+                                           kKillNonSpareRendererWithSpareRender,
+                                       1);
+    histogram_tester.ExpectTotalCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName, 3);
+    histogram_tester.ExpectTotalCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                      1);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // OOM Kill - Spare killed
+  {
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info = ChildExitObserver::TerminationInfo{};
+    term_info.was_killed_intentionally_by_browser = false;
+    term_info.is_spare_renderer = true;
+    term_info.has_spare_renderer = true;
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectBucketCount(
+        kKillSpareRendererAvailabilityOOMUMAName,
+        SpareRendererAvailabilityWhenKilled::kKillSpareRenderer, 1);
+    histogram_tester.ExpectTotalCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName, 3);
+    histogram_tester.ExpectTotalCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                      2);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
+
+  // OOM Kill - Non-spare killed, No spare available
+  {
+    ChildExitObserver::TerminationInfo term_info;
+    CrashMetricsReporterObserver crash_dump_observer;
+    CrashMetricsReporter::GetInstance()->AddObserver(&crash_dump_observer);
+    term_info = ChildExitObserver::TerminationInfo{};
+    term_info.was_killed_intentionally_by_browser = false;
+    term_info.is_spare_renderer = false;
+    term_info.has_spare_renderer = false;
+    CrashMetricsReporter::GetInstance()->ChildProcessExited(term_info);
+    crash_dump_observer.WaitForProcessed();
+    histogram_tester.ExpectBucketCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName,
+        SpareRendererAvailabilityWhenKilled::
+            kKillNonSpareRendererWithoutSpareRenderer,
+        1);
+    histogram_tester.ExpectTotalCount(
+        kKillSpareRendererAvailabilityIntentionalKillUMAName, 3);
+    histogram_tester.ExpectTotalCount(kKillSpareRendererAvailabilityOOMUMAName,
+                                      3);
+    CrashMetricsReporter::GetInstance()->RemoveObserver(&crash_dump_observer);
+  }
 }
 
 }  // namespace crash_reporter

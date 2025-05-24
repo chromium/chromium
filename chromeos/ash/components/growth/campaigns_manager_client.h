@@ -57,6 +57,9 @@ class CampaignsManagerClient {
   // True if the device is feature aware device.
   virtual bool IsFeatureAwareDevice() const = 0;
 
+  // True if the app icon is available on shelf.
+  virtual bool IsAppIconOnShelf(const std::string& app_id) const = 0;
+
   // Returns application locale.
   virtual const std::string& GetApplicationLocale() const = 0;
 
@@ -90,6 +93,8 @@ class CampaignsManagerClient {
       const std::map<std::string, std::string>& params) = 0;
   // Returns the IdentityManager for the active user profile.
   virtual signin::IdentityManager* GetIdentityManager() const = 0;
+  virtual void RecordImpressionEvents(int campaign_id,
+                                      std::optional<int> group_id) = 0;
 };
 
 }  // namespace growth

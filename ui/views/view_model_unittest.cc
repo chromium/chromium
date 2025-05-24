@@ -18,8 +18,9 @@ namespace {
 std::string BoundsString(const ViewModel& model) {
   std::string result;
   for (size_t i = 0; i < model.view_size(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += " ";
+    }
     result += base::NumberToString(model.ideal_bounds(i).x());
   }
   return result;
@@ -29,8 +30,9 @@ std::string BoundsString(const ViewModel& model) {
 std::string ViewIDsString(const ViewModel& model) {
   std::string result;
   for (size_t i = 0; i < model.view_size(); ++i) {
-    if (i != 0)
+    if (i != 0) {
       result += " ";
+    }
     result += base::NumberToString(model.view_at(i)->GetID());
   }
   return result;

@@ -1,0 +1,89 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("download") {
+  sources = [
+    "bubble/download_bubble_contents_view.cc",
+    "bubble/download_bubble_contents_view.h",
+    "bubble/download_bubble_navigation_handler.h",
+    "bubble/download_bubble_partial_view.cc",
+    "bubble/download_bubble_partial_view.h",
+    "bubble/download_bubble_password_prompt_view.cc",
+    "bubble/download_bubble_password_prompt_view.h",
+    "bubble/download_bubble_primary_view.cc",
+    "bubble/download_bubble_primary_view.h",
+    "bubble/download_bubble_row_list_view.cc",
+    "bubble/download_bubble_row_list_view.h",
+    "bubble/download_bubble_row_view.cc",
+    "bubble/download_bubble_row_view.h",
+    "bubble/download_bubble_security_view.cc",
+    "bubble/download_bubble_security_view.h",
+    "bubble/download_bubble_started_animation_views.cc",
+    "bubble/download_bubble_started_animation_views.h",
+    "bubble/download_dialog_view.cc",
+    "bubble/download_dialog_view.h",
+    "bubble/download_toolbar_ui_controller.cc",
+    "bubble/download_toolbar_ui_controller.h",
+    "download_danger_prompt_views.cc",
+    "download_in_progress_dialog_view.cc",
+    "download_in_progress_dialog_view.h",
+    "download_item_view.cc",
+    "download_item_view.h",
+    "download_shelf_context_menu_view.cc",
+    "download_shelf_context_menu_view.h",
+    "download_shelf_started_animation_views.cc",
+    "download_shelf_started_animation_views.h",
+    "download_shelf_view.cc",
+    "download_shelf_view.h",
+    "download_started_animation.cc",
+    "download_started_animation_views.cc",
+    "download_started_animation_views.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/download",
+    "//components/download/public/common:public",
+    "//components/offline_items_collection/core",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/gfx/animation",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+  deps = [
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles:profile_util",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/safe_browsing:safe_browsing",
+    "//chrome/browser/themes:themes",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/hats:hats",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/views/frame:immersive_mode_controller",
+    "//components/autofill/content/browser:browser",
+    "//components/constrained_window:constrained_window",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_policy_handler",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//ui/strings:ui_strings_grit",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/kiosk" ]
+  }
+}

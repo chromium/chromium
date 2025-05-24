@@ -5,14 +5,14 @@
 
 import json
 import os
-from typing import Union
 import unittest
 from unittest import mock
 
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
+
 from gpu_tests import constants
 from gpu_tests import overlay_support
-
-from pyfakefs import fake_filesystem_unittest  # pylint:disable=import-error
 
 rotation = overlay_support.VideoRotation
 
@@ -655,8 +655,7 @@ class GpuOverlayConfigUnittest(unittest.TestCase):
     self.assertNotEqual(config, other)
 
 
-def _createMockGpu(vendor: Union[constants.GpuVendor, int],
-                   device: int) -> mock.Mock:
+def _createMockGpu(vendor: constants.GpuVendor | int, device: int) -> mock.Mock:
   gpu = mock.Mock()
   gpu.vendor_id = vendor
   gpu.device_id = device

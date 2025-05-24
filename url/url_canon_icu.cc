@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/memory/stack_allocated.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "third_party/icu/source/common/unicode/ucnv_cb.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -89,8 +90,7 @@ ICUCharsetConverter::ICUCharsetConverter(UConverter* converter)
 
 ICUCharsetConverter::~ICUCharsetConverter() = default;
 
-void ICUCharsetConverter::ConvertFromUTF16(const char16_t* input,
-                                           int input_len,
+void ICUCharsetConverter::ConvertFromUTF16(std::u16string_view input,
                                            CanonOutput* output) {
   // Install our error handler. It will be called for character that can not
   // be represented in the destination character set.
@@ -103,8 +103,9 @@ void ICUCharsetConverter::ConvertFromUTF16(const char16_t* input,
   do {
     UErrorCode err = U_ZERO_ERROR;
     char* dest = &output->data()[begin_offset];
-    int required_capacity = ucnv_fromUChars(converter_, dest, dest_capacity,
-                                            input, input_len, &err);
+    int required_capacity =
+        ucnv_fromUChars(converter_, dest, dest_capacity, input.data(),
+                        base::checked_cast<int32_t>(input.size()), &err);
     if (err != U_BUFFER_OVERFLOW_ERROR) {
       output->set_length(begin_offset + required_capacity);
       return;

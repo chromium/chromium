@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_transport.h"
 
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -68,14 +63,14 @@ void RTCRtpTransport::createProcessor(ScriptState* script_state,
                                       DedicatedWorker* worker,
                                       const ScriptValue& options,
                                       ExceptionState& exception_state) {
-  HeapVector<ScriptValue> transfer;
-  createProcessor(script_state, worker, options, transfer, exception_state);
+  createProcessor(script_state, worker, options, /* transfer=*/{},
+                  exception_state);
 }
 
 void RTCRtpTransport::createProcessor(ScriptState* script_state,
                                       DedicatedWorker* worker,
                                       const ScriptValue& options,
-                                      HeapVector<ScriptValue>& transfer,
+                                      HeapVector<ScriptObject> transfer,
                                       ExceptionState& exception_state) {
   worker->PostCustomEvent(
       TaskType::kInternalMediaRealTime, script_state,
@@ -83,7 +78,7 @@ void RTCRtpTransport::createProcessor(ScriptState* script_state,
           &CreateEvent, MakeCrossThreadWeakHandle(this),
           ExecutionContext::From(script_state)
               ->GetTaskRunner(TaskType::kInternalMediaRealTime)),
-      CrossThreadFunction<Event*(ScriptState*)>(), options, transfer,
+      CrossThreadFunction<Event*(ScriptState*)>(), options, std::move(transfer),
       exception_state);
 }
 

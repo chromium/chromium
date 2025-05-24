@@ -16,7 +16,7 @@
 //
 // Must be in sync with PushNotificationClientId enum in
 // tools/metrics/histograms/metadata/ios/enums.xml.
-// LINT.IfChange
+// LINT.IfChange(PushNotificationClientId)
 enum class PushNotificationClientId {
   kCommerce = 1,
   kContent = 2,
@@ -24,8 +24,16 @@ enum class PushNotificationClientId {
   kSports = 4,
   kSafetyCheck = 5,
   kSendTab = 6,
-  kMaxValue = kSendTab,
+  kReminders = 7,
+  kMaxValue = kReminders,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:PushNotificationClientId)
+
+// Specifies whether a push notification client (via PushNotificationClientId)
+// operates at the application level or is tied to a specific user Profile.
+enum class PushNotificationClientScope {
+  kAppWide,
+  kPerProfile,
+};
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_CLIENT_ID_H_

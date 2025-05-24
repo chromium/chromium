@@ -4,15 +4,16 @@
 
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import './number_settings_section.js';
-import './print_preview_shared.css.js';
 
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CopiesCapability} from '../data/cdd.js';
 
-import {getTemplate} from './copies_settings.html.js';
+import {getCss} from './copies_settings.css.js';
+import {getHtml} from './copies_settings.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 /**
@@ -27,7 +28,7 @@ export interface PrintPreviewCopiesSettingsElement {
   };
 }
 
-const PrintPreviewCopiesSettingsElementBase = SettingsMixin(PolymerElement);
+const PrintPreviewCopiesSettingsElementBase = SettingsMixin(CrLitElement);
 
 export class PrintPreviewCopiesSettingsElement extends
     PrintPreviewCopiesSettingsElementBase {
@@ -35,39 +36,63 @@ export class PrintPreviewCopiesSettingsElement extends
     return 'print-preview-copies-settings';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      capability: Object,
-
-      copiesMax_: {
-        type: Number,
-        computed: 'computeCopiesMax_(capability)',
-      },
-
-      currentValue_: {
-        type: String,
-        observer: 'onInputChanged_',
-      },
-
-      inputValid_: Boolean,
-
-      disabled: Boolean,
+      capability: {type: Object},
+      copiesMax_: {type: Number},
+      currentValue_: {type: String},
+      inputValid_: {type: Boolean},
+      disabled: {type: Boolean},
+      collateAvailable_: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return ['onSettingsChanged_(settings.copies.value, settings.collate.*)'];
+  accessor capability: CopiesCapability|null = null;
+  accessor disabled: boolean = false;
+  protected accessor copiesMax_: number = DEFAULT_MAX_COPIES;
+  protected accessor currentValue_: string = '';
+  protected accessor inputValid_: boolean = false;
+  private accessor collateAvailable_: boolean = false;
+
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver('copies.value', () => this.onSettingsChanged_());
+    this.addSettingObserver('collate.*', () => this.onSettingsChanged_());
+    this.onSettingsChanged_();
+
+    this.addSettingObserver('collate.available', (value: boolean) => {
+      this.collateAvailable_ = value;
+    });
+    this.collateAvailable_ = this.getSetting('collate').available;
   }
 
-  capability: CopiesCapability;
-  disabled: boolean;
-  private copiesMax_: number;
-  private currentValue_: string;
-  private inputValid_: boolean;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('capability')) {
+      this.copiesMax_ = this.computeCopiesMax_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('currentValue_')) {
+      this.onInputChanged_();
+    }
+  }
 
   /**
    * @return The maximum number of copies this printer supports.
@@ -80,7 +105,7 @@ export class PrintPreviewCopiesSettingsElement extends
   /**
    * @return The message to show as hint.
    */
-  private getHintMessage_(): string {
+  protected getHintMessage_(): string {
     return loadTimeData.getStringF('copiesInstruction', this.copiesMax_);
   }
 
@@ -112,15 +137,25 @@ export class PrintPreviewCopiesSettingsElement extends
   /**
    * @return Whether collate checkbox should be hidden.
    */
-  private collateHidden_(): boolean {
-    return !this.getSetting('collate').available || !this.inputValid_ ||
+  protected collateHidden_(): boolean {
+    return !this.collateAvailable_ || !this.inputValid_ ||
         this.currentValue_ === '' || parseInt(this.currentValue_, 10) === 1;
   }
 
-  private onCollateChange_() {
+  protected onCollateChange_() {
     this.setSetting('collate', this.$.collate.checked);
   }
+
+  protected onCurrentValueChanged_(e: CustomEvent<{value: string}>) {
+    this.currentValue_ = e.detail.value;
+  }
+
+  protected onInputValidChanged_(e: CustomEvent<{value: boolean}>) {
+    this.inputValid_ = e.detail.value;
+  }
 }
+
+export type CopiesSettingsElement = PrintPreviewCopiesSettingsElement;
 
 declare global {
   interface HTMLElementTagNameMap {

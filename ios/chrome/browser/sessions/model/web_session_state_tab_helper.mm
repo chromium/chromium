@@ -79,21 +79,22 @@ WebSessionStateTabHelper::WebSessionStateTabHelper(web::WebState* web_state)
 
 WebSessionStateTabHelper::~WebSessionStateTabHelper() = default;
 
-ChromeBrowserState* WebSessionStateTabHelper::GetBrowserState() {
-  return ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+ProfileIOS* WebSessionStateTabHelper::GetProfile() {
+  return ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
 }
 
 NSData* WebSessionStateTabHelper::FetchSessionFromCache() {
   WebSessionStateCache* cache =
-      WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
+      WebSessionStateCacheFactory::GetForProfile(GetProfile());
   NSData* data =
       [cache sessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()];
   return data.length ? data : nil;
 }
 
 void WebSessionStateTabHelper::SaveSessionStateIfStale() {
-  if (!stale_)
+  if (!stale_) {
     return;
+  }
   SaveSessionState();
 }
 
@@ -104,15 +105,14 @@ void WebSessionStateTabHelper::SaveSessionState() {
   if (data) {
     int64_t size_kb = data.length / 1024;
     WebSessionStateCache* cache =
-        WebSessionStateCacheFactory::GetForBrowserState(GetBrowserState());
+        WebSessionStateCacheFactory::GetForProfile(GetProfile());
     // To prevent very large session states from using too much space, don't
     // persist any `data` larger than 5MB.  If this happens, remove the now
     // stale session state data.
     if (size_kb > kMaxSessionState) {
       [cache
           removeSessionStateDataForWebStateID:web_state_->GetUniqueIdentifier()
-                                    incognito:GetBrowserState()
-                                                  ->IsOffTheRecord()];
+                                    incognito:GetProfile()->IsOffTheRecord()];
       return;
     }
 
@@ -142,8 +142,9 @@ void WebSessionStateTabHelper::DidFinishNavigation(
     web::NavigationContext* navigation_context) {
   // Don't record navigations that result in downloads, since these will be
   // discarded and there's no simple callback when discarded.
-  if (navigation_context->IsDownload())
+  if (navigation_context->IsDownload()) {
     return;
+  }
 
   MarkStale();
 }
@@ -151,8 +152,9 @@ void WebSessionStateTabHelper::DidFinishNavigation(
 void WebSessionStateTabHelper::WebFrameBecameAvailable(
     web::WebFramesManager* web_frames_manager,
     web::WebFrame* web_frame) {
-  if (web_frame->IsMainFrame())
+  if (web_frame->IsMainFrame()) {
     return;
+  }
 
   // -WebFrameBecameAvailable is called much more often than navigations, so
   // check if either `item_count_` or `last_committed_item_index_` has changed
@@ -196,5 +198,3 @@ void WebSessionStateTabHelper::MarkStale() {
 
   stale_ = true;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(WebSessionStateTabHelper)

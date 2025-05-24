@@ -14,7 +14,6 @@
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "url/gurl.h"
 
 class Profile;
 
@@ -30,8 +29,6 @@ class RealTimeUrlLookupServiceBase;
 }  // namespace safe_browsing
 
 namespace enterprise_data_protection {
-
-bool IsDataProtectionEnabled(Profile* profile);
 
 // Monitors a navigation in a WebContents to determine if data protection
 // settings should be enabled or not.
@@ -84,12 +81,15 @@ class DataProtectionNavigationObserver
       Callback callback);
 
   // Checks the `web_contents` url for enabled data protection settings. Note
-  // that `callback` is always invoked but it be called synchronously or
+  // that `callback` is always invoked but may be called synchronously or
   // asynchronously depending on whether the state is cached in
   // RealTimeUrlLookupService or not.
-  static void GetDataProtectionSettings(Profile* profile,
-                                        content::WebContents* web_contents,
-                                        Callback callback);
+  // This function is public to be called by tests and should no be called by
+  // non-test code other that `DataProtectionNavigationObserver` and
+  // `DataProtectionNavigationController`.
+  static void ApplyDataProtectionSettings(Profile* profile,
+                                          content::WebContents* web_contents,
+                                          Callback callback);
 
   // public for testing
   DataProtectionNavigationObserver(

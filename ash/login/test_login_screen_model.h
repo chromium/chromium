@@ -74,7 +74,6 @@ class ASH_EXPORT TestLoginScreenModel : public ash::LoginScreenModel {
       const std::vector<ash::InputMethodItem>& keyboard_layouts) override;
   void SetPublicSessionShowFullManagementDisclosure(
       bool show_full_management_disclosure) override;
-  void HandleFocusLeavingLockScreenApps(bool reverse) override;
   void NotifyOobeDialogState(ash::OobeDialogState state) override;
   void NotifyFocusPod(const AccountId& account_id) override;
 };

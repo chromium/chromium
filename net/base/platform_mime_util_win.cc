@@ -28,7 +28,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
 }
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     base::FilePath::StringType* ext) const {
   base::FilePath::StringType key =
       L"MIME\\Database\\Content Type\\" + base::UTF8ToWide(mime_type);
@@ -44,7 +44,7 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
 }
 
 void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     std::unordered_set<base::FilePath::StringType>* extensions) const {
   // Multiple extensions could have the given mime type specified as their types
   // in their 'HKCR\.<extension>\Content Type' keys. Iterating all the HKCR

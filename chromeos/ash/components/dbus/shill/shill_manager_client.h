@@ -50,12 +50,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
 
   struct CreateP2PGroupParameter {
     CreateP2PGroupParameter(
-        const std::optional<std::string> ssid,
-        const std::optional<std::string> passphrase,
+        std::optional<std::string> ssid,
+        std::optional<std::string> passphrase,
         const std::optional<uint32_t> frequency,
         const std::optional<shill::WiFiInterfacePriority> priority);
-    CreateP2PGroupParameter(const std::optional<std::string> ssid,
-                            const std::optional<std::string> passphrase);
+    CreateP2PGroupParameter(std::optional<std::string> ssid,
+                            std::optional<std::string> passphrase);
 
     ~CreateP2PGroupParameter();
 
@@ -180,6 +180,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
     // Makes ConfigureService succeed, fail, or timeout.
     virtual void SetSimulateConfigurationResult(
         FakeShillSimulatedResult configuration_result) = 0;
+
+    // Defines the error message which will be returned if configuration result
+    // is set to failure with `SetSimulateConfigurationResult`.
+    virtual void SetSimulateConfigurationError(
+        std::string_view error_name,
+        std::string_view error_message) = 0;
 
     // Makes SetTetheringEnabled succeed, fail, or timeout and the enable
     // tethering error string when it failed.

@@ -13,16 +13,12 @@
 
   // Pending
   const resultPending = await dp1.Preload.oncePrerenderStatusUpdated();
-  testRunner.log(resultPending, '', ['loaderId', 'sessionId']);
+  testRunner.log(resultPending);
 
   // Running
-  testRunner.log(
-      await dp1.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp1.Preload.oncePrerenderStatusUpdated());
   // Ready
-  testRunner.log(
-      await dp1.Preload.oncePrerenderStatusUpdated(), '',
-      ['loaderId', 'sessionId']);
+  testRunner.log(await dp1.Preload.oncePrerenderStatusUpdated());
 
   const session2 = childTargetManager.findAttachedSessionPrerender();
   const dp2 = session2.protocol;
@@ -33,7 +29,7 @@
 
   // Success
   const resultSuccess = await dp2.Preload.oncePrerenderStatusUpdated();
-  testRunner.log(resultSuccess, '', ['loaderId', 'sessionId']);
+  testRunner.log(resultSuccess);
 
   if (resultPending.params.key.loaderId !== resultSuccess.params.key.loaderId) {
     testRunner.log('loaderId should remain consistent.');

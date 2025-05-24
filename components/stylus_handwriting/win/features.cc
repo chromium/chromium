@@ -11,8 +11,22 @@ BASE_FEATURE(kStylusHandwritingWin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsStylusHandwritingWinEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::stylus_handwriting::win::kStylusHandwritingWin);
+  return base::FeatureList::IsEnabled(kStylusHandwritingWin);
+}
+
+BASE_FEATURE(kProximateBoundsCollection,
+             "ProximateBoundsCollection",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kProximateBoundsCollectionHalfLimit,
+                   &kProximateBoundsCollection,
+                   "half_limit",
+                   100);
+
+uint32_t ProximateBoundsCollectionHalfLimit() {
+  return static_cast<uint32_t>(
+      std::abs(kProximateBoundsCollectionHalfLimit.Get()));
 }
 
 }  // namespace stylus_handwriting::win

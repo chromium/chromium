@@ -38,7 +38,7 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
     test::ThemeServiceChangedWaiter waiter_;
   };
 
-  OmniboxPopupViewViewsTest() {}
+  OmniboxPopupViewViewsTest() = default;
 
   OmniboxPopupViewViewsTest(const OmniboxPopupViewViewsTest&) = delete;
   OmniboxPopupViewViewsTest& operator=(const OmniboxPopupViewViewsTest&) =
@@ -46,6 +46,9 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
 
   views::Widget* CreatePopupForTestQuery();
   views::Widget* GetPopupWidget() { return popup_view()->GetWidget(); }
+  OmniboxHeaderView* GetHeaderViewAt(int index) {
+    return popup_view()->header_view_at(index);
+  }
   OmniboxResultView* GetResultViewAt(int index) {
     return popup_view()->result_view_at(index);
   }
@@ -101,6 +104,16 @@ class OmniboxPopupViewViewsTest : public InProcessBrowserTest {
 
  private:
   OmniboxTriggeredFeatureService triggered_feature_service_;
+};
+
+class OmniboxPopupSuggestionGroupHeadersTest
+    : public OmniboxPopupViewViewsTest {
+ public:
+  OmniboxPopupSuggestionGroupHeadersTest() = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      omnibox::kHideSuggestionGroupHeaders};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_TEST_H_

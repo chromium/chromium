@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//components/safe_browsing/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 if (is_android && safe_browsing_mode == 2) {
   # Generate the android real time allowlist binary proto from the ascii proto.
@@ -15,9 +16,8 @@ if (is_android && safe_browsing_mode == 2) {
     input_filename = "real_time_url_allowlist.asciipb"
     output_dir = target_gen_dir
     output_basename = "real_time_url_checks_allowlist.pb"
-    python_path_root = "$root_out_dir/pyproto"
     python_path_safe_browsing =
-        "$python_path_root/components/safe_browsing/android/proto"
+        "$proto_python_root/components/safe_browsing/android/proto"
 
     inputs = [ input_filename ]
 
@@ -37,7 +37,7 @@ if (is_android && safe_browsing_mode == 2) {
       "-o",
       output_basename,
       "-p",
-      rebase_path(python_path_root, root_build_dir),
+      rebase_path(proto_python_root, root_build_dir),
       "-p",
       rebase_path(python_path_safe_browsing, root_build_dir),
     ]
@@ -51,9 +51,8 @@ if (is_android && safe_browsing_mode == 2) {
     input_filename = "real_time_url_allowlist.asciipb"
     output_dir = "$target_gen_dir/allowlist"
     output_basename = "real_time_url_checks_allowlist.pb"
-    python_path_root = "$root_build_dir/pyproto"
     python_path_safe_browsing =
-        "$python_path_root/components/safe_browsing/android/proto"
+        "$proto_python_root/components/safe_browsing/android/proto"
 
     inputs = [ input_filename ]
 
@@ -74,7 +73,7 @@ if (is_android && safe_browsing_mode == 2) {
       "-o",
       output_basename,
       "-p",
-      rebase_path(python_path_root, root_build_dir),
+      rebase_path(proto_python_root, root_build_dir),
       "-p",
       rebase_path(python_path_safe_browsing, root_build_dir),
     ]

@@ -37,6 +37,7 @@ char const kVideoPlaying[] = "avplay";
 char const kIncognitoTabCount[] = "OTRTabs";
 char const kRegularTabCount[] = "regTabs";
 char const kInactiveTabCount[] = "inactiveTabs";
+char const kBookmarkNodesCount[] = "bookmarks";
 char const kConnectedScenes[] = "scenes";
 char const kForegroundScenes[] = "fgScenes";
 char const kDestroyingAndRebuildingIncognitoBrowserState[] =
@@ -209,6 +210,11 @@ void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress) {
     [[CrashReportUserApplicationState sharedInstance]
         removeValue:kDestroyingAndRebuildingIncognitoBrowserState];
   }
+}
+
+void SetBookmarkNodesCount(int bookmarks_count, ProfileIOS* profile) {
+  [[CrashReportUserApplicationState sharedInstance] setValue:kBookmarkNodesCount
+                                                   withValue:bookmarks_count];
 }
 
 void SetGridToVisibleTabAnimation(NSString* to_view_controller,

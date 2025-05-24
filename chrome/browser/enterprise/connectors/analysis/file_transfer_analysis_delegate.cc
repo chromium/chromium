@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -66,7 +67,7 @@ class GetFileURLsDelegate final : public storage::RecursiveOperationDelegate {
   ~GetFileURLsDelegate() override = default;
 
   // RecursiveOperationDelegate:
-  void Run() override { NOTREACHED_IN_MIGRATION(); }
+  void Run() override { NOTREACHED(); }
   void RunRecursively() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     StartRecursiveOperation(root_,
@@ -250,7 +251,7 @@ FileTransferAnalysisDelegate::Create(
 }
 
 // static
-void FileTransferAnalysisDelegate::SetFactorForTesting(
+void FileTransferAnalysisDelegate::SetFactoryForTesting(
     FileTransferAnalysisDelegateFactory factory) {
   GetFactoryStorage() = factory;
 }
@@ -425,6 +426,53 @@ FileTransferAnalysisDelegate::GetFilesRequestHandlerForTesting() {
   return request_handler_.get();
 }
 
+const AnalysisSettings& FileTransferAnalysisDelegate::settings() const {
+  return settings_;
+}
+
+signin::IdentityManager* FileTransferAnalysisDelegate::identity_manager() const {
+  return IdentityManagerFactory::GetForProfile(profile_);
+}
+
+int FileTransferAnalysisDelegate::user_action_requests_count() const {
+  return scanning_urls_.size();
+}
+
+std::string FileTransferAnalysisDelegate::tab_title() const {
+  return "";
+}
+
+std::string FileTransferAnalysisDelegate::user_action_id() const {
+  return "";
+}
+
+std::string FileTransferAnalysisDelegate::email() const {
+  return GetProfileEmail(profile_);
+}
+
+std::string FileTransferAnalysisDelegate::url() const {
+  return "";
+}
+
+const GURL& FileTransferAnalysisDelegate::tab_url() const {
+  return GURL::EmptyGURL();
+}
+
+ContentAnalysisRequest::Reason FileTransferAnalysisDelegate::reason() const {
+  return ContentAnalysisRequest::UNKNOWN;
+}
+
+google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+FileTransferAnalysisDelegate::referrer_chain() const {
+  return google::protobuf::RepeatedPtrField<
+      ::safe_browsing::ReferrerChainEntry>();
+}
+
+google::protobuf::RepeatedPtrField<std::string>
+FileTransferAnalysisDelegate::frame_url_chain() const {
+  return {};
+}
+
 void FileTransferAnalysisDelegate::OnGotFileURLs(
     std::vector<storage::FileSystemURL> scanning_urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -441,17 +489,15 @@ void FileTransferAnalysisDelegate::OnGotFileURLs(
   }
 
   request_handler_ = FilesRequestHandler::Create(
+      this,
       safe_browsing::BinaryUploadService::GetForProfile(profile_, settings_),
-      profile_, settings_, GURL{},
+      profile_, GURL{},
       SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
           profile_, source_url_.path()),
       SourceDestinationMatcherAsh::GetVolumeDescriptionFromPath(
           profile_, destination_url_.path()),
-      // User action id and tab title are only needed for local content
-      // analysis, leave them empty here.
-      /*user_action_id=*/std::string(), /*tab_title=*/std::string(),
       /*content_transfer_method=*/std::string(), access_point_,
-      ContentAnalysisRequest::UNKNOWN, std::move(paths),
+      std::move(paths),
       base::BindOnce(&FileTransferAnalysisDelegate::ContentAnalysisCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
   request_handler_->UploadData();

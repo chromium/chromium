@@ -1,0 +1,155 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "icu_experimental_data"
+  epoch = "0.3"
+  crate_type = "rlib"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/lib.rs"
+  sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/lib.rs" ]
+  inputs = [
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_displayname_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_displayname_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_essentials_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_essentials_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_extended_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_extended_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_patterns_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/currency_patterns_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/digital_duration_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/digital_duration_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/language_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/language_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/locale_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/locale_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_compact_decimal_format_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_compact_decimal_format_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_day_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_day_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_hour_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_hour_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_minute_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_minute_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_month_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_month_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_quarter_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_quarter_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_second_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_second_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_week_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_week_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_year_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/long_year_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_day_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_day_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_hour_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_hour_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_minute_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_minute_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_month_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_month_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_quarter_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_quarter_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_second_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_second_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_week_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_week_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_year_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/narrow_year_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/percent_essentials_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/percent_essentials_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/person_names_format_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/person_names_format_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/region_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/region_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/script_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/script_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_compact_decimal_format_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_compact_decimal_format_data_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_currency_compact_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_currency_compact_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_day_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_day_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_hour_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_hour_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_minute_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_minute_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_month_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_month_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_quarter_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_quarter_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_second_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_second_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_week_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_week_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_year_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/short_year_relative_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/transliterator_rules_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/transliterator_rules_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_display_name_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_display_name_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_essentials_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_essentials_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_info_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_info_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_trie_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/units_trie_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/variant_display_names_v1.rs.data",
+    "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/src/../data/variant_display_names_v1.rs.data",
+  ]
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "The ICU4X Project Developers"
+  cargo_pkg_name = "icu_experimental_data"
+  cargo_pkg_description = "Data for the icu_experimental crate"
+  cargo_pkg_version = "0.3.0"
+
+  allow_unsafe = false
+
+  build_root = "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/build.rs"
+  build_sources = [ "//third_party/rust/chromium_crates_io/vendor/icu_experimental_data-v0_3/build.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

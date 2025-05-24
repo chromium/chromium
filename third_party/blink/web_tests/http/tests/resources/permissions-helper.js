@@ -25,8 +25,6 @@ var PermissionsHelper = (function() {
         return {name: "geolocation"};
       case "background-sync":
         return {name: "background-sync"};
-      case "accessibility-events":
-        return {name: "accessibility-events"};
       case "clipboard-read-write":
         return {name: "clipboard-write", allowWithoutSanitization: true};
       case "clipboard-sanitized-write":

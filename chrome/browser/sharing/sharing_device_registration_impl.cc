@@ -53,45 +53,44 @@ SharingDeviceRegistrationImpl::~SharingDeviceRegistrationImpl() = default;
 
 void SharingDeviceRegistrationImpl::RegisterDevice(
     RegistrationCallback callback) {
-  std::optional<std::string> authorized_entity = GetAuthorizationEntity();
-  if (!authorized_entity) {
-    OnVapidTargetInfoRetrieved(std::move(callback),
-                               /*authorized_entity=*/std::nullopt,
-                               SharingDeviceRegistrationResult::kSuccess,
-                               /*vapid_target_info=*/std::nullopt);
+  if (!CanSendViaSenderID(sync_service_)) {
+    OnSharingTargetInfoRetrieved(std::move(callback),
+                                 SharingDeviceRegistrationResult::kSuccess,
+                                 /*sharing_target_info=*/std::nullopt);
     return;
   }
 
+  // Attempt to register using sender ID when enabled.
   RetrieveTargetInfo(
-      *authorized_entity,
-      base::BindOnce(&SharingDeviceRegistrationImpl::OnVapidTargetInfoRetrieved,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     *authorized_entity));
+      kSharingSenderID,
+      base::BindOnce(
+          &SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SharingDeviceRegistrationImpl::RetrieveTargetInfo(
-    const std::string& authorized_entity,
+    const std::string& sender_id,
     TargetInfoCallback callback) {
   instance_id_driver_->GetInstanceID(kSharingFCMAppID)
       ->GetToken(
-          authorized_entity, instance_id::kGCMScope,
+          sender_id, instance_id::kGCMScope,
           /*time_to_live=*/base::TimeDelta(),
           /*flags=*/{InstanceID::Flags::kBypassScheduler},
           base::BindOnce(&SharingDeviceRegistrationImpl::OnFCMTokenReceived,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                         authorized_entity));
+                         sender_id));
 }
 
 void SharingDeviceRegistrationImpl::OnFCMTokenReceived(
     TargetInfoCallback callback,
-    const std::string& authorized_entity,
+    const std::string& sender_id,
     const std::string& fcm_token,
     instance_id::InstanceID::Result result) {
   switch (result) {
     case InstanceID::SUCCESS:
       instance_id_driver_->GetInstanceID(kSharingFCMAppID)
           ->GetEncryptionInfo(
-              authorized_entity,
+              sender_id,
               base::BindOnce(
                   &SharingDeviceRegistrationImpl::OnEncryptionInfoReceived,
                   weak_ptr_factory_.GetWeakPtr(), std::move(callback),
@@ -123,37 +122,8 @@ void SharingDeviceRegistrationImpl::OnEncryptionInfoReceived(
           fcm_token, p256dh, auth_secret}));
 }
 
-void SharingDeviceRegistrationImpl::OnVapidTargetInfoRetrieved(
-    RegistrationCallback callback,
-    std::optional<std::string> authorized_entity,
-    SharingDeviceRegistrationResult result,
-    std::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info) {
-  if (result != SharingDeviceRegistrationResult::kSuccess) {
-    std::move(callback).Run(result);
-    return;
-  }
-
-  if (!CanSendViaSenderID(sync_service_)) {
-    OnSharingTargetInfoRetrieved(
-        std::move(callback), std::move(authorized_entity),
-        std::move(vapid_target_info), SharingDeviceRegistrationResult::kSuccess,
-        /*sharing_target_info=*/std::nullopt);
-    return;
-  }
-
-  // Attempt to register using sender ID when enabled.
-  RetrieveTargetInfo(
-      kSharingSenderID,
-      base::BindOnce(
-          &SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-          std::move(authorized_entity), std::move(vapid_target_info)));
-}
-
 void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
     RegistrationCallback callback,
-    std::optional<std::string> authorized_entity,
-    std::optional<syncer::DeviceInfo::SharingTargetInfo> vapid_target_info,
     SharingDeviceRegistrationResult result,
     std::optional<syncer::DeviceInfo::SharingTargetInfo> sharing_target_info) {
   if (result != SharingDeviceRegistrationResult::kSuccess) {
@@ -161,7 +131,7 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
     return;
   }
 
-  if (!vapid_target_info && !sharing_target_info) {
+  if (!sharing_target_info) {
     std::move(callback).Run(SharingDeviceRegistrationResult::kInternalError);
     return;
   }
@@ -169,10 +139,9 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
   base::UmaHistogramBoolean("Sharing.LocalSharingTargetInfoSupportsSync",
                             !!sharing_target_info);
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features =
-      GetEnabledFeatures(/*supports_vapid=*/authorized_entity.has_value());
+      GetEnabledFeatures();
   syncer::DeviceInfo::SharingInfo sharing_info(
-      vapid_target_info ? std::move(*vapid_target_info)
-                        : syncer::DeviceInfo::SharingTargetInfo(),
+      /*vapid_target_info=*/syncer::DeviceInfo::SharingTargetInfo(),
       sharing_target_info ? std::move(*sharing_target_info)
                           : syncer::DeviceInfo::SharingTargetInfo(),
       /*chime_representative_target_id=*/std::string(),
@@ -180,7 +149,7 @@ void SharingDeviceRegistrationImpl::OnSharingTargetInfoRetrieved(
   sharing_sync_preference_->SetLocalSharingInfo(std::move(sharing_info));
   sharing_sync_preference_->SetFCMRegistration(
       // Clears authorized_entity in preferences if it's not populated.
-      SharingSyncPreference::FCMRegistration(std::move(authorized_entity),
+      SharingSyncPreference::FCMRegistration(/*authorized_entity=*/std::nullopt,
                                              base::Time::Now()));
   std::move(callback).Run(SharingDeviceRegistrationResult::kSuccess);
 }
@@ -252,31 +221,11 @@ void SharingDeviceRegistrationImpl::OnFCMTokenDeleted(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
-}
-
-std::optional<std::string>
-SharingDeviceRegistrationImpl::GetAuthorizationEntity() const {
-  // TODO(himanshujaju) : Extract a static function to convert ECPrivateKey* to
-  // Base64PublicKey in library.
-  crypto::ECPrivateKey* vapid_key = vapid_key_manager_->GetOrCreateKey();
-  if (!vapid_key) {
-    return std::nullopt;
-  }
-
-  std::string public_key;
-  if (!gcm::GetRawPublicKey(*vapid_key, &public_key)) {
-    return std::nullopt;
-  }
-
-  std::string base64_public_key;
-  base::Base64UrlEncode(public_key, base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &base64_public_key);
-  return std::make_optional(std::move(base64_public_key));
+  NOTREACHED();
 }
 
 std::set<SharingSpecificFields::EnabledFeatures>
-SharingDeviceRegistrationImpl::GetEnabledFeatures(bool supports_vapid) const {
+SharingDeviceRegistrationImpl::GetEnabledFeatures() const {
   // Used in tests
   if (enabled_features_testing_value_) {
     return enabled_features_testing_value_.value();
@@ -285,15 +234,9 @@ SharingDeviceRegistrationImpl::GetEnabledFeatures(bool supports_vapid) const {
   std::set<SharingSpecificFields::EnabledFeatures> enabled_features;
   if (IsClickToCallSupported()) {
     enabled_features.insert(SharingSpecificFields::CLICK_TO_CALL_V2);
-    if (supports_vapid) {
-      enabled_features.insert(SharingSpecificFields::CLICK_TO_CALL_VAPID);
-    }
   }
   if (IsSharedClipboardSupported()) {
     enabled_features.insert(SharingSpecificFields::SHARED_CLIPBOARD_V2);
-    if (supports_vapid) {
-      enabled_features.insert(SharingSpecificFields::SHARED_CLIPBOARD_VAPID);
-    }
   }
   if (IsSmsFetcherSupported()) {
     enabled_features.insert(SharingSpecificFields::SMS_FETCHER);

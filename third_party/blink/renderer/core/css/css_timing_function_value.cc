@@ -24,7 +24,10 @@
  */
 
 #include "third_party/blink/renderer/core/css/css_timing_function_value.h"
-#include "base/ranges/algorithm.h"
+
+#include <algorithm>
+
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -48,12 +51,13 @@ String CSSLinearTimingFunctionValue::CustomCSSText() const {
 
 bool CSSLinearTimingFunctionValue::Equals(
     const CSSLinearTimingFunctionValue& other) const {
-  return base::ranges::equal(points_, other.points_);
+  return std::ranges::equal(points_, other.points_);
 }
 
 String CSSCubicBezierTimingFunctionValue::CustomCSSText() const {
-  return "cubic-bezier(" + String::Number(x1_) + ", " + String::Number(y1_) +
-         ", " + String::Number(x2_) + ", " + String::Number(y2_) + ")";
+  return WTF::StrCat({"cubic-bezier(", String::Number(x1_), ", ",
+                      String::Number(y1_), ", ", String::Number(x2_), ", ",
+                      String::Number(y2_), ")"});
 }
 
 bool CSSCubicBezierTimingFunctionValue::Equals(
@@ -93,10 +97,11 @@ String CSSStepsTimingFunctionValue::CustomCSSText() const {
   // If the step position is jump-end or end, serialize as steps(<integer>).
   // Otherwise, serialize as steps(<integer>, <step-position>).
   if (step_position_string.empty()) {
-    return "steps(" + String::Number(steps_) + ')';
+    return WTF::StrCat({"steps(", steps_->CssText(), ")"});
   }
 
-  return "steps(" + String::Number(steps_) + ", " + step_position_string + ')';
+  return WTF::StrCat(
+      {"steps(", steps_->CssText(), ", ", step_position_string, ")"});
 }
 
 bool CSSStepsTimingFunctionValue::Equals(

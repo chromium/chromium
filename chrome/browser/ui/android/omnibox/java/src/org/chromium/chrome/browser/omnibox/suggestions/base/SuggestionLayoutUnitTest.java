@@ -40,9 +40,9 @@ public class SuggestionLayoutUnitTest {
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    private Context mContext = ContextUtils.getApplicationContext();
-    private View mDecorationView = new View(mContext);
-    private View mContentView = new View(mContext);
+    private final Context mContext = ContextUtils.getApplicationContext();
+    private final View mDecorationView = new View(mContext);
+    private final View mContentView = new View(mContext);
     private SuggestionLayout mLayout = new SuggestionLayout(mContext);
 
     @Test

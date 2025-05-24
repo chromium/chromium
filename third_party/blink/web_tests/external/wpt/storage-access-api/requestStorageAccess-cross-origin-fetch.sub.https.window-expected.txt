@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Cross-origin fetches from a frame with storage-access are not credentialed by default
+  assert_true: requestStorageAccess resolves without requiring a gesture. expected true got false
+[FAIL] Cross-origin HTTP redirects from a frame with storage-access are not credentialed by default
+  assert_true: requestStorageAccess resolves without requiring a gesture. expected true got false
+Harness: the test ran to completion.

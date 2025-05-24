@@ -90,7 +90,7 @@ class URLPattern {
   // The <all_urls> string pattern.
   static const char kAllUrlsPattern[];
 
-  // Returns true if the given |scheme| is considered valid for extensions.
+  // Returns true if the given `scheme` is considered valid for extensions.
   static bool IsValidSchemeForExtensions(std::string_view scheme);
 
   // Returns the mask for all schemes considered valid for extensions.
@@ -111,9 +111,12 @@ class URLPattern {
   URLPattern& operator=(const URLPattern& other);
   URLPattern& operator=(URLPattern&& other);
 
-  bool operator<(const URLPattern& other) const;
-  bool operator>(const URLPattern& other) const;
-  bool operator==(const URLPattern& other) const;
+  friend auto operator<=>(const URLPattern& a, const URLPattern& b) {
+    return a.GetAsString() <=> b.GetAsString();
+  }
+  friend bool operator==(const URLPattern& a, const URLPattern& b) {
+    return a.GetAsString() == b.GetAsString();
+  }
 
   // Initializes this instance by parsing the provided string. Returns
   // URLPattern::ParseResult::kSuccess on success, or an error code otherwise.
@@ -162,23 +165,23 @@ class URLPattern {
   // Returns true if this instance matches the specified security origin.
   bool MatchesSecurityOrigin(const GURL& test) const;
 
-  // Returns true if |test| matches our scheme.
+  // Returns true if `test` matches our scheme.
   // Note that if test is "filesystem", this may fail whereas MatchesURL
   // may succeed.  MatchesURL is smart enough to look at the inner_url instead
   // of the outer "filesystem:" part.
   bool MatchesScheme(std::string_view test) const;
 
-  // Returns true if |test| matches our host.
+  // Returns true if `test` matches our host.
   bool MatchesHost(std::string_view test) const;
   bool MatchesHost(const GURL& test) const;
 
-  // Returns true if |test| matches our path.
+  // Returns true if `test` matches our path.
   bool MatchesPath(std::string_view test) const;
 
   // Returns true if the pattern matches all patterns in an (e)TLD. This
   // includes patterns like *://*.com/*, *://*.co.uk/*, etc. A pattern that
   // matches all domains (e.g., *://*/*) will return true.
-  // |private_filter| specifies whether private registries (like appspot.com)
+  // `private_filter` specifies whether private registries (like appspot.com)
   // should be considered; if included, patterns like *://*.appspot.com/* will
   // return true. By default, we exclude private registries (so *.appspot.com
   // returns false).
@@ -207,12 +210,12 @@ class URLPattern {
   // other.OverlapsWith(this) would result in the same answer.
   bool OverlapsWith(const URLPattern& other) const;
 
-  // Returns true if this pattern matches all possible URLs that |other| can
+  // Returns true if this pattern matches all possible URLs that `other` can
   // match. For example, http://*.google.com encompasses http://www.google.com.
   bool Contains(const URLPattern& other) const;
 
   // Creates a new URLPattern that represents the intersection of this
-  // URLPattern with the |other|, or std::nullopt if no intersection exists.
+  // URLPattern with the `other`, or std::nullopt if no intersection exists.
   // For instance, given the patterns http://*.google.com/* and
   // *://maps.google.com/*, the intersection is http://maps.google.com/*.
   // NOTES:
@@ -249,15 +252,15 @@ class URLPattern {
   static const char* GetParseResultString(URLPattern::ParseResult parse_result);
 
  private:
-  // Returns true if any of the |schemes| items matches our scheme.
+  // Returns true if any of the `schemes` items matches our scheme.
   bool MatchesAnyScheme(const std::vector<std::string>& schemes) const;
 
-  // Returns true if all of the |schemes| items matches our scheme.
+  // Returns true if all of the `schemes` items matches our scheme.
   bool MatchesAllSchemes(const std::vector<std::string>& schemes) const;
 
   bool MatchesSecurityOriginHelper(const GURL& test) const;
 
-  // Returns true if our port matches the |port| pattern (it may be "*").
+  // Returns true if our port matches the `port` pattern (it may be "*").
   bool MatchesPortPattern(std::string_view port) const;
 
   // If the URLPattern contains a wildcard scheme, returns a list of

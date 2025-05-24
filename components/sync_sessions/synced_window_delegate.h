@@ -54,7 +54,7 @@ class SyncedWindowDelegate {
   virtual bool ShouldSync() const = 0;
 
  protected:
-  virtual ~SyncedWindowDelegate() {}
+  virtual ~SyncedWindowDelegate() = default;
 };
 
 }  // namespace sync_sessions

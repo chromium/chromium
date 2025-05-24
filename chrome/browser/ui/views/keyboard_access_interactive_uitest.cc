@@ -10,7 +10,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -28,6 +27,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/style/platform_style.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
@@ -64,9 +64,6 @@ class ViewFocusChangeWaiter : public views::FocusChangeListener {
 
  private:
   // views::FocusChangeListener:
-  void OnWillChangeFocus(views::View* focused_before,
-                         views::View* focused_now) override {}
-
   void OnDidChangeFocus(views::View* focused_before,
                         views::View* focused_now) override {
     if (focused_now && focused_now->GetID() != previous_view_id_) {
@@ -109,8 +106,12 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
     } else {
       DCHECK(observation_.IsObserving());
       observation_.Reset();
-      // Press DOWN to select the first item, then RETURN to select it.
-      SendKeyPress(browser_, ui::VKEY_DOWN);
+      if (!views::PlatformStyle::kAutoSelectFirstMenuItemFromKeyboard) {
+        // Press DOWN to select the first item, then RETURN to select it. Only
+        // needed on platforms where we don't automatically select the first
+        // item on menu open.
+        SendKeyPress(browser_, ui::VKEY_DOWN);
+      }
       SendKeyPress(browser_, ui::VKEY_RETURN);
     }
   }
@@ -135,7 +136,7 @@ class SendKeysMenuListener : public AppMenuButtonObserver {
 
 class KeyboardAccessTest : public InProcessBrowserTest {
  public:
-  KeyboardAccessTest() {}
+  KeyboardAccessTest() = default;
 
   KeyboardAccessTest(const KeyboardAccessTest&) = delete;
   KeyboardAccessTest& operator=(const KeyboardAccessTest&) = delete;
@@ -213,7 +214,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
     browser()->window()->GetLocationBar()->FocusLocation(false);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Chrome OS doesn't have a way to just focus the app menu, so we use Alt+F to
   // bring up the menu.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_F, false,
@@ -238,7 +239,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccess(bool alternate_key_sequence,
 
   // See above comment. Since we already brought up the menu, no need to do this
   // on ChromeOS.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (alternate_key_sequence) {
     SendKeyPress(browser(), ui::VKEY_DOWN);
   } else {
@@ -262,7 +263,7 @@ LRESULT CALLBACK SystemMenuTestCBTHook(int n_code,
   // Look for the system menu window getting created or becoming visible and
   // then select the New Tab option from the menu.
   if (n_code == HCBT_ACTIVATE || n_code == HCBT_CREATEWND) {
-    wchar_t class_name[MAX_PATH] = {0};
+    wchar_t class_name[MAX_PATH] = {};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
                  std::size(class_name));
     if (base::EqualsCaseInsensitiveASCII(class_name, "#32768")) {
@@ -312,7 +313,7 @@ LRESULT CALLBACK SystemMenuReopenClosedTabTestCBTHook(int n_code,
   // Look for the system menu window getting created or becoming visible and
   // then select the New Tab option from the menu.
   if (n_code == HCBT_ACTIVATE || n_code == HCBT_CREATEWND) {
-    wchar_t class_name[MAX_PATH] = {0};
+    wchar_t class_name[MAX_PATH] = {};
     GetClassName(reinterpret_cast<HWND>(w_param), class_name,
                  std::size(class_name));
     if (base::EqualsCaseInsensitiveASCII(class_name, "#32768")) {
@@ -396,7 +397,7 @@ void KeyboardAccessTest::TestMenuKeyboardAccessAndDismiss() {
 }
 
 // http://crbug.com/62310.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestMenuKeyboardAccess DISABLED_TestMenuKeyboardAccess
 #elif BUILDFLAG(IS_MAC)
 // No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952
@@ -410,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, MAYBE_TestMenuKeyboardAccess) {
 }
 
 // http://crbug.com/62310.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestAltMenuKeyboardAccess DISABLED_TestAltMenuKeyboardAccess
 #elif BUILDFLAG(IS_MAC)
 // No keyboard shortcut for the Chrome menu on Mac: http://crbug.com/823952

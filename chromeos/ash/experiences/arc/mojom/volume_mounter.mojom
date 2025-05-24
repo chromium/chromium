@@ -1,0 +1,83 @@
+// Copyright 2017 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 7
+
+module arc.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+[Extensible]
+enum MountEvent {
+  // Mounts a volume in Android.
+  MOUNTING,
+  // Unmounts a volume in Android.
+  UNMOUNTING,
+};
+
+[Extensible]
+enum DeviceType {
+  // Neither USB device nor SD card is inserted.
+  DEVICE_TYPE_UNKNOWN,
+  // USB device is inserted.
+  DEVICE_TYPE_USB,
+  // SD card is inserted.
+  DEVICE_TYPE_SD,
+};
+
+struct MountPointInfo {
+  // The type of mount event to be triggered in Android.
+  MountEvent mount_event;
+  // The device source path of this mount point.
+  string source_path;
+  // The path to the mounted volume.
+  string mount_path;
+  // The fs_uuid of the disk. If empty, the event should be ignored.
+  string fs_uuid;
+  // The file system label.
+  string label;
+  // The device type that contains this mount point. If unknown, the event
+  // should be ignored.
+  DeviceType device_type;
+  // Whether the mounted volume should be visible to Android apps.
+  // This is a user-controlled setting, which is accessible in "External
+  // storage preferences" screen in device settings.
+  [MinVersion=2] bool visible;
+};
+
+// Deprecated method IDs: 2
+// Next Method ID: 5
+interface VolumeMounterHost {
+  // Requests all recorded MountPointInfos to be sent through a series of
+  // VolumeMounterInstance::OnMountEvent call.
+  [MinVersion=0] RequestAllMountPoints@1();
+
+  // Sets up external storage mount points for MyFiles and removable media by
+  // setting their owner to be Android's MediaProvider.
+  [MinVersion=4] SetUpExternalStorageMountPoints@3(uint32 media_provider_uid)
+      => (bool success);
+
+  // Used to notify from ARCVM to host that ARCVM finished unmounting all
+  // removable media and dropping caches so the host-side unmount before device
+  // suspension can be unblocked.
+  [MinVersion=6] OnReadyToSuspend@4(bool success);
+};
+
+// Notifies Android about Mounting events.
+// Next Method ID: 3
+interface VolumeMounterInstance {
+  // Establishes full-duplex communication with the host.
+  [MinVersion=1] Init@0(pending_remote<VolumeMounterHost> host_remote) => ();
+
+  // Triggers a mount event in Android.
+  OnMountEvent@1(MountPointInfo mount_point_info);
+
+  // Requests ARC to prepare for the host-side unmount of a removable media
+  // mounted on `path` by unmounting it on the ARC side and dropping ARC-side
+  // cache for the volume. `path` is the host-side mount path. When `path` is
+  // not a host-side mount path of a removable media known to ARC, this method
+  // is no-op and returns true.
+  [MinVersion=5] PrepareForRemovableMediaUnmount@2(
+      mojo_base.mojom.FilePath path) => (bool success);
+};

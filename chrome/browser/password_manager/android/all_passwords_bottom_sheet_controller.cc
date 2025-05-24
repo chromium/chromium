@@ -7,9 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -18,13 +16,11 @@
 #include "chrome/browser/ui/android/passwords/all_passwords_bottom_sheet_view_impl.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/password_manager/core/common/password_manager_features.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/gfx/native_widget_types.h"
@@ -46,7 +42,6 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
     PasswordManagerClient* client,
     PasswordReuseDetectionManagerClient*
         password_reuse_detection_manager_client,
-    ShowMigrationWarningCallback show_migration_warning_callback,
     std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge)
     : view_(std::move(view)),
       web_contents_(web_contents),
@@ -58,8 +53,6 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       client_(client),
       password_reuse_detection_manager_client_(
           password_reuse_detection_manager_client),
-      show_migration_warning_callback_(
-          std::move(show_migration_warning_callback)),
       access_loss_warning_bridge_(std::move(access_loss_warning_bridge)),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext())) {}
@@ -76,8 +69,6 @@ AllPasswordsBottomSheetController::AllPasswordsBottomSheetController(
       account_store_(account_store),
       dismissal_callback_(std::move(dismissal_callback)),
       focused_field_type_(focused_field_type),
-      show_migration_warning_callback_(
-          base::BindRepeating(&local_password_migration::ShowWarning)),
       access_loss_warning_bridge_(
           std::make_unique<PasswordAccessLossWarningBridgeImpl>()),
       plus_address_service_(PlusAddressServiceFactory::GetForBrowserContext(
@@ -171,15 +162,6 @@ void AllPasswordsBottomSheetController::OnCredentialSelected(
   } else if (!requests_to_fill_password) {
     driver_->FillIntoFocusedField(is_password_field, username);
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    show_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
-            kAllPasswords);
-  }
 
   TryToShowAccessLossWarningSheet();
 
@@ -198,10 +180,6 @@ const GURL& AllPasswordsBottomSheetController::GetFrameUrl() {
 
 bool AllPasswordsBottomSheetController::IsPlusAddress(
     const std::string& potential_plus_address) const {
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    return false;
-  }
   return plus_address_service_ &&
          plus_address_service_->IsPlusAddress(potential_plus_address);
 }
@@ -245,17 +223,14 @@ void AllPasswordsBottomSheetController::OnResultFromAllStoresReceived(
 }
 
 void AllPasswordsBottomSheetController::TryToShowAccessLossWarningSheet() {
-  if (!base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    return;
-  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
                      profile->GetPrefs(), /*called_at_startup=*/false)) {
     access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
         profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile,
-        /*called_at_startup=*/false);
+        /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kAllPasswords);
   }
 }

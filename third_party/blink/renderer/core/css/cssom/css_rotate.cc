@@ -63,8 +63,7 @@ CSSRotate* FromCSSRotateXYZ(const CSSFunctionValue& value) {
       return CSSRotate::Create(CSSUnitValue::Create(0), CSSUnitValue::Create(0),
                                CSSUnitValue::Create(1), angle);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -127,8 +126,7 @@ CSSRotate* CSSRotate::FromCSSValue(const CSSFunctionValue& value) {
     case CSSValueID::kRotateZ:
       return FromCSSRotateXYZ(value);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

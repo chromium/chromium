@@ -5,6 +5,8 @@
 #ifndef CONTENT_BROWSER_LOADER_URL_LOADER_FACTORY_UTILS_H_
 #define CONTENT_BROWSER_LOADER_URL_LOADER_FACTORY_UTILS_H_
 
+#include <variant>
+
 #include "base/memory/stack_allocated.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/common/content_export.h"
@@ -136,8 +138,8 @@ class CONTENT_EXPORT TerminalParams final {
   //
   // See the `process_id_` comment below for `process_id`.
   using URLLoaderFactoryTypes =
-      absl::variant<mojo::PendingRemote<network::mojom::URLLoaderFactory>,
-                    scoped_refptr<network::SharedURLLoaderFactory>>;
+      std::variant<mojo::PendingRemote<network::mojom::URLLoaderFactory>,
+                   scoped_refptr<network::SharedURLLoaderFactory>>;
   static TerminalParams ForNonNetwork(URLLoaderFactoryTypes url_loader_factory,
                                       int process_id);
 

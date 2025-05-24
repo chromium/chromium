@@ -4,14 +4,14 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/card_unmask_authentication_selection_dialog_view.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #include "content/public/test/browser_test.h"
 
@@ -42,13 +42,15 @@ class CardUnmaskAuthenticationSelectionDialogBrowserTestBase
   }
 
   CardUnmaskAuthenticationSelectionDialogView* GetDialog() {
-    if (!controller())
+    if (!controller()) {
       return nullptr;
+    }
 
     CardUnmaskAuthenticationSelectionDialog* dialog_view =
         controller()->GetDialogViewForTesting();
-    if (!dialog_view)
+    if (!dialog_view) {
       return nullptr;
+    }
 
     return static_cast<CardUnmaskAuthenticationSelectionDialogView*>(
         dialog_view);
@@ -102,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(
   VerifyUi();
 
   // Select the CVC challenge option in the dialog.
-  auto cvc_challenge_option = base::ranges::find_if(
+  auto cvc_challenge_option = std::ranges::find_if(
       GetChallengeOptions(), [](const auto& challenge_option) {
         return challenge_option.type == CardUnmaskChallengeOptionType::kCvc;
       });

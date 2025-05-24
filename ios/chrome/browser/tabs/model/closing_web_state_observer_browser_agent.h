@@ -32,7 +32,6 @@ class ClosingWebStateObserverBrowserAgent
 
  private:
   friend class BrowserUserData<ClosingWebStateObserverBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit ClosingWebStateObserverBrowserAgent(Browser* browser);
 
@@ -55,8 +54,6 @@ class ClosingWebStateObserverBrowserAgent
   void WebStateListDidChange(WebStateList* web_state_list,
                              const WebStateListChange& change,
                              const WebStateListStatus& status) override;
-
-  raw_ptr<Browser> browser_;
 
   base::WeakPtrFactory<ClosingWebStateObserverBrowserAgent> weak_ptr_factory_{
       this};

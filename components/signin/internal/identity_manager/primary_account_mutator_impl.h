@@ -8,7 +8,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 
@@ -35,16 +34,16 @@ class PrimaryAccountMutatorImpl : public PrimaryAccountMutator {
       ConsentLevel consent_level,
       signin_metrics::AccessPoint access_point,
       base::OnceClosure prefs_committed_callback) override;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void RevokeSyncConsent(signin_metrics::ProfileSignout source_metric) override;
   bool ClearPrimaryAccount(
       signin_metrics::ProfileSignout source_metric) override;
   bool RemovePrimaryAccountButKeepTokens(
       signin_metrics::ProfileSignout source_metric) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
  private:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Returns true if transitioning from Sync to Signin consent level is allowed
   // for this platform / configuration.
   bool CanTransitionFromSyncToSigninConsentLevel() const;

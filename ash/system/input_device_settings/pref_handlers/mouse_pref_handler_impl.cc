@@ -58,7 +58,7 @@ void UpdateButtonRemappingsWithCompleteList(
   auto default_remappings =
       GetButtonRemappingListForConfig(mouse_button_config);
   for (auto& remapping : default_remappings) {
-    const auto iter = base::ranges::find(
+    const auto iter = std::ranges::find(
         current_button_remappings, *remapping->button,
         [](const mojom::ButtonRemappingPtr& current_remapping) {
           return *current_remapping->button;

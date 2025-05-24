@@ -38,14 +38,43 @@ NSArray<NSValue*>* SwipeLeft(CGPoint startPoint) {
   return touchPath;
 }
 
+// Returns an L-shaped touch path from start to end, with the vertical movement
+// first and the horizontal movement afterwards.
+NSArray<NSValue*>* TouchPath(CGPoint start, CGPoint end) {
+  const int number_of_frames = 20;
+  const CGFloat delta_x = (end.x - start.x) / number_of_frames;
+  const CGFloat delta_y = (end.y - start.y) / number_of_frames;
+
+  NSMutableArray* touch_path = [[NSMutableArray alloc] init];
+  [touch_path addObject:[NSValue valueWithCGPoint:start]];
+
+  // First the vertical movement.
+  for (int i = 0; i < number_of_frames; i++) {
+    CGPoint point = CGPointMake(start.x, start.y + i * delta_y);
+    [touch_path addObject:[NSValue valueWithCGPoint:point]];
+  }
+
+  if (delta_x != 0) {
+    // Then the horizontal movement.
+    for (int i = 0; i < number_of_frames; i++) {
+      CGPoint point = CGPointMake(start.x + i * delta_x, end.y);
+      [touch_path addObject:[NSValue valueWithCGPoint:point]];
+    }
+  }
+
+  [touch_path addObject:[NSValue valueWithCGPoint:end]];
+
+  return touch_path;
+}
+
 NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
 
 }  // namespace
 
 @implementation ChromeActionsAppInterface : NSObject
 
-+ (id<GREYAction>)longPressElement:(ElementSelector*)selector
-                triggerContextMenu:(BOOL)triggerContextMenu {
++ (id<GREYAction>)longPressElementOnWebView:(ElementSelector*)selector
+                         triggerContextMenu:(BOOL)triggerContextMenu {
   return WebViewLongPressElementForContextMenu(
       chrome_test_util::GetCurrentWebState(), selector, triggerContextMenu);
 }
@@ -101,6 +130,31 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
 + (id<GREYAction>)tapWebElementUnverified:(ElementSelector*)selector {
   return web::WebViewTapElement(chrome_test_util::GetCurrentWebState(),
                                 selector, /*verified*/ false);
+}
+
++ (id<GREYAction>)longPressOnHiddenElement {
+  GREYPerformBlock longPress = ^BOOL(id element, __strong NSError** error) {
+    grey_dispatch_sync_on_main_thread(^{
+      UIView* view = base::apple::ObjCCast<UIView>(element);
+      if (!view) {
+        *error = [NSError
+            errorWithDomain:kChromeActionsErrorDomain
+                       code:0
+                   userInfo:@{
+                     NSLocalizedDescriptionKey : @"View is not a UIView"
+                   }];
+        return;
+      }
+
+      [GREYTapper longPressOnElement:element
+                            location:view.center
+                            duration:0.7
+                               error:error];
+    });
+    return YES;
+  };
+  return [GREYActionBlock actionWithName:@"Long press on hidden element"
+                            performBlock:longPress];
 }
 
 + (id<GREYAction>)scrollToTop {
@@ -222,4 +276,49 @@ NSString* kChromeActionsErrorDomain = @"ChromeActionsError";
         }];
 }
 
++ (id<GREYAction>)overscrollSwipe:(GREYDirection)direction {
+  return [GREYActionBlock
+      actionWithName:@"Swipe along path"
+         constraints:nil
+        performBlock:^(UIView* element, NSError* __strong* errorOrNil) {
+          if ([element window] == nil) {
+            NSString* errorDescription = [NSString
+                stringWithFormat:
+                    @"Cannot swipe on this view as it has no window and "
+                    @"isn't a window itself:\n%@",
+                    [element grey_description]];
+            *errorOrNil = [NSError
+                errorWithDomain:@"No window available"
+                           code:0
+                       userInfo:@{@"Failure Reason" : (errorDescription)}];
+            // Indicates that the action failed.
+            return NO;
+          }
+          CGFloat horizontal = 0;
+          CGFloat vertical = 250;
+          switch (direction) {
+            case kGREYDirectionLeft:
+              horizontal = -250;
+              break;
+            case kGREYDirectionRight:
+              horizontal = 250;
+              break;
+            default:
+              break;
+          }
+          CGRect frame = element.frame;
+          CGPoint startPoint = CGPointMake(
+              CGRectGetMidX(frame) - horizontal / 2.0, CGRectGetMidY(frame));
+          CGPoint endPoint =
+              CGPointMake(startPoint.x + horizontal, startPoint.y + vertical);
+
+          // Invoke a custom selector that animates the window of the element.
+          [GREYSyntheticEvents touchAlongPath:TouchPath(startPoint, endPoint)
+                             relativeToWindow:[element window]
+                                  forDuration:1
+                                      timeout:10];
+          // Indicates that the action was executed successfully.
+          return YES;
+        }];
+}
 @end

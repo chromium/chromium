@@ -25,6 +25,7 @@
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
+#include "components/language_detection/core/constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/page_translated_details.h"
@@ -43,7 +44,6 @@
 #include "components/translate/core/browser/translate_trigger_decision.h"
 #include "components/translate/core/browser/translate_url_util.h"
 #include "components/translate/core/common/language_detection_details.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/variations_associated_data.h"
@@ -157,15 +157,6 @@ void TranslateManager::InitiateTranslation(const std::string& page_lang) {
 
 bool TranslateManager::CanManuallyTranslate(bool menuLogging) {
   bool can_translate = true;
-
-  if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
-    if (!menuLogging)
-      return false;
-    TranslateBrowserMetrics::ReportMenuTranslationUnavailableReason(
-        TranslateBrowserMetrics::MenuTranslationUnavailableReason::
-            kTranslateDisabled);
-    can_translate = false;
-  }
 
   if (net::NetworkChangeNotifier::IsOffline()) {
     if (!menuLogging)
@@ -361,7 +352,7 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
   // server side auto language detection.
   std::string source_lang(original_source_lang);
   if (!TranslateDownloadManager::IsSupportedLanguage(source_lang))
-    source_lang = std::string(translate::kUnknownLanguageCode);
+    source_lang = std::string(language_detection::kUnknownLanguageCode);
 
   // Capture the translate event if we were triggered from the menu.
   if (triggered_from_menu) {
@@ -377,7 +368,7 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
     // page with multiple languages we often detect same language, but the
     // Translation service is able to translate the various languages using it's
     // own language detection.
-    source_lang = translate::kUnknownLanguageCode;
+    source_lang = language_detection::kUnknownLanguageCode;
   }
 
   // Trigger the "translating now" UI.
@@ -482,7 +473,7 @@ void TranslateManager::PageTranslated(const std::string& source_lang,
   language_state_.set_translation_error(error_type != TranslateErrors::NONE);
 
   if ((error_type == TranslateErrors::NONE) &&
-      source_lang != translate::kUnknownLanguageCode &&
+      source_lang != language_detection::kUnknownLanguageCode &&
       !TranslateDownloadManager::IsSupportedLanguage(source_lang)) {
     error_type = TranslateErrors::UNSUPPORTED_LANGUAGE;
   }
@@ -553,7 +544,7 @@ std::string TranslateManager::GetTargetLanguage(
   // preference.
   // We don't enable auto translate feature in incognito profiles so this will
   // always be empty for incognito.
-  if (source_lang_code != translate::kUnknownLanguageCode) {
+  if (source_lang_code != language_detection::kUnknownLanguageCode) {
     std::string auto_translate_language =
         translate::TranslateManager::GetAutoTargetLanguage(source_lang_code,
                                                            prefs);
@@ -677,8 +668,7 @@ void TranslateManager::SetIgnoreMissingKeyForTesting(bool ignore) {
 // static
 bool TranslateManager::IsAvailable(const TranslatePrefs* prefs) {
   // These conditions mirror the conditions in InitiateTranslation.
-  return base::FeatureList::IsEnabled(translate::kTranslate) &&
-         (ignore_missing_key_for_testing_ ||
+  return (ignore_missing_key_for_testing_ ||
           ::google_apis::HasAPIKeyConfigured()) &&
          prefs->IsOfferTranslateEnabled();
 }
@@ -821,12 +811,6 @@ void TranslateManager::FilterIsTranslatePossible(
     decision->PreventAllTriggering();
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledDoesntNeedTranslation);
-  }
-
-  if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
-    decision->PreventAllTriggering();
-    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
-        TriggerDecision::kDisabledTranslationFeatureDisabled);
   }
 
   // Also, skip if the connection is currently offline - initiation doesn't make
@@ -1011,7 +995,8 @@ void TranslateManager::FilterForHrefTranslate(
       // last ditch effort assume that language detection was incorrect and send
       // "und" as the source language to make the translate service attempt to
       // detect the language as it processes the page content.
-      decision->href_translate_source = translate::kUnknownLanguageCode;
+      decision->href_translate_source =
+          language_detection::kUnknownLanguageCode;
     } else {
       decision->PreventAutoHrefTranslate();
       decision->PreventShowingHrefTranslateUI();
@@ -1048,7 +1033,8 @@ void TranslateManager::FilterForPredefinedTarget(
     // then as a last ditch effort assume that language detection was incorrect
     // and send "und" as the source language to make the translate service
     // attempt to detect the language as it processes the page content.
-    decision->predefined_translate_source = translate::kUnknownLanguageCode;
+    decision->predefined_translate_source =
+        language_detection::kUnknownLanguageCode;
   }
 }
 

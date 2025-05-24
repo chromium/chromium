@@ -8,8 +8,8 @@
 
 namespace permissions {
 
-MockPermissionObserver::MockPermissionObserver() {}
+MockPermissionObserver::MockPermissionObserver() = default;
 
-MockPermissionObserver::~MockPermissionObserver() {}
+MockPermissionObserver::~MockPermissionObserver() = default;
 
 }  // namespace permissions

@@ -6,7 +6,7 @@ pronounced "sea bee you eye".
 
 Important subdirectories:
 * views - the Views implementation of the UI, used on Windows, Mac, Linux, and
-          ChromeOS/Lacros. This includes features like Omnibox, downloads.
+          ChromeOS. This includes features like Omnibox, downloads.
 * cocoa - the remaining Cocoa UI, used only on Mac. This directory used to
           contain a separate full implementation of the UI, parallel to the
           Views implementation.

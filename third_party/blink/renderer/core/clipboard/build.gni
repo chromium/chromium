@@ -3,8 +3,6 @@
 # found in the LICENSE file.
 
 blink_core_sources_clipboard = [
-  "clipboard_mime_types.cc",
-  "clipboard_mime_types.h",
   "clipboard_utilities.cc",
   "clipboard_utilities.h",
   "data_object.cc",

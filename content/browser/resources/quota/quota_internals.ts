@@ -8,10 +8,10 @@ import type {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.moj
 
 import type {BucketTableEntry} from './quota_internals.mojom-webui.js';
 import type {RetrieveBucketsTableResult} from './quota_internals_browser_proxy.js';
-import {QuotaInternalsBrowserProxy, StorageType} from './quota_internals_browser_proxy.js';
+import {QuotaInternalsBrowserProxy} from './quota_internals_browser_proxy.js';
 
 // Object for constructing the bucket row in the usage table.
-interface StorageTypeBucketTableEntry {
+interface BucketEntry {
   'bucketId': string;
   'name': string;
   'usage': string;
@@ -20,16 +20,10 @@ interface StorageTypeBucketTableEntry {
   'lastModified': string;
 }
 
-// Bucket entries organized by StorageType for constructing the usage table.
-interface StorageTypeEntries {
-  // key = storageType
-  [key: string]: StorageTypeBucketTableEntry[];
-}
-
-// StorageTypeEntries organized by StorageKey for constructing the usage table.
+// BucketEntry organized by StorageKey for constructing the usage table.
 interface StorageKeyData {
   'bucketCount': number;
-  'storageKeyEntries': StorageTypeEntries;
+  'storageKeyEntries': BucketEntry[];
 }
 
 // Map of StorageKey entries for constructing bucket usage table.
@@ -89,18 +83,11 @@ async function renderDiskAvailabilityAndTempPoolSize() {
 }
 
 async function renderGlobalUsage() {
-  const typeVals: number[] =
-      Object.keys(StorageType).map((v) => Number(v)).filter((v) => !isNaN(v));
-
-  for (const typeVal of typeVals) {
-    const result = await getProxy().getGlobalUsage(typeVal);
-    const formattedResultString: string = `${Number(result.usage)} B (${
-        result.unlimitedUsage} B for unlimited origins)`;
-    document.body
-        .querySelector(`.${
-            StorageType[typeVal].toLowerCase()}-global-and-unlimited-usage`)!
-        .textContent = formattedResultString;
-  }
+  const result = await getProxy().getGlobalUsage();
+  const formattedResultString: string = `${Number(result.usage)} B (${
+      result.unlimitedUsage} B for unlimited origins)`;
+  document.body.querySelector(`.global-and-unlimited-usage`)!.textContent =
+      formattedResultString;
 }
 
 async function renderEvictionStats() {
@@ -136,23 +123,21 @@ async function renderUsageAndQuotaStats() {
    * bucketTableEntriesByStorageKey = {
    *   <storage_key_string>: {
    *     bucketCount: <number>,
-   *     storageKeyEntries: {
-   *       <storage_type>: [{
+   *     storageKeyEntries: [{
    *         bucketId: <bigint>,
    *         name: <string>,
    *         usage: <bigint>,
    *         useCount: <bigint>,
    *         lastAccessed: <Time>,
    *         lastModified: <Time>
-   *          }]
-   *        }
+   *        }]
    *      }
    *    }
    */
 
   for (let i = 0; i < bucketTableEntries.length; i++) {
     const entry = bucketTableEntries[i];
-    const bucketTableEntryObj: StorageTypeBucketTableEntry = {
+    const bucketTableEntryObj: BucketEntry = {
       bucketId: entry.bucketId.toString(),
       name: entry.name,
       usage: entry.usage.toString(),
@@ -166,108 +151,68 @@ async function renderUsageAndQuotaStats() {
     if (!(entry.storageKey in bucketTableEntriesByStorageKey)) {
       bucketTableEntriesByStorageKey[entry.storageKey] = {
         'bucketCount': 0,
-        'storageKeyEntries': {},
+        'storageKeyEntries': [],
       };
     }
-    if (!(entry.type in bucketTableEntriesByStorageKey[entry.storageKey]
-                                                      ['storageKeyEntries'])) {
-      bucketTableEntriesByStorageKey[entry
-                                         .storageKey]['storageKeyEntries'][entry
-                                                                               .type] =
-          [bucketTableEntryObj];
-      bucketTableEntriesByStorageKey[entry.storageKey]['bucketCount'] += 1;
-    } else {
-      bucketTableEntriesByStorageKey[entry
-                                         .storageKey]['storageKeyEntries'][entry
-                                                                               .type]
-          .push(bucketTableEntryObj);
-      bucketTableEntriesByStorageKey[entry.storageKey]['bucketCount'] += 1;
-    }
+    bucketTableEntriesByStorageKey[entry.storageKey]['storageKeyEntries'].push(
+        bucketTableEntryObj);
+    bucketTableEntriesByStorageKey[entry.storageKey]['bucketCount'] += 1;
   }
 
   const storageKeys: string[] = Object.keys(bucketTableEntriesByStorageKey);
 
   /* Populate the rows of the Usage and Quota table by iterating over:
    * each storage key in bucketTableEntriesByStorageKey,
-   * each storage key's storage type(s),
-   * and each storage type's bucket(s). */
+   * each storage key's bucket(s). */
 
   // Iterate over each storageKey in bucketTableEntriesByStorageKey.
   for (let i = 0; i < storageKeys.length; i++) {
     const storageKey: string = storageKeys[i];
     const storageKeyRowSpan =
         bucketTableEntriesByStorageKey[storageKey]['bucketCount'];
-    const bucketsByStorageType: StorageTypeEntries =
+    const buckets: BucketEntry[] =
         bucketTableEntriesByStorageKey[storageKey]['storageKeyEntries'];
-    const storageTypes: StorageType[] =
-        Object.keys(bucketsByStorageType).map(typeStr => Number(typeStr));
 
-    // Iterate over each storageType for a given storage key.
-    for (let j = 0; j < storageTypes.length; j++) {
-      const storageType: StorageType = storageTypes[j];
-      const bucketsForStorageType: StorageTypeBucketTableEntry[] =
-          bucketsByStorageType[storageType];
-      const storageTypeRowSpan: number =
-          bucketsByStorageType[storageType].length;
+    // Iterate over each bucket for a given storageKey.
+    for (let k = 0; k < buckets.length; k++) {
+      const isFirstStorageKeyRow: boolean = (k === 0);
 
-      // Iterate over each bucket for a given storageKey and storageType.
-      for (let k = 0; k < bucketsForStorageType.length; k++) {
-        const isFirstStorageKeyRow: boolean = (j === 0 && k === 0);
-        const isFirstStorageType: boolean = (k === 0);
+      // Initialize a Usage and Quota table row template.
+      const rowTemplate: HTMLTemplateElement =
+          document.body.querySelector<HTMLTemplateElement>(
+              '#usage-and-quota-row')!;
+      const tableBody: HTMLTableElement =
+          document.body.querySelector<HTMLTableElement>(
+              '#usage-and-quota-tbody')!;
+      const usageAndQuotaRowTemplate: HTMLTemplateElement =
+          rowTemplate.cloneNode(true) as HTMLTemplateElement;
+      const usageAndQuotaRow = usageAndQuotaRowTemplate.content;
 
-        // Initialize a Usage and Quota table row template.
-        const rowTemplate: HTMLTemplateElement =
-            document.body.querySelector<HTMLTemplateElement>(
-                '#usage-and-quota-row')!;
-        const tableBody: HTMLTableElement =
-            document.body.querySelector<HTMLTableElement>(
-                '#usage-and-quota-tbody')!;
-        const usageAndQuotaRowTemplate: HTMLTemplateElement =
-            rowTemplate.cloneNode(true) as HTMLTemplateElement;
-        const usageAndQuotaRow = usageAndQuotaRowTemplate.content;
+      usageAndQuotaRow.querySelector('.storage-key')!.textContent = storageKey;
+      usageAndQuotaRow.querySelector('.storage-key')!.setAttribute(
+          'rowspan', `${storageKeyRowSpan}`);
+      usageAndQuotaRow.querySelector('.bucket')!.textContent = buckets[k].name;
+      usageAndQuotaRow.querySelector('.usage')!.textContent = buckets[k].usage;
+      usageAndQuotaRow.querySelector('.use-count')!.textContent =
+          buckets[k].useCount;
+      usageAndQuotaRow.querySelector('.last-accessed')!.textContent =
+          buckets[k].lastAccessed;
+      usageAndQuotaRow.querySelector('.last-modified')!.textContent =
+          buckets[k].lastModified;
 
-        usageAndQuotaRow.querySelector('.storage-key')!.textContent =
-            storageKey;
-        usageAndQuotaRow.querySelector('.storage-key')!.setAttribute(
-            'rowspan', `${storageKeyRowSpan}`);
-        usageAndQuotaRow.querySelector('.storage-type')!.textContent =
-            StorageType[storageType];
-        usageAndQuotaRow.querySelector('.storage-type')!.setAttribute(
-            'rowspan', `${storageTypeRowSpan}`);
-        usageAndQuotaRow.querySelector('.bucket')!.textContent =
-            bucketsForStorageType[k].name;
-        usageAndQuotaRow.querySelector('.usage')!.textContent =
-            bucketsForStorageType[k].usage;
-        usageAndQuotaRow.querySelector('.use-count')!.textContent =
-            bucketsForStorageType[k].useCount;
-        usageAndQuotaRow.querySelector('.last-accessed')!.textContent =
-            bucketsForStorageType[k].lastAccessed;
-        usageAndQuotaRow.querySelector('.last-modified')!.textContent =
-            bucketsForStorageType[k].lastModified;
-
-        /* If the current row is not the first of its kind for a given storage
-         * key, remove the storage key cell when appending the row to the table
-         * body. This creates a nested row to the right of the storage key cell.
-         */
-        if (!isFirstStorageKeyRow) {
-          usageAndQuotaRow.querySelector('.storage-key')!.remove();
-        }
-
-        /* If the current storage type (temporary, syncable) is not
-         * the first of its kind for a given storage key and storage type,
-         * remove the Storage Type cells from the row before
-         * appending the row to the table body.
-         * This creates a nested row to the right of the Storage Type cell. */
-        if (!isFirstStorageType) {
-          usageAndQuotaRow.querySelector('.storage-type')!.remove();
-        }
-        tableBody.appendChild(usageAndQuotaRow);
+      /* If the current row is not the first of its kind for a given storage
+       * key, remove the storage key cell when appending the row to the table
+       * body. This creates a nested row to the right of the storage key cell.
+       */
+      if (!isFirstStorageKeyRow) {
+        usageAndQuotaRow.querySelector('.storage-key')!.remove();
       }
+      tableBody.appendChild(usageAndQuotaRow);
     }
   }
 }
 
-async function renderSimulateStoragePressureButton() {
+function renderSimulateStoragePressureButton() {
   getProxy().isSimulateStoragePressureAvailable().then(result => {
     if (!result.available) {
       document.body

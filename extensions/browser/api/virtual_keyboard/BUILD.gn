@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions,
        "Cannot depend on extensions because enable_extensions=false.")
+assert(is_chromeos)
 
 source_set("virtual_keyboard") {
   sources = [
@@ -16,16 +17,15 @@ source_set("virtual_keyboard") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//extensions/browser/api/virtual_keyboard_private",
-    "//extensions/common",
+  public_deps = [
+    "//extensions/browser:browser_sources",
     "//extensions/common/api",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//ui/base/ime/ash" ]
-  }
-
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//base",
+    "//extensions/browser/api/virtual_keyboard_private",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
+    "//ui/base/ime/ash",
+  ]
 }

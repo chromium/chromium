@@ -45,12 +45,11 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   // Add the semi-opaque background layer.
-  background_ =
-      AddChildView(views::Builder<views::View>()
-                       .SetPaintToLayer()
-                       .SetBackground(views::CreateThemedSolidBackground(
-                           kColorPipWindowBackground))
-                       .Build());
+  background_ = AddChildView(views::Builder<views::View>()
+                                 .SetPaintToLayer()
+                                 .SetBackground(views::CreateSolidBackground(
+                                     kColorPipWindowBackground))
+                                 .Build());
   background_->layer()->SetOpacity(0.0f);
 
   // TODO(crbug.com/356210387): Apply blur directly to `background_` layer.

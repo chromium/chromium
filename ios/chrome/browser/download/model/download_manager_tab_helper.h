@@ -7,12 +7,15 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
 #include "ios/web/public/download/download_task_observer.h"
 #include "ios/web/public/web_state_observer.h"
 #include "ios/web/public/web_state_user_data.h"
+
+@protocol SnackbarCommands;
 
 namespace web {
 class DownloadTask;
@@ -30,8 +33,20 @@ class DownloadManagerTabHelper
 
   ~DownloadManagerTabHelper() override;
 
+  // Returns whether downloads should be restricted. It checks if downloads
+  // should be restricted based on the download restriction policy for files,
+  // save to drive policy, and incognito.
+  static bool ShouldRestrictDownload(web::WebState* web_state);
+
+  // Returns whether downloads to file should be restricted. It checks if
+  // downloads should be restricted based on the download restriction policy.
+  static bool ShouldRestrictDownloadToFile(web::WebState* web_state);
+
   // Set the current download task for this tab.
   virtual void SetCurrentDownload(std::unique_ptr<web::DownloadTask> task);
+
+  // Returns the final file path for the current download if stored locally.
+  const base::FilePath& GetDownloadTaskFinalFilePath() const;
 
   // Returns `true` after Download() was called, `false` after the task was
   // cancelled.
@@ -42,6 +57,9 @@ class DownloadManagerTabHelper
 
   // Sets the delegate. The tab helper will no-op if the delegate is nil.
   void SetDelegate(id<DownloadManagerTabHelperDelegate> delegate);
+
+  // Sets the snackbar handler.
+  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
 
   // Starts the current download task. Asserts that `task == task_`.
   virtual void StartDownload(web::DownloadTask* task);
@@ -77,14 +95,27 @@ class DownloadManagerTabHelper
   void OnDownloadPolicyDecision(std::unique_ptr<web::DownloadTask> task,
                                 NewDownloadPolicy policy);
 
+  // Displays a snackbar when download is restricted.
+  void ShowRestrictDownloadSnackbar();
+
+  // Use `user_documents_path` as the download file destination.
+  void UseAvailableUserDocumentsPath(base::FilePath user_documents_path);
+
+  // Moves the downloaded file to user's Documents if it exists.
+  void MoveToUserDocumentsIfFileExists(base::FilePath task_path,
+                                       bool file_exists);
+
+  // Checks if the move has been completed.
+  void MoveComplete(bool move_completed);
+
   raw_ptr<web::WebState> web_state_ = nullptr;
   __weak id<DownloadManagerTabHelperDelegate> delegate_ = nil;
+  __weak id<SnackbarCommands> snackbar_handler_ = nil;
   std::unique_ptr<web::DownloadTask> task_;
+  base::FilePath task_final_file_path_;
   bool delegate_started_ = false;
 
   base::WeakPtrFactory<DownloadManagerTabHelper> weak_ptr_factory_{this};
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_DOWNLOAD_MANAGER_TAB_HELPER_H_

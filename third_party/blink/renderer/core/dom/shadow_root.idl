@@ -37,14 +37,6 @@ interface ShadowRoot : DocumentFragment {
     readonly attribute boolean delegatesFocus;
     readonly attribute SlotAssignmentMode slotAssignment;
 
-    [RuntimeEnabled=ScopedCustomElementRegistry]
-    readonly attribute CustomElementRegistry? registry;
-
-    // Declarative Shadow DOM getInnerHTML() function. This version should be
-    // considered deprecated, as we work to standardize the version below,
-    // getHTML().
-    [Affects=Nothing, MeasureAs=ElementGetInnerHTML, RuntimeEnabled=ElementGetInnerHTML] HTMLString getInnerHTML(optional GetInnerHTMLOptions options = {});
-
     // Declarative Shadow DOM getHTML() function.
     [Affects=Nothing, MeasureAs=ElementGetHTML, RaisesException] HTMLString getHTML(optional GetHTMLOptions options = {});
 
@@ -89,6 +81,9 @@ interface ShadowRoot : DocumentFragment {
                             (DOMString or ElementCreationOptions) options);
 
     [RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString string);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLUnsafe,CEReactions] void setHTMLUnsafe(HTMLString html, SetHTMLUnsafeOptions options);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,MeasureAs=SetHTMLSafe,CEReactions] void setHTML(DOMString html, optional SetHTMLOptions options = {});
+
 };
 
 ShadowRoot includes DocumentOrShadowRoot;

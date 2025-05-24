@@ -17,6 +17,7 @@ namespace blink {
 
 class ExecutionContext;
 class Permissions;
+class V8PermissionState;
 
 class PermissionStatusListener final
     : public GarbageCollected<PermissionStatusListener>,
@@ -57,7 +58,7 @@ class PermissionStatusListener final
   bool HasPendingActivity();
   void SetStatus(MojoPermissionStatus status) { status_ = status; }
 
-  String state() const;
+  V8PermissionState state() const;
   String name() const;
 
   void Trace(Visitor*) const override;

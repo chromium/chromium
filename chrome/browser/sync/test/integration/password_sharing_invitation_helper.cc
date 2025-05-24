@@ -70,9 +70,8 @@ std::vector<uint8_t> EncryptInvitationData(
 
   std::optional<std::vector<uint8_t>> result =
       sender_cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(serialized_data)),
-          base::as_bytes(
-              base::make_span(recipient_public_key.x25519_public_key())));
+          base::as_byte_span(serialized_data),
+          base::as_byte_span(recipient_public_key.x25519_public_key()));
   CHECK(result);
 
   return result.value();

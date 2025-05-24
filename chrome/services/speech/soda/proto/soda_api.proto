@@ -13,7 +13,7 @@ package speech.soda.chrome;
 option optimize_for = LITE_RUNTIME;
 option java_multiple_files = true;
 
-// Next ID to use: 17
+// Next ID to use: 20
 message ExtendedSodaConfigMsg {
   // Number of channels in RAW audio that will be provided to SODA.
   optional int32 channel_count = 1;
@@ -80,6 +80,31 @@ message ExtendedSodaConfigMsg {
 
   // Whether to mask / leave offensive words in recognition.
   optional bool mask_offensive_words = 16 [default = false];
+
+  enum SpeakerDiarizationMode {
+    // Not specified.
+    DIARIZATION_UNSPECIFIED = 0;
+
+    // Do not use speaker diarization. The default.
+    SPEAKER_DIARIZATION_MODE_OFF_DEFAULT = 1;
+
+    // Use Speaker turn detection.
+    SPEAKER_CHANGE_DETECTION = 2;
+
+    // Use full Speaker Diarization.
+    SPEAKER_LABEL_DETECTION = 3;
+  }
+
+  optional SpeakerDiarizationMode speaker_diarization_mode = 17
+      [default = SPEAKER_DIARIZATION_MODE_OFF_DEFAULT];
+
+  // When diarization set to SPEAKER_LABEL_DETECTION, maximum number of labels
+  // to set.
+  optional int32 max_speaker_count = 18 [default = 2];
+
+  // Set to enable context biasing such as making the given phrases more likely
+  // to appear in the results.
+  optional RecognitionContext recognition_context = 19;
 }
 
 // Next ID: 3
@@ -96,6 +121,36 @@ message MultilangConfig {
   // spoken language changed and the new language detected. The audio buffer
   // rewind will try to cover this gap. See b/218705498 for additional details.
   optional bool rewind_when_switching_language = 2;
+}
+
+// Required by the RecognitionContext as the context input for the SODA API.
+message ContextInput {
+  message Phrase {
+    // Text to be boosted in the model.
+    optional string phrase = 1;
+
+    // Represents approximately the natural log of the number of times more
+    // likely you think this phrase is than what the recognizer knows. A
+    // reasonable boost value should be inside the range [0, 10], with a default
+    // value of 1. A boost value of 0 means the phrase is not boosted at all,
+    // and a higher boost value means the phrase is more likely to appear.
+    optional float boost = 2;
+  }
+
+  message Phrases {
+    repeated Phrase phrase = 1;
+  }
+
+  // A unique ID for the name of the context used to identify which model the
+  // data feeds into.
+  optional string name = 1;
+
+  // Phrases context that will generally be plugged directly into the model.
+  optional Phrases phrases = 2;
+}
+
+message RecognitionContext {
+  repeated ContextInput context = 1;
 }
 
 // Next id: 5

@@ -27,8 +27,9 @@ TabModalConfirmDialogDelegate::~TabModalConfirmDialogDelegate() {
 }
 
 void TabModalConfirmDialogDelegate::Cancel() {
-  if (closing_)
+  if (closing_) {
     return;
+  }
   // Make sure we won't do anything when another action occurs.
   closing_ = true;
   OnCanceled();
@@ -36,8 +37,9 @@ void TabModalConfirmDialogDelegate::Cancel() {
 }
 
 void TabModalConfirmDialogDelegate::Accept() {
-  if (closing_)
+  if (closing_) {
     return;
+  }
   // Make sure we won't do anything when another action occurs.
   closing_ = true;
   OnAccepted();
@@ -45,8 +47,9 @@ void TabModalConfirmDialogDelegate::Accept() {
 }
 
 void TabModalConfirmDialogDelegate::Close() {
-  if (closing_)
+  if (closing_) {
     return;
+  }
   // Make sure we won't do anything when another action occurs.
   closing_ = true;
   OnClosed();
@@ -55,8 +58,9 @@ void TabModalConfirmDialogDelegate::Close() {
 
 void TabModalConfirmDialogDelegate::LinkClicked(
     WindowOpenDisposition disposition) {
-  if (closing_)
+  if (closing_) {
     return;
+  }
   OnLinkClicked(disposition);
 }
 
@@ -99,8 +103,9 @@ void TabModalConfirmDialogDelegate::OnLinkClicked(
 void TabModalConfirmDialogDelegate::OnClosed() {}
 
 void TabModalConfirmDialogDelegate::CloseDialog() {
-  if (close_delegate_)
+  if (close_delegate_) {
     close_delegate_->CloseDialog();
+  }
 }
 
 std::optional<int> TabModalConfirmDialogDelegate::GetDefaultDialogButton() {

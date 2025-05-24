@@ -2,9 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/toolchain/siso.gni")
-
 # Defines the configuration of Remote Build Execution (RBE).
+
+import("//build/toolchain/remoteexec_defaults.gni")
+import("//build/toolchain/siso.gni")
 
 declare_args() {
   # Deprecated: Please use reclient_bin_dir instead.
@@ -24,15 +25,25 @@ declare_args() {
 
   # Set to true to enable remote executions.
   use_remoteexec = false
+}
 
-  # Set to true to enable remote linking using reclient.
-  use_reclient_links = false
+if (rbe_exec_root != rebase_path("//")) {
+  assert(!use_siso, "Can't use non-default rbe_exec_root with siso.")
+}
+
+use_reclient_default = false
+if (use_remoteexec) {
+  if (use_siso) {
+    use_reclient_default = use_reclient_on_siso
+  } else {
+    use_reclient_default = use_reclient_on_ninja
+  }
 }
 
 declare_args() {
-  # Use Reclient as the RBE client by default.
+  # Set to true to use re-client.
   # Set to false to use Siso's builtin RBE client.
-  use_reclient = use_remoteexec
+  use_reclient = use_reclient_default
 
   # The directory where the re-client tooling binaries are.
   if (rbe_bin_dir != "") {
@@ -61,50 +72,53 @@ declare_args() {
 if (use_reclient) {
   assert(use_remoteexec, "Can't enable Reclient when use_remoteexec is false")
 }
+
 if (use_remoteexec) {
-  assert(
-      use_reclient || use_siso,
-      "Either use_reclient or use_siso needs to be true to enable remote executions")
+  assert(use_reclient || use_siso,
+         "Can't enable remoteexec when use_reclient and use_siso are false")
 }
+
+if (use_remoteexec) {
+  rbe_logs = [ "use_remoteexec=true" ]
+} else {
+  rbe_logs = [ "use_remoteexec=false" ]
+}
+
+if (use_reclient) {
+  rbe_logs += [ "use_reclient=true" ]
+} else {
+  rbe_logs += [ "use_reclient=false" ]
+}
+
+# Siso native also uses rewrapper cfg file
+# to get remote platform property.
+use_reclient_cfgs =
+    use_reclient || (use_remoteexec && (host_os == "win" || host_os == "mac"))
 
 declare_args() {
   # Set to the path of the RBE reclient configuration files.
   # Configuration file selection based on operating system.
-  if (!use_reclient) {
+  if (!use_reclient_cfgs) {
     reclient_cc_cfg_file = ""
-    reclient_link_cfg_file = ""
     reclient_py_cfg_file = ""
-    reclient_py_large_cfg_file = ""
-  } else if (host_os == "linux") {
+  } else if (use_reclient && host_os == "linux") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_linux.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_linux_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_linux.cfg"
-    reclient_link_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                             "/chromium-browser-clang/rewrapper_linux_link.cfg"
   } else if (host_os == "win") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_windows.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_windows_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_windows.cfg"
-    reclient_link_cfg_file = ""
   } else if (host_os == "mac") {
     reclient_py_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/python/rewrapper_mac.cfg"
-    reclient_py_large_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
-                                 "/python/rewrapper_mac_large.cfg"
     reclient_cc_cfg_file = rebase_path(reclient_cfg_dir, root_build_dir) +
                            "/chromium-browser-clang/rewrapper_mac.cfg"
-    reclient_link_cfg_file = ""
   } else {
     reclient_cc_cfg_file = ""
-    reclient_link_cfg_file = ""
     reclient_py_cfg_file = ""
-    reclient_py_large_cfg_file = ""
   }
 
   if (use_reclient) {
@@ -125,38 +139,14 @@ declare_args() {
   }
 }
 
-if (use_reclient && current_toolchain == default_toolchain) {
+if (use_reclient_cfgs && current_toolchain == default_toolchain) {
   # Check existence of reclient configs and show user friendly error message if
   # it doesn't.
-  exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
-              [ reclient_cc_cfg_file ],
-              "",
-              [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
-}
-
-if (is_win) {
-  if (use_reclient_links) {
-    print("For now, remote linking is not available for Windows.")
-    use_reclient_links = false
+  if (!path_exists(reclient_cc_cfg_file)) {
+    # Use exec_script() to show a good error message.
+    exec_script(rebase_path("//build/toolchain/check_rewrapper_cfg.py"),
+                [ reclient_cc_cfg_file ],
+                "",
+                [ rebase_path(reclient_cc_cfg_file, ".", root_build_dir) ])
   }
-}
-if (is_mac || is_ios) {
-  if (use_reclient_links) {
-    print("For now, remote linking is not available on Macs.")
-    use_reclient_links = false
-  }
-}
-
-# TODO(crbug.com/326584510): Reclient does not upload `inputs` from C/C++
-# targets. This file is added to `inputs` for all C targets in
-# //build/config/BUILDCONFIG.gn. We work around the bug in Reclient by
-# specifying the file here.
-#
-# This is a comma-delimited list of paths relative to the source tree root. The
-# leading space is important, if the string is non-empty. :)
-rbe_bug_326584510_missing_inputs = ""
-if (defined(clang_unsafe_buffers_paths) &&
-    "$clang_unsafe_buffers_paths" != "") {
-  from_exec_root = rebase_path(clang_unsafe_buffers_paths, rbe_exec_root)
-  rbe_bug_326584510_missing_inputs = " -inputs=$from_exec_root"
 }

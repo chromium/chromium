@@ -206,8 +206,9 @@ class WebSigninInterceptor {
     ShowOidcInterceptionDialog(
         content::WebContents* web_contents,
         const BubbleParameters& bubble_parameters,
-        signin::SigninChoiceWithConfirmationCallback callback,
-        base::OnceClosure dialog_closed_closure) = 0;
+        signin::SigninChoiceWithConfirmAndRetryCallback callback,
+        base::OnceClosure dialog_closed_closure,
+        base::RepeatingClosure retry_callback) = 0;
 
     // Shows the first run experience for `account_id` in `browser` opened for
     // a newly created profile.

@@ -351,6 +351,33 @@ promise_test(async t => {
   assert_equals(videoParameters.encodings[0].maxBitrate, 50);
 }, 'setParameters() set low maxBitrate value');
 
+promise_test(async t => {
+  let pc1 = new RTCPeerConnection();
+  t.add_cleanup(() => pc1.close());
+  let pc2 = new RTCPeerConnection();
+  t.add_cleanup(() => pc2.close());
+
+  const videoTransceiver = pc1.addTransceiver('video',
+    {direction: 'sendonly'});
+
+  // Munge here.
+  let offer = await pc1.createOffer();
+  await pc1.setLocalDescription({type: 'offer', sdp: mungeVideoCodec(offer.sdp)});
+  await pc2.setRemoteDescription(offer);
+
+  let answer = await pc2.createAnswer();
+  await pc2.setLocalDescription({type: 'answer', sdp: mungeVideoCodec(answer.sdp)});
+  await pc1.setRemoteDescription(pc2.localDescription);
+
+  let videoParameters = videoTransceiver.sender.getParameters();
+  let vp9Codec = videoParameters.codecs.find(c => c.mimeType === 'video/VP9');
+  assert_true(!!vp9Codec);
+  videoParameters.encodings[0].codec = vp9Codec;
+
+  await videoTransceiver.sender.setParameters(videoParameters);
+
+}, 'setParameters() to a codec with munging');
+
 /**
   * Helper functions to tests.
   */
@@ -362,6 +389,23 @@ async function exchangeOfferAnswer(localPc, remotePc) {
   let answer = await remotePc.createAnswer();
   await remotePc.setLocalDescription(answer);
   await localPc.setRemoteDescription(answer);
+}
+
+function mungeVideoCodec(sdp) {
+  const lines = sdp.split('\r\n');
+  // Find VP9 payload type.
+  const vp9Idx = lines.findIndex(l => l.startsWith('a=rtpmap:') && l.includes("VP9"));
+  assert_greater_than(vp9Idx, 0);
+  const vp9Line = lines[vp9Idx];
+  assert_true(!!vp9Line);
+  const vp9PtMatch = vp9Line.match(/a=rtpmap:(\d+)/);
+  assert_true(!!vp9PtMatch);
+  const pt = vp9PtMatch[1];
+  assert_true(!!pt);
+  // Add useadaptivelayering to fmtp line.
+  const vp9ftmpIdx = lines.findIndex(l => l.startsWith(`a=fmtp:${pt}`));
+  lines[vp9ftmpIdx] += ';useadaptivelayering=true';
+  return lines.join('\r\n');
 }
 
 </script>

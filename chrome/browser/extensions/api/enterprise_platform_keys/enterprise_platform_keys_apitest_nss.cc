@@ -15,6 +15,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ash/scoped_test_system_nss_key_slot_mixin.h"
 #include "chromeos/ash/components/chaps_util/test_util.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -60,12 +62,13 @@ namespace {
 constexpr char kExtensionId[] = "aecpbnckhoppanpmefllkdkohionpmig";
 
 // Keys of configuration options sent by the C++ side to the JS side of the
-// test.
-// NOTE: the strings must stay in sync with the JS code.
+// test. NOTE: the strings must stay in sync with the JS code.
 // * whether the test is running in a user session:
 constexpr char kIsUserSessionTestConfig[] = "isUserSessionTest";
 // * whether the system token is enabled or not:
 constexpr char kSystemTokenEnabledConfig[] = "systemTokenEnabled";
+// * whether the `PlatformKeysChangesWave1` feature flag is enabled or not:
+constexpr char kChangesWave1EnabledConfig[] = "changesWave1Enabled";
 
 // The test extension has a certificate referencing this private key which will
 // be stored in the user's token in the test setup.
@@ -138,7 +141,7 @@ const unsigned char privateKeyPkcs8System[] = {
     0xd8, 0x71, 0x69, 0x5e, 0x8d, 0xb4, 0x48, 0x1c, 0xa4, 0x01, 0xce, 0xc1,
     0xb5, 0x6f, 0xe9, 0x1b, 0x32, 0x91, 0x34, 0x38};
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 base::FilePath GetExtensionDirName(ContextType context_type) {
   base::FilePath path =
@@ -190,10 +193,13 @@ void ImportPrivateKeyPKCS8ToSlot(const unsigned char* pkcs8_der,
 }
 
 // Builds the tests configuration dictionary and serializes it.
-std::string BuildCustomArg(bool user_session_test, bool system_token_enabled) {
+std::string BuildCustomArg(bool is_user_session_test,
+                           bool system_token_enabled,
+                           bool changes_wave1_enabled) {
   base::Value::Dict custom_arg_value;
-  custom_arg_value.Set(kIsUserSessionTestConfig, user_session_test);
+  custom_arg_value.Set(kIsUserSessionTestConfig, is_user_session_test);
   custom_arg_value.Set(kSystemTokenEnabledConfig, system_token_enabled);
+  custom_arg_value.Set(kChangesWave1EnabledConfig, changes_wave1_enabled);
 
   std::string custom_arg;
   if (!base::JSONWriter::Write(custom_arg_value, &custom_arg)) {
@@ -202,34 +208,52 @@ std::string BuildCustomArg(bool user_session_test, bool system_token_enabled) {
   return custom_arg;
 }
 
-struct Params {
-  Params(PlatformKeysTestBase::SystemTokenStatus system_token_status,
-         PlatformKeysTestBase::EnrollmentStatus enrollment_status,
-         PlatformKeysTestBase::UserStatus user_status,
-         ContextType context_type)
+struct UserSessionParams {
+  UserSessionParams(PlatformKeysTestBase::SystemTokenStatus system_token_status,
+                    PlatformKeysTestBase::EnrollmentStatus enrollment_status,
+                    PlatformKeysTestBase::UserStatus user_status,
+                    bool changes_wave1_enabled,
+                    ContextType context_type)
       : system_token_status_(system_token_status),
         enrollment_status_(enrollment_status),
         user_status_(user_status),
+        changes_wave1_enabled_(changes_wave1_enabled),
         context_type_(context_type) {}
 
   PlatformKeysTestBase::SystemTokenStatus system_token_status_;
   PlatformKeysTestBase::EnrollmentStatus enrollment_status_;
   PlatformKeysTestBase::UserStatus user_status_;
+  bool changes_wave1_enabled_;
   ContextType context_type_;
 };
 
-class EnterprisePlatformKeysTest
+class EnterprisePlatformKeysUserSessionTest
     : public PlatformKeysTestBase,
-      public ::testing::WithParamInterface<Params> {
+      public ::testing::WithParamInterface<UserSessionParams> {
  public:
-  EnterprisePlatformKeysTest()
+  EnterprisePlatformKeysUserSessionTest()
       : PlatformKeysTestBase(GetParam().system_token_status_,
                              GetParam().enrollment_status_,
-                             GetParam().user_status_) {}
+                             GetParam().user_status_) {
+    if (GetParam().changes_wave1_enabled_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::features::kPlatformKeysChangesWave1);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::features::kPlatformKeysChangesWave1);
+    }
+  }
 
-  EnterprisePlatformKeysTest(const EnterprisePlatformKeysTest&) = delete;
-  EnterprisePlatformKeysTest& operator=(const EnterprisePlatformKeysTest&) =
-      delete;
+  ~EnterprisePlatformKeysUserSessionTest() override = default;
+  EnterprisePlatformKeysUserSessionTest(
+      const EnterprisePlatformKeysUserSessionTest&) = delete;
+  EnterprisePlatformKeysUserSessionTest& operator=(
+      const EnterprisePlatformKeysUserSessionTest&) = delete;
+
+ protected:
+  ExtensionForceInstallMixin& extension_force_install_mixin() {
+    return extension_force_install_mixin_;
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PlatformKeysTestBase::SetUpCommandLine(command_line);
@@ -246,7 +270,6 @@ class EnterprisePlatformKeysTest
         profile(), mock_policy_provider());
   }
 
- protected:
   bool IsSystemTokenEnabled() const {
     return system_token_status() == SystemTokenStatus::EXISTS &&
            enrollment_status() == EnrollmentStatus::ENROLLED &&
@@ -258,17 +281,18 @@ class EnterprisePlatformKeysTest
                              "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6");
   }
 
-  ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
-
  private:
   void PrepareTestSystemSlotOnIO(
       crypto::ScopedTestSystemNSSKeySlot* system_slot) override {
-    // Import a private key to the system slot.  The Javascript part of this
-    // test has a prepared certificate for this key.
+    // Import a private key to the system slot. The Javascript part of this test
+    // has a prepared certificate for this key.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8System,
                                 std::size(privateKeyPkcs8System),
                                 system_slot->slot());
   }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+  ExtensionForceInstallMixin extension_force_install_mixin_{&mixin_host_};
 
   // Allows tests to generate software-backed keys by configuring fake ChapsUtil
   // instances to be created in its constructor (and undoing the change in its
@@ -278,31 +302,33 @@ class EnterprisePlatformKeysTest
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, PRE_Basic) {
+IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysUserSessionTest, PRE_Basic) {
   AddScreenplayTag();
   RunPreTest();
 }
 
-IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
+IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysUserSessionTest, Basic) {
   AddScreenplayTag();
   {
     base::test::TestFuture<net::NSSCertDatabase*> get_db_future;
     NssServiceFactory::GetForContext(profile())
         ->UnsafelyGetNSSCertDatabaseForTesting(get_db_future.GetCallback());
     // In order to use a prepared certificate, import a private key to the
-    // user's token for which the Javscript test will import the certificate.
+    // user's token for which the Javascript test will import the certificate.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8User,
                                 std::size(privateKeyPkcs8User),
                                 get_db_future.Get()->GetPrivateSlot().get());
   }
 
-  SetCustomArg(BuildCustomArg(/*user_session_test=*/true,
-                              /*system_token_enabled=*/IsSystemTokenEnabled()));
+  SetCustomArg(
+      BuildCustomArg(/*user_session_test=*/true,
+                     /*system_token_enabled=*/IsSystemTokenEnabled(),
+                     chromeos::features::IsPlatformKeysChangesWave1Enabled()));
 
   extensions::ResultCatcher catcher;
 
   extensions::ExtensionId extension_id;
-  ASSERT_TRUE(extension_force_install_mixin_.ForceInstallFromSourceDir(
+  ASSERT_TRUE(extension_force_install_mixin().ForceInstallFromSourceDir(
       GetExtensionDirName(GetParam().context_type_), GetExtensionPemFileName(),
       ExtensionForceInstallMixin::WaitMode::kLoad, &extension_id));
   ASSERT_EQ(kExtensionId, extension_id);
@@ -311,46 +337,120 @@ IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysTest, Basic) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    PersistentBackground_CheckSystemTokenAvailability,
-    EnterprisePlatformKeysTest,
+    PersistentBackground_CheckSystemTokenAvailability_ChangesWave1Enabled,
+    EnterprisePlatformKeysUserSessionTest,
     ::testing::Values(
-        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kPersistentBackground),
-        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kPersistentBackground),
-        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kPersistentBackground),
-        Params(PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kPersistentBackground)));
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kPersistentBackground),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kPersistentBackground),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kPersistentBackground),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kPersistentBackground)));
 
 INSTANTIATE_TEST_SUITE_P(
-    ServiceWorker_CheckSystemTokenAvailability,
-    EnterprisePlatformKeysTest,
+    PersistentBackground_CheckSystemTokenAvailability_ChangesWave1Disabled,
+    EnterprisePlatformKeysUserSessionTest,
     ::testing::Values(
-        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kServiceWorker),
-        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kServiceWorker),
-        Params(PlatformKeysTestBase::SystemTokenStatus::EXISTS,
-               PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
-               ContextType::kServiceWorker),
-        Params(PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
-               PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
-               PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
-               ContextType::kServiceWorker)));
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kPersistentBackground),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kPersistentBackground),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kPersistentBackground),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker_CheckSystemTokenAvailability_ChangesWave1Enabled,
+    EnterprisePlatformKeysUserSessionTest,
+    ::testing::Values(
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kServiceWorker),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kServiceWorker),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kServiceWorker),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/true,
+            ContextType::kServiceWorker)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ServiceWorker_CheckSystemTokenAvailability_ChangesWave1Disabled,
+    EnterprisePlatformKeysUserSessionTest,
+    ::testing::Values(
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kServiceWorker),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kServiceWorker),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::EXISTS,
+            PlatformKeysTestBase::EnrollmentStatus::NOT_ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_OTHER_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kServiceWorker),
+        UserSessionParams(
+            PlatformKeysTestBase::SystemTokenStatus::DOES_NOT_EXIST,
+            PlatformKeysTestBase::EnrollmentStatus::ENROLLED,
+            PlatformKeysTestBase::UserStatus::MANAGED_AFFILIATED_DOMAIN,
+            /*changes_wave1_enabled=*/false,
+            ContextType::kServiceWorker)));
 
 class EnterprisePlatformKeysIsRestrictedTest
     : public ExtensionApiTest,
@@ -400,11 +500,29 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          EnterprisePlatformKeysIsRestrictedTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
+struct LoginScreenParams {
+  LoginScreenParams(bool changes_wave1_enabled, ContextType context_type)
+      : changes_wave1_enabled_(changes_wave1_enabled),
+        context_type_(context_type) {}
+
+  bool changes_wave1_enabled_;
+  ContextType context_type_;
+};
+
 class EnterprisePlatformKeysLoginScreenTest
     : public extensions::MixinBasedExtensionApiTest,
-      public ::testing::WithParamInterface<ContextType> {
+      public ::testing::WithParamInterface<LoginScreenParams> {
  public:
-  EnterprisePlatformKeysLoginScreenTest() = default;
+  EnterprisePlatformKeysLoginScreenTest() {
+    if (GetParam().changes_wave1_enabled_) {
+      scoped_feature_list_.InitAndEnableFeature(
+          chromeos::features::kPlatformKeysChangesWave1);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          chromeos::features::kPlatformKeysChangesWave1);
+    }
+  }
+
   EnterprisePlatformKeysLoginScreenTest(
       const EnterprisePlatformKeysLoginScreenTest&) = delete;
   EnterprisePlatformKeysLoginScreenTest& operator=(
@@ -412,8 +530,8 @@ class EnterprisePlatformKeysLoginScreenTest
   ~EnterprisePlatformKeysLoginScreenTest() override = default;
 
  protected:
-  ExtensionForceInstallMixin* extension_force_install_mixin() {
-    return &extension_force_install_mixin_;
+  ExtensionForceInstallMixin& extension_force_install_mixin() {
+    return extension_force_install_mixin_;
   }
 
   void AddScreenplayTag() {
@@ -421,7 +539,6 @@ class EnterprisePlatformKeysLoginScreenTest
                              "screenplay-f9cdeb9c-d567-4d70-a2dc-9ee4203175e6");
   }
 
- private:
   void SetUp() override {
     ash::platform_keys::PlatformKeysServiceFactory::GetInstance()
         ->SetTestingMode(true);
@@ -444,6 +561,8 @@ class EnterprisePlatformKeysLoginScreenTest
                                     kExtensionId);
   }
 
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   ash::DeviceStateMixin device_state_mixin_{
       &mixin_host_,
       ash::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -459,25 +578,28 @@ class EnterprisePlatformKeysLoginScreenTest
 IN_PROC_BROWSER_TEST_P(EnterprisePlatformKeysLoginScreenTest, Basic) {
   AddScreenplayTag();
   base::Value::Dict config;
-  config.Set("customArg", BuildCustomArg(/*user_session_test=*/false,
-                                         /*system_token_enabled=*/true));
+  config.Set(
+      "customArg",
+      BuildCustomArg(/*user_session_test=*/false, /*system_token_enabled=*/true,
+                     chromeos::features::IsPlatformKeysChangesWave1Enabled()));
   extensions::TestGetConfigFunction::set_test_config_state(&config);
-
   extensions::ResultCatcher catcher;
-
   extensions::ExtensionId extension_id;
 
-  ASSERT_TRUE(extension_force_install_mixin()->ForceInstallFromSourceDir(
-      GetExtensionDirName(GetParam()), GetExtensionPemFileName(),
+  ASSERT_TRUE(extension_force_install_mixin().ForceInstallFromSourceDir(
+      GetExtensionDirName(GetParam().context_type_), GetExtensionPemFileName(),
       ExtensionForceInstallMixin::WaitMode::kLoad, &extension_id));
   ASSERT_EQ(kExtensionId, extension_id);
-
   ASSERT_TRUE(catcher.GetNextResult());
 }
 
-INSTANTIATE_TEST_SUITE_P(PersistentBackground,
-                         EnterprisePlatformKeysLoginScreenTest,
-                         ::testing::Values(ContextType::kPersistentBackground));
+INSTANTIATE_TEST_SUITE_P(
+    PersistentBackground,
+    EnterprisePlatformKeysLoginScreenTest,
+    ::testing::Values(LoginScreenParams(/*changes_wave1_enabled=*/true,
+                                        ContextType::kPersistentBackground),
+                      LoginScreenParams(/*changes_wave1_enabled=*/false,
+                                        ContextType::kPersistentBackground)));
 
 // TODO(crbug.com/40217298): Service workers don't work in the login screen
 // context. Investigate and fix.

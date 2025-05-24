@@ -9,14 +9,20 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/public/web/web_render_theme.h"
+#include "third_party/blink/renderer/core/css/document_style_environment_variables.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_emulator.h"
 #include "third_party/blink/renderer/core/inspector/locale_controller.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom.h"
+#include "third_party/blink/renderer/core/inspector/protocol/emulation.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -32,7 +38,46 @@
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
 
 namespace blink {
-using protocol::Maybe;
+
+namespace {
+
+void SetOrUnsetVariable(DocumentStyleEnvironmentVariables& variables,
+                        UADefinedVariable variable,
+                        std::optional<int> value) {
+  if (value.has_value()) {
+    variables.SetVariable(variable,
+                          StyleEnvironmentVariables::FormatPx(*value));
+  } else {
+    variables.RemoveVariable(variable);
+  }
+}
+
+void ApplySafeAreaInsetOverride(
+    LocalFrame* frame,
+    const protocol::Emulation::SafeAreaInsets& insets) {
+  if (Document* document = frame->GetDocument()) {
+    DocumentStyleEnvironmentVariables& vars =
+        document->GetStyleEngine().EnsureEnvironmentVariables();
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetTop,
+                       insets.getTop());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetTop,
+                       insets.getTopMax());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetLeft,
+                       insets.getLeft());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetLeft,
+                       insets.getLeftMax());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetBottom,
+                       insets.getBottom());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetBottom,
+                       insets.getBottomMax());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaInsetRight,
+                       insets.getRight());
+    SetOrUnsetVariable(vars, UADefinedVariable::kSafeAreaMaxInsetRight,
+                       insets.getRightMax());
+  }
+}
+
+}  // namespace
 
 InspectorEmulationAgent::InspectorEmulationAgent(
     WebLocalFrameImpl* web_local_frame_impl,
@@ -70,7 +115,11 @@ InspectorEmulationAgent::InspectorEmulationAgent(
       timezone_id_override_(&agent_state_, /*default_value=*/WTF::String()),
       disabled_image_types_(&agent_state_, /*default_value=*/false),
       cpu_throttling_rate_(&agent_state_, /*default_value=*/1),
-      automation_override_(&agent_state_, /*default_value=*/false) {}
+      automation_override_(&agent_state_, /*default_value=*/false),
+      safe_area_insets_override_(&agent_state_,
+                                 /*default_value=*/std::vector<uint8_t>()),
+      small_viewport_height_difference_override_(&agent_state_,
+                                                 /*default_value=*/0.0) {}
 
 InspectorEmulationAgent::~InspectorEmulationAgent() = default;
 
@@ -84,10 +133,9 @@ void InspectorEmulationAgent::Restore() {
   // directly.
   std::vector<uint8_t> save_serialized_ua_metadata_override =
       serialized_ua_metadata_override_.Get();
-  setUserAgentOverride(
-      user_agent_override_.Get(), accept_language_override_.Get(),
-      navigator_platform_override_.Get(),
-      protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
+  setUserAgentOverride(user_agent_override_.Get(),
+                       accept_language_override_.Get(),
+                       navigator_platform_override_.Get(), nullptr);
   ua_metadata_override_ = blink::UserAgentMetadata::Demarshal(std::string(
       reinterpret_cast<char*>(save_serialized_ua_metadata_override.data()),
       save_serialized_ua_metadata_override.size()));
@@ -132,6 +180,15 @@ void InspectorEmulationAgent::Restore() {
     setAutoDarkModeOverride(auto_dark_mode_override_.Get());
   if (!timezone_id_override_.Get().IsNull())
     setTimezoneOverride(timezone_id_override_.Get());
+  auto status_or_insets = protocol::Emulation::SafeAreaInsets::ReadFrom(
+      safe_area_insets_override_.Get());
+  if (status_or_insets.ok()) {
+    setSafeAreaInsetsOverride(std::move(status_or_insets).value());
+  }
+  if (double difference = small_viewport_height_difference_override_.Get()) {
+    web_local_frame_->FrameWidgetImpl()->SetBrowserControlsTopHeightOverride(
+        difference);
+  }
 
   if (virtual_time_policy_.Get().IsNull())
     return;
@@ -143,8 +200,8 @@ void InspectorEmulationAgent::Restore() {
   if (virtual_time_policy_.Get() ==
       protocol::Emulation::VirtualTimePolicyEnum::Pause) {
     setVirtualTimePolicy(
-        protocol::Emulation::VirtualTimePolicyEnum::Pause, Maybe<double>(),
-        Maybe<int>(), initial_virtual_time_.Get(), &virtual_time_ticks_base_ms);
+        protocol::Emulation::VirtualTimePolicyEnum::Pause, std::nullopt,
+        std::nullopt, initial_virtual_time_.Get(), &virtual_time_ticks_base_ms);
     return;
   }
 
@@ -165,9 +222,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   }
 
   hardware_concurrency_override_.Clear();
-  setUserAgentOverride(
-      String(), protocol::Maybe<String>(), protocol::Maybe<String>(),
-      protocol::Maybe<protocol::Emulation::UserAgentMetadata>());
+  setUserAgentOverride(String(), std::nullopt, std::nullopt, nullptr);
   if (!locale_override_.Get().empty())
     setLocaleOverride(String());
   if (!web_local_frame_)
@@ -175,7 +230,7 @@ protocol::Response InspectorEmulationAgent::disable() {
   setScriptExecutionDisabled(false);
   setScrollbarsHidden(false);
   setDocumentCookieDisabled(false);
-  setTouchEmulationEnabled(false, Maybe<int>());
+  setTouchEmulationEnabled(false, std::nullopt);
   setAutomationOverride(false);
   // Clear emulated media features. Note that the current approach
   // doesn't work well in cases where two clients have the same set of
@@ -190,12 +245,20 @@ protocol::Response InspectorEmulationAgent::disable() {
   setCPUThrottlingRate(1);
   setFocusEmulationEnabled(false);
   if (emulate_auto_dark_mode_.Get()) {
-    setAutoDarkModeOverride(Maybe<bool>());
+    setAutoDarkModeOverride(std::nullopt);
   }
   timezone_override_.reset();
-  setDefaultBackgroundColorOverride(Maybe<protocol::DOM::RGBA>());
+  setDefaultBackgroundColorOverride(nullptr);
   disabled_image_types_.Clear();
   return protocol::Response::Success();
+}
+
+void InspectorEmulationAgent::DidCommitLoadForLocalFrame(LocalFrame* frame) {
+  auto status_or_insets = protocol::Emulation::SafeAreaInsets::ReadFrom(
+      safe_area_insets_override_.Get());
+  if (status_or_insets.ok()) {
+    ApplySafeAreaInsetOverride(frame, *std::move(status_or_insets).value());
+  }
 }
 
 protocol::Response InspectorEmulationAgent::resetPageScaleFactor() {
@@ -252,7 +315,7 @@ protocol::Response InspectorEmulationAgent::setDocumentCookieDisabled(
 
 protocol::Response InspectorEmulationAgent::setTouchEmulationEnabled(
     bool enabled,
-    protocol::Maybe<int> max_touch_points) {
+    std::optional<int> max_touch_points) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
@@ -271,8 +334,9 @@ protocol::Response InspectorEmulationAgent::setTouchEmulationEnabled(
 }
 
 protocol::Response InspectorEmulationAgent::setEmulatedMedia(
-    Maybe<String> media,
-    Maybe<protocol::Array<protocol::Emulation::MediaFeature>> features) {
+    std::optional<String> media,
+    std::unique_ptr<protocol::Array<protocol::Emulation::MediaFeature>>
+        features) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
@@ -280,11 +344,12 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
   emulated_media_.Set(media_value);
   GetWebViewImpl()->GetPage()->GetSettings().SetMediaTypeOverride(media_value);
 
-  auto const old_emulated_media_features_keys = emulated_media_features_.Keys();
+  auto const old_emulated_media_features_keys =
+      WTF::ToVector(emulated_media_features_.Keys());
   emulated_media_features_.Clear();
 
-  if (features.has_value()) {
-    for (const auto& media_feature : features.value()) {
+  if (features) {
+    for (const auto& media_feature : *features) {
       String name = media_feature->getName();
       String value = media_feature->getValue();
       emulated_media_features_.Set(name, value);
@@ -408,7 +473,7 @@ protocol::Response InspectorEmulationAgent::setFocusEmulationEnabled(
 }
 
 protocol::Response InspectorEmulationAgent::setAutoDarkModeOverride(
-    Maybe<bool> enabled) {
+    std::optional<bool> enabled) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
@@ -426,9 +491,9 @@ protocol::Response InspectorEmulationAgent::setAutoDarkModeOverride(
 
 protocol::Response InspectorEmulationAgent::setVirtualTimePolicy(
     const String& policy,
-    Maybe<double> virtual_time_budget_ms,
-    protocol::Maybe<int> max_virtual_time_task_starvation_count,
-    protocol::Maybe<double> initial_virtual_time,
+    std::optional<double> virtual_time_budget_ms,
+    std::optional<int> max_virtual_time_task_starvation_count,
+    std::optional<double> initial_virtual_time,
     double* virtual_time_ticks_base_ms) {
   VirtualTimeController::VirtualTimePolicy scheduler_policy =
       VirtualTimeController::VirtualTimePolicy::kPause;
@@ -569,18 +634,18 @@ void InspectorEmulationAgent::VirtualTimeBudgetExpired() {
 }
 
 protocol::Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
-    Maybe<protocol::DOM::RGBA> color) {
+    std::unique_ptr<protocol::DOM::RGBA> color) {
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
-  if (!color.has_value()) {
+  if (!color) {
     // Clear the override and state.
     GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(std::nullopt);
     default_background_color_override_rgba_.Clear();
     return protocol::Response::Success();
   }
 
-  blink::protocol::DOM::RGBA* rgba = &color.value();
+  blink::protocol::DOM::RGBA* rgba = &*color;
   default_background_color_override_rgba_.Set(rgba->Serialize());
   // Clamping of values is done by Color() constructor.
   int alpha = static_cast<int>(lroundf(255.0f * rgba->getA(1.0f)));
@@ -589,21 +654,48 @@ protocol::Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
   return protocol::Response::Success();
 }
 
+protocol::Response InspectorEmulationAgent::setSafeAreaInsetsOverride(
+    std::unique_ptr<protocol::Emulation::SafeAreaInsets> insets) {
+  protocol::Response response = AssertPage();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+  safe_area_insets_override_.Set(insets->Serialize());
+
+  for (Frame* frame = GetWebViewImpl()->GetPage()->MainFrame(); frame;
+       frame = frame->Tree().TraverseNext()) {
+    if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
+      ApplySafeAreaInsetOverride(local_frame, *insets);
+
+      if (!local_frame->IsLocalRoot()) {
+        continue;
+      }
+
+      auto* frame_impl = WebLocalFrameImpl::FromFrame(local_frame);
+      if (auto* widget = frame_impl->FrameWidgetImpl()) {
+        widget->UpdateLifecycle(WebLifecycleUpdate::kAll,
+                                DocumentUpdateReason::kInspector);
+      }
+    }
+  }
+  return protocol::Response::Success();
+}
+
 protocol::Response InspectorEmulationAgent::setDeviceMetricsOverride(
     int width,
     int height,
     double device_scale_factor,
     bool mobile,
-    Maybe<double> scale,
-    Maybe<int> screen_width,
-    Maybe<int> screen_height,
-    Maybe<int> position_x,
-    Maybe<int> position_y,
-    Maybe<bool> dont_set_visible_size,
-    Maybe<protocol::Emulation::ScreenOrientation>,
-    Maybe<protocol::Page::Viewport>,
-    Maybe<protocol::Emulation::DisplayFeature>,
-    Maybe<protocol::Emulation::DevicePosture>) {
+    std::optional<double> scale,
+    std::optional<int> screen_width,
+    std::optional<int> screen_height,
+    std::optional<int> position_x,
+    std::optional<int> position_y,
+    std::optional<bool> dont_set_visible_size,
+    std::unique_ptr<protocol::Emulation::ScreenOrientation>,
+    std::unique_ptr<protocol::Page::Viewport>,
+    std::unique_ptr<protocol::Emulation::DisplayFeature>,
+    std::unique_ptr<protocol::Emulation::DevicePosture>) {
   // We don't have to do anything other than reply to the client, as the
   // emulation parameters should have already been updated by the handling of
   // blink::mojom::FrameWidget::EnableDeviceEmulation.
@@ -631,9 +723,9 @@ protocol::Response InspectorEmulationAgent::setHardwareConcurrencyOverride(
 
 protocol::Response InspectorEmulationAgent::setUserAgentOverride(
     const String& user_agent,
-    protocol::Maybe<String> accept_language,
-    protocol::Maybe<String> platform,
-    protocol::Maybe<protocol::Emulation::UserAgentMetadata>
+    std::optional<String> accept_language,
+    std::optional<String> platform,
+    std::unique_ptr<protocol::Emulation::UserAgentMetadata>
         ua_metadata_override) {
   if (!user_agent.empty() || accept_language.has_value() ||
       platform.has_value()) {
@@ -647,7 +739,7 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
         navigator_platform_override_.Get());
   }
 
-  if (ua_metadata_override.has_value()) {
+  if (ua_metadata_override) {
     blink::UserAgentMetadata default_ua_metadata =
         Platform::Current()->UserAgentMetadata();
 
@@ -657,8 +749,7 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
       return protocol::Response::InvalidParams(
           "Can't specify UserAgentMetadata but no UA string");
     }
-    protocol::Emulation::UserAgentMetadata& ua_metadata =
-        ua_metadata_override.value();
+    protocol::Emulation::UserAgentMetadata& ua_metadata = *ua_metadata_override;
     ua_metadata_override_.emplace();
     if (ua_metadata.hasBrands()) {
       for (const auto& bv : *ua_metadata.getBrands(nullptr)) {
@@ -726,7 +817,7 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
 }
 
 protocol::Response InspectorEmulationAgent::setLocaleOverride(
-    protocol::Maybe<String> maybe_locale) {
+    std::optional<String> maybe_locale) {
   // Only allow resetting overrides set by the same agent.
   if (locale_override_.Get().empty() &&
       LocaleController::instance().has_locale_override()) {
@@ -863,6 +954,46 @@ protocol::Response InspectorEmulationAgent::setAutomationOverride(
   if (enabled)
     InnerEnable();
   automation_override_.Set(enabled);
+  return protocol::Response::Success();
+}
+
+protocol::Response
+InspectorEmulationAgent::setSmallViewportHeightDifferenceOverride(
+    int difference) {
+  protocol::Response response = AssertPage();
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  if (!web_local_frame_->IsOutermostMainFrame()) {
+    return protocol::Response::ServerError(
+        "Operation is only supported for the main frame");
+  }
+
+  cc::BrowserControlsParams browser_controls_params =
+      GetWebViewImpl()->GetBrowserControls().Params();
+  // Use same scale as in LocalFrameView::LargeViewportSizeForViewportUnits().
+  gfx::Size viewport_size =
+      GetWebViewImpl()->GetPage()->GetVisualViewport().Size();
+  gfx::SizeF small_viewport_size =
+      web_local_frame_->GetFrameView()->SmallViewportSizeForViewportUnits();
+  float scale = viewport_size.width() && small_viewport_size.width()
+                    ? viewport_size.width() / small_viewport_size.width()
+                    : 1.0;
+  float scaled_difference = difference * scale;
+  browser_controls_params.top_controls_height = scaled_difference;
+
+  // Storing the scaled value allows us to easily apply the override in
+  // `Restore()`.
+  small_viewport_height_difference_override_.Set(scaled_difference);
+
+  GetWebViewImpl()->MainFrameViewWidget()->SetBrowserControlsTopHeightOverride(
+      scaled_difference);
+  // Ensure the override is applied immediately without having to wait for
+  // `WebFrameWidgetImpl::UpdateVisualProperties()` to be called.
+  GetWebViewImpl()->ResizeWithBrowserControls(
+      GetWebViewImpl()->Size(), viewport_size, browser_controls_params);
+
   return protocol::Response::Success();
 }
 

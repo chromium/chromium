@@ -27,10 +27,10 @@ public class OfflineContentAvailabilityStatusProvider implements OfflineContentP
     private static OfflineContentAvailabilityStatusProvider sInstance;
 
     // Keeps track of suggested content.
-    private Set<ContentId> mSuggestedItems = new HashSet<>();
+    private final Set<ContentId> mSuggestedItems = new HashSet<>();
     // Keeps track of persistent content, i.e. non-transient content, including prefetch, downloads,
     // offline pages, etc. The idea is that this set will be empty iff Download Home would be empty.
-    private Set<ContentId> mPersistentItems = new HashSet<>();
+    private final Set<ContentId> mPersistentItems = new HashSet<>();
 
     /**
      * @return An {@link OfflineContentAvailabilityStatusProvider} instance singleton.  If one

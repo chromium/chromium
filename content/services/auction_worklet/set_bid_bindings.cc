@@ -23,6 +23,7 @@
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_currencies.h"
@@ -201,6 +202,7 @@ struct SetBidBindings::GenerateBidOutput {
   std::optional<std::vector<AdRender>> ad_components;
   std::optional<double> ad_cost;
   std::optional<UnrestrictedDouble> modeling_signals;
+  std::optional<v8::Local<v8::Value>> aggregate_win_signals;
   std::optional<std::string> selected_buyer_and_seller_reporting_id;
   bool allow_component_auction = false;
   uint32_t num_mandatory_ad_components = 0;
@@ -400,6 +402,11 @@ SetBidBindings::ConvertBidToIDL(
   convert_set_bid.GetOptionalSequence(
       "adComponents", std::move(components_exist), collect_components);
   convert_set_bid.GetOptional("adCost", idl.ad_cost);
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgePrivateModelTraining)) {
+    convert_set_bid.GetOptional("aggregateWinSignals",
+                                idl.aggregate_win_signals);
+  }
   std::optional<bool> maybe_allow_component_auction;
   convert_set_bid.GetOptional("allowComponentAuction",
                               maybe_allow_component_auction);
@@ -407,7 +414,6 @@ SetBidBindings::ConvertBidToIDL(
   convert_set_bid.GetOptional("bid", idl.bid);
   convert_set_bid.GetOptional("bidCurrency", idl.bid_currency);
   convert_set_bid.GetOptional("modelingSignals", idl.modeling_signals);
-
   std::optional<uint32_t> maybe_num_mandatory_ad_components;
   if (support_multi_bid_) {
     convert_set_bid.GetOptional("numMandatoryAdComponents",
@@ -518,6 +524,24 @@ SetBidBindings::SemanticCheckBid(
   if (idl.modeling_signals.has_value() && idl.modeling_signals->number >= 0 &&
       idl.modeling_signals->number < (1 << 12)) {
     modeling_signals = idl.modeling_signals->number;
+  }
+
+  std::optional<std::string> aggregate_win_signals;
+  if (idl.aggregate_win_signals.has_value()) {
+    // Don't need a `script_timeout` here since one is already active.
+    std::string aggregate_win_signals_str;
+    AuctionV8Helper::Result json_result = v8_helper_->ExtractJson(
+        context, *idl.aggregate_win_signals, /*script_timeout=*/nullptr,
+        &aggregate_win_signals_str);
+    if (json_result == AuctionV8Helper::Result::kFailure) {
+      return base::unexpected(IdlConvert::Status::MakeErrorMessage(base::StrCat(
+          {error_prefix, "bid has invalid aggregateWinSignals value."})));
+    } else if (json_result == AuctionV8Helper::Result::kTimeout) {
+      return base::unexpected(IdlConvert::Status::MakeTimeout(base::StrCat(
+          {error_prefix,
+           "serializing bid 'aggregateWinSignals' value to JSON timed out."})));
+    }
+    aggregate_win_signals = std::move(aggregate_win_signals_str);
   }
 
   std::string render_url_string;
@@ -667,6 +691,7 @@ SetBidBindings::SemanticCheckBid(
       std::move(idl.selected_buyer_and_seller_reporting_id),
       std::move(ad_component_descriptors),
       static_cast<std::optional<uint16_t>>(modeling_signals),
+      /*aggregate_win_signals*/ std::move(aggregate_win_signals),
       /*bid_duration=*/base::TimeDelta());
   return bid_and_worklet_only_metadata;
 }
@@ -677,8 +702,23 @@ bool SetBidBindings::IsSelectedReportingIdValid(
   if (!ad.selectable_buyer_and_seller_reporting_ids.has_value()) {
     return false;
   }
-  if (!base::Contains(*ad.selectable_buyer_and_seller_reporting_ids,
-                      selected_buyer_and_seller_reporting_id)) {
+  auto iter = std::find(ad.selectable_buyer_and_seller_reporting_ids->begin(),
+                        ad.selectable_buyer_and_seller_reporting_ids->end(),
+                        selected_buyer_and_seller_reporting_id);
+  if (iter == ad.selectable_buyer_and_seller_reporting_ids->end()) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit) &&
+      blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get() >= 0 &&
+      std::distance(ad.selectable_buyer_and_seller_reporting_ids->begin(),
+                    iter) >=
+          blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get()) {
     return false;
   }
   if (is_reporting_id_set_excluded_.Run(

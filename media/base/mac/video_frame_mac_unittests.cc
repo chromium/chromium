@@ -117,28 +117,6 @@ TEST(VideoFrameMac, CheckLifetime) {
   EXPECT_EQ(1, instances_destroyed);
 }
 
-TEST(VideoFrameMac, CheckWrapperFrame) {
-  const FormatPair format_pairs[] = {
-      {PIXEL_FORMAT_I420, kCVPixelFormatType_420YpCbCr8Planar},
-      {PIXEL_FORMAT_NV12, kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange},
-  };
-
-  for (const auto& format_pair : format_pairs) {
-    base::apple::ScopedCFTypeRef<CVPixelBufferRef> pb;
-    CVPixelBufferCreate(nullptr, kWidth, kHeight, format_pair.corevideo,
-                        nullptr, pb.InitializeInto());
-    ASSERT_TRUE(pb.get());
-
-    auto frame = VideoFrame::WrapCVPixelBuffer(pb.get(), kTimestamp);
-    ASSERT_TRUE(frame.get());
-    EXPECT_EQ(pb.get(), frame->CvPixelBuffer());
-    EXPECT_EQ(format_pair.chrome, frame->format());
-
-    frame = nullptr;
-    EXPECT_EQ(1, CFGetRetainCount(pb.get()));
-  }
-}
-
 static void FillFrameWithPredictableValues(const VideoFrame& frame) {
   for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
     const gfx::Size& size =
@@ -186,8 +164,8 @@ TEST(VideoFrameMac, CorrectlyWrapsFramesWithPadding) {
     uint8_t* plane_ptr = reinterpret_cast<uint8_t*>(
         CVPixelBufferGetBaseAddressOfPlane(pb.get(), i));
     EXPECT_EQ(frame->visible_data(i), plane_ptr);
-    const int stride =
-        static_cast<int>(CVPixelBufferGetBytesPerRowOfPlane(pb.get(), i));
+    const size_t stride =
+        static_cast<size_t>(CVPixelBufferGetBytesPerRowOfPlane(pb.get(), i));
     EXPECT_EQ(frame->stride(i), stride);
     const int offset = kVisibleRectOffset / ((i == 0) ? 1 : 2);
     for (int h = 0; h < plane_size.height(); ++h) {

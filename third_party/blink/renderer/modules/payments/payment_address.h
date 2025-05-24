@@ -25,7 +25,7 @@ class MODULES_EXPORT PaymentAddress : public ScriptWrappable {
 
   ~PaymentAddress() override;
 
-  ScriptValue toJSONForBinding(ScriptState*) const;
+  ScriptObject toJSONForBinding(ScriptState*) const;
 
   const String& country() const { return country_; }
   const Vector<String>& addressLine() const { return address_line_; }

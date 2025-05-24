@@ -335,7 +335,7 @@ int GetIndicatorsTimeout() {
 UiSceneCreator::UiSceneCreator(UiScene* scene, Ui* ui, Model* model)
     : scene_(scene), ui_(ui), model_(model) {}
 
-UiSceneCreator::~UiSceneCreator() {}
+UiSceneCreator::~UiSceneCreator() = default;
 
 void UiSceneCreator::CreateScene() {
   CreateWebVrRoot();
@@ -438,7 +438,7 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
                 icon = &kOpenInBrowserIcon;
                 break;
               case ExternalPromptNotificationType::kPromptNone:
-                NOTREACHED_IN_MIGRATION();
+                NOTREACHED();
             }
 
             text_element->SetText(l10n_util::GetStringUTF16(message_id));

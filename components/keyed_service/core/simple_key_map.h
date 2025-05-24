@@ -54,7 +54,9 @@ class KEYED_SERVICE_EXPORT SimpleKeyMap {
   SimpleKeyMap();
   ~SimpleKeyMap();
 
-  std::map<raw_ptr<content::BrowserContext>, SimpleFactoryKey*> mapping_;
+  std::map<raw_ptr<content::BrowserContext>,
+           raw_ptr<SimpleFactoryKey, CtnExperimental>>
+      mapping_;
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_SIMPLE_KEY_MAP_H_

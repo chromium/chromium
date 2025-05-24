@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_ASH_ARC_ARC_OPEN_URL_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_ARC_ARC_OPEN_URL_DELEGATE_IMPL_H_
 
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "components/arc/intent_helper/open_url_delegate.h"
+#include "chromeos/ash/experiences/arc/intent_helper/open_url_delegate.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 
 // Implements arc::OpenUrlDelegate to inject dependency.
 // This has dependency to ChromeNewWindowClient, so needs to be initialized

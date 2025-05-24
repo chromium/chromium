@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -26,7 +26,6 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -57,6 +56,9 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/disable_reason.h"
+#include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
@@ -416,7 +418,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // |url|. Returns the body of the response.
   //
   // The method below uses "programmatic" (rather than "declarative") way to
-  // inject a content script, but the behavior and permissions of the conecnt
+  // inject a content script, but the behavior and permissions of the content
   // script should be the same in both cases.  See also
   // https://developer.chrome.com/extensions/content_scripts#programmatic.
   std::string FetchViaContentScript(const GURL& url,
@@ -484,7 +486,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // Asks the test |extension_| to inject |content_script| into |web_contents|.
   //
   // This is an implementation of FetchCallback.
-  // Returns true if the content script execution started succeessfully.
+  // Returns true if the content script execution started successfully.
   bool ExecuteContentScript(content::WebContents* web_contents,
                             const std::string& content_script) {
     int tab_id = ExtensionTabUtil::GetTabId(web_contents);
@@ -501,7 +503,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // Executes |regular_script| in |web_contents|.
   //
   // This is an implementation of FetchCallback.
-  // Returns true if the script execution started succeessfully.
+  // Returns true if the script execution started successfully.
   bool ExecuteRegularScript(content::RenderFrameHost* frame,
                             const std::string& regular_script) {
     content::ExecuteScriptAsync(frame, regular_script);
@@ -518,7 +520,7 @@ class OrbAndCorsExtensionBrowserTest : public OrbAndCorsExtensionTestBase {
   // commit is happening.
   //
   // This is an implementation of FetchCallback.
-  // Returns true if the script execution started succeessfully.
+  // Returns true if the script execution started successfully.
   bool ExecuteInSrcDocFrame(content::RenderFrameHost* parent_frame,
                             const std::string& script_to_run_in_subframe) {
     static int sequence_id = 0;
@@ -744,8 +746,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   // Unload the extension and try fetching again.  The content script should
   // still be present and work, but after the extension is unloaded, the fetch
   // should always fail.  See also https://crbug.com/843381.
-  extension_service()->DisableExtension(extension->id(),
-                                        disable_reason::DISABLE_USER_ACTION);
+  extension_registrar()->DisableExtension(
+      extension->id(), {disable_reason::DISABLE_USER_ACTION});
   EXPECT_FALSE(ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
       extension->id()));
   {
@@ -1268,21 +1270,10 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
 //
 // (Specifically, this makes sure RFHI is passing the correct factory
 // parameter to URLLoaderFactoryParamsHelper::CreateForIsolatedWorld.)
-class TrustTokenExtensionBrowserTest : public OrbAndCorsExtensionBrowserTest {
- public:
-  TrustTokenExtensionBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        network::features::kPrivateStateTokens);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // TODO(crbug.com/40221677): Have trust tokens handle the existence, or not, of
 // PrivacySandboxSettings3.
 IN_PROC_BROWSER_TEST_F(
-    TrustTokenExtensionBrowserTest,
+    OrbAndCorsExtensionBrowserTest,
     DISABLED_FromProgrammaticContentScript_TrustTokenRedemptionAllowed) {
   // Trust Tokens operations only work on secure origins - set up a https test
   // server to help with this. One alternative would be using a localhost URL
@@ -1951,7 +1942,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
           // Note that these requests will use the URLLoaderFactory owned by
           // ServiceWorkerSubresourceLoader which can be different to the
           // network loader factory owned by the ServiceWorker thread (which is
-          // used for fetch intiated by the service worker above).
+          // used for fetch initiated by the service worker above).
       }); )";
   ASSERT_TRUE(RegisterServiceWorkerForExtension(kServiceWorkerScript));
 
@@ -2111,7 +2102,7 @@ class ReadyToCommitWaiter : public content::WebContentsObserver {
   ReadyToCommitWaiter(const ReadyToCommitWaiter&) = delete;
   ReadyToCommitWaiter& operator=(const ReadyToCommitWaiter&) = delete;
 
-  ~ReadyToCommitWaiter() override {}
+  ~ReadyToCommitWaiter() override = default;
 
   void Wait() { run_loop_.Run(); }
 
@@ -2203,7 +2194,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   EXPECT_EQ(false, content::EvalJs(active_web_contents(),
                                    kInjectionVerificationScript));
 
-  // Try to fetch a WebUI resource (i.e. verify that the unsucessful content
+  // Try to fetch a WebUI resource (i.e. verify that the unsuccessful content
   // script injection above didn't clobber the WebUI-specific URLLoaderFactory).
   const char kScript[] = R"(
       var img = document.createElement('img');
@@ -2718,7 +2709,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   }
 }
 
-// Similar to FromBackgroundPage_ActiveTabPermission, but focues on interaction
+// Similar to FromBackgroundPage_ActiveTabPermission, but focuses on interaction
 // between the regular background page and the separate incognito background
 // page in "split" mode.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
@@ -2953,7 +2944,7 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
   }
 }
 
-// Similar to FromBackgroundPage_ActiveTabPermission, but focues on behavior
+// Similar to FromBackgroundPage_ActiveTabPermission, but focuses on behavior
 // of the background page when it is shared between the regular and the
 // incognito profiles in "spanning" mode.
 IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,

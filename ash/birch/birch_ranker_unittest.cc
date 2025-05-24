@@ -566,8 +566,8 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
 
 TEST(BirchRankerTest, RankCoralItems) {
   // Create a coral item.
-  BirchCoralItem item(u"Title", u"Subtext", std::vector<GURL>(),
-                      std::vector<std::string>());
+  BirchCoralItem item(u"Title", u"Subtext", CoralSource::kInSession,
+                      /*group_id=*/base::Token());
   std::vector<BirchCoralItem> items = {item};
 
   // Simulate 9 AM.

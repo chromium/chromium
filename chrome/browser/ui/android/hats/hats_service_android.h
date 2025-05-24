@@ -42,6 +42,7 @@ class HatsServiceAndroid : public HatsService {
                       content::WebContents* web_contents,
                       const SurveyBitsData& product_specific_bits_data,
                       const SurveyStringData& product_specific_string_data,
+                      NavigationBehaviour navigation_behaviour,
                       base::OnceClosure success_callback,
                       base::OnceClosure failure_callback,
                       const std::optional<std::string>& supplied_trigger_id,
@@ -60,6 +61,8 @@ class HatsServiceAndroid : public HatsService {
     void DismissCallback(messages::DismissReason reason);
 
     // content::WebContentsObserver
+    void DidFinishNavigation(
+        content::NavigationHandle* navigation_handle) override;
     void WebContentsDestroyed() override;
 
     // Returns a weak pointer to this object.
@@ -79,6 +82,7 @@ class HatsServiceAndroid : public HatsService {
     std::string trigger_;
     SurveyBitsData product_specific_bits_data_;
     SurveyStringData product_specific_string_data_;
+    NavigationBehaviour navigation_behaviour_;
     base::OnceClosure success_callback_;
     base::OnceClosure failure_callback_;
     std::optional<std::string> supplied_trigger_id_;
@@ -107,7 +111,9 @@ class HatsServiceAndroid : public HatsService {
     kAndroidDismissedByFeature =
         10,  // Another survey was already launched, leading to the current one
              // being aborted.
-    kMaxValue = kAndroidDismissedByFeature,
+    kAndroidCloseButton =
+        11,  // Dismissed when a mouse clicks on the close button.
+    kMaxValue = kAndroidCloseButton,
   };
 
   explicit HatsServiceAndroid(Profile* profile);
@@ -117,40 +123,44 @@ class HatsServiceAndroid : public HatsService {
 
   ~HatsServiceAndroid() override;
 
-  void LaunchSurvey(
-      const std::string& trigger,
-      base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing(),
-      const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {}) override;
+  void LaunchSurvey(const std::string& trigger,
+                    base::OnceClosure success_callback,
+                    base::OnceClosure failure_callback,
+                    const SurveyBitsData& product_specific_bits_data,
+                    const SurveyStringData& product_specific_string_data,
+                    const std::optional<std::string>& supplied_trigger_id,
+                    const SurveyOptions& survey_options) override;
 
   void LaunchSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data,
-      base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing(),
-      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
-      const SurveyOptions& survey_options = SurveyOptions()) override;
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::optional<std::string>& supplied_trigger_id,
+      const SurveyOptions& survey_options) override;
 
   bool LaunchDelayedSurvey(
       const std::string& trigger,
       int timeout_ms,
-      const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {}) override;
+      const SurveyBitsData& product_specific_bits_data,
+      const SurveyStringData& product_specific_string_data) override;
+
+  // Surface the overloaded method from the base class.
+  using HatsService::LaunchDelayedSurveyForWebContents;
 
   bool LaunchDelayedSurveyForWebContents(
       const std::string& trigger,
       content::WebContents* web_contents,
       int timeout_ms,
-      const SurveyBitsData& product_specific_bits_data = {},
-      const SurveyStringData& product_specific_string_data = {},
-      NavigationBehaviour navigation_behaviour = NavigationBehaviour::ALLOW_ANY,
-      base::OnceClosure success_callback = base::DoNothing(),
-      base::OnceClosure failure_callback = base::DoNothing(),
-      const std::optional<std::string>& supplied_trigger_id = std::nullopt,
-      const SurveyOptions& survey_options = SurveyOptions()) override;
+      const SurveyBitsData& product_specific_bits_data,
+      const SurveyStringData& product_specific_string_data,
+      NavigationBehaviour navigation_behaviour,
+      base::OnceClosure success_callback,
+      base::OnceClosure failure_callback,
+      const std::optional<std::string>& supplied_trigger_id,
+      const SurveyOptions& survey_options) override;
 
   // Currently not implemented
   bool CanShowAnySurvey(bool user_prompted) const override;
@@ -163,6 +173,8 @@ class HatsServiceAndroid : public HatsService {
   DelayedSurveyTask& GetFirstTaskForTesting() {
     return const_cast<DelayedSurveyTask&>(*pending_tasks_.begin());
   }
+
+  bool HasPendingTasksForTesting();
 
  protected:
   // Remove |task| from the set of |pending_tasks_|.

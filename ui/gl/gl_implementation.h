@@ -59,25 +59,15 @@ struct GL_EXPORT GLImplementationParts {
   GLImplementation gl = kGLImplementationNone;
   ANGLEImplementation angle = ANGLEImplementation::kNone;
 
-  constexpr bool operator==(const GLImplementationParts& other) const {
-    return (gl == other.gl && angle == other.angle);
-  }
-  constexpr bool operator!=(const GLImplementationParts& other) const {
-    return !operator==(other);
-  }
+  friend constexpr bool operator==(const GLImplementationParts&,
+                                   const GLImplementationParts&) = default;
 
   constexpr bool operator==(const ANGLEImplementation angle_impl) const {
-    return operator==(GLImplementationParts(angle_impl));
-  }
-  constexpr bool operator!=(const ANGLEImplementation angle_impl) const {
-    return !operator==(angle_impl);
+    return *this == GLImplementationParts(angle_impl);
   }
 
   constexpr bool operator==(const GLImplementation gl_impl) const {
-    return operator==(GLImplementationParts(gl_impl));
-  }
-  constexpr bool operator!=(const GLImplementation gl_impl) const {
-    return !operator==(gl_impl);
+    return *this == GLImplementationParts(gl_impl);
   }
 
   bool IsValid() const;
@@ -167,6 +157,11 @@ GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 // Get the software GL implementation
 GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
 
+// Set the command line flags to request the provided GL implementation
+GL_EXPORT void SetGLImplementationCommandLineSwitches(
+    const GLImplementationParts& implementation,
+    base::CommandLine* command_line);
+
 // Set the software GL implementation on the provided command line
 GL_EXPORT void SetSoftwareGLCommandLineSwitches(
     base::CommandLine* command_line);
@@ -183,6 +178,9 @@ GetRequestedGLImplementationFromCommandLine(
 
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);
+
+GL_EXPORT bool IsSwiftShaderGLImplementation(
+    GLImplementationParts implementation);
 
 // Get the GL implementation with a given name.
 GL_EXPORT GLImplementationParts

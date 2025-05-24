@@ -124,7 +124,7 @@ public class PartialCustomTabFullSizeStrategyTest {
 
         PartialCustomTabFullSizeStrategy strategy = createPcctFullSizeStrategy();
 
-        assertEquals(Math.round(mPCCTTestRule.mCoordinatorLayout.getElevation()), 0);
+        assertEquals(0, Math.round(mPCCTTestRule.mCoordinatorLayout.getElevation()));
         assertEquals(
                 "Full-Size PCCT should be created",
                 PartialCustomTabBaseStrategy.PartialCustomTabType.FULL_SIZE,

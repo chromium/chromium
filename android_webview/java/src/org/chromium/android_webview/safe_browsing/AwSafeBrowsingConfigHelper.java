@@ -17,9 +17,12 @@ import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.ScopedSysTraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helper class for getting the configuration settings related to safebrowsing in WebView. */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwSafeBrowsingConfigHelper {
     // This does not track the user opt-in. This value tracks whether or not the user opt-in
     // callback has returned. Until the callback has returned, the user opt-in state is unknown.
@@ -84,6 +87,7 @@ public class AwSafeBrowsingConfigHelper {
         }
     }
 
+    @Nullable
     private static Boolean getOptInPreferenceTraced() {
         try (ScopedSysTraceEvent e =
                 ScopedSysTraceEvent.scoped("AwSafeBrowsingConfigHelper.getAppOptInPreference")) {

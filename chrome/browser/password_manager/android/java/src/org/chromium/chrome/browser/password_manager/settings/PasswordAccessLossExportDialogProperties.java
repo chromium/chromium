@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
 /** Defines properties for password access loss export dialog view. */
+@NullMarked
 class PasswordAccessLossExportDialogProperties {
     private PasswordAccessLossExportDialogProperties() {}
 

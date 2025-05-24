@@ -4,6 +4,8 @@
 
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 
+#include <algorithm>
+
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -16,7 +18,6 @@
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_tray.h"
 #include "ash/system/status_area_widget.h"
-#include "base/ranges/algorithm.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
@@ -116,7 +117,7 @@ views::View* HoldingSpaceTestApi::GetHoldingSpaceItemView(
     const std::vector<views::View*>& item_views,
     const std::string& item_id) {
   auto it =
-      base::ranges::find(item_views, item_id, [](const views::View* item_view) {
+      std::ranges::find(item_views, item_id, [](const views::View* item_view) {
         return HoldingSpaceItemView::Cast(item_view)->item_id();
       });
   return it != item_views.end() ? *it : nullptr;

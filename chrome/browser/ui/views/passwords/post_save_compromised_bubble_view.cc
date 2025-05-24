@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
@@ -21,7 +22,7 @@ PostSaveCompromisedBubbleView::PostSaveCompromisedBubbleView(
     views::View* anchor_view)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
-                             /*auto_dismissable=*/false),
+                             /*easily_dismissable=*/false),
       controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
@@ -74,3 +75,6 @@ void PostSaveCompromisedBubbleView::AddedToWidget() {
   SetBubbleHeader(controller_.GetImageID(/*dark=*/false),
                   controller_.GetImageID(/*dark=*/true));
 }
+
+BEGIN_METADATA(PostSaveCompromisedBubbleView)
+END_METADATA

@@ -4,20 +4,20 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossNotificationProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossNotificationProperties.TEXT;
 import static org.chromium.chrome.browser.access_loss.PasswordAccessLossNotificationProperties.TITLE;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
-import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
@@ -28,20 +28,14 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Shows the password access loss notification with the properties belonging to the current {@link
  * PasswordAccessLossWarningType}.
  */
+@NullMarked
 public class PwdAccessLossNotificationCoordinator {
     @VisibleForTesting protected static final String TAG = "access_loss_warning";
 
     private final Context mContext;
-    private final BaseNotificationManagerProxy mNotificationManagerProxy;
-
-    @VisibleForTesting
-    PwdAccessLossNotificationCoordinator(Context context, BaseNotificationManagerProxy manager) {
-        mContext = context;
-        mNotificationManagerProxy = manager;
-    }
 
     public PwdAccessLossNotificationCoordinator(Context context) {
-        this(context, BaseNotificationManagerProxyFactory.create(context));
+        mContext = context;
     }
 
     private static NotificationWrapperBuilder createNotificationBuilder() {
@@ -78,7 +72,7 @@ public class PwdAccessLossNotificationCoordinator {
         NotificationWrapper notification =
                 notificationWrapperBuilder.buildWithBigTextStyle(contents);
 
-        mNotificationManagerProxy.notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
 
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
@@ -92,7 +86,6 @@ public class PwdAccessLossNotificationCoordinator {
      * @param warningType determines the values in the models.
      * @return the model for the notification.
      */
-    @Nullable
     PropertyModel getModelForNotificationType(@PasswordAccessLossWarningType int warningType) {
         switch (warningType) {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
@@ -104,8 +97,8 @@ public class PwdAccessLossNotificationCoordinator {
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
                 return buildAccessLossNotificationAboutManualMigration();
             default:
-                assert false : "Unhandled warning type.";
-                return null;
+                assert false : "Unhandled warning type. " + warningType;
+                return assumeNonNull(null);
         }
     }
 

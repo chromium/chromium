@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -23,7 +24,8 @@ namespace storage_monitor {
 
 // This client listens for MTP storage attachment and detachment events
 // from MtpManager and forwards them to StorageMonitor.
-class MtpManagerClientChromeOS : public device::mojom::MtpManagerClient {
+class COMPONENT_EXPORT(STORAGE_MONITOR) MtpManagerClientChromeOS
+    : public device::mojom::MtpManagerClient {
  public:
   MtpManagerClientChromeOS(StorageMonitor::Receiver* receiver,
                            device::mojom::MtpManager* mtp_manager);

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media_capabilities/media_capabilities_identifiability_metrics.h"
 
+#include "base/bit_cast.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -54,13 +55,19 @@ IdentifiableToken ComputeToken(const VideoConfiguration* configuration) {
   if (!configuration)
     return IdentifiableToken();
 
+  // `IdentifiableTokenBuilder::AddValue()` requires
+  // `std::has_unique_object_representations_v<>`, which doesn't hold for
+  // floating-point values. Work around by reinterpreting as an integral type of
+  // the same size, without changing the underlying bit pattern.
+  static_assert(sizeof(decltype(configuration->framerate())) ==
+                sizeof(int64_t));
   IdentifiableTokenBuilder builder;
   builder
       .AddToken(IdentifiabilityBenignStringToken(configuration->contentType()))
       .AddValue(configuration->width())
       .AddValue(configuration->height())
       .AddValue(configuration->bitrate())
-      .AddValue(configuration->framerate());
+      .AddValue(base::bit_cast<int64_t>(configuration->framerate()));
 
   // While the above are always present, we need to check the other properties'
   // presence explicitly.
@@ -69,16 +76,16 @@ IdentifiableToken ComputeToken(const VideoConfiguration* configuration) {
       .AddValue(configuration->hasTransferFunction())
       .AddValue(configuration->hasScalabilityMode());
   if (configuration->hasHdrMetadataType()) {
-    builder.AddToken(
-        IdentifiabilityBenignStringToken(configuration->hdrMetadataType()));
+    builder.AddToken(IdentifiabilityBenignStringToken(
+        configuration->hdrMetadataType().AsString()));
   }
   if (configuration->hasColorGamut()) {
-    builder.AddToken(
-        IdentifiabilityBenignStringToken(configuration->colorGamut()));
+    builder.AddToken(IdentifiabilityBenignStringToken(
+        configuration->colorGamut().AsString()));
   }
   if (configuration->hasTransferFunction()) {
-    builder.AddToken(
-        IdentifiabilityBenignStringToken(configuration->transferFunction()));
+    builder.AddToken(IdentifiabilityBenignStringToken(
+        configuration->transferFunction().AsString()));
   }
   if (configuration->hasScalabilityMode()) {
     builder.AddToken(
@@ -150,9 +157,9 @@ IdentifiableToken ComputeToken(
       .AddValue(configuration->hasAudioCapabilities())
       .AddValue(configuration->hasVideoCapabilities())
       .AddToken(IdentifiabilityBenignStringToken(
-          configuration->distinctiveIdentifier()))
-      .AddToken(
-          IdentifiabilityBenignStringToken(configuration->persistentState()))
+          configuration->distinctiveIdentifier().AsString()))
+      .AddToken(IdentifiabilityBenignStringToken(
+          configuration->persistentState().AsString()))
       .AddValue(configuration->hasSessionTypes());
   if (configuration->hasInitDataTypes()) {
     builder.AddToken(
@@ -200,9 +207,9 @@ IdentifiableToken ComputeToken(
   builder.AddToken(IdentifiabilityBenignStringToken(configuration->keySystem()))
       .AddToken(IdentifiabilityBenignStringToken(configuration->initDataType()))
       .AddToken(IdentifiabilityBenignStringToken(
-          configuration->distinctiveIdentifier()))
-      .AddToken(
-          IdentifiabilityBenignStringToken(configuration->persistentState()))
+          configuration->distinctiveIdentifier().AsString()))
+      .AddToken(IdentifiabilityBenignStringToken(
+          configuration->persistentState().AsString()))
       .AddValue(configuration->hasSessionTypes())
       .AddValue(configuration->hasAudio())
       .AddValue(configuration->hasVideo());
@@ -224,7 +231,9 @@ IdentifiableToken ComputeToken(
     return IdentifiableToken();
 
   IdentifiableTokenBuilder builder;
-  builder.AddToken(IdentifiabilityBenignStringToken(configuration->type()))
+  builder
+      .AddToken(
+          IdentifiabilityBenignStringToken(configuration->type().AsString()))
       .AddValue(configuration->hasKeySystemConfiguration())
       .AddValue(configuration->hasAudio())
       .AddValue(configuration->hasVideo());

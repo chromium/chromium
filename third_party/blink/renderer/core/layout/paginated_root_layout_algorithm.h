@@ -15,6 +15,7 @@ namespace blink {
 class BlockBreakToken;
 class BlockNode;
 class ConstraintSpace;
+class CountersAttachmentContext;
 struct PageAreaLayoutParams;
 
 // This is the root layout algorithm when the document is paginated (for
@@ -99,13 +100,16 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
    public:
     PageContainerResult(const PhysicalBoxFragment& fragment,
                         const BlockBreakToken* fragmentainer_break_token,
+                        const CountersAttachmentContext& counters_context,
                         bool needs_total_page_count)
         : fragment(&fragment),
           fragmentainer_break_token(fragmentainer_break_token),
+          counters_context(counters_context.ShallowClone()),
           needs_total_page_count(needs_total_page_count) {}
 
     const PhysicalBoxFragment* fragment;
     const BlockBreakToken* fragmentainer_break_token;
+    CountersAttachmentContext counters_context;
     bool needs_total_page_count;
   };
 
@@ -132,11 +136,12 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
       wtf_size_t page_index,
       wtf_size_t total_page_count,
       const AtomicString& page_name,
+      const CountersAttachmentContext& counters_context,
       const PageAreaLayoutParams& params,
       const PhysicalBoxFragment* existing_page_container = nullptr) const {
     return LayoutPageContainer(Node(), GetConstraintSpace(), page_index,
-                               total_page_count, page_name, params,
-                               existing_page_container);
+                               total_page_count, page_name, counters_context,
+                               params, existing_page_container);
   }
 
   static PageContainerResult LayoutPageContainer(
@@ -145,6 +150,7 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
       wtf_size_t page_index,
       wtf_size_t total_page_count,
       const AtomicString& page_name,
+      const CountersAttachmentContext&,
       const PageAreaLayoutParams&,
       const PhysicalBoxFragment* existing_page_container = nullptr);
 };

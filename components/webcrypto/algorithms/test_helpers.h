@@ -49,7 +49,6 @@ class Status;
 // webcrypto::Status.
 void PrintTo(const Status& status, ::std::ostream* os);
 bool operator==(const Status& a, const Status& b);
-bool operator!=(const Status& a, const Status& b);
 
 // Gives a human-readable description of |status| and any error it represents.
 std::string StatusToString(const Status& status);

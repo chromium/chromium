@@ -42,6 +42,12 @@ class CORE_EXPORT V8ThrowDOMException {
       const String& sanitized_message,
       const String& unsanitized_message = String());
 
+  // Combined CreateOrEmpty() + V8ThrowException::ThrowException().
+  static void Throw(v8::Isolate*,
+                    DOMExceptionCode,
+                    const String& sanitized_message,
+                    const String& unsanitized_message = String());
+
   // Attaches a stacktrace to an existing DOMException object. This should only
   // be used when initializing a subclass of DOMException. In other cases, uses
   // CreateOrEmpty().

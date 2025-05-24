@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_DECODER_TEST_HELPERS_H_
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_base.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -31,10 +27,14 @@ using DecoderCreator = std::unique_ptr<ImageDecoder> (*)();
 using DecoderCreatorWithAlpha =
     std::unique_ptr<ImageDecoder> (*)(ImageDecoder::AlphaOption);
 
-inline void PrepareReferenceData(char* buffer, size_t size) {
-  for (size_t i = 0; i < size; ++i) {
+inline void PrepareReferenceData(base::span<char> buffer) {
+  for (size_t i = 0; i < buffer.size(); ++i) {
     buffer[i] = static_cast<char>(i);
   }
+}
+
+inline void PrepareReferenceData(base::span<uint8_t> buffer) {
+  PrepareReferenceData(base::as_writable_chars(buffer));
 }
 
 Vector<char> ReadFile(StringView file_name);
@@ -127,7 +127,7 @@ void TestBppHistogram(DecoderCreator create_decoder,
                       const char* image_type,
                       const char* image_name,
                       const char* histogram_name,
-                      base::HistogramBase::Sample sample);
+                      base::HistogramBase::Sample32 sample);
 
 }  // namespace blink
 

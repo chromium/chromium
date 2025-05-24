@@ -9,7 +9,7 @@
 namespace extensions {
 namespace switches {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Allow roaming in the cellular network.
 const char kAppShellAllowRoaming[] = "app-shell-allow-roaming";
 

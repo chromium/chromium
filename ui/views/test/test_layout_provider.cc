@@ -25,8 +25,9 @@ void TestLayoutProvider::SetFontDetails(
 }
 
 int TestLayoutProvider::GetDistanceMetric(int metric) const {
-  if (distance_metrics_.count(metric))
+  if (distance_metrics_.count(metric)) {
     return distance_metrics_.find(metric)->second;
+  }
   return LayoutProvider::GetDistanceMetric(metric);
 }
 

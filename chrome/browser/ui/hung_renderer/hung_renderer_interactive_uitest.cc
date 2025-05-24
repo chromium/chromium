@@ -20,13 +20,13 @@
 
 class HungRendererNavigationTest : public InProcessBrowserTest {
  public:
-  HungRendererNavigationTest() {}
+  HungRendererNavigationTest() = default;
 
   HungRendererNavigationTest(const HungRendererNavigationTest&) = delete;
   HungRendererNavigationTest& operator=(const HungRendererNavigationTest&) =
       delete;
 
-  ~HungRendererNavigationTest() override {}
+  ~HungRendererNavigationTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {

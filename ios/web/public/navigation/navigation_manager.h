@@ -6,7 +6,6 @@
 #define IOS_WEB_PUBLIC_NAVIGATION_NAVIGATION_MANAGER_H_
 
 #import <Foundation/Foundation.h>
-
 #include <stddef.h>
 
 #include <memory>
@@ -171,17 +170,6 @@ class NavigationManager {
   // This takes ownership of `items` (must be moved).
   virtual void Restore(int last_committed_item_index,
                        std::vector<std::unique_ptr<NavigationItem>> items) = 0;
-
-  // Returns true after session restoration has started, until the first
-  // post-restore navigation is started.
-  virtual bool IsRestoreSessionInProgress() const = 0;
-
-  // Registers a callback to be run when session restoration is completed.
-  // If there is no in-progress session restoration, the callback is run
-  // immediately.
-  // TODO(crbug.com/40602044): This API is only needed for clearing cookies.
-  // Remove after //ios/web exposes a proper cookie clearing API.
-  virtual void AddRestoreCompletionCallback(base::OnceClosure callback) = 0;
 };
 
 }  // namespace web

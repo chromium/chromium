@@ -5,13 +5,13 @@
 #ifndef UI_GFX_SYS_COLOR_CHANGE_LISTENER_H_
 #define UI_GFX_SYS_COLOR_CHANGE_LISTENER_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 // Interface for classes that want to listen to system color changes.
-class GFX_EXPORT SysColorChangeListener {
+class COMPONENT_EXPORT(GFX) SysColorChangeListener {
  public:
   virtual void OnSysColorChange() = 0;
 
@@ -21,7 +21,7 @@ class GFX_EXPORT SysColorChangeListener {
 
 // Create an instance of this class in any object that wants to listen
 // for system color changes.
-class GFX_EXPORT ScopedSysColorChangeListener {
+class COMPONENT_EXPORT(GFX) ScopedSysColorChangeListener {
  public:
   explicit ScopedSysColorChangeListener(SysColorChangeListener* listener);
 

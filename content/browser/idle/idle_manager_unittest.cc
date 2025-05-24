@@ -39,6 +39,11 @@ using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 
+MATCHER_P(PermissionTypeMatcher, id, "") {
+  return ::testing::Matches(::testing::Eq(id))(
+      blink::PermissionDescriptorToPermissionType(arg));
+}
+
 namespace content {
 
 namespace {
@@ -57,7 +62,7 @@ enum ScreenIdleState {
 
 class MockIdleMonitor : public blink::mojom::IdleMonitor {
  public:
-  MOCK_METHOD2(Update, void(IdleStatePtr, bool));
+  MOCK_METHOD(void, Update, (IdleStatePtr, bool));
 };
 
 class MockIdleTimeProvider : public ui::IdleTimeProvider {
@@ -67,18 +72,20 @@ class MockIdleTimeProvider : public ui::IdleTimeProvider {
   MockIdleTimeProvider(const MockIdleTimeProvider&) = delete;
   MockIdleTimeProvider& operator=(const MockIdleTimeProvider&) = delete;
 
-  MOCK_METHOD0(CalculateIdleTime, base::TimeDelta());
-  MOCK_METHOD0(CheckIdleStateIsLocked, bool());
+  MOCK_METHOD(base::TimeDelta, CalculateIdleTime, ());
+  MOCK_METHOD(bool, CheckIdleStateIsLocked, ());
 };
 
 class IdleManagerTest : public RenderViewHostTestHarness {
+ public:
+  IdleManagerTest(const IdleManagerTest&) = delete;
+  IdleManagerTest& operator=(const IdleManagerTest&) = delete;
+
  protected:
   IdleManagerTest()
       : RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~IdleManagerTest() override = default;
-  IdleManagerTest(const IdleManagerTest&) = delete;
-  IdleManagerTest& operator=(const IdleManagerTest&) = delete;
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -112,7 +119,8 @@ class IdleManagerTest : public RenderViewHostTestHarness {
   void SetPermissionStatus(blink::mojom::PermissionStatus permission_status) {
     ON_CALL(*permission_manager_,
             GetPermissionStatusForCurrentDocument(
-                blink::PermissionType::IDLE_DETECTION, main_rfh(),
+                PermissionTypeMatcher(blink::PermissionType::IDLE_DETECTION),
+                main_rfh(),
                 /*should_include_device_status*/ false))
         .WillByDefault(Return(permission_status));
   }

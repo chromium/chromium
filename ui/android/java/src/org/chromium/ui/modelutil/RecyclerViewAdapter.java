@@ -6,9 +6,11 @@ package org.chromium.ui.modelutil;
 
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
@@ -21,6 +23,7 @@ import java.util.List;
  * @param <P> The payload type for partial updates, or {@link Void} if the adapter does not support
  *     partial updates.
  */
+@NullMarked
 public class RecyclerViewAdapter<VH extends ViewHolder, P> extends RecyclerView.Adapter<VH>
         implements ListObservable.ListObserver<P> {
     /**

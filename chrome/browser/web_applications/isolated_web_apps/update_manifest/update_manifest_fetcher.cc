@@ -102,31 +102,13 @@ void UpdateManifestFetcher::OnUpdateManifestDownloaded(
 
 void UpdateManifestFetcher::ParseUpdateManifest(
     const std::string& update_manifest_content) {
-  InitializeJsonParser();
+  base::JSONReader::Result result =
+      base::JSONReader::ReadAndReturnValueWithError(update_manifest_content,
+                                                    base::JSON_PARSE_RFC);
 
-  json_parser_->Parse(
-      update_manifest_content, base::JSON_PARSE_RFC,
-      base::BindOnce(&UpdateManifestFetcher::OnUpdateManifestParsed,
-                     base::Unretained(this)));
-}
-
-void UpdateManifestFetcher::InitializeJsonParser() {
-  CHECK(!json_parser_);
-  data_decoder_.GetService()->BindJsonParser(
-      json_parser_.BindNewPipeAndPassReceiver());
-  json_parser_.set_disconnect_handler(base::BindOnce(
-      &UpdateManifestFetcher::OnUpdateManifestParsed, base::Unretained(this),
-      std::nullopt, "JsonParser terminated unexpectedly"));
-}
-
-void UpdateManifestFetcher::OnUpdateManifestParsed(
-    std::optional<base::Value> result,
-    const std::optional<std::string>& error) {
   if (!result.has_value()) {
-    if (error.has_value()) {
-      LOG(ERROR) << "Unable to parse IWA Update Manifest JSON for URL " << url_
-                 << ". Error: was" << *error;
-    }
+    LOG(ERROR) << "Unable to parse IWA Update Manifest JSON for URL " << url_
+               << ". Error: was" << result.error().message;
     std::move(fetch_callback_).Run(base::unexpected(Error::kInvalidJson));
     return;
   }

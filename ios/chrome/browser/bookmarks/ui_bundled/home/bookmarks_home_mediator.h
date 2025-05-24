@@ -6,8 +6,10 @@
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_HOME_BOOKMARKS_HOME_MEDIATOR_H_
 
 #import <UIKit/UIKit.h>
+
 #import <set>
 #import <string>
+
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
 @protocol BookmarksHomeConsumer;
@@ -105,6 +107,9 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 
 // Stops mediating and disconnects from backend models.
 - (void)disconnect;
+
+// Whether the view can be dismissed.
+- (BOOL)canDismiss;
 
 // Rebuilds the table view model data for the Bookmarks section.  Deletes any
 // existing data first.

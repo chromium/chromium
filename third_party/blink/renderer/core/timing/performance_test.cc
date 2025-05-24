@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -106,17 +105,13 @@ class PerformanceTest : public PageTestBase {
   }
 
   void CheckBackForwardCacheRestoration(PerformanceEntryVector entries) {
-    // Expect there are 2 back forward cache restoration entries.
-    EXPECT_EQ(2, base::ranges::count(entries, "back-forward-cache-restoration",
-                                     &PerformanceEntry::entryType));
-
-    // Retain only back forward cache restoration entries.
-    entries.erase(std::remove_if(entries.begin(), entries.end(),
-                                 [](const PerformanceEntry* e) -> bool {
-                                   return e->entryType() !=
-                                          "back-forward-cache-restoration";
-                                 }),
-                  entries.end());
+    // Retain only back forward cache restoration entries. There should be two.
+    auto to_remove =
+        std::ranges::remove_if(entries, [](const PerformanceEntry* e) {
+          return e->entryType() != "back-forward-cache-restoration";
+        });
+    entries.erase(to_remove.begin(), to_remove.end());
+    EXPECT_EQ(2u, entries.size());
 
     BackForwardCacheRestoration* b1 =
         static_cast<BackForwardCacheRestoration*>(entries[0].Get());

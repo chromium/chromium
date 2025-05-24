@@ -38,12 +38,16 @@ bool EncodeImage(const gfx::ImageSkia& image_skia,
   base::AssertLongCPUWorkAllowed();
   SkBitmap bitmap = *(image_skia.bitmap());
   DCHECK(!bitmap.drawsNothing());
-
   *output = base::MakeRefCounted<base::RefCountedBytes>();
 
   if (image_metadata.empty()) {
-    return gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality,
-                                  &(*output)->as_vector());
+    std::optional<std::vector<uint8_t>> data =
+        gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality);
+    if (!data) {
+      return false;
+    }
+    (*output)->as_vector() = std::move(data.value());
+    return true;
   }
 
   SkPixmap pixmap;
@@ -52,11 +56,16 @@ bool EncodeImage(const gfx::ImageSkia& image_skia,
     return false;
   }
 
-  auto xmpMetadata = SkData::MakeWithCString(image_metadata.c_str());
+  auto xmp_metadata = SkData::MakeWithCString(image_metadata.c_str());
 
-  return gfx::JPEGCodec::Encode(pixmap, kDefaultEncodingQuality,
-                                SkJpegEncoder::Downsample::k420,
-                                &(*output)->as_vector(), xmpMetadata.get());
+  std::optional<std::vector<uint8_t>> data = gfx::JPEGCodec::Encode(
+      pixmap, kDefaultEncodingQuality, SkJpegEncoder::Downsample::k420,
+      xmp_metadata.get());
+  if (!data) {
+    return false;
+  }
+  (*output)->as_vector() = std::move(data.value());
+  return true;
 }
 
 // Resizes `image` to a resolution which is nearest to `preferred_width` and
@@ -125,8 +134,7 @@ bool SaveWallpaper(const gfx::ImageSkia& image,
     return false;
   }
 
-  if (!base::WriteFile(temp_path,
-                       base::make_span(data->front(), data->size()))) {
+  if (!base::WriteFile(temp_path, base::span(*data))) {
     LOG(WARNING) << "Failed to write wallpaper data to temporary file";
     base::DeleteFile(temp_path);
     return false;
@@ -148,17 +156,6 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
                             const WallpaperLayout layout,
                             const gfx::Size preferred_size,
                             const std::string& image_metadata) {
-  if (layout == WALLPAPER_LAYOUT_CENTER) {
-    // TODO(b/325498873) remove this.
-    if (base::PathExists(path)) {
-      DVLOG(1) << "Deleting path " << path;
-      base::DeleteFile(path);
-    }
-    DVLOG(1) << "Skipping resize and save for WALLPAPER_LAYOUT_CENTER path "
-             << path;
-    return false;
-  }
-
   gfx::ImageSkia resized_image = ResizeImage(image, layout, preferred_size);
   if (resized_image.isNull()) {
     LOG(WARNING) << "Failed to resize image";

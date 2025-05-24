@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.browserservices.ui;
 
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import javax.inject.Inject;
-
 /** Model describing the state of a Trusted Web Activity. */
-@ActivityScope
+@NullMarked
 public class TrustedWebActivityModel extends PropertyModel {
     /** The state of Trusted Web Activity disclosure. Can be one of the constants below. */
     public static final WritableIntPropertyKey DISCLOSURE_STATE = new WritableIntPropertyKey();
@@ -48,7 +46,6 @@ public class TrustedWebActivityModel extends PropertyModel {
         void onDisclosureShown();
     }
 
-    @Inject
     public TrustedWebActivityModel() {
         super(
                 DISCLOSURE_STATE,

@@ -31,7 +31,7 @@ class VirtualDesktopHelper;
 namespace views {
 class DesktopNativeWidgetAura;
 class NativeMenuWin;
-}
+}  // namespace views
 
 class BrowserDesktopWindowTreeHostWin
     : public BrowserDesktopWindowTreeHost,
@@ -56,6 +56,7 @@ class BrowserDesktopWindowTreeHostWin
   DesktopWindowTreeHost* AsDesktopWindowTreeHost() override;
   int GetMinimizeButtonOffset() const override;
   bool UsesNativeSystemMenu() const override;
+  void ClientDestroyedWidget() override;
 
   // Overridden from DesktopWindowTreeHostWin:
   void Init(const views::Widget::InitParams& params) override;
@@ -64,7 +65,7 @@ class BrowserDesktopWindowTreeHostWin
   std::string GetWorkspace() const override;
   int GetInitialShowState() const override;
   bool GetClientAreaInsets(gfx::Insets* insets,
-                           HMONITOR monitor) const override;
+                           int frame_thickness) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void HandleCreate() override;
   void HandleDestroying() override;
@@ -78,6 +79,7 @@ class BrowserDesktopWindowTreeHostWin
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void HandleWindowMinimizedOrRestored(bool restored) override;
+  void HandleRequestClose() override;
 
   // ProfileAttributesStorage::Observer:
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
@@ -108,7 +110,7 @@ class BrowserDesktopWindowTreeHostWin
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
 
-  base::win::ScopedHICON icon_handle_;
+  base::win::ScopedGDIObject<HICON> icon_handle_;
 
   // This will be null pre Win10.
   scoped_refptr<VirtualDesktopHelper> virtual_desktop_helper_;

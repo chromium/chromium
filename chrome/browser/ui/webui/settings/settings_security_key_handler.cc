@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <utility>
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/platform_util.h"
@@ -75,7 +75,7 @@ bool DecodePublicKey(const std::string& value,
     return false;
   }
 
-  base::ranges::copy(bytes, out->begin());
+  std::ranges::copy(bytes, out->begin());
   return true;
 }
 
@@ -285,7 +285,7 @@ void SecurityKeysResetHandler::HandleCompleteReset(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -314,7 +314,7 @@ void SecurityKeysResetHandler::OnResetFinished(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -430,8 +430,7 @@ void SecurityKeysCredentialHandler::HandleDelete(
   for (const base::Value& el : args[1].GetList()) {
     std::vector<uint8_t> credential_id_bytes;
     if (!base::HexStringToBytes(el.GetString(), &credential_id_bytes)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     device::PublicKeyCredentialDescriptor credential_id(
         device::CredentialType::kPublicKey, std::move(credential_id_bytes));
@@ -456,14 +455,14 @@ void SecurityKeysCredentialHandler::HandleUpdateUserInformation(
 
   std::vector<uint8_t> credential_id_bytes;
   if (!base::HexStringToBytes(args[1].GetString(), &credential_id_bytes)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   device::PublicKeyCredentialDescriptor credential_id(
       device::CredentialType::kPublicKey, credential_id_bytes);
 
   std::vector<uint8_t> user_handle;
   if (!base::HexStringToBytes(args[2].GetString(), &user_handle)) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   std::string new_username = args[3].GetString();
   std::string new_displayname = args[4].GetString();
@@ -519,8 +518,7 @@ void SecurityKeysCredentialHandler::OnHaveCredentials(
       base::Value::Dict credential_dict;
       std::string credential_id = base::HexEncode(credential.credential_id.id);
       if (credential_id.empty()) {
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
       }
       std::string userHandle = base::HexEncode(credential.user.id);
 
@@ -930,8 +928,7 @@ void SecurityKeysBioEnrollmentHandler::HandleDelete(
   callback_id_ = args[0].GetString();
   std::vector<uint8_t> template_id;
   if (!base::HexStringToBytes(args[1].GetString(), &template_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bio_->DeleteTemplate(
       std::move(template_id),
@@ -958,8 +955,7 @@ void SecurityKeysBioEnrollmentHandler::HandleRename(
   callback_id_ = args[0].GetString();
   std::vector<uint8_t> template_id;
   if (!base::HexStringToBytes(args[1].GetString(), &template_id)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bio_->RenameTemplate(
       std::move(template_id), args[2].GetString(),

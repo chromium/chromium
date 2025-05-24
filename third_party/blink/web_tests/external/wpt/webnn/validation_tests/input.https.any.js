@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API input interface
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -10,14 +10,7 @@
 // Tests for input(name, descriptor)
 const tests = [
   {
-    testName:
-        '[input] Test building a 0-D scalar input without presenting dimensions',
-    name: 'input',
-    descriptor: {dataType: 'float32'},
-    output: {dataType: 'float32', shape: []},
-  },
-  {
-    testName: '[input] Test building a 0-D scalar input with empty dimensions',
+    testName: '[input] Test building a 0-D scalar input with empty shape',
     name: 'input',
     descriptor: {dataType: 'float32', shape: []},
     output: {dataType: 'float32', shape: []},
@@ -65,10 +58,21 @@ tests.forEach(
       const builder = new MLGraphBuilder(context);
       if (test.output) {
         const inputOperand = builder.input(test.name, test.descriptor);
-        assert_equals(inputOperand.dataType(), test.output.dataType);
-        assert_array_equals(inputOperand.shape(), test.output.shape);
+        assert_equals(inputOperand.dataType, test.output.dataType);
+        assert_array_equals(inputOperand.shape, test.output.shape);
       } else {
         assert_throws_js(
             TypeError, () => builder.input(test.name, test.descriptor));
       }
     }, test.testName));
+
+promise_test(async t => {
+  const builder = new MLGraphBuilder(context);
+
+  const inputDescriptor = {
+      dataType: 'float32',
+      shape: [(context.opSupportLimits().maxTensorByteLength + 1) / 4]};
+
+  assert_throws_js(
+    TypeError, () => builder.input('input', inputDescriptor));
+}, '[input] throw if the output tensor byte length exceeds limit');

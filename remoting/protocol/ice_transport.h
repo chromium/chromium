@@ -57,7 +57,8 @@ class IceTransport : public Transport,
   bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) override;
 
  private:
-  typedef std::map<std::string, IceTransportChannel*> ChannelsMap;
+  typedef std::map<std::string, raw_ptr<IceTransportChannel, CtnExperimental>>
+      ChannelsMap;
   using PendingChannelCreatedCallbacks =
       std::map<std::string, ChannelCreatedCallback>;
 
@@ -75,7 +76,7 @@ class IceTransport : public Transport,
                                const std::string& ufrag,
                                const std::string& password) override;
   void OnChannelCandidate(IceTransportChannel* transport,
-                          const cricket::Candidate& candidate) override;
+                          const webrtc::Candidate& candidate) override;
   void OnChannelRouteChange(IceTransportChannel* transport,
                             const TransportRoute& route) override;
   void OnChannelFailed(IceTransportChannel* transport) override;

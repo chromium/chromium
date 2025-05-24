@@ -3,19 +3,20 @@
 // found in the LICENSE file.
 
 #ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
 #endif
 
 #include "net/base/sockaddr_util_posix.h"
 
 #include <stddef.h>
 #include <string.h>
-#include <stddef.h>
-
 #include <sys/socket.h>
 #include <sys/un.h>
 
+#include "base/compiler_specific.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "build/build_config.h"
 #include "net/base/sockaddr_storage.h"
 
@@ -37,7 +38,20 @@ bool FillUnixAddress(const std::string& socket_path,
     return false;
 
   struct sockaddr_un* socket_addr =
-      reinterpret_cast<struct sockaddr_un*>(address->addr);
+      reinterpret_cast<struct sockaddr_un*>(address->addr());
+
+  // We want to change the behavior here to limit path size to the length of
+  // `sun_path`, rather than the current behavior. This is code is to test the
+  // viability of doing so.
+  //
+  // TODO(crbug.com/416481248): Remove this logic, and, if all goes well, change
+  // behavior of the code above.
+  if (path_size > sizeof(socket_addr->sun_path)) {
+    SCOPED_CRASH_KEY_NUMBER("crbug-416481248", "domain-socket-path-len",
+                            path_size);
+    base::debug::DumpWithoutCrashing();
+  }
+
   memset(socket_addr, 0, address->addr_len);
   socket_addr->sun_family = AF_UNIX;
   address->addr_len = path_size + offsetof(struct sockaddr_un, sun_path);
@@ -52,7 +66,8 @@ bool FillUnixAddress(const std::string& socket_path,
   // length of the structure exactly, as potentially the socket name may
   // have '\0' characters embedded (although we don't support this).
   // Note that addr.sun_path is already zero initialized.
-  memcpy(socket_addr->sun_path + 1, socket_path.c_str(), socket_path.size());
+  UNSAFE_TODO(memcpy(socket_addr->sun_path + 1, socket_path.c_str(),
+                     socket_path.size());)
   return true;
 #else
   return false;

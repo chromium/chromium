@@ -18,12 +18,18 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include <stdlib.h>
+
 #include <algorithm>
 #include <cstring>
 
 #include "partition_alloc/shim/allocator_shim_internals.h"
 
 extern "C" {
+
+SHIM_ALWAYS_EXPORT void* __wrap_aligned_alloc(size_t alignment, size_t size) {
+  return ShimMemalign(alignment, size, nullptr);
+}
 
 SHIM_ALWAYS_EXPORT void* __wrap_calloc(size_t n, size_t size) {
   return ShimCalloc(n, size, nullptr);

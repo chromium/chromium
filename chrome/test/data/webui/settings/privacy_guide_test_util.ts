@@ -5,7 +5,7 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {SettingsPrivacyGuidePageElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsPrivacyGuidePageElement, ThirdPartyCookieBlockingSetting} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, CookieControlsMode, PrivacyGuideStep, SafeBrowsingSetting} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {Router, routes, SignedInState, StatusAction} from 'chrome://settings/settings.js';
@@ -89,12 +89,22 @@ export function setThirdPartyCookieSetting(
   });
 }
 
+export function setThirdPartyCookieBlockingSetting(
+    page: SettingsPrivacyGuidePageElement,
+    setting: ThirdPartyCookieBlockingSetting): void {
+  page.set('prefs.generated.third_party_cookie_blocking_setting', {
+    type: chrome.settingsPrivate.PrefType.NUMBER,
+    value: setting,
+  });
+}
+
 export function shouldShowCookiesCard(page: SettingsPrivacyGuidePageElement):
     boolean {
-  return page.getPref('profile.cookie_controls_mode').value !==
-      CookieControlsMode.OFF &&
-      page.getPref('generated.cookie_default_content_setting').value !==
-      ContentSetting.BLOCK;
+  return page.getPref('generated.cookie_default_content_setting').value !==
+      ContentSetting.BLOCK &&
+      (page.getPref('profile.cookie_controls_mode').value !==
+           CookieControlsMode.OFF ||
+       loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled'));
 }
 
 // Set the safe browsing setting for the privacy guide.

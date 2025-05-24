@@ -39,6 +39,7 @@ class AppendNodeCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   Member<ContainerNode> parent_;
   Member<Node> node_;

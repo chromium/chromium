@@ -12,6 +12,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 
 namespace {
@@ -58,7 +59,7 @@ bool EntryMatches(Iterator begin,
 }
 
 // This list must be sorted according to CompareEntry.
-const UsbBlocklist::Entry kStaticEntries[] = {
+constexpr UsbBlocklist::Entry kStaticEntries[] = {
     {0x096e, 0x0850, kMaxVersion},  // KEY-ID
     {0x096e, 0x0852, kMaxVersion},  // Feitian
     {0x096e, 0x0853, kMaxVersion},  // Feitian
@@ -110,12 +111,7 @@ const UsbBlocklist::Entry kStaticEntries[] = {
 
 }  // namespace
 
-UsbBlocklist::Entry::Entry(uint16_t vendor_id,
-                           uint16_t product_id,
-                           uint16_t max_version)
-    : vendor_id(vendor_id), product_id(product_id), max_version(max_version) {}
-
-UsbBlocklist::~UsbBlocklist() {}
+UsbBlocklist::~UsbBlocklist() = default;
 
 // static
 UsbBlocklist& UsbBlocklist::Get() {
@@ -134,7 +130,7 @@ bool UsbBlocklist::IsExcluded(
                             device_info.device_version_minor << 4 |
                             device_info.device_version_subminor;
   return IsExcluded(
-      Entry(device_info.vendor_id, device_info.product_id, device_version));
+      Entry{device_info.vendor_id, device_info.product_id, device_version});
 }
 
 void UsbBlocklist::ResetToDefaultValuesForTest() {
@@ -149,8 +145,10 @@ UsbBlocklist::UsbBlocklist() {
 }
 
 void UsbBlocklist::PopulateWithServerProvidedValues() {
-  std::string blocklist_string =
-      base::GetFieldTrialParamValue("WebUSBBlocklist", "blocklist_additions");
+  std::string blocklist_string = base::GetFieldTrialParamByFeatureAsString(
+      /*feature=*/features::kWebUsbBlocklist,
+      /*param_name=*/"blocklist_additions",
+      /*default_value=*/"");
 
   for (const auto& entry :
        base::SplitStringPiece(blocklist_string, ",", base::TRIM_WHITESPACE,

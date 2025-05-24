@@ -105,8 +105,7 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
     JNIEnv* env,
     const WebFeedMetadata& metadata) {
   return Java_WebFeedMetadata_Constructor(
-      env, ToJavaWebFeedId(env, metadata.web_feed_id),
-      base::android::ConvertUTF8ToJavaString(env, metadata.title),
+      env, ToJavaWebFeedId(env, metadata.web_feed_id), metadata.title,
       url::GURLAndroid::FromNativeGURL(env, metadata.publisher_url),
       static_cast<int>(metadata.subscription_status),
       static_cast<int>(metadata.availability_status), metadata.is_recommended,
@@ -141,10 +140,8 @@ base::android::ScopedJavaLocalRef<jobject> ToJava(
 base::android::ScopedJavaLocalRef<jobject> ToJava(
     JNIEnv* env,
     const WebFeedSubscriptions::QueryWebFeedResult& result) {
-  return Java_QueryResult_Constructor(
-      env, base::android::ConvertUTF8ToJavaString(env, result.web_feed_id),
-      base::android::ConvertUTF8ToJavaString(env, result.title),
-      base::android::ConvertUTF8ToJavaString(env, result.url));
+  return Java_QueryResult_Constructor(env, result.web_feed_id, result.title,
+                                      result.url);
 }
 
 base::android::ScopedJavaLocalRef<jobject> ToJava(
@@ -388,7 +385,7 @@ static void JNI_WebFeedBridge_IncrementFollowedFromWebPageMenuCount(
 
 static void JNI_WebFeedBridge_QueryWebFeed(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& url,
+    std::string& url,
     const base::android::JavaParamRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
       AdaptQueryWebFeedResultCallback(j_callback);
@@ -397,14 +394,12 @@ static void JNI_WebFeedBridge_QueryWebFeed(
     std::move(callback).Run({});
     return;
   }
-  subscriptions->QueryWebFeed(
-      GURL(base::android::ConvertJavaStringToUTF8(env, url)),
-      std::move(callback));
+  subscriptions->QueryWebFeed(GURL(url), std::move(callback));
 }
 
 static void JNI_WebFeedBridge_QueryWebFeedId(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& id,
+    std::string& id,
     const base::android::JavaParamRef<jobject>& j_callback) {
   base::OnceCallback<void(WebFeedSubscriptions::QueryWebFeedResult)> callback =
       AdaptQueryWebFeedResultCallback(j_callback);
@@ -413,7 +408,6 @@ static void JNI_WebFeedBridge_QueryWebFeedId(
     std::move(callback).Run({});
     return;
   }
-  subscriptions->QueryWebFeedId(base::android::ConvertJavaStringToUTF8(env, id),
-                                std::move(callback));
+  subscriptions->QueryWebFeedId(id, std::move(callback));
 }
 }  // namespace feed

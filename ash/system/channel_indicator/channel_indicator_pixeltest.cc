@@ -32,7 +32,8 @@ class ChannelIndicatorPixelTest
     std::unique_ptr<TestShellDelegate> shell_delegate =
         std::make_unique<TestShellDelegate>();
     shell_delegate->set_channel(GetChannel());
-    AshTestBase::SetUp(std::move(shell_delegate));
+    set_shell_delegate(std::move(shell_delegate));
+    AshTestBase::SetUp();
     GetSessionControllerClient()->SetSessionState(
         IsLoggedIn() ? session_manager::SessionState::ACTIVE
                      : session_manager::SessionState::LOGIN_PRIMARY);
@@ -78,7 +79,7 @@ TEST_P(ChannelIndicatorPixelTest, ChannelIndicatorArea) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateTestName(),
-      /*revision_number=*/0, GetPrimaryShelf()->GetStatusAreaWidget()));
+      /*revision_number=*/2, GetPrimaryShelf()->GetStatusAreaWidget()));
 }
 
 }  // namespace ash

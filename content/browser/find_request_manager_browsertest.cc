@@ -7,13 +7,15 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/browser/find_request_manager.h"
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/find_in_page_client.h"
-#include "content/browser/find_request_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -1233,7 +1235,8 @@ class FindTestWebContentsPrerenderingDelegate
     : public FindTestWebContentsDelegate {
  public:
   PreloadingEligibility IsPrerender2Supported(
-      WebContents& web_contents) override {
+      WebContents& web_contents,
+      PreloadingTriggerType trigger_type) override {
     return PreloadingEligibility::kEligible;
   }
 };
@@ -1649,7 +1652,7 @@ INSTANTIATE_TEST_SUITE_P(
 // hasn't finished the find-in-page session to the new document.
 // TODO(crbug.com/40220234): Fix flakiness and reenable the test.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_ANDROID)
+    BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #define MAYBE_NavigateFrameDuringFind DISABLED_NavigateFrameDuringFind
 #else
 #define MAYBE_NavigateFrameDuringFind NavigateFrameDuringFind

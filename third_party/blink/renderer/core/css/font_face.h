@@ -50,14 +50,13 @@ class CSSFontFace;
 class CSSFontFamilyValue;
 class CSSPropertyValueSet;
 class CSSValue;
-class DOMArrayBuffer;
-class DOMArrayBufferView;
 class Document;
 class CSSLengthResolver;
 class ExceptionState;
 class MediaValues;
 class FontFaceDescriptors;
 class StyleRuleFontFace;
+class V8FontFaceLoadStatus;
 class V8UnionArrayBufferOrArrayBufferViewOrString;
 struct FontMetricsOverride;
 
@@ -115,7 +114,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   void setLineGapOverride(ExecutionContext*, const String&, ExceptionState&);
   void setSizeAdjust(ExecutionContext*, const String&, ExceptionState&);
 
-  String status() const;
+  V8FontFaceLoadStatus status() const;
   ScriptPromise<FontFace> loaded(ScriptState* script_state) {
     return FontStatusPromise(script_state);
   }
@@ -169,11 +168,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
  private:
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
-                          DOMArrayBuffer* source,
-                          const FontFaceDescriptors*);
-  static FontFace* Create(ExecutionContext*,
-                          const AtomicString& family,
-                          DOMArrayBufferView*,
+                          base::span<const uint8_t> data,
                           const FontFaceDescriptors*);
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
@@ -181,7 +176,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
                           const FontFaceDescriptors*);
 
   void InitCSSFontFace(ExecutionContext*, const CSSValue& src);
-  void InitCSSFontFace(ExecutionContext*, const unsigned char* data, size_t);
+  void InitCSSFontFace(ExecutionContext*, base::span<const uint8_t> data);
   void SetPropertyFromString(const ExecutionContext*,
                              const String&,
                              AtRuleDescriptorID,

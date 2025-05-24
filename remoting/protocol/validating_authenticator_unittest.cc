@@ -315,7 +315,7 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidAccount) {
             validating_authenticator_->rejection_reason());
 }
 
-TEST_F(ValidatingAuthenticatorTest, InvalidConnection_ProtocolError) {
+TEST_F(ValidatingAuthenticatorTest, InvalidConnection_InvalidState) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
       .Times(1)
       .WillOnce(InvokeCallbackArgument<1>());
@@ -324,13 +324,13 @@ TEST_F(ValidatingAuthenticatorTest, InvalidConnection_ProtocolError) {
       .WillByDefault(Return(Authenticator::REJECTED));
 
   ON_CALL(*mock_authenticator_, rejection_reason())
-      .WillByDefault(Return(Authenticator::RejectionReason::PROTOCOL_ERROR));
+      .WillByDefault(Return(Authenticator::RejectionReason::INVALID_STATE));
 
   // Verify validation callback is not called for invalid connections.
   SendMessageAndWaitForCallback();
   ASSERT_FALSE(validate_complete_called_);
   ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
-  ASSERT_EQ(Authenticator::RejectionReason::PROTOCOL_ERROR,
+  ASSERT_EQ(Authenticator::RejectionReason::INVALID_STATE,
             validating_authenticator_->rejection_reason());
 }
 

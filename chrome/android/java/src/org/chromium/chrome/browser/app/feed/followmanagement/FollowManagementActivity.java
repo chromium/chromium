@@ -19,8 +19,8 @@ public class FollowManagementActivity extends SnackbarActivity {
     private static final String TAG = "FollowMActivity";
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateInternal(Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
         Log.d(TAG, "FollowManagementActivity.onCreate");
 
         FollowManagementCoordinator coordinator = new FollowManagementCoordinator(this);

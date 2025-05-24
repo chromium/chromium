@@ -30,8 +30,9 @@
 }
 
 - (void)startAnimated:(BOOL)animated {
-  if (self.started)
+  if (self.started) {
     return;
+  }
   self.containedViewController = [[UIViewController alloc] init];
   UIView* view = self.viewController.view;
   view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -44,8 +45,9 @@
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  if (!self.started)
+  if (!self.started) {
     return;
+  }
   [self.viewController willMoveToParentViewController:nil];
   [self.viewController.view removeFromSuperview];
   [self.viewController removeFromParentViewController];

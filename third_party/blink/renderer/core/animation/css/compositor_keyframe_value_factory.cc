@@ -75,25 +75,24 @@ CompositorKeyframeValue* CompositorKeyframeValueFactory::Create(
       const AtomicString& property_name = property.CustomPropertyName();
       const CSSValue* value = style.GetVariableValue(property_name);
 
-      const auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value);
-      if (primitive_value && primitive_value->IsNumber()) {
-        return MakeGarbageCollected<CompositorKeyframeDouble>(
-            primitive_value->GetFloatValue());
+      if (const auto* number_value = DynamicTo<CSSNumericLiteralValue>(value)) {
+        if (number_value->IsNumber()) {
+          return MakeGarbageCollected<CompositorKeyframeDouble>(
+              number_value->ClampedDoubleValue());
+        }
       }
 
       // TODO: Add supported for interpolable color values from
       // CSSIdentifierValue when given a value of currentcolor
       if (const auto* color_value = DynamicTo<cssvalue::CSSColor>(value)) {
-        Color color = color_value->Value();
-        return MakeGarbageCollected<CompositorKeyframeColor>(SkColorSetARGB(
-            color.AlphaAsInteger(), color.Red(), color.Green(), color.Blue()));
+        return MakeGarbageCollected<CompositorKeyframeColor>(
+            color_value->Value().toSkColor4f().toSkColor());
       }
 
       return nullptr;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ui/webauthn/passkey_deleted_confirmation_controller.h"
 
+#include <string>
+#include <utility>
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
@@ -23,19 +28,6 @@ PasskeyDeletedConfirmationController::~PasskeyDeletedConfirmationController() {
 std::u16string PasskeyDeletedConfirmationController::GetTitle() const {
   return l10n_util::GetStringUTF16(
       IDS_WEBAUTHN_GPM_PASSKEY_UPDATE_NEEDED_TITLE);
-}
-
-void PasskeyDeletedConfirmationController::OnGotItButtonClicked() {
-  dismissal_reason_ = password_manager::metrics_util::CLICKED_GOT_IT;
-}
-
-void PasskeyDeletedConfirmationController::OnManagePasskeysButtonClicked() {
-  dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
-  if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
-        password_manager::ManagePasswordsReferrer::
-            kPasskeyDeletedConfirmationBubble);
-  }
 }
 
 void PasskeyDeletedConfirmationController::ReportInteractions() {

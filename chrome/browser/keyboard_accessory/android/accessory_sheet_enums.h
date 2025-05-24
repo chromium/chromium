@@ -22,6 +22,49 @@ enum class AccessoryTabType {
   COUNT,
 };
 
+// Used to record which type of suggestion was selected.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Must be kept in sync with the enum
+// in enums.xml. A java IntDef@ is generated from this.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.keyboard_accessory
+enum class AccessorySuggestionType {
+  // Address manual filling sheet suggestion types:
+  kNameFull = 0,
+  kCompanyName = 1,
+  kAddressLine1 = 2,
+  kAddressLine2 = 3,
+  kZip = 4,
+  kCity = 5,
+  kState = 6,
+  kCountry = 7,
+  kPhoneNumber = 8,
+  kEmailAddress = 9,
+
+  // Payments manual filling sheet suggestion types:
+  kCreditCardNumber = 10,
+  kCreditCardExpirationMonth = 11,
+  kCreditCardExpirationYear = 12,
+  kCreditCardNameFull = 13,
+  kCreditCardCvc = 14,
+  kIban = 15,
+  kPromoCode = 16,
+
+  // Password manual filling sheet suggestion types:
+  kCredentialUsername = 17,
+  kCredentialPassword = 18,
+  kPasskey = 19,
+
+  // Plus address suggestion types are accessible from both address and
+  // passwords manual filling sheets.
+  kPlusAddress = 20,
+
+  // Google Wallet loyalty card suggestion accessing from the payments manual
+  // filling sheet.
+  kLoyaltyCard = 21,
+
+  kMaxValue = kLoyaltyCard,
+};
+
 // Describes possible actions in the keyboard accessory and its sheets. Used to
 // distinguish specific actions and links.
 // Additionally, they are used to record metrics for the associated action.
@@ -29,6 +72,8 @@ enum class AccessoryTabType {
 // be reused. Must be kept in sync with the enum in enums.xml. A java IntDef@ is
 // generated from this.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.keyboard_accessory
+//
+// LINT.IfChange(AccessoryAction)
 enum class AccessoryAction {
   GENERATE_PASSWORD_AUTOMATIC = 0,
   MANAGE_PASSWORDS = 1,
@@ -46,8 +91,10 @@ enum class AccessoryAction {
   CREATE_PLUS_ADDRESS_FROM_PASSWORD_SHEET = 13,
   SELECT_PLUS_ADDRESS_FROM_PASSWORD_SHEET = 14,
   MANAGE_PLUS_ADDRESS_FROM_PASSWORD_SHEET = 15,
+  MANAGE_LOYALTY_CARDS = 16,
   COUNT,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml)
 
 // Used to record metrics for accessory toggles. Entries should not be
 // renumbered and numeric values should never be reused. Must be kept in sync

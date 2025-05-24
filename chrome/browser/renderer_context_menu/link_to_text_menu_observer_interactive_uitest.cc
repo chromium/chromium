@@ -18,7 +18,6 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
@@ -27,8 +26,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/process_manager.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-shared.h"
+#include "third_party/blink/public/mojom/annotation/annotation.mojom-test-utils.h"
 #include "ui/base/clipboard/clipboard.h"
 
 class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
@@ -84,15 +86,53 @@ class MockLinkToTextMenuObserver : public LinkToTextMenuObserver {
   }
 };
 
+class MockAnnotationAgentContainer
+    : public blink::mojom::AnnotationAgentContainerInterceptorForTesting {
+ public:
+  MockAnnotationAgentContainer() : receiver_(this) {}
+
+  // Creates and returns a MockAnnotationAgentContainer instance and installs a
+  // binder to the new instance in `rfh`'s InterfaceProvider (overwriting the
+  // previous binder).
+  static std::unique_ptr<MockAnnotationAgentContainer>
+  InstallMockAnnotationAgentContainer(content::RenderFrameHost* rfh) {
+    service_manager::InterfaceProvider::TestApi test_api(
+        rfh->GetRemoteInterfaces());
+    auto mock = std::make_unique<MockAnnotationAgentContainer>();
+    test_api.SetBinderForName(
+        blink::mojom::AnnotationAgentContainer::Name_,
+        base::BindRepeating(&MockAnnotationAgentContainer::Bind,
+                            base::Unretained(mock.get())));
+    return mock;
+  }
+
+  void Bind(mojo::ScopedMessagePipeHandle handle) {
+    receiver_.Bind(
+        mojo::PendingReceiver<blink::mojom::AnnotationAgentContainer>(
+            std::move(handle)));
+  }
+
+  void FlushForTesting() { receiver_.FlushForTesting(); }
+
+  // blink::mojom::AnnotationAgentContainer overrides
+  MOCK_METHOD(void, RemoveAgentsOfType, (blink::mojom::AnnotationType));
+
+  // blink::mojom::AnnotationAgentContainerInterceptorForTesting overrides
+  blink::mojom::AnnotationAgentContainer* GetForwardingInterface() override {
+    NOTREACHED();
+  }
+
+ private:
+  mojo::Receiver<blink::mojom::AnnotationAgentContainer> receiver_;
+};
+
 namespace {
 
 class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
  public:
   LinkToTextMenuObserverTest() {
     scoped_features_.InitWithFeatures(
-        {toast_features::kLinkToHighlightCopiedToast,
-         toast_features::kToastFramework},
-        {});
+        {toast_features::kLinkToHighlightCopiedToast}, {});
   }
 
   void SetUpOnMainThread() override {
@@ -149,18 +189,6 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
 
 LinkToTextMenuObserverTest::~LinkToTextMenuObserverTest() = default;
 
-class LinkToTextMenuObserverDataControlsTest
-    : public LinkToTextMenuObserverTest {
- public:
-  LinkToTextMenuObserverDataControlsTest() {
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
-  }
-
- protected:
-  base::test::ScopedFeatureList scoped_features_;
-};
-
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyMenuItem) {
@@ -183,7 +211,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyMenuItem) {
 IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, AddsCopyAndRemoveMenuItems) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
-  params.opened_from_highlight = true;
+  params.annotation_type = blink::mojom::AnnotationType::kSharedHighlight;
   observer()->SetGenerationResults(
       std::string(), shared_highlighting::LinkGenerationError::kEmptySelection,
       shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
@@ -309,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
-  params.opened_from_highlight = true;
+  params.annotation_type = blink::mojom::AnnotationType::kSharedHighlight;
   observer()->SetGenerationResults(
       "hello%20world", shared_highlighting::LinkGenerationError::kNone,
       shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
@@ -354,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/#:~:text=hello%20world");
   params.selection_text = u"";
-  params.opened_from_highlight = true;
+  params.annotation_type = blink::mojom::AnnotationType::kSharedHighlight;
   observer()->SetReshareSelector("hello%20world");
   InitMenu(params);
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_RESHARELINKTOTEXT, 0);
@@ -549,8 +577,7 @@ IN_PROC_BROWSER_TEST_F(
             text);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
-                       BlocksCopyingLinkToText) {
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, BlocksCopyingLinkToText) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
@@ -584,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   EXPECT_TRUE(text.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
                        WarnsCopyingLinkToTextAndCancel) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
@@ -619,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   EXPECT_TRUE(text.empty());
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
                        WarnsCopyingLinkToTextAndBypass) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
@@ -654,8 +681,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
   EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
 }
 
-IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
-                       ReplacesCopyingLinkToText) {
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ReplacesCopyingLinkToText) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
                                    "name": "rule_name",
                                    "rule_id": "rule_id",
@@ -689,7 +715,7 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ShowsToastOnCopyingLink) {
   content::ContextMenuParams params;
   params.page_url = GURL("http://foo.com/");
   params.selection_text = u"hello world";
-  params.opened_from_highlight = true;
+  params.annotation_type = blink::mojom::AnnotationType::kSharedHighlight;
   observer()->SetGenerationResults(
       "hello%20world", shared_highlighting::LinkGenerationError::kNone,
       shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
@@ -697,4 +723,40 @@ IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, ShowsToastOnCopyingLink) {
   menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
 
   EXPECT_TRUE(browser()->GetFeatures().toast_controller()->IsShowingToast());
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest,
+                       AddsRemoveMenuItemForGlicHighlight) {
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.annotation_type = blink::mojom::AnnotationType::kGlic;
+  InitMenu(params);
+  EXPECT_EQ(1u, menu()->GetMenuSize());
+  MockRenderViewContextMenu::MockMenuItem item;
+
+  // Check Remove item.
+  menu()->GetMenuItem(0, &item);
+  EXPECT_EQ(IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, item.command_id);
+  EXPECT_FALSE(item.checked);
+  EXPECT_FALSE(item.hidden);
+  EXPECT_TRUE(item.enabled);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverTest, RemovesGlicHighlight) {
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.annotation_type = blink::mojom::AnnotationType::kGlic;
+  InitMenu(params);
+  std::unique_ptr<MockAnnotationAgentContainer>
+      mock_annotation_agent_container =
+          MockAnnotationAgentContainer::InstallMockAnnotationAgentContainer(
+              browser()
+                  ->tab_strip_model()
+                  ->GetActiveWebContents()
+                  ->GetPrimaryMainFrame());
+  EXPECT_CALL(*mock_annotation_agent_container,
+              RemoveAgentsOfType(blink::mojom::AnnotationType::kGlic));
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_REMOVELINKTOTEXT, 0);
+  mock_annotation_agent_container->FlushForTesting();
 }

@@ -199,7 +199,7 @@ class CertVerifyImplUsingPathBuilder : public CertVerifyImpl {
 
 class DummySystemTrustStore : public net::SystemTrustStore {
  public:
-  bssl::TrustStore* GetTrustStore() override { return &trust_store_; }
+  bssl::TrustStore* GetTrustStore() override { return &empty_trust_store_; }
 
   bool IsKnownRoot(const bssl::ParsedCertificate* trust_anchor) const override {
     return false;
@@ -219,10 +219,12 @@ class DummySystemTrustStore : public net::SystemTrustStore {
       const bssl::ParsedCertificate* cert) const override {
     return {};
   }
+
+  bssl::TrustStore* eutl_trust_store() override { return &empty_trust_store_; }
 #endif
 
  private:
-  bssl::TrustStoreCollection trust_store_;
+  bssl::TrustStoreCollection empty_trust_store_;
 };
 
 std::unique_ptr<net::SystemTrustStore> CreateSystemTrustStore(
@@ -580,8 +582,7 @@ int main(int argc, char** argv) {
   std::string impls_str = command_line.GetSwitchValueASCII("impls");
   if (impls_str.empty()) {
     // Default value.
-#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || \
-      BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(CHROME_ROOT_STORE_ONLY))
     impls_str = "platform,";
 #endif
     impls_str += "builtin,pathbuilder";

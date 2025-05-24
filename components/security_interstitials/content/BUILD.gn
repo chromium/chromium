@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//components/captive_portal/core/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 static_library("security_interstitial_page") {
@@ -67,10 +68,10 @@ static_library("security_interstitial_page") {
     ":proto",
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/captive_portal/core",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/guest_view/buildflags",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/network_time",
@@ -92,7 +93,6 @@ static_library("security_interstitial_page") {
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
-    "//services/cert_verifier/public/mojom",
     "//services/network/public/cpp:cpp",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
@@ -123,7 +123,9 @@ static_library("security_interstitial_page") {
     ]
     deps +=
         [ "//components/security_interstitials/content/android:jni_headers" ]
-  } else {
+  }
+
+  if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
 }
@@ -146,7 +148,6 @@ source_set("unit_tests") {
     ":security_interstitial_page",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/captive_portal/content",
     "//components/captive_portal/core:test_support",
     "//components/embedder_support",

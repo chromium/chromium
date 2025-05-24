@@ -55,7 +55,7 @@ public class StartupTimeActivity extends Activity {
 
     private static final String TARGET_KEY = "target";
 
-    private LinkedList<Long> mEventQueue = new LinkedList<>();
+    private final LinkedList<Long> mEventQueue = new LinkedList<>();
 
     private boolean mFinished;
     // Keep track of the time that the last task was run.
@@ -75,7 +75,7 @@ public class StartupTimeActivity extends Activity {
         int WORKAROUND = 4;
     }
 
-    private Runnable mUiBlockingTaskTracker =
+    private final Runnable mUiBlockingTaskTracker =
             new Runnable() {
                 @Override
                 public void run() {
@@ -95,7 +95,7 @@ public class StartupTimeActivity extends Activity {
                 }
             };
 
-    private Runnable mFinishTask =
+    private final Runnable mFinishTask =
             new Runnable() {
                 @Override
                 public void run() {

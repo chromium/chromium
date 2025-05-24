@@ -7,7 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/integrators/plus_addresses/autofill_plus_address_delegate.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -46,6 +46,14 @@ void RecordAutofillSuggestionEvent(
         plus_address_autofill_suggestion_event) {
   base::UmaHistogramEnumeration("PlusAddresses.Suggestion.Events",
                                 plus_address_autofill_suggestion_event);
+}
+
+void RecordNetErrorCode(PlusAddressNetworkRequestType type, int net_error) {
+  base::UmaHistogramSparse(base::ReplaceStringPlaceholders(
+                               "PlusAddresses.NetworkRequest.$1.NetErrorCode",
+                               {PlusAddressNetworkRequestTypeToString(type)},
+                               /*offsets=*/nullptr),
+                           net_error);
 }
 
 void RecordNetworkRequestLatency(

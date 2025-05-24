@@ -66,8 +66,6 @@ export interface SettingsAppearancePageElement {
     colorSchemeModeRow: HTMLElement,
     colorSchemeModeSelect: HTMLSelectElement,
     defaultFontSize: SettingsDropdownMenuElement,
-    showSavedTabGroups: SettingsToggleButtonElement,
-    autoPinNewTabGroups: SettingsToggleButtonElement,
     zoomLevel: HTMLSelectElement,
     tabSearchPositionDropdown: SettingsDropdownMenuElement,
   };
@@ -103,11 +101,6 @@ export class SettingsAppearancePageElement extends
        * Dictionary defining page visibility.
        */
       pageVisibility: Object,
-
-      prefs: {
-        type: Object,
-        notify: true,
-      },
 
       defaultZoom_: Number,
 
@@ -205,27 +198,6 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showSavedTabGroupsInBookmarksBar_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
-        },
-      },
-
-      showAutoPinNewTabGroups_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
-        },
-      },
-
-      toolbarPinningEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('toolbarPinningEnabled');
-        },
-      },
-
       showManagedThemeDialog_: Boolean,
 
       sidePanelOptions_: {
@@ -297,34 +269,31 @@ export class SettingsAppearancePageElement extends
     ];
   }
 
-  pageVisibility: AppearancePageVisibility;
-  private defaultZoom_: number;
-  private isWallpaperPolicyControlled_: boolean;
-  private fontSizeOptions_: DropdownMenuOptionList;
-  private colorSchemeModeOptions_:
+  declare pageVisibility: AppearancePageVisibility;
+  declare private defaultZoom_: number;
+  declare private isWallpaperPolicyControlled_: boolean;
+  declare private fontSizeOptions_: DropdownMenuOptionList;
+  declare private colorSchemeModeOptions_:
       Array<{value: ColorSchemeMode, name: string}>;
-  private selectedColorSchemeMode_: ColorSchemeMode|undefined;
-  private pageZoomLevels_: number[];
-  private themeSublabel_: string;
-  private themeUrl_: string;
-  private systemTheme_: SystemTheme;
-  private focusConfig_: Map<string, string>;
-  private isForcedTheme_: boolean;
-  private showHoverCardImagesOption_: boolean;
-  private showSavedTabGroupsInBookmarksBar_: boolean;
-  private showAutoPinNewTabGroups_: boolean;
-  private showResetPinnedActionsButton_: boolean;
-  private toolbarPinningEnabled_: boolean;
+  declare private selectedColorSchemeMode_: ColorSchemeMode|undefined;
+  declare private pageZoomLevels_: number[];
+  declare private themeSublabel_: string;
+  declare private themeUrl_: string;
+  declare private systemTheme_: SystemTheme;
+  declare private focusConfig_: Map<string, string>;
+  declare private isForcedTheme_: boolean;
+  declare private showHoverCardImagesOption_: boolean;
+  declare private showResetPinnedActionsButton_: boolean;
 
   // <if expr="is_linux">
-  private showCustomChromeFrame_: boolean;
+  declare private showCustomChromeFrame_: boolean;
   // </if>
 
-  private showTabSearchPositionSettings_: boolean;
-  private showTabSearchPositionRestartButton_: boolean;
-  private showManagedThemeDialog_: boolean;
-  private sidePanelOptions_: DropdownMenuOptionList;
-  private tabSearchOptions_: DropdownMenuOptionList;
+  declare private showTabSearchPositionSettings_: boolean;
+  declare private showTabSearchPositionRestartButton_: boolean;
+  declare private showManagedThemeDialog_: boolean;
+  declare private sidePanelOptions_: DropdownMenuOptionList;
+  declare private tabSearchOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
   private colorSchemeModeHandler_: CustomizeColorSchemeModeHandlerInterface =
@@ -407,11 +376,7 @@ export class SettingsAppearancePageElement extends
   }
 
   private onThemeClick_() {
-    if (this.toolbarPinningEnabled_) {
-      this.appearanceBrowserProxy_.openCustomizeChrome();
-    } else {
-      window.open(this.themeUrl_ || loadTimeData.getString('themesGalleryUrl'));
-    }
+    this.appearanceBrowserProxy_.openCustomizeChrome();
   }
 
   private onCustomizeToolbarClick_() {
@@ -508,8 +473,8 @@ export class SettingsAppearancePageElement extends
       return;
     }
 
-    let i18nId;
     // <if expr="is_linux">
+    let i18nId: string;
     switch (this.systemTheme_) {
       case SystemTheme.GTK:
         i18nId = 'gtkTheme';
@@ -521,15 +486,11 @@ export class SettingsAppearancePageElement extends
         i18nId = 'classicTheme';
         break;
     }
+    this.themeSublabel_ = this.i18n(i18nId);
     // </if>
     // <if expr="not is_linux">
-    if (this.toolbarPinningEnabled_) {
       this.themeSublabel_ = '';
-      return;
-    }
-    i18nId = 'chooseFromWebStore';
     // </if>
-    this.themeSublabel_ = this.i18n(i18nId);
   }
 
   /** @return Whether applied theme is set by policy. */
@@ -539,7 +500,7 @@ export class SettingsAppearancePageElement extends
 
   private async toolbarPinningStateChanged_(): Promise<void> {
     this.showResetPinnedActionsButton_ =
-        !await this.appearanceBrowserProxy_.pinnedToolbarActionsAreDefault();
+        !(await this.appearanceBrowserProxy_.pinnedToolbarActionsAreDefault());
   }
 
   private isSelectedColorSchemeMode_(colorSchemeMode: ColorSchemeMode):

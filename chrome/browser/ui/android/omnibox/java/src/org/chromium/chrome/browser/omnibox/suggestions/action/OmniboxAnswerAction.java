@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.components.omnibox.action.OmniboxActionId;
 
 /** Omnibox action for showing an Action associated with an Answer. */
+@NullMarked
 public class OmniboxAnswerAction extends OmniboxAction {
 
     /**
@@ -21,8 +21,7 @@ public class OmniboxAnswerAction extends OmniboxAction {
      * @param hint Text that should be displayed in the associated action chip.
      * @param accessibilityHint Text for screen reader to read when focusing action chip
      */
-    public OmniboxAnswerAction(
-            long nativeInstance, @NonNull String hint, @NonNull String accessibilityHint) {
+    public OmniboxAnswerAction(long nativeInstance, String hint, String accessibilityHint) {
         super(
                 OmniboxActionId.ANSWER_ACTION,
                 nativeInstance,
@@ -33,7 +32,7 @@ public class OmniboxAnswerAction extends OmniboxAction {
     }
 
     @Override
-    public void execute(@NonNull OmniboxActionDelegate delegate) {
+    public void execute(OmniboxActionDelegate delegate) {
         // Not yet implemented.
     }
 }

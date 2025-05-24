@@ -5,6 +5,7 @@
 #ifndef UI_BASE_INTERACTION_INTERACTION_SEQUENCE_TEST_UTIL_H_
 #define UI_BASE_INTERACTION_INTERACTION_SEQUENCE_TEST_UTIL_H_
 
+#include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/interaction_sequence.h"

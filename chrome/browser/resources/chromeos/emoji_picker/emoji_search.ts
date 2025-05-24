@@ -6,20 +6,21 @@ import 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_fiel
 import './emoji_category_button.js';
 import './emoji_group.js';
 
-import {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
+import type {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
-import {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
-import {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import type {PolymerSpliceChange} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {NO_INTERNET_SEARCH_ERROR_MSG} from './constants.js';
-import {Status} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {getTemplate} from './emoji_search.html.js';
 import {createCustomEvent, EMOJI_IMG_BUTTON_CLICK, GIF_ERROR_TRY_AGAIN} from './events.js';
 import Fuse from './fuse.js';
-import {CategoryData, CategoryEnum, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
+import {Status} from './tenor_types.mojom-webui.js';
+import type {CategoryData, EmojiGroupData, EmojiVariants, Gender, Tone} from './types.js';
+import {CategoryEnum} from './types.js';
 
 declare global {
   interface HTMLElementTagNameMap {
@@ -60,7 +61,6 @@ export class EmojiSearch extends PolymerElement {
       gifSupport: {type: Boolean, value: false},
       sealSupport: {type: Boolean, value: false},
       status: {type: Status, value: null},
-      searchQuery: {type: String, value: ''},
       nextGifPos: {type: String, value: ''},
       errorMessage: {type: String, value: NO_INTERNET_SEARCH_ERROR_MSG},
       closeGifNudgeOverlay: {type: Object},
@@ -99,6 +99,7 @@ export class EmojiSearch extends PolymerElement {
   private fuseInstances = new Map<CategoryEnum, Fuse<EmojiVariants>>();
   private nextGifPos: string;  // This variable ensures that we get the correct
                                // set of GIFs when fetching more.
+  private errorMessage: string;
   private scrollTimeout: number|null;
 
   static get observers() {
@@ -390,8 +391,8 @@ export class EmojiSearch extends PolymerElement {
 
     // Append more GIFs to show if user is near the bottom of the currently
     // rendered GIFs (300px is around the average height of 2 GIFs).
-    if (searchResultRect!.getBoundingClientRect().bottom -
-            thisRect!.getBoundingClientRect().bottom <=
+    if (searchResultRect.getBoundingClientRect().bottom -
+            thisRect.getBoundingClientRect().bottom <=
         300) {
       const gifIndex = this.searchResults.findIndex(
           group => group.category === CategoryEnum.GIF);

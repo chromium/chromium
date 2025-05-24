@@ -113,7 +113,8 @@ TestViewTransitionContentLayerImpl::TestViewTransitionContentLayerImpl(
     : ViewTransitionContentLayerImpl(tree_impl,
                                      id,
                                      resource_id,
-                                     is_live_content_layer) {}
+                                     is_live_content_layer,
+                                     gfx::RectF()) {}
 
 void TestViewTransitionContentLayerImpl::AddDamageRect(
     const gfx::Rect& damage_rect) {
@@ -1514,7 +1515,7 @@ TEST_F(DamageTrackerTest, VerifyDamageForSurfaceChangeFromViewTransitionLayer) {
   LayerImpl* child1 = AddLayerInActiveTree<TestLayerImpl>();
   LayerImpl* grand_child1 = AddLayerInActiveTree<TestLayerImpl>();
   LayerImpl* child2 = AddLayerInActiveTree<TestViewTransitionContentLayerImpl>(
-      viz::ViewTransitionElementResourceId(transition_token, 3), false);
+      viz::ViewTransitionElementResourceId(transition_token, 3, false), false);
 
   // child 1 of the root - live render surface.
   child1->SetBounds(gfx::Size(80, 80));
@@ -1752,9 +1753,8 @@ TEST_F(DamageTrackerTest, VerifyDamageForMask) {
   CreateEffectNode(child);
   auto* mask_layer = AddLayerInActiveTree<FakePictureLayerImpl>();
   SetupMaskProperties(child, mask_layer);
-  Region empty_invalidation;
-  mask_layer->UpdateRasterSource(
-      FakeRasterSource::CreateFilled(child->bounds()), &empty_invalidation);
+  mask_layer->SetRasterSourceForTesting(
+      FakeRasterSource::CreateFilled(child->bounds()));
 
   // Add opacity and a grand_child so that the render surface persists even
   // after we remove the mask.

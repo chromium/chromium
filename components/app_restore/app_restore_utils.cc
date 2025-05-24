@@ -33,11 +33,6 @@ bool IsArcWindow(aura::Window* window) {
          chromeos::AppType::ARC_APP;
 }
 
-bool IsLacrosWindow(aura::Window* window) {
-  return window->GetProperty(chromeos::kAppTypeKey) ==
-         chromeos::AppType::LACROS;
-}
-
 bool HasWindowInfo(int32_t restore_window_id) {
   // DeskTemplateReadHandler::GetWindowInfo returns nullptr if
   // `restore_window_id` is unknown.
@@ -208,18 +203,6 @@ std::string GetAppIdFromAppName(const std::string& app_name) {
   if (app_name.substr(0, prefix.length()) != prefix)
     return std::string();
   return app_name.substr(prefix.length());
-}
-
-const std::string GetLacrosWindowId(aura::Window* window) {
-  const std::string* lacros_window_id =
-      window->GetProperty(app_restore::kLacrosWindowId);
-  DCHECK(lacros_window_id);
-  return *lacros_window_id;
-}
-
-int32_t GetLacrosRestoreWindowId(const std::string& lacros_window_id) {
-  return full_restore::FullRestoreReadHandler::GetInstance()
-      ->GetLacrosRestoreWindowId(lacros_window_id);
 }
 
 std::tuple<int, int, int> GetWindowAndTabCount(

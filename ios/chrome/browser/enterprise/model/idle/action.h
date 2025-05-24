@@ -36,8 +36,7 @@ class Action {
 
   // Runs this action on `browser_state`, which may be asynchronous. When it's
   // done, runs `continuation` with the result.
-  virtual void Run(ChromeBrowserState* browser_state,
-                   Continuation continuation) = 0;
+  virtual void Run(ProfileIOS* profile, Continuation continuation) = 0;
 
   int priority() const { return priority_; }
 

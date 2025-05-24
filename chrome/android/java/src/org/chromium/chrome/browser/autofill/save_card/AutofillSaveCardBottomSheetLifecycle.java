@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill.save_card;
 
+
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
@@ -18,6 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
  * (e.g., going into the "tab overview"), so the bottom sheet can be dismissed. Ignores page
  * navigation.
  */
+@NullMarked
 /*package*/ class AutofillSaveCardBottomSheetLifecycle extends EmptyBottomSheetObserver
         implements TabModelObserver, LayoutStateProvider.LayoutStateObserver {
     /** Controller callbacks from the save card bottom sheet. */
@@ -56,6 +60,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
      *
      * @param delegate The controller callbacks for user actions.
      */
+    @Initializer
     void begin(ControllerDelegate delegate) {
         mDelegate = delegate;
 

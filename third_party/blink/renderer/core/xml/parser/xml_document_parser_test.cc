@@ -52,7 +52,7 @@ TEST(XMLDocumentParserTest, ParseFragmentWithUnboundNamespacePrefix) {
   // XMLDocumentParser::StartElementNs should notice that prefix "foo" does not
   // exist and map the element to the null namespace. It should not fall back to
   // the default namespace.
-  EXPECT_TRUE(fragment->ParseXML("<foo:bar/>", svg));
+  EXPECT_TRUE(fragment->ParseXML("<foo:bar/>", svg, ASSERT_NO_EXCEPTION));
   EXPECT_TRUE(fragment->HasOneChild());
   auto* bar = To<Element>(fragment->firstChild());
   EXPECT_TRUE(bar);

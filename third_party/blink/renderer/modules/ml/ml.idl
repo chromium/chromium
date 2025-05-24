@@ -6,11 +6,17 @@
 
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
-  Exposed=(Window, DedicatedWorker)
+  Exposed=(Window, Worker)
 ] interface ML {
   [
     CallWith=ScriptState,
     RaisesException,
     Measure
   ] Promise<MLContext> createContext(optional MLContextOptions options = {});
+
+  [
+    CallWith=ScriptState,
+    RaisesException,
+    MeasureAs=MLCreateContextGPUDevice
+  ] Promise<MLContext> createContext(GPUDevice gpuDevice);
 };

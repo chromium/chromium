@@ -35,7 +35,7 @@ class ParseCallback {
   ParseCallback(const ParseCallback&) = delete;
   ParseCallback& operator=(const ParseCallback&) = delete;
 
-  ~ParseCallback() {}
+  ~ParseCallback() = default;
 
   // Copies payment method manifest into Java.
   void OnPaymentMethodManifestParsed(
@@ -129,7 +129,7 @@ PaymentManifestParserAndroid::PaymentManifestParserAndroid(
     std::unique_ptr<ErrorLogger> log)
     : parser_(std::move(log)) {}
 
-PaymentManifestParserAndroid::~PaymentManifestParserAndroid() {}
+PaymentManifestParserAndroid::~PaymentManifestParserAndroid() = default;
 
 void PaymentManifestParserAndroid::ParsePaymentMethodManifest(
     JNIEnv* env,

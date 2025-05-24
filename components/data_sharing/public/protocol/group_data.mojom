@@ -15,6 +15,7 @@ enum MemberRole {
   kOwner,
   kMember,
   kInvitee,
+  kFormerMember,
 };
 
 // Data representing a member in a group.
@@ -33,6 +34,9 @@ struct GroupMember {
 
   // URL of the avatar of this member.
   url.mojom.Url avatar_url;
+
+  // Given name of the member.
+  string given_name;
 };
 
 // Data representing a group of users.
@@ -40,11 +44,14 @@ struct GroupData {
   // ID of the group.
   string group_id;
 
-  // Name of the group
+  // Name of the group.
   string display_name;
 
-   // A list of members in this group.
+  // A list of members in this group.
   array<GroupMember> members;
+
+  // A list of former members in this group.
+  array<GroupMember> former_members;
 
   // Access token to join the group. It could be empty if the token is expired
   // and not regenerated.

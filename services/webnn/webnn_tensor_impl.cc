@@ -4,6 +4,7 @@
 
 #include "services/webnn/webnn_tensor_impl.h"
 
+#include "base/task/bind_post_task.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
@@ -20,11 +21,17 @@ WebNNTensorImpl::WebNNTensorImpl(
       usage_(std::move(tensor_info->usage)),
       receiver_(this, std::move(receiver)) {
   // Safe to use base::Unretained because `this` owns `receiver_`.
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&WebNNTensorImpl::OnDisconnect, base::Unretained(this)));
+  receiver_.set_disconnect_handler(base::BindPostTask(
+      context_->scheduler_task_runner(),
+      base::BindOnce(&WebNNTensorImpl::OnDisconnect, base::Unretained(this))));
 }
 
 WebNNTensorImpl::~WebNNTensorImpl() = default;
+
+bool WebNNTensorImpl::IsValidWithDescriptor(
+    const OperandDescriptor& descriptor) const {
+  return descriptor_ == descriptor;
+}
 
 void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
   if (!usage().Has(MLTensorUsageFlags::kRead)) {
@@ -33,7 +40,9 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
   }
 
   // Call ReadTensorImpl() implemented by a backend.
-  ReadTensorImpl(std::move(callback));
+  context_->scheduler_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&WebNNTensorImpl::ReadTensorImpl,
+                                base::Unretained(this), std::move(callback)));
 }
 
 void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
@@ -49,7 +58,9 @@ void WebNNTensorImpl::WriteTensor(mojo_base::BigBuffer src_buffer) {
   }
 
   // Call WriteTensorImpl() implemented by a backend.
-  WriteTensorImpl(std::move(src_buffer));
+  context_->scheduler_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&WebNNTensorImpl::WriteTensorImpl,
+                                base::Unretained(this), std::move(src_buffer)));
 }
 
 void WebNNTensorImpl::OnDisconnect() {

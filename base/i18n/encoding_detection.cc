@@ -23,16 +23,15 @@ bool DetectEncoding(const std::string& text, std::string* encoding) {
   int consumed_bytes;
   bool is_reliable;
   Encoding enc = CompactEncDet::DetectEncoding(
-      text.c_str(), text.length(), nullptr, nullptr, nullptr,
-      UNKNOWN_ENCODING,
+      text.c_str(), text.length(), nullptr, nullptr, nullptr, UNKNOWN_ENCODING,
       UNKNOWN_LANGUAGE,
       CompactEncDet::QUERY_CORPUS,  // plain text
-      false,  // Include 7-bit encodings
-      &consumed_bytes,
-      &is_reliable);
+      false,                        // Include 7-bit encodings
+      &consumed_bytes, &is_reliable);
 
-  if (enc == UNKNOWN_ENCODING)
+  if (enc == UNKNOWN_ENCODING) {
     return false;
+  }
 
   *encoding = MimeEncodingName(enc);
   return true;

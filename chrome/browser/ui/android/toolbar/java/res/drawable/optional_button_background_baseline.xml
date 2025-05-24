@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item
+        android:id="@android:id/content"
+        android:height="@dimen/modern_toolbar_background_size"
+        android:left="@dimen/toolbar_phone_optional_button_background_padding"
+        android:right="@dimen/toolbar_phone_optional_button_background_padding"
+        android:gravity="center"
+        android:drawable="@drawable/optional_button_background_selector_baseline" />
+</ripple>

@@ -4,12 +4,13 @@
 
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
@@ -31,7 +32,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/device_identity/device_identity_provider.h"
@@ -47,8 +48,7 @@ std::variant<std::unique_ptr<InvalidationService>,
              std::unique_ptr<InvalidationListener>>
 CreateInvalidationServiceOrListenerImpl(Profile* profile,
                                         IdentityProvider* identity_provider,
-                                        std::string sender_id,
-                                        std::string project_number,
+                                        int64_t project_number,
                                         std::string log_prefix) {
   return CreateInvalidationServiceOrListener(
       identity_provider,
@@ -57,8 +57,7 @@ CreateInvalidationServiceOrListenerImpl(Profile* profile,
           ->driver(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      profile->GetPrefs(), std::move(sender_id), std::move(project_number),
-      std::move(log_prefix));
+      profile->GetPrefs(), project_number, std::move(log_prefix));
 }
 
 }  // namespace
@@ -66,7 +65,7 @@ CreateInvalidationServiceOrListenerImpl(Profile* profile,
 // static
 ProfileInvalidationProvider* ProfileInvalidationProviderFactory::GetForProfile(
     Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::IsSigninBrowserContext(profile) ||
       (user_manager::UserManager::IsInitialized() &&
        user_manager::UserManager::Get()->IsLoggedInAsGuest())) {
@@ -120,16 +119,16 @@ ProfileInvalidationProviderFactory::BuildServiceInstanceForBrowserContext(
 
   std::unique_ptr<IdentityProvider> identity_provider;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
   if (user_manager::UserManager::IsInitialized() &&
-      user_manager::UserManager::Get()->IsLoggedInAsKioskApp() &&
+      user_manager::UserManager::Get()->IsLoggedInAsKioskChromeApp() &&
       connector->IsDeviceEnterpriseManaged()) {
     identity_provider = std::make_unique<DeviceIdentityProvider>(
         DeviceOAuth2TokenServiceFactory::Get());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   Profile* profile = Profile::FromBrowserContext(context);
 

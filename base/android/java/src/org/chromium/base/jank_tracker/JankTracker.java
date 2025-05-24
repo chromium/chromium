@@ -4,7 +4,10 @@
 
 package org.chromium.base.jank_tracker;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Interface for Android UI jank tracking. */
+@NullMarked
 public interface JankTracker {
     /**
      * Starts tracking UI jank for a specific use scenario (e.g. Tab switcher, Omnibox, etc.),
@@ -24,8 +27,8 @@ public interface JankTracker {
      *
      * @param scenario A value constructed from {@link JankScenarioType} along with an id that
      *     specifies a use scenario.
-     * @param endScenarioTime A value that determines the maximum frame metric (based on vsync time)
-     *     that should be included.
+     * @param endScenarioTimeNs A value that determines the maximum frame metric (based on vsync
+     *     time) that should be included.
      */
     void finishTrackingScenario(JankScenario scenario, long endScenarioTimeNs);
 

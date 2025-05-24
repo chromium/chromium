@@ -35,11 +35,12 @@ AdminTemplateServiceFactory::AdminTemplateServiceFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {}
 
-KeyedService* AdminTemplateServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AdminTemplateServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  return new desks_storage::AdminTemplateService(
+  return std::make_unique<desks_storage::AdminTemplateService>(
       profile->GetPath(), multi_user_util::GetAccountIdFromProfile(profile),
       profile->GetPrefs());
 }

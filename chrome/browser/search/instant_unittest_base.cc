@@ -21,11 +21,9 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 
-InstantUnitTestBase::InstantUnitTestBase() {
-}
+InstantUnitTestBase::InstantUnitTestBase() = default;
 
-InstantUnitTestBase::~InstantUnitTestBase() {
-}
+InstantUnitTestBase::~InstantUnitTestBase() = default;
 
 void InstantUnitTestBase::SetUp() {
   BrowserWithTestWindowTest::SetUp();

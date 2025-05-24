@@ -14,14 +14,11 @@ namespace mojo {
 template <>
 struct StructTraits<cc::mojom::ElementIdDataView, cc::ElementId> {
   static uint64_t id(const cc::ElementId& id) { return id.GetInternalValue(); }
-
-  static bool IsNull(const cc::ElementId& id) { return !id; }
-
-  static void SetToNull(cc::ElementId* out) { *out = cc::ElementId(); }
-
   static bool Read(cc::mojom::ElementIdDataView data, cc::ElementId* out) {
     if (data.id() == cc::ElementId::kInvalidElementId) {
       *out = cc::ElementId();
+    } else if (data.id() == cc::ElementId::kDeletedElementId) {
+      *out = cc::ElementId::DeletedValue();
     } else {
       *out = cc::ElementId(data.id());
     }

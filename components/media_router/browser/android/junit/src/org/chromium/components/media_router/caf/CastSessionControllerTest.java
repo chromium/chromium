@@ -155,7 +155,7 @@ public class CastSessionControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
-                                observedNamespaces.add((String) (invocation.getArguments()[0]));
+                                observedNamespaces.add((String) invocation.getArguments()[0]);
                                 return null;
                             }
                         })
@@ -166,7 +166,7 @@ public class CastSessionControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) {
-                                observedNamespaces.remove((String) (invocation.getArguments()[0]));
+                                observedNamespaces.remove((String) invocation.getArguments()[0]);
                                 return null;
                             }
                         })

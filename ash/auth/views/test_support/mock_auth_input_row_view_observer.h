@@ -6,7 +6,7 @@
 #define ASH_AUTH_VIEWS_TEST_SUPPORT_MOCK_AUTH_INPUT_ROW_VIEW_OBSERVER_H_
 
 #include <cstdint>
-#include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "ash/auth/views/auth_input_row_view.h"
@@ -22,10 +22,10 @@ class ASH_EXPORT MockAuthInputRowViewObserver
 
   MOCK_METHOD(void, OnTextfieldBlur, (), (override));
   MOCK_METHOD(void, OnTextfieldFocus, (), (override));
-  MOCK_METHOD(void, OnContentsChanged, (const std::u16string&), (override));
+  MOCK_METHOD(void, OnContentsChanged, (std::u16string_view), (override));
   MOCK_METHOD(void, OnCapsLockStateChanged, (bool), (override));
   MOCK_METHOD(void, OnTextVisibleChanged, (bool), (override));
-  MOCK_METHOD(void, OnSubmit, (const std::u16string&), (override));
+  MOCK_METHOD(void, OnSubmit, (std::u16string_view), (override));
   MOCK_METHOD(void, OnEscape, (), (override));
 };
 

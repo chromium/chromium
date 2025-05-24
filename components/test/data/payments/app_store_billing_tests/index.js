@@ -6,7 +6,7 @@
 
 const methodName = window.location.origin + '/method_manifest.json';
 let request;
-let supportedInstruments = [];
+const supportedInstruments = [];
 
 /**
  * Add a payment method to the payment request.

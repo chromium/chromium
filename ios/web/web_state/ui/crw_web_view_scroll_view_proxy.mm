@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
-
 #import <objc/runtime.h>
+
 #import <memory>
 
 #import "base/apple/foundation_util.h"
@@ -13,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/web/common/features.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
+#import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
 
 // *Address of* this variable is used as a marker to specify that it matches any
 // context.
@@ -188,8 +188,9 @@ static int gAnyContext = 0;
 }
 
 - (void)setScrollView:(UIScrollView*)scrollView {
-  if (self.underlyingScrollView == scrollView)
+  if (self.underlyingScrollView == scrollView) {
     return;
+  }
 
   // Use a placeholder UIScrollView instead when nil is given. See the comment
   // in -init why this is necessary.

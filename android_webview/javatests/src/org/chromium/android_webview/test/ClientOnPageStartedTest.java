@@ -19,6 +19,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedErrorHelper;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -130,12 +131,12 @@ public class ClientOnPageStartedTest extends AwParameterizedTest {
             @Override
             public void onReceivedError(AwWebResourceRequest request, AwWebResourceError error) {
                 Assert.assertEquals(
-                        "onReceivedError called twice for " + request.url,
+                        "onReceivedError called twice for " + request.getUrl(),
                         false,
                         mIsOnReceivedErrorCalled);
                 mIsOnReceivedErrorCalled = true;
                 Assert.assertEquals(
-                        "onPageStarted not called before onReceivedError for " + request.url,
+                        "onPageStarted not called before onReceivedError for " + request.getUrl(),
                         true,
                         mIsOnPageStartedCalled);
                 super.onReceivedError(request, error);
@@ -174,7 +175,7 @@ public class ClientOnPageStartedTest extends AwParameterizedTest {
         String invalidUrl = "http://localhost:7/non_existent";
         mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, invalidUrl);
 
-        Assert.assertEquals(invalidUrl, onReceivedErrorHelper.getRequest().url);
+        Assert.assertEquals(invalidUrl, onReceivedErrorHelper.getRequest().getUrl());
         Assert.assertEquals(invalidUrl, onPageStartedHelper.getUrl());
 
         // Rather than wait a fixed time to see that another onPageStarted callback isn't issued

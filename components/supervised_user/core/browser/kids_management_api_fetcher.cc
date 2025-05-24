@@ -5,6 +5,7 @@
 #include "components/supervised_user/core/browser/kids_management_api_fetcher.h"
 
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "base/version_info/channel.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
@@ -14,8 +15,8 @@ namespace supervised_user {
 
 namespace {
 std::string ToQueryString(const kidsmanagement::ListMembersRequest& request) {
-  return base::StrCat({"allow_empty_family=",
-                       (request.allow_empty_family() ? "true" : "false")});
+  return base::StrCat(
+      {"allow_empty_family=", base::ToString(request.allow_empty_family())});
 }
 }  // namespace
 

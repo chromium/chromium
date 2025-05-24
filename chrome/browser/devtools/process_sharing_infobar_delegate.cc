@@ -11,11 +11,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/infobars/core/infobar.h"
+#include "components/webui/flags/pref_service_flags_storage.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -36,7 +37,7 @@ std::unique_ptr<views::View> MakeRestartView() {
   views::Label* message_label = new views::Label(message);
   message_label->SetMultiLine(true);
   message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  view->AddChildView(message_label);
+  view->AddChildViewRaw(message_label);
 
   return view;
 }
@@ -88,13 +89,13 @@ bool ProcessSharingInfobarDelegate::Accept() {
                        static_cast<int>(ui::mojom::DialogButton::kCancel));
   delegate->SetContentsView(MakeRestartView());
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   delegate->SetShowCloseButton(false);
   delegate->set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   delegate->SetAcceptCallback(base::BindOnce(
       [](base::WeakPtr<content::WebContents> inspected_web_contents) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         PrefService* prefs = Profile::FromBrowserContext(
                                  inspected_web_contents->GetBrowserContext())
                                  ->GetPrefs();
@@ -120,7 +121,7 @@ bool ProcessSharingInfobarDelegate::Accept() {
 
   views::DialogDelegate::CreateDialogWidget(
       std::move(delegate), inspected_web_contents_->GetTopLevelNativeWindow(),
-      nullptr)
+      gfx::NativeView())
       ->Show();
 
   return ConfirmInfoBarDelegate::Accept();

@@ -16,8 +16,8 @@ component("io_thread") {
     "//ios/web",
     "//ios/web/common:user_agent",
     "//ios/web/public",
-    "//net",
   ]
+  public_deps = [ "//net" ]
 
   sources = [
     "ios_io_thread.h",

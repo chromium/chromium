@@ -19,7 +19,7 @@ source_set("webui") {
     "//mojo/public/js:resources",
     "//net",
     "//ui/base",
-    "//ui/resources",
+    "//ui/webui/resources",
     "//url",
   ]
 

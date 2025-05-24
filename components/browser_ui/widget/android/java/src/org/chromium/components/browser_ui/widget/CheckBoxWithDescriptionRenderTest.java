@@ -11,18 +11,22 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.test.R;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.ui.test.util.RenderTestRule.Component;
 
@@ -30,11 +34,17 @@ import org.chromium.ui.test.util.RenderTestRule.Component;
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class CheckBoxWithDescriptionRenderTest extends BlankUiTestActivityTestCase {
+public class CheckBoxWithDescriptionRenderTest {
     private static final String PRIMARY = "Include all sites under this domain";
     private static final String DESCRIPTION = "Recommended for best experience";
     private static final String LONG_DESCRIPTION =
             "A very very very very very very very very very very very very very long string";
+
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     @Rule
     public RenderTestRule mRenderTestRule =
@@ -49,10 +59,14 @@ public class CheckBoxWithDescriptionRenderTest extends BlankUiTestActivityTestCa
     private CheckBoxWithDescription mCheckBoxCheckedPrimaryDescriptionShort;
     private CheckBoxWithDescription mCheckBoxCheckedPrimaryDescriptionLong;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        Activity activity = getActivity();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        Activity activity = sActivity;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     View content =

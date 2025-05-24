@@ -8,7 +8,8 @@
 #import "base/memory/raw_ptr.h"
 #import "components/visited_url_ranking/public/fetch_result.h"
 #import "components/visited_url_ranking/public/url_visit_data_fetcher.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace visited_url_ranking {
 

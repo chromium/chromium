@@ -36,7 +36,7 @@
 #include "cc/paint/draw_looper.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -128,7 +128,8 @@ class PLATFORM_EXPORT GraphicsContextState final {
 
   TextDrawingModeFlags text_drawing_mode_ = kTextModeFill;
 
-  InterpolationQuality interpolation_quality_ = kInterpolationDefault;
+  InterpolationQuality interpolation_quality_ =
+      GetDefaultInterpolationQuality();
   DynamicRangeLimit dynamic_range_limit_{
       cc::PaintFlags::DynamicRangeLimit::kHigh};
 

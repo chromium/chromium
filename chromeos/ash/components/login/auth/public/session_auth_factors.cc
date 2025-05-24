@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/cryptohome/common_types.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
@@ -88,7 +87,7 @@ bool SessionAuthFactors::HasPasswordKey(const std::string& label) const {
 
 bool SessionAuthFactors::HasSinglePasswordFactor() const {
   CHECK(keys_.empty());
-  size_t passwords = base::ranges::count_if(session_factors_, [](auto& f) {
+  size_t passwords = std::ranges::count_if(session_factors_, [](auto& f) {
     if (f.ref().type() != cryptohome::AuthFactorType::kPassword) {
       return false;
     }
@@ -115,7 +114,7 @@ const cryptohome::KeyDefinition* SessionAuthFactors::FindPinKey() const {
 const cryptohome::AuthFactor* SessionAuthFactors::FindFactorByType(
     cryptohome::AuthFactorType type) const {
   DCHECK(keys_.empty());
-  const auto& result = base::ranges::find(
+  const auto& result = std::ranges::find(
       session_factors_, type, [](const auto& f) { return f.ref().type(); });
   if (result == session_factors_.end())
     return nullptr;
@@ -125,7 +124,7 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindFactorByType(
 const cryptohome::AuthFactor* SessionAuthFactors::FindOnlinePasswordFactor()
     const {
   DCHECK(keys_.empty());
-  const auto& result = base::ranges::find_if(session_factors_, [](auto& f) {
+  const auto& result = std::ranges::find_if(session_factors_, [](auto& f) {
     if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
       return false;
     auto label = f.ref().label().value();
@@ -157,7 +156,7 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindPasswordFactor(
   DCHECK_NE(label.value(), kCryptohomePinLabel);
 
   const auto& result =
-      base::ranges::find_if(session_factors_, [&label](auto& f) {
+      std::ranges::find_if(session_factors_, [&label](auto& f) {
         if (f.ref().type() != cryptohome::AuthFactorType::kPassword)
           return false;
         return f.ref().label() == label;

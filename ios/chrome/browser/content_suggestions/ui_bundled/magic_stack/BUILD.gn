@@ -1,0 +1,289 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "magic_stack_collection_view_audience.h",
+    "magic_stack_consumer.h",
+    "magic_stack_module.h",
+    "magic_stack_module.mm",
+    "magic_stack_module_container_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/shared/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("ranking_model") {
+  sources = [
+    "magic_stack_ranking_model.h",
+    "magic_stack_ranking_model.mm",
+    "magic_stack_ranking_model_delegate.h",
+  ]
+  deps = [
+    ":cells",
+    ":constants",
+    ":magic_stack",
+    ":public",
+    ":utils",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/search",
+    "//components/search_engines",
+    "//components/segmentation_platform/embedder/home_modules",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
+    "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_tiles",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check:prefs",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tips",
+    "//ios/chrome/browser/lens/ui_bundled:lens_availability",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/ntp/model:features",
+    "//ios/chrome/browser/ntp/ui_bundled",
+    "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
+    "//ios/chrome/browser/parcel_tracking:features",
+    "//ios/chrome/browser/parcel_tracking:prefs",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/tips_manager/model:tips_manager",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("utils") {
+  sources = [
+    "magic_stack_utils.h",
+    "magic_stack_utils.mm",
+  ]
+  deps = [
+    ":constants",
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/public",
+    "//components/variations/service",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/signin/model:authentication_service",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("constants") {
+  sources = [
+    "magic_stack_constants.h",
+    "magic_stack_constants.mm",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("cells") {
+  sources = [
+    "magic_stack_context_menu_interaction_handler.h",
+    "magic_stack_context_menu_interaction_handler.mm",
+    "magic_stack_edit_button_cell.h",
+    "magic_stack_edit_button_cell.mm",
+    "magic_stack_module_collection_view_cell.h",
+    "magic_stack_module_collection_view_cell.mm",
+    "magic_stack_module_container.h",
+    "magic_stack_module_container.mm",
+    "magic_stack_module_contents_factory.h",
+    "magic_stack_module_contents_factory.mm",
+  ]
+  deps = [
+    ":constants",
+    ":magic_stack_module_content_view_delegate",
+    ":public",
+    ":utils",
+    "//base",
+    "//components/commerce/core:feature_list",
+    "//google_apis",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:promo_module_ui",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_tiles",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/send_tab_to_self",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:price_tracking_shop_card",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:shop_card_data",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tips",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/colors/resources",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("magic_stack") {
+  sources = [
+    "edit_button_config.h",
+    "edit_button_config.mm",
+    "magic_stack_collection_view.h",
+    "magic_stack_collection_view.mm",
+    "magic_stack_layout_configurator.h",
+    "magic_stack_layout_configurator.mm",
+    "placeholder_config.h",
+    "placeholder_config.mm",
+  ]
+  deps = [
+    ":cells",
+    ":constants",
+    ":public",
+    ":utils",
+    "//base",
+    "//components/segmentation_platform/public",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/resources",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption",
+    "//ios/chrome/browser/ntp/shared/metrics:home_metrics",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "magic_stack_collection_view_unittest.mm",
+    "magic_stack_ranking_model_unittest.mm",
+  ]
+  deps = [
+    ":magic_stack",
+    ":public",
+    ":ranking_model",
+    "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//components/feature_engagement/test:test_support",
+    "//components/image_fetcher/core",
+    "//components/ntp_tiles",
+    "//components/segmentation_platform/embedder/home_modules",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/segmentation_platform/public",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:metrics",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:public",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:ui_util",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:most_visited_tiles",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:shortcuts",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/impression_limits:unit_tests",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/price_tracking_promo:unit_tests",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/safety_check",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/set_up_list:utils",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/shop_card:unit_tests",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tab_resumption",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/tips",
+    "//ios/chrome/browser/default_browser/model:test_support",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/ntp/model:set_up_list_prefs",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/parcel_tracking:features",
+    "//ios/chrome/browser/reading_list/model",
+    "//ios/chrome/browser/reading_list/model:test_support",
+    "//ios/chrome/browser/safety_check/model:factory",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/segmentation_platform/model",
+    "//ios/chrome/browser/shared/coordinator/scene/test",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/utils:test_support",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/start_surface/ui_bundled",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/browser/tips_manager/model:factory",
+    "//ios/chrome/browser/tips_manager/model:tips_manager",
+    "//ios/chrome/browser/url_loading/model",
+    "//ios/chrome/browser/url_loading/model:test_support",
+    "//ios/chrome/common/ui/util",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
+  ]
+}
+
+source_set("magic_stack_module_content_view_delegate") {
+  sources = [ "magic_stack_module_content_view_delegate.h" ]
+}

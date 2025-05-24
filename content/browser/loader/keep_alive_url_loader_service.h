@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/common/loader/url_loader_factory_bundle.h"
 #include "third_party/blink/public/mojom/loader/fetch_later.mojom.h"
@@ -23,6 +24,7 @@
 namespace content {
 
 class BrowserContext;
+class NavigationHandle;
 class PolicyContainerHost;
 
 // A service that stores bound SharedURLLoaderFactory mojo pipes from renderers
@@ -74,7 +76,17 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     FactoryContext& operator=(const FactoryContext&) = delete;
 
     // Updates `weak_document_ptr` and other document-related fields.
-    void OnDidCommitNavigation(WeakDocumentPtr committed_document);
+    void OnDidCommitNavigation(NavigationHandle* navigation_handle);
+
+    // Updates `attribution_context` for fields relied on prerendered page
+    // activation, e.g. UKM source ID.
+    void OnDidCommitPrerenderedPageActivation();
+
+    // Called when a `KeepAliveURLLoader` is about to create.
+    // This updates RenderFrameHostImpl via `weak_document_ptr` about the
+    // creation of a keepalive request.
+    void OnBeforeKeepAliveURLLoaderCreated(
+        const network::ResourceRequest& resource_request);
 
     // Updates `factory` using the given `new_factory`.
     //
@@ -97,6 +109,15 @@ class CONTENT_EXPORT KeepAliveURLLoaderService {
     // be set to the document that this `BindContext` is associated with. It
     // will become null whenever the document navigates away.
     WeakDocumentPtr weak_document_ptr;
+
+    // Upon NavigationRequest::DidCommitNavigation(), `ukm_source_id` will
+    // be set to the PageUkmSourceId of the document that this `BindContext` is
+    // associated with. This includes UkmSourceId for prerendered page
+    // activation.
+    //
+    // It will never be reset even if the document has navigated away from the
+    // original page.
+    std::optional<ukm::SourceId> ukm_source_id;
 
     // The `PolicyContainerHost` of the document connecting to an implementation
     // of `KeepAliveURLLoaderFactoriesBase` using this context.

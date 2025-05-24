@@ -4,13 +4,13 @@
 
 #include "device/fido/filter.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -55,7 +55,7 @@ bool IsListOf(const base::Value* v, bool (*predicate)(const base::Value&)) {
     return false;
   }
   const auto& contents = v->GetList();
-  return !contents.empty() && base::ranges::all_of(contents, predicate);
+  return !contents.empty() && std::ranges::all_of(contents, predicate);
 }
 
 std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
@@ -71,13 +71,13 @@ std::vector<std::string> GetStringOrListOfStrings(const base::Value* v) {
 }
 
 std::optional<std::vector<FilterStep>> ParseJSON(std::string_view json) {
-  std::optional<base::Value> v =
-      base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!v || !v->is_dict()) {
+  auto dict =
+      base::JSONReader::ReadDict(json, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!dict) {
     return std::nullopt;
   }
 
-  const base::Value::List* filters = v->GetDict().FindList("filters");
+  const base::Value::List* filters = dict->FindList("filters");
   if (!filters) {
     return std::nullopt;
   }
@@ -280,10 +280,10 @@ Action Evaluate(
     if ((!filter.operation ||
          base::MatchPattern(OperationToString(op), *filter.operation)) &&
         (filter.rp_id.empty() ||
-         base::ranges::any_of(filter.rp_id,
-                              [rp_id](const std::string& pattern) {
-                                return base::MatchPattern(rp_id, pattern);
-                              })) &&
+         std::ranges::any_of(filter.rp_id,
+                             [rp_id](const std::string& pattern) {
+                               return base::MatchPattern(rp_id, pattern);
+                             })) &&
         (!filter.device ||
          base::MatchPattern(device.value_or(""), *filter.device)) &&
         (!filter.id_type || (id && base::MatchPattern(IDTypeToString(id->first),
@@ -293,10 +293,10 @@ Action Evaluate(
         (!filter.id_max_size ||
          (id && *filter.id_max_size >= id->second.size())) &&
         (filter.id.empty() ||
-         (id_hex && base::ranges::any_of(
-                        filter.id, [&id_hex](const std::string& pattern) {
-                          return base::MatchPattern(*id_hex, pattern);
-                        })))) {
+         (id_hex &&
+          std::ranges::any_of(filter.id, [&id_hex](const std::string& pattern) {
+            return base::MatchPattern(*id_hex, pattern);
+          })))) {
       return filter.action;
     }
   }
@@ -332,7 +332,8 @@ ScopedFilterForTesting::~ScopedFilterForTesting() {
 }
 
 bool ParseForTesting(std::string_view json) {
-  CHECK(base::JSONReader::Read(json, base::JSON_ALLOW_TRAILING_COMMAS)) << json;
+  CHECK(base::JSONReader::ReadDict(json, base::JSON_ALLOW_TRAILING_COMMAS))
+      << json;
   return MaybeParseFilter(json);
 }
 

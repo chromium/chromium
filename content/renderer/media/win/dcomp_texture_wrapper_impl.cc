@@ -43,8 +43,6 @@ class DCOMPTextureMailboxResources
     return shared_image_;
   }
 
-  DCOMPTextureFactory* Factory() { return factory_.get(); }
-
  private:
   friend class base::RefCounted<DCOMPTextureMailboxResources>;
 
@@ -75,9 +73,9 @@ void OnReleaseVideoFrame(
   DVLOG(1) << __func__;
 
   dcomp_texture_resources->SetSyncToken(sync_token);
-  gpu::SharedImageInterface* sii =
-      dcomp_texture_resources->Factory()->SharedImageInterface();
-  sii->Flush();
+  // ClientSharedImage destructor calls DestroySharedImage which in turn ensures
+  // that the deferred destroy request is flushed. Thus, clients don't need to
+  // call SharedImageInterface::Flush explicitly.
 }
 
 }  // namespace
@@ -167,7 +165,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     return;
   }
 
-  uint32_t texture_target = GL_TEXTURE_EXTERNAL_OES;
+  const gfx::ColorSpace color_space = gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::BT709);
 
   // No need to wait on any sync token as the SharedImage |mailbox_| should be
   // ready for use.
@@ -187,14 +186,14 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
     // Ensure that the ClientSI holds the correct texture target (which is *not*
     // the texture target that ClientSharedImage would compute internally for
     // these parameters).
-    shared_image =
-        sii->NotifyMailboxAdded(mailbox_, viz::SinglePlaneFormat::kBGRA_8888,
-                                natural_size_, gfx::ColorSpace::CreateSRGB(),
-                                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                    gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-                                texture_target);
+    shared_image = sii->NotifyMailboxAdded(
+        mailbox_, viz::SinglePlaneFormat::kBGRA_8888, natural_size_,
+        color_space, kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+            gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+            gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+        GL_TEXTURE_EXTERNAL_OES);
+
     CHECK(shared_image);
     dcomp_texture_resources_ =
         base::MakeRefCounted<DCOMPTextureMailboxResources>(
@@ -205,14 +204,14 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
       dcomp_texture_resources_->GetSharedImage();
 
   auto frame = media::VideoFrame::WrapSharedImage(
-      media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(), texture_target,
+      media::PIXEL_FORMAT_BGRA, shared_image, gpu::SyncToken(),
       base::BindPostTask(
           media_task_runner_,
           base::BindOnce(&OnReleaseVideoFrame, dcomp_texture_resources_)),
       natural_size_, gfx::Rect(natural_size_), natural_size_,
       base::TimeDelta());
 
-  // Sets `dcomp_surface` to use StreamTexture. See `VideoResourceUpdater`.
+  frame->set_color_space(color_space);
   frame->metadata().dcomp_surface = true;
 
   std::move(create_video_frame_cb).Run(frame, mailbox_);
@@ -242,8 +241,8 @@ void DCOMPTextureWrapperImpl::CreateVideoFrame(
   gpu::SyncToken sync_token = sii->GenVerifiedSyncToken();
 
   auto video_frame_texture = media::VideoFrame::WrapMappableSharedImage(
-      shared_image, sync_token, GL_TEXTURE_2D, base::NullCallback(),
-      gfx::Rect(natural_size), natural_size, base::TimeDelta::Min());
+      shared_image, sync_token, base::NullCallback(), gfx::Rect(natural_size),
+      natural_size, base::TimeDelta::Min());
   video_frame_texture->metadata().wants_promotion_hint = true;
   video_frame_texture->metadata().allow_overlay = true;
 

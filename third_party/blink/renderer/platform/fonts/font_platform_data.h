@@ -112,6 +112,9 @@ class PLATFORM_EXPORT FontPlatformData
   bool IsVerticalAnyUpright() const {
     return blink::IsVerticalAnyUpright(orientation_);
   }
+  bool IsVerticalNonCJKUpright() const {
+    return blink::IsVerticalNonCJKUpright(orientation_);
+  }
   void SetOrientation(FontOrientation orientation) {
     orientation_ = orientation;
   }

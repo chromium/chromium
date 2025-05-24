@@ -9,6 +9,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -70,7 +71,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
   // packet.
   void SchedulePumpSamples();
 
-  AudioManagerFuchsia* manager_;
+  raw_ptr<AudioManagerFuchsia> manager_;
   AudioParameters parameters_;
 
   fuchsia::media::AudioRendererPtr audio_renderer_;
@@ -82,7 +83,7 @@ class AudioOutputStreamFuchsia : public AudioOutputStream {
   base::WritableSharedMemoryMapping payload_buffer_;
   size_t payload_buffer_pos_ = 0;
 
-  AudioSourceCallback* callback_ = nullptr;
+  raw_ptr<AudioSourceCallback> callback_ = nullptr;
 
   double volume_ = 1.0;
 

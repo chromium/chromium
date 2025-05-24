@@ -36,11 +36,6 @@ bool PaymentShippingOption::operator==(
          amount.Equals(other.amount) && selected == other.selected;
 }
 
-bool PaymentShippingOption::operator!=(
-    const PaymentShippingOption& other) const {
-  return !(*this == other);
-}
-
 PaymentShippingOption& PaymentShippingOption::operator=(
     const PaymentShippingOption& other) {
   id = other.id;

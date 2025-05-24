@@ -6,12 +6,12 @@
 #define UI_GFX_BIDI_LINE_ITERATOR_H_
 
 #include <memory>
-#include <string>
+#include <string_view>
 
+#include "base/component_export.h"
 #include "base/i18n/rtl.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/ubidi_deleter.h"
 
 namespace ui {
@@ -20,7 +20,7 @@ namespace gfx {
 // A simple wrapper class for the bidirectional iterator of ICU.
 // This class uses the bidirectional iterator of ICU to split a line of
 // bidirectional texts into visual runs in its display order.
-class GFX_EXPORT BiDiLineIterator {
+class COMPONENT_EXPORT(GFX) BiDiLineIterator {
  public:
   BiDiLineIterator();
 
@@ -31,7 +31,7 @@ class GFX_EXPORT BiDiLineIterator {
 
   // Initializes the bidirectional iterator with the specified text.  Returns
   // whether initialization succeeded.
-  bool Open(const std::u16string& text, base::i18n::TextDirection direction);
+  bool Open(std::u16string_view text, base::i18n::TextDirection direction);
 
   // Returns the number of visual runs in the text, or zero on error.
   int CountRuns() const;

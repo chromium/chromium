@@ -12,10 +12,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/sharing_message/sharing_dialog_data.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_handle.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -91,6 +93,10 @@ bool TestBrowserWindow::IsOnCurrentWorkspace() const {
   return true;
 }
 
+bool TestBrowserWindow::IsVisibleOnScreen() const {
+  return true;
+}
+
 void TestBrowserWindow::SetTopControlsShownRatio(
     content::WebContents* web_contents,
     float ratio) {}
@@ -124,8 +130,8 @@ int TestBrowserWindow::GetTopControlsHeight() const {
 void TestBrowserWindow::SetTopControlsGestureScrollInProgress(
     bool in_progress) {}
 
-StatusBubble* TestBrowserWindow::GetStatusBubble() {
-  return nullptr;
+std::vector<StatusBubble*> TestBrowserWindow::GetStatusBubbles() {
+  return {};
 }
 
 gfx::Rect TestBrowserWindow::GetRestoredBounds() const {
@@ -196,6 +202,10 @@ autofill::AutofillBubbleHandler* TestBrowserWindow::GetAutofillBubbleHandler() {
 
 ExtensionsContainer* TestBrowserWindow::GetExtensionsContainer() {
   return nullptr;
+}
+
+bool TestBrowserWindow::PreHandleMouseEvent(const blink::WebMouseEvent& event) {
+  return false;
 }
 
 content::KeyboardEventProcessingResult
@@ -285,10 +295,6 @@ TestBrowserWindow::ShowScreenshotCapturedBubble(content::WebContents* contents,
 }
 #endif
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-void TestBrowserWindow::VerifyUserEligibilityIOSPasswordPromoBubble() {}
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 send_tab_to_self::SendTabToSelfBubbleView*
 TestBrowserWindow::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* contents) {
@@ -323,6 +329,10 @@ DownloadShelf* TestBrowserWindow::GetDownloadShelf() {
   return &download_shelf_;
 }
 views::View* TestBrowserWindow::GetTopContainer() {
+  return nullptr;
+}
+
+views::View* TestBrowserWindow::GetLensOverlayView() {
   return nullptr;
 }
 
@@ -366,8 +376,15 @@ void TestBrowserWindow::SetCloseCallback(base::OnceClosure close_callback) {
 }
 
 user_education::FeaturePromoController*
-TestBrowserWindow::GetFeaturePromoController() {
+TestBrowserWindow::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
+}
+
+bool TestBrowserWindow::IsFeaturePromoQueued(
+    const base::Feature& iph_feature) const {
+  return feature_promo_controller_ &&
+         feature_promo_controller_->GetPromoStatus(iph_feature) ==
+             user_education::FeaturePromoStatus::kQueued;
 }
 
 bool TestBrowserWindow::IsFeaturePromoActive(
@@ -385,27 +402,29 @@ user_education::FeaturePromoResult TestBrowserWindow::CanShowFeaturePromo(
   return feature_promo_controller_->CanShowPromo(iph_feature);
 }
 
-user_education::FeaturePromoResult TestBrowserWindow::MaybeShowFeaturePromo(
+void TestBrowserWindow::MaybeShowFeaturePromo(
     user_education::FeaturePromoParams params) {
   if (!feature_promo_controller_) {
-    return user_education::FeaturePromoResult::kBlockedByContext;
+    user_education::FeaturePromoController::PostShowPromoResult(
+        std::move(params.show_promo_result_callback),
+        user_education::FeaturePromoResult::kBlockedByContext);
+    return;
   }
 
-  return feature_promo_controller_->MaybeShowPromo(std::move(params));
+  feature_promo_controller_->MaybeShowPromo(std::move(params));
 }
 
-bool TestBrowserWindow::MaybeShowStartupFeaturePromo(
+void TestBrowserWindow::MaybeShowStartupFeaturePromo(
     user_education::FeaturePromoParams params) {
-  if (!feature_promo_controller_)
-    return false;
-  return feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
+  if (feature_promo_controller_) {
+    feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
+  }
 }
 
-bool TestBrowserWindow::CloseFeaturePromo(
-    const base::Feature& iph_feature,
-    user_education::EndFeaturePromoReason close_reason) {
+bool TestBrowserWindow::AbortFeaturePromo(const base::Feature& iph_feature) {
   return feature_promo_controller_ &&
-         feature_promo_controller_->EndPromo(iph_feature, close_reason);
+         feature_promo_controller_->EndPromo(
+             iph_feature, user_education::EndFeaturePromoReason::kAbortPromo);
 }
 
 user_education::FeaturePromoHandle
@@ -417,13 +436,35 @@ TestBrowserWindow::CloseFeaturePromoAndContinue(
              : user_education::FeaturePromoHandle();
 }
 
-void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}
+bool TestBrowserWindow::NotifyFeaturePromoFeatureUsed(
+    const base::Feature& feature,
+    FeaturePromoFeatureUsedAction action) {
+  if (feature_promo_controller_ &&
+      action == FeaturePromoFeatureUsedAction::kClosePromoIfPresent) {
+    return feature_promo_controller_->EndPromo(
+        feature, user_education::EndFeaturePromoReason::kFeatureEngaged);
+  }
+  return false;
+}
 
-void TestBrowserWindow::NotifyPromoFeatureUsed(const base::Feature& feature) {}
+void TestBrowserWindow::NotifyAdditionalConditionEvent(const char* event_name) {
+}
 
 user_education::DisplayNewBadge TestBrowserWindow::MaybeShowNewBadgeFor(
     const base::Feature& new_badge_feature) {
   return user_education::DisplayNewBadge();
+}
+
+void TestBrowserWindow::NotifyNewBadgeFeatureUsed(
+    const base::Feature& feature) {}
+
+bool TestBrowserWindow::IsTabModalPopupDeprecated() const {
+  return is_tab_modal_popup_deprecated_;
+}
+
+void TestBrowserWindow::SetIsTabModalPopupDeprecated(
+    bool is_tab_modal_popup_deprecated) {
+  is_tab_modal_popup_deprecated_ = is_tab_modal_popup_deprecated;
 }
 
 user_education::FeaturePromoController*

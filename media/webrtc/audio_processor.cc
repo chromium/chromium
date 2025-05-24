@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <inttypes.h>
+
+#include "base/strings/to_string.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -27,7 +31,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
@@ -76,12 +79,7 @@ int GetCaptureBufferSize(bool need_webrtc_processing,
 #endif
 }
 
-bool ApmNeedsPlayoutReference(const webrtc::AudioProcessing* apm,
-                              const AudioProcessingSettings& settings) {
-  if (!base::FeatureList::IsEnabled(
-          features::kWebRtcApmTellsIfPlayoutReferenceIsNeeded)) {
-    return settings.NeedPlayoutReference();
-  }
+bool ApmNeedsPlayoutReference(const webrtc::AudioProcessing* apm) {
   if (!apm) {
     // APM is not available; hence, observing the playout reference is not
     // needed.
@@ -115,7 +113,7 @@ class AudioProcessorCaptureBus {
 
   float* const* channel_ptrs() {
     for (int i = 0; i < bus_->channels(); ++i) {
-      channel_ptrs_[i] = bus_->channel(i);
+      channel_ptrs_[i] = bus_->channel_span(i).data();
     }
     return channel_ptrs_.get();
   }
@@ -172,16 +170,14 @@ class AudioProcessorCaptureFifo {
     const media::AudioBus* source_to_push = &source;
 
     if (audio_source_intermediate_) {
-      for (int i = 0; i < destination_->bus()->channels(); ++i) {
-        audio_source_intermediate_->SetChannelData(
-            i, const_cast<float*>(source.channel(i)));
-      }
       audio_source_intermediate_->set_frames(source.frames());
+      audio_source_intermediate_->SetAllChannels(source.AllChannels());
       source_to_push = audio_source_intermediate_.get();
     }
 
     if (fifo_) {
-      CHECK_LT(fifo_->frames(), destination_->bus()->frames());
+      CHECK_LT(fifo_->frames(),
+               static_cast<size_t>(destination_->bus()->frames()));
       next_audio_delay_ =
           audio_delay + fifo_->frames() * base::Seconds(1) / sample_rate_;
       fifo_->Push(source_to_push);
@@ -198,8 +194,10 @@ class AudioProcessorCaptureFifo {
   bool Consume(AudioProcessorCaptureBus** destination,
                base::TimeDelta* audio_delay) {
     if (fifo_) {
-      if (fifo_->frames() < destination_->bus()->frames())
+      if (fifo_->frames() <
+          static_cast<size_t>(destination_->bus()->frames())) {
         return false;
+      }
 
       fifo_->Consume(destination_->bus(), 0, destination_->bus()->frames());
       *audio_delay = next_audio_delay_;
@@ -246,16 +244,15 @@ std::unique_ptr<AudioProcessor> AudioProcessor::Create(
     const media::AudioParameters& output_format) {
   log_callback.Run(base::StringPrintf(
       "AudioProcessor::Create({multi_channel_capture_processing=%s})",
-      settings.multi_channel_capture_processing ? "true" : "false"));
+      base::ToString(settings.multi_channel_capture_processing)));
 
-  rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing =
+  webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing =
       media::CreateWebRtcAudioProcessingModule(settings);
 
   return std::make_unique<AudioProcessor>(
       std::move(deliver_processed_audio_callback), std::move(log_callback),
       input_format, output_format, std::move(webrtc_audio_processing),
-      settings.stereo_mirroring,
-      ApmNeedsPlayoutReference(webrtc_audio_processing.get(), settings));
+      ApmNeedsPlayoutReference(webrtc_audio_processing.get()));
 }
 
 AudioProcessor::AudioProcessor(
@@ -263,11 +260,9 @@ AudioProcessor::AudioProcessor(
     LogCallback log_callback,
     const media::AudioParameters& input_format,
     const media::AudioParameters& output_format,
-    rtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
-    bool stereo_mirroring,
+    webrtc::scoped_refptr<webrtc::AudioProcessing> webrtc_audio_processing,
     bool needs_playout_reference)
     : webrtc_audio_processing_(webrtc_audio_processing),
-      stereo_mirroring_(stereo_mirroring),
       needs_playout_reference_(needs_playout_reference),
       log_callback_(std::move(log_callback)),
       input_format_(input_format),
@@ -332,8 +327,7 @@ AudioProcessor::~AudioProcessor() {
 void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
                                           base::TimeTicks audio_capture_time,
                                           int num_preferred_channels,
-                                          double volume,
-                                          bool key_pressed) {
+                                          double volume) {
   DCHECK(deliver_processed_audio_callback_);
   // Sanity-check the input audio format in debug builds.
   DCHECK(input_format_.IsValid());
@@ -359,15 +353,8 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
       output_bus = output_bus_.get();
       new_volume =
           ProcessData(process_bus->channel_ptrs(), process_bus->bus()->frames(),
-                      capture_delay, volume, key_pressed,
-                      num_preferred_channels, output_bus->channel_ptrs());
-    }
-
-    // Swap channels before interleaving the data.
-    if (stereo_mirroring_ &&
-        output_format_.channel_layout() == media::CHANNEL_LAYOUT_STEREO) {
-      // Swap the first and second channels.
-      output_bus->bus()->SwapChannels(0, 1);
+                      capture_delay, volume, num_preferred_channels,
+                      output_bus->channel_ptrs());
     }
 
     deliver_processed_audio_callback_.Run(*output_bus->bus(),
@@ -378,7 +365,7 @@ void AudioProcessor::ProcessCapturedAudio(const media::AudioBus& audio_source,
 void AudioProcessor::SetOutputWillBeMuted(bool muted) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   SendLogMessage(
-      base::StringPrintf("%s({muted=%s})", __func__, muted ? "true" : "false"));
+      base::StringPrintf("%s({muted=%s})", __func__, base::ToString(muted)));
   if (webrtc_audio_processing_) {
     webrtc_audio_processing_->set_output_will_be_muted(muted);
   }
@@ -458,8 +445,9 @@ void AudioProcessor::AnalyzePlayoutData(const AudioBus& audio_bus,
   webrtc::StreamConfig input_stream_config(*playout_sample_rate_hz_,
                                            audio_bus.channels());
   std::array<const float*, media::limits::kMaxChannels> input_ptrs;
-  for (int i = 0; i < audio_bus.channels(); ++i)
-    input_ptrs[i] = audio_bus.channel(i);
+  for (int i = 0; i < audio_bus.channels(); ++i) {
+    input_ptrs[i] = audio_bus.channel_span(i).data();
+  }
 
   const int apm_error = webrtc_audio_processing_->AnalyzeReverseStream(
       input_ptrs.data(), input_stream_config);
@@ -482,7 +470,6 @@ std::optional<double> AudioProcessor::ProcessData(
     int process_frames,
     base::TimeDelta capture_delay,
     double volume,
-    bool key_pressed,
     int num_preferred_channels,
     float* const* output_ptrs) {
   DCHECK(webrtc_audio_processing_);
@@ -520,8 +507,7 @@ std::optional<double> AudioProcessor::ProcessData(
   // controller.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   DCHECK_LE(volume, 1.0);
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    BUILDFLAG(IS_OPENBSD)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_OPENBSD)
   // We have a special situation on Linux where the microphone volume can be
   // "higher than maximum". The input volume slider in the sound preference
   // allows the user to set a scaling that is higher than 100%. It means that
@@ -540,7 +526,6 @@ std::optional<double> AudioProcessor::ProcessData(
   DCHECK_LE(current_analog_gain_level, max_analog_gain_level);
 
   ap->set_stream_analog_level(current_analog_gain_level);
-  ap->set_stream_key_pressed(key_pressed);
 
   // Depending on how many channels the sinks prefer, the number of APM output
   // channels is allowed to vary between 1 and the number of channels of the

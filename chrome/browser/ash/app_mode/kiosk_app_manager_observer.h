@@ -16,6 +16,9 @@ class KioskAppManagerObserver : public base::CheckedObserver {
   // Invoked when the app data is changed or loading state is changed.
   virtual void OnKioskAppDataChanged(const std::string& app_id) {}
 
+  // Invoked when the app data is removed.
+  virtual void OnKioskAppDataRemoved(const std::string& app_id) {}
+
   // Invoked when failed to load web store data of an app.
   virtual void OnKioskAppDataLoadFailure(const std::string& app_id) {}
 

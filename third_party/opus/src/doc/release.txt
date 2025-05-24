@@ -21,7 +21,7 @@
   and update the links.
 - Update /topic in #opus IRC channel.
 
-Releases are commited to https://svn.xiph.org/releases/opus/
+Releases are committed to https://svn.xiph.org/releases/opus/
 which propagates to downloads.xiph.org, and copied manually
 to https://archive.mozilla.org/pub/opus/
 

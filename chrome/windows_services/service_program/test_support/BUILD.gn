@@ -1,0 +1,44 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("test_support") {
+  testonly = true
+  public = [
+    "scoped_install_service.h",
+    "scoped_log_grabber.h",
+    "scoped_medium_integrity.h",
+    "scoped_mock_context.h",
+    "service_environment.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "scoped_install_service.cc",
+    "scoped_log_grabber.cc",
+    "scoped_medium_integrity.cc",
+    "scoped_mock_context.cc",
+    "service_environment.cc",
+  ]
+  deps = [
+    "//chrome/common:non_code_constants",
+    "//chrome/install_static:install_static_util",
+    "//chrome/installer/util:work_item",
+    "//chrome/windows_services/service_program:constants",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "scoped_log_grabber_unittest.cc" ]
+  deps = [
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/windows_services/service_program:lib",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+}

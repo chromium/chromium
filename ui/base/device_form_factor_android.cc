@@ -26,6 +26,10 @@ DeviceFormFactor GetDeviceFormFactor() {
     return DEVICE_FORM_FACTOR_AUTOMOTIVE;
   }
 
+  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+    return DEVICE_FORM_FACTOR_DESKTOP;
+  }
+
   if (Java_DeviceFormFactor_isTablet(base::android::AttachCurrentThread())) {
     return DEVICE_FORM_FACTOR_TABLET;
   }

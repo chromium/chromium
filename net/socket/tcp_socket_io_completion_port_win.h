@@ -24,6 +24,18 @@ class SocketPerformanceWatcher;
 // TCPSocketDefaultWin.
 class NET_EXPORT TcpSocketIoCompletionPortWin : public TCPSocketWin {
  public:
+  // Disables usage of FILE_SKIP_COMPLETION_PORT_ON_SUCCESS in a scope. This
+  // only affect sockets on which `Read()` or `Write()` hasn't been called yet.
+  class NET_EXPORT DisableSkipCompletionPortOnSuccessForTesting {
+   public:
+    DisableSkipCompletionPortOnSuccessForTesting();
+    ~DisableSkipCompletionPortOnSuccessForTesting();
+    DisableSkipCompletionPortOnSuccessForTesting(
+        const DisableSkipCompletionPortOnSuccessForTesting&) = delete;
+    DisableSkipCompletionPortOnSuccessForTesting& operator=(
+        const DisableSkipCompletionPortOnSuccessForTesting&) = delete;
+  };
+
   TcpSocketIoCompletionPortWin(
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetLog* net_log,
@@ -57,9 +69,12 @@ class NET_EXPORT TcpSocketIoCompletionPortWin : public TCPSocketWin {
  private:
   class CoreImpl;
 
-  // Ensures that `core_` is registered as an IO handler for `socket_`, i.e. it
-  // will be notified when an I/O completion packet for `socket_` is processed.
-  void EnsureRegisteredAsIOHandler();
+  // Attempts to initialize overlapped IO for `socket_`, if not already
+  // initialized. This entails:
+  // - Registering `core_` as an IO handler.
+  // - Attempting to activate `FILE_SKIP_COMPLETION_PORT_ON_SUCCESS`.
+  // Returns true on success.
+  bool EnsureOverlappedIOInitialized();
 
   // Handles a completed read/write operation on `socket_`. `bytes_transferred`
   // is the number of bytes actually read/written. `error` is the error code for
@@ -77,10 +92,59 @@ class NET_EXPORT TcpSocketIoCompletionPortWin : public TCPSocketWin {
                        scoped_refptr<IOBuffer> buffer,
                        int buffer_length);
 
+  // Handles a read request for the TCP socket. This function is used by both
+  // Read() and ReadIfReady() to perform a read operation. The behavior of the
+  // function varies based on the `allow_zero_byte_overlapped_read` parameter:
+  //
+  // - If allow_zero_byte_overlapped_read is true (called from ReadIfReady):
+  //   1. Attempts to perform a non-overlapped read using WSARecv.
+  //   2. If the operation returns WSAEWOULDBLOCK (indicating no data is
+  //      available), issues a zero-byte overlapped read to wait for incoming
+  //      data. This is signaled via the completion routine when data becomes
+  //      available, allowing the caller to issue another ReadIfReady() call
+  //      to retrieve the data.
+  //
+  // - If allow_zero_byte_overlapped_read is false (called from Read):
+  //   1. Directly performs an overlapped read with the caller's buffer, using
+  //      WSARecv.
+  //   2. If the operation completes immediately, the data is copied to the
+  //      caller's buffer by the kernel, and the result is returned.
+  //   3. If the operation is pending (WSA_IO_PENDING), the read is completed
+  //      asynchronously, and the completion routine is invoked when the data is
+  //      available. The caller's buffer is held until the operation completes.
+  //
+  //  The function ensures compatibility with both Read() and ReadIfReady() by:
+  //
+  // - Allowing the OVERLAPPED structure to be passed conditionally.
+  // - Handling completion differently based on the caller's context.
+  // - Tracking pending operations using the `IOContext` structure in the
+  //   CoreImpl.
+  //
+  // Parameters:
+  // - buffer: IOBuffer to store the read data.
+  // - buf_len: Length of the buffer.
+  // - callback: Callback to invoke upon completion of the read operation.
+  // - allow_zero_byte_overlapped_read: Determines whether zero-byte
+  //   overlapped reads are allowed (true for ReadIfReady, false for Read).
+  //
+  // Returns:
+  // - The number of bytes read if the operation completes immediately.
+  // - ERR_IO_PENDING if the operation is pending and will complete
+  //   asynchronously.
+  // - A network error code if the read operation fails immediately.
+  int HandleReadRequest(IOBuffer* buffer,
+                        int buf_len,
+                        CompletionOnceCallback callback,
+                        bool allow_zero_byte_overlapped_read);
+
   CoreImpl& GetCoreImpl();
 
   // Number of read operations waiting for an I/O completion packet.
   int num_pending_reads_ = 0;
+
+  // Whether queuing a completion packet is skipped when an operation on
+  // `socket_` succeeds immediately.
+  bool skip_completion_port_on_success_ = false;
 };
 
 }  // namespace net

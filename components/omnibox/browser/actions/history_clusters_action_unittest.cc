@@ -4,11 +4,11 @@
 
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 
+#include <algorithm>
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
@@ -40,7 +40,7 @@ struct MatchData {
 ACMatches CreateACMatches(std::vector<MatchData> matches_data) {
   ACMatches matches;
   matches.reserve(matches_data.size());
-  base::ranges::transform(
+  std::ranges::transform(
       matches_data, std::back_inserter(matches), [](const auto& match_data) {
         AutocompleteMatch match(nullptr, match_data.relevance, true,
                                 match_data.type);
@@ -67,13 +67,14 @@ class HistoryClustersActionTest : public testing::Test {
 
     prefs_enabled_.registry()->RegisterBooleanPref(
         history_clusters::prefs::kVisible, true);
+    prefs_enabled_.registry()->RegisterDictionaryPref(
+        history_clusters::prefs::kShortCache);
+    prefs_enabled_.registry()->RegisterDictionaryPref(
+        history_clusters::prefs::kAllCache);
 
     search_actions_config_.is_journeys_enabled_no_locale_check = true;
     search_actions_config_.omnibox_action = true;
     search_actions_config_.omnibox_action_on_navigation_intents = false;
-    // Setting this to false even though users see true behavior so that we do
-    // not need to register history clusters specific prefs in this test.
-    search_actions_config_.persist_caches_to_prefs = false;
     SetConfigForTesting(search_actions_config_);
   }
 

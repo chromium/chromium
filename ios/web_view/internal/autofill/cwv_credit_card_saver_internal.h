@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "ios/web_view/public/cwv_credit_card_saver.h"

@@ -80,8 +80,7 @@ void FidoDevice::SetDeviceInfo(AuthenticatorGetInfoResponse device_info) {
 bool FidoDevice::NoSilentRequests() const {
   // caBLE devices do not support silent requests.
   const auto transport = DeviceTransport();
-  return transport == FidoTransportProtocol::kHybrid ||
-         transport == FidoTransportProtocol::kAndroidAccessory;
+  return transport == FidoTransportProtocol::kHybrid;
 }
 
 // static

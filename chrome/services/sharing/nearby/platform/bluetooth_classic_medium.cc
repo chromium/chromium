@@ -12,8 +12,7 @@
 #include "components/cross_device/nearby/nearby_features.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -309,5 +308,4 @@ void BluetoothClassicMedium::RemoveStaleBluetoothDevices() {
   }
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <TargetConditionals.h>
+
 #import <functional>
 #import <string>
-
-#import <TargetConditionals.h>
 
 #import "base/functional/bind.h"
 #import "base/test/ios/wait_util.h"

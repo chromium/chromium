@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
 
 namespace ash {
@@ -208,10 +209,15 @@ bool ShelfModel::Swap(int index, bool with_next) {
 void ShelfModel::Move(int index, int target_index) {
   if (index == target_index)
     return;
-  // TODO: this needs to enforce valid ranges.
+
   ShelfItem item(items_[index]);
+
+  CHECK(index >= 0 && index < item_count());
   items_.erase(items_.begin() + index);
+
+  CHECK(target_index >= 0 && target_index <= item_count());
   items_.insert(items_.begin() + target_index, item);
+
   for (auto& observer : observers_)
     observer.ShelfItemMoved(index, target_index);
 }

@@ -20,11 +20,11 @@ class FaviconWebStateDispatcherTest : public PlatformTest,
                                       public web::WebStateObserver {
  public:
   FaviconWebStateDispatcherTest() : web_state_destroyed_(false) {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
   }
 
-  web::BrowserState* GetBrowserState() { return browser_state_.get(); }
+  web::BrowserState* GetBrowserState() { return profile_.get(); }
 
   bool IsWebStateDestroyed() { return web_state_destroyed_; }
 
@@ -36,7 +36,7 @@ class FaviconWebStateDispatcherTest : public PlatformTest,
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   bool web_state_destroyed_;
 };
 

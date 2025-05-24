@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -11,9 +12,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/window_animations.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/app_window_base.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
@@ -45,12 +43,13 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
     const AppWindowShelfItemController::WindowList& windows) {
   DCHECK(window_to_show);
 
-  auto i = base::ranges::find(windows, window_to_show);
+  auto i = std::ranges::find(windows, window_to_show);
   if (i != windows.end()) {
-    if (++i != windows.end())
+    if (++i != windows.end()) {
       window_to_show = *i;
-    else
+    } else {
       window_to_show = windows.front();
+    }
   }
   if (window_to_show->IsActive()) {
     // Coming here, only a single window is active. For keyboard activations
@@ -60,29 +59,6 @@ ash::ShelfAction ActivateOrAdvanceToNextAppWindow(
     return ShowAndActivateOrMinimize(window_to_show, windows.size() == 1);
   }
   return ash::SHELF_ACTION_NONE;
-}
-
-// Launches a new lacros window if there isn't already one on the active desk,
-// or the icon is clicked with CTRL.
-bool ShouldLaunchNewLacrosWindow(
-    const ui::Event& event,
-    const std::list<raw_ptr<AppWindowBase, CtnExperimental>>& app_windows) {
-  // If the icon is clicked with holding the CTRL, launch a new window.
-  if (event.IsControlDown())
-    return true;
-
-  // Do not launch a new window if there is already a lacros window on the
-  // current desk.
-  for (AppWindowBase* window : app_windows) {
-    aura::Window* aura_window = window->GetNativeWindow();
-    if (crosapi::browser_util::IsLacrosWindow(aura_window) &&
-        chromeos::DesksHelper::Get(aura_window)
-            ->BelongsToActiveDesk(aura_window)) {
-      return false;
-    }
-  }
-
-  return true;
 }
 
 }  // namespace
@@ -104,35 +80,40 @@ AppWindowShelfItemController::~AppWindowShelfItemController() {
 
 void AppWindowShelfItemController::AddWindow(AppWindowBase* app_window) {
   aura::Window* window = app_window->GetNativeWindow();
-  if (window && !observed_windows_.IsObservingSource(window))
+  if (window && !observed_windows_.IsObservingSource(window)) {
     observed_windows_.AddObservation(window);
-  if (window && window->GetProperty(ash::kHideInShelfKey))
+  }
+  if (window && window->GetProperty(ash::kHideInShelfKey)) {
     hidden_windows_.push_front(app_window);
-  else
+  } else {
     windows_.push_front(app_window);
+  }
   UpdateShelfItemIcon();
 }
 
 AppWindowShelfItemController::WindowList::iterator
 AppWindowShelfItemController::GetFromNativeWindow(aura::Window* window,
                                                   WindowList& list) {
-  return base::ranges::find(list, window, &AppWindowBase::GetNativeWindow);
+  return std::ranges::find(list, window, &AppWindowBase::GetNativeWindow);
 }
 
 void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
   DCHECK(app_window);
   aura::Window* window = app_window->GetNativeWindow();
-  if (window && observed_windows_.IsObservingSource(window))
+  if (window && observed_windows_.IsObservingSource(window)) {
     observed_windows_.RemoveObservation(window);
-  if (app_window == last_active_window_)
+  }
+  if (app_window == last_active_window_) {
     last_active_window_ = nullptr;
-  auto iter = base::ranges::find(windows_, app_window);
+  }
+  auto iter = std::ranges::find(windows_, app_window);
   if (iter != windows_.end()) {
     windows_.erase(iter);
   } else {
-    iter = base::ranges::find(hidden_windows_, app_window);
-    if (iter == hidden_windows_.end())
+    iter = std::ranges::find(hidden_windows_, app_window);
+    if (iter == hidden_windows_.end()) {
       return;
+    }
     hidden_windows_.erase(iter);
   }
   UpdateShelfItemIcon();
@@ -141,12 +122,14 @@ void AppWindowShelfItemController::RemoveWindow(AppWindowBase* app_window) {
 AppWindowBase* AppWindowShelfItemController::GetAppWindow(aura::Window* window,
                                                           bool include_hidden) {
   auto iter = GetFromNativeWindow(window, windows_);
-  if (iter != windows_.end())
+  if (iter != windows_.end()) {
     return *iter;
+  }
   if (include_hidden) {
     iter = GetFromNativeWindow(window, hidden_windows_);
-    if (iter != hidden_windows_.end())
+    if (iter != hidden_windows_.end()) {
       return *iter;
+    }
   }
   return nullptr;
 }
@@ -154,8 +137,9 @@ AppWindowBase* AppWindowShelfItemController::GetAppWindow(aura::Window* window,
 void AppWindowShelfItemController::SetActiveWindow(aura::Window* window) {
   // If the window is hidden, do not set it as last_active_window
   AppWindowBase* app_window = GetAppWindow(window, false);
-  if (app_window)
+  if (app_window) {
     last_active_window_ = app_window;
+  }
   UpdateShelfItemIcon();
 }
 
@@ -180,19 +164,6 @@ void AppWindowShelfItemController::ItemSelected(
 
   if (filtered_windows.empty()) {
     std::move(callback).Run(ash::SHELF_ACTION_NONE, {});
-    return;
-  }
-
-  // If this app is the lacros browser, create a new window if there isn't a
-  // lacros window on the current workspace, or the icon is clicked with CTRL.
-  // Otherwise, fallthrough to minimize or activate or advance.
-  // TODO(sammiequon): This feature should only be for lacros browser and not
-  // lacros PWAs. Revisit when there is a way to differentiate the two.
-  if (app_id() == app_constants::kLacrosAppId &&
-      ShouldLaunchNewLacrosWindow(*event, filtered_windows)) {
-    crosapi::BrowserManager::Get()->NewWindow(
-        /*incognito=*/false, /*should_trigger_session_restore=*/true);
-    std::move(callback).Run(ash::SHELF_ACTION_NEW_WINDOW_CREATED, {});
     return;
   }
 
@@ -236,8 +207,9 @@ AppWindowShelfItemController::GetAppMenuItems(
     ++command_id;
     aura::Window* window = it->GetNativeWindow();
     // Can window be null?
-    if (!filter_predicate.is_null() && !filter_predicate.Run(window))
+    if (!filter_predicate.is_null() && !filter_predicate.Run(window)) {
       continue;
+    }
 
     auto title = (window && !window->GetTitle().empty()) ? window->GetTitle()
                                                          : app_title;
@@ -250,8 +222,9 @@ AppWindowShelfItemController::GetAppMenuItems(
         // Fall back to the larger app icon.
         icon = window->GetProperty(aura::client::kAppIconKey);
       }
-      if (icon && !icon->isNull())
+      if (icon && !icon->isNull()) {
         image = *icon;
+      }
     }
     items.push_back({command_id, title, image});
   }
@@ -277,8 +250,9 @@ void AppWindowShelfItemController::Close() {
 }
 
 void AppWindowShelfItemController::ActivateIndexedApp(size_t index) {
-  if (index >= windows_.size())
+  if (index >= windows_.size()) {
     return;
+  }
   auto it = windows_.begin();
   std::advance(it, index);
   ShowAndActivateOrMinimize(*it, /*allow_minimize=*/windows_.size() == 1);
@@ -305,10 +279,12 @@ void AppWindowShelfItemController::OnWindowPropertyChanged(aura::Window* window,
 }
 
 AppWindowBase* AppWindowShelfItemController::GetLastActiveWindow() {
-  if (last_active_window_)
+  if (last_active_window_) {
     return last_active_window_;
-  if (windows_.empty())
+  }
+  if (windows_.empty()) {
     return nullptr;
+  }
   return windows_.front();
 }
 

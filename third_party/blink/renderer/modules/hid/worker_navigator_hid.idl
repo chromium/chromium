@@ -6,7 +6,7 @@
 
 [
     Exposed(ServiceWorker WebHIDOnServiceWorkers,
-            DedicatedWorker WebHIDOnDedicatedWorkers),
+            DedicatedWorker WebHID),
     ImplementedAs=HID,
     RuntimeEnabled=WebHID,
     SecureContext

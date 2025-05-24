@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.invalidation;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Runner which can be paused. When the runner is paused, the execution of its
@@ -28,15 +31,16 @@ import androidx.annotation.Nullable;
  * }
  * </pre>
  */
+@NullMarked
 public class ResumableDelayedTaskRunner {
     private final Handler mHandler = new Handler();
     private final Thread mThread = Thread.currentThread();
 
     /** Runnable which is added to the handler's message queue. */
-    @Nullable private Runnable mHandlerRunnable;
+    private @Nullable Runnable mHandlerRunnable;
 
     /** User provided task. */
-    @Nullable private Runnable mRunnable;
+    private @Nullable Runnable mRunnable;
 
     /** Time at which the task is scheduled. */
     private long mScheduledTime;
@@ -90,6 +94,7 @@ public class ResumableDelayedTaskRunner {
                 new Runnable() {
                     @Override
                     public void run() {
+                        assumeNonNull(mRunnable);
                         mRunnable.run();
                         mRunnable = null;
                         mHandlerRunnable = null;

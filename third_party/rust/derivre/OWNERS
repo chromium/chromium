@@ -1,0 +1,4 @@
+# `derivre` crate has been brought into `chromium_crates_io` as a dependency
+# of the `llguidance` crate.  `derivre` is maintained by the same GitHub org
+# as `llguidance`: https://github.com/guidance-ai/derivre
+file://third_party/rust/llguidance/OWNERS

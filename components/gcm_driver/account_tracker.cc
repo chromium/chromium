@@ -85,6 +85,12 @@ void AccountTracker::OnRefreshTokenRemovedForAccount(
   UpdateSignInState(account_id, /*is_signed_in=*/false);
 }
 
+void AccountTracker::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  // Needs to be shutdown before IdentityManager.
+  NOTREACHED(base::NotFatalUntil::M142);
+}
+
 void AccountTracker::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   // TODO(crbug.com/40067875): Delete account-tracking code, latest when

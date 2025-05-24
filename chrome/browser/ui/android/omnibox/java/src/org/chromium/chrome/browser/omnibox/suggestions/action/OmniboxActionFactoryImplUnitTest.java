@@ -22,7 +22,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.omnibox.EntityInfoProto;
 import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 
@@ -31,12 +30,11 @@ import org.chromium.components.omnibox.action.OmniboxActionFactoryJni;
 @Config(manifest = Config.NONE)
 public class OmniboxActionFactoryImplUnitTest {
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
     private @Mock OmniboxActionFactoryJni mNatives;
 
     @Before
     public void setUp() {
-        mJniMocker.mock(OmniboxActionFactoryJni.TEST_HOOKS, mNatives);
+        OmniboxActionFactoryJni.setInstanceForTesting(mNatives);
     }
 
     @After

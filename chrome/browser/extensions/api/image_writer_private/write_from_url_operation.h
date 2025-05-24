@@ -44,11 +44,11 @@ class WriteFromUrlOperation : public Operation {
   // Sets the image_path to the correct location to download to.
   void GetDownloadTarget(base::OnceClosure continuation);
 
-  // Downloads the |url| to the currently configured |image_path|.  Should not
-  // be called without calling |GetDownloadTarget| first.
+  // Downloads the `url` to the currently configured `image_path`.  Should not
+  // be called without calling `GetDownloadTarget` first.
   void Download(base::OnceClosure continuation);
 
-  // Verifies the download matches |hash|.  If the hash is empty, this stage is
+  // Verifies the download matches `hash`.  If the hash is empty, this stage is
   // skipped.
   void VerifyDownload(base::OnceClosure continuation);
 

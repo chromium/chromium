@@ -17,10 +17,10 @@ BytesConsumerTestUtil::MockBytesConsumer::MockBytesConsumer() {
   using testing::ByMove;
   using testing::DoAll;
   using testing::Return;
-  using testing::SetArgPointee;
+  using testing::SetArgReferee;
 
-  ON_CALL(*this, BeginRead(_, _))
-      .WillByDefault(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  ON_CALL(*this, BeginRead(_))
+      .WillByDefault(DoAll(SetArgReferee<0>(base::span<const char>{}),
                            Return(Result::kError)));
   ON_CALL(*this, EndRead(_)).WillByDefault(Return(Result::kError));
   ON_CALL(*this, GetPublicState()).WillByDefault(Return(PublicState::kErrored));
@@ -29,10 +29,6 @@ BytesConsumerTestUtil::MockBytesConsumer::MockBytesConsumer() {
   ON_CALL(*this, DrainAsDataPipe())
       .WillByDefault(Return(ByMove(mojo::ScopedDataPipeConsumerHandle())));
   ON_CALL(*this, DrainAsFormData()).WillByDefault(Return(ByMove(nullptr)));
-}
-
-String BytesConsumerTestUtil::CharVectorToString(const Vector<char>& v) {
-  return String(v.data(), v.size());
 }
 
 }  // namespace blink

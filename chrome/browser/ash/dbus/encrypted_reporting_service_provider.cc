@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/storage_selector/storage_selector.h"
 #include "chrome/browser/policy/messaging_layer/upload/event_upload_size_controller.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
@@ -34,10 +33,6 @@
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/dbus/missive/history_tracker.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace ash {
 
@@ -66,11 +61,9 @@ void SendStatusAsResponse(
     result.error().SaveTo(response_message.mutable_status());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Turn on/off the debug state flag (for Ash only).
+  // Turn on/off the debug state flag.
   response_message.set_health_data_logging_enabled(
       ::reporting::HistoryTracker::Get()->debug_state());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Encode whole `response_message`
   dbus::MessageWriter writer(response.get());
@@ -101,15 +94,6 @@ EncryptedReportingServiceProvider::~EncryptedReportingServiceProvider() =
 void EncryptedReportingServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   CHECK(OnOriginThread());
-
-  if (!::reporting::StorageSelector::is_uploader_required()) {
-    // We should never get to here, since the provider is only exported
-    // when is_uploader_required() is true. Have this code only
-    // in order to log configuration inconsistency.
-    LOG(ERROR) << "Uploads are not expected in this configuration";
-    return;
-  }
-
   exported_object->ExportMethod(
       chromeos::kChromeReportingServiceInterface,
       chromeos::kChromeReportingServiceUploadEncryptedRecordMethod,
@@ -188,19 +172,6 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
   CHECK(OnOriginThread());
   auto response = dbus::Response::FromMethodCall(method_call);
   ::reporting::UploadEncryptedRecordResponse response_message;
-
-  if (!::reporting::StorageSelector::is_uploader_required()) {
-    // We should never get to here, since the provider is only exported when
-    // is_uploader_required() is true. Have this code only as a door stopper in
-    // order to let `missive` daemon log configuration inconsistency.
-    ::reporting::Status status{
-        ::reporting::error::FAILED_PRECONDITION,
-        "Uploads are not expected in this configuration"};
-    LOG(ERROR) << status;
-    SendStatusAsResponse(std::move(response), std::move(response_sender),
-                         std::move(response_message), base::unexpected(status));
-    return;
-  }
 
   chromeos::MissiveClient* const missive_client =
       chromeos::MissiveClient::Get();
@@ -293,13 +264,11 @@ void EncryptedReportingServiceProvider::RequestUploadEncryptedRecords(
           remaining_storage_capacity,
           ::reporting::FileUploadDelegate::kMaxUploadBufferSize))};
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Accept health data if present (ChromeOS only)
+  // Accept health data if present.
   if (request.has_health_data()) {
     ::reporting::HistoryTracker::Get()->set_data(
         std::move(request.health_data()), base::DoNothing());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   upload_provider_->RequestUploadEncryptedRecords(
       request.need_encryption_keys(), std::move(records),

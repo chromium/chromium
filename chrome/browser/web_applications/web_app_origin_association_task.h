@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ORIGIN_ASSOCIATION_TASK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_ORIGIN_ASSOCIATION_TASK_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -34,7 +35,7 @@ class WebAppOriginAssociationManager::Task {
  private:
   ScopeExtensionInfo& GetCurrentScopeExtension();
   void FetchAssociationFile(ScopeExtensionInfo& scope_extension);
-  void OnAssociationFileFetched(std::unique_ptr<std::string> file_content);
+  void OnAssociationFileFetched(std::optional<std::string> file_content);
   void OnAssociationParsed(
       webapps::mojom::WebAppOriginAssociationPtr association,
       std::vector<webapps::mojom::WebAppOriginAssociationErrorPtr> errors);

@@ -45,7 +45,7 @@ static inline void TestLinkRelAttribute(const String& value,
                                         bool is_preconnect = false,
                                         bool is_canonical = false,
                                         bool is_compression_dictionary = false,
-                                        bool is_payment = false) {
+                                        bool is_facilitated_payment = false) {
   SCOPED_TRACE(value.Utf8());
   LinkRelAttribute link_rel_attribute(value);
   ASSERT_EQ(is_style_sheet, link_rel_attribute.IsStyleSheet());
@@ -57,7 +57,7 @@ static inline void TestLinkRelAttribute(const String& value,
   ASSERT_EQ(is_canonical, link_rel_attribute.IsCanonical());
   ASSERT_EQ(is_compression_dictionary,
             link_rel_attribute.IsCompressionDictionary());
-  ASSERT_EQ(is_payment, link_rel_attribute.IsPayment());
+  ASSERT_EQ(is_facilitated_payment, link_rel_attribute.IsFacilitatedPayment());
 }
 
 TEST(LinkRelAttributeTest, Constructor) {
@@ -157,13 +157,13 @@ TEST(LinkRelAttributeTest, Constructor) {
                        false, /*is_preconnect=*/false, /*is_canonical=*/false,
                        /*is_compression_dictionary=*/false);
   TestLinkRelAttribute(
-      "payment", false, mojom::blink::FaviconIconType::kInvalid, false, false,
-      false, /*is_preconnect=*/false, /*is_canonical=*/false,
-      /*is_compression_dictionary=*/false, /*is_payment=*/true);
+      "facilitated-payment", false, mojom::blink::FaviconIconType::kInvalid,
+      false, false, false, /*is_preconnect=*/false, /*is_canonical=*/false,
+      /*is_compression_dictionary=*/false, /*is_facilitated_payment=*/true);
   TestLinkRelAttribute(
-      "pAymENt", false, mojom::blink::FaviconIconType::kInvalid, false, false,
-      false, /*is_preconnect=*/false, /*is_canonical=*/false,
-      /*is_compression_dictionary=*/false, /*is_payment=*/true);
+      "fAciLitaTed-pAymENt", false, mojom::blink::FaviconIconType::kInvalid,
+      false, false, false, /*is_preconnect=*/false, /*is_canonical=*/false,
+      /*is_compression_dictionary=*/false, /*is_facilitated_payment=*/true);
 }
 
 }  // namespace blink

@@ -14,12 +14,12 @@
          "toolbar": [ 204, 208, 212 ]
       },
       "images": {
-         "theme_button_background": "i/agxjaHJvbWV0aGVtZXNyDAsSBEZpbGUYwsgCDA",
-         "theme_frame": "i/agxjaHJvbWV0aGVtZXNyDAsSBEZpbGUYw8gCDA",
-         "theme_ntp_background": "i/agxjaHJvbWV0aGVtZXNyDAsSBEZpbGUYj9gCDA",
-         "theme_tab_background": "i/agxjaHJvbWV0aGVtZXNyDAsSBEZpbGUY_c8CDA",
-         "theme_toolbar": "i/agxjaHJvbWV0aGVtZXNyDAsSBEZpbGUYnMgCDA",
-         "theme_window_control_background": "i/agxjaHJvbWV0aGVtZXNyDAsSBEZpbGUYjNgCDA"
+         "theme_button_background": "i/theme_button_background.png",
+         "theme_frame": "i/theme_frame.png",
+         "theme_ntp_background": "i/theme_ntp_background.png",
+         "theme_tab_background": "i/theme_tab_background.png",
+         "theme_toolbar": "i/theme_toolbar.png",
+         "theme_window_control_background": "i/theme_window_control_background.png"
       },
       "properties": {
          "ntp_background_alignment": "top",

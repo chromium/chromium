@@ -34,6 +34,7 @@ PreconditionState GetPreconditionStateFromAccountManagedStatus(
       return PreconditionState::kMustStopAndClearData;
     case signin::AccountManagedStatusFinder::Outcome::kPending:
     case signin::AccountManagedStatusFinder::Outcome::kError:
+    case signin::AccountManagedStatusFinder::Outcome::kTimeout:
       // If the account status cannot be determined (immediately), keep the data
       // to prevent redownloding once the status was determined.
       return PreconditionState::kMustStopAndKeepData;

@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.xsurface;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Implemented in Chromium.
@@ -16,6 +17,7 @@ import androidx.annotation.Nullable;
  *
  * Should only be called on the UI thread.
  */
+@NullMarked
 public interface SurfaceScopeDependencyProvider {
     /** Returns the activity. */
     default @Nullable Activity getActivity() {

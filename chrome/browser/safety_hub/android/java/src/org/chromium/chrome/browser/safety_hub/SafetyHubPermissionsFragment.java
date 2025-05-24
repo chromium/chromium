@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.safety_hub;
 
+import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.maybeRecordAbusiveNotificationRevokedInteraction;
 import static org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.recordRevokedPermissionsInteraction;
 
 import android.os.Bundle;
 import android.view.MenuItem;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.preference.Preference;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.PermissionsModuleInteractions;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -24,10 +25,11 @@ import org.chromium.components.favicon.LargeIconBridge;
  * Safety Hub subpage that displays a list of all revoked permissions alongside their supported
  * actions.
  */
+@NullMarked
 public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
         implements Preference.OnPreferenceClickListener, UnusedSitePermissionsBridge.Observer {
     private UnusedSitePermissionsBridge mUnusedSitePermissionsBridge;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
 
     @Override
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
@@ -60,20 +62,25 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                     Snackbar.UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS,
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             mUnusedSitePermissionsBridge.restoreRevokedPermissionsReviewList(
                                     (PermissionsData[]) actionData);
                             recordRevokedPermissionsInteraction(
+                                    PermissionsModuleInteractions.UNDO_ACKNOWLEDGE_ALL);
+                            maybeRecordAbusiveNotificationRevokedInteraction(
+                                    (PermissionsData[]) actionData,
                                     PermissionsModuleInteractions.UNDO_ACKNOWLEDGE_ALL);
                         }
                     },
                     permissionsDataList);
             recordRevokedPermissionsInteraction(PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
+            maybeRecordAbusiveNotificationRevokedInteraction(
+                    permissionsDataList, PermissionsModuleInteractions.ACKNOWLEDGE_ALL);
         }
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference instanceof SafetyHubPermissionsPreference) {
             PermissionsData permissionsData =
                     ((SafetyHubPermissionsPreference) preference).getPermissionsData();
@@ -85,15 +92,24 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
                     Snackbar.UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION,
                     new SnackbarManager.SnackbarController() {
                         @Override
-                        public void onAction(Object actionData) {
+                        public void onAction(@Nullable Object actionData) {
                             mUnusedSitePermissionsBridge.undoRegrantPermissions(
                                     (PermissionsData) actionData);
                             recordRevokedPermissionsInteraction(
+                                    PermissionsModuleInteractions.UNDO_ALLOW_AGAIN);
+                            PermissionsData[] permissionsDataList =
+                                    new PermissionsData[] {(PermissionsData) actionData};
+                            maybeRecordAbusiveNotificationRevokedInteraction(
+                                    permissionsDataList,
                                     PermissionsModuleInteractions.UNDO_ALLOW_AGAIN);
                         }
                     },
                     permissionsData);
             recordRevokedPermissionsInteraction(PermissionsModuleInteractions.ALLOW_AGAIN);
+            PermissionsData[] permissionsDataList = new PermissionsData[] {permissionsData};
+            permissionsDataList[0] = permissionsData;
+            maybeRecordAbusiveNotificationRevokedInteraction(
+                    permissionsDataList, PermissionsModuleInteractions.ALLOW_AGAIN);
         }
         return false;
     }
@@ -106,7 +122,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.safety_hub_subpage_menu_item) {
-            launchSettingsActivity(SiteSettings.class);
+            startSettings(SiteSettings.class);
             recordRevokedPermissionsInteraction(PermissionsModuleInteractions.GO_TO_SETTINGS);
             return true;
         }
@@ -155,5 +171,10 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     @Override
     protected @StringRes int getPermissionsListTextId() {
         return R.string.page_info_permissions_title;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

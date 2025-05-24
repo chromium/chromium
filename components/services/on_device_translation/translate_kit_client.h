@@ -14,9 +14,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_native_library.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/services/on_device_translation/translate_kit_structs.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace on_device_translation {
 
@@ -24,7 +26,7 @@ namespace on_device_translation {
 // numeric values should never be reused.
 // LINT.IfChange(LoadTranslateKitResult)
 enum class LoadTranslateKitResult {
-  kUnknown = 0,
+  // kUnknown = 0,  Deprecated
   // Success to load TranslateKit library.
   kSuccess = 1,
   // Fails due to invalid TranslateKit binary.
@@ -32,7 +34,10 @@ enum class LoadTranslateKitResult {
   // Success to load TranslateKit binary but fails due to invalid function
   // pointers.
   kInvalidFunctionPointer = 3,
-  kMaxValue = kInvalidFunctionPointer,
+  // Success to load TranslateKit binary but the binary version is invalid.
+  kInvalidVersion = 4,
+
+  kMaxValue = kInvalidVersion,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ai/enums.xml:LoadTranslateKitResult)
 
@@ -49,6 +54,8 @@ class TranslateKitClient {
   };
 
   static TranslateKitClient* Get();
+  static std::unique_ptr<TranslateKitClient> CreateForTest(
+      const base::FilePath& library_path);
 
   TranslateKitClient(const base::FilePath& library_path,
                      base::PassKey<TranslateKitClient>);
@@ -65,11 +72,11 @@ class TranslateKitClient {
   bool CanTranslate(const std::string& source_lang,
                     const std::string& target_lang);
 
-  // Returns a Translator instance for the given pair of languages.
-  // Returns null if either the language pair is not supported or fails to
-  // to create such Translator.
-  Translator* GetTranslator(const std::string& source_lang,
-                            const std::string& target_lang);
+  // Returns a Translator instance for the given pair of languages, or an error
+  // of type `mojom::CreateTranslatorResult` if fails to create such Translator.
+  base::expected<Translator*, mojom::CreateTranslatorResult> GetTranslator(
+      const std::string& source_lang,
+      const std::string& target_lang);
 
  private:
   // TranslatorImpl manages an instance of translator created by TranslateKit
@@ -113,6 +120,13 @@ class TranslateKitClient {
   std::uintptr_t OpenForReadOnlyMemoryMapImpl(const char* file_name,
                                               size_t file_name_size);
 
+  // Checks if the TranslateKit binary is valid and all the function pointers
+  // are valid. And sets the `maybe_kit_ptr_` to the error code if any.
+  LoadTranslateKitResult CheckLoadTranslateKitResult();
+
+  // Checks if the loaded TranslateKit version is valid.
+  bool IsTranslateKitVersionValid();
+
   // Initializes the TranslateKit instance only when first needed, provided the
   // underlying library has loaded successfully. Returns true if initialization
   // was successful, false otherwise.
@@ -121,12 +135,6 @@ class TranslateKitClient {
   // The TranslateKit binary.
   base::ScopedNativeLibrary lib_;
 
-  std::uintptr_t kit_ptr_ = 0;
-  bool failed_to_initialize_ = false;
-
-  // The results after attempting to load `lib_`.
-  LoadTranslateKitResult load_lib_result_ = LoadTranslateKitResult::kUnknown;
-
   using TranslatorKey = std::pair<std::string, std::string>;
   // Manages all instances of `Translator` created by this client.
   std::map<TranslatorKey, std::unique_ptr<Translator>> translators_;
@@ -134,23 +142,8 @@ class TranslateKitClient {
   // WARNING:
   // Changes to the below interfaces must be backwards compatible and
   // reflected in the Google3-side definition.
-
-  typedef bool (*FileExistsFn)(const char* file_name,
-                               size_t file_name_size,
-                               bool* is_directory,
-                               std::uintptr_t user_data);
-  typedef std::uintptr_t (*OpenForReadOnlyMemoryMapFn)(
-      const char* file_name,
-      size_t file_name_size,
-      std::uintptr_t user_data);
-  typedef void (*DeleteReadOnlyMemoryRegionFn)(std::uintptr_t memory_map_ptr,
-                                               std::uintptr_t user_data);
-  typedef const void* (*ReadOnlyMemoryRegionDataFn)(
-      std::uintptr_t memory_map_ptr,
-      std::uintptr_t user_data);
-  typedef uint64_t (*ReadOnlyMemoryRegionLengthFn)(
-      std::uintptr_t memory_map_ptr,
-      std::uintptr_t user_data);
+  typedef bool (*GetTranslateKitVersionFn)(TranslateKitVersion* version);
+  GetTranslateKitVersionFn get_translate_kit_version_func_;
 
   typedef void (*InitializeStorageBackendFn)(
       FileExistsFn file_exists,
@@ -187,9 +180,12 @@ class TranslateKitClient {
                                         std::uintptr_t user_data);
   TranslatorTranslateFn translator_translate_func_;
 
-  mojom::OnDeviceTranslationServiceConfigPtr config_;
-  std::set<std::string> directories_;
-  std::map<std::string, base::File> files_;
+  // The pointer to the TranslateKit instance or 0 if not initialized or
+  // error `mojom::CreateTranslatorResult` if failed to initialize.
+  base::expected<std::uintptr_t, mojom::CreateTranslatorResult> maybe_kit_ptr_{
+      0};
+
+  mojo::Remote<mojom::FileOperationProxy> file_operation_proxy_;
 };
 
 }  // namespace on_device_translation

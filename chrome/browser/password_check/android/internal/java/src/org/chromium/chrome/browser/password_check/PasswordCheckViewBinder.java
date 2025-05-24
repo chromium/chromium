@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.password_check;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.COMPROMISED_CREDENTIAL;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.CREDENTIAL_HANDLER;
 import static org.chromium.chrome.browser.password_check.PasswordCheckProperties.CompromisedCredentialProperties.FAVICON_OR_FALLBACK;
@@ -40,6 +41,8 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.password_check.PasswordCheckProperties.ItemType;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
@@ -52,7 +55,7 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.RecyclerViewAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -60,6 +63,7 @@ import org.chromium.ui.widget.ButtonCompat;
  * Provides functions that map {@link PasswordCheckProperties} changes in a {@link PropertyModel} to
  * the suitable method in {@link PasswordCheckFragmentView}.
  */
+@NullMarked
 class PasswordCheckViewBinder {
     /**
      * Called whenever a property in the given model changes. It updates the given view
@@ -120,7 +124,8 @@ class PasswordCheckViewBinder {
                         PasswordCheckViewBinder::bindCredentialView);
         }
         assert false : "Cannot create view for ItemType: " + itemType;
-        return null;
+        // https://github.com/uber/NullAway/issues/1104
+        return assumeNonNull(null);
     }
 
     /**
@@ -426,8 +431,8 @@ class PasswordCheckViewBinder {
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT:
                 return getString(view, R.string.password_check_status_message_error_quota_limit);
             case PasswordCheckUIStatus.ERROR_QUOTA_LIMIT_ACCOUNT_CHECK:
-                NoUnderlineClickableSpan linkSpan =
-                        new NoUnderlineClickableSpan(
+                ChromeClickableSpan linkSpan =
+                        new ChromeClickableSpan(
                                 view.getContext(), unusedView -> launchCheckupInAccount.run());
                 return SpanApplier.applySpans(
                         getString(
@@ -440,7 +445,8 @@ class PasswordCheckViewBinder {
             default:
                 assert false : "Unhandled check status " + status + "on message update";
         }
-        return null;
+        // https://github.com/uber/NullAway/issues/1104
+        return assumeNonNull(null);
     }
 
     private static int getStatusTextMargin(@PasswordCheckUIStatus int status) {
@@ -462,7 +468,7 @@ class PasswordCheckViewBinder {
         return 0;
     }
 
-    private static String getStatusDescription(View view, Long checkTimestamp) {
+    private static @Nullable String getStatusDescription(View view, Long checkTimestamp) {
         if (checkTimestamp == null) return null;
         Resources res = getResources(view);
         return res.getString(
@@ -535,16 +541,12 @@ class PasswordCheckViewBinder {
         // TODO(crbug.com/40710602): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE && compromisedCredentialsCount == null) return;
         TextView statusSubtitle = view.findViewById(R.id.check_status_subtitle);
-        statusSubtitle.setText(
-                getSubtitleText(view, status, showStatusSubtitle, compromisedCredentialsCount));
+        statusSubtitle.setText(getSubtitleText(view, status, compromisedCredentialsCount));
         statusSubtitle.setVisibility(showStatusSubtitle ? View.VISIBLE : View.GONE);
     }
 
     private static String getSubtitleText(
-            View view,
-            @PasswordCheckUIStatus int status,
-            boolean showStatusSubtitle,
-            Integer compromisedCredentialsCount) {
+            View view, @PasswordCheckUIStatus int status, Integer compromisedCredentialsCount) {
         switch (status) {
             case PasswordCheckUIStatus.IDLE:
                 assert compromisedCredentialsCount != null;
@@ -567,7 +569,8 @@ class PasswordCheckViewBinder {
             default:
                 assert false : "Unhandled check status " + status + "on icon update";
         }
-        return null;
+        // https://github.com/uber/NullAway/issues/1104
+        return assumeNonNull(null);
     }
 
     private static ListMenu createCredentialMenu(

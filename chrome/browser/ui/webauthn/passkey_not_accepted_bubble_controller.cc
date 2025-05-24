@@ -4,15 +4,23 @@
 
 #include "chrome/browser/ui/webauthn/passkey_not_accepted_bubble_controller.h"
 
+#include <string>
+#include <utility>
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/passwords/bubble_controllers/password_bubble_controller_base.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 PasskeyNotAcceptedBubbleController::PasskeyNotAcceptedBubbleController(
     base::WeakPtr<PasswordsModelDelegate> delegate,
-    password_manager::metrics_util::UIDisplayDisposition display_disposition)
-    : PasswordBubbleControllerBase(std::move(delegate), display_disposition) {}
+    password_manager::metrics_util::UIDisplayDisposition display_disposition,
+    std::string passkey_rp_id)
+    : PasswordBubbleControllerBase(std::move(delegate), display_disposition),
+      passkey_rp_id_(std::move(passkey_rp_id)) {}
 
 PasskeyNotAcceptedBubbleController::~PasskeyNotAcceptedBubbleController() {
   OnBubbleClosing();
@@ -25,7 +33,8 @@ std::u16string PasskeyNotAcceptedBubbleController::GetTitle() const {
 void PasskeyNotAcceptedBubbleController::OnGooglePasswordManagerLinkClicked() {
   dismissal_reason_ = password_manager::metrics_util::CLICKED_MANAGE;
   if (delegate_) {
-    delegate_->NavigateToPasswordManagerSettingsPage(
+    delegate_->NavigateToPasswordDetailsPageInPasswordManager(
+        passkey_rp_id_,
         password_manager::ManagePasswordsReferrer::kPasskeyNotAcceptedBubble);
   }
 }

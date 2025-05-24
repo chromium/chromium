@@ -23,6 +23,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.task.PostTask;
@@ -38,10 +39,13 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.device_lock.DeviceLockCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
@@ -75,6 +79,8 @@ public class SigninFirstRunFragment extends Fragment
                         mModalDialogManager,
                         this,
                         PrivacyPreferencesManagerImpl.getInstance(),
+                        new FullscreenSigninConfig(
+                                /* shouldDisableSignin= */ BuildInfo.getInstance().isAutomotive),
                         SigninAccessPoint.START_PAGE);
 
         if (getPageDelegate().isLaunchedFromCct()) {
@@ -120,7 +126,9 @@ public class SigninFirstRunFragment extends Fragment
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         mFragmentView = new FrameLayout(getActivity());
         mMainView = inflateFragmentView(inflater, getActivity());
         mFragmentView.addView(mMainView);
@@ -135,7 +143,7 @@ public class SigninFirstRunFragment extends Fragment
                 && data != null) {
             String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
             if (addedAccountName != null) {
-                mFullscreenSigninCoordinator.onAccountSelected(addedAccountName);
+                mFullscreenSigninCoordinator.onAccountAdded(addedAccountName);
             }
         }
     }
@@ -159,7 +167,7 @@ public class SigninFirstRunFragment extends Fragment
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
     public void addAccount() {
-        recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
+        getPageDelegate().recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
                         (@Nullable Intent intent) -> {
@@ -188,14 +196,26 @@ public class SigninFirstRunFragment extends Fragment
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
-    public void recordFreProgressHistogram(@MobileFreProgress int state) {
-        getPageDelegate().recordFreProgressHistogram(state);
+    public void recordUserSignInHistograms(@AccountConsistencyPromoAction int promoAction) {
+        @MobileFreProgress
+        int progressState =
+                promoAction == AccountConsistencyPromoAction.SIGNED_IN_WITH_DEFAULT_ACCOUNT
+                        ? MobileFreProgress.WELCOME_SIGNIN_WITH_DEFAULT_ACCOUNT
+                        : MobileFreProgress.WELCOME_SIGNIN_WITH_NON_DEFAULT_ACCOUNT;
+        getPageDelegate().recordFreProgressHistogram(progressState);
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
-    public void recordNativePolicyAndChildStatusLoadedHistogram() {
-        getPageDelegate().recordNativePolicyAndChildStatusLoadedHistogram();
+    public void recordSigninDismissedHistograms() {
+        getPageDelegate().recordFreProgressHistogram(MobileFreProgress.WELCOME_DISMISS);
+    }
+
+    /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
+    @Override
+    public void recordLoadCompletedHistograms(
+            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
+        getPageDelegate().recordLoadCompletedHistograms(slowestLoadPoint);
     }
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */

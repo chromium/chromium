@@ -23,10 +23,8 @@ class OptimizationMetadata {
 
   // Validates that the metadata stored in |any_metadata_| is of the same type
   // and is parseable as |T|. Will return metadata if all checks pass.
-  template <
-      class T,
-      class = typename std::enable_if<
-          std::is_convertible<T*, google::protobuf::MessageLite*>{}>::type>
+  template <class T>
+    requires(std::is_convertible_v<T*, google::protobuf::MessageLite*>)
   std::optional<T> ParsedMetadata() const {
     if (!any_metadata_)
       return std::nullopt;

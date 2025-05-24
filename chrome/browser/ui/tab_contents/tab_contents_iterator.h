@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_TAB_CONTENTS_TAB_CONTENTS_ITERATOR_H_
 
 #include <iterator>
+#include <optional>
 
 #include "base/memory/stack_allocated.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 namespace content {
 class WebContents;
@@ -47,8 +49,8 @@ class AllTabContentsesList {
     Iterator(const Iterator& iterator);
     ~Iterator();
 
-    value_type operator->() { return cur_; }
-    reference operator*() { return cur_; }
+    value_type operator->() const { return cur_; }
+    reference operator*() const { return cur_; }
 
     Iterator& operator++() {
       Next();
@@ -62,8 +64,6 @@ class AllTabContentsesList {
     }
 
     bool operator==(const Iterator& other) const { return cur_ == other.cur_; }
-
-    bool operator!=(const Iterator& other) const { return !(*this == other); }
 
     // Returns the Browser instance associated with the current tab contents.
     // Valid as long as this iterator != the AllTabContentses().end() iterator.
@@ -83,9 +83,6 @@ class AllTabContentsesList {
     // contents.
     void Next();
 
-    // Tab index into the current Browser of the current tab contents.
-    int tab_index_;
-
     // Current WebContents, or null if we're at the end of the list. This can be
     // extracted given the browser iterator and index, but it's nice to cache
     // this since the caller may access the current tab contents many times.
@@ -93,6 +90,9 @@ class AllTabContentsesList {
 
     // An iterator over all the browsers.
     BrowserList::const_iterator browser_iterator_;
+
+    // An iterator for tabs in a tabstrip.
+    std::optional<TabStripModel::TabIterator> tab_iterator_;
   };
 
   using iterator = Iterator;

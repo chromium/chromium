@@ -39,7 +39,9 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+        const base::flat_map<
+            mojom::Feature,
+            raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
             global_state_feature_managers,
         bool is_secondary_user);
     static void SetFactoryForTesting(Factory* test_factory);
@@ -51,7 +53,9 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
         AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-        const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+        const base::flat_map<
+            mojom::Feature,
+            raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
             global_state_feature_managers,
         bool is_secondary_user) = 0;
 
@@ -70,7 +74,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+      const base::flat_map<mojom::Feature,
+                           raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
           global_state_feature_managers,
       bool is_secondary_user);
 
@@ -111,7 +116,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   raw_ptr<HostStatusProvider> host_status_provider_;
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
   raw_ptr<AndroidSmsPairingStateTracker> android_sms_pairing_state_tracker_;
-  const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>
+  const base::flat_map<mojom::Feature,
+                       raw_ptr<GlobalStateFeatureManager, CtnExperimental>>
       global_state_feature_managers_;
 
   // Certain features may be unavailable to secondary users logged into a

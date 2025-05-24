@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
+      enc_check="möl" source_lang_id="en">
   <outputs>
     <output filename="remoting/base/string_resources.h" type="rc_header">
       <emit emit_type="prepend"/>
@@ -62,6 +62,9 @@
     <output filename="remoting/resources/lt.pak" lang="lt" type="data_package"/>
     <output filename="remoting/resources/lv.pak" lang="lv" type="data_package"/>
     <output filename="remoting/resources/ml.pak" lang="ml" type="data_package"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/mn.pak" lang="mn" type="data_package"/>
+    </if>
     <output filename="remoting/resources/mr.pak" lang="mr" type="data_package"/>
     <output filename="remoting/resources/ms.pak" lang="ms" type="data_package"/>
     <!-- The translation console uses 'no' for Norwegian (Bokmål), but we use 'nb'. -->
@@ -154,10 +157,13 @@
     <output filename="remoting/resources/_locales/ko/messages.json" lang="ko" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/lt/messages.json" lang="lt" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/lv/messages.json" lang="lv" type="chrome_messages_json"/>
-    <!-- The translation console uses 'no' for Norwegian (Bokmål), but Chrome uses 'nb'. -->
     <output filename="remoting/resources/_locales/ml/messages.json" lang="ml" type="chrome_messages_json"/>
+    <if expr="is_chromeos">
+      <output filename="remoting/resources/_locales/mn/messages.json" lang="mn" type="chrome_messages_json"/>
+    </if>
     <output filename="remoting/resources/_locales/mr/messages.json" lang="mr" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/ms/messages.json" lang="ms" type="chrome_messages_json"/>
+    <!-- The translation console uses 'no' for Norwegian (Bokmål), but Chrome uses 'nb'. -->
     <output filename="remoting/resources/_locales/nb/messages.json" lang="no" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/nl/messages.json" lang="nl" type="chrome_messages_json"/>
     <output filename="remoting/resources/_locales/pl/messages.json" lang="pl" type="chrome_messages_json"/>
@@ -305,7 +311,7 @@
           Google LLC
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chrome Remote Desktop Host executable. It should be updated every year.">
-          Copyright 2024 Google LLC. All Rights Reserved.
+          Copyright 2025 Google LLC. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chrome Remote Desktop.">
           Chrome Remote Desktop Service
@@ -347,7 +353,7 @@
           The Chromium Authors
         </message>
         <message name="IDS_COPYRIGHT" desc="The copyright message specified in the version information of each Chromoting Host executable. It should be updated every year.">
-          Copyright 2024 The Chromium Authors. All Rights Reserved.
+          Copyright 2025 The Chromium Authors. All Rights Reserved.
         </message>
         <message name="IDS_DISPLAY_SERVICE_NAME" desc="The name of the Windows service installed by Chromoting.">
           Chromoting Service
@@ -754,6 +760,9 @@
       <message name="IDS_REMOTING_REMOTE_SECURITY_KEY_DESCRIPTION" desc="The file description specified in the version information of remote_security_key.exe.">
         Security Key Remoting Process
       </message>
+      <message name="IDS_REMOTING_CRASHPAD_HANDLER_DESCRIPTION" desc="The file description specified in the version information of remoting_crashpad_handler.exe.">
+        Crash Reporting
+      </message>
       <message name="IDS_REMOTING_START_HOST_DESCRIPTION" desc="The file description specified in the version information of remoting_start_host.exe.">
         Host Provisioning Utility
       </message>
@@ -805,8 +814,19 @@
       <message desc="Message displayed before sharing computer when admin initiated the connection remotely" name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED">
         <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> has requested access to see your screen and control your keyboard and mouse. Press ''<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE">{1}<ex>cancel</ex></ph>'' if you are not expecting this request. Otherwise select ''<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM">{2}<ex>share</ex></ph>'' to allow the connection when ready.
       </message>
+      <message desc="Message displayed before sharing computer when admin initiated the connection remotely and the notification will show a countdown before the it can be automatically accepted." name="IDS_SHARE_CONFIRM_DIALOG_MESSAGE_ADMIN_INITIATED_CRD_UNATTENDED">
+        <ph name="CLIENT_USERNAME">{0}<ex>client@email.com</ex></ph> has requested access to see your screen and control your keyboard and mouse. Would you like to share your device?
+      </message>
+      <message desc="Message displayed in dialog before sharing computer when admin initiated connection remotely and notification will be automatically accepted after a countdown." name="IDS_CRD_AUTO_ACCEPT_COUNTDOWN">
+        {0, plural,
+          =1 {If you don’t take action, your device will automatically start sharing in # second.}
+          other {If you don’t take action, your device will automatically start sharing in # seconds.}}
+      </message>
       <message desc="Label for the button to accept sharing the computer in 'It2Me' mode." meaning="Accept share request." name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" >
         Share
+      </message>
+      <message desc="Label for the button to accept sharing the computer in 'It2Me' mode in the case when the notification can be automatically accepted with a countdown." meaning="Accept share request." name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM_CRD_UNATTENDED" >
+        Share device
       </message>
       <message desc="Label for the button to decline sharing the computer in 'It2Me' mode." name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" >
         Cancel

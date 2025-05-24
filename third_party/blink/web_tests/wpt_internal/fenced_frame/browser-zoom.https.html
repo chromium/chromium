@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html class="reftest-wait">
+<title>Test browser zoom with fenced frames.</title>
+<link rel=match href=resources/browser-zoom-match.html>
+<script src="/common/utils.js"></script>
+<script src="resources/utils.js"></script>
+
+<style>
+  body {
+    margin: 10px;
+  }
+
+  p {
+    font-size: 10px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  fencedframe {
+    /* border: 1px solid black; */
+    width: 320px;
+    height: 50px;
+  }
+</style>
+
+<body onload="main();">
+  <p>This is text outside of the fenced frame.</p>
+  <script>
+    async function main() {
+      const key = token();
+      const config = await generateURNFromFledge(
+          "resources/browser-zoom-inner.html",
+          [key], [], true, false, ['320', '50']);
+      const fenced_frame = document.createElement('fencedframe');
+      fenced_frame.config = config;
+      document.body.append(fenced_frame);
+      // Wait until the fenced frame's page is loaded.
+      await nextValueFromServer(key);
+      if (window.testRunner) {
+        testRunner.setPageZoomFactor(2);
+      }
+      document.documentElement.classList.remove("reftest-wait");
+    };
+  </script>
+</body>
+
+</html>

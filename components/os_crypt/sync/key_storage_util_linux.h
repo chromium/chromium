@@ -26,6 +26,13 @@ enum class SelectedLinuxBackend {
   KWALLET6,
 };
 
+// OSCrypt has a setting that determines whether a backend will be used.
+// The presence of this file in the file system means that the backend
+// should be ignored. It's absence means OSCrypt should use the backend.
+//
+// Exposed for use in tests.
+inline constexpr char kBackendPreferenceFileName[] = "Disable Local Encryption";
+
 // Decide which backend to target. |type| is checked first. If it does not
 // match a supported backend and |use_backend| is true, |desktop_env| will be
 // used to decide.
@@ -36,11 +43,6 @@ SelectedLinuxBackend COMPONENT_EXPORT(OS_CRYPT)
     SelectBackend(const std::string& type,
                   bool use_backend,
                   base::nix::DesktopEnvironment desktop_env);
-
-// Set the setting that disables using OS-level encryption. If |use| is true,
-// a backend will be used.
-bool COMPONENT_EXPORT(OS_CRYPT)
-    WriteBackendUse(const base::FilePath& user_data_dir, bool use);
 
 // Decide whether the backend should be used based on the setting.
 bool COMPONENT_EXPORT(OS_CRYPT)

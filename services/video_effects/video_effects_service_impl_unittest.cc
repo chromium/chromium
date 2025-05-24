@@ -52,7 +52,8 @@ TEST_F(VideoEffectsServiceTest, DISABLED_CreateEffectsProcessorWorks) {
   // to work (irrespective of whether the passed-in pipes are usable or not).
 
   mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver;
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+      manager_receiver;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote;
 
   service_remote_->CreateEffectsProcessor(
@@ -73,7 +74,8 @@ TEST_F(VideoEffectsServiceTest,
   // to fail if the same device id is passed.
 
   mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver1;
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver1;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+      manager_receiver1;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote1;
 
   service_remote_->CreateEffectsProcessor(
@@ -85,7 +87,8 @@ TEST_F(VideoEffectsServiceTest,
   ASSERT_TRUE(processor_remote1.is_connected());
 
   mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver2;
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver2;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+      manager_receiver2;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote2;
 
   service_remote_->CreateEffectsProcessor(
@@ -107,7 +110,8 @@ TEST_F(VideoEffectsServiceTest,
   // to succeed if the previous processor with that ID has been removed
 
   mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver1;
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver1;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+      manager_receiver1;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote1;
 
   service_remote_->CreateEffectsProcessor(
@@ -123,7 +127,8 @@ TEST_F(VideoEffectsServiceTest,
   base::RunLoop().RunUntilIdle();
 
   mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver2;
-  mojo::PendingReceiver<media::mojom::VideoEffectsManager> manager_receiver2;
+  mojo::PendingReceiver<media::mojom::ReadonlyVideoEffectsManager>
+      manager_receiver2;
   mojo::Remote<mojom::VideoEffectsProcessor> processor_remote2;
 
   service_remote_->CreateEffectsProcessor(

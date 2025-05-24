@@ -207,7 +207,6 @@ public class CustomTabModalDialogTest {
 
     @Test
     @SmallTest
-    @Features.DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     public void testBackPressDismissTabModalDialog() {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
         Intent intent = CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, mTestPage);
@@ -278,12 +277,5 @@ public class CustomTabModalDialogTest {
         histogramWatcher.assertExpected("Dialog should be dismissed by back press");
         CriteriaHelper.pollUiThread(
                 () -> !dialogManager.isShowing(), "Dialog should be dismissed by back press");
-    }
-
-    @Test
-    @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testBackPressDismissTabModalDialog_BackGestureRefactor() {
-        testBackPressDismissTabModalDialog();
     }
 }

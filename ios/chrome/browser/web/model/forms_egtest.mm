@@ -12,7 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -137,7 +137,7 @@ void TestFormResponseProvider::GetResponseHeadersAndBody(
     *response_body = request.method + std::string(" ") + request.body;
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -560,14 +560,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // Wait for the accessory icon to appear.
     [ChromeEarlGrey waitForKeyboardToAppear];
 
-    if (@available(iOS 16, *)) {
-      // TODO(crbug.com/40227513): Move this logic into EG.
-      XCUIApplication* app = [[XCUIApplication alloc] init];
-      [[[app keyboards] buttons][@"go"] tap];
-    } else {
-      [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
-          performAction:grey_tap()];
-    }
+    // TODO(crbug.com/40227513): Move this logic into EG.
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+    [[[app keyboards] buttons][@"go"] tap];
   }
 }
 

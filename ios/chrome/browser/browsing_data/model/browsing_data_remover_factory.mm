@@ -7,23 +7,21 @@
 #import <utility>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-BrowsingDataRemover* BrowsingDataRemoverFactory::GetForBrowserState(
+BrowsingDataRemover* BrowsingDataRemoverFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<BrowsingDataRemover*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
+  return GetInstance()->GetServiceForProfileAs<BrowsingDataRemover>(
+      profile, /*create=*/true);
 }
 
 // static
 BrowsingDataRemover* BrowsingDataRemoverFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
-  return static_cast<BrowsingDataRemover*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<BrowsingDataRemover>(
+      profile, /*create=*/false);
 }
 
 // static
@@ -33,9 +31,9 @@ BrowsingDataRemoverFactory* BrowsingDataRemoverFactory::GetInstance() {
 }
 
 BrowsingDataRemoverFactory::BrowsingDataRemoverFactory()
-    : BrowserStateKeyedServiceFactory(
-          "BrowsingDataRemover",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("BrowsingDataRemover",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
+}
 
 BrowsingDataRemoverFactory::~BrowsingDataRemoverFactory() = default;
 
@@ -45,10 +43,5 @@ BrowsingDataRemoverFactory::BuildServiceInstanceFor(
   // TODO(crbug.com/40940855): the factory should declare the services
   // used by BrowsingDataRemoverImpl and inject them in the constructor.
   return std::make_unique<BrowsingDataRemoverImpl>(
-      ChromeBrowserState::FromBrowserState(context));
-}
-
-web::BrowserState* BrowsingDataRemoverFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
+      ProfileIOS::FromBrowserState(context));
 }

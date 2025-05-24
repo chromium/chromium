@@ -8,7 +8,9 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "net/base/network_isolation_key.h"
 #include "services/network/prefetch_url_loader_client.h"
@@ -19,13 +21,40 @@ namespace network {
 namespace {
 
 size_t GetMaxSize() {
-  int supplied_size = features::kNetworkContextPrefetchMaxLoaders.Get();
-  return static_cast<size_t>(std::max(supplied_size, 1));
+  // How many prefetches should be cached before old ones are evicted. This
+  // provides rough control over the overall memory used by prefetches.
+  return static_cast<size_t>(std::max(
+      base::GetFieldTrialParamByFeatureAsInt(features::kNetworkContextPrefetch,
+                                             /*name=*/"max_loaders",
+                                             /*default_value=*/10),
+      1));
+}
+
+base::TimeDelta GetEraseGraceTime() {
+  // When "NetworkContextPrefetchUseMatches" is disabled, how long to leave a
+  // matched cache entry alive before deleting it. This corresponds to the
+  // expected maximum time it will take for a request to reach the HttpCache
+  // once it has been initiated. Since it may be delayed by the
+  // ResourceScheduler, give the delay is quite large.
+  //
+  // Why not shorter: the request from the render process may be delayed by the
+  // ResourceScheduler.
+  //
+  // Why not longer: If the prefetch has not yet received response headers, it
+  // has an exclusive cache lock. The real request from the render process
+  // cannot proceed until the cache lock is released. If the response turns out
+  // to be uncacheable, then this time is pure waste.
+  return std::max(base::Seconds(0),
+                  base::GetFieldTrialParamByFeatureAsTimeDelta(
+                      features::kNetworkContextPrefetch,
+                      /*name=*/"erase_grace_time",
+                      /*default_value=*/base::Seconds(1)));
 }
 
 }  // namespace
 
-PrefetchCache::PrefetchCache() : max_size_(GetMaxSize()) {}
+PrefetchCache::PrefetchCache()
+    : max_size_(GetMaxSize()), erase_grace_time_(GetEraseGraceTime()) {}
 
 PrefetchCache::~PrefetchCache() = default;
 
@@ -84,7 +113,7 @@ PrefetchURLLoaderClient* PrefetchCache::Emplace(
 PrefetchURLLoaderClient* PrefetchCache::Lookup(
     const net::NetworkIsolationKey& nik,
     const GURL& url) {
-  const auto it = map_.find(KeyType(nik, url));
+  const auto it = FindInMap(nik, url);
   return it == map_.end() ? nullptr : it->second;
 }
 
@@ -102,14 +131,22 @@ void PrefetchCache::Consume(PrefetchURLLoaderClient* client) {
 }
 
 void PrefetchCache::Erase(PrefetchURLLoaderClient* client) {
-  const auto it =
-      map_.find(KeyType(client->network_isolation_key(), client->url()));
+  const auto it = FindInMap(client->network_isolation_key(), client->url());
   if (it != map_.end()) {
     CHECK_EQ(it->second, client);
     map_.erase(it);
     client->RemoveFromList();
   }
   EraseFromStorage(client);
+}
+
+void PrefetchCache::DelayedErase(PrefetchURLLoaderClient* client) {
+  const auto now = base::TimeTicks::Now();
+  PendingErasure pending_erasure = {client->network_isolation_key(),
+                                    client->url(), now + erase_grace_time_};
+  CHECK(Lookup(pending_erasure.nik, pending_erasure.url));
+  delayed_erase_queue_.push(std::move(pending_erasure));
+  SchedulePendingErases(now);
 }
 
 void PrefetchCache::OnTimer() {
@@ -123,6 +160,23 @@ void PrefetchCache::OnTimer() {
   }
 }
 
+void PrefetchCache::DoDelayedErases() {
+  const auto now = base::TimeTicks::Now();
+  while (!delayed_erase_queue_.empty() &&
+         delayed_erase_queue_.front().erase_time <= now) {
+    PendingErasure pending = std::move(delayed_erase_queue_.front());
+    delayed_erase_queue_.pop();
+    PrefetchURLLoaderClient* to_erase = Lookup(pending.nik, pending.url);
+    if (to_erase) {
+      RemoveFromCache(to_erase);
+      EraseFromStorage(to_erase);
+    }
+  }
+  if (!delayed_erase_queue_.empty()) {
+    SchedulePendingErases(now);
+  }
+}
+
 void PrefetchCache::EraseOldest() {
   CHECK(!list_.empty());
   PrefetchURLLoaderClient* oldest = list_.head()->value();
@@ -133,8 +187,7 @@ void PrefetchCache::EraseOldest() {
 }
 
 void PrefetchCache::RemoveFromCache(PrefetchURLLoaderClient* client) {
-  const auto it =
-      map_.find(KeyType(client->network_isolation_key(), client->url()));
+  const auto it = FindInMap(client->network_isolation_key(), client->url());
   CHECK(it != map_.end());
   CHECK_EQ(it->second, client);
   map_.erase(it);
@@ -150,12 +203,30 @@ void PrefetchCache::EraseFromStorage(PrefetchURLLoaderClient* client) {
 }
 
 void PrefetchCache::StartTimer(base::TimeTicks now) {
+  CHECK(!list_.empty());
   auto next_expiry = list_.head()->value()->expiry_time();
   // It's safe to use base::Unretained() as destroying `this` will destroy
   // `expiry_timer_`, preventing the callback being called.
   expiry_timer_.Start(
       FROM_HERE, std::max(base::Seconds(0), next_expiry - now),
       base::BindOnce(&PrefetchCache::OnTimer, base::Unretained(this)));
+}
+
+void PrefetchCache::SchedulePendingErases(base::TimeTicks now) {
+  CHECK(!delayed_erase_queue_.empty());
+  const auto next_expiry = delayed_erase_queue_.front().erase_time;
+  const auto delay = std::max(base::Seconds(0), next_expiry - now);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PrefetchCache::DoDelayedErases,
+                     weak_factory_.GetWeakPtr()),
+      delay);
+}
+
+PrefetchCache::MapType::iterator PrefetchCache::FindInMap(
+    const net::NetworkIsolationKey& nik,
+    const GURL& url) {
+  return map_.find(KeyType(nik, url));
 }
 
 }  // namespace network

@@ -6,7 +6,7 @@ import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_reso
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {BatteryChargeStatus, BatteryChargeStatusObserverRemote, BatteryHealth, BatteryHealthObserverRemote, BatteryInfo, CpuUsage, CpuUsageObserverRemote, MemoryUsage, MemoryUsageObserverRemote, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
+import type {BatteryChargeStatus, BatteryChargeStatusObserverRemote, BatteryHealth, BatteryHealthObserverRemote, BatteryInfo, CpuUsage, CpuUsageObserverRemote, MemoryUsage, MemoryUsageObserverRemote, SystemDataProviderInterface, SystemInfo} from './system_data_provider.mojom-webui.js';
 
 /**
  * @fileoverview
@@ -144,7 +144,7 @@ export class FakeSystemDataProvider implements FakeSystemDataProviderInterface {
 
   // Implements SystemDataProviderInterface.ObserveMemoryUsage.
   observeMemoryUsage(remote: MemoryUsageObserverRemote): void {
-    this.observeCpuUsagePromise = this.observe(
+    this.observeMemoryUsagePromise = this.observe(
         'MemoryUsageObserver_onMemoryUsageUpdated', (memoryUsage) => {
           remote.onMemoryUsageUpdated(
               /** @type {!MemoryUsage} */ (memoryUsage));
@@ -153,11 +153,11 @@ export class FakeSystemDataProvider implements FakeSystemDataProviderInterface {
 
   // Returns the promise for the most recent memory usage observation.
   getObserveMemoryUsagePromiseForTesting(): Promise<void> {
-    assert(this.observeCpuUsagePromise);
-    return this.observeCpuUsagePromise;
+    assert(this.observeMemoryUsagePromise);
+    return this.observeMemoryUsagePromise;
   }
 
-  // Sets the values that will observed from ObserveCpuUsage.
+  // Sets the values that will observed from ObserveMemoryUsage.
   setFakeMemoryUsage(memoryUsageList: MemoryUsage[]): void {
     this.observables.setObservableData(
         'MemoryUsageObserver_onMemoryUsageUpdated', memoryUsageList);

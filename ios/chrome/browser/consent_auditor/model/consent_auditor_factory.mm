@@ -16,7 +16,6 @@
 #import "components/consent_auditor/consent_auditor_impl.h"
 #import "components/consent_auditor/consent_sync_bridge.h"
 #import "components/consent_auditor/consent_sync_bridge_impl.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
 #import "components/sync/model/data_type_store_service.h"
@@ -30,15 +29,8 @@
 // static
 consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfile(
     ProfileIOS* profile) {
-  return static_cast<consent_auditor::ConsentAuditor*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
-// static
-consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return static_cast<consent_auditor::ConsentAuditor*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<consent_auditor::ConsentAuditor>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -48,9 +40,7 @@ ConsentAuditorFactory* ConsentAuditorFactory::GetInstance() {
 }
 
 ConsentAuditorFactory::ConsentAuditorFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ConsentAuditor",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("ConsentAuditor") {
   DependsOn(DataTypeStoreServiceFactory::GetInstance());
 }
 
@@ -73,9 +63,9 @@ std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
       std::make_unique<consent_auditor::ConsentSyncBridgeImpl>(
           std::move(store_factory), std::move(change_processor));
 
+  // The locale doesn't change at runtime, so we can pass it directly.
   return std::make_unique<consent_auditor::ConsentAuditorImpl>(
       std::move(consent_sync_bridge),
-      // The locale doesn't change at runtime, so we can pass it directly.
       GetApplicationContext()->GetApplicationLocale(),
       base::DefaultClock::GetInstance());
 }

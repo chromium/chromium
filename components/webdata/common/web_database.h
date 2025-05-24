@@ -15,6 +15,7 @@
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
+#include "sql/transaction.h"
 
 namespace os_crypt_async {
 class Encryptor;
@@ -23,17 +24,14 @@ class Encryptor;
 // This class manages a SQLite database that stores various web page meta data.
 class WEBDATA_EXPORT WebDatabase {
  public:
-  enum State {
-    COMMIT_NOT_NEEDED,
-    COMMIT_NEEDED
-  };
+  enum State { COMMIT_NOT_NEEDED, COMMIT_NEEDED };
 
   // Current database version number.
   //
   // Note: when changing the current version number, corresponding changes must
   // happen in the unit tests, and new migration test added to
   // `WebDatabaseMigrationTest`.
-  static constexpr int kCurrentVersionNumber = 134;
+  static constexpr int kCurrentVersionNumber = 141;
 
   // To support users who are upgrading from older versions of Chrome, we enable
   // migrating from any database version newer than `kDeprecatedVersionNumber`.
@@ -96,6 +94,16 @@ class WEBDATA_EXPORT WebDatabase {
   void BeginTransaction();
   void CommitTransaction();
 
+  // Acquire a scoped transaction. The `AcquireTransaction` is meant to replace
+  // the `BeginTransaction` / `CommitTransaction` transaction management and
+  // both are exclusive.
+  //
+  // Returns an sql::Transaction which automatically rolls back uncommitted
+  // transactions when going out of scope. If this method fails, no transaction
+  // is returned but the database will still execute statements, but they will
+  // be enclosed in their own implicit transaction.
+  std::unique_ptr<sql::Transaction> AcquireTransaction();
+
   std::string GetDiagnosticInfo(int extended_error, sql::Statement* statement);
 
   // Exposed for testing only.
@@ -112,8 +120,7 @@ class WEBDATA_EXPORT WebDatabase {
   // Implementations may set |*update_compatible_version| to true if
   // the compatible version should be changed to |version|.
   // Implementations should otherwise not modify this parameter.
-  bool MigrateToVersion(int version,
-                        bool* update_compatible_version);
+  bool MigrateToVersion(int version, bool* update_compatible_version);
 
   bool MigrateToVersion58DropWebAppsAndIntents();
   bool MigrateToVersion79DropLoginsTable();
@@ -121,6 +128,11 @@ class WEBDATA_EXPORT WebDatabase {
 
   sql::Database db_;
   sql::MetaTable meta_table_;
+
+  // Sets when the scoped transaction should be used instead of the
+  // BeginTransaction/CommitTransaction transaction APIs. Sets to true when
+  // part of the 'SqlScopedTransactionWebDatabase' Finch experiment.
+  const bool use_scoped_transaction_;
 
   // Map of all the different tables that have been added to this
   // object. Non-owning.

@@ -10,8 +10,8 @@ import java.util.UUID;
 
 /** Object to hold a client identifier for an offline page. */
 public class ClientId {
-    private String mNamespace;
-    private String mId;
+    private final String mNamespace;
+    private final String mId;
 
     public ClientId(String namespace, String id) {
         mNamespace = namespace;

@@ -11,11 +11,12 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "third_party/webrtc/rtc_base/system_time.h"
 
-namespace rtc {
+namespace webrtc {
 
 int64_t SystemTimeNanos() {
   return (base::TimeTicks::Now() - base::TimeTicks()).InNanoseconds();
 }
 
-}  // namespace rtc
+}  // namespace webrtc

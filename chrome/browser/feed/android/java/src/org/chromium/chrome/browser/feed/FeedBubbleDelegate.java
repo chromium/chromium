@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.feed;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.feature_engagement.Tracker;
 
 /** Delegate to provide necessary checks for bubble (IPH) triggering in feeds. */
+@NullMarked
 public interface FeedBubbleDelegate {
     /** Gets the feature engagement tracker. */
     Tracker getFeatureEngagementTracker();
@@ -21,7 +23,7 @@ public interface FeedBubbleDelegate {
      * Determines whether the position of the feed header in the NTP container is suitable for
      * showing the IPH.
      */
-    boolean isFeedHeaderPositionInContainerSuitableForIPH(float headerMaxPosFraction);
+    boolean isFeedHeaderPositionInContainerSuitableForIph(float headerMaxPosFraction);
 
     /** Returns the current time in milliseconds. */
     long getCurrentTimeMs();

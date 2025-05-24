@@ -18,8 +18,6 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
 
 namespace gpu {
 class ClientSharedImageInterface;

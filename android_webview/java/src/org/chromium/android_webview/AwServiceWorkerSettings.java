@@ -12,6 +12,8 @@ import android.webkit.WebSettings;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Set;
@@ -19,10 +21,11 @@ import java.util.Set;
 /**
  * Stores Android WebView Service Worker specific settings.
  *
- * Methods in this class can be called from any thread, including threads created by
- * the client of WebView.
+ * <p>Methods in this class can be called from any thread, including threads created by the client
+ * of WebView.
  */
 @Lifetime.Profile
+@NullMarked
 public class AwServiceWorkerSettings {
     // Must be maximum 20 characters, hence the abbreviation
     private static final String TAG = "AwSWSettings";
@@ -42,6 +45,7 @@ public class AwServiceWorkerSettings {
 
     // Computed on construction.AwServiceWorkerSettingsTest
     private final boolean mHasInternetPermission;
+    private boolean mIncludeCookiesOnIntercept;
 
     public AwServiceWorkerSettings(Context context, AwBrowserContext browserContext) {
         mBrowserContext = browserContext;
@@ -154,7 +158,7 @@ public class AwServiceWorkerSettings {
      * See {@link
      * androidx.webkit.ServiceWorkerWebSettingsCompat#setRequestedWithHeaderOriginAllowList}
      */
-    public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
+    public void setRequestedWithHeaderOriginAllowList(@Nullable Set<String> allowedOriginRules) {
         // Even though clients shouldn't pass in null, it's better to guard against it
         allowedOriginRules =
                 allowedOriginRules != null ? allowedOriginRules : Collections.emptySet();
@@ -179,6 +183,22 @@ public class AwServiceWorkerSettings {
     public Set<String> getRequestedWithHeaderOriginAllowList() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mRequestedWithHeaderAllowedOriginRules;
+        }
+    }
+
+    /**
+     * Set whether the shouldInterceptRequest API should include request cookies and accept response
+     * cookies.
+     */
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        synchronized (mAwServiceWorkerSettingsLock) {
+            this.mIncludeCookiesOnIntercept = includeCookiesOnIntercept;
+        }
+    }
+
+    public boolean getIncludeCookiesOnIntercept() {
+        synchronized (mAwServiceWorkerSettingsLock) {
+            return mIncludeCookiesOnIntercept;
         }
     }
 }

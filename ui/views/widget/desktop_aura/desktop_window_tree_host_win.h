@@ -13,6 +13,8 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/display/display.h"
+#include "ui/gfx/win/wuc_backdrop.h"
 #include "ui/views/views_export.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #include "ui/views/win/hwnd_message_handler_delegate.h"
@@ -98,6 +100,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void OnNativeWidgetCreated(const Widget::InitParams& params) override;
   void OnActiveWindowChanged(bool active) override;
   void OnWidgetInitDone() override;
+  void OnWidgetThemeChanged(
+      ui::ColorProviderKey::ColorMode color_mode) override;
   std::unique_ptr<corewm::Tooltip> CreateTooltip() override;
   std::unique_ptr<aura::client::DragDropClient> CreateDragDropClient() override;
   void Close() override;
@@ -208,14 +212,13 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   bool CanMaximize() const override;
   bool CanMinimize() const override;
   bool CanActivate() const override;
-  bool WantsMouseEventsWhenInactive() const override;
   bool WidgetSizeIsClientSize() const override;
   bool IsModal() const override;
   int GetInitialShowState() const override;
   int GetNonClientComponent(const gfx::Point& point) const override;
-  void GetWindowMask(const gfx::Size& size, SkPath* path) override;
+  void GetWindowMask(const gfx::Size& size_px, SkPath* path) override;
   bool GetClientAreaInsets(gfx::Insets* insets,
-                           HMONITOR monitor) const override;
+                           int frame_thickness) const override;
   bool GetDwmFrameInsetsInPixels(gfx::Insets* insets) const override;
   void GetMinMaxSize(gfx::Size* min_size, gfx::Size* max_size) const override;
   gfx::Size GetRootViewSize() const override;
@@ -227,6 +230,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleCancelMode() override;
   void HandleCaptureLost() override;
   void HandleClose() override;
+  void HandleRequestClose() override;
   bool HandleCommand(int command) override;
   void HandleAccelerator(const ui::Accelerator& accelerator) override;
   void HandleCreate() override;
@@ -236,6 +240,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleDisplayChange() override;
   void HandleBeginWMSizeMove() override;
   void HandleEndWMSizeMove() override;
+  void HandleBeginUserResize() override;
+  void HandleEndUserResize() override;
   void HandleMove() override;
   void HandleWorkAreaChanged() override;
   void HandleVisibilityChanged(bool visible) override;
@@ -290,10 +296,17 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // Call Windows API to update the window display affinity.
   void UpdateAllowScreenshots();
 
-  HMONITOR last_monitor_from_window_ = nullptr;
+  // Creates a Windows.Ui.Composition backdrop and attaches it to the hwnd if
+  // the window does not have a redirection bitmap and Chromium is responsible
+  // for drawing the frame. Also resets the backdrop if the frame mode is
+  // changed to be system drawn.
+  void UpdateWUCBackdrop();
 
   std::unique_ptr<HWNDMessageHandler> message_handler_;
   std::unique_ptr<aura::client::FocusClient> focus_client_;
+
+  // Used to track monitor changes.
+  display::Display last_nearest_display_;
 
   // TODO(beng): Consider providing an interface to DesktopNativeWidgetAura
   //             instead of providing this route back to Widget.
@@ -312,6 +325,8 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
 
   // Windows are enlarged to be at least 64x64 pixels, so keep track of the
   // extra added here.
+  // TODO(crbug.com/401996981): This is likely no longer necessary and should be
+  // removed.
   gfx::Vector2d window_enlargement_;
 
   // Whether the window close should be converted to a hide, and then actually
@@ -336,6 +351,9 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   // True if the window is allow to take screenshots, by default is true.
   bool allow_screenshots_ = true;
 
+  // A Windows.Ui.Composition visual tree that represents the window backdrop.
+  std::unique_ptr<gfx::WUCBackdrop> wuc_backdrop_;
+
   // Visibility of the cursor. On Windows we can have multiple root windows and
   // the implementation of ::ShowCursor() is based on a counter, so making this
   // member static ensures that ::ShowCursor() is always called exactly once
@@ -346,10 +364,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   std::unique_ptr<ui::KeyboardHook> keyboard_hook_;
 
   std::unique_ptr<wm::ScopedTooltipDisabler> tooltip_disabler_;
-
-  // Indicates if current window will receive mouse events when should not
-  // become activated.
-  bool wants_mouse_events_when_inactive_ = false;
 
   // Set to true when DesktopDragDropClientWin starts a touch-initiated drag
   // drop and false when it finishes. While in touch drag, if touch move events

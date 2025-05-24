@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>No crash when parsing ident() in @position-try</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#ident">
+<link rel="help" href="https://github.com/w3c/csswg-drafts/issues/12219">
+<!-- Note that this test is not worth upstreaming. When Issue 12219 is resolved,
+     it should be replaced by a behavioral test in external/wpt. -->
+<style>
+  @position-try ident("--p") {}
+  @position-try ident("--p" sign(1px)) {}
+  @position-try ident("--p" sign(10%)) {}
+  @position-try ident("--p" sibling-index()) {}
+  @position-try ident("--p" calc(42 * sign(1em - 1px)) {}
+</style>

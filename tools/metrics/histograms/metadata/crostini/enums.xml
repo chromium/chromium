@@ -173,6 +173,15 @@ chromium-metrics-reviews@google.com.
   <int value="77" label="SIGNAL_NOT_CONNECTED"/>
   <int value="78" label="INSTALL_TERMINA_CANCELLED"/>
   <int value="79" label="START_TIMED_OUT"/>
+  <int value="80" label="DISK_IMAGE_NO_RESPONSE"/>
+  <int value="81" label="DISK_IMAGE_IN_PROGRESS"/>
+  <int value="82" label="DISK_IMAGE_FAILED"/>
+  <int value="83" label="DISK_IMAGE_FAILED_NO_SPACE"/>
+  <int value="84" label="DISK_IMAGE_CANCELLED"/>
+  <int value="85" label="START_BAGUETTE_VM_TIMED_OUT"/>
+  <int value="86" label="UNINSTALL_BAGUETTE_FAILED"/>
+  <int value="87" label="INSTALL_BAGUETTE_CANCELLED"/>
+  <int value="88" label="DOWNLOAD_BAGUETTE_FAILED"/>
 </enum>
 
 <enum name="CrostiniSettingsEvent">

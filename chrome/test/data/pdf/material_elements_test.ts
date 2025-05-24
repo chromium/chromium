@@ -19,7 +19,7 @@ const tests = [
    */
   function testPageSelectorChange() {
     document.body.innerHTML = '';
-    const selector = document.createElement('viewer-page-selector')!;
+    const selector = document.createElement('viewer-page-selector');
     selector.docLength = 1234;
     document.body.appendChild(selector);
 
@@ -65,7 +65,7 @@ const tests = [
     selector.docLength = 1234;
     document.body.appendChild(selector);
     chrome.test.assertEq(
-        '1234', selector.shadowRoot!.querySelector('#pagelength')!.textContent);
+        '1234', selector.shadowRoot.querySelector('#pagelength')!.textContent);
     chrome.test.assertEq(
         '4', selector.style.getPropertyValue('--page-length-digits'));
     chrome.test.succeed();
@@ -92,7 +92,7 @@ const tests = [
     await microtasksFinished();
 
     const rootBookmarks =
-        bookmarkContent.shadowRoot!.querySelectorAll('viewer-bookmark');
+        bookmarkContent.shadowRoot.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(1, rootBookmarks.length, 'one root bookmark');
     const rootBookmark = rootBookmarks[0]!;
     rootBookmark.$.expand.click();
@@ -100,7 +100,7 @@ const tests = [
     await microtasksFinished();
 
     const subBookmarks =
-        rootBookmark.shadowRoot!.querySelectorAll('viewer-bookmark');
+        rootBookmark.shadowRoot.querySelectorAll('viewer-bookmark');
     chrome.test.assertEq(2, subBookmarks.length, 'two sub bookmarks');
     chrome.test.assertEq(
         1, subBookmarks[1]!.depth, 'sub bookmark depth correct');

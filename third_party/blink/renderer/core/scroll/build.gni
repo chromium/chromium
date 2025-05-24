@@ -19,8 +19,6 @@ blink_core_sources_scroll = [
   "scroll_into_view_util.h",
   "scroll_snapshot_client.cc",
   "scroll_snapshot_client.h",
-  "scroll_start_targets.cc",
-  "scroll_start_targets.h",
   "scroll_types.h",
   "scrollable_area.cc",
   "scrollable_area.h",
@@ -36,8 +34,6 @@ blink_core_sources_scroll = [
   "scrollbar_theme_overlay_mobile.cc",
   "scrollbar_theme_overlay_mobile.h",
   "scrollbar_theme_overlay_mock.h",
-  "smooth_scroll_sequencer.cc",
-  "smooth_scroll_sequencer.h",
   "snap_event.cc",
   "snap_event.h",
 ]

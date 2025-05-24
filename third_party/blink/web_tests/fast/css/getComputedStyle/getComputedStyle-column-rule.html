@@ -21,7 +21,7 @@ computedStyle = window.getComputedStyle(e, null);
 shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-column-rule')", '1px dotted rgb(0, 0, 0)');
 
 e.style.webkitColumnRule="10px red";
-shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-column-rule')", '0px none rgb(255, 0, 0)');
+shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-column-rule')", '0px rgb(255, 0, 0)');
 
 e.style.webkitColumnRuleWidth="medium"
 e.style.webkitColumnRuleStyle="dashed"
@@ -29,7 +29,7 @@ shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-column-rule')", '
 
 e.style.webkitColumnRule="10px dotted blue"
 e.style.webkitColumnRuleStyle="none";
-shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-column-rule')", '0px none rgb(0, 0, 255)');
+shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-column-rule')", '0px rgb(0, 0, 255)');
 
 e.style.webkitColumnRuleStyle="hidden";
 shouldBeEqualToString("computedStyle.getPropertyValue('-webkit-column-rule')", '0px hidden rgb(0, 0, 255)');

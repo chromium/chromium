@@ -10,11 +10,11 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 
 namespace blink {
 
@@ -199,8 +199,7 @@ TEST_F(EditingUtilitiesTest,
       "345</div>");
   const auto& sample = *GetElementById("sample");
   const auto& text_012 = *To<Text>(sample.firstChild());
-  const auto& input =
-      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
+  const auto& input = ToTextControl(*QuerySelector("input"));
   const auto& inner_editor = *input.InnerEditorElement();
   const auto& text_abc = *To<Text>(inner_editor.firstChild());
 
@@ -233,8 +232,7 @@ TEST_F(EditingUtilitiesTest,
       "345</div>");
   const auto& sample = *GetElementById("sample");
   const auto& text_012 = *To<Text>(sample.firstChild());
-  const auto& input =
-      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
+  const auto& input = ToTextControl(*QuerySelector("input"));
   const auto& inner_editor = *input.InnerEditorElement();
   const auto& text_abc = *To<Text>(inner_editor.firstChild());
 
@@ -268,8 +266,7 @@ TEST_F(EditingUtilitiesTest,
       "345</div>");
   const auto& sample = *GetElementById("sample");
   const auto& text_012 = *To<Text>(sample.firstChild());
-  const auto& input =
-      ToTextControl(*GetDocument().QuerySelector(AtomicString("input")));
+  const auto& input = ToTextControl(*QuerySelector("input"));
   const auto& inner_editor = *input.InnerEditorElement();
   const auto& text_abc = *To<Text>(inner_editor.firstChild());
 
@@ -991,7 +988,7 @@ TEST_F(EditingUtilitiesTest, previousPositionOf_Backspace_TextTransform) {
 
 TEST_F(EditingUtilitiesTest, IsTabHTMLSpanElementOnDisplayNone) {
   SetBodyContent("<span style=\"display:none\">\t</span>");
-  const Node* const node = GetDocument().QuerySelector(AtomicString("span"));
+  const Node* const node = QuerySelector("span");
   EXPECT_EQ(false, IsTabHTMLSpanElement(node));
 }
 

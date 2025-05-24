@@ -7,7 +7,7 @@
 FakeClipboardRecentContent::FakeClipboardRecentContent()
     : content_age_(base::TimeDelta::Max()), suppress_content_(false) {}
 
-FakeClipboardRecentContent::~FakeClipboardRecentContent() {}
+FakeClipboardRecentContent::~FakeClipboardRecentContent() = default;
 
 std::optional<GURL> FakeClipboardRecentContent::GetRecentURLFromClipboard() {
   if (suppress_content_)

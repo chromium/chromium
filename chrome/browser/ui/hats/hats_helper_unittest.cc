@@ -5,18 +5,34 @@
 #include "chrome/browser/ui/hats/hats_helper.h"
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/page_info/merchant_trust_service_factory.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/mock_trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/page_info/core/merchant_trust_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+
+namespace {}  // namespace
+
+class MockMerchantTrustService : public page_info::MerchantTrustService {
+ public:
+  MockMerchantTrustService()
+      : MerchantTrustService(nullptr, nullptr, false, nullptr) {}
+  MOCK_METHOD(void, MaybeShowEvaluationSurvey, (), (override));
+};
+
+std::unique_ptr<KeyedService> BuildMockMerchantTrustService(
+    content::BrowserContext* context) {
+  return std::make_unique<::testing::NiceMock<MockMerchantTrustService>>();
+}
 
 class HatsHelperTest : public testing::Test {
  public:
@@ -33,6 +49,10 @@ class HatsHelperTest : public testing::Test {
                 profile(),
                 base::BindRepeating(&BuildMockTrustSafetySentimentService)));
 
+    mock_merchant_trust_service_ = static_cast<MockMerchantTrustService*>(
+        MerchantTrustServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+            profile(), base::BindRepeating(&BuildMockMerchantTrustService)));
+
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     HatsHelper::CreateForWebContents(web_contents_.get());
@@ -43,6 +63,9 @@ class HatsHelperTest : public testing::Test {
   MockHatsService* mock_hats_service() { return mock_hats_service_; }
   MockTrustSafetySentimentService* mock_sentiment_service() {
     return mock_sentiment_service_;
+  }
+  MockMerchantTrustService* mock_merchant_trust_service() {
+    return mock_merchant_trust_service_;
   }
   content::WebContentsTester* test_web_contents() {
     return content::WebContentsTester::For(web_contents_.get());
@@ -59,6 +82,7 @@ class HatsHelperTest : public testing::Test {
   std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<MockHatsService> mock_hats_service_;
   raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
+  raw_ptr<MockMerchantTrustService> mock_merchant_trust_service_;
 };
 
 TEST_F(HatsHelperTest, SentimentServiceInformed) {
@@ -70,6 +94,18 @@ TEST_F(HatsHelperTest, SentimentServiceInformed) {
 
   // Navigations to non-NTP pages should not inform the service.
   EXPECT_CALL(*mock_sentiment_service(), OpenedNewTabPage()).Times(0);
+  test_web_contents()->NavigateAndCommit(GURL("https://unrelated.com"));
+}
+
+TEST_F(HatsHelperTest, MerchantTrustSurveyAttempted) {
+  // Check that the helper attempts to show the survey.
+  EXPECT_CALL(*mock_merchant_trust_service(), MaybeShowEvaluationSurvey());
+  test_web_contents()->NavigateAndCommit(GURL(chrome::kChromeUINewTabURL));
+  testing::Mock::VerifyAndClearExpectations(mock_merchant_trust_service());
+
+  // Navigations to non-NTP pages should not inform the service.
+  EXPECT_CALL(*mock_merchant_trust_service(), MaybeShowEvaluationSurvey())
+      .Times(0);
   test_web_contents()->NavigateAndCommit(GURL("https://unrelated.com"));
 }
 

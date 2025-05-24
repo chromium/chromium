@@ -12,7 +12,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -21,7 +20,8 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "components/renderer_context_menu/render_view_context_menu_proxy.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/intent.h"
@@ -33,10 +33,6 @@
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/image/image_skia_operations.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#endif
 
 namespace arc {
 
@@ -109,10 +105,8 @@ void StartSmartSelectionActionMenu::InitMenu(
               weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/40808069): Take metrics in Lacros as well.
+
   base::RecordAction(base::UserMetricsAction("Arc.SmartTextSelection.Request"));
-#endif
 
   // Add placeholder items.
   for (size_t i = 0; i < kMaxMainMenuCommands; ++i) {

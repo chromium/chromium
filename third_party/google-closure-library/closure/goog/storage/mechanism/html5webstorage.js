@@ -12,8 +12,8 @@
 goog.provide('goog.storage.mechanism.HTML5WebStorage');
 
 goog.require('goog.asserts');
+goog.require('goog.iter');
 goog.require('goog.iter.Iterator');
-goog.require('goog.iter.StopIteration');
 goog.require('goog.storage.mechanism.ErrorCode');
 goog.require('goog.storage.mechanism.IterableMechanism');
 
@@ -133,21 +133,25 @@ goog.storage.mechanism.HTML5WebStorage.prototype.__iterator__ = function(
   var i = 0;
   var storage = this.storage_;
   var newIter = new goog.iter.Iterator();
-  newIter.nextValueOrThrow = function() {
+  /**
+   * @return {!IIterableResult<string>}
+   * @override
+   */
+  newIter.next = function() {
     'use strict';
     if (i >= storage.length) {
-      throw goog.iter.StopIteration;
+      return goog.iter.ES6_ITERATOR_DONE;
     }
     var key = goog.asserts.assertString(storage.key(i++));
     if (opt_keys) {
-      return key;
+      return goog.iter.createEs6IteratorYield(key);
     }
     var value = storage.getItem(key);
     // The value must exist and be a string, otherwise it is a storage error.
     if (typeof value !== 'string') {
       throw goog.storage.mechanism.ErrorCode.INVALID_VALUE;
     }
-    return value;
+    return goog.iter.createEs6IteratorYield(value);
   };
 
   return newIter;

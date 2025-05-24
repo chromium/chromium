@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
-#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -21,20 +20,6 @@
 
 namespace blink {
 
-namespace {
-
-gfx::QuadF GetQuadForTraceEvent(const LocalFrameView& frame_view,
-                                const CullRect& cull_rect) {
-  gfx::QuadF quad(gfx::RectF(cull_rect.Rect()));
-  if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
-    quad += gfx::Vector2dF(owner->PhysicalContentBoxOffset());
-    owner->LocalToAbsoluteQuad(quad, kTraverseDocumentBoundaries);
-  }
-  return quad;
-}
-
-}  // namespace
-
 bool FramePainter::in_paint_contents_ = false;
 
 void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
@@ -43,7 +28,6 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
   if (GetFrameView().ShouldThrottleRendering() || !document->IsActive())
     return;
 
-  GetFrameView().NotifyPageThatContentAreaWillPaint();
   ENTER_EMBEDDER_STATE(document->GetAgent().isolate(),
                        &GetFrameView().GetFrame(), BlinkState::PAINT);
   LayoutView* layout_view = GetFrameView().GetLayoutView();
@@ -63,13 +47,6 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
             DocumentLifecycle::kPrePaintClean);
 
   FramePaintTiming frame_paint_timing(context, &GetFrameView().GetFrame());
-
-  DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
-      "devtools.timeline,rail", "Paint", inspector_paint_event::Data,
-      &GetFrameView().GetFrame(), layout_view,
-      GetQuadForTraceEvent(GetFrameView(),
-                           layout_view->FirstFragment().GetCullRect()),
-      /*layer_id=*/0);
 
   bool is_top_level_painter = !in_paint_contents_;
   in_paint_contents_ = true;

@@ -89,7 +89,7 @@ class FastPairDataEncryptorImplTest : public testing::TestWithParam<TestParam> {
                      weak_ptr_factory_.GetWeakPtr()));
   }
 
-  void SuccessfulSetUp(const std::vector<uint8_t> account_key) {
+  void SuccessfulSetUp(const std::vector<uint8_t>& account_key) {
     repository_ = std::make_unique<FakeFastPairRepository>();
     nearby::fastpair::Device metadata;
 

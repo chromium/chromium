@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.creator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 /** Properties used for the CreatorModel */
+@NullMarked
 public class CreatorProperties {
     public static final WritableObjectPropertyKey<byte[]> WEB_FEED_ID_KEY =
             new WritableObjectPropertyKey<>();

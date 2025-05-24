@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.R;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsPromoScreenCoordinator.Delegate;
@@ -28,9 +29,9 @@ import org.chromium.ui.widget.ButtonCompat;
 
 /**
  * This class is responsible for pushing updates to the Restore Tabs promo screen view. These
- * updates are pulled from the RestoreTabsProperties when a notification of an update is
- * received.
+ * updates are pulled from the RestoreTabsProperties when a notification of an update is received.
  */
+@NullMarked
 public class RestoreTabsPromoScreenViewBinder {
     static class ViewHolder {
         final View mContentView;
@@ -90,26 +91,12 @@ public class RestoreTabsPromoScreenViewBinder {
             getRestoreTabsButton(view)
                     .setOnClickListener(
                             (v) -> {
-                                var context = view.mContentView.getContext();
-                                String restoreDescription =
-                                        context.getString(
-                                                R.string
-                                                        .restore_tabs_open_tabs_button_clicked_description);
-                                getRestoreTabsButton(view)
-                                        .announceForAccessibility(restoreDescription);
                                 delegate.onAllTabsChosen();
                             });
 
             getReviewTabsButton(view)
                     .setOnClickListener(
                             (v) -> {
-                                var context = view.mContentView.getContext();
-                                String reviewDescription =
-                                        context.getString(
-                                                R.string
-                                                        .restore_tabs_promo_sheet_review_tabs_button_clicked_description);
-                                getReviewTabsButton(view)
-                                        .announceForAccessibility(reviewDescription);
                                 delegate.onReviewTabsChosen();
                             });
         } else if (propertyKey == SELECTED_DEVICE) {

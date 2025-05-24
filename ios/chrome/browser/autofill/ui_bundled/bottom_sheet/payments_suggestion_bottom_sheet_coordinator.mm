@@ -167,12 +167,24 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 
 - (void)primaryButtonTappedForCard:(CreditCardData*)creditCardData
                            atIndex:(NSInteger)index {
+  if (_dismissing) {
+    // Do not handle an action if the view controller is already being
+    // dismissed. Only one action is allowed on the sheet.
+    return;
+  }
+  // Disable user interactions on the root view of the view controller so any
+  // further user action isn't allowed. Only one action is allowed on the sheet.
+  self.viewController.view.userInteractionEnabled = NO;
+
   _dismissing = YES;
   [self.mediator logExitReason:kUsePaymentsSuggestion];
   __weak __typeof(self) weakSelf = self;
   [self.viewController
-      dismissViewControllerAnimated:NO
+      dismissViewControllerAnimated:YES
                          completion:^{
+                           // Dismiss the soft keyboard when done with the
+                           // animation so it doesn't flicker.
+                           [weakSelf dismissSoftKeyboard];
                            [weakSelf didSelectCreditCard:creditCardData
                                                  atIndex:index];
                            [weakSelf.browserCoordinatorCommandsHandler
@@ -207,6 +219,17 @@ using PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion;
 - (void)setInitialVoiceOverFocus {
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.viewController.image);
+}
+
+// Dismisses the soft keyboard. Make sure to only call this when there is an
+// active webstate.
+- (void)dismissSoftKeyboard {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  CHECK(activeWebState, base::NotFatalUntil::M135);
+  if (activeWebState) {
+    [activeWebState->GetView() endEditing:NO];
+  }
 }
 
 @end

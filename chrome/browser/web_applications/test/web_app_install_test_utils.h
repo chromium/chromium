@@ -10,16 +10,12 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
 #include "components/webapps/common/web_app_id.h"
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-#include "components/services/app_service/public/cpp/url_handler_info.h"
-#endif
 
 class GURL;
 class Profile;
@@ -71,13 +67,6 @@ webapps::AppId InstallWebAppWithoutOsIntegration(
     webapps::WebappInstallSource install_source =
         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
-// Synchronously install a web-app-based shortcut for testing.
-webapps::AppId InstallShortcut(Profile* profile,
-                               const std::string& shortcut_name,
-                               const GURL& start_url,
-                               bool create_default_icon = true,
-                               bool is_policy_install = false);
-
 // Synchronously uninstall a web app. May be used in unit tests and browser
 // tests. Emulates a user uninstall - if the web app cannot be uninstalled by
 // the user, then this will fail.
@@ -89,6 +78,15 @@ void UninstallWebApp(Profile* profile,
 // Synchronously uninstall all web apps for the given profile. May be used in
 // unit tests and browser tests. Returns `false` if there was a failure.
 bool UninstallAllWebApps(Profile* profile);
+
+// Fetches the manifest for the given web contents and installs the app that
+// exists there. Unit tests should use this in combination with the
+// FakeWebContentsManager to set the manifest & page state for the current web
+// contents page.
+webapps::AppId InstallForWebContents(
+    Profile* profile,
+    content::WebContents* web_contents,
+    webapps::WebappInstallSource install_surface);
 
 }  // namespace test
 }  // namespace web_app

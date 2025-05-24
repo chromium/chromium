@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ui/base/app_types.h"
@@ -39,7 +40,7 @@ class FakeWMHelper : public exo::WMHelper {
   }
 
  private:
-  std::map<int, aura::Window*> map_;
+  std::map<int, raw_ptr<aura::Window, CtnExperimental>> map_;
 };
 
 }  // namespace

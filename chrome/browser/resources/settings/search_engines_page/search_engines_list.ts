@@ -72,9 +72,6 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
       collapsedEngines:
           {type: Array, computed: 'computeCollapsedEngines_(engines)'},
 
-      /** Used to fix scrolling glitch when list is not top most element. */
-      scrollOffset: Number,
-
       lastFocused_: Object,
 
       listBlurred_: Boolean,
@@ -92,17 +89,17 @@ export class SettingsSearchEnginesListElement extends PolymerElement {
     };
   }
 
-  engines: SearchEngine[];
-  visibleEngines: SearchEngine[];
-  collapsedEngines: SearchEngine[];
-  visibleEnginesSize: number;
-  fixedHeight: boolean;
-  showShortcut: boolean;
-  showQueryUrl: boolean;
-  collapseList: boolean;
-  expandListText: string;
-  private lastFocused_: HTMLElement;
-  private listBlurred_: boolean;
+  declare engines: SearchEngine[];
+  declare visibleEngines: SearchEngine[];
+  declare collapsedEngines: SearchEngine[];
+  declare visibleEnginesSize: number;
+  declare fixedHeight: boolean;
+  declare showShortcut: boolean;
+  declare showQueryUrl: boolean;
+  declare collapseList: boolean;
+  declare expandListText: string;
+  declare private lastFocused_: HTMLElement;
+  declare private listBlurred_: boolean;
 
   private computeVisibleEngines_(engines: SearchEngine[]) {
     if (!engines || !engines.length) {

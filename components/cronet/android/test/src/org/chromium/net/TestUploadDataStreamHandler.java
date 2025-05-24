@@ -17,29 +17,27 @@ import org.jni_zero.NativeMethods;
 import org.chromium.net.impl.CronetUrlRequestContext;
 
 /**
- * A wrapper class on top of the native net::UploadDataStream. This class is
- * used in tests to drive the native UploadDataStream directly.
+ * A wrapper class on top of the native net::UploadDataStream. This class is used in tests to drive
+ * the native UploadDataStream directly.
  */
 @JNINamespace("cronet")
 public final class TestUploadDataStreamHandler {
-    private final CronetTestUtil.NetworkThreadTestConnector mNetworkThreadTestConnector;
     private final CronetEngine mCronetEngine;
     private long mTestUploadDataStreamHandler;
-    private ConditionVariable mWaitInitCalled = new ConditionVariable();
-    private ConditionVariable mWaitInitComplete = new ConditionVariable();
-    private ConditionVariable mWaitReadComplete = new ConditionVariable();
-    private ConditionVariable mWaitResetComplete = new ConditionVariable();
+    private final ConditionVariable mWaitInitCalled = new ConditionVariable();
+    private final ConditionVariable mWaitInitComplete = new ConditionVariable();
+    private final ConditionVariable mWaitReadComplete = new ConditionVariable();
+    private final ConditionVariable mWaitResetComplete = new ConditionVariable();
     // Waits for checkIfInitCallbackInvoked() returns result asynchronously.
-    private ConditionVariable mWaitCheckInit = new ConditionVariable();
+    private final ConditionVariable mWaitCheckInit = new ConditionVariable();
     // Waits for checkIfReadCallbackInvoked() returns result asynchronously.
-    private ConditionVariable mWaitCheckRead = new ConditionVariable();
+    private final ConditionVariable mWaitCheckRead = new ConditionVariable();
     // If true, init completes synchronously.
     private boolean mInitCompletedSynchronously;
     private String mData = "";
 
     public TestUploadDataStreamHandler(Context context, final long uploadDataStream) {
         mCronetEngine = new CronetEngine.Builder(context).build();
-        mNetworkThreadTestConnector = new CronetTestUtil.NetworkThreadTestConnector(mCronetEngine);
         CronetUrlRequestContext requestContext = (CronetUrlRequestContext) mCronetEngine;
         mTestUploadDataStreamHandler =
                 TestUploadDataStreamHandlerJni.get()
@@ -53,7 +51,6 @@ public final class TestUploadDataStreamHandler {
         if (mTestUploadDataStreamHandler != 0) {
             TestUploadDataStreamHandlerJni.get().destroy(mTestUploadDataStreamHandler);
             mTestUploadDataStreamHandler = 0;
-            mNetworkThreadTestConnector.shutdown();
             mCronetEngine.shutdown();
         }
     }

@@ -18,7 +18,7 @@ namespace extensions {
 // A helper class that listen for ExtensionRegistry notifications.
 class TestExtensionRegistryObserver : public ExtensionRegistryObserver {
  public:
-  // If |extension_id| is provided, listens only to events relating to that
+  // If `extension_id` is provided, listens only to events relating to that
   // extension. Otherwise, listens to all events.
   explicit TestExtensionRegistryObserver(ExtensionRegistry* registry);
   TestExtensionRegistryObserver(ExtensionRegistry* registry,

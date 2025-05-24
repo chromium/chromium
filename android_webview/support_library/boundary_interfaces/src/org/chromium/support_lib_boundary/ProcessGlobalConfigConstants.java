@@ -7,12 +7,15 @@ package org.chromium.support_lib_boundary;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.StringDef;
 
+import org.jspecify.annotations.NullMarked;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /** Constants for ProcessGlobalConfig shared between chromium and AndroidX. */
+@NullMarked
 public final class ProcessGlobalConfigConstants {
     private ProcessGlobalConfigConstants() {}
 

@@ -20,8 +20,8 @@ namespace {
 
 bool MatchesPattern(std::u16string_view input, std::string_view pattern_name) {
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
-  base::span<const MatchPatternRef> patterns = GetMatchPatterns(
-      pattern_name, /*language_code=*/std::nullopt, *GetActivePatternFile());
+  base::span<const MatchPatternRef> patterns =
+      GetMatchPatterns(pattern_name, LanguageCode(""), *GetActivePatternFile());
   return std::ranges::any_of(patterns, [&](MatchPatternRef pattern_ref) {
     return MatchesRegex(
         input, *cache->GetRegexPattern((*pattern_ref).positive_pattern));
@@ -31,7 +31,12 @@ bool MatchesPattern(std::u16string_view input, std::string_view pattern_name) {
 class NameFieldParserTest : public FormFieldParserTestBase,
                             public testing::Test {
  public:
-  NameFieldParserTest() = default;
+  NameFieldParserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kAutofillUseNegativePatternForAllAttributes,
+         features::kAutofillSupportLastNamePrefix},
+        {});
+  }
   NameFieldParserTest(const NameFieldParserTest&) = delete;
   NameFieldParserTest& operator=(const NameFieldParserTest&) = delete;
 
@@ -40,6 +45,9 @@ class NameFieldParserTest : public FormFieldParserTestBase,
                                          AutofillScanner* scanner) override {
     return NameFieldParser::Parse(context, scanner);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(NameFieldParserTest, FirstMiddleLast) {
@@ -220,6 +228,45 @@ TEST_F(NameFieldParserTest, NotAddressName) {
 // Tests that contact name is classified as full name.
 TEST_F(NameFieldParserTest, ContactNameFull) {
   AddTextFormFieldData("contact", "Контактное лицо", NAME_FULL);
+
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
+// Tests that a field for a surname is not parsed as a name field if it has a
+// negative pattern match with only one attribute.
+// "surname5" is a negative pattern for surname, while "surname" is a positive
+// pattern for surname. We expect the field to be not parsed even if negative
+// pattern is matched on a different attribute.
+TEST_F(NameFieldParserTest, NameSurnameNegativePatternDifferentAttributes) {
+  AddTextFormFieldData("firstname", "firstname", UNKNOWN_TYPE);
+  AddTextFormFieldData("surname5", "surname", UNKNOWN_TYPE);
+
+  ClassifyAndVerify(ParseResult::kNotParsed);
+}
+
+TEST_F(NameFieldParserTest, LastNamePrefix) {
+  AddTextFormFieldData("first_name", "First Name", NAME_FIRST);
+  AddTextFormFieldData("tussenvoegsel", "tussenvoegsel", NAME_LAST_PREFIX);
+  AddTextFormFieldData("last_name", "Last Name", NAME_LAST_CORE);
+
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
+TEST_F(NameFieldParserTest, LastNamePrefixWithMiddleName) {
+  AddTextFormFieldData("first_name", "First Name", NAME_FIRST);
+  AddTextFormFieldData("middle_name", "Middle Name", NAME_MIDDLE);
+  AddTextFormFieldData("tussenvoegsel", "tussenvoegsel", NAME_LAST_PREFIX);
+  AddTextFormFieldData("last_name", "Last Name", NAME_LAST_CORE);
+
+  ClassifyAndVerify(ParseResult::kParsed);
+}
+
+TEST_F(NameFieldParserTest, LastNamePrefixWithTwoLastNames) {
+  AddTextFormFieldData("first_name", "First Name", NAME_FIRST);
+  AddTextFormFieldData("tussenvoegsel", "tussenvoegsel", NAME_LAST_PREFIX);
+  AddTextFormFieldData("apellido_paterno", "apellido paterno", NAME_LAST_FIRST);
+  AddTextFormFieldData("segunda_apellido", "segunda apellido",
+                       NAME_LAST_SECOND);
 
   ClassifyAndVerify(ParseResult::kParsed);
 }

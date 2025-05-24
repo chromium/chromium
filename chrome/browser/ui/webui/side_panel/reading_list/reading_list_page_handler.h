@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace base {
 class Clock;
@@ -57,6 +57,7 @@ class ReadingListPageHandler : public reading_list::mojom::PageHandler,
   void UpdateCurrentPageActionButtonState() override;
   void ShowUI() override;
   void CloseUI() override;
+  void GetWindowData(GetWindowDataCallback callback) override;
 
   // ReadingListModelObserver:
   void ReadingListModelLoaded(const ReadingListModel* model) override {}

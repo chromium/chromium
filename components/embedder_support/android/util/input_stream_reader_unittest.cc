@@ -28,8 +28,8 @@ using testing::Test;
 
 class MockInputStream : public embedder_support::InputStream {
  public:
-  MockInputStream() {}
-  ~MockInputStream() override {}
+  MockInputStream() = default;
+  ~MockInputStream() override = default;
 
   MOCK_CONST_METHOD1(BytesAvailable, bool(int* bytes_available));
   MOCK_METHOD2(Skip, bool(int64_t n, int64_t* bytes_skipped));

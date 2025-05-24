@@ -37,10 +37,10 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSource
           nullptr);
 
   // UnderlyingSourceBase
-  ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&) override;
-  ScriptPromiseUntyped Cancel(ScriptState*,
-                              ScriptValue reason,
-                              ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&) override;
+  ScriptPromise<IDLUndefined> Cancel(ScriptState*,
+                                     ScriptValue reason,
+                                     ExceptionState&) override;
 
   void OnFrameFromSource(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface>);

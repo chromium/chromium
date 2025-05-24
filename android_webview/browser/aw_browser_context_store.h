@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
@@ -116,6 +117,9 @@ class AwBrowserContextStore final {
   // Finds and reserves a non-default profile number which hasn't previously
   // been assigned to any profile (even deleted ones).
   int AssignNewProfileNumber();
+
+  const base::ElapsedTimer uptime_for_metrics_;
+  size_t instantiated_contexts_for_metrics_ = 0;
 
   // (local_state) PrefService which is used to persist information about the
   // profiles that exist on disk.

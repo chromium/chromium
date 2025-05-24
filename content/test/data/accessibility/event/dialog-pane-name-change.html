@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<body>
+<div id="live" role="dialog" aria-live="polite">Before</div>
+<script>
+  function go() {
+    document.getElementById('live').firstChild.data = 'After';
+  }
+</script>
+</body>
+</html>

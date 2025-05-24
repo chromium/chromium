@@ -52,7 +52,7 @@ public class ImageFetcherBridgeTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        ImageFetcherBridgeJni.TEST_HOOKS.setInstanceForTesting(mNatives);
+        ImageFetcherBridgeJni.setInstanceForTesting(mNatives);
         mBridge = new ImageFetcherBridge(mSimpleFactoryKeyHandle);
     }
 

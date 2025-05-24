@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -177,10 +178,10 @@ int HTMLMarqueeElement::loop() const {
 
 void HTMLMarqueeElement::setLoop(int value, ExceptionState& exception_state) {
   if (value <= 0 && value != -1) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kIndexSizeError,
-                                      "The provided value (" +
-                                          String::Number(value) +
-                                          ") is neither positive nor -1.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        WTF::StrCat({"The provided value (", String::Number(value),
+                     ") is neither positive nor -1."}));
     return;
   }
   SetIntegralAttribute(html_names::kLoopAttr, value);
@@ -219,7 +220,7 @@ bool HTMLMarqueeElement::IsPresentationAttribute(
 void HTMLMarqueeElement::CollectStyleForPresentationAttribute(
     const QualifiedName& attr,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (attr == html_names::kBgcolorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (attr == html_names::kHeightAttr) {
@@ -270,7 +271,8 @@ void HTMLMarqueeElement::ContinueAnimation() {
   if (!ShouldContinue())
     return;
 
-  if (player_ && player_->PlayStateString() == "paused") {
+  if (player_ && player_->CalculateAnimationPlayState() ==
+                     V8AnimationPlayState::Enum::kPaused) {
     player_->play();
     return;
   }

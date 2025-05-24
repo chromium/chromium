@@ -27,7 +27,7 @@ enum class BatteryDischargeMode {
   kRetrievalError = 3,
   kNoBattery = 4,
   kBatteryLevelIncreased = 5,
-  kInvalidInterval = 6,
+  // kInvalidInterval = 6,  No longer used.
   kMacFullyCharged = 7,
   kMultipleBatteries = 8,
   kFullChargedCapacityIsZero = 9,

@@ -34,7 +34,7 @@ namespace {
 // - Everything else specify kExeTypeUnknown.
 class TestElementDetector {
  public:
-  TestElementDetector() {}
+  TestElementDetector() = default;
 
   std::optional<Element> Run(ConstBufferView image) const {
     DCHECK_GT(image.size(), 0U);

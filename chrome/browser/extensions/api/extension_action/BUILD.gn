@@ -1,0 +1,44 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions_core)
+
+source_set("extension_action") {
+  sources = [
+    "extension_action_api.cc",
+    "extension_action_api.h",
+  ]
+
+  if (is_android) {
+    sources += [ "extension_action_api_android.cc" ]
+  } else {
+    sources += [ "extension_action_api_non_android.cc" ]
+  }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui",
+    "//components/sessions",
+    "//content/public/common",
+    "//extensions/common:common_constants",
+    "//extensions/common:mojom",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/ui/tabs:tab_strip" ]
+  }
+}

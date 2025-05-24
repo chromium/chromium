@@ -17,6 +17,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -52,8 +53,9 @@ void OpenNewWindowForProfile(Profile* profile) {
 
 void DeleteProfileAtPath(base::FilePath file_path,
                          ProfileMetrics::ProfileDelete deletion_source) {
-  if (!profiles::IsMultipleProfilesEnabled())
+  if (!profiles::IsMultipleProfilesEnabled()) {
     return;
+  }
   g_browser_process->profile_manager()
       ->GetDeleteProfileHelper()
       .MaybeScheduleProfileForDeletion(

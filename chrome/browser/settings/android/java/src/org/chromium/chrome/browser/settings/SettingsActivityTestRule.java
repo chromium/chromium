@@ -18,12 +18,12 @@ import org.junit.Assert;
 
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 
 /**
  * Activity test rule that launch {@link SettingsActivity} in tests.
  *
- * Noting that the activity is not starting after the test rule created. The user have to call
+ * <p>Noting that the activity is not starting after the test rule created. The user have to call
  * {@link #startSettingsActivity()} explicitly to launch the settings activity.
  *
  * @param <T> Fragment that will be attached to the SettingsActivity.
@@ -69,10 +69,10 @@ public class SettingsActivityTestRule<T extends Fragment>
      */
     public SettingsActivity startSettingsActivity(Bundle fragmentArgs) {
         Context context = ApplicationProvider.getApplicationContext();
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Intent intent =
-                settingsLauncher.createSettingsActivityIntent(
-                        context, mFragmentClass, fragmentArgs);
+                settingsNavigation.createSettingsIntent(context, mFragmentClass, fragmentArgs);
         launchActivity(intent);
         ApplicationTestUtils.waitForActivityState(getActivity(), Stage.RESUMED);
         return getActivity();

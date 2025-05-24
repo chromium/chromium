@@ -91,6 +91,9 @@ class ProductSpecificationsSet {
   // Name of the set
   const std::string& name() const { return name_; }
 
+  // Returns whether the given URL is in this set.
+  bool ContainsUrl(const GURL& url) const;
+
  private:
   friend commerce::ProductSpecificationsService;
   friend commerce::ProductSpecificationsSyncBridge;

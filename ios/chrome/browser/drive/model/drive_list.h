@@ -22,6 +22,11 @@ struct DriveItem {
   DriveItem& operator=(const DriveItem& other);
   DriveItem& operator=(DriveItem&& other);
 
+  // Comparison operator relies on `identifier` only.
+  bool operator==(const DriveItem& rhs) const {
+    return [identifier isEqualToString:rhs.identifier];
+  }
+
   // Unique identifier for this item.
   NSString* identifier = nil;
   // The name of this item.
@@ -33,14 +38,24 @@ struct DriveItem {
   // Link to this shared drive's background image. Only populated for shared
   // drives.
   NSString* background_image_link = nil;
+  // The time the item was created.
+  NSDate* created_time = nil;
   // The last time the item was modified by anyone.
   NSDate* modified_time = nil;
+  // The last time the item was modified by the user.
+  NSDate* modified_by_me_time = nil;
   // The last time the item was viewed by the user.
   NSDate* viewed_by_me_time = nil;
   // The time the item was shared with the current user.
   NSDate* shared_with_me_time = nil;
   // Identifier of the item's parent folder.
   NSString* parent_identifier = nil;
+  // Whether the item is a shortcut.
+  bool is_shortcut = false;
+  // If the item is a shortcut, the identifier of the target.
+  NSString* shortcut_target_identifier = nil;
+  // If the item is a shortcut, the MIME type of the target.
+  NSString* shortcut_target_mime_type = nil;
   // Whether the item is a shared drive.
   bool is_shared_drive = false;
   // Whether the item is a folder.
@@ -54,6 +69,16 @@ struct DriveItem {
   // If this is a file which cannot be downloaded directly, then it can only be
   // exported to a different MIME type.
   bool can_download = false;
+  // If this item is a file, the MD5 checksum of that file.
+  NSString* md5_checksum = nil;
+};
+
+// std::hash specialization for DriveItem.
+template <>
+struct std::hash<DriveItem> {
+  size_t operator()(const DriveItem& item) const {
+    return size_t{item.identifier.hash};
+  }
 };
 
 // Results reported by the completion block of a query to list/search for files.

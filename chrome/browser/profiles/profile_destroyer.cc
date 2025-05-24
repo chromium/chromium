@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_process_host.h"
@@ -30,7 +29,7 @@ namespace {
 // Set the render host waiting time to 5s on Android, that's the same
 // as an "Application Not Responding" timeout.
 const int64_t kTimerDelaySeconds = 5;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 // linux-chromeos-dbg is failing to destroy the profile in under 1 second
 const int64_t kTimerDelaySeconds = 2;
 #else
@@ -295,7 +294,7 @@ void ProfileDestroyer::DestroyOriginalProfileNow(
   // RenderProcessHosts in --single-process mode, to avoid race conditions.
   if (!content::RenderProcessHost::run_renderer_in_process()) {
     DCHECK_EQ(profile_hosts_count, 0u);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     // ChromeOS' system profile can be outlived by its off-the-record profile
     // (see https://crbug.com/828479).
     DCHECK_EQ(off_the_record_profile_hosts_count, 0u);

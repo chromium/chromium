@@ -7,10 +7,8 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 
-BROWSER_USER_DATA_KEY_IMPL(WebStateUpdateBrowserAgent)
-
 WebStateUpdateBrowserAgent::WebStateUpdateBrowserAgent(Browser* browser)
-    : web_state_list_(browser->GetWebStateList()) {
+    : BrowserUserData(browser), web_state_list_(browser->GetWebStateList()) {
   web_state_list_observation_.Observe(web_state_list_.get());
 
   // All the BrowserAgent are attached to the Browser during the creation,

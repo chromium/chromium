@@ -41,17 +41,14 @@ inline void WriteBigEndianCommon(::benchmark::State& state,
   auto value = T{0};
   for (auto _ : state) {
     if constexpr (sizeof(T) == 1) {
-      buffer.subspan(offset).first<sizeof(T)>().copy_from(U8ToBigEndian(value));
+      buffer.subspan(offset).copy_prefix_from(U8ToBigEndian(value));
     } else if constexpr (sizeof(T) == 2) {
-      buffer.subspan(offset).first<sizeof(T)>().copy_from(
-          U16ToBigEndian(value));
+      buffer.subspan(offset).copy_prefix_from(U16ToBigEndian(value));
     } else if constexpr (sizeof(T) == 4) {
-      buffer.subspan(offset).first<sizeof(T)>().copy_from(
-          U32ToBigEndian(value));
+      buffer.subspan(offset).copy_prefix_from(U32ToBigEndian(value));
     } else {
       static_assert(sizeof(T) == 8);
-      buffer.subspan(offset).first<sizeof(T)>().copy_from(
-          U64ToBigEndian(value));
+      buffer.subspan(offset).copy_prefix_from(U64ToBigEndian(value));
     }
     offset += sizeof(T);
     static_assert(kSize % sizeof(T) == 0u);

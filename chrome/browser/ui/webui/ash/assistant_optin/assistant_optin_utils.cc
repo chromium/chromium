@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,6 +15,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/ash/services/assistant/public/cpp/features.h"
 #include "chromeos/ash/services/assistant/public/proto/activity_control_settings_common.pb.h"
@@ -55,8 +55,7 @@ AssistantNativeIconType SettingIdToIconType(
     case assistant::SettingSetId::DA:
       return AssistantNativeIconType::kDA;
     case assistant::SettingSetId::UNKNOWN_SETTING_SET_ID:
-      NOTREACHED_IN_MIGRATION();
-      return AssistantNativeIconType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -132,7 +131,6 @@ base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
             .Set("iconUri", setting_zippy.icon_uri())
             .Set("nativeIconType", static_cast<int>(SettingIdToIconType(
                                        setting_zippy.setting_set_id())))
-            .Set("useNativeIcons", features::IsAssistantNativeIconsEnabled())
             .Set("popupLink", l10n_util::GetStringUTF16(
                                   IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK))
             .Set("learnMoreDialogButton", learn_more_dialog.dismiss_button())
@@ -216,8 +214,9 @@ void RecordActivityControlConsent(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   // This function doesn't care about browser sync consent.
   DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  const CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
 
   using sync_pb::UserConsentTypes;
   UserConsentTypes::AssistantActivityControlConsent consent;
@@ -227,7 +226,7 @@ void RecordActivityControlConsent(
   consent.set_setting_type(setting_type);
 
   ConsentAuditorFactory::GetForProfile(profile)
-      ->RecordAssistantActivityControlConsent(account_id, consent);
+      ->RecordAssistantActivityControlConsent(gaia_id, consent);
 }
 
 bool IsHotwordDspAvailable() {

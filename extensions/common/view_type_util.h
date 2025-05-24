@@ -11,8 +11,8 @@
 
 namespace extensions {
 
-// Matches the |view_type| to the corresponding ViewType, and populates
-// |view_type_out|. Returns true if a match is found.
+// Matches the `view_type` to the corresponding ViewType, and populates
+// `view_type_out`. Returns true if a match is found.
 bool GetViewTypeFromString(const std::string& view_type,
                            mojom::ViewType* view_type_out);
 

@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.ephemeraltab;
 
 import android.view.ViewGroup;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /** An Observer that gets notified on Ephemeral Tab events. */
+@NullMarked
 public interface EphemeralTabObserver {
     default void onToolbarCreated(ViewGroup toolbarView) {}
 

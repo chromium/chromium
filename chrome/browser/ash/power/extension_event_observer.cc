@@ -35,8 +35,7 @@ ExtensionEventObserver::TestApi::TestApi(
     : parent_(parent) {
 }
 
-ExtensionEventObserver::TestApi::~TestApi() {
-}
+ExtensionEventObserver::TestApi::~TestApi() = default;
 
 bool ExtensionEventObserver::TestApi::MaybeRunSuspendReadinessCallback() {
   if (!parent_ || parent_->suspend_readiness_callback_.callback().is_null())

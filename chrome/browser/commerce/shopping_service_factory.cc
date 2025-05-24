@@ -13,6 +13,7 @@
 #include "chrome/browser/persisted_state_db/session_proto_db_factory.h"
 #include "chrome/browser/power_bookmarks/power_bookmark_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
@@ -29,6 +30,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "components/commerce/core/proto/cart_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #endif
 
@@ -82,6 +84,7 @@ ShoppingServiceFactory::ShoppingServiceFactory()
 #endif
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(commerce::ProductSpecificationsServiceFactory::GetInstance());
+  DependsOn(TabRestoreServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
@@ -105,15 +108,18 @@ ShoppingServiceFactory::BuildServiceInstanceForBrowserContext(
 #if !BUILDFLAG(IS_ANDROID)
       SessionProtoDBFactory<discounts_db::DiscountsContentProto>::GetInstance()
           ->GetForProfile(context),
+      SessionProtoDBFactory<cart_db::ChromeCartContentProto>::GetInstance()
+          ->GetForProfile(context),
 #else
-      nullptr,
+      nullptr, nullptr,
 #endif
       SessionProtoDBFactory<
           parcel_tracking_db::ParcelTrackingContent>::GetInstance()
           ->GetForProfile(context),
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::EXPLICIT_ACCESS),
-      std::make_unique<commerce::WebExtractorImpl>());
+      std::make_unique<commerce::WebExtractorImpl>(),
+      TabRestoreServiceFactory::GetForProfile(profile));
 }
 
 bool ShoppingServiceFactory::ServiceIsCreatedWithBrowserContext() const {

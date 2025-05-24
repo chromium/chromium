@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list_types.h"
+#include "base/types/optional_ref.h"
 
 class MediaEffectsModelProvider {
  public:
@@ -16,8 +17,10 @@ class MediaEffectsModelProvider {
    public:
     // Invoked when background segmentation model becomes available or was
     // updated. `path` will contain the file system path to the new model file.
+    // If `path` is a nullopt, it means that there is no new model file
+    // available and the consumers of the old model file should cease using it.
     virtual void OnBackgroundSegmentationModelUpdated(
-        const base::FilePath& path) = 0;
+        base::optional_ref<const base::FilePath> path) = 0;
   };
 
   virtual ~MediaEffectsModelProvider() = default;

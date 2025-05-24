@@ -23,6 +23,10 @@
 #include "ui/display/types/display_constants.h"
 #endif
 
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+#include <BrowserEngineKit/BrowserEngineKit.h>
+#endif
+
 @class CAContext;
 @class CALayer;
 
@@ -36,7 +40,8 @@ namespace gpu {
 class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
  public:
   ImageTransportSurfaceOverlayMacEGL(
-      DawnContextProvider* dawn_context_provider);
+      scoped_refptr<SharedContextState> context_state,
+      SurfaceHandle surface_handle);
 
   // Presenter implementation
   bool Resize(const gfx::Size& size,
@@ -105,9 +110,11 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
   base::TimeDelta frame_interval_;
 #endif
 
-  int cap_max_pending_swaps_ = 1;
+#if BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS)
+  BELayerHierarchy* __strong layer_hierarchy_;
+#endif
 
-  raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
+  int cap_max_pending_swaps_ = 1;
 
   base::WeakPtrFactory<ImageTransportSurfaceOverlayMacEGL> weak_ptr_factory_;
 };

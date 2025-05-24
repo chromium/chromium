@@ -126,9 +126,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, OpenNewTabs) {
   SendKeyPress(ui::VKEY_CONTROL);
 
   // In the locked state, pressing 't' should open a new tab each time.
-  // Note Lacros starts with a "New Tab" tab, whereas Ash does not.
-  int tab_count = IsLacrosRunning() ? 2 : 1;
-  for (; tab_count < 5; ++tab_count) {
+  for (int tab_count = 1; tab_count < 5; ++tab_count) {
     SendKeyPress(ui::VKEY_T);
     utils_->WaitForNumTabsWithRegexName(tab_count, "/New Tab*/");
   }
@@ -189,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, SearchLeftOmnibox) {
   SendKeyPress(ui::VKEY_CONTROL);
   SendKeyPress(ui::VKEY_T);
 
-  utils_->WaitForNumTabsWithRegexName(IsLacrosRunning() ? 2 : 1, "/New Tab*/");
+  utils_->WaitForNumTabsWithRegexName(1, "/New Tab*/");
 
   // Type 'foo'.
   SendKeyPress(ui::VKEY_F);
@@ -270,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(StickyKeysBrowserTest, CyclesWindows) {
   // Ensure there is a normal browser window open with ctrl+t.
   SendKeyPress(ui::VKEY_CONTROL);
   SendKeyPress(ui::VKEY_T);
-  int expected_tabs = IsLacrosRunning() ? 2 : 1;
+  int expected_tabs = 1;
   utils_->WaitForNumTabsWithRegexName(expected_tabs, "/New Tab*/");
 
   // Open an incognito browser.

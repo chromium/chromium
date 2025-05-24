@@ -9,11 +9,11 @@
 
 #include <string_view>
 
-#include "base/rust_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/rust/cxx/v1/cxx.h"
 
-#if !BUILDFLAG(BUILD_RUST_BASE_CONVERSIONS)
-#error "string_view_rust.h included without BUILD_RUST_BASE_CONVERSIONS"
+#if BUILDFLAG(IS_NACL)
+#error "string_view_rust.h included under IS_NACL"
 #endif
 
 namespace base {

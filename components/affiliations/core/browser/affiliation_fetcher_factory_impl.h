@@ -15,8 +15,10 @@ class AffiliationFetcherFactoryImpl : public AffiliationFetcherFactory {
   ~AffiliationFetcherFactoryImpl() override;
 
   std::unique_ptr<AffiliationFetcherInterface> CreateInstance(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AffiliationFetcherDelegate* delegate) override;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      override;
+
+  bool CanCreateFetcher() const override;
 };
 
 }  // namespace affiliations

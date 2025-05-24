@@ -5,11 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_BOOKMARKS_UI_BUNDLED_FOLDER_CHOOSER_BOOKMARKS_FOLDER_CHOOSER_MEDIATOR_H_
 
+#import <Foundation/Foundation.h>
+
+#import <set>
+
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_consumer.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/folder_chooser/bookmarks_folder_chooser_mutator.h"
-
-#import <Foundation/Foundation.h>
-#import <set>
 
 class AuthenticationService;
 @protocol BookmarksFolderChooserMediatorDelegate;

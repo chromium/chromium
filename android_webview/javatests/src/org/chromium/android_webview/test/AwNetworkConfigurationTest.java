@@ -24,8 +24,8 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.TestAwContentsClient.OnReceivedSslErrorHelper;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -390,7 +390,7 @@ public class AwNetworkConfigurationTest extends AwParameterizedTest {
                 mContentsClient.getShouldInterceptRequestHelper().getRequestsForUrl(url);
         Assert.assertFalse(
                 "X-Requested-With should be invisible to shouldInterceptRequest",
-                request.requestHeaders.containsKey("X-Requested-With"));
+                request.getRequestHeaders().containsKey("X-Requested-With"));
     }
 
     @Test

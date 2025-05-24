@@ -90,8 +90,6 @@ class SignedExchangeLoaderTest : public testing::Test {
     MOCK_METHOD2(SetPriority,
                  void(net::RequestPriority priority,
                       int32_t intra_priority_value));
-    MOCK_METHOD0(PauseReadingBodyFromNet, void());
-    MOCK_METHOD0(ResumeReadingBodyFromNet, void());
 
    private:
     mojo::Receiver<network::mojom::URLLoader> receiver_;
@@ -147,12 +145,6 @@ TEST_F(SignedExchangeLoaderTest, Simple) {
           SignedExchangeLoader::URLLoaderThrottlesGetter(), FrameTreeNodeId(),
           std::string() /* accept_langs */,
           false /* keep_entry_for_prefetch_cache */);
-
-  EXPECT_CALL(mock_loader, PauseReadingBodyFromNet());
-  signed_exchange_loader->PauseReadingBodyFromNet();
-
-  EXPECT_CALL(mock_loader, ResumeReadingBodyFromNet());
-  signed_exchange_loader->ResumeReadingBodyFromNet();
 
   constexpr int kIntraPriority = 5;
   EXPECT_CALL(mock_loader,

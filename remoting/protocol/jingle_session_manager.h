@@ -66,7 +66,8 @@ class JingleSessionManager : public SessionManager,
   bool OnSignalStrategyIncomingStanza(
       const jingle_xmpp::XmlElement* stanza) override;
 
-  typedef std::map<std::string, JingleSession*> SessionsMap;
+  typedef std::map<std::string, raw_ptr<JingleSession, CtnExperimental>>
+      SessionsMap;
 
   IqSender* iq_sender() { return iq_sender_.get(); }
   void SendReply(std::unique_ptr<jingle_xmpp::XmlElement> original_stanza,

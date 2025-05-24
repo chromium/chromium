@@ -13,11 +13,12 @@ import android.widget.ProgressBar;
 
 import androidx.annotation.ColorInt;
 
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.util.ColorUtils;
 
 /** Common functions for dynamic colors needed by both players. */
+@NullMarked
 public class Colors {
     /**
      * Returns the color that should be used for the player background.
@@ -62,15 +63,11 @@ public class Colors {
         bar.setProgressTintList(
                 ColorStateList.valueOf(
                         ColorUtils.inNightMode(context)
-                                ? context.getColor(R.color.baseline_primary_80)
+                                ? SemanticColorUtils.getDefaultIconColorAccent1(context)
                                 : SemanticColorUtils.getDefaultIconColor(context)));
     }
 
     private static @ColorInt int getPlayerBackgroundColor(Context context) {
-        // The dark mode color should change to "Surface Container High" in the next
-        // Material update.
-        return ColorUtils.inNightMode(context)
-                ? ChromeColors.getSurfaceColor(context, R.dimen.default_elevation_4)
-                : SemanticColorUtils.getDefaultBgColor(context);
+        return SemanticColorUtils.getDefaultBgColor(context);
     }
 }

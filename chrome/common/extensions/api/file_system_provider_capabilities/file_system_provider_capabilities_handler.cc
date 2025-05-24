@@ -34,15 +34,13 @@ FileSystemProviderCapabilities::FileSystemProviderCapabilities(
       source_(source) {
 }
 
-FileSystemProviderCapabilities::~FileSystemProviderCapabilities() {
-}
+FileSystemProviderCapabilities::~FileSystemProviderCapabilities() = default;
 
-FileSystemProviderCapabilitiesHandler::FileSystemProviderCapabilitiesHandler() {
-}
+FileSystemProviderCapabilitiesHandler::FileSystemProviderCapabilitiesHandler() =
+    default;
 
 FileSystemProviderCapabilitiesHandler::
-    ~FileSystemProviderCapabilitiesHandler() {
-}
+    ~FileSystemProviderCapabilitiesHandler() = default;
 
 // static
 const FileSystemProviderCapabilities* FileSystemProviderCapabilities::Get(
@@ -96,7 +94,7 @@ bool FileSystemProviderCapabilitiesHandler::Parse(Extension* extension,
       source = SOURCE_NETWORK;
       break;
     case api::manifest_types::FileSystemProviderSource::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::unique_ptr<FileSystemProviderCapabilities> capabilities(

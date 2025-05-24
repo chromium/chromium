@@ -5,23 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_SERVICE_FACTORY_H_
 
-#import <memory>
-
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace drive {
 
 class DriveService;
 
 // Singleton that owns all instances of DriveService and associates them with
-// instances of ChromeBrowserState.
-class DriveServiceFactory final : public BrowserStateKeyedServiceFactory {
+// instances of ProfileIOS.
+class DriveServiceFactory final : public ProfileKeyedServiceFactoryIOS {
  public:
   static DriveService* GetForProfile(ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static DriveService* GetForBrowserState(ProfileIOS* profile);
   static DriveServiceFactory* GetInstance();
 
  private:
@@ -32,8 +29,6 @@ class DriveServiceFactory final : public BrowserStateKeyedServiceFactory {
 
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
 };
 

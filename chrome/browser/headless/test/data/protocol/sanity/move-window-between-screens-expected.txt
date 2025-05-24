@@ -1,0 +1,5 @@
+Tests window moving between multiple screens.
+Window 1,1 500x300, screen #1
+Window 801,1 500x301, screen #2
+Window 1,601 500x302, screen #3
+Window 801,601 500x303, screen #4

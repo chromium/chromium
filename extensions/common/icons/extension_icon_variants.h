@@ -9,19 +9,22 @@
 #include <vector>
 
 #include "base/values.h"
+#include "extensions/common/icons/extension_icon_set.h"
 #include "extensions/common/icons/extension_icon_variant.h"
 #include "extensions/common/icons/extension_icon_variants_diagnostics.h"
 
 namespace extensions {
 
-// Representation of the `icon_variants` key anywhere in manifest.json. It could
+// Representation of the `icon_variants` key defined in manifest.json. It could
 // be a top level key or a subkey of `action`.
 class ExtensionIconVariants {
  public:
   ExtensionIconVariants();
-  ExtensionIconVariants(const ExtensionIconVariants& other) = delete;
-  ExtensionIconVariants(ExtensionIconVariants&& other);
   ~ExtensionIconVariants();
+  ExtensionIconVariants(ExtensionIconVariants&& other);
+  ExtensionIconVariants(const ExtensionIconVariants& other);
+  ExtensionIconVariants& operator=(ExtensionIconVariants&& other) = default;
+  ExtensionIconVariants& operator=(const ExtensionIconVariants& other) = delete;
 
   // Parse the provided list from manifest.json and set `list_` with the result.
   void Parse(const base::Value::List* list);
@@ -36,6 +39,11 @@ class ExtensionIconVariants {
   std::vector<diagnostics::icon_variants::Diagnostic>& get_diagnostics() {
     return diagnostics_;
   }
+
+  const std::vector<ExtensionIconVariant>& GetList() const { return list_; }
+
+  void AddDiagnostic(diagnostics::icon_variants::Feature feature,
+                     diagnostics::icon_variants::Id id);
 
  private:
   std::vector<ExtensionIconVariant> list_;

@@ -91,11 +91,6 @@ class BASE_EXPORT ConditionVariable {
 
   ~ConditionVariable();
 
-#if BUILDFLAG(IS_APPLE)
-  // Initializes features for this class. See `base::features::Init()`.
-  static void InitializeFeatures();
-#endif
-
   // Wait() releases the caller's critical section atomically as it starts to
   // sleep, and the reacquires it when it is signaled. The wait functions are
   // susceptible to spurious wakeups. (See usage note 1 for more details.)

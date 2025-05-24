@@ -8,6 +8,7 @@ import "components/attribution_reporting/data_host.mojom";
 import "components/attribution_reporting/registration_eligibility.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "services/network/public/mojom/attribution.mojom";
+import "url/mojom/origin.mojom";
 
 // Mojo struct to represent blink::Impression native struct.
 struct Impression {
@@ -15,6 +16,10 @@ struct Impression {
   // API parameters will be used from the the `AttributionDataHost`
   // that is associated with `attribution_src_token`.
   AttributionSrcToken attribution_src_token;
+
+  // Whether there were any impression string associated with the attributionsrc
+  // tag. This is only used for internal metric collection purpose.
+  bool is_empty_attribution_src_tag;
 };
 
 // Sent from renderer to browser process when a resource request matching the
@@ -25,9 +30,11 @@ interface AttributionHost {
   // element. Information will be passed at a later point when the renderer
   // is done fetching the config. `is_for_background_requests` indicates if the
   // host will be used to register registrations from background requests.
+   // `reporting_origins` indicate the requesters of the data host.
   RegisterDataHost(pending_receiver<attribution_reporting.mojom.DataHost> data_host,
                    attribution_reporting.mojom.RegistrationEligibility registration_eligibility,
-                   bool is_for_background_requests
+                   bool is_for_background_requests,
+                   array<url.mojom.Origin> reporting_origins
                    );
 
   // Registers a new data host which can register a source associated with a

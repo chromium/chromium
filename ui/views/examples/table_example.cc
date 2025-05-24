@@ -158,11 +158,11 @@ void TableExample::GetGroupRange(size_t model_index, GroupRange* range) {
 }
 
 void TableExample::OnSelectionChanged() {
-  PrintStatus("Selected: %s", SelectedColumnName().c_str());
+  PrintStatus("Selected: " + SelectedColumnName());
 }
 
 void TableExample::OnDoubleClick() {
-  PrintStatus("Double Click: %s", SelectedColumnName().c_str());
+  PrintStatus("Double Click: " + SelectedColumnName());
 }
 
 void TableExample::OnMiddleClick() {}

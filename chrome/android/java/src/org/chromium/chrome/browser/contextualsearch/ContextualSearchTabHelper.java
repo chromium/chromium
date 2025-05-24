@@ -71,16 +71,15 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     /** Whether the current default search engine is Google.  Is {@code null} if not inited. */
     private Boolean mIsDefaultSearchEngineGoogle;
 
-    private Callback<ContextualSearchManager> mManagerCallback;
+    private final Callback<ContextualSearchManager> mManagerCallback;
 
     /** The ReadAloudController supplier to get the active playback tab supplier when available. */
     private ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
 
+    private final Callback<Tab> mActivePlaybackTabCallback = this::onActivePlaybackTabUpdated;
+
     /** To listen for when the current tab has an active ReadAloud playback. */
     private ObservableSupplier<Tab> mReadAloudActivePlaybackTab;
-
-    /** Callback for when the ReadAloudController is ready. */
-    private OneShotCallback<ReadAloudController> mReadAloudControllerSupplierCallback;
 
     /**
      * Creates a contextual search tab helper for the given tab.
@@ -110,10 +109,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (isReadAloudTapToSeekEnabled()) {
             mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
             if (mReadAloudControllerSupplier != null) {
-                mReadAloudControllerSupplierCallback =
-                        new OneShotCallback<ReadAloudController>(
-                                mReadAloudControllerSupplier,
-                                this::onReadAloudControllerSupplierReady);
+                new OneShotCallback<ReadAloudController>(
+                        mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
             }
         }
     }
@@ -135,7 +132,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             mReadAloudActivePlaybackTab = readAloudController.getActivePlaybackTabSupplier();
         }
         if (mReadAloudActivePlaybackTab != null) {
-            mReadAloudActivePlaybackTab.addObserver(this::onActivePlaybackTabUpdated);
+            mReadAloudActivePlaybackTab.addObserver(mActivePlaybackTabCallback);
         }
     }
 
@@ -178,6 +175,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         }
         if (NetworkChangeNotifier.isInitialized()) {
             NetworkChangeNotifier.removeConnectionTypeObserver(this);
+        }
+        if (mReadAloudActivePlaybackTab != null) {
+            mReadAloudActivePlaybackTab.removeObserver(mActivePlaybackTabCallback);
         }
         removeContextualSearchHooks(mWebContents);
         mWebContents = null;
@@ -363,7 +363,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         // and Talkback has poor interaction with Contextual Search (see
                         // http://crbug.com/399708 and http://crbug.com/396934).
                         && !manager.isRunningInCompatibilityMode()
-                        && !(mTab.isShowingErrorPage())
+                        && !mTab.isShowingErrorPage()
                         && isDeviceOnline(manager);
         if (mTab.isCustomTab() && !isActive) {
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
@@ -469,10 +469,10 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
      * coordinates.
      */
     @CalledByNative
-    void onShowUnhandledTapUIIfNeeded(int x, int y) {
+    void onShowUnhandledTapUiIfNeeded(int x, int y) {
         // Only notify the manager if we currently have a valid listener.
         if (mGestureStateListener != null && getContextualSearchManager(mTab) != null) {
-            getContextualSearchManager(mTab).onShowUnhandledTapUIIfNeeded(x, y);
+            getContextualSearchManager(mTab).onShowUnhandledTapUiIfNeeded(x, y);
         }
     }
 

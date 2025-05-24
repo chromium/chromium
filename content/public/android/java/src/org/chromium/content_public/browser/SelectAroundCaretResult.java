@@ -4,10 +4,13 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A list of parameters about a selection attempt. This data is generated from
  * third_party/blink/public/mojom/input/input_handler.mojom's SelectAroundCaretResult.
  */
+@NullMarked
 public class SelectAroundCaretResult {
     private final int mExtendedStartAdjust;
     private final int mExtendedEndAdjust;

@@ -15,6 +15,8 @@ const char kCalendarFilePath[] =
     "ios/testing/data/http_server_files/sample.ics";
 const char kMobileConfigFilePath[] =
     "ios/testing/data/http_server_files/sample.mobileconfig";
+const char kAppleWalletOrderFilePath[] =
+    "ios/testing/data/http_server_files/sample.order";
 const char kPkPassFilePath[] =
     "ios/testing/data/http_server_files/generic.pkpass";
 const char kBundledPkPassFilePath[] =

@@ -12,7 +12,6 @@
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/clipboard_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/extension_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/files_cleanup_handler.h"
-#include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/lacros_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/pinned_apps_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/print_jobs_cleanup_handler.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login/cleanup/web_app_cleanup_handler.h"
@@ -27,7 +26,6 @@ constexpr char kBrowserCleanupHandlerHistogramName[] = "Browser";
 constexpr char kClipboardCleanupHandlerHistogramName[] = "Clipboard";
 constexpr char kExtensionCleanupHandlerHistogramName[] = "Extension";
 constexpr char kFilesCleanupHandlerHistogramName[] = "Files";
-constexpr char kLacrosCleanupHandlerHistogramName[] = "Lacros";
 constexpr char kPinnedAppsCleanupHandlerHistogramName[] = "PinnedApps";
 constexpr char kPrintJobsCleanupHandlerHistogramName[] = "PrintJobs";
 constexpr char kWebAppCleanupHandlerHistogramName[] = "WebApp";
@@ -49,8 +47,6 @@ void CleanupManagerAsh::InitializeCleanupHandlers() {
                             std::make_unique<BrowserCleanupHandler>()});
   cleanup_handlers_.insert({kFilesCleanupHandlerHistogramName,
                             std::make_unique<FilesCleanupHandler>()});
-  cleanup_handlers_.insert({kLacrosCleanupHandlerHistogramName,
-                            std::make_unique<LacrosCleanupHandler>()});
   cleanup_handlers_.insert({kClipboardCleanupHandlerHistogramName,
                             std::make_unique<ClipboardCleanupHandler>()});
   // Pinned apps cleanup handler should be run before the extensions and apps

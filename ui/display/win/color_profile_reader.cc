@@ -8,6 +8,7 @@
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/thread_pool.h"
@@ -25,7 +26,7 @@ BOOL CALLBACK EnumMonitorForProfilePathCallback(HMONITOR monitor,
                                                 LPARAM data) {
   std::wstring device_name;
   MONITORINFOEX monitor_info;
-  ::ZeroMemory(&monitor_info, sizeof(monitor_info));
+  UNSAFE_TODO(::ZeroMemory(&monitor_info, sizeof(monitor_info)));
   monitor_info.cbSize = sizeof(monitor_info);
   ::GetMonitorInfo(monitor, &monitor_info);
   device_name = std::wstring(monitor_info.szDevice);

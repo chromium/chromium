@@ -55,15 +55,16 @@ class ResourceRequestContext {
 
 // Prepares the underlying ResourceRequest for `params` with enough information
 // to do a cache lookup. If a cached value is not used,
-// PrepareResourceRequest() must be called.
+// UpgradeResourceRequestForLoader() must be called.
+//
+// `bundle_url_for_uuid_resources` is an optional bundle URL for
+// uuid-in-package: resources for security checks. Should only be set when the
+// request is WebBundle.
 //
 // Returns std::nullopt if loading the ResourceRequest in `params` is not
 // blocked. Otherwise, returns a blocked reason.
 // This method may modify the ResourceRequest in `params` according to
 // `context` and `resource_type`.
-//
-// This function should only be called if
-// MinimimalResourceRequestPrepBeforeCacheLookupEnabled is enabled.
 BLINK_PLATFORM_EXPORT std::optional<ResourceRequestBlockedReason>
 PrepareResourceRequestForCacheAccess(
     ResourceType type,
@@ -73,29 +74,7 @@ PrepareResourceRequestForCacheAccess(
     FetchContext& context,
     FetchParameters& params);
 
-// `virtual_time_pauser` may be set by this method.
-//
-// `compute_load_priority_callback` is used to compute the priority of the
-// ResourceRequest if not yet set before calling this function.
-//
-// `trace_callback` is executed at some point to enable tracing within this
-// function.
-//
-// `bundle_url_for_uuid_resources` is an optional bundle URL for
-// uuid-in-package: resources for security checks. Should only be set when the
-// request is WebBundle.
-// NOTE: PrepareResourceRequest  is temporary and will only enabled if a bug is
-// encountered (it's behind a kill switch).
-BLINK_PLATFORM_EXPORT std::optional<ResourceRequestBlockedReason>
-PrepareResourceRequest(
-    ResourceType resource_type,
-    const FetchClientSettingsObject& fetch_client_settings_object,
-    FetchParameters& params,
-    FetchContext& context,
-    WebScopedVirtualTimePauser& virtual_time_pauser,
-    ResourceRequestContext& resource_request_context,
-    const KURL& bundle_url_for_uuid_resources);
-BLINK_PLATFORM_EXPORT void UpgradeResourceRequestForLoaderNew(
+BLINK_PLATFORM_EXPORT void UpgradeResourceRequestForLoader(
     ResourceType resource_type,
     FetchParameters& params,
     FetchContext& context,

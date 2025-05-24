@@ -38,19 +38,19 @@ const wchar_t kRegValueName[] = L"name";
 bool Install() {
   base::FilePath source_exe_path;
   if (!base::PathService::Get(base::FILE_EXE, &source_exe_path)) {
-    LOG(ERROR) << "Failed to retrieve the current executable's path.";
+    VLOG(1) << "Failed to retrieve the current executable's path.";
     return false;
   }
 
   const std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
-    LOG(ERROR) << "Failed to get install directory";
+    VLOG(1) << "Failed to get install directory";
     return false;
   }
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
-    LOG(ERROR) << "Failed to create temporary directory.";
+    VLOG(1) << "Failed to create temporary directory.";
     return false;
   }
 
@@ -58,7 +58,7 @@ bool Install() {
       base::WrapUnique(WorkItemList::CreateWorkItemList());
 
   install_list->AddCopyTreeWorkItem(
-      source_exe_path, install_directory->AppendASCII(kExecutableName),
+      source_exe_path, install_directory->AppendUTF8(kExecutableName),
       temp_dir.GetPath(), WorkItem::ALWAYS);
   install_list->AddCreateRegKeyWorkItem(HKEY_LOCAL_MACHINE, kAppRegKey,
                                         KEY_WOW64_32KEY);
@@ -69,21 +69,10 @@ bool Install() {
       HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY, kRegValueName,
       L"" PRODUCT_FULLNAME_STRING, /*overwrite=*/true);
 
-  std::optional<base::FilePath> alternate_arch_install_dir =
-      GetInstallDirectoryForAlternateArch();
-  if (alternate_arch_install_dir &&
-      base::PathExists(*alternate_arch_install_dir)) {
-    VLOG(1) << "Found an existing installation for a different architecture at "
-            << *alternate_arch_install_dir
-            << ". It will be removed by this install.";
-    install_list->AddDeleteTreeWorkItem(*alternate_arch_install_dir,
-                                        temp_dir.GetPath());
-  }
-
   if (!install_list->Do()) {
-    LOG(ERROR) << "Install failed, rolling back...";
+    VLOG(1) << "Install failed, rolling back...";
     install_list->Rollback();
-    LOG(ERROR) << "Rollback complete.";
+    VLOG(1) << "Rollback complete.";
     return false;
   }
 
@@ -91,24 +80,27 @@ bool Install() {
 }
 
 bool Uninstall() {
+  {
+    LONG result = base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey,
+                                    KEY_SET_VALUE | KEY_WOW64_32KEY)
+                      .DeleteKey(L"");
+    VLOG_IF(1, result != ERROR_SUCCESS)
+        << "Failed to delete updater registration: " << kAppRegKey
+        << " error: " << result;
+  }
+
   const std::optional<base::FilePath> install_directory = GetInstallDirectory();
   if (!install_directory) {
-    LOG(ERROR) << "Failed to get install directory";
+    VLOG(1) << "Failed to get install directory";
     return false;
   }
-  std::optional<base::FilePath> alternate_arch_install_dir =
-      GetInstallDirectoryForAlternateArch();
-
-  base::DeletePathRecursively(*alternate_arch_install_dir);
-  base::win::RegKey(HKEY_LOCAL_MACHINE, kAppRegKey, KEY_WOW64_32KEY)
-      .DeleteKey(L"");
 
   base::FilePath cmd_exe_path;
   if (!base::PathService::Get(base::DIR_SYSTEM, &cmd_exe_path)) {
-    LOG(ERROR) << "Failed to get System32 path.";
+    VLOG(1) << "Failed to get System32 path.";
     return false;
   }
-  cmd_exe_path = cmd_exe_path.AppendASCII("cmd.exe");
+  cmd_exe_path = cmd_exe_path.Append(L"cmd.exe");
 
   // Try deleting the directory 15 times and wait one second between tries.
   const std::wstring command_line = base::StrCat(
@@ -123,7 +115,7 @@ bool Uninstall() {
   options.start_hidden = true;
   base::Process process = base::LaunchProcess(command_line, options);
   if (!process.IsValid()) {
-    LOG(ERROR) << "Failed to create process " << command_line;
+    VLOG(1) << "Failed to create process " << command_line;
     return false;
   }
   return true;

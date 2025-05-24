@@ -34,6 +34,8 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
   ShoppingServiceAndroid(ShoppingService* service);
   ~ShoppingServiceAndroid() override;
 
+  ShoppingService* GetShoppingService();
+
   void GetProductInfoForUrl(JNIEnv* env,
                             const JavaParamRef<jobject>& obj,
                             const JavaParamRef<jobject>& j_gurl,
@@ -106,9 +108,6 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
   bool IsShoppingListEligible(JNIEnv* env, const JavaParamRef<jobject>& obj);
 
   bool IsMerchantViewerEnabled(JNIEnv* env, const JavaParamRef<jobject>& obj);
-
-  bool IsCommercePriceTrackingEnabled(JNIEnv* env,
-                                      const JavaParamRef<jobject>& obj);
 
   bool IsPriceInsightsEligible(JNIEnv* env, const JavaParamRef<jobject>& obj);
 

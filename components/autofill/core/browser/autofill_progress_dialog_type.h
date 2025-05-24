@@ -19,6 +19,10 @@ enum class AutofillProgressDialogType {
   // Used in the VCN 3DS authentication flow after closure of the pop-up, while
   // a Payments server call is being made to fetch the resulting virtual card.
   k3dsFetchVcnProgressDialog,
+  // Used when unmasking a card info retrieval enrolled card.
+  kCardInfoRetrievalEnrolledUnmaskProgressDialog,
+  // Used when fetching VCN details during a BNPL transaction.
+  kBnplFetchVcnProgressDialog,
 };
 
 }  // namespace autofill

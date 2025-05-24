@@ -17,7 +17,7 @@ DistillerURLFetcherFactory::DistillerURLFetcherFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory) {}
 
-DistillerURLFetcherFactory::~DistillerURLFetcherFactory() {}
+DistillerURLFetcherFactory::~DistillerURLFetcherFactory() = default;
 
 DistillerURLFetcher* DistillerURLFetcherFactory::CreateDistillerURLFetcher()
     const {
@@ -28,7 +28,7 @@ DistillerURLFetcher::DistillerURLFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory) {}
 
-DistillerURLFetcher::~DistillerURLFetcher() {}
+DistillerURLFetcher::~DistillerURLFetcher() = default;
 
 void DistillerURLFetcher::FetchURL(const std::string& url,
                                    URLFetcherCallback callback) {
@@ -78,6 +78,7 @@ std::unique_ptr<network::SimpleURLLoader> DistillerURLFetcher::CreateURLFetcher(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = GURL(url);
   resource_request->method = "GET";
+  resource_request->site_for_cookies = net::SiteForCookies::FromUrl(GURL(url));
 
   auto url_loader = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);

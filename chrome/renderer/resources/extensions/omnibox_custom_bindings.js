@@ -4,8 +4,12 @@
 
 // Custom binding for the omnibox API. Only injected into the v8 contexts
 // for extensions which have permission for the omnibox API.
+const inServiceWorker = requireNative('utils').isInServiceWorker();
+const SetIconCommon = requireNative('setIcon').SetIconCommon;
 
-var inServiceWorker = requireNative('utils').isInServiceWorker();
+var imageUtil = require('imageUtil');
+
+const kMaxActionIconSize = 160;
 
 // Remove invalid characters from |text| so that it is suitable to use
 // for |AutocompleteMatch::contents|.
@@ -77,6 +81,57 @@ function parseOmniboxDescription(input) {
 
   return result;
 }
+
+
+function verifyImageSize(imageData) {
+  if (imageData.width > kMaxActionIconSize ||
+      imageData.height > kMaxActionIconSize) {
+    throw new Error('Icons must be smaller 160 px wide and tall.');
+  }
+}
+
+// Register custom hook to update action icons to a format that can be parsed by
+// the browser.
+apiBridge.registerCustomHook(function(bindingsAPI) {
+  var apiFunctions = bindingsAPI.apiFunctions;
+  apiFunctions.setUpdateArgumentsPreValidate(
+      'sendSuggestions', function(requestId, userSuggestions) {
+        for (let i = 0; i < userSuggestions.length; i++) {
+          let suggestion = userSuggestions[i];
+
+          if (!suggestion.actions) {
+            continue;
+          }
+          let actions = [];
+          for (let j = 0; j < suggestion.actions.length; j++) {
+            if (!suggestion.actions[j].icon) {
+              $Array.push(actions, suggestion.actions[j]);
+              continue;
+            }
+            // Deep copy is needed in case many actions point to the same icon.
+            let icon = new ImageData(
+                new Uint8ClampedArray(suggestion.actions[j].icon.data),
+                suggestion.actions[j].icon.width,
+                suggestion.actions[j].icon.height);
+            let action = {
+              name: suggestion.actions[j].name,
+              label: suggestion.actions[j].label,
+              tooltipText: suggestion.actions[j].tooltipText,
+              icon: {}
+            };
+            verifyImageSize(icon);
+            imageUtil.verifyImageData(icon);
+            let details = {imageData: {}};
+            details.imageData = {__proto__: null};
+            details.imageData[icon.width.toString()] = icon;
+            action.icon = SetIconCommon(details);
+            $Array.push(actions, action);
+          }
+          suggestion.actions = actions;
+        }
+        return [requestId, userSuggestions];
+      });
+});
 
 // The following custom hooks are only registered in non-service worker
 // contexts. In service worker contexts, we instead parse the description and

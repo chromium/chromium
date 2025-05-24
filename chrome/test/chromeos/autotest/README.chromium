@@ -1,5 +1,5 @@
 Name: Test code
-URL: unknown
-License: BSD
+URL: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/refs/heads/master/docs/user-doc.md
+License: BSD-3-Clause
 Security Critical: no
 Shipped: no

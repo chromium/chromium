@@ -45,11 +45,19 @@ CSSMatrixComponent* CSSMatrixComponent::FromCSSValue(
     const CSSFunctionValue& value) {
   WTF::Vector<double> entries;
   for (const auto& item : value) {
-    entries.push_back(To<CSSPrimitiveValue>(*item).GetDoubleValue());
+    std::optional<double> number =
+        To<CSSPrimitiveValue>(*item).GetValueIfKnown();
+    if (!number.has_value()) {
+      // Since the internal representation is a DOMMatrix, which can only
+      // contain numbers, we cannot represent matrices which contain unresolved
+      // calc() expressions like sibling-index() or sign(1em - 20px).
+      return nullptr;
+    }
+    entries.push_back(number.value());
   }
 
   return CSSMatrixComponent::Create(
-      DOMMatrixReadOnly::CreateForSerialization(entries.data(), entries.size()),
+      DOMMatrixReadOnly::CreateForSerialization(entries),
       CSSMatrixComponentOptions::Create());
 }
 

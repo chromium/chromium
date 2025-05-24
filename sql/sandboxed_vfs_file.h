@@ -5,7 +5,6 @@
 #ifndef SQL_SANDBOXED_VFS_FILE_H_
 #define SQL_SANDBOXED_VFS_FILE_H_
 
-#include "base/dcheck_is_on.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
@@ -50,9 +49,7 @@ class SandboxedVfsFile {
   // returned sqlite3_file object.
   static void Create(base::File file,
                      base::FilePath file_path,
-#if DCHECK_IS_ON()
                      SandboxedVfsFileType file_type,
-#endif  // DCHECK_IS_ON()
                      SandboxedVfs* vfs,
                      sqlite3_file& buffer);
 
@@ -85,9 +82,7 @@ class SandboxedVfsFile {
  private:
   SandboxedVfsFile(base::File file,
                    base::FilePath file_path,
-#if DCHECK_IS_ON()
                    SandboxedVfsFileType file_type,
-#endif  // DCHECK_IS_ON()
                    SandboxedVfs* vfs);
   ~SandboxedVfsFile();
 
@@ -97,10 +92,8 @@ class SandboxedVfsFile {
   int sqlite_lock_mode_;
   // The SandboxedVfs that created this instance.
   const raw_ptr<SandboxedVfs> vfs_;
-#if DCHECK_IS_ON()
   // Tracked to check assumptions about SQLite's locking protocol.
   const SandboxedVfsFileType file_type_;
-#endif  // DCHECK_IS_ON()
   // Used to identify the file in IPCs to the browser process.
   const base::FilePath file_path_;
 };

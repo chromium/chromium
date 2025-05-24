@@ -4,26 +4,26 @@
 
 #import "ios/net/protocol_handler_util.h"
 
-#include <string>
+#import <string>
 
-#include "base/base64.h"
-#include "base/logging.h"
-#include "base/strings/sys_string_conversions.h"
-#include "base/time/time.h"
-#include "ios/net/crn_http_url_response.h"
+#import "base/base64.h"
+#import "base/logging.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "ios/net/crn_http_url_response.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/base/net_errors.h"
-#include "net/http/http_request_headers.h"
-#include "net/http/http_response_headers.h"
-#include "net/http/http_version.h"
-#include "net/url_request/referrer_policy.h"
-#include "net/url_request/url_request.h"
-#include "url/buildflags.h"
-#include "url/gurl.h"
+#import "net/base/net_errors.h"
+#import "net/http/http_request_headers.h"
+#import "net/http/http_response_headers.h"
+#import "net/http/http_version.h"
+#import "net/url_request/referrer_policy.h"
+#import "net/url_request/url_request.h"
+#import "url/buildflags.h"
+#import "url/gurl.h"
 
 #if !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-#include "base/i18n/encoding_detection.h"  // nogncheck
-#include "base/i18n/icu_string_conversions.h"  // nogncheck
+#import "base/i18n/encoding_detection.h"      // nogncheck
+#import "base/i18n/icu_string_conversions.h"  // nogncheck
 #endif  // !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
 
 namespace {
@@ -51,13 +51,14 @@ NSError* GetIOSError(NSInteger ns_error_code,
   // NSUnderlyingErrorKey.
   NSDate* creation_date = creation_time.ToNSDate();
   DCHECK(creation_date);
-  NSError* underlying_error =
-      [NSError errorWithDomain:kNSErrorDomain code:net_error_code userInfo:nil];
+  NSError* underlying_error = [NSError errorWithDomain:kNSErrorDomain
+                                                  code:net_error_code
+                                              userInfo:nil];
   DCHECK(url);
   NSDictionary* dictionary = @{
-      NSURLErrorFailingURLStringErrorKey : url,
-      @"CreationDate" : creation_date,
-      NSUnderlyingErrorKey : underlying_error,
+    NSURLErrorFailingURLStringErrorKey : url,
+    @"CreationDate" : creation_date,
+    NSUnderlyingErrorKey : underlying_error,
   };
   return [NSError errorWithDomain:NSURLErrorDomain
                              code:ns_error_code
@@ -68,94 +69,98 @@ NSURLResponse* GetNSURLResponseForRequest(URLRequest* request) {
   NSURL* url = NSURLWithGURL(request->url());
   DCHECK(url);
 
-    // Iterate over all the headers and copy them.
-    bool has_content_type_header = false;
-    NSMutableDictionary* header_fields = [NSMutableDictionary dictionary];
-    HttpResponseHeaders* headers = request->response_headers();
-    if (headers != nullptr) {
-      size_t iter = 0;
-      std::string name, value;
-      while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
-        NSString* key = base::SysUTF8ToNSString(name);
-        if (!key) {
-          DLOG(ERROR) << "Header name is not in UTF8: " << name;
-          // Skip the invalid header.
-          continue;
-        }
-        // Do not copy "Cache-Control" headers as we provide our own controls.
-        if ([key caseInsensitiveCompare:@"cache-control"] == NSOrderedSame)
-          continue;
-        if ([key caseInsensitiveCompare:kContentType] == NSOrderedSame) {
-          key = kContentType;
-          has_content_type_header = true;
-        }
+  // Iterate over all the headers and copy them.
+  bool has_content_type_header = false;
+  NSMutableDictionary* header_fields = [NSMutableDictionary dictionary];
+  HttpResponseHeaders* headers = request->response_headers();
+  if (headers != nullptr) {
+    size_t iter = 0;
+    std::string name, value;
+    while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
+      NSString* key = base::SysUTF8ToNSString(name);
+      if (!key) {
+        DLOG(ERROR) << "Header name is not in UTF8: " << name;
+        // Skip the invalid header.
+        continue;
+      }
+      // Do not copy "Cache-Control" headers as we provide our own controls.
+      if ([key caseInsensitiveCompare:@"cache-control"] == NSOrderedSame) {
+        continue;
+      }
+      if ([key caseInsensitiveCompare:kContentType] == NSOrderedSame) {
+        key = kContentType;
+        has_content_type_header = true;
+      }
 
-        // Handle bad encoding.
-        NSString* v = base::SysUTF8ToNSString(value);
-        if (!v) {
-          DLOG(ERROR) << "Header \"" << name << "\" is not in UTF8: " << value;
+      // Handle bad encoding.
+      NSString* v = base::SysUTF8ToNSString(value);
+      if (!v) {
+        DLOG(ERROR) << "Header \"" << name << "\" is not in UTF8: " << value;
 #if BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-          DCHECK(FALSE) << "ICU support is required, but not included.";
-          continue;
+        DCHECK(FALSE) << "ICU support is required, but not included.";
+        continue;
 #else
-          // Infer the encoding, or skip the header if it's not possible.
-          std::string encoding;
-          if (!base::DetectEncoding(value, &encoding))
-            continue;
-          std::string value_utf8;
-          if (!base::ConvertToUtf8AndNormalize(value, encoding, &value_utf8))
-            continue;
-          v = base::SysUTF8ToNSString(value_utf8);
-          DCHECK(v);
+        // Infer the encoding, or skip the header if it's not possible.
+        std::string encoding;
+        if (!base::DetectEncoding(value, &encoding)) {
+          continue;
+        }
+        std::string value_utf8;
+        if (!base::ConvertToUtf8AndNormalize(value, encoding, &value_utf8)) {
+          continue;
+        }
+        v = base::SysUTF8ToNSString(value_utf8);
+        DCHECK(v);
 #endif  // !BUILDFLAG(USE_PLATFORM_ICU_ALTERNATIVES)
-        }
+      }
 
-        // Duplicate keys are appended using a comma separator (RFC 2616).
-        NSMutableString* existing = [header_fields objectForKey:key];
-        if (existing) {
-          [existing appendFormat:@",%@", v];
-        } else {
-          [header_fields setObject:[NSMutableString stringWithString:v]
-                            forKey:key];
-        }
+      // Duplicate keys are appended using a comma separator (RFC 2616).
+      NSMutableString* existing = [header_fields objectForKey:key];
+      if (existing) {
+        [existing appendFormat:@",%@", v];
+      } else {
+        [header_fields setObject:[NSMutableString stringWithString:v]
+                          forKey:key];
       }
     }
+  }
 
-    // WebUI does not define a "Content-Type" header. Use the MIME type instead.
-    if (!has_content_type_header) {
-      std::string mime_type = "";
-      request->GetMimeType(&mime_type);
-      NSString* type = base::SysUTF8ToNSString(mime_type);
-      if ([type length])
-        [header_fields setObject:type forKey:kContentType];
+  // WebUI does not define a "Content-Type" header. Use the MIME type instead.
+  if (!has_content_type_header) {
+    std::string mime_type = "";
+    request->GetMimeType(&mime_type);
+    NSString* type = base::SysUTF8ToNSString(mime_type);
+    if ([type length]) {
+      [header_fields setObject:type forKey:kContentType];
     }
-    NSString* content_type = [header_fields objectForKey:kContentType];
-    if (content_type) {
-      NSRange range = [content_type rangeOfString:@","];
-      // If there are several "Content-Type" headers, keep only the first one.
-      if (range.location != NSNotFound) {
-        [header_fields setObject:[content_type substringToIndex:range.location]
-                          forKey:kContentType];
-      }
+  }
+  NSString* content_type = [header_fields objectForKey:kContentType];
+  if (content_type) {
+    NSRange range = [content_type rangeOfString:@","];
+    // If there are several "Content-Type" headers, keep only the first one.
+    if (range.location != NSNotFound) {
+      [header_fields setObject:[content_type substringToIndex:range.location]
+                        forKey:kContentType];
     }
+  }
 
-    // Use a "no-store" cache control to ensure that the response is not cached
-    // by the system. See b/7045043.
-    [header_fields setObject:@"no-store" forKey:@"Cache-Control"];
+  // Use a "no-store" cache control to ensure that the response is not cached
+  // by the system. See b/7045043.
+  [header_fields setObject:@"no-store" forKey:@"Cache-Control"];
 
-    // Parse the HTTP version.
-    NSString* version_string = @"HTTP/1.1";
-    if (headers) {
-      const HttpVersion& http_version = headers->GetHttpVersion();
-      version_string = [NSString stringWithFormat:@"HTTP/%hu.%hu",
-                                                  http_version.major_value(),
-                                                  http_version.minor_value()];
-    }
+  // Parse the HTTP version.
+  NSString* version_string = @"HTTP/1.1";
+  if (headers) {
+    const HttpVersion& http_version = headers->GetHttpVersion();
+    version_string =
+        [NSString stringWithFormat:@"HTTP/%hu.%hu", http_version.major_value(),
+                                   http_version.minor_value()];
+  }
 
-    return [[CRNHTTPURLResponse alloc] initWithURL:url
-                                        statusCode:request->GetResponseCode()
-                                       HTTPVersion:version_string
-                                      headerFields:header_fields];
+  return [[CRNHTTPURLResponse alloc] initWithURL:url
+                                      statusCode:request->GetResponseCode()
+                                     HTTPVersion:version_string
+                                    headerFields:header_fields];
 }
 
 void CopyHttpHeaders(NSURLRequest* in_request, URLRequest* out_request) {

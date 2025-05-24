@@ -5,13 +5,18 @@
 use crate::config::BuildConfig;
 use crate::crates;
 use crate::group::Group;
-use crate::paths;
-use anyhow::{format_err, Result};
+use crate::paths::{self, get_vendor_dir_for_package};
+use anyhow::{bail, format_err, Result};
+use guppy::graph::PackageMetadata;
+use guppy::PackageId;
+use itertools::Itertools;
 use semver::Version;
 use serde::Deserialize;
 use serde::Serialize;
 use std::collections::HashMap;
+use std::fmt::Display;
 use std::path::{Path, PathBuf};
+use std::sync::LazyLock;
 
 #[derive(Clone, Debug, Serialize)]
 pub struct ReadmeFile {
@@ -30,12 +35,12 @@ pub struct ReadmeFile {
 /// written. The value is the contents of the README file, which can be
 /// consumed by a handlebars template.
 pub fn readme_files_from_packages<'a>(
-    deps: impl IntoIterator<Item = &'a cargo_metadata::Package>,
+    deps: impl IntoIterator<Item = PackageMetadata<'a>>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    mut find_group: impl FnMut(&'a cargo_metadata::PackageId) -> Group,
-    mut find_security_critical: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
-    mut find_shipped: impl FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
+    mut find_group: impl FnMut(&'a PackageId) -> Group,
+    mut find_security_critical: impl FnMut(&'a PackageId) -> Option<bool>,
+    mut find_shipped: impl FnMut(&'a PackageId) -> Option<bool>,
 ) -> Result<HashMap<PathBuf, ReadmeFile>> {
     let mut map = HashMap::new();
 
@@ -55,32 +60,32 @@ pub fn readme_files_from_packages<'a>(
 }
 
 pub fn readme_file_from_package<'a>(
-    package: &'a cargo_metadata::Package,
+    package: PackageMetadata<'a>,
     paths: &paths::ChromiumPaths,
     extra_config: &BuildConfig,
-    find_group: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Group,
-    find_security_critical: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
-    find_shipped: &mut dyn FnMut(&'a cargo_metadata::PackageId) -> Option<bool>,
+    find_group: &mut dyn FnMut(&'a PackageId) -> Group,
+    find_security_critical: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
+    find_shipped: &mut dyn FnMut(&'a PackageId) -> Option<bool>,
 ) -> Result<(PathBuf, ReadmeFile)> {
-    let epoch = crates::Epoch::from_version(&package.version);
+    let epoch = crates::Epoch::from_version(package.version());
     let dir = paths
         .third_party
-        .join(crates::NormalizedName::from_crate_name(&package.name).to_string())
+        .join(crates::NormalizedName::from_crate_name(package.name()).to_string())
         .join(epoch.to_string());
 
-    let crate_config = extra_config.per_crate_config.get(&package.name);
+    let crate_config = extra_config.per_crate_config.get(package.name());
     let crate_dir = paths
         .third_party_cargo_root
         .join("vendor")
-        .join(format!("{}-{}", package.name, package.version));
-    let group = find_group(&package.id);
+        .join(get_vendor_dir_for_package(package.name(), package.version()));
+    let group = find_group(package.id());
 
-    let security_critical = find_security_critical(&package.id).unwrap_or(match group {
+    let security_critical = find_security_critical(package.id()).unwrap_or(match group {
         Group::Safe | Group::Sandbox => true,
         Group::Test => false,
     });
 
-    let shipped = find_shipped(&package.id).unwrap_or(match group {
+    let shipped = find_shipped(package.id()).unwrap_or(match group {
         Group::Safe | Group::Sandbox => true,
         Group::Test => false,
     });
@@ -88,67 +93,44 @@ pub fn readme_file_from_package<'a>(
     let license = {
         if let Some(config_license) = crate_config.and_then(|config| config.license.clone()) {
             config_license
-        } else if let Some(pkg_license) = &package.license {
-            // Map to something in ALLOWED_LICENSES.
-            if let Some(mapped_license) = ALLOWED_LICENSES
-                .iter()
-                .find(|(allowed_license, _)| pkg_license == *allowed_license)
-                .map(|(_, mapped_license)| *mapped_license)
-            {
-                mapped_license.to_owned()
-            } else {
-                return Err(format_err!(
-                    "License '{}' in Cargo.toml for {} crate is not in ALLOWED_LICENSES",
-                    pkg_license,
-                    package.name,
-                ));
-            }
+        } else if let Some(pkg_license) = package.license() {
+            let license_kinds = parse_license_string(pkg_license)?;
+            license_kinds_to_string(&license_kinds)
         } else {
             return Err(format_err!(
                 "No license field found in Cargo.toml for {} crate",
-                package.name
+                package.name()
             ));
         }
     };
 
-    let path_if_exists = |path: &'a Path| -> Result<Option<&'a Path>> {
-        if crate_dir.join(path).try_exists()? { Ok(Some(path)) } else { Ok(None) }
-    };
-    let to_crate_dir_string = |path: &Path| -> String {
-        format!("//{}", paths::normalize_unix_path_separator(&crate_dir.join(path)))
+    let license_files = if let Some(config_license_files) = crate_config.and_then(|config| {
+        if config.license_files.is_empty() {
+            None
+        } else {
+            Some(config.license_files.iter().map(Path::new))
+        }
+    }) {
+        config_license_files
+            .map(|p| format!("//{}", paths::normalize_unix_path_separator(&crate_dir.join(p))))
+            .collect()
+    } else if let Some(pkg_license) = package.license() {
+        let license_kinds = parse_license_string(pkg_license)?;
+        find_license_files_for_kinds(&license_kinds, &crate_dir)?
+    } else {
+        Vec::new()
     };
 
-    let license_files: Vec<String> = {
-        if let Some(config_license_files) = crate_config.and_then(|config| {
-            if config.license_files.is_empty() {
-                None
-            } else {
-                Some(config.license_files.iter().map(Path::new))
-            }
-        }) {
-            config_license_files.map(to_crate_dir_string).collect()
-        } else if let Some(file) = &package.license_file {
-            path_if_exists(file.as_std_path())?.into_iter().map(to_crate_dir_string).collect()
-        } else {
-            EXPECTED_LICENSE_FILE
-                .iter()
-                .filter_map(|(l, path)| {
-                    if license == **l {
-                        path_if_exists(Path::new(path)).unwrap_or(None).map(to_crate_dir_string)
-                    } else {
-                        None
-                    }
-                })
-                .collect()
-        }
-    };
-    if license_files.is_empty() && shipped {
-        log::warn!(
-            "License file not found for crate {name}.\n  Crates that are \
-            marked `shipped` must specify a License File.\n  You can specify \
-            the `license_files` in [crate.{name}] relative to the crate's root \
-            directory.",
-            name = package.name
+    if license_files.is_empty() {
+        bail!(
+            "License file not found for crate {name}.\n
+             \n
+             You can specify the `license_files` in `crate.{name}]` \
+             section of the `gnrt_config.toml` to manually point out \
+             a license file relative to the crate's root. \
+             (Alternatively you can tweak `gnrt`'s source code to improve \
+             its ability to recognize license files based on their name).",
+            name = package.name()
         );
     }
 
@@ -157,7 +139,7 @@ pub fn readme_file_from_package<'a>(
             paths
                 .third_party_cargo_root
                 .join("vendor")
-                .join(format!("{}-{}", package.name, package.version))
+                .join(get_vendor_dir_for_package(package.name(), package.version()))
                 .join(".cargo_vcs_info.json"),
         ) {
             #[derive(Deserialize)]
@@ -177,10 +159,10 @@ pub fn readme_file_from_package<'a>(
     };
 
     let readme = ReadmeFile {
-        name: package.name.clone(),
-        url: format!("https://crates.io/crates/{}", package.name),
-        description: package.description.clone().unwrap_or_default(),
-        version: package.version.clone(),
+        name: package.name().to_string(),
+        url: format!("https://crates.io/crates/{}", package.name()),
+        description: package.description().unwrap_or_default().to_string(),
+        version: package.version().clone(),
         security_critical: if security_critical { "yes" } else { "no" },
         shipped: if shipped { "yes" } else { "no" },
         license,
@@ -191,55 +173,159 @@ pub fn readme_file_from_package<'a>(
     Ok((dir, readme))
 }
 
-// Allowed licenses, in the format they are specified in Cargo.toml files from
-// crates.io, and the format to write to README.chromium.
-static ALLOWED_LICENSES: [(&str, &str); 21] = [
-    // ("Cargo.toml string", "License for README.chromium")
-    ("Apache-2.0", "Apache 2.0"),
-    ("MIT OR Apache-2.0", "Apache 2.0"),
-    ("MIT/Apache-2.0", "Apache 2.0"),
-    ("MIT / Apache-2.0", "Apache 2.0"),
-    ("Apache-2.0 / MIT", "Apache 2.0"),
-    ("Apache-2.0 OR MIT", "Apache 2.0"),
-    ("Apache-2.0/MIT", "Apache 2.0"),
-    ("(Apache-2.0 OR MIT) AND BSD-3-Clause", "Apache 2.0 | BSD 3-Clause"),
-    ("MIT OR Apache-2.0 OR Zlib", "Apache 2.0"),
-    ("MIT", "MIT"),
-    ("Unlicense OR MIT", "MIT"),
-    ("Unlicense/MIT", "MIT"),
-    ("Apache-2.0 OR BSL-1.0", "Apache 2.0"),
-    ("BSD-3-Clause", "BSD 3-Clause"),
-    ("ISC", "ISC"),
-    ("MIT OR Zlib OR Apache-2.0", "Apache 2.0"),
-    ("Zlib OR Apache-2.0 OR MIT", "Apache 2.0"),
-    ("0BSD OR MIT OR Apache-2.0", "Apache 2.0"),
-    (
-        "(MIT OR Apache-2.0) AND Unicode-DFS-2016",
-        "Apache 2.0 AND Unicode License Agreement - Data Files and Software (2016)",
-    ),
-    ("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", "Apache 2.0"),
-    ("BSD-2-Clause OR Apache-2.0 OR MIT", "Apache 2.0"),
-];
+/// REVIEW REQUIREMENT: When adding a new `LicenseKind`, please consult
+/// `readme.rs-third-party-license-review.md`.
+#[allow(clippy::upper_case_acronyms)]
+#[derive(Debug, Eq, Hash, PartialEq, Clone, Copy)]
+enum LicenseKind {
+    /// https://spdx.org/licenses/Apache-2.0.html
+    Apache2,
 
-static EXPECTED_LICENSE_FILE: [(&str, &str); 20] = [
-    ("Apache 2.0", "LICENSE"),
-    ("Apache 2.0", "LICENSE.md"),
-    ("Apache 2.0", "LICENSE-APACHE"),
-    ("Apache 2.0", "LICENSE-APACHE.txt"),
-    ("Apache 2.0", "LICENSE-APACHE.md"),
-    ("MIT", "LICENSE"),
-    ("MIT", "LICENSE.md"),
-    ("MIT", "LICENSE-MIT"),
-    ("MIT", "LICENSE-MIT.txt"),
-    ("MIT", "LICENSE-MIT.md"),
-    ("BSD 3-Clause", "LICENSE"),
-    ("BSD 3-Clause", "LICENSE.md"),
-    ("BSD 3-Clause", "LICENSE-BSD"),
-    ("BSD 3-Clause", "LICENSE-BSD.txt"),
-    ("BSD 3-Clause", "LICENSE-BSD.md"),
-    ("ISC", "LICENSE"),
-    ("ISC", "LICENSE.md"),
-    ("ISC", "LICENSE-ISC"),
-    ("Apache 2.0 | BSD 3-Clause", "LICENSE"),
-    ("Apache 2.0 | BSD 3-Clause", "LICENSE.md"),
-];
+    /// https://spdx.org/licenses/BSD-3-Clause.html
+    BSD3,
+
+    /// https://spdx.org/licenses/MIT.html
+    MIT,
+
+    /// https://spdx.org/licenses/ISC.html
+    ISC,
+
+    /// https://spdx.org/licenses/Zlib.html
+    Zlib,
+
+    /// https://spdx.org/licenses/Unicode-3.0.html
+    Unicode3,
+}
+
+impl Display for LicenseKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        // NOTE: The strings used below should match the SPDX "Short identifier"
+        // which can be found on the https://spdx.org website.  (e.g. see
+        // https://spdx.org/licenses/Apache-2.0.html).
+        match self {
+            LicenseKind::Apache2 => write!(f, "Apache-2.0"),
+            LicenseKind::BSD3 => write!(f, "BSD-3-Clause"),
+            LicenseKind::MIT => write!(f, "MIT"),
+            LicenseKind::ISC => write!(f, "ISC"),
+            LicenseKind::Zlib => write!(f, "Zlib"),
+            LicenseKind::Unicode3 => write!(f, "Unicode-3.0"),
+        }
+    }
+}
+
+/// LICENSE_STRING_TO_LICENSE_KIND, converts licenses from the format they are
+/// specified in Cargo.toml files from crates.io, to the LicenseKind that will
+/// be written to README.chromium.
+/// Each entry looks like the following:
+/// h.insert(
+///   "Cargo.toml string",
+///   vec![LicenseKind::<License for README.chromium>]
+/// );
+static LICENSE_STRING_TO_LICENSE_KIND: LazyLock<HashMap<&'static str, Vec<LicenseKind>>> =
+    LazyLock::new(|| {
+        let mut h = HashMap::new();
+        h.insert("Apache-2.0", vec![LicenseKind::Apache2]);
+        h.insert("MIT OR Apache-2.0", vec![LicenseKind::Apache2]);
+        h.insert("MIT/Apache-2.0", vec![LicenseKind::Apache2]);
+        h.insert("MIT / Apache-2.0", vec![LicenseKind::Apache2]);
+        h.insert("Apache-2.0 / MIT", vec![LicenseKind::Apache2]);
+        h.insert("Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
+        h.insert("Apache-2.0/MIT", vec![LicenseKind::Apache2]);
+        h.insert(
+            "(Apache-2.0 OR MIT) AND BSD-3-Clause",
+            vec![LicenseKind::Apache2, LicenseKind::BSD3],
+        );
+        h.insert("MIT OR Apache-2.0 OR Zlib", vec![LicenseKind::Apache2]);
+        h.insert("MIT", vec![LicenseKind::MIT]);
+        h.insert("Unlicense OR MIT", vec![LicenseKind::MIT]);
+        h.insert("Unlicense/MIT", vec![LicenseKind::MIT]);
+        h.insert("Apache-2.0 OR BSL-1.0", vec![LicenseKind::Apache2]);
+        h.insert("BSD-3-Clause", vec![LicenseKind::BSD3]);
+        h.insert("ISC", vec![LicenseKind::ISC]);
+        h.insert("MIT OR Zlib OR Apache-2.0", vec![LicenseKind::Apache2]);
+        h.insert("Zlib OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
+        h.insert("0BSD OR MIT OR Apache-2.0", vec![LicenseKind::Apache2]);
+        h.insert(
+            "(MIT OR Apache-2.0) AND Unicode-3.0",
+            vec![LicenseKind::Apache2, LicenseKind::Unicode3],
+        );
+        h.insert("MIT AND (MIT OR Apache-2.0)", vec![LicenseKind::Apache2]);
+        h.insert("Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
+        h.insert("BSD-2-Clause OR Apache-2.0 OR MIT", vec![LicenseKind::Apache2]);
+        h.insert("Unicode-3.0", vec![LicenseKind::Unicode3]);
+        h.insert("Zlib", vec![LicenseKind::Zlib]);
+        h
+    });
+
+static LICENSE_KIND_TO_LICENSE_FILES: LazyLock<HashMap<LicenseKind, Vec<&'static str>>> =
+    LazyLock::new(|| {
+        let mut h = HashMap::new();
+        h.insert(
+            LicenseKind::Apache2,
+            vec![
+                "LICENSE-APACHE",
+                "LICENSE-APACHE.md",
+                "LICENSE-APACHE.txt",
+                "license-apache-2.0",
+                "LICENSE.md",
+                "LICENSE",
+            ],
+        );
+        h.insert(
+            LicenseKind::MIT,
+            vec!["LICENSE-MIT", "LICENSE-MIT.txt", "LICENSE-MIT.md", "LICENSE.md", "LICENSE"],
+        );
+        h.insert(
+            LicenseKind::BSD3,
+            vec!["LICENSE-BSD", "LICENSE-BSD.txt", "LICENSE-BSD.md", "LICENSE.md", "LICENSE"],
+        );
+        h.insert(LicenseKind::ISC, vec!["LICENSE-ISC", "LICENSE.md", "LICENSE"]);
+        h.insert(LicenseKind::Zlib, vec!["LICENSE-ZLIB", "LICENSE.md", "LICENSE"]);
+        h.insert(LicenseKind::Unicode3, vec!["LICENSE-UNICODE", "LICENSE.md", "LICENSE"]);
+        h
+    });
+
+/// Converts a license string from Cargo.toml into a Vec of LicenseKinds.
+fn parse_license_string(pkg_license: &str) -> Result<Vec<LicenseKind>> {
+    LICENSE_STRING_TO_LICENSE_KIND.get(pkg_license).cloned().ok_or_else(|| {
+        format_err!("License '{}' not in LICENSE_STRING_TO_LICENSE_KIND", pkg_license)
+    })
+}
+
+/// Converts a slice of LicenseKinds into a comma-separated string.
+fn license_kinds_to_string(license_kinds: &[LicenseKind]) -> String {
+    license_kinds.iter().join(", ")
+}
+
+/// Finds license files for the given license kinds in the crate directory.
+fn find_license_files_for_kinds(
+    license_kinds: &[LicenseKind],
+    crate_dir: &Path,
+) -> Result<Vec<String>> {
+    let mut found_files = Vec::new();
+
+    for kind in license_kinds {
+        // Safe to unwrap because if a LicenseKind isn't in
+        // LICENSE_KIND_TO_LICENSE_FILES, it's a bug in gnrt's implementation.
+        let possible_files = LICENSE_KIND_TO_LICENSE_FILES.get(kind).unwrap_or_else(|| {
+            panic!("Bug in gnrt: License kind {kind:?} not in LICENSE_KIND_TO_LICENSE_FILES")
+        });
+
+        // Try each possible file in priority order.
+        for file in possible_files {
+            let path = crate_dir.join(file);
+            if path.try_exists()? {
+                let normalized_path = format!("//{}", paths::normalize_unix_path_separator(&path));
+                found_files.push(normalized_path);
+                break; // Found highest priority file for this license kind.
+            }
+        }
+    }
+
+    // Check for duplicates using itertools.
+    if found_files.iter().duplicates().count() > 0 {
+        bail!("Duplicate license files found: {:?}", found_files);
+    }
+
+    Ok(found_files)
+}

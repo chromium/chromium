@@ -7,12 +7,12 @@
 
 namespace ipcz {
 
-// Overloaded is a template helper for more succint evaluation of absl::variant
+// Overloaded is a template helper for more succint evaluation of std::variant
 // values. This allows visitation to be expressed with anonymous lambdas as
 // follows:
 //
-//     absl::variant<A, B, C> v = MakeSomeVariant();
-//     absl::visit(
+//     std::variant<A, B, C> v = MakeSomeVariant();
+//     std::visit(
 //         Overloaded{
 //             [](const A& v) { return "A"; },
 //             [](const B& v) { return "B"; },

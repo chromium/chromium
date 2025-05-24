@@ -39,7 +39,7 @@ class OverlayUserPrefStoreTest : public testing::Test {
     overlay_->RegisterPersistentPref(shared_key);
   }
 
-  ~OverlayUserPrefStoreTest() override {}
+  ~OverlayUserPrefStoreTest() override = default;
 
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<TestingPrefStore> underlay_;

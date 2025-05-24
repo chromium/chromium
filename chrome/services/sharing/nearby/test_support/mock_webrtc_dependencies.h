@@ -36,17 +36,9 @@ class MockWebRtcDependencies
       void,
       GetHostAddress,
       (const std::string& host_name,
+       std::optional<net::AddressFamily> address_family,
        bool enable_mdns,
        network::mojom::P2PSocketManager::GetHostAddressCallback callback),
-      (override));
-  MOCK_METHOD(
-      void,
-      GetHostAddressWithFamily,
-      (const std::string& host_name,
-       int address_family,
-       bool enable_mdns,
-       network::mojom::P2PSocketManager::GetHostAddressWithFamilyCallback
-           callback),
       (override));
   MOCK_METHOD(
       void,

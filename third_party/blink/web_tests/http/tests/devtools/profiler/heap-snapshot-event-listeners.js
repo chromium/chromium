@@ -44,7 +44,7 @@ import * as Profiler from 'devtools/panels/profiler/profiler.js';
   async function snapshotReceived(profile) {
     var snapshotProxy = profile.snapshotProxy;
     var classNames = await snapshotProxy.aggregatesWithFilter(new HeapSnapshotModel.HeapSnapshotModel.NodeFilter());
-    var found = Object.keys(classNames).includes('EventListenerWrapperTest');
+    var found = Object.values(classNames).some(v => v.name === 'EventListenerWrapperTest');
     if (found)
       TestRunner.addResult('PASS: the class name is found');
     else

@@ -15,7 +15,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/observer_list.h"
-#include "build/chromeos_buildflags.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_model_associator.h"
@@ -46,7 +45,6 @@ class PrefServiceSyncable : public PrefService,
       std::unique_ptr<PrefNotifierImpl> pref_notifier,
       std::unique_ptr<PrefValueStore> pref_value_store,
       scoped_refptr<PersistentPrefStore> user_prefs,
-      scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
       scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
@@ -64,7 +62,6 @@ class PrefServiceSyncable : public PrefService,
       std::unique_ptr<PrefNotifierImpl> pref_notifier,
       std::unique_ptr<PrefValueStore> pref_value_store,
       scoped_refptr<DualLayerUserPrefStore> dual_layer_user_prefs,
-      scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
       scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
       scoped_refptr<PrefModelAssociatorClient> pref_model_associator_client,
       base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
@@ -95,7 +92,7 @@ class PrefServiceSyncable : public PrefService,
   // priority preferences.
   bool IsPrioritySyncing();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // As above, but for OS preferences.
   bool AreOsPrefsSyncing();
 
@@ -138,7 +135,7 @@ class PrefServiceSyncable : public PrefService,
   PrefModelAssociator pref_sync_associator_;
   PrefModelAssociator priority_pref_sync_associator_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Associators for Chrome OS system preferences.
   PrefModelAssociator os_pref_sync_associator_;
   PrefModelAssociator os_priority_pref_sync_associator_;

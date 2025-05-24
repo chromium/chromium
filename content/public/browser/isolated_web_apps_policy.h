@@ -14,15 +14,8 @@ class BrowserContext;
 // For more information about IWAs, see:
 // https://github.com/WICG/isolated-web-apps/blob/main/README.md
 
-class CONTENT_EXPORT IsolatedWebAppsPolicy {
- public:
-  IsolatedWebAppsPolicy(const IsolatedWebAppsPolicy&) = delete;
-  IsolatedWebAppsPolicy& operator=(const IsolatedWebAppsPolicy&) = delete;
-  IsolatedWebAppsPolicy() = delete;
-
-  // Returns true if Isolated Web Apps are enabled.
-  static bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context);
-};
+// Returns true if Isolated Web Apps are enabled.
+CONTENT_EXPORT bool AreIsolatedWebAppsEnabled(BrowserContext* browser_context);
 
 }  // namespace content
 

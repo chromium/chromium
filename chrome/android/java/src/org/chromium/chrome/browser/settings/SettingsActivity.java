@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,11 +25,13 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -36,7 +39,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -50,16 +52,19 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
+import java.lang.ref.WeakReference;
 import java.util.Locale;
 
 /**
@@ -67,21 +72,23 @@ import java.util.Locale;
  *
  * <p>This activity displays a single {@link Fragment}, typically a {@link
  * PreferenceFragmentCompat}. There are two types of fragments shown in the activity:
- * <i>embeddable</i> fragments that implement {@link SettingsPage}, and <i>standalone</i> fragments
- * that do not implement it. Embeddable fragments may be embedded into a column in the multi-column
- * settings UI, if it is enabled and the window is large enough. Standalone fragments, in contrast,
- * are always shown as occupying the whole window.
+ * <i>embeddable</i> fragments that implement {@link EmbeddableSettingsPage}, and <i>standalone</i>
+ * fragments that do not implement it. Embeddable fragments may be embedded into a column in the
+ * multi-column settings UI, if it is enabled and the window is large enough. Standalone fragments,
+ * in contrast, are always shown as occupying the whole window.
  *
  * <p>Embeddable fragments must not modify the activity UI outside of the fragment, e.g. the
  * activity title and the action bar, because the same activity instance is shared among multiple
  * fragments as the user navigates through the settings. Instead, fragments should implement methods
- * in {@link SettingsPage} to ask the activity to update its UI appropriately.
+ * in {@link EmbeddableSettingsPage} to ask the activity to update its UI appropriately.
  *
  * <p>Standalone fragments may modify the activity UI as needed. A standalone fragment is always
  * launched with a fresh settings activity instance that is not shared with other fragments.
  */
 public class SettingsActivity extends ChromeBaseAppCompatActivity
         implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SnackbarManageable {
+    private static final String TAG = "SettingsActivity";
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static final String EXTRA_SHOW_FRAGMENT = "show_fragment";
 
@@ -98,7 +105,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private boolean mStandalone;
     private Profile mProfile;
-    private ScrimCoordinator mScrim;
+    private ScrimManager mScrimManager;
     private ManagedBottomSheetController mManagedBottomSheetController;
     private final OneshotSupplierImpl<BottomSheetController> mBottomSheetControllerSupplier =
             new OneshotSupplierImpl<>();
@@ -111,8 +118,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     // process those intents in onNewIntent.
     private Intent mPendingNewIntent;
 
+    // Used to avoid finishing the same fragment multiple times. If the referent is identical to the
+    // result of getMainFragment(), it should be considered already finished. Otherwise it should be
+    // ignored.
+    private WeakReference<Fragment> mFinishedMainFragment;
+
     // This is only used on automotive.
     private @Nullable MissingDeviceLockLauncher mMissingDeviceLockLauncher;
+
+    // Used to manage and show new intents;
+    private IntentRequestTracker mIntentRequestTracker;
 
     private static final String MAIN_FRAGMENT_TAG = "settings_main";
 
@@ -165,22 +180,19 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // recreated and super.onCreate() has already recreated the fragment.
         if (savedInstanceState == null) {
             Fragment fragment = instantiateMainFragment(getIntent());
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
-                    .setCustomAnimations(
-                            R.anim.shared_x_axis_open_enter,
-                            R.anim.shared_x_axis_open_exit,
-                            R.anim.shared_x_axis_close_enter,
-                            R.anim.shared_x_axis_close_exit)
-                    .commit();
+
+            var transaction = fragmentManager.beginTransaction();
+            transaction.replace(R.id.content, fragment, MAIN_FRAGMENT_TAG);
+            setFragmentAnimation(transaction, fragment);
+            transaction.commit();
         }
 
         setStatusBarColor();
         initBottomSheet();
 
-        mSnackbarManagerSupplier.set(
-                new SnackbarManager(this, findViewById(android.R.id.content), null));
+        mSnackbarManagerSupplier.set(new SnackbarManager(this, getContentView(), null));
+
+        mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
     }
 
     @Override
@@ -222,33 +234,18 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     /** Set up the bottom sheet for this activity. */
     private void initBottomSheet() {
         ViewGroup sheetContainer = findViewById(R.id.sheet_container);
-        mScrim =
-                new ScrimCoordinator(
-                        this,
-                        new ScrimCoordinator.SystemUiScrimDelegate() {
-                            @Override
-                            public void setStatusBarScrimFraction(float scrimFraction) {
-                                // TODO: Implement if status bar needs to change color with the
-                                // scrim.
-                            }
-
-                            @Override
-                            public void setNavigationBarScrimFraction(float scrimFraction) {
-                                // TODO: Implement if navigation bar needs to change color with the
-                                // scrim.
-                            }
-                        },
-                        (ViewGroup) sheetContainer.getParent(),
-                        getColor(R.color.default_scrim_color));
+        // TODO: Observe scrim changes if status bar needs to change color with the scrim.
+        mScrimManager = new ScrimManager(this, (ViewGroup) sheetContainer.getParent());
 
         mManagedBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrim,
-                        (sheet) -> {},
+                        () -> mScrimManager,
+                        CallbackUtils.emptyCallback(),
                         getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,
-                        () -> 0);
+                        () -> 0,
+                        /* desktopWindowStateManager= */ null);
         mBottomSheetControllerSupplier.set(mManagedBottomSheetController);
     }
 
@@ -257,17 +254,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public boolean onPreferenceStartFragment(
             PreferenceFragmentCompat caller, Preference preference) {
-        startFragment(preference.getFragment(), preference.getExtras());
+        startSettings(preference.getFragment(), preference.getExtras());
         return true;
     }
 
     /**
-     * Starts a new Settings activity showing the desired fragment.
+     * Starts a new settings showing the desired fragment.
      *
      * @param fragmentClass The Class of the fragment to show.
      * @param args Arguments to pass to Fragment.instantiate(), or null.
      */
-    public void startFragment(@Nullable String fragmentClass, @Nullable Bundle args) {
+    public void startSettings(@Nullable String fragmentClass, @Nullable Bundle args) {
         Intent intent = SettingsIntentUtil.createIntent(this, fragmentClass, args);
         startActivity(intent);
     }
@@ -306,17 +303,42 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         if (mPendingNewIntent != null) {
             Fragment fragment = instantiateMainFragment(mPendingNewIntent);
             mPendingNewIntent = null;
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .setReorderingAllowed(true)
-                    .setCustomAnimations(
-                            R.anim.shared_x_axis_open_enter,
-                            R.anim.shared_x_axis_open_exit,
-                            R.anim.shared_x_axis_close_enter,
-                            R.anim.shared_x_axis_close_exit)
+
+            var transaction = getSupportFragmentManager().beginTransaction();
+            transaction.setReorderingAllowed(true);
+            setFragmentAnimation(transaction, fragment);
+            transaction
                     .replace(R.id.content, fragment, MAIN_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commit();
+        }
+    }
+
+    private static @SettingsFragment.AnimationType int getAnimationType(
+            @NonNull Fragment fragment) {
+        if (fragment instanceof SettingsFragment settingsFragment) {
+            // The fragment is (being) migrated. Respect the animation type that the fragment says.
+            return settingsFragment.getAnimationType();
+        }
+
+        // The fragment is not yet migrated with auditing. Fallback to the legacy animation type.
+        Log.w(TAG, "Non-migrated Settings fragment is found: " + fragment.getClass().getName());
+        return SettingsFragment.AnimationType.TWEEN;
+    }
+
+    private static void setFragmentAnimation(
+            @NonNull FragmentTransaction transaction, @NonNull Fragment fragment) {
+        switch (getAnimationType(fragment)) {
+            case SettingsFragment.AnimationType.TWEEN -> transaction.setCustomAnimations(
+                    R.anim.shared_x_axis_open_enter,
+                    R.anim.shared_x_axis_open_exit,
+                    R.anim.shared_x_axis_close_enter,
+                    R.anim.shared_x_axis_close_exit);
+            case SettingsFragment.AnimationType.PROPERTY -> transaction.setCustomAnimations(
+                    R.animator.shared_x_axis_open_enter,
+                    R.animator.shared_x_axis_open_exit,
+                    R.animator.shared_x_axis_close_enter,
+                    R.animator.shared_x_axis_close_exit);
         }
     }
 
@@ -345,7 +367,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     @Override
     protected void onDestroy() {
-        mScrim.destroy();
+        mScrimManager.destroy();
         super.onDestroy();
     }
 
@@ -357,6 +379,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @VisibleForTesting
     public Fragment getMainFragment() {
         return getSupportFragmentManager().findFragmentById(R.id.content);
+    }
+
+    /**
+     * Returns the intent request tracker for the Settings Activity. If the tracker does not exist
+     * yet create one and return that.
+     *
+     * @return IntentRequestTracker The intent request tracker for the Settings Activity.
+     */
+    public IntentRequestTracker getIntentRequestTracker() {
+        return mIntentRequestTracker;
     }
 
     @Override
@@ -391,16 +423,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         if (item.getItemId() == android.R.id.home) {
-            if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                if (fragmentManager.getBackStackEntryCount() == 0) {
-                    finish();
-                } else {
-                    fragmentManager.popBackStack();
-                }
-            } else {
-                finish();
-            }
+            finishCurrentSettings(mainFragment);
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
             HelpAndFeedbackLauncherImpl.getForProfile(mProfile)
@@ -408,6 +431,22 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        mIntentRequestTracker.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // Finish the current settings when the ESC key is pressed.
+        if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            finishCurrentSettings(getMainFragment());
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private void initBackPressHandler() {
@@ -425,8 +464,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             BackPressHelper.create(
                     activeFragment.getViewLifecycleOwner(),
                     getOnBackPressedDispatcher(),
-                    (BackPressHandler) activeFragment,
-                    SecondaryActivity.SETTINGS);
+                    (BackPressHandler) activeFragment);
         }
     }
 
@@ -434,8 +472,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         BackPressHelper.create(
                 this,
                 getOnBackPressedDispatcher(),
-                mBottomSheetControllerSupplier.get().getBottomSheetBackPressHandler(),
-                SecondaryActivity.SETTINGS);
+                mBottomSheetControllerSupplier.get().getBottomSheetBackPressHandler());
     }
 
     @Override
@@ -469,8 +506,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             return;
         }
 
-        if (UiUtils.isSystemUiThemingDisabled()) return;
-
         // Use transparent color, so the AppBarLayout can color the status bar on scroll.
         UiUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT);
 
@@ -485,6 +520,67 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
     }
 
+    /**
+     * Finishes the current fragment.
+     *
+     * <p>This method asks the activity to show the previous fragment. If the back stack is empty,
+     * the activity itself is finished.
+     *
+     * <p>If the given fragment is not the current one, or the fragment is already finished, this
+     * method does nothing. In other words, this method is idempotent.
+     *
+     * <p>This method executes navigations asynchronously. It means that it is safe to call this
+     * method on the UI thread in most cases, particularly even in the middle of executing fragment
+     * transactions. On the other hand, you have to be careful when you want to go back multiple
+     * pages using this method; it may not work as you expect to call this method multiple times in
+     * a row because the subsequent method calls are ignored due to fragment mismatch. Use {@link
+     * executePendingNavigations} to synchronously execute pending navigations to work around this
+     * problem.
+     *
+     * <p>This method is package-private because it is used by {@link SettingsNavigationImpl}. Use
+     * {@link SettingsNavigation} to call this method from fragments, instead of calling it
+     * directly.
+     *
+     * @param fragment The expected current fragment.
+     */
+    @SuppressLint("ReferenceEquality")
+    void finishCurrentSettings(Fragment fragment) {
+        if (getMainFragment() != fragment) {
+            return;
+        }
+        if (mFinishedMainFragment != null && mFinishedMainFragment.get() == fragment) {
+            return;
+        }
+
+        mFinishedMainFragment = new WeakReference<>(fragment);
+
+        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            if (fragmentManager.getBackStackEntryCount() == 0) {
+                finish();
+            } else {
+                fragmentManager.popBackStack();
+            }
+        } else {
+            finish();
+        }
+    }
+
+    /**
+     * Executes pending navigations immediately.
+     *
+     * <p>See {@link finishCurrentSettings} for a valid use case of this method.
+     *
+     * <p>This method is package-private because it is used by {@link SettingsNavigationImpl}. Use
+     * {@link SettingsNavigation} to call this method from fragments, instead of calling it
+     * directly.
+     */
+    void executePendingNavigations() {
+        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
+            getSupportFragmentManager().executePendingTransactions();
+        }
+    }
+
     private class TitleUpdater extends FragmentManager.FragmentLifecycleCallbacks {
         private final Callback<String> mSetTitleCallback =
                 (title) -> {
@@ -497,20 +593,20 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         private ObservableSupplier<String> mCurrentPageTitle;
 
         @Override
-        public void onFragmentResumed(
+        public void onFragmentStarted(
                 @NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
             if (!MAIN_FRAGMENT_TAG.equals(fragment.getTag())) {
                 return;
             }
 
-            // TitleUpdater is enabled only when the fragment implements SettingsPage.
-            SettingsPage settingsFragment = (SettingsPage) fragment;
+            // TitleUpdater is enabled only when the fragment implements EmbeddableSettingsPage.
+            EmbeddableSettingsPage settingsFragment = (EmbeddableSettingsPage) fragment;
 
             if (mCurrentPageTitle != null) {
                 mCurrentPageTitle.removeObserver(mSetTitleCallback);
             }
             mCurrentPageTitle = settingsFragment.getPageTitle();
-            mCurrentPageTitle.addObserver(mSetTitleCallback);
+            mCurrentPageTitle.addSyncObserverAndCallIfNonNull(mSetTitleCallback);
         }
     }
 
@@ -546,12 +642,25 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     "Settings.FragmentAttached", className.hashCode());
             // Log hashCode to easily add new class names to enums.xml.
             Log.d(
-                    "SettingsActivity",
+                    TAG,
                     String.format(
                             Locale.ENGLISH,
                             "Settings.FragmentAttached: <int value=\"%d\" label=\"%s\"/>",
                             className.hashCode(),
                             className));
+
+            if (!(fragment instanceof SettingsFragment)) {
+                RecordHistogram.recordSparseHistogram(
+                        "Settings.NonSettingsFragmentAttached", className.hashCode());
+                Log.e(
+                        TAG,
+                        String.format(
+                                Locale.ENGLISH,
+                                "%s does not implement SettingsFragment",
+                                className));
+            }
+            assert fragment instanceof SettingsFragment
+                    : className + "does not implement SettingsFragment";
         }
     }
 }

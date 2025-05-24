@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -23,7 +24,7 @@ using DangerousFileResult =
 std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
     content::WebContents* web_contents,
     const url::Origin& origin,
-    const base::FilePath& path,
+    const content::PathInfo& path_info,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback) {
@@ -47,7 +48,8 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
   dialog_builder
       .SetTitle(l10n_util::GetStringFUTF16(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TITLE,
-          file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(path)))
+          file_system_access_ui_helper::GetElidedPathForDisplayAsTitle(
+              path_info)))
       .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
           IDS_FILE_SYSTEM_ACCESS_DANGEROUS_FILE_TEXT,
           ui::DialogModelLabel::CreateEmphasizedText(origin_identity_name)))
@@ -68,23 +70,24 @@ std::unique_ptr<ui::DialogModel> CreateFileSystemAccessDangerousFileDialog(
 
 void ShowFileSystemAccessDangerousFileDialog(
     const url::Origin& origin,
-    const base::FilePath& path,
+    const content::PathInfo& path_info,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback,
     content::WebContents* web_contents) {
-  chrome::ShowTabModal(CreateFileSystemAccessDangerousFileDialog(
-                           web_contents, origin, path, std::move(callback)),
-                       web_contents);
+  chrome::ShowTabModal(
+      CreateFileSystemAccessDangerousFileDialog(web_contents, origin, path_info,
+                                                std::move(callback)),
+      web_contents);
 }
 
 std::unique_ptr<ui::DialogModel>
 CreateFileSystemAccessDangerousFileDialogForTesting(  // IN-TEST
     const url::Origin& origin,
-    const base::FilePath& path,
+    const content::PathInfo& path_info,
     base::OnceCallback<
         void(content::FileSystemAccessPermissionContext::SensitiveEntryResult)>
         callback) {
   return CreateFileSystemAccessDangerousFileDialog(
-      /*web_contents=*/nullptr, origin, path, std::move(callback));
+      /*web_contents=*/nullptr, origin, path_info, std::move(callback));
 }

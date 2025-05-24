@@ -15,6 +15,8 @@ data_sharing_pb::MemberRole ConvertMemberRole(
       return data_sharing_pb::MEMBER_ROLE_MEMBER;
     case data_sharing::mojom::MemberRole::kInvitee:
       return data_sharing_pb::MEMBER_ROLE_INVITEE;
+    case data_sharing::mojom::MemberRole::kFormerMember:
+      return data_sharing_pb::MEMBER_ROLE_FORMER_MEMBER;
     default:
       return data_sharing_pb::MEMBER_ROLE_UNSPECIFIED;
   }
@@ -24,6 +26,7 @@ data_sharing_pb::GroupMember ConvertGroupMember(
     const data_sharing::mojom::GroupMemberPtr& member) {
   data_sharing_pb::GroupMember result;
   result.set_gaia_id(member->gaia_id);
+  result.set_given_name(member->given_name);
   result.set_display_name(member->display_name);
   result.set_email(member->email);
   result.set_avatar_url(member->avatar_url.spec());
@@ -39,6 +42,9 @@ data_sharing_pb::GroupData ConvertGroup(
   result.set_access_token(group_data->access_token);
   for (auto& member : group_data->members) {
     *result.add_members() = ConvertGroupMember(member);
+  }
+  for (auto& former_member : group_data->former_members) {
+    *result.add_former_members() = ConvertGroupMember(former_member);
   }
   return result;
 }

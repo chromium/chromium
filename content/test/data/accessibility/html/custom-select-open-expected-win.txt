@@ -1,6 +1,6 @@
 ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++IA2_ROLE_SECTION
-++++ROLE_SYSTEM_COMBOBOX name='Currency for purchase' value='USD United States Dollar $' EXPANDED FOCUSABLE HASPOPUP haspopup:menu
+++++ROLE_SYSTEM_COMBOBOX name='Currency for purchase' value='USD' EXPANDED FOCUSABLE HASPOPUP haspopup:menu
 ++++++ROLE_SYSTEM_LIST ispopup:auto
 ++++++++ROLE_SYSTEM_LISTITEM name='EUR Euro' FOCUSABLE SELECTABLE
 ++++++++++IA2_ROLE_SECTION

@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.notifications;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 import org.chromium.components.browser_ui.notifications.channels.ChannelsInitializer;
@@ -19,6 +19,7 @@ import org.chromium.components.browser_ui.notifications.channels.ChannelsInitial
  * Factory which supplies the appropriate type of notification builder based on Android version.
  * Should be used for all notifications we create, to ensure a notification channel is set on O.
  */
+@NullMarked
 public class NotificationWrapperBuilderFactory {
     /**
      * Creates a NotificationCompat.Builder under the hood, wrapped in our own interface, and
@@ -41,12 +42,9 @@ public class NotificationWrapperBuilderFactory {
             String channelId, @Nullable NotificationMetadata metadata) {
         Context context = ContextUtils.getApplicationContext();
 
-        NotificationManagerProxyImpl notificationManagerProxy =
-                new NotificationManagerProxyImpl(context);
-
         ChannelsInitializer channelsInitializer =
                 new ChannelsInitializer(
-                        notificationManagerProxy,
+                        BaseNotificationManagerProxyFactory.create(),
                         ChromeChannelDefinitions.getInstance(),
                         context.getResources());
 

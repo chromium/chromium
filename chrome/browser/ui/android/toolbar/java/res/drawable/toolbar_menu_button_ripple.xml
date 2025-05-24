@@ -10,6 +10,8 @@ found in the LICENSE file.
     android:paddingStart="@dimen/button_end_padding">
   <item
       android:id="@android:id/content"
-      android:drawable="@drawable/toolbar_button_highlight_layer_list">
-  </item>
+      android:width="@dimen/large_icon_background_size"
+      android:height="@dimen/large_icon_background_size"
+      android:gravity="center"
+      android:drawable="@drawable/default_icon_background_selector" />
 </ripple>

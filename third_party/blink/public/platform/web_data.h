@@ -31,9 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_DATA_H_
 
+#include <vector>
+
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 #if INSIDE_BLINK
@@ -52,13 +54,7 @@ class BLINK_PLATFORM_EXPORT WebData {
 
   WebData() = default;
 
-  WebData(const char* data, size_t size) { Assign(data, size); }
-
-  template <int N>
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  WebData(const char (&data)[N]) {
-    Assign(data, N - 1);
-  }
+  explicit WebData(base::span<const uint8_t> data) { Assign(data); }
 
   WebData(const WebData& d) { Assign(d); }
 
@@ -69,35 +65,34 @@ class BLINK_PLATFORM_EXPORT WebData {
 
   void Reset();
   void Assign(const WebData&);
-  void Assign(const char* data, size_t size);
-  void Append(const char* data, size_t size);
+  void Assign(base::span<const uint8_t> data);
+  void Append(base::span<const uint8_t> data);
 
   size_t size() const;
 
-  // Returns the number of consecutive bytes after "position". "data"
-  // points to the first byte. Returns 0 when no more data is left.
-  size_t GetSomeData(const char*& data, size_t position) const;
+  // Returns a span of the consecutive bytes after "position". Returns an empty
+  // span when no more data is left.
+  base::span<const uint8_t> GetSomeData(size_t position) const;
 
   // Same as SharedBuffer::CopyAs, copies the segmented data into a
   // contiguous buffer.  Use GetSomeData() or ForEachSegment() whenever
   // possible, if a copy can be avoided.
-  WebVector<uint8_t> Copy() const;
+  std::vector<uint8_t> Copy() const;
 
-  // Helper for applying a lambda to all data segments, sequentially:
+  // Helper for applying a lambda to all data segments sequentially:
   //
-  //   bool func(const char* segment, size_t segment_size,
-  //             size_t segment_offset);
+  //   bool func(base::span<const uint8_t> segment, size_t segment_offset);
   //
-  // The iterator stops early when the lambda returns |false|.
+  // The iterator stops early when the lambda returns false.
   template <typename Func>
   void ForEachSegment(Func&& func) const {
-    const char* segment;
-    size_t pos = 0;
-
-    while (size_t length = GetSomeData(segment, pos)) {
-      if (!func(segment, length, pos))
+    size_t segment_offset = 0;
+    for (base::span<const uint8_t> segment = GetSomeData(segment_offset);
+         !segment.empty(); segment = GetSomeData(segment_offset)) {
+      if (!func(segment, segment_offset)) {
         break;
-      pos += length;
+      }
+      segment_offset += segment.size();
     }
   }
 
@@ -109,18 +104,6 @@ class BLINK_PLATFORM_EXPORT WebData {
   WebData& operator=(scoped_refptr<SharedBuffer>);
   operator scoped_refptr<SharedBuffer>() const;
   operator const SharedBuffer&() const;
-#else
-  template <class C>
-  // NOLINTNEXTLINE(google-explicit-constructor)
-  WebData(const C& c) {
-    Assign(c.data(), c.size());
-  }
-
-  template <class C>
-  WebData& operator=(const C& c) {
-    Assign(c.data(), c.size());
-    return *this;
-  }
 #endif
 
  private:

@@ -19,7 +19,7 @@ class ConfirmDownloadReplacingRequest
     : public OverlayRequestConfig<ConfirmDownloadReplacingRequest> {
  private:
   void CreateAuxiliaryData(base::SupportsUserData* user_data) override;
-  OVERLAY_USER_DATA_SETUP(ConfirmDownloadReplacingRequest);
+  friend class OverlayUserData<ConfirmDownloadReplacingRequest>;
 };
 
 #endif  // IOS_CHROME_BROWSER_DOWNLOAD_MODEL_CONFIRM_DOWNLOAD_REPLACING_OVERLAY_H_

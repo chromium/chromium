@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
@@ -73,7 +74,6 @@ void HTMLLinkElement::ParseAttribute(
     RemoveExpectRenderBlockingLink();
 
     rel_attribute_ = LinkRelAttribute(value);
-    // TODO(vmpstr): Add rel=expect to UseCounter.
     AddExpectRenderBlockingLinkIfNeeded();
 
     if (rel_attribute_.IsMonetization() &&
@@ -97,14 +97,24 @@ void HTMLLinkElement::ParseAttribute(
     if (rel_attribute_.IsTermsOfService()) {
       UseCounter::Count(&GetDocument(), WebFeature::kLinkRelTermsOfService);
     }
-    if (rel_attribute_.IsPayment() && GetDocument().IsInOutermostMainFrame()) {
-      UseCounter::Count(&GetDocument(), WebFeature::kLinkRelPayment);
-#if BUILDFLAG(IS_ANDROID)
-      if (RuntimeEnabledFeatures::PaymentLinkDetectionEnabled()) {
-        GetDocument().HandlePaymentLink(
-            GetNonEmptyURLAttribute(html_names::kHrefAttr));
-      }
-#endif
+    if (rel_attribute_.IsFacilitatedPayment() &&
+        GetDocument().IsInOutermostMainFrame()) {
+      UseCounter::Count(&GetDocument(), WebFeature::kLinkRelFacilitatedPayment);
+      MaybeHandlePaymentLink();
+    }
+    if (rel_attribute_.IsPreconnect()) {
+      TRACE_EVENT_INSTANT(
+          TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "LinkPreconnect",
+          "data", [&](perfetto::TracedValue context) {
+            auto dict = std::move(context).WriteDictionary();
+            if (GetDocument().GetFrame()) {
+              dict.Add("frame",
+                       GetDocument().GetFrame()->GetFrameIdForTracing());
+            }
+            dict.Add("node_id", GetDomNodeId());
+            const KURL& url = GetNonEmptyURLAttribute(html_names::kHrefAttr);
+            dict.Add("url", url.GetString());
+          });
     }
     rel_list_->DidUpdateAttributeValue(params.old_value, value);
     Process();
@@ -119,6 +129,7 @@ void HTMLLinkElement::ParseAttribute(
     // Log href attribute before logging resource fetching in process().
     LogUpdateAttributeIfIsolatedWorldAndInDocument("link", params);
     HandleExpectHrefChanges(params.old_value, value);
+    MaybeHandlePaymentLink();
     Process();
   } else if (name == html_names::kTypeAttr) {
     type_ = value;
@@ -135,7 +146,7 @@ void HTMLLinkElement::ParseAttribute(
     }
   } else if (name == html_names::kSizesAttr) {
     sizes_->DidUpdateAttributeValue(params.old_value, value);
-    WebVector<gfx::Size> web_icon_sizes =
+    std::vector<gfx::Size> web_icon_sizes =
         WebIconSizesParser::ParseIconSizes(value);
     icon_sizes_.resize(base::checked_cast<wtf_size_t>(web_icon_sizes.size()));
     for (wtf_size_t i = 0; i < icon_sizes_.size(); ++i)
@@ -261,6 +272,8 @@ Node::InsertionNotificationRequest HTMLLinkElement::InsertedInto(
     return kInsertionDone;
   DCHECK(isConnected());
 
+  MaybeHandlePaymentLink();
+
   GetDocument().GetStyleEngine().AddStyleSheetCandidateNode(*this);
 
   if (!ShouldLoadLink() && IsInShadowTree()) {
@@ -285,8 +298,10 @@ void HTMLLinkElement::RemovedFrom(ContainerNode& insertion_point) {
   // the flags.
   bool was_connected = isConnected();
   HTMLElement::RemovedFrom(insertion_point);
-  if (!insertion_point.isConnected())
+  if (!insertion_point.isConnected() ||
+      GetDocument().StatePreservingAtomicMoveInProgress()) {
     return;
+  }
 
   link_loader_->Abort();
 
@@ -430,7 +445,8 @@ void HTMLLinkElement::HandleExpectBlockingChanges() {
     return;
   }
 
-  if (blocking_attribute_->HasRenderToken()) {
+  if (blocking_attribute_->HasRenderToken() ||
+      blocking_attribute_->HasFullFrameRateToken()) {
     AddExpectRenderBlockingLinkIfNeeded();
   } else {
     RemoveExpectRenderBlockingLink();
@@ -507,17 +523,31 @@ void HTMLLinkElement::AddExpectRenderBlockingLinkIfNeeded(
     return;
   }
 
+  UseCounter::CountWebDXFeature(&GetDocument(), WebDXFeature::kLinkRelExpect);
+
   bool media_matches = media_known_to_match || MediaQueryMatches();
-  bool is_blocking_render = blocking_attribute_->HasRenderToken();
-  if (!media_matches || !is_blocking_render || !isConnected()) {
+  RenderBlockingLevel blocking_level = blocking_attribute_->GetBlockingLevel();
+  if (!media_matches || blocking_level == RenderBlockingLevel::kNone ||
+      !isConnected()) {
     return;
   }
 
   if (auto* render_blocking_resource_manager =
           GetDocument().GetRenderBlockingResourceManager()) {
     render_blocking_resource_manager->AddPendingParsingElementLink(
-        ParseSameDocumentIdFromHref(href), this);
+        ParseSameDocumentIdFromHref(href), this, blocking_level);
   }
+}
+
+void HTMLLinkElement::MaybeHandlePaymentLink() {
+#if BUILDFLAG(IS_ANDROID)
+  KURL payment_link = GetNonEmptyURLAttribute(html_names::kHrefAttr);
+  if (rel_attribute_.IsFacilitatedPayment() && !payment_link.IsEmpty() &&
+      isConnected() && GetDocument().IsInOutermostMainFrame() &&
+      RuntimeEnabledFeatures::PaymentLinkDetectionEnabled()) {
+    GetDocument().HandlePaymentLink(payment_link);
+  }
+#endif
 }
 
 }  // namespace blink

@@ -1,47 +1,30 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 // Author: kenton@google.com (Kenton Varda)
 
 #include <memory>
 #include <string>
+#include <utility>
+#include <vector>
 
-#include <google/protobuf/testing/file.h>
-#include <google/protobuf/testing/file.h>
-#include <google/protobuf/compiler/command_line_interface.h>
-#include <google/protobuf/compiler/python/generator.h>
-#include <google/protobuf/io/printer.h>
-#include <google/protobuf/io/zero_copy_stream.h>
-#include <google/protobuf/stubs/strutil.h>
-#include <google/protobuf/testing/googletest.h>
+#include "google/protobuf/testing/file.h"
 #include <gtest/gtest.h>
+#include "absl/log/absl_check.h"
+#include "absl/strings/str_cat.h"
+#include "absl/strings/str_split.h"
+#include "absl/strings/substitute.h"
+#include "google/protobuf/compiler/code_generator.h"
+#include "google/protobuf/compiler/command_line_interface_tester.h"
+#include "google/protobuf/compiler/cpp/generator.h"
+#include "google/protobuf/compiler/python/generator.h"
+#include "google/protobuf/cpp_features.pb.h"
+#include "google/protobuf/io/printer.h"
+#include "google/protobuf/io/zero_copy_stream.h"
 
 namespace google {
 namespace protobuf {
@@ -78,26 +61,28 @@ class TestGenerator : public CodeGenerator {
 TEST(PythonPluginTest, ImportTest) {
   // Create files test1.proto and test2.proto with the former importing the
   // latter.
-  GOOGLE_CHECK_OK(File::SetContents(TestTempDir() + "/test1.proto",
-                             "syntax = \"proto3\";\n"
-                             "package foo;\n"
-                             "import \"test2.proto\";"
-                             "message Message1 {\n"
-                             "  Message2 message_2 = 1;\n"
-                             "}\n",
-                             true));
-  GOOGLE_CHECK_OK(File::SetContents(TestTempDir() + "/test2.proto",
-                             "syntax = \"proto3\";\n"
-                             "package foo;\n"
-                             "message Message2 {}\n",
-                             true));
+  ABSL_CHECK_OK(
+      File::SetContents(absl::StrCat(::testing::TempDir(), "/test1.proto"),
+                        "syntax = \"proto3\";\n"
+                        "package foo;\n"
+                        "import \"test2.proto\";"
+                        "message Message1 {\n"
+                        "  Message2 message_2 = 1;\n"
+                        "}\n",
+                        true));
+  ABSL_CHECK_OK(
+      File::SetContents(absl::StrCat(::testing::TempDir(), "/test2.proto"),
+                        "syntax = \"proto3\";\n"
+                        "package foo;\n"
+                        "message Message2 {}\n",
+                        true));
 
   compiler::CommandLineInterface cli;
   cli.SetInputsAreProtoPathRelative(true);
   python::Generator python_generator;
   cli.RegisterGenerator("--python_out", &python_generator, "");
-  std::string proto_path = "-I" + TestTempDir();
-  std::string python_out = "--python_out=" + TestTempDir();
+  std::string proto_path = absl::StrCat("-I", ::testing::TempDir());
+  std::string python_out = absl::StrCat("--python_out=", ::testing::TempDir());
   const char* argv[] = {"protoc", proto_path.c_str(), "-I.", python_out.c_str(),
                         "test1.proto"};
   ASSERT_EQ(0, cli.Run(5, argv));
@@ -105,19 +90,72 @@ TEST(PythonPluginTest, ImportTest) {
   // Loop over the lines of the generated code and verify that we find an
   // ordinary Python import but do not find the string "importlib".
   std::string output;
-  GOOGLE_CHECK_OK(File::GetContents(TestTempDir() + "/test1_pb2.py", &output,
-                             true));
-  std::vector<std::string> lines = Split(output, "\n");
+  ABSL_CHECK_OK(
+      File::GetContents(absl::StrCat(::testing::TempDir(), "/test1_pb2.py"),
+                        &output, true));
+  std::vector<absl::string_view> lines = absl::StrSplit(output, '\n');
   std::string expected_import = "import test2_pb2";
   bool found_expected_import = false;
-  for (int i = 0; i < lines.size(); ++i) {
-    if (lines[i].find(expected_import) != std::string::npos) {
+  for (absl::string_view line : lines) {
+    if (absl::StrContains(line, expected_import)) {
       found_expected_import = true;
     }
-    EXPECT_EQ(std::string::npos, lines[i].find("importlib"));
+    EXPECT_FALSE(absl::StrContains(line, "importlib"));
   }
   EXPECT_TRUE(found_expected_import);
 }
+
+class PythonGeneratorTest : public CommandLineInterfaceTester,
+                            public testing::WithParamInterface<bool> {
+ protected:
+  PythonGeneratorTest() {
+    auto generator = std::make_unique<Generator>();
+    generator->set_opensource_runtime(GetParam());
+    RegisterGenerator("--python_out", "--python_opt", std::move(generator),
+                      "Python test generator");
+
+    // Generate built-in protos.
+    CreateTempFile(
+        google::protobuf::DescriptorProto::descriptor()->file()->name(),
+        google::protobuf::DescriptorProto::descriptor()->file()->DebugString());
+  }
+};
+
+TEST_P(PythonGeneratorTest, PythonWithCppFeatures) {
+  // Test that the presence of C++ features does not break Python generation.
+  RegisterGenerator("--cpp_out", "--cpp_opt",
+                    std::make_unique<cpp::CppGenerator>(),
+                    "C++ test generator");
+  CreateTempFile("google/protobuf/cpp_features.proto",
+                 pb::CppFeatures::descriptor()->file()->DebugString());
+  CreateTempFile("foo.proto",
+                 R"schema(
+    edition = "2023";
+
+    import "google/protobuf/cpp_features.proto";
+
+    package foo;
+    
+    enum Bar {
+      AAA = 0;
+      BBB = 1;
+    }
+
+    message Foo {
+      Bar bar_enum = 1 [features.(pb.cpp).legacy_closed_enum = true];
+    })schema");
+
+  RunProtoc(absl::Substitute(
+      "protocol_compiler --proto_path=$$tmpdir --cpp_out=$$tmpdir "
+      "--python_out=$$tmpdir foo.proto $0 "
+      "google/protobuf/cpp_features.proto",
+      google::protobuf::DescriptorProto::descriptor()->file()->name()));
+
+  ExpectNoErrors();
+}
+
+INSTANTIATE_TEST_SUITE_P(PythonGeneratorTest, PythonGeneratorTest,
+                         testing::Bool());
 
 }  // namespace
 }  // namespace python

@@ -4,6 +4,8 @@
 
 package org.chromium.components.translate;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +16,14 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.translate.TranslateMessage.MenuItem;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@NullMarked
 final class TranslateMessageSecondaryMenuAdapter extends BaseAdapter {
     @IntDef({
         ViewType.DIVIDER,
@@ -37,9 +42,9 @@ final class TranslateMessageSecondaryMenuAdapter extends BaseAdapter {
     }
 
     private final LayoutInflater mInflater;
-    private MenuItem[] mMenuItems;
+    private MenuItem @Nullable [] mMenuItems;
 
-    public TranslateMessageSecondaryMenuAdapter(Context context, MenuItem[] menuItems) {
+    public TranslateMessageSecondaryMenuAdapter(Context context, MenuItem @Nullable [] menuItems) {
         mInflater = LayoutInflater.from(context);
         mMenuItems = menuItems;
     }
@@ -64,6 +69,7 @@ final class TranslateMessageSecondaryMenuAdapter extends BaseAdapter {
 
     @Override
     public int getItemViewType(int position) {
+        assumeNonNull(mMenuItems);
         MenuItem item = mMenuItems[position];
         if (item.title.equals("")) return ViewType.DIVIDER;
         if (!item.subtitle.equals("")) {
@@ -97,7 +103,7 @@ final class TranslateMessageSecondaryMenuAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return mMenuItems[position];
+        return assumeNonNull(mMenuItems)[position];
     }
 
     @Override
@@ -107,6 +113,7 @@ final class TranslateMessageSecondaryMenuAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        assumeNonNull(mMenuItems);
         switch (getItemViewType(position)) {
             case ViewType.DIVIDER:
                 convertView =

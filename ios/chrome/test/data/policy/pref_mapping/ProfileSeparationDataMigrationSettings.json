@@ -1,0 +1,17 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile_separation.data_migration_settings",
+      "pref_location": "user_profile",
+      "default_value": 1,
+      "values_to_test": [
+        1,
+        2,
+        3
+      ]
+    }
+  }
+]

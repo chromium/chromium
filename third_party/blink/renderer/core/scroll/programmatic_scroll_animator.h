@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_PROGRAMMATIC_SCROLL_ANIMATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_PROGRAMMATIC_SCROLL_ANIMATOR_H_
 
-#include <memory>
 #include "base/time/time.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_compositor_coordinator.h"
@@ -32,10 +31,8 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
       delete;
   ~ProgrammaticScrollAnimator() override;
 
-  void ScrollToOffsetWithoutAnimation(const ScrollOffset&,
-                                      bool is_sequenced_scroll);
+  void ScrollToOffsetWithoutAnimation(const ScrollOffset&);
   void AnimateToOffset(const ScrollOffset&,
-                       bool is_sequenced_scroll = false,
                        ScrollableArea::ScrollCallback on_finish =
                            ScrollableArea::ScrollCallback());
 
@@ -50,6 +47,7 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   void UpdateCompositorAnimations() override;
   void NotifyCompositorAnimationFinished(int group_id) override;
   void NotifyCompositorAnimationAborted(int group_id) override {}
+  ScrollOffset TargetOffset() const { return target_offset_; }
 
   void Trace(Visitor*) const override;
 
@@ -58,14 +56,8 @@ class ProgrammaticScrollAnimator : public ScrollAnimatorCompositorCoordinator {
   void AnimationFinished();
 
   Member<ScrollableArea> scrollable_area_;
-  std::unique_ptr<cc::ScrollOffsetAnimationCurve> animation_curve_;
   ScrollOffset target_offset_;
   base::TimeTicks start_time_;
-  // is_sequenced_scroll_ is true for the entire duration of an animated scroll
-  // as well as during an instant scroll if that scroll is part of a sequence.
-  // It resets to false at the end of the scroll. It controls whether we should
-  // abort the smooth scroll sequence after an instant SetScrollOffset.
-  bool is_sequenced_scroll_;
   // on_finish_ is a callback to call on animation finished, cancelled, or
   // otherwise interrupted in any way.
   ScrollableArea::ScrollCallback on_finish_;

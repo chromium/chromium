@@ -1,0 +1,97 @@
+# Copyright 2017 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("popup") {
+  sources = [
+    "omnibox_popup_presenter.h",
+    "omnibox_popup_presenter.mm",
+  ]
+  deps = [
+    ":popup_ui_protocols",
+    "//base",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/toolbar/ui_bundled/public",
+    "//ios/chrome/browser/toolbar/ui_bundled/public:constants",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//ui/gfx/ios:uikit_util",
+  ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
+}
+
+source_set("popup_ui") {
+  sources = [
+    "omnibox_popup_view_controller.h",
+    "omnibox_popup_view_controller.mm",
+  ]
+  deps = [
+    ":popup_ui_protocols",
+    "//base",
+    "//components/favicon/core",
+    "//components/omnibox/common",
+    "//ios/chrome/browser/content_suggestions/ui_bundled/cells:constants",
+    "//ios/chrome/browser/favicon/ui_bundled",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui:omnibox_popup_shared",
+    "//ios/chrome/browser/omnibox/ui/popup/carousel",
+    "//ios/chrome/browser/omnibox/ui/popup/row",
+    "//ios/chrome/browser/omnibox/ui/popup/row/actions",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
+    "//ios/chrome/browser/toolbar/ui_bundled/buttons",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("popup_icon") {
+  sources = [
+    "omnibox_icon_view.h",
+    "omnibox_icon_view.mm",
+  ]
+  deps = [
+    ":popup_ui_protocols",
+    "//base",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/omnibox/ui/popup/row:icon_retriever",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:symbols_views",
+    "//ios/chrome/common/ui/util",
+    "//url",
+  ]
+}
+
+source_set("popup_ui_protocols") {
+  sources = [
+    "content_providing.h",
+    "omnibox_popup_consumer.h",
+    "omnibox_popup_mutator.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "omnibox_popup_view_controller_unittest.mm" ]
+  deps = [
+    ":popup_ui",
+    ":popup_ui_protocols",
+    "//base/test:test_support",
+    "//ios/chrome/browser/omnibox/model:omnibox_pedal_swift",
+    "//ios/chrome/browser/omnibox/model:ui_bundled_interface",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

@@ -2,16 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/repack.gni")
-import("//ui/webui/webui_features.gni")
 
 group("resources") {
   public_deps = [
     ":ui_resources_grd",
     ":ui_unscaled_resources_grd",
-    ":webui_resources_grd",
   ]
 }
 
@@ -32,19 +29,6 @@ grit("ui_unscaled_resources_grd") {
   outputs = [
     "grit/ui_unscaled_resources.h",
     "ui_unscaled_resources.rc",
-  ]
-}
-
-grit("webui_resources_grd") {
-  enable_input_discovery_for_gn_analyze = false
-  source = "$root_gen_dir/ui/webui/resources/webui_resources.grd"
-  deps = [ "//ui/webui/resources:build_grd" ]
-
-  outputs = [
-    "grit/webui_resources.h",
-    "grit/webui_resources_map.cc",
-    "grit/webui_resources_map.h",
-    "webui_resources.pak",
   ]
 }
 
@@ -130,10 +114,10 @@ repack("repack_ui_test_pak_100_percent") {
   sources = [
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
+    "$root_gen_dir/ui/webui/resources/webui_resources.pak",
   ]
 
   output = "$root_out_dir/ui_test.pak"
@@ -142,6 +126,7 @@ repack("repack_ui_test_pak_100_percent") {
     "//mojo/public/js:resources",
     "//ui/resources",
     "//ui/strings",
+    "//ui/webui/resources:resources_grit",
   ]
 
   if (!is_ios) {
@@ -153,14 +138,14 @@ repack("repack_ui_test_pak_100_percent") {
   }
 
   if (is_chromeos) {
-    sources +=
-        [ "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak" ]
-    deps += [ "//ui/chromeos/strings" ]
-  }
-
-  if (is_chromeos_ash) {
-    sources += [ "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak" ]
-    deps += [ "//ui/chromeos/resources" ]
+    sources += [
+      "$root_gen_dir/ui/chromeos/resources/ui_chromeos_resources_100_percent.pak",
+      "$root_gen_dir/ui/chromeos/strings/ui_chromeos_strings_en-US.pak",
+    ]
+    deps += [
+      "//ui/chromeos/resources",
+      "//ui/chromeos/strings",
+    ]
   }
 
   if (toolkit_views) {

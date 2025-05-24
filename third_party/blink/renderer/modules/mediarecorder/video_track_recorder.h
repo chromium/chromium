@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_frame_pool.h"
@@ -24,7 +25,7 @@
 #include "media/muxers/webm_muxer.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/video/video_encode_accelerator.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
 #include "third_party/blink/public/web/modules/mediastream/encoded_video_frame.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
@@ -44,6 +45,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace media {
+struct VideoEncoderInfo;
 class VideoEncoderMetricsProvider;
 class VideoFrame;
 }
@@ -74,6 +76,9 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     kH264,
 #endif
     kAv1,
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    kHevc,
+#endif
     kLast
   };
 
@@ -85,28 +90,26 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // which wasn't encoded by MediaRecorder) video data available.
     // |encoded_alpha| represents the encode output of alpha channel when
     // available, can be empty otherwise.
-    virtual void OnPassthroughVideo(const media::Muxer::VideoParameters& params,
-                                    std::string encoded_data,
-                                    std::string encoded_alpha,
-                                    base::TimeTicks timestamp,
-                                    bool is_key_frame) = 0;
+    virtual void OnPassthroughVideo(
+        const media::Muxer::VideoParameters& params,
+        scoped_refptr<media::DecoderBuffer> encoded_data,
+        base::TimeTicks timestamp) = 0;
 
     // Called to indicate there is encoded video data available. |encoded_alpha|
     // represents the encode output of alpha channel when available, can be
     // empty otherwise.
     virtual void OnEncodedVideo(
         const media::Muxer::VideoParameters& params,
-        std::string encoded_data,
-        std::string encoded_alpha,
+        scoped_refptr<media::DecoderBuffer> encoded_data,
         std::optional<media::VideoEncoder::CodecDescription> codec_description,
-        base::TimeTicks timestamp,
-        bool is_key_frame) = 0;
+        base::TimeTicks timestamp) = 0;
 
     virtual std::unique_ptr<media::VideoEncoderMetricsProvider>
     CreateVideoEncoderMetricsProvider() = 0;
 
     // Called on encountering encoder errors.
-    virtual void OnVideoEncodingError() = 0;
+    virtual void OnVideoEncodingError(
+        const media::EncoderStatus& error_status) = 0;
 
     // Called when a track's ready state changes.
     virtual void OnSourceReadyStateChanged() = 0;
@@ -125,16 +128,22 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     CodecProfile(CodecId codec_id,
                  media::VideoCodecProfile profile,
                  media::VideoCodecLevel level);
+
+    bool operator==(const CodecProfile& others) const {
+      return (codec_id == others.codec_id) && (profile == others.profile) &&
+             (level == others.level);
+    }
+    bool operator!=(const CodecProfile& others) const {
+      return !(*this == others);
+    }
   };
 
   using OnEncodedVideoCB = base::RepeatingCallback<void(
       const media::Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks capture_timestamp,
-      bool is_key_frame)>;
-  using OnErrorCB = base::RepeatingClosure;
+      base::TimeTicks capture_timestamp)>;
+  using OnErrorCB = base::RepeatingCallback<void(const media::EncoderStatus&)>;
 
   // MediaStreamVideoSink implementation
   double GetRequiredMinFramesPerSec() const override { return 1; }
@@ -201,6 +210,10 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
    protected:
     friend class VideoTrackRecorderTest;
 
+    // Subclasses ought to call this whenever they learn about the current
+    // video encoder details.
+    void OnVideoEncoderInfo(const media::VideoEncoderInfo& encoder_info);
+
     scoped_refptr<media::VideoFrame> MaybeProvideEncodableFrame(
         scoped_refptr<media::VideoFrame> video_frame);
     // Called shortly after wrapping the Encoder in a SequenceBound, on the
@@ -237,6 +250,19 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
 
     // Number of frames that we keep the reference alive for encode.
     std::unique_ptr<Counter> num_frames_in_encode_;
+
+    // The maximum number of frames which we'll keep alive at a time during
+    // encoding. This guarantees that there is a limit on the number of frames
+    // in a FIFO queue that are being encoded, i.e., once this limit is
+    // reached, further incoming frames are dropped.
+    // This value can be updated by OnVideoEncoderInfo() so that it matches the
+    // encoder capabilities. Some encoders must accumulate a certain number of
+    // frames before they start producing output. Thus, it's also crucial that
+    // the maximum size of the device's video capture buffer pool can
+    // accommodate at least this many frames.
+    static constexpr size_t kMaxNumberOfFramesInEncoderMinValue = 10;
+    size_t max_number_of_frames_in_encode_ =
+        kMaxNumberOfFramesInEncoderMinValue;
 
     // Used to retrieve incoming opaque VideoFrames (i.e. VideoFrames backed by
     // textures).
@@ -400,7 +426,7 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       CodecProfile codec_profile,
       bool is_screencast,
       bool create_vea_encoder);
-  void OnHardwareEncoderError();
+  void OnHardwareEncoderError(const media::EncoderStatus& error_status);
 
   void ConnectToTrack(const VideoCaptureDeliverFrameCB& callback);
   void DisconnectFromTrack();
@@ -425,6 +451,8 @@ class MODULES_EXPORT VideoTrackRecorderImpl : public VideoTrackRecorder {
       GUARDED_BY_CONTEXT(main_sequence_checker_);
   bool encoder_support_known_ GUARDED_BY_CONTEXT(main_sequence_checker_) =
       false;
+  size_t num_video_transformation_changes_ = 0;
+  std::optional<media::VideoTransformation> last_transformation_ = std::nullopt;
   base::WeakPtrFactory<VideoTrackRecorderImpl> weak_factory_{this};
 };
 

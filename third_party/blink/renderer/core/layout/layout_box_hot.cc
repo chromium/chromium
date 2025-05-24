@@ -20,6 +20,7 @@
 namespace blink {
 
 bool LayoutBox::HasHitTestableOverflow() const {
+  NOT_DESTROYED();
   // See MayIntersect() for the reason of using HasVisualOverflow here.
   if (!HasVisualOverflow()) {
     return false;

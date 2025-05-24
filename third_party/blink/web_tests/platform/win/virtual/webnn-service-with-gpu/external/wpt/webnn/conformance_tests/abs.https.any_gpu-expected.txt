@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] abs int64 4D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32,int8]."
+Harness: the test ran to completion.
+

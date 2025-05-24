@@ -2,18 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("test_support") {
-  testonly = true
+import("//services/video_effects/args.gni")
 
-  sources = [
-    "fake_video_effects_processor.cc",
-    "fake_video_effects_processor.h",
-    "fake_video_effects_service.cc",
-    "fake_video_effects_service.h",
-  ]
+if (enable_video_effects) {
+  source_set("test_support") {
+    testonly = true
 
-  public_deps = [
-    "//base/test:test_support",
-    "//services/video_effects/public/mojom",
-  ]
+    sources = [
+      "fake_video_effects_processor.cc",
+      "fake_video_effects_processor.h",
+      "fake_video_effects_service.cc",
+      "fake_video_effects_service.h",
+    ]
+
+    public_deps = [
+      "//base/test:test_support",
+      "//services/video_effects/public/mojom",
+    ]
+  }
 }

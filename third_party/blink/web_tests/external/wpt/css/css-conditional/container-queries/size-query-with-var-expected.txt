@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Matching --match-unknown-fallback
+  assert_equals: expected "yes" but got "no"
+[FAIL] Matching --match-unregistered
+  assert_equals: expected "yes" but got "no"
+[FAIL] Matching --match-registered
+  assert_equals: expected "yes" but got "no"
+Harness: the test ran to completion.
+

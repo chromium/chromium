@@ -125,6 +125,23 @@ TEST_F(XmlUnitTestResultPrinterTest, MultiTagsWithSameNameInXmlFile) {
       << expected_content_2 << " not found in " << content;
 }
 
+TEST_F(XmlUnitTestResultPrinterTest, SubTestResultInXmlFile) {
+  XmlUnitTestResultPrinter::Get()->AddSubTestResult("my_sub_test_result", 123,
+                                                    std::nullopt);
+  std::string file_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kTestLauncherOutput);
+  std::string content;
+  ASSERT_TRUE(
+      base::ReadFileToString(FilePath::FromUTF8Unsafe(file_path), &content));
+  static constexpr std::string_view expected_content =
+      "<x-sub-test-result name=\"SubTestResultInXmlFile\" "
+      "classname=\"XmlUnitTestResultPrinterTest\" "
+      "subname=\"my_sub_test_result\" "
+      "time=\"0.123\"></x-sub-test-result>";
+  EXPECT_THAT(content, testing::HasSubstr(expected_content));
+}
+
 class XmlUnitTestResultPrinterTimestampTest : public ::testing::Test {
  public:
   static void TearDownTestSuite() {

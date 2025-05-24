@@ -33,7 +33,7 @@ class BrowserContext;
 
 namespace policy::local_user_files {
 
-constexpr char kSkyVaultMigrationNotificationId[] = "skyvault-migration";
+inline constexpr char kSkyVaultMigrationNotificationId[] = "skyvault-migration";
 
 // Shows notifications and dialogs related to SkyVault migration status.
 class MigrationNotificationManager : public KeyedService {
@@ -49,27 +49,32 @@ class MigrationNotificationManager : public KeyedService {
   // user can select to start the migration immediately which executes the
   // `migration_callback`.
   // Virtual to override in tests.
-  virtual void ShowMigrationInfoDialog(CloudProvider provider,
+  virtual void ShowMigrationInfoDialog(MigrationDestination destination,
                                        base::Time migration_start_time,
                                        base::OnceClosure migration_callback);
 
   // Shows the migration in progress notification.
-  void ShowMigrationProgressNotification(CloudProvider provider);
+  void ShowMigrationProgressNotification(MigrationDestination destination);
 
   // Shows the migration completed successfully notification with a button to
   // open the folder specified by `destination_path`.
   void ShowMigrationCompletedNotification(
-      CloudProvider provider,
+      MigrationDestination destination,
       const base::FilePath& destination_path);
 
+  // Shows a notification that the user's files were successfully removed.
+  // Virtual to override in tests.
+  virtual void ShowDeletionCompletedNotification();
+
   // Shows a notification that migration completed with errors.
-  void ShowMigrationErrorNotification(
-      CloudProvider provider,
-      const base::FilePath& destination_path,
-      std::map<base::FilePath, MigrationUploadError> errors);
+  void ShowMigrationErrorNotification(MigrationDestination destination,
+                                      const std::string& folder_name,
+                                      const base::FilePath& error_log_path);
 
   // Shows the policy configuration error notification.
-  void ShowConfigurationErrorNotification(CloudProvider provider);
+  // Virtual to override in tests.
+  virtual void ShowConfigurationErrorNotification(
+      MigrationDestination destination);
 
   // Displays a single notification prompting the user to sign in to OneDrive.
   // Queues any subsequent sign-in requests until the user responds which
@@ -77,8 +82,8 @@ class MigrationNotificationManager : public KeyedService {
   base::CallbackListSubscription ShowOneDriveSignInNotification(
       SignInCallback callback);
 
-  // Closes any open notification or dialog.
-  void CloseAll();
+  // Closes any open notification.
+  void CloseNotifications();
 
   // Closes the migration dialog. No-op if dialog isn't opened.
   void CloseDialog();

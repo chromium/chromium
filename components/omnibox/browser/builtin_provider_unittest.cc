@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -52,7 +53,7 @@ const char16_t kSubpageThree[] = u"three";
 
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
-  FakeAutocompleteProviderClient() {}
+  FakeAutocompleteProviderClient() = default;
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;
   FakeAutocompleteProviderClient& operator=(
@@ -92,16 +93,18 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 }  // namespace
 
 class BuiltinProviderTest : public testing::Test {
+ public:
+  BuiltinProviderTest(const BuiltinProviderTest&) = delete;
+  BuiltinProviderTest& operator=(const BuiltinProviderTest&) = delete;
+
  protected:
   struct TestData {
     const std::u16string input;
     const std::vector<GURL> output;
   };
 
-  BuiltinProviderTest() : provider_(nullptr) {}
-  ~BuiltinProviderTest() override {}
-  BuiltinProviderTest(const BuiltinProviderTest&) = delete;
-  BuiltinProviderTest& operator=(const BuiltinProviderTest&) = delete;
+  BuiltinProviderTest() = default;
+  ~BuiltinProviderTest() override = default;
 
   void SetUp() override {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();
@@ -351,7 +354,8 @@ TEST_F(BuiltinProviderTest, Inlining) {
   struct InliningTestData {
     const std::u16string input;
     const std::u16string expected_inline_autocompletion;
-  } cases[] = {
+  };
+  auto cases = std::to_array<InliningTestData>({
       // Typing along "about://media" should not yield an inline autocompletion
       // until the completion is unique.  We don't bother checking every single
       // character before the first "m" is typed.
@@ -428,7 +432,7 @@ TEST_F(BuiltinProviderTest, Inlining) {
       {kAbout + kSep + kHostB.substr(0, 2) + u"/", std::u16string()},
       {kAbout + kSep + kHostB.substr(0, 2) + u"a", std::u16string()},
       {kAbout + kSep + kHostB.substr(0, 2) + u"+", std::u16string()},
-  };
+  });
 
   ACMatches matches;
   for (size_t i = 0; i < std::size(cases); ++i) {

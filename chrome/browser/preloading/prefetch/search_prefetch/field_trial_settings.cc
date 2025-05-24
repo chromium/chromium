@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
+#include "net/base/features.h"
 
 namespace {
 size_t g_cache_size_for_testing = 0;
@@ -18,13 +19,9 @@ BASE_FEATURE(kSearchPrefetchServicePrefetching,
              "SearchPrefetchServicePrefetching",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSearchPrefetchBlockBeforeHeaders,
-             "SearchPrefetchBlockBeforeHeaders",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool SearchPrefetchBlockBeforeHeadersIsEnabled() {
-  return base::FeatureList::IsEnabled(kSearchPrefetchBlockBeforeHeaders);
-}
+BASE_FEATURE(kSearchPrefetchWithNoVarySearchDiskCache,
+             "SearchPrefetchWithNoVarySearchDiskCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool SearchPrefetchServicePrefetchingIsEnabled() {
   if (!base::FeatureList::IsEnabled(kSearchPrefetchServicePrefetching)) {
@@ -65,20 +62,20 @@ void SetSearchPrefetchMaxCacheEntriesForTesting(size_t cache_size) {
   g_cache_size_for_testing = cache_size;
 }
 
-base::TimeDelta SearchPrefetchBlockHeadStart() {
-  return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-      kSearchPrefetchBlockBeforeHeaders, "block_head_start_ms", 0));
-}
-
 BASE_FEATURE(kSearchNavigationPrefetch,
              "SearchNavigationPrefetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_ANDROID)
+);
 
 const base::FeatureParam<std::string> kSuggestPrefetchParam{
     &kSearchNavigationPrefetch, "suggest_prefetch_param", "cs"};
 
 const base::FeatureParam<std::string> kNavigationPrefetchParam{
-    &kSearchNavigationPrefetch, "navigation_prefetch_param", "cs"};
+    &kSearchNavigationPrefetch, "navigation_prefetch_param", "op"};
 
 bool IsSearchNavigationPrefetchEnabled() {
   return base::FeatureList::IsEnabled(kSearchNavigationPrefetch);
@@ -118,9 +115,21 @@ bool OnlyAllowDefaultMatchPreloading() {
       kSearchPrefetchOnlyAllowDefaultMatchPreloading);
 }
 
+bool IsNoVarySearchDiskCacheEnabled() {
+  return base::FeatureList::IsEnabled(net::features::kHttpCacheNoVarySearch) &&
+         base::FeatureList::IsEnabled(kSearchPrefetchWithNoVarySearchDiskCache);
+}
+
+bool IsPrefetchIncognitoEnabled() {
+  return SearchPrefetchServicePrefetchingIsEnabled() &&
+         IsSearchNavigationPrefetchEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(kSearchNavigationPrefetch,
+                                                 "allow_incognito", false);
+}
+
 BASE_FEATURE(kAutocompleteDictionaryPreload,
              "AutocompleteDictionaryPreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta>
     kAutocompletePreloadedDictionaryTimeout{
@@ -137,7 +146,3 @@ const base::FeatureParam<base::TimeDelta>
     kSuppressesSearchPrefetchOnSlowNetworkThreshold{
         &kSuppressesSearchPrefetchOnSlowNetwork,
         "slow_network_threshold_for_search_prefetch", base::Milliseconds(208)};
-
-BASE_FEATURE(kEnsureSearchPrefetchServiceOnInterceptor,
-             "EnsureSearchprefetchServiceOnInterceptor",
-             base::FEATURE_ENABLED_BY_DEFAULT);

@@ -1,0 +1,4 @@
+Document Level=0
+++Window Level=0 Window.IsModal=true
+++++Text IsControlElement=false Level=1
+++++Text IsControlElement=false Level=2

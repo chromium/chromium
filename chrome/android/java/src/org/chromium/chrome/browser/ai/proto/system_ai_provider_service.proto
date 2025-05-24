@@ -1,0 +1,85 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option java_package = "org.chromium.chrome.browser.ai.proto";
+option optimize_for = LITE_RUNTIME;
+
+package system_ai_provider_service.proto;
+
+message AvailabilityRequest {
+  repeated Capability requested_capabilities = 1;
+  ClientInfo client_info = 2;
+}
+
+message ClientInfo {
+  // If the client app is currently running in work profile
+  bool is_work_profile = 1;
+  // Account(s) in the client app that are currently active.
+  repeated Account client_account = 2;
+}
+
+message Account {
+  string email = 1;
+}
+
+enum Capability {
+  UNDEFINED_CAPABILITY = 0;
+  // Capability to analyze files (e.g. PDFs)
+  ANALYZE_ATTACHMENT_CAPABILITY = 1;
+  // Capability to summarize the contents of a URL.
+  SUMMARIZE_URL_CAPABILITY = 2;
+}
+
+message AvailabilityResponse {
+  oneof status {
+    ServiceAvailable available = 1;
+    ServiceNotAvailable not_available = 2;
+  }
+}
+
+message ServiceAvailable {
+  // List of supported capabilities.
+  repeated Capability supported_capabilities = 1;
+}
+
+message ServiceNotAvailable {
+  // error code why service is not available
+  int64 code = 1;
+}
+
+message LaunchRequest {
+  // Action that the client app is requesting. Each action corresponds to a
+  // capability.
+  oneof requested_action {
+    SummarizeUrl summarize_url = 1;
+    AnalyzeAttachment analyze_attachment = 2;
+  }
+  ClientInfo client_info = 3;
+}
+
+message SummarizeUrl {
+  UrlContext url_context = 1;
+}
+
+message AnalyzeAttachment {
+  repeated File files = 1;
+}
+
+message File {
+  // Uri to the file.
+  string uri = 1;
+  // Display name of the file
+  string display_name = 2;
+  // Mime type of the file
+  string mime_type = 3;
+}
+
+message UrlContext {
+  string url = 1;
+  string page_content = 2;
+}
+
+message LaunchResponse {}

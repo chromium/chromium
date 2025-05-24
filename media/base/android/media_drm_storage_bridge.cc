@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/android/callback_android.h"
+#include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
@@ -52,7 +53,6 @@ void MediaDrmStorageBridge::Initialize(const CreateStorageCB& create_storage_cb,
 
 void MediaDrmStorageBridge::OnProvisioned(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_storage,
     // Callback<Boolean>
     const JavaParamRef<jobject>& j_callback) {
   DCHECK(impl_);
@@ -69,7 +69,6 @@ void MediaDrmStorageBridge::OnProvisioned(
 
 void MediaDrmStorageBridge::OnLoadInfo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_storage,
     const JavaParamRef<jbyteArray>& j_session_id,
     // Callback<PersistentInfo>
     const JavaParamRef<jobject>& j_callback) {
@@ -88,7 +87,6 @@ void MediaDrmStorageBridge::OnLoadInfo(
 
 void MediaDrmStorageBridge::OnSaveInfo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_storage,
     const JavaParamRef<jobject>& j_persist_info,
     // Callback<Boolean>
     const JavaParamRef<jobject>& j_callback) {
@@ -126,7 +124,6 @@ void MediaDrmStorageBridge::OnSaveInfo(
 
 void MediaDrmStorageBridge::OnClearInfo(
     JNIEnv* env,
-    const JavaParamRef<jobject>& j_storage,
     const JavaParamRef<jbyteArray>& j_session_id,
     // Callback<Boolean>
     const JavaParamRef<jobject>& j_callback) {

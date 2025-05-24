@@ -21,8 +21,7 @@ std::string SyncChange::ChangeTypeToString(SyncChangeType change_type) {
     case ACTION_DELETE:
       return "ACTION_DELETE";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 SyncChange::SyncChange(const base::Location& from_here,

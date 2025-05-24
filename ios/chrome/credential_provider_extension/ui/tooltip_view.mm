@@ -44,9 +44,9 @@ static __weak TooltipView* _active;
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = @[
-        UITraitUserInterfaceIdiom.self, UITraitUserInterfaceStyle.self,
-        UITraitDisplayGamut.self, UITraitAccessibilityContrast.self,
-        UITraitUserInterfaceLevel.self
+        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+        UITraitUserInterfaceLevel.class
       ];
       __weak TooltipView* weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,

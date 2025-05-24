@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -24,6 +23,7 @@
 #include "content/public/browser/web_ui_message_handler.h"
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/webui_util.h"
 
 using content::WebUIMessageHandler;
 
@@ -89,7 +89,7 @@ SlowHandler::SlowHandler(Profile* profile) : profile_(profile) {
   user_pref_registrar_->Init(profile_->GetPrefs());
 }
 
-SlowHandler::~SlowHandler() {}
+SlowHandler::~SlowHandler() = default;
 
 void SlowHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(

@@ -84,6 +84,7 @@ class CORE_EXPORT UndoStack final : public GarbageCollected<UndoStack> {
   // should be root editable element and be in undo/redo stack.
   void ElementRemoved(Element* element);
 
+  String ToString() const;
   void Trace(Visitor*) const;
 
  private:

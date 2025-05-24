@@ -8,8 +8,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace base {
-namespace trait_helpers {
+namespace base::trait_helpers {
 namespace {
 
 struct ExampleTrait {};
@@ -23,14 +22,14 @@ enum class EnumTraitB { ONE, TWO };
 struct TestTraits {
   // List of traits that are valid inputs for the constructor below.
   struct ValidTrait {
-    ValidTrait(ExampleTrait);
-    ValidTrait(EnumTraitA);
-    ValidTrait(EnumTraitB);
+    explicit ValidTrait(ExampleTrait);
+    explicit ValidTrait(EnumTraitA);
+    explicit ValidTrait(EnumTraitB);
   };
 
   template <class... ArgTypes>
     requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
-  constexpr TestTraits(ArgTypes... args)
+  constexpr explicit TestTraits(ArgTypes... args)
       : has_example_trait(trait_helpers::HasTrait<ExampleTrait, ArgTypes...>()),
         enum_trait_a(
             trait_helpers::GetEnum<EnumTraitA, EnumTraitA::A>(args...)),
@@ -46,20 +45,20 @@ struct TestTraits {
 struct FilteredTestTraits : public TestTraits {
   template <class... ArgTypes>
     requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
-  constexpr FilteredTestTraits(ArgTypes... args)
+  constexpr explicit FilteredTestTraits(ArgTypes... args)
       : TestTraits(Exclude<ExampleTrait>::Filter(args)...) {}
 };
 
 struct RequiredEnumTestTraits {
   // List of traits that are required inputs for the constructor below.
   struct ValidTrait {
-    ValidTrait(EnumTraitA);
+    explicit ValidTrait(EnumTraitA);
   };
 
   // We require EnumTraitA to be specified.
   template <class... ArgTypes>
     requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
-  constexpr RequiredEnumTestTraits(ArgTypes... args)
+  constexpr explicit RequiredEnumTestTraits(ArgTypes... args)
       : enum_trait_a(trait_helpers::GetEnum<EnumTraitA>(args...)) {}
 
   const EnumTraitA enum_trait_a;
@@ -68,13 +67,13 @@ struct RequiredEnumTestTraits {
 struct OptionalEnumTestTraits {
   // List of traits that are optional inputs for the constructor below.
   struct ValidTrait {
-    ValidTrait(EnumTraitA);
+    explicit ValidTrait(EnumTraitA);
   };
 
   // EnumTraitA can optionally be specified.
   template <class... ArgTypes>
     requires trait_helpers::AreValidTraits<ValidTrait, ArgTypes...>
-  constexpr OptionalEnumTestTraits(ArgTypes... args)
+  constexpr explicit OptionalEnumTestTraits(ArgTypes... args)
       : enum_trait_a(trait_helpers::GetOptionalEnum<EnumTraitA>(args...)) {}
 
   const std::optional<EnumTraitA> enum_trait_a;
@@ -163,12 +162,14 @@ TEST(TraitsBagTest, OptionalEnum) {
 
 TEST(TraitsBagTest, ValidTraitInheritance) {
   struct ValidTraitsA {
-    ValidTraitsA(EnumTraitA);
+    // For inheritance to work transparently, all constructors but the last in
+    // the chain must be implicit.
+    ValidTraitsA(EnumTraitA);  // NOLINT(google-explicit-constructor)
   };
 
   struct ValidTraitsB {
-    ValidTraitsB(ValidTraitsA);
-    ValidTraitsB(EnumTraitB);
+    explicit ValidTraitsB(ValidTraitsA);
+    explicit ValidTraitsB(EnumTraitB);
   };
 
   static_assert(AreValidTraits<ValidTraitsA, EnumTraitA>, "");
@@ -213,5 +214,4 @@ TEST(TraitsBagTest, EmptyTraitIsValid) {
   static_assert(IsValidTrait<TestTraits::ValidTrait, EmptyTrait>, "");
 }
 
-}  // namespace trait_helpers
-}  // namespace base
+}  // namespace base::trait_helpers

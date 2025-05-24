@@ -31,7 +31,7 @@ UserPolicyMetricsRecorder::UserPolicyMetricsRecorder(
   scoped_policy_provider_observation_.Observe(provider);
 }
 
-UserPolicyMetricsRecorder::~UserPolicyMetricsRecorder() {}
+UserPolicyMetricsRecorder::~UserPolicyMetricsRecorder() = default;
 
 void UserPolicyMetricsRecorder::OnUpdatePolicy(
     ConfigurationPolicyProvider* provider) {

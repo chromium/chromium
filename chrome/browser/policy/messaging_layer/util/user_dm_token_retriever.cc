@@ -11,7 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"

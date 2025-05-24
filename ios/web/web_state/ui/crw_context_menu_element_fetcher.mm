@@ -41,14 +41,14 @@
     _webState = webState;
     _observer = std::make_unique<web::WebStateObserverBridge>(self);
     webState->AddObserver(_observer.get());
-
   }
   return self;
 }
 
 - (void)dealloc {
-  if (self.webState)
+  if (self.webState) {
     self.webState->RemoveObserver(_observer.get());
+  }
 }
 
 - (void)fetchDOMElementAtPoint:(CGPoint)point
@@ -115,8 +115,9 @@
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateDestroyed:(web::WebState*)webState {
-  if (self.webState)
+  if (self.webState) {
     self.webState->RemoveObserver(_observer.get());
+  }
   self.webState = nullptr;
 }
 

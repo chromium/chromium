@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("test_java") {
   testonly = true
@@ -44,6 +45,7 @@ android_library("test_support_java") {
     "//content/public/android:content_java",
     "//third_party/android_deps:espresso_java",
     "//third_party/hamcrest:hamcrest_java",
+    "//third_party/jni_zero:jni_zero_java",
     "//url:gurl_java",
   ]
 
@@ -52,5 +54,25 @@ android_library("test_support_java") {
     "//chrome/browser/autofill/android:java",
     "//components/autofill/android:main_autofill_java",
     "//content/public/test/android:content_java_test_support",
+  ]
+
+  srcjar_deps = [ ":jni_headers" ]
+}
+
+generate_jni("jni_headers") {
+  testonly = true
+  visibility = [ ":*" ]
+  sources = [ "android/java/src/org/chromium/chrome/browser/autofill/AutofillTestHelper.java" ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [ "android/autofill_test_helper_android.cc" ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/autofill",
+    "//components/autofill/core/browser",
   ]
 }

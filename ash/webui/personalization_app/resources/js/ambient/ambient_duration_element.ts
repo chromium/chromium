@@ -73,7 +73,7 @@ export class AmbientDurationElement extends WithPersonalizationStore {
   }
 
   private onDurationChanged_(value: number|null) {
-    if (typeof value == 'number') {
+    if (typeof value === 'number') {
       this.selectedDuration_ = value.toString();
     }
   }

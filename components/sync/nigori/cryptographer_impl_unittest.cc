@@ -120,7 +120,7 @@ TEST(CryptographerImplTest, ShouldSelectDefaultCrossUserSharingKey) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -139,7 +139,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonSetEncryptionKeyPair) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -159,7 +159,7 @@ TEST(CryptographerImplTest, ShouldFailOnNonExistentDefaultEncryptionKeyPair) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair()
               .GetRawPublicKey());
 
@@ -366,7 +366,7 @@ TEST(CryptographerImplTest, ShouldEncryptAndDecryptForCrossUserSharing) {
 
   std::optional<std::vector<uint8_t>> encrypted_message =
       cryptographer_sender->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(plaintext)),
+          base::as_byte_span(plaintext),
           cryptographer_recipient->GetCrossUserSharingKeyPair(0)
               .GetRawPublicKey());
 

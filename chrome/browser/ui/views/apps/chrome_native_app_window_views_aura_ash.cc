@@ -41,7 +41,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -50,6 +50,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/widget/widget.h"
@@ -86,21 +87,17 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
   void UpdateWindowRoundedCorners() override {
     DCHECK(GetWidget());
 
-    if (!chromeos::features::IsRoundedWindowsEnabled()) {
-      return;
-    }
+    aura::Window* window = GetWidget()->GetNativeWindow();
 
-    aura::Window* frame_window = GetWidget()->GetNativeWindow();
-
-    const int corner_radius = chromeos::GetFrameCornerRadius(frame_window);
-    frame_window->SetProperty(aura::client::kWindowCornerRadiusKey,
-                              corner_radius);
+    const gfx::RoundedCornersF window_radii = chromeos::GetWindowRadii(window);
+    window->SetProperty(aura::client::kWindowCornerRadiusKey,
+                        window_radii.upper_left());
 
     if (draw_frame()) {
-      SetFrameCornerRadius(corner_radius);
+      SetFrameCornerRadius(window_radii.upper_left());
     }
 
-    GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
+    GetWidget()->client_view()->UpdateWindowRoundedCorners(window_radii);
   }
 
   // aura::WindowObserver:
@@ -110,7 +107,7 @@ class NativeAppWindowFrameView : public apps::AppWindowFrameView,
     // Windows in ChromeOS are rounded for certain window states. If these
     // states change, we need to update the rounded corners accordingly. See
     // `chromeos::ShouldWindowHaveRoundedCorners()` for more details.
-    if (chromeos::CanPropertyEffectFrameRadius(key)) {
+    if (chromeos::CanPropertyEffectWindowRadius(key)) {
       UpdateWindowRoundedCorners();
     }
   }
@@ -141,17 +138,19 @@ class ChromeNativeAppNonClientView : public views::ClientView {
   ~ChromeNativeAppNonClientView() override = default;
 
   // views::ClientView:
-  void UpdateWindowRoundedCorners(int corner_radius) override {
+  void UpdateWindowRoundedCorners(
+      const gfx::RoundedCornersF& window_radii) override {
     DCHECK(GetWidget());
 
-    gfx::RoundedCornersF radii(0, 0, corner_radius, corner_radius);
+    gfx::RoundedCornersF radii(0, 0, window_radii.lower_right(),
+                               window_radii.lower_left());
 
     // If the chrome app's non-standard frame is not drawn, then round all four
     // corners of the web contents to achieve a rounded window.
     // For an app with a standard frame, we always draw the frame.
     if (has_non_standard_frame_ && !draw_non_standard_frame_) {
-      radii.set_upper_right(corner_radius);
-      radii.set_upper_left(corner_radius);
+      radii.set_upper_right(window_radii.upper_right());
+      radii.set_upper_left(window_radii.upper_left());
     }
 
     static_cast<ChromeNativeAppWindowViewsAuraAsh*>(contents_view())
@@ -200,10 +199,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
   // Some windows need to be placed in special containers, for example to make
   // them visible at the login or lock screen.
   std::optional<int> container_id;
-  if (create_params.is_ime_window)
+  if (create_params.is_ime_window) {
     container_id = ash::kShellWindowId_ImeWindowParentContainer;
-  else if (create_params.show_on_lock_screen)
-    container_id = ash::kShellWindowId_LockActionHandlerContainer;
+  }
 
   if (container_id.has_value()) {
     ash_util::SetupWidgetInitParamsForContainer(init_params, *container_id);
@@ -213,14 +211,6 @@ void ChromeNativeAppWindowViewsAuraAsh::OnBeforeWidgetInit(
       // changing focus). See https://crbug.com/935274 for more details.
       init_params->activatable = views::Widget::InitParams::Activatable::kNo;
     }
-  }
-
-  // Resizable lock screen apps will end up maximized by ash. Do it now to
-  // save back-and-forth communication with the window manager. Right now all
-  // lock screen apps either end up maximized (e.g. Keep) or are not resizable.
-  if (create_params.show_on_lock_screen && create_params.resizable) {
-    DCHECK_EQ(ui::mojom::WindowShowState::kDefault, init_params->show_state);
-    init_params->show_state = ui::mojom::WindowShowState::kMaximized;
   }
 
   const int32_t restore_window_id =
@@ -255,8 +245,9 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonStandardAppFrame() {
 ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
   TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon");
   const ui::ImageModel& image = ChromeNativeAppWindowViews::GetWindowIcon();
-  if (image.IsEmpty())
+  if (image.IsEmpty()) {
     return ui::ImageModel();
+  }
 
   DCHECK(image.IsImage());
   const gfx::ImageSkia image_skia = image.Rasterize(nullptr);
@@ -265,8 +256,9 @@ ui::ImageModel ChromeNativeAppWindowViewsAuraAsh::GetWindowIcon() {
 }
 
 bool ChromeNativeAppWindowViewsAuraAsh::ShouldRemoveStandardFrame() {
-  if (IsFrameless())
+  if (IsFrameless()) {
     return true;
+  }
 
   return HasFrameColor();
 }
@@ -289,8 +281,9 @@ gfx::RoundedCornersF ChromeNativeAppWindowViewsAuraAsh::GetWindowRadii() const {
 gfx::Rect ChromeNativeAppWindowViewsAuraAsh::GetRestoredBounds() const {
   gfx::Rect* bounds =
       GetNativeWindow()->GetProperty(ash::kRestoreBoundsOverrideKey);
-  if (bounds && !bounds->IsEmpty())
+  if (bounds && !bounds->IsEmpty()) {
     return *bounds;
+  }
 
   return ChromeNativeAppWindowViewsAura::GetRestoredBounds();
 }
@@ -310,8 +303,9 @@ ui::mojom::WindowShowState ChromeNativeAppWindowViewsAuraAsh::GetRestoredState()
         ash::kRestoreWindowStateTypeOverrideKey));
     is_fullscreen = restore_state == ui::mojom::WindowShowState::kFullscreen;
   } else {
-    if (IsMaximized())
+    if (IsMaximized()) {
       return ui::mojom::WindowShowState::kMaximized;
+    }
     is_fullscreen = IsFullscreen();
   }
 
@@ -337,10 +331,11 @@ ui::ZOrderLevel ChromeNativeAppWindowViewsAuraAsh::GetZOrderLevel() const {
 void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   menu_model_ = CreateMultiUserContextMenu(GetNativeWindow());
-  if (!menu_model_)
+  if (!menu_model_) {
     return;
+  }
 
   // Only show context menu if point is in caption.
   gfx::Point point_in_view_coords(p);
@@ -367,8 +362,9 @@ void ChromeNativeAppWindowViewsAuraAsh::ShowContextMenuForViewImpl(
 std::unique_ptr<views::NonClientFrameView>
 ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
     views::Widget* widget) {
-  if (IsFrameless())
+  if (IsFrameless()) {
     return CreateNonStandardAppFrame();
+  }
 
   window_state_observation_.Observe(ash::WindowState::Get(GetNativeWindow()));
 
@@ -381,8 +377,7 @@ ChromeNativeAppWindowViewsAuraAsh::CreateNonClientFrameView(
   UpdateImmersiveMode();
 
   if (HasFrameColor()) {
-    custom_frame_view->SetFrameColors(ActiveFrameColor(),
-                                      InactiveFrameColor());
+    custom_frame_view->SetFrameColors(ActiveFrameColor(), InactiveFrameColor());
   }
 
   return custom_frame_view;
@@ -471,7 +466,7 @@ bool ChromeNativeAppWindowViewsAuraAsh::IsFullscreen() const {
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::EnterFullscreen(
-    const GURL& url,
+    const url::Origin& origin,
     ExclusiveAccessBubbleType bubble_type,
     const int64_t display_id) {
   // This codepath is never hit for Chrome Apps.
@@ -511,13 +506,18 @@ bool ChromeNativeAppWindowViewsAuraAsh::IsExclusiveAccessBubbleDisplayed()
 }
 
 void ChromeNativeAppWindowViewsAuraAsh::OnExclusiveAccessUserInput() {
-  if (exclusive_access_bubble_)
+  if (exclusive_access_bubble_) {
     exclusive_access_bubble_->OnUserInput();
+  }
 }
 
 content::WebContents*
 ChromeNativeAppWindowViewsAuraAsh::GetWebContentsForExclusiveAccess() {
   return web_view()->web_contents();
+}
+
+bool ChromeNativeAppWindowViewsAuraAsh::CanUserEnterFullscreen() const {
+  return true;
 }
 
 bool ChromeNativeAppWindowViewsAuraAsh::CanUserExitFullscreen() const {
@@ -583,10 +583,11 @@ void ChromeNativeAppWindowViewsAuraAsh::OnPostWindowStateTypeChange(
     // WindowState saves restore bounds *after* changing the property, and
     // enabling immersive mode will change the current bounds before the old
     // bounds can be saved.
-    if (window_state->IsFullscreen())
+    if (window_state->IsFullscreen()) {
       app_window()->OSFullscreen();
-    else
+    } else {
       app_window()->OnNativeWindowChanged();
+    }
   }
 }
 
@@ -594,8 +595,9 @@ void ChromeNativeAppWindowViewsAuraAsh::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  if (key != aura::client::kShowStateKey)
+  if (key != aura::client::kShowStateKey) {
     return;
+  }
 
   auto new_state = window->GetProperty(aura::client::kShowStateKey);
 
@@ -633,12 +635,14 @@ void ChromeNativeAppWindowViewsAuraAsh::OnMenuClosed() {
 
 bool ChromeNativeAppWindowViewsAuraAsh::ShouldEnableImmersiveMode() const {
   // No immersive mode for forced fullscreen or frameless windows.
-  if (app_window()->IsForcedFullscreen() || IsFrameless())
+  if (app_window()->IsForcedFullscreen() || IsFrameless()) {
     return false;
+  }
 
   // Always use immersive mode when fullscreen is set by the OS.
-  if (app_window()->IsOsFullscreen())
+  if (app_window()->IsOsFullscreen()) {
     return true;
+  }
 
   // Windows in tablet mode which are resizable have their title bars
   // hidden in ash for more size, so enable immersive mode so users
@@ -668,8 +672,9 @@ gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetCustomImage() {
 
 gfx::Image ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage() {
   TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::GetAppIconImage");
-  if (!app_icon_image_skia_.isNull())
+  if (!app_icon_image_skia_.isNull()) {
     return gfx::Image(app_icon_image_skia_);
+  }
 
   return ChromeNativeAppWindowViews::GetAppIconImage();
 }
@@ -703,11 +708,13 @@ void ChromeNativeAppWindowViewsAuraAsh::LoadAppIcon(
 void ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon(
     apps::IconValuePtr icon_value) {
   TRACE_EVENT0("ui", "ChromeNativeAppWindowViewsAuraAsh::OnLoadIcon");
-  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard)
+  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
     return;
+  }
 
   app_icon_image_skia_ = icon_value->uncompressed;
 
-  if (icon_value->is_placeholder_icon)
+  if (icon_value->is_placeholder_icon) {
     LoadAppIcon(false /* allow_placeholder_icon */);
+  }
 }

@@ -84,6 +84,7 @@ extern const base::FilePath::CharType kTransportSecurityPersisterFilename[];
 extern const base::FilePath::CharType kTrustTokenFilename[];
 extern const base::FilePath::CharType kVideoTutorialsStorageDirname[];
 extern const base::FilePath::CharType kWebAppDirname[];
+extern const base::FilePath::CharType kDeviceBoundSessionsFilename[];
 
 #if BUILDFLAG(IS_WIN)
 extern const base::FilePath::CharType kJumpListIconDirname[];

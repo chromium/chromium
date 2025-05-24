@@ -17,7 +17,6 @@
 #include "components/viz/service/display/frame_interval_matchers.h"
 #include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace viz {
 class SurfaceManager;
@@ -29,6 +28,7 @@ class SurfaceManager;
 class VIZ_SERVICE_EXPORT FrameIntervalDecider {
  public:
   using FrameIntervalClass = FrameIntervalMatcher::FrameIntervalClass;
+  using ResultInterval = FrameIntervalMatcher::ResultInterval;
   using Result = FrameIntervalMatcher::Result;
   using ResultCallback = FrameIntervalMatcher::ResultCallback;
   using FixedIntervalSettings = FrameIntervalMatcher::FixedIntervalSettings;
@@ -89,6 +89,7 @@ class VIZ_SERVICE_EXPORT FrameIntervalDecider {
 
   base::TimeTicks current_result_frame_time_;
   std::optional<Result> current_result_;
+  uint64_t frame_id_ = 0u;
 };
 
 }  // namespace viz

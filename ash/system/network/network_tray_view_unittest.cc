@@ -74,7 +74,9 @@ class NetworkTrayViewTest : public AshTestBase {
 
   NetworkTrayView* network_tray_view() { return network_tray_view_; }
 
-  std::u16string get_tooltip() { return network_tray_view_->tooltip_; }
+  const std::u16string get_tooltip() {
+    return network_tray_view_->GetRenderedTooltipText(gfx::Point());
+  }
 
  private:
   std::unique_ptr<FakeCrosNetworkConfig> cros_network_;

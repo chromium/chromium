@@ -86,9 +86,7 @@ void BreadcrumbManagerTabHelper::DidChangeVisibleSecurityState() {
       visible_security_state->displayed_mixed_content;
 
   security_state::SecurityLevel security_level =
-      security_state::GetSecurityLevel(
-          *visible_security_state,
-          /*used_policy_installed_certificate=*/false);
+      security_state::GetSecurityLevel(*visible_security_state);
   const bool security_style_authentication_broken =
       security_level == security_state::SecurityLevel::DANGEROUS;
 

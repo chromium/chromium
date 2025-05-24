@@ -43,12 +43,6 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "content/browser/webauth/authenticator_environment.h"
-#include "content/public/common/content_switches.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
-#endif
-
 namespace content {
 
 namespace {
@@ -514,48 +508,48 @@ class FakeLocalFrameWithBeforeUnload : public content::FakeLocalFrame {
     Init(test_host->GetRemoteAssociatedInterfaces());
   }
 
-  bool was_before_unload_called() const { return was_before_unload_called_; }
-
-  void RunBeforeUnloadCallback() {
-    ASSERT_TRUE(before_unload_callback_);
-    std::move(before_unload_callback_)
-        .Run(true, base::TimeTicks::Now(), base::TimeTicks::Now());
+  bool was_before_unload_sent_to_renderer() const {
+    return was_before_unload_sent_to_renderer_;
   }
 
   // FakeLocalFrame:
   void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) override {
-    was_before_unload_called_ = true;
-    before_unload_callback_ = std::move(callback);
+    was_before_unload_sent_to_renderer_ = true;
   }
 
  private:
-  bool was_before_unload_called_ = false;
-  BeforeUnloadCallback before_unload_callback_;
+  bool was_before_unload_sent_to_renderer_ = false;
 };
 
 // Verifies BeforeUnload() is not sent to renderer if there is no before
 // unload handler present.
 TEST_F(RenderFrameHostImplTest, BeforeUnloadNotSentToRenderer) {
-  FakeLocalFrameWithBeforeUnload local_frame(contents()->GetPrimaryMainFrame());
+  TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+  base::RunLoop run_loop;
+  bool before_unload_completed = false;
+  rfh->set_on_process_before_unload_completed_for_testing(
+      base::BindLambdaForTesting([&]() {
+        before_unload_completed = true;
+        EXPECT_TRUE(rfh->is_waiting_for_beforeunload_completion());
+        run_loop.Quit();
+      }));
+  FakeLocalFrameWithBeforeUnload local_frame(rfh);
   auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
       GURL("https://example.com/simple.html"), contents());
   simulator->set_block_invoking_before_unload_completed_callback(true);
   simulator->Start();
-  EXPECT_TRUE(contents()
-                  ->GetPrimaryMainFrame()
-                  ->is_waiting_for_beforeunload_completion());
-  EXPECT_FALSE(local_frame.was_before_unload_called());
+  run_loop.Run();
+  EXPECT_TRUE(before_unload_completed);
+  EXPECT_FALSE(local_frame.was_before_unload_sent_to_renderer());
   // This is necessary to trigger FakeLocalFrameWithBeforeUnload to be bound.
-  contents()->GetPrimaryMainFrame()->FlushLocalFrameMessages();
+  rfh->FlushLocalFrameMessages();
   // This runs a MessageLoop, which also results in the PostTask() scheduled
   // completing.
   local_frame.FlushMessages();
-  EXPECT_FALSE(local_frame.was_before_unload_called());
+  EXPECT_FALSE(local_frame.was_before_unload_sent_to_renderer());
   // Because of the nested message loops run by the previous calls, the task
   // that RenderFrameHostImpl will have also completed.
-  EXPECT_FALSE(contents()
-                   ->GetPrimaryMainFrame()
-                   ->is_waiting_for_beforeunload_completion());
+  EXPECT_FALSE(rfh->is_waiting_for_beforeunload_completion());
 }
 
 class LoadingStateChangedDelegate : public WebContentsDelegate {
@@ -882,7 +876,7 @@ TEST_F(RenderFrameHostImplTest,
           NavigationRequest::From(navigation->GetNavigationHandle());
       // Disable Storage Partitioning by enabling the deprecation trial.
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
     }
 
     navigation->Commit();
@@ -1038,7 +1032,7 @@ TEST_F(RenderFrameHostImplTest,
       NavigationRequest* request =
           NavigationRequest::From(navigation->GetNavigationHandle());
       request->GetMutableRuntimeFeatureStateContext()
-          .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+          .SetDisableThirdPartyStoragePartitioning3Enabled(true);
     }
 
     navigation->Commit();
@@ -1117,13 +1111,13 @@ TEST_F(RenderFrameHostImplTest, CalculateStorageKeyOfUnnavigatedFrame) {
 
   // Disable Storage Partitioning by enabling the deprecation trial.
   request->GetMutableRuntimeFeatureStateContext()
-      .SetDisableThirdPartyStoragePartitioning2Enabled(true);
+      .SetDisableThirdPartyStoragePartitioning3Enabled(true);
 
   navigation->Commit();
 
   EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
                   ->runtime_feature_state_read_context()
-                  .IsDisableThirdPartyStoragePartitioning2Enabled());
+                  .IsDisableThirdPartyStoragePartitioning3Enabled());
 
   // Create a child frame and navigate to `child_url`.
   auto* child_frame = main_test_rfh()->AppendChild("child");
@@ -1203,6 +1197,109 @@ TEST_F(RenderFrameHostImplTest,
           .IsTestFeatureEnabled());
 }
 
+class TestUnpartitionedStorageAcessContentBrowserClient
+    : public ContentBrowserClient {
+ public:
+  TestUnpartitionedStorageAcessContentBrowserClient() = default;
+  ~TestUnpartitionedStorageAcessContentBrowserClient() override = default;
+
+  bool IsUnpartitionedStorageAccessAllowedByUserPreference(
+      BrowserContext* browser_context,
+      const GURL& url,
+      const net::SiteForCookies& site_for_cookies,
+      const url::Origin& top_frame_origin) override {
+    return is_unpartitioned_storage_access_allowed_by_user_preference_;
+  }
+
+  void SetIsUnpartitionedStorageAccessAllowedByUserPreference(bool value) {
+    is_unpartitioned_storage_access_allowed_by_user_preference_ = value;
+  }
+
+ private:
+  bool is_unpartitioned_storage_access_allowed_by_user_preference_ = false;
+};
+
+// Test that CalculateStorageKey will create a first-party or third-party key,
+// in the presence of a deprecation trial, depending on the state of
+// IsUnpartitionedStorageAccessAllowedByUserPreference()
+TEST_F(
+    RenderFrameHostImplTest,
+    CalculateStorageKeyWithIsUnpartitionedStorageAccessAllowedByUserPreference) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Because Storage partitioning's usage of RuntimeFeatureState is only meant
+  // to disable (i.e.: 1p only) partitioning, we need the make sure the feature
+  // is on first.
+  scoped_feature_list.InitAndEnableFeature(
+      net::features::kThirdPartyStoragePartitioning);
+
+  TestUnpartitionedStorageAcessContentBrowserClient client;
+  ContentBrowserClient* regular_client = SetBrowserClientForTesting(&client);
+
+  client.SetIsUnpartitionedStorageAccessAllowedByUserPreference(true);
+
+  // This test will create a main frame that has a storage partitioning
+  // deprecation trial active and a child frame that is navigated to a
+  // third-party site. Since IsUnpartitionedStorageAccessAllowedByUserPreference
+  // returns true the child frame's StorageKey should be first-party.
+
+  GURL url = GURL("https://a.com");
+  GURL child_url = GURL("https://b.com");
+
+  // Start by giving the main frame a SP disabled
+  // RuntimeFeatureStateReadContext.
+  auto navigation =
+      NavigationSimulator::CreateRendererInitiated(url, main_rfh());
+  navigation->Start();
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+
+  // Disable Storage Partitioning by enabling the deprecation trial.
+  request->GetMutableRuntimeFeatureStateContext()
+      .SetDisableThirdPartyStoragePartitioning3Enabled(true);
+
+  navigation->Commit();
+
+  EXPECT_TRUE(RuntimeFeatureStateDocumentData::GetForCurrentDocument(main_rfh())
+                  ->runtime_feature_state_read_context()
+                  .IsDisableThirdPartyStoragePartitioning3Enabled());
+
+  // Create a child frame and navigate to `child_url`.
+  auto* child_frame = main_test_rfh()->AppendChild("child");
+  auto child_navigation =
+      NavigationSimulator::CreateRendererInitiated(child_url, child_frame);
+  child_navigation->Commit();
+  child_frame = static_cast<TestRenderFrameHost*>(
+      child_navigation->GetFinalRenderFrameHost());
+
+  // Since IsUnpartitionedStorageAccessAllowedByUserPreference is true the
+  // StorageKey should be first-party.
+  blink::StorageKey child_frame_key_1p =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(child_url));
+  EXPECT_EQ(child_frame_key_1p, child_frame->GetStorageKey());
+
+  // Now perform the same test, except
+  // IsUnpartitionedStorageAccessAllowedByUserPreference is false.
+  client.SetIsUnpartitionedStorageAccessAllowedByUserPreference(false);
+  GURL child_url2 = GURL("https://c.com");
+
+  child_navigation =
+      NavigationSimulator::CreateRendererInitiated(child_url2, child_frame);
+  child_navigation->Commit();
+  child_frame = static_cast<TestRenderFrameHost*>(
+      child_navigation->GetFinalRenderFrameHost());
+
+  // Since IsUnpartitionedStorageAccessAllowedByUserPreference is false the
+  // StorageKey should be third-party.
+  blink::StorageKey child_frame_key_3p =
+      blink::StorageKey::Create(url::Origin::Create(child_url2),
+                                net::SchemefulSite(url::Origin::Create(url)),
+                                blink::mojom::AncestorChainBit::kCrossSite);
+  EXPECT_EQ(child_frame_key_3p, child_frame->GetStorageKey());
+
+  SetBrowserClientForTesting(regular_client);
+}
+
 #if BUILDFLAG(IS_ANDROID)
 class TestWebAuthnContentBrowserClientImpl : public ContentBrowserClient {
  public:
@@ -1244,6 +1341,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -1263,6 +1361,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "doofenshmirtz.evil", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -1282,6 +1381,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformGetAssertionWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_get_assertion=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -1300,6 +1400,7 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
   main_test_rfh()->PerformMakeCredentialWebAuthSecurityChecks(
       "owca.org", url::Origin::Create(url),
       /*is_payment_credential_creation=*/false,
+      /*remote_desktop_client_override_origin=*/std::nullopt,
       base::BindLambdaForTesting(
           [&status](blink::mojom::AuthenticatorStatus s, bool is_cross_origin) {
             status = s;
@@ -1308,6 +1409,175 @@ TEST_F(RenderFrameHostImplWebAuthnTest,
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class AvoidUnnecessaryBeforeUnloadCheckSyncTest
+    : public RenderFrameHostImplTest {
+ public:
+  class ForcePostTaskContentBrowserClient : public ContentBrowserClient {
+    bool SupportsAvoidUnnecessaryBeforeUnloadCheckSync() override {
+      return false;
+    }
+  };
+
+  // In this function, the following code path will be executed on navigation.
+  //
+  // [AvoidUnnecessaryBeforeUnloadCheckSync disabled]
+  // - Start a browser initiated navigation.
+  // - Run TestRenderFrameHost::SendBeforeUnload()
+  // - Run on_sendbeforeunload_begin_ closure
+  // - Run RenderFrameHostImpl::SendBeforeUnload() => Post a task
+  // - Run on_sendbeforeunload_end_ closure
+  //
+  // (In the posted task)
+  // - Run RenderFrameHostImpl::ProcessBeforeUnloadCompleted()
+  // - Run on_process_before_unload_completed_for_testing_ closure
+  //
+  // [AvoidUnnecessaryBeforeUnloadCheckSync + `kWithSendBeforeUnload`]
+  // - Start a browser initiated navigation.
+  // - Run TestRenderFrameHost::SendBeforeUnload()
+  // - Run on_sendbeforeunload_begin_ closure
+  // - Run RenderFrameHostImpl::SendBeforeUnload()
+  // - Run RenderFrameHostImpl::ProcessBeforeUnloadCompleted()
+  // - Run on_process_before_unload_completed_for_testing_ closure
+  // - Run on_sendbeforeunload_end_ closure
+  //
+  // [AvoidUnnecessaryBeforeUnloadCheckSync + `kWithoutSendBeforeUnload`]
+  // - Start a browser initiated navigation.
+  // - (the rest will be skipped)
+  //
+  // - expect_beforeunload_processed_on_sendbeforeunload_stack argument checks
+  //   if ProcessBeforeUnloadCompleted() is called without posting a task by
+  //   checking it in on_sendbeforeunload_end_ closure. This argument is
+  //   optional because this argument doesn't make sense when SendBeforeUnload()
+  //   and ProcessBeforeUnloadCompleted are not called at all.
+  //
+  // - expect_to_run_sendbeforeunload argument checks if both
+  //   SendBeforeUnload() and ProcessBeforeUnloadCompleted() are called or not.
+  void TestBeforeUnloadBehaviorOnNavigation(
+      std::optional<bool>
+          expect_beforeunload_processed_on_sendbeforeunload_stack,
+      bool expect_to_run_sendbeforeunload,
+      const base::Location& location = FROM_HERE) {
+    TestRenderFrameHost* rfh = contents()->GetPrimaryMainFrame();
+    bool beforeunload_processed = false;
+    bool run_sendbeforeunload = false;
+    // The following callback is called when processing beforeunload is
+    // completed.
+    rfh->set_on_process_before_unload_completed_for_testing(
+        base::BindLambdaForTesting([&]() { beforeunload_processed = true; }));
+    // The following callback is called when SendBeforeUnload() is about to
+    // start.
+    rfh->set_on_sendbeforeunload_begin(base::BindLambdaForTesting([&]() {
+      EXPECT_FALSE(beforeunload_processed) << location.ToString();
+    }));
+    // The following callback is called when SendBeforeUnload() is about to end.
+    rfh->set_on_sendbeforeunload_end(base::BindLambdaForTesting([&]() {
+      EXPECT_EQ(beforeunload_processed,
+                *expect_beforeunload_processed_on_sendbeforeunload_stack)
+          << location.ToString();
+      run_sendbeforeunload = true;
+    }));
+
+    auto simulator = NavigationSimulatorImpl::CreateBrowserInitiated(
+        GURL("https://example.com/navigation.html"), contents());
+    simulator->Start();
+    simulator->Wait();
+
+    EXPECT_EQ(beforeunload_processed, expect_to_run_sendbeforeunload)
+        << location.ToString();
+    EXPECT_EQ(run_sendbeforeunload, expect_to_run_sendbeforeunload)
+        << location.ToString();
+  }
+};
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest, EnabledWithSendBeforeUnload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_sendbeforeunload_stack=*/true,
+      /*expect_to_run_sendbeforeunload=*/true);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest, Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kAvoidUnnecessaryBeforeUnloadCheckSync);
+
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_sendbeforeunload_stack=*/false,
+      /*expect_to_run_sendbeforeunload=*/true);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithSendBeforeUnloadButBrowserClientProhibits) {
+  ForcePostTaskContentBrowserClient force_post_task_content_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&force_post_task_content_browser_client);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes precedence over
+  // enabling the kAvoidUnnecessaryBeforeUnloadCheckSync feature.
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_sendbeforeunload_stack=*/false,
+      /*expect_to_run_sendbeforeunload=*/true);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithoutSendBeforeUnload) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithoutSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_send_beforeunload_stack=*/std::nullopt,
+      /*expect_to_run_send_beforeunload=*/false);
+}
+
+TEST_F(AvoidUnnecessaryBeforeUnloadCheckSyncTest,
+       EnabledWithoutSendBeforeUnloadButBrowserClientProhibits) {
+  ForcePostTaskContentBrowserClient force_post_task_content_browser_client;
+  ContentBrowserClient* old_browser_client =
+      SetBrowserClientForTesting(&force_post_task_content_browser_client);
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      /*enabled_features=*/{{features::kAvoidUnnecessaryBeforeUnloadCheckSync,
+                             {{features::
+                                   kAvoidUnnecessaryBeforeUnloadCheckSyncMode
+                                       .name,
+                               "WithoutSendBeforeUnload"}}}},
+      /*disabled_features=*/{});
+
+  // SupportsAvoidUnnecessaryBeforeUnloadCheckSync() takes precedence over
+  // enabling the kAvoidUnnecessaryBeforeUnloadCheckSync feature.
+  TestBeforeUnloadBehaviorOnNavigation(
+      /*expect_beforeunload_processed_on_send_beforeunload_stack=*/false,
+      /*expect_to_run_send_beforeunload=*/true);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
 
 class RenderFrameHostImplThirdPartyStorageTest
     : public RenderViewHostImplTestHarness,
@@ -1374,59 +1644,6 @@ TEST_P(RenderFrameHostImplThirdPartyStorageTest,
         child_frame->GetStorageKey());
   }
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(RenderFrameHostImplTest, GetVirtualAuthenticatorManagerWhenInactiveRFH) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      switches::kEnableWebAuthDeprecatedMojoTestingApi);
-
-  // Enable a back forward cache.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      GetBasicBackForwardCacheFeatureForTesting(),
-      GetDefaultDisabledBackForwardCacheFeaturesForTesting());
-
-  // Create a page with an iframe:
-  contents()->NavigateAndCommit(GURL("https://initial.example.test/"));
-
-  RenderFrameHostImpl* parent_rfh = main_test_rfh();
-  RenderFrameHostImpl* child_rfh = static_cast<RenderFrameHostImpl*>(
-      NavigationSimulator::NavigateAndCommitFromDocument(
-          GURL("https://childframe.com"),
-          RenderFrameHostTester::For(parent_rfh)->AppendChild("child")));
-  EXPECT_TRUE(child_rfh->IsActive());
-
-  // The active child document should enable VirtualAuthenticator.
-  {
-    mojo::Remote<blink::test::mojom::VirtualAuthenticatorManager> remote;
-    child_rfh->GetVirtualAuthenticatorManager(
-        remote.BindNewPipeAndPassReceiver());
-    EXPECT_TRUE(AuthenticatorEnvironment::GetInstance()
-                    ->IsVirtualAuthenticatorEnabledFor(
-                        contents()->GetPrimaryFrameTree().root()->child_at(0)));
-  }
-
-  // Navigate to another page, causing the two RenderFrameHost to become
-  // inactive.
-  RenderFrameDeletedObserver parent_rfh_deleted(parent_rfh);
-  auto navigation = NavigationSimulatorImpl::CreateBrowserInitiated(
-      GURL("https://final.example.test/"), contents());
-  navigation->set_drop_unload_ack(true);
-  navigation->Commit();
-  ASSERT_FALSE(parent_rfh_deleted.deleted());
-  EXPECT_FALSE(parent_rfh->IsActive());
-
-  // The inactive document should not enable VirtualAuthenticator.
-  {
-    mojo::Remote<blink::test::mojom::VirtualAuthenticatorManager> remote;
-    child_rfh->GetVirtualAuthenticatorManager(
-        remote.BindNewPipeAndPassReceiver());
-    EXPECT_FALSE(AuthenticatorEnvironment::GetInstance()
-                     ->IsVirtualAuthenticatorEnabledFor(
-                         contents()->GetPrimaryFrameTree().root()));
-  }
-}
-#endif
 
 namespace {
 

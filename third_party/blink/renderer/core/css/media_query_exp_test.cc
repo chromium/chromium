@@ -127,19 +127,20 @@ MediaQueryExpComparison EqCmp(MediaQueryExpValue v) {
 }
 
 MediaQueryExp LeftExp(String feature, MediaQueryExpComparison cmp) {
-  return MediaQueryExp::Create(feature,
+  return MediaQueryExp::Create(AtomicString(feature),
                                MediaQueryExpBounds(cmp, NoCmp(InvalidValue())));
 }
 
 MediaQueryExp RightExp(String feature, MediaQueryExpComparison cmp) {
-  return MediaQueryExp::Create(feature,
+  return MediaQueryExp::Create(AtomicString(feature),
                                MediaQueryExpBounds(NoCmp(InvalidValue()), cmp));
 }
 
 MediaQueryExp PairExp(String feature,
                       MediaQueryExpComparison left,
                       MediaQueryExpComparison right) {
-  return MediaQueryExp::Create(feature, MediaQueryExpBounds(left, right));
+  return MediaQueryExp::Create(AtomicString(feature),
+                               MediaQueryExpBounds(left, right));
 }
 
 const MediaQueryExpNode* FeatureNode(MediaQueryExp expr) {

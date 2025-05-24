@@ -127,14 +127,13 @@ const NetLogWithSource& HttpProxyClientSocket::NetLog() const {
 bool HttpProxyClientSocket::WasEverUsed() const {
   if (socket_)
     return socket_->WasEverUsed();
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 NextProto HttpProxyClientSocket::GetNegotiatedProtocol() const {
   // Do not delegate to `socket_`. While `socket_` may negotiate ALPN with the
   // proxy, this object represents the tunneled TCP connection to the origin.
-  return kProtoUnknown;
+  return NextProto::kProtoUnknown;
 }
 
 bool HttpProxyClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
@@ -307,9 +306,7 @@ int HttpProxyClientSocket::DoLoop(int last_io_result) {
       case STATE_DONE:
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE &&
            next_state_ != STATE_DONE);

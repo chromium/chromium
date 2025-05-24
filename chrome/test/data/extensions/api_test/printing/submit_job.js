@@ -4,7 +4,7 @@
 
 chrome.test.getConfig(function(config) {
   const url = 'http://localhost:' + config.testServer.port + '/pdf/test.pdf';
-  submitJob('id', 'test job', url, response => {
+  submitJob('id', 'test job', url, minimal_ticket, response => {
     chrome.test.assertNe(undefined, response);
     chrome.test.assertNe(undefined, response.status);
     chrome.test.assertEq(chrome.printing.SubmitJobStatus.OK, response.status);

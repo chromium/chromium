@@ -302,8 +302,9 @@ is_version_ge() {
   local right="${2}"
 
   local -a left_array right_array
-  IFS=. left_array=(${left})
-  IFS=. right_array=(${right})
+  local IFS=.
+  left_array=(${left})
+  right_array=(${right})
 
   local left_count=${#left_array[@]}
   local right_count=${#right_array[@]}
@@ -367,7 +368,7 @@ ksadmin_version() {
       # This isn't very special, it's just what happens to be current as this is
       # written. It's new enough that all of the feature checks
       # (ksadmin_supports_*) pass.
-      g_ksadmin_version="1.2.13.41"
+      g_ksadmin_version="137.0.7106.0"
     else
       g_ksadmin_version="$(ksadmin --ksadmin-version || true)"
     fi
@@ -432,6 +433,11 @@ ksadmin_supports_versionpath_versionkey() {
 
   # The return value of is_ksadmin_version_ge is used as this function's
   # return value.
+}
+
+# Returns 0 (true) if ksadmin supports --print_xattr_tag_brand.
+ksadmin_supports_print_xattr_tag_brand() {
+  is_ksadmin_version_ge 137.0.7106.0
 }
 
 # Runs "defaults read" to obtain the value of a key in a property list. As
@@ -606,10 +612,13 @@ main() {
   if [[ ${EUID} -eq 0 ]]; then
     readonly RSYNC_FLAGS="--ignore-times --links --perms --recursive --times"
   else
-    # When non-root, omit dir times, since rsync can't update them if the
-    # directories are owned by a different user.
+    # When non-root, omit link and dir times, since rsync can't update them if
+    # the directories are owned by a different user. Also avoid --perms, since
+    # in some cases users can't change the permissions of files owned by other
+    # users.
     readonly RSYNC_FLAGS=\
-"--ignore-times --links --perms --recursive --times --omit-dir-times"
+"--ignore-times --links --no-perms --executability --chmod=u=rwX,go=rX\
+ --recursive"
   fi
 
   # It's difficult to get GOOGLE_CHROME_UPDATER_DEBUG set in the environment
@@ -917,10 +926,20 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   local old_ks_plist="${installed_app_plist}"
   note "old_ks_plist = ${old_ks_plist}"
   local old_brand
-  old_brand="$(infoplist_read "${old_ks_plist}" \
-                              "${KS_BRAND_KEY}" 2> /dev/null ||
-               true)"
-  note "old_brand (from app) = ${old_brand}"
+  if ksadmin_supports_print_xattr_tag_brand; then
+    old_brand="$(ksadmin --print-xattr-tag-brand "${KS_TICKET_XC_PATH}" \
+                         2> /dev/null ||
+                 true)"
+    if [[ -n "${old_brand}" ]] ; then
+      note "old_brand (from extended attribute tag) = ${old_brand}"
+    fi
+  fi
+  if [[ -z "${old_brand}" ]] ; then
+    old_brand="$(infoplist_read "${old_ks_plist}" \
+                                "${KS_BRAND_KEY}" 2> /dev/null ||
+                true)"
+    note "old_brand (from app Info.plist) = ${old_brand}"
+  fi
 
   local update_versioned_dir=
   if [[ -z "${is_patch}" ]]; then
@@ -1270,6 +1289,14 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
     new_brand="GCCM"
   elif [[ "${old_brand}" == "GCCM" && ! -e "${cbcm_path}" ]]; then
     new_brand="GCEM"
+  elif [[ "${old_brand}" == "FPAB" && -e "${cbcm_path}" ]]; then
+    new_brand="FPJB"
+  elif [[ "${old_brand}" == "FPJB" && ! -e "${cbcm_path}" ]]; then
+    new_brand="FPAB"
+  elif [[ "${old_brand}" == "FPAC" && -e "${cbcm_path}" ]]; then
+    new_brand="FPJC"
+  elif [[ "${old_brand}" == "FPJC" && ! -e "${cbcm_path}" ]]; then
+    new_brand="FPAC"
   else
     new_brand="${old_brand}"
   fi

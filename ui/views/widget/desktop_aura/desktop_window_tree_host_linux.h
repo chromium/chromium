@@ -104,7 +104,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
 #if BUILDFLAG(USE_ATK)
   bool OnAtkKeyEvent(AtkKeyEventStruct* atk_key_event, bool transient) override;
 #endif  // BUILDFLAG(USE_ATK)
-  bool IsOverrideRedirect() const override;
+  bool IsOverrideRedirect(const ui::X11Extension& x11_extension) const override;
   gfx::Rect GetGuessedFullScreenSizeInPx() const override;
 
   // Enables event listening after closing |dialog|.

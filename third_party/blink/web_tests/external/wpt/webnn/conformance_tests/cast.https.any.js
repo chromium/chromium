@@ -1,5 +1,5 @@
 // META: title=test WebNN API cast operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -624,6 +624,35 @@ const castTests = [
     }
   },
   {
+    'name': 'cast int32 4D constant tensor to float32',
+    'graph': {
+      'inputs': {
+        'castInput': {
+          'data': [
+            45, 55, 11, 21, 78, 104, 102, 66, 41, 110, 92, 69,
+            48, 23, 58, 12, 33, 24,  101, 87, 49, 118, 1,  77
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'int32'},
+          'constant': true,
+        }
+      },
+      'operators': [{
+        'name': 'cast',
+        'arguments': [{'input': 'castInput'}, {'type': 'float32'}],
+        'outputs': 'castOutput'
+      }],
+      'expectedOutputs': {
+        'castOutput': {
+          'data': [
+            45, 55, 11, 21, 78, 104, 102, 66, 41, 110, 92, 69,
+            48, 23, 58, 12, 33, 24,  101, 87, 49, 118, 1,  77
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'cast int32 4D tensor to float16',
     'graph': {
       'inputs': {
@@ -1074,6 +1103,56 @@ const castTests = [
     }
   },
   {
+    'name': 'cast int8 0D constant tensor to int32',
+    'graph': {
+      'inputs': {
+        'castInput': {
+          'data': [17],
+          'descriptor': {shape: [], dataType: 'int8'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'cast',
+        'arguments': [{'input': 'castInput'}, {'type': 'int32'}],
+        'outputs': 'castOutput'
+      }],
+      'expectedOutputs': {
+        'castOutput':
+            {'data': [17], 'descriptor': {shape: [], dataType: 'int32'}}
+      }
+    }
+  },
+  {
+    'name': 'cast int8 1D constant tensor to int32',
+    'graph': {
+      'inputs': {
+        'castInput': {
+          'data': [
+            123, 17, 31, 77, 88, 44, 84, 40, 14, 64, 109, 4,
+            2,   0,  45, 47, 72, 88, 82, 4,  73, 36, 65,  117
+          ],
+          'descriptor': {shape: [24], dataType: 'int8'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'cast',
+        'arguments': [{'input': 'castInput'}, {'type': 'int32'}],
+        'outputs': 'castOutput'
+      }],
+      'expectedOutputs': {
+        'castOutput': {
+          'data': [
+            123, 17, 31, 77, 88, 44, 84, 40, 14, 64, 109, 4,
+            2,   0,  45, 47, 72, 88, 82, 4,  73, 36, 65,  117
+          ],
+          'descriptor': {shape: [24], dataType: 'int32'}
+        }
+      }
+    }
+  },
+  {
     'name': 'cast int8 4D tensor to float32',
     'graph': {
       'inputs': {
@@ -1416,7 +1495,7 @@ const castTests = [
 if (navigator.ml) {
   castTests.forEach((test) => {
     webnn_conformance_test(
-        buildGraphAndCompute, getCastPrecisionTolerance, test);
+        buildAndExecuteGraph, getCastPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

@@ -80,7 +80,12 @@ class CallbackCookieSettings : public CookieSettingsBase {
     return false;
   }
 
-  bool ShouldBlockThirdPartyCookies() const override { return false; }
+  bool ShouldBlockThirdPartyCookies(
+      base::optional_ref<const url::Origin> top_frame_origin,
+      net::CookieSettingOverrides overrides) const override {
+    return MaybeBlockThirdPartyCookiesPerModifiers(top_frame_origin, overrides)
+        .value_or(false);
+  }
   bool MitigationsEnabledFor3pcd() const override { return false; }
 
   bool IsThirdPartyCookiesAllowedScheme(
@@ -91,13 +96,11 @@ class CallbackCookieSettings : public CookieSettingsBase {
   bool ShouldIgnoreSameSiteRestrictions(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies) const override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
  private:
   GetSettingCallback callback_;
-  ContentSettingsType type_;
 };
 
 class CookieSettingsBaseTest : public testing::Test {
@@ -214,13 +217,37 @@ TEST_F(CookieSettingsBaseTest, ShouldNotDeleteNoThirdPartyDomainMatch) {
 TEST_F(CookieSettingsBaseTest, CookieAccessNotAllowedWithBlockedSetting) {
   CallbackCookieSettings settings(CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
-      url_, site_for_cookies_, origin_, net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
   CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      url_, site_for_cookies_, origin_, net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
+}
+
+TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithNonNoncePartitionKey) {
+  CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(url_);
+
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      cookie_partition_key));
+}
+
+TEST_F(CookieSettingsBaseTest, CookieAccessNotAllowedWithNoncePartitionKey) {
+  CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
+  net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(
+          url_, net::CookiePartitionKey::AncestorChainBit::kCrossSite,
+          base::UnguessableToken::Create());
+
+  EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      cookie_partition_key));
 }
 
 TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
@@ -230,19 +257,22 @@ TEST_F(CookieSettingsBaseTest, ThirdPartyCookiesOverriden) {
   net::CookieSettingOverrides overrides{};
   overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);
 
-  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(url_, site_for_cookies_,
-                                                 origin_, overrides));
-  EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
-      kThirdPartyURL, site_for_cookies_, origin_, overrides));
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      kThirdPartyURL, site_for_cookies_, origin_,
-      net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_FALSE(settings.IsFullCookieAccessAllowed(
+      kThirdPartyURL, site_for_cookies_, origin_, overrides,
+      /*cookie_partition_key=*/std::nullopt));
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      kThirdPartyURL, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithSessionOnlySetting) {
   CallbackCookieSettings settings(CONTENT_SETTING_SESSION_ONLY);
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
-      url_, site_for_cookies_, origin_, net::CookieSettingOverrides()));
+      url_, site_for_cookies_, origin_, net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 }
 
 TEST_F(CookieSettingsBaseTest, LegacyCookieAccessSemantics) {
@@ -302,51 +332,9 @@ TEST_F(CookieSettingsBaseTest, IsValidLegacyAccessSetting) {
       CONTENT_SETTING_SESSION_ONLY));
 }
 
-class CookieSettingsBaseStorageAccessAPITest
-    : public testing::TestWithParam<std::tuple<bool, bool>> {
- public:
-  CookieSettingsBaseStorageAccessAPITest() {
-    CookieSettingsBase::SetStorageAccessAPIGrantsUnpartitionedStorageForTesting(
-        PermissionGrantsUnpartitionedStorage());
-
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (IsStoragePartitioned()) {
-      enabled.push_back({net::features::kThirdPartyStoragePartitioning, {}});
-    } else {
-      disabled.push_back(net::features::kThirdPartyStoragePartitioning);
-    }
-    features_.InitWithFeaturesAndParameters(enabled, disabled);
-  }
-
-  bool PermissionGrantsUnpartitionedStorage() const {
-    return std::get<0>(GetParam());
-  }
-  bool IsStoragePartitioned() const { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList features_;
-};
-
-TEST_P(CookieSettingsBaseStorageAccessAPITest,
-       SettingOverridesForStorageAccessAPIs) {
-  CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
-
-  net::CookieSettingOverrides overrides = settings.SettingOverridesForStorage();
-
-  EXPECT_EQ(
-      overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible),
-      PermissionGrantsUnpartitionedStorage() || IsStoragePartitioned());
-  EXPECT_EQ(
-      overrides.Has(
-          net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible),
-      IsStoragePartitioned());
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    CookieSettingsBaseStorageAccessAPITest,
-    testing::Combine(testing::Bool(), testing::Bool()));
+// `GetStorageAccessStatus` is tested in
+// components/content_settings/core/browser/cookie_settings_unittest.cc and
+// services/network/cookie_settings_unittest.cc
 
 }  // namespace
 }  // namespace content_settings

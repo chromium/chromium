@@ -4,10 +4,13 @@
 
 package org.chromium.components.webapps;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Used by {@link AddToHomescreenDialogView} to propagate view events to {@link
  * AddToHomescreenMediator}.
  */
+@NullMarked
 public interface AddToHomescreenViewDelegate {
     /** Called when the user accepts adding the item to home screen with the provided title. */
     void onAddToHomescreen(String title, @AppType int selectedType);

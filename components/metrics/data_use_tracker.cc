@@ -28,7 +28,7 @@ const double kDefaultUMARatio = 0.05;
 DataUseTracker::DataUseTracker(PrefService* local_state)
     : local_state_(local_state) {}
 
-DataUseTracker::~DataUseTracker() {}
+DataUseTracker::~DataUseTracker() = default;
 
 // static
 std::unique_ptr<DataUseTracker> DataUseTracker::Create(

@@ -1,0 +1,10 @@
+Name: smallvec
+URL: https://crates.io/crates/smallvec
+Version: 1.15.0
+Revision: 7c4d350f5ec284fd05807f1a182387889a62af24
+License: Apache-2.0
+License File: //third_party/rust/chromium_crates_io/vendor/smallvec-v1/LICENSE-APACHE
+Shipped: yes
+Security Critical: yes
+
+Description: 'Small vector' optimization: store up to a small number of items on the stack

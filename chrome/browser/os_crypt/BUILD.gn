@@ -53,12 +53,33 @@ source_set("browser_tests") {
     "//base",
     "//chrome/elevation_service:public_headers",
     "//chrome/test:test_support",
+    "//chrome/windows_services/service_program/test_support",
     "//content/test:test_support",
   ]
 
   if (!is_component_build) {
     data_deps = [ ":app_binary" ]
   }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "app_bound_encryption_provider_win_unittest.cc",
+    "app_bound_encryption_win_unittest.cc",
+  ]
+
+  deps = [
+    ":os_crypt",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/elevation_service:public_headers",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
 source_set("test_support") {
@@ -74,6 +95,7 @@ source_set("test_support") {
     "//chrome/install_static/test:test_support",
     "//chrome/installer/util:constants",
     "//chrome/installer/util:work_item",
+    "//chrome/windows_services/service_program/test_support",
   ]
 }
 

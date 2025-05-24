@@ -4,19 +4,24 @@
 
 package org.chromium.components.translate;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -29,7 +34,7 @@ import org.chromium.components.messages.SecondaryMenuMaxSize;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenu;
-import org.chromium.ui.listmenu.ListMenuButtonDelegate;
+import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.Toast;
@@ -38,6 +43,7 @@ import java.lang.ref.WeakReference;
 
 /** Manages the translate message UI. */
 @JNINamespace("translate")
+@NullMarked
 class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     public static class MenuItem {
         // If |title| is an empty string, then a divider will be shown.
@@ -69,7 +75,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     private final int mDismissalDurationSeconds;
 
     // Will be null before the message is shown.
-    private PropertyModel mMessageProperties;
+    private @Nullable PropertyModel mMessageProperties;
 
     /** Shows a Toast with the general translate error message. */
     @CalledByNative
@@ -87,7 +93,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
      * the activity is being recreated or destroyed.
      */
     @CalledByNative
-    public static TranslateMessage create(
+    public static @Nullable TranslateMessage create(
             WebContents webContents, long nativeTranslateMessage, int dismissalDurationSeconds) {
         Context context = getContextFromWebContents(webContents);
         if (context == null) return null;
@@ -105,9 +111,9 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     TranslateMessage(
-            @NonNull Context context,
-            @NonNull MessageDispatcher messageDispatcher,
-            @NonNull WebContents webContents,
+            Context context,
+            MessageDispatcher messageDispatcher,
+            WebContents webContents,
             long nativeTranslateMessage,
             int dismissalDurationSeconds) {
         mContext = context;
@@ -153,6 +159,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
                             .with(MessageBannerProperties.ON_DISMISSED, this::handleDismiss)
                             .build();
         }
+        assumeNonNull(mMessageProperties);
 
         mMessageProperties.set(MessageBannerProperties.TITLE, title);
         mMessageProperties.set(MessageBannerProperties.DESCRIPTION, description);
@@ -197,10 +204,11 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
     @CalledByNative
     public void dismiss() {
+        assertNonNull(mMessageProperties);
         mMessageDispatcher.dismissMessage(mMessageProperties, DismissReason.DISMISSED_BY_FEATURE);
     }
 
-    private static Context getContextFromWebContents(WebContents webContents) {
+    private static @Nullable Context getContextFromWebContents(WebContents webContents) {
         WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return null;
         WeakReference<Activity> ref = windowAndroid.getActivity();
@@ -234,7 +242,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
     // TranslateMessageSecondaryMenu.Handler implementation:
     @Override
-    public MenuItem[] handleSecondaryMenuItemClicked(MenuItem menuItem) {
+    public MenuItem @Nullable [] handleSecondaryMenuItemClicked(MenuItem menuItem) {
         if (mNativeTranslateMessage == 0) return null;
         return TranslateMessageJni.get()
                 .handleSecondaryMenuItemClicked(
@@ -245,19 +253,19 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
     }
 
     private final class SecondaryMenuButtonDelegate extends DataSetObserver
-            implements ListMenuButtonDelegate {
+            implements ListMenuDelegate {
         /**
          * Keeps track of the RectProvider supplied to anchor the AnchoredPopupWindow to the
          * ListMenuButton. It's kept as a WeakReference so that this doesn't inadvertently extend
          * the lifetime of the RectProvider and all of its references past the time when the popup
          * window is dismissed.
          */
-        private WeakReference<RectProvider> mRectProvider;
+        private @Nullable WeakReference<RectProvider> mRectProvider;
 
-        // ListMenuButtonDelegate implementation:
+        // ListMenuDelegate implementation:
         @Override
         public RectProvider getRectProvider(View listMenuButton) {
-            RectProvider provider = ListMenuButtonDelegate.super.getRectProvider(listMenuButton);
+            RectProvider provider = ListMenuDelegate.super.getRectProvider(listMenuButton);
             mRectProvider = new WeakReference<RectProvider>(provider);
             return provider;
         }
@@ -275,10 +283,12 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
 
         // DataSetObserver implementation:
         @Override
+        @NullUnmarked
         public void onChanged() {
             // If the mRectProvider is set, then call setRect() with the existing Rect in order to
             // force it to notify its observer, which will cause the AnchoredPopupWindow to update
             // its onscreen dimensions to fit the new menu items.
+            // @NullUnmarked because mRectProvider is assumed to be non-null.
             RectProvider provider = mRectProvider.get();
             if (provider != null) provider.setRect(provider.getRect());
         }

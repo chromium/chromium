@@ -164,8 +164,8 @@ struct PasswordGenerationUIData {
   // The form associated with the password field.
   FormData form_data;
 
-  // Whether the password input field is empty.
-  bool input_field_empty = false;
+  // Whether the password generation was rejected by the user.
+  bool generation_rejected = false;
 };
 
 void LogPasswordGenerationEvent(PasswordGenerationEvent event);

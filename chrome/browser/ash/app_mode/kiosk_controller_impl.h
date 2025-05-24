@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
 #include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
@@ -27,6 +28,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 
+class PrefService;
+
 namespace ash {
 
 class AppLaunchSplashScreen;
@@ -36,7 +39,8 @@ class KioskLaunchController;
 class KioskControllerImpl : public KioskController,
                             public user_manager::UserManager::Observer {
  public:
-  explicit KioskControllerImpl(user_manager::UserManager* user_manager);
+  KioskControllerImpl(PrefService& local_state,
+                      user_manager::UserManager* user_manager);
   KioskControllerImpl(const KioskControllerImpl&) = delete;
   KioskControllerImpl& operator=(const KioskControllerImpl&) = delete;
   ~KioskControllerImpl() override;
@@ -96,10 +100,13 @@ class KioskControllerImpl : public KioskController,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  const raw_ref<PrefService> local_state_;
+
   KioskIwaManager GUARDED_BY_CONTEXT(sequence_checker_) iwa_manager_;
   WebKioskAppManager GUARDED_BY_CONTEXT(sequence_checker_) web_app_manager_;
   KioskChromeAppManager GUARDED_BY_CONTEXT(sequence_checker_)
       chrome_app_manager_;
+  KioskArcvmAppManager GUARDED_BY_CONTEXT(sequence_checker_) arcvm_app_manager_;
 
   // Created once the Kiosk session launch starts. Only not null during the
   // kiosk launch.

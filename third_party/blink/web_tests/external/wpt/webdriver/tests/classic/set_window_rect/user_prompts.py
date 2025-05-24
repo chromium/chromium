@@ -16,10 +16,10 @@ def check_user_prompt_closed_without_exception(session, create_dialog):
     def check_user_prompt_closed_without_exception(dialog_type, retval):
         original_rect = session.window.rect
 
-        create_dialog(dialog_type, text=dialog_type)
+        create_dialog(dialog_type, text="cheese")
 
         response = set_window_rect(session, {
-            "x": original_rect["x"] + 10, "y": original_rect["y"] + 10})
+            "width": original_rect["width"] + 10, "height": original_rect["height"] + 10})
         assert_success(response)
 
         assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
@@ -34,11 +34,12 @@ def check_user_prompt_closed_with_exception(session, create_dialog):
     def check_user_prompt_closed_with_exception(dialog_type, retval):
         original_rect = session.window.rect
 
-        create_dialog(dialog_type, text=dialog_type)
+        create_dialog(dialog_type, text="cheese")
 
         response = set_window_rect(session, {
-            "x": original_rect["x"] + 10, "y": original_rect["y"] + 10})
-        assert_error(response, "unexpected alert open")
+            "width": original_rect["width"] + 10, "height": original_rect["height"] + 10})
+        assert_error(response, "unexpected alert open",
+                     data={"text": "cheese"})
 
         assert_dialog_handled(session, expected_text=dialog_type, expected_retval=retval)
 
@@ -52,13 +53,14 @@ def check_user_prompt_not_closed_but_exception(session, create_dialog):
     def check_user_prompt_not_closed_but_exception(dialog_type):
         original_rect = session.window.rect
 
-        create_dialog(dialog_type, text=dialog_type)
+        create_dialog(dialog_type, text="cheese")
 
         response = set_window_rect(session, {
-            "x": original_rect["x"] + 10, "y": original_rect["y"] + 10})
-        assert_error(response, "unexpected alert open")
+            "width": original_rect["width"] + 10, "height": original_rect["height"] + 10})
+        assert_error(response, "unexpected alert open",
+                     data={"text": "cheese"})
 
-        assert session.alert.text == dialog_type
+        assert session.alert.text == "cheese"
         session.alert.dismiss()
 
         assert session.window.rect == original_rect

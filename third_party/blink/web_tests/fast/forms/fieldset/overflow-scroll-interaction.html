@@ -38,8 +38,9 @@ promise_test(async () => {
   assert_equals(fieldset.scrollHeight, 400);
   await test_driver.click(fieldset);
   assert_equals(fieldset.scrollTop, 0);
+  const scrollEndPromise = eventPromise(fieldset, 'scrollend');
   await test_driver.send_keys(fieldset, ' ');
-  await eventPromise(fieldset, 'scroll');
+  await scrollEndPromise;
   assert_greater_than(fieldset.scrollTop, 0);
 }, 'Pressing the space bar should scroll up');
 

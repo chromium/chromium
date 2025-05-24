@@ -144,7 +144,15 @@ def GenerateArgs(config_path, platform, override_args=None):
   overriden_features_set = set(_FindFeaturesOverriddenByArgs(override_args))
   # Should skip any experiment that will enable or disable a feature that is
   # also enabled or disabled in the override_args.
+  #
+  # In addition because this is only used for benchmarks we also remove any
+  # experiment that sets `disable_benchmarking`. In actual field trials this
+  # would require `--enable-benchmarking` to be passed to the Chrome binary,
+  # but since this is generated without command line args we err on the side
+  # of caution and remove that experiment.
   def ShouldSkipExperiment(experiment):
+    if experiment.get('disable_benchmarking', "false") == "true":
+      return True
     experiment_features = (experiment.get('disable_features', [])
                            + experiment.get('enable_features', []))
     return not overriden_features_set.isdisjoint(experiment_features)

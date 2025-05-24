@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.widget.FrameLayout;
-
-import androidx.core.util.Pair;
-
-import org.chromium.base.Callback;
+import org.chromium.base.lifetime.Destroyable;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
+import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
@@ -27,9 +25,9 @@ public class TabGroupRowProperties {
 
     public static final ReadableIntPropertyKey COLOR_INDEX = new ReadableIntPropertyKey();
     // First is the user title, second is the number of tabs.
-    public static final ReadableObjectPropertyKey<Pair<String, Integer>> TITLE_DATA =
+    public static final ReadableObjectPropertyKey<TabGroupRowViewTitleData> TITLE_DATA =
             new ReadableObjectPropertyKey<>();
-    public static final ReadableObjectPropertyKey<Long> CREATION_MILLIS =
+    public static final ReadableObjectPropertyKey<TabGroupTimeAgo> TIMESTAMP_EVENT =
             new ReadableObjectPropertyKey<>();
     public static final ReadableObjectPropertyKey<Runnable> OPEN_RUNNABLE =
             new ReadableObjectPropertyKey<>();
@@ -37,18 +35,25 @@ public class TabGroupRowProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<Runnable> LEAVE_RUNNABLE =
             new WritableObjectPropertyKey<>();
-    public static final WritableObjectPropertyKey<Callback<FrameLayout>>
-            GET_IMAGE_TILE_CONTAINER_CALLBACK = new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<Runnable> ROW_CLICK_RUNNABLE =
+            new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<SharedImageTilesView> SHARED_IMAGE_TILES_VIEW =
+            new WritableObjectPropertyKey<>();
+
+    public static final WritableObjectPropertyKey<Destroyable> DESTROYABLE =
+            new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
         CLUSTER_DATA,
         DISPLAY_AS_SHARED,
         COLOR_INDEX,
         TITLE_DATA,
-        CREATION_MILLIS,
+        TIMESTAMP_EVENT,
         OPEN_RUNNABLE,
         DELETE_RUNNABLE,
         LEAVE_RUNNABLE,
-        GET_IMAGE_TILE_CONTAINER_CALLBACK
+        ROW_CLICK_RUNNABLE,
+        SHARED_IMAGE_TILES_VIEW,
+        DESTROYABLE
     };
 }

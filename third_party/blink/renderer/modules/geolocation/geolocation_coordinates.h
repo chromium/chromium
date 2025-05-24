@@ -60,7 +60,7 @@ class GeolocationCoordinates : public ScriptWrappable {
   std::optional<double> altitudeAccuracy() const { return altitude_accuracy_; }
   std::optional<double> heading() const { return heading_; }
   std::optional<double> speed() const { return speed_; }
-  ScriptValue toJSON(ScriptState* script_state) const;
+  ScriptObject toJSON(ScriptState* script_state) const;
 
  private:
   double latitude_;

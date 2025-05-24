@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_BUNDLE_SCRIPT_WEB_BUNDLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_WEB_BUNDLE_SCRIPT_WEB_BUNDLE_H_
 
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include <variant>
+
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_error.h"
@@ -34,7 +35,7 @@ class CORE_EXPORT ScriptWebBundle final
     : public GarbageCollected<ScriptWebBundle>,
       public SubresourceWebBundle {
  public:
-  static absl::variant<ScriptWebBundle*, ScriptWebBundleError>
+  static std::variant<ScriptWebBundle*, ScriptWebBundleError>
   CreateOrReuseInline(ScriptElementBase&, const String& inline_text);
 
   ScriptWebBundle(ScriptElementBase& element,

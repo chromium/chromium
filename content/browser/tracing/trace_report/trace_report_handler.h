@@ -8,6 +8,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/task/task_runner.h"
 #include "base/token.h"
+#include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/browser/tracing/trace_report/trace_report.mojom.h"
 #include "content/browser/tracing/trace_report/trace_upload_list.h"
@@ -19,7 +21,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
-// Handles communication between the browser and chrome://traces-internals.
+// Handles communication between the browser and chrome://traces.
 class CONTENT_EXPORT TraceReportHandler
     : public trace_report::mojom::PageHandler {
  public:
@@ -27,18 +29,17 @@ class CONTENT_EXPORT TraceReportHandler
       mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
       mojo::PendingRemote<trace_report::mojom::Page> page);
 
-  TraceReportHandler(
-      mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
-      mojo::PendingRemote<trace_report::mojom::Page> page,
-      TraceUploadList& trace_upload_list,
-      BackgroundTracingManagerImpl& background_tracing_manager);
-
   TraceReportHandler(const TraceReportHandler&) = delete;
   TraceReportHandler& operator=(const TraceReportHandler&) = delete;
   ~TraceReportHandler() override;
 
   // trace_report::mojom::TraceReportHandler:
   // Get all the trace report currently stored locally
+  void StartTraceSession(mojo_base::BigBuffer config_pb,
+                         StartTraceSessionCallback callback) override;
+  void CloneTraceSession(CloneTraceSessionCallback callback) override;
+  void StopTraceSession(StopTraceSessionCallback callback) override;
+  void GetBufferUsage(GetBufferUsageCallback callback) override;
   void GetAllTraceReports(GetAllTraceReportsCallback callback) override;
   void DeleteSingleTrace(const base::Token& uuid,
                          DeleteSingleTraceCallback callback) override;
@@ -52,17 +53,62 @@ class CONTENT_EXPORT TraceReportHandler
   void GetEnabledScenarios(GetEnabledScenariosCallback callback) override;
   void SetEnabledScenarios(const std::vector<std::string>& new_config,
                            SetEnabledScenariosCallback callback) override;
+  void GetPrivacyFilterEnabled(
+      GetPrivacyFilterEnabledCallback callback) override;
+  void SetPrivacyFilterEnabled(bool enable) override;
+
+  void SetScenariosConfigFromString(
+      const std::string& config_string,
+      SetScenariosConfigFromStringCallback callback) override;
+  void SetScenariosConfigFromBuffer(
+      mojo_base::BigBuffer config_pb,
+      SetScenariosConfigFromBufferCallback callback) override;
+
+#if BUILDFLAG(IS_WIN)
+  void GetSystemTracingState(GetSystemTracingStateCallback callback) override;
+  void GetSecurityShieldIconUrl(
+      GetSecurityShieldIconUrlCallback callback) override;
+  void EnableSystemTracing(EnableSystemTracingCallback callback) override;
+  void DisableSystemTracing(DisableSystemTracingCallback callback) override;
+#endif  // BUILDFLAG(IS_WIN)
+
+ protected:
+  TraceReportHandler(
+      mojo::PendingReceiver<trace_report::mojom::PageHandler> receiver,
+      mojo::PendingRemote<trace_report::mojom::Page> page,
+      TraceUploadList& trace_upload_list,
+      BackgroundTracingManagerImpl& background_tracing_manager,
+      TracingDelegate* tracing_delegate);
+
+  virtual std::unique_ptr<perfetto::TracingSession> CreateTracingSession();
 
  private:
   void OnGetAllReportsTaskComplete(GetAllTraceReportsCallback callback,
                                    std::vector<ClientTraceReport> results);
+  bool SetScenariosConfig(
+      const perfetto::protos::gen::ChromeFieldTracingConfig& config);
+  void MaybeSetupPresetTracingFromFieldTrial();
 
+  void OnTracingError(perfetto::TracingError error);
+  void OnTracingStop();
+  void OnTracingStart();
+  void OnTraceComplete(std::optional<mojo_base::BigBuffer>);
+  void OnBufferUsage(bool success, float percent_full, bool data_loss);
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   mojo::Receiver<trace_report::mojom::PageHandler> receiver_;
-  mojo::PendingRemote<trace_report::mojom::Page> page_;
+  mojo::Remote<trace_report::mojom::Page> page_;
 
   // Used to perform actions with on a single trace_report_database instance.
-  raw_ref<TraceUploadList> trace_upload_list_;
-  raw_ref<BackgroundTracingManagerImpl> background_tracing_manager_;
+  const raw_ref<TraceUploadList> trace_upload_list_;
+  const raw_ref<BackgroundTracingManagerImpl> background_tracing_manager_;
+  const raw_ptr<TracingDelegate> tracing_delegate_;
+
+  base::UnguessableToken session_unguessable_name_;
+  std::unique_ptr<perfetto::TracingSession> tracing_session_;
+  StartTraceSessionCallback start_callback_;
+  StopTraceSessionCallback stop_callback_;
+  GetBufferUsageCallback on_buffer_usage_callback_;
 
   base::WeakPtrFactory<TraceReportHandler> weak_factory_{this};
 };

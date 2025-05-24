@@ -9,9 +9,9 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './icons.html.js';
 
-import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
-import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
+import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -65,19 +65,20 @@ export class ShoppingListElement extends PolymerElement {
     };
   }
 
-  productInfos: BookmarkProductInfo[];
-  private untrackedItems_: BookmarkProductInfo[];
-  private open_: boolean;
+  declare productInfos: BookmarkProductInfo[];
+  declare private untrackedItems_: BookmarkProductInfo[];
+  declare private open_: boolean;
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingServiceApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private priceTrackingProxy_: PriceTrackingBrowserProxy =
+      PriceTrackingBrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private retryOperationCallback_: () => void;
 
   override connectedCallback() {
     super.connectedCallback();
 
-    const callbackRouter = this.shoppingServiceApi_.getCallbackRouter();
+    const callbackRouter = this.priceTrackingProxy_.getCallbackRouter();
     this.listenerIds_.push(
         callbackRouter.priceTrackedForBookmark.addListener(
             (product: BookmarkProductInfo) =>
@@ -102,7 +103,7 @@ export class ShoppingListElement extends PolymerElement {
     super.disconnectedCallback();
 
     this.listenerIds_.forEach(
-        id => this.shoppingServiceApi_.getCallbackRouter().removeListener(id));
+        id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
   }
 
   private getFaviconUrl_(url: string): string {
@@ -136,7 +137,7 @@ export class ShoppingListElement extends PolymerElement {
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
     this.bookmarksApi_.openBookmark(
-        event.model.item.bookmarkId!.toString(), 0, {
+        event.model.item.bookmarkId.toString(), 0, {
           middleButton: true,
           altKey: event.altKey,
           ctrlKey: event.ctrlKey,
@@ -153,7 +154,7 @@ export class ShoppingListElement extends PolymerElement {
     chrome.metricsPrivate.recordUserAction(
         'Commerce.PriceTracking.SidePanel.ClickedTrackedProduct');
     this.bookmarksApi_.openBookmark(
-        event.model.item.bookmarkId!.toString(), 0, {
+        event.model.item.bookmarkId.toString(), 0, {
           middleButton: false,
           altKey: event.altKey,
           ctrlKey: event.ctrlKey,
@@ -168,7 +169,7 @@ export class ShoppingListElement extends PolymerElement {
     event.preventDefault();
     event.stopPropagation();
     this.bookmarksApi_.showContextMenu(
-        event.model.item.bookmarkId!.toString(), event.clientX, event.clientY,
+        event.model.item.bookmarkId.toString(), event.clientX, event.clientY,
         ActionSource.kPriceTracking);
   }
 
@@ -176,16 +177,16 @@ export class ShoppingListElement extends PolymerElement {
       event: DomRepeatEvent<BookmarkProductInfo, MouseEvent>) {
     event.preventDefault();
     event.stopPropagation();
-    const bookmarkId = event.model.item.bookmarkId!;
+    const bookmarkId = event.model.item.bookmarkId;
     if (this.untrackedItems_.includes(event.model.item)) {
       const index = this.untrackedItems_.indexOf(event.model.item);
       this.splice('untrackedItems_', index, 1);
-      this.shoppingServiceApi_.trackPriceForBookmark(bookmarkId);
+      this.priceTrackingProxy_.trackPriceForBookmark(bookmarkId);
       chrome.metricsPrivate.recordUserAction(
           'Commerce.PriceTracking.SidePanel.Track.BellButton');
     } else {
       this.push('untrackedItems_', event.model.item);
-      this.shoppingServiceApi_.untrackPriceForBookmark(bookmarkId);
+      this.priceTrackingProxy_.untrackPriceForBookmark(bookmarkId);
       chrome.metricsPrivate.recordUserAction(
           'Commerce.PriceTracking.SidePanel.Untrack.BellButton');
     }
@@ -261,9 +262,9 @@ export class ShoppingListElement extends PolymerElement {
       product: BookmarkProductInfo, attemptedTrack: boolean) {
     this.retryOperationCallback_ = () => {
       if (attemptedTrack) {
-        this.shoppingServiceApi_.trackPriceForBookmark(product.bookmarkId);
+        this.priceTrackingProxy_.trackPriceForBookmark(product.bookmarkId);
       } else {
-        this.shoppingServiceApi_.untrackPriceForBookmark(product.bookmarkId);
+        this.priceTrackingProxy_.untrackPriceForBookmark(product.bookmarkId);
       }
     };
     this.$.errorToast.show();

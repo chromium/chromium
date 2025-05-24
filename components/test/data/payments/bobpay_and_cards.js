@@ -4,8 +4,8 @@
  * found in the LICENSE file.
  */
 
-var request = null;
-var showPromise = null;
+let request = null;
+let showPromise = null;
 
 /**
  * Helper function that launches the PaymentRequest UI with the specified
@@ -52,7 +52,7 @@ async function testPaymentMethods(methods, requestShippingContact = false) {
 async function abort() {
   await request.abort();
   return await showPromise.catch((e) => {
-    return e.name == 'AbortError';
+    return e.name === 'AbortError';
   });
 }
 

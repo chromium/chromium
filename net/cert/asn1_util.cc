@@ -16,10 +16,10 @@ namespace net::asn1 {
 namespace {
 
 // Parses input |in| which should point to the beginning of a Certificate, and
-// sets |*tbs_certificate| ready to parse the Subject. If parsing
+// sets |*tbs_certificate| ready to parse the Issuer. If parsing
 // fails, this function returns false and |*tbs_certificate| is left in an
 // undefined state.
-bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
+bool SeekToIssuer(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
   // From RFC 5280, section 4.1
   //    Certificate  ::=  SEQUENCE  {
   //      tbsCertificate       TBSCertificate,
@@ -60,6 +60,18 @@ bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
   }
   // signature
   if (!tbs_certificate->SkipTag(CBS_ASN1_SEQUENCE)) {
+    return false;
+  }
+
+  return true;
+}
+
+// Parses input |in| which should point to the beginning of a Certificate, and
+// sets |*tbs_certificate| ready to parse the Subject. If parsing
+// fails, this function returns false and |*tbs_certificate| is left in an
+// undefined state.
+bool SeekToSubject(bssl::der::Input in, bssl::der::Parser* tbs_certificate) {
+  if (!SeekToIssuer(in, tbs_certificate)) {
     return false;
   }
   // issuer
@@ -201,6 +213,31 @@ bool ExtractSubjectFromDERCert(std::string_view cert,
   if (!parser.ReadRawTLV(&subject))
     return false;
   *subject_out = subject.AsStringView();
+  return true;
+}
+
+bool ExtractIssuerAndSubjectFromDERCert(
+    base::span<const uint8_t> cert,
+    base::span<const uint8_t>* issuer_out,
+    base::span<const uint8_t>* subject_out) {
+  bssl::der::Parser parser;
+  if (!SeekToIssuer(bssl::der::Input(cert), &parser)) {
+    return false;
+  }
+  bssl::der::Input issuer;
+  if (!parser.ReadRawTLV(&issuer)) {
+    return false;
+  }
+  *issuer_out = issuer.AsSpan();
+  // skip validity
+  if (!parser.SkipTag(CBS_ASN1_SEQUENCE)) {
+    return false;
+  }
+  bssl::der::Input subject;
+  if (!parser.ReadRawTLV(&subject)) {
+    return false;
+  }
+  *subject_out = subject.AsSpan();
   return true;
 }
 

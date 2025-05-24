@@ -96,10 +96,6 @@ class PLATFORM_EXPORT HarfBuzzFace final
 
   static void SetVariationSelectorMode(VariationSelectorMode value);
 
-  static bool GetIsSystemFallbackStage();
-
-  static void SetIsSystemFallbackStage(bool value);
-
  private:
   void PrepareHarfBuzzFontData();
 

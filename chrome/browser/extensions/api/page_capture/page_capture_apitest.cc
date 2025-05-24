@@ -16,7 +16,7 @@
 
 namespace extensions {
 
-using ContextType = ExtensionApiTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class PageCaptureSaveAsMHTMLDelegate
     : public PageCaptureSaveAsMHTMLFunction::TestDelegate {
@@ -92,15 +92,9 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionPageCaptureApiTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-// TODO(crbug.com/326868086, crbug.com/342254075): Test is flaky on MSan and on
-// Windows.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN)
-#define MAYBE_SaveAsMHTMLWithoutFileAccess DISABLED_SaveAsMHTMLWithoutFileAccess
-#else
-#define MAYBE_SaveAsMHTMLWithoutFileAccess SaveAsMHTMLWithoutFileAccess
-#endif
-IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest,
-                       MAYBE_SaveAsMHTMLWithoutFileAccess) {
+// TODO(crbug.com/326868086, crbug.com/342254075, crbug.com/374409662,
+// crbug.com/406917890): Test is flaky across all platforms.
+IN_PROC_BROWSER_TEST_P(ExtensionPageCaptureApiTest, DISABLED_SaveAsMHTMLWithoutFileAccess) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   PageCaptureSaveAsMHTMLDelegate delegate;
   ASSERT_TRUE(RunTest("page_capture", "ONLY_PAGE_CAPTURE_PERMISSION"))

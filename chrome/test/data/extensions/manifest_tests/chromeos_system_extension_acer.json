@@ -1,0 +1,26 @@
+{
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8Mnuy0OFJuLfsWRk3VEMGr+9hwFQVZH3N54aWqRkBVYzUUzQTrpmNd7mJboLCD4hfZhYw0153Qgwhdj1plWzjRb8ghV1Xf0FFPG8qJstbDUAEhnScFzwJ+pmpHKtDdT7NdhapDUpx2807OIPsXYim6Kls/n30HK47Uyr8gIHDIof8Y8F9Q8StUwEOrdKaZOc8hgDBqIAEestxp7JQtMxYSiGUVMrelDn1ah8exqkoAkqRgqFonKqcnRgUglRfJMX9d4GwVOBnCs4DZkd5maG0wA+0noCCyj9+Rlveepg/qd1CkvcpYlQqnpVlS57a/chsuzkYFpQqSKpl/tGNLobdQIDAQAB",
+  "name": "Test chromeos extension",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "os.attached_device_info",
+    "os.diagnostics",
+    "os.events",
+    "os.telemetry",
+    "os.telemetry.serial_number",
+    "os.telemetry.network_info"
+  ],
+  "optional_permissions": [
+    "os.bluetooth_peripherals_info",
+    "os.diagnostics.network_info_mlab",
+    "os.management.audio"
+  ],
+  "chromeos_system_extension": {},
+  "externally_connectable": {
+    "matches": [
+      "https://acerpartners.com/*"
+    ]
+  },
+  "options_page": "options.html"
+}

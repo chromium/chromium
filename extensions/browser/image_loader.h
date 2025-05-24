@@ -41,7 +41,7 @@ class ImageLoader : public KeyedService {
   // resource.
   struct ImageRepresentation {
     // Enum values to indicate whether to resize loaded bitmap when it is larger
-    // than |desired_size| or always resize it.
+    // than `desired_size` or always resize it.
     enum ResizeCondition { RESIZE_WHEN_LARGER, ALWAYS_RESIZE, NEVER_RESIZE };
 
     ImageRepresentation(const ExtensionResource& resource,
@@ -55,17 +55,17 @@ class ImageLoader : public KeyedService {
 
     ResizeCondition resize_condition;
 
-    // When |resize_method| is ALWAYS_RESIZE or when the loaded image is larger
-    // than |desired_size| it will be resized to these dimensions.
+    // When `resize_method` is ALWAYS_RESIZE or when the loaded image is larger
+    // than `desired_size` it will be resized to these dimensions.
     gfx::Size desired_size;
 
-    // |scale_factor| is used to construct the loaded gfx::ImageSkia.
+    // `scale_factor` is used to construct the loaded gfx::ImageSkia.
     float scale_factor;
   };
 
   struct LoadResult;
 
-  // Returns the instance for the given |context| or NULL if none. This is
+  // Returns the instance for the given `context` or NULL if none. This is
   // a convenience wrapper around ImageLoaderFactory::GetForBrowserContext.
   static ImageLoader* Get(content::BrowserContext* context);
 
@@ -77,7 +77,7 @@ class ImageLoader : public KeyedService {
   ~ImageLoader() override;
 
   // Specify image resource to load. If the loaded image is larger than
-  // |max_size| it will be resized to those dimensions. IMPORTANT NOTE: this
+  // `max_size` it will be resized to those dimensions. IMPORTANT NOTE: this
   // function may call back your callback synchronously (ie before it returns)
   // if the image was found in the cache.
   // Note this method loads a raw bitmap from the resource. All sizes given are
@@ -92,7 +92,7 @@ class ImageLoader : public KeyedService {
   // Loads a gfx::Image that has representations at all scale factors we are
   // likely to care about. That includes every scale for which we pack resources
   // in ResourceBundle plus the scale for all currently attached displays. The
-  // image is returned via |callback|.
+  // image is returned via `callback`.
   void LoadImageAtEveryScaleFactorAsync(const Extension* extension,
                                         const gfx::Size& dip_size,
                                         ImageLoaderImageCallback callback);

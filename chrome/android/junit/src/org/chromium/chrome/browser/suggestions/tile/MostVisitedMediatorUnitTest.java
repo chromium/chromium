@@ -27,11 +27,13 @@ import android.view.ViewStub;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,6 +60,7 @@ import java.util.ArrayList;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MostVisitedMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock Resources mResources;
     @Mock Configuration mConfiguration;
     @Mock UiConfig mUiConfig;
@@ -84,7 +87,6 @@ public class MostVisitedMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mModel = new PropertyModel(MostVisitedTilesProperties.ALL_KEYS);
         when(mResources.getConfiguration()).thenReturn(mConfiguration);
         mDisplayMetrics.widthPixels = 1000;
@@ -123,7 +125,7 @@ public class MostVisitedMediatorUnitTest {
 
         verify(mTileRenderer, atLeastOnce())
                 .renderTileSection(anyList(), eq(mMvTilesLayout), any());
-        verify(mMvTilesLayout).addView(any());
+        verify(mMvTilesLayout).addTile(any());
         verify(mSnapshotTileGridChangedRunnable, atLeastOnce()).run();
     }
 
@@ -233,7 +235,7 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
-                (int) (mModel.get(HORIZONTAL_EDGE_PADDINGS)));
+                (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
         int tileViewWidth = mResources.getDimensionPixelOffset(R.dimen.tile_view_width);
         Assert.assertEquals(
                 (int)
@@ -241,7 +243,7 @@ public class MostVisitedMediatorUnitTest {
                                         - mModel.get(HORIZONTAL_EDGE_PADDINGS)
                                         - tileViewWidth * 4.5)
                                 / 4),
-                (int) (mModel.get(HORIZONTAL_INTERVAL_PADDINGS)));
+                (int) mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
     }
 
     @Test
@@ -255,7 +257,7 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_edge_portrait),
-                (int) (mModel.get(HORIZONTAL_EDGE_PADDINGS)));
+                (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
         int tileViewWidth = mResources.getDimensionPixelOffset(R.dimen.tile_view_width_condensed);
         Assert.assertEquals(
                 Integer.max(
@@ -265,7 +267,7 @@ public class MostVisitedMediatorUnitTest {
                                                 - mModel.get(HORIZONTAL_EDGE_PADDINGS)
                                                 - tileViewWidth * 4.5)
                                         / 4)),
-                (int) (mModel.get(HORIZONTAL_INTERVAL_PADDINGS)));
+                (int) mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
     }
 
     @Test
@@ -276,10 +278,10 @@ public class MostVisitedMediatorUnitTest {
 
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                (int) (mModel.get(HORIZONTAL_EDGE_PADDINGS)));
+                (int) mModel.get(HORIZONTAL_EDGE_PADDINGS));
         Assert.assertEquals(
                 mResources.getDimensionPixelSize(R.dimen.tile_view_padding_landscape),
-                (int) (mModel.get(HORIZONTAL_INTERVAL_PADDINGS)));
+                (int) mModel.get(HORIZONTAL_INTERVAL_PADDINGS));
     }
 
     @Test
@@ -350,9 +352,13 @@ public class MostVisitedMediatorUnitTest {
     private void createMediator(boolean isTablet) {
         mMvTilesLayout = Mockito.mock(MostVisitedTilesLayout.class);
 
-        mMvTilesLayout.addView(mTileView);
+        when(mMvTilesLayout.getResources()).thenReturn(mResources);
         when(mMvTilesLayout.getChildCount()).thenReturn(1);
         when(mMvTilesLayout.getChildAt(0)).thenReturn(mTileView);
+        when(mMvTilesLayout.getTileCount()).thenReturn(1);
+        when(mMvTilesLayout.getTileAt(0)).thenReturn(mTileView);
+        mMvTilesLayout.addTile(mTileView);
+
         when(mNoMvPlaceholderStub.inflate()).thenReturn(mNoMvPlaceholder);
 
         mMediator =

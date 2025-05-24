@@ -4,7 +4,8 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OsSettingsA11yPageElement, Router, routes} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsA11yPageElement} from 'chrome://os-settings/os_settings.js';
+import {Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
@@ -85,8 +86,9 @@ suite('OsSettingsA11yPageKioskModeTest', () => {
         isVisible(page.shadowRoot!.querySelector('#additionalFeaturesLink')));
   });
 
-  test('Always redirect to MANAGE_ACCESSIBILITY route in kiosk mode', () => {
-    loadTimeData.overrideValues({isKioskModeActive: true});
+  test('Redirect to MANAGE_ACCESSIBILITY route if enabled', () => {
+    loadTimeData.overrideValues(
+        {isKioskOldA11ySettingsRedirectionEnabled: true});
     Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
     initPage();
     flush();
@@ -94,4 +96,19 @@ suite('OsSettingsA11yPageKioskModeTest', () => {
     assertEquals(
         Router.getInstance().currentRoute, routes.MANAGE_ACCESSIBILITY);
   });
+
+  test(
+      'Not redirect to MANAGE_ACCESSIBILITY route for kiosk if disabled',
+      () => {
+        loadTimeData.overrideValues({
+          isKioskOldA11ySettingsRedirectionEnabled: false,
+          isKioskModeActive: true,
+        });
+        Router.getInstance().navigateTo(routes.OS_ACCESSIBILITY);
+        initPage();
+        flush();
+
+        assertEquals(
+            Router.getInstance().currentRoute, routes.OS_ACCESSIBILITY);
+      });
 });

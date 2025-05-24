@@ -4,8 +4,7 @@
 
 #include "base/observer_list_internal.h"
 
-namespace base {
-namespace internal {
+namespace base::internal {
 
 CheckedObserverAdapter::CheckedObserverAdapter(const CheckedObserver* observer)
     : weak_ptr_(observer->factory_.GetWeakPtr()) {}
@@ -16,5 +15,4 @@ CheckedObserverAdapter& CheckedObserverAdapter::operator=(
     CheckedObserverAdapter&& other) = default;
 CheckedObserverAdapter::~CheckedObserverAdapter() = default;
 
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal

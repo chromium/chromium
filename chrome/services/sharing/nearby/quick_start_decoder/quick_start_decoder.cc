@@ -274,8 +274,7 @@ QuickStartDecoder::DecodeSecondDeviceAuthPayload(
         mojom::QuickStartDecoderError::kMessageDoesNotMatchSchema);
   }
   uint8_t ctap_status = response_bytes[0];
-  base::span<const uint8_t> cbor_bytes(response_bytes);
-  cbor_bytes = cbor_bytes.subspan(1);
+  auto cbor_bytes = base::as_byte_span(response_bytes).subspan<1>();
   if (ctap_status != kCtapDeviceResponseSuccess) {
     LOG(ERROR) << "Ctap Device Response Status Code is not Success(0x00). Got: "
                << ctap_status;

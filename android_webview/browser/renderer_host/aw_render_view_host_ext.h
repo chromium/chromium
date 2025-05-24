@@ -57,11 +57,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
   using DocumentHasImagesResult = base::OnceCallback<void(bool)>;
   void DocumentHasImages(DocumentHasImagesResult result);
 
-  // Do a hit test at the view port coordinates and asynchronously update
-  // |last_hit_test_data_|. Width and height in |touch_area| are in density
-  // independent pixels used by blink::WebView.
-  void RequestNewHitTestDataAt(const gfx::PointF& touch_center,
-                               const gfx::SizeF& touch_area);
   // Return |last_hit_test_data_|. Note that this is unavoidably racy;
   // the corresponding public WebView API is as well.
   mojom::HitTestDataPtr TakeLastHitTestData();

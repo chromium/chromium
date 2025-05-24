@@ -28,16 +28,6 @@ using sync_pb::SharingSpecificFields;
 namespace {
 
 bool IsStale(const syncer::DeviceInfo& device) {
-  if (base::FeatureList::IsEnabled(kSharingMatchPulseInterval)) {
-    base::TimeDelta pulse_delta = base::Hours(
-        device.form_factor() == syncer::DeviceInfo::FormFactor::kDesktop
-            ? kSharingPulseDeltaDesktopHours.Get()
-            : kSharingPulseDeltaAndroidHours.Get());
-    base::Time min_updated_time =
-        base::Time::Now() - device.pulse_interval() - pulse_delta;
-    return device.last_updated_timestamp() < min_updated_time;
-  }
-
   const base::Time min_updated_time =
       base::Time::Now() - kSharingDeviceExpiration;
   return device.last_updated_timestamp() < min_updated_time;
@@ -163,18 +153,9 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
     sync_pb::SharingSpecificFields::EnabledFeatures required_feature) const {
   std::set<SharingSpecificFields::EnabledFeatures> accepted_features{
       required_feature};
-  if (required_feature == SharingSpecificFields::CLICK_TO_CALL_V2) {
-    accepted_features.insert(SharingSpecificFields::CLICK_TO_CALL_VAPID);
-  }
-  if (required_feature == SharingSpecificFields::SHARED_CLIPBOARD_V2) {
-    accepted_features.insert(SharingSpecificFields::SHARED_CLIPBOARD_VAPID);
-  }
-
-  bool can_send_via_vapid = CanSendViaVapid(sync_service_);
   bool can_send_via_sender_id = CanSendViaSenderID(sync_service_);
 
-  std::erase_if(devices, [accepted_features, can_send_via_vapid,
-                          can_send_via_sender_id](
+  std::erase_if(devices, [accepted_features, can_send_via_sender_id](
                              const syncer::DeviceInfo* device) {
     // Checks if |last_updated_timestamp| is not too old.
     if (IsStale(*device)) {
@@ -187,21 +168,16 @@ SharingDeviceSourceSync::FilterDeviceCandidates(
     }
 
     // Checks if message can be sent via either VAPID or sender ID.
-    auto& vapid_target_info = device->sharing_info()->vapid_target_info;
     auto& sender_id_target_info = device->sharing_info()->sender_id_target_info;
-    bool vapid_channel_valid =
-        (can_send_via_vapid && !vapid_target_info.fcm_token.empty() &&
-         !vapid_target_info.p256dh.empty() &&
-         !vapid_target_info.auth_secret.empty());
     bool sender_id_channel_valid =
         (can_send_via_sender_id && !sender_id_target_info.fcm_token.empty() &&
          !sender_id_target_info.p256dh.empty() &&
          !sender_id_target_info.auth_secret.empty());
-    if (!vapid_channel_valid && !sender_id_channel_valid) {
+    if (!sender_id_channel_valid) {
       return true;
     }
 
-    // Checks whether |device| supports any of |accepted_features|.
+    // Checks whether `device` supports any of `accepted_features`.
     return base::STLSetIntersection<
                std::vector<SharingSpecificFields::EnabledFeatures>>(
                device->sharing_info()->enabled_features, accepted_features)

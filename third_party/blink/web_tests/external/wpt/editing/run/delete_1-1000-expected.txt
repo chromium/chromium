@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["delete",""]] "<span>foo[</span><span>]bar</span>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span><span>bar</span>" but got "<span>fo</span><span>bar</span>"
 [FAIL] [["stylewithcss","true"],["delete",""]] "foo<span style=display:none>bar</span>[]baz" queryCommandState("stylewithcss") before
@@ -20,13 +20,7 @@ Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a name=\\"abc\\">fo</a></span>bar"
 [FAIL] [["delete",""]] "<span><a href=/ name=abc>foo</a></span>[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<span>foo</span>bar" but got "<span><a href=\\"/\\" name=\\"abc\\">fo</a></span>bar"
-[FAIL] [["delete",""]] "foo <span>&nbsp;</span>[] bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo&nbsp; bar" but got "foo &nbsp;bar"
-[FAIL] [["delete",""]] "foo <span>&nbsp;</span> []bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo&nbsp;<span> </span>bar" but got "foo <span>&nbsp;</span>bar"
-[FAIL] [["delete",""]] "<b>foo&nbsp;</b> []bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foo </b>bar" but got "<b>foo&nbsp;</b>bar"
-[FAIL] [["delete",""]] "<b>foo&nbsp;</b>&nbsp;[]bar" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foo </b>bar" but got "<b>foo&nbsp;</b>bar"
+[FAIL] [["delete",""]] "<b>foo </b>&nbsp;[]bar" compare innerHTML
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<b>foo&nbsp;</b>bar" but got "<b>foo </b>bar"
 Harness: the test ran to completion.
 

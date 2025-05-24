@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.InsetObserver;
+import org.chromium.ui.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -78,6 +79,8 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
         WindowInsetsCompat modifiedInsets = mCallback.onApplyWindowInsets(mView, windowInsets);
 
         assertEquals(Insets.NONE, modifiedInsets.getInsets(WindowInsetsCompat.Type.ime()));
+        assertEquals(
+                Insets.NONE, modifiedInsets.getInsets(WindowInsetsCompat.Type.navigationBars()));
         verify(mUpdateRunnable, never()).run();
 
         mCallback.onEnd(mAnimation);
@@ -128,7 +131,10 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
     public void testAttachDetach() {
         mCallback.attach(mWindowAndroid);
         verify(mInsetObserver).addWindowInsetsAnimationListener(mCallback);
-        verify(mInsetObserver).addInsetsConsumer(mCallback);
+        verify(mInsetObserver)
+                .addInsetsConsumer(
+                        mCallback,
+                        InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
 
         mCallback.detach();
         verify(mInsetObserver).removeWindowInsetsAnimationListener(mCallback);
@@ -140,7 +146,10 @@ public class DeferredIMEWindowInsetApplicationCallbackTest {
         when(mActivity.isFinishing()).thenReturn(true);
         mCallback.attach(mWindowAndroid);
         verify(mInsetObserver, never()).addWindowInsetsAnimationListener(mCallback);
-        verify(mInsetObserver, never()).addInsetsConsumer(mCallback);
+        verify(mInsetObserver, never())
+                .addInsetsConsumer(
+                        mCallback,
+                        InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
 
         mCallback.detach();
         verify(mInsetObserver, never()).removeWindowInsetsAnimationListener(mCallback);

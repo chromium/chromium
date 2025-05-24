@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/test/fake_tile_manager.h"
+#include "cc/tiles/picture_layer_tiling_set.h"
 
 namespace cc {
 

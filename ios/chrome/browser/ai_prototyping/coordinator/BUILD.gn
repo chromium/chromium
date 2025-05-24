@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "ai_prototyping_coordinator.h",
+    "ai_prototyping_coordinator.mm",
+    "ai_prototyping_mediator.h",
+    "ai_prototyping_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ai_prototyping/model",
+    "//ios/chrome/browser/ai_prototyping/ui",
+    "//ios/chrome/browser/ai_prototyping/utils",
+    "//ios/chrome/browser/intelligence/enhanced_calendar/model",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/mojom",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

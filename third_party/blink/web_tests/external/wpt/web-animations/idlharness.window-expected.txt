@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 52 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] AnimationTimeline interface: operation play(optional AnimationEffect?)
   assert_own_property: interface prototype object missing non-static operation expected property "play" missing
 [FAIL] AnimationTimeline interface: document.timeline must inherit property "currentTime" with the proper type
@@ -100,5 +100,17 @@ Found 50 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
 [FAIL] SequenceEffect interface: operation clone()
   assert_own_property: self does not have own property "SequenceEffect" expected property "SequenceEffect" missing
+[FAIL] AnimationTrigger interface: attribute timeline
+  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+[FAIL] AnimationTrigger interface: attribute type
+  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+[FAIL] AnimationTrigger interface: attribute rangeStart
+  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+[FAIL] AnimationTrigger interface: attribute rangeEnd
+  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+[FAIL] AnimationTrigger interface: attribute exitRangeStart
+  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
+[FAIL] AnimationTrigger interface: attribute exitRangeEnd
+  assert_equals: setter must be function for PutForwards, Replaceable, or non-readonly attributes expected "function" but got "undefined"
 Harness: the test ran to completion.
 

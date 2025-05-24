@@ -33,12 +33,12 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
       content::RenderFrameHost* owner_rfh);
 
   // Completes the creation of a WebContents associated with the provided
-  // |guest_extension_id| and |guest_instance_id| for the given
-  // |browser_context|.
-  // |guest_render_process_host| is the RenderProcessHost and |url| is the
+  // `guest_extension_id` and `guest_instance_id` for the given
+  // `browser_context`.
+  // `guest_render_process_host` is the RenderProcessHost and `url` is the
   // resource GURL of the extension instance making this request. If there is
-  // any mismatch between the expected |guest_instance_id| and
-  // |guest_extension_id| provided and the recorded copies from when the the
+  // any mismatch between the expected `guest_instance_id` and
+  // `guest_extension_id` provided and the recorded copies from when the the
   // <appview> was created, the RenderProcessHost of the extension instance
   // behind this request will be killed.
   static bool CompletePendingRequest(
@@ -57,18 +57,40 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
   explicit AppViewGuest(content::RenderFrameHost* owner_rfh);
 
   // GuestViewBase implementation.
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) final;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       scoped_refptr<content::SiteInstance> site_instance,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
+  void DidAttachToEmbedder() final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
 
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
+
   // content::WebContentsDelegate implementation.
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
+  bool IsWebContentsCreationOverridden(
+      content::RenderFrameHost* opener,
+      content::SiteInstance* source_site_instance,
+      content::mojom::WindowContainerType window_container_type,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url) final;
+  content::WebContents* CreateCustomWebContents(
+      content::RenderFrameHost* opener,
+      content::SiteInstance* source_site_instance,
+      bool is_new_browsing_instance,
+      const GURL& opener_url,
+      const std::string& frame_name,
+      const GURL& target_url,
+      const content::StoragePartitionConfig& partition_config,
+      content::SessionStorageNamespace* session_storage_namespace) final;
   void RequestMediaAccessPermission(
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
@@ -77,16 +99,18 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
                                   const url::Origin& security_origin,
                                   blink::mojom::MediaStreamType type) final;
 
-  void CompleteCreateWebContents(const GURL& url,
-                                 const Extension* guest_extension,
-                                 std::unique_ptr<GuestViewBase> owned_this,
-                                 WebContentsCreatedCallback callback);
+  void CompleteCreateInnerPage(const GURL& url,
+                               const Extension* guest_extension,
+                               std::unique_ptr<GuestViewBase> owned_this,
+                               GuestPageCreatedCallback callback);
 
   void LaunchAppAndFireEvent(
       std::unique_ptr<GuestViewBase> owned_this,
       base::Value::Dict data,
-      WebContentsCreatedCallback callback,
+      GuestPageCreatedCallback callback,
       std::unique_ptr<LazyContextTaskQueue::ContextInfo> context_info);
+
+  void LoadURL();
 
   GURL url_;
   std::string guest_extension_id_;

@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -47,7 +46,8 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #else
@@ -109,7 +109,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // ExtensionBrowserTest sets the login users to a non-managed value;
     // replace it. This is the default username sent in policy blobs from the
     // testserver.
@@ -191,7 +191,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
         g_browser_process->browser_policy_connector();
     connector->ScheduleServiceInitialization(0);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     UserCloudPolicyManagerAsh* policy_manager =
         browser()->profile()->GetUserCloudPolicyManagerAsh();
     ASSERT_TRUE(policy_manager);
@@ -213,7 +213,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
             connector->device_management_service(),
             g_browser_process->shared_url_loader_factory()));
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Register the cloud policy client.
     client_ = policy_manager->core()->client();
@@ -231,7 +231,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     client_->RemoveObserver(&observer);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   void SignOut() {
     auto* primary_account_mutator =
         IdentityManagerFactory::GetForProfile(browser()->profile())
@@ -257,26 +257,14 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
   raw_ptr<CloudPolicyClient, DanglingUntriaged> client_ = nullptr;
 };
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_FetchExtensionPolicy DISABLED_FetchExtensionPolicy
-#else
-#define MAYBE_FetchExtensionPolicy FetchExtensionPolicy
-#endif
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_FetchExtensionPolicy) {
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, FetchExtensionPolicy) {
   // Read the initial policy.
   ExtensionTestMessageListener policy_listener(kTestPolicyJSON);
   event_listener_->Reply("get-policy-Name");
   EXPECT_TRUE(policy_listener.WaitUntilSatisfied());
 }
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_UpdateExtensionPolicy DISABLED_UpdateExtensionPolicy
-#else
-#define MAYBE_UpdateExtensionPolicy UpdateExtensionPolicy
-#endif
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_UpdateExtensionPolicy) {
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, UpdateExtensionPolicy) {
   // Read the initial policy.
   ExtensionTestMessageListener policy_listener(kTestPolicyJSON,
                                                ReplyBehavior::kWillReply);
@@ -306,13 +294,7 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_UpdateExtensionPolicy) {
   EXPECT_TRUE(policy_listener2.WaitUntilSatisfied());
 }
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_InstallNewExtension DISABLED_InstallNewExtension
-#else
-#define MAYBE_InstallNewExtension InstallNewExtension
-#endif
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
+IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, InstallNewExtension) {
   event_listener_->Reply("idle");
   event_listener_.reset();
 
@@ -336,86 +318,6 @@ IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, MAYBE_InstallNewExtension) {
   EXPECT_TRUE(result_listener.WaitUntilSatisfied());
 }
 
-// Signing out on Chrome OS is a different process from signing out on the
-// Desktop platforms. On Chrome OS the session is ended, and the user goes back
-// to the sign-in screen; the Profile data is not affected. On the Desktop the
-// session goes on though, and all the signed-in services are disconnected;
-// in particular, the policy caches are dropped if the user signs out.
-// This test verifies that when the user signs out then any existing component
-// policy caches are dropped, and that it's still possible to sign back in and
-// get policy for components working again.
-// Signing out on Lacros is not possible.
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(ComponentCloudPolicyTest, SignOutAndBackIn) {
-  // Signout is not enabled when this feature is enabled.
-  if (base::FeatureList::IsEnabled(kDisallowManagedProfileSignout)) {
-    event_listener_->Reply("idle");
-    event_listener_.reset();
-    return;
-  }
-  // Read the initial policy.
-  ExtensionTestMessageListener initial_policy_listener(
-      kTestPolicyJSON, ReplyBehavior::kWillReply);
-  event_listener_->Reply("get-policy-Name");
-  EXPECT_TRUE(initial_policy_listener.WaitUntilSatisfied());
-
-  // Verify that the policy cache exists.
-  std::string cache_key;
-  base::Base64UrlEncode("extension-policy",
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &cache_key);
-  std::string cache_subkey;
-  base::Base64UrlEncode(kTestExtension,
-                        base::Base64UrlEncodePolicy::INCLUDE_PADDING,
-                        &cache_subkey);
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath cache_path = browser()
-                                  ->profile()
-                                  ->GetPath()
-                                  .Append(FILE_PATH_LITERAL("Policy"))
-                                  .Append(FILE_PATH_LITERAL("Components"))
-                                  .AppendASCII(cache_key)
-                                  .AppendASCII(cache_subkey);
-  EXPECT_TRUE(base::PathExists(cache_path));
-
-  // Now sign-out. The policy cache should be removed, and the extension should
-  // get an empty policy update.
-  ExtensionTestMessageListener event_listener("event",
-                                              ReplyBehavior::kWillReply);
-  initial_policy_listener.Reply("idle");
-  SignOut();
-  EXPECT_TRUE(event_listener.WaitUntilSatisfied());
-
-  // The extension got an update event; verify that the policy was empty.
-  ExtensionTestMessageListener signout_policy_listener("{}");
-  event_listener.Reply("get-policy-Name");
-  EXPECT_TRUE(signout_policy_listener.WaitUntilSatisfied());
-
-  // Spin all threads, including the background thread that performs cache
-  // operations, in order to guarantee that the cache file gets deleted before
-  // the test asserts it. There's no easy way to wait for this event otherwise.
-  content::RunAllTasksUntilIdle();
-
-  // Verify that the cache is gone.
-  EXPECT_FALSE(base::PathExists(cache_path));
-
-  // Verify that the policy is fetched again if the user signs back in.
-  ExtensionTestMessageListener event_listener2("event",
-                                               ReplyBehavior::kWillReply);
-
-  SignInAndRegister();
-  EXPECT_TRUE(event_listener2.WaitUntilSatisfied());
-
-  // The extension got updated policy; verify it.
-  ExtensionTestMessageListener signin_policy_listener(kTestPolicyJSON);
-  event_listener2.Reply("get-policy-Name");
-  EXPECT_TRUE(signin_policy_listener.WaitUntilSatisfied());
-
-  // And the cache is back.
-  EXPECT_TRUE(base::PathExists(cache_path));
-}
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 // Test of the component cloud policy when the policy test server is configured
 // to perform the signing key rotation for each policy fetch.
 class KeyRotationComponentCloudPolicyTest : public ComponentCloudPolicyTest {
@@ -438,13 +340,7 @@ class KeyRotationComponentCloudPolicyTest : public ComponentCloudPolicyTest {
   }
 };
 
-// crbug.com/1230268 not working on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_Basic DISABLED_Basic
-#else
-#define MAYBE_Basic Basic
-#endif
-IN_PROC_BROWSER_TEST_F(KeyRotationComponentCloudPolicyTest, MAYBE_Basic) {
+IN_PROC_BROWSER_TEST_F(KeyRotationComponentCloudPolicyTest, Basic) {
   // Read the initial policy.
   ExtensionTestMessageListener policy_listener(kTestPolicyJSON,
                                                ReplyBehavior::kWillReply);

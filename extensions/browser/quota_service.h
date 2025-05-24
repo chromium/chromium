@@ -54,11 +54,11 @@ class QuotaService {
 
   virtual ~QuotaService();
 
-  // Decide whether the invocation of |function| with argument |args| by the
-  // extension specified by |extension_id| results in a quota limit violation.
+  // Decide whether the invocation of `function` with argument `args` by the
+  // extension specified by `extension_id` results in a quota limit violation.
   // Returns an error message representing the failure if quota was exceeded,
   // or empty-string if the request is fine and can proceed.
-  // |args| must be a list.
+  // `args` must be a list.
   std::string Assess(const ExtensionId& extension_id,
                      ExtensionFunction* function,
                      const base::Value::List& args,
@@ -137,7 +137,7 @@ class QuotaLimitHeuristic {
     bool has_tokens() const { return num_tokens_ > 0; }
 
     // Reset this bucket to specification (from internal configuration), to be
-    // valid from |start| until the first refill interval elapses and it needs
+    // valid from `start` until the first refill interval elapses and it needs
     // to be reset again.
     void Reset(const Config& config, const base::TimeTicks& start);
 
@@ -151,7 +151,7 @@ class QuotaLimitHeuristic {
   };
   using BucketList = std::list<Bucket*>;
 
-  // A helper interface to retrieve the bucket corresponding to |args| from
+  // A helper interface to retrieve the bucket corresponding to `args` from
   // the set of buckets (which is typically stored in the BucketMapper itself)
   // for this QuotaLimitHeuristic.
   class BucketMapper {
@@ -159,15 +159,15 @@ class QuotaLimitHeuristic {
     virtual ~BucketMapper() {}
     // In most cases, this should simply extract item IDs from the arguments
     // (e.g for bookmark operations involving an existing item). If a problem
-    // occurs while parsing |args|, the function aborts - buckets may be non-
+    // occurs while parsing `args`, the function aborts - buckets may be non-
     // empty). The expectation is that invalid args and associated errors are
     // handled by the ExtensionFunction itself so we don't concern ourselves.
-    // |args| must be a list.
+    // `args` must be a list.
     virtual void GetBucketsForArgs(const base::Value::List& args,
                                    BucketList* buckets) = 0;
   };
 
-  // Maps all calls to the same bucket, regardless of |args|, for this
+  // Maps all calls to the same bucket, regardless of `args`, for this
   // QuotaLimitHeuristic.
   class SingletonBucketMapper : public BucketMapper {
    public:
@@ -194,10 +194,10 @@ class QuotaLimitHeuristic {
   virtual ~QuotaLimitHeuristic();
 
   // Determines if sufficient quota exists (according to the Apply
-  // implementation of a derived class) to perform an operation with |args|,
+  // implementation of a derived class) to perform an operation with `args`,
   // based on the history of similar operations with similar arguments (which
   // is retrieved using the BucketMapper).
-  // |args| must be a list.
+  // `args` must be a list.
   bool ApplyToArgs(const base::Value::List& args,
                    const base::TimeTicks& event_time);
 
@@ -207,7 +207,7 @@ class QuotaLimitHeuristic {
  protected:
   const Config& config() { return config_; }
 
-  // Determine if the new event occurring at |event_time| involving |bucket|
+  // Determine if the new event occurring at `event_time` involving `bucket`
   // constitutes a quota violation according to this heuristic.
   virtual bool Apply(Bucket* bucket, const base::TimeTicks& event_time) = 0;
 

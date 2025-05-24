@@ -4,10 +4,10 @@
 
 #include "chrome/browser/enterprise/signin/enterprise_signin_service.h"
 
+#include <algorithm>
 #include <string>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/enterprise/signin/enterprise_signin_prefs.h"
 #include "chrome/browser/profiles/profile.h"

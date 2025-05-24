@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 
 // Move-only struct holding the parameters of a profile being added into
 // ProfileAttributesStorage.
@@ -31,7 +32,7 @@ struct ProfileAttributesInitParams {
   std::u16string profile_name;
   // GAIA id of the user signed into the profile. Empty string if the
   // user is not signed in.
-  std::string gaia_id;
+  GaiaId gaia_id;
   // Email address of the user signed into the profile. Empty string if the user
   // is not signed in.
   std::u16string user_name;

@@ -87,7 +87,7 @@ class WorkItem {
   // TODO(robertshield): Move this out of WorkItem.
   class Condition {
    public:
-    virtual ~Condition() {}
+    virtual ~Condition() = default;
     virtual bool ShouldRun() const = 0;
   };
 

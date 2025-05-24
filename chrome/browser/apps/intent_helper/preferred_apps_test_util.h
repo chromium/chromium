@@ -17,8 +17,12 @@ class Profile;
 namespace apps_util {
 
 // Utility to wait for a change in preferred apps settings to be reflected in a
-// PreferredAppsList. This is useful for Lacros Crosapi tests where the
-// preferred apps settings need to be synchronized between processes.
+// PreferredAppsList. This used to be useful for Lacros Crosapi tests where the
+// preferred apps settings needed to be synchronized between processes. Now that
+// Lacros was sunsetted, this utility is still being used by
+// preinstalled_web_app_manager_browsertest.cc and by
+// intent_picker_bubble_view_browsertest.cc, and is being tested against
+// multiple desktop platforms including but not limited to ChromeOS.
 class PreferredAppUpdateWaiter
     : public apps::PreferredAppsListHandle::Observer {
  public:

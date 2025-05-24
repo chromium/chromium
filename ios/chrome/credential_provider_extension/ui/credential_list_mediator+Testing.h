@@ -20,11 +20,9 @@
 // and sorted by service name.
 - (NSArray<id<Credential>>*)fetchAllCredentials;
 
-// Returns the list of allowed passkey credentials for the relying party.
-- (NSArray<id<Credential>>*)filterPasskeyCredentials;
-
-// Returns the list of allowed password credentials for the service identifier.
-- (NSArray<id<Credential>>*)filterPasswordCredentials;
+// Returns the list of allowed credentials that are related to the relying
+// party/service identifiers.
+- (NSArray<id<Credential>>*)filterCredentials;
 
 // Tells the consumer to show the passed in suggested and all credentials.
 - (void)presentCredentials;

@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_delegate.h"
+#include "ui/compositor/layer_owner.h"
 #include "ui/compositor/paint_context.h"
 
 namespace lens {
@@ -21,17 +22,18 @@ namespace lens {
 // LayerDelegate for controlling the background blur behind the overlay. This
 // class is only a LayerDelegate to control the layer painting and does not own
 // the layer.
-class LensOverlayBlurLayerDelegate : public ui::LayerDelegate,
+class LensOverlayBlurLayerDelegate : public ui::LayerOwner,
+                                     public ui::LayerDelegate,
                                      public content::RenderWidgetHostObserver {
  public:
-  // Starts painting to the given layer with a blurred background image using
-  // the given render view as the background. Note: Initializing this class does
-  // not start capturing screenshots of the background view until
+  // Creates a layer and starts painting to it with a blurred background image
+  // using the given render view as the background. Note: Initializing this
+  // class does not start capturing screenshots of the background view until
   // StartBackgroundImageCapture(). Meaning, until StartBackgroundImageCapture,
   // this layer will paint a static blurred image that was taken on
   // initialization.
-  LensOverlayBlurLayerDelegate(ui::Layer* layer,
-                               content::RenderWidgetHost* background_view_host);
+  explicit LensOverlayBlurLayerDelegate(
+      content::RenderWidgetHost* background_view_host);
   ~LensOverlayBlurLayerDelegate() override;
 
   // Starts taking screenshots of the background view to use for blurring.
@@ -65,10 +67,6 @@ class LensOverlayBlurLayerDelegate : public ui::LayerDelegate,
 
   // A timer to periodically take screenshots of the underlying page.
   base::RepeatingTimer screenshot_timer_;
-
-  // Pointer to the layer we are adding the blur to. Belongs to a child of the
-  // LensOverlayController so guaranteed to outlive this class.
-  raw_ptr<ui::Layer> layer_;
 
   // Pointer to the RenderWidgetHost to get the contents which we are
   // blurring. Owned by the live page web contents, so is possible to become

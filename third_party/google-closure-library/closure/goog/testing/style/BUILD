@@ -6,7 +6,9 @@ licenses(["notice"])
 
 closure_js_library(
     name = "layoutasserts",
+    testonly = True,
     srcs = ["layoutasserts.js"],
+    lenient = True,
     deps = [
         ":style",
         "//closure/goog/style",
@@ -16,7 +18,9 @@ closure_js_library(
 
 closure_js_library(
     name = "style",
+    testonly = True,
     srcs = ["style.js"],
+    lenient = True,
     deps = [
         "//closure/goog/dom",
         "//closure/goog/math:rect",

@@ -283,9 +283,11 @@ goog.net.xpc.NativeMessagingTransport.initialize_ = function(listenWindow) {
  * @param {goog.events.BrowserEvent} msgEvt The message event.
  * @return {boolean} True if message was successfully delivered to a channel.
  * @private
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.net.xpc.NativeMessagingTransport.messageReceived_ = function(msgEvt) {
   'use strict';
+  /** @suppress {strictMissingProperties} Added to tighten compiler checks */
   const data = msgEvt.getBrowserEvent().data;
 
   if (typeof data !== 'string') {
@@ -469,6 +471,7 @@ goog.net.xpc.NativeMessagingTransport.prototype.sendSetupAckMessage_ = function(
  * permitted.
  * @param {number} version The new protocol number.
  * @private
+ * @suppress {strictPrimitiveOperators}
  */
 goog.net.xpc.NativeMessagingTransport.prototype.setPeerProtocolVersion_ =
     function(version) {
@@ -558,6 +561,9 @@ goog.net.xpc.NativeMessagingTransport.prototype.send = function(
         // versions of Opera, where it is a method of the document object.  It
         // also seems that the appearance of postMessage on the peer window
         // object can sometimes be delayed.
+        /**
+         * @suppress {strictMissingProperties} Added to tighten compiler checks
+         */
         const obj = win.postMessage ? win : win.document;
         if (!obj.postMessage) {
           goog.log.warning(

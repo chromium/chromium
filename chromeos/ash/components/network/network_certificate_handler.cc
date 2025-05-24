@@ -38,7 +38,7 @@ NetworkCertificateHandler::Certificate GetCertificate(
       LOG(ERROR) << "Unable to PEM-encode CA";
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   result.available_for_network_auth =

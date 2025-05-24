@@ -59,11 +59,6 @@ TestImageTransportFactory::SharedMainThreadRasterContextProvider() {
   return nullptr;
 }
 
-gpu::GpuMemoryBufferManager*
-TestImageTransportFactory::GetGpuMemoryBufferManager() {
-  return &gpu_memory_buffer_manager_;
-}
-
 cc::TaskGraphRunner* TestImageTransportFactory::GetTaskGraphRunner() {
   return &task_graph_runner_;
 }

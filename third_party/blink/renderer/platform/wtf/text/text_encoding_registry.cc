@@ -24,16 +24,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding_registry.h"
 
 #include <atomic>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -45,6 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_icu.h"
@@ -106,10 +103,11 @@ static void CheckExistingName(const char* alias, const char* atomic_name) {
   if (old_atomic_name == atomic_name)
     return;
   // Keep the warning silent about one case where we know this will happen.
-  if (strcmp(alias, "ISO-8859-8-I") == 0 &&
-      strcmp(old_atomic_name, "ISO-8859-8-I") == 0 &&
-      EqualIgnoringASCIICase(atomic_name, "iso-8859-8"))
+  if (UNSAFE_TODO(strcmp(alias, "ISO-8859-8-I")) == 0 &&
+      UNSAFE_TODO(strcmp(old_atomic_name, "ISO-8859-8-I")) == 0 &&
+      EqualIgnoringASCIICase(atomic_name, "iso-8859-8")) {
     return;
+  }
   LOG(ERROR) << "alias " << alias << " maps to " << old_atomic_name
              << " already, but someone is trying to make it map to "
              << atomic_name;
@@ -120,15 +118,15 @@ static void CheckExistingName(const char* alias, const char* atomic_name) {
 static bool IsUndesiredAlias(const char* alias) {
   // Reject aliases with version numbers that are supported by some back-ends
   // (such as "ISO_2022,locale=ja,version=0" in ICU).
-  for (const char* p = alias; *p; ++p) {
-    if (*p == ',')
-      return true;
+  if (UNSAFE_TODO(strchr(alias, ','))) {
+    return true;
   }
   // 8859_1 is known to (at least) ICU, but other browsers don't support this
   // name - and having it caused a compatibility
   // problem, see bug 43554.
-  if (0 == strcmp(alias, "8859_1"))
+  if (0 == UNSAFE_TODO(strcmp(alias, "8859_1"))) {
     return true;
+  }
   return false;
 }
 
@@ -138,7 +136,8 @@ static void AddToTextEncodingNameMap(const char* alias, const char* name) {
   if (IsUndesiredAlias(alias))
     return;
   const auto it = g_text_encoding_name_map->find(name);
-  DCHECK(strcmp(alias, name) == 0 || it != g_text_encoding_name_map->end());
+  DCHECK(UNSAFE_TODO(strcmp(alias, name)) == 0 ||
+         it != g_text_encoding_name_map->end());
   const char* atomic_name =
       it != g_text_encoding_name_map->end() ? it->value : name;
   CheckExistingName(alias, atomic_name);
@@ -217,33 +216,32 @@ const char* AtomicCanonicalTextEncodingName(const char* name) {
 }
 
 template <typename CharacterType>
-const char* AtomicCanonicalTextEncodingName(const CharacterType* characters,
-                                            size_t length) {
-  char buffer[kMaxEncodingNameLength + 1];
+const char* AtomicCanonicalTextEncodingName(
+    base::span<const CharacterType> characters) {
+  if (characters.size() > kMaxEncodingNameLength) {
+    return nullptr;
+  }
+  std::array<char, kMaxEncodingNameLength + 1> buffer;
   size_t j = 0;
-  for (size_t i = 0; i < length; ++i) {
-    char c = static_cast<char>(characters[i]);
-    if (j == kMaxEncodingNameLength || c != characters[i])
-      return nullptr;
-    buffer[j++] = c;
+  for (size_t i = 0; i < characters.size(); ++i) {
+    buffer[j++] = static_cast<char>(characters[i]);
   }
   buffer[j] = 0;
-  return AtomicCanonicalTextEncodingName(buffer);
+  return AtomicCanonicalTextEncodingName(buffer.data());
 }
 
 const char* AtomicCanonicalTextEncodingName(const String& alias) {
-  if (!alias.length())
+  if (alias.empty()) {
     return nullptr;
-
-  if (alias.Contains('\0'))
+  }
+  if (alias.Contains('\0')) {
     return nullptr;
-
-  if (alias.Is8Bit())
-    return AtomicCanonicalTextEncodingName<LChar>(alias.Characters8(),
-                                                  alias.length());
-
-  return AtomicCanonicalTextEncodingName<UChar>(alias.Characters16(),
-                                                alias.length());
+  }
+  if (!alias.ContainsOnlyASCIIOrEmpty()) {
+    return nullptr;
+  }
+  return VisitCharacters(
+      alias, [](auto chars) { return AtomicCanonicalTextEncodingName(chars); });
 }
 
 bool NoExtendedTextEncodingNameUsed() {
@@ -251,18 +249,15 @@ bool NoExtendedTextEncodingNameUsed() {
 }
 
 Vector<String> TextEncodingAliasesForTesting() {
-  Vector<String> results;
-  {
-    base::AutoLock lock(EncodingRegistryLock());
-    if (!g_text_encoding_name_map)
-      BuildBaseTextCodecMaps();
-    if (!AtomicDidExtendTextCodecMaps()) {
-      ExtendTextCodecMaps();
-      AtomicSetDidExtendTextCodecMaps();
-    }
-    CopyKeysToVector(*g_text_encoding_name_map, results);
+  base::AutoLock lock(EncodingRegistryLock());
+  if (!g_text_encoding_name_map) {
+    BuildBaseTextCodecMaps();
   }
-  return results;
+  if (!AtomicDidExtendTextCodecMaps()) {
+    ExtendTextCodecMaps();
+    AtomicSetDidExtendTextCodecMaps();
+  }
+  return Vector<String>(g_text_encoding_name_map->Keys());
 }
 
 #ifndef NDEBUG
@@ -273,7 +268,7 @@ void DumpTextEncodingNameMap() {
   base::AutoLock lock(EncodingRegistryLock());
 
   for (const auto& it : *g_text_encoding_name_map)
-    fprintf(stderr, "'%s' => '%s'\n", it.key, it.value);
+    UNSAFE_TODO(fprintf(stderr, "'%s' => '%s'\n", it.key, it.value));
 }
 #endif
 

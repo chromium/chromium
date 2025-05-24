@@ -32,7 +32,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "services/device/public/mojom/geoposition.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -56,7 +56,7 @@ const char kFeaturePolicyErrorMessage[] =
     "Geolocation has been disabled in this document by permissions policy.";
 const char kFeaturePolicyConsoleWarning[] =
     "Geolocation access has been blocked because of a permissions policy "
-    "applied to the current document. See https://goo.gl/EuHzyv for more "
+    "applied to the current document. See https://crbug.com/414348233 for more "
     "details.";
 
 Geoposition* CreateGeoposition(
@@ -210,14 +210,26 @@ void Geolocation::RecordOriginTypeAccess() const {
 void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
                                      V8PositionErrorCallback* error_callback,
                                      const PositionOptions* options) {
+  if (options->enableHighAccuracy()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
+  }
+
   if (!GetFrame())
     return;
+
 
   probe::BreakableLocation(GetExecutionContext(),
                            "Geolocation.getCurrentPosition");
 
   auto* notifier = MakeGarbageCollected<GeoNotifier>(this, success_callback,
                                                      error_callback, options);
+
+  if (GetFrame()->IsAdScriptInStack()) {
+    notifier->SetCalledWithAdScriptInStack();
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnGeoLocation);
+  }
 
   one_shots_->insert(notifier);
 
@@ -227,6 +239,11 @@ void Geolocation::getCurrentPosition(V8PositionCallback* success_callback,
 int Geolocation::watchPosition(V8PositionCallback* success_callback,
                                V8PositionErrorCallback* error_callback,
                                const PositionOptions* options) {
+  if (options->enableHighAccuracy()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
+  }
+
   if (!GetFrame())
     return 0;
 
@@ -234,6 +251,12 @@ int Geolocation::watchPosition(V8PositionCallback* success_callback,
 
   auto* notifier = MakeGarbageCollected<GeoNotifier>(this, success_callback,
                                                      error_callback, options);
+
+  if (GetFrame()->IsAdScriptInStack()) {
+    notifier->SetCalledWithAdScriptInStack();
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kAdScriptInStackOnWatchGeoLocation);
+  }
 
   int watch_id;
   // Keep asking for the next id until we're given one that we don't already
@@ -258,7 +281,7 @@ void Geolocation::StartRequest(GeoNotifier* notifier) {
   }
 
   if (!GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kGeolocation,
+          network::mojom::PermissionsPolicyFeature::kGeolocation,
           ReportOptions::kReportOnFailure, kFeaturePolicyConsoleWarning)) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationDisabledByFeaturePolicy);
@@ -464,8 +487,9 @@ void Geolocation::StartUpdating(GeoNotifier* notifier) {
   updating_ = true;
   if (notifier->Options()->enableHighAccuracy() && !enable_high_accuracy_) {
     enable_high_accuracy_ = true;
-    if (geolocation_.is_bound())
-      geolocation_->SetHighAccuracy(true);
+    if (geolocation_.is_bound()) {
+      geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
+    }
   }
   UpdateGeolocationConnection(notifier);
 }
@@ -503,8 +527,9 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
 
   geolocation_.set_disconnect_handler(WTF::BindOnce(
       &Geolocation::OnGeolocationConnectionError, WrapWeakPersistent(this)));
-  if (enable_high_accuracy_)
-    geolocation_->SetHighAccuracy(true);
+  if (enable_high_accuracy_) {
+    geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
+  }
   QueryNextPosition();
 }
 

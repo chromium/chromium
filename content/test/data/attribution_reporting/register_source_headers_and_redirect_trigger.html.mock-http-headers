@@ -1,3 +1,0 @@
-HTTP/1.1 301 Moved Permanently
-Attribution-Reporting-Register-Source:{"destination":"https://d.test"}
-Location: /register_trigger_headers.html

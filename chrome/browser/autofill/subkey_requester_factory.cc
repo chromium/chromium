@@ -39,7 +39,7 @@ SubKeyRequesterFactory::SubKeyRequesterFactory()
           ValidationRulesStorageFactory::CreateStorage(),
           l10n_util::GetLanguage(g_browser_process->GetApplicationLocale())) {}
 
-SubKeyRequesterFactory::~SubKeyRequesterFactory() {}
+SubKeyRequesterFactory::~SubKeyRequesterFactory() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 static base::android::ScopedJavaLocalRef<jobject>

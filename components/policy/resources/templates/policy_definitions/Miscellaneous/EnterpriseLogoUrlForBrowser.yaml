@@ -1,0 +1,21 @@
+caption: Enterprise Logo URL for a managed browser
+default: null
+desc: |-
+  A URL to an image that will be used as an enterprise badge for a managed browser. The URL must point to an image.
+
+  It is recommended to use the favicon (example https://www.google.com/favicon.ico) or an icon no smaller than 48 x 48 px.
+
+  Note that this policy is only applied for managed browsers, so it will have no effect for managed users on unmanaged browsers.
+example_value: https://example.com/image.png
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome.*
+owners:
+- file://components/policy/OWNERS
+- esalma@google.com
+schema:
+  type: string
+tags: []
+type: string

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/gamepad_blocklist.h"
+
+#include <array>
 
 #include "device/gamepad/gamepad_id_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,31 +12,33 @@
 namespace device {
 namespace {
 // Blocked devices, taken from the gamepad blocklist.
-constexpr std::pair<uint16_t, uint16_t> kBlockedDevices[] = {
-    {0x045e, 0x0922},  // Microsoft keyboard
-    {0x05ac, 0x3232},  // Apple(?) bluetooth mouse
-    {0x17ef, 0x6099},  // Lenovo keyboard
-};
+constexpr auto kBlockedDevices =
+    std::to_array<std::pair<uint16_t, uint16_t>>({
+        {0x045e, 0x0922},  // Microsoft keyboard
+        {0x05ac, 0x3232},  // Apple(?) bluetooth mouse
+        {0x17ef, 0x6099},  // Lenovo keyboard
+    });
 constexpr size_t kBlockedDevicesLength = std::size(kBlockedDevices);
 
 // Known devices from blocked vendors, taken from usb.ids.
 // http://www.linux-usb.org/usb.ids
-constexpr std::pair<uint16_t, uint16_t> kBlockedVendorDevices[] = {
-    {0x056a, 0x50b8},  // Wacom touchpad
-    {0x06cb, 0x000f},  // Synaptics touchpad
-    {0x2833, 0x0001},  // Oculus Rift DK1 head tracker
-    {0x2833, 0x0021},  // Oculus Rift DK2 USB hub
-    {0x2833, 0x0031},  // Oculus Rift CV1 subdevice
-    {0x2833, 0x0101},  // Oculus latency tester
-    {0x2833, 0x0201},  // Oculus Rift DK2 camera
-    {0x2833, 0x0211},  // Oculus Rift CV1 sensor
-    {0x2833, 0x0330},  // Oculus Rift CV1 audio port
-    {0x2833, 0x1031},  // Oculus Rift CV1 subdevice
-    {0x2833, 0x2021},  // Oculus Rift DK2 main unit
-    {0x2833, 0x2031},  // Oculus Rift CV1
-    {0x2833, 0x3031},  // Oculus Rift CV1 subdevice
-    {0xb58e, 0x9e84},  // Blue Yeti Stereo Microphone
-};
+constexpr auto kBlockedVendorDevices =
+    std::to_array<std::pair<uint16_t, uint16_t>>({
+        {0x056a, 0x50b8},  // Wacom touchpad
+        {0x06cb, 0x000f},  // Synaptics touchpad
+        {0x2833, 0x0001},  // Oculus Rift DK1 head tracker
+        {0x2833, 0x0021},  // Oculus Rift DK2 USB hub
+        {0x2833, 0x0031},  // Oculus Rift CV1 subdevice
+        {0x2833, 0x0101},  // Oculus latency tester
+        {0x2833, 0x0201},  // Oculus Rift DK2 camera
+        {0x2833, 0x0211},  // Oculus Rift CV1 sensor
+        {0x2833, 0x0330},  // Oculus Rift CV1 audio port
+        {0x2833, 0x1031},  // Oculus Rift CV1 subdevice
+        {0x2833, 0x2021},  // Oculus Rift DK2 main unit
+        {0x2833, 0x2031},  // Oculus Rift CV1
+        {0x2833, 0x3031},  // Oculus Rift CV1 subdevice
+        {0xb58e, 0x9e84},  // Blue Yeti Stereo Microphone
+    });
 constexpr size_t kBlockedVendorDevicesLength = std::size(kBlockedVendorDevices);
 
 }  // namespace

@@ -4,11 +4,13 @@
 package org.chromium.android_webview.test.sensitive_content;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.base.test.util.CriteriaHelper.pollUiThreadNested;
 
 import android.os.Build;
 import android.view.View;
 
 import androidx.test.InstrumentationRegistry;
+import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -25,8 +27,11 @@ import org.chromium.android_webview.test.TestAwContentsClient;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.sensitive_content.SensitiveContentFeatures;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.ViewAndroidDelegate;
 
 /** Tests that the content sensitivity is set properly on WebView. */
 @RunWith(AwJUnit4ClassRunner.class)
@@ -61,9 +66,9 @@ public class AwSensitiveContentTest {
     @MediumTest
     public void testWebViewHasSensitiveContentWhileSensitiveFieldsArePresent() throws Exception {
         Assert.assertEquals(
-                "Initially, the does not have sensitive content",
-                mTestContainerView.getContentSensitivity(),
-                View.CONTENT_SENSITIVITY_AUTO);
+                "Initially, the page does not have sensitive content",
+                View.CONTENT_SENSITIVITY_AUTO,
+                mTestContainerView.getContentSensitivity());
 
         sActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
         pollUiThread(
@@ -76,5 +81,37 @@ public class AwSensitiveContentTest {
                 () ->
                         mTestContainerView.getContentSensitivity()
                                 == View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+    }
+
+    @Test
+    @MediumTest
+    @UiThreadTest
+    public void testSwapViewAndroidDelegate() {
+        sActivityTestRule.loadUrlAsync(mAwContents, mTestServer.getURL(SENSITIVE_FILE));
+        pollUiThreadNested(
+                () ->
+                        mTestContainerView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
+
+        WebContents webContents = mAwContents.getWebContents();
+        ContentView newContainerView =
+                ContentView.createContentView(sActivityTestRule.getActivity(), webContents);
+        ViewAndroidDelegate newViewAndroidDelegate =
+                ViewAndroidDelegate.createBasicDelegate(newContainerView);
+        Assert.assertEquals(
+                "Initially, the content view does not have sensitive content",
+                View.CONTENT_SENSITIVITY_AUTO,
+                newContainerView.getContentSensitivity());
+
+        webContents.setDelegates(
+                "",
+                newViewAndroidDelegate,
+                newContainerView,
+                null,
+                WebContents.createDefaultInternalsHolder());
+        pollUiThreadNested(
+                () ->
+                        newContainerView.getContentSensitivity()
+                                == View.CONTENT_SENSITIVITY_SENSITIVE);
     }
 }

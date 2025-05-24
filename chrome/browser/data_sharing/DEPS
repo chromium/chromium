@@ -4,4 +4,5 @@ include_rules = [
   "+components/data_sharing/internal/data_sharing_service_impl.h",
   "+components/data_sharing/internal/empty_data_sharing_service.h",
   "+components/data_sharing/test_support",
+  "+components/collaboration/test_support",
 ]

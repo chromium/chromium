@@ -23,6 +23,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -81,8 +82,6 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // Make a note that this is a speculative resolve request. This allows
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
-    // TODO(crbug.com/40641818): Pass in a non-empty
-    // NetworkAnonymizationKey.
     // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
     // HTTPS DNS resource record query.
     render_frame_host->GetProcess()
@@ -132,7 +131,7 @@ SimpleNetworkHintsHandlerImpl::~SimpleNetworkHintsHandlerImpl() = default;
 void SimpleNetworkHintsHandlerImpl::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<mojom::NetworkHintsHandler> receiver) {
-  int render_process_id = frame_host->GetProcess()->GetID();
+  int render_process_id = frame_host->GetProcess()->GetDeprecatedID();
   int render_frame_id = frame_host->GetRoutingID();
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new SimpleNetworkHintsHandlerImpl(render_process_id,
@@ -168,11 +167,12 @@ void SimpleNetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
 
   render_frame_host->GetStoragePartition()
       ->GetNetworkContext()
-      ->PreconnectSockets(/*num_streams=*/1, url.GetURL(),
-                          allow_credentials
-                              ? network::mojom::CredentialsMode::kInclude
-                              : network::mojom::CredentialsMode::kOmit,
-                          network_anonymization_key);
+      ->PreconnectSockets(
+          /*num_streams=*/1, url.GetURL(),
+          allow_credentials ? network::mojom::CredentialsMode::kInclude
+                            : network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 }  // namespace network_hints

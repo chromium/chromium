@@ -29,7 +29,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
-#include "third_party/smhasher/src/MurmurHash2.h"
+#include "third_party/smhasher/src/src/MurmurHash2.h"
 #include "ui/android/color_utils_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -87,7 +87,7 @@ WebApkUpdateDataFetcher::WebApkUpdateDataFetcher(JNIEnv* env,
   java_ref_.Reset(env, obj);
 }
 
-WebApkUpdateDataFetcher::~WebApkUpdateDataFetcher() {}
+WebApkUpdateDataFetcher::~WebApkUpdateDataFetcher() = default;
 
 void WebApkUpdateDataFetcher::ReplaceWebContents(
     JNIEnv* env,
@@ -132,8 +132,7 @@ void WebApkUpdateDataFetcher::FetchInstallableData() {
   webapps::InstallableParams params;
   params.installable_criteria =
       webapps::InstallableCriteria::kValidManifestWithIcons;
-  params.prefer_maskable_icon =
-      webapps::WebappsIconUtils::DoesAndroidSupportMaskableIcons();
+  params.prefer_maskable_icon = true;
   params.valid_primary_icon = true;
   webapps::InstallableManager* installable_manager =
       webapps::InstallableManager::FromWebContents(web_contents());
@@ -211,32 +210,15 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
 
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  ScopedJavaLocalRef<jstring> java_url =
-      base::android::ConvertUTF8ToJavaString(env, info_.url.spec());
-  ScopedJavaLocalRef<jstring> java_scope =
-      base::android::ConvertUTF8ToJavaString(env, info_.scope.spec());
-  ScopedJavaLocalRef<jstring> java_name =
-      base::android::ConvertUTF16ToJavaString(env, info_.name);
-  ScopedJavaLocalRef<jstring> java_short_name =
-      base::android::ConvertUTF16ToJavaString(env, info_.short_name);
-  ScopedJavaLocalRef<jstring> java_manifest_url =
-      base::android::ConvertUTF8ToJavaString(env, info_.manifest_url.spec());
   ScopedJavaLocalRef<jstring> java_manifest_id =
       base::android::ConvertUTF8ToJavaString(env, info_.manifest_id.spec());
 
-  ScopedJavaLocalRef<jstring> java_primary_icon_url =
-      base::android::ConvertUTF8ToJavaString(
-          env, info_.best_primary_icon_url.spec());
-  ScopedJavaLocalRef<jstring> java_primary_icon_murmur2_hash =
-      base::android::ConvertUTF8ToJavaString(
-          env, icons[info_.best_primary_icon_url]->hash());
+  std::string primary_icon_murmur2_hash =
+      icons[info_.best_primary_icon_url]->hash();
   ScopedJavaLocalRef<jobject> java_primary_icon =
       gfx::ConvertToJavaBitmap(primary_icon_);
   jboolean java_is_primary_icon_maskable = info_.is_primary_icon_maskable;
 
-  ScopedJavaLocalRef<jstring> java_splash_icon_url =
-      base::android::ConvertUTF8ToJavaString(env,
-                                             info_.splash_image_url.spec());
   jboolean java_is_splash_icon_maskable = info_.is_splash_image_maskable;
   std::string splash_icon_hash = "";
   std::string splash_icon_data = "";
@@ -247,29 +229,23 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
       splash_icon_data = it->second->ExtractData();
     }
   }
-  ScopedJavaLocalRef<jstring> java_splash_icon_murmur2_hash =
-      base::android::ConvertUTF8ToJavaString(env, splash_icon_hash);
   base::android::ScopedJavaLocalRef<jbyteArray> java_splash_icon_data =
       base::android::ToJavaByteArray(env, splash_icon_data);
 
   ScopedJavaLocalRef<jobjectArray> java_icon_urls =
       base::android::ToJavaArrayOfStrings(env, info_.icon_urls);
 
-  ScopedJavaLocalRef<jstring> java_share_action;
-  ScopedJavaLocalRef<jstring> java_share_params_title;
-  ScopedJavaLocalRef<jstring> java_share_params_text;
-  ScopedJavaLocalRef<jstring> java_share_params_url;
+  std::string share_action;
+  std::u16string share_params_title;
+  std::u16string share_params_text;
   jboolean java_share_params_is_method_post = false;
   jboolean java_share_params_is_enctype_multipart = false;
   ScopedJavaLocalRef<jobjectArray> java_share_params_file_names;
   ScopedJavaLocalRef<jobjectArray> java_share_params_accepts;
   if (info_.share_target.has_value() && info_.share_target->action.is_valid()) {
-    java_share_action = base::android::ConvertUTF8ToJavaString(
-        env, info_.share_target->action.spec());
-    java_share_params_title = base::android::ConvertUTF16ToJavaString(
-        env, info_.share_target->params.title);
-    java_share_params_text = base::android::ConvertUTF16ToJavaString(
-        env, info_.share_target->params.text);
+    share_action = info_.share_target->action.spec();
+    share_params_title = info_.share_target->params.title;
+    share_params_text = info_.share_target->params.text;
 
     java_share_params_is_method_post =
         (info_.share_target->method ==
@@ -320,20 +296,20 @@ void WebApkUpdateDataFetcher::OnGotIconMurmur2Hashes(
   }
 
   Java_WebApkUpdateDataFetcher_onDataAvailable(
-      env, java_ref_, java_url, java_scope, java_name, java_short_name,
-      java_manifest_url, java_manifest_id, java_primary_icon_url,
-      java_primary_icon_murmur2_hash, java_primary_icon,
-      java_is_primary_icon_maskable, java_splash_icon_url,
-      java_splash_icon_murmur2_hash, java_splash_icon_data,
+      env, java_ref_, info_.url.spec(), info_.scope.spec(), info_.name,
+      info_.short_name, info_.manifest_url.spec(), java_manifest_id,
+      info_.best_primary_icon_url.spec(), primary_icon_murmur2_hash,
+      java_primary_icon, java_is_primary_icon_maskable,
+      info_.splash_image_url.spec(), splash_icon_hash, java_splash_icon_data,
       java_is_splash_icon_maskable, java_icon_urls,
       static_cast<int>(info_.display), static_cast<int>(info_.orientation),
       ui::OptionalSkColorToJavaColor(info_.theme_color),
       ui::OptionalSkColorToJavaColor(info_.background_color),
       ui::OptionalSkColorToJavaColor(info_.dark_theme_color),
-      ui::OptionalSkColorToJavaColor(info_.dark_background_color),
-      java_share_action, java_share_params_title, java_share_params_text,
-      java_share_params_is_method_post, java_share_params_is_enctype_multipart,
-      java_share_params_file_names, java_share_params_accepts,
+      ui::OptionalSkColorToJavaColor(info_.dark_background_color), share_action,
+      share_params_title, share_params_text, java_share_params_is_method_post,
+      java_share_params_is_enctype_multipart, java_share_params_file_names,
+      java_share_params_accepts,
       base::android::ToJavaArrayOfStringArray(env, shortcuts),
       base::android::ToJavaArrayOfByteArray(env, shortcut_icon_data));
 }

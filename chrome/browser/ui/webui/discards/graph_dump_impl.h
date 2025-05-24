@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -24,13 +25,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class DiscardsGraphDumpImpl
-    : public discards::mojom::GraphDump,
-      public performance_manager::GraphOwned,
-      public performance_manager::FrameNode::ObserverDefaultImpl,
-      public performance_manager::PageNode::ObserverDefaultImpl,
-      public performance_manager::ProcessNode::ObserverDefaultImpl,
-      public performance_manager::WorkerNode::ObserverDefaultImpl {
+class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
+                              public performance_manager::GraphOwned,
+                              public performance_manager::FrameNodeObserver,
+                              public performance_manager::PageNodeObserver,
+                              public performance_manager::ProcessNodeObserver,
+                              public performance_manager::WorkerNodeObserver {
  public:
   DiscardsGraphDumpImpl();
 
@@ -82,8 +82,7 @@ class DiscardsGraphDumpImpl
       const performance_manager::FrameNode* previous_opener) override;
   void OnEmbedderFrameNodeChanged(
       const performance_manager::PageNode* page_node,
-      const performance_manager::FrameNode* previous_embedder,
-      EmbeddingType previous_embedding_type) override;
+      const performance_manager::FrameNode* previous_embedder) override;
   void OnMainFrameUrlChanged(
       const performance_manager::PageNode* page_node) override;
   void OnFaviconUpdated(
@@ -172,7 +171,9 @@ class DiscardsGraphDumpImpl
 
   // The live nodes and their IDs.
   base::flat_map<const performance_manager::Node*, NodeId> node_ids_;
-  base::flat_map<NodeId, const performance_manager::Node*> nodes_by_id_;
+  base::flat_map<NodeId,
+                 raw_ptr<const performance_manager::Node, CtnExperimental>>
+      nodes_by_id_;
   NodeId::Generator node_id_generator_;
 
   // The current change subscriber to this dumper. This instance is subscribed

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/browsing_data/counters/downloads_counter.h"
 
+#include <algorithm>
+
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/download/download_history.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -14,8 +15,7 @@
 DownloadsCounter::DownloadsCounter(Profile* profile)
     : profile_(profile) {}
 
-DownloadsCounter::~DownloadsCounter() {
-}
+DownloadsCounter::~DownloadsCounter() = default;
 
 const char* DownloadsCounter::GetPrefName() const {
   return browsing_data::prefs::kDeleteDownloadHistory;
@@ -27,7 +27,7 @@ void DownloadsCounter::Count() {
   download_manager->GetAllDownloads(&downloads);
   base::Time begin_time = GetPeriodStart();
 
-  ReportResult(base::ranges::count_if(
+  ReportResult(std::ranges::count_if(
       downloads, [begin_time](const download::DownloadItem* item) {
         return item->GetStartTime() >= begin_time &&
                DownloadHistory::IsPersisted(item);

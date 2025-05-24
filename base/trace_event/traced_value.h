@@ -24,8 +24,6 @@ class Value;
 
 namespace trace_event {
 
-class TraceEventMemoryOverhead;
-
 class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
  public:
   // TODO(oysteine): |capacity| is not used in any production code. Consider
@@ -69,8 +67,6 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
   // ConvertableToTraceFormat implementation.
   void AppendAsTraceFormat(std::string* out) const override;
   bool AppendToProto(ProtoAppender* appender) const override;
-
-  void EstimateTraceMemoryOverhead(TraceEventMemoryOverhead* overhead) override;
 
   // Helper to auto-close an array. The call to |ArrayScope::~ArrayScope| closes
   // the array.
@@ -376,9 +372,6 @@ class BASE_EXPORT TracedValue : public ConvertableToTraceFormat {
     virtual void AppendAsTraceFormat(std::string* out) const = 0;
 
     virtual bool AppendToProto(ProtoAppender* appender);
-
-    virtual void EstimateTraceMemoryOverhead(
-        TraceEventMemoryOverhead* overhead) = 0;
 
     virtual bool IsPickleWriter() const = 0;
     virtual bool IsProtoWriter() const = 0;

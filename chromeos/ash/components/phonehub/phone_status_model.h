@@ -11,8 +11,7 @@
 #include <ostream>
 #include <string>
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Contains properties representing a phone's status, including mobile
 // connection state and battery/power state.
@@ -115,7 +114,6 @@ std::ostream& operator<<(
     std::ostream& stream,
     PhoneStatusModel::BatterySaverState battery_saver_state);
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_PHONE_STATUS_MODEL_H_

@@ -44,11 +44,35 @@ void AssociateMailboxImmediate(GLuint device_id,
   }
 }
 
+void AssociateMailboxForBufferImmediate(GLuint device_id,
+                                        GLuint device_generation,
+                                        GLuint id,
+                                        GLuint generation,
+                                        uint64_t usage,
+                                        const GLuint* mailbox) {
+  const uint32_t size =
+      webgpu::cmds::AssociateMailboxForBufferImmediate::ComputeSize();
+  webgpu::cmds::AssociateMailboxForBufferImmediate* c =
+      GetImmediateCmdSpaceTotalSize<
+          webgpu::cmds::AssociateMailboxForBufferImmediate>(size);
+  if (c) {
+    c->Init(device_id, device_generation, id, generation, usage, mailbox);
+  }
+}
+
 void DissociateMailbox(GLuint texture_id, GLuint texture_generation) {
   webgpu::cmds::DissociateMailbox* c =
       GetCmdSpace<webgpu::cmds::DissociateMailbox>();
   if (c) {
     c->Init(texture_id, texture_generation);
+  }
+}
+
+void DissociateMailboxForBuffer(GLuint buffer_id, GLuint buffer_generation) {
+  webgpu::cmds::DissociateMailboxForBuffer* c =
+      GetCmdSpace<webgpu::cmds::DissociateMailboxForBuffer>();
+  if (c) {
+    c->Init(buffer_id, buffer_generation);
   }
 }
 

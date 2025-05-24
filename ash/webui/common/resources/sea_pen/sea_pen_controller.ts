@@ -4,12 +4,14 @@
 
 import {FullscreenPreviewState} from 'chrome://resources/ash/common/personalization/wallpaper_state.js';
 
-import {QUERY, SeaPenImageId} from './constants.js';
+import type {SeaPenImageId} from './constants.js';
+import {QUERY} from './constants.js';
 import {isSeaPenTextInputEnabled} from './load_time_booleans.js';
-import {MantaStatusCode, SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import type {SeaPenFeedbackMetadata, SeaPenProviderInterface, SeaPenQuery, SeaPenThumbnail} from './sea_pen.mojom-webui.js';
+import {MantaStatusCode} from './sea_pen.mojom-webui.js';
 import * as seaPenAction from './sea_pen_actions.js';
 import {logSeaPenImageSet} from './sea_pen_metrics_logger.js';
-import {SeaPenStoreInterface} from './sea_pen_store.js';
+import type {SeaPenStoreInterface} from './sea_pen_store.js';
 import {isNonEmptyArray, isPersonalizationApp} from './sea_pen_utils.js';
 import {withMinimumDelay} from './transition.js';
 
@@ -134,11 +136,11 @@ export async function selectSeaPenThumbnail(
   }
 }
 
-export async function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
+export function clearSeaPenThumbnails(store: SeaPenStoreInterface) {
   store.dispatch(seaPenAction.clearSeaPenThumbnailsAction());
 }
 
-export async function cleanUpSeaPenQueryStates(store: SeaPenStoreInterface) {
+export function cleanUpSeaPenQueryStates(store: SeaPenStoreInterface) {
   store.beginBatchUpdate();
   store.dispatch(seaPenAction.setThumbnailResponseStatusCodeAction(null));
   store.dispatch(seaPenAction.clearCurrentSeaPenQueryAction());
@@ -260,6 +262,33 @@ export async function closeSeaPenIntroductionDialog(
   // Dispatch action to set the should show dialog boolean.
   store.dispatch(
       seaPenAction.setShouldShowSeaPenIntroductionDialogAction(false));
+}
+
+export async function getShouldShowSeaPenFreeformIntroductionDialog(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  const {shouldShowFreeformDialog} =
+      await provider.shouldShowSeaPenFreeformIntroductionDialog();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(
+      seaPenAction.setShouldShowSeaPenFreeformIntroductionDialogAction(
+          shouldShowFreeformDialog));
+}
+
+export async function closeSeaPenFreeformIntroductionDialog(
+    provider: SeaPenProviderInterface,
+    store: SeaPenStoreInterface): Promise<void> {
+  if (!store.data.shouldShowSeaPenFreeformIntroductionDialog) {
+    // Do nothing if the introduction dialog is already closed;
+    return;
+  }
+
+  await provider.handleSeaPenFreeformIntroductionDialogClosed();
+
+  // Dispatch action to set the should show dialog boolean.
+  store.dispatch(
+      seaPenAction.setShouldShowSeaPenFreeformIntroductionDialogAction(false));
 }
 
 /**

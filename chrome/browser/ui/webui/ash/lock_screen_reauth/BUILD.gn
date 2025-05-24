@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("lock_screen_reauth") {
   sources = [
@@ -57,6 +55,7 @@ static_library("lock_screen_reauth") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/extensions",
@@ -65,7 +64,6 @@ static_library("lock_screen_reauth") {
     "//chrome/browser/resources/chromeos/lock_screen_reauth:resources",
     "//chrome/browser/resources/gaia_auth_host:resources",
     "//chrome/browser/ui/ash/login",
-    "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/internet",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:chrome_features",
@@ -88,6 +86,7 @@ static_library("lock_screen_reauth") {
     "//ui/chromeos/strings:strings_provider",
     "//ui/display",
     "//ui/strings:ui_strings",
+    "//ui/webui",
   ]
 
   allow_circular_includes_from = [

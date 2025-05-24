@@ -498,7 +498,7 @@ PP_Bool FakeURLRequestInfoInterface::AppendDataToBody(PP_Resource request,
 
   request_resource->body.append(static_cast<const char*>(data), len);
 
-  char len_string[64] = {0};
+  char len_string[64] = {};
   snprintf(len_string, sizeof(len_string), "%u", len);
 
   SetHeader("Content-Length", len_string, &request_resource->headers);

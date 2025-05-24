@@ -65,7 +65,7 @@ class BackgroundTask {
   BackgroundTask& operator=(const BackgroundTask&) = delete;
 
   // Destructor.
-  virtual ~BackgroundTask() {}
+  virtual ~BackgroundTask() = default;
 
  protected:
   BackgroundTask() = default;

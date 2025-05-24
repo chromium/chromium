@@ -6,6 +6,7 @@ import("//build/config/ui.gni")
 
 source_set("toasts") {
   sources = [
+    "toast_id.cc",
     "toast_id.h",
     "toast_registry.cc",
     "toast_registry.h",
@@ -15,6 +16,7 @@ source_set("toasts") {
   public_deps = [
     "//base",
     "//ui/base",
+    "//ui/menus",
   ]
   deps = [ "//components/vector_icons:vector_icons" ]
 }
@@ -29,5 +31,6 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//testing/gtest",
     "//ui/gfx",
+    "//ui/menus",
   ]
 }

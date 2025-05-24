@@ -6,24 +6,24 @@
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_processor_constructor.h"
+#include "third_party/blink/renderer/platform/bindings/callback_method_retriever.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
 AudioWorkletProcessorDefinition* AudioWorkletProcessorDefinition::Create(
     const String& name,
-    V8BlinkAudioWorkletProcessorConstructor* constructor,
-    V8BlinkAudioWorkletProcessCallback* process) {
+    V8BlinkAudioWorkletProcessorConstructor* constructor) {
   DCHECK(!IsMainThread());
-  return MakeGarbageCollected<AudioWorkletProcessorDefinition>(
-      name, constructor, process);
+  return MakeGarbageCollected<AudioWorkletProcessorDefinition>(name,
+                                                               constructor);
 }
 
 AudioWorkletProcessorDefinition::AudioWorkletProcessorDefinition(
     const String& name,
-    V8BlinkAudioWorkletProcessorConstructor* constructor,
-    V8BlinkAudioWorkletProcessCallback* process)
-    : name_(name), constructor_(constructor), process_(process) {}
+    V8BlinkAudioWorkletProcessorConstructor* constructor)
+    : name_(name), constructor_(constructor) {}
 
 AudioWorkletProcessorDefinition::~AudioWorkletProcessorDefinition() = default;
 
@@ -54,7 +54,6 @@ const AudioParamDescriptor*
 
 void AudioWorkletProcessorDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(constructor_);
-  visitor->Trace(process_);
   visitor->Trace(audio_param_descriptors_);
 }
 

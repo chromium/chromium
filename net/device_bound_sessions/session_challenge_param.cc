@@ -4,7 +4,8 @@
 
 #include "net/device_bound_sessions/session_challenge_param.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
@@ -49,7 +50,7 @@ std::optional<SessionChallengeParam> SessionChallengeParam::ParseItem(
   }
 
   std::optional<std::string> session_id;
-  if (auto it = base::ranges::find(
+  if (auto it = std::ranges::find(
           session_challenge.params, kSessionIdKey,
           &std::pair<std::string, structured_headers::Item>::first);
       it != session_challenge.params.end()) {
@@ -76,14 +77,17 @@ std::vector<SessionChallengeParam> SessionChallengeParam::CreateIfValid(
     return params;
   }
 
-  std::string header_value;
-  if (!headers || !headers->GetNormalizedHeader(kSessionChallengeHeaderName,
-                                                &header_value)) {
+  if (!headers) {
+    return params;
+  }
+  std::optional<std::string> header_value =
+      headers->GetNormalizedHeader(kSessionChallengeHeaderName);
+  if (!header_value) {
     return params;
   }
 
   std::optional<structured_headers::List> list =
-      structured_headers::ParseList(header_value);
+      structured_headers::ParseList(*header_value);
 
   if (!list) {
     return params;

@@ -19,7 +19,7 @@ namespace blink {
 
 class Frame;
 class ComputeIntersectionsContext;
-struct IntrinsicSizingInfo;
+struct NaturalSizingInfo;
 
 class CORE_EXPORT FrameView : public EmbeddedContentView {
  public:
@@ -35,8 +35,7 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
       unsigned parent_flags,
       ComputeIntersectionsContext&) = 0;
 
-  virtual bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const = 0;
-  virtual bool HasIntrinsicSizingInfo() const = 0;
+  virtual std::optional<NaturalSizingInfo> GetNaturalDimensions() const = 0;
 
   // Returns true if this frame could potentially skip rendering and avoid
   // scheduling visual updates.
@@ -91,6 +90,9 @@ class CORE_EXPORT FrameView : public EmbeddedContentView {
   bool DisplayLockedInParentFrame();
 
   virtual void VisibilityChanged(mojom::blink::FrameVisibility visibilty) = 0;
+  std::optional<mojom::blink::FrameVisibility> frame_visibility() const {
+    return frame_visibility_;
+  }
 
  private:
   PhysicalRect rect_in_parent_;

@@ -1,4 +1,0 @@
-# Ignore because eslint doesn't understand // <if expr>
-gaia_auth_host/authenticator.js
-gaia_auth_host/password_change_authenticator.js
-gaia_auth_host/saml_username_autofill.js

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_DIALOG_UI_FOR_TEST_H_
 
 #include <string>
+
 #include "base/functional/callback.h"
 
 namespace global_media_controls {

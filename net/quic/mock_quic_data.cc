@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "net/quic/mock_quic_data.h"
+
 #include "net/base/hex_utils.h"
+#include "net/socket/socket_test_util.h"
 
 namespace net::test {
 
@@ -14,6 +16,10 @@ MockQuicData::~MockQuicData() = default;
 
 void MockQuicData::AddConnect(IoMode mode, int rv) {
   connect_ = std::make_unique<MockConnect>(mode, rv);
+}
+
+void MockQuicData::AddConnect(MockConnectCompleter* completer) {
+  connect_ = std::make_unique<MockConnect>(completer);
 }
 
 void MockQuicData::AddRead(IoMode mode,

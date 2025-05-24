@@ -54,22 +54,25 @@ PendingTask::~PendingTask() = default;
 PendingTask& PendingTask::operator=(PendingTask&& other) = default;
 
 TimeTicks TaskMetadata::GetDesiredExecutionTime() const {
-  if (!delayed_run_time.is_null())
+  if (!delayed_run_time.is_null()) {
     return delayed_run_time;
+  }
   return queue_time;
 }
 
 TimeTicks TaskMetadata::earliest_delayed_run_time() const {
   DCHECK(!delayed_run_time.is_null());
-  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly)
+  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly) {
     return delayed_run_time - leeway;
+  }
   return delayed_run_time;
 }
 
 TimeTicks TaskMetadata::latest_delayed_run_time() const {
   DCHECK(!delayed_run_time.is_null());
-  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner)
+  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner) {
     return delayed_run_time + leeway;
+  }
   return delayed_run_time;
 }
 

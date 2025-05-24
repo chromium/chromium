@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/ukm/ukm_recorder_impl.h"
 
 #include <memory>
@@ -57,6 +52,8 @@ BASE_FEATURE(kUkmSamplingRateFeature,
 
 namespace {
 
+// Allowlisted source ids are sent. Non-allowlisted source ids are sent if the
+// url matches that of an allow-listed source.
 bool IsAllowlistedSourceId(SourceId source_id) {
   SourceIdType type = GetSourceIdType(source_id);
   switch (type) {
@@ -70,7 +67,8 @@ bool IsAllowlistedSourceId(SourceId source_id) {
     case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
     case ukm::SourceIdObj::Type::NOTIFICATION_ID:
-    case ukm::SourceIdObj::Type::EXTENSION_ID: {
+    case ukm::SourceIdObj::Type::EXTENSION_ID:
+    case ukm::SourceIdObj::Type::CDM_ID: {
       return true;
     }
     case ukm::SourceIdObj::Type::DEFAULT:
@@ -390,6 +388,14 @@ void UkmRecorderImpl::OnUkmAllowedStateChanged(UkmConsentState state) {
   NotifyAllObservers(&UkmRecorderObserver::OnUkmAllowedStateChanged, state);
 }
 
+void UkmRecorderImpl::StoreWebDXFeaturesDownsamplingParameter(Report* report) {
+  Report::DownsamplingRate* rate = report->add_downsampling_rates();
+  // TODO(crbug.com/381251064): Consider populating all the other applied
+  // downsampling rates too.
+  rate->set_event_hash(base::HashMetricName(kWebFeatureSamplingKeyword));
+  rate->set_standard_rate(webdx_features_sampling_);
+}
+
 void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   DVLOG(DebuggingLogLevel::Rare) << "StoreRecordingsInReport starts";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -573,6 +579,10 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   DVLOG(DebuggingLogLevel::Rare)
       << "StoreRecordingsInReport done [num_serialized_entries="
       << num_serialized_entries << "]";
+
+  StoreWebDXFeaturesDownsamplingParameter(report);
+  DVLOG(DebuggingLogLevel::Rare) << "# of downsampling parameters stored: "
+                                 << report->downsampling_rates().size();
 }
 
 int UkmRecorderImpl::PruneData(std::set<SourceId>& source_ids_seen) {
@@ -803,6 +813,7 @@ UkmConsentType UkmRecorderImpl::GetConsentType(SourceIdType type) {
     case SourceIdType::CHROMEOS_WEBSITE_ID:
     case SourceIdType::EXTENSION_ID:
     case SourceIdType::NOTIFICATION_ID:
+    case SourceIdType::CDM_ID:
       return UkmConsentType::MSBB;
   }
   return UkmConsentType::MSBB;
@@ -855,7 +866,8 @@ void UkmRecorderImpl::MaybeMarkForDeletion(SourceId source_id) {
     case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
     case ukm::SourceIdObj::Type::EXTENSION_ID:
-    case ukm::SourceIdObj::Type::NOTIFICATION_ID: {
+    case ukm::SourceIdObj::Type::NOTIFICATION_ID:
+    case ukm::SourceIdObj::Type::CDM_ID: {
       // Don't keep sources of these types after current report because their
       // entries are logged only at source creation time.
       MarkSourceForDeletion(source_id);
@@ -1163,7 +1175,7 @@ void UkmRecorderImpl::LoadExperimentSamplingParams(
 
     // Special string value used in the experiment configs for webdx features
     // sampling.
-    if (event_name == "_webdx_features_sampling") {
+    if (event_name == kWebFeatureSamplingKeyword) {
       // Sampling rates must be non-negative integers.
       if (base::StringToInt(event_param, &sampling_rate) &&
           sampling_rate >= 0) {

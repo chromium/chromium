@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+
+const kDataUrlDedicatedWorker = 5568;
+const kDataUrlSharedWorker = 5569;
+
+test(() => {
+  internals.clearUseCounter(document, kDataUrlDedicatedWorker);
+  new Worker('data:application/javascript,close();');
+  assert_true(internals.isUseCounted(document, kDataUrlDedicatedWorker));
+}, "kDataUrlDedicatedWorker UseCounter should be triggered when a classic dedicated worker is created from a data: URL.");
+
+test(() => {
+  internals.clearUseCounter(document, kDataUrlDedicatedWorker);
+  new Worker('data:application/javascript,close();', {type: 'module'});
+  assert_true(internals.isUseCounted(document, kDataUrlDedicatedWorker));
+}, "kDataUrlDedicatedWorker UseCounter should be triggered when a module dedicated worker is created from a data: URL.");
+
+test(() => {
+  internals.clearUseCounter(document, kDataUrlSharedWorker);
+  new SharedWorker('data:application/javascript,close();');
+  assert_true(internals.isUseCounted(document, kDataUrlSharedWorker));
+}, "kDataUrlSharedWorker UseCounter should be triggered when a classic shared worker is created from a data: URL.");
+
+test(() => {
+  internals.clearUseCounter(document, kDataUrlSharedWorker);
+  new SharedWorker('data:application/javascript,close();', {type: 'module'});
+  assert_true(internals.isUseCounted(document, kDataUrlSharedWorker));
+}, "kDataUrlSharedWorker UseCounter should be triggered when a module shared worker is created from a data: URL.");
+
+</script>
+</body>

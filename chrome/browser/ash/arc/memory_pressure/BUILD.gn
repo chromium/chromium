@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("memory_pressure") {
   sources = [
@@ -17,12 +17,12 @@ static_library("memory_pressure") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//base",
-    "//chrome/browser/ash/arc/process",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/dbus/resourced",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/arc/process",
     "//content/public/browser",
     "//content/public/common",
   ]
@@ -38,8 +38,8 @@ source_set("unit_tests") {
 
   deps = [
     ":memory_pressure",
-    "//ash/components/arc/mojom",
     "//base",
+    "//chromeos/ash/experiences/arc/mojom",
     "//content/public/common",
     "//content/test:test_support",
     "//testing/gtest",

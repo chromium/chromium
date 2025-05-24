@@ -16,7 +16,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_menu_icon_loader.h"
-#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/menu_manager_test_observer.h"
 #include "chrome/browser/extensions/test_extension_menu_icon_loader.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
@@ -34,6 +33,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/state_store_test_observer.h"
+#include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -689,6 +689,7 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
   params.is_editable = false;
 
   const Extension* extension = AddExtension("test");
+  ExtensionRegistry::Get(profile_.get())->AddEnabled(extension);
   std::unique_ptr<MenuItem> parent = CreateTestItem(extension);
   std::unique_ptr<MenuItem> item = CreateTestItem(extension);
   MenuItem* item_ptr = item.get();
@@ -705,14 +706,14 @@ TEST_F(MenuManagerTest, ExecuteCommand) {
     EXPECT_CALL(*mock_event_router,
                 DispatchEventToExtensionMock(
                     item_ptr->extension_id(), MenuManager::kOnContextMenus, _,
-                    &profile, GURL(), EventRouter::USER_GESTURE_ENABLED))
+                    &profile, GURL(), EventRouter::UserGestureState::kEnabled))
         .Times(1)
         .WillOnce(SaveArg<2>(&list));
     EXPECT_CALL(
         *mock_event_router,
         DispatchEventToExtensionMock(
             item_ptr->extension_id(), context_menus::OnClicked::kEventName, _,
-            &profile, GURL(), EventRouter::USER_GESTURE_ENABLED))
+            &profile, GURL(), EventRouter::UserGestureState::kEnabled))
         .Times(1)
         .WillOnce(DeleteArg<2>());
   }

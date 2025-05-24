@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "third_party/webrtc/rtc_base/ip_address.h"
@@ -33,11 +34,11 @@ class FakeNetworkDispatcher
     // Return thread on which ReceivePacket() should be called.
     virtual const scoped_refptr<base::SingleThreadTaskRunner>& GetThread()
         const = 0;
-    virtual const rtc::IPAddress& GetAddress() const = 0;
+    virtual const webrtc::IPAddress& GetAddress() const = 0;
 
     // Deliver a packet sent by a different node.
-    virtual void ReceivePacket(const rtc::SocketAddress& from,
-                               const rtc::SocketAddress& to,
+    virtual void ReceivePacket(const webrtc::SocketAddress& from,
+                               const webrtc::SocketAddress& to,
                                const scoped_refptr<net::IOBuffer>& data,
                                int data_size) = 0;
   };
@@ -47,19 +48,19 @@ class FakeNetworkDispatcher
   FakeNetworkDispatcher(const FakeNetworkDispatcher&) = delete;
   FakeNetworkDispatcher& operator=(const FakeNetworkDispatcher&) = delete;
 
-  rtc::IPAddress AllocateAddress();
+  webrtc::IPAddress AllocateAddress();
 
   // Must be called on the thread that the |node| works on.
   void AddNode(Node* node);
   void RemoveNode(Node* node);
 
-  void DeliverPacket(const rtc::SocketAddress& from,
-                     const rtc::SocketAddress& to,
+  void DeliverPacket(const webrtc::SocketAddress& from,
+                     const webrtc::SocketAddress& to,
                      const scoped_refptr<net::IOBuffer>& data,
                      int data_size);
 
  private:
-  typedef std::map<rtc::IPAddress, Node*> NodesMap;
+  typedef std::map<webrtc::IPAddress, raw_ptr<Node, CtnExperimental>> NodesMap;
 
   friend class base::RefCountedThreadSafe<FakeNetworkDispatcher>;
   virtual ~FakeNetworkDispatcher();

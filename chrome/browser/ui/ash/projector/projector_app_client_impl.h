@@ -6,11 +6,16 @@
 #define CHROME_BROWSER_UI_ASH_PROJECTOR_PROJECTOR_APP_CLIENT_IMPL_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/webui/projector_app/projector_app_client.h"
+#include "base/memory/raw_ref.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/ash/projector/pending_screencast_manager.h"
 #include "chrome/browser/ui/ash/projector/screencast_manager.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
 
 namespace network {
 namespace mojom {
@@ -27,7 +32,10 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  ProjectorAppClientImpl();
+  // `local_state` and `application_locale_storage` must not be null, and must
+  // outlive `this`.
+  ProjectorAppClientImpl(PrefService* local_state,
+                         ApplicationLocaleStorage* application_locale_storage);
   ProjectorAppClientImpl(const ProjectorAppClientImpl&) = delete;
   ProjectorAppClientImpl& operator=(const ProjectorAppClientImpl&) = delete;
   ~ProjectorAppClientImpl() override;
@@ -64,6 +72,9 @@ class ProjectorAppClientImpl : public ash::ProjectorAppClient {
  private:
   void NotifyScreencastsPendingStatusChanged(
       const ash::PendingScreencastContainerSet& pending_screencast_containers);
+
+  raw_ref<PrefService> local_state_;
+  raw_ref<ApplicationLocaleStorage> application_locale_storage_;
 
   base::ObserverList<Observer> observers_;
 

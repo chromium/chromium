@@ -24,6 +24,7 @@ class PlusAddressCreationController {
   // In creation UI scenarios, `callback` may not be run due to user
   // cancellation.
   virtual void OfferCreation(const url::Origin& main_frame_origin,
+                             bool is_manual_fallback,
                              PlusAddressCallback callback) = 0;
 
   // Sends a request to the server to obtain a plus address after the previous

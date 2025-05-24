@@ -5,6 +5,7 @@
 #import "ios/chrome/app/spotlight/open_tabs_spotlight_manager.h"
 
 #import <CoreSpotlight/CoreSpotlight.h>
+
 #import <memory>
 #import <queue>
 
@@ -84,10 +85,10 @@ const int kBatchSize = 100;
 
 #pragma mark - public
 
-+ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithProfile:
+    (ProfileIOS*)profile {
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
   SearchableItemFactory* searchableItemFactory = [[SearchableItemFactory alloc]
       initWithLargeIconService:largeIconService
                         domain:spotlight::DOMAIN_OPEN_TABS
@@ -95,8 +96,7 @@ const int kBatchSize = 100;
 
   return [[OpenTabsSpotlightManager alloc]
       initWithLargeIconService:largeIconService
-                   browserList:BrowserListFactory::GetForBrowserState(
-                                   browserState)
+                   browserList:BrowserListFactory::GetForProfile(profile)
             spotlightInterface:[SpotlightInterface defaultInterface]
          searchableItemFactory:searchableItemFactory];
 }
@@ -213,7 +213,6 @@ const int kBatchSize = 100;
   }
 
   [self addAllURLsFromWebStateList:webStateList];
-
 }
 
 - (void)browserList:(const BrowserList*)browserList
@@ -234,7 +233,7 @@ const int kBatchSize = 100;
   [self removeAllURLsFromWebStateList:webStateList];
 }
 
-- (void)browserListWillShutdown:(const BrowserList*)browserList {
+- (void)browserListWillShutdown:(BrowserList*)browserList {
   [self shutdownAllObservation];
 }
 

@@ -61,7 +61,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//ios/third_party/webkit",
     "//testing/gtest",

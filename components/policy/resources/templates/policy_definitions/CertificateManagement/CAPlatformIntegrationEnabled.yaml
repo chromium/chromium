@@ -23,10 +23,8 @@ schema:
   type: boolean
 # Intentionally not supported on ChromeOS as there is no "platform" certificate
 # store to integrate with.
-future_on:
-- chrome.linux
-- chrome.mac
-- chrome.win
-- android
+supported_on:
+- chrome.*:131-
+- android:131-
 tags: []
 type: main

@@ -17,6 +17,7 @@
 #include "ash/style/typography.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -66,6 +67,8 @@ constexpr int kMarginBetweenTitleAndBody = 15;
 constexpr int kMarginBetweenBodyAndButtons = 20;
 constexpr int kMarginBetweenButtons = 8;
 
+}  // namespace
+
 // The real error dialog with content.
 class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
   METADATA_HEADER(ConnectionErrorDialogDelegateView, views::WidgetDelegateView)
@@ -78,12 +81,15 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     SetModalType(ui::mojom::ModalType::kWindow);
 
     SetPaintToLayer();
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
+
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kDialogRoundedCornerRadius));
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         static_cast<ui::ColorId>(cros_tokens::kCrosSysBaseElevated),
         kDialogRoundedCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -266,8 +272,6 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
 
 BEGIN_METADATA(ConnectionErrorDialogDelegateView)
 END_METADATA
-
-}  // namespace
 
 AppStreamConnectionErrorDialog::AppStreamConnectionErrorDialog(
     views::View* host_view,

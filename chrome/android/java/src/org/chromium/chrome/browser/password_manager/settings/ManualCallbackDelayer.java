@@ -12,7 +12,7 @@ import java.util.List;
  */
 public final class ManualCallbackDelayer implements CallbackDelayer {
     /** The callbacks to be run within {@link runCallbacksSynchronously}.*/
-    private List<Runnable> mCallbacks = new ArrayList<>();
+    private final List<Runnable> mCallbacks = new ArrayList<>();
 
     @Override
     public void delay(Runnable callback) {

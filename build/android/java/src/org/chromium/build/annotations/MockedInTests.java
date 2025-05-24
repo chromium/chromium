@@ -8,10 +8,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * See b/147584922. Proguard and Mockito don't play nicely together, and proguard rules make it
- * impossible to keep the base class/interface for a mocked class without providing additional
- * explicit information, like this annotation. This annotation should only need to be used on a
- * class/interface that is extended/implemented by another class/interface that is then mocked.
+ * Prevents optimization. R8 supports Mockito now, so this should be rarely be needed.
  */
 @Target(ElementType.TYPE)
 public @interface MockedInTests {}

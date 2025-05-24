@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/platform/platform_event_source.h"
 
 #include <stddef.h>
@@ -165,7 +160,7 @@ TEST_F(PlatformEventTest, DispatcherBasic) {
 // Tests that dispatchers receive events in the correct order.
 TEST_F(PlatformEventTest, DispatcherOrder) {
   std::vector<int> list_dispatcher;
-  int sequence[] = {21, 3, 6, 45};
+  const std::vector<int> sequence = {21, 3, 6, 45};
   std::vector<std::unique_ptr<TestPlatformEventDispatcher>> dispatchers;
   for (auto id : sequence) {
     dispatchers.push_back(
@@ -174,8 +169,7 @@ TEST_F(PlatformEventTest, DispatcherOrder) {
   std::optional<PlatformEvent> event(CreateInvalidPlatformEvent());
   source()->Dispatch(*event);
   ASSERT_EQ(std::size(sequence), list_dispatcher.size());
-  EXPECT_EQ(std::vector<int>(sequence, sequence + std::size(sequence)),
-            list_dispatcher);
+  EXPECT_EQ(sequence, list_dispatcher);
 }
 
 // Tests that if a dispatcher consumes the event, the subsequent dispatchers do
@@ -223,7 +217,7 @@ TEST_F(PlatformEventTest, ObserverBasic) {
 // Tests that observers receive events in the correct order.
 TEST_F(PlatformEventTest, ObserverOrder) {
   std::vector<int> list_observer;
-  const int sequence[] = {21, 3, 6, 45};
+  const std::vector<int> sequence = {21, 3, 6, 45};
   std::vector<std::unique_ptr<TestPlatformEventObserver>> observers;
   for (auto id : sequence) {
     observers.push_back(
@@ -232,8 +226,7 @@ TEST_F(PlatformEventTest, ObserverOrder) {
   std::optional<PlatformEvent> event(CreateInvalidPlatformEvent());
   source()->Dispatch(*event);
   ASSERT_EQ(std::size(sequence), list_observer.size());
-  EXPECT_EQ(std::vector<int>(sequence, sequence + std::size(sequence)),
-            list_observer);
+  EXPECT_EQ(sequence, list_observer);
 }
 
 // Tests that observers and dispatchers receive events in the correct order.
@@ -245,8 +238,8 @@ TEST_F(PlatformEventTest, DispatcherAndObserverOrder) {
   TestPlatformEventObserver second_o(20, &list);
   std::optional<PlatformEvent> event(CreateInvalidPlatformEvent());
   source()->Dispatch(*event);
-  const int expected[] = {10, 20, 12, 23};
-  EXPECT_EQ(std::vector<int>(expected, expected + std::size(expected)), list);
+  const std::vector<int> expected = {10, 20, 12, 23};
+  EXPECT_EQ(expected, list);
 }
 
 // Tests that an overridden dispatcher receives events before the default

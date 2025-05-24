@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
+#include "components/pdf/common/pdf_util.h"
 #include "components/pdf/renderer/pdf_view_web_plugin_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -36,7 +36,7 @@ bool IsPdfRenderer() {
 blink::WebPlugin* CreateInternalPlugin(
     blink::WebPluginParams params,
     content::RenderFrame* render_frame,
-    std::unique_ptr<PdfInternalPluginDelegate> delegate) {
+    base::span<const url::Origin> additional_allowed_origins) {
   // For a PDF plugin, `params.url` holds the plugin's stream URL. If `params`
   // contains an 'original-url' attribute, reset `params.url` with its original
   // URL value so that it can be used to determine the plugin's origin.
@@ -52,7 +52,8 @@ blink::WebPlugin* CreateInternalPlugin(
   blink::WebFrame* frame = render_frame->GetWebFrame();
   blink::WebFrame* parent_frame = frame->Parent();
   if (!parent_frame ||
-      !delegate->IsAllowedOrigin(parent_frame->GetSecurityOrigin())) {
+      !IsPdfInternalPluginAllowedOrigin(parent_frame->GetSecurityOrigin(),
+                                        additional_allowed_origins)) {
     return nullptr;
   }
 
@@ -64,7 +65,8 @@ blink::WebPlugin* CreateInternalPlugin(
   // Likewise, they should not share a process with this frame.
   //
   // See crbug.com/1259635 and crbug.com/1261758 for examples of previous bugs.
-  CHECK(!delegate->IsAllowedOrigin(frame->GetSecurityOrigin()));
+  CHECK(!IsPdfInternalPluginAllowedOrigin(frame->GetSecurityOrigin(),
+                                          additional_allowed_origins));
   CHECK(parent_frame->IsWebRemoteFrame());
 
   mojo::AssociatedRemote<pdf::mojom::PdfHost> pdf_host;

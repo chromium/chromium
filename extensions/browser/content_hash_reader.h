@@ -45,7 +45,7 @@ class ContentHashReader {
   ~ContentHashReader();
 
   // Factory to create ContentHashReader to get expected hashes for the file at
-  // |relative_path| within an extension.
+  // `relative_path` within an extension.
   // Must be called on a thread that is allowed to do file I/O. Returns an
   // instance whose success or failure type can be determined by calling
   // status() method. On failure, this object should likely be discarded.

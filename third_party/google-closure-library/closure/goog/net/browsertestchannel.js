@@ -541,6 +541,7 @@ goog.net.BrowserTestChannel.prototype.onRequestComplete = function(req) {
     if (!goog.net.ChannelRequest.supportsXhrStreaming()) {
       // we always get Trident responses in separate calls to
       // onRequestData, so we have to check the time they came
+      /** @suppress {strictPrimitiveOperators} */
       const ms = this.lastTime_ - this.firstTime_;
       if (ms < 200) {
         // TODO: need to empirically verify that this number is OK
@@ -609,6 +610,7 @@ goog.net.BrowserTestChannel.prototype.isActive = function(browserChannel) {
  */
 goog.net.BrowserTestChannel.prototype.checkForEarlyNonBuffered_ = function() {
   'use strict';
+  /** @suppress {strictPrimitiveOperators} */
   const ms = this.firstTime_ - this.startTime_;
 
   // we always get Trident responses in separate calls to

@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.feed.webfeed;
 import android.graphics.Bitmap;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
@@ -28,9 +29,10 @@ import org.chromium.url.GURL;
  * If that fails, we use LargeIconBridge to fetch the favicon for the page.
  * If that fails, we generate a monogram.
  */
+@NullMarked
 public class WebFeedFaviconFetcher {
-    private LargeIconBridge mLargeIconBridge;
-    private ImageFetcher mImageFetcher;
+    private final LargeIconBridge mLargeIconBridge;
+    private final ImageFetcher mImageFetcher;
 
     public static WebFeedFaviconFetcher createDefault() {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
@@ -56,14 +58,9 @@ public class WebFeedFaviconFetcher {
             int iconSizePx,
             int textSizePx,
             GURL siteUrl,
-            GURL faviconUrl,
-            Callback<Bitmap> callback) {
-        Request request = new Request();
-        request.iconSizePx = iconSizePx;
-        request.textSizePx = textSizePx;
-        request.siteUrl = siteUrl;
-        request.faviconUrl = faviconUrl;
-        request.callback = callback;
+            @Nullable GURL faviconUrl,
+            Callback<@Nullable Bitmap> callback) {
+        Request request = new Request(siteUrl, faviconUrl, iconSizePx, textSizePx, callback);
         request.begin();
     }
 
@@ -75,11 +72,24 @@ public class WebFeedFaviconFetcher {
     }
 
     private class Request {
-        public GURL siteUrl;
-        @Nullable public GURL faviconUrl;
-        public int iconSizePx;
-        public int textSizePx;
-        public Callback<Bitmap> callback;
+        public final GURL siteUrl;
+        public final @Nullable GURL faviconUrl;
+        public final int iconSizePx;
+        public final int textSizePx;
+        public final Callback<@Nullable Bitmap> callback;
+
+        public Request(
+                GURL siteUrl,
+                @Nullable GURL faviconUrl,
+                int iconSizePx,
+                int textSizePx,
+                Callback<@Nullable Bitmap> callback) {
+            this.siteUrl = siteUrl;
+            this.faviconUrl = faviconUrl;
+            this.iconSizePx = iconSizePx;
+            this.textSizePx = textSizePx;
+            this.callback = callback;
+        }
 
         void begin() {
             if (faviconUrl == null || !faviconUrl.isValid()) {
@@ -90,7 +100,7 @@ public class WebFeedFaviconFetcher {
         }
 
         private void fetchImageWithFaviconUrl() {
-            assert faviconUrl.isValid();
+            assert faviconUrl != null && faviconUrl.isValid();
             mImageFetcher.fetchImage(
                     ImageFetcher.Params.create(
                             faviconUrl.getSpec(),
@@ -105,7 +115,7 @@ public class WebFeedFaviconFetcher {
                     siteUrl, iconSizePx, this::onFaviconFetchedWithSiteUrl);
         }
 
-        private void onFaviconFetchedWithFaviconUrl(Bitmap bitmap) {
+        private void onFaviconFetchedWithFaviconUrl(@Nullable Bitmap bitmap) {
             if (bitmap == null) {
                 fetchImageWithSiteUrl();
             } else {

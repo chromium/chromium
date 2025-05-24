@@ -23,7 +23,7 @@ using base::android::JavaRef;
 JourneyLoggerAndroid::JourneyLoggerAndroid(ukm::SourceId source_id)
     : journey_logger_(source_id) {}
 
-JourneyLoggerAndroid::~JourneyLoggerAndroid() {}
+JourneyLoggerAndroid::~JourneyLoggerAndroid() = default;
 
 void JourneyLoggerAndroid::Destroy(JNIEnv* env,
                                    const JavaParamRef<jobject>& jcaller) {

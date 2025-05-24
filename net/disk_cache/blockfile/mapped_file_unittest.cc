@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/disk_cache/blockfile/mapped_file.h"
 
 #include "base/files/file_path.h"
@@ -33,8 +38,7 @@ class FileCallbackTest: public disk_cache::FileIOCallback {
 
 void FileCallbackTest::OnFileIOComplete(int bytes_copied) {
   if (id_ > *max_id_) {
-    NOTREACHED_IN_MIGRATION();
-    helper_->set_callback_reused_error(true);
+    NOTREACHED();
   }
 
   helper_->CallbackWasCalled();
@@ -50,7 +54,7 @@ TEST_F(DiskCacheTest, MappedFile_SyncIO) {
 
   char buffer1[20];
   char buffer2[20];
-  CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
+  CacheTestFillBuffer(base::as_writable_byte_span(buffer1), false);
   base::strlcpy(buffer1, "the data", std::size(buffer1));
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 8192));
   EXPECT_TRUE(file->Read(buffer2, sizeof(buffer2), 8192));
@@ -69,7 +73,7 @@ TEST_F(DiskCacheTest, MappedFile_AsyncIO) {
 
   char buffer1[20];
   char buffer2[20];
-  CacheTestFillBuffer(buffer1, sizeof(buffer1), false);
+  CacheTestFillBuffer(base::as_writable_byte_span(buffer1), false);
   base::strlcpy(buffer1, "the data", std::size(buffer1));
   bool completed;
   EXPECT_TRUE(file->Write(buffer1, sizeof(buffer1), 1024 * 1024, &callback,

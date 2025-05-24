@@ -159,13 +159,13 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
 }
 
 WASAPIAudioOutputStream::~WASAPIAudioOutputStream() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   StopAudioSessionEventListener();
 }
 
 bool WASAPIAudioOutputStream::Open() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage("%s([opened=%s])", __func__, opened_ ? "true" : "false");
   if (opened_)
     return true;
@@ -351,7 +351,7 @@ bool WASAPIAudioOutputStream::Open() {
 
 void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   DVLOG(1) << "WASAPIAudioOutputStream::Start()";
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   CHECK(callback);
   CHECK(opened_);
   SendLogMessage("%s([opened=%s, started=%s])", __func__,
@@ -438,7 +438,7 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
 
 void WASAPIAudioOutputStream::Stop() {
   DVLOG(1) << "WASAPIAudioOutputStream::Stop()";
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage("%s([started=%s])", __func__,
                  render_thread_ ? "true" : "false");
 
@@ -486,7 +486,7 @@ void WASAPIAudioOutputStream::Stop() {
 
 void WASAPIAudioOutputStream::Close() {
   DVLOG(1) << "WASAPIAudioOutputStream::Close()";
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
   SendLogMessage("%s()", __func__);
 
   StopAudioSessionEventListener();
@@ -1029,7 +1029,7 @@ void WASAPIAudioOutputStream::ReportAndResetStats() {
 }
 
 void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   if (session_listener_) {
     // Already started listening!
@@ -1057,7 +1057,7 @@ void WASAPIAudioOutputStream::StartAudioSessionEventListener() {
 }
 
 void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   if (!session_listener_) {
     // Already stopped listening!
@@ -1076,7 +1076,7 @@ void WASAPIAudioOutputStream::StopAudioSessionEventListener() {
 }
 
 void WASAPIAudioOutputStream::OnDeviceChanged() {
-  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_);
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
 
   device_changed_ = true;
   if (source_)

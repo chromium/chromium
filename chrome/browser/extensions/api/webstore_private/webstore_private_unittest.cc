@@ -15,19 +15,20 @@
 #include "base/values.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/extensions/api/webstore_private/webstore_private_api.h"
-#include "chrome/browser/extensions/extension_api_unittest.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/mv2_experiment_stage.h"
-#include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/extensions/install_approval.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_test_util.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/browser/api/management/management_api.h"
 #include "extensions/browser/api_test_utils.h"
@@ -41,6 +42,10 @@
 #include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/mv2_experiment_stage.h"
+#endif
 
 namespace extensions {
 namespace {
@@ -153,32 +158,34 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 
 }  // namespace
 
-using WebstorePrivateApiUnittest = ExtensionApiUnittest;
-
-TEST_F(WebstorePrivateApiUnittest, GetFullChromeVersion) {
-  auto function =
-      base::MakeRefCounted<WebstorePrivateGetFullChromeVersionFunction>();
-  std::optional<base::Value> response =
-      api_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), /*args*/ "[]", browser()->profile());
-  ASSERT_TRUE(response);
-  ASSERT_TRUE(response->is_dict());
-
-  std::string version = std::string(version_info::GetVersionNumber());
-  EXPECT_EQ(version, *response->GetDict().FindString("version_number"));
-}
-
-class WebstorePrivateExtensionInstallRequestBase : public ExtensionApiUnittest {
+// TODO(crbug.com/408458901): Create a base test class for extensions tests that
+// doesn't depend on ExtensionService and use it here.
+class WebstorePrivateApiTestBase : public testing::Test {
  public:
   using ExtensionInstallStatus = api::webstore_private::ExtensionInstallStatus;
-  WebstorePrivateExtensionInstallRequestBase()
-      : ExtensionApiUnittest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  WebstorePrivateApiTestBase() = default;
+  WebstorePrivateApiTestBase(const WebstorePrivateApiTestBase&) = delete;
+  WebstorePrivateApiTestBase& operator=(const WebstorePrivateApiTestBase&) =
+      delete;
 
-  WebstorePrivateExtensionInstallRequestBase(
-      const WebstorePrivateExtensionInstallRequestBase&) = delete;
-  WebstorePrivateExtensionInstallRequestBase& operator=(
-      const WebstorePrivateExtensionInstallRequestBase&) = delete;
+  // testing::Test:
+  void SetUp() override {
+    rvh_test_enabler_ = std::make_unique<content::RenderViewHostTestEnabler>();
+    profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(profile_manager_->SetUp());
+    profile_ = profile_manager_->CreateTestingProfile(
+        TestingProfile::kDefaultProfileUserName, /*prefs=*/nullptr,
+        /*user_name=*/std::u16string(),
+        /*avatar_id=*/0, /*testing_factories=*/{});
+    extension_ = ExtensionBuilder("Test").Build();
+  }
+
+  void TearDown() override {
+    extension_ = nullptr;
+    profile_ = nullptr;
+    rvh_test_enabler_.reset();
+  }
 
   std::string GenerateArgs(const char* id) {
     return base::StringPrintf(R"(["%s"])", id);
@@ -192,18 +199,59 @@ class WebstorePrivateExtensionInstallRequestBase : public ExtensionApiUnittest {
     return ExtensionBuilder("extension").SetID(id).Build();
   }
 
+  std::optional<base::Value> RunFunctionAndReturnValue(
+      scoped_refptr<ExtensionFunction> function,
+      const std::string& args) {
+    function->set_extension(extension_);
+    return api_test_utils::RunFunctionAndReturnSingleResult(std::move(function),
+                                                            args, profile());
+  }
+
+  std::string RunFunctionAndReturnError(
+      scoped_refptr<ExtensionFunction> function,
+      const std::string& args) {
+    function->set_extension(extension_);
+    return api_test_utils::RunFunctionAndReturnError(std::move(function), args,
+                                                     profile());
+  }
+
   void VerifyResponse(const ExtensionInstallStatus& expected_response,
                       const base::Value& actual_response) {
     ASSERT_TRUE(actual_response.is_string());
     EXPECT_EQ(ToString(expected_response), actual_response.GetString());
   }
+
+  TestingProfileManager* profile_manager() { return profile_manager_.get(); }
+  TestingProfile* profile() { return profile_.get(); }
+  const Extension* extension() { return extension_.get(); }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
+  std::unique_ptr<TestingProfileManager> profile_manager_;
+  raw_ptr<TestingProfile> profile_ = nullptr;  // Owned by `profile_manager_`.
+  scoped_refptr<const Extension> extension_;
 };
 
+TEST_F(WebstorePrivateApiTestBase, GetFullChromeVersion) {
+  auto function =
+      base::MakeRefCounted<WebstorePrivateGetFullChromeVersionFunction>();
+  std::optional<base::Value> response =
+      api_test_utils::RunFunctionAndReturnSingleResult(
+          function.get(), /*args*/ "[]", profile());
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->is_dict());
+
+  std::string version = std::string(version_info::GetVersionNumber());
+  EXPECT_EQ(version, *response->GetDict().FindString("version_number"));
+}
+
 class WebstorePrivateGetExtensionStatusTest
-    : public WebstorePrivateExtensionInstallRequestBase {
+    : public WebstorePrivateApiTestBase {
  public:
   void SetUp() override {
-    WebstorePrivateExtensionInstallRequestBase::SetUp();
+    WebstorePrivateApiTestBase::SetUp();
     in_process_data_decoder_ =
         std::make_unique<data_decoder::test::InProcessDataDecoder>();
   }
@@ -270,7 +318,7 @@ TEST_F(WebstorePrivateGetExtensionStatusTest,
 
 TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionCorrupted) {
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
-  ExtensionPrefs::Get(profile())->SetExtensionDisabled(
+  ExtensionPrefs::Get(profile())->AddDisableReason(
       kExtensionId, disable_reason::DISABLE_CORRUPTED);
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
@@ -280,33 +328,14 @@ TEST_F(WebstorePrivateGetExtensionStatusTest, ExtensionCorrupted) {
 }
 
 class SupervisedUserWebstorePrivateGetExtensionStatusTest
-    : public WebstorePrivateGetExtensionStatusTest {
- public:
-  SupervisedUserWebstorePrivateGetExtensionStatusTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-    enabled_features.push_back(
-        supervised_user::
-            kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
-    enabled_features.push_back(
-        supervised_user::kExposedParentalControlNeededForExtensionInstallation);
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+    : public WebstorePrivateGetExtensionStatusTest {};
 
 TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
        ExtensionCustodianApprovalRequired) {
   profile()->SetIsSupervisedProfile(true);
 
   ExtensionRegistry::Get(profile())->AddDisabled(CreateExtension(kExtensionId));
-  ExtensionPrefs::Get(profile())->SetExtensionDisabled(
+  ExtensionPrefs::Get(profile())->AddDisableReason(
       kExtensionId, disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
   auto function =
       base::MakeRefCounted<WebstorePrivateGetExtensionStatusFunction>();
@@ -332,22 +361,16 @@ TEST_F(SupervisedUserWebstorePrivateGetExtensionStatusTest,
 }
 
 class WebstorePrivateBeginInstallWithManifest3Test
-    : public ExtensionApiUnittest {
+    : public WebstorePrivateApiTestBase {
  public:
-  WebstorePrivateBeginInstallWithManifest3Test()
-      : ExtensionApiUnittest(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  WebstorePrivateBeginInstallWithManifest3Test() = default;
 
   void SetUp() override {
-    ExtensionApiUnittest::SetUp();
+    WebstorePrivateApiTestBase::SetUp();
     ManagementAPI::GetFactoryInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildManagementApi));
     EventRouterFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating(&BuildEventRouter));
-    TestExtensionSystem* test_extension_system =
-        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
-    service_ = test_extension_system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
   }
 
   void EnableExtensionRequest(bool enable) {
@@ -392,14 +415,11 @@ class WebstorePrivateBeginInstallWithManifest3Test
     return ExtensionBuilder("extension").SetID(id).Build();
   }
 
-  ExtensionService* extension_service() { return service_; }
-
  private:
   // This test does not create a root window. Because of this,
   // ScopedDisableRootChecking needs to be used (which disables the root window
   // check).
   test::ScopedDisableRootChecking disable_root_checking_;
-  raw_ptr<ExtensionService, DanglingUntriaged> service_ = nullptr;
 };
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
@@ -749,7 +769,6 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
         profile()->GetPrefs(),
         safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
   }
-  extension_service()->Init();
 
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
@@ -783,7 +802,7 @@ TEST_P(WebstorePrivateBeginInstallWithManifest3FrictionDialogTest,
   EXPECT_EQ(test_case.expected_friction_shown,
             function->GetFrictionDialogShownForTesting());
 
-  std::unique_ptr<WebstoreInstaller::Approval> approval =
+  std::unique_ptr<InstallApproval> approval =
       WebstorePrivateApi::PopApprovalForTesting(profile(), kExtensionId);
   if (test_case.dialog_action == ScopedTestDialogAutoConfirm::ACCEPT) {
     ASSERT_TRUE(approval);
@@ -802,9 +821,11 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // A test suite to be used with the MV2 deprecation experiments.
+// NOTE: Android does not support MV2 deprecation experiments.
 class WebstorePrivateManifestV2DeprecationUnitTest
-    : public ExtensionApiUnittest,
+    : public WebstorePrivateApiTestBase,
       public testing::WithParamInterface<MV2ExperimentStage> {
  public:
   WebstorePrivateManifestV2DeprecationUnitTest();
@@ -883,7 +904,7 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
       base::MakeRefCounted<WebstorePrivateGetMV2DeprecationStatusFunction>();
   std::optional<base::Value> response =
       api_test_utils::RunFunctionAndReturnSingleResult(
-          function.get(), /*args*/ "[]", browser()->profile());
+          function.get(), /*args*/ "[]", profile());
   ASSERT_TRUE(response);
 
   std::string expected;
@@ -904,5 +925,6 @@ TEST_P(WebstorePrivateManifestV2DeprecationUnitTest,
 
   EXPECT_EQ(expected, *response);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

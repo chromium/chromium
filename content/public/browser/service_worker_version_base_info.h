@@ -18,6 +18,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionBaseInfo {
  public:
   ServiceWorkerVersionBaseInfo();
   ServiceWorkerVersionBaseInfo(
+      const GURL& script_url,
       const GURL& scope,
       const blink::StorageKey& storage_key,
       int64_t registration_id,
@@ -27,6 +28,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionBaseInfo {
   ServiceWorkerVersionBaseInfo(const ServiceWorkerVersionBaseInfo& other);
   virtual ~ServiceWorkerVersionBaseInfo() = default;
 
+  GURL script_url;
   GURL scope;
   blink::StorageKey storage_key;
   int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;

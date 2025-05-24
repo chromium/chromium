@@ -21,7 +21,6 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -101,7 +100,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     const std::u16string& local_profile_name,
     std::optional<size_t> icon_index,
     base::OnceCallback<void(Profile*)> callback)
-    : source_profile_(source_profile),
+    : source_profile_(source_profile->GetWeakPtr()),
       account_id_(account_id),
       callback_(std::move(callback)) {
   ProfileAttributesStorage& storage =
@@ -110,7 +109,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     icon_index = storage.ChooseAvatarIconIndexForNewProfile();
   }
   std::u16string name = local_profile_name.empty()
-                            ? storage.ChooseNameForNewProfile(*icon_index)
+                            ? storage.ChooseNameForNewProfile()
                             : local_profile_name;
   ProfileManager::CreateMultiProfileAsync(
       name, *icon_index,
@@ -124,7 +123,7 @@ DiceSignedInProfileCreator::DiceSignedInProfileCreator(
     CoreAccountId account_id,
     const base::FilePath& target_profile_path,
     base::OnceCallback<void(Profile*)> callback)
-    : source_profile_(source_profile),
+    : source_profile_(source_profile->GetWeakPtr()),
       account_id_(account_id),
       callback_(std::move(callback)) {
   // Make sure the callback is not called synchronously.
@@ -142,10 +141,7 @@ DiceSignedInProfileCreator::~DiceSignedInProfileCreator() = default;
 
 void DiceSignedInProfileCreator::OnNewProfileInitialized(Profile* new_profile) {
   if (!new_profile) {
-    NOTREACHED_IN_MIGRATION() << "Error creating new profile";
-    if (callback_)
-      std::move(callback_).Run(nullptr);
-    return;
+    NOTREACHED() << "Error creating new profile";
   }
 
   cookies_mover_ = std::make_unique<signin_util::CookiesMover>(
@@ -180,14 +176,14 @@ void DiceSignedInProfileCreator::LoadNewProfileTokens(
 void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
     Profile* new_profile) {
   tokens_loaded_callback_runner_.reset();
-  if (!new_profile) {
+  if (!new_profile || !source_profile_) {
     if (callback_)
       std::move(callback_).Run(nullptr);
     return;
   }
 
   auto* accounts_mutator =
-      IdentityManagerFactory::GetForProfile(source_profile_)
+      IdentityManagerFactory::GetForProfile(source_profile_.get())
           ->GetAccountsMutator();
   auto* new_profile_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
@@ -195,17 +191,13 @@ void DiceSignedInProfileCreator::OnNewProfileTokensLoaded(
       new_profile_identity_manager->GetAccountsMutator();
   accounts_mutator->MoveAccount(new_profile_accounts_mutator, account_id_);
 
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    // Sign in for new profiles, profile switches are expected to be already
-    // signed in.
-    if (!new_profile_identity_manager->HasPrimaryAccount(
-            signin::ConsentLevel::kSignin)) {
-      new_profile_identity_manager->GetPrimaryAccountMutator()
-          ->SetPrimaryAccount(
-              account_id_, signin::ConsentLevel::kSignin,
-              signin_metrics::AccessPoint::
-                  ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE);
-    }
+  // Sign in for new profiles, profile switches are expected to be already
+  // signed in.
+  if (!new_profile_identity_manager->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin)) {
+    new_profile_identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+        account_id_, signin::ConsentLevel::kSignin,
+        signin_metrics::AccessPoint::kSigninInterceptFirstRunExperience);
   }
 
   if (callback_) {

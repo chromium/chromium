@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/media_router/common/providers/cast/certificate/net_parsed_certificate.h"
 
 #include "base/containers/contains.h"
@@ -13,17 +18,18 @@
 #include "third_party/boringssl/src/pki/input.h"
 #include "third_party/boringssl/src/pki/parse_name.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
+#include "third_party/openscreen/src/platform/base/span.h"
 
 namespace openscreen::cast {
 
 // static
 ErrorOr<std::unique_ptr<ParsedCertificate>> ParsedCertificate::ParseFromDER(
-    const std::vector<uint8_t>& der_cert) {
+    openscreen::ByteView der_cert) {
   std::shared_ptr<const bssl::ParsedCertificate> cert =
-      bssl::ParsedCertificate::Create(net::x509_util::CreateCryptoBuffer(
-                                          base::span<const uint8_t>(der_cert)),
-                                      cast_certificate::GetCertParsingOptions(),
-                                      nullptr);
+      bssl::ParsedCertificate::Create(
+          net::x509_util::CreateCryptoBuffer(
+              base::span<const uint8_t>(der_cert.cbegin(), der_cert.cend())),
+          cast_certificate::GetCertParsingOptions(), nullptr);
   if (!cert) {
     return Error::Code::kErrCertsParse;
   }

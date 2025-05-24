@@ -36,6 +36,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/unique_cookie_key.h"
 #include "net/extras/sqlite/cookie_crypto_delegate.h"
 #include "net/extras/sqlite/sqlite_persistent_store_backend_base.h"
 #include "net/log/net_log.h"
@@ -488,8 +489,7 @@ class SQLitePersistentCookieStore::Backend
   }
 
   typedef std::list<std::unique_ptr<PendingOperation>> PendingOperationsForKey;
-  typedef std::map<CanonicalCookie::StrictlyUniqueCookieKey,
-                   PendingOperationsForKey>
+  typedef std::map<UniqueCookieKey, PendingOperationsForKey>
       PendingOperationsMap;
   PendingOperationsMap pending_ GUARDED_BY(lock_);
   PendingOperationsMap::size_type num_pending_ GUARDED_BY(lock_) = 0;
@@ -530,8 +530,7 @@ DBCookiePriority CookiePriorityToDBCookiePriority(CookiePriority value) {
       return kCookiePriorityHigh;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kCookiePriorityMedium;
+  NOTREACHED();
 }
 
 CookiePriority DBCookiePriorityToCookiePriority(DBCookiePriority value) {
@@ -544,8 +543,7 @@ CookiePriority DBCookiePriorityToCookiePriority(DBCookiePriority value) {
       return COOKIE_PRIORITY_HIGH;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return COOKIE_PRIORITY_DEFAULT;
+  NOTREACHED();
 }
 
 // Possible values for the 'samesite' column
@@ -1536,7 +1534,7 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
             kCommitInterval)) {
-      NOTREACHED_IN_MIGRATION() << "background_task_runner() is not running.";
+      DUMP_WILL_BE_NOTREACHED() << "background_task_runner() is not running.";
     }
   } else if (num_pending == kCommitAfterBatchSize) {
     // We've reached a big enough batch, fire off a commit now.
@@ -1690,8 +1688,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }

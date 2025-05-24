@@ -257,14 +257,13 @@ class MessageNode(base.ContentNode):
   def GetCliques(self):
     return [self.clique] if self.clique else []
 
-  def Translate(self, lang):
+  def Translate(self, lang, gender):
     '''Returns a translated version of this message.
     '''
     assert self.clique
-    msg = self.clique.MessageForLanguage(lang,
-                                         self.PseudoIsAllowed(),
-                                         self.ShouldFallbackToEnglish()
-                                         ).GetRealContent()
+    msg = self.clique.MessageForLanguageAndGender(
+        lang, gender, self.PseudoIsAllowed(),
+        self.ShouldFallbackToEnglish()).GetRealContent()
     if self._replace_ellipsis:
       msg = _ELLIPSIS_PATTERN.sub(_ELLIPSIS_SYMBOL, msg)
     # Always remove all byte order marks (\uFEFF) https://crbug.com/1033305
@@ -279,9 +278,9 @@ class MessageNode(base.ContentNode):
     '''We always expand variables on Messages.'''
     return True
 
-  def GetDataPackValue(self, lang, encoding):
+  def GetDataPackValue(self, lang, gender, encoding):
     '''Returns a str represenation for a data_pack entry.'''
-    message = self.ws_at_start + self.Translate(lang) + self.ws_at_end
+    message = self.ws_at_start + self.Translate(lang, gender) + self.ws_at_end
     return util.Encode(message, encoding)
 
   def IsResourceMapSource(self):

@@ -49,9 +49,7 @@ void PairingHostAuthenticator::Initialize(
 PairingHostAuthenticator::~PairingHostAuthenticator() = default;
 
 Authenticator::State PairingHostAuthenticator::state() const {
-  if (protocol_error_) {
-    return REJECTED;
-  } else if (waiting_for_paired_secret_) {
+  if (waiting_for_paired_secret_) {
     return PROCESSING_MESSAGE;
   }
   return PairingAuthenticatorBase::state();
@@ -59,9 +57,6 @@ Authenticator::State PairingHostAuthenticator::state() const {
 
 Authenticator::RejectionReason PairingHostAuthenticator::rejection_reason()
     const {
-  if (protocol_error_) {
-    return RejectionReason::PROTOCOL_ERROR;
-  }
   return PairingAuthenticatorBase::rejection_reason();
 }
 

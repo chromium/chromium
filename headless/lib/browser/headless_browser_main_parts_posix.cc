@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "headless/lib/browser/headless_browser_main_parts.h"
 
 #include <errno.h>
@@ -16,7 +21,7 @@
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "headless/lib/browser/headless_browser_impl.h"
@@ -27,7 +32,7 @@
 #include "components/os_crypt/sync/os_crypt.h"
 #include "headless/public/switches.h"
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #endif
 
@@ -171,7 +176,7 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
 
 #if BUILDFLAG(IS_LINUX)
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   bluez::BluezDBusManager::Initialize(/*system_bus=*/nullptr);
 #endif
 

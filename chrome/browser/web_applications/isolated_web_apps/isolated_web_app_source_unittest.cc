@@ -4,12 +4,13 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 
+#include <variant>
+
 #include "base/files/file_path.h"
 #include "base/test/gmock_expected_support.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -79,13 +80,13 @@ TEST_F(IwaSourceBundleTest, WithModeAndFileOp) {
 TEST_F(IwaSourceBundleTest, WithDevModeFileOp) {
   IwaSourceBundle bundle{kExamplePath};
   IwaSourceBundleDevModeWithFileOp dev_bundle_with_file_op =
-      bundle.WithDevModeFileOp(IwaSourceBundleDevFileOp::kReference);
+      bundle.WithDevModeFileOp(IwaSourceBundleDevFileOp::kMove);
   EXPECT_THAT(dev_bundle_with_file_op,
               Eq(IwaSourceBundleDevModeWithFileOp(
-                  kExamplePath, IwaSourceBundleDevFileOp::kReference)));
+                  kExamplePath, IwaSourceBundleDevFileOp::kMove)));
   EXPECT_THAT(dev_bundle_with_file_op.path(), Eq(kExamplePath));
   EXPECT_THAT(dev_bundle_with_file_op.file_op(),
-              Eq(IwaSourceBundleDevFileOp::kReference));
+              Eq(IwaSourceBundleDevFileOp::kMove));
 }
 
 TEST_F(IwaSourceBundleTest, WithProdModeFileOp) {
@@ -133,17 +134,16 @@ TEST_F(IwaSourceBundleWithModeTest, WithFileOp) {
     IwaSourceBundleWithMode bundle{kExamplePath, /*dev_mode=*/false};
     EXPECT_THAT(
         bundle.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
-                          IwaSourceBundleDevFileOp::kReference),
+                          IwaSourceBundleDevFileOp::kMove),
         Eq(IwaSourceBundleWithModeAndFileOp{
             kExamplePath, IwaSourceBundleModeAndFileOp::kProdModeCopy}));
   }
   {
     IwaSourceBundleWithMode bundle{kExamplePath, /*dev_mode=*/true};
-    EXPECT_THAT(
-        bundle.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
-                          IwaSourceBundleDevFileOp::kReference),
-        Eq(IwaSourceBundleWithModeAndFileOp{
-            kExamplePath, IwaSourceBundleModeAndFileOp::kDevModeReference}));
+    EXPECT_THAT(bundle.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                                  IwaSourceBundleDevFileOp::kMove),
+                Eq(IwaSourceBundleWithModeAndFileOp{
+                    kExamplePath, IwaSourceBundleModeAndFileOp::kDevModeMove}));
   }
 }
 
@@ -223,9 +223,9 @@ TEST_F(IwaSourceBundleWithModeAndFileOpTest, FromDevOrProdModeWithFileOp) {
   using ModeAndFileOp = IwaSourceBundleWithModeAndFileOp::ModeAndFileOp;
   {
     IwaSourceBundleWithModeAndFileOp bundle{IwaSourceBundleDevModeWithFileOp(
-        kExamplePath, IwaSourceBundleDevFileOp::kReference)};
+        kExamplePath, IwaSourceBundleDevFileOp::kMove)};
     EXPECT_THAT(bundle, Eq(IwaSourceBundleWithModeAndFileOp(
-                            kExamplePath, ModeAndFileOp::kDevModeReference)));
+                            kExamplePath, ModeAndFileOp::kDevModeMove)));
   }
   {
     IwaSourceBundleWithModeAndFileOp bundle{IwaSourceBundleProdModeWithFileOp(
@@ -380,18 +380,17 @@ TEST_F(IwaSourceWithModeTest, WithFileOp) {
         IwaSourceBundleWithMode(kExamplePath, /*dev_mode=*/false)};
     EXPECT_THAT(
         source.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
-                          IwaSourceBundleDevFileOp::kReference),
+                          IwaSourceBundleDevFileOp::kMove),
         Eq(IwaSourceBundleWithModeAndFileOp{
             kExamplePath, IwaSourceBundleModeAndFileOp::kProdModeCopy}));
   }
   {
     IwaSourceWithMode source{
         IwaSourceBundleWithMode(kExamplePath, /*dev_mode=*/true)};
-    EXPECT_THAT(
-        source.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
-                          IwaSourceBundleDevFileOp::kReference),
-        Eq(IwaSourceBundleWithModeAndFileOp{
-            kExamplePath, IwaSourceBundleModeAndFileOp::kDevModeReference}));
+    EXPECT_THAT(source.WithFileOp(IwaSourceBundleProdFileOp::kCopy,
+                                  IwaSourceBundleDevFileOp::kMove),
+                Eq(IwaSourceBundleWithModeAndFileOp{
+                    kExamplePath, IwaSourceBundleModeAndFileOp::kDevModeMove}));
   }
 }
 
@@ -422,14 +421,14 @@ TEST_F(IwaSourceDevModeTest, WithFileOp) {
 TEST_F(IwaSourceDevModeTest, FromStorageLocation) {
   base::FilePath profile_dir(FILE_PATH_LITERAL("/profile-directory"));
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(
             profile_dir,
             IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/false));
     EXPECT_THAT(result, ErrorIs(_));
   }
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(
             profile_dir, IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/true));
     EXPECT_THAT(
@@ -439,13 +438,13 @@ TEST_F(IwaSourceDevModeTest, FromStorageLocation) {
                                               .AppendASCII("main.swbn")))));
   }
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(
             profile_dir, IwaStorageUnownedBundle(kExamplePath));
     EXPECT_THAT(result, ValueIs(Eq(IwaSourceBundleDevMode(kExamplePath))));
   }
   {
-    base::expected<IwaSourceDevMode, absl::monostate> result =
+    base::expected<IwaSourceDevMode, std::monostate> result =
         IwaSourceDevMode::FromStorageLocation(profile_dir,
                                               IwaStorageProxy(kExampleOrigin));
     EXPECT_THAT(result, ValueIs(Eq(IwaSourceProxy(kExampleOrigin))));
@@ -477,7 +476,7 @@ TEST_F(IwaSourceProdModeTest, WithFileOp) {
 TEST_F(IwaSourceProdModeTest, FromStorageLocation) {
   base::FilePath profile_dir(FILE_PATH_LITERAL("/profile-directory"));
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(
             profile_dir,
             IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/false));
@@ -488,19 +487,19 @@ TEST_F(IwaSourceProdModeTest, FromStorageLocation) {
                                                .AppendASCII("main.swbn")))));
   }
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(
             profile_dir, IwaStorageOwnedBundle("ascii-dir", /*dev_mode=*/true));
     EXPECT_THAT(result, ErrorIs(_));
   }
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(
             profile_dir, IwaStorageUnownedBundle(kExamplePath));
     EXPECT_THAT(result, ErrorIs(_));
   }
   {
-    base::expected<IwaSourceProdMode, absl::monostate> result =
+    base::expected<IwaSourceProdMode, std::monostate> result =
         IwaSourceProdMode::FromStorageLocation(profile_dir,
                                                IwaStorageProxy(kExampleOrigin));
     EXPECT_THAT(result, ErrorIs(_));
@@ -558,25 +557,25 @@ using IwaSourceDevModeWithFileOpTest = IwaSourceTestBase;
 TEST_F(IwaSourceDevModeWithFileOpTest, Works) {
   using FileOp = IwaSourceBundleDevFileOp;
   IwaSourceDevModeWithFileOp source{
-      IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kReference)};
-  EXPECT_THAT(source.variant(), VariantWith<IwaSourceBundleDevModeWithFileOp>(
-                                    Eq(IwaSourceBundleDevModeWithFileOp(
-                                        kExamplePath, FileOp::kReference))));
+      IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kMove)};
+  EXPECT_THAT(
+      source.variant(),
+      VariantWith<IwaSourceBundleDevModeWithFileOp>(
+          Eq(IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kMove))));
 
   EXPECT_THAT(
       IwaSourceDevModeWithFileOp(
-          IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kReference)),
-      Eq(IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kReference)));
+          IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kMove)),
+      Eq(IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kMove)));
   EXPECT_THAT(
       IwaSourceDevModeWithFileOp(IwaSourceProxy(kExampleOrigin)),
-      Ne(IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kReference)));
+      Ne(IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kMove)));
+  EXPECT_THAT(IwaSourceDevModeWithFileOp(IwaSourceBundleDevModeWithFileOp(
+                  kExamplePath, FileOp::kMove)),
+              Ne(IwaSourceBundleDevModeWithFileOp(kGooglePath, FileOp::kMove)));
   EXPECT_THAT(
       IwaSourceDevModeWithFileOp(
-          IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kReference)),
-      Ne(IwaSourceBundleDevModeWithFileOp(kGooglePath, FileOp::kReference)));
-  EXPECT_THAT(
-      IwaSourceDevModeWithFileOp(
-          IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kReference)),
+          IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kMove)),
       Ne(IwaSourceBundleDevModeWithFileOp(kExamplePath, FileOp::kCopy)));
 }
 

@@ -69,8 +69,9 @@ ColorProviderManager& ColorProviderManager::Get() {
 // static
 ColorProviderManager& ColorProviderManager::GetForTesting() {
   std::optional<GlobalManager>& manager = GetGlobalManager();
-  if (!manager.has_value())
+  if (!manager.has_value()) {
     manager.emplace();
+  }
   return manager.value();
 }
 
@@ -86,8 +87,9 @@ void ColorProviderManager::ResetColorProviderInitializerList() {
 }
 
 void ColorProviderManager::ResetColorProviderCache() {
-  if (!color_providers_.empty())
+  if (!color_providers_.empty()) {
     color_providers_.clear();
+  }
 }
 
 void ColorProviderManager::AppendColorProviderInitializer(
@@ -106,8 +108,9 @@ ColorProvider* ColorProviderManager::GetColorProviderFor(ColorProviderKey key) {
 
     auto provider = std::make_unique<ColorProvider>();
     DCHECK(initializer_list_);
-    if (!initializer_list_->empty())
+    if (!initializer_list_->empty()) {
       initializer_list_->Notify(provider.get(), key);
+    }
 
     RecordTimeSpentInitializingColorProvider(timer.Elapsed());
     ++num_providers_initialized_;

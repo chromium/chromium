@@ -18,7 +18,7 @@ namespace ash {
 
 namespace secure_channel {
 class ConnectionManager;
-}
+}  // namespace secure_channel
 
 namespace phonehub {
 

@@ -80,10 +80,6 @@ bool PrivacySandboxSettingsDelegate::IsRestrictedNoticeEnabled() const {
 }
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
-          .Get()) {
-    return true;
-  }
   // If the Sandbox was ever reported as restricted, it is always restricted.
   // TODO (crbug.com/1428546): Adjust when we have a graduation flow.
   bool was_ever_reported_as_restricted =
@@ -114,11 +110,6 @@ bool PrivacySandboxSettingsDelegate::IsPrivacySandboxRestricted() const {
 
 bool PrivacySandboxSettingsDelegate::IsPrivacySandboxCurrentlyUnrestricted()
     const {
-  if (privacy_sandbox::kPrivacySandboxSettings4ForceRestrictedUserForTesting
-          .Get()) {
-    return false;
-  }
-
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -401,13 +392,9 @@ bool PrivacySandboxSettingsDelegate::
       static_cast<content_settings::CookieControlsMode>(
           profile_->GetPrefs()->GetInteger(prefs::kCookieControlsMode));
 
-  switch (cookie_controls_mode) {
-    case content_settings::CookieControlsMode::kBlockThirdParty:
-    case content_settings::CookieControlsMode::kLimited:
-      return false;
-    case content_settings::CookieControlsMode::kIncognitoOnly:
-    case content_settings::CookieControlsMode::kOff:
-      break;
+  if (cookie_controls_mode ==
+      content_settings::CookieControlsMode::kBlockThirdParty) {
+    return false;
   }
 
   return true;

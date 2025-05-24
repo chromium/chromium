@@ -7,7 +7,6 @@
 
 namespace ash {
 extern const char kChromeUIFilesInternalsHost[];
-extern const char kChromeUIFilesInternalsURL[];
 }  // namespace ash
 
 #endif  // ASH_WEBUI_FILES_INTERNALS_URL_CONSTANTS_H_

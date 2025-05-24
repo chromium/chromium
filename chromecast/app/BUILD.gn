@@ -149,13 +149,11 @@ grit("resources") {
   ]
 }
 
-grit("chromecast_settings") {
+grit_strings("chromecast_settings") {
   source = "//chromecast/app/resources/chromecast_settings.grd"
 
   outputs = [ "grit/chromecast_settings.h" ]
-  foreach(locale, cast_locales) {
-    outputs += [ "chromecast_settings_${locale}.pak" ]
-  }
+  locales = cast_locales
 
   deps = [ ":verify_cast_locales" ]
 }

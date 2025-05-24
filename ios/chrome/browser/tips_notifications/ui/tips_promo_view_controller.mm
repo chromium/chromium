@@ -15,15 +15,8 @@ namespace {
 // Custom spacing added between the animation and the title.
 const CGFloat kCustomSpacingAfterAnimation = 30;
 
-// The approxomate height of the items that have a fixed height: title,
-// subtitle, and buttons.
-const CGFloat kFixedItemsHeight = 200;
-
-// The height of the animation, as a percentage of the whole view minus the
-// fixed height items. By subtracting out the height of the items with a
-// fixed height, and sizing the animationa based on what is left we can
-// scale more accurately on larger and smaller screens.
-const CGFloat kAnimationHeightPercent = 0.75;
+// The height of the animation, as a percentage of the whole view.
+const CGFloat kAnimationHeightPercent = 0.5;
 
 }  // namespace
 
@@ -48,25 +41,23 @@ const CGFloat kAnimationHeightPercent = 0.75;
   [self.specificContentView addSubview:contentStack];
   [super viewDidLoad];
 
-  UILayoutGuide* contentLayoutGuide = [[UILayoutGuide alloc] init];
-  [self.view addLayoutGuide:contentLayoutGuide];
-
   [NSLayoutConstraint activateConstraints:@[
-    [contentLayoutGuide.heightAnchor
-        constraintEqualToAnchor:self.view.heightAnchor
-                       constant:-kFixedItemsHeight],
     [_animationViewWrapper.animationView.heightAnchor
-        constraintEqualToAnchor:contentLayoutGuide.heightAnchor
+        constraintEqualToAnchor:self.view.heightAnchor
                      multiplier:kAnimationHeightPercent],
+    [contentStack.centerXAnchor
+        constraintEqualToAnchor:self.specificContentView.centerXAnchor],
+    [contentStack.topAnchor
+        constraintEqualToAnchor:self.specificContentView.topAnchor
+                       constant:-kCustomSpacingAfterAnimation],
+    [contentStack.widthAnchor
+        constraintEqualToAnchor:self.specificContentView.widthAnchor],
     [self.specificContentView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:contentStack.heightAnchor],
   ]];
-  AddSameConstraintsToSides(
-      contentStack, self.specificContentView,
-      LayoutSides::kTrailing | LayoutSides::kLeading | LayoutSides::kTop);
 
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                        withAction:@selector(updateAnimation)];
   }
 }

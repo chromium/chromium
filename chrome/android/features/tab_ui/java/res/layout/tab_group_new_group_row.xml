@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:id="@+id/tab_group_list_new_group_row"
+  android:layout_width="match_parent"
+  android:layout_height="@dimen/tab_group_list_new_group_row_height"
+  android:gravity="center_vertical"
+  android:orientation="horizontal"
+  tools:ignore="UnusedResources">
+
+  <FrameLayout
+      android:layout_width="@dimen/tab_group_cluster_size"
+      android:layout_height="@dimen/tab_group_list_new_group_icon_button_height"
+      android:layout_marginStart="@dimen/tab_group_list_first_element_horizontal_margin"
+      android:background="@drawable/tab_group_start_icon_bg">
+    <ImageView
+        android:src="@drawable/plus"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/tab_group_list_new_group_icon_height"
+        android:contentDescription="@null"
+        android:layout_gravity="center"
+        app:tint="@macro/default_icon_color" />
+  </FrameLayout>
+
+  <Space
+    android:layout_width="@dimen/tab_group_list_first_element_horizontal_margin"
+    android:layout_height="match_parent" />
+
+  <LinearLayout
+    android:layout_width="0dp"
+    android:layout_height="match_parent"
+    android:layout_weight="1"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tab_group_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:text="@string/create_new_group_row_title"
+        tools:text="@string/create_new_group_row_title"
+        />
+  </LinearLayout>
+
+
+</LinearLayout>

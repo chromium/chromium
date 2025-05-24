@@ -1,3 +1,8 @@
 include_rules = [
   "+ui/base",
+  "+components/endpoint_fetcher",
+  "+services/data_decoder/public/cpp",
+  "+ui/gfx/geometry",
+  "+chromeos/ash/components/channel",
+  "+content/public/test",
 ]

@@ -4,17 +4,38 @@
 
 #include "ash/wallpaper/wallpaper_metrics_manager.h"
 
+#include <string>
+#include <string_view>
+
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/wallpaper/wallpaper_constants.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 
 namespace ash {
+
+namespace {
+
+// Return the full histogram name for a given time of day wallpaper.
+std::string GetTimeOfDayHistogramName(const uint64_t unit_id) {
+  const std::string_view base = "Ash.Wallpaper.SetTimeOfDayAfterOobe.";
+  switch (unit_id) {
+    case wallpaper_constants::kAlternateTimeOfDayWallpaperUnitId:
+      return base::StrCat({base, "Alternate"});
+    case wallpaper_constants::kDefaultTimeOfDayWallpaperUnitId:
+      return base::StrCat({base, "Default"});
+    default:
+      NOTREACHED() << "Invalid unit_id " << unit_id;
+  }
+}
+}  // namespace
 
 WallpaperMetricsManager::WallpaperMetricsManager() {
   wallpaper_controller_observation_.Observe(WallpaperController::Get());
@@ -83,8 +104,9 @@ void WallpaperMetricsManager::OnWallpaperPreviewStarted() {
 }
 
 void WallpaperMetricsManager::LogSettingTimeOfDayWallpaperAfterOobe(
-    bool success) {
-  base::UmaHistogramBoolean("Ash.Wallpaper.IsSetToTimeOfDayAfterOobe", success);
+    const uint64_t unit_id,
+    const bool success) {
+  base::UmaHistogramBoolean(GetTimeOfDayHistogramName(unit_id), success);
 }
 
 void WallpaperMetricsManager::LogWallpaperResult(WallpaperType type,

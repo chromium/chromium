@@ -8,7 +8,6 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_controller.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
-#include "components/autofill/core/browser/personal_data_manager_observer.h"
 
 namespace content {
 class WebContents;
@@ -18,8 +17,7 @@ namespace autofill {
 
 // Interface for payment method-specific keyboard accessory controller between the
 // ManualFillingController and Autofill backend logic.
-class PaymentMethodAccessoryController : public AccessoryController,
-                                      public PersonalDataManagerObserver {
+class PaymentMethodAccessoryController : public AccessoryController {
  public:
   PaymentMethodAccessoryController() = default;
   ~PaymentMethodAccessoryController() override = default;

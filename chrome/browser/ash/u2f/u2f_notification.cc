@@ -26,6 +26,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "third_party/cros_system_api/dbus/debugd/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 namespace ash {
@@ -44,9 +45,9 @@ enum class ButtonIndex : int {
 
 }  // namespace
 
-U2FNotification::U2FNotification() {}
+U2FNotification::U2FNotification() = default;
 
-U2FNotification::~U2FNotification() {}
+U2FNotification::~U2FNotification() = default;
 
 void U2FNotification::Check() {
   DebugDaemonClient::Get()->GetU2fFlags(base::BindOnce(
@@ -114,7 +115,8 @@ void U2FNotification::ShowNotification() {
       base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
           base::BindRepeating(&U2FNotification::OnNotificationClick,
                               weak_factory_.GetWeakPtr())),
-      gfx::kNoneIcon, message_center::SystemNotificationWarningLevel::WARNING);
+      gfx::VectorIcon::EmptyIcon(),
+      message_center::SystemNotificationWarningLevel::WARNING);
   notification.SetSystemPriority();
   notification.set_pinned(false);
 

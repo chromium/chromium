@@ -8,10 +8,13 @@ mojom("mojo_bindings") {
   sources = [
     "geometry.mojom",
     "lens.mojom",
+    "lens_ghost_loader.mojom",
+    "lens_side_panel.mojom",
     "overlay_object.mojom",
+    "page_content_type.mojom",
     "polygon.mojom",
-    "search_bubble.mojom",
     "text.mojom",
+    "translate.mojom",
   ]
   webui_module_path = "/"
   public_deps = [

@@ -142,7 +142,7 @@ class MockTCPSocket : public net::MockTCPClientSocket {
 
 class CompleteHandler {
  public:
-  CompleteHandler() {}
+  CompleteHandler() = default;
 
   CompleteHandler(const CompleteHandler&) = delete;
   CompleteHandler& operator=(const CompleteHandler&) = delete;
@@ -176,7 +176,7 @@ class TestCastSocketBase : public CastSocketImpl {
   TestCastSocketBase(const TestCastSocketBase&) = delete;
   TestCastSocketBase& operator=(const TestCastSocketBase&) = delete;
 
-  ~TestCastSocketBase() override {}
+  ~TestCastSocketBase() override = default;
 
   void SetVerifyChallengeResult(bool value) {
     verify_challenge_result_ = value;
@@ -225,7 +225,7 @@ class MockTestCastSocket : public TestCastSocketBase {
   MockTestCastSocket(const MockTestCastSocket&) = delete;
   MockTestCastSocket& operator=(const MockTestCastSocket&) = delete;
 
-  ~MockTestCastSocket() override {}
+  ~MockTestCastSocket() override = default;
 
   void SetupMockTransport() {
     mock_transport_ = new MockCastTransport;
@@ -295,10 +295,11 @@ class TestSocketFactory : public net::ClientSocketFactory {
   }
 
   void Pause() {
-    if (socket_data_provider_)
+    if (socket_data_provider_) {
       socket_data_provider_->Pause();
-    else
+    } else {
       socket_data_provider_paused_ = true;
+    }
   }
 
   void Resume() { socket_data_provider_->Resume(); }
@@ -317,8 +318,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
       net::NetworkQualityEstimator*,
       net::NetLog*,
       const net::NetLogSource&) override {
-    if (tcp_client_socket_)
+    if (tcp_client_socket_) {
       return std::move(tcp_client_socket_);
+    }
 
     if (tcp_unresponsive_) {
       socket_data_provider_ = std::make_unique<net::StaticSocketDataProvider>();
@@ -328,8 +330,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
       socket_data_provider_ =
           std::make_unique<net::StaticSocketDataProvider>(reads_, writes_);
       socket_data_provider_->set_connect_data(*tcp_connect_data_);
-      if (socket_data_provider_paused_)
+      if (socket_data_provider_paused_) {
         socket_data_provider_->Pause();
+      }
       return std::unique_ptr<net::TransportClientSocket>(
           new MockTCPSocket(false, socket_data_provider_.get()));
     }
@@ -348,8 +351,9 @@ class TestSocketFactory : public net::ClientSocketFactory {
     ssl_socket_data_provider_ = std::make_unique<net::SSLSocketDataProvider>(
         ssl_connect_data_->mode, ssl_connect_data_->result);
 
-    if (tls_socket_created_)
+    if (tls_socket_created_) {
       std::move(tls_socket_created_).Run();
+    }
 
     return std::make_unique<net::MockSSLClientSocket>(
         std::move(nested_socket), net::HostPortPair(), net::SSLConfig(),
@@ -385,7 +389,7 @@ class CastSocketTestBase : public testing::Test {
   CastSocketTestBase(const CastSocketTestBase&) = delete;
   CastSocketTestBase& operator=(const CastSocketTestBase&) = delete;
 
-  ~CastSocketTestBase() override {}
+  ~CastSocketTestBase() override = default;
 
   void SetUp() override {
     EXPECT_CALL(*observer_, OnMessage(_, _)).Times(0);
@@ -425,7 +429,7 @@ class MockCastSocketTest : public CastSocketTestBase {
   MockCastSocketTest& operator=(const MockCastSocketTest&) = delete;
 
  protected:
-  MockCastSocketTest() {}
+  MockCastSocketTest() = default;
 
   void TearDown() override {
     if (socket_) {
@@ -466,7 +470,7 @@ class SslCastSocketTest : public CastSocketTestBase {
   SslCastSocketTest& operator=(const SslCastSocketTest&) = delete;
 
  protected:
-  SslCastSocketTest() {}
+  SslCastSocketTest() = default;
 
   void TearDown() override {
     if (socket_) {

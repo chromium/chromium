@@ -4,6 +4,8 @@
 
 package org.chromium.components.webapps.bottomsheet;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Pair;
@@ -18,6 +20,9 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.UnownedUserData;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.ContentPriority;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -25,6 +30,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.webapps.AddToHomescreenProperties;
 import org.chromium.components.webapps.AddToHomescreenViewDelegate;
 import org.chromium.components.webapps.AppType;
@@ -43,6 +49,7 @@ import java.util.ArrayList;
 
 /** This class controls the Bottom Sheet PWA install functionality. */
 @JNINamespace("webapps")
+@NullMarked
 public class PwaBottomSheetController
         implements UnownedUserData, AddToHomescreenViewDelegate, View.OnClickListener {
     private final Context mContext;
@@ -51,7 +58,7 @@ public class PwaBottomSheetController
     private long mNativePwaBottomSheetController;
 
     /** The controller used to show the bottom sheet. */
-    private BottomSheetController mBottomSheetController;
+    private @Nullable BottomSheetController mBottomSheetController;
 
     /**
      * The observer used to set the bottom sheet content priority, communicate sheet state changes
@@ -67,6 +74,7 @@ public class PwaBottomSheetController
                             PwaBottomSheetControllerJni.get()
                                     .onSheetClosedWithSwipe(mNativePwaBottomSheetController);
                         }
+                        assumeNonNull(mBottomSheetController);
                         mBottomSheetController.removeObserver(mBottomSheetObserver);
                         mWebContentsObserver = null;
                         mPwaBottomSheetContent = null;
@@ -76,6 +84,7 @@ public class PwaBottomSheetController
 
                     // When our sheet is not fully expanded, lower its priority to make sure
                     // other (high-priority) sheets in the queue can be shown.
+                    assumeNonNull(mPwaBottomSheetContent);
                     if (isBottomSheetVisible() && state == SheetState.FULL) {
                         mPwaBottomSheetContent.setPriority(ContentPriority.HIGH);
                         PwaBottomSheetControllerJni.get()
@@ -87,38 +96,40 @@ public class PwaBottomSheetController
             };
 
     /** The Bottom Sheet content class for showing our content. */
-    private PwaInstallBottomSheetContent mPwaBottomSheetContent;
+    private @Nullable PwaInstallBottomSheetContent mPwaBottomSheetContent;
 
     /** The property model for our bottom sheet. */
-    private PropertyModel mModel;
+    private @Nullable PropertyModel mModel;
 
     /** The adapter for handling the images inside the RecyclerView. */
-    private ScreenshotsAdapter mScreenshotAdapter;
+    private @Nullable ScreenshotsAdapter mScreenshotAdapter;
 
     /** The current WebContents the UI is associated with. */
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
     /**
      * The observer to keep track of navigations (so the bottom sheet can close). May be null during
      * tests.
      */
-    private WebContentsObserver mWebContentsObserver;
+    private @Nullable WebContentsObserver mWebContentsObserver;
 
     /** The ViewHolder for the view's Screenshots RecyclerView. */
-    private class ScreenshotViewHolder extends RecyclerView.ViewHolder {
+    private static class ScreenshotViewHolder extends RecyclerView.ViewHolder {
         public ScreenshotViewHolder(View itemView) {
             super(itemView);
         }
     }
 
     /** The Adapter for the view's Screenshots RecyclerView. */
-    class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotViewHolder> {
-        private Context mContext;
-        private ArrayList<Bitmap> mScreenshots;
+    static class ScreenshotsAdapter extends RecyclerView.Adapter<ScreenshotViewHolder> {
+        private final Context mContext;
+        private final ArrayList<Bitmap> mScreenshots;
+        private final boolean mShouldPadForDialogContent;
 
-        public ScreenshotsAdapter(Context context) {
+        public ScreenshotsAdapter(Context context, boolean shouldPadForDialogContent) {
             mContext = context;
             mScreenshots = new ArrayList<Bitmap>();
+            mShouldPadForDialogContent = shouldPadForDialogContent;
         }
 
         @SuppressWarnings("NotifyDataSetChanged")
@@ -143,11 +154,11 @@ public class PwaBottomSheetController
             view.setAdjustViewBounds(true);
             view.setImageBitmap(bitmap);
             view.setContentDescription(
-                    mContext.getResources()
-                            .getString(R.string.pwa_install_bottom_sheet_screenshot));
+                    mContext.getString(R.string.pwa_install_bottom_sheet_screenshot));
             view.setOnClickListener(
                     v -> {
-                        final ImageZoomView dialog = new ImageZoomView(mContext, bitmap);
+                        final ImageZoomView dialog =
+                                new ImageZoomView(mContext, bitmap, mShouldPadForDialogContent);
                         dialog.show();
                     });
         }
@@ -192,6 +203,8 @@ public class PwaBottomSheetController
                     @Override
                     public void didFinishNavigationInPrimaryMainFrame(NavigationHandle navigation) {
                         if (navigation.hasCommitted()) {
+                            assumeNonNull(mPwaBottomSheetContent);
+                            assumeNonNull(mBottomSheetController);
                             mBottomSheetController.hideContent(
                                     mPwaBottomSheetContent, /* animate= */ true);
                         }
@@ -224,13 +237,17 @@ public class PwaBottomSheetController
         mNativePwaBottomSheetController = nativePwaBottomSheetController;
         mWebContents = webContents;
 
-        mBottomSheetController = BottomSheetControllerProvider.from(windowAndroid);
-        if (mBottomSheetController == null || !canShowFor(webContents)) {
+        BottomSheetController bottomSheetController =
+                BottomSheetControllerProvider.from(windowAndroid);
+        if (bottomSheetController == null || !canShowFor(webContents)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
             return;
         }
+        mBottomSheetController = bottomSheetController;
 
-        mScreenshotAdapter = new ScreenshotsAdapter(mContext);
+        boolean shouldPadForDialogContent =
+                EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
+        mScreenshotAdapter = new ScreenshotsAdapter(mContext, shouldPadForDialogContent);
         PwaInstallBottomSheetView view =
                 new PwaInstallBottomSheetView(mContext, mScreenshotAdapter);
         mPwaBottomSheetContent = new PwaInstallBottomSheetContent(view, this);
@@ -246,15 +263,13 @@ public class PwaBottomSheetController
         PropertyModelChangeProcessor.create(
                 mModel, view, AddToHomescreenBottomSheetViewBinder::bind);
 
-        mBottomSheetController.addObserver(mBottomSheetObserver);
-        if (!mBottomSheetController.requestShowContent(mPwaBottomSheetContent, true)) {
+        bottomSheetController.addObserver(mBottomSheetObserver);
+        if (!bottomSheetController.requestShowContent(mPwaBottomSheetContent, true)) {
             // TODO(finnur): Investigate whether retrying is feasible (and how).
             return;
         }
 
-        if (webContents != null) {
-            createWebContentsObserver(webContents);
-        }
+        createWebContentsObserver(webContents);
     }
 
     /**
@@ -265,10 +280,14 @@ public class PwaBottomSheetController
         return webContents.getVisibility() == Visibility.VISIBLE;
     }
 
-    /** @return Whether the Bottom Sheet Installer UI sheet is visible. */
+    /**
+     * @return Whether the Bottom Sheet Installer UI sheet is visible.
+     */
+    @EnsuresNonNullIf({"mPwaBottomSheetContent", "mBottomSheetController"})
     public boolean isBottomSheetVisible() {
         return (mPwaBottomSheetContent != null
-                && mBottomSheetController.getCurrentSheetContent() == mPwaBottomSheetContent);
+                && assumeNonNull(mBottomSheetController).getCurrentSheetContent()
+                        == mPwaBottomSheetContent);
     }
 
     // onClickListener:
@@ -276,7 +295,9 @@ public class PwaBottomSheetController
     @Override
     public void onClick(View view) {
         int id = view.getId();
+        assumeNonNull(mBottomSheetController);
         if (id == R.id.button_install) {
+            assumeNonNull(mPwaBottomSheetContent);
             onAddToHomescreen();
             mBottomSheetController.hideContent(mPwaBottomSheetContent, false);
         } else if (id == R.id.drag_handlebar) {
@@ -304,6 +325,7 @@ public class PwaBottomSheetController
     }
 
     private void addWebAppScreenshot(Bitmap screenshot) {
+        assumeNonNull(mScreenshotAdapter);
         mScreenshotAdapter.addScreenshot(screenshot);
     }
 
@@ -367,7 +389,8 @@ public class PwaBottomSheetController
         void updateInstallSource(
                 long nativePwaBottomSheetController, @WebappInstallSource int installSource);
 
-        void onAddToHomescreen(long nativePwaBottomSheetController, WebContents webContents);
+        void onAddToHomescreen(
+                long nativePwaBottomSheetController, @Nullable WebContents webContents);
 
         void destroy(long nativePwaBottomSheetController);
     }

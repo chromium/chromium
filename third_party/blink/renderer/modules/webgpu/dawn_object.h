@@ -57,7 +57,7 @@ class DawnObjectBase {
   const String& label() const { return label_; }
   void setLabel(const String& value);
 
-  virtual void setLabelImpl(const String& value) = 0;
+  virtual void SetLabelImpl(const String& value) = 0;
 
  private:
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
@@ -102,16 +102,16 @@ class DawnObject : public DawnObjectImpl {
 template <>
 class DawnObject<wgpu::Device> : public DawnObjectBase {
  public:
-  DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
-             wgpu::Device handle,
-             const String& label)
-      : DawnObjectBase(dawn_control_client, label),
-        handle_(std::move(handle)) {}
-
   const wgpu::Device& GetHandle() const { return handle_; }
 
+ protected:
+  // Support setting the handle after creation to allow for GPUDevice's
+  // two-step initialization.
+  using DawnObjectBase::DawnObjectBase;
+  void SetHandle(wgpu::Device handle) { handle_ = std::move(handle); }
+
  private:
-  const wgpu::Device handle_;
+  wgpu::Device handle_;
 };
 
 template <>

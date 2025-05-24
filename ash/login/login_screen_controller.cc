@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/login/security_token_request_controller.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
@@ -30,7 +30,6 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
@@ -141,10 +140,6 @@ void LoginScreenController::AuthenticateUserWithPasswordOrPin(
   LOG(WARNING) << "crbug.com/1339004 : started authentication";
   SetAuthenticationStage(AuthenticationStage::kDoAuthenticate);
 
-  if (authenticated_by_pin) {
-    DCHECK(base::ContainsOnlyChars(password, "0123456789"));
-  }
-
   client_->AuthenticateUserWithPasswordOrPin(
       account_id, password, authenticated_by_pin,
       base::BindOnce(&LoginScreenController::OnAuthenticateComplete,
@@ -231,13 +226,6 @@ void LoginScreenController::OnMaxIncorrectPasswordAttempted(
     return;
   }
   client_->OnMaxIncorrectPasswordAttempted(account_id);
-}
-
-void LoginScreenController::FocusLockScreenApps(bool reverse) {
-  if (!client_) {
-    return;
-  }
-  client_->FocusLockScreenApps(reverse);
 }
 
 void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {

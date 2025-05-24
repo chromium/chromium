@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "base/debug/stack_trace.h"
 
 #include <elf.h>
 #include <link.h>
@@ -28,6 +28,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/debug/elf_reader.h"
+#include "base/debug/stack_trace.h"
 #include "base/logging.h"
 
 namespace base {
@@ -46,8 +47,9 @@ _Unwind_Reason_Code UnwindStore(struct _Unwind_Context* context,
   uintptr_t pc = _Unwind_GetIP(context);
   data->trace_array[*data->count] = reinterpret_cast<void*>(pc);
   *data->count += 1;
-  if (*data->count == data->max)
+  if (*data->count == data->max) {
     return _URC_END_OF_STACK;
+  }
   return _URC_NO_REASON;
 }
 
@@ -57,14 +59,17 @@ _Unwind_Reason_Code UnwindStore(struct _Unwind_Context* context,
 const char* PermissionFlagsToString(int flags, char permission_buf[4]) {
   char* permission = permission_buf;
 
-  if (flags & PF_R)
+  if (flags & PF_R) {
     (*permission++) = 'r';
+  }
 
-  if (flags & PF_W)
+  if (flags & PF_W) {
     (*permission++) = 'w';
+  }
 
-  if (flags & PF_X)
+  if (flags & PF_X) {
     (*permission++) = 'x';
+  }
 
   *permission = '\0';
 
@@ -75,7 +80,7 @@ const char* PermissionFlagsToString(int flags, char permission_buf[4]) {
 class SymbolMap {
  public:
   struct Segment {
-    const void* addr = nullptr;
+    raw_ptr<const void> addr = nullptr;
     size_t relative_addr = 0;
     int permission_flags = 0;
     size_t size = 0;
@@ -86,11 +91,11 @@ class SymbolMap {
     // binaries have only 2-3 such segments.
     static constexpr size_t kMaxSegmentCount = 8;
 
-    const void* addr = nullptr;
+    raw_ptr<const void> addr = nullptr;
     std::array<Segment, kMaxSegmentCount> segments;
     size_t segment_count = 0;
-    char name[ZX_MAX_NAME_LEN + 1] = {0};
-    char build_id[kMaxBuildIdStringLength + 1] = {0};
+    char name[ZX_MAX_NAME_LEN + 1] = {};
+    char build_id[kMaxBuildIdStringLength + 1] = {};
   };
 
   SymbolMap();
@@ -143,8 +148,9 @@ void SymbolMap::Populate() {
 
   // Populate ELF binary metadata into |modules_|.
   while (lmap != nullptr) {
-    if (count_ >= kMaxMapEntries)
+    if (count_ >= kMaxMapEntries) {
       break;
+    }
 
     SymbolMap::Module& next_entry = modules_[count_];
     ++count_;
@@ -155,8 +161,9 @@ void SymbolMap::Populate() {
     // Each Segment corresponds to a "mmap" line in the output.
     next_entry.segment_count = 0;
     for (const Elf64_Phdr& phdr : GetElfProgramHeaders(next_entry.addr)) {
-      if (phdr.p_type != PT_LOAD)
+      if (phdr.p_type != PT_LOAD) {
         continue;
+      }
 
       if (next_entry.segment_count > Module::kMaxSegmentCount) {
         LOG(WARNING) << "Exceeded the maximum number of segments.";
@@ -165,7 +172,7 @@ void SymbolMap::Populate() {
 
       Segment segment;
       segment.addr =
-          reinterpret_cast<const char*>(next_entry.addr) + phdr.p_vaddr;
+          reinterpret_cast<const char*>(next_entry.addr.get()) + phdr.p_vaddr;
       segment.relative_addr = phdr.p_vaddr;
       segment.size = phdr.p_memsz;
       segment.permission_flags = static_cast<int>(phdr.p_flags);
@@ -214,7 +221,7 @@ bool ModuleContainsFrameAddress(const void* address,
   for (size_t i = 0; i < module_entry.segment_count; ++i) {
     const SymbolMap::Segment& segment = module_entry.segments[i];
     const void* segment_end = reinterpret_cast<const void*>(
-        reinterpret_cast<const char*>(segment.addr) + segment.size - 1);
+        reinterpret_cast<const char*>(segment.addr.get()) + segment.size - 1);
 
     if (address >= segment.addr && address <= segment_end) {
       return true;
@@ -282,15 +289,16 @@ void StackTrace::OutputToStreamWithPrefixImpl(
           << std::dec << ":load:" << module_id << ":"
           << PermissionFlagsToString(segment.permission_flags,
                                      permission_string)
-          << ":"
-          << "0x" << std::hex << segment.relative_addr << std::dec << "}}}\n";
+          << ":" << "0x" << std::hex << segment.relative_addr << std::dec
+          << "}}}\n";
     }
 
     ++module_id;
   }
 
-  for (size_t i = 0; i < count_; ++i)
+  for (size_t i = 0; i < count_; ++i) {
     *os << "{{{bt:" << i << ":" << trace_[i] << "}}}\n";
+  }
 
   *os << "{{{reset}}}\n";
 }

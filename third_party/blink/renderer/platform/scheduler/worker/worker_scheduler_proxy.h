@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_origin_type.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
@@ -48,24 +47,6 @@ class PLATFORM_EXPORT WorkerSchedulerProxy {
     return lifecycle_state_;
   }
 
-  // Accessed only during init.
-  std::optional<FrameOriginType> parent_frame_type() const {
-    DCHECK(!initialized_);
-    return parent_frame_type_;
-  }
-
-  // Accessed only during init.
-  ukm::SourceId ukm_source_id() const {
-    DCHECK(!initialized_);
-    return ukm_source_id_;
-  }
-
-  // Accessed only during init.
-  FrameStatus initial_frame_status() const {
-    DCHECK(!initialized_);
-    return initial_frame_status_;
-  }
-
  private:
   // Can be accessed only from the worker thread.
   base::WeakPtr<WorkerScheduler> worker_scheduler_;
@@ -80,9 +61,6 @@ class PLATFORM_EXPORT WorkerSchedulerProxy {
       throttling_observer_handle_;
 
   bool initialized_ = false;
-  std::optional<FrameOriginType> parent_frame_type_;
-  FrameStatus initial_frame_status_ = FrameStatus::kNone;
-  ukm::SourceId ukm_source_id_ = ukm::kInvalidSourceId;
 
   THREAD_CHECKER(parent_thread_checker_);
 };

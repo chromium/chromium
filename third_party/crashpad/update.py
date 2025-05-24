@@ -95,13 +95,13 @@ def main(args):
     readme_content_old = open(readme_path, 'rb').read().decode('utf-8')
 
     project_name_match = re.search(
-        r'^Name:\s+(.*)$', readme_content_old, re.MULTILINE)
+        r'^Name:\s+(.*)$', readme_content_old, flags=re.MULTILINE)
     project_name = project_name_match.group(1)
 
     # Extract the original commit hash from the README.
     revision_match = re.search(r'^Revision:\s+([0-9a-fA-F]{40})($|\s)',
                                readme_content_old,
-                               re.MULTILINE)
+                               flags=re.MULTILINE)
     revision_old = revision_match.group(1)
 
     subprocess.check_call(['git', 'fetch', parsed.repository, parsed.fetch_ref],
@@ -232,8 +232,8 @@ Press ^C to abort.
         r'^(Revision:\s+)([0-9a-fA-F]{40})($|\s.*?$)',
         r'\g<1>' + revision_new,
         readme_content_old,
-        1,
-        re.MULTILINE)
+        count=1,
+        flags=re.MULTILINE)
 
     # If the in-tree copy has no changes relative to the upstream, clear the
     # “Local Modifications” section of the README.
@@ -258,8 +258,8 @@ Press ^C to abort.
         readme_content_new = re.sub(r'\nLocal Modifications:\n.*$',
                                     '\nLocal Modifications:\n' + modifications,
                                     readme_content_new,
-                                    1,
-                                    re.DOTALL)
+                                    count=1,
+                                    flags=re.DOTALL)
 
     # The UPDATE_TO ref is no longer useful.
     subprocess.check_call(['git', 'update-ref', '-d', 'UPDATE_TO'],

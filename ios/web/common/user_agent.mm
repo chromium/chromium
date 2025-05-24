@@ -5,10 +5,10 @@
 #import "ios/web/common/user_agent.h"
 
 #import <UIKit/UIKit.h>
-
 #import <stddef.h>
 #import <stdint.h>
 #import <sys/sysctl.h>
+
 #import <string>
 
 #import "base/strings/string_util.h"
@@ -72,12 +72,15 @@ std::string GetUserAgentTypeDescription(UserAgentType type) {
 }
 
 UserAgentType GetUserAgentTypeWithDescription(const std::string& description) {
-  if (description == std::string(kUserAgentTypeMobileDescription))
+  if (description == std::string(kUserAgentTypeMobileDescription)) {
     return UserAgentType::MOBILE;
-  if (description == std::string(kUserAgentTypeDesktopDescription))
+  }
+  if (description == std::string(kUserAgentTypeDesktopDescription)) {
     return UserAgentType::DESKTOP;
-  if (description == std::string(kUserAgentTypeAutomaticDescription))
+  }
+  if (description == std::string(kUserAgentTypeAutomaticDescription)) {
     return UserAgentType::AUTOMATIC;
+  }
   return UserAgentType::NONE;
 }
 
@@ -88,8 +91,9 @@ std::string BuildOSCpuInfo() {
   std::string platform =
       base::SysNSStringToUTF8([[UIDevice currentDevice] model]);
   size_t position = platform.find_first_of(" ");
-  if (position != std::string::npos)
+  if (position != std::string::npos) {
     platform = platform.substr(0, position);
+  }
 
   base::StringAppendF(&os_cpu, "%s; CPU %s %s like Mac OS X", platform.c_str(),
                       (platform == "iPad") ? "OS" : "iPhone OS",

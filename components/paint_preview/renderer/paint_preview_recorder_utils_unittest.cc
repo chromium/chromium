@@ -31,6 +31,7 @@
 #include "components/paint_preview/common/serialized_recording.h"
 #include "components/paint_preview/common/test_utils.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,7 +51,6 @@
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
-#include "third_party/skia/include/encode/SkPngEncoder.h"
 
 namespace paint_preview {
 
@@ -277,8 +277,7 @@ class PaintPreviewRecorderUtilsSerializeAsSkPictureTest
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
 
   PaintPreviewTracker tracker;
@@ -411,7 +410,7 @@ TEST_P(PaintPreviewRecorderUtilsSerializeAsSkPictureTest,
     SkCanvas sk_canvas(bitmap);
     sk_canvas.drawColor(SkColors::kRed);
     auto sk_image = SkImages::RasterFromBitmap(bitmap);
-    auto data = SkPngEncoder::Encode(nullptr, sk_image.get(), {});
+    auto data = skia::EncodePngAsSkData(nullptr, sk_image.get());
     CHECK(data);
     ASSERT_TRUE(SkPngDecoder::IsPng(data->data(), data->size()));
     SkCodecs::Register(SkPngDecoder::Decoder());

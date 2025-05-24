@@ -5,6 +5,7 @@
 #include "ui/gfx/color_space_win.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "third_party/skia/modules/skcms/skcms.h"
 
@@ -13,7 +14,7 @@ namespace gfx {
 DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     const ColorSpace& color_space) {
   DXVA2_ExtendedFormat format;
-  memset(&format, 0, sizeof(format));
+  UNSAFE_TODO(memset(&format, 0, sizeof(format)));
   format.SampleFormat = DXVA2_SampleProgressiveFrame;
   format.VideoLighting = DXVA2_VideoLighting_dim;
   format.NominalRange = DXVA2_NominalRange_16_235;
@@ -131,7 +132,6 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
     case gfx::ColorSpace::TransferID::GAMMA24:
     case gfx::ColorSpace::TransferID::CUSTOM:
     case gfx::ColorSpace::TransferID::CUSTOM_HDR:
-    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::INVALID:
       // Not handled
       break;
@@ -143,16 +143,10 @@ DXVA2_ExtendedFormat ColorSpaceWin::GetExtendedFormat(
 bool ColorSpaceWin::CanConvertToDXGIColorSpace(const ColorSpace& color_space) {
   // RGB color space is not supported yet.
   DCHECK_NE(color_space.GetMatrixID(), gfx::ColorSpace::MatrixID::RGB);
-  switch (color_space.GetRangeID()) {
-    case gfx::ColorSpace::RangeID::LIMITED:
-    case gfx::ColorSpace::RangeID::FULL:
-      break;
 
-    case gfx::ColorSpace::RangeID::DERIVED:
-    case gfx::ColorSpace::RangeID::INVALID:
-      // Assuming limited.
-      break;
-  }
+  // Support both full and limited color ranges, but also for derived and
+  // invalid ones, assume limited color range regarding YUV and full color
+  // range regarding RGB.
 
   switch (color_space.GetMatrixID()) {
     case gfx::ColorSpace::MatrixID::BT709:
@@ -232,7 +226,6 @@ bool ColorSpaceWin::CanConvertToDXGIColorSpace(const ColorSpace& color_space) {
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
     case gfx::ColorSpace::TransferID::CUSTOM:
     case gfx::ColorSpace::TransferID::CUSTOM_HDR:
-    case gfx::ColorSpace::TransferID::PIECEWISE_HDR:
     case gfx::ColorSpace::TransferID::SCRGB_LINEAR_80_NITS:
       // Not supported.
       return false;

@@ -137,14 +137,6 @@ bool IsESimSupported() {
   return false;
 }
 
-bool IsCellularSimLocked() {
-  const DeviceStateProperties* cellular_device =
-      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
-          NetworkType::kCellular);
-  return cellular_device &&
-         !cellular_device->sim_lock_status->lock_type.empty();
-}
-
 NetworkType GetMobileSectionNetworkType() {
   if (features::IsInstantHotspotRebrandEnabled()) {
     return NetworkType::kCellular;
@@ -591,7 +583,7 @@ void NetworkListViewControllerImpl::SetConnectionWarningIcon(
   // Set 'info' icon on left side.
   std::unique_ptr<views::ImageView> image_view = base::WrapUnique(
       TrayPopupUtils::CreateMainImageView(/*use_wide_layout=*/false));
-  image_view->SetImage(gfx::CreateVectorIcon(
+  image_view->SetImage(ui::ImageModel::FromVectorIcon(
       use_managed_icon ? kSystemTrayManagedIcon : kSystemMenuInfoIcon,
       AshColorProvider::Get()->GetContentLayerColor(
           AshColorProvider::ContentLayerType::kIconColorPrimary)));
@@ -688,7 +680,7 @@ size_t NetworkListViewControllerImpl::CreateWifiGroupHeader(
                : IDS_ASH_QUICK_SETTINGS_UNKNOWN_NETWORKS));
   header->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
   header->SetBorder(views::CreateEmptyBorder(kWifiGroupLabelPadding));
-  header->SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant);
+  header->SetEnabledColor(cros_tokens::kCrosSysOnSurfaceVariant);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *header);
 
   if (is_known) {
@@ -862,13 +854,6 @@ void NetworkListViewControllerImpl::UpdateMobileToggleAndSetStatusMessage() {
     // The toggle will never be enabled during cellular state transitions.
     toggle_enabled &=
         cellular_enabled || cellular_state == DeviceStateType::kDisabled;
-
-    // The toggle will never be enabled if the device is SIM locked and we
-    // cannot open the Settings UI.
-    toggle_enabled &=
-        cellular_enabled ||
-        Shell::Get()->session_controller()->ShouldEnableSettings() ||
-        !IsCellularSimLocked();
 
     mobile_header_view_->SetToggleVisibility(/*visibility=*/true);
     mobile_header_view_->SetToggleState(/*enabled=*/toggle_enabled,

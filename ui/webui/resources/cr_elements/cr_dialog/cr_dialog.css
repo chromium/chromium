@@ -7,13 +7,12 @@
  * #import=../cr_shared_vars.css.js
  * #import=../cr_hidden_style_lit.css.js
  * #import=../cr_icons_lit.css.js
+ * #import=../cr_scrollable_lit.css.js
  * #scheme=relative
- * #include=cr-hidden-style-lit cr-icons-lit
+ * #include=cr-hidden-style-lit cr-icons-lit cr-scrollable-lit
  * #css_wrapper_metadata_end */
 
 dialog {
-  --scroll-border-color: var(--google-grey-300);
-  --scroll-border: 1px solid var(--scroll-border-color);
   background-color: var(--cr-dialog-background-color, white);
   border: 0;
   border-radius: var(--cr-dialog-border-radius, 8px);
@@ -21,6 +20,7 @@ dialog {
   box-shadow: 0 0 16px rgba(0, 0, 0, 0.12),
               0 16px 16px rgba(0, 0, 0, 0.24);
   color: inherit;
+  line-height: 20px;
   max-height: initial;
   max-width: initial;
   overflow-y: hidden;
@@ -32,7 +32,6 @@ dialog {
 
 @media (prefers-color-scheme: dark) {
   dialog {
-    --scroll-border-color: var(--google-grey-700);
     background-color: var(--cr-dialog-background-color,
         var(--google-grey-900));
     /* Note: the colors in linear-gradient() are intentionally the same to
@@ -128,27 +127,6 @@ dialog::backdrop {
   overflow: auto;
 }
 
-:host {
-  --transparent-border: 1px solid transparent;
-}
-
-/* Cr Dialog uses borders instead of box-shadows. */
-#cr-container-shadow-top {
-  border-bottom: var(--cr-dialog-body-border-top,
-      var(--transparent-border));
-}
-
-#cr-container-shadow-bottom {
-  border-bottom: var(--cr-dialog-body-border-bottom,
-      var(--transparent-border));
-}
-
-#cr-container-shadow-top:has(+ #container.can-scroll:not(.scrolled-to-top)),
-#container.can-scroll:not(.scrolled-to-bottom) +
-    #cr-container-shadow-bottom {
-  border-bottom: var(--scroll-border);
-}
-
 .top-container {
   align-items: flex-start;
   display: flex;
@@ -169,3 +147,14 @@ dialog::backdrop {
   margin-inline-end: 4px;
   margin-top: 4px;
 }
+
+/* If --cr-dialog-body-border-top is defined, force show the scrollable top
+ * border and override its styling. */
+/* clean-css ignore:start */
+@container style(--cr-dialog-body-border-top) {
+  .cr-scrollable-top {
+    display: block;
+    border-top: var(--cr-dialog-body-border-top);
+  }
+}
+/* clean-css ignore:end */

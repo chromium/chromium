@@ -92,21 +92,20 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
   base::Value::Dict response;
-  std::optional<base::Value> message_value = base::JSONReader::Read(message);
-  if (!message_value || !message_value->is_dict()) {
+  std::optional<base::Value::Dict> message_dict =
+      base::JSONReader::ReadDict(message);
+  if (!message_dict) {
     OnError("Received a message that's not a dictionary.");
     return;
   }
 
-  base::Value::Dict& message_dict = message_value->GetDict();
-
   // If the client supplies an ID, it will expect it in the response. This
   // might be a string or a number, so cope with both.
-  if (const base::Value* id = message_dict.Find("id")) {
+  if (const base::Value* id = message_dict->Find("id")) {
     response.Set("id", id->Clone());
   }
 
-  const std::string* type = message_dict.FindString("type");
+  const std::string* type = message_dict->FindString("type");
   if (!type) {
     OnError("'type' not found");
     return;
@@ -115,41 +114,41 @@ void Me2MeNativeMessagingHost::OnMessage(const std::string& message) {
   response.Set("type", *type + "Response");
 
   if (*type == "hello") {
-    ProcessHello(std::move(message_dict), std::move(response));
+    ProcessHello(std::move(*message_dict), std::move(response));
   } else if (*type == "clearPairedClients") {
-    ProcessClearPairedClients(std::move(message_dict), std::move(response));
+    ProcessClearPairedClients(std::move(*message_dict), std::move(response));
   } else if (*type == "deletePairedClient") {
-    ProcessDeletePairedClient(std::move(message_dict), std::move(response));
+    ProcessDeletePairedClient(std::move(*message_dict), std::move(response));
   } else if (*type == "getHostName") {
-    ProcessGetHostName(std::move(message_dict), std::move(response));
+    ProcessGetHostName(std::move(*message_dict), std::move(response));
   } else if (*type == "getPinHash") {
-    ProcessGetPinHash(std::move(message_dict), std::move(response));
+    ProcessGetPinHash(std::move(*message_dict), std::move(response));
   } else if (*type == "generateKeyPair") {
-    ProcessGenerateKeyPair(std::move(message_dict), std::move(response));
+    ProcessGenerateKeyPair(std::move(*message_dict), std::move(response));
   } else if (*type == "updateDaemonConfig") {
-    ProcessUpdateDaemonConfig(std::move(message_dict), std::move(response));
+    ProcessUpdateDaemonConfig(std::move(*message_dict), std::move(response));
   } else if (*type == "getDaemonConfig") {
-    ProcessGetDaemonConfig(std::move(message_dict), std::move(response));
+    ProcessGetDaemonConfig(std::move(*message_dict), std::move(response));
   } else if (*type == "getPairedClients") {
-    ProcessGetPairedClients(std::move(message_dict), std::move(response));
+    ProcessGetPairedClients(std::move(*message_dict), std::move(response));
   } else if (*type == "getUsageStatsConsent") {
-    ProcessGetUsageStatsConsent(std::move(message_dict), std::move(response));
+    ProcessGetUsageStatsConsent(std::move(*message_dict), std::move(response));
   } else if (*type == "startDaemon") {
-    ProcessStartDaemon(std::move(message_dict), std::move(response));
+    ProcessStartDaemon(std::move(*message_dict), std::move(response));
   } else if (*type == "stopDaemon") {
-    ProcessStopDaemon(std::move(message_dict), std::move(response));
+    ProcessStopDaemon(std::move(*message_dict), std::move(response));
   } else if (*type == "getDaemonState") {
-    ProcessGetDaemonState(std::move(message_dict), std::move(response));
+    ProcessGetDaemonState(std::move(*message_dict), std::move(response));
   } else if (*type == "getHostClientId") {
-    ProcessGetHostClientId(std::move(message_dict), std::move(response));
+    ProcessGetHostClientId(std::move(*message_dict), std::move(response));
   } else if (*type == "getCredentialsFromAuthCode") {
-    ProcessGetCredentialsFromAuthCode(std::move(message_dict),
+    ProcessGetCredentialsFromAuthCode(std::move(*message_dict),
                                       std::move(response), true);
   } else if (*type == "getRefreshTokenFromAuthCode") {
-    ProcessGetCredentialsFromAuthCode(std::move(message_dict),
+    ProcessGetCredentialsFromAuthCode(std::move(*message_dict),
                                       std::move(response), false);
   } else if (*type == "it2mePermissionCheck") {
-    ProcessIt2mePermissionCheck(std::move(message_dict), std::move(response));
+    ProcessIt2mePermissionCheck(std::move(*message_dict), std::move(response));
   } else {
     OnError("Unsupported request type: " + *type);
   }

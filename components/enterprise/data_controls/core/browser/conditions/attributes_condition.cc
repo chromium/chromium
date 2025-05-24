@@ -25,7 +25,8 @@ AttributesCondition::AttributesCondition(const base::Value::Dict& value) {
 
     auto url_matcher = std::make_unique<url_matcher::URLMatcher>();
     base::MatcherStringPattern::ID id(0);
-    url_matcher::util::AddFilters(url_matcher.get(), true, &id, *urls_value);
+    url_matcher::util::AddFiltersWithLimit(url_matcher.get(), true, &id,
+                                           *urls_value);
 
     if (!url_matcher->IsEmpty()) {
       url_matcher_ = std::move(url_matcher);

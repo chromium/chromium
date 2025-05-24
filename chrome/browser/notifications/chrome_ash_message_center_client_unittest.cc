@@ -26,8 +26,10 @@
 #include "components/permissions/test/permission_test_util.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +50,7 @@ class ChromeAshMessageCenterClientTest : public testing::Test,
  protected:
   ChromeAshMessageCenterClientTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {}
-  ~ChromeAshMessageCenterClientTest() override {}
+  ~ChromeAshMessageCenterClientTest() override = default;
 
   // testing::Test:
   void SetUp() override {
@@ -126,10 +128,9 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
       static_cast<extensions::TestExtensionSystem*>(
           extensions::ExtensionSystem::Get(profile));
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  extensions::ExtensionService* extension_service =
-      test_extension_system->CreateExtensionService(
-          &command_line, base::FilePath() /* install_directory */,
-          false /* autoupdate_enabled*/);
+  test_extension_system->CreateExtensionService(
+      &command_line, base::FilePath() /* install_directory */,
+      false /* autoupdate_enabled*/);
 
   extensions::ExtensionBuilder foo_app;
   // Foo is an app with name Foo and should appear second.
@@ -157,7 +158,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                        "scripts", base::Value::List().Append("background.js"))))
           .Set("permissions", base::Value::List().Append("notifications")));
   foo_app.SetID(kFooId);
-  extension_service->AddExtension(foo_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(foo_app.Build());
 
   extensions::ExtensionBuilder bar_app;
   bar_app.SetManifest(
@@ -172,7 +173,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                        "scripts", base::Value::List().Append("background.js"))))
           .Set("permissions", base::Value::List().Append("notifications")));
   bar_app.SetID(kBarId);
-  extension_service->AddExtension(bar_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(bar_app.Build());
 
   extensions::ExtensionBuilder baz_app;
   baz_app.SetManifest(
@@ -186,7 +187,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                               "scripts",
                               base::Value::List().Append("background.js")))));
   baz_app.SetID(kBazId);
-  extension_service->AddExtension(baz_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(baz_app.Build());
 
   extensions::ExtensionBuilder baf_app;
   baf_app.SetManifest(
@@ -204,7 +205,7 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
                                          "hosted_app/main.html"))));
 
   baf_app.SetID(kBafId);
-  extension_service->AddExtension(baf_app.Build().get());
+  extensions::ExtensionRegistrar::Get(profile)->AddExtension(baf_app.Build());
   CreateClient();
 
   RefreshNotifierList();
@@ -215,6 +216,9 @@ TEST_F(ChromeAshMessageCenterClientTest, NotifierSortOrder) {
 
 TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
   TestingProfile* profile = CreateProfile("myprofile@gmail.com");
+  const auto notification_permission_descriptor = content::
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::NOTIFICATIONS);
   CreateClient();
 
   GURL origin("https://example.com/");
@@ -236,7 +240,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::GRANTED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // (2) Disable the permission when the default is to ask (expected to clear).
@@ -245,7 +249,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::ASK,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // Change the default content setting vaule for notifications to ALLOW.
@@ -259,7 +263,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::DENIED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // (4) Enable the permission when the default is allowed (expected to clear).
@@ -269,7 +273,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::GRANTED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // Now change the default content setting value to BLOCK.
@@ -283,7 +287,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::GRANTED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 
   // (6) Disable the permission when the default is blocked (expected to clear).
@@ -292,7 +296,7 @@ TEST_F(ChromeAshMessageCenterClientTest, SetWebPageNotifierEnabled) {
       blink::mojom::PermissionStatus::DENIED,
       profile->GetPermissionController()
           ->GetPermissionResultForOriginWithoutContext(
-              blink::PermissionType::NOTIFICATIONS, url::Origin::Create(origin))
+              notification_permission_descriptor, url::Origin::Create(origin))
           .status);
 }
 

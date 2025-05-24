@@ -81,8 +81,7 @@
     case network::mojom::ReferrerPolicy::kStrictOrigin:
       return web::ReferrerPolicy::ReferrerPolicyStrictOrigin;
   }
-  NOTREACHED_IN_MIGRATION();
-  return web::ReferrerPolicy::ReferrerPolicyDefault;
+  NOTREACHED();
 }
 
 - (web::ContextMenuParams)webContextMenuParams {
@@ -131,7 +130,8 @@
         willEndForConfiguration:configuration
                        animator:animator];
   if (_webContents) {
-    _webContents->NotifyContextMenuClosed(_params.link_followed);
+    _webContents->NotifyContextMenuClosed(_params.link_followed,
+                                          _params.impression);
   }
 }
 

@@ -7,10 +7,10 @@
 
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class FilePath;
@@ -23,7 +23,7 @@ namespace web_app {
 
 class FileUtilsWrapper;
 
-using OptionsOrError = absl::variant<ExternalInstallOptions, std::string>;
+using OptionsOrError = std::variant<ExternalInstallOptions, std::string>;
 
 OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            const base::FilePath& dir,
@@ -41,7 +41,7 @@ IconBitmapsOrError ParseOfflineManifestIconBitmaps(
     const base::Value* icon_files);
 
 using WebAppInstallInfoFactoryOrError =
-    absl::variant<WebAppInstallInfoFactory, std::string>;
+    std::variant<WebAppInstallInfoFactory, std::string>;
 
 WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     FileUtilsWrapper& file_utils,

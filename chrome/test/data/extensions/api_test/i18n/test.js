@@ -10,9 +10,6 @@ var callbackPass = chrome.test.callbackPass;
 
 chrome.test.getConfig(function(config) {
 
-  var TEST_FILE_URL = "http://localhost:PORT/extensions/test_file.html"
-      .replace(/PORT/, config.testServer.port);
-
   chrome.test.runTests([
     function getAcceptLanguages() {
       chrome.i18n.getAcceptLanguages(callbackPass(function(results) {
@@ -44,6 +41,14 @@ chrome.test.getConfig(function(config) {
       chrome.test.succeed();
     },
     function getMessageFromContentScript() {
+      // TODO(crbug.com/371432155): Port to desktop Android once the chrome.tabs
+      // API is supported.
+      if (/Android/.test(navigator.userAgent)) {
+        chrome.test.succeed();
+        return;
+      }
+      var TEST_FILE_URL = "http://localhost:PORT/extensions/test_file.html"
+        .replace(/PORT/, config.testServer.port);
       chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
           chrome.test.assertEq(request, "Number of errors: 19");

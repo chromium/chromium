@@ -56,10 +56,8 @@ void NearbyConnectionManager::AttemptNearbyInitiatorConnection(
     ConnectionSuccessCallback success_callback,
     const FailureCallback& failure_callback) {
   if (base::Contains(id_pair_to_initiator_metadata_map_, device_id_pair)) {
-    PA_LOG(ERROR) << "Tried to add Nearby initiator connection attempt, but "
-                  << "one was already active. Device IDs: " << device_id_pair;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "Tried to add Nearby initiator connection attempt, but "
+                 << "one was already active. Device IDs: " << device_id_pair;
   }
 
   id_pair_to_initiator_metadata_map_.emplace(std::make_pair(
@@ -162,9 +160,8 @@ void NearbyConnectionManager::RemoveRequestMetadata(
     const DeviceIdPair& device_id_pair) {
   auto metadata_it = id_pair_to_initiator_metadata_map_.find(device_id_pair);
   if (metadata_it == id_pair_to_initiator_metadata_map_.end()) {
-    PA_LOG(ERROR) << "Tried to remove Nearby initiator metadata, but none "
-                  << "existed. Device IDs: " << device_id_pair;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "Tried to remove Nearby initiator metadata, but none "
+                 << "existed. Device IDs: " << device_id_pair;
   } else {
     id_pair_to_initiator_metadata_map_.erase(metadata_it);
   }
@@ -172,9 +169,8 @@ void NearbyConnectionManager::RemoveRequestMetadata(
   auto id_pair_it =
       remote_device_id_to_id_pair_map_.find(device_id_pair.remote_device_id());
   if (id_pair_it == remote_device_id_to_id_pair_map_.end()) {
-    PA_LOG(ERROR) << "Tried to remove Nearby initiator attempt, but no attempt "
-                  << "existed. Device IDs: " << device_id_pair;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "Tried to remove Nearby initiator attempt, but no attempt "
+                 << "existed. Device IDs: " << device_id_pair;
   } else {
     id_pair_it->second.erase(device_id_pair);
   }

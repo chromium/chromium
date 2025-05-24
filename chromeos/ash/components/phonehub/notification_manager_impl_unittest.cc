@@ -14,8 +14,7 @@
 #include "chromeos/ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -277,5 +276,5 @@ TEST_F(NotificationManagerImplTest, ClearNotificationsOnFeatureStatusChanged) {
   SetNotificationFeatureStatus(FeatureState::kDisabledByUser);
   EXPECT_EQ(0u, GetNumNotifications());
 }
-}  // namespace phonehub
-}  // namespace ash
+
+}  // namespace ash::phonehub

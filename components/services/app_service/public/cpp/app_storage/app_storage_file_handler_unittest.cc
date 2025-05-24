@@ -204,44 +204,6 @@ TEST_F(AppStorageFileHandlerTest, ReadFromWrongJSONFile) {
   EXPECT_FALSE(app_info);
 }
 
-// Test AppStorageFileHandler can work when the data format isn't correct.
-TEST_F(AppStorageFileHandlerTest, ReadFromWrongDataFile) {
-  const char kAppInfoData[] =
-      "{\"abc\":{}, \"aaa\":{\"type\":2, \"readiness\":100}}";
-  WriteToFile(kAppInfoData);
-  auto app_info = ReadFromFile();
-
-  // The app type for "abc" is empty, so we can get one app only {app_id =
-  // "aaa", app_type = kBuiltIn}.
-  ASSERT_TRUE(app_info);
-  EXPECT_EQ(1u, app_info->apps.size());
-  EXPECT_EQ("aaa", app_info->apps[0]->app_id);
-  EXPECT_EQ(AppType::kBuiltIn, app_info->apps[0]->app_type);
-  // The readiness for the app "aaa" is wrong, so readiness is set as the
-  // default value.
-  EXPECT_EQ(Readiness::kUnknown, app_info->apps[0]->readiness);
-
-  EXPECT_EQ(1u, app_info->app_types.size());
-  EXPECT_TRUE(base::Contains(app_info->app_types, AppType::kBuiltIn));
-}
-
-// Test AppStorageFileHandler can work when the app type isn't correct.
-TEST_F(AppStorageFileHandlerTest, ReadFromWrongAppType) {
-  const char kAppInfoData[] = "{\"abc\":{\"type\":100}, \"aaa\":{\"type\":2}}";
-  WriteToFile(kAppInfoData);
-  auto app_info = ReadFromFile();
-
-  // The app type for "abc" is wrong, so we can get one app only {app_id =
-  // "aaa", app_type = kBuiltIn}.
-  ASSERT_TRUE(app_info);
-  EXPECT_EQ(1u, app_info->apps.size());
-  EXPECT_EQ("aaa", app_info->apps[0]->app_id);
-  EXPECT_EQ(AppType::kBuiltIn, app_info->apps[0]->app_type);
-
-  EXPECT_EQ(1u, app_info->app_types.size());
-  EXPECT_TRUE(base::Contains(app_info->app_types, AppType::kBuiltIn));
-}
-
 // Test AppStorageFileHandler can read and write the empty app info data.
 TEST_F(AppStorageFileHandlerTest, ReadAndWriteEmptyData) {
   WriteToFile(std::vector<AppPtr>());

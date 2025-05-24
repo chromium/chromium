@@ -20,7 +20,7 @@ namespace remoting {
 
 std::string GetFqdn() {
 #if BUILDFLAG(IS_WIN)
-  wchar_t buffer[MAX_PATH] = {0};
+  wchar_t buffer[MAX_PATH] = {};
   DWORD size = MAX_PATH;
   if (!::GetComputerNameExW(ComputerNameDnsFullyQualified, buffer, &size)) {
     PLOG(ERROR) << "GetComputerNameExW failed";

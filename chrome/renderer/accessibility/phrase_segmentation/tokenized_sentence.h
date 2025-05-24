@@ -21,7 +21,7 @@ class TokenizedSentence {
 
   // Constructs a tokenized sentence from tokens.
   explicit TokenizedSentence(const std::u16string& text,
-                             const std::vector<std::u16string> tokens);
+                             const std::vector<std::u16string>& tokens);
 
   ~TokenizedSentence();
 

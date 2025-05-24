@@ -130,18 +130,95 @@ chromium-metrics-reviews@google.com.
   <int value="255" label="Unspecified/unknown error in user-mode"/>
 </enum>
 
-<enum name="ChromeOSRevenPartitionMigration">
-  <int value="0" label="kSuccess"/>
-  <int value="1" label="kNoMigrationNeeded"/>
-  <int value="2" label="kGptReadKernError"/>
-  <int value="3" label="kGptReadRootError"/>
-  <int value="4" label="kGptWriteKernError"/>
-  <int value="5" label="kGptWriteRootError"/>
-  <int value="6" label="kDiskOpenError"/>
-  <int value="7" label="kDiskReadError"/>
-  <int value="8" label="kDiskWriteError"/>
-  <int value="9" label="kRootPartitionUnexpectedSize"/>
-  <int value="10" label="kMigrationNotAllowed"/>
+<enum name="SetupInstallResult">
+  <summary>
+    Return status of the Windows installer. The values in this enum must be kept
+    in sync with the InstallStatus enum in
+    //chrome/installer/util/util_constants.h.
+  </summary>
+  <int value="0" label="First install of Chrome succeeded."/>
+  <int value="1" label="Same version reinstalled for repair."/>
+  <int value="2" label="Chrome successfully updated to new version."/>
+  <int value="3" label="No work done; launched existing Chrome."/>
+  <int value="4" label="Higher version of Chrome already exists."/>
+  <int value="5" label="User level install already exists."/>
+  <int value="6" label="Machine level install already exists."/>
+  <int value="7" label="Install/update failed."/>
+  <int value="8" label="Failed to patch setup.exe."/>
+  <int value="9" label="Current OS not supported."/>
+  <int value="10" label="OS API call failed."/>
+  <int value="11" label="Unable to get Temp directory."/>
+  <int value="12" label="Failed to uncompress Chrome archive."/>
+  <int value="13" label="Something wrong with the installer archive."/>
+  <int value="14" label="User trying system level install is not Admin."/>
+  <int value="15" label="Chrome not installed (during uninstall)."/>
+  <int value="16" label="Chrome currently running (during uninstall)."/>
+  <int value="17" label="User has confirmed Chrome uninstall."/>
+  <int value="18" label="User okayed uninstall and profile deletion."/>
+  <int value="19" label="Chrome successfully uninstalled."/>
+  <int value="20" label="Chrome uninstallation failed."/>
+  <int value="21" label="User cancelled Chrome uninstallation."/>
+  <int value="22" label="Unknown status (this should never happen)."/>
+  <int value="23" label="Rename of new_chrome.exe to chrome.exe worked."/>
+  <int value="24" label="Rename of new_chrome.exe failed."/>
+  <int value="25" label="EULA dialog was not accepted by user."/>
+  <int value="26" label="EULA dialog was accepted by user."/>
+  <int value="27" label="EULA accepted with the crash option selected."/>
+  <int value="28" label="Installation directory is in use by another process."/>
+  <int value="29" label="Uninstallation required a reboot."/>
+  <int value="30" label="Chrome successfully updated but old version running."/>
+  <int value="31" label="Chrome repair failed as Chrome was running."/>
+  <int value="32" label="Setup has been re-launched as the interactive user."/>
+  <int value="33"
+      label="The chrome-sxs option provided does not work with other command
+             line options."/>
+  <int value="42" label="Failed to apply a diff patch."/>
+  <int value="47"
+      label="A non-install option was called with an invalid installer state."/>
+  <int value="49"
+      label="The arguments of --patch were missing or they were invalid for
+             any reason."/>
+  <int value="50"
+      label="No previous version archive found for differential update."/>
+  <int value="51"
+      label="No multi-install products to update. The binaries will be
+             uninstalled if they are not in use. (Removed in M84.)"/>
+  <int value="52" label="The binaries were uninstalled. (Removed in M84.)"/>
+  <int value="53" label="An unsupported legacy option was given."/>
+  <int value="54" label="Current CPU not supported."/>
+  <int value="55" label="Autoupdates are now enabled."/>
+  <int value="56" label="Autoupdates could not be enabled."/>
+  <int value="57"
+      label="Unpacking the (possibly patched) uncompressed archive failed."/>
+  <int value="71" label="Rotation of the device trust key failed."/>
+  <int value="72" label="Rotation of the device trust key succeeded."/>
+  <int value="73" label="Creation of shortcuts succeeded."/>
+  <int value="74" label="DMToken deletion failed."/>
+  <int value="75" label="DMToken deletion succeeded."/>
+  <int value="76" label="Failed Device Trust Rotation: Invalid Permissions"/>
+  <int value="77" label="Failed Device Trust Rotation: Conflict"/>
+  <int value="78"
+      label="Successfully configured the browser in a specified directory"/>
+  <int value="79"
+      label="Failed to configure the browser in a specified directory"/>
+</enum>
+
+<enum name="UnPackStatus">
+  <int value="0" label="No Error"/>
+  <int value="1" label="Archive file not found"/>
+  <int value="2" label="Archive file can not be opened"/>
+  <int value="3" label="Archive can not be opened by extract tool."/>
+  <int value="4" label="File can not be extracted"/>
+  <int value="5" label="Mapped file IO Exception"/>
+  <int value="6" label="Can not get the name of extracted file"/>
+  <int value="7" label="Can not create extracted file on disk"/>
+  <int value="8" label="Can not write the extracted file on disk"/>
+  <int value="9" label="Can not set the extract time to file (Deprecated)"/>
+  <int value="10" label="Can not close extracted file (Deprecated)"/>
+  <int value="11" label="Can not create file memory mapping"/>
+  <int value="12" label="File CRC mismatch"/>
+  <int value="13" label="There is not enough space on the disk."/>
+  <int value="14" label="I/O device error."/>
 </enum>
 
 </enums>

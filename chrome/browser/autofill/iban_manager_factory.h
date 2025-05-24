@@ -22,7 +22,7 @@ class IbanManager;
 // Singleton that owns all IbanManagers and associates them with Profiles.
 class IbanManagerFactory : public ProfileKeyedServiceFactory {
  public:
-  // Returns the IbanManager for |profile|, creating it if it is not yet
+  // Returns the IbanManager for `profile`, creating it if it is not yet
   // created.
   static IbanManager* GetForProfile(Profile* profile);
 
@@ -35,7 +35,7 @@ class IbanManagerFactory : public ProfileKeyedServiceFactory {
   ~IbanManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

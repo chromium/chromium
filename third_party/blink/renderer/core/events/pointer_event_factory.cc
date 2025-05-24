@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/events/pointer_event_util.h"
@@ -45,8 +41,7 @@ uint16_t ButtonToButtonsBitfield(WebPointerProperties::Button button) {
 
 #undef CASE_BUTTON_TO_BUTTONS
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 const AtomicString& PointerEventNameForEventType(WebInputEvent::Type type) {
@@ -62,8 +57,7 @@ const AtomicString& PointerEventNameForEventType(WebInputEvent::Type type) {
     case WebInputEvent::Type::kPointerCancel:
       return event_type_names::kPointercancel;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 
@@ -147,21 +141,21 @@ void UpdateCommonPointerEventInit(const WebPointerEvent& web_pointer_event,
 // static
 const AtomicString& PointerEventFactory::PointerTypeNameForWebPointPointerType(
     WebPointerProperties::PointerType type) {
-  // TODO(mustaq): Fix when the spec starts supporting hovering erasers.
-  // See spec https://github.com/w3c/pointerevents/issues/134
   switch (type) {
     case WebPointerProperties::PointerType::kUnknown:
       return g_empty_atom;
-    case WebPointerProperties::PointerType::kTouch:
-      return pointer_type_names::kTouch;
-    case WebPointerProperties::PointerType::kPen:
-      return pointer_type_names::kPen;
     case WebPointerProperties::PointerType::kMouse:
       return pointer_type_names::kMouse;
-    default:
-      DUMP_WILL_BE_NOTREACHED();
-      return g_empty_atom;
+    case WebPointerProperties::PointerType::kPen:
+      return pointer_type_names::kPen;
+    case WebPointerProperties::PointerType::kTouch:
+      return pointer_type_names::kTouch;
+    case WebPointerProperties::PointerType::kEraser:
+      // TODO(mustaq): Fix when the spec starts supporting hovering erasers.
+      // See spec https://github.com/w3c/pointerevents/issues/134
+      return pointer_type_names::kPen;
   }
+  NOTREACHED();
 }
 
 HeapVector<Member<PointerEvent>> PointerEventFactory::CreateEventSequence(

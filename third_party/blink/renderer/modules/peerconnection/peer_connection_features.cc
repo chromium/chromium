@@ -16,6 +16,13 @@ BASE_FEATURE(kWebRtcEncodedTransformDirectCallback,
              "WebRtcEncodedTransformDirectCallback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature enables encrypting RTP header extensions using RFC 6904, if
+// requested. Requesting should be done using the RTP header extension API;
+// doing it via SDP munging is possible, but not recommended.
+BASE_FEATURE(kWebRtcEncryptedRtpHeaderExtensions,
+             "WebRtcEncryptedRtpHeaderExtensions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // This features enables the restriction that frames sent to an
 // RTCRtpScriptTransformer's writable must come from the transformer's readable
 // and must be written in the same order in which they are read. This feature

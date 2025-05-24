@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <string>
 #include <string_view>
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -72,7 +72,7 @@ DlcserviceClient::InstallResult InstallKioskVisionDlc(
 dlcservice::DlcsWithContent GetExistingDlcs(FakeDlcserviceClient& service) {
   base::test::TestFuture<const dlcservice::DlcsWithContent&> future;
   service.GetExistingDlcs(
-      base::BindOnce([](const std::string_view err,
+      base::BindOnce([](std::string_view err,
                         const dlcservice::DlcsWithContent& dlcs) {
         return dlcs;
       }).Then(future.GetCallback()));
@@ -81,7 +81,7 @@ dlcservice::DlcsWithContent GetExistingDlcs(FakeDlcserviceClient& service) {
 
 bool IsKioskVisionDlcInstalled(FakeDlcserviceClient& service) {
   const dlcservice::DlcsWithContent& dlcs = GetExistingDlcs(service);
-  return base::ranges::any_of(dlcs.dlc_infos(), [](const auto& info) {
+  return std::ranges::any_of(dlcs.dlc_infos(), [](const auto& info) {
     return info.id() == kKioskVisionDlcId;
   });
 }

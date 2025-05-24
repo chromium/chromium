@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_view_transition.h"
 
-#include "base/auto_reset.h"
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"

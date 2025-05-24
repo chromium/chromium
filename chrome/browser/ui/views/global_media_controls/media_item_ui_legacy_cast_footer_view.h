@@ -10,7 +10,6 @@
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/views/media_item_ui_footer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/gfx/color_palette.h"
 
 namespace views {
 class Button;

@@ -1,0 +1,87 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("download") {
+  sources = [
+    "download_bubble_contents_view_info.h",
+    "download_bubble_info.h",
+    "download_bubble_info_utils.h",
+    "download_bubble_row_list_view_info.h",
+    "download_bubble_row_view_info.h",
+    "download_bubble_security_view_info.h",
+    "download_display.h",
+    "download_item_mode.h",
+    "download_started_animation.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/download",
+    "//components/download/public/common:public",
+    "//components/offline_items_collection/core",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "download_bubble_contents_view_info.cc",
+    "download_bubble_info.cc",
+    "download_bubble_info_utils.cc",
+    "download_bubble_row_list_view_info.cc",
+    "download_bubble_row_view_info.cc",
+    "download_bubble_security_view_info.cc",
+    "download_display.cc",
+    "download_item_mode.cc",
+    "download_started_animation.h",
+  ]
+  deps = [
+    ":download",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/ui/color:color_headers",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/signin/public/identity_manager",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/base:features",
+    "//ui/views",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "download_bubble_row_list_view_info_unittest.cc",
+    "download_bubble_row_view_info_unittest.cc",
+    "download_bubble_security_view_info_unittest.cc",
+  ]
+
+  deps = [
+    ":download",
+    "//base/test:test_support",
+    "//chrome/browser/safe_browsing",
+    "//chrome/test:test_support",
+    "//components/download/public/common:test_support",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ui/views",
+  ]
+}

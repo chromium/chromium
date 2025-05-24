@@ -30,36 +30,31 @@ network::mojom::CookieManager* GetCookieServiceClient(Profile* profile) {
       ->GetCookieManagerForBrowserProcess();
 }
 
-void CookiesFetcherRestoreCookiesImpl(
-    JNIEnv* env,
-    Profile* profile,
-    const jni_zero::JavaParamRef<jstring>& name,
-    const jni_zero::JavaParamRef<jstring>& value,
-    const jni_zero::JavaParamRef<jstring>& domain,
-    const jni_zero::JavaParamRef<jstring>& path,
-    jlong creation,
-    jlong expiration,
-    jlong last_access,
-    jlong last_update,
-    jboolean secure,
-    jboolean httponly,
-    jint same_site,
-    jint priority,
-    const jni_zero::JavaParamRef<jstring>& partition_key,
-    jint source_scheme,
-    jint source_port,
-    jint source_type) {
+void CookiesFetcherRestoreCookiesImpl(JNIEnv* env,
+                                      Profile* profile,
+                                      const std::string& name,
+                                      const std::string& value,
+                                      const std::string& domain,
+                                      const std::string& path,
+                                      jlong creation,
+                                      jlong expiration,
+                                      jlong last_access,
+                                      jlong last_update,
+                                      jboolean secure,
+                                      jboolean httponly,
+                                      jint same_site,
+                                      jint priority,
+                                      const std::string& partition_key,
+                                      jint source_scheme,
+                                      jint source_port,
+                                      jint source_type) {
   CHECK(profile->IsOffTheRecord());
-  std::string domain_str(base::android::ConvertJavaStringToUTF8(env, domain));
-  std::string path_str(base::android::ConvertJavaStringToUTF8(env, path));
 
-  std::string top_level_site =
-      base::android::ConvertJavaStringToUTF8(env, partition_key);
   // TODO (crbug.com/326605834) Once ancestor chain bit changes are
   // implemented update this method utilize the ancestor bit.
   base::expected<std::optional<net::CookiePartitionKey>, std::string>
       serialized_cookie_partition_key = net::CookiePartitionKey::FromStorage(
-          top_level_site, /*has_cross_site_ancestor=*/true);
+          partition_key, /*has_cross_site_ancestor=*/true);
   if (!serialized_cookie_partition_key.has_value()) {
     TriedToRestoreCookieMetric(/*success=*/false);
     return;
@@ -67,9 +62,7 @@ void CookiesFetcherRestoreCookiesImpl(
 
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::FromStorage(
-          base::android::ConvertJavaStringToUTF8(env, name),
-          base::android::ConvertJavaStringToUTF8(env, value), domain_str,
-          path_str,
+          name, value, domain, path,
           base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(creation)),
           base::Time::FromDeltaSinceWindowsEpoch(
               base::Microseconds(expiration)),
@@ -95,8 +88,7 @@ void CookiesFetcherRestoreCookiesImpl(
   GetCookieServiceClient(profile)->SetCanonicalCookie(
       *cookie,
       net::cookie_util::CookieDomainAndPathToURL(
-          domain_str, path_str,
-          static_cast<net::CookieSourceScheme>(source_scheme)),
+          domain, path, static_cast<net::CookieSourceScheme>(source_scheme)),
       net::CookieOptions::MakeAllInclusive(),
       network::mojom::CookieManager::SetCanonicalCookieCallback());
   TriedToRestoreCookieMetric(/*success=*/true);

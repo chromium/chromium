@@ -1,0 +1,4 @@
+include_rules = [
+  "+ash/shell.h",
+  "+ash/shell_observer.h",
+]

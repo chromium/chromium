@@ -98,3 +98,8 @@ void SceneUrlLoadingService::LoadUrlInNewTab(const UrlLoadParams& params) {
 Browser* SceneUrlLoadingService::GetCurrentBrowser() {
   return [delegate_ currentBrowserForURLLoading];
 }
+
+UrlLoadingBrowserAgent* SceneUrlLoadingService::GetBrowserAgent(
+    bool incognito) {
+  return [delegate_ browserAgentForIncognito:incognito];
+}

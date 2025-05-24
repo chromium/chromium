@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
 
+#include "base/strings/to_string.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
@@ -107,10 +108,9 @@ TEST_P(AllowedByNosniffTest, AllowedOrNot) {
 
   for (auto& testcase : data) {
     SCOPED_TRACE(testing::Message()
-                 << "\n  mime type: " << testcase.mimetype
-                 << "\n  allowed: " << (testcase.allowed ? "true" : "false")
-                 << "\n  strict_allowed: "
-                 << (testcase.strict_allowed ? "true" : "false"));
+                 << "\n  mime type: " << testcase.mimetype << "\n  allowed: "
+                 << base::ToString(testcase.allowed) << "\n  strict_allowed: "
+                 << base::ToString(testcase.strict_allowed));
 
     const KURL url("https://bla.com/");
     MockUseCounter* use_counter = MockUseCounter::Create();

@@ -14,11 +14,11 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 #include "third_party/blink/renderer/core/layout/table/table_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 
@@ -64,6 +64,14 @@ LayoutUnit BlockSizeFromAspectRatio(const BoxStrut& border_padding,
 // Used to distinguish between the different length classes.
 enum class LengthTypeInternal { kMin, kMain, kMax };
 
+// How fit-content should resolve if the available-size is indefinite.
+enum class FitContentMode {
+  kNormal,  // fit-content will resolve as min-content for the min-size, and
+            // max-content for the max-size.
+  kMinContribution,  // fit-content will resolve as min-content.
+  kMaxContribution   // fit-content will resolve as max-content.
+};
+
 // Resolve means translate a Length to a LayoutUnit.
 //  - |ConstraintSpace| the information given by the parent, e.g. the
 //    available-size.
@@ -82,6 +90,7 @@ ResolveInlineLengthInternal(const ConstraintSpace&,
                             const Length&,
                             const Length* auto_length,
                             LengthTypeInternal length_type,
+                            FitContentMode fit_content_mode,
                             LayoutUnit override_available_size,
                             CalcSizeKeywordBehavior calc_size_keyword_behavior);
 
@@ -106,11 +115,12 @@ inline LayoutUnit ResolveMinInlineLength(
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
     const Length* auto_length = nullptr,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    FitContentMode fit_content_mode = FitContentMode::kNormal) {
   const LayoutUnit result = ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      auto_length, LengthTypeInternal::kMin, override_available_size,
-      CalcSizeKeywordBehavior::kAsSpecified);
+      auto_length, LengthTypeInternal::kMin, fit_content_mode,
+      override_available_size, CalcSizeKeywordBehavior::kAsSpecified);
   return result == kIndefiniteSize ? border_padding.InlineSum() : result;
 }
 
@@ -121,10 +131,11 @@ inline LayoutUnit ResolveMaxInlineLength(
     const BoxStrut& border_padding,
     MinMaxSizesFunctionRef min_max_sizes_func,
     const Length& length,
-    LayoutUnit override_available_size = kIndefiniteSize) {
+    LayoutUnit override_available_size = kIndefiniteSize,
+    FitContentMode fit_content_mode = FitContentMode::kNormal) {
   const LayoutUnit result = ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      /* auto_length */ nullptr, LengthTypeInternal::kMax,
+      /* auto_length */ nullptr, LengthTypeInternal::kMax, fit_content_mode,
       override_available_size, CalcSizeKeywordBehavior::kAsSpecified);
   return result == kIndefiniteSize ? LayoutUnit::Max() : result;
 }
@@ -142,8 +153,8 @@ inline LayoutUnit ResolveMainInlineLength(
         CalcSizeKeywordBehavior::kAsSpecified) {
   return ResolveInlineLengthInternal(
       constraint_space, style, border_padding, min_max_sizes_func, length,
-      auto_length, LengthTypeInternal::kMain, override_available_size,
-      calc_size_keyword_behavior);
+      auto_length, LengthTypeInternal::kMain, FitContentMode::kNormal,
+      override_available_size, calc_size_keyword_behavior);
 }
 
 // Used for resolving min block lengths, (|ComputedStyle::MinLogicalHeight|).
@@ -182,11 +193,12 @@ inline LayoutUnit ResolveInitialMaxBlockLength(
     const ConstraintSpace& constraint_space,
     const ComputedStyle& style,
     const BoxStrut& border_padding,
-    const Length& length) {
+    const Length& length,
+    LayoutUnit override_available_size = kIndefiniteSize) {
   const LayoutUnit result = ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length,
       /* auto_length */ &Length::Auto(), LengthTypeInternal::kMax,
-      /* override_available_size */ kIndefiniteSize,
+      override_available_size,
       /* override_percentage_resolution_size */ nullptr,
       [](SizeType) { return kIndefiniteSize; });
   return result == kIndefiniteSize ? LayoutUnit::Max() : result;
@@ -215,12 +227,11 @@ inline LayoutUnit ResolveMainBlockLength(
     const Length& length,
     const Length* auto_length,
     LayoutUnit intrinsic_size,
-    LayoutUnit override_available_size = kIndefiniteSize,
-    const LayoutUnit* override_percentage_resolution_size = nullptr) {
+    LayoutUnit override_available_size = kIndefiniteSize) {
   return ResolveBlockLengthInternal(
       constraint_space, style, border_padding, length, auto_length,
       LengthTypeInternal::kMain, override_available_size,
-      override_percentage_resolution_size,
+      /* override_percentage_resolution_size */ nullptr,
       [intrinsic_size](SizeType) { return intrinsic_size; });
 }
 
@@ -242,9 +253,11 @@ inline LayoutUnit ResolveMainBlockLength(
 //
 // The initial variant of this function won't try and resolve
 // "min-block-size: min-content" and similar.
-MinMaxSizes ComputeInitialMinMaxBlockSizes(const ConstraintSpace&,
-                                           const BlockNode&,
-                                           const BoxStrut& border_padding);
+MinMaxSizes ComputeInitialMinMaxBlockSizes(
+    const ConstraintSpace&,
+    const BlockNode&,
+    const BoxStrut& border_padding,
+    LayoutUnit override_available_size = kIndefiniteSize);
 MinMaxSizes ComputeMinMaxBlockSizes(
     const ConstraintSpace&,
     const BlockNode&,
@@ -273,12 +286,19 @@ ComputeMinMaxInlineSizesFromAspectRatio(const ConstraintSpace&,
                                         const BlockNode&,
                                         const BoxStrut& border_padding);
 
+enum class TransferredSizesMode {
+  kNormal,  // Apply the transferred min/max sizes.
+  kIgnore   // Ignore the transferred min/max sizes.
+};
+
 MinMaxSizes ComputeMinMaxInlineSizes(
     const ConstraintSpace& space,
     const BlockNode& node,
     const BoxStrut& border_padding,
     const Length* auto_min_length,
     MinMaxSizesFunctionRef min_max_sizes_func,
+    TransferredSizesMode transferred_sizes_mode = TransferredSizesMode::kNormal,
+    FitContentMode fit_content_mode = FitContentMode::kNormal,
     LayoutUnit override_available_size = kIndefiniteSize);
 
 // Returns block size of the node's border box by resolving the computed value
@@ -389,8 +409,8 @@ CORE_EXPORT int ResolveUsedColumnCount(int computed_count,
                                        LayoutUnit computed_size,
                                        LayoutUnit used_gap,
                                        LayoutUnit available_size);
-CORE_EXPORT int ResolveUsedColumnCount(LayoutUnit available_size,
-                                       const ComputedStyle&);
+CORE_EXPORT int ResolveUsedColumnCount(const ComputedStyle&,
+                                       LayoutUnit available_size);
 
 // Based on available inline size, CSS computed column-width, CSS computed
 // column-count and CSS used column-gap, return CSS used column-width.
@@ -398,14 +418,38 @@ CORE_EXPORT LayoutUnit ResolveUsedColumnInlineSize(int computed_count,
                                                    LayoutUnit computed_size,
                                                    LayoutUnit used_gap,
                                                    LayoutUnit available_size);
-CORE_EXPORT LayoutUnit ResolveUsedColumnInlineSize(LayoutUnit available_size,
-                                                   const ComputedStyle&);
+CORE_EXPORT LayoutUnit ResolveUsedColumnInlineSize(const ComputedStyle&,
+                                                   LayoutUnit available_size);
 
-CORE_EXPORT LayoutUnit ResolveUsedColumnGap(LayoutUnit available_size,
-                                            const ComputedStyle&);
+// Return the used value of `column-gap` if it is a `<length-percentage>`.
+// Otherwise, if it's `normal`, whose resolution is algorithm-specific,
+// std::nullopt is returned.
+std::optional<LayoutUnit> ResolveColumnGapLength(const ComputedStyle&,
+                                                 LayoutUnit available_size);
 
-CORE_EXPORT LayoutUnit ColumnInlineProgression(LayoutUnit available_size,
-                                               const ComputedStyle&);
+CORE_EXPORT LayoutUnit ResolveColumnGapForMulticol(const ComputedStyle&,
+                                                   LayoutUnit available_size);
+
+// Return the used value of `row-gap` if it is a `<length-percentage>`.
+// Otherwise, if it's `normal`, whose resolution is algorithm-specific,
+// std::nullopt is returned.
+std::optional<LayoutUnit> ResolveRowGapLength(const ComputedStyle&,
+                                              LayoutUnit available_size);
+
+LayoutUnit ResolveRowGapForMulticol(const ComputedStyle&,
+                                    LayoutUnit available_size);
+
+// Return the used value of `item-tolerance` if it is a `<length-percentage>`.
+// Otherwise, if it's `normal`, whose resolution is algorithm-specific,
+// `std::nullopt` is returned.
+std::optional<LayoutUnit> ResolveItemToleranceLength(const ComputedStyle&,
+                                                     LayoutUnit available_size);
+
+LayoutUnit ResolveItemToleranceForMasonry(const ComputedStyle&,
+                                          const LogicalSize& available_size);
+
+CORE_EXPORT LayoutUnit ColumnInlineProgression(const ComputedStyle&,
+                                               LayoutUnit available_size);
 
 // Compute physical margins.
 CORE_EXPORT PhysicalBoxStrut
@@ -675,15 +719,10 @@ MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
     const ConstraintSpace& space);
 
 // Same as above, but allows a custom function to compute min/max sizes.
-inline MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
+MinMaxSizesResult ComputeMinAndMaxContentContributionForSelf(
     const BlockNode& child,
     const ConstraintSpace& space,
-    MinMaxSizesFunctionRef min_max_sizes_func) {
-  DCHECK(child.CreatesNewFormattingContext());
-
-  return ComputeMinAndMaxContentContributionInternal(
-      child.Style().GetWritingMode(), child, space, min_max_sizes_func);
-}
+    MinMaxSizesFunctionRef min_max_sizes_func);
 
 // Used for unit-tests.
 CORE_EXPORT MinMaxSizes
@@ -697,6 +736,10 @@ ComputeMinAndMaxContentContributionForTest(WritingMode writing_mode,
 // Otherwise, it returns std::nullopt and the caller has to compute the size
 // itself.
 std::optional<MinMaxSizesResult> CalculateMinMaxSizesIgnoringChildren(
+    const BlockNode&,
+    const BoxStrut& border_scrollbar_padding);
+
+LayoutUnit CalculateIntrinsicBlockSizeIgnoringChildren(
     const BlockNode&,
     const BoxStrut& border_scrollbar_padding);
 

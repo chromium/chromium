@@ -19,7 +19,7 @@ import type {XrFrameStatistics, XrLogMessage} from './xr_session.mojom-webui.js'
 
 let browserProxy: BrowserProxy;
 
-async function bootstrap() {
+function bootstrap() {
   browserProxy = BrowserProxy.getInstance();
   assert(browserProxy);
 
@@ -30,7 +30,7 @@ async function bootstrap() {
   renderSessionStatisticsContent();
 }
 
-async function setupSidebarButtonListeners() {
+function setupSidebarButtonListeners() {
   const deviceInfoButton = getRequiredElement('device-info-button');
   const sessionInfoButton = getRequiredElement('session-info-button');
   const runtimeInfoButton = getRequiredElement('runtime-info-button');
@@ -81,7 +81,7 @@ async function renderDeviceInfoContent() {
   deviceInfoContent.appendChild(table);
 }
 
-async function renderSessionInfoContent() {
+function renderSessionInfoContent() {
   const sessionInfoContent = getRequiredElement('session-info-content');
   assert(sessionInfoContent);
 
@@ -116,7 +116,7 @@ async function renderActiveRuntimesTable(
   runtimeInfoTable.recreateActiveRuntimesTable(activeRuntimes);
 }
 
-async function renderRuntimeInfoContent() {
+function renderRuntimeInfoContent() {
   const runtimeInfoContent = getRequiredElement('runtime-info-content');
   assert(runtimeInfoContent);
 
@@ -143,7 +143,7 @@ async function renderRuntimeInfoContent() {
   runtimeInfoContent.appendChild(runtimeChangelogTable);
 }
 
-async function renderSessionStatisticsContent() {
+function renderSessionStatisticsContent() {
   const sessionStatisticsContent =
       getRequiredElement('session-statistics-content');
   assert(sessionStatisticsContent);

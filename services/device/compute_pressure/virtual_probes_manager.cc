@@ -66,8 +66,9 @@ void VirtualProbesManager::RemoveOverrideForSource(
   }
 }
 
-void VirtualProbesManager::AddUpdate(mojom::PressureSource source,
-                                     mojom::PressureState state) {
+void VirtualProbesManager::AddDataUpdate(mojom::PressureSource source,
+                                         mojom::PressureState state,
+                                         double own_contribution_estimate) {
   if (!overridden_sources_.Has(source)) {
     return;
   }
@@ -76,6 +77,8 @@ void VirtualProbesManager::AddUpdate(mojom::PressureSource source,
     case mojom::PressureSource::kCpu: {
       if (auto* manager = cpu_probe_manager()) {
         static_cast<VirtualCpuProbeManager*>(manager)->SetPressureState(state);
+        static_cast<VirtualCpuProbeManager*>(manager)
+            ->SetOwnContributionEstimate(own_contribution_estimate);
       }
       break;
     }

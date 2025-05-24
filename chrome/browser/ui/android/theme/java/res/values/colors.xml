@@ -11,4 +11,11 @@ found in the LICENSE file.
     <color name="toolbar_hairline_overlay">@color/baseline_neutral_0_alpha_10</color>
     <color name="toolbar_icon_unfocused_activity_incognito_color">@color/baseline_neutral_90_alpha_38</color>
 
+    <!-- Hub pane switcher colors -->
+    <color name="pane_switcher_background_incognito">@color/gm3_baseline_surface_container_dark</color>
+    <color name="pane_switcher_background_incognito_v2">@color/gm3_baseline_surface_dark</color>
+    <color name="pane_switcher_selected_tab_incognito">@color/gm3_baseline_surface_bright_dark</color>
+    <color name="pane_switcher_selected_tab_incognito_v2">@color/baseline_secondary_30</color>
+    <color name="pane_switcher_selected_tab_icon_color_incognito">@color/baseline_neutral_90</color>
+
 </resources>

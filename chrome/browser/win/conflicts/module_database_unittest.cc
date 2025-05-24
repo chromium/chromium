@@ -45,8 +45,7 @@ class ModuleDatabaseTest : public testing::Test {
         task_environment_(base::test::TaskEnvironment::MainThreadType::UI,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        module_database_(std::make_unique<ModuleDatabase>(
-            /* third_party_blocking_policy_enabled = */ false)) {
+        module_database_(std::make_unique<ModuleDatabase>()) {
     module_database_->module_inspector_.SetUtilWinFactoryCallbackForTesting(
         base::BindRepeating(&ModuleDatabaseTest::CreateUtilWinService,
                             base::Unretained(this)));

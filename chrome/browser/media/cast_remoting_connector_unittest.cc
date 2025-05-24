@@ -50,8 +50,8 @@ RemotingSinkMetadataPtr GetDefaultSinkMetadata() {
 
 class MockRemotingSource final : public media::mojom::RemotingSource {
  public:
-  MockRemotingSource() {}
-  ~MockRemotingSource() override {}
+  MockRemotingSource() = default;
+  ~MockRemotingSource() override = default;
 
   void Bind(mojo::PendingReceiver<media::mojom::RemotingSource> receiver) {
     receiver_.Bind(std::move(receiver));
@@ -78,7 +78,7 @@ class MockMediaRemoter final : public media::mojom::Remoter {
                                        source_.BindNewPipeAndPassReceiver());
   }
 
-  ~MockMediaRemoter() override {}
+  ~MockMediaRemoter() override = default;
 
   void OnSinkAvailable() {
     EXPECT_TRUE(source_);

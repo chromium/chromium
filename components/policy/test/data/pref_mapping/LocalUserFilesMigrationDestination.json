@@ -2,7 +2,7 @@
   {
     "can_be_recommended": false,
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {
@@ -44,6 +44,17 @@
             "filebrowser.local_user_files_migration_destination": {
               "location": "local_state",
               "value": "read_only"
+            }
+          }
+      },
+      {
+          "policies": {
+              "LocalUserFilesMigrationDestination": "delete"
+          },
+          "prefs": {
+            "filebrowser.local_user_files_migration_destination": {
+              "location": "local_state",
+              "value": "delete"
             }
           }
       }

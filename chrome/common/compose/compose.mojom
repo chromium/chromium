@@ -16,6 +16,13 @@ interface ComposeSessionUntrustedPageHandlerFactory {
       pending_remote<ComposeUntrustedDialog> dialog);
 };
 
+enum InputMode {
+  kUnset,
+  kPolish,
+  kElaborate,
+  kFormalize,
+};
+
 enum StyleModifier {
   kUnset,
   kFormal,
@@ -119,10 +126,10 @@ interface ComposeSessionUntrustedPageHandler {
   // Asks the browser to track a cancel edit action for logging purposes.
   LogCancelEdit();
 
-  // Asks the Browser to compose `input`, informing the Browser if the compose
-  // call was based on the user input being 'edited' in the dialog after the
-  // initial compose response.
-  Compose(string input, bool edited);
+  // Asks the Browser to compose `input`, informing the Browser of the input
+  // mode used for the request and if the compose call was based on the user
+  // input being 'edited' in the dialog after the initial compose response.
+  Compose(string input, InputMode mode, bool edited);
 
   // Asks the Browser to rewrite the last response. `style` specifies how the
   // response should be changed.

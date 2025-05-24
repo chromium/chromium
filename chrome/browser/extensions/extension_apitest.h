@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 
@@ -47,11 +48,16 @@ class ExtensionApiTest : public ExtensionBrowserTest {
     bool open_in_incognito = false;
 
     // Launch the extension as a platform app.
+    // Note: This is unsupported on desktop android builds.
     bool launch_as_platform_app = false;
 
     // Use //extensions/test/data/ as the root path instead of the default
     // path of //chrome/test/data/extensions/api_test/.
     bool use_extensions_root_dir = false;
+
+    // If given, the Profile instance is used. Otherwise, the default Profile
+    // (i.e., taken by browser()->profile()) for the browser_test is used.
+    raw_ptr<Profile> profile = nullptr;
   };
 
   explicit ExtensionApiTest(ContextType context_type = ContextType::kNone);
@@ -62,7 +68,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  // Loads the extension with |extension_name| and default RunOptions and
+  // Loads the extension with `extension_name` and default RunOptions and
   // LoadOptions.
   [[nodiscard]] bool RunExtensionTest(const char* extension_name);
 
@@ -77,8 +83,8 @@ class ExtensionApiTest : public ExtensionBrowserTest {
                                       const RunOptions& run_options,
                                       const LoadOptions& load_options);
 
-  // Opens the given |url| and waits for the next result from the
-  // chrome.test API. If |open_in_incognito| is true, the URL is opened
+  // Opens the given `url` and waits for the next result from the
+  // chrome.test API. If `open_in_incognito` is true, the URL is opened
   // in an off-the-record browser profile. This API is different from
   // RunExtensionTest as it doesn't load an extension.
   [[nodiscard]] bool OpenTestURL(const GURL& url,
@@ -93,7 +99,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   //
   // Starting the test server is done in two steps; first the server socket is
   // created and starts listening, followed by the start of an IO thread on
-  // which the test server will accept connectons.
+  // which the test server will accept connections.
   //
   // In general you can start the test server using StartEmbeddedTestServer()
   // which handles both steps. When you need to register request handlers that
@@ -114,7 +120,7 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   bool StartWebSocketServer(const base::FilePath& root_directory,
                             bool enable_basic_auth = false);
 
-  // Sets the additional string argument |customArg| to the test config object,
+  // Sets the additional string argument `customArg` to the test config object,
   // which is available to javascript tests using chrome.test.getConfig().
   void SetCustomArg(std::string_view custom_arg);
 
@@ -150,6 +156,9 @@ class ExtensionApiTest : public ExtensionBrowserTest {
 
  private:
   void OpenURL(const GURL& url, bool open_in_incognito);
+
+  // Initializes the test data directories to the proper locations.
+  void SetUpTestDataDir();
 
   // Hold details of the test, set in C++, which can be accessed by
   // javascript using chrome.test.getConfig().

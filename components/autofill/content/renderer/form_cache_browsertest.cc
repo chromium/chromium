@@ -4,12 +4,12 @@
 
 #include "components/autofill/content/renderer/form_cache.h"
 
+#include <algorithm>
 #include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,7 +18,6 @@
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 #include "components/autofill/content/renderer/focus_test_utils.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/form_cache_test_api.h"
 #include "components/autofill/content/renderer/test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
@@ -35,9 +34,12 @@
 using blink::WebDocument;
 using blink::WebElement;
 using testing::AllOf;
+using testing::Each;
 using testing::ElementsAre;
 using testing::Field;
+using testing::IsEmpty;
 using testing::Property;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
@@ -71,6 +73,12 @@ const FormData* GetFormByName(const std::vector<FormData>& forms,
 
 class FormCacheBrowserTest : public test::AutofillRendererTest {
  public:
+  static constexpr CallTimerState kCallTimerStateDummy = {
+      .call_site = CallTimerState::CallSite::kExtractForms,
+      .last_autofill_agent_reset = {},
+      .last_dom_content_loaded = {},
+  };
+
   ~FormCacheBrowserTest() override = default;
 
   void SetUp() override {
@@ -84,11 +92,16 @@ class FormCacheBrowserTest : public test::AutofillRendererTest {
   }
 
   FormCache::UpdateFormCacheResult UpdateFormCache() {
-    return form_cache_->UpdateFormCache(GetFieldDataManager());
+    return form_cache_->UpdateFormCache(GetFieldDataManager(),
+                                        kCallTimerStateDummy);
   }
 
   size_t num_extracted_forms() {
-    return test_api(*form_cache_).num_extracted_forms();
+    return std::ranges::count_if(form_cache_->extracted_forms(),
+                                 [](const auto& id_and_form) {
+                                   const auto& [id, form] = id_and_form;
+                                   return form != nullptr;
+                                 });
   }
 
   FieldDataManager& GetFieldDataManager() const {
@@ -527,37 +540,45 @@ TEST_F(FormCacheBrowserTest, FrameLimit) {
 // - the forms [kMaxExtractableChildFrames, kMaxExtractableFields) should have
 //   empty FormData::child_frames,
 // - the forms [kMaxExtractableFields, end) should be skipped.
-// TODO(crbug.com/40816477): Flaky on android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_FieldAndFrameLimit DISABLED_FieldAndFrameLimit
-#else
-#define MAYBE_FieldAndFrameLimit FieldAndFrameLimit
-#endif
-TEST_F(FormCacheBrowserTest, MAYBE_FieldAndFrameLimit) {
+TEST_F(FormCacheBrowserTest, FieldAndFrameLimit) {
+  // Ideally, the test would create `kMaxExtractableFields + 1` forms
+  //   <form><input><iframe></iframe></form>
+  // But that many iframes seem to cause test timeouts. So only the first
+  // `kMaxExtractableChildFrames + 1` forms will get an <iframe>.
   ASSERT_LE(kMaxExtractableChildFrames, kMaxExtractableFields);
+  constexpr size_t kNumFormsWithFrame = kMaxExtractableChildFrames + 1;
+  constexpr size_t kNumFormsWithoutFrame =
+      kMaxExtractableFields + 1 - kNumFormsWithFrame;
 
   std::string html;
-  for (unsigned int i = 0; i < kMaxExtractableFields + 1; i++) {
+  for (size_t i = 0; i < kNumFormsWithFrame; i++) {
     html += "<form><input><iframe></iframe></form>";
+  }
+  for (size_t i = 0; i < kNumFormsWithoutFrame; i++) {
+    html += "<form><input></form>";
   }
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
+  ASSERT_EQ(kMaxExtractableFields + 1,
+            GetDocument().GetElementsByHTMLTagName("form").length());
+  ASSERT_EQ(kMaxExtractableFields + 1,
+            GetDocument().GetElementsByHTMLTagName("input").length());
+  ASSERT_EQ(kMaxExtractableChildFrames + 1,
+            GetDocument().GetElementsByHTMLTagName("iframe").length());
 
   FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_EQ(forms.updated_forms.size(), kMaxExtractableFields);
-  EXPECT_TRUE(std::ranges::none_of(forms.updated_forms,
-                                   &std::vector<FormFieldData>::empty,
-                                   &FormData::fields));
-  EXPECT_TRUE(std::ranges::none_of(
-      base::make_span(forms.updated_forms).first(kMaxExtractableChildFrames),
-      &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
-  EXPECT_TRUE(std::ranges::all_of(
-      base::make_span(forms.updated_forms).subspan(kMaxExtractableChildFrames),
-      &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
+  EXPECT_THAT(forms.updated_forms,
+              Each(Property("fields", &FormData::fields, SizeIs(1))));
+  EXPECT_THAT(
+      base::span(forms.updated_forms).first<kMaxExtractableChildFrames>(),
+      Each(Property("child_frames", &FormData::child_frames, SizeIs(1))));
+  EXPECT_THAT(
+      base::span(forms.updated_forms).subspan<kMaxExtractableChildFrames>(),
+      Each(Property("child_frames", &FormData::child_frames, IsEmpty())));
 
-  EXPECT_TRUE(forms.removed_forms.empty());
+  EXPECT_THAT(forms.removed_forms, IsEmpty());
 }
 
 // Tests that form extraction measures its total time.
@@ -567,14 +588,23 @@ TEST_F(FormCacheBrowserTest, UpdateFormCacheMeasuresTotalTime) {
     <input>
   )");
   // FormCache::UpdateFormCache() is called by AutofillAgent.
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.UpdateFormCache", 1);
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.UpdateFormCache.UpdateFormCache", 1);
-  // form_util::ExtractFormData() is also called by PasswordAutofillAgent.
-  histogram_tester.ExpectTotalCount(  //
-      "Autofill.TimingPrecise.ExtractFormData", 3);
-  histogram_tester.ExpectTotalCount(  //
+  histogram_tester.ExpectTotalCount("Autofill.TimingPrecise.UpdateFormCache",
+                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingPrecise.UpdateFormCache.DidDispatchDomContentLoadedEvent",
+      1);
+  // / On pageload `AutofillAgent::DidDispatchDomContentLoadedEvent()` and
+  // `PasswordAutofillAgent::DidFinishLoad()` are called, each triggering form
+  //  extraction.
+  histogram_tester.ExpectTotalCount(
+      "Autofill.TimingPrecise.ExtractFormData",
+      // When `AutofillOptimizeFormExtraction` is disabled, the
+      // signal from AutofillAgent also notifies PasswordAutofillAgent, which
+      // extracts a third but redundant time.
+      base::FeatureList::IsEnabled(features::kAutofillOptimizeFormExtraction)
+          ? 2
+          : 3);
+  histogram_tester.ExpectTotalCount(
       "Autofill.TimingPrecise.ExtractFormData.UpdateFormCache", 1);
 }
 

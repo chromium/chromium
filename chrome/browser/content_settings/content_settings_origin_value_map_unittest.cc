@@ -147,10 +147,15 @@ TEST_F(OriginValueMapTest, SetValueReturnsChanges) {
                    ContentSettingsPattern::FromString("[*.]google.com"),
                    ContentSettingsType::COOKIES, base::Value(1), {}));
 
-  // A change in value returns true.
+  // A change in value returns true and new values is recorded.
   EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsType::COOKIES, base::Value(2), {}));
+  auto rule =
+      map.GetRule(GURL("http://www.google.com"), GURL("http://www.google.com"),
+                  ContentSettingsType::COOKIES);
+  ASSERT_TRUE(rule);
+  EXPECT_EQ(base::Value(2), rule->value);
 
   // A change in metadata returns true.
   content_settings::RuleMetaData metadata;
@@ -158,7 +163,7 @@ TEST_F(OriginValueMapTest, SetValueReturnsChanges) {
   EXPECT_TRUE(map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsPattern::FromString("[*.]google.com"),
                            ContentSettingsType::COOKIES, base::Value(2),
-                           metadata));
+                           std::move(metadata)));
 }
 
 TEST_F(OriginValueMapTest, SetDeleteValue) {
@@ -288,10 +293,10 @@ TEST_F(OriginValueMapTest, IterateNonempty) {
   content_settings::RuleMetaData metadata;
   metadata.set_last_modified(t1);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(1), metadata);
+               ContentSettingsType::COOKIES, base::Value(1), metadata.Clone());
   metadata.set_last_modified(t2);
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(2), metadata);
+               ContentSettingsType::COOKIES, base::Value(2), metadata.Clone());
 
   map.GetLock().Release();
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
@@ -323,13 +328,13 @@ TEST_F(OriginValueMapTest, UpdateLastModified) {
   metadata.set_last_modified(t1);
   metadata.set_session_model(content_settings::mojom::SessionModel::DURABLE);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(1), metadata);
+               ContentSettingsType::COOKIES, base::Value(1), metadata.Clone());
   metadata.SetExpirationAndLifetime(base::Time::Now() + base::Seconds(100),
                                     base::Seconds(100));
   metadata.set_session_model(
       content_settings::mojom::SessionModel::USER_SESSION);
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(2), metadata);
+               ContentSettingsType::COOKIES, base::Value(2), metadata.Clone());
   map.GetLock().Release();
 
   {
@@ -358,7 +363,7 @@ TEST_F(OriginValueMapTest, UpdateLastModified) {
   base::Time t2 = t1 + base::Seconds(1);
   metadata.set_last_modified(t2);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
-               ContentSettingsType::COOKIES, base::Value(3), metadata);
+               ContentSettingsType::COOKIES, base::Value(3), metadata.Clone());
   map.GetLock().Release();
   {
     std::unique_ptr<content_settings::RuleIterator> rule_iterator =

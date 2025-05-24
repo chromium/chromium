@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] getAttributeType(\n          "foo",\n          "onmouseup",\n          "https://example.com/namespace",\n          "null") == "null"
+  assert_equals: expected (object) null but got (string) "TrustedScript"
+Harness: the test ran to completion.
+

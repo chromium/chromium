@@ -43,7 +43,12 @@ TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
       page_view()->GetViewByID(kUiElementContainer);
   views::View* indicator =
       ui_element_container_view->GetViewByID(kOverflowIndicator);
-  EXPECT_EQ(indicator->GetBackground()->get_color(),
+  auto get_background_color([](const views::View* view) {
+    return view->GetBackground()->color().ResolveToSkColor(
+        view->GetColorProvider());
+  });
+
+  EXPECT_EQ(get_background_color(indicator),
             AshColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kSeparatorColor));
 
@@ -52,7 +57,7 @@ TEST_F(UiElementContainerViewTest, DarkAndLightTheme) {
   const bool dark_mode_status = dark_light_mode_controller->IsDarkModeEnabled();
   ASSERT_NE(initial_dark_mode_status, dark_mode_status);
 
-  EXPECT_EQ(indicator->GetBackground()->get_color(),
+  EXPECT_EQ(get_background_color(indicator),
             AshColorProvider::Get()->GetContentLayerColor(
                 ColorProvider::ContentLayerType::kSeparatorColor));
 }

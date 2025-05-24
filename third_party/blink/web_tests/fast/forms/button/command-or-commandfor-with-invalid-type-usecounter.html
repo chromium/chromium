@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:chromium@keithcirkel.co.uk">
+<link rel=help href="https://github.com/whatwg/html/issues/10832">
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<form>
+  <button>button</button>
+</form>
+
+<script>
+const counterId = 5333;
+test(() => {
+  assert_false(internals.isUseCounted(document, counterId),
+    'UseCounter should initially not be counted.');
+
+  const button = document.querySelector('button');
+  button.setAttribute('commandfor', 'other');
+
+  assert_true(internals.isUseCounted(document, counterId),
+    'UseCounter should be counted for implicit type with command=foo');
+
+}, 'Tests for UseCounters for button type attribute values.');
+</script>

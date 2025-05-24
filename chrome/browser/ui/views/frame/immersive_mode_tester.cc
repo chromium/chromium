@@ -66,8 +66,9 @@ void ImmersiveModeTester::OnImmersiveRevealEnded() {
   reveal_started_ = false;
   reveal_ended_ = true;
   EXPECT_FALSE(GetBrowserView()->immersive_mode_controller()->IsRevealed());
-  if (reveal_loop_ && reveal_loop_->running())
+  if (reveal_loop_ && reveal_loop_->running()) {
     reveal_loop_->Quit();
+  }
 }
 
 void ImmersiveModeTester::OnImmersiveModeControllerDestroyed() {

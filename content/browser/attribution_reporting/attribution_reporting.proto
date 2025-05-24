@@ -48,7 +48,7 @@ message AttributionReadOnlySourceData {
 
   optional TriggerDataMatching trigger_data_matching = 5;
 
-  optional bool debug_cookie_set = 6;
+  optional bool cookie_based_debug_allowed = 6;
 
   optional double event_level_epsilon = 7;
 
@@ -101,4 +101,14 @@ message AttributionScopesData {
   optional uint32 scope_limit = 2;
   // Must be positive.
   optional uint32 max_event_states = 3;
+}
+
+message AggregatableNamedBudgetPair {
+  // Must be positive.
+  optional uint32 original_budget = 1;
+  optional uint32 remaining_budget = 2;
+}
+
+message AggregatableNamedBudgets {
+  map<string, AggregatableNamedBudgetPair> budgets = 1;
 }

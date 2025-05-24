@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/color_enhancement/color_enhancement_controller.h"
 
+#include <array>
 #include <memory>
 
 #include "ash/shell.h"
@@ -32,37 +28,38 @@ namespace {
 //
 // The first index is ColorVisionCorrectionType enum, so this must be kept in
 // that order.
-const float kSimulationParams[3][9][3] = {
+constexpr std::array<std::array<float, 3>, 27> kSimulationParams = {{
+
     // ColorVisionCorrectionType::kProtanomaly:
-    {{0.4720, -1.2946, 0.9857},
-     {-0.6128, 1.6326, 0.0187},
-     {0.1407, -0.3380, -0.0044},
-     {-0.1420, 0.2488, 0.0044},
-     {0.1872, -0.3908, 0.9942},
-     {-0.0451, 0.1420, 0.0013},
-     {0.0222, -0.0253, -0.0004},
-     {-0.0290, -0.0201, 0.0006},
-     {0.0068, 0.0454, 0.9990}},
+    {{0.4720, -1.2946, 0.9857}},
+    {{-0.6128, 1.6326, 0.0187}},
+    {{0.1407, -0.3380, -0.0044}},
+    {{-0.1420, 0.2488, 0.0044}},
+    {{0.1872, -0.3908, 0.9942}},
+    {{-0.0451, 0.1420, 0.0013}},
+    {{0.0222, -0.0253, -0.0004}},
+    {{-0.0290, -0.0201, 0.0006}},
+    {{0.0068, 0.0454, 0.9990}},
     // ColorVisionCorrectionType::kDeuteranomaly:
-    {{0.5442, -1.1454, 0.9818},
-     {-0.7091, 1.5287, 0.0238},
-     {0.1650, -0.3833, -0.0055},
-     {-0.1664, 0.4368, 0.0056},
-     {0.2178, -0.5327, 0.9927},
-     {-0.0514, 0.0958, 0.0017},
-     {0.0180, -0.0288, -0.0006},
-     {-0.0232, -0.0649, 0.0007},
-     {0.0052, 0.0360, 0.9998}},
+    {{0.5442, -1.1454, 0.9818}},
+    {{-0.7091, 1.5287, 0.0238}},
+    {{0.1650, -0.3833, -0.0055}},
+    {{-0.1664, 0.4368, 0.0056}},
+    {{0.2178, -0.5327, 0.9927}},
+    {{-0.0514, 0.0958, 0.0017}},
+    {{0.0180, -0.0288, -0.0006}},
+    {{-0.0232, -0.0649, 0.0007}},
+    {{0.0052, 0.0360, 0.9998}},
     // ColorVisionCorrectionType::kTritanomaly:
-    {{0.4275, -0.0181, 0.9307},
-     {-0.2454, 0.0013, 0.0827},
-     {-0.1821, 0.0168, -0.0134},
-     {-0.1280, 0.0047, 0.0202},
-     {0.0233, -0.0398, 0.9728},
-     {0.1048, 0.0352, 0.0070},
-     {-0.0156, 0.0061, 0.0071},
-     {0.3841, 0.2947, 0.0151},
-     {-0.3685, -0.3008, 0.9778}}};
+    {{0.4275, -0.0181, 0.9307}},
+    {{-0.2454, 0.0013, 0.0827}},
+    {{-0.1821, 0.0168, -0.0134}},
+    {{-0.1280, 0.0047, 0.0202}},
+    {{0.0233, -0.0398, 0.9728}},
+    {{0.1048, 0.0352, 0.0070}},
+    {{-0.0156, 0.0061, 0.0071}},
+    {{0.3841, 0.2947, 0.0151}},
+    {{-0.3685, -0.3008, 0.9778}}}};
 
 // Returns a 3x3 matrix for simulating the given type of CVD with the given
 // severity.
@@ -74,11 +71,13 @@ gfx::Matrix3F GetCvdSimulationMatrix(ColorVisionCorrectionType type,
   gfx::Matrix3F result = gfx::Matrix3F::Zeros();
   for (int i = 0; i < 3; i++) {
     for (int j = 0; j < 3; j++) {
+      int type_start_row = static_cast<int>(type) * 9;
       int param_row = i * 3 + j;
-      result.set(i, j,
-                 kSimulationParams[type][param_row][0] * severity_squared +
-                     kSimulationParams[type][param_row][1] * severity +
-                     kSimulationParams[type][param_row][2]);
+      result.set(
+          i, j,
+          kSimulationParams[type_start_row + param_row][0] * severity_squared +
+              kSimulationParams[type_start_row + param_row][1] * severity +
+              kSimulationParams[type_start_row + param_row][2]);
     }
   }
   return result;

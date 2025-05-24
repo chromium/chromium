@@ -425,13 +425,15 @@ TEST_F(MediaStreamDeviceObserverTest, OnZoomLevelChange) {
                           blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
                 EXPECT_EQ(device.id, "device_id");
                 EXPECT_EQ(device.name, "device_name");
-                EXPECT_EQ(zoom_level,
-                          CaptureController::getSupportedZoomLevels()[0]);
+                EXPECT_EQ(
+                    zoom_level,
+                    CaptureController::getSupportedZoomLevelsForTabs()[0]);
               }),
       });
   static_cast<mojom::blink::MediaStreamDeviceObserver*>(observer_.get())
-      ->OnZoomLevelChange(kStreamLabel, device,
-                          CaptureController::getSupportedZoomLevels()[0]);
+      ->OnZoomLevelChange(
+          kStreamLabel, device,
+          CaptureController::getSupportedZoomLevelsForTabs()[0]);
 }
 #endif
 

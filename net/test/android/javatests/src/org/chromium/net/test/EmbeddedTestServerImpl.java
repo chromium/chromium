@@ -12,6 +12,7 @@ import android.os.RemoteException;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
@@ -34,7 +35,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
     private static final String TAG = "TestServer";
 
-    private static AtomicInteger sCount = new AtomicInteger();
+    private static final AtomicInteger sCount = new AtomicInteger();
 
     private final Context mContext;
     private Handler mHandler;
@@ -257,9 +258,49 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
                 });
     }
 
-    /** Shut down the server.
+    /**
+     * Get the request headers observed on the server for the given relative URL.
      *
-     *  @return Whether the server was successfully shut down.
+     * @param relativeUrl The relative URL for which request headers should be returned.
+     * @return The vector alternates between header names (even indices) and their corresponding
+     *     values (odd indices).
+     */
+    @Override
+    public String[] getRequestHeadersForUrl(final String relativeUrl) {
+        return runOnHandlerThread(
+                new Callable<String[]>() {
+                    @Override
+                    public String[] call() {
+                        return EmbeddedTestServerImplJni.get()
+                                .getRequestHeadersForUrl(mNativeEmbeddedTestServer, relativeUrl);
+                    }
+                });
+    }
+
+    /**
+     * Get the count of the request observed on the server for the given relative URL.
+     *
+     * @param relativeUrl The relative URL for which request count should be returned.
+     * @return The request count.
+     */
+    @Override
+    public int getRequestCountForUrl(final String relativeUrl) {
+        return runOnHandlerThread(
+                        new Callable<Integer>() {
+                            @Override
+                            public Integer call() {
+                                return EmbeddedTestServerImplJni.get()
+                                        .getRequestCountForUrl(
+                                                mNativeEmbeddedTestServer, relativeUrl);
+                            }
+                        })
+                .intValue();
+    }
+
+    /**
+     * Shut down the server.
+     *
+     * @return Whether the server was successfully shut down.
      */
     @Override
     public boolean shutdownAndWaitUntilComplete() {
@@ -362,5 +403,10 @@ public class EmbeddedTestServerImpl extends IEmbeddedTestServerImpl.Stub {
                 long nativeEmbeddedTestServerAndroid, String hostName, String relativeUrl);
 
         void serveFilesFromDirectory(long nativeEmbeddedTestServerAndroid, String directoryPath);
+
+        @JniType("std::vector<std::string>")
+        String[] getRequestHeadersForUrl(long nativeEmbeddedTestServerAndroid, String relativeUrl);
+
+        int getRequestCountForUrl(long nativeEmbeddedTestServerAndroid, String relativeUrl);
     }
 }

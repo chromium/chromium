@@ -31,6 +31,7 @@ class FetchRespondWithObserver;
 class PerformanceMark;
 class PerformanceMeasure;
 class Request;
+class Response;
 class ScriptState;
 struct WebServiceWorkerError;
 class WebURLResponse;
@@ -64,7 +65,7 @@ class MODULES_EXPORT FetchEvent final
   String resultingClientId() const;
   bool isReload() const;
 
-  void respondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
+  void respondWith(ScriptState*, ScriptPromise<Response>, ExceptionState&);
   ScriptPromise<IDLAny> preloadResponse(ScriptState*);
   ScriptPromise<IDLUndefined> handled(ScriptState*);
 

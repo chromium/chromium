@@ -112,8 +112,16 @@ def GenerateTestResults(result_code, result_bundle, statuses, duration_ms,
 
   def add_result(result):
     if result.GetName().endswith('#null'):
-      assert result.GetType() == base_test_result.ResultType.FAIL
-      class_failure_results.append(result)
+      if result.GetType() == base_test_result.ResultType.UNKNOWN:
+        # Not sure how this happens. http://crbug.com/397924393
+        # It presumably means two START events happen in a row.
+        pass
+      else:
+        assert result.GetType() == base_test_result.ResultType.FAIL, (
+            'test result of %r should be %r, but got %r' %
+            (result.GetName(), base_test_result.ResultType.FAIL,
+             result.GetType()))
+        class_failure_results.append(result)
     else:
       results.append(result)
 
@@ -618,6 +626,8 @@ class InstrumentationTestInstance(test_instance.TestInstance):
 
     self._webview_process_mode = args.webview_process_mode
 
+    self._webview_rebaseline_mode = args.webview_rebaseline_mode
+
     self._wpr_enable_record = args.wpr_enable_record
 
     self._external_shard_index = args.test_launcher_shard_index
@@ -1052,6 +1062,10 @@ class InstrumentationTestInstance(test_instance.TestInstance):
   @property
   def webview_process_mode(self):
     return self._webview_process_mode
+
+  @property
+  def webview_rebaseline_mode(self):
+    return self._webview_rebaseline_mode
 
   @property
   def wpr_replay_mode(self):

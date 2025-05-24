@@ -53,6 +53,8 @@ struct CONTENT_EXPORT CdmInfo {
   };
 
   // If `capability` is nullopt, the `capability` will be lazy initialized.
+  // Note that `version` will be overridden by the version in `capability` to
+  // allow for version determination during lazy initialization.
   CdmInfo(const std::string& key_system,
           Robustness robustness,
           std::optional<media::CdmCapability> capability,
@@ -60,6 +62,13 @@ struct CONTENT_EXPORT CdmInfo {
           const std::string& name,
           const media::CdmType& type,
           const base::Version& version,
+          const base::FilePath& path);
+  CdmInfo(const std::string& key_system,
+          Robustness robustness,
+          std::optional<media::CdmCapability> capability,
+          bool supports_sub_key_systems,
+          const std::string& name,
+          const media::CdmType& type,
           const base::FilePath& path);
   CdmInfo(const std::string& key_system,
           Robustness robustness,
@@ -80,6 +89,11 @@ struct CONTENT_EXPORT CdmInfo {
 
   // CDM capability, e.g. video codecs, encryption schemes and session types.
   std::optional<media::CdmCapability> capability;
+
+  // Status of the CDM capability query. Optional since this is done only by a
+  // lazy capability query. Used to inspect the reason when no capability
+  // reported.
+  std::optional<media::CdmCapabilityQueryStatus> capability_query_status;
 
   // Whether the CdmInfo is enabled etc. This only affects capability query.
   Status status = Status::kEnabled;

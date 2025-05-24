@@ -5,6 +5,8 @@
 #ifndef UI_LINUX_LINUX_UI_FACTORY_H_
 #define UI_LINUX_LINUX_UI_FACTORY_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 

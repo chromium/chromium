@@ -12,8 +12,6 @@ source_set("lib") {
     "xr_runtime_provider.h",
     "xr_service_test_hook.cc",
     "xr_service_test_hook.h",
-    "xr_test_hook_wrapper.cc",
-    "xr_test_hook_wrapper.h",
   ]
 
   configs += [ "//content:content_implementation" ]
@@ -24,6 +22,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//components/webxr:test_support",
     "//content/public/common:common_sources",
     "//device/base",
     "//device/vr:vr",

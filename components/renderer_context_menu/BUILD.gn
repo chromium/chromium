@@ -19,14 +19,15 @@ static_library("renderer_context_menu") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//components/search_engines",
+    "//components/vector_icons",
     "//content/public/browser",
     "//content/public/common",
     "//ppapi/buildflags",
     "//printing/buildflags",
     "//third_party/blink/public:blink_headers",
     "//ui/base",
+    "//ui/menus",
   ]
 
   if (toolkit_views) {
@@ -34,6 +35,7 @@ static_library("renderer_context_menu") {
       "views/toolkit_delegate_views.cc",
       "views/toolkit_delegate_views.h",
     ]
+    public_deps = [ "//ui/base/mojom:ui_base_types" ]
     deps += [ "//ui/views" ]
   }
 }

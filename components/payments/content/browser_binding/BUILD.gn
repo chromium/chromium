@@ -1,0 +1,130 @@
+source_set("browser_binding") {
+  visibility = [ "//components/payments/content/*" ]
+  public_deps = [
+    ":interface",
+    ":passkey_browser_binder",
+  ]
+  if (is_android) {
+    deps = [ ":android" ]
+  }
+}
+
+source_set("interface") {
+  sources = [
+    "browser_bound_key.h",
+    "browser_bound_key_store.h",
+  ]
+  public_deps = [
+    "//base",
+    "//device/fido",
+  ]
+}
+
+source_set("passkey_browser_binder") {
+  visibility = [ "//components/payments/content/*" ]
+  sources = [
+    "passkey_browser_binder.cc",
+    "passkey_browser_binder.h",
+  ]
+  public_deps = [ ":interface" ]
+  deps = [
+    ":browser_bound_key_metadata",
+    "//base",
+    "//components/payments/content:utils",
+    "//components/webdata/common",
+  ]
+}
+
+source_set("passkey_browser_binder_unittests") {
+  testonly = true
+  visibility = [ "//components/payments/*" ]
+  sources = [ "passkey_browser_binder_unittest.cc" ]
+  deps = [
+    ":browser_bound_key_metadata",
+    ":fake_browser_bound_key_store",
+    ":interface",
+    ":passkey_browser_binder",
+    "//base",
+    "//base/test:test_support",
+    "//components/payments/content:test_support",
+    "//content/test:test_support",
+    "//device/fido",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  source_set("browser_bound_keys_deleter_factory") {
+    sources = [
+      "browser_bound_keys_deleter.cc",
+      "browser_bound_keys_deleter.h",
+      "browser_bound_keys_deleter_factory.cc",
+      "browser_bound_keys_deleter_factory.h",
+    ]
+    public_deps = [
+      "//base",  # base/no_destructor.h
+      "//components/keyed_service/content",
+      "//components/payments/content:utils",
+    ]
+    deps = [
+      ":android",
+      ":passkey_browser_binder",
+      "//components/keyed_service/content",
+      "//components/webauthn/android",
+      "//components/webdata_services",
+      "//content/public/browser",
+    ]
+  }
+
+  source_set("android") {
+    visibility = [ ":*" ]
+    sources = [
+      "browser_bound_key_android.cc",
+      "browser_bound_key_android.h",
+      "browser_bound_key_store_android.cc",
+      "browser_bound_key_store_android.h",
+    ]
+    deps = [
+      ":interface",
+      "//base",
+      "//components/payments/content/android:browser_binding_jni",
+      "//device/fido",
+      "//third_party/jni_zero",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "mock_browser_bound_keys_deleter.cc",
+      "mock_browser_bound_keys_deleter.h",
+    ]
+    public_deps = [
+      ":browser_bound_keys_deleter_factory",
+      "//testing/gmock",
+    ]
+  }
+}
+
+source_set("fake_browser_bound_key_store") {
+  testonly = true
+  sources = [
+    "fake_browser_bound_key.cc",
+    "fake_browser_bound_key.h",
+    "fake_browser_bound_key_store.cc",
+    "fake_browser_bound_key_store.h",
+  ]
+  deps = [
+    ":interface",
+    "//base",
+    "//device/fido",
+  ]
+}
+
+source_set("browser_bound_key_metadata") {
+  sources = [
+    "browser_bound_key_metadata.cc",
+    "browser_bound_key_metadata.h",
+  ]
+}

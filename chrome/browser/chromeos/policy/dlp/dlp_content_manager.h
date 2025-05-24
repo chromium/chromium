@@ -192,7 +192,6 @@ class DlpContentManager : public DlpContentObserver,
         content::MediaStreamUI::SourceCallback source_callback);
 
     bool operator==(const ScreenShareInfo& other) const;
-    bool operator!=(const ScreenShareInfo& other) const;
 
     const content::DesktopMediaID& media_id() const;
     const content::DesktopMediaID& new_media_id() const;

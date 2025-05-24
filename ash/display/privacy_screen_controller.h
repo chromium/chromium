@@ -67,6 +67,8 @@ class ASH_EXPORT PrivacyScreenController
           displays) override;
 
  private:
+  friend class PrivacyScreenToastControllerTest;
+
   // Calculates PrivacyScreen's logical status.
   bool CalculateCurrentStatus() const;
 

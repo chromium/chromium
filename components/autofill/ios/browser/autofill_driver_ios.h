@@ -14,9 +14,10 @@
 #import "base/memory/raw_ptr.h"
 #import "base/memory/raw_ref.h"
 #import "base/memory/weak_ptr.h"
-#import "components/autofill/core/browser/autofill_client.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
+#import "components/autofill/core/browser/foundations/autofill_client.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#import "components/autofill/ios/browser/form_fetch_batcher.h"
 #import "url/origin.h"
 
 namespace web {
@@ -79,7 +80,6 @@ class AutofillDriverIOS final : public AutofillDriver,
                     AutofillClient* client,
                     AutofillDriverRouter* router,
                     id<AutofillDriverIOSBridge> bridge,
-                    const std::string& app_locale,
                     base::PassKey<AutofillDriverIOSFactory>);
 
   ~AutofillDriverIOS() override;
@@ -90,8 +90,8 @@ class AutofillDriverIOS final : public AutofillDriver,
   AutofillDriverIOS* GetParent() override;
   AutofillClient& GetAutofillClient() override;
   BrowserAutofillManager& GetAutofillManager() override;
+  ukm::SourceId GetPageUkmSourceId() const override;
   bool IsActive() const override;
-  bool IsInAnyMainFrame() const override;
   bool HasSharedAutofillPermission() const override;
   bool CanShowAutofillUi() const override;
   base::flat_set<FieldGlobalId> ApplyFormAction(
@@ -108,9 +108,8 @@ class AutofillDriverIOS final : public AutofillDriver,
       FormGlobalId form,
       base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
           response_callback) override;
-  void SendTypePredictionsToRenderer(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
-      override;
+  void ExposeDomNodeIDs() override;
+  void SendTypePredictionsToRenderer(const FormStructure& form) override;
   void RendererShouldClearPreviewedForm() override;
   void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,
@@ -126,6 +125,12 @@ class AutofillDriverIOS final : public AutofillDriver,
   void GetFourDigitCombinationsFromDom(
       base::OnceCallback<void(const std::vector<std::string>&)>
           potential_matches) override;
+  void ExtractLabeledTextNodeValue(
+      const std::u16string& value_regex,
+      const std::u16string& label_regex,
+      uint32_t number_of_ancestor_levels_to_search,
+      base::OnceCallback<void(const std::string& amount)> response_callback)
+      override;
 
   void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
@@ -135,6 +140,9 @@ class AutofillDriverIOS final : public AutofillDriver,
   bool is_processed() const { return processed_; }
   void set_processed(bool processed) { processed_ = processed; }
   web::WebFrame* web_frame() const;
+  base::WeakPtr<AutofillDriverIOS> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
   // Methods routed by AutofillDriverRouter. These are a subset of the methods
   // in mojom::AutofillDriver; that interface is content-specific, but to
@@ -147,14 +155,13 @@ class AutofillDriverIOS final : public AutofillDriver,
   void FormsSeen(const std::vector<FormData>& updated_forms,
                  const std::vector<FormGlobalId>& removed_forms);
   void FormSubmitted(const FormData& form,
-                     bool known_success,
                      mojom::SubmissionSource submission_source);
   void CaretMovedInFormField(const FormData& form,
                              const FieldGlobalId& field_id,
                              const gfx::Rect& caret_bounds);
-  void TextFieldDidChange(const FormData& form,
-                          const FieldGlobalId& field_id,
-                          base::TimeTicks timestamp);
+  void TextFieldValueChanged(const FormData& form,
+                             const FieldGlobalId& field_id,
+                             base::TimeTicks timestamp);
 
   // AutofillDriverIOS:
 
@@ -171,6 +178,20 @@ class AutofillDriverIOS final : public AutofillDriver,
   // not being registered. Can't be rolled back where the driver cannot be
   // re-registered after being unregistered.
   void Unregister();
+
+  // Called when form extraction was triggered on the driver's frame. Called
+  // as soon as the extraction request is started regardless of the results.
+  void OnDidTriggerFormFetch();
+
+  // Scans to find all eligible forms in the frame's document. If batching is
+  // enabled and `immediately` is true, runs this scan and the batch
+  // immediately altogether.
+  void ScanForms(bool immediately = false);
+
+  // Fetches forms filtered by `form_name` and calls `caller_completion` with
+  // the form fetch results upon completion of the fetch.
+  void FetchFormsFilteredByName(const std::u16string& form_name,
+                                FormFetchCompletion completion);
 
  private:
   friend class AutofillDriverIOSTestApi;
@@ -230,6 +251,9 @@ class AutofillDriverIOS final : public AutofillDriver,
                          int removed_forms_count,
                          int removed_unowned_fields_count);
 
+  // Logs metrics related to triggered form extraction.
+  void RecordTriggeredFormExtractionMetrics();
+
   // The WebState with which this object is associated.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
@@ -272,6 +296,18 @@ class AutofillDriverIOS final : public AutofillDriver,
 
   // True if the drive was once unregistered.
   bool unregistered_ = false;
+
+  // Counter for the number of form extractions that were triggered during the
+  // driver's lifetime. The counter doesn't care whether the extraction
+  // actually happened for real where it focuses on the trigger.
+  int form_extraction_trigger_count_ = 0;
+
+  // FetchRequestBatcher used exclusively for batching document form scans.
+  FormFetchBatcher document_scan_batcher_;
+
+  // FetchRequestBatcher used exclusively for batching filtered document form
+  // scans.
+  FormFetchBatcher document_filtered_scan_batcher_;
 
   base::WeakPtrFactory<AutofillDriverIOS> weak_ptr_factory_{this};
 };

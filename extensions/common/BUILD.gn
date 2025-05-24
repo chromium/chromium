@@ -4,12 +4,16 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions_core)
+
+# If enable_extensions is true then enable_guest_view must also be true.
+assert(!enable_extensions || enable_guest_view)
 
 group("common_constants") {
   if (is_component_build) {
@@ -63,6 +67,18 @@ source_set("constants_impl") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
+source_set("extension_features") {
+  sources = [
+    "extension_features.cc",
+    "extension_features.h",
+  ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//extensions/buildflags",
+  ]
+}
+
 mojom("mojom") {
   # We don't want Blink variants of bindings to be generated.
   disable_variants = true
@@ -78,6 +94,7 @@ mojom("mojom") {
     "mojom/event_dispatcher.mojom",
     "mojom/event_router.mojom",
     "mojom/execution_world.mojom",
+    "mojom/extension_id.mojom",
     "mojom/extra_response_data.mojom",
     "mojom/feature_session_type.mojom",
     "mojom/frame.mojom",
@@ -85,6 +102,7 @@ mojom("mojom") {
     "mojom/injection_type.mojom",
     "mojom/keep_alive.mojom",
     "mojom/manifest.mojom",
+    "mojom/match_origin_as_fallback.mojom",
     "mojom/message_port.mojom",
     "mojom/permission_set.mojom",
     "mojom/renderer.mojom",
@@ -183,6 +201,23 @@ mojom("mojom") {
           [ "//extensions/common/mojom/stack_frame_mojom_traits.h" ]
       traits_sources =
           [ "//extensions/common/mojom/stack_frame_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "extensions.mojom.ExtensionId"
+          cpp = "::extensions::ExtensionId"
+        },
+      ]
+      traits_headers =
+          [ "//extensions/common/mojom/extension_id_mojom_traits.h" ]
+
+      traits_sources =
+          [ "//extensions/common/mojom/extension_id_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//components/crx_file",
+        "//mojo/public/cpp/bindings",
+      ]
     },
     {
       types = [
@@ -288,8 +323,6 @@ static_library("common") {
     "extension.h",
     "extension_api.cc",
     "extension_api.h",
-    "extension_features.cc",
-    "extension_features.h",
     "extension_id.h",
     "extension_l10n_util.cc",
     "extension_l10n_util.h",
@@ -456,7 +489,6 @@ static_library("common") {
     "permissions/usb_device_permission_data.cc",
     "permissions/usb_device_permission_data.h",
     "process_context_data.h",
-    "script_constants.h",
     "stack_frame.cc",
     "stack_frame.h",
     "switches.cc",
@@ -469,6 +501,10 @@ static_library("common") {
     "url_pattern_set.h",
     "user_script.cc",
     "user_script.h",
+    "user_scripts_allowed_state.cc",
+    "user_scripts_allowed_state.h",
+    "user_scripts_availability.cc",
+    "user_scripts_availability.h",
     "utils/base_string.cc",
     "utils/base_string.h",
     "utils/content_script_utils.cc",
@@ -493,6 +529,7 @@ static_library("common") {
 
   public_deps = [
     ":common_constants",
+    ":extension_features",
     ":mojom",
     "//components/services/app_service",
     "//content/public/common",
@@ -512,6 +549,7 @@ static_library("common") {
     "//components/crash/core/common",
     "//components/crx_file",
     "//components/nacl/common:buildflags",
+    "//components/pdf/common:util",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/url_formatter",
@@ -551,12 +589,6 @@ static_library("common") {
   }
 
   if (is_chromeos) {
-    sources += [
-      "manifest_handlers/action_handlers_handler.cc",
-      "manifest_handlers/action_handlers_handler.h",
-    ]
-  }
-  if (is_chromeos_ash) {
     sources += [
       "manifest_handlers/input_components_handler.cc",
       "manifest_handlers/input_components_handler.h",
@@ -660,8 +692,13 @@ source_set("unit_tests") {
     "manifest_handlers/update_url_unittest.cc",
     "manifest_unittest.cc",
     "message_bundle_unittest.cc",
+    "mojom/event_router_mojom_unittest.cc",
+    "mojom/extension_id_mojom_traits_unittest.cc",
     "mojom/message_port_mojom_traits_unittest.cc",
     "mojom/permission_set_mojom_traits_unittest.cc",
+    "mojom/renderer_host_mojom_unittest.cc",
+    "mojom/renderer_mojom_unittest.cc",
+    "mojom/service_worker_host_mojom_unittest.cc",
     "mojom/url_pattern_set_mojom_traits_unittest.cc",
     "permissions/api_permission_set_unittest.cc",
     "permissions/api_permission_unittest.cc",
@@ -711,10 +748,6 @@ source_set("unit_tests") {
     sources += [ "manifest_handlers/file_handler_manifest_unittest.cc" ]
   }
 
-  if (is_chromeos_ash) {
-    sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]
-  }
-
   data = [
     "//extensions/common/mojom/api_permission_id.mojom",
     "//tools/metrics/histograms/metadata/extensions/enums.xml",
@@ -737,6 +770,8 @@ if (enable_extensions) {
     deps = [
       ":common",
       "//base",
+      "//content/public/common",
+      "//content/test:test_support",
       "//extensions:test_support",
     ]
 

@@ -67,7 +67,7 @@ bool StorageController::CanAccessStorageArea(LocalFrame* frame,
 StorageController::StorageController(DomStorageConnection connection,
                                      size_t total_cache_limit)
     : namespaces_(MakeGarbageCollected<
-                  HeapHashMap<String, WeakMember<StorageNamespace>>>()),
+                  GCedHeapHashMap<String, WeakMember<StorageNamespace>>>()),
       total_cache_limit_(total_cache_limit),
       dom_storage_remote_(std::move(connection.dom_storage_remote)) {
   // May be null in tests.

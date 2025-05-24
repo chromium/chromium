@@ -157,12 +157,13 @@ void DocumentDownloadTabHelper::DidFinishNavigation(
   if (!headers) {
     return;
   }
-  std::string content_size;
-  if (!headers->GetNormalizedHeader("Content-Length", &content_size)) {
+  std::optional<std::string> content_size =
+      headers->GetNormalizedHeader("Content-Length");
+  if (!content_size) {
     return;
   }
   int64_t file_size;
-  if (!base::StringToInt64(content_size, &file_size)) {
+  if (!base::StringToInt64(*content_size, &file_size)) {
     return;
   }
   file_size_ = file_size <= 0 ? -1 : file_size;
@@ -186,6 +187,10 @@ void DocumentDownloadTabHelper::PageLoaded(
   // Only triggers on http(s).
   GURL url = web_state->GetLastCommittedURL();
   should_trigger = should_trigger && url.SchemeIsHTTPOrHTTPS();
+
+  // Only trigger when download is not restricted.
+  should_trigger = should_trigger &&
+                   !DownloadManagerTabHelper::ShouldRestrictDownload(web_state);
 
   if (should_trigger) {
     base::UmaHistogramEnumeration(kIOSDocumentDownloadMimeType,
@@ -355,5 +360,3 @@ void DocumentDownloadTabHelper::OnPreviousTaskDeleted() {
   }
   AttachFullscreen();
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(DocumentDownloadTabHelper)

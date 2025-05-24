@@ -42,9 +42,7 @@ class CSSImageSetValue;
 // alternatives via the referenced CSSImageSetValue.
 class StyleImageSet final : public StyleImage {
  public:
-  StyleImageSet(StyleImage* best_fit_image,
-                CSSImageSetValue* image_set_val,
-                bool is_origin_clean);
+  StyleImageSet(StyleImage* best_fit_image, CSSImageSetValue* image_set_val);
   ~StyleImageSet() override;
 
   CSSValue* CssValue() const override;
@@ -59,9 +57,9 @@ class StyleImageSet final : public StyleImage {
   bool IsLoaded() const override;
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String& failing_url) const override;
-  bool IsOriginClean() const override { return is_origin_clean_; }
+  bool IsFromOriginCleanStyleSheet() const override;
 
-  IntrinsicSizingInfo GetNaturalSizingInfo(
+  NaturalSizingInfo GetNaturalSizingInfo(
       float multiplier,
       RespectImageOrientationEnum) const override;
   gfx::SizeF ImageSize(float multiplier,
@@ -73,7 +71,7 @@ class StyleImageSet final : public StyleImage {
   void RemoveClient(ImageResourceObserver*) override;
 
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
-                                const Document&,
+                                const Node&,
                                 const ComputedStyle&,
                                 const gfx::SizeF& target_size) const override;
 
@@ -94,8 +92,6 @@ class StyleImageSet final : public StyleImage {
   Member<StyleImage> best_fit_image_;
 
   Member<CSSImageSetValue> image_set_value_;  // Not retained; it owns us.
-
-  bool is_origin_clean_;
 };
 
 template <>

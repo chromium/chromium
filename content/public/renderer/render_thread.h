@@ -103,10 +103,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Retrieve the process ID of the browser process.
   virtual int32_t GetClientId() = 0;
 
-  // Set the renderer process type.
-  virtual void SetRendererProcessType(
-      blink::scheduler::WebRendererProcessType type) = 0;
-
   // Returns the user-agent string.
   virtual blink::WebString GetUserAgent() = 0;
   virtual const blink::UserAgentMetadata& GetUserAgentMetadata() = 0;

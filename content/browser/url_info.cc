@@ -29,7 +29,6 @@ UrlInfo::UrlInfo(const UrlInfoInit& init)
       storage_partition_config(init.storage_partition_config_),
       web_exposed_isolation_info(init.web_exposed_isolation_info_),
       is_pdf(init.is_pdf_),
-      common_coop_origin(init.common_coop_origin_),
       cross_origin_isolation_key(init.cross_origin_isolation_key_) {
   // An origin-keyed process can only be used for origin-keyed agent clusters.
   // We can check this for the explicit header case here, and it is checked more
@@ -74,6 +73,28 @@ bool UrlInfo::RequestsOriginKeyedProcess(
           OriginIsolationRequest::kRequiresOriginKeyedProcessByHeader) ||
          (requests_default_origin_agent_cluster_isolation() &&
           context.default_isolation_state().requires_origin_keyed_process());
+}
+
+void UrlInfo::WriteIntoTrace(perfetto::TracedProto<TraceProto> proto) const {
+  proto->set_url(url.possibly_invalid_spec());
+  if (origin.has_value()) {
+    proto->set_origin(origin->GetDebugString());
+  }
+  proto->set_is_sandboxed(is_sandboxed);
+  proto->set_is_pdf(is_pdf);
+  proto->set_is_coop_isolation_requested(is_coop_isolation_requested);
+  proto->set_origin_isolation_request(origin_isolation_request);
+  proto->set_is_prefetch_with_cross_site_contamination(
+      is_prefetch_with_cross_site_contamination);
+  if (web_exposed_isolation_info.has_value()) {
+    proto.Set(TraceProto::kWebExposedIsolationInfo,
+              *web_exposed_isolation_info);
+  }
+  if (storage_partition_config.has_value()) {
+    std::stringstream ss;
+    ss << *storage_partition_config;
+    proto->set_storage_partition_config(ss.str());
+  }
 }
 
 UrlInfoInit::UrlInfoInit(UrlInfoInit&) = default;
@@ -140,12 +161,6 @@ UrlInfoInit& UrlInfoInit::WithWebExposedIsolationInfo(
 
 UrlInfoInit& UrlInfoInit::WithIsPdf(bool is_pdf) {
   is_pdf_ = is_pdf;
-  return *this;
-}
-
-UrlInfoInit& UrlInfoInit::WithCommonCoopOrigin(
-    const url::Origin& common_coop_origin) {
-  common_coop_origin_ = common_coop_origin;
   return *this;
 }
 

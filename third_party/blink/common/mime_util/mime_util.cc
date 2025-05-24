@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <unordered_set>
 
 #include "base/containers/contains.h"
@@ -128,9 +129,9 @@ bool IsSupportedNonImageMimeType(std::string_view mime_type) {
 #if !BUILDFLAG(IS_IOS)
          media::IsSupportedMediaMimeType(mime_lower) ||
 #endif
-         (base::StartsWith(mime_lower, "text/") &&
+         (mime_lower.starts_with("text/") &&
           !kUnsupportedTextTypes.contains(mime_lower)) ||
-         (base::StartsWith(mime_lower, "application/") &&
+         (mime_lower.starts_with("application/") &&
           net::MatchesMimeType("application/*+json", mime_lower));
 }
 
@@ -140,6 +141,10 @@ bool IsUnsupportedTextMimeType(std::string_view mime_type) {
 
 bool IsSupportedJavascriptMimeType(std::string_view mime_type) {
   return kSupportedJavascriptTypes.contains(mime_type);
+}
+
+bool IsWasmMIMEType(std::string_view mime_type) {
+  return net::MatchesMimeType("application/wasm", mime_type);
 }
 
 // TODO(crbug.com/362282752): Allow non-application `*/*+json` MIME types.

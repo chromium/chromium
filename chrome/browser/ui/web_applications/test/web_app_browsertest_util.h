@@ -7,7 +7,7 @@
 
 #include <string_view>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -32,6 +32,10 @@ class FilePath;
 namespace webapps {
 enum class InstallResultCode;
 }
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace web_app {
 
@@ -176,6 +180,36 @@ base::FilePath CreateTestFileWithExtension(std::string_view extension);
 // Wait for an IPH bubble to show up inside the browser, and return true or
 // false based on whether the bubble showed up.
 bool WaitForIPHToShowIfAny(Browser* browser);
+
+namespace test {
+
+// Denote ways to simulate click on an element.
+enum class ClickMethod {
+  kLeftClick,
+  kMiddleClick,
+  kShiftClick,
+  kRightClickLaunchApp
+};
+
+// This function simulates a click on the middle of an element matching
+// `element_id` based on the type of click passed to it.
+void SimulateClickOnElement(content::WebContents* contents,
+                            std::string element_id,
+                            ClickMethod click);
+
+// Runs `action` for all tabs. This method is resilient to `action` waiting on
+// async work, and considers the fresh `BrowserList` and tab model before each
+// call. This method ensures that `action` is not called for the same web
+// contents twice.
+void RunForAllTabs(base::RepeatingCallback<void(content::WebContents&)> action);
+
+// Wait for all available `WebContents` when this is called to finish loading.
+// Note: This will hang forever if any web contents purposefully never finishes
+// loading, causes reloads, or in any other way doesn't call the 'load' event in
+// the page.
+void CompletePageLoadForAllWebContents();
+
+}  // namespace test
 
 }  // namespace web_app
 

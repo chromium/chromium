@@ -55,7 +55,7 @@ ArchiveAnalyzerResults::ArchiveAnalyzerResults() = default;
 ArchiveAnalyzerResults::ArchiveAnalyzerResults(
     const ArchiveAnalyzerResults& other) = default;
 
-ArchiveAnalyzerResults::~ArchiveAnalyzerResults() {}
+ArchiveAnalyzerResults::~ArchiveAnalyzerResults() = default;
 
 void UpdateArchiveAnalyzerResultsWithFile(base::FilePath path,
                                           base::File* file,
@@ -192,7 +192,7 @@ void SetLengthAndDigestForContainedFile(
       break;
     }
 
-    hasher->Update(base::make_span(block).first(*bytes_read_now));
+    hasher->Update(base::span(block).first(*bytes_read_now));
     bytes_read_previously += *bytes_read_now;
   }
 

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/base/clipboard/clipboard_mac.h"
 
 #import <Cocoa/Cocoa.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <limits>
 #include <string_view>
 
@@ -18,7 +24,6 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -128,7 +133,7 @@ std::optional<DataTransferEndpoint> ClipboardMac::GetSourceInternal(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  NSString* source_url = [pasteboard stringForType:kUTTypeChromiumSourceURL];
+  NSString* source_url = [pasteboard stringForType:kUTTypeChromiumSourceUrl];
 
   if (!source_url) {
     return std::nullopt;
@@ -212,23 +217,28 @@ std::vector<std::u16string> ClipboardMac::GetStandardFormats(
     const DataTransferEndpoint* data_dst) const {
   std::vector<std::u16string> types;
   NSPasteboard* pb = GetPasteboard();
-  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeText));
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeHTML));
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeSvg));
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst))
-    types.push_back(base::UTF8ToUTF16(kMimeTypeRTF));
+  if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
+                        data_dst)) {
+    types.push_back(kMimeTypePlainText16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeHtml16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeSvg16);
+  }
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
+    types.push_back(kMimeTypeRtf16);
+  }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
                         data_dst)) {
-    types.push_back(base::UTF8ToUTF16(kMimeTypeURIList));
+    types.push_back(kMimeTypeUriList16);
   } else if (pb && [NSImage canInitWithPasteboard:pb]) {
     // Finder Cmd+C places both file and icon onto the clipboard
     // (http://crbug.com/553686), so ignore images if we have detected files.
     // This means that if an image is present with file content, we will always
     // ignore the image, but this matches observable Safari behavior.
-    types.push_back(base::UTF8ToUTF16(kMimeTypePNG));
+    types.push_back(kMimeTypePng16);
   }
   return types;
 }
@@ -387,7 +397,7 @@ void ClipboardMac::ReadFilenames(ClipboardBuffer buffer,
 
   std::vector<ui::FileInfo> files =
       clipboard_util::FilesFromPasteboard(GetPasteboard());
-  base::ranges::move(files, std::back_inserter(*result));
+  std::ranges::move(files, std::back_inserter(*result));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -400,7 +410,7 @@ void ClipboardMac::ReadBookmark(const DataTransferEndpoint* data_dst,
   NSPasteboard* pb = GetPasteboard();
 
   if (title) {
-    NSString* contents = [pb stringForType:kUTTypeURLName];
+    NSString* contents = [pb stringForType:kUTTypeUrlName];
     *title = base::SysNSStringToUTF16(contents);
   }
 
@@ -428,17 +438,20 @@ void ClipboardMac::ReadData(const ClipboardFormatType& format,
 void ClipboardMac::WritePortableAndPlatformRepresentations(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     uint32_t privacy_types) {
   WritePortableAndPlatformRepresentationsInternal(
-      buffer, objects, std::move(platform_representations), std::move(data_src),
-      GetPasteboard(), privacy_types);
+      buffer, objects, std::move(raw_objects),
+      std::move(platform_representations), std::move(data_src), GetPasteboard(),
+      privacy_types);
 }
 
 void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
     ClipboardBuffer buffer,
     const ObjectMap& objects,
+    const std::vector<RawData>& raw_objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
     NSPasteboard* pasteboard,
@@ -453,12 +466,16 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   [pasteboard declareTypes:@[] owner:nil];
 
   DispatchPlatformRepresentations(std::move(platform_representations));
-  for (const auto& object : objects)
+  for (const auto& object : objects) {
     DispatchPortableRepresentation(object.second);
+  }
+  for (const auto& raw_object : raw_objects) {
+    DispatchPortableRepresentation(raw_object);
+  }
 
   if (data_src && data_src->IsUrlType()) {
     [pasteboard setString:base::SysUTF8ToNSString(data_src->GetURL()->spec())
-                  forType:kUTTypeChromiumSourceURL];
+                  forType:kUTTypeChromiumSourceUrl];
   }
   if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
     WriteConfidentialDataForPassword();
@@ -487,8 +504,7 @@ void ClipboardMac::WriteSvg(std::string_view markup) {
 }
 
 void ClipboardMac::WriteRTF(std::string_view rtf) {
-  WriteData(ClipboardFormatType::RtfType(),
-            base::as_bytes(base::make_span(rtf)));
+  WriteData(ClipboardFormatType::RtfType(), base::as_byte_span(rtf));
 }
 
 void ClipboardMac::WriteFilenames(std::vector<ui::FileInfo> filenames) {

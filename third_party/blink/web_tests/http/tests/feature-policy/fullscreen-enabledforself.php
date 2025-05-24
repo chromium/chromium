@@ -14,8 +14,8 @@ Header("Feature-Policy: fullscreen 'self'");
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="resources/helper.js"></script>
-<iframe></iframe>
-<iframe allowfullscreen></iframe>
+<iframe allow="focus-without-user-activation"></iframe>
+<iframe allow="focus-without-user-activation" allowfullscreen></iframe>
 <script>
 var srcs = [
   "resources/feature-policy-fullscreen.html",

@@ -4,7 +4,6 @@
 """Classes related to the possible matching algorithms for Skia Gold."""
 
 import math
-from typing import List, Optional, Union
 
 
 class Parameters():
@@ -55,7 +54,7 @@ class SkiaGoldMatchingAlgorithm():
   ALGORITHM_KEY = 'image_matching_algorithm'
   """Abstract base class for all algorithms."""
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     """Gets command line parameters for the algorithm.
 
     Returns:
@@ -75,7 +74,7 @@ class SkiaGoldMatchingAlgorithm():
 class ExactMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
   """Class for the default exact matching algorithm in Gold."""
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     return []
 
   def Name(self) -> str:
@@ -102,7 +101,7 @@ class FuzzyMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     self._pixel_per_channel_delta_threshold = pixel_per_channel_delta_threshold
     self._ignored_border_thickness = ignored_border_thickness
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.MAX_DIFFERENT_PIXELS,
@@ -140,7 +139,7 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
           'matching.')
     self._edge_threshold = edge_threshold
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.EDGE_THRESHOLD, self._edge_threshold))
@@ -150,8 +149,8 @@ class SobelMatchingAlgorithm(FuzzyMatchingAlgorithm):
     return 'sobel'
 
 
-def _GenerateOptionalKey(key: str, value: Union[int, str]) -> List[str]:
-  return ['--add-test-optional-key', '%s:%s' % (key, value)]
+def _GenerateOptionalKey(key: str, value: int | str) -> list[str]:
+  return ['--add-test-optional-key', f'{key}:{value}']
 
 
 class SampleAreaMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
@@ -160,7 +159,7 @@ class SampleAreaMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
   def __init__(self,
                sample_area_width: int,
                max_different_pixels_per_area: int,
-               sample_area_channel_delta_threshold: Optional[int] = None):
+               sample_area_channel_delta_threshold: int | None = None):
     super().__init__()
     assert sample_area_width >= 1
     assert sample_area_width <= math.sqrt(2**31 - 1)
@@ -182,7 +181,7 @@ class SampleAreaMatchingAlgorithm(SkiaGoldMatchingAlgorithm):
     self._sample_area_channel_delta_threshold = (
         sample_area_channel_delta_threshold)
 
-  def GetCmdline(self) -> List[str]:
+  def GetCmdline(self) -> list[str]:
     retval = super().GetCmdline()
     retval.extend(
         _GenerateOptionalKey(Parameters.SAMPLE_AREA_WIDTH,

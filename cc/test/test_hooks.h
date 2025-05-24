@@ -70,7 +70,8 @@ class TestHooks : public AnimationDelegate {
   virtual void NotifyReadyToDrawOnThread(LayerTreeHostImpl* host_impl) {}
   virtual void NotifyAllTileTasksCompleted(LayerTreeHostImpl* host_impl) {}
   virtual void NotifyTileStateChangedOnThread(LayerTreeHostImpl* host_impl,
-                                              const Tile* tile) {}
+                                              const Tile* tile,
+                                              bool update_damage) {}
   virtual void DidRunBeginMainFrame() {}
   virtual void DidReceivePresentationTimeOnThread(
       LayerTreeHostImpl* host_impl,
@@ -115,11 +116,13 @@ class TestHooks : public AnimationDelegate {
   virtual void DidInitializeLayerTreeFrameSink() {}
   virtual void DidFailToInitializeLayerTreeFrameSink() {}
   virtual void DidAddAnimation() {}
+  virtual void OnCommitRequested() {}
   virtual void WillCommit(const CommitState&) {}
   virtual void DidCommit() {}
   virtual void DidCommitAndDrawFrame() {}
   virtual void DidActivateSyncTree() {}
-  virtual void NotifyThroughputTrackerResults(CustomTrackerResults results) {}
+  virtual void NotifyCompositorMetricsTrackerResults(
+      CustomTrackerResults results) {}
   virtual std::unique_ptr<BeginMainFrameMetrics> GetBeginMainFrameMetrics();
   virtual void DidPresentCompositorFrame(
       uint32_t frame_token,

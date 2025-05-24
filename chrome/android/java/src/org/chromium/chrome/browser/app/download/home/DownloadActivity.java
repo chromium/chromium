@@ -9,13 +9,13 @@ import android.os.Bundle;
 
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -43,19 +43,30 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
                     mCurrentUrl = url;
                 }
             };
-    private OTRProfileID mOtrProfileID;
+    private OtrProfileId mOtrProfileId;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        // If the profile doesn't exist, then do not perform any action.
-        if (!DownloadUtils.doesProfileExistFromIntent(getIntent())) finish();
+    protected void onCreateInternal(Bundle savedInstanceState) {
+        super.onCreateInternal(savedInstanceState);
 
         mCurrentUrl =
                 savedInstanceState == null
                         ? UrlConstants.DOWNLOADS_URL
                         : savedInstanceState.getString(BUNDLE_KEY_CURRENT_URL);
+    }
+
+    @Override
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
+
+        // TODO(crbug.com/40254448): Update DownloadActivity to use ProfileIntentUtils instead of
+        // the existing custom profile passing logic.
+        //
+        // If the profile doesn't exist, then do not perform any action.
+        if (!DownloadUtils.doesProfileExistFromIntent(getIntent())) {
+            finish();
+            return;
+        }
 
         // Loads offline pages and prefetch downloads.
         OfflineContentAggregatorNotificationBridgeUiFactory.instance();
@@ -63,11 +74,11 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
                 DownloadActivityLauncher.shouldShowPrefetchContent(getIntent());
         mPermissionDelegate =
                 new ActivityAndroidPermissionDelegate(new WeakReference<Activity>(this));
-        mOtrProfileID = DownloadUtils.getOTRProfileIDFromIntent(getIntent());
+        mOtrProfileId = DownloadUtils.getOtrProfileIdFromIntent(getIntent());
 
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
-                        .setOTRProfileID(mOtrProfileID)
+                        .setOtrProfileId(mOtrProfileId)
                         .setIsSeparateActivity(true)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
                         .setStartWithPrefetchedContent(showPrefetchContent)
@@ -83,10 +94,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
         if (!showPrefetchContent) mDownloadCoordinator.updateForUrl(mCurrentUrl);
         mDownloadCoordinator.addObserver(mUiObserver);
         BackPressHelper.create(
-                this,
-                getOnBackPressedDispatcher(),
-                mDownloadCoordinator.getBackPressHandlers(),
-                SecondaryActivity.DOWNLOAD);
+                this, getOnBackPressedDispatcher(), mDownloadCoordinator.getBackPressHandlers());
     }
 
     @Override
@@ -97,9 +105,11 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
 
     @Override
     protected void onDestroy() {
-        mDownloadCoordinator.removeObserver(mUiObserver);
-        mDownloadCoordinator.destroy();
-        mModalDialogManager.destroy();
+        if (mDownloadCoordinator != null) {
+            mDownloadCoordinator.removeObserver(mUiObserver);
+            mDownloadCoordinator.destroy();
+            mModalDialogManager.destroy();
+        }
         super.onDestroy();
     }
 

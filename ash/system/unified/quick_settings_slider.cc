@@ -8,6 +8,8 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/color_util.h"
 #include "base/notreached.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -85,11 +87,19 @@ QuickSettingsSlider::QuickSettingsSlider(views::SliderListener* listener,
   SetValueIndicatorRadius(kFullSliderRoundedRadius);
   SetFocusBehavior(FocusBehavior::ALWAYS);
 
+  GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
   GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
   GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
 
 QuickSettingsSlider::~QuickSettingsSlider() = default;
+
+// By not calling the superclass's AddedToWidget, the QuickSettingsSlider
+// ensures that only its own custom behavior is executed, avoiding any
+// redundant accessibility events getting triggered.
+void QuickSettingsSlider::AddedToWidget() {
+  UpdateAccessibleValue();
+}
 
 void QuickSettingsSlider::SetSliderStyle(Style style) {
   if (slider_style_ == style)
@@ -100,6 +110,7 @@ void QuickSettingsSlider::SetSliderStyle(Style style) {
   if (slider_style_ == Style::kRadioInactive)
     SetFocusBehavior(FocusBehavior::NEVER);
 
+  UpdateAccessibleValue();
   SchedulePaint();
 }
 
@@ -116,12 +127,11 @@ int QuickSettingsSlider::GetInactiveRadioSliderRoundedCornerRadius() {
   return kInactiveRadioSliderRoundedRadius + kFocusOffset;
 }
 
-void QuickSettingsSlider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kSlider;
+void QuickSettingsSlider::UpdateAccessibleValue() {
   std::u16string volume_level = base::UTF8ToUTF16(
       base::StringPrintf("%d%%", static_cast<int>(GetValue() * 100 + 0.5)));
-
+  views::ScopedAccessibilityEventBlocker scoped_event_blocker(
+      GetViewAccessibility());
   if (is_toggleable_volume_slider_) {
     std::u16string message = l10n_util::GetStringFUTF16(
         slider_style_ == Style::kDefaultMuted
@@ -129,10 +139,16 @@ void QuickSettingsSlider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
             : IDS_ASH_STATUS_TRAY_VOLUME_SLIDER_ACCESSIBILITY_ANNOUNCEMENT,
         volume_level);
 
-    node_data->SetValue(message);
+    GetViewAccessibility().SetValue(message);
   } else {
-    node_data->SetValue(volume_level);
+    GetViewAccessibility().SetValue(volume_level);
   }
+}
+
+void QuickSettingsSlider::SetIsToggleableVolumeSlider(
+    bool is_toggleable_volume_slider) {
+  is_toggleable_volume_slider_ = is_toggleable_volume_slider;
+  UpdateAccessibleValue();
 }
 
 SkColor QuickSettingsSlider::GetThumbColor() const {

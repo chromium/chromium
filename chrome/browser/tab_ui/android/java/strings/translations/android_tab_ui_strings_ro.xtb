@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="ro">
+<translation id="1293272072740285747">Păstrează acest grup pentru a adăuga file mai târziu sau șterge-l dacă nu mai ai nevoie de el.
+
+Dacă îl ștergi, toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="TITLE_OF_GROUP" />, iar acesta va fi șters de pe toate dispozitivele.</translation>
+<translation id="1340839264183302272">Ieși din grup</translation>
+<translation id="1419023007528516122">Astfel, grupul va fi șters definitiv de pe dispozitiv</translation>
+<translation id="1501480321619201731">Șterge grupul</translation>
+<translation id="2677748264148917807">Ieși</translation>
+<translation id="3547352561153509682">Astfel, grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Anulezi gruparea filelor?</translation>
+<translation id="4139634748112164403">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters definitiv</translation>
+<translation id="4431937619879060901">Vei pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele tale</translation>
+<translation id="4460014764210899310">Anulați gruparea</translation>
+<translation id="4777866634702576038">Ștergi grupul de file?</translation>
+<translation id="5094423602314093681">Elimini filele și ștergi grupul?</translation>
+<translation id="5647702255748985085">Ieși din grup?</translation>
+<translation id="742664698522525515">Păstrezi grupul?</translation>
+<translation id="750886945254958667">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l dacă nu mai dorești să ai acces la el</translation>
+<translation id="8261506727792406068">Șterge</translation>
+<translation id="870736955561925754">Închizi fila și ștergi grupul?</translation>
+<translation id="8804742093141782941">Păstrează grupul</translation>
+<translation id="9169141410816678175">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și acesta va fi șters de pe toate dispozitivele</translation>
+<translation id="9216898458513705996">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Ștergi grupul?</translation>
+</translationbundle>

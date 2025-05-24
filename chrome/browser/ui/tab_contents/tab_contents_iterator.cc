@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,10 +16,11 @@
 AllTabContentsesList::Iterator::Iterator() : Iterator(true) {}
 
 AllTabContentsesList::Iterator::Iterator(bool is_end_iter)
-    : tab_index_(-1),
-      cur_(nullptr),
-      browser_iterator_(BrowserList::GetInstance()->begin()) {
-  if (!is_end_iter) {
+    : cur_(nullptr),
+      browser_iterator_(BrowserList::GetInstance()->begin()),
+      tab_iterator_(std::nullopt) {
+  if (!is_end_iter &&
+      (browser_iterator_ != BrowserList::GetInstance()->end())) {
     // Load the first WebContents into |cur_|.
     Next();
   }
@@ -29,22 +32,23 @@ AllTabContentsesList::Iterator::~Iterator() = default;
 
 void AllTabContentsesList::Iterator::Next() {
   // The current WebContents should be valid unless we are at the beginning.
-  DCHECK(cur_ || tab_index_ == -1) << "Trying to advance past the end";
+  DCHECK(cur_ || (browser_iterator_ != BrowserList::GetInstance()->end()))
+      << "Trying to advance past the end";
 
   // Update |cur_| to the next WebContents in the list.
   while (browser_iterator_ != BrowserList::GetInstance()->end()) {
-    if (++tab_index_ >= (*browser_iterator_)->tab_strip_model()->count()) {
-      // Advance to the next Browser in the list.
-      ++browser_iterator_;
-      tab_index_ = -1;
-      continue;
+    if (!tab_iterator_.has_value()) {
+      tab_iterator_ = (*browser_iterator_)->tab_strip_model()->begin();
     }
 
-    auto* next_tab =
-        (*browser_iterator_)->tab_strip_model()->GetWebContentsAt(tab_index_);
-    if (next_tab) {
-      cur_ = next_tab;
+    if (tab_iterator_ != (*browser_iterator_)->tab_strip_model()->end()) {
+      cur_ = tab_iterator_.value()->GetContents();
+      // Increment by reference has better performance.
+      ++(tab_iterator_.value());
       return;
+    } else {
+      tab_iterator_ = std::nullopt;
+      browser_iterator_++;
     }
   }
 

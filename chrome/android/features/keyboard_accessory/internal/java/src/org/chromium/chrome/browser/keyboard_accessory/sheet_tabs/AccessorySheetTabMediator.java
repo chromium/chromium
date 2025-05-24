@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecord
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.FooterCommand;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.IbanInfo;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.LoyaltyCardInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.OptionToggle;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PasskeySection;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PlusAddressInfo;
@@ -34,13 +35,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class contains the logic for the simple accessory sheets. Changes to its internal
- * {@link PropertyModel} are observed by a {@link PropertyModelChangeProcessor} and affect the
- * accessory sheet tab view.
+ * This class contains the logic for the simple accessory sheets. Changes to its internal {@link
+ * PropertyModel} are observed by a {@link PropertyModelChangeProcessor} and affect the accessory
+ * sheet tab view.
  */
 class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData> {
     private final PropertyModel mModel;
-    private final @AccessoryTabType int mTabType;
     private final @Type int mUserInfoType;
     private final @AccessoryAction int mManageActionToRecord;
     private final ToggleChangeDelegate mToggleChangeDelegate;
@@ -70,12 +70,10 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
 
     AccessorySheetTabMediator(
             PropertyModel model,
-            @AccessoryTabType int tabType,
             @Type int userInfoType,
             @AccessoryAction int manageActionToRecord,
             @Nullable ToggleChangeDelegate toggleChangeDelegate) {
         mModel = model;
-        mTabType = tabType;
         mUserInfoType = userInfoType;
         mManageActionToRecord = manageActionToRecord;
         mToggleChangeDelegate = toggleChangeDelegate;
@@ -136,6 +134,9 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
         }
         for (IbanInfo ibanInfo : accessorySheetData.getIbanInfoList()) {
             items.add(new AccessorySheetDataPiece(ibanInfo, Type.IBAN_INFO));
+        }
+        for (LoyaltyCardInfo loyaltyCardInfo : accessorySheetData.getLoyaltyCardInfoList()) {
+            items.add(new AccessorySheetDataPiece(loyaltyCardInfo, Type.LOYALTY_CARD_INFO));
         }
         for (FooterCommand command : accessorySheetData.getFooterCommands()) {
             items.add(new AccessorySheetDataPiece(command, Type.FOOTER_COMMAND));

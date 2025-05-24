@@ -27,6 +27,7 @@ source_set("omnibox") {
 
   deps = [
     "//chrome/browser/extensions",
+    "//chrome/browser/omnibox",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//services/data_decoder/public/cpp",

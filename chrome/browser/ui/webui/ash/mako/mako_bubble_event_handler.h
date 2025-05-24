@@ -5,8 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_BUBBLE_EVENT_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_MAKO_MAKO_BUBBLE_EVENT_HANDLER_H_
 
+#include <variant>
+
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/events/event.h"
@@ -51,7 +52,7 @@ class MakoBubbleEventHandler : public ui::EventHandler {
     gfx::Rect original_bounds_in_screen;
     gfx::Vector2d original_pointer_pos;
   };
-  using State = absl::variant<InitialState, DraggingState, ResizingState>;
+  using State = std::variant<InitialState, DraggingState, ResizingState>;
 
   explicit MakoBubbleEventHandler(Delegate* delegate);
 

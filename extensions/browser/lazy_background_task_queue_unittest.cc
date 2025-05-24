@@ -33,7 +33,7 @@ namespace {
 class TestProcessManager : public ProcessManager {
  public:
   explicit TestProcessManager(BrowserContext* context)
-      : ProcessManager(context, context, ExtensionRegistry::Get(context)),
+      : ProcessManager(context, ExtensionRegistry::Get(context)),
         create_count_(0) {
     // ProcessManager constructor above assumes non-incognito.
     DCHECK(!context->IsOffTheRecord());

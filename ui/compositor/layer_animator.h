@@ -105,8 +105,8 @@ class COMPOSITOR_EXPORT LayerAnimator : public base::RefCounted<LayerAnimator>,
   float GetTargetGrayscale() const;
 
   // Sets the color on the delegate. May cause an implicit animation.
-  virtual void SetColor(SkColor color);
-  SkColor GetTargetColor() const;
+  virtual void SetColor(SkColor4f color);
+  SkColor4f GetTargetColor() const;
 
   // Sets the clip rect on the delegate. May cause an implicit animation.
   virtual void SetClipRect(const gfx::Rect& clip_rect);

@@ -29,8 +29,11 @@
 namespace {
 
 base::FilePath GetPythonPath() {
-  // Every environment should have python3.
-  return base::FilePath(FILE_PATH_LITERAL("python3"));
+#if BUILDFLAG(IS_WIN)
+  return base::FilePath(FILE_PATH_LITERAL("vpython3.bat"));
+#else
+  return base::FilePath(FILE_PATH_LITERAL("vpython3"));
+#endif
 }
 
 const base::FilePath kTestDataPath = base::FilePath(

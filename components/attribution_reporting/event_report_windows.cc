@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <optional>
@@ -16,7 +17,6 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -46,7 +46,7 @@ bool IsReportWindowValid(base::TimeDelta report_window) {
 }
 
 bool IsStrictlyIncreasing(const std::vector<base::TimeDelta>& end_times) {
-  return base::ranges::adjacent_find(end_times, std::not_fn(std::less{})) ==
+  return std::ranges::adjacent_find(end_times, std::not_fn(std::less{})) ==
          end_times.end();
 }
 
@@ -221,30 +221,11 @@ EventReportWindows::FromJSON(const base::Value::Dict& registration,
         });
 
     return EventReportWindows(report_window, source_type);
-  } else if (multiple_windows) {
-    return ParseWindowsJSON(*multiple_windows, expiry);
-  } else {
+  } else if (!multiple_windows) {
     return EventReportWindows(expiry, source_type);
   }
-}
 
-// static
-base::expected<EventReportWindows, SourceRegistrationError>
-EventReportWindows::ParseWindows(const base::Value::Dict& dict,
-                                 base::TimeDelta expiry,
-                                 const EventReportWindows& default_if_absent) {
-  const base::Value* value = dict.Find(kEventReportWindows);
-  if (!value) {
-    return default_if_absent;
-  }
-  return ParseWindowsJSON(*value, expiry);
-}
-
-// static
-base::expected<EventReportWindows, SourceRegistrationError>
-EventReportWindows::ParseWindowsJSON(const base::Value& v,
-                                     base::TimeDelta expiry) {
-  const base::Value::Dict* dict = v.GetIfDict();
+  const base::Value::Dict* dict = multiple_windows->GetIfDict();
   if (!dict) {
     return base::unexpected(
         SourceRegistrationError::kEventReportWindowsWrongType);

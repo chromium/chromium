@@ -12,7 +12,11 @@ pybind_extension(
     srcs = [
         "_pywrap_audio_buffer.cc",
     ],
+    enable_stub_generation = True,
     module_name = "_pywrap_audio_buffer",
+    pytype_srcs = [
+        "_pywrap_audio_buffer.pyi",
+    ],
     deps = [
         "//tensorflow_lite_support/cc/task/audio/core:audio_buffer",
         "//tensorflow_lite_support/cc/task/audio/utils:audio_utils",

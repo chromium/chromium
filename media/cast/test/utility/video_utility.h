@@ -9,16 +9,7 @@
 
 #include "media/base/video_frame.h"
 
-namespace media {
-namespace cast {
-
-// Compute and return PSNR between two frames.
-double I420PSNR(const media::VideoFrame& frame1,
-                const media::VideoFrame& frame2);
-
-// Compute and return SSIM between two frames.
-double I420SSIM(const media::VideoFrame& frame1,
-                const media::VideoFrame& frame2);
+namespace media::cast {
 
 // Populate a video |frame| with a plaid pattern, cycling from the given
 // |start_value|.
@@ -29,11 +20,6 @@ void PopulateVideoFrame(VideoFrame* frame, int start_value);
 // Populate a video frame with noise.
 void PopulateVideoFrameWithNoise(VideoFrame* frame);
 
-// Populate a video frame from a file.
-// Returns true if frame was populated, false if not (EOF).
-bool PopulateVideoFrameFromFile(VideoFrame* frame, FILE* video_file);
-
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast
 
 #endif  // MEDIA_CAST_TEST_UTILITY_VIDEO_UTILITY_H_

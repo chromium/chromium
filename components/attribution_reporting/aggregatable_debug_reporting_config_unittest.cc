@@ -10,12 +10,10 @@
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
 #include "components/attribution_reporting/debug_types.mojom.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,7 +41,7 @@ using ::testing::Property;
 using ::testing::SizeIs;
 
 constexpr size_t kNumSourceDebugDataTypes = 15;
-constexpr size_t kNumTriggerDebugDataTypes = 21;
+constexpr size_t kNumTriggerDebugDataTypes = 22;
 
 TEST(AggregatableDebugReportingConfig, Parse) {
   const struct {
@@ -653,9 +651,6 @@ TEST(AggregatableDebugReportingConfig, Parse) {
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
-
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.desc);
 
@@ -732,9 +727,6 @@ TEST(AggregatableDebugReportingConfig, SerializeSource) {
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
-
   for (const auto& test_case : kTestCases) {
     base::Value::Dict dict;
     test_case.input.Serialize(dict);
@@ -783,9 +775,6 @@ TEST(AggregatableDebugReportingConfig, SerializeTrigger) {
   aggregation_service::ScopedAggregationCoordinatorAllowlistForTesting
       scoped_coordinator_allowlist(
           {url::Origin::Create(GURL("https://a.test"))});
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
 
   for (const auto& test_case : kTestCases) {
     base::Value::Dict dict;
@@ -875,9 +864,6 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
     }
   })json";
 
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
-
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.type_str);
 
@@ -912,6 +898,10 @@ TEST(AggregatableDebugReportingConfig, TriggerDebugDataTypes) {
       {
           "trigger-aggregate-insufficient-budget",
           DebugDataType::kTriggerAggregateInsufficientBudget,
+      },
+      {
+          "trigger-aggregate-insufficient-named-budget",
+          DebugDataType::kTriggerAggregateInsufficientNamedBudget,
       },
       {
           "trigger-aggregate-no-contributions",
@@ -995,9 +985,6 @@ TEST(AggregatableDebugReportingConfig, TriggerDebugDataTypes) {
       }]
     }
   })json";
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionAggregatableDebugReporting);
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.type_str);

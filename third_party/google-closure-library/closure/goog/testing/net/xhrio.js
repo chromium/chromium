@@ -198,7 +198,7 @@ goog.testing.net.XhrIo.prototype.lastHeaders_;
 
 /**
  * The response object.
- * @private {string|Document|ArrayBuffer}
+ * @private {string|!Document|!ArrayBuffer|!Blob|null}
  */
 goog.testing.net.XhrIo.prototype.response_ = '';
 
@@ -486,7 +486,8 @@ goog.testing.net.XhrIo.prototype.simulatePartialResponse = function(
 /**
  * Simulates receiving a response.
  * @param {number} statusCode Simulated status code.
- * @param {string|Document|ArrayBuffer|null} response Simulated response.
+ * @param {string|!Document|!ArrayBuffer|!Blob|null} response Simulated
+ *     response.
  * @param {Object=} opt_headers Simulated response headers.
  */
 goog.testing.net.XhrIo.prototype.simulateResponse = function(

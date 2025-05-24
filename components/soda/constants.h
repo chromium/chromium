@@ -87,7 +87,7 @@ struct SodaLanguagePackComponentConfig {
   const uint8_t public_key_sha[32] = {};
 };
 
-constexpr SodaLanguagePackComponentConfig kLanguageComponentConfigs[] = {
+inline constexpr SodaLanguagePackComponentConfig kLanguageComponentConfigs[] = {
     {LanguageCode::kEnUs,
      "en-US",
      prefs::kSodaEnUsConfigPath,

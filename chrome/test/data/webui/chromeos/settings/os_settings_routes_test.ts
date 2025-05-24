@@ -9,7 +9,8 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {createRoutesForTesting, OsSettingsRoutes} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsRoutes} from 'chrome://os-settings/os_settings.js';
+import {createRoutesForTesting} from 'chrome://os-settings/os_settings.js';
 import {assertEquals, assertNull} from 'chrome://webui-test/chai_assert.js';
 
 suite('Route', () => {

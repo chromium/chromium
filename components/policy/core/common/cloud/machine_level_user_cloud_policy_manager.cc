@@ -42,7 +42,8 @@ MachineLevelUserCloudPolicyManager::MachineLevelUserCloudPolicyManager(
       external_data_manager_(std::move(external_data_manager)),
       policy_dir_(policy_dir) {}
 
-MachineLevelUserCloudPolicyManager::~MachineLevelUserCloudPolicyManager() {}
+MachineLevelUserCloudPolicyManager::~MachineLevelUserCloudPolicyManager() =
+    default;
 
 void MachineLevelUserCloudPolicyManager::Connect(
     PrefService* local_state,

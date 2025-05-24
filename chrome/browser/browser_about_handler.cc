@@ -39,9 +39,6 @@ bool HandleChromeAboutAndChromeSyncRewrite(
   if (host == chrome::kChromeUIAboutHost) {
     // Replace chrome://about with chrome://chrome-urls.
     host = chrome::kChromeUIChromeURLsHost;
-  } else if (host == chrome::kChromeUISyncHost) {
-    // Replace chrome://sync with chrome://sync-internals (for legacy reasons).
-    host = chrome::kChromeUISyncInternalsHost;
   }
 
   if (host != url->host()) {

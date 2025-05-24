@@ -35,10 +35,6 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "BGRA_8888";
   } else if (format == SinglePlaneFormat::kALPHA_8) {
     return "ALPHA_8";
-  } else if (format == SinglePlaneFormat::kLUMINANCE_8) {
-    return "LUMINANCE_8";
-  } else if (format == SinglePlaneFormat::kRGB_565) {
-    return "RGB_565";
   } else if (format == SinglePlaneFormat::kBGR_565) {
     return "BGR_565";
   } else if (format == SinglePlaneFormat::kETC1) {
@@ -283,8 +279,7 @@ int SharedImageFormat::NumChannelsInPlane(int plane_index) const {
     case PlaneConfig::kY_UV_A:
       return plane_index == 1 ? 2 : 1;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // For multiplanar formats.
@@ -298,8 +293,7 @@ int SharedImageFormat::MultiplanarBitDepth() const {
     case ChannelFormat::k16F:
       return 16;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 std::string SharedImageFormat::ToString() const {
@@ -377,7 +371,6 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RG_1616:
       return 32;
     case mojom::SingleplanarFormat::RGBA_4444:
-    case mojom::SingleplanarFormat::RGB_565:
     case mojom::SingleplanarFormat::LUMINANCE_F16:
     case mojom::SingleplanarFormat::R_F16:
     case mojom::SingleplanarFormat::R_16:
@@ -385,13 +378,20 @@ int SharedImageFormat::BitsPerPixel() const {
     case mojom::SingleplanarFormat::RG_88:
       return 16;
     case mojom::SingleplanarFormat::ALPHA_8:
-    case mojom::SingleplanarFormat::LUMINANCE_8:
     case mojom::SingleplanarFormat::R_8:
       return 8;
     case mojom::SingleplanarFormat::ETC1:
       return 4;
   }
   NOTREACHED();
+}
+
+SharedImageFormat SharedImageFormat::N32Format() {
+#if BUILDFLAG(IS_ANDROID)
+  return SinglePlaneFormat::kRGBA_8888;
+#else
+  return SinglePlaneFormat::kBGRA_8888;
+#endif
 }
 
 bool SharedImageFormat::operator==(const SharedImageFormat& o) const {

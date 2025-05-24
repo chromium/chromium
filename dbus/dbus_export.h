@@ -15,17 +15,9 @@
 #endif  // defined(WIN32)
 
 #if defined(COMPONENT_BUILD)
-
-#if defined(DBUS_IMPLEMENTATION)
 #define CHROME_DBUS_EXPORT __attribute__((visibility("default")))
-#else
-#define CHROME_DBUS_EXPORT
-#endif
-
 #else  // !defined(COMPONENT_BUILD)
-
 #define CHROME_DBUS_EXPORT
-
 #endif  // defined(COMPONENT_BUILD)
 
 #endif  // DBUS_DBUS_EXPORT_H_

@@ -9,7 +9,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/user_actions/user_actions_ui_handler.h"
 #include "chrome/common/url_constants.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/user_actions_ui_resources.h"
+#include "components/grit/user_actions_ui_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -20,11 +21,10 @@ UserActionsUI::UserActionsUI(content::WebUI* web_ui)
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::CreateAndAdd(Profile::FromWebUI(web_ui),
                                              chrome::kChromeUIUserActionsHost);
-  html_source->SetDefaultResource(IDR_USER_ACTIONS_HTML);
-  html_source->AddResourcePath("user_actions.css", IDR_USER_ACTIONS_CSS);
-  html_source->AddResourcePath("user_actions.js", IDR_USER_ACTIONS_JS);
+  html_source->AddResourcePaths(kUserActionsUiResources);
+  html_source->AddResourcePath("", IDR_USER_ACTIONS_UI_USER_ACTIONS_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<UserActionsUIHandler>());
 }
 
-UserActionsUI::~UserActionsUI() {}
+UserActionsUI::~UserActionsUI() = default;

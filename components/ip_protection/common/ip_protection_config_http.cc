@@ -4,20 +4,25 @@
 
 #include "components/ip_protection/common/ip_protection_config_http.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/types/expected.h"
 #include "net/base/features.h"
+#include "net/http/http_request_headers.h"
+#include "services/network/public/cpp/mutable_network_traffic_annotation_tag_mojom_traits.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace ip_protection {
@@ -27,15 +32,14 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ip_protection_service_get_token",
                                         R"(
     semantics {
-      sender: "Chrome IP Protection Service Client"
+      sender: "IP Protection Service Client"
       description:
         "Request to a Google auth server to obtain an authorization token "
-        "for Chrome's IP Protection privacy proxies."
+        "for IP Protection privacy proxies."
       trigger:
-        "The Chrome IP Protection Service is out of proxy authorization "
-        "tokens."
+        "The IP Protection Service is out of proxy authorization tokens."
       data:
-        "Chrome sign-in OAuth Token"
+        "Sign-in OAuth Token"
       destination: GOOGLE_OWNED_SERVICE
       internal {
         contacts {
@@ -45,7 +49,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
       user_data {
         type: ACCESS_TOKEN
       }
-      last_reviewed: "2023-09-07"
+      last_reviewed: "2024-09-26"
     }
     policy {
       cookies_allowed: NO
@@ -119,8 +123,11 @@ void IpProtectionConfigHttp::DoRequest(
                                        kGetTokenTrafficAnnotation);
 
   // Retry on network changes, for consistency with GetProxyConfig requests.
+  // A network change during DNS resolution results in a DNS error rather than
+  // a network change error, so retry in those cases as well.
   url_loader->SetRetryOptions(
-      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE);
+      2, network::SimpleURLLoader::RETRY_ON_NETWORK_CHANGE |
+             network::SimpleURLLoader::RETRY_ON_NAME_NOT_RESOLVED);
 
   url_loader->AttachStringForUpload(body, kProtobufContentType);
   auto* url_loader_ptr = url_loader.get();
@@ -135,7 +142,7 @@ void IpProtectionConfigHttp::DoRequest(
 void IpProtectionConfigHttp::OnDoRequestCompleted(
     std::unique_ptr<network::SimpleURLLoader> url_loader,
     quiche::BlindSignMessageCallback callback,
-    std::unique_ptr<std::string> response) {
+    std::optional<std::string> response) {
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
@@ -149,7 +156,7 @@ void IpProtectionConfigHttp::OnDoRequestCompleted(
     return;
   }
 
-  if (!response) {
+  if (!response.has_value()) {
     std::move(callback)(
         absl::InternalError("Failed Request to Authentication Server"));
     return;

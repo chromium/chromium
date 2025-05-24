@@ -13,7 +13,8 @@
 class PageVisiblityExecutorFuzzer {
  public:
   PageVisiblityExecutorFuzzer()
-      : model_executor_(page_content_annotations::PageVisibilityModelExecutor()) {
+      : model_executor_(
+            page_content_annotations::PageVisibilityModelExecutor()) {
     model_executor_.InitializeAndMoveToExecutionThread(
         // This is an arbitrarily long time since we don't need to test the
         // timeout behavior here, libfuzzer will take care of hangs.

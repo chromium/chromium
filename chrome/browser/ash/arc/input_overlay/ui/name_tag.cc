@@ -60,9 +60,9 @@ void NameTag::SetState(bool is_error, const std::u16string& error_tooltip) {
   subtitle_label_->SetText(error_tooltip);
   subtitle_label_->SetVisible(is_error);
 
-  title_label_->SetEnabledColorId(for_editing_list_ && is_error
-                                      ? cros_tokens::kCrosSysError
-                                      : cros_tokens::kCrosSysOnSurface);
+  title_label_->SetEnabledColor(for_editing_list_ && is_error
+                                    ? cros_tokens::kCrosSysError
+                                    : cros_tokens::kCrosSysOnSurface);
   UpdateLabelsFitWidth();
 
   // The widget may need a resize.
@@ -128,7 +128,7 @@ void NameTag::Init() {
   subtitle_label_ = sub_container->AddChildView(
       ash::bubble_utils::CreateLabel(ash::TypographyToken::kCrosAnnotation2,
                                      u"", cros_tokens::kCrosSysSecondary));
-  subtitle_label_->SetEnabledColorId(cros_tokens::kCrosSysError);
+  subtitle_label_->SetEnabledColor(cros_tokens::kCrosSysError);
   subtitle_label_->SetMultiLine(true);
   subtitle_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_label_->SetVisible(false);

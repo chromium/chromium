@@ -52,53 +52,6 @@ static_assert(lorgnette::SCAN_FAILURE_MODE_FLATBED_OPEN ==
 static_assert(lorgnette::SCAN_FAILURE_MODE_IO_ERROR ==
               static_cast<int>(mojom::ScanFailureMode::kIoError));
 
-mojom::ScanFailureMode ProtobufResultToMojoResult(
-    lorgnette::ScanFailureMode failure_mode) {
-  // The static_assert() checks above make this cast safe.
-  return static_cast<mojom::ScanFailureMode>(failure_mode);
-}
-
-// Wrapper around `data` that allows this to be a WeakPtr.
-struct ScanResult {
- public:
-  ScanResult() = default;
-  ScanResult(const ScanResult&) = delete;
-  ScanResult& operator=(const ScanResult&) = delete;
-  ~ScanResult() = default;
-
-  base::WeakPtr<ScanResult> AsWeakPtr() {
-    return weak_ptr_factory.GetWeakPtr();
-  }
-
-  std::optional<std::string> data;
-
- private:
-  base::WeakPtrFactory<ScanResult> weak_ptr_factory{this};
-};
-
-void OnPageReceived(base::WeakPtr<ScanResult> scan_result,
-                    std::string scanned_image,
-                    uint32_t /*page_number*/) {
-  if (!scan_result)
-    return;
-
-  // Take only the first page of the scan.
-  if (scan_result->data.has_value())
-    return;
-
-  scan_result->data = std::move(scanned_image);
-}
-
-// As a standalone function, this will always run `callback`. If this was a
-// DocumentScanAsh method instead, then that method bound to a
-// base::WeakPtr<DocumentScanAsh> may sometimes not run `callback`.
-void OnScanCompleted(DocumentScanAsh::ScanFirstPageCallback callback,
-                     std::unique_ptr<ScanResult> scan_result,
-                     lorgnette::ScanFailureMode failure_mode) {
-  std::move(callback).Run(ProtobufResultToMojoResult(failure_mode),
-                          std::move(scan_result->data));
-}
-
 void GetScannerListAdapter(
     DocumentScanAsh::GetScannerListCallback callback,
     const std::optional<lorgnette::ListScannersResponse>& response_in) {
@@ -242,20 +195,6 @@ void DocumentScanAsh::GetScannerNames(GetScannerNamesCallback callback) {
   ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
       ->GetScannerNames(
           base::BindOnce(GetScannerNamesAdapter, std::move(callback)));
-}
-
-void DocumentScanAsh::ScanFirstPage(const std::string& scanner_name,
-                                    ScanFirstPageCallback callback) {
-  lorgnette::ScanSettings settings;
-  settings.set_color_mode(lorgnette::MODE_COLOR);  // Hardcoded for now.
-
-  auto scan_result = std::make_unique<ScanResult>();
-  auto scan_result_weak_ptr = scan_result->AsWeakPtr();
-  ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
-      ->Scan(scanner_name, settings, base::NullCallback(),
-             base::BindRepeating(&OnPageReceived, scan_result_weak_ptr),
-             base::BindOnce(&OnScanCompleted, std::move(callback),
-                            std::move(scan_result)));
 }
 
 void DocumentScanAsh::GetScannerList(const std::string& client_id,

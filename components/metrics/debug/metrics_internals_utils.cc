@@ -4,8 +4,11 @@
 
 #include "components/metrics/debug/metrics_internals_utils.h"
 
+#include <string>
 #include <string_view>
 
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/proto/study.pb.h"
@@ -27,7 +30,7 @@ std::string ChannelToString(variations::Study::Channel channel) {
     case variations::Study::STABLE:
       return "Stable";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string PlatformToString(variations::Study::Platform platform) {
@@ -53,7 +56,7 @@ std::string PlatformToString(variations::Study::Platform platform) {
     case variations::Study::PLATFORM_CHROMEOS_LACROS:
       return "ChromeOS Lacros";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string CpuArchitectureToString(
@@ -70,7 +73,7 @@ std::string CpuArchitectureToString(
     case variations::Study::TRANSLATED_X86_64:
       return "translated_x86_64";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string FormFactorToString(variations::Study::FormFactor form_factor) {
@@ -92,8 +95,22 @@ std::string FormFactorToString(variations::Study::FormFactor form_factor) {
     case variations::Study::FOLDABLE:
       return "Foldable";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+std::string GoogleGroupsToString(
+    const base::flat_set<uint64_t>& google_groups) {
+  std::string result;
+  for (const uint64_t google_group : google_groups) {
+    if (!result.empty()) {
+      result += ",";
+    }
+    result += base::NumberToString(google_group);
+  }
+  return result;
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 std::string BoolToString(bool val) {
   return val ? "Yes" : "No";
@@ -150,6 +167,10 @@ base::Value::List GetVariationsSummary(
   list.Append(CreateKeyValueDict("Locale", state->locale));
   list.Append(
       CreateKeyValueDict("Enterprise", BoolToString(state->IsEnterprise())));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  list.Append(CreateKeyValueDict("Google Groups",
+                                 GoogleGroupsToString(state->GoogleGroups())));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return list;
 }
 

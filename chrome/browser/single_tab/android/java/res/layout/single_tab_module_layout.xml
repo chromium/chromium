@@ -53,6 +53,7 @@ found in the LICENSE file.
         android:text="@string/tab_resumption_module_see_more"
         android:textAlignment="viewEnd"
         android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Link"
+        android:contentDescription="@string/accessibility_tab_resumption_module_see_more"
         />
   </LinearLayout>
 
@@ -84,10 +85,12 @@ found in the LICENSE file.
                   android:layout_marginStart="@dimen/single_tab_thumbnail_margin"
                   android:layout_marginEnd="@dimen/single_tab_thumbnail_margin"
                   android:layout_alignParentStart="true"
+                  android:layout_alignParentBottom="true"
+                  android:layout_alignParentTop="true"
                   android:adjustViewBounds="false"
                   android:gravity="center_horizontal"
                   android:importantForAccessibility="no"
-                  android:scaleType="fitCenter"
+                  android:scaleType="matrix"
                   app:cornerRadiusBottomEnd="@dimen/single_tab_thumbnail_radius"
                   app:cornerRadiusBottomStart="@dimen/single_tab_thumbnail_radius"
                   app:cornerRadiusTopEnd="@dimen/single_tab_thumbnail_radius"
@@ -99,7 +102,7 @@ found in the LICENSE file.
                   android:layout_height="24dp"
                   android:layout_marginBottom="8dp"
                   android:layout_marginEnd="8dp"
-                  android:layout_alignBottom="@id/tab_thumbnail"
+                  android:layout_alignParentBottom="true"
                   android:layout_alignEnd="@id/tab_thumbnail"
                   android:paddingTop="@dimen/favicon_padding"
                   android:paddingBottom="@dimen/favicon_padding"

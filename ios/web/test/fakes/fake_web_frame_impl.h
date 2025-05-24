@@ -5,13 +5,15 @@
 #ifndef IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_IMPL_H_
 #define IOS_WEB_TEST_FAKES_FAKE_WEB_FRAME_IMPL_H_
 
-#include <map>
-#include <vector>
+#import <map>
+#import <vector>
 
 #import "base/memory/raw_ptr.h"
-#include "base/values.h"
-#include "ios/web/js_messaging/web_frame_internal.h"
-#include "ios/web/public/test/fakes/fake_web_frame.h"
+#import "base/values.h"
+#import "ios/web/js_messaging/web_frame_internal.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
+#import "url/gurl.h"
+#import "url/origin.h"
 
 namespace web {
 
@@ -21,13 +23,13 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
  public:
   FakeWebFrameImpl(const std::string& frame_id,
                    bool is_main_frame,
-                   GURL security_origin);
+                   url::Origin security_origin);
 
   // WebFrame:
   WebFrameInternal* GetWebFrameInternal() override;
   std::string GetFrameId() const override;
   bool IsMainFrame() const override;
-  GURL GetSecurityOrigin() const override;
+  url::Origin GetSecurityOrigin() const override;
   BrowserState* GetBrowserState() override;
   bool CallJavaScriptFunction(const std::string& name,
                               const base::Value::List& parameters) override;
@@ -100,7 +102,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   // Whether or not the receiver represents the main frame.
   bool is_main_frame_ = false;
   // The security origin associated with this frame.
-  GURL security_origin_;
+  url::Origin security_origin_;
   // Vector holding history of all javascript handler calls made in this frame.
   // The calls are sorted with the most recent appended at the end.
   std::vector<std::u16string> java_script_calls_;

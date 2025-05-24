@@ -11,6 +11,7 @@ NSString* const kChromeDefaultBrowserIllustrationImage =
     @"chrome_default_browser_illustration";
 NSString* const kChromeDefaultBrowserScreenBannerImage =
     @"chrome_default_browser_screen_banner";
+NSString* const kChromeGuidedTourBannerImage = @"chrome_guided_tour_banner";
 NSString* const kChromeNotificationsOptInBannerImage =
     @"chrome_notifications_opt_in_banner";
 NSString* const kChromeNotificationsOptInBannerLandscapeImage =
@@ -30,7 +31,6 @@ NSString* const kGooglePasswordManagerWidgetPromoDisabledImage =
     @"google_password_manager_widget_promo_disabled";
 NSString* const kGooglePaySymbol = @"google_pay";
 NSString* const kGooglePhotosSymbol = @"google_photos";
-NSString* const kGooglePlusAddressSymbol = @"google_plus_address";
 NSString* const kGoogleSettingsPasswordsInOtherAppsBannerImage =
     @"google_settings_passwords_in_other_apps_banner";
 NSString* const kMulticolorChromeballSymbol = @"multicolor_chromeball";
@@ -42,6 +42,7 @@ NSString* const kUSPSCarrierImage = @"parcel_tracking_carrier_usps";
 #else
 NSString* const kChromiumDefaultBrowserScreenBannerImage =
     @"chromium_default_browser_screen_banner";
+NSString* const kChromiumGuidedTourBannerImage = @"chromium_guided_tour_banner";
 NSString* const kChromiumNotificationsOptInBannerImage =
     @"chromium_notifications_opt_in_banner";
 NSString* const kChromiumNotificationsOptInBannerLandscapeImage =
@@ -60,12 +61,12 @@ NSString* const kChromiumSigninPromoLogoImage = @"chromium_signin_promo_logo";
 
 // Custom symbol names.
 NSString* const kPrivacySymbol = @"checkerboard_shield";
-NSString* const kSyncDisabledSymbol = @"arrow_triangle_slash_circlepath";
 NSString* const kSafetyCheckSymbol = @"checkermark_shield";
 NSString* const kArrowClockWiseSymbol = @"arrow_clockwise";
 NSString* const kIncognitoSymbol = @"incognito";
 NSString* const kSquareNumberSymbol = @"square_number";
 NSString* const kTranslateSymbol = @"translate";
+NSString* const kEnterpriseSigninBannerSymbol = @"enterprise_signin_banner";
 NSString* const kEnterpriseSymbol = @"enterprise";
 NSString* const kPasswordManagerSymbol = @"password_manager";
 NSString* const kPopupBadgeMinusSymbol = @"popup_badge_minus";
@@ -105,6 +106,7 @@ NSString* const kFamilylinkSymbol = @"familylink";
 NSString* const kMyDriveSymbol = @"my_drive";
 NSString* const kSharedDrivesSymbol = @"shared_drives";
 NSString* const kEllipsisSquareFillSymbol = @"ellipsis_square_fill";
+NSString* const kMagnifyingglassSparkSymbol = @"magnifyingglass_spark";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
@@ -124,6 +126,8 @@ NSString* const kCameraFillSymbol = @"custom_camera_fill";
 
 // Default symbol names.
 NSString* const kChartBarXAxisSymbol = @"chart.bar.xaxis";
+NSString* const kChartLineDowntrendXYAxisSymbol =
+    @"chart.line.downtrend.xyaxis";
 NSString* const kCircleSymbol = @"circle";
 NSString* const kCircleFillSymbol = @"circle.fill";
 NSString* const kSyncEnabledSymbol = @"arrow.triangle.2.circlepath";
@@ -195,6 +199,8 @@ NSString* const kWifiSymbol = @"wifi";
 NSString* const kBookmarksSymbol = @"star";
 NSString* const kSyncErrorSymbol =
     @"exclamationmark.arrow.triangle.2.circlepath";
+NSString* const kSyncPasswordErrorSymbol =
+    @"lock.trianglebadge.exclamationmark.fill";
 NSString* const kMenuSymbol = @"ellipsis";
 NSString* const kSortSymbol = @"arrow.up.arrow.down";
 NSString* const kExpandSymbol = @"arrow.up.left.and.arrow.down.right";
@@ -239,6 +245,7 @@ NSString* const kShippingBoxSymbol = @"shippingbox";
 NSString* const kSliderHorizontalSymbol = @"slider.horizontal.3";
 NSString* const kMacbookAndIPhoneSymbol = @"macbook.and.iphone";
 NSString* const kCheckmarkShieldSymbol = @"checkmark.shield";
+NSString* const kListBulletSymbol = @"list.bullet";
 NSString* const kListBulletClipboardSymbol = @"list.bullet.clipboard";
 NSString* const kListBulletRectangleSymbol = @"list.bullet.rectangle.portrait";
 NSString* const kBoxTruckFillSymbol = @"box.truck.fill";
@@ -266,8 +273,27 @@ NSString* const kPencilSymbol = @"pencil";
 NSString* const kMagicStackSymbol = @"wand.and.stars.inverse";
 NSString* const kDiscoverFeedSymbol = @"newspaper";
 NSString* const kFilterSymbol = @"line.3.horizontal.decrease.circle";
+NSString* const kSelectedFilterSymbol =
+    @"line.3.horizontal.decrease.circle.fill";
 NSString* const kPersonTwoSymbol = @"person.2";
 NSString* const kSquareFilledOnSquareSymbol = @"square.filled.on.square";
+NSString* const kPauseButton = @"pause.circle";
+NSString* const kPlayButton = @"play.circle";
+NSString* const kFolderSymbol = @"folder";
+NSString* const kCartSymbol = @"cart";
+NSString* const kArrowUTurnForwardSymbol = @"arrow.uturn.forward";
+NSString* const kArrowUTurnForwardCircleFillSymbol =
+    @"arrow.uturn.forward.circle.fill";
+NSString* const kIPhoneAndArrowForwardSymbol = @"iphone.and.arrow.forward";
+NSString* const kPersonPlusSymbol = @"person.crop.circle.badge.plus";
+NSString* const kArrowUpTrashSymbol = @"arrow.up.trash";
+NSString* const kRectangleGroupBubble = @"rectangle.3.group.bubble";
+NSString* const kHomeSymbol = @"house";
+NSString* const kWorkSymbol = @"case";
+NSString* const kShieldedEnvelope = @"envelope.badge.shield.half.filled";
+NSString* const kReaderModeSymbolPreIOS18 = @"doc.plaintext";
+NSString* const kReaderModeSymbolPostIOS18 = @"text.page";
+NSString* const kCircleBadgeFill = @"circlebadge.fill";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

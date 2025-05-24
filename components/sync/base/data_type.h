@@ -168,7 +168,14 @@ enum DataType {
   // standard syncable prefs.
   PLUS_ADDRESS_SETTING,
 
-  LAST_USER_DATA_TYPE = PLUS_ADDRESS_SETTING,
+  // Valuables stored in the Google Wallet.
+  // Read-only on the client.
+  AUTOFILL_VALUABLE,
+
+  // Account-local metadata for shared tab groups.
+  SHARED_TAB_GROUP_ACCOUNT_DATA,
+
+  LAST_USER_DATA_TYPE = SHARED_TAB_GROUP_ACCOUNT_DATA,
 
   // ---- Control Types ----
   // An object representing a set of Nigori keys.
@@ -220,9 +227,9 @@ enum class DataTypeForHistograms {
   // kDeprecatedSyncedNotifications = 20,
   kPriorityPreferences = 21,
   kDictionary = 22,
-  // kFaviconImages = 23,
-  // kFaviconTracking = 24,
-  kProxyTabs = 25,
+  // kDeprecatedFaviconImages = 23,
+  // kDeprecatedFaviconTracking = 24,
+  // kDeprecatedProxyTabs = 25,
   kSupervisedUserSettings = 26,
   // kDeprecatedSupervisedUsers = 27,
   // kDeprecatedArticles = 28,
@@ -266,7 +273,9 @@ enum class DataTypeForHistograms {
   kProductComparison = 66,
   kCookies = 67,
   kPlusAddressSettings = 68,
-  kMaxValue = kPlusAddressSettings,
+  kAutofillValuable = 69,
+  kSharedTabGroupAccountData = 70,
+  kMaxValue = kSharedTabGroupAccountData,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncDataTypes)
 
@@ -294,16 +303,7 @@ constexpr DataTypeSet UserTypes() {
 }
 
 // User types which are not user-controlled.
-constexpr DataTypeSet AlwaysPreferredUserTypes() {
-  return {DEVICE_INFO,
-          USER_CONSENTS,
-          PLUS_ADDRESS,
-          PLUS_ADDRESS_SETTING,
-          SECURITY_EVENTS,
-          SEND_TAB_TO_SELF,
-          SUPERVISED_USER_SETTINGS,
-          SHARING_MESSAGE};
-}
+DataTypeSet AlwaysPreferredUserTypes();
 
 // User types which are always encrypted.
 constexpr DataTypeSet AlwaysEncryptedUserTypes() {
@@ -394,17 +394,18 @@ constexpr DataTypeSet SharedTypes() {
 }
 
 // Types triggering a warning when the user signs out and the types have
-// unsynced data. The warning offers the user to either save the data locally or
-// abort sign-out, depending on the platform.
+// unsynced data. The warning offers the user to proceed with sign-out deleting
+// any pending account data or abort, depending on the platform.
 constexpr DataTypeSet TypesRequiringUnsyncedDataCheckOnSignout() {
   static_assert(
-      53 == GetNumDataTypes(),
+      55 == GetNumDataTypes(),
       "Add new types to `TypesRequiringUnsyncedDataCheckOnSignout()` if there "
       "should be a warning when the user signs out and the types have unsynced "
-      "data. The warning offers the user to either save the data locally or "
-      "abort sign-out, depending on the platform");
-  return {syncer::BOOKMARKS, syncer::CONTACT_INFO, syncer::PASSWORDS,
-          syncer::READING_LIST, syncer::SAVED_TAB_GROUP};
+      "data. The warning offers the user to either proceed with sign-out "
+      "deleting any pending account data or abort, depending on the platform");
+  return {syncer::BOOKMARKS,    syncer::CONTACT_INFO,    syncer::PASSWORDS,
+          syncer::READING_LIST, syncer::SAVED_TAB_GROUP, syncer::THEMES,
+          syncer::EXTENSIONS};
 }
 
 // User types that can be encrypted, which is a subset of UserTypes() and a
@@ -440,11 +441,11 @@ DataTypeSet GetDataTypeSetFromSpecificsFieldNumberList(
 int GetSpecificsFieldNumberFromDataType(DataType data_type);
 
 // Returns a string with application lifetime that represents the name of
-// |data_type|.
+// `data_type`.
 const char* DataTypeToDebugString(DataType data_type);
 
 // Returns a string with application lifetime that is used as the histogram
-// suffix for |data_type|.
+// suffix for `data_type`.
 const char* DataTypeToHistogramSuffix(DataType data_type);
 
 // Some histograms take an integer parameter that represents a data type.
@@ -461,8 +462,11 @@ int DataTypeToStableIdentifier(DataType data_type);
 // persistence. It is guaranteed to be lowercase.
 const char* DataTypeToStableLowerCaseString(DataType data_type);
 
-// Returns the comma-separated string representation of |data_types|.
+// Returns the comma-separated string representation of `data_types`.
 std::string DataTypeSetToDebugString(DataTypeSet data_types);
+
+// Necessary for compatibility with EXPECT_EQ and the like.
+std::ostream& operator<<(std::ostream& out, DataType data_type);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
 std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set);
@@ -475,10 +479,10 @@ std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set);
 // not return the root entity.
 std::string DataTypeToProtocolRootTag(DataType data_type);
 
-// Returns true if |data_type| is a real datatype
+// Returns true if `data_type` is a real datatype
 bool IsRealDataType(DataType data_type);
 
-// Returns true if |data_type| is an act-once type. Act once types drop
+// Returns true if `data_type` is an act-once type. Act once types drop
 // entities after applying them. Drops are deletes that are not synced to other
 // clients.
 bool IsActOnceDataType(DataType data_type);

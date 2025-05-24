@@ -25,7 +25,7 @@ class TestFileSystemAccessDangerousFileDialog {
   std::unique_ptr<ui::TestDialogModelHost> CreateDialogModelHost() {
     return std::make_unique<ui::TestDialogModelHost>(
         CreateFileSystemAccessDangerousFileDialogForTesting(
-            kTestOrigin, kTestPath,
+            kTestOrigin, kTestPathInfo,
             base::BindLambdaForTesting([&](DangerousFileResult result) {
               callback_called_ = true;
               result_ = result;
@@ -41,7 +41,8 @@ class TestFileSystemAccessDangerousFileDialog {
  private:
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
-  const base::FilePath kTestPath = base::FilePath(FILE_PATH_LITERAL("bar.swf"));
+  const content::PathInfo kTestPathInfo =
+      content::PathInfo(FILE_PATH_LITERAL("bar.swf"));
 
   bool callback_called_ = false;
   std::optional<DangerousFileResult> result_ = std::nullopt;

@@ -44,7 +44,10 @@ if (is_android) {
   }
 
   java_cpp_enum("device_reauth_java_enums_srcjar") {
-    sources = [ "device_reauth_metrics_util.h" ]
+    sources = [
+      "device_authenticator.h",
+      "device_reauth_metrics_util.h",
+    ]
   }
 }
 

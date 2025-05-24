@@ -18,28 +18,18 @@
 namespace headless {
 
 namespace {
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-
 constexpr char kChromeHeadlessProductName[] = "Chrome_Headless";
-
-#endif
-
 }  // namespace
 
 HeadlessCrashReporterClient::HeadlessCrashReporterClient() = default;
 HeadlessCrashReporterClient::~HeadlessCrashReporterClient() = default;
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-void HeadlessCrashReporterClient::GetProductNameAndVersion(
-    std::string* product_name,
-    std::string* version,
-    std::string* channel) {
-  *product_name = kChromeHeadlessProductName;
-  *version = PRODUCT_VERSION;
-  *channel = "";
+void HeadlessCrashReporterClient::GetProductInfo(
+    ProductInfo* product_info) {
+  product_info->product_name = kChromeHeadlessProductName;
+  product_info->version = PRODUCT_VERSION;
+  product_info->channel = "";
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 bool HeadlessCrashReporterClient::GetCrashDumpLocation(
 #if BUILDFLAG(IS_WIN)

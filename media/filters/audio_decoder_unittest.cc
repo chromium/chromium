@@ -176,7 +176,7 @@ class AudioDecoderTest
  protected:
   bool IsSupported() const {
     if (params_.profile == AudioCodecProfile::kXHE_AAC) {
-      return IsSupportedAudioType(
+      return IsDecoderSupportedAudioType(
           {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false});
     }
     return true;
@@ -207,8 +207,7 @@ class AudioDecoderTest
   void Initialize() {
     // Load the test data file.
     data_ = ReadTestDataFile(params_.filename);
-    protocol_ = std::make_unique<InMemoryUrlProtocol>(data_->data(),
-                                                      data_->size(), false);
+    protocol_ = std::make_unique<InMemoryUrlProtocol>(*data_, false);
     reader_ = std::make_unique<AudioFileReader>(protocol_.get());
     ASSERT_TRUE(reader_->OpenDemuxerForTesting());
 
@@ -229,11 +228,11 @@ class AudioDecoderTest
 
 #if (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(USE_PROPRIETARY_CODECS)
-    // MediaCodec type requires config->aac_extra_data() for AAC codec. For ADTS
+    // MediaCodec type requires config->extra_data() for AAC codec. For ADTS
     // streams we need to extract it with a separate procedure.
     if ((decoder_type_ == AudioDecoderType::kMediaCodec ||
          decoder_type_ == AudioDecoderType::kMediaFoundation) &&
-        params_.codec == AudioCodec::kAAC && config.aac_extra_data().empty()) {
+        params_.codec == AudioCodec::kAAC && config.extra_data().empty()) {
       int sample_rate;
       ChannelLayout channel_layout;
       std::vector<uint8_t> extra_data;
@@ -244,7 +243,6 @@ class AudioDecoderTest
       config.Initialize(AudioCodec::kAAC, kSampleFormatS16, channel_layout,
                         sample_rate, extra_data, EncryptionScheme::kUnencrypted,
                         base::TimeDelta(), 0);
-      config.set_aac_extra_data(extra_data);
       ASSERT_FALSE(config.extra_data().empty());
     }
 #endif

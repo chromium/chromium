@@ -22,12 +22,12 @@ namespace {
 
 class OobeDisplayChooserTest : public OobeBaseTest {
  public:
-  OobeDisplayChooserTest() {}
+  OobeDisplayChooserTest() = default;
 
   OobeDisplayChooserTest(const OobeDisplayChooserTest&) = delete;
   OobeDisplayChooserTest& operator=(const OobeDisplayChooserTest&) = delete;
 
-  ~OobeDisplayChooserTest() override {}
+  ~OobeDisplayChooserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kOobeSkipPostLogin);

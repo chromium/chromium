@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
+#include "base/uuid.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -96,10 +97,10 @@ class BrowserState : public base::SupportsUserData {
   virtual void UpdateCorsExemptHeader(
       network::mojom::NetworkContextParams* params) {}
 
-  // Returns the identifier used to access the WebKit storage for
-  // the WebState attached to this BrowserState. Use the default data store if
-  // the string is empty.
-  virtual const std::string& GetWebKitStorageID() const;
+  // Returns the identifier used to access the WebKit storage for the WebState
+  // attached to this BrowserState. Use the default data store if UUID is not
+  // valid.
+  virtual const base::Uuid& GetWebKitStorageID() const;
 
  protected:
   BrowserState();

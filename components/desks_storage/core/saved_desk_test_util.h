@@ -15,14 +15,12 @@
 namespace desks_storage::saved_desk_test_util {
 
 // Adds a Chrome browser window to `out_restore_data`.
-void AddBrowserWindow(bool is_lacros,
-                      int window_id,
+void AddBrowserWindow(int window_id,
                       std::vector<GURL> urls,
                       app_restore::RestoreData* out_restore_data);
 
 // Adds a PWA window to `out_restore_data`.
-void AddPwaWindow(bool is_lacros,
-                  int window_id,
+void AddPwaWindow(int window_id,
                   std::string url,
                   app_restore::RestoreData* out_restore_data);
 

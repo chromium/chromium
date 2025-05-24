@@ -30,10 +30,12 @@ policy::PolicySource GetPolicySource(BSTR source_bstr) {
   constexpr std::wstring_view kDefaultSource = L"Default";
   const auto source =
       std::wstring_view(source_bstr, ::SysStringLen(source_bstr));
-  if (source == kCloudSource)
+  if (source == kCloudSource) {
     return policy::POLICY_SOURCE_CLOUD;
-  if (source == kDefaultSource)
+  }
+  if (source == kDefaultSource) {
     return policy::POLICY_SOURCE_ENTERPRISE_DEFAULT;
+  }
   DCHECK_EQ(source, std::wstring_view(L"Group Policy"));
   return policy::POLICY_SOURCE_PLATFORM;
 }
@@ -51,8 +53,9 @@ std::unique_ptr<policy::PolicyMap::Entry> ConvertPolicyStatusValueToPolicyEntry(
   }
 
   base::win::ScopedBstr source;
-  if (FAILED(policy->get_source(source.Receive())))
+  if (FAILED(policy->get_source(source.Receive()))) {
     return nullptr;
+  }
 
   auto entry = std::make_unique<policy::PolicyMap::Entry>(
       policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_MACHINE,
@@ -75,7 +78,8 @@ std::unique_ptr<policy::PolicyMap::Entry> ConvertPolicyStatusValueToPolicyEntry(
             : base::Value(base::AsStringPiece16(conflict_value.Get())),
         nullptr));
   }
-  if (entry->source == policy::POLICY_SOURCE_ENTERPRISE_DEFAULT)
+  if (entry->source == policy::POLICY_SOURCE_ENTERPRISE_DEFAULT) {
     entry->SetIsDefaultValue();
+  }
   return entry;
 }

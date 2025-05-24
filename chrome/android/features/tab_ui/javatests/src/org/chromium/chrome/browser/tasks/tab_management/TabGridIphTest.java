@@ -27,7 +27,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.prepareTabsWithThumbnail;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
@@ -55,12 +54,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -71,33 +68,22 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 
 /** End-to-end tests for TabGridIph component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=IPH_TabGroupsDragAndDrop<TabGroupsDragAndDrop",
-    "force-fieldtrials=TabGroupsDragAndDrop/Enabled",
-    "force-fieldtrial-params=TabGroupsDragAndDrop.Enabled:availability/any/"
-            + "event_trigger/"
-            + "name%3Aiph_tabgroups_drag_and_drop;comparator%3A==0;window%3A30;storage%3A365/"
-            + "event_trigger2/"
-            + "name%3Aiph_tabgroups_drag_and_drop;comparator%3A<2;window%3A90;storage%3A365/"
-            + "event_used/"
-            + "name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365/"
-            + "session_rate/<1"
-})
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
-// Remove the ANDROID_HUB_FLOATING_ACTION_BUTTON restriction and regenerate goldens when launching.
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON,
-    ChromeFeatureList.ANDROID_HUB_SEARCH
-})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@EnableFeatures(
+        "IPH_TabGroupsDragAndDrop:availability/any"
+            + "/event_trigger/name%3Aiph_tabgroups_drag_and_drop;comparator%3A==0;window%3A30;storage%3A365"
+            + "/event_trigger2/name%3Aiph_tabgroups_drag_and_drop;comparator%3A<2;window%3A90;storage%3A365"
+            + "/event_used/name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365"
+            + "/session_rate/<1")
 @DoNotBatch(reason = "Batching can cause message state to leak between tests.")
 public class TabGridIphTest {
     private ModalDialogManager mModalDialogManager;
@@ -111,7 +97,7 @@ public class TabGridIphTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(2)
+                    .setRevision(4)
                     .build();
 
     @Before
@@ -133,7 +119,7 @@ public class TabGridIphTest {
         CriteriaHelper.pollUiThread(mTracker::isInitialized);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return mTracker.wouldTriggerHelpUI(
+                    return mTracker.wouldTriggerHelpUi(
                             FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
                 });
     }
@@ -340,22 +326,6 @@ public class TabGridIphTest {
 
     @Test
     @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
-    public void testIphMessageRenderedCorrectly_withFloatingActionButton() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabsWithThumbnail(mActivityTestRule, 8, 0, null);
-
-        enterTabSwitcher(cta);
-        CriteriaHelper.pollUiThread(TabSwitcherMessageManager::hasAppendedMessagesForTesting);
-        onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
-
-        View view = cta.findViewById(R.id.pane_frame);
-        mRenderTestRule.render(view, "iph_message_card");
-    }
-
-    @Test
-    @MediumTest
     public void testIphItemChangeWithLastTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -393,7 +363,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Consistent failures despite revival effort in b/341267765")
-    public void testSwipeToDismiss_IPH() {
+    public void testSwipeToDismiss_Iph() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
@@ -417,7 +387,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Still flaky on arm builds despite revival effort in b/341267765")
-    public void testNotShowIPHInMultiWindowMode() {
+    public void testNotShowIphInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));

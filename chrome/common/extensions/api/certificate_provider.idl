@@ -47,7 +47,7 @@ namespace certificateProvider {
   };
 
   // Information about a client certificate.
-  [noinline_doc] dictionary ClientCertificateInfo {
+  dictionary ClientCertificateInfo {
     // The array must contain the DER encoding of the X.509 client certificate
     // as its first element.
     // <p>This must include exactly one certificate.</p>

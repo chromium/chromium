@@ -11,14 +11,16 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <tuple>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/debug/alias.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -28,7 +30,6 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,7 +38,6 @@
 #include "build/build_config.h"
 #include "net/filter/gzip_header.h"
 #include "skia/ext/image_operations.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/brotli/include/brotli/decode.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -46,6 +46,7 @@
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/data_pack.h"
+#include "ui/base/resource/lottie_resource.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/base/ui_base_paths.h"
 #include "ui/base/ui_base_switches.h"
@@ -70,6 +71,9 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/threading/scoped_blocking_call.h"
 #include "ui/display/win/dpi.h"
 
 // To avoid conflicts with the macro from the Windows SDK...
@@ -90,19 +94,8 @@ const unsigned char kPngDataChunkType[4] = { 'I', 'D', 'A', 'T' };
 const char kPakFileExtension[] = ".pak";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// Pointers to the functions |lottie::ParseLottieAsStillImage| and
-// |lottie::ParseLottieAsThemedStillImage|, so that dependencies used by those
-// functions do not need to be included directly in ui/base.
-ResourceBundle::LottieImageParseFunction g_parse_lottie_as_still_image_ =
-    nullptr;
-ResourceBundle::LottieThemedImageParseFunction
-    g_parse_lottie_as_themed_still_image_ = nullptr;
-#endif
-
 ResourceBundle* g_shared_instance_ = nullptr;
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   base::FilePath path;
   if (base::PathService::Get(base::DIR_ASSETS, &path))
@@ -115,22 +108,12 @@ base::FilePath GetResourcesPakFilePath(const std::string& pak_name) {
   return base::FilePath(pak_name.c_str());
 #endif  // BUILDFLAG(IS_WIN)
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 SkBitmap CreateEmptyBitmap() {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(32, 32);
   bitmap.eraseARGB(255, 255, 255, 0);
   return bitmap;
-}
-
-// Helper function for determining whether a resource is gzipped.
-bool HasGzipHeader(std::string_view data) {
-  net::GZipHeader header;
-  const char* header_end = nullptr;
-  net::GZipHeader::Status header_status =
-      header.ReadMore(data.data(), data.length(), &header_end);
-  return header_status == net::GZipHeader::COMPLETE_HEADER;
 }
 
 // Helper function for determining whether a resource is brotli compressed.
@@ -161,17 +144,17 @@ size_t GetBrotliDecompressSize(std::string_view input) {
   return static_cast<size_t>(uncompress_size);
 }
 
-using OutputBufferType = absl::variant<std::string*, std::vector<uint8_t>*>;
+using OutputBufferType = std::variant<std::string*, std::vector<uint8_t>*>;
 
 // Returns a span of the given length that writes into `out_buf`.
 base::span<uint8_t> GetBufferForWriting(OutputBufferType out_buf, size_t len) {
-  if (absl::holds_alternative<std::string*>(out_buf)) {
-    std::string* str = absl::get<std::string*>(out_buf);
+  if (std::holds_alternative<std::string*>(out_buf)) {
+    std::string* str = std::get<std::string*>(out_buf);
     str->resize(len);
     return base::span<uint8_t>(reinterpret_cast<uint8_t*>(str->data()), len);
   }
 
-  std::vector<uint8_t>* vec = absl::get<std::vector<uint8_t>*>(out_buf);
+  std::vector<uint8_t>* vec = std::get<std::vector<uint8_t>*>(out_buf);
   vec->resize(len);
   return base::span<uint8_t>(vec->data(), len);
 }
@@ -193,11 +176,12 @@ bool BrotliDecompress(std::string_view input, OutputBufferType output) {
 
 // Helper function for decompressing resource.
 void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
-  if (!data.empty() && HasGzipHeader(data)) {
+  if (!data.empty() &&
+      net::GZipHeader::HasGZipHeader(base::as_byte_span(data))) {
     TRACE_EVENT0("ui", "DecompressIfNeeded::GzipUncompress");
     const uint32_t uncompressed_size = compression::GetUncompressedSize(data);
     bool success = compression::GzipUncompress(
-        base::as_bytes(base::make_span(data)),
+        base::as_byte_span(data),
         GetBufferForWriting(output, uncompressed_size));
     DCHECK(success);
   } else if (!data.empty() && HasBrotliHeader(data)) {
@@ -206,7 +190,7 @@ void DecompressIfNeeded(std::string_view data, OutputBufferType output) {
     DCHECK(success);
   } else {
     base::span<uint8_t> dest = GetBufferForWriting(output, data.size());
-    base::ranges::copy(data, dest.data());
+    std::ranges::copy(data, dest.data());
   }
 }
 
@@ -362,16 +346,6 @@ ResourceBundle& ResourceBundle::GetSharedInstance() {
   return *g_shared_instance_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-void ResourceBundle::SetLottieParsingFunctions(
-    LottieImageParseFunction parse_lottie_as_still_image,
-    LottieThemedImageParseFunction parse_lottie_as_themed_still_image) {
-  g_parse_lottie_as_still_image_ = parse_lottie_as_still_image;
-  g_parse_lottie_as_themed_still_image_ = parse_lottie_as_themed_still_image;
-}
-#endif
-
 void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
     base::File pak_file,
     const base::MemoryMappedFile::Region& region) {
@@ -385,7 +359,49 @@ void ResourceBundle::LoadSecondaryLocaleDataWithPakFileRegion(
 // static
 bool ResourceBundle::LocaleDataPakExists(const std::string& locale) {
   const auto path = GetLocaleFilePath(locale);
-  return !path.empty() && base::PathExists(path);
+  if (path.empty()) {
+    return false;
+  }
+#if BUILDFLAG(IS_WIN)
+  // https://crbug.com/40688225: Chrome sometimes fails to find standard .pak
+  // files. One theory is that this happens shortly after an update because
+  // scanners (e.g., A/V) are busy checking Chrome's files. If this is
+  // happening, then `base::PathExists` is reporting `false` for files that
+  // exist but can't be opened.
+  DWORD attributes;
+  {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    attributes = ::GetFileAttributes(path.value().c_str());
+  }
+  if (attributes == FILE_ATTRIBUTE_DIRECTORY) {
+    return false;  // A directory is not a .pak file.
+  }
+  if (attributes != INVALID_FILE_ATTRIBUTES) {
+    return true;  // Attributes were read; the file must exist.
+  }
+  const auto error = ::GetLastError();
+  if (error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND) {
+    return false;  // `path` does not exist.
+  }
+  // The attributes could not be read yet `path` exists. This is likely a case
+  // of the file being locked by other software. Either the file will be
+  // readable by the time it's needed, or the failure to open it will be handled
+  // at that time.
+
+  // Include the path and the error in subsequent crashes (e.g., in Chrome's
+  // InitResourceBundleAndDetermineLocale).
+  static auto* const busy_path_key = base::debug::AllocateCrashKeyString(
+      "LocaleDataPakExists-busy_path", base::debug::CrashKeySize::Size256);
+  base::debug::SetCrashKeyString(busy_path_key, path.AsUTF8Unsafe());
+  static auto* const busy_error_key = base::debug::AllocateCrashKeyString(
+      "LocaleDataPakExists-busy_error", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(busy_error_key, base::NumberToString(error));
+
+  return true;
+#else
+  return base::PathExists(path);
+#endif
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -461,24 +477,55 @@ std::string ResourceBundle::LoadLocaleResources(const std::string& pref_locale,
     locale_file_path = GetLocaleFilePath(app_locale);
 
   if (locale_file_path.empty()) {
-    // It's possible that there is no locale.pak.
+    // locale.pak was provided by neither GetOverriddenPakPath() nor
+    // GetLocaleFilePath().
+    if (crash_on_failure) {
+      // Store the locale strings in crash keys in case the caller subsequently
+      // crashes the process; see https://crbug.com/40688225.
+      static auto* const app_locale_key = base::debug::AllocateCrashKeyString(
+          "LoadLocaleResourcesNoPath-app_locale",
+          base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(app_locale_key, app_locale);
+      static auto* const pref_locale_key = base::debug::AllocateCrashKeyString(
+          "LoadLocaleResourcesNoPath-pref_locale",
+          base::debug::CrashKeySize::Size32);
+      base::debug::SetCrashKeyString(pref_locale_key, pref_locale);
+    }
     LOG(WARNING) << "locale_file_path.empty() for locale " << app_locale;
     return std::string();
   }
 
   auto data_pack = std::make_unique<DataPack>(k100Percent);
-  if (!data_pack->LoadFromPath(locale_file_path) && crash_on_failure) {
-    // https://crbug.com/1076423: Chrome can't start when the locale file cannot
-    // be loaded. Crash early and gather some data.
-#if BUILDFLAG(IS_WIN)
-    const auto last_error = ::GetLastError();
-    base::debug::Alias(&last_error);
-    wchar_t path_copy[MAX_PATH];
-    base::wcslcpy(path_copy, locale_file_path.value().c_str(),
-                  std::size(path_copy));
-    base::debug::Alias(path_copy);
-#endif  // BUILDFLAG(IS_WIN)
-    CHECK(false);
+  if (auto result = data_pack->LoadFromPathWithError(locale_file_path);
+      !result.has_value() && crash_on_failure) {
+    DataPack::ErrorState& error = result.error();
+    // https://crbug.com/40688225 and https://crbug.com/394631579: Chrome can't
+    // start when the locale file cannot be loaded. Crash early and gather some
+    // data.
+
+    // The local contained in prefs; provided by the caller.
+    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "pref_locale",
+                              pref_locale);
+    // The app locale resolved from the pref value.
+    SCOPED_CRASH_KEY_STRING32("LoadLocaleResources", "app_locale", app_locale);
+    // The path to the (possibly overridden) file that could not be opened.
+    SCOPED_CRASH_KEY_STRING1024("LoadLocaleResources", "locale_filepath",
+                                locale_file_path.AsUTF8Unsafe());
+
+    // A ui::DataPack::FailureReason indicating what step during the attempt to
+    // load the file failed.
+    SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "reason",
+                            static_cast<int>(error.reason));
+    // A last-error code on Windows; otherwise, errno. Only relevant if `reason`
+    // is `kOpenFile` (0) or `kMapFile` (1).
+    SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "error", error.error);
+    // The base::File::Error from opening the file. Only relevant if `reason` is
+    // `kOpenFile` (0). Most likely redundant given `error` above, but reporting
+    // anyway just in case.
+    SCOPED_CRASH_KEY_NUMBER("LoadLocaleResources", "file_error",
+                            error.file_error);
+
+    NOTREACHED();
   }
 
   locale_resources_data_ = std::move(data_pack);
@@ -607,11 +654,10 @@ std::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
     int resource_id) const {
   // The prefix that GRIT prepends to Lottie assets, after compression if any.
   // See: tools/grit/grit/node/structure.py
-  constexpr char kLottiePrefix[6] = {'L', 'O', 'T', 'T', 'I', 'E'};
+  constexpr std::string_view kLottiePrefix = "LOTTIE";
 
   const std::string_view potential_lottie = GetRawDataResource(resource_id);
-  if (potential_lottie.substr(0u, std::size(kLottiePrefix)) !=
-      std::string_view(kLottiePrefix, std::size(kLottiePrefix))) {
+  if (!potential_lottie.starts_with(kLottiePrefix)) {
     return std::nullopt;
   }
 
@@ -621,7 +667,6 @@ std::optional<ResourceBundle::LottieData> ResourceBundle::GetLottieData(
   return result;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
     int resource_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -637,13 +682,24 @@ const ui::ImageModel& ResourceBundle::GetThemedLottieImageNamed(
   // The bytes string was successfully loaded, so parse it and cache the
   // resulting image.
   auto inserted = image_models_.emplace(
-      resource_id, (*g_parse_lottie_as_themed_still_image_)(std::move(*data)));
+      resource_id, ParseLottieAsThemedStillImage(std::move(*data)));
   DCHECK(inserted.second);
   return inserted.first->second;
 }
-#endif
 
 constexpr uint8_t ResourceBundle::kBrotliConst[];
+
+bool ResourceBundle::HasDataResource(int resource_id) const {
+  if (delegate_ && delegate_->HasDataResource(resource_id)) {
+    return true;
+  }
+  for (const auto& resource_handle : resource_handles_) {
+    if (resource_handle->HasResource(static_cast<uint16_t>(resource_id))) {
+      return true;
+    }
+  }
+  return false;
+}
 
 base::RefCountedMemory* ResourceBundle::LoadDataResourceBytes(
     int resource_id) const {
@@ -672,7 +728,8 @@ base::RefCountedMemory* ResourceBundle::LoadDataResourceBytesForScale(
   if (data.empty())
     return nullptr;
 
-  if (HasGzipHeader(data) || HasBrotliHeader(data)) {
+  if (net::GZipHeader::HasGZipHeader(base::as_byte_span(data)) ||
+      HasBrotliHeader(data)) {
     base::RefCountedString* bytes_string = new base::RefCountedString();
     DecompressIfNeeded(data, &bytes_string->as_string());
     return bytes_string;
@@ -702,7 +759,7 @@ std::string_view ResourceBundle::GetRawDataResourceForScale(
   if (scale_factor != ui::k100Percent) {
     for (const auto& resource_handle : resource_handles_) {
       if (resource_handle->GetResourceScaleFactor() == scale_factor) {
-        if (auto data = resource_handle->GetStringPiece(
+        if (auto data = resource_handle->GetStringView(
                 static_cast<uint16_t>(resource_id));
             data.has_value()) {
           if (loaded_scale_factor) {
@@ -719,7 +776,7 @@ std::string_view ResourceBundle::GetRawDataResourceForScale(
          resource_handle->GetResourceScaleFactor() == ui::k200Percent ||
          resource_handle->GetResourceScaleFactor() == ui::k300Percent ||
          resource_handle->GetResourceScaleFactor() == ui::kScaleFactorNone)) {
-      if (auto data = resource_handle->GetStringPiece(
+      if (auto data = resource_handle->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value()) {
         if (loaded_scale_factor) {
@@ -759,12 +816,12 @@ std::string ResourceBundle::LoadLocalizedResourceString(int resource_id) const {
   std::string_view data;
   if (locale_resources_data_.get()) {
     data = locale_resources_data_
-               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               ->GetStringView(static_cast<uint16_t>(resource_id))
                .value_or(std::string_view());
   }
   if (data.empty() && secondary_locale_resources_data_.get()) {
     data = secondary_locale_resources_data_
-               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               ->GetStringView(static_cast<uint16_t>(resource_id))
                .value_or(std::string_view());
   }
   if (data.empty()) {
@@ -780,7 +837,7 @@ bool ResourceBundle::IsGzipped(int resource_id) const {
   if (!raw_data.data())
     return false;
 
-  return HasGzipHeader(raw_data);
+  return net::GZipHeader::HasGZipHeader(base::as_byte_span(raw_data));
 }
 
 bool ResourceBundle::IsBrotli(int resource_id) const {
@@ -812,7 +869,7 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
     base::AutoLock lock_scope(*locale_resources_data_lock_);
 
     if (locale_resources_data_.get()) {
-      if (auto data = locale_resources_data_->GetStringPiece(
+      if (auto data = locale_resources_data_->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value() && !data->empty()) {
         return new base::RefCountedStaticMemory(base::as_byte_span(*data));
@@ -820,7 +877,7 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
     }
 
     if (secondary_locale_resources_data_.get()) {
-      if (auto data = secondary_locale_resources_data_->GetStringPiece(
+      if (auto data = secondary_locale_resources_data_->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value() && !data->empty()) {
         return new base::RefCountedStaticMemory(base::as_byte_span(*data));
@@ -947,10 +1004,11 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
   g_shared_instance_ = new ResourceBundle(delegate);
   std::vector<ResourceScaleFactor> supported_scale_factors;
 #if BUILDFLAG(IS_IOS)
-  display::Display display = display::Screen::GetScreen()->GetPrimaryDisplay();
-  if (display.device_scale_factor() > 2.0) {
+  float internal_display_device_scale_factor =
+      display::GetInternalDisplayDeviceScaleFactor();
+  if (internal_display_device_scale_factor > 2.0) {
     supported_scale_factors.push_back(k300Percent);
-  } else if (display.device_scale_factor() > 1.0) {
+  } else if (internal_display_device_scale_factor > 1.0) {
     supported_scale_factors.push_back(k200Percent);
   } else {
     supported_scale_factors.push_back(k100Percent);
@@ -974,12 +1032,11 @@ void ResourceBundle::InitSharedInstance(Delegate* delegate) {
 
 void ResourceBundle::FreeImages() {
   images_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   image_models_.clear();
 #endif
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void ResourceBundle::LoadChromeResources() {
   // Always load the 1x data pack first as the 2x data pack contains both 1x and
   // 2x images. The 1x data pack only has 1x images, thus passes in an accurate
@@ -994,7 +1051,6 @@ void ResourceBundle::LoadChromeResources() {
         GetResourcesPakFilePath("chrome_200_percent.pak"), k200Percent);
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void ResourceBundle::AddDataPackFromPathInternal(
     const base::FilePath& path,
@@ -1057,11 +1113,13 @@ void ResourceBundle::InitDefaultFontList() {
 
 gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
   DCHECK(!resource_handles_.empty()) << "Missing call to SetResourcesDataDLL?";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
   std::optional<LottieData> data = GetLottieData(resource_id);
   if (data) {
-    return (*g_parse_lottie_as_still_image_)(std::move(*data));
+    return ParseLottieAsStillImage(std::move(*data));
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
   const ResourceScaleFactor scale_factor_to_load = GetMaxResourceScaleFactor();
 #elif BUILDFLAG(IS_WIN)
   const ResourceScaleFactor scale_factor_to_load =
@@ -1070,6 +1128,7 @@ gfx::ImageSkia ResourceBundle::CreateImageSkia(int resource_id) {
 #else
   const ResourceScaleFactor scale_factor_to_load = ui::k100Percent;
 #endif
+
   // TODO(oshima): Consider reading the image size from png IHDR chunk and
   // skip decoding here and remove #ifdef below.
   // |ResourceBundle::GetSharedInstance()| is destroyed after the
@@ -1089,17 +1148,16 @@ bool ResourceBundle::LoadBitmap(const ResourceHandle& data_handle,
   if (!memory.get())
     return false;
 
-  if (DecodePNG(memory->data(), memory->size(), bitmap, fell_back_to_1x)) {
+  if (DecodePNG(*memory, bitmap, fell_back_to_1x)) {
     return true;
   }
 
 #if !BUILDFLAG(IS_IOS)
   // iOS does not compile or use the JPEG codec.  On other platforms,
   // 99% of our assets are PNGs, however fallback to JPEG.
-  std::unique_ptr<SkBitmap> jpeg_bitmap(
-      gfx::JPEGCodec::Decode(memory->data(), memory->size()));
-  if (jpeg_bitmap.get()) {
-    bitmap->swap(*jpeg_bitmap.get());
+  SkBitmap jpeg_bitmap = gfx::JPEGCodec::Decode(*memory);
+  if (!jpeg_bitmap.isNull()) {
+    bitmap->swap(jpeg_bitmap);
     *fell_back_to_1x = false;
     return true;
   }
@@ -1153,7 +1211,7 @@ gfx::Image& ResourceBundle::GetEmptyImage() {
   return empty_image_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const ui::ImageModel& ResourceBundle::GetEmptyImageModel() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1187,11 +1245,11 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   std::optional<std::string_view> data;
   ResourceHandle::TextEncodingType encoding =
       locale_resources_data_->GetTextEncodingType();
-  if (!(data = locale_resources_data_->GetStringPiece(
+  if (!(data = locale_resources_data_->GetStringView(
             static_cast<uint16_t>(resource_id)))
            .has_value()) {
     if (secondary_locale_resources_data_.get() &&
-        (data = secondary_locale_resources_data_->GetStringPiece(
+        (data = secondary_locale_resources_data_->GetStringView(
              static_cast<uint16_t>(resource_id)))
             .has_value()) {
       // Fall back on the secondary locale pak if it exists.
@@ -1240,7 +1298,7 @@ bool ResourceBundle::PNGContainsFallbackMarker(base::span<const uint8_t> buf) {
     if (buf.size() < kPngChunkMetadataSize) {
       break;
     }
-    uint32_t length = base::numerics::U32FromBigEndian(buf.first<4u>());
+    uint32_t length = base::U32FromBigEndian(buf.first<4u>());
     if (buf.size() - kPngChunkMetadataSize < length) {
       break;
     }
@@ -1264,15 +1322,12 @@ bool ResourceBundle::PNGContainsFallbackMarker(base::span<const uint8_t> buf) {
 }
 
 // static
-bool ResourceBundle::DecodePNG(const unsigned char* buf,
-                               size_t size,
+bool ResourceBundle::DecodePNG(base::span<const uint8_t> buf,
                                SkBitmap* bitmap,
                                bool* fell_back_to_1x) {
-  *fell_back_to_1x = PNGContainsFallbackMarker(
-      // TODO(crbug.com/40284755): DecodePNG should be receiving a span. We
-      // can't tell that the size is correct from here.
-      UNSAFE_TODO(base::span(buf, size)));
-  return gfx::PNGCodec::Decode(buf, size, bitmap);
+  *fell_back_to_1x = PNGContainsFallbackMarker(buf);
+  *bitmap = gfx::PNGCodec::Decode(buf);
+  return !bitmap->isNull();
 }
 
 }  // namespace ui

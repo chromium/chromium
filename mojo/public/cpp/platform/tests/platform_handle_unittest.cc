@@ -26,6 +26,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
 #include "base/win/scoped_handle.h"
 #else
 #include "base/files/scoped_file.h"
@@ -249,6 +251,21 @@ TEST_P(PlatformHandleTest, CStructConversion) {
   PlatformHandle handle = PlatformHandle::FromMojoPlatformHandle(&c_handle);
   EXPECT_EQ(kTestData, GetObjectContents(handle));
 }
+
+#if BUILDFLAG(IS_WIN) && !DCHECK_IS_ON()
+// In DCHECK builds these explode but we include defense-in-depth measures as
+// third party code can cause unexpected values to manifest in handles.
+TEST_P(PlatformHandleTest, InvalidHandles) {
+  // Validate the security assumption that a pseudo handle cannot be adopted as
+  // a PlatformHandle and that it cannot be cloned to a valid handle.
+  PlatformHandle invalid((base::win::ScopedHandle(::GetCurrentThread())));
+  EXPECT_FALSE(invalid.is_valid());
+  PlatformHandle cloned = invalid.Clone();
+  EXPECT_FALSE(cloned.is_valid());
+  EXPECT_EQ(invalid.ReleaseHandle(), nullptr);
+  EXPECT_EQ(cloned.ReleaseHandle(), nullptr);
+}
+#endif  // BUILDFLAG(IS_WIN) && !DCHECK_IS_ON()
 
 #if BUILDFLAG(IS_ANDROID)
 DEFINE_BINDER_CLASS(IncrementerInterface);

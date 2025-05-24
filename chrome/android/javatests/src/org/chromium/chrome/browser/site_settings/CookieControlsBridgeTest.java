@@ -39,6 +39,7 @@ import org.chromium.components.content_settings.CookieControlsBridge;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.CookieControlsObserver;
+import org.chromium.components.content_settings.CookieControlsState;
 import org.chromium.components.content_settings.PrefNames;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -54,7 +55,7 @@ public class CookieControlsBridgeTest {
     public static final String COOKIE_CONTROLS_BATCH_NAME = "cookie_controls";
 
     private class TestCallbackHandler implements CookieControlsObserver {
-        private CallbackHelper mHelper;
+        private final CallbackHelper mHelper;
 
         public TestCallbackHandler(CallbackHelper helper) {
             mHelper = helper;
@@ -62,13 +63,12 @@ public class CookieControlsBridgeTest {
 
         @Override
         public void onStatusChanged(
-                boolean controlsVisible,
-                boolean protectionsOn,
+                @CookieControlsState int controlsState,
                 @CookieControlsEnforcement int enforcement,
                 @CookieBlocking3pcdStatus int blockingStatus,
                 long expiration) {
-            mCookieControlsVisible = controlsVisible;
-            mThirdPartyCookiesBlocked = protectionsOn;
+            mCookieControlsVisible = controlsState != CookieControlsState.HIDDEN;
+            mThirdPartyCookiesBlocked = controlsState == CookieControlsState.BLOCKED3PC;
             mEnforcement = enforcement;
             mExpiration = expiration;
             mHelper.notifyCalled();
@@ -150,7 +150,11 @@ public class CookieControlsBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(mCallbackHandler, tab.getWebContents(), null);
+                            new CookieControlsBridge(
+                                    mCallbackHandler,
+                                    tab.getWebContents(),
+                                    null,
+                                    /* isIncognitoBranded= */ false);
                 });
 
         mCallbackHelper.waitForCallback(currentCallCount, 2);
@@ -179,7 +183,11 @@ public class CookieControlsBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(mCallbackHandler, tab.getWebContents(), null);
+                            new CookieControlsBridge(
+                                    mCallbackHandler,
+                                    tab.getWebContents(),
+                                    null,
+                                    /* isIncognitoBranded= */ false);
                 });
 
         mCallbackHelper.waitForCallback(currentCallCount, 2);
@@ -203,7 +211,11 @@ public class CookieControlsBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(mCallbackHandler, tab.getWebContents(), null);
+                            new CookieControlsBridge(
+                                    mCallbackHandler,
+                                    tab.getWebContents(),
+                                    null,
+                                    /* isIncognitoBranded= */ false);
                 });
 
         mCallbackHelper.waitForCallback(currentCallCount, 2);
@@ -244,7 +256,11 @@ public class CookieControlsBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(mCallbackHandler, tab.getWebContents(), null);
+                            new CookieControlsBridge(
+                                    mCallbackHandler,
+                                    tab.getWebContents(),
+                                    null,
+                                    /* isIncognitoBranded= */ false);
                 });
 
         mCallbackHelper.waitForCallback(currentCallCount, 2);
@@ -281,7 +297,11 @@ public class CookieControlsBridgeTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCookieControlsBridge =
-                            new CookieControlsBridge(mCallbackHandler, tab.getWebContents(), null);
+                            new CookieControlsBridge(
+                                    mCallbackHandler,
+                                    tab.getWebContents(),
+                                    null,
+                                    /* isIncognitoBranded= */ true);
                 });
 
         mCallbackHelper.waitForCallback(currentCallCount, 2);
@@ -297,7 +317,8 @@ public class CookieControlsBridgeTest {
                             new CookieControlsBridge(
                                     mCallbackHandler,
                                     incognitoTab.getWebContents(),
-                                    incognitoTab.getProfile().getOriginalProfile());
+                                    incognitoTab.getProfile().getOriginalProfile(),
+                                    /* isIncognitoBranded= */ true);
                 });
         mCallbackHelper.waitForCallback(currentCallCount, 2);
         assertEquals(true, mCookieControlsVisible);

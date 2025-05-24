@@ -32,6 +32,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
   MOCK_METHOD(bool, IsDeviceInDemoMode, (), (const, override));
   MOCK_METHOD(bool, IsCloudGamingDevice, (), (const, override));
   MOCK_METHOD(bool, IsFeatureAwareDevice, (), (const, override));
+  MOCK_METHOD(bool,
+              IsAppIconOnShelf,
+              (const std::string& app_id),
+              (const, override));
   MOCK_METHOD(std::string&, GetApplicationLocale, (), (const, override));
   MOCK_METHOD(std::string&, GetUserLocale, (), (const, override));
   MOCK_METHOD(const std::string, GetCountryCode, (), (const, override));
@@ -60,6 +64,10 @@ class MockCampaignsManagerClient : public CampaignsManagerClient {
               GetIdentityManager,
               (),
               (const, override));
+  MOCK_METHOD(void,
+              RecordImpressionEvents,
+              (int campaign_id, std::optional<int> group_id),
+              (override));
 };
 
 }  // namespace growth

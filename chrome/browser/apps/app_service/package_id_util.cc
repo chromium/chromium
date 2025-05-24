@@ -16,13 +16,13 @@
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/services/app_service/public/cpp/types_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace apps_util {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::optional<apps::PackageId> GetPackageIdForApp(
     Profile* profile,
     const apps::AppUpdate& update) {
@@ -50,7 +50,7 @@ std::optional<apps::PackageId> GetPackageIdForApp(
   return apps::PackageId(ConvertAppTypeToPackageType(update.AppType()).value(),
                          update.PublisherId());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::optional<std::string> GetAppWithPackageId(
     Profile* profile,

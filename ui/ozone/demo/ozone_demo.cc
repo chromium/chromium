@@ -61,8 +61,7 @@ int main(int argc, char** argv) {
           switches::kTraceToConsole)) {
     base::trace_event::TraceConfig trace_config =
         tracing::GetConfigForTraceToConsole();
-    base::trace_event::TraceLog::GetInstance()->SetEnabled(
-        trace_config, base::trace_event::TraceLog::RECORDING_MODE);
+    base::trace_event::TraceLog::GetInstance()->SetEnabled(trace_config);
   }
 
   mojo::core::Init();

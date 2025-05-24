@@ -15,8 +15,8 @@ goog.provide('goog.date.DateRange.StandardDateRangeKeys');
 
 goog.require('goog.date.Date');
 goog.require('goog.date.Interval');
+goog.require('goog.iter');
 goog.require('goog.iter.Iterator');
-goog.require('goog.iter.StopIteration');
 
 
 
@@ -409,14 +409,17 @@ goog.date.DateRange.Iterator = function(dateRange) {
 goog.inherits(goog.date.DateRange.Iterator, goog.iter.Iterator);
 
 
-/** @override */
-goog.date.DateRange.Iterator.prototype.nextValueOrThrow = function() {
+/**
+ * @return {!IIterableResult<!goog.date.Date>}
+ * @override
+ */
+goog.date.DateRange.Iterator.prototype.next = function() {
   'use strict';
   if (Number(this.nextDate_.toIsoString()) > this.endDate_) {
-    throw goog.iter.StopIteration;
+    return goog.iter.ES6_ITERATOR_DONE;
   }
 
   var rv = this.nextDate_.clone();
   this.nextDate_.add(new goog.date.Interval(goog.date.Interval.DAYS, 1));
-  return rv;
+  return goog.iter.createEs6IteratorYield(rv);
 };

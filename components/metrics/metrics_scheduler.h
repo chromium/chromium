@@ -17,7 +17,7 @@ class MetricsScheduler {
   // Creates MetricsScheduler object with the given |task_callback|
   // callback to call when a task should happen.
   MetricsScheduler(const base::RepeatingClosure& task_callback,
-                   bool fast_startup_for_testing);
+                   bool fast_startup);
 
   MetricsScheduler(const MetricsScheduler&) = delete;
   MetricsScheduler& operator=(const MetricsScheduler&) = delete;

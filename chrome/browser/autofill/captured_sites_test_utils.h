@@ -15,12 +15,12 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/time/time_override.h"
 #include "base/types/strong_alias.h"
 #include "base/values.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -91,10 +91,14 @@ struct GetParamAsString {
   }
 };
 
+// Reads the recipe file and returns the recipe as a base::Value::Dict.
+std::optional<base::Value::Dict> ReadRecipeFile(
+    const base::FilePath& recipe_file_path);
+
 std::optional<base::FilePath> GetCommandFilePath();
 
 // Prints tips on how to run captured-site tests.
-// |test_file_name| should be without the .cc suffix.
+// `test_file_name` should be without the .cc suffix.
 void PrintInstructions(const char* test_file_name);
 
 // IFrameWaiter
@@ -145,11 +149,16 @@ class IFrameWaiter : public content::WebContentsObserver {
 
 // WebPageReplayServerWrapper is a helper wrapper that controls the configuring
 // and running the WebPageReplay Server instance.
+// TODO(b/399665693): Consider moving this to a shared WPR utilities code
+// location.
 class WebPageReplayServerWrapper {
  public:
-  explicit WebPageReplayServerWrapper(const bool start_as_replay,
-                                      int hostHttpPort = 8080,
-                                      int hostHttpsPort = 8081);
+  explicit WebPageReplayServerWrapper(
+      bool start_as_replay,
+      int host_http_port = 8080,
+      int host_https_port = 8081,
+      // Passes additional arguments used in the WPR command.
+      std::vector<std::string> extra_args = {});
 
   WebPageReplayServerWrapper(const WebPageReplayServerWrapper&) = delete;
   WebPageReplayServerWrapper& operator=(const WebPageReplayServerWrapper&) =
@@ -173,6 +182,7 @@ class WebPageReplayServerWrapper {
   int host_http_port_;
   int host_https_port_;
   bool start_as_replay_;
+  std::vector<std::string> extra_args_;
 };
 
 class ProfileDataController {
@@ -296,11 +306,11 @@ class TestRecipeReplayer {
   static bool ScrollElementIntoView(const std::string& element_xpath,
                                     content::RenderFrameHost* frame);
   static bool PlaceFocusOnElement(const std::string& element_xpath,
-                                  const std::vector<std::string> iframe_path,
+                                  const std::vector<std::string>& iframe_path,
                                   content::RenderFrameHost* frame);
   static bool GetBoundingRectOfTargetElement(
       const std::string& target_element_xpath,
-      const std::vector<std::string> iframe_path,
+      const std::vector<std::string>& iframe_path,
       content::RenderFrameHost* frame,
       gfx::Rect* output_rect);
   static bool SimulateLeftMouseClickAt(
@@ -375,12 +385,18 @@ class TestRecipeReplayer {
       const content::ToRenderFrameHost& frame,
       const std::string& element_xpath,
       bool expect_to_be_shown);
+  // When returning true, `frame` points to the RenderFrameHost of the frame
+  // specified in `action`. This is determined dynamically because
+  // WaitForElementToBeReady may need to wait for navigations to finish and the
+  // frame to be loaded.
   bool WaitForElementToBeReady(const std::string& xpath,
                                const int visibility_enum_val,
-                               content::RenderFrameHost* frame,
+                               const base::Value::Dict& action,
+                               content::RenderFrameHost** frame,
                                bool ignore_failure = false);
   bool WaitForStateChange(
-      content::RenderFrameHost* frame,
+      const base::Value::Dict& action,
+      content::RenderFrameHost** frame,
       const std::vector<std::string>& state_assertions,
       const base::TimeDelta& timeout = default_action_timeout,
       bool ignore_failure = false);
@@ -406,15 +422,17 @@ class TestRecipeReplayer {
                                ui::DomKey key);
   bool HasChromeStoredCredential(const base::Value::Dict& action,
                                  bool* stored_cred);
-  bool OverrideAutofillClock(const base::FilePath capture_file_path);
+  bool OverrideTimeClock(const base::FilePath capture_file_path);
   bool SetupSavedAutofillProfile(
       base::Value::List saved_autofill_profile_container);
   bool SetupSavedPasswords(base::Value::List saved_password_list_container);
 
   // Wait until Chrome finishes loading a page and updating the page's visuals.
   // If Chrome finishes loading a page but continues to paint every half
-  // second, exit after |continuous_paint_timeout| expires since Chrome
+  // second, exit after `continuous_paint_timeout` expires since Chrome
   // finished loading the page.
+  // After calling `WaitTillPageIsIdle()` all RenderFrameHost pointers should
+  // be considered potentially invalid because a navigation may have happened.
   void WaitTillPageIsIdle(
       base::TimeDelta continuous_paint_timeout = default_action_timeout);
   // Wait until Chrome makes at least 1 visual update, or until timeout
@@ -431,8 +449,8 @@ class TestRecipeReplayer {
 
   std::vector<testing::AssertionResult> validation_failures_;
 
-  // Overrides the AutofillClock to use the recorded date.
-  autofill::TestAutofillClock test_clock_;
+  // Overrides the TimeClock to use the recorded date.
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 };
 
 }  // namespace captured_sites_test_utils

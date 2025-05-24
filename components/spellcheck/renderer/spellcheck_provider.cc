@@ -9,12 +9,14 @@
 
 #include "components/spellcheck/renderer/spellcheck_provider.h"
 
+#include <algorithm>
 #include <unordered_map>
+#include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -30,7 +32,6 @@
 #include "content/public/renderer/render_thread.h"
 #include "services/service_manager/public/cpp/local_interface_provider.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -44,7 +45,6 @@ using blink::WebString;
 using blink::WebTextCheckingCompletion;
 using blink::WebTextCheckingResult;
 using blink::WebTextDecorationType;
-using blink::WebVector;
 
 static_assert(int(blink::kWebTextDecorationTypeSpelling) ==
                   int(SpellCheckResult::SPELLING),
@@ -60,7 +60,7 @@ class SpellCheckProvider::DictionaryUpdateObserverImpl
   ~DictionaryUpdateObserverImpl() override;
 
   // DictionaryUpdateObserver:
-  void OnDictionaryUpdated(const WebVector<WebString>& words_added) override;
+  void OnDictionaryUpdated(const std::vector<WebString>& words_added) override;
 
  private:
   raw_ptr<SpellCheckProvider> owner_;
@@ -78,11 +78,10 @@ SpellCheckProvider::DictionaryUpdateObserverImpl::
 }
 
 void SpellCheckProvider::DictionaryUpdateObserverImpl::OnDictionaryUpdated(
-    const WebVector<WebString>& words_added) {
+    const std::vector<WebString>& words_added) {
   // Clear only cache. Current pending requests should continue as they are.
   owner_->last_request_.clear();
-  owner_->last_results_.Assign(
-      blink::WebVector<blink::WebTextCheckingResult>());
+  owner_->last_results_.clear();
 
   // owner_->render_frame() is nullptr in unit tests.
   if (auto* render_frame = owner_->render_frame()) {
@@ -125,7 +124,7 @@ void SpellCheckProvider::RequestTextChecking(
   // Send this text to a browser. A browser checks the user profile and send
   // this text to the Spelling service only if a user enables this feature.
   last_request_.clear();
-  last_results_.Assign(blink::WebVector<blink::WebTextCheckingResult>());
+  last_results_.clear();
   last_identifier_ = text_check_completions_.Add(std::move(completion));
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -268,7 +267,7 @@ void SpellCheckProvider::CheckSpelling(
     const WebString& text,
     size_t& offset,
     size_t& length,
-    blink::WebVector<blink::WebString>* optional_suggestions) {
+    std::vector<blink::WebString>* optional_suggestions) {
   std::u16string word = text.Utf16();
 
   if (optional_suggestions) {
@@ -289,12 +288,7 @@ void SpellCheckProvider::CheckSpelling(
 
     std::vector<std::u16string> suggestions;
     spellcheck::FillSuggestions(per_language_suggestions, &suggestions);
-    WebVector<WebString> web_suggestions(suggestions.size());
-    base::ranges::transform(suggestions, web_suggestions.begin(),
-                            [](const auto& suggestion) {
-                              return WebString::FromUTF16(suggestion);
-                            });
-    *optional_suggestions = web_suggestions;
+    *optional_suggestions = base::ToVector(suggestions, &WebString::FromUTF16);
     spellcheck_renderer_metrics::RecordCheckedTextLengthWithSuggestions(
         base::saturated_cast<int>(word.size()));
   } else {
@@ -338,7 +332,7 @@ void SpellCheckProvider::OnRespondSpellingService(
 
   // Double-check the returned spellchecking results with Hunspell to visualize
   // the differences between ours and the enhanced spell checker.
-  blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
+  std::vector<blink::WebTextCheckingResult> textcheck_results;
   spellcheck_->CreateTextCheckingResults(
       SpellCheck::USE_HUNSPELL_FOR_GRAMMAR, GetSpellCheckHost(),
       /*line_offset=*/0, line, results, &textcheck_results);
@@ -375,7 +369,7 @@ void SpellCheckProvider::OnRespondTextCheck(
   std::unique_ptr<WebTextCheckingCompletion> completion(
       text_check_completions_.Replace(identifier, nullptr));
   text_check_completions_.Remove(identifier);
-  blink::WebVector<blink::WebTextCheckingResult> textcheck_results;
+  std::vector<blink::WebTextCheckingResult> textcheck_results;
 
   SpellCheck::ResultFilter result_filter = SpellCheck::DO_NOT_MODIFY;
 
@@ -444,8 +438,8 @@ bool SpellCheckProvider::SatisfyRequestFromCache(
       if (start <= text_length && end <= text_length)
         ++result_size;
     }
-    blink::WebVector<blink::WebTextCheckingResult> results(last_results_.data(),
-                                                           result_size);
+    std::vector<blink::WebTextCheckingResult> results =
+        base::ToVector(base::span(last_results_).first(result_size));
     completion->DidFinishCheckingText(results);
     return true;
   }

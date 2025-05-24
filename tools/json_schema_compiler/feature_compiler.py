@@ -178,8 +178,6 @@ FEATURE_GRAMMAR = ({
                 'mojom::ContextType::kPrivilegedWebPage',
                 'content_script':
                 'mojom::ContextType::kContentScript',
-                'lock_screen_extension':
-                'mojom::ContextType::kLockscreenExtension',
                 'offscreen_extension':
                 'mojom::ContextType::kOffscreenExtension',
                 'user_script':
@@ -288,7 +286,6 @@ FEATURE_GRAMMAR = ({
             'enum_map': {
                 'chromeos': 'Feature::CHROMEOS_PLATFORM',
                 'fuchsia': 'Feature::FUCHSIA_PLATFORM',
-                'lacros': 'Feature::LACROS_PLATFORM',
                 'linux': 'Feature::LINUX_PLATFORM',
                 'mac': 'Feature::MACOSX_PLATFORM',
                 'win': 'Feature::WIN_PLATFORM',

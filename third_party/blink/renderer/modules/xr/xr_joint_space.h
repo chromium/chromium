@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class V8XRHandJoint;
 class XRSession;
 
 class XRJointSpace : public XRSpace {
@@ -31,7 +32,7 @@ class XRJointSpace : public XRSpace {
 
   float radius() const { return radius_; }
   device::mojom::blink::XRHandJoint joint() const { return joint_; }
-  const String jointName() const;
+  V8XRHandJoint jointName() const;
   device::mojom::XRHandedness handedness() const { return handedness_; }
 
   std::optional<gfx::Transform> MojoFromNative() const override;

@@ -236,7 +236,8 @@ class MediaStreamConstraintsUtilVideoDeviceTest : public testing::Test {
     };
   }
 
-  static WTF::Vector<DoubleConstraint MediaTrackConstraintSetPlatform::*>
+  static WTF::Vector<
+      DoubleOrBooleanConstraint MediaTrackConstraintSetPlatform::*>
   PanTiltZoomConstraints() {
     return {
         &MediaTrackConstraintSetPlatform::pan,
@@ -1908,11 +1909,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryExactPanTiltZoom) {
     EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
     ASSERT_TRUE(result.image_capture_device_settings().has_value());
     if (constraint == &MediaTrackConstraintSetPlatform::pan) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->pan.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->pan);
     } else if (constraint == &MediaTrackConstraintSetPlatform::tilt) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->tilt.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->tilt);
     } else if (constraint == &MediaTrackConstraintSetPlatform::zoom) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->zoom.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->zoom);
     }
   }
 }
@@ -1928,11 +1929,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryMinPanTiltZoom) {
     EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
     ASSERT_TRUE(result.image_capture_device_settings().has_value());
     if (constraint == &MediaTrackConstraintSetPlatform::pan) {
-      EXPECT_EQ(2, result.image_capture_device_settings()->pan.value());
+      EXPECT_EQ(2, *result.image_capture_device_settings()->pan);
     } else if (constraint == &MediaTrackConstraintSetPlatform::tilt) {
-      EXPECT_EQ(2, result.image_capture_device_settings()->tilt.value());
+      EXPECT_EQ(2, *result.image_capture_device_settings()->tilt);
     } else if (constraint == &MediaTrackConstraintSetPlatform::zoom) {
-      EXPECT_EQ(2, result.image_capture_device_settings()->zoom.value());
+      EXPECT_EQ(2, *result.image_capture_device_settings()->zoom);
     }
   }
 }
@@ -1948,11 +1949,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryMaxPanTiltZoom) {
     EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
     ASSERT_TRUE(result.image_capture_device_settings().has_value());
     if (constraint == &MediaTrackConstraintSetPlatform::pan) {
-      EXPECT_EQ(4, result.image_capture_device_settings()->pan.value());
+      EXPECT_EQ(4, *result.image_capture_device_settings()->pan);
     } else if (constraint == &MediaTrackConstraintSetPlatform::tilt) {
-      EXPECT_EQ(4, result.image_capture_device_settings()->tilt.value());
+      EXPECT_EQ(4, *result.image_capture_device_settings()->tilt);
     } else if (constraint == &MediaTrackConstraintSetPlatform::zoom) {
-      EXPECT_EQ(4, result.image_capture_device_settings()->zoom.value());
+      EXPECT_EQ(4, *result.image_capture_device_settings()->zoom);
     }
   }
 }
@@ -1969,11 +1970,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, MandatoryPanTiltZoomRange) {
     EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
     ASSERT_TRUE(result.image_capture_device_settings().has_value());
     if (constraint == &MediaTrackConstraintSetPlatform::pan) {
-      EXPECT_EQ(2, result.image_capture_device_settings()->pan.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->pan);
     } else if (constraint == &MediaTrackConstraintSetPlatform::tilt) {
-      EXPECT_EQ(2, result.image_capture_device_settings()->tilt.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->tilt);
     } else if (constraint == &MediaTrackConstraintSetPlatform::zoom) {
-      EXPECT_EQ(2, result.image_capture_device_settings()->zoom.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->zoom);
     }
   }
 }
@@ -1989,11 +1990,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, IdealPanTiltZoom) {
     EXPECT_EQ(low_res_device_->device_id.Utf8(), result.device_id());
     ASSERT_TRUE(result.image_capture_device_settings().has_value());
     if (constraint == &MediaTrackConstraintSetPlatform::pan) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->pan.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->pan);
     } else if (constraint == &MediaTrackConstraintSetPlatform::tilt) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->tilt.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->tilt);
     } else if (constraint == &MediaTrackConstraintSetPlatform::zoom) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->zoom.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->zoom);
     }
   }
 }
@@ -2644,14 +2645,13 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
     EXPECT_EQ(result.image_capture_device_settings()->torch.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::torch);
     if (result.image_capture_device_settings()->torch.has_value()) {
-      EXPECT_FALSE(result.image_capture_device_settings()->torch.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()->torch);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->background_blur.has_value(),
         constraint == &MediaTrackConstraintSetPlatform::background_blur);
     if (result.image_capture_device_settings()->background_blur.has_value()) {
-      EXPECT_FALSE(
-          result.image_capture_device_settings()->background_blur.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()->background_blur);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()
@@ -2660,8 +2660,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
             &MediaTrackConstraintSetPlatform::background_segmentation_mask);
     if (result.image_capture_device_settings()
             ->background_segmentation_mask.has_value()) {
-      EXPECT_FALSE(result.image_capture_device_settings()
-                       ->background_segmentation_mask.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()
+                        ->background_segmentation_mask);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->eye_gaze_correction.has_value(),
@@ -2669,13 +2669,12 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
     if (result.image_capture_device_settings()
             ->eye_gaze_correction.has_value()) {
       EXPECT_FALSE(
-          result.image_capture_device_settings()->eye_gaze_correction.value());
+          *result.image_capture_device_settings()->eye_gaze_correction);
     }
     EXPECT_EQ(result.image_capture_device_settings()->face_framing.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::face_framing);
     if (result.image_capture_device_settings()->face_framing.has_value()) {
-      EXPECT_FALSE(
-          result.image_capture_device_settings()->face_framing.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()->face_framing);
     }
   }
 
@@ -2753,56 +2752,51 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
         constraint == &MediaTrackConstraintSetPlatform::exposure_compensation);
     if (result.image_capture_device_settings()
             ->exposure_compensation.has_value()) {
-      EXPECT_EQ(1.0, result.image_capture_device_settings()
-                         ->exposure_compensation.value());
+      EXPECT_EQ(1.0,
+                *result.image_capture_device_settings()->exposure_compensation);
     }
     EXPECT_EQ(result.image_capture_device_settings()->exposure_time.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::exposure_time);
     if (result.image_capture_device_settings()->exposure_time.has_value()) {
-      EXPECT_EQ(2.0,
-                result.image_capture_device_settings()->exposure_time.value());
+      EXPECT_EQ(2.0, *result.image_capture_device_settings()->exposure_time);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->color_temperature.has_value(),
         constraint == &MediaTrackConstraintSetPlatform::color_temperature);
     if (result.image_capture_device_settings()->color_temperature.has_value()) {
-      EXPECT_EQ(
-          3.0,
-          result.image_capture_device_settings()->color_temperature.value());
+      EXPECT_EQ(3.0,
+                *result.image_capture_device_settings()->color_temperature);
     }
     EXPECT_EQ(result.image_capture_device_settings()->iso.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::iso);
     if (result.image_capture_device_settings()->iso.has_value()) {
-      EXPECT_EQ(4.0, result.image_capture_device_settings()->iso.value());
+      EXPECT_EQ(4.0, *result.image_capture_device_settings()->iso);
     }
     EXPECT_EQ(result.image_capture_device_settings()->brightness.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::brightness);
     if (result.image_capture_device_settings()->brightness.has_value()) {
-      EXPECT_EQ(5.0,
-                result.image_capture_device_settings()->brightness.value());
+      EXPECT_EQ(5.0, *result.image_capture_device_settings()->brightness);
     }
     EXPECT_EQ(result.image_capture_device_settings()->contrast.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::contrast);
     if (result.image_capture_device_settings()->contrast.has_value()) {
-      EXPECT_EQ(6.0, result.image_capture_device_settings()->contrast.value());
+      EXPECT_EQ(6.0, *result.image_capture_device_settings()->contrast);
     }
     EXPECT_EQ(result.image_capture_device_settings()->saturation.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::saturation);
     if (result.image_capture_device_settings()->saturation.has_value()) {
-      EXPECT_EQ(7.0,
-                result.image_capture_device_settings()->saturation.value());
+      EXPECT_EQ(7.0, *result.image_capture_device_settings()->saturation);
     }
     EXPECT_EQ(result.image_capture_device_settings()->sharpness.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::sharpness);
     if (result.image_capture_device_settings()->sharpness.has_value()) {
-      EXPECT_EQ(8.0, result.image_capture_device_settings()->sharpness.value());
+      EXPECT_EQ(8.0, *result.image_capture_device_settings()->sharpness);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->focus_distance.has_value(),
         constraint == &MediaTrackConstraintSetPlatform::focus_distance);
     if (result.image_capture_device_settings()->focus_distance.has_value()) {
-      EXPECT_EQ(9.0,
-                result.image_capture_device_settings()->focus_distance.value());
+      EXPECT_EQ(9.0, *result.image_capture_device_settings()->focus_distance);
     }
   }
 }
@@ -2838,11 +2832,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
     // set. The third advanced must be ignored because it is invalid. The fourth
     // advanced set must be applied.
     if (constraint == &MediaTrackConstraintSetPlatform::pan) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->pan.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->pan);
     } else if (constraint == &MediaTrackConstraintSetPlatform::tilt) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->tilt.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->tilt);
     } else if (constraint == &MediaTrackConstraintSetPlatform::zoom) {
-      EXPECT_EQ(3, result.image_capture_device_settings()->zoom.value());
+      EXPECT_EQ(3, *result.image_capture_device_settings()->zoom);
     }
   }
 }
@@ -2904,7 +2898,10 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, AdvancedPanTiltZoom) {
     ASSERT_TRUE(result.HasValue());
     EXPECT_EQ(default_device_->device_id.Utf8(), result.device_id());
     // The advanced set must be ignored because the device does not support PTZ.
-    EXPECT_FALSE(result.image_capture_device_settings().has_value());
+    EXPECT_FALSE(result.image_capture_device_settings().has_value() &&
+                 (result.image_capture_device_settings()->pan.has_value() ||
+                  result.image_capture_device_settings()->tilt.has_value() ||
+                  result.image_capture_device_settings()->zoom.has_value()));
   }
 }
 
@@ -2940,14 +2937,13 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, BasicImageCapture) {
     EXPECT_EQ(result.image_capture_device_settings()->torch.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::torch);
     if (result.image_capture_device_settings()->torch.has_value()) {
-      EXPECT_FALSE(result.image_capture_device_settings()->torch.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()->torch);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->background_blur.has_value(),
         constraint == &MediaTrackConstraintSetPlatform::background_blur);
     if (result.image_capture_device_settings()->background_blur.has_value()) {
-      EXPECT_FALSE(
-          result.image_capture_device_settings()->background_blur.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()->background_blur);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()
@@ -2956,8 +2952,8 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, BasicImageCapture) {
             &MediaTrackConstraintSetPlatform::background_segmentation_mask);
     if (result.image_capture_device_settings()
             ->background_segmentation_mask.has_value()) {
-      EXPECT_FALSE(result.image_capture_device_settings()
-                       ->background_segmentation_mask.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()
+                        ->background_segmentation_mask);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->eye_gaze_correction.has_value(),
@@ -2965,13 +2961,12 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, BasicImageCapture) {
     if (result.image_capture_device_settings()
             ->eye_gaze_correction.has_value()) {
       EXPECT_FALSE(
-          result.image_capture_device_settings()->eye_gaze_correction.value());
+          *result.image_capture_device_settings()->eye_gaze_correction);
     }
     EXPECT_EQ(result.image_capture_device_settings()->face_framing.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::face_framing);
     if (result.image_capture_device_settings()->face_framing.has_value()) {
-      EXPECT_FALSE(
-          result.image_capture_device_settings()->face_framing.value());
+      EXPECT_FALSE(*result.image_capture_device_settings()->face_framing);
     }
   }
 
@@ -2989,56 +2984,51 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest, BasicImageCapture) {
         constraint == &MediaTrackConstraintSetPlatform::exposure_compensation);
     if (result.image_capture_device_settings()
             ->exposure_compensation.has_value()) {
-      EXPECT_EQ(1.0, result.image_capture_device_settings()
-                         ->exposure_compensation.value());
+      EXPECT_EQ(1.0,
+                *result.image_capture_device_settings()->exposure_compensation);
     }
     EXPECT_EQ(result.image_capture_device_settings()->exposure_time.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::exposure_time);
     if (result.image_capture_device_settings()->exposure_time.has_value()) {
-      EXPECT_EQ(2.0,
-                result.image_capture_device_settings()->exposure_time.value());
+      EXPECT_EQ(2.0, *result.image_capture_device_settings()->exposure_time);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->color_temperature.has_value(),
         constraint == &MediaTrackConstraintSetPlatform::color_temperature);
     if (result.image_capture_device_settings()->color_temperature.has_value()) {
-      EXPECT_EQ(
-          3.0,
-          result.image_capture_device_settings()->color_temperature.value());
+      EXPECT_EQ(3.0,
+                *result.image_capture_device_settings()->color_temperature);
     }
     EXPECT_EQ(result.image_capture_device_settings()->iso.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::iso);
     if (result.image_capture_device_settings()->iso.has_value()) {
-      EXPECT_EQ(4.0, result.image_capture_device_settings()->iso.value());
+      EXPECT_EQ(4.0, *result.image_capture_device_settings()->iso);
     }
     EXPECT_EQ(result.image_capture_device_settings()->brightness.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::brightness);
     if (result.image_capture_device_settings()->brightness.has_value()) {
-      EXPECT_EQ(5.0,
-                result.image_capture_device_settings()->brightness.value());
+      EXPECT_EQ(5.0, *result.image_capture_device_settings()->brightness);
     }
     EXPECT_EQ(result.image_capture_device_settings()->contrast.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::contrast);
     if (result.image_capture_device_settings()->contrast.has_value()) {
-      EXPECT_EQ(6.0, result.image_capture_device_settings()->contrast.value());
+      EXPECT_EQ(6.0, *result.image_capture_device_settings()->contrast);
     }
     EXPECT_EQ(result.image_capture_device_settings()->saturation.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::saturation);
     if (result.image_capture_device_settings()->saturation.has_value()) {
-      EXPECT_EQ(7.0,
-                result.image_capture_device_settings()->saturation.value());
+      EXPECT_EQ(7.0, *result.image_capture_device_settings()->saturation);
     }
     EXPECT_EQ(result.image_capture_device_settings()->sharpness.has_value(),
               constraint == &MediaTrackConstraintSetPlatform::sharpness);
     if (result.image_capture_device_settings()->sharpness.has_value()) {
-      EXPECT_EQ(8.0, result.image_capture_device_settings()->sharpness.value());
+      EXPECT_EQ(8.0, *result.image_capture_device_settings()->sharpness);
     }
     EXPECT_EQ(
         result.image_capture_device_settings()->focus_distance.has_value(),
         constraint == &MediaTrackConstraintSetPlatform::focus_distance);
     if (result.image_capture_device_settings()->focus_distance.has_value()) {
-      EXPECT_EQ(9.0,
-                result.image_capture_device_settings()->focus_distance.value());
+      EXPECT_EQ(9.0, *result.image_capture_device_settings()->focus_distance);
     }
   }
 }
@@ -3145,11 +3135,11 @@ TEST_F(MediaStreamConstraintsUtilVideoDeviceTest,
   auto result = SelectEligibleSettings();
   EXPECT_TRUE(result.has_value());
   // Vector<VideoCaptureSettings> expected_settings;
-  EXPECT_EQ(2u, result.value().size());
-  EXPECT_EQ("fake_device_1", result.value()[0].device_id());
-  EXPECT_EQ(gfx::Size(1000, 1000), result.value()[0].Format().frame_size);
-  EXPECT_EQ("fake_device_3", result.value()[1].device_id());
-  EXPECT_EQ(gfx::Size(1280, 720), result.value()[1].Format().frame_size);
+  EXPECT_EQ(2u, result->size());
+  EXPECT_EQ("fake_device_1", (*result)[0].device_id());
+  EXPECT_EQ(gfx::Size(1000, 1000), (*result)[0].Format().frame_size);
+  EXPECT_EQ("fake_device_3", (*result)[1].device_id());
+  EXPECT_EQ(gfx::Size(1280, 720), (*result)[1].Format().frame_size);
 }
 
 }  // namespace blink

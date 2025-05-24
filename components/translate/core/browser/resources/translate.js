@@ -255,7 +255,7 @@ cr.googleTranslate = (function() {
       }
       if (!lib.getDetectedLanguage) {
         return 'und';
-      }  // Defined as translate::kUnknownLanguageCode in C++.
+      }  // Defined as language_detection::kUnknownLanguageCode in C++.
       return lib.getDetectedLanguage();
     },
 

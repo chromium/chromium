@@ -8,13 +8,17 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.os.Vibrator;
-import org.chromium.base.ContextUtils;
-import org.chromium.base.Log;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+
 /** Android implementation details for device::VibrationManagerAndroid. */
 @JNINamespace("device")
+@NullMarked
 public class VibrationManagerAndroid {
     private static final String TAG = "VibrationManager";
 

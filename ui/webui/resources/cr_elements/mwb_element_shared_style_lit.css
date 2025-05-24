@@ -8,5 +8,14 @@
  * #import=./mwb_shared_vars.css.js
  * #css_wrapper_metadata_end */
 
-/* Purposefully empty since this style is generated at build time from the
- * equivalent Polymer version. */
+a,
+cr-button,
+cr-icon-button,
+div {
+  cursor: default;
+}
+
+cr-icon-button {
+  --cr-icon-button-icon-size: var(--mwb-icon-size);
+  --cr-icon-button-size: calc(var(--mwb-icon-size) * 1.5);
+}

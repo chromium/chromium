@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<style>
+  .black-layer {
+    width: 100px;
+    height: 100px;
+    background: black;
+    will-change: opacity;
+  }
+  #parent {
+    transform-origin:0 0;
+    scale: 0.995;
+    transform: translate(1px);
+  }
+</style>
+<!-- Tests that a 1px seam remains between the two .black-layer composited
+layers, due to scale and transform both being present. -->
+<div id=parent>
+  <div class="black-layer"></div>
+  <div class="black-layer"></div>
+</div>

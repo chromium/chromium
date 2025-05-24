@@ -54,7 +54,7 @@ class RunSegmenterTest : public testing::Test {
                                             run.script, run.render_orientation,
                                             run.font_fallback_priority));
     }
-    RunSegmenter run_segmenter(text.Characters16(), text.length(), orientation);
+    RunSegmenter run_segmenter(text.Span16(), orientation);
     VerifyRuns(&run_segmenter, expect);
   }
 
@@ -89,8 +89,7 @@ TEST_F(RunSegmenterTest, Empty) {
   String empty(g_empty_string16_bit);
   RunSegmenter::RunSegmenterRange segmenter_range = {
       0, 0, USCRIPT_INVALID_CODE, OrientationIterator::kOrientationKeep};
-  RunSegmenter run_segmenter(empty.Characters16(), empty.length(),
-                             FontOrientation::kVerticalMixed);
+  RunSegmenter run_segmenter(empty.Span16(), FontOrientation::kVerticalMixed);
   DCHECK(!run_segmenter.Consume(&segmenter_range));
   ASSERT_EQ(segmenter_range.start, 0u);
   ASSERT_EQ(segmenter_range.end, 0u);

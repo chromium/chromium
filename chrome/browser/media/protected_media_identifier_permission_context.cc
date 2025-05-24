@@ -21,19 +21,16 @@
 #include "content/public/browser/web_contents.h"
 #include "media/base/media_switches.h"
 #include "net/base/url_util.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_switches.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/request_type.h"
@@ -45,31 +42,16 @@
 #error This file currently only supports Chrome OS, Android and Windows.
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/prefs.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 ProtectedMediaIdentifierPermissionContext::
     ProtectedMediaIdentifierPermissionContext(
         content::BrowserContext* browser_context)
     : PermissionContextBase(
           browser_context,
           ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
-          blink::mojom::PermissionsPolicyFeature::kEncryptedMedia) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // base::Unretained is safe because this object is built as a singleton and
-  // lives while the browser process is alive.
-  attestation_enabled_observer_ = std::make_unique<CrosapiPrefObserver>(
-      crosapi::mojom::PrefPath::kAttestationForContentProtectionEnabled,
-      base::BindRepeating(&ProtectedMediaIdentifierPermissionContext::
-                              OnAttestationEnabledChanged,
-                          base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
+          network::mojom::PermissionsPolicyFeature::kEncryptedMedia) {}
 
 ProtectedMediaIdentifierPermissionContext::
-    ~ProtectedMediaIdentifierPermissionContext() {
-}
+    ~ProtectedMediaIdentifierPermissionContext() = default;
 
 ContentSetting
 ProtectedMediaIdentifierPermissionContext::GetPermissionStatusInternal(
@@ -164,14 +146,10 @@ bool ProtectedMediaIdentifierPermissionContext::
   // This could be disabled by the device policy or by a switch in content
   // settings.
   bool attestation_enabled = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!ash::CrosSettings::Get()->GetBoolean(
           ash::kAttestationForContentProtectionEnabled, &attestation_enabled)) {
     attestation_enabled = false;
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  attestation_enabled = attestation_enabled_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (!attestation_enabled) {
     DVLOG(1) << "Protected media identifier disabled by the user or by device "
                 "policy.";
@@ -182,11 +160,3 @@ bool ProtectedMediaIdentifierPermissionContext::
 
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProtectedMediaIdentifierPermissionContext::OnAttestationEnabledChanged(
-    base::Value value) {
-  DCHECK(value.is_bool());
-  attestation_enabled_ = value.GetBool();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

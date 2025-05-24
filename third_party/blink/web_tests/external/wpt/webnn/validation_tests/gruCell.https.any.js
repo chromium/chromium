@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API gruCell operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -298,8 +298,8 @@ tests.forEach(
             const output = builder.gruCell(
                 input, weight, recurrentWeight, hiddenState, test.hiddenSize,
                 options);
-            assert_equals(output.dataType(), test.output.dataType);
-            assert_array_equals(output.shape(), test.output.shape);
+            assert_equals(output.dataType, test.output.dataType);
+            assert_array_equals(output.shape, test.output.shape);
           } else {
             const label = 'gru_cell_xxx';
             options.label = label;

@@ -16,16 +16,14 @@ FakeAffiliationService::FakeAffiliationService() = default;
 
 FakeAffiliationService::~FakeAffiliationService() = default;
 
-void FakeAffiliationService::PrefetchChangePasswordURLs(
-    const std::vector<GURL>& urls,
+void FakeAffiliationService::PrefetchChangePasswordURL(
+    const GURL& url,
     base::OnceClosure callback) {}
-void FakeAffiliationService::Clear() {}
 GURL FakeAffiliationService::GetChangePasswordURL(const GURL& url) const {
   return GURL();
 }
 void FakeAffiliationService::GetAffiliationsAndBranding(
     const FacetURI& facet_uri,
-    AffiliationService::StrategyOnCacheMiss cache_miss_strategy,
     ResultCallback result_callback) {
   AffiliatedFacets affiliations;
   affiliations.push_back(Facet(facet_uri, FacetBrandingInfo(), GURL()));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
 
+#include <utility>
+
 #include "base/task/thread_pool.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -39,7 +41,8 @@ DependencyParserModelLoaderFactory::DependencyParserModelLoaderFactory()
 DependencyParserModelLoaderFactory::~DependencyParserModelLoaderFactory() =
     default;
 
-KeyedService* DependencyParserModelLoaderFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DependencyParserModelLoaderFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!features::IsReadAnythingReadAloudPhraseHighlightingEnabled()) {
     return nullptr;
@@ -54,7 +57,8 @@ KeyedService* DependencyParserModelLoaderFactory::BuildServiceInstanceFor(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    return new DependencyParserModelLoader(opt_guide, background_task_runner);
+    return std::make_unique<DependencyParserModelLoader>(
+        opt_guide, std::move(background_task_runner));
   }
   return nullptr;
 }

@@ -18,7 +18,6 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/views/borealis/borealis_disallowed_dialog.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -40,6 +39,8 @@ namespace {
 
 // Views uses tricks like this to ensure singleton-ness of dialogs.
 static Widget* g_instance_ = nullptr;
+
+}  // namespace
 
 class BorealisLaunchErrorDialog : public DialogDelegate {
  public:
@@ -81,9 +82,9 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
 
     InitializeView();
     SetModalType(ui::mojom::ModalType::kNone);
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     SetShowCloseButton(false);
-    set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
+    set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   }
 
@@ -137,7 +138,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
         CONTEXT_IPH_BUBBLE_TITLE, views::style::STYLE_EMPHASIZED);
     title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     title_label->SetMultiLine(true);
-    view->AddChildView(title_label);
+    view->AddChildViewRaw(title_label);
 
     std::u16string body_string;
     switch (failure_) {
@@ -155,7 +156,7 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
     views::Label* message_label = new views::Label(body_string);
     message_label->SetMultiLine(true);
     message_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    view->AddChildView(message_label);
+    view->AddChildViewRaw(message_label);
 
     if (failure_ == FailureType::FAILURE_RETRY) {
       auto checkbox = std::make_unique<views::Checkbox>(
@@ -186,20 +187,20 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
           profile, chromeos::settings::mojom::kStorageSubpagePath);
     } else if (failure_ == FailureType::FAILURE_RETRY) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE, base::BindOnce(
-                         [](Profile* profile) {
-                           // Technically "retry" should re-do whatever the user
-                           // originally tried. For simplicity we just retry the
-                           // client app.
-                           ::borealis::BorealisServiceFactory::GetForProfile(
-                               profile)
-                               ->AppLauncher()
-                               .Launch(::borealis::kClientAppId,
-                                       ::borealis::BorealisLaunchSource::
-                                           kErrorDialogRetryButton,
-                                       base::DoNothing());
-                         },
-                         profile));
+          FROM_HERE,
+          base::BindOnce(
+              [](Profile* profile) {
+                // Technically "retry" should re-do whatever the user
+                // originally tried. For simplicity we just retry the
+                // client app.
+                ::borealis::BorealisServiceFactory::GetForProfile(profile)
+                    ->AppLauncher()
+                    .Launch(::borealis::kClientAppId,
+                            ::borealis::BorealisLaunchSource::
+                                kErrorDialogRetryButton,
+                            base::DoNothing());
+              },
+              profile));
     }
   }
 
@@ -216,7 +217,6 @@ class BorealisLaunchErrorDialog : public DialogDelegate {
   FailureType failure_;
   raw_ptr<views::Checkbox> feedback_checkbox_ = nullptr;
 };
-}  // namespace
 
 void ShowBorealisLaunchErrorView(Profile* profile,
                                  BorealisStartupResult error) {

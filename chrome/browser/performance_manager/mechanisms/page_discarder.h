@@ -5,9 +5,10 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_PAGE_DISCARDER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_MECHANISMS_PAGE_DISCARDER_H_
 
+#include <cstdint>
+#include <optional>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 
 namespace performance_manager {
@@ -27,18 +28,11 @@ class PageDiscarder {
   // When invoked, DiscardPageNodes() becomes a no-op.
   static void DisableForTesting();
 
-  struct DiscardEvent {
-    base::TimeTicks discard_time;
-    uint64_t estimated_memory_freed_kb = 0;
-  };
-
-  // Discards |page_nodes| and runs |post_discard_cb| on the origin sequence
-  // once this is done.
-  virtual void DiscardPageNodes(
-      const std::vector<const PageNode*>& page_nodes,
-      ::mojom::LifecycleUnitDiscardReason discard_reason,
-      base::OnceCallback<void(const std::vector<DiscardEvent>&)>
-          post_discard_cb);
+  // Discards `page_node`. On success, returns the estimated amount of memory
+  // freed in kilobytes. On failure, returns nullopt.
+  virtual std::optional<uint64_t> DiscardPageNode(
+      const PageNode* page_node,
+      ::mojom::LifecycleUnitDiscardReason discard_reason);
 };
 
 }  // namespace mechanism

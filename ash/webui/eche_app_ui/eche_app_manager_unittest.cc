@@ -29,6 +29,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_debug_manager_client.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -94,7 +95,7 @@ class FakeAccessibilityProviderProxy : public AccessibilityProviderProxy {
 
 const char kFakeDeviceName[] = "Someone's Chromebook";
 const char kFakeBoardName[] = "atlas";
-const char kFakeGaiaId[] = "123";
+const GaiaId::Literal kFakeGaiaId("123");
 const size_t kNumTestDevices = 3;
 const char kFakeDeviceType[] = "Chromebook";
 

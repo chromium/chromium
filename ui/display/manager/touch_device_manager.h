@@ -64,9 +64,10 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceIdentifier {
 
   TouchDeviceIdentifier& operator=(TouchDeviceIdentifier other);
 
-  bool operator<(const TouchDeviceIdentifier& other) const;
-  bool operator==(const TouchDeviceIdentifier& other) const;
-  bool operator!=(const TouchDeviceIdentifier& other) const;
+  friend bool operator==(const TouchDeviceIdentifier&,
+                         const TouchDeviceIdentifier&) = default;
+  friend auto operator<=>(const TouchDeviceIdentifier&,
+                          const TouchDeviceIdentifier&) = default;
 
   std::string ToString() const;
   std::string SecondaryIdToString() const;

@@ -10,7 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/protocol/extensions_handler.h"
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/devtools/protocol/storage_handler.h"
@@ -75,7 +75,7 @@ class ChromeDevToolsSession : public protocol::FrontendChannel {
   std::unique_ptr<StorageHandler> storage_handler_;
   std::unique_ptr<SystemInfoHandler> system_info_handler_;
   std::unique_ptr<TargetHandler> target_handler_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WindowManagerHandler> window_manager_handler_;
 #endif
   raw_ptr<content::DevToolsAgentHostClientChannel> client_channel_;

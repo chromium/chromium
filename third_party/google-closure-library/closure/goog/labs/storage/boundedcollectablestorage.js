@@ -185,7 +185,7 @@ goog.labs.storage.BoundedCollectableStorage.removeSubsequence_ = function(
 
   goog.asserts.assert(keysToRemoveIdx == keysToRemove.length);
   goog.asserts.assert(keysIdx < keys.length);
-  return goog.array.concat(keysToKeep, keys.slice(keysIdx + 1));
+  return [...keysToKeep, ...keys.slice(keysIdx + 1)];
 };
 
 

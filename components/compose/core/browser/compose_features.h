@@ -59,9 +59,6 @@ BASE_DECLARE_FEATURE(kComposeUiParams);
 // Enables animation of text output. Applies only to on-device evaluation.
 BASE_DECLARE_FEATURE(kComposeTextOutputAnimation);
 
-// Constrols parameters around text selection and insert/replacement heuristics.
-BASE_DECLARE_FEATURE(kComposeTextSelection);
-
 // Enables client-side timeout of a Compose request.
 BASE_DECLARE_FEATURE(kComposeRequestLatencyTimeout);
 
@@ -82,6 +79,9 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
 
 // Enables on-device execution, if available.
 BASE_DECLARE_FEATURE(kComposeAllowOnDeviceExecution);
+
+// Enables or disables upfront input modes in the dialog.
+BASE_DECLARE_FEATURE(kComposeUpfrontInputModes);
 
 }  // namespace compose::features
 

@@ -23,7 +23,7 @@ import java.lang.reflect.InvocationHandler;
 /** Adapter between WebMessagePortBoundaryInterface and MessagePort. */
 @Lifetime.Temporary
 class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface {
-    private MessagePort mPort;
+    private final MessagePort mPort;
 
     SupportLibWebMessagePortAdapter(MessagePort port) {
         mPort = port;

@@ -142,7 +142,7 @@ class SSLPlatformKeyAndroid : public ThreadedSSLPrivateKey::Delegate {
     }
 
     std::optional<std::vector<uint8_t>> padded =
-        AddPSSPadding(pubkey_.get(), md, base::make_span(digest, digest_len));
+        AddPSSPadding(pubkey_.get(), md, base::span(digest, digest_len));
     if (!padded) {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }

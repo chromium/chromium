@@ -18,10 +18,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-// This should be after all other #includes.
-#if defined(_WINDOWS_)  // Detect whether windows.h was included.
 #include "base/win/windows_h_disallowed.h"
-#endif  // defined(_WINDOWS_)
 
 namespace views {
 
@@ -38,8 +35,9 @@ BoundsAnimator::~BoundsAnimator() {
   // that it won't call AnimationCanceled().
   ViewToDataMap data;
   data.swap(data_);
-  for (auto& entry : data)
+  for (auto& entry : data) {
     CleanupData(false, &entry.second);
+  }
 }
 
 void BoundsAnimator::AnimateViewTo(
@@ -55,8 +53,9 @@ void BoundsAnimator::AnimateViewTo(
   // bounds.
   if (is_animating && target == data_[view].target_bounds) {
     // If this animation specifies a different delegate, swap them out.
-    if (delegate && delegate != data_[view].delegate)
+    if (delegate && delegate != data_[view].delegate) {
       SetAnimationDelegate(view, std::move(delegate));
+    }
 
     return;
   }
@@ -123,10 +122,11 @@ void BoundsAnimator::AnimateViewTo(
 
 void BoundsAnimator::SetTargetBounds(View* view, const gfx::Rect& target) {
   const auto i = data_.find(view);
-  if (i == data_.end())
+  if (i == data_.end()) {
     AnimateViewTo(view, target);
-  else
+  } else {
     i->second.target_bounds = target;
+  }
 }
 
 gfx::Rect BoundsAnimator::GetTargetBounds(const View* view) const {
@@ -150,8 +150,9 @@ void BoundsAnimator::SetAnimationDelegate(
 
 void BoundsAnimator::StopAnimatingView(View* view) {
   const auto i = data_.find(view);
-  if (i != data_.end())
+  if (i != data_.end()) {
     i->second.animation->Stop();
+  }
 }
 
 bool BoundsAnimator::IsAnimating(View* view) const {
@@ -163,22 +164,26 @@ bool BoundsAnimator::IsAnimating() const {
 }
 
 void BoundsAnimator::Complete() {
-  if (data_.empty())
+  if (data_.empty()) {
     return;
+  }
 
-  while (!data_.empty())
+  while (!data_.empty()) {
     data_.begin()->second.animation->End();
+  }
 
   // Invoke AnimationContainerProgressed to force a repaint and notify delegate.
   AnimationContainerProgressed(container_.get());
 }
 
 void BoundsAnimator::Cancel() {
-  if (data_.empty())
+  if (data_.empty()) {
     return;
+  }
 
-  while (!data_.empty())
+  while (!data_.empty()) {
     data_.begin()->second.animation->Stop();
+  }
 
   // Invoke AnimationContainerProgressed to force a repaint and notify delegate.
   AnimationContainerProgressed(container_.get());
@@ -221,8 +226,9 @@ BoundsAnimator::Data BoundsAnimator::RemoveFromMaps(View* view) {
 }
 
 void BoundsAnimator::CleanupData(bool send_cancel, Data* data) {
-  if (send_cancel && data->delegate)
+  if (send_cancel && data->delegate) {
     data->delegate->AnimationCanceled(data->animation.get());
+  }
 
   data->delegate.reset();
 
@@ -235,8 +241,9 @@ void BoundsAnimator::CleanupData(bool send_cancel, Data* data) {
 std::unique_ptr<gfx::Animation> BoundsAnimator::ResetAnimationForView(
     View* view) {
   const auto i = data_.find(view);
-  if (i == data_.end())
+  if (i == data_.end()) {
     return nullptr;
+  }
 
   std::unique_ptr<gfx::Animation> old_animation =
       std::move(i->second.animation);
@@ -319,8 +326,9 @@ void BoundsAnimator::AnimationProgressed(const gfx::Animation* animation) {
     }
   }
 
-  if (data.delegate)
+  if (data.delegate) {
     data.delegate->AnimationProgressed(animation);
+  }
 }
 
 void BoundsAnimator::AnimationEnded(const gfx::Animation* animation) {
@@ -357,8 +365,9 @@ void BoundsAnimator::OnChildViewRemoved(views::View* observed_view,
                                         views::View* removed) {
   DCHECK_EQ(parent_, observed_view);
   const auto iter = data_.find(removed);
-  if (iter == data_.end())
+  if (iter == data_.end()) {
     return;
+  }
   AnimationCanceled(iter->second.animation.get());
 }
 

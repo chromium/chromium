@@ -103,14 +103,15 @@ TEST_F(CSSPrimitiveValueTest, IsTimeCalc) {
 TEST_F(CSSPrimitiveValueTest, ClampTimeToNonNegative) {
   UnitValue a = {4926, UnitType::kMilliseconds};
   UnitValue b = {5, UnitType::kSeconds};
-  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeSeconds());
+  EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeSeconds(
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CSSPrimitiveValueTest, ClampAngleToNonNegative) {
   UnitValue a = {89, UnitType::kDegrees};
   UnitValue b = {0.25, UnitType::kTurns};
   EXPECT_EQ(0.0, CreateNonNegativeSubtraction(a, b)->ComputeDegrees(
-                     CSSToLengthConversionData()));
+                     CSSToLengthConversionData(/*element=*/nullptr)));
 }
 
 TEST_F(CSSPrimitiveValueTest, IsResolution) {
@@ -131,7 +132,7 @@ TEST_F(CSSPrimitiveValueTest, Zooming) {
   UnitValue b = {10, UnitType::kPercentage};
   CSSPrimitiveValue* original = CreateAddition(a, b);
 
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   conversion_data.SetZoom(0.5);
 
   Length length = original->ConvertToLength(conversion_data);
@@ -149,7 +150,7 @@ TEST_F(CSSPrimitiveValueTest, PositiveInfinityLengthClamp) {
   UnitValue a = {std::numeric_limits<double>::infinity(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   EXPECT_EQ(std::numeric_limits<double>::max(),
             value->ComputeLength<double>(conversion_data));
 }
@@ -158,7 +159,7 @@ TEST_F(CSSPrimitiveValueTest, NegativeInfinityLengthClamp) {
   UnitValue a = {-std::numeric_limits<double>::infinity(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   EXPECT_EQ(std::numeric_limits<double>::lowest(),
             value->ComputeLength<double>(conversion_data));
 }
@@ -167,14 +168,14 @@ TEST_F(CSSPrimitiveValueTest, NaNLengthClamp) {
   UnitValue a = {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels};
   UnitValue b = {1, UnitType::kPixels};
   CSSPrimitiveValue* value = CreateAddition(a, b);
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   EXPECT_EQ(0.0, value->ComputeLength<double>(conversion_data));
 }
 
 TEST_F(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
   CSSPrimitiveValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPercentage});
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   Length length = value->ConvertToLength(conversion_data);
   EXPECT_EQ(std::numeric_limits<float>::max(), length.Percent());
 }
@@ -182,7 +183,7 @@ TEST_F(CSSPrimitiveValueTest, PositiveInfinityPercentLengthClamp) {
 TEST_F(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
   CSSPrimitiveValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPercentage});
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   Length length = value->ConvertToLength(conversion_data);
   EXPECT_EQ(std::numeric_limits<float>::lowest(), length.Percent());
 }
@@ -190,50 +191,48 @@ TEST_F(CSSPrimitiveValueTest, NegativeInfinityPercentLengthClamp) {
 TEST_F(CSSPrimitiveValueTest, NaNPercentLengthClamp) {
   CSSPrimitiveValue* value = Create(
       {-std::numeric_limits<double>::quiet_NaN(), UnitType::kPercentage});
-  CSSToLengthConversionData conversion_data;
+  CSSToLengthConversionData conversion_data(/*element=*/nullptr);
   Length length = value->ConvertToLength(conversion_data);
   EXPECT_EQ(0.0, length.Percent());
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueWithoutClampingAllowNaN) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
-  EXPECT_TRUE(std::isnan(value->GetDoubleValueWithoutClamping()));
+  EXPECT_TRUE(std::isnan(value->DoubleValue()));
 }
 
 TEST_F(CSSPrimitiveValueTest,
        GetDoubleValueWithoutClampingAllowPositveInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
-  EXPECT_TRUE(std::isinf(value->GetDoubleValueWithoutClamping()) &&
-              value->GetDoubleValueWithoutClamping() > 0);
+  EXPECT_TRUE(std::isinf(value->DoubleValue()) && value->DoubleValue() > 0);
 }
 
 TEST_F(CSSPrimitiveValueTest,
        GetDoubleValueWithoutClampingAllowNegativeInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
 
-  EXPECT_TRUE(std::isinf(value->GetDoubleValueWithoutClamping()) &&
-              value->GetDoubleValueWithoutClamping() < 0);
+  EXPECT_TRUE(std::isinf(value->DoubleValue()) && value->DoubleValue() < 0);
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNaN) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::quiet_NaN(), UnitType::kPixels});
-  EXPECT_EQ(0.0, value->GetDoubleValue());
+  EXPECT_EQ(0.0, value->ClampedDoubleValue());
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampPositiveInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({std::numeric_limits<double>::infinity(), UnitType::kPixels});
-  EXPECT_EQ(std::numeric_limits<double>::max(), value->GetDoubleValue());
+  EXPECT_EQ(std::numeric_limits<double>::max(), value->ClampedDoubleValue());
 }
 
 TEST_F(CSSPrimitiveValueTest, GetDoubleValueClampNegativeInfinity) {
-  CSSPrimitiveValue* value =
+  CSSNumericLiteralValue* value =
       Create({-std::numeric_limits<double>::infinity(), UnitType::kPixels});
-  EXPECT_EQ(std::numeric_limits<double>::lowest(), value->GetDoubleValue());
+  EXPECT_EQ(std::numeric_limits<double>::lowest(), value->ClampedDoubleValue());
 }
 
 TEST_F(CSSPrimitiveValueTest, TestCanonicalizingNumberUnitCategory) {
@@ -347,12 +346,13 @@ TEST_F(CSSPrimitiveValueTest, ComputeMethodsWithLengthResolver) {
         sign, degs, CSSMathOperator::kMultiply);
     CSSPrimitiveValue* value = CSSMathFunctionValue::Create(expression);
 
-    Font font;
-    CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+    Font* font = MakeGarbageCollected<Font>();
+    CSSToLengthConversionData length_resolver =
+        CSSToLengthConversionData(/*element=*/nullptr);
     length_resolver.SetFontSizes(
-        CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+        CSSToLengthConversionData::FontSizes(10.0f, 10.0f, font, 1.0f));
     EXPECT_EQ(10.0, value->ComputeDegrees(length_resolver));
-    EXPECT_EQ("calc(sign(-1em + 12px) * 10deg)", value->CustomCSSText());
+    EXPECT_EQ("calc(10deg * sign(-1em + 12px))", value->CustomCSSText());
   }
 }
 
@@ -360,7 +360,7 @@ TEST_F(CSSPrimitiveValueTest, ContainerProgressTreeScope) {
   ScopedCSSProgressNotationForTest scoped_feature(true);
   const CSSValue* value = css_test_helpers::ParseValue(
       GetDocument(), "<number>",
-      "container-progress(width of my-container from 0px to 1px)");
+      "container-progress(width of my-container, 0px, 1px)");
   ASSERT_TRUE(value);
 
   const CSSValue& scoped_value = value->EnsureScopedValue(&GetDocument());
@@ -390,17 +390,17 @@ TEST_F(CSSPrimitiveValueTest, CSSPrimitiveValueOperations) {
   EXPECT_EQ(function->Multiply(1, CSSPrimitiveValue::UnitType::kPixels)
                 ->Add(10, CSSPrimitiveValue::UnitType::kPixels)
                 ->CustomCSSText(),
-            "calc(10px + sign(-20em + 10px) * 1px)");
+            "calc(10px + (1px * sign(-20em + 10px)))");
   EXPECT_EQ(function->MultiplyBy(10, CSSPrimitiveValue::UnitType::kNumber)
                 ->CustomCSSText(),
             "calc(10 * sign(-20em + 10px))");
   EXPECT_EQ(function->MultiplyBy(1, CSSPrimitiveValue::UnitType::kPixels)
                 ->Subtract(*numeric_percentage)
                 ->CustomCSSText(),
-            "calc(-10% + 1px * sign(-20em + 10px))");
+            "calc(-10% + (1px * sign(-20em + 10px)))");
   EXPECT_EQ(function->Divide(20, CSSPrimitiveValue::UnitType::kNumber)
                 ->CustomCSSText(),
-            "calc(sign(-20em + 10px) / 20)");
+            "calc(0.05 * sign(-20em + 10px))");
   EXPECT_EQ(function->Subtract(*function)->CustomCSSText(),
             "calc(sign(-20em + 10px) - sign(-20em + 10px))");
   EXPECT_EQ(
@@ -424,10 +424,10 @@ TEST_F(CSSPrimitiveValueTest, ComputeValueToCanonicalUnit) {
           node_20_px, node_2_em, CSSMathOperator::kSubtract);
   auto* function = CSSMathFunctionValue::Create(node_sub);
 
-  Font font;
-  CSSToLengthConversionData length_resolver = CSSToLengthConversionData();
+  Font* font = MakeGarbageCollected<Font>();
+  CSSToLengthConversionData length_resolver(/*element=*/nullptr);
   length_resolver.SetFontSizes(
-      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, &font, 1.0f));
+      CSSToLengthConversionData::FontSizes(10.0f, 10.0f, font, 1.0f));
 
   EXPECT_EQ(function->ComputeValueInCanonicalUnit(length_resolver), 0);
   EXPECT_EQ(numeric_percentage->ComputeValueInCanonicalUnit(length_resolver),

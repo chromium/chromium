@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Offer to send a sendonly H264 codec on a sendonly transceiver
+  assert_true: The first offered codec's sdpFmtpLine is the sendonly one. expected true got false
+Harness: the test ran to completion.
+

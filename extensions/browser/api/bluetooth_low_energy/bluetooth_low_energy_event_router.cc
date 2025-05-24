@@ -255,12 +255,9 @@ DeviceConnectErrorCodeToStatus(BluetoothDevice::ConnectErrorCode error_code) {
     case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
       return extensions::BluetoothLowEnergyEventRouter::kStatusErrorSocket;
     case BluetoothDevice::NUM_CONNECT_ERROR_CODES:
-      NOTREACHED_IN_MIGRATION();
-      return extensions::BluetoothLowEnergyEventRouter::
-          kStatusErrorInvalidArguments;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return extensions::BluetoothLowEnergyEventRouter::kStatusErrorFailed;
+  NOTREACHED();
 }
 
 }  // namespace

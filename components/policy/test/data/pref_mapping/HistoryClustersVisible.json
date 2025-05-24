@@ -4,23 +4,17 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "fuchsia",
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "HistoryClustersVisible": false
-        },
-        "prefs": {
-          "history_clusters.visible": {
-            "location": "user_profile",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "history_clusters.visible",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

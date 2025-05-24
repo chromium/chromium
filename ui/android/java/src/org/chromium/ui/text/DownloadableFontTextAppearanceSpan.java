@@ -15,11 +15,14 @@ import androidx.annotation.FontRes;
 import androidx.annotation.StyleRes;
 import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 
 /** {@link TextAppearanceSpan} that supports downloadable fonts, e.g. google sans. */
+@NullMarked
 public class DownloadableFontTextAppearanceSpan extends TextAppearanceSpan {
-    private final Typeface mTypeface;
+    private final @Nullable Typeface mTypeface;
 
     public DownloadableFontTextAppearanceSpan(Context context, int appearance) {
         super(context, appearance);

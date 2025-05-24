@@ -5,7 +5,7 @@
 
   await dp.Page.enable();
   await dp.Runtime.enable();
-  await bp.BluetoothEmulation.enable({state: 'powered-on'});
+  await bp.BluetoothEmulation.enable({state: 'powered-on', leSupported: true});
   const bluetoothAvailable = await session.evaluateAsync(
     () => navigator.bluetooth.getAvailability()
   );

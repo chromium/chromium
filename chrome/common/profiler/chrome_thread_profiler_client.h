@@ -7,9 +7,9 @@
 
 #include "base/command_line.h"
 #include "base/functional/callback.h"
-#include "base/profiler/call_stack_profile_params.h"
-#include "base/profiler/process_type.h"
 #include "base/profiler/stack_sampling_profiler.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/sampling_profiler/process_type.h"
 #include "components/sampling_profiler/thread_profiler_client.h"
 
 namespace metrics {
@@ -34,13 +34,13 @@ class ChromeThreadProfilerClient
   // sampling_profiler::ThreadProfilerClient implementation.
   base::StackSamplingProfiler::SamplingParams GetSamplingParams() override;
   std::unique_ptr<base::ProfileBuilder> CreateProfileBuilder(
-      base::CallStackProfileParams profile_params,
+      sampling_profiler::CallStackProfileParams profile_params,
       metrics::WorkIdRecorder* work_id_recorder,
       base::OnceClosure builder_completed_callback) override;
   base::StackSamplingProfiler::UnwindersFactory GetUnwindersFactory() override;
   bool IsProfilerEnabledForCurrentProcessAndThread(
-      base::ProfilerThreadType thread) override;
-  base::ProfilerProcessType GetProcessType(
+      sampling_profiler::ProfilerThreadType thread) override;
+  sampling_profiler::ProfilerProcessType GetProcessType(
       const base::CommandLine& command_line) override;
   bool IsSingleProcess(const base::CommandLine& command_line) override;
 };

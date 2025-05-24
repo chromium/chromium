@@ -54,9 +54,6 @@ const wchar_t kRegValueChromeStatsSample[] = L"UsageStatsInSample";
 // The constants defined in this file are also defined in chrome/installer and
 // other places. we need to unify them.
 const wchar_t kHeadless[] = L"CHROME_HEADLESS";
-const wchar_t kShowRestart[] = L"CHROME_CRASHED";
-const wchar_t kRestartInfo[] = L"CHROME_RESTART";
-const wchar_t kRtlLocale[] = L"RIGHT_TO_LEFT";
 
 const wchar_t kCrashpadHandler[] = L"crashpad-handler";
 const wchar_t kFallbackHandler[] = L"fallback-handler";
@@ -387,6 +384,25 @@ std::wstring GetElevationServiceDisplayName() {
   return GetBaseAppName() + kElevationServiceDisplayName;
 }
 
+const CLSID& GetTracingServiceClsid() {
+  return InstallDetails::Get().tracing_service_clsid();
+}
+
+const IID& GetTracingServiceIid() {
+  return InstallDetails::Get().tracing_service_iid();
+}
+
+std::wstring GetTracingServiceName() {
+  std::wstring name = GetTracingServiceDisplayName();
+  name.erase(std::remove_if(name.begin(), name.end(), isspace), name.end());
+  return name;
+}
+
+std::wstring GetTracingServiceDisplayName() {
+  static constexpr wchar_t kTracingServiceDisplayName[] = L" Tracing Service";
+  return GetBaseAppName() + kTracingServiceDisplayName;
+}
+
 std::wstring GetBaseAppName() {
   return InstallDetails::Get().mode().base_app_name;
 }
@@ -540,7 +556,8 @@ bool ReportingIsEnforcedByPolicy(bool* crash_reporting_enabled) {
 
 void InitializeProcessType() {
   assert(g_process_type == ProcessType::UNINITIALIZED);
-  g_process_type = GetProcessType(GetCommandLineSwitchValue(kProcessType));
+  g_process_type = GetProcessType(
+      GetCommandLineSwitchValue(::GetCommandLine(), kProcessType));
 }
 
 bool IsProcessTypeInitialized() {
@@ -852,15 +869,12 @@ std::optional<std::wstring> GetCommandLineSwitch(
   return std::nullopt;
 }
 
-std::optional<std::wstring> GetCommandLineSwitch(
-    std::wstring_view switch_name) {
+std::wstring GetCommandLineSwitchValue(const std::wstring& command_line,
+                                       std::wstring_view switch_name) {
+  assert(!command_line.empty());
   assert(!switch_name.empty());
-  return GetCommandLineSwitch(::GetCommandLine(), switch_name);
-}
-
-std::wstring GetCommandLineSwitchValue(std::wstring_view switch_name) {
-  assert(!switch_name.empty());
-  return GetCommandLineSwitch(switch_name).value_or(std::wstring());
+  return GetCommandLineSwitch(command_line, switch_name)
+      .value_or(std::wstring());
 }
 
 bool RecursiveDirectoryCreate(const std::wstring& full_path) {

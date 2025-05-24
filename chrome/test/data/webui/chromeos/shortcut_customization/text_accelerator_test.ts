@@ -5,17 +5,18 @@
 import 'chrome://shortcut-customization/js/text_accelerator.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {KeyInputState} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString, stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import type {IronIconElement} from 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
-import {AcceleratorSource, LayoutStyle, TextAcceleratorPart, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
+import type {TextAcceleratorPart} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorSource, LayoutStyle, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -44,8 +45,8 @@ suite('textAcceleratorTest', function() {
   });
 
   function getTextPartsContainer(): HTMLElement {
-    return textAccelElement!.shadowRoot!.querySelector('.parts-container') as
-        HTMLElement;
+    return textAccelElement!.shadowRoot!.querySelector<HTMLElement>(
+        '.parts-container')!;
   }
 
   function getAllInputKeys(): NodeListOf<ShortcutInputKeyElement> {
@@ -60,7 +61,7 @@ suite('textAcceleratorTest', function() {
     return getTextPartsContainer().querySelectorAll('#delimiter-icon');
   }
 
-  function getLockIcon(): HTMLDivElement {
+  function getLockIcon(): HTMLElement {
     return strictQuery(
         '.lock-icon-container', textAccelElement!.shadowRoot, HTMLDivElement);
   }

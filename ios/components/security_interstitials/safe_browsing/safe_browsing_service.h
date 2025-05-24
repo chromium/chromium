@@ -18,15 +18,15 @@ class SafeBrowsingClient;
 
 namespace base {
 class FilePath;
-}
+}  // namespace base
 
 namespace network {
 class SharedURLLoaderFactory;
 
 namespace mojom {
 class NetworkContext;
-}
-}
+}  // namespace mojom
+}  // namespace network
 
 namespace safe_browsing {
 class SafeBrowsingDatabaseManager;
@@ -49,10 +49,17 @@ class SafeBrowsingService
   SafeBrowsingService& operator=(const SafeBrowsingService&) = delete;
 
   // Called on the UI thread to initialize the service.
-  virtual void Initialize(PrefService* prefs,
-                          const base::FilePath& user_data_path,
-                          safe_browsing::SafeBrowsingMetricsCollector*
-                              safe_browsing_metrics_collector) = 0;
+  virtual void Initialize(const base::FilePath& user_data_path) = 0;
+
+  // Called on the UI thread when a new BrowserState is created with the
+  // BrowserState's associated `prefs` and `metrics_collector`.
+  virtual void OnBrowserStateCreated(
+      PrefService* prefs,
+      safe_browsing::SafeBrowsingMetricsCollector* metrics_collector) = 0;
+
+  // Called on the UI thread when a BrowserState is destroyed with the
+  // BrowserState's associated `prefs`.
+  virtual void OnBrowserStateDestroyed(PrefService* prefs) = 0;
 
   // Called on the UI thread to terminate the service. This must be called
   // before the IO thread is torn down.

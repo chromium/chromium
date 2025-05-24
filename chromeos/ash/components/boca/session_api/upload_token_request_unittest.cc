@@ -16,6 +16,7 @@
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/common/test_util.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/gaia_urls_overrider_for_testing.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -105,13 +106,14 @@ TEST_F(UploadTokenRequestTest, UploadTokenAndSucceed) {
   EXPECT_CALL(request_handler(), HandleRequest(_))
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateSuccessfulResponse())));
-  std::string gaia_id = "1";
+  GaiaId gaia_id("1");
   std::string token = "token";
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<UploadTokenRequest> request =
-      std::make_unique<UploadTokenRequest>(request_sender(), gaia_id, token,
+      std::make_unique<UploadTokenRequest>(request_sender(), "https://test",
+                                           gaia_id, token,
                                            future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
@@ -136,13 +138,14 @@ TEST_F(UploadTokenRequestTest, UploadTokenAndFail) {
       .WillOnce(DoAll(SaveArg<0>(&http_request),
                       Return(MockRequestHandler::CreateFailedResponse())));
 
-  std::string gaia_id = "1";
+  GaiaId gaia_id("1");
   std::string token = "token";
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<UploadTokenRequest> request =
-      std::make_unique<UploadTokenRequest>(request_sender(), gaia_id, token,
+      std::make_unique<UploadTokenRequest>(request_sender(), "https://test",
+                                           gaia_id, token,
                                            future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());

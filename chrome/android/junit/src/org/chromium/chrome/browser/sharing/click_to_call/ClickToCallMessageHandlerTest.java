@@ -17,10 +17,12 @@ import android.content.Intent;
 import android.os.Build;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowNotification;
@@ -29,9 +31,11 @@ import org.robolectric.shadows.ShadowNotificationManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.device.ShadowDeviceConditions;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.components.browser_ui.notifications.NotificationFeatureMap;
 import org.chromium.net.ConnectionType;
 
 /**
@@ -39,15 +43,16 @@ import org.chromium.net.ConnectionType;
  * display a notification or directly open the dialer.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({NotificationFeatureMap.CACHE_NOTIIFICATIONS_ENABLED})
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowDeviceConditions.class})
 public class ClickToCallMessageHandlerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Spy private Context mContext = RuntimeEnvironment.application.getApplicationContext();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ContextUtils.initApplicationContextForTests(mContext);
     }
 

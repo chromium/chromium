@@ -1,3 +1,0 @@
-Tests that Fetch.requestPaused is emitted for worker subresource when enable after worker creation
-fetched in worker: Fetched for real!
-

@@ -32,7 +32,7 @@ class ExtensionHostRegistryFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 };
 
@@ -56,12 +56,13 @@ content::BrowserContext* ExtensionHostRegistryFactory::GetBrowserContextToUse(
   // the original context. This makes it quite challenging to let this have its
   // own incognito context.
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
+      context);
 }
 
-KeyedService* ExtensionHostRegistryFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionHostRegistryFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ExtensionHostRegistry();
+  return std::make_unique<ExtensionHostRegistry>();
 }
 
 }  // namespace

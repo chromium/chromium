@@ -96,7 +96,7 @@ def main(argv):
     success = c.ExecuteTestCase()
   except KeyboardInterrupt:
     logging.error('Test aborted.')
-  except:
+  except Exception:
     print(traceback.format_exc())
     logging.error('Test failed.')
   finally:

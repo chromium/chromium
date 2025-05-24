@@ -308,8 +308,7 @@ std::optional<BackgroundImageInfo> GetBackgroundImageInfoOnWorker(
     return std::nullopt;
   }
 
-  auto image = gfx::ImageFrom1xJPEGEncodedData(&jpeg_bytes.value()[0],
-                                               jpeg_bytes.value().size());
+  auto image = gfx::ImageFrom1xJPEGEncodedData(jpeg_bytes.value());
   if (image.IsEmpty()) {
     return std::nullopt;
   }
@@ -888,6 +887,11 @@ void CameraEffectsController::OnAutozoomControlEnabledChanged(bool enabled) {
 
   effect->set_dependency_flags(VcHostedEffect::ResourceDependency::kCamera);
   AddEffect(std::move(effect));
+  auto& effects_manager =
+      VideoConferenceTrayController::Get()->GetEffectsManager();
+  if (!effects_manager.IsDelegateRegistered(this)) {
+    effects_manager.RegisterDelegate(this);
+  }
 }
 
 cros::mojom::SegmentationModel
@@ -932,6 +936,8 @@ void CameraEffectsController::SetCameraEffects(
       GetInferenceBackend(ash::features::kVcSegmentationInferenceBackend);
   config->relighting_inference_backend =
       GetInferenceBackend(ash::features::kVcRelightingInferenceBackend);
+  config->retouch_inference_backend =
+      GetInferenceBackend(ash::features::kVcRetouchInferenceBackend);
 
   if (config->replace_enabled &&
       config->background_filepath != current_effects_->background_filepath) {

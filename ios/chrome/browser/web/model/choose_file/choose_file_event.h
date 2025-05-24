@@ -19,6 +19,7 @@ class WebState;
 // Records information about the user's interaction with a file `<input>`.
 struct ChooseFileEvent {
   ChooseFileEvent(bool allow_multiple_files,
+                  bool has_selected_file,
                   std::vector<std::string> accept_file_extensions,
                   std::vector<std::string> accept_mime_types,
                   web::WebState* web_state,
@@ -31,6 +32,8 @@ struct ChooseFileEvent {
 
   // Whether the input accepts multiple files.
   bool allow_multiple_files;
+  // Whether the input already has selected file.
+  bool has_selected_file;
   // The file extensions that the input accepts.
   std::vector<std::string> accept_file_extensions;
   // The MIME types that the input accepts.

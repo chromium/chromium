@@ -36,7 +36,6 @@ namespace {
 constexpr base::TimeDelta kWaitForJsNotReturnTimeout = base::Milliseconds(500);
 
 const char kTestScriptName[] = "annotations_test";
-const char kNoViewportScriptName[] = "annotations";
 const char kViewportScriptName[] = "text_main";
 
 // Feature to include test ts code only.
@@ -310,24 +309,6 @@ class AnnotationTextManagerTest : public web::WebTestWithWebState {
   std::unique_ptr<AnnotationsTestJavaScriptFeature> js_test_feature_;
 };
 
-class AnnotationTextManagerNoViewportTest : public AnnotationTextManagerTest {
- public:
-  AnnotationTextManagerNoViewportTest() = default;
-
-  AnnotationTextManagerNoViewportTest(
-      const AnnotationTextManagerNoViewportTest&) = delete;
-  AnnotationTextManagerNoViewportTest& operator=(
-      const AnnotationTextManagerNoViewportTest&) = delete;
-
- protected:
-  void SetUp() override {
-    feature_.InitAndDisableFeature(features::kEnableViewportIntents);
-    AnnotationTextManagerTest::SetUp();
-  }
-
-  std::string GetScriptName() override { return kNoViewportScriptName; }
-};
-
 class AnnotationTextManagerViewportTest : public AnnotationTextManagerTest {
  public:
   AnnotationTextManagerViewportTest() = default;
@@ -338,11 +319,6 @@ class AnnotationTextManagerViewportTest : public AnnotationTextManagerTest {
       const AnnotationTextManagerViewportTest&) = delete;
 
  protected:
-  void SetUp() override {
-    feature_.InitAndEnableFeature(features::kEnableViewportIntents);
-    AnnotationTextManagerTest::SetUp();
-  }
-
   std::string GetScriptName() override { return kViewportScriptName; }
 
   void LoadHtmlAndExtractText(const std::string& html) override {
@@ -350,21 +326,6 @@ class AnnotationTextManagerViewportTest : public AnnotationTextManagerTest {
     AnnotationTextManagerTest::LoadHtmlAndExtractText(html);
   }
 };
-
-// Tests page text extraction.
-// Covers: PageLoaded, OnTextExtracted, StartExtractingText.
-TEST_F(AnnotationTextManagerNoViewportTest, ExtractText) {
-  LoadHtmlAndExtractText("<html><body>"
-                         "<p>You'll find it on</p>"
-                         "<p>Castro Street, <span>Mountain View</span>, CA</p>"
-                         "<p>Enjoy</p>"
-                         "</body></html>");
-
-  EXPECT_EQ("You'll find it on"
-            "\nCastro Street, Mountain View, CA"
-            "\nEnjoy",
-            observer()->extracted_text());
-}
 
 // Tests page text extraction.
 // Covers: PageLoaded, OnTextExtracted, StartExtractingText.
@@ -392,25 +353,6 @@ TEST_F(AnnotationTextManagerViewportTest, ExtractTextTags) {
 }
 
 // Tests no page text extraction if there is no supported type.
-TEST_F(AnnotationTextManagerNoViewportTest, ExtractNoText) {
-  auto* manager = AnnotationsTextManager::FromWebState(web_state());
-  manager->SetSupportedTypes(0);
-
-  int seq_id = observer()->seq_id();
-
-  ASSERT_TRUE(LoadHtml("<html><body>"
-                       "<p>You'll find it on</p>"
-                       "<p>Castro Street, <span>Mountain View</span>, CA</p>"
-                       "<p>Enjoy</p>"
-                       "</body></html>"));
-  ASSERT_TRUE(WaitForWebFramesCount(1));
-  EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForJsNotReturnTimeout, ^{
-    return observer()->seq_id() > seq_id;
-  }));
-  EXPECT_EQ("", observer()->extracted_text());
-}
-
-// Tests no page text extraction if there is no supported type.
 TEST_F(AnnotationTextManagerViewportTest, ExtractNoText) {
   auto* manager = AnnotationsTextManager::FromWebState(web_state());
   manager->SetSupportedTypes(0);
@@ -427,25 +369,6 @@ TEST_F(AnnotationTextManagerViewportTest, ExtractNoText) {
     return observer()->seq_id() > seq_id;
   }));
   EXPECT_EQ("", observer()->extracted_text());
-}
-
-TEST_F(AnnotationTextManagerNoViewportTest, CheckMetadata) {
-  LoadHtmlAndExtractText("<html lang=\"fr\">"
-                         "<head>"
-                         "<meta http-equiv=\"content-language\" content=\"fr\">"
-                         "<meta name=\"chrome\" content=\"nointentdetection\"/>"
-                         "<meta name=\"google\" content=\"notranslate\"/>"
-                         "</head>"
-                         "<body>"
-                         "<p>You'll find it on</p>"
-                         "<p>Castro Street, <span>Mountain View</span>, CA</p>"
-                         "<p>Enjoy</p>"
-                         "</body></html>");
-  std::string fr = "fr";
-  EXPECT_TRUE(observer()->metadata().FindBool("hasNoIntentDetection").value());
-  EXPECT_TRUE(observer()->metadata().FindBool("hasNoTranslate").value());
-  EXPECT_EQ(fr, *observer()->metadata().FindString("htmlLang"));
-  EXPECT_EQ(fr, *observer()->metadata().FindString("httpContentLanguage"));
 }
 
 TEST_F(AnnotationTextManagerViewportTest, CheckMetadata) {
@@ -469,20 +392,6 @@ TEST_F(AnnotationTextManagerViewportTest, CheckMetadata) {
   EXPECT_EQ("", observer()->extracted_text());
 }
 
-TEST_F(AnnotationTextManagerNoViewportTest, CheckWkMetadata) {
-  LoadHtmlAndExtractText(
-      "<html lang=\"fr\">"
-      "<head>"
-      "<meta name=\"format-detection\" content=\"telephone=no\"/>"
-      "</head>"
-      "<body>"
-      "<p>You'll find it on</p>"
-      "<p>Castro Street, <span>Mountain View</span>, CA</p>"
-      "<p>Enjoy</p>"
-      "</body></html>");
-  EXPECT_TRUE(observer()->metadata().FindBool("wkNoTelephone").value());
-}
-
 TEST_F(AnnotationTextManagerViewportTest, CheckWkMetadata) {
   int seq_id = observer()->seq_id();
 
@@ -503,22 +412,6 @@ TEST_F(AnnotationTextManagerViewportTest, CheckWkMetadata) {
   EXPECT_TRUE(observer()->metadata().FindBool("wkNoTelephone").value());
 }
 
-TEST_F(AnnotationTextManagerNoViewportTest, CheckNoMetadata) {
-  LoadHtmlAndExtractText("<html>"
-                         "<head>"
-                         "</head>"
-                         "<body>"
-                         "<p>You'll find it on</p>"
-                         "<p>Castro Street, <span>Mountain View</span>, CA</p>"
-                         "<p>Enjoy</p>"
-                         "</body></html>");
-  std::string empty = "";
-  EXPECT_FALSE(observer()->metadata().FindBool("hasNoIntentDetection").value());
-  EXPECT_FALSE(observer()->metadata().FindBool("hasNoTranslate").value());
-  EXPECT_EQ(empty, *observer()->metadata().FindString("htmlLang"));
-  EXPECT_EQ(empty, *observer()->metadata().FindString("httpContentLanguage"));
-}
-
 TEST_F(AnnotationTextManagerViewportTest, CheckNoMetadata) {
   LoadHtmlAndExtractText("<html>"
                          "<head>"
@@ -533,35 +426,6 @@ TEST_F(AnnotationTextManagerViewportTest, CheckNoMetadata) {
   EXPECT_FALSE(observer()->metadata().FindBool("hasNoTranslate"));
   EXPECT_EQ(empty, *observer()->metadata().FindString("htmlLang"));
   EXPECT_EQ(empty, *observer()->metadata().FindString("httpContentLanguage"));
-}
-
-// Tests page decoration when page doesn't change.
-// Covers: DecorateAnnotations, ConvertMatchToAnnotation.
-TEST_F(AnnotationTextManagerNoViewportTest, DecorateText) {
-  LoadHtmlAndExtractText("<html><body>"
-                         "<p>text</p>"
-                         "<p>annotation</p>"
-                         "<p>text</p>"
-                         "</body></html>");
-
-  std::string text = "text"
-                     "\nannotation"
-                     "\ntext";
-  EXPECT_EQ(text, observer()->extracted_text());
-
-  // Create annotation.
-  NSString* source = base::SysUTF8ToNSString(text);
-  CreateAndApplyAnnotations(source, @[ @"annotation" ], observer() -> seq_id());
-
-  EXPECT_EQ(observer()->successes(), 1);
-  EXPECT_EQ(observer()->annotations(), 1);
-
-  // Check the resulting html is annotating at the right place.
-  CheckHtml("<html><body>"
-            "<p>text</p>"
-            "<p><chrome_annotation>annotation</chrome_annotation></p>"
-            "<p>text</p>"
-            "</body></html>");
 }
 
 // Tests page decoration when page doesn't change.
@@ -635,21 +499,6 @@ TEST_F(AnnotationTextManagerViewportTest, UpdateDecoratedText) {
 }
 
 // Tests on no-decoration tags.
-TEST_F(AnnotationTextManagerNoViewportTest, NoDecorateText) {
-  LoadHtmlAndExtractText("<html><body>"
-                         "<p>text</p>"
-                         "<a>annotation1</a>"
-                         "<input type=\"radio\">"
-                         "<label>annotation2</label>"
-                         "<p>text</p>"
-                         "</body></html>");
-
-  std::string text = "text"
-                     "\ntext";
-  EXPECT_EQ(text, observer()->extracted_text());
-}
-
-// Tests on no-decoration tags.
 TEST_F(AnnotationTextManagerViewportTest, NoDecorateText) {
   LoadHtmlAndExtractText("<html><body>"
                          "<p>text</p>"
@@ -662,40 +511,6 @@ TEST_F(AnnotationTextManagerViewportTest, NoDecorateText) {
   std::string text = "text  ‡  "
                      "text ";
   EXPECT_EQ(text, observer()->extracted_text());
-}
-
-// Tests different annotation cases, including tags boundaries.
-// Covers: RemoveDecorations
-TEST_F(AnnotationTextManagerNoViewportTest, DecorateTextCrossingElements) {
-  std::string html = "<html><body>"
-                     "<p>abc</p>"
-                     "<p>def</p>"
-                     "<p>ghi</p>"
-                     "<p>jkl</p>"
-                     "<p>mno</p>"
-                     "</body></html>";
-  LoadHtmlAndExtractText(html);
-
-  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotations(source, @[ @"a", @"c\nd", @"f\nghi\nj", @"l\nmno" ],
-                            observer() -> seq_id());
-
-  // Check the resulting html is annotating at the right place.
-  CheckHtml("<html><body>"
-            "<p><chrome_annotation>a</chrome_annotation>b<chrome_annotation>c</"
-            "chrome_annotation></p>"
-            "<p><chrome_annotation>d</chrome_annotation>e<chrome_annotation>f</"
-            "chrome_annotation></p>"
-            "<p><chrome_annotation>ghi</chrome_annotation></p>"
-            "<p><chrome_annotation>j</chrome_annotation>k<chrome_annotation>l</"
-            "chrome_annotation></p>"
-            "<p><chrome_annotation>mno</chrome_annotation></p>"
-            "</body></html>");
-
-  // Make sure it's back to the original.
-  auto* manager = AnnotationsTextManager::FromWebState(web_state());
-  manager->RemoveDecorations();
-  CheckHtml(html);
 }
 
 // Tests decoration across elements for addresses.
@@ -765,30 +580,6 @@ TEST_F(AnnotationTextManagerViewportTest, DontDecorateTextCrossingElements) {
 
 // Tests annotation cases with line breaks, including tags boundaries.
 // Covers: DecorateAnnotations, RemoveDecorations
-TEST_F(AnnotationTextManagerNoViewportTest, DecorateTextBreakElements) {
-  std::string html = "<html><body>"
-                     "<p>abc<br>\ndef</p>"
-                     "</body></html>";
-  LoadHtmlAndExtractText(html);
-  CheckHtml(html);
-
-  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotations(source, @[ @"abc\n\ndef" ], observer() -> seq_id());
-
-  // Check the resulting html is annotating at the right place.
-  CheckHtml("<html><body>"
-            "<p><chrome_annotation>abc</chrome_annotation><br>"
-            "<chrome_annotation>\ndef</chrome_annotation></p>"
-            "</body></html>");
-
-  // Make sure it's back to the original.
-  auto* manager = AnnotationsTextManager::FromWebState(web_state());
-  manager->RemoveDecorations();
-  CheckHtml(html);
-}
-
-// Tests annotation cases with line breaks, including tags boundaries.
-// Covers: DecorateAnnotations, RemoveDecorations
 TEST_F(AnnotationTextManagerViewportTest, DecorateTextBreakElements) {
   std::string html = "<html><body>"
                      "<p>abc<br>\ndef</p>"
@@ -817,22 +608,6 @@ TEST_F(AnnotationTextManagerViewportTest, DecorateTextBreakElements) {
 
 // Tests on click handler.
 // Covers: OnClick.
-TEST_F(AnnotationTextManagerNoViewportTest, ClickAnnotation) {
-  LoadHtmlAndExtractText("<html><body>"
-                         "<p>text</p>"
-                         "<p>annotation</p>"
-                         "<p>text</p>"
-                         "</body></html>");
-  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotations(source, @[ @"annotation" ], observer() -> seq_id());
-  ClickAnnotation(0);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 1;
-  }));
-}
-
-// Tests on click handler.
-// Covers: OnClick.
 TEST_F(AnnotationTextManagerViewportTest, ClickAnnotation) {
   LoadHtmlAndExtractText("<html><body>"
                          "<p>text</p>"
@@ -845,82 +620,6 @@ TEST_F(AnnotationTextManagerViewportTest, ClickAnnotation) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
     return observer()->clicks() == 1;
   }));
-}
-
-// Tests removing annotation of one type
-TEST_F(AnnotationTextManagerNoViewportTest, RemoveDecorationTypeTest) {
-  std::string html = "<html><body>"
-                     "<p>abc def</p>"
-                     "<p>zzzzz ghi zzzzz</p>"
-                     "<p>zzzzz klm zzzzz</p>"
-                     "</body></html>";
-  LoadHtmlAndExtractText(html);
-  CheckHtml(html);
-  auto* manager = AnnotationsTextManager::FromWebState(web_state());
-
-  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-
-  CreateAndApplyAnnotationsWithTypes(
-      source,
-      @{@"type1" : @[ @"abc", @"ghi" ],
-        @"type2" : @[ @"def", @"klm" ]},
-      observer()->seq_id());
-
-  // Check the resulting html is annotating at the right place.
-  CheckHtml("<html><body>"
-            "<p><chrome_annotation>abc</chrome_annotation> "
-            "<chrome_annotation>def</chrome_annotation></p>"
-            "<p>zzzzz <chrome_annotation>ghi</chrome_annotation> zzzzz</p>"
-            "<p>zzzzz <chrome_annotation>klm</chrome_annotation> zzzzz</p>"
-            "</body></html>");
-
-  CountAnnotation();
-  ASSERT_EQ(observer()->annotations(), 4);
-
-  ClickAnnotation(0);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 1;
-  }));
-
-  ClickAnnotation(1);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 2;
-  }));
-
-  ClickAnnotation(2);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 3;
-  }));
-
-  ClickAnnotation(3);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 4;
-  }));
-
-  manager->RemoveDecorationsWithType("type1");
-  // Check the resulting html is annotating at the right place.
-  CheckHtml("<html><body>"
-            "<p>abc <chrome_annotation>def</chrome_annotation></p>"
-            "<p>zzzzz ghi zzzzz</p>"
-            "<p>zzzzz <chrome_annotation>klm</chrome_annotation> zzzzz</p>"
-            "</body></html>");
-
-  CountAnnotation();
-  ASSERT_EQ(observer()->annotations(), 2);
-
-  ClickAnnotation(0);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 5;
-  }));
-
-  ClickAnnotation(1);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 6;
-  }));
-
-  // Make sure it's back to the original.
-  manager->RemoveDecorations();
-  CheckHtml(html);
 }
 
 // Tests removing annotation of one type
@@ -1000,54 +699,6 @@ TEST_F(AnnotationTextManagerViewportTest, RemoveDecorationTypeTest) {
   // Make sure it's back to the original.
   manager->RemoveDecorations();
   CheckHtml(html);
-}
-
-// Tests on (simulated) navigation in web state.
-TEST_F(AnnotationTextManagerNoViewportTest, NavigationClearsAnnotation) {
-  std::string text1 = "<html><body>"
-                      "<p>text</p>"
-                      "<p>annotation</p>"
-                      "<p>text</p>"
-                      "</body></html>";
-
-  LoadHtmlAndExtractText(text1);
-  NSString* source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotationsWithTypes(
-      source,
-      @{@"type1" : @[ @"annotation" ]}, observer()->seq_id());
-  ClickAnnotation(0);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 1;
-  }));
-  ASSERT_TRUE(observer()->click_data() == "type1-annotation");
-
-  std::string text2 = "<html><body>"
-                      "<p>bla</p>"
-                      "<p>blurb</p>"
-                      "<p>bla</p>"
-                      "</body></html>";
-  LoadHtmlAndExtractText(text2);
-  source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotationsWithTypes(
-      source,
-      @{@"type2" : @[ @"blurb" ]}, observer()->seq_id());
-  ClickAnnotation(0);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 2;
-  }));
-  ASSERT_TRUE(observer()->click_data() == "type2-blurb");
-
-  // Now navigate back to original text.
-  LoadHtmlAndExtractText(text1);
-  source = base::SysUTF8ToNSString(observer()->extracted_text());
-  CreateAndApplyAnnotationsWithTypes(
-      source,
-      @{@"type1" : @[ @"annotation" ]}, observer()->seq_id());
-  ClickAnnotation(0);
-  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
-    return observer()->clicks() == 3;
-  }));
-  ASSERT_TRUE(observer()->click_data() == "type1-annotation");
 }
 
 // Tests on (simulated) navigation in web state.

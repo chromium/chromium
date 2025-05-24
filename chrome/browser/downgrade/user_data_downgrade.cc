@@ -43,12 +43,12 @@ bool IsValidSnapshotDirectory(const base::FilePath& path) {
 
 }  // namespace
 
-const base::FilePath::StringPieceType kDowngradeLastVersionFile(
+const base::FilePath::StringViewType kDowngradeLastVersionFile(
     FILE_PATH_LITERAL("Last Version"));
-const base::FilePath::StringPieceType kDowngradeDeleteSuffix(
+const base::FilePath::StringViewType kDowngradeDeleteSuffix(
     FILE_PATH_LITERAL(".CHROME_DELETE"));
 
-const base::FilePath::StringPieceType kSnapshotsDir(
+const base::FilePath::StringViewType kSnapshotsDir(
     FILE_PATH_LITERAL("Snapshots"));
 
 base::FilePath GetLastVersionFile(const base::FilePath& user_data_dir) {

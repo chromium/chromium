@@ -62,33 +62,11 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewPagesSettingsFocusTest,
   RunTestCase("EnterOnInputTriggersPrint");
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-class PrintPreviewDestinationDropdownCrosFocusTest
-    : public PrintPreviewFocusTest {
- protected:
-  void RunTestCase(const std::string& testCase) {
-    PrintPreviewFocusTest::RunTest(
-        "print_preview/destination_dropdown_cros_test.js",
-        base::StringPrintf("runMochaTest('DestinationDropdownCrosTest', '%s');",
-                           testCase.c_str()));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PrintPreviewDestinationDropdownCrosFocusTest,
-                       ClickCloses) {
-  RunTestCase("ClickCloses");
-}
-#endif
-
 class PrintPreviewDestinationDialogFocusTest : public PrintPreviewFocusTest {
  protected:
   void RunTestCase(const std::string& testCase) {
     PrintPreviewFocusTest::RunTest(
-#if BUILDFLAG(IS_CHROMEOS)
-        "print_preview/destination_dialog_cros_interactive_test.js",
-#else
         "print_preview/destination_dialog_interactive_test.js",
-#endif
         base::StringPrintf(
             "runMochaTest('DestinationDialogInteractiveTest', '%s');",
             testCase.c_str()));

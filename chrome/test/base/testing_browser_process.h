@@ -18,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/buildflags.h"
@@ -110,8 +109,8 @@ class TestingBrowserProcess : public BrowserProcess {
   policy::PolicyService* policy_service() override;
   IconManager* icon_manager() override;
   GpuModeManager* gpu_mode_manager() override;
-  BackgroundModeManager* background_mode_manager() override;
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  BackgroundModeManager* background_mode_manager() override;
   void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) override;
 #endif
@@ -141,9 +140,7 @@ class TestingBrowserProcess : public BrowserProcess {
   DownloadRequestLimiter* download_request_limiter() override;
   StartupData* startup_data() override;
 
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void StartAutoupdateTimer() override {}
 #endif
 
@@ -160,8 +157,8 @@ class TestingBrowserProcess : public BrowserProcess {
   resource_coordinator::TabManager* GetTabManager() override;
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
-#if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
+#if !BUILDFLAG(IS_ANDROID)
   HidSystemTrayIcon* hid_system_tray_icon() override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
@@ -172,6 +169,7 @@ class TestingBrowserProcess : public BrowserProcess {
 
   BuildState* GetBuildState() override;
   GlobalFeatures* GetFeatures() override;
+  void CreateGlobalFeaturesForTesting() override;
 
   // Set the local state for tests. Consumer is responsible for cleaning it up
   // afterwards (using ScopedTestingLocalState, for example).
@@ -198,6 +196,9 @@ class TestingBrowserProcess : public BrowserProcess {
   TestingBrowserProcessPlatformPart* GetTestPlatformPart();
   void SetStatusTray(std::unique_ptr<StatusTray> status_tray);
 #if !BUILDFLAG(IS_ANDROID)
+  void SetComponentUpdater(
+      std::unique_ptr<component_updater::ComponentUpdateService>
+          component_updater);
   void SetHidSystemTrayIcon(
       std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon);
   void SetUsbSystemTrayIcon(
@@ -214,7 +215,6 @@ class TestingBrowserProcess : public BrowserProcess {
 
   void Init();
 
-  std::string app_locale_;
   bool is_shutting_down_ = false;
 
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
@@ -267,7 +267,9 @@ class TestingBrowserProcess : public BrowserProcess {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<MediaFileSystemRegistry> media_file_system_registry_;
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   std::unique_ptr<extensions::ExtensionsBrowserClient>
       extensions_browser_client_;
 #endif
@@ -275,10 +277,11 @@ class TestingBrowserProcess : public BrowserProcess {
   std::unique_ptr<resource_coordinator::ResourceCoordinatorParts>
       resource_coordinator_parts_;
 
-#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
+  std::unique_ptr<component_updater::ComponentUpdateService> component_updater_;
   BuildState build_state_;
 #endif
 

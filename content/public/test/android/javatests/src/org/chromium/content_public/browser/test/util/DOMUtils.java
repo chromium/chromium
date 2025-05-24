@@ -7,6 +7,7 @@ package org.chromium.content_public.browser.test.util;
 import static org.hamcrest.CoreMatchers.is;
 
 import android.app.Activity;
+import android.app.Instrumentation;
 import android.graphics.Rect;
 import android.util.JsonReader;
 import android.view.View;
@@ -206,8 +207,8 @@ public class DOMUtils {
         StringBuilder sb = new StringBuilder();
         sb.append("(function() {");
         sb.append(
-                "  return [document.documentElement.clientWidth,"
-                        + " document.documentElement.clientHeight];");
+                "  return [Math.round(window.visualViewport.width),"
+                        + " Math.round(window.visualViewport.height)];");
         sb.append("})();");
 
         String jsonText =
@@ -487,7 +488,22 @@ public class DOMUtils {
     }
 
     /**
+     * Right-click a DOM node by its id.
+     *
+     * @param webContents The WebContents in which the node lives.
+     * @param jsCode js code that returns an element.
+     */
+    public static void rightClickNodeByJs(
+            Instrumentation instrumentation, final WebContents webContents, String jsCode)
+            throws TimeoutException {
+        int[] clickTarget = getClickTargetForNodeByJs(webContents, jsCode);
+        ClickUtils.mouseContextClickView(
+                instrumentation, getContainerView(webContents), clickTarget[0], clickTarget[1]);
+    }
+
+    /**
      * Scrolls the view to ensure that the required DOM node is visible.
+     *
      * @param webContents The WebContents in which the node lives.
      * @param nodeId The id of the node.
      */
@@ -794,8 +810,7 @@ public class DOMUtils {
         TestInputMethodManagerWrapper inputMethodManagerWrapper =
                 TestInputMethodManagerWrapper.create(imeAdapter);
         imeAdapter.setInputMethodManagerWrapper(inputMethodManagerWrapper);
-        // Click the text field node, so that it would get focus.
-        DOMUtils.clickNode(webContents, nodeId);
+        DOMUtils.focusNode(webContents, nodeId);
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {

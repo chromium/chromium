@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/default_tick_clock.h"
@@ -19,6 +20,8 @@ namespace media {
 class VideoFramePool::PoolImpl
     : public base::RefCountedThreadSafe<VideoFramePool::PoolImpl> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   PoolImpl();
   PoolImpl(const PoolImpl&) = delete;
   PoolImpl& operator=(const PoolImpl&) = delete;
@@ -144,7 +147,7 @@ void VideoFramePool::PoolImpl::FrameReleased(scoped_refptr<VideoFrame> frame) {
     frames_.erase(frames_.begin(), frames_.begin() + stale_index);
 }
 
-VideoFramePool::VideoFramePool() : pool_(new PoolImpl()) {}
+VideoFramePool::VideoFramePool() : pool_(base::MakeRefCounted<PoolImpl>()) {}
 
 VideoFramePool::~VideoFramePool() {
   pool_->Shutdown();

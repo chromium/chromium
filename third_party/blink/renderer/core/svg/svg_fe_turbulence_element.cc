@@ -31,20 +31,20 @@ namespace blink {
 
 template <>
 CORE_EXPORT const SVGEnumerationMap& GetEnumerationMap<SVGStitchOptions>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSvgStitchtypeStitch, "stitch"},
-      {kSvgStitchtypeNostitch, "noStitch"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "stitch",
+      "noStitch",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
 
 template <>
 CORE_EXPORT const SVGEnumerationMap& GetEnumerationMap<TurbulenceType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {FETURBULENCE_TYPE_FRACTALNOISE, "fractalNoise"},
-      {FETURBULENCE_TYPE_TURBULENCE, "turbulence"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "fractalNoise",
+      "turbulence",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -124,7 +124,6 @@ void SVGFETurbulenceElement::SvgAttributeChanged(
       attr_name == svg_names::kSeedAttr ||
       attr_name == svg_names::kStitchTilesAttr ||
       attr_name == svg_names::kTypeAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }

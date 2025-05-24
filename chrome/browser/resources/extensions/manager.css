@@ -1,0 +1,74 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./shared_vars.css.js
+ * #import=./shared_style.css.js
+ * #include=cr-hidden-style-lit shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+#viewManager {
+  flex: 1 1 var(--cr-toolbar-field-width);
+  height: 100%;
+  position: relative;
+}
+
+@media (min-width:1650px) {
+  #viewManager:has(extensions-item-list.active) {
+    /* The flex basis is wider for the item list view so more items can be
+       shown per row. This value pertains to 3 extension items shown per
+       row. */
+    flex-basis: 1400px;
+  }
+}
+
+@media (max-width:1649px) {
+  #viewManager:has(extensions-item-list.active) {
+    /* The flex basis is wider for the item list view so more items can be
+       shown per row. This value pertains to 2 extension items shown per
+       row, and is lower than the above value so extension columns will be
+       more centered on the screen. */
+    flex-basis: 950px;
+  }
+}
+
+extensions-item {
+  display: inline-block;
+}
+
+#container {
+  align-items: flex-start;
+  display: flex;
+  flex: 1;
+  overflow: overlay;
+  position: relative;
+}
+
+#left {
+  height: 100%;
+  min-width: var(--sidebar-width);
+  position: sticky;
+  top: 0;
+}
+
+#left extensions-sidebar {
+  max-height: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+#left,
+#right {
+  flex: 1 1 0;
+}

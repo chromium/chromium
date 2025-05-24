@@ -3,7 +3,7 @@
   "importMapBaseURL": "https://base.example/",
   "tests": {
     "should throw if a scope's value is not an object": {
-      "expectedParsedImportMap": null,
+      "expectedParsedImportMap": { "imports":{}, "scopes":{}, "integrity": {} },
       "tests": {
         "null": {
           "importMap": {

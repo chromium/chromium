@@ -19,7 +19,7 @@ class ExtensionsBrowserAPIProvider {
       delete;
   virtual ~ExtensionsBrowserAPIProvider() = default;
 
-  // Registers any API functions in the given |registry|.
+  // Registers any API functions in the given `registry`.
   virtual void RegisterExtensionFunctions(
       ExtensionFunctionRegistry* registry) = 0;
 };

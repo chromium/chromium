@@ -31,6 +31,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
                                                 IsReused,
                                                 GURL,
                                                 std::u16string,
+                                                std::u16string,
                                                 std::vector<GURL>)>;
 
   LeakDetectionDelegateHelper(

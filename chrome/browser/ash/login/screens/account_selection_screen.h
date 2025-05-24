@@ -10,9 +10,12 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 
 namespace ash {
 
@@ -47,12 +50,19 @@ class AccountSelectionScreen : public BaseScreen {
 
   static std::string GetResultString(Result result);
 
+  void OnCredentialsExpiredCallback();
+
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
+
+  // Safely checks if the UserContext stored in the WizardContext contains all
+  // information needed to perform the signin.
+  bool IsUserContextComplete(const WizardContext* const wizard_context) const;
+  bool MaybeLoginWithCachedCredentials();
 
   base::WeakPtr<AccountSelectionScreenView> view_;
   ScreenExitCallback exit_callback_;

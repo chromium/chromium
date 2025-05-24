@@ -7,9 +7,9 @@
 #include <memory>
 
 #include "base/numerics/safe_conversions.h"
-#include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_push_encryption_key_name.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_error.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_provider.h"
@@ -97,31 +97,29 @@ std::optional<DOMTimeStamp> PushSubscription::expirationTime() const {
   return expiration_time_;
 }
 
-DOMArrayBuffer* PushSubscription::getKey(const AtomicString& name) const {
-  if (name == "p256dh")
-    return p256dh_.Get();
-  if (name == "auth")
-    return auth_.Get();
-
-  return nullptr;
+DOMArrayBuffer* PushSubscription::getKey(
+    const V8PushEncryptionKeyName& name) const {
+  switch (name.AsEnum()) {
+    case V8PushEncryptionKeyName::Enum::kP256Dh:
+      return p256dh_.Get();
+    case V8PushEncryptionKeyName::Enum::kAuth:
+      return auth_.Get();
+  }
+  NOTREACHED();
 }
 
 ScriptPromise<IDLBoolean> PushSubscription::unsubscribe(
     ScriptState* script_state) {
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
-  auto promise = resolver->Promise();
-
   PushProvider* push_provider =
       PushProvider::From(service_worker_registration_);
   DCHECK(push_provider);
-  push_provider->Unsubscribe(
-      std::make_unique<CallbackPromiseAdapter<IDLBoolean, DOMException>>(
-          resolver));
-  return promise;
+  push_provider->Unsubscribe(resolver);
+  return resolver->Promise();
 }
 
-ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
+ScriptObject PushSubscription::toJSONForBinding(ScriptState* script_state) {
   DCHECK(p256dh_);
 
   V8ObjectBuilder result(script_state);
@@ -139,7 +137,7 @@ ScriptValue PushSubscription::toJSONForBinding(ScriptState* script_state) {
 
   result.Add("keys", keys);
 
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 void PushSubscription::Trace(Visitor* visitor) const {

@@ -177,7 +177,7 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
     case ash::AcceleratorAction::kToggleImeMenuBubble:
       return mojom_accelerator_action::kToggleImeMenuBubble;
     case ash::AcceleratorAction::kTogglePicker:
-      return mojom_accelerator_action::kTogglePicker;
+      return mojom_accelerator_action::kToggleQuickInsert;
     case ash::AcceleratorAction::kShowShortcutViewer:
       return mojom_accelerator_action::kShowShortcutViewer;
     case ash::AcceleratorAction::kToggleStylusTools:
@@ -291,6 +291,16 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kWindowMinimize;
     case ash::AcceleratorAction::kMinimizeTopWindowOnBack:
       return mojom_accelerator_action::kMinimizeTopWindowOnBack;
+    case ash::AcceleratorAction::kResizePipWindow:
+      return mojom_accelerator_action::kResizePipWindow;
+    case ash::AcceleratorAction::kToggleGeminiApp:
+      return mojom_accelerator_action::kToggleGeminiApp;
+    case ash::kToggleDoNotDisturb:
+      return mojom_accelerator_action::kToggleDoNotDisturb;
+    case ash::AcceleratorAction::kToggleCameraAllowed:
+      return mojom_accelerator_action::kToggleCameraAllowed;
+    case ash::kStartSunfishSession:
+      return mojom_accelerator_action::kStartSunfishSession;
     case ash::AcceleratorAction::kDebugClearUseKMeansPref:
       return mojom_accelerator_action::kDebugClearUseKMeansPref;
     case ash::AcceleratorAction::kDebugKeyboardBacklightToggle:
@@ -309,6 +319,8 @@ EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::ToMojom(
       return mojom_accelerator_action::kDebugShowToast;
     case ash::AcceleratorAction::kDebugShowSystemNudge:
       return mojom_accelerator_action::kDebugShowSystemNudge;
+    case ash::AcceleratorAction::kDebugShowTestWindow:
+      return mojom_accelerator_action::kDebugShowTestWindow;
     case ash::AcceleratorAction::kDebugStartSunfishSession:
       return mojom_accelerator_action::kDebugStartSunfishSession;
     case ash::AcceleratorAction::kDebugSystemUiStyleViewer:
@@ -599,7 +611,7 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
     case mojom_accelerator_action::kToggleImeMenuBubble:
       *out = ash::AcceleratorAction::kToggleImeMenuBubble;
       return true;
-    case mojom_accelerator_action::kTogglePicker:
+    case mojom_accelerator_action::kToggleQuickInsert:
       *out = ash::AcceleratorAction::kTogglePicker;
       return true;
     case mojom_accelerator_action::kShowShortcutViewer:
@@ -770,6 +782,21 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
     case mojom_accelerator_action::kMinimizeTopWindowOnBack:
       *out = ash::AcceleratorAction::kMinimizeTopWindowOnBack;
       return true;
+    case mojom_accelerator_action::kResizePipWindow:
+      *out = ash::AcceleratorAction::kResizePipWindow;
+      return true;
+    case mojom_accelerator_action::kToggleGeminiApp:
+      *out = ash::AcceleratorAction::kToggleGeminiApp;
+      return true;
+    case mojom_accelerator_action::kToggleDoNotDisturb:
+      *out = ash::AcceleratorAction::kToggleDoNotDisturb;
+      return true;
+    case mojom_accelerator_action::kToggleCameraAllowed:
+      *out = ash::AcceleratorAction::kToggleCameraAllowed;
+      return true;
+    case mojom_accelerator_action::kStartSunfishSession:
+      *out = ash::AcceleratorAction::kStartSunfishSession;
+      return true;
     case mojom_accelerator_action::kDebugClearUseKMeansPref:
       *out = ash::AcceleratorAction::kDebugClearUseKMeansPref;
       return true;
@@ -796,6 +823,9 @@ bool EnumTraits<mojom_accelerator_action, ash::AcceleratorAction>::FromMojom(
       return true;
     case mojom_accelerator_action::kDebugShowSystemNudge:
       *out = ash::AcceleratorAction::kDebugShowSystemNudge;
+      return true;
+    case mojom_accelerator_action::kDebugShowTestWindow:
+      *out = ash::AcceleratorAction::kDebugShowTestWindow;
       return true;
     case mojom_accelerator_action::kDebugStartSunfishSession:
       *out = ash::AcceleratorAction::kDebugStartSunfishSession;

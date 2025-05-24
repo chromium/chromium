@@ -12,7 +12,6 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
 #include "content/browser/renderer_host/navigation_controller_android.h"
@@ -20,6 +19,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom-forward.h"
+#include "ui/android/browser_controls_offset_tag_definitions.h"
 
 class GURL;
 
@@ -98,9 +98,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void ResumeLoadingCreatedWebContents(JNIEnv* env);
 
-  void OnHide(JNIEnv* env);
-  void OnShow(JNIEnv* env);
-  void SetImportance(JNIEnv* env, jint importance);
+  void SetPrimaryMainFrameImportance(JNIEnv* env, jint importance);
   void SuspendAllMediaPlayers(JNIEnv* env);
   void SetAudioMuted(JNIEnv* env, jboolean mute);
   jboolean IsAudioMuted(JNIEnv* env);
@@ -192,9 +190,6 @@ class CONTENT_EXPORT WebContentsAndroid {
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateEventForwarder(
       JNIEnv* env);
 
-  void SetMediaSession(
-      const base::android::ScopedJavaLocalRef<jobject>& j_media_session);
-
   void SendOrientationChangeEvent(JNIEnv* env, jint orientation);
 
   void OnScaleFactorChanged(JNIEnv* env);
@@ -206,6 +201,15 @@ class CONTENT_EXPORT WebContentsAndroid {
                                 int left,
                                 int bottom,
                                 int right);
+
+  void SetContextMenuInsets(JNIEnv* env,
+                            int top,
+                            int left,
+                            int bottom,
+                            int right);
+
+  void ShowInterestInElement(JNIEnv* env, int nodeID);
+
   void NotifyRendererPreferenceUpdate(JNIEnv* env);
 
   void NotifyBrowserControlsHeightChanged(JNIEnv* env);
@@ -217,12 +221,11 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   jint GetVisibility(JNIEnv* env);
 
-  void UpdateWebContentsVisibility(JNIEnv* env, jint visibiity);
+  void UpdateWebContentsVisibility(JNIEnv* env, jint visibility);
 
-  void NotifyControlsConstraintsChanged(
+  void UpdateOffsetTagDefinitions(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jold_offset_tag_bundle,
-      const base::android::JavaParamRef<jobject>& joffset_tag_bundle);
+      const base::android::JavaParamRef<jobject>& joffset_tag_definitions);
 
   RenderWidgetHostViewAndroid* GetRenderWidgetHostViewAndroid();
 
@@ -247,6 +250,12 @@ class CONTENT_EXPORT WebContentsAndroid {
       gfx::Image snapshot);
 
   void SetLongPressLinkSelectText(JNIEnv* env, jboolean enabled);
+
+  void SetSupportsForwardTransitionAnimation(JNIEnv* env, jboolean enabled);
+
+  jboolean HasOpener(JNIEnv* env);
+
+  jint GetOriginalWindowOpenDisposition(JNIEnv* env);
 
   // Adds a crash report, like DumpWithoutCrashing(), including the Java stack
   // trace from which `web_contents` was created. This is meant to help debug
@@ -285,8 +294,8 @@ class CONTENT_EXPORT WebContentsAndroid {
     explicit BrowserControlsOffsetTagMediator(WebContents* web_contents);
     ~BrowserControlsOffsetTagMediator() override;
 
-    void SetOffsetTagsInfo(
-        const cc::BrowserControlsOffsetTagsInfo& new_offset_tags_info);
+    void SetOffsetTagDefinitions(const ui::BrowserControlsOffsetTagDefinitions&
+                                     new_offset_tag_definitions);
 
     void UpdateRenderProcessConnection(
         RenderWidgetHostViewAndroid* old_rwhva,
@@ -294,7 +303,7 @@ class CONTENT_EXPORT WebContentsAndroid {
 
    private:
     raw_ptr<RenderWidgetHostViewAndroid> rwhva_ = nullptr;
-    cc::BrowserControlsOffsetTagsInfo offset_tags_info_;
+    ui::BrowserControlsOffsetTagDefinitions offset_tag_definitions_;
   };
 
   raw_ptr<BrowserControlsOffsetTagMediator> offset_tag_mediator_ = nullptr;

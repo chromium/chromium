@@ -11,6 +11,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 
@@ -19,6 +21,7 @@ import java.io.File;
  *
  * <p>TODO(crbug.com/40136597): Deduplicate code between tabbed mode and custom tabs.
  */
+@NullMarked
 public class TabStateDirectory {
     private static final String TAG = "tabpersistence";
 
@@ -37,8 +40,8 @@ public class TabStateDirectory {
     /** Prevents two state directories from getting created simultaneously. */
     private static final Object CUSTOM_TABS_DIR_CREATION_LOCK = new Object();
 
-    private static File sTabbedModeStateDirectory;
-    private static File sCustomTabsStateDirectory;
+    private static @Nullable File sTabbedModeStateDirectory;
+    private static @Nullable File sCustomTabsStateDirectory;
 
     /**
      * The folder where the state should be saved to.

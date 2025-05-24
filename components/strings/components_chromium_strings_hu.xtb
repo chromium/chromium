@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Ezt az oldalt a Chromium blokkolja</translation>
 <translation id="48558539577516920">A hálózat elérésének engedélyezése a Chromium számára a tűzfal-
           vagy vírusirtó-beállításokban.</translation>
+<translation id="4949828774841497663">Lépjen az Alkalmazások &gt; Rendszerbeállítások &gt; Hálózat menüpontra,
+          válassza ki az aktív hálózatot, kattintson a Részletek… gombra, és szüntesse meg
+          a kiválasztott proxyk kijelölését.</translation>
 <translation id="580822234363523061">Lépjen ide:
           Chromium menü &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           és gondoskodjon róla, hogy a konfiguráció beállítása „nincs proxy” vagy „közvetlen” legyen.</translation>
+<translation id="648062525172759633">Ezek az oldalak a Chromium fejlesztői számára készültek, és előfordulhat, hogy nincsenek aktívan karbantartva vagy tesztelve. Az engedélyezésükhöz lépjen a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> oldalra, kattintson a hibaelhárítási oldalak engedélyezéséhez tartozó gombra, majd lépjen ismét erre az oldalra.</translation>
 <translation id="6549378540556750549">A Chromiumot létrejöttéhez más <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_OSS" /> is hozzájárultak.</translation>
 <translation id="6613594504749178791">Módosításai a Chromium újraindítása után lépnek érvénybe.</translation>
 <translation id="691026815377248078">A Chromiumnak Bluetooth-hozzáférésre van szükséges a párosítás 
@@ -41,7 +45,6 @@
         <ph name="ADVANCED_TITLE" />,
         és törölje a jelet a(z) „<ph name="NO_PREFETCH_DESCRIPTION" />” jelölőnégyzetből.
         Ha ettől nem szűnik meg a probléma, javasoljuk, hogy jelölje be ismét ezt a lehetőséget a jobb teljesítmény érdekében.</translation>
-<translation id="8187289872471304532">Az Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies (Alkalmazások &gt; Rendszerbeállítások &gt; Hálózat &gt; Speciális &gt; Proxyk) menüpont alatt törölje a jelet minden kijelölt proxy mellől.</translation>
 <translation id="8597726643333341451">Jelenleg biztonságos Chrome for Testing-oldalt tekint meg.</translation>
 <translation id="8684913864886094367">A Chromium nem záródott be megfelelően.</translation>
 </translationbundle>

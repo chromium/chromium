@@ -85,8 +85,6 @@ public class PaymentRequestBottomBar extends ViewGroup {
                     maxTotalWidth < totalWidthWithoutLogo
                             ? 0
                             : maxTotalWidth - totalWidthWithoutLogo;
-            assert maxTotalWidth >= totalWidthWithoutLogo
-                    : "Screen width is expected to fit the two buttons at least.";
         }
 
         // Sets the blank space width.

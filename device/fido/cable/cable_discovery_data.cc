@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "device/fido/cable/cable_discovery_data.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "base/check_op.h"
 #include "base/i18n/string_compare.h"
-#include "base/ranges/algorithm.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/cbor/values.h"
@@ -64,8 +70,7 @@ bool CableDiscoveryData::operator==(const CableDiscoveryData& other) const {
       return v2.value() == other.v2.value();
 
     case CableDiscoveryData::Version::INVALID:
-      CHECK(false);
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -129,7 +134,7 @@ std::optional<std::unique_ptr<Pairing>> Pairing::Parse(
   const cbor::Value::MapValue::const_iterator name_it =
       map.find(cbor::Value(5));
   if (name_it == map.end() || !name_it->second.is_string() ||
-      base::ranges::any_of(
+      std::ranges::any_of(
           its,
           [&map](const cbor::Value::MapValue::const_iterator& it) {
             return it == map.end() || !it->second.is_bytestring();
@@ -144,7 +149,7 @@ std::optional<std::unique_ptr<Pairing>> Pairing::Parse(
   pairing->id = its[1]->second.GetBytestring();
   pairing->secret = its[2]->second.GetBytestring();
   const std::vector<uint8_t>& peer_public_key = its[3]->second.GetBytestring();
-  base::ranges::copy(peer_public_key, pairing->peer_public_key_x962.begin());
+  std::ranges::copy(peer_public_key, pairing->peer_public_key_x962.begin());
   pairing->name = name_it->second.GetString();
 
   if (!VerifyPairingSignature(local_identity_seed,

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/arc/intent_helper/custom_tab_session_impl.h"
 
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -13,7 +12,8 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/test/test_browser_closed_waiter.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/intent_helper/custom_tab.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/test/shell_surface_builder.h"
 #include "components/exo/wm_helper.h"
@@ -26,8 +26,8 @@
 class CustomTabSessionImplTest : public InProcessBrowserTest,
                                  public content::WebContentsObserver {
  public:
-  CustomTabSessionImplTest() {}
-  ~CustomTabSessionImplTest() override {}
+  CustomTabSessionImplTest() = default;
+  ~CustomTabSessionImplTest() override = default;
   CustomTabSessionImplTest(const CustomTabSessionImplTest&) = delete;
   CustomTabSessionImplTest& operator=(const CustomTabSessionImplTest&) = delete;
 

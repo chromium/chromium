@@ -96,8 +96,10 @@ message SessionTab {
 }
 
 message TabNavigation {
-  // The virtual URL, when nonempty, will override the actual URL of the page
-  // when we display it to the user.
+  // The page's URL as displayed to the user (which can be the actual page URL
+  // or a virtual override). It can be empty or, in rare cases, an unsyncable
+  // URL, so it is the receiver's responsibility to implement additional
+  // filtering before displaying these URLs or tabs in the UI.
   optional string virtual_url = 2;
   // The referring URL, which can be empty.
   optional string referrer = 3;

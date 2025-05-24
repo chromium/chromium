@@ -4,15 +4,14 @@
 
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
@@ -26,6 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model_states.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -196,6 +196,43 @@ class ContentSettingMediaImageModel : public ContentSettingImageModel {
   PageSpecificContentSettings::MicrophoneCameraState state_;
 };
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Image model for displaying media icons in the location bar.
+class ContentSettingSmartCardImageModel
+    : public ContentSettingSimpleImageModel {
+ public:
+  ContentSettingSmartCardImageModel()
+      : ContentSettingSimpleImageModel(ImageType::SMART_CARD,
+                                       ContentSettingsType::SMART_CARD_GUARD) {}
+
+  ContentSettingSmartCardImageModel(const ContentSettingSmartCardImageModel&) =
+      delete;
+  ContentSettingSmartCardImageModel& operator=(
+      const ContentSettingSmartCardImageModel&) = delete;
+
+  bool UpdateAndGetVisibility(WebContents* web_contents) override {
+    PageSpecificContentSettings* content_settings =
+        PageSpecificContentSettings::GetForFrame(
+            web_contents->GetPrimaryMainFrame());
+    if (!content_settings) {
+      return false;
+    }
+    // This should never appear when the permission is blocked.
+    SetIcon(ContentSettingsType::SMART_CARD_GUARD, /*blocked=*/false);
+    set_tooltip(l10n_util::GetStringUTF16(IDS_ACCESSED_SMART_CARD_READER_BODY));
+    return content_settings->ShouldShowDeviceInUseIndicator(
+        ContentSettingsType::SMART_CARD_GUARD);
+  }
+
+  std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
+      ContentSettingBubbleModel::Delegate* delegate,
+      WebContents* web_contents) override {
+    return std::make_unique<ContentSettingSimpleBubbleModel>(
+        delegate, web_contents, ContentSettingsType::SMART_CARD_GUARD);
+  }
+};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 class ContentSettingSensorsImageModel : public ContentSettingSimpleImageModel {
  public:
   ContentSettingSensorsImageModel();
@@ -225,7 +262,6 @@ class ContentSettingNotificationsImageModel
 
   // ContentSettingSimpleImageModel:
   bool UpdateAndGetVisibility(WebContents* web_contents) override;
-  void SetPromoWasShown(content::WebContents* contents) override;
   std::unique_ptr<ContentSettingBubbleModel> CreateBubbleModelImpl(
       ContentSettingBubbleModel::Delegate* delegate,
       WebContents* web_contents) override;
@@ -259,33 +295,28 @@ namespace {
 
 struct ContentSettingsImageDetails {
   ContentSettingsType content_type;
-  // This field is not a raw_ref<> because it was filtered by the rewriter for:
-  // #global-scope
-  RAW_PTR_EXCLUSION const gfx::VectorIcon& icon;
   int blocked_tooltip_id;
   int blocked_explanatory_text_id;
   int accessed_tooltip_id;
 };
 
-const ContentSettingsImageDetails kImageDetails[] = {
-    {ContentSettingsType::COOKIES, vector_icons::kCookieIcon,
-     IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE, 0,
+constexpr ContentSettingsImageDetails kImageDetails[] = {
+    {ContentSettingsType::COOKIES, IDS_BLOCKED_ON_DEVICE_SITE_DATA_MESSAGE, 0,
      IDS_ACCESSED_ON_DEVICE_SITE_DATA_MESSAGE},
-    {ContentSettingsType::IMAGES, vector_icons::kPhotoIcon,
-     IDS_BLOCKED_IMAGES_MESSAGE, 0, 0},
-    {ContentSettingsType::JAVASCRIPT, vector_icons::kCodeIcon,
-     IDS_BLOCKED_JAVASCRIPT_MESSAGE, 0, 0},
-    {ContentSettingsType::MIXEDSCRIPT, kMixedContentIcon,
-     IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT, 0, 0},
-    {ContentSettingsType::SOUND, kTabAudioIcon, IDS_BLOCKED_SOUND_TITLE, 0, 0},
-    {ContentSettingsType::ADS, vector_icons::kAdsIcon,
-     IDS_BLOCKED_ADS_PROMPT_TOOLTIP, IDS_BLOCKED_ADS_PROMPT_TITLE, 0},
+    {ContentSettingsType::IMAGES, IDS_BLOCKED_IMAGES_MESSAGE, 0, 0},
+    {ContentSettingsType::JAVASCRIPT, IDS_BLOCKED_JAVASCRIPT_MESSAGE, 0, 0},
+    {ContentSettingsType::MIXEDSCRIPT, IDS_BLOCKED_DISPLAYING_INSECURE_CONTENT,
+     0, 0},
+    {ContentSettingsType::SOUND, IDS_BLOCKED_SOUND_TITLE, 0, 0},
+    {ContentSettingsType::ADS, IDS_BLOCKED_ADS_PROMPT_TOOLTIP,
+     IDS_BLOCKED_ADS_PROMPT_TITLE, 0},
 };
 
 const ContentSettingsImageDetails* GetImageDetails(ContentSettingsType type) {
   for (const ContentSettingsImageDetails& image_details : kImageDetails) {
-    if (image_details.content_type == type)
+    if (image_details.content_type == type) {
       return &image_details;
+    }
   }
   return nullptr;
 }
@@ -362,9 +393,15 @@ void GetIconChromeRefresh(ContentSettingsType type,
       *icon =
           blocked ? &vector_icons::kIframeOffIcon : &vector_icons::kIframeIcon;
       return;
-    default:
-      NOTREACHED_IN_MIGRATION();
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::SMART_CARD_GUARD:
+      // Indicator shows only when at least one connection is active, hence no
+      // need for the off icon.
+      *icon = &vector_icons::kSmartCardReaderIcon;
       return;
+#endif
+    default:
+      NOTREACHED();
   }
 }
 
@@ -377,7 +414,7 @@ void GetIconFromType(ContentSettingsType type,
                      bool blocked,
                      raw_ptr<const gfx::VectorIcon>* icon,
                      raw_ptr<const gfx::VectorIcon>* badge) {
-  *badge = &gfx::kNoneIcon;
+  *badge = &gfx::VectorIcon::EmptyIcon();
   GetIconChromeRefresh(type, blocked, icon);
 }
 
@@ -445,12 +482,15 @@ ContentSettingImageModel::CreateForContentType(ImageType image_type) {
       return std::make_unique<ContentSettingStorageAccessImageModel>();
     case ImageType::NOTIFICATIONS:
       return std::make_unique<ContentSettingNotificationsImageModel>();
+#if BUILDFLAG(IS_CHROMEOS)
+    case ImageType::SMART_CARD:
+      return std::make_unique<ContentSettingSmartCardImageModel>();
+#endif
 
     case ImageType::NUM_IMAGE_TYPES:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ContentSettingImageModel::Update(content::WebContents* contents) {
@@ -465,10 +505,6 @@ void ContentSettingImageModel::Update(content::WebContents* contents) {
     }
     if (should_auto_open_bubble_) {
       ContentSettingImageModelStates::Get(contents)->SetBubbleWasAutoOpened(
-          image_type(), false);
-    }
-    if (should_show_promo_) {
-      ContentSettingImageModelStates::Get(contents)->SetPromoWasShown(
           image_type(), false);
     }
   }
@@ -502,20 +538,6 @@ void ContentSettingImageModel::AccessibilityWasNotified(
       image_type(), true);
 }
 
-bool ContentSettingImageModel::ShouldShowPromo(content::WebContents* contents) {
-  DCHECK(contents);
-  return should_show_promo_ &&
-         !ContentSettingImageModelStates::Get(contents)->PromoWasShown(
-             image_type());
-}
-
-void ContentSettingImageModel::SetPromoWasShown(
-    content::WebContents* contents) {
-  DCHECK(contents);
-  ContentSettingImageModelStates::Get(contents)->SetPromoWasShown(image_type(),
-                                                                  true);
-}
-
 bool ContentSettingImageModel::ShouldAutoOpenBubble(
     content::WebContents* contents) {
   return should_auto_open_bubble_ &&
@@ -536,7 +558,7 @@ void ContentSettingImageModel::SetIcon(ContentSettingsType type, bool blocked) {
 
 void ContentSettingImageModel::SetFramebustBlockedIcon() {
   icon_ = &kOpenInNewOffChromeRefreshIcon;
-  icon_badge_ = &gfx::kNoneIcon;
+  icon_badge_ = &gfx::VectorIcon::EmptyIcon();
 }
 
 // Generic blocked content settings --------------------------------------------
@@ -561,13 +583,15 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
 
   bool is_blocked = content_settings->IsContentBlocked(type);
   bool is_allowed = content_settings->IsContentAllowed(type);
-  if (!is_blocked && !is_allowed)
+  if (!is_blocked && !is_allowed) {
     return false;
+  }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -611,7 +635,8 @@ bool ContentSettingBlockedImageModel::UpdateAndGetVisibility(
 ContentSettingGeolocationImageModel::ContentSettingGeolocationImageModel()
     : ContentSettingImageModel(ImageType::GEOLOCATION, kNotifyAccessibility) {}
 
-ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() {}
+ContentSettingGeolocationImageModel::~ContentSettingGeolocationImageModel() =
+    default;
 
 bool ContentSettingGeolocationImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
@@ -700,10 +725,12 @@ bool ContentSettingRPHImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   auto* content_settings_delegate =
       PageSpecificContentSettingsDelegate::FromWebContents(web_contents);
-  if (!content_settings_delegate)
+  if (!content_settings_delegate) {
     return false;
-  if (content_settings_delegate->pending_protocol_handler().IsEmpty())
+  }
+  if (content_settings_delegate->pending_protocol_handler().IsEmpty()) {
     return false;
+  }
 
   return true;
 }
@@ -719,8 +746,9 @@ bool ContentSettingMIDISysExImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
 
   const bool is_allowed =
       content_settings->IsContentAllowed(ContentSettingsType::MIDI_SYSEX);
@@ -751,8 +779,9 @@ bool ContentSettingDownloadsImageModel::UpdateAndGetVisibility(
       g_browser_process->download_request_limiter();
 
   // DownloadRequestLimiter can be absent in unit_tests.
-  if (!download_request_limiter)
+  if (!download_request_limiter) {
     return false;
+  }
 
   switch (download_request_limiter->GetDownloadUiStatus(web_contents)) {
     case DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED:
@@ -784,13 +813,15 @@ bool ContentSettingClipboardReadWriteImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
   ContentSettingsType content_type = ContentSettingsType::CLIPBOARD_READ_WRITE;
   bool blocked = content_settings->IsContentBlocked(content_type);
   bool allowed = content_settings->IsContentAllowed(content_type);
-  if (!blocked && !allowed)
+  if (!blocked && !allowed) {
     return false;
+  }
 
   SetIcon(ContentSettingsType::CLIPBOARD_READ_WRITE, /*blocked=*/!allowed);
   set_tooltip(l10n_util::GetStringUTF16(
@@ -813,8 +844,9 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
   state_ = content_settings->GetMicrophoneCameraState();
 
   // If neither the microphone nor the camera stream was accessed then no icon
@@ -913,9 +945,10 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
 
   int id = IDS_CAMERA_BLOCKED;
   if (IsMicBlockedOnSiteLevel() || IsCameraBlockedOnSiteLevel()) {
-    if (IsMicAccessed())
+    if (IsMicAccessed()) {
       id = IsCamAccessed() ? IDS_MICROPHONE_CAMERA_BLOCKED
                            : IDS_MICROPHONE_BLOCKED;
+    }
 
     if (IsCamAccessed()) {
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/true);
@@ -926,9 +959,10 @@ bool ContentSettingMediaImageModel::UpdateAndGetVisibility(
   } else {
     SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
     id = IDS_CAMERA_ACCESSED;
-    if (IsMicAccessed())
+    if (IsMicAccessed()) {
       id = IsCamAccessed() ? IDS_MICROPHONE_CAMERA_ALLOWED
                            : IDS_MICROPHONE_ACCESSED;
+    }
 
     if (IsCamAccessed()) {
       SetIcon(ContentSettingsType::MEDIASTREAM_CAMERA, /*blocked=*/false);
@@ -1002,8 +1036,10 @@ ContentSettingFramebustBlockImageModel::ContentSettingFramebustBlockImageModel()
 bool ContentSettingFramebustBlockImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   // Early exit if no blocked Framebust.
-  if (!FramebustBlockTabHelper::FromWebContents(web_contents)->HasBlockedUrls())
+  if (!FramebustBlockTabHelper::FromWebContents(web_contents)
+           ->HasBlockedUrls()) {
     return false;
+  }
 
   SetFramebustBlockedIcon();
   set_explanatory_string_id(IDS_REDIRECT_BLOCKED_TITLE);
@@ -1029,14 +1065,16 @@ bool ContentSettingSensorsImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   auto* content_settings = PageSpecificContentSettings::GetForFrame(
       web_contents->GetPrimaryMainFrame());
-  if (!content_settings)
+  if (!content_settings) {
     return false;
+  }
 
   bool blocked = content_settings->IsContentBlocked(content_type());
   bool allowed = content_settings->IsContentAllowed(content_type());
 
-  if (!blocked && !allowed)
+  if (!blocked && !allowed) {
     return false;
+  }
 
   HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()));
@@ -1071,8 +1109,10 @@ bool ContentSettingPopupImageModel::UpdateAndGetVisibility(
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents->GetPrimaryMainFrame());
-  if (!content_settings || !content_settings->IsContentBlocked(content_type()))
+  if (!content_settings ||
+      !content_settings->IsContentBlocked(content_type())) {
     return false;
+  }
   SetIcon(ContentSettingsType::POPUPS, /*blocked=*/true);
   set_explanatory_string_id(IDS_BLOCKED_POPUPS_EXPLANATORY_TEXT);
   set_tooltip(l10n_util::GetStringUTF16(IDS_BLOCKED_POPUPS_TOOLTIP));
@@ -1100,7 +1140,7 @@ bool ContentSettingStorageAccessImageModel::UpdateAndGetVisibility(
     return false;
   }
   bool has_blocked_requests =
-      base::ranges::any_of(entries, [](auto& entry) { return !entry.second; });
+      std::ranges::any_of(entries, [](auto& entry) { return !entry.second; });
 
   SetIcon(ContentSettingsType::STORAGE_ACCESS,
           /*blocked=*/has_blocked_requests);
@@ -1127,7 +1167,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
     WebContents* web_contents) {
   set_should_auto_open_bubble(false);
   set_blocked_on_system_level(false);
-  set_should_show_promo(false);
 
 #if BUILDFLAG(IS_MAC)
   if (std::optional<webapps::AppId> app_id =
@@ -1168,8 +1207,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
 
   auto* manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   // We shouldn't show the icon unless we're a PWA.
   // TODO(crbug.com/40186737): Allow PermissionRequestManager to identify the
@@ -1183,10 +1220,7 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
   }
 
   // |manager| may be null in tests.
-  // Show promo the first time a quiet prompt is shown to the user.
   SetIcon(ContentSettingsType::NOTIFICATIONS, /*blocked=*/false);
-  set_should_show_promo(
-      QuietNotificationPermissionUiState::ShouldShowPromo(profile));
   if (permissions::PermissionUiSelector::ShouldSuppressAnimation(
           manager->ReasonForUsingQuietUi())) {
     set_accessibility_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
@@ -1195,15 +1229,6 @@ bool ContentSettingNotificationsImageModel::UpdateAndGetVisibility(
     set_explanatory_string_id(IDS_NOTIFICATIONS_OFF_EXPLANATORY_TEXT);
   }
   return true;
-}
-
-void ContentSettingNotificationsImageModel::SetPromoWasShown(
-    content::WebContents* contents) {
-  DCHECK(contents);
-  auto* profile = Profile::FromBrowserContext(contents->GetBrowserContext());
-  QuietNotificationPermissionUiState::PromoWasShown(profile);
-
-  ContentSettingImageModel::SetPromoWasShown(contents);
 }
 
 std::unique_ptr<ContentSettingBubbleModel>
@@ -1215,8 +1240,7 @@ ContentSettingNotificationsImageModel::CreateBubbleModelImpl(
     return std::make_unique<ContentSettingNotificationsBubbleModel>(
         delegate, web_contents);
 #else
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
 #endif
   } else {
     return std::make_unique<ContentSettingQuietRequestBubbleModel>(
@@ -1247,8 +1271,8 @@ int ContentSettingImageModel::AccessibilityAnnouncementStringId() const {
 ContentSettingImageModel::ContentSettingImageModel(
     ImageType image_type,
     bool image_type_should_notify_accessibility)
-    : icon_(&gfx::kNoneIcon),
-      icon_badge_(&gfx::kNoneIcon),
+    : icon_(&gfx::VectorIcon::EmptyIcon()),
+      icon_badge_(&gfx::VectorIcon::EmptyIcon()),
       image_type_(image_type),
       image_type_should_notify_accessibility_(
           image_type_should_notify_accessibility) {}
@@ -1284,6 +1308,9 @@ ContentSettingImageModel::GenerateContentSettingImageModels() {
       ImageType::CLIPBOARD_READ_WRITE,
       ImageType::NOTIFICATIONS,
       ImageType::STORAGE_ACCESS,
+#if BUILDFLAG(IS_CHROMEOS)
+      ImageType::SMART_CARD,
+#endif
   };
 
   std::vector<std::unique_ptr<ContentSettingImageModel>> result;
@@ -1300,9 +1327,9 @@ size_t ContentSettingImageModel::GetContentSettingImageModelIndexForTesting(
   std::vector<std::unique_ptr<ContentSettingImageModel>> models =
       GenerateContentSettingImageModels();
   for (size_t i = 0; i < models.size(); ++i) {
-    if (image_type == models[i]->image_type())
+    if (image_type == models[i]->image_type()) {
       return i;
+    }
   }
-  NOTREACHED_IN_MIGRATION();
-  return models.size();
+  NOTREACHED();
 }

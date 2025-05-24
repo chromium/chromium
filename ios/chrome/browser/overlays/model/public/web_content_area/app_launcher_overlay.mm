@@ -35,8 +35,6 @@ std::unique_ptr<OverlayResponse> CreateAllowAppLaunchResponse(
 
 #pragma mark - AppLaunchConfirmationRequest
 
-OVERLAY_USER_DATA_SETUP_IMPL(AppLaunchConfirmationRequest);
-
 AppLaunchConfirmationRequest::AppLaunchConfirmationRequest(
     AppLaunchConfirmationRequestCause cause)
     : cause_(cause) {}
@@ -100,8 +98,4 @@ void AppLaunchConfirmationRequest::CreateAuxiliaryData(
       base::BindRepeating(&CreateAllowAppLaunchResponse));
 }
 
-#pragma mark - AllowAppLaunchResponse
-
-OVERLAY_USER_DATA_SETUP_IMPL(AllowAppLaunchResponse);
-
-}  // app_launcher_overlays
+}  // namespace app_launcher_overlays

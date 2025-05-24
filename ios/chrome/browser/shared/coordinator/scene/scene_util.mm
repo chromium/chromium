@@ -6,21 +6,27 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string_view>
+
 #import "base/check.h"
 #import "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 
 namespace {
 // Unique identifier used by device that do not support multiple scenes.
-NSString* const kSyntheticSessionIdentifier = @"{SyntheticIdentifier}";
+constexpr std::string_view kSyntheticSessionIdentifier =
+    "{SyntheticIdentifier}";
 }  // namespace
 
-NSString* SessionIdentifierForScene(UIScene* scene) {
+std::string SessionIdentifierForScene(UIScene* scene) {
   if (base::ios::IsMultipleScenesSupported()) {
-    NSString* identifier = [[scene session] persistentIdentifier];
+    std::string identifier =
+        base::SysNSStringToUTF8([[scene session] persistentIdentifier]);
 
-    DCHECK(identifier.length != 0);
-    DCHECK(![kSyntheticSessionIdentifier isEqualToString:identifier]);
+    DCHECK_NE(identifier, "");
+    DCHECK_NE(identifier, kSyntheticSessionIdentifier);
     return identifier;
   }
-  return kSyntheticSessionIdentifier;
+
+  return std::string(kSyntheticSessionIdentifier);
 }

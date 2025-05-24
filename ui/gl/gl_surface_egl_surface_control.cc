@@ -5,6 +5,7 @@
 #include "ui/gl/gl_surface_egl_surface_control.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/build_info.h"
@@ -351,7 +352,7 @@ bool GLSurfaceEGLSurfaceControl::ScheduleOverlayPlane(
     src.Intersect(gfx::Rect(buffer_size));
 
     auto transform =
-        absl::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform);
+        std::get<gfx::OverlayTransform>(overlay_plane_data.plane_transform);
     if (uninitialized || surface_state.src != src || surface_state.dst != dst ||
         surface_state.transform != transform) {
       surface_state.src = src;
@@ -564,7 +565,8 @@ void GLSurfaceEGLSurfaceControl::CheckPendingPresentationCallbacks() {
   }
 }
 
-void GLSurfaceEGLSurfaceControl::SetFrameRate(float frame_rate) {
+void GLSurfaceEGLSurfaceControl::SetFrameRate(
+    gfx::SurfaceControlFrameRate frame_rate) {
   if (frame_rate_ == frame_rate)
     return;
 

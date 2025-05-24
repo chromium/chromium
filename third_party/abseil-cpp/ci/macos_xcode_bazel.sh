@@ -19,12 +19,15 @@
 
 set -euox pipefail
 
+# Use Xcode 16.0
+sudo xcode-select -s /Applications/Xcode_16.0.app/Contents/Developer
+
 if [[ -z ${ABSEIL_ROOT:-} ]]; then
   ABSEIL_ROOT="$(realpath $(dirname ${0})/..)"
 fi
 
 # If we are running on Kokoro, check for a versioned Bazel binary.
-KOKORO_GFILE_BAZEL_BIN="bazel-7.0.0-darwin-x86_64"
+KOKORO_GFILE_BAZEL_BIN="bazel-8.2.1-darwin-x86_64"
 if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f ${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN} ]]; then
   BAZEL_BIN="${KOKORO_GFILE_DIR}/${KOKORO_GFILE_BAZEL_BIN}"
   chmod +x ${BAZEL_BIN}
@@ -32,11 +35,10 @@ else
   BAZEL_BIN="bazel"
 fi
 
-# Avoid depending on external sites like GitHub by checking --distdir for
-# external dependencies first.
-# https://docs.bazel.build/versions/master/guide.html#distdir
-if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -d "${KOKORO_GFILE_DIR}/distdir" ]]; then
-  BAZEL_EXTRA_ARGS="--distdir=${KOKORO_GFILE_DIR}/distdir ${BAZEL_EXTRA_ARGS:-}"
+# Use Bazel Vendor mode to reduce reliance on external dependencies.
+if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" ]]; then
+  tar -xf "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" -C "${TMP}/"
+  BAZEL_EXTRA_ARGS="--vendor_dir=\"${TMP}/abseil-cpp_vendor\" ${BAZEL_EXTRA_ARGS:-}"
 fi
 
 # Print the compiler and Bazel versions.
@@ -52,10 +54,13 @@ if [[ -n "${ALTERNATE_OPTIONS:-}" ]]; then
   cp ${ALTERNATE_OPTIONS:-} absl/base/options.h || exit 1
 fi
 
+# Avoid using the system version of google-benchmark.
+brew uninstall google-benchmark
+
 ${BAZEL_BIN} test ... \
   --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
   --copt="-Werror" \
-  --cxxopt="-std=c++14" \
+  --cxxopt="-std=c++17" \
   --enable_bzlmod=true \
   --features=external_include_paths \
   --keep_going \

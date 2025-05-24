@@ -4,6 +4,8 @@
 
 #include "components/visited_url_ranking/public/features.h"
 
+#include <string>
+
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
@@ -17,7 +19,21 @@ constexpr base::FeatureParam<bool>
     kVisitedURLRankingHistoryFetcherDiscardZeroDurationVisits{
         &kVisitedURLRankingService,
         /*name=*/"history_fetcher_discard_zero_duration_visits",
+#if BUILDFLAG(IS_ANDROID)
+        /*default_value=*/false};
+#else
         /*default_value=*/true};
+#endif  // BUILDFLAG(IS_ANDROID)
+
+constexpr base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam{
+    &kVisitedURLRankingService,
+    /*name=*/"visited_url_ranking_url_types",
+    /*default_value=*/""};
+
+constexpr base::FeatureParam<bool> kVisitedURLRankingRecordActions{
+    &kVisitedURLRankingService,
+    /*name=*/"visited_url_ranking_record_actions",
+    /*default_value=*/false};
 
 const char kVisitedURLRankingFetchDurationInHoursParam[] =
     "VisitedURLRankingFetchDurationInHoursParam";
@@ -77,7 +93,7 @@ constexpr base::FeatureParam<std::string>
     kVisitedURLRankingDeduplicationExcludedPrefixes{
         &kVisitedURLRankingDeduplication,
         /*name=*/"url_deduplication_excluded_prefixes",
-        /*default_value=*/"www."};
+        /*default_value=*/"www.; login.corp.; myaccount.; accounts.;"};
 
 BASE_FEATURE(kVisitedURLRankingDecorations,
              "VisitedURLRankingDecorations",
@@ -99,4 +115,79 @@ constexpr base::FeatureParam<int>
         /*name=*/"decorations_recently_visited_minutes_threshold",
         /*default_value=*/1};
 
+BASE_FEATURE(kVisitedURLRankingScoreThreshold,
+             "VisitedURLRankingScoreThreshold",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveLocalTab{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"active_local_tab_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveRemoteTab{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"active_remote_tab_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdLocalVisit{
+    &kVisitedURLRankingScoreThreshold,
+    /*name=*/"local_visit_score_threshold",
+    /*default_value=*/0};
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdRemoteVisit{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"remote_visit_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdCCTVisit{
+    &kVisitedURLRankingScoreThreshold,
+    /*name=*/"cct_visit_score_threshold",
+    /*default_value=*/0};
+
+BASE_FEATURE(kGroupSuggestionService,
+             "GroupSuggestionService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableRecentlyOpened{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_recently_opened",
+    /*default_value=*/false};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableSwitchBetween{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_switch_between",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableSimilarSource{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_similar_source",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableSameOrigin{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_same_origin",
+    /*default_value=*/false};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableTabSwitcherOnly{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_tab_switcher_only",
+    /*default_value=*/false};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionEnableVisibilityCheck{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_enable_visibility_check",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<bool> kGroupSuggestionTriggerCalculationOnPageLoad{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_trigger_calculation_on_page_load",
+    /*default_value=*/true};
+
+constexpr base::FeatureParam<base::TimeDelta> kGroupSuggestionThrottleAgeLimit{
+    &kGroupSuggestionService,
+    /*name=*/"group_suggestion_throttle_age_limit",
+    /*default_value=*/base::Days(1)};
 }  // namespace visited_url_ranking::features

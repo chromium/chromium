@@ -7,10 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_session_runner.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
@@ -26,19 +22,24 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +52,7 @@ namespace arc {
 namespace {
 
 constexpr char kTestEmail[] = "user@gmail.com";
-constexpr char kTestGaiaId[] = "1234567890";
+constexpr GaiaId::Literal kTestGaiaId("1234567890");
 
 class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
  public:
@@ -98,9 +99,6 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable(kTestEmail,
                                       signin::ConsentLevel::kSignin);
-
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&pref_service_);
-    user_manager::KnownUser::RegisterPrefs(pref_service_.registry());
   }
 
   void TearDown() override {
@@ -108,7 +106,6 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     arc_session_manager_.reset();
     identity_test_env_profile_adaptor_.reset();
     profile_.reset();
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
     ash::UpstartClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
     ash::ConciergeClient::Shutdown();
@@ -127,13 +124,13 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
         ConsentAuditorFactory::GetForProfile(profile()));
   }
 
-  CoreAccountId GetAccountId() const {
+  GaiaId GetGaiaId() const {
     auto* identity_manager =
         identity_test_env_profile_adaptor_->identity_test_env()
             ->identity_manager();
     return identity_manager
         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-        .account_id;
+        .gaia;
   }
 
  protected:
@@ -143,6 +140,8 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   session_manager::SessionManager session_manager_;
@@ -153,7 +152,6 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler> preference_handler_;
-  TestingPrefServiceSimple pref_service_;
 };
 
 TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeTriggersService) {
@@ -210,14 +208,13 @@ TEST_F(ArcPlayStoreEnabledPreferenceHandlerTest, PrefChangeRevokesConsent) {
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::NOT_GIVEN);
-  play_consent.set_confirmation_grd_id(
-      IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_REMOVE);
+  play_consent.set_confirmation_grd_id(IDS_SETTINGS_ANDROID_APPS_REMOVE_BUTTON);
   play_consent.add_description_grd_ids(
-      IDS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
+      IDS_OS_SETTINGS_ANDROID_APPS_DISABLE_DIALOG_MESSAGE);
   play_consent.set_consent_flow(
       UserConsentTypes::ArcPlayTermsOfServiceConsent::SETTING_CHANGE);
   EXPECT_CALL(*auditor, RecordArcPlayConsent(
-                            GetAccountId(),
+                            GetGaiaId(),
                             consent_auditor::ArcPlayConsentEq(play_consent)));
 
   ASSERT_FALSE(IsArcPlayStoreEnabledForProfile(profile()));

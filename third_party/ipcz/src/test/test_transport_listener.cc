@@ -36,7 +36,8 @@ class TestTransportListener::ListenerImpl : public DriverTransport::Listener {
 
   // DriverTransport::Listener:
   bool OnTransportMessage(const DriverTransport::RawMessage& message,
-                          const DriverTransport& transport) override {
+                          const DriverTransport& transport,
+                          IpczDriverHandle envelope) override {
     ABSL_ASSERT(message_handler_);
     return message_handler_(message);
   }

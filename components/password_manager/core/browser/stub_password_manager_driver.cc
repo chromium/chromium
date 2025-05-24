@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 
+#include "components/autofill/core/common/aliases.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -15,23 +16,27 @@ int StubPasswordManagerDriver::GetId() const {
   return 0;
 }
 
-void StubPasswordManagerDriver::SetPasswordFillData(
+void StubPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
     const autofill::PasswordFormFillData& form_data) {}
 
 void StubPasswordManagerDriver::GeneratedPasswordAccepted(
     const std::u16string& password) {}
 
+void StubPasswordManagerDriver::GeneratedPasswordRejected() {}
+
 void StubPasswordManagerDriver::FocusNextFieldAfterPasswords() {}
 
-void StubPasswordManagerDriver::FillSuggestion(const std::u16string& username,
-                                               const std::u16string& password) {
-}
+void StubPasswordManagerDriver::FillSuggestion(
+    const std::u16string& username,
+    const std::u16string& password,
+    base::OnceCallback<void(bool)> success_callback) {}
 
 void StubPasswordManagerDriver::FillSuggestionById(
     autofill::FieldRendererId username_element_id,
     autofill::FieldRendererId password_element_id,
     const std::u16string& username,
-    const std::u16string& password) {}
+    const std::u16string& password,
+    autofill::AutofillSuggestionTriggerSource suggestion_source) {}
 
 #if BUILDFLAG(IS_ANDROID)
 void StubPasswordManagerDriver::TriggerFormSubmission() {}

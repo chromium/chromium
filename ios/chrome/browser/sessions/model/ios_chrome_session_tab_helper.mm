@@ -18,5 +18,3 @@ void IOSChromeSessionTabHelper::SetWindowID(SessionID window_id) {
   DCHECK(window_id.is_valid());
   window_id_ = window_id;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(IOSChromeSessionTabHelper)

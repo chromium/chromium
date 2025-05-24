@@ -18,12 +18,14 @@ import android.view.ViewStructure;
 import android.view.autofill.AutofillValue;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -44,6 +46,7 @@ import org.chromium.ui.mojom.VirtualKeyboardMode;
 @EnableFeatures(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU)
 @DisableFeatures(ChromeFeatureList.ANIMATED_IMAGE_DRAG_SHADOW)
 public class TabViewAndroidDelegateTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private final ArgumentCaptor<TabObserver> mTabObserverCaptor =
             ArgumentCaptor.forClass(TabObserver.class);
 
@@ -61,7 +64,6 @@ public class TabViewAndroidDelegateTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mVisualViewportInsetSupplier = new ObservableSupplierImpl<>();
 

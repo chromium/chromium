@@ -35,7 +35,7 @@ below:
 -->
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <!-- TODO add each of your output files.  Modify the three below, and add
     your own for your various languages.  See the user's guide
@@ -236,7 +236,6 @@ below:
       change nontranslateable parts of the messages into placeholders (using the
       <ph> element).  You can also use the 'grit add' tool to help you identify
       nontranslateable parts and create placeholders for them. -->
-
       <message name="IDS_DETAILS_WITHOUT_SUMMARY_LABEL" desc="Clickable label to show detailed information or to hide the detailed information.">
         Details
       </message>
@@ -378,31 +377,10 @@ below:
       <message name="IDS_PRETTY_PRINT_JSON" desc="Label for the checkbox that enables 'pretty-printing' of JSON documents.To pretty-print JSON, carriage returns and spaces are inserted to cleanly format the JSON and make it readable.">
         Pretty-print
       </message>
+      <message name="IDS_PARTIAL_INTEREST_TARGET_ACTIVATION_HINT" desc="Hint text added to the page for popovers activated by elements with the 'interesttarget' attribute, which have been activated in partial interest mode. This is an instruction for which key(s) to press in order to activate the popover in full interest mode.">
+        Press <ph name="HOT_KEY">$1<ex>Alt + ⬆️</ex></ph> to activate
+      </message>
 
-      <message name="IDS_PERMISSION_REQUEST_CAMERA" desc="Label for a permission element that will trigger a camera request">
-        Use camera
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_MICROPHONE" desc="Label for a permission element that will trigger a microphone request">
-        Use microphone
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE" desc="Label for a permission element that will trigger a camera and microphone request">
-        Use microphone and camera
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
-        Share location
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_CAMERA_ALLOWED" desc="Label for a permission element when camera access is allowed">
-        Camera allowed
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED" desc="Label for a permission element when microphone access is allowed">
-        Microphone allowed
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED" desc="Label for a permission element when camera access and microphone access are allowed">
-        Camera and microphone allowed
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED" desc="Label for a permission element when geolocation access is allowed">
-        Sharing location allowed
-      </message>
 
 <!-- The following IDS_FORM_VALIDATION_* messages were taken from Mozilla's dom.properties file.
 
@@ -491,6 +469,18 @@ below:
         Captions
       </message>
       <message name="IDS_MEDIA_OVERFLOW_MENU_CLOSED_CAPTIONS_SUBMENU_TITLE" desc="Media controls overflow menu title for the closed captions submenu. The text for this overflow menu should be short.">
+        Options
+      </message>
+      <message name="IDS_MEDIA_TRACK_IDENTIFIER_VERBOSE_TITLE_NUMBERED" desc="Track identifier prefix for when tracks have no name. The numeric track identifier will be joined after a space, like 'Track #2'">
+        Track #<ph name="TRACK_NUMBER">$1<ex>1</ex></ph>
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_SHOW_AUDIO_TRACK_MENU_BUTTON" desc="Media controls overflow menu item label for an audio track selection button. The text for this overflow menu should be short.">
+        Audio Tracks
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_SHOW_VIDEO_TRACK_MENU_BUTTON" desc="Media controls overflow menu item label for a video track selection button. The text for this overflow menu should be short.">
+        Video Tracks
+      </message>
+      <message name="IDS_MEDIA_OVERFLOW_MENU_TRACK_SELECTION_SUBMENU_TITLE" desc="Media controls overflow menu title for the video track selection submenu. The text for this overflow menu should be short.">
         Options
       </message>
       <message name="IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED" desc="Media controls overflow menu item label for a playback speed button. The text for this overflow menu should be short.">

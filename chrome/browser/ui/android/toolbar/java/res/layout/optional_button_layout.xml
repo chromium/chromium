@@ -27,7 +27,7 @@ found in the LICENSE file.
         android:id="@+id/optional_toolbar_button"
         style="@style/ToolbarButton"
         android:paddingStart="@dimen/toolbar_phone_optional_button_foreground_start_padding"
-        android:paddingVertical="@dimen/toolbar_phone_optional_button_foreground_vertical_padding"
+        android:paddingTop="@dimen/toolbar_phone_optional_button_foreground_vertical_padding"
         android:layout_gravity="center_vertical|start"
         android:visibility="gone"/>
     <TextView
@@ -46,7 +46,6 @@ found in the LICENSE file.
         android:scaleType="fitStart"
         android:id="@+id/swappable_icon_animation_image"
         android:paddingStart="@dimen/toolbar_phone_optional_button_foreground_start_padding"
-        android:paddingVertical="@dimen/toolbar_phone_optional_button_foreground_vertical_padding"
         android:layout_gravity="center_vertical|start"
         android:visibility="gone"
         style="@style/ToolbarButton"

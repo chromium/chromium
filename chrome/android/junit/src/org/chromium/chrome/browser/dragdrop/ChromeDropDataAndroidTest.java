@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.dragdrop;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.when;
 
 import org.junit.Rule;
@@ -29,16 +29,19 @@ public final class ChromeDropDataAndroidTest {
     public void testBuildTabClipDataText() {
         when(mTab.getId()).thenReturn(1);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
-        ChromeDropDataAndroid data = new ChromeDropDataAndroid.Builder().withTab(mTab).build();
+        ChromeDropDataAndroid data = new ChromeTabDropDataAndroid.Builder().withTab(mTab).build();
         assertEquals(
                 "Clip data text is not as expected.",
                 JUnitTestGURLs.EXAMPLE_URL.getSpec(),
-                data.buildTabClipDataText());
+                data.buildTabClipDataText(/* context= */ null));
     }
 
     @Test
-    public void testBuildTabClipDataTextWithNullTab() {
-        ChromeDropDataAndroid data = new ChromeDropDataAndroid.Builder().build();
-        assertNull("Clip data text is not as expected.", data.buildTabClipDataText());
+    public void testBuildTabClipDataTextWithNullBrowserContent() {
+        assertThrows(
+                AssertionError.class,
+                () -> {
+                    new ChromeTabDropDataAndroid.Builder().build();
+                });
     }
 }

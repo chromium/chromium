@@ -13,18 +13,17 @@
 class SupervisedUserSettingsServiceFactoryTest : public PlatformTest {
  protected:
   SupervisedUserSettingsServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
-  // ChromeBrowserState needs thread.
+  // ProfileIOS needs thread.
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Tests that SupervisedUserSettingsServiceFactory creates
 // SupervisedUserSettingsService.
 TEST_F(SupervisedUserSettingsServiceFactoryTest, CreateService) {
   supervised_user::SupervisedUserSettingsService* service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
-          browser_state_.get());
+      SupervisedUserSettingsServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service);
 }

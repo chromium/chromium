@@ -11,9 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-
-namespace detail {
+namespace base::detail {
 
 TEST(ValueIteratorsTest, IsAssignable) {
   static_assert(
@@ -241,6 +239,4 @@ TEST(ValueIteratorsTest, ConstDictIteratorOperatorNE) {
   EXPECT_NE(iterator(storage.begin()), iterator(storage.end()));
 }
 
-}  // namespace detail
-
-}  // namespace base
+}  // namespace base::detail

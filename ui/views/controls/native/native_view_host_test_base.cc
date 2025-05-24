@@ -67,7 +67,7 @@ std::unique_ptr<Widget> NativeViewHostTestBase::CreateChildForHost(
   child->SetContentsView(contents_view);
 
   // Owned by |parent_view|.
-  parent_view->AddChildView(host);
+  parent_view->AddChildViewRaw(host);
   host->Attach(child->GetNativeView());
 
   return child;

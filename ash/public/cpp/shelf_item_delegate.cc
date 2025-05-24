@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/shelf_item_delegate.h"
 
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace ash {
 

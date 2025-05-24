@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_SEND_RESULT_H_
 
+#include <variant>
+
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -26,6 +27,8 @@ struct CONTENT_EXPORT SendResult {
     // The report was dropped because of transient assembly failure, e.g. the
     // public key was not fetched.
     kTransientAssemblyFailure,
+    // The report was dropped because it exceeded the max report lifetime.
+    kExpired,
   };
 
   struct Sent {
@@ -42,6 +45,8 @@ struct CONTENT_EXPORT SendResult {
     friend bool operator==(const Sent&, const Sent&) = default;
   };
 
+  struct Expired {};
+
   struct Dropped {};
 
   struct AssemblyFailure {
@@ -51,7 +56,7 @@ struct CONTENT_EXPORT SendResult {
 
   Status status() const;
 
-  using Result = absl::variant<Sent, Dropped, AssemblyFailure>;
+  using Result = std::variant<Sent, Dropped, Expired, AssemblyFailure>;
   Result result;
 };
 

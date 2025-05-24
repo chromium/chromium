@@ -4,18 +4,21 @@
 
 package org.chromium.components.browser_ui.util;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * A helper class that stores Chrome cached flag values to allow them to be used in //components.
  *
  * <p>TODO(crbug.com/40266922): Remove this class after code changes allow for //components to
  * access cached flags.
  */
+@NullMarked
 public class BrowserUiUtilsCachedFlags {
 
     /** The singleton instance for this class. */
-    private static BrowserUiUtilsCachedFlags sInstance;
+    private static @Nullable BrowserUiUtilsCachedFlags sInstance;
 
-    private boolean mUseVerticalAutomotiveBackButtonToolbar;
     private boolean mAsyncNotificationManager;
 
     /** Returns the singleton instance, creating one if needed. */
@@ -24,14 +27,6 @@ public class BrowserUiUtilsCachedFlags {
             sInstance = new BrowserUiUtilsCachedFlags();
         }
         return sInstance;
-    }
-
-    public void setVerticalAutomotiveBackButtonToolbarFlag(boolean value) {
-        mUseVerticalAutomotiveBackButtonToolbar = value;
-    }
-
-    public boolean getVerticalAutomotiveBackButtonToolbarFlag() {
-        return mUseVerticalAutomotiveBackButtonToolbar;
     }
 
     /** Sets whether to use async notiication manager. */

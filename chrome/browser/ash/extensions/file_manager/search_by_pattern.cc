@@ -64,7 +64,7 @@ std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
       continue;
     }
     // Reject files that have path in excluded paths.
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             excluded_paths, [&path](const base::FilePath& excluded_path) {
               DCHECK(!path.EndsWithSeparator());
               DCHECK(!excluded_path.EndsWithSeparator());

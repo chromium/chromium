@@ -7,11 +7,16 @@ package org.chromium.device.geolocation;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.location.LocationManager;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.tasks.Tasks;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -137,6 +142,9 @@ public class LocationProviderTest {
         Context context = Mockito.mock(Context.class);
         FusedLocationProviderClient fusedLocationProviderClient =
                 Mockito.mock(FusedLocationProviderClient.class);
+        when(fusedLocationProviderClient.requestLocationUpdates(
+                        (LocationRequest) any(), (LocationCallback) any(), any()))
+                .thenReturn(Tasks.forCanceled());
 
         LocationProviderGmsCore locationProviderGmsCore =
                 new LocationProviderGmsCore(context, fusedLocationProviderClient);

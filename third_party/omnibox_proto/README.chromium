@@ -1,9 +1,9 @@
 Name: Omnibox Protos
 Short Name: omnibox_proto
 URL: This is the canonical public repository
-Version: 676892842
-Date: 2024-09-20 UTC
-License: BSD
+Version: 758850629
+Date: 2025-05-14
+License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes
 Security Critical: Yes

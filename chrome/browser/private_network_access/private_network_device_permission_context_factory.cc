@@ -25,10 +25,10 @@ PrivateNetworkDevicePermissionContextFactory::
 PrivateNetworkDevicePermissionContextFactory::
     ~PrivateNetworkDevicePermissionContextFactory() = default;
 
-KeyedService*
-PrivateNetworkDevicePermissionContextFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  return new PrivateNetworkDevicePermissionContext(
+std::unique_ptr<KeyedService> PrivateNetworkDevicePermissionContextFactory::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
+  return std::make_unique<PrivateNetworkDevicePermissionContext>(
       Profile::FromBrowserContext(context));
 }
 

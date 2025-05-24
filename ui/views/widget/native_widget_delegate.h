@@ -64,8 +64,13 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   virtual void OnNativeFocus() = 0;
   virtual void OnNativeBlur() = 0;
 
-  // Called when the window is shown/hidden.
+  // Called when the window is shown/hidden. A visible widget might be
+  // physically invisible on screen, for example, if it is shown on an hidden
+  // virtual desktop.
   virtual void OnNativeWidgetVisibilityChanged(bool visible) = 0;
+
+  // Called when the window's visibility on screen changes.
+  virtual void OnNativeWidgetVisibilityOnScreenChanged(bool visible) = 0;
 
   // Called when the native widget is created.
   virtual void OnNativeWidgetCreated() = 0;
@@ -93,6 +98,10 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // This may happen at the same time as OnNativeWidgetWindowShowStateChanged,
   // e.g. maximize.
   virtual void OnNativeWidgetSizeChanged(const gfx::Size& new_size) = 0;
+
+  // Called when the user begins/ends to resizing the window.
+  virtual void OnNativeWidgetUserResizeStarted() = 0;
+  virtual void OnNativeWidgetUserResizeEnded() = 0;
 
   // Called when NativeWidget changed workspaces or its visible on all
   // workspaces state changes.

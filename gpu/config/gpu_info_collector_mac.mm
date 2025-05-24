@@ -26,7 +26,22 @@ enum class MetalReadWriteTextureSupportTier {
   kMaxValue = kTier2_AdditionalFormats,
 };
 
-void RecordReadWriteMetalTexturesSupportedHistogram() {
+// The enums is used for an UMA histogram so we should never reorder entries or
+// remove unused values.
+enum class MetalFamilyMac {
+  kMac1 = 0,
+  kMac2 = 1,
+  kMaxValue = kMac2,
+};
+
+MetalFamilyMac GetMetalFamilyMac(id<MTLDevice> device) {
+  if ([device supportsFamily:MTLGPUFamilyMac2]) {
+    return MetalFamilyMac::kMac2;
+  }
+  return MetalFamilyMac::kMac1;
+}
+
+void RecordHistograms() {
   // Metal tiers are `MTLReadWriteTextureTier[None|1|2]` which correspond to the
   // integers 0, 1, and 2. The enum `MetalReadWriteTextureSupportTier` was
   // written to use integers one higher than the macOS API constants so that it
@@ -38,6 +53,8 @@ void RecordReadWriteMetalTexturesSupportedHistogram() {
   NSArray<id<MTLDevice>>* devices = MTLCopyAllDevices();
   for (id<MTLDevice> device in devices) {
     best_tier = std::max(best_tier, device.readWriteTextureSupport + 1);
+
+    UMA_HISTOGRAM_ENUMERATION("Gpu.Metal.FamilyMac", GetMetalFamilyMac(device));
   }
 
   UMA_HISTOGRAM_ENUMERATION(
@@ -67,7 +84,7 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
 
   TRACE_EVENT0("gpu", "gpu_info_collector::CollectGraphicsInfo");
 
-  RecordReadWriteMetalTexturesSupportedHistogram();
+  RecordHistograms();
 
   return CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL());
 }

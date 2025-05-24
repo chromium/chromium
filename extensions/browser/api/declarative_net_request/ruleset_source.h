@@ -61,12 +61,12 @@ class RulesetSource {
   // manifest for a static ruleset). Always true for a dynamic ruleset.
   bool enabled_by_default() const { return enabled_by_default_; }
 
-  // Indexes the given |rules| in indexed/flatbuffer format.
+  // Indexes the given `rules` in indexed/flatbuffer format.
   ParseInfo IndexRules(std::vector<api::declarative_net_request::Rule> rules,
                        uint8_t parse_flags) const;
 
-  // Creates a verified RulesetMatcher corresponding to the buffer in |data|.
-  // Returns kSuccess on success along with the ruleset |matcher|.
+  // Creates a verified RulesetMatcher corresponding to the buffer in `data`.
+  // Returns kSuccess on success along with the ruleset `matcher`.
   LoadRulesetResult CreateVerifiedMatcher(
       std::string data,
       std::unique_ptr<RulesetMatcher>* matcher) const;

@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.privacy_sandbox;
 import android.os.Bundle;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
@@ -16,6 +14,9 @@ import androidx.preference.PreferenceCategory;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -23,17 +24,20 @@ import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
 
 /** Fragment for the Privacy Sandbox -> Fledge preferences. */
+@NullMarked
 public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     @VisibleForTesting static final int MAX_DISPLAYED_SITES = 15;
@@ -54,7 +58,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     private TextMessagePreference mEmptyFledgePreference;
     private TextMessagePreference mDisabledFledgePreference;
     private ChromeBasePreference mAllSitesPreference;
-    private LargeIconBridge mLargeIconBridge;
+    private @Nullable LargeIconBridge mLargeIconBridge;
     private ClickableSpansTextMessagePreference mFooterPreference;
     private boolean mMoreThanMaxSitesToDisplay;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
@@ -101,26 +105,25 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
         mFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.settings_fledge_page_footer_new),
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         getContext(), this::onFledgeSettingsLinkClicked)),
                         new SpanApplier.SpanInfo(
                                 "<link2>",
                                 "</link2>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onCookieSettingsLink)),
+                                new ChromeClickableSpan(getContext(), this::onCookieSettingsLink)),
                         new SpanApplier.SpanInfo(
                                 "<link3>",
                                 "</link3>",
-                                new NoUnderlineClickableSpan(
+                                new ChromeClickableSpan(
                                         getContext(), this::onManagingAdPrivacyClicked))));
+        handleAdsApiUxEnhancements();
     }
 
     @Override
@@ -128,25 +131,88 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
         return mPageTitle;
     }
 
-    private void onLearnMoreClicked(View view) {
+    private void handleAdsApiUxEnhancements() {
+        if (!ChromeFeatureList.isEnabled(
+                ChromeFeatureList.PRIVACY_SANDBOX_ADS_API_UX_ENHANCEMENTS)) {
+            return;
+        }
+        mFledgeTogglePreference.setSummary(
+                getContext()
+                        .getString(R.string.settings_site_suggested_ads_page_toggle_sub_label_v2));
+        mFledgeDescriptionPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string
+                                                .settings_site_suggested_ads_page_explanation_v2_clank),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(getContext(), this::onLearnMoreClicked))));
+        mHeadingPreference.setSummary(
+                getContext()
+                        .getString(
+                                R.string.settings_site_suggested_ads_current_sites_description_v2));
+        ClickableSpansTextMessagePreference disclaimerPreference =
+                findPreference("fledge_page_disclaimer");
+        disclaimerPreference.setVisible(true);
+        disclaimerPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(
+                                        R.string.settings_site_suggested_ads_page_disclaimer_clank),
+                        new SpanApplier.SpanInfo(
+                                "<link>",
+                                "</link>",
+                                new ChromeClickableSpan(
+                                        getContext(), this::onPrivacyPolicyLinkClicked))));
+        mFooterPreference.setSummary(
+                SpanApplier.applySpans(
+                        getResources()
+                                .getString(R.string.settings_site_suggested_ads_page_footer_v2),
+                        new SpanApplier.SpanInfo(
+                                "<link1>",
+                                "</link1>",
+                                new ChromeClickableSpan(
+                                        getContext(), this::onFledgeSettingsLinkClicked)),
+                        new SpanApplier.SpanInfo(
+                                "<link2>",
+                                "</link2>",
+                                new ChromeClickableSpan(
+                                        getContext(), this::onCookieSettingsLink))));
+    }
+
+    private void onLearnMoreClicked(View unused) {
         RecordUserAction.record("Settings.PrivacySandbox.Fledge.LearnMoreClicked");
-        launchSettingsActivity(FledgeLearnMoreFragment.class);
+        startSettings(FledgeLearnMoreFragment.class);
     }
 
-    private void onManagingAdPrivacyClicked(View view) {
-        openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
+    private void onManagingAdPrivacyClicked(View unused) {
+        getCustomTabLauncher()
+                .openUrlInCct(getContext(), PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
-    private void onFledgeSettingsLinkClicked(View view) {
-        launchSettingsActivity(TopicsFragment.class);
+    private void onFledgeSettingsLinkClicked(View unused) {
+        startSettings(TopicsFragment.class);
     }
 
-    private void onCookieSettingsLink(View view) {
+    private void onCookieSettingsLink(View unused) {
         launchCookieSettings();
     }
 
+    private void onPrivacyPolicyLinkClicked(View unused) {
+        RecordUserAction.record(
+                "Settings.PrivacySandbox.SiteSuggestedAds.PrivacyPolicyLinkClicked");
+        getCustomTabLauncher()
+                .openUrlInCct(
+                        getContext(),
+                        getPrivacySandboxBridge().shouldUsePrivacyPolicyChinaDomain()
+                                ? UrlConstants.GOOGLE_PRIVACY_POLICY_CHINA
+                                : UrlConstants.GOOGLE_PRIVACY_POLICY);
+    }
+
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         // Disable animations on preference changes.
@@ -154,8 +220,8 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         getPrivacySandboxBridge().getFledgeJoiningEtldPlusOneForDisplay(this::populateCurrentSites);
         updatePreferenceVisibility();
     }
@@ -170,7 +236,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public boolean onPreferenceChange(@NonNull Preference preference, Object value) {
+    public boolean onPreferenceChange(Preference preference, Object value) {
         if (preference.getKey().equals(FLEDGE_TOGGLE_PREFERENCE)) {
             boolean enabled = (boolean) value;
             RecordUserAction.record(
@@ -186,7 +252,7 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     }
 
     @Override
-    public boolean onPreferenceClick(@NonNull Preference preference) {
+    public boolean onPreferenceClick(Preference preference) {
         if (preference instanceof FledgePreference) {
             getPrivacySandboxBridge()
                     .setFledgeJoiningAllowed(((FledgePreference) preference).getSite(), false);
@@ -259,5 +325,10 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                 return false;
             }
         };
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

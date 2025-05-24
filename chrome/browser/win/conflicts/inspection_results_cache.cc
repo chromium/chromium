@@ -4,6 +4,7 @@
 
 #include "chrome/browser/win/conflicts/inspection_results_cache.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/files/important_file_writer.h"
 #include "base/hash/md5.h"
 #include "base/pickle.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 
 namespace {
@@ -170,8 +170,9 @@ ReadCacheResult DeserializeInspectionResultsCache(
   base::MD5Digest md5_digest;
   base::span<const uint8_t> payload = pickle.payload_bytes();
   base::MD5Sum(payload.first(payload.size() - sizeof(md5_digest)), &md5_digest);
-  if (!base::ranges::equal(read_md5_digest->a, md5_digest.a))
+  if (!std::ranges::equal(read_md5_digest->a, md5_digest.a)) {
     return ReadCacheResult::kFailInvalidMD5;
+  }
 
   return ReadCacheResult::kSuccess;
 }

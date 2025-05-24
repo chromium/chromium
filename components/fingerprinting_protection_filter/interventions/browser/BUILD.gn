@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+# For this component iOS is explicitly not supported.
+if (use_blink) {
+  source_set("browser") {
+    sources = [
+      "interventions_web_contents_helper.cc",
+      "interventions_web_contents_helper.h",
+    ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      "../common:features",
+      "//base",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "interventions_web_contents_helper_unittest.cc" ]
+    public_deps = [ "//content/public/browser" ]
+    deps = [
+      ":browser",
+      "../common:features",
+      "//base",
+      "//content/test:test_support",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//url",
+    ]
+  }
+}

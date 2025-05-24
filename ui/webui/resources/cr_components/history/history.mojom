@@ -1,0 +1,180 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module history.mojom;
+
+/**
+ * The following enum must be kept in sync with its respective variants in
+ * components/supervised_user/core/browser/supervised_user_utils.h
+ */
+enum FilteringBehavior {
+  kUnknown = -1,
+  kAllow = 0,
+  // Deprecated, kWarn = 1.
+  kBlock = 2,
+  kInvalid = 3,
+};
+
+// Represents the possible states of the query process.
+struct QueryState {
+  // Whether the most recent query was incremental.
+  bool incremental;
+
+  // Whether a query is still happening.
+  bool querying;
+
+  // Term to search for.
+  string search_term;
+
+  // Timestamp for determining which times to consider in subsequent query.
+  string? after;
+};
+
+
+// Basic info about a query.
+struct HistoryQuery {
+  // Term searched for.
+  string term;
+
+  // Whether a query is finished.
+  bool finished;
+};
+
+// Additional debugging fields shown only if the debug feature is enabled.
+struct DebugInfo {
+  // Whether URL is stored locally.
+  bool is_url_in_local_database;
+
+  // Total number of times this URL has been visited.
+  uint32 visit_count;
+
+  // Number of times this URL has been manually entered in the URL bar.
+  uint32 typed_count;
+};
+
+/**
+ * Represents a single entry. Holds all information needed to display in the
+ * UI. Most of this data is stored here: browsing_history_service.h.
+ */
+struct HistoryEntry {
+  // URL of visit.
+  string url;
+
+  // Title of the entry. May be empty.
+  string title;
+
+  // Domain of visit.
+  string domain;
+
+  // Fallback favicon url.
+  string fallback_favicon_text;
+
+  // The time of the entry. Usually this will be the time of the most recent
+  // visit to `url` on a particular day as defined in the local timezone.
+  double time;
+
+  // Timestamps of all local or remote visits the same URL on the same day.
+  array<double> all_timestamps;
+
+  // Date to display on various services.
+  string date_short;
+
+  // Name of device entry was visited on.
+  string device_name;
+
+  // Type of device entry was visited on.
+  string device_type;
+
+  // Used in the screenreader entry summary.
+  string date_time_of_day;
+
+  // Currently to determine the boundaries between cards and other visual
+  // information.
+  string date_relative_day;
+
+  // Boolean to determine if a visit is currently selected.
+  bool selected;
+
+  // Timestamp to be read by screenreader.
+  string readableTimestamp;
+
+  // The entry's search snippet, if this entry is a search result.
+  string snippet;
+
+  // If an entry is bookmarked.
+  bool starred;
+
+  // Whether an entry is allowed via a supervised user.
+  FilteringBehavior host_filtering_behavior;
+
+  // Whether an entry is blocked.
+  bool blocked_visit;
+
+  // Whether the URL was obtained from a remote device.
+  bool is_url_in_remote_user_data;
+
+  // Optional parameter used to plumb footprints associated icon url.
+  string remote_icon_url_for_uma;
+
+  // Optional debug info about a visit.
+  DebugInfo? debug;
+};
+
+
+// Hold info about query as well as array of returned entries.
+struct QueryResult {
+  // Holds search term and whether a query is finished.
+  HistoryQuery? info;
+
+  // Array of returned entries.
+  array<HistoryEntry> value;
+};
+
+// Represents an item to be removed.
+struct RemovalItem {
+  // URL of items to be removed.
+  string url;
+
+  // Timestamps of items to be removed.
+  array<double> timestamps;
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // The BrowserProxy singleton calls this when it's first initialized.
+  SetPage(pending_remote<Page> page);
+
+  // Queries for entries matching the query term. Returns a promise of a
+  // result object.
+  QueryHistory(string query, int32 max_results, double? begin_time) => (QueryResult results);
+
+  // Completes continuation of ongoing query. Returns a promise of a result
+  // object.
+  QueryHistoryContinuation() => (QueryResult results);
+
+  // Removes marked visits.
+  RemoveVisits(array<RemovalItem> items) => ();
+
+  // Opens clear browsing data dialog.
+  OpenClearBrowsingDataDialog();
+
+  // Removes bookmark for a given url.
+  RemoveBookmark(string url);
+
+  // Sets last selected tab so user returns to most recently used tab upon
+  // revisiting the history page.
+  SetLastSelectedTab(int32 last_tab);
+
+  // Notify the backend that the side panel UI is ready to be shown.
+  ShowSidePanelUI();
+};
+
+// WebUI-side handler for requests from browser.
+interface Page {
+  // Alerts the page that the history was deleted.
+  OnHistoryDeleted();
+
+  // Alerts the page the other forms of history may or may not be available.
+  OnHasOtherFormsChanged(bool has_other_forms);
+};

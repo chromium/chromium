@@ -5,25 +5,25 @@
 package org.chromium.chrome.browser.notifications.permissions;
 
 import android.Manifest;
+import android.content.pm.PackageManager;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
-import androidx.core.app.NotificationManagerCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.UnownedUserData;
 import org.chromium.base.UnownedUserDataKey;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.NotificationPermissionState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.browser_ui.notifications.NotificationProxyUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.permissions.PermissionPrefs;
@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  * Central class containing the logic for when to trigger notification permission request optionally
  * with a rationale.
  */
+@NullMarked
 public class NotificationPermissionController implements UnownedUserData {
     /** Field trial param controlling rationale behavior. */
     public static final String FIELD_TRIAL_ALWAYS_SHOW_RATIONALE_BEFORE_REQUESTING_PERMISSION =
@@ -182,7 +183,6 @@ public class NotificationPermissionController implements UnownedUserData {
      */
     public boolean requestPermissionIfNeeded(boolean contextual) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU
-                || !BuildInfo.targetsAtLeastT()
                 || ApiCompatibilityUtils.isDemoUser()) {
             return false;
         }
@@ -233,7 +233,7 @@ public class NotificationPermissionController implements UnownedUserData {
     int shouldRequestPermission() {
         // Notifications only require permission starting at Android T. And apps targeting < T can't
         // request permission as the OS prompts the user automatically.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU || !BuildInfo.targetsAtLeastT()) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return PermissionRequestMode.DO_NOT_REQUEST;
         }
 
@@ -283,9 +283,7 @@ public class NotificationPermissionController implements UnownedUserData {
      */
     // TODO(shaktisahu): Determine the rules for showing site notification permission.
     public boolean doesAppLevelSettingsAllowSiteNotifications() {
-        NotificationManagerCompat manager =
-                NotificationManagerCompat.from(ContextUtils.getApplicationContext());
-        boolean notificationsEnabledAtAppLevel = manager.areNotificationsEnabled();
+        boolean notificationsEnabledAtAppLevel = NotificationProxyUtils.areNotificationsEnabled();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             return notificationsEnabledAtAppLevel;
         }
@@ -359,8 +357,25 @@ public class NotificationPermissionController implements UnownedUserData {
         mAndroidPermissionDelegate.requestPermissions(
                 permissionsToRequest,
                 (permissions, grantResults) ->
-                        NotificationUmaTracker.getInstance()
-                                .onNotificationPermissionRequestResult(permissions, grantResults));
+                        onNotificationPermissionRequestResult(permissions, grantResults));
+    }
+
+    private void onNotificationPermissionRequestResult(String[] permissions, int[] grantResults) {
+        if (permissions == null
+                || permissions.length != 1
+                || grantResults.length != 1
+                || !permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)) {
+            assert permissions != null : "Parameter permissions should not be null";
+            assert permissions.length == 1 : "A single permission should have been requested";
+            assert grantResults.length == 1 : "A single result should have been returned";
+            assert permissions[0].equals(Manifest.permission.POST_NOTIFICATIONS)
+                    : "The requested permission should be for notifications";
+            return;
+        }
+        boolean isPermissionGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        NotificationProxyUtils.setNotificationEnabled(isPermissionGranted);
+        NotificationUmaTracker.getInstance()
+                .recordNotificationPermissionRequestResult(isPermissionGranted);
     }
 
     /** Some heuristic based re-triggering logic. */

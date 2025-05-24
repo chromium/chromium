@@ -48,16 +48,14 @@
     "scandeps_server": true
   },
   "$build/siso": {
-    "configs": [
-      "remote-library-link",
-      "remote-exec-link"
-    ],
+    "configs": [],
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [
       "no-fallback"
     ],
-    "project": "rbe-chromium-untrusted"
+    "project": "rbe-chromium-untrusted",
+    "remote_jobs": 5120
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

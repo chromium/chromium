@@ -4,11 +4,13 @@
 
 #include "components/global_media_controls/public/media_session_notification_item.h"
 
+#include <algorithm>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/media_message_center/media_notification_util.h"
@@ -61,11 +63,13 @@ MediaSessionNotificationItem::MediaSessionNotificationItem(
     const std::string& source_name,
     const std::optional<base::UnguessableToken>& source_id,
     mojo::Remote<media_session::mojom::MediaController> controller,
-    media_session::mojom::MediaSessionInfoPtr session_info)
+    media_session::mojom::MediaSessionInfoPtr session_info,
+    bool always_hidden)
     : delegate_(delegate),
       request_id_(request_id),
       source_(GetSourceFromName(source_name)),
-      source_id_(source_id) {
+      source_id_(source_id),
+      always_hidden_(always_hidden) {
   DCHECK(delegate_);
 
   SetController(std::move(controller), std::move(session_info));
@@ -410,6 +414,10 @@ MediaSessionNotificationItem::GetMediaSessionActions() const {
 }
 
 bool MediaSessionNotificationItem::ShouldShowNotification() const {
+  if (always_hidden_) {
+    return false;
+  }
+
   // Hide the media notification if it is not controllable or the notification
   // title is missing.
   if (!session_info_ || !session_info_->is_controllable ||
@@ -572,8 +580,8 @@ void MediaSessionNotificationItem::UpdateViewCommon() {
 
 bool MediaSessionNotificationItem::FrozenWithChapterArtwork() {
   auto it =
-      base::ranges::find_if(frozen_with_chapter_artwork_,
-                            [](const auto& it) { return it.second == true; });
+      std::ranges::find_if(frozen_with_chapter_artwork_,
+                           [](const auto& it) { return it.second == true; });
   return it != frozen_with_chapter_artwork_.end();
 }
 }  // namespace global_media_controls

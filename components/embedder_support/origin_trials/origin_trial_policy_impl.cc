@@ -93,9 +93,7 @@ bool OriginTrialPolicyImpl::IsFeatureDisabledForUser(
     const raw_ref<const base::Feature> field_trial_feature;
   } origin_trial_feature_to_field_trial_feature_map[] = {
       {"FrobulateThirdParty",
-       raw_ref(kOriginTrialsSampleAPIThirdPartyAlternativeUsage)},
-      {"ConversionMeasurement",
-       raw_ref(kConversionMeasurementAPIAlternativeUsage)}};
+       raw_ref(kOriginTrialsSampleAPIThirdPartyAlternativeUsage)}};
   for (const auto& mapping : origin_trial_feature_to_field_trial_feature_map) {
     if (feature == mapping.origin_trial_feature_name) {
       return !base::FeatureList::IsEnabled(*mapping.field_trial_feature);

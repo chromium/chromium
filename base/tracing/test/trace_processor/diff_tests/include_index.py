@@ -23,12 +23,8 @@ def fetch_all_diff_tests(index_path: str) -> List['testing.TestCase']:
   test_data_path = os.path.abspath(os.path.join(__file__, '../../../data'))
 
   chrome_stdlib_tests = []
-  for test_suite_cls in CHROME_STDLIB_TESTSUITES:
-    test_suite = test_suite_cls(index_path,
-                                'chrome',
-                                test_suite_cls.__name__, test_data_path)
+  for test_suite_cls in CHROME_STDLIB_TESTSUITES + [StdlibSmoke]:
+    test_suite = test_suite_cls(index_path, test_data_path)
     chrome_stdlib_tests += test_suite.fetch()
 
-  return [
-      *StdlibSmoke(index_path, 'stdlib', 'StdlibSmoke').fetch(),
-      ] + chrome_stdlib_tests
+  return chrome_stdlib_tests

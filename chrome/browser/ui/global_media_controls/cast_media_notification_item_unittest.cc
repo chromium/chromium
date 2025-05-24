@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
@@ -61,7 +62,8 @@ class MockBitmapFetcher : public BitmapFetcher {
               (net::ReferrerPolicy referrer_policy,
                network::mojom::CredentialsMode credentials_mode,
                const net::HttpRequestHeaders& additional_headers,
-               const url::Origin& initiator),
+               const url::Origin& initiator,
+               bool is_same_site_request),
               (override));
   MOCK_METHOD(void,
               Start,
@@ -71,7 +73,7 @@ class MockBitmapFetcher : public BitmapFetcher {
 
 class MockSessionController : public CastMediaSessionController {
  public:
-  MockSessionController(
+  explicit MockSessionController(
       mojo::Remote<media_router::mojom::MediaController> remote)
       : CastMediaSessionController(std::move(remote)) {}
 

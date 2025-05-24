@@ -46,6 +46,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -322,10 +323,8 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   // We force to create contents background since the bubble border background
   // is not shown in this view.
   set_force_create_contents_background(true);
-  // Bubbles that use transparent colors should not paint their ClientViews to a
-  // layer as doing so could result in visual artifacts.
-  SetPaintClientToLayer(false);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+
   DCHECK(delegate_);
   DCHECK(params_.parent_window);
   // anchor_widget() is computed by BubbleDialogDelegateView().
@@ -340,32 +339,36 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   set_close_on_deactivate(init_params.close_on_deactivate);
   set_margins(init_params.margin.has_value() ? init_params.margin.value()
                                              : gfx::Insets());
+  set_corner_radius(params_.corner_radius);
 
-  if (init_params.translucent) {
-    // TODO(crbug.com/40832096): In the dark light mode feature, remove layer
-    // creation in children views of this view to improve performance.
-    SetPaintToLayer(ui::LAYER_TEXTURED);
-    layer()->SetFillsBoundsOpaquely(false);
+  // Always create a layer so that the layer for FocusRing stays in this view's
+  // layer. Without it, the layer for FocusRing goes above the NativeViewHost
+  // and may steal events.
+  // TODO(crbug.com/40832096): In the dark light mode feature, remove layer
+  // creation in children views of this view to improve performance.
+  SetPaintToLayer(init_params.transparent ? ui::LAYER_NOT_DRAWN
+                                          : ui::LAYER_TEXTURED);
+
+  if (init_params.transparent) {
+    set_use_round_corners(false);
+    SetBackgroundColor(SK_ColorTRANSPARENT);
+  } else {
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
     layer()->SetIsFastRoundedCorner(true);
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  } else {
-    // Create a layer so that the layer for FocusRing stays in this view's
-    // layer. Without it, the layer for FocusRing goes above the
-    // NativeViewHost and may steal events.
-    SetPaintToLayer(ui::LAYER_NOT_DRAWN);
 
-    if (!init_params.transparent) {
-      SetPaintToLayer();
-      layer()->SetRoundedCornerRadius(
-          gfx::RoundedCornersF{static_cast<float>(params_.corner_radius)});
-    }
+    SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevatedOpaque);
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        params_.corner_radius,
+        views::HighlightBorder::Type::kHighlightBorderOnShadow));
   }
 
-  if (init_params.transparent) {
-    set_color(SK_ColorTRANSPARENT);
+  if (init_params.translucent && chromeos::features::IsSystemBlurEnabled()) {
+    CHECK(!init_params.transparent);
+    SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated);
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
   if (params_.has_shadow) {
@@ -395,7 +398,14 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   Shell::Get()->display_manager()->AddDisplayObserver(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
+  UpdateAccessibleName();
   UpdateAccessibleIgnoredState();
+
+  name_changed_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&TrayBubbleView::OnAXNameChanged,
+                              base::Unretained(this)));
 }
 
 TrayBubbleView::~TrayBubbleView() {
@@ -413,6 +423,7 @@ TrayBubbleView::~TrayBubbleView() {
 void TrayBubbleView::InitializeAndShowBubble() {
   GetWidget()->Show();
   UpdateBubble();
+  UpdateAccessibleName();
   UpdateAccessibleIgnoredState();
 
   // Manually sets the shadow position since `CreateShadowOnTextureLayer` only
@@ -475,6 +486,7 @@ void TrayBubbleView::ResetDelegate() {
 
   delegate_ = nullptr;
   UpdateAccessibleIgnoredState();
+  GetViewAccessibility().SetName(std::u16string());
 }
 
 void TrayBubbleView::ChangeAnchorView(views::View* anchor_view) {
@@ -533,7 +545,7 @@ void TrayBubbleView::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 ui::LayerType TrayBubbleView::GetLayerType() const {
-  if (params_.translucent) {
+  if (params_.translucent || params_.transparent) {
     return ui::LAYER_NOT_DRAWN;
   }
   return ui::LAYER_TEXTURED;
@@ -544,8 +556,8 @@ std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
   // Create the customized bubble border.
   std::unique_ptr<BubbleBorder> bubble_border =
       std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
-  if (params_.corner_radius) {
-    bubble_border->SetCornerRadius(params_.corner_radius);
+  if (GetParams().round_corners) {
+    bubble_border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));
   }
   bubble_border->set_avoid_shadow_overlap(true);
   if (params_.insets.has_value()) {
@@ -628,27 +640,6 @@ void TrayBubbleView::OnMouseExited(const ui::MouseEvent& event) {
   if (delegate_ && mouse_actively_entered_) {
     delegate_->OnMouseExitedView();
   }
-}
-
-void TrayBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (delegate_ && CanActivate()) {
-    node_data->SetNameChecked(delegate_->GetAccessibleNameForBubble());
-  }
-}
-
-void TrayBubbleView::OnThemeChanged() {
-  views::BubbleDialogDelegateView::OnThemeChanged();
-  if (params_.transparent) {
-    return;
-  }
-
-  SetBorder(std::make_unique<views::HighlightBorder>(
-      params_.corner_radius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : views::HighlightBorder::Type::kHighlightBorder1));
-  set_color(
-      GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemBaseElevated));
 }
 
 void TrayBubbleView::MouseMovedOutOfHost() {
@@ -741,6 +732,16 @@ void TrayBubbleView::CloseBubbleView() {
   delegate_->HideBubble(this);
 }
 
+void TrayBubbleView::UpdateAccessibleName() {
+  if (delegate_->GetAccessibleNameForBubble().empty()) {
+    GetViewAccessibility().SetName(
+        delegate_->GetAccessibleNameForBubble(),
+        ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(delegate_->GetAccessibleNameForBubble());
+  }
+}
+
 void TrayBubbleView::ChildPreferredSizeChanged(View* child) {
   SizeToContents();
 }
@@ -753,6 +754,13 @@ void TrayBubbleView::SetBubbleBorderInsets(gfx::Insets insets) {
 
 void TrayBubbleView::UpdateAccessibleIgnoredState() {
   GetViewAccessibility().SetIsIgnored(!delegate_ || !CanActivate());
+}
+
+void TrayBubbleView::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                                     const std::optional<std::string>& name) {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 BEGIN_METADATA(TrayBubbleView)

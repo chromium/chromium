@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -47,10 +46,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/lock_screen_apps/state_controller.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
@@ -114,8 +109,9 @@ void OpenURLAfterCheckIsDefaultBrowser(
   // open it.
   Profile* profile = Profile::FromBrowserContext(source->GetBrowserContext());
   DCHECK(profile);
-  if (!profile)
+  if (!profile) {
     return;
+  }
   switch (state) {
     case shell_integration::IS_DEFAULT:
       OpenURLFromTabInternal(profile, params,
@@ -125,7 +121,7 @@ void OpenURLAfterCheckIsDefaultBrowser(
     case shell_integration::UNKNOWN_DEFAULT:
     case shell_integration::OTHER_MODE_IS_DEFAULT:
       platform_util::OpenExternal(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
           profile,
 #endif
           params.url);
@@ -133,7 +129,7 @@ void OpenURLAfterCheckIsDefaultBrowser(
     case shell_integration::NUM_DEFAULT_STATES:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -155,13 +151,13 @@ void ChromeAppDelegate::RelinquishKeepAliveAfterTimeout(
 class ChromeAppDelegate::NewWindowContentsDelegate
     : public content::WebContentsDelegate {
  public:
-  NewWindowContentsDelegate() {}
+  NewWindowContentsDelegate() = default;
 
   NewWindowContentsDelegate(const NewWindowContentsDelegate&) = delete;
   NewWindowContentsDelegate& operator=(const NewWindowContentsDelegate&) =
       delete;
 
-  ~NewWindowContentsDelegate() override {}
+  ~NewWindowContentsDelegate() override = default;
 
   void BecomeOwningDeletageOf(
       std::unique_ptr<content::WebContents> web_contents) {
@@ -218,7 +214,6 @@ ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab(
 ChromeAppDelegate::ChromeAppDelegate(Profile* profile, bool keep_alive)
     : has_been_shown_(false),
       is_hidden_(true),
-      for_lock_screen_app_(false),
       profile_(profile),
       new_window_contents_delegate_(new NewWindowContentsDelegate()) {
   if (keep_alive) {
@@ -350,7 +345,7 @@ bool ChromeAppDelegate::CheckMediaAccessPermission(
 }
 
 int ChromeAppDelegate::PreferredIconSize() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Use a size appropriate for the ash shelf (see ash::kShelfSize).
   return extension_misc::EXTENSION_ICON_MEDIUM;
 #else
@@ -361,8 +356,9 @@ int ChromeAppDelegate::PreferredIconSize() const {
 void ChromeAppDelegate::SetWebContentsBlocked(
     content::WebContents* web_contents,
     bool blocked) {
-  if (!blocked)
+  if (!blocked) {
     web_contents->Focus();
+  }
   // RenderFrameHost may be NULL during shutdown.
   content::RenderFrameHost* host = web_contents->GetPrimaryMainFrame();
   if (host && host->IsRenderFrameLive()) {
@@ -410,18 +406,6 @@ void ChromeAppDelegate::OnShow() {
   }
 }
 
-bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
-                                  bool reverse) {
-  if (!for_lock_screen_app_)
-    return false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return lock_screen_apps::StateController::Get()->HandleTakeFocus(web_contents,
-                                                                   reverse);
-#else
-  return false;
-#endif
-}
-
 content::PictureInPictureResult ChromeAppDelegate::EnterPictureInPicture(
     content::WebContents* web_contents) {
   return PictureInPictureWindowManager::GetInstance()
@@ -433,6 +417,7 @@ void ChromeAppDelegate::ExitPictureInPicture() {
 }
 
 void ChromeAppDelegate::OnAppTerminating() {
-  if (!terminating_callback_.is_null())
+  if (!terminating_callback_.is_null()) {
     std::move(terminating_callback_).Run();
+  }
 }

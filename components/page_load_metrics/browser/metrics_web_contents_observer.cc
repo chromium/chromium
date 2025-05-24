@@ -11,11 +11,12 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/page_load_metrics/browser/metrics_lifecycle_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_embedder_interface.h"
 #include "components/page_load_metrics/browser/page_load_metrics_memory_tracker.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/public/common/loader/resource_type_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "ui/base/page_transition_types.h"
+#include "url/url_constants.h"
 
 namespace page_load_metrics {
 
@@ -71,11 +73,6 @@ UserInitiatedInfo CreateUserInitiatedInfo(
   return UserInitiatedInfo::RenderInitiated(
       navigation_handle->HasUserGesture(),
       !navigation_handle->NavigationInputStart().is_null());
-}
-
-bool IsUrlSchemeSupported(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kDataScheme) ||
-         url.SchemeIs(url::kFileScheme);
 }
 
 }  // namespace
@@ -177,7 +174,7 @@ void MetricsWebContentsObserver::BindPageLoadMetrics(
   observer->page_load_metrics_receivers_.Bind(rfh, std::move(receiver));
 }
 
-MetricsWebContentsObserver::~MetricsWebContentsObserver() {}
+MetricsWebContentsObserver::~MetricsWebContentsObserver() = default;
 
 void MetricsWebContentsObserver::WebContentsWillSoonBeDestroyed() {
   // TODO(crbug.com/40238907): Should not rely on this call.
@@ -204,7 +201,7 @@ void MetricsWebContentsObserver::WebContentsDestroyed() {
   // access the current WebContents.
   primary_page_ = nullptr;
   active_pages_.clear();
-  ukm_smoothness_data_.clear();
+  ukm_data_.clear();
   provisional_loads_.clear();
   aborted_provisional_loads_.clear();
 }
@@ -276,7 +273,7 @@ void MetricsWebContentsObserver::RenderFrameDeleted(
   }
   active_pages_.erase(rfh);
   inactive_pages_.erase(rfh);
-  ukm_smoothness_data_.erase(rfh);
+  ukm_data_.erase(rfh);
 }
 
 void MetricsWebContentsObserver::MediaStartedPlaying(
@@ -378,7 +375,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       source_id = ukm::NoURLSourceId();
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // For prerendered page activations, we don't create a new PageLoadTracker,
@@ -486,9 +483,7 @@ void MetricsWebContentsObserver::ResourceLoadComplete(
     content::RenderFrameHost* render_frame_host,
     const content::GlobalRequestID& request_id,
     const blink::mojom::ResourceLoadInfo& resource_load_info) {
-  // Ignore non-HTTP schemes (e.g. chrome://) for non-webUI surfaces.
-  if (!resource_load_info.final_url.SchemeIsHTTPOrHTTPS() &&
-      !embedder_interface_->IsNonTabWebUI()) {
+  if (!ShouldTrackScheme(resource_load_info.final_url.scheme_piece())) {
     return;
   }
 
@@ -573,7 +568,7 @@ void MetricsWebContentsObserver::OnCookiesAccessedImpl(
     PageLoadTracker& tracker,
     const content::CookieAccessDetails& details) {
   // TODO(altimin): Propagate `CookieAccessDetails` further.
-  bool is_partitioned_access = base::ranges::all_of(
+  bool is_partitioned_access = std::ranges::all_of(
       details.cookie_access_result_list,
       [](const net::CookieWithAccessResult& cookie_with_access_result) {
         return cookie_with_access_result.cookie.IsPartitioned();
@@ -663,6 +658,7 @@ void MetricsWebContentsObserver::DidFinishNavigation(
     return;
   }
 
+  CHECK(navigation_handle->IsInMainFrame());
   // Not all navigations trigger the WillStartNavigationRequest callback (for
   // example, navigations to about:blank). DidFinishNavigation is guaranteed to
   // be called for every navigation, so we also update has_navigated_ here, to
@@ -670,13 +666,12 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   // TODO(crbug.com/40216775): This flag seems broken for Prerender and
   // FencedFrames.
   has_navigated_ = true;
+  main_frame_is_webui_ = web_contents()->GetWebUI() != nullptr;
 
   std::unique_ptr<PageLoadTracker> navigation_handle_tracker(
       std::move(provisional_loads_[navigation_handle]));
   provisional_loads_.erase(navigation_handle);
 
-  // Ignore same-document navigations.
-  CHECK(navigation_handle->IsInMainFrame());
   if (navigation_handle->HasCommitted() &&
       navigation_handle->IsSameDocument()) {
     if (navigation_handle_tracker) {
@@ -831,11 +826,13 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
   const bool is_main_frame =
       render_frame_host && render_frame_host->GetParent() == nullptr;
   if (is_main_frame) {
-    auto it = ukm_smoothness_data_.find(render_frame_host);
-    if (it != ukm_smoothness_data_.end()) {
-      raw_tracker->metrics_update_dispatcher()->SetUpSharedMemoryForSmoothness(
-          render_frame_host, std::move(it->second));
-      ukm_smoothness_data_.erase(it);
+    auto ukm_it = ukm_data_.find(render_frame_host);
+    if (ukm_it != ukm_data_.end()) {
+      auto& [smoothness_memory, dropped_frames_memory] = ukm_it->second;
+      raw_tracker->metrics_update_dispatcher()->SetUpSharedMemoryForUkms(
+          render_frame_host, std::move(smoothness_memory),
+          std::move(dropped_frames_memory));
+      ukm_data_.erase(ukm_it);
     }
   }
 
@@ -977,6 +974,7 @@ void MetricsWebContentsObserver::NavigationStopped() {
 }
 
 void MetricsWebContentsObserver::OnInputEvent(
+    const content::RenderWidgetHost& widget,
     const blink::WebInputEvent& event) {
   // Ignore browser navigation or reload which comes with type Undefined.
   if (event.GetType() == blink::WebInputEvent::Type::kUndefined) {
@@ -1225,8 +1223,7 @@ bool MetricsWebContentsObserver::DoesTimingUpdateHaveError(
     return true;
   }
 
-  if (!IsUrlSchemeSupported(tracker->GetUrl()) &&
-      !embedder_interface_->IsNonTabWebUI()) {
+  if (!ShouldTrackScheme(tracker->GetUrl().scheme_piece())) {
     RecordInternalError(ERR_IPC_FROM_BAD_URL_SCHEME);
     return true;
   }
@@ -1260,24 +1257,25 @@ void MetricsWebContentsObserver::AddCustomUserTiming(
   OnCustomUserTimingUpdated(render_frame_host, std::move(custom_timing));
 }
 
-void MetricsWebContentsObserver::SetUpSharedMemoryForSmoothness(
-    base::ReadOnlySharedMemoryRegion shared_memory) {
+void MetricsWebContentsObserver::SetUpSharedMemoryForUkms(
+    base::ReadOnlySharedMemoryRegion smoothness_memory,
+    base::ReadOnlySharedMemoryRegion dropped_frames_memory) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();
   const bool is_outermost_main_frame =
       render_frame_host->GetParentOrOuterDocument() == nullptr;
   if (!is_outermost_main_frame) {
-    // TODO(crbug.com/40144214): Merge smoothness metrics from OOPIFs and
-    // FencedFrames with the main-frame. Also need to check if FencedFrames
-    // send this request correctly.
     return;
   }
 
   if (PageLoadTracker* tracker = GetPageLoadTracker(render_frame_host)) {
-    tracker->metrics_update_dispatcher()->SetUpSharedMemoryForSmoothness(
-        render_frame_host, std::move(shared_memory));
+    tracker->metrics_update_dispatcher()->SetUpSharedMemoryForUkms(
+        render_frame_host, std::move(smoothness_memory),
+        std::move(dropped_frames_memory));
   } else {
-    ukm_smoothness_data_.emplace(render_frame_host, std::move(shared_memory));
+    ukm_data_.emplace(render_frame_host,
+                      std::make_pair(std::move(smoothness_memory),
+                                     std::move(dropped_frames_memory)));
   }
 }
 
@@ -1286,18 +1284,6 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
   CHECK(navigation_handle->IsInMainFrame());
   CHECK(!navigation_handle->HasCommitted() ||
         !navigation_handle->IsSameDocument());
-  // For non-webUI surfaces, only track http/https/data/file schemes.
-  // For webUI surfaces, track all schemes.
-  if (!IsUrlSchemeSupported(navigation_handle->GetURL()) &&
-      !embedder_interface_->IsNonTabWebUI()) {
-    return false;
-  }
-
-  // Ignore NTP loads.
-  if (embedder_interface_->IsNewTabPageUrl(navigation_handle->GetURL())) {
-    return false;
-  }
-
   // The navigation served from the back-forward cache will use the previously
   // created tracker for the document.
   if (navigation_handle->IsServedFromBackForwardCache()) {
@@ -1324,7 +1310,30 @@ bool MetricsWebContentsObserver::ShouldTrackMainFrameNavigation(
     }
   }
 
-  return true;
+  const GURL& url = navigation_handle->GetURL();
+  if (embedder_interface_->IsNonTabWebUI(url) ||
+      embedder_interface_->IsNewTabPageUrl(url)) {
+    return true;
+  }
+
+  return ShouldTrackSchemeForNonWebUI(url.scheme_piece());
+}
+
+bool MetricsWebContentsObserver::ShouldTrackScheme(
+    std::string_view scheme) const {
+  // Allow any scheme if we are tracking WebUIs.
+  if (main_frame_is_webui_) {
+    return true;
+  }
+
+  return ShouldTrackSchemeForNonWebUI(scheme);
+}
+
+bool MetricsWebContentsObserver::ShouldTrackSchemeForNonWebUI(
+    std::string_view scheme) const {
+  return scheme == url::kHttpsScheme || scheme == url::kHttpScheme ||
+         scheme == url::kDataScheme || scheme == url::kFileScheme ||
+         embedder_interface_->ShouldObserveScheme(scheme);
 }
 
 void MetricsWebContentsObserver::OnBrowserFeatureUsage(

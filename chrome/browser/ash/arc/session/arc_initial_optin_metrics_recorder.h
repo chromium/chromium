@@ -12,8 +12,6 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
-
 namespace content {
 class BrowserContext;
 }
@@ -24,9 +22,6 @@ namespace arc {
 class ArcInitialOptInMetricsRecorder : public ArcSessionManagerObserver,
                                        public KeyedService {
  public:
-  // Returns singleton instance for the given Profile.
-  static ArcInitialOptInMetricsRecorder* GetForProfile(Profile* profile);
-
   explicit ArcInitialOptInMetricsRecorder(content::BrowserContext* context);
   ArcInitialOptInMetricsRecorder(const ArcInitialOptInMetricsRecorder&) =
       delete;
@@ -44,8 +39,6 @@ class ArcInitialOptInMetricsRecorder : public ArcSessionManagerObserver,
   // Returns true if we need to report Ash.ArcAppInitialAppsInstallDuration
   // histogram in this session but it has not been reported yet.
   bool NeedReportArcAppListReady() const;
-
-  static void EnsureFactoryBuilt();
 
  private:
   std::optional<base::TimeTicks> arc_opt_in_time_;

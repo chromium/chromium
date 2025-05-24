@@ -23,6 +23,11 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 
 #include <memory>
@@ -87,7 +92,7 @@ class DeferredImageDecoderTest : public testing::Test,
   void SetUp() override {
     paint_image_id_ = PaintImage::GetNextId();
     ImageDecodingStore::Instance().SetCacheLimitInBytes(1024 * 1024);
-    data_ = SharedBuffer::Create(kWhitePNG, sizeof(kWhitePNG));
+    data_ = SharedBuffer::Create(kWhitePNG);
     original_data_ = data_->CopyAs<Vector<char>>();
     frame_count_ = 1;
     auto decoder = std::make_unique<MockImageDecoder>(this);
@@ -181,8 +186,8 @@ TEST_F(DeferredImageDecoderTest, drawIntoPaintRecord) {
 }
 
 TEST_F(DeferredImageDecoderTest, drawIntoPaintRecordProgressive) {
-  scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(original_data_.data(), original_data_.size() - 10);
+  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
+      base::span(original_data_).first(original_data_.size() - 10));
 
   // Received only half the file.
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
@@ -217,8 +222,8 @@ TEST_F(DeferredImageDecoderTest, allDataReceivedPriorToDecodeNonIncrementally) {
 TEST_F(DeferredImageDecoderTest, allDataReceivedPriorToDecodeIncrementally) {
   // The image is received in two parts, but a PaintImageGenerator is created
   // only after all the data is received.
-  scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(original_data_.data(), original_data_.size() - 10);
+  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
+      base::span(original_data_).first(original_data_.size() - 10));
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   PaintImage image = CreatePaintImage();
@@ -232,8 +237,8 @@ TEST_F(DeferredImageDecoderTest, notAllDataReceivedPriorToDecode) {
   // The image is received in two parts, and a PaintImageGenerator is created
   // for each one. In real usage, it's likely that the software image decoder
   // will start working with partial data.
-  scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(original_data_.data(), original_data_.size() - 10);
+  scoped_refptr<SharedBuffer> partial_data = SharedBuffer::Create(
+      base::span(original_data_).first(original_data_.size() - 10));
   lazy_decoder_->SetData(partial_data, false /* all_data_received */);
   PaintImage image =
       CreatePaintImage(PaintImage::CompletionState::kPartiallyDone);
@@ -296,7 +301,7 @@ TEST_F(DeferredImageDecoderTest, singleFrameImageLoading) {
   EXPECT_TRUE(actual_decoder_);
 
   status_ = ImageFrame::kFrameComplete;
-  data_->Append(" ", 1u);
+  data_->Append(base::span_from_cstring(" "));
   lazy_decoder_->SetData(data_, true /* all_data_received */);
   EXPECT_FALSE(actual_decoder_);
   EXPECT_TRUE(lazy_decoder_->FrameIsReceivedAtIndex(0));
@@ -322,7 +327,7 @@ TEST_F(DeferredImageDecoderTest, multiFrameImageLoading) {
   frame_count_ = 2;
   frame_duration_ = base::Milliseconds(20);
   status_ = ImageFrame::kFrameComplete;
-  data_->Append(" ", 1u);
+  data_->Append(base::span_from_cstring(" "));
   lazy_decoder_->SetData(data_, false /* all_data_received */);
 
   image = CreatePaintImage();
@@ -381,7 +386,7 @@ TEST_F(DeferredImageDecoderTest, smallerFrameCount) {
 TEST_F(DeferredImageDecoderTest, frameOpacity) {
   for (bool test_gif : {false, true}) {
     if (test_gif)
-      data_ = SharedBuffer::Create(kWhiteGIF, sizeof(kWhiteGIF));
+      data_ = SharedBuffer::Create(kWhiteGIF);
 
     std::unique_ptr<DeferredImageDecoder> decoder =
         DeferredImageDecoder::Create(data_, true,
@@ -419,7 +424,7 @@ TEST_F(DeferredImageDecoderTest, frameOpacity) {
 TEST_F(DeferredImageDecoderTest, data) {
   Vector<char> data_binary = data_->CopyAs<Vector<char>>();
   scoped_refptr<SharedBuffer> original_buffer =
-      SharedBuffer::Create(data_binary.data(), data_binary.size());
+      SharedBuffer::Create(data_binary);
   EXPECT_EQ(original_buffer->size(), data_binary.size());
   lazy_decoder_->SetData(original_buffer, false /* all_data_received */);
   scoped_refptr<SharedBuffer> new_buffer = lazy_decoder_->Data();

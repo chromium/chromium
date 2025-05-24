@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/web_state_delegate_bridge.h"
-
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/ui/context_menu_params.h"
+#import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gtest_mac.h"

@@ -11,7 +11,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "cc/base/histograms.h"
@@ -31,6 +31,7 @@
 #include "components/viz/common/quads/frame_deadline.h"
 #include "components/viz/common/quads/offset_tag.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/resources/resource_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -159,7 +160,7 @@ void LayerTreeImpl::RequestCopyOfOutput(
     std::unique_ptr<viz::CopyOutputRequest> request) {
   if (request->has_source()) {
     const base::UnguessableToken& source = request->source();
-    auto it = base::ranges::find_if(
+    auto it = std::ranges::find_if(
         copy_requests_for_next_frame_,
         [&source](const std::unique_ptr<viz::CopyOutputRequest>& x) {
           return x->has_source() && x->source() == source;
@@ -453,16 +454,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
     viz::CompositorFrame& out_frame,
     base::flat_set<viz::ResourceId>& out_resource_ids,
     viz::HitTestRegionList& out_hit_test_region_list) {
-  TRACE_EVENT(
-      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(args.trace_id), [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_graphics_pipeline();
-        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_GENERATE_COMPOSITOR_FRAME);
-        data->set_display_trace_id(args.trace_id);
-      });
-
   for (auto& resource_request :
        ui_resource_manager_.TakeUIResourcesRequests()) {
     switch (resource_request.GetType()) {
@@ -501,7 +492,7 @@ void LayerTreeImpl::GenerateCompositorFrame(
     // embed something. There is no way to provide an offset value without an
     // embedded viz::Surface to look the value up from.
     // TODO(b/334144355): Don't tag quads if no definition is added.
-    if (layer->surface_id().is_valid()) {
+    if (layer->surface_range().IsValid()) {
       out_frame.metadata.offset_tag_definitions.push_back(
           layer->GetOffsetTagDefinition(tag));
     }
@@ -567,8 +558,8 @@ void LayerTreeImpl::GenerateCompositorFrame(
   for (const auto& pass : out_frame.render_pass_list) {
     total_quad_count += pass->quad_list.size();
     for (const auto* quad : pass->quad_list) {
-      for (viz::ResourceId resource_id : quad->resources) {
-        out_resource_ids.insert(resource_id);
+      if (quad->resource_id != viz::kInvalidResourceId) {
+        out_resource_ids.insert(quad->resource_id);
       }
     }
   }
@@ -626,6 +617,15 @@ void LayerTreeImpl::Draw(Layer& layer,
       registered_offset_tags_.contains(layer.offset_tag())) {
     // A layer can't have a different offset tag than it's ancestor.
     CHECK(!data.offset_tag);
+
+    // If a mask filter from a parent layer that applies to tagged `layer` then
+    // the mask filter bounds shouldn't move based on offset. Currently viz
+    // assumes that mask bounds should move so don't allow this case. Allowing
+    // this would require plumbing a bool to viz that indicates if
+    // `SharedQuadState::mask_filter_info` should be translated, see
+    // crbug.com/361804880 for details
+    CHECK(!data.mask_filter_info_in_target.HasRoundedCorners() &&
+          !data.mask_filter_info_in_target.HasGradientMask());
 
     offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
 

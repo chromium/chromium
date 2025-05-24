@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
-
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/common/credit_card_network_identifiers.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "url/gurl.h"
@@ -155,4 +154,53 @@ TEST_F(ManualFillCreditCardFormAutofilliOSTest, MaskedCardCanNotFillDirectly) {
 
   EXPECT_TRUE(manualFillCard);
   EXPECT_FALSE(manualFillCard.canFillDirectly);
+}
+
+// Tests that the manual fill credit card build from virtual card has CVC.
+TEST_F(ManualFillCreditCardFormAutofilliOSTest,
+       ManualFillFromVirtualCardHasCVC) {
+  NSString* GUID = @"1234-5678-abcd";
+  NSString* number = @"1234";
+  NSString* CVC = @"123";
+
+  CreditCard autofillCreditCard = CreditCard();
+  autofillCreditCard.set_record_type(
+      autofill::CreditCard::RecordType::kVirtualCard);
+  autofillCreditCard.set_guid(
+      base::UTF16ToASCII(base::SysNSStringToUTF16(GUID)));
+  autofillCreditCard.SetNumber(base::SysNSStringToUTF16(number));
+  autofillCreditCard.set_cvc(base::SysNSStringToUTF16(CVC));
+
+  ManualFillCreditCard* manualFillCard =
+      [[ManualFillCreditCard alloc] initWithCreditCard:autofillCreditCard
+                                                  icon:nil];
+
+  EXPECT_NSEQ(manualFillCard.CVC, CVC);
+}
+
+// Tests that the manual fill credit card build from CardInfoRetrieval enrolled
+// card has CVC and the enrollment state set.
+TEST_F(ManualFillCreditCardFormAutofilliOSTest,
+       ManualFillFromCardInfoRetrieval) {
+  NSString* GUID = @"1234-5678-abcd";
+  NSString* number = @"1234";
+  NSString* CVC = @"123";
+
+  CreditCard autofillCreditCard = CreditCard();
+  autofillCreditCard.set_card_info_retrieval_enrollment_state(
+      autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalEnrolled);
+  autofillCreditCard.set_guid(
+      base::UTF16ToASCII(base::SysNSStringToUTF16(GUID)));
+  autofillCreditCard.SetNumber(base::SysNSStringToUTF16(number));
+  autofillCreditCard.set_cvc(base::SysNSStringToUTF16(CVC));
+
+  ManualFillCreditCard* manualFillCard =
+      [[ManualFillCreditCard alloc] initWithCreditCard:autofillCreditCard
+                                                  icon:nil];
+
+  EXPECT_NSEQ(manualFillCard.CVC, CVC);
+  EXPECT_EQ(manualFillCard.cardInfoRetrievalEnrollmentState,
+            autofill::CreditCard::CardInfoRetrievalEnrollmentState::
+                kRetrievalEnrolled);
 }

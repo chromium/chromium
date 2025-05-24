@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
+#include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -61,21 +63,33 @@ InterpolationValue CSSFontWeightInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontWeightInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  DCHECK(state);
   FontSelectionValue inherited_font_weight =
-      state->ParentStyle()->GetFontWeight();
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+      state.ParentStyle()->GetFontWeight();
+  const CSSLengthResolver& length_resolver = state.CssToLengthConversionData();
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID keyword = identifier_value->GetValueID();
     if (keyword == CSSValueID::kBolder || keyword == CSSValueID::kLighter) {
       conversion_checkers.push_back(
           MakeGarbageCollected<InheritedFontWeightChecker>(
               inherited_font_weight));
     }
+  } else if (const auto* primitive_value =
+                 DynamicTo<CSSPrimitiveValue>(value)) {
+    if (primitive_value->IsElementDependent()) {
+      conversion_checkers.push_back(
+          TreeCountingChecker::Create(length_resolver));
+    }
+    CSSPrimitiveValue::LengthTypeFlags types;
+    primitive_value->AccumulateLengthUnitTypes(types);
+    if (InterpolationType::ConversionChecker* length_units_checker =
+            LengthUnitsChecker::MaybeCreate(types, state)) {
+      conversion_checkers.push_back(length_units_checker);
+    }
   }
   return CreateFontWeightValue(StyleBuilderConverterBase::ConvertFontWeight(
-      value, inherited_font_weight));
+      length_resolver, value, inherited_font_weight));
 }
 
 InterpolationValue

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<title>Test the behavior of AudioContext with the media-playback-while-not-rendered permission policy</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+  <script>
+    // The tests in this file depend on
+    //resources/media-playback-while-not-visible-permission-policy-audiocontext-frame.html
+    internals.settings.setAutoplayPolicy('no-user-gesture-required');
+
+    // Sets up an iframe with an AudioContext with the
+    // media-playback-while-not-visible permission policy disabled, set the
+    // iframe source to
+    // resources/media-playback-while-not-visible-permission-policy-audiocontext-frame.html
+    // and sets the iframe's AudioContext initial state to
+    // `expected_initial_state`.
+    async function setUpIframeAudioContextInitialState(expected_initial_state) {
+      if (document.readyState !=='complete'){
+        await new Promise(resolve => {
+          window.addEventListener('load', resolve)
+        })
+      }
+
+      let iframe = document.createElement('iframe');
+      iframe.id = 'audio-context-frame';
+      iframe.allow = "media-playback-while-not-visible 'none'; autoplay *"
+      iframe.src = 'resources/media-playback-while-not-visible-permission-policy-audiocontext-frame.html';
+      document.body.appendChild(iframe);
+      await new Promise(resolve => {
+        iframe.addEventListener('load', resolve)
+      })
+
+
+      let initial_state = await queryAudioContextState(iframe);
+      if (initial_state === 'closed') {
+        assert_unreached('AudioContext initial state is closed');
+      }
+
+      if (initial_state === expected_initial_state) {
+        return;
+      }
+
+      if (expected_initial_state === 'running') {
+        await sendCommandToAudioContext(iframe, 'resume');
+        assert_equals(await queryAudioContextState(iframe), 'running');
+      } else if (expected_initial_state === 'suspended') {
+        await sendCommandToAudioContext(iframe, 'suspend');
+        assert_equals(await queryAudioContextState(iframe), 'suspended');
+      }
+    }
+
+    // Returns a promise that resolves when the iframe's AudioContext emits a
+    // 'statechange' event. The promise resolves with the new state of the
+    // AudioContext. Moreover, the event listener is removed after the promise
+    // resolves or if the promise times out (after 500ms).
+    function expectIframeAudioContextStateChangeEvent() {
+      return new Promise(resolve => {
+        function expectStateChangeEvent(event) {
+          if (event.data.operation !== 'statechange') {
+            return;
+          }
+          window.removeEventListener('message', expectStateChangeEvent);
+          resolve(event.data.value);
+        }
+
+        window.addEventListener('message', expectStateChangeEvent);
+        setTimeout(() => {
+          window.removeEventListener('message', expectStateChangeEvent);
+          resolve('no state change');
+        }, 500);
+      })
+    }
+
+    // Sends a message to the iframe to query the state of the AudioContext and
+    // returns a promise that resolves with the state of the AudioContext. The
+    // event listener is removed after the promise resolves.
+    function queryAudioContextState(iframe) {
+      return new Promise((resolve, reject) => {
+        window.addEventListener(
+            'message',
+            function expectStateQueryResponse(event) {
+              if (event.data.operation !== 'getState') {
+                return;
+              }
+              window.removeEventListener('message', expectStateQueryResponse);
+              resolve(event.data.value);
+            });
+        iframe.contentWindow.postMessage('getState', '*');
+      })
+    }
+
+    // Sends a message to the iframe with a command that should be performed on
+    // the AudioContext. Returns a promise that resolves when the operation is
+    // completed. The event listener is removed after the promise resolves.
+    function sendCommandToAudioContext(iframe, command) {
+      return new Promise((resolve, reject)  => {
+        window.addEventListener(
+            'message',
+            function expectCommandResponse(event) {
+              if (event.data.operation !== command) {
+                return;
+              }
+              window.removeEventListener('message', expectCommandResponse);
+              resolve();
+            });
+        iframe.contentWindow.postMessage(command, '*');
+      })
+    }
+
+    promise_test(async t => {
+      await setUpIframeAudioContextInitialState('running');
+      let iframe = document.getElementById('audio-context-frame');
+
+      let statechange_promise = expectIframeAudioContextStateChangeEvent();
+      iframe.style.setProperty('display', 'none');
+      assert_equals(await statechange_promise, 'interrupted');
+
+      statechange_promise = expectIframeAudioContextStateChangeEvent();
+      iframe.style.setProperty('display', 'block');
+      assert_equals(await statechange_promise, 'running');
+
+      t.add_cleanup(() => {
+        document.body.removeChild(iframe);
+      });
+    }, 'Hide and show an iframe with a running AudioContext');
+
+    promise_test(async t => {
+      await setUpIframeAudioContextInitialState('suspended');
+      let iframe = document.getElementById('audio-context-frame');
+
+      // No state change should be observed and `timeout_promise` should
+      // resolve first.
+      let statechange_promise = expectIframeAudioContextStateChangeEvent();
+      iframe.style.setProperty('display', 'none');
+      assert_equals(await statechange_promise, 'no state change');
+
+      // Likewise, no state change should be observed and `timeout_promise`
+      // should resolve first.
+      statechange_promise = expectIframeAudioContextStateChangeEvent();
+      iframe.style.setProperty('display', 'block');
+      assert_equals(await statechange_promise, 'no state change');
+
+      t.add_cleanup(() => {
+        document.body.removeChild(iframe);
+      });
+    }, 'Hide and show an iframe with a suspended AudioContext');
+
+    promise_test(async t => {
+      await setUpIframeAudioContextInitialState('suspended');
+      let iframe = document.getElementById('audio-context-frame');
+
+      // No state change should be observed and `timeout_promise` should
+      // resolve first.
+      let statechange_promise = expectIframeAudioContextStateChangeEvent();
+      iframe.style.setProperty('display', 'none');
+      assert_equals(await statechange_promise, 'no state change');
+
+      // Calling resume() on a suspended hidden iframe should throw an
+      // InvalidStateError exception and put the iframe's AudioContext in the
+      // 'interrupted' state.
+      statechange_promise = expectIframeAudioContextStateChangeEvent();
+      resume_audiocontext_promise = sendCommandToAudioContext(iframe, 'resume');
+      assert_equals(await statechange_promise, 'interrupted');
+      await resume_audiocontext_promise
+
+      // Showing the iframe should resume the AudioContext, putting it in the
+      // 'running state'.
+      statechange_promise = expectIframeAudioContextStateChangeEvent();
+      iframe.style.setProperty('display', 'block');
+      assert_equals(await statechange_promise, 'running');
+
+      t.add_cleanup(() => {
+        document.body.removeChild(iframe);
+      });
+    }, 'While the iframe is hidden with a suspended AudioContext, resume the AudioContext');
+  </script>
+</body>

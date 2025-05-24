@@ -7,13 +7,8 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
-#include "build/chromeos_buildflags.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#else
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -24,7 +19,6 @@
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
-#endif
 
 namespace policy {
 
@@ -42,13 +36,6 @@ class UserPolicySigninServiceUtilTest : public ::testing::Test {
   ~UserPolicySigninServiceUtilTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto init_params = crosapi::mojom::BrowserInitParams::New();
-    init_params->device_properties = crosapi::mojom::DeviceProperties::New();
-    init_params->device_properties->device_affiliation_ids = {kAffiliationId1};
-    init_params->device_properties->device_dm_token = kDMToken;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#else
     fake_storage_ = std::make_unique<FakeBrowserDMTokenStorage>();
     fake_storage_->SetClientId("client-id");
     fake_storage_->SetDMToken(kDMToken);
@@ -75,23 +62,17 @@ class UserPolicySigninServiceUtilTest : public ::testing::Test {
     manager_->core()->ConnectForTesting(/*service=*/nullptr, std::move(client));
     g_browser_process->browser_policy_connector()
         ->SetMachineLevelUserCloudPolicyManagerForTesting(manager_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void TearDown() override {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     g_browser_process->browser_policy_connector()
         ->SetMachineLevelUserCloudPolicyManagerForTesting(nullptr);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
  private:
   base::test::TaskEnvironment task_env_;
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   std::unique_ptr<FakeBrowserDMTokenStorage> fake_storage_;
   std::unique_ptr<MachineLevelUserCloudPolicyManager> manager_;
-#endif
 };
 
 TEST_F(UserPolicySigninServiceUtilTest, Affiliated) {

@@ -506,12 +506,6 @@ for t_name, t_repr in [
     ('asan', GTestInfo(MACRO_TYPE, 'ADDRESS_SANITIZER', None)),
     ('msan', GTestInfo(MACRO_TYPE, 'MEMORY_SANITIZER', None)),
     ('tsan', GTestInfo(MACRO_TYPE, 'THREAD_SANITIZER', None)),
-    ('lacros',
-     GTestInfo(BUILDFLAG_TYPE, 'IS_CHROMEOS_LACROS',
-               'build/chromeos_buildflags.h')),
-    ('ash',
-     GTestInfo(BUILDFLAG_TYPE, 'IS_CHROMEOS_ASH',
-               'build/chromeos_buildflags.h')),
 ]:
   conditions.get_term(t_name).gtest_info = t_repr
 

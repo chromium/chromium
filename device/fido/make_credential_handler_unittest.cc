@@ -26,7 +26,6 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -382,7 +381,7 @@ MATCHER(IsResidentKeyRequest, "") {
   }
 
   base::span<const uint8_t> param_bytes(arg);
-  param_bytes = param_bytes.subspan(1);
+  param_bytes = param_bytes.subspan<1>();
   const auto maybe_map = cbor::Reader::Read(param_bytes);
   if (!maybe_map || !maybe_map->is_map()) {
     return false;
@@ -423,7 +422,7 @@ MATCHER_P(IsUvRequest, is_uv, "") {
   }
 
   base::span<const uint8_t> param_bytes(arg);
-  param_bytes = param_bytes.subspan(1);
+  param_bytes = param_bytes.subspan<1>();
   const auto maybe_map = cbor::Reader::Read(param_bytes);
   if (!maybe_map || !maybe_map->is_map()) {
     *result_listener << "not a map";

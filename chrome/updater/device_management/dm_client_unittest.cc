@@ -28,6 +28,7 @@
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/test/unit_test_util.h"
+#include "components/policy/core/common/policy_types.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/update_client/network.h"
 #include "net/base/url_util.h"
@@ -50,7 +51,6 @@ class TestTokenService
   TestTokenService(const std::string& enrollment_token,
                    const std::string& dm_token)
       : enrollment_token_(enrollment_token), dm_token_(dm_token) {}
-  ~TestTokenService() override = default;
 
   // Overrides for TokenServiceInterface.
   std::string GetDeviceID() const override { return "test-device-id"; }
@@ -86,7 +86,6 @@ class TestTokenService
 class TestConfigurator : public DMClient::Configurator {
  public:
   explicit TestConfigurator(const GURL& url);
-  ~TestConfigurator() override = default;
 
   GURL GetDMServerUrl() const override { return server_url_; }
 
@@ -127,8 +126,8 @@ class DMRequestCallbackHandler
 
   void CreateStorage(bool init_dm_token, bool init_cache_info) {
     ASSERT_TRUE(storage_dir_.CreateUniqueTempDir());
-    constexpr char kEnrollmentToken[] = "TestEnrollmentToken";
-    constexpr char kDmToken[] = "test-dm-token";
+    static constexpr char kEnrollmentToken[] = "TestEnrollmentToken";
+    static constexpr char kDmToken[] = "test-dm-token";
     storage_ =
         CreateDMStorage(storage_dir_.GetPath(),
                         std::make_unique<TestTokenService>(
@@ -289,8 +288,6 @@ class DMValidationReportRequestCallbackHandler
 
 class DMClientTest : public ::testing::Test {
  public:
-  ~DMClientTest() override = default;
-
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       const net::test_server::HttpRequest& request) {
     std::string app_type;
@@ -378,6 +375,7 @@ class DMPolicyFetchClientTest : public DMClientTest {
  public:
   void PostRequest() {
     DMClient::FetchPolicy(
+        policy::PolicyFetchReason::kTest,
         std::make_unique<TestConfigurator>(test_server_.GetURL("/dm_api")),
         callback_handler_->GetStorage(),
         base::BindOnce(&DMPolicyFetchRequestCallbackHandler::OnRequestComplete,

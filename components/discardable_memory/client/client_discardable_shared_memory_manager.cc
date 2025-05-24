@@ -247,7 +247,7 @@ ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
 
   DCHECK_NE(size, 0u);
 
-  auto size_in_kb = static_cast<base::HistogramBase::Sample>(size / 1024);
+  auto size_in_kb = static_cast<base::HistogramBase::Sample32>(size / 1024);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Memory.DiscardableAllocationSize",
                               size_in_kb,  // In KiB
                               1,
@@ -499,8 +499,7 @@ bool ClientDiscardableSharedMemoryManager::LockSpan(
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void ClientDiscardableSharedMemoryManager::UnlockSpan(

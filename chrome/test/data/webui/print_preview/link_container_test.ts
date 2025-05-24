@@ -9,7 +9,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 // </if>
 import {isWindows} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {getCddTemplate} from './print_preview_test_utils.js';
 
@@ -35,13 +35,15 @@ suite('LinkContainerTest', function() {
     linkContainer.destination = fooDestination;
     linkContainer.appKioskMode = false;
     linkContainer.disabled = false;
+    return microtasksFinished();
   });
 
   /** Tests that the system dialog link is hidden in App Kiosk mode. */
-  test('HideInAppKioskMode', function() {
+  test('HideInAppKioskMode', async function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
     assertFalse(systemDialogLink.hidden);
-    linkContainer.set('appKioskMode', true);
+    linkContainer.appKioskMode = true;
+    await microtasksFinished();
     assertTrue(systemDialogLink.hidden);
   });
 
@@ -49,16 +51,15 @@ suite('LinkContainerTest', function() {
    * Test that clicking the system dialog link click results in an event
    * firing, and the throbber appears on non-Windows.
    */
-  test('SystemDialogLinkClick', function() {
+  test('SystemDialogLinkClick', async function() {
     const promise = eventToPromise('print-with-system-dialog', linkContainer);
     const throbber = linkContainer.$.systemDialogThrobber;
     assertTrue(throbber.hidden);
 
     const link = linkContainer.$.systemDialogLink;
     link.click();
-    return promise.then(function() {
-      assertEquals(isWindows, throbber.hidden);
-    });
+    await promise;
+    assertEquals(isWindows, throbber.hidden);
   });
 
   /**
@@ -69,10 +70,11 @@ suite('LinkContainerTest', function() {
     assertLinkState(link, false);
 
     // <if expr="is_macosx">
-    assertEquals('Print using system dialog… (⌥⌘P)', link.textContent);
+    assertEquals('Print using system dialog… (⌥⌘P)', link.textContent!.trim());
     // </if>
     // <if expr="not is_macosx">
-    assertEquals('Print using system dialog… (Ctrl+Shift+P)', link.textContent);
+    assertEquals(
+        'Print using system dialog… (Ctrl+Shift+P)', link.textContent!.trim());
     // </if>
   });
 
@@ -81,7 +83,7 @@ suite('LinkContainerTest', function() {
    * (if it exists), and that the system dialog link is disabled on Windows
    * and enabled on other platforms.
    */
-  test('InvalidState', function() {
+  test('InvalidState', async function() {
     const systemDialogLink = linkContainer.$.systemDialogLink;
 
     assertLinkState(systemDialogLink, false);
@@ -93,6 +95,7 @@ suite('LinkContainerTest', function() {
     // Set disabled to true, indicating that there is a validation error or
     // printer error.
     linkContainer.disabled = true;
+    await microtasksFinished();
     assertLinkState(systemDialogLink, isWindows);
     // <if expr="is_macosx">
     assert(openInPreviewLink);
@@ -105,16 +108,15 @@ suite('LinkContainerTest', function() {
    * Test that clicking the open in preview link correctly results in a
    * property change and that the throbber appears. Mac only.
    */
-  test(
-      'OpenInPreviewLinkClick', function() {
-        const throbber = linkContainer.$.openPdfInPreviewThrobber;
-        assertTrue(throbber.hidden);
-        const promise = eventToPromise('open-pdf-in-preview', linkContainer);
+  test('OpenInPreviewLinkClick', function() {
+    const throbber = linkContainer.$.openPdfInPreviewThrobber;
+    assertTrue(throbber.hidden);
+    const promise = eventToPromise('open-pdf-in-preview', linkContainer);
 
-        linkContainer.$.openPdfInPreviewLink.click();
-        return promise.then(function() {
-          assertFalse(throbber.hidden);
-        });
-      });
+    linkContainer.$.openPdfInPreviewLink.click();
+    return promise.then(function() {
+      assertFalse(throbber.hidden);
+    });
+  });
   // </if>
 });

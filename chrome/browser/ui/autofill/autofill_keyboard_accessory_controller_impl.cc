@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/check_op.h"
@@ -19,25 +20,20 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge_impl.h"
-#include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/metrics/granular_filling_metrics.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion_hiding_reason.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
-#include "components/autofill/core/common/autofill_features.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -112,8 +108,7 @@ AutofillSuggestionController::GetOrCreate(
     previous->Hide(SuggestionHidingReason::kViewDestroyed);
   }
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
-      delegate, web_contents, std::move(controller_common),
-      base::BindRepeating(&local_password_migration::ShowWarning));
+      delegate, web_contents, std::move(controller_common));
   return controller->GetWeakPtr();
 }
 
@@ -121,27 +116,16 @@ AutofillKeyboardAccessoryControllerImpl::
     AutofillKeyboardAccessoryControllerImpl(
         base::WeakPtr<AutofillSuggestionDelegate> delegate,
         content::WebContents* web_contents,
-        PopupControllerCommon controller_common,
-        ShowPasswordMigrationWarningCallback
-            show_pwd_migration_warning_callback)
+        PopupControllerCommon controller_common)
     : delegate_(delegate),
       web_contents_(web_contents->GetWeakPtr()),
-      controller_common_(std::move(controller_common)),
-      show_pwd_migration_warning_callback_(
-          std::move(show_pwd_migration_warning_callback)) {}
+      controller_common_(std::move(controller_common)) {}
 
 AutofillKeyboardAccessoryControllerImpl::
     ~AutofillKeyboardAccessoryControllerImpl() = default;
 
 void AutofillKeyboardAccessoryControllerImpl::Hide(
     SuggestionHidingReason reason) {
-  // If the reason for hiding is only stale data or a user interacting with
-  // native Chrome UI (kFocusChanged/kEndEditing), the popup might be kept open.
-  if (is_view_pinned_ && (reason == SuggestionHidingReason::kStaleData ||
-                          reason == SuggestionHidingReason::kFocusChanged ||
-                          reason == SuggestionHidingReason::kEndEditing)) {
-    return;  // Don't close the popup while waiting for an update.
-  }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
       (reason == SuggestionHidingReason::kWidgetChanged ||
@@ -252,7 +236,12 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
+  if (base::checked_cast<size_t>(index) >= suggestions_.size() ||
+      !IsAcceptableSuggestionType(suggestions_[index].type)) {
+    // Prevents crashes from crbug.com/521133. It seems that in rare cases or
+    // races the suggestions_ and the user-selected index may be out of sync.
+    // If the index points out of bounds, Chrome will crash. Prevent this by
+    // ignoring the selection and wait for another signal from the user.
     return;
   }
   if (IsPointerLocked(web_contents_.get())) {
@@ -263,7 +252,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` invalidate the reference.
   Suggestion suggestion = suggestions_[index];
-  if (!suggestion.is_acceptable) {
+  if (!suggestion.IsAcceptable()) {
     return;
   }
 
@@ -277,8 +266,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     manual_filling_controller->Hide();
   }
 
-  NotifyUserEducationAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
-                                             suggestion);
+  NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
@@ -291,29 +279,19 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     // after accepting passwords.
     return;
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsAndroidAccessLossWarning)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-    if (!access_loss_warning_bridge_) {
-      access_loss_warning_bridge_ =
-          std::make_unique<PasswordAccessLossWarningBridgeImpl>();
-    }
-    if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
-                       profile->GetPrefs(), /*called_at_startup=*/false)) {
-      access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
-          profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(),
-          profile, /*called_at_startup=*/false);
-    }
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+  if (!access_loss_warning_bridge_) {
+    access_loss_warning_bridge_ =
+        std::make_unique<PasswordAccessLossWarningBridgeImpl>();
   }
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::
-              kUnifiedPasswordManagerLocalPasswordsMigrationWarning)) {
-    show_pwd_migration_warning_callback_.Run(
-        web_contents_->GetTopLevelNativeWindow(),
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-        password_manager::metrics_util::PasswordMigrationWarningTriggers::
+  if (profile && access_loss_warning_bridge_->ShouldShowAccessLossNoticeSheet(
+                     profile->GetPrefs(), /*called_at_startup=*/false)) {
+    access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
+        profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile,
+        /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
             kKeyboardAcessoryBar);
   }
 }
@@ -351,10 +329,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
   const FillingProduct filling_product =
       GetFillingProductFromSuggestionType(GetSuggestionAt(index).type);
   if (!confirmed) {
-    if (filling_product == FillingProduct::kAddress) {
-      autofill_metrics::LogDeleteAddressProfileFromExtendedMenu(
-          /*user_accepted_delete=*/false);
-    }
     return;
   }
 
@@ -375,7 +349,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
       }
       break;
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       // TODO(crbug.com/41482065): Add metrics for credit cards.
       break;
     case FillingProduct::kNone:
@@ -384,7 +357,9 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
       break;
   }
 
@@ -523,10 +498,6 @@ void AutofillKeyboardAccessoryControllerImpl::UpdateDataListValues(
   }
 }
 
-void AutofillKeyboardAccessoryControllerImpl::PinView() {
-  is_view_pinned_ = true;
-}
-
 bool AutofillKeyboardAccessoryControllerImpl::HasSuggestions() const {
   return !suggestions_.empty() &&
          IsStandaloneSuggestionType(suggestions_[0].type);
@@ -547,8 +518,7 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const SuggestionType type = suggestions_[index].type;
-  const Suggestion::BackendId backend_id =
-      suggestions_[index].GetPayload<Suggestion::BackendId>();
+  const Suggestion::Payload& payload = suggestions_[index].payload;
 
   if (type == SuggestionType::kAutocompleteEntry) {
     if (title) {
@@ -568,39 +538,56 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
 
-  if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (!CreditCard::IsLocalCard(credit_card)) {
-      return false;
+  if (std::holds_alternative<Suggestion::Guid>(payload)) {
+    if (const CreditCard* credit_card =
+            pdm->payments_data_manager().GetCreditCardByGUID(
+                std::get<Suggestion::Guid>(payload).value())) {
+      if (!CreditCard::IsLocalCard(credit_card)) {
+        return false;
+      }
+      if (title) {
+        title->assign(credit_card->CardNameAndLastFourDigits());
+      }
+      if (body) {
+        body->assign(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
+      }
+      return true;
     }
-    if (title) {
-      title->assign(credit_card->CardNameAndLastFourDigits());
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-    }
-    return true;
+    return false;
   }
 
-  if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (title) {
-      std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
-      if (!street_address.empty()) {
-        title->swap(street_address);
-      } else {
-        title->assign(value);
+  if (std::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
+    if (const AutofillProfile* profile =
+            pdm->address_data_manager().GetProfileByGUID(
+                std::get<Suggestion::AutofillProfilePayload>(payload)
+                    .guid.value())) {
+      // Home & Work addresses can't be deleted through the chrome UI.
+      switch (profile->record_type()) {
+        case AutofillProfile::RecordType::kAccountHome:
+        case AutofillProfile::RecordType::kAccountWork:
+          return false;
+        case AutofillProfile::RecordType::kLocalOrSyncable:
+        case AutofillProfile::RecordType::kAccount:
+          break;
       }
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-    }
 
-    return true;
+      if (title) {
+        std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
+        if (!street_address.empty()) {
+          title->swap(street_address);
+        } else {
+          title->assign(value);
+        }
+      }
+      if (body) {
+        body->assign(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+      }
+
+      return true;
+    }
+    return false;
   }
 
   return false;  // The ID was valid. The entry may have been deleted in a race.
@@ -609,8 +596,8 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
 void AutofillKeyboardAccessoryControllerImpl::
     OrderSuggestionsAndCreateLabels() {
   // If there is an Undo suggestion, move it to the front.
-  if (auto it = base::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
-                                   &Suggestion::type);
+  if (auto it = std::ranges::find(suggestions_, SuggestionType::kUndoOrClear,
+                                  &Suggestion::type);
       it != suggestions_.end()) {
     std::rotate(suggestions_.begin(), it, it + 1);
   }

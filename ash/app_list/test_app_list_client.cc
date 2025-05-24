@@ -13,7 +13,10 @@
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "chromeos/ash/services/assistant/public/cpp/features.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/base/models/image_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace ash {
 
@@ -152,6 +155,21 @@ void TestAppListClient::RecordAppsDefaultVisibility(
 
 bool TestAppListClient::HasReordered() {
   return false;
+}
+
+void TestAppListClient::GetAssistantNewEntryPointEligibility(
+    GetAssistantNewEntryPointEligibilityCallback callback) {
+  std::move(callback).Run(assistant::features::IsNewEntryPointEnabled());
+}
+
+std::optional<std::string> TestAppListClient::GetAssistantNewEntryPointName() {
+  // TODO(crbug.com/388361414): update the string
+  return "New entry point";
+}
+
+ui::ImageModel TestAppListClient::GetGeminiIcon() {
+  // Use `kMahiSparkIcon` as a placeholder.
+  return ui::ImageModel::FromVectorIcon(chromeos::kMahiSparkIcon);
 }
 
 }  // namespace ash

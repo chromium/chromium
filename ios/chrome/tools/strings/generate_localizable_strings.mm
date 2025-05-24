@@ -51,19 +51,22 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
       [NSString stringWithFormat:@"%@/%@.lproj/locale.pak",
                                  packed_data_pack_dir, locale_name];
 
-  if (!resource_path)
+  if (!resource_path) {
     return resource_data_pack;
+  }
 
   // FilePath may contain components that references parent directory
   // (".."). DataPack disallows paths with ".." for security reasons.
   base::FilePath resources_pak_path([resource_path fileSystemRepresentation]);
   resources_pak_path = base::MakeAbsoluteFilePath(resources_pak_path);
-  if (!base::PathExists(resources_pak_path))
+  if (!base::PathExists(resources_pak_path)) {
     return resource_data_pack;
+  }
 
   resource_data_pack.reset(new ui::DataPack(ui::k100Percent));
-  if (!resource_data_pack->LoadFromPath(resources_pak_path))
+  if (!resource_data_pack->LoadFromPath(resources_pak_path)) {
     resource_data_pack.reset();
+  }
 
   return resource_data_pack;
 }
@@ -72,7 +75,7 @@ std::unique_ptr<ui::DataPack> LoadResourceDataPack(
 // Return nil if none is found.
 NSString* GetStringFromDataPack(const ui::DataPack& data_pack,
                                 uint16_t resource_id) {
-  std::optional<std::string_view> data = data_pack.GetStringPiece(resource_id);
+  std::optional<std::string_view> data = data_pack.GetStringView(resource_id);
   if (!data.has_value()) {
     return nil;
   }

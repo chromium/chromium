@@ -22,9 +22,16 @@ include_rules = [
   "+chrome/browser/nearby_sharing",
   "+chrome/browser/profiles",
   "+chrome/browser/signin/identity_manager_factory.h",
+  "+chrome/browser/ui/ash/graduation",
   "+chrome/browser/ui/webui/ash/settings/constants",
   "+chrome/browser/ui/webui/ash/settings/pages",
   "+chrome/browser/ui/webui/ash/settings/search",
   "+chrome/browser/ui/webui/ash/settings/services/metrics",
   "+chrome/test",
 ]
+
+specific_include_rules = {
+  "os_settings_manager_unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ]
+}

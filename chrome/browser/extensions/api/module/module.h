@@ -23,7 +23,7 @@ class ExtensionSetUpdateUrlDataFunction : public ExtensionFunction {
                              EXTENSION_SETUPDATEURLDATA)
 
  protected:
-  ~ExtensionSetUpdateUrlDataFunction() override {}
+  ~ExtensionSetUpdateUrlDataFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -35,7 +35,7 @@ class ExtensionIsAllowedIncognitoAccessFunction : public ExtensionFunction {
                              EXTENSION_ISALLOWEDINCOGNITOACCESS)
 
  protected:
-  ~ExtensionIsAllowedIncognitoAccessFunction() override {}
+  ~ExtensionIsAllowedIncognitoAccessFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;
@@ -47,7 +47,7 @@ class ExtensionIsAllowedFileSchemeAccessFunction : public ExtensionFunction {
                              EXTENSION_ISALLOWEDFILESCHEMEACCESS)
 
  protected:
-  ~ExtensionIsAllowedFileSchemeAccessFunction() override {}
+  ~ExtensionIsAllowedFileSchemeAccessFunction() override = default;
 
   // ExtensionFunction:
   ResponseAction Run() override;

@@ -5,7 +5,10 @@
 #ifndef CHROMEOS_PRINTING_PRINTER_CONFIGURATION_H_
 #define CHROMEOS_PRINTING_PRINTER_CONFIGURATION_H_
 
+#include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/component_export.h"
 #include "chromeos/printing/cups_printer_status.h"
@@ -27,7 +30,54 @@ enum class COMPONENT_EXPORT(CHROMEOS_PRINTING) PrinterClass {
   kSaved
 };
 
-COMPONENT_EXPORT(CHROMEOS_PRINTING) std::string ToString(PrinterClass pclass);
+struct COMPONENT_EXPORT(CHROMEOS_PRINTING) IppPrinterInfo {
+  IppPrinterInfo();
+  IppPrinterInfo(const std::vector<std::string>& document_formats,
+                 const std::string& document_format_default,
+                 const std::string& document_format_preferred,
+                 const std::vector<std::string>& urf_supported,
+                 const std::vector<std::string>& pdf_versions,
+                 const std::vector<std::string>& ipp_features,
+                 const std::string& mopria_certified,
+                 const std::vector<std::string>& printer_kind);
+  IppPrinterInfo(const IppPrinterInfo& other);
+  ~IppPrinterInfo();
+
+  // document-format-supported
+  // MIME types for supported formats.
+  std::vector<std::string> document_formats;
+
+  // document-format-default
+  // MIME type for default format.
+  std::string document_format_default;
+
+  // document-format-preferred
+  // MIME type for preferred format.
+  std::string document_format_preferred;
+
+  // urf-supported
+  // A collection of supported URF printing modes.
+  std::vector<std::string> urf_supported;
+
+  // pdf-version-supported
+  // A collection of supported PDF versions.
+  std::vector<std::string> pdf_versions;
+
+  // ipp-features-supported
+  // A collection of supported IPP features.
+  std::vector<std::string> ipp_features;
+
+  // mopria-certified
+  // Mopria certification level of the printer.
+  std::string mopria_certified;
+
+  // printer-kind
+  // A collection of supported printing categories.
+  std::vector<std::string> printer_kind;
+};
+
+COMPONENT_EXPORT(CHROMEOS_PRINTING)
+std::string_view ToString(PrinterClass pclass);
 
 // This function checks if the given URI is a valid printer URI. |uri| is
 // considered to be a valid printer URI if it has one of the scheme listed in
@@ -82,6 +132,59 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
     bool autoconf = false;
   };
 
+  template <typename T>
+  struct PrintOption {
+    std::optional<T> default_value;
+    std::vector<T> allowed_values;
+  };
+
+  struct Size {
+    bool operator==(const Size&) const = default;
+
+    int width;
+    int height;
+  };
+
+  // This enum can be modified (adding new values, changing the order of values,
+  // etc.).
+  enum DuplexType {
+    kUnknownDuplexType = 0,
+    kOneSided = 1,
+    kShortEdge = 2,
+    kLongEdge = 3
+  };
+
+  struct Dpi {
+    bool operator==(const Dpi&) const = default;
+
+    int horizontal;
+    int vertical;
+  };
+
+  // This enum can be modified (adding new values, changing the order of values,
+  // etc.).
+  enum QualityType {
+    kUnknownQualityType = 0,
+    kDraft = 1,
+    kNormal = 2,
+    kHigh = 3
+  };
+
+  struct ManagedPrintOptions {
+    ManagedPrintOptions();
+    ManagedPrintOptions(const ManagedPrintOptions& other);
+    ManagedPrintOptions& operator=(const ManagedPrintOptions& other);
+    ~ManagedPrintOptions();
+
+    PrintOption<Size> media_size;
+    PrintOption<std::string> media_type;
+    PrintOption<DuplexType> duplex;
+    PrintOption<bool> color;
+    PrintOption<Dpi> dpi;
+    PrintOption<QualityType> quality;
+    PrintOption<bool> print_as_image;
+  };
+
   // The location where the printer is stored.
   enum Source {
     SRC_USER_PREFS,
@@ -108,7 +211,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   Printer();
 
   // Constructs a printer object with the given |id|.
-  explicit Printer(const std::string& id);
+  explicit Printer(std::string id);
 
   // Copy constructor and assignment.
   Printer(const Printer& printer);
@@ -141,6 +244,11 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
     make_and_model_ = make_and_model;
   }
 
+  ManagedPrintOptions print_job_options() const { return print_job_options_; }
+  void set_print_job_options(const ManagedPrintOptions& print_job_options) {
+    print_job_options_ = print_job_options;
+  }
+
   const Uri& uri() const { return uri_; }
 
   // These methods set |uri| as a new uri. If |uri| is incorrect or does not
@@ -148,7 +256,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // to the object and false is returned. If |error_message| is not nullptr,
   // the error message is written there when the methods return false.
   bool SetUri(const Uri& uri, std::string* error_message = nullptr);
-  bool SetUri(const std::string& uri, std::string* error_message = nullptr);
+  bool SetUri(std::string_view uri, std::string* error_message = nullptr);
 
   const PpdReference& ppd_reference() const { return ppd_reference_; }
   PpdReference* mutable_ppd_reference() { return &ppd_reference_; }
@@ -165,6 +273,13 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
 
   const std::string& uuid() const { return uuid_; }
   void set_uuid(const std::string& uuid) { uuid_ = uuid; }
+
+  const std::optional<IppPrinterInfo>& ipp_printer_info() const {
+    return ipp_printer_info_;
+  }
+  void set_ipp_printer_info(std::optional<IppPrinterInfo> ipp_printer_info) {
+    ipp_printer_info_ = std::move(ipp_printer_info);
+  }
 
   // Returns true if the printer should be automatically configured using IPP
   // Everywhere.  Computed using information from |ppd_reference_| and |uri_|.
@@ -245,6 +360,9 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // Contains protocol, hostname, port, and queue.
   Uri uri_;
 
+  // Holds allowed/default values of print job options set by policy.
+  ManagedPrintOptions print_job_options_;
+
   // How to find the associated postscript printer description.
   PpdReference ppd_reference_;
 
@@ -267,6 +385,9 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) Printer {
   // This flag is set for printers that take part in the finch experiment
   // created for b/184293121.
   bool experimental_setup_of_usb_printer_with_ipp_and_ppd_ = false;
+
+  // IPP attributes, if available.
+  std::optional<IppPrinterInfo> ipp_printer_info_;
 };
 
 }  // namespace chromeos

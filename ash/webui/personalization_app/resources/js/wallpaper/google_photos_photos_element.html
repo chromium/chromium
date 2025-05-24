@@ -64,8 +64,13 @@
         </template>
         <div class="photos">
           <template is="dom-repeat" items="[[row]]" as="photo">
+            <div hidden id$="[[getPhotoDescriptionId_(photo)]]">
+              <p>[[getPhotoDate_(photo)]]</p>
+              <p>[[photo.location]]</p>
+            </div>
             <wallpaper-grid-item
                 aria-label$="[[getPhotoAriaLabel_(photo)]]"
+                aria-describedby$="[[getPhotoDescriptionId_(photo)]]"
                 aria-posinset$="[[getPhotoAriaIndex_(photo.index)]]"
                 class="photo"
                 colindex$="[[index]]"

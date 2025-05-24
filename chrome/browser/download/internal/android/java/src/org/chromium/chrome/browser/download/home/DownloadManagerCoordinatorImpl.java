@@ -18,6 +18,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.filter.Filters;
 import org.chromium.chrome.browser.download.home.filter.Filters.FilterType;
 import org.chromium.chrome.browser.download.home.list.DateOrderedListCoordinator;
@@ -40,6 +41,7 @@ import java.io.Closeable;
  * The top level coordinator for the download home UI.  This is currently an in progress class and
  * is not fully fleshed out yet.
  */
+@NullMarked
 class DownloadManagerCoordinatorImpl
         implements DownloadManagerCoordinator, ToolbarCoordinator.ToolbarActionDelegate {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
@@ -50,7 +52,7 @@ class DownloadManagerCoordinatorImpl
     private final SelectionDelegate<ListItem> mSelectionDelegate;
 
     private final Activity mActivity;
-    private final Callback<Context> mSettingsLauncher;
+    private final Callback<Context> mSettingsNavigation;
     private final BackPressHandler[] mBackPressHandlers;
 
     private ViewGroup mMainView;
@@ -62,7 +64,7 @@ class DownloadManagerCoordinatorImpl
             Activity activity,
             DownloadManagerUiConfig config,
             Supplier<Boolean> exploreOfflineTabVisibilitySupplier,
-            Callback<Context> settingsLauncher,
+            Callback<Context> settingsNavigation,
             SnackbarManager snackbarManager,
             ModalDialogManager modalDialogManager,
             Tracker tracker,
@@ -70,7 +72,7 @@ class DownloadManagerCoordinatorImpl
             OfflineContentProvider provider,
             DiscardableReferencePool discardableReferencePool) {
         mActivity = activity;
-        mSettingsLauncher = settingsLauncher;
+        mSettingsNavigation = settingsNavigation;
         mDeleteCoordinator = new DeleteUndoCoordinator(snackbarManager);
         mSelectionDelegate = new SelectionDelegate<ListItem>();
         mListCoordinator =
@@ -90,7 +92,8 @@ class DownloadManagerCoordinatorImpl
                 new ToolbarCoordinator(
                         mActivity,
                         this,
-                        mListCoordinator,
+                        /* listActionDelegate= */ mListCoordinator,
+                        /* listContentView= */ mListCoordinator.getView(),
                         mSelectionDelegate,
                         config.isSeparateActivity,
                         tracker);
@@ -198,7 +201,7 @@ class DownloadManagerCoordinatorImpl
     @Override
     public void openSettings() {
         RecordUserAction.record("Android.DownloadManager.Settings");
-        mSettingsLauncher.onResult(mActivity);
+        mSettingsNavigation.onResult(mActivity);
     }
 
     private void notifyFilterChanged(@FilterType int filter) {

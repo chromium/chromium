@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "fuchsia_web/webengine/renderer/web_engine_audio_renderer.h"
 
 #include <lib/sys/cpp/component_context.h>
@@ -83,18 +88,19 @@ scoped_refptr<media::DecoderBuffer> PreparePcm24Buffer(
   static_assert(ARCH_CPU_LITTLE_ENDIAN,
                 "Only little-endian CPUs are supported.");
 
-  size_t samples = buffer->size() / 3;
+  auto buffer_span = base::span(*buffer);
+  size_t samples = buffer_span.size() / 3;
   scoped_refptr<media::DecoderBuffer> result =
       base::MakeRefCounted<media::DecoderBuffer>(samples * 4);
   for (size_t i = 0; i < samples - 1; ++i) {
     reinterpret_cast<uint32_t*>(result->writable_data())[i] =
-        *reinterpret_cast<const uint32_t*>(buffer->data() + i * 3) & 0x00ffffff;
+        *reinterpret_cast<const uint32_t*>(buffer_span.subspan(i * 3).data()) &
+        0x00ffffff;
   }
   size_t last_sample = samples - 1;
   reinterpret_cast<uint32_t*>(result->writable_data())[last_sample] =
-      buffer->data()[last_sample * 3] |
-      (buffer->data()[last_sample * 3 + 1] << 8) |
-      (buffer->data()[last_sample * 3 + 2] << 16);
+      buffer_span[last_sample * 3] | (buffer_span[last_sample * 3 + 1] << 8) |
+      (buffer_span[last_sample * 3 + 2] << 16);
 
   result->set_timestamp(buffer->timestamp());
   result->set_duration(buffer->duration());

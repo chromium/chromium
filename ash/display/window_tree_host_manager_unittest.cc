@@ -27,7 +27,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/cursor_shape_client.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/client/focus_client.h"
@@ -38,7 +37,6 @@
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
-#include "ui/display/display_features.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_layout_builder.h"
 #include "ui/display/display_observer.h"
@@ -405,7 +403,6 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kHostWindowBounds,
         "1920x1080~" + ToDisplaySpecRadiiString(kTestRoundedPanelRadii));
-    scoped_features_.InitAndEnableFeature(display::features::kRoundedDisplay);
     AshTestBase::SetUp();
 
     display::Display primary_display =
@@ -415,10 +412,6 @@ class WindowTreeHostManagerRoundedDisplayTest : public AshTestBase {
   }
 
  protected:
-  // Currently `display::features::kRoundedDisplay` feature is used during the
-  // `ash::Shell` shutdown as we call `AshTestBase::TearDown()`, therefore
-  // `scoped_features_` needs to outlive the call.
-  base::test::ScopedFeatureList scoped_features_;
 
   // ManagedDisplayInfo of the display initialized on the
   // `AshTestBase::SetUp()`.
@@ -1300,10 +1293,7 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithThreeDisplays) {
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::DisplayIdList non_primary_ids =
       display_manager()->GetConnectedDisplayIdList();
-  auto itr =
-      std::remove(non_primary_ids.begin(), non_primary_ids.end(), primary_id);
-  ASSERT_TRUE(itr != non_primary_ids.end());
-  non_primary_ids.erase(itr, non_primary_ids.end());
+  ASSERT_GT(std::erase(non_primary_ids, primary_id), 0u);
   ASSERT_EQ(2u, non_primary_ids.size());
 
   // Build the following layout:
@@ -1420,10 +1410,7 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithFourDisplays) {
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
   display::DisplayIdList non_primary_ids =
       display_manager()->GetConnectedDisplayIdList();
-  auto itr =
-      std::remove(non_primary_ids.begin(), non_primary_ids.end(), primary_id);
-  ASSERT_TRUE(itr != non_primary_ids.end());
-  non_primary_ids.erase(itr, non_primary_ids.end());
+  ASSERT_GT(std::erase(non_primary_ids, primary_id), 0u);
   ASSERT_EQ(3u, non_primary_ids.size());
 
   // Build the following layout:
@@ -1525,8 +1512,6 @@ TEST_F(WindowTreeHostManagerTest, SetPrimaryWithFourDisplays) {
 }
 
 TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
-  WindowTreeHostManager* window_tree_host_manager =
-      Shell::Get()->window_tree_host_manager();
   TestEventHandler event_handler;
   Shell::Get()->AddPreTargetHandler(&event_handler);
 
@@ -1534,8 +1519,8 @@ TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
   display::Display display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
-  window_tree_host_manager->SetOverscanInsets(
-      display1.id(), gfx::Insets::TLBR(10, 15, 20, 25));
+  display_manager()->SetOverscanInsets(display1.id(),
+                                       gfx::Insets::TLBR(10, 15, 20, 25));
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
   EXPECT_EQ(gfx::Rect(0, 0, 80, 170), root_windows[0]->bounds());
   EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
@@ -1546,7 +1531,7 @@ TEST_F(WindowTreeHostManagerTest, OverscanInsets) {
   generator.MoveMouseToInHost(20, 25);
   EXPECT_EQ(gfx::Point(5, 15), event_handler.GetLocationAndReset());
 
-  window_tree_host_manager->SetOverscanInsets(display1.id(), gfx::Insets());
+  display_manager()->SetOverscanInsets(display1.id(), gfx::Insets());
   EXPECT_EQ(gfx::Rect(0, 0, 120, 200), root_windows[0]->bounds());
   EXPECT_EQ(gfx::Rect(120, 0, 150, 200),
             display_manager_test.GetSecondaryDisplay().bounds());
@@ -2163,7 +2148,7 @@ TEST_F(WindowTreeHostManagerTest,
   views::Widget* widget = views::Widget::CreateWindowWithContext(
       nullptr, root2, gfx::Rect(350, 0, 100, 100));
   views::View* view = new views::View();
-  widget->GetContentsView()->AddChildView(view);
+  widget->GetContentsView()->AddChildViewRaw(view);
   view->SetBounds(0, 0, 100, 100);
   widget->Show();
 

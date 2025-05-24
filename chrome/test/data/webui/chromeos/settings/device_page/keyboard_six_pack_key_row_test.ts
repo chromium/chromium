@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://os-settings/lazy_load.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {KeyboardSixPackKeyRowElement, SettingsDropdownMenuElement, SixPackKey, sixPackKeyProperties} from 'chrome://os-settings/os_settings.js';
+import {KeyboardSixPackKeyRowElement, sixPackKeyProperties} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsDropdownMenuElement} from 'chrome://os-settings/os_settings.js';
+import {SixPackKey} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -71,9 +74,9 @@ suite('<keyboard-six-pack-key-row>', () => {
     for (const key
              of [SixPackKey.DELETE, SixPackKey.INSERT, SixPackKey.PAGE_UP,
                  SixPackKey.PAGE_DOWN, SixPackKey.HOME, SixPackKey.END]) {
-      await setKey((key as SixPackKey));
+      await setKey(key);
       assertDeepEquals(
-          getMenuOptionsForSixPackKey((key as SixPackKey)),
+          getMenuOptionsForSixPackKey((key)),
           sixPackKeyRow.shadowRoot!
               .querySelector<SettingsDropdownMenuElement>(
                   '#keyDropdown')!.menuOptions);

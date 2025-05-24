@@ -15,7 +15,7 @@ namespace sessions {
 // chrome/content dependencies.
 class CommandStorageManagerDelegate {
  public:
-  CommandStorageManagerDelegate() {}
+  CommandStorageManagerDelegate() = default;
 
   // Returns true if save operations can be performed as a delayed task - which
   // is usually only used by unit tests.
@@ -34,7 +34,7 @@ class CommandStorageManagerDelegate {
   virtual void OnErrorWritingSessionCommands() = 0;
 
  protected:
-  virtual ~CommandStorageManagerDelegate() {}
+  virtual ~CommandStorageManagerDelegate() = default;
 };
 
 }  // namespace sessions

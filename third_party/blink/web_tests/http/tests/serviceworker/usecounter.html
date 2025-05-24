@@ -289,6 +289,22 @@ promise_test(async t => {
   assert_true(isUseCounted(win, kServiceWorkerFrameType));
 }, 'Client.frameType is counted');
 
+promise_test(async t => {
+  const kIntegrityPolicyInServiceWorkerResponse = 5557;  // from web_feature.mojom
+  const kUrl = 'resources/integrity-policy-worker.php';
+  const kScope = 'resources/usecounter-window.html?integrityPolicy';
+
+  const registration =
+      await service_worker_unregister_and_register(t, kUrl, kScope);
+  add_result_callback(() => registration.unregister());
+  const worker = registration.installing;
+  await wait_for_state(t, worker, 'activated');
+
+  const win = await openWindow(kScope);
+  await observeUseCounter(win, kIntegrityPolicyInServiceWorkerResponse);
+  assert_true(isUseCounted(win, kIntegrityPolicyInServiceWorkerResponse));
+}, 'Integrity-Policy is counted');
+
 // TODO(nhiroki): Test a case where ServiceWorker controls SharedWorker that is
 // connected from multiple windows. In such a case, API use on ServiceWorker
 // should be propagated to all connecting windows via SharedWorker.

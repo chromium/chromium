@@ -59,14 +59,7 @@ VirtualCardEnrollmentBubbleSource ConvertToVirtualCardEnrollmentBubbleSource(
       return VirtualCardEnrollmentBubbleSource::
           VIRTUAL_CARD_ENROLLMENT_SETTINGS_PAGE_SOURCE;
     case VirtualCardEnrollmentSource::kNone:
-      if (base::FeatureList::IsEnabled(
-              features::kAutofillEnableVirtualCardEnrollMetricsLogger)) {
-        NOTREACHED();
-      } else {
-        NOTREACHED_IN_MIGRATION();
-        return VirtualCardEnrollmentBubbleSource::
-            VIRTUAL_CARD_ENROLLMENT_UNKNOWN_SOURCE;
-      }
+      NOTREACHED();
   }
 }
 

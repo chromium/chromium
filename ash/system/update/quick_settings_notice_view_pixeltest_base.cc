@@ -36,8 +36,8 @@ void QuickSettingsNoticeViewPixelTestBase::SetUp() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
   // The stroke color has transparency, so set a background color so it
   // renders like in production.
-  contents->SetBackground(views::CreateThemedSolidBackground(
-      cros_tokens::kCrosSysSystemBaseElevated));
+  contents->SetBackground(
+      views::CreateSolidBackground(cros_tokens::kCrosSysSystemBaseElevated));
 }
 
 void QuickSettingsNoticeViewPixelTestBase::TearDown() {

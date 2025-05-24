@@ -5,10 +5,10 @@
 #ifndef MEDIA_CDM_WIN_MEDIA_FOUNDATION_CDM_MODULE_H_
 #define MEDIA_CDM_WIN_MEDIA_FOUNDATION_CDM_MODULE_H_
 
-#include <string>
-
 #include <mfcontentdecryptionmodule.h>
 #include <wrl.h>
+
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
@@ -27,11 +27,21 @@ class MEDIA_EXPORT MediaFoundationCdmModule {
   // CDM is an OS or store CDM, `cdm_path` could be empty. See implementation
   // details in ActivateCdmFactory() for how OS or store CDMs are handled.
   // Must only be called once.
-  void Initialize(const base::FilePath& cdm_path);
+  bool Initialize(const base::FilePath& cdm_path);
 
   HRESULT GetCdmFactory(
       const std::string& key_system,
       Microsoft::WRL::ComPtr<IMFContentDecryptionModuleFactory>& cdm_factory);
+
+  // Returns true if an OS CDM is used. For example, the PlayReady CDM.
+  // OS CDMs are not loaded from a CDM path since they are part of the OS.
+  bool IsOsCdm() const {
+    return is_os_cdm_for_testing_.value_or(cdm_path_.empty());
+  }
+
+  void SetIsOsCdmForTesting(bool is_os_cdm) {
+    is_os_cdm_for_testing_ = is_os_cdm;
+  }
 
  private:
   MediaFoundationCdmModule();
@@ -49,6 +59,8 @@ class MEDIA_EXPORT MediaFoundationCdmModule {
 
   // Indicates whether ActivateCdmFactory() has been called.
   bool activated_ = false;
+
+  std::optional<bool> is_os_cdm_for_testing_;
 
   base::FilePath cdm_path_;
   std::string key_system_;

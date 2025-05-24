@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 /** Parses upload log file in crash directory where crash upload id and time are written. */
 public class UploadedCrashesInfoLoader extends CrashInfoLoader {
-    private File mLogFile;
+    private final File mLogFile;
 
     /** @param logsFile upload log file to parse. */
     public UploadedCrashesInfoLoader(File logFile) {

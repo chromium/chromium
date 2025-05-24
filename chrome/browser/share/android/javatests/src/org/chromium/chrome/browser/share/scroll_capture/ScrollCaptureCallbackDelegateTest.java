@@ -40,7 +40,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtilsJni;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
@@ -72,11 +71,9 @@ public class ScrollCaptureCallbackDelegateTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Before
     public void setUp() {
-        mJniMocker.mock(PaintPreviewCompositorUtilsJni.TEST_HOOKS, mCompositorUtils);
+        PaintPreviewCompositorUtilsJni.setInstanceForTesting(mCompositorUtils);
         doReturn(false).when(mCompositorUtils).stopWarmCompositor();
         doNothing().when(mCompositorUtils).warmupCompositor();
         mScrollCaptureCallbackObj = new ScrollCaptureCallbackDelegate(mEntryManagerWrapper);

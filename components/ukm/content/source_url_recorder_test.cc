@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/ukm/content/source_url_recorder.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/web_contents.h"
@@ -11,6 +12,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/source.pb.h"
 #include "url/gurl.h"
@@ -61,26 +63,33 @@ TEST_F(SourceUrlRecorderWebContentsObserverTest, InitialUrl) {
 
   const auto& sources = test_ukm_recorder_.GetSources();
 
-  // Expect two sources, one for navigation, one for document.
-  EXPECT_EQ(2ul, sources.size());
+  // Expect three sources, one each for navigation, redirect, and document.
+  EXPECT_EQ(3ul, sources.size());
   size_t navigation_type_source_count = 0;
+  size_t redirect_type_source_count = 0;
   size_t document_type_source_count = 0;
   for (const auto& kv : sources) {
     if (ukm::GetSourceIdType(kv.first) ==
         ukm::SourceIdObj::Type::NAVIGATION_ID) {
       // The navigation source has both URLs.
-      EXPECT_EQ(initial_url, kv.second->urls().front());
-      EXPECT_EQ(final_url, kv.second->urls().back());
+      EXPECT_THAT(kv.second->urls(),
+                  testing::ElementsAre(initial_url, final_url));
       navigation_type_source_count++;
+    }
+    if (ukm::GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::REDIRECT_ID) {
+      // The redirect source has the initial URL which the navigation requested.
+      EXPECT_THAT(kv.second->urls(), testing::ElementsAre(initial_url));
+      redirect_type_source_count++;
     }
     if (ukm::GetSourceIdType(kv.first) == ukm::SourceIdObj::Type::DEFAULT) {
       // The document source has the final URL which is one set on the
       // committed document.
-      EXPECT_EQ(final_url, kv.second->urls().front());
+      EXPECT_THAT(kv.second->urls(), testing::ElementsAre(final_url));
       document_type_source_count++;
     }
   }
   EXPECT_EQ(1u, navigation_type_source_count);
+  EXPECT_EQ(1u, redirect_type_source_count);
   EXPECT_EQ(1u, document_type_source_count);
 }
 

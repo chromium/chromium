@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.feed;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class bundles the parameters for the creation of a single web feed. */
+@NullMarked
 public class SingleWebFeedParameters {
-    private byte[] mWebFeedId;
-    private int mEntryPoint;
+    private final byte[] mWebFeedId;
+    private final int mEntryPoint;
 
     public SingleWebFeedParameters(byte[] webFeedId, int entryPoint) {
         mWebFeedId = webFeedId;

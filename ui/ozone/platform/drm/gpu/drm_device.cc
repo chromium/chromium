@@ -15,13 +15,13 @@
 #include <xf86drm.h>
 #include <xf86drmMode.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -84,8 +84,7 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
       case DRM_EVENT_VBLANK:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     idx += event.length;
@@ -106,7 +105,7 @@ class DrmDevice::PageFlipManager {
   ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
-    auto it = base::ranges::find(callbacks_, id, &PageFlip::id);
+    auto it = std::ranges::find(callbacks_, id, &PageFlip::id);
     if (it == callbacks_.end()) {
       LOG(WARNING) << "Could not find callback for page flip id=" << id;
       return;
@@ -177,9 +176,7 @@ class DrmDevice::IOWatcher : public base::MessagePumpEpoll::FdWatcher {
       Unregister();
   }
 
-  void OnFileCanWriteWithoutBlocking(int fd) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void OnFileCanWriteWithoutBlocking(int fd) override { NOTREACHED(); }
 
   raw_ptr<DrmDevice::PageFlipManager> page_flip_manager_;
 

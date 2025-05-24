@@ -35,7 +35,6 @@
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
-#include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
@@ -77,6 +76,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -152,10 +152,7 @@ PrefService* GetActivePrefService() {
   if (GetPrimaryUserPrefService()) {
     return GetPrimaryUserPrefService();
   }
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return GetSigninPrefService();
-  }
-  return nullptr;
+  return GetSigninPrefService();
 }
 
 bool IsUserAmbientModeEnabled() {
@@ -171,8 +168,7 @@ bool IsUserAmbientModeEnabled() {
 bool IsAmbientModeManagedScreensaverEnabled() {
   PrefService* pref_service = GetActivePrefService();
 
-  return ash::features::IsAmbientModeManagedScreensaverEnabled() &&
-         !chromeos::IsKioskSession() && pref_service &&
+  return !chromeos::IsKioskSession() && pref_service &&
          pref_service->GetBoolean(
              ambient::prefs::kAmbientModeManagedScreensaverEnabled);
 }
@@ -181,20 +177,7 @@ bool IsAmbientModeEnabled() {
   return IsUserAmbientModeEnabled() || IsAmbientModeManagedScreensaverEnabled();
 }
 
-class AmbientWidgetDelegate : public views::WidgetDelegate {
- public:
-  AmbientWidgetDelegate() {
-    SetCanFullscreen(true);
-    SetCanMaximize(true);
-    SetOwnedByWidget(true);
-  }
-};
-
 void RecordManagedScreensaverEnabledPref() {
-  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return;
-  }
-
   if (PrefService* pref_service = GetActivePrefService();
       pref_service &&
       pref_service->IsManagedPreference(
@@ -205,6 +188,15 @@ void RecordManagedScreensaverEnabledPref() {
 }
 
 }  // namespace
+
+class AmbientWidgetDelegate : public views::WidgetDelegate {
+ public:
+  AmbientWidgetDelegate() {
+    SetCanFullscreen(true);
+    SetCanMaximize(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
+  }
+};
 
 // static
 void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -449,13 +441,9 @@ void AmbientController::OnActiveUserPrefServiceChanged(
   }
 
   bool ambient_mode_allowed = AmbientClient::Get()->IsAmbientModeAllowed();
-  bool managed_screensaver_flag_enabled =
-      ash::features::IsAmbientModeManagedScreensaverEnabled();
 
-  if (ambient_mode_allowed || managed_screensaver_flag_enabled) {
-    pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
-    pref_change_registrar_->Init(pref_service);
-  }
+  pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
+  pref_change_registrar_->Init(pref_service);
 
   if (ambient_mode_allowed) {
     pref_change_registrar_->Add(
@@ -464,27 +452,19 @@ void AmbientController::OnActiveUserPrefServiceChanged(
                             weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (managed_screensaver_flag_enabled) {
-    screensaver_images_policy_handler_ =
-        ScreensaverImagesPolicyHandler::Create(pref_service);
+  screensaver_images_policy_handler_ =
+      ScreensaverImagesPolicyHandler::Create(pref_service);
 
-    pref_change_registrar_->Add(
-        ambient::prefs::kAmbientModeManagedScreensaverEnabled,
-        base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  pref_change_registrar_->Add(
+      ambient::prefs::kAmbientModeManagedScreensaverEnabled,
+      base::BindRepeating(&AmbientController::OnEnabledPrefChanged,
+                          weak_ptr_factory_.GetWeakPtr()));
 
-  if (ambient_mode_allowed || managed_screensaver_flag_enabled) {
-    OnEnabledPrefChanged();
-  }
+  OnEnabledPrefChanged();
 }
 
 void AmbientController::OnSigninScreenPrefServiceInitialized(
     PrefService* pref_service) {
-  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return;
-  }
-
   screensaver_images_policy_handler_ =
       ScreensaverImagesPolicyHandler::Create(pref_service);
 
@@ -847,10 +827,7 @@ PrefChangeRegistrar* AmbientController::GetActivePrefChangeRegistrar() {
     return pref_change_registrar_.get();
   }
 
-  if (ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return sign_in_pref_change_registrar_.get();
-  }
-  return nullptr;
+  return sign_in_pref_change_registrar_.get();
 }
 
 void AmbientController::AddManagedScreensaverPolicyPrefObservers() {
@@ -1099,7 +1076,7 @@ void AmbientController::RequestAccessToken(
   if (IsAmbientModeManagedScreensaverEnabled()) {
     // Consume the callback to be resilient against dependencies on the callback
     // in the future.
-    std::move(callback).Run("", "");
+    std::move(callback).Run(GaiaId(), "");
     return;
   }
   access_token_controller_.RequestAccessToken(std::move(callback),

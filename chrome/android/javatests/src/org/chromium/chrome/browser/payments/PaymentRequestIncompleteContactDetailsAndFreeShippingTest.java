@@ -68,7 +68,7 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditIncompleteShippingAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -112,7 +112,7 @@ public class PaymentRequestIncompleteContactDetailsAndFreeShippingTest {
     @MediumTest
     @Feature({"Payments"})
     public void testEditIncompleteShippingAndContactAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(

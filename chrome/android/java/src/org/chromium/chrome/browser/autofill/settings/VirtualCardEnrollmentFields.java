@@ -9,6 +9,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.url.GURL;
 
@@ -18,6 +19,7 @@ import java.util.LinkedList;
  * Class to represent the fields required to show the {@link AutofillVirtualCardEnrollmentDialog}
  */
 @JNINamespace("autofill")
+@NullMarked
 public class VirtualCardEnrollmentFields {
     @VisibleForTesting final LinkedList<LegalMessageLine> mGoogleLegalMessages = new LinkedList<>();
     @VisibleForTesting final LinkedList<LegalMessageLine> mIssuerLegalMessages = new LinkedList<>();

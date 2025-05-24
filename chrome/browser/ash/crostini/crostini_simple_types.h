@@ -117,7 +117,11 @@ enum class CrostiniResult {
   DISK_IMAGE_FAILED = 82,
   DISK_IMAGE_FAILED_NO_SPACE = 83,
   DISK_IMAGE_CANCELLED = 84,
-  kMaxValue = DISK_IMAGE_CANCELLED,
+  START_BAGUETTE_VM_TIMED_OUT = 85,
+  UNINSTALL_BAGUETTE_FAILED = 86,
+  INSTALL_BAGUETTE_CANCELLED = 87,
+  DOWNLOAD_BAGUETTE_FAILED = 88,
+  kMaxValue = DOWNLOAD_BAGUETTE_FAILED,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };

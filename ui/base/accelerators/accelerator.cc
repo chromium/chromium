@@ -13,8 +13,8 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -33,55 +33,15 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ui_base_features.h"
 #endif
 
-namespace ui {
-
-namespace {
-
-const int kModifierMask = EF_SHIFT_DOWN | EF_CONTROL_DOWN | EF_ALT_DOWN |
-                          EF_COMMAND_DOWN | EF_FUNCTION_DOWN | EF_ALTGR_DOWN;
-
-const int kInterestingFlagsMask =
-    kModifierMask | EF_IS_SYNTHESIZED | EF_IS_REPEAT;
-
-std::u16string ApplyModifierToAcceleratorString(
-    const std::u16string& accelerator,
-    int modifier_message_id) {
-  return l10n_util::GetStringFUTF16(
-      IDS_APP_ACCELERATOR_WITH_MODIFIER,
-      l10n_util::GetStringUTF16(modifier_message_id), accelerator);
-}
-
-}  // namespace
-
-Accelerator::Accelerator() : Accelerator(VKEY_UNKNOWN, EF_NONE) {}
-
-Accelerator::Accelerator(KeyboardCode key_code,
-                         int modifiers,
-                         KeyState key_state,
-                         base::TimeTicks time_stamp)
-    : key_code_(key_code),
-      key_state_(key_state),
-      modifiers_(modifiers & kInterestingFlagsMask),
-      time_stamp_(time_stamp),
-      interrupted_by_mouse_event_(false) {}
-
-#if BUILDFLAG(IS_CHROMEOS)
-Accelerator::Accelerator(KeyboardCode key_code,
-                         DomCode code,
-                         int modifiers,
-                         KeyState key_state,
-                         base::TimeTicks time_stamp)
-    : key_code_(key_code),
-      code_(code),
-      key_state_(key_state),
-      modifiers_(modifiers & kInterestingFlagsMask),
-      time_stamp_(time_stamp),
-      interrupted_by_mouse_event_(false) {}
+#if BUILDFLAG(USE_BLINK)
+#include "ui/base/accelerators/media_keys_listener.h"
 #endif
+
+namespace ui {
 
 Accelerator::Accelerator(const KeyEvent& key_event)
     : key_code_(key_event.key_code()),
@@ -98,23 +58,12 @@ Accelerator::Accelerator(const KeyEvent& key_event)
     code_ = key_event.code();
   }
 
-  // Rewrite to Right Alt based on the presence of the property.
+  // Rewrite to Quick Insert based on the presence of the property.
   if (key_event.key_code() == VKEY_ASSISTANT &&
-      HasRightAltProperty(key_event)) {
-    key_code_ = VKEY_RIGHT_ALT;
+      HasQuickInsertProperty(key_event)) {
+    key_code_ = VKEY_QUICK_INSERT;
   }
 #endif
-}
-
-Accelerator::Accelerator(const Accelerator& accelerator) = default;
-
-Accelerator& Accelerator::operator=(const Accelerator& accelerator) = default;
-
-Accelerator::~Accelerator() = default;
-
-// static
-int Accelerator::MaskOutKeyEventFlags(int flags) {
-  return flags & kModifierMask;
 }
 
 KeyEvent Accelerator::ToKeyEvent() const {
@@ -128,62 +77,93 @@ KeyEvent Accelerator::ToKeyEvent() const {
                   modifiers(), time_stamp());
 }
 
-bool Accelerator::operator<(const Accelerator& rhs) const {
-  const int modifiers_with_mask = MaskOutKeyEventFlags(modifiers_);
-  const int rhs_modifiers_with_mask = MaskOutKeyEventFlags(rhs.modifiers_);
-  return std::tie(key_code_, key_state_, modifiers_with_mask) <
-         std::tie(rhs.key_code_, rhs.key_state_, rhs_modifiers_with_mask);
-}
+#if BUILDFLAG(USE_BLINK)
+bool Accelerator::IsMediaKey() const {
+  if (modifiers_ != EF_NONE) {
+    return false;
+  }
 
-bool Accelerator::operator==(const Accelerator& rhs) const {
-  return (key_code_ == rhs.key_code_) && (key_state_ == rhs.key_state_) &&
-         (MaskOutKeyEventFlags(modifiers_) ==
-          MaskOutKeyEventFlags(rhs.modifiers_)) &&
-         interrupted_by_mouse_event_ == rhs.interrupted_by_mouse_event_;
+  return ui::MediaKeysListener::IsMediaKeycode(key_code_);
 }
+#endif
 
-bool Accelerator::operator!=(const Accelerator& rhs) const {
-  return !(*this == rhs);
-}
+std::vector<std::u16string> Accelerator::GetShortcutVectorRepresentation()
+    const {
+  std::vector<std::u16string> shortcut_vector;
+  if (IsEmpty()) {
+    return shortcut_vector;
+  }
 
-bool Accelerator::IsShiftDown() const {
-  return (modifiers_ & EF_SHIFT_DOWN) != 0;
-}
+  std::u16string key_code = GetKeyCodeStringForShortcut();
 
-bool Accelerator::IsCtrlDown() const {
-  return (modifiers_ & EF_CONTROL_DOWN) != 0;
-}
+#if BUILDFLAG(IS_MAC)
+  shortcut_vector = GetShortFormModifiers();
+  shortcut_vector.push_back(key_code);
+#else
+  std::vector<std::u16string> modifiers = GetLongFormModifiers();
+  // For some reason, menus in Windows ignore standard Unicode directionality
+  // marks (such as LRE, PDF, etc.). On RTL locales, we use RTL menus and
+  // therefore any text we draw for the menu items is drawn in an RTL context.
+  // Thus, the text "Ctrl++" (which we currently use for the Zoom In option)
+  // appears as "++Ctrl" in RTL because the Unicode BiDi algorithm puts
+  // punctuation on the left when the context is right-to-left. Shortcuts that
+  // do not end with a punctuation mark (such as "Ctrl+H" do not have this
+  // problem).
+  //
+  // The only way to solve this problem is to adjust the shortcut representation
+  // if the locale is RTL so that it is drawn correctly in an RTL context.
+  // Instead of returning "Ctrl++" in the above example, we return "++Ctrl".
+  // This will cause the text to appear as "Ctrl++" when Windows draws the
+  // string in an RTL context because the punctuation no longer appears at the
+  // end of the string.
+  // To accomplish this, if the character used for the accelerator is not
+  // alphanumeric and the locale is RTL place the character key code before the
+  // modifiers. Otherwise, place it after the modifiers as per usual.
+  //
+  // TODO(crbug.com/40175605): This hack of doing the RTL adjustment here was
+  // intended to be removed when the menu system moved to MenuItemView. That was
+  // crbug.com/2822, closed in 2010. Can we finally remove all of this?
+  if (base::i18n::IsRTL() && key_code.length() == 1 &&
+      !base::IsAsciiAlphaNumeric(key_code[0])) {
+    shortcut_vector.push_back(key_code);
+    shortcut_vector.insert(shortcut_vector.end(), modifiers.begin(),
+                           modifiers.end());
+  } else {
+    shortcut_vector.insert(shortcut_vector.end(), modifiers.begin(),
+                           modifiers.end());
+    shortcut_vector.push_back(key_code);
+  }
 
-bool Accelerator::IsAltDown() const {
-  return (modifiers_ & EF_ALT_DOWN) != 0;
-}
+#endif  // BUILDFLAG(IS_MAC)
 
-bool Accelerator::IsAltGrDown() const {
-  return (modifiers_ & EF_ALTGR_DOWN) != 0;
-}
-
-bool Accelerator::IsCmdDown() const {
-  return (modifiers_ & EF_COMMAND_DOWN) != 0;
-}
-
-bool Accelerator::IsFunctionDown() const {
-  return (modifiers_ & EF_FUNCTION_DOWN) != 0;
-}
-
-bool Accelerator::IsRepeat() const {
-  return (modifiers_ & EF_IS_REPEAT) != 0;
+  return shortcut_vector;
 }
 
 std::u16string Accelerator::GetShortcutText() const {
   std::u16string shortcut;
+  std::vector<std::u16string> shortcut_vector =
+      GetShortcutVectorRepresentation();
 
+  // Shortcut text is expected to be represented using '+' as a separator on all
+  // platforms except Mac, where no separator is used.
 #if BUILDFLAG(IS_MAC)
-  shortcut = KeyCodeToMacSymbol();
+  shortcut = base::JoinString(shortcut_vector, u"");
 #else
-  shortcut = KeyCodeToName();
+  shortcut = base::JoinString(shortcut_vector, u"+");
 #endif
 
-  if (shortcut.empty()) {
+  return shortcut;
+}
+
+std::u16string Accelerator::GetKeyCodeStringForShortcut() const {
+  std::u16string key_string;
+#if BUILDFLAG(IS_MAC)
+  key_string = KeyCodeToMacSymbol();
+#else
+  key_string = KeyCodeToName();
+#endif
+
+  if (key_string.empty()) {
 #if BUILDFLAG(IS_WIN)
     // Our fallback is to try translate the key code to a regular character
     // unless it is one of digits (VK_0 to VK_9). Some keyboard
@@ -192,69 +172,27 @@ std::u16string Accelerator::GetShortcutText() const {
     // accent' for '0'). For display in the menu (e.g. Ctrl-0 for the
     // default zoom level), we leave VK_[0-9] alone without translation.
     wchar_t key;
-    if (base::IsAsciiDigit(key_code_))
+    if (base::IsAsciiDigit(base::to_underlying(key_code_))) {
       key = static_cast<wchar_t>(key_code_);
-    else
+    } else {
       key = LOWORD(::MapVirtualKeyW(key_code_, MAPVK_VK_TO_CHAR));
+    }
     // If there is no translation for the given |key_code_| (e.g.
     // VKEY_UNKNOWN), |::MapVirtualKeyW| returns 0.
-    if (key != 0)
-      shortcut += key;
+    if (key != 0) {
+      key_string += key;
+    }
 #elif defined(USE_AURA) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
     const uint16_t c = DomCodeToUsLayoutCharacter(
         UsLayoutKeyboardCodeToDomCode(key_code_), false);
-    if (c != 0)
-      shortcut +=
+    if (c != 0) {
+      key_string +=
           static_cast<std::u16string::value_type>(base::ToUpperASCII(c));
+    }
 #endif
   }
 
-#if BUILDFLAG(IS_MAC)
-  shortcut = ApplyShortFormModifiers(shortcut);
-#else
-  // Checking whether the character used for the accelerator is alphanumeric.
-  // If it is not, then we need to adjust the string later on if the locale is
-  // right-to-left. See below for more information of why such adjustment is
-  // required.
-  std::u16string shortcut_rtl;
-  bool adjust_shortcut_for_rtl = false;
-  if (base::i18n::IsRTL() && shortcut.length() == 1 &&
-      !base::IsAsciiAlpha(shortcut[0]) && !base::IsAsciiDigit(shortcut[0])) {
-    adjust_shortcut_for_rtl = true;
-    shortcut_rtl.assign(shortcut);
-  }
-
-  shortcut = ApplyLongFormModifiers(shortcut);
-
-  // For some reason, menus in Windows ignore standard Unicode directionality
-  // marks (such as LRE, PDF, etc.). On RTL locales, we use RTL menus and
-  // therefore any text we draw for the menu items is drawn in an RTL context.
-  // Thus, the text "Ctrl++" (which we currently use for the Zoom In option)
-  // appears as "++Ctrl" in RTL because the Unicode BiDi algorithm puts
-  // punctuations on the left when the context is right-to-left. Shortcuts that
-  // do not end with a punctuation mark (such as "Ctrl+H" do not have this
-  // problem).
-  //
-  // The only way to solve this problem is to adjust the string if the locale
-  // is RTL so that it is drawn correctly in an RTL context. Instead of
-  // returning "Ctrl++" in the above example, we return "++Ctrl". This will
-  // cause the text to appear as "Ctrl++" when Windows draws the string in an
-  // RTL context because the punctuation no longer appears at the end of the
-  // string.
-  //
-  // TODO(crbug.com/40175605): This hack of doing the RTL adjustment here was
-  // intended to be removed when the menu system moved to MenuItemView. That was
-  // crbug.com/2822, closed in 2010. Can we finally remove all of this?
-  if (adjust_shortcut_for_rtl) {
-    DCHECK_GT(shortcut_rtl.length(), 0u);
-    shortcut_rtl.append(u"+");
-
-    shortcut_rtl.append(shortcut, 0, shortcut.length() - shortcut_rtl.length());
-    shortcut.swap(shortcut_rtl);
-  }
-#endif  // BUILDFLAG(IS_MAC)
-
-  return shortcut;
+  return key_string;
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -387,54 +325,53 @@ std::u16string Accelerator::KeyCodeToName() const {
   return string_id ? l10n_util::GetStringUTF16(string_id) : std::u16string();
 }
 
-std::u16string Accelerator::ApplyLongFormModifiers(
-    const std::u16string& shortcut) const {
-  std::u16string result = shortcut;
-
-  if (IsShiftDown())
-    result = ApplyModifierToAcceleratorString(result, IDS_APP_SHIFT_KEY);
-
-  // Note that we use 'else-if' in order to avoid using Ctrl+Alt as a shortcut.
-  // See https://devblogs.microsoft.com/oldnewthing/20040329-00/?p=40003 for
-  // more information.
-  if (IsCtrlDown())
-    result = ApplyModifierToAcceleratorString(result, IDS_APP_CTRL_KEY);
-  else if (IsAltDown())
-    result = ApplyModifierToAcceleratorString(result, IDS_APP_ALT_KEY);
+std::vector<std::u16string> Accelerator::GetLongFormModifiers() const {
+  std::vector<std::u16string> modifiers;
 
   if (IsCmdDown()) {
 #if BUILDFLAG(IS_MAC)
-    result = ApplyModifierToAcceleratorString(result, IDS_APP_COMMAND_KEY);
+    modifiers.push_back(l10n_util::GetStringUTF16(IDS_APP_COMMAND_KEY));
 #elif BUILDFLAG(IS_CHROMEOS)
-    result = ApplyModifierToAcceleratorString(result, IDS_APP_SEARCH_KEY);
+    modifiers.push_back(l10n_util::GetStringUTF16(IDS_APP_SEARCH_KEY));
 #elif BUILDFLAG(IS_WIN)
-    result = ApplyModifierToAcceleratorString(result, IDS_APP_WINDOWS_KEY);
+    modifiers.push_back(l10n_util::GetStringUTF16(IDS_APP_WINDOWS_KEY));
+#elif BUILDFLAG(IS_LINUX)
+    modifiers.push_back(l10n_util::GetStringUTF16(IDS_APP_SUPER_KEY));
 #else
     NOTREACHED();
 #endif
   }
 
-  return result;
+  if (IsAltDown()) {
+    modifiers.push_back(l10n_util::GetStringUTF16(IDS_APP_ALT_KEY));
+  }
+
+  if (IsCtrlDown()) {
+    modifiers.push_back(l10n_util::GetStringUTF16(IDS_APP_CTRL_KEY));
+  }
+
+  if (IsShiftDown()) {
+    modifiers.push_back(l10n_util::GetStringUTF16(IDS_APP_SHIFT_KEY));
+  }
+
+  return modifiers;
 }
 
-std::u16string Accelerator::ApplyShortFormModifiers(
-    const std::u16string& shortcut) const {
-  std::u16string result;
-  result.reserve(6);
-
+std::vector<std::u16string> Accelerator::GetShortFormModifiers() const {
+  std::vector<std::u16string> modifiers;
   // Add modifiers in the order that matches how they are displayed in native
   // menus.
   if (IsCtrlDown()) {
-    result.push_back(u'⌃');  // U+2303, UP ARROWHEAD
+    modifiers.push_back(u"⌃");  // U+2303, UP ARROWHEAD
   }
   if (IsAltDown()) {
-    result.push_back(u'⌥');  // U+2325, OPTION KEY
+    modifiers.push_back(u"⌥");  // U+2325, OPTION KEY
   }
   if (IsShiftDown()) {
-    result.push_back(u'⇧');  // U+21E7, UPWARDS WHITE ARROW
+    modifiers.push_back(u"⇧");  // U+21E7, UPWARDS WHITE ARROW
   }
   if (IsCmdDown()) {
-    result.push_back(u'⌘');  // U+2318, PLACE OF INTEREST SIGN
+    modifiers.push_back(u"⌘");  // U+2318, PLACE OF INTEREST SIGN
   }
 
   if (IsFunctionDown()) {
@@ -459,12 +396,10 @@ std::u16string Accelerator::ApplyShortFormModifiers(
     //
     // TODO(http://crbug.com/40800376): Implement all of this when text-style
     // presentations are implemented for Views in https://crbug.com/40137571.
-    result.append(u"(fn) ");
+    modifiers.push_back(u"(fn) ");
   }
 
-  result.append(shortcut);
-
-  return result;
+  return modifiers;
 }
 
 }  // namespace ui

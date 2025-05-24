@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../controls/settings_toggle_button.js';
+import './settings_category_default_radio_group.js';
+import './chooser_exception_list.js';
+import '../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ContentSettingsTypes} from './constants.js';
+import {ChooserType, ContentSettingsTypes} from './constants.js';
 import {getTemplate} from './smart_card_readers_page.html.js';
 
-export class SettingsSmartCardReadersPageElement extends PolymerElement {
+const SettingsSmartCardReadersPageElementBase = PolymerElement;
+
+export class SettingsSmartCardReadersPageElement extends
+    SettingsSmartCardReadersPageElementBase {
   static get is() {
     return 'settings-smart-card-readers-page';
   }
@@ -20,9 +25,13 @@ export class SettingsSmartCardReadersPageElement extends PolymerElement {
 
   static get properties() {
     return {
-      contentSettingsType_: {
-        type: ContentSettingsTypes,
-        value: ContentSettingsTypes.SMART_CARD_READERS,
+      contentSettingsTypeEnum_: {
+        type: Object,
+        value: ContentSettingsTypes,
+      },
+      chooserTypeEnum_: {
+        type: Object,
+        value: ChooserType,
       },
     };
   }

@@ -9,9 +9,9 @@ import("//testing/test.gni")
 buildflag_header("buildflags") {
   header = "buildflags.h"
   if (is_chrome_branded && is_win) {
-    flags = [ "USE_GOOGLE_UPDATE_INTEGRATION=1" ]
+    flags = [ "USE_GOOGLE_UPDATE_INTEGRATION=true" ]
   } else {
-    flags = [ "USE_GOOGLE_UPDATE_INTEGRATION=0" ]
+    flags = [ "USE_GOOGLE_UPDATE_INTEGRATION=false" ]
   }
 }
 

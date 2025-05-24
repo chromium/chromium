@@ -16,19 +16,21 @@ export function getHtml(this: AutoTabGroupsPageElement) {
         aria-live="polite"
         aria-relevant="all">
       ${
-      this.declutterEnabled_ ? html`
+      this.showBackButton ? html`
         <cr-icon-button class="back-button"
+            aria-label="${this.getBackButtonAriaLabel_()}"
             iron-icon="cr:arrow-back"
             @click="${this.onBackClick_}">
         </cr-icon-button>
       ` :
-                               ''}
+                            ''}
       ${this.getTitle_()}
     </div>
     <auto-tab-groups-not-started id="notStarted"
         ?shown="${this.isState_(TabOrganizationState.kNotStarted)}"
         model-strategy="${this.modelStrategy_}"
         @model-strategy-change="${this.onModelStrategyChange_}"
+        @user-instruction-input-change="${this.onUserInstructionInputChange_}"
         @sign-in-click="${this.onSignInClick_}"
         @organize-tabs-click="${this.onOrganizeTabsClick_}"
         @learn-more-click="${this.onLearnMoreClick_}"
@@ -40,8 +42,7 @@ export function getHtml(this: AutoTabGroupsPageElement) {
     <auto-tab-groups-results id="results"
         ?shown="${this.isState_(TabOrganizationState.kSuccess)}"
         .session="${this.session_}"
-        ?multi-tab-organization="${this.multiTabOrganization_}"
-        available-height="${this.availableHeight_}"
+        available-height="${this.availableHeight}"
         @name-change="${this.onNameChange_}"
         @reject-click="${this.onRejectClick_}"
         @reject-all-groups-click="${this.onRejectAllGroupsClick_}"

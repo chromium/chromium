@@ -17,13 +17,15 @@ void WebRuntimeFeaturesBase::Enable{{feature.name}}(bool enable) {
 }
 
 // static
-bool WebRuntimeFeaturesBase::Is{{feature.name}}Enabled() {
 {% if feature.in_origin_trial %}
+bool WebRuntimeFeaturesBase::Is{{feature.name}}EnabledByRuntimeFlag() {
   return RuntimeEnabledFeatures::{{feature.name}}EnabledByRuntimeFlag();
-{% else %}
-  return RuntimeEnabledFeatures::{{feature.name}}Enabled();
-{% endif %}
 }
+{% else %}
+bool WebRuntimeFeaturesBase::Is{{feature.name}}Enabled() {
+  return RuntimeEnabledFeatures::{{feature.name}}Enabled();
+}
+{% endif %}
 
 {% endif %}
 {% endfor %}

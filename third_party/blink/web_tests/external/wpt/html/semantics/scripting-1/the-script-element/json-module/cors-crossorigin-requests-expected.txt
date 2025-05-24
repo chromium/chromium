@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Imported JSON module with parse error, cross-origin, with CORS
+  assert_equals: Unexpected _log value expected "SyntaxError" but got ""
+Harness: the test ran to completion.
+

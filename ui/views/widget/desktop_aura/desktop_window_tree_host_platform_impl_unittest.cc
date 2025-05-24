@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-
 #include <utility>
 
 #include "base/command_line.h"
@@ -16,6 +14,7 @@
 #include "ui/platform_window/platform_window.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -42,8 +41,9 @@ class ShapedNonClientFrameView : public NonClientFrameView {
   }
   int NonClientHitTest(const gfx::Point& point) override {
     // Fake bottom for non client event test.
-    if (point == gfx::Point(500, 500))
+    if (point == gfx::Point(500, 500)) {
       return HTBOTTOM;
+    }
     return HTNOWHERE;
   }
   void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {
@@ -75,22 +75,6 @@ class ShapedNonClientFrameView : public NonClientFrameView {
   bool layout_requested_ = false;
 };
 
-class ShapedWidgetDelegate : public WidgetDelegateView {
- public:
-  ShapedWidgetDelegate() = default;
-
-  ShapedWidgetDelegate(const ShapedWidgetDelegate&) = delete;
-  ShapedWidgetDelegate& operator=(const ShapedWidgetDelegate&) = delete;
-
-  ~ShapedWidgetDelegate() override = default;
-
-  // WidgetDelegateView:
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override {
-    return std::make_unique<ShapedNonClientFrameView>();
-  }
-};
-
 class MouseEventRecorder : public ui::EventHandler {
  public:
   MouseEventRecorder() = default;
@@ -116,6 +100,22 @@ class MouseEventRecorder : public ui::EventHandler {
 };
 
 }  // namespace
+
+class ShapedWidgetDelegate : public WidgetDelegateView {
+ public:
+  ShapedWidgetDelegate() = default;
+
+  ShapedWidgetDelegate(const ShapedWidgetDelegate&) = delete;
+  ShapedWidgetDelegate& operator=(const ShapedWidgetDelegate&) = delete;
+
+  ~ShapedWidgetDelegate() override = default;
+
+  // WidgetDelegateView:
+  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
+      Widget* widget) override {
+    return std::make_unique<ShapedNonClientFrameView>();
+  }
+};
 
 class DesktopWindowTreeHostPlatformImplTest : public ViewsTestBase {
  public:

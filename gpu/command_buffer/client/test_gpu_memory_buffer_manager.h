@@ -45,9 +45,7 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback) override;
-  bool CopyGpuMemoryBufferSync(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion memory_region) override;
+  bool IsConnected() override;
 
  private:
   // This class is called by multiple threads at the same time. Hold this lock
@@ -57,7 +55,7 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
 
   // Buffers allocated by this manager.
   int last_gpu_memory_buffer_id_ = 1000;
-  std::map<int, gfx::GpuMemoryBuffer*> buffers_;
+  std::map<int, raw_ptr<gfx::GpuMemoryBuffer, CtnExperimental>> buffers_;
 
   // Parent information for child managers.
   int client_id_ = -1;
@@ -66,7 +64,7 @@ class TestGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
 
   // Child infomration for parent managers.
   int last_client_id_ = 5000;
-  std::map<int, TestGpuMemoryBufferManager*> clients_;
+  std::map<int, raw_ptr<TestGpuMemoryBufferManager, CtnExperimental>> clients_;
 
   bool fail_on_create_ = false;
 };

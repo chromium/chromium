@@ -1,0 +1,11 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+=== Start Continuation ===
+rootWebArea focusable name='focus-changed'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer className='hidden'
+++++++++group focusable className='takes-focus'
+++++++++++staticText name='xyz'
+++++++++++++inlineTextBox name='xyz'

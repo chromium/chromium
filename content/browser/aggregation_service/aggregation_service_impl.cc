@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,6 +23,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/task/updateable_sequenced_task_runner.h"
@@ -122,23 +124,6 @@ void AggregationServiceImpl::AssembleReport(
     AggregatableReportRequest report_request,
     AssemblyCallback callback) {
   assembler_->AssembleReport(std::move(report_request), std::move(callback));
-}
-
-void AggregationServiceImpl::SendReport(
-    const GURL& url,
-    const AggregatableReport& report,
-    std::optional<AggregatableReportRequest::DelayType> delay_type,
-    SendCallback callback) {
-  SendReport(url, base::Value(report.GetAsJson()), delay_type,
-             std::move(callback));
-}
-
-void AggregationServiceImpl::SendReport(
-    const GURL& url,
-    const base::Value& contents,
-    std::optional<AggregatableReportRequest::DelayType> delay_type,
-    SendCallback callback) {
-  sender_->SendReport(url, contents, delay_type, std::move(callback));
 }
 
 const base::SequenceBound<AggregationServiceStorage>&
@@ -255,14 +240,15 @@ void AggregationServiceImpl::OnReportAssemblyComplete(
   // origin to perform this check.
   base::Value value(report->GetAsJson());
   auto delay_type = report_request.delay_type();
-  SendReport(reporting_url, value, delay_type,
-             /*callback=*/
-             base::BindOnce(
-                 &AggregationServiceImpl::OnReportSendingComplete,
-                 // `base::Unretained` is safe as the sender is owned by `this`.
-                 base::Unretained(this), std::move(done),
-                 std::move(report_request), request_id, std::move(*report),
-                 /*sending_timer=*/base::ElapsedTimer()));
+  sender_->SendReport(
+      std::move(reporting_url), value, delay_type,
+      /*callback=*/
+      base::BindOnce(
+          &AggregationServiceImpl::OnReportSendingComplete,
+          // `base::Unretained` is safe as the sender is owned by `this`.
+          base::Unretained(this), std::move(done), std::move(report_request),
+          request_id, std::move(*report),
+          /*sending_timer=*/base::ElapsedTimer()));
 }
 
 void AggregationServiceImpl::OnReportSendingComplete(
@@ -409,6 +395,28 @@ void AggregationServiceImpl::NotifyReportHandled(
         "NumRetriesBeforeSuccess",
         request.failed_send_attempts(),
         /*exclusive_max=*/AggregatableReportScheduler::kMaxRetries + 1);
+  }
+
+  if (request.delay_type().has_value()) {
+    const std::string_view delay_type_string =
+        AggregatableReportRequest::DelayTypeToString(*request.delay_type());
+
+    base::UmaHistogramEnumeration(
+        base::JoinString({"PrivacySandbox.AggregationService",
+                          delay_type_string, "FinalRequestStatus"},
+                         "."),
+        status);
+
+    if (request.delay_type() !=
+            AggregatableReportRequest::DelayType::Unscheduled &&
+        did_request_succeed) {
+      base::UmaHistogramExactLinear(
+          base::JoinString({"PrivacySandbox.AggregationService",
+                            delay_type_string, "NumRetriesBeforeSuccess"},
+                           "."),
+          request.failed_send_attempts(),
+          /*exclusive_max=*/AggregatableReportScheduler::kMaxRetries + 1);
+    }
   }
 
   base::Time now = base::Time::Now();

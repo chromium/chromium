@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/active_style_sheets.h"
 
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -120,17 +115,17 @@ ActiveSheetsChange CompareActiveStyleSheets(
   ActiveStyleSheetVector merged_sorted;
   merged_sorted.reserve(old_style_sheet_count + new_style_sheet_count -
                         2 * index);
-  merged_sorted.AppendRange(old_style_sheets.begin() + index,
-                            old_style_sheets.end());
-  merged_sorted.AppendRange(new_style_sheets.begin() + index,
-                            new_style_sheets.end());
+  merged_sorted.AppendSpan(base::span(old_style_sheets).subspan(index));
+  merged_sorted.AppendSpan(base::span(new_style_sheets).subspan(index));
 
   std::sort(merged_sorted.begin(), merged_sorted.end());
 
-  auto merged_iterator = merged_sorted.begin();
-  while (merged_iterator != merged_sorted.end()) {
+  auto merged_span = base::span(merged_sorted);
+  auto merged_iterator = merged_span.begin();
+  auto merged_end = merged_span.end();
+  while (merged_iterator != merged_end) {
     const auto& sheet1 = *merged_iterator++;
-    if (merged_iterator == merged_sorted.end() ||
+    if (merged_iterator == merged_end ||
         (*merged_iterator).first != sheet1.first) {
       // Sheet either removed or inserted.
       if (sheet1.second) {

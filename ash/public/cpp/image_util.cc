@@ -4,13 +4,13 @@
 
 #include "ash/public/cpp/image_util.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "ipc/ipc_channel.h"
@@ -49,7 +49,7 @@ void ToImageSkia(DecodeImageCallback callback, const SkBitmap& bitmap) {
 void ToFrames(DecodeAnimationCallback callback,
               std::vector<data_decoder::mojom::AnimationFramePtr> raw_frames) {
   std::vector<AnimationFrame> frames(raw_frames.size());
-  base::ranges::transform(
+  std::ranges::transform(
       raw_frames, frames.begin(),
       [](const data_decoder::mojom::AnimationFramePtr& frame_ptr) {
         return AnimationFrame{

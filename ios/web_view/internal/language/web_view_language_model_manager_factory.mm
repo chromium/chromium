@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
+#import "ios/web_view/internal/language/web_view_language_model_manager_factory.h"
 
-#include "base/feature_list.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/core/keyed_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/language/core/browser/language_model.h"
-#include "components/language/core/browser/language_model_manager.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/language/core/common/language_experiments.h"
-#include "components/language/core/language_model/fluent_language_model.h"
-#include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/pref_service.h"
-#include "ios/web_view/internal/app/application_context.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "base/feature_list.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/core/keyed_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/language/core/browser/language_model.h"
+#import "components/language/core/browser/language_model_manager.h"
+#import "components/language/core/browser/pref_names.h"
+#import "components/language/core/common/language_experiments.h"
+#import "components/language/core/language_model/fluent_language_model.h"
+#import "components/pref_registry/pref_registry_syncable.h"
+#import "components/prefs/pref_service.h"
+#import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 

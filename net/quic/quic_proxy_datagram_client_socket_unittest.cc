@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/quic/quic_proxy_datagram_client_socket.h"
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -141,7 +147,7 @@ class QuicProxyDatagramClientSocketTest : public QuicProxyClientSocketTestBase {
   }
 
   void AssertAsyncReadEquals(const char* data, int len) override {
-    CHECK(false);
+    NOTREACHED();
   }
 
   void AssertReadStarts(const char* data, int len) override {

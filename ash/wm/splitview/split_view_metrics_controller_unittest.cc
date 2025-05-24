@@ -252,7 +252,6 @@ TEST_F(SplitViewMetricsControllerTest, SnapWindowSuggestions) {
       WindowSnapActionSource::kSnapByWindowLayoutMenu,
       WindowSnapActionSource::kDragWindowToEdgeToSnap,
       WindowSnapActionSource::kLongPressCaptionButtonToSnap,
-      WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu,
       WindowSnapActionSource::kKeyboardShortcutToSnap,
       WindowSnapActionSource::kSnapByWindowStateRestore,
       WindowSnapActionSource::kSnapByFullRestoreOrDeskTemplateOrSavedDesk,

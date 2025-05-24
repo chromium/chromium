@@ -10,10 +10,9 @@
 #include "base/feature_list.h"
 #include "base/not_fatal_until.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/feature_engagement/public/configuration.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/feature_engagement/public/configuration_provider.h"
 #endif
 
@@ -93,7 +92,7 @@ const std::vector<std::string> EditableConfiguration::GetRegisteredGroups()
   return groups;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void EditableConfiguration::UpdateConfig(
     const base::Feature& feature,
     const ConfigurationProvider* provider) {

@@ -5,6 +5,7 @@
       "chrome_pgo_phase": 1,
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
+      "enable_chrome_android_internal": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -12,6 +13,7 @@
       "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
@@ -22,6 +24,7 @@
       "chrome_pgo_phase": 1,
       "clang_use_default_sample_profile": false,
       "debuggable_apks": false,
+      "enable_chrome_android_internal": false,
       "ffmpeg_branding": "Chrome",
       "is_chrome_branded": true,
       "is_official_build": true,
@@ -29,6 +32,7 @@
       "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
@@ -41,6 +45,7 @@
       "is_debug": false,
       "is_official_build": true,
       "symbol_level": 1,
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
@@ -57,6 +62,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
@@ -73,6 +79,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
@@ -86,6 +93,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "arm64",
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
@@ -99,6 +107,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "x86",
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }
@@ -112,6 +121,7 @@
       "is_official_build": true,
       "symbol_level": 1,
       "target_cpu": "x64",
+      "use_reclient": false,
       "use_remoteexec": true,
       "v8_is_on_release_branch": true
     }

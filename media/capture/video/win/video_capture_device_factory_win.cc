@@ -11,6 +11,7 @@
 
 #include <objbase.h>
 
+#include <delayimp.h>
 #include <mfapi.h>
 #include <mferror.h>
 #include <stddef.h>
@@ -35,9 +36,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -47,7 +48,6 @@
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_variant.h"
-#include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
@@ -104,8 +104,9 @@ enum BlockedCameraNames {
   BLOCKED_CAMERA_IP_CAMERA = 1,
   BLOCKED_CAMERA_CYBERLINK_WEBCAM_SPLITTER = 2,
   BLOCKED_CAMERA_EPOCCAM = 3,
+  BLOCKED_CAMERA_PLEORA_EBUS = 4,
   // This one must be last, and equal to the previous enumerated value.
-  BLOCKED_CAMERA_MAX = BLOCKED_CAMERA_EPOCCAM,
+  BLOCKED_CAMERA_MAX = BLOCKED_CAMERA_PLEORA_EBUS,
 };
 
 #define UWP_ENUM_ERROR_HANDLER(hr, err_log)                         \
@@ -123,6 +124,7 @@ const char* const kBlockedCameraNames[] = {
     "IP Camera [JPEG/MJPEG]",
     "CyberLink Webcam Splitter",
     "EpocCam",
+    "eBUS DirectShow Source",
 };
 static_assert(std::size(kBlockedCameraNames) == BLOCKED_CAMERA_MAX + 1,
               "kBlockedCameraNames should be same size as "
@@ -226,36 +228,40 @@ bool IsDeviceBlockedForMediaFoundationByDisplayName(
   return kDisplayNamesBlockedForMediaFoundation.contains(display_name);
 }
 
-HMODULE ExpandEnvironmentStringsAndLoadLibrary(base::wcstring_view path) {
-  auto expanded_path = base::win::ExpandEnvironmentVariables(path);
-  if (!expanded_path) {
-    return nullptr;
-  }
-
-  return LoadLibraryExW(expanded_path->c_str(), nullptr,
-                        LOAD_WITH_ALTERED_SEARCH_PATH);
-}
-
 bool LoadMediaFoundationDlls() {
-  static constexpr base::wcstring_view kMfDLLs[] = {
-      L"%WINDIR%\\system32\\mf.dll", L"%WINDIR%\\system32\\mfplat.dll",
-      L"%WINDIR%\\system32\\mfreadwrite.dll",
-      L"%WINDIR%\\system32\\MFCaptureEngine.dll"};
-
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
-  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY_REPEATEDLY();
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
-  // Load required DLLs.
-  for (const auto& kMfDLL : kMfDLLs) {
-    if (!ExpandEnvironmentStringsAndLoadLibrary(kMfDLL)) {
+  // Force-resolve all imports from modules accessed via /DELAYLOAD. Note that
+  // MF.dll and MFPlat.DLL have already been resolved via
+  // InitializeMediaFoundation(). __HrLoadAllImportsForDll makes a
+  // case-sensitive comparison to the module names in the dll.
+  // LINT.IfChange
+  for (const char* mfdll : {"MFReadWrite.dll"}) {
+    // LINT.ThenChange(//chrome/common/win/delay_load_failure_hook.cc)
+    HRESULT hr = E_FAIL;
+    __try {
+      hr = __HrLoadAllImportsForDll(mfdll);
+    } __except (HRESULT_FACILITY(::GetExceptionCode()) == FACILITY_VISUALCPP
+                    ? EXCEPTION_EXECUTE_HANDLER
+                    : EXCEPTION_CONTINUE_SEARCH) {
+      // Resolution of all imports failed; possibly because the module failed
+      // to load or because one or more imports was not found.
+      hr = E_FAIL;
+    }
+    if (FAILED(hr)) {
       return false;
     }
   }
 
+  // MFCaptureEngine is not imported via delayloads, but may be needed anyway.
+  if (!base::LoadSystemLibrary(L"MFCaptureEngine.dll")) {
+    return false;
+  }
+
   // Load optional DLLs whose availability depends on Windows version.
-  ExpandEnvironmentStringsAndLoadLibrary(
-      L"%WINDIR%\\system32\\mfsensorgroup.dll");
+  base::LoadSystemLibrary(L"mfsensorgroup.dll");
 
   return true;
 }
@@ -329,7 +335,7 @@ bool DevicesInfoContainsDeviceId(const DevicesInfo& devices_info,
 DevicesInfo::const_iterator FindNonDirectShowDeviceInfoByNameAndModel(
     const DevicesInfo& devices_info,
     const std::string& name_and_model) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       devices_info,
       [name_and_model](const VideoCaptureDeviceInfo& device_info) {
         return device_info.descriptor.capture_api !=
@@ -362,6 +368,8 @@ void FindAndSetDefaultVideoCamera(
 class VideoCaptureDeviceFactoryWin::ComThreadData
     : public base::RefCountedThreadSafe<ComThreadData> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   ComThreadData(base::WeakPtr<VideoCaptureDeviceFactoryWin> device_factory,
                 scoped_refptr<base::SingleThreadTaskRunner> com_thread_runner,
                 scoped_refptr<base::SingleThreadTaskRunner> origin_task_runner)
@@ -393,6 +401,8 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
     : public base::RefCountedThreadSafe<UsageReportHandler>,
       public IMFSensorActivitiesReportCallback {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   UsageReportHandler() : my_pid_(base::GetCurrentProcId()) {}
 
   // IUnknown
@@ -523,11 +533,10 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
     });
   }
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<UsageReportHandler>;
   virtual ~UsageReportHandler() = default;
 
- private:
   void UpdateAvailabilityCache(
       const std::map<std::string, CameraAvailability>& report_availabilities) {
     bool should_invoke_system_monitor = false;
@@ -603,7 +612,6 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
 
   switch (device_descriptor.capture_api) {
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION:
-      [[fallthrough]];
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION_SENSOR: {
       DCHECK(PlatformSupportsMediaFoundation());
       ComPtr<IMFMediaSource> source;
@@ -636,8 +644,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           return VideoCaptureErrorOrDevice(
               VideoCaptureError::kWinMediaFoundationSourceCreationFailed);
       }
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
     case VideoCaptureApi::WIN_DIRECT_SHOW: {
       ComPtr<IBaseFilter> capture_filter;
@@ -657,12 +664,8 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           VideoCaptureError::kWinDirectShowDeviceInitializationFailed);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return VideoCaptureErrorOrDevice(
-      VideoCaptureError::kVideoCaptureDeviceFactoryWinUnknownError);
 }
 
 bool VideoCaptureDeviceFactoryWin::CreateDeviceEnumMonikerDirectShow(
@@ -980,7 +983,7 @@ void VideoCaptureDeviceFactoryWin::ComThreadData::FoundAllDevicesUWP(
                                 std::move(result_callback)));
 
   auto it = async_ops_.find(operation);
-  CHECK(it != async_ops_.end(), base::NotFatalUntil::M130);
+  CHECK(it != async_ops_.end());
   (*it)->Release();
   async_ops_.erase(it);
 }

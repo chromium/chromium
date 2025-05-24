@@ -382,7 +382,9 @@ IN_PROC_BROWSER_TEST_P(WebRtcPanTiltZoomConstraintsBrowserTest,
             "runGetUserMedia-success");
 
   EXPECT_EQ(
-      content::EvalJs(tab->GetPrimaryMainFrame(), "checkConstraints({});"),
+      content::EvalJs(
+          tab->GetPrimaryMainFrame(),
+          base::StringPrintf("checkConstraints({ %s: true });", Constraint())),
       "checkConstraints-success");
 }
 

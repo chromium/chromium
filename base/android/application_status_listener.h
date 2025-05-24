@@ -6,6 +6,7 @@
 #define BASE_ANDROID_APPLICATION_STATUS_LISTENER_H_
 
 #include <jni.h>
+
 #include <memory>
 
 #include "base/android/jni_android.h"

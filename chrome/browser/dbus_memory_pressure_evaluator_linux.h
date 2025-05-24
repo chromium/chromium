@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DBUS_MEMORY_PRESSURE_EVALUATOR_LINUX_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -20,7 +21,6 @@
 #include "dbus/bus.h"
 
 namespace dbus {
-class Response;
 class Signal;
 }  // namespace dbus
 
@@ -55,9 +55,6 @@ class DbusMemoryPressureEvaluatorLinux
 
   // Constants for D-Bus services, object paths, methods, and signals. In-class
   // so they can be shared with the tests.
-  static const char kMethodNameHasOwner[];
-  static const char kMethodListActivatableNames[];
-
   static const char kLmmService[];
   static const char kLmmObject[];
   static const char kLmmInterface[];
@@ -81,30 +78,13 @@ class DbusMemoryPressureEvaluatorLinux
   // handler if so. Otherwise, checks if the portal is available instead.
   void CheckIfLmmIsAvailable();
   // Handles the availability response from above.
-  void CheckIfLmmIsAvailableResponse(bool is_available);
+  void CheckIfLmmIsAvailableResponse(std::optional<bool> is_available);
 
   // Checks if the portal service is available, setting up the memory pressure
   // signal handler if so.
   void CheckIfPortalIsAvailable();
   // Handles the availability response from above.
-  void CheckIfPortalIsAvailableResponse(bool is_available);
-
-  // Checks if the given service is available, calling callback(true) if so or
-  // callback(false) otherwise.
-  void CheckIfServiceIsAvailable(scoped_refptr<dbus::Bus> bus,
-                                 const std::string& service,
-                                 base::OnceCallback<void(bool)> callback);
-
-  void OnNameHasOwnerResponse(scoped_refptr<dbus::Bus> bus,
-                              const std::string& service,
-                              base::OnceCallback<void(bool)> callback,
-                              dbus::Response* response);
-  void OnListActivatableNamesResponse(const std::string& service,
-                                      base::OnceCallback<void(bool)> callback,
-                                      dbus::Response* response);
-
-  // Shuts down the given bus on the D-Bus thread and clears the pointer.
-  void ResetBus(scoped_refptr<dbus::Bus>& bus);
+  void CheckIfPortalIsAvailableResponse(std::optional<bool> is_available);
 
   void OnSignalConnected(const std::string& interface,
                          const std::string& signal,

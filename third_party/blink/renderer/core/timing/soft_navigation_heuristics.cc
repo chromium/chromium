@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 
+#include <cstdint>
+#include <iterator>
 #include <utility>
 
+#include "base/containers/adapters.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
@@ -28,9 +31,6 @@ namespace blink {
 
 namespace {
 
-const size_t SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE = 2;
-const size_t HUNDRED_PERCENT = 100;
-
 const char kPageLoadInternalSoftNavigationOutcome[] =
     "PageLoad.Internal.SoftNavigationOutcome";
 
@@ -43,34 +43,47 @@ enum SoftNavigationOutcome {
   kSoftNavigationDetected = 0,
 
   kNoSoftNavContextDuringUrlChange = 1,
-  kNoPaint = 2,
+  kInsufficientPaints = 2,
   kNoDomModification = 4,
 
-  kNoPaintOrDomModification = kNoPaint | kNoDomModification,
+  // For now, this next value is equivalent to kNoDomModification, because we
+  // cannot have paints without a dom mod.
+  // However, kNoDomModification might evolve into something more "semantic",
+  // such that you could have paints without a dom mod.
+  kNoPaintOrDomModification = kInsufficientPaints | kNoDomModification,
 
   kMaxValue = kNoPaintOrDomModification,
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:SoftNavigationOutcome)
 
-void LogAndTraceDetectedSoftNavigation(LocalFrame* frame,
-                                       LocalDOMWindow* window,
-                                       const SoftNavigationContext& context) {
-  CHECK(frame && frame->IsMainFrame());
-  CHECK(window);
-  if (!RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
+void OnSoftNavigationContextWasExhausted(const SoftNavigationContext& context,
+                                         uint64_t required_paint_area) {
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("loading"),
+      "SoftNavigationHeuristics::SoftNavigationContextWasExhausted", "context",
+      context);
+
+  // Don't bother to log if the URL was never set.  That means it was just a
+  // normal interaction.
+  if (context.Url().empty()) {
     return;
   }
-  auto* console_message = MakeGarbageCollected<ConsoleMessage>(
-      mojom::blink::ConsoleMessageSource::kJavaScript,
-      mojom::blink::ConsoleMessageLevel::kInfo,
-      String("A soft navigation has been detected: ") + context.Url());
-  window->AddConsoleMessage(console_message);
 
-  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
-                      "SoftNavigationHeuristics_SoftNavigationDetected",
-                      context.UserInteractionTimestamp(), "frame",
-                      GetFrameIdForTracing(frame), "url", context.Url(),
-                      "navigationId", window->GetNavigationId());
+  // TODO(crbug.com/351826232): Consider differentiating contexts that were
+  // cleaned up before page was unloaded vs cleaned up because of page unload.
+
+  if (context.WasEmitted()) {
+    // We already report this outcome eagerly, as part of
+    // `ReportSoftNavigationToMetrics`, so don't report again here.
+    // However, if we ever report total painted area, or largest paint size, we
+    // should do it here, lazily, in order to wait for the final sizes.
+  } else if (!context.HasDomModification()) {
+    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
+                                  SoftNavigationOutcome::kNoDomModification);
+  } else if (!context.SatisfiesSoftNavPaintCriteria(required_paint_area)) {
+    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
+                                  SoftNavigationOutcome::kInsufficientPaints);
+  }
 }
 
 constexpr bool IsInteractionStart(
@@ -116,89 +129,47 @@ EventScopeTypeFromEvent(const Event& event) {
 
 }  // namespace
 
-// static
-const char SoftNavigationHeuristics::kSupplementName[] =
-    "SoftNavigationHeuristics";
-
-SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow& window)
-    : Supplement<LocalDOMWindow>(window) {
-  LocalFrame* frame = window.GetFrame();
+SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
+    : window_(window),
+      task_attribution_tracker_(
+          scheduler::TaskAttributionTracker::From(window->GetIsolate())) {
+  LocalFrame* frame = window->GetFrame();
   CHECK(frame && frame->View());
-
-  viewport_area_ = frame->View()->GetLayoutSize().Area64();
 }
 
-SoftNavigationHeuristics* SoftNavigationHeuristics::From(
-    LocalDOMWindow& window) {
+SoftNavigationHeuristics* SoftNavigationHeuristics::CreateIfNeeded(
+    LocalDOMWindow* window) {
+  CHECK(window);
   if (!base::FeatureList::IsEnabled(features::kSoftNavigationDetection)) {
     return nullptr;
   }
-  if (!window.GetFrame()->IsMainFrame()) {
+  if (!window->GetFrame()->IsMainFrame()) {
     return nullptr;
   }
-  SoftNavigationHeuristics* heuristics =
-      Supplement<LocalDOMWindow>::From<SoftNavigationHeuristics>(window);
-  if (!heuristics) {
-    if (Document* document = window.document()) {
-      // Don't measure soft navigations in devtools.
-      if (document->Url().ProtocolIs("devtools")) {
-        return nullptr;
-      }
+  if (Document* document = window->document()) {
+    // Don't measure soft navigations in devtools.
+    if (document->Url().ProtocolIs("devtools")) {
+      return nullptr;
     }
-    heuristics = MakeGarbageCollected<SoftNavigationHeuristics>(window);
-    ProvideTo(window, heuristics);
   }
-  return heuristics;
+  return MakeGarbageCollected<SoftNavigationHeuristics>(window);
 }
 
-void SoftNavigationHeuristics::Dispose() {
+void SoftNavigationHeuristics::Shutdown() {
+  task_attribution_tracker_ = nullptr;
+
+  const auto required_paint_area = CalculateRequiredPaintArea();
   for (const auto& context : potential_soft_navigations_) {
-    RecordUmaForNonSoftNavigationInteraction(*context.Get());
+    OnSoftNavigationContextWasExhausted(*context.Get(), required_paint_area);
   }
-}
-
-void SoftNavigationHeuristics::RecordUmaForNonSoftNavigationInteraction(
-    const SoftNavigationContext& context) const {
-  // For all interactions which included a (soft nav context attributable) URL
-  // modification, yet were not declared soft navs, log the criteria which were
-  // not met.
-  if (context.Url().empty()) {
-    return;
-  }
-
-  if (!paint_conditions_met_ && !context.HasMainModification()) {
-    base::UmaHistogramEnumeration(
-        kPageLoadInternalSoftNavigationOutcome,
-        SoftNavigationOutcome::kNoPaintOrDomModification);
-  } else if (!paint_conditions_met_) {
-    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
-                                  SoftNavigationOutcome::kNoPaint);
-  } else if (!context.HasMainModification()) {
-    base::UmaHistogramEnumeration(kPageLoadInternalSoftNavigationOutcome,
-                                  SoftNavigationOutcome::kNoDomModification);
-  }
+  potential_soft_navigations_.clear();
 }
 
 void SoftNavigationHeuristics::SetIsTrackingSoftNavigationHeuristicsOnDocument(
     bool value) const {
-  LocalDOMWindow* window = GetSupplementable();
-  if (!window) {
-    return;
-  }
-  if (Document* document = window->document()) {
+  if (Document* document = window_->document()) {
     document->SetIsTrackingSoftNavigationHeuristics(value);
   }
-}
-
-void SoftNavigationHeuristics::ResetHeuristic() {
-  // Reset previously seen indicators and task IDs.
-  potential_soft_navigations_.clear();
-  last_detected_soft_navigation_ = nullptr;
-  active_interaction_context_ = nullptr;
-  SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
-  did_commit_previous_paints_ = false;
-  paint_conditions_met_ = false;
-  softnav_painted_area_ = 0;
 }
 
 SoftNavigationContext*
@@ -206,178 +177,166 @@ SoftNavigationHeuristics::GetSoftNavigationContextForCurrentTask() {
   if (potential_soft_navigations_.empty()) {
     return nullptr;
   }
-  auto* tracker = scheduler::TaskAttributionTracker::From(
-      GetSupplementable()->GetIsolate());
-  // The `tracker` must exist if `potential_soft_navigations_` is non-empty.
-  CHECK(tracker);
-  auto* task_state = tracker->RunningTask();
-  if (!task_state) {
-    return nullptr;
+  // The `task_attribution_tracker_` must exist if `potential_soft_navigations_`
+  // is non-empty. `task_state` can have null `context` in tests. `context` can
+  // be non-null but not in `potential_soft_navigations_` if the heuristic was
+  // reset, e.g.  if `context` was already considered a soft navigation. In that
+  // case, return null.
+  CHECK(task_attribution_tracker_);
+  if (auto* task_state = task_attribution_tracker_->RunningTask()) {
+    if (auto* context = task_state->GetSoftNavigationContext()) {
+      // Even when we have a context, we need to confirm if this SNH instance
+      // knows about it. If a context created in one window is scheduled in
+      // another, we might have a different SNH instance. This seems to fail
+      // with datetime/calendar modals, for example.
+      // TODO(crbug.com/40871933): We don't care to support datetime modals, but
+      // this behaviour might be similar for iframes, and might be worth
+      // supporting.
+      if (context && potential_soft_navigations_.Contains(context)) {
+        return context;
+      }
+    }
   }
-  SoftNavigationContext* context =
-      task_state ? task_state->GetSoftNavigationContext() : nullptr;
-  // `task_state` can have null `context` in tests. `context` can be non-null
-  // but not in `potential_soft_navigations_` if the heuristic was reset, e.g.
-  // if `context` was already considered a soft navigation. In that case, return
-  // null.
-  if (!context || !potential_soft_navigations_.Contains(context)) {
-    return nullptr;
-  }
-  return context;
+  return nullptr;
 }
 
 std::optional<scheduler::TaskAttributionId>
 SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted() {
-  auto* tracker = scheduler::TaskAttributionTracker::From(
-      GetSupplementable()->GetIsolate());
-  // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
-  // is enabled.
-  if (!tracker) {
+  // `task_attribution_tracker_` will be null if
+  // TaskAttributionInfrastructureDisabledForTesting is enabled.
+  if (!task_attribution_tracker_) {
     return std::nullopt;
   }
-  scheduler::TaskAttributionInfo* task_state = tracker->RunningTask();
-  SoftNavigationContext* context =
-      task_state ? task_state->GetSoftNavigationContext() : nullptr;
-  TRACE_EVENT1("scheduler",
-               "SoftNavigationHeuristics::AsyncSameDocumentNavigationStarted",
-               "has_context", !!context);
-  if (context) {
-    tracker->AddSameDocumentNavigationTask(task_state);
+  scheduler::TaskAttributionInfo* task_state =
+      task_attribution_tracker_->RunningTask();
+  if (!task_state) {
+    return std::nullopt;
   }
-  return context ? std::optional<scheduler::TaskAttributionId>(task_state->Id())
-                 : std::nullopt;
+  SoftNavigationContext* context = task_state->GetSoftNavigationContext();
+  if (!context) {
+    return std::nullopt;
+  }
+  task_attribution_tracker_->AddSameDocumentNavigationTask(task_state);
+  return task_state->Id();
 }
 
 void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
     const String& url,
     SoftNavigationContext* context) {
-  TRACE_EVENT2("scheduler",
-               "SoftNavigationHeuristics::SameDocumentNavigationCommitted",
-               "url", url, "has_context", !!context);
-  if (context) {
-    if (potential_soft_navigations_.Contains(context)) {
-      context->SetUrl(url);
-      EmitSoftNavigationEntryIfAllConditionsMet(context);
-    }
-  } else {
+  if (!context) {
+    TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                        "SoftNavigationHeuristics::"
+                        "SameDocumentNavigationCommittedWithoutContext",
+                        "url", url);
     base::UmaHistogramEnumeration(
         kPageLoadInternalSoftNavigationOutcome,
         SoftNavigationOutcome::kNoSoftNavContextDuringUrlChange);
+    return;
   }
+  context->SetUrl(url);
+
+  TRACE_EVENT_INSTANT(
+      TRACE_DISABLED_BY_DEFAULT("loading"),
+      "SoftNavigationHeuristics::SameDocumentNavigationCommitted", "context",
+      *context);
+
+  EmitSoftNavigationEntryIfAllConditionsMet(context);
 }
 
-bool SoftNavigationHeuristics::ModifiedDOM() {
+bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
+  // Don't bother marking dom nodes unless they are in the right frame.
+  if (!GetLocalFrameIfOutermostAndNotDetached()) {
+    return false;
+  }
   SoftNavigationContext* context = GetSoftNavigationContextForCurrentTask();
-  if (context) {
-    context->MarkMainModification();
-    EmitSoftNavigationEntryIfAllConditionsMet(context);
+  if (!context) {
+    return false;
   }
-  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::ModifiedDOM",
-               "has_context", !!context);
-  return !!context;
+  context->AddModifiedNode(node);
+
+  EmitSoftNavigationEntryIfAllConditionsMet(context);
+  return true;
 }
 
-void SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
+bool SoftNavigationHeuristics::EmitSoftNavigationEntryIfAllConditionsMet(
     SoftNavigationContext* context) {
-  // If there's an `EventScope` on the stack, hold off checking to avoid
-  // clearing state while it's in use.
-  if (has_active_event_scope_) {
-    return;
+  DCHECK(context);
+
+  // If we've already emitted this entry, we might still be tracking paints.
+  // Skip the rest since we only want to emit new soft-navs.
+  if (context->WasEmitted()) {
+    return false;
   }
 
-  LocalFrame* frame = GetLocalFrameIfNotDetached();
-  // TODO(crbug.com/1510706): See if we need to add `paint_conditions_met_` back
-  // into this condition.
-  if (!context || !context->IsSoftNavigation() ||
-      context->UserInteractionTimestamp().is_null() || !frame ||
-      !frame->IsOutermostMainFrame()) {
-    return;
+  // Are the basic criteria met (interaction, url, dom modification)?
+  if (!context->SatisfiesSoftNavNonPaintCriteria()) {
+    return false;
   }
-  last_detected_soft_navigation_ = context;
 
-  LocalDOMWindow* window = GetSupplementable();
+  // Once we've met all criteria with a new context, we replace the active
+  // soft_navigation. This helps us collect paints even after Task graph is
+  // exhausted, and allows the previous context to get cleaned up.
+  // TODO(crbug.com/416705860): Consider always making this the context which
+  // was last to update the URL, immediately upon changing, rather than waiting
+  // for other criteria (like dom modification) to be met.
+  most_recent_context_to_meet_non_paint_criteria_ = context;
+
+  // Are we done?
+  uint64_t required_paint_area = CalculateRequiredPaintArea();
+  if (!context->SatisfiesSoftNavPaintCriteria(required_paint_area)) {
+    return false;
+  }
+
+  // We have met all criteria!  SetWasEmitted here, even though we might still
+  // constrain reporting (below).  That is because we do not want to test
+  // for meeting criteria ever again, once we meet it for the first time.
+  context->SetWasEmitted();
+
+  // TODO(crbug.com/40871933): We are already only marking dom nodes when we
+  // have a frame, and we are already limiting paints attribution to contexts
+  // that come from the same SNH/window instance.  So, this might be safe to
+  // CHECK().  However, potentially it is possible to meet paint criteria, then
+  // meet some other final criteria in a different frame?  Until we test that,
+  // let's just guard carefully.
+  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
+  if (!frame) {
+    return false;
+  }
+
   ++soft_navigation_count_;
-  window->GenerateNewNavigationId();
-  auto* performance = DOMWindowPerformance::performance(*window);
+  window_->GenerateNewNavigationId();
+  auto* performance = DOMWindowPerformance::performance(*window_.Get());
   performance->AddSoftNavigationEntry(AtomicString(context->Url()),
                                       context->UserInteractionTimestamp());
 
-  CommitPreviousPaints(frame);
-
-  LogAndTraceDetectedSoftNavigation(frame, window, *context);
+  CommitPreviousPaintTimings(frame);
   ReportSoftNavigationToMetrics(frame, context);
-  ResetHeuristic();
+
+  TRACE_EVENT_INSTANT("scheduler,devtools.timeline,loading",
+                      "SoftNavigationHeuristics_SoftNavigationDetected",
+                      "context", *context, "frame", GetFrameIdForTracing(frame),
+                      "navigationId", window_->GetNavigationId());
+
+  return true;
 }
 
-// This is called from Text/ImagePaintTimingDetector when a paint is recorded
-// there.
-void SoftNavigationHeuristics::RecordPaint(
-    LocalFrame* frame,
-    uint64_t painted_area,
-    bool is_modified_by_soft_navigation) {
-  if (!initial_interaction_encountered_ && is_modified_by_soft_navigation) {
-    // TODO(crbug.com/41496928): Paints can be reported for Nodes which had
-    // is_modified... flag set but a different instance of a
-    // SoftNavigationHeuristics class.  This happens when Nodes are re-parented
-    // into a new document, e.g. into an open() window.
-    // Instead of just ignoring the worst case of this issue as we do here, we
-    // should support this use case.  Either by clearing the flag on nodes, or,
-    // by staring an interaction/navigation id on Node, rathan than boolean.
+void SoftNavigationHeuristics::RecordPaint(LocalFrame* frame,
+                                           const gfx::RectF& rect,
+                                           Node* node) {
+  // For now, we only care to map paints for the most recent context to meet
+  // non-paint criteria.
+  if (most_recent_context_to_meet_non_paint_criteria_ &&
+      most_recent_context_to_meet_non_paint_criteria_->AddPaintedArea(
+          node, rect, true)) {
     return;
   }
-  if (!initial_interaction_encountered_) {
-    // We haven't seen an interaction yet, so we are still measuring initial
-    // paint area.
-    CHECK(!is_modified_by_soft_navigation);
-    initial_painted_area_ += painted_area;
-    return;
-  }
+}
 
-  if (potential_soft_navigations_.empty()) {
-    // We aren't measuring a soft-nav so we can just exit.
-    return;
-  }
-
-  if (!is_modified_by_soft_navigation) {
-    return;
-  }
-
-  softnav_painted_area_ += painted_area;
-
-  uint64_t required_paint_area =
-      std::min(initial_painted_area_, viewport_area_);
-
-  if (required_paint_area == 0) {
-    return;
-  }
-
-  float softnav_painted_area_ratio =
-      (float)softnav_painted_area_ / (float)required_paint_area;
-
-  uint64_t required_paint_area_scaled =
-      required_paint_area * SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE;
-  uint64_t softnav_painted_area_scaled =
-      softnav_painted_area_ * HUNDRED_PERCENT;
-  bool is_above_threshold =
-      (softnav_painted_area_scaled > required_paint_area_scaled);
-
-  TRACE_EVENT_INSTANT(
-      "loading", "SoftNavigationHeuristics_RecordPaint", "softnav_painted_area",
-      softnav_painted_area_, "softnav_painted_area_ratio",
-      softnav_painted_area_ratio, "url",
-      (last_detected_soft_navigation_ ? last_detected_soft_navigation_->Url()
-                                      : ""),
-      "is_above_threshold", is_above_threshold);
-
-  // TODO(crbug.com/1510706): GC between DOM modification and paint could cause
-  // `last_detected_soft_navigation_` to be cleared, preventing the entry from
-  // being emitted if `paint_conditions_met_` wasn't set but will be in the
-  // subsequent paint. This problem existed in task attribution v1 as well since
-  // the heuristic is reset when `potential_soft_navigations_` becomes empty.
-  if (is_above_threshold) {
-    paint_conditions_met_ = true;
-    EmitSoftNavigationEntryIfAllConditionsMet(
-        last_detected_soft_navigation_.Get());
+void SoftNavigationHeuristics::OnPaintFinished() {
+  for (const auto& context : potential_soft_navigations_) {
+    if (context->OnPaintFinished()) {
+      EmitSoftNavigationEntryIfAllConditionsMet(context);
+    }
   }
 }
 
@@ -395,11 +354,9 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
       loader->GetTiming().MonotonicTimeToPseudoWallTime(
           context->UserInteractionTimestamp());
 
-  LocalDOMWindow* window = GetSupplementable();
-
   blink::SoftNavigationMetrics metrics = {soft_navigation_count_,
                                           soft_navigation_start_time,
-                                          window->GetNavigationId().Utf8()};
+                                          window_->GetNavigationId().Utf8()};
 
   if (LocalFrameClient* frame_client = frame->Client()) {
     // This notifies UKM about this soft navigation.
@@ -411,19 +368,18 @@ void SoftNavigationHeuristics::ReportSoftNavigationToMetrics(
                                 SoftNavigationOutcome::kSoftNavigationDetected);
 }
 
-void SoftNavigationHeuristics::ResetPaintsIfNeeded() {
-  LocalFrame* frame = GetLocalFrameIfNotDetached();
-  if (!frame || !frame->IsOutermostMainFrame()) {
+void SoftNavigationHeuristics::ResetPaintTimingsIfNeeded() {
+  LocalFrame* frame = GetLocalFrameIfOutermostAndNotDetached();
+  if (!frame) {
     return;
   }
   LocalFrameView* local_frame_view = frame->View();
   CHECK(local_frame_view);
-  LocalDOMWindow* window = GetSupplementable();
-  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window)) {
-    if (Document* document = window->document();
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(window_)) {
+    if (Document* document = window_->document();
         document &&
         RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
-            window)) {
+            window_.Get())) {
       PaintTiming::From(*document).ResetFirstPaintAndFCP();
     }
     local_frame_view->GetPaintTimingDetector().RestartRecordingLCP();
@@ -436,36 +392,37 @@ void SoftNavigationHeuristics::ResetPaintsIfNeeded() {
 // `EmitSoftNavigationEntryIfAllConditionsMet()`), the previous paints are
 // committed, to make sure accumulated FP, FCP and LCP entries are properly
 // fired.
-void SoftNavigationHeuristics::CommitPreviousPaints(LocalFrame* frame) {
+void SoftNavigationHeuristics::CommitPreviousPaintTimings(LocalFrame* frame) {
   CHECK(frame && frame->IsOutermostMainFrame());
-  LocalDOMWindow* window = GetSupplementable();
-  if (!did_commit_previous_paints_) {
-    LocalFrameView* local_frame_view = frame->View();
+  LocalFrameView* local_frame_view = frame->View();
 
-    CHECK(local_frame_view);
+  CHECK(local_frame_view);
 
-    local_frame_view->GetPaintTimingDetector().SoftNavigationDetected(window);
-    if (RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
-            window)) {
-      PaintTiming::From(*window->document()).SoftNavigationDetected();
-    }
-
-    did_commit_previous_paints_ = true;
+  local_frame_view->GetPaintTimingDetector().SoftNavigationDetected(
+      window_.Get());
+  if (RuntimeEnabledFeatures::SoftNavigationHeuristicsExposeFPAndFCPEnabled(
+          window_.Get())) {
+    PaintTiming::From(*window_->document()).SoftNavigationDetected();
   }
 }
 
 void SoftNavigationHeuristics::Trace(Visitor* visitor) const {
-  Supplement<LocalDOMWindow>::Trace(visitor);
-  visitor->Trace(last_detected_soft_navigation_);
   visitor->Trace(active_interaction_context_);
+  visitor->Trace(most_recent_context_to_meet_non_paint_criteria_);
   // Register a custom weak callback, which runs after processing weakness for
   // the container. This allows us to observe the collection becoming empty
   // without needing to observe individual element disposal.
   visitor->RegisterWeakCallbackMethod<
       SoftNavigationHeuristics,
       &SoftNavigationHeuristics::ProcessCustomWeakness>(this);
+  visitor->Trace(window_);
 }
 
+// This is invoked when executing a callback with an active `EventScope`,
+// which happens for click and keyboard input events, as well as
+// user-initiated navigation and popstate events. Running such an event
+// listener "activates" the `SoftNavigationContext` as a candidate soft
+// navigation.
 void SoftNavigationHeuristics::OnCreateTaskScope(
     scheduler::TaskAttributionInfo& task_state) {
   CHECK(active_interaction_context_);
@@ -480,14 +437,11 @@ void SoftNavigationHeuristics::OnCreateTaskScope(
 
   // TODO(crbug.com/40942324): Replace task_id with either an id for the
   // `SoftNavigationContext` or a serialized version of the object.
-  TRACE_EVENT1("scheduler", "SoftNavigationHeuristics::OnCreateTaskScope",
-               "task_id", task_state.Id().value());
-  // This is invoked when executing a callback with an active `EventScope`,
-  // which happens for click and keyboard input events, as well as
-  // user-initiated navigation and popstate events. Running such an event
-  // listener "activates" the `SoftNavigationContext` as a candidate soft
-  // navigation.
-  initial_interaction_encountered_ = true;
+  TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                      "SoftNavigationHeuristics::OnCreateTaskScope", "context",
+                      active_interaction_context_.Get(), "task_id",
+                      task_state.Id().value());
+
   SetIsTrackingSoftNavigationHeuristicsOnDocument(true);
 }
 
@@ -503,28 +457,50 @@ void SoftNavigationHeuristics::ProcessCustomWeakness(
   //
   // Note: This is not allowed to do Oilpan allocations. If that's needed, this
   // can schedule a task or microtask to reset the heuristic.
-  Vector<UntracedMember<SoftNavigationContext>> dead_contexts;
-  for (const auto& context : potential_soft_navigations_) {
+  const auto required_paint_area = CalculateRequiredPaintArea();
+  WTF::EraseIf(potential_soft_navigations_, [&](const auto& context) {
     if (!info.IsHeapObjectAlive(context)) {
-      RecordUmaForNonSoftNavigationInteraction(*context.Get());
-      dead_contexts.push_back(context);
+      OnSoftNavigationContextWasExhausted(*context.Get(), required_paint_area);
+      return true;
     }
-  }
-  potential_soft_navigations_.RemoveAll(dead_contexts);
+    return false;
+  });
+
+  // This should never happen if we have a last_interaction_context_.
+  // numbecrbug.com/416706750aints?  Perhaps once all dom nodes modified by the
+  // context and/or number of paints?  Perhaps once all dom nodes modified by
+  // the context have been painted at least once, we don't care about more data?
+  // Perhaps after user scrolls/interacts after history change?
   if (potential_soft_navigations_.empty()) {
     CHECK(!active_interaction_context_);
-    ResetHeuristic();
+    CHECK(!most_recent_context_to_meet_non_paint_criteria_);
+    SetIsTrackingSoftNavigationHeuristicsOnDocument(false);
   }
 }
 
-LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfNotDetached() const {
-  LocalDOMWindow* window = GetSupplementable();
-  return window->IsCurrentlyDisplayedInFrame() ? window->GetFrame() : nullptr;
+LocalFrame* SoftNavigationHeuristics::GetLocalFrameIfOutermostAndNotDetached()
+    const {
+  if (!window_->IsCurrentlyDisplayedInFrame()) {
+    return nullptr;
+  }
+
+  LocalFrame* frame = window_->GetFrame();
+  if (!frame->IsOutermostMainFrame()) {
+    return nullptr;
+  }
+
+  return frame;
 }
 
 SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     EventScope::Type type,
     ScriptState* script_state) {
+  // TODO(crbug.com/417164510): It appears that we can create many contexts for
+  // a single interaction, because we can get many ::CreateEventScope (non
+  // nested) even for a single interaction.
+  // We might want to move the EventScope wrapper higher up in the event
+  // dispatch code, so we don't re-create it so often.
+
   if (!has_active_event_scope_) {
     // Create a new `SoftNavigationContext`, which represents a candidate soft
     // navigation interaction. This context is propagated to all descendant
@@ -534,19 +510,23 @@ SoftNavigationHeuristics::EventScope SoftNavigationHeuristics::CreateEventScope(
     // "new interaction" (i.e. keydown), but will create a new one if that has
     // been cleared, which can happen in tests.
     if (IsInteractionStart(type) || !active_interaction_context_) {
-      active_interaction_context_ =
-          MakeGarbageCollected<SoftNavigationContext>();
-      potential_soft_navigations_.insert(active_interaction_context_.Get());
+      active_interaction_context_ = MakeGarbageCollected<SoftNavigationContext>(
+          RuntimeEnabledFeatures::
+              SoftNavigationDetectionAdvancedPaintAttributionEnabled(window_));
+      potential_soft_navigations_.push_back(active_interaction_context_);
+      TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("loading"),
+                          "SoftNavigationHeuristics::CreateNewContext",
+                          "context", *active_interaction_context_);
     }
 
     // Ensure that paints would be reset, so that paint recording would continue
     // despite the user interaction.
-    ResetPaintsIfNeeded();
+    ResetPaintTimingsIfNeeded();
   }
   CHECK(active_interaction_context_.Get());
 
-  auto* tracker = scheduler::TaskAttributionTracker::From(
-      GetSupplementable()->GetIsolate());
+  auto* tracker =
+      scheduler::TaskAttributionTracker::From(window_->GetIsolate());
   bool is_nested = std::exchange(has_active_event_scope_, true);
   // `tracker` will be null if TaskAttributionInfrastructureDisabledForTesting
   // is enabled.
@@ -568,7 +548,7 @@ SoftNavigationHeuristics::MaybeCreateEventScopeForEvent(const Event& event) {
   if (!type) {
     return std::nullopt;
   }
-  auto* script_state = ToScriptStateForMainWorld(GetSupplementable());
+  auto* script_state = ToScriptStateForMainWorld(window_.Get());
   if (!script_state) {
     return std::nullopt;
   }
@@ -600,6 +580,27 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
 
   // TODO(crbug.com/1502640): We should also reset the heuristic a few seconds
   // after a click event handler is done, to reduce potential cycles.
+}
+
+uint64_t SoftNavigationHeuristics::CalculateRequiredPaintArea() const {
+  static constexpr uint64_t kMinRequiredArea = 1;
+
+  LocalFrame* frame = window_->GetFrame();
+  CHECK(frame);
+  LocalFrameView* local_frame_view = frame->View();
+  if (!local_frame_view) {
+    return kMinRequiredArea;
+  }
+
+  constexpr int kSoftNavigationPaintAreaPercentageInPoints = 1;  // 0.01%
+  uint64_t viewport_area = local_frame_view->GetLayoutSize().Area64();
+  uint64_t required_paint_area =
+      (viewport_area * kSoftNavigationPaintAreaPercentageInPoints) / 10000;
+
+  if (required_paint_area > kMinRequiredArea) {
+    return required_paint_area;
+  }
+  return kMinRequiredArea;
 }
 
 // SoftNavigationHeuristics::EventScope implementation

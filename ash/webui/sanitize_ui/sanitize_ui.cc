@@ -2,32 +2,54 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_sanitize_app_resources.h"
 #include "ash/webui/grit/ash_sanitize_app_resources_map.h"
 #include "ash/webui/sanitize_ui/sanitize_ui_delegate.h"
+#include "ash/webui/sanitize_ui/sanitize_ui_uma.h"
 #include "ash/webui/sanitize_ui/url_constants.h"
+#include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace {
 
 // This function chooses which view should be shown based on the url. The done
 // page is only shown if the url query is set to "done".
 bool ShowDone(const GURL url) {
-  return url.has_query() && url.query() == "done";
+  bool show_done = url.has_query() && url.query() == "done";
+  if (show_done) {
+    base::UmaHistogramEnumeration("Sanitize.SanitizeEvent",
+                                  ash::SanitizeEvent::kSanitizeDoneScreen);
+  } else {
+    base::UmaHistogramEnumeration("Sanitize.SanitizeEvent",
+                                  ash::SanitizeEvent::kSanitizeInitialScreen);
+  }
+  return show_done;
 }
 
 }  // namespace
 namespace ash {
+
+bool SanitizeDialogUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  auto* session_controller = Shell::Get()->session_controller();
+  bool is_managed_user = session_controller->IsActiveAccountManaged();
+  bool is_child_user = session_controller->IsUserChild();
+  bool is_guest_mode_active = session_controller->IsUserGuest();
+  bool is_managed_device = ash::InstallAttributes::Get()->IsEnterpriseManaged();
+  return ChromeOSWebUIConfig::IsWebUIEnabled(browser_context) &&
+         !is_managed_device && !is_managed_user && !is_guest_mode_active &&
+         !is_child_user &&
+         base::FeatureList::IsEnabled(ash::features::kSanitize);
+}
 
 class SanitizeSettingsResetter : public sanitize_ui::mojom::SettingsResetter {
  public:
@@ -37,6 +59,9 @@ class SanitizeSettingsResetter : public sanitize_ui::mojom::SettingsResetter {
 
   void PerformSanitizeSettings() override {
     if (sanitize_ui_delegate_) {
+      base::UmaHistogramEnumeration(
+          "Sanitize.SanitizeEvent",
+          ash::SanitizeEvent::kSanitizeProcessStarted);
       sanitize_ui_delegate_->PerformSanitizeSettings();
     }
   }
@@ -45,6 +70,12 @@ class SanitizeSettingsResetter : public sanitize_ui::mojom::SettingsResetter {
       mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver) {
     receiver_.reset();
     receiver_.Bind(std::move(receiver));
+  }
+
+  void SetAttemptRestartForTesting(  // IN-TEST
+      const base::RepeatingClosure& restart_attempt) {
+    sanitize_ui_delegate_->SetAttemptRestartForTesting(  // IN-TEST
+        restart_attempt);
   }
 
  private:
@@ -69,9 +100,7 @@ SanitizeDialogUI::SanitizeDialogUI(
   html_source->UseStringsJs();
   html_source->EnableReplaceI18nInJS();
 
-  const auto resources =
-      base::make_span(kAshSanitizeAppResources, kAshSanitizeAppResourcesSize);
-  html_source->AddResourcePaths(resources);
+  html_source->AddResourcePaths(kAshSanitizeAppResources);
   html_source->AddResourcePath("", IDR_ASH_SANITIZE_APP_INDEX_HTML);
   html_source->AddResourcePath("test_loader.html", IDR_WEBUI_TEST_LOADER_HTML);
   html_source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
@@ -85,22 +114,36 @@ SanitizeDialogUI::SanitizeDialogUI(
       {"sanitizeDoneButton", IDS_SANITIZE_DONE},
       {"sanitizeDoneAccordionExtensionsTitle",
        IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE},
+      {"sanitizeDoneAccordionExtensionsReenableSubheader",
+       IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE_SUBHEADER},
       {"sanitizeDoneAccordionExtensionsReenable",
        IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE},
       {"sanitizeDoneAccordionChromeOsTitle",
        IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE},
+      {"sanitizeDoneAccordionChromeOsInputSubheader",
+       IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT_SUBHEADER},
       {"sanitizeDoneAccordionChromeOsInput",
        IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT},
+      {"sanitizeDoneAccordionChromeOsNetworkSubheader",
+       IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK_SUBHEADER},
       {"sanitizeDoneAccordionChromeOsNetwork",
        IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK},
       {"sanitizeDoneAccordionChromeTitle",
        IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE},
+      {"sanitizeDoneAccordionChromeSiteContentSubheader",
+       IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT_SUBHEADER},
       {"sanitizeDoneAccordionChromeSiteContent",
        IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT},
+      {"sanitizeDoneAccordionChromeStartupSubheader",
+       IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP_SUBHEADER},
       {"sanitizeDoneAccordionChromeStartup",
        IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP},
+      {"sanitizeDoneAccordionChromeHomepageSubheader",
+       IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE_SUBHEADER},
       {"sanitizeDoneAccordionChromeHomepage",
        IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE},
+      {"sanitizeDoneAccordionChromeLanguagesSubheader",
+       IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES_SUBHEADER},
       {"sanitizeDoneAccordionChromeLanguages",
        IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES},
       {"sanitizeDoneButtonExtensions", IDS_SANITIZE_DONE_BUTTON_EXTENSIONS},
@@ -138,6 +181,12 @@ void SanitizeDialogUI::BindInterface(
 void SanitizeDialogUI::BindInterface(
     mojo::PendingReceiver<sanitize_ui::mojom::SettingsResetter> receiver) {
   sanitize_settings_resetter_->BindInterface(std::move(receiver));
+}
+
+void SanitizeDialogUI::SetAttemptRestartForTesting(
+    const base::RepeatingClosure& restart_attempt) {
+  sanitize_settings_resetter_->SetAttemptRestartForTesting(  // IN-TEST
+      restart_attempt);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(SanitizeDialogUI)

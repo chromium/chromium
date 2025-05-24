@@ -21,7 +21,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.h"
@@ -41,14 +43,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace printing {
 
@@ -82,20 +76,9 @@ base::Value::List ConvertPrintersToValues(
 }  // namespace
 
 PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
-    PRINTER_LOG(DEBUG) << "Local printer not available";
-    return;
-  }
-  local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
-  local_printer_version_ =
-      service->GetInterfaceVersion<crosapi::mojom::LocalPrinter>();
-#endif
 }
 
 PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() = default;
@@ -248,8 +231,9 @@ void PrintPreviewHandlerChromeOS::SendPrinterSetup(
   base::Value::Dict* printer = destination_info.FindDict(kPrinter);
   if (printer) {
     base::Value::Dict* policies_value = printer->FindDict(kSettingPolicies);
-    if (policies_value)
+    if (policies_value) {
       response.Set("policies", std::move(*policies_value));
+    }
   }
   ResolveJavascriptCallback(base::Value(callback_id), response);
 }
@@ -301,10 +285,11 @@ void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
 void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdateCompletion(
     base::Value callback_id,
     std::optional<base::Value::Dict> result) {
-  if (result)
+  if (result) {
     ResolveJavascriptCallback(callback_id, *result);
-  else
+  } else {
     ResolveJavascriptCallback(callback_id, base::Value());
+  }
 }
 
 void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
@@ -400,15 +385,6 @@ void PrintPreviewHandlerChromeOS::HandleObserveLocalPrinters(
   CHECK_EQ(1U, args.size());
   CHECK(args[0].is_string());
   const std::string& callback_id = args[0].GetString();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (int{crosapi::mojom::LocalPrinter::MethodMinVersions::
-              kAddLocalPrintersObserverMinVersion} > local_printer_version_) {
-    PRINTER_LOG(DEBUG) << "Local printer version incompatible";
-    ResolveJavascriptCallback(callback_id, base::Value::List());
-    return;
-  }
-#endif
 
   if (!local_printer_) {
     PRINTER_LOG(DEBUG) << "Local printer not available";

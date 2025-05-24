@@ -26,11 +26,13 @@ const Plugin = goog.require('goog.editor.Plugin');
 const Range = goog.require('goog.dom.Range');
 const SafeHtml = goog.require('goog.html.SafeHtml');
 const TagName = goog.require('goog.dom.TagName');
+const TestEvent = goog.require('goog.testing.events.Event');
 const classlist = goog.require('goog.dom.classlist');
 const editorRange = goog.require('goog.editor.range');
 const events = goog.require('goog.events');
 const functions = goog.require('goog.functions');
 const googDom = goog.require('goog.dom');
+const platform = goog.require('goog.labs.userAgent.platform');
 const recordFunction = goog.require('goog.testing.recordFunction');
 const testSuite = goog.require('goog.testing.testSuite');
 const testingDom = goog.require('goog.testing.dom');
@@ -52,21 +54,21 @@ class TestPlugin extends Plugin {
     this.getTrogClassId = () => 'TestPlugin';
 
     /** @suppress {checkTypes} suppression added to enable type checking */
-    this.handleKeyDown = goog.nullFunction;
+    this.handleKeyDown = () => {};
     /** @suppress {checkTypes} suppression added to enable type checking */
-    this.handleKeyPress = goog.nullFunction;
+    this.handleKeyPress = () => {};
     /** @suppress {checkTypes} suppression added to enable type checking */
-    this.handleKeyUp = goog.nullFunction;
+    this.handleKeyUp = () => {};
     /** @suppress {checkTypes} suppression added to enable type checking */
-    this.handleKeyboardShortcut = goog.nullFunction;
+    this.handleKeyboardShortcut = () => {};
     /** @suppress {checkTypes} suppression added to enable type checking */
-    this.isSupportedCommand = goog.nullFunction;
-    this.execCommandInternal = goog.nullFunction;
-    this.queryCommandValue = goog.nullFunction;
+    this.isSupportedCommand = () => {};
+    this.execCommandInternal = () => {};
+    this.queryCommandValue = () => {};
     /** @suppress {checkTypes} suppression added to enable type checking */
-    this.activeOnUneditableFields = goog.nullFunction;
+    this.activeOnUneditableFields = () => {};
     /** @suppress {checkTypes} suppression added to enable type checking */
-    this.handleSelectionChange = goog.nullFunction;
+    this.handleSelectionChange = () => {};
   }
 }
 
@@ -181,7 +183,8 @@ function doTestPlaceCursorAtStart(html = undefined, parentId = undefined) {
 
   let startNode = parentId ?
       editableField.getEditableDomHelper().getElement(parentId).firstChild :
-      textNode ? textNode : editableField.getElement();
+      textNode ? textNode :
+                 editableField.getElement();
   assertEquals(
       'The range should start at the specified expected node', startNode,
       range.getStartNode());
@@ -239,13 +242,14 @@ function doTestPlaceCursorAtEnd(
 
   const endNode = parentId ?
       editableField.getEditableDomHelper().getElement(parentId).lastChild :
-      textNode ? textNode : editableField.getElement();
+      textNode ? textNode :
+                 editableField.getElement();
   assertEquals(
       'The range should end at the specified expected node', endNode,
       range.getEndNode());
-  const offset = (opt_offset != null) ?
-      opt_offset :
-      textNode ? endNode.nodeValue.length : endNode.childNodes.length - 1;
+  const offset = (opt_offset != null) ? opt_offset :
+      textNode                        ? endNode.nodeValue.length :
+                                        endNode.childNodes.length - 1;
   if (hasBogusNode) {
     assertEquals(
         'The range should end at the ending of the bogus node ' +
@@ -1251,6 +1255,45 @@ testSuite({
     }
   },
 
+  testSetSafeHtml_withPendingDelayedChangeEvent() {
+    const editableField = new FieldConstructor('testField', document);
+    const clock = new MockClock(true);
+
+    try {
+      let delayedChangeCalled = false;
+      events.listen(editableField, Field.EventType.DELAYEDCHANGE, () => {
+        delayedChangeCalled = true;
+      });
+
+      editableField.makeEditable();
+      clock.tick(1000);
+      assertFalse(
+          'Make editable must not fire delayed change.', delayedChangeCalled);
+
+      let shouldWrapInParagraphTag = false;
+      editableField.setSafeHtml(
+          shouldWrapInParagraphTag, SafeHtml.htmlEscape('foo'),
+          false /* Fire delayed change */);
+      testingDom.assertHtmlContentsMatch('foo', editableField.getElement());
+      clock.tick(100);
+      assertFalse(
+          'delayedChange should not fire after only 100ms.',
+          delayedChangeCalled);
+
+      editableField.setSafeHtml(
+          shouldWrapInParagraphTag, SafeHtml.htmlEscape('bar'),
+          true /* Don't fire delayed change */);
+      testingDom.assertHtmlContentsMatch('bar', editableField.getElement());
+      clock.tick(1000);
+      assertFalse(
+          'setSafeHtml must not fire pending delayed change if so configured.',
+          delayedChangeCalled);
+    } finally {
+      clock.dispose();
+      editableField.dispose();
+    }
+  },
+
   /**
      Verify that restoreSavedRange() restores the range and sets the focus.
    */
@@ -1425,11 +1468,99 @@ testSuite({
 
     assertTrue(Field.isGeneratingKey_(regularKeyEvent, true));
     assertFalse(Field.isGeneratingKey_(ctrlKeyEvent, true));
-    if (userAgent.WINDOWS && !userAgent.GECKO) {
+    if ((userAgent.WINDOWS || platform.isAndroid()) && !userAgent.GECKO) {
       assertTrue(Field.isGeneratingKey_(imeKeyEvent, false));
     } else {
       assertFalse(Field.isGeneratingKey_(imeKeyEvent, false));
     }
+  },
+
+  testRegularKeyDispatchesDelayedChange() {
+    if (userAgent.GECKO) {
+      // Gecko based browsers handle changes via mutation events
+      return;
+    }
+    if (userAgent.WINDOWS || platform.isAndroid()) {
+      // Windows and Android platforms do not emit events with 'regular' key
+      // codes.
+      return;
+    }
+    const editableField = new FieldConstructor('testField');
+    const clock = new MockClock(true);
+    const delayedChanges = recordFunction();
+
+    editableField.makeEditable();
+    events.listen(editableField, Field.EventType.DELAYEDCHANGE, delayedChanges);
+
+    testingEvents.fireKeySequence(editableField.getElement(), KeyCodes.A);
+    clock.tick(1000);
+
+    if (!(userAgent.WINDOWS || platform.isAndroid()) || userAgent.GECKO) {
+      assertEquals(
+          'Delayed change event should\'ve been dispatched', 1,
+          delayedChanges.getCallCount());
+    }
+
+    clock.dispose();
+    editableField.dispose();
+  },
+
+  testImeKeyDispatchesDelayedChange() {
+    if (BrowserFeature.USE_MUTATION_EVENTS) {
+      // Gecko based browsers handle changes via mutation events
+      return;
+    }
+    if (!(userAgent.WINDOWS || platform.isAndroid())) {
+      // Only Windows and Android platforms emit these IME-specific events.
+      return;
+    }
+    const editableField = new FieldConstructor('testField');
+    const clock = new MockClock(true);
+    const delayedChanges = recordFunction();
+
+    editableField.makeEditable();
+    events.listen(editableField, Field.EventType.DELAYEDCHANGE, delayedChanges);
+
+    testingEvents.fireKeySequence(editableField.getElement(), KeyCodes.WIN_IME);
+    clock.tick(1000);
+
+    assertEquals(
+        'Delayed change event should\'ve been dispatched', 1,
+        delayedChanges.getCallCount());
+
+
+    clock.dispose();
+    editableField.dispose();
+  },
+
+  testInputEventDispatchesDelayedChange() {
+    if (BrowserFeature.USE_MUTATION_EVENTS) {
+      // Gecko based browsers handle changes via mutation events
+      return;
+    }
+    const editableField = new FieldConstructor('testField');
+    const clock = new MockClock(true);
+    const delayedChanges = recordFunction();
+
+    editableField.makeEditable();
+    events.listen(editableField, Field.EventType.DELAYEDCHANGE, delayedChanges);
+
+    // Non-typing changes on some devices rely on emitting an INPUT event, such
+    // as:
+    // - swipe-typing a word (on iOS)
+    // - accepting a word prediction (on iOS)
+    // - using speech to text (on iOS)
+    // - accepting a spellcheck suggestion (on iOS, Android or Desktop)
+    testingEvents.fireBrowserEvent(
+        new TestEvent(EventType.INPUT, editableField.getElement()));
+    clock.tick(1000);
+
+    assertEquals(
+        'Delayed change event should\'ve been dispatched', 1,
+        delayedChanges.getCallCount());
+
+    clock.dispose();
+    editableField.dispose();
   },
 
   testSetEditableClassName() {

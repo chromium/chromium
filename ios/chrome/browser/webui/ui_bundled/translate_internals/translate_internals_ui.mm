@@ -6,12 +6,13 @@
 
 #import <string>
 
+#import "components/grit/translate_internals_resources.h"
+#import "components/grit/translate_internals_resources_map.h"
 #import "components/translate/core/common/translate_util.h"
 #import "components/translate/translate_internals/translate_internals_handler.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/webui/ui_bundled/translate_internals/ios_translate_internals_handler.h"
-#import "ios/chrome/grit/ios_resources.h"
 #import "ios/web/public/webui/web_ui_ios.h"
 #import "ios/web/public/webui/web_ui_ios_data_source.h"
 
@@ -24,12 +25,9 @@ web::WebUIIOSDataSource* CreateTranslateInternalsHTMLSource() {
   web::WebUIIOSDataSource* source =
       web::WebUIIOSDataSource::Create(kChromeUITranslateInternalsHost);
 
-  source->SetDefaultResource(IDR_IOS_TRANSLATE_INTERNALS_HTML);
   source->UseStringsJs();
-  source->AddResourcePath("translate_internals.css",
-                          IDR_IOS_TRANSLATE_INTERNALS_CSS);
-  source->AddResourcePath("translate_internals.js",
-                          IDR_IOS_TRANSLATE_INTERNALS_JS);
+  source->AddResourcePaths(kTranslateInternalsResources);
+  source->AddResourcePath("", IDR_TRANSLATE_INTERNALS_TRANSLATE_INTERNALS_HTML);
 
   base::Value::Dict langs =
       translate::TranslateInternalsHandler::GetLanguages();

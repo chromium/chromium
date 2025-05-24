@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -13,6 +14,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * updates are pulled from the {@link TabSwitcherModel} when a notification of an update is
  * received.
  */
+@NullMarked
 public class TabSwitcherButtonViewBinder
         implements PropertyModelChangeProcessor.ViewBinder<
                 PropertyModel, TabSwitcherButtonView, PropertyKey> {

@@ -89,12 +89,12 @@ ContinueBrowsingChip::ContinueBrowsingChip(
   favicon->SetImageSize(kContinueBrowsingChipFaviconSize);
 
   if (metadata.favicon.IsEmpty()) {
-    favicon->SetImage(CreateVectorIcon(
+    favicon->SetImage(ui::ImageModel::FromVectorIcon(
         kPhoneHubDefaultFaviconIcon,
         AshColorProvider::Get()->GetContentLayerColor(
             AshColorProvider::ContentLayerType::kIconColorPrimary)));
   } else {
-    favicon->SetImage(metadata.favicon.AsImageSkia());
+    favicon->SetImage(ui::ImageModel::FromImage(metadata.favicon));
   }
 
   auto* url_label = header_view->AddChildView(

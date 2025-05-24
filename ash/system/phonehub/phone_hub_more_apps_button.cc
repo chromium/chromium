@@ -129,7 +129,7 @@ void PhoneHubMoreAppsButton::StartLoadingAnimation(
   RemoveAllChildViews();
   for (size_t i = 0; i < 4; i++) {
     AppLoadingIcon* app_loading_icon =
-        AddChildView(new AppLoadingIcon(AppIcon::kSizeSmall));
+        AddChildViewRaw(new AppLoadingIcon(AppIcon::kSizeSmall));
     app_loading_icons_.push_back(app_loading_icon);
 
     size_t x = i % 2;

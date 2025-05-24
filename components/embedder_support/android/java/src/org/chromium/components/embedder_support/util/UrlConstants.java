@@ -4,6 +4,7 @@
 
 package org.chromium.components.embedder_support.util;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.url.GURL;
 
 /**
@@ -12,6 +13,7 @@ import org.chromium.url.GURL;
  * <p>Do not add any more NTP related constants. TODO(crbug.com/40281619) Move NTP related constants
  * to ChromeUrlConstants.java
  */
+@NullMarked
 public class UrlConstants {
     public static final String APP_INTENT_SCHEME = "android-app";
     public static final String BLOB_SCHEME = "blob";
@@ -22,6 +24,7 @@ public class UrlConstants {
     public static final String DATA_SCHEME = "data";
     public static final String DEVTOOLS_SCHEME = "devtools";
     public static final String DOCUMENT_SCHEME = "document";
+    public static final String FIDO_SCHEME = "fido";
     public static final String FILE_SCHEME = "file";
     public static final String FILESYSTEM_SCHEME = "filesystem";
     public static final String FTP_SCHEME = "ftp";
@@ -69,6 +72,7 @@ public class UrlConstants {
 
     public static final String RECENT_TABS_HOST = "recent-tabs";
     public static final String RECENT_TABS_URL = "chrome-native://recent-tabs/";
+    public static final String GRID_TAB_SWITCHER_URL = "chrome-native://gts/";
 
     // TODO(dbeam): do we need both HISTORY_URL and NATIVE_HISTORY_URL?
     public static final String HISTORY_HOST = "history";
@@ -119,8 +123,8 @@ public class UrlConstants {
     public static final String MY_ACTIVITY_URL_IN_QD =
             "https://myactivity.google.com/myactivity?utm_source=chrome_qd";
 
-    public static final String GOOGLE_EMBEDDED_PRIVACY_POLICY =
-            "https://policies.google.com/privacy/embedded";
+    public static final String GOOGLE_PRIVACY_POLICY = "https://policies.google.com/privacy";
+    public static final String GOOGLE_PRIVACY_POLICY_CHINA = "https://policies.google.cn/privacy";
 
     public static final String GOOGLE_URL = "https://www.google.com/";
 
@@ -142,7 +146,7 @@ public class UrlConstants {
     private static class Holder {
         private static final String SERIALIZED_NTP_URL =
                 "73,1,true,0,6,0,-1,0,-1,9,6,0,-1,15,1,0,-1,0,-1,false,false,chrome://newtab/";
-        private static GURL sNtpGurl =
+        private static final GURL sNtpGurl =
                 GURL.deserializeLatestVersionOnly(SERIALIZED_NTP_URL.replace(',', '\0'));
     }
 

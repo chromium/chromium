@@ -20,10 +20,21 @@ class WKContentRuleListProvider {
   WKContentRuleListProvider();
   ~WKContentRuleListProvider();
 
+  WKContentRuleListProvider(const WKContentRuleListProvider&) = delete;
+  WKContentRuleListProvider& operator=(const WKContentRuleListProvider&) =
+      delete;
+
   // Sets the WKUserContentController that this provider will install its rules
-  // on.
+  // on. This should be called before rules are expected to be applied.
+  // Calling this triggers installation of any already-compiled rules.
   void SetUserContentController(
       WKUserContentController* user_content_controller);
+
+  // Sets a callback to be invoked when all initial static content rule lists
+  // (e.g., block-local, mixed-content) have finished their compilation
+  // attempts. If compilations are already complete when this is called,
+  // the callback will be run immediately.
+  void SetOnAllStaticListsCompiledCallback(base::OnceClosure callback);
 
   // Updates and re-installs the Content Blocker rules using any new state.
   // This may be asynchronous if a rule list hasn't been compiled yet, so
@@ -33,24 +44,51 @@ class WKContentRuleListProvider {
   // installed).
   void UpdateContentRuleLists(base::OnceCallback<void(bool)> callback);
 
- private:
-  WKContentRuleListProvider(const WKContentRuleListProvider&) = delete;
-  WKContentRuleListProvider& operator=(const WKContentRuleListProvider&) =
-      delete;
+  // Updates or clears the Script Blocking rule list.
+  // - `json_rules`: An NSString containing the JSON rules for script
+  //   blocking. Passing nil will uninstall the managed list from the controller
+  //   and remove it from the list store.
+  // - `callback`: Called with `success` (true if compilation succeeded) and an
+  //   `error` if one occurred during compilation.
+  void UpdateScriptBlockingRuleList(
+      NSString* json_rules,
+      base::OnceCallback<void(bool success, NSError* error)> callback);
 
-  // Installs the content rule list that should be installed given the current
-  // block setting.
+ private:
+  // Installs all compiled content rule lists managed by this provider onto the
+  // `user_content_controller_`.
   void InstallContentRuleLists();
 
-  // Uninstalls all content rule lists installed by this provider.
+  // Uninstalls all content rule lists managed by this provider from the
+  // `user_content_controller_`.
   void UninstallContentRuleLists();
 
-  __weak WKUserContentController* user_content_controller_;
-  WKContentRuleList* block_local_rule_list_;
-  WKContentRuleList* mixed_content_autoupgrade_rule_list_;
+  // Called after each static list compilation attempt. Decrements the pending
+  // count and invokes `on_all_static_lists_compiled_callback_` if all have
+  // completed.
+  void MaybeSignalStaticListsCompiled();
 
+  // Controller where rules are installed. Weak reference as the controller's
+  // lifecycle might be managed elsewhere (e.g., by WKWebViewConfiguration).
+  __weak WKUserContentController* user_content_controller_ = nullptr;
+
+  // Compiled rule lists.
+  WKContentRuleList* block_local_rule_list_ = nullptr;
+  WKContentRuleList* mixed_content_autoupgrade_rule_list_ = nullptr;
+  WKContentRuleList* script_blocking_rule_list_ = nullptr;
+
+  // Callback for the UpdateContentRuleLists method.
   base::OnceCallback<void(bool)> update_callback_;
 
+  // Counter for pending static list compilations initiated by the constructor.
+  int pending_static_compilations_;
+
+  // Callback to be invoked once all initial static lists have finished
+  // compiling.
+  base::OnceClosure on_all_static_lists_compiled_callback_;
+
+  // Factory for creating weak pointers to this object, used for async
+  // callbacks.
   base::WeakPtrFactory<WKContentRuleListProvider> weak_ptr_factory_;
 };
 

@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,7 +37,7 @@ const size_t kDataHeaderIndex =
 
 TEST(WavAudioHandlerTest, SampleDataTest) {
   std::string data(kTestAudioData, kTestAudioDataSize);
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   ASSERT_TRUE(handler);
   ASSERT_EQ(2, handler->GetNumChannels());
   ASSERT_EQ(16, handler->bits_per_sample_for_testing());
@@ -46,7 +47,7 @@ TEST(WavAudioHandlerTest, SampleDataTest) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->GetNumChannels(),
@@ -62,7 +63,7 @@ TEST(WavAudioHandlerTest, SampleDataTest) {
 
 TEST(WavAudioHandlerTest, SampleFloatDataTest) {
   std::string data(kTestFloatAudioData, kTestFloatAudioDataSize);
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   ASSERT_TRUE(handler);
   ASSERT_EQ(2, handler->GetNumChannels());
   ASSERT_EQ(32, handler->bits_per_sample_for_testing());
@@ -72,7 +73,7 @@ TEST(WavAudioHandlerTest, SampleFloatDataTest) {
 
   ASSERT_EQ(8U, handler->data().size());
   const char kData[] = "\x00\x01\x00\x00\x01\x00\x00\x00";
-  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->GetNumChannels(),
@@ -88,7 +89,7 @@ TEST(WavAudioHandlerTest, SampleFloatDataTest) {
 
 TEST(WavAudioHandlerTest, SampleExtensibleDataTest) {
   std::string data(kTestExtensibleAudioData, kTestExtensibleAudioDataSize);
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   ASSERT_TRUE(handler);
   ASSERT_EQ(2, handler->GetNumChannels());
   ASSERT_EQ(32, handler->bits_per_sample_for_testing());
@@ -98,7 +99,7 @@ TEST(WavAudioHandlerTest, SampleExtensibleDataTest) {
 
   ASSERT_EQ(8U, handler->data().size());
   const char kData[] = "\x01\x00\x00\x00\x01\x00\x00\x00";
-  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 
   std::unique_ptr<AudioBus> bus =
       AudioBus::Create(handler->GetNumChannels(),
@@ -117,7 +118,7 @@ TEST(WavAudioHandlerTest, TestZeroChannelsIsNotValid) {
   std::string data(kTestAudioData, kTestAudioDataSize);
   data[kChannelIndex] = '\x00';
   data[kChannelIndex + 1] = '\x00';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_FALSE(handler);
 }
 
@@ -127,7 +128,7 @@ TEST(WavAudioHandlerTest, TestZeroBitsPerSampleIsNotValid) {
   std::string data(kTestAudioData, kTestAudioDataSize);
   data[kBitsPerSampleIndex] = '\x00';
   data[kBitsPerSampleIndex + 1] = '\x00';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_FALSE(handler);
 }
 
@@ -139,7 +140,7 @@ TEST(WavAudioHandlerTest, TestZeroSamplesPerSecondIsNotValid) {
   data[kSampleRateIndex + 1] = '\x00';
   data[kSampleRateIndex + 2] = '\x00';
   data[kSampleRateIndex + 3] = '\x00';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_FALSE(handler);
 }
 
@@ -150,7 +151,7 @@ TEST(WavAudioHandlerTest, TestTooBigTotalSizeIsOkay) {
   data[kWavDataSizeIndex + 1] = '\xFF';
   data[kWavDataSizeIndex + 2] = '\xFF';
   data[kWavDataSizeIndex + 3] = '\x00';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_TRUE(handler);
   EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());
@@ -161,7 +162,7 @@ TEST(WavAudioHandlerTest, TestTooBigTotalSizeIsOkay) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 }
 
 TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
@@ -173,7 +174,7 @@ TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
   data[kDataHeaderIndex + 5] = '\xFF';
   data[kDataHeaderIndex + 6] = '\xFF';
   data[kDataHeaderIndex + 7] = '\x00';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_TRUE(handler);
   EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());
@@ -184,7 +185,7 @@ TEST(WavAudioHandlerTest, TestTooBigDataChunkSizeIsOkay) {
 
   ASSERT_EQ(4U, handler->data().size());
   const char kData[] = "\x01\x00\x01\x00";
-  ASSERT_EQ(std::string_view(kData, std::size(kData) - 1), handler->data());
+  ASSERT_EQ(base::byte_span_from_cstring(kData), handler->data());
 }
 
 TEST(WavAudioHandlerTest, TestTooSmallFormatSizeIsNotValid) {
@@ -196,7 +197,7 @@ TEST(WavAudioHandlerTest, TestTooSmallFormatSizeIsNotValid) {
   data[kFormatHeaderIndex + 5] = '\x00';
   data[kFormatHeaderIndex + 6] = '\x00';
   data[kFormatHeaderIndex + 7] = '\x00';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_FALSE(handler);
 }
 
@@ -207,7 +208,7 @@ TEST(WavAudioHandlerTest, TestOtherSectionTypesIsOkay) {
   data.append("abcd\x04\x00\x00\x00\x01\x02\x03\x04");
   data[kWavDataSizeIndex] += 12;  // This should not overflow.
 
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_TRUE(handler);
   EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());
@@ -225,7 +226,7 @@ TEST(WavAudioHandlerTest, TestNoFmtSectionIsNotValid) {
   data[kFormatHeaderIndex + 1] = 'b';
   data[kFormatHeaderIndex + 2] = 'c';
   data[kFormatHeaderIndex + 3] = 'd';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_FALSE(handler);
 }
 
@@ -238,7 +239,7 @@ TEST(WavAudioHandlerTest, TestNoDataSectionIsOkay) {
   data[kDataHeaderIndex + 1] = 'b';
   data[kDataHeaderIndex + 2] = 'c';
   data[kDataHeaderIndex + 3] = 'd';
-  auto handler = WavAudioHandler::Create(data);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
   EXPECT_TRUE(handler);
   EXPECT_TRUE(handler->Initialize());
   ASSERT_EQ(2, handler->GetNumChannels());

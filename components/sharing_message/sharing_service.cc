@@ -87,9 +87,8 @@ SharingService::SharingService(
 }
 
 SharingService::~SharingService() {
-  if (sync_service_ && sync_service_->HasObserver(this)) {
-    sync_service_->RemoveObserver(this);
-  }
+  // `sync_service_` should be reset in `Shutdown` method.
+  DCHECK(!sync_service_);
 }
 
 std::optional<SharingTargetDeviceInfo> SharingService::GetDeviceByGuid(
@@ -195,26 +194,43 @@ void SharingService::EntryAddedLocally(
     return;
   }
 
-  auto large_icon_types = std::vector<favicon_base::IconTypeSet>(
-      {{favicon_base::IconType::kWebManifestIcon},
-       {favicon_base::IconType::kFavicon},
-       {favicon_base::IconType::kTouchIcon},
-       {favicon_base::IconType::kTouchPrecomposedIcon}});
+  if (send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithURLImage()) {
+    auto large_icon_types = std::vector<favicon_base::IconTypeSet>(
+        {{favicon_base::IconType::kWebManifestIcon},
+         {favicon_base::IconType::kFavicon},
+         {favicon_base::IconType::kTouchIcon},
+         {favicon_base::IconType::kTouchPrecomposedIcon}});
 
-  // Retrieve favicon to issue notification.
-  favicon_service_->GetLargestRawFaviconForPageURL(
-      entry->GetURL(), large_icon_types, kMinimumFaviconSize,
-      base::BindOnce(&SharingService::SendNotificationForSendTabToSelfPush,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     send_tab_to_self::SendTabToSelfEntry(*entry)),
-      &task_tracker_);
+    // Retrieve favicon to issue notification.
+    favicon_service_->GetLargestRawFaviconForPageURL(
+        entry->GetURL(), large_icon_types, kMinimumFaviconSize,
+        base::BindOnce(&SharingService::SendNotificationForSendTabToSelfPush,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       send_tab_to_self::SendTabToSelfEntry(*entry)),
+        &task_tracker_);
+  } else {
+    SendNotificationForSendTabToSelfPush(
+        send_tab_to_self::SendTabToSelfEntry(*entry),
+        favicon_base::FaviconRawBitmapResult{});
+  }
 }
 
-void SharingService::OnSyncShutdown(syncer::SyncService* sync) {
+void SharingService::ResetConnectionToSyncService() {
   if (sync_service_ && sync_service_->HasObserver(this)) {
     sync_service_->RemoveObserver(this);
   }
   sync_service_ = nullptr;
+}
+
+void SharingService::Shutdown() {
+  // Avoid dangling `raw_ptr`s by explicitly resetting/destroying early fields
+  // and objects that maintain `raw_ptr`s to things owned by other services.
+  ResetConnectionToSyncService();
+  sharing_device_registration_.reset();
+}
+
+void SharingService::OnSyncShutdown(syncer::SyncService* sync) {
+  ResetConnectionToSyncService();
 }
 
 void SharingService::OnStateChanged(syncer::SyncService* sync) {
@@ -252,6 +268,7 @@ void SharingService::RegisterDeviceInTesting(
 void SharingService::UnregisterDevice() {
   sharing_device_registration_->UnregisterDevice(base::BindOnce(
       &SharingService::OnDeviceUnregistered, weak_ptr_factory_.GetWeakPtr()));
+  message_sender_->ClearPendingMessages();
 }
 
 void SharingService::OnDeviceRegistered(
@@ -297,7 +314,7 @@ void SharingService::OnDeviceRegistered(
       break;
     case SharingDeviceRegistrationResult::kDeviceNotRegistered:
       // Register device cannot return kDeviceNotRegistered.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

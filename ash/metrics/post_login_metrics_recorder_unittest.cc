@@ -64,12 +64,9 @@ TEST_F(PostLoginMetricsRecorderTest, ReportLoggedInStateChanged) {
 }
 
 TEST_F(PostLoginMetricsRecorderTest, ReportAllBrowserWindowsCreated) {
-  constexpr char kAllBrowserWindowsCreated[] =
-      "Ash.LoginSessionRestore.AllBrowserWindowsCreated";
   constexpr char kLoginPerfAllBrowserWindowsCreated[] =
       "Ash.LoginPerf.AutoRestore.AllBrowserWindowsCreated";
 
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsCreated, 0);
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsCreated, 0);
 
   const base::TimeTicks origin = base::TimeTicks::Now();
@@ -79,22 +76,15 @@ TEST_F(PostLoginMetricsRecorderTest, ReportAllBrowserWindowsCreated) {
                                                 /*restore_automatically=*/true);
   metrics_recorder_->OnAllBrowserWindowsCreated(origin + duration);
 
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsCreated, 1);
-  histogram_tester_->ExpectTimeBucketCount(kAllBrowserWindowsCreated, duration,
-                                           1);
-
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsCreated, 1);
   histogram_tester_->ExpectTimeBucketCount(kLoginPerfAllBrowserWindowsCreated,
                                            duration, 1);
 }
 
 TEST_F(PostLoginMetricsRecorderTest, ReportAllBrowserWindowsShown) {
-  constexpr char kAllBrowserWindowsShown[] =
-      "Ash.LoginSessionRestore.AllBrowserWindowsShown";
   constexpr char kLoginPerfAllBrowserWindowsShown[] =
       "Ash.LoginPerf.AutoRestore.AllBrowserWindowsShown";
 
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsShown, 0);
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsShown, 0);
 
   const base::TimeTicks origin = base::TimeTicks::Now();
@@ -104,22 +94,15 @@ TEST_F(PostLoginMetricsRecorderTest, ReportAllBrowserWindowsShown) {
                                                 /*restore_automatically=*/true);
   metrics_recorder_->OnAllBrowserWindowsShown(origin + duration);
 
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsShown, 1);
-  histogram_tester_->ExpectTimeBucketCount(kAllBrowserWindowsShown, duration,
-                                           1);
-
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsShown, 1);
   histogram_tester_->ExpectTimeBucketCount(kLoginPerfAllBrowserWindowsShown,
                                            duration, 1);
 }
 
 TEST_F(PostLoginMetricsRecorderTest, ReportAllBrowserWindowsPresented) {
-  constexpr char kAllBrowserWindowsPresented[] =
-      "Ash.LoginSessionRestore.AllBrowserWindowsPresented";
   constexpr char kLoginPerfAllBrowserWindowsPresented[] =
       "Ash.LoginPerf.AutoRestore.AllBrowserWindowsPresented";
 
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsPresented, 0);
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsPresented, 0);
 
   const base::TimeTicks origin = base::TimeTicks::Now();
@@ -128,10 +111,6 @@ TEST_F(PostLoginMetricsRecorderTest, ReportAllBrowserWindowsPresented) {
   metrics_recorder_->OnSessionRestoreDataLoaded(origin,
                                                 /*restore_automatically=*/true);
   metrics_recorder_->OnAllBrowserWindowsPresented(origin + duration);
-
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsPresented, 1);
-  histogram_tester_->ExpectTimeBucketCount(kAllBrowserWindowsPresented,
-                                           duration, 1);
 
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsPresented, 1);
   histogram_tester_->ExpectTimeBucketCount(kLoginPerfAllBrowserWindowsPresented,
@@ -142,12 +121,9 @@ TEST_F(PostLoginMetricsRecorderTest,
        ShouldNotReportAllBrowserWindowsPresentedIfNoDisplayIsActive) {
   DisableDisplay();
 
-  constexpr char kAllBrowserWindowsPresented[] =
-      "Ash.LoginSessionRestore.AllBrowserWindowsPresented";
   constexpr char kLoginPerfAllBrowserWindowsPresented[] =
       "Ash.LoginPerf.AutoRestore.AllBrowserWindowsPresented";
 
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsPresented, 0);
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsPresented, 0);
 
   const base::TimeTicks origin = base::TimeTicks::Now();
@@ -157,7 +133,6 @@ TEST_F(PostLoginMetricsRecorderTest,
                                                 /*restore_automatically=*/true);
   metrics_recorder_->OnAllBrowserWindowsPresented(origin + duration);
 
-  histogram_tester_->ExpectTotalCount(kAllBrowserWindowsPresented, 0);
   histogram_tester_->ExpectTotalCount(kLoginPerfAllBrowserWindowsPresented, 0);
 }
 
@@ -173,14 +148,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportAllShelfIconsLoaded) {
   const bool auto_restore = GetParam();
 
-  constexpr char kAllShelfIconsLoaded[] =
-      "Ash.LoginSessionRestore.AllShelfIconsLoaded";
-
   const std::string kLoginPerfAllShelfIconsLoaded =
       auto_restore ? "Ash.LoginPerf.AutoRestore.AllShelfIconsLoaded"
                    : "Ash.LoginPerf.ManualRestore.AllShelfIconsLoaded";
 
-  histogram_tester_->ExpectTotalCount(kAllShelfIconsLoaded, 0);
   histogram_tester_->ExpectTotalCount(kLoginPerfAllShelfIconsLoaded, 0);
 
   const base::TimeTicks origin = base::TimeTicks::Now();
@@ -188,9 +159,6 @@ TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportAllShelfIconsLoaded) {
   metrics_recorder_->OnAuthSuccess(origin);
   metrics_recorder_->OnSessionRestoreDataLoaded(origin, auto_restore);
   metrics_recorder_->OnAllExpectedShelfIconLoaded(origin + duration);
-
-  histogram_tester_->ExpectTotalCount(kAllShelfIconsLoaded, 1);
-  histogram_tester_->ExpectTimeBucketCount(kAllShelfIconsLoaded, duration, 1);
 
   histogram_tester_->ExpectTotalCount(kLoginPerfAllShelfIconsLoaded, 1);
   histogram_tester_->ExpectTimeBucketCount(kLoginPerfAllShelfIconsLoaded,
@@ -201,13 +169,10 @@ TEST_P(PostLoginMetricsRecorderSessionRestoreTest,
        ReportShelfLoginAnimationEnd) {
   const bool auto_restore = GetParam();
 
-  constexpr char kShelfLoginAnimationEnd[] =
-      "Ash.LoginSessionRestore.ShelfLoginAnimationEnd";
   const std::string kLoginPerfShelfLoginAnimationEnd =
       auto_restore ? "Ash.LoginPerf.AutoRestore.ShelfLoginAnimationEnd"
                    : "Ash.LoginPerf.ManualRestore.ShelfLoginAnimationEnd";
 
-  histogram_tester_->ExpectTotalCount(kShelfLoginAnimationEnd, 0);
   histogram_tester_->ExpectTotalCount(kLoginPerfShelfLoginAnimationEnd, 0);
 
   const base::TimeTicks origin = base::TimeTicks::Now();
@@ -215,10 +180,6 @@ TEST_P(PostLoginMetricsRecorderSessionRestoreTest,
   metrics_recorder_->OnAuthSuccess(origin);
   metrics_recorder_->OnSessionRestoreDataLoaded(origin, auto_restore);
   metrics_recorder_->OnShelfAnimationFinished(origin + duration);
-
-  histogram_tester_->ExpectTotalCount(kShelfLoginAnimationEnd, 1);
-  histogram_tester_->ExpectTimeBucketCount(kShelfLoginAnimationEnd, duration,
-                                           1);
 
   histogram_tester_->ExpectTotalCount(kLoginPerfShelfLoginAnimationEnd, 1);
   histogram_tester_->ExpectTimeBucketCount(kLoginPerfShelfLoginAnimationEnd,
@@ -285,6 +246,26 @@ TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportBootTimeLogin3) {
 
   histogram_tester_->ExpectTotalCount(kBootTimeLogin3, 1);
   histogram_tester_->ExpectTimeBucketCount(kBootTimeLogin3, duration, 1);
+}
+
+TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportDeferredTasksStarted) {
+  const bool auto_restore = GetParam();
+
+  const std::string kLoginPerfDeferredTasksStarted =
+      auto_restore ? "Ash.LoginPerf.AutoRestore.DeferredTasksStarted"
+                   : "Ash.LoginPerf.ManualRestore.DeferredTasksStarted";
+
+  histogram_tester_->ExpectTotalCount(kLoginPerfDeferredTasksStarted, 0);
+
+  const base::TimeTicks origin = base::TimeTicks::Now();
+  const base::TimeDelta duration = base::Milliseconds(100);  // not real
+  metrics_recorder_->OnAuthSuccess(origin);
+  metrics_recorder_->OnSessionRestoreDataLoaded(origin, auto_restore);
+  metrics_recorder_->OnDeferredTasksStarted(origin + duration);
+
+  histogram_tester_->ExpectTotalCount(kLoginPerfDeferredTasksStarted, 1);
+  histogram_tester_->ExpectTimeBucketCount(kLoginPerfDeferredTasksStarted,
+                                           duration, 1);
 }
 
 TEST_P(PostLoginMetricsRecorderSessionRestoreTest, ReportTotalDuration) {

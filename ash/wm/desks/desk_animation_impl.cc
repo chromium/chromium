@@ -224,7 +224,7 @@ bool DeskActivationAnimation::EndSwipeAnimation() {
   // Start tracking the animation smoothness after the continuous gesture swipe
   // has ended.
   throughput_tracker_ = desks_util::GetSelectedCompositorForPerformanceMetrics()
-                            ->RequestNewThroughputTracker();
+                            ->RequestNewCompositorMetricsTracker();
   throughput_tracker_->Start(
       metrics_util::ForSmoothnessV3(base::BindRepeating([](int smoothness) {
         UMA_HISTOGRAM_PERCENTAGE(kDeskEndGestureSmoothnessHistogramName,

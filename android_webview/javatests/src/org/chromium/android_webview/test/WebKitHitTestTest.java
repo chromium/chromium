@@ -32,6 +32,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageCommitVisibleHelper;
+import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.util.concurrent.TimeUnit;
@@ -77,12 +78,16 @@ public class WebKitHitTestTest extends AwParameterizedTest {
 
     private String setServerResponseAndLoad(String response) throws Throwable {
         // Use a different path each time to avoid flakes due to caching.
-        String path = "/hittest" + (mServerResponseCount++) + ".html";
+        String path = "/hittest" + mServerResponseCount++ + ".html";
         String url = mWebServer.setResponse(path, response, null);
         OnPageCommitVisibleHelper commitHelper = mContentsClient.getOnPageCommitVisibleHelper();
         int currentCallCount = commitHelper.getCallCount();
         mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
         commitHelper.waitForCallback(currentCallCount, 1, WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> WebContentsUtils.simulateEndOfPaintHolding(mAwContents.getWebContents()));
+
         return url;
     }
 

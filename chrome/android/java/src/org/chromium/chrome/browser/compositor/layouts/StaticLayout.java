@@ -4,26 +4,23 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
-import android.animation.Animator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
-import android.os.Handler;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.scene_layer.StaticTabSceneLayer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
-import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
-import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,7 +31,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
-import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -53,45 +49,8 @@ import java.util.Collections;
 public class StaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
 
-    private static final int HIDE_TIMEOUT_MS = 2000;
-    private static final int HIDE_DURATION_MS = 500;
-
-    private boolean mHandlesTabLifecycles;
-    private boolean mNeedsOffsetTag;
-
-    private class UnstallRunnable implements Runnable {
-        @Override
-        public void run() {
-            mUnstalling = false;
-            CompositorAnimator.ofWritableFloatPropertyKey(
-                            mAnimationHandler,
-                            mModel,
-                            LayoutTab.SATURATION,
-                            mModel.get(LayoutTab.SATURATION),
-                            1.0f,
-                            HIDE_DURATION_MS)
-                    .start();
-            CompositorAnimator animator =
-                    CompositorAnimator.ofWritableFloatPropertyKey(
-                            mAnimationHandler,
-                            mModel,
-                            LayoutTab.STATIC_TO_VIEW_BLEND,
-                            mModel.get(LayoutTab.STATIC_TO_VIEW_BLEND),
-                            0.0f,
-                            HIDE_DURATION_MS);
-            animator.addListener(
-                    new CancelAwareAnimatorListener() {
-                        @Override
-                        public void onEnd(Animator animation) {
-                            updateVisibleIdsCheckingLiveLayer(
-                                    mModel.get(LayoutTab.TAB_ID),
-                                    mModel.get(LayoutTab.CAN_USE_LIVE_TEXTURE));
-                        }
-                    });
-            animator.start();
-            mModel.set(LayoutTab.SHOULD_STALL, false);
-        }
-    }
+    private final boolean mHandlesTabLifecycles;
+    private final boolean mNeedsOffsetTag;
 
     private final Context mContext;
     private final LayoutManagerHost mViewHost;
@@ -102,36 +61,33 @@ public class StaticLayout extends Layout {
 
     private StaticTabSceneLayer mSceneLayer;
 
-    private final UnstallRunnable mUnstallRunnable;
-    private final Handler mHandler;
-    private boolean mUnstalling;
-
     private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
-    private BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
+    private final BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
 
-    private final CompositorAnimationHandler mAnimationHandler;
     private final Supplier<TopUiThemeColorProvider> mTopUiThemeColorProvider;
 
     private boolean mIsActive;
 
     private static Integer sToolbarTextBoxBackgroundColorForTesting;
 
-    private float mPxToDp;
+    private final float mPxToDp;
 
     /**
      * Creates an instance of the {@link StaticLayout}.
-     * @param context             The current Android's context.
-     * @param updateHost          The {@link LayoutUpdateHost} view for this layout.
-     * @param renderHost          The {@link LayoutRenderHost} view for this layout.
-     * @param viewHost            The {@link LayoutManagerHost} view for this layout
+     *
+     * @param context The current Android's context.
+     * @param updateHost The {@link LayoutUpdateHost} view for this layout.
+     * @param renderHost The {@link LayoutRenderHost} view for this layout.
+     * @param viewHost The {@link LayoutManagerHost} view for this layout.
      * @param requestSupplier Frame request supplier for Compositor MCP.
      * @param tabModelSelector {@link TabModelSelector} instance.
      * @param tabContentManager {@link TabContentsManager} instance.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param needsOffsetTag Whether or not this layout needs an OffsetTag.
      */
     public StaticLayout(
             Context context,
@@ -142,7 +98,8 @@ public class StaticLayout extends Layout {
             TabModelSelector tabModelSelector,
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
-            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider) {
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
+            boolean needsOffsetTag) {
         this(
                 context,
                 updateHost,
@@ -153,7 +110,8 @@ public class StaticLayout extends Layout {
                 tabContentManager,
                 browserControlsStateProvider,
                 topUiThemeColorProvider,
-                null);
+                null,
+                needsOffsetTag);
     }
 
     /** Protected constructor for testing, allows specifying a custom SceneLayer. */
@@ -168,16 +126,18 @@ public class StaticLayout extends Layout {
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            StaticTabSceneLayer testSceneLayer) {
+            StaticTabSceneLayer testSceneLayer,
+            boolean needsOffsetTag) {
         super(context, updateHost, renderHost);
 
         mContext = context;
-        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+
         // Only handle tab lifecycle on tablets.
-        mHandlesTabLifecycles = isTablet;
-        // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
-        // and the tag would have been set on the TabStripSceneLayer already.
-        mNeedsOffsetTag = !isTablet;
+        mHandlesTabLifecycles = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
+
+        // StaticTabSceneLayer is a subtree of TabStripSceneLayer, and the tag would have been set
+        // on the TabStripSceneLayer already if tablet UI is present.
+        mNeedsOffsetTag = needsOffsetTag;
 
         mViewHost = viewHost;
         mRequestSupplier = requestSupplier;
@@ -193,17 +153,10 @@ public class StaticLayout extends Layout {
                         .with(LayoutTab.Y, 0.0f)
                         .with(LayoutTab.RENDER_X, 0.0f)
                         .with(LayoutTab.RENDER_Y, 0.0f)
-                        .with(LayoutTab.SATURATION, 1.0f)
-                        .with(LayoutTab.STATIC_TO_VIEW_BLEND, 0.0f)
                         .with(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER, this::isActive)
                         .build();
 
-        mAnimationHandler = updateHost.getAnimationHandler();
         mTopUiThemeColorProvider = topUiThemeColorProvider;
-
-        mHandler = new Handler();
-        mUnstallRunnable = new UnstallRunnable();
-        mUnstalling = false;
 
         Resources res = context.getResources();
         float dpToPx = res.getDisplayMetrics().density;
@@ -217,28 +170,19 @@ public class StaticLayout extends Layout {
                     public void onControlsConstraintsChanged(
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo,
-                            @BrowserControlsState int constraints) {
+                            @BrowserControlsState int constraints,
+                            boolean shouldUpdateOffsets) {
                         if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
-                            // On tablets, StaticTabSceneLayer is a subtree of TabStripSceneLayer,
-                            // and the tag would have been set on the TabStripSceneLayer already.
                             if (mNeedsOffsetTag) {
                                 mModel.set(
                                         LayoutTab.CONTENT_OFFSET_TAG,
-                                        offsetTagsInfo.getTopControlsOffsetTag());
+                                        offsetTagsInfo.getContentOffsetTag());
                             }
 
-                            // With BCIV enabled, scrolling will not update the content offset of
-                            // the browser's compositor frame. If we transition to a HIDDEN state
-                            // while the controls are already scrolled offscreen, then there is no
-                            // need to move the top controls, which means the renderer will not
-                            // notify the browser to move them. We set the content offset here so
-                            // the browser will submit a compositor frame with the correct offset.
-                            int contentOffset = mBrowserControlsStateProvider.getContentOffset();
-                            if (constraints == BrowserControlsState.HIDDEN
-                                    && contentOffset
-                                            == mBrowserControlsStateProvider
-                                                    .getTopControlsMinHeight()) {
-                                mModel.set(LayoutTab.CONTENT_OFFSET, contentOffset);
+                            if (shouldUpdateOffsets) {
+                                mModel.set(
+                                        LayoutTab.CONTENT_OFFSET,
+                                        mBrowserControlsStateProvider.getContentOffset());
                             }
                         }
                     }
@@ -247,16 +191,23 @@ public class StaticLayout extends Layout {
                     public void onControlsOffsetChanged(
                             int topOffset,
                             int topControlsMinHeightOffset,
+                            boolean topControlsMinHeightChanged,
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
-                            boolean needsAnimate,
+                            boolean bottomControlsMinHeightChanged,
+                            boolean requestNewFrame,
                             boolean isVisibilityForced) {
                         if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled()
-                                || needsAnimate
+                                || requestNewFrame
                                 || isVisibilityForced) {
-                            mModel.set(
-                                    LayoutTab.CONTENT_OFFSET,
-                                    mBrowserControlsStateProvider.getContentOffset());
+                            int contentOffset = mBrowserControlsStateProvider.getContentOffset();
+                            mModel.set(LayoutTab.CONTENT_OFFSET, contentOffset);
+                        } else {
+                            // We need to set the height, as it would have changed if this is the
+                            // first frame of an animation. Any existing offsets from scrolling and
+                            // animations will be applied by OffsetTags.
+                            int height = mBrowserControlsStateProvider.getTopControlsHeight();
+                            mModel.set(LayoutTab.CONTENT_OFFSET, height);
                         }
                     }
                 };
@@ -294,10 +245,6 @@ public class StaticLayout extends Layout {
 
         mTabModelSelectorTabObserver =
                 new TabModelSelectorTabObserver(tabModelSelector) {
-                    @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
-                        if (mIsActive) unstallImmediately(tab.getId());
-                    }
 
                     @Override
                     public void onShown(Tab tab, @TabSelectionType int type) {
@@ -338,10 +285,8 @@ public class StaticLayout extends Layout {
                     }
 
                     @Override
-                    public void didBackForwardTransitionAnimationChange() {
-                        updateStaticTab(
-                                tabModelSelector.getCurrentTab(),
-                                /* skipUpdateVisibleIds= */ false);
+                    public void didBackForwardTransitionAnimationChange(Tab tab) {
+                        updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
                     }
                 };
     }
@@ -391,29 +336,14 @@ public class StaticLayout extends Layout {
         super.doneHiding();
     }
 
-    private void setPreHideState() {
-        mHandler.removeCallbacks(mUnstallRunnable);
-        mModel.set(LayoutTab.STATIC_TO_VIEW_BLEND, 1.0f);
-        mModel.set(LayoutTab.SATURATION, 0.0f);
-        mUnstalling = true;
-    }
-
-    private void setPostHideState() {
-        mHandler.removeCallbacks(mUnstallRunnable);
-        mModel.set(LayoutTab.STATIC_TO_VIEW_BLEND, 0.0f);
-        mModel.set(LayoutTab.SATURATION, 1.0f);
-        mUnstalling = false;
-    }
-
     private void requestFocus(Tab tab) {
-        // TODO(crbug.com/40249125): Investigating guarded removal of this behavior (requesting
-        // focus on
-        // a tab) since it may no longer be relevant.
         // We will restrict avoidance of tab focus request only on tablet devices, since this is
-        // known to cause regressions on phones - see crbug.com/1471887 for details.
-        if (ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AVOID_SELECTED_TAB_FOCUS_ON_LAYOUT_DONE_SHOWING)
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+        // known to cause regressions on phones - see https://crbug.com/40069240 for details.
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)) {
+            return;
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REMOVE_TAB_FOCUS_ON_SHOWING_AND_SELECT)) {
             return;
         }
 
@@ -432,28 +362,11 @@ public class StaticLayout extends Layout {
         }
     }
 
-    private void updateVisibleIdsFromTab(Tab tab) {
-        // May be called when inactive. Prevent this from updating until the layout is shown.
-        if (!isActive()) return;
-
-        final int tabId = tab.getId();
-        if (shouldStall(tab)) {
-            updateCacheVisibleIdsAndPrimary(Collections.singletonList(tabId), tabId);
-        } else {
-            updateVisibleIdsCheckingLiveLayer(tabId, canUseLiveTexture(tab));
-        }
-    }
-
     private void setStaticTab(Tab tab) {
         assert tab != null;
 
-        if (mModel.get(LayoutTab.TAB_ID) == tab.getId() && !mModel.get(LayoutTab.SHOULD_STALL)) {
-            updateVisibleIdsCheckingLiveLayer(tab.getId(), canUseLiveTexture(tab));
-            setPostHideState();
-            return;
-        }
-
-        updateVisibleIdsFromTab(tab);
+        updateVisibleIdsCheckingLiveLayer(tab.getId(), canUseLiveTexture(tab));
+        if (mModel.get(LayoutTab.TAB_ID) == tab.getId()) return;
 
         mModel.set(LayoutTab.TAB_ID, tab.getId());
         mModel.set(LayoutTab.IS_INCOGNITO, tab.isIncognito());
@@ -463,28 +376,21 @@ public class StaticLayout extends Layout {
         mModel.set(LayoutTab.MAX_CONTENT_HEIGHT, mViewHost.getHeight() * mPxToDp);
 
         updateStaticTab(tab, /* skipUpdateVisibleIds= */ true);
-
-        if (mModel.get(LayoutTab.SHOULD_STALL)) {
-            setPreHideState();
-            mHandler.postDelayed(mUnstallRunnable, HIDE_TIMEOUT_MS);
-        } else {
-            setPostHideState();
-        }
     }
 
     private void updateStaticTab(Tab tab, boolean skipUpdateVisibleIds) {
         if (mModel.get(LayoutTab.TAB_ID) != tab.getId()) return;
 
+        boolean useLiveTexture = canUseLiveTexture(tab);
         if (!skipUpdateVisibleIds) {
-            updateVisibleIdsFromTab(tab);
+            updateVisibleIdsCheckingLiveLayer(tab.getId(), useLiveTexture);
         }
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
         mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getSceneLayerBackground(tab));
-        mModel.set(LayoutTab.SHOULD_STALL, shouldStall(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
-        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, canUseLiveTexture(tab));
+        mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, useLiveTexture);
     }
 
     private int getToolbarTextBoxBackgroundColor(Tab tab) {
@@ -502,11 +408,6 @@ public class StaticLayout extends Layout {
         sToolbarTextBoxBackgroundColorForTesting = color;
     }
 
-    // Whether the tab is ready to display or it should be faded in as it loads.
-    private boolean shouldStall(Tab tab) {
-        return (tab.isFrozen() || tab.needsReload()) && !tab.isNativePage();
-    }
-
     private boolean canUseLiveTexture(Tab tab) {
         final WebContents webContents = tab.getWebContents();
         if (webContents == null) return false;
@@ -516,27 +417,9 @@ public class StaticLayout extends Layout {
                 tab.isNativePage() || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
         final boolean isBFScreenshotDrawing =
                 isNativePage && tab.isDisplayingBackForwardAnimation();
-        assert !isBFScreenshotDrawing
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.BACK_FORWARD_TRANSITIONS)
+        assert !isBFScreenshotDrawing || GestureNavigationUtils.areBackForwardTransitionsEnabled()
                 : "Must not draw bf screenshot if back forward transition is disabled";
         return !SadTab.isShowing(tab) && (!isNativePage || isBFScreenshotDrawing);
-    }
-
-    @Override
-    public void unstallImmediately(int tabId) {
-        if (mModel.get(LayoutTab.TAB_ID) == tabId
-                && mModel.get(LayoutTab.SHOULD_STALL)
-                && mUnstalling) {
-            unstallImmediately();
-        }
-    }
-
-    @Override
-    public void unstallImmediately() {
-        if (mModel.get(LayoutTab.SHOULD_STALL) && mUnstalling) {
-            mHandler.removeCallbacks(mUnstallRunnable);
-            mUnstallRunnable.run();
-        }
     }
 
     @Override

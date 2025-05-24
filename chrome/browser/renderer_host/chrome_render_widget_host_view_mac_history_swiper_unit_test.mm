@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
-
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/ocmock_extensions.h"
 #include "ui/events/blink/did_overscroll_params.h"
@@ -203,9 +202,15 @@ void MacHistorySwiperTest::onOverscrolled(
 }
 
 void MacHistorySwiperTest::rendererACKForBeganEvent() {
-  blink::WebMouseWheelEvent event;
-  event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
-  [historySwiper_ rendererHandledWheelEvent:event consumed:NO];
+  blink::WebGestureEvent begin_event;
+  begin_event.SetType(blink::WebInputEvent::Type::kGestureScrollBegin);
+  begin_event.data.scroll_begin.synthetic = false;
+  begin_event.data.scroll_begin.inertial_phase =
+      blink::WebGestureEvent::InertialPhaseState::kNonMomentum;
+  [historySwiper_ rendererHandledGestureScrollEvent:begin_event consumed:NO];
+  blink::WebGestureEvent update_event;
+  update_event.SetType(blink::WebInputEvent::Type::kGestureScrollUpdate);
+  [historySwiper_ rendererHandledGestureScrollEvent:update_event consumed:NO];
 }
 
 void MacHistorySwiperTest::sendBeginGestureEventInMiddle() {

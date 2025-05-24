@@ -154,13 +154,9 @@ void DebugRectHistory::SaveScreenSpaceRects(
 
 void DebugRectHistory::SaveTouchEventHandlerRects(LayerTreeImpl* tree_impl) {
   for (auto* layer : *tree_impl) {
-    const TouchActionRegion& touch_action_region = layer->touch_action_region();
-    for (int touch_action_index = static_cast<int>(TouchAction::kNone);
-         touch_action_index != static_cast<int>(TouchAction::kMax);
-         ++touch_action_index) {
-      auto touch_action = static_cast<TouchAction>(touch_action_index);
-      Region region = touch_action_region.GetRegionForTouchAction(touch_action);
-      for (gfx::Rect rect : region) {
+    for (const auto& pair : layer->touch_action_region()) {
+      TouchAction touch_action = pair.first;
+      for (gfx::Rect rect : pair.second) {
         debug_rects_.emplace_back(DebugRectType::kTouchEventHandler,
                                   MathUtil::MapEnclosingClippedRect(
                                       layer->ScreenSpaceTransform(), rect),

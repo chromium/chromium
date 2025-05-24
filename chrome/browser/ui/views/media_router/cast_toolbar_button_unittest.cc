@@ -6,7 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/ui/browser.h"
@@ -208,9 +207,7 @@ TEST_F(CastToolbarButtonTest, UpdateRoutes) {
 }
 
 TEST_F(CastToolbarButtonTest, PausedIcon) {
-  // Enable the proper features / prefs.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kAccessCodeCastFreezeUI);
+  // Enable the proper pref.
   profile_->GetPrefs()->SetBoolean(prefs::kAccessCodeCastEnabled, true);
 
   button_->UpdateIcon();

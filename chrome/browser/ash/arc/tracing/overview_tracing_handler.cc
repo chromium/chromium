@@ -14,8 +14,6 @@
 #include <string_view>
 #include <vector>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_util.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -38,6 +36,8 @@
 #include "chrome/browser/ash/arc/tracing/present_frames_tracer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -352,9 +352,13 @@ void OverviewTracingHandler::UpdateActiveArcWindowInfo() {
   const gfx::ImageSkia* app_icon =
       arc_active_window_->GetProperty(aura::client::kAppIconKey);
   if (app_icon) {
-    gfx::PNGCodec::EncodeBGRASkBitmap(
-        app_icon->GetRepresentation(1.0f).GetBitmap(),
-        false /* discard_transparency */, &active_trace_->task_icon_png);
+    std::optional<std::vector<uint8_t>> data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(
+            app_icon->GetRepresentation(1.0f).GetBitmap(),
+            false /* discard_transparency */);
+    if (data) {
+      active_trace_->task_icon_png = std::move(data).value();
+    }
   }
 }
 

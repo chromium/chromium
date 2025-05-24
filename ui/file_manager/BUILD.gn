@@ -267,6 +267,11 @@ copy("for_image_loader_unittests") {
 grd_prefix = "file_manager_gen"
 generated_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
 
+# Appending this suffix works around the Service Worker Script Cache serving
+# old versions, by changing the cache key. The script itself now also has some
+# runtime code to reload on a stale version. Look for § in the TS files.
+image_loader_service_worker_version = "20241016"
+
 generate_grd("build_grd") {
   out_grd = generated_grd
 
@@ -278,10 +283,16 @@ generate_grd("build_grd") {
   ]
 
   input_files_base_dir = rebase_path(target_gen_dir, root_build_dir)
-  input_files = [ "image_loader/background.rollup.js" ]
+  input_files = [
+    "image_loader/offscreen.rollup.js",
+    "image_loader/shared.rollup.js",
+    "image_loader/service_worker.rollup.js",
+  ]
 
-  resource_path_rewrites =
-      [ "image_loader/background.rollup.js|image_loader/background.js" ]
+  resource_path_rewrites = [
+    "image_loader/offscreen.rollup.js|image_loader/offscreen.js",
+    "image_loader/service_worker.rollup.js|image_loader/service_worker_$image_loader_service_worker_version.js",
+  ]
 
   if (optimize_webui) {
     input_files +=

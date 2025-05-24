@@ -1,0 +1,37 @@
+{
+  "Win10 FYI x64 Release XR Perf (NVIDIA)": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "--benchmarks=xr.webxr.static",
+          "-v",
+          "--upload-results",
+          "--output-format=histograms",
+          "--browser=release_x64"
+        ],
+        "experiment_percentage": 100,
+        "merge": {
+          "args": [
+            "--upload-skia-json"
+          ],
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "xr.webxr.static",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "display_attached": "1",
+            "gpu": "10de:2184-31.0.15.4601",
+            "os": "Windows-10-19045",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "vr_perf_tests",
+        "test_id_prefix": "ninja://tools/perf/contrib/vr_benchmarks:vr_perf_tests/"
+      }
+    ]
+  }
+}

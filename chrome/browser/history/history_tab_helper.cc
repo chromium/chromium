@@ -7,6 +7,7 @@
 #include <optional>
 #include <string>
 
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -89,8 +90,8 @@ bool ShouldConsiderForNtpMostVisited(
 }
 
 // Returns the page associated with `opener_web_contents`.
-std::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
-    base::WeakPtr<content::WebContents> opener_web_contents) {
+std::optional<history::Opener> GetHistoryOpenerFromWebContents(
+    content::WebContents* opener_web_contents) {
   if (!opener_web_contents)
     return std::nullopt;
 
@@ -104,10 +105,18 @@ std::optional<history::Opener> GetHistoryOpenerFromOpenerWebContents(
   if (!last_committed_entry)
     return std::nullopt;
 
-  return history::Opener(
-      history::ContextIDForWebContents(opener_web_contents.get()),
-      last_committed_entry->GetUniqueID(),
-      opener_web_contents->GetLastCommittedURL());
+  return history::Opener(history::ContextIDForWebContents(opener_web_contents),
+                         last_committed_entry->GetUniqueID(),
+                         opener_web_contents->GetLastCommittedURL());
+}
+
+// A helper function for when the `WebContents` is a weak pointer.
+std::optional<history::Opener> GetHistoryOpenerFromWeakWebContents(
+    base::WeakPtr<content::WebContents> weak_web_contents) {
+  if (!weak_web_contents) {
+    return std::nullopt;
+  }
+  return GetHistoryOpenerFromWebContents(weak_web_contents.get());
 }
 
 history::VisitContextAnnotations::BrowserType GetBrowserType(
@@ -145,10 +154,10 @@ history::VisitContextAnnotations::BrowserType GetBrowserType(
       return history::VisitContextAnnotations::BrowserType::kPopup;
     case Browser::TYPE_DEVTOOLS:
       return history::VisitContextAnnotations::BrowserType::kUnknown;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case Browser::TYPE_CUSTOM_TAB:
       return history::VisitContextAnnotations::BrowserType::kCustomTab;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
@@ -266,27 +275,113 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
           : static_cast<ChromeNavigationUIData*>(
                 navigation_handle->GetNavigationUIData());
 
-  // (crbug.com/365922169) When generating the HistoryAddPageArgs below, we must
-  // calculate the value for its member `is_ephemeral`. This member represents
-  // whether our navigation came from a credentialless iframe (which is an
-  // ephemeral context). Our goal is to use this information to avoid storing
-  // ephemeral navigations from credentialless iframes in the history backend.
-  // Currently, this is behavior which will be tested behind the partitioned
-  // :visited links experiments flags (PartitionVisitedLinkDatabase and
+  // (crbug.com/365922169) When generating the HistoryAddPageArgs below,
+  // we must calculate the value for its member `is_ephemeral`. This
+  // member represents whether our navigation came from a credentialless
+  // iframe (which is an ephemeral context). Our goal is to use this
+  // information to avoid storing ephemeral navigations from
+  // credentialless iframes in the history backend. Currently, this is
+  // behavior which will be tested behind the partitioned :visited links
+  // experiments flags (PartitionVisitedLinkDatabase and
   // PartitionVisitedLinkDatabaseWithSelfLinks). HOWEVER, due to layering
-  // constraints, we do not have the ability to check these blink::feature flags
-  // in any code found in components/history/core/ (which is where most history
-  // DB code lives).
+  // constraints, we do not have the ability to check these blink::feature
+  // flags in any code found in components/history/core/ (which is where
+  // most history DB code lives).
 
-  // Instead, we check the values of these flags here - setting `is_ephemeral`
-  // to false if neither of these experimental flags are enabled. Once the
-  // experiments have completed, is_ephemeral will go back to being a pure check
-  // of whether the navigation is from a credentialless iframe.
+  // Instead, we check the values of these flags here - setting
+  // `is_ephemeral` to false if neither of these experimental flags are
+  // enabled. Once the experiments have completed, is_ephemeral will go
+  // back to being a pure check of whether the navigation is from a
+  // credentialless iframe.
   const bool are_partitioned_visited_links_enabled =
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabase) ||
       base::FeatureList::IsEnabled(
           blink::features::kPartitionVisitedLinkDatabaseWithSelfLinks);
+  const bool is_ephemeral = are_partitioned_visited_links_enabled &&
+                                    navigation_handle->GetRenderFrameHost()
+                                ? navigation_handle->GetRenderFrameHost()
+                                      ->GetStorageKey()
+                                      .nonce()
+                                      .has_value()
+                                : false;
+
+  // Reloads do not result in calling TitleWasSet() (which normally sets
+  // the title), so a reload needs to set the title. This is
+  // important for a reload after clearing history.
+  const std::optional<std::u16string> title =
+      navigation_handle->IsSameDocument() ||
+              navigation_handle->GetReloadType() != content::ReloadType::NONE
+          ? std::optional<std::u16string>(
+                navigation_handle->GetWebContents()->GetTitle())
+          : std::nullopt;
+
+  // Only compute the opener page if it's the first committed page for this
+  // WebContents.
+  const std::optional<history::Opener> opener =
+      navigation_handle->GetPreviousPrimaryMainFrameURL().is_empty()
+          ? GetHistoryOpenerFromWeakWebContents(opener_web_contents_)
+          // Or use the opener for same-document navigations to connect these
+          // visits.
+          : (navigation_handle->IsSameDocument()
+                 ? std::make_optional(history::Opener(
+                       history::ContextIDForWebContents(web_contents()),
+                       nav_entry_id,
+                       navigation_handle->GetPreviousPrimaryMainFrameURL()))
+                 : std::nullopt);
+
+  // Top-level URL is used to calculate the triple-key for partitioned :visited
+  // links. When a navigation occurs, the top-level url is the previous primary
+  // main frame. However, sometimes this information is not available to us; for
+  // example, a navigation may open in a new tab or have a severed opener
+  // relationship. For `LINK` type navigations, this may be a context click to
+  // open a link in a new tab or a link with target="_blank". Since we want to
+  // construct an accurate triple key for all links, we populate their top-level
+  // url with either opener URL or live original opener chain URL, whichever
+  // is available.
+  std::optional<GURL> top_level_url =
+      navigation_handle->GetPreviousPrimaryMainFrameURL();
+  // If there is not a valid previous primary main frame, attempt to replace it.
+  if (!top_level_url.has_value() || !top_level_url->is_valid()) {
+    // We support the use of opener or opener chain URL for `LINK` types only.
+    if (ui::PageTransitionCoreTypeIs(page_transition,
+                                     ui::PAGE_TRANSITION_LINK)) {
+      // If available and valid, use opener URL.
+      if (opener.has_value() && opener->url.is_valid()) {
+        top_level_url = opener->url;
+      } else if (web_contents()->HasLiveOriginalOpenerChain()) {
+        // Otherwise, check for a valid URL at the root of our opener chain.
+        const std::optional<history::Opener> root =
+            GetHistoryOpenerFromWebContents(
+                web_contents()->GetFirstWebContentsInLiveOriginalOpenerChain());
+        // If available and valid, use the root opener URL.
+        if (root.has_value() && root->url.is_valid()) {
+          top_level_url = root->url;
+        }
+      }
+    }
+  }
+
+  // Frame URL is used to calculate the triple-key for partitioned :visited
+  // links. When a navigation occurs, this value is typically the initiator
+  // URL, obtained from the `initiator_origin` member of CommonNavigationParams.
+  // However, there are some cases where initiator origin is not provided.
+  // In those cases, we will fallback on the referrer URL, if present.
+  std::optional<GURL> frame_url;
+  if (navigation_handle->GetInitiatorOrigin().has_value()) {
+    // The VisitedLinkDatabase stores the triple keys via URL to be efficient.
+    // However, in practice, the triple-partiton key is only concerned about
+    // frame origin. So while we persist keys across sessions via URL, we do not
+    // care about persisting the entire URL path. Therefore, it is okay to use
+    // url::Origin::GetURL() here.
+    frame_url = navigation_handle->GetInitiatorOrigin()->GetURL();
+  }
+  if (!frame_url.has_value() || !frame_url->is_valid()) {
+    // If valid, use referrer URL to replace an invalid initiator frame URL.
+    if (referrer_url.is_valid()) {
+      frame_url = referrer_url;
+    }
+  }
 
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
@@ -295,36 +390,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       navigation_handle->GetRedirectChain(), page_transition, hidden,
       history::SOURCE_BROWSED, navigation_handle->DidReplaceEntry(),
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle),
-      // Reloads do not result in calling TitleWasSet() (which normally sets
-      // the title), so a reload needs to set the title. This is
-      // important for a reload after clearing history.
-      navigation_handle->IsSameDocument() ||
-              navigation_handle->GetReloadType() != content::ReloadType::NONE
-          ? std::optional<std::u16string>(
-                navigation_handle->GetWebContents()->GetTitle())
-          : std::nullopt,
-      // Our top-level site is the previous primary main frame.
-      navigation_handle->GetPreviousPrimaryMainFrameURL(),
-      // Only compute the opener page if it's the first committed page for this
-      // WebContents.
-      navigation_handle->GetPreviousPrimaryMainFrameURL().is_empty()
-          ? GetHistoryOpenerFromOpenerWebContents(opener_web_contents_)
-          // Or use the opener for same-document navigations to connect these
-          // visits.
-          : (navigation_handle->IsSameDocument()
-                 ? std::make_optional(history::Opener(
-                       history::ContextIDForWebContents(web_contents()),
-                       nav_entry_id,
-                       navigation_handle->GetPreviousPrimaryMainFrameURL()))
-                 : std::nullopt),
+      is_ephemeral, title, top_level_url, frame_url, opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
-      app_id_, std::move(context_annotations),
-      are_partitioned_visited_links_enabled
-          ? navigation_handle->GetRenderFrameHost()
-                ->GetStorageKey()
-                .nonce()
-                .has_value()
-          : false);
+      app_id_, std::move(context_annotations));
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {
@@ -373,8 +441,22 @@ void HistoryTabHelper::DidFinishNavigation(
     return;
   }
 
+  // Before some error navigations are filtered out with ShouldUpdateHistory(),
+  // we need to estimate the proportion of navigatons with [4XX - 5XX] HTTP
+  // status codes.
+  int http_response_code = 0;
+  if (navigation_handle->GetResponseHeaders()) {
+    http_response_code =
+        navigation_handle->GetResponseHeaders()->response_code();
+  }
+  UMA_HISTOGRAM_BOOLEAN(
+      "History.Is4XXOr5XXStatusCode",
+      (http_response_code >= 400) && (http_response_code < 600));
+
   // Update history. Note that this needs to happen after the entry is complete,
   // which WillNavigate[Main,Sub]Frame will do before this function is called.
+  UMA_HISTOGRAM_BOOLEAN("History.ShouldUpdateHistory",
+                        navigation_handle->ShouldUpdateHistory());
   if (!navigation_handle->ShouldUpdateHistory())
     return;
 
@@ -543,11 +625,11 @@ bool HistoryTabHelper::IsEligibleTab(
 #if BUILDFLAG(IS_ANDROID)
 static void JNI_HistoryTabHelper_SetAppIdNative(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& japp_id,
+    std::string& app_id,
     const base::android::JavaParamRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* history_tab_helper = HistoryTabHelper::FromWebContents(web_contents);
-  history_tab_helper->SetAppId(base::android::ConvertJavaStringToUTF8(japp_id));
+  history_tab_helper->SetAppId(app_id);
 }
 #endif
 WEB_CONTENTS_USER_DATA_KEY_IMPL(HistoryTabHelper);

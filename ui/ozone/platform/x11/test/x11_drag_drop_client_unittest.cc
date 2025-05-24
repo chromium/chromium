@@ -215,7 +215,8 @@ class TestDragDropClient : public SimpleTestDragDropClient {
 
   // Map of x11::Windows to the collector which intercepts
   // x11::ClientMessageEvents for that window.
-  std::map<x11::Window, ClientMessageEventCollector*> collectors_;
+  std::map<x11::Window, raw_ptr<ClientMessageEventCollector, CtnExperimental>>
+      collectors_;
 };
 
 ///////////////////////////////////////////////////////////////////////////////

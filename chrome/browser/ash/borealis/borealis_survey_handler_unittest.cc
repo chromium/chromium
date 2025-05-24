@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -18,7 +19,7 @@ namespace borealis {
 
 class BorealisSurveyHandlerTest : public ChromeAshTestBase {
  public:
-  // AshTestBase:
+  // ChromeAshTestBase:
   void SetUp() override {
     ChromeAshTestBase::SetUp();
     profile_ = std::make_unique<TestingProfile>();

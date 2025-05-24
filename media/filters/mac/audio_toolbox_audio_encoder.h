@@ -40,8 +40,7 @@ class MEDIA_EXPORT AudioToolboxAudioEncoder : public AudioEncoder {
   void Flush(EncoderStatusCB flush_cb) override;
 
  private:
-  bool CreateEncoder(const AudioEncoderConfig& config,
-                     const AudioStreamBasicDescription& output_format);
+  bool CreateEncoder(const AudioStreamBasicDescription& output_format);
 
   void DrainFifoOutput();
 

@@ -58,7 +58,7 @@ BasePasswordDialog::BasePasswordDialog(GURL url, gfx::Size desired_size)
     : SystemWebDialogDelegate(url, /*title=*/std::u16string()),
       desired_size_(desired_size) {}
 
-BasePasswordDialog::~BasePasswordDialog() {}
+BasePasswordDialog::~BasePasswordDialog() = default;
 
 void BasePasswordDialog::GetDialogSize(gfx::Size* size) const {
   *size = FitSizeToDisplay(desired_size_);
@@ -87,8 +87,9 @@ void PasswordChangeDialog::Show() {
 // static
 void PasswordChangeDialog::Dismiss() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (g_dialog)
+  if (g_dialog) {
     g_dialog->Close();
+  }
 }
 
 PasswordChangeDialog::PasswordChangeDialog()
@@ -117,8 +118,9 @@ void ConfirmPasswordChangeDialog::Show(const std::string& scraped_old_password,
 // static
 void ConfirmPasswordChangeDialog::Dismiss() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (g_confirm_dialog)
+  if (g_confirm_dialog) {
     g_confirm_dialog->Close();
+  }
 }
 
 ConfirmPasswordChangeDialog::ConfirmPasswordChangeDialog(
@@ -179,8 +181,9 @@ void UrgentPasswordExpiryNotificationDialog::Show() {
 // static
 void UrgentPasswordExpiryNotificationDialog::Dismiss() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (g_notification_dialog)
+  if (g_notification_dialog) {
     g_notification_dialog->Close();
+  }
 }
 
 UrgentPasswordExpiryNotificationDialog::UrgentPasswordExpiryNotificationDialog()

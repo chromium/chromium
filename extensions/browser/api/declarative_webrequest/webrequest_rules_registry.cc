@@ -20,6 +20,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_prefs_helper.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
@@ -287,8 +288,8 @@ WebRequestRulesRegistry::~WebRequestRulesRegistry() = default;
 
 base::Time WebRequestRulesRegistry::GetExtensionInstallationTime(
     const ExtensionId& extension_id) const {
-  return ExtensionPrefs::Get(browser_context())
-      ->GetLastUpdateTime(extension_id);
+  return GetLastUpdateTime(ExtensionPrefs::Get(browser_context()),
+                           extension_id);
 }
 
 void WebRequestRulesRegistry::ClearCacheOnNavigation() {

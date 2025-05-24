@@ -100,12 +100,13 @@ class VideoDecoderTest : public testing::Test {
                                                   exception_state);
   }
 
-  VideoDecoderInit* CreateVideoDecoderInit(MockFunctionScope& mock_functions) {
+  VideoDecoderInit* CreateVideoDecoderInit(ScriptState* script_state,
+                                           MockFunctionScope& mock_functions) {
     auto* init = MakeGarbageCollected<VideoDecoderInit>();
     init->setOutput(V8VideoFrameOutputCallback::Create(
-        mock_functions.ExpectNoCall()->V8Function()));
+        mock_functions.ExpectNoCall()->ToV8Function(script_state)));
     init->setError(V8WebCodecsErrorCallback::Create(
-        mock_functions.ExpectNoCall()->V8Function()));
+        mock_functions.ExpectNoCall()->ToV8Function(script_state)));
     return init;
   }
 
@@ -135,9 +136,10 @@ TEST_F(VideoDecoderTest, HardwareDecodersApplyPressure) {
   auto* encoder_pressure_manager =
       pressure_manager_provider.GetEncoderPressureManager();
 
-  auto* fake_decoder = CreateFakeDecoder(v8_scope.GetScriptState(),
-                                         CreateVideoDecoderInit(mock_functions),
-                                         v8_scope.GetExceptionState());
+  auto* fake_decoder = CreateFakeDecoder(
+      v8_scope.GetScriptState(),
+      CreateVideoDecoderInit(v8_scope.GetScriptState(), mock_functions),
+      v8_scope.GetExceptionState());
 
   ASSERT_TRUE(fake_decoder);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
@@ -179,9 +181,10 @@ TEST_F(VideoDecoderTest, ResetReleasesPressure) {
   V8TestingScope v8_scope;
   MockFunctionScope mock_functions(v8_scope.GetScriptState());
 
-  auto* fake_decoder = CreateFakeDecoder(v8_scope.GetScriptState(),
-                                         CreateVideoDecoderInit(mock_functions),
-                                         v8_scope.GetExceptionState());
+  auto* fake_decoder = CreateFakeDecoder(
+      v8_scope.GetScriptState(),
+      CreateVideoDecoderInit(v8_scope.GetScriptState(), mock_functions),
+      v8_scope.GetExceptionState());
 
   ASSERT_TRUE(fake_decoder);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
 #include <memory>
@@ -35,7 +40,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
@@ -113,13 +117,9 @@ const char* GetPlatformName() {
   return "windows";
 #elif BUILDFLAG(IS_APPLE)
   return "macOS";
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
 #elif BUILDFLAG(IS_LINUX)
   return "linux";
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return "lacros";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return "ash";
 #endif
 }
@@ -480,9 +480,9 @@ bool SkiaGoldPixelDiff::CompareScreenshot(
     const SkiaGoldMatchingAlgorithm* algorithm) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(initialized_) << "Initialize the class before using this method.";
-  std::vector<unsigned char> output;
-  bool ret = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &output);
-  if (!ret) {
+  std::optional<std::vector<uint8_t>> output =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/true);
+  if (!output) {
     LOG(ERROR) << "Encoding SkBitmap to PNG format failed.";
     return false;
   }
@@ -496,7 +496,7 @@ bool SkiaGoldPixelDiff::CompareScreenshot(
       base::FilePath::FromUTF8Unsafe(golden_image_name + ".png"));
   base::File file(temporary_path, base::File::Flags::FLAG_CREATE_ALWAYS |
                                       base::File::Flags::FLAG_WRITE);
-  bool ok = file.WriteAndCheck(0, output);
+  bool ok = file.WriteAndCheck(0, output.value());
   file.Close();
   if (!ok) {
     LOG(ERROR) << "Writing the PNG image to temporary file failed."

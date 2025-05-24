@@ -19,8 +19,8 @@
 #include "base/check.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/flat_tree.h"
+#include "base/containers/to_vector.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/abseil_string_number_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -29,6 +29,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/parsing_utils.h"
+#include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -83,7 +84,7 @@ std::string HexEncodeAggregationKey(absl::uint128 value) {
   out << "0x";
   out.setf(out.hex, out.basefield);
   out << value;
-  return out.str();
+  return std::move(out).str();
 }
 
 base::expected<std::optional<uint64_t>, ParseError> ParseUint64(
@@ -210,9 +211,17 @@ ParseAggregationCoordinator(const base::Value::Dict& dict) {
     return base::unexpected(ParseError());
   }
   auto aggregation_coordinator_origin =
-      SuitableOrigin::Create(*aggregation_coordinator);
+      SuitableOrigin::Create(*std::move(aggregation_coordinator));
   CHECK(aggregation_coordinator_origin.has_value());
   return *std::move(aggregation_coordinator_origin);
+}
+
+base::expected<int, ParseError> ParseAggregatableValue(const base::Value& v) {
+  ASSIGN_OR_RETURN(int value, ParseInt(v));
+  if (!IsAggregatableValueInRange(value)) {
+    return base::unexpected(ParseError());
+  }
+  return value;
 }
 
 void SerializeUint64(base::Value::Dict& dict,
@@ -305,21 +314,18 @@ base::expected<base::flat_set<std::string>, StringSetError> ExtractStringSet(
     }
   }
 
-  base::ranges::sort(list);
-  list.erase(base::ranges::unique(list), list.end());
+  std::ranges::sort(list);
+  auto repeated = std::ranges::unique(list);
+  list.erase(repeated.begin(), repeated.end());
 
   if (list.size() > max_set_size) {
     return base::unexpected(StringSetError::kSetTooLong);
   }
 
-  std::vector<std::string> values;
-  values.reserve(list.size());
-
-  for (base::Value& item : list) {
-    values.emplace_back(std::move(item).TakeString());
-  }
-
-  return base::flat_set<std::string>(base::sorted_unique, std::move(values));
+  return base::flat_set<std::string>(
+      base::sorted_unique, base::ToVector(list, [](base::Value& item) {
+        return std::move(item).TakeString();
+      }));
 }
 
 }  // namespace attribution_reporting

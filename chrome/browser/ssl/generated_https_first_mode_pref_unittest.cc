@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
+#include "chrome/browser/safe_browsing/advanced_protection_status_manager_desktop.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ssl/https_first_mode_settings_tracker.h"
@@ -83,9 +84,10 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   // Sign in, otherwise AP manager won't notify observers of the AP status.
   SignIn(/*is_under_advanced_protection=*/false);
 
-  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile());
+  safe_browsing::AdvancedProtectionStatusManagerDesktop* aps_manager =
+      static_cast<safe_browsing::AdvancedProtectionStatusManagerDesktop*>(
+          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+              profile()));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
@@ -114,9 +116,10 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
   settings_private::TestGeneratedPrefObserver test_observer;
   pref.AddObserver(&test_observer);
 
-  safe_browsing::AdvancedProtectionStatusManager* aps_manager =
-      safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
-          profile());
+  safe_browsing::AdvancedProtectionStatusManagerDesktop* aps_manager =
+      static_cast<safe_browsing::AdvancedProtectionStatusManagerDesktop*>(
+          safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
+              profile()));
   EXPECT_EQ(
       static_cast<HttpsFirstModeSetting>(pref.GetPrefObject().value->GetInt()),
       HttpsFirstModeSetting::kDisabled);
@@ -140,6 +143,9 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
 
 // Check the generated pref respects updates to the underlying preference.
 TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePreference) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
+
   GeneratedHttpsFirstModePref pref(profile());
 
   // Check setting the generated pref updates the underlying preference.
@@ -186,7 +192,7 @@ TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePreference) {
                 std::make_unique<base::Value>(
                     static_cast<int>(HttpsFirstModeSetting::kEnabledBalanced))
                     .get()),
-            settings_private::SetPrefResult::PREF_TYPE_UNSUPPORTED);
+            settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 
   // With Balanced Mode feature disabled, check that setting the underlying
   // Balanced pref to `true` does not change the generated pref from kDisabled.

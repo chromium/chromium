@@ -6,13 +6,16 @@ package org.chromium.components.paintpreview.player;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /** Uses touch gesture-based heuristics to detect use frustration. */
+@NullMarked
 public class PlayerUserFrustrationDetector {
-    private Runnable mFrustrationDetectionCallback;
-    private List<Long> mTapsTimeMs = new ArrayList<>();
+    private final Runnable mFrustrationDetectionCallback;
+    private final List<Long> mTapsTimeMs = new ArrayList<>();
 
     static final int CONSECUTIVE_SINGLE_TAP_WINDOW_MS = 2 * 1000;
     static final int CONSECUTIVE_SINGLE_TAP_COUNT = 3;

@@ -33,6 +33,10 @@ def _gpu_device(*, vendor, device):
 
 # LINT.IfChange
 
+_ANDROID_DESKTOP_BOARD_GPUS = {
+    "brya": _gpu_device(vendor = "8086", device = "46a8"),
+}
+
 _CROS_BOARD_GPUS = {
     "volteer": _gpu_device(vendor = "8086", device = "9a49"),
 }
@@ -45,6 +49,7 @@ _VENDOR_SUBSTITUTIONS = {
 _DEVICE_SUBSTITUTIONS = {
     "m1": "0",
     "m2": "0",
+    "m3": "0",
     # Qualcomm Adreno 680/685/690 and 741 on Windows arm64. The approach
     # swarming uses to find GPUs (looking for all Win32_VideoController WMI
     # objects) results in different output than what Chrome sees.
@@ -59,8 +64,6 @@ _DEVICE_SUBSTITUTIONS = {
 _ANDROID_VULKAN_DEVICES = {
     # Pixel 6 phones map to multiple GPU models.
     "oriole": _gpu_device(vendor = "13b5", device = "92020010,92020000"),
-    "dm1q": _gpu_device(vendor = "5143", device = "43050a01"),
-    "a23": _gpu_device(vendor = "5143", device = "6010001"),
 }
 
 def _get_dimensions(spec_value):
@@ -69,10 +72,20 @@ def _get_dimensions(spec_value):
         fail("dimensions is not set")
     return dimensions
 
+def _is_android_desktop(spec_value, settings):
+    """Helper function to determine if the test will be running on Android Desktop."""
+    is_android = settings.os_type == common.os_type.ANDROID
+    return is_android and _get_android_desktop_board_name(spec_value)
+
 def _is_skylab(settings):
     """Helper function to determine if the test will be running on skylab."""
     return (settings.browser_config == common.browser_config.CROS_CHROME and
             not settings.use_swarming)
+
+def _get_android_desktop_board_name(spec_value):
+    """Helper function to determine what Android Desktop board is being used."""
+    dimensions = _get_dimensions(spec_value)
+    return dimensions.get("label-board")
 
 def _get_cros_board_name(spec_value):
     """Helper function to determine what ChromeOS board is being used."""
@@ -85,6 +98,17 @@ def _get_cros_board_name(spec_value):
         fail("Unknown CrOS pool {}".format(pool))
 
     return dimensions.get("device_type", "amd64-generic")
+
+def _android_desktop_telemetry_remote(_, settings, spec_value):
+    """Substitutes the correct Android Desktop remote Telemetry arguments."""
+    if settings.os_type != common.os_type.ANDROID:
+        fail("Ran an Android Desktop-specific substitution on a non-Android builder")
+    if not _get_android_desktop_board_name(spec_value):
+        return []
+    return [
+        "--device=variable_lab_dut_hostname",
+        "--connect-to-device-over-network",
+    ]
 
 def _cros_telemetry_remote(_, settings, spec_value):
     """Substitutes the correct CrOS remote Telemetry arguments.
@@ -133,7 +157,9 @@ def _get_gpus(spec_value):
         <vendor ID>:<device ID>-<driver>.
     """
     dimensions = _get_dimensions(spec_value)
-    return dimensions.get("gpu", []).split("|")
+    if "gpu" not in dimensions:
+        return []
+    return dimensions["gpu"].split("|")
 
 def _get_android_vulkan_device(settings, spec_value):
     if settings.os_type == common.os_type.ANDROID:
@@ -148,18 +174,20 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
     We only ever trigger tests on a single vendor type per builder definition,
     so multiple found vendors is an error.
     """
+    if _is_android_desktop(spec_value, settings):
+        return _gpu_expected_vendor_id_android_desktop(spec_value)
     if _is_skylab(settings):
-        return _gpu_expected_vendor_id_skylab(settings)
+        return _gpu_expected_vendor_id_skylab(spec_value)
     gpus = _get_gpus(spec_value)
 
     # We don't specify GPU on things like Android and certain CrOS devices, so
     # default to 0.
     if not gpus:
-        return ["--expected-vendor-id", "0"]
+        vulkan_device = _get_android_vulkan_device(settings, spec_value)
+        if vulkan_device:
+            return ["--expected-vendor-id", vulkan_device.vendor]
 
-    vulkan_device = _get_android_vulkan_device(settings, spec_value)
-    if vulkan_device:
-        return ["--expected-vendor-id", vulkan_device.vendor]
+        return ["--expected-vendor-id", "0"]
 
     vendor_ids = set()
     for gpu_and_driver in gpus:
@@ -172,6 +200,14 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
         fail("got more than 1 vendor ID")
 
     return ["--expected-vendor-id", vendor_ids.pop()]
+
+def _gpu_expected_vendor_id_android_desktop(spec_value):
+    board = _get_android_desktop_board_name(spec_value)
+    if not board:
+        fail("Failed to get board for Android Desktop test")
+    gpu_device = _ANDROID_DESKTOP_BOARD_GPUS.get(board)
+    vendor_id = gpu_device.vendor if gpu_device else "0"
+    return ["--expected-vendor-id", vendor_id]
 
 def _gpu_expected_vendor_id_skylab(spec_value):
     cros_board = spec_value.get("cros_board")
@@ -187,22 +223,24 @@ def _gpu_expected_device_id(_, settings, spec_value):
     Most configurations only need one expected GPU, but heterogeneous pools
     (e.g. HD 630 and UHD 630 machines) require multiple.
     """
+    if _is_android_desktop(spec_value, settings):
+        return _gpu_expected_device_id_android_desktop(spec_value)
     if _is_skylab(settings):
         return _gpu_expected_device_id_skylab(spec_value)
     gpus = _get_gpus(spec_value)
 
     # We don't specify GPU on things like Android/CrOS devices, so default to 0.
     if not gpus:
-        return ["--expected-device-id", "0"]
+        vulkan_device = _get_android_vulkan_device(settings, spec_value)
+        if vulkan_device:
+            device_ids = vulkan_device.device.split(",")
+            commands = []
+            for index, device_id in enumerate(device_ids):
+                commands.append("--expected-device-id")
+                commands.append(device_ids[index])
+            return commands
 
-    vulkan_device = _get_android_vulkan_device(settings, spec_value)
-    if vulkan_device:
-        device_ids = vulkan_device.device.split(",")
-        commands = []
-        for index, device_id in enumerate(device_ids):
-            commands.append("--expected-device-id")
-            commands.append(device_ids[index])
-        return commands
+        return ["--expected-device-id", "0"]
 
     device_ids = set()
     for gpu_and_driver in gpus:
@@ -215,6 +253,14 @@ def _gpu_expected_device_id(_, settings, spec_value):
     for device_id in sorted(device_ids):
         retval.extend(["--expected-device-id", device_id])
     return retval
+
+def _gpu_expected_device_id_android_desktop(spec_value):
+    board = _get_android_desktop_board_name(spec_value)
+    if not board:
+        fail("Failed to get board for Android Desktop test")
+    gpu_device = _ANDROID_DESKTOP_BOARD_GPUS.get(board)
+    device_id = gpu_device.device if gpu_device else "0"
+    return ["--expected-device-id", device_id]
 
 def _gpu_expected_device_id_skylab(spec_value):
     cros_board = spec_value.get("cros_board")
@@ -271,6 +317,14 @@ def _gpu_parallel_jobs(builder_name, settings, spec_value):
             if gpu.startswith("10de"):
                 return ["--jobs=1"]
 
+    # trace_test flakily hangs Win NVIDIA GTX 1660 machines crbug.com/406454932.
+    # Speculatively disable parallelism to check if it is related.
+    is_trace_test = test_name.startswith("trace_test") or suite == "trace_test"
+    if settings.os_type == common.os_type.WINDOWS and is_trace_test:
+        for gpu in _get_gpus(spec_value):
+            if gpu.startswith("10de:2184"):
+                return ["--jobs=1"]
+
     if settings.os_type in (
         common.os_type.LACROS,
         common.os_type.LINUX,
@@ -289,9 +343,12 @@ def _gpu_telemetry_no_root_for_unrooted_devices(_, settings, spec_value):
 
     unrooted_devices = (
         "a13",
+        "a13ve",
         "a23",
+        "a23xq",
         "dm1q",  # Samsung S23.
         "devonn",  # Motorola Moto G Power 5G.
+        "s5e9945",  # Samsung S24
     )
     dimensions = _get_dimensions(spec_value)
     device_type = dimensions.get("device_type")
@@ -310,7 +367,7 @@ def _gpu_webgl_runtime_file(_, settings, spec_value):
     # Default to using Linux's file if we're on a platform that we don't
     # actively maintain runtime files for.
     chosen_os = settings.os_type
-    if chosen_os in (
+    if chosen_os not in (
         common.os_type.ANDROID,
         common.os_type.LINUX,
         common.os_type.MAC,
@@ -360,6 +417,10 @@ def _placeholder(*, pyl_arg_value, function):
     )
 
 magic_args = struct(
+    ANDROID_DESKTOP_TELEMETRY_REMOTE = _placeholder(
+        pyl_arg_value = "$$MAGIC_SUBSTITUTION_AndroidDesktopTelemetryRemote",
+        function = _android_desktop_telemetry_remote,
+    ),
     CROS_TELEMETRY_REMOTE = _placeholder(
         pyl_arg_value = "$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote",
         function = _cros_telemetry_remote,

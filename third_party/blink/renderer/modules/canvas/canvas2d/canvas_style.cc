@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
@@ -61,30 +63,33 @@ static ColorParseResult ParseColor(Color& parsed_color,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
                                    bool is_in_web_app_scope) {
-  if (EqualIgnoringASCIICase(color_string, "currentcolor"))
+  if (EqualIgnoringASCIICase(color_string, "currentcolor")) {
     return ColorParseResult::kCurrentColor;
-  const bool kUseStrictParsing = true;
-  if (CSSParser::ParseColor(parsed_color, color_string, kUseStrictParsing))
+  }
+  if (CSSParser::ParseColor(parsed_color, color_string)) {
     return ColorParseResult::kColor;
+  }
   if (CSSParser::ParseSystemColor(parsed_color, color_string, color_scheme,
                                   color_provider, is_in_web_app_scope)) {
     return ColorParseResult::kColor;
   }
-  if (auto* color_mix_value =
-          DynamicTo<cssvalue::CSSColorMixValue>(CSSParser::ParseSingleValue(
-              CSSPropertyID::kColor, color_string,
-              StrictCSSParserContext(SecureContextMode::kInsecureContext)))) {
+  CSSParserTokenStream stream(color_string);
+  const CSSValue* parsed_value =
+      css_parsing_utils::ConsumeColorWithoutElementContext(
+          stream, *StrictCSSParserContext(SecureContextMode::kInsecureContext));
+  if (parsed_value && (parsed_value->IsColorMixValue() ||
+                       parsed_value->IsRelativeColorValue())) {
     static const TextLinkColors kDefaultTextLinkColors{};
     // TODO(40946458): Don't use default length resolver here!
     const ResolveColorValueContext context{
-        .length_resolver = CSSToLengthConversionData(),
+        .length_resolver = CSSToLengthConversionData(/*element=*/nullptr),
         .text_link_colors = kDefaultTextLinkColors,
         .used_color_scheme = color_scheme,
         .color_provider = color_provider,
         .is_in_web_app_scope = is_in_web_app_scope};
-    const StyleColor style_color = ResolveColorValue(*color_mix_value, context);
+    const StyleColor style_color = ResolveColorValue(*parsed_value, context);
     parsed_color = style_color.Resolve(Color::kBlack, color_scheme);
-    return ColorParseResult::kColorMix;
+    return ColorParseResult::kColorFunction;
   }
   return ColorParseResult::kParseFailed;
 }
@@ -105,7 +110,7 @@ bool ParseCanvasColorString(const String& color_string, Color& parsed_color) {
       /*color_provider=*/nullptr, /*is_in_web_app_scope=*/false);
   switch (parse_result) {
     case ColorParseResult::kColor:
-    case ColorParseResult::kColorMix:
+    case ColorParseResult::kColorFunction:
       return true;
     case ColorParseResult::kCurrentColor:
       parsed_color = Color::kBlack;
@@ -128,11 +133,11 @@ void CanvasStyle::ApplyToFlags(cc::PaintFlags& flags,
       break;
     case kImagePattern:
       GetCanvasPattern()->GetPattern()->ApplyToFlags(
-          flags, AffineTransformToSkMatrix(GetCanvasPattern()->GetTransform()));
+          flags, GetCanvasPattern()->GetTransform().ToSkMatrix());
       flags.setColor(SkColor4f(0.0f, 0.0f, 0.0f, global_alpha));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

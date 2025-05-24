@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_ON_DEVICE_TRANSLATION_TRANSLATE_KIT_STRUCTS_H_
 
 #include <cstddef>
+#include <cstdint>
 
 // WARNING:
 // This below section contains the interface contract between Chrome and the
@@ -40,6 +41,14 @@ typedef struct {
 } TranslateKitOutputText;
 
 typedef struct {
+  // The buffer to store the version string to.
+  // Not owned.
+  char* buffer;
+  // The size of `buffer`.
+  size_t buffer_size;
+} TranslateKitVersion;
+
+typedef struct {
   // A chrome::on_device_translation::TranslateKitLanguagePackageConfig
   // serialized as a string.
   // Not owned.
@@ -47,6 +56,20 @@ typedef struct {
   // The size of `package_config`.
   size_t package_config_size;
 } TranslateKitSetLanguagePackagesArgs;
+
+typedef bool (*FileExistsFn)(const char* file_name,
+                             size_t file_name_size,
+                             bool* is_directory,
+                             std::uintptr_t user_data);
+typedef std::uintptr_t (*OpenForReadOnlyMemoryMapFn)(const char* file_name,
+                                                     size_t file_name_size,
+                                                     std::uintptr_t user_data);
+typedef void (*DeleteReadOnlyMemoryRegionFn)(std::uintptr_t memory_map_ptr,
+                                             std::uintptr_t user_data);
+typedef const void* (*ReadOnlyMemoryRegionDataFn)(std::uintptr_t memory_map_ptr,
+                                                  std::uintptr_t user_data);
+typedef uint64_t (*ReadOnlyMemoryRegionLengthFn)(std::uintptr_t memory_map_ptr,
+                                                 std::uintptr_t user_data);
 
 }  // extern "C"
 

@@ -56,7 +56,8 @@ class DevToolsClient {
   // Precondition: IsMainPage()
   // Precondition: IsConnected()
   // Precondition: BiDi tunnel for CDP traffic is not set.
-  virtual Status StartBidiServer(std::string bidi_mapper_script) = 0;
+  virtual Status StartBidiServer(std::string bidi_mapper_script,
+                                 bool enable_unsafe_extension_debugging) = 0;
 
   virtual bool WasCrashed() = 0;
 
@@ -122,6 +123,8 @@ class DevToolsClient {
   virtual DevToolsClient* GetParentClient() const = 0;
 
   virtual bool IsMainPage() const = 0;
+
+  virtual bool IsTabTarget() const = 0;
 
   virtual Status SendRaw(const std::string& message) = 0;
 

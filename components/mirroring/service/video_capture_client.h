@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_MIRRORING_SERVICE_VIDEO_CAPTURE_CLIENT_H_
 #define COMPONENTS_MIRRORING_SERVICE_VIDEO_CAPTURE_CLIENT_H_
 
+#include <variant>
+
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
@@ -17,7 +19,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media {
 class VideoFrame;
@@ -80,9 +81,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) VideoCaptureClient
   static void DidFinishConsumingFrame(BufferFinishedCallback callback);
 
   // Reports the utilization to release the buffer for potential reuse.
-  using MappingKeepAlive = absl::variant<absl::monostate,
-                                         base::WritableSharedMemoryMapping,
-                                         base::ReadOnlySharedMemoryMapping>;
+  using MappingKeepAlive = std::variant<std::monostate,
+                                        base::WritableSharedMemoryMapping,
+                                        base::ReadOnlySharedMemoryMapping>;
   void OnClientBufferFinished(int buffer_id,
                               MappingKeepAlive mapping_keep_alive);
 

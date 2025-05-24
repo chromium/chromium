@@ -9,7 +9,10 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** The interface for dropdown popup window. */
+@NullMarked
 public interface DropdownPopupWindowInterface {
     /**
      * Sets the adapter that provides the data and the views to represent the data

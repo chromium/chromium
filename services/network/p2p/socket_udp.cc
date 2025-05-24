@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_udp.h"
 
 #include <tuple>
@@ -21,6 +16,7 @@
 #include "build/build_config.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
+#include "net/base/port_util.h"
 #include "net/log/net_log_source.h"
 #include "services/network/p2p/socket_throttler.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
@@ -29,6 +25,7 @@
 #include "services/network/throttling/throttling_network_interceptor.h"
 #include "services/network/throttling/throttling_p2p_network_interceptor.h"
 #include "third_party/webrtc/media/base/rtp_utils.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace {
 
@@ -89,18 +86,18 @@ std::unique_ptr<net::DatagramServerSocket> DefaultSocketFactory(
   return base::WrapUnique(socket);
 }
 
-rtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
+webrtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
   switch (tos.ecn) {
     case net::ECN_NO_CHANGE:
       NOTREACHED();
     case net::ECN_NOT_ECT:
-      return rtc::EcnMarking::kNotEct;
+      return webrtc::EcnMarking::kNotEct;
     case net::ECN_ECT1:
-      return rtc::EcnMarking::kEct1;
+      return webrtc::EcnMarking::kEct1;
     case net::ECN_ECT0:
-      return rtc::EcnMarking::kEct0;
+      return webrtc::EcnMarking::kEct0;
     case net::ECN_CE:
-      return rtc::EcnMarking::kCe;
+      return webrtc::EcnMarking::kCe;
   }
 }
 
@@ -108,17 +105,16 @@ rtc::EcnMarking GetEcnMarking(net::DscpAndEcn tos) {
 
 namespace network {
 
-P2PPendingPacket::P2PPendingPacket(const net::IPEndPoint& to,
-                                   base::span<const uint8_t> content,
-                                   const rtc::PacketOptions& options,
-                                   uint64_t id)
+P2PPendingPacket::P2PPendingPacket(
+    const net::IPEndPoint& to,
+    base::span<const uint8_t> content,
+    const webrtc::AsyncSocketPacketOptions& options,
+    uint64_t id)
     : to(to),
-      data(base::MakeRefCounted<net::IOBufferWithSize>(content.size())),
+      data(base::MakeRefCounted<net::VectorIOBuffer>(content)),
       size(content.size()),
       packet_options(options),
-      id(id) {
-  memcpy(data->data(), content.data(), content.size());
-}
+      id(id) {}
 
 P2PPendingPacket::P2PPendingPacket(const P2PPendingPacket& other) = default;
 P2PPendingPacket::~P2PPendingPacket() = default;
@@ -296,9 +292,7 @@ void P2PSocketUdp::MaybeDrainReceivedPackets(bool force) {
 
 bool P2PSocketUdp::HandleReadResult(int result) {
   if (result > 0) {
-    base::span<const uint8_t> data =
-        base::make_span(reinterpret_cast<const uint8_t*>(recv_buffer_->data()),
-                        static_cast<size_t>(result));
+    auto data = recv_buffer_->first(static_cast<size_t>(result));
 
     if (!base::Contains(connected_peers_, recv_address_)) {
       P2PSocket::StunMessageType type;
@@ -314,10 +308,14 @@ bool P2PSocketUdp::HandleReadResult(int result) {
     }
 
     delegate_->DumpPacket(data, true);
+    net::DscpAndEcn last_tos =
+        socket_ == nullptr
+            ? net::DscpAndEcn(net::DSCP_DEFAULT, net::ECN_DEFAULT)
+            : socket_->GetLastTos();
     auto packet = mojom::P2PReceivedPacket::New(
         data, recv_address_,
-        base::TimeTicks() + base::Nanoseconds(rtc::TimeNanos()),
-        GetEcnMarking(socket_->GetLastTos()));
+        base::TimeTicks() + base::Nanoseconds(webrtc::TimeNanos()),
+        GetEcnMarking(last_tos));
 
     if (interceptor_) {
       interceptor_->EnqueueReceive(std::move(packet), std::move(recv_buffer_),
@@ -349,7 +347,12 @@ bool P2PSocketUdp::HandleReadResult(int result) {
 }
 
 bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
-  int64_t send_time_us = rtc::TimeMicros();
+  int64_t send_time_us = webrtc::TimeMicros();
+
+  if (!net::IsPortAllowedForIpEndpoint(packet.to)) {
+    OnError();
+    return false;
+  }
 
   // The peer is considered not connected until the first incoming STUN
   // request/response. In that state the renderer is allowed to send only STUN
@@ -358,10 +361,7 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
   // messages are sent in correct order.
   if (!base::Contains(connected_peers_, packet.to)) {
     P2PSocket::StunMessageType type = P2PSocket::StunMessageType();
-    bool stun = GetStunPacketType(
-        base::make_span(reinterpret_cast<const uint8_t*>(packet.data->data()),
-                        packet.size),
-        &type);
+    bool stun = GetStunPacketType(packet.data->first(packet.size), &type);
     if (!stun || type == STUN_DATA_INDICATION) {
       LOG(ERROR) << "Page tried to send a data packet to "
                  << packet.to.ToString() << " before STUN binding is finished.";
@@ -402,9 +402,9 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
     }
   }
 
-  cricket::ApplyPacketOptions(packet.data->bytes(), packet.size,
-                              packet.packet_options.packet_time_params,
-                              send_time_us);
+  webrtc::ApplyPacketOptions(packet.data->bytes(), packet.size,
+                             packet.packet_options.packet_time_params,
+                             send_time_us);
   auto callback_binding = base::BindRepeating(
       &P2PSocketUdp::OnSend, base::Unretained(this), packet.id,
       packet.packet_options.packet_id, send_time_us / 1000);
@@ -431,10 +431,7 @@ bool P2PSocketUdp::DoSend(const P2PPendingPacket& packet) {
     }
   }
 
-  delegate_->DumpPacket(
-      base::make_span(reinterpret_cast<const uint8_t*>(packet.data->data()),
-                      packet.size),
-      false);
+  delegate_->DumpPacket(packet.data->first(packet.size), false);
 
   return true;
 }
@@ -501,9 +498,7 @@ void P2PSocketUdp::Send(base::span<const uint8_t> data,
 bool P2PSocketUdp::SendPacket(base::span<const uint8_t> data,
                               const P2PPacketInfo& packet_info) {
   if (data.size() > kMaximumPacketSize) {
-    NOTREACHED_IN_MIGRATION();
-    OnError();
-    return false;
+    NOTREACHED();
   }
   if (interceptor_) {
     P2PPendingPacket packet(packet_info.destination, data,
@@ -563,7 +558,7 @@ void P2PSocketUdp::SetOption(P2PSocketOption option, int32_t value) {
       socket_->SetRecvTos();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

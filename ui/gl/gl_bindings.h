@@ -120,20 +120,19 @@
 
 // GL_ANGLE_shader_pixel_local_storage
 #define GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE 0x96E0
-#define GL_MAX_COLOR_ATTACHMENTS_WITH_ACTIVE_PIXEL_LOCAL_STORAGE_ANGLE 0x96E1
-#define GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE 0x96E2
-#define GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE 0x96E3
-#define GL_LOAD_OP_ZERO_ANGLE 0x96E4
-#define GL_LOAD_OP_CLEAR_ANGLE 0x96E5
-#define GL_LOAD_OP_LOAD_ANGLE 0x96E6
-#define GL_STORE_OP_STORE_ANGLE 0x96E7
-#define GL_PIXEL_LOCAL_FORMAT_ANGLE 0x96E8
-#define GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE 0x96E9
-#define GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE 0x96EA
-#define GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE 0x96EB
-#define GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE 0x96EC
-#define GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE 0x96ED
-#define GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE 0x96EE
+#define GL_MAX_COMBINED_DRAW_BUFFERS_AND_PIXEL_LOCAL_STORAGE_PLANES_ANGLE 0x96E1
+#define GL_PIXEL_LOCAL_STORAGE_ACTIVE_PLANES_ANGLE 0x96E2
+#define GL_LOAD_OP_ZERO_ANGLE 0x96E3
+#define GL_LOAD_OP_CLEAR_ANGLE 0x96E4
+#define GL_LOAD_OP_LOAD_ANGLE 0x96E5
+#define GL_STORE_OP_STORE_ANGLE 0x96E6
+#define GL_PIXEL_LOCAL_FORMAT_ANGLE 0x96E7
+#define GL_PIXEL_LOCAL_TEXTURE_NAME_ANGLE 0x96E8
+#define GL_PIXEL_LOCAL_TEXTURE_LEVEL_ANGLE 0x96E9
+#define GL_PIXEL_LOCAL_TEXTURE_LAYER_ANGLE 0x96EA
+#define GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE 0x96EB
+#define GL_PIXEL_LOCAL_CLEAR_VALUE_INT_ANGLE 0x96EC
+#define GL_PIXEL_LOCAL_CLEAR_VALUE_UNSIGNED_INT_ANGLE 0x96ED
 
 // GL_EXT_occlusion_query_boolean
 #define GL_ANY_SAMPLES_PASSED_EXT                        0x8C2F
@@ -367,6 +366,11 @@
 #define GL_RG8_EXT 0x822B
 #endif /* GL_EXT_texture_rg */
 
+#ifndef GL_EXT_texture_type_2_10_10_10_REV
+#define GL_EXT_texture_type_2_10_10_10_REV 1
+#define GL_UNSIGNED_INT_2_10_10_10_REV_EXT 0x8368
+#endif /* GL_EXT_texture_type_2_10_10_10_REV */
+
 // This is from NV_path_rendering, but the GL header is not up to date with the
 // most recent version of the extension. This definition could be removed once
 // glext.h r27498 or later is imported.
@@ -469,6 +473,18 @@
 // Forward declare EGL types.
 typedef uint64_t EGLuint64CHROMIUM;
 
+// GL_ANGLE_blob_cache
+typedef GLsizeiptr(APIENTRY* GLGETBLOBPROCANGLE)(const void* key,
+                                                 GLsizeiptr keySize,
+                                                 void* value,
+                                                 GLsizeiptr valueSize,
+                                                 const void* userParam);
+typedef void(APIENTRY* GLSETBLOBPROCANGLE)(const void* key,
+                                           GLsizeiptr keySize,
+                                           const void* value,
+                                           GLsizeiptr valueSize,
+                                           const void* userParam);
+
 #include "gl_bindings_autogen_gl.h"
 #include "gl_bindings_autogen_egl.h"
 
@@ -484,11 +500,6 @@ struct GL_EXPORT DriverGL {
 
   ProcsGL fn;
   ExtensionsGL ext;
-
-  DriverGL() {
-    // InitializeStaticBindings() requires that fn is null-initialized.
-    ClearBindings();
-  }
 };
 
 struct GL_EXPORT CurrentGL {

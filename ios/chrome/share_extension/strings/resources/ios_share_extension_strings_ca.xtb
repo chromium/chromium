@@ -2,9 +2,17 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1613742542373525524">APPLICATION_NAME no pot gestionar aquest enllaç.</translation>
+<translation id="3086502722585482455">Obre a</translation>
 <translation id="4655616150233109325">Obre a Chrome</translation>
+<translation id="5244924493358516288">(límit màxim)</translation>
+<translation id="5596627076506792578">Més opcions</translation>
 <translation id="601731541915429022">Afegeix a la llista de lectura</translation>
+<translation id="6527303717912515753">Comparteix</translation>
 <translation id="6930009216791986919">Afegeix a les adreces d'interès</translation>
 <translation id="6965382102122355670">D'acord</translation>
+<translation id="712865579676939176">Cerca a</translation>
+<translation id="7440631557836890806">Cerca d'incògnit</translation>
+<translation id="7658239707568436148">Cancel·la</translation>
 <translation id="8258999165172757081">S'ha afegit</translation>
+<translation id="850600235656508448">Obre en mode d'incògnit</translation>
 </translationbundle>

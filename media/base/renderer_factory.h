@@ -46,11 +46,6 @@ class MEDIA_EXPORT RendererFactory {
       VideoRendererSink* video_renderer_sink,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) = 0;
-
-  // Returns the MediaResource::Type that should be used with the renderers
-  // created by this factory.
-  // NOTE: Returns Type::STREAM by default.
-  virtual MediaResource::Type GetRequiredMediaResourceType();
 };
 
 }  // namespace media

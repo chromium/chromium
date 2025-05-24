@@ -11,8 +11,11 @@ import os
 import re
 import unittest
 
+# vpython-provided modules.
+from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+
+# //testing/buildbot imports.
 import generate_buildbot_json
-from pyfakefs import fake_filesystem_unittest
 
 # pylint: disable=super-with-arguments
 
@@ -2025,15 +2028,6 @@ class UnitTest(TestCase):
         'Attempted to generate a script test on tester.*'):
       fbb.check_output_file_consistency(verbose=True)
 
-  def test_junit_tests(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_JUNIT_WATERFALL,
-                    GOOD_COMPOSITION_TEST_SUITES,
-                    LUCI_MILO_CFG,
-                    exceptions=NO_BAR_TEST_EXCEPTIONS)
-    fbb.check_output_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
   def test_gpu_telemetry_test_with_invalid_name(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL,
@@ -2604,6 +2598,23 @@ FOO_TEST_SUITE_WITH_MIXIN = """\
 }
 """
 
+FOO_TEST_SUITE_WITH_TEST_COMMON = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_test': {
+        'test_common': {
+          'args': ['test-common-arg'],
+          'mixins': ['test-common-mixin'],
+        },
+        'args': ['test-arg'],
+        'mixins': ['test-mixin'],
+      },
+    },
+  },
+}
+"""
+
 MIXIN_ARGS = """\
 {
   'builder_mixin': {
@@ -2635,6 +2646,21 @@ MIXIN_APPEND = """\
     '$mixin_append': {
       'args': [ '--mixin-argument' ],
     },
+  },
+}
+"""
+
+MIXINS_FAIL_IF_UNUSED_FALSE = """\
+{
+  'test_mixin': {
+    'fail_if_unused': False,
+    'swarming': {
+      'value': 'test',
+    },
+  },
+  'unused_mixin': {
+    'fail_if_unused': False,
+    'args': ['--unused'],
   },
 }
 """
@@ -2721,6 +2747,17 @@ SWARMING_MIXINS_SORTED = """\
   },
   'c_mixin': {
     'c': 'c',
+  },
+}
+"""
+
+TEST_COMMON_MIXINS = """\
+{
+  'test-common-mixin': {
+    'args': ['test-common-mixin-arg'],
+  },
+  'test-mixin': {
+    'args': ['test-mixin-arg'],
   },
 }
 """
@@ -2857,6 +2894,15 @@ class MixinTests(TestCase):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
+  def test_fail_if_unused_false(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    FOO_TEST_SUITE_WITH_MIXIN,
+                    LUCI_MILO_CFG,
+                    mixins=MIXINS_FAIL_IF_UNUSED_FALSE)
+    fbb.check_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
   def test_list(self):
     fbb = FakeBBGen(self.args,
                     FOO_GTESTS_INVALID_LIST_MIXIN_WATERFALL,
@@ -2866,7 +2912,6 @@ class MixinTests(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
-
 
   def test_no_duplicate_keys(self):
     fbb = FakeBBGen(self.args,
@@ -2990,6 +3035,16 @@ class MixinTests(TestCase):
                     mixins=SWARMING_MIXINS)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
+
+  def test_test_common(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    FOO_TEST_SUITE_WITH_TEST_COMMON,
+                    LUCI_MILO_CFG,
+                    mixins=TEST_COMMON_MIXINS)
+    fbb.check_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
 
 TEST_SUITE_WITH_PARAMS = """\
 {
@@ -4315,7 +4370,6 @@ MATRIX_SKYLAB_WATERFALL = """\
         },
         'cros_board': 'octopus',
         'cros_dut_pool': 'chromium',
-        'run_cft': True,
       },
     },
   },
@@ -4336,7 +4390,6 @@ MATRIX_SKYLAB_WATERFALL_WITH_BUILD_TARGET_VARIANT = """\
         'cros_board': 'octopus',
         'cros_build_target': 'octopus-arc-t',
         'cros_dut_pool': 'chromium',
-        'run_cft': True,
       },
     },
   },
@@ -4391,7 +4444,6 @@ SKYLAB_VARIANTS = """\
     'skylab': {
       'cros_board': 'octopus',
       'cros_model': 'casta',
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-release/R89-13655.0.0',
     },
     'enabled': True,
@@ -4399,7 +4451,6 @@ SKYLAB_VARIANTS = """\
   },
   'octopus-89-with-autotest-name': {
     'skylab': {
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-release/R89-13655.0.0',
       'autotest_name': 'unique_autotest_name',
     },
@@ -4408,7 +4459,6 @@ SKYLAB_VARIANTS = """\
   },
   'octopus-88': {
     'skylab': {
-      'cros_chrome_version': '88.0.2324.0',
       'cros_img': 'octopus-release/R88-13597.23.0',
     },
     'enabled': True,
@@ -4423,7 +4473,6 @@ SKYLAB_VARIANTS_WITH_BUILD_VARIANT = """\
     'skylab': {
       'cros_board': 'octopus',
       'cros_model': 'casta',
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-arc-t-release/R89-13655.0.0',
     },
     'enabled': True,
@@ -4431,7 +4480,6 @@ SKYLAB_VARIANTS_WITH_BUILD_VARIANT = """\
   },
   'octopus-89-with-autotest-name': {
     'skylab': {
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-arc-t-release/R89-13655.0.0',
       'autotest_name': 'unique_autotest_name',
     },
@@ -4440,7 +4488,6 @@ SKYLAB_VARIANTS_WITH_BUILD_VARIANT = """\
   },
   'octopus-88': {
     'skylab': {
-      'cros_chrome_version': '88.0.2324.0',
       'cros_img': 'octopus-arc-t-release/R88-13597.23.0',
     },
     'enabled': True,
@@ -4454,13 +4501,17 @@ ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF = """\
   'basic_suites': {
     'cros_skylab_basic': {
       'tast.basic': {
-        'tast_expr': 'dummy expr',
+        'skylab': {
+          'tast_expr': 'dummy expr',
+          'shard_level_retries_on_ctp': 2,
+        },
         'suite': 'tast.basic',
-        'shard_level_retries_on_ctp': 2,
         'timeout': 3600,
       },
       'tast.foo': {
-        'tast_expr': 'dummy expr',
+        'skylab': {
+          'tast_expr': 'dummy expr',
+        },
         'suite': 'tast.foo',
         'timeout': 3600,
       },
@@ -4485,7 +4536,6 @@ ENABLED_AND_DISABLED_VARIANTS = """\
   'enabled': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '89.0.3234.0',
       'cros_img': 'octopus-release/R89-13655.0.0',
     },
     'enabled': True,
@@ -4494,7 +4544,6 @@ ENABLED_AND_DISABLED_VARIANTS = """\
   'disabled': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '88.0.2324.0',
       'cros_img': 'octopus-release/R88-13597.23.0',
     },
     'enabled': False,

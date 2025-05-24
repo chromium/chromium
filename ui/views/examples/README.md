@@ -1,7 +1,7 @@
 
 # Overview
 `views_examples` and `views_examples_with_content` are executable tools to
-showcase all the [Views](docs/ui/views/overview.md) components with some varied
+showcase all the [Views](../../../docs/ui/views/overview.md) components with some varied
 styles. The latter has extra support for `web_view` as well.
 
 ## How to build and run

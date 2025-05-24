@@ -6,17 +6,19 @@ import './base_page.js';
 import './repair_component_chip.js';
 import './shimless_rma_shared.css.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ComponentTypeToId} from './data.js';
-import {CLICK_REPAIR_COMPONENT_BUTTON, ClickRepairComponentButtonEvent} from './events.js';
+import type {ClickRepairComponentButtonEvent} from './events.js';
+import {CLICK_REPAIR_COMPONENT_BUTTON} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_select_components_page.html.js';
-import {RepairComponentChip} from './repair_component_chip.js';
-import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import type {RepairComponentChip} from './repair_component_chip.js';
+import type {Component, ComponentType, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {ComponentRepairStatus} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
 
 interface ComponentCheckbox {

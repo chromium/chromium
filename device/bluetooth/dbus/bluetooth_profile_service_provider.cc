@@ -112,8 +112,11 @@ class BluetoothProfileServiceProviderImpl
     dbus::MessageReader array_reader(NULL);
     if (!reader.PopObjectPath(&device_path) || !reader.PopFileDescriptor(&fd) ||
         !reader.PopArray(&array_reader)) {
-      LOG(WARNING) << "NewConnection called with incorrect paramters: "
+      LOG(WARNING) << "NewConnection called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -153,8 +156,11 @@ class BluetoothProfileServiceProviderImpl
     dbus::MessageReader reader(method_call);
     dbus::ObjectPath device_path;
     if (!reader.PopObjectPath(&device_path)) {
-      LOG(WARNING) << "RequestDisconnection called with incorrect paramters: "
+      LOG(WARNING) << "RequestDisconnection called with incorrect parameters: "
                    << method_call->ToString();
+      std::move(response_sender)
+          .Run(dbus::ErrorResponse::FromMethodCall(
+              method_call, DBUS_ERROR_INVALID_ARGS, "Incorrect parameters."));
       return;
     }
 
@@ -211,8 +217,7 @@ class BluetoothProfileServiceProviderImpl
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected status code from delegate: " << status;
+        NOTREACHED() << "Unexpected status code from delegate: " << status;
     }
   }
 

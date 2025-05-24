@@ -12,7 +12,7 @@ namespace cssvalue {
 String CSSGridAutoRepeatValue::CustomCSSText() const {
   StringBuilder result;
   result.Append("repeat(");
-  result.Append(getValueName(AutoRepeatID()));
+  result.Append(GetCSSValueNameAs<StringView>(AutoRepeatID()));
   result.Append(", ");
   result.Append(CSSValueList::CustomCSSText());
   result.Append(')');

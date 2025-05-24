@@ -29,6 +29,6 @@ class MockAecdumpRecordingManager : public AecdumpRecordingManager {
   MOCK_METHOD0(DisableDebugRecording, void());
 };
 
-}  // namespace media.
+}  // namespace media
 
 #endif  // MEDIA_AUDIO_MOCK_AECDUMP_RECORDING_MANAGER_H_

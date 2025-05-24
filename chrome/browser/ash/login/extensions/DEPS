@@ -19,7 +19,7 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_service.h",
-  "+chrome/browser/extensions/extension_system_factory.h",
+  "+chrome/browser/extensions/chrome_extension_system_factory.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
   "+chrome/common/chrome_paths.h",

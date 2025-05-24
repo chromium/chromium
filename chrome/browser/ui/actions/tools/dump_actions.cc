@@ -11,12 +11,12 @@
 // stdout.
 
 #include <algorithm>
+#include <functional>
 #include <iomanip>
 #include <ios>
 #include <iostream>
 #include <string>
 
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "ui/actions/action_id.h"
@@ -39,7 +39,7 @@ const char* enum_names[] = {
 
 int main(int argc, const char* argv[]) {
   const size_t longest_name =
-      strlen(base::ranges::max(enum_names, base::ranges::less(), strlen)) + 1;
+      strlen(std::ranges::max(enum_names, std::ranges::less(), strlen)) + 1;
 
   std::cout << std::setfill(' ') << std::left;
   std::cout << std::setw(longest_name) << "ID";

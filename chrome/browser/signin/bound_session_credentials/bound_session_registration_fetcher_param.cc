@@ -25,6 +25,7 @@ constexpr char kRegistrationListHeaderName[] =
 constexpr char kRegistrationItemKey[] = "registration";
 constexpr char kChallengeItemKey[] = "challenge";
 constexpr char kPathItemKey[] = "path";
+constexpr char kWsbetaItemKey[] = "wsbeta";
 }  // namespace
 
 // A temporary feature to gate the new list header support until its format is
@@ -46,10 +47,12 @@ BoundSessionRegistrationFetcherParam::~BoundSessionRegistrationFetcherParam() =
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge)
+    std::string challenge,
+    bool is_wsbeta)
     : registration_endpoint_(std::move(registration_endpoint)),
       supported_algos_(std::move(supported_algos)),
-      challenge_(std::move(challenge)) {}
+      challenge_(std::move(challenge)),
+      is_wsbeta_(is_wsbeta) {}
 
 // static
 std::vector<BoundSessionRegistrationFetcherParam>
@@ -63,18 +66,16 @@ BoundSessionRegistrationFetcherParam::CreateFromHeaders(
   // First, try the new header format (gated behind a feature flag).
   if (base::FeatureList::IsEnabled(
           kBoundSessionRegistrationListHeaderSupport)) {
-    std::string list_header_value;
-    if (headers->GetNormalizedHeader(kRegistrationListHeaderName,
-                                     &list_header_value)) {
-      return MaybeCreateFromListHeader(request_url, list_header_value);
+    if (std::optional<std::string> list_header_value =
+            headers->GetNormalizedHeader(kRegistrationListHeaderName)) {
+      return MaybeCreateFromListHeader(request_url, *list_header_value);
     }
   }
 
   // Only if the new format header is missing, try the legacy format.
-  std::string legacy_header_value;
-  if (headers->GetNormalizedHeader(kRegistrationHeaderName,
-                                   &legacy_header_value)) {
-    return MaybeCreateFromLegacyHeader(request_url, legacy_header_value);
+  if (std::optional<std::string> legacy_header_value =
+          headers->GetNormalizedHeader(kRegistrationHeaderName)) {
+    return MaybeCreateFromLegacyHeader(request_url, *legacy_header_value);
   }
 
   // Return an empty result if none of the headers are present.
@@ -86,10 +87,11 @@ BoundSessionRegistrationFetcherParam
 BoundSessionRegistrationFetcherParam::CreateInstanceForTesting(
     GURL registration_endpoint,
     std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos,
-    std::string challenge) {
+    std::string challenge,
+    bool is_wsbeta) {
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
                                               std::move(supported_algos),
-                                              std::move(challenge));
+                                              std::move(challenge), is_wsbeta);
 }
 
 // static
@@ -114,6 +116,7 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
 
   GURL registration_endpoint;
   std::string challenge;
+  bool is_wsbeta = false;
   for (const auto& [name, value] : item.params) {
     if (value.is_string() && name == kPathItemKey) {
       registration_endpoint = bound_session_credentials::ResolveEndpointPath(
@@ -123,6 +126,10 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
     if (value.is_string() && name == kChallengeItemKey) {
       challenge = value.GetString();
     }
+
+    if (value.is_boolean() && name == kWsbetaItemKey) {
+      is_wsbeta = value.GetBoolean();
+    }
   }
 
   if (!registration_endpoint.is_valid() || challenge.empty()) {
@@ -131,7 +138,7 @@ BoundSessionRegistrationFetcherParam::ParseListItem(
 
   return BoundSessionRegistrationFetcherParam(std::move(registration_endpoint),
                                               std::move(supported_algos),
-                                              std::move(challenge));
+                                              std::move(challenge), is_wsbeta);
 }
 
 // static
@@ -208,7 +215,7 @@ BoundSessionRegistrationFetcherParam::MaybeCreateFromLegacyHeader(
     std::vector<BoundSessionRegistrationFetcherParam> result;
     result.push_back(BoundSessionRegistrationFetcherParam(
         std::move(registration_endpoint), std::move(supported_algos),
-        std::move(challenge)));
+        std::move(challenge), /*is_wsbeta=*/false));
     return result;
   } else {
     return {};

@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/webrtc_audio_source_adapter.h"
 
+#include <algorithm>
+#include <iterator>
 #include <numeric>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -48,9 +46,10 @@ class FakeAudioSink : public webrtc::AudioTrackSinkInterface {
     EXPECT_EQ(kChannels, static_cast<int>(number_of_channels));
     EXPECT_EQ((kSampleRate * kFrameDuration).InSeconds(),
               static_cast<int>(number_of_samples));
-    const int16_t* samples = reinterpret_cast<const int16_t*>(audio_data);
-    samples_.insert(samples_.end(), samples,
-                    samples + number_of_samples * kChannels);
+    const int16_t* samples = static_cast<const int16_t*>(audio_data);
+    size_t sample_count = number_of_samples * kChannels;
+    samples_.reserve(samples_.size() + sample_count);
+    std::copy_n(samples, sample_count, std::back_inserter(samples_));
   }
 
   const std::vector<int16_t>& samples() { return samples_; }
@@ -64,8 +63,9 @@ class FakeAudioSink : public webrtc::AudioTrackSinkInterface {
 class WebrtcAudioSourceAdapterTest : public testing::Test {
  public:
   void SetUp() override {
-    audio_source_adapter_ = new rtc::RefCountedObject<WebrtcAudioSourceAdapter>(
-        task_environment_.GetMainThreadTaskRunner());
+    audio_source_adapter_ =
+        new webrtc::RefCountedObject<WebrtcAudioSourceAdapter>(
+            task_environment_.GetMainThreadTaskRunner());
     audio_source_ = new FakeAudioSource();
     audio_source_adapter_->Start(base::WrapUnique(audio_source_.get()));
     audio_source_adapter_->AddSink(&sink_);
@@ -97,8 +97,8 @@ TEST_F(WebrtcAudioSourceAdapterTest, PartialFrames) {
     }
 
     std::unique_ptr<AudioPacket> packet(new AudioPacket());
-    packet->add_data(reinterpret_cast<char*>(&(data[0])),
-                     num_samples * kChannels * sizeof(int16_t));
+    auto bytes = base::as_bytes(base::span(data));
+    packet->add_data(reinterpret_cast<const char*>(bytes.data()), bytes.size());
     packet->set_encoding(AudioPacket::ENCODING_RAW);
     packet->set_sampling_rate(AudioPacket::SAMPLING_RATE_48000);
     packet->set_bytes_per_sample(AudioPacket::BYTES_PER_SAMPLE_2);

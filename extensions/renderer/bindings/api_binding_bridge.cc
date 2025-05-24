@@ -39,8 +39,7 @@ APIBindingBridge::APIBindingBridge(APIBindingHooks* hooks,
   v8::Maybe<bool> result = wrapper->SetPrivate(
       context, GetPrivatePropertyName(isolate, kApiObjectKey), api_object);
   if (!result.IsJust() || !result.FromJust()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   v8::Local<v8::Object> js_hook_interface = hooks->GetJSHookInterface(context);
   result = wrapper->SetPrivate(context,
@@ -104,8 +103,7 @@ void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,
   // This CHECK is helping to track down https://crbug.com/819968, and should be
   // removed when that's fixed.
   CHECK(binding::IsContextValid(context));
-  JSRunner::Get(context)->RunJSFunction(function, context, std::size(args),
-                                        args);
+  JSRunner::Get(context)->RunJSFunction(function, context, args);
 }
 
 }  // namespace extensions

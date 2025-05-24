@@ -23,6 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace endpoint_fetcher {
+
 using MockEndpointFetcherCallback = base::MockCallback<EndpointFetcherCallback>;
 
 namespace {
@@ -116,15 +118,17 @@ class EndpointFetcherTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory());
     if (request_params.has_value()) {
-      return EndpointFetcher(loader_factory, GURL("https://example.com"), "GET",
-                             "", base::Milliseconds(3000), "", {}, {},
-                             TRAFFIC_ANNOTATION_FOR_TESTS,
-                             version_info::Channel::CANARY, request_params);
+      return EndpointFetcher(loader_factory, GURL("https://example.com"), "",
+                             base::Milliseconds(3000), "", {}, {},
+                             version_info::Channel::CANARY,
+                             request_params.value());
     }
-    return EndpointFetcher(loader_factory, GURL("https://example.com"), "GET",
-                           "", base::Milliseconds(3000), "", {}, {},
-                           TRAFFIC_ANNOTATION_FOR_TESTS,
-                           version_info::Channel::CANARY);
+    return EndpointFetcher(loader_factory, GURL("https://example.com"), "",
+                           base::Milliseconds(3000), "", {}, {},
+                           version_info::Channel::CANARY,
+                           EndpointFetcher::RequestParams::Builder(
+                               HttpMethod::kGet, TRAFFIC_ANNOTATION_FOR_TESTS)
+                               .Build());
   }
 
   network::mojom::CredentialsMode GetCredentialsMode(
@@ -134,6 +138,10 @@ class EndpointFetcherTest : public testing::Test {
 
   int GetMaxRetries(EndpointFetcher& endpoint_fetcher) {
     return endpoint_fetcher.GetMaxRetries();
+  }
+
+  bool GetSetSiteForCookies(EndpointFetcher& endpoint_fetcher) {
+    return endpoint_fetcher.GetSetSiteForCookies();
   }
 
  private:
@@ -302,7 +310,8 @@ TEST_F(EndpointFetcherTest, TestCredentialsModeUnspecified) {
 
 TEST_F(EndpointFetcherTest, TestOmitCredentialsMode) {
   EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
-      EndpointFetcher::RequestParams::Builder()
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
           .SetCredentialsMode(CredentialsMode::kOmit)
           .Build());
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
@@ -311,7 +320,8 @@ TEST_F(EndpointFetcherTest, TestOmitCredentialsMode) {
 
 TEST_F(EndpointFetcherTest, TestIncludeCredentialsMode) {
   EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
-      EndpointFetcher::RequestParams::Builder()
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
           .SetCredentialsMode(CredentialsMode::kInclude)
           .Build());
   EXPECT_EQ(network::mojom::CredentialsMode::kInclude,
@@ -326,6 +336,26 @@ TEST_F(EndpointFetcherTest, TestMaxRetriesUnspecified) {
 
 TEST_F(EndpointFetcherTest, TestMaxRetries) {
   EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
-      EndpointFetcher::RequestParams::Builder().SetMaxRetries(42).Build());
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetMaxRetries(42)
+          .Build());
   EXPECT_EQ(42, GetMaxRetries(fetcher));
 }
+
+TEST_F(EndpointFetcherTest, TestSetSiteForCookiesUnspecified) {
+  EndpointFetcher fetcher =
+      GetAPIKeyEndpointFetcherWithRequestParams(std::nullopt);
+  EXPECT_FALSE(GetSetSiteForCookies(fetcher));
+}
+
+TEST_F(EndpointFetcherTest, TestSetSiteForCookies) {
+  EndpointFetcher fetcher = GetAPIKeyEndpointFetcherWithRequestParams(
+      EndpointFetcher::RequestParams::Builder(HttpMethod::kUndefined,
+                                              TRAFFIC_ANNOTATION_FOR_TESTS)
+          .SetSetSiteForCookies(true)
+          .Build());
+  EXPECT_TRUE(GetSetSiteForCookies(fetcher));
+}
+
+}  // namespace endpoint_fetcher

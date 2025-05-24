@@ -31,18 +31,21 @@ bool IsVideoCaptureUseGpuMemoryBufferEnabled() {
 }
 
 #if BUILDFLAG(IS_WIN)
-BASE_FEATURE(kMediaFoundationCameraUsageMonitoring,
-             "MediaFoundationCameraUsageMonitoring",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsMediaFoundationCameraUsageMonitoringEnabled() {
-  return base::FeatureList::IsEnabled(kMediaFoundationCameraUsageMonitoring);
+  return base::FeatureList::IsEnabled(
+      features::kMediaFoundationCameraUsageMonitoring);
 }
 #endif
 
 }  // namespace switches
 
 namespace features {
+
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kTabCaptureInfobarLinks,
+             "TabCaptureInfobarLinks",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if defined(WEBRTC_USE_PIPEWIRE)
 // Controls whether the PipeWire support for cameras is enabled on the
@@ -51,5 +54,12 @@ BASE_FEATURE(kWebRtcPipeWireCamera,
              "WebRtcPipeWireCamera",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(WEBRTC_USE_PIPEWIRE)
+
+#if BUILDFLAG(IS_WIN)
+// Controls monitoring for camera usage by other applications.
+BASE_FEATURE(kMediaFoundationCameraUsageMonitoring,
+             "MediaFoundationCameraUsageMonitoring",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace features

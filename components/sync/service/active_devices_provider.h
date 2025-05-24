@@ -26,9 +26,9 @@ class ActiveDevicesProvider {
   virtual ActiveDevicesInvalidationInfo CalculateInvalidationInfo(
       const std::string& local_cache_guid) const = 0;
 
-  // The |callback| will be called on each change in device infos. It might be
+  // The `callback` will be called on each change in device infos. It might be
   // called multiple times with the same number of active devices. The
-  // |callback| must be cleared before this object is destroyed.
+  // `callback` must be cleared before this object is destroyed.
   virtual void SetActiveDevicesChangedCallback(
       ActiveDevicesChangedCallback callback) = 0;
 };

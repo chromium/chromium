@@ -9,11 +9,11 @@
 
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/drive_upload_virtual_task.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/install_isolated_web_app_virtual_task.h"
 #include "chrome/browser/ash/file_manager/virtual_tasks/ms365_virtual_task.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 
 namespace file_manager::file_tasks {
@@ -47,10 +47,10 @@ bool LooksLikeVirtualTask(const TaskDescriptor& task) {
 bool AllEntriesMatchAtLeastOneMimeType(
     const std::vector<extensions::EntryInfo>& entries,
     const std::vector<std::string>& mime_types) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       entries,
       [&](const std::string& entry_mime_type) {
-        return base::ranges::any_of(
+        return std::ranges::any_of(
             mime_types, [&](const std::string& mime_type) {
               return apps_util::MimeTypeMatched(entry_mime_type, mime_type);
             });
@@ -63,10 +63,10 @@ bool AllEntriesMatchAtLeastOneMimeType(
 bool AllUrlsMatchAtLeastOneFileExtension(
     const std::vector<GURL>& file_urls,
     const std::vector<std::string>& file_extensions) {
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       file_urls,
       [&](const std::string& file_name) {
-        return base::ranges::any_of(
+        return std::ranges::any_of(
             file_extensions, [&](const std::string& file_extension) {
               return apps_util::ExtensionMatched(file_name, file_extension);
             });
@@ -121,7 +121,7 @@ VirtualTask* FindVirtualTask(const TaskDescriptor& task) {
     return nullptr;
   }
   const auto& tasks = GetVirtualTasks();
-  auto itr = base::ranges::find(tasks, task.action_id, &VirtualTask::id);
+  auto itr = std::ranges::find(tasks, task.action_id, &VirtualTask::id);
   if (itr == tasks.end()) {
     return nullptr;
   }

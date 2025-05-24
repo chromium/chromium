@@ -7,7 +7,6 @@
 
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-std::optional<metrics::SystemProfileProto_TpmIdentifier> GetTpmIdentifier(
-    bool report_full_names);
+std::optional<metrics::SystemProfileProto_TpmIdentifier> GetTpmIdentifier();
 
 #endif  // CHROME_SERVICES_UTIL_WIN_TPM_METRICS_H_

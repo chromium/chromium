@@ -8,19 +8,20 @@ import android.content.Intent;
 import android.net.Uri;
 
 import androidx.annotation.DrawableRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Base class for defining methods where different behavior is required by downstream targets. The
- * correct version of {@link LensControllerDelegateImpl} will be determined at compile time via
- * build rules.
+ * correct implementation of {@link LensControllerDelegate} will be determined at compile time via
+ * {@link ServiceLoaderUtil}.
  */
+@NullMarked
 public class LensControllerDelegate {
     /**
      * @see {@link LensController#isSdkAvailable()}
@@ -55,8 +56,10 @@ public class LensControllerDelegate {
     public void getChipRenderParams(
             LensQueryParams lensQueryParams, Callback<ChipRenderParams> chipRenderParamsCallback) {}
 
-    /** @see {@link LensController#getShareWithGoogleLensIntent()} */
-    public Intent getShareWithGoogleLensIntent(
+    /**
+     * @see {@link LensController#getShareWithGoogleLensIntent()}
+     */
+    public @Nullable Intent getShareWithGoogleLensIntent(
             Uri imageUri,
             boolean isIncognito,
             String srcUrl,
@@ -66,14 +69,20 @@ public class LensControllerDelegate {
         return null;
     }
 
-    /** @see {@link LensController#startLens(WindowAndroid, Intent)} */
+    /**
+     * @see {@link LensController#startLens(WindowAndroid, Intent)}
+     */
     public void startLens(WindowAndroid window, Intent intent) {}
 
-    /** @see {@link LensController#startLens(WindowAndroid, Intent, LensIntentParams)} */
+    /**
+     * @see {@link LensController#startLens(WindowAndroid, Intent, LensIntentParams)}
+     */
     public void startLens(WindowAndroid window, LensIntentParams lensIntentParams) {}
 
-    /** @see {@link LensCOntroller#isLensEnabled(LensQueryParams)} */
-    public boolean isLensEnabled(@NonNull LensQueryParams lensQueryParams) {
+    /**
+     * @see {@link LensController#isLensEnabled(LensQueryParams)}
+     */
+    public boolean isLensEnabled(LensQueryParams lensQueryParams) {
         return false;
     }
 
@@ -96,20 +105,10 @@ public class LensControllerDelegate {
 
     /**
      * Retrieve the Text resource id for "Translate image with Google Lens".
+     *
      * @return The resource id for "Translate image with Google Lens" string.
      */
     protected @StringRes int getTranslateWithGoogleLensTextResourceId() {
         return R.string.contextmenu_translate_image_with_google_lens;
-    }
-
-    /** Enables lens debug mode for chrome://internals/lens. */
-    public void enableDebugMode() {}
-
-    /** Disables lens debug mode for chrome://internals/lens. */
-    public void disableDebugMode() {}
-
-    /** Gets debug data to populate chrome://internals/lens. */
-    public String[][] getDebugData() {
-        return new String[0][0];
     }
 }

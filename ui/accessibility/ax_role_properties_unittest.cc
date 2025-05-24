@@ -71,7 +71,7 @@ TEST(AXRolePropertiesTest, TestIsTableWithColumns) {
       ax::mojom::Role::kGrid, ax::mojom::Role::kListGrid,
       ax::mojom::Role::kTable, ax::mojom::Role::kTreeGrid};
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   roles_expected_is_table_with_columns.insert(ax::mojom::Role::kLayoutTable);
 #endif
 

@@ -99,7 +99,7 @@ class DnsLookupClient : public network::mojom::ResolveHostClient {
         /*resolved_addresses=*/std::nullopt,
         /*endpoint_results_with_metadata=*/std::nullopt));
   }
-  ~DnsLookupClient() override {}
+  ~DnsLookupClient() override = default;
 
   // network::mojom::ResolveHostClient:
   void OnComplete(int32_t error,
@@ -376,8 +376,9 @@ void NetInternalsTest::MessageHandler::DnsLookup(
   ASSERT_TRUE(browser());
 
   auto resolve_host_parameters = network::mojom::ResolveHostParameters::New();
-  if (local)
+  if (local) {
     resolve_host_parameters->source = net::HostResolverSource::LOCAL_ONLY;
+  }
   mojo::PendingRemote<network::mojom::ResolveHostClient> client;
   // DnsLookupClient owns itself.
   new DnsLookupClient(
@@ -410,7 +411,7 @@ void NetInternalsTest::MessageHandler::RgisterTestSharedDictionary(
   CHECK(dictionary_json_string);
   base::Value::Dict dict = base::test::ParseJsonDict(*dictionary_json_string);
   net::SHA256HashValue hash_value;
-  base::HexStringToSpan(*dict.FindString("hash"), hash_value.data);
+  base::HexStringToSpan(*dict.FindString("hash"), hash_value);
   const std::string* id_string = dict.FindString("id");
   network_context_for_testing_.RegisterTestSharedDictionary(
       net::SharedDictionaryIsolationKey(

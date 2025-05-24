@@ -1,0 +1,8 @@
+include_rules = [
+  "+chromeos/ash/experiences/arc/arc_util.h",
+  "+chromeos/ash/experiences/arc/mojom/on_device_safety.mojom.h",
+  "+chromeos/ash/experiences/arc/session/arc_bridge_service.h",
+  "+chromeos/ash/experiences/arc/session/arc_service_manager.h",
+  "+components/manta",
+  "+components/user_manager/user_manager.h",
+]

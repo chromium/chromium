@@ -1,5 +1,4 @@
 include_rules = [
   "+components/open_from_clipboard",
-  "+ios/chrome/browser/ui/util",
   "-url",
 ]

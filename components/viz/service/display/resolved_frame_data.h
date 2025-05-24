@@ -7,10 +7,11 @@
 
 #include <memory>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/functional/bind_internal.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
@@ -36,8 +37,8 @@ const std::optional<gfx::Rect>& GetOptionalDamageRectFromQuad(
 struct VIZ_SERVICE_EXPORT ResolvedQuadData {
   explicit ResolvedQuadData(const DrawQuad& quad);
 
-  // Remapped display ResourceIds.
-  DrawQuad::Resources remapped_resources;
+  // Remapped display ResourceId.
+  ResourceId remapped_resource_id;
 };
 
 // Render pass data that is fixed for the lifetime of ResolvedPassData.
@@ -256,7 +257,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
   // Returns namespace ID for the client that submitted this frame. This is used
   // to deduplicate layer IDs from different clients.
-  uint32_t GetClientNamespaceId() const;
+  std::pair<uint32_t, uint32_t> GetClientNamespaceId() const;
 
   void SetFullDamageForNextAggregation();
 
@@ -387,7 +388,9 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   std::vector<std::unique_ptr<CompositorRenderPass>> offset_tag_render_passes_;
 
   std::vector<ResolvedPassData> resolved_passes_;
-  base::flat_map<CompositorRenderPassId, ResolvedPassData*> render_pass_id_map_;
+  base::flat_map<CompositorRenderPassId,
+                 raw_ptr<ResolvedPassData, CtnExperimental>>
+      render_pass_id_map_;
   base::flat_map<CompositorRenderPassId, AggregatedRenderPassId>
       aggregated_id_map_;
 

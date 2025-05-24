@@ -4,7 +4,7 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 build_webui("build") {
   grd_prefix = "ash_shortcut_customization_app"
@@ -27,7 +27,7 @@ build_webui("build") {
     "js/shortcuts_page.ts",
     "js/text_accelerator.ts",
   ]
-  non_web_component_files = [
+  ts_files = [
     "js/accelerator_lookup_manager.ts",
     "js/fake_data.ts",
     "js/fake_shortcut_provider.ts",

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("wallpaper") {
   sources = [
@@ -15,11 +15,11 @@ static_library("wallpaper") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/image_decoder",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/account_id",
     "//components/keyed_service/core",
     "//components/user_manager",
@@ -35,8 +35,6 @@ source_set("unit_tests") {
 
   deps = [
     ":wallpaper",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
@@ -48,6 +46,8 @@ source_set("unit_tests") {
     "//chrome/common",
     "//chrome/test:test_support",
     "//chromeos/ash/components/cryptohome",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/user_manager",

@@ -18,7 +18,7 @@ namespace {
 class MockPageFormAnalyserLogger : public PageFormAnalyserLogger {
  public:
   MockPageFormAnalyserLogger() : PageFormAnalyserLogger(nullptr) {}
-  virtual ~MockPageFormAnalyserLogger() {}
+  virtual ~MockPageFormAnalyserLogger() = default;
 
   void Send(std::string message,
             ConsoleLevel level,

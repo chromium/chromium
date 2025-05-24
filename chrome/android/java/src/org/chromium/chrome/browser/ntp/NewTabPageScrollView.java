@@ -22,7 +22,7 @@ import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
  */
 public class NewTabPageScrollView extends FadingEdgeScrollView {
 
-    private GestureDetector mGestureDetector;
+    private final GestureDetector mGestureDetector;
 
     /** Constructor needed to inflate from XML. */
     public NewTabPageScrollView(Context context, AttributeSet attrs) {

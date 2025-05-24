@@ -4,7 +4,7 @@
 
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './oobe_personalized_apps_list.html.js';

@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] sign float32 1D constant tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type float32 must be one of []."
+[FAIL] sign float16 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type float16 must be one of []."
+[FAIL] sign float32 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type float32 must be one of []."
+[FAIL] sign float32 1D tensor with -infinity and +infinity
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type float32 must be one of []."
+[FAIL] sign int32 2D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int32 must be one of []."
+[FAIL] sign int64 3D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int64 must be one of [float32,float16,int32]."
+[FAIL] sign int8 4D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Unsupported data type, input 'input' data type int8 must be one of [float32,float16,int32]."
+Harness: the test ran to completion.
+

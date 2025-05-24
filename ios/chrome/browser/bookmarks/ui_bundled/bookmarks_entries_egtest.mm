@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -68,10 +68,10 @@ id<GREYMatcher> AddBookmarkButton() {
 }
 
 // Tear down called once per test.
-- (void)tearDown {
+- (void)tearDownHelper {
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - BookmarksEntriesTestCase Tests
@@ -293,7 +293,7 @@ id<GREYMatcher> AddBookmarkButton() {
       tapOnContextMenuButton:IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT
                   openEditor:kBookmarkEditViewContainerIdentifier
            setParentFolderTo:@"Folder 1.1"
-                        from:@"Mobile Bookmarks"
+                        from:@"Mobile bookmarks"
                   kindOfTest:chrome_test_util::KindOfTest::kSignedOut];
 
   // Verify edit mode remains.
@@ -740,7 +740,7 @@ id<GREYMatcher> AddBookmarkButton() {
   // Bookmarks" folder.
 
   [BookmarkEarlGreyUI
-      assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+      assertChangeFolderIsCorrectlySet:@"Mobile bookmarks"
                             kindOfTest:chrome_test_util::KindOfTest::
                                            kSignedOut];
 

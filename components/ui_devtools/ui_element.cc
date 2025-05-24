@@ -4,10 +4,11 @@
 
 #include "components/ui_devtools/ui_element.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 
@@ -55,13 +56,12 @@ std::string UIElement::GetTypeName() const {
     case UIElementType::SURFACE:
       return "Surface";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void UIElement::AddChild(UIElement* child, UIElement* before) {
   if (before) {
-    auto iter = base::ranges::find(children_, before);
+    auto iter = std::ranges::find(children_, before);
     CHECK(iter != children_.end(), base::NotFatalUntil::M130);
     children_.insert(iter, child);
   } else {
@@ -91,13 +91,13 @@ void UIElement::ClearChildren() {
 void UIElement::RemoveChild(UIElement* child, bool notify_delegate) {
   if (notify_delegate)
     delegate_->OnUIElementRemoved(child);
-  auto iter = base::ranges::find(children_, child);
+  auto iter = std::ranges::find(children_, child);
   CHECK(iter != children_.end(), base::NotFatalUntil::M130);
   children_.erase(iter);
 }
 
 void UIElement::ReorderChild(UIElement* child, int index) {
-  auto i = base::ranges::find(children_, child);
+  auto i = std::ranges::find(children_, child);
   CHECK(i != children_.end(), base::NotFatalUntil::M130);
   DCHECK_GE(index, 0);
   DCHECK_LT(static_cast<size_t>(index), children_.size());
@@ -118,8 +118,7 @@ void UIElement::ReorderChild(UIElement* child, int index) {
 
 template <class T>
 int UIElement::FindUIElementIdForBackendElement(T* element) const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 std::vector<UIElement::ClassProperties>

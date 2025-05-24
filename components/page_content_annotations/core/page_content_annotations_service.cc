@@ -4,6 +4,7 @@
 
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -13,7 +14,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -599,7 +599,7 @@ void PageContentAnnotationsService::OnRelatedSearchesExtracted(
     if (group->type != continuous_search::mojom::ResultType::kRelatedSearches) {
       continue;
     }
-    base::ranges::transform(
+    std::ranges::transform(
         group->results, std::back_inserter(related_searches),
         [](const continuous_search::mojom::SearchResultPtr& result) {
           return base::UTF16ToUTF8(
@@ -914,7 +914,7 @@ void PageContentAnnotationsService::OnOptimizationGuideResponseReceived(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -5,6 +5,7 @@
 #include "components/viz/common/quads/aggregated_render_pass.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/traced_value.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -60,7 +61,7 @@ void AggregatedRenderPass::SetAll(
     const gfx::Transform& transform_to_root_target,
     const cc::FilterOperations& filters,
     const cc::FilterOperations& backdrop_filters,
-    const std::optional<gfx::RRectF>& backdrop_filter_bounds,
+    const std::optional<SkPath>& backdrop_filter_bounds,
     gfx::ContentColorUsage color_usage,
     bool has_transparent_background,
     bool cache_render_pass,
@@ -137,17 +138,13 @@ DrawQuad* AggregatedRenderPass::CopyFromAndAppendDrawQuad(
       CopyFromAndAppendTypedDrawQuad<VideoHoleDrawQuad>(quad);
       break;
     case DrawQuad::Material::kSharedElement:
-      CHECK(false)
+      NOTREACHED()
           << "Shared Element quads should be resolved before aggregation";
-      break;
     // RenderPass quads need to use specific CopyFrom function.
     case DrawQuad::Material::kAggregatedRenderPass:
     case DrawQuad::Material::kCompositorRenderPass:
     case DrawQuad::Material::kInvalid:
-      // TODO(danakj): Why is this a check instead of dcheck, and validate from
-      // IPC?
-      CHECK(false);  // Invalid DrawQuad material.
-      break;
+      NOTREACHED();
   }
   quad_list.back()->shared_quad_state = shared_quad_state_list.back();
   return quad_list.back();
@@ -225,7 +222,6 @@ void AggregatedRenderPass::AsValueInto(
 
   value->SetInteger("content_color_usage",
                     base::to_underlying(content_color_usage));
-  value->SetBoolean("is_color_conversion_pass", is_color_conversion_pass);
   value->SetBoolean("is_from_surface_root_pass", is_from_surface_root_pass);
 #if BUILDFLAG(IS_WIN)
   value->SetBoolean("will_backing_be_read_by_viz", will_backing_be_read_by_viz);

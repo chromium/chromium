@@ -32,8 +32,7 @@ struct COMPONENT_EXPORT(APP_TYPES) RunOnOsLogin {
   RunOnOsLogin(RunOnOsLogin&&) = default;
   RunOnOsLogin& operator=(RunOnOsLogin&&) = default;
 
-  bool operator==(const RunOnOsLogin& other) const;
-  bool operator!=(const RunOnOsLogin& other) const;
+  friend bool operator==(const RunOnOsLogin&, const RunOnOsLogin&) = default;
 
   ~RunOnOsLogin();
 

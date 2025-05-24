@@ -166,7 +166,10 @@ public class RoundedCornerOutlineProviderUnitTest {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
         mProvider.setRoundingEdges(
-                /* left= */ false, /* top= */ true, /* right= */ true, /* bottom= */ true);
+                /* leftEdge= */ false,
+                /* topEdge= */ true,
+                /* rightEdge= */ true,
+                /* bottomEdge= */ true);
 
         // Default: no clipping padded area.
         mProvider.getOutline(mView, mOutline);
@@ -190,7 +193,10 @@ public class RoundedCornerOutlineProviderUnitTest {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
         mProvider.setRoundingEdges(
-                /* left= */ true, /* top= */ false, /* right= */ true, /* bottom= */ true);
+                /* leftEdge= */ true,
+                /* topEdge= */ false,
+                /* rightEdge= */ true,
+                /* bottomEdge= */ true);
 
         // Default: no clipping padded area.
         mProvider.getOutline(mView, mOutline);
@@ -214,7 +220,10 @@ public class RoundedCornerOutlineProviderUnitTest {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
         mProvider.setRoundingEdges(
-                /* left= */ true, /* top= */ true, /* right= */ false, /* bottom= */ true);
+                /* leftEdge= */ true,
+                /* topEdge= */ true,
+                /* rightEdge= */ false,
+                /* bottomEdge= */ true);
 
         // Default: no clipping padded area.
         mProvider.getOutline(mView, mOutline);
@@ -238,7 +247,10 @@ public class RoundedCornerOutlineProviderUnitTest {
         mView.layout(10, 15, 10 + VIEW_WIDTH, 15 + VIEW_HEIGHT);
         mView.setPaddingRelative(15, 10, 25, 20);
         mProvider.setRoundingEdges(
-                /* left= */ true, /* top= */ true, /* right= */ true, /* bottom= */ false);
+                /* leftEdge= */ true,
+                /* topEdge= */ true,
+                /* rightEdge= */ true,
+                /* bottomEdge= */ false);
 
         // Default: no clipping padded area.
         mProvider.getOutline(mView, mOutline);
@@ -264,7 +276,10 @@ public class RoundedCornerOutlineProviderUnitTest {
         // Disable rounding near the right and bottom edges.
         // The effect is that only top-left edge is rounded.
         mProvider.setRoundingEdges(
-                /* left= */ true, /* top= */ true, /* right= */ false, /* bottom= */ false);
+                /* leftEdge= */ true,
+                /* topEdge= */ true,
+                /* rightEdge= */ false,
+                /* bottomEdge= */ false);
 
         // Default: no clipping padded area.
         mProvider.getOutline(mView, mOutline);
@@ -291,7 +306,10 @@ public class RoundedCornerOutlineProviderUnitTest {
         // Disable rounding near the top and bottom edges.
         // The effect is that rounding is effectively disabled.
         mProvider.setRoundingEdges(
-                /* left= */ true, /* top= */ false, /* right= */ true, /* bottom= */ false);
+                /* leftEdge= */ true,
+                /* topEdge= */ false,
+                /* rightEdge= */ true,
+                /* bottomEdge= */ false);
 
         // Default: no clipping padded area.
         mProvider.getOutline(mView, mOutline);

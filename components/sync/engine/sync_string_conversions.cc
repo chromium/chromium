@@ -21,8 +21,7 @@ const char* ConnectionStatusToString(ConnectionStatus status) {
     ENUM_CASE(CONNECTION_SERVER_ERROR);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "INVALID_CONNECTION_STATUS";
+  NOTREACHED();
 }
 
 const char* PassphraseTypeToString(PassphraseType type) {
@@ -34,8 +33,7 @@ const char* PassphraseTypeToString(PassphraseType type) {
     ENUM_CASE(PassphraseType::kTrustedVaultPassphrase);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "INVALID_PASSPHRASE_TYPE";
+  NOTREACHED();
 }
 
 #undef ENUM_CASE

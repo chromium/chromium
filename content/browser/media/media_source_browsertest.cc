@@ -19,24 +19,24 @@ namespace content {
 
 class MediaSourceTest : public MediaBrowserTest {
  public:
-  void TestSimplePlayback(const std::string& media_file,
-                          const std::string& media_type,
-                          const std::string& expectation) {
+  void TestSimplePlayback(std::string_view media_file,
+                          std::string_view media_type,
+                          std::string_view expectation) {
     base::StringPairs query_params;
     query_params.emplace_back("mediaFile", media_file);
     query_params.emplace_back("mediaType", media_type);
-    RunMediaTestPage("media_source_player.html", query_params, expectation,
-                     true);
+    RunMediaTestPage("media_source_player.html", query_params,
+                     std::string(expectation), true);
   }
 
-  void TestSimplePlayback(const std::string& media_file,
-                          const std::string& expectation) {
+  void TestSimplePlayback(std::string_view media_file,
+                          std::string_view expectation) {
     TestSimplePlayback(media_file, media::GetMimeTypeForFile(media_file),
                        expectation);
   }
 
-  base::StringPairs GetAudioVideoQueryParams(const std::string& audio_file,
-                                             const std::string& video_file) {
+  base::StringPairs GetAudioVideoQueryParams(std::string_view audio_file,
+                                             std::string_view video_file) {
     base::StringPairs params;
     params.emplace_back("audioFile", audio_file);
     params.emplace_back("audioFormat", media::GetMimeTypeForFile(audio_file));
@@ -110,6 +110,33 @@ IN_PROC_BROWSER_TEST_F(MediaSourceTest, MAYBE_ConfigChangeVideo) {
 }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
+// Flaky test crbug.com/246308
+// Test changed to skip checks resulting in flakiness. Proper fix still needed.
+// TODO(crbug.com/330132631): Flaky on Fuchsia, deflake and re-enable the test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_ConfigChangeVideo_MP4 DISABLED_ConfigChangeVideo_MP4
+#else
+#define MAYBE_ConfigChangeVideo_MP4 ConfigChangeVideo_MP4
+#endif
+IN_PROC_BROWSER_TEST_F(MediaSourceTest, MAYBE_ConfigChangeVideo_MP4) {
+  base::StringPairs params;
+
+  // Start with 1280x720 first to ensure we end up on the hardware decoder.
+  constexpr char kAVFile1[] = "bear-1280x720-av_frag.mp4";
+  params.emplace_back("avFormat", media::GetMimeTypeForFile(kAVFile1));
+  params.emplace_back("avFile1", kAVFile1);
+  params.emplace_back("avResolution1", "1280x720");
+
+  constexpr char kAVFile2[] = "bear-640x360-av_frag.mp4";
+  params.emplace_back("avFile2", kAVFile2);
+  params.emplace_back("avResolution2", "640x360");
+
+  ASSERT_EQ(media::GetMimeTypeForFile(kAVFile1),
+            media::GetMimeTypeForFile(kAVFile2));
+  RunMediaTestPage("mse_config_change.html", std::move(params),
+                   media::kEndedTitle, true);
+}
+
 IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_Video_MP4_Audio_WEBM) {
   auto query_params = GetAudioVideoQueryParams("bear-320x240-audio-only.webm",
                                                "bear-640x360-v_frag.mp4");
@@ -131,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_FLAC_MP4) {
 }
 
 IN_PROC_BROWSER_TEST_F(MediaSourceTest, Playback_AudioOnly_XHE_AAC_MP4) {
-  if (media::IsSupportedAudioType(
+  if (media::IsDecoderSupportedAudioType(
           {media::AudioCodec::kAAC, media::AudioCodecProfile::kXHE_AAC})) {
     TestSimplePlayback("noise-xhe-aac.mp4", media::kEndedTitle);
   }

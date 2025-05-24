@@ -4,6 +4,7 @@
 
 #include "chrome/services/printing/print_backend_service_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -28,7 +28,6 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/printing/printing_init.h"
 #include "chrome/services/printing/public/mojom/print_backend_service.mojom.h"
 #include "components/crash/core/common/crash_keys.h"
@@ -396,8 +395,7 @@ PrintBackendServiceImpl::PrintingContextDelegate::GetParentView() {
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
   return parent_native_view_;
 #else
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif
 }
 
@@ -412,7 +410,7 @@ void PrintBackendServiceImpl::PrintingContextDelegate::SetParentWindow(
   parent_native_view_ = reinterpret_cast<gfx::NativeView>(
       base::win::Uint32ToHandle(parent_window_id));
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 #endif
@@ -517,7 +515,7 @@ void PrintBackendServiceImpl::GetDefaultPrinterName(
       mojom::DefaultPrinterNameResult::NewDefaultPrinterName(default_printer));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     mojom::PrintBackendService::GetPrinterSemanticCapsAndDefaultsCallback
@@ -539,7 +537,7 @@ void PrintBackendServiceImpl::GetPrinterSemanticCapsAndDefaults(
       mojom::PrinterSemanticCapsAndDefaultsResult::NewPrinterCaps(
           std::move(printer_caps)));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void PrintBackendServiceImpl::FetchCapabilities(
     const std::string& printer_name,
@@ -635,7 +633,7 @@ void PrintBackendServiceImpl::EstablishPrintingContext(uint32_t context_id
 
   context_container->context = PrintingContext::Create(
       context_container->delegate.get(),
-      PrintingContext::ProcessBehavior::kOopEnabledPerformSystemCalls);
+      PrintingContext::OutOfProcessBehavior::kEnabledPerformSystemCalls);
 
   bool inserted = persistent_printing_contexts_
                       .insert({context_id, std::move(context_container)})
@@ -953,7 +951,7 @@ void PrintBackendServiceImpl::RemoveDocumentHelper(
   // reverse iterator.
   int cookie = document_helper.document_cookie();
   auto item =
-      base::ranges::find(documents_, cookie, &DocumentHelper::document_cookie);
+      std::ranges::find(documents_, cookie, &DocumentHelper::document_cookie);
   CHECK(item != documents_.end(), base::NotFatalUntil::M130)
       << "Document " << cookie << " to be deleted not found";
   documents_.erase(item);

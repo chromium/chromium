@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -24,6 +25,8 @@
 #include "chrome/test/base/fake_gaia_mixin.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
@@ -81,7 +84,7 @@ class ChromeSessionManagerTest : public LoginManagerTest {
   ChromeSessionManagerTest(const ChromeSessionManagerTest&) = delete;
   ChromeSessionManagerTest& operator=(const ChromeSessionManagerTest&) = delete;
 
-  ~ChromeSessionManagerTest() override {}
+  ~ChromeSessionManagerTest() override = default;
 
   // LoginManagerTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -123,12 +126,22 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerTest, OobeNewUser) {
 }
 
 class ChromeSessionManagerExistingUsersTest : public ChromeSessionManagerTest {
- public:
-  ChromeSessionManagerExistingUsersTest() {
-    login_manager_.AppendRegularUsers(3);
-  }
+ protected:
+  const LoginManagerMixin::TestUserInfo with_gaia_pw_{
+      LoginManagerMixin::CreateConsumerAccountId(1),
+      test::UserAuthConfig::Create({AshAuthFactor::kGaiaPassword})};
+  const LoginManagerMixin::TestUserInfo with_local_pw_{
+      LoginManagerMixin::CreateConsumerAccountId(2),
+      test::UserAuthConfig::Create({AshAuthFactor::kLocalPassword})};
+  const LoginManagerMixin::TestUserInfo with_pin_{
+      LoginManagerMixin::CreateConsumerAccountId(3),
+      test::UserAuthConfig::Create({AshAuthFactor::kCryptohomePin})};
 
-  LoginManagerMixin login_manager_{&mixin_host_};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+  LoginManagerMixin login_manager_{&mixin_host_,
+                                   {with_gaia_pw_, with_local_pw_, with_pin_},
+                                   nullptr,
+                                   &cryptohome_mixin_};
 };
 
 // http://crbug.com/1338401
@@ -169,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
   // Verify that session manager has the correct user session info.
   ASSERT_EQ(users.size(), manager->sessions().size());
   for (size_t i = 0; i < users.size(); ++i) {
-    EXPECT_EQ(users[i].account_id, manager->sessions()[i].user_account_id);
+    EXPECT_EQ(users[i].account_id, manager->sessions()[i]->account_id());
   }
 }
 
@@ -182,10 +195,25 @@ IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
             manager->session_state());
   EXPECT_EQ(0u, manager->sessions().size());
 
-  const auto& users = login_manager_.users();
   // Verify that session state is ACTIVE with one user session after signing
   // in a user with a local password.
-  LoginUserWithLocalPassword(users[0].account_id);
+  LoginUserWithLocalPassword(with_local_pw_.account_id);
+  EXPECT_EQ(session_manager::SessionState::ACTIVE, manager->session_state());
+  EXPECT_EQ(1u, manager->sessions().size());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSessionManagerExistingUsersTest,
+                       LoginExistingUsersWithPin) {
+  // Verify that session state is LOGIN_PRIMARY with existing user data dir.
+  session_manager::SessionManager* manager =
+      session_manager::SessionManager::Get();
+  EXPECT_EQ(session_manager::SessionState::LOGIN_PRIMARY,
+            manager->session_state());
+  EXPECT_EQ(0u, manager->sessions().size());
+
+  // Verify that session state is ACTIVE with one user session after signing
+  // in a user with a pin.
+  LoginUserWithPin(with_pin_.account_id);
   EXPECT_EQ(session_manager::SessionState::ACTIVE, manager->session_state());
   EXPECT_EQ(1u, manager->sessions().size());
 }

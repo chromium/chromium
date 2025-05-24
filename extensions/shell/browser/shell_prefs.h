@@ -22,10 +22,10 @@ namespace extensions {
 // Support for preference initialization and management.
 namespace shell_prefs {
 
-// Creates a pref service for device-wide preferences stored in |data_dir|.
+// Creates a pref service for device-wide preferences stored in `data_dir`.
 std::unique_ptr<PrefService> CreateLocalState(const base::FilePath& data_dir);
 
-// Creates a pref service that loads user preferences for |browser_context|.
+// Creates a pref service that loads user preferences for `browser_context`.
 std::unique_ptr<PrefService> CreateUserPrefService(
     content::BrowserContext* browser_context);
 

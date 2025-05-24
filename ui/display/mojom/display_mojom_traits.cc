@@ -19,8 +19,7 @@ EnumTraits<display::mojom::Rotation, display::Display::Rotation>::ToMojom(
     case display::Display::ROTATE_270:
       return display::mojom::Rotation::VALUE_270;
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::mojom::Rotation::VALUE_0;
+  NOTREACHED();
 }
 
 bool EnumTraits<display::mojom::Rotation, display::Display::Rotation>::
@@ -40,8 +39,7 @@ bool EnumTraits<display::mojom::Rotation, display::Display::Rotation>::
       *out = display::Display::ROTATE_270;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 display::mojom::TouchSupport
@@ -55,8 +53,7 @@ EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport>::
     case display::Display::TouchSupport::UNAVAILABLE:
       return display::mojom::TouchSupport::UNAVAILABLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::mojom::TouchSupport::UNKNOWN;
+  NOTREACHED();
 }
 
 bool EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport>::
@@ -73,8 +70,7 @@ bool EnumTraits<display::mojom::TouchSupport, display::Display::TouchSupport>::
       *out = display::Display::TouchSupport::UNAVAILABLE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 display::mojom::AccelerometerSupport
@@ -89,8 +85,7 @@ EnumTraits<display::mojom::AccelerometerSupport,
     case display::Display::AccelerometerSupport::UNAVAILABLE:
       return display::mojom::AccelerometerSupport::UNAVAILABLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::mojom::AccelerometerSupport::UNKNOWN;
+  NOTREACHED();
 }
 
 bool EnumTraits<display::mojom::AccelerometerSupport,
@@ -108,8 +103,7 @@ bool EnumTraits<display::mojom::AccelerometerSupport,
       *out = display::Display::AccelerometerSupport::UNAVAILABLE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StructTraits<display::mojom::DisplayDataView, display::Display>::Read(

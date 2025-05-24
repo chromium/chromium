@@ -14,6 +14,7 @@ import android.util.TypedValue;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -222,12 +223,12 @@ public class AndroidProtocolHandler {
     /**
      * Determine the mime type for an Android resource.
      *
-     * @param stream  The opened input stream which to examine.
-     * @param url     The url from which the stream was opened.
+     * @param stream The opened input stream which to examine.
+     * @param url The url from which the stream was opened.
      * @return The mime type or null if the type is unknown.
      */
     @CalledByNative
-    public static String getMimeType(InputStream stream, GURL url) {
+    public static @JniType("std::string") String getMimeType(InputStream stream, GURL url) {
         Uri uri = verifyUrl(url);
         if (uri == null) {
             return null;
@@ -249,7 +250,8 @@ public class AndroidProtocolHandler {
                     mimeType = AndroidProtocolHandlerJni.get().getWellKnownMimeType(path);
                 }
 
-                if (mimeType != null) {
+                assert mimeType != null;
+                if (!mimeType.isEmpty()) {
                     return mimeType;
                 }
             }
@@ -285,10 +287,13 @@ public class AndroidProtocolHandler {
 
     @NativeMethods
     interface Natives {
+        @JniType("std::string")
         String getAndroidAssetPath();
 
+        @JniType("std::string")
         String getAndroidResourcePath();
 
-        String getWellKnownMimeType(String path);
+        @JniType("std::string")
+        String getWellKnownMimeType(@JniType("std::string") String path);
     }
 }

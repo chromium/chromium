@@ -18,11 +18,11 @@ namespace arc {
 // Defines the delay to start tracing after ARC++ window gets activated.
 // This is done to avoid likely redundant statistics collection during the app
 // initialization/loading time.
-static constexpr base::TimeDelta kInitTracingDelay = base::Minutes(1);
+inline constexpr base::TimeDelta kInitTracingDelay = base::Minutes(1);
 
 // Defines the delay to start next session of capturing statistics for the same
 // active app or in case the app was already reported.
-static constexpr base::TimeDelta kNextTracingDelay = base::Minutes(20);
+inline constexpr base::TimeDelta kNextTracingDelay = base::Minutes(20);
 
 // Schedules and reports UMA performance measurements.
 class UmaPerfReporting {

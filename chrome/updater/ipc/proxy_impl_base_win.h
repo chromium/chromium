@@ -74,7 +74,7 @@ class ProxyImplBase {
     // normal operation and retrying on registration issues does not help.
     const auto create_server =
         [](REFCLSID clsid) -> HResultOr<Microsoft::WRL::ComPtr<IUnknown>> {
-      constexpr int kNumTries = 2;
+      static constexpr int kNumTries = 2;
       HRESULT hr = E_FAIL;
       for (int i = 0; i != kNumTries; ++i) {
         Microsoft::WRL::ComPtr<IUnknown> server;
@@ -120,6 +120,8 @@ class ProxyImplBase {
     CHECK(interface_.has_value());
     return interface_.value();
   }
+
+  UpdaterScope scope() const { return scope_; }
 
   HRESULT ConnectToServer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

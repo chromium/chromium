@@ -138,7 +138,7 @@ suite('find-shortcut-lit', () => {
   });
 
   test('handled with modal context closed', async () => {
-    const testElement = document.createElement('find-shortcut-lit')!;
+    const testElement = document.createElement('find-shortcut-lit');
     const dialog = document.createElement('cr-dialog');
     document.body.appendChild(testElement);
     document.body.appendChild(dialog);

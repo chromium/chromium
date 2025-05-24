@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -19,9 +20,12 @@
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper.h"
 #include "chrome/browser/ash/shimless_rma/diagnostics_app_profile_helper_constants.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
+#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -35,9 +39,9 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "extensions/common/constants.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy_declaration.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 namespace ash::shimless_rma {
 namespace {
@@ -130,6 +134,21 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
                            web_app::IwaStorageOwnedBundle{
                                "random_folder", /*dev_mode=*/false})));
   }
+
+  void RemoveInstallManagementMaybeUninstall(
+      const webapps::AppId& app_id,
+      web_app::WebAppManagement::Type install_management,
+      webapps::WebappUninstallSource uninstall_source,
+      UninstallCallback callback,
+      const base::Location& location) override {
+    EXPECT_EQ(install_management,
+              web_app::WebAppManagement::Type::kIwaShimlessRma);
+    EXPECT_EQ(uninstall_source, webapps::WebappUninstallSource::kUnknown);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  webapps::UninstallResultCode::kAppRemoved));
+  }
 };
 
 class FakeDiagnosticsAppProfileHelperDelegate
@@ -152,7 +171,7 @@ class FakeDiagnosticsAppProfileHelperDelegate
     return &web_app_command_scheduler_;
   }
 
-  const web_app::WebApp* GetWebAppById(
+  const web_app::WebApp* GetWebAppByIdUnsafe(
       const webapps::AppId& app_id,
       content::BrowserContext* browser_context) override {
     return &web_app_;
@@ -167,7 +186,7 @@ class FakeDiagnosticsAppProfileHelperDelegate
  protected:
   FakeServiceWorkerContext fake_service_worker_context_;
   FakeWebAppCommandScheduler web_app_command_scheduler_;
-  web_app::WebApp web_app_{/*AppId=*/""};
+  web_app::WebApp web_app_{/*app_id=*/""};
 };
 
 class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
@@ -220,7 +239,8 @@ class ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest
     // provider and if there is something already registered there then it will
     // interfere with the tests. Those tests that need an external provider
     // will register one specifically.
-    service->ClearProvidersForTesting();
+    extensions::ExternalProviderManager::Get(profile)
+        ->ClearProvidersForTesting();
 
     service->Init();
 
@@ -325,15 +345,15 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        IWACanHaveAllowlistedPermissionsPolicy) {
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{
-          {blink::ParsedPermissionsPolicyDeclaration{
-               blink::mojom::PermissionsPolicyFeature::kCamera},
-           blink::ParsedPermissionsPolicyDeclaration{
-               blink::mojom::PermissionsPolicyFeature::kFullscreen},
-           blink::ParsedPermissionsPolicyDeclaration{
-               blink::mojom::PermissionsPolicyFeature::kMicrophone},
-           blink::ParsedPermissionsPolicyDeclaration{
-               blink::mojom::PermissionsPolicyFeature::kHid}}});
+      network::ParsedPermissionsPolicy{
+          {network::ParsedPermissionsPolicyDeclaration{
+               network::mojom::PermissionsPolicyFeature::kCamera},
+           network::ParsedPermissionsPolicyDeclaration{
+               network::mojom::PermissionsPolicyFeature::kFullscreen},
+           network::ParsedPermissionsPolicyDeclaration{
+               network::mojom::PermissionsPolicyFeature::kMicrophone},
+           network::ParsedPermissionsPolicyDeclaration{
+               network::mojom::PermissionsPolicyFeature::kHid}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -346,11 +366,11 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
 TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
        IWACannotHavePermissionsPolicyOutsideAllowlist) {
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{
-          blink::ParsedPermissionsPolicyDeclaration{
-              blink::mojom::PermissionsPolicyFeature::kCamera},
-          {blink::ParsedPermissionsPolicyDeclaration{
-              blink::mojom::PermissionsPolicyFeature::kNotFound}}});
+      network::ParsedPermissionsPolicy{
+          network::ParsedPermissionsPolicyDeclaration{
+              network::mojom::PermissionsPolicyFeature::kCamera},
+          {network::ParsedPermissionsPolicyDeclaration{
+              network::mojom::PermissionsPolicyFeature::kNotFound}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -369,8 +389,9 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
       ash::features::kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{{blink::ParsedPermissionsPolicyDeclaration{
-          blink::mojom::PermissionsPolicyFeature::kCamera}}});
+      network::ParsedPermissionsPolicy{
+          {network::ParsedPermissionsPolicyDeclaration{
+              network::mojom::PermissionsPolicyFeature::kCamera}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)
@@ -390,8 +411,9 @@ TEST_F(ChromeShimlessRmaDelegatePrepareDiagnosticsAppProfileTest,
       expected_url_origin.GetURL());
 
   fake_diagnostics_app_profile_helper_delegate_->web_app().SetPermissionsPolicy(
-      blink::ParsedPermissionsPolicy{{blink::ParsedPermissionsPolicyDeclaration{
-          blink::mojom::PermissionsPolicyFeature::kNotFound}}});
+      network::ParsedPermissionsPolicy{
+          {network::ParsedPermissionsPolicyDeclaration{
+              network::mojom::PermissionsPolicyFeature::kNotFound}}});
 
   auto result = PrepareDiagnosticsAppBrowserContext(
       base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT)

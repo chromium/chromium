@@ -6,10 +6,10 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -22,7 +22,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -60,7 +60,7 @@ const uint32_t kIncludeBrowsersScheduledForDeletion = 1 << 6;
 bool DoesBrowserMatchProfile(Browser& browser,
                              Profile* profile,
                              uint32_t match_types) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Get the profile on which the window is currently shown.
   // MultiUserWindowManagerHelper might be NULL under test scenario.
   ash::MultiUserWindowManager* const multi_user_window_manager =
@@ -82,7 +82,7 @@ bool DoesBrowserMatchProfile(Browser& browser,
         profile->GetOriginalProfile()) {
       return false;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (shown_profile &&
         shown_profile->GetOriginalProfile() != profile->GetOriginalProfile()) {
       return false;
@@ -92,7 +92,7 @@ bool DoesBrowserMatchProfile(Browser& browser,
     if (browser.profile() != profile) {
       return false;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (shown_profile && shown_profile != profile) {
       return false;
     }
@@ -125,8 +125,9 @@ bool BrowserMatches(Browser* browser,
     return false;
   }
 
-  if ((match_types & kMatchNormal) && !browser->is_type_normal())
+  if ((match_types & kMatchNormal) && !browser->is_type_normal()) {
     return false;
+  }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   // Note that |browser->window()| might be nullptr in tests.
@@ -134,7 +135,7 @@ bool BrowserMatches(Browser* browser,
       (!browser->window() || !browser->window()->IsOnCurrentWorkspace())) {
     return false;
   }
-#endif  // BUILDFLAG(IS_WIN)
+#endif
 
   if (match_types & kMatchDisplayId &&
       display::Screen::GetScreen()
@@ -166,8 +167,9 @@ Browser* FindBrowserMatching(const T& begin,
                              uint32_t match_types,
                              int64_t display_id = display::kInvalidDisplayId) {
   for (T i = begin; i != end; ++i) {
-    if (BrowserMatches(*i, profile, window_feature, match_types, display_id))
+    if (BrowserMatches(*i, profile, window_feature, match_types, display_id)) {
       return *i;
+    }
   }
   return nullptr;
 }
@@ -180,18 +182,23 @@ Browser* FindBrowserWithTabbedOrAnyType(
     bool match_not_closing,
     int64_t display_id = display::kInvalidDisplayId) {
   BrowserList* browser_list_impl = BrowserList::GetInstance();
-  if (!browser_list_impl)
+  if (!browser_list_impl) {
     return nullptr;
+  }
   uint32_t match_types = kMatchAny;
-  if (match_tabbed)
+  if (match_tabbed) {
     match_types |= kMatchNormal;
-  if (match_original_profiles)
+  }
+  if (match_original_profiles) {
     match_types |= kMatchOriginalProfile;
-  if (display_id != display::kInvalidDisplayId)
+  }
+  if (display_id != display::kInvalidDisplayId) {
     match_types |= kMatchDisplayId;
+  }
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-  if (match_current_workspace)
+  if (match_current_workspace) {
     match_types |= kMatchCurrentWorkspace;
+  }
 #endif
   if (match_not_closing) {
     match_types |= kMatchNotClosing;
@@ -214,11 +221,11 @@ size_t GetBrowserCountImpl(Profile* profile,
   BrowserList* browser_list_impl = BrowserList::GetInstance();
   size_t count = 0;
   if (browser_list_impl) {
-    for (auto i = browser_list_impl->begin(); i != browser_list_impl->end();
-         ++i) {
-      if (BrowserMatches(*i, profile, Browser::FEATURE_NONE, match_types,
-                         display_id))
+    for (const auto& i : *browser_list_impl) {
+      if (BrowserMatches(i, profile, Browser::FEATURE_NONE, match_types,
+                         display_id)) {
         count++;
+      }
     }
   }
   return count;
@@ -254,8 +261,9 @@ std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
   std::vector<Browser*> browsers;
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, kMatchNormal,
-                       display::kInvalidDisplayId))
+                       display::kInvalidDisplayId)) {
       browsers.emplace_back(browser);
+    }
   }
   return browsers;
 }
@@ -273,18 +281,21 @@ std::vector<Browser*> FindAllBrowsersWithProfile(Profile* profile) {
 
 Browser* FindBrowserWithID(SessionID desired_id) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->session_id() == desired_id)
+    if (browser->session_id() == desired_id) {
       return browser;
+    }
   }
   return nullptr;
 }
 
 Browser* FindBrowserWithWindow(gfx::NativeWindow window) {
-  if (!window)
+  if (!window) {
     return nullptr;
+  }
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->window() && browser->window()->GetNativeWindow() == window)
+    if (browser->window() && browser->window()->GetNativeWindow() == window) {
       return browser;
+    }
   }
   return nullptr;
 }
@@ -297,7 +308,7 @@ Browser* FindBrowserWithActiveWindow() {
 Browser* FindBrowserWithTab(const WebContents* web_contents) {
   DCHECK(web_contents);
   auto& all_tabs = AllTabContentses();
-  auto it = base::ranges::find(all_tabs, web_contents);
+  auto it = std::ranges::find(all_tabs, web_contents);
 
   return (it == all_tabs.end()) ? nullptr : it.browser();
 }

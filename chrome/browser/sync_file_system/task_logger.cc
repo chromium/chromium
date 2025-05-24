@@ -29,9 +29,9 @@ int GenerateLogID() {
 typedef TaskLogger::TaskLog TaskLog;
 
 TaskLogger::TaskLog::TaskLog() : log_id(GenerateLogID()) {}
-TaskLogger::TaskLog::~TaskLog() {}
+TaskLogger::TaskLog::~TaskLog() = default;
 
-TaskLogger::TaskLogger() {}
+TaskLogger::TaskLogger() = default;
 
 TaskLogger::~TaskLogger() {
   ClearLog();

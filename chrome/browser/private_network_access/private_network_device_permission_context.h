@@ -17,9 +17,9 @@
 
 class Profile;
 
-const char kPrivateNetworkDeviceValidityHistogramName[] =
+inline constexpr char kPrivateNetworkDeviceValidityHistogramName[] =
     "Security.PrivateNetworkAccess.PermissionDeviceValidity";
-const char kUserAcceptedPrivateNetworkDeviceHistogramName[] =
+inline constexpr char kUserAcceptedPrivateNetworkDeviceHistogramName[] =
     "Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType";
 
 // These values are logged to UMA. Entries should not be renumbered and numeric

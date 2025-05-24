@@ -3,6 +3,8 @@
 # existing buckets.
 per-file enums.xml=*
 
+per-file update_autofill_enums.py=file://components/autofill/OWNERS
+
 # Everything else in this directory is metrics infrastructure.
 # (prefer to send to chromium-metrics-reviews@google.com)
 file://base/metrics/OWNERS

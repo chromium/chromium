@@ -129,6 +129,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     std::optional<LargeBlob> large_blob;
     std::optional<std::array<uint8_t, 32>> large_blob_key;
     std::optional<std::vector<uint8_t>> cred_blob;
+
+    // The custom provider name for this credential.
+    std::optional<std::string> provider_name;
   };
 
   using Credential = std::pair<base::span<const uint8_t>, RegistrationData*>;
@@ -136,6 +139,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
   class COMPONENT_EXPORT(DEVICE_FIDO) Observer : public base::CheckedObserver {
    public:
     virtual void OnCredentialCreated(const Credential& credential) = 0;
+    virtual void OnCredentialDeleted(
+        base::span<const uint8_t> credential_id) = 0;
+    virtual void OnCredentialUpdated(const Credential& credential) = 0;
     virtual void OnAssertion(const Credential& credential) = 0;
   };
 
@@ -299,6 +305,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     void AddObserver(Observer* observer);
     void RemoveObserver(Observer* observer);
     void NotifyCredentialCreated(
+        const std::pair<base::span<const uint8_t>, RegistrationData*>&
+            credential);
+    void NotifyCredentialDeleted(base::span<const uint8_t> credential_id);
+    void NotifyCredentialUpdated(
         const std::pair<base::span<const uint8_t>, RegistrationData*>&
             credential);
     void NotifyAssertion(const std::pair<base::span<const uint8_t>,

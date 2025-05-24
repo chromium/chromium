@@ -4,7 +4,6 @@
 
 import './searchbox_match.js';
 import './searchbox_dropdown_shared_style.css.js';
-import '//resources/polymer/v3_0/iron-selector/iron-selector.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_icons.css.js';
 
@@ -12,11 +11,11 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from './searchbox.mojom-webui.js';
+import {RenderType, SideType} from './searchbox.mojom-webui.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import {getTemplate} from './searchbox_dropdown.html.js';
 import type {SearchboxMatchElement} from './searchbox_match.js';
-import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from './searchbox.mojom-webui.js';
-import {RenderType, SelectionLineState, SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, renderTypeToClass, sideTypeToClass} from './utils.js';
 
 // The '%' operator in JS returns negative numbers. This workaround avoids that.
@@ -103,7 +102,7 @@ export class SearchboxDropdownElement extends PolymerElement {
         type: Boolean,
         value: false,
         computed: 'computeShowSecondarySide_(' +
-            'canShowSecondarySide, result.matches.*, hiddenGroupIds_.*)',
+            'canShowSecondarySide, result.matches.*)',
       },
 
       showThumbnail: {
@@ -115,12 +114,6 @@ export class SearchboxDropdownElement extends PolymerElement {
       // Private properties
       //========================================================================
 
-      /** The list of suggestion group IDs whose matches should be hidden. */
-      hiddenGroupIds_: {
-        type: Array,
-        computed: `computeHiddenGroupIds_(result)`,
-      },
-
       /** The list of selectable match elements. */
       selectableMatchElements_: {
         type: Array,
@@ -129,14 +122,15 @@ export class SearchboxDropdownElement extends PolymerElement {
     };
   }
 
-  canShowSecondarySide: boolean;
-  hadSecondarySide: boolean;
-  hasSecondarySide: boolean;
-  result: AutocompleteResult;
-  selectedMatchIndex: number;
-  private hiddenGroupIds_: number[];
-  private selectableMatchElements_: SearchboxMatchElement[];
-  private showSecondarySide_: boolean;
+  declare canShowSecondarySide: boolean;
+  declare hadSecondarySide: boolean;
+  declare hasSecondarySide: boolean;
+  declare hasEmptyInput: boolean;
+  declare result: AutocompleteResult;
+  declare selectedMatchIndex: number;
+  declare showThumbnail: boolean;
+  declare private selectableMatchElements_: SearchboxMatchElement[];
+  declare private showSecondarySide_: boolean;
   private resizeObserver_: ResizeObserver|null = null;
   private pageHandler_: PageHandlerInterface;
 
@@ -196,11 +190,6 @@ export class SearchboxDropdownElement extends PolymerElement {
 
   updateSelection(
       oldSelection: OmniboxPopupSelection, selection: OmniboxPopupSelection) {
-    if (selection.state === SelectionLineState.kFocusedButtonHeader) {
-      // TODO: Focus group header.
-      this.unselect();
-      return;
-    }
     // If the updated selection is a new match, remove any remaining selection
     // on the previously selected match.
     if (oldSelection.line !== selection.line) {
@@ -242,29 +231,6 @@ export class SearchboxDropdownElement extends PolymerElement {
   //============================================================================
   // Event handlers
   //============================================================================
-
-  private onHeaderClick_(e: Event) {
-    const groupId =
-        Number.parseInt((e.currentTarget as HTMLElement).dataset['id']!, 10);
-
-    // Tell the backend to toggle visibility of the given suggestion group ID.
-    this.pageHandler_.toggleSuggestionGroupIdVisibility(groupId);
-
-    // Hide/Show matches with the given suggestion group ID.
-    const index = this.hiddenGroupIds_.indexOf(groupId);
-    if (index === -1) {
-      this.push('hiddenGroupIds_', groupId);
-    } else {
-      this.splice('hiddenGroupIds_', index, 1);
-    }
-  }
-
-  private onHeaderFocusin_() {
-    this.dispatchEvent(new CustomEvent('header-focusin', {
-      bubbles: true,
-      composed: true,
-    }));
-  }
 
   private onHeaderMousedown_(e: Event) {
     e.preventDefault();  // Prevents default browser action (focus).
@@ -324,12 +290,6 @@ export class SearchboxDropdownElement extends PolymerElement {
     return this.result && decodeString16(this.result.input) === '';
   }
 
-  private computeHiddenGroupIds_(): number[] {
-    return Object.keys(this.result?.suggestionGroupsMap ?? {})
-        .map(groupId => Number.parseInt(groupId, 10))
-        .filter(groupId => this.result.suggestionGroupsMap[groupId].hidden);
-  }
-
   private isSelected_(match: AutocompleteMatch): boolean {
     return this.matchIndex_(match) === this.selectedMatchIndex;
   }
@@ -342,14 +302,6 @@ export class SearchboxDropdownElement extends PolymerElement {
     return [...new Set<number>(
         this.result?.matches?.map(match => match.suggestionGroupId)
             .filter(groupId => this.sideTypeForGroup_(groupId) === side))];
-  }
-
-  /**
-   * @returns Whether matches with the given suggestion group ID should be
-   *     hidden.
-   */
-  private groupIsHidden_(groupId: number): boolean {
-    return this.hiddenGroupIds_.indexOf(groupId) !== -1;
   }
 
   /**
@@ -381,10 +333,8 @@ export class SearchboxDropdownElement extends PolymerElement {
    *     group ID.
    */
   private matchesForGroup_(groupId: number): AutocompleteMatch[] {
-    return this.groupIsHidden_(groupId) ?
-        [] :
-        (this.result?.matches ??
-         []).filter(match => match.suggestionGroupId === groupId);
+    return (this.result?.matches ?? [])
+        .filter(match => match.suggestionGroupId === groupId);
   }
 
   /**
@@ -404,47 +354,10 @@ export class SearchboxDropdownElement extends PolymerElement {
         SideType.kDefaultPrimary;
   }
 
-  /**
-   * @returns A11y label for suggestion group show/hide toggle button.
-   */
-  private toggleButtonA11yLabelForGroup_(groupId: number): string {
-    if (!this.hasHeaderForGroup_(groupId)) {
-      return '';
-    }
-
-    return !this.groupIsHidden_(groupId) ?
-        decodeString16(
-            this.result.suggestionGroupsMap[groupId].hideGroupA11yLabel) :
-        decodeString16(
-            this.result.suggestionGroupsMap[groupId].showGroupA11yLabel);
-  }
-
-  /**
-   * @returns Icon name for suggestion group show/hide toggle button.
-   */
-  private toggleButtonIconForGroup_(groupId: number): string {
-    return this.groupIsHidden_(groupId) ? 'icon-arrow-drop-down-cr23' :
-                                          'icon-arrow-drop-up-cr23';
-  }
-
-  /**
-   * @returns Tooltip for suggestion group show/hide toggle button.
-   */
-  private toggleButtonTitleForGroup_(groupId: number): string {
-    return loadTimeData.getString(
-        this.groupIsHidden_(groupId) ? 'showSuggestions' : 'hideSuggestions');
-  }
-
   private computeShowSecondarySide_(): boolean {
     if (!this.canShowSecondarySide) {
       // Parent prohibits showing secondary side.
       return false;
-    }
-
-    if (!this.hiddenGroupIds_) {
-      // Not ready yet as dropdown has received results but has not yet
-      // determined which groups are hidden.
-      return true;
     }
 
     // Only show secondary side if there are primary matches visible.

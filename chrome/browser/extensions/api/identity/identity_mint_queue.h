@@ -36,7 +36,7 @@ class IdentityMintRequestQueue {
 
   class Request {
    public:
-    virtual ~Request() {}
+    virtual ~Request() = default;
     virtual void StartMintToken(IdentityMintRequestQueue::MintType type) = 0;
   };
 
@@ -48,7 +48,7 @@ class IdentityMintRequestQueue {
   void RequestComplete(IdentityMintRequestQueue::MintType type,
                        const ExtensionTokenKey& key,
                        IdentityMintRequestQueue::Request* request);
-  // Cancels a request. OK to call if |request| is not queued.
+  // Cancels a request. OK to call if `request` is not queued.
   // Does *not* start a new request, even if the canceled request is at
   // the head of the queue.
   void RequestCancel(const ExtensionTokenKey& key,

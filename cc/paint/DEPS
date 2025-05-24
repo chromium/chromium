@@ -2,6 +2,7 @@
 # write include rules here to be clear.
 include_rules = [
   "-cc",
+  "-ui/base",
   "+cc/base",
   "+cc/debug",
   "+cc/paint",

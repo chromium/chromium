@@ -109,39 +109,39 @@ WebState* ContentNavigationContext::GetWebState() {
 }
 
 int64_t ContentNavigationContext::GetNavigationId() const {
-  return handle_.GetNavigationId();
+  return handle_->GetNavigationId();
 }
 
 const GURL& ContentNavigationContext::GetUrl() const {
-  return handle_.GetURL();
+  return handle_->GetURL();
 }
 
 bool ContentNavigationContext::HasUserGesture() const {
-  return handle_.HasUserGesture();
+  return handle_->HasUserGesture();
 }
 
 ui::PageTransition ContentNavigationContext::GetPageTransition() const {
-  return handle_.GetPageTransition();
+  return handle_->GetPageTransition();
 }
 
 bool ContentNavigationContext::IsSameDocument() const {
-  return handle_.IsSameDocument();
+  return handle_->IsSameDocument();
 }
 
 bool ContentNavigationContext::HasCommitted() const {
-  return handle_.HasCommitted();
+  return handle_->HasCommitted();
 }
 
 bool ContentNavigationContext::IsDownload() const {
-  return handle_.IsDownload();
+  return handle_->IsDownload();
 }
 
 bool ContentNavigationContext::IsPost() const {
-  return handle_.IsPost();
+  return handle_->IsPost();
 }
 
 NSError* ContentNavigationContext::GetError() const {
-  net::Error net_error_code = handle_.GetNetErrorCode();
+  net::Error net_error_code = handle_->GetNetErrorCode();
   if (net_error_code == net::OK) {
     error_ = nil;
   } else {
@@ -158,11 +158,11 @@ NSError* ContentNavigationContext::GetError() const {
 }
 
 net::HttpResponseHeaders* ContentNavigationContext::GetResponseHeaders() const {
-  return const_cast<net::HttpResponseHeaders*>(handle_.GetResponseHeaders());
+  return const_cast<net::HttpResponseHeaders*>(handle_->GetResponseHeaders());
 }
 
 bool ContentNavigationContext::IsRendererInitiated() const {
-  return handle_.IsRendererInitiated();
+  return handle_->IsRendererInitiated();
 }
 
 HttpsUpgradeType ContentNavigationContext::GetFailedHttpsUpgradeType() const {

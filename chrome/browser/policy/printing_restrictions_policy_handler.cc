@@ -5,7 +5,6 @@
 #include "chrome/browser/policy/printing_restrictions_policy_handler.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/schema.h"
@@ -68,7 +67,7 @@ bool PrintingEnumPolicyHandler<Mode>::GetValue(const PolicyMap& policies,
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 PrintingAllowedColorModesPolicyHandler::PrintingAllowedColorModesPolicyHandler()
     : PrintingEnumPolicyHandler<printing::ColorModeRestriction>(
           key::kPrintingAllowedColorModes,
@@ -144,7 +143,7 @@ PrintingPinDefaultPolicyHandler::PrintingPinDefaultPolicyHandler()
           }) {}
 
 PrintingPinDefaultPolicyHandler::~PrintingPinDefaultPolicyHandler() = default;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 PrintingAllowedBackgroundGraphicsModesPolicyHandler::

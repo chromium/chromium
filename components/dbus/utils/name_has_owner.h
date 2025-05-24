@@ -23,7 +23,7 @@ using NameHasOwnerCallback =
 
 // Checks whether the service `name` has an owner on the bus and runs `callback`
 // with this boolean value. Errors are indicated as a nullopt.
-COMPONENT_EXPORT(DBUS)
+COMPONENT_EXPORT(COMPONENTS_DBUS)
 void NameHasOwner(dbus::Bus* bus,
                   const std::string& name,
                   NameHasOwnerCallback callback);

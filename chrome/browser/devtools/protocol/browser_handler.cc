@@ -27,7 +27,6 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_png_rep.h"
 
-using protocol::Maybe;
 using protocol::Response;
 
 namespace {
@@ -77,7 +76,7 @@ BrowserHandler::BrowserHandler(protocol::UberDispatcher* dispatcher,
 BrowserHandler::~BrowserHandler() = default;
 
 Response BrowserHandler::GetWindowForTarget(
-    protocol::Maybe<std::string> target_id,
+    std::optional<std::string> target_id,
     int* out_window_id,
     std::unique_ptr<protocol::Browser::Bounds>* out_bounds) {
   auto host =
@@ -150,7 +149,8 @@ Response BrowserHandler::SetWindowBounds(
           "restore it to normal state first.");
     }
     window->GetExclusiveAccessContext()->EnterFullscreen(
-        GURL(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, display::kInvalidDisplayId);
+        url::Origin(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
+        display::kInvalidDisplayId);
   } else if (window_state == "maximized") {
     if (window->IsMinimized() || window->IsFullscreen()) {
       return Response::ServerError(
@@ -174,15 +174,15 @@ Response BrowserHandler::SetWindowBounds(
       window->SetBounds(bounds);
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return Response::Success();
 }
 
 protocol::Response BrowserHandler::SetDockTile(
-    protocol::Maybe<std::string> label,
-    protocol::Maybe<protocol::Binary> image) {
+    std::optional<std::string> label,
+    std::optional<protocol::Binary> image) {
   std::vector<gfx::ImagePNGRep> reps;
   if (image.has_value()) {
     reps.emplace_back(image.value().bytes(), 1);
@@ -199,7 +199,9 @@ protocol::Response BrowserHandler::ExecuteBrowserCommand(
           {protocol::Browser::BrowserCommandIdEnum::OpenTabSearch,
            IDC_TAB_SEARCH},
           {protocol::Browser::BrowserCommandIdEnum::CloseTabSearch,
-           IDC_TAB_SEARCH_CLOSE}};
+           IDC_TAB_SEARCH_CLOSE},
+          {protocol::Browser::BrowserCommandIdEnum::OpenGlic, IDC_OPEN_GLIC},
+      };
   if (command_id_map.count(command_id) == 0) {
     return Response::InvalidParams("Invalid BrowserCommandId: " + command_id);
   }

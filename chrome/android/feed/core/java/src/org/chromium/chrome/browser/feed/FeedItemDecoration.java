@@ -21,10 +21,13 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
 
     private final FeedSurfaceCoordinator mCoordinator;
     private final Drawable mTopRoundedBackground;
+    private final Drawable mTopLeftRoundedBackground;
+    private final Drawable mTopRightRoundedBackground;
     private final Drawable mBottomRoundedBackground;
     private final Drawable mBottomLeftRoundedBackground;
     private final Drawable mBottomRightRoundedBackground;
     private final Drawable mNotRoundedBackground;
+    private final Drawable mAllRoundedBackground;
     private final int mGutterPadding;
     private final int mAdditionalBottomCardPadding;
 
@@ -41,7 +44,15 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
                 drawableProvider.getDrawable(R.drawable.home_surface_ui_background_not_rounded);
         mBottomRoundedBackground =
                 drawableProvider.getDrawable(R.drawable.home_surface_ui_background_bottom_rounded);
+        mAllRoundedBackground =
+                drawableProvider.getDrawable(R.drawable.home_surface_ui_background_rounded);
         if (mCoordinator.useStaggeredLayout()) {
+            mTopLeftRoundedBackground =
+                    drawableProvider.getDrawable(
+                            R.drawable.home_surface_ui_background_topleft_rounded);
+            mTopRightRoundedBackground =
+                    drawableProvider.getDrawable(
+                            R.drawable.home_surface_ui_background_topright_rounded);
             mBottomLeftRoundedBackground =
                     drawableProvider.getDrawable(
                             R.drawable.home_surface_ui_background_bottomleft_rounded);
@@ -49,6 +60,8 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
                     drawableProvider.getDrawable(
                             R.drawable.home_surface_ui_background_bottomright_rounded);
         } else {
+            mTopLeftRoundedBackground = null;
+            mTopRightRoundedBackground = null;
             mBottomLeftRoundedBackground = null;
             mBottomRightRoundedBackground = null;
         }
@@ -212,15 +225,23 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
             }
 
             // Draw the background for the extended bounds.
-            Drawable background;
-            if (multiColumn
-                    && reachLastViewInFeedContainment
-                    && bounds.bottom == maxBottom + mAdditionalBottomCardPadding) {
-                background =
-                        (columnIndex == 0)
-                                ? mBottomLeftRoundedBackground
-                                : mBottomRightRoundedBackground;
-            } else {
+            Drawable background = null;
+            if (multiColumn) {
+                if (bounds.bottom == maxBottom + mAdditionalBottomCardPadding) {
+                    background =
+                            (columnIndex == 0)
+                                    ? mBottomLeftRoundedBackground
+                                    : mBottomRightRoundedBackground;
+                } else if (!mCoordinator.isHeaderVisible()) {
+                    int headerPosition = mCoordinator.getHeaderPosition();
+                    if (position == headerPosition) {
+                        background = mTopLeftRoundedBackground;
+                    } else if (position == headerPosition + 1) {
+                        background = mTopRightRoundedBackground;
+                    }
+                }
+            }
+            if (background == null) {
                 background = getBackgroundDrawable(position);
             }
             background.setBounds(bounds);
@@ -237,7 +258,7 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     private boolean belongsToFeedContainment(int position) {
         // Exclude the NTP header views that appear above the feed header and the last view
         // which is used to provide the bottom margin for the feed containment.
-        return position >= mCoordinator.getSectionHeaderPosition()
+        return position >= mCoordinator.getHeaderPosition()
                 && position < mCoordinator.getContentManager().getItemCount() - 1;
     }
 
@@ -246,8 +267,10 @@ public class FeedItemDecoration extends RecyclerView.ItemDecoration {
     }
 
     private Drawable getBackgroundDrawable(int position) {
-        if (position == mCoordinator.getSectionHeaderPosition()) {
-            return mTopRoundedBackground;
+        if (position == mCoordinator.getHeaderPosition()) {
+            return isLastViewInFeedContainment(position)
+                    ? mAllRoundedBackground
+                    : mTopRoundedBackground;
         } else if (isLastViewInFeedContainment(position)) {
             return mBottomRoundedBackground;
         } else {

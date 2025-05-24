@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "content/browser/interest_group/auction_nonce_manager.h"
+
 #include <memory>
 #include <string>
 
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/uuid.h"
 #include "content/public/test/browser_test_utils.h"

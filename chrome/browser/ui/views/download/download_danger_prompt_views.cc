@@ -13,7 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/ui/bookmarks/bookmark_editor.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -42,8 +41,6 @@
 #include "url/gurl.h"
 
 using safe_browsing::ClientSafeBrowsingReportRequest;
-
-namespace {
 
 // Views-specific implementation of download danger prompt dialog, which
 // implements danger warning bypass from the downloads extension API. We use
@@ -84,9 +81,7 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
     download::DownloadItem* item,
     Profile* profile,
     OnDone done)
-    : download_(item),
-      profile_(profile),
-      done_(std::move(done)) {
+    : download_(item), profile_(profile), done_(std::move(done)) {
   // Note that this prompt is asking whether to cancel a dangerous download, so
   // the accept path is titled "Cancel".
   SetButtonLabel(ui::mojom::DialogButton::kOk,
@@ -125,8 +120,9 @@ DownloadDangerPromptViews::DownloadDangerPromptViews(
 }
 
 DownloadDangerPromptViews::~DownloadDangerPromptViews() {
-  if (download_)
+  if (download_) {
     download_->RemoveObserver(this);
+  }
 }
 
 // DownloadDangerPrompt methods:
@@ -226,29 +222,26 @@ void DownloadDangerPromptViews::RunDone(Action action) {
         RecordDownloadDangerPromptHistogram("Proceed", *download_);
       }
       RecordDownloadWarningEvent(action, download_);
-      if (!download_->GetURL().is_empty() &&
-          !content::DownloadItemUtils::GetBrowserContext(download_)
-               ->IsOffTheRecord()) {
-        ClientSafeBrowsingReportRequest::ReportType report_type =
-            ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API;
-        // Do not send cancel report since it's not a terminal action.
-        if (accept) {
-          SendSafeBrowsingDownloadReport(report_type, accept, download_);
-        }
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+      // Do not send cancel report since it's not a terminal action.
+      if (accept) {
+        SendSafeBrowsingDownloadReport(
+            ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_BY_API, accept,
+            download_);
       }
+#endif
     }
     download_->RemoveObserver(this);
     download_ = nullptr;
   }
-  if (done)
+  if (done) {
     std::move(done).Run(action);
+  }
 }
 
 BEGIN_METADATA(DownloadDangerPromptViews)
 ADD_READONLY_PROPERTY_METADATA(std::u16string, MessageBody)
 END_METADATA
-
-}  // namespace
 
 // static
 DownloadDangerPrompt* DownloadDangerPrompt::Create(

@@ -66,6 +66,9 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
     return machine_level_user_cloud_policy_manager_;
   }
 
+  void SetMachineLevelUserCloudPolicyManagerForTesting(
+      policy::MachineLevelUserCloudPolicyManager* manager);
+
   // BrowserPolicyConnector.
   void Init(PrefService* local_state,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -78,6 +81,8 @@ class BrowserPolicyConnectorIOS : public policy::BrowserPolicyConnector {
   // Always returns true because there is no way for normal users to use command
   // line switch anyway.
   bool IsCommandLineSwitchSupported() const override;
+
+  void OnResourceBundleCreated();
 
  protected:
   // BrowserPolicyConnectorBase.

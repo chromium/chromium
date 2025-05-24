@@ -53,7 +53,7 @@ public class PasswordManagerErrorMessageHelperBridge {
      * @return whether the UI can be shown given the conditions above.
      */
     @CalledByNative
-    static boolean shouldShowSignInErrorUI(Profile profile) {
+    static boolean shouldShowSignInErrorUi(Profile profile) {
         final IdentityManager identityManager =
                 IdentityServicesProvider.get().getIdentityManager(profile);
         if (identityManager == null) return false;
@@ -84,7 +84,7 @@ public class PasswordManagerErrorMessageHelperBridge {
      * @return whether the UI can be shown given the conditions above.
      */
     @CalledByNative
-    static boolean shouldShowUpdateGMSCoreErrorUI(Profile profile) {
+    static boolean shouldShowUpdateGMSCoreErrorUi(Profile profile) {
         PrefService prefService = UserPrefs.get(profile);
         long lastShownTimestamp =
                 Long.valueOf(prefService.getString(Pref.UPM_ERROR_UI_SHOWN_TIMESTAMP));

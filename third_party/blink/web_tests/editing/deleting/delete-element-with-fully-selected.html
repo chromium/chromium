@@ -1,0 +1,61 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+    [
+      '<div contenteditable>Test\u200B|<span></span></div>',
+    ],
+    'delete',
+    [
+      '<div contenteditable>Test|<span></span></div>',
+    ], 'The span node is not deleted because it is not selected');
+
+selection_test(
+    [
+      '<div contenteditable>Test\u200B|<span></span></div>',
+    ],
+    selection => {
+      const document = selection.document;
+      document.execCommand('delete');
+      document.execCommand('undo');
+      // The selection is selected on macOS, and other platform are not.
+      document.getSelection().removeAllRanges();
+    },
+    [
+      '<div contenteditable>Test\u200B<span></span></div>',
+    ], 'The undo command works as expected');
+
+selection_test(
+    [
+      '<div contenteditable>Test\u200B|<span></span></div>',
+    ],
+    selection => {
+      const document = selection.document;
+      document.execCommand('delete');
+      document.execCommand('undo');
+      document.execCommand('redo');
+    },
+    [
+      '<div contenteditable>Test|<span></span></div>',
+    ], 'The redo command works as expected');
+
+selection_test(
+  [
+    '<div contenteditable>Test\u200B<span>|</span></div>',
+  ],
+  'delete',
+  [
+    '<div contenteditable>Test|</div>',
+  ], 'The span node is deleted because it is fully selected');
+
+selection_test(
+    [
+      '<div contenteditable>Test\u200B<span>|1</span></div>',
+    ],
+    'delete',
+    [
+      '<div contenteditable>Test|<span>1</span></div>',
+    ], 'The span node with text is not deleted because it is not fully selected');
+</script>

@@ -56,12 +56,10 @@ class AwCrashReporterClient : public crash_reporter::CrashReporterClient {
     return false;
   }
 
-  void GetProductNameAndVersion(std::string* product_name,
-                                std::string* version,
-                                std::string* channel) override {
-    *product_name = "AndroidWebView";
-    *version = PRODUCT_VERSION;
-    *channel =
+  void GetProductInfo(ProductInfo* product_info) override {
+    product_info->product_name = "AndroidWebView";
+    product_info->version = PRODUCT_VERSION;
+    product_info->channel =
         version_info::GetChannelString(version_info::android::GetChannel());
   }
 

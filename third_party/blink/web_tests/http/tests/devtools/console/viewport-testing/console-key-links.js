@@ -144,8 +144,8 @@ import * as Console from 'devtools/panels/console/console.js';
 
   function dumpFocus(activeElement, messageIndex = 0, skipObjectCheck) {
     const firstMessage = consoleView.visibleViewMessages[messageIndex];
-    const hasTrace = !!firstMessage.element().querySelector('.console-message-stack-trace-toggle');
-    const hasHiddenStackTrace = firstMessage.element().querySelector('.console-message-stack-trace-wrapper > div.hidden');
+    const hasTrace = !!firstMessage.element().querySelector('.console-message-stack-trace-toggle .console-message-expand-icon');
+    const hasHiddenStackTrace = firstMessage.element().querySelector('.console-message-stack-trace-wrapper > div.hidden-stack-trace');
     const hasCollapsedObject = firstMessage.element().querySelector('.console-view-object-properties-section:not(.expanded)');
     const hasExpandedObject = firstMessage.element().querySelector('.console-view-object-properties-section.expanded');
 

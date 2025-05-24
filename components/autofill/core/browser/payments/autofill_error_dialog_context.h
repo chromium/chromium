@@ -39,8 +39,18 @@ enum class AutofillErrorDialogType {
   kCreditCardUploadError = 7,
   // Error shown when the server cannot enroll the virtual card.
   kVirtualCardEnrollmentTemporaryError = 8,
+  // Error shown when the server returns a temporary error for unmasking a
+  // runtime retrieval enrolled card.
+  kCardInfoRetrievalTemporaryError = 9,
+  // Error shown when the server returns a permanent error for unmasking a
+  // runtime retrieval enrolled card.
+  kCardInfoRetrievalPermanentError = 10,
+  // Error shown when the server returns a temporary error for a BNPL flow.
+  kBnplTemporaryError = 11,
+  // Error shown when the server returns a permanent error for a BNPL flow.
+  kBnplPermanentError = 12,
   // kMaxValue is required for logging histograms.
-  kMaxValue = kVirtualCardEnrollmentTemporaryError,
+  kMaxValue = kBnplPermanentError,
 };
 
 // The context for the autofill error dialog.
@@ -49,6 +59,18 @@ struct AutofillErrorDialogContext {
   // kVirtualCardPermanentError if `is_permanent_error` is true, and type
   // kVirtualCardTemporaryError if `is_permanent_error` is false.
   static AutofillErrorDialogContext WithVirtualCardPermanentOrTemporaryError(
+      bool is_permanent_error);
+
+  // Returns an AutofillErrorDialogContext that is type
+  // kCardInfoRetrievalPermanentError if `is_permanent_error` is true, and type
+  // kCardInfoRetrievalTemporaryError if `is_permanent_error` is false.
+  static AutofillErrorDialogContext
+  WithCardInfoRetrievalPermanentOrTemporaryError(bool is_permanent_error);
+
+  // Returns an AutofillErrorDialogContext that is type
+  // kBnplPermanentError if `is_permanent_error` is true, and type
+  // kBnplTemporaryError if `is_permanent_error` is false.
+  static AutofillErrorDialogContext WithBnplPermanentOrTemporaryError(
       bool is_permanent_error);
 
   AutofillErrorDialogContext();

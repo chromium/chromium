@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
 #include "base/command_line.h"
@@ -31,14 +27,15 @@ class ScopedLocale {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     old_locale_ = getenv("LC_ALL");
 
-    static const struct {
+    struct Locales {
       const char* chrome_locale;
       const char* system_locale;
-    } kLocales[] = {
-      { "da", "da_DK.UTF-8" },
-      { "he", "he_IL.UTF-8" },
-      { "zh-TW", "zh_TW.UTF-8" }
     };
+    static const auto kLocales = std::to_array<Locales>({
+        {"da", "da_DK.UTF-8"},
+        {"he", "he_IL.UTF-8"},
+        {"zh-TW", "zh_TW.UTF-8"},
+    });
     bool found_locale = false;
     for (size_t i = 0; i < std::size(kLocales); ++i) {
       if (kLocales[i].chrome_locale == locale) {

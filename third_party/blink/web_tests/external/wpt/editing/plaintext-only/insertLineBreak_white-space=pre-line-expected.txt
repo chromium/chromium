@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+Found 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] execCommand("insertLineBreak") when <p>{}<br></p>
+  assert_equals: expected "<p>\\n\\n</p>" but got "<p>\\n<br></p>"
+[FAIL] execCommand("insertLineBreak") when <p style="white-space:normal">A[]B</p>
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Enter when <p>{}<br></p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p>\\n\\n</p>" but got "<p>\\n<br></p>"
+[FAIL] Pressing Shift+Enter when <p>{}<br></p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p>\\n\\n</p>" but got "<p>\\n<br></p>"
+[FAIL] Pressing Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+[FAIL] Pressing Shift+Enter when <p style="white-space:normal">A[]B</p> should cause "insertLineBreak" and shouldn't insert new paragraph: editingHost.innerHTML
+  assert_equals: expected "<p style=\\"white-space:normal\\">A<br>B</p>" but got "<p style=\\"white-space:normal\\">A\\nB</p>"
+Harness: the test ran to completion.
+

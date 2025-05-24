@@ -70,7 +70,7 @@ class WebApkDatabaseTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     profile_ = testing_profile_manager_.CreateTestingProfile(
-        TestingProfile::kDefaultProfileUserName, true);
+        TestingProfile::kDefaultProfileUserName);
 
     data_type_store_service_ = std::make_unique<FakeDataTypeStoreService>();
 

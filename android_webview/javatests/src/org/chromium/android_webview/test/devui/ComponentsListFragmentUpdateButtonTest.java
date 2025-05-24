@@ -52,7 +52,7 @@ public class ComponentsListFragmentUpdateButtonTest {
     public BaseActivityTestRule<MainActivity> mRule =
             new BaseActivityTestRule<>(MainActivity.class);
 
-    private static File sComponentsDownloadDir =
+    private static final File sComponentsDownloadDir =
             new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath());
 
     @Before

@@ -53,7 +53,7 @@ WebApkInfo::WebApkInfo(std::string name,
       is_backing_browser(is_backing_browser),
       update_status(std::move(update_status)) {}
 
-WebApkInfo::~WebApkInfo() {}
+WebApkInfo::~WebApkInfo() = default;
 
 WebApkInfo& WebApkInfo::operator=(WebApkInfo&& rhs) noexcept = default;
 WebApkInfo::WebApkInfo(WebApkInfo&& other) noexcept = default;

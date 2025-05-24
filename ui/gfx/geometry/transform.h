@@ -15,8 +15,8 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
-#include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/matrix44.h"
 
 namespace gfx {
@@ -47,7 +47,7 @@ struct DecomposedTransform;
 //   in the method comments.
 // - On assignment, the new matrix will keep the choice of the rhs matrix.
 //
-class GEOMETRY_SKIA_EXPORT Transform {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
  public:
   constexpr Transform() : axis_2d_() {}
 
@@ -138,7 +138,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
       return matrix_ == rhs.matrix_;
     return GetFullMatrix() == rhs.GetFullMatrix();
   }
-  bool operator!=(const Transform& rhs) const { return !(*this == rhs); }
 
   // Gets a value at |row|, |col| from the matrix.
   constexpr double rc(int row, int col) const {
@@ -543,6 +542,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Rounds 2d translation components rc(0, 3), rc(1, 3) to integers.
   void Round2dTranslationComponents();
+
+  // Makes rc(0, 3) and rc(1, 3) components integers by flooring.
+  void Floor2dTranslationComponents();
 
   // Rounds translation components to integers, and all other components to
   // identity. Normally this function is meaningful only if

@@ -8,9 +8,9 @@
 #import <Foundation/Foundation.h>
 
 @class ASCredentialServiceIdentifier;
-@class ASPasskeyCredentialRequestParameters;
 @protocol CredentialResponseHandler;
 @protocol CredentialStore;
+@class PasskeyRequestDetails;
 @class ReauthenticationHandler;
 @class UIViewController;
 
@@ -39,9 +39,7 @@
 - (void)stop;
 
 // Set the request parameters for passkeys.
-- (void)setRequestParameters:
-    (ASPasskeyCredentialRequestParameters*)requestParameters
-    API_AVAILABLE(ios(17.0));
+- (void)setPasskeyRequestDetails:(PasskeyRequestDetails*)passkeyRequestDetails;
 
 @end
 

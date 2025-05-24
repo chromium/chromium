@@ -9,23 +9,14 @@ component("lottie") {
     "animation.cc",
     "animation.h",
     "animation_observer.h",
-    "resource.cc",
-    "resource.h",
   ]
 
   defines = [ "IS_UI_LOTTIE_IMPL" ]
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//cc/paint",
+    "//ui/color",
     "//ui/gfx",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ui/base",
-      "//ui/color",
-    ]
-  }
 }

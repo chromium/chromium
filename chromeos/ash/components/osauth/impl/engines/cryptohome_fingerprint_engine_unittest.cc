@@ -20,6 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -86,8 +87,9 @@ TEST_F(CryptohomeFingerprintEngineTest, GetFactor) {
 }
 
 TEST_F(CryptohomeFingerprintEngineTest, StandardSuccessfulAuthenticate) {
-  AccountId id = AccountId::FromUserEmail("test@example.com");
-  user_manager_.AddUser(id);
+  AccountId id =
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
+  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
 
   // Initialize the engine.
   TestFuture<AshAuthFactor> init_common;
@@ -125,8 +127,9 @@ TEST_F(CryptohomeFingerprintEngineTest, StandardSuccessfulAuthenticate) {
 }
 
 TEST_F(CryptohomeFingerprintEngineTest, StandardFailedAuthenticate) {
-  AccountId id = AccountId::FromUserEmail("test@example.com");
-  user_manager_.AddUser(id);
+  AccountId id =
+      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("fakegaia"));
+  user_manager_.AddGaiaUser(id, user_manager::UserType::kRegular);
 
   // Initialize the engine.
   TestFuture<AshAuthFactor> init_common;

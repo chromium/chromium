@@ -13,17 +13,18 @@
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_refresh_state_tracker.h"
 
-@protocol FeedControlDelegate;
 @protocol NewTabPageFollowDelegate;
 @protocol NewTabPageActionsDelegate;
 @class NewTabPageState;
+namespace feature_engagement {
+class Tracker;
+}
 class PrefService;
 
-namespace base {
-class Time;
-}  // namespace base
-
 // Records different metrics for the NTP feeds.
+// TODO(crbug.com/402798827): Rename `FeedMetricsRecorder` to something more
+// general like `FeedRecorder` if kFeedSwipeInProductHelp becomes a full launch
+// candidate.
 @interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
 
 // The last active new tab page state.
@@ -39,6 +40,8 @@ class Time;
 @property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
 
 - (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:
+               (feature_engagement::Tracker*)featureEngagementTracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -62,33 +65,13 @@ class Time;
 // Record metrics for when the user has tapped on the feed preview.
 - (void)recordDiscoverFeedPreviewTapped;
 
-// Record metrics for when the user selects the 'Learn More' item in the feed
-// header menu.
-- (void)recordHeaderMenuLearnMoreTapped;
-
 // Record metrics for when the user selects the 'Manage' item in the feed header
 // menu.
 - (void)recordHeaderMenuManageTapped;
 
-// Record metrics for when the user selects the 'Manage Activity' item in the
-// feed header menu.
-- (void)recordHeaderMenuManageActivityTapped;
-
 // Record metrics for when the user selects the 'Following' item in the feed
 // header menu.
 - (void)recordHeaderMenuManageFollowingTapped;
-
-// Record metrics for when the user selects the 'Hidden' item in the feed
-// management UI.
-- (void)recordHeaderMenuManageHiddenTapped;
-
-// Record metrics for when the user selects the 'Following' item in the feed
-// management UI.
-- (void)recordHeaderMenuManageFollowingTapped;
-
-// Record metrics for when the user toggles the feed visibility from the feed
-// header menu.
-- (void)recordDiscoverFeedVisibilityChanged:(BOOL)visible;
 
 // Records metrics for when a user opens an article in the same tab.
 - (void)recordOpenURLInSameTab;
@@ -228,6 +211,14 @@ class Time;
 
 // Records a user action for the Following feed sort type being selected.
 - (void)recordFollowingFeedSortTypeSelected:(FollowingFeedSortType)sortType;
+
+// Records when the user has scrolled `scrollDistance` in a carousel within a
+// cell.
+- (void)recordCarouselScrolled:(int)scrollDistance;
+
+// Records that an error has occurred when handling `action` requested by the
+// feed.
+- (void)recordFeedHandlingError:(NSString*)action;
 
 // Records the value of the uniformity flag value from Discover.
 - (void)recordUniformityFlagValue:(BOOL)flag;

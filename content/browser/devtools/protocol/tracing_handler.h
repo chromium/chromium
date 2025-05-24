@@ -71,21 +71,21 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   void OnTraceToStreamComplete(const std::string& stream_handle);
 
   // Protocol methods.
-  void Start(Maybe<std::string> categories,
-             Maybe<std::string> options,
-             Maybe<double> buffer_usage_reporting_interval,
-             Maybe<std::string> transfer_mode,
-             Maybe<std::string> transfer_format,
-             Maybe<std::string> transfer_compression,
-             Maybe<Tracing::TraceConfig> config,
-             Maybe<Binary> perfetto_config,
-             Maybe<std::string> tracing_backend,
+  void Start(std::optional<std::string> categories,
+             std::optional<std::string> options,
+             std::optional<double> buffer_usage_reporting_interval,
+             std::optional<std::string> transfer_mode,
+             std::optional<std::string> transfer_format,
+             std::optional<std::string> transfer_compression,
+             std::unique_ptr<Tracing::TraceConfig> config,
+             std::optional<Binary> perfetto_config,
+             std::optional<std::string> tracing_backend,
              std::unique_ptr<StartCallback> callback) override;
   Response End() override;
   void GetCategories(std::unique_ptr<GetCategoriesCallback> callback) override;
   void RequestMemoryDump(
-      Maybe<bool> deterministic,
-      Maybe<std::string> level_of_detail,
+      std::optional<bool> deterministic,
+      std::optional<std::string> level_of_detail,
       std::unique_ptr<RequestMemoryDumpCallback> callback) override;
   Response RecordClockSyncMarker(const std::string& sync_id) override;
 

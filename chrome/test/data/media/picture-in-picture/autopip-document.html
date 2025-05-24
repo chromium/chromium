@@ -2,6 +2,8 @@
 <head>
 <meta charset="utf-8">
 <title>Autopip Document Picture-in-Picture</title>
+<script src="../../webrtc/test_functions.js"></script>
+<script src="../../webrtc/getusermedia.js"></script>
 </head>
 <body>
   <video id="video" controls loop>
@@ -19,6 +21,12 @@ function playVideo() {
 function pauseVideo() {
   video.pause();
   navigator.mediaSession.playbackState = "paused";
+}
+
+function triggerNewPlayerCreation() {
+  video.removeAttribute('src');
+  video.src = "../bigbuck.webm";
+  return true;
 }
 
 function openPip() {

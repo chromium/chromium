@@ -1,0 +1,12 @@
+include_rules = [
+  "+components/application_locale_storage",
+  "+components/keyed_service/core",
+  "+components/search",
+  "+components/signin/public/identity_manager",
+  "+components/version_info",
+  "+net",
+  "+services/network/public",
+  "+services/network/test",
+  "+third_party/skia",
+  "+ui/base",
+]

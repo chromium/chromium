@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.tabpersistence;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabState;
 
 import java.nio.ByteBuffer;
 
 /** Interface for serializing and deserializing {@link TabState} */
+@NullMarked
 public interface TabStateSerializer {
 
     /**
@@ -22,7 +25,7 @@ public interface TabStateSerializer {
 
     /**
      * @param byteBuffer serialized {@link TabState}
-     * @return deserialized {@link TabState}
+     * @return deserialized {@link TabState} or null if it failed.
      */
-    TabState deserialize(ByteBuffer byteBuffer);
+    @Nullable TabState deserialize(ByteBuffer byteBuffer);
 }

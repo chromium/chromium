@@ -12,10 +12,11 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -59,6 +60,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -72,11 +74,15 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/test/event_generator.h"
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 using content::EvalJs;
@@ -214,7 +220,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
                       base::NumberToString(window_size.width()),
                       ",height:", base::NumberToString(window_size.height()),
                       ",preferInitialWindowPlacement:",
-                      prefer_initial_window_placement ? "true" : "false"});
+                      base::ToString(prefer_initial_window_placement)});
     script = base::StrCat({script, "})"});
     ASSERT_EQ(true, EvalJs(active_web_contents, script));
     ASSERT_TRUE(window_controller() != nullptr);
@@ -253,6 +259,22 @@ class DocumentPictureInPictureWindowControllerBrowserTest
         true, base::Minutes(1))
         .Wait();
     EXPECT_NE(browser_view->GetBounds().origin(), gfx::Point(0, 0));
+  }
+
+  const std::string GetPipWindowPageTitle(content::WebContents* web_contents) {
+    return EvalJs(web_contents, "getPipWindowPageTitle();").ExtractString();
+  }
+
+  void SetPipWindowPageTitle(content::WebContents* web_contents,
+                             std::string title) {
+    std::string script =
+        base::StrCat({"setPipWindowPageTitle(\"", title, "\");"});
+
+    ASSERT_EQ(true, EvalJs(web_contents, script));
+  }
+
+  const std::string GetWindowPageTitle(content::WebContents* web_contents) {
+    return EvalJs(web_contents, "getWindowPageTitle();").ExtractString();
   }
 
   // Watch for destruction of a WebContents. `is_destroyed()` will report if the
@@ -616,7 +638,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   // Simulate a click on the document picture in picture window title, and
   // verify that the context menu is not shown.
   pip_frame_view->frame()->ShowContextMenuForViewImpl(
-      window_title, click_location, ui::MenuSourceType::MENU_SOURCE_MOUSE);
+      window_title, click_location, ui::mojom::MenuSourceType::kMouse);
 
   EXPECT_EQ(false, pip_frame_view->frame()->IsMenuRunnerRunningForTesting());
 }
@@ -644,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(window_controller()->GetChildWebContents());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verify that it is possible to resize a document picture in picture window
 // using the resize outside bound in ChromeOS ASH.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
@@ -678,10 +700,18 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   const auto expected_size = initial_window_size + gfx::Size(drag_distance, 0);
   ASSERT_EQ(expected_size, window->GetBoundsInScreen().size());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        WindowBoundsAreCached) {
+#if BUILDFLAG(IS_OZONE)
+  // Ozone/wayland doesn't support getting/setting window position in global
+  // screen coordinates. So this test is not applicable there as it essentially
+  // validates that.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP();
+  }
+#endif
   // Create a Document PiP window with any size.  We want to be sure that this
   // fits in the display comfortably.
   const gfx::Size size(400, 410);
@@ -906,4 +936,43 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   // The picture-in-picture window should no longer have system focus.
   EXPECT_TRUE(widget_activation_waiter.WaitForActivationState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       AccessibleTabLabelReturnsCorrectTitle) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* opener_web_contents = window_controller()->GetWebContents();
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+
+  // Verify that the pip window page title is empty and, the opener window page
+  // title is not.
+  const std::string pip_window_page_title =
+      GetPipWindowPageTitle(opener_web_contents);
+  EXPECT_TRUE(pip_window_page_title.empty());
+  const std::string window_page_title = GetWindowPageTitle(opener_web_contents);
+  EXPECT_FALSE(window_page_title.empty());
+
+  // Verify that the accessible label returns the opener window page title, when
+  // the pip window page title is not set.
+  EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
+            browser_view->GetAccessibleTabLabel(
+                browser()->tab_strip_model()->active_index()));
+
+  // Set the pip window page title and ensure that the pip and opener window
+  // page titles are different.
+  const std::string new_pip_window_page_title = "Test PiP Page Title";
+  SetPipWindowPageTitle(opener_web_contents, new_pip_window_page_title);
+  EXPECT_EQ(new_pip_window_page_title,
+            GetPipWindowPageTitle(opener_web_contents));
+  EXPECT_NE(new_pip_window_page_title, window_page_title);
+
+  // Verify that, although the pip window page title is set, the accessible
+  // label returns the opener window page title.
+  EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
+            browser_view->GetAccessibleTabLabel(
+                browser()->tab_strip_model()->active_index()));
 }

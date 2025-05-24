@@ -5,30 +5,24 @@
 #include "chrome/browser/sync/chrome_sync_client.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_key.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/sync/data_type_store_service_factory.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/sync_invalidations_service_factory.h"
-#include "chrome/browser/trusted_vault/trusted_vault_service_factory.h"
+#include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/service/trusted_vault_synthetic_field_trial.h"
@@ -38,11 +32,6 @@
 #include "content/public/browser/browser_thread.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/password_manager/account_password_store_factory.h"
-#include "chrome/browser/password_manager/profile_password_store_factory.h"
-#include "chrome/browser/reading_list/reading_list_model_factory.h"
-#include "components/browser_sync/sync_client_utils.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -52,61 +41,65 @@ namespace {
 
 using content::BrowserThread;
 
-// A global variable is needed to detect multiprofile scenarios where more than
-// one profile try to register a synthetic field trial.
-bool trusted_vault_synthetic_field_trial_registered = false;
-
 #if BUILDFLAG(IS_WIN)
 constexpr base::FilePath::CharType kLoopbackServerBackendFilename[] =
     FILE_PATH_LITERAL("profile.pb");
 #endif  // BUILDFLAG(IS_WIN)
 
+// A global variable is needed to detect multi-profile scenarios where more than
+// one profile try to register a synthetic field trial. Rather than using a
+// boolean, a struct is used to handle the case where the same profile is loaded
+// multiple times and tries to register the very same synthetic field trial
+// group (which shouldn't be considered a conflict).
+struct ProfileAndGroupName {
+  base::FilePath profile_base_name;
+  std::string group_name;
+
+  friend bool operator==(const ProfileAndGroupName& lhs,
+                         const ProfileAndGroupName& rhs) = default;
+};
+
+std::optional<ProfileAndGroupName>& GetRegisteredProfileAndGroupName() {
+  static base::NoDestructor<std::optional<ProfileAndGroupName>> value;
+  return *value;
+}
+
 }  // namespace
 
-ChromeSyncClient::ChromeSyncClient(Profile* profile)
-    : profile_(profile), extensions_activity_monitor_(profile) {
+ChromeSyncClient::ChromeSyncClient(
+    const base::FilePath& profile_base_name,
+    PrefService* pref_service,
+    signin::IdentityManager* identity_manager,
+    trusted_vault::TrustedVaultService* trusted_vault_service,
+    syncer::SyncInvalidationsService* sync_invalidations_service,
+    syncer::DeviceInfoSyncService* device_info_sync_service,
+    syncer::DataTypeStoreService* data_type_store_service,
+    supervised_user::SupervisedUserSettingsService*
+        supervised_user_settings_service,
+    std::unique_ptr<ExtensionsActivityMonitor> extensions_activity_monitor)
+    : profile_base_name_(profile_base_name),
+      pref_service_(pref_service),
+      identity_manager_(identity_manager),
+      trusted_vault_service_(trusted_vault_service),
+      sync_invalidations_service_(sync_invalidations_service),
+      supervised_user_settings_service_(supervised_user_settings_service),
+      extensions_activity_monitor_(std::move(extensions_activity_monitor)),
+      engine_factory_(this,
+                      device_info_sync_service->GetDeviceInfoTracker(),
+                      data_type_store_service->GetSyncDataPath()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  engine_factory_ = std::make_unique<SyncEngineFactoryImpl>(
-      this,
-      DeviceInfoSyncServiceFactory::GetForProfile(profile_)
-          ->GetDeviceInfoTracker(),
-      DataTypeStoreServiceFactory::GetForProfile(profile_)->GetSyncDataPath());
-
-#if BUILDFLAG(IS_ANDROID)
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      profile_password_store = ProfilePasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  scoped_refptr<password_manager::PasswordStoreInterface>
-      account_password_store = AccountPasswordStoreFactory::GetForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS);
-
-  local_data_query_helper_ =
-      std::make_unique<browser_sync::LocalDataQueryHelper>(
-          profile_password_store.get(), account_password_store.get(),
-          BookmarkModelFactory::GetForBrowserContext(profile_),
-          ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
-              profile_));
-
-  local_data_migration_helper_ =
-      std::make_unique<browser_sync::LocalDataMigrationHelper>(
-          profile_password_store.get(), account_password_store.get(),
-          BookmarkModelFactory::GetForBrowserContext(profile_),
-          ReadingListModelFactory::GetAsDualReadingListForBrowserContext(
-              profile_));
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;
 
 PrefService* ChromeSyncClient::GetPrefService() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return profile_->GetPrefs();
+  return pref_service_;
 }
 
 signin::IdentityManager* ChromeSyncClient::GetIdentityManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return IdentityManagerFactory::GetForProfile(profile_);
+  return identity_manager_;
 }
 
 base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
@@ -130,7 +123,7 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
   // should be considered roamed. For now the code assumes all profiles are
   // created in the same order on all machines.
   local_sync_backend_folder =
-      local_sync_backend_folder.Append(profile_->GetBaseName());
+      local_sync_backend_folder.Append(profile_base_name_);
   local_sync_backend_folder =
       local_sync_backend_folder.Append(kLoopbackServerBackendFilename);
 #endif  // BUILDFLAG(IS_WIN)
@@ -138,54 +131,35 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
   return local_sync_backend_folder;
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void ChromeSyncClient::GetLocalDataDescriptions(
-    syncer::DataTypeSet types,
-    base::OnceCallback<void(
-        std::map<syncer::DataType, syncer::LocalDataDescription>)> callback) {
-  types.RemoveAll(
-      local_data_migration_helper_->GetTypesWithOngoingMigrations());
-  local_data_query_helper_->Run(types, std::move(callback));
-}
-
-void ChromeSyncClient::TriggerLocalDataMigration(syncer::DataTypeSet types) {
-  local_data_migration_helper_->Run(types);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 trusted_vault::TrustedVaultClient* ChromeSyncClient::GetTrustedVaultClient() {
-  return TrustedVaultServiceFactory::GetForProfile(profile_)
-      ->GetTrustedVaultClient(trusted_vault::SecurityDomainId::kChromeSync);
+  return trusted_vault_service_->GetTrustedVaultClient(
+      trusted_vault::SecurityDomainId::kChromeSync);
 }
 
 syncer::SyncInvalidationsService*
 ChromeSyncClient::GetSyncInvalidationsService() {
-  return SyncInvalidationsServiceFactory::GetForProfile(profile_);
+  return sync_invalidations_service_;
 }
 
 scoped_refptr<syncer::ExtensionsActivity>
 ChromeSyncClient::GetExtensionsActivity() {
-  return extensions_activity_monitor_.GetExtensionsActivity();
+  return extensions_activity_monitor_->GetExtensionsActivity();
 }
 
 syncer::SyncEngineFactory* ChromeSyncClient::GetSyncEngineFactory() {
-  return engine_factory_.get();
+  return &engine_factory_;
 }
 
 bool ChromeSyncClient::IsCustomPassphraseAllowed() {
-  supervised_user::SupervisedUserSettingsService*
-      supervised_user_settings_service =
-          SupervisedUserSettingsServiceFactory::GetForKey(
-              profile_->GetProfileKey());
-  if (supervised_user_settings_service) {
-    return supervised_user_settings_service->IsCustomPassphraseAllowed();
+  if (supervised_user_settings_service_) {
+    return supervised_user_settings_service_->IsCustomPassphraseAllowed();
   }
   return true;
 }
 
 bool ChromeSyncClient::IsPasswordSyncAllowed() {
 #if BUILDFLAG(IS_ANDROID)
-  return profile_->GetPrefs()->GetInteger(
+  return pref_service_->GetInteger(
              password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores) !=
          static_cast<int>(
              password_manager::prefs::UseUpmLocalAndSeparateStoresState::
@@ -200,7 +174,7 @@ void ChromeSyncClient::SetPasswordSyncAllowedChangeCb(
 #if BUILDFLAG(IS_ANDROID)
   CHECK(!upm_pref_change_registrar_.prefs())
       << "SetPasswordSyncAllowedChangeCb() must be called at most once";
-  upm_pref_change_registrar_.Init(profile_->GetPrefs());
+  upm_pref_change_registrar_.Init(pref_service_);
   // This overfires: the kPasswordsUseUPMLocalAndSeparateStores pref might have
   // changed value, but not IsPasswordSyncAllowed(). That's fine, `cb` should
   // handle this case.
@@ -215,23 +189,33 @@ void ChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());
 
-  if (!base::FeatureList::IsEnabled(
-          syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrial)) {
-    // Disabled via variations, as additional safeguard.
-    return;
-  }
+  ProfileAndGroupName new_profile_and_group_name{profile_base_name_,
+                                                 group.name()};
 
-  // If `trusted_vault_synthetic_field_trial_registered` is true, and given that
-  // each SyncService invokes this function at most once, it means that multiple
-  // profiles are trying to register a synthetic field trial. In that case,
-  // register a special "conflict" group.
+  std::optional<ProfileAndGroupName>& global_profile_and_group_name =
+      GetRegisteredProfileAndGroupName();
+
+  // If a group is previously set, it may imply that a different profile has
+  // just been loaded, as this function is invoked at most once per profile.
+  // However, on some platforms (e.g. Mac), the same profile can be closed and
+  // loaded once again, and this case should not count as a conflict case.
+  const bool multi_profile_conflict =
+      global_profile_and_group_name.has_value() &&
+      global_profile_and_group_name.value() != new_profile_and_group_name;
+
+  // Use a special group name if a multi-profile conflict was detected.
   const std::string group_name =
-      trusted_vault_synthetic_field_trial_registered
+      multi_profile_conflict
           ? syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup::
                 GetMultiProfileConflictGroupName()
           : group.name();
 
-  trusted_vault_synthetic_field_trial_registered = true;
+  // If a conflict was detected, ensure that future runs of this function will
+  // also report a conflict by using a pair that won't match future invocations
+  // of this function.
+  global_profile_and_group_name =
+      multi_profile_conflict ? ProfileAndGroupName{base::FilePath(), group_name}
+                             : new_profile_and_group_name;
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       syncer::kTrustedVaultAutoUpgradeSyntheticFieldTrialName, group_name,

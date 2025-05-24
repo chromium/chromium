@@ -6,10 +6,10 @@
 
 namespace blink {
 
-ScriptValue ReportBody::toJSON(ScriptState* script_state) const {
+ScriptObject ReportBody::toJSON(ScriptState* script_state) const {
   V8ObjectBuilder result(script_state);
   BuildJSONValue(result);
-  return result.GetScriptValue();
+  return result.ToScriptObject();
 }
 
 }  // namespace blink

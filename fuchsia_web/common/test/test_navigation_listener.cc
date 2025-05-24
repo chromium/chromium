@@ -68,7 +68,7 @@ void TestNavigationListener::RunUntilUrlEquals(const GURL& expected_url) {
 }
 
 void TestNavigationListener::RunUntilTitleEquals(
-    const std::string_view expected_title) {
+    std::string_view expected_title) {
   fuchsia::web::NavigationState state;
   state.set_title(std::string(expected_title));
   state.set_page_type(fuchsia::web::PageType::NORMAL);
@@ -77,7 +77,7 @@ void TestNavigationListener::RunUntilTitleEquals(
 
 void TestNavigationListener::RunUntilUrlAndTitleEquals(
     const GURL& expected_url,
-    const std::string_view expected_title) {
+    std::string_view expected_title) {
   fuchsia::web::NavigationState state;
   state.set_url(expected_url.spec());
   state.set_title(std::string(expected_title));
@@ -124,16 +124,24 @@ void TestNavigationListener::OnNavigationStateChanged(
   DCHECK(before_ack_);
 
   // Update our local cache of the Frame's current state.
-  if (changes.has_url())
+  if (changes.has_url()) {
     current_state_.set_url(changes.url());
-  if (changes.has_title())
+  }
+  if (changes.has_title()) {
     current_state_.set_title(changes.title());
-  if (changes.has_can_go_back())
+  }
+  if (changes.has_can_go_back()) {
     current_state_.set_can_go_back(changes.can_go_back());
-  if (changes.has_can_go_forward())
+  }
+  if (changes.has_can_go_forward()) {
     current_state_.set_can_go_forward(changes.can_go_forward());
-  if (changes.has_page_type())
+  }
+  if (changes.has_page_type()) {
     current_state_.set_page_type(changes.page_type());
+  }
+  if (changes.has_error_detail()) {
+    current_state_.set_error_detail(changes.error_detail());
+  }
   if (changes.has_is_main_document_loaded()) {
     current_state_.set_is_main_document_loaded(
         changes.is_main_document_loaded());
@@ -248,6 +256,17 @@ bool TestNavigationListener::AllFieldsMatch(
       failure_reasons->push_back(
           {"is_main_document_loaded",
            base::NumberToString(expected_state_->is_main_document_loaded())});
+    }
+    success = false;
+  }
+
+  if (expected_state_->has_error_detail() &&
+      (!current_state_.has_error_detail() ||
+       expected_state_->error_detail() != current_state_.error_detail())) {
+    if (failure_reasons) {
+      failure_reasons->push_back(
+          {"error_detail",
+           base::NumberToString(expected_state_->error_detail())});
     }
     success = false;
   }

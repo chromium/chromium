@@ -39,6 +39,7 @@ goog.inherits(
  * Redraw the rectangle.  Called when the coordinate system is changed.
  * @protected
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.ext.Rectangle.prototype.redraw = function() {
   'use strict';

@@ -57,9 +57,9 @@ GenerateAuthFactorExtendedInfoRequest(int depth) {
 
 }  // namespace
 
-CryptohomeWebUIHandler::CryptohomeWebUIHandler() {}
+CryptohomeWebUIHandler::CryptohomeWebUIHandler() = default;
 
-CryptohomeWebUIHandler::~CryptohomeWebUIHandler() {}
+CryptohomeWebUIHandler::~CryptohomeWebUIHandler() = default;
 
 void CryptohomeWebUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -136,6 +136,14 @@ void CryptohomeWebUIHandler::OnGetAuthFactorExtendedInfo(
                           return ss.empty() ? s : ss + " " + s;
                         });
   }
+
+  std::string recovery_seed = "<empty>";
+  if (reply.has_value() &&
+      !reply->recovery_info_reply().recovery_seed().empty()) {
+    recovery_seed = reply->recovery_info_reply().recovery_seed();
+  }
+
+  SetCryptohomeProperty("recovery_seed", base::Value(recovery_seed));
   SetCryptohomeProperty("recovery_ids", base::Value(recovery_ids));
 }
 

@@ -8,9 +8,10 @@ import android.content.Context;
 import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
@@ -22,6 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Helper for showing management notice dialog and record metrics during the fre sign-in flow. */
+@NullMarked
 final class FreManagementNoticeDialogHelper {
     private static final String UNMANAGED_SIGNIN_DURATION_NAME =
             "Signin.Android.FREUnmanagedAccountSigninDuration";
@@ -52,10 +54,10 @@ final class FreManagementNoticeDialogHelper {
 
     private FreManagementNoticeDialogHelper() {}
 
-    private static class WrappedSigninCallback implements SigninManager.SignInCallback {
-        private SigninManager.SignInCallback mWrappedCallback;
+    private static class WrappedSigninCallback implements SignInCallback {
+        private final @Nullable SignInCallback mWrappedCallback;
 
-        public WrappedSigninCallback(SigninManager.SignInCallback callback) {
+        public WrappedSigninCallback(@Nullable SignInCallback callback) {
             mWrappedCallback = callback;
         }
 
@@ -79,7 +81,8 @@ final class FreManagementNoticeDialogHelper {
      * Performs signin after confirming account management with the user, if necessary. Also records
      * FRE metrics.
      *
-     * <p>TODO(crbug.com/349787455): Do not record FRE metrics in the upgrade promo.
+     * <p>TODO(crbug.com/349787455): Do not record FRE metrics in the non-FRE fullscreen sign-in
+     * flows.
      */
     static void checkAccountManagementAndSignIn(
             CoreAccountInfo coreAccountInfo,
@@ -94,7 +97,7 @@ final class FreManagementNoticeDialogHelper {
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.recordMediumTimesHistogram(
+                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                     UNMANAGED_SIGNIN_DURATION_NAME,
                                     SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);
@@ -141,7 +144,7 @@ final class FreManagementNoticeDialogHelper {
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.recordMediumTimesHistogram(
+                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                     UNMANAGED_SIGNIN_DURATION_NAME,
                                     SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);

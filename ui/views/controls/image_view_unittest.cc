@@ -105,7 +105,7 @@ TEST_P(ImageViewTest, CenterAlignment) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(kImageSkiaSize, kImageSkiaSize);
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  image_view()->SetImage(image_skia);
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(image_skia));
   views::test::RunScheduledLayout(image_view());
   EXPECT_NE(gfx::Size(), image_skia.size());
 
@@ -145,7 +145,7 @@ TEST_P(ImageViewTest, ImageOriginForCustomViewBounds) {
   constexpr int kImageSkiaSize = 20;
   bitmap.allocN32Pixels(kImageSkiaSize, kImageSkiaSize);
   gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
-  image_view()->SetImage(image_skia);
+  image_view()->SetImage(ui::ImageModel::FromImageSkia(image_skia));
 
   EXPECT_EQ(gfx::Point(30, 30), image_view()->GetImageBounds().origin());
   EXPECT_EQ(image_view_bounds, image_view()->bounds());
@@ -154,7 +154,7 @@ TEST_P(ImageViewTest, ImageOriginForCustomViewBounds) {
 // Verifies setting the accessible name will be call NotifyAccessibilityEvent.
 TEST_P(ImageViewTest, SetAccessibleNameNotifiesAccessibilityEvent) {
   std::u16string test_tooltip_text = u"Test Tooltip Text";
-  test::AXEventCounter counter(views::AXEventManager::Get());
+  test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kTextChanged));
   image_view()->GetViewAccessibility().SetName(test_tooltip_text);
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kTextChanged));

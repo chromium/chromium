@@ -25,10 +25,10 @@ struct ExternalInstallInfoUpdateUrl;
 class ExternalProviderInterface {
  public:
   // ExternalProvider uses this interface to communicate back to the
-  // caller what extensions are registered, and which |id|, |version| and |path|
-  // they have. See also VisitRegisteredExtension below. Ownership of |version|
+  // caller what extensions are registered, and which `id`, `version` and `path`
+  // they have. See also VisitRegisteredExtension below. Ownership of `version`
   // is not transferred to the visitor.  Callers of the methods below must
-  // ensure that |id| is a valid extension id (use
+  // ensure that `id` is a valid extension id (use
   // crx_file::id_util::IdIsValid(id)).
   class VisitorInterface {
    public:
@@ -46,7 +46,7 @@ class ExternalProviderInterface {
         bool force_update) = 0;
 
     // Called after all the external extensions have been reported
-    // through the above two methods. |provider| is a pointer to the
+    // through the above two methods. `provider` is a pointer to the
     // provider that is now ready (typically this), and the
     // implementation of OnExternalProviderReady() should be able to
     // safely assert that provider->IsReady().
@@ -74,12 +74,18 @@ class ExternalProviderInterface {
   virtual void ServiceShutdown() = 0;
 
   // Enumerate registered extensions, calling
-  // OnExternalExtension(File|UpdateUrl)Found on the |visitor| object for each
+  // OnExternalExtension(File|UpdateUrl)Found on the `visitor` object for each
   // registered extension found if the external loader calls LoadFinished().
   virtual void VisitRegisteredExtension() = 0;
 
-  // Test if this provider has an extension with id |id| registered.
+  // Test if this provider has an extension with id `id` registered.
   virtual bool HasExtension(const std::string& id) const = 0;
+
+  // Test if this provider has an extension with id `id` and location `location`
+  // registered.
+  virtual bool HasExtensionWithLocation(
+      const std::string& id,
+      mojom::ManifestLocation location) const = 0;
 
   // Gets details of an extension by its id.  Output params will be set only
   // if they are not NULL.  If an output parameter is not specified by the
@@ -100,6 +106,14 @@ class ExternalProviderInterface {
   // and is independent of the external loader calling LoadFinished(). This
   // method does not load the prefs, but uses the ones present in the provider.
   virtual void TriggerOnExternalExtensionFound() = 0;
+
+  // Sets underlying prefs and notifies provider. Only to be called by the
+  // owned ExternalLoader instance.
+  virtual void SetPrefs(base::Value::Dict prefs) {}
+
+  // Updates the underlying prefs and notifies provider.
+  // Only to be called by the owned ExternalLoader instance.
+  virtual void UpdatePrefs(base::Value::Dict prefs) {}
 };
 
 using ProviderCollection =

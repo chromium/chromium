@@ -10,12 +10,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_delegate.h"
+#include "third_party/blink/renderer/modules/payments/payment_response.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -34,8 +35,7 @@ class MockPaymentRequest : public GarbageCollected<MockPaymentRequest>,
 
   ~MockPaymentRequest() override = default;
 
-  MOCK_METHOD1(OnUpdatePaymentDetails,
-               void(const ScriptValue& detailsScriptValue));
+  MOCK_METHOD1(OnUpdatePaymentDetails, void(PaymentDetailsUpdate* details));
   MOCK_METHOD1(OnUpdatePaymentDetailsFailure, void(const String& error));
   bool IsInteractive() const override { return true; }
 
@@ -52,7 +52,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsCalled) {
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -74,7 +74,7 @@ TEST(PaymentRequestUpdateEventTest, OnUpdatePaymentDetailsFailureCalled) {
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -93,11 +93,12 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateWithoutDispatching) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetPaymentRequest((MakeGarbageCollected<MockPaymentRequest>()));
 
-  event->updateWith(scope.GetScriptState(),
-                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-                        scope.GetScriptState())
-                        ->Promise(),
-                    scope.GetExceptionState());
+  event->updateWith(
+      scope.GetScriptState(),
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
+          scope.GetScriptState())
+          ->Promise(),
+      scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
@@ -111,18 +112,20 @@ TEST(PaymentRequestUpdateEventTest, CannotUpdateTwice) {
   event->SetTrusted(true);
   event->SetPaymentRequest(request);
   event->SetEventPhase(Event::PhaseType::kCapturingPhase);
-  event->updateWith(scope.GetScriptState(),
-                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-                        scope.GetScriptState())
-                        ->Promise(),
-                    scope.GetExceptionState());
+  event->updateWith(
+      scope.GetScriptState(),
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
+          scope.GetScriptState())
+          ->Promise(),
+      scope.GetExceptionState());
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 
-  event->updateWith(scope.GetScriptState(),
-                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-                        scope.GetScriptState())
-                        ->Promise(),
-                    scope.GetExceptionState());
+  event->updateWith(
+      scope.GetScriptState(),
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
+          scope.GetScriptState())
+          ->Promise(),
+      scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }
@@ -134,11 +137,12 @@ TEST(PaymentRequestUpdateEventTest, UpdaterNotRequired) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetTrusted(true);
 
-  event->updateWith(scope.GetScriptState(),
-                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-                        scope.GetScriptState())
-                        ->Promise(),
-                    scope.GetExceptionState());
+  event->updateWith(
+      scope.GetScriptState(),
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
+          scope.GetScriptState())
+          ->Promise(),
+      scope.GetExceptionState());
 
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 }
@@ -146,7 +150,6 @@ TEST(PaymentRequestUpdateEventTest, UpdaterNotRequired) {
 TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -158,25 +161,27 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  String error_message;
-  request->show(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), scope.GetExceptionState()));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
-      error_message);
+      promise_tester.ValueAsString());
 
-  event->updateWith(scope.GetScriptState(),
-                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-                        scope.GetScriptState())
-                        ->Promise(),
-                    scope.GetExceptionState());
+  event->updateWith(
+      scope.GetScriptState(),
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
+          scope.GetScriptState())
+          ->Promise(),
+      scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ("PaymentRequest is no longer interactive",
@@ -186,7 +191,6 @@ TEST(PaymentRequestUpdateEventTest, AddressChangeUpdateWithTimeout) {
 TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -198,25 +202,27 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  String error_message;
-  request->show(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), scope.GetExceptionState()));
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
-      error_message);
+      promise_tester.ValueAsString());
 
-  event->updateWith(scope.GetScriptState(),
-                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-                        scope.GetScriptState())
-                        ->Promise(),
-                    scope.GetExceptionState());
+  event->updateWith(
+      scope.GetScriptState(),
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
+          scope.GetScriptState())
+          ->Promise(),
+      scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ("PaymentRequest is no longer interactive",
@@ -226,7 +232,6 @@ TEST(PaymentRequestUpdateEventTest, OptionChangeUpdateWithTimeout) {
 TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -239,13 +244,13 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  String error_message;
-  request->show(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), scope.GetExceptionState()));
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -254,10 +259,11 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
-      error_message);
+      promise_tester.ValueAsString());
 
   payment_details->Resolve();
 }
@@ -265,7 +271,6 @@ TEST(PaymentRequestUpdateEventTest, AddressChangePromiseTimeout) {
 TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
   test::TaskEnvironment task_environment;
   PaymentRequestV8TestingScope scope;
-  MockFunctionScope funcs(scope.GetScriptState());
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), scope.GetExceptionState());
@@ -278,13 +283,13 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
 
   LocalFrame::NotifyUserActivation(
       &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
-  String error_message;
-  request->show(scope.GetScriptState(), scope.GetExceptionState())
-      .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
+  ScriptPromiseTester promise_tester(
+      scope.GetScriptState(),
+      request->show(scope.GetScriptState(), scope.GetExceptionState()));
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   auto* payment_details =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
           scope.GetScriptState());
   event->updateWith(scope.GetScriptState(), payment_details->Promise(),
                     scope.GetExceptionState());
@@ -293,10 +298,11 @@ TEST(PaymentRequestUpdateEventTest, OptionChangePromiseTimeout) {
   request->OnUpdatePaymentDetailsTimeoutForTesting();
 
   scope.PerformMicrotaskCheckpoint();
+  EXPECT_TRUE(promise_tester.IsRejected());
   EXPECT_EQ(
       "AbortError: Timed out waiting for a "
       "PaymentRequestUpdateEvent.updateWith(promise) to resolve.",
-      error_message);
+      promise_tester.ValueAsString());
 
   payment_details->Resolve();
 }
@@ -308,11 +314,12 @@ TEST(PaymentRequestUpdateEventTest, NotAllowUntrustedEvent) {
       scope.GetExecutionContext(), event_type_names::kShippingaddresschange);
   event->SetTrusted(false);
 
-  event->updateWith(scope.GetScriptState(),
-                    MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
-                        scope.GetScriptState())
-                        ->Promise(),
-                    scope.GetExceptionState());
+  event->updateWith(
+      scope.GetScriptState(),
+      MakeGarbageCollected<ScriptPromiseResolver<PaymentDetailsUpdate>>(
+          scope.GetScriptState())
+          ->Promise(),
+      scope.GetExceptionState());
 
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 }

@@ -4,11 +4,12 @@
 
 package org.chromium.components.payments;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.payments.mojom.PaymentOptions;
 
 /** A collection of utility methods for PaymentOptions. */
+@NullMarked
 public class PaymentOptionsUtils {
     /**
      * @param options Any PaymentOption, can be null.

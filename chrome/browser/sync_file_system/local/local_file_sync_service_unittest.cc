@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stdint.h>
 
 #include <memory>
@@ -621,8 +616,8 @@ TEST_F(LocalFileSyncServiceTest, RecordFakeChange) {
 
 class OriginChangeMapTest : public testing::Test {
  protected:
-  OriginChangeMapTest() {}
-  ~OriginChangeMapTest() override {}
+  OriginChangeMapTest() = default;
+  ~OriginChangeMapTest() override = default;
 
   bool NextOriginToProcess(GURL* origin) {
     return map_.NextOriginToProcess(origin);
@@ -658,8 +653,7 @@ TEST_F(OriginChangeMapTest, Basic) {
   ASSERT_EQ(1 + 2 + 4, GetTotalChangeCount());
 
   const GURL kOrigins[] = { kOrigin1, kOrigin2, kOrigin3 };
-  std::set<GURL> all_origins;
-  all_origins.insert(kOrigins, kOrigins + std::size(kOrigins));
+  std::set<GURL> all_origins(std::begin(kOrigins), std::end(kOrigins));
 
   GURL origin;
   while (!all_origins.empty()) {
@@ -696,7 +690,7 @@ TEST_F(OriginChangeMapTest, Basic) {
   SetOriginChangeCount(kOrigin2, 8);
   ASSERT_EQ(1 + 4 + 8, GetTotalChangeCount());
 
-  all_origins.insert(kOrigins, kOrigins + std::size(kOrigins));
+  all_origins.insert(std::begin(kOrigins), std::end(kOrigins));
   while (!all_origins.empty()) {
     ASSERT_TRUE(NextOriginToProcess(&origin));
     ASSERT_TRUE(base::Contains(all_origins, origin));
@@ -718,8 +712,7 @@ TEST_F(OriginChangeMapTest, WithDisabled) {
 
   ASSERT_EQ(1 + 2 + 4, GetTotalChangeCount());
 
-  std::set<GURL> all_origins;
-  all_origins.insert(kOrigins, kOrigins + std::size(kOrigins));
+  std::set<GURL> all_origins(std::begin(kOrigins), std::end(kOrigins));
 
   GURL origin;
   while (!all_origins.empty()) {

@@ -42,6 +42,7 @@ namespace ash {
 class CrosSettings;
 class KioskAppId;
 class OAuth2TokenInitializer;
+class DemoLoginController;
 enum class SigninError;
 
 namespace login {
@@ -146,6 +147,12 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // Calls login() on previously-used `login_performer_`.
   void LoginAuthenticated(std::unique_ptr<UserContext> user_context);
 
+  // Retrieve public session auto-login policy and update the
+  // timer.
+  void ConfigureAutoLogin();
+
+  DemoLoginController* GetDemoLoginControllerForTest();
+
  private:
   friend class ExistingUserControllerTest;
   friend class ExistingUserControllerAutoLoginTest;
@@ -160,9 +167,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   void LoginAsGuest();
   void LoginAsPublicSession(const UserContext& user_context);
   void LoginAsKioskApp(KioskAppId kiosk_app_id);
-  // Retrieve public session auto-login policy and update the
-  // timer.
-  void ConfigureAutoLogin();
 
   // Trigger public session auto-login.
   void OnPublicSessionAutoLoginTimerFire();
@@ -316,14 +320,16 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   // URL to append to start Guest mode with.
   GURL guest_mode_url_;
 
-  // Once Lacros is shipped, this will no longer be necessary.
-  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_ash_httpauth_;
+  std::unique_ptr<HttpAuthDialog::ScopedEnabler> enable_system_httpauth_;
 
   // The displayed email for the next login attempt set by `SetDisplayEmail`.
   std::string display_email_;
 
   // Whether login attempt is running.
   bool is_login_in_progress_ = false;
+
+  // Whether the user has empty password.
+  std::optional<bool> user_has_empty_password_;
 
   // Whether user signin is completed.
   bool is_signin_completed_ = false;
@@ -361,6 +367,9 @@ class ExistingUserController : public HttpAuthDialog::Observer,
 
   // The source of PIN salts. Used to retrieve PIN during TransformPinKey.
   std::unique_ptr<quick_unlock::PinSaltStorage> pin_salt_storage_;
+
+  // Manage auto login for demo mode.
+  std::unique_ptr<ash::DemoLoginController> demo_login_controller_;
 
   base::ScopedObservation<user_manager::UserManager,
                           user_manager::UserManager::Observer>

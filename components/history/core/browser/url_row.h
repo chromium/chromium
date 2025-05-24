@@ -190,8 +190,7 @@ struct VisitContentModelAnnotations {
     static std::optional<Category> FromStringVector(
         const std::vector<std::string>& vector);
     std::string ToString() const;
-    bool operator==(const Category& other) const;
-    bool operator!=(const Category& other) const;
+    friend bool operator==(const Category&, const Category&) = default;
 
     std::string id;
     int weight = 0;

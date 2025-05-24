@@ -4,15 +4,18 @@
 
 package org.chromium.chrome.browser.user_education;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.SupplierUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -29,40 +32,31 @@ import java.util.List;
 
 /**
  * Class that manages requests to trigger IPH's. Customizes the IPH with text bubbles, view
- * highlights, etc. based on the configuration.
- * Recipes for use:
- * 1. Create an IPH bubble anchored to a view:
- * mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(myContext.getResources(),
- *                 FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
- *                 R.string.my_feature_iph_accessibility_text)
- *                                                     .setAnchorView(myAnchorView)
- *                                                     .setCircleHighlight(true)
- *                                                     .build());
- * 2. Create an IPH bubble that does custom logic when shown and hidden
- * mUserEducationHelper.requestShowIPH(new IPHCommandBuilder(myContext.getResources(),
- *                 FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
- *                 R.string.my_feature_iph_accessibility_text)
- *                                                     .setAnchorView(myAnchorView)
- *                                                     .setCircleHighlight(true)
- *                                                     .setOnShowCallback( ()-> doCustomShowLogic())
- *                                                     .setOnDismissCallback(() ->
- *                                                         doCustomDismissLogic())
- *                                                     .build());
+ * highlights, etc. based on the configuration. Recipes for use: 1. Create an IPH bubble anchored to
+ * a view: mUserEducationHelper.requestShowIph(new IphCommandBuilder(myContext.getResources(),
+ * FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
+ * R.string.my_feature_iph_accessibility_text) .setAnchorView(myAnchorView)
+ * .setCircleHighlight(true) .build()); 2. Create an IPH bubble that does custom logic when shown
+ * and hidden mUserEducationHelper.requestShowIph(new IphCommandBuilder(myContext.getResources(),
+ * FeatureConstants.MY_FEATURE_NAME, R.string.my_feature_iph_text,
+ * R.string.my_feature_iph_accessibility_text) .setAnchorView(myAnchorView)
+ * .setCircleHighlight(true) .setOnShowCallback( ()-> doCustomShowLogic()) .setOnDismissCallback(()
+ * -> doCustomDismissLogic()) .build());
  */
+@NullMarked
 public class UserEducationHelper {
     private final Activity mActivity;
     private final Handler mHandler;
 
     private Profile mProfile;
-    private List<IPHCommand> mPendingIPHCommands;
-    private TextBubble mTextBubble;
+    private @Nullable List<IphCommand> mPendingIphCommands;
+    private @Nullable TextBubble mTextBubble;
 
     /**
      * Constructs a {@link UserEducationHelper} that is immediately available to process inbound
-     * {@link IPHCommand}s.
+     * {@link IphCommand}s.
      */
-    public UserEducationHelper(
-            @NonNull Activity activity, @NonNull Profile profile, Handler handler) {
+    public UserEducationHelper(Activity activity, Profile profile, Handler handler) {
         assert activity != null : "Trying to show an IPH for a null activity.";
         assert profile != null : "Trying to show an IPH with a null profile";
 
@@ -74,15 +68,13 @@ public class UserEducationHelper {
 
     /**
      * Constructs a {@link UserEducationHelper} that will wait for a {@link Profile} to become
-     * available before processing inbound {@link IPHCommand}s.
+     * available before processing inbound {@link IphCommand}s.
      *
      * <p>Caveat, this will only observe the first available Profile from the supplier and will keep
      * a reference to the {@link Profile#getOriginalProfile()}.
      */
     public UserEducationHelper(
-            @NonNull Activity activity,
-            @NonNull Supplier<Profile> profileSupplier,
-            Handler handler) {
+            Activity activity, Supplier<Profile> profileSupplier, Handler handler) {
         assert activity != null : "Trying to show an IPH for a null activity.";
         assert profileSupplier != null : "Trying to show an IPH with a null profile supplier";
 
@@ -92,40 +84,41 @@ public class UserEducationHelper {
         SupplierUtils.waitForAll(() -> setProfile(profileSupplier.get()), profileSupplier);
     }
 
+    @Initializer
     private void setProfile(Profile profile) {
         assert profile != null;
         mProfile = profile.getOriginalProfile();
 
-        if (mPendingIPHCommands != null) {
-            for (IPHCommand iphCommand : mPendingIPHCommands) {
-                requestShowIPH(iphCommand);
+        if (mPendingIphCommands != null) {
+            for (IphCommand iphCommand : mPendingIphCommands) {
+                requestShowIph(iphCommand);
             }
-            mPendingIPHCommands = null;
+            mPendingIphCommands = null;
         }
     }
 
     /**
      * Requests display of the in-product help (IPH) data in @param iphCommand.
-     * @see IPHCommand for a breakdown of this data.
-     * Display will only occur if the feature engagement tracker for the current profile says it
-     * should.
+     *
+     * @see IphCommand for a breakdown of this data. Display will only occur if the feature
+     *     engagement tracker for the current profile says it should.
      */
-    public void requestShowIPH(IPHCommand iphCommand) {
+    public void requestShowIph(IphCommand iphCommand) {
         if (iphCommand == null) return;
 
         if (mProfile == null) {
-            if (mPendingIPHCommands == null) mPendingIPHCommands = new ArrayList<>();
-            mPendingIPHCommands.add(iphCommand);
+            if (mPendingIphCommands == null) mPendingIphCommands = new ArrayList<>();
+            mPendingIphCommands.add(iphCommand);
             return;
         }
 
-        try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIPH")) {
+        try (TraceEvent te = TraceEvent.scoped("UserEducationHelper::requestShowIph")) {
             final Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
-            tracker.addOnInitializedCallback(success -> showIPH(tracker, iphCommand));
+            tracker.addOnInitializedCallback(success -> showIph(tracker, iphCommand));
         }
     }
 
-    private void showIPH(Tracker tracker, IPHCommand iphCommand) {
+    private void showIph(Tracker tracker, IphCommand iphCommand) {
         // Activity was destroyed; don't show IPH.
         View anchorView = iphCommand.anchorView;
         if (mActivity == null
@@ -150,7 +143,7 @@ public class UserEducationHelper {
         mTextBubble = null;
         TriggerDetails triggerDetails =
                 new TriggerDetails(
-                        tracker.shouldTriggerHelpUI(featureName), /* shouldShowSnooze= */ false);
+                        tracker.shouldTriggerHelpUi(featureName), /* shouldShowSnooze= */ false);
 
         assert (triggerDetails != null);
         if (!triggerDetails.shouldTriggerIph) {
@@ -163,10 +156,10 @@ public class UserEducationHelper {
         iphCommand.fetchFromResources();
 
         if (iphCommand.showTextBubble) {
-            String contentString = iphCommand.contentString;
-            String accessibilityString = iphCommand.accessibilityText;
-            assert (!contentString.isEmpty());
-            assert (!accessibilityString.isEmpty());
+            String contentString = assumeNonNull(iphCommand.contentString);
+            String accessibilityString = assumeNonNull(iphCommand.accessibilityText);
+            assert !contentString.isEmpty();
+            assert !accessibilityString.isEmpty();
 
             mTextBubble =
                     new TextBubble(
@@ -175,7 +168,9 @@ public class UserEducationHelper {
                             contentString,
                             accessibilityString,
                             !iphCommand.removeArrow,
-                            viewRectProvider != null ? viewRectProvider : rectProvider,
+                            viewRectProvider != null
+                                    ? viewRectProvider
+                                    : assumeNonNull(rectProvider),
                             ChromeAccessibilityUtil.get().isAccessibilityEnabled());
             mTextBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
             mTextBubble.setDismissOnTouchInteraction(iphCommand.dismissOnTouch);
@@ -192,6 +187,12 @@ public class UserEducationHelper {
                                     },
                                     ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS));
             mTextBubble.setAutoDismissTimeout(iphCommand.autoDismissTimeout);
+            if (iphCommand.dismissOnTouchTimeout != TextBubble.NO_TIMEOUT) {
+                TextBubble textBubbleForLambda = mTextBubble;
+                mHandler.postDelayed(
+                        () -> textBubbleForLambda.setDismissOnTouchInteraction(true),
+                        iphCommand.dismissOnTouchTimeout);
+            }
 
             mTextBubble.show();
         }
@@ -201,7 +202,7 @@ public class UserEducationHelper {
         }
 
         if (viewRectProvider != null) {
-            viewRectProvider.setInsetPx(iphCommand.insetRect);
+            viewRectProvider.setInsetPx(assumeNonNull(iphCommand.insetRect));
         }
 
         iphCommand.onShowCallback.run();
@@ -212,5 +213,9 @@ public class UserEducationHelper {
         if (mTextBubble != null) {
             mTextBubble.dismiss();
         }
+    }
+
+    public @Nullable TextBubble getTextBubbleForTesting() {
+        return mTextBubble;
     }
 }

@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
 
-#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/pattern.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -29,6 +27,7 @@
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/live_caption/caption_util.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -112,8 +111,8 @@ void MediaToolbarButtonView::Enable() {
   // attempt to display an IPH at this point would have simply failed, so this
   // is not a behavioral change (see crbug.com/1291170).
   if (browser_->window() && captions::IsLiveCaptionFeatureSupported()) {
-      browser_->window()->MaybeShowFeaturePromo(
-          feature_engagement::kIPHLiveCaptionFeature);
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHLiveCaptionFeature);
   }
 
   observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
@@ -122,24 +121,20 @@ void MediaToolbarButtonView::Enable() {
 void MediaToolbarButtonView::Disable() {
   SetEnabled(false);
 
-  ClosePromoBubble();
+  ClosePromoBubble(/*engaged=*/false);
 
   observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonDisabled);
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(
-          browser_->profile()) &&
-      service_->should_show_cast_local_media_iph()) {
+  if (service_->should_show_cast_local_media_iph()) {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCLocalMediaCastingFeature);
   }
 }
 
 void MediaToolbarButtonView::MaybeShowStopCastingPromo() {
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(
-          browser_->profile()) &&
-      service_->HasLocalCastNotifications()) {
+  if (service_->HasLocalCastNotifications()) {
     browser_->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHGMCCastStartStopFeature);
   }
@@ -150,22 +145,32 @@ void MediaToolbarButtonView::ButtonPressed() {
     MediaDialogView::HideDialog();
   } else {
     MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
-    ClosePromoBubble();
+    ClosePromoBubble(/*engaged=*/true);
     observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
   }
 }
 
-void MediaToolbarButtonView::ClosePromoBubble() {
+void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
   // This can get called during setup before the window is even added to the
   // browser (and before any bubbles could possibly be shown) so if there is no
   // window, just bail.
-  if (!browser_->window())
+  if (!browser_->window()) {
     return;
+  }
 
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHLiveCaptionFeature);
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHGMCCastStartStopFeature);
+  if (engaged) {
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHLiveCaptionFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHGMCCastStartStopFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHLiveCaptionFeature);
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHGMCCastStartStopFeature);
+  }
 }
 
 BEGIN_METADATA(MediaToolbarButtonView)

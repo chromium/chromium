@@ -38,10 +38,12 @@ found in the LICENSE file.
         <item name="android:background">@drawable/incognito_card_bg</item>
     </style>
 
+    <!-- LINT.IfChange(MaterialCardStyle) -->
     <style name="MaterialCardStyle">
         <item name="cornerRadius">@dimen/card_rounded_corner_radius</item>
-        <item name="cardElevation">@dimen/default_elevation_2</item>
+        <item name="cardBackgroundColor">@macro/default_card_bg_color</item>
     </style>
+    <!-- LINT.ThenChange(//components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/MaterialCardViewNoShadow.java) -->
 
     <style name="ListActionButton" parent="@style/TextButton">
         <item name="android:minHeight">48dp</item>
@@ -163,9 +165,6 @@ found in the LICENSE file.
         <item name="chipColor">@macro/history_chip_bg_color</item>
         <item name="verticalInset">0dp</item>
     </style>
-    <style name="TabResumptionAppChip" parent="HistoryAppChip">
-        <item name="primaryTextAppearance">@style/TextAppearance.TextSmall.Primary</item>
-    </style>
     <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
         <item name="iconWidth">28dp</item>
         <item name="iconHeight">28dp</item>
@@ -192,13 +191,13 @@ found in the LICENSE file.
     <!-- Popup and long-press context popup menu style -->
     <style name="PopupMenuStyle" parent="Widget.AppCompat.Light.PopupMenu">
         <item name="android:popupBackground">@drawable/menu_bg_tinted</item>
-        <item name="android:overlapAnchor" tools:targetApi="21">true</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
+        <item name="android:overlapAnchor">true</item>
+        <item name="android:popupElevation">0dp</item>
     </style>
 
     <!-- Spinner styles -->
     <style name="SpinnerStyle" parent="Widget.AppCompat.Spinner">
         <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
-        <item name="android:popupElevation" tools:targetApi="21">0dp</item>
+        <item name="android:popupElevation">0dp</item>
     </style>
 </resources>

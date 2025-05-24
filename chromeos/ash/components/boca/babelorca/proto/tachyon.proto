@@ -37,6 +37,10 @@ message InboxMessage {
   MessageClass message_class = 5;
 }
 
+message PullOptions {
+  repeated InboxMessage.MessageType message_types = 2;
+}
+
 message InboxSendRequest {
   Id dest_id = 1;
   InboxMessage message = 2;
@@ -60,6 +64,7 @@ message SignInGaiaResponse {
 
 message ReceiveMessagesRequest {
   RequestHeader header = 1;
+  PullOptions initial_pull_options = 4;
 }
 
 message ReceiveMessagesResponse {

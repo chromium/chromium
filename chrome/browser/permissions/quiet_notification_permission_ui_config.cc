@@ -149,11 +149,3 @@ bool QuietNotificationPermissionUiConfig::
       features::kQuietNotificationPrompts,
       kEnableAbusiveContentTriggeredRequestWarning, true /* default */);
 }
-
-// static
-bool QuietNotificationPermissionUiConfig::
-    IsDisruptiveBehaviorRequestBlockingEnabled() {
-  return base::FeatureList::IsEnabled(features::kQuietNotificationPrompts) &&
-         base::FeatureList::IsEnabled(
-             features::kDisruptiveNotificationPermissionRevocation);
-}

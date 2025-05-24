@@ -7,10 +7,13 @@ package org.chromium.base;
 import android.text.TextUtils;
 import android.util.Patterns;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /** Provides public methods for detecting and eliding sensitive PII. */
+@NullMarked
 public class PiiElider {
     private static final String EMAIL_ELISION = "XXX@EMAIL.ELIDED";
 
@@ -100,10 +103,13 @@ public class PiiElider {
     private static final String[] SYSTEM_NAMESPACE =
             new String[] {
                 "android.",
+                "c2.", // MediaCodec names.
                 "com.android.",
                 "dalvik.",
                 "java.",
                 "javax.",
+                "omx.", // MediaCodec names.
+                "OMX.",
                 "org.apache.",
                 "org.json.",
                 "org.w3c.dom.",

@@ -9,9 +9,9 @@
 
 namespace display {
 
-ScreenBase::ScreenBase() {}
+ScreenBase::ScreenBase() = default;
 
-ScreenBase::~ScreenBase() {}
+ScreenBase::~ScreenBase() = default;
 
 gfx::Point ScreenBase::GetCursorScreenPoint() {
   NOTIMPLEMENTED_LOG_ONCE();

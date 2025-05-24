@@ -4,11 +4,11 @@
 
 #include "components/bookmarks/managed/managed_bookmark_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -71,7 +71,7 @@ class ManagedBookmarkServiceTest : public testing::Test {
   ManagedBookmarkServiceTest& operator=(const ManagedBookmarkServiceTest&) =
       delete;
 
-  ~ManagedBookmarkServiceTest() override {}
+  ~ManagedBookmarkServiceTest() override = default;
 
   void SetUp() override {
     TestingProfile::Builder profile_builder;
@@ -153,7 +153,7 @@ class ManagedBookmarkServiceTest : public testing::Test {
     if (node->is_folder()) {
       const base::Value::List* children = dict.FindList("children");
       return children &&
-             base::ranges::equal(
+             std::ranges::equal(
                  *children, node->children(),
                  [](const base::Value& child, const auto& child_node) {
                    return child.is_dict() &&

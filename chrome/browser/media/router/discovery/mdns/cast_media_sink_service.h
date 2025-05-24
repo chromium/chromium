@@ -49,7 +49,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   virtual void Initialize(
       const OnSinksDiscoveredCallback& sinks_discovered_cb,
       base::RepeatingClosure discovery_permission_rejected_cb,
-      MediaSinkServiceBase* dial_media_sink_service);
+      DialMediaSinkServiceImpl* dial_media_sink_service);
 
   virtual void DiscoverSinksNow();
 
@@ -60,7 +60,7 @@ class CastMediaSinkService : public DnsSdRegistry::DnsSdObserver {
   // Marked virtual for tests.
   virtual std::unique_ptr<CastMediaSinkServiceImpl, base::OnTaskRunnerDeleter>
   CreateImpl(const OnSinksDiscoveredCallback& sinks_discovered_cb,
-             MediaSinkServiceBase* dial_media_sink_service);
+             DialMediaSinkServiceImpl* dial_media_sink_service);
 
   CastMediaSinkServiceImpl* impl() { return impl_.get(); }
 

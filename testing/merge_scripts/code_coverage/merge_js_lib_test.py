@@ -10,8 +10,10 @@ import shutil
 import tempfile
 import unittest
 
+# vpython-provided modules.
+from parameterized import parameterized  # pylint: disable=import-error
+
 import merge_js_lib as merger
-from parameterized import parameterized
 
 
 class MergeJSLibTest(unittest.TestCase):

@@ -10,6 +10,10 @@ import android.view.View;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.OffsetTag;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -26,15 +30,16 @@ import java.util.List;
  * scrolling.
  */
 @JNINamespace("android")
+@NullMarked
 public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements SceneOverlay {
     /** Handle to the native side of this class. */
     private long mNativePtr;
 
     /** The resource ID used to reference the view bitmap in native. */
-    private int mResourceId;
+    private final int mResourceId;
 
     /** The height of the view's top shadow. */
-    private int mTopShadowHeightPx;
+    private final int mTopShadowHeightPx;
 
     /** The current Y offset of the bottom view in px. */
     private int mCurrentYOffsetPx;
@@ -45,8 +50,11 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     /** Whether the {@link SceneLayer}is visible. */
     private boolean mIsVisible;
 
+    /** The OffsetTag indicating that this layer will be moved by viz. */
+    private @Nullable OffsetTag mOffsetTag;
+
     /** The {@link ViewResourceFrameLayout} that this scene layer represents. */
-    private ViewResourceFrameLayout mBottomView;
+    private final ViewResourceFrameLayout mBottomView;
 
     /**
      * Build a composited bottom view layer.
@@ -87,6 +95,13 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     }
 
     /**
+     * @param offsetTag The view's OffsetTag, indicating that this layer will be moved by viz.
+     */
+    public void setOffsetTag(OffsetTag offsetTag) {
+        mOffsetTag = offsetTag;
+    }
+
+    /**
      * @param visible Whether this {@link SceneLayer} is visible.
      */
     public void setIsVisible(boolean visible) {
@@ -111,8 +126,13 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
-        // The composited shadow should be visible if the Android toolbar's isn't.
-        boolean isShadowVisible = mBottomView.getVisibility() != View.VISIBLE;
+        boolean isShadowVisible;
+        if (ChromeFeatureList.sBcivBottomControls.isEnabled()) {
+            isShadowVisible = true;
+        } else {
+            // The composited shadow should be visible if the Android toolbar's isn't.
+            isShadowVisible = mBottomView.getVisibility() != View.VISIBLE;
+        }
 
         ScrollingBottomViewSceneLayerJni.get()
                 .updateScrollingBottomViewLayer(
@@ -123,7 +143,8 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
                         mTopShadowHeightPx,
                         mCurrentXOffsetPx,
                         viewport.height() + mCurrentYOffsetPx,
-                        isShadowVisible);
+                        isShadowVisible,
+                        mOffsetTag);
 
         return this;
     }
@@ -135,7 +156,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
     }
 
     @Override
-    public EventFilter getEventFilter() {
+    public @Nullable EventFilter getEventFilter() {
         return null;
     }
 
@@ -183,6 +204,7 @@ public class ScrollingBottomViewSceneLayer extends SceneOverlayLayer implements 
                 int shadowHeightPx,
                 float xOffset,
                 float yOffset,
-                boolean showShadow);
+                boolean showShadow,
+                @Nullable OffsetTag offsetTag);
     }
 }

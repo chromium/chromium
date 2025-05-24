@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/analysis_service_settings.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
@@ -23,9 +24,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "content/public/browser/browser_context.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace storage {
 class FileSystemURL;
@@ -52,11 +53,7 @@ class ConnectorsManager : public ConnectorsManagerBase {
   ConnectorsManager(PrefService* pref_service,
                     const ServiceProviderConfig* config,
                     bool observe_prefs = true);
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   ~ConnectorsManager() override;
-#else
-  ~ConnectorsManager() override;
-#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
   // Validates which settings should be applied to an analysis connector event
   // against cached policies. This function will prioritize new connector
@@ -64,13 +61,13 @@ class ConnectorsManager : public ConnectorsManagerBase {
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<AnalysisSettings> GetAnalysisSettings(
       content::BrowserContext* context,
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
       AnalysisConnector connector);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Checks if the corresponding connector is enabled.
   bool IsAnalysisConnectorEnabled(AnalysisConnector connector) const;
@@ -119,7 +116,7 @@ class ConnectorsManager : public ConnectorsManagerBase {
   void CacheAnalysisConnectorPolicy(AnalysisConnector connector) const;
 
   // Get data location region from policy.
-  DataRegion GetDataRegion() const;
+  DataRegion GetDataRegion(AnalysisConnector connector) const;
 
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   // Close connection with local agent if all the relevant connectors are turned

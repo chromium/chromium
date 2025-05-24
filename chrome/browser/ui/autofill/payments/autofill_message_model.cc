@@ -38,7 +38,7 @@ AutofillMessageModel::CreateForSaveCardFailure() {
   message->SetDescription(ui_params.description_text);
   message->SetPrimaryButtonText(ui_params.failure_ok_button_text);
   message->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC));
+      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_OLD));
 
   return base::WrapUnique(
       new AutofillMessageModel(std::move(message), Type::kSaveCardFailure));
@@ -58,7 +58,7 @@ AutofillMessageModel::CreateForVirtualCardEnrollFailure(
   message->SetDescription(ui_params.description_text);
   message->SetPrimaryButtonText(ui_params.failure_ok_button_text);
   message->SetIconResourceId(
-      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC));
+      ResourceMapper::MapToJavaDrawableId(IDR_AUTOFILL_CC_GENERIC_OLD));
 
   return base::WrapUnique(new AutofillMessageModel(
       std::move(message), Type::kVirtualCardEnrollFailure));

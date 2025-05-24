@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-shared.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-forward.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-shared.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -74,7 +75,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // 'Save-Data: on'.
   bool data_saver_enabled = false;
   bool local_storage_enabled = false;
-  bool databases_enabled = false;
   bool tabs_to_links = true;
   bool disable_ipc_flooding_protection = false;
   bool hyperlink_auditing_enabled = true;
@@ -359,6 +359,10 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Forced colors are disabled for sites in the `kPageColorsBlockList` pref.
   bool is_forced_colors_disabled = false;
 
+  // Holds the browser's theme color to be used to render root non-overlay
+  // Fluent scrollbars. Stored from an SkColor as ARGB.
+  std::optional<SkColor> root_scrollbar_theme_color;
+
   // The preferred color scheme set by the user's browser settings. The variable
   // follows the browser's color mode setting unless a browser theme (custom or
   // not) is defined, in which case the color scheme is set to the default
@@ -413,11 +417,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
 
   // Whether touch input can trigger HTML drag-and-drop operations. The
   // default value depends on the platform.
-  bool touch_drag_drop_enabled;  // Set in web_preferences.cc
+  bool touch_drag_drop_enabled = false;
 
   // Whether the end of a drag fires a contextmenu event and possibly shows a
-  // context-menu (depends on how the event is handled).  Currently touch-drags
-  // cannot show context menus, see crbug.com/1096189.
+  // context-menu (depends on how the event is handled). Follows
+  // `touch_drag_drop_enabled` in Windows.
   bool touch_dragend_context_menu = false;
 
   // By default, WebXR's immersive-ar session creation is allowed, but this can
@@ -436,6 +440,15 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // Whether modal context menu is used. A modal context menu meaning it is
   // blocking user's access to the background web content.
   bool modal_context_menu = true;
+
+  // Whether the safe-area-insets should be changed dynamically based on
+  // browser controls shown ratio. This value is used in web settings only
+  // when feature DynamicSafeAreaInsets is enabled.
+  bool dynamic_safe_area_insets_enabled = false;
+
+  // Whether PaymentRequest is enabled. Controlled by WebView settings on
+  // WebView and by `kWebPayments` feature flag everywhere.
+  bool payment_request_enabled = false;
 
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for

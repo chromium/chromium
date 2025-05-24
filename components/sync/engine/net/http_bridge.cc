@@ -377,7 +377,7 @@ void HttpBridge::OnURLLoadCompleteInternal(
   url_loader_factory_ = nullptr;
 
   // Wake the blocked syncer thread in MakeSynchronousPost.
-  // WARNING: DONT DO ANYTHING AFTER THIS CALL! |this| may be deleted!
+  // WARNING: DONT DO ANYTHING AFTER THIS CALL! `this` may be deleted!
   http_post_completed_.Signal();
 }
 
@@ -416,7 +416,7 @@ void HttpBridge::OnURLLoadTimedOut() {
   fetch_state_.http_request_timeout_timer = nullptr;
 
   // Wake the blocked syncer thread in MakeSynchronousPost.
-  // WARNING: DONT DO ANYTHING AFTER THIS CALL! |this| may be deleted!
+  // WARNING: DONT DO ANYTHING AFTER THIS CALL! `this` may be deleted!
   http_post_completed_.Signal();
 }
 

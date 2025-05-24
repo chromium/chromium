@@ -189,7 +189,7 @@ class StructureNode(base.Node):
   def GetCliques(self):
     return self.gatherer.GetCliques()
 
-  def GetDataPackValue(self, lang, encoding):
+  def GetDataPackValue(self, lang, gender, encoding):
     """Returns a bytes representation for a data_pack entry."""
     if self.ExpandVariables():
       text = self.gatherer.GetText()

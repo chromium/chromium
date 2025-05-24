@@ -214,7 +214,7 @@ class NET_EXPORT BidirectionalStream : public BidirectionalStreamImpl::Delegate,
   void OnNeedsClientAuth(SSLCertRequestInfo* cert_info) override;
   void OnQuicBroken() override;
   void OnSwitchesToHttpStreamPool(
-      HttpStreamPoolSwitchingInfo switching_info) override;
+      HttpStreamPoolRequestInfo request_info) override;
 
   // Helper method to notify delegate if there is an error.
   void NotifyFailed(int error);

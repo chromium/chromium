@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/login/ui/local_authentication_request_controller_impl.h"
-
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
+#include "ash/login/ui/local_authentication_request_controller_impl.h"
 #include "ash/login/ui/local_authentication_request_view.h"
 #include "ash/login/ui/local_authentication_request_widget.h"
 #include "ash/login/ui/login_button.h"
@@ -20,6 +20,7 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/cryptohome/account_identifier_operators.h"
 #include "chromeos/ash/components/dbus/cryptohome/key.pb.h"
@@ -32,6 +33,7 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
@@ -44,8 +46,9 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-const char kTestAccount[] = "user@test.com";
-const char kExpectedPassword[] = "qwerty";
+constexpr char kTestAccount[] = "user@test.com";
+constexpr GaiaId::Literal kFakeGaia("fake_gaia");
+constexpr char kExpectedPassword[] = "qwerty";
 
 class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
  public:
@@ -55,7 +58,10 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
       const LocalAuthenticationRequestControllerImplPixelTest&) = delete;
 
  protected:
-  LocalAuthenticationRequestControllerImplPixelTest() = default;
+  LocalAuthenticationRequestControllerImplPixelTest() {
+    scoped_features_.InitAndDisableFeature(
+        features::kLocalAuthenticationWithPin);
+  }
   ~LocalAuthenticationRequestControllerImplPixelTest() override = default;
 
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -78,11 +84,14 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
 
-    test_account_id_ = AccountId::FromUserEmail(kTestAccount);
+    test_account_id_ = AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
 
     SetExpectedCredentialsWithDbusClient(test_account_id_, kExpectedPassword);
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    fake_user_manager->AddUser(test_account_id_);
+
+    auto fake_user_manager =
+        std::make_unique<user_manager::FakeUserManager>(local_state());
+    fake_user_manager->AddGaiaUser(test_account_id_,
+                                   user_manager::UserType::kRegular);
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(fake_user_manager));
   }
@@ -188,6 +197,8 @@ class LocalAuthenticationRequestControllerImplPixelTest : public AshTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
+  base::test::ScopedFeatureList scoped_features_;
+
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
 
@@ -224,12 +235,12 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, FailedValidation) {
 
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Ready", /*revision_number=*/2, view));
+      "Ready", /*revision_number=*/5, view));
 
   SimulateValidation(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Fail", /*revision_number=*/2, view));
+      "Fail", /*revision_number=*/5, view));
 }
 
 // Tests local authentication dialog theme change
@@ -251,7 +262,7 @@ TEST_F(LocalAuthenticationRequestControllerImplPixelTest, ThemeChange) {
   DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   // Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "Light", /*revision_number=*/1, view));
+      "Light", /*revision_number=*/4, view));
 }
 
 }  // namespace

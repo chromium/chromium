@@ -14,22 +14,24 @@ import os
 import platform
 import subprocess
 import sys
+import pathlib
 
-sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
-                 'scripts'))
-from build import (RunCommand)
+DEFAULT_SYSROOT = pathlib.Path(__file__).parents[2].joinpath(
+    'third_party', 'rust-toolchain')
 
-DEFAULT_SYSROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
-                               '..', 'third_party', 'rust-toolchain')
+# Determine the cargo executable name based on whether `subprocess` thinks
+# we're on a Windows platform or not, which is more accurate than checking it
+# ourselves. See https://bugs.python.org/issue8110 for more details.
+_CARGO_EXE = 'cargo.exe' if 'STARTUPINFO' in subprocess.__all__ else 'cargo'
 
 
 def RunCargo(rust_sysroot, home_dir, cargo_args):
-    if not os.path.exists(rust_sysroot):
+    rust_sysroot = pathlib.Path(rust_sysroot)
+    if not rust_sysroot.exists():
         print(f'WARNING: Rust sysroot missing at "{rust_sysroot}"')
 
-    abs_rust_sysroot = os.path.abspath(rust_sysroot)
-    bin_dir = os.path.join(abs_rust_sysroot, 'bin')
+    bin_dir = rust_sysroot.absolute().joinpath('bin')
+    cargo_path = bin_dir.joinpath(_CARGO_EXE)
 
     cargo_env = dict(os.environ)
     if home_dir:
@@ -37,17 +39,38 @@ def RunCargo(rust_sysroot, home_dir, cargo_args):
     cargo_env['PATH'] = (f'{bin_dir}{os.pathsep}{cargo_env["PATH"]}'
                          if cargo_env["PATH"] else f'{bin_dir}')
 
-    return RunCommand(['cargo'] + cargo_args, env=cargo_env, fail_hard=False)
+    # https://docs.python.org/3/library/subprocess.html#subprocess.Popen:
+    #     **Warning**: For maximum reliability, use a fully qualified path for
+    #     the executable.
+    #
+    #     Resolving the path of executable (or the first item of args) is
+    #     platform dependent. [...] For Windows, see the documentation of the
+    #     `lpApplicationName` and `lpCommandLine` parameters of WinAPI
+    #     `CreateProcess`, and note that when resolving or searching for the
+    #     executable path with `shell=False`, _cwd_ does not override the
+    #     current working directory and _env_ cannot override the `PATH`
+    #     environment variable.
+    #
+    # The `CreateProcessW` documentation states that `lpApplicationName` and
+    # `lpCommandLine` uses the **current process'** `PATH` environment variable
+    # to look up executables. However, the created process' environment
+    # variables can still be specified using `lpEnvironment`.
+    #
+    # Therefore, there is no need for `shell=True` here if we provide a fully
+    # qualified path to cargo.
+    return subprocess.run(['cargo'] + cargo_args,
+                          env=cargo_env,
+                          executable=cargo_path).returncode
 
 
 def main():
     parser = argparse.ArgumentParser(description='run cargo')
     parser.add_argument('--rust-sysroot',
                         default=DEFAULT_SYSROOT,
+                        type=pathlib.Path,
                         help='use cargo and rustc from here')
     (args, cargo_args) = parser.parse_known_args()
-    success = RunCargo(args.rust_sysroot, None, cargo_args)
-    return 0 if success else 1
+    return RunCargo(args.rust_sysroot, None, cargo_args)
 
 
 if __name__ == '__main__':

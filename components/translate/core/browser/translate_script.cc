@@ -50,7 +50,7 @@ const char TranslateScript::kJavascriptLoaderCallbackQueryValue[] =
 TranslateScript::TranslateScript()
     : expiration_delay_(base::Days(kExpirationDelayDays)) {}
 
-TranslateScript::~TranslateScript() {}
+TranslateScript::~TranslateScript() = default;
 
 void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
   script_fetch_start_time_ = base::Time::Now().InMillisecondsFSinceUnixEpoch();

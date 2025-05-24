@@ -5,10 +5,11 @@
 #ifndef CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_
 #define CONTENT_RENDERER_CONTENT_SECURITY_POLICY_UTIL_H_
 
+#include <vector>
+
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/content_security_policy.mojom-forward.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 namespace content {
 
@@ -30,7 +31,7 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
 
 // Helper function to perform ToWebContentSecurityPolicy on an array.
 CONTENT_EXPORT
-blink::WebVector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
+std::vector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
     std::vector<network::mojom::ContentSecurityPolicyPtr>);
 
 }  // namespace content

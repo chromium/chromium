@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SAFE_BROWSING_URL_LOOKUP_SERVICE_FACTORY_H_
 
 #include "base/no_destructor.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 class KeyedService;
@@ -18,6 +19,10 @@ class BrowserContext;
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace variations {
+class VariationsService;
+}
 
 namespace safe_browsing {
 
@@ -55,6 +60,9 @@ class RealTimeUrlLookupServiceFactory : public ProfileKeyedServiceFactory {
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* context) const;
+
+  static variations::VariationsService* GetVariationsService();
+  static base::Time GetMinAllowedTimestampForReferrerChains(Profile* profile);
 
   scoped_refptr<network::SharedURLLoaderFactory> testing_url_loader_factory_;
 };

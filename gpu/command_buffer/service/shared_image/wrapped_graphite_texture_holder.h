@@ -8,6 +8,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "third_party/skia/include/gpu/graphite/BackendTexture.h"
 
 namespace gpu {
@@ -18,20 +19,16 @@ class SharedContextState;
 // This holder can be used to extend BackendTexture's lifetime beyond that of
 // the backing that holds it.
 class WrappedGraphiteTextureHolder
-    : public base::RefCountedThreadSafe<WrappedGraphiteTextureHolder> {
+    : public SkiaImageRepresentation::GraphiteTextureHolder {
  public:
   WrappedGraphiteTextureHolder(
       skgpu::graphite::BackendTexture backend_texture,
       scoped_refptr<SharedContextState> context_state,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  const skgpu::graphite::BackendTexture& texture() { return texture_; }
-
  private:
-  friend class base::RefCountedThreadSafe<WrappedGraphiteTextureHolder>;
-  ~WrappedGraphiteTextureHolder();
+  ~WrappedGraphiteTextureHolder() override;
 
-  skgpu::graphite::BackendTexture texture_;
   scoped_refptr<SharedContextState> context_state_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };

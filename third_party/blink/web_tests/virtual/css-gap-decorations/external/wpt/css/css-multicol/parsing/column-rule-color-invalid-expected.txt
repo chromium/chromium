@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] e.style['column-rule-color'] = "green blue" should not set the property value
+  assert_equals: expected "" but got "green blue"
+Harness: the test ran to completion.
+

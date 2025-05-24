@@ -23,7 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace ash {
 
@@ -124,9 +124,7 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
       std::make_unique<ConnectivityDiagnosticsMessageHandler>(
           std::move(send_feedback_report_callback), show_feedback_button));
 
-  const auto resources = base::make_span(kConnectivityDiagnosticsResources,
-                                         kConnectivityDiagnosticsResourcesSize);
-  SetUpWebUIDataSource(source, resources,
+  SetUpWebUIDataSource(source, kConnectivityDiagnosticsResources,
                        IDR_CONNECTIVITY_DIAGNOSTICS_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
   source->AddLocalizedString("networkDevicesLabel",

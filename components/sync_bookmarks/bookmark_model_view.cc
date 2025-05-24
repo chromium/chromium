@@ -191,11 +191,10 @@ void BookmarkModelViewUsingLocalOrSyncableNodes::RemoveAllSyncableNodes() {
       continue;
     }
 
-    for (int i = static_cast<int>(permanent_node->children().size() - 1);
-         i >= 0; --i) {
-      underlying_model()->Remove(permanent_node->children()[i].get(),
-                                 bookmarks::metrics::BookmarkEditSource::kOther,
-                                 FROM_HERE);
+    while (!permanent_node->children().empty()) {
+      underlying_model()->RemoveLastChild(
+          permanent_node.get(), bookmarks::metrics::BookmarkEditSource::kOther,
+          FROM_HERE);
     }
   }
 

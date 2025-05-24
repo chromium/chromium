@@ -108,8 +108,7 @@ class DeviceDescriptionServiceTest : public ::testing::Test {
     (*description_cache_)[device_label] = cache_entry;
   }
 
-  void OnDeviceDescriptionFetchComplete(int num) {
-  }
+  void OnDeviceDescriptionFetchComplete(int num) {}
 
   void TestOnParsedDeviceDescription(
       ParsedDialDeviceDescription device_description,
@@ -267,9 +266,10 @@ TEST_F(DeviceDescriptionServiceTest, TestOnParsedDeviceDescription) {
       SafeDialDeviceDescriptionParser::ParsingResult::kFailedToReadFriendlyName,
       SafeDialDeviceDescriptionParser::ParsingResult::kFailedToReadModelName,
       SafeDialDeviceDescriptionParser::ParsingResult::kFailedToReadDeviceType};
-  for (auto error : errors)
+  for (auto error : errors) {
     TestOnParsedDeviceDescription(ParsedDialDeviceDescription(), error,
                                   error_message);
+  }
 
   // Empty field
   error_message = "Failed to process fetch result";

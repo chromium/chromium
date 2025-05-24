@@ -408,7 +408,7 @@ class FastPairPairerImplTest : public AshTestBase {
   void SetPublicKey() { data_encryptor_->public_key(kPublicKey); }
 
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    SimulateUserLogin({kUserEmail, user_type});
   }
 
   void DeviceUnpaired() {

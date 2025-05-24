@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/memory/scoped_refptr.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 
 enum class PromoStyleImageType {
@@ -17,6 +19,7 @@ enum class PromoStyleImageType {
 };
 
 enum class BannerImageSizeType {
+  kExtraShort,
   kShort,
   kStandard,
   kTall,
@@ -39,16 +42,22 @@ enum class ActionButtonsVisibility {
 // Style screens.
 @interface PromoStyleViewController : UIViewController <UITextViewDelegate>
 
+- (instancetype)initWithTaskRunner:
+    (scoped_refptr<base::SequencedTaskRunner>)taskRunner;
+
+- (instancetype)init;
+
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
-                         bundle:(NSBundle*)nibBundleOrNil
-    NS_DESIGNATED_INITIALIZER;
+                         bundle:(NSBundle*)nibBundleOrNil NS_UNAVAILABLE;
 
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
 // The name of the banner image. Must be set before the view is loaded.
-@property(nonatomic, strong) NSString* bannerName;
+@property(nonatomic, copy) NSString* bannerName;
 
 // The ratio of the view covered by the banner.
+// - kExtraShort: 15%,
+// - kShort: 20%,
 // - kStandard: 25%,
 // - kTall: 35%,
 // - kExtraTall: 50%.
@@ -180,6 +189,12 @@ enum class ActionButtonsVisibility {
 // NO.
 @property(nonatomic, assign) BOOL scrollToEndMandatory;
 
+// Whether the view controller should prefer to compress low resistance subviews
+// (UILayoutPriorityDefaultLow) to keep them in the visible area before making
+// the content scrollable. Must be set before the view is loaded. Defaults to
+// NO.
+@property(nonatomic, assign) BOOL preferToCompressContent;
+
 // The text for the "More" button. Must be set before the view is loaded
 // for views with "scrollToMandatory = YES."
 @property(nonatomic, copy) NSString* readMoreString;
@@ -190,6 +205,16 @@ enum class ActionButtonsVisibility {
 
 // The help button item in the top left of the view. Nil if not available.
 @property(nonatomic, readonly) UIButton* learnMoreButton;
+
+// Controls if there is a dismiss button in the top right of the view. Must be
+// set before the view is loaded. Defaults to NO.
+@property(nonatomic, assign) BOOL shouldShowDismissButton;
+
+// The dismiss button item in the top right of the view. Nil if not available.
+@property(nonatomic, readonly) UIButton* dismissButton;
+
+// The text for the dismiss button.
+@property(nonatomic, copy) NSString* dismissButtonString;
 
 // Whether the bottom of the view controller is reached. This value will always
 // be YES when `self.scrollToEndMandatory` is NO.
@@ -214,6 +239,9 @@ enum class ActionButtonsVisibility {
 // Whether the primary button should be disabled and have its button text
 // replaced with a spinner. Should be set only after the view is loaded.
 @property(nonatomic, assign) BOOL primaryButtonSpinnerEnabled;
+
+// Determines the font text style to use for the title.
+- (UIFontTextStyle)titleLabelFontTextStyle;
 
 @end
 

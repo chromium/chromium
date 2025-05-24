@@ -13,6 +13,7 @@ namespace media {
 
 WebMColorMetadata::WebMColorMetadata() = default;
 WebMColorMetadata::WebMColorMetadata(const WebMColorMetadata& rhs) = default;
+WebMColorMetadata::~WebMColorMetadata() = default;
 
 WebMColorVolumeMetadataParser::WebMColorVolumeMetadataParser() = default;
 WebMColorVolumeMetadataParser::~WebMColorVolumeMetadataParser() = default;

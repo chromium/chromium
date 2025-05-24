@@ -8,11 +8,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Base64;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.browser.trusted.Token;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.Origin;
@@ -50,6 +51,7 @@ import java.util.Set;
  *
  * TODO(peconn): Unify this and WebappDataStorage?
  */
+@NullMarked
 public class InstalledWebappPermissionStore {
     private static final String SHARED_PREFS_FILE = "twa_permission_registry";
 
@@ -93,8 +95,7 @@ public class InstalledWebappPermissionStore {
      * Retrieves the permission setting of {@link ContentSettingsType} for the origin due to
      * delegation to an app. Returns {@code null} if the origin is not linked to an app.
      */
-    @Nullable
-    public @ContentSettingValues Integer getPermission(
+    public @Nullable @ContentSettingValues Integer getPermission(
             @ContentSettingsType.EnumType int type, Origin origin) {
         String key = createPermissionSettingKey(type, origin);
 
@@ -109,18 +110,15 @@ public class InstalledWebappPermissionStore {
         return mPreferences.getInt(key, ContentSettingValues.ASK);
     }
 
-    @Nullable
-    String getDelegateAppName(Origin origin) {
+    public @Nullable String getDelegateAppName(Origin origin) {
         return mPreferences.getString(createAppNameKey(origin), null);
     }
 
-    @Nullable
-    String getDelegatePackageName(Origin origin) {
+    public @Nullable String getDelegatePackageName(Origin origin) {
         return mPreferences.getString(createPackageNameKey(origin), null);
     }
 
-    @Nullable
-    Set<Token> getAllDelegateApps(Origin origin) {
+    public @Nullable Set<Token> getAllDelegateApps(Origin origin) {
         Set<String> tokens = mPreferences.getStringSet(createAllDelegateAppsKey(origin), null);
         if (tokens == null) return null;
 
@@ -131,7 +129,7 @@ public class InstalledWebappPermissionStore {
         return result;
     }
 
-    void addDelegateApp(Origin origin, Token token) {
+    public void addDelegateApp(Origin origin, Token token) {
         String key = createAllDelegateAppsKey(origin);
         Set<String> allDelegateApps =
                 new HashSet<>(mPreferences.getStringSet(key, Collections.emptySet()));
@@ -152,7 +150,7 @@ public class InstalledWebappPermissionStore {
      * Sets the permission state for the origin. Returns whether {@code true} if state was changed,
      * {@code false} if the provided state was the same as the state beforehand.
      */
-    boolean setStateForOrigin(
+    public boolean setStateForOrigin(
             Origin origin,
             String packageName,
             String appName,
@@ -187,7 +185,7 @@ public class InstalledWebappPermissionStore {
     }
 
     /** Removes the origin from the store. */
-    void removeOrigin(Origin origin) {
+    public void removeOrigin(Origin origin) {
         Set<String> origins = getStoredOrigins();
         origins.remove(origin.toString());
 
@@ -205,7 +203,7 @@ public class InstalledWebappPermissionStore {
     }
 
     /** Reset permission {@type} from the store. */
-    void resetPermission(Origin origin, @ContentSettingsType.EnumType int type) {
+    public void resetPermission(Origin origin, @ContentSettingsType.EnumType int type) {
         mPreferences
                 .edit()
                 .remove(createPermissionKey(type, origin))
@@ -214,7 +212,7 @@ public class InstalledWebappPermissionStore {
     }
 
     /** Stores the notification permission setting the origin had before the app was installed. */
-    void setPreInstallNotificationPermission(
+    public void setPreInstallNotificationPermission(
             Origin origin, @ContentSettingValues int settingValue) {
         mPreferences
                 .edit()
@@ -227,9 +225,8 @@ public class InstalledWebappPermissionStore {
      * {@code null} if no setting is stored. If a setting was stored, calling this method removes
      * it.
      */
-    @Nullable
-    @ContentSettingValues
-    Integer getAndRemovePreInstallNotificationPermission(Origin origin) {
+    public @Nullable @ContentSettingValues Integer getAndRemovePreInstallNotificationPermission(
+            Origin origin) {
         String key = createPreInstallNotificationPermissionSettingKey(origin);
 
         if (!mPreferences.contains(key)) {

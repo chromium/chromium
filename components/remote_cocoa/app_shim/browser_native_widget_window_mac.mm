@@ -6,9 +6,14 @@
 
 #import <AppKit/AppKit.h>
 
+#include "base/mac/mac_util.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 
+namespace {
+// Workaround for https://crbug.com/1369643
+const double kThinControllerHeight = 0.5;
+}  // namespace
 @interface NSWindow (PrivateBrowserNativeWidgetAPI)
 + (Class)frameViewClassForStyleMask:(NSUInteger)windowStyle;
 @end
@@ -16,6 +21,7 @@
 @interface NSThemeFrame (PrivateBrowserNativeWidgetAPI)
 - (CGFloat)_titlebarHeight;
 - (void)setStyleMask:(NSUInteger)styleMask;
+- (void)setButtonRevealAmount:(double)amount;
 @end
 
 @interface BrowserWindowFrame : NativeWidgetMacNSWindowTitledFrame
@@ -23,6 +29,7 @@
 
 @implementation BrowserWindowFrame {
   BOOL _inFullScreen;
+  BOOL _alwaysShowTrafficLights;
 }
 
 // NSThemeFrame overrides.
@@ -63,9 +70,39 @@
   return YES;
 }
 
+- (void)setButtonRevealAmount:(double)amount {
+  // Don't override the reveal amount sent to `super`. `-[NSThemeFrame
+  // setButtonRevealAmount:]` performs layout operations in addition to
+  // adjusting the visibility of the traffic lights. The layout changes are
+  // desired and should be left intact.
+  [super setButtonRevealAmount:amount];
+  if (amount == 1.0) {
+    return;
+  }
+
+  [self maybeShowTrafficLights];
+}
+
+- (void)setAlwaysShowTrafficLights:(BOOL)alwaysShow {
+  _alwaysShowTrafficLights = alwaysShow;
+  [self maybeShowTrafficLights];
+}
+
+- (void)maybeShowTrafficLights {
+  if (!_alwaysShowTrafficLights) {
+    return;
+  }
+  NSWindow* window = [self window];
+  [[window standardWindowButton:NSWindowCloseButton] setAlphaValue:1.0];
+  [[window standardWindowButton:NSWindowMiniaturizeButton] setAlphaValue:1.0];
+  [[window standardWindowButton:NSWindowZoomButton] setAlphaValue:1.0];
+}
+
 @end
 
 @implementation BrowserNativeWidgetWindow
+
+@synthesize thinTitlebarViewController = _thinTitlebarViewController;
 
 // NSWindow (PrivateAPI) overrides.
 
@@ -89,6 +126,18 @@
            selector:@selector(windowDidBecomeKey:)
                name:NSWindowDidBecomeKeyNotification
              object:nil];
+    if (base::mac::MacOSMajorVersion() >= 13) {
+      _thinTitlebarViewController =
+          [[NSTitlebarAccessoryViewController alloc] init];
+      NSView* thinView = [[NSView alloc] init];
+      thinView.wantsLayer = YES;
+      thinView.layer.backgroundColor = NSColor.blackColor.CGColor;
+      _thinTitlebarViewController.view = thinView;
+      _thinTitlebarViewController.layoutAttribute = NSLayoutAttributeBottom;
+      _thinTitlebarViewController.fullScreenMinHeight = kThinControllerHeight;
+      _thinTitlebarViewController.hidden = YES;
+      [self addTitlebarAccessoryViewController:_thinTitlebarViewController];
+    }
   }
   return self;
 }
@@ -122,6 +171,11 @@
   remote_cocoa::NativeWidgetNSWindowBridge* bridge = [self bridge];
   if (bridge)
     bridge->host()->OnFocusWindowToolbar();
+}
+
+- (void)setAlwaysShowTrafficLights:(BOOL)alwaysShow {
+  [base::apple::ObjCCastStrict<BrowserWindowFrame>(self.contentView.superview)
+      setAlwaysShowTrafficLights:alwaysShow];
 }
 
 @end

@@ -10,7 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
@@ -69,8 +69,7 @@ FieldType TypeForField(AddressField address_field) {
     case ::i18n::addressinput::RECIPIENT:
       return NAME_FULL;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_TYPE;
+  NOTREACHED();
 }
 
 bool FieldForType(FieldType server_type, AddressField* field) {

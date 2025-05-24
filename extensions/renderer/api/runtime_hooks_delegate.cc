@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/v8_value_converter.h"
@@ -46,7 +47,8 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
                     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.Holder()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -63,7 +65,8 @@ void GetDynamicId(v8::Local<v8::Name> property_name,
                   const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.Holder()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -98,7 +101,8 @@ void GetBackgroundPageCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.This()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.This()->GetCreationContextChecked(isolate);
 
   // Custom callbacks are called with the arguments of the callback function and
   // the response from the API. Since the custom callback here handles all the
@@ -158,6 +162,15 @@ v8::LocalVector<v8::Value> MassageRequestUpdateCheckResults(
   return v8::LocalVector<v8::Value>(isolate, {status, details});
 }
 
+// Constructs a URL string from an `id` and `path`. `id` is directly used as
+// the host and can be a static or dynamic (GUID) identifier.
+GURL UrlFromPathAndId(const std::string& id, const std::string& path) {
+  std::string maybe_slash = !path.empty() && path[0] == '/' ? "" : "/";
+  std::string url = base::StrCat(
+      {kExtensionScheme, url::kStandardSchemeSeparator, id, maybe_slash, path});
+  return GURL(url);
+}
+
 }  // namespace
 
 RuntimeHooksDelegate::RuntimeHooksDelegate(
@@ -176,22 +189,21 @@ RequestResult RuntimeHooksDelegate::GetURL(
   v8::Isolate* isolate = script_context->isolate();
   std::string path = gin::V8ToString(isolate, arguments[0]);
   const auto* extension = script_context->extension();
-  bool use_dynamic_url = false;
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection)) {
-    use_dynamic_url =
-        WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, path);
-  }
-  std::string id = use_dynamic_url ? extension->guid() : extension->id();
 
-  RequestResult result(RequestResult::HANDLED);
-  std::string url = base::StringPrintf(
-      "chrome-extension://%s%s%s", id.c_str(),
-      !path.empty() && path[0] == '/' ? "" : "/", path.c_str());
+  GURL url = UrlFromPathAndId(extension->id(), path);
   // GURL considers any possible path valid. Since the argument is only appended
   // as part of the path, there should be no way this could conceivably fail.
-  DCHECK(GURL(url).is_valid());
-  result.return_value = gin::StringToV8(isolate, url);
+  DCHECK(url.is_valid());
+
+  if (WebAccessibleResourcesInfo::ShouldUseDynamicUrl(extension, url.path())) {
+    GURL::Replacements replacements;
+    replacements.SetHostStr(extension->guid());
+    url = url.ReplaceComponents(replacements);
+  }
+
+  RequestResult result(RequestResult::HANDLED);
+  DCHECK(url.is_valid());
+  result.return_value = gin::StringToV8(isolate, url.spec());
   return result;
 }
 
@@ -263,11 +275,8 @@ void RuntimeHooksDelegate::InitializeTemplate(
     const APITypeReferenceMap& type_refs) {
   object_template->SetNativeDataProperty(gin::StringToSymbol(isolate, "id"),
                                          &GetExtensionId, &EmptySetter);
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionDynamicURLRedirection)) {
-    object_template->SetNativeDataProperty(
-        gin::StringToSymbol(isolate, "dynamicId"), &GetDynamicId, &EmptySetter);
-  }
+  object_template->SetNativeDataProperty(
+      gin::StringToSymbol(isolate, "dynamicId"), &GetDynamicId, &EmptySetter);
 }
 
 RequestResult RuntimeHooksDelegate::HandleGetManifest(
@@ -510,9 +519,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     if (!script_context->module_system()
              ->Require("fileEntryBindingUtil")
              .ToLocal(&file_entry_binding_util)) {
-      NOTREACHED_IN_MIGRATION();
-      // Abort, and consider the request handled.
-      return RequestResult(RequestResult::HANDLED);
+      NOTREACHED();
     }
 
     v8::Local<v8::Value> get_bind_directory_entry_callback_value;
@@ -520,14 +527,11 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
              ->Get(v8_context, gin::StringToSymbol(
                                    isolate, "getBindDirectoryEntryCallback"))
              .ToLocal(&get_bind_directory_entry_callback_value)) {
-      NOTREACHED_IN_MIGRATION();
-      return RequestResult(RequestResult::THROWN);
+      NOTREACHED();
     }
 
     if (!get_bind_directory_entry_callback_value->IsFunction()) {
-      NOTREACHED_IN_MIGRATION();
-      // Abort, and consider the request handled.
-      return RequestResult(RequestResult::HANDLED);
+      NOTREACHED();
     }
 
     v8::Local<v8::Function> get_bind_directory_entry_callback =
@@ -536,18 +540,15 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     maybe_custom_callback =
         JSRunner::Get(v8_context)
             ->RunJSFunctionSync(get_bind_directory_entry_callback, v8_context,
-                                0, nullptr);
+                                {});
   }  // End modules enabled scope.
   v8::Local<v8::Value> callback;
   if (!maybe_custom_callback.ToLocal(&callback)) {
-    NOTREACHED_IN_MIGRATION();
-    return RequestResult(RequestResult::THROWN);
+    NOTREACHED();
   }
 
   if (!callback->IsFunction()) {
-    NOTREACHED_IN_MIGRATION();
-    // Abort, and consider the request handled.
-    return RequestResult(RequestResult::HANDLED);
+    NOTREACHED();
   }
 
   RequestResult result(RequestResult::NOT_HANDLED);

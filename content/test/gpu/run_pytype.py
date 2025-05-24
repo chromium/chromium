@@ -22,10 +22,12 @@ EXTRA_PATHS_COMPONENTS = [
     ('build', 'fuchsia', 'test'),
     ('build', 'util'),
     ('testing', ),
+    ('third_party', 'blink', 'tools'),
     ('third_party', 'catapult', 'common', 'py_utils'),
     ('third_party', 'catapult', 'devil'),
     ('third_party', 'catapult', 'telemetry'),
     ('third_party', 'catapult', 'third_party', 'typ'),
+    ('third_party', 'catapult', 'tracing'),
     ('tools', 'perf'),
 ]
 EXTRA_PATHS = [

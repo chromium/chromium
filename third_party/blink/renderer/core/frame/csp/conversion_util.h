@@ -11,15 +11,6 @@
 
 namespace blink {
 
-// Convert a ContentSecurityPolicy into a WebContentSecurityPolicy. These two
-// classes represent the exact same thing, but one is public, the other is
-// private.
-// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
-// from blink.
-CORE_EXPORT
-WebContentSecurityPolicy ConvertToPublic(
-    network::mojom::blink::ContentSecurityPolicyPtr policy);
-
 // Convert a WebContentSecurityPolicy into a ContentSecurityPolicy. These two
 // classes represent the exact same thing, but one is in public, the other is
 // private.
@@ -27,10 +18,10 @@ CORE_EXPORT
 network::mojom::blink::ContentSecurityPolicyPtr ConvertToMojoBlink(
     const WebContentSecurityPolicy& policy);
 
-// Helper function that applies ConvertToBlink above to a WebVector.
+// Helper function that applies ConvertToBlink above to a std::vector.
 CORE_EXPORT
 Vector<network::mojom::blink::ContentSecurityPolicyPtr> ConvertToMojoBlink(
-    const WebVector<WebContentSecurityPolicy>& policy);
+    const std::vector<WebContentSecurityPolicy>& policy);
 
 }  // namespace blink
 

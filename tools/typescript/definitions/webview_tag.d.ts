@@ -265,6 +265,7 @@ declare global {
         request: WebRequestEventInterface;
         back(callback?: (success: boolean) => void): void;
         reload(): void;
+        stop(): void;
         addContentScripts(contentScriptList: ContentScriptDetails[]): void;
         removeContentScripts(scriptNameList?: string[]): void;
         clearData(options: ClearDataOptions, types: ClearDataTypeSet, callback?:
@@ -274,6 +275,8 @@ declare global {
         insertCSS(details: InjectDetails,
             callback?: (results: any[]) => void): void;
         terminate(): void;
+        getUserAgent(): string;
+        setUserAgentOverride(userAgent: string): void;
       }
 
       export enum ZoomMode {

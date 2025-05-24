@@ -32,9 +32,9 @@ std::string GetSubjectPublicKeyInfo(const net::X509Certificate& certificate) {
 
 }  // namespace
 
-ThreadSafeCertificateMap::ThreadSafeCertificateMap() {}
+ThreadSafeCertificateMap::ThreadSafeCertificateMap() = default;
 
-ThreadSafeCertificateMap::~ThreadSafeCertificateMap() {}
+ThreadSafeCertificateMap::~ThreadSafeCertificateMap() = default;
 
 void ThreadSafeCertificateMap::UpdateCertificatesForExtension(
     const std::string& extension_id,

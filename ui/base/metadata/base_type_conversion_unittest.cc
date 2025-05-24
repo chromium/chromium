@@ -4,7 +4,8 @@
 
 #include "ui/base/metadata/base_type_conversion.h"
 
-#include "base/ranges/ranges.h"
+#include <ranges>
+
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -51,7 +52,7 @@ TEST_F(TypeConversionTest, TestConversion_OptionalIntToString) {
   std::optional<int> src;
   std::u16string to_string =
       ui::metadata::TypeConverter<std::optional<int>>::ToString(src);
-  EXPECT_EQ(to_string, ui::metadata::GetNullOptStr());
+  EXPECT_EQ(to_string, ui::metadata::kNullOptStr);
 
   src = 5;
   to_string = ui::metadata::TypeConverter<std::optional<int>>::ToString(src);
@@ -61,7 +62,7 @@ TEST_F(TypeConversionTest, TestConversion_OptionalIntToString) {
 TEST_F(TypeConversionTest, TestConversion_StringToOptionalInt) {
   std::optional<int> ret;
   EXPECT_EQ(ui::metadata::TypeConverter<std::optional<int>>::FromString(
-                ui::metadata::GetNullOptStr()),
+                ui::metadata::kNullOptStr),
             std::make_optional(ret));
 
   EXPECT_EQ(ui::metadata::TypeConverter<std::optional<int>>::FromString(u"10"),
@@ -78,20 +79,20 @@ TEST_F(TypeConversionTest, TestConversion_ShadowValuesToString) {
 
   EXPECT_EQ(
       ui::metadata::TypeConverter<gfx::ShadowValues>::ToString(shadow_values),
-      u"[ (1,2),0.30,rgba(255,0,0,128) ]");
+      u"[(1,2),0.30,rgba(255,0,0,128)]");
 
   shadow_values.emplace_back(gfx::Vector2d(9, 8), .76,
                              SkColorSetARGB(20, 0, 64, 255));
 
   EXPECT_EQ(
       ui::metadata::TypeConverter<gfx::ShadowValues>::ToString(shadow_values),
-      u"[ (1,2),0.30,rgba(255,0,0,128); (9,8),0.76,rgba(0,64,255,20) ]");
+      u"[(1,2),0.30,rgba(255,0,0,128); (9,8),0.76,rgba(0,64,255,20)]");
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToShadowValues) {
   std::optional<gfx::ShadowValues> opt_result =
       ui::metadata::TypeConverter<gfx::ShadowValues>::FromString(
-          u"[ (6,4),0.53,rgba(23,44,0,1); (93,83),4.33,rgba(10,20,0,0.059) ]");
+          u"[(6,4),0.53,rgba(23,44,0,1); (93,83),4.33,rgba(10,20,0,0.059)]");
 
   EXPECT_EQ(opt_result.has_value(), true);
   gfx::ShadowValues result = opt_result.value();
@@ -223,34 +224,33 @@ TEST_F(TypeConversionTest, TestConversion_StringToVector) {
 
 TEST_F(TypeConversionTest, CheckIsSerializable) {
   // Test types with explicitly added converters.
-  EXPECT_TRUE(ui::metadata::TypeConverter<int8_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<int16_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<int32_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<int64_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<uint8_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<uint16_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<uint32_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<uint64_t>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<float>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<double>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<bool>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<const char*>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<std::u16string>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::ShadowValues>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::Size>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::Range>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::Insets>::IsSerializable());
+  EXPECT_TRUE(ui::metadata::TypeConverter<int8_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<int16_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<int32_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<int64_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<uint8_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<uint16_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<uint32_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<uint64_t>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<float>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<double>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<bool>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<const char*>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<std::u16string>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::ShadowValues>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::Size>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::Range>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<gfx::Insets>::is_serializable);
 
   // Test enum type.
-  EXPECT_TRUE(ui::metadata::TypeConverter<TestResult>::IsSerializable());
+  EXPECT_TRUE(ui::metadata::TypeConverter<TestResult>::is_serializable);
 
   // Test aliased types.
-  EXPECT_TRUE(ui::metadata::TypeConverter<int>::IsSerializable());
-  EXPECT_TRUE(ui::metadata::TypeConverter<SkColor>::IsSerializable());
+  EXPECT_TRUE(ui::metadata::TypeConverter<int>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<SkColor>::is_serializable);
 
   // Test std::optional type.
-  EXPECT_TRUE(ui::metadata::TypeConverter<
-              std::optional<const char*>>::IsSerializable());
   EXPECT_TRUE(
-      ui::metadata::TypeConverter<std::optional<int>>::IsSerializable());
+      ui::metadata::TypeConverter<std::optional<const char*>>::is_serializable);
+  EXPECT_TRUE(ui::metadata::TypeConverter<std::optional<int>>::is_serializable);
 }

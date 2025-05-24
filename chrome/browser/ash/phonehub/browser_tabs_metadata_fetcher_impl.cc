@@ -17,8 +17,8 @@
 #include "components/ukm/scheme_constants.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 std::vector<BrowserTabsModel::BrowserTabMetadata>
@@ -107,8 +107,7 @@ void BrowserTabsMetadataFetcherImpl::Fetch(
     favicon_request_handler_->GetFaviconImageForPageURL(
         results_[i].url,
         base::BindOnce(&BrowserTabsMetadataFetcherImpl::OnFaviconReady,
-                       weak_ptr_factory_.GetWeakPtr(), i, barrier),
-        favicon::HistoryUiFaviconRequestOrigin::kRecentTabs);
+                       weak_ptr_factory_.GetWeakPtr(), i, barrier));
   }
 }
 
@@ -126,5 +125,4 @@ void BrowserTabsMetadataFetcherImpl::OnFaviconReady(
   std::move(done_closure).Run();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

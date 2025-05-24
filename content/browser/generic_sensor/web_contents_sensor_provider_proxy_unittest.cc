@@ -34,7 +34,8 @@ class TestPermissionManager : public MockPermissionManager {
           void(const std::vector<blink::mojom::PermissionStatus>&)> callback)
       override {
     ASSERT_EQ(request_description.permissions.size(), 1ul);
-    ASSERT_EQ(request_description.permissions[0],
+    ASSERT_EQ(blink::PermissionDescriptorToPermissionType(
+                  request_description.permissions[0]),
               blink::PermissionType::SENSORS);
     std::move(callback).Run({blink::mojom::PermissionStatus::GRANTED});
   }

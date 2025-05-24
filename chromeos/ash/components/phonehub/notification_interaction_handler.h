@@ -12,8 +12,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/notification_click_handler.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // The handler that exposes the APIs to interact with Phone Hub Notification.
 class NotificationInteractionHandler {
@@ -38,7 +37,6 @@ class NotificationInteractionHandler {
   base::ObserverList<NotificationClickHandler> handler_list_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_INTERACTION_HANDLER_H_

@@ -10,6 +10,7 @@
 #include "remoting/test/frame_generator_util.h"
 
 #include "base/base_paths.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -36,8 +37,7 @@ void CopyPixelsToBuffer(const SkBitmap& src,
 }
 }  // namespace
 
-namespace remoting {
-namespace test {
+namespace remoting::test {
 
 std::unique_ptr<webrtc::DesktopFrame> LoadDesktopFrameFromPng(
     const char* name) {
@@ -53,9 +53,8 @@ std::unique_ptr<webrtc::DesktopFrame> LoadDesktopFrameFromPng(
     LOG(FATAL) << "Failed to read " << file_path.MaybeAsASCII()
                << ". Please run remoting/test/data/download.sh";
   }
-  SkBitmap bitmap;
-  gfx::PNGCodec::Decode(reinterpret_cast<const uint8_t*>(file_content.data()),
-                        file_content.size(), &bitmap);
+  SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(file_content));
+  CHECK(!bitmap.isNull());
   std::unique_ptr<webrtc::DesktopFrame> frame(new webrtc::BasicDesktopFrame(
       webrtc::DesktopSize(bitmap.width(), bitmap.height())));
   CopyPixelsToBuffer(bitmap, frame->data(), frame->stride());
@@ -74,5 +73,4 @@ void DrawRect(webrtc::DesktopFrame* frame,
   }
 }
 
-}  // namespace test
-}  // namespace remoting
+}  // namespace remoting::test

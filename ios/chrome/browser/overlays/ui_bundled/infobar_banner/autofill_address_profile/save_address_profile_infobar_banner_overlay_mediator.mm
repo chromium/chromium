@@ -5,14 +5,14 @@
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile/save_address_profile_infobar_banner_overlay_mediator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/save_address_profile_infobar_banner_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using autofill_address_profile_infobar_overlays::
@@ -52,8 +52,9 @@ using autofill_address_profile_infobar_overlays::
 @implementation SaveAddressProfileInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  if (!self.consumer || !self.config)
+  if (!self.consumer || !self.config) {
     return;
+  }
 
   [self.consumer
       setButtonText:base::SysUTF16ToNSString(self.config->button_label_text())];

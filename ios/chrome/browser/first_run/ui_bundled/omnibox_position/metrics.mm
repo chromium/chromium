@@ -7,7 +7,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
-#import "ios/chrome/browser/ui/toolbar/public/omnibox_position_util.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/public/omnibox_position_util.h"
 
 namespace {
 
@@ -40,23 +40,23 @@ void RecordScreenEvent(OmniboxPositionChoiceScreenEvent event) {
   // Record action.
   switch (event) {
     case OmniboxPositionChoiceScreenEvent::kScreenDisplayed: {
-        base::RecordAction(
-            base::UserMetricsAction("IOS.Omnibox.Promo.Presented.Startup"));
+      base::RecordAction(
+          base::UserMetricsAction("IOS.Omnibox.Promo.Presented.Startup"));
       break;
     }
     case OmniboxPositionChoiceScreenEvent::kPositionValidated: {
-        base::RecordAction(base::UserMetricsAction(
-            "IOS.Omnibox.Promo.PositionValidated.Startup"));
+      base::RecordAction(base::UserMetricsAction(
+          "IOS.Omnibox.Promo.PositionValidated.Startup"));
       break;
     }
     case OmniboxPositionChoiceScreenEvent::kPositionDiscarded: {
-        base::RecordAction(base::UserMetricsAction(
-            "IOS.Omnibox.Promo.PositionDiscarded.Startup"));
+      base::RecordAction(base::UserMetricsAction(
+          "IOS.Omnibox.Promo.PositionDiscarded.Startup"));
       break;
     }
     case OmniboxPositionChoiceScreenEvent::kScreenSkipped: {
-        base::RecordAction(
-            base::UserMetricsAction("IOS.Omnibox.Promo.Skipped.Startup"));
+      base::RecordAction(
+          base::UserMetricsAction("IOS.Omnibox.Promo.Skipped.Startup"));
       break;
     }
     default:

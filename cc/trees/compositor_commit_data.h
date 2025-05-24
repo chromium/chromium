@@ -98,12 +98,24 @@ struct CC_EXPORT CompositorCommitData {
   bool browser_controls_constraint_changed = false;
 
   struct ScrollEndInfo {
+    ScrollEndInfo();
+    ~ScrollEndInfo();
     // Set to true when a scroll gesture being handled on the compositor has
     // ended.
+    // TODO(crbug.com/372627916): This is not used when
+    // MultiImplOnlyScrollAnimations is enabled. Remove it when deleting the old
+    // code path.
     bool scroll_gesture_did_end = false;
 
+    // TODO(crbug.com/372627916): These are not used when
+    // MultiImplOnlyScrollAnimations is enabled. Remove them when deleting the
+    // old code path.
     bool gesture_affects_outer_viewport_scroll = false;
     bool gesture_affects_inner_viewport_scroll = false;
+
+    // The set of containers for which an impl scroll has ended between this
+    // commit and the last.
+    base::flat_set<ElementId> done_containers;
   };
   ScrollEndInfo scroll_end_data;
 

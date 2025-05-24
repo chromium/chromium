@@ -15,8 +15,8 @@
 #include "base/process/process_handle.h"  // For ProcessId.
 #include "base/time/time.h"               // For TimeTicks.
 #include "chrome/browser/ash/arc/memory_pressure/container_oom_score_manager.h"
-#include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/experiences/arc/process/arc_process_service.h"
 
 FORWARD_DECLARE_TEST(ContainerAppKillerTest, DoNotKillRecentlyKilled);
 FORWARD_DECLARE_TEST(ContainerAppKillerTest, IsRecentlyKilled);

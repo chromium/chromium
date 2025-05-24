@@ -12,20 +12,24 @@
 #include <va/va.h>
 
 #include <algorithm>
+#include <array>
+#include <bitset>
 #include <memory>
 #include <numeric>
 #include <optional>
 #include <tuple>
 
+#include "base/containers/contains.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
+#include "media/gpu/svc_layers.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vp9_svc_layers.h"
 #include "media/parsers/vp9_parser.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,11 +46,12 @@ namespace {
 
 constexpr size_t kDefaultMaxNumRefFrames = kVp9NumRefsPerFrame;
 
-constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
-    {1, 0, 0},  // For one spatial layer.
-    {2, 1, 0},  // For two spatial layers.
-    {4, 2, 1},  // For three spatial layers.
-};
+constexpr auto kSpatialLayersResolutionScaleDenom =
+    std::to_array<std::array<int, 3>>({
+        {1, 0, 0},  // For one spatial layer.
+        {2, 1, 0},  // For two spatial layers.
+        {4, 2, 1},  // For three spatial layers.
+    });
 constexpr uint8_t kTemporalLayerPattern[][4] = {
     {0, 0, 0, 0},
     {0, 1, 0, 1},
@@ -417,8 +422,8 @@ void VP9VaapiVideoEncoderDelegateTest::
   InSequence seq;
 
   constexpr VASurfaceID kDummyVASurfaceID = 123;
-  scoped_refptr<VP9Picture> picture(new VaapiVP9Picture(
-      std::make_unique<VASurfaceHandle>(kDummyVASurfaceID, base::DoNothing())));
+  auto picture = base::MakeRefCounted<VaapiVP9Picture>(
+      std::make_unique<VASurfaceHandle>(kDummyVASurfaceID, base::DoNothing()));
 
   auto encode_job =
       CreateEncodeJob(force_key, expected_spatial_layer_id, end_of_picture,
@@ -560,8 +565,8 @@ void VP9VaapiVideoEncoderDelegateTest::UpdateRatesTest(
     SVCInterLayerPredMode inter_layer_pred,
     size_t num_spatial_layers,
     size_t num_temporal_layers) {
-  ASSERT_LE(num_temporal_layers, VP9SVCLayers::kMaxTemporalLayers);
-  ASSERT_LE(num_spatial_layers, VP9SVCLayers::kMaxSpatialLayers);
+  ASSERT_LE(num_temporal_layers, SVCLayers::kMaxTemporalLayers);
+  ASSERT_LE(num_spatial_layers, SVCLayers::kMaxSpatialLayers);
   const auto spatial_layer_resolutions =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);
   auto update_rates_and_encode = [this, inter_layer_pred, num_spatial_layers,
@@ -760,7 +765,7 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
     size_t num_temporal_layers;
     std::vector<size_t> active_layers;
   };
-  std::vector<ActivationQuery> kQueries[2] = {
+  std::array<std::vector<ActivationQuery>, 2> kQueries = {{
       {
           // Two spatial layers.
           {num_temporal_layers, {0}},     // Deactivate the top layer.
@@ -791,13 +796,13 @@ TEST_P(VP9VaapiVideoEncoderDelegateTest, DeactivateActivateSpatialLayers) {
           {1, {0}},                          // L1T1
           {1, {0, 1, 2}},                    // L3T1
       },
-  };
+  }};
 
   // Allocate a default bitrate allocation with the maximum temporal layers so
   // that it has non-zero bitrate up to the maximum supported temporal layers.
   const VideoBitrateAllocation kDefaultBitrateAllocation =
       AllocateDefaultBitrateForTesting(
-          num_spatial_layers, VP9SVCLayers::kMaxTemporalLayers,
+          num_spatial_layers, SVCLayers::kMaxTemporalLayers,
           DefaultVideoEncodeAcceleratorConfig().bitrate);
   const std::vector<gfx::Size> kDefaultSpatialLayers =
       GetDefaultSpatialLayerResolutions(num_spatial_layers);

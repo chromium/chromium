@@ -20,16 +20,16 @@ BrowserProcessTask::BrowserProcessTask()
            base::GetCurrentProcessHandle()),
       used_sqlite_memory_(-1) {}
 
-BrowserProcessTask::~BrowserProcessTask() {
-}
+BrowserProcessTask::~BrowserProcessTask() = default;
 
 bool BrowserProcessTask::IsKillable() {
   // Never kill the browser process.
   return false;
 }
 
-void BrowserProcessTask::Kill() {
+bool BrowserProcessTask::Kill() {
   // Never kill the browser process.
+  return false;
 }
 
 void BrowserProcessTask::Refresh(const base::TimeDelta& update_interval,

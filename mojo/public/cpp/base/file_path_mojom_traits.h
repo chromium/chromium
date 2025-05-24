@@ -11,11 +11,14 @@
 #define MOJO_PUBLIC_CPP_BASE_FILE_PATH_MOJOM_TRAITS_H_
 
 #include "base/component_export.h"
-#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/file_path.mojom-shared.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/containers/span.h"
+#endif
 
 namespace mojo {
 
@@ -24,9 +27,8 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::FilePathDataView, base::FilePath> {
 #if BUILDFLAG(IS_WIN)
   static base::span<const uint16_t> path(const base::FilePath& path) {
-    return base::make_span(
-        reinterpret_cast<const uint16_t*>(path.value().data()),
-        path.value().size());
+    return base::span(reinterpret_cast<const uint16_t*>(path.value().data()),
+                      path.value().size());
   }
 #else
   static const base::FilePath::StringType& path(const base::FilePath& path) {

@@ -90,7 +90,6 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
       std::vector<viz::ReturnedResource> resources) override;
   void OnBeginFrame(const viz::BeginFrameArgs& args,
                     const viz::FrameTimingDetailsMap& feedbacks,
-                    bool frame_ack,
                     std::vector<viz::ReturnedResource> resources) override {}
   void OnBeginFramePausedChanged(bool paused) override {}
   void ReclaimResources(std::vector<viz::ReturnedResource> resources) override;
@@ -132,7 +131,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   std::unique_ptr<viz::ExternalBeginFrameSource> begin_frame_source_;
 
   std::unique_ptr<ChildCompositorFrameSink> child_sink_support_;
-  base::flat_set<base::PlatformThreadId> child_frame_renderer_thread_ids_;
+  std::vector<viz::Thread> child_frame_renderer_threads_;
 
   bool clients_need_begin_frames_ = false;
   bool needs_begin_frames_ = false;

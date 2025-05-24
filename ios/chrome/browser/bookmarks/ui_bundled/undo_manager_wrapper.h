@@ -7,7 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 // This object is a convenience ObjC wrapper around UndoManager.
 // On construction, it registers itself as an observer of the UndoManager.
@@ -23,7 +23,7 @@
 @interface UndoManagerWrapper : NSObject
 
 // Designated initializer.
-- (instancetype)initWithBrowserState:(ProfileIOS*)profile;
+- (instancetype)initWithProfile:(ProfileIOS*)profile;
 
 // Subsequent changes to the BookmarkModel are grouped together so that a single
 // undo will revert all changes.

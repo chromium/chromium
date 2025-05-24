@@ -17,8 +17,8 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Concrete, Chrome-specific implementation of VrCompositorDelegate interface. */
 public class VrCompositorDelegateImpl implements VrCompositorDelegate {
-    private CompositorView mCompositorView;
-    private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    private final CompositorView mCompositorView;
+    private final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
 
     VrCompositorDelegateImpl(WebContents webContents) {
         ChromeActivity activity = ChromeActivity.fromWebContents(webContents);

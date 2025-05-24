@@ -6,16 +6,18 @@ package org.chromium.chrome.browser.device_dialog;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.permissions.BluetoothScanningPromptAndroidDelegate;
 
 /** The implementation of {@link BluetoothScanningPromptAndroidDelegate} for Chrome. */
+@NullMarked
 public class ChromeBluetoothScanningPromptAndroidDelegate
         implements BluetoothScanningPromptAndroidDelegate {
 
-    private Profile mProfile;
+    private final Profile mProfile;
 
     @CalledByNative
     ChromeBluetoothScanningPromptAndroidDelegate(Profile profile) {

@@ -4,7 +4,7 @@
 
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
+import type {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {setFeedbackServiceProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';

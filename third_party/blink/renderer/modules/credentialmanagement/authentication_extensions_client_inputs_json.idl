@@ -28,7 +28,7 @@ dictionary AuthenticationExtensionsClientInputsJSON {
   boolean enforceCredentialProtectionPolicy = false;
   boolean minPinLength;
   boolean credProps = false;
-  [RuntimeEnabled=WebAuthenticationLargeBlobExtension] AuthenticationExtensionsLargeBlobInputsJSON largeBlob;
+  AuthenticationExtensionsLargeBlobInputsJSON largeBlob;
   Base64URLString credBlob;
   boolean getCredBlob;
   [RuntimeEnabled=SecurePaymentConfirmation] AuthenticationExtensionsPaymentInputs payment;

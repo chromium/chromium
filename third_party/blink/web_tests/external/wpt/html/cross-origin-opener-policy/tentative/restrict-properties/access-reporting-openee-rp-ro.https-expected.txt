@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] access-reporting-openee-rp-ro
-  assert_equals: expected (string) "coop" but got (undefined) undefined
-Harness: the test ran to completion.
-

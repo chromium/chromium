@@ -203,72 +203,110 @@ class ServiceWorkerBasicAuthTest : public ContentBrowserTest {
     // such a dialog is difficult to control programmatically and doesn't work
     // on all platforms.
     ShellContentBrowserClient::Get()->set_login_request_callback(
-        base::BindLambdaForTesting([&](bool is_primary_main_frame) {
-          login_requested_ = is_primary_main_frame ? LoginRequested::kMainFrame
-                                                   : LoginRequested::kSubFrame;
-        }));
+        base::BindLambdaForTesting(
+            [&](bool is_primary_main_frame_navigation, bool is_for_navigation) {
+              login_requested_ = is_primary_main_frame_navigation
+                                     ? LoginRequested::kMainFrame
+                                     : LoginRequested::kNotMainFrame;
+              is_for_navigation_ = is_for_navigation;
+            }));
+  }
+
+  void SetupServiceWorker() {
+    // Load a page that installs the service worker.
+    EXPECT_TRUE(NavigateToURL(
+        shell(), ssl_server_.GetURL("/workers/service_worker_setup.html")));
+    EXPECT_EQ("ok", EvalJs(shell(), "setup();"));
+  }
+
+  void TestMainframeNavigation(bool under_service_worker_control) {
+    if (under_service_worker_control) {
+      SetupServiceWorker();
+    }
+    EXPECT_EQ(LoginRequested::kNone, login_requested_);
+    // Because our login request callback does nothing, navigation should
+    // fail.
+    EXPECT_FALSE(
+        NavigateToURL(shell(), ssl_server_.GetURL(kWorkerHttpBasicAuthPath)));
+    EXPECT_EQ(LoginRequested::kMainFrame, login_requested_);
+    EXPECT_TRUE(is_for_navigation_);
+  }
+
+  void TestSubframeNavigation(bool under_service_worker_control) {
+    if (under_service_worker_control) {
+      SetupServiceWorker();
+    }
+    EXPECT_EQ(LoginRequested::kNone, login_requested_);
+    EXPECT_TRUE(NavigateToURL(
+        shell(), ssl_server_.GetURL("/workers/iframe_basic_auth.html")));
+    // Login request callback should be called for a iframe's main resource.
+    EXPECT_EQ(LoginRequested::kNotMainFrame, login_requested_);
+    EXPECT_TRUE(is_for_navigation_);
+  }
+
+  void TestSubresource(bool under_service_worker_control) {
+    if (under_service_worker_control) {
+      SetupServiceWorker();
+    }
+    // Load the page.
+    EXPECT_TRUE(
+        NavigateToURL(shell(), ssl_server_.GetURL("/workers/simple.html")));
+
+    EXPECT_EQ(LoginRequested::kNone, login_requested_);
+    // Perform a fetch from the page to a resource which needs basic
+    // auth (The fetch should return status code 401.)
+    std::string url = ssl_server_.GetURL(kWorkerHttpBasicAuthPath).spec();
+    EXPECT_EQ(401, EvalJs(shell(), "try_fetch_status('" + url + "');"));
+    EXPECT_EQ(LoginRequested::kNotMainFrame, login_requested_);
+    EXPECT_FALSE(is_for_navigation_);
   }
 
  protected:
-  enum class LoginRequested { kNone, kMainFrame, kSubFrame };
+  enum class LoginRequested { kNone, kMainFrame, kNotMainFrame };
 
   LoginRequested login_requested_ = LoginRequested::kNone;
+  bool is_for_navigation_ = false;
   net::test_server::EmbeddedTestServer ssl_server_;
 };
 
-// Tests that basic auth prompts for a page controlled by a service
-// worker, when the service worker calls fetch() for the main resource.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasicAuthTest,
-                       BasicAuthPromptFetchMainResourceMainFrame) {
-  // Load a page that installs the service worker.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), ssl_server_.GetURL("/workers/service_worker_setup.html")));
-  EXPECT_EQ("ok", EvalJs(shell(), "setup();"));
-
-  EXPECT_EQ(LoginRequested::kNone, login_requested_);
-  // Because our login request callback does nothing, navigation should
-  // fail.
-  EXPECT_FALSE(
-      NavigateToURL(shell(), ssl_server_.GetURL(kWorkerHttpBasicAuthPath)));
-  EXPECT_EQ(LoginRequested::kMainFrame, login_requested_);
+// Tests that basic auth prompts for a page controlled by a service worker, when
+// navigating the main frame.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasicAuthTest, BasicAuthPromptMainFrame) {
+  TestMainframeNavigation(/*under_service_worker_control=*/true);
 }
 
-// Tests that basic auth prompts for a page controlled by a service
-// worker, when the service worker calls fetch() for the main resource for
-// subframe.
+// Tests that basic auth prompts for a page not controlled by a service worker,
+// when navigating the main frame.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasicAuthTest,
-                       BasicAuthPromptFetchMainResourceSubframe) {
-  // Load a page that installs the service worker.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), ssl_server_.GetURL("/workers/service_worker_setup.html")));
-  EXPECT_EQ("ok", EvalJs(shell(), "setup();"));
-
-  EXPECT_EQ(LoginRequested::kNone, login_requested_);
-  EXPECT_TRUE(NavigateToURL(
-      shell(), ssl_server_.GetURL("/workers/iframe_basic_auth.html")));
-  // Login request callback should be called for a iframe's main resource.
-  EXPECT_EQ(LoginRequested::kSubFrame, login_requested_);
+                       BasicAuthPromptMainFrameNoServiceWorker) {
+  TestMainframeNavigation(/*under_service_worker_control=*/false);
 }
 
-// Tests that basic auth prompts for a page controlled by a service
-// worker, when the service worker calls fetch() for a subresource.
+// Tests that basic auth prompts for a page controlled by a service worker, when
+// navigating a sub frame.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasicAuthTest, BasicAuthPromptSubframe) {
+  TestSubframeNavigation(/*under_service_worker_control=*/true);
+}
+
+// Tests that basic auth prompts for a page not controlled by a service worker,
+// when navigating a sub frame.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasicAuthTest,
+                       BasicAuthPromptSubframeNoServiceWorker) {
+  TestSubframeNavigation(/*under_service_worker_control=*/false);
+}
+
+// Tests that basic auth prompts for a page controlled by a service worker, when
+// the page calls fetch() for a subresource.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerBasicAuthTest,
                        BasicAuthPromptFetchSubResource) {
-  // Load a page that installs the service worker.
-  EXPECT_TRUE(NavigateToURL(
-      shell(), ssl_server_.GetURL("/workers/service_worker_setup.html")));
-  EXPECT_EQ("ok", EvalJs(shell(), "setup();"));
+  TestSubresource(/*under_service_worker_control=*/true);
+}
 
-  // Load a page controlled by the service worker.
-  EXPECT_TRUE(
-      NavigateToURL(shell(), ssl_server_.GetURL("/workers/simple.html")));
-
-  EXPECT_EQ(LoginRequested::kNone, login_requested_);
-  // Perform a fetch from the controlled page to the page which needs basic
-  // auth (The fetch should return status code 401.)
-  std::string url = ssl_server_.GetURL(kWorkerHttpBasicAuthPath).spec();
-  EXPECT_EQ(401, EvalJs(shell(), "try_fetch_status('" + url + "');"));
-  EXPECT_EQ(LoginRequested::kMainFrame, login_requested_);
+// Tests that basic auth prompts for a page not controlled by a service worker,
+// when the page calls fetch() for a subresource.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerBasicAuthTest,
+                       BasicAuthPromptFetchSubResourceNoServiceWorker) {
+  TestSubresource(/*under_service_worker_control=*/false);
 }
 
 }  // namespace content

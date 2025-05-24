@@ -38,12 +38,12 @@
 #import "net/http/transport_security_state.h"
 #import "net/url_request/url_request_context_builder.h"
 
-ProfileIOSImplIOData::Handle::Handle(ChromeBrowserState* browser_state)
+ProfileIOSImplIOData::Handle::Handle(ProfileIOS* profile)
     : io_data_(new ProfileIOSImplIOData),
-      browser_state_(browser_state),
+      profile_(profile),
       initialized_(false) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  DCHECK(browser_state);
+  DCHECK(profile);
 }
 
 ProfileIOSImplIOData::Handle::~Handle() {
@@ -52,11 +52,10 @@ ProfileIOSImplIOData::Handle::~Handle() {
   io_data_->ShutdownOnUIThread(GetAllContextGetters());
 }
 
-void ProfileIOSImplIOData::Handle::Init(
-    const base::FilePath& cookie_path,
-    const base::FilePath& cache_path,
-    int cache_max_size,
-    const base::FilePath& profile_path) {
+void ProfileIOSImplIOData::Handle::Init(const base::FilePath& cookie_path,
+                                        const base::FilePath& cache_path,
+                                        int cache_max_size,
+                                        const base::FilePath& profile_path) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   DCHECK(!io_data_->lazy_params_);
 
@@ -116,7 +115,7 @@ void ProfileIOSImplIOData::Handle::LazyInitialize() const {
   // Set initialized_ to true at the beginning in case any of the objects
   // below try to get the ResourceContext pointer.
   initialized_ = true;
-  io_data_->InitializeOnUIThread(browser_state_);
+  io_data_->InitializeOnUIThread(profile_);
 }
 
 std::unique_ptr<ProfileIOSIOData::IOSChromeURLRequestContextGetterVector>
@@ -142,7 +141,7 @@ ProfileIOSImplIOData::LazyParams::LazyParams() : cache_max_size(0) {}
 ProfileIOSImplIOData::LazyParams::~LazyParams() {}
 
 ProfileIOSImplIOData::ProfileIOSImplIOData()
-    : ProfileIOSIOData(ChromeBrowserStateType::REGULAR_BROWSER_STATE),
+    : ProfileIOSIOData(ProfileIOSType::REGULAR_PROFILE),
       app_cache_max_size_(0) {}
 
 ProfileIOSImplIOData::~ProfileIOSImplIOData() {}

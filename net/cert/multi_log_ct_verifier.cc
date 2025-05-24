@@ -55,8 +55,7 @@ std::map<std::string, scoped_refptr<const CTLogVerifier>> CreateLogsMap(
     const std::vector<scoped_refptr<const CTLogVerifier>>& log_verifiers) {
   std::map<std::string, scoped_refptr<const CTLogVerifier>> logs;
   for (const auto& log_verifier : log_verifiers) {
-    std::string key_id = log_verifier->key_id();
-    logs[key_id] = log_verifier;
+    logs[log_verifier->key_id()] = log_verifier;
   }
   return logs;
 }

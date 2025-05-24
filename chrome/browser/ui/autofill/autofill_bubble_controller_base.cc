@@ -30,8 +30,9 @@ void AutofillBubbleControllerBase::Show() {
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
+  if (visibility == content::Visibility::HIDDEN) {
     HideBubble();
+  }
 }
 
 void AutofillBubbleControllerBase::WebContentsDestroyed() {
@@ -42,8 +43,9 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
 // Page action icons do not exist for Android.
 #if !BUILDFLAG(IS_ANDROID)
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser)
+  if (browser) {
     browser->window()->UpdatePageActionIcon(GetPageActionIconType());
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 

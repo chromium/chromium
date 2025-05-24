@@ -17,7 +17,6 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/functional/callback.h"
 #include "base/hash/hash.h"
-#include "chrome/browser/ash/input_method/field_trial.h"
 #include "chrome/browser/ash/input_method/url_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -29,14 +28,6 @@
 namespace ash {
 namespace input_method {
 namespace {
-
-const char* kAllowedDomainAndPathsForPersonalInfoSuggester[][2] = {
-    {"discord.com", ""},         {"messenger.com", ""},
-    {"web.whatsapp.com", ""},    {"web.skype.com", ""},
-    {"duo.google.com", ""},      {"hangouts.google.com", ""},
-    {"messages.google.com", ""}, {"web.telegram.org", ""},
-    {"voice.google.com", ""},    {"mail.google.com", "/chat"},
-};
 
 const char* kAllowedDomainAndPathsForEmojiSuggester[][2] = {
     {"discord.com", ""},         {"messenger.com", ""},
@@ -58,31 +49,6 @@ const char* kTestUrls[] = {
 const uint32_t kHashedInternalUrls[] = {
     1845308025U,
     153302869U,
-};
-
-// For ARC++ apps, use arc package name. For system apps, use app ID.
-const char* kAllowedAppsForPersonalInfoSuggester[] = {
-    "com.discord",
-    "com.facebook.orca",
-    "com.whatsapp",
-    "com.skype.raider",
-    "com.google.android.apps.tachyon",
-    "com.google.android.talk",
-    "org.telegram.messenger",
-    "com.enflick.android.TextNow",
-    "com.facebook.mlite",
-    "com.viber.voip",
-    "com.skype.m2",
-    "com.imo.android.imoim",
-    "com.google.android.apps.googlevoice",
-    "com.playstation.mobilemessenger",
-    "kik.android",
-    "com.link.messages.sms",
-    "jp.naver.line.android",
-    "com.skype.m2",
-    "co.happybits.marcopolo",
-    "com.imo.android.imous",
-    "mmfbcljfglbokpmkimbfghdkjmjhdgbg",  // System text
 };
 
 // For ARC++ apps, use arc package name. For system apps, use app ID.
@@ -262,14 +228,7 @@ AssistiveSuggesterClientFilter::AssistiveSuggesterClientFilter(
     GetUrlCallback get_url,
     GetFocusedWindowPropertiesCallback get_window_properties)
     : get_url_(std::move(get_url)),
-      get_window_properties_(std::move(get_window_properties)),
-      denylist_(DenylistAdditions{
-          .autocorrect_denylist_json =
-              GetFieldTrialParam(features::kAutocorrectByDefault,
-                                 ParamName::kDenylist),
-          .multi_word_denylist_json =
-              GetFieldTrialParam(features::kAssistMultiWord,
-                                 ParamName::kDenylist)}) {}
+      get_window_properties_(std::move(get_window_properties)) {}
 
 AssistiveSuggesterClientFilter::~AssistiveSuggesterClientFilter() = default;
 
@@ -277,17 +236,8 @@ void AssistiveSuggesterClientFilter::FetchEnabledSuggestionsThen(
     FetchEnabledSuggestionsCallback callback,
     const TextInputMethod::InputContext& context) {
   WindowProperties window_properties = get_window_properties_.Run();
-  get_url_.Run(
-      base::BindOnce(&AssistiveSuggesterClientFilter::ReturnEnabledSuggestions,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     window_properties, context));
-}
+  std::optional<GURL> current_url = get_url_.Run();
 
-void AssistiveSuggesterClientFilter::ReturnEnabledSuggestions(
-    AssistiveSuggesterSwitch::FetchEnabledSuggestionsCallback callback,
-    WindowProperties window_properties,
-    const TextInputMethod::InputContext& context,
-    const std::optional<GURL>& current_url) {
   // Deny-list (will block if matched, otherwise allow)
   bool diacritic_suggestions_allowed =
       !IsMatchedSubDomain(kDeniedDomainsForDiacritics, current_url) &&
@@ -318,17 +268,9 @@ void AssistiveSuggesterClientFilter::ReturnEnabledSuggestions(
       !IsMatchedApp(kDeniedAppsForMultiwordSuggester, window_properties) &&
       !IsMatchedExactUrl(kDeniedUrlsForMultiwordSuggester, current_url);
 
-  // Allow-list (will only allow if matched)
-  bool personal_info_suggestions_allowed =
-      IsTestUrl(current_url) || IsInternalWebsite(current_url) ||
-      IsMatchedUrlWithPathPrefix(kAllowedDomainAndPathsForPersonalInfoSuggester,
-                                 current_url) ||
-      IsMatchedApp(kAllowedAppsForPersonalInfoSuggester, window_properties);
-
   std::move(callback).Run(AssistiveSuggesterSwitch::EnabledSuggestions{
       .emoji_suggestions = emoji_suggestions_allowed,
       .multi_word_suggestions = multi_word_suggestions_allowed,
-      .personal_info_suggestions = personal_info_suggestions_allowed,
       .diacritic_suggestions = diacritic_suggestions_allowed,
   });
 }

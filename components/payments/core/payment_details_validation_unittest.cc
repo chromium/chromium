@@ -27,7 +27,7 @@ struct PaymentDetailsValidationTestCase {
       : details(details),
         require_total(require_total),
         expect_valid(expect_valid) {}
-  ~PaymentDetailsValidationTestCase() {}
+  ~PaymentDetailsValidationTestCase() = default;
 
   const char* const details;
   const bool require_total;

@@ -147,9 +147,8 @@ class EventSender {
 
   void LeapForward(int milliseconds);
 
-  void BeginDragWithItems(
-      blink::WebLocalFrame* frame,
-      const blink::WebVector<blink::WebDragData::Item>& items);
+  void BeginDragWithItems(blink::WebLocalFrame* frame,
+                          const std::vector<blink::WebDragData::Item>& items);
   void BeginDragWithFiles(blink::WebLocalFrame* frame,
                           const std::vector<std::string>& files);
   void BeginDragWithStringData(blink::WebLocalFrame* frame,

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/webui/web_view_web_ui_ios_controller_factory.h"
+#import "ios/web_view/internal/webui/web_view_web_ui_ios_controller_factory.h"
 
 #import <Foundation/Foundation.h>
 
-#include "base/functional/bind.h"
-#include "base/location.h"
-#include "base/no_destructor.h"
-#include "ios/components/webui/web_ui_url_constants.h"
-#include "ios/web_view/internal/webui/web_view_sync_internals_ui.h"
-#include "url/gurl.h"
+#import "base/functional/bind.h"
+#import "base/location.h"
+#import "base/no_destructor.h"
+#import "ios/components/webui/web_ui_url_constants.h"
+#import "ios/web_view/internal/webui/web_view_sync_internals_ui.h"
+#import "url/gurl.h"
 
 using web::WebUIIOS;
 using web::WebUIIOSController;
@@ -37,14 +37,16 @@ std::unique_ptr<WebUIIOSController> NewWebUIIOS(WebUIIOS* web_ui,
 WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
   // This will get called a lot to check all URLs, so do a quick check of other
   // schemes to filter out most URLs.
-  if (!url.SchemeIs(kChromeUIScheme))
+  if (!url.SchemeIs(kChromeUIScheme)) {
     return nullptr;
+  }
 
   // Please keep this in alphabetical order. If #ifs or special logic is
   // required, add it below in the appropriate section.
   const std::string url_host = url.host();
-  if (url_host == kChromeUISyncInternalsHost)
+  if (url_host == kChromeUISyncInternalsHost) {
     return &NewWebUIIOS<WebViewSyncInternalsUI>;
+  }
 
   return nullptr;
 }
@@ -53,8 +55,9 @@ WebUIIOSFactoryFunction GetWebUIIOSFactoryFunction(const GURL& url) {
 
 NSInteger WebViewWebUIIOSControllerFactory::GetErrorCodeForWebUIURL(
     const GURL& url) const {
-  if (GetWebUIIOSFactoryFunction(url))
+  if (GetWebUIIOSFactoryFunction(url)) {
     return 0;
+  }
   return NSURLErrorUnsupportedURL;
 }
 
@@ -63,8 +66,9 @@ WebViewWebUIIOSControllerFactory::CreateWebUIIOSControllerForURL(
     WebUIIOS* web_ui,
     const GURL& url) const {
   WebUIIOSFactoryFunction function = GetWebUIIOSFactoryFunction(url);
-  if (!function)
+  if (!function) {
     return nullptr;
+  }
 
   return (*function)(web_ui, url);
 }

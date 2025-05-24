@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
@@ -57,9 +56,9 @@ const EventKeys = {
 
 export interface LensUploadDialogElement {
   $: {
-    dialog: HTMLDivElement,
+    dialog: HTMLElement,
     lensForm: LensFormElement,
-    dragDropArea: HTMLDivElement,
+    dragDropArea: HTMLElement,
     closeButton: CrIconButtonElement,
   };
 }
@@ -147,16 +146,16 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     };
   }
 
-  protected isHidden_: boolean;
-  protected isError_: boolean;
-  protected isNormalOrError_: boolean;
-  protected isDragging_: boolean;
-  protected isLoading_: boolean;
-  protected isOffline_: boolean;
-  private dialogState_ = DialogState.HIDDEN;
-  private lensErrorMessage_ = LensErrorMessage.NONE;
+  protected accessor isHidden_: boolean = false;
+  protected accessor isError_: boolean = false;
+  protected accessor isNormalOrError_: boolean = false;
+  protected accessor isDragging_: boolean = false;
+  protected accessor isLoading_: boolean = false;
+  protected accessor isOffline_: boolean = false;
+  private accessor dialogState_ = DialogState.HIDDEN;
+  private accessor lensErrorMessage_ = LensErrorMessage.NONE;
   private outsideHandlerAttached_ = false;
-  protected uploadUrl_: string = '';
+  protected accessor uploadUrl_: string = '';
   private dragCount: number = 0;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -219,9 +218,9 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     this.updateComplete.then(() => {
       this.attachOutsideHandler_();
       if (this.isOffline_) {
-        this.shadowRoot!.getElementById('offlineRetryButton')!.focus();
+        this.shadowRoot.getElementById('offlineRetryButton')!.focus();
       } else {
-        this.shadowRoot!.getElementById('uploadText')!.focus();
+        this.shadowRoot.getElementById('uploadText')!.focus();
       }
     });
     recordLensUploadDialogAction(LensUploadDialogAction.DIALOG_OPENED);
@@ -294,9 +293,9 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     } else if (event.key === EventKeys.TAB && event.shiftKey) {
       event.preventDefault();
       if (this.isNormalOrError_) {
-        this.shadowRoot!.getElementById('inputSubmit')!.focus();
+        this.shadowRoot.getElementById('inputSubmit')!.focus();
       } else if (this.isOffline_) {
-        this.shadowRoot!.getElementById('offlineRetryButton')!.focus();
+        this.shadowRoot.getElementById('offlineRetryButton')!.focus();
       }
     }
   }

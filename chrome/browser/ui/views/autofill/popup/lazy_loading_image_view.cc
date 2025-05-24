@@ -25,7 +25,7 @@ LazyLoadingImageView::LazyLoadingImageView(gfx::Size size,
 LazyLoadingImageView::~LazyLoadingImageView() = default;
 
 void LazyLoadingImageView::OnLoadSuccess(const gfx::Image& image) {
-  image_->SetImage(image.AsImageSkia());
+  image_->SetImage(ui::ImageModel::FromImage(image));
 }
 
 void LazyLoadingImageView::OnPaint(gfx::Canvas* canvas) {

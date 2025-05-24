@@ -4,8 +4,9 @@
 
 #include "components/lookalikes/core/safety_tips_config.h"
 
+#include <algorithm>
+
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "third_party/re2/src/re2/re2.h"
 #include "url/gurl.h"
@@ -187,7 +188,7 @@ bool IsCommonWordInConfigProto(const reputation::SafetyTipsConfig* proto,
   }
 
   auto common_words = proto->common_word();
-  DCHECK(base::ranges::is_sorted(common_words.begin(), common_words.end()));
+  DCHECK(std::ranges::is_sorted(common_words.begin(), common_words.end()));
   auto lower = std::lower_bound(
       common_words.begin(), common_words.end(), word,
       [](const std::string& a, const std::string& b) -> bool { return a < b; });

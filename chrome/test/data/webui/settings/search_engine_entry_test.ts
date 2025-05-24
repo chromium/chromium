@@ -10,7 +10,7 @@ import type {SettingsOmniboxExtensionEntryElement, SettingsSearchEngineEntryElem
 import type {SearchEngine} from 'chrome://settings/settings.js';
 import {ExtensionControlBrowserProxyImpl, SearchEnginesBrowserProxyImpl, ChoiceMadeLocation} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import { eventToPromise, isVisible } from 'chrome://webui-test/test_util.js';
 
 import {TestExtensionControlBrowserProxy} from './test_extension_control_browser_proxy.js';
 import {createSampleOmniboxExtension, createSampleSearchEngine, TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
@@ -74,7 +74,7 @@ suite('SearchEngineEntryTest', function() {
     const menuButton = entry.shadowRoot!.querySelector<HTMLElement>(
         'cr-icon-button.icon-more-vert');
     assertTrue(!!menuButton);
-    menuButton!.click();
+    menuButton.click();
     const menu = entry.shadowRoot!.querySelector('cr-action-menu')!;
     assertTrue(menu.open);
     return menu;
@@ -134,7 +134,7 @@ suite('SearchEngineEntryTest', function() {
     const button =
         entry.shadowRoot!.querySelector<HTMLButtonElement>(`#${buttonId}`);
     assertTrue(!!button);
-    assertTrue(button!.hidden);
+    assertTrue(button.hidden);
   }
 
   test('Remove_Hidden', function() {
@@ -170,7 +170,7 @@ suite('SearchEngineEntryTest', function() {
     const button =
         entry.shadowRoot!.querySelector<HTMLButtonElement>(`#${buttonId}`);
     assertTrue(!!button);
-    assertTrue(button!.disabled);
+    assertTrue(button.disabled);
   }
 
   test('MakeDefault_Disabled', function() {
@@ -259,6 +259,82 @@ suite('SearchEngineEntryTest', function() {
         entry.i18n(
             'searchEnginesMoreActionsAriaLabel', entry.engine.displayName),
         menuButton.ariaLabel);
+  });
+
+
+  // Test that when a search engine has an iconPath, site-favicon displays the
+  // icon. Downloaded icon should not be visible.
+  test('FaviconWithIconPath', function() {
+    entry.engine = createSampleSearchEngine({
+      iconPath: 'images/foo.png',
+      iconURL: 'http://www.google.com/favicon.ico',
+    });
+
+    assertEquals(
+        'chrome://image/?http://www.google.com/favicon.ico',
+        entry.$.downloadedIcon.src);
+    assertFalse(isVisible(entry.$.downloadedIcon));
+
+    const siteFavicon = entry.shadowRoot!.querySelector('site-favicon');
+    assertTrue(!!siteFavicon);
+    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
+    assertTrue(!!favicon);
+    assertTrue(isVisible(favicon));
+  });
+
+  // Test that when a search engine has an iconURL and downloading is
+  // successful, the downloaded icon is displayed. The site-favicon should not
+  // be visible.
+  test('FaviconWithIconURL_Successful', async function() {
+    entry.engine = createSampleSearchEngine({
+      iconPath: '',
+      iconURL: 'chrome://resources/images/chrome_logo_dark.svg',
+    });
+
+    await eventToPromise('load', entry.$.downloadedIcon);
+    assertEquals(
+        'chrome://resources/images/chrome_logo_dark.svg',
+        entry.$.downloadedIcon.src);
+    assertTrue(isVisible(entry.$.downloadedIcon));
+
+    const siteFavicon = entry.shadowRoot!.querySelector('site-favicon');
+    assertTrue(!!siteFavicon);
+    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
+    assertTrue(!!favicon);
+    assertFalse(isVisible(favicon));
+  });
+
+  // Test that when a search engine has an iconURL and downloading fails,
+  // site-favicon displays the icon.
+  test('FaviconWithIconURL_Failed', async function() {
+    entry.engine = createSampleSearchEngine(
+        {iconPath: '', iconURL: 'chrome://resources/images/invalid_url'});
+
+    await eventToPromise('error', entry.$.downloadedIcon);
+    assertEquals(
+        'chrome://resources/images/invalid_url', entry.$.downloadedIcon.src);
+    assertFalse(isVisible(entry.$.downloadedIcon));
+
+    const siteFavicon = entry.shadowRoot!.querySelector('site-favicon');
+    assertTrue(!!siteFavicon);
+    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon');
+    assertTrue(!!favicon);
+    assertTrue(isVisible(favicon));
+  });
+
+  // Test that when a search engine has neither an iconPath nor an iconURL,
+  // site-favicon displays the icon based on the search engine's URL.
+  test('FaviconWithURL', function() {
+    entry.engine = createSampleSearchEngine({iconPath: '', iconURL: ''});
+
+    assertEquals('', entry.$.downloadedIcon.src);
+    assertFalse(isVisible(entry.$.downloadedIcon));
+
+    const siteFavicon = entry.shadowRoot!.querySelector('site-favicon');
+    assertTrue(!!siteFavicon);
+    const favicon = siteFavicon.shadowRoot!.querySelector('#favicon')!;
+    assertTrue(!!favicon);
+    assertTrue(isVisible(favicon));
   });
 });
 

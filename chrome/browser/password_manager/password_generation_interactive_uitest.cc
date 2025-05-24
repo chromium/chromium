@@ -7,7 +7,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_manager_interactive_test_base.h"
@@ -22,8 +21,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -171,12 +170,10 @@ class PasswordGenerationInteractiveTest
   }
 
   void NavigateToAndAcceptSuggestedPassword() {
+    // Cancel button is the first focusable element, hence two down button
+    // presses to reach the accept button.
     SendKeyToPopup(ui::VKEY_DOWN);
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kPasswordGenerationSoftNudge)) {
-      // With the feature enabled, cancel button is the first focusable element.
-      SendKeyToPopup(ui::VKEY_DOWN);
-    }
+    SendKeyToPopup(ui::VKEY_DOWN);
     SendKeyToPopup(ui::VKEY_RETURN);
   }
 
@@ -220,17 +217,6 @@ class PasswordGenerationInteractiveTest
 // tabs to allow waiting for an Autofill popup to open.
 class PasswordGenerationAutofillPopupInteractiveTest
     : public PasswordGenerationInteractiveTest {
- public:
-  PasswordGenerationAutofillPopupInteractiveTest() {
-    // TODO(crbug.com/41492898): This class contains one test
-    // (HidesGenerationPopupWhenShowingPasswordSuggestionsWithGeneration)
-    // checking that the autofill popup with suggestions should be displayed
-    // (and generation popup hidden) on field focus. Make sure it works with the
-    // nudge popup as well.
-    scoped_feature_list_.InitAndDisableFeature(
-        password_manager::features::kPasswordGenerationSoftNudge);
-  }
-
  protected:
   ObservingAutofillClient& autofill_client() {
     return *autofill_client_injector_[WebContents()];
@@ -239,7 +225,6 @@ class PasswordGenerationAutofillPopupInteractiveTest
  private:
   autofill::TestAutofillClientInjector<ObservingAutofillClient>
       autofill_client_injector_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -271,8 +256,10 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
       1);
 }
 
+// TODO(http://crbug.com/382272011): Re-enable this test after flakiness is
+// resolved.
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
-                       PopupShownAutomaticallyAndPasswordErased) {
+                       DISABLED_PopupShownAutomaticallyAndPasswordErased) {
   FocusPasswordField();
   WaitForGenerationPopupShowing();
   NavigateToAndAcceptSuggestedPassword();
@@ -325,11 +312,11 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   EXPECT_FALSE(GenerationPopupShowing());
 }
 
-// Verify that password generation popup is hidden when popup
-// with generation and password suggestions is visible.
-IN_PROC_BROWSER_TEST_F(
-    PasswordGenerationAutofillPopupInteractiveTest,
-    HidesGenerationPopupWhenShowingPasswordSuggestionsWithGeneration) {
+// Verify that tapping the password field does not trigger the suggestion popup
+// when user triggered the generation popup first (either by choosing it from
+// suggestions popup with generation or context menu).
+IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
+                       SuggestionsPopupIsNotShownWhenGenerationPopupVisible) {
   // Save the credentials since the autofill popup with generation and
   // password suggestion would not appear without stored passwords.
   password_manager::PasswordStoreInterface* password_store =
@@ -353,13 +340,44 @@ IN_PROC_BROWSER_TEST_F(
   WaitForGenerationPopupShowing();
   EXPECT_TRUE(GenerationPopupShowing());
 
-  // Click on the password field to display the autofill popup.
+  // Click on the password field and check that generation popup is still shown.
   content::SimulateMouseClickOrTapElementWithId(WebContents(),
                                                 "password_field");
-  // Make sure that the autofill popup is showing.
-  autofill_client().WaitForAutofillPopup();
-  // Make sure the generation popup is dismissed.
+  EXPECT_TRUE(GenerationPopupShowing());
+}
+
+// Verify that password suggestions popup is still showing up even after
+// user rejected password generation.
+IN_PROC_BROWSER_TEST_F(
+    PasswordGenerationAutofillPopupInteractiveTest,
+    PopupWithSuggestionsShowingUpAfterUserRejectedGeneration) {
+  // Save a credential since the autofill popup with generation and
+  // password suggestion would not appear otherwise.
+  password_manager::PasswordStoreInterface* password_store =
+      ProfilePasswordStoreFactory::GetForProfile(
+          browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+          .get();
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.username_value = u"temp";
+  signin_form.password_value = u"random123";
+  password_store->AddLogin(signin_form);
+  WaitForPasswordStore();
+
+  NavigateToFile("/password/signup_form_new_password.html");
+
+  // Trigger password generation and reject by navigating to "Cancel" button.
+  password_manager_util::UserTriggeredManualGenerationFromContextMenu(
+      ChromePasswordManagerClient::FromWebContents(WebContents()),
+      autofill::ContentAutofillClient::FromWebContents(WebContents()));
+  SendKeyToPopup(ui::VKEY_DOWN);
+  SendKeyToPopup(ui::VKEY_RETURN);
   WaitForStatus(TestGenerationPopupObserver::GenerationPopup::kHidden);
+
+  // Check that the suggestions popup still shows up on password field tap.
+  content::SimulateMouseClickOrTapElementWithId(WebContents(),
+                                                "password_field");
+  autofill_client().WaitForAutofillPopup();
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
@@ -503,6 +521,19 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
   NavigateToFile("/password/signup_form.html");
 
   // Check that popup is dismissed.
+  EXPECT_FALSE(GenerationPopupShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
+                       GenerationPopupNotShownAfterUserRejected) {
+  FocusPasswordField();
+  WaitForGenerationPopupShowing();
+
+  // Reject generation by navigating to "Cancel" button.
+  SendKeyToPopup(ui::VKEY_DOWN);
+  SendKeyToPopup(ui::VKEY_RETURN);
+
+  FocusPasswordField();
   EXPECT_FALSE(GenerationPopupShowing());
 }
 

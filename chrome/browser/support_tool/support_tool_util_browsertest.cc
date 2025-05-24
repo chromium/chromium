@@ -23,10 +23,10 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Profile;
 
@@ -57,14 +57,14 @@ class SupportToolUtilTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class SupportToolUtilLoginScreenTest : public ash::LoginManagerTest {
  public:
   SupportToolUtilLoginScreenTest() = default;
 };
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilTest, GetSupportToolHandler) {
             handler->GetDataCollectorsForTesting().size());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verifies that all data collectors available on login screen are added to
 // `SupportToolHandler`.
 IN_PROC_BROWSER_TEST_F(SupportToolUtilLoginScreenTest, GetSupportToolHandler) {
@@ -139,4 +139,4 @@ IN_PROC_BROWSER_TEST_F(SupportToolUtilLoginScreenTest, GetSupportToolHandler) {
   EXPECT_EQ(0U, handler->GetDataCollectorsForTesting().size());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

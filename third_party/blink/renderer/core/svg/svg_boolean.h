@@ -31,14 +31,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_BOOLEAN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_BOOLEAN_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-class SVGBoolean final : public SVGPropertyHelper<SVGBoolean> {
+class SVGBoolean final : public SVGPropertyBase {
  public:
   // SVGBoolean does not have a tear-off type.
   typedef void TearOffType;
@@ -67,6 +67,7 @@ class SVGBoolean final : public SVGPropertyHelper<SVGBoolean> {
   void SetValue(bool value) { value_ = value; }
 
   static AnimatedPropertyType ClassType() { return kAnimatedBoolean; }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
  private:
   bool value_;

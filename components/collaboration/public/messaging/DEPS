@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/data_sharing/public",
+  "+components/strings",
+  "+components/tab_groups",
+  "+ui/base",
+]

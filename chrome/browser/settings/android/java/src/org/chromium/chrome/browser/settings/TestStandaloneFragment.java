@@ -11,10 +11,12 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /** A standalone settings fragment that has several preference inside. */
-public class TestStandaloneFragment extends PreferenceFragmentCompat implements BackPressHandler {
+public class TestStandaloneFragment extends PreferenceFragmentCompat
+        implements BackPressHandler, SettingsFragment {
     public static final String EXTRA_TITLE = "title";
 
     private final ObservableSupplierImpl<Boolean> mBackPressStateSupplier =
@@ -50,5 +52,10 @@ public class TestStandaloneFragment extends PreferenceFragmentCompat implements 
     @Override
     public ObservableSupplierImpl<Boolean> getHandleBackPressChangedSupplier() {
         return mBackPressStateSupplier;
+    }
+
+    @Override
+    public @AnimationType int getAnimationType() {
+        return AnimationType.PROPERTY;
     }
 }

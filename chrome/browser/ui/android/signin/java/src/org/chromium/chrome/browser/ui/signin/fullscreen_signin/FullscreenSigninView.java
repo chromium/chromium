@@ -13,14 +13,16 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
-/** View that wraps the fullscreen signin promo and caches references to UI elements. **/
+/** View that wraps the fullscreen signin promo and caches references to UI elements. */
+@NullMarked
 public class FullscreenSigninView extends RelativeLayout {
+    private ImageView mLogo;
     private TextView mTitle;
     private TextView mSubtitle;
     private View mBrowserManagedHeader;
@@ -42,6 +44,7 @@ public class FullscreenSigninView extends RelativeLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
+        mLogo = findViewById(R.id.fre_logo);
         mTitle = findViewById(R.id.title);
         mSubtitle = findViewById(R.id.subtitle);
         mBrowserManagedHeader = findViewById(R.id.fre_browser_managed_by);
@@ -54,7 +57,7 @@ public class FullscreenSigninView extends RelativeLayout {
         mFooter = findViewById(R.id.signin_fre_footer);
         mSigninProgressSpinner = findViewById(R.id.fre_signin_progress_spinner);
         mSigninProgressText = findViewById(R.id.fre_signin_progress_text);
-        mPrivacyDisclaimer = (TextView) findViewById(R.id.privacy_disclaimer);
+        mPrivacyDisclaimer = findViewById(R.id.privacy_disclaimer);
     }
 
     View getBrowserManagedHeaderView() {
@@ -103,5 +106,9 @@ public class FullscreenSigninView extends RelativeLayout {
 
     TextView getTitle() {
         return mTitle;
+    }
+
+    ImageView getLogo() {
+        return mLogo;
     }
 }

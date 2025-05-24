@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
@@ -20,14 +21,14 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <memory>
 
 #include "base/functional/callback.h"
 #include "pdf/pdf_progressive_searchifier.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace chrome_pdf {
 
@@ -139,8 +140,7 @@ std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
-  chrome_pdf::PDFiumEngineExports* engine_exports =
-      chrome_pdf::PDFiumEngineExports::Get();
+  PDFiumEngineExports* engine_exports = PDFiumEngineExports::Get();
   return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_index);
 }
 
@@ -184,7 +184,7 @@ std::vector<uint8_t> ConvertPdfDocumentToNupPdf(
       input_buffer, pages_per_sheet, page_size, printable_area);
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 std::vector<uint8_t> Searchify(
     base::span<const uint8_t> pdf_buffer,
     base::RepeatingCallback<screen_ai::mojom::VisualAnnotationPtr(
@@ -198,6 +198,6 @@ std::unique_ptr<PdfProgressiveSearchifier> CreateProgressiveSearchifier() {
   PDFiumEngineExports* engine_exports = PDFiumEngineExports::Get();
   return engine_exports->CreateProgressiveSearchifier();
 }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Build;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -29,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
@@ -36,6 +38,7 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEv
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -69,6 +72,7 @@ public class OverlayPanelEventFilterTest {
     @Mock private Tab mTab;
     @Mock private OverlayPanelContentDelegate mOverlayPanelContentDelegate;
     @Mock private OverlayPanelContentProgressObserver mOverlayPanelContentProgressObserver;
+    @Mock private InsetObserver mInsetObserver;
 
     private float mTouchSlopDp;
     private float mDpToPx;
@@ -156,7 +160,9 @@ public class OverlayPanelEventFilterTest {
                     profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
-                    () -> tab);
+                    () -> tab,
+                    /* desktopWindowStateManager= */ null,
+                    /* bottomControlsStacker= */ null);
         }
 
         @Override
@@ -225,7 +231,7 @@ public class OverlayPanelEventFilterTest {
         // GestureHandler overrides.
 
         @Override
-        public void onDown(float x, float y, boolean fromMouse, int buttons) {}
+        public void onDown(float x, float y, int buttons) {}
 
         @Override
         public void onUpOrCancel() {}
@@ -236,7 +242,7 @@ public class OverlayPanelEventFilterTest {
         }
 
         @Override
-        public void click(float x, float y, boolean fromMouse, int buttons) {
+        public void click(float x, float y, int buttons) {
             mWasTapDetectedOnPanel = true;
         }
 
@@ -273,7 +279,9 @@ public class OverlayPanelEventFilterTest {
                             new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(mActivity));
+                                    IntentRequestTracker.createFromActivity(mActivity),
+                                    mInsetObserver,
+                                    /* trackOcclusion= */ true);
 
                     mPanel =
                             new MockOverlayPanel(
@@ -319,6 +327,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
     public void testTapContentView() {
         positionPanelInAlmostMaximizedState();
 
@@ -356,6 +365,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
     public void testScrollUpContentView() {
         positionPanelInMaximizedState();
 
@@ -375,6 +385,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
     public void testScrollDownContentView() {
         positionPanelInMaximizedState();
 
@@ -421,6 +432,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
     public void testUnwantedScrollDoesNotHappenInContentView() {
         positionPanelInAlmostMaximizedState();
 
@@ -456,6 +468,7 @@ public class OverlayPanelEventFilterTest {
     @MediumTest
     @Feature({"OverlayPanel"})
     @UiThreadTest
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/1415559")
     public void testDragPanelThenContinuouslyScrollContentView() {
         positionPanelInAlmostMaximizedState();
 

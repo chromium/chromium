@@ -3,8 +3,7 @@
 ## Contact Information
 
   * **Contact**:
-    * hirthanan@google.com
-    * qianwan@google.com
+    * troywang@google.com
   * **Escalation**:
     * chromeos-data-eng@google.com
   * **File a bug**: [template](https://bugs.chromium.org/p/chromium/issues/list?q=component:OS%3ESoftware%3EData)

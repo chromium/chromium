@@ -10,10 +10,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.AutofillProfile;
 
 /** JNI wrapper for C++ SaveUpdateAddressProfilePromptController. */
 @JNINamespace("autofill")
+@NullMarked
 final class SaveUpdateAddressProfilePromptController {
     private long mNativeSaveUpdateAddressProfilePromptController;
 

@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "third_party/blink/public/common/common_export.h"
@@ -35,7 +36,11 @@ struct BLINK_COMMON_EXPORT CloneableMessage {
   // |owned_encoded_message| and just serializes whatever |encoded_message|
   // points to. When deserializing |owned_encoded_message| is set to the data
   // and |encoded_message| is set to point to |owned_encoded_message|.
-  base::span<const uint8_t> encoded_message;
+  //
+  // TODO(crbug.com/372506014): investigate dangling span, e.g. in
+  // `blink_web_tests` on `linux-rel`.
+  // TODO(367764863) Rewrite to base::raw_span
+  RAW_PTR_EXCLUSION base::span<const uint8_t> encoded_message;
   std::vector<uint8_t> owned_encoded_message;
 
   // Copies data into owned_encoded_message if it's not already there.

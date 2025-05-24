@@ -3,8 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/synchronization/lock.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
+#include "base/timer/elapsed_timer.h"
+#include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
+#include "content/browser/preloading/preloading.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -14,9 +19,11 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prefetch_test_util.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -28,10 +35,27 @@ namespace {
 
 using net::test_server::ControllableHttpResponse;
 
-class NavPrefetchBrowserTest : public ContentBrowserTest {
+class NavPrefetchBrowserTest : public ContentBrowserTest,
+                               public BackForwardCacheMetricsTestMatcher {
  public:
+  NavPrefetchBrowserTest() {
+    scoped_feature_list_.InitWithFeatures({features::kPrefetchReusable}, {});
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_ukm_entry_builder_ =
+        std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
+            content_preloading_predictor::kSpeculationRules);
+
+    ssl_server_.RegisterRequestMonitor(
+        base::BindRepeating(&NavPrefetchBrowserTest::MonitorResourceRequest,
+                            base::Unretained(this)));
+    ssl_server_.AddDefaultHandlers(GetTestDataFilePath());
+    ssl_server_.SetSSLConfig(
+        net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+    ASSERT_TRUE(ssl_server_.Start());
   }
 
   void StartPrefetch(const GURL& url) {
@@ -48,8 +72,13 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
                  network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin));
     std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
     candidates.push_back(std::move(candidate));
-    prefetch_document_manager->ProcessCandidates(candidates,
-                                                 /*devtools_observer=*/nullptr);
+    prefetch_document_manager->ProcessCandidates(candidates);
+  }
+
+  void ResetSSLConfig(
+      net::test_server::EmbeddedTestServer::ServerCertificate cert,
+      const net::SSLServerConfig& ssl_config) {
+    ASSERT_TRUE(ssl_server_.ResetSSLConfig(cert, ssl_config));
   }
 
   RenderFrameHostImpl& GetPrimaryMainFrameHost() {
@@ -70,8 +99,42 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
     return request_count_by_path_[url.PathForRequest()];
   }
 
+  // BackForwardCacheMetricsTestMatcher implementation.
+  const base::HistogramTester& histogram_tester() override {
+    return histogram_tester_;
+  }
+
+  // BackForwardCacheMetricsTestMatcher implementation.
+  const ukm::TestAutoSetUkmRecorder& ukm_recorder() override {
+    return *ukm_recorder_;
+  }
+
+  const test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_ukm_entry_builder_;
+  }
+
+ protected:
+  GURL GetUrl(const std::string& host, const std::string& path) const {
+    return ssl_server_.GetURL(host, path);
+  }
+
  private:
+  base::ScopedMockElapsedTimersForTest test_timer_;
+
+  net::test_server::EmbeddedTestServer ssl_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
+  base::HistogramTester histogram_tester_;
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
+      attempt_ukm_entry_builder_;
+  // Disable sampling for UKM preloading logs.
+  test::PreloadingConfigOverride preloading_config_override_;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   base::Lock lock_;
 };
 
@@ -99,8 +162,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   auto* prefetch_document_manager =
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh);
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
-  prefetch_document_manager->ProcessCandidates(candidates,
-                                               /*devtools_observer=*/nullptr);
+  prefetch_document_manager->ProcessCandidates(candidates);
 
   // Wait for a new request, and respond to it.
   response2.WaitForRequest();
@@ -115,19 +177,9 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
 
 // TODO(crbug.com/345352974): Make it a web platform test instead.
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
-  GURL des_url = ssl_server.GetURL("a.test", "/title2.html");
-  GURL next_nav_url =
-      ssl_server.GetURL("b.test", "/server-redirect?" + des_url.spec());
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL des_url = GetUrl("a.test", "/title2.html");
+  GURL next_nav_url = GetUrl("b.test", "/server-redirect?" + des_url.spec());
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   test::TestPrefetchWatcher test_prefetch_watcher;
@@ -144,22 +196,29 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
 
   EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
   EXPECT_EQ(GetRequestCount(des_url), 1);
+  ukm::SourceId ukm_source_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Navigate primary page to flush the metrics.
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::ExpectPreloadingAttemptUkm(
+      ukm_recorder(),
+      {attempt_entry_builder().BuildEntry(
+          ukm_source_id, PreloadingType::kPrefetch,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kSuccess,
+          PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true,
+          base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+          blink::mojom::SpeculationEagerness::kEager)});
 }
 
 // TODO(crbug.com/345352974): Make it a web platform test instead.
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
   const std::string server_cookie = "host_cookie=1";
-  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   // 1. Prefetch a resource which sets cookie.
@@ -183,7 +242,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
                    "document.cookie"), server_cookie);
 
   // 4. Navigate to another same-site page to confirm the cookie is persistent.
-  GURL after_prefetch_url = ssl_server.GetURL("b.test", "/title2.html");
+  GURL after_prefetch_url = GetUrl("b.test", "/title2.html");
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", after_prefetch_url));
   EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
@@ -193,18 +252,9 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, SetCookieViaHTTPResponse) {
 // TODO(crbug.com/345352974): Make it a web platform test instead.
 IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
                        NeverSetCookieForDiscardedPrefetch) {
-  net::test_server::EmbeddedTestServer ssl_server{
-      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
-  ssl_server.RegisterRequestMonitor(base::BindRepeating(
-      &NavPrefetchBrowserTest::MonitorResourceRequest, base::Unretained(this)));
-  ssl_server.AddDefaultHandlers(GetTestDataFilePath());
-  ssl_server.SetSSLConfig(
-      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
-  ASSERT_TRUE(ssl_server.Start());
-
-  GURL initiator_url = ssl_server.GetURL("a.test", "/empty.html");
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
   const std::string server_cookie = "host_cookie=1";
-  GURL des_url = ssl_server.GetURL("b.test", "/set-cookie?" + server_cookie);
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
   ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
 
   // 1. Prefetch a resource which sets cookie.
@@ -217,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   // 2. Navigate to another URL to invalidate the prefetch result.
   TestNavigationObserver nav_observer(shell()->web_contents());
   nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
-  GURL after_prefetch_url = ssl_server.GetURL("b.test", "/title2.html");
+  GURL after_prefetch_url = GetUrl("b.test", "/title2.html");
 
   std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        JsReplace("location = $1", after_prefetch_url));
@@ -227,6 +277,275 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest,
   // real jar.
   EXPECT_EQ(EvalJs(shell()->web_contents()->GetPrimaryMainFrame(),
                        "document.cookie").ExtractString(), "");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavPrefetchBrowserTest,
+    CrossSitePrefetchNotServedWhenCookieChange_BeforeFirstServe) {
+  // Perform a cross-site prefetch which sets cookie.
+  const std::string server_cookie = "server_cookie=1";
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(des_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), des_url);
+  ASSERT_EQ(GetRequestCount(des_url), 1);
+
+  // Change a cookie for the prefetched site.
+  ASSERT_TRUE(SetCookie(shell()->web_contents()->GetBrowserContext(), des_url,
+                        "test=1"));
+
+  // Try to navigate a prefetched site. Prefetch is not used because default
+  // network context's cookie has been changed.
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", des_url));
+  nav_observer.Wait();
+  EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), des_url);
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  EXPECT_EQ(GetRequestCount(des_url), 2);
+  EXPECT_THAT(GetCanonicalCookies(shell()->web_contents()->GetBrowserContext(),
+                                  des_url),
+              testing::UnorderedElementsAre(
+                  net::MatchesCookieNameValue("server_cookie", "1"),
+                  net::MatchesCookieNameValue("test", "1")));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavPrefetchBrowserTest,
+    CrossSitePrefetchNotServedWhenCookieChange_AfterFirstServe) {
+  if (!BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    GTEST_SKIP()
+        << "This test assumes that BFCache is used when back navigation";
+  }
+
+  // Perform a cross-site prefetch which sets cookie.
+  const std::string server_cookie = "server_cookie=1";
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL des_url = GetUrl("b.test", "/set-cookie?" + server_cookie);
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(des_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), des_url);
+  ASSERT_EQ(GetRequestCount(des_url), 1);
+
+  // Activate a prefetch. Cookie is successfully copied to default network
+  // context.
+  {
+    TestNavigationObserver nav_observer(shell()->web_contents());
+    nav_observer.set_wait_event(
+        TestNavigationObserver::WaitEvent::kLoadStopped);
+    std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         JsReplace("location = $1", des_url));
+    nav_observer.Wait();
+    EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+    EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), des_url);
+    EXPECT_THAT(GetCanonicalCookies(
+                    shell()->web_contents()->GetBrowserContext(), des_url),
+                testing::UnorderedElementsAre(
+                    net::MatchesCookieNameValue("server_cookie", "1")));
+  }
+
+  // Back to the initial site. Since the document that initiated prefetch has
+  // been restored from BFCache, `PrefetchDocumentManager` and the prefetch
+  // should still be alive in this timing.
+  {
+    TestNavigationObserver observer1(shell()->web_contents());
+    shell()->GoBackOrForward(-1);
+    observer1.Wait();
+    ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), initiator_url);
+    ExpectRestored(FROM_HERE);
+  }
+
+  // Activate a prefetch again. Prefetch is served if `kPrefetchReusable` is
+  // enabled.
+  {
+    TestNavigationObserver nav_observer(shell()->web_contents());
+    nav_observer.set_wait_event(
+        TestNavigationObserver::WaitEvent::kLoadStopped);
+    std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         JsReplace("location = $1", des_url));
+    nav_observer.Wait();
+    EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), des_url);
+    EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+    EXPECT_EQ(GetRequestCount(des_url), 1);
+  }
+
+  // Set a cookie to a prefetched site.
+  ASSERT_TRUE(SetCookie(shell()->web_contents()->GetBrowserContext(), des_url,
+                        "test=1"));
+
+  // Back to the initial site and try to activate prefetch again. Prefetch is
+  // not served because the cookie has been changed.
+  {
+    TestNavigationObserver nav_observer(shell()->web_contents());
+    shell()->GoBackOrForward(-1);
+    nav_observer.Wait();
+    ASSERT_EQ(shell()->web_contents()->GetLastCommittedURL(), initiator_url);
+    ExpectRestored(FROM_HERE);
+  }
+  {
+    TestNavigationObserver nav_observer(shell()->web_contents());
+    nav_observer.set_wait_event(
+        TestNavigationObserver::WaitEvent::kLoadStopped);
+    std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                         JsReplace("location = $1", des_url));
+    nav_observer.Wait();
+    EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), des_url);
+    EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+    EXPECT_EQ(GetRequestCount(des_url), 2);
+    EXPECT_THAT(GetCanonicalCookies(
+                    shell()->web_contents()->GetBrowserContext(), des_url),
+                testing::UnorderedElementsAre(
+                    net::MatchesCookieNameValue("server_cookie", "1"),
+                    net::MatchesCookieNameValue("test", "1")));
+  }
+}
+
+// In the tests below about auth/cert errors, we just check that the prefetches
+// should fail. We expect no dialogs etc. are presented to users on such
+// failures, because we don't pass URLLoaderNetworkServiceObserver for prefetch
+// requests in the first place. If we should pass
+// URLLoaderNetworkServiceObserver in the future (which is unlikely though), we
+// would need more test coverage here (for prefetches to
+// ServiceWorker-controlled URLs, check dialogs like in
+// content/browser/service_worker/service_worker_auth_browsertest.cc, etc.).
+
+// Tests that prefetch fails when auth is requested.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, AuthRequested) {
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL destination_url = GetUrl("a.test", "/auth-basic");
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(destination_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), destination_url);
+  ASSERT_EQ(GetRequestCount(destination_url), 1);
+
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", destination_url));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  EXPECT_EQ(GetRequestCount(destination_url), 2);
+  ukm::SourceId ukm_source_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Navigate primary page to flush the metrics.
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::ExpectPreloadingAttemptUkm(
+      ukm_recorder(),
+      {attempt_entry_builder().BuildEntry(
+          ukm_source_id, PreloadingType::kPrefetch,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kFailure,
+          ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNon2XX),
+          /*accurate=*/true,
+          /*ready_time=*/std::nullopt,
+          blink::mojom::SpeculationEagerness::kEager)});
+}
+
+// Tests that prefetch fails when client cert is requested.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ClientCertRequested) {
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL destination_url = GetUrl("a.test", "/title2.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  // Reset the server's config to cause a client cert request.
+  net::SSLServerConfig ssl_config;
+  ssl_config.client_cert_type =
+      net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
+  ResetSSLConfig(net::test_server::EmbeddedTestServer::CERT_TEST_NAMES,
+                 ssl_config);
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(destination_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), destination_url);
+
+  // Reset the server's config to normal.
+  ResetSSLConfig(net::test_server::EmbeddedTestServer::CERT_TEST_NAMES,
+                 net::SSLServerConfig());
+
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", destination_url));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  // Prefetch request should not be counted.
+  EXPECT_EQ(GetRequestCount(destination_url), 1);
+  ukm::SourceId ukm_source_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Navigate primary page to flush the metrics.
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::ExpectPreloadingAttemptUkm(
+      ukm_recorder(),
+      {attempt_entry_builder().BuildEntry(
+          ukm_source_id, PreloadingType::kPrefetch,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kFailure,
+          ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNetError),
+          /*accurate=*/true,
+          /*ready_time=*/std::nullopt,
+          blink::mojom::SpeculationEagerness::kEager)});
+}
+
+// Tests that prefetch fails when cert is expired.
+IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, CertExpired) {
+  GURL initiator_url = GetUrl("a.test", "/empty.html");
+  GURL destination_url = GetUrl("a.test", "/title2.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  // Reset the server's config to cause a cert error.
+  ResetSSLConfig(net::test_server::EmbeddedTestServer::CERT_EXPIRED,
+                 net::SSLServerConfig());
+
+  test::TestPrefetchWatcher test_prefetch_watcher;
+  StartPrefetch(destination_url);
+  test_prefetch_watcher.WaitUntilPrefetchResponseCompleted(
+      GetPrimaryMainFrameHost().GetDocumentToken(), destination_url);
+
+  // Reset the server's config to normal.
+  ResetSSLConfig(net::test_server::EmbeddedTestServer::CERT_TEST_NAMES,
+                 net::SSLServerConfig());
+
+  TestNavigationObserver nav_observer(shell()->web_contents());
+  nav_observer.set_wait_event(TestNavigationObserver::WaitEvent::kLoadStopped);
+  std::ignore = ExecJs(shell()->web_contents()->GetPrimaryMainFrame(),
+                       JsReplace("location = $1", destination_url));
+  nav_observer.Wait();
+
+  EXPECT_FALSE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
+  // Prefetch request should not be counted.
+  EXPECT_EQ(GetRequestCount(destination_url), 1);
+  ukm::SourceId ukm_source_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Navigate primary page to flush the metrics.
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::ExpectPreloadingAttemptUkm(
+      ukm_recorder(),
+      {attempt_entry_builder().BuildEntry(
+          ukm_source_id, PreloadingType::kPrefetch,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kFailure,
+          ToPreloadingFailureReason(PrefetchStatus::kPrefetchFailedNetError),
+          /*accurate=*/true,
+          /*ready_time=*/std::nullopt,
+          blink::mojom::SpeculationEagerness::kEager)});
 }
 
 }  // namespace

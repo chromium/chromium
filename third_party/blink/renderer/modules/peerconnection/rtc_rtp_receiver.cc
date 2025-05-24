@@ -4,7 +4,11 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver.h"
 
+#include <inttypes.h>
+
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -181,8 +185,9 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedStreams(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  LogMessage(base::StringPrintf("%s({transform_shortcircuited_=%s})", __func__,
-                                transform_shortcircuited_ ? "true" : "false"));
+  LogMessage(
+      base::StringPrintf("%s({transform_shortcircuited_=%s})", __func__,
+                         base::ToString(transform_shortcircuited_).c_str()));
   if (transform_shortcircuited_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Too late to create encoded streams");
@@ -234,13 +239,14 @@ void RTCRtpReceiver::set_transport(RTCDtlsTransport* transport) {
   transport_ = transport;
 }
 
-String RTCRtpReceiver::TransceiverDirection() {
+V8RTCRtpTransceiverDirection RTCRtpReceiver::TransceiverDirection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // `transceiver_` is always initialized to a valid value.
   return transceiver_->direction();
 }
 
-String RTCRtpReceiver::TransceiverCurrentDirection() {
+std::optional<V8RTCRtpTransceiverDirection>
+RTCRtpReceiver::TransceiverCurrentDirection() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // `transceiver_` is always initialized to a valid value.
   return transceiver_->currentDirection();

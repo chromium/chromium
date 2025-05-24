@@ -15,6 +15,7 @@
 #include "components/sync/model/data_type_store_service.h"
 #include "components/sync/service/sync_service_observer.h"
 #include "components/version_info/channel.h"
+#include "base/scoped_observation.h"
 
 class GURL;
 class PrefService;
@@ -76,6 +77,9 @@ class SendTabToSelfSyncService : public KeyedService,
   // Cyclic dependency, initialized in OnSyncServiceInitialized(), reset in
   // OnSyncShutdown().
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+
+  base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
+      sync_service_observation_{this};
 };
 
 }  // namespace send_tab_to_self

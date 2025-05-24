@@ -4,6 +4,7 @@
 
 #include "ash/system/notification_center/views/notification_list_view.h"
 
+#include <algorithm>
 #include <string>
 
 #include "ash/constants/ash_features.h"
@@ -26,7 +27,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -81,7 +81,8 @@ void SetupThroughputTrackerForAnimationSmoothness(
     return;
   }
 
-  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker.emplace(
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker());
   tracker->Start(ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating(&RecordAnimationSmoothness, histogram_name)));
 }
@@ -385,7 +386,7 @@ gfx::Rect NotificationListView::GetLastNotificationBounds() const {
 
 gfx::Rect NotificationListView::GetNotificationBoundsBelowY(
     int y_offset) const {
-  const auto it = base::ranges::lower_bound(
+  const auto it = std::ranges::lower_bound(
       children(), y_offset, {},
       [](const views::View* v) { return v->bounds().bottom(); });
   return (it == children().cend()) ? gfx::Rect() : (*it)->bounds();
@@ -409,7 +410,7 @@ void NotificationListView::AnimateResize() {
 
 message_center::MessageView*
 NotificationListView::GetMessageViewForNotificationId(const std::string& id) {
-  auto it = base::ranges::find(children(), id, [](views::View* child) {
+  auto it = std::ranges::find(children(), id, [](views::View* child) {
     DCHECK(views::IsViewClass<MessageViewContainer>(child));
     return AsMVC(child)->message_view()->notification_id();
   });
@@ -713,14 +714,14 @@ MessageViewContainer* NotificationListView::AsMVC(views::View* v) {
 
 const MessageViewContainer* NotificationListView::GetNotificationById(
     const std::string& id) const {
-  const auto i = base::ranges::find(children(), id, [](const views::View* v) {
+  const auto i = std::ranges::find(children(), id, [](const views::View* v) {
     return AsMVC(v)->GetNotificationId();
   });
   return (i == children().cend()) ? nullptr : AsMVC(*i);
 }
 
 MessageViewContainer* NotificationListView::GetNextRemovableNotification() {
-  const auto i = base::ranges::find_if_not(
+  const auto i = std::ranges::find_if_not(
       base::Reversed(children()),
       [](const views::View* v) { return AsMVC(v)->IsPinned(); });
   return (i == children().rend()) ? nullptr : AsMVC(*i);
@@ -793,7 +794,7 @@ void NotificationListView::InterruptClearAll() {
 
 void NotificationListView::DeleteRemovedNotifications() {
   views::View::Views removed_views;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       children(), std::back_inserter(removed_views),
       [](const views::View* v) { return AsMVC(v)->is_removed(); });
 

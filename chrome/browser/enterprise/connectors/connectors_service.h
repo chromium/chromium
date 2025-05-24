@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -32,10 +31,6 @@ class FileSystemURL;
 
 namespace enterprise_connectors {
 
-// Controls whether the Enterprise Connectors policies should be read by
-// ConnectorsManager in Managed Guest Sessions.
-BASE_DECLARE_FEATURE(kEnterpriseConnectorsEnabledOnMGS);
-
 // A keyed service to access ConnectorsManager, which tracks Connector policies.
 class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
  public:
@@ -44,19 +39,16 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   ~ConnectorsService() override;
 
   // Accessors that call the corresponding method in ConnectorsManager.
-  std::optional<ReportingSettings> GetReportingSettings(
-      ReportingConnector connector) override;
+  std::optional<ReportingSettings> GetReportingSettings() override;
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::optional<AnalysisSettings> GetAnalysisSettings(
       const storage::FileSystemURL& source_url,
       const storage::FileSystemURL& destination_url,
       AnalysisConnector connector);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  bool IsConnectorEnabled(AnalysisConnector connector) const override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool DelayUntilVerdict(AnalysisConnector connector);
 
@@ -82,16 +74,6 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
       AnalysisConnector connector);
 
-  std::optional<std::string> GetBrowserDmToken() const;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  std::optional<std::string> GetProfileDmToken() const;
-#endif
-
-  // Obtain a ClientMetadata instance corresponding to the current
-  // OnSecurityEvent policy value.  `is_cloud` is true when using a cloud-
-  // based service provider and false when using a local service provider.
-  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud);
-
   // Returns the profile email if real-time URL check is set for the profile,
   // the device ID if it is set for the device, or an empty string if it is
   // unset.
@@ -107,6 +89,11 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
 
   // Observe if reporting policies have changed to include telemetry event.
   void ObserveTelemetryReporting(base::RepeatingCallback<void()> callback);
+
+  // ConnectorsServiceBase:
+  bool IsConnectorEnabled(AnalysisConnector connector) const override;
+  std::optional<std::string> GetBrowserDmToken() const override;
+  std::unique_ptr<ClientMetadata> BuildClientMetadata(bool is_cloud) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ConnectorsServiceProfileTypeBrowserTest, IsEnabled);
@@ -126,6 +113,7 @@ class ConnectorsService : public ConnectorsServiceBase, public KeyedService {
   const PrefService* GetPrefs() const override;
   ConnectorsManagerBase* GetConnectorsManagerBase() override;
   const ConnectorsManagerBase* GetConnectorsManagerBase() const override;
+  policy::CloudPolicyManager* GetManagedUserCloudPolicyManager() const override;
 
   // Returns the policy::PolicyScope stored in the given |scope_pref|.
   policy::PolicyScope GetPolicyScope(const char* scope_pref) const;
@@ -149,7 +137,7 @@ class ConnectorsServiceFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<ConnectorsServiceFactory>;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;

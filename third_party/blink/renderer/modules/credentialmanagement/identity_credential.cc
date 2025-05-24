@@ -46,9 +46,6 @@ void OnDisconnect(ScriptPromiseResolver<IDLUndefined>* resolver,
 IdentityCredential* IdentityCredential::Create(const String& token,
                                                bool is_auto_selected,
                                                const String& config_url) {
-  if (!RuntimeEnabledFeatures::FedCmAutoSelectedFlagEnabled()) {
-    is_auto_selected = false;
-  }
   return MakeGarbageCollected<IdentityCredential>(token, is_auto_selected,
                                                   config_url);
 }
@@ -107,18 +104,16 @@ ScriptPromise<IDLUndefined> IdentityCredential::disconnect(
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   auto promise = resolver->Promise();
 
-  if (!options->hasConfigURL()) {
-    resolver->RejectWithTypeError("configURL is required");
-    return promise;
-  }
-
+  // configURL, accountHint, and clientId are required. But the latter is marked
+  // optional due to the dictionary being reused for digital credentials. So we
+  // have to check that one manually.
   if (!options->hasClientId()) {
     resolver->RejectWithTypeError("clientId is required");
     return promise;
   }
 
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+          network::mojom::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
     resolver->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The 'identity-credentials-get' feature is not enabled in this "

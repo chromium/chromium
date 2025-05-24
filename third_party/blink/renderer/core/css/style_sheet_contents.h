@@ -96,6 +96,9 @@ class CORE_EXPORT StyleSheetContents final
   Document* SingleOwnerDocument() const;
   bool HasSingleOwnerDocument() const { return has_single_owner_document_; }
 
+  // Gets a client in the given TreeScope.
+  CSSStyleSheet* ClientInTreeScope(const TreeScope& tree_scope) const;
+
   // Gets the first owner document in the list of registered clients, or nullptr
   // if there are none.
   Document* AnyOwnerDocument() const;
@@ -214,9 +217,25 @@ class CORE_EXPORT StyleSheetContents final
   bool IsMutable() const { return is_mutable_; }
   void StartMutation();
 
+  // Set to true whenever this StyleSheetContents was returned as a cache hit
+  // from the text cache (StyleEngine::CreateSheet()). If this flag is true,
+  // is means that this StyleSheetContents may be shared between multiple
+  // CSSStyleSheets.
   bool IsUsedFromTextCache() const { return is_used_from_text_cache_; }
   void SetIsUsedFromTextCache() { is_used_from_text_cache_ = true; }
 
+  // Set to true whenever this StyleSheetContents was returned as a cache hit
+  // from the resource cache [1]. If this flag is true, is means that this
+  // StyleSheetContents may be shared between multiple CSSStyleSheets.
+  //
+  // [1] CSSStyleSheetResource::CreateParsedStyleSheetFromCache
+  bool IsUsedFromResourceCache() const { return is_used_from_resource_cache_; }
+  void SetIsUsedFromResourceCache() { is_used_from_resource_cache_ = true; }
+
+  // The CSSStyleSheetResource is set whenever this StyleSheetContents is
+  // the cached stylesheet of that CSSStyleSheetResource. We must not modify
+  // this StyleSheetContents while this is true, and any mutations must
+  // therefore perform a copy-on-write first.
   bool IsReferencedFromResource() const {
     return referenced_from_resource_ != nullptr;
   }
@@ -236,6 +255,10 @@ class CORE_EXPORT StyleSheetContents final
   bool HasRuleSet() { return rule_set_.Get(); }
   RuleSet& EnsureRuleSet(const MediaQueryEvaluator&);
   void ClearRuleSet();
+  // Create a RuleSet which is not associated (i.e. not owned)
+  // by this StyleSheetContents. This is useful for matching rules
+  // in  an "alternate reality", which is the case for InspectorGhostRules.
+  RuleSet* CreateUnconnectedRuleSet(const MediaQueryEvaluator&) const;
 
   String SourceMapURL() const { return source_map_url_; }
 
@@ -275,6 +298,7 @@ class CORE_EXPORT StyleSheetContents final
   bool has_media_queries_ : 1;
   bool has_single_owner_document_ : 1;
   bool is_used_from_text_cache_ : 1;
+  bool is_used_from_resource_cache_ : 1;
 
   Member<const CSSParserContext> parser_context_;
 

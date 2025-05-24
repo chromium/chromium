@@ -36,7 +36,9 @@ class MEDIA_GPU_EXPORT VulkanOverlayAdaptor {
   static std::unique_ptr<VulkanOverlayAdaptor> Create(
       bool is_protected,
       TiledImageFormat format = kMM21,
-      const gfx::Size& max_size = gfx::Size(3840, 2160));
+      // |max_size| should be aligned to the MM21 tile dimensions, so we use
+      // 2176 instead of 2160.
+      const gfx::Size& max_size = gfx::Size(3840, 2176));
 
   // Note: |crop_rect| is actually the crop *in addition* to the |visible_rect|
   // cropping. It is equivalent to |uv_rect| in an OverlayCandidate.

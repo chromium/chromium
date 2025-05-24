@@ -5,4 +5,11 @@
 #import "ios/chrome/browser/alert_view/ui_bundled/test/fake_alert_consumer.h"
 
 @implementation FakeAlertConsumer
+
+- (void)setImageLottieName:(NSString*)imageLottieName
+        darkModeLottieName:imageDarkModeLottieName {
+}
+
+- (void)setProgressState:(ProgressIndicatorState)progressState {
+}
 @end

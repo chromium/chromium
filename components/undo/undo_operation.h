@@ -8,7 +8,7 @@
 // Base class for all undo operations.
 class UndoOperation {
  public:
-  virtual ~UndoOperation() {}
+  virtual ~UndoOperation() = default;
 
   virtual void Undo() = 0;
 

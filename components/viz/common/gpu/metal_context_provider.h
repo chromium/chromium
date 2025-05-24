@@ -19,9 +19,9 @@ namespace gl {
 class ProgressReporter;
 }  // namespace gl
 
-namespace skgpu::graphite {
-class Context;
-}  // namespace skgpu::graphite
+namespace gpu {
+class GraphiteSharedContext;
+}  // namespace gpu
 
 namespace viz {
 
@@ -39,10 +39,12 @@ class VIZ_METAL_CONTEXT_PROVIDER_EXPORT MetalContextProvider {
   bool InitializeGraphiteContext(
       const skgpu::graphite::ContextOptions& options);
 
-  skgpu::graphite::Context* GetGraphiteContext();
+  int32_t GetMaxTextureSize() const;
+
+  gpu::GraphiteSharedContext* GetGraphiteSharedContext() const;
 
 #if __OBJC__
-  id<MTLDevice> GetMTLDevice();
+  id<MTLDevice> GetMTLDevice() const;
 #endif  // __OBJC__
 
  private:

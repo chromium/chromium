@@ -5,43 +5,43 @@
 #ifndef UI_NATIVE_THEME_SCROLLBAR_ANIMATOR_MAC_H_
 #define UI_NATIVE_THEME_SCROLLBAR_ANIMATOR_MAC_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
-#include "ui/native_theme/native_theme_export.h"
 
 namespace ui {
 
 // Timer used for animating scrollbar effects.
 // TODO(crbug.com/40626921): Change this to be driven by the client
 // (Blink or Views) animation system.
-class NATIVE_THEME_EXPORT ScrollbarAnimationTimerMac {
+class COMPONENT_EXPORT(NATIVE_THEME) ScrollbarAnimationTimerMac {
  public:
   ScrollbarAnimationTimerMac(
       base::RepeatingCallback<void(double)> callback,
-      double duration,
+      base::TimeDelta duration,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   ~ScrollbarAnimationTimerMac();
 
   void Start();
   void Stop();
-  void SetDuration(double duration);
+  void SetDuration(base::TimeDelta duration);
 
  private:
   void TimerFired();
 
   base::RepeatingTimer timer_;
-  double start_time_;  // In seconds.
-  double duration_;    // In seconds.
+  base::TimeTicks start_time_;
+  base::TimeDelta duration_;
   base::RepeatingCallback<void(double)> callback_;
   std::unique_ptr<gfx::CubicBezierTimingFunction> timing_function_;
 };
 
-class NATIVE_THEME_EXPORT OverlayScrollbarAnimatorMac {
+class COMPONENT_EXPORT(NATIVE_THEME) OverlayScrollbarAnimatorMac {
  public:
   class Client {
    public:
@@ -103,9 +103,10 @@ class NATIVE_THEME_EXPORT OverlayScrollbarAnimatorMac {
   float thumb_alpha_ = 0;
   float track_alpha_ = 0;
   bool mouse_in_track_ = false;
+  bool animations_enabled_;
 
-  static const float kAnimationDurationSeconds;
-  static const base::TimeDelta kFadeOutDelay;
+  static constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(250);
+  static constexpr base::TimeDelta kFadeOutDelay = base::Milliseconds(500);
 
   // Animator for expanding `thumb_width_` when the mouse enters the
   // scrollbar area.

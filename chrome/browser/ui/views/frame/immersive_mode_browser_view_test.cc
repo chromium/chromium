@@ -5,9 +5,9 @@
 #include <memory>
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/ash/test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/chromeos/test_util.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -66,15 +66,8 @@ using ImmersiveModeBrowserViewTestNoWebUiTabStrip =
 
 // This test does not make sense for the webUI tabstrip, since the frame is not
 // painted in that case.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40199989): Reveal does not end until mouse is moved. Find out
-// if this is a product or test issue and fix it.
-#define MAYBE_ImmersiveFullscreen DISABLED_ImmersiveFullscreen
-#else
-#define MAYBE_ImmersiveFullscreen ImmersiveFullscreen
-#endif
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTestNoWebUiTabStrip,
-                       MAYBE_ImmersiveFullscreen) {
+                       ImmersiveFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   content::WebContents* web_contents = browser_view->GetActiveWebContents();
   BrowserNonClientFrameViewChromeOS* frame_view =
@@ -200,8 +193,9 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
                                     {IDC_SELECT_TAB_0, 0},
                                     {IDC_SELECT_NEXT_TAB, 1},
                                     {IDC_SELECT_PREVIOUS_TAB, 0}};
-  for (const auto& datum : test_data)
+  for (const auto& datum : test_data) {
     tester.RunCommand(datum.command, datum.expected_index);
+  }
 }
 
 // This test does not make sense for the webUI tabstrip, since the window layout
@@ -247,10 +241,6 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // Open a new app window.
   Browser* app_browser =
       CreateBrowserForApp("test_browser_app", browser()->profile());
-  // TODO(neis): Move this into the CreateBrowser* functions.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui_test_utils::CreateAsyncWidgetRequestWaiter(*browser()).Wait();
-#endif
 
   BrowserView* app_view = BrowserView::GetBrowserViewForBrowser(app_browser);
   chromeos::ImmersiveFullscreenControllerTestApi(
@@ -295,16 +285,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 // fullscreen to locked fullscreen does not cause a crash.
 // Also test that the immersive mode is disabled afterwards (and the shelf is
 // hidden, and the fullscreen control popup doesn't show up).
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40948963): Reenable test when bug is fixed.
-#define MAYBE_RegularToLockedFullscreenDisablesImmersive \
-  DISABLED_RegularToLockedFullscreenDisablesImmersive
-#else
-#define MAYBE_RegularToLockedFullscreenDisablesImmersive \
-  RegularToLockedFullscreenDisablesImmersive
-#endif
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
-                       MAYBE_RegularToLockedFullscreenDisablesImmersive) {
+                       RegularToLockedFullscreenDisablesImmersive) {
   if (!IsIsShelfVisibleSupported()) {
     GTEST_SKIP() << "Ash is too old.";
   }
@@ -348,12 +330,7 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
   // we're at it, also make sure that the shelf is hidden.
   EXPECT_TRUE(browser_view->GetWidget()->IsFullscreen());
   EXPECT_FALSE(browser_view->immersive_mode_controller()->IsEnabled());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(crbug.com/40276379): Enable this assertion once the bug is fixed (at
-  // the moment PinWindow returns too early).
-#else
   EXPECT_FALSE(IsShelfVisible());
-#endif
 
   // Make sure the fullscreen control popup doesn't show up.
   ui::MouseEvent mouse_move(ui::EventType::kMouseMoved, gfx::Point(1, 1),

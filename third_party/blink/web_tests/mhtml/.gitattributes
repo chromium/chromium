@@ -6,8 +6,9 @@
 *original* binary
 
 # MHTML files in general should only have CRLF line endings
-# (see RFC2557, section 10).
-*.mht text eol=crlf
+# (see RFC2557, section 10). So treat them as binary as
+# GOB needs them as such.
+*.mht binary
 
 # While the overall structure of MHTML always uses CRLF, the MHTML parts
 # that use binary encoding will preserve their original line endings

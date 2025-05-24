@@ -57,7 +57,7 @@ class FeatureSwitch {
     FeatureSwitch::OverrideValue previous_value_;
   };
 
-  // |switch_name| can be null, in which case the feature is controlled solely
+  // `switch_name` can be null, in which case the feature is controlled solely
   // by the default and override values.
   FeatureSwitch(const char* switch_name,
                 DefaultValue default_value);

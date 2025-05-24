@@ -31,8 +31,6 @@ ButtonConfig::ButtonConfig(const ButtonConfig& copy) = default;
 
 #pragma mark - AlertRequest
 
-OVERLAY_USER_DATA_SETUP_IMPL(AlertRequest);
-
 AlertRequest::AlertRequest(
     NSString* title,
     NSString* message,
@@ -54,8 +52,6 @@ AlertRequest::~AlertRequest() = default;
 
 #pragma mark - AlertResponse
 
-OVERLAY_USER_DATA_SETUP_IMPL(AlertResponse);
-
 AlertResponse::AlertResponse(size_t tapped_button_row_index,
                              size_t tapped_button_column_index,
                              NSArray<NSString*>* text_field_values)
@@ -65,4 +61,4 @@ AlertResponse::AlertResponse(size_t tapped_button_row_index,
 
 AlertResponse::~AlertResponse() = default;
 
-}  // alert_overlays
+}  // namespace alert_overlays

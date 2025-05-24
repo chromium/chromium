@@ -123,18 +123,6 @@ const char kInfobarSyncErrorModalEventHistogram[] =
 const char kInfobarSyncErrorBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeSyncError";
 
-// Histogram names for the Parcel Tracking banner.
-const char kInfobarParcelTrackingBannerEventHistogram[] =
-    "Mobile.Messages.Banner.Event.InfobarTypeParcelTracking";
-const char kInfobarParcelTrackingBannerDismissTypeHistogram[] =
-    "Mobile.Messages.Banner.Dismiss.InfobarTypeParcelTracking";
-// Modal.
-const char kInfobarParcelTrackingModalEventHistogram[] =
-    "Mobile.Messages.Modal.Event.InfobarTypeParcelTracking";
-// Badge.
-const char kInfobarParcelTrackingBadgeTappedHistogram[] =
-    "Mobile.Messages.Badge.Tapped.InfobarTypeParcelTracking";
-
 // Histogram names for the Enhanced Safe Browsing banner.
 const char kInfobarEnhancedSafeBrowsingBannerEventHistogram[] =
     "Mobile.Messages.Banner.Event.InfobarTypeEnhancedSafeBrowsing";
@@ -144,6 +132,26 @@ const char kInfobarEnhancedSafeBrowsingModalEventHistogram[] =
     "Mobile.Messages.Modal.Event.InfobarTypeEnhancedSafeBrowsing";
 const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
     "Mobile.Messages.Badge.Tapped.InfobarTypeEnhancedSafeBrowsing";
+
+// Histogram names for the non modal sign-in promo banner.
+const char kInfobarTypeSigninBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.InfobarTypeSignin";
+const char kInfobarTypeSigninBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.InfobarTypeSignin";
+const char kInfobarTypeSigninModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.InfobarTypeSignin";
+const char kInfobarTypeSigninBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.InfobarTypeSignin";
+
+// Histogram names for collaboration group banner.
+const char kInfobarCollaborationGroupBannerEventHistogram[] =
+    "Mobile.Messages.Banner.Event.kInfobarCollaborationGroup";
+const char kInfobarCollaborationGroupBannerDismissTypeHistogram[] =
+    "Mobile.Messages.Banner.Dismiss.kInfobarCollaborationGroup";
+const char kInfobarCollaborationGroupModalEventHistogram[] =
+    "Mobile.Messages.Modal.Event.kInfobarCollaborationGroup";
+const char kInfobarCollaborationGroupBadgeTappedHistogram[] =
+    "Mobile.Messages.Badge.Tapped.kInfobarCollaborationGroup";
 
 }  // namespace
 
@@ -198,13 +206,16 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBannerEventHistogram, event);
       break;
-    case InfobarType::kInfobarTypeParcelTracking:
-      UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingBannerEventHistogram,
-                                event);
-      break;
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarEnhancedSafeBrowsingBannerEventHistogram, event);
+      break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBannerEventHistogram, event);
+      break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupBannerEventHistogram,
+                                event);
       break;
   }
 }
@@ -248,19 +259,24 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBannerDismissTypeHistogram,
                                 dismissType);
       break;
-    case InfobarType::kInfobarTypeParcelTracking:
-      UMA_HISTOGRAM_ENUMERATION(
-          kInfobarParcelTrackingBannerDismissTypeHistogram, dismissType);
-      break;
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarEnhancedSafeBrowsingBannerDismissTypeHistgram, dismissType);
+      break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBannerDismissTypeHistogram,
+                                dismissType);
+      break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(
+          kInfobarCollaborationGroupBannerDismissTypeHistogram, dismissType);
       break;
   }
 }
 
 - (void)recordBannerOnScreenDuration:(base::TimeDelta)duration {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime",
+                                        duration);
 }
 
 - (void)recordModalEvent:(MobileMessagesModalEvent)event {
@@ -296,12 +312,15 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorModalEventHistogram, event);
       break;
-    case InfobarType::kInfobarTypeParcelTracking:
-      UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingModalEventHistogram,
-                                event);
-      break;
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
       UMA_HISTOGRAM_ENUMERATION(kInfobarEnhancedSafeBrowsingModalEventHistogram,
+                                event);
+      break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninModalEventHistogram, event);
+      break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupModalEventHistogram,
                                 event);
       break;
   }
@@ -336,18 +355,20 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
       break;
     case InfobarType::kInfobarTypeTailoredSecurityService:
       // TailoredSecurityService infobar doesn't have a badge.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case InfobarType::kInfobarTypeSyncError:
       UMA_HISTOGRAM_ENUMERATION(kInfobarSyncErrorBadgeTappedHistogram, state);
-      break;
-    case InfobarType::kInfobarTypeParcelTracking:
-      UMA_HISTOGRAM_ENUMERATION(kInfobarParcelTrackingBadgeTappedHistogram,
-                                state);
       break;
     case InfobarType::kInfobarTypeEnhancedSafeBrowsing:
       UMA_HISTOGRAM_ENUMERATION(
           kInfobarEnhancedSafeBrowsingBadgeTappedHistogram, state);
+      break;
+    case InfobarType::kInfobarTypeSignin:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarTypeSigninBadgeTappedHistogram, state);
+      break;
+    case InfobarType::kInfobarTypeCollaborationGroup:
+      UMA_HISTOGRAM_ENUMERATION(kInfobarCollaborationGroupBadgeTappedHistogram,
+                                state);
       break;
   }
 }

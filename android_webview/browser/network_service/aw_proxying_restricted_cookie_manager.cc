@@ -13,10 +13,12 @@
 #include "android_webview/browser/aw_cookie_access_policy.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/base/shared_memory_version.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -111,6 +113,7 @@ void AwProxyingRestrictedCookieManager::GetAllForUrl(
     net::StorageAccessApiStatus storage_access_api_status,
     network::mojom::CookieManagerGetOptionsPtr options,
     bool is_ad_tagged,
+    bool apply_devtools_overrides,
     bool force_disable_third_party_cookies,
     GetAllForUrlCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -129,7 +132,8 @@ void AwProxyingRestrictedCookieManager::GetAllForUrl(
 
   underlying_restricted_cookie_manager_->GetAllForUrl(
       url, site_for_cookies, top_frame_origin, storage_access_api_status,
-      std::move(options), is_ad_tagged, disable_3pcs, std::move(callback));
+      std::move(options), is_ad_tagged, apply_devtools_overrides, disable_3pcs,
+      std::move(callback));
 }
 
 void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
@@ -139,6 +143,8 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
     net::CookieInclusionStatus status,
+    bool is_ad_tagged,
+    bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   PrivacySetting cookieState =
@@ -152,7 +158,8 @@ void AwProxyingRestrictedCookieManager::SetCanonicalCookie(
   if (cookie.IsPartitioned() || cookieState == PrivacySetting::kStateAllowed) {
     underlying_restricted_cookie_manager_->SetCanonicalCookie(
         cookie, url, site_for_cookies, top_frame_origin,
-        storage_access_api_status, status, std::move(callback));
+        storage_access_api_status, status, is_ad_tagged,
+        apply_devtools_overrides, std::move(callback));
   } else {
     std::move(callback).Run(false);
   }
@@ -188,6 +195,9 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
+    bool get_version_shared_memory,
+    bool is_ad_tagged,
+    bool apply_devtools_overrides,
     const std::string& cookie,
     SetCookieFromStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -196,7 +206,7 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
       AllowCookies(url, site_for_cookies, storage_access_api_status);
 
   if (cookieState == PrivacySetting::kStateDisallowed) {
-    std::move(callback).Run();
+    std::move(callback).Run(/*response=*/nullptr);
     return;
   }
 
@@ -210,9 +220,10 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
        parsed_cookie.IsSecure())) {
     underlying_restricted_cookie_manager_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
+        get_version_shared_memory, is_ad_tagged, apply_devtools_overrides,
         cookie, std::move(callback));
   } else {
-    std::move(callback).Run();
+    std::move(callback).Run(/*response=*/nullptr);
   }
 }
 
@@ -223,6 +234,7 @@ void AwProxyingRestrictedCookieManager::GetCookiesString(
     net::StorageAccessApiStatus storage_access_api_status,
     bool get_version_shared_memory,
     bool is_ad_tagged,
+    bool apply_devtools_overrides,
     bool force_disable_third_party_cookies,
     GetCookiesStringCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -247,8 +259,8 @@ void AwProxyingRestrictedCookieManager::GetCookiesString(
   // strategy so that the shared memory access can be revoked from here.
   underlying_restricted_cookie_manager_->GetCookiesString(
       url, site_for_cookies, top_frame_origin, storage_access_api_status,
-      /*get_version_shared_memory=*/false, is_ad_tagged, disable_3pcs,
-      std::move(callback));
+      /*get_version_shared_memory=*/false, is_ad_tagged,
+      apply_devtools_overrides, disable_3pcs, std::move(callback));
 }
 
 void AwProxyingRestrictedCookieManager::CookiesEnabledFor(
@@ -256,6 +268,7 @@ void AwProxyingRestrictedCookieManager::CookiesEnabledFor(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
+    bool apply_devtools_overrides,
     CookiesEnabledForCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   std::move(callback).Run(

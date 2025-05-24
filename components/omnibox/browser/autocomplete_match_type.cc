@@ -8,14 +8,15 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/suggestion_answer.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -61,6 +62,8 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "organic-repeatable-query-tile",
     "history-embeddings",
     "featured-enterprise-search",
+    "history-embeddings-answer",
+    "tab-group",
   });
   // clang-format on
   static_assert(strings.size() == AutocompleteMatchType::NUM_TYPES,
@@ -157,6 +160,8 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // TILE_REPEATABLE_QUERY
       IDS_ACC_AUTOCOMPLETE_HISTORY,          // HISTORY_EMBEDDINGS
       0,                                     // FEATURED_ENTERPRISE_SEARCH
+      0,                                     // HISTORY_EMBEDDINGS_ANSWER
+      0,                                     // TAB_GROUP
   });
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");
@@ -190,16 +195,11 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       // Search match.
       // If additional descriptive text exists with a search, treat as search
       // with immediate answer, such as Weather in Boston: 53 degrees.
-      if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-          match.answer_template) {
+      if (match.answer_template.has_value()) {
         omnibox::FormattedString subhead =
             match.answer_template->answers(0).subhead();
         description = base::UTF8ToUTF16(
             subhead.has_a11y_text() ? subhead.a11y_text() : subhead.text());
-        has_description = true;
-        message = IDS_ACC_AUTOCOMPLETE_QUICK_ANSWER;
-      } else if (match.answer) {
-        description = match.answer->second_line().AccessibleText();
         has_description = true;
         message = IDS_ACC_AUTOCOMPLETE_QUICK_ANSWER;
       }
@@ -232,8 +232,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       // Clipboard match with no textual clipboard content.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Get the length of friendly text inserted before the actual suggested match.
@@ -254,6 +253,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
 // static
 std::u16string AutocompleteMatchType::ToAccessibilityLabel(
     const AutocompleteMatch& match,
+    const std::u16string& header_text,
     const std::u16string& match_text,
     size_t match_index,
     size_t total_matches,
@@ -265,6 +265,11 @@ std::u16string AutocompleteMatchType::ToAccessibilityLabel(
   // Start with getting the base label.
   std::u16string result =
       GetAccessibilityBaseLabel(match, match_text, label_prefix_length);
+
+  // Add the suggestion group header text, if applicable.
+  if (!header_text.empty()) {
+    result = base::StrCat({result, u", ", header_text});
+  }
 
   // Add the additional message, if applicable.
   if (!additional_message_format.empty()) {

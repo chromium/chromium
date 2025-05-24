@@ -483,8 +483,7 @@ void StorageAreaImpl::Get(const std::vector<uint8_t>& key,
   // TODO(ssid): Remove this method since it is not supported in only keys mode,
   // crbug.com/764127.
   if (cache_mode_ == CacheMode::KEYS_ONLY_WHEN_POSSIBLE) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if (!IsMapLoaded() || IsMapUpgradeNeeded()) {
     LoadMap(base::BindOnce(&StorageAreaImpl::Get,
@@ -644,6 +643,9 @@ void StorageAreaImpl::OnMapLoaded(
   // class is functional for the lifetime of the object.
   delegate_->OnMapLoaded(status);
   if (!status.ok()) {
+    if (database_) {
+      database_->RemoveCommitter(this);
+    }
     database_ = nullptr;
     SetCacheMode(CacheMode::KEYS_AND_VALUES);
   }
@@ -917,6 +919,9 @@ void StorageAreaImpl::OnForkStateLoaded(bool database_enabled,
   }
 
   if (!database_enabled) {
+    if (database_) {
+      database_->RemoveCommitter(this);
+    }
     database_ = nullptr;
     cache_mode_ = CacheMode::KEYS_AND_VALUES;
   }

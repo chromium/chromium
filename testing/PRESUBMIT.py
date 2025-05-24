@@ -9,6 +9,27 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
+PYLINT_PATHS_COMPONENTS = [
+    ('build', ),
+    ('build', 'android'),
+    ('build', 'util'),
+    ('content', 'test', 'gpu'),
+    ('testing', ),
+    ('testing', 'buildbot'),
+    ('testing', 'scripts'),
+    ('testing', 'variations', 'presubmit'),
+    ('third_party', ),
+    ('third_party', 'blink', 'renderer', 'bindings', 'scripts'),
+    ('third_party', 'blink', 'tools'),
+    ('third_party', 'catapult', 'telemetry'),
+    ('third_party', 'catapult', 'third_party', 'typ'),
+    ('third_party', 'catapult', 'tracing'),
+    ('third_party', 'domato', 'src'),
+    ('third_party', 'js_code_coverage'),
+    ('third_party', 'webdriver', 'pylib'),
+    ('tools', 'perf'),
+]
+
 
 def _GetChromiumSrcPath(input_api):
   """Returns the path to the Chromium src directory."""
@@ -25,9 +46,12 @@ def _GetTestingEnv(input_api):
   # Only common code will reside under /testing.
   gpu_test_path = input_api.os_path.join(input_api.PresubmitLocalPath(), '..',
                                          'content', 'test', 'gpu')
+  typ_path = input_api.os_path.join(input_api.PresubmitLocalPath(), '..',
+                                    'third_party', 'catapult', 'third_party',
+                                    'typ')
   testing_env.update({
       'PYTHONPATH':
-      input_api.os_path.pathsep.join([testing_path, gpu_test_path]),
+      input_api.os_path.pathsep.join([testing_path, gpu_test_path, typ_path]),
       'PYTHONDONTWRITEBYTECODE':
       '1',
   })
@@ -59,10 +83,9 @@ def CheckPylint(input_api, output_api):
   """Runs pylint on all directory content and subdirectories."""
   files_to_skip = input_api.DEFAULT_FILES_TO_SKIP
   chromium_src_path = _GetChromiumSrcPath(input_api)
-  extra_path_components = [('testing', )]
   pylint_extra_paths = [
       input_api.os_path.join(chromium_src_path, *component)
-      for component in extra_path_components
+      for component in PYLINT_PATHS_COMPONENTS
   ]
   if input_api.is_windows:
     # These scripts don't run on Windows and should not be linted on Windows -

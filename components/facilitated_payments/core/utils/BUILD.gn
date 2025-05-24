@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("utils") {
+  sources = [
+    "facilitated_payments_ui_utils.h",
+    "facilitated_payments_utils.h",
+  ]
+}
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("facilitated_payments_enums_java") {
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+    srcjar_deps = [ ":facilitated_payments_enums_javagen" ]
+  }
+
+  java_cpp_enum("facilitated_payments_enums_javagen") {
+    sources = [
+      "facilitated_payments_ui_utils.h",
+      "facilitated_payments_utils.h",
+    ]
+  }
+}

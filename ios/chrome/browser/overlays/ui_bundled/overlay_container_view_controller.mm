@@ -23,8 +23,9 @@
   // allow touches to continue to the underlying UI.
   for (UIView* subview in self.subviews) {
     CGPoint adjustedPoint = [subview convertPoint:point fromView:self];
-    if ([subview pointInside:adjustedPoint withEvent:event])
+    if ([subview pointInside:adjustedPoint withEvent:event]) {
       return YES;
+    }
   }
   return NO;
 }

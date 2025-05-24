@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/net/probe_message.h"
 
@@ -18,16 +14,7 @@
 
 namespace chrome_browser_net {
 
-const uint32_t ProbeMessage::kVersion = 2;
-const uint32_t ProbeMessage::kMaxNumberProbePackets = 21;
-const uint32_t ProbeMessage::kMaxProbePacketBytes = 1500;
-// Maximum pacing interval is 300 seconds (for testing NAT binding).
-const uint32_t ProbeMessage::kMaxPacingIntervalMicros = 300000000;
-const char ProbeMessage::kEncodingString[] =
-    "T\xd3?\xa5h2\x9c\x8en\xf1Q6\xbc{\xc6-4\xfa$f\xb9[\xa6\xcd@6,\xdf\xb3i-\xe6"
-    "v\x9eV\x8dXd\xd9kE\xf6=\xbeO";
-
-ProbeMessage::ProbeMessage() {}
+ProbeMessage::ProbeMessage() = default;
 
 bool ProbeMessage::ParseInput(const std::string& input,
                               ProbePacket* probe_packet) const {
@@ -94,12 +81,12 @@ void ProbeMessage::GenerateProbeRequest(const ProbePacket_Token& token,
 
   // Add padding to mitigate amplification attack.
   std::string* padding = probe_packet->mutable_padding();
-  int padding_size = probe_size - probe_packet->ByteSize();
+  int padding_size = probe_size - probe_packet->ByteSizeLong();
   padding->append(std::string(std::max(0, padding_size), 0));
   probe_packet->mutable_header()->set_checksum(Checksum(*padding));
-  DVLOG(3) << "Request size " << probe_packet->ByteSize() << " probe size "
+  DVLOG(3) << "Request size " << probe_packet->ByteSizeLong() << " probe size "
            << probe_size;
-  DCHECK_LE(probe_size, static_cast<uint32_t>(probe_packet->ByteSize()));
+  DCHECK_LE(probe_size, probe_packet->ByteSizeLong());
 }
 
 void ProbeMessage::SetPacketHeader(ProbePacket_Type packet_type,
@@ -112,14 +99,13 @@ void ProbeMessage::SetPacketHeader(ProbePacket_Type packet_type,
 std::string ProbeMessage::Encode(const std::string& input) const {
 
   std::string output(input.size(), 0);
-  int key_pos = 0;
-  // kEncodingString contains a ending '\0' character, excluded for encoding.
-  int key_size = sizeof(kEncodingString) - 1;
+  size_t key_pos = 0u;
   for (size_t i = 0; i < input.size(); ++i) {
     output[i] = input[i] ^ kEncodingString[key_pos];
     ++key_pos;
-    if (key_pos >= key_size)
+    if (key_pos >= kEncodingString.size()) {
       key_pos = 0;
+    }
   }
   return output;
 }

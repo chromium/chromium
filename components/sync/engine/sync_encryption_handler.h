@@ -41,9 +41,9 @@ class SyncEncryptionHandler {
 
     // Called when user interaction is required to obtain a valid passphrase for
     // decryption.
-    // |key_derivation_params| are the parameters that should be used to obtain
+    // `key_derivation_params` are the parameters that should be used to obtain
     // the key from the passphrase.
-    // |pending_keys| is a copy of the cryptographer's pending keys, that may be
+    // `pending_keys` is a copy of the cryptographer's pending keys, that may be
     // cached by the frontend for subsequent use by the UI.
     virtual void OnPassphraseRequired(
         const KeyDerivationParams& key_derivation_params,
@@ -69,9 +69,9 @@ class SyncEncryptionHandler {
     // everything flag has been changed. Note that this doesn't imply the
     // encryption is complete.
     //
-    // |encrypted_types| will always be a superset of
-    // AlwaysEncryptedUserTypes().  If |encrypt_everything| is
-    // true, |encrypted_types| will be the set of all encryptable types.
+    // `encrypted_types` will always be a superset of
+    // AlwaysEncryptedUserTypes().  If `encrypt_everything` is
+    // true, `encrypted_types` will be the set of all encryptable types.
     //
     // Until this function is called, observers can assume that the
     // set of encrypted types is AlwaysEncryptedUserTypes() and that the
@@ -84,8 +84,8 @@ class SyncEncryptionHandler {
     virtual void OnCryptographerStateChanged(Cryptographer* cryptographer,
                                              bool has_pending_keys) = 0;
 
-    // The passphrase type has changed. |type| is the new type,
-    // |passphrase_time| is the time the passphrase was set (unset if |type|
+    // The passphrase type has changed. `type` is the new type,
+    // `passphrase_time` is the time the passphrase was set (unset if `type`
     // is KEYSTORE_PASSPHRASE or the passphrase was set before we started
     // recording the time).
     virtual void OnPassphraseTypeChanged(PassphraseType type,
@@ -112,7 +112,7 @@ class SyncEncryptionHandler {
   // OnPassphraseAccepted() or OnPassphraseRequired(), updates the nigori node,
   // and triggers re-encryption as appropriate. If an explicit password has been
   // set previously, we drop subsequent requests to set a passphrase.
-  // |passphrase| shouldn't be empty.
+  // `passphrase` shouldn't be empty.
   virtual void SetEncryptionPassphrase(
       const std::string& passphrase,
       const KeyDerivationParams& key_derivation_params) = 0;

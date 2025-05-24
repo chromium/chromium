@@ -183,7 +183,7 @@ TEST_F(DebugRecordingFileProviderTest,
   const uint32_t id = 1;
   EXPECT_CALL(*this, OnFileCreated(true)).Times(0);
   GTEST_FLAG_SET(death_test_style, "threadsafe");
-  EXPECT_DCHECK_DEATH(remote_file_provider_->CreateWavFile(
+  EXPECT_NOTREACHED_DEATH(remote_file_provider_->CreateWavFile(
       static_cast<media::AudioDebugRecordingStreamType>(invalid_stream_type),
       id,
       base::BindOnce(&DebugRecordingFileProviderTest::FileCreated,

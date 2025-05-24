@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <type_traits>
+
 #include "net/base/net_export.h"
 
 namespace disk_cache {
@@ -51,11 +53,16 @@ static const int kSimpleEntryTotalFileCount = kSimpleEntryNormalFileCount + 1;
 struct NET_EXPORT_PRIVATE SimpleFileHeader {
   SimpleFileHeader();
 
-  uint64_t initial_magic_number;
-  uint32_t version;
-  uint32_t key_length;
-  uint32_t key_hash;
+  uint64_t initial_magic_number = 0;
+  uint32_t version = 0;
+  uint32_t key_length = 0;
+  uint32_t key_hash = 0;
+
+  // Avoid implicit padding so `std::has_unique_object_representations_v<>` will
+  // hold.
+  uint32_t unused_padding = 0;
 };
+static_assert(std::has_unique_object_representations_v<SimpleFileHeader>);
 
 struct NET_EXPORT_PRIVATE SimpleFileEOF {
   enum Flags {
@@ -65,20 +72,28 @@ struct NET_EXPORT_PRIVATE SimpleFileEOF {
 
   SimpleFileEOF();
 
-  uint64_t final_magic_number;
-  uint32_t flags;
-  uint32_t data_crc32;
+  uint64_t final_magic_number = 0;
+  uint32_t flags = 0;
+  uint32_t data_crc32 = 0;
   // |stream_size| is only used in the EOF record for stream 0.
-  uint32_t stream_size;
+  uint32_t stream_size = 0;
+
+  // Avoid implicit padding so `std::has_unique_object_representations_v<>` will
+  // hold.
+  uint32_t unused_padding = 0;
 };
 
 struct SimpleFileSparseRangeHeader {
   SimpleFileSparseRangeHeader();
 
-  uint64_t sparse_range_magic_number;
-  int64_t offset;
-  int64_t length;
-  uint32_t data_crc32;
+  uint64_t sparse_range_magic_number = 0;
+  int64_t offset = 0;
+  int64_t length = 0;
+  uint32_t data_crc32 = 0;
+
+  // Avoid implicit padding so `std::has_unique_object_representations_v<>` will
+  // hold.
+  uint32_t unused_padding = 0;
 };
 
 }  // namespace disk_cache

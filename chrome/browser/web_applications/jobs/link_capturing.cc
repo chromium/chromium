@@ -6,8 +6,8 @@
 
 #include "base/values.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/proto/web_app_proto_package.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -29,10 +29,6 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
     debug_value.Set("result", "App not installed.");
     return;
   }
-  if (lock.registrar().IsShortcutApp(app_id)) {
-    debug_value.Set("result", "App is created as a shortcut.");
-    return;
-  }
 
   // When disabling, simply disable & exit because this doesn't need to affect
   // the state of other apps.
@@ -41,7 +37,7 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
       ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
       WebApp* app_to_update = update->UpdateApp(app_id);
       app_to_update->SetLinkCapturingUserPreference(
-          proto::LinkCapturingUserPreference::DO_NOT_CAPTURE_SUPPORTED_LINKS);
+          proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
     }
     debug_value.Set("app_updated", true);
     // TODO(b/273830801): Automatically call observers when changes are
@@ -61,9 +57,8 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
         WebApp* app_to_update = update->UpdateApp(app_id);
         app_to_update->SetLinkCapturingUserPreference(
             set_to_preferred
-                ? proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS
-                : proto::LinkCapturingUserPreference::
-                      DO_NOT_CAPTURE_SUPPORTED_LINKS);
+                ? proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE
+                : proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
       }
       debug_value.Set("app_updated", true);
       lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(
@@ -83,14 +78,14 @@ void SetAppCapturesSupportedLinksDisableOverlapping(
     // as 'default' to stay as such, allowing them to take over if this one is
     // uninstalled.
     if (other_app->user_link_capturing_preference() !=
-        proto::LinkCapturingUserPreference::CAPTURE_SUPPORTED_LINKS) {
+        proto::NAVIGATION_CAPTURING_PREFERENCE_CAPTURE) {
       continue;
     }
     {
       ScopedRegistryUpdate update = lock.sync_bridge().BeginUpdate();
       WebApp* app_to_update = update->UpdateApp(other_app_id);
       app_to_update->SetLinkCapturingUserPreference(
-          proto::LinkCapturingUserPreference::DO_NOT_CAPTURE_SUPPORTED_LINKS);
+          proto::NAVIGATION_CAPTURING_PREFERENCE_DO_NOT_CAPTURE);
     }
     debug_value.EnsureList("capturing_apps_disabled")->Append(other_app_id);
     lock.registrar().NotifyWebAppUserLinkCapturingPreferencesChanged(

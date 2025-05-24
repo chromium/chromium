@@ -50,8 +50,7 @@ mojo::PlatformChannelEndpoint ConnectToServer(
 
   return channel.TakeRemoteEndpoint();
 #else
-  NOTREACHED_IN_MIGRATION() << "Unsupported platform.";
-  return mojo::PlatformChannelEndpoint();
+  NOTREACHED() << "Unsupported platform.";
 #endif
 }
 

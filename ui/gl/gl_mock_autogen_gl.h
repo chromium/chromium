@@ -88,6 +88,10 @@ MOCK_METHOD10(BlitFramebuffer,
                    GLint dstY1,
                    GLbitfield mask,
                    GLenum filter));
+MOCK_METHOD3(BlobCacheCallbacksANGLE,
+             void(GLSETBLOBPROCANGLE set,
+                  GLGETBLOBPROCANGLE get,
+                  const void* userData));
 MOCK_METHOD4(
     BufferData,
     void(GLenum target, GLsizeiptr size, const void* data, GLenum usage));

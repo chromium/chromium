@@ -11,7 +11,10 @@ import android.net.Uri;
 
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Launches the UI through which the user can update Google Play Services/ */
+@NullMarked
 public class GmsUpdateLauncher {
     // Referrer string for the Google Play Store when installing GMS Core package
     private static final String STORE_REFERER = "chrome_upm";
@@ -32,6 +35,7 @@ public class GmsUpdateLauncher {
         intent.setPackage("com.android.vending");
         intent.setData(Uri.parse(deepLinkUrl));
         intent.putExtra("callerId", context.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         // Request for overlay flow, Play Store will fallback to the default
         // behaviour if overlay is not available.

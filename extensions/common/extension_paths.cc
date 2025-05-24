@@ -28,7 +28,10 @@ bool PathProvider(int key, base::FilePath* result) {
 // This cannot be done as a static initializer sadly since Visual Studio will
 // eliminate this object file if there is no direct entry point into it.
 void RegisterPathProvider() {
+  static bool registered = false;
+  DCHECK(!registered);
   base::PathService::RegisterProvider(PathProvider, PATH_START, PATH_END);
+  registered = true;
 }
 
 }  // namespace extensions

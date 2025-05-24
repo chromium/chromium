@@ -28,23 +28,22 @@ namespace logging {
 //
 //   MyType& type_ref = CHECK_DEREF(your_wrapped_pointer.get());
 //
-#define CHECK_DEREF(ptr) \
-  ::logging::CheckDeref(ptr, #ptr " != nullptr", __FILE__, __LINE__)
+#define CHECK_DEREF(ptr) ::logging::CheckDeref(ptr, #ptr " != nullptr")
 
 template <typename T>
-[[nodiscard]] T& CheckDeref(T* ptr,
-                            const char* message,
-                            const char* file,
-                            int line) {
+[[nodiscard]] T& CheckDeref(
+    T* ptr,
+    const char* message,
+    const base::Location& location = base::Location::Current()) {
   // Note: we can't just call `CHECK_NE(ptr, nullptr)` here, as that would
   // cause the error to be reported from this header, and we want the error
   // to be reported at the file and line of the caller.
   if (ptr == nullptr) [[unlikely]] {
-#if !CHECK_WILL_STREAM()
-    CheckFailure();
+#if CHECK_WILL_STREAM()
+    // `CheckNoreturnError` will die with a fatal error in its destructor.
+    CheckNoreturnError::Check(message, location);
 #else
-    // `LogMessage` will die with a fatal error in its destructor.
-    LogMessage(file, line, message);
+    CheckFailure();
 #endif  // !CHECK_WILL_STREAM()
   }
   return *ptr;

@@ -117,8 +117,6 @@ const char kOnUserScriptConnectEvent[] = "runtime.onUserScriptConnect";
 const char kOnConnectExternalEvent[] = "runtime.onConnectExternal";
 const char kOnConnectNativeEvent[] = "runtime.onConnectNative";
 
-const int kNoFrameId = -1;
-
 std::unique_ptr<Message> MessageFromV8(v8::Local<v8::Context> context,
                                        v8::Local<v8::Value> value,
                                        mojom::SerializationFormat format,
@@ -371,7 +369,7 @@ void MassageSendMessageArguments(v8::Isolate* isolate,
       options = arguments[2];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (allow_options_argument)

@@ -10,11 +10,12 @@
 
 namespace {
 
-const char kStartCastingModeHistogramName[] =
+inline constexpr char kStartCastingModeHistogramName[] =
     "Media.GlobalMediaControls.MediaCastMode.Start";
-const char kStopCastingModeHistogramName[] =
+inline constexpr char kStopCastingModeHistogramName[] =
     "Media.GlobalMediaControls.MediaCastMode.Stop";
-const char kCastStartStopHistogramName[] = "Media.Notification.Cast.StartStop";
+inline constexpr char kCastStartStopHistogramName[] =
+    "Media.Notification.Cast.StartStop";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

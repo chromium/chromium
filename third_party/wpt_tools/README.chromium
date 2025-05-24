@@ -1,8 +1,9 @@
 Name: web-platform-tests - Test Suites for Web Platform specifications
 Short Name: wpt
 URL: https://github.com/web-platform-tests/wpt/
-Version: 2574834459a09a6ad761c9bc110186737317ae78
-License: LICENSES FOR W3C TEST SUITES (https://www.w3.org/Consortium/Legal/2008/03-bsd-license.html)
+Version: N/A
+Revision: 307dcacd9bccd9e66e062f3675c56e49efeca81d
+License: BSD-3-Clause
 Security Critical: no
 Shipped: no
 Description: This includes code for the manifest tool, lint tool, and wptserve.
@@ -12,6 +13,3 @@ Description: This includes code for the manifest tool, lint tool, and wptserve.
     for more details on maintenance.
 Local Modifications:
 - Removed all files except for those listed in wpt/WPTIncludeList.
-- Local patch to work-around error where maybe_parse_tombstone is missing
-  a parameter.
-- wpt.config.json defined to align with Blink web test runner setup.

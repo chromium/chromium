@@ -31,10 +31,10 @@ public class CapturedSitesSyncWrapper {
 
     private final WebView mWebView;
 
-    private CallbackHelper mPageCallback = new CallbackHelper();
-    private CallbackHelper mJsCallback = new CallbackHelper();
+    private final CallbackHelper mPageCallback = new CallbackHelper();
+    private final CallbackHelper mJsCallback = new CallbackHelper();
 
-    private List<ConsoleMessage> mErrorMessageList =
+    private final List<ConsoleMessage> mErrorMessageList =
             Collections.synchronizedList(new ArrayList<ConsoleMessage>());
 
     public CapturedSitesSyncWrapper(WebView wv) {

@@ -74,9 +74,17 @@ const char kFwupdErrorName_AuthExpired[] = "org.freedesktop.fwupd.AuthExpired";
 // "1" is the bitflag for an internal device. Defined here:
 // https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
 const uint64_t kInternalDeviceFlag = 1;
+// "100000000"(9th bit) is the bit representing FWUPD_DEVICE_FLAG_NEEDS_REBOOT
+// in FwupdDeviceFlags. It signifies whether the device requires a system reboot
+// to apply a firmware update.
+// Defined here:
+// https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h#L304-L311
+const uint64_t kNeedsRebootDeviceFlag = 1llu << 8;
+
 // "100000000"(9th bit) is the bit release flag for a trusted report.
 // Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
 const uint64_t kTrustedReportsReleaseFlag = 1llu << 8;
+
 // "10000"(5th bit) is the fwupd feature flag to allow interactive requests.
 // Defined here: https://github.com/fwupd/fwupd/blob/main/libfwupd/fwupd-enums.h
 const uint64_t kRequestsFeatureFlag = 1llu << 4;

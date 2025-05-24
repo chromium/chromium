@@ -16,15 +16,17 @@ namespace hud_display {
 SolidSourceBackground::SolidSourceBackground(SkColor color,
                                              SkScalar top_rounding_radius)
     : top_rounding_radius_(top_rounding_radius) {
-  SetNativeControlColor(color);
+  SetColor(color);
 }
 
 void SolidSourceBackground::Paint(gfx::Canvas* canvas,
                                   views::View* view) const {
+  const SkColor resolved_color =
+      color().ResolveToSkColor(view->GetColorProvider());
   if (top_rounding_radius_ == 0) {
     // Fill the background. Note that we don't constrain to the bounds as
     // canvas is already clipped for us.
-    canvas->DrawColor(get_color(), SkBlendMode::kSrc);
+    canvas->DrawColor(resolved_color, SkBlendMode::kSrc);
   } else {
     const SkScalar circle_size = top_rounding_radius_ * 2;
     const SkScalar right_edge = view->width();
@@ -42,7 +44,7 @@ void SolidSourceBackground::Paint(gfx::Canvas* canvas,
     flags.setAntiAlias(true);
     flags.setBlendMode(SkBlendMode::kSrc);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(get_color());
+    flags.setColor(resolved_color);
     canvas->DrawPath(path, flags);
   }
 }

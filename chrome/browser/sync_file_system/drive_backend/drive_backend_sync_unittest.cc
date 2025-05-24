@@ -13,6 +13,7 @@
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -41,8 +42,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "google_apis/drive/drive_api_parser.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -87,7 +91,7 @@ class DriveBackendSyncTest : public testing::Test,
   DriveBackendSyncTest(const DriveBackendSyncTest&) = delete;
   DriveBackendSyncTest& operator=(const DriveBackendSyncTest&) = delete;
 
-  ~DriveBackendSyncTest() override {}
+  ~DriveBackendSyncTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(base_dir_.CreateUniqueTempDir());
@@ -108,7 +112,7 @@ class DriveBackendSyncTest : public testing::Test,
 
     std::unique_ptr<drive::FakeDriveService> drive_service(
         new drive::FakeDriveService);
-    drive_service->Initialize(CoreAccountId::FromGaiaId("account_id"));
+    drive_service->Initialize(CoreAccountId::FromGaiaId(GaiaId("account_id")));
     ASSERT_TRUE(drive::test_util::SetUpTestEntries(drive_service.get()));
 
     std::unique_ptr<drive::DriveUploaderInterface> uploader(
@@ -122,9 +126,8 @@ class DriveBackendSyncTest : public testing::Test,
         base::SingleThreadTaskRunner::GetCurrentDefault(),  // ui_task_runner
         worker_task_runner_.get(), drive_task_runner.get(), base_dir_.GetPath(),
         nullptr,  // task_logger
-        nullptr,  // notification_manager
-        nullptr,  // extension_service
-        nullptr,  // extension_registry
+        extensions::ExtensionRegistrar::Get(&profile_),
+        extensions::ExtensionRegistry::Get(&profile_),
         nullptr,  // identity_manager
         nullptr,  // url_loader_factory
         nullptr,  // drive_service
@@ -319,7 +322,7 @@ class DriveBackendSyncTest : public testing::Test,
   }
 
   void FetchRemoteChanges() {
-    remote_sync_service_->OnNotificationTimerFired();
+    remote_sync_service_->OnReadyToSendRequests();
     WaitForIdleWorker();
   }
 
@@ -410,7 +413,8 @@ class DriveBackendSyncTest : public testing::Test,
       app_root_by_title[remote_entry->title()] = remote_entry.get();
     }
 
-    for (std::map<std::string, CannedSyncableFileSystem*>::const_iterator itr =
+    for (std::map<std::string, raw_ptr<CannedSyncableFileSystem,
+                                       CtnExperimental>>::const_iterator itr =
              file_systems_.begin();
          itr != file_systems_.end(); ++itr) {
       const std::string& app_id = itr->first;
@@ -599,7 +603,8 @@ class DriveBackendSyncTest : public testing::Test,
   int64_t pending_local_changes_;
 
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_service_helper_;
-  std::map<std::string, CannedSyncableFileSystem*> file_systems_;
+  std::map<std::string, raw_ptr<CannedSyncableFileSystem, CtnExperimental>>
+      file_systems_;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;

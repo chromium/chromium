@@ -5,11 +5,11 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_DISPLAY_INFO_PROVIDER_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_DISPLAY_INFO_PROVIDER_H_
 
-#include "extensions/browser/api/system_display/display_info_provider.h"
+#include "extensions/browser/display_info_provider_base.h"
 
 namespace extensions {
 
-class ShellDisplayInfoProvider : public DisplayInfoProvider {
+class ShellDisplayInfoProvider : public DisplayInfoProviderBase {
  public:
   ShellDisplayInfoProvider();
 

@@ -16,6 +16,7 @@ class TestAdditionalFeaturesController final
  public:
   inline void RegisterFeatureList(base::FeatureList* featureList) final {}
   inline void FeatureListDidCompleteSetup() final {}
+  inline void ShutDown() final {}
 };
 
 }  // namespace

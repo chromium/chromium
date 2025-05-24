@@ -92,10 +92,10 @@ impl ChromiumPaths {
 fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
     let p = Path::new(p_str);
     if !root.join(p).exists() {
-        return Err(io::Error::new(
-            io::ErrorKind::Other,
-            format!("could not find {} (invoked from Chromium checkout root?)", p.display()),
-        ));
+        return Err(io::Error::other(format!(
+            "could not find {} (invoked from Chromium checkout root?)",
+            p.display()
+        )));
     }
 
     Ok(p)
@@ -106,8 +106,20 @@ fn check_path<'a>(root: &Path, p_str: &'a str) -> io::Result<&'a Path> {
 pub fn normalize_unix_path_separator(path: &Path) -> String {
     // `Path`s on windows use `\` separators and we need to use `/` in GN strings.
     path.iter()
-        .map(|comp| comp.to_str().unwrap_or_else(|| panic!("non-UTF-8 in path {:?}", path)))
+        .map(|comp| comp.to_str().unwrap_or_else(|| panic!("non-UTF-8 in path {path:?}")))
         .join("/")
+}
+
+/// Returns the name of a directory where we want to vendor a third-party crate
+/// with the given `name` and `version`.
+///
+/// Note that this can be quite an arbitrary name, because `cargo` will
+/// discover available crates by reading all the nested `Cargo.toml`
+/// files (rather than based on directory names).  See also
+/// https://crbug.com/396397336#comment7 and adjacent comments.
+pub fn get_vendor_dir_for_package(name: &str, version: &semver::Version) -> String {
+    let epoch = crate::crates::Epoch::from_version(version);
+    format!("{name}-{epoch}")
 }
 
 static RUST_THIRD_PARTY_DIR: &str = "third_party/rust";

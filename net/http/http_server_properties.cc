@@ -24,6 +24,7 @@
 #include "net/http/http_server_properties_manager.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/ssl/ssl_config.h"
+#include "url/url_constants.h"
 
 namespace net {
 
@@ -214,13 +215,17 @@ bool HttpServerProperties::SupportsRequestPriority(
   if (server.host().empty())
     return false;
 
-  if (GetSupportsSpdy(server, network_anonymization_key))
+  if ((server.scheme() == url::kHttpScheme ||
+       server.scheme() == url::kHttpsScheme) &&
+      GetSupportsSpdy(server, network_anonymization_key)) {
     return true;
+  }
   const AlternativeServiceInfoVector alternative_service_info_vector =
       GetAlternativeServiceInfos(server, network_anonymization_key);
   for (const AlternativeServiceInfo& alternative_service_info :
        alternative_service_info_vector) {
-    if (alternative_service_info.alternative_service().protocol == kProtoQUIC) {
+    if (alternative_service_info.alternative_service().protocol ==
+        NextProto::kProtoQUIC) {
       return true;
     }
   }
@@ -231,8 +236,16 @@ bool HttpServerProperties::GetSupportsSpdy(
     const url::SchemeHostPort& server,
     const NetworkAnonymizationKey& network_anonymization_key) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return GetSupportsSpdyInternal(NormalizeSchemeHostPort(server),
-                                 network_anonymization_key);
+  CHECK(server.scheme() == url::kHttpScheme ||
+        server.scheme() == url::kHttpsScheme);
+  if (server.host().empty()) {
+    return false;
+  }
+
+  auto server_info = server_info_map_.Get(
+      CreateServerInfoKey(server, network_anonymization_key));
+  return server_info != server_info_map_.end() &&
+         server_info->second.supports_spdy.value_or(false);
 }
 
 void HttpServerProperties::SetSupportsSpdy(
@@ -240,8 +253,23 @@ void HttpServerProperties::SetSupportsSpdy(
     const NetworkAnonymizationKey& network_anonymization_key,
     bool supports_spdy) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  SetSupportsSpdyInternal(NormalizeSchemeHostPort(server),
-                          network_anonymization_key, supports_spdy);
+  CHECK(server.scheme() == url::kHttpScheme ||
+        server.scheme() == url::kHttpsScheme);
+  if (server.host().empty()) {
+    return;
+  }
+
+  auto server_info = server_info_map_.GetOrPut(
+      CreateServerInfoKey(server, network_anonymization_key));
+  // If value is already the same as `supports_spdy`, or value is unset and
+  // `supports_spdy` is false, don't queue a write.
+  bool queue_write =
+      server_info->second.supports_spdy.value_or(false) != supports_spdy;
+  server_info->second.supports_spdy = supports_spdy;
+
+  if (queue_write) {
+    MaybeQueueWriteProperties();
+  }
 }
 
 bool HttpServerProperties::RequiresHTTP11(
@@ -282,7 +310,7 @@ void HttpServerProperties::SetHttp2AlternativeService(
     const NetworkAnonymizationKey& network_anonymization_key,
     const AlternativeService& alternative_service,
     base::Time expiration) {
-  DCHECK_EQ(alternative_service.protocol, kProtoHTTP2);
+  DCHECK_EQ(alternative_service.protocol, NextProto::kProtoHTTP2);
 
   SetAlternativeServices(
       origin, network_anonymization_key,
@@ -297,7 +325,7 @@ void HttpServerProperties::SetQuicAlternativeService(
     const AlternativeService& alternative_service,
     base::Time expiration,
     const quic::ParsedQuicVersionVector& advertised_versions) {
-  DCHECK(alternative_service.protocol == kProtoQUIC);
+  DCHECK(alternative_service.protocol == NextProto::kProtoQUIC);
 
   SetAlternativeServices(
       origin, network_anonymization_key,
@@ -634,43 +662,6 @@ base::TimeDelta HttpServerProperties::GetUpdatePrefsDelayForTesting() {
   return kUpdatePrefsDelay;
 }
 
-bool HttpServerProperties::GetSupportsSpdyInternal(
-    url::SchemeHostPort server,
-    const NetworkAnonymizationKey& network_anonymization_key) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_NE(server.scheme(), url::kWsScheme);
-  DCHECK_NE(server.scheme(), url::kWssScheme);
-  if (server.host().empty())
-    return false;
-
-  auto server_info = server_info_map_.Get(
-      CreateServerInfoKey(std::move(server), network_anonymization_key));
-  return server_info != server_info_map_.end() &&
-         server_info->second.supports_spdy.value_or(false);
-}
-
-void HttpServerProperties::SetSupportsSpdyInternal(
-    url::SchemeHostPort server,
-    const NetworkAnonymizationKey& network_anonymization_key,
-    bool supports_spdy) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK_NE(server.scheme(), url::kWsScheme);
-  DCHECK_NE(server.scheme(), url::kWssScheme);
-  if (server.host().empty())
-    return;
-
-  auto server_info = server_info_map_.GetOrPut(
-      CreateServerInfoKey(std::move(server), network_anonymization_key));
-  // If value is already the same as |supports_spdy|, or value is unset and
-  // |supports_spdy| is false, don't queue a write.
-  bool queue_write =
-      server_info->second.supports_spdy.value_or(false) != supports_spdy;
-  server_info->second.supports_spdy = supports_spdy;
-
-  if (queue_write)
-    MaybeQueueWriteProperties();
-}
-
 bool HttpServerProperties::RequiresHTTP11Internal(
     url::SchemeHostPort server,
     const NetworkAnonymizationKey& network_anonymization_key) {
@@ -712,7 +703,7 @@ void HttpServerProperties::MaybeForceHTTP11Internal(
   DCHECK_NE(server.scheme(), url::kWssScheme);
   if (RequiresHTTP11(std::move(server), network_anonymization_key)) {
     ssl_config->alpn_protos.clear();
-    ssl_config->alpn_protos.push_back(kProtoHTTP11);
+    ssl_config->alpn_protos.push_back(NextProto::kProtoHTTP11);
   }
 }
 
@@ -746,12 +737,12 @@ HttpServerProperties::GetAlternativeServiceInfosInternal(
       }
       // If the alternative service is equivalent to the origin (same host, same
       // port, and both TCP), skip it.
-      if (host_port_pair.Equals(alternative_service.host_port_pair()) &&
-          alternative_service.protocol == kProtoHTTP2) {
+      if (host_port_pair.Equals(alternative_service.GetHostPortPair()) &&
+          alternative_service.protocol == NextProto::kProtoHTTP2) {
         ++it;
         continue;
       }
-      if (alternative_service.protocol == kProtoQUIC) {
+      if (alternative_service.protocol == NextProto::kProtoQUIC) {
         valid_alternative_service_infos.push_back(
             AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
                 alternative_service, it->expiration(),
@@ -801,7 +792,7 @@ HttpServerProperties::GetAlternativeServiceInfosInternal(
       ++it;
       continue;
     }
-    if (alternative_service.protocol == kProtoQUIC) {
+    if (alternative_service.protocol == NextProto::kProtoQUIC) {
       valid_alternative_service_infos.push_back(
           AlternativeServiceInfo::CreateQuicAlternativeServiceInfo(
               alternative_service, it->expiration(),

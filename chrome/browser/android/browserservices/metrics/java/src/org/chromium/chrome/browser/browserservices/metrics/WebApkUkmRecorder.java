@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browserservices.metrics;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapps.WebApkDistributor;
 
 /**
@@ -14,13 +16,17 @@ import org.chromium.components.webapps.WebApkDistributor;
  * the use cases for the most used WebAPKs.
  */
 @JNINamespace("webapk")
+@NullMarked
 public class WebApkUkmRecorder {
     /**
      * Records the duration, in exponentially-bucketed milliseconds, of a WebAPK session (from
      * launch/foreground to background).
      */
     public static void recordWebApkSessionDuration(
-            String manifestId, @WebApkDistributor int distributor, int versionCode, long duration) {
+            @Nullable String manifestId,
+            @WebApkDistributor int distributor,
+            int versionCode,
+            long duration) {
         WebApkUkmRecorderJni.get()
                 .recordSessionDuration(manifestId, distributor, versionCode, duration);
     }
@@ -29,7 +35,10 @@ public class WebApkUkmRecorder {
      * Records that WebAPK was launched and the reason for the launch.
      */
     public static void recordWebApkLaunch(
-            String manifestId, @WebApkDistributor int distributor, int versionCode, int source) {
+            @Nullable String manifestId,
+            @WebApkDistributor int distributor,
+            int versionCode,
+            int source) {
         WebApkUkmRecorderJni.get().recordVisit(manifestId, distributor, versionCode, source);
     }
 
@@ -38,7 +47,7 @@ public class WebApkUkmRecorder {
      * since the last time that the user clearer Chrome's storage.
      */
     public static void recordWebApkUninstall(
-            String manifestId,
+            @Nullable String manifestId,
             @WebApkDistributor int distributor,
             int versionCode,
             int launchCount,
@@ -51,12 +60,12 @@ public class WebApkUkmRecorder {
     @NativeMethods
     interface Natives {
         void recordSessionDuration(
-                String manifestId, int distributor, int versionCode, long duration);
+                @Nullable String manifestId, int distributor, int versionCode, long duration);
 
-        void recordVisit(String manifestId, int distributor, int versionCode, int source);
+        void recordVisit(@Nullable String manifestId, int distributor, int versionCode, int source);
 
         void recordUninstall(
-                String manifestId,
+                @Nullable String manifestId,
                 int distributor,
                 int versionCode,
                 int launchCount,

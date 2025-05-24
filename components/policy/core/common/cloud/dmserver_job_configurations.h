@@ -95,6 +95,7 @@ class POLICY_EXPORT DMServerJobConfiguration : public JobConfigurationBase {
     DMAuth auth_data = DMAuth::NoAuth();
     std::optional<std::string> profile_id = std::nullopt;
     std::optional<std::string> oauth_token = std::nullopt;
+    bool use_cookies = false;
     scoped_refptr<network::SharedURLLoaderFactory> factory;
     DMServerJobConfiguration::Callback callback;
   };

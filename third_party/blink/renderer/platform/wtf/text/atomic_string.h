@@ -26,6 +26,7 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
@@ -42,6 +43,17 @@
 #endif
 
 namespace WTF {
+class WTF_EXPORT AtomicString;
+}
+
+// `AtomicString` is interned, so it's safe to hash; allow conversion to a byte
+// span to facilitate this.
+namespace base {
+template <>
+inline constexpr bool kCanSafelyConvertToByteSpan<::WTF::AtomicString> = true;
+}
+
+namespace WTF {
 
 // An AtomicString instance represents a string, and multiple AtomicString
 // instances can share their string storage if the strings are
@@ -55,23 +67,14 @@ class WTF_EXPORT AtomicString {
   static void Init();
 
   AtomicString() = default;
-  explicit AtomicString(const LChar* chars)
-      : AtomicString(chars,
-                     chars ? strlen(reinterpret_cast<const char*>(chars)) : 0) {
-  }
-
-#if defined(ARCH_CPU_64_BITS)
-  // Only define a size_t constructor if size_t is 64 bit otherwise
-  // we'd have a duplicate define.
-  AtomicString(const LChar* chars, size_t length);
-#endif  // defined(ARCH_CPU_64_BITS)
-
   explicit AtomicString(const char* chars)
-      : AtomicString(reinterpret_cast<const LChar*>(chars)) {}
-  AtomicString(const LChar* chars, unsigned length);
-  AtomicString(
-      const UChar* chars,
-      unsigned length,
+      // SAFETY: The below span creation is safe if `chars` points to a
+      // NUL-terminated string.
+      : AtomicString(base::as_bytes(
+            UNSAFE_BUFFERS(base::span(chars, chars ? strlen(chars) : 0u)))) {}
+  explicit AtomicString(base::span<const LChar> chars);
+  explicit AtomicString(
+      base::span<const UChar> chars,
       AtomicStringUCharEncoding encoding = AtomicStringUCharEncoding::kUnknown);
   explicit AtomicString(const UChar* chars);
 
@@ -90,8 +93,10 @@ class WTF_EXPORT AtomicString {
   StringImpl* Impl() const { return string_.Impl(); }
 
   bool Is8Bit() const { return string_.Is8Bit(); }
-  const LChar* Characters8() const { return string_.Characters8(); }
-  const UChar* Characters16() const { return string_.Characters16(); }
+  // Use Span16() instead.
+  UNSAFE_BUFFER_USAGE const UChar* Characters16() const {
+    return UNSAFE_TODO(string_.Characters16());
+  }
   wtf_size_t length() const { return string_.length(); }
   base::span<const LChar> Span8() const { return string_.Span8(); }
   base::span<const UChar> Span16() const { return string_.Span16(); }
@@ -123,10 +128,10 @@ class WTF_EXPORT AtomicString {
 
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
-  // platform features.
-  wtf_size_t FindIgnoringCase(const StringView& value,
-                              wtf_size_t start = 0) const {
-    return string_.FindIgnoringCase(value, start);
+  // platform features.  See crbug.com/40476285.
+  wtf_size_t DeprecatedFindIgnoringCase(const StringView& value,
+                                        wtf_size_t start = 0) const {
+    return string_.DeprecatedFindIgnoringCase(value, start);
   }
 
   // ASCII case insensitive string matching.
@@ -168,6 +173,12 @@ class WTF_EXPORT AtomicString {
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return string_.EndsWith(suffix, case_sensitivity);
   }
+  // Unicode aware case insensitive string matching. Non-ASCII characters might
+  // match to ASCII characters. This function is rarely used to implement web
+  // platform features.  See crbug.com/40476285.
+  bool DeprecatedEndsWithIgnoringCase(const StringView& suffix) const {
+    return string_.DeprecatedEndsWithIgnoringCase(suffix);
+  }
   bool EndsWith(UChar character) const { return string_.EndsWith(character); }
 
   // Returns a lowercase/uppercase version of the string.
@@ -186,7 +197,7 @@ class WTF_EXPORT AtomicString {
   template <typename IntegerType>
   static AtomicString Number(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
-    return AtomicString(converter.Characters8(), converter.length());
+    return AtomicString(converter.Span());
   }
 
   static AtomicString Number(double, unsigned precision = 6);
@@ -201,14 +212,14 @@ class WTF_EXPORT AtomicString {
 #endif
   // AtomicString::fromUTF8 will return a null string if
   // the input data contains invalid UTF-8 sequences.
-  // NOTE: Passing a zero size means use the whole string.
-  static AtomicString FromUTF8(const char*, size_t length);
+  static AtomicString FromUTF8(base::span<const uint8_t>);
   static AtomicString FromUTF8(const char*);
   static AtomicString FromUTF8(std::string_view);
 
   std::string Ascii() const { return string_.Ascii(); }
   std::string Latin1() const { return string_.Latin1(); }
-  std::string Utf8(UTF8ConversionMode mode = kLenientUTF8Conversion) const {
+  std::string Utf8(
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
     return StringView(*this).Utf8(mode);
   }
 
@@ -312,6 +323,26 @@ inline StringView::StringView(const AtomicString& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}
 
 }  // namespace WTF
+
+// Mark `AtomicString` and `const char*` as having a common reference type (the
+// type to which both can be converted or bound) of `String`. This makes them
+// satisfy `std::equality_comparable`, which allows usage like:
+// ```
+//   std::vector<AtomicString<T>> v;
+//   const char* e;
+//   auto it = std::ranges::find(v, e);
+// ```
+// Without this, the `find()` call above would fail to compile with a cryptic
+// error about being unable to invoke `std::ranges::equal_to()`.
+template <template <typename> typename TQ, template <typename> typename UQ>
+struct std::basic_common_reference<WTF::AtomicString, const char*, TQ, UQ> {
+  using type = WTF::String;
+};
+
+template <template <typename> typename TQ, template <typename> typename UQ>
+struct std::basic_common_reference<const char*, WTF::AtomicString, TQ, UQ> {
+  using type = WTF::String;
+};
 
 WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(AtomicString)
 

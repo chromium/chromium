@@ -39,7 +39,7 @@ class Step;
 
 class Filter final : public Expression {
  public:
-  Filter(Expression*, HeapVector<Member<Predicate>>&);
+  Filter(Expression*, GCedHeapVector<Member<Predicate>>&);
   ~Filter() override;
   void Trace(Visitor*) const override;
 

@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_page_with_cached_script_javascript
+  webdriver.error.TimeoutException: timeout (500): Timed out after 2.0 seconds
+Harness: the test ran to completion.

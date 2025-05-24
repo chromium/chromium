@@ -1,0 +1,21 @@
+{
+    "name": "Chrome built-in text-to-speech extension",
+    "manifest_version": 2,
+    "version": "1.0",
+    "key": "MIIEuwIBADANBgkqhkiG9w0BAQEFAASCBKUwggShAgEAAoIBAQCtYixYJAS1nKShvLwsObAQmOAUEfOsHbL1Z+tOJJFOJuGUptMfn4xX2n7mkanMVn3ynto2TwavaYf/vZPpx+V45oLRDB1W7LMnd0X7vuJ0cz6CXm2vfwuEOGrvQYR3QpJTkvAsJuW/QTGWvlmnU9kfiwYrRh2Z5L0bN1K15QzUgNFA0KZ6ONQ30dIhihW0foo/4grdEkwt4L4az1/60sR9sJaSMDOsg6p/vDHY3QXgj/ufK/yQpxp8liUu0wAHGiZpVHvV7fXukPpNTC+KKVrszQkLkNk9R6o35iIKCnNy70D6oEJ1Sg+kYUZCWYXBha86G9X0IdmQkMnYXqTStIQ1AgMBAAECgf8IwG0bwzcH3MSEIzYIMRahjr3V1tmimDNKBMndev0wXi/YJnZVcw5xEbOm9cxupW7OzkmPpxCXQq570RYA8El1H23Uy+Wnb3Xda2BtUD6+u+9hxo8LE7tuel+kIO3+hoXxitbOJDaEv3wjZWtBOxDzlb8njwHweO4viMhB6IXjWvVqjF6a8T4TRlCELfRD4N+mjvn1KBr43oP4aX7s6QPbX2UccB7U7lx4yJD5r/SAjjhEzOZsYw9o4FoF+k13OubFmtvkF515NHUxLMRyf3WNbFCv54lyA+UZ6XKpbRm3fXFMhdNUCTNGpxHkhbrPRt7RmIV4jHP6tlL5cMzeDcECgYEA3fOoD0a5TJ5cQqmg0+BHkSC816MC1+1Bxc+xNJmh9y/uPutHqVWo0pHIo0XPgAf8XSaCjxjWUHL23S6uqPSgmUHt2M4fMtBMeuGh3wRXRnNMwxhN2W4U/ozruglup+sSzDTz7npRVMIxDB6M4pRgGLNgASgxBCkcLMRyd8L41UECgYEAx/sswnm4v44RbGD0RIA6b3OIrgDO0I69ymdfxsc7UD9JPoB6N/eWaGYF46NLTLRHeFb065gT4/snTsgYg+Zl4i3e89GhYT2mWGQsx6dtLwAxp0g8AWuXlCPsVr22IfCaYC6nutMSQzBtU64mVUx7hoF6htjFct8oSE/399QULfUCgYAD3F0sBtrqTkbkkfbOOLSF/b/LMHa4MtRWEIrQk2uR1S+bwJP6ihbpssd+r5QwcfMd27Ghs5jmxVkt98XqAndYsyDkCJHaXG04Jfye2IB8JT1Ml3ujMJsE4oanMcrO+PPWwYUMvOv1QXuA7ncc6d/SDiy5WG2h2OU4kiI7mxShAQKBgQCxS/+P34iq05Kg6ohFnwWvv9dipTa2cobTRrkEK6hraeBO+Gri6a/AmQsJmcFtnLtsdnOn1+lyiz17PC136zFSyGZM9gLEinrLDO0iiU5kiCB9da41eCUn4n1rHcC28HB9a3+rQ+yCAxI6SUCVCTzOsEZn/RF42V4GVle6sZy+bQKBgDwC09Ski9WpzCI/CTzSZX9RlhDfmHfUFTWFtiYFxPj98HcaO+hIWDpFne/hUnp/YL2SXwfYIP17DLqinRfJPcKW+Y2gmB8i57naZZEPHmXSl0CBxlvHBW2TTdNZ+V2WUtO0+GNWFWA/wh46gbJofwbr44jWG3sN22LuzFyx8pga",
+    "background": {
+        "scripts": [
+            "background.js"
+        ],
+        "persistent": true
+    },
+    "description": "The Google Text to Speech Engine.",
+    "permissions": [
+      "https://dl.google.com/*",
+      "ttsEngine",
+      "webRequest",
+      "webRequestBlocking"
+    ],
+    "content_security_policy": "script-src 'self' 'wasm-eval' 'unsafe-eval' https://dl.google.com 'unsafe-inline' 'sha256-cGBWcbIItfbVcLtHNeOJb9QGd3LqnOUHMfdsmB/devA=' 'sha256-VTkjPxBYYCe//bHFrgsvm4FE+3eWbV021KGvRI33DIQ=' 'sha256-e5LQunoISQiLKZsrpAalVAyr63xqBjZ1W47Go89vt/o=' 'sha256-AKSF2c8X/BZc8OnfW8iXjZ4/AOFGS0ft/YhCWJwlQ9o=' 'sha256-DMF2Q16G5w/pHs5OPYH+eWUxPxysDzytOUCo1lKVOSA=' 'sha256-i1wuR7SfJ9G/6ZTUagF9upq6l9Wb8YzCqIH29UR1QDA=' 'sha256-7yPdtKnajzuS+D9nDHSVdSs+1kaL1E1Zl0HU6csK2Y4=' 'sha256-qqURePDT8lm/GIarEoYDapkx9QqXvQob+ivJckgxsXY=' 'sha256-RMSqHznNzfybAW99WZABbiusMDFL1dNKAedUmiUifxA=' 'sha256-6GFr/PbTsH4+cJ0C9phPX+lGpsvyJrh3NNnT3bfDoh8='; object-src 'self'; connect-src *"
+
+}

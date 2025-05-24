@@ -28,8 +28,7 @@ namespace {
 
 class RendererPermissionsPolicyDelegateTest : public testing::Test {
  public:
-  RendererPermissionsPolicyDelegateTest() {
-  }
+  RendererPermissionsPolicyDelegateTest() = default;
 
   void SetUp() override {
     testing::Test::SetUp();

@@ -4,6 +4,8 @@
 
 #include "ash/display/resolution_notification_controller.h"
 
+#include <string_view>
+
 #include "ash/display/display_change_dialog.h"
 #include "ash/display/display_util.h"
 #include "ash/screen_util.h"
@@ -155,7 +157,7 @@ class ResolutionNotificationControllerTest
         new_is_native, source);
   }
 
-  static std::u16string GetNotificationMessage() {
+  static std::u16string_view GetNotificationMessage() {
     return controller()->dialog_for_testing()->label_->GetText();
   }
 
@@ -459,15 +461,24 @@ TEST_P(ResolutionNotificationControllerTest, Fallback) {
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
-TEST_P(ResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
+namespace {
+class NoSessionResolutionNotificationControllerTest
+    : public ResolutionNotificationControllerTest {
+ public:
+  NoSessionResolutionNotificationControllerTest() { set_start_session(false); }
+  NoSessionResolutionNotificationControllerTest(
+      const NoSessionResolutionNotificationControllerTest&) = delete;
+  NoSessionResolutionNotificationControllerTest& operator=(
+      const NoSessionResolutionNotificationControllerTest&) = delete;
+  ~NoSessionResolutionNotificationControllerTest() override = default;
+};
+
+}  // namespace
+
+TEST_P(NoSessionResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
   // Login in as kiosk app.
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::UserType::kKioskApp;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
 
@@ -479,15 +490,10 @@ TEST_P(ResolutionNotificationControllerTest, NoTimeoutInKioskMode) {
                                 /*new_is_native=*/false);
 }
 
-TEST_P(ResolutionNotificationControllerTest, NoDialogInKioskMode) {
+TEST_P(NoSessionResolutionNotificationControllerTest, NoDialogInKioskMode) {
   // Login in as kiosk app.
-  UserSession session;
-  session.session_id = 1u;
-  session.user_info.type = user_manager::UserType::kKioskApp;
-  session.user_info.account_id = AccountId::FromUserEmail("user1@test.com");
-  session.user_info.display_name = "User 1";
-  session.user_info.display_email = "user1@test.com";
-  Shell::Get()->session_controller()->UpdateUserSession(std::move(session));
+  SimulateKioskMode(user_manager::UserType::kKioskApp);
+
   EXPECT_EQ(LoginStatus::KIOSK_APP,
             Shell::Get()->session_controller()->login_status());
 
@@ -512,6 +518,9 @@ TEST_P(ResolutionNotificationControllerTest, NoDialogInKioskMode) {
 // enabled and disabled.
 INSTANTIATE_TEST_SUITE_P(All,
                          ResolutionNotificationControllerTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         NoSessionResolutionNotificationControllerTest,
                          ::testing::Bool());
 
 }  // namespace ash

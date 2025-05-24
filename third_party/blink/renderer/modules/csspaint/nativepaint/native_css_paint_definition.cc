@@ -45,11 +45,13 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
     return nullptr;
   }
   Animation* compositable_animation = nullptr;
+
   // We'd composite only if it is the only animation of its type on
   // this element.
   unsigned count = 0;
   for (const auto& animation : element->GetElementAnimations()->Animations()) {
-    if (animation.key->CalculateAnimationPlayState() == Animation::kIdle ||
+    if (animation.key->CalculateAnimationPlayState() ==
+            V8AnimationPlayState::Enum::kIdle ||
         !animation.key->Affects(*element, property)) {
       continue;
     }
@@ -60,29 +62,25 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
     return nullptr;
   }
 
-  // If we are here, this element must have one animation of the CSSProperty
-  // type only. Fall back to the main thread if it is not composite:replace.
+  if (!AnimationIsValidForPaintWorklets(compositable_animation, element,
+                                        property, filter)) {
+    return nullptr;
+  }
+
+  return compositable_animation;
+}
+
+bool NativeCssPaintDefinition::AnimationIsValidForPaintWorklets(
+    Animation* compositable_animation,
+    const Element* element,
+    const CSSProperty& property,
+    ValueFilter filter) {
   const AnimationEffect* effect = compositable_animation->effect();
 
   // TODO(crbug.com/1429770): Implement positive delay fix for bgcolor.
   if (effect->SpecifiedTiming().start_delay.AsTimeValue().InSecondsF() > 0.f) {
-    if (property.PropertyID() == CSSPropertyID::kClipPath) {
-      // TODO(crbug.com/365481208): When clip-path: none, the clip path paint
-      // worklet won't be painted. This results in a composited animation with
-      // no associated paint worklet. This prevents that from happening by
-      // forcing these animations to be downgraded to main thread, however this
-      // solution is far from ideal, and introduces complexity into an already
-      // complex state machine. This should be removed once a better solution
-      // is found to clip-path: none during delays.
-      if (!element->GetLayoutObject()->StyleRef().HasClipPath()) {
-        // Set the animation to kNotComposited so that when the animation begins
-        // the paint worklet is not painted.
-        element->GetElementAnimations()->SetCompositedClipPathStatus(
-            ElementAnimations::CompositedPaintStatus::kNotComposited);
-        return nullptr;
-      }
-    } else {
-      return nullptr;
+    if (property.PropertyID() != CSSPropertyID::kClipPath) {
+      return false;
     }
   }
 
@@ -90,17 +88,17 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
   const KeyframeEffectModelBase* model =
       static_cast<const KeyframeEffect*>(effect)->Model();
   if (model->AffectedByUnderlyingAnimations()) {
-    return nullptr;
+    return false;
   }
   const PropertySpecificKeyframeVector* frames =
       model->GetPropertySpecificKeyframes(PropertyHandle(property));
   DCHECK_GE(frames->size(), 2u);
   for (const auto& frame : *frames) {
     if (!CanGetValueFromKeyframe(element, frame, model, filter)) {
-      return nullptr;
+      return false;
     }
   }
-  return compositable_animation;
+  return true;
 }
 
 bool NativeCssPaintDefinition::DefaultValueFilter(

@@ -93,6 +93,9 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
 
   ~TableLayout() override;
 
+  size_t NumColumns() const;
+  size_t NumRows() const;
+
   // Adds a column. The alignment gives the default alignment for views added
   // with no explicit alignment. fixed_width gives a specific width for the
   // column, and is only used if size_type == kFixed. min_width gives the
@@ -114,12 +117,20 @@ class VIEWS_EXPORT TableLayout : public LayoutManagerBase {
   // spans.
   TableLayout& AddPaddingColumn(float horizontal_resize, int width);
 
+  // Removes the last `n` normal and/or padding columns. `n` must be at
+  // most `num_columns()`.
+  void RemoveColumns(size_t n);
+
   // Adds `n` new rows with the specified height (0 for unspecified height).
   TableLayout& AddRows(size_t n, float vertical_resize, int height = 0);
 
   // Adds a padding row, used to provide vertical white space between views.
   // Padding rows don't have any views, but are counted in row spans.
   TableLayout& AddPaddingRow(float vertical_resize, int height);
+
+  // Removes the last `n` normal and/or padding rows. `n` must be at most
+  // `num_rows()`.
+  void RemoveRows(size_t n);
 
   // Forces the specified columns to have the same size. The size of
   // linked columns is that of the max of the specified columns.

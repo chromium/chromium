@@ -8,7 +8,6 @@
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/buckets/bucket_locator.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom-shared.h"
 
 namespace mojo {
@@ -24,11 +23,6 @@ class StructTraits<storage::mojom::BucketLocatorDataView,
   static const blink::StorageKey& storage_key(
       const storage::BucketLocator& bucket) {
     return bucket.storage_key;
-  }
-
-  static const blink::mojom::StorageType& type(
-      const storage::BucketLocator& bucket) {
-    return bucket.type;
   }
 
   static bool is_default(const storage::BucketLocator& bucket) {

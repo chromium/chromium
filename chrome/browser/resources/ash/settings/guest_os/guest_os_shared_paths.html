@@ -18,7 +18,7 @@
     </h2>
   </div>
   <iron-list class="list-frame vertical-list" role="list"
-      aria-labeledby="guestOsListHeading" items="[[sharedPaths_]]">
+      aria-labelledby="guestOsListHeading" items="[[sharedPaths_]]">
     <template>
       <div class="list-item" role="listitem">
         <div class="start" aria-hidden="true"
@@ -28,7 +28,7 @@
         <cr-icon-button class="icon-clear" tabindex$="[[tabIndex]]"
             on-click="onRemoveSharedPathClick_"
             title="$i18n{guestOsSharedPathsStopSharing}"
-            aria-labeledby$="[[generatePathDisplayTextId_(index)]]">
+            aria-labelledby$="[[generatePathDisplayTextId_(index)]]">
         </cr-icon-button>
       </div>
     </template>

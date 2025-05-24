@@ -68,6 +68,9 @@ class UnitTestTestSuite::UnitTestEventListener
     SetUtilityClientForTesting(content_clients_->content_utility_client.get());
 
     browser_accessibility_state_ = BrowserAccessibilityStateImpl::Create();
+    // Prevent accessibility from being turned on by the platform so that the
+    // tests can run undisturbed.
+    browser_accessibility_state_->SetActivationFromPlatformEnabled(false);
 
     if (first_test_start_callback_)
       std::move(first_test_start_callback_).Run();

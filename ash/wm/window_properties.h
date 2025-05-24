@@ -23,6 +23,10 @@ class WindowState;
 
 // Alphabetical sort.
 
+// A property key to indicate whether the window shadow will be disabled when
+// resizing is available.
+ASH_EXPORT extern const aura::WindowProperty<bool>* const kDisableResizeShadow;
+
 // A property key to indicate whether this window is temporarily hidden because
 // of the window dragging.
 ASH_EXPORT extern const aura::WindowProperty<bool>* const
@@ -57,6 +61,18 @@ ASH_EXPORT extern const aura::WindowProperty<bool>* const
 // window initiating the request.
 ASH_EXPORT extern const aura::WindowProperty<std::string*>* const
     kWebAuthnRequestId;
+
+// A property key to indicate the resize histogram name for a specific window.
+// Must be set with kWindowResizeMaxLatencyHistogramName. This will have no
+// affect on windows that do not use a DefaultWindowResizer for resizing.
+ASH_EXPORT extern const aura::WindowProperty<std::string*>* const
+    kWindowResizeHistogramName;
+
+// A property key to indicate the resize max latency histogram name for a
+// specific window. Must be set with kWindowResizeHistogramName. This will have
+// no affect on windows that do not use a DefaultWindowResizer for resizing.
+ASH_EXPORT extern const aura::WindowProperty<std::string*>* const
+    kWindowResizeMaxLatencyHistogramName;
 
 // A property key to store WindowState in the window. The window state
 // is owned by the window.

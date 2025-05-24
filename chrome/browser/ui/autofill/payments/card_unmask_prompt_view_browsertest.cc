@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 
+#include <string_view>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -17,9 +19,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/user_prefs/user_prefs.h"
@@ -44,7 +46,7 @@ class TestCardUnmaskDelegate : public CardUnmaskDelegate {
   TestCardUnmaskDelegate(const TestCardUnmaskDelegate&) = delete;
   TestCardUnmaskDelegate& operator=(const TestCardUnmaskDelegate&) = delete;
 
-  virtual ~TestCardUnmaskDelegate() = default;
+  ~TestCardUnmaskDelegate() override = default;
 
   // CardUnmaskDelegate:
   void OnUnmaskPromptAccepted(
@@ -87,7 +89,7 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   // CardUnmaskPromptControllerImpl:.
   // When the confirm button is clicked.
-  void OnUnmaskPromptAccepted(const std::u16string& cvc,
+  void OnUnmaskPromptAccepted(std::u16string_view cvc,
                               const std::u16string& exp_month,
                               const std::u16string& exp_year,
                               bool enable_fido_auth,
@@ -120,12 +122,14 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
 
   payments::PaymentsAutofillClient::PaymentsRpcResult GetVerificationResult()
       const override {
-    if (expected_failure_temporary_)
+    if (expected_failure_temporary_) {
       return payments::PaymentsAutofillClient::PaymentsRpcResult::
           kTryAgainFailure;
-    if (expected_failure_permanent_)
+    }
+    if (expected_failure_permanent_) {
       return payments::PaymentsAutofillClient::PaymentsRpcResult::
           kPermanentFailure;
+    }
 
     return payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess;
   }
@@ -141,11 +145,12 @@ class TestCardUnmaskPromptController : public CardUnmaskPromptControllerImpl {
   using CardUnmaskPromptControllerImpl::view;
 
  private:
-  void ShowVerificationResult(const std::u16string verification_message,
+  void ShowVerificationResult(const std::u16string& verification_message,
                               bool allow_retry) {
     // It's possible the prompt has been closed.
-    if (!view())
+    if (!view()) {
       return;
+    }
     view()->GotVerificationResult(verification_message, allow_retry);
   }
 
@@ -180,8 +185,9 @@ class CardUnmaskPromptViewBrowserTest : public DialogBrowserTest {
 
   void ShowUi(const std::string& name) override {
     CreditCard card = test::GetMaskedServerCard();
-    if (name == kExpiryExpired)
+    if (name == kExpiryExpired) {
       card.SetExpirationYear(2016);
+    }
 
     CardUnmaskPromptOptions card_unmask_prompt_options =
         CardUnmaskPromptOptions(
@@ -272,8 +278,14 @@ IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
 
 // Makes sure the tab can be closed while the dialog is showing.
 // https://crbug.com/484376
+// TODO(crbug.com/409069597): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_CloseTabWhileDialogShowing DISABLED_CloseTabWhileDialogShowing
+#else
+#define MAYBE_CloseTabWhileDialogShowing CloseTabWhileDialogShowing
+#endif
 IN_PROC_BROWSER_TEST_F(CardUnmaskPromptViewBrowserTest,
-                       CloseTabWhileDialogShowing) {
+                       MAYBE_CloseTabWhileDialogShowing) {
   ShowUi(kExpiryExpired);
   // Simulate BrowserAutofillManager (the delegate in production code) being
   // destroyed before CardUnmaskPromptViewBridge::OnConstrainedWindowClosed() is

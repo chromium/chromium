@@ -108,6 +108,24 @@ class StabilityMetricsHelper {
 #endif
   );
 
+  // Records a CDM utility process launch with name |metrics_name|.
+  void CdmUtilityProcessLaunched(const std::string& metrics_name);
+
+  // Records a CDM utility process crash with name |metrics_name|.
+  void CdmUtilityProcessCrashed(const std::string& metrics_name, int exit_code);
+
+  // Records that a CDM utility process process with name |metrics_name| failed
+  // to launch. The |launch_error_code| is a platform-specific error code. On
+  // Windows, a |last_error| is also supplied to help diagnose the launch
+  // failure.
+  void CdmUtilityProcessLaunchFailed(const std::string& metrics_name,
+                                     int launch_error_code
+#if BUILDFLAG(IS_WIN)
+                                     ,
+                                     DWORD last_error
+#endif
+  );
+
   // Logs the initiation of a page load.
   void LogLoadStarted();
 

@@ -67,8 +67,7 @@ class VaapiImageProcessorBackend : public ImageProcessorBackend {
   // ScopedVASurfaces for reuse according to the expectations of libva
   // vaDestroySurfaces(): "Surfaces can only be destroyed after all contexts
   // using these surfaces have been destroyed."
-  base::IDMap<std::unique_ptr<ScopedVASurface>,
-              decltype(gfx::GenericSharedMemoryId::id)>
+  base::flat_map<base::UnguessableToken, std::unique_ptr<ScopedVASurface>>
       allocated_va_surfaces_ GUARDED_BY_CONTEXT(backend_sequence_checker_);
 };
 

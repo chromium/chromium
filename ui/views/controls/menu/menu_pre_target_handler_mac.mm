@@ -29,10 +29,12 @@ MenuPreTargetHandlerMac::~MenuPreTargetHandlerMac() = default;
 void MenuPreTargetHandlerMac::NativeWidgetMacEventMonitorOnEvent(
     ui::Event* ui_event,
     bool* was_handled) {
-  if (*was_handled)
+  if (*was_handled) {
     return;
-  if (!ui_event->IsKeyEvent())
+  }
+  if (!ui_event->IsKeyEvent()) {
     return;
+  }
   *was_handled = controller_->OnWillDispatchKeyEvent(ui_event->AsKeyEvent()) !=
                  ui::POST_DISPATCH_PERFORM_DEFAULT;
 }

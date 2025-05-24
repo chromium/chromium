@@ -1,0 +1,16 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer ignored
+++++++++staticText name='This content is visible on-screen' nameFrom=contents
+++++++++++inlineTextBox name='This content is visible on-screen' nameFrom=contents
+++++++genericContainer ignored
+++++++++staticText name='This content is not visible on-screen, but will be included in the AXTree because it is one screen down the view port.' nameFrom=contents
+++++++++++inlineTextBox name='This content is not visible on-screen, but will be included in ' nameFrom=contents
+++++++++++inlineTextBox name='the AXTree because it is one screen down the view port.' nameFrom=contents
+++++++genericContainer ignored
+++++++++paragraph
+++++++++++staticText name='this content is included via the extra nodes rule' nameFrom=contents
+++++++++++++inlineTextBox name='this content is included via ' nameFrom=contents
+++++++++++++inlineTextBox name='the extra nodes rule' nameFrom=contents
+++++++++paragraph

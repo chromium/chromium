@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/string_data_source.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,14 +105,16 @@ class PrefetchDataPipeTeeTest : public ::testing::Test,
     }
   }
   void WriteComplete() { source_producer_.reset(); }
-  void ResetReference() {
+  void ResetTee() {
     if (GetParam()) {
       tee_.reset();
     }
   }
+  void ResetTeeForce() { tee_.reset(); }
 
   PrefetchDataPipeTee& tee() { return *tee_; }
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
+  base::HistogramTester& histogram_tester() { return *histogram_tester_; }
 
   static constexpr int kProducerPipeCapacity = 1024;
   static constexpr int kBufferLimit = 8;
@@ -128,12 +131,15 @@ class PrefetchDataPipeTeeTest : public ::testing::Test,
 
     tee_ = base::MakeRefCounted<PrefetchDataPipeTee>(
         std::move(source_consumer_handle), kBufferLimit);
+
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
   std::unique_ptr<mojo::DataPipeProducer> source_producer_;
   scoped_refptr<PrefetchDataPipeTee> tee_;
 
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 TEST_P(PrefetchDataPipeTeeTest, FirstTargetAddedThenLoaded) {
@@ -161,11 +167,23 @@ TEST_P(PrefetchDataPipeTeeTest, FirstTargetAddedThenLoaded) {
   // targets can be added.
   auto target2 = DataPipeReader(tee().Clone());
   auto target3 = DataPipeReader(tee().Clone());
-  ResetReference();
+  ResetTee();
 
   EXPECT_EQ(target1.ReadData(32), "");
   EXPECT_EQ(target2.ReadData(32), "Body");
   EXPECT_EQ(target3.ReadData(32), "Body");
+
+  ResetTeeForce();
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState",
+      PrefetchDataPipeTee::State::kLoaded, 1);
+  EXPECT_EQ(1u, histogram_tester()
+                    .GetTotalCountsForPrefix(
+                        "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.")
+                    .size());
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.Loading"),
+              testing::UnorderedElementsAre(base::Bucket(2, 1)));
 }
 
 TEST_P(PrefetchDataPipeTeeTest, FirstTargetAddedAndRemoved) {
@@ -200,6 +218,23 @@ TEST_P(PrefetchDataPipeTeeTest, FirstTargetAddedAndRemoved) {
   task_environment().RunUntilIdle();
 
   EXPECT_FALSE(tee().Clone());
+
+  ResetTeeForce();
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState",
+      PrefetchDataPipeTee::State::kSizeExceeded, 1);
+  EXPECT_EQ(2u, histogram_tester()
+                    .GetTotalCountsForPrefix(
+                        "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.")
+                    .size());
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.Loading"),
+              testing::UnorderedElementsAre(base::Bucket(2, 1)));
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.SizeExceeded"),
+      testing::UnorderedElementsAre(base::Bucket(5, 1), base::Bucket(4, 1),
+                                    base::Bucket(6, 1)));
 }
 
 TEST_P(PrefetchDataPipeTeeTest, LoadedThenFirstTargetAdded) {
@@ -211,10 +246,19 @@ TEST_P(PrefetchDataPipeTeeTest, LoadedThenFirstTargetAdded) {
   // targets can be added.
   auto target1 = DataPipeReader(tee().Clone());
   auto target2 = DataPipeReader(tee().Clone());
-  ResetReference();
+  ResetTee();
 
   EXPECT_EQ(target1.ReadData(32), "Body");
   EXPECT_EQ(target2.ReadData(32), "Body");
+
+  ResetTeeForce();
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState",
+      PrefetchDataPipeTee::State::kLoaded, 1);
+  EXPECT_EQ(0u, histogram_tester()
+                    .GetTotalCountsForPrefix(
+                        "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.")
+                    .size());
 }
 
 TEST_P(PrefetchDataPipeTeeTest, FirstTargetAddedThenExceedLimit) {
@@ -233,9 +277,25 @@ TEST_P(PrefetchDataPipeTeeTest, FirstTargetAddedThenExceedLimit) {
   // Even after the source is complete, no target can be added because the
   // buffer is already discarded due to size limit.
   EXPECT_FALSE(tee().Clone());
-  ResetReference();
+  ResetTee();
 
   EXPECT_EQ(target1.ReadData(32), "Body exceeds limit");
+
+  ResetTeeForce();
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState",
+      PrefetchDataPipeTee::State::kSizeExceeded, 1);
+  EXPECT_EQ(2u, histogram_tester()
+                    .GetTotalCountsForPrefix(
+                        "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.")
+                    .size());
+  EXPECT_THAT(histogram_tester().GetAllSamples(
+                  "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.Loading"),
+              testing::UnorderedElementsAre(base::Bucket(2, 1)));
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.SizeExceeded"),
+      testing::UnorderedElementsAre(base::Bucket(3, 1), base::Bucket(4, 1)));
 }
 
 TEST_P(PrefetchDataPipeTeeTest, ExceedLimitThenFirstTargetAdded) {
@@ -250,9 +310,22 @@ TEST_P(PrefetchDataPipeTeeTest, ExceedLimitThenFirstTargetAdded) {
   // Even after the source is complete, no target can be added because the
   // buffer is already discarded due to size limit.
   EXPECT_FALSE(tee().Clone());
-  ResetReference();
+  ResetTee();
 
   EXPECT_EQ(target1.ReadData(32), "Body exceeds limit");
+
+  ResetTeeForce();
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState",
+      PrefetchDataPipeTee::State::kSizeExceeded, 1);
+  EXPECT_EQ(1u, histogram_tester()
+                    .GetTotalCountsForPrefix(
+                        "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.")
+                    .size());
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.SizeExceeded"),
+      testing::UnorderedElementsAre(base::Bucket(2, 1), base::Bucket(3, 1)));
 }
 
 TEST_P(PrefetchDataPipeTeeTest, ExceedLimitLargeData) {
@@ -268,7 +341,7 @@ TEST_P(PrefetchDataPipeTeeTest, ExceedLimitLargeData) {
 
   auto target1 = DataPipeReader(tee().Clone());
   EXPECT_FALSE(tee().Clone());
-  ResetReference();
+  ResetTee();
 
   // Full data can be read.
   std::string expected = "Body exceeds limit" + large_content;
@@ -285,6 +358,19 @@ TEST_P(PrefetchDataPipeTeeTest, ExceedLimitLargeData) {
   WriteComplete();
   task_environment().RunUntilIdle();
   EXPECT_EQ(target1.ReadData(32), "");
+
+  ResetTeeForce();
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState",
+      PrefetchDataPipeTee::State::kSizeExceeded, 1);
+  EXPECT_EQ(1u, histogram_tester()
+                    .GetTotalCountsForPrefix(
+                        "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.")
+                    .size());
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.SizeExceeded"),
+      testing::UnorderedElementsAre(base::Bucket(2, 1)));
 }
 
 TEST_P(PrefetchDataPipeTeeTest, ExceedLimitAndLoadedThenFirstTargetAdded) {
@@ -294,9 +380,22 @@ TEST_P(PrefetchDataPipeTeeTest, ExceedLimitAndLoadedThenFirstTargetAdded) {
 
   auto target1 = DataPipeReader(tee().Clone());
   EXPECT_FALSE(tee().Clone());
-  ResetReference();
+  ResetTee();
 
   EXPECT_EQ(target1.ReadData(32), "Body exceeds limit");
+
+  ResetTeeForce();
+  histogram_tester().ExpectUniqueSample(
+      "Preloading.Prefetch.PrefetchDataPipeTeeDtorState",
+      PrefetchDataPipeTee::State::kSizeExceeded, 1);
+  EXPECT_EQ(1u, histogram_tester()
+                    .GetTotalCountsForPrefix(
+                        "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.")
+                    .size());
+  EXPECT_THAT(
+      histogram_tester().GetAllSamples(
+          "Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.SizeExceeded"),
+      testing::UnorderedElementsAre(base::Bucket(2, 1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(ParametrizedTests,

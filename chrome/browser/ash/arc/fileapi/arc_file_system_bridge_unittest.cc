@@ -7,11 +7,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/mojom/file_system.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -33,7 +28,9 @@
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -42,6 +39,11 @@
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/fake_virtual_file_provider_client.h"
 #include "chromeos/ash/components/dbus/virtual_file_provider/virtual_file_provider_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/mojom/file_system.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -314,17 +316,20 @@ TEST_F(ArcFileSystemBridgeTest, CreateAndDestroyMoniker) {
 
   const guest_os::GuestId arcvm_id = guest_os::GuestId(
       guest_os::VmType::ARCVM, kArcVmName, /*container_name=*/"");
-  guest_os::GuestOsSessionTracker::GetForProfile(profile_)->AddGuestForTesting(
-      arcvm_id,
-      guest_os::GuestInfo{arcvm_id, /*cid=*/32, /*username=*/"",
-                          /*homedir=*/base::FilePath(), /*ipv4_address=*/"",
-                          /*sftp_vsock_port=*/0});
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
+      ->AddGuestForTesting(
+          arcvm_id,
+          guest_os::GuestInfo{arcvm_id, /*cid=*/32, /*username=*/"",
+                              /*homedir=*/base::FilePath(), /*ipv4_address=*/"",
+                              /*sftp_vsock_port=*/0});
 
   fusebox::Server fusebox_server(/*delegate=*/nullptr);
   fusebox::Moniker moniker;
   EXPECT_TRUE(CreateMoniker(&moniker));
-  EXPECT_TRUE(guest_os::GuestOsSharePath::GetForProfile(profile_)->IsPathShared(
-      kArcVmName, base::FilePath(fusebox::MonikerMap::GetFilename(moniker))));
+  EXPECT_TRUE(
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->IsPathShared(
+          kArcVmName,
+          base::FilePath(fusebox::MonikerMap::GetFilename(moniker))));
   EXPECT_TRUE(DestroyMoniker(moniker));
 }
 
@@ -335,11 +340,12 @@ TEST_F(ArcFileSystemBridgeTest, MaxNumberOfSharedMonikers) {
 
   const guest_os::GuestId arcvm_id = guest_os::GuestId(
       guest_os::VmType::ARCVM, kArcVmName, /*container_name=*/"");
-  guest_os::GuestOsSessionTracker::GetForProfile(profile_)->AddGuestForTesting(
-      arcvm_id,
-      guest_os::GuestInfo{arcvm_id, /*cid=*/32, /*username=*/"",
-                          /*homedir=*/base::FilePath(), /*ipv4_address=*/"",
-                          /*sftp_vsock_port=*/0});
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
+      ->AddGuestForTesting(
+          arcvm_id,
+          guest_os::GuestInfo{arcvm_id, /*cid=*/32, /*username=*/"",
+                              /*homedir=*/base::FilePath(), /*ipv4_address=*/"",
+                              /*sftp_vsock_port=*/0});
 
   fusebox::Server fusebox_server(/*delegate=*/nullptr);
   arc_file_system_bridge_->SetMaxNumberOfSharedMonikersForTesting(3);

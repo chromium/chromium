@@ -4,9 +4,9 @@
 
 #include "chrome/browser/ui/global_media_controls/cast_media_notification_producer.h"
 
+#include <algorithm>
 #include <map>
 
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,8 +33,6 @@ bool ShouldHideNotification(Profile* profile,
   }
   // If the user changes the pref to show all Cast sessions, they won't be shown
   // until `OnRoutesUpdated()` is called again.
-  // TODO(crbug.com/41321719): Ash currently considers Lacros routes non-local
-  // and hides them if the pref is set to false.
   if (!route.is_local() &&
       !profile->GetPrefs()->GetBoolean(
           media_router::prefs::
@@ -43,24 +41,18 @@ bool ShouldHideNotification(Profile* profile,
   }
   std::unique_ptr<media_router::CastMediaSource> source =
       media_router::CastMediaSource::FromMediaSource(route.media_source());
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
-    // Show local site-initiated Mirroring routes.
-    if (source && route.is_local() &&
-        media_router::IsSiteInitiatedMirroringSource(source->source_id())) {
-      return false;
-    }
-    // Hide a route if it contains a Streaming App, i.e. Tab/Desktop Mirroring
-    // and Remote Playback routes.
-    if (source && source->ContainsStreamingApp()) {
-      // Don't hide it in case of MirroringType::kOffscreenTab.
-      // This happens when 1UA mode is being used. It uses a URL for MediaSource
-      // and a streaming receiver app for CastMediaSource.
-      return !route.media_source().url().SchemeIsHTTPOrHTTPS();
-    }
-  } else if (route.controller_type() !=
-             media_router::RouteControllerType::kGeneric) {
-    // Hide a route if it doesn't have a generic controller (play, pause etc.).
-    return true;
+  // Show local site-initiated Mirroring routes.
+  if (source && route.is_local() &&
+      media_router::IsSiteInitiatedMirroringSource(source->source_id())) {
+    return false;
+  }
+  // Hide a route if it contains a Streaming App, i.e. Tab/Desktop Mirroring
+  // and Remote Playback routes.
+  if (source && source->ContainsStreamingApp()) {
+    // Don't hide it in case of MirroringType::kOffscreenTab.
+    // This happens when 1UA mode is being used. It uses a URL for MediaSource
+    // and a streaming receiver app for CastMediaSource.
+    return !route.media_source().url().SchemeIsHTTPOrHTTPS();
   }
 
   // Skip the multizone member check if it's a DIAL route.
@@ -100,8 +92,9 @@ CastMediaNotificationProducer::~CastMediaNotificationProducer() = default;
 base::WeakPtr<media_message_center::MediaNotificationItem>
 CastMediaNotificationProducer::GetMediaItem(const std::string& id) {
   const auto item_it = items_.find(id);
-  if (item_it == items_.end())
+  if (item_it == items_.end()) {
     return nullptr;
+  }
   return item_it->second.GetWeakPtr();
 }
 
@@ -130,8 +123,9 @@ bool CastMediaNotificationProducer::HasFrozenItems() {
 void CastMediaNotificationProducer::OnItemShown(
     const std::string& id,
     global_media_controls::MediaItemUI* item_ui) {
-  if (item_ui)
+  if (item_ui) {
     item_ui_observer_set_.Observe(id, item_ui);
+  }
 }
 
 void CastMediaNotificationProducer::OnDialogDisplayed() {
@@ -168,11 +162,12 @@ void CastMediaNotificationProducer::OnRoutesUpdated(
   });
 
   for (const auto& route : routes) {
-    if (ShouldHideNotification(profile_, route))
+    if (ShouldHideNotification(profile_, route)) {
       continue;
+    }
 
-    auto item_it = base::ranges::find(items_, route.media_route_id(),
-                                      &Items::value_type::first);
+    auto item_it = std::ranges::find(items_, route.media_route_id(),
+                                     &Items::value_type::first);
     if (item_it == items_.end()) {
       mojo::Remote<media_router::mojom::MediaController> controller_remote;
       mojo::PendingReceiver<media_router::mojom::MediaController>
@@ -206,7 +201,6 @@ bool CastMediaNotificationProducer::HasActiveItems() const {
 }
 
 bool CastMediaNotificationProducer::HasLocalMediaRoute() const {
-  return base::ranges::any_of(items_,
-                              &CastMediaNotificationItem::route_is_local,
-                              &Items::value_type::second);
+  return std::ranges::any_of(items_, &CastMediaNotificationItem::route_is_local,
+                             &Items::value_type::second);
 }

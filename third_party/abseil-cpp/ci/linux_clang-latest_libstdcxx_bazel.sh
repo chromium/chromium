@@ -25,7 +25,7 @@ if [[ -z ${ABSEIL_ROOT:-} ]]; then
 fi
 
 if [[ -z ${STD:-} ]]; then
-  STD="c++14 c++17"
+  STD="c++17 c++20 c++23"
 fi
 
 if [[ -z ${COMPILATION_MODE:-} ]]; then
@@ -51,12 +51,12 @@ if [[ ${USE_BAZEL_CACHE:-0} -ne 0 ]]; then
   BAZEL_EXTRA_ARGS="--remote_cache=https://storage.googleapis.com/absl-bazel-remote-cache/${container_key} --google_credentials=/keystore/73103_absl-bazel-remote-cache ${BAZEL_EXTRA_ARGS:-}"
 fi
 
-# Avoid depending on external sites like GitHub by checking --distdir for
-# external dependencies first.
-# https://docs.bazel.build/versions/master/guide.html#distdir
-if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -d "${KOKORO_GFILE_DIR}/distdir" ]]; then
-  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_GFILE_DIR}/distdir,target=/distdir,readonly ${DOCKER_EXTRA_ARGS:-}"
-  BAZEL_EXTRA_ARGS="--distdir=/distdir ${BAZEL_EXTRA_ARGS:-}"
+# Use Bazel Vendor mode to reduce reliance on external dependencies.
+# See https://bazel.build/external/vendor and the Dockerfile for
+# an explaination of how this works.
+if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -f "${KOKORO_GFILE_DIR}/distdir/abseil-cpp_vendor.tar.gz" ]]; then
+  DOCKER_EXTRA_ARGS="--mount type=bind,source=${KOKORO_GFILE_DIR}/distdir,target=/distdir,readonly --env=BAZEL_VENDOR_ARCHIVE=/distdir/abseil-cpp_vendor.tar.gz ${DOCKER_EXTRA_ARGS:-}"
+  BAZEL_EXTRA_ARGS="--vendor_dir=/abseil-cpp_vendor ${BAZEL_EXTRA_ARGS:-}"
 fi
 
 for std in ${STD}; do
@@ -68,28 +68,29 @@ for std in ${STD}; do
         --workdir=/abseil-cpp \
         --cap-add=SYS_PTRACE \
         --rm \
-        -e CC="/opt/llvm/clang/bin/clang" \
-        -e BAZEL_CXXOPTS="-std=${std}" \
         ${DOCKER_EXTRA_ARGS:-} \
         ${DOCKER_CONTAINER} \
+        /bin/bash --login -c "
         /usr/local/bin/bazel test ... \
-          --compilation_mode="${compilation_mode}" \
-          --copt="--gcc-toolchain=/usr/local" \
-          --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
-          --copt="${exceptions_mode}" \
-          --copt="-march=haswell" \
+          --action_env=\"CC=/opt/llvm/clang/bin/clang\" \
+          --action_env=\"BAZEL_CXXOPTS=-std=${std}\" \
+          --compilation_mode=\"${compilation_mode}\" \
+          --copt=\"--gcc-toolchain=/usr/local\" \
+          --copt=\"-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1\" \
+          --copt=\"${exceptions_mode}\" \
+          --copt=\"-march=haswell\" \
           --copt=-Werror \
-          --define="absl=1" \
+          --define=\"absl=1\" \
           --enable_bzlmod=true \
           --features=external_include_paths \
           --keep_going \
-          --linkopt="--gcc-toolchain=/usr/local" \
+          --linkopt=\"--gcc-toolchain=/usr/local\" \
           --show_timestamps \
-          --test_env="GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1" \
-          --test_env="TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo" \
+          --test_env=\"GTEST_INSTALL_FAILURE_SIGNAL_HANDLER=1\" \
+          --test_env=\"TZDIR=/abseil-cpp/absl/time/internal/cctz/testdata/zoneinfo\" \
           --test_output=errors \
           --test_tag_filters=-benchmark \
-          ${BAZEL_EXTRA_ARGS:-}
+          ${BAZEL_EXTRA_ARGS:-}"
     done
   done
 done

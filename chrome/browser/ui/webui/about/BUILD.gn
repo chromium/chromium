@@ -1,0 +1,68 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("about") {
+  sources = [ "about_ui.h" ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+# TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
+# from //chrome/browser/ui/webui, which are not modularized yet. Merge this
+# to "about" source set when the dependencies are modularized.
+source_set("impl") {
+  sources = [ "about_ui.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":about",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//components/language/core/common",
+    "//components/webui/about",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/borealis",
+      "//chrome/browser/ash/crostini",
+      "//chrome/browser/ash/customization",
+      "//chrome/browser/ash/login",
+      "//chrome/browser/ash/login/demo_mode",
+      "//chromeos/ash/components/system",
+      "//components/component_updater/ash",
+    ]
+  }
+}
+
+if (is_chromeos) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "about_ui_unittest.cc" ]
+
+    deps = [
+      ":about",
+      "//base",
+      "//chrome/browser/ash/login",
+      "//chrome/browser/ash/login/demo_mode",
+      "//chrome/browser/ui/ash/login:test_support",
+      "//chrome/browser/ui/webui/ash/login",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/system",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/zlib/google:compression_utils",
+    ]
+  }
+}

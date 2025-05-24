@@ -32,11 +32,7 @@ class PermissionActionsHistory : public KeyedService {
     PermissionAction action;
     base::Time time;
 
-    bool operator==(const Entry that) const {
-      return std::tie(this->action, this->time) ==
-             std::tie(that.action, that.time);
-    }
-    bool operator!=(const Entry that) const { return !(*this == that); }
+    friend bool operator==(const Entry&, const Entry&) = default;
   };
 
   enum class EntryFilter {

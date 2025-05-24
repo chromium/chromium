@@ -1,41 +1,18 @@
 #region Copyright notice and license
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 #endregion
 
-using System;
-using System.Buffers;
-using System.IO;
 using Google.Protobuf.TestProtos;
 using Proto2 = Google.Protobuf.TestProtos.Proto2;
 using NUnit.Framework;
+using System;
+using System.Buffers;
+using System.IO;
 
 namespace Google.Protobuf
 {
@@ -563,8 +540,8 @@ namespace Google.Protobuf
             int groupFieldNumber = Proto2.TestAllTypes.OptionalGroupFieldNumber;
 
             // write Proto2.TestAllTypes with "optional_group" set, but use wrong EndGroup closing tag
-            MemoryStream ms = new MemoryStream();
-            CodedOutputStream output = new CodedOutputStream(ms);
+            var ms = new MemoryStream();
+            var output = new CodedOutputStream(ms);
             output.WriteTag(WireFormat.MakeTag(groupFieldNumber, WireFormat.WireType.StartGroup));
             output.WriteGroup(new Proto2.TestAllTypes.Types.OptionalGroup { A = 12345 });
             // end group with different field number
@@ -578,8 +555,8 @@ namespace Google.Protobuf
         [Test]
         public void ReadGroup_UnknownFields_WrongEndGroupTag()
         {
-            MemoryStream ms = new MemoryStream();
-            CodedOutputStream output = new CodedOutputStream(ms);
+            var ms = new MemoryStream();
+            var output = new CodedOutputStream(ms);
             output.WriteTag(WireFormat.MakeTag(14, WireFormat.WireType.StartGroup));
             // end group with different field number
             output.WriteTag(WireFormat.MakeTag(15, WireFormat.WireType.EndGroup));
@@ -600,12 +577,11 @@ namespace Google.Protobuf
         }
 
         /// <summary>
-        /// Tests that if we read an string that contains invalid UTF-8, no exception
-        /// is thrown.  Instead, the invalid bytes are replaced with the Unicode
-        /// "replacement character" U+FFFD.
+        /// Tests that if we read a string that contains invalid UTF-8, an exception
+        /// is thrown.
         /// </summary>
         [Test]
-        public void ReadInvalidUtf8()
+        public void ReadInvalidUtf8ThrowsInvalidProtocolBufferException()
         {
             MemoryStream ms = new MemoryStream();
             CodedOutputStream output = new CodedOutputStream(ms);
@@ -620,8 +596,7 @@ namespace Google.Protobuf
             CodedInputStream input = new CodedInputStream(ms);
 
             Assert.AreEqual(tag, input.ReadTag());
-            string text = input.ReadString();
-            Assert.AreEqual('\ufffd', text[0]);
+            Assert.Throws<InvalidProtocolBufferException>(() => input.ReadString());
         }
 
         [Test]
@@ -654,7 +629,7 @@ namespace Google.Protobuf
             output.Flush();
             ms.Position = 0;
 
-            CodedInputStream input = new CodedInputStream(ms);
+            var input = new CodedInputStream(ms);
 
             Assert.AreEqual(tag, input.ReadTag());
             Assert.Throws<InvalidProtocolBufferException>(() => input.ReadBytes());
@@ -694,26 +669,24 @@ namespace Google.Protobuf
         [Test]
         public void TestSlowPathAvoidance()
         {
-            using (var ms = new MemoryStream())
-            {
-                CodedOutputStream output = new CodedOutputStream(ms);
-                output.WriteTag(1, WireFormat.WireType.LengthDelimited);
-                output.WriteBytes(ByteString.CopyFrom(new byte[100]));
-                output.WriteTag(2, WireFormat.WireType.LengthDelimited);
-                output.WriteBytes(ByteString.CopyFrom(new byte[100]));
-                output.Flush();
+            using var ms = new MemoryStream();
+            var output = new CodedOutputStream(ms);
+            output.WriteTag(1, WireFormat.WireType.LengthDelimited);
+            output.WriteBytes(ByteString.CopyFrom(new byte[100]));
+            output.WriteTag(2, WireFormat.WireType.LengthDelimited);
+            output.WriteBytes(ByteString.CopyFrom(new byte[100]));
+            output.Flush();
 
-                ms.Position = 0;
-                CodedInputStream input = new CodedInputStream(ms, new byte[ms.Length / 2], 0, 0, false);
+            ms.Position = 0;
+            CodedInputStream input = new CodedInputStream(ms, new byte[ms.Length / 2], 0, 0, false);
 
-                uint tag = input.ReadTag();
-                Assert.AreEqual(1, WireFormat.GetTagFieldNumber(tag));
-                Assert.AreEqual(100, input.ReadBytes().Length);
+            uint tag = input.ReadTag();
+            Assert.AreEqual(1, WireFormat.GetTagFieldNumber(tag));
+            Assert.AreEqual(100, input.ReadBytes().Length);
 
-                tag = input.ReadTag();
-                Assert.AreEqual(2, WireFormat.GetTagFieldNumber(tag));
-                Assert.AreEqual(100, input.ReadBytes().Length);
-            }
+            tag = input.ReadTag();
+            Assert.AreEqual(2, WireFormat.GetTagFieldNumber(tag));
+            Assert.AreEqual(100, input.ReadBytes().Length);
         }
 
         [Test]
@@ -927,13 +900,11 @@ namespace Google.Protobuf
         {
             byte[] serializedMessage = GenerateBigSerializedMessage();
             // How many of these big messages do we need to take us near our 2GB limit?
-            int count = Int32.MaxValue / serializedMessage.Length;
+            int count = int.MaxValue / serializedMessage.Length;
             // Now make a MemoryStream that will fake a near-2GB stream of messages by returning
             // our big serialized message 'count' times.
-            using (RepeatingMemoryStream stream = new RepeatingMemoryStream(serializedMessage, count))
-            {
-                Assert.DoesNotThrow(()=>TestAllTypes.Parser.ParseFrom(stream));
-            }
+            using var stream = new RepeatingMemoryStream(serializedMessage, count);
+            Assert.DoesNotThrow(() => TestAllTypes.Parser.ParseFrom(stream));
         }
 
         [Test]
@@ -941,17 +912,15 @@ namespace Google.Protobuf
         {
             byte[] serializedMessage = GenerateBigSerializedMessage();
             // How many of these big messages do we need to take us near our 2GB limit?
-            int count = Int32.MaxValue / serializedMessage.Length;
+            int count = int.MaxValue / serializedMessage.Length;
             // Now add one to take us over the 2GB limit
             count++;
             // Now make a MemoryStream that will fake a near-2GB stream of messages by returning
             // our big serialized message 'count' times.
-            using (RepeatingMemoryStream stream = new RepeatingMemoryStream(serializedMessage, count))
-            {
-                Assert.Throws<InvalidProtocolBufferException>(() => TestAllTypes.Parser.ParseFrom(stream),
-                    "Protocol message was too large.  May be malicious.  " +
-                    "Use CodedInputStream.SetSizeLimit() to increase the size limit.");
-            }
+            using var stream = new RepeatingMemoryStream(serializedMessage, count);
+            Assert.Throws<InvalidProtocolBufferException>(() => TestAllTypes.Parser.ParseFrom(stream),
+                "Protocol message was too large.  May be malicious.  " +
+                "Use CodedInputStream.SetSizeLimit() to increase the size limit.");
         }
 
         /// <returns>A serialized big message</returns>

@@ -64,7 +64,7 @@ void InvalidateInlineItems(LayoutObject* object) {
   // be prohibited when moved to different parent as if it were destroyed.
   if (object->FirstInlineFragmentItemIndex()) {
     if (auto* text = DynamicTo<LayoutText>(object))
-      text->DetachAbstractInlineTextBoxesIfNeeded();
+      text->DetachAxHooksIfNeeded();
     FragmentItems::LayoutObjectWillBeMoved(*object);
   }
   object->SetIsInLayoutNGInlineFormattingContext(false);
@@ -164,8 +164,7 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   // where child->parent() ends up being owner but
   // child->nextSibling()->parent() is not owner.
   if (before_child && before_child->Parent() != owner) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (!owner->DocumentBeingDestroyed() &&

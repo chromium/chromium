@@ -8,15 +8,23 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 namespace blink {
 
 class XRCompositionLayer;
+class XRProjectionLayer;
 class XRSession;
+class XRViewData;
 
 // Base class for XRWebGLBinding and XRGPUBinding, which helps facilitate type
 // checking when layers are passed in to get sub images.
 class XRGraphicsBinding : public GarbageCollectedMixin {
  public:
+  enum class Api { kWebGL, kWebGPU };
+
   explicit XRGraphicsBinding(XRSession*);
   virtual ~XRGraphicsBinding() = default;
 
@@ -25,6 +33,9 @@ class XRGraphicsBinding : public GarbageCollectedMixin {
   double nativeProjectionScaleFactor() const;
 
   bool OwnsLayer(XRCompositionLayer*);
+
+  virtual gfx::Rect GetViewportForView(XRProjectionLayer* layer,
+                                       XRViewData* view) = 0;
 
   void Trace(Visitor*) const override;
 

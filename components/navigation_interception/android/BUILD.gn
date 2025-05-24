@@ -5,7 +5,9 @@
 import("//build/config/android/rules.gni")
 
 android_library("navigation_interception_java") {
+  srcjar_deps = [ "//components/navigation_interception:jni_headers" ]
   deps = [
+    "//base:base_java",
     "//content/public/android:content_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",

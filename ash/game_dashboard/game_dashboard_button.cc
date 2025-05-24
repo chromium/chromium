@@ -42,7 +42,6 @@ namespace ash {
 
 namespace {
 
-constexpr float kContainerCornerRadius = 13.0f;
 constexpr int kBorderThickness = 1;
 constexpr int kIconHeight = 20;
 constexpr gfx::Insets kArrowMargins = gfx::Insets::TLBR(0, 6, 0, 0);
@@ -65,8 +64,10 @@ ui::ColorId GetIconAndLabelEnabledColorId(bool is_recording) {
 
 }  // namespace
 
-GameDashboardButton::GameDashboardButton(PressedCallback callback)
-    : views::Button(std::move(callback)) {
+GameDashboardButton::GameDashboardButton(PressedCallback callback,
+                                         float corner_radius)
+    : views::Button(std::move(callback)),
+      container_corner_radius_(corner_radius) {
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
@@ -93,7 +94,7 @@ GameDashboardButton::GameDashboardButton(PressedCallback callback)
 
   // Set up highlight ink drop and focus ring.
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
-      this, gfx::RoundedCornersF(kContainerCornerRadius));
+      this, gfx::RoundedCornersF(container_corner_radius_));
   auto* ink_drop = views::InkDrop::Get(this);
   ink_drop->SetMode(views::InkDropHost::InkDropMode::ON);
   ink_drop->GetInkDrop()->SetShowHighlightOnHover(false);
@@ -194,24 +195,24 @@ void GameDashboardButton::UpdateViews() {
                     : cros_tokens::kCrosSysRipplePrimary);
 
   SetBorder(views::CreateRoundedRectBorder(
-      kBorderThickness, kContainerCornerRadius, gfx::Insets(),
+      kBorderThickness, container_corner_radius_, gfx::Insets(),
       SkColorSetA(DarkLightModeControllerImpl::Get()->IsDarkModeEnabled()
                       ? cros_tokens::kCrosSysWhite
                       : cros_tokens::kCrosSysBlack,
                   kAlphaForButtonBorder)));
 
   const bool enabled = GetEnabled();
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       enabled ? GetBackgroundEnabledColorId(is_recording_)
               : cros_tokens::kCrosSysDisabledContainer,
-      kContainerCornerRadius));
+      container_corner_radius_));
 
   const auto icon_and_label_color =
       enabled ? GetIconAndLabelEnabledColorId(is_recording_)
               : cros_tokens::kCrosSysDisabled;
   gamepad_icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
       chromeos::kGameDashboardGamepadIcon, icon_and_label_color, kIconHeight));
-  title_view_->SetEnabledColorId(icon_and_label_color);
+  title_view_->SetEnabledColor(icon_and_label_color);
   UpdateArrowIcon();
 }
 

@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/render_blocking_resource_manager.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/script/script_runner.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
@@ -54,7 +55,11 @@ HTMLScriptElement::HTMLScriptElement(Document& document,
     : HTMLElement(html_names::kScriptTag, document),
       children_changed_by_api_(false),
       blocking_attribute_(MakeGarbageCollected<BlockingAttribute>(this)),
-      loader_(InitializeScriptLoader(flags)) {}
+      loader_(InitializeScriptLoader(flags)) {
+  if (!flags.IsCreatedByParser()) {
+    async_task_context_.Schedule(document.GetExecutionContext(), localName());
+  }
+}
 
 const AttrNameToTrustedType& HTMLScriptElement::GetCheckedAttributeTypes()
     const {
@@ -144,7 +149,8 @@ Node::InsertionNotificationRequest HTMLScriptElement::InsertedInto(
 void HTMLScriptElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
   loader_->Removed();
-  if (GetDocument().GetRenderBlockingResourceManager()) {
+  if (GetDocument().GetRenderBlockingResourceManager() &&
+      !GetDocument().StatePreservingAtomicMoveInProgress()) {
     GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(
         *this);
   }
@@ -252,6 +258,10 @@ String HTMLScriptElement::IntegrityAttributeValue() const {
   return FastGetAttribute(html_names::kIntegrityAttr);
 }
 
+String HTMLScriptElement::SignatureAttributeValue() const {
+  return FastGetAttribute(html_names::kSignatureAttr);
+}
+
 String HTMLScriptElement::ReferrerPolicyAttributeValue() const {
   return FastGetAttribute(html_names::kReferrerpolicyAttr);
 }
@@ -334,10 +344,12 @@ DOMNodeId HTMLScriptElement::GetDOMNodeId() {
 }
 
 void HTMLScriptElement::DispatchLoadEvent() {
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_);
   DispatchEvent(*Event::Create(event_type_names::kLoad));
 }
 
 void HTMLScriptElement::DispatchErrorEvent() {
+  probe::AsyncTask async_task(GetExecutionContext(), &async_task_context_);
   DispatchEvent(*Event::Create(event_type_names::kError));
 }
 

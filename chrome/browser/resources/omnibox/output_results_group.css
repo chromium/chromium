@@ -160,6 +160,14 @@ tbody.head th {
   font-weight: bold;
 }
 
+.cell-image-and-icon .icon-image,
+.cell-image-and-icon .image-image {
+  max-height: 28px;
+  width: 28px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin: 0 2px;
+}
 .cell-contents-and-description .pair-container,
 .cell-destination-url .pair-container,
 .cell-fill-and-inline .pair-container {
@@ -175,11 +183,6 @@ tbody.head th {
 .cell-contents-and-description .pair-item,
 .cell-destination-url .pair-item {
   margin-inline-end: 15px;
-}
-
-.cell-contents-and-description img.pair-item {
-  border-radius: 3px;
-  height: 28px;
 }
 
 .cell-contents-and-description .pair-item.contents::after {
@@ -202,10 +205,6 @@ tbody.head th {
 
 .cell-contents-and-description .pair-item.answer {
   color: orange;
-}
-
-.cell-contents-and-description .pair-item.image-url {
-  font-size: .5rem;
 }
 
 .cell-destination-url .pair-item:first-child img {

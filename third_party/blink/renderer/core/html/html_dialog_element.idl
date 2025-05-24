@@ -30,7 +30,9 @@
 ] interface HTMLDialogElement : HTMLElement {
     [CEReactions, Reflect] attribute boolean open;
     attribute DOMString returnValue;
+    [CEReactions] attribute DOMString closedBy;
     [CEReactions, Measure, RaisesException] void show();
     [CEReactions, Measure, RaisesException] void showModal();
     [CEReactions] void close(optional DOMString returnValue);
+    [CEReactions,RaisesException,MeasureAs="WebDXFeature::kRequestclose"] void requestClose(optional DOMString returnValue);
 };

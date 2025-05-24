@@ -275,7 +275,7 @@ class HoldingSpaceTrayBubble::ChildBubbleContainer
         kAnimationDuration);
     layout_animation_->SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
     layout_animation_throughput_tracker_ =
-        GetWidget()->GetCompositor()->RequestNewThroughputTracker();
+        GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker();
     layout_animation_throughput_tracker_->Start(
         metrics_util::ForSmoothnessV3(base::BindRepeating(
             holding_space_metrics::RecordBubbleResizeAnimationSmoothness)));

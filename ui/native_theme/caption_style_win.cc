@@ -65,9 +65,7 @@ void GetFontFamilyString(CC::ClosedCaptionStyle closed_caption_style,
       break;
     case CC::ClosedCaptionStyle_Default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED_IN_MIGRATION();
-      *css_font_family = std::string();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -91,8 +89,7 @@ std::string GetEdgeEffectString(CC::ClosedCaptionEdgeEffect edge_effect) {
       return "0px 0px 2px rgba(0, 0, 0, 0.5), 2px 2px 2px black";
     case CC::ClosedCaptionEdgeEffect_Default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -110,8 +107,7 @@ std::string GetCaptionSizeString(CC::ClosedCaptionSize caption_size) {
       return "200%";
     case CC::ClosedCaptionSize_Default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -155,8 +151,7 @@ SkColor GetCaptionColor(CC::ClosedCaptionColor caption_color) {
     case CC::ClosedCaptionColor_Default:
     default:
       // We shouldn't override with OS Styling for Default case.
-      NOTREACHED_IN_MIGRATION();
-      return SK_ColorWHITE;
+      NOTREACHED();
   }
 }
 
@@ -172,7 +167,6 @@ std::string GetCssColorWithAlpha(CC::ClosedCaptionColor caption_color,
 
 std::optional<CaptionStyle> InitializeFromSystemSettings() {
   TRACE_EVENT0("ui", "InitializeFromSystemSettings");
-  DCHECK(base::FeatureList::IsEnabled(features::kSystemCaptionStyle));
 
   base::win::ScopedHString closed_caption_properties_string =
       base::win::ScopedHString::Create(
@@ -182,56 +176,66 @@ std::optional<CaptionStyle> InitializeFromSystemSettings() {
   HRESULT hr = base::win::RoGetActivationFactory(
       closed_caption_properties_string.get(),
       IID_PPV_ARGS(&closed_caption_properties_statics));
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionSize font_size = CC::ClosedCaptionSize_Default;
   hr = closed_caption_properties_statics->get_FontSize(&font_size);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionEdgeEffect edge_effect = CC::ClosedCaptionEdgeEffect_Default;
   hr = closed_caption_properties_statics->get_FontEffect(&edge_effect);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionStyle font_family = CC::ClosedCaptionStyle_Default;
   hr = closed_caption_properties_statics->get_FontStyle(&font_family);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionColor font_color = CC::ClosedCaptionColor_Default;
   hr = closed_caption_properties_statics->get_FontColor(&font_color);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionOpacity font_opacity = CC::ClosedCaptionOpacity_Default;
   hr = closed_caption_properties_statics->get_FontOpacity(&font_opacity);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionColor background_color = CC::ClosedCaptionColor_Default;
   hr =
       closed_caption_properties_statics->get_BackgroundColor(&background_color);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionOpacity background_opacity =
       CC::ClosedCaptionOpacity_Default;
   hr = closed_caption_properties_statics->get_BackgroundOpacity(
       &background_opacity);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionColor region_color = CC::ClosedCaptionColor_Default;
   hr = closed_caption_properties_statics->get_RegionColor(&region_color);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CC::ClosedCaptionOpacity region_opacity = CC::ClosedCaptionOpacity_Default;
   hr = closed_caption_properties_statics->get_RegionOpacity(&region_opacity);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
     return std::nullopt;
+  }
 
   CaptionStyle caption_style;
   if (font_family != CC::ClosedCaptionStyle_Default) {
@@ -241,8 +245,9 @@ std::optional<CaptionStyle> InitializeFromSystemSettings() {
     caption_style.font_variant = AddCSSImportant(caption_style.font_variant);
   }
 
-  if (font_size != CC::ClosedCaptionSize_Default)
+  if (font_size != CC::ClosedCaptionSize_Default) {
     caption_style.text_size = AddCSSImportant(GetCaptionSizeString(font_size));
+  }
 
   if (edge_effect != CC::ClosedCaptionEdgeEffect_Default) {
     caption_style.text_shadow =
@@ -270,11 +275,7 @@ std::optional<CaptionStyle> InitializeFromSystemSettings() {
 }  // namespace
 
 std::optional<CaptionStyle> CaptionStyle::FromSystemSettings() {
-  if (base::FeatureList::IsEnabled(features::kSystemCaptionStyle)) {
-    return InitializeFromSystemSettings();
-  }
-  // Return default CaptionStyle if kSystemCaptionStyle is not enabled.
-  return std::nullopt;
+  return InitializeFromSystemSettings();
 }
 
 }  // namespace ui

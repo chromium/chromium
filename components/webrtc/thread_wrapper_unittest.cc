@@ -172,7 +172,7 @@ class ThreadWrapperProvider : public blink::MetronomeLikeTaskQueueProvider {
  public:
   void Initialize() override {
     ThreadWrapper::EnsureForCurrentMessageLoop();
-    thread_ = rtc::Thread::Current();
+    thread_ = webrtc::Thread::Current();
   }
 
   base::TimeDelta DeltaToNextTick() const override {
@@ -188,7 +188,7 @@ class ThreadWrapperProvider : public blink::MetronomeLikeTaskQueueProvider {
 
  private:
   // ThreadWrapper destroys itself when |message_loop_| is destroyed.
-  raw_ptr<rtc::Thread> thread_;
+  raw_ptr<webrtc::Thread> thread_;
 };
 
 // Instantiate suite to run all tests defined in
@@ -203,7 +203,7 @@ class ThreadWrapperTaskQueueFactory : public TaskQueueFactory {
   std::unique_ptr<TaskQueueBase, TaskQueueDeleter> CreateTaskQueue(
       std::string_view name,
       Priority priority) const override {
-    std::unique_ptr<rtc::Thread> thread = rtc::Thread::Create();
+    std::unique_ptr<webrtc::Thread> thread = webrtc::Thread::Create();
     thread->Start();
     return std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>(
         thread.release());

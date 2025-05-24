@@ -12,7 +12,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/signed_certificate_timestamp_and_status.h"
-#include "third_party/boringssl/src/pki/ocsp_verify_result.h"
+#include "third_party/boringssl/src/include/openssl/pki/ocsp.h"
 
 namespace ct {
 enum class CTPolicyCompliance;
@@ -23,6 +23,7 @@ namespace net {
 class X509Certificate;
 
 // The result of certificate verification.
+// LINT.IfChange(CertVerifyResult)
 class NET_EXPORT CertVerifyResult {
  public:
   CertVerifyResult();
@@ -78,10 +79,6 @@ class NET_EXPORT CertVerifyResult {
   // meaningless if the certificate was not trusted.
   bool is_issued_by_known_root;
 
-  // is_issued_by_additional_trust_anchor is true if the root CA used for this
-  // verification came from the list of additional trust anchors.
-  bool is_issued_by_additional_trust_anchor;
-
   // Verification of stapled OCSP response, if present.
   bssl::OCSPVerifyResult ocsp_result;
 
@@ -94,7 +91,11 @@ class NET_EXPORT CertVerifyResult {
   // The result of evaluating whether the certificate complies with the
   // Certificate Transparency policy.
   ct::CTPolicyCompliance policy_compliance;
+
+  // The result of evaluating CT requirements.
+  ct::CTRequirementsStatus ct_requirement_status;
 };
+// LINT.ThenChange(/services/network/public/cpp/net_ipc_param_traits.cc:CertVerifyResult)
 
 }  // namespace net
 

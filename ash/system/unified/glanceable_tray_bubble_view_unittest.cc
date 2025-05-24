@@ -4,32 +4,17 @@
 
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/system/time/calendar_view.h"
 #include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/glanceable_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
 
 namespace ash {
 
 class GlanceableTrayBubbleViewTest : public AshTestBase {
  public:
-  GlanceableTrayBubbleViewTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlanceablesTimeManagementClassroomStudentView,
-         features::kGlanceablesTimeManagementTasksView},
-        /*disabled_features=*/{});
-  }
-
-  GlanceableTrayBubbleViewTest(const GlanceableTrayBubbleViewTest&) = delete;
-  GlanceableTrayBubbleViewTest& operator=(const GlanceableTrayBubbleViewTest&) =
-      delete;
-  ~GlanceableTrayBubbleViewTest() override = default;
-
   CalendarView* GetCalendarView() {
     auto* date_tray = Shell::GetPrimaryRootWindowController()
                           ->shelf()
@@ -42,9 +27,6 @@ class GlanceableTrayBubbleViewTest : public AshTestBase {
 
     return date_tray->glanceables_bubble_for_test()->GetCalendarView();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(GlanceableTrayBubbleViewTest, CalendarViewHeight) {

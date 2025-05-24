@@ -334,6 +334,10 @@ void BrowserCompositorMac::DidEnterBackForwardCache() {
   delegated_frame_host_->DidEnterBackForwardCache();
 }
 
+void BrowserCompositorMac::ActivatedOrEvictedFromBackForwardCache() {
+  delegated_frame_host_->ActivatedOrEvictedFromBackForwardCache();
+}
+
 void BrowserCompositorMac::DidNavigate() {
   if (render_widget_host_is_hidden_) {
     // Navigating while hidden should not allocate a new LocalSurfaceID. Once

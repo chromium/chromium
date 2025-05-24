@@ -7,6 +7,7 @@ module network.mojom;
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "services/network/public/mojom/address_family.mojom";
 import "services/network/public/mojom/network_interface.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
@@ -63,14 +64,12 @@ interface P2PSocketManager {
   StartNetworkNotifications(
       pending_remote<P2PNetworkNotificationClient> client);
 
-  // Performs DNS hostname resolution.
-  GetHostAddress(string host_name, bool enable_mdns)
+  // Performs DNS hostname resolution, optionally with a specific address
+  // family.
+  GetHostAddress(string host_name,
+                 AddressFamily? address_family,
+                 bool enable_mdns)
       => (array<IPAddress> addresses);
-
-  // Performs DNS hostname resolution for a specific IP address family.
-  GetHostAddressWithFamily(string host_name,
-                           int32 address_family,
-                           bool enable_mdns) => (array<IPAddress> addresses);
 
   // Creates a P2PSocket
   CreateSocket(P2PSocketType type,

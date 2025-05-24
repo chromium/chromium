@@ -38,8 +38,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   // Error out early if the URL isn't valid, since we early-return in the
   // IndexedRulesetMatcher pretty early if this is the case.
-  if (!url_to_check.is_valid())
+  if (!url_to_check.is_valid()) {
     return 0;
+  }
 
   std::vector<uint8_t> remaining_bytes =
       fuzzed_data.ConsumeRemainingBytes<uint8_t>();
@@ -53,14 +54,16 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   subresource_filter::RulesetIndexer indexer;
   url_pattern_index::proto::FilteringRules ruleset_chunk;
   while (reader.ReadNextChunk(&ruleset_chunk)) {
-    for (const auto& rule : ruleset_chunk.url_rules())
+    for (const auto& rule : ruleset_chunk.url_rules()) {
       indexer.AddUrlRule(rule);
+    }
   }
   indexer.Finish();
 
   // Error out if we were unable to fully read the unindexed version.
-  if (reader.num_bytes_read() != static_cast<int64_t>(remaining_bytes.size()))
+  if (reader.num_bytes_read() != static_cast<int64_t>(remaining_bytes.size())) {
     return 0;
+  }
 
   CHECK(subresource_filter::IndexedRulesetMatcher::Verify(
       indexer.data(), indexer.GetChecksum(),

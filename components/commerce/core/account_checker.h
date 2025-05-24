@@ -37,15 +37,13 @@ class AccountChecker {
 
   virtual bool IsSignedIn();
 
-  // Returns whether bookmarks is currently syncing. This will return true in
-  // cases where sync is still initializing, but the sync feature itself is
-  // enabled.
-  virtual bool IsSyncingBookmarks();
-
   // Check whether a specific sync entity is enabled by the user. This means
   // the user has chosen to sync the provided model type and does not
   // necessarily mean sync is active.
   virtual bool IsSyncTypeEnabled(syncer::UserSelectableType type);
+
+  // Check whether sync is available for the user.
+  virtual bool IsSyncAvailable();
 
   virtual bool IsAnonymizedUrlDataCollectionEnabled();
 
@@ -79,15 +77,15 @@ class AccountChecker {
   void FetchPriceEmailPref();
 
   // This method could be overridden in tests.
-  virtual std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
-      const std::string& oauth_consumer_name,
-      const GURL& url,
-      const std::string& http_method,
-      const std::string& content_type,
-      const std::vector<std::string>& scopes,
-      const base::TimeDelta& timeout,
-      const std::string& post_data,
-      const net::NetworkTrafficAnnotationTag& annotation_tag);
+  virtual std::unique_ptr<endpoint_fetcher::EndpointFetcher>
+  CreateEndpointFetcher(const std::string& oauth_consumer_name,
+                        const GURL& url,
+                        const std::string& http_method,
+                        const std::string& content_type,
+                        const std::vector<std::string>& scopes,
+                        const base::TimeDelta& timeout,
+                        const std::string& post_data,
+                        const net::NetworkTrafficAnnotationTag& annotation_tag);
 
  private:
   // Called when the pref value on whether to receive price tracking emails
@@ -100,8 +98,8 @@ class AccountChecker {
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   void OnSendPriceEmailPrefJsonParsed(
       data_decoder::DataDecoder::ValueOrError result);
@@ -111,8 +109,8 @@ class AccountChecker {
       // lifetime extends to the callback and is not destroyed
       // prematurely (which would result in cancellation of the request).
       // TODO(crbug.com/40238190): Avoid passing this fetcher.
-      std::unique_ptr<EndpointFetcher> endpoint_fetcher,
-      std::unique_ptr<EndpointResponse> responses);
+      std::unique_ptr<endpoint_fetcher::EndpointFetcher> endpoint_fetcher,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> responses);
 
   void OnFetchPriceEmailPrefJsonParsed(
       data_decoder::DataDecoder::ValueOrError result);

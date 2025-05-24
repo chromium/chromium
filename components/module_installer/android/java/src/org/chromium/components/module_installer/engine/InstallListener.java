@@ -4,7 +4,10 @@
 
 package org.chromium.components.module_installer.engine;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Broadcast listener for dynamic feature module installs. */
+@NullMarked
 public interface InstallListener {
     /**
      * Called when the install has completed.

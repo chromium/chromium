@@ -82,9 +82,7 @@ unsigned GetPolicyValue(const AddressSorterPosix::PolicyTable& table,
     if (IPAddressMatchesPrefix(address, prefix, entry.prefix_length))
       return entry.value;
   }
-  NOTREACHED_IN_MIGRATION();
-  // The last entry is the least restrictive, so assume it's default.
-  return table.back().value;
+  NOTREACHED();
 }
 
 bool IsIPv6Multicast(const IPAddress& address) {
@@ -133,8 +131,7 @@ AddressSorterPosix::AddressScope GetScope(
     return static_cast<AddressSorterPosix::AddressScope>(
         GetPolicyValue(ipv4_scope_table, address));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return AddressSorterPosix::SCOPE_NODELOCAL;
+    NOTREACHED();
   }
 }
 

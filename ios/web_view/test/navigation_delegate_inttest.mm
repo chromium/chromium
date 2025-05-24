@@ -8,10 +8,11 @@
 #import "ios/web_view/test/web_view_inttest_base.h"
 #import "ios/web_view/test/web_view_test_util.h"
 #import "net/base/apple/url_conversions.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest_mac.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
-#include "url/gurl.h"
+#import "third_party/ocmock/gtest_support.h"
+#import "url/gurl.h"
 
 namespace ios_web_view {
 
@@ -65,7 +66,7 @@ TEST_F(NavigationDelegateTest, RequestSucceeds) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -78,7 +79,8 @@ TEST_F(NavigationDelegateTest, RequestSucceeds) {
                                                       GetEchoURL(), YES)
                                   decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationResponsePolicy);
+        __unsafe_unretained void (^decisionHandler)(
+            CWVNavigationResponsePolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationResponsePolicyAllow);
@@ -88,7 +90,7 @@ TEST_F(NavigationDelegateTest, RequestSucceeds) {
   OCMExpect([mock_delegate_ webViewDidFinishNavigation:web_view_]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests that expected delegate methods are called for a failed request.
@@ -99,7 +101,7 @@ TEST_F(NavigationDelegateTest, RequestFails) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -112,7 +114,7 @@ TEST_F(NavigationDelegateTest, RequestFails) {
          didFailNavigationWithError:[OCMArg any]]);
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetCloseSocketURL()));
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 
   // Wait for the error text to be injected to make sure that the JavaScript has
   // been correctly injected.
@@ -129,7 +131,7 @@ TEST_F(NavigationDelegateTest, CancelRequest) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyCancel);
@@ -137,7 +139,7 @@ TEST_F(NavigationDelegateTest, CancelRequest) {
       });
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests that a response is canceled and no further delegate methods are called
@@ -149,7 +151,7 @@ TEST_F(NavigationDelegateTest, CancelResponse) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -162,7 +164,8 @@ TEST_F(NavigationDelegateTest, CancelResponse) {
                                                       GetEchoURL(), YES)
                                   decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationResponsePolicy);
+        __unsafe_unretained void (^decisionHandler)(
+            CWVNavigationResponsePolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationResponsePolicyCancel);
@@ -170,7 +173,7 @@ TEST_F(NavigationDelegateTest, CancelResponse) {
       });
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests that same document navigations do not trigger delegate methods.
@@ -182,7 +185,7 @@ TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
                                                     CWVNavigationTypeTyped)
                                 decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationActionPolicy);
+        __unsafe_unretained void (^decisionHandler)(CWVNavigationActionPolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationActionPolicyAllow);
@@ -195,7 +198,8 @@ TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
                                                       GetEchoURL(), YES)
                                   decisionHandler:[OCMArg any]])
       .andDo(^(NSInvocation* invocation) {
-        __weak void (^decisionHandler)(CWVNavigationResponsePolicy);
+        __unsafe_unretained void (^decisionHandler)(
+            CWVNavigationResponsePolicy);
         [invocation getArgument:&decisionHandler atIndex:4];
         if (decisionHandler) {
           decisionHandler(CWVNavigationResponsePolicyAllow);
@@ -206,7 +210,7 @@ TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
 
   ASSERT_TRUE(test::LoadUrl(web_view_, GetEchoURL()));
 
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 
   // Same document navigations should not trigger the delegate methods.
   NSError* error = nil;
@@ -214,7 +218,7 @@ TEST_F(NavigationDelegateTest, SameDocumentNavigations) {
                        web_view_, @"history.pushState({}, \"\");", &error));
   EXPECT_FALSE(error);
 
-  [(id)mock_delegate_ verify];
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 }  // namespace ios_web_view

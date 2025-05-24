@@ -28,6 +28,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="2329392777730037872">Otvaranje <ph name="URL" /> na klijentu nije uspelo.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće uspostaviti vezu sa hostom. Do ovoga je verovatno došlo zbog konfiguracije mreže koju koristite.</translation>
+<translation id="242591256144136845">Autorska prava 2025. Google LLC. Sva prava zadržana.</translation>
 <translation id="2504109125669302160">Dajte dozvolu za „Pristupačnost“ proizvodu <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Povezani ste sa <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Želite li da delite ovaj računar da bi drugi korisnik mogao da ga vidi i kontroliše?</translation>
@@ -39,6 +40,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="2758123043070977469">Došlo je do problema pri potvrdi identiteta. Prijavite se ponovo.</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
 <translation id="2919669478609886916">Trenutno delite ovaj uređaj sa još jednim korisnikom. Da li želite da nastavite deljenje?</translation>
+<translation id="2929683002824598593">Deli uređaj</translation>
 <translation id="2939145106548231838">Potvrdite autentičnost na hostu</translation>
 <translation id="3027681561976217984">Režim dodira</translation>
 <translation id="3106379468611574572">Udaljeni računar ne odgovara na zahteve za povezivanje. Proverite da li je na mreži i pokušajte ponovo.</translation>
@@ -91,6 +93,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="4987330545941822761">Chrome udaljeni računar ne može da odredi pregledač za lokalno otvaranje URL-ova. Izaberite ga sa liste u nastavku.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (van mreže)</translation>
 <translation id="507204348399810022">Želite li stvarno da onemogućite daljinsko povezivanje sa hostom <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Izveštavanje o otkazivanju</translation>
 <translation id="5170982930780719864">ID hosta je nevažeći.</translation>
 <translation id="5204575267916639804">Česta pitanja</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
@@ -116,10 +119,12 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="6178645564515549384">Matični host za razmenu poruka za daljinsku pomoć</translation>
 <translation id="618120821413932081">Ažuriraj rezoluciju udaljenog računara da bi se podudarala sa prozorom</translation>
 <translation id="6223301979382383752">Otvori podešavanja snimanja ekrana</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> zahteva pristup za pregled ekrana i kontrolisanje tastature i miša. Želite li da delite uređaj?</translation>
 <translation id="6284412385303060032">Host koji je pokrenut na ekranu za prijavljivanje na konzolu je isključen da bi podržao režim zavese prelaskom na hosta koji je pokrenut u sesiji određenog korisnika.</translation>
 <translation id="6542902059648396432">Prijavi problem...</translation>
 <translation id="6583902294974160967">Podrška</translation>
 <translation id="6612717000975622067">Pošalji Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Ako ne reagujete, uređaj će automatski početi da deli za # sekundu.}one{Ako ne reagujete, uređaj će automatski početi da deli za # sekundu.}few{Ako ne reagujete, uređaj će automatski početi da deli za # sekunde.}other{Ako ne reagujete, uređaj će automatski početi da deli za # sekundi.}}</translation>
 <translation id="6654753848497929428">Deli</translation>
 <translation id="677755392401385740">Host je pokrenut za korisnika: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Pomoćna aplikacija za otvaranje URL-a preko <ph name="PRODUCT_NAME" /> klijenta</translation>
@@ -133,6 +138,7 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="7067321367069083429">Ekran služi kao dodirni ekran</translation>
 <translation id="7116737094673640201">Dobro došli u Chrome udaljeni računar</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
+<translation id="7298392173540380852">Autorska prava 2025. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="7312846573060934304">Host je oflajn.</translation>
 <translation id="7319983568955948908">Zaustavi deljenje</translation>
 <translation id="7359298090707901886">Izabrani pregledač ne može da se koristi za otvaranje URL-ova na lokalnom računaru.</translation>
@@ -149,7 +155,6 @@ Ako je stavka „<ph name="SERVICE_SCRIPT_NAME" />“ već označena, uklonite 
 <translation id="7693372326588366043">Osvežite listu hostova</translation>
 <translation id="7714222945760997814">Prijavi ovo</translation>
 <translation id="7868137160098754906">Unesite PIN za udaljeni računar.</translation>
-<translation id="7881455334687220899">Autorska prava 2024. Autori Chromium-a. Sva prava zadržana.</translation>
 <translation id="7895403300744144251">Smernice za bezbednost na udaljenom računaru ne dozvoljavaju veze sa vašeg naloga.</translation>
 <translation id="7936528439960309876">Usidri sa desne strane</translation>
 <translation id="7970576581263377361">Potvrda autentičnosti nije uspela. Prijavite se ponovo u Chromium.</translation>
@@ -181,7 +186,6 @@ Ako je polje pored stavke <ph name="SERVICE_SCRIPT_NAME" /> već označeno, ukl
 <translation id="8747048596626351634">Sesija je prekinuta ili nije uspela da se pokrene. Ako na udaljenom računaru postoji ~/.chrome-remote-desktop-session, uverite se da pokreće dugotrajne procese u prednjem planu, kao što je računarsko okruženje ili menadžer prozora.</translation>
 <translation id="8804164990146287819">Politika privatnosti</translation>
 <translation id="8906511416443321782">Pristup mikrofonu je obavezan da bi se audio sadržaj snimao i strimovao na klijentu Chrome udaljenog računara.</translation>
-<translation id="9042277333359847053">Autorska prava 2024. Google LLC. Sva prava zadržana.</translation>
 <translation id="9111855907838866522">Povezani ste sa udaljenim uređajem. Da biste otvorili meni, dodirnite ekran sa četiri prsta.</translation>
 <translation id="9126115402994542723">Ne traži ponovo PIN pri povezivanju sa ovim hostom sa ovog uređaja.</translation>
 <translation id="916856682307586697">Pokrenite podrazumevanu sesiju XSession</translation>

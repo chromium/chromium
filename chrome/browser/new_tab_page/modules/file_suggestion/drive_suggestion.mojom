@@ -1,0 +1,17 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module file_suggestion.mojom;
+
+import "chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom";
+
+// Browser-side handler for requests from NTP Module UI.
+interface DriveSuggestionHandler {
+  // Fetches document suggestions from ItemSuggest API.
+  GetFiles() => (array<File> files);
+  // Dismissed module for fixed amount of time.
+  DismissModule();
+  // Restores the module immediately.
+  RestoreModule();
+};

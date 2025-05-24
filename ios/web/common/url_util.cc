@@ -7,8 +7,9 @@
 namespace web {
 
 GURL GURLByRemovingRefFromGURL(const GURL& full_url) {
-  if (!full_url.has_ref())
+  if (!full_url.has_ref()) {
     return full_url;
+  }
 
   GURL::Replacements replacements;
   replacements.ClearRef();

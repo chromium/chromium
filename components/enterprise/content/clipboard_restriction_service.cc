@@ -92,10 +92,10 @@ void ClipboardRestrictionService::UpdateSettings() {
   // and the copy will be blocked. While confusing, this is mostly to map to the
   // same policy format as the content analysis connector, which also has
   // "enable" and "disable" lists used in this way.
-  url_matcher::util::AddFilters(enable_url_matcher_.get(), true, &next_id_,
-                                *enable);
-  url_matcher::util::AddFilters(disable_url_matcher_.get(), false, &next_id_,
-                                *disable);
+  url_matcher::util::AddFiltersWithLimit(enable_url_matcher_.get(), true,
+                                         &next_id_, *enable);
+  url_matcher::util::AddFiltersWithLimit(disable_url_matcher_.get(), false,
+                                         &next_id_, *disable);
 
   std::optional<int> min_data_size = settings.FindInt(
       enterprise::content::kCopyPreventionSettingsMinDataSizeFieldName);
@@ -132,7 +132,9 @@ ClipboardRestrictionServiceFactory::GetBrowserContextToUse(
   return context;
 }
 
-KeyedService* ClipboardRestrictionServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ClipboardRestrictionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new ClipboardRestrictionService(user_prefs::UserPrefs::Get(context));
+  return std::make_unique<ClipboardRestrictionService>(
+      user_prefs::UserPrefs::Get(context));
 }

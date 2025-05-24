@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/task/sequence_manager/work_deduplicator.h"
+
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace sequence_manager {
-namespace internal {
+namespace base::sequence_manager::internal {
 
 using NextTask = WorkDeduplicator::NextTask;
 using ShouldScheduleWork = WorkDeduplicator::ShouldScheduleWork;
@@ -214,6 +213,4 @@ TEST(WorkDeduplicatorTest, OnDelayedWorkRequestedWithDoWorkPending) {
             work_deduplicator.OnDelayedWorkRequested());
 }
 
-}  // namespace internal
-}  // namespace sequence_manager
-}  // namespace base
+}  // namespace base::sequence_manager::internal

@@ -9,11 +9,11 @@
 
 namespace autofill {
 class PersonalDataManager;
-}  // namespace autofill;
+}  // namespace autofill
 
 namespace password_manager {
 class PasswordStoreInterface;
-}  // password_manager
+}  // namespace password_manager
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -180,8 +180,7 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
                  : PermissionsData::PageAccess::kDenied;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return PermissionsData::PageAccess::kDenied;
+  NOTREACHED();
 }
 
 // Returns true if |request|.url is of the form clients[0-9]*.google.com.
@@ -368,6 +367,7 @@ bool WebRequestPermissions::HideRequest(
   // domain. However once the old webstore is turned down we can change it over
   // during that cleanup.
   if (extension_urls::IsWebstoreUpdateUrl(url) ||
+      extension_urls::IsWebstoreApiUrl(url) ||
       extension_urls::IsBlocklistUpdateUrl(url) ||
       extension_urls::IsSafeBrowsingUrl(url) ||
       (url.DomainIs("chrome.google.com") &&

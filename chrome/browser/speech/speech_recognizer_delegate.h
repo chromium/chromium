@@ -58,7 +58,7 @@ class SpeechRecognizerDelegate {
       media::mojom::LanguageIdentificationEventPtr event) = 0;
 
  protected:
-  virtual ~SpeechRecognizerDelegate() {}
+  virtual ~SpeechRecognizerDelegate() = default;
 };
 
 #endif  // CHROME_BROWSER_SPEECH_SPEECH_RECOGNIZER_DELEGATE_H_

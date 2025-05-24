@@ -15,15 +15,16 @@ namespace base::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
-BASE_EXPORT BASE_DECLARE_FEATURE(kEnforceNoExecutableFileHandles);
-
 BASE_EXPORT BASE_DECLARE_FEATURE(kFeatureParamWithCache);
+
+BASE_EXPORT BASE_DECLARE_FEATURE(kFastFilePathIsParent);
+
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                       kUseRustJsonParserInCurrentSequence);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowEndMemoryExperiment);
 
-BASE_EXPORT BASE_DECLARE_FEATURE(kUseRustJsonParser);
-
-BASE_EXPORT extern const base::FeatureParam<int> kLowMemoryDeviceThresholdMB;
+BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t, kLowMemoryDeviceThresholdMB);
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOn3GbDevices);
@@ -31,11 +32,17 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPartialLowEndModeOnMidRangeDevices);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+BASE_EXPORT BASE_DECLARE_FEATURE(kBackgroundNotPerceptibleBinding);
 BASE_EXPORT BASE_DECLARE_FEATURE(kCollectAndroidFrameTimelineMetrics);
 BASE_EXPORT BASE_DECLARE_FEATURE(
     kPostPowerMonitorBroadcastReceiverInitToBackground);
 BASE_EXPORT BASE_DECLARE_FEATURE(kPostGetMyMemoryStateToBackground);
+BASE_EXPORT BASE_DECLARE_FEATURE(kUseSharedRebindServiceConnection);
 #endif
+
+#if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
+BASE_EXPORT BASE_DECLARE_FEATURE(kUsePriorityInheritanceMutex);
+#endif  // BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE)
 
 // Policy for emitting profiler metadata from `ThreadController`.
 enum class EmitThreadControllerProfilerMetadata {

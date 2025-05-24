@@ -38,8 +38,9 @@ class MockBrowserControlsOffsetManagerClient
         browser_controls_show_threshold_(browser_controls_show_threshold),
         browser_controls_hide_threshold_(browser_controls_hide_threshold) {
     active_tree_ = std::make_unique<LayerTreeImpl>(
-        host_impl_, new SyncedScale, new SyncedBrowserControls,
-        new SyncedBrowserControls, new SyncedElasticOverscroll);
+        host_impl_, viz::BeginFrameArgs(), new SyncedScale,
+        new SyncedBrowserControls, new SyncedBrowserControls,
+        new SyncedElasticOverscroll);
     root_scroll_layer_ = LayerImpl::Create(active_tree_.get(), 1);
   }
 
@@ -960,6 +961,24 @@ TEST(BrowserControlsOffsetManagerTest, ControlsStayAtMinHeightOnHeightChange) {
   EXPECT_FLOAT_EQ(20.f, manager->ContentTopOffset());
 }
 
+TEST(BrowserControlsOffsetManagerTest,
+     ControlsStayAtFullHeightWhenPreviousMinHeightEqualledFullHeight) {
+  MockBrowserControlsOffsetManagerClient client(20.f, 0.5f, 0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  // Set the min-height to 20.
+  client.SetBrowserControlsParams({20, 20, 0, 0, false, false});
+
+  // Change the height to 120.
+  client.SetBrowserControlsParams({120, 20, 0, 0, false, false});
+  EXPECT_FALSE(manager->HasAnimation());
+  EXPECT_FLOAT_EQ(120.f, manager->TopControlsHeight());
+  EXPECT_FLOAT_EQ(20.f, manager->TopControlsMinHeight());
+  // Top controls should stay at the same visible height.
+  EXPECT_FLOAT_EQ(0.f, manager->ControlsTopOffset());
+  EXPECT_FLOAT_EQ(120.f, manager->ContentTopOffset());
+}
+
 TEST(BrowserControlsOffsetManagerTest, ControlsAdjustToNewHeight) {
   MockBrowserControlsOffsetManagerClient client(100.f, 0.5f, 0.5f);
   BrowserControlsOffsetManager* manager = client.manager();
@@ -1484,6 +1503,56 @@ TEST(BrowserControlsOffsetManagerTest, MinHeightDecreasedByMoreThanHeight) {
   EXPECT_FLOAT_EQ(1.f, manager->BottomControlsShownRatio());
   // Ensure that the min height offset has fully shrunk.
   EXPECT_FLOAT_EQ(0.f, manager->BottomControlsMinHeightOffset());
+}
+
+TEST(BrowserControlsOffsetManagerTest, ShowAnimateToleratesTopAlreadyShown) {
+  MockBrowserControlsOffsetManagerClient client(
+      /*top_controls_height=*/100.f,
+      /*browser_controls_show_threshold=*/0.5f,
+      /*float browser_controls_hide_threshold=*/0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  client.SetBrowserControlsParams(
+      {/*top_controls_height=*/100, /*top_controls_min_height=*/0,
+       /*bottom_controls_height=*/100, /*bottom_controls_min_height=*/0,
+       /*animate_browser_controls_height_changes=*/false,
+       /*browser_controls_shrink_blink_size=*/false});
+  client.SetCurrentBrowserControlsShownRatio(/*top_ratio=*/1.0,
+                                             /*bottom_ratio=*/0.0);
+  manager->UpdateBrowserControlsState(BrowserControlsState::kBoth,
+                                      BrowserControlsState::kShown, true,
+                                      std::nullopt);
+  EXPECT_TRUE(manager->HasAnimation());
+  base::TimeTicks time = base::TimeTicks::Now();
+
+  while (manager->HasAnimation()) {
+    time = base::Microseconds(100) + time;
+    manager->Animate(time);
+  }
+  EXPECT_FALSE(manager->HasAnimation());
+}
+
+TEST(BrowserControlsOffsetManagerTest,
+     ScrollWithMinBottomHeightEqualToTotalBottomHeight) {
+  MockBrowserControlsOffsetManagerClient client(
+      /*top_controls_height=*/100.f,
+      /*browser_controls_show_threshold=*/0.5f,
+      /*float browser_controls_hide_threshold=*/0.5f);
+  BrowserControlsOffsetManager* manager = client.manager();
+
+  client.SetBrowserControlsParams(
+      {/*top_controls_height=*/0, /*top_controls_min_height=*/0,
+       /*bottom_controls_height=*/100, /*bottom_controls_min_height=*/100,
+       /*animate_browser_controls_height_changes=*/false,
+       /*browser_controls_shrink_blink_size=*/false});
+
+  // ScrollVerticallyBy will trip an assertion in
+  // MockBrowserControlsOffsetManagerClient::AssertAndClamp if the resulting
+  // ratio is NaN which is the bug being tested here.
+  manager->ScrollBegin();
+  client.ScrollVerticallyBy(30.f);
+  manager->ScrollEnd();
+  EXPECT_FLOAT_EQ(30.f, client.ViewportScrollOffset().y());
 }
 
 }  // namespace

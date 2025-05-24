@@ -11,9 +11,11 @@ import android.graphics.drawable.RippleDrawable;
 import android.util.TypedValue;
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /** This helper class contains shared utilities used for the touch-to-fill functionality. */
+@NullMarked
 public class TouchToFillUtil {
     private TouchToFillUtil() {}
 
@@ -32,6 +34,6 @@ public class TouchToFillUtil {
                 new RippleDrawable(ColorStateList.valueOf(themeRes.data), background, null);
         view.setBackground(rippleDrawable);
         view.setBackgroundTintList(
-                ColorStateList.valueOf(SemanticColorUtils.getDefaultBgColorElev1(context)));
+                ColorStateList.valueOf(SemanticColorUtils.getColorSurfaceContainerLow(context)));
     }
 }

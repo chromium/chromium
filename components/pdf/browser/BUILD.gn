@@ -21,6 +21,7 @@ source_set("browser") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//pdf/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/touch_selection",
   ]
 
@@ -29,6 +30,7 @@ source_set("browser") {
     "//components/pdf/common:util",
     "//content/public/common",
     "//pdf:features",
+    "//services/screen_ai/buildflags",
     "//ui/base",
     "//ui/gfx/geometry",
   ]

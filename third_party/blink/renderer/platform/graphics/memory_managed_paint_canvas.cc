@@ -59,8 +59,12 @@ void MemoryManagedPaintCanvas::drawImageRect(
 }
 
 void MemoryManagedPaintCanvas::UpdateMemoryUsage(const cc::PaintImage& image) {
-  if (cached_image_ids_.Contains(image.GetContentIdForFrame(0u)))
+  if (image.IsDeferredPaintRecord()) {
     return;
+  }
+  if (cached_image_ids_.Contains(image.GetContentIdForFrame(0u))) {
+    return;
+  }
 
   cached_image_ids_.insert(image.GetContentIdForFrame(0u));
   image_bytes_used_ += image.GetSkImageInfo().computeMinByteSize();

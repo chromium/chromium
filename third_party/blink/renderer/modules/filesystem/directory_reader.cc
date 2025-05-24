@@ -39,8 +39,13 @@ namespace blink {
 
 namespace {
 
-void RunEntriesCallback(V8EntriesCallback* callback, EntryHeapVector* entries) {
-  callback->InvokeAndReportException(nullptr, *entries);
+void RunEntriesCallback(V8EntriesCallback* callback,
+                        GCedEntryHeapVector* entries) {
+  // TODO(https://crbug.com/392817527): Ideally bindings would take a ref to the
+  // GCed vector directly. Since we an move here this should not be a
+  // performance problem.
+  callback->InvokeAndReportException(nullptr,
+                                     EntryHeapVector(std::move(*entries)));
 }
 
 }  // namespace
@@ -66,8 +71,8 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
   }
 
   auto success_callback_wrapper = WTF::BindRepeating(
-      [](DirectoryReader* persistent_reader, EntryHeapVector* entries) {
-        persistent_reader->AddEntries(*entries);
+      [](DirectoryReader* persistent_reader, GCedEntryHeapVector* entries) {
+        persistent_reader->AddEntries(EntryHeapVector(std::move(*entries)));
       },
       WrapPersistentIfNeeded(this));
 
@@ -86,8 +91,8 @@ void DirectoryReader::readEntries(V8EntriesCallback* entries_callback,
   }
 
   if (!has_more_entries_ || !entries_.empty()) {
-    EntryHeapVector* entries =
-        MakeGarbageCollected<EntryHeapVector>(std::move(entries_));
+    GCedEntryHeapVector* entries =
+        MakeGarbageCollected<GCedEntryHeapVector>(std::move(entries_));
     DOMFileSystem::ScheduleCallback(
         Filesystem()->GetExecutionContext(),
         WTF::BindOnce(&RunEntriesCallback, WrapPersistent(entries_callback),

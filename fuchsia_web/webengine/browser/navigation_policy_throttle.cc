@@ -5,6 +5,8 @@
 #include "fuchsia_web/webengine/browser/navigation_policy_throttle.h"
 
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
+#include "fuchsia_web/webengine/browser/navigation_controller_impl.h"
 #include "fuchsia_web/webengine/browser/navigation_policy_handler.h"
 
 namespace {
@@ -28,11 +30,9 @@ fuchsia::web::RequestedNavigation ToRequestedNavigation(
 }  // namespace
 
 NavigationPolicyThrottle::NavigationPolicyThrottle(
-    content::NavigationHandle* handle,
+    content::NavigationThrottleRegistry& registry,
     NavigationPolicyHandler* policy_handler)
-    : NavigationThrottle(handle),
-      policy_handler_(policy_handler),
-      navigation_handle_(handle) {
+    : NavigationThrottle(registry), policy_handler_(policy_handler) {
   if (policy_handler->is_provider_connected()) {
     policy_handler_->RegisterNavigationThrottle(this);
   } else {
@@ -41,8 +41,9 @@ NavigationPolicyThrottle::NavigationPolicyThrottle(
 }
 
 NavigationPolicyThrottle::~NavigationPolicyThrottle() {
-  if (policy_handler_)
+  if (policy_handler_) {
     policy_handler_->RemoveNavigationThrottle(this);
+  }
 }
 
 void NavigationPolicyThrottle::OnNavigationPolicyProviderDisconnected(
@@ -69,6 +70,11 @@ void NavigationPolicyThrottle::OnRequestedNavigationEvaluated(
       // the NavigationHandle that owns this NavigationThrottle.
       break;
     case fuchsia::web::NavigationDecision::kAbort:
+      // Mark the request as aborted so it can be handled by the
+      // `NavigationControllerImpl` properly.
+      navigation_handle()->SetUserData(
+          NavigationControllerImpl::kAbortedRequestKey,
+          std::make_unique<base::SupportsUserData::Data>());
       CancelDeferredNavigation(content::NavigationThrottle::CANCEL);
       // DO NOT ADD CODE after this. The callback above will destroy the
       // NavigationHandle that owns this NavigationThrottle.
@@ -112,16 +118,17 @@ NavigationPolicyThrottle::HandleNavigationPhase(
         content::NavigationThrottle::CANCEL);
   }
 
-  if (!policy_handler_->ShouldEvaluateNavigation(navigation_handle_, phase)) {
+  if (!policy_handler_->ShouldEvaluateNavigation(navigation_handle(), phase)) {
     return content::NavigationThrottle::ThrottleCheckResult(
         content::NavigationThrottle::PROCEED);
   }
 
   policy_handler_->EvaluateRequestedNavigation(
-      ToRequestedNavigation(navigation_handle_, phase),
+      ToRequestedNavigation(navigation_handle(), phase),
       [weak_this = weak_factory_.GetWeakPtr()](auto decision) {
-        if (weak_this)
+        if (weak_this) {
           weak_this->OnRequestedNavigationEvaluated(std::move(decision));
+        }
       });
 
   is_paused_ = true;

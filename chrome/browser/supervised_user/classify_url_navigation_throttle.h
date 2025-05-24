@@ -11,7 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "content/public/browser/navigation_handle.h"
@@ -19,6 +19,14 @@
 #include "url/gurl.h"
 
 namespace supervised_user {
+
+// LINT.IfChange(ClassifyUrlThrottleFinalStatus)
+enum class ClassifyUrlThrottleFinalStatus : int {
+  kAllowed = 0,
+  kBlocked = 1,
+  kMaxValue = kBlocked,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleFinalStatus)
 
 // LINT.IfChange(ClassifyUrlThrottleStatus)
 enum class ClassifyUrlThrottleStatus : int {
@@ -34,19 +42,31 @@ enum class ClassifyUrlThrottleStatus : int {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleStatus)
 
+// LINT.IfChange(ClassifyUrlThrottleUseCase)
+enum class ClassifyUrlThrottleUseCase : int {
+  kNotAllowed = 0,
+  kFamilyLinkSupervisedUser = 1,
+  kMaxValue = kFamilyLinkSupervisedUser,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ClassifyUrlThrottleUseCase)
+
+enum class InterstitialResultCallbackActions {
+  kCancelNavigation = 0,
+  kCancelWithInterstitial = 1
+};
+
 // Returns a new throttle for the given navigation, or nullptr if no
 // throttling is required.
-std::unique_ptr<content::NavigationThrottle>
-MaybeCreateClassifyUrlNavigationThrottleFor(
-    content::NavigationHandle* navigation_handle);
+void MaybeCreateAndAddClassifyUrlNavigationThrottle(
+    content::NavigationThrottleRegistry& registry);
 
 // Navigation throttle that processes requests and redirects in parallel with
 // their verification against ClassifyUrl, up until the response is ready for
 // processing. Only then the navigation can be deferred.
 class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<ClassifyUrlNavigationThrottle> MakeUnique(
-      content::NavigationHandle* navigation_handle);
+  static void CreateAndAdd(content::NavigationThrottleRegistry& registry,
+      SupervisedUserURLFilter* url_filter);
 
   ClassifyUrlNavigationThrottle(const ClassifyUrlNavigationThrottle&) = delete;
   ClassifyUrlNavigationThrottle& operator=(
@@ -63,13 +83,7 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // scheduled) which is important to determine the final verdict.
   class ClassifyUrlCheckList {
    public:
-    // Named tuple for bits of result.
-    struct FilteringResult {
-      GURL url;
-      FilteringBehavior behavior;
-      FilteringBehaviorReason reason;
-    };
-    using Key = std::vector<FilteringResult>::size_type;
+    using Key = std::vector<SupervisedUserURLFilter::Result>::size_type;
 
     ClassifyUrlCheckList();
     ClassifyUrlCheckList(ClassifyUrlCheckList& other) = delete;
@@ -78,10 +92,10 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
 
     // Registers new check if the list is not sealed.
     Key NewCheck();
-    void UpdateCheck(Key key, FilteringResult result);
+    void UpdateCheck(Key key, SupervisedUserURLFilter::Result result);
 
     // Returns blocking Filtering result if there's one or nothing.
-    std::optional<FilteringResult> GetBlockingResult() const;
+    std::optional<SupervisedUserURLFilter::Result> GetBlockingResult() const;
 
     // Returns true if this classification allowed or blocking.
     bool IsDecided() const;
@@ -93,7 +107,7 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
     base::TimeDelta ElapsedSinceDecided() const;
 
    private:
-    std::vector<std::optional<FilteringResult>> results_;
+    std::vector<std::optional<SupervisedUserURLFilter::Result>> results_;
 
     // After disabling new checks can't be issued, but it enables positive
     // verification of all-allow results.
@@ -104,8 +118,8 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
     std::optional<base::ElapsedTimer> elapsed_;
   };
 
-  explicit ClassifyUrlNavigationThrottle(
-      content::NavigationHandle* navigation_handle);
+  ClassifyUrlNavigationThrottle(content::NavigationThrottleRegistry& registry,
+                                SupervisedUserURLFilter* url_filter);
 
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
@@ -126,10 +140,7 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
 
   // The triggered callback; results will be written onto check.
   void OnURLCheckDone(ClassifyUrlCheckList::Key key,
-                      const GURL& url,
-                      FilteringBehavior behavior,
-                      FilteringBehaviorReason reason,
-                      bool uncertain);
+                      SupervisedUserURLFilter::Result result);
 
   // Change state of the throttle and record metrics.
   std::optional<ThrottleCheckResult> NextNavigationState(
@@ -138,16 +149,15 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // Defers the navigation to accommodate the interstitial and shows that
   // interstitial.
   ThrottleCheckResult DeferAndScheduleInterstitial(
-      ClassifyUrlCheckList::FilteringResult result);
+      SupervisedUserURLFilter::Result result);
 
   // Interstitial handling
-  void ScheduleInterstitial(ClassifyUrlCheckList::FilteringResult result);
-  void ShowInterstitial(ClassifyUrlCheckList::FilteringResult result);
-  void OnInterstitialResult(
-      ClassifyUrlCheckList::FilteringResult result,
-      SupervisedUserNavigationThrottle::CallbackActions action,
-      bool already_sent_request,
-      bool is_main_frame);
+  void ScheduleInterstitial(SupervisedUserURLFilter::Result result);
+  void ShowInterstitial(SupervisedUserURLFilter::Result result);
+  void OnInterstitialResult(SupervisedUserURLFilter::Result result,
+                            InterstitialResultCallbackActions action,
+                            bool already_sent_request,
+                            bool is_main_frame);
 
   // All pending and completed checks.
   ClassifyUrlCheckList list_;
@@ -159,7 +169,7 @@ class ClassifyUrlNavigationThrottle : public content::NavigationThrottle {
   // (success) case.
   std::optional<base::ElapsedTimer> waiting_for_decision_;
 
-  raw_ptr<supervised_user::SupervisedUserURLFilter> url_filter_;
+  raw_ptr<SupervisedUserURLFilter> url_filter_;
   base::WeakPtrFactory<ClassifyUrlNavigationThrottle> weak_ptr_factory_{this};
 };
 

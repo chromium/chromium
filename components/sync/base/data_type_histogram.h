@@ -6,6 +6,7 @@
 #define COMPONENTS_SYNC_BASE_DATA_TYPE_HISTOGRAM_H_
 
 #include "components/sync/base/data_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace syncer {
 
@@ -23,15 +24,31 @@ enum class UpdateDropReason {
   kDroppedByBridge
 };
 
-// Records that a remote update of an entity of type |type| got dropped into a
-// |reason| related histogram.
+// LINT.IfChange(UnsyncedDataRecordingEvent)
+enum class UnsyncedDataRecordingEvent {
+  // Upon `DataTypeLocalChangeProcessor::ModelReadyToSync()` call.
+  kOnModelReady,
+  // When the user initiates a signout flow (but has not confirmed yet).
+  // And is in pending state.
+  kOnSignoutConfirmationFromPendingState,
+  // And is not in pending state.
+  kOnSignoutConfirmation,
+  // Right after the user reauthenticates and fixes their signin pending state.
+  // Only recorded in transport mode. Not recorded for sync-the-feature (aka
+  // "Sync paused").
+  kOnReauthFromPendingState,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sync/histograms.xml:UnsyncedDataRecordingEventVariants)
+
+// Records that a remote update of an entity of type `type` got dropped into a
+// `reason` related histogram.
 void SyncRecordDataTypeUpdateDropReason(UpdateDropReason reason, DataType type);
 
-// Converts memory size |bytes| into kilobytes and records it into |data_type|
+// Converts memory size `bytes` into kilobytes and records it into `data_type`
 // related histogram for memory footprint of sync data.
 void SyncRecordDataTypeMemoryHistogram(DataType data_type, size_t bytes);
 
-// Records |count| into a |data_type| related histogram for count of sync
+// Records `count` into a `data_type` related histogram for count of sync
 // entities.
 void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count);
 
@@ -43,16 +60,10 @@ void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
                                            size_t specifics_bytes,
                                            size_t total_bytes);
 
-// Records when the model (including both data and metadata) was cleared for a
-// given `data_type` due to
-// `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`.
-void SyncRecordModelClearedOnceHistogram(DataType data_type);
-
-// Records the amount of unsynced entities for the given |data_type| upon
-// DataTypeLocalChangeProcessor::ModelReadyToSync() call.
-void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
-    DataType data_type,
-    size_t num_unsynced_entities);
+// Records the amount of unsynced entities for the given `unsynced_data`.
+void SyncRecordDataTypeNumUnsyncedEntitiesFromDataCounts(
+    UnsyncedDataRecordingEvent event,
+    absl::flat_hash_map<DataType, size_t> unsynced_data);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

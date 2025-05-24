@@ -5,10 +5,10 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_DELEGATE_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_DELEGATE_H_
 
-#include <set>
-
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+#include <set>
 
 #include "base/functional/callback.h"
 #include "build/blink_buildflags.h"
@@ -104,6 +104,10 @@ class WebStateDelegate {
   // UIResponder Form Input APIs, consult Apple's UIResponder documentation for
   // more info.
   virtual id<CRWResponderInputView> GetResponderInputView(WebState* source);
+
+  // Provides an opportunity to the delegate to react to the creation of the web
+  // view.
+  virtual void OnNewWebViewCreated(WebState* source);
 
  protected:
   virtual ~WebStateDelegate();

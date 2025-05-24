@@ -47,7 +47,6 @@ class FontFallbackMap;
 class FontFamily;
 class FontSelectorClient;
 class GenericFontFamilySettings;
-class SimpleFontData;
 class UseCounter;
 
 class PLATFORM_EXPORT FontSelector : public FontCacheClient {
@@ -85,36 +84,6 @@ class PLATFORM_EXPORT FontSelector : public FontCacheClient {
   // Called when a page attempts to match a font name via a @font-face src:local
   // rule, and the font is not available.
   virtual void ReportFailedLocalFontMatch(const AtomicString& font_name) = 0;
-
-  // Called whenever a page attempts to find a local font based on a name. This
-  // only includes lookups where the name is allowed to match family names,
-  // PostScript names and full font names.
-  virtual void ReportFontLookupByUniqueOrFamilyName(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) = 0;
-
-  // Called whenever a page attempts to find a local font based on a name. This
-  // only includes lookups where the name is allowed to match PostScript names
-  // and full font names, but not family names.
-  virtual void ReportFontLookupByUniqueNameOnly(
-      const AtomicString& name,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data,
-      bool is_loading_fallback = false) = 0;
-
-  // Called whenever a page attempts to find a local font based on a fallback
-  // character.
-  virtual void ReportFontLookupByFallbackCharacter(
-      UChar32 fallback_character,
-      FontFallbackPriority fallback_priority,
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) = 0;
-
-  // Called whenever a page attempts to find a last-resort font.
-  virtual void ReportLastResortFallbackFontLookup(
-      const FontDescription& font_description,
-      const SimpleFontData* resulting_font_data) = 0;
 
   virtual void ReportNotDefGlyph() const = 0;
 

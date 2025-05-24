@@ -38,7 +38,8 @@ class CSSIntrinsicLengthInterpolationType : public CSSInterpolationType {
                  double interpolation_fraction) const final;
 
   static InterpolableValue* CreateInterpolableIntrinsicDimension(
-      const StyleIntrinsicLength&);
+      const StyleIntrinsicLength&,
+      float);
 
  private:
   StyleIntrinsicLength GetIntrinsicDimension(const ComputedStyle&) const;
@@ -52,7 +53,7 @@ class CSSIntrinsicLengthInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
 };
 

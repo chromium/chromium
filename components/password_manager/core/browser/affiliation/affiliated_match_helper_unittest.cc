@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -42,8 +43,6 @@ using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAre;
-using StrategyOnCacheMiss =
-    ::affiliations::AffiliationService::StrategyOnCacheMiss;
 
 const char kTestWebFacetURIAlpha1[] = "https://one.alpha.example.com";
 const char kTestWebFacetURIAlpha2[] = "https://two.alpha.example.com";
@@ -185,9 +184,8 @@ TEST_F(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealms) {
       FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1));
   EXPECT_CALL(*mock_affiliation_service(),
               GetAffiliationsAndBranding(
-                  FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1),
-                  StrategyOnCacheMiss::FAIL, _))
-      .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassBeta(), true));
+                  FacetURI::FromCanonicalSpec(kTestWebFacetURIBeta1), _))
+      .WillOnce(RunOnceCallback<1>(GetTestEquivalenceClassBeta(), true));
   EXPECT_CALL(*mock_affiliation_service(),
               GetGroupingInfo(testing::ElementsAre(FacetURI::FromCanonicalSpec(
                                   kTestWebFacetURIBeta1)),
@@ -210,9 +208,8 @@ TEST_F(AffiliatedMatchHelperTest, GetAffiliatedAndroidRealmsAndWebsites) {
       FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));
   EXPECT_CALL(*mock_affiliation_service(),
               GetAffiliationsAndBranding(
-                  FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1),
-                  StrategyOnCacheMiss::FAIL, _))
-      .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassAlpha(), true));
+                  FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1), _))
+      .WillOnce(RunOnceCallback<1>(GetTestEquivalenceClassAlpha(), true));
   EXPECT_CALL(*mock_affiliation_service(),
               GetGroupingInfo(testing::ElementsAre(FacetURI::FromCanonicalSpec(
                                   kTestWebFacetURIAlpha1)),
@@ -278,7 +275,7 @@ TEST_F(AffiliatedMatchHelperTest,
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(AffiliatedMatchHelperTest, GetGroupedRealms) {
   EXPECT_CALL(*mock_affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(AffiliatedFacets(), true));
+      .WillOnce(RunOnceCallback<1>(AffiliatedFacets(), true));
   EXPECT_CALL(*mock_affiliation_service(),
               GetGroupingInfo(testing::ElementsAre(FacetURI::FromCanonicalSpec(
                                   kTestWebFacetURIAlpha1)),
@@ -295,7 +292,7 @@ TEST_F(AffiliatedMatchHelperTest, GetGroupedRealms) {
 
 TEST_F(AffiliatedMatchHelperTest, GetGroupedAndAffiliatedRealms) {
   EXPECT_CALL(*mock_affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassAlpha(), true));
+      .WillOnce(RunOnceCallback<1>(GetTestEquivalenceClassAlpha(), true));
   EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
       .WillOnce(RunOnceCallback<1>(GetTestEquivalenceGroupClassAlpha()));
 
@@ -314,7 +311,7 @@ TEST_F(AffiliatedMatchHelperTest, GetGroupedRealmsWhenNoMatch) {
       FacetURI::FromCanonicalSpec(kTestWebFacetURIAlpha1));
 
   EXPECT_CALL(*mock_affiliation_service(), GetAffiliationsAndBranding)
-      .WillOnce(RunOnceCallback<2>(AffiliatedFacets(), true));
+      .WillOnce(RunOnceCallback<1>(AffiliatedFacets(), true));
   EXPECT_CALL(*mock_affiliation_service(), GetGroupingInfo)
       .WillOnce(
           RunOnceCallback<1>(std::vector<GroupedFacets>{result_grouped_facet}));
@@ -342,21 +339,20 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
 
   size_t expected_form_count = forms.size();
 
-  EXPECT_CALL(
-      *mock_affiliation_service(),
-      GetAffiliationsAndBranding(
-          FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3), _, _))
-      .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassAlpha(), true));
+  EXPECT_CALL(*mock_affiliation_service(),
+              GetAffiliationsAndBranding(
+                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIAlpha3), _))
+      .WillOnce(RunOnceCallback<1>(GetTestEquivalenceClassAlpha(), true));
 
   EXPECT_CALL(*mock_affiliation_service(),
               GetAffiliationsAndBranding(
-                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2), _, _))
-      .WillOnce(RunOnceCallback<2>(GetTestEquivalenceClassBeta(), true));
+                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIBeta2), _))
+      .WillOnce(RunOnceCallback<1>(GetTestEquivalenceClassBeta(), true));
 
   EXPECT_CALL(*mock_affiliation_service(),
               GetAffiliationsAndBranding(
-                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma), _, _))
-      .WillOnce(RunOnceCallback<2>(AffiliatedFacets(), false));
+                  FacetURI::FromCanonicalSpec(kTestAndroidFacetURIGamma), _))
+      .WillOnce(RunOnceCallback<1>(AffiliatedFacets(), false));
 
   LoginsResultOrError result;
   base::MockCallback<base::OnceCallback<void(LoginsResultOrError)>> mock_reply;
@@ -364,7 +360,7 @@ TEST_F(AffiliatedMatchHelperTest, InjectAffiliationAndBrandingInformation) {
   match_helper()->InjectAffiliationAndBrandingInformation(std::move(forms),
                                                           mock_reply.Get());
 
-  auto result_forms = std::move(absl::get<std::vector<PasswordForm>>(result));
+  auto result_forms = std::move(std::get<std::vector<PasswordForm>>(result));
 
   ASSERT_EQ(expected_form_count, result_forms.size());
   EXPECT_THAT(result_forms[0].affiliated_web_realm,

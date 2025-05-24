@@ -7,12 +7,12 @@
 
 #include <optional>
 #include <string_view>
+#include <variant>
 
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/memory/stack_allocated.h"
 #include "base/types/id_type.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 
@@ -45,7 +45,7 @@ struct CBORHeader {
     uint64_t size;
   };
 
-  const absl::variant<bool, int64_t, StringInfo, ContainerInfo> data;
+  const std::variant<bool, int64_t, StringInfo, ContainerInfo> data;
 };
 
 // The maximum length of the CBOR item header (type and argument).

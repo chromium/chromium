@@ -9,6 +9,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -144,8 +145,9 @@ std::u16string ShareFileDownloadTabHelper::GetFileNameSuggestion() {
   // fail use the default filename "document".
   std::string content_disposition;
   if (response_headers_) {
-    response_headers_->GetNormalizedHeader("content-disposition",
-                                           &content_disposition);
+    content_disposition =
+        response_headers_->GetNormalizedHeader("content-disposition")
+            .value_or(std::string());
   }
   std::string default_file_name =
       l10n_util::GetStringUTF8(IDS_IOS_OPEN_IN_FILE_DEFAULT_TITLE);
@@ -167,6 +169,10 @@ bool ShareFileDownloadTabHelper::ShouldDownload(web::WebState* web_state) {
     return false;
   }
 
+  if (DownloadManagerTabHelper::ShouldRestrictDownloadToFile(web_state)) {
+    return false;
+  }
+
   std::string mime_type = web_state->GetContentsMimeType();
   return (mime_type == content_type::kMimeTypePDF ||
           mime_type == content_type::kMimeTypeMicrosoftWord ||
@@ -180,5 +186,3 @@ bool ShareFileDownloadTabHelper::ShouldDownload(web::WebState* web_state) {
           mime_type == content_type::kMimeTypeMicrosoftExcel ||
           mime_type == content_type::kMimeTypeMicrosoftExcelOpenXML);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ShareFileDownloadTabHelper)

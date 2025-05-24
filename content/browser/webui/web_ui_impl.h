@@ -13,12 +13,14 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/webui/url_data_manager_backend.h"
 #include "content/common/content_export.h"
 #include "content/common/web_ui.mojom.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/bindings_policy.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 
 namespace content {
 class NavigationRequest;
@@ -97,6 +99,9 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
 
   bool HasRenderFrameHost() const;
 
+  static blink::mojom::LocalResourceLoaderConfigPtr
+  GetLocalResourceLoaderConfigForTesting(URLDataManagerBackend* data_backend);
+
  private:
   friend class WebUIMainFrameObserver;
 
@@ -108,6 +113,8 @@ class CONTENT_EXPORT WebUIImpl : public WebUI, public mojom::WebUIHost {
 
   // Called internally and by the owned WebUIMainFrameObserver.
   void DisallowJavascriptOnAllHandlers();
+
+  blink::mojom::LocalResourceLoaderConfigPtr GetLocalResourceLoaderConfig();
 
   // A map of message name -> message handling callback.
   std::map<std::string, MessageCallback> message_callbacks_;

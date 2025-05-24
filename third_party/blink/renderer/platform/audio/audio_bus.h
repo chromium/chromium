@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_BUS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_BUS_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_channel.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
@@ -39,7 +40,7 @@ namespace blink {
 // An AudioBus represents a collection of one or more AudioChannels.
 // The data layout is "planar" as opposed to "interleaved".  An AudioBus with
 // one channel is mono, an AudioBus with two channels is stereo, etc.
-class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
+class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
  public:
   enum {
     kChannelLeft = 0,
@@ -75,8 +76,7 @@ class PLATFORM_EXPORT AudioBus : public ThreadSafeRefCounted<AudioBus> {
   // doesn't already match the file's sample-rate).  The created buffer will
   // have its sample-rate set correctly to the result.
   static scoped_refptr<AudioBus> CreateBusFromInMemoryAudioFile(
-      const void* data,
-      size_t data_size,
+      base::span<const uint8_t> data,
       bool mix_to_mono,
       float sample_rate);
 

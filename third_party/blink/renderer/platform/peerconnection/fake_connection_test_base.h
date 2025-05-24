@@ -32,8 +32,8 @@ class FakeConnectionTestBase : public ::testing::Test {
     ready.Wait();
   }
 
-  const ::cricket::Connection* GetConnection(std::string_view remote_ip,
-                                             int remote_port) {
+  const ::webrtc::Connection* GetConnection(std::string_view remote_ip,
+                                            int remote_port) {
     return connection_factory_->CreateConnection(
         webrtc::IceCandidateType::kHost, remote_ip, remote_port);
   }

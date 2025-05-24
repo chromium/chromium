@@ -143,43 +143,6 @@ void DispatchEventToExtensionsImpl(Profile* profile,
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void DispatchEventToExtensionsWithAshControlState(
-    Profile* profile,
-    events::HistogramValue histogram_value,
-    const std::string& event_name,
-    base::Value::List args,
-    mojom::APIPermissionID permission,
-    bool incognito,
-    const std::string& browser_pref,
-    crosapi::mojom::PrefControlState control_state) {
-  DispatchEventToExtensionsImpl(
-      profile, histogram_value, event_name, std::move(args), permission,
-      incognito, browser_pref,
-      base::BindRepeating(&GetLevelOfControlWithAshControlState,
-                          control_state));
-}
-
-const char* GetLevelOfControlWithAshControlState(
-    crosapi::mojom::PrefControlState control_state,
-    Profile* profile,
-    const ExtensionId& extension_id,
-    const std::string& browser_pref,
-    bool incognito) {
-  switch (control_state) {
-    case crosapi::mojom::PrefControlState::kNotExtensionControllable:
-      return preference_helpers::kNotControllable;
-    case crosapi::mojom::PrefControlState::kLacrosExtensionControllable:
-      return preference_helpers::kControllableByThisExtension;
-    case crosapi::mojom::PrefControlState::kLacrosExtensionControlled:
-    case crosapi::mojom::PrefControlState::kNotExtensionControlledPrefPath:
-    case crosapi::mojom::PrefControlState::kDefaultUnknown:
-      return extensions::preference_helpers::GetLevelOfControl(
-          profile, extension_id, browser_pref, incognito);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 void DispatchEventToExtensions(Profile* profile,
                                events::HistogramValue histogram_value,
                                const std::string& event_name,

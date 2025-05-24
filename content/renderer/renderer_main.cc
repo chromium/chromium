@@ -26,15 +26,14 @@
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/threading/hang_watcher.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
 #include "content/common/skia_utils.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/main_function_params.h"
 #include "content/public/renderer/content_renderer_client.h"
@@ -43,11 +42,13 @@
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/renderer_main_platform_delegate.h"
 #include "media/media_buildflags.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "sandbox/policy/switches.h"
 #include "services/tracing/public/cpp/trace_startup.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/webrtc_overrides/init_webrtc.h"  // nogncheck
@@ -71,11 +72,9 @@
 #include "third_party/blink/public/web/web_view.h"
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap_renderer_initialization_impl.h"
-#endif  // defined(X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/system/core_scheduling.h"
@@ -107,12 +106,14 @@ void HandleRendererErrorTestParameters(const base::CommandLine& command_line) {
 }
 
 std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
+  std::unique_ptr<base::MessagePump> message_pump;
 #if BUILDFLAG(IS_FUCHSIA)
   // Allow FIDL APIs on renderer main thread.
-  return base::MessagePump::Create(base::MessagePumpType::IO);
+  message_pump = base::MessagePump::Create(base::MessagePumpType::IO);
 #else
-  return base::MessagePump::Create(base::MessagePumpType::DEFAULT);
+  message_pump = base::MessagePump::Create(base::MessagePumpType::DEFAULT);
 #endif
+  return message_pump;
 }
 
 void LogTimeToStartRunLoop(const base::CommandLine& command_line,
@@ -156,8 +157,6 @@ int RendererMain(MainFunctionParams parameters) {
 
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_RENDERER);
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventRendererProcessSortIndex);
 
   const base::CommandLine& command_line = *parameters.command_line;
 
@@ -165,7 +164,7 @@ int RendererMain(MainFunctionParams parameters) {
   base::apple::ScopedNSAutoreleasePool* pool = parameters.autorelease_pool;
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // As the Zygote process starts up earlier than the browser process, it gets
   // its own locale (at login time for Chrome OS). So we have to set the ICU
   // default locale for the renderer process here.
@@ -175,15 +174,11 @@ int RendererMain(MainFunctionParams parameters) {
         command_line.GetSwitchValueASCII(switches::kLang);
     base::i18n::SetICUDefaultLocale(locale);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // When we start the renderer on ChromeOS if the system has core scheduling
   // available we want to turn it on.
   chromeos::system::EnableCoreSchedulingIfAvailable();
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #if defined(ARCH_CPU_X86_64)
   using UserspaceSwapInit =
       ash::memory::userspace_swap::UserspaceSwapRendererInitializationImpl;
@@ -195,7 +190,7 @@ int RendererMain(MainFunctionParams parameters) {
         << "Unable to complete presandbox userspace swap initialization";
   }
 #endif  // defined(ARCH_CPU_X86_64)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   InitializeSkia();
 
@@ -262,29 +257,19 @@ int RendererMain(MainFunctionParams parameters) {
     // first thread type change in ChildProcess constructor.
     // It also needs to be registered before the process has multiple threads,
     // which may race with application of the sandbox.
-    if (base::FeatureList::IsEnabled(
-            features::kHandleChildThreadTypeChangesInBrowser) ||
-        base::FeatureList::IsEnabled(features::kSchedQoSOnResourcedForChrome)) {
-      SandboxedProcessThreadTypeHandler::Create();
-
-      // Change the main thread type. On Linux and ChromeOS this needs to be
-      // done only if kHandleRendererThreadTypeChangesInBrowser is enabled to
-      // avoid child threads inheriting the main thread settings.
-      if (base::FeatureList::IsEnabled(
-              features::kMainThreadCompositingPriority)) {
-        base::PlatformThread::SetCurrentThreadType(
-            base::ThreadType::kDisplayCritical);
-      }
-    }
-#else
-    if (base::FeatureList::IsEnabled(
-            features::kMainThreadCompositingPriority)) {
-      base::PlatformThread::SetCurrentThreadType(
-          base::ThreadType::kDisplayCritical);
-    } else {
-      base::PlatformThread::SetCurrentThreadType(base::ThreadType::kDefault);
-    }
+    SandboxedProcessThreadTypeHandler::Create();
 #endif
+    // Consider CrRendererMain a display critical thread. While some Javascript
+    // running on the main thread might not be, experiments demonstrated that
+    // overall this improves user-perceived performance.
+    // If kInputScenarioPriorityBoost is enabled, the main thread will only be
+    // display critical when user input is detected.
+    base::ThreadType thread_type =
+        base::FeatureList::IsEnabled(
+            blink::features::kInputScenarioPriorityBoost)
+            ? base::ThreadType::kDefault
+            : base::ThreadType::kDisplayCritical;
+    base::PlatformThread::SetCurrentThreadType(thread_type);
 
     std::unique_ptr<RenderProcess> render_process = RenderProcessImpl::Create();
     // It's not a memory leak since RenderThread has the same lifetime
@@ -293,7 +278,7 @@ int RendererMain(MainFunctionParams parameters) {
     new RenderThreadImpl(run_loop.QuitClosure(),
                          std::move(main_thread_scheduler));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_64)
+#if BUILDFLAG(IS_CHROMEOS) && defined(ARCH_CPU_X86_64)
     // Once the sandbox has been entered and initialization of render threads
     // complete we will transfer FDs to the browser, or close them on failure.
     // This should always be called because it will also transfer the errno that
@@ -317,6 +302,16 @@ int RendererMain(MainFunctionParams parameters) {
       TRACE_EVENT_INSTANT1("startup", "RendererMain", TRACE_EVENT_SCOPE_THREAD,
                            "needs_startup_tracing_after_mojo_init", true);
     }
+
+#if BUILDFLAG(IS_WIN)
+    // Now that Mojo is initialized, but before the sandbox is enabled, set up
+    // DirectReceiver.
+    if (base::FeatureList::IsEnabled(
+            blink::features::kDirectCompositorThreadIpc)) {
+      // Pre-initialize a transport since a feature that will use it is enabled.
+      mojo::CreateDirectReceiverTransportBeforeSandbox();
+    }
+#endif  // BUILDFLAG(IS_WIN)
 
     if (need_sandbox) {
       should_run_loop = platform.EnableSandbox();

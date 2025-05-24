@@ -16,14 +16,14 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -36,12 +36,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 @EnableFeatures(ChromeFeatureList.FEED_FOLLOW_UI_UPDATE)
 public class FeedManagementMediatorTest {
     private static final @StreamKind int TEST_STREAM_KIND = StreamKind.FOR_YOU;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private Activity mActivity;
     private ShadowActivity mShadowActivity;
     private ModelList mModelList;
     private FeedManagementMediator mFeedManagementMediator;
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
@@ -50,8 +49,7 @@ public class FeedManagementMediatorTest {
         mActivity = Robolectric.setupActivity(Activity.class);
         mShadowActivity = Shadows.shadowOf(mActivity);
         mModelList = new ModelList();
-        MockitoAnnotations.initMocks(this);
-        mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
+        FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
 
         mFeedManagementMediator =
                 new FeedManagementMediator(mActivity, mModelList, TEST_STREAM_KIND);
@@ -67,7 +65,8 @@ public class FeedManagementMediatorTest {
         assertEquals(
                 intent.getData(), Uri.parse("https://myactivity.google.com/myactivity?product=50"));
         verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
+                .reportOtherUserActionForStream(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
     }
 
     @Test
@@ -81,8 +80,8 @@ public class FeedManagementMediatorTest {
                 intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/yourinterests?sh=n"));
         verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
+                .reportOtherUserActionForStream(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class FeedManagementMediatorTest {
                 intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/hidden?sh=n"));
         verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(
-                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
+                .reportOtherUserActionForStream(
+                        TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_HIDDEN);
     }
 }

@@ -5,6 +5,7 @@
 #ifndef UI_LINUX_LINUX_UI_DELEGATE_STUB_H_
 #define UI_LINUX_LINUX_UI_DELEGATE_STUB_H_
 
+#include "base/component_export.h"
 #include "ui/linux/linux_ui_delegate.h"
 
 namespace ui {

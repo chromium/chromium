@@ -66,7 +66,7 @@ public class InstalledWebappBridge {
 
     @CalledByNative
     private static Permission[] getPermissions(@ContentSettingsType.EnumType int type) {
-        return InstalledWebappPermissionManager.get().getPermissions(type);
+        return InstalledWebappPermissionManager.getPermissions(type);
     }
 
     @CalledByNative
@@ -92,11 +92,10 @@ public class InstalledWebappBridge {
         }
         switch (type) {
             case ContentSettingsType.GEOLOCATION:
-                PermissionUpdater.get().getLocationPermission(origin, lastCommittedUrl, callback);
+                PermissionUpdater.getLocationPermission(origin, lastCommittedUrl, callback);
                 break;
             case ContentSettingsType.NOTIFICATIONS:
-                PermissionUpdater.get()
-                        .requestNotificationPermission(origin, lastCommittedUrl, callback);
+                PermissionUpdater.requestNotificationPermission(origin, lastCommittedUrl, callback);
                 break;
             default:
                 throw new IllegalStateException("Unsupported permission type.");

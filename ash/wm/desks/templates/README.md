@@ -46,8 +46,7 @@ with using the features.
 
 Launching applications is done via `ChromeDesksTemplatesDelegate`, which lives
 in `chrome/`. Launching applications requires dependencies which are forbidden
-in `ash/`, such as app service, profiles and browser code. The delegate is also
-used to communicate to LaCros to launch LaCros browsers if LaCros is enabled.
+in `ash/`, such as app service, profiles and browser code.
 
 Launching applications code is shared with the full restore feature. There are
 a couple differences, including:

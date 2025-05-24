@@ -44,8 +44,12 @@ using mojom::blink::FormControlType;
 namespace {
 
 HTMLInputElement* NextInputElement(const HTMLInputElement& element,
-                                   const HTMLFormElement* stay_within,
+                                   const HTMLFormElement* form,
                                    bool forward) {
+  const Node* stay_within =
+      form && RuntimeEnabledFeatures::RadioInputNextButtonInScopeEnabled()
+          ? form->GetListedElementsScope()
+          : form;
   return forward ? Traversal<HTMLInputElement>::Next(element, stay_within)
                  : Traversal<HTMLInputElement>::Previous(element, stay_within);
 }
@@ -56,8 +60,8 @@ void RadioInputType::CountUsage() {
   CountUsageIfVisible(WebFeature::kInputTypeRadio);
 }
 
-ControlPart RadioInputType::AutoAppearance() const {
-  return kRadioPart;
+AppearanceValue RadioInputType::AutoAppearance() const {
+  return AppearanceValue::kRadio;
 }
 
 bool RadioInputType::ValueMissing(const String&) const {
@@ -190,9 +194,9 @@ void RadioInputType::HandleKeyupEvent(KeyboardEvent& event) {
   }
 }
 
-bool RadioInputType::IsKeyboardFocusable(
+bool RadioInputType::IsKeyboardFocusableSlow(
     Element::UpdateBehavior update_behavior) const {
-  if (!InputType::IsKeyboardFocusable(update_behavior)) {
+  if (!InputType::IsKeyboardFocusableSlow(update_behavior)) {
     return false;
   }
 
@@ -274,9 +278,6 @@ bool RadioInputType::ShouldAppearIndeterminate() const {
 HTMLInputElement* RadioInputType::NextRadioButtonInGroup(
     HTMLInputElement* current,
     bool forward) {
-  // TODO(https://crbug.com/323953913): Staying within form() is
-  // incorrect.  This code ignore input elements associated by |form|
-  // content attribute.
   // TODO(tkent): Comparing name() with == is incorrect.  It should be
   // case-insensitive.
   for (HTMLInputElement* input_element =

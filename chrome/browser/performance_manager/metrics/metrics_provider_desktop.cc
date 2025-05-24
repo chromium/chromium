@@ -22,6 +22,10 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/registry.h"
+#endif
+
 using performance_manager::user_tuning::prefs::kMemorySaverModeState;
 using performance_manager::user_tuning::prefs::MemorySaverModeState;
 
@@ -33,12 +37,7 @@ MetricsProviderDesktop* g_metrics_provider = nullptr;
 
 uint64_t kBytesPerMb = 1024 * 1024;
 
-#if BUILDFLAG(IS_MAC)
-uint64_t kKilobytesPerMb = 1024;
-#endif
-
-base::TimeDelta kCpuThroughputSamplingInterval = base::Minutes(5);
-
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 enum class CpuThroughputEstimatedStatus {
   kNormal,
   kUnknown,
@@ -203,6 +202,56 @@ void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
       kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
       TRACE_ID_LOCAL(id), started_running_time + wall_time);
 }
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
+
+#if BUILDFLAG(IS_WIN)
+// Reports histograms describing the value of the HKEY_LOCAL_MACHINE ->
+// Software\Microsoft\Windows NT\CurrentVersion\Image File ->
+// FrontEndHeapDebugOptions registry key. We observed locally that the 0x10 bit
+// activates stack collection on heap allocation, which results in unacceptable
+// performance. We want to be sure that this isn't used widely in the field.
+void RecordFrontEndHeapDebugOptionsHistogram() {
+  // Outcome of reading the registry key. These values are persisted to logs.
+  // Entries should not be renumbered and numeric values should never be reused.
+  // LINT.IfChange(FrontEndHeapDebugOptionsOutcome)
+  enum class FrontEndHeapDebugOptionsOutcome {
+    kCannotOpenKey = 0,
+    kCannotReadValue = 1,
+    kSuccess = 2,
+    kMaxValue = kSuccess,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/performance_manager/enums.xml:FrontEndHeapDebugOptionsOutcome)
+
+  std::optional<FrontEndHeapDebugOptionsOutcome> outcome;
+  base::win::RegKey key;
+  if (key.Open(HKEY_LOCAL_MACHINE,
+               L"Software\\Microsoft\\Windows NT\\CurrentVersion\\Image File "
+               L"Execution Options\\chrome.exe",
+               KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS) {
+    DWORD value = 0;
+    if (key.ReadValueDW(L"FrontEndHeapDebugOptions", &value) == ERROR_SUCCESS) {
+      base::UmaHistogramSparse(
+          "PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsValue",
+          // Limit the number of distinct values recorded to this histogram, as
+          // recommended by `base::UmaHistogramSparse()` documentation. The
+          // highest bit observed being set in practice is 0x10 (for stack
+          // collection on heap allocation). We set the maximum a little bit
+          // above that, to be aware if higher bits are used in the field.
+          std::clamp(base::saturated_cast<int>(value), 0, 0xff));
+      outcome = FrontEndHeapDebugOptionsOutcome::kSuccess;
+    } else {
+      outcome = FrontEndHeapDebugOptionsOutcome::kCannotReadValue;
+    }
+  } else {
+    outcome = FrontEndHeapDebugOptionsOutcome::kCannotOpenKey;
+  }
+
+  CHECK(outcome.has_value());
+  base::UmaHistogramEnumeration(
+      "PerformanceManager.RegistryStats.FrontEndHeapDebugOptionsOutcome",
+      outcome.value());
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -346,6 +395,10 @@ void MetricsProviderDesktop::ProvideCurrentSessionData(
 
   RecordDiskMetrics();
 
+#if BUILDFLAG(IS_WIN)
+  RecordFrontEndHeapDebugOptionsHistogram();
+#endif  // BUILDFLAG(IS_WIN)
+
   // Request a disk measurement so it's ready for the next interval
   PostDiskMetricsTask();
 }
@@ -357,14 +410,9 @@ MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
   DCHECK(!g_metrics_provider);
   g_metrics_provider = this;
 
-  available_memory_metrics_timer_.Start(
-      FROM_HERE, base::Minutes(2),
-      base::BindRepeating(&MetricsProviderDesktop::RecordAvailableMemoryMetrics,
-                          base::Unretained(this)));
-
-  if constexpr (ShouldCollectCpuFrequencyMetrics()) {
-    ScheduleCpuFrequencyTask();
-  }
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
+  ScheduleCpuFrequencyTask();
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 }
 
 void MetricsProviderDesktop::OnBatterySaverActiveChanged(bool is_active) {
@@ -425,32 +473,6 @@ bool MetricsProviderDesktop::IsMemorySaverEnabled() const {
          static_cast<int>(MemorySaverModeState::kDisabled);
 }
 
-void MetricsProviderDesktop::RecordAvailableMemoryMetrics() {
-  auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  auto total_bytes = base::SysInfo::AmountOfPhysicalMemory();
-
-  base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
-                                  available_bytes / kBytesPerMb);
-  base::UmaHistogramPercentage("Memory.Experimental.AvailableMemoryPercent",
-                               available_bytes * 100 / total_bytes);
-
-#if BUILDFLAG(IS_MAC)
-  base::SystemMemoryInfoKB info;
-  if (base::GetSystemMemoryInfo(&info)) {
-    base::UmaHistogramMemoryLargeMB(
-        "Memory.Experimental.MacFileBackedMemoryMB2",
-        info.file_backed / kKilobytesPerMb);
-    // `info.file_backed` is in kb, so multiply it by 1024 to get the amount of
-    // bytes
-    base::UmaHistogramPercentage(
-        "Memory.Experimental.MacAvailableMemoryPercentFreePageCache2",
-        (available_bytes +
-         (base::checked_cast<uint64_t>(info.file_backed) * 1024u)) *
-            100u / total_bytes);
-  }
-#endif
-}
-
 void MetricsProviderDesktop::ResetTrackers() {
   battery_saver_mode_tracker_ = std::make_unique<ScopedTimeInModeTracker>(
       battery_saver_enabled_,
@@ -460,15 +482,11 @@ void MetricsProviderDesktop::ResetTrackers() {
       "PerformanceManager.UserTuning.MemorySaverModeEnabledPercent");
 }
 
+#if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 // static
 void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
     base::TimeTicks posted_at_time) {
   auto started_running_time = base::TimeTicks::Now();
-
-  // Check this after computing started_running_time so that
-  // started_running_time is as close to reality as possible.
-  CHECK(ShouldCollectCpuFrequencyMetrics());
-
   auto queued_time = started_running_time - posted_at_time;
 
   static const double kHzInMhz = 1000 * 1000;
@@ -565,6 +583,8 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
 
 // static
 void MetricsProviderDesktop::ScheduleCpuFrequencyTask() {
+  static constexpr base::TimeDelta kCpuThroughputSamplingInterval =
+      base::Minutes(5);
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
@@ -582,6 +602,7 @@ void MetricsProviderDesktop::PostCpuFrequencyEstimation() {
       base::BindOnce(&MetricsProviderDesktop::RecordCpuFrequencyMetrics,
                      base::TimeTicks::Now()));
 }
+#endif  // SHOULD_COLLECT_CPU_FREQUENCY_METRICS()
 
 void MetricsProviderDesktop::RecordDiskMetrics() {
   if (!pending_disk_metrics_) {

@@ -133,8 +133,9 @@ void SmbUrl::CanonicalizeSmbUrl(const std::string& url) {
   url::StdStringCanonOutput canonical_output(&url_);
 
   url::Component scheme;
-  if (!url::CanonicalizeScheme(url.c_str(), initial_parsed.scheme,
-                               &canonical_output, &scheme)) {
+  if (!url::CanonicalizeScheme(
+          initial_parsed.scheme.as_string_view_on(url.c_str()),
+          &canonical_output, &scheme)) {
     Reset();
     return;
   }

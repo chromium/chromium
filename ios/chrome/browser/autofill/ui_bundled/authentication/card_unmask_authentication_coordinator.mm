@@ -5,15 +5,15 @@
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_coordinator.h"
 
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
-#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/card_unmask_authentication_selection_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/authentication/otp_input_dialog_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/card_unmask_prompt_view_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/ios_chrome_payments_autofill_client.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @interface CardUnmaskAuthenticationCoordinator () <
     UIAdaptivePresentationControllerDelegate>
@@ -58,6 +58,8 @@
 // TODO(crbug.com/333925306): Create a CVC input coordinator/mediator out of the
 // legacy CardUnmaskPromptViewBridge and move this function there.
 - (void)continueWithCvcAuth {
+  // TODO(crbug.com/40714201): Use AutofillClientIOS::FromWebState() so that
+  // tests can easily inject their AutofillClient.
   autofill::ChromeAutofillClientIOS* client =
       AutofillTabHelper::FromWebState(
           self.browser->GetWebStateList()->GetActiveWebState())
@@ -75,7 +77,7 @@
       paymentsClient->GetCardUnmaskPromptModel();
   _cvcInputViewBridge = std::make_unique<autofill::CardUnmaskPromptViewBridge>(
       cvcInputModelController, _navigationController,
-      client->GetPersonalDataManager(), browserCoordinatorCommandsHandler);
+      &client->GetPersonalDataManager(), browserCoordinatorCommandsHandler);
 
   __weak __typeof__(self) weakSelf = self;
   cvcInputModelController->ShowPrompt(

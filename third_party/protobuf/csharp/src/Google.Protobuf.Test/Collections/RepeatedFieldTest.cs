@@ -1,39 +1,15 @@
 ﻿#region Copyright notice and license
 // Protocol Buffers - Google's data interchange format
 // Copyright 2015 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 #endregion
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,8 +35,7 @@ namespace Google.Protobuf.Collections
         [Test]
         public void Add_SingleItem()
         {
-            var list = new RepeatedField<string>();
-            list.Add("foo");
+            var list = new RepeatedField<string> { "foo" };
             Assert.AreEqual(1, list.Count);
             Assert.AreEqual("foo", list[0]);
         }
@@ -68,8 +43,7 @@ namespace Google.Protobuf.Collections
         [Test]
         public void Add_Sequence()
         {
-            var list = new RepeatedField<string>();
-            list.Add(new[] { "foo", "bar" });
+            var list = new RepeatedField<string> { new[] { "foo", "bar" } };
             Assert.AreEqual(2, list.Count);
             Assert.AreEqual("foo", list[0]);
             Assert.AreEqual("bar", list[1]);
@@ -151,6 +125,44 @@ namespace Google.Protobuf.Collections
             // It's okay for this to throw ArgumentNullException if necessary.
             // It's not ideal, but not awful.
             Assert.Catch<ArgumentException>(() => list.AddRange(new List<int?> { 20, null }));
+        }
+
+        [Test]
+        public void AddRange_ReadOnlySpanPath()
+        {
+            var list = new RepeatedField<string>();
+            list.AddRange(new[] { "foo", "bar" }.AsSpan());
+            Assert.AreEqual(2, list.Count);
+            Assert.AreEqual("foo", list[0]);
+            Assert.AreEqual("bar", list[1]);
+        }
+
+        [Test]
+        public void AddRange_ReadOnlySpan_NullsProhibited_ReferenceType()
+        {
+            // We don't just trust that a collection with a nullable element type doesn't contain nulls
+            var list = new RepeatedField<string>();
+            // It's okay for this to throw ArgumentNullException if necessary.
+            // It's not ideal, but not awful.
+            Assert.Catch<ArgumentException>(() => list.AddRange(new string[] { "foo", null }.AsSpan()));
+        }
+
+        [Test]
+        public void AddRange_ReadOnlySpan_NullsProhibited_NullableValueType()
+        {
+            // We don't just trust that a collection with a nullable element type doesn't contain nulls
+            var list = new RepeatedField<int?>();
+            // It's okay for this to throw ArgumentNullException if necessary.
+            // It's not ideal, but not awful.
+            Assert.Catch<ArgumentException>(() => list.AddRange(new int?[] { 20, null }.AsSpan()));
+        }
+
+        [Test]
+        public void AddRange_ReadOnlySpan_AlreadyNotEmpty()
+        {
+            var list = new RepeatedField<int> { 1, 2, 3 };
+            list.AddRange(new int[] { 4, 5, 6 }.AsSpan());
+            CollectionAssert.AreEqual(new[] { 1, 2, 3, 4, 5, 6 }, list);
         }
 
         [Test]
@@ -293,15 +305,13 @@ namespace Google.Protobuf.Collections
         public void Enumerator()
         {
             var list = new RepeatedField<string> { "first", "second" };
-            using (var enumerator = list.GetEnumerator())
-            {
-                Assert.IsTrue(enumerator.MoveNext());
-                Assert.AreEqual("first", enumerator.Current);
-                Assert.IsTrue(enumerator.MoveNext());
-                Assert.AreEqual("second", enumerator.Current);
-                Assert.IsFalse(enumerator.MoveNext());
-                Assert.IsFalse(enumerator.MoveNext());
-            }
+            using var enumerator = list.GetEnumerator();
+            Assert.IsTrue(enumerator.MoveNext());
+            Assert.AreEqual("first", enumerator.Current);
+            Assert.IsTrue(enumerator.MoveNext());
+            Assert.AreEqual("second", enumerator.Current);
+            Assert.IsFalse(enumerator.MoveNext());
+            Assert.IsFalse(enumerator.MoveNext());
         }
 
         [Test]
@@ -892,6 +902,18 @@ namespace Google.Protobuf.Collections
 
             Assert.DoesNotThrow(() => list.Capacity = 0, "Can set Capacity to 0");
             Assert.AreEqual(0, list.Capacity);
+        }
+
+        [Test]
+        public void Clear_CapacityUnaffected()
+        {
+            var list = new RepeatedField<int> { 1 };
+            Assert.AreEqual(1, list.Count);
+            Assert.AreEqual(8, list.Capacity);
+
+            list.Clear();
+            Assert.AreEqual(0, list.Count);
+            Assert.AreEqual(8, list.Capacity);
         }
     }
 }

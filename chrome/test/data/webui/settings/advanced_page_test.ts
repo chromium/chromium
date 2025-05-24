@@ -77,7 +77,7 @@ suite('AdvancedPage', function() {
     for (let i = 0; i < sections.length; i++) {
       const section = getSection(basicPage, sections[i]!);
       assertTrue(!!section);
-      verifySectionWithSubpagesHidden(section!);
+      verifySectionWithSubpagesHidden(section);
     }
   });
 });

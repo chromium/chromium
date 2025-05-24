@@ -22,6 +22,8 @@
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
+#include "net/base/proxy_chain.h"
+#include "net/base/session_usage.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace base {
@@ -54,6 +56,9 @@ class NET_EXPORT SSLClientSessionCache {
     std::optional<IPAddress> dest_ip_addr;
     NetworkAnonymizationKey network_anonymization_key;
     PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
+    SessionUsage session_usage = SessionUsage::kDestination;
+    ProxyChain proxy_chain = ProxyChain::Direct();
+    size_t proxy_chain_index = 0;
   };
 
   explicit SSLClientSessionCache(const Config& config);

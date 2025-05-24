@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/v4l2_image_processor_backend.h"
 
 #include <errno.h>
@@ -53,7 +58,7 @@ void FillV4L2BufferByGpuMemoryBufferHandle(
   DCHECK_EQ(buffer->Memory(), V4L2_MEMORY_DMABUF);
   const size_t num_planes = GetNumPlanesOfV4L2PixFmt(fourcc.ToV4L2PixFmt());
   const std::vector<gfx::NativePixmapPlane>& planes =
-      gmb_handle.native_pixmap_handle.planes;
+      gmb_handle.native_pixmap_handle().planes;
 
   for (size_t i = 0; i < num_planes; ++i) {
     if (fourcc.IsMultiPlanar()) {
@@ -520,8 +525,10 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     if (!input_queue_->IsStreaming()) {
       const FrameResource& input_frame =
           *(input_job_queue_.front()->input_frame.get());
-      const gfx::Size input_buffer_size(input_frame.stride(0),
-                                        input_frame.coded_size().height());
+      const gfx::Size input_buffer_size(
+          input_frame.stride(0) /
+              VideoFrame::BytesPerElement(input_frame.format(), 0),
+          input_frame.coded_size().height());
       if (!ReconfigureV4L2Format(input_buffer_size,
                                  V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)) {
         NotifyError();
@@ -534,8 +541,10 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
         !output_queue_->IsStreaming()) {
       const FrameResource& output_frame =
           *(input_job_queue_.front()->output_frame.get());
-      const gfx::Size output_buffer_size(output_frame.stride(0),
-                                         output_frame.coded_size().height());
+      const gfx::Size output_buffer_size(
+          output_frame.stride(0) /
+              VideoFrame::BytesPerElement(output_frame.format(), 0),
+          output_frame.coded_size().height());
       if (!ReconfigureV4L2Format(output_buffer_size,
                                  V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
         NotifyError();
@@ -547,10 +556,11 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     std::optional<V4L2WritableBufferRef> input_buffer;
     // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
     if (input_memory_type_ == V4L2_MEMORY_DMABUF) {
-      const FrameResource& input_frame =
-          *(input_job_queue_.front()->input_frame.get());
-      input_buffer =
-          input_queue_->GetFreeBufferForFrame(input_frame.GetSharedMemoryId());
+      const std::optional<base::UnguessableToken> tracking_token =
+          input_job_queue_.front()->input_frame->metadata().tracking_token;
+      if (tracking_token.has_value()) {
+        input_buffer = input_queue_->GetFreeBufferForFrame(*tracking_token);
+      }
     }
     if (!input_buffer)
       input_buffer = input_queue_->GetFreeBuffer();
@@ -558,10 +568,11 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     std::optional<V4L2WritableBufferRef> output_buffer;
     // If we are using DMABUF frames, try to always obtain the same V4L2 buffer.
     if (output_memory_type_ == V4L2_MEMORY_DMABUF) {
-      const FrameResource& output_frame =
-          *(input_job_queue_.front()->output_frame.get());
-      output_buffer = output_queue_->GetFreeBufferForFrame(
-          output_frame.GetSharedMemoryId());
+      const std::optional<base::UnguessableToken> tracking_token =
+          input_job_queue_.front()->output_frame->metadata().tracking_token;
+      if (tracking_token.has_value()) {
+        output_buffer = output_queue_->GetFreeBufferForFrame(*tracking_token);
+      }
     }
     if (!output_buffer)
       output_buffer = output_queue_->GetFreeBuffer();
@@ -898,7 +909,7 @@ bool V4L2ImageProcessorBackend::EnqueueInputRecord(
       FillV4L2BufferByGpuMemoryBufferHandle(
           input_config_.fourcc, input_config_.size, *input_handle, &buffer);
       if (!std::move(buffer).QueueDMABuf(
-              input_handle->native_pixmap_handle.planes)) {
+              input_handle->native_pixmap_handle().planes)) {
         VPLOGF(1) << "Failed to queue a DMABUF buffer to input queue";
         NotifyError();
         return false;
@@ -937,7 +948,7 @@ bool V4L2ImageProcessorBackend::EnqueueOutputRecord(
       FillV4L2BufferByGpuMemoryBufferHandle(
           output_config_.fourcc, output_config_.size, *output_handle, &buffer);
       return std::move(buffer).QueueDMABuf(
-          output_handle->native_pixmap_handle.planes);
+          output_handle->native_pixmap_handle().planes);
     }
     default:
       NOTREACHED();

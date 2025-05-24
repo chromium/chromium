@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 
+#include <array>
 #include <memory>
 #include <vector>
 
@@ -17,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter_test_utils.h"
@@ -31,6 +28,11 @@
 namespace subresource_filter {
 
 namespace proto = url_pattern_index::proto;
+
+constexpr const char kSubresourceLoadEvaluationWallDurationHistogram[] =
+    "SubresourceFilter.SubresourceLoad.Evaluation.WallDuration";
+constexpr const char kSubresourceLoadEvaluationCPUDurationHistogram[] =
+    "SubresourceFilter.SubresourceLoad.Evaluation.CPUDuration";
 
 class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
  public:
@@ -74,8 +76,9 @@ class AsyncDocumentSubresourceFilterTest : public ::testing::Test {
   }
 
   void RunBlockingTasks() {
-    if (blocking_task_runner_->HasPendingTask())
+    if (blocking_task_runner_->HasPendingTask()) {
       blocking_task_runner_->RunPendingTasks();
+    }
   }
 
   VerifiedRulesetDealer::Handle* dealer_handle() {
@@ -224,7 +227,8 @@ TEST_F(AsyncDocumentSubresourceFilterTest, ActivationStateIsReported) {
 
   testing::TestActivationStateCallbackReceiver activation_state;
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-      ruleset_handle.get(), std::move(params), activation_state.GetCallback());
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
 
   RunUntilIdle();
   mojom::ActivationState expected_state;
@@ -242,7 +246,8 @@ TEST_F(AsyncDocumentSubresourceFilterTest, DeleteFilter_NoActivationCallback) {
 
   testing::TestActivationStateCallbackReceiver activation_state;
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-      ruleset_handle.get(), std::move(params), activation_state.GetCallback());
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
 
   EXPECT_FALSE(filter->has_activation_state());
   filter.reset();
@@ -263,7 +268,8 @@ TEST_F(AsyncDocumentSubresourceFilterTest, ActivationStateIsComputedCorrectly) {
 
   testing::TestActivationStateCallbackReceiver activation_state;
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-      ruleset_handle.get(), std::move(params), activation_state.GetCallback());
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
 
   RunUntilIdle();
 
@@ -285,23 +291,27 @@ TEST_F(AsyncDocumentSubresourceFilterTest, DisabledForCorruptRuleset) {
 
   testing::TestActivationStateCallbackReceiver activation_state;
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-      ruleset_handle.get(), std::move(params), activation_state.GetCallback());
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
 
   RunUntilIdle();
   activation_state.ExpectReceivedOnce(mojom::ActivationState());
 }
 
 TEST_F(AsyncDocumentSubresourceFilterTest, GetLoadPolicyForSubdocument) {
+  base::HistogramTester histogram_tester;
+
   dealer_handle()->TryOpenAndSetRulesetFile(
       ruleset().path, /*expected_checksum=*/0, base::DoNothing());
   auto ruleset_handle = CreateRulesetHandle();
 
   AsyncDocumentSubresourceFilter::InitializationParams params(
-      GURL("http://example.com"), mojom::ActivationLevel::kEnabled, false);
+      GURL("http://example.com"), mojom::ActivationLevel::kEnabled, true);
 
   testing::TestActivationStateCallbackReceiver activation_state;
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-      ruleset_handle.get(), std::move(params), activation_state.GetCallback());
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
 
   LoadPolicyCallbackReceiver load_policy_1;
   LoadPolicyCallbackReceiver load_policy_2;
@@ -313,6 +323,12 @@ TEST_F(AsyncDocumentSubresourceFilterTest, GetLoadPolicyForSubdocument) {
   RunUntilIdle();
   load_policy_1.ExpectReceivedOnce(LoadPolicy::ALLOW);
   load_policy_2.ExpectReceivedOnce(LoadPolicy::DISALLOW);
+
+  // Check that the UMA tag is propagated for performance measurement metrics.
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationWallDurationHistogram, 2);
+  histogram_tester.ExpectTotalCount(
+      kSubresourceLoadEvaluationCPUDurationHistogram, 2);
 }
 
 TEST_F(AsyncDocumentSubresourceFilterTest, GetLoadPolicyForSubdocumentURLs) {
@@ -407,8 +423,8 @@ TEST_F(AsyncDocumentSubresourceFilterTest, GetLoadPolicyForSubdocumentURLs) {
 
     testing::TestActivationStateCallbackReceiver activation_state;
     auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-        ruleset_handle.get(), std::move(params),
-        activation_state.GetCallback());
+        ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+        kSafeBrowsingRulesetConfig.uma_tag);
 
     base::RunLoop run_loop;
     MultiLoadPolicyCallbackReceiver load_policy;
@@ -438,7 +454,8 @@ TEST_F(AsyncDocumentSubresourceFilterTest, FirstDisallowedLoadIsReported) {
 
   testing::TestActivationStateCallbackReceiver activation_state;
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-      ruleset_handle.get(), std::move(params), activation_state.GetCallback());
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
   filter->set_first_disallowed_load_callback(
       first_disallowed_load_receiver.GetClosure());
 
@@ -473,7 +490,8 @@ TEST_F(AsyncDocumentSubresourceFilterTest, UpdateActivationState) {
       GURL("http://example.com"), mojom::ActivationLevel::kDryRun, false);
   testing::TestActivationStateCallbackReceiver activation_state;
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
-      ruleset_handle.get(), std::move(params), activation_state.GetCallback());
+      ruleset_handle.get(), std::move(params), activation_state.GetCallback(),
+      kSafeBrowsingRulesetConfig.uma_tag);
 
   // Make sure the ADSF computes its initial activation before updating it.
   RunUntilIdle();
@@ -512,7 +530,7 @@ TEST_F(AsyncDocumentSubresourceFilterTest,
 
   auto filter = std::make_unique<AsyncDocumentSubresourceFilter>(
       ruleset_handle.get(), url::Origin::Create(GURL("http://example.com")),
-      provided_state);
+      provided_state, kSafeBrowsingRulesetConfig.uma_tag);
 
   EXPECT_TRUE(filter->has_activation_state());
   EXPECT_EQ(provided_state.activation_level,
@@ -529,7 +547,7 @@ TEST_F(AsyncDocumentSubresourceFilterTest,
 
 class SubresourceFilterComputeActivationStateTest : public ::testing::Test {
  public:
-  SubresourceFilterComputeActivationStateTest() {}
+  SubresourceFilterComputeActivationStateTest() = default;
 
   SubresourceFilterComputeActivationStateTest(
       const SubresourceFilterComputeActivationStateTest&) = delete;
@@ -581,12 +599,13 @@ class SubresourceFilterComputeActivationStateTest : public ::testing::Test {
 TEST_F(SubresourceFilterComputeActivationStateTest,
        ActivationBitsCorrectlyPropagateToChildDocument) {
   // TODO(pkalinnikov): Find a short way to express all these tests.
-  const struct {
+  struct TestCases {
     const char* document_url;
     const char* parent_document_origin;
     mojom::ActivationState parent_activation;
     mojom::ActivationState expected_activation_state;
-  } kTestCases[] = {
+  };
+  const auto kTestCases = std::to_array<TestCases>({
       {"http://example.com", "http://example.com", MakeState(false, false),
        MakeState(false, false)},
       {"http://example.com", "http://example.com", MakeState(false, true),
@@ -624,7 +643,7 @@ TEST_F(SubresourceFilterComputeActivationStateTest,
        MakeState(true)},
       {"http://child3.com", "http://parent1.com", MakeState(true, true),
        MakeState(true, true)},
-  };
+  });
 
   for (size_t i = 0, size = std::size(kTestCases); i != size; ++i) {
     SCOPED_TRACE(::testing::Message() << "Test number: " << i);

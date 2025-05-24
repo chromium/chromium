@@ -62,13 +62,15 @@ class ThrobberView : public View, public LayoutDelegate {
   }
 
   bool OnMousePressed(const ui::MouseEvent& event) override {
-    if (GetEventHandlerForPoint(event.location()) != throbber_)
+    if (GetEventHandlerForPoint(event.location()) != throbber_) {
       return false;
+    }
 
-    if (is_checked_)
+    if (is_checked_) {
       throbber_->Start();
-    else
+    } else {
       throbber_->Stop();
+    }
     throbber_->SetChecked(!is_checked_);
     is_checked_ = !is_checked_;
     return true;

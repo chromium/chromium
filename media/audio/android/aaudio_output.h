@@ -13,6 +13,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "media/audio/android/aaudio_stream_wrapper.h"
+#include "media/audio/android/audio_device.h"
 #include "media/audio/android/muteable_audio_output_stream.h"
 #include "media/base/amplitude_peak_detector.h"
 #include "media/base/audio_parameters.h"
@@ -28,6 +29,7 @@ class REQUIRES_ANDROID_API(AAUDIO_MIN_API) AAudioOutputStream
  public:
   AAudioOutputStream(AudioManagerAndroid* manager,
                      const AudioParameters& params,
+                     android::AudioDevice device,
                      aaudio_usage_t usage);
 
   AAudioOutputStream(const AAudioOutputStream&) = delete;

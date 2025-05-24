@@ -8,6 +8,7 @@ workaround and should be replaced once this bug is resolved"""
 
 import json
 import logging
+import os
 import re
 import sys
 
@@ -38,6 +39,8 @@ class LegacyOutputAdapter:
   ANNOTATOR_PREFIX_SUFIX = '@@@'
   TRIGGER_STEP_PREFIX = 'test_pre_run.[trigger] '
   TRIGGER_LINK_TEXT = '@@@STEP_LINK@task UI:'
+  # Special sub-log names added by the UTR recipe to surface to users.
+  UTR_LOG_NAME = 'utr_log'
 
   def __init__(self):
     self._trigger_link_re = re.compile(r'.+@(https://.+)@@@$')
@@ -59,6 +62,7 @@ class LegacyOutputAdapter:
         'reclient compile': self._ProcessCompileLine,
         'test_pre_run.[trigger] ': self._ProcessTriggerLine,
         'collect tasks.wait for tasks': self._ProcessCollectLine,
+        'download compilation outputs': self._PrintOnlyStepName,
     }
     # The first match is used. This allows us to filter parent steps while still
     # printing child steps by adding the child step name first. By default INFO
@@ -89,6 +93,8 @@ class LegacyOutputAdapter:
         'Test statistics': logging.DEBUG,
         'read gclient': logging.DEBUG,
         'write output_properties_file': logging.DEBUG,
+        'prepare skylab tests.': logging.DEBUG,
+        'update invocation instructions': logging.DEBUG,
     }
     # Setup logger for printing to the same line
     logger = logging.getLogger('single_line_logger')
@@ -98,27 +104,39 @@ class LegacyOutputAdapter:
     logger.propagate = False
 
     self._last_line = ''
+    self._last_line_teriminal_lines = 0
     self._current_log_level = logging.DEBUG
     self._single_line_logger = logger
+    self._terminal_columns, _ = os.get_terminal_size()
     self._current_step_name = ''
     self._dot_count = 0
 
+  def _PrintCurrentStepName(self, log_level):
+    logging.log(log_level, '\n[cyan]Running: %s[/]', self._current_step_name)
+
   def _StdoutProcessLine(self, line):
-    if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
-      # Pass through any non-engine text
-      is_urlish = re.match(r'^http[s]?://\S+$', line)
-      if is_urlish:
-        logging.log(self._current_log_level, line)
-      else:
-        basic_logger.log(self._current_log_level, line)
+    # Pass through any non-engine or utr-log text.
+    if line.startswith(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):
+      # '-3' corresponds to the trailing @@@ on every sub-log line.
+      line = line[len(f'@@@STEP_LOG_LINE@{self.UTR_LOG_NAME}@'):-3]
+    if line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
+      return
+    is_urlish = re.match(r'^http[s]?://\S+$', line)
+    if is_urlish:
+      logging.log(self._current_log_level, line)
+    else:
+      basic_logger.log(self._current_log_level, line)
 
   def _StepNameProcessLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
       # Always print the step name to info
-      logging.log(self._current_log_level,
-                  '\n[cyan]Running: ' + self._current_step_name + '[/]')
+      self._PrintCurrentStepName(self._current_log_level)
       return
     self._StdoutProcessLine(line)
+
+  def _PrintOnlyStepName(self, line):
+    if line.startswith(self.SEED_STEP_TEXT):
+      self._PrintCurrentStepName(logging.INFO)
 
   def _ProcessTriggerLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT + self.TRIGGER_STEP_PREFIX):
@@ -140,11 +158,17 @@ class LegacyOutputAdapter:
 
   def _ProcessCompileLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
-      logging.info('\n[cyan]Running: ' + self._current_step_name + '[/]')
+      self._PrintCurrentStepName(logging.INFO)
       return
     matches = self._ninja_status_re.match(line)
     if matches:
-      self._single_line_logger.log(self._current_log_level, '\33[2K\r' + line)
+      # Remove the last line which might be multiple on the terminal
+      self._single_line_logger.log(self._current_log_level, '\33[2K')
+      if self._last_line_teriminal_lines > 1:
+        for _ in range(self._last_line_teriminal_lines - 1):
+          self._single_line_logger.log(self._current_log_level, '\33[A\33[2K')
+      self._single_line_logger.log(self._current_log_level, '\r' + line)
+      self._single_line_logger.handlers[0].flush()
       return
     if self._last_line.startswith('['):
       basic_logger.log(self._current_log_level, '')
@@ -152,7 +176,7 @@ class LegacyOutputAdapter:
 
   def _ProcessCollectLine(self, line):
     if line.startswith(self.SEED_STEP_TEXT):
-      logging.info('\n[cyan]Running: ' + self._current_step_name + '[/]')
+      self._PrintCurrentStepName(logging.INFO)
     matches = self._collect_wait_re.match(line)
     if matches:
       task_ids = json.loads(matches[2])['task_id']
@@ -183,6 +207,8 @@ class LegacyOutputAdapter:
       self._current_log_level = self._get_log_level(self._current_step_name)
     self._current_proccess_fn(line)
     self._last_line = line
+    self._last_line_teriminal_lines = int(
+        (len(line) - 1) / self._terminal_columns) + 1
     if line.startswith(self.STEP_CLOSED_TEXT):
       # Text outside of steps will use the last processor otherwise
       self._current_log_level = logging.DEBUG

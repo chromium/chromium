@@ -30,6 +30,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_CHANNEL_H_
 
 #include <memory>
+
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
@@ -40,7 +42,7 @@ namespace blink {
 // An AudioChannel represents a buffer of non-interleaved floating-point audio
 // samples.
 // The PCM samples are normally assumed to be in a nominal range -1.0 -> +1.0
-class PLATFORM_EXPORT AudioChannel {
+class PLATFORM_EXPORT AudioChannel final {
  public:
   // Memory can be externally referenced, or can be internally allocated with an
   // AudioFloatArray.
@@ -95,8 +97,8 @@ class PLATFORM_EXPORT AudioChannel {
     if (mem_buffer_.get()) {
       mem_buffer_->Zero();
     } else {
-      memset(raw_pointer_, 0,
-             base::CheckMul(sizeof(float), length_).ValueOrDie());
+      UNSAFE_TODO(memset(raw_pointer_, 0,
+                         base::CheckMul(sizeof(float), length_).ValueOrDie()));
     }
   }
 

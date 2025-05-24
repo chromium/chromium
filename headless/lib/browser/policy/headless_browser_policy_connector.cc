@@ -150,7 +150,7 @@ HeadlessBrowserPolicyConnector::CreatePlatformProvider() {
       std::make_unique<MacPreferences>(), bundle_id);
   return std::make_unique<AsyncPolicyProvider>(GetSchemaRegistry(),
                                                std::move(loader));
-#elif BUILDFLAG(IS_POSIX)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<AsyncPolicyLoader> loader(new ConfigDirPolicyLoader(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),

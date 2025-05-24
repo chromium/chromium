@@ -12,7 +12,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "ui/gfx/image/image_family.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -128,6 +127,25 @@ std::string GetFirefoxProgIdSuffix();
 // Attempt to determine if this instance of Chrome is the default client
 // application for the given scheme and return the appropriate state.
 DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme);
+
+#if BUILDFLAG(IS_WIN)
+// Returns a `DefaultWebClientState` indicating whether this instance of Chrome
+// is the default app for `file_extension`. `file_extension` must include a
+// leading `.`, e.g., ".pdf".
+DefaultWebClientState IsDefaultHandlerForFileExtension(
+    const std::string& file_extension);
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+// Returns a `DefaultWebClientState` indicating whether this instance of Chrome
+// is the default app for `type`. `type` must be a UTType identifier,
+// e.g., "com.adobe.pdf".
+DefaultWebClientState IsDefaultHandlerForUTType(const std::string& type);
+
+// Sets Chrome as the default app for `type` (only for the current user). `type`
+// must be a UTType identifier, e.g., "com.adobe.pdf".
+bool SetAsDefaultHandlerForUTType(const std::string& type);
+#endif  // BUILDFLAG(IS_MAC)
 
 // Is the current instance of Chrome running in App mode.
 bool IsRunningInAppMode();

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "chrome/browser/new_tab_page/promos/promo_service.h"
 
 #include <utility>
@@ -222,6 +227,7 @@ void PromoService::Refresh() {
   resource_request->url = GetApiUrl();
   resource_request->request_initiator =
       url::Origin::Create(GURL(chrome::kChromeUINewTabURL));
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation);
@@ -244,11 +250,10 @@ void PromoService::OnLoadDone(std::unique_ptr<std::string> response_body) {
   response.swap(*response_body);
 
   // The response may start with )]}'. Ignore this.
-  if (base::StartsWith(response, kXSSIResponsePreamble,
-                       base::CompareCase::SENSITIVE)) {
-    response = response.substr(strlen(kXSSIResponsePreamble));
+  auto remainder = base::RemovePrefix(response, kXSSIResponsePreamble);
+  if (remainder) {
+    response = std::string(*remainder);
   }
-
   data_decoder::DataDecoder::ParseJsonIsolated(
       response, base::BindOnce(&PromoService::OnJsonParsed,
                                weak_ptr_factory_.GetWeakPtr()));

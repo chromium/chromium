@@ -15,7 +15,7 @@ class FilePath;
 
 class MediaFileSystemContext {
  public:
-  virtual ~MediaFileSystemContext() {}
+  virtual ~MediaFileSystemContext() = default;
 
   // Register a new media file system for |path| as |fs_name|.
   virtual bool RegisterFileSystem(const std::string& device_id,

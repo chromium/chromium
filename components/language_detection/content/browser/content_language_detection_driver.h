@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "components/language_detection/content/common/language_detection.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -15,14 +16,17 @@
 
 namespace language_detection {
 
-class LanguageDetectionModelService;
+class LanguageDetectionModelProvider;
 
 // Content implementation of LanguageDetectionDriver.
 class ContentLanguageDetectionDriver
-    : public mojom::ContentLanguageDetectionDriver {
+    : public mojom::ContentLanguageDetectionDriver,
+      public base::SupportsUserData::Data {
  public:
+  // `language_detection_model_provider` is not owned by and must outlive
+  // `this`.
   explicit ContentLanguageDetectionDriver(
-      LanguageDetectionModelService* language_detection_model_service);
+      LanguageDetectionModelProvider* language_detection_model_provider);
 
   ContentLanguageDetectionDriver(const ContentLanguageDetectionDriver&) =
       delete;
@@ -38,6 +42,9 @@ class ContentLanguageDetectionDriver
   // translate::mojom::ContentTranslateDriver implementation:
   void GetLanguageDetectionModel(
       GetLanguageDetectionModelCallback callback) override;
+
+  void GetLanguageDetectionModelStatus(
+      GetLanguageDetectionModelStatusCallback callback) override;
 
  protected:
   // Notifies `this` that the translate model service is available for model
@@ -55,10 +62,9 @@ class ContentLanguageDetectionDriver
   mojo::ReceiverSet<language_detection::mojom::ContentLanguageDetectionDriver>
       receivers_;
 
-  // The service that provides the model files needed for translate. Not owned
-  // but guaranteed to outlive `this`.
-  const raw_ptr<LanguageDetectionModelService>
-      language_detection_model_service_;
+  // Provides access to the model file needed for language detection.
+  const raw_ptr<LanguageDetectionModelProvider>
+      language_detection_model_provider_;
 
   base::WeakPtrFactory<ContentLanguageDetectionDriver> weak_pointer_factory_{
       this};

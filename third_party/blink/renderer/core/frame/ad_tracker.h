@@ -86,11 +86,16 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // stack or the top and bottom is indicated by `stack_type`. kBottomAndTop is
   // generally best as it catches more ads, but if you're calling very
   // frequently then consider just the bottom of the stack for performance sake.
-  // If `out_ad_script` is non-null and there is ad script in the stack, the
-  // bottom-most known ad script on the stack will be copied to the address.
-  bool IsAdScriptInStack(
+  //
+  // Output Parameters:
+  // - `out_ad_script_ancestry`: if non-null and there is ad script in the
+  //   stack, this vector will be populated with the identified ad script and
+  //   its ancestor scripts, ordered from the most immediate caller to more
+  //   distant ancestors. The ancestry will be traced up to the first script
+  //   flagged by the subresource filter.
+  virtual bool IsAdScriptInStack(
       StackType stack_type,
-      std::optional<AdScriptIdentifier>* out_ad_script = nullptr);
+      Vector<AdScriptIdentifier>* out_ad_script_ancestry = nullptr);
 
   virtual void Trace(Visitor*) const;
 
@@ -102,7 +107,9 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
  protected:
   // Protected for testing.
-  virtual String ScriptAtTopOfStack();
+  // Note that this outputs the `out_top_script` even when it's not an ad.
+  virtual String ScriptAtTopOfStack(
+      std::optional<AdScriptIdentifier>* out_top_script);
   virtual ExecutionContext* GetCurrentExecutionContext();
 
  private:
@@ -110,17 +117,58 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   friend class AdTrackerSimTest;
   friend class AdTrackerTest;
 
-  // |script_name| will be empty in the case of a dynamically added script with
-  // no src attribute set. |script_id| won't be set for module scripts in an
-  // errored state or for non-source text modules.
+  // Similar to the public IsAdScriptInStack method but instead of returning an
+  // ancestry chain, it returns only one script (the most immediate one).
+  bool IsAdScriptInStackHelper(
+      StackType stack_type,
+      std::optional<AdScriptIdentifier>* out_ad_script);
+
+  // `script_name` will be empty in the case of a dynamically added script with
+  // no src attribute set. `script_id` won't be set for module scripts in an
+  // errored state or for non-source text modules. `top_level_execution` should
+  // be true if the top-level script is being run, as opposed to a function
+  // being called.
   void WillExecuteScript(ExecutionContext*,
                          const v8::Local<v8::Context>& v8_context,
                          const String& script_name,
-                         int script_id);
+                         int script_id,
+                         bool top_level_execution);
   void DidExecuteScript();
   bool IsKnownAdScript(ExecutionContext*, const String& url);
-  bool IsKnownAdScriptForCheckedContext(ExecutionContext&, const String& url);
-  void AppendToKnownAdScripts(ExecutionContext&, const String& url);
+  bool IsKnownAdScriptForCheckedContext(
+      ExecutionContext&,
+      const String& url,
+      std::optional<AdScriptIdentifier>* out_ad_script);
+
+  // Adds the given `url` to the set of known ad scripts associated with the
+  // provided `execution_context`.
+  //
+  // If `ancestor_ad_script` is specified, it indicates that `url` was
+  // identified as an ad script indirectly, due to its association with another
+  // ad script (`ancestor_ad_script`) in the call stack. In such cases, a link
+  // is then established between `url` and `ancestor_ad_script`.
+  void AppendToKnownAdScripts(
+      ExecutionContext& execution_context,
+      const String& url,
+      const std::optional<AdScriptIdentifier>& ancestor_ad_script);
+
+  // If a known ancestor of `script_name` exists in `execution_context`, creates
+  // and links a new AdScriptIdentifier (with `script_id` and
+  // `v8_context`) to the ancestor. The link is kept in `ancestor_ad_scripts_`.
+  //
+  // Prerequisites: `script_name` is a known ad script in `execution_context`.
+  void MaybeLinkKnownAdScriptToAncestor(
+      ExecutionContext* execution_context,
+      const v8::Local<v8::Context>& v8_context,
+      const String& script_name,
+      int script_id);
+
+  // Retrieves the ancestry chain of a given ad script (inclusive), ordered from
+  // the script itself to the root script. The root script is guaranteed to be
+  // subresource-filter-flagged, while all preceding scripts in the chain are
+  // non-subresource-filter-flagged.
+  Vector<AdScriptIdentifier> GetAncestryChain(
+      const AdScriptIdentifier& ad_script);
 
   Member<LocalFrame> local_root_;
 
@@ -138,10 +186,27 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // if there isn't one.
   std::optional<AdScriptIdentifier> bottom_most_async_ad_script_;
 
-  // The set of ad scripts detected outside of ad-frame contexts. Scripts are
-  // identified by name (i.e. resource URL). Scripts with no name (i.e. inline
-  // scripts) use a String created by GenerateFakeUrlFromScriptId() instead.
-  HeapHashMap<WeakMember<ExecutionContext>, HashSet<String>> known_ad_scripts_;
+  // Maps the URL of a detected ad script to an optional `AdScriptIdentifier`
+  // representing its ancestor ad script in the creation stack. This ancestor is
+  // only recorded if the detected ad script is *not* flagged by the subresource
+  // filter.
+  //
+  // Script Identification:
+  // - Scripts with a resource URL are identified by that URL.
+  // - Inline scripts (without a URL) are assigned a unique synthetic URL
+  //   generated by `GenerateFakeUrlFromScriptId()`.
+  using KnownAdScriptsAndAncestor =
+      HashMap<String, std::optional<AdScriptIdentifier>>;
+
+  // Tracks ad scripts detected outside of ad-frame contexts.
+  HeapHashMap<WeakMember<ExecutionContext>, KnownAdScriptsAndAncestor>
+      context_known_ad_scripts_;
+
+  // Maps non-subresource-filter-flagged ad scripts to their ancestor ad script
+  // in the creation stack. Following the chain iteratively through this map
+  // will eventually lead to a root script that *is* subresource-filter-flagged.
+  // This allows derived scripts to be traced back to their flagged origin.
+  HashMap<AdScriptIdentifier, AdScriptIdentifier> ancestor_ad_scripts_;
 
   // The number of ad-related async tasks currently running in the stack.
   int running_ad_async_tasks_ = 0;

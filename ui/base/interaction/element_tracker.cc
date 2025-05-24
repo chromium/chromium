@@ -4,6 +4,7 @@
 
 #include "ui/base/interaction/element_tracker.h"
 
+#include <algorithm>
 #include <iterator>
 #include <list>
 #include <map>
@@ -16,7 +17,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
@@ -247,7 +247,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
   const auto it = element_data_.find(LookupKey(id, context));
   ElementList result;
   if (it != element_data_.end()) {
-    base::ranges::copy(it->second.elements(), std::back_inserter(result));
+    std::ranges::copy(it->second.elements(), std::back_inserter(result));
   }
   return result;
 }
@@ -257,7 +257,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
   ElementList result;
   for (const auto& [key, data] : element_data_) {
     if (key.first == id) {
-      base::ranges::copy(data.elements(), std::back_inserter(result));
+      std::ranges::copy(data.elements(), std::back_inserter(result));
     }
   }
   return result;
@@ -525,6 +525,14 @@ SafeElementReference::SafeElementReference(SafeElementReference&& other)
 SafeElementReference::SafeElementReference(const SafeElementReference& other)
     : element_(other.element_) {
   Subscribe();
+}
+
+SafeElementReference& SafeElementReference::operator=(TrackedElement* el) {
+  if (element_ != el) {
+    element_ = el;
+    Subscribe();
+  }
+  return *this;
 }
 
 SafeElementReference& SafeElementReference::operator=(

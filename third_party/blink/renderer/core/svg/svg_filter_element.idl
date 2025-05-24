@@ -29,12 +29,12 @@
 [
     Exposed=Window
 ] interface SVGFilterElement : SVGElement {
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration filterUnits;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration primitiveUnits;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedLength      x;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedLength      y;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedLength      width;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedLength      height;
+    readonly attribute SVGAnimatedEnumeration filterUnits;
+    readonly attribute SVGAnimatedEnumeration primitiveUnits;
+    readonly attribute SVGAnimatedLength      x;
+    readonly attribute SVGAnimatedLength      y;
+    readonly attribute SVGAnimatedLength      width;
+    readonly attribute SVGAnimatedLength      height;
 };
 
 SVGFilterElement includes SVGURIReference;

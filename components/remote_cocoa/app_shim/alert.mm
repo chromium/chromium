@@ -11,6 +11,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+#include "ui/gfx/text_elider.h"
 
 using remote_cocoa::mojom::AlertBridgeInitParams;
 using remote_cocoa::mojom::AlertDisposition;
@@ -39,9 +40,6 @@ const int kMessageTextMaxSlots = 2000;
 // Returns the underlying alert.
 - (NSAlert*)alert;
 
-// Set a blank icon for dialogs with text provided by the page.
-- (void)setBlankIcon;
-
 // Add a text field to the alert.
 - (void)addTextFieldWithPrompt:(NSString*)prompt;
 
@@ -56,8 +54,6 @@ const int kMessageTextMaxSlots = 2000;
   _alert = [[NSAlert alloc] init];
   _alert.delegate = self;
 
-  if (params->hide_application_icon)
-    [self setBlankIcon];
   if (params->text_field_text) {
     [self addTextFieldWithPrompt:base::SysUTF16ToNSString(
                                      *params->text_field_text)];
@@ -181,11 +177,6 @@ const int kMessageTextMaxSlots = 2000;
   }
 }
 
-- (void)setBlankIcon {
-  NSImage* image = [[NSImage alloc] initWithSize:NSMakeSize(1, 1)];
-  _alert.icon = image;
-}
-
 - (NSAlert*)alert {
   return _alert;
 }
@@ -215,7 +206,7 @@ const int kMessageTextMaxSlots = 2000;
       _alertBridge->SendResultAndDestroy(AlertDisposition::CLOSE);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "device/fido/device_response_converter.h"
 
 #include <memory>
@@ -344,13 +349,13 @@ std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     return std::nullopt;
   }
   if (GetResponseCode(buffer) != CtapDeviceResponseCode::kSuccess) {
-    FIDO_LOG(ERROR) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
+    FIDO_LOG(DEBUG) << "-> (GetInfo CTAP2 error code " << +buffer[0] << ")";
     return std::nullopt;
   }
 
   cbor::Reader::DecoderError error;
   std::optional<CBOR> decoded_response =
-      cbor::Reader::Read(buffer.subspan(1), &error);
+      cbor::Reader::Read(buffer.subspan<1>(), &error);
 
   if (!decoded_response) {
     FIDO_LOG(ERROR) << "-> (CBOR parse error from GetInfo response '"
@@ -820,7 +825,7 @@ static std::optional<std::string> FixInvalidUTF8String(
   size_t longest_valid_prefix_len = 0;
 
   for (size_t i = 0; i < utf8_bytes.size(); i++) {
-    state = validator.AddBytes(utf8_bytes.subspan(i, 1));
+    state = validator.AddBytes(utf8_bytes.subspan(i, 1u));
     switch (state) {
       case base::StreamingUtf8Validator::VALID_ENDPOINT:
         longest_valid_prefix_len = i + 1;
@@ -846,8 +851,7 @@ static std::optional<std::string> FixInvalidUTF8String(
     case base::StreamingUtf8Validator::INVALID:
       // This shouldn't happen because we should return immediately if
       // |INVALID| occurs.
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
 
     case base::StreamingUtf8Validator::VALID_MIDPOINT: {
       // This string has been truncated. This is the case that we expect to

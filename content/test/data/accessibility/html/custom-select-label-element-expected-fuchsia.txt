@@ -1,0 +1,11 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='labeltext '
+++++++++++UNKNOWN label='labeltext '
+++++++UNKNOWN focusable label='labeltext' actions='{DEFAULT}' value='one'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN focusable selected label='one' actions='{DEFAULT}'
+++++++++++++UNKNOWN hidden focusable label='two' actions='{DEFAULT}'

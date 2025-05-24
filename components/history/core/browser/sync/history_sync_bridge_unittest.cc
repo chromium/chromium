@@ -28,8 +28,10 @@
 #include "components/sync/protocol/history_specifics.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync/test/forwarding_data_type_local_change_processor.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -149,14 +151,14 @@ class FakeDataTypeLocalChangeProcessor
   void Delete(const std::string& storage_key,
               const syncer::DeletionOrigin& origin,
               syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void UpdateStorageKey(
       const syncer::EntityData& entity_data,
       const std::string& storage_key,
       syncer::MetadataChangeList* metadata_change_list) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void UntrackEntityForStorageKey(const std::string& storage_key) override {
@@ -195,14 +197,12 @@ class FakeDataTypeLocalChangeProcessor
 
   base::Time GetEntityCreationTime(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::Time();
+    NOTREACHED();
   }
 
   base::Time GetEntityModificationTime(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::Time();
+    NOTREACHED();
   }
 
   void OnModelStarting(syncer::DataTypeSyncBridge* bridge) override {}
@@ -212,11 +212,11 @@ class FakeDataTypeLocalChangeProcessor
 
   bool IsTrackingMetadata() const override { return is_tracking_metadata_; }
 
-  std::string TrackedAccountId() const override {
+  GaiaId TrackedGaiaId() const override {
     if (!IsTrackingMetadata()) {
-      return "";
+      return GaiaId();
     }
-    return "account_id";
+    return GaiaId("gaia_id");
   }
 
   std::string TrackedCacheGuid() const override {
@@ -236,14 +236,12 @@ class FakeDataTypeLocalChangeProcessor
 
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate()
       override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   const sync_pb::EntitySpecifics& GetPossiblyTrimmedRemoteSpecifics(
       const std::string& storage_key) const override {
-    NOTREACHED_IN_MIGRATION();
-    return sync_pb::EntitySpecifics::default_instance();
+    NOTREACHED();
   }
 
   sync_pb::UniquePosition UniquePositionAfter(
@@ -487,7 +485,7 @@ class HistorySyncBridgeTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  sql::Database db_;
+  sql::Database db_{sql::test::kTestTag};
   sql::MetaTable meta_table_;
   HistorySyncMetadataDatabase metadata_db_;
 
@@ -600,22 +598,76 @@ TEST_F(HistorySyncBridgeTest, MergesRemoteChanges) {
   ASSERT_EQ(backend()->GetVisits()[0].app_id, kTestAppId2);
 }
 
-TEST_F(HistorySyncBridgeTest, DoesNotApplyUnsyncableRemoteChanges) {
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidValid) {
+  sync_pb::HistorySpecifics valid =
+      CreateSpecifics(base::Time::Now() - base::Minutes(10),
+                      "remote_cache_guid", GURL("https://remote.com"));
+
+  EXPECT_TRUE(bridge()->IsEntityDataValid(SpecificsToEntityData(valid)));
+}
+
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidMissingCacheGuid) {
+  sync_pb::HistorySpecifics missing_cache_guid = CreateSpecifics(
+      base::Time::Now() - base::Minutes(1), "", GURL("https://remote.com"));
+
+  EXPECT_FALSE(
+      bridge()->IsEntityDataValid(SpecificsToEntityData(missing_cache_guid)));
+}
+
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidMissingVisitTime) {
+  sync_pb::HistorySpecifics missing_visit_time = CreateSpecifics(
+      base::Time(), "remote_cache_guid", GURL("https://remote.com"));
+  missing_visit_time.clear_visit_time_windows_epoch_micros();
+
+  EXPECT_FALSE(
+      bridge()->IsEntityDataValid(SpecificsToEntityData(missing_visit_time)));
+}
+
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidNoRedirects) {
+  sync_pb::HistorySpecifics no_redirects =
+      CreateSpecifics(base::Time::Now() - base::Minutes(2), "remote_cache_guid",
+                      GURL("https://remote.com"));
+  no_redirects.clear_redirect_entries();
+
+  EXPECT_FALSE(
+      bridge()->IsEntityDataValid(SpecificsToEntityData(no_redirects)));
+}
+
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidTooOld) {
+  sync_pb::HistorySpecifics too_old = CreateSpecifics(
+      base::Time::Now() - TestHistoryBackendForSync::kExpiryThreshold -
+          base::Hours(1),
+      "remote_cache_guid", GURL("https://remote.com"));
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(SpecificsToEntityData(too_old)));
+}
+
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidTooNew) {
+  sync_pb::HistorySpecifics too_new =
+      CreateSpecifics(base::Time::Now() + base::Days(7), "remote_cache_guid",
+                      GURL("https://remote.com"));
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(SpecificsToEntityData(too_new)));
+}
+
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidUnsyncableUrls) {
   // Add some "unsyncable" URLs on the server:
   // file:// URLs don't make sense to sync.
-  sync_pb::HistorySpecifics remote_entity1 =
+  sync_pb::HistorySpecifics remote_entity =
       CreateSpecifics(base::Time::Now() - base::Minutes(2), "remote_cache_guid",
                       GURL("file:///path/to/file"));
-  // "data://" URLs can be arbitrarily large, and thus shouldn't be synced.
-  sync_pb::HistorySpecifics remote_entity2 =
+
+  EXPECT_FALSE(
+      bridge()->IsEntityDataValid(SpecificsToEntityData(remote_entity)));
+}
+
+TEST_F(HistorySyncBridgeTest, IsEntityDataValidLargeUrls) {
+  sync_pb::HistorySpecifics remote_entity =
       CreateSpecifics(base::Time::Now() - base::Minutes(1), "remote_cache_guid",
                       GURL("data:text/plain;base64,SGVsbG8sIFdvcmxkIQ=="));
 
-  ApplyInitialSyncChanges({remote_entity1, remote_entity2});
-
-  // Since all remote URLs were invalid, they should not have been added to the
-  // backend.
-  EXPECT_TRUE(backend()->GetURLs().empty());
+  EXPECT_FALSE(
+      bridge()->IsEntityDataValid(SpecificsToEntityData(remote_entity)));
 }
 
 TEST_F(HistorySyncBridgeTest, ClearsDataWhenSyncStopped) {
@@ -706,44 +758,6 @@ TEST_F(HistorySyncBridgeTest, DeletesForeignVisitsWhenSyncStoppedPermanently) {
 
   // Now foreign visits should've been cleared.
   EXPECT_EQ(backend()->delete_all_foreign_visits_call_count(), 1);
-}
-
-TEST_F(HistorySyncBridgeTest, IgnoresInvalidVisits) {
-  const std::string remote_cache_guid("remote_cache_guid");
-  const GURL remote_url("https://remote.com");
-
-  // Create a bunch of remote entities that are invalid in various ways.
-  sync_pb::HistorySpecifics missing_cache_guid =
-      CreateSpecifics(base::Time::Now() - base::Minutes(1), "", remote_url);
-
-  sync_pb::HistorySpecifics missing_visit_time =
-      CreateSpecifics(base::Time(), remote_cache_guid, remote_url);
-  missing_visit_time.clear_visit_time_windows_epoch_micros();
-
-  sync_pb::HistorySpecifics no_redirects = CreateSpecifics(
-      base::Time::Now() - base::Minutes(2), remote_cache_guid, remote_url);
-  no_redirects.clear_redirect_entries();
-
-  sync_pb::HistorySpecifics too_old = CreateSpecifics(
-      base::Time::Now() - TestHistoryBackendForSync::kExpiryThreshold -
-          base::Hours(1),
-      remote_cache_guid, remote_url);
-
-  sync_pb::HistorySpecifics too_new = CreateSpecifics(
-      base::Time::Now() + base::Days(7), remote_cache_guid, remote_url);
-
-  // ...and a single valid one.
-  sync_pb::HistorySpecifics valid = CreateSpecifics(
-      base::Time::Now() - base::Minutes(10), remote_cache_guid, remote_url);
-
-  ApplyInitialSyncChanges({missing_cache_guid, missing_visit_time, no_redirects,
-                           too_old, too_new, valid});
-
-  // None of the invalid entities should've made it into the DB.
-  ASSERT_EQ(backend()->GetURLs().size(), 1u);
-  ASSERT_EQ(backend()->GetVisits().size(), 1u);
-  EXPECT_EQ(backend()->GetURLs()[0].url(), remote_url);
-  EXPECT_EQ(backend()->GetVisits()[0].originator_cache_guid, remote_cache_guid);
 }
 
 TEST_F(HistorySyncBridgeTest, UploadsNewLocalVisit) {

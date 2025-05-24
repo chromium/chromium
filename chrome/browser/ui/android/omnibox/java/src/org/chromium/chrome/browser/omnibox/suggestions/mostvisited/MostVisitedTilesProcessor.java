@@ -10,9 +10,9 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.view.View;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSugg
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -36,9 +37,10 @@ import java.util.List;
 import java.util.Optional;
 
 /** SuggestionProcessor for Most Visited URL tiles. */
+@NullMarked
 public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
-    private final @NonNull SuggestionHost mSuggestionHost;
-    private final @NonNull Optional<OmniboxImageSupplier> mImageSupplier;
+    private final SuggestionHost mSuggestionHost;
+    private final Optional<OmniboxImageSupplier> mImageSupplier;
     private final @Px int mCarouselItemViewWidth;
     private final @Px int mCarouselItemViewHeight;
     private final @Px int mInitialSpacing;
@@ -52,9 +54,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
      * @param imageSupplier Class retrieving favicons for the MV Tiles.
      */
     public MostVisitedTilesProcessor(
-            @NonNull Context context,
-            @NonNull SuggestionHost host,
-            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
+            Context context, SuggestionHost host, Optional<OmniboxImageSupplier> imageSupplier) {
         super(context);
         mSuggestionHost = host;
         mImageSupplier = imageSupplier;
@@ -73,7 +73,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch match, int matchIndex) {
+    public boolean doesProcessSuggestion(AutocompleteMatch match, int matchIndex) {
         switch (match.getType()) {
             case OmniboxSuggestionType.TILE_MOST_VISITED_SITE:
             case OmniboxSuggestionType.TILE_REPEATABLE_QUERY:
@@ -89,17 +89,14 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public @NonNull PropertyModel createModel() {
-        @SuppressWarnings("null")
-        @NonNull
+    public PropertyModel createModel() {
         PropertyModel model =
                 new PropertyModel.Builder(BaseCarouselSuggestionViewProperties.ALL_KEYS)
                         .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
                         .with(
                                 BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string.accessibility_omnibox_most_visited_list))
+                                mContext.getString(
+                                        R.string.accessibility_omnibox_most_visited_list))
                         .with(
                                 BaseCarouselSuggestionViewProperties.TOP_PADDING,
                                 OmniboxResourceProvider.getMostVisitedCarouselTopPadding(mContext))
@@ -125,17 +122,15 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public void populateModel(AutocompleteMatch match, PropertyModel model, int matchIndex) {
-        super.populateModel(match, model, matchIndex);
+    public void populateModel(
+            AutocompleteInput input, AutocompleteMatch match, PropertyModel model, int matchIndex) {
+        super.populateModel(input, match, model, matchIndex);
 
         List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
-
-        @SuppressWarnings("null")
-        @NonNull
         String title =
-                TextUtils.isEmpty(match.getDisplayText())
+                TextUtils.isEmpty(match.getDescription())
                         ? match.getUrl().getHost()
-                        : match.getDisplayText();
+                        : match.getDescription();
         int tileIndex = tileList.size();
 
         var tileModel =
@@ -158,8 +153,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     private PropertyModel createTile(
-            @NonNull String title,
-            @NonNull GURL url,
+            String title,
+            GURL url,
             boolean isSearch,
             View.OnClickListener onClick,
             View.OnLongClickListener onLongClick) {
@@ -186,7 +181,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
         }
 
         var model =
-                new PropertyModel.Builder(TileViewProperties.ALL_KEYS)
+                new PropertyModel.Builder(MostVisitedTileViewProperties.ALL_KEYS)
                         .with(TileViewProperties.TITLE, title)
                         .with(TileViewProperties.TITLE_LINES, 1)
                         .with(
@@ -197,7 +192,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         .with(
                                 TileViewProperties.ICON_TINT,
                                 ChromeColors.getSecondaryIconTint(
-                                        mContext, /* isIncognito= */ false))
+                                        mContext, /* forceLightIconTint= */ false))
                         .with(TileViewProperties.CONTENT_DESCRIPTION, contentDescription)
                         .with(TileViewProperties.ICON, decoration)
                         .with(

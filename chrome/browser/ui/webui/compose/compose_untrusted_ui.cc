@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/compose/compose_untrusted_ui.h"
 
 #include <string>
@@ -19,7 +14,6 @@
 #include "chrome/browser/compose/chrome_compose_client.h"
 #include "chrome/browser/compose/compose_enabling.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/compose_resources.h"
 #include "chrome/grit/compose_resources_map.h"
 #include "chrome/grit/generated_resources.h"
@@ -29,8 +23,8 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 ComposeUIUntrustedConfig::ComposeUIUntrustedConfig()
     : DefaultTopChromeWebUIConfig(content::kChromeUIUntrustedScheme,
@@ -51,9 +45,8 @@ ComposeUntrustedUI::ComposeUntrustedUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIUntrustedComposeUrl);
-webui::SetupWebUIDataSource(
-      source, base::make_span(kComposeResources, kComposeResourcesSize),
-      IDR_COMPOSE_COMPOSE_HTML);
+  webui::SetupWebUIDataSource(source, kComposeResources,
+                              IDR_COMPOSE_COMPOSE_HTML);
 
   // Localized strings.
   static constexpr webui::LocalizedString kStrings[] = {
@@ -71,6 +64,9 @@ webui::SetupWebUIDataSource(
       {"inputPlaceholderLine1", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1},
       {"inputPlaceholderLine2", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_2},
       {"inputPlaceholderLine3", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_3},
+      {"inputModeChipPolish", IDS_COMPOSE_INPUT_MODE_POLISH},
+      {"inputModeChipElaborate", IDS_COMPOSE_INPUT_MODE_ELABORATE},
+      {"inputModeChipFormalize", IDS_COMPOSE_INPUT_MODE_FORMALIZE},
       {"inputFooter", IDS_COMPOSE_INPUT_FOOTER},
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"onDeviceUsedFooter", IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED},
@@ -123,6 +119,9 @@ webui::SetupWebUIDataSource(
       "enableOnDeviceDogfoodFooter",
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
+  source->AddBoolean("enableUpfrontInputModes",
+                     base::FeatureList::IsEnabled(
+                         compose::features::kComposeUpfrontInputModes));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,

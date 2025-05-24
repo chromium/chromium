@@ -60,7 +60,7 @@ bool AudioFileReader::OpenDemuxer() {
     return false;
   }
 
-  const int result = avformat_find_stream_info(format_context, NULL);
+  const int result = avformat_find_stream_info(format_context, nullptr);
   if (result < 0) {
     DLOG(WARNING)
         << "AudioFileReader::Open() : error in avformat_find_stream_info()";
@@ -88,14 +88,6 @@ bool AudioFileReader::OpenDemuxer() {
       AVStreamToAVCodecContext(format_context->streams[stream_index_]);
   if (!codec_context_)
     return false;
-
-  // Future versions of ffmpeg may copy the allow list from the format context.
-  if (base::FeatureList::IsEnabled(kFFmpegAllowLists) &&
-      !codec_context_->codec_whitelist) {
-    // Note: FFmpeg will try to free this string, so we must duplicate it.
-    codec_context_->codec_whitelist =
-        av_strdup(FFmpegGlue::GetAllowedAudioDecoders());
-  }
 
   DCHECK_EQ(codec_context_->codec_type, AVMEDIA_TYPE_AUDIO);
   return true;
@@ -316,8 +308,9 @@ bool AudioFileReader::OnNewFrame(
         reinterpret_cast<float*>(frame->data[0]), frames_read);
   } else if (codec_context_->sample_fmt == AV_SAMPLE_FMT_FLTP) {
     for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      memcpy(audio_bus->channel(ch), frame->extended_data[ch],
-             sizeof(float) * frames_read);
+      audio_bus->channel_span(ch).copy_from_nonoverlapping(
+          base::span(reinterpret_cast<float*>(frame->extended_data[ch]),
+                     static_cast<size_t>(frames_read)));
     }
   } else {
     int bytes_per_sample = av_get_bytes_per_sample(codec_context_->sample_fmt);
@@ -335,9 +328,8 @@ bool AudioFileReader::OnNewFrame(
             reinterpret_cast<const int32_t*>(frame->data[0]), frames_read);
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported bytes per sample encountered: " << bytes_per_sample;
-        audio_bus->ZeroFrames(frames_read);
+        NOTREACHED() << "Unsupported bytes per sample encountered: "
+                     << bytes_per_sample;
     }
   }
 

@@ -57,6 +57,8 @@ constexpr char kAccountEmailFormat[] = "%s@foo.com";
 constexpr char kAccountName[] = "The Liliputian";
 constexpr char kAccountGivenName[] = "Julius";
 constexpr char kAccountPicture[] = "https://image.com/yolo";
+constexpr char kAccountPhone[] = "(650) 243-3243";
+constexpr char kAccountUsername[] = "@julius";
 
 struct AccountConfig {
   std::string id;
@@ -163,7 +165,8 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                        endpoints, idp_metadata));
   }
 
-  void SendAccountsRequest(const GURL& accounts_url,
+  void SendAccountsRequest(const url::Origin& idp_origin,
+                           const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override {
     has_fetched_accounts_endpoint_ = true;
@@ -172,7 +175,9 @@ class TestIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
     for (const AccountConfig& account_config : config_.accounts) {
       accounts.emplace_back(base::MakeRefCounted<IdentityRequestAccount>(
           account_config.id, GenerateEmailForUserId(account_config.id),
-          kAccountName, kAccountGivenName, GURL(kAccountPicture),
+          kAccountName, GenerateEmailForUserId(account_config.id), kAccountName,
+          kAccountGivenName, GURL(kAccountPicture), kAccountPhone,
+          kAccountUsername,
           /*login_hints=*/std::vector<std::string>(),
           /*domain_hints=*/std::vector<std::string>(),
           /*labels=*/std::vector<std::string>(), account_config.login_state));
@@ -521,7 +526,7 @@ TEST_F(FederatedAuthUserInfoRequestTest,
   std::vector<std::optional<bool>> kTestCases = {std::nullopt, true};
 
   for (const std::optional<bool>& test_case : kTestCases) {
-    EXPECT_CALL(*permission_delegate_, SetIdpSigninStatus(_, false));
+    EXPECT_CALL(*permission_delegate_, SetIdpSigninStatus(_, false, _));
 
     Config config = kValidConfig;
     config.idp_signin_status = test_case;

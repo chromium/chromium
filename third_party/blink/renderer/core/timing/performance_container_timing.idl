@@ -1,0 +1,16 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    Exposed=Window,
+    RuntimeEnabled=ContainerTiming
+] interface PerformanceContainerTiming : PerformanceEntry {
+    readonly attribute DOMRectReadOnly intersectionRect;
+    readonly attribute double size;
+    readonly attribute DOMString identifier;
+    readonly attribute Element? lastPaintedElement;
+    readonly attribute DOMHighResTimeStamp firstRenderTime;
+
+    [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
+};

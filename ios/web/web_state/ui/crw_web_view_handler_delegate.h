@@ -15,7 +15,7 @@ namespace web {
 class NavigationContextImpl;
 class UserInteractionState;
 class WebStateImpl;
-}
+}  // namespace web
 
 // Delegate for the WebView handlers.
 @protocol CRWWebViewHandlerDelegate

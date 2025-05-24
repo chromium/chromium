@@ -9,6 +9,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,9 +20,14 @@
 #include "net/log/net_log_with_source.h"
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/network_service_buildflags.h"
 #include "services/network/public/mojom/cert_verifier_service.mojom.h"
 #include "services/network/public/mojom/cert_verifier_service_updater.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+#include "services/network/public/mojom/network_context.mojom-forward.h"
+#endif
 
 namespace net {
 class ChromeRootStoreData;
@@ -46,7 +52,8 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
       mojo::PendingReceiver<mojom::CertVerifierServiceUpdater> updater_receiver,
       mojo::PendingRemote<mojom::CertVerifierServiceClient> client,
       scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher,
-      net::CertVerifyProc::InstanceParams instance_params);
+      net::CertVerifyProc::InstanceParams instance_params,
+      bool wait_for_update);
 
   // mojom::CertVerifierService implementation:
   void Verify(const net::CertVerifier::RequestParams& params,
@@ -62,6 +69,11 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
   // mojom::CertVerifierServiceUpdater implementation:
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override;
+  void WaitUntilNextUpdateForTesting(
+      WaitUntilNextUpdateForTestingCallback callback) override;
+#if BUILDFLAG(IS_CT_SUPPORTED)
+  void SetCTPolicy(network::mojom::CTPolicyPtr ct_policy) override;
+#endif
 
   // Set a pointer to the CertVerifierServiceFactory so that it may be notified
   // when we are deleted.
@@ -73,12 +85,28 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
   void UpdateVerifierData(const net::CertVerifyProc::ImplParams& impl_params);
 
  private:
+  struct QueuedCertVerifyRequest {
+    QueuedCertVerifyRequest();
+    ~QueuedCertVerifyRequest();
+    QueuedCertVerifyRequest(QueuedCertVerifyRequest&&);
+    QueuedCertVerifyRequest& operator=(QueuedCertVerifyRequest&& other);
+
+    net::CertVerifier::RequestParams params;
+    net::NetLogSource net_log_source;
+    mojo::PendingRemote<mojom::CertVerifierRequest> cert_verifier_request;
+  };
+
   ~CertVerifierServiceImpl() override;
 
   // CertVerifier::Observer methods:
   void OnCertVerifierChanged() override;
 
   void OnDisconnectFromService();
+
+  void VerifyHelper(
+      const net::CertVerifier::RequestParams& params,
+      const net::NetLogSource& net_log_source,
+      mojo::PendingRemote<mojom::CertVerifierRequest> cert_verifier_request);
 
   net::CertVerifyProc::InstanceParams instance_params_;
   std::unique_ptr<net::CertVerifierWithUpdatableProc> verifier_;
@@ -88,6 +116,11 @@ class CertVerifierServiceImpl : public mojom::CertVerifierService,
   scoped_refptr<CertNetFetcherURLLoader> cert_net_fetcher_;
   base::WeakPtr<cert_verifier::CertVerifierServiceFactoryImpl>
       service_factory_impl_;
+  // Will queue requests for processing until this is false.
+  bool waiting_for_update_;
+  base::TimeTicks wait_start_time_;
+  std::vector<QueuedCertVerifyRequest> queued_requests_;
+  WaitUntilNextUpdateForTestingCallback update_complete_callback_;
 };
 
 }  // namespace internal

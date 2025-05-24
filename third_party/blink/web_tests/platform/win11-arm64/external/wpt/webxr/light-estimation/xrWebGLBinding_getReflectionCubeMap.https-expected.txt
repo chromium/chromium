@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+[FAIL] Test that getReflectionCubeMap returns or throws appropriately without a reflection map. - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Test that getReflectionCubeMap returns or throws appropriately without a reflection map. - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

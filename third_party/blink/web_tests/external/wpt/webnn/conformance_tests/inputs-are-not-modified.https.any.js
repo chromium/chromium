@@ -1,5 +1,5 @@
 // META: title=test that input tensors are not modified during a call to dispatch()
-// META: global=window,dedicatedworker
+// META: global=window,worker
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -31,10 +31,10 @@ promise_test(async () => {
     mlContext.createTensor({
       dataType: 'float32',
       shape: [4],
-      usage: MLTensorUsage.WRITE | MLTensorUsage.READ
+      readable: true,
+      writable: true,
     }),
-    mlContext.createTensor(
-        {dataType: 'float32', shape: [4], usage: MLTensorUsage.READ}),
+    mlContext.createTensor({dataType: 'float32', shape: [4], readable: true}),
     builder.build({'output': outputOperand})
   ]);
 
@@ -66,10 +66,10 @@ promise_test(async () => {
     mlContext.createTensor({
       dataType: 'float32',
       shape: [4],
-      usage: MLTensorUsage.WRITE | MLTensorUsage.READ
+      readable: true,
+      writable: true,
     }),
-    mlContext.createTensor(
-        {dataType: 'float32', shape: [4], usage: MLTensorUsage.READ}),
+    mlContext.createTensor({dataType: 'float32', shape: [4], readable: true}),
     builder.build({'output': outputOperand})
   ]);
 

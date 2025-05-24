@@ -10,6 +10,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -52,11 +54,10 @@
 #include "chrome/browser/extensions/external_provider_impl.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/common/chrome_paths.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/crosapi/mojom/chrome_app_kiosk_service.mojom.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -208,7 +209,7 @@ void KioskChromeAppManager::RegisterProfilePrefs(
   chromeos::KioskBrowserSession::RegisterProfilePrefs(registry);
 }
 
-std::string KioskChromeAppManager::GetAutoLaunchApp() const {
+const std::string& KioskChromeAppManager::GetAutoLaunchApp() const {
   return auto_launch_app_id_;
 }
 
@@ -278,9 +279,7 @@ bool KioskChromeAppManager::GetSwitchesForSessionRestore(
 
 void KioskChromeAppManager::OnExternalCacheDamaged(const std::string& app_id) {
   CHECK(external_cache_);
-  base::FilePath crx_path;
-  std::string version;
-  GetCachedCrx(app_id, &crx_path, &version);
+  auto [crx_path, _] = GetCachedCrx(app_id).value_or(CachedCrxInfo());
   external_cache_->OnDamagedFileDetected(crx_path);
 }
 
@@ -297,7 +296,7 @@ void KioskChromeAppManager::AddAppForTest(
   }
 
   apps_.emplace_back(KioskAppData::CreateForTest(
-      this, app_id, account_id, update_url, required_platform_version));
+      *this, app_id, account_id, update_url, required_platform_version));
 }
 
 std::string KioskChromeAppManager::GetAutoLaunchAppRequiredPlatformVersion()
@@ -331,13 +330,13 @@ KioskChromeAppManager::App KioskChromeAppManager::ConstructApp(
   return app;
 }
 
-bool KioskChromeAppManager::GetApp(const std::string& app_id, App* app) const {
+std::optional<KioskChromeAppManager::App> KioskChromeAppManager::GetApp(
+    const std::string& app_id) const {
   const KioskAppData* data = GetAppData(app_id);
   if (!data) {
-    return false;
+    return std::nullopt;
   }
-  *app = ConstructApp(*data);
-  return true;
+  return ConstructApp(*data);
 }
 
 void KioskChromeAppManager::ClearAppData(const std::string& app_id) {
@@ -370,15 +369,16 @@ void KioskChromeAppManager::RetryFailedAppDataFetch() {
 }
 
 bool KioskChromeAppManager::HasCachedCrx(const std::string& app_id) const {
-  base::FilePath crx_path;
-  std::string version;
-  return GetCachedCrx(app_id, &crx_path, &version);
+  return GetCachedCrx(app_id).has_value();
 }
 
-bool KioskChromeAppManager::GetCachedCrx(const std::string& app_id,
-                                         base::FilePath* file_path,
-                                         std::string* version) const {
-  return external_cache_->GetExtension(app_id, file_path, version);
+std::optional<KioskChromeAppManager::CachedCrxInfo>
+KioskChromeAppManager::GetCachedCrx(std::string_view app_id) const {
+  base::FilePath path;
+  std::string version;
+  return external_cache_->GetExtension(std::string(app_id), &path, &version)
+             ? std::make_optional(std::make_tuple(path, version))
+             : std::nullopt;
 }
 
 crosapi::mojom::AppInstallParams
@@ -577,19 +577,18 @@ void KioskChromeAppManager::UpdateAppsFromPolicy() {
       apps_.push_back(std::move(old_it->second));
       old_apps.erase(old_it);
     } else {
-      base::FilePath cached_crx;
-      std::string version;
-      GetCachedCrx(device_local_account.kiosk_app_id, &cached_crx, &version);
+      auto [crx_path, _] = GetCachedCrx(device_local_account.kiosk_app_id)
+                               .value_or(CachedCrxInfo());
 
       apps_.push_back(std::make_unique<KioskAppData>(
-          this, device_local_account.kiosk_app_id, account_id,
-          GURL(device_local_account.kiosk_app_update_url), cached_crx));
+          *this, device_local_account.kiosk_app_id, account_id,
+          GURL(device_local_account.kiosk_app_update_url), crx_path));
       apps_.back()->Load();
     }
     KioskCryptohomeRemover::CancelDelayedCryptohomeRemoval(account_id);
   }
 
-  std::vector<KioskAppDataBase*> apps_to_remove;
+  std::vector<const KioskAppDataBase*> apps_to_remove;
   std::vector<std::string> app_ids_to_remove;
   for (auto& entry : old_apps) {
     apps_to_remove.emplace_back(entry.second.get());
@@ -632,9 +631,8 @@ void KioskChromeAppManager::OnExtensionLoadedInCache(
     return;
   }
 
-  base::FilePath crx_path;
-  std::string version;
-  if (GetCachedCrx(id, &crx_path, &version)) {
+  if (auto crx_info = GetCachedCrx(id); crx_info.has_value()) {
+    auto& [crx_path, _] = crx_info.value();
     app_data->SetCachedCrx(crx_path);
   }
 

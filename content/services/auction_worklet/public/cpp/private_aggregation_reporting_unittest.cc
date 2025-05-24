@@ -32,9 +32,8 @@ class PaReportingTest : public testing::Test {
                   mojom::ForEventSignalBucket::NewIdBucket(1),
                   mojom::ForEventSignalValue::NewIntValue(2),
                   /*filtering_id=*/std::nullopt,
-                  mojom::EventType::NewReserved(
-                      mojom::ReservedEventType::kReservedOnce))),
-          blink::mojom::AggregationServiceMode::kDefault,
+                  mojom::EventType::NewReservedNonError(
+                      mojom::ReservedNonErrorEventType::kReservedOnce))),
           blink::mojom::DebugModeDetails::New());
 
   // Using reserved.always as the event.
@@ -45,9 +44,8 @@ class PaReportingTest : public testing::Test {
                   mojom::ForEventSignalBucket::NewIdBucket(1),
                   mojom::ForEventSignalValue::NewIntValue(2),
                   /*filtering_id=*/std::nullopt,
-                  mojom::EventType::NewReserved(
-                      mojom::ReservedEventType::kReservedAlways))),
-          blink::mojom::AggregationServiceMode::kDefault,
+                  mojom::EventType::NewReservedNonError(
+                      mojom::ReservedNonErrorEventType::kReservedAlways))),
           blink::mojom::DebugModeDetails::New());
 
   // Using a custom event.
@@ -59,7 +57,6 @@ class PaReportingTest : public testing::Test {
                   mojom::ForEventSignalValue::NewIntValue(2),
                   /*filtering_id=*/std::nullopt,
                   mojom::EventType::NewNonReserved("event_type"))),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
   // Using kWinningBid base_value for bucket and value.
@@ -77,7 +74,6 @@ class PaReportingTest : public testing::Test {
                                               0)),
                   /*filtering_id=*/std::nullopt,
                   mojom::EventType::NewNonReserved("event_type"))),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
   // Using kAverageCodeFetchTime for value.
@@ -96,7 +92,6 @@ class PaReportingTest : public testing::Test {
                           0)),
                   /*filtering_id=*/std::nullopt,
                   mojom::EventType::NewNonReserved("event_type"))),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
   // Using kAverageCodeFetchTime for bucket.
@@ -115,7 +110,6 @@ class PaReportingTest : public testing::Test {
                                               0)),
                   /*filtering_id=*/std::nullopt,
                   mojom::EventType::NewNonReserved("event_type"))),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
   // Just a raw histogram, not conditional on an event.
@@ -126,7 +120,6 @@ class PaReportingTest : public testing::Test {
                   /*bucket=*/42,
                   /*value=*/24,
                   /*filtering_id=*/std::nullopt)),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
   // Using kWinningBid base_value for bucket and value.
@@ -144,7 +137,6 @@ class PaReportingTest : public testing::Test {
                                               0)),
                   /*filtering_id=*/std::nullopt,
                   mojom::EventType::NewNonReserved("event_type"))),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
   // Using kRejectReason for value.
@@ -160,7 +152,6 @@ class PaReportingTest : public testing::Test {
                           0)),
                   /*filtering_id=*/std::nullopt,
                   mojom::EventType::NewNonReserved("event_type"))),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 
   // Using kRejectReason for bucket.
@@ -176,7 +167,6 @@ class PaReportingTest : public testing::Test {
                   mojom::ForEventSignalValue::NewIntValue(2),
                   /*filtering_id=*/std::nullopt,
                   mojom::EventType::NewNonReserved("event_type"))),
-          blink::mojom::AggregationServiceMode::kDefault,
           blink::mojom::DebugModeDetails::New());
 };
 

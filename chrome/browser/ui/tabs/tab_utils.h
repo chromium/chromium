@@ -19,6 +19,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+enum class TabAlert;
+}  // namespace tabs
+
 struct LastMuteMetadata
     : public content::WebContentsUserData<LastMuteMetadata> {
   TabMutedReason reason = TabMutedReason::NONE;
@@ -35,11 +39,11 @@ struct LastMuteMetadata
 // privacy, i.e. if only one is to be shown, it should be the first.
 // TabAlertState::NONE will never be present in the list; an empty list
 // is returned instead.
-std::vector<TabAlertState> GetTabAlertStatesForContents(
+std::vector<tabs::TabAlert> GetTabAlertStatesForContents(
     content::WebContents* contents);
 
 // Returns a localized string describing the |alert_state|.
-std::u16string GetTabAlertStateText(const TabAlertState alert_state);
+std::u16string GetTabAlertStateText(const tabs::TabAlert alert_state);
 
 // Sets whether all audio output from |contents| is muted, along with the
 // |reason| it is to be muted/unmuted (via UI or extension API).  When |reason|

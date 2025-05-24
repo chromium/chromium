@@ -64,8 +64,7 @@ ConfirmBubbleViews::ConfirmBubbleViews(
   label_->SetMaximumWidth(400);
 }
 
-ConfirmBubbleViews::~ConfirmBubbleViews() {
-}
+ConfirmBubbleViews::~ConfirmBubbleViews() = default;
 
 std::u16string ConfirmBubbleViews::GetWindowTitle() const {
   return model_->GetTitle();

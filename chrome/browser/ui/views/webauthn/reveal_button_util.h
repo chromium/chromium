@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_REVEAL_BUTTON_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_REVEAL_BUTTON_UTIL_H_
 
+#include <memory>
+
 #include "ui/views/controls/button/image_button.h"
 
 // Creates the eye icon button that is used to toggle the pin visibility.

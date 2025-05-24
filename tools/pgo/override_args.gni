@@ -1,0 +1,6 @@
+# This is intended to be used on bots, but these args work locally too.
+
+# As an example, this file can contain the following (uncommented):
+#pgo_override_filename = "chrome-android64-main-1746631188-f62ce3c6980019c1d1229c672a11ade92b49238c-9158358aef7fc7a0f62b5f98b94c2f09b8e14b32.profdata"
+#pgo_gs_bucket = "chrome-pgo-trybot-profiles"
+#pgo_gs_bucket_path = "pgo_profiles"

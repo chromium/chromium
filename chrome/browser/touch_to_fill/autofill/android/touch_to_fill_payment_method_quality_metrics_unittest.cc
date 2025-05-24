@@ -71,8 +71,7 @@ class TouchToFillForPaymentMethodsTest
               "CVC", "CVC", "", FormControlType::kInputText));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     return fields_to_return;
@@ -142,7 +141,7 @@ TEST_P(TouchToFillForPaymentMethodsTest,
                             test_case.field_types);
   // Simulate user made change to autofilled field.
   if (!test_case.is_all_accepted) {
-    SimulateUserChangedTextField(form, form.fields()[0]);
+    SimulateUserChangedField(form, form.fields()[0]);
   }
 
   SubmitForm(form);

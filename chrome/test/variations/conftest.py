@@ -50,11 +50,18 @@ def pytest_addoption(parser: pytest.Parser):
                    help='Path to the magic CrOS VM cache dir. See the comment '
                    '"magic_cros_vm_cache" in mixins.star for more info.')
 
+def setup_java_path(src_dir: str):
+  java_home = os.path.join(src_dir, 'third_party', 'jdk', 'current')
+  java_bin = os.path.join(java_home, 'bin')
+  os.environ['JAVA_HOME'] = java_home
+  os.environ['PATH'] = java_bin + os.pathsep + os.environ['PATH']
+
 
 def pytest_cmdline_main(config: pytest.Config):
   src_dir = os.path.abspath(
     os.path.join(os.path.dirname(__file__), *([os.pardir] * 3)))
 
+  setup_java_path(src_dir)
   root_build_dir = config.getoption('root_build_dir')
   # Adds the output dir to the search path so the generated files can be
   # imported.

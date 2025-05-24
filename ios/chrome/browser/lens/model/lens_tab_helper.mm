@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
+
+#import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
-#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 
 namespace {
@@ -80,5 +81,3 @@ void LensTabHelper::OpenLensInputSelection(LensEntrypoint entry_point) {
       presentationCompletion:nil];
   [commands_handler_ openLensInputSelection:command];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(LensTabHelper)

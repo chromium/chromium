@@ -253,7 +253,7 @@ struct Config {
       attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
     }
 #endif
-    attrib_helper.enable_oop_rasterization = it.GetBit();
+    attrib_helper.enable_gpu_rasterization = it.GetBit();
 
 #if defined(GPU_FUZZER_USE_STUB)
     std::vector<std::string_view> enabled_extensions;
@@ -445,8 +445,8 @@ class CommandBufferSetup {
     auto* context = context_state_->context();
     decoder_.reset(raster::RasterDecoder::Create(
         command_buffer_.get(), command_buffer_->service(), &outputter_,
-        gpu_feature_info, gpu_preferences_, nullptr /* memory_tracker */,
-        shared_image_manager_.get(), context_state_, true /* is_privileged */));
+        gpu_feature_info, gpu_preferences_, /*memory_tracker=*/nullptr,
+        shared_image_manager_.get(), context_state_, /*is_privileged=*/true));
 #else
     context_->MakeCurrentDefault();
     // GLES2Decoder may Initialize feature_info differently than
@@ -454,10 +454,10 @@ class CommandBufferSetup {
     auto decoder_feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
         config_.workarounds, gpu_feature_info);
     scoped_refptr<gles2::ContextGroup> context_group = new gles2::ContextGroup(
-        gpu_preferences_, true, nullptr /* memory_tracker */,
-        &translator_cache_, &completeness_cache_, decoder_feature_info,
+        gpu_preferences_, /*memory_tracker=*/nullptr, &translator_cache_,
+        &completeness_cache_, decoder_feature_info,
         config_.attrib_helper.bind_generates_resource,
-        nullptr /* progress_reporter */, gpu_feature_info,
+        /*progress_reporter=*/nullptr, gpu_feature_info,
         discardable_manager_.get(), passthrough_discardable_manager_.get(),
         shared_image_manager_.get());
     auto* context = context_.get();

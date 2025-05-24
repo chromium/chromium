@@ -9,8 +9,9 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_manager.mojom-blink.h"
+#include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -57,12 +58,12 @@ PressureClientImpl::PressureClientImpl(ExecutionContext* context,
                                        PressureObserverManager* manager)
     : ExecutionContextClient(context),
       manager_(manager),
-      receiver_(this, context) {}
+      associated_receiver_(this, context) {}
 
 PressureClientImpl::~PressureClientImpl() = default;
 
 void PressureClientImpl::OnPressureUpdated(
-    device::mojom::blink::PressureUpdatePtr update) {
+    mojom::blink::WebPressureUpdatePtr update) {
   auto source = PressureSourceToV8PressureSource(update->source);
   // New observers may be created and added. Take a snapshot so as
   // to safely iterate.
@@ -70,6 +71,7 @@ void PressureClientImpl::OnPressureUpdated(
   for (const auto& observer : observers) {
     observer->OnUpdate(GetExecutionContext(), source,
                        PressureStateToV8PressureState(update->state),
+                       update->own_contribution_estimate,
                        CalculateTimestamp(update->timestamp));
   }
 }
@@ -85,20 +87,22 @@ void PressureClientImpl::RemoveObserver(PressureObserver* observer) {
   }
 }
 
-void PressureClientImpl::BindPressureClient(
-    mojo::PendingReceiver<device::mojom::blink::PressureClient>
-        pending_client_receiver) {
-  receiver_.Bind(
-      std::move(pending_client_receiver),
-      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  receiver_.set_disconnect_handler(
+mojo::PendingAssociatedRemote<mojom::blink::WebPressureClient>
+PressureClientImpl::BindNewEndpointAndPassRemote(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  auto associated_pending_remote =
+      associated_receiver_.BindNewEndpointAndPassRemote(task_runner);
+
+  associated_receiver_.set_disconnect_handler(
       WTF::BindOnce(&PressureClientImpl::Reset, WrapWeakPersistent(this)));
+
+  return associated_pending_remote;
 }
 
 void PressureClientImpl::Reset() {
   state_ = State::kUninitialized;
   observers_.clear();
-  receiver_.reset();
+  associated_receiver_.reset();
 }
 
 DOMHighResTimeStamp PressureClientImpl::CalculateTimestamp(
@@ -117,8 +121,8 @@ DOMHighResTimeStamp PressureClientImpl::CalculateTimestamp(
 }
 
 void PressureClientImpl::Trace(Visitor* visitor) const {
+  visitor->Trace(associated_receiver_);
   visitor->Trace(manager_);
-  visitor->Trace(receiver_);
   visitor->Trace(observers_);
   ExecutionContextClient::Trace(visitor);
 }

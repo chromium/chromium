@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Setting style attribute declaration property value counted
+  assert_equals: expected true but got false
+[FAIL] Setting style rule style property value counted
+  assert_equals: expected true but got false
+[FAIL] Setting constructed sheet style property value counted
+  assert_equals: expected true but got false
+Harness: the test ran to completion.
+

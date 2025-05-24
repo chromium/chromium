@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/liburlpattern/tokenize.h"
 
@@ -36,7 +37,7 @@ class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
     std::optional<std::string_view> hash;
   };
   using ProtocolCheckCallback =
-      std::function<absl::StatusOr<bool>(std::string_view)>;
+      std::function<base::expected<bool, absl::Status>(std::string_view)>;
 
   explicit ConstructorStringParser(std::string_view constructor_string);
 
@@ -52,21 +53,6 @@ class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
 
   // Return the parse result.  Should only be called after `Parse()` succeeds.
   const Result& GetResult() const { return result_; }
-
-  // Returns which of the components were actually present.
-  // This is currently only used for data analysis to evaluate potential
-  // evolution of the URL pattern syntax.
-  struct ComponentSet {
-    bool protocol = false;
-    bool username = false;
-    bool password = false;
-    bool hostname = false;
-    bool port = false;
-    bool pathname = false;
-    bool search = false;
-    bool hash = false;
-  };
-  const ComponentSet& GetPresentComponents() { return present_components_; }
 
  private:
   enum class StringParseState {
@@ -191,9 +177,6 @@ class COMPONENT_EXPORT(LIBURLPATTERN) ConstructorStringParser {
   // True if we should apply parse rules as if this is a "standard" URL.  If
   // false then this is treated as a "not a base URL" or "path" URL.
   bool should_treat_as_standard_url_ = false;
-
-  // Track which components were actually present.
-  ComponentSet present_components_;
 };
 
 }  // namespace liburlpattern

@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
 #include "sql/statement.h"
 
@@ -20,12 +21,14 @@ bool DocumentsTable::Create(SqlDatabase* db) {
   static constexpr char kQuery[] =
       // clang-format off
       "CREATE TABLE documents("
-          "document_id INTEGER PRIMARY KEY,"
-          "directory_path TEXT NOT NULL,"
-          "file_name TEXT NOT NULL,"
-          "last_modified_time INTEGER NOT NULL,"
-          "file_size INTEGER NOT NULL,"
-          "UNIQUE (directory_path, file_name))";
+        "document_id INTEGER PRIMARY KEY,"
+        "directory_path TEXT NOT NULL,"
+        "file_name TEXT NOT NULL,"
+        "last_modified_time INTEGER NOT NULL,"
+        "file_size INTEGER NOT NULL,"
+        "ocr_version INTEGER DEFAULT 0," // OCR index version, 0 if not indexed.
+        "ica_version INTEGER DEFAULT 0," // ICA index version, 0 if not indexed.
+        "UNIQUE (directory_path, file_name)) STRICT";
   // clang-format on
 
   std::unique_ptr<sql::Statement> statement =
@@ -159,8 +162,8 @@ bool DocumentsTable::GetAllFiles(SqlDatabase* db,
   }
 
   while (statement->Step()) {
-    base::FilePath file_path(statement->ColumnString(0));
-    file_path = file_path.Append(statement->ColumnString(1));
+    base::FilePath file_path(statement->ColumnStringView(0));
+    file_path = file_path.Append(statement->ColumnStringView(1));
 
     DVLOG(1) << "GetAll : " << file_path;
     documents.emplace_back(base::FilePath(std::move(file_path)));
@@ -189,11 +192,66 @@ bool DocumentsTable::SearchByDirectory(
   statement->BindString(0, base::StrCat({directory.value(), "%"}));
 
   while (statement->Step()) {
-    base::FilePath file_path(statement->ColumnString(0));
-    file_path = file_path.Append(statement->ColumnString(1));
+    base::FilePath file_path(statement->ColumnStringView(0));
+    file_path = file_path.Append(statement->ColumnStringView(1));
     matched_paths.emplace_back(file_path);
   }
 
   return true;
 }
+
+// static
+bool DocumentsTable::UpdateOCRStatus(SqlDatabase* db, int64_t document_id) {
+  static constexpr char kQuery[] =
+      // clang-format off
+      "UPDATE documents "
+      "SET ocr_version = ? "
+      "WHERE document_id = ?";
+  // clang-format on
+
+  std::unique_ptr<sql::Statement> statement =
+      db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
+    return false;
+  }
+
+  // Safe on ChromeOS.
+  statement->BindInt(0, kOcrVersion);
+  statement->BindInt64(1, document_id);
+  if (!statement->Run()) {
+    LOG(ERROR) << "Couldn't execute the statement";
+    return false;
+  }
+
+  return true;
+}
+
+// static
+bool DocumentsTable::UpdateICAStatus(SqlDatabase* db, int64_t document_id) {
+  static constexpr char kQuery[] =
+      // clang-format off
+      "UPDATE documents "
+      "SET ica_version = ? "
+      "WHERE document_id = ?";
+  // clang-format on
+
+  std::unique_ptr<sql::Statement> statement =
+      db->GetStatementForQuery(SQL_FROM_HERE, kQuery);
+  if (!statement) {
+    LOG(ERROR) << "Couldn't create the statement";
+    return false;
+  }
+
+  // Safe on ChromeOS.
+  statement->BindInt(0, kIcaVersion);
+  statement->BindInt64(1, document_id);
+  if (!statement->Run()) {
+    LOG(ERROR) << "Couldn't execute the statement";
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace app_list

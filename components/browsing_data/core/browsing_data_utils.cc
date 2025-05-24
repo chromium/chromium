@@ -22,13 +22,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace browsing_data {
-
-const char kDeleteBrowsingDataDialogHistogram[] =
-    "Privacy.DeleteBrowsingData.Dialog";
-
-// Creates a string like "for a.com, b.com, and 4 more".
-std::u16string CreateDomainExamples(
+namespace {
+// Creates a string like "for a.com, b.com, and 4 more" for the password
+// counter.
+std::u16string CreatePasswordDomainExamples(
     int password_count,
     const std::vector<std::string> domain_examples) {
   DCHECK_GE(password_count,
@@ -53,6 +50,67 @@ std::u16string CreateDomainExamples(
       replacements, nullptr);
   return domains_list;
 }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+// Constructs the text to be displayed by the history counter from the given
+// `history_result`. The string is based on the unique domains within the
+// deletion range and if there are synced entries within the deletion range.
+std::u16string CreateHistoryCounterString(
+    const browsing_data::HistoryCounter::HistoryResult* history_result) {
+  CHECK(history_result->source()->GetPrefName() ==
+            browsing_data::prefs::kDeleteBrowsingHistoryBasic ||
+        history_result->source()->GetPrefName() ==
+            browsing_data::prefs::kDeleteBrowsingHistory);
+
+  if (!history_result->Finished()) {
+    // The counter is still counting.
+    return l10n_util::GetStringUTF16(IDS_CLEAR_BROWSING_DATA_CALCULATING);
+  }
+
+  browsing_data::BrowsingDataCounter::ResultInt unique_domains_count =
+      history_result->unique_domains_result();
+
+  if (unique_domains_count == 0) {
+    if (history_result->has_synced_visits()) {
+      return l10n_util::GetStringUTF16(IDS_DEL_NO_BROWSING_HISTORY_SYNC_TEXT);
+    }
+    return l10n_util::GetStringUTF16(IDS_DEL_NO_BROWSING_HISTORY_TEXT);
+  }
+  std::u16string last_visited_domain =
+      base::UTF8ToUTF16(history_result->last_visited_domain());
+  CHECK(!last_visited_domain.empty());
+
+  unique_domains_count--;
+  if (unique_domains_count > 0) {
+    std::u16string domain_count_string;
+    if (history_result->has_synced_visits()) {
+      domain_count_string = l10n_util::GetPluralStringFUTF16(
+          IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_SYNC_TEXT,
+          unique_domains_count);
+    } else {
+      domain_count_string = l10n_util::GetPluralStringFUTF16(
+          IDS_DEL_BROWSING_HISTORY_DOMAIN_COUNT_TEXT, unique_domains_count);
+    }
+    return l10n_util::GetStringFUTF16(
+        IDS_DEL_BROWSING_HISTORY_COUNTER_MULTIPLE_DOMAINS_TEXT,
+        last_visited_domain, domain_count_string);
+  }
+
+  if (history_result->has_synced_visits()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_SYNC_TEXT,
+        last_visited_domain);
+  }
+  return l10n_util::GetStringFUTF16(
+      IDS_DEL_BROWSING_HISTORY_COUNTER_SINGLE_DOMAIN_TEXT, last_visited_domain);
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}  // namespace
+
+namespace browsing_data {
+
+const char kDeleteBrowsingDataDialogHistogram[] =
+    "Privacy.DeleteBrowsingData.Dialog";
 
 base::Time CalculateBeginDeleteTime(TimePeriod time_period) {
   base::TimeDelta diff;
@@ -123,51 +181,30 @@ void RecordTimePeriodChange(TimePeriod period) {
     case TimePeriod::LAST_15_MINUTES:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_Last15Minutes"));
-      base::UmaHistogramEnumeration(
-          browsing_data::kDeleteBrowsingDataDialogHistogram,
-          DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
       break;
     case TimePeriod::LAST_HOUR:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_LastHour"));
-      base::UmaHistogramEnumeration(
-          browsing_data::kDeleteBrowsingDataDialogHistogram,
-          DeleteBrowsingDataDialogAction::kLastHourSelected);
       break;
     case TimePeriod::LAST_DAY:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_LastDay"));
-      base::UmaHistogramEnumeration(
-          browsing_data::kDeleteBrowsingDataDialogHistogram,
-          DeleteBrowsingDataDialogAction::kLastDaySelected);
       break;
     case TimePeriod::LAST_WEEK:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_LastWeek"));
-      base::UmaHistogramEnumeration(
-          browsing_data::kDeleteBrowsingDataDialogHistogram,
-          DeleteBrowsingDataDialogAction::kLastWeekSelected);
       break;
     case TimePeriod::FOUR_WEEKS:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_LastMonth"));
-      base::UmaHistogramEnumeration(
-          browsing_data::kDeleteBrowsingDataDialogHistogram,
-          DeleteBrowsingDataDialogAction::kLastFourWeeksSelected);
       break;
     case TimePeriod::ALL_TIME:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_Everything"));
-      base::UmaHistogramEnumeration(
-          browsing_data::kDeleteBrowsingDataDialogHistogram,
-          DeleteBrowsingDataDialogAction::kAllTimeSelected);
       break;
     case TimePeriod::OLDER_THAN_30_DAYS:
       base::RecordAction(base::UserMetricsAction(
           "ClearBrowsingData_TimePeriodChanged_OlderThan30Days"));
-      base::UmaHistogramEnumeration(
-          browsing_data::kDeleteBrowsingDataDialogHistogram,
-          DeleteBrowsingDataDialogAction::kOlderThan30DaysSelected);
       break;
   }
 }
@@ -199,8 +236,8 @@ std::u16string GetCounterTextFromResult(
                   ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
                   : IDS_DEL_PASSWORDS_COUNTER,
               profile_passwords),
-          {CreateDomainExamples(profile_passwords,
-                                password_result->domain_examples())},
+          CreatePasswordDomainExamples(profile_passwords,
+                                       password_result->domain_examples()),
           nullptr));
     }
 
@@ -209,8 +246,9 @@ std::u16string GetCounterTextFromResult(
           l10n_util::GetPluralStringFUTF16(
               IDS_DEL_ACCOUNT_PASSWORDS_COUNTER,
               password_result->account_passwords()),
-          {CreateDomainExamples(password_result->account_passwords(),
-                                password_result->account_domain_examples())},
+          CreatePasswordDomainExamples(
+              password_result->account_passwords(),
+              password_result->account_domain_examples()),
           nullptr));
     }
 
@@ -225,7 +263,7 @@ std::u16string GetCounterTextFromResult(
             IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_COMBINATION, parts[0],
             parts[1]);
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -246,10 +284,16 @@ std::u16string GetCounterTextFromResult(
 
   if (pref_name == prefs::kDeleteBrowsingHistoryBasic) {
     // The basic tab doesn't show history counter results.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
+  // TODO(crbug.com/397187800): Migrate to displaying the domains for Desktop.
   if (pref_name == prefs::kDeleteBrowsingHistory) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    // History counter.
+    return CreateHistoryCounterString(
+        static_cast<const HistoryCounter::HistoryResult*>(result));
+#else   // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
     // History counter.
     const HistoryCounter::HistoryResult* history_result =
         static_cast<const HistoryCounter::HistoryResult*>(result);
@@ -260,6 +304,7 @@ std::u16string GetCounterTextFromResult(
                      IDS_DEL_BROWSING_HISTORY_COUNTER_SYNCED, local_item_count)
                : l10n_util::GetPluralStringFUTF16(
                      IDS_DEL_BROWSING_HISTORY_COUNTER, local_item_count);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
 
   if (pref_name == prefs::kDeleteFormData) {
@@ -267,69 +312,88 @@ std::u16string GetCounterTextFromResult(
     const AutofillCounter::AutofillResult* autofill_result =
         static_cast<const AutofillCounter::AutofillResult*>(result);
     AutofillCounter::ResultInt num_suggestions = autofill_result->Value();
-    AutofillCounter::ResultInt num_credit_cards =
+    AutofillCounter::ResultInt num_payment_methods =
         autofill_result->num_credit_cards();
     AutofillCounter::ResultInt num_addresses = autofill_result->num_addresses();
+    AutofillCounter::ResultInt num_entities = autofill_result->num_entities();
 
     std::vector<std::u16string> displayed_strings;
 
-    if (num_credit_cards) {
+    if (num_payment_methods) {
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-          IDS_DEL_AUTOFILL_COUNTER_CREDIT_CARDS, num_credit_cards));
+          IDS_DEL_AUTOFILL_COUNTER_PAYMENT_METHODS, num_payment_methods));
     }
     if (num_addresses) {
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
           IDS_DEL_AUTOFILL_COUNTER_ADDRESSES, num_addresses));
     }
-    if (num_suggestions) {
+
+    auto num_suggestions_and_entities = num_suggestions + num_entities;
+    if (num_suggestions_and_entities > 0) {
       // We use a different wording for autocomplete suggestions based on the
       // length of the entire string.
       switch (displayed_strings.size()) {
         case 0:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS,
+              num_suggestions_and_entities));
           break;
         case 1:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_LONG,
+              num_suggestions_and_entities));
           break;
         case 2:
           displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
-              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT, num_suggestions));
+              IDS_DEL_AUTOFILL_COUNTER_SUGGESTIONS_SHORT,
+              num_suggestions_and_entities));
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 
     bool synced = autofill_result->is_sync_enabled();
 
-    // Construct the resulting string from the sections in |displayed_strings|.
+    // TODO(crbug.com/371539581): Exclude payment methods from this part,
+    // because it can be attributed as "synced", while payment methods are
+    // always local.
+    std::u16string payment_methods_addresses_autocomplete_entries_part;
     switch (displayed_strings.size()) {
       case 0:
-        return l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
+        payment_methods_addresses_autocomplete_entries_part =
+            l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
+        break;
       case 1:
-        return synced ? l10n_util::GetStringFUTF16(
-                            IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
-                            displayed_strings[0])
-                      : displayed_strings[0];
+        payment_methods_addresses_autocomplete_entries_part =
+            synced ? l10n_util::GetStringFUTF16(
+                         IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
+                         displayed_strings[0])
+                   : displayed_strings[0];
+        break;
       case 2:
-        return l10n_util::GetStringFUTF16(
-            synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
-                   : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
-            displayed_strings[0], displayed_strings[1]);
+        payment_methods_addresses_autocomplete_entries_part =
+            l10n_util::GetStringFUTF16(
+                synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
+                       : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
+                displayed_strings[0], displayed_strings[1]);
+        break;
       case 3:
-        return l10n_util::GetStringFUTF16(
-            synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
-                   : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
-            displayed_strings[0], displayed_strings[1], displayed_strings[2]);
+        payment_methods_addresses_autocomplete_entries_part =
+            l10n_util::GetStringFUTF16(
+                synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
+                       : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
+                displayed_strings[0], displayed_strings[1],
+                displayed_strings[2]);
+        break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
+
+    return payment_methods_addresses_autocomplete_entries_part;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 const char* GetTimePeriodPreferenceName(
@@ -392,8 +456,7 @@ bool GetDeletionPreferenceFromDataType(
       *out_pref = prefs::kCloseTabs;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::optional<BrowsingDataType> GetDataTypeFromDeletionPreference(

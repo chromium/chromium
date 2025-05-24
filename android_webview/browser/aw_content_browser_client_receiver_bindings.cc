@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/common/content_features.h"
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -30,6 +31,7 @@
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h"
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -240,7 +242,7 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
     content::RenderProcessHost* render_process_host) {
   registry->AddInterface<safe_browsing::mojom::SafeBrowsing>(
       base::BindRepeating(
-          &MaybeCreateSafeBrowsing, render_process_host->GetID(),
+          &MaybeCreateSafeBrowsing, render_process_host->GetDeprecatedID(),
           base::BindRepeating(
               &AwContentBrowserClient::GetSafeBrowsingUrlCheckerDelegate,
               base::Unretained(this))),
@@ -249,7 +251,7 @@ void AwContentBrowserClient::ExposeInterfacesToRenderer(
   // Add the RenderMessageFilter creation callback, the callbkack will happen on
   // the IO thread.
   registry->AddInterface<mojom::RenderMessageFilter>(base::BindRepeating(
-      &CreateRenderMessageFilter, render_process_host->GetID()));
+      &CreateRenderMessageFilter, render_process_host->GetDeprecatedID()));
 }
 
 void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
@@ -274,6 +276,11 @@ void AwContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
           features::kWebViewMediaIntegrityApiBlinkExtension)) {
     map->Add<blink::mojom::WebViewMediaIntegrityService>(
         base::BindRepeating(&BindMediaIntegrityServiceReceiver));
+  }
+
+  if (base::FeatureList::IsEnabled(::features::kWebPayments)) {
+    map->Add<payments::mojom::PaymentRequest>(base::BindRepeating(
+        &ForwardToJavaFrame<payments::mojom::PaymentRequest>));
   }
 }
 

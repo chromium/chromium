@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
+
+#include <array>
 
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -28,6 +25,7 @@
 #include "cc/test/test_layer_tree_host_base.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/test/test_tile_priorities.h"
+#include "cc/tiles/eviction_tile_priority_queue.h"
 #include "cc/tiles/tile.h"
 #include "cc/tiles/tile_priority.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -82,9 +80,11 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
   void RunRasterQueueConstructTest(const std::string& test_name,
                                    int layer_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
+    auto priorities = std::to_array<TreePriority>({
+        SAME_PRIORITY_FOR_BOTH_TREES,
+        SMOOTHNESS_TAKES_PRIORITY,
+        NEW_CONTENT_TAKES_PRIORITY,
+    });
     int priority_count = 0;
 
     std::vector<FakePictureLayerImpl*> layers = CreateLayers(layer_count, 10);
@@ -107,9 +107,11 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
   void RunRasterQueueConstructAndIterateTest(const std::string& test_name,
                                              int layer_count,
                                              int tile_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
+    auto priorities = std::to_array<TreePriority>({
+        SAME_PRIORITY_FOR_BOTH_TREES,
+        SMOOTHNESS_TAKES_PRIORITY,
+        NEW_CONTENT_TAKES_PRIORITY,
+    });
 
     std::vector<FakePictureLayerImpl*> layers = CreateLayers(layer_count, 100);
     for (auto* layer : layers)
@@ -138,9 +140,11 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
 
   void RunEvictionQueueConstructTest(const std::string& test_name,
                                      int layer_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
+    auto priorities = std::to_array<TreePriority>({
+        SAME_PRIORITY_FOR_BOTH_TREES,
+        SMOOTHNESS_TAKES_PRIORITY,
+        NEW_CONTENT_TAKES_PRIORITY,
+    });
     int priority_count = 0;
 
     std::vector<FakePictureLayerImpl*> layers = CreateLayers(layer_count, 10);
@@ -168,9 +172,11 @@ class TileManagerPerfTest : public TestLayerTreeHostBase {
   void RunEvictionQueueConstructAndIterateTest(const std::string& test_name,
                                                int layer_count,
                                                int tile_count) {
-    TreePriority priorities[] = {SAME_PRIORITY_FOR_BOTH_TREES,
-                                 SMOOTHNESS_TAKES_PRIORITY,
-                                 NEW_CONTENT_TAKES_PRIORITY};
+    auto priorities = std::to_array<TreePriority>({
+        SAME_PRIORITY_FOR_BOTH_TREES,
+        SMOOTHNESS_TAKES_PRIORITY,
+        NEW_CONTENT_TAKES_PRIORITY,
+    });
     int priority_count = 0;
 
     std::vector<FakePictureLayerImpl*> layers =

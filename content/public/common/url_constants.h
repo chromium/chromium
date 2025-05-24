@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_COMMON_URL_CONSTANTS_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "url/url_constants.h"
 
@@ -20,9 +19,10 @@ namespace content {
 inline constexpr char kChromeDevToolsScheme[] = "devtools";
 inline constexpr char kChromeErrorScheme[] = "chrome-error";
 inline constexpr char kChromeUIScheme[] = "chrome";  // Used for WebUIs.
+inline constexpr char kChromeNativeScheme[] = "chrome-native";
 inline constexpr char kChromeUIUntrustedScheme[] = "chrome-untrusted";
 inline constexpr char kViewSourceScheme[] = "view-source";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 inline constexpr char kExternalFileScheme[] = "externalfile";
 #endif
 #if BUILDFLAG(IS_ANDROID)
@@ -53,7 +53,7 @@ inline constexpr char kChromeUIQuotaInternalsHost[] = "quota-internals";
 inline constexpr char kChromeUIResourcesHost[] = "resources";
 inline constexpr char kChromeUIServiceWorkerInternalsHost[] =
     "serviceworker-internals";
-inline constexpr char kChromeUITracesInternalsHost[] = "traces-internals";
+inline constexpr char kChromeUITracesInternalsHost[] = "traces";
 inline constexpr char kChromeUITracingHost[] = "tracing";
 inline constexpr char kChromeUIUkmHost[] = "ukm";
 inline constexpr char kChromeUIUntrustedResourcesURL[] =

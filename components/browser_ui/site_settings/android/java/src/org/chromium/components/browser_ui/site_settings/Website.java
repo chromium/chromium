@@ -4,11 +4,14 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.StorageInfoClearedCallback;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -24,25 +27,28 @@ import java.util.List;
 import java.util.Map;
 
 /** Website is a class for storing information about a website and its associated permissions. */
+@NullMarked
 public final class Website implements WebsiteEntry {
     private final WebsiteAddress mOrigin;
-    private final WebsiteAddress mEmbedder;
+    private final @Nullable WebsiteAddress mEmbedder;
 
     /** Indexed by ContentSettingsType. */
-    private Map<Integer, ContentSettingException> mContentSettingExceptions = new HashMap<>();
+    private final Map<Integer, ContentSettingException> mContentSettingExceptions = new HashMap<>();
 
     /** Indexed by ContentSettingsType. */
-    private Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
+    private final Map<Integer, PermissionInfo> mPermissionInfos = new HashMap<>();
 
     /**
      * Indexed by ContentSettingsType. For Permissions like the StorageAccess API that are keyed by
      * requesting and embedding site.
      */
-    private Map<Integer, List<ContentSettingException>> mEmbeddedPermissionInfos = new HashMap<>();
+    private final Map<Integer, List<ContentSettingException>> mEmbeddedPermissionInfos =
+            new HashMap<>();
 
-    private LocalStorageInfo mLocalStorageInfo;
-    private RWSCookieInfo mRWSCookieInfo;
-    private CookiesInfo mCookiesInfo;
+    private @Nullable LocalStorageInfo mLocalStorageInfo;
+    private @Nullable RwsCookieInfo mRwsCookieInfo;
+    private @Nullable CookiesInfo mCookiesInfo;
+    private @Nullable FileEditingInfo mFileEditingInfo;
     private double mZoomFactor;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
     private final List<SharedDictionaryInfo> mSharedDictionaryInfo = new ArrayList<>();
@@ -72,7 +78,7 @@ public final class Website implements WebsiteEntry {
         return type == ContentSettingsType.STORAGE_ACCESS;
     }
 
-    public Website(WebsiteAddress origin, WebsiteAddress embedder) {
+    public Website(WebsiteAddress origin, @Nullable WebsiteAddress embedder) {
         mOrigin = origin;
         mEmbedder = embedder;
     }
@@ -81,12 +87,17 @@ public final class Website implements WebsiteEntry {
         return mOrigin;
     }
 
-    public WebsiteAddress getEmbedder() {
+    public @Nullable WebsiteAddress getEmbedder() {
         return mEmbedder;
     }
 
     public String getTitle() {
         return getMainAddress().getTitle();
+    }
+
+    @Override
+    public String getDomainAndRegistry() {
+        return assumeNonNull(getAddress().getDomainAndRegistry());
     }
 
     public boolean representsThirdPartiesOnSite() {
@@ -97,7 +108,7 @@ public final class Website implements WebsiteEntry {
 
     public WebsiteAddress getMainAddress() {
         if (representsThirdPartiesOnSite()) {
-            return mEmbedder;
+            return assumeNonNull(mEmbedder);
         }
         return mOrigin;
     }
@@ -107,7 +118,7 @@ public final class Website implements WebsiteEntry {
      * either return null (representing the wildcard) if it a 3P exception, or the mEmbedder
      * (which may not be null, such as in the "a.com, b.com" origin combination).
      */
-    private WebsiteAddress getAdditionalInformationAddress() {
+    private @Nullable WebsiteAddress getAdditionalInformationAddress() {
         if (representsThirdPartiesOnSite()) return null;
         return mEmbedder;
     }
@@ -152,7 +163,7 @@ public final class Website implements WebsiteEntry {
     /**
      * @return PermissionInfo with permission details of specified type (Camera, Clipboard, etc.).
      */
-    public PermissionInfo getPermissionInfo(@ContentSettingsType.EnumType int type) {
+    public @Nullable PermissionInfo getPermissionInfo(@ContentSettingsType.EnumType int type) {
         return mPermissionInfos.get(type);
     }
 
@@ -179,7 +190,8 @@ public final class Website implements WebsiteEntry {
         for (var existing_info : list) {
             if (existing_info.getContentSettingType() == info.getContentSettingType()
                     && existing_info.getPrimaryPattern().equals(info.getPrimaryPattern())
-                    && existing_info.getSecondaryPattern().equals(info.getSecondaryPattern())) {
+                    && assumeNonNull(existing_info.getSecondaryPattern())
+                            .equals(info.getSecondaryPattern())) {
                 // In incognito mode we can have two exceptions with the same pattern. Only keep
                 // the first one.
                 return;
@@ -193,7 +205,7 @@ public final class Website implements WebsiteEntry {
     }
 
     /** Returns the exception info for this Website for specified type. */
-    public ContentSettingException getContentSettingException(
+    public @Nullable ContentSettingException getContentSettingException(
             @ContentSettingsType.EnumType int type) {
         return mContentSettingExceptions.get(type);
     }
@@ -212,22 +224,20 @@ public final class Website implements WebsiteEntry {
      * @param exceptions Website embedded exceptions.
      * @return the ContentSettingValue of the list of |exceptions|.
      */
-    private @ContentSettingValues @Nullable Integer getContentSetting(
+    private @ContentSettingValues Integer getContentSetting(
             List<ContentSettingException> exceptions) {
         assert !exceptions.isEmpty();
 
-        @ContentSettingValues
-        @Nullable
-        Integer contentSetting = exceptions.get(0).getContentSetting();
+        @ContentSettingValues int contentSetting = exceptions.get(0).getContentSetting();
 
         for (ContentSettingException exception : exceptions) {
-            assert exception.getContentSetting().equals(contentSetting);
+            assert exception.getContentSetting() == contentSetting;
         }
 
         return contentSetting;
     }
 
-    public List<ContentSettingException> getEmbeddedContentSettings(
+    public @Nullable List<ContentSettingException> getEmbeddedContentSettings(
             @ContentSettingsType.EnumType int type) {
         assert isEmbeddedPermission(type);
         return getEmbeddedPermissions().get(type);
@@ -247,9 +257,9 @@ public final class Website implements WebsiteEntry {
             // have been grouped by content setting.
             return getContentSetting(exceptions);
         } else if (getPermissionInfo(type) != null) {
-            return getPermissionInfo(type).getContentSetting(browserContextHandle);
+            return assumeNonNull(getPermissionInfo(type)).getContentSetting(browserContextHandle);
         } else if (getContentSettingException(type) != null) {
-            return getContentSettingException(type).getContentSetting();
+            return assumeNonNull(getContentSettingException(type)).getContentSetting();
         }
 
         return null;
@@ -260,8 +270,9 @@ public final class Website implements WebsiteEntry {
             BrowserContextHandle browserContextHandle,
             @ContentSettingsType.EnumType int type,
             @ContentSettingValues int value) {
-        if (getPermissionInfo(type) != null) {
-            getPermissionInfo(type).setContentSetting(browserContextHandle, value);
+        PermissionInfo permissionInfo = getPermissionInfo(type);
+        if (permissionInfo != null) {
+            permissionInfo.setContentSetting(browserContextHandle, value);
             return;
         }
 
@@ -294,7 +305,7 @@ public final class Website implements WebsiteEntry {
                 exception =
                         new ContentSettingException(
                                 ContentSettingsType.JAVASCRIPT,
-                                getAddress().getHost(),
+                                assumeNonNull(getAddress().getHost()),
                                 value,
                                 ProviderType.NONE,
                                 /* isEmbargoed= */ false);
@@ -314,7 +325,7 @@ public final class Website implements WebsiteEntry {
                 exception =
                         new ContentSettingException(
                                 ContentSettingsType.SOUND,
-                                getAddress().getHost(),
+                                assumeNonNull(getAddress().getHost()),
                                 value,
                                 ProviderType.NONE,
                                 /* isEmbargoed= */ false);
@@ -356,6 +367,7 @@ public final class Website implements WebsiteEntry {
     public boolean isEmbargoed(@ContentSettingsType.EnumType int type) {
         if (isEmbeddedPermission(type)) {
             List<ContentSettingException> exceptions = getEmbeddedContentSettings(type);
+            assumeNonNull(exceptions);
             assert exceptions.size() == 1;
 
             return exceptions.get(0).isEmbargoed();
@@ -372,16 +384,16 @@ public final class Website implements WebsiteEntry {
         mLocalStorageInfo = info;
     }
 
-    public LocalStorageInfo getLocalStorageInfo() {
+    public @Nullable LocalStorageInfo getLocalStorageInfo() {
         return mLocalStorageInfo;
     }
 
-    public RWSCookieInfo getRWSCookieInfo() {
-        return mRWSCookieInfo;
+    public @Nullable RwsCookieInfo getRwsCookieInfo() {
+        return mRwsCookieInfo;
     }
 
-    public void setRWSCookieInfo(RWSCookieInfo rwsCookieInfo) {
-        mRWSCookieInfo = rwsCookieInfo;
+    public void setRwsCookieInfo(RwsCookieInfo rwsCookieInfo) {
+        mRwsCookieInfo = rwsCookieInfo;
     }
 
     public void addStorageInfo(StorageInfo info) {
@@ -413,8 +425,16 @@ public final class Website implements WebsiteEntry {
         mCookiesInfo = info;
     }
 
-    public CookiesInfo getCookiesInfo() {
+    public @Nullable CookiesInfo getCookiesInfo() {
         return mCookiesInfo;
+    }
+
+    public void setFileEditingInfo(FileEditingInfo info) {
+        mFileEditingInfo = info;
+    }
+
+    public @Nullable FileEditingInfo getFileEditingInfo() {
+        return mFileEditingInfo;
     }
 
     public void clearAllStoredData(
@@ -425,6 +445,7 @@ public final class Website implements WebsiteEntry {
             siteSettingsDelegate.getBrowsingDataModel(
                     (model) -> {
                         String host = getAddress().getHost();
+                        assertNonNull(host);
                         model.removeBrowsingData(
                                 host,
                                 () -> {
@@ -476,7 +497,7 @@ public final class Website implements WebsiteEntry {
     }
 
     public String getTitleForEmbeddedPreferenceRow() {
-        return omitProtocolIfPresent(mEmbedder.getTitle());
+        return omitProtocolIfPresent(assumeNonNull(mEmbedder).getTitle());
     }
 
     public void setDomainImportant(boolean isImportant) {
@@ -524,20 +545,21 @@ public final class Website implements WebsiteEntry {
 
     /** {@inheritDoc} */
     @Override
+    @EnsuresNonNullIf({"mRwsCookieInfo"})
     public boolean isPartOfRws() {
-        return getRWSCookieInfo() != null;
+        return mRwsCookieInfo != null;
     }
 
     /** {@inheritDoc} */
     @Override
-    public String getRwsOwner() {
-        return isPartOfRws() ? getRWSCookieInfo().getOwner() : null;
+    public @Nullable String getRwsOwner() {
+        return isPartOfRws() ? mRwsCookieInfo.getOwner() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public int getRwsSize() {
-        return isPartOfRws() ? getRWSCookieInfo().getMembersCount() : 0;
+        return isPartOfRws() ? mRwsCookieInfo.getMembersCount() : 0;
     }
 
     @Override

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <grit base_dir="." latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="grit/ui_chromeos_strings.h" type="rc_header">
       <emit emit_type='prepend'></emit>
@@ -180,7 +180,7 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
-      <!-- Files app strings. It's shared with ARC++ (//ash/components/arc). -->
+      <!-- Files app strings. It's shared with ARC++ (//chromeos/ash/experiences/arc). -->
       <part file="file_manager_strings.grdp" />
 
       <!-- Default user profile images. -->
@@ -1322,6 +1322,11 @@
         Urdu
       </message>
 
+      <!-- Lobster Strings -->
+      <message name="IDS_CHROMEOS_LOBSTER_CONTAINS_PERSON_ERROR_RESPONSE" desc="The error message displayed when Lobster image candidates contain people and are filtered out.">
+        For now, results with people won't be shown. Try another prompt.
+      </message>
+
       <!-- Network error strings -->
       <message name="IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN" desc="Network error details in notifications: UNKNOWN">
         Unknown network error
@@ -1932,43 +1937,6 @@
       </message>
       <message name="IDS_NETWORK_EAP_DEFAULT_SERVER_CA_WITHOUT_SUBJECT_VERIFICATION" desc="Network error message shown when the EAP configuration uses the default server CA cert without configuring subject alt name or domain matches to validate the servers identity">
         Missing 'Subject alternative name match' or 'Domain suffix match' to validate the authentication server identity
-      </message>
-
-       <!-- Strings shown on the Incognito navigation blocked page when policy-configured mandatory extensions are not allowed by the user to run in Incognito -->
-      <message name="IDS_INCOGNITO_NAVIGATION_BLOCKED_PAGE_TITLE" desc="Title of the page shown when Incognito navigation is blocked">
-              {COUNT, plural,
-              =1 {To use Incognito, your organization requires an extension}
-              other {To use Incognito, your organization requires some extensions}}
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_MESSAGE" desc="Informational message shown when Incognito navigation is blocked">
-                    {COUNT, plural,
-              =1 {Turn on the following extension in Incognito:}
-              other {Turn on the following extensions in Incognito:}}
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS" desc="Instructions shown on the blocked navigation page on how to enable an extension">
-        Turn on an extension in Incognito:
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_1" desc="First step from the instruction to enable an extension in Incognito mode">
-        Type <ph name="BEGIN_BOLD">&lt;b&gt;</ph>chrome://extensions<ph name="END_BOLD">&lt;/b&gt;</ph> into your browser
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_2" desc="Second step from the instruction to enable an extension in Incognito mode">
-        Find the extension above
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_3" desc="Third step from the instruction to enable an extension in Incognito mode">
-        Click <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Details<ph name="END_BOLD">&lt;/b&gt;</ph>
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_INSTRUCTIONS_STEP_4" desc="Forth step from the instruction to enable an extension in Incognito mode">
-        Turn on <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Allow in Incognito<ph name="END_BOLD">&lt;/b&gt;</ph>
-      </message>
-        <message name="IDS_INCOGNITO_NAVIGATION_MISSING_TITLE" desc="Message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
-        {COUNT, plural,
-              =1 {Can’t find extension}
-              other {Can’t find extensions}}
-      </message>
-      <message name="IDS_INCOGNITO_NAVIGATION_MISSING_EXTENSIONS" desc="Message shown when the admin has configures one or more extensions as mandatory for Incognito mode navigation but the extensions are not installed in the browser">
-        {COUNT, plural,
-              =1 {An extension with the ID <ph name="BEGIN_LIST">&lt;ul id="mising-extensions" &gt;</ph><ph name="END_LIST">&lt;/ul&gt;</ph> can’t be located. Contact your administrator.}
-              other {Extensions with the IDs <ph name="BEGIN_LIST">&lt;ul id="mising-extensions" &gt;</ph><ph name="END_LIST">&lt;/ul&gt;</ph> can’t be located. Contact your administrator.}}
       </message>
 
       <!-- Settings strings -->

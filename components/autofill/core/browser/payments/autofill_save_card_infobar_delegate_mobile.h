@@ -43,6 +43,7 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
 
   bool is_for_upload() const { return ui_info_.is_for_upload; }
   int issuer_icon_id() const { return ui_info_.issuer_icon_id; }
+  const std::u16string& card_network() const { return ui_info_.card_network; }
   const std::u16string& card_label() const { return ui_info_.card_label; }
   const std::u16string& card_sub_label() const {
     return ui_info_.card_sub_label;
@@ -67,6 +68,9 @@ class AutofillSaveCardInfoBarDelegateMobile : public ConfirmInfoBarDelegate {
   }
   const gfx::Image& displayed_target_account_avatar() const {
     return ui_info_.displayed_target_account_avatar;
+  }
+  const std::u16string& logo_icon_description() const {
+    return ui_info_.logo_icon_description;
   }
 
   // Called when a link in the legal message text was clicked.

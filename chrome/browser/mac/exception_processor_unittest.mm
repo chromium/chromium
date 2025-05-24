@@ -50,7 +50,7 @@ void ThrowExceptionInRunLoop() {
 TEST_F(ExceptionProcessorTest, ThrowExceptionInRunLoop) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(ThrowExceptionInRunLoop(),
-               ".*FATAL:exception_processor\\.mm.*"
+               ".*FATAL:.*exception_processor\\.mm.*"
                "Terminating from Objective-C exception:.*");
 }
 
@@ -106,7 +106,7 @@ void ThrowExceptionFromSelector() {
 TEST_F(ExceptionProcessorTest, ThrowExceptionFromSelector) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(ThrowExceptionFromSelector(),
-               ".*FATAL:exception_processor\\.mm.*"
+               ".*FATAL:.*exception_processor\\.mm.*"
                "Terminating from Objective-C exception:.*");
 }
 
@@ -141,7 +141,7 @@ void ThrowInNotificationObserver() {
 TEST_F(ExceptionProcessorTest, ThrowInNotificationObserver) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");
   EXPECT_DEATH(ThrowInNotificationObserver(),
-               ".*FATAL:exception_processor\\.mm.*"
+               ".*FATAL:.*exception_processor\\.mm.*"
                "Terminating from Objective-C exception:.*");
 }
 

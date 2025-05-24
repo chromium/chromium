@@ -1,7 +1,7 @@
 caption: Enable post-quantum key agreement for TLS
 default: null
 desc: |-
-  This policy configures whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will offer a post-quantum key agreement algorithm in TLS. In future versions, the algorithm will be ML-KEM, a NIST post-quantum standard. Initially, the algorithm was Kyber, an earlier draft iteration of the standard. This allows supporting servers to protect user traffic from being later decrypted by quantum computers.
+  This policy configures whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will offer a post-quantum key agreement algorithm in TLS, using the ML-KEM NIST standard. Prior to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> 131, the algorithm was Kyber, an earlier draft iteration of the standard. This allows supporting servers to protect user traffic from being later decrypted by quantum computers.
 
   If this policy is Enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will offer a post-quantum key agreement in TLS connections. User traffic will then be protected from quantum computers when communicating with compatible servers.
 

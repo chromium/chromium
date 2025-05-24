@@ -74,13 +74,13 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
 
     test('proceed', async function() {
       assertTrue(isChildVisible(app, '#proceed-button'));
-      app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!.click();
+      app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!.click();
       await browserProxy.whenCalled('proceed');
     });
 
     test('cancel', async function() {
       assertTrue(isChildVisible(app, '#cancel-button'));
-      app.shadowRoot!.querySelector<HTMLElement>('#cancel-button')!.click();
+      app.shadowRoot.querySelector<HTMLElement>('#cancel-button')!.click();
       await browserProxy.whenCalled('cancel');
     });
 
@@ -103,7 +103,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertTrue(isChildVisible(app, '#linkData'));
 
       const linkDataCheckbox: CrCheckboxElement =
-          app.shadowRoot!.querySelector('#linkData')!;
+          app.shadowRoot.querySelector('#linkData')!;
       assertEquals(
           app.i18n('linkDataText'), linkDataCheckbox.textContent!.trim());
       assertFalse(linkDataCheckbox.checked);
@@ -111,7 +111,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       linkDataCheckbox.click();
       await microtasksFinished();
       const proceedButton =
-          app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
+          app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!;
 
       assertTrue(linkDataCheckbox.checked);
       assertEquals(
@@ -136,7 +136,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertTrue(isChildVisible(app, '#linkData'));
 
       const linkDataCheckbox: CrCheckboxElement =
-          app.shadowRoot!.querySelector('#linkData')!;
+          app.shadowRoot.querySelector('#linkData')!;
       assertEquals(
           app.i18n('linkDataText'), linkDataCheckbox.textContent!.trim());
       assertFalse(linkDataCheckbox.checked);
@@ -158,7 +158,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       await microtasksFinished();
 
       const proceedButton =
-          app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
+          app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!;
 
       assertTrue(linkDataCheckbox.checked);
       assertEquals(
@@ -172,6 +172,62 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(linkDataCheckbox.checked);
     });
 
+    test('stateChangesWithBackButton', async function() {
+      if (!useUpdatedUi) {
+        return;
+      }
+
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      app = document.createElement('managed-user-profile-notice-app');
+      document.body.appendChild(app);
+      await browserProxy.whenCalled('initialized');
+
+      loadTimeData.overrideValues({
+        'initialState': State.VALUE_PROPOSITION,
+        'enforcedByPolicy': false,
+        'cancelLabel': 'cancel',
+        'backLabel': 'back',
+        'cancelValueProp': 'cancel_value_prop',
+      });
+      const cancelButton =
+          app.shadowRoot.querySelector<HTMLElement>('#cancel-button')!;
+
+      webUIListenerCallback('on-state-changed', State.VALUE_PROPOSITION);
+      await microtasksFinished();
+
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'Value proposition State: #cancel-button');
+      assertTrue(
+          isChildVisible(app, '#value-prop'),
+          'Value proposition State: #value-prop');
+      assertEquals(
+          'cancel_value_prop', cancelButton.textContent!.trim(),
+          'Value proposition State: Cancel label');
+
+      webUIListenerCallback('on-state-changed', State.DISCLOSURE);
+      await microtasksFinished();
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'Disclosure State: #cancel-button');
+      assertEquals(
+          'back', cancelButton.textContent!.trim(),
+          'Disclosure State: Cancel label');
+
+      // Brings us back to disclosure.
+      cancelButton.click();
+      await microtasksFinished();
+      assertTrue(
+          isChildVisible(app, '#value-prop'),
+          'Value proposition State: #value-prop');
+      assertTrue(
+          isChildVisible(app, '#cancel-button'),
+          'Disclosure State: #cancel-button');
+      assertEquals(
+          'cancel_value_prop', cancelButton.textContent!.trim(),
+          'Disclosure State: Cancel label');
+    });
+
     test('stateChanges', async function() {
       if (!useUpdatedUi) {
         return;
@@ -183,7 +239,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       await browserProxy.whenCalled('initialized');
 
       const proceedButton =
-          app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
+          app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!;
 
       webUIListenerCallback('on-state-changed', State.VALUE_PROPOSITION);
       await microtasksFinished();
@@ -292,7 +348,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(
           isChildVisible(app, '#proceed-button'),
           'Processing State: #proceed-button');
-      assertFalse(
+      assertTrue(
           isChildVisible(app, '#cancel-button'),
           'Processing State: #cancel-button');
 
@@ -316,7 +372,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertFalse(
           isChildVisible(app, '#cancel-button'), 'Error State: #cancel-button');
       assertEquals(
-          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          app.i18n('closeLabel'), proceedButton.textContent!.trim(),
           'Error State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.TIMEOUT);
@@ -336,11 +392,11 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       assertTrue(
           isChildVisible(app, '#proceed-button'),
           'Timeout State: #proceed-button');
-      assertFalse(
+      assertTrue(
           isChildVisible(app, '#cancel-button'),
           'Timeout State: #cancel-button');
       assertEquals(
-          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          app.i18n('retryLabel'), proceedButton.textContent!.trim(),
           'Timeout State: Proceed label');
 
       webUIListenerCallback('on-state-changed', State.SUCCESS);
@@ -364,7 +420,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
           isChildVisible(app, '#cancel-button'),
           'Success State: #cancel-button');
       assertEquals(
-          app.i18n('confirmLabel'), proceedButton.textContent!.trim(),
+          app.i18n('continueLabel'), proceedButton.textContent!.trim(),
           'Success State: Proceed label');
     });
 
@@ -374,7 +430,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       await microtasksFinished();
 
       const targetElement = useUpdatedUi ?
-          app.shadowRoot!.querySelector<HTMLElement>('#disclosure')! :
+          app.shadowRoot.querySelector<HTMLElement>('#disclosure')! :
           app;
       // Helper to test all the text values in the UI.
       function checkTextValues(
@@ -400,7 +456,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
         }
         assertTrue(isChildVisible(app, '#proceed-button'));
         const proceedButton =
-            app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
+            app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!;
         assertEquals(expectedProceedLabel, proceedButton.textContent!.trim());
       }
 
@@ -446,14 +502,14 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       await microtasksFinished();
 
       const targetElement =
-          app.shadowRoot!.querySelector<HTMLElement>('#value-prop')!;
+          app.shadowRoot.querySelector<HTMLElement>('#value-prop')!;
       // Helper to test all the text values in the UI in the disclosure screenl.
       function checkValuePropositionTextValues(
           expectedTitle: string, expectedSubtitle: string,
           expectedEmail: string, expectedAccountName: string,
           expectedProceedLabel: string) {
         const target =
-            app.shadowRoot!.querySelector<HTMLElement>('#value-prop')!;
+            app.shadowRoot.querySelector<HTMLElement>('#value-prop')!;
         assertTrue(isChildVisible(target, '.title'));
         const titleElement =
             target.shadowRoot!.querySelector<HTMLElement>('.title')!;
@@ -473,13 +529,13 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
             expectedAccountName, accountNameElement.textContent!.trim());
         assertTrue(isChildVisible(app, '#proceed-button'));
         const proceedButton =
-            app.shadowRoot!.querySelector<HTMLElement>('#proceed-button')!;
+            app.shadowRoot.querySelector<HTMLElement>('#proceed-button')!;
         assertEquals(expectedProceedLabel, proceedButton.textContent!.trim());
       }
 
       // Initial values.
       checkValuePropositionTextValues(
-          app.i18n('signinIntoChrome'), app.i18n('valuePropSubtitle'),
+          app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
           'email@email.com', 'account_name', 'continue_as');
       checkImageUrl(targetElement, AVATAR_URL_1);
 
@@ -498,7 +554,7 @@ import {TestManagedUserProfileNoticeBrowserProxy} from './test_managed_user_prof
       });
       await microtasksFinished();
       checkValuePropositionTextValues(
-          app.i18n('signinIntoChrome'), app.i18n('valuePropSubtitle'),
+          app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
           'new_email@email.com', 'new_account_name', 'new_continue_as');
 
       checkImageUrl(targetElement, AVATAR_URL_2);

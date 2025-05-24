@@ -1,0 +1,70 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+#centerContainer {
+  display: flex;
+  justify-content: center;
+  margin: 12px auto;
+  max-width: 400px;
+}
+
+#centerContainer > div {
+  min-width: calc-size(fit-content, min(50%, size));
+  padding: 0 16px;
+  position: relative;
+}
+
+#centerContainer > div > p,
+#centerContainer > div > button {
+  color: var(--color-new-tab-footer-text);
+  font-size: 13px;
+  line-height: 20px;
+  margin: 0;
+  overflow: hidden;
+  padding: 6px 0;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+[role="link"] {
+  border:none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+[role="link"]:hover {
+  background: var(--color-new-tab-page-button-background-hovered);
+}
+
+/* Add a vertical divider after each centerContainer item in the footer
+ * except the last one. */
+#centerContainer > div:not(:last-child):after {
+  background-color: var(--color-new-tab-footer-text);
+  content: "";
+  display: inline-block;
+  height: 13px;
+  position: absolute;
+  right: 0;
+  top: calc(50% - 6px);
+  width: 1px;
+}
+
+#managementNoticeContainer {
+  display: flex;
+}
+
+#managementNoticeLogo {
+  padding-right: 16px;
+  width: 20px;
+  height: 20px;
+  transform: translateY(+25%);
+}

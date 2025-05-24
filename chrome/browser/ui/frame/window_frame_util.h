@@ -32,7 +32,7 @@ class WindowFrameUtil {
   static gfx::Size GetWindowsCaptionButtonAreaSize();
 
  private:
-  WindowFrameUtil() {}
+  WindowFrameUtil() = default;
 };
 
 #endif  // CHROME_BROWSER_UI_FRAME_WINDOW_FRAME_UTIL_H_

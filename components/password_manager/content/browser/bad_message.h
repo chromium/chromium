@@ -37,15 +37,17 @@ enum class BadMessageReason {
   CPMD_BAD_ORIGIN_SHOW_PASSWORD_EDITING_POPUP_OBSOLETE = 12,    // obsolete
   CPMD_BAD_ORIGIN_GENERATION_AVAILABLE_FOR_FORM_OBSOLETE = 13,  // obsolete
   CPMD_BAD_ORIGIN_PRERENDERING = 14,
+  CPMD_BAD_ORIGIN_NO_GENERATED_PASSWORD_TO_EDIT = 15,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ContentPasswordManagerDriver becomes CPMD) plus a unique
   // description of the reason. After making changes, you MUST update
   // histograms.xml by running:
-  // "python tools/metrics/histograms/update_bad_message_reasons.py"
+  // "python3 tools/metrics/histograms/update_bad_message_reasons.py"
   BAD_MESSAGE_MAX
 };
 
+// TODO(crbug.com/398857496): Add unit tests for the functions.
 namespace bad_message {
 
 // Returns true if a password form operation is allowed to be performed on the
@@ -76,6 +78,11 @@ bool CheckChildProcessSecurityPolicyForURL(content::RenderFrameHost* frame,
 // Returns true if frame is not prerendering (when password manager updates
 // are disallowed). Kills the renderer if we are prerendering.
 bool CheckFrameNotPrerendering(content::RenderFrameHost* frame);
+
+// Returns true if the generated_password isn't empty. Otherwise, kills the
+// renderer.
+bool CheckGeneratedPassword(content::RenderFrameHost* frame,
+                            const std::u16string& generated_password);
 
 }  // namespace bad_message
 }  // namespace password_manager

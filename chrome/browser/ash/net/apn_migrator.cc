@@ -82,81 +82,116 @@ ApnMigrator::ApnMigrator(
 
 ApnMigrator::~ApnMigrator() = default;
 
+bool ApnMigrator::has_iccids_changed(base::flat_set<std::string> new_iccids,
+                                     base::flat_set<std::string> old_iccids) {
+  if (new_iccids.size() != old_iccids.size()) {
+    return true;
+  }
+
+  return !std::equal(new_iccids.begin(), new_iccids.end(), old_iccids.begin());
+}
+
+base::flat_set<std::string> ApnMigrator::extract_iccids(
+    NetworkStateHandler::NetworkStateList& network_list) {
+  base::flat_set<std::string> iccids;
+
+  for (const NetworkState* network : network_list) {
+    if (!network->iccid().empty()) {
+      iccids.insert(network->iccid());
+    }
+  }
+
+  return iccids;
+}
+
+void ApnMigrator::ResetOldIccidsForTesting() {
+  old_iccids_.clear();
+}
+
 void ApnMigrator::NetworkListChanged() {
   NetworkStateHandler::NetworkStateList network_list;
   network_state_handler_->GetVisibleNetworkListByType(
       NetworkTypePattern::Cellular(), &network_list);
-  for (const NetworkState* network : network_list) {
-    // Only attempt to migrate networks known by Shill.
-    if (network->IsNonShillCellularNetwork()) {
-      continue;
-    }
+  base::flat_set<std::string> new_iccids = extract_iccids(network_list);
 
-    if (network->iccid().empty()) {
-      // If the network somehow has no iccid, don't attempt to migrate.
-      NET_LOG(DEBUG) << "Network has no iccid, not migrating: "
-                     << network->guid();
-      continue;
-    }
+  if (has_iccids_changed(new_iccids, old_iccids_)) {
+    old_iccids_ = new_iccids;
 
-    // The network has already been updated in Shill with the correct logic
-    // depending on if the flag is enabled or disabled. Finish early so we don't
-    // redundantly update Shill.
-    if (base::Contains(shill_updated_iccids_, network->iccid())) {
-      continue;
-    }
-
-    bool has_network_been_migrated =
-        managed_cellular_pref_handler_->ContainsApnMigratedIccid(
-            network->iccid());
-    if (!ash::features::IsApnRevampEnabled()) {
-      // If the network has been marked as migrated, but the ApnRevamp flag is
-      // disabled, the flag was disabled after being enabled. Clear
-      // CustomApnList so that Shill knows to use legacy APN selection logic.
-      if (has_network_been_migrated) {
-        NET_LOG(EVENT) << "Network has been migrated but the revamp flag is "
-                       << "disabled. Clearing CustomAPNList: "
-                       << network->iccid();
-        network_configuration_handler_->ClearShillProperties(
-            network->path(), {shill::kCellularCustomApnListProperty},
-            base::BindOnce(&ApnMigrator::OnClearPropertiesSuccess,
-                           weak_factory_.GetWeakPtr(), network->iccid()),
-            base::BindOnce(&ApnMigrator::OnClearPropertiesFailure,
-                           weak_factory_.GetWeakPtr(), network->iccid(),
-                           network->guid()));
+    for (const NetworkState* network : network_list) {
+      // Only attempt to migrate networks known by Shill.
+      if (network->IsNonShillCellularNetwork()) {
+        continue;
       }
-      continue;
-    }
 
-    if (!has_network_been_migrated) {
-      NET_LOG(EVENT) << "Network has not been migrated, attempting to migrate: "
-                     << network->iccid();
-      MigrateNetwork(*network);
-      continue;
-    }
-
-    // The network has already been migrated, either the last time the flag was
-    // on, or this time. Send Shill the revamp APN list.
-    if (const base::Value::List* custom_apn_list =
-            GetNetworkMetadataStore()->GetCustomApnList(network->guid())) {
-      if (!ash::features::IsAllowApnModificationPolicyEnabled() ||
-          network_configuration_handler_->AllowApnModification()) {
-        NET_LOG(EVENT) << "Network has already been migrated, setting with the "
-                       << "populated custom APN list: " << network->iccid();
-        SetShillCustomApnListForNetwork(*network, custom_apn_list);
-      } else if (!network_configuration_handler_->AllowApnModification()) {
-        NET_LOG(EVENT) << "Not setting custom APN list as admin has restricted "
-                          "use of custom APNs";
-        base::Value::List empty_custom_apn_list;
-        SetShillCustomApnListForNetwork(*network, &empty_custom_apn_list);
+      if (network->iccid().empty()) {
+        // If the network somehow has no iccid, don't attempt to migrate.
+        NET_LOG(DEBUG) << "Network has no iccid, not migrating: "
+                       << network->guid();
+        continue;
       }
-      continue;
-    }
 
-    NET_LOG(EVENT) << "Network has already been migrated, setting with the "
-                   << "empty custom APN list: " << network->iccid();
-    base::Value::List empty_custom_apn_list;
-    SetShillCustomApnListForNetwork(*network, &empty_custom_apn_list);
+      // The network has already been updated in Shill with the correct logic
+      // depending on if the flag is enabled or disabled. Finish early so we
+      // don't redundantly update Shill.
+      if (base::Contains(shill_updated_iccids_, network->iccid())) {
+        continue;
+      }
+
+      bool has_network_been_migrated =
+          managed_cellular_pref_handler_->ContainsApnMigratedIccid(
+              network->iccid());
+      if (!ash::features::IsApnRevampEnabled()) {
+        // If the network has been marked as migrated, but the ApnRevamp flag is
+        // disabled, the flag was disabled after being enabled. Clear
+        // CustomApnList so that Shill knows to use legacy APN selection logic.
+        if (has_network_been_migrated) {
+          NET_LOG(EVENT) << "Network has been migrated but the revamp flag is "
+                         << "disabled. Clearing CustomAPNList: "
+                         << network->iccid();
+          network_configuration_handler_->ClearShillProperties(
+              network->path(), {shill::kCellularCustomApnListProperty},
+              base::BindOnce(&ApnMigrator::OnClearPropertiesSuccess,
+                             weak_factory_.GetWeakPtr(), network->iccid()),
+              base::BindOnce(&ApnMigrator::OnClearPropertiesFailure,
+                             weak_factory_.GetWeakPtr(), network->iccid(),
+                             network->guid()));
+        }
+        continue;
+      }
+
+      if (!has_network_been_migrated) {
+        NET_LOG(EVENT)
+            << "Network has not been migrated, attempting to migrate: "
+            << network->iccid();
+        MigrateNetwork(*network);
+        continue;
+      }
+
+      // The network has already been migrated, either the last time the flag
+      // was on, or this time. Send Shill the revamp APN list.
+      if (const base::Value::List* custom_apn_list =
+              GetNetworkMetadataStore()->GetCustomApnList(network->guid())) {
+        if (!ash::features::IsAllowApnModificationPolicyEnabled() ||
+            network_configuration_handler_->AllowApnModification()) {
+          NET_LOG(EVENT)
+              << "Network has already been migrated, setting with the "
+              << "populated custom APN list: " << network->iccid();
+          SetShillCustomApnListForNetwork(*network, custom_apn_list);
+        } else if (!network_configuration_handler_->AllowApnModification()) {
+          NET_LOG(EVENT)
+              << "Not setting custom APN list as admin has restricted "
+                 "use of custom APNs";
+          base::Value::List empty_custom_apn_list;
+          SetShillCustomApnListForNetwork(*network, &empty_custom_apn_list);
+        }
+        continue;
+      }
+
+      NET_LOG(EVENT) << "Network has already been migrated, setting with the "
+                     << "empty custom APN list: " << network->iccid();
+      base::Value::List empty_custom_apn_list;
+      SetShillCustomApnListForNetwork(*network, &empty_custom_apn_list);
+    }
   }
 }
 

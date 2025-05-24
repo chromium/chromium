@@ -9,9 +9,10 @@
 
 #include "services/device/hid/hid_connection_impl.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 
 namespace device {
 

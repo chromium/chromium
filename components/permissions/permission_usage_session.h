@@ -38,8 +38,8 @@ struct PermissionUsageSession {
   // usage started.
   bool had_focus;
 
-  bool operator==(const PermissionUsageSession& other) const;
-  bool operator!=(const PermissionUsageSession& other) const;
+  friend bool operator==(const PermissionUsageSession&,
+                         const PermissionUsageSession&) = default;
 
   // Checks if the session satisfies the following constraints:
   // 1) `origin` is not opaque;

@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("metrics") {
   sources = [
@@ -22,7 +22,6 @@ static_library("metrics") {
     "//components/prefs",
   ]
   deps = [
-    "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//services/preferences/public/cpp",
     "//ui/base",

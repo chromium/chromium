@@ -5,24 +5,24 @@
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -36,14 +36,13 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/multi_user_window_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#endif
-
 #if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_CHROMEOS)
 #include "ui/ozone/public/ozone_platform.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/glic_enabling.h"
+#include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #endif
 
 SystemMenuModelBuilder::SystemMenuModelBuilder(
@@ -67,17 +66,16 @@ void SystemMenuModelBuilder::Init() {
 void SystemMenuModelBuilder::BuildMenu(ui::SimpleMenuModel* model) {
   // We add the menu items in reverse order so that insertion_index never needs
   // to change.
-  if (browser()->is_type_normal())
+  if (browser()->is_type_normal()) {
     BuildSystemMenuForBrowserWindow(model);
-  else
+  } else {
     BuildSystemMenuForAppOrPopupWindow(model);
+  }
 }
 
 void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     ui::SimpleMenuModel* model) {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   model->AddItemWithStringId(IDC_MINIMIZE_WINDOW, IDS_MINIMIZE_WINDOW_MENU);
   model->AddItemWithStringId(IDC_MAXIMIZE_WINDOW, IDS_MAXIMIZE_WINDOW_MENU);
   model->AddItemWithStringId(IDC_RESTORE_WINDOW, IDS_RESTORE_WINDOW_MENU);
@@ -87,17 +85,23 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   model->AddItemWithStringId(IDC_RESTORE_TAB, IDS_RESTORE_TAB);
   model->AddItemWithStringId(IDC_BOOKMARK_ALL_TABS, IDS_BOOKMARK_ALL_TABS);
   model->AddItemWithStringId(IDC_NAME_WINDOW, IDS_NAME_WINDOW);
-  if (base::FeatureList::IsEnabled(features::kCompactMode)) {
+#if BUILDFLAG(ENABLE_GLIC)
+#if BUILDFLAG(IS_WIN)
+  // On Windows we can not remove an item when showing the menu. So only add
+  // the glic toggle option if glic is enabled when building the menu.
+  if (glic::GlicEnabling::IsEnabledForProfile(browser()->profile())) {
+#endif  // BUILDFLAG(IS_WIN)
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    model->AddItemWithStringId(IDC_COMPACT_MODE, IDS_COMPACT_MODE);
+    model->AddItemWithStringId(IDC_GLIC_TOGGLE_PIN, IDS_GLIC_PIN);
+#if BUILDFLAG(IS_WIN)
   }
+#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(ENABLE_GLIC)
   if (chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
+    model->AddItemWithStringId(IDC_TASK_MANAGER_CONTEXT_MENU, IDS_TASK_MANAGER);
   }
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   bool supports_server_side_decorations = true;
 #if BUILDFLAG(IS_OZONE) && !BUILDFLAG(IS_CHROMEOS)
@@ -160,7 +164,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   bool should_show_task_manager =
       (browser()->is_type_app() || browser()->is_type_app_popup()) &&
       chrome::CanOpenTaskManager();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Hide TaskManager option for the app if it is locked for OnTask. Only
   // relevant for non-web browser scenarios.
   if (browser()->IsLockedForOnTask()) {
@@ -185,8 +189,9 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   gfx::NativeWindow window =
       menu_delegate_.browser()->window()->GetNativeWindow();
-  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window))
+  if (!chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(window)) {
     return;
+  }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   move_to_desks_model_ = std::make_unique<chromeos::MoveToDesksMenuModel>(
@@ -199,7 +204,7 @@ void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
 #endif
 
 void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(browser()->window());
 
   // Avoid appending the teleport menu for the settings window.  This window's
@@ -213,15 +218,17 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
   }
 
   // Don't show the menu for incognito windows.
-  if (browser()->profile()->IsOffTheRecord())
+  if (browser()->profile()->IsOffTheRecord()) {
     return;
+  }
 
   // To show the menu we need at least two logged in users.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   const user_manager::UserList logged_in_users =
       user_manager->GetLRULoggedInUsers();
-  if (logged_in_users.size() <= 1u)
+  if (logged_in_users.size() <= 1u) {
     return;
+  }
 
   // If this does not belong to a profile or there is no window, or the window
   // is not owned by anyone, we don't show the menu addition.
@@ -230,8 +237,9 @@ void SystemMenuModelBuilder::AppendTeleportMenu(ui::SimpleMenuModel* model) {
       multi_user_util::GetAccountIdFromProfile(browser()->profile());
   aura::Window* window = browser()->window()->GetNativeWindow();
   if (!account_id.is_valid() || !window ||
-      !window_manager->GetWindowOwner(window).is_valid())
+      !window_manager->GetWindowOwner(window).is_valid()) {
     return;
+  }
 
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   int command_id = IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT;

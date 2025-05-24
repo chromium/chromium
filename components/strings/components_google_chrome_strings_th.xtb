@@ -9,8 +9,10 @@
 <translation id="2447485272386224171">Chrome เป็นจริงขึ้นได้จากโปรเจ็กต์โอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> และ<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
 <translation id="2588322182880276190">โลโก้ Chrome</translation>
 <translation id="3444832043240812445">หน้าเว็บนี้จะแสดงเฉพาะข้อมูลเกี่ยวกับข้อขัดข้องที่เกิดขึ้นเมื่อเร็วๆ นี้ของคุณเท่านั้น หากคุณ<ph name="BEGIN_LINK" />เปิดใช้งานการรายงานข้อขัดข้อง<ph name="END_LINK" /></translation>
+<translation id="3512634283363927263">หน้าเหล่านี้มีไว้สำหรับนักพัฒนาซอฟต์แวร์ Chrome เท่านั้น และอาจไม่ได้รับการดูแลรักษาหรือทดสอบอย่างสม่ำเสมอ หากต้องการเปิดใช้ ให้ไปที่ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> คลิกปุ่มเพื่อเปิดใช้หน้าแก้ไขข้อบกพร่อง แล้วมาที่หน้านี้อีกครั้ง</translation>
 <translation id="3875312571075912821">อนุญาตให้ Chrome เข้าถึงเครือข่ายในการตั้งค่าไฟร์วอลล์
           หรือการป้องกันไวรัส</translation>
+<translation id="4949828774841497663">ไปที่แอปพลิเคชัน &gt; การตั้งค่าระบบ &gt; เครือข่าย เลือกเครือข่ายที่ใช้งานอยู่ คลิกปุ่ม "รายละเอียด..." แล้วยกเลิกการเลือกพร็อกซีที่อาจเลือกไว้</translation>
 <translation id="5005121315113832363">หน้านี้ถูกบล็อกโดย Chrome</translation>
 <translation id="6011049234605203654">ไปที่
           เมนู Chrome &gt;
@@ -39,9 +41,6 @@
           การตั้งค่า LAN
           และยกเลิกการเลือก "ใช้พร็อกซีเซิร์ฟเวอร์สำหรับ LAN ของคุณ"</translation>
 <translation id="7230956101631259640">คุณกำลังดูหน้า Chrome ที่ปลอดภัย</translation>
-<translation id="8187289872471304532">ไปที่
-          แอปพลิเคชัน &gt; ค่ากำหนดของระบบ &gt; เครือข่าย &gt; ขั้นสูง &gt; พร็อกซี
-          แล้วยกเลิกการเลือกพร็อกซีที่ได้เลือกไว้</translation>
 <translation id="8232971017369963250">Chrome เกิดขึ้นได้ด้วยโปรเจ็กต์โอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /></translation>
 <translation id="8279509328145658601">Chrome ยังเกิดขึ้นได้ด้วย<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
 <translation id="8544217240017914508">Google Chrome กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>

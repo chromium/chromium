@@ -17,7 +17,6 @@
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/account_id/account_id.h"
-#include "url/gurl.h"
 
 class AccountId;
 
@@ -86,7 +85,7 @@ class PlatformVerificationFlow
   // purposes.  For normal operation the default implementation should be used.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns true iff the device is in a mode that supports platform
     // verification. For example, platform verification is not supported in dev

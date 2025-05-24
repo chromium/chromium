@@ -4,14 +4,20 @@
 
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt.h"
 
+#include <memory>
+#include <vector>
+
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/permission_bubble/permission_bubble_browser_test_util.h"
 #include "chrome/browser/ui/views/permissions/exclusive_access_permission_prompt_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "content/public/test/browser_test.h"
 
 using testing::_;
@@ -25,19 +31,19 @@ class PermissionPromptDelegate : public TestPermissionBubbleViewDelegate {
   }
 
   void Accept() override {
-    for (auto request : Requests()) {
+    for (const auto& request : Requests()) {
       request->PermissionGranted(/*is_one_time=*/false);
     }
   }
 
   void AcceptThisTime() override {
-    for (auto request : Requests()) {
+    for (const auto& request : Requests()) {
       request->PermissionGranted(/*is_one_time=*/true);
     }
   }
 
   void Deny() override {
-    for (auto request : Requests()) {
+    for (const auto& request : Requests()) {
       request->PermissionDenied();
     }
   }
@@ -60,10 +66,30 @@ class ExclusiveAccessPermissionPromptInteractiveTest
   }
 
  protected:
+  std::unique_ptr<permissions::PermissionRequest> CreateKeyboardRequest() {
+    return std::make_unique<permissions::PermissionRequest>(
+        std::make_unique<permissions::PermissionRequestData>(
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                ContentSettingsType::KEYBOARD_LOCK),
+            /*user_gesture=*/false, GURL("https://example.com")),
+        keyboard_callback_.Get());
+  }
+
+  base::MockCallback<permissions::PermissionRequest::PermissionDecidedCallback>
+      pointer_callback_;
+
+  std::unique_ptr<permissions::PermissionRequest> CreatePointerRequest() {
+    return std::make_unique<permissions::PermissionRequest>(
+        std::make_unique<permissions::PermissionRequestData>(
+            std::make_unique<permissions::ContentSettingPermissionResolver>(
+                ContentSettingsType::POINTER_LOCK),
+            /*user_gesture=*/false, GURL("https://example.com")),
+        pointer_callback_.Get());
+  }
+
   std::unique_ptr<ExclusiveAccessPermissionPrompt> CreatePrompt(
-      std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-          requests) {
-    prompt_delegate_->set_requests(requests);
+      std::vector<std::unique_ptr<permissions::PermissionRequest>> requests) {
+    prompt_delegate_->set_requests(std::move(requests));
     return std::make_unique<ExclusiveAccessPermissionPrompt>(
         browser(), browser()->tab_strip_model()->GetActiveWebContents(),
         prompt_delegate_.get());
@@ -94,62 +120,67 @@ class ExclusiveAccessPermissionPromptInteractiveTest
 
   base::MockCallback<permissions::PermissionRequest::PermissionDecidedCallback>
       keyboard_callback_;
-  permissions::PermissionRequest keyboard_request_{
-      GURL("https://example.com"), permissions::RequestType::kKeyboardLock,
-      /*has_gesture=*/false, keyboard_callback_.Get(), base::OnceClosure()};
-  base::MockCallback<permissions::PermissionRequest::PermissionDecidedCallback>
-      pointer_callback_;
-  permissions::PermissionRequest pointer_request_{
-      GURL("https://example.com"), permissions::RequestType::kPointerLock,
-      /*has_gesture=*/false, pointer_callback_.Get(), base::OnceClosure()};
+
   std::unique_ptr<PermissionPromptDelegate> prompt_delegate_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        AllowPermisison) {
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.emplace_back(CreateKeyboardRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
-      CreatePrompt({&keyboard_request_});
-  EXPECT_CALL(keyboard_callback_,
-              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/false, _));
+      CreatePrompt(std::move(requests));
+  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_ALLOW,
+                                      /*is_one_time=*/false, _, _));
   PressAllowButton(prompt.get());
 }
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        AllowPermisisonThisTime) {
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.emplace_back(CreateKeyboardRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
-      CreatePrompt({&keyboard_request_});
+      CreatePrompt(std::move(requests));
   EXPECT_CALL(keyboard_callback_,
-              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/true, _));
+              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/true, _, _));
   PressAllowThisTimeButton(prompt.get());
 }
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        DenyPermisison) {
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.emplace_back(CreateKeyboardRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
-      CreatePrompt({&keyboard_request_});
-  EXPECT_CALL(keyboard_callback_,
-              Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false, _));
+      CreatePrompt(std::move(requests));
+  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_BLOCK,
+                                      /*is_one_time=*/false, _, _));
   PressDenyButton(prompt.get());
 }
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        AllowMultiplePermisisons) {
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.emplace_back(CreateKeyboardRequest());
+  requests.emplace_back(CreatePointerRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
-      CreatePrompt({&keyboard_request_, &pointer_request_});
-  EXPECT_CALL(keyboard_callback_,
-              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/false, _));
-  EXPECT_CALL(pointer_callback_,
-              Run(CONTENT_SETTING_ALLOW, /*is_one_time=*/false, _));
+      CreatePrompt(std::move(requests));
+  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_ALLOW,
+                                      /*is_one_time=*/false, _, _));
+  EXPECT_CALL(pointer_callback_, Run(CONTENT_SETTING_ALLOW,
+                                     /*is_one_time=*/false, _, _));
   PressAllowButton(prompt.get());
 }
 
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessPermissionPromptInteractiveTest,
                        DenyMultiplePermisisons) {
+  std::vector<std::unique_ptr<permissions::PermissionRequest>> requests;
+  requests.emplace_back(CreateKeyboardRequest());
+  requests.emplace_back(CreatePointerRequest());
   std::unique_ptr<ExclusiveAccessPermissionPrompt> prompt =
-      CreatePrompt({&keyboard_request_, &pointer_request_});
-  EXPECT_CALL(keyboard_callback_,
-              Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false, _));
-  EXPECT_CALL(pointer_callback_,
-              Run(CONTENT_SETTING_BLOCK, /*is_one_time=*/false, _));
+      CreatePrompt(std::move(requests));
+  EXPECT_CALL(keyboard_callback_, Run(CONTENT_SETTING_BLOCK,
+                                      /*is_one_time=*/false, _, _));
+  EXPECT_CALL(pointer_callback_, Run(CONTENT_SETTING_BLOCK,
+                                     /*is_one_time=*/false, _, _));
   PressDenyButton(prompt.get());
 }

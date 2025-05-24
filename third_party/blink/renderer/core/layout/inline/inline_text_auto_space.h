@@ -23,6 +23,12 @@ class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   STACK_ALLOCATED();
 
  public:
+  // A class for testing to inspect what `InlineTextAutoSpace` did.
+  class CORE_EXPORT Callback {
+   public:
+    virtual void DidApply(base::span<const OffsetWithSpacing>) = 0;
+  };
+
   explicit InlineTextAutoSpace(const InlineItemsData& data);
 
   // True if this may apply auto-spacing. If this is false, it's safe to skip
@@ -33,21 +39,22 @@ class CORE_EXPORT InlineTextAutoSpace : public TextAutoSpace {
   // https://drafts.csswg.org/css-text-4/#propdef-text-autospace
   //
   // The `data` must be the same instance as the one given to the constructor.
-  //
-  // If `offsets_out` is not null, the offsets of auto-space points are added to
-  // it without applying auto-spacing. This is for tseting-purpose.
-  void Apply(InlineItemsData& data, Vector<wtf_size_t>* offsets_out = nullptr);
-  void ApplyIfNeeded(InlineItemsData& data,
-                     Vector<wtf_size_t>* offsets_out = nullptr) {
+  void Apply(InlineItemsData& data);
+  void ApplyIfNeeded(InlineItemsData& data) {
     if (MayApply()) [[unlikely]] {
-      Apply(data, offsets_out);
+      Apply(data);
     }
+  }
+
+  void SetCallbackForTesting(Callback* callback) {
+    callback_for_testing_ = callback;
   }
 
  private:
   void Initialize(const InlineItemsData& data);
 
   InlineItemSegments::RunSegmenterRanges ranges_;
+  Callback* callback_for_testing_ = nullptr;
 };
 
 inline InlineTextAutoSpace::InlineTextAutoSpace(const InlineItemsData& data) {

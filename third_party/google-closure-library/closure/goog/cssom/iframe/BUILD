@@ -7,6 +7,7 @@ licenses(["notice"])
 closure_js_library(
     name = "style",
     srcs = ["style.js"],
+    lenient = True,
     deps = [
         "//closure/goog/asserts",
         "//closure/goog/cssom",

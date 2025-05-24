@@ -8,19 +8,15 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
+class ProfileIOS;
 class TrustedVaultClientBackend;
 
 // Singleton that owns all TrustedVaultClientBackends and associates them with
-// ChromeBrowserState.
-class TrustedVaultClientBackendFactory
-    : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class TrustedVaultClientBackendFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static TrustedVaultClientBackend* GetForBrowserState(ProfileIOS* profile);
-
   static TrustedVaultClientBackend* GetForProfile(ProfileIOS* profile);
   static TrustedVaultClientBackendFactory* GetInstance();
 

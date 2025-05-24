@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -20,6 +21,8 @@ namespace policy {
 
 using ExtensionToPolicyMap = std::map<std::string, const DownloadFileType>;
 
+// This map owns the entries used for overrides i.e. their danger level always
+// says "not dangerous".
 ExtensionToPolicyMap& GetExtensionToPolicyMap() {
   static base::NoDestructor<ExtensionToPolicyMap> ext_map;
   return *ext_map;
@@ -204,7 +207,7 @@ base::FilePath::StringType FileTypePolicies::GetFileExtension(
     const base::FilePath& file) {
   // Remove trailing space and period characters from the extension.
   base::FilePath::StringType file_basename = file.BaseName().value();
-  base::FilePath::StringPieceType trimmed_filename = base::TrimString(
+  base::FilePath::StringViewType trimmed_filename = base::TrimString(
       file_basename, FILE_PATH_LITERAL(". "), base::TRIM_TRAILING);
   return base::FilePath(trimmed_filename).FinalExtension();
 }
@@ -241,21 +244,17 @@ const DownloadFileType& FileTypePolicies::PolicyForExtension(
     return last_resort_default_;
   }
   auto itr = file_type_by_ext_.find(ascii_ext);
+  const DownloadFileType& policy_to_use = itr == file_type_by_ext_.end()
+                                              ? config_->default_file_type()
+                                              : *itr->second;
 
-  if (safe_browsing::IsInNotDangerousOverrideList(ascii_ext, source_url,
-                                                  prefs)) {
-    if (itr != file_type_by_ext_.end()) {
-      return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
-          ascii_ext, *itr->second);
-    }
+  if (ShouldOverrideFileTypePolicies(ascii_ext, source_url, prefs) ==
+      FileTypePoliciesOverrideResult::kOverrideAsNotDangerous) {
     return policy::GetOrCreatePolicyForExtensionOverrideNotDangerous(
-        ascii_ext, config_->default_file_type());
+        ascii_ext, policy_to_use);
   }
 
-  if (itr != file_type_by_ext_.end())
-    return *itr->second;
-  else
-    return config_->default_file_type();
+  return policy_to_use;
 }
 
 DownloadFileType FileTypePolicies::PolicyForFile(
@@ -282,6 +281,12 @@ int64_t FileTypePolicies::UmaValueForFile(const base::FilePath& file) const {
   const std::string ext = CanonicalizedExtension(file);
   AutoLock lock(lock_);
   return PolicyForExtension(ext, GURL{}, nullptr).uma_value();
+}
+
+int64_t FileTypePolicies::UmaValueForUTF16FilenameUnsafe(
+    const std::u16string& filename) const {
+  base::FilePath file_path = base::FilePath::FromUTF16Unsafe(filename);
+  return UmaValueForFile(file_path);
 }
 
 bool FileTypePolicies::IsArchiveFile(const base::FilePath& file) const {

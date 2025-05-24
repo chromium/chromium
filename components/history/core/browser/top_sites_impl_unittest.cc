@@ -108,7 +108,7 @@ class TopSitesQuerier {
 
 class TopSitesImplTest : public HistoryUnitTestBase {
  public:
-  TopSitesImplTest() {}
+  TopSitesImplTest() = default;
 
   TopSitesImplTest(const TopSitesImplTest&) = delete;
   TopSitesImplTest& operator=(const TopSitesImplTest&) = delete;
@@ -290,7 +290,7 @@ class TopSitesImplTest : public HistoryUnitTestBase {
 
 class MockTopSitesObserver : public TopSitesObserver {
  public:
-  MockTopSitesObserver() {}
+  MockTopSitesObserver() = default;
 
   MockTopSitesObserver(const MockTopSitesObserver&) = delete;
   MockTopSitesObserver& operator=(const MockTopSitesObserver&) = delete;

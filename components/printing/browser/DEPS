@@ -1,6 +1,8 @@
 include_rules = [
   "+components/crash/core/common",
   "+components/discardable_memory/service",
+  "+components/enterprise/buildflags",
+  "+components/enterprise/watermarking",
   "+components/services/print_compositor/public",
   "+components/site_isolation",
   "+components/strings/grit",

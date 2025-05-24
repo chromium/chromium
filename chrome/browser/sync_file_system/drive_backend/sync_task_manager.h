@@ -54,7 +54,7 @@ class SyncTaskManager {
 
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
 
     // Called when the manager is idle.
     virtual void MaybeScheduleNextTask() = 0;

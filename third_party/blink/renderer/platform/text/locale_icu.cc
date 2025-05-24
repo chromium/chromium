@@ -34,12 +34,12 @@
 #include <unicode/udisplaycontext.h>
 #include <unicode/uloc.h>
 
+#include <algorithm>
 #include <iterator>
 #include <limits>
 #include <memory>
 
 #include "base/memory/ptr_util.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -235,8 +235,7 @@ const Vector<String>& LocaleICU::MonthLabels() {
     }
     if (month_labels_.empty()) {
       month_labels_.reserve(std::size(kFallbackMonthNames));
-      base::ranges::copy(kFallbackMonthNames,
-                         std::back_inserter(month_labels_));
+      std::ranges::copy(kFallbackMonthNames, std::back_inserter(month_labels_));
     }
   }
   return month_labels_;
@@ -250,8 +249,8 @@ const Vector<String>& LocaleICU::WeekDayShortLabels() {
     }
     if (week_day_short_labels_.empty()) {
       week_day_short_labels_.reserve(std::size(kFallbackWeekdayShortNames));
-      base::ranges::copy(kFallbackWeekdayShortNames,
-                         std::back_inserter(week_day_short_labels_));
+      std::ranges::copy(kFallbackWeekdayShortNames,
+                        std::back_inserter(week_day_short_labels_));
     }
   }
   return week_day_short_labels_;
@@ -387,8 +386,8 @@ const Vector<String>& LocaleICU::ShortMonthLabels() {
     }
     if (short_month_labels_.empty()) {
       short_month_labels_.reserve(std::size(kFallbackMonthShortNames));
-      base::ranges::copy(kFallbackMonthShortNames,
-                         std::back_inserter(short_month_labels_));
+      std::ranges::copy(kFallbackMonthShortNames,
+                        std::back_inserter(short_month_labels_));
     }
   }
   return short_month_labels_;

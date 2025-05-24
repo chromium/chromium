@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -99,11 +100,11 @@ class ImageSanitizerTest : public testing::Test {
   ImageSanitizerTest& operator=(const ImageSanitizerTest&) = delete;
 
  protected:
-  void CreateValidImage(const base::FilePath::StringPieceType& file_name) {
+  void CreateValidImage(const base::FilePath::StringViewType& file_name) {
     ASSERT_TRUE(WriteBase64DataToFile(kBase64edValidPng, file_name));
   }
 
-  void CreateInvalidImage(const base::FilePath::StringPieceType& file_name) {
+  void CreateInvalidImage(const base::FilePath::StringViewType& file_name) {
     ASSERT_TRUE(WriteBase64DataToFile(kBase64edInvalidPng, file_name));
   }
 
@@ -132,7 +133,7 @@ class ImageSanitizerTest : public testing::Test {
 
  private:
   bool WriteBase64DataToFile(const std::string& base64_data,
-                             const base::FilePath::StringPieceType& file_name) {
+                             const base::FilePath::StringViewType& file_name) {
     std::string binary;
     if (!base::Base64Decode(base64_data, &binary)) {
       return false;
@@ -211,10 +212,10 @@ TEST_F(ImageSanitizerTest, ValidCase) {
   // Make sure the image files are there and non empty, and that the
   // ImageSanitizerDecodedImage callback was invoked for every image.
   for (const auto& path : paths) {
-    int64_t file_size = 0;
     base::FilePath full_path = GetImagePath().Append(path);
-    EXPECT_TRUE(base::GetFileSize(full_path, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(full_path);
+    EXPECT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
 
     ASSERT_TRUE(base::Contains(*client()->decoded_images(), path));
     EXPECT_FALSE((*client()->decoded_images())[path].drawsNothing());

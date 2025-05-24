@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "base/version.h"
 #include "chrome/updater/registration_data.h"
+#include "components/policy/core/common/policy_types.h"
 
 namespace updater {
 
@@ -33,10 +34,11 @@ void UpdateServiceStubWin::GetVersion(
 }
 
 void UpdateServiceStubWin::FetchPolicies(
+    policy::PolicyFetchReason reason,
     base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  impl_->FetchPolicies(std::move(callback).Then(task_end_listener_));
+  impl_->FetchPolicies(reason, std::move(callback).Then(task_end_listener_));
 }
 
 void UpdateServiceStubWin::RegisterApp(const RegistrationRequest& request,
@@ -63,11 +65,12 @@ void UpdateServiceStubWin::CheckForUpdate(
     const std::string& app_id,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
-  impl_->CheckForUpdate(app_id, priority, policy_same_version_update,
+  impl_->CheckForUpdate(app_id, priority, policy_same_version_update, language,
                         state_update,
                         std::move(callback).Then(task_end_listener_));
 }
@@ -77,12 +80,13 @@ void UpdateServiceStubWin::Update(
     const std::string& install_data_index,
     Priority priority,
     PolicySameVersionUpdate policy_same_version_update,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->Update(app_id, install_data_index, priority,
-                policy_same_version_update, state_update,
+                policy_same_version_update, language, state_update,
                 std::move(callback).Then(task_end_listener_));
 }
 
@@ -100,12 +104,13 @@ void UpdateServiceStubWin::Install(
     const std::string& client_install_data,
     const std::string& install_data_index,
     Priority priority,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->Install(registration, client_install_data, install_data_index,
-                 priority, std::move(state_update),
+                 priority, language, std::move(state_update),
                  std::move(callback).Then(task_end_listener_));
 }
 
@@ -122,12 +127,13 @@ void UpdateServiceStubWin::RunInstaller(
     const std::string& install_args,
     const std::string& install_data,
     const std::string& install_settings,
+    const std::string& language,
     base::RepeatingCallback<void(const UpdateState&)> state_update,
     base::OnceCallback<void(Result)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   task_start_listener_.Run();
   impl_->RunInstaller(app_id, installer_path, install_args, install_data,
-                      install_settings, std::move(state_update),
+                      install_settings, language, std::move(state_update),
                       std::move(callback).Then(task_end_listener_));
 }
 

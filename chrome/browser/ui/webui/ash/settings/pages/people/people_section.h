@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PEOPLE_PEOPLE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PEOPLE_PEOPLE_SECTION_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "chrome/browser/ash/auth/legacy_fingerprint_engine.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
-#include "chrome/browser/ui/webui/ash/settings/pages/privacy/sync_section.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
@@ -76,8 +73,6 @@ class PeopleSection : public OsSettingsSection,
   void FetchAccounts();
   void UpdateAccountManagerSearchTags(
       const std::vector<::account_manager::Account>& accounts);
-
-  std::optional<SyncSection> sync_subsection_;
 
   raw_ptr<account_manager::AccountManager> account_manager_ = nullptr;
   raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_ =

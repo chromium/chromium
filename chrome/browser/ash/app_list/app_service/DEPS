@@ -44,7 +44,6 @@ include_rules = [
   "+chrome/browser/web_applications/test",
   "+chrome/browser/web_applications/web_app_command_manager.h",
   "+chrome/browser/web_applications/web_app_icon_manager.h",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/common/chrome_constants.h",

@@ -14,9 +14,11 @@ proto_library("proto") {
   ]
 
   proto_out_dir = "third_party/ukey2/proto"
-  import_dirs = [ "//third_party/securemessage/proto" ]
-  link_deps = [ "//third_party/securemessage/proto" ]
-  proto_deps = [ "//third_party/securemessage/proto" ]
+  import_dirs = [
+    "//third_party/securemessage/proto",
+    "//third_party/securemessage/src/proto",
+  ]
+  deps = [ "//third_party/securemessage/proto" ]
 }
 
 config("ukey2_config") {

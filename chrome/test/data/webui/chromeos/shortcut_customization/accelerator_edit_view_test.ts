@@ -7,18 +7,19 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeShortcutInputProvider} from 'chrome://resources/ash/common/shortcut_input_ui/fake_shortcut_input_provider.js';
-import {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
+import type {KeyEvent} from 'chrome://resources/ash/common/shortcut_input_ui/input_device_settings.mojom-webui.js';
 import {Modifier as ModifierEnum} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
+import type {AcceleratorEditViewElement} from 'chrome://shortcut-customization/js/accelerator_edit_view.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {fakeAcceleratorConfig, fakeDefaultAccelerators, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
 import {setShortcutProviderForTesting} from 'chrome://shortcut-customization/js/mojo_interface_provider.js';
 import {setShortcutInputProviderForTesting} from 'chrome://shortcut-customization/js/shortcut_input_mojo_interface_provider.js';
 import {AcceleratorConfigResult, AcceleratorSource, Modifier} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {AcceleratorResultData, Subactions} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
+import type {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
+import {Subactions} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -58,7 +59,7 @@ suite('acceleratorEditViewTest', function() {
     assertTrue(!!editViewElement);
     const element = editViewElement.shadowRoot!.getElementById(id);
     assertTrue(!!element);
-    return element as HTMLElement;
+    return element;
   }
 
   test('LoadsBasicEditView', async () => {
@@ -79,14 +80,14 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     // Only the Cancel button should now be visible.
     assertFalse(isVisible(getElementById('editButtonsContainer')));
     assertTrue(isVisible(getElementById('cancelButtonContainer')));
 
     // Click on the Cancel button and expect the edit buttons to be available.
-    getElementById('cancelButton')!.click();
+    getElementById('cancelButton').click();
 
     await flushTasks();
     assertTrue(isVisible(getElementById('editButtonsContainer')));
@@ -116,7 +117,7 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
     await flushTasks();
 
     const fakeResult: AcceleratorResultData = {
@@ -173,7 +174,7 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
     await flushTasks();
 
     // Press 'Snap Window left' key, expect an error since it is a
@@ -243,7 +244,7 @@ suite('acceleratorEditViewTest', function() {
     assertEquals(undefined, provider.getLastRecordedSubactions());
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
     await flushTasks();
 
     // Press 'Snap Window left' key, expect an error since it is a
@@ -261,7 +262,7 @@ suite('acceleratorEditViewTest', function() {
     assertTrue(editViewElement!.hasError);
 
     // Click the cancel button and expect metric to be fired.
-    getElementById('cancelButton')!.click();
+    getElementById('cancelButton').click();
     assertFalse(provider.getLastRecordedIsAdd());
     assertEquals(Subactions.kErrorCancel, provider.getLastRecordedSubactions());
   });
@@ -285,7 +286,7 @@ suite('acceleratorEditViewTest', function() {
     await flushTasks();
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     await flushTasks();
 
@@ -332,7 +333,7 @@ suite('acceleratorEditViewTest', function() {
     assertTrue(isVisible(getElementById('editButtonsContainer')));
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     // Input hint message should be shown.
     const expectedHintMessage =
@@ -355,7 +356,7 @@ suite('acceleratorEditViewTest', function() {
     await flush();
 
     // Click on the edit button.
-    getElementById('editButton')!.click();
+    getElementById('editButton').click();
 
     // Expect cancel button is visible.
     const cancelButton = getElementById('cancelButton');
@@ -369,7 +370,7 @@ suite('acceleratorEditViewTest', function() {
     editViewElement!.addEventListener('blur', () => {
       onBlurCalled = true;
     });
-    cancelButton!.addEventListener('click', () => {
+    cancelButton.addEventListener('click', () => {
       onCancelButtonClickedCalled = true;
     });
 

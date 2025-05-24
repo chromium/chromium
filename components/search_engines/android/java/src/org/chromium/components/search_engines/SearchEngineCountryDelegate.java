@@ -11,15 +11,23 @@ import androidx.annotation.MainThread;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.Instant;
 
-/** Placeholder delegate class to get device country. Implemented in the internal code. */
+/**
+ * Placeholder delegate class to get interact with internal device APIs involved in the search
+ * engine choice experiences.
+ */
+@NullMarked
 public abstract class SearchEngineCountryDelegate {
     @MainThread
     public SearchEngineCountryDelegate() {}
 
+    @Deprecated
     @MainThread
     public SearchEngineCountryDelegate(Context context) {}
 
@@ -35,6 +43,15 @@ public abstract class SearchEngineCountryDelegate {
     @MainThread
     public Promise<String> getDeviceCountry() {
         return Promise.rejected();
+    }
+
+    /**
+     * Returns the moment when the device recorded that the default browser has been selected by the
+     * user in the OS-level choice screens. Returns {@code null} if no selection was made, or if it
+     * was made on a device that does not support exposing this information.
+     */
+    public @Nullable Instant getDeviceBrowserSelectedTimestamp() {
+        return null;
     }
 
     /** Proxy for {@link SearchEngineChoiceService#isDeviceChoiceDialogEligible()}. */

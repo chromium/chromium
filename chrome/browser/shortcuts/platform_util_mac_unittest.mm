@@ -79,7 +79,7 @@ TEST(ShortcutsPlatformUtilMacTest, SanitizeTitleForFileName) {
   EXPECT_EQ("Whitespace is allowed!",
             sanitize_to_string("Whitespace is allowed!"));
   EXPECT_EQ(" ... dots ...", sanitize_to_string("... ... dots ..."));
-  EXPECT_EQ(std::nullopt, SanitizeTitleForFileName("... ..."));
+  EXPECT_EQ(" ...", sanitize_to_string("... ..."));
   EXPECT_EQ(std::nullopt, SanitizeTitleForFileName(""));
   EXPECT_EQ(std::nullopt, SanitizeTitleForFileName("...."));
 }

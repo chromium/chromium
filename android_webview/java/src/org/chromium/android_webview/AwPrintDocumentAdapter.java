@@ -21,9 +21,9 @@ import java.util.ArrayList;
  */
 public class AwPrintDocumentAdapter extends PrintDocumentAdapter {
 
-    private AwPdfExporter mPdfExporter;
+    private final AwPdfExporter mPdfExporter;
     private PrintAttributes mAttributes;
-    private String mDocumentName;
+    private final String mDocumentName;
 
     /**
      * Constructor.

@@ -6,8 +6,8 @@
 
 namespace media_router {
 
-DnsSdService::DnsSdService() {}
+DnsSdService::DnsSdService() = default;
 DnsSdService::DnsSdService(const DnsSdService& other) = default;
-DnsSdService::~DnsSdService() {}
+DnsSdService::~DnsSdService() = default;
 
 }  // namespace media_router

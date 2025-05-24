@@ -35,6 +35,12 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
     return has_spacing_ ? word_spacing_ : TextRunLayoutUnit();
   }
   bool HasSpacing() const { return has_spacing_; }
+  bool IsLetterSpacingAppliedForTesting() const {
+    return is_letter_spacing_applied_;
+  }
+  bool IsWordSpacingAppliedForTesting() const {
+    return is_word_spacing_applied_;
+  }
   bool HasExpansion() const { return expansion_opportunity_count_; }
   unsigned ExpansionOppotunityCount() const {
     return expansion_opportunity_count_;
@@ -54,6 +60,8 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   // Set letter-spacing, word-spacing, and
   // justification. Available only for TextRun.
   void SetSpacingAndExpansion(const FontDescription&);
+  // This one is not only for TextRun.
+  void SetSpacingAndExpansion(const FontDescription&, bool normalize_space);
 
   // Compute the sum of all spacings for the specified |index|.
   // The |index| is for the |TextContainerType| given in the constructor.
@@ -63,11 +71,15 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
     unsigned index;
     float original_advance = 0.0;
   };
-  TextRunLayoutUnit ComputeSpacing(unsigned index, float& offset) {
-    return ComputeSpacing(ComputeSpacingParameters{.index = index}, offset);
+  TextRunLayoutUnit ComputeSpacing(unsigned index,
+                                   float& offset,
+                                   bool is_cursive_script = false) {
+    return ComputeSpacing(ComputeSpacingParameters{.index = index}, offset,
+                          is_cursive_script);
   }
   TextRunLayoutUnit ComputeSpacing(const ComputeSpacingParameters& parameters,
-                                   float& offset);
+                                   float& offset,
+                                   bool is_cursive_script);
 
  private:
   bool IsAfterExpansion() const { return is_after_expansion_; }
@@ -85,6 +97,8 @@ class PLATFORM_EXPORT ShapeResultSpacing final {
   TextRunLayoutUnit expansion_per_opportunity_;
   unsigned expansion_opportunity_count_ = 0;
   bool has_spacing_ = false;
+  bool is_letter_spacing_applied_ = false;
+  bool is_word_spacing_applied_ = false;
   bool normalize_space_ = false;
   bool allow_tabs_ = false;
   bool is_after_expansion_ = false;

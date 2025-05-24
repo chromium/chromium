@@ -16,13 +16,13 @@ namespace {
 // in the desks containers.
 constexpr std::array<int, 13> kPreDesksActivatableContainersIds = {
     kShellWindowId_OverlayContainer,
+    kShellWindowId_CaptureModeSearchResultsPanel,
     kShellWindowId_LockSystemModalContainer,
     kShellWindowId_AccessibilityBubbleContainer,
     kShellWindowId_AccessibilityPanelContainer,
     kShellWindowId_SettingBubbleContainer,
     kShellWindowId_LiveCaptionContainer,
     kShellWindowId_PowerMenuContainer,
-    kShellWindowId_LockActionHandlerContainer,
     kShellWindowId_LockScreenContainer,
     kShellWindowId_SystemModalContainer,
     kShellWindowId_AlwaysOnTopContainer,

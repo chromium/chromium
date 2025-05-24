@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_builder.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream_source.h"
 #include "third_party/blink/renderer/core/svg/svg_path_utilities.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -94,13 +94,6 @@ SVGParsingError SVGPath::SetValueAsString(const String& string) {
   SVGParsingError parse_status = BuildByteStreamFromString(string, builder);
   path_value_ = MakeGarbageCollected<CSSPathValue>(builder.CopyByteStream());
   return parse_status;
-}
-
-SVGPropertyBase* SVGPath::CloneForAnimation(const String& value) const {
-  SVGPathByteStreamBuilder builder;
-  BuildByteStreamFromString(value, builder);
-  return MakeGarbageCollected<SVGPath>(
-      *MakeGarbageCollected<CSSPathValue>(builder.CopyByteStream()));
 }
 
 void SVGPath::Add(const SVGPropertyBase* other, const SVGElement*) {

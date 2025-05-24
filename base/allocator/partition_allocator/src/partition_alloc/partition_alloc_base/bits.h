@@ -9,12 +9,13 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <type_traits>
 
 #include "partition_alloc/build_config.h"
-#include "partition_alloc/partition_alloc_base/bits.h"
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/notreached.h"
 
 namespace partition_alloc::internal::base::bits {
 
@@ -144,6 +145,32 @@ constexpr int Log2Ceiling(uint32_t n) {
   // When n == 0, (n - 1) will underflow to 0xFFFFFFFF, which is
   // why the statement below starts with (n ? 32 : -1).
   return (n ? 32 : -1) - CountlZero(n - 1);
+}
+
+// Computes the result of bitwise left-rotating the value of x by s positions.
+template <class T>
+PA_ALWAYS_INLINE constexpr T RotR(T x, T s) {
+  constexpr int n = std::numeric_limits<T>::digits;
+  static_assert(n == 32 || n == 64);
+
+#if PA_HAS_BUILTIN(__builtin_rotateright32) && \
+    PA_HAS_BUILTIN(__builtin_rotateright64)
+  if constexpr (n == 32) {
+    return __builtin_rotateright32(x, s);
+  } else if constexpr (n == 64) {
+    return __builtin_rotateright64(x, s);
+  }
+#else
+  int r = s % n;
+  if (r == 0) {
+    return x;
+  } else if (r > 0) {
+    return (x >> r) | (x << (n - r));
+  }
+#endif  // PA_HAS_BUILTIN(__builtin_rotateright32) &&
+        // PA_HAS_BUILTIN(__builtin_rotateright64)
+
+  PA_NOTREACHED();
 }
 
 }  // namespace partition_alloc::internal::base::bits

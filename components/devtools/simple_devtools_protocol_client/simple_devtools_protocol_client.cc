@@ -179,8 +179,7 @@ void SimpleDevToolsProtocolClient::SendProtocolMessage(
 
   std::string json_message;
   base::JSONWriter::Write(base::Value(std::move(message)), &json_message);
-  agent_host_->DispatchProtocolMessage(
-      this, base::as_bytes(base::make_span(json_message)));
+  agent_host_->DispatchProtocolMessage(this, base::as_byte_span(json_message));
 }
 
 void SimpleDevToolsProtocolClient::SendCommand(

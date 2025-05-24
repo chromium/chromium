@@ -525,8 +525,7 @@ SmartLockAuthEvent SmartLockService::GetPasswordAuthEvent() const {
       return PASSWORD_ENTRY_PRIMARY_USER_ABSENT;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SMART_LOCK_AUTH_EVENT_COUNT;
+  NOTREACHED();
 }
 
 SmartLockMetricsRecorder::SmartLockAuthEventPasswordState
@@ -576,14 +575,8 @@ SmartLockService::GetSmartUnlockPasswordAuthEvent() const {
       return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
           kPrimaryUserAbsent;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-          kUnknownState;
+      NOTREACHED();
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return SmartLockMetricsRecorder::SmartLockAuthEventPasswordState::
-      kUnknownState;
 }
 
 multidevice::RemoteDeviceRefList SmartLockService::GetUnlockKeys() {
@@ -824,12 +817,8 @@ void SmartLockService::UseLoadedRemoteDevices(
     const multidevice::RemoteDeviceRefList& remote_devices) {
   // When Smart Lock is enabled, only one Smart Lock host should exist.
   if (remote_devices.size() != 1u) {
-    PA_LOG(ERROR) << "There should only be 1 Smart Lock host, but there are: "
-                  << remote_devices.size();
-    SetProximityAuthDevices(GetAccountId(), multidevice::RemoteDeviceRefList(),
-                            std::nullopt);
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "There should only be 1 Smart Lock host, but there are: "
+                 << remote_devices.size();
   }
 
   std::optional<multidevice::RemoteDeviceRef> local_device =

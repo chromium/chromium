@@ -47,10 +47,12 @@ void SshConfiguredHandler::DeclareLocalizedValues(
 }
 
 void SshConfiguredHandler::InitAfterJavascriptAllowed() {
-  if (callback_ids_.empty())
+  if (callback_ids_.empty()) {
     return;
-  if (!is_ssh_configured_.has_value())
+  }
+  if (!is_ssh_configured_.has_value()) {
     return;
+  }
   ResolveCallbacks();
 }
 
@@ -83,8 +85,9 @@ void SshConfiguredHandler::OnGetDebuggingFeatures(bool succeeded,
 }
 
 void SshConfiguredHandler::ResolveCallbacks() {
-  if (!IsJavascriptAllowed())
+  if (!IsJavascriptAllowed()) {
     return;
+  }
   DCHECK(is_ssh_configured_.has_value());
   for (const std::string& callback_id : callback_ids_) {
     ResolveJavascriptCallback(base::Value(callback_id),

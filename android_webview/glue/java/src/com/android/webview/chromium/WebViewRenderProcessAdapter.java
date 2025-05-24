@@ -19,10 +19,10 @@ import java.util.WeakHashMap;
 @RequiresApi(Build.VERSION_CODES.Q)
 @Lifetime.Renderer
 class WebViewRenderProcessAdapter extends WebViewRenderProcess {
-    private static WeakHashMap<AwRenderProcess, WebViewRenderProcessAdapter> sInstances =
+    private static final WeakHashMap<AwRenderProcess, WebViewRenderProcessAdapter> sInstances =
             new WeakHashMap<>();
 
-    private WeakReference<AwRenderProcess> mAwRenderProcessWeakRef;
+    private final WeakReference<AwRenderProcess> mAwRenderProcessWeakRef;
 
     public static WebViewRenderProcessAdapter getInstanceFor(AwRenderProcess awRenderProcess) {
         if (awRenderProcess == null) {

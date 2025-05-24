@@ -7,5 +7,5 @@ import("//third_party/protobuf/proto_library.gni")
 proto_library("send_tab_to_self_proto") {
   proto_in_dir = "//"
   sources = [ "send_tab_to_self.proto" ]
-  link_deps = [ "//components/sync/protocol:protocol" ]
+  deps = [ "//components/sync/protocol:protocol" ]
 }

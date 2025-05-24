@@ -33,8 +33,6 @@ namespace invalidation {
 
 namespace {
 
-constexpr char kDeprecatedSyncInvalidationGCMSenderId[] = "8181035976";
-
 const char kTypeSubscribedForInvalidations[] =
     "invalidation.per_sender_registered_for_invalidation";
 
@@ -128,18 +126,6 @@ void PerUserTopicSubscriptionManager::RegisterPrefs(
     PrefRegistrySimple* registry) {
   // Same as RegisterProfilePrefs; see comment in the header.
   RegisterProfilePrefs(registry);
-}
-
-// static
-void PerUserTopicSubscriptionManager::ClearDeprecatedPrefs(PrefService* prefs) {
-  if (prefs->HasPrefPath(kTypeSubscribedForInvalidations)) {
-    ScopedDictPrefUpdate update(prefs, kTypeSubscribedForInvalidations);
-    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
-  }
-  if (prefs->HasPrefPath(kActiveRegistrationTokens)) {
-    ScopedDictPrefUpdate update(prefs, kActiveRegistrationTokens);
-    update->Remove(kDeprecatedSyncInvalidationGCMSenderId);
-  }
 }
 
 struct PerUserTopicSubscriptionManager::SubscriptionEntry {
@@ -352,10 +338,8 @@ void PerUserTopicSubscriptionManager::StartPendingSubscriptionRequest(
     const Topic& topic) {
   auto it = pending_subscriptions_.find(topic);
   if (it == pending_subscriptions_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << "StartPendingSubscriptionRequest called on " << topic
-        << " which is not in the registration map";
-    return;
+    NOTREACHED() << "StartPendingSubscriptionRequest called on " << topic
+                 << " which is not in the registration map";
   }
   if (it->second->request_retry_timer_.IsRunning()) {
     // A retry is already scheduled for this request; nothing to do.

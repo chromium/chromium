@@ -34,10 +34,13 @@ message UserDemographicsProto {
   enum Gender {
     // The default value for clients that do not have any gender information.
     GENDER_UNKNOWN = 0;
+
     // The user specified that they prefer to be referred to as male.
     GENDER_MALE = 1;
+
     // The user specified that they prefer to be referred to as female.
     GENDER_FEMALE = 2;
+
     // The user specified that they prefer not to disclose a gender or the user
     // provided a custom gender identifier. This value may be synced to Chrome,
     // but it is not transmitted to UMA because the population size is

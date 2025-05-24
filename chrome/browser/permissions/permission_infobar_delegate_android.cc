@@ -32,10 +32,7 @@ using SecondaryButtonBehavior =
 
 }  // namespace
 
-PermissionInfoBarDelegate::~PermissionInfoBarDelegate() {
-  permissions::PermissionUmaUtil::RecordInfobarDetailsExpanded(
-      details_expanded_);
-}
+PermissionInfoBarDelegate::~PermissionInfoBarDelegate() = default;
 
 // static
 infobars::InfoBar* PermissionInfoBarDelegate::Create(
@@ -72,8 +69,7 @@ std::u16string PermissionInfoBarDelegate::GetCompactLinkText() const {
           IDS_NOTIFICATION_QUIET_PERMISSION_MINI_INFOBAR_DETAILS_LINK);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 // TODO(crbug.com/40131069): Many methods of this class switches on the quiet UI
@@ -150,8 +146,7 @@ bool PermissionInfoBarDelegate::Cancel() {
       permission_prompt_->Accept();
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 PermissionInfoBarDelegate::PermissionInfoBarDelegate(

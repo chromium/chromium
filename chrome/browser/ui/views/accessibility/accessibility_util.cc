@@ -12,8 +12,9 @@
 
 void AnnounceInActiveBrowser(const std::u16string& message) {
   Browser* const browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser || !browser->is_type_normal() || !browser->window()->IsActive())
+  if (!browser || !browser->is_type_normal() || !browser->IsActive()) {
     return;
+  }
 
   BrowserView::GetBrowserViewForBrowser(browser)
       ->GetViewAccessibility()

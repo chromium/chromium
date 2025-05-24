@@ -104,6 +104,9 @@ class FaceGazeTestUtils {
     MOUSE_CLICK_LEFT_DOUBLE = 49,
     TOGGLE_SCROLL_MODE = 50,
     CUSTOM_KEY_COMBINATION = 51,
+    KEY_PRESS_SCREENSHOT = 52,
+    MOUSE_CLICK_LEFT_TRIPLE = 53,
+    TOGGLE_PRECISION_CLICK = 54,
   };
 
   // Facial gestures recognized by Mediapipe. Ensure this enum stays in sync
@@ -163,9 +166,8 @@ class FaceGazeTestUtils {
     Config& WithBufferSize(int size);
     Config& WithCursorAcceleration(bool acceleration);
     Config& WithDialogAccepted(bool accepted);
-    Config& WithGesturesToMacros(
-        const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros);
-    Config& WithGestureConfidences(
+    Config& WithBindings(
+        const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros,
         const base::flat_map<FaceGazeGesture, int>& gesture_confidences);
     Config& WithCursorSpeeds(const CursorSpeeds& speeds);
     Config& WithGestureRepeatDelayMs(int delay);
@@ -179,6 +181,7 @@ class FaceGazeTestUtils {
     bool use_landmark_weights() const { return use_landmark_weights_; }
     bool use_velocity_threshold() const { return use_velocity_threshold_; }
     bool dialog_accepted() const { return dialog_accepted_; }
+    bool use_gesture_duration() const { return use_gesture_duration_; }
     const std::optional<base::flat_map<FaceGazeGesture, MacroName>>&
     gestures_to_macros() const {
       return gestures_to_macros_;
@@ -203,6 +206,7 @@ class FaceGazeTestUtils {
     bool use_landmark_weights_;
     bool use_velocity_threshold_;
     bool dialog_accepted_;
+    bool use_gesture_duration_;
 
     // Optional properties.
     std::optional<base::flat_map<FaceGazeGesture, MacroName>>
@@ -271,9 +275,9 @@ class FaceGazeTestUtils {
   void ExecuteAccessibilityCommonScript(const std::string& script);
 
   // Setup-related methods.
-  void SetUpMediapipeDir();
+  void SetUpMediapipeDir(const char* mediapipe_dir);
   void WaitForJSReady();
-  void SetUpJSTestSupport();
+  void SetUpJSTestSupport(const char* test_support_dir);
   void CancelMouseControllerInterval();
   void ConfigureFaceGaze(const Config& config);
 
@@ -290,6 +294,9 @@ class FaceGazeTestUtils {
 
   // Sets the gesture repeat delay threshold.
   void SetGestureRepeatDelayMs(int delay);
+
+  // Sets whether a gesture duration should be required to recognize a gesture.
+  void SetGestureDuration(bool use_duration);
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };

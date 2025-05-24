@@ -1,0 +1,53 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./print_preview_vars.css.js
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: var(--print-preview-sidebar-margin)
+      var(--print-preview-sidebar-margin) 12px;
+}
+
+@media (prefers-color-scheme: light) {
+  :host {
+    background-color: white;
+  }
+}
+
+#headerContainer {
+  align-items: center;
+  display: flex;
+}
+
+.summary,
+.title {
+  color: var(--cr-primary-text-color);
+  line-height: calc(20/13 * 1em);
+  margin: 0;
+}
+
+.title {
+  font-size: calc(16/13 * 1em);
+  font-weight: 400;
+}
+
+.summary {
+  font-weight: 500;
+}
+
+cr-icon {
+  align-self: center;
+  fill: var(--cr-secondary-text-color);
+  height: 16px;
+  margin-inline-start: 8px;
+  width: 16px;
+}

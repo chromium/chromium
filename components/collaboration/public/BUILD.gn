@@ -1,0 +1,267 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+group("public") {
+  public_deps = [
+    ":core_public",
+    ":empty_messaging_backend_service",
+    ":messaging_public",
+  ]
+}
+
+static_library("core_public") {
+  visibility = [ ":*" ]
+  sources = [
+    "collaboration_controller_delegate.h",
+    "collaboration_flow_entry_point.cc",
+    "collaboration_flow_entry_point.h",
+    "collaboration_flow_type.h",
+    "collaboration_service.h",
+    "collaboration_utils.cc",
+    "collaboration_utils.h",
+    "service_status.cc",
+    "service_status.h",
+  ]
+
+  deps = [ "//ui/base" ]
+
+  public_deps = [
+    ":features",
+    "//base",
+    "//components/data_sharing/public",
+    "//components/keyed_service/core",
+    "//components/saved_tab_groups/public",
+    "//components/strings:components_strings_grit",
+    "//url",
+  ]
+}
+
+source_set("data_type_controller") {
+  visibility = [ "//components/browser_sync" ]
+
+  sources = [
+    "data_type_controller/collaboration_group_data_type_controller.cc",
+    "data_type_controller/collaboration_group_data_type_controller.h",
+    "data_type_controller/collaboration_service_precondition_checker.cc",
+    "data_type_controller/collaboration_service_precondition_checker.h",
+    "data_type_controller/shared_tab_group_account_data_type_controller.cc",
+    "data_type_controller/shared_tab_group_account_data_type_controller.h",
+    "data_type_controller/shared_tab_group_data_type_controller.cc",
+    "data_type_controller/shared_tab_group_data_type_controller.h",
+  ]
+
+  deps = [
+    ":core_public",
+    "//base",
+    "//components/data_sharing/public:features",
+    "//components/signin/public/identity_manager",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//ui/base:base",
+  ]
+}
+
+static_library("features") {
+  visibility = [ "*" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
+static_library("messaging_public") {
+  visibility = [
+    ":*",
+    "//components/collaboration/internal:messaging_internal",
+    "//components/collaboration/internal:messaging_unit_tests",
+  ]
+
+  sources = [
+    "messaging/activity_log.cc",
+    "messaging/activity_log.h",
+    "messaging/message.cc",
+    "messaging/message.h",
+    "messaging/messaging_backend_service.h",
+    "messaging/util.cc",
+    "messaging/util.h",
+  ]
+
+  deps = [ "//ui/base" ]
+
+  public_deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//components/keyed_service/core",
+    "//components/saved_tab_groups/public",
+    "//components/strings:components_strings_grit",
+    "//components/tab_groups",
+  ]
+}
+
+source_set("prefs") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
+group("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/collaboration:unit_tests" ]
+
+  deps = [ ":messaging_unit_tests" ]
+}
+
+source_set("messaging_unit_tests") {
+  testonly = true
+  sources = [ "messaging/util_unittest.cc" ]
+  deps = [
+    ":messaging_public",
+    "//base",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}
+
+if (is_android) {
+  java_group("java") {
+    deps = [
+      ":core_java",
+      ":messaging_java",
+    ]
+  }
+
+  java_group("junit") {
+    testonly = true
+
+    deps = [ ":junit_messaging" ]
+  }
+
+  android_library("core_java") {
+    sources = [
+      "android/java/src/org/chromium/components/collaboration/CollaborationControllerDelegate.java",
+      "android/java/src/org/chromium/components/collaboration/CollaborationService.java",
+      "android/java/src/org/chromium/components/collaboration/ServiceStatus.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
+    ]
+
+    srcjar_deps = [
+      ":core_enums_java",
+      ":core_jni_headers",
+    ]
+  }
+
+  java_cpp_enum("core_enums_java") {
+    sources = [
+      "collaboration_controller_delegate.h",
+      "collaboration_flow_entry_point.h",
+      "collaboration_flow_type.h",
+      "service_status.h",
+    ]
+  }
+
+  generate_jni("core_jni_headers") {
+    visibility = [
+      ":*",
+      "//components/collaboration/internal:core_internal",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/collaboration/ServiceStatus.java" ]
+  }
+
+  android_library("messaging_java") {
+    sources = [
+      "android/java/src/org/chromium/components/collaboration/messaging/ActivityLogItem.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/ActivityLogQueryParams.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/InstantMessage.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/MessageAttribution.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/MessageUtils.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendService.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/PersistentMessage.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/TabGroupMessageMetadata.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/TabMessageMetadata.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+
+    srcjar_deps = [ ":messaging_enums_java" ]
+  }
+
+  java_cpp_enum("messaging_enums_java") {
+    visibility = [ ":*" ]
+
+    sources = [
+      "messaging/activity_log.h",
+      "messaging/message.h",
+    ]
+  }
+
+  robolectric_library("junit_messaging") {
+    sources = [ "android/java/src/org/chromium/components/collaboration/messaging/MessageUtilsUnitTest.java" ]
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_junit_test_support",
+      "//components/data_sharing:test_support_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/signin/public/android:java",
+      "//third_party/android_deps:robolectric_all_java",
+      "//third_party/junit:junit",
+      "//third_party/mockito:mockito_java",
+      "//url:gurl_junit_test_support",
+      "//url:url_java",
+    ]
+  }
+
+  static_library("conversion_utils") {
+    sources = [
+      "android/conversion_utils.cc",
+      "android/conversion_utils.h",
+    ]
+
+    deps = [
+      ":public",
+      "//base",
+    ]
+  }
+}
+
+static_library("empty_messaging_backend_service") {
+  visibility = [ "*" ]
+  sources = [
+    "messaging/empty_messaging_backend_service.cc",
+    "messaging/empty_messaging_backend_service.h",
+  ]
+  deps = [ ":messaging_public" ]
+}

@@ -16,10 +16,8 @@ import("//build/config/cast.gni")
 # Chrome builds. Ideally we could create some generic knobs here that could be
 # flipped elsewhere though.
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
-import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/rust/rust_static_library.gni")
 import("//build/toolchain/kythe.gni")
@@ -51,19 +49,24 @@ declare_args() {
 
   # Output Rust mojom bindings when `generate_rust` is `true` for a target. The
   # option has no effect if this flag is disabled.
-  enable_rust_mojom_bindings = enable_all_rust_features
+  #
+  # This is currently behind a build flag since it's not being actively worked
+  # on, but to maintain some coverage of the code on the Rust FYI bots. When we
+  # want to actively develop support for Mojo use with Rust again, we should do
+  # it without any build flags.
+  enable_rust_mojom_bindings = false
 
   # Enables Closure compilation of generated JS lite bindings. In environments
   # where compilation is supported, any mojom target "foo" will also have a
   # corresponding "foo_js_library_for_compile" target generated.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     enable_mojom_closure_compile = enable_js_type_check && optimize_webui
   }
 }
 
 # Closure libraries are needed for mojom_closure_compile, and when
 # js_type_check is enabled on Ash.
-if (is_chromeos_ash) {
+if (is_chromeos) {
   generate_mojom_closure_libraries =
       enable_mojom_closure_compile || enable_js_type_check
 } else {
@@ -83,14 +86,10 @@ if (is_chromeos_ash) {
 # ARC) we have to explicitly opt out there even when NaCl is enabled (and
 # consequently also when building for NaCl toolchains.) For this reason we
 # check |target_os| explicitly, as it's consistent across all toolchains.
-#
-# TODO(crbug.com/40118868): Remove !chromeos_is_browser_only once
-# lacros-chrome switches to target_os="chromeos"
 enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
     (is_mac || is_win || (is_linux && !is_castos) ||
-     ((enable_nacl || is_nacl) &&
-      (target_os != "chromeos" && !chromeos_is_browser_only)))
+     ((enable_nacl || is_nacl) && target_os != "chromeos"))
 
 _mojom_tools_root = "//mojo/public/tools"
 _mojom_library_root = "$_mojom_tools_root/mojom/mojom"
@@ -111,7 +110,6 @@ mojom_parser_sources = [
   "$_mojom_library_root/parse/conditional_features.py",
   "$_mojom_library_root/parse/lexer.py",
   "$_mojom_library_root/parse/parser.py",
-  "//tools/diagnosis/crbug_1001171.py",
 ]
 
 mojom_generator_root = "$_mojom_tools_root/bindings"
@@ -352,15 +350,10 @@ if (enable_scrambled_message_ids) {
 #       correct dependency order. Note that this only has an effect if
 #       the |enable_mojom_closure_compile| global arg is set to |true| as well.
 #
-#   generate_webui_js_bindings (optional)
-#       Generate WebUI bindings in JavaScript rather than TypeScript. Defaults
-#       to false. ChromeOS only parameter.
-#
 #   generate_legacy_js_bindings (optional)
 #       Generate js_data_deps target containing legacy JavaScript bindings files
 #       for Blink tests and other non-WebUI users when generating TypeScript
-#       bindings for WebUI. Ignored if generate_webui_js_bindings is set to
-#       true.
+#       bindings for WebUI.
 #
 #   js_generate_struct_deserializers (optional)
 #       Generates JS deerialize methods for structs.
@@ -386,9 +379,6 @@ if (enable_scrambled_message_ids) {
 #       be added to one of the lists in ui/webui/resources/mojo/BUILD.gn,
 #       at which point they will be made available to all WebUI pages at the
 #       given URL.
-#
-#       Note: WebUI module bindings are generated in TypeScript by default,
-#       unless |generate_webui_js_bindings| is specified as true.
 #
 #   generate_rust (optional, experimental)
 #       Generate experimental Rust bindings. Do not use outside of tests or
@@ -674,13 +664,18 @@ template("mojom") {
         [ string_replace(path, rebase_path(root_gen_dir, "//") + "/", "") ]
   }
 
-  # Sanity check that either all input files have a .mojom extension, or
-  # all input files have a .test-mojom extension AND |testonly| is |true|.
+  # Sanity check that either all input files have a .mojom extension, or, for
+  # testonly targets, that all input files have a .test-mojom extension.
   sources_list_filenames =
       process_file_template(sources_list, "{{source_file_part}}")
   sources_list_filenames_with_mojom_extension =
       process_file_template(sources_list, "{{source_name_part}}.mojom")
-  if (sources_list_filenames != sources_list_filenames_with_mojom_extension) {
+  if (sources_list_filenames == sources_list_filenames_with_mojom_extension) {
+    if (defined(invoker.sources)) {
+      assert(!defined(invoker.testonly) || !invoker.testonly,
+             "testonly mojom target has non- .test-mojom files")
+    }
+  } else {
     sources_list_filenames_with_test_mojom_extension =
         process_file_template(sources_list, "{{source_name_part}}.test-mojom")
     if (sources_list_filenames ==
@@ -734,6 +729,17 @@ template("mojom") {
   if (defined(invoker.parser_deps)) {
     parser_deps += invoker.parser_deps
   }
+
+  config("${parser_target_name}_inputs") {
+    inputs = sources_list + [ build_metadata_filename ]
+  }
+  group("${parser_target_name}_deps") {
+    public_configs = [ ":${parser_target_name}_inputs" ]
+    public_deps = parser_deps
+  }
+
+  parser_deps += [ ":${parser_target_name}_deps" ]
+
   if (sources_list == []) {
     # Even without sources we generate a parser target to at least forward
     # other parser dependencies.
@@ -750,16 +756,8 @@ template("mojom") {
     }
     if (is_android) {
       enabled_features += [ "is_android" ]
-    } else if (is_chromeos_ash) {
-      enabled_features += [
-        "is_chromeos",
-        "is_chromeos_ash",
-      ]
-    } else if (is_chromeos_lacros) {
-      enabled_features += [
-        "is_chromeos",
-        "is_chromeos_lacros",
-      ]
+    } else if (is_chromeos) {
+      enabled_features += [ "is_chromeos" ]
     } else if (is_fuchsia) {
       enabled_features += [ "is_fuchsia" ]
     } else if (is_ios) {
@@ -776,23 +774,19 @@ template("mojom") {
       enabled_features += [ "is_apple" ]
     }
 
-    action(parser_target_name) {
-      allow_remote = true
+    action_outputs = []
+    foreach(base_path, output_file_base_paths) {
+      filename = get_path_info(base_path, "file")
+      dirname = get_path_info(base_path, "dir")
+      action_outputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
+    }
 
-      # Use large worker to avoid OOM (b/325844324) and make it faster with
-      # multiple cores.
-      remote_worker = "large"
-      custom_processor = "mojom_parser"
+    action("${parser_target_name}_action") {
       script = mojom_parser_script
       inputs = mojom_parser_sources + ply_sources + [ build_metadata_filename ]
       sources = sources_list
       public_deps = parser_deps
-      outputs = []
-      foreach(base_path, output_file_base_paths) {
-        filename = get_path_info(base_path, "file")
-        dirname = get_path_info(base_path, "dir")
-        outputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
-      }
+      outputs = action_outputs
 
       filelist = []
       foreach(source, sources_list) {
@@ -840,14 +834,18 @@ template("mojom") {
           "--add-module-metadata",
           "webui_module_path=${invoker.webui_module_path}",
         ]
-        if (defined(invoker.generate_webui_js_bindings) &&
-            invoker.generate_webui_js_bindings) {
-          args += [
-            "--add-module-metadata",
-            "generate_webui_js=True",
-          ]
-        }
       }
+    }
+
+    # This config is to propagate mojom-module files to descendant targets'
+    # input properly.
+    config("${parser_target_name}_outputs") {
+      inputs = action_outputs
+    }
+
+    group(parser_target_name) {
+      public_configs = [ ":${parser_target_name}_outputs" ]
+      public_deps = [ ":${parser_target_name}_action" ]
     }
   }
 
@@ -926,7 +924,6 @@ template("mojom") {
     }
 
     action(generator_cpp_message_ids_target_name) {
-      allow_remote = true
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
       sources = sources_list +
@@ -974,7 +971,6 @@ template("mojom") {
     generator_shared_target_name = "${target_name}_shared__generator"
 
     action(generator_shared_target_name) {
-      allow_remote = true
       visibility = [ ":*" ]
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
@@ -1001,8 +997,10 @@ template("mojom") {
         inputs += [ "$root_gen_dir/$dirname/${filename}-module" ]
 
         outputs += [
+          "$root_gen_dir/$base_path-data-view.h",
           "$root_gen_dir/$base_path-features.h",
           "$root_gen_dir/$base_path-params-data.h",
+          "$root_gen_dir/$base_path-send-validation.h",
           "$root_gen_dir/$base_path-shared-internal.h",
           "$root_gen_dir/$base_path-shared.cc",
           "$root_gen_dir/$base_path-shared.h",
@@ -1053,8 +1051,10 @@ template("mojom") {
       sources = []
       foreach(base_path, output_file_base_paths) {
         sources += [
+          "$root_gen_dir/$base_path-data-view.h",
           "$root_gen_dir/$base_path-features.h",
           "$root_gen_dir/$base_path-params-data.h",
+          "$root_gen_dir/$base_path-send-validation.h",
           "$root_gen_dir/$base_path-shared-internal.h",
           "$root_gen_dir/$base_path-shared.cc",
           "$root_gen_dir/$base_path-shared.h",
@@ -1107,7 +1107,6 @@ template("mojom") {
         "${target_name}_mojolpm_proto_generator"
 
     action(generator_mojolpm_proto_target_name) {
-      allow_remote = true
       script = mojom_generator_script
       inputs = mojom_generator_sources + jinja2_sources
       sources =
@@ -1182,16 +1181,16 @@ template("mojom") {
         import_dirs = [ "//" ]
         proto_in_dir = "${root_gen_dir}"
         proto_out_dir = "."
+        deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto" ]
         proto_deps = [ ":$generator_mojolpm_proto_target_name" ]
-        link_deps = [ "//mojo/public/tools/fuzzers:mojolpm_proto" ]
+        link_deps = []
 
         foreach(d, all_deps) {
           # Resolve the name, so that a target //mojo/something becomes
           # //mojo/something:something and we can append mojolpm_proto_suffix
           # to get the proto dependency name.
           full_name = get_label_info("$d", "label_no_toolchain")
-          proto_deps += [ "${full_name}_mojolpm_proto" ]
-          link_deps += [ "${full_name}_mojolpm_proto" ]
+          deps += [ "${full_name}_mojolpm_proto" ]
         }
       }
     } else {
@@ -1357,6 +1356,9 @@ template("mojom") {
           "base/component_export.h",
         ]
       }
+      if (defined(variant) && variant == "blink") {
+        export_defines += [ "BLINK_MOJO_IMPL=1" ]
+      }
 
       generator_cpp_output_suffixes = []
       variant_dash_suffix = ""
@@ -1375,7 +1377,6 @@ template("mojom") {
 
       # TODO(crbug.com/40758345): Investigate nondeterminism in Py3 builds.
       action(generator_target_name) {
-        allow_remote = true
         visibility = [ ":*" ]
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
@@ -1518,7 +1519,6 @@ template("mojom") {
     write_file(_typemap_config_filename, _rebased_typemap_configs, "json")
 
     action(_typemap_validator_target_name) {
-      allow_remote = true
       script = "$mojom_generator_root/validate_typemap_config.py"
       inputs = [ _typemap_config_filename ]
       outputs = [ _typemap_stamp_filename ]
@@ -1537,7 +1537,6 @@ template("mojom") {
     write_file(_ts_typemap_config_filename, ts_typemap_configs, "json")
 
     action(_ts_typemap_validator_target_name) {
-      allow_remote = true
       script = "$mojom_generator_root/validate_ts_typemap_config.py"
       inputs = [ _ts_typemap_config_filename ]
       outputs = [ _ts_typemap_stamp_filename ]
@@ -1549,7 +1548,6 @@ template("mojom") {
     }
 
     action(type_mappings_target_name) {
-      allow_remote = true
       inputs =
           mojom_generator_sources + jinja2_sources + [ _typemap_stamp_filename ]
       outputs = [ type_mappings_path ]
@@ -2038,6 +2036,7 @@ template("mojom") {
       android_library(java_target_name) {
         forward_variables_from(invoker, [ "enable_bytecode_checks" ])
         deps = [
+          "//build/android:build_java",
           "//mojo/public/java:bindings_java",
           "//mojo/public/java:system_java",
           "//third_party/androidx:androidx_annotation_annotation_java",
@@ -2059,15 +2058,7 @@ template("mojom") {
     }
   }
 
-  if (defined(invoker.generate_webui_js_bindings)) {
-    assert(is_chromeos_ash,
-           "generate_webui_js_bindings can only be used on ChromeOS Ash")
-    assert(invoker.generate_webui_js_bindings,
-           "generate_webui_js_bindings should be set to true or removed")
-  }
-
-  use_typescript_for_target = defined(invoker.webui_module_path) &&
-                              !defined(invoker.generate_webui_js_bindings)
+  use_typescript_for_target = defined(invoker.webui_module_path)
 
   generate_legacy_js = !use_typescript_for_target ||
                        (defined(invoker.generate_legacy_js_bindings) &&
@@ -2112,11 +2103,6 @@ template("mojom") {
             "$root_gen_dir/$base_path-lite.js",
             "$root_gen_dir/$base_path-lite-for-compile.js",
           ]
-
-          if (defined(invoker.webui_module_path) &&
-              !use_typescript_for_target) {
-            outputs += [ "$root_gen_dir/mojom-webui/$base_path-webui.js" ]
-          }
         }
 
         response_file_contents = filelist
@@ -2214,56 +2200,6 @@ template("mojom") {
       group(js_library_for_compile_target_name) {
       }
     }
-
-    # WebUI specific closure targets, not needed by targets that are generating
-    # TypeScript WebUI bindings or by legacy-only targets.
-    if (defined(invoker.webui_module_path) && !use_typescript_for_target) {
-      webui_js_target_name = "${target_name}_webui_js"
-      if (sources_list != []) {
-        js_library(webui_js_target_name) {
-          extra_public_deps = [ ":$generator_js_target_name" ]
-          sources = []
-          foreach(base_path, output_file_base_paths) {
-            sources += [ "$root_gen_dir/mojom-webui/${base_path}-webui.js" ]
-          }
-          externs_list = [
-            "${externs_path}/mojo_core.js",
-            "${externs_path}/pending.js",
-          ]
-          if (defined(invoker.disallow_native_types) &&
-              invoker.disallow_native_types) {
-            deps = []
-          } else {
-            deps = [ "//mojo/public/js:bindings_uncompiled" ]
-          }
-          foreach(d, all_deps) {
-            full_name = get_label_info(d, "label_no_toolchain")
-            deps += [ "${full_name}_webui_js" ]
-          }
-        }
-      } else {
-        group(webui_js_target_name) {
-        }
-      }
-
-      webui_grdp_target_name = "${target_name}_webui_grdp"
-      out_grd = "$target_gen_dir/${target_name}_webui_resources.grdp"
-      grd_prefix = "${target_name}_webui"
-      generate_grd(webui_grdp_target_name) {
-        grd_prefix = grd_prefix
-        out_grd = out_grd
-
-        deps = [ ":$webui_js_target_name" ]
-
-        input_files = []
-        foreach(base_path, output_file_base_paths) {
-          input_files += [ "${base_path}-webui.js" ]
-        }
-
-        input_files_base_dir =
-            rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
-      }
-    }
   }
   if ((generate_js_fuzzing || !defined(invoker.cpp_only) ||
        !invoker.cpp_only) && use_typescript_for_target) {
@@ -2276,7 +2212,18 @@ template("mojom") {
       # Generate Typescript bindings.
       generator_ts_target_name = "${target_name}_ts__generator"
 
-      action(generator_ts_target_name) {
+      if (defined(invoker.ts_typemaps)) {
+        converter_sources = []
+        foreach(typemap, invoker.ts_typemaps) {
+          converter_sources += [ typemap.source ]
+        }
+        copy("${target_name}_ts__copy_converters") {
+          sources = converter_sources
+          outputs = [ "{{source_gen_dir}}/{{source_file_part}}" ]
+        }
+      }
+
+      action("${generator_ts_target_name}") {
         script = mojom_generator_script
         inputs = mojom_generator_sources + jinja2_sources
         sources = sources_list + [ type_mappings_path ]

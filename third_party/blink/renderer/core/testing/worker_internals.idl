@@ -11,4 +11,8 @@ interface WorkerInternals {
     [CallWith=ScriptState, RaisesException] void countDeprecation(unsigned long feature);
 
     [CallWith=ScriptState] void collectGarbage();
+
+    void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
+    boolean isCanvasImageSourceAccelerated(HTMLCanvasElement imageSource);
+    boolean isCanvasImageSourceAccelerated(OffscreenCanvas imageSource);
 };

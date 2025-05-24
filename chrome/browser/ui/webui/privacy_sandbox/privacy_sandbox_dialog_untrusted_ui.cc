@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_untrusted_ui.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/privacy_sandbox_resources.h"
@@ -19,6 +21,20 @@
 #include "content/public/common/url_constants.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
+
+namespace {
+
+using enum privacy_sandbox::PrivacyPolicyDomainType;
+using enum privacy_sandbox::PrivacyPolicyColorScheme;
+
+PrivacySandboxService* GetPrivacySandboxService(content::WebUI* web_ui) {
+  auto* privacy_sandbox_service =
+      PrivacySandboxServiceFactory::GetForProfile(Profile::FromWebUI(web_ui));
+  CHECK(privacy_sandbox_service);
+  return privacy_sandbox_service;
+}
+
+}  // namespace
 
 PrivacySandboxDialogUntrustedUIConfig::PrivacySandboxDialogUntrustedUIConfig()
     : DefaultWebUIConfig(content::kChromeUIUntrustedScheme,
@@ -35,13 +51,20 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIUntrustedPrivacySandboxDialogURL);
 
+  bool should_use_china_domain =
+      GetPrivacySandboxService(web_ui)->ShouldUsePrivacyPolicyChinaDomain();
+
+  std::string privacy_policy_domain = should_use_china_domain
+                                          ? "https://policies.google.cn;"
+                                          : "https://policies.google.com;";
+
   // Allows google pages to be embedded within the untrusted source.
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
-      "frame-src https://policies.google.com;");
+      "frame-src " + privacy_policy_domain);
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ObjectSrc,
-      "object-src https://policies.google.com;");
+      "object-src " + privacy_policy_domain);
   untrusted_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome-untrusted://resources 'self' 'unsafe-inline';");
@@ -55,18 +78,19 @@ PrivacySandboxDialogUntrustedUI::PrivacySandboxDialogUntrustedUI(
       IDR_PRIVACY_SANDBOX_PRIVACY_SANDBOX_PRIVACY_POLICY_HTML);
 
   // Dark mode support.
-  ThemeService::BrowserColorScheme color_scheme =
+  ThemeService::BrowserColorScheme browser_color_scheme =
       ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
           ->GetBrowserColorScheme();
   bool is_dark_mode =
-      (color_scheme == ThemeService::BrowserColorScheme::kSystem)
+      (browser_color_scheme == ThemeService::BrowserColorScheme::kSystem)
           ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
-          : color_scheme == ThemeService::BrowserColorScheme::kDark;
+          : browser_color_scheme == ThemeService::BrowserColorScheme::kDark;
 
   untrusted_source->AddString("privacyPolicyURL",
-                              is_dark_mode
-                                  ? chrome::kPrivacyPolicyOnlineDarkModeURLPath
-                                  : chrome::kPrivacyPolicyOnlineURLPath);
+                              privacy_sandbox::GetEmbeddedPrivacyPolicyURL(
+                                  should_use_china_domain ? kChina : kNonChina,
+                                  is_dark_mode ? kDarkMode : kLightMode,
+                                  g_browser_process->GetApplicationLocale()));
 
   untrusted_source->AddFrameAncestor(
       GURL(chrome::kChromeUIPrivacySandboxDialogURL));

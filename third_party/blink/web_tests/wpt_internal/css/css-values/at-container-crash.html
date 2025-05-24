@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<title>No crash when parsing ident() in @container</title>
+<link rel="help" href="https://drafts.csswg.org/css-values-5/#ident">
+<link rel="help" href="hhttps://github.com/w3c/csswg-drafts/issues/12219">
+<!-- Note that this test is not worth upstreaming. When Issue 12219 is resolved,
+     it should be replaced by a behavioral test in external/wpt. -->
+<style>
+  @container ident("--p") {}
+  @container ident("--p" sign(1px)) {}
+  @container ident("--p" sign(10%)) {}
+  @container ident("--p" sibling-index()) {}
+  @container ident("--p" calc(42 * sign(1em - 1px)) {}
+</style>

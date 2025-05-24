@@ -1,0 +1,37 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+assert(toolkit_views)
+
+source_set("dialogs") {
+  sources = [ "outdated_upgrade_bubble.h" ]
+}
+
+source_set("impl") {
+  sources = [ "outdated_upgrade_bubble.cc" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":dialogs",
+    "//base",
+    "//base/version_info:channel",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/common:channel_info",
+    "//chrome/common:constants",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+
+  if (is_win) {
+    deps += [ "//chrome/installer/util:with_no_strings" ]
+  }
+}

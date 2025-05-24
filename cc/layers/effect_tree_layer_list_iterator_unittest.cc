@@ -76,7 +76,7 @@ class EffectTreeLayerListIteratorTest : public LayerTreeImplTestBase,
                                           ->EffectTreeIndex()] = count;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }

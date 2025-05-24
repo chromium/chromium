@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/editing/local_caret_rect.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_caret_position.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
@@ -95,8 +96,7 @@ bool ShouldAlignCaretRight(ETextAlign text_align, TextDirection direction) {
     case ETextAlign::kEnd:
       return IsLtr(direction);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 LayoutUnit ClampAndRound(LayoutUnit value, LayoutUnit min, LayoutUnit max) {
@@ -215,8 +215,7 @@ LocalCaretRect ComputeLocalCaretRect(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return {layout_object, PhysicalRect()};
+  NOTREACHED();
 }
 
 LocalCaretRect ComputeLocalSelectionRect(

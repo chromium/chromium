@@ -18,7 +18,7 @@ class DataTypeManagerObserver {
   virtual void OnConfigureStart() = 0;
 
  protected:
-  virtual ~DataTypeManagerObserver() {}
+  virtual ~DataTypeManagerObserver() = default;
 };
 
 }  // namespace syncer

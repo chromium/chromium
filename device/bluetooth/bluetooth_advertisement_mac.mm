@@ -6,7 +6,8 @@
 
 #include "base/functional/bind.h"
 #import "base/task/single_thread_task_runner.h"
-#include "device/bluetooth/bluetooth_adapter_mac.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_low_energy_advertisement_manager_mac.h"
 
 namespace device {
 

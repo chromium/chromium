@@ -8,7 +8,6 @@
 
 #include "base/files/platform_file.h"
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/drm/common/scoped_drm_types.h"
@@ -40,9 +39,8 @@ uint32_t OverlayTransformToDrmRotationPropertyValue(
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90:
     case gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270:
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return 0;
 }
 
 // Rotations are dependent on modifiers. Tiled formats can be rotated,

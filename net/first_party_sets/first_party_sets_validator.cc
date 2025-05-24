@@ -4,7 +4,9 @@
 
 #include "net/first_party_sets/first_party_sets_validator.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
+#include "base/containers/map_util.h"
 #include "net/base/schemeful_site.h"
 
 namespace net {
@@ -36,9 +38,14 @@ void FirstPartySetsValidator::Update(const SchemefulSite& site,
 }
 
 bool FirstPartySetsValidator::IsValid() const {
-  return base::ranges::all_of(primary_states_, [](const auto& pair) -> bool {
+  return std::ranges::all_of(primary_states_, [](const auto& pair) -> bool {
     return pair.second.IsValid();
   });
+}
+
+bool FirstPartySetsValidator::IsSiteValid(const SchemefulSite& site) const {
+  const SiteState* state = base::FindOrNull(site_metadatas_, site);
+  return state && IsSitePrimaryValid(state->first_seen_primary);
 }
 
 bool FirstPartySetsValidator::IsSitePrimaryValid(

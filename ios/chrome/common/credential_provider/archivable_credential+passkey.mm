@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
-
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
+#import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 
 using base::HexEncode;
 using base::SysNSStringToUTF8;
@@ -29,8 +28,7 @@ NSString* RecordIdentifierForPasskey(
   // These are the UNIQUE keys in the login database.
   return [NSString
       stringWithFormat:@"%@|%@", SysUTF8ToNSString(passkey.rp_id()),
-                       SysUTF8ToNSString(
-                           HexEncode(passkey.credential_id()))];
+                       SysUTF8ToNSString(HexEncode(passkey.credential_id()))];
 }
 
 sync_pb::WebauthnCredentialSpecifics PasskeyFromCredential(

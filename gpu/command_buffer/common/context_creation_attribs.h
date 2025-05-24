@@ -46,7 +46,7 @@ struct GPU_EXPORT ContextCreationAttribs {
   bool enable_gles2_interface = true;
   bool enable_grcontext = false;
   bool enable_raster_interface = false;
-  bool enable_oop_rasterization = false;
+  bool enable_gpu_rasterization = false;
 
   ContextType context_type = CONTEXT_TYPE_OPENGLES2;
 };

@@ -16,9 +16,10 @@
 #import "components/safe_browsing/core/browser/password_protection/password_reuse_detection_manager_client.h"
 #import "ios/chrome/browser/safe_browsing/model/input_event_observer.h"
 #import "ios/chrome/browser/safe_browsing/model/password_protection_java_script_feature.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer.h"
+
+class ProfileIOS;
 
 namespace safe_browsing {
 class PasswordProtectionService;
@@ -32,7 +33,7 @@ class LogManager;
 @protocol IOSChromePasswordReuseDetectionManagerClientBridge <
     PasswordReuseDetectionManagerClientBridge>
 
-@property(readonly, nonatomic) ChromeBrowserState* browserState;
+@property(readonly, nonatomic) ProfileIOS* profile;
 
 @end
 
@@ -59,7 +60,7 @@ class IOSChromePasswordReuseDetectionManagerClient
   // safe_browsing::PasswordReuseDetectionManagerClient implementation.
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
       const override;
-  autofill::LogManager* GetLogManager() override;
+  autofill::LogManager* GetCurrentLogManager() override;
   virtual safe_browsing::PasswordProtectionService*
   GetPasswordProtectionService() const;
 
@@ -99,6 +100,7 @@ class IOSChromePasswordReuseDetectionManagerClient
   safe_browsing::PasswordReuseDetectionManager
       password_reuse_detection_manager_;
 
+  const raw_ptr<autofill::LogRouter> log_router_;
   std::unique_ptr<autofill::LogManager> log_manager_;
 
   base::ScopedObservation<web::WebState, web::WebStateObserver>

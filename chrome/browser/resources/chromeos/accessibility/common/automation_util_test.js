@@ -16,24 +16,20 @@ AccessibilityExtensionAutomationUtilE2ETest = class extends CommonE2ETestBase {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-    await Promise.all([
-      importModule('RectUtil', '/common/rect_util.js'),
-      importModule('AutomationUtil', '/common/automation_util.js'),
-    ]);
 
-    window.Dir = constants.Dir;
-    window.RoleType = chrome.automation.RoleType;
+    globalThis.Dir = constants.Dir;
+    globalThis.RoleType = chrome.automation.RoleType;
 
     /** Filters nodes not rooted by desktop. */
     function filterNonDesktopRoot(node) {
       return node.root.role !== RoleType.DESKTOP;
     }
 
-    window.getNonDesktopAncestors = function(node) {
+    globalThis.getNonDesktopAncestors = function(node) {
       return AutomationUtil.getAncestors(node).filter(filterNonDesktopRoot);
     };
 
-    window.getNonDesktopUniqueAncestors = function(node1, node2) {
+    globalThis.getNonDesktopUniqueAncestors = function(node1, node2) {
       return AutomationUtil.getUniqueAncestors(node1, node2)
           .filter(filterNonDesktopRoot);
     };

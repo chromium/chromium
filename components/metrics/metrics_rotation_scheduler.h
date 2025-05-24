@@ -21,7 +21,7 @@ class MetricsRotationScheduler : public MetricsScheduler {
   MetricsRotationScheduler(
       const base::RepeatingClosure& rotation_callback,
       const base::RepeatingCallback<base::TimeDelta(void)>& interval_callback,
-      bool fast_startup_for_testing);
+      bool fast_startup);
 
   MetricsRotationScheduler(const MetricsRotationScheduler&) = delete;
   MetricsRotationScheduler& operator=(const MetricsRotationScheduler&) = delete;

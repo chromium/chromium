@@ -15,7 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/datefmt.h"
@@ -54,8 +54,9 @@ std::u16string TimeFormatWithoutAmPm(const icu::DateFormat* formatter,
   if (ampm_length) {
     int begin = ampm_field.getBeginIndex();
     // Doesn't include any spacing before the field.
-    if (begin)
+    if (begin) {
       begin--;
+    }
     time_string.removeBetween(begin, ampm_field.getEndIndex());
   }
   return i18n::UnicodeStringToString16(time_string);
@@ -89,10 +90,14 @@ icu::SimpleDateFormat CreateSimpleDateFormatter(
 
 UMeasureFormatWidth DurationWidthToMeasureWidth(DurationFormatWidth width) {
   switch (width) {
-    case DURATION_WIDTH_WIDE: return UMEASFMT_WIDTH_WIDE;
-    case DURATION_WIDTH_SHORT: return UMEASFMT_WIDTH_SHORT;
-    case DURATION_WIDTH_NARROW: return UMEASFMT_WIDTH_NARROW;
-    case DURATION_WIDTH_NUMERIC: return UMEASFMT_WIDTH_NUMERIC;
+    case DURATION_WIDTH_WIDE:
+      return UMEASFMT_WIDTH_WIDE;
+    case DURATION_WIDTH_SHORT:
+      return UMEASFMT_WIDTH_SHORT;
+    case DURATION_WIDTH_NARROW:
+      return UMEASFMT_WIDTH_NARROW;
+    case DURATION_WIDTH_NUMERIC:
+      return UMEASFMT_WIDTH_NUMERIC;
   }
   NOTREACHED();
 }
@@ -164,7 +169,7 @@ std::u16string TimeFormatShortDateAndTimeWithTimeZone(const Time& time) {
   return TimeFormat(*formatter, time);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::u16string TimeFormatMonthAndYearForTimeZone(
     const Time& time,
     const icu::TimeZone* time_zone) {

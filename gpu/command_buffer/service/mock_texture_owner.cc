@@ -21,6 +21,7 @@ MockTextureOwner::MockTextureOwner(GLuint fake_texture_id,
       fake_context(fake_context),
       fake_surface(fake_surface) {
   ON_CALL(*this, GetTextureId()).WillByDefault(Return(fake_texture_id));
+  ON_CALL(*this, UpdateTexImage(_)).WillByDefault(Return(true));
   ON_CALL(*this, GetContext()).WillByDefault(Return(fake_context));
   ON_CALL(*this, GetSurface()).WillByDefault(Return(fake_surface));
   ON_CALL(*this, RunWhenBufferIsAvailable(_))

@@ -17,13 +17,13 @@ struct RequestMetadata {
 
   RequestMetadata();
 
+  friend bool operator==(const RequestMetadata&,
+                         const RequestMetadata&) = default;
+
   std::string mime_type;
   int http_response_code;
   std::string content_location_header;
 };
-
-bool operator==(const RequestMetadata& lhs, const RequestMetadata& rhs);
-bool operator!=(const RequestMetadata& lhs, const RequestMetadata& rhs);
 
 }  // namespace image_fetcher
 

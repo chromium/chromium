@@ -4,6 +4,9 @@
 
 package org.chromium.components.permissions;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -28,6 +31,9 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.omnibox.AutocompleteSchemeClassifier;
 import org.chromium.components.omnibox.OmniboxUrlEmphasizer;
@@ -35,7 +41,7 @@ import org.chromium.content_public.browser.bluetooth.BluetoothChooserEvent;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.permissions.PermissionCallback;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.util.ColorUtils;
@@ -51,6 +57,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>The dialog is shown by create() or show(), and always runs finishDialog() as it's closing.
  */
 @JNINamespace("permissions")
+@NullMarked
 public class BluetoothChooserDialog
         implements ItemChooserDialog.ItemSelectedCallback, PermissionCallback {
     private static final String TAG = "Bluetooth";
@@ -96,7 +103,7 @@ public class BluetoothChooserDialog
     final BluetoothChooserAndroidDelegate mDelegate;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public Drawable mConnectedIcon;
+    public @Nullable Drawable mConnectedIcon;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public String mConnectedIconDescription;
@@ -117,9 +124,6 @@ public class BluetoothChooserDialog
     // The status message to show when the bluetooth adapter is turned off.
     private final SpannableString mAdapterOffStatus;
 
-    // Should the "adapter off" message be shown once Bluetooth permission is granted?
-    private boolean mAdapterOff;
-
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public final BroadcastReceiver mLocationModeBroadcastReceiver =
             new BroadcastReceiver() {
@@ -130,11 +134,6 @@ public class BluetoothChooserDialog
                     if (!checkLocationServicesAndPermission()) return;
 
                     mItemChooserDialog.clear();
-
-                    if (mAdapterOff) {
-                        notifyAdapterTurnedOff();
-                        return;
-                    }
 
                     Natives jni = BluetoothChooserDialogJni.get();
                     jni.restartSearch(mNativeBluetoothChooserDialogPtr);
@@ -171,10 +170,8 @@ public class BluetoothChooserDialog
             BluetoothChooserAndroidDelegate delegate,
             long nativeBluetoothChooserDialogPtr) {
         mWindowAndroid = windowAndroid;
-        mActivity = windowAndroid.getActivity().get();
-        assert mActivity != null;
-        mContext = windowAndroid.getContext().get();
-        assert mContext != null;
+        mActivity = assertNonNull(windowAndroid.getActivity().get());
+        mContext = assertNonNull(windowAndroid.getContext().get());
         mOrigin = origin;
         mSecurityLevel = securityLevel;
         mDelegate = delegate;
@@ -204,10 +201,12 @@ public class BluetoothChooserDialog
                                 "<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF_HELP)));
     }
 
-    private Drawable getIconWithRowIconColorStateList(int icon) {
+    private @Nullable Drawable getIconWithRowIconColorStateList(int icon) {
         Resources res = mContext.getResources();
 
-        Drawable drawable = TraceEventVectorDrawableCompat.create(res, icon, mContext.getTheme());
+        Drawable drawable =
+                assumeNonNull(
+                        TraceEventVectorDrawableCompat.create(res, icon, mContext.getTheme()));
         DrawableCompat.setTintList(
                 drawable,
                 AppCompatResources.getColorStateList(
@@ -217,6 +216,7 @@ public class BluetoothChooserDialog
 
     /** Show the BluetoothChooserDialog. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @Initializer
     public void show() {
         SpannableString origin = new SpannableString(mOrigin);
 
@@ -309,11 +309,6 @@ public class BluetoothChooserDialog
 
         mItemChooserDialog.clear();
 
-        if (mAdapterOff) {
-            notifyAdapterTurnedOff();
-            return;
-        }
-
         Natives jni = BluetoothChooserDialogJni.get();
         jni.restartSearch(mNativeBluetoothChooserDialogPtr);
     }
@@ -388,9 +383,8 @@ public class BluetoothChooserDialog
         return false;
     }
 
-    private NoUnderlineClickableSpan createLinkSpan(@LinkType int linkType) {
-        return new NoUnderlineClickableSpan(
-                mContext, (view) -> onBluetoothLinkClick(view, linkType));
+    private ChromeClickableSpan createLinkSpan(@LinkType int linkType) {
+        return new ChromeClickableSpan(mContext, (view) -> onBluetoothLinkClick(view, linkType));
     }
 
     private void onBluetoothLinkClick(View view, @LinkType int linkType) {
@@ -442,7 +436,7 @@ public class BluetoothChooserDialog
 
     @CalledByNative
     @VisibleForTesting
-    public static BluetoothChooserDialog create(
+    public static @Nullable BluetoothChooserDialog create(
             WindowAndroid windowAndroid,
             String origin,
             int securityLevel,
@@ -485,10 +479,12 @@ public class BluetoothChooserDialog
         Drawable icon = null;
         String iconDescription = null;
         if (isGATTConnected) {
-            icon = mConnectedIcon.getConstantState().newDrawable();
+            icon = assumeNonNull(assumeNonNull(mConnectedIcon).getConstantState()).newDrawable();
             iconDescription = mConnectedIconDescription;
         } else if (signalStrengthLevel != -1) {
-            icon = mSignalStrengthLevelIcon[signalStrengthLevel].getConstantState().newDrawable();
+            icon =
+                    assumeNonNull(mSignalStrengthLevelIcon[signalStrengthLevel].getConstantState())
+                            .newDrawable();
             iconDescription =
                     mContext.getResources()
                             .getQuantityString(
@@ -510,41 +506,35 @@ public class BluetoothChooserDialog
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
     public void notifyAdapterTurnedOff() {
-        mAdapterOff = true;
+        SpannableString adapterOffMessage =
+                SpanApplier.applySpans(
+                        mContext.getString(R.string.bluetooth_adapter_off),
+                        new SpanInfo("<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
 
-        // Permission is required to turn the adapter on so make sure to ask for that first.
-        if (checkLocationServicesAndPermission()) {
-            SpannableString adapterOffMessage =
-                    SpanApplier.applySpans(
-                            mContext.getString(R.string.bluetooth_adapter_off),
-                            new SpanInfo(
-                                    "<link>", "</link>", createLinkSpan(LinkType.ADAPTER_OFF)));
-
-            mItemChooserDialog.setErrorState(adapterOffMessage, mAdapterOffStatus);
-        }
+        mItemChooserDialog.setErrorState(adapterOffMessage, mAdapterOffStatus);
     }
 
     @CalledByNative
     private void notifyAdapterTurnedOn() {
-        mAdapterOff = false;
         mItemChooserDialog.clear();
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @CalledByNative
+    public void notifyAdapterUnauthorized() {
+        checkLocationServicesAndPermission();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative
     public void notifyDiscoveryState(@DiscoveryMode int discoveryState) {
         switch (discoveryState) {
-            case DiscoveryMode.DISCOVERY_FAILED_TO_START:
-                // FAILED_TO_START might be caused by a missing Location
-                // permission or by the Location service being turned off.
-                // Check, and show a request if so.
-                checkLocationServicesAndPermission();
-                break;
             case DiscoveryMode.DISCOVERY_IDLE:
                 mItemChooserDialog.setIdleState();
                 break;
             default:
                 // TODO(jyasskin): Report the new state to the user.
+                Log.e(TAG, "Unexpected discovery state: " + discoveryState);
                 break;
         }
     }

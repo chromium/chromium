@@ -25,8 +25,8 @@ import org.chromium.components.module_installer.engine.InstallListener;
 public class ModuleTest {
     @Mock private InstallEngine mInstallEngineMock;
 
-    private final String mModuleName = "module_stub";
-    private final Class mInterface = ModuleTestStubInterface.class;
+    private static final String MODULE_NAME = "module_stub";
+    private static final Class INTERFACE = ModuleTestStubInterface.class;
     private final String mImplName = ModuleTestStub.class.getName();
 
     private Module<ModuleTestStub> mModule;
@@ -43,7 +43,7 @@ public class ModuleTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mModule = new Module<ModuleTestStub>(mModuleName, mInterface, mImplName);
+        mModule = new Module<ModuleTestStub>(MODULE_NAME, INTERFACE, mImplName);
         mModule.setInstallEngine(mInstallEngineMock);
     }
 
@@ -56,7 +56,7 @@ public class ModuleTest {
         mModule.isInstalled();
 
         // Assert.
-        inOrder.verify(mInstallEngineMock).isInstalled(mModuleName);
+        inOrder.verify(mInstallEngineMock).isInstalled(MODULE_NAME);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -70,7 +70,7 @@ public class ModuleTest {
         mModule.install(listenerMock);
 
         // Assert.
-        inOrder.verify(mInstallEngineMock).install(mModuleName, listenerMock);
+        inOrder.verify(mInstallEngineMock).install(MODULE_NAME, listenerMock);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -83,7 +83,7 @@ public class ModuleTest {
         mModule.installDeferred();
 
         // Assert.
-        inOrder.verify(mInstallEngineMock).installDeferred(mModuleName);
+        inOrder.verify(mInstallEngineMock).installDeferred(MODULE_NAME);
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -91,7 +91,7 @@ public class ModuleTest {
     public void whenGetImpl_VerifyCorrectInstance() {
         // Arrange.
         Class expectedType = ModuleTestStub.class;
-        doReturn(true).when(mInstallEngineMock).isInstalled(mModuleName);
+        doReturn(true).when(mInstallEngineMock).isInstalled(MODULE_NAME);
 
         // Act.
         ModuleTestStub impl = mModule.getImpl();
@@ -104,8 +104,9 @@ public class ModuleTest {
     public void whenGettingUnknownImpl_VerifyError() {
         // Arrange.
         String impl = "some unknown type";
-        Module<ModuleTestStub> module = new Module<ModuleTestStub>(mModuleName, mInterface, impl);
-        doReturn(true).when(mInstallEngineMock).isInstalled(mModuleName);
+        Module<ModuleTestStub> module =
+                new Module<ModuleTestStub>(MODULE_NAME, INTERFACE, impl);
+        doReturn(true).when(mInstallEngineMock).isInstalled(MODULE_NAME);
         module.setInstallEngine(mInstallEngineMock);
 
         // Act & Assert.

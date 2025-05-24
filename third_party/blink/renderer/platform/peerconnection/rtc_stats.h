@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_STATS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_RTC_STATS_H_
 
+#include <vector>
+
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -55,15 +56,13 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
   const scoped_refptr<const webrtc::RTCStatsReport> stats_report_;
   webrtc::RTCStatsReport::ConstIterator it_;
   const webrtc::RTCStatsReport::ConstIterator end_;
-  // Number of allowlisted webrtc::RTCStats in |stats_report_|.
-  const size_t size_;
 };
 
 using RTCStatsReportCallback =
     base::OnceCallback<void(std::unique_ptr<RTCStatsReportPlatform>)>;
 
 PLATFORM_EXPORT
-rtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
+webrtc::scoped_refptr<webrtc::RTCStatsCollectorCallback>
 CreateRTCStatsCollectorCallback(
     scoped_refptr<base::SingleThreadTaskRunner> main_thread,
     RTCStatsReportCallback callback);
@@ -76,7 +75,8 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
     : public webrtc::RTCStatsCollectorCallback {
  public:
   void OnStatsDelivered(
-      const rtc::scoped_refptr<const webrtc::RTCStatsReport>& report) override;
+      const webrtc::scoped_refptr<const webrtc::RTCStatsReport>& report)
+      override;
 
  protected:
   RTCStatsCollectorCallbackImpl(
@@ -85,7 +85,7 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
   ~RTCStatsCollectorCallbackImpl() override;
 
   void OnStatsDeliveredOnMainThread(
-      rtc::scoped_refptr<const webrtc::RTCStatsReport> report);
+      webrtc::scoped_refptr<const webrtc::RTCStatsReport> report);
 
   const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
   RTCStatsReportCallback callback_;

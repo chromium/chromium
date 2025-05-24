@@ -168,8 +168,9 @@ void ScreenshotCapturedBubble::Init() {
 /*static*/
 const std::u16string ScreenshotCapturedBubble::GetFilenameForURL(
     const GURL& url) {
-  if (!url.has_host() || url.HostIsIPAddress())
+  if (!url.has_host() || url.HostIsIPAddress()) {
     return u"chrome_screenshot.png";
+  }
 
   return base::ASCIIToUTF16(
       base::StrCat({"chrome_screenshot_", url.host(), ".png"}));
@@ -181,8 +182,9 @@ void ScreenshotCapturedBubble::DownloadButtonPressed() {
       image_view_->GetImage().GetRepresentation(1.0f).GetBitmap();
   const GURL data_url = GURL(webui::GetBitmapDataUrl(bitmap));
 
-  if (!web_contents_)
+  if (!web_contents_) {
     return;
+  }
 
   Browser* browser = chrome::FindBrowserWithTab(web_contents_.get());
   content::DownloadManager* download_manager =

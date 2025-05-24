@@ -132,8 +132,7 @@ PositionInFlatTree NextWordPositionInternal(
           return SkipWhitespaceIfNeeded(text, runner);
         // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
-            (WTF::unicode::IsPunct(text[runner]) ||
-             U16_IS_SURROGATE(text[runner]))) {
+            IsWordBoundary(text[runner])) {
           if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
             return SkipWhitespaceIfNeeded(text, runner);
           continue;
@@ -213,8 +212,7 @@ PositionInFlatTree PreviousWordPositionInternal(
            runner = it->preceding(runner)) {
         // Accumulate punctuation/surrogate pair runs.
         if (static_cast<unsigned>(runner) < text.length() &&
-            (WTF::unicode::IsPunct(text[runner]) ||
-             U16_IS_SURROGATE(text[runner]))) {
+            IsWordBoundary(text[runner])) {
           if (WTF::unicode::IsAlphanumeric(text[runner - 1]))
             return Position::Before(runner);
           punct_runner = runner;
@@ -365,8 +363,7 @@ PositionInFlatTree MiddleOfWordPosition(const PositionInFlatTree& word_start,
     }
     middle -= length;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PositionInFlatTree(nullptr, 0);
+  NOTREACHED();
 }
 
 Position MiddleOfWordPosition(const Position& word_start,
@@ -379,4 +376,12 @@ bool IsWordBreak(UChar ch) {
   return (WTF::unicode::IsPrintableChar(ch) && !IsWhitespace(ch)) ||
          U16_IS_SURROGATE(ch) || IsLineBreak(ch) || ch == kLowLineCharacter;
 }
+
+bool IsWordBoundary(UChar ch) {
+  return WTF::unicode::IsPunct(ch) ||
+         (RuntimeEnabledFeatures::TreatSymbolsAsWordBoundaryEnabled() &&
+          WTF::unicode::IsSymbol(ch)) ||
+         U16_IS_SURROGATE(ch);
+}
+
 }  // namespace blink

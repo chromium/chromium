@@ -24,18 +24,6 @@ test(() => {
   assert_equals(navigator.clipboard, navigator.clipboard);
 }, 'navigator.clipboard exists');
 
-promise_test(async t => {
-  await getPermissions();
-  const text_plain = "This text was copied using `Clipboard.prototype.write`.";
-  const html_text = "<p style='color: red; font-style: oblique;'>Test</p>";
-  await promise_rejects_dom(t, "NotAllowedError", navigator.clipboard.write([
-   new ClipboardItem({
-            "text/plain":  text_plain,
-            "text/html" : html_text
-        }),
-    ]));
-  }, 'navigator.clipboard.write(Promise<DOMString>) fails');
-
 promise_test(async () => {
   await getPermissions();
   const blob = new Blob(['hello'], {type: 'text/plain'});

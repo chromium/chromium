@@ -52,8 +52,6 @@ public final class DeveloperUiService extends Service {
     private static final String FRAGMENT_ID_INTENT_EXTRA = "fragment-id";
     private static final String RESET_FLAGS_INTENT_EXTRA = "reset-flags";
 
-    private static final int FRAGMENT_ID_HOME = 0;
-    private static final int FRAGMENT_ID_CRASHES = 1;
     private static final int FRAGMENT_ID_FLAGS = 2;
 
     public static final String NOTIFICATION_TITLE = "Experimental WebView features active";

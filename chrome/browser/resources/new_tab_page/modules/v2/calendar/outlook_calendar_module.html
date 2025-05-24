@@ -6,9 +6,18 @@
                           'modulesMoreActions',
                           'modulesOutlookCalendarTitle')}"
     @disable-button-click="${this.onDisableButtonClick_}"
-    @menu-button-click="${this.onMenuButtonClick_}">
+    @dismiss-button-click="${this.onDismissButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}"
+    @signout-button-click="${this.onSignOutButtonClick_}">
 </ntp-module-header-v2>
 <ntp-calendar id="outlook-calendar"
     .events="${this.events_}"
-    module-name="OutlookCalendar">
+    module-name="OutlookCalendar"
+    calendar-link="https://outlook.office.com/calendar/">
 </ntp-calendar>
+${this.showInfoDialog_ ? html`
+   <ntp-info-dialog show-on-attach
+       .innerHTML="${this.i18nAdvanced('modulesOutlookCalendarInfo')}"
+       @close="${this.onInfoDialogClose_}">
+   </ntp-info-dialog>
+ ` : ''}

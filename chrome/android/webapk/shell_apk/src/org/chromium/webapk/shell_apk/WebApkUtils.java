@@ -33,11 +33,14 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 
 import java.util.ArrayList;
 
 /** Contains utility methods for interacting with WebAPKs. */
+@NullMarked
 public class WebApkUtils {
     private static final String TAG = "cr_WebApkUtils";
     private static final float CONTRAST_LIGHT_ITEM_THRESHOLD = 3f;
@@ -56,7 +59,7 @@ public class WebApkUtils {
     }
 
     /** Returns the <meta-data> value in the Android Manifest for {@link key}. */
-    public static String readMetaDataFromManifest(Context context, String key) {
+    public static @Nullable String readMetaDataFromManifest(Context context, String key) {
         Bundle metadata = readMetaData(context);
         if (metadata == null) return null;
 
@@ -64,7 +67,7 @@ public class WebApkUtils {
     }
 
     /** Returns the <meta-data> in the Android Manifest. */
-    public static Bundle readMetaData(Context context) {
+    public static @Nullable Bundle readMetaData(Context context) {
         ApplicationInfo ai = null;
         try {
             ai =
@@ -100,15 +103,17 @@ public class WebApkUtils {
         return returnUrlBuilder.toString();
     }
 
-    /** Returns the package name for the passed-in ResolveInfo. */
-    public static String getPackageNameFromResolveInfo(ResolveInfo resolveInfo) {
+    /** Returns the component name for the passed-in ResolveInfo. */
+    public static @Nullable ComponentName getComponentNameFromResolveInfo(
+            @Nullable ResolveInfo resolveInfo) {
         return (resolveInfo != null && resolveInfo.activityInfo != null)
-                ? resolveInfo.activityInfo.packageName
+                ? new ComponentName(
+                        resolveInfo.activityInfo.packageName, resolveInfo.activityInfo.name)
                 : null;
     }
 
     /** Builds a context for the passed in remote package name. */
-    public static Context fetchRemoteContext(Context context, String remotePackageName) {
+    public static @Nullable Context fetchRemoteContext(Context context, String remotePackageName) {
         try {
             return context.getApplicationContext().createPackageContext(remotePackageName, 0);
         } catch (NameNotFoundException e) {
@@ -180,7 +185,7 @@ public class WebApkUtils {
         bgG = (bgG < 0.03928f) ? bgG / 12.92f : (float) Math.pow((bgG + 0.055f) / 1.055f, 2.4f);
         bgB = (bgB < 0.03928f) ? bgB / 12.92f : (float) Math.pow((bgB + 0.055f) / 1.055f, 2.4f);
         float bgL = 0.2126f * bgR + 0.7152f * bgG + 0.0722f * bgB;
-        return Math.abs((1.05f) / (bgL + 0.05f));
+        return Math.abs(1.05f / (bgL + 0.05f));
     }
 
     /**
@@ -198,7 +203,7 @@ public class WebApkUtils {
      * Decodes bitmap drawable from WebAPK's resources. This should also be used for XML aliases.
      */
     @SuppressWarnings("deprecation")
-    public static Bitmap decodeBitmapFromDrawable(Resources resources, int resourceId) {
+    public static @Nullable Bitmap decodeBitmapFromDrawable(Resources resources, int resourceId) {
         if (resourceId == 0) {
             return null;
         }
@@ -307,7 +312,7 @@ public class WebApkUtils {
 
     /** Returns the ComponentName for the top activity in {@link taskId}'s task stack. */
     @SuppressLint("NewApi") // See crbug.com/1081331 for context.
-    public static ComponentName fetchTopActivityComponent(Context context, int taskId) {
+    public static @Nullable ComponentName fetchTopActivityComponent(Context context, int taskId) {
         ActivityManager manager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.AppTask task : manager.getAppTasks()) {

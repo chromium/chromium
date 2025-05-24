@@ -110,6 +110,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   friend class SharedWorkerServiceImplTest;
   friend class TestSharedWorkerServiceImpl;
   friend class WorkerTest;
+  friend class SharedWorkerExtendedLifetimeBrowserTest;
+  friend class SharedWorkerExtendedLifetimeBrowserOriginTrialTest;
   FRIEND_TEST_ALL_PREFIXES(NetworkServiceRestartBrowserTest, SharedWorker);
 
   // Creates a new worker in the creator's renderer process.
@@ -144,7 +146,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
 
   std::set<std::unique_ptr<SharedWorkerHost>, base::UniquePtrComparator>
       worker_hosts_;
-  base::flat_map<blink::SharedWorkerToken, SharedWorkerHost*>
+  base::flat_map<blink::SharedWorkerToken,
+                 raw_ptr<SharedWorkerHost, CtnExperimental>>
       shared_worker_hosts_;
 
   // |storage_partition_| owns |this|.

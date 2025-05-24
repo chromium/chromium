@@ -27,6 +27,7 @@ goog.provide('goog.dom.DomHelper');
 
 goog.require('goog.array');
 goog.require('goog.asserts');
+goog.require('goog.asserts.dom');
 goog.require('goog.dom.BrowserFeature');
 goog.require('goog.dom.NodeType');
 goog.require('goog.dom.TagName');
@@ -114,6 +115,23 @@ goog.dom.getElement = function(element) {
 
 
 /**
+ * Gets an HTML element from the current document by element id.
+ *
+ * @param {string} id
+ * @return {?HTMLElement} The element with the given ID or null if no such
+ *     element exists.
+ */
+goog.dom.getHTMLElement = function(id) {
+  'use strict'
+  const element = goog.dom.getElement(id);
+  if (!element) {
+    return null;
+  }
+  return goog.asserts.dom.assertIsHtmlElement(element);
+};
+
+
+/**
  * Gets an element by id from the given document (if present).
  * If an element is given, it is returned.
  * @param {!Document} doc
@@ -143,6 +161,22 @@ goog.dom.getRequiredElement = function(id) {
 
 
 /**
+ * Gets an HTML element by id, asserting that the element is found.
+ *
+ * This is used when an element is expected to exist, and should fail with
+ * an assertion error if it does not (if assertions are enabled).
+ *
+ * @param {string} id Element ID.
+ * @return {!HTMLElement} The element with the given ID, if it exists.
+ */
+goog.dom.getRequiredHTMLElement = function(id) {
+  'use strict'
+  return goog.asserts.dom.assertIsHtmlElement(
+      goog.dom.getRequiredElementHelper_(document, id));
+};
+
+
+/**
  * Helper function for getRequiredElementHelper functions, both static and
  * on DomHelper.  Asserts the element with the given id exists.
  * @param {!Document} doc
@@ -155,9 +189,7 @@ goog.dom.getRequiredElementHelper_ = function(doc, id) {
   // To prevent users passing in Elements as is permitted in getElement().
   goog.asserts.assertString(id);
   var element = goog.dom.getElementHelper_(doc, id);
-  element =
-      goog.asserts.assertElement(element, 'No element found with id: ' + id);
-  return element;
+  return goog.asserts.assert(element, 'No element found with id: ' + id);
 };
 
 
@@ -284,6 +316,24 @@ goog.dom.getElementByClass = function(className, opt_el) {
 
 
 /**
+ * Returns the first element with the provided className and asserts that it is
+ * an HTML element.
+ *
+ * @param {string} className the name of the class to look for.
+ * @param {!Element|!Document=} opt_parent Optional element to look in.
+ * @return {?HTMLElement} The first item with the class name provided.
+ */
+goog.dom.getHTMLElementByClass = function(className, opt_parent) {
+  'use strict'
+  const element = goog.dom.getElementByClass(className, opt_parent);
+  if (!element) {
+    return null;
+  }
+  return goog.asserts.dom.assertIsHtmlElement(element);
+};
+
+
+/**
  * Ensures an element with the given className exists, and then returns the
  * first element with the provided className.
  *
@@ -298,6 +348,25 @@ goog.dom.getRequiredElementByClass = function(className, opt_root) {
   var retValue = goog.dom.getElementByClass(className, opt_root);
   return goog.asserts.assert(
       retValue, 'No element found with className: ' + className);
+};
+
+
+/**
+ * Ensures an element with the given className exists, and then returns the
+ * first element with the provided className after asserting that it is an
+ * HTML element.
+ *
+ * @param {string} className the name of the class to look for.
+ * @param {!Element|!Document=} opt_parent Optional element or document to look
+ *     in.
+ * @return {!HTMLElement} The first item with the class name provided.
+ */
+goog.dom.getRequiredHTMLElementByClass = function(className, opt_parent) {
+  'use strict'
+  const retValue = goog.dom.getElementByClass(className, opt_parent);
+  goog.asserts.assert(
+      retValue, 'No HTMLElement found with className: ' + className);
+  return goog.asserts.dom.assertIsHtmlElement(retValue);
 };
 
 
@@ -562,7 +631,7 @@ goog.dom.DIRECT_ATTRIBUTE_MAP_ = {
  * docEl.clientWidth  Same as innerWidth.
  * win.innerWidth     Width of viewport excluding scrollbar.
  * win.innerHeight    Height of the viewport including scrollbar.
- * frame.innerHeight  Height of the viewport exluding scrollbar.
+ * frame.innerHeight  Height of the viewport excluding scrollbar.
  *
  * Safari 3 (tested in 522)
  *
@@ -729,8 +798,7 @@ goog.dom.getDocumentScroll_ = function(doc) {
   'use strict';
   var el = goog.dom.getDocumentScrollElement_(doc);
   var win = goog.dom.getWindow_(doc);
-  if (goog.userAgent.IE && goog.userAgent.isVersionOrHigher('10') &&
-      win.pageYOffset != el.scrollTop) {
+  if (goog.userAgent.IE && win.pageYOffset != el.scrollTop) {
     // The keyboard on IE10 touch devices shifts the page using the pageYOffset
     // without modifying scrollTop. For this case, we want the body scroll
     // offsets.
@@ -1548,16 +1616,9 @@ goog.dom.getParentElement = function(element) {
   'use strict';
   var parent;
   if (goog.dom.BrowserFeature.CAN_USE_PARENT_ELEMENT_PROPERTY) {
-    var isIe9 = goog.userAgent.IE && goog.userAgent.isVersionOrHigher('9') &&
-        !goog.userAgent.isVersionOrHigher('10');
-    // SVG elements in IE9 can't use the parentElement property.
-    // goog.global['SVGElement'] is not defined in IE9 quirks mode.
-    if (!(isIe9 && goog.global['SVGElement'] &&
-          element instanceof goog.global['SVGElement'])) {
-      parent = element.parentElement;
-      if (parent) {
-        return parent;
-      }
+    parent = element.parentElement;
+    if (parent) {
+      return parent;
     }
   }
   parent = element.parentNode;
@@ -1798,8 +1859,9 @@ goog.dom.getOwnerDocument = function(node) {
   // TODO(nnaze): Update param signature to be non-nullable.
   goog.asserts.assert(node, 'Node cannot be null or undefined.');
   return /** @type {!Document} */ (
-      node.nodeType == goog.dom.NodeType.DOCUMENT ? node : node.ownerDocument ||
-              node.document);
+      node.nodeType == goog.dom.NodeType.DOCUMENT ?
+          node :
+          node.ownerDocument || node.document);
 };
 
 
@@ -2510,8 +2572,8 @@ goog.dom.getPixelRatio = function() {
     // Should be for IE10 and FF6-17 (this basically clamps to lower)
     // Note that the order of these statements is important
     return goog.dom.matchesPixelRatio_(3) || goog.dom.matchesPixelRatio_(2) ||
-           goog.dom.matchesPixelRatio_(1.5) || goog.dom.matchesPixelRatio_(1) ||
-           .75;
+        goog.dom.matchesPixelRatio_(1.5) || goog.dom.matchesPixelRatio_(1) ||
+        .75;
   }
   return 1;
 };

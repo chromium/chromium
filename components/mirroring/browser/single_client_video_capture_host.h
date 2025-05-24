@@ -21,8 +21,8 @@
 #include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-using media::VideoCaptureParams;
 using media::VideoCaptureDevice;
+using media::VideoCaptureParams;
 
 namespace mirroring {
 

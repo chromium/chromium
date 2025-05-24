@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojom") {
   sources = [ "multidevice_types.mojom" ]
@@ -13,10 +12,6 @@ mojom("mojom") {
 
   webui_module_path =
       "chrome://resources/mojo/chromeos/ash/components/multidevice/mojom"
-
-  # Used by ash/webui/common/resources/multidevice_setup, which is still using
-  # JS + Closure.
-  generate_webui_js_bindings = true
 
   cpp_typemaps = [
     {

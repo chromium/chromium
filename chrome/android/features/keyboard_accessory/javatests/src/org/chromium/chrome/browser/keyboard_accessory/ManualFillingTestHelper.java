@@ -16,7 +16,7 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedHiding;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedShowing;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyShown;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.checkThatAccessoryViewFullyShown;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
@@ -211,18 +211,6 @@ public class ManualFillingTestHelper {
         return DOMUtils.getNodeValue(mWebContentsRef.get(), nodeId);
     }
 
-    public void clickEmailField(boolean forceAccessory) throws TimeoutException {
-        // TODO(fhorschig): This should be |focusNode|. Change with autofill popup deprecation.
-        DOMUtils.clickNode(mWebContentsRef.get(), USERNAME_NODE_ID);
-        if (forceAccessory) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        getManualFillingCoordinator().getMediatorForTesting().show(true);
-                    });
-        }
-        getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
-    }
-
     public void clickFieldWithoutCompletion() throws TimeoutException {
         DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
         DOMUtils.focusNode(mWebContentsRef.get(), NO_COMPLETION_FIELD_ID);
@@ -296,7 +284,7 @@ public class ManualFillingTestHelper {
 
     public void waitForKeyboardAccessoryToBeShown(boolean waitForSuggestionsToLoad) {
         pollInstrumentationThread(() -> accessoryStartedShowing(getKeyboardAccessoryBar()));
-        pollUiThread(() -> accessoryViewFullyShown(mActivityTestRule.getActivity()));
+        pollUiThread(() -> checkThatAccessoryViewFullyShown(mActivityTestRule.getActivity()));
         if (waitForSuggestionsToLoad) {
             pollUiThread(
                     () -> {
@@ -471,11 +459,11 @@ public class ManualFillingTestHelper {
 
     // --------------------------------------------------
     // Generic helpers to match, check or wait for views.
-    // TODO(fhorschig): Consider Moving to ViewUtils.
     // --------------------------------------------------
 
     /**
      * Use in a |onView().perform| action to select the tab at |tabIndex| for the found tab layout.
+     *
      * @param tabIndex The index to be selected.
      * @return The action executed by |perform|.
      */
@@ -628,7 +616,6 @@ public class ManualFillingTestHelper {
 
     // --------------------------------------------
     // Helpers that force override the native side.
-    // TODO(fhorschig): Search alternatives.
     // --------------------------------------------
 
     public void addGenerationButton() {

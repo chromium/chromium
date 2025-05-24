@@ -4,7 +4,6 @@
 
 #include "components/history/core/browser/features.h"
 
-#include "build/build_config.h"
 #include "components/history/core/browser/top_sites_impl.h"
 #include "components/sync/base/features.h"
 
@@ -12,8 +11,7 @@ namespace history {
 namespace {
 constexpr auto is_android = !!BUILDFLAG(IS_ANDROID);
 constexpr auto kOrganicRepeatableQueriesDefaultValue =
-    is_android ? base::FEATURE_ENABLED_BY_DEFAULT
-               : base::FEATURE_DISABLED_BY_DEFAULT;
+    base::FEATURE_DISABLED_BY_DEFAULT;
 
 // Specifies the scaling behavior, i.e. whether the relevance scales of the
 // top sites and repeatable queries should be first aligned.
@@ -80,14 +78,15 @@ BASE_FEATURE(kPopulateVisitedLinkDatabase,
              "PopulateVisitedLinkDatabase",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, uses new scoring function for Most Visited Tiles computation.
 BASE_FEATURE(kMostVisitedTilesNewScoring,
              "MostVisitedTilesNewScoring",
+             is_android ? base::FEATURE_ENABLED_BY_DEFAULT
+                        : base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, heuristically remove possible visual duplicates from top sites.
+BASE_FEATURE(kMostVisitedTilesVisualDeduplication,
+             "MostVisitedTilesVisualDeduplication",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kMvtScoringParamRecencyFactor[] = "recency_factor";
-const char kMvtScoringParamDailyVisitCountCap[] = "daily_visit_count_cap";
-
-const char kMvtScoringParamRecencyFactor_Default[] = "default";
-const char kMvtScoringParamRecencyFactor_DecayStaircase[] = "decay_staircase";
 
 }  // namespace history

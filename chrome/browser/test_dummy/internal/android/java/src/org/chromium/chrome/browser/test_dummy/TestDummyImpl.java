@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.test_dummy;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 
 import androidx.annotation.IntDef;
-import androidx.appcompat.app.AlertDialog;
 
 import org.jni_zero.NativeMethods;
 

@@ -26,6 +26,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -90,6 +91,7 @@ public class TrustedWebActivityLocationDelegationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = 34, message = "crbug.com/403167167")
     public void getLocationFromTestTwaService() throws TimeoutException, Exception {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =

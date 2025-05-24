@@ -35,10 +35,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/peerconnection/resolution_monitor.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_utils.h"
 #include "third_party/webrtc/api/video_codecs/video_codec.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
+#include "third_party/webrtc/modules/video_coding/include/video_error_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -394,7 +396,7 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
     scoped_refptr<gpu::ClientSharedImage> shared_image =
         gpu::ClientSharedImage::CreateForTesting();
     scoped_refptr<media::VideoFrame> frame = media::VideoFrame::WrapSharedImage(
-        media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(), 0,
+        media::PIXEL_FORMAT_ARGB, shared_image, gpu::SyncToken(),
         media::VideoFrame::ReleaseMailboxCB(), gfx::Size(640, 360),
         gfx::Rect(640, 360), gfx::Size(640, 360),
         base::Microseconds(timestamp));
@@ -792,7 +794,7 @@ TEST_F(RTCVideoDecoderAdapterTest, DecodesImageWithSingleSpatialLayer) {
 
   // Check the side data was not set as there was only 1 spatial layer.
   ASSERT_TRUE(decoder_buffer);
-  if (decoder_buffer->has_side_data()) {
+  if (decoder_buffer->side_data()) {
     EXPECT_TRUE(decoder_buffer->side_data()->spatial_layers.empty());
   }
 }
@@ -843,6 +845,29 @@ TEST_F(RTCVideoDecoderAdapterTest, FallbackToSWInAV1SVC) {
 
   ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 
+  media_thread_.FlushForTesting();
+}
+
+TEST_F(RTCVideoDecoderAdapterTest, CanReadSharedFrameBuffer) {
+  ASSERT_TRUE(BasicSetup());
+
+  EXPECT_CALL(*video_decoder_, Decode_(_, _))
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
+
+  ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread =
+      blink::scheduler::GetSingleThreadTaskRunnerForTesting();
+
+  EXPECT_CALL(decoded_cb_, Run).WillOnce([&](const webrtc::VideoFrame& frame) {
+    main_thread->PostTask(FROM_HERE, base::BindOnce(
+                                         [](const webrtc::VideoFrame& frame) {
+                                           frame.video_frame_buffer()->ToI420();
+                                         },
+                                         frame));
+  });
+  FinishDecode(0);
   media_thread_.FlushForTesting();
 }
 

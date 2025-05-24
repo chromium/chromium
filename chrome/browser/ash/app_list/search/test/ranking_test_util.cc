@@ -17,7 +17,7 @@ base::FilePath RankerTestBase::GetPath() {
 }
 
 Results RankerTestBase::MakeScoredResults(const std::vector<std::string>& ids,
-                                          const std::vector<double> scores,
+                                          const std::vector<double>& scores,
                                           ResultType result_type,
                                           Category category) {
   Results res;
@@ -48,7 +48,7 @@ LaunchData RankerTestBase::MakeLaunchData(const std::string& id,
 
 void RankerTestBase::SetFtrlScore(const ResultsMap& results,
                                   ProviderType provider,
-                                  const std::vector<double> ftrl_scores) {
+                                  const std::vector<double>& ftrl_scores) {
   const auto it = results.find(provider);
   ASSERT_NE(it, results.end());
 

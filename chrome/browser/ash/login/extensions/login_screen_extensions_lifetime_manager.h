@@ -13,6 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -65,7 +66,8 @@ class LoginScreenExtensionsLifetimeManager final
   extensions::ExtensionIdList GetPolicyExtensionIds() const;
   void DisablePolicyExtensions();
   void EnablePolicyExtensions();
-  void DisableExtension(const extensions::ExtensionId& extension_id);
+  void DisableExtension(content::BrowserContext* browser_context,
+                        const extensions::ExtensionId& extension_id);
 
   // Unowned pointers:
   raw_ptr<Profile> const signin_original_profile_;

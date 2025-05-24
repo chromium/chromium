@@ -1,0 +1,5 @@
+include_rules = [
+    "+ios/chrome/browser/first_run/ui_bundled/best_features/ui/best_features_item.h",
+    "+ios/chrome/browser/first_run/ui_bundled/features.h",
+    "+ios/chrome/browser/first_run/ui_bundled/welcome_back/model/welcome_back_prefs.h",
+]

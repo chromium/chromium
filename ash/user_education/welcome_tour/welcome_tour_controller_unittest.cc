@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "ash/accelerators/accelerator_lookup.h"
@@ -50,17 +51,17 @@
 #include "chromeos/constants/devicetype.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/types/event_type.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -102,8 +103,7 @@ using ContextMode = TutorialDescription::ContextMode;
 using ElementSpecifier = TutorialDescription::ElementSpecifier;
 
 // Strings.
-constexpr char16_t kTotalStepsV1[] = u"5";
-constexpr char16_t kTotalStepsV2[] = u"6";
+constexpr char16_t kTotalSteps[] = u"5";
 
 // Actions ---------------------------------------------------------------------
 
@@ -169,7 +169,8 @@ MATCHER_P6(BubbleStep,
          arg.next_button_callback().is_null() != has_next_button &&
          util::GetHelpBubbleModalType(ext_props) ==
              ui::mojom::ModalType::kSystem &&
-         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon;
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() ==
+             &gfx::VectorIcon::EmptyIcon();
 }
 
 MATCHER_P7(BubbleStep,
@@ -190,7 +191,8 @@ MATCHER_P7(BubbleStep,
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
-         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() ==
+             &gfx::VectorIcon::EmptyIcon() &&
          util::GetHelpBubbleModalType(ext_props) ==
              ui::mojom::ModalType::kSystem;
 }
@@ -216,7 +218,8 @@ MATCHER_P8(BubbleStep,
          arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
          Matches(body_text_matcher)(util::GetHelpBubbleBodyText(ext_props)) &&
          arg.next_button_callback().is_null() != has_next_button &&
-         &util::GetHelpBubbleBodyIcon(ext_props)->get() == &gfx::kNoneIcon &&
+         &util::GetHelpBubbleBodyIcon(ext_props)->get() ==
+             &gfx::VectorIcon::EmptyIcon() &&
          util::GetHelpBubbleModalType(ext_props) ==
              ui::mojom::ModalType::kSystem;
 }
@@ -267,7 +270,7 @@ MATCHER_P(TutorialDescriptionEqInternal, tutorial_description, "") {
   return std::tie(arg.can_be_restarted, arg.complete_button_text_id) ==
              std::tie(tutorial_description->data.can_be_restarted,
                       tutorial_description->data.complete_button_text_id) &&
-         base::ranges::equal(
+         std::ranges::equal(
              arg.steps, tutorial_description->data.steps,
              [](auto& a, auto& b) { return Matches(StepEq(a))(b); });
 }
@@ -401,12 +404,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   // Add a primary and secondary user session for the first time. This should
   // *not* trigger the Welcome Tour to start.
   auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
-  session_controller_client->AddUserSession(
-      secondary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
+  SimulateUserLogin({.is_new_profile = true, .activate_session = false},
+                    primary_account_id);
 
   // Activate the primary user session. This *should* trigger the Welcome Tour
   // to be registered and started as well as notify observers. Note that
@@ -439,8 +438,8 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 
   // Switch to the secondary user session and back again. This should *not*
   // trigger the Welcome Tour to start.
-  session_controller_client->SwitchActiveUser(secondary_account_id);
-  session_controller_client->SwitchActiveUser(primary_account_id);
+  SimulateUserLogin({.is_new_profile = true}, secondary_account_id);
+  SwitchActiveUser(primary_account_id);
 
   // Deactivate and then reactivate the primary user session. This should *not*
   // trigger the Welcome Tour to start.
@@ -471,51 +470,6 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
       EXPECT_FALSE(WelcomeTourDialog::Get());
     }
   }
-}
-
-// Verifies that the Welcome Tour is started when the primary user session is
-// first activated and the last active user pref service is not null.
-TEST_F(WelcomeTourControllerTest, StartsTourWhenUserPrefServiceIsNotNull) {
-  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
-
-  // Ensure controller exists.
-  auto* const welcome_tour_controller = WelcomeTourController::Get();
-  ASSERT_TRUE(welcome_tour_controller);
-
-  // Ensure delegate exists and disallow any tutorial registrations/starts.
-  auto* const user_education_delegate = this->user_education_delegate();
-  ASSERT_TRUE(user_education_delegate);
-  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(0);
-  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(0);
-
-  // Observe the `WelcomeTourController` for start/end events.
-  StrictMock<MockWelcomeTourControllerObserver> observer;
-  base::ScopedObservation<WelcomeTourController, WelcomeTourControllerObserver>
-      observation{&observer};
-  observation.Observe(welcome_tour_controller);
-
-  // Add a primary user without pref service for the first time. This should
-  // *not* trigger the Welcome Tour to start.
-  auto* const session_controller_client = GetSessionControllerClient();
-  session_controller_client->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/false, /*is_new_profile=*/true);
-
-  // Activate the primary user session. This should *not* trigger the Welcome
-  // Tour to start because the last active user pref service is null.
-  session_controller_client->SetSessionState(SessionState::ACTIVE);
-  Mock::VerifyAndClearExpectations(user_education_delegate);
-  Mock::VerifyAndClearExpectations(&observer);
-
-  // Set the pref service. This *should* trigger the Welcome Tour to be
-  // registered and started as well as notify observers.
-  EXPECT_CALL(*user_education_delegate, RegisterTutorial).Times(1);
-  EXPECT_CALL(*user_education_delegate, StartTutorial).Times(1);
-  EXPECT_CALL(observer, OnWelcomeTourStarted);
-
-  session_controller_client->ProvidePrefServiceForUser(primary_account_id);
-  Mock::VerifyAndClearExpectations(user_education_delegate);
-  Mock::VerifyAndClearExpectations(&observer);
 }
 
 // Verifies that the Welcome Tour can be aborted via the dialog.
@@ -570,31 +524,31 @@ TEST_F(WelcomeTourControllerTest, AbortsTourAndPropagatesEvents) {
   EXPECT_TRUE(ended_future.Wait());
 }
 
-// WelcomeTourControllerV2Test -------------------------------------------------
+// WelcomeTourControllerV3Test -------------------------------------------------
 
 // Base class for tests of the `WelcomeTourController` which are concerned with
-// the behavior of WelcomeTourV2 experiment arms, parameterized by whether the
-// Welcome Tour V2 feature is enabled.
-class WelcomeTourControllerV2Test
+// the behavior of WelcomeTourV3 experiment arms, parameterized by whether the
+// Welcome Tour V3 feature is enabled.
+class WelcomeTourControllerV3Test
     : public WelcomeTourControllerTest,
       public ::testing::WithParamInterface<std::tuple<
-          /*is_welcome_tour_v2_enabled=*/bool,
+          /*is_welcome_tour_v3_enabled=*/bool,
           /*is_welcome_tour_counterfactually_enabled=*/bool>> {
  public:
-  WelcomeTourControllerV2Test() {
+  WelcomeTourControllerV3Test() {
     // Only one of those features can be enabled at a time.
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kWelcomeTourV2,
-          IsWelcomeTourV2Enabled() && !IsWelcomeTourCounterfactuallyEnabled()},
+        {{features::kWelcomeTourV3,
+          IsWelcomeTourV3Enabled() && !IsWelcomeTourCounterfactuallyEnabled()},
          {features::kWelcomeTourCounterfactualArm,
           IsWelcomeTourCounterfactuallyEnabled()},
          {features::kWelcomeTourHoldbackArm, false}});
   }
 
  protected:
-  // Returns whether the WelcomeTourV2 feature is enabled given test
+  // Returns whether the WelcomeTourV3 feature is enabled given test
   // parameterization.
-  bool IsWelcomeTourV2Enabled() const { return std::get<0>(GetParam()); }
+  bool IsWelcomeTourV3Enabled() const { return std::get<0>(GetParam()); }
 
   // Returns whether the WelcomeTour feature is counterfactually enabled given
   // test parameterization.
@@ -608,19 +562,17 @@ class WelcomeTourControllerV2Test
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    WelcomeTourControllerV2Test,
+    WelcomeTourControllerV3Test,
     testing::Combine(
-        /*is_welcome_tour_v2_enabled=*/testing::Bool(),
+        /*is_welcome_tour_v3_enabled=*/testing::Bool(),
         /*is_welcome_tour_counterfactually_enabled=*/testing::Bool()));
 
 // Verifies that `GetTutorialDescription()` returns expected values.
-TEST_P(WelcomeTourControllerV2Test, GetTutorialDescription) {
+TEST_P(WelcomeTourControllerV3Test, GetTutorialDescription) {
   auto* welcome_tour_controller = WelcomeTourController::Get();
   ASSERT_TRUE(welcome_tour_controller);
 
   const std::u16string product_name = ui::GetChromeOSDeviceName();
-  const std::u16string total_steps =
-      features::IsWelcomeTourV2Enabled() ? kTotalStepsV2 : kTotalStepsV1;
   int current_step = 1;
 
   using ::testing::Matcher;
@@ -634,63 +586,73 @@ TEST_P(WelcomeTourControllerV2Test, GetTutorialDescription) {
           ElementSpecifier(kShelfViewElementId), ContextMode::kInitial,
           HelpBubbleId::kWelcomeTourShelf,
           StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_ACCNAME,
-                        base::NumberToString16(current_step++), total_steps),
+                        base::NumberToString16(current_step++), kTotalSteps),
           IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
           StringUTF8Eq(IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT),
           HelpBubbleArrow::kBottomCenter,
           /*has_next_button=*/true),
       EventStep(ElementSpecifier(kShelfViewElementId),
                 ContextMode::kFromPreviousStep,
-                /*has_name_elements_callback=*/true),
-      BubbleStep(
-          ElementSpecifier(kUnifiedSystemTrayElementName), ContextMode::kAny,
-          HelpBubbleId::kWelcomeTourStatusArea,
-          StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_ACCNAME,
-                        base::NumberToString16(current_step++), total_steps),
-          IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
-          StringUTF8Eq(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT),
-          HelpBubbleArrow::kBottomRight,
-          /*has_next_button=*/true),
-      EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
-                ContextMode::kFromPreviousStep,
-                /*has_name_elements_callback=*/true),
-      BubbleStep(
-          ElementSpecifier(kHomeButtonElementName), ContextMode::kAny,
-          HelpBubbleId::kWelcomeTourHomeButton,
-          StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME,
-                        base::NumberToString16(current_step++), total_steps,
-                        product_name),
-          IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
-          StringFUTF8Eq(
-              (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook)
-                  ? IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK
-                  : IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_OTHER_DEVICE_TYPES,
-              product_name),
-          HelpBubbleArrow::kBottomLeft,
-          /*has_next_button=*/true),
-      BubbleStep(ElementSpecifier(kSearchBoxViewElementId), ContextMode::kAny,
-                 HelpBubbleId::kWelcomeTourSearchBox,
-                 StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME,
-                               base::NumberToString16(current_step++),
-                               total_steps, product_name),
-                 IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
-                 StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
-                               product_name),
-                 HelpBubbleArrow::kTopCenter,
-                 /*has_next_button=*/true),
-      EventStep(ElementSpecifier(kSearchBoxViewElementId),
-                ContextMode::kFromPreviousStep,
-                /*has_name_elements_callback=*/false)};
+                /*has_name_elements_callback=*/true)};
 
-  if (features::IsWelcomeTourV2Enabled()) {
+  if (!features::IsWelcomeTourV3Enabled()) {
+    // No status area step for V3.
     expected_steps.insert(
         expected_steps.end(),
-        {// Files app step for V2.
+        {BubbleStep(
+             ElementSpecifier(kUnifiedSystemTrayElementName), ContextMode::kAny,
+             HelpBubbleId::kWelcomeTourStatusArea,
+             StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_ACCNAME,
+                           base::NumberToString16(current_step++), kTotalSteps),
+             IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+             StringUTF8Eq(IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT),
+             HelpBubbleArrow::kBottomRight,
+             /*has_next_button=*/true),
+         EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
+                   ContextMode::kFromPreviousStep,
+                   /*has_name_elements_callback=*/true)});
+  }
+
+  expected_steps.insert(
+      expected_steps.end(),
+      {BubbleStep(
+           ElementSpecifier(kHomeButtonElementName), ContextMode::kAny,
+           HelpBubbleId::kWelcomeTourHomeButton,
+           StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_ACCNAME,
+                         base::NumberToString16(current_step++), kTotalSteps,
+                         product_name),
+           IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+           StringFUTF8Eq(
+               (chromeos::GetDeviceType() == chromeos::DeviceType::kChromebook)
+                   ? IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_CHROMEBOOK
+                   : IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT_OTHER_DEVICE_TYPES,
+               product_name),
+           HelpBubbleArrow::kBottomLeft,
+           /*has_next_button=*/true),
+       BubbleStep(
+           ElementSpecifier(kSearchBoxViewElementId), ContextMode::kAny,
+           HelpBubbleId::kWelcomeTourSearchBox,
+           StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_ACCNAME,
+                         base::NumberToString16(current_step++), kTotalSteps,
+                         product_name),
+           IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
+           StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
+                         product_name),
+           HelpBubbleArrow::kTopCenter,
+           /*has_next_button=*/true),
+       EventStep(ElementSpecifier(kSearchBoxViewElementId),
+                 ContextMode::kFromPreviousStep,
+                 /*has_name_elements_callback=*/false)});
+
+  if (features::IsWelcomeTourV3Enabled()) {
+    expected_steps.insert(
+        expected_steps.end(),
+        {// Files app step for V3.
          BubbleStep(
              ElementSpecifier(kFilesAppElementId),
              ContextMode::kFromPreviousStep, HelpBubbleId::kWelcomeTourFilesApp,
              StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_ACCNAME,
-                           base::NumberToString16(current_step++), total_steps),
+                           base::NumberToString16(current_step++), kTotalSteps),
              IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
              StringUTF8Eq(IDS_ASH_WELCOME_TOUR_FILES_APP_BUBBLE_BODY_TEXT),
              HelpBubbleArrow::kBottomLeft,
@@ -707,7 +669,7 @@ TEST_P(WelcomeTourControllerV2Test, GetTutorialDescription) {
            ContextMode::kFromPreviousStep,
            HelpBubbleId::kWelcomeTourSettingsApp,
            StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_ACCNAME,
-                         base::NumberToString16(current_step++), total_steps,
+                         base::NumberToString16(current_step++), kTotalSteps,
                          product_name),
            IDS_ASH_WELCOME_TOUR_OVERRIDDEN_BUBBLE_BODY_TEXT,
            StringFUTF8Eq(IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
@@ -818,14 +780,10 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
 // supported but is enabled.
 TEST_P(WelcomeTourControllerChromeVoxTest,
        MaybePreventTourFromStartingIfChromeVoxEnabled) {
-  const auto primary_account_id = AccountId::FromUserEmail("primary@test");
-
   base::HistogramTester histogram_tester;
-  TestSessionControllerClient* const session = GetSessionControllerClient();
-  session->AddUserSession(
-      primary_account_id.GetUserEmail(), user_manager::UserType::kRegular,
-      /*provide_pref_service=*/true, /*is_new_profile=*/true);
-  session->SwitchActiveUser(primary_account_id);
+  auto primary_account_id = SimulateUserLogin({.display_email = "primary@test",
+                                               .is_new_profile = true,
+                                               .activate_session = false});
 
   // Enable the spoken feedback after the pref service is ready and before the
   // session becomes active.
@@ -851,6 +809,7 @@ TEST_P(WelcomeTourControllerChromeVoxTest,
                   Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
       .Times(expect_prevent ? 1 : 0);
 
+  TestSessionControllerClient* const session = GetSessionControllerClient();
   session->SetSessionState(SessionState::ACTIVE);
   Mock::VerifyAndClearExpectations(user_education_delegate());
 
@@ -878,7 +837,7 @@ class WelcomeTourControllerHoldbackTest
     if (const auto& is_holdback = IsHoldback()) {
       scoped_feature_list_.InitWithFeatureStates(
           {{features::kWelcomeTourHoldbackArm, is_holdback.value()},
-           {features::kWelcomeTourV2, false},
+           {features::kWelcomeTourV3, false},
            {features::kWelcomeTourCounterfactualArm, false}});
     }
   }
@@ -981,20 +940,6 @@ class WelcomeTourControllerUserEligibilityTest
   // WelcomeTourControllerTest:
   void SetUp() override {
     WelcomeTourControllerTest::SetUp();
-
-    // Provide an implementation of `IsNewUser()` which returns whether a given
-    // user should be considered "new" cross-device based on test
-    // parameterization.
-    ON_CALL(*user_education_delegate(), IsNewUser)
-        .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
-
-    // Add a user based on test parameterization.
-    TestSessionControllerClient* const session = GetSessionControllerClient();
-    session->AddUserSession(primary_account_id_.GetUserEmail(), GetUserType(),
-                            /*provide_pref_service=*/true,
-                            /*is_new_profile=*/IsNewUserLocally(),
-                            /*given_name=*/std::string(), IsManagedUser());
-    session->SwitchActiveUser(primary_account_id_);
   }
 
   // Used to conditionally force user eligibility based on test
@@ -1062,8 +1007,18 @@ TEST_P(WelcomeTourControllerUserEligibilityTest, EnforcesUserEligibility) {
 
   base::HistogramTester histogram_tester;
 
-  // Activate the user session and verify expectations.
-  GetSessionControllerClient()->SetSessionState(SessionState::ACTIVE);
+  // Provide an implementation of `IsNewUser()` which returns whether a given
+  // user should be considered "new" cross-device based on test
+  // parameterization.
+  ON_CALL(*user_education_delegate(), IsNewUser)
+      .WillByDefault(ReturnRefOfCopy(IsNewUserCrossDevice()));
+
+  // Login into the user session and verify expectations.
+  SimulateUserLogin({.display_email = "primary@test",
+                     .user_type = GetUserType(),
+                     .is_new_profile = IsNewUserLocally(),
+                     .is_account_managed = IsManagedUser()});
+
   Mock::VerifyAndClearExpectations(user_education_delegate());
 
   // Verify histograms.

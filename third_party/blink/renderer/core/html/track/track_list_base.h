@@ -64,7 +64,7 @@ class TrackListBase : public EventTarget {
       tracks_.EraseAt(i);
       return;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void RemoveAll() {

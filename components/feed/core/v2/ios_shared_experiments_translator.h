@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_IOS_SHARED_EXPERIMENTS_TRANSLATOR_H_
 #define COMPONENTS_FEED_CORE_V2_IOS_SHARED_EXPERIMENTS_TRANSLATOR_H_
 
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>

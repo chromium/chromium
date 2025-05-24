@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/account_id/account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_manager {
@@ -13,7 +14,7 @@ namespace user_manager {
 namespace {
 
 const char kEmail[] = "email@example.com";
-const char kGaiaId[] = "fake_gaia_id";
+const GaiaId::Literal kGaiaId("fake_gaia_id");
 
 }  // namespace
 

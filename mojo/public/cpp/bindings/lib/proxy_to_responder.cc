@@ -4,8 +4,6 @@
 
 #include "mojo/public/cpp/bindings/lib/proxy_to_responder.h"
 
-#include <cstring>
-
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {

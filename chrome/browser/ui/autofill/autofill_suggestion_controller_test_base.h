@@ -21,8 +21,8 @@
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_external_delegate.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/ui/autofill_external_delegate.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/suggestion_button_action.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
@@ -205,8 +205,8 @@ class AutofillSuggestionControllerTestBase
 };
 
 // Below are test versions of `AutofillClient`, `BrowserAutofillManager`,
-// `AutofillExternalDelegate` and `AutofillSuggestionController` that are used in the
-// fixture above.
+// `AutofillExternalDelegate` and `AutofillSuggestionController` that are used
+// in the fixture above.
 
 class AutofillExternalDelegateForPopupTest : public AutofillExternalDelegate {
  public:
@@ -247,10 +247,6 @@ class AutofillSuggestionControllerForTest
       base::WeakPtr<AutofillExternalDelegate> external_delegate,
       content::WebContents* web_contents,
       const gfx::RectF& element_bounds
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      ShowPasswordMigrationWarningCallback show_pwd_migration_warning_callback
-#endif
   );
   ~AutofillSuggestionControllerForTest() override;
 

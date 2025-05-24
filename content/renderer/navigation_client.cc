@@ -12,7 +12,6 @@
 #include "content/renderer/render_frame_impl.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
-#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container.mojom.h"
@@ -20,8 +19,22 @@
 
 namespace content {
 
-NavigationClient::NavigationClient(RenderFrameImpl* render_frame)
-    : render_frame_(render_frame) {}
+NavigationClient::NavigationClient(
+    RenderFrameImpl* render_frame,
+    NavigationClient* initiator_navigation_client)
+    : render_frame_(render_frame) {
+  if (initiator_navigation_client) {
+    // When a navigation is initiated in this frame, but commits in a new
+    // RenderFrame object, the `was_initiated_in_this_frame_` value should be
+    // carried over from the old RenderFrame's NavigationClient. This is because
+    // the new RenderFrame uses a new NavigationClient to commit, and
+    // was_initiated_in_this_frame is only set on the previous RenderFrame's
+    // NavigationClient when starting the navigation. Copy that value to the new
+    // NavigationClient.
+    was_initiated_in_this_frame_ =
+        initiator_navigation_client->was_initiated_in_this_frame();
+  }
+}
 
 NavigationClient::NavigationClient(
     RenderFrameImpl* render_frame,
@@ -53,7 +66,7 @@ void NavigationClient::CommitNavigation(
     const blink::DocumentToken& document_token,
     const base::UnguessableToken& devtools_navigation_token,
     const base::Uuid& base_auction_nonce,
-    const std::optional<blink::ParsedPermissionsPolicy>& permissions_policy,
+    const std::optional<network::ParsedPermissionsPolicy>& permissions_policy,
     blink::mojom::PolicyContainerPtr policy_container,
     mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojo::PendingRemote<blink::mojom::CodeCacheHost>

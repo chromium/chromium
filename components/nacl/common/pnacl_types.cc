@@ -12,6 +12,6 @@ PnaclCacheInfo::PnaclCacheInfo()
       has_no_store_header(false),
       use_subzero(false) {}
 PnaclCacheInfo::PnaclCacheInfo(const PnaclCacheInfo& other) = default;
-PnaclCacheInfo::~PnaclCacheInfo() {}
+PnaclCacheInfo::~PnaclCacheInfo() = default;
 
 }  // namespace nacl

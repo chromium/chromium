@@ -84,6 +84,27 @@ class ContentSettingsPattern {
     SCHEME_MAX,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(Scope)
+  enum class Scope {
+    kOriginScoped = 0,                        // https://example.com:443
+    kWithDomainWildcard = 1,                  // https://[*.]example.com:443
+    kWithPortWildcard = 2,                    // https://example.com
+    kWithSchemeWildcard = 3,                  // example.com:443
+    kWithSchemeAndPortWildcard = 4,           // example.com
+    kWithDomainAndPortWildcard = 5,           // https://[*.]example.com
+    kWithDomainAndSchemeWildcard = 6,         // [*.]example.com:443
+    kWithDomainAndSchemeAndPortWildcard = 7,  // [*.]example.com
+    kFullWildcard = 8,                        // * (default values)
+    kFilePath = 9,                            // file:///tmp/index.html
+    kCustomScope = 10,                        // everything else: https://*,
+                                              // *:443 etc.
+    kMaxValue = kCustomScope
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/privacy/enums.xml:ContentSettingPatternScope)
+
   struct PatternParts {
     PatternParts();
     PatternParts(const PatternParts& other);
@@ -253,21 +274,22 @@ class ContentSettingsPattern {
   // Returns the host of a pattern.
   const std::string& GetHost() const;
 
+  // Returns the scope of the pattern (based on the wildcards in the pattern).
+  Scope GetScope() const;
+
   // Compares the pattern with a given |other| pattern and returns the
   // |Relation| of the two patterns.
   Relation Compare(const ContentSettingsPattern& other) const;
 
-  // Returns true if the pattern and the |other| pattern are identical.
-  bool operator==(const ContentSettingsPattern& other) const;
+  friend bool operator==(const ContentSettingsPattern& a,
+                         const ContentSettingsPattern& b) {
+    return a.Compare(b) == IDENTITY;
+  }
 
-  // Returns true if the pattern and the |other| pattern are not identical.
-  bool operator!=(const ContentSettingsPattern& other) const;
-
-  // Returns true if the pattern has a lower priority than the |other| pattern.
-  bool operator<(const ContentSettingsPattern& other) const;
-
-  // Returns true if the pattern has a higher priority than the |other| pattern.
-  bool operator>(const ContentSettingsPattern& other) const;
+  friend auto operator<=>(const ContentSettingsPattern& a,
+                          const ContentSettingsPattern& b) {
+    return a.Compare(b) <=> IDENTITY;
+  }
 
   // Formatter method for Google Test
   friend void PrintTo(const ContentSettingsPattern& pattern, std::ostream* os) {

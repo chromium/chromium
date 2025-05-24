@@ -23,7 +23,6 @@ source_set("model") {
   ]
   public_deps = [ "//base" ]
   deps = [
-    "//components/keyed_service/ios",
     "//components/search_engines",
     "//components/sessions",
     "//ios/chrome/app:mode",
@@ -78,6 +77,8 @@ source_set("test_support") {
   sources = [
     "fake_url_loading_browser_agent.h",
     "fake_url_loading_browser_agent.mm",
+    "fake_url_loading_delegate.h",
+    "fake_url_loading_delegate.mm",
     "test_scene_url_loading_service.h",
     "test_scene_url_loading_service.mm",
   ]

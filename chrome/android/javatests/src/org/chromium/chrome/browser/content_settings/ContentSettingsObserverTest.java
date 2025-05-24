@@ -40,7 +40,7 @@ import java.util.concurrent.TimeoutException;
 public class ContentSettingsObserverTest {
     @Rule public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
-    private CallbackHelper mCallbackHelper = new CallbackHelper();
+    private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
     private String mLastPrimaryPattern;
     private String mLastSecondaryPattern;

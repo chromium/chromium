@@ -4,9 +4,11 @@
 package org.chromium.chrome.browser.password_check;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 
 /** Helper class for recording password check metrics. */
+@NullMarked
 public final class PasswordCheckMetricsRecorder {
     private PasswordCheckMetricsRecorder() {}
 

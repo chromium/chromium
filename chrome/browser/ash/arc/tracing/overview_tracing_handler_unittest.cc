@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/arc/tracing/overview_tracing_handler.h"
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/test/arc_task_window_builder.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
@@ -15,6 +13,8 @@
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/test/arc_task_window_builder.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace arc {

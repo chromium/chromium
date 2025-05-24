@@ -19,11 +19,11 @@ namespace blink {
 struct CORE_EXPORT InterpolationValue {
   DISALLOW_NEW();
 
-  explicit InterpolationValue(InterpolableValue* interpolable_value,
-                              scoped_refptr<const NonInterpolableValue>
-                                  non_interpolable_value = nullptr)
+  explicit InterpolationValue(
+      InterpolableValue* interpolable_value,
+      const NonInterpolableValue* non_interpolable_value = nullptr)
       : interpolable_value(interpolable_value),
-        non_interpolable_value(std::move(non_interpolable_value)) {}
+        non_interpolable_value(non_interpolable_value) {}
 
   InterpolationValue(std::nullptr_t) {}
 
@@ -45,14 +45,17 @@ struct CORE_EXPORT InterpolationValue {
   }
 
   void Clear() {
-    interpolable_value.Clear();
+    interpolable_value = nullptr;
     non_interpolable_value = nullptr;
   }
 
-  void Trace(Visitor* v) const { v->Trace(interpolable_value); }
+  void Trace(Visitor* v) const {
+    v->Trace(interpolable_value);
+    v->Trace(non_interpolable_value);
+  }
 
   Member<InterpolableValue> interpolable_value;
-  scoped_refptr<const NonInterpolableValue> non_interpolable_value;
+  Member<const NonInterpolableValue> non_interpolable_value;
 };
 
 // Wrapper to be used with MakeGarbageCollected<>.

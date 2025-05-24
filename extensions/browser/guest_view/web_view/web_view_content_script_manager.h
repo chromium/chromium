@@ -44,7 +44,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
       content::BrowserContext* browser_context);
 
   // Adds content scripts for the WebView specified by
-  // |embedder_process_id| and |view_instance_id|.
+  // `embedder_process_id` and `view_instance_id`.
   void AddContentScripts(int embedder_process_id,
                          content::RenderFrameHost* render_frame_host,
                          int view_instance_id,
@@ -52,13 +52,13 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
                          UserScriptList user_scripts);
 
   // Removes all content scripts for the WebView identified by
-  // |embedder_process_id| and |view_instance_id|.
+  // `embedder_process_id` and `view_instance_id`.
   void RemoveAllContentScriptsForWebView(int embedder_process_id,
                                          int view_instance_id);
 
-  // Removes contents scipts whose names are in the |script_name_list| for the
-  // WebView specified by |embedder_process_id| and |view_instance_id|.
-  // If the |script_name_list| is empty, removes all the content scripts added
+  // Removes contents scripts whose names are in the `script_name_list` for the
+  // WebView specified by `embedder_process_id` and `view_instance_id`.
+  // If the `script_name_list` is empty, removes all the content scripts added
   // for this WebView.
   void RemoveContentScripts(int embedder_process_id,
                             int view_instance_id,
@@ -66,13 +66,13 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
                             const std::vector<std::string>& script_name_list);
 
   // Returns the content script IDs added by the WebView specified by
-  // |embedder_process_id| and |view_instance_id|.
+  // `embedder_process_id` and `view_instance_id`.
   std::set<std::string> GetContentScriptIDSet(int embedder_process_id,
                                               int view_instance_id);
 
   // Checks if there is any pending content script updates.
-  // If not, run |callback| immediately; otherwise caches the |callback|, and
-  // the |callback| will be called after all the pending content scripts are
+  // If not, run `callback` immediately; otherwise caches the `callback`, and
+  // the `callback` will be called after all the pending content scripts are
   // loaded.
   void SignalOnScriptsUpdated(base::OnceClosure callback);
 
@@ -90,7 +90,7 @@ class WebViewContentScriptManager : public base::SupportsUserData::Data {
                         const std::optional<std::string>& error);
 
   // If there are no pending script loads, we will run all the remaining
-  // callbacks in |pending_scripts_loading_callbacks_|.
+  // callbacks in `pending_scripts_loading_callbacks_`.
   void RunCallbacksIfReady();
 
   // A map from embedder process ID and view instance ID (uniquely identifying

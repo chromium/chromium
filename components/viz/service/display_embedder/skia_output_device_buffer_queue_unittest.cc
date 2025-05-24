@@ -71,8 +71,7 @@ namespace {
                                                                               \
    private:                                                                   \
     virtual void TestBodyOnGpu();                                             \
-    GTEST_INTERNAL_ATTRIBUTE_MAYBE_UNUSED                                     \
-        static ::testing::TestInfo* const test_info_;                         \
+    [[maybe_unused]] static ::testing::TestInfo* const test_info_;            \
   };                                                                          \
                                                                               \
   ::testing::TestInfo* const GTEST_TEST_CLASS_NAME_(test_suite_name,          \
@@ -194,9 +193,9 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       SkAlphaType alpha_type,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
+      bool is_thread_safe,
       gfx::GpuMemoryBufferHandle handle) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   bool IsSupported(gpu::SharedImageUsageSet usage,
                    SharedImageFormat format,

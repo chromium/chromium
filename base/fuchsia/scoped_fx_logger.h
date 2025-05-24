@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/logging.h"
 
 namespace base {
 
@@ -43,7 +44,7 @@ class BASE_EXPORT ScopedFxLogger {
   void LogMessage(std::string_view file,
                   uint32_t line_number,
                   std::string_view msg,
-                  FuchsiaLogSeverity severity);
+                  logging::LogSeverity severity);
 
   bool is_valid() const { return socket_.is_valid(); }
 

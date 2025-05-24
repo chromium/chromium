@@ -13,8 +13,8 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
+#include "chrome/browser/ui/user_education/show_promo_in_page.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
@@ -23,7 +23,7 @@
 #include "chrome/browser/signin/signin_promo.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/ash/settings/app_management/app_management_uma.h"
 #endif
 
@@ -64,7 +64,7 @@ enum HelpSource {
   // WebUI (the "About" page).
   HELP_SOURCE_WEBUI,
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // WebUI (the OS "About" page).
   HELP_SOURCE_WEBUI_CHROME_OS,
 #endif
@@ -92,7 +92,7 @@ void ShowBetaForum(Browser* browser);
 void ShowSlow(Browser* browser);
 
 // Constructs a settings GURL for the specified |sub_page|.
-GURL GetSettingsUrl(const std::string& sub_page);
+GURL GetSettingsUrl(std::string_view sub_page);
 
 // Returns true if |browser| is a trusted popup window containing a page with
 // matching |scheme| (or any trusted popup if |scheme| is empty).
@@ -102,9 +102,10 @@ bool IsTrustedPopupWindowWithScheme(const Browser* browser,
 // Various things that open in a settings UI.
 // NOTE: For Chrome OS settings, use SettingsWindowManager::ShowOSSettings().
 void ShowSettings(Browser* browser);
-void ShowSettingsSubPage(Browser* browser, const std::string& sub_page);
-void ShowSettingsSubPageForProfile(Profile* profile,
-                                   const std::string& sub_page);
+void ShowSettingsSubPage(Browser* browser, std::string_view sub_page);
+void ShowSettingsSubPageForProfile(Profile* profile, std::string_view sub_page);
+void ShowPageWithPromoForProfile(Profile* profile,
+                                 ShowPromoInPage::Params promo_params);
 void ShowContentSettingsExceptions(Browser* browser,
                                    ContentSettingsType content_settings_type);
 void ShowContentSettingsExceptionsForProfile(
@@ -120,7 +121,7 @@ void ShowSiteSettingsFileSystem(Browser* browser, const GURL& url);
 void ShowContentSettings(Browser* browser,
                          ContentSettingsType content_settings_type);
 void ShowSettingsSubPageInTabbedBrowser(Browser* browser,
-                                        const std::string& sub_page);
+                                        std::string_view sub_page);
 void ShowClearBrowsingDataDialog(Browser* browser);
 void ShowPasswordManager(Browser* browser);
 void ShowPasswordDetailsPage(Browser* browser,
@@ -142,19 +143,21 @@ void ShowAllSitesSettingsFilteredByRwsOwner(
     Browser* browser,
     const std::string& rws_owner_host_name);
 
+// Shows all recent shared tab group activities.
+void ShowSharedTabGroupActivity(Profile* profile);
+
 // Shows the enterprise management info page in a browser tab.
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
                            ash::settings::AppManagementEntryPoint entry_point);
 
-#endif
+void ShowGraduationApp(Profile* profile);
 
-#if BUILDFLAG(IS_CHROMEOS)
 // Constructs an OS settings GURL for the specified `sub_page`.
-GURL GetOSSettingsUrl(const std::string& sub_page);
+GURL GetOSSettingsUrl(std::string_view sub_page);
 
 void ShowPrintManagementApp(Profile* profile);
 
@@ -183,6 +186,8 @@ void ShowWebAppSettings(Profile* profile,
                         const std::string& app_id,
                         web_app::AppSettingsPageEntryPoint entry_point);
 #endif
+
+void ShowAllComparisonTables(Browser* browser);
 
 }  // namespace chrome
 

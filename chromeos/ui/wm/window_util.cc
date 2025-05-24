@@ -99,14 +99,10 @@ gfx::Size GetFloatedWindowTabletSize(aura::Window* window) {
   // floatable window to not be floatable anymore.
   // TODO(b/278769645): Remove this workaround once browser returns a viable
   // minimum size.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const int minimum_width_padding = kBrowserExtraPaddingDp;
-#else
   const int minimum_width_padding =
       window->GetProperty(chromeos::kAppTypeKey) == chromeos::AppType::BROWSER
           ? kBrowserExtraPaddingDp
           : 0;
-#endif
 
   // If the preferred width is less than the minimum width, use the minimum
   // width. Add padding to the preferred width if the window is a browser, but
@@ -118,9 +114,6 @@ gfx::Size GetFloatedWindowTabletSize(aura::Window* window) {
 }
 
 bool CanFloatWindow(aura::Window* window) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Only app window can be floated. All windows on lacros side are expected to
-  // be lacros, so this check is not needed.
   if (window->GetProperty(chromeos::kAppTypeKey) ==
       chromeos::AppType::NON_APP) {
     return false;
@@ -140,7 +133,6 @@ bool CanFloatWindow(aura::Window* window) {
                       state_type == chromeos::WindowStateType::kMaximized)) {
     return false;
   }
-#endif
 
   if (window->GetProperty(aura::client::kZOrderingKey) !=
       ui::ZOrderLevel::kNormal) {

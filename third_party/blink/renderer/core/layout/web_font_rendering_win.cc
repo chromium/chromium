@@ -28,7 +28,6 @@ WebFontPrewarmer* WebFontRendering::GetFontPrewarmer() {
 void WebFontRendering::SetFontRenderingClient(
     WebFontRenderingClient* rendering_client) {
   FontCache::SetFontPrewarmer(rendering_client);
-  // TODO(yosin): Call `FontThreadPool::SetFontRenderingClient()`.
 }
 
 // static

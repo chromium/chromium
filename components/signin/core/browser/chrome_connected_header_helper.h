@@ -27,13 +27,13 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
  public:
   explicit ChromeConnectedHeaderHelper(
       AccountConsistencyMethod account_consistency);
-  ~ChromeConnectedHeaderHelper() override {}
+  ~ChromeConnectedHeaderHelper() override = default;
 
   // Returns the Chrome-Connected cookie, or an empty string if it should not be
   // added to the request to |url|.
   static std::string BuildRequestCookieIfPossible(
       const GURL& url,
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       AccountConsistencyMethod account_consistency,
       const content_settings::CookieSettings* cookie_settings,
       int profile_mode_mask);
@@ -47,7 +47,7 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
   // empty string, in this case the header must not be added.
   std::string BuildRequestHeader(bool is_header_request,
                                  const GURL& url,
-                                 const std::string& gaia_id,
+                                 const GaiaId& gaia_id,
                                  Tribool is_child_account,
                                  int profile_mode_mask,
                                  const std::string& source,

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
@@ -115,6 +116,8 @@ IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, UseCustomFrame) {
 // be the same as the already existing window has.
 // The regression was found in https://crbug.com/1287212.
 IN_PROC_BROWSER_TEST_F(DesktopBrowserFrameAuraLinuxTest, NewWindowSize) {
+  // Ensure the first window is active before creating the second one.
+  ui_test_utils::BrowserActivationWaiter(browser()).WaitForActivation();
   Profile* profile = browser()->profile();
   Browser::CreateParams params(profile, true /* user_gesture */);
   Browser* browser2 = Browser::Create(params);

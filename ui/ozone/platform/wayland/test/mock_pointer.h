@@ -17,8 +17,6 @@ namespace wl {
 
 extern const struct wl_pointer_interface kMockPointerImpl;
 
-class TestZcrPointerStylus;
-
 class MockPointer : public ServerObject {
  public:
   explicit MockPointer(wl_resource* resource);
@@ -32,14 +30,6 @@ class MockPointer : public ServerObject {
                void(wl_resource* surface_resource,
                     int32_t hotspot_x,
                     int32_t hotspot_y));
-
-  void set_pointer_stylus(TestZcrPointerStylus* pointer_stylus) {
-    pointer_stylus_ = pointer_stylus;
-  }
-  TestZcrPointerStylus* pointer_stylus() const { return pointer_stylus_; }
-
- private:
-  raw_ptr<TestZcrPointerStylus, DanglingUntriaged> pointer_stylus_ = nullptr;
 };
 
 }  // namespace wl

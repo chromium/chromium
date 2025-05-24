@@ -37,6 +37,7 @@ constexpr auto kDumpProviderAllowlist =
 #endif
         "AutocompleteController",
         "AXPlatformNode",
+        "AXPlatformNodeWin",
         "BlinkGC",
         "BlinkObjectCounters",
         "BlobStorageContext",
@@ -51,6 +52,7 @@ constexpr auto kDumpProviderAllowlist =
         "DevTools",
         "DiscardableSharedMemoryManager",
         "DownloadService",
+        "DawnCache",
         "ExtensionFunctions",
         "FontCaches",
         "FrameEvictionManager",
@@ -99,6 +101,8 @@ constexpr auto kDumpProviderAllowlist =
 
 // A list of string names that are allowed for the memory allocator dumps in
 // background mode.
+// NOTE: There is no generic pattern matching support and only names containing
+// "0x?" match "0x" followed by hex digits.
 constexpr auto kAllocatorDumpNameAllowlist =
     base::MakeFixedFlatSet<std::string_view>({
 // clang-format off
@@ -107,6 +111,9 @@ constexpr auto kAllocatorDumpNameAllowlist =
 #if BUILDFLAG(IS_ANDROID)
         base::android::MeminfoDumpProvider::kDumpName,
 #endif
+        "accessibility/ax_platform_win_dormant_node",
+        "accessibility/ax_platform_win_ghost_node",
+        "accessibility/ax_platform_win_live_node",
         "accessibility/ax_platform_node",
         "blink_gc/main/allocated_objects",
         "blink_gc/main/heap",
@@ -157,6 +164,11 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "frame_evictor",
         "gpu/command_buffer_memory/buffer_0x?",
         "gpu/dawn",
+        "gpu/dawn/textures",
+        "gpu/dawn/textures/depth_stencil",
+        "gpu/dawn/textures/msaa",
+        "gpu/dawn/buffers",
+        "gpu/shader_cache/graphite_cache",
         "gpu/discardable_cache/cache_0x?",
         "gpu/discardable_cache/cache_0x?/avg_image_size",
         "gpu/gl/buffers/context_group_0x?",
@@ -165,11 +177,12 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "gpu/gr_shader_cache/cache_0x?",
         "gpu/mapped_memory/manager_0x?",
         "gpu/shared_images",
-        "gpu/media_texture_owner_?",
+        "gpu/media_texture_owner_0x?",
         "gpu/transfer_buffer_memory/buffer_0x?",
         "gpu/transfer_cache/cache_0x?",
         "gpu/transfer_cache/cache_0x?/avg_image_size",
         "gpu/vulkan/vma_allocator_0x?",
+        "gpu/vulkan/graphite_allocator",
         "history/delta_file_service/leveldb_0x?",
         "history/usage_reports_buffer/leveldb_0x?",
 #if BUILDFLAG(IS_MAC)
@@ -244,7 +257,7 @@ constexpr auto kAllocatorDumpNameAllowlist =
 #endif
         "partition_alloc/partitions/layout",
         "skia/gpu_resources/context_0x?",
-        "skia/gpu_resources/graphite_context_0x?",
+        "skia/gpu_resources/graphite_shared_context_0x?",
         "skia/gpu_resources/gpu_main_graphite_image_provider_0x?",
         "skia/gpu_resources/gpu_main_graphite_recorder_0x?",
         "skia/gpu_resources/viz_compositor_graphite_image_provider_0x?",
@@ -276,26 +289,26 @@ constexpr auto kAllocatorDumpNameAllowlist =
         "v8/main/heap/trusted_large_object_space",
         "v8/main/malloc",
         "v8/main/zapped_for_debug",
-        "v8/utility/code_stats",
-        "v8/utility/contexts/detached_context",
-        "v8/utility/contexts/native_context",
-        "v8/utility/global_handles",
-        "v8/utility/heap/code_space",
-        "v8/utility/heap/code_large_object_space",
-        "v8/utility/heap/large_object_space",
-        "v8/utility/heap/map_space",
-        "v8/utility/heap/new_large_object_space",
-        "v8/utility/heap/new_space",
-        "v8/utility/heap/old_space",
-        "v8/utility/heap/read_only_space",
-        "v8/utility/heap/shared_large_object_space",
-        "v8/utility/heap/shared_space",
-        "v8/utility/heap/shared_trusted_large_object_space",
-        "v8/utility/heap/shared_trusted_space",
-        "v8/utility/heap/trusted_space",
-        "v8/utility/heap/trusted_large_object_space",
-        "v8/utility/malloc",
-        "v8/utility/zapped_for_debug",
+        "v8/utility/code_stats/isolate_0x?",
+        "v8/utility/contexts/detached_context/isolate_0x?",
+        "v8/utility/contexts/native_context/isolate_0x?",
+        "v8/utility/global_handles/isolate_0x?",
+        "v8/utility/heap/code_space/isolate_0x?",
+        "v8/utility/heap/code_large_object_space/isolate_0x?",
+        "v8/utility/heap/large_object_space/isolate_0x?",
+        "v8/utility/heap/map_space/isolate_0x?",
+        "v8/utility/heap/new_large_object_space/isolate_0x?",
+        "v8/utility/heap/new_space/isolate_0x?",
+        "v8/utility/heap/old_space/isolate_0x?",
+        "v8/utility/heap/read_only_space/isolate_0x?",
+        "v8/utility/heap/shared_large_object_space/isolate_0x?",
+        "v8/utility/heap/shared_space/isolate_0x?",
+        "v8/utility/heap/shared_trusted_large_object_space/isolate_0x?",
+        "v8/utility/heap/shared_trusted_space/isolate_0x?",
+        "v8/utility/heap/trusted_space/isolate_0x?",
+        "v8/utility/heap/trusted_large_object_space/isolate_0x?",
+        "v8/utility/malloc/isolate_0x?",
+        "v8/utility/zapped_for_debug/isolate_0x?",
         "v8/workers/code_stats/isolate_0x?",
         "v8/workers/contexts/detached_context/isolate_0x?",
         "v8/workers/contexts/native_context/isolate_0x?",
@@ -350,16 +363,20 @@ bool IsMemoryDumpProviderInAllowlist(const char* mdp_name) {
 bool IsMemoryAllocatorDumpNameInAllowlist(const std::string& name) {
   // Global dumps that are of hex digits are all allowed for background use.
   if (base::StartsWith(name, "global/", CompareCase::SENSITIVE)) {
-    for (size_t i = strlen("global/"); i < name.size(); i++)
-      if (!base::IsHexDigit(name[i]))
+    for (size_t i = strlen("global/"); i < name.size(); i++) {
+      if (!base::IsHexDigit(name[i])) {
         return false;
+      }
+    }
     return true;
   }
 
   if (base::StartsWith(name, "shared_memory/", CompareCase::SENSITIVE)) {
-    for (size_t i = strlen("shared_memory/"); i < name.size(); i++)
-      if (!base::IsHexDigit(name[i]))
+    for (size_t i = strlen("shared_memory/"); i < name.size(); i++) {
+      if (!base::IsHexDigit(name[i])) {
         return false;
+      }
+    }
     return true;
   }
 

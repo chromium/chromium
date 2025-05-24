@@ -86,9 +86,6 @@ constexpr TrackerDataActionPair kAcceleratorTrackerList[] = {
      {"AccelTracker_Screen_Capture_Bar_Windows", TrackerType::kCaptureMode}},
 };
 
-constexpr size_t kAcceleratorTrackerListLength =
-    std::size(kAcceleratorTrackerList);
-
 // AcceleratorTracker is a Shell pretarget EventHandler that only records user
 // action metrics for any key combinations and does not consume the inputted
 // events or block them from propagating.

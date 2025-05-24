@@ -15,7 +15,6 @@
 #include <memory>
 
 #include "base/task/single_thread_task_runner.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/linux/v4l2_capture_device_impl.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
@@ -54,9 +53,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceLinux : public VideoCaptureDevice {
   void SetPhotoOptions(mojom::PhotoSettingsPtr settings,
                        SetPhotoOptionsCallback callback) override;
 
-  void SetGPUEnvironmentForTesting(
-      std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support);
-
  protected:
   virtual void SetRotation(int rotation);
 
@@ -72,9 +68,6 @@ class CAPTURE_EXPORT VideoCaptureDeviceLinux : public VideoCaptureDevice {
   // VideoCaptureDeviceLinux lives but otherwise operating and deleted on
   // |v4l2_thread_|.
   std::unique_ptr<V4L2CaptureDelegate> capture_impl_;
-
-  // For GPU Environment Testing.
-  std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_test_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

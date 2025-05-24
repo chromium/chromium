@@ -13,7 +13,9 @@ class WebGLVertexArrayObject final : public WebGLVertexArrayObjectBase {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WebGLVertexArrayObject(WebGLRenderingContextBase*, VaoType);
+  explicit WebGLVertexArrayObject(WebGLContextObjectSupport*,
+                                  VaoType,
+                                  GLint max_vertex_attribs);
 };
 
 }  // namespace blink

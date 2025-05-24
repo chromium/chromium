@@ -9,12 +9,6 @@
 
 #include "gpu/command_buffer/service/webgpu_decoder_impl.h"
 
-#include <dawn/native/DawnNative.h>
-#include <dawn/native/OpenGLBackend.h>
-#include <dawn/platform/DawnPlatform.h>
-#include <dawn/webgpu_cpp.h>
-#include <dawn/wire/WireServer.h>
-
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -29,6 +23,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "base/numerics/checked_math.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_split.h"
@@ -62,6 +57,12 @@
 #include "gpu/config/webgpu_blocklist.h"
 #include "gpu/webgpu/callback.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/dawn/include/dawn/native/DawnNative.h"
+#include "third_party/dawn/include/dawn/native/OpenGLBackend.h"
+#include "third_party/dawn/include/dawn/platform/DawnPlatform.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
+#include "third_party/dawn/include/dawn/wire/WireServer.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSemaphore.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
@@ -94,38 +95,21 @@ constexpr wgpu::TextureUsage kAllowedMailboxTextureUsages =
     kAllowedWritableMailboxTextureUsages | kAllowedReadableMailboxTextureUsages;
 
 template <typename T1, typename T2>
-struct AssignIfSameElseCrashFnImpl;
-
-template <typename T2, typename R, typename... Args>
-struct AssignIfSameElseCrashFnImpl<R (*)(Args...), T2> {
-  using T1 = R (*)(Args...);
-
-  void operator()(T1* out, T2 in) {
-    if constexpr (std::is_same_v<T1, T2>) {
-      *out = in;
-    } else if constexpr (std::is_same_v<R, void>) {
-      *out = [](Args... args) {
-        CHECK(false) << "Invalid call to deprecated function.";
-      };
-    } else {
-      *out = [](Args... args) -> R {
-        CHECK(false) << "Invalid call to deprecated function.";
-        return {};
-      };
-    }
-  }
-};
-
-template <typename T1, typename T2>
-void AssignIfSameElseCrashFn(T1* out, T2 in) {
-  AssignIfSameElseCrashFnImpl<T1, T2>{}(out, in);
-}
-
-template <typename T1, typename T2>
 void ChainStruct(T1& head, T2* struct_to_chain) {
   DCHECK(struct_to_chain->nextInChain == nullptr);
   struct_to_chain->nextInChain = head.nextInChain;
   head.nextInChain = struct_to_chain;
+}
+
+template <size_t N>
+WGPUStringView MakeStringView(const char (&s)[N]) {
+  return {s, N};
+}
+WGPUStringView MakeStringView(const char* s) {
+  return {s, std::strlen(s)};
+}
+WGPUStringView MakeStringView() {
+  return {nullptr, 0};
 }
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
@@ -153,10 +137,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   base::WeakPtr<DecoderContext> AsWeakPtr() override {
     return weak_ptr_factory_.GetWeakPtr();
   }
-  const gles2::ContextState* GetContextState() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  const gles2::ContextState* GetContextState() override { NOTREACHED(); }
   void Destroy(bool have_context) override;
   bool MakeCurrent() override {
     if (gl_context_.get()) {
@@ -165,64 +146,42 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     return true;
   }
   gl::GLContext* GetGLContext() override { return nullptr; }
-  gl::GLSurface* GetGLSurface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
-  const gles2::FeatureInfo* GetFeatureInfo() const override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  gl::GLSurface* GetGLSurface() override { NOTREACHED(); }
+  const gles2::FeatureInfo* GetFeatureInfo() const override { NOTREACHED(); }
   Capabilities GetCapabilities() override { return {}; }
   GLCapabilities GetGLCapabilities() override { return {}; }
-  void RestoreGlobalState() const override { NOTREACHED_IN_MIGRATION(); }
-  void ClearAllAttributes() const override { NOTREACHED_IN_MIGRATION(); }
-  void RestoreAllAttributes() const override { NOTREACHED_IN_MIGRATION(); }
+  void RestoreGlobalState() const override { NOTREACHED(); }
+  void ClearAllAttributes() const override { NOTREACHED(); }
+  void RestoreAllAttributes() const override { NOTREACHED(); }
   void RestoreState(const gles2::ContextState* prev_state) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void RestoreActiveTexture() const override { NOTREACHED_IN_MIGRATION(); }
+  void RestoreActiveTexture() const override { NOTREACHED(); }
   void RestoreAllTextureUnitAndSamplerBindings(
       const gles2::ContextState* prev_state) const override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void RestoreActiveTextureUnitBinding(unsigned int target) const override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void RestoreBufferBinding(unsigned int target) override {
-    NOTREACHED_IN_MIGRATION();
-  }
-  void RestoreBufferBindings() const override { NOTREACHED_IN_MIGRATION(); }
-  void RestoreFramebufferBindings() const override {
-    NOTREACHED_IN_MIGRATION();
-  }
-  void RestoreRenderbufferBindings() override { NOTREACHED_IN_MIGRATION(); }
-  void RestoreProgramBindings() const override { NOTREACHED_IN_MIGRATION(); }
-  void RestoreTextureState(unsigned service_id) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void RestoreBufferBinding(unsigned int target) override { NOTREACHED(); }
+  void RestoreBufferBindings() const override { NOTREACHED(); }
+  void RestoreFramebufferBindings() const override { NOTREACHED(); }
+  void RestoreRenderbufferBindings() override { NOTREACHED(); }
+  void RestoreProgramBindings() const override { NOTREACHED(); }
+  void RestoreTextureState(unsigned service_id) override { NOTREACHED(); }
   void RestoreTextureUnitBindings(unsigned unit) const override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void RestoreVertexAttribArray(unsigned index) override {
-    NOTREACHED_IN_MIGRATION();
-  }
-  void RestoreAllExternalTextureBindingsIfNeeded() override {
-    NOTREACHED_IN_MIGRATION();
-  }
-  QueryManager* GetQueryManager() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  void RestoreVertexAttribArray(unsigned index) override { NOTREACHED(); }
+  void RestoreAllExternalTextureBindingsIfNeeded() override { NOTREACHED(); }
+  QueryManager* GetQueryManager() override { NOTREACHED(); }
   void SetQueryCallback(unsigned int query_client_id,
                         base::OnceClosure callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void CancelAllQueries() override { NOTREACHED_IN_MIGRATION(); }
-  gles2::GpuFenceManager* GetGpuFenceManager() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  void CancelAllQueries() override { NOTREACHED(); }
+  gles2::GpuFenceManager* GetGpuFenceManager() override { NOTREACHED(); }
   bool HasPendingQueries() const override { return false; }
   void ProcessPendingQueries(bool did_finish) override {}
   bool HasMoreIdleWork() const override { return false; }
@@ -259,10 +218,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     wire_serializer_->Flush();
   }
 
-  TextureBase* GetTextureBase(uint32_t client_id) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  TextureBase* GetTextureBase(uint32_t client_id) override { NOTREACHED(); }
   void SetLevelInfo(uint32_t client_id,
                     int level,
                     unsigned internal_format,
@@ -272,7 +228,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                     unsigned format,
                     unsigned type,
                     const gfx::Rect& cleared_rect) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   bool WasContextLost() const override {
     NOTIMPLEMENTED();
@@ -282,10 +238,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   void MarkContextLost(error::ContextLostReason reason) override {
     NOTIMPLEMENTED();
   }
-  bool CheckResetStatus() override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  bool CheckResetStatus() override { NOTREACHED(); }
   void BeginDecoding() override {}
   void EndDecoding() override {}
   const char* GetCommandName(unsigned int command_id) const;
@@ -295,14 +248,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                           int* entries_processed) override;
   std::string_view GetLogPrefix() override { return "WebGPUDecoderImpl"; }
   gles2::ContextGroup* GetContextGroup() override { return nullptr; }
-  gles2::ErrorState* GetErrorState() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
-  bool IsCompressedTextureFormat(unsigned format) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  gles2::ErrorState* GetErrorState() override { NOTREACHED(); }
+  bool IsCompressedTextureFormat(unsigned format) override { NOTREACHED(); }
   bool ClearLevel(gles2::Texture* texture,
                   unsigned target,
                   int level,
@@ -312,8 +259,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                   int yoffset,
                   int width,
                   int height) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool ClearCompressedTextureLevel(gles2::Texture* texture,
                                    unsigned target,
@@ -321,8 +267,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                    unsigned format,
                                    int width,
                                    int height) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool ClearCompressedTextureLevel3D(gles2::Texture* texture,
                                      unsigned target,
@@ -331,8 +276,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                      int width,
                                      int height,
                                      int depth) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool ClearLevel3D(gles2::Texture* texture,
                     unsigned target,
@@ -342,8 +286,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                     int width,
                     int height,
                     int depth) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   bool initialized() const override { return true; }
   void SetLogCommands(bool log_commands) override { NOTIMPLEMENTED(); }
@@ -351,10 +294,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     NOTIMPLEMENTED();
     return nullptr;
   }
-  int GetRasterDecoderId() const override {
-    NOTREACHED_IN_MIGRATION();
-    return -1;
-  }
+  int GetRasterDecoderId() const override { NOTREACHED(); }
 
  private:
   typedef error::Error (WebGPUDecoderImpl::*CmdHandler)(
@@ -395,7 +335,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
   wgpu::Adapter CreatePreferredAdapter(wgpu::PowerPreference power_preference,
                                        bool force_fallback,
-                                       bool compatibility_mode) const;
+                                       wgpu::FeatureLevel feature_level) const;
 
   // Decide if a device feature is exposed to render process.
   bool IsFeatureExposed(wgpu::FeatureName feature) const;
@@ -406,8 +346,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                                 const WGPURequestAdapterOptions* options,
                                 CallbackInfo callback_info);
   WGPUBool AdapterHasFeatureImpl(WGPUAdapter adapter, WGPUFeatureName feature);
-  size_t AdapterEnumerateFeaturesImpl(WGPUAdapter adapter,
-                                      WGPUFeatureName* features);
+  void AdapterGetFeaturesImpl(WGPUAdapter adapter,
+                              WGPUSupportedFeatures* features_out);
   template <typename CallbackInfo>
   WGPUFuture RequestDeviceImpl(WGPUAdapter adapter,
                                const WGPUDeviceDescriptor* descriptor,
@@ -438,6 +378,14 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       wgpu::TextureUsage usage,
       wgpu::TextureUsage internal_usage,
       std::vector<wgpu::TextureFormat> view_formats);
+
+  class SharedBufferRepresentationAndAccess;
+
+  std::unique_ptr<SharedBufferRepresentationAndAccess>
+  AssociateMailboxDawnBuffer(const Mailbox& mailbox,
+                             const wgpu::Device& device,
+                             wgpu::BackendType backendType,
+                             wgpu::BufferUsage usage);
 
   // Device creation requires that an isolation key has been set for the
   // decoder. As a result, this callback also runs all queued device creation
@@ -530,8 +478,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // Include list of formats this is tested to work with.
       // See gpu/command_buffer/tests/webgpu_mailbox_unittest.cc
       if (format != viz::SinglePlaneFormat::kBGRA_8888 &&
-// TODO(crbug.com/40823053): Support "rgba8unorm" canvas context format on Mac
-#if !BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40823053): Support "rgba8unorm" canvas context format on Apple
+#if !BUILDFLAG(IS_APPLE)
           format != viz::SinglePlaneFormat::kRGBA_8888 &&
 #endif
           format != viz::SinglePlaneFormat::kRGBA_F16) {
@@ -544,11 +492,55 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       }
 
       const bool is_initialized = representation->IsCleared();
+      // Create a wgpu::Texture to hold the image contents.
+      // It must be internally copyable as this class itself uses the texture as
+      // the dest and source of copies for transfer back and forth between Skia
+      // and Dawn.
+      wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
+      internal_usage_desc.internalUsage = internal_usage |
+                                          wgpu::TextureUsage::CopyDst |
+                                          wgpu::TextureUsage::CopySrc;
+      wgpu::TextureDescriptor texture_desc = {
+          .nextInChain = &internal_usage_desc,
+          .usage = usage,
+          .dimension = wgpu::TextureDimension::e2D,
+          .size = {static_cast<uint32_t>(representation->size().width()),
+                   static_cast<uint32_t>(representation->size().height()), 1},
+          .format = ToDawnFormat(representation->format()),
+          .mipLevelCount = 1,
+          .sampleCount = 1,
+          .viewFormatCount = view_formats.size(),
+          .viewFormats =
+              reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
+      };
+
+      // CreateTexture() may cause a validation error on an invalid texture
+      // descriptor, but is suppressed here. It will be caught in by the
+      // ValidateTextureDescriptor() call in
+      // GPUCanvasContext::getCurrentTexture() instead.
+      device.PushErrorScope(wgpu::ErrorFilter::Validation);
+      auto texture = device.CreateTexture(&texture_desc);
+      bool error = false;
+      device.PopErrorScope(
+          wgpu::CallbackMode::AllowSpontaneous,
+          [&error](wgpu::PopErrorScopeStatus status, wgpu::ErrorType type,
+                   wgpu::StringView message) {
+            if (type == wgpu::ErrorType::Validation) {
+              error = true;
+            }
+          });
+      auto status = instance.WaitAny(0, nullptr, 0);
+      DCHECK(status == wgpu::WaitStatus::Success);
+      if (error) {
+        // If the CreateTexture() call failed, fail this function so that an
+        // ErrorSharedImageRepresentationAndAccess is created instead.
+        return nullptr;
+      }
       auto result =
           base::WrapUnique(new SharedImageRepresentationAndAccessSkiaFallback(
               std::move(shared_context_state), std::move(representation),
-              std::move(instance), std::move(device), usage, internal_usage,
-              std::move(view_formats)));
+              std::move(instance), std::move(device), std::move(texture), usage,
+              internal_usage));
       if (is_initialized && !result->PopulateFromSkia()) {
         return nullptr;
       }
@@ -584,50 +576,16 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
         std::unique_ptr<SkiaImageRepresentation> representation,
         wgpu::Instance instance,
         wgpu::Device device,
+        wgpu::Texture texture,
         wgpu::TextureUsage usage,
-        wgpu::TextureUsage internal_usage,
-        std::vector<wgpu::TextureFormat> view_formats)
+        wgpu::TextureUsage internal_usage)
         : shared_context_state_(std::move(shared_context_state)),
           representation_(std::move(representation)),
           instance_(std::move(instance)),
           device_(std::move(device)),
+          texture_(std::move(texture)),
           usage_(usage),
-          internal_usage_(internal_usage) {
-      // Create a wgpu::Texture to hold the image contents.
-      // It must be internally copyable as this class itself uses the texture as
-      // the dest and source of copies for transfer back and forth between Skia
-      // and Dawn.
-      wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
-      if (base::FeatureList::IsEnabled(
-              features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-        internal_usage_desc.internalUsage = internal_usage |
-                                            wgpu::TextureUsage::CopyDst |
-                                            wgpu::TextureUsage::CopySrc;
-      } else {
-        // We also need RenderAttachment usage for clears, and TextureBinding
-        // for copyTextureForBrowser.
-        internal_usage_desc.internalUsage =
-            wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc |
-            wgpu::TextureUsage::RenderAttachment |
-            wgpu::TextureUsage::TextureBinding;
-      }
-      wgpu::TextureDescriptor texture_desc = {
-          .nextInChain = &internal_usage_desc,
-          .usage = usage,
-          .dimension = wgpu::TextureDimension::e2D,
-          .size = {static_cast<uint32_t>(representation_->size().width()),
-                   static_cast<uint32_t>(representation_->size().height()), 1},
-          .format = ToDawnFormat(representation_->format()),
-          .mipLevelCount = 1,
-          .sampleCount = 1,
-          .viewFormatCount = view_formats.size(),
-          .viewFormats =
-              reinterpret_cast<wgpu::TextureFormat*>(view_formats.data()),
-      };
-
-      texture_ = device_.CreateTexture(&texture_desc);
-      DCHECK(texture_);
-    }
+          internal_usage_(internal_usage) {}
 
     bool ComputeStagingBufferParams(viz::SharedImageFormat format,
                                     const gfx::Size& size,
@@ -704,10 +662,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           success = false;
         }
       } else {
-        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->graphite_shared_context());
         DCHECK(shared_context_state_->gpu_main_graphite_recorder());
         if (success && !GraphiteReadPixelsSync(
-                           shared_context_state_->graphite_context(),
+                           shared_context_state_->graphite_shared_context(),
                            shared_context_state_->gpu_main_graphite_recorder(),
                            sk_image.get(), sk_image->imageInfo(), dst_pointer,
                            bytes_per_row, 0, 0)) {
@@ -759,7 +717,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
 
       wgpu::CommandEncoder encoder =
           device_.CreateCommandEncoder(&command_encoder_desc);
-      wgpu::ImageCopyBuffer buffer_copy = {
+      wgpu::TexelCopyBufferInfo buffer_copy = {
           .layout =
               {
                   .bytesPerRow = bytes_per_row,
@@ -767,7 +725,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
               },
           .buffer = buffer.Get(),
       };
-      wgpu::ImageCopyTexture texture_copy = {
+      wgpu::TexelCopyTextureInfo texture_copy = {
           .texture = texture_,
       };
       wgpu::Extent3D extent = {
@@ -801,10 +759,10 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       };
       wgpu::Buffer buffer = device_.CreateBuffer(&buffer_desc);
 
-      wgpu::ImageCopyTexture texture_copy = {
+      wgpu::TexelCopyTextureInfo texture_copy = {
           .texture = texture_,
       };
-      wgpu::ImageCopyBuffer buffer_copy = {
+      wgpu::TexelCopyBufferInfo buffer_copy = {
           .layout =
               {
                   .bytesPerRow = bytes_per_row,
@@ -821,6 +779,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       internal_usage_desc.useInternalUsages = true;
       wgpu::CommandEncoderDescriptor command_encoder_desc = {
           .nextInChain = &internal_usage_desc,
+          .label = "WebGPUDecoderImpl::UploadContentsToSkia",
       };
       wgpu::CommandEncoder encoder =
           device_.CreateCommandEncoder(&command_encoder_desc);
@@ -835,7 +794,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       wgpu::FutureWaitInfo waitInfo{buffer.MapAsync(
           wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
           wgpu::CallbackMode::WaitAnyOnly,
-          [&](wgpu::MapAsyncStatus status, const char* message) {
+          [&](wgpu::MapAsyncStatus status, wgpu::StringView message) {
             success = status == wgpu::MapAsyncStatus::Success;
             if (!success) {
               DLOG(ERROR) << message;
@@ -874,10 +833,11 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       if (shared_context_state_->gr_context()) {
         skgpu::ganesh::Flush(surface);
       } else {
-        DCHECK(shared_context_state_->graphite_context());
+        DCHECK(shared_context_state_->graphite_shared_context());
         DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-        GraphiteFlushAndSubmit(shared_context_state_->graphite_context(),
-                               shared_context_state_->gpu_main_graphite_recorder());
+        GraphiteFlushAndSubmit(
+            shared_context_state_->graphite_shared_context(),
+            shared_context_state_->gpu_main_graphite_recorder());
       }
       // Transition the image back to the desired end state. This is used for
       // transitioning the image to the external queue for Vulkan/GL interop.
@@ -961,6 +921,66 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   base::flat_map<std::tuple<uint32_t, uint32_t>,
                  std::unique_ptr<SharedImageRepresentationAndAccess>>
       associated_shared_image_map_;
+
+  // Helper class whose derived implementations holds a representation
+  // and its ScopedAccess, ensuring safe destruction order.
+  class SharedBufferRepresentationAndAccess {
+   public:
+    virtual ~SharedBufferRepresentationAndAccess() = default;
+    // Get an unowned reference to the wgpu::Buffer for the shared image.
+    virtual wgpu::Buffer buffer() const = 0;
+    virtual Mailbox mailbox() const = 0;
+  };
+
+  // Wraps a |DawnBufferRepresentation| as a wgpu::Buffer.
+  class SharedBufferRepresentationAndAccessDawn
+      : public SharedBufferRepresentationAndAccess {
+   public:
+    SharedBufferRepresentationAndAccessDawn(
+        std::unique_ptr<DawnBufferRepresentation> representation,
+        std::unique_ptr<DawnBufferRepresentation::ScopedAccess> access)
+        : representation_(std::move(representation)),
+          access_(std::move(access)) {}
+
+    wgpu::Buffer buffer() const override { return access_->buffer(); }
+    Mailbox mailbox() const override { return representation_->mailbox(); }
+
+   private:
+    std::unique_ptr<DawnBufferRepresentation> representation_;
+    std::unique_ptr<DawnBufferRepresentation::ScopedAccess> access_;
+  };
+
+  // Implementation of SharedBufferRepresentationAndAccess that yields an error
+  // buffer.
+  class ErrorSharedBufferRepresentationAndAccess
+      : public SharedBufferRepresentationAndAccess {
+   public:
+    ErrorSharedBufferRepresentationAndAccess(const wgpu::Device& device,
+                                             wgpu::BufferUsage usage,
+                                             const Mailbox& mailbox) {
+      // Note: the buffer descriptor doesn't matter since this buffer won't be
+      // used for reflection and all validation checks the error state of the
+      // buffer before the buffer attributes.
+      wgpu::BufferDescriptor buffer_desc = {};
+      buffer_desc.usage = usage;
+      buffer_ = device.CreateErrorBuffer(&buffer_desc);
+      mailbox_ = mailbox;
+    }
+    ~ErrorSharedBufferRepresentationAndAccess() override = default;
+
+    wgpu::Buffer buffer() const override { return buffer_.Get(); }
+    Mailbox mailbox() const override { return mailbox_; }
+
+   private:
+    wgpu::Buffer buffer_;
+    Mailbox mailbox_;
+  };
+
+  // Map from the <ID, generation> pair for a wire buffer to the shared buffer
+  // representation and access for it.
+  base::flat_map<std::tuple<uint32_t, uint32_t>,
+                 std::unique_ptr<SharedBufferRepresentationAndAccess>>
+      associated_shared_buffer_map_;
 
   // A container of devices that we've seen on the wire, and their associated
   // metadata. Not all of them may be valid, so it gets pruned when
@@ -1075,7 +1095,8 @@ WebGPUDecoder* CreateWebGPUDecoderImpl(
       dawn_caching_interface = caching_interface_factory->CreateInstance(
           *dawn_cache_options.handle,
           base::BindRepeating(&DecoderClient::CacheBlob,
-                              base::Unretained(client)));
+                              base::Unretained(client),
+                              gpu::GpuDiskCacheType::kDawnWebGPU));
     } else {
       dawn_caching_interface = caching_interface_factory->CreateInstance();
     }
@@ -1119,16 +1140,25 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
   if (gpu_preferences.enable_unsafe_webgpu) {
     safety_level_ = webgpu::SafetyLevel::kUnsafe;
   }
-  dawn_instance_ = DawnInstance::Create(
-      dawn_platform_.get(), gpu_preferences, safety_level_,
-      /*logging_callback=*/nullptr, /*logging_callback_userdata=*/nullptr);
+  dawn_instance_ = DawnInstance::Create(dawn_platform_.get(), gpu_preferences,
+                                        safety_level_);
 
   use_webgpu_adapter_ = gpu_preferences.use_webgpu_adapter;
   use_webgpu_power_preference_ = gpu_preferences.use_webgpu_power_preference;
   force_webgpu_compat_ = gpu_preferences.force_webgpu_compat;
   require_enabled_toggles_ = gpu_preferences.enabled_dawn_features_list;
   require_disabled_toggles_ = gpu_preferences.disabled_dawn_features_list;
-  for (std::string f :
+  for (std::string& f :
+       base::SplitString(features::kWebGPUEnabledToggles.Get(), ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    require_enabled_toggles_.push_back(std::move(f));
+  }
+  for (std::string& f :
+       base::SplitString(features::kWebGPUDisabledToggles.Get(), ",",
+                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+    require_disabled_toggles_.push_back(std::move(f));
+  }
+  for (std::string& f :
        base::SplitString(features::kWebGPUUnsafeFeatures.Get(), ",",
                          base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     runtime_unsafe_features_.insert(std::move(f));
@@ -1141,38 +1171,33 @@ WebGPUDecoderImpl::WebGPUDecoderImpl(
 
   DawnProcTable wire_procs = dawn::native::GetProcs();
   wire_procs.createInstance =
-      [](const WGPUInstanceDescriptor*) -> WGPUInstance {
-    CHECK(false);
-    return nullptr;
-  };
-  wire_procs.instanceRequestAdapter2 = [](auto... args) {
+      [](const WGPUInstanceDescriptor*) -> WGPUInstance { NOTREACHED(); };
+  wire_procs.instanceRequestAdapter = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestAdapterImpl(
         std::forward<decltype(args)>(args)...);
   };
-  AssignIfSameElseCrashFn(&wire_procs.instanceRequestAdapter,
-                          wire_procs.instanceRequestAdapter2);
-  AssignIfSameElseCrashFn(&wire_procs.instanceRequestAdapterF,
-                          wire_procs.instanceRequestAdapter2);
   wire_procs.adapterHasFeature = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->AdapterHasFeatureImpl(
         std::forward<decltype(args)>(args)...);
   };
-  wire_procs.adapterEnumerateFeatures = [](auto... args) {
+  wire_procs.adapterGetFeatures = [](auto... args) {
     DCHECK(parent_decoder);
-    return parent_decoder->AdapterEnumerateFeaturesImpl(
+    return parent_decoder->AdapterGetFeaturesImpl(
         std::forward<decltype(args)>(args)...);
   };
-  wire_procs.adapterRequestDevice2 = [](auto... args) {
+  wire_procs.supportedFeaturesFreeMembers =
+      [](WGPUSupportedFeatures supported_features) -> void {
+    // We don't need any state so we don't need the parent decoder and can free
+    // immediately.
+    delete[] supported_features.features;
+  };
+  wire_procs.adapterRequestDevice = [](auto... args) {
     DCHECK(parent_decoder);
     return parent_decoder->RequestDeviceImpl(
         std::forward<decltype(args)>(args)...);
   };
-  AssignIfSameElseCrashFn(&wire_procs.adapterRequestDevice,
-                          wire_procs.adapterRequestDevice2);
-  AssignIfSameElseCrashFn(&wire_procs.adapterRequestDeviceF,
-                          wire_procs.adapterRequestDevice2);
 
   wire_server_ = DawnWireServer::Create(
       this, wire_serializer_.get(), memory_transfer_service_.get(), wire_procs);
@@ -1202,6 +1227,7 @@ void WebGPUDecoderImpl::Destroy(bool have_context) {
   queued_request_device_calls_.clear();
 
   associated_shared_image_map_.clear();
+  associated_shared_buffer_map_.clear();
 
   // Destroy all known devices to ensure that any service-side objects holding
   // refs to these objects observe that the devices are lost and can drop their
@@ -1250,14 +1276,17 @@ ContextResult WebGPUDecoderImpl::Initialize(
 bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
   switch (feature) {
     case wgpu::FeatureName::ChromiumExperimentalTimestampQueryInsidePasses:
-    case wgpu::FeatureName::ChromiumExperimentalSubgroups:
-    case wgpu::FeatureName::ChromiumExperimentalSubgroupUniformControlFlow:
-    case wgpu::FeatureName::ClipDistances:
     case wgpu::FeatureName::MultiDrawIndirect:
+    case wgpu::FeatureName::TextureCompressionASTCSliced3D:
+    case wgpu::FeatureName::TextureCompressionBCSliced3D:
+    case wgpu::FeatureName::Unorm16TextureFormats:
+    case wgpu::FeatureName::Snorm16TextureFormats:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     case wgpu::FeatureName::AdapterPropertiesD3D:
     case wgpu::FeatureName::AdapterPropertiesVk:
     case wgpu::FeatureName::AdapterPropertiesMemoryHeaps:
+    case wgpu::FeatureName::ShaderModuleCompilationOptions:
+    case wgpu::FeatureName::CoreFeaturesAndLimits:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe ||
              safety_level_ == webgpu::SafetyLevel::kSafeExperimental;
     case wgpu::FeatureName::DepthClipControl:
@@ -1271,10 +1300,11 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::RG11B10UfloatRenderable:
     case wgpu::FeatureName::BGRA8UnormStorage:
     case wgpu::FeatureName::Float32Filterable:
+    case wgpu::FeatureName::Float32Blendable:
+    case wgpu::FeatureName::ClipDistances:
     case wgpu::FeatureName::DualSourceBlending:
     case wgpu::FeatureName::DawnMultiPlanarFormats:
-    case wgpu::FeatureName::Subgroups:
-    case wgpu::FeatureName::SubgroupsF16: {
+    case wgpu::FeatureName::Subgroups: {
       // Likely case when no features are blocked.
       if (runtime_unsafe_features_.empty() ||
           safety_level_ == webgpu::SafetyLevel::kUnsafe) {
@@ -1288,6 +1318,10 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
 
       return !runtime_unsafe_features_.contains(info->name);
     }
+    case wgpu::FeatureName::SharedBufferMemoryD3D12Resource:
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
+    case wgpu::FeatureName::ChromiumExperimentalSubgroupMatrix:
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     default:
       return false;
   }
@@ -1309,34 +1343,29 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
     force_fallback_adapter = true;
   }
 
-#if BUILDFLAG(IS_LINUX)
-  if (!shared_context_state_->GrContextIsVulkan() &&
-      !shared_context_state_->IsGraphiteDawnVulkan() &&
-      use_webgpu_adapter_ != WebGPUAdapterName::kOpenGLES) {
-    callback_info.callback(
-        WGPURequestAdapterStatus_Unavailable, nullptr,
-        "WebGPU on Linux requires GLES compat, or command-line flag "
-        "--enable-features=Vulkan, or command-line flag "
-        "--enable-features=SkiaGraphite (and skia_use_dawn = true GN arg)",
-        callback_info.userdata1, callback_info.userdata2);
-    return {};
+  wgpu::FeatureLevel feature_level = wgpu::FeatureLevel::Core;
+  if (force_webgpu_compat_ ||
+      (static_cast<wgpu::FeatureLevel>(options->featureLevel) ==
+           wgpu::FeatureLevel::Compatibility &&
+       (safety_level_ == webgpu::SafetyLevel::kUnsafe ||
+        safety_level_ == webgpu::SafetyLevel::kSafeExperimental ||
+        base::FeatureList::IsEnabled(features::kWebGPUCompatibilityMode)))) {
+    feature_level = wgpu::FeatureLevel::Compatibility;
   }
-#endif  // BUILDFLAG(IS_LINUX)
 
   wgpu::Adapter adapter = CreatePreferredAdapter(
       static_cast<wgpu::PowerPreference>(options->powerPreference),
-      options->forceFallbackAdapter || force_fallback_adapter,
-      options->compatibilityMode || force_webgpu_compat_);
+      options->forceFallbackAdapter || force_fallback_adapter, feature_level);
 
   if (adapter == nullptr) {
     // There are no adapters to return since webgpu is not supported here
     callback_info.callback(WGPURequestAdapterStatus_Unavailable, nullptr,
-                           "No available adapters.", callback_info.userdata1,
-                           callback_info.userdata2);
+                           MakeStringView("No available adapters."),
+                           callback_info.userdata1, callback_info.userdata2);
     return {};
   }
   callback_info.callback(WGPURequestAdapterStatus_Success,
-                         adapter.MoveToCHandle(), nullptr,
+                         adapter.MoveToCHandle(), MakeStringView(),
                          callback_info.userdata1, callback_info.userdata2);
   return {};
 }
@@ -1350,24 +1379,28 @@ WGPUBool WebGPUDecoderImpl::AdapterHasFeatureImpl(WGPUAdapter adapter,
   return adapter_obj.HasFeature(static_cast<wgpu::FeatureName>(feature));
 }
 
-size_t WebGPUDecoderImpl::AdapterEnumerateFeaturesImpl(
+void WebGPUDecoderImpl::AdapterGetFeaturesImpl(
     WGPUAdapter adapter,
-    WGPUFeatureName* features_out) {
+    WGPUSupportedFeatures* features_out) {
   wgpu::Adapter adapter_obj(adapter);
-  size_t count = adapter_obj.EnumerateFeatures(nullptr);
+  wgpu::SupportedFeatures supported_features;
+  adapter_obj.GetFeatures(&supported_features);
 
-  std::vector<wgpu::FeatureName> features(count);
-  adapter_obj.EnumerateFeatures(features.data());
-
-  auto it =
-      std::partition(features.begin(), features.end(),
-                     [&](wgpu::FeatureName f) { return IsFeatureExposed(f); });
-  count = std::distance(features.begin(), it);
-
-  if (features_out != nullptr) {
-    memcpy(features_out, features.data(), sizeof(wgpu::FeatureName) * count);
+  std::vector<wgpu::FeatureName> exposed_features;
+  for (uint32_t i = 0; i < supported_features.featureCount; ++i) {
+    wgpu::FeatureName feature = supported_features.features[i];
+    if (IsFeatureExposed(feature)) {
+      exposed_features.push_back(feature);
+    };
   }
-  return count;
+  const size_t count = exposed_features.size();
+  WGPUFeatureName* features = new WGPUFeatureName[count];
+  uint32_t index = 0;
+  for (wgpu::FeatureName feature : exposed_features) {
+    features[index++] = static_cast<WGPUFeatureName>(feature);
+  }
+  features_out->featureCount = count;
+  features_out->features = features;
 }
 
 template <typename CallbackInfo>
@@ -1405,11 +1438,11 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
     };
 
     // Check that no disallowed features were requested. They should be hidden
-    // by AdapterEnumerateFeaturesImpl.
+    // by AdapterGetFeaturesImpl.
     for (const wgpu::FeatureName& feature : required_features) {
       if (!IsFeatureExposed(feature)) {
         callback_info.callback(WGPURequestDeviceStatus_Error, nullptr,
-                               "Disallowed feature requested.",
+                               MakeStringView("Disallowed feature requested."),
                                callback_info.userdata1,
                                callback_info.userdata2);
         return {};
@@ -1435,7 +1468,7 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
 
 #if BUILDFLAG(IS_ANDROID)
       wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
-      wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
+      wgpu::FeatureName::SharedFenceSyncFD,
 #endif
 
       wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,
@@ -1449,9 +1482,16 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   }
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  // On Desktop GL via ANGLE, require GL texture sharing.
-  if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES &&
+  // If adapter_options.forceFallbackAdapter is set to true,
+  // fallback (Swiftshader) instead of OpenGLES Adapter can still be
+  // selected.
+  // Make sure the adapter backend type is OpenGLES.
+  // Then if on Desktop GL via ANGLE, require GL texture sharing.
+  wgpu::AdapterInfo adapter_info = {};
+  adapter_obj.GetInfo(&adapter_info);
+  if (adapter_info.backendType == wgpu::BackendType::OpenGLES &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGL) {
+    DCHECK(adapter_obj.HasFeature(wgpu::FeatureName::ANGLETextureSharing));
     required_features.push_back(wgpu::FeatureName::ANGLETextureSharing);
   }
 #endif
@@ -1508,15 +1548,15 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   auto f = adapter_obj.RequestDevice(
       &desc, wgpu::CallbackMode::AllowSpontaneous,
       [&](wgpu::RequestDeviceStatus status, wgpu::Device device,
-          const char* message) {
+          wgpu::StringView message) {
         called = true;
         // Copy the device to save in known_device_metadata_.
         wgpu::Device device_copy = device;
         // Forward to the original callback.
-        callback_info.callback(static_cast<WGPURequestDeviceStatus>(status),
-                               device.MoveToCHandle(), message,
-                               callback_info.userdata1,
-                               callback_info.userdata2);
+        callback_info.callback(
+            static_cast<WGPURequestDeviceStatus>(status),
+            device.MoveToCHandle(), {message.data, message.length},
+            callback_info.userdata1, callback_info.userdata2);
         if (device_copy) {
           // Intercept the response so we can add a device ref to the list of
           // known devices on.
@@ -1547,17 +1587,10 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
           desc.requiredLimits->nextInChain == nullptr);
     CHECK_EQ(desc.defaultQueue.nextInChain, nullptr);
 
-#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
     device_label_ = WGPUStringViewToString(desc.label);
     if (device_label_) {
       label = {device_label_->data(), device_label_->size()};
     }
-#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
-    if (desc.label) {
-      device_label_ = std::string(desc.label);
-      label = device_label_.c_str();
-    }
-#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
     if (desc.requiredFeatures) {
       required_features_ = std::vector<WGPUFeatureName>(
           desc.requiredFeatures,
@@ -1568,21 +1601,13 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
       required_limits_ = *desc.requiredLimits;
       requiredLimits = &required_limits_;
     }
-#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
     queue_label_ = WGPUStringViewToString(desc.defaultQueue.label);
     if (queue_label_) {
       defaultQueue.label = {queue_label_->data(), queue_label_->size()};
     }
-#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
-    if (desc.defaultQueue.label) {
-      queue_label_ = std::string(desc.defaultQueue.label);
-      defaultQueue.label = queue_label_.c_str();
-    }
-#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
   }
 
   // Memory backed members.
-#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
   std::optional<std::string> WGPUStringViewToString(WGPUStringView sv) {
     if (sv.data == nullptr && sv.length == WGPU_STRLEN) {
       return {};
@@ -1593,12 +1618,8 @@ struct WGPUDeviceDescriptorDeepCopy : WGPUDeviceDescriptor {
 
   std::optional<std::string> device_label_;
   std::optional<std::string> queue_label_;
-#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
-  std::string device_label_;
-  std::string queue_label_;
-#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_LABELS)
   std::vector<WGPUFeatureName> required_features_;
-  WGPURequiredLimits required_limits_;
+  WGPULimits required_limits_;
 };
 
 }  // namespace
@@ -1621,17 +1642,17 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
   // the decoder's dtor explicitly resolves all these callbacks.
   return base::BindOnce(
       [](WebGPUDecoderImpl* decoder, wgpu::Adapter adapter,
-         std::unique_ptr<WGPUDeviceDescriptor> descriptor,
+         std::unique_ptr<WGPUDeviceDescriptorDeepCopy> descriptor,
          CallbackInfo callback_info, bool run) {
         if (run) {
           DCHECK(decoder->isolation_key_);
           decoder->RequestDeviceImpl(adapter.Get(), descriptor.get(),
                                      callback_info);
         } else {
-          callback_info.callback(WGPURequestDeviceStatus_Unknown, nullptr,
-                                 "Queued device request cancelled.",
-                                 callback_info.userdata1,
-                                 callback_info.userdata2);
+          callback_info.callback(
+              WGPURequestDeviceStatus_CallbackCancelled, nullptr,
+              MakeStringView("Queued device request cancelled."),
+              callback_info.userdata1, callback_info.userdata2);
         }
       },
       base::Unretained(this), adapter, std::move(desc), callback_info);
@@ -1647,7 +1668,7 @@ bool WebGPUDecoderImpl::use_blocklist() const {
 wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     wgpu::PowerPreference power_preference,
     bool force_fallback,
-    bool compatibility_mode) const {
+    wgpu::FeatureLevel feature_level) const {
   // Update power_preference based on command-line flag
   // use_webgpu_power_preference_.
   switch (use_webgpu_power_preference_) {
@@ -1683,7 +1704,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
 
   // Prepare wgpu::RequestAdapterOptions.
   wgpu::RequestAdapterOptions adapter_options;
-  adapter_options.compatibilityMode = compatibility_mode;
+  adapter_options.featureLevel = feature_level;
   adapter_options.forceFallbackAdapter = force_fallback;
   adapter_options.powerPreference = power_preference;
 
@@ -1768,8 +1789,15 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     case WebGPUAdapterName::kDefault: {
 #if BUILDFLAG(IS_WIN)
       backend_types = {wgpu::BackendType::D3D12};
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
       backend_types = {wgpu::BackendType::Metal};
+#elif BUILDFLAG(IS_LINUX)
+      if (shared_context_state_->GrContextIsVulkan() ||
+          shared_context_state_->IsGraphiteDawnVulkan()) {
+        backend_types = {wgpu::BackendType::Vulkan};
+      } else {
+        backend_types = {wgpu::BackendType::OpenGLES};
+      }
 #else
       backend_types = {wgpu::BackendType::Vulkan, wgpu::BackendType::OpenGLES};
 #endif
@@ -2037,19 +2065,14 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
 
-    if (base::FeatureList::IsEnabled(
-            features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-      if (!(usage & kWritableUsagesSupportingLazyClear) &&
-          !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-        LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
-                      "the texture requires passing a usage that supports lazy "
-                      "clearing";
-        return nullptr;
-      }
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
+                    "the texture requires passing a usage that supports lazy "
+                    "clearing";
+      return nullptr;
     }
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDawnSIRepsUseClientProvidedInternalUsages) &&
-             !shared_image->IsCleared()) {
+  } else if (!shared_image->IsCleared()) {
     if (!(shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
       LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
                     "WebGPU write access to the SharedImage";
@@ -2124,19 +2147,14 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
 
-    if (base::FeatureList::IsEnabled(
-            features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-      if (!(usage & kWritableUsagesSupportingLazyClear) &&
-          !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-        LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
-                      "the texture requires passing a usage that supports lazy "
-                      "clearing";
-        return nullptr;
-      }
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
+                    "the texture requires passing a usage that supports lazy "
+                    "clearing";
+      return nullptr;
     }
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDawnSIRepsUseClientProvidedInternalUsages) &&
-             !shared_image->IsCleared()) {
+  } else if (!shared_image->IsCleared()) {
     if (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
       LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
                     "WebGPU write access to the SharedImage";
@@ -2334,6 +2352,124 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
   return error::kNoError;
 }
 
+std::unique_ptr<WebGPUDecoderImpl::SharedBufferRepresentationAndAccess>
+WebGPUDecoderImpl::AssociateMailboxDawnBuffer(const Mailbox& mailbox,
+                                              const wgpu::Device& device,
+                                              wgpu::BackendType backendType,
+                                              wgpu::BufferUsage usage) {
+  std::unique_ptr<DawnBufferRepresentation> shared_buffer =
+      shared_image_representation_factory_->ProduceDawnBuffer(mailbox, device,
+                                                              backendType);
+
+  if (!shared_buffer) {
+    DLOG(ERROR) << "AssociateMailboxDawnBuffer: Couldn't produce shared image";
+    return nullptr;
+  }
+
+  std::unique_ptr<DawnBufferRepresentation::ScopedAccess> scoped_access =
+      shared_buffer->BeginScopedAccess(usage);
+  if (!scoped_access) {
+    DLOG(ERROR)
+        << "AssociateMailboxDawnBuffer: Couldn't begin shared image access";
+    return nullptr;
+  }
+
+  return std::make_unique<SharedBufferRepresentationAndAccessDawn>(
+      std::move(shared_buffer), std::move(scoped_access));
+}
+
+error::Error WebGPUDecoderImpl::HandleAssociateMailboxForBufferImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile webgpu::cmds::AssociateMailboxForBufferImmediate& c =
+      *static_cast<
+          const volatile webgpu::cmds::AssociateMailboxForBufferImmediate*>(
+          cmd_data);
+  uint32_t device_id = static_cast<uint32_t>(c.device_id);
+  uint32_t device_generation = static_cast<uint32_t>(c.device_generation);
+  uint32_t id = static_cast<uint32_t>(c.id);
+  uint32_t generation = static_cast<uint32_t>(c.generation);
+  wgpu::BufferUsage usage = static_cast<wgpu::BufferUsage>(c.usage);
+
+  if (sizeof(Mailbox) != immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+
+  volatile const GLbyte* immediate_data =
+      gles2::GetImmediateDataAs<volatile const GLbyte*>(c, sizeof(Mailbox),
+                                                        immediate_data_size);
+  Mailbox mailbox = Mailbox::FromVolatile(
+      *reinterpret_cast<const volatile Mailbox*>(immediate_data));
+  DLOG_IF(ERROR, !mailbox.Verify())
+      << "AssociateMailboxForBuffer was passed an invalid mailbox";
+
+  wgpu::Device device = wire_server_->GetDevice(device_id, device_generation);
+  if (device == nullptr) {
+    return error::kInvalidArguments;
+  }
+
+  {
+    auto it = associated_shared_buffer_map_.find({id, generation});
+    if (it != associated_shared_buffer_map_.end()) {
+      DLOG(ERROR)
+          << "AssociateMailboxForBuffer to an already associated buffer.";
+      return error::kInvalidArguments;
+    }
+  }
+
+  std::unique_ptr<SharedBufferRepresentationAndAccess>
+      representation_and_access;
+  auto it = known_device_metadata_.find(device);
+  DCHECK(it != known_device_metadata_.end());
+  representation_and_access = AssociateMailboxDawnBuffer(
+      mailbox, device, it->second.backendType, usage);
+
+  if (!representation_and_access) {
+    // The WebGPU specification error model is that failure to create a buffer
+    // returns an error buffer instead. Follow this pattern here.
+    representation_and_access =
+        std::make_unique<ErrorSharedBufferRepresentationAndAccess>(
+            device, usage, mailbox);
+  }
+
+  // Inject the buffer in the dawn::wire::Server and remember which shared
+  // image it is associated with.
+  if (!wire_server_->InjectBuffer(representation_and_access->buffer().Get(),
+                                  {id, generation},
+                                  {device_id, device_generation})) {
+    DLOG(ERROR) << "AssociateMailboxForBuffer: Invalid buffer ID";
+    return error::kInvalidArguments;
+  }
+
+  auto insertion = associated_shared_buffer_map_.emplace(
+      std::tuple<uint32_t, uint32_t>(id, generation),
+      std::move(representation_and_access));
+
+  // InjectBuffer already validated that the (ID, generation) can't have been
+  // registered before.
+  DCHECK(insertion.second);
+  return error::kNoError;
+}
+
+error::Error WebGPUDecoderImpl::HandleDissociateMailboxForBuffer(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile webgpu::cmds::DissociateMailboxForBuffer& c =
+      *static_cast<const volatile webgpu::cmds::DissociateMailboxForBuffer*>(
+          cmd_data);
+  uint32_t buffer_id = static_cast<uint32_t>(c.buffer_id);
+  uint32_t buffer_generation = static_cast<uint32_t>(c.buffer_generation);
+
+  auto it = associated_shared_buffer_map_.find({buffer_id, buffer_generation});
+  if (it == associated_shared_buffer_map_.end()) {
+    DLOG(ERROR) << "DissociateMailboxForBuffer: Invalid buffer ID";
+    return error::kInvalidArguments;
+  }
+
+  associated_shared_buffer_map_.erase(it);
+  return error::kNoError;
+}
+
 bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
   // Before using the shared context, ensure it is current if we're on GL.
   if (shared_context_state_->GrContextIsGL()) {
@@ -2381,9 +2517,9 @@ bool WebGPUDecoderImpl::ClearSharedImageWithSkia(const Mailbox& mailbox) {
   if (shared_context_state_->gr_context()) {
     skgpu::ganesh::Flush(surface);
   } else {
-    DCHECK(shared_context_state_->graphite_context());
+    DCHECK(shared_context_state_->graphite_shared_context());
     DCHECK(shared_context_state_->gpu_main_graphite_recorder());
-    GraphiteFlushAndSubmit(shared_context_state_->graphite_context(),
+    GraphiteFlushAndSubmit(shared_context_state_->graphite_shared_context(),
                            shared_context_state_->gpu_main_graphite_recorder());
   }
   // Transition the image back to the desired end state. This is used for
@@ -2461,8 +2597,7 @@ error::Error WebGPUDecoderImpl::HandleSetWebGPUExecutionContextToken(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return error::kInvalidArguments;
+      NOTREACHED();
   }
   isolation_key_provider_->GetIsolationKey(
       execution_context_token,

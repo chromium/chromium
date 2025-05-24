@@ -23,8 +23,9 @@ declare_args() {
   # Do not disable brotli filter by default.
   disable_brotli_filter = false
 
-  # Do not disable zstd filter by default, except for Cronet builds.
-  disable_zstd_filter = is_cronet_build
+  # Do not disable zstd filter by default.
+  # TODO: https://crbug.com/40282397 - Consider dropping once Cronet default enables zstd.
+  disable_zstd_filter = false
 
   # Multicast DNS.
   enable_mdns = is_win || is_linux || is_chromeos || is_fuchsia || is_apple
@@ -52,8 +53,8 @@ declare_args() {
   # the builtin cert verifier with the Chrome Root Store.
   chrome_root_store_only = is_win || is_mac || is_linux || is_chromeos
 
-  # DBSC is only supported on windows for now
-  enable_device_bound_sessions = is_win
+  # DBSC is only supported on Windows, Linux and Mac for now.
+  enable_device_bound_sessions = is_win || is_linux || is_mac
 
   # Bracketed URIs parsing is only available for debug builds.
   # TODO(crbug.com/365771838): Ensure tests are updated if needed if this

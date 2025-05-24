@@ -31,12 +31,17 @@ public class FreIntentCreator {
     /**
      * Creates an intent to launch the First Run Experience.
      *
-     * @param caller               Activity instance that is requesting the first run.
-     * @param fromIntent           Intent used to launch the caller.
+     * @param caller Activity instance that is requesting the first run.
+     * @param fromIntent Intent used to launch the caller.
      * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
+     * @param usePendingIntent Whether to use PendingIntent or original Intent after FRE.
      * @return Intent to launch First Run Experience.
      */
-    public Intent create(Context caller, Intent fromIntent, boolean preferLightweightFre) {
+    public Intent create(
+            Context caller,
+            Intent fromIntent,
+            boolean preferLightweightFre,
+            boolean usePendingIntent) {
         @Nullable
         BrowserServicesIntentDataProvider webApkIntentDataProvider =
                 WebappLauncherActivity.maybeSlowlyGenerateWebApkIntentDataProviderFromIntent(
@@ -56,7 +61,12 @@ public class FreIntentCreator {
         }
 
         Intent result = createInternal(caller, fromIntent, preferLightweightFre, associatedAppName);
-        addPendingIntent(caller, result, intentToLaunchAfterFreComplete);
+        result.putExtra(FirstRunActivity.EXTRA_FRE_USE_PENDING_INTENT, usePendingIntent);
+        if (usePendingIntent) {
+            addPendingIntent(caller, result, intentToLaunchAfterFreComplete);
+        } else {
+            result.putExtra(FirstRunActivity.EXTRA_FRE_COMPLETE_LAUNCH_INTENT, fromIntent);
+        }
         return result;
     }
 

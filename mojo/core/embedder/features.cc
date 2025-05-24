@@ -51,5 +51,14 @@ BASE_FEATURE(kMojoUseBinder,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+// If enabled, then only handles of types Section, File, Directory and
+// DxgkSharedResource are allowed to traverse a process boundary to an untrusted
+// process via mojo.
+BASE_FEATURE(kMojoHandleTypeProtections,
+             "MojoHandleTypeProtections",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace core
 }  // namespace mojo

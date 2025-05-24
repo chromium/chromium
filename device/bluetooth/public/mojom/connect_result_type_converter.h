@@ -65,11 +65,9 @@ struct TypeConverter<bluetooth::mojom::ConnectResult,
       case device::BluetoothDevice::ConnectErrorCode::ERROR_SOCKET:
         return bluetooth::mojom::ConnectResult::SOCKET;
       case device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES:
-        NOTREACHED_IN_MIGRATION();
-        return bluetooth::mojom::ConnectResult::FAILED;
+        NOTREACHED();
     }
-    NOTREACHED_IN_MIGRATION();
-    return bluetooth::mojom::ConnectResult::FAILED;
+    NOTREACHED();
   }
 };
 }  // namespace mojo

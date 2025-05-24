@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/payments/core/journey_logger.h"
 
@@ -85,14 +81,7 @@ JourneyLogger::JourneyLogger(ukm::SourceId payment_request_source_id)
     : events2_(static_cast<int>(Event2::kInitiated)),
       payment_request_source_id_(payment_request_source_id) {}
 
-JourneyLogger::~JourneyLogger() {
-  // has_recorded_ is false in cases that the page gets closed. To see more
-  // details about this case please check sample crash link from
-  // dumpWithoutCrash:
-  // https://crash.corp.google.com/browse?q=reportid=%27c1268a7104b25de2%27
-  UMA_HISTOGRAM_BOOLEAN("PaymentRequest.JourneyLoggerHasRecorded",
-                        has_recorded_);
-}
+JourneyLogger::~JourneyLogger() = default;
 
 void JourneyLogger::SetNumberOfSuggestionsShown(Section section,
                                                 int number,
@@ -147,7 +136,7 @@ void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
       SetEvent2Occurred(Event2::kSelectedOther);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -230,12 +219,6 @@ void JourneyLogger::RecordCheckoutStep(CheckoutFunnelStep step) {
 
 void JourneyLogger::RecordJourneyStatsHistograms(
     CompletionStatus completion_status) {
-  if (has_recorded_) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "PaymentRequest.JourneyLoggerHasRecordedMultipleTimes", true);
-  }
-  has_recorded_ = true;
-
   RecordEventsMetric(completion_status);
 
   // Depending on the completion status record kPaymentRequestTriggered and/or
@@ -253,7 +236,7 @@ void JourneyLogger::RecordJourneyStatsHistograms(
     case COMPLETION_STATUS_COULD_NOT_SHOW:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // These following metrics only make sense if the Payment Request was
@@ -296,7 +279,7 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
       SetEvent2Occurred(Event2::kUserOptedOut);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Add whether the user had and initial form of payment to the events.

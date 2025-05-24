@@ -12,11 +12,11 @@
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "crypto/secure_hash.h"
+#include "net/base/hash_value.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 
 namespace net {
 class IOBuffer;
-struct SHA256HashValue;
 }  // namespace net
 
 namespace network {
@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterInMemory
   explicit SharedDictionaryWriterInMemory(FinishCallback finish_callback);
 
   // SharedDictionaryWriter
-  void Append(const char* buf, int num_bytes) override;
+  void Append(base::span<const uint8_t> data) override;
   void Finish() override;
 
  private:

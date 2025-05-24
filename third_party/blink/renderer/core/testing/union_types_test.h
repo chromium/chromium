@@ -31,7 +31,7 @@ class UnionTypesTest final : public ScriptWrappable {
   String doubleOrStringArg(V8UnionDoubleOrString* arg);
   String doubleOrInternalEnumArg(V8UnionDoubleOrInternalEnum* arg);
   String doubleOrStringSequenceArg(
-      HeapVector<Member<V8UnionDoubleOrString>>& sequence);
+      const HeapVector<Member<V8UnionDoubleOrString>>& sequence);
 
   String nodeListOrElementArg(const V8UnionElementOrNodeList* arg);
   String nodeListOrElementOrNullArg(const V8UnionElementOrNodeList* arg);

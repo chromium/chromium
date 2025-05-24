@@ -45,7 +45,7 @@ PushNotificationService* PushNotificationServiceFactory::GetForBrowserContext(
   // PushNotificationService is currently only implemented for ChromeOS Desktop.
   // If/when iOS and/or Android decide on a Push Notification Service
   // implementation, this CHECK can be revisited.
-  CHECK(BUILDFLAG(IS_CHROMEOS_ASH));
+  CHECK(BUILDFLAG(IS_CHROMEOS));
   return static_cast<PushNotificationServiceDesktopImpl*>(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
@@ -72,7 +72,7 @@ PushNotificationServiceFactory::BuildServiceInstanceForBrowserContext(
   // PushNotificationService is currently only implemented for ChromeOS Desktop.
   // If/when iOS and/or Android decide on a Push Notification Service
   // implementation, this CHECK can be revisited.
-  CHECK(BUILDFLAG(IS_CHROMEOS_ASH));
+  CHECK(BUILDFLAG(IS_CHROMEOS));
   if (!context) {
     return nullptr;
   }

@@ -13,6 +13,8 @@ struct HashValue
   bool operator == (const HashValue &cmp) const;
 
   // Not actually used now. Const member for same reason as operator == above.
+  // Can be removed after switching to C++20, which automatically provides "!="
+  // if operator == is defined.
   bool operator != (const HashValue &cmp) const {return !(*this==cmp);}
 
   HASH_TYPE Type;

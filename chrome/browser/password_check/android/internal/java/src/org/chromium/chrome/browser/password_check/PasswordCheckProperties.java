@@ -8,6 +8,7 @@ import android.util.Pair;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper.FaviconOrFallback;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter;
@@ -18,6 +19,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Properties defined here reflect the visible state of the PasswordCheck subcomponents. */
+@NullMarked
 class PasswordCheckProperties {
     static final PropertyModel.ReadableObjectPropertyKey<ListModel<MVCListAdapter.ListItem>> ITEMS =
             new PropertyModel.ReadableObjectPropertyKey<>("items");

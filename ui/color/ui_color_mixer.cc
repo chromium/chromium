@@ -112,6 +112,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
       SkColorSetA(gfx::kGoogleGrey900, 0xE6)};
   mixer[kColorLiveCaptionBubbleButtonIcon] =
       ui::DeriveDefaultIconColor(kColorLiveCaptionBubbleForegroundDefault);
+  mixer[kColorLiveCaptionBubbleButtonBackground] = {SK_ColorTRANSPARENT};
   mixer[kColorLiveCaptionBubbleButtonIconDisabled] = ui::SetAlpha(
       kColorLiveCaptionBubbleButtonIcon, gfx::kDisabledControlAlpha);
   mixer[kColorLiveCaptionBubbleForegroundDefault] =
@@ -225,6 +226,7 @@ void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
         SetAlpha(std::move(tab_background_base), 0x53);
   }
   mixer[kColorTabContentSeparator] = {kColorMidground};
+  mixer[kColorTabForegroundDisabled] = {kColorSysStateDisabled};
   mixer[kColorTableGroupingIndicator] = {kColorItemHighlight};
   mixer[kColorTableHeaderBackground] = {kColorTableBackground};
   mixer[kColorTableHeaderForeground] = {kColorTableForeground};

@@ -18,8 +18,7 @@ struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) InfolistEntry {
   bool highlighted;
 
   InfolistEntry(const std::u16string& title, const std::u16string& body);
-  bool operator==(const InfolistEntry& entry) const;
-  bool operator!=(const InfolistEntry& entry) const;
+  friend bool operator==(const InfolistEntry&, const InfolistEntry&) = default;
 };
 
 }  // namespace ui

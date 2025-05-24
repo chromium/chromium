@@ -14,9 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace internal {
-namespace test {
+namespace base::internal::test {
 
 TestTaskFactory::TestTaskFactory(scoped_refptr<TaskRunner> task_runner,
                                  TaskSourceExecutionMode execution_mode)
@@ -43,15 +41,17 @@ bool TestTaskFactory::PostTask(PostNestedTask post_nested_task,
 
 void TestTaskFactory::WaitForAllTasksToRun() const {
   AutoLock auto_lock(lock_);
-  while (ran_tasks_.size() < num_posted_tasks_)
+  while (ran_tasks_.size() < num_posted_tasks_) {
     cv_.Wait();
+  }
 }
 
 void TestTaskFactory::RunTaskCallback(size_t task_index,
                                       PostNestedTask post_nested_task,
                                       OnceClosure after_task_closure) {
-  if (post_nested_task == PostNestedTask::YES)
+  if (post_nested_task == PostNestedTask::YES) {
     PostTask(PostNestedTask::NO, OnceClosure());
+  }
 
   if (execution_mode_ == TaskSourceExecutionMode::kSingleThread ||
       execution_mode_ == TaskSourceExecutionMode::kSequenced) {
@@ -94,20 +94,21 @@ void TestTaskFactory::RunTaskCallback(size_t task_index,
       ADD_FAILURE() << "A task didn't run in the expected order.";
     }
 
-    if (execution_mode_ == TaskSourceExecutionMode::kSingleThread)
+    if (execution_mode_ == TaskSourceExecutionMode::kSingleThread) {
       EXPECT_TRUE(thread_checker_.CalledOnValidThread());
+    }
 
-    if (ran_tasks_.find(task_index) != ran_tasks_.end())
+    if (ran_tasks_.find(task_index) != ran_tasks_.end()) {
       ADD_FAILURE() << "A task ran more than once.";
+    }
     ran_tasks_.insert(task_index);
 
     cv_.Signal();
   }
 
-  if (!after_task_closure.is_null())
+  if (!after_task_closure.is_null()) {
     std::move(after_task_closure).Run();
+  }
 }
 
-}  // namespace test
-}  // namespace internal
-}  // namespace base
+}  // namespace base::internal::test

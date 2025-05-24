@@ -4,6 +4,7 @@
 
 #include "content/browser/devtools/tracing_process_set_monitor.h"
 
+#include "base/auto_reset.h"
 #include "content/public/browser/render_process_host.h"
 
 namespace content {

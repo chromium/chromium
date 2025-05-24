@@ -14,92 +14,107 @@ import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
 import {assert} from '//resources/ash/common/assert.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {ActivationStateType, SecurityType, SubjectAltName, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
 import {OncSource, PolicySource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {flush, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
 import {getTemplate} from './network_property_list_mojo.html.js';
 import {FAKE_CREDENTIAL, OncMojo} from './onc_mojo.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-property-list-mojo',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ */
+const NetworkPropertyListMojoElementBase =
+    mixinBehaviors([I18nBehavior, CrPolicyNetworkBehaviorMojo], PolymerElement);
 
-  behaviors: [I18nBehavior, CrPolicyNetworkBehaviorMojo],
+/** @polymer */
+class NetworkPropertyListMojoElement extends
+    NetworkPropertyListMojoElementBase {
+  static get is() {
+    return 'network-property-list-mojo';
+  }
 
-  properties: {
-    /**
-     * The dictionary containing the properties to display.
-     * @type {!Object|undefined}
-     */
-    propertyDict: {
-      type: Object,
-      observer: 'onPropertyDictChanged_',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Fields to display.
-     * @type {!Array<string>}
-     */
-    fields: {
-      type: Array,
-      value() {
-        return [];
+  static get properties() {
+    return {
+      /**
+       * The dictionary containing the properties to display.
+       * @type {!Object|undefined}
+       */
+      propertyDict: {
+        type: Object,
+        observer: 'onPropertyDictChanged_',
       },
-    },
 
-    /**
-     * Edit type of editable fields. May contain a property for any field in
-     * |fields|. Other properties will be ignored. Property values can be:
-     *   'String' - A text input will be displayed.
-     *   'StringArray' - A text input will be displayed that expects a comma
-     *       separated list of strings.
-     *   'Password' - A string with input type = password.
-     * When a field changes, the 'property-change' event will be fired with
-     * the field name and the new value provided in the event detail.
-     * @type {!Object<string>}
-     */
-    editFieldTypes: {
-      type: Object,
-      value() {
-        return {};
+      /**
+       * Fields to display.
+       * @type {!Array<string>}
+       */
+      fields: {
+        type: Array,
+        value() {
+          return [];
+        },
       },
-    },
 
-    /** Prefix used to look up property key translations. */
-    prefix: {
-      type: String,
-      value: '',
-    },
+      /**
+       * Edit type of editable fields. May contain a property for any field in
+       * |fields|. Other properties will be ignored. Property values can be:
+       *   'String' - A text input will be displayed.
+       *   'StringArray' - A text input will be displayed that expects a comma
+       *       separated list of strings.
+       *   'Password' - A string with input type = password.
+       * When a field changes, the 'property-change' event will be fired with
+       * the field name and the new value provided in the event detail.
+       * @type {!Object<string>}
+       */
+      editFieldTypes: {
+        type: Object,
+        value() {
+          return {};
+        },
+      },
 
-    /**
-     * Whether all CrInputs are automatically read-only, and none are
-     * editable by the user.
-     */
-    allFieldsReadOnly: {
-      type: Boolean,
-      value: true,
-      readonly: true,
-      observer: 'onAllFieldsReadOnlyChanged_',
-    },
+      /** Prefix used to look up property key translations. */
+      prefix: {
+        type: String,
+        value: '',
+      },
 
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
+      /**
+       * Whether all CrInputs are automatically read-only, and none are
+       * editable by the user.
+       */
+      allFieldsReadOnly: {
+        type: Boolean,
+        value: true,
+        readonly: true,
+        observer: 'onAllFieldsReadOnlyChanged_',
+      },
 
-    /**
-     * Whether any of the CrInputElements have been visibly focused since
-     * |allFieldsReadOnly| becoming true.
-     * @private
-     */
-    hasAnyInputFocused_: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether any of the CrInputElements have been visibly focused since
+       * |allFieldsReadOnly| becoming true.
+       * @private
+       */
+      hasAnyInputFocused_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
 
   /** @private */
   onAllFieldsReadOnlyChanged_() {
@@ -114,7 +129,7 @@ Polymer({
     setTimeout(() => {
       this.attemptToFocusFirstEditableCrInput_();
     });
-  },
+  }
 
   /**
    * Since |this.propertyDict| may change multiple times after the
@@ -131,7 +146,7 @@ Polymer({
     }
 
     this.attemptToFocusFirstEditableCrInput_();
-  },
+  }
 
   /**
    * Attempts to focus the first non read-only CrInputElement.
@@ -150,7 +165,7 @@ Polymer({
     // CrInputElement's focus event may not properly fire before
     // |this.propertyDict| reaches steady state.
     /** @type {{focusInput: function():void}} */ (crInput).focusInput();
-  },
+  }
 
   /**
    * Select the text contents of the input if
@@ -177,7 +192,7 @@ Polymer({
     crInput.setAttribute('edited', true);
     crInput.select();
     this.hasAnyInputFocused_ = true;
-  },
+  }
 
   /**
    * Event triggered when an input field changes. Fires a 'property-change'
@@ -201,8 +216,12 @@ Polymer({
     if (newValue === curValue) {
       return;
     }
-    this.fire('property-change', {field: key, value: newValue});
-  },
+    this.dispatchEvent(new CustomEvent('property-change', {
+      bubbles: true,
+      composed: true,
+      detail: {field: key, value: newValue}
+    }));
+  }
 
   /**
    * Converts mojo keys to ONC keys. TODO(stevenjb): Remove this and update
@@ -256,7 +275,7 @@ Polymer({
       result += '-';
     });
     return 'Onc' + result.slice(0, result.length - 1);
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -277,7 +296,7 @@ Polymer({
       }
     }
     return result;
-  },
+  }
 
   /**
    * Generates a filter function dependent on propertyDict and editFieldTypes.
@@ -292,7 +311,7 @@ Polymer({
       const value = this.getPropertyValue_(key);
       return value !== '';
     };
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -312,7 +331,7 @@ Polymer({
           source !== OncSource.kDevicePolicy;
     }
     return !this.isNetworkPolicyEnforced(property);
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -323,7 +342,7 @@ Polymer({
     const editType = this.editFieldTypes[key];
     return editType === 'String' || editType === 'StringArray' ||
         editType === 'Password';
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -332,7 +351,7 @@ Polymer({
    */
   isEditable_(key) {
     return this.isEditType_(key) && this.isPropertyEditable_(key);
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -341,7 +360,7 @@ Polymer({
    */
   showEditable_(key) {
     return this.isEditable_(key);
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -350,7 +369,7 @@ Polymer({
    */
   getEditInputType_(key) {
     return this.editFieldTypes[key] === 'Password' ? 'password' : 'text';
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -367,7 +386,7 @@ Polymer({
       return undefined;
     }
     return /** @type{!OncMojo.ManagedProperty}*/ (property);
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -395,7 +414,7 @@ Polymer({
       // Otherwise just return undefined.
     }
     return property;
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -462,7 +481,7 @@ Polymer({
       return this.i18n(oncKey);
     }
     return valueStr;
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -475,7 +494,7 @@ Polymer({
       classes.push('secure');
     }
     return classes.join(' ');
-  },
+  }
 
   /**
    * Converts edit field values to the correct edit type.
@@ -490,7 +509,7 @@ Polymer({
       return fieldValue.toString().split(/, */);
     }
     return fieldValue;
-  },
+  }
 
   /**
    * @param {string} key The property key.
@@ -528,5 +547,8 @@ Polymer({
     }
 
     return '';
-  },
-});
+  }
+}
+
+customElements.define(
+    NetworkPropertyListMojoElement.is, NetworkPropertyListMojoElement);

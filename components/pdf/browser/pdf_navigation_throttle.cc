@@ -61,9 +61,9 @@ PdfNavigationThrottle::WillProcessResponse() {
 }
 
 PdfNavigationThrottle::PdfNavigationThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     std::unique_ptr<PdfStreamDelegate> stream_delegate)
-    : content::NavigationThrottle(navigation_handle),
+    : content::NavigationThrottle(registry),
       stream_delegate_(std::move(stream_delegate)) {
   DCHECK(stream_delegate_);
 }
@@ -79,10 +79,13 @@ PdfNavigationThrottle::WillStartRequest() {
   // Intercepts navigations to a PDF stream URL in a PDF content frame and
   // re-navigates to the original PDF URL.
 
-  // Skip main frame navigations, as the main frame should never be navigating
-  // to the stream URL.
+  // The main frame may contain the PDF extension for non-PdfOopif cases; it
+  // should never be navigated away from the extension.
   if (navigation_handle()->IsInMainFrame()) {
-    return PROCEED;
+    return stream_delegate_->ShouldAllowPdfExtensionFrameNavigation(
+               navigation_handle())
+               ? PROCEED
+               : BLOCK_REQUEST;
   }
 
   // Skip unless navigating to the stream URL.
@@ -156,10 +159,8 @@ PdfNavigationThrottle::WillStartRequest() {
             // `MimeHandlerViewGuest` navigates its embedder for calls to
             // `WebContents::OpenURL()`, so use `LoadURLWithParams()` directly
             // instead.
-            content::WebContents::FromRenderFrameHost(embedder_frame)
-                ->GetController()
-                .LoadURLWithParams(
-                    content::NavigationController::LoadURLParams(new_params));
+            embedder_frame->GetController().LoadURLWithParams(
+                content::NavigationController::LoadURLParams(new_params));
 
             // Note that we don't need to register the stream's URL loader as a
             // subresource, as `MimeHandlerViewGuest::ReadyToCommitNavigation()`

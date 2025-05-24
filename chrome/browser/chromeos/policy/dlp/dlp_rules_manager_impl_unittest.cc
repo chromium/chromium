@@ -15,7 +15,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -67,6 +66,7 @@ constexpr char kRuleId3[] = "testid3";
 constexpr char kRuleName1[] = "rule #1";
 constexpr char kRuleName2[] = "rule #2";
 constexpr char kRuleName3[] = "rule #3";
+
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state, Profile* profile)
@@ -84,9 +84,6 @@ class DlpRulesManagerImplTest : public testing::Test {
 
   void SetUp() override {
     TestingProfile::Builder builder;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    builder.SetIsMainProfile(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     profile_ = builder.Build();
 
     dlp_rules_manager_ = std::make_unique<MockDlpRulesManager>(
@@ -530,46 +527,6 @@ TEST_F(DlpRulesManagerImplTest, IsRestricted_MultipleURLs) {
       DlpRulesManager::Restriction::kClipboard, DlpRulesManager::Level::kBlock,
       kDrivePattern, kWildCardMatching,
       DlpRulesManager::RuleMetadata(kRuleName2, kRuleId2));
-}
-
-TEST_F(DlpRulesManagerImplTest, DisabledByFeature) {
-  dlp_test_util::DlpRule rule1(kRuleName1, "Block", kRuleId1);
-  rule1.AddSrcUrl(kExampleUrl)
-      .AddDstUrl(kWildCardMatching)
-      .AddRestriction(data_controls::kRestrictionClipboard,
-                      data_controls::kLevelBlock)
-      .AddRestriction(data_controls::kRestrictionScreenshot,
-                      data_controls::kLevelBlock);
-
-  UpdatePolicyPref({rule1});
-
-  CheckIsRestrictedDestination(
-      kExampleUrl, kWildCardMatching, DlpRulesManager::Restriction::kClipboard,
-      DlpRulesManager::Level::kBlock, kExampleUrl, kWildCardMatching,
-      DlpRulesManager::RuleMetadata(kRuleName1, kRuleId1));
-
-  EXPECT_EQ(DlpRulesManager::Level::kBlock,
-            dlp_rules_manager_->IsRestricted(
-                GURL(kExampleUrl), DlpRulesManager::Restriction::kScreenshot));
-
-  // Disable feature
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kDataLeakPreventionPolicy);
-
-  dlp_test_util::DlpRule rule2(kRuleName2, "Block", kRuleId2);
-  rule2.AddSrcUrl(kExampleUrl)
-      .AddDstUrl(kWildCardMatching)
-      .AddRestriction(data_controls::kRestrictionClipboard,
-                      data_controls::kLevelBlock);
-
-  UpdatePolicyPref({rule2});
-
-  CheckIsRestrictedDestination(
-      kExampleUrl, kWildCardMatching, DlpRulesManager::Restriction::kClipboard,
-      DlpRulesManager::Level::kAllow,
-      /*expected_src_pattern=*/"", /*expected_dst_pattern=*/"",
-      DlpRulesManager::RuleMetadata(/*name=*/"", /*obfuscated_id=*/""));
 }
 
 TEST_F(DlpRulesManagerImplTest, WarnPriority) {

@@ -1,0 +1,10 @@
+Name: core_maths
+URL: https://crates.io/crates/core_maths
+Version: 0.1.1
+Revision: d8ea96acac3893ad9a7e16cd7526936fbfc51021
+License: MIT
+License File: //third_party/rust/chromium_crates_io/vendor/core_maths-v0_1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Extension trait for full float functionality in `#[no_std]` backed by `libm`.

@@ -4,19 +4,23 @@
 
 package org.chromium.components.media_router;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.mediarouter.media.MediaRouteSelector;
 import androidx.mediarouter.media.MediaRouter;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /** Shared code for media route dialogs. */
+@NullMarked
 public abstract class BaseMediaRouteDialogManager {
     /**
      * A helper class to handle the system visibility change caused by the dialog showing up.
@@ -57,7 +61,7 @@ public abstract class BaseMediaRouteDialogManager {
     private final MediaRouter mAndroidMediaRouter;
     private final MediaRouteDialogDelegate mDelegate;
 
-    protected DialogFragment mDialogFragment;
+    protected @Nullable DialogFragment mDialogFragment;
 
     public void openDialog(WebContents initiator) {
         if (mAndroidMediaRouter == null) {
@@ -65,6 +69,7 @@ public abstract class BaseMediaRouteDialogManager {
             return;
         }
 
+        assumeNonNull(MediaRouterClient.getInstance());
         FragmentManager fm = MediaRouterClient.getInstance().getSupportFragmentManager(initiator);
         if (fm == null) {
             mDelegate.onDialogCancelled();
@@ -104,14 +109,13 @@ public abstract class BaseMediaRouteDialogManager {
      * @param fm {@link FragmentManager} to use to show the dialog.
      * @return null if the initialization fails, otherwise the initialized dialog fragment.
      */
-    @Nullable
-    protected abstract DialogFragment openDialogInternal(FragmentManager fm);
+    protected abstract @Nullable DialogFragment openDialogInternal(FragmentManager fm);
 
     protected MediaRouteDialogDelegate delegate() {
         return mDelegate;
     }
 
-    protected MediaRouter androidMediaRouter() {
+    MediaRouter androidMediaRouter() {
         return mAndroidMediaRouter;
     }
 

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer_source_handler.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_buffer_source_options.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
@@ -46,7 +42,7 @@ AudioBufferSourceHandler::AudioBufferSourceHandler(
     float sample_rate,
     AudioParamHandler& playback_rate,
     AudioParamHandler& detune)
-    : AudioScheduledSourceHandler(kNodeTypeAudioBufferSource,
+    : AudioScheduledSourceHandler(NodeType::kNodeTypeAudioBufferSource,
                                   node,
                                   sample_rate),
       playback_rate_(&playback_rate),
@@ -144,8 +140,8 @@ bool AudioBufferSourceHandler::RenderSilenceAndFinishIfNotLooping(
       // still need to provide more output, so generate silence for the
       // remaining.
       for (unsigned i = 0; i < NumberOfChannels(); ++i) {
-        memset(destination_channels_[i] + index, 0,
-               sizeof(float) * frames_to_process);
+        UNSAFE_TODO(memset(destination_channels_[i] + index, 0,
+                           sizeof(float) * frames_to_process));
       }
     }
 
@@ -185,8 +181,8 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
   // Potentially zero out initial frames leading up to the offset.
   if (destination_frame_offset) {
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      memset(destination_channels_[i], 0,
-             sizeof(float) * destination_frame_offset);
+      UNSAFE_TODO(memset(destination_channels_[i], 0,
+                         sizeof(float) * destination_frame_offset));
     }
   }
 
@@ -286,20 +282,22 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       DCHECK_LE(read_index + frames_this_time, buffer_length);
 
       for (unsigned i = 0; i < number_of_channels; ++i) {
-        DCHECK(destination_channels[i]);
+        DCHECK(UNSAFE_TODO(destination_channels[i]));
 
         // Note: the buffer corresponding to source_channels[i] could have been
         // transferred so need to check for that.  If it was transferred,
         // source_channels[i] is null.
-        if (source_channels[i]) {
-          memcpy(destination_channels[i] + write_index,
-                 source_channels[i] + read_index,
-                 sizeof(float) * frames_this_time);
-        } else {
-          // Recall that a floating-point zero is represented by 4 bytes of 0.
-          memset(destination_channels[i] + write_index, 0,
-                 sizeof(float) * frames_this_time);
-        }
+        UNSAFE_TODO({
+          if (source_channels[i]) {
+            memcpy(destination_channels[i] + write_index,
+                   source_channels[i] + read_index,
+                   sizeof(float) * frames_this_time);
+          } else {
+            // Recall that a floating-point zero is represented by 4 bytes of 0.
+            memset(destination_channels[i] + write_index, 0,
+                   sizeof(float) * frames_this_time);
+          }
+        });
       }
 
       write_index += frames_this_time;
@@ -346,31 +344,33 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       }
 
       // Linear interpolation.
-      for (unsigned i = 0; i < number_of_channels; ++i) {
-        float* destination = destination_channels[i];
-        const float* source = source_channels[i];
-        double sample;
+      UNSAFE_TODO({
+        for (unsigned i = 0; i < number_of_channels; ++i) {
+          float* destination = destination_channels[i];
+          const float* source = source_channels[i];
+          double sample;
 
-        // The source channel may have been transferred so don't try to read
-        // from it if it was.  Just set the destination to 0.
-        if (source) {
-          if (read_index == read_index2 && read_index >= 1) {
-            // We're at the end of the buffer, so just linearly extrapolate from
-            // the last two samples.
-            double sample1 = source[read_index - 1];
-            double sample2 = source[read_index];
-            sample = sample2 + (sample2 - sample1) * interpolation_factor;
+          // The source channel may have been transferred so don't try to read
+          // from it if it was.  Just set the destination to 0.
+          if (source) {
+            if (read_index == read_index2 && read_index >= 1) {
+              // We're at the end of the buffer, so just linearly extrapolate
+              // from the last two samples.
+              double sample1 = source[read_index - 1];
+              double sample2 = source[read_index];
+              sample = sample2 + (sample2 - sample1) * interpolation_factor;
+            } else {
+              double sample1 = source[read_index];
+              double sample2 = source[read_index2];
+              sample = (1.0 - interpolation_factor) * sample1 +
+                       interpolation_factor * sample2;
+            }
+            destination[write_index] = ClampTo<float>(sample);
           } else {
-            double sample1 = source[read_index];
-            double sample2 = source[read_index2];
-            sample = (1.0 - interpolation_factor) * sample1 +
-                     interpolation_factor * sample2;
+            destination[write_index] = 0;
           }
-          destination[write_index] = ClampTo<float>(sample);
-        } else {
-          destination[write_index] = 0;
         }
-      }
+      });
       write_index++;
 
       virtual_read_index += computed_playback_rate;

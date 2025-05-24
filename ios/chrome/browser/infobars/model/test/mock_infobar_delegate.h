@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_TEST_MOCK_INFOBAR_DELEGATE_H_
 
 #include "components/infobars/core/confirm_infobar_delegate.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 
 // Mock version of ConfirmInfoBarDelegate.

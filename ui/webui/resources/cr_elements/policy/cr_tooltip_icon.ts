@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../icons_lit.html.js';
+import '../icons.html.js';
 import '../cr_icon/cr_icon.js';
 import '../cr_tooltip/cr_tooltip.js';
 
@@ -41,10 +41,10 @@ export class CrTooltipIconElement extends CrLitElement {
     };
   }
 
-  iconAriaLabel: string = '';
-  iconClass: string = '';
-  tooltipText: string = '';
-  tooltipPosition: string = 'top';
+  accessor iconAriaLabel: string = '';
+  accessor iconClass: string = '';
+  accessor tooltipText: string = '';
+  accessor tooltipPosition: string = 'top';
 
   getFocusableElement(): HTMLElement {
     return this.$.indicator;

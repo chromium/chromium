@@ -61,7 +61,7 @@ void HostDisplayClient::CreateLayeredWindowUpdater(
 }
 void HostDisplayClient::AddChildWindowToBrowser(
     gpu::SurfaceHandle child_window) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 
@@ -71,10 +71,10 @@ void HostDisplayClient::DidCompleteSwapWithNewSize(const gfx::Size& size) {
 }
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE_X11)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void HostDisplayClient::SetPreferredRefreshRate(float refresh_rate) {
   NOTREACHED();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace viz

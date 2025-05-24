@@ -156,21 +156,19 @@ testSuite({
   testSetTextMultipleLines() {
     select(textarea);
     assertEquals('', selection.getText(textarea));
-    const isLegacyIE = userAgent.IE && !userAgent.isVersionOrHigher('9');
-    const message =
-        isLegacyIE ? 'Get Behind Me\r\nSatan' : 'Get Behind Me\nSatan';
+    const message = 'Get Behind Me\nSatan';
     selection.setText(textarea, message);
     assertEquals(message, selection.getText(textarea));
 
     // Select the text up to the point just after the \r\n combination
     // or \n in GECKO.
-    const endOfNewline = isLegacyIE ? 15 : 14;
+    const endOfNewline = 14;
     let selectedMessage = message.substring(0, endOfNewline);
     selection.setStart(textarea, 0);
     selection.setEnd(textarea, endOfNewline);
     assertEquals(selectedMessage, selection.getText(textarea));
 
-    selectedMessage = isLegacyIE ? '\r\n' : '\n';
+    selectedMessage = '\n';
     selection.setStart(textarea, 13);
     selection.setEnd(textarea, endOfNewline);
     assertEquals(selectedMessage, selection.getText(textarea));
@@ -212,8 +210,7 @@ testSuite({
    */
   testSetAndGetCursorWithLineBreaks() {
     select(textarea);
-    const isLegacyIE = userAgent.IE && !userAgent.isVersionOrHigher('9');
-    const newline = isLegacyIE ? '\r\n' : '\n';
+    const newline = '\n';
     let message = `Hello${newline}World`;
     selection.setText(textarea, message);
 
@@ -228,7 +225,7 @@ testSuite({
 
     // Test setEnd and getEnd, by setting the cursor exactly after the
     // \r\n combination in IE or after \n in GECKO.
-    let endOfNewline = isLegacyIE ? 7 : 6;
+    let endOfNewline = 6;
     checkSetAndGetTextarea(endOfNewline, endOfNewline);
 
     // Select a \r\n combination in IE or \n in GECKO and see if
@@ -236,8 +233,8 @@ testSuite({
     clearField(textarea);
     message = `Hello${newline}${newline}World`;
     selection.setText(textarea, message);
-    const startOfNewline = isLegacyIE ? 7 : 6;
-    endOfNewline = isLegacyIE ? 9 : 7;
+    const startOfNewline = 6;
+    endOfNewline = 7;
     checkSetAndGetTextarea(startOfNewline, endOfNewline);
 
     // Select 2 \r\n combinations in IE or 2 \ns in GECKO and see if getStart
@@ -249,12 +246,12 @@ testSuite({
     clearField(textarea);
     message = `Hello${newline}${newline}${newline}${newline}World`;
     selection.setText(textarea, message);
-    const middleOfNewlines = isLegacyIE ? 9 : 7;
+    const middleOfNewlines = 7;
     checkSetAndGetTextarea(middleOfNewlines, middleOfNewlines);
 
     // Position cursor at end of a textarea which ends with \r\n in IE or \n in
     // GECKO.
-    if (!userAgent.IE || !userAgent.isVersionOrHigher('11')) {
+    if (!userAgent.IE) {
       // TODO(johnlenz): investigate why this fails in IE 11.
       clearField(textarea);
       message = `Hello${newline}${newline}`;
@@ -268,12 +265,12 @@ testSuite({
     clearField(textarea);
     message = `${newline}${newline}World`;
     selection.setText(textarea, message);
-    const endOfTwoNewlines = isLegacyIE ? 4 : 2;
+    const endOfTwoNewlines = 2;
     checkSetAndGetTextarea(endOfTwoNewlines, endOfTwoNewlines);
 
     // Position cursor at the end of the first \r\n in IE or \n in
     // GECKO within a textarea.
-    let endOfOneNewline = isLegacyIE ? 2 : 1;
+    let endOfOneNewline = 1;
     checkSetAndGetTextarea(endOfOneNewline, endOfOneNewline);
   },
 
@@ -309,9 +306,7 @@ testSuite({
     // vs \n.
     selection.setCursorPosition(textarea, textarea.value.length - 4);
 
-    const isLegacyIE = userAgent.IE && !userAgent.isVersionOrHigher('9');
-    const linebreak = isLegacyIE ? '\r\n' : '\n';
-    const expectedLeftString = `Hello${linebreak}W`;
+    const expectedLeftString = 'Hello\nW';
 
     assertEquals(
         'getStart on input should return after the newline',

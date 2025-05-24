@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -88,12 +89,17 @@ void KeyboardBacklightColorNudgeController::MaybeShowEducationNudge(
   education_nudge_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
 
   ui::Layer* layer = education_nudge_->layer();
+
+  // TODO(b:375253816): Figure out an opaque color id.
   layer->SetColor(
       ShelfConfig::Get()->GetDefaultShelfColor(education_nudge_->GetWidget()));
   layer->SetRoundedCornerRadius(
-      gfx::RoundedCornersF{static_cast<float>(GetBubbleCornerRadius())});
-  layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+      gfx::RoundedCornersF{static_cast<float>(kBubbleCornerRadius)});
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   gfx::Rect anchor_rect =
       keyboard_brightness_slider_view->GetAnchorBoundsInScreen();

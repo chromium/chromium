@@ -1,4 +1,4 @@
-finnur@chromium.org
+file://chrome/browser/webshare/OWNERS
 
 # Changes to Mojo interfaces require a security review to avoid
 # introducing new sandbox escapes.

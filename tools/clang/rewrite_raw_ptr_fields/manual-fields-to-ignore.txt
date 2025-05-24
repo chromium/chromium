@@ -135,10 +135,6 @@ WatchedLifetimeMenuController::_deallocCalled
 blink::SegmentedSubstring::data_last_char_
 net::FixedSetIncrementalLookup::bytes_
 
-# Causes unrelated test failures.
-# TODO(crbug.com/349424269): Fix tests, rewrite, and remove.
-media::Vp9FrameHeader::data
-
 #######
 # BackupRefPtr-specific sections
 #######

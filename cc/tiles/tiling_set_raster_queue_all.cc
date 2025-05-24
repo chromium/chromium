@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/tiles/tiling_set_raster_queue_all.h"
 
 #include <stddef.h>
@@ -456,8 +451,7 @@ void TilingSetRasterQueueAll::TilingIterator::AdvancePhase() {
     phase_ = static_cast<Phase>(phase_ + 1);
     switch (phase_) {
       case Phase::VISIBLE_RECT:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case Phase::PENDING_VISIBLE_RECT:
         pending_visible_iterator_ =
             PendingVisibleTilingIterator(tiling_, tiling_data_);

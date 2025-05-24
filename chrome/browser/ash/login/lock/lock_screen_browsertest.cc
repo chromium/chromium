@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -23,7 +24,8 @@ namespace {
 
 class LockScreenBaseTest : public LoginManagerTest {
  public:
-  LockScreenBaseTest() = default;
+  explicit LockScreenBaseTest(const LoginManagerMixin::UserList& initial_users)
+      : initial_users_(initial_users) {}
 
   LockScreenBaseTest(const LockScreenBaseTest&) = delete;
   LockScreenBaseTest& operator=(const LockScreenBaseTest&) = delete;
@@ -38,13 +40,23 @@ class LockScreenBaseTest : public LoginManagerTest {
 
  protected:
   std::vector<std::string> user_input_methods_;
-  LoginManagerMixin login_manager_{&mixin_host_};
+  LoginManagerMixin::UserList initial_users_;
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
+  LoginManagerMixin login_manager_{&mixin_host_, initial_users_, nullptr,
+                                   &cryptohome_mixin_};
 };
 
 class LockScreenInputsTest : public LockScreenBaseTest {
  public:
-  LockScreenInputsTest() {
-    login_manager_.AppendRegularUsers(2);
+  LockScreenInputsTest()
+      : LockScreenBaseTest(
+            {LoginManagerMixin::TestUserInfo{
+                 LoginManagerMixin::CreateConsumerAccountId(1),
+                 test::UserAuthConfig::Create({AshAuthFactor::kGaiaPassword})},
+             LoginManagerMixin::TestUserInfo{
+                 LoginManagerMixin::CreateConsumerAccountId(2),
+                 test::UserAuthConfig::Create(
+                     {AshAuthFactor::kGaiaPassword})}}) {
     user_input_methods_.push_back("xkb:fr::fra");
     user_input_methods_.push_back("xkb:de::ger");
   }
@@ -52,10 +64,6 @@ class LockScreenInputsTest : public LockScreenBaseTest {
 
 IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
   const auto& users = login_manager_.users();
-  SetExpectedCredentialsWithDbusClient(users[0].account_id,
-                                       LoginManagerTest::kPassword);
-  SetExpectedCredentialsWithDbusClient(users[1].account_id,
-                                       LoginManagerTest::kPassword);
   LoginUserWithDbusClient(users[0].account_id, LoginManagerTest::kPassword);
   scoped_refptr<input_method::InputMethodManager::State> ime_states[2] = {
       nullptr, nullptr};
@@ -121,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenInputsTest, CheckIMESwitches) {
 
 class LockScreenFilterInputTest : public LockScreenBaseTest {
  public:
-  LockScreenFilterInputTest() {
+  LockScreenFilterInputTest() : LockScreenBaseTest({}) {
     login_manager_.AppendRegularUsers(1);
     // Lock screen input metnod.
     user_input_methods_.push_back("xkb:fr::fra");
@@ -185,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(LockScreenFilterInputTest, Basic) {
 // DeviceLoginScreenInputMethods policy should not affect lock screen.
 class LockScreenDevicePolicyInputsTest : public LockScreenBaseTest {
  public:
-  LockScreenDevicePolicyInputsTest() {
+  LockScreenDevicePolicyInputsTest() : LockScreenBaseTest({}) {
     login_manager_.AppendRegularUsers(1);
     // Lock screen input metnod.
     user_input_methods_.push_back("xkb:fr::fra");
@@ -245,8 +253,10 @@ IN_PROC_BROWSER_TEST_F(LockScreenDevicePolicyInputsTest, PolicyNotHonored) {
 
 class LockScreenLocalPasswordTest : public LockScreenBaseTest {
  public:
-  LockScreenLocalPasswordTest() {
-    login_manager_.AppendRegularUsers(1);
+  LockScreenLocalPasswordTest()
+      : LockScreenBaseTest({LoginManagerMixin::TestUserInfo{
+            LoginManagerMixin::CreateConsumerAccountId(1),
+            test::UserAuthConfig::Create({AshAuthFactor::kLocalPassword})}}) {
     user_input_methods_.push_back("xkb:de::ger");
   }
 };
@@ -277,6 +287,44 @@ IN_PROC_BROWSER_TEST_F(LockScreenLocalPasswordTest, UnlockWithWrongPassword) {
   locker_tester.UnlockWithPassword(test_account_id,
                                    LoginManagerTest::kPassword);
   base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(locker_tester.IsLocked());
+}
+
+class LockScreenPinOnlyTest : public LockScreenBaseTest {
+ public:
+  LockScreenPinOnlyTest()
+      : LockScreenBaseTest({LoginManagerMixin::TestUserInfo{
+            LoginManagerMixin::CreateConsumerAccountId(1),
+            test::UserAuthConfig::Create({AshAuthFactor::kCryptohomePin})}}) {
+    FakeUserDataAuthClient::TestApi::Get()
+        ->set_supports_low_entropy_credentials(true);
+    user_input_methods_.push_back("xkb:de::ger");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LockScreenPinOnlyTest, UnlockWithCorrectPin) {
+  const AccountId test_account_id = login_manager_.users().front().account_id;
+  LoginUserWithPin(test_account_id);
+
+  ScreenLockerTester locker_tester;
+  locker_tester.Lock();
+
+  // Unlock with pin, the same as was used for login.
+  LoginScreenTestApi::SubmitPin(test_account_id, test::kAuthPin);
+  locker_tester.WaitForUnlock();
+  EXPECT_EQ(test_account_id,
+            user_manager::UserManager::Get()->GetActiveUser()->GetAccountId());
+}
+
+IN_PROC_BROWSER_TEST_F(LockScreenPinOnlyTest, UnlockWithWrongPin) {
+  const AccountId test_account_id = login_manager_.users().front().account_id;
+  LoginUserWithPin(test_account_id);
+
+  ScreenLockerTester locker_tester;
+  locker_tester.Lock();
+
+  // Unlock with a bad pin.
+  LoginScreenTestApi::SubmitPin(test_account_id, "000000");
   EXPECT_TRUE(locker_tester.IsLocked());
 }
 

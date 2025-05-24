@@ -25,7 +25,7 @@ namespace {
 // Resonse body for requests sent to web::test::HttpServer.
 const char kHelloWorld[] = "Hello World";
 
-}  // namespave
+}  // namespace
 
 using web::test::HttpServer;
 
@@ -60,8 +60,8 @@ TEST_F(HttpServerTest, StartAndInterfaceWithResponseProvider) {
   __block NSString* page_result;
   id completion_handler =
       ^(NSData* data, NSURLResponse* response, NSError* error) {
-        page_result =
-            [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        page_result = [[NSString alloc] initWithData:data
+                                            encoding:NSUTF8StringEncoding];
       };
   GURL url = HttpServer::GetSharedInstance().MakeUrl("http://whatever");
   NSURLSessionDataTask* data_task =

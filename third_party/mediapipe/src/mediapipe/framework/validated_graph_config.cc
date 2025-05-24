@@ -20,7 +20,7 @@
 #include "absl/container/flat_hash_set.h"
 #include "absl/log/absl_check.h"
 #include "absl/log/absl_log.h"
-#include "absl/memory/memory.h"
+#include "absl/status/status.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/substitute.h"
@@ -30,16 +30,14 @@
 #include "mediapipe/framework/legacy_calculator_support.h"
 #include "mediapipe/framework/packet_generator.h"
 #include "mediapipe/framework/packet_generator.pb.h"
-#include "mediapipe/framework/packet_set.h"
 #include "mediapipe/framework/packet_type.h"
 #include "mediapipe/framework/port.h"
-#include "mediapipe/framework/port/core_proto_inc.h"
 #include "mediapipe/framework/port/logging.h"
 #include "mediapipe/framework/port/proto_ns.h"
 #include "mediapipe/framework/port/ret_check.h"
 #include "mediapipe/framework/port/source_location.h"
-#include "mediapipe/framework/port/status.h"
 #include "mediapipe/framework/port/status_builder.h"
+#include "mediapipe/framework/port/status_macros.h"
 #include "mediapipe/framework/port/topologicalsorter.h"
 #include "mediapipe/framework/status_handler.h"
 #include "mediapipe/framework/stream_handler.pb.h"
@@ -47,8 +45,8 @@
 #include "mediapipe/framework/tool/name_util.h"
 #include "mediapipe/framework/tool/status_util.h"
 #include "mediapipe/framework/tool/subgraph_expansion.h"
-#include "mediapipe/framework/tool/validate.h"
 #include "mediapipe/framework/tool/validate_name.h"
+#include "mediapipe/framework/vlog_utils.h"
 
 namespace mediapipe {
 
@@ -325,14 +323,15 @@ absl::Status NodeTypeInfo::Initialize(
 absl::Status ValidatedGraphConfig::Initialize(
     CalculatorGraphConfig input_config, const GraphRegistry* graph_registry,
     const Subgraph::SubgraphOptions* graph_options,
-    std::shared_ptr<GraphServiceManager> service_manager) {
+    const GraphServiceManager* service_manager) {
   RET_CHECK(!initialized_)
       << "ValidatedGraphConfig can be initialized only once.";
-
-#if !defined(MEDIAPIPE_MOBILE)
-  VLOG(1) << "ValidatedGraphConfig::Initialize called with config:\n"
-          << input_config.DebugString();
-#endif
+  if (VLOG_IS_ON(1)) {
+    VlogLargeMessage(
+        /*verbose_level=*/1,
+        absl::StrCat("ValidatedGraphConfig::Initialize called with config:\n",
+                     input_config.DebugString()));
+  }
 
   config_ = std::move(input_config);
   MP_RETURN_IF_ERROR(
@@ -404,10 +403,13 @@ absl::Status ValidatedGraphConfig::Initialize(
 
   MP_RETURN_IF_ERROR(ValidateExecutors());
 
-#if !defined(MEDIAPIPE_MOBILE)
-  VLOG(1) << "ValidatedGraphConfig produced canonical config:\n"
-          << config_.DebugString();
-#endif
+  if (VLOG_IS_ON(1)) {
+    VlogLargeMessage(
+        /*verbose_level=*/1,
+        absl::StrCat("ValidatedGraphConfig produced canonical config:\n",
+                     config_.DebugString()));
+  }
+
   initialized_ = true;
   return absl::OkStatus();
 }
@@ -415,7 +417,7 @@ absl::Status ValidatedGraphConfig::Initialize(
 absl::Status ValidatedGraphConfig::Initialize(
     const std::string& graph_type, const GraphRegistry* graph_registry,
     const Subgraph::SubgraphOptions* graph_options,
-    std::shared_ptr<GraphServiceManager> service_manager) {
+    const GraphServiceManager* service_manager) {
   graph_registry =
       graph_registry ? graph_registry : &GraphRegistry::global_graph_registry;
   Subgraph::SubgraphOptions local_graph_options;
@@ -436,7 +438,7 @@ absl::Status ValidatedGraphConfig::Initialize(
     const std::vector<CalculatorGraphTemplate>& input_templates,
     const std::string& graph_type,
     const Subgraph::SubgraphOptions* graph_options,
-    std::shared_ptr<GraphServiceManager> service_manager) {
+    const GraphServiceManager* service_manager) {
   GraphRegistry graph_registry;
   for (auto& config : input_configs) {
     graph_registry.Register(config.type(), config);
@@ -451,7 +453,7 @@ absl::Status ValidatedGraphConfig::Initialize(
 absl::Status ValidatedGraphConfig::PerformBasicTransforms(
     const GraphRegistry* graph_registry,
     const Subgraph::SubgraphOptions* graph_options,
-    std::shared_ptr<GraphServiceManager> service_manager) {
+    const GraphServiceManager* service_manager) {
   MP_RETURN_IF_ERROR(tool::ExpandSubgraphs(&config_, graph_registry,
                                            graph_options, service_manager));
 
@@ -709,7 +711,7 @@ absl::Status ValidatedGraphConfig::AddInputStreamsForNode(
       }
     } else {
       if (edge_info.back_edge) {
-        VLOG(1) << "Encountered expected behavior: the back edge \"" << name
+        ABSL_VLOG(1) << "Encountered expected behavior: the back edge \"" << name
                 << "\" for node with (possibly sorted) index " << node_index
                 << " name " << node_type_info->Contract().GetNodeName()
                 << " has an output stream which we have not yet seen.";
@@ -765,7 +767,7 @@ NodeTypeInfo::NodeRef ValidatedGraphConfig::NodeForSorterIndex(
 
 absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
 #if !(defined(MEDIAPIPE_LITE) || defined(MEDIAPIPE_MOBILE))
-  VLOG(2) << "BEFORE TOPOLOGICAL SORT:\n" << config_.DebugString();
+  ABSL_VLOG(2) << "BEFORE TOPOLOGICAL SORT:\n" << config_.DebugString();
 #endif  // !(MEDIAPIPE_LITE || MEDIAPIPE_MOBILE)
   // The topological sorter assumes the nodes in the graph are identified
   // by consecutive indexes 0, 1, 2, ... We sort the generators and
@@ -785,7 +787,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
       if (output_streams_[upstream].parent_node.type !=
               NodeTypeInfo::NodeType::GRAPH_INPUT_STREAM &&
           !input_streams_[index].back_edge) {
-        VLOG(3) << "Adding an edge for stream \"" << name << "\" from "
+        ABSL_VLOG(3) << "Adding an edge for stream \"" << name << "\" from "
                 << output_streams_[upstream].parent_node.index << " to "
                 << input_streams_[index].parent_node.index;
         sorter.AddEdge(
@@ -807,7 +809,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
     auto iter = side_packet_to_producer_.find(name);
     if (iter != side_packet_to_producer_.end()) {
       int upstream = iter->second;
-      VLOG(3) << "Adding an edge for side packet \"" << name << "\" from "
+      ABSL_VLOG(3) << "Adding an edge for side packet \"" << name << "\" from "
               << output_side_packets_[upstream].parent_node.index << " to "
               << input_side_packets_[index].parent_node.index;
       sorter.AddEdge(
@@ -833,7 +835,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
   while (sorter.GetNext(&index, &cyclic, &cycle_indexes)) {
     NodeTypeInfo::NodeRef node = NodeForSorterIndex(index);
     if (node.type == NodeTypeInfo::NodeType::PACKET_GENERATOR) {
-      VLOG(3) << "Taking generator with index " << node.index
+      ABSL_VLOG(3) << "Taking generator with index " << node.index
               << " in the original order";
       tmp_generators.emplace_back(std::move(generators_[node.index]));
       tmp_generators.back().SetNodeIndex(tmp_generators.size() - 1);
@@ -841,7 +843,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
           config_.mutable_packet_generator(node.index));
       sorted_nodes_.push_back(&tmp_generators.back());
     } else {
-      VLOG(3) << "Taking calculator with index " << node.index
+      ABSL_VLOG(3) << "Taking calculator with index " << node.index
               << " in the original order";
       tmp_calculators.emplace_back(std::move(calculators_[node.index]));
       tmp_calculators.back().SetNodeIndex(tmp_calculators.size() - 1);
@@ -869,7 +871,7 @@ absl::Status ValidatedGraphConfig::TopologicalSortNodes() {
   node_configs.Swap(config_.mutable_node());
   tmp_calculators.swap(calculators_);
 #if !(defined(MEDIAPIPE_LITE) || defined(MEDIAPIPE_MOBILE))
-  VLOG(2) << "AFTER TOPOLOGICAL SORT:\n" << config_.DebugString();
+  ABSL_VLOG(2) << "AFTER TOPOLOGICAL SORT:\n" << config_.DebugString();
 #endif  // !(MEDIAPIPE_LITE || MEDIAPIPE_MOBILE)
   return absl::OkStatus();
 }
@@ -1087,7 +1089,7 @@ absl::Status ValidatedGraphConfig::ValidateRequiredSidePacketTypes(
   }
   if (!statuses.empty()) {
     return tool::CombinedStatus(
-        "ValidateRequiredSidePackets failed to validate: ", statuses);
+        "ValidateRequiredSidePacketTypes failed to validate: ", statuses);
   }
   return absl::OkStatus();
 }

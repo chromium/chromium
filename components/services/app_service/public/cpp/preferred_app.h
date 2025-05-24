@@ -20,8 +20,9 @@ struct COMPONENT_EXPORT(APP_TYPES) PreferredApp {
   PreferredApp& operator=(const PreferredApp&) = delete;
   ~PreferredApp();
 
+  // Not defaulted to enforce comparing the content of `intent_filter` (instead
+  // of just the pointer address).
   bool operator==(const PreferredApp& other) const;
-  bool operator!=(const PreferredApp& other) const;
 
   std::unique_ptr<PreferredApp> Clone() const;
 
@@ -31,22 +32,6 @@ struct COMPONENT_EXPORT(APP_TYPES) PreferredApp {
 
 using PreferredAppPtr = std::unique_ptr<PreferredApp>;
 using PreferredApps = std::vector<PreferredAppPtr>;
-
-// Represents changes which have been made to the preferred apps list, both
-// adding new filters and removing existing filters.
-struct COMPONENT_EXPORT(APP_TYPES) PreferredAppChanges {
-  PreferredAppChanges();
-  PreferredAppChanges(const PreferredAppChanges&) = delete;
-  PreferredAppChanges& operator=(const PreferredAppChanges&) = delete;
-  ~PreferredAppChanges();
-
-  std::unique_ptr<PreferredAppChanges> Clone() const;
-
-  base::flat_map<std::string, IntentFilters> added_filters;
-  base::flat_map<std::string, IntentFilters> removed_filters;
-};
-
-using PreferredAppChangesPtr = std::unique_ptr<PreferredAppChanges>;
 
 // Represents a group of `app_ids` that is no longer preferred app of their
 // corresponding `intent_filters`.

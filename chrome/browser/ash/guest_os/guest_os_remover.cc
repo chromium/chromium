@@ -45,7 +45,7 @@ void GuestOsRemover::RemoveVm() {
 }
 
 void GuestOsRemover::StopVmFinished(
-    std::optional<vm_tools::concierge::StopVmResponse> response) {
+    std::optional<vm_tools::concierge::SuccessFailureResponse> response) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!response) {
     LOG(ERROR) << "Failed to stop termina vm. Empty response.";

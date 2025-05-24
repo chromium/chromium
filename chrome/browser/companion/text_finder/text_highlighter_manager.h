@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_COMPANION_TEXT_FINDER_TEXT_HIGHLIGHTER_MANAGER_H_
 #define CHROME_BROWSER_COMPANION_TEXT_FINDER_TEXT_HIGHLIGHTER_MANAGER_H_
 
-#include <memory>
-#include <unordered_map>
-
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
@@ -33,10 +30,26 @@ class TextHighlighterManager
   TextHighlighterManager& operator=(const TextHighlighterManager&) = delete;
 
   // Creates a text highlighter and adds it to manager. Removes any existing
-  // text hightlighter. Returns the id associated with the created text
-  // highlighter.
+  // text hightlighter.
   void CreateTextHighlighterAndRemoveExistingInstance(
       const std::string& text_directive);
+
+  // Creates multiple text finders for a vector of text directives. Calls
+  // `all_done_callback` when all text finders finish searching (via
+  // `base::BarrierCallback`).
+  void CreateTextHighlightersAndRemoveExisting(
+      const std::vector<std::string>& text_directives);
+
+  // Returns the text highlighter for testing.
+  std::vector<internal::TextHighlighter*> get_text_highlighters_for_testing() {
+    std::vector<internal::TextHighlighter*> highlighters;
+    highlighters.reserve(highlighters_.size());
+
+    std::transform(highlighters_.begin(), highlighters_.end(),
+                   std::back_inserter(highlighters),
+                   [](const auto& highlighter) { return highlighter.get(); });
+    return highlighters;
+  }
 
  private:
   friend class content::PageUserData<TextHighlighterManager>;
@@ -46,8 +59,8 @@ class TextHighlighterManager
 
   PAGE_USER_DATA_KEY_DECL();
 
-  // Managed text highlighter instance.
-  std::unique_ptr<internal::TextHighlighter> text_highlighter_;
+  // List of text highlighters that were attempted to be rendered on the page.
+  std::vector<std::unique_ptr<internal::TextHighlighter>> highlighters_;
 
   // A connection to the annotation agent container on the renderer side to
   // bind a text highlighter instance to its agent counterpart.

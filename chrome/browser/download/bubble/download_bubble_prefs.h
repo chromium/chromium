@@ -28,8 +28,7 @@ bool IsDownloadBubblePartialViewControlledByPref();
 bool IsDownloadBubblePartialViewEnabled(Profile* profile);
 
 // Set the pref governing whether the partial view should be shown automatically
-// when downloads are finished. Note that on Lacros, the pref may be ignored
-// if the SysUI integration is enabled.
+// when downloads are finished.
 void SetDownloadBubblePartialViewEnabled(Profile* profile, bool enabled);
 
 // Whether the setting is controlled by pref and is the default value (not set

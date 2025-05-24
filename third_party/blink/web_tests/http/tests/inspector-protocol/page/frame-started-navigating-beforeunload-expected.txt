@@ -1,0 +1,52 @@
+CONFIRM NAVIGATION
+CONFIRM NAVIGATION
+Tests frameStartedNavigating events with beforeunload
+
+Prepare
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 0>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/before-unload.html
+    }
+    sessionId : <string>
+}
+
+Fragment navigation
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 1>
+        navigationType : sameDocument
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/before-unload.html#some_fragment
+    }
+    sessionId : <string>
+}
+
+Reload
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 2>
+        navigationType : reload
+        url : http://127.0.0.1:8000/inspector-protocol/page/resources/before-unload.html#some_fragment
+    }
+    sessionId : <string>
+}
+
+Leave beforeunload page
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 3>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html
+    }
+    sessionId : <string>
+}
+

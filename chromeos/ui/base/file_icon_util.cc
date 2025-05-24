@@ -16,10 +16,8 @@
 #include "base/not_fatal_until.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
@@ -59,73 +57,31 @@ struct IconParams {
 SkColor ResolveColor(ColorId color_id, bool dark_background) {
   // Changes to this should be reflected in
   // ui/file_manager/file_manager/foreground/css/file_types.css.
-  if (chromeos::features::IsJellyrollEnabled()) {
-    auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-    auto* color_provider = ui::ColorProviderManager::Get().GetColorProviderFor(
-        native_theme->GetColorProviderKey(nullptr));
-    switch (color_id) {
-      case ColorId::kBlue:
-        return color_provider->GetColor(cros_tokens::kCrosSysProgress);
-      case ColorId::kGreen:
-        return color_provider->GetColor(cros_tokens::kCrosSysPositive);
-      case ColorId::kGrey:
-        return color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
-      case ColorId::kRed:
-        return color_provider->GetColor(cros_tokens::kCrosSysError);
-      case ColorId::kYellow:
-        return color_provider->GetColor(cros_tokens::kCrosSysWarning);
-      case ColorId::kFiletypePpt:
-        return color_provider->GetColor(cros_tokens::kCrosSysFileMsPpt);
-      case ColorId::kFiletypeGsite:
-      case ColorId::kFiletypeSites:
-        return color_provider->GetColor(cros_tokens::kCrosSysFileSite);
-      case ColorId::kFiletypeGform:
-        return color_provider->GetColor(cros_tokens::kCrosSysFileForm);
-      case ColorId::kFiletypeExcel:
-        return color_provider->GetColor(cros_tokens::kCrosSysFileMsExcel);
-      case ColorId::kFiletypeWord:
-        return color_provider->GetColor(cros_tokens::kCrosSysFileMsWord);
-    }
-  } else {
-    switch (color_id) {
-      case ColorId::kBlue:
-        return cros_styles::ResolveColor(cros_styles::ColorName::kIconColorBlue,
-                                         dark_background,
-                                         /*use_debug_colors=*/false);
-      case ColorId::kGreen:
-        return cros_styles::ResolveColor(
-            cros_styles::ColorName::kIconColorGreen, dark_background,
-            /*use_debug_colors=*/false);
-      case ColorId::kGrey:
-        return cros_styles::ResolveColor(
-            cros_styles::ColorName::kIconColorPrimary, dark_background,
-            /*use_debug_colors=*/false);
-      case ColorId::kRed:
-        return cros_styles::ResolveColor(cros_styles::ColorName::kIconColorRed,
-                                         dark_background,
-                                         /*use_debug_colors=*/false);
-      case ColorId::kYellow:
-        return cros_styles::ResolveColor(
-            cros_styles::ColorName::kIconColorYellow, dark_background,
-            /*use_debug_colors=*/false);
-      case ColorId::kFiletypePpt:
-        return SkColorSetRGB(0xFF, 0x76, 0x37);
-      case ColorId::kFiletypeGsite:
-      case ColorId::kFiletypeSites:
-        return dark_background ? SkColorSetRGB(0xBC, 0x9E, 0xFF)
-                               : SkColorSetRGB(0x79, 0x6E, 0xEE);
-      case ColorId::kFiletypeGform:
-      case ColorId::kFiletypeExcel:
-        // Before refresh23, they are mapped to kGreen.
-        return cros_styles::ResolveColor(
-            cros_styles::ColorName::kIconColorGreen, dark_background,
-            /*use_debug_colors=*/false);
-      case ColorId::kFiletypeWord:
-        // Before refresh23, it's mapped to kBlue.
-        return cros_styles::ResolveColor(cros_styles::ColorName::kIconColorBlue,
-                                         dark_background,
-                                         /*use_debug_colors=*/false);
-    }
+  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
+  auto* color_provider = ui::ColorProviderManager::Get().GetColorProviderFor(
+      native_theme->GetColorProviderKey(nullptr));
+  switch (color_id) {
+    case ColorId::kBlue:
+      return color_provider->GetColor(cros_tokens::kCrosSysProgress);
+    case ColorId::kGreen:
+      return color_provider->GetColor(cros_tokens::kCrosSysPositive);
+    case ColorId::kGrey:
+      return color_provider->GetColor(cros_tokens::kCrosSysOnSurface);
+    case ColorId::kRed:
+      return color_provider->GetColor(cros_tokens::kCrosSysError);
+    case ColorId::kYellow:
+      return color_provider->GetColor(cros_tokens::kCrosSysWarning);
+    case ColorId::kFiletypePpt:
+      return color_provider->GetColor(cros_tokens::kCrosSysFileMsPpt);
+    case ColorId::kFiletypeGsite:
+    case ColorId::kFiletypeSites:
+      return color_provider->GetColor(cros_tokens::kCrosSysFileSite);
+    case ColorId::kFiletypeGform:
+      return color_provider->GetColor(cros_tokens::kCrosSysFileForm);
+    case ColorId::kFiletypeExcel:
+      return color_provider->GetColor(cros_tokens::kCrosSysFileMsExcel);
+    case ColorId::kFiletypeWord:
+      return color_provider->GetColor(cros_tokens::kCrosSysFileMsWord);
   }
 }
 

@@ -17,13 +17,13 @@ class CommitMessage;
 
 namespace syncer::commit_util {
 
-// Adds bookmark extensions activity report to |message|.
+// Adds bookmark extensions activity report to `message`.
 void AddExtensionsActivityToMessage(
     ExtensionsActivity* activity,
     ExtensionsActivity::Records* extensions_activity_buffer,
     sync_pb::CommitMessage* message);
 
-// Fills the config_params field of |message|.
+// Fills the config_params field of `message`.
 void AddClientConfigParamsToMessage(
     DataTypeSet enabled_types,
     bool cookie_jar_mismatch,

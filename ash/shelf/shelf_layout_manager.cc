@@ -53,6 +53,7 @@
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/work_area_insets.h"
@@ -66,6 +67,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/screen_position_client.h"
@@ -372,6 +377,15 @@ bool IsInImmersiveFullscreen() {
   return active_window && active_window->IsInImmersiveFullscreen();
 }
 
+void RecordGrowthCampaignsHoverEvent() {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  // Campaigns manager may be null in tests.
+  if (campaigns_manager) {
+    campaigns_manager->RecordEvent(growth::kGrowthCampaignsEventHotseatHover,
+                                   /*trigger_campaigns=*/true);
+  }
+}
+
 // Forwards gesture events to ShelfLayoutManager to hide the hotseat
 // when it is kExtended.
 class HotseatEventHandler : public ui::EventHandler,
@@ -488,7 +502,8 @@ ShelfLayoutManager::ScopedVisibilityLock::~ScopedVisibilityLock() {
 ShelfLayoutManager::ShelfLayoutManager(ShelfWidget* shelf_widget, Shelf* shelf)
     : shelf_widget_(shelf_widget),
       shelf_(shelf),
-      is_background_blur_enabled_(features::IsBackgroundBlurEnabled()) {
+      is_background_blur_enabled_(features::IsBackgroundBlurEnabled() &&
+                                  chromeos::features::IsSystemBlurEnabled()) {
   DCHECK(shelf_widget_);
   DCHECK(shelf_);
 }
@@ -1171,7 +1186,8 @@ ShelfBackgroundType ShelfLayoutManager::ComputeShelfBackgroundType() const {
   const bool has_visible_snap_group =
       snap_group_controller &&
       snap_group_controller->GetTopmostVisibleSnapGroup(
-          shelf_native_window->GetRootWindow());
+          shelf_native_window->GetRootWindow(),
+          /*topwindow_only=*/false);
   const bool maximized =
       in_split_view_mode || has_visible_snap_group ||
       state_.window_state == WorkspaceWindowState::kFullscreen ||
@@ -1306,6 +1322,17 @@ void ShelfLayoutManager::OnPinnedStateChanged(aura::Window* pinned_window) {
   // Shelf needs to be hidden on entering to pinned mode, or restored
   // on exiting from pinned mode.
   UpdateVisibilityState(/*force_layout=*/false);
+}
+
+void ShelfLayoutManager::OnRootWindowWillShutdown(aura::Window* root_window) {
+  // It is possible that there are shelf update calls between Root Window
+  // shutting down and ShelfWidget::Shutdown (which subsequently called
+  // |PrepareForShutdown()|). Therefore, we need to flip the |in_shutdown_| bit
+  // early to avoid making changes to a partially destroyed host.
+  aura::Window* root = shelf_widget_->GetNativeWindow()->GetRootWindow();
+  if (root == root_window) {
+    PrepareForShutdown();
+  }
 }
 
 void ShelfLayoutManager::OnShellDestroying() {
@@ -1487,9 +1514,7 @@ void ShelfLayoutManager::OnLocaleChanged() {
   shelf_->login_shelf_widget()->HandleLocaleChange();
   shelf_->status_area_widget()->HandleLocaleChange();
   shelf_->navigation_widget()->HandleLocaleChange();
-  if (features::IsDeskButtonEnabled()) {
-    shelf_widget_->desk_button_widget()->HandleLocaleChange();
-  }
+  shelf_widget_->desk_button_widget()->HandleLocaleChange();
 
   // Layout update is needed when language changes between LTR and RTL.
   LayoutShelf();
@@ -1662,6 +1687,12 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state,
   }
 
   if (previous_hotseat_state != hotseat_state()) {
+    // Record showing the home launcher in tablet mode as the equivalent of
+    // hovering over the shelf, since there's no hover on a
+    // touch-only device.
+    if (hotseat_state() == HotseatState::kShownHomeLauncher) {
+      RecordGrowthCampaignsHoverEvent();
+    }
     if (hotseat_state() == HotseatState::kExtended)
       hotseat_event_handler_ = std::make_unique<HotseatEventHandler>(this);
     else
@@ -1676,6 +1707,16 @@ void ShelfLayoutManager::SetState(ShelfVisibilityState visibility_state,
 HotseatState ShelfLayoutManager::CalculateHotseatState(
     ShelfVisibilityState visibility_state,
     ShelfAutoHideState auto_hide_state) const {
+  // Hide hotseat when in locked fullscreen mode to prevent users from exiting
+  // this mode.
+  auto* const screen_pinning_controller =
+      Shell::Get()->screen_pinning_controller();
+  if (screen_pinning_controller && screen_pinning_controller->IsPinned() &&
+      (GetWindowPinType(screen_pinning_controller->pinned_window()) ==
+       chromeos::WindowPinType::kTrustedPinned)) {
+    return HotseatState::kHidden;
+  }
+
   if (!Shell::Get()->IsInTabletMode() || !shelf_->IsHorizontalAlignment()) {
     return HotseatState::kShownClamshell;
   }
@@ -1952,9 +1993,7 @@ void ShelfLayoutManager::UpdateBoundsAndOpacity(bool animate) {
   hotseat_widget->UpdateLayout(animate);
   status_widget->UpdateLayout(animate);
   nav_widget->UpdateLayout(animate);
-  if (features::IsDeskButtonEnabled()) {
-    shelf_widget_->desk_button_widget()->UpdateLayout(animate);
-  }
+  shelf_widget_->desk_button_widget()->UpdateLayout(animate);
   shelf_->login_shelf_widget()->UpdateLayout(animate);
 
   phase_ = ShelfLayoutPhase::kAtRest;
@@ -1988,8 +2027,7 @@ void ShelfLayoutManager::UpdateTargetBounds(const State& state,
   shelf_->status_area_widget()->CalculateTargetBounds();
   shelf_->navigation_widget()->CalculateTargetBounds();
 
-  if (features::IsDeskButtonEnabled() &&
-      shelf_->desk_button_widget()->ShouldReserveSpaceFromShelf()) {
+  if (shelf_->desk_button_widget()->ShouldReserveSpaceFromShelf()) {
     // If the desk button should be on the shelf, reserve space for it in the
     // hotseat before drawing the hotseat.
     CalculateDeskButtonAndHotseatTargetBounds();
@@ -2087,10 +2125,8 @@ void ShelfLayoutManager::UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
     shelf_->hotseat_widget()->UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
-    if (features::IsDeskButtonEnabled()) {
-      shelf_->desk_button_widget()->UpdateTargetBoundsForGesture(
-          adjusted_shelf_position);
-    }
+    shelf_->desk_button_widget()->UpdateTargetBoundsForGesture(
+        adjusted_shelf_position);
     shelf_->navigation_widget()->UpdateTargetBoundsForGesture(
         adjusted_shelf_position);
     shelf_->status_area_widget()->UpdateTargetBoundsForGesture(
@@ -2438,12 +2474,10 @@ bool ShelfLayoutManager::IsShelfWindow(aura::Window* window) {
 
   // Calculate whether `window` is contained by the desk button widget.
   bool window_in_desk_button_widget = false;
-  if (features::IsDeskButtonEnabled()) {
-    const aura::Window* desk_button_window =
-        shelf_->desk_button_widget()->GetNativeWindow();
-    window_in_desk_button_widget =
-        (desk_button_window && desk_button_window->Contains(window));
-  }
+  const aura::Window* desk_button_window =
+      shelf_->desk_button_widget()->GetNativeWindow();
+  window_in_desk_button_widget =
+      (desk_button_window && desk_button_window->Contains(window));
 
   return (shelf_window && shelf_window->Contains(window)) ||
          (navigation_window && navigation_window->Contains(window)) ||
@@ -3188,9 +3222,7 @@ void ShelfLayoutManager::HandleShelfAlignmentChange() {
 
   // The desk button widget needs to know that the alignment is changing early
   // so that it can calculate the correct preferred length.
-  if (features::IsDeskButtonEnabled()) {
-    shelf_->desk_button_widget()->PrepareForAlignmentChange();
-  }
+  shelf_->desk_button_widget()->PrepareForAlignmentChange();
 
   UpdateVisibilityState(/*force_layout=*/true);
 }
@@ -3228,7 +3260,7 @@ bool ShelfLayoutManager::IsShelfContainerAnimating() const {
 }
 
 void ShelfLayoutManager::CalculateDeskButtonAndHotseatTargetBounds() {
-  CHECK(features::IsDeskButtonEnabled() && shelf_->desk_button_widget() &&
+  CHECK(shelf_->desk_button_widget() &&
         shelf_->desk_button_widget()->ShouldReserveSpaceFromShelf());
 
   auto reserve_space_for_desk_button_widget = [](Shelf* shelf) {

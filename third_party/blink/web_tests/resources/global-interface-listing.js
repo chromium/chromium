@@ -127,6 +127,7 @@ function globalInterfaceListing(
     'BluetoothRemoteGATTServer',
     'BluetoothRemoteGATTService',
     'BluetoothUUID',
+    'ClipboardChangeEvent', // crbug.com/417636703
   ]);
 
   // List of all platform-specific properties on interfaces that appear on all
@@ -139,6 +140,9 @@ function globalInterfaceListing(
     Notification: new Set([
       'getter image',
     ]),
+    // crbug.com/417636703 This API is not yet supported on Mac
+    Clipboard:
+        new Set(['getter onclipboardchange', 'setter onclipboardchange']),
   };
 
   // List of all platform-specific global properties. Please update this list

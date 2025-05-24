@@ -6,6 +6,7 @@
 
 #include <ostream>
 #include <utility>
+#include <variant>
 
 namespace apps {
 
@@ -98,7 +99,7 @@ AppInstallData::~AppInstallData() = default;
 bool AppInstallData::IsValidForInstallation() const {
   if (package_id.package_type() == PackageType::kWeb ||
       package_id.package_type() == PackageType::kWebsite) {
-    if (!absl::holds_alternative<WebAppInstallData>(app_type_data)) {
+    if (!std::holds_alternative<WebAppInstallData>(app_type_data)) {
       return false;
     }
   } else if (!install_url.is_valid()) {
@@ -132,7 +133,7 @@ std::ostream& operator<<(std::ostream& out, const AppInstallData& data) {
   out << ", install_url: " << data.install_url;
 
   out << ", app_type_data: ";
-  absl::visit([&out](const auto& data) { out << data; }, data.app_type_data);
+  std::visit([&out](const auto& data) { out << data; }, data.app_type_data);
 
   return out << "}";
 }

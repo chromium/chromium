@@ -23,7 +23,7 @@ const char kFakeNow[] = "01/01/18 01:23:45 AM";
 
 class SchedulerUtilsTest : public testing::Test {
  public:
-  SchedulerUtilsTest() {}
+  SchedulerUtilsTest() = default;
   SchedulerUtilsTest(const SchedulerUtilsTest&) = delete;
   SchedulerUtilsTest& operator=(const SchedulerUtilsTest&) = delete;
   ~SchedulerUtilsTest() override = default;

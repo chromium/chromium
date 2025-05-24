@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 
 // Listens to debug events and enables test code to block until a desired
 // number of DevTools ports are open.
@@ -47,7 +48,7 @@ class TestDebugListener final : public fuchsia::web::DevToolsListener {
     void OnHttpPortOpen(uint16_t port) override;
 
     uint16_t port_ = 0;
-    TestDebugListener* test_debug_listener_;
+    raw_ptr<TestDebugListener> test_debug_listener_;
     fidl::Binding<fuchsia::web::DevToolsPerContextListener> binding_;
   };
 

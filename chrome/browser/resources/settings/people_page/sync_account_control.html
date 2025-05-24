@@ -6,7 +6,7 @@
       }
 
       .account-icon {
-        border-radius: 20px;
+        border-radius: 50%;
         flex-shrink: 0;
         height: var(--shown-avatar-size);
         width: var(--shown-avatar-size);
@@ -86,6 +86,12 @@
         }
       }
 
+      h3 {
+        font-size: inherit;
+        margin: 0;
+        font-weight: normal;
+      }
+
       #sync-icon-container cr-icon {
         fill: white;  /* Same in light and dark modes. */
         height: 12px;
@@ -102,6 +108,7 @@
         background-size: 100% auto;
         display: none;
         padding-top: calc(120 / 680 * 100%); /* Keep background ratio. */
+        display: block;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -110,9 +117,6 @@
         }
       }
 
-      :host([showing-promo]) #banner {
-        display: block;
-      }
     </style>
     <div id="banner" hidden="[[shouldHideBanner_(syncStatus.signedInState)]]"
         part="banner"></div>
@@ -120,10 +124,10 @@
         id="promo-header" hidden="[[shouldHideBanner_(
               syncStatus.signedInState)]]">
       <div class="flex cr-padded-text">
-        <div id="promo-title" part="title">
+        <h3 id="promo-title" part="title">
           [[getLabel_(promoLabelWithAccount,
               promoLabelWithNoAccount, shownAccount_)]]
-        </div>
+        </h3>
         <div class="secondary">[[subLabel_]]</div>
       </div>
       <cr-button class="action-button cr-button-gap" on-click="onSigninClick_"
@@ -132,14 +136,16 @@
                   syncStatus.firstSetupInProgress,
                   prefs.signin.allowed_on_next_startup.value)]]"
           hidden="[[shouldShowAvatarRow_]]">
-        $i18n{peopleSignIn}
+        $i18n{peopleSignInNoAccountAwareness}
       </cr-button>
     </div>
     <template is="dom-if" if="[[shouldShowAvatarRow_]]">
       <div class="cr-row first two-line" id="avatar-row">
         <div id="avatar-container">
           <img class="account-icon" alt=""
-              src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]">
+              src="[[getProfileImageSrc_(
+                shownAccount_.avatarImage,
+                profileAvatarURL_)]]">
           <div id="sync-icon-container"
               hidden="[[!isSyncing_(syncStatus.signedInState)]]"
               class$="[[getSyncIconStyle_(
@@ -156,36 +162,54 @@
                 '$i18nPolymer{syncNotWorking}',
                 '$i18nPolymer{syncPasswordsNotWorking}',
                 '$i18nPolymer{syncPaused}',
-                '$i18nPolymer{syncDisabled}', syncStatus.hasError,
+                '$i18nPolymer{syncDisabled}',
+                '$i18nPolymer{accountAwareRowTitle}',
+                syncStatus.hasError,
                 syncStatus.statusAction, syncStatus.disabled)]]
           </div>
-          <div class="secondary text-elide">
+          <div class="secondary text-elide"
+              hidden="[[shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
             [[getAccountLabel_(
-                '$i18nPolymer{signedInTo}', '$i18nPolymer{syncingTo}',
+                '$i18nPolymer{signedInTo}',
+                '$i18nPolymer{syncingTo}',
                 shownAccount_.email, syncStatus.hasError,
                 syncStatus.signedInState, syncStatus.disabled,
                 syncStatus.firstSetupInProgress,
                 shownAccount_.isPrimaryAccount)]]
+          </div>
+          <div class="secondary"
+              hidden="[[!shouldHideSubtitleWithAccountInfoText_(syncStatus)]]">
+            [[getAvatarSubtitleLabel_(
+              '$i18nPolymer{accountAwareRowSubtitle}',
+              '$i18nPolymer{pendingStateAvatarRowSubtitle}',
+              shownAccount_.email,
+              this.syncStatus.signedInState)]]
           </div>
         </div>
         <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]"
             on-click="onMenuButtonClick_" id="dropdown-arrow"
-            aria-label="$i18n{useAnotherAccount}">
+            aria-label="$i18n{changeAccount}"
+            aria-expanded="false">
         </cr-icon-button>
         <div class="separator"
             hidden="[[!shouldAllowAccountSwitch_(syncStatus.signedInState,
                 syncStatus.domain, syncStatus.signinPaused)]]">
         </div>
+        <cr-button id="signout-button" class="cr-button-gap"
+            hidden="[[shouldHideSignoutButton_(syncStatus.signedInState)]]"
+            on-click="onSignoutClick_">
+          $i18n{signOutOfChrome}
+        </cr-button>
         <cr-button id="sync-button" class="action-button cr-button-gap"
             hidden="[[shouldHideSyncButton_(syncStatus.signedInState,
                 syncStatus.signinPaused)]]"
             on-click="onSyncButtonClick_"
             disabled="[[shouldDisableSyncButton_(showSetupButtons_,
-                    syncStatus.firstSetupInProgress,
-                    prefs.signin.allowed_on_next_startup.value)]]">
-          $i18n{peopleSignIn}
+                syncStatus.firstSetupInProgress,
+                prefs.signin.allowed_on_next_startup.value)]]">
+          $i18nPolymer{turnOnSync}
         </cr-button>
         <cr-button id="turn-off"
             class="cr-button-gap"
@@ -193,14 +217,27 @@
                 syncStatus.domain, showSetupButtons_)]]"
             on-click="onTurnOffButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
-          $i18n{turnOffSync}
+          [[getTurnOffSyncLabel_(
+            '$i18nPolymer{turnOffSync}',
+            syncStatus.secondaryButtonActionText)]]
         </cr-button>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
-                showSetupButtons_)]]"
+            showSetupButtons_, syncStatus.statusAction)]]"
             on-click="onErrorButtonClick_"
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
+        </cr-button>
+        <cr-button class="action-button cr-button-gap"
+            on-click="onSyncButtonClick_" id="account-aware"
+            hidden="[[!shouldShowAccountAwareSigninButton_(
+                syncStatus.signedInState)]]">
+        <img class="account-icon small" alt=""
+        src="[[getAccountImageSrc_(shownAccount_.avatarImage)]]"
+        slot="prefix-icon">
+        [[getAccountAwareSigninButtonLabel_(
+          '$i18nPolymer{accountAwareSigninButtonLabel}',
+          shownAccount_.givenName)]]
         </cr-button>
         <div id="setup-buttons" hidden="[[!showSetupButtons_]]"
             class="cr-button-gap">
@@ -213,8 +250,11 @@
         <div id="signin-paused-buttons"
             hidden="[[!shouldShowSigninPausedButtons_(
                 syncStatus.signinPaused)]]">
-          <cr-button class="cr-button-gap" on-click="onSignoutClick_">
-            $i18n{peopleSignOut}
+          <cr-button class="cr-button-gap" id="remove-account-button"
+              hidden="[[shouldHideRemoveAccountButton_(
+                  syncStatus.signedInState)]]"
+              on-click="onSignoutClick_">
+            $i18n{pendingSecondaryButton}
           </cr-button>
           <cr-button class="action-button cr-button-gap"
               on-click="onSigninClick_">
@@ -227,7 +267,7 @@
           if="[[shouldAllowAccountSwitch_(syncStatus.signedInState,
               syncStatus.domain, syncStatus.signinPaused)]]" restamp>
         <cr-action-menu id="menu" auto-reposition
-            role-description="$i18n{menu}">
+            role-description="$i18n{menu}" on-close="onDropdownClose_">
           <template is="dom-repeat" items="[[storedAccounts_]]">
             <button class="dropdown-item" on-click="onAccountClick_">
               <img class="account-icon small" alt=""
@@ -236,15 +276,10 @@
             </button>
           </template>
           <button class="dropdown-item" on-click="onSigninClick_"
-              disabled="[[syncStatus.firstSetupInProgress]]" id="sign-in-item">
-            <img class="account-icon small" alt=""
-                src="chrome://theme/IDR_PROFILE_AVATAR_PLACEHOLDER_LARGE">
+                  disabled="[[syncStatus.firstSetupInProgress]]"
+                  id="sign-in-item">
+            <cr-icon icon="cr:add" class="account-icon small" alt=""></cr-icon>
             <span>$i18n{useAnotherAccount}</span>
-          </button>
-          <button class="dropdown-item" on-click="onSignoutClick_"
-              disabled="[[syncStatus.firstSetupInProgress]]" id="sign-out-item">
-            <cr-icon icon="settings:exit-to-app"></cr-icon>
-            <span>$i18n{peopleSignOut}</span>
           </button>
         </cr-action-menu>
       </template>

@@ -263,13 +263,12 @@ function isAncestorOf(
     if (currentId === ancestorId) {
       return true;
     }
-    currentId = nodes[currentId!]!.parentId;
+    currentId = nodes[currentId]!.parentId;
   }
   return false;
 }
 
-// Exported for tests.
-export function updateSelectedFolder(
+function updateSelectedFolder(
     selectedFolder: string, action: Action, nodes: NodeMap): string {
   switch (action.name) {
     case 'select-folder':

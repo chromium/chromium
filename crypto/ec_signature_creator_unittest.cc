@@ -37,7 +37,7 @@ TEST(ECSignatureCreatorTest, BasicTest) {
 
   std::string data("Hello, World!");
   std::vector<uint8_t> signature;
-  ASSERT_TRUE(signer->Sign(base::as_bytes(base::make_span(data)), &signature));
+  ASSERT_TRUE(signer->Sign(base::as_byte_span(data), &signature));
 
   std::vector<uint8_t> public_key_info;
   ASSERT_TRUE(key_original->ExportPublicKey(&public_key_info));
@@ -46,6 +46,6 @@ TEST(ECSignatureCreatorTest, BasicTest) {
   ASSERT_TRUE(verifier.VerifyInit(crypto::SignatureVerifier::ECDSA_SHA256,
                                   signature, public_key_info));
 
-  verifier.VerifyUpdate(base::as_bytes(base::make_span(data)));
+  verifier.VerifyUpdate(base::as_byte_span(data));
   ASSERT_TRUE(verifier.VerifyFinal());
 }

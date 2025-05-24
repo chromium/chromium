@@ -194,11 +194,6 @@ class NetworkTasksTest : public testing::Test {
 
 TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    GTEST_SKIP() << "Network binding on Android requires an API level >= 23";
-  }
-
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);
@@ -216,11 +211,6 @@ TEST_F(NetworkTasksTest, NetworkBoundContextLifetime) {
 
 TEST_F(NetworkTasksTest, NetworkBoundContextWithPendingRequest) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_MARSHMALLOW) {
-    GTEST_SKIP() << "Network binding on Android requires an API level >= 23";
-  }
-
   constexpr net::handles::NetworkHandle kNetwork = 1;
 
   CheckURLRequestContextExistence(kNetwork, false);

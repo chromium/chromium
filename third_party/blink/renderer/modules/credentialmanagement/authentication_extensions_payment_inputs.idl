@@ -6,5 +6,8 @@
 
 dictionary AuthenticationExtensionsPaymentInputs {
   boolean isPayment;
+
+  // A sequence of public key credential creation parameters for the browser bound key.
+  [RuntimeEnabled=SecurePaymentConfirmationBrowserBoundKeys] sequence<PublicKeyCredentialParameters> browserBoundPubKeyCredParams;
 };
 

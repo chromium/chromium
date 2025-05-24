@@ -14,6 +14,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
 #include "ui/aura/window.h"
@@ -85,7 +86,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AccessibilityBridgeFuchsiaImpl final
 
   // Root window for the fuchsia view for which this accessibility bridge
   // instance is responsible.
-  aura::Window* root_window_;
+  raw_ptr<aura::Window> root_window_;
 
   // Manages connections with the fuchsia semantics APIs.
   std::unique_ptr<AXFuchsiaSemanticProvider> semantic_provider_;

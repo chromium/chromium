@@ -5,11 +5,11 @@
 #ifndef IOS_WEB_JS_MESSAGING_JAVA_SCRIPT_CONTENT_WORLD_H_
 #define IOS_WEB_JS_MESSAGING_JAVA_SCRIPT_CONTENT_WORLD_H_
 
+#import <WebKit/WebKit.h>
+
 #include <map>
 #include <memory>
 #include <set>
-
-#import <WebKit/WebKit.h>
 
 #import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"

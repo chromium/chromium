@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Throws QuotaExceededError when the quota has been exceeded
+  assert_throws_dom: function "function() {\n        while (true) {\n            index++;\n            localStorage.setItem("" + key + index, "" + val + index);\n        }\n    }" threw object "QuotaExceededError: Failed to execute 'setItem' on 'Storage': Setting the value of 'name5063' exceeded the quota." that is not a DOMException QUOTA_EXCEEDED_ERR: property "code" is equal to 0, expected 22
+Harness: the test ran to completion.
+

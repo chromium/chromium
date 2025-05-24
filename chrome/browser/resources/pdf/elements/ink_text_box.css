@@ -1,0 +1,107 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --handle-size: 8px;
+  --textbox-height: 100px;
+  --textbox-location-x: 0;
+  --textbox-location-y: 0;
+  --textbox-width: 20px;
+  border: 2px solid var(--google-blue-700);
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  height: var(--textbox-height);
+  width: var(--textbox-width);
+  top: var(--textbox-location-y);
+  left: var(--textbox-location-x);
+  position: absolute;
+  z-index: 1;
+}
+
+.handle {
+  background-color: var(--google-blue-700);
+  border-radius: 50%;
+  height: 8px;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 8px;
+}
+
+.handle.top {
+  top: 0%;
+}
+
+.handle.left {
+  left: 0%;
+}
+
+.handle.right {
+  left: 100%;
+}
+
+.handle.bottom {
+  top: 100%;
+}
+
+.handle.left.center,
+.handle.right.center {
+  top: 50%;
+}
+
+.handle.top.center,
+.handle.bottom.center {
+  left: 50%;
+}
+
+.handle.left,
+.handle.right {
+  cursor: ew-resize;
+}
+
+.handle.top,
+.handle.bottom {
+  cursor: ns-resize;
+}
+
+.handle.top.right,
+.handle.bottom.left {
+  cursor: nesw-resize;
+}
+
+.handle.top.left,
+.handle.bottom.right {
+  cursor: nwse-resize;
+}
+
+textarea {
+  background: none;
+  border: none;
+  display: block;
+  field-sizing: content;
+  flex: 1;
+  outline: none;
+  overflow: hidden;
+  padding: calc(var(--handle-size) / 2 + 2px);
+  resize: none;
+}
+
+:host([text-rotations_="1"]) textarea {
+  writing-mode: vertical-rl;
+}
+
+:host([text-rotations_="2"]) textarea {
+  transform: rotate(180deg);
+}
+
+:host([text-rotations_="3"]) textarea {
+  writing-mode: sideways-lr;
+}

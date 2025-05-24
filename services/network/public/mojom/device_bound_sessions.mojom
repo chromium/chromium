@@ -1,0 +1,89 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "services/network/public/mojom/clear_data_filter.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/url.mojom";
+
+// LINT.IfChange
+struct DeviceBoundSessionKey {
+  // The site the session is scoped to.
+  SchemefulSite site;
+
+  // The site-scoped identifier for the session.
+  string id;
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_key.h)
+
+// LINT.IfChange
+enum DeviceBoundSessionAccessType {
+  kCreation = 0,
+  kUpdate = 1,
+  kTermination = 2,
+};
+
+struct DeviceBoundSessionAccess {
+  // Type of access
+  DeviceBoundSessionAccessType access_type;
+
+  // Key of accessed session
+  DeviceBoundSessionKey session_key;
+
+  // Bound cookie names. Only populated when `access_type` is `kTermination`.
+  array<string> cookies;
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_access.h)
+
+// LINT.IfChange
+enum DeviceBoundSessionUsage {
+  kUnknown = 0,
+  kNoUsage = 1,
+  kInScopeNotDeferred = 2,
+  kDeferred = 3,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_usage.h)
+
+// DeviceBoundSessionManager is a privileged interface that should only
+// be used in trusted processes.
+[RequireContext=sandbox.mojom.Context.kBrowser]
+interface DeviceBoundSessionManager {
+  // Asynchronously fetch all sessions currently registered.
+  GetAllSessions() => (array<DeviceBoundSessionKey> sessions);
+
+  // Delete a session by key.
+  DeleteSession(DeviceBoundSessionKey session);
+
+  // Delete all sessions matching the filter logic. Conditions are AND'ed
+  // together and providing no arguments at all will delete all sessions.
+  // - If present, sessions must be created after `created_after_time`.
+  // - If present, sessions must be created before `created_before_time`.
+  // - If present, sessions must match `filter` (see clear_data_filter.mojom).
+  DeleteAllSessions(mojo_base.mojom.Time? created_after_time,
+                    mojo_base.mojom.Time? created_before_time,
+                    ClearDataFilter? filter) => ();
+
+  // Add an observer for accesses to sessions including `url`.
+  AddObserver(url.mojom.Url url,
+              pending_remote<DeviceBoundSessionAccessObserver> observer);
+};
+
+// Observer that is notified on use of a device bound session.
+interface DeviceBoundSessionAccessObserver {
+  // Called when a device bound session is used. This includes:
+  // - Newly registered sessions
+  // - Sessions deferring requests
+  // - Session deletion
+  OnDeviceBoundSessionAccessed(DeviceBoundSessionAccess access);
+
+  // Called to create a copy of this observer. (e.g. when cloning observers
+  // from ResourceRequest).
+  Clone(pending_receiver<DeviceBoundSessionAccessObserver> observer);
+};

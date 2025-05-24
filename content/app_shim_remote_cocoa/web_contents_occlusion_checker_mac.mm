@@ -19,12 +19,6 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 
-using features::kMacWebContentsOcclusion;
-
-// Experiment features.
-const base::FeatureParam<bool> kEnhancedWindowOcclusionDetection{
-    &kMacWebContentsOcclusion, "EnhancedWindowOcclusionDetection", false};
-
 namespace {
 
 NSString* const kWindowDidChangePositionInWindowList =
@@ -98,7 +92,6 @@ bool IsBrowserProcess() {
 - (instancetype)init {
   self = [super init];
 
-  DCHECK(base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
   DCHECK(IsBrowserProcess());
   if (!IsBrowserProcess()) {
     static auto* const crash_key = base::debug::AllocateCrashKeyString(
@@ -134,8 +127,7 @@ bool IsBrowserProcess() {
 
 - (BOOL)isManualOcclusionDetectionEnabled {
   return [WebContentsOcclusionCheckerMac
-             manualOcclusionDetectionSupportedForCurrentMacOSVersion] &&
-         kEnhancedWindowOcclusionDetection.Get();
+      manualOcclusionDetectionSupportedForCurrentMacOSVersion];
 }
 
 // Alternative implementation of orderWindow:relativeTo:. Replaces
@@ -391,8 +383,12 @@ bool IsBrowserProcess() {
 - (void)performOcclusionStateUpdates {
   _occlusionStateUpdatesAreScheduled = NO;
 
-  if (content::GetContentClient()->browser() &&
-      content::GetContentClient()->browser()->IsShuttingDown()) {
+  auto* content_client = content::GetContentClient();
+  if (!content_client) {
+    return;
+  }
+  auto* browser = content_client->browser();
+  if (browser && browser->IsShuttingDown()) {
     return;
   }
 

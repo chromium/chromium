@@ -62,16 +62,15 @@ PowerButtonMenuView::PowerButtonMenuView(
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
       kPowerButtonMenuCornerRadius,
-      chromeos::features::IsJellyrollEnabled()
-          ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-          : kPowerButtonMenuBorderType));
+      views::HighlightBorder::Type::kHighlightBorderOnShadow));
   SetBackground(
-      views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
+      views::CreateSolidBackground(kPowerButtonMenuBackgroundColorId));
 
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
-  if (features::IsBackgroundBlurEnabled()) {
+  if (features::IsBackgroundBlurEnabled() &&
+      chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }

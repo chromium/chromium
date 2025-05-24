@@ -18,7 +18,6 @@ using alert_overlays::AlertRequest;
 using alert_overlays::AlertResponse;
 using alert_overlays::ButtonConfig;
 using java_script_dialog_overlay::BlockDialogsButtonConfig;
-using java_script_dialog_overlay::DialogMessage;
 using java_script_dialog_overlay::DialogTitle;
 using java_script_dialog_overlay::kButtonIndexOk;
 using java_script_dialog_overlay::ShouldAddBlockDialogsButton;
@@ -33,8 +32,9 @@ const size_t kPromptBlockButtonIndex = 2;
 std::unique_ptr<OverlayResponse> CreateDialogResponse(
     std::unique_ptr<OverlayResponse> response) {
   AlertResponse* alert_response = response->GetInfo<AlertResponse>();
-  if (!alert_response)
+  if (!alert_response) {
     return nullptr;
+  }
 
   JavaScriptPromptDialogResponse::Action action =
       JavaScriptPromptDialogResponse::Action::kCancel;
@@ -55,17 +55,15 @@ std::unique_ptr<OverlayResponse> CreateDialogResponse(
 
 #pragma mark - JavaScriptPromptDialogRequest
 
-OVERLAY_USER_DATA_SETUP_IMPL(JavaScriptPromptDialogRequest);
-
 JavaScriptPromptDialogRequest::JavaScriptPromptDialogRequest(
     web::WebState* web_state,
-    const GURL& url,
-    bool is_main_frame,
+    const GURL& main_frame_url,
+    const url::Origin& alerting_frame_origin,
     NSString* message,
     NSString* default_text_field_value)
     : weak_web_state_(web_state->GetWeakPtr()),
-      url_(url),
-      is_main_frame_(is_main_frame),
+      main_frame_url_(main_frame_url),
+      alerting_frame_origin_(alerting_frame_origin),
       message_(message),
       default_text_field_value_(default_text_field_value) {}
 
@@ -73,9 +71,8 @@ JavaScriptPromptDialogRequest::~JavaScriptPromptDialogRequest() = default;
 
 void JavaScriptPromptDialogRequest::CreateAuxiliaryData(
     base::SupportsUserData* user_data) {
-  NSString* alert_title = DialogTitle(is_main_frame_, message());
-  NSString* alert_message = DialogMessage(is_main_frame_, message());
-
+  NSString* alert_title =
+      DialogTitle(main_frame_url(), alerting_frame_origin());
   // Add a text field with the default value.
   NSString* text_field_identifier =
       kJavaScriptDialogTextFieldAccessibilityIdentifier;
@@ -97,15 +94,13 @@ void JavaScriptPromptDialogRequest::CreateAuxiliaryData(
   }
 
   // Create the alert config.
-  AlertRequest::CreateForUserData(user_data, alert_title, alert_message,
+  AlertRequest::CreateForUserData(user_data, alert_title, message(),
                                   kJavaScriptDialogAccessibilityIdentifier,
                                   text_field_configs, button_configs,
                                   base::BindRepeating(&CreateDialogResponse));
 }
 
 #pragma mark - JavaScriptPromptDialogResponse
-
-OVERLAY_USER_DATA_SETUP_IMPL(JavaScriptPromptDialogResponse);
 
 JavaScriptPromptDialogResponse::JavaScriptPromptDialogResponse(
     Action action,

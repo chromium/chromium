@@ -98,11 +98,11 @@ public class MediaSessionTest {
 
     private MediaSessionObserver mObserver;
 
-    private ArrayList<StateRecord> mStateRecords = new ArrayList<StateRecord>();
+    private final ArrayList<StateRecord> mStateRecords = new ArrayList<StateRecord>();
 
     private static class StateRecord {
-        public boolean isControllable;
-        public boolean isSuspended;
+        public final boolean isControllable;
+        public final boolean isSuspended;
 
         public StateRecord(boolean isControllable, boolean isSuspended) {
             this.isControllable = isControllable;
@@ -134,7 +134,7 @@ public class MediaSessionTest {
         try {
             mActivityTestRule.launchContentShellWithUrlSync(MEDIA_SESSION_TEST_URL);
         } catch (Throwable t) {
-            Assert.fail("Couldn't load test page");
+            throw new AssertionError("Couldn't load test page", t);
         }
 
         mAudioFocusChangeListener = new MockAudioFocusChangeListener();

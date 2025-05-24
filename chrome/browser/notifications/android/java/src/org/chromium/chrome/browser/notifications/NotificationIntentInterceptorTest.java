@@ -141,7 +141,7 @@ public class NotificationIntentInterceptorTest {
     @Test
     public void testContentIntentInterception() throws Exception {
         // Send notification.
-        new NotificationManagerProxyImpl(mContext)
+        NotificationManagerProxyImpl.getInstance()
                 .notify(buildSimpleNotification(TEST_NOTIFICATION_TITLE));
 
         // Simulates a notification click.
@@ -154,8 +154,8 @@ public class NotificationIntentInterceptorTest {
         // Verify the intent and histograms recorded.
         Intent receivedIntent = mReceiver.intentReceived();
         Assert.assertEquals(
-                receivedIntent.getExtras().getInt(EXTRA_INTENT_TYPE),
-                NotificationIntentInterceptor.IntentType.CONTENT_INTENT);
+                NotificationIntentInterceptor.IntentType.CONTENT_INTENT,
+                receivedIntent.getExtras().getInt(EXTRA_INTENT_TYPE));
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -170,7 +170,7 @@ public class NotificationIntentInterceptorTest {
     @Test
     public void testDeleteIntentInterception() throws Exception {
         // Send notification.
-        new NotificationManagerProxyImpl(mContext)
+        NotificationManagerProxyImpl.getInstance()
                 .notify(buildSimpleNotification(TEST_NOTIFICATION_TITLE));
 
         // Simulates a notification cancel.
@@ -193,7 +193,7 @@ public class NotificationIntentInterceptorTest {
     @Test
     public void testActionIntentInterception() throws Exception {
         // Send notification.
-        new NotificationManagerProxyImpl(mContext)
+        NotificationManagerProxyImpl.getInstance()
                 .notify(buildSimpleNotification(TEST_NOTIFICATION_TITLE));
 
         // Simulates a button click.

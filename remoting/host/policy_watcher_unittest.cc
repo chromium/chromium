@@ -16,7 +16,6 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/fake_async_policy_loader.h"
 #include "components/policy/policy_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -303,6 +302,7 @@ class PolicyWatcherTest : public testing::Test {
     dict.Set(key::kRemoteAccessHostAllowEnterpriseRemoteSupportConnections,
              true);
     dict.Set(key::kRemoteAccessHostAllowEnterpriseFileTransfer, false);
+    dict.Set(key::kClassManagementEnabled, "disabled");
 #endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     dict.Set(key::kRemoteAccessHostMatchUsername, false);
@@ -607,7 +607,7 @@ TEST_F(PolicyWatcherTest, Relay) {
   SetPolicies(relay_true_);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(PolicyWatcherTest, Curtain) {
   testing::InSequence sequence;
   EXPECT_CALL(mock_policy_callback_,
@@ -639,7 +639,7 @@ TEST_F(PolicyWatcherTest, MatchUsername) {
   SetPolicies(username_false_);
 }
 #endif
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PolicyWatcherTest, UdpPortRange) {
   testing::InSequence sequence;
@@ -685,7 +685,8 @@ TEST_F(PolicyWatcherTest, PolicySchemaAndPolicyWatcherShouldBeInSync) {
   ASSERT_TRUE(schema->valid());
   for (auto it = schema->GetPropertiesIterator(); !it.IsAtEnd(); it.Advance()) {
     std::string key = it.key();
-    if (key.find("RemoteAccessHost") == std::string::npos) {
+    if ((key.find("RemoteAccessHost") == std::string::npos) &&
+        (key != "ClassManagementEnabled")) {
       // For now PolicyWatcher::GetPolicySchema() mixes Chrome and Chromoting
       // policies, so we have to skip them here.
       continue;

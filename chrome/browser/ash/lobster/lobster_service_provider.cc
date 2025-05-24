@@ -8,7 +8,6 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/lobster/lobster_service.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/manta/manta_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"

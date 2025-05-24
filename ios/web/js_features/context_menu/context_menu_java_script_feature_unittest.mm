@@ -12,8 +12,8 @@
 #import "ios/web/public/ui/context_menu_params.h"
 #import "testing/gtest_mac.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 namespace web {
 

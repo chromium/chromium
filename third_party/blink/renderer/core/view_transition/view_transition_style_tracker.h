@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_STYLE_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_STYLE_TRACKER_H_
 
+#include <unordered_map>
+
 #include "base/containers/flat_map.h"
 #include "base/unguessable_token.h"
 #include "cc/layers/view_transition_content_layer.h"
@@ -15,15 +17,19 @@
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
+#include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -59,31 +65,30 @@ class ViewTransitionStyleTracker
  public:
   // Properties that transition on container elements.
   struct ContainerProperties {
-    ContainerProperties() = default;
-    ContainerProperties(const PhysicalSize& size, const gfx::Transform& matrix)
-        : border_box_size_in_css_space(size), snapshot_matrix(matrix) {}
+    bool operator==(const ContainerProperties& other) const = default;
 
-    bool operator==(const ContainerProperties& other) const {
-      return border_box_size_in_css_space ==
-                 other.border_box_size_in_css_space &&
-             snapshot_matrix == other.snapshot_matrix;
-    }
-    bool operator!=(const ContainerProperties& other) const {
-      return !(*this == other);
-    }
-
-    PhysicalSize border_box_size_in_css_space;
+    // The rect used to compute the reference rect, which is what's eventually
+    // used fo the projecting the content to the coordinate space of the
+    // pseudo-element. It is in layer space, as the contents are captured in
+    // layer space.
+    PhysicalRect border_box_rect_in_enclosing_layer_css_space;
 
     // Transforms a point from local space into the snapshot viewport. For
     // details of the snapshot viewport, see README.md.
     gfx::Transform snapshot_matrix;
+
+    PhysicalSize GroupSize() const {
+      return border_box_rect_in_enclosing_layer_css_space.size;
+    }
   };
 
   explicit ViewTransitionStyleTracker(
       Document& document,
       const blink::ViewTransitionToken& transition_token);
   ViewTransitionStyleTracker(Document& document, ViewTransitionState);
-  ~ViewTransitionStyleTracker();
+  ViewTransitionStyleTracker(
+      Element& element,
+      const blink::ViewTransitionToken& transition_token);
 
   void AddTransitionElementsFromCSS();
 
@@ -96,8 +101,12 @@ class ViewTransitionStyleTracker
   // set elements and names is valid. Returns true if capture phase started,
   // and false if the transition should be aborted. If `snap_browser_controls`
   // is set, browser controls will be forced to a fully shown state to ensure a
-  // consistent state for cross-document transitions.
+  // consistent state for cross-document transitiopns.
   bool Capture(bool snap_browser_controls);
+
+  void SetCaptureRectsFromCompositor(
+      const std::unordered_map<viz::ViewTransitionElementResourceId,
+                               gfx::RectF>&);
 
   // Notifies when caching snapshots for elements in the old DOM finishes. This
   // is dispatched before script is notified to ensure this class releases any
@@ -212,9 +221,18 @@ class ViewTransitionStyleTracker
   const Vector<AtomicString>& GetViewTransitionClassList(
       const AtomicString& name) const;
 
+  const Vector<AtomicString>& GetViewTransitionNames() const {
+    return view_transition_names_;
+  }
+
   // This returns the resolved containing group name for a given view transition
   // name. Note that this only works once the transition starts.
   AtomicString GetContainingGroupName(const AtomicString& name) const;
+
+  void WillEnterGetComputedStyleScope();
+  void WillExitGetComputedStyleScope();
+
+  void InvalidateInternalPseudoStyle();
 
  private:
   class ImageWrapperPseudoElement;
@@ -228,14 +246,21 @@ class ViewTransitionStyleTracker
       const AtomicString& name,
       const StyleViewTransitionGroup& group) const;
 
+  AtomicString GenerateAutoName(Element&, const TreeScope*, bool allow_from_id);
+
   struct ElementData : public GarbageCollected<ElementData> {
     void Trace(Visitor* visitor) const;
 
     // Returns the intrinsic size for the element's snapshot.
     gfx::RectF GetInkOverflowRect(bool use_cached_data) const;
     gfx::RectF GetCapturedSubrect(bool use_cached_data) const;
-    gfx::RectF GetBorderBoxRect(bool use_cached_data,
+
+    // This is the geometry of the snapshot, in layer coordinate space, that is
+    // going to be mapped to the old/new pseudo-element's content rect.
+    gfx::RectF GetReferenceRect(bool use_cached_data,
                                 float device_scale_factor) const;
+
+    bool ShouldPropagateVisualOverflowRectAsMaxExtentsRect() const;
 
     // Caches the current state for the old snapshot.
     void CacheStateForOldSnapshot();
@@ -246,8 +271,8 @@ class ViewTransitionStyleTracker
 
     // Computed info for each element participating in the transition for the
     // |target_element|. This information is mirrored into the UA stylesheet.
-    // This is stored in a vector to be able to stack animations.
-    Vector<ContainerProperties> container_properties;
+    // It is std::nullopt before it is populated for the first time.
+    std::optional<ContainerProperties> container_properties;
 
     // Computed info cached before the DOM switches to the new state.
     ContainerProperties cached_container_properties;
@@ -291,6 +316,11 @@ class ViewTransitionStyleTracker
     Vector<AtomicString> class_list;
 
     AtomicString containing_group_name;
+
+    // Whether this name was auto-generated via auto/match-element.
+    // Auto-generated names do not appear in reflection methods such as
+    // getAnimations.
+    bool is_generated_name;
   };
 
   // In physical pixels. Returns the snapshot root rect, relative to the
@@ -298,7 +328,8 @@ class ViewTransitionStyleTracker
   // snapshot root rect.
   gfx::Rect GetSnapshotRootInFixedViewport() const;
 
-  void InvalidateStyle();
+  void InvalidateStyleAndCompositing();
+  void InvalidatePseudoStyle();
   bool HasLiveNewContent() const;
   void EndTransition();
 
@@ -313,7 +344,7 @@ class ViewTransitionStyleTracker
       PaintLayer*,
       const TreeScope*,
       Vector<AtomicString>& containing_group_stack,
-      const AtomicString& current_containing_group_name);
+      const AtomicString& nearest_group_with_contain);
 
   void InvalidateHitTestingCache();
 
@@ -333,7 +364,13 @@ class ViewTransitionStyleTracker
       PhysicalRect& visual_overflow_rect_in_layout_space,
       std::optional<gfx::RectF>& captured_rect_in_layout_space) const;
 
-  viz::ViewTransitionElementResourceId GenerateResourceId() const;
+  // Computes a transform for the participant's border box relative to the
+  // viewport in the case of a document transition, or the padding box rect of
+  // the scope element in the case of a scoped transition.
+  gfx::Transform ComputeTransformForParticipant(const LayoutObject&) const;
+
+  viz::ViewTransitionElementResourceId GenerateResourceId(
+      bool for_subframe_snapshot = false) const;
 
   void SnapBrowserControlsToFullyShown();
 
@@ -341,7 +378,18 @@ class ViewTransitionStyleTracker
   // found in one of the ancestors of the given element.
   AtomicString ComputeContainingGroupName(Element*) const;
 
+  // This is the scope element in the case of a scoped transition, or the
+  // root (html) element in the case of a document transition. It can be null
+  // in the rare case that the root element has been removed from the DOM.
+  Element* OriginatingElement() const;
+
+  // Returns true if we have potentially created pseudo elements that should not
+  // be exposed via getComputedStyle or should not have author styles applied.
+  bool HasInternalPseudoElements() const;
+
   Member<Document> document_;
+
+  Member<Element> element_;
 
   // Indicates which step during the transition we're currently at.
   State state_ = State::kIdle;
@@ -411,6 +459,14 @@ class ViewTransitionStyleTracker
     AtomicString contain;
   };
   HashMap<AtomicString, AncestorGroupNames> group_state_map_;
+
+  base::Token token_;
+
+  HashMap<AtomicString, AtomicString> id_to_auto_name_map_;
+
+  Vector<AtomicString> view_transition_names_;
+
+  bool in_get_computed_style_scope_ = false;
 };
 
 }  // namespace blink

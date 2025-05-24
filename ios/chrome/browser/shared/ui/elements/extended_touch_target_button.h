@@ -7,11 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/elements/custom_highlight_button.h"
-
 // Button with touch target potentially extended outside its bound in a circle
 // with the center in the center of this button.
-@interface ExtendedTouchTargetButton : CustomHighlightableButton
+@interface ExtendedTouchTargetButton : UIButton
 
 // The minimum diameter to extend to. Default is 44 point, per Apple UI
 // Guidelines.

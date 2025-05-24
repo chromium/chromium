@@ -1,0 +1,65 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./shared_style_lit.css.js
+ * #include=shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  overflow: auto;
+}
+
+#illustration {
+  background: url(images/sign_in_promo.svg) no-repeat center center;
+  background-size: contain;
+  height: 222px;
+  margin-top: 100px;
+  width: 594.5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #illustration {
+    background-image: url(images/sign_in_promo_dark.svg);
+  }
+}
+
+#no-synced-tabs {
+  height: 100%;
+}
+
+#sign-in-guide {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow-x: hidden;
+  text-align: center;
+}
+
+#turn-on-sync-promo {
+  font-size: 215%;
+  margin-top: 40px;
+}
+
+#turn-on-sync-promo-desc {
+  color: var(--cr-secondary-text-color);
+  font-size: 123%;
+  margin-top: 10px;
+}
+
+#turn-on-sync-button {
+  margin: 24px 0;
+}
+
+#synced-device-list {
+  padding-top: var(--first-card-padding-top);
+}
+
+history-synced-device-card {
+  margin-block-end: var(--card-padding-between);
+}

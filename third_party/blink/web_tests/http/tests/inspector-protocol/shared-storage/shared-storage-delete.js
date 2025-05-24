@@ -21,10 +21,6 @@
     testRunner.log(entriesResult.result?.entries, 'Entries:');
   }
 
-  async function getSharedStorageEvents(testRunner, events) {
-    testRunner.log(events, 'Events: ', ['accessTime', 'mainFrameId']);
-  }
-
   const events = [];
   let totalEventsSoFar = 0;
 
@@ -38,13 +34,14 @@
 
   await dp.Storage.setSharedStorageTracking({enable: true});
 
-  eventPromise = getPromiseForEventCount(4);
+  eventPromise = getPromiseForEventCount(5);
 
   // The following calls should trigger events if shared storage is enabled, as
   // tracking is now enabled.
   //
-  // Generates 4 events.
+  // Generates 5 events.
   await session.evaluateAsync(`
+        sharedStorage.clear();
         sharedStorage.set('key0-set-from-document', 'value0');
         sharedStorage.set('key1-set-from-document', 'value1');
         sharedStorage.append('key1-set-from-document', 'value1');
@@ -74,7 +71,7 @@
 
   await getSharedStorageMetadata(dp, testRunner, baseOrigin);
   await getSharedStorageEntries(dp, testRunner, baseOrigin);
-  await getSharedStorageEvents(testRunner, events);
+  testRunner.log(events, 'Events: ', ['accessTime', 'mainFrameId']);
 
   testRunner.completeTest();
 })

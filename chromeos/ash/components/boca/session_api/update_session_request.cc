@@ -20,6 +20,7 @@
 namespace ash::boca {
 
 UpdateSessionRequest::UpdateSessionRequest(google_apis::RequestSender* sender,
+                                           std::string url_base,
                                            ::boca::UserIdentity teacher,
                                            std::string session_id,
                                            UpdateSessionCallback callback)
@@ -28,7 +29,7 @@ UpdateSessionRequest::UpdateSessionRequest(google_apis::RequestSender* sender,
                           google_apis::ProgressCallback()),
       teacher_(std::move(teacher)),
       session_id_(session_id),
-      url_base_(kSchoolToolsApiBaseUrl),
+      url_base_(std::move(url_base)),
       callback_(std::move(callback)) {}
 
 UpdateSessionRequest ::~UpdateSessionRequest() = default;
@@ -106,10 +107,12 @@ bool UpdateSessionRequest::GetContentData(std::string* upload_content_type,
       student_config.Set(kCaptionsConfig, std::move(caption_config));
     }
 
-    base::Value::Dict main_group_student_config;
-    main_group_student_config.Set(kMainStudentGroupName,
-                                  std::move(student_config));
-    root.Set(kStudentGroupsConfig, std::move(main_group_student_config));
+    base::Value::Dict group_student_config;
+    group_student_config.Set(kMainStudentGroupName, student_config.Clone());
+    // TODO(crbug.com/375051415): We duplicate the session config for access
+    // code student for now, this should eventually be moved to server.
+    group_student_config.Set(kAccessCodeGroupName, std::move(student_config));
+    root.Set(kStudentGroupsConfig, std::move(group_student_config));
   }
 
   base::JSONWriter::Write(root, upload_content);
@@ -125,7 +128,8 @@ void UpdateSessionRequest::ProcessURLFetchResults(
     case google_apis::HTTP_SUCCESS:
       blocking_task_runner()->PostTaskAndReplyWithResult(
           FROM_HERE,
-          base::BindOnce(&GetSessionProtoFromJson, std::move(response_body)),
+          base::BindOnce(&GetSessionProtoFromJson, std::move(response_body),
+                         true),
           base::BindOnce(&UpdateSessionRequest::OnDataParsed,
                          weak_ptr_factory_.GetWeakPtr()));
       break;

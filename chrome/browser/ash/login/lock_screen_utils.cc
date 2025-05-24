@@ -70,7 +70,7 @@ void SetUserInputMethod(const AccountId& account_id,
     DVLOG(0) << "SetUserInputMethod: failed to set user layout. Switching to "
                 "default.";
 
-    ime_state->SetInputMethodLoginDefault();
+    ime_state->SetInputMethodLoginDefault(false /* is_in_oobe_context */);
   }
 }
 
@@ -134,7 +134,7 @@ void StopEnforcingPolicyInputMethods() {
   imm_state->SetAllowedInputMethods(std::vector<std::string>());
   if (ImeControllerClientImpl::Get())  // Can be null in tests.
     ImeControllerClientImpl::Get()->SetImesManagedByPolicy(false);
-  imm_state->SetInputMethodLoginDefault();
+  imm_state->SetInputMethodLoginDefault(false /* is_in_oobe_context */);
 }
 
 void SetKeyboardSettings(const AccountId& account_id) {

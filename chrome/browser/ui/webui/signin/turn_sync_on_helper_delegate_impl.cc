@@ -12,7 +12,6 @@
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
@@ -25,10 +24,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -77,16 +78,19 @@ void OnEmailConfirmation(signin::SigninChoiceCallback callback,
       std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
 
-TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(Browser* browser,
-                                                           bool is_sync_promo)
+TurnSyncOnHelperDelegateImpl::TurnSyncOnHelperDelegateImpl(
+    Browser* browser,
+    bool is_sync_promo,
+    bool turn_sync_on_signed_profile)
     : browser_(browser),
       profile_(browser_->profile()),
-      is_sync_promo_(is_sync_promo) {
+      is_sync_promo_(is_sync_promo),
+      turn_sync_on_signed_profile_(turn_sync_on_signed_profile) {
   DCHECK(browser);
   DCHECK(profile_);
   BrowserList::AddObserver(this);
@@ -96,8 +100,19 @@ TurnSyncOnHelperDelegateImpl::~TurnSyncOnHelperDelegateImpl() {
   BrowserList::RemoveObserver(this);
 }
 
+bool TurnSyncOnHelperDelegateImpl::IsProfileCreationRequiredByPolicy() const {
+  return profile_creation_required_by_policy_;
+}
+
 void TurnSyncOnHelperDelegateImpl::ShowLoginError(const SigninUIError& error) {
-  DCHECK(!error.IsOk());
+  CHECK(!error.IsOk());
+  if (is_sync_promo_ &&
+      error.type() ==
+          SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
+    // Do not show Sync-related errors if it's a Sync promo.
+    return;
+  }
+
   TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(error, browser_);
 }
 
@@ -105,6 +120,11 @@ void TurnSyncOnHelperDelegateImpl::
     ShouldEnterpriseConfirmationPromptForNewProfile(
         Profile* profile,
         base::OnceCallback<void(bool)> callback) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnterpriseUpdatedProfileCreationScreen)) {
+    std::move(callback).Run(/*prompt_for_new_profile=*/true);
+    return;
+  }
   ui::CheckShouldPromptForNewProfile(profile, std::move(callback));
 }
 
@@ -112,11 +132,6 @@ void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Profile Separation Enforced is not supported on Lacros.
-  OnProfileCheckComplete(account_info, std::move(callback),
-                         /*prompt_for_new_profile=*/false);
-#else
   account_level_signin_restriction_policy_fetcher_ =
       std::make_unique<policy::UserCloudSigninRestrictionPolicyFetcher>(
           g_browser_process->browser_policy_connector(),
@@ -129,7 +144,6 @@ void TurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
       base::BindOnce(&TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete,
                      weak_ptr_factory_.GetWeakPtr(), account_info,
                      std::move(callback)));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
@@ -142,6 +156,12 @@ void TurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(
   browser_ = EnsureBrowser(browser_, profile_);
   browser_->signin_view_controller()->ShowModalSyncConfirmationDialog(
       /*is_signin_intercept=*/false, is_sync_promo_);
+}
+
+bool TurnSyncOnHelperDelegateImpl::
+    ShouldAbortBeforeShowSyncDisabledConfirmation() {
+  // Do not show the sync disabled confirmation if it's a Sync promo.
+  return is_sync_promo_;
 }
 
 void TurnSyncOnHelperDelegateImpl::ShowSyncDisabledConfirmation(
@@ -177,19 +197,21 @@ void TurnSyncOnHelperDelegateImpl::OnSyncConfirmationUIClosed(
     LoginUIService::SyncConfirmationUIClosedResult result) {
   DCHECK(sync_confirmation_callback_);
   // Treat closing the ui as an implicit ABORT_SYNC action.
-  if (result == LoginUIService::UI_CLOSED)
+  if (result == LoginUIService::UI_CLOSED) {
     result = LoginUIService::ABORT_SYNC;
-  if (browser_)
+  }
+  if (browser_) {
     browser_->signin_view_controller()->CloseModalSignin();
+  }
   std::move(sync_confirmation_callback_).Run(result);
 }
 
 void TurnSyncOnHelperDelegateImpl::OnBrowserRemoved(Browser* browser) {
-  if (browser == browser_)
+  if (browser == browser_) {
     browser_ = nullptr;
+  }
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     const AccountInfo& account_info,
     signin::SigninChoiceCallback callback,
@@ -198,7 +220,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
     std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
     return;
   }
-  auto profile_creation_required_by_policy =
+  profile_creation_required_by_policy_ =
       signin_util::IsProfileSeparationEnforcedByProfile(browser_->profile(),
                                                         account_info.email) ||
       signin_util::IsProfileSeparationEnforcedByPolicies(
@@ -207,13 +229,14 @@ void TurnSyncOnHelperDelegateImpl::OnProfileSigninRestrictionsFetched(
       ProfileSeparationAllowsKeepingUnmanagedBrowsingDataInManagedProfile(
           browser_->profile(), profile_separation_policies);
   browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-      account_info, /*is_oidc_account=*/false,
-      profile_creation_required_by_policy, show_link_data_option,
-      std::move(callback),
-      base::BindOnce(&SigninViewController::CloseModalSignin,
-                     browser_->signin_view_controller()->AsWeakPtr()));
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info, /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/turn_sync_on_signed_profile_,
+          profile_creation_required_by_policy_, show_link_data_option,
+          std::move(callback),
+          base::BindOnce(&SigninViewController::CloseModalSignin,
+                         browser_->signin_view_controller()->AsWeakPtr())));
 }
-#endif
 
 void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
     const AccountInfo& account_info,
@@ -223,7 +246,7 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
     std::move(callback).Run(signin::SIGNIN_CHOICE_CANCEL);
     return;
   }
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+
   if (prompt_for_new_profile) {
     account_level_signin_restriction_policy_fetcher_
         ->GetManagedAccountsSigninRestriction(
@@ -244,26 +267,27 @@ void TurnSyncOnHelperDelegateImpl::OnProfileCheckComplete(
                 : std::string());
     return;
   }
-#endif
-  DCHECK(!prompt_for_new_profile);
+
   browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-      account_info, /*is_oidc_account=*/false,
-      /*profile_creation_required_by_policy=*/false,
-      /*show_link_data_option=*/false,
-      base::BindOnce(
-          [](signin::SigninChoiceCallback callback,
-             signin::SigninChoice choice) {
-            // When `show_link_data_option` is false,
-            // `ShowModalManagedUserNoticeDialog()` calls back
-            // with either `SIGNIN_CHOICE_CANCEL` or
-            // `SIGNIN_CHOICE_NEW_PROFILE`. The profile is clean here, no
-            // need to create a new one.
-            std::move(callback).Run(
-                choice == signin::SigninChoice::SIGNIN_CHOICE_CANCEL
-                    ? signin::SigninChoice::SIGNIN_CHOICE_CANCEL
-                    : signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
-          },
-          std::move(callback)),
-      base::BindOnce(&SigninViewController::CloseModalSignin,
-                     browser_->signin_view_controller()->AsWeakPtr()));
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info, /*is_oidc_account=*/false,
+          /*turn_sync_on_signed_profile=*/turn_sync_on_signed_profile_,
+          /*profile_creation_required_by_policy=*/false,
+          /*show_link_data_option=*/false,
+          base::BindOnce(
+              [](signin::SigninChoiceCallback callback,
+                 signin::SigninChoice choice) {
+                // When `show_link_data_option` is false,
+                // `ShowModalManagedUserNoticeDialog()` calls back
+                // with either `SIGNIN_CHOICE_CANCEL` or
+                // `SIGNIN_CHOICE_NEW_PROFILE`. The profile is clean here, no
+                // need to create a new one.
+                std::move(callback).Run(
+                    choice == signin::SigninChoice::SIGNIN_CHOICE_CANCEL
+                        ? signin::SigninChoice::SIGNIN_CHOICE_CANCEL
+                        : signin::SigninChoice::SIGNIN_CHOICE_CONTINUE);
+              },
+              std::move(callback)),
+          base::BindOnce(&SigninViewController::CloseModalSignin,
+                         browser_->signin_view_controller()->AsWeakPtr())));
 }

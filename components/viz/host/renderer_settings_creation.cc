@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "cc/base/switches.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
@@ -55,7 +55,7 @@ RendererSettings CreateRendererSettings() {
 #if BUILDFLAG(IS_APPLE)
   renderer_settings.release_overlay_resources_after_gpu_query = true;
   renderer_settings.auto_resize_output_surface = false;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   renderer_settings.auto_resize_output_surface = false;
 #endif
   renderer_settings.allow_antialiasing =
@@ -69,7 +69,13 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  // Used finch experiment to determine the best value. See b:330617490 for
+  // details.
+  renderer_settings.occlusion_culler_settings.quad_split_limit = 12;
+  renderer_settings.occlusion_culler_settings
+      .generate_complex_occluder_for_rounded_corners = true;
+#else
   renderer_settings.occlusion_culler_settings.quad_split_limit =
       features::DrawQuadSplitLimit();
 #endif

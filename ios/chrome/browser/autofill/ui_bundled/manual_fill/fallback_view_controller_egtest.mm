@@ -63,19 +63,21 @@ id<GREYMatcher> UsernameChipButton() {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:chrome_test_util::WebViewMatcher()];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
   [AutofillAppInterface clearProfilePasswordStore];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector
             (testPasswordsVisibleWhenOpenedFromNonPasswordField)]) {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
 
   return config;
@@ -130,13 +132,17 @@ id<GREYMatcher> UsernameChipButton() {
       performAction:TapWebElementWithId(kFormElementNormal)];
 
   // Verify that the address manual fill button is visible.
-  [[EarlGrey selectElementWithMatcher:KeyboardAccessoryAddressManualFill()]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:KeyboardAccessoryAddressManualFill()];
 }
 
 // Tests that saved passwords for the current site are visible in the manual
 // fallback even when the focused field is not password-related.
 - (void)testPasswordsVisibleWhenOpenedFromNonPasswordField {
+  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"This test is for the older keyboard accessory");
+  }
+
   // Save a password for the current site.
   NSString* URLString =
       base::SysUTF8ToNSString(self.testServer->GetURL(kFormHTMLFile).spec());

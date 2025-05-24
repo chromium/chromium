@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/feature_list.h"
+#include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/current_thread.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test.pb.h"
@@ -10,10 +14,12 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/optimization_guide/model_execution/chrome_on_device_model_service_controller.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webauthn/sheet_models.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
@@ -23,14 +29,21 @@
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
+#include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -60,8 +73,8 @@ proto::ExecuteResponse BuildComposeResponse(const std::string& output) {
   compose_response.set_output(output);
   proto::ExecuteResponse execute_response;
   proto::Any* any_metadata = execute_response.mutable_response_metadata();
-  any_metadata->set_type_url("type.googleapis.com/" +
-                             compose_response.GetTypeName());
+  any_metadata->set_type_url(
+      base::StrCat({"type.googleapis.com/", compose_response.GetTypeName()}));
   compose_response.SerializeToString(any_metadata->mutable_value());
   auto response_data = ParsedAnyMetadata<proto::ComposeResponse>(*any_metadata);
   EXPECT_TRUE(response_data);
@@ -95,6 +108,9 @@ class ScopedSetMetricsConsent {
   const bool consent_;
 };
 
+constexpr float kTestDefaultTemperature = 0.9;
+constexpr uint32_t kTestDefaultTopK = 7;
+
 }  // namespace
 
 class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
@@ -112,7 +128,8 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
         net::EmbeddedTestServer::TYPE_HTTPS);
     net::EmbeddedTestServer::ServerCertificateConfig cert_config;
     cert_config.dns_names = {
-        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host()};
+        GURL(kOptimizationGuideServiceModelExecutionDefaultURL).host(),
+    };
     model_execution_server_->SetSSLConfig(cert_config);
     model_execution_server_->RegisterRequestHandler(base::BindRepeating(
         &ModelExecutionBrowserTestBase::HandleGetModelExecutionRequest,
@@ -122,31 +139,18 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     // receiving it from model execution.
     model_quality_logs_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    cert_config.dns_names = {
+        GURL(kOptimizationGuideServiceModelQualtiyDefaultURL).host(),
+    };
     model_quality_logs_server_->SetSSLConfig(cert_config);
     model_quality_logs_server_->RegisterRequestHandler(base::BindRepeating(
         &ModelExecutionBrowserTestBase::HandleGetModelQualityLogsUploadRequest,
         base::Unretained(this)));
+    num_logs_requests_ = 0;
 
     ASSERT_TRUE(model_execution_server_->Start());
     ASSERT_TRUE(model_quality_logs_server_->Start());
     InProcessBrowserTest::SetUp();
-  }
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
-            browser()->profile());
-    host_resolver()->AddRule("*", "127.0.0.1");
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&ModelExecutionBrowserTestBase::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
   }
 
   void SetUpCommandLine(base::CommandLine* cmd) override {
@@ -164,6 +168,21 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
                 GURL(kOptimizationGuideServiceModelQualtiyDefaultURL).host(),
                 "/")
             .spec());
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InProcessBrowserTest::SetUpBrowserContextKeyedServices(context);
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->profile());
+    host_resolver()->AddRule("*", "127.0.0.1");
   }
 
   void TearDownOnMainThread() override {
@@ -202,24 +221,26 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   // Executes the model for the feature, waits until the response is received,
   // and returns the response.
   void ExecuteModel(UserVisibleFeatureKey feature,
-                    const google::protobuf::MessageLite& request_metadata,
+                    const proto::ComposeRequest& request_metadata,
                     Profile* profile = nullptr) {
     if (!profile) {
       profile = browser()->profile();
     }
     base::RunLoop run_loop;
-    GetOptimizationGuideKeyedService(profile)->ExecuteModel(
+    ExecuteModelWithLogging(
+        GetOptimizationGuideKeyedService(profile),
         ToModelBasedCapabilityKey(feature), request_metadata,
+        /*execution_timeout=*/std::nullopt,
         base::BindOnce(&ModelExecutionBrowserTestBase::OnModelExecutionResponse,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
   }
 
-  bool CanCreateOnDeviceSession(
+  OnDeviceModelEligibilityReason GetOnDeviceModelEligibility(
       ModelBasedCapabilityKey feature,
-      OnDeviceModelEligibilityReason* on_device_model_eligibility_reason) {
-    return GetOptimizationGuideKeyedService()->CanCreateOnDeviceSession(
-        feature, on_device_model_eligibility_reason);
+      Profile* profile = nullptr) {
+    return GetOptimizationGuideKeyedService(profile)
+        ->GetOnDeviceModelEligibility(feature);
   }
 
   void SetExpectedBearerAccessToken(
@@ -235,36 +256,45 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     scoped_metrics_consent_.emplace(consent);
   }
 
+  void WaitForModelQualityLogsUpload(int expected_num_logs_requests) {
+    while (num_logs_requests_ < expected_num_logs_requests) {
+      base::RunLoop run_loop;
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
+      run_loop.Run();
+    }
+    EXPECT_EQ(num_logs_requests_, expected_num_logs_requests);
+  }
+
  protected:
   void OnModelExecutionResponse(
       base::OnceClosure on_model_execution_closure,
       OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<ModelQualityLogEntry> log_entry) {
-    if (result.has_value() ||
-        result.error().error() == OptimizationGuideModelExecutionError::
-                                      ModelExecutionError::kFiltered ||
-        result.error().error() ==
+      std::unique_ptr<proto::ComposeLoggingData> logging_data) {
+    ModelQualityLogsUploaderService* logs_uploader =
+        GetOptimizationGuideKeyedService()
+            ->GetModelQualityLogsUploaderService();
+    base::WeakPtr<ModelQualityLogsUploaderService> logs_uploader_weak_ptr;
+    if (logs_uploader) {
+      logs_uploader_weak_ptr = logs_uploader->GetWeakPtr();
+    }
+    auto log_entry =
+        std::make_unique<ModelQualityLogEntry>(logs_uploader_weak_ptr);
+    *log_entry->log_ai_data_request()->mutable_compose() = *logging_data;
+    if (result.response.has_value() ||
+        result.response.error().error() ==
+            OptimizationGuideModelExecutionError::ModelExecutionError::
+                kFiltered ||
+        result.response.error().error() ==
             OptimizationGuideModelExecutionError::ModelExecutionError::
                 kUnsupportedLanguage) {
-      EXPECT_TRUE(log_entry);
-      proto::LogAiDataRequest* log_ai_data_request =
-          log_entry.get()->log_ai_data_request();
-      EXPECT_NE(log_ai_data_request, nullptr);
-      EXPECT_EQ(log_ai_data_request->feature_case(),
-                proto::LogAiDataRequest::FeatureCase::kCompose);
-      EXPECT_TRUE(log_ai_data_request->has_compose());
-      EXPECT_TRUE(log_ai_data_request->mutable_compose()->has_request());
+      EXPECT_TRUE(logging_data->has_request());
     }
 
-    if (result.has_value()) {
-      EXPECT_TRUE(log_entry.get()
-                      ->log_ai_data_request()
-                      ->mutable_compose()
-                      ->has_response());
-      model_execution_result_ = base::ok(result.value());
-    } else {
-      model_execution_result_ = base::unexpected(result.error());
+    if (result.response.has_value()) {
+      EXPECT_TRUE(logging_data->has_response());
     }
+    model_execution_result_.emplace(std::move(result));
     ModelQualityLogEntry::Upload(std::move(log_entry));
     std::move(on_model_execution_closure).Run();
   }
@@ -311,7 +341,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
       response->set_code(net::HTTP_OK);
       response->set_content(serialized_response);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return std::move(response);
@@ -324,22 +354,16 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     EXPECT_EQ(request.method, net::test_server::METHOD_POST);
     EXPECT_NE(request.headers.end(), request.headers.find("X-Client-Data"));
 
-    // Access token should be set.
-    EXPECT_TRUE(base::Contains(request.headers,
-                               net::HttpRequestHeaders::kAuthorization));
-    EXPECT_EQ(expected_bearer_access_token_,
-              request.headers.at(net::HttpRequestHeaders::kAuthorization));
+    // Access token should not be set.
+    EXPECT_FALSE(base::Contains(request.headers,
+                                net::HttpRequestHeaders::kAuthorization));
 
     std::string serialized_response;
     response->set_code(net::HTTP_OK);
     response->set_content(serialized_response);
 
+    num_logs_requests_++;
     return std::move(response);
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
   // Virtualize for testing different feature configurations.
@@ -359,12 +383,14 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
   // Identity test support.
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  base::CallbackListSubscription create_services_subscription_;
 
   std::optional<ScopedSetMetricsConsent> scoped_metrics_consent_;
 
   // The expected authorization header holding the bearer access token.
   std::string expected_bearer_access_token_;
+
+  // The number of requests received by the model quality logs server.
+  std::atomic<int> num_logs_requests_ = 0;
 };
 
 class ModelExecutionDisabledBrowserTest : public ModelExecutionBrowserTestBase {
@@ -380,28 +406,24 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_FALSE(model_execution_result_->has_value());
+  EXPECT_FALSE(model_execution_result_->response.has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kGenericFailure,
-            model_execution_result_->error().error());
-  EXPECT_TRUE(model_execution_result_->error().transient());
+            model_execution_result_->response.error().error());
+  EXPECT_TRUE(model_execution_result_->response.error().transient());
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionDisabledBrowserTest,
-                       CanCreateOnDeviceSessionExecutionDisabled) {
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &on_device_model_eligibility_reason));
-  EXPECT_EQ(on_device_model_eligibility_reason,
+                       GetOnDeviceModelEligibilityExecutionDisabled) {
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionDisabledBrowserTest,
-    CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(
-      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                               /*on_device_model_eligibility_reason=*/nullptr));
+    GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 
 class ModelExecutionEnabledOnDeviceDisabledBrowserTest
@@ -415,20 +437,16 @@ class ModelExecutionEnabledOnDeviceDisabledBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledOnDeviceDisabledBrowserTest,
-                       CanCreateOnDeviceSessionOnDeviceDisabled) {
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &on_device_model_eligibility_reason));
-  EXPECT_EQ(on_device_model_eligibility_reason,
+                       GetOnDeviceModelEligibilityOnDeviceDisabled) {
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
             OnDeviceModelEligibilityReason::kFeatureNotEnabled);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledOnDeviceDisabledBrowserTest,
-    CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(
-      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                               /*on_device_model_eligibility_reason=*/nullptr));
+    GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+            OnDeviceModelEligibilityReason::kSuccess);
 }
 
 class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
@@ -474,11 +492,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   ExecuteModel(UserVisibleFeatureKey::kCompose, request,
                otr_browser->profile());
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_FALSE(model_execution_result_->has_value());
+  EXPECT_FALSE(model_execution_result_->response.has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
-                kGenericFailure,
-            model_execution_result_->error().error());
-  EXPECT_TRUE(model_execution_result_->error().transient());
+                kPermissionDenied,
+            model_execution_result_->response.error().error());
+  EXPECT_FALSE(model_execution_result_->response.error().transient());
 
   // The logs shouldn't be uploaded because model execution is disabled for
   // incognito and we wouldn't be receiving any log entry.
@@ -492,11 +510,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_FALSE(model_execution_result_->has_value());
+  EXPECT_FALSE(model_execution_result_->response.has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kPermissionDenied,
-            model_execution_result_->error().error());
-  EXPECT_FALSE(model_execution_result_->error().transient());
+            model_execution_result_->response.error().error());
+  EXPECT_FALSE(model_execution_result_->response.error().transient());
 
   // The logs shouldn't be uploaded because model execution is denied without
   // user signin, also model quality logs.
@@ -505,23 +523,45 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       ModelExecutionSuccess) {
+                       ModelExecutionSuccess_WithoutMetricsConsent) {
   EnableSignin();
+  SetMetricsConsent(false);
   SetExpectedBearerAccessToken("Bearer access_token");
 
   proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_TRUE(model_execution_result_->has_value());
+  EXPECT_TRUE(model_execution_result_->response.has_value());
   auto response = ParsedAnyMetadata<proto::ComposeResponse>(
-      model_execution_result_->value());
+      model_execution_result_->response.value());
   EXPECT_EQ("foo response", response->output());
 
   // The logs shouldn't be uploaded because there is no metrics consent.
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
       ModelQualityLogsUploadStatus::kMetricsReportingDisabled, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
+                       ModelExecutionSuccess_WithMetricsConsent) {
+  EnableSignin();
+  SetMetricsConsent(true);
+  SetExpectedBearerAccessToken("Bearer access_token");
+
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("a user typed this");
+  ExecuteModel(UserVisibleFeatureKey::kCompose, request);
+  EXPECT_TRUE(model_execution_result_.has_value());
+  EXPECT_TRUE(model_execution_result_->response.has_value());
+  auto response = ParsedAnyMetadata<proto::ComposeResponse>(
+      model_execution_result_->response.value());
+  EXPECT_EQ("foo response", response->output());
+
+  WaitForModelQualityLogsUpload(1);
+  histogram_tester_.ExpectUniqueSample(
+      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
+      ModelQualityLogsUploadStatus::kUploadSuccessful, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -539,11 +579,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_FALSE(model_execution_result_->has_value());
+  EXPECT_FALSE(model_execution_result_->response.has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kGenericFailure,
-            model_execution_result_->error().error());
-  EXPECT_TRUE(model_execution_result_->error().transient());
+            model_execution_result_->response.error().error());
+  EXPECT_TRUE(model_execution_result_->response.error().transient());
 
   // The logs shouldn't be uploaded when model execution fails for unsuccessful
   // response.
@@ -561,11 +601,11 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_FALSE(model_execution_result_->has_value());
+  EXPECT_FALSE(model_execution_result_->response.has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kGenericFailure,
-            model_execution_result_->error().error());
-  EXPECT_TRUE(model_execution_result_->error().transient());
+            model_execution_result_->response.error().error());
+  EXPECT_TRUE(model_execution_result_->response.error().transient());
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -578,10 +618,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_FALSE(model_execution_result_->has_value());
+  EXPECT_FALSE(model_execution_result_->response.has_value());
   EXPECT_EQ(
       OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered,
-      model_execution_result_->error().error());
+      model_execution_result_->response.error().error());
 }
 
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
@@ -603,10 +643,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_FALSE(model_execution_result_->has_value());
+  EXPECT_FALSE(model_execution_result_->response.has_value());
   EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
                 kUnsupportedLanguage,
-            model_execution_result_->error().error());
+            model_execution_result_->response.error().error());
 
   // There should be no error-status reports about log uploading (we don't try
   // to upload logs in this test, so there's no success report either).
@@ -615,21 +655,129 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
       0);
 }
 
+// TODO(crbug.com/388544208): Flaky on linux-win-cross-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
+  DISABLED_GetOnDeviceModelEligibilityModelNotEligible
+#else
+#define MAYBE_GetOnDeviceModelEligibilityModelNotEligible \
+  GetOnDeviceModelEligibilityModelNotEligible
+#endif
 IN_PROC_BROWSER_TEST_F(ModelExecutionEnabledBrowserTest,
-                       CanCreateOnDeviceSessionNoModelAvailable) {
-  OnDeviceModelEligibilityReason on_device_model_eligibility_reason;
-  EXPECT_FALSE(CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                                        &on_device_model_eligibility_reason));
-  EXPECT_EQ(on_device_model_eligibility_reason,
-            OnDeviceModelEligibilityReason::kModelNotAvailable);
+                       MAYBE_GetOnDeviceModelEligibilityModelNotEligible) {
+  EXPECT_EQ(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+            OnDeviceModelEligibilityReason::kModelNotEligible);
 }
 
 IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledBrowserTest,
-    CanCreateOnDeviceSessionExecutionDisabledNullDebugReason) {
-  EXPECT_FALSE(
-      CanCreateOnDeviceSession(ModelBasedCapabilityKey::kCompose,
-                               /*on_device_model_eligibility_reason=*/nullptr));
+    GetOnDeviceModelEligibilityExecutionDisabledNullDebugReason) {
+  EXPECT_NE(GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose),
+            OnDeviceModelEligibilityReason::kSuccess);
+}
+
+class OnDeviceModelExecutionEnabledBrowserTest
+    : public ModelExecutionEnabledBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationGuideModelExecution, {}},
+         {features::kModelQualityLogging, {}},
+         {features::kOptimizationGuideOnDeviceModel, {}},
+         {features::kOnDeviceModelPerformanceParams,
+          {{"compatible_on_device_performance_classes", "*"}}}},
+        {});
+  }
+
+  void SetUpGlobalAssets() {
+    model_execution::prefs::RecordFeatureUsage(
+        g_browser_process->local_state(), ModelBasedCapabilityKey::kCompose);
+    base_model_asset_.SetReadyIn(
+        *OnDeviceModelComponentStateManager::GetInstanceForTesting());
+  }
+
+  // Set up assets which are registered per-profile.
+  void SetUpProfileAssets() {
+    compose_asset_.SendTo(
+        *ChromeOnDeviceModelServiceController::GetSingleInstanceMayBeNull());
+  }
+
+ private:
+  optimization_guide::FakeBaseModelAsset base_model_asset_;
+  FakeAdaptationAsset compose_asset_{{
+      .config =
+          []() {
+            proto::OnDeviceModelExecutionFeatureConfig config;
+            config.set_feature(proto::MODEL_EXECUTION_FEATURE_COMPOSE);
+            config.set_can_skip_text_safety(true);
+            auto* params = config.mutable_sampling_params();
+            params->set_top_k(kTestDefaultTopK);
+            params->set_temperature(kTestDefaultTemperature);
+            return config;
+          }(),
+  }};
+};
+
+IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
+                       GetOnDeviceModelEligibilityInRegularProfile) {
+  SetUpGlobalAssets();
+  SetUpProfileAssets();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+                                       nullptr) ==
+           OnDeviceModelEligibilityReason::kSuccess;
+  })) << "Timeout waiting for model to be marked eligible.";
+}
+
+IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
+                       GetOnDeviceModelEligibilityInIncognito) {
+  SetUpGlobalAssets();
+
+  Browser* otr_browser = CreateIncognitoBrowser();
+  SetUpProfileAssets();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+                                       otr_browser->profile()) ==
+           OnDeviceModelEligibilityReason::kSuccess;
+  })) << "Timeout waiting for model to be marked eligible.";
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+// Guest profile only available in some platforms.
+IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
+                       GetOnDeviceModelEligibilityInGuestProfile) {
+  SetUpGlobalAssets();
+
+  Browser* guest_browser = CreateGuestBrowser();
+  SetUpProfileAssets();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+                                       guest_browser->profile()) ==
+           OnDeviceModelEligibilityReason::kSuccess;
+  })) << "Timeout waiting for model to be marked eligible.";
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+
+IN_PROC_BROWSER_TEST_F(OnDeviceModelExecutionEnabledBrowserTest,
+                       GetSamplingParamsConfig) {
+  SetUpGlobalAssets();
+  SetUpProfileAssets();
+
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return GetOnDeviceModelEligibility(ModelBasedCapabilityKey::kCompose,
+                                       nullptr) ==
+           OnDeviceModelEligibilityReason::kSuccess;
+  })) << "Timeout waiting for model to be marked eligible.";
+
+  auto sampling_config =
+      GetOptimizationGuideKeyedService()->GetSamplingParamsConfig(
+          ModelBasedCapabilityKey::kCompose);
+
+  EXPECT_EQ(sampling_config->default_top_k, kTestDefaultTopK);
+  EXPECT_EQ(sampling_config->default_temperature, kTestDefaultTemperature);
 }
 
 class ModelExecutionInternalsPageBrowserTest
@@ -658,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionInternalsPageBrowserTest,
   request.mutable_generate_params()->set_user_input("foo");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_TRUE(model_execution_result_->has_value());
+  EXPECT_TRUE(model_execution_result_->response.has_value());
   CheckInternalsLog("ExecuteModel");
   // CheckInternalsLog("TabOrganization Request");
   CheckInternalsLog("OnModelExecutionResponse");
@@ -669,7 +817,7 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
  public:
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {::switches::kExplicitBrowserSigninUIOnDesktop},
+        {features::internal::kHistorySearchSettingsVisibility},
         {features::internal::kTabOrganizationGraduated});
   }
 };
@@ -744,7 +892,11 @@ IN_PROC_BROWSER_TEST_F(
     ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin,
     PRE_HistorySearchRecordsSyntheticFieldTrial) {
   EnableSignin();
+#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+#else
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
+#endif
 
   browser()->profile()->GetPrefs()->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kHistorySearch),
@@ -793,9 +945,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionComposeLoggingDisabledTest,
   request.mutable_generate_params()->set_user_input("a user typed this");
   ExecuteModel(UserVisibleFeatureKey::kCompose, request);
   EXPECT_TRUE(model_execution_result_.has_value());
-  EXPECT_TRUE(model_execution_result_->has_value());
+  EXPECT_TRUE(model_execution_result_->response.has_value());
   auto response = ParsedAnyMetadata<proto::ComposeResponse>(
-      model_execution_result_->value());
+      model_execution_result_->response.value());
   EXPECT_EQ("foo response", response->output());
 
   // The logs shouldn't be uploaded because the feature is not enabled for
@@ -825,60 +977,21 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
       enabled_features.push_back(
           {features::internal::kHistorySearchSettingsVisibility,
            {{"enable_feature_when_main_toggle_on", "false"}}});
+    } else {
+      disabled_features.push_back(
+          features::internal::kHistorySearchSettingsVisibility);
     }
-    enabled_features.push_back(
-        {::switches::kExplicitBrowserSigninUIOnDesktop, {}});
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
-                       PRE_NewFeaturesEnabledWhenMainToggleEnabled) {
-  EnableSignin();
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-
-  browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kModelExecutionMainToggleSettingState,
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(
-      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kHistorySearch));
-}
-
-IN_PROC_BROWSER_TEST_F(ModelExecutionNewFeaturesEnabledAutomaticallyTest,
-                       NewFeaturesEnabledWhenMainToggleEnabled) {
-#if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(IsSignedIn());
-#endif
-  // The new feature should have got enabled since main toggle was on.
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(
-      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
-  // The feature with automatic enabling disallowed should be visible but not
-  // enabled.
-#if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#else
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kHistorySearch));
-#endif
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kHistorySearch));
-}
-
 #if !BUILDFLAG(IS_ANDROID)
 
 class ModelExecutionEnterprisePolicyBrowserTest
-    : public ModelExecutionEnabledBrowserTest {
+    : public ModelExecutionEnabledBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
   void SetUp() override {
     policy_provider_.SetDefaultReturns(
@@ -890,164 +1003,34 @@ class ModelExecutionEnterprisePolicyBrowserTest
   }
 
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kOptimizationGuideModelExecution,
-         features::kModelQualityLogging,
-         features::internal::kTabOrganizationSettingsVisibility,
-         features::internal::kWallpaperSearchSettingsVisibility},
-        /*disabled_features=*/
-        {features::internal::kComposeGraduated,
-         features::internal::kComposeSettingsVisibility,
-         features::internal::kTabOrganizationGraduated,
-         features::internal::kWallpaperSearchGraduated});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kOptimizationGuideModelExecution,
+        features::kModelQualityLogging,
+        features::internal::kTabOrganizationSettingsVisibility,
+        features::internal::kWallpaperSearchSettingsVisibility};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        features::internal::kComposeGraduated,
+        features::internal::kComposeSettingsVisibility,
+        features::internal::kTabOrganizationGraduated,
+        features::internal::kWallpaperSearchGraduated};
+
+    if (ShowEnterpriseDisabledFeatures()) {
+      enabled_features.push_back(features::kAiSettingsPageEnterpriseDisabledUi);
+    } else {
+      disabled_features.push_back(
+          features::kAiSettingsPageEnterpriseDisabledUi);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
+
+  bool ShowEnterpriseDisabledFeatures() { return GetParam(); }
 
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
-                       DisableThenEnable) {
-  EnableSignin();
-
-  auto* prefs = browser()->profile()->GetPrefs();
-  prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  base::RunLoop().RunUntilIdle();
-
-  // Default policy value allows the feature.
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kCompose));
-
-  // Disable via the enterprise policy.
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kTabOrganizerSettings,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD,
-               base::Value(static_cast<int>(
-                   model_execution::prefs::ModelExecutionEnterprisePolicyValue::
-                       kDisable)),
-               nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
-
-  // Enable via the enterprise policy.
-  policies.Set(
-      policy::key::kTabOrganizerSettings, policy::POLICY_LEVEL_MANDATORY,
-      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-      base::Value(static_cast<int>(
-          model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
-      nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kCompose));
-}
-
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
-                       DisableThenEnableCompose) {
-  EnableSignin();
-
-  SetExpectedBearerAccessToken("Bearer access_token");
-  SetResponseType(ModelExecutionRemoteResponseType::kUnsupportedLanguage);
-
-  // Enable metrics consent for logging.
-  SetMetricsConsent(true);
-  ASSERT_TRUE(
-      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven());
-
-  auto* prefs = browser()->profile()->GetPrefs();
-  prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kCompose),
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  base::RunLoop().RunUntilIdle();
-
-  // Default policy value allows the feature.
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(
-      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
-
-  // Disable via the enterprise policy.
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kHelpMeWriteSettings,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD,
-               base::Value(static_cast<int>(
-                   model_execution::prefs::ModelExecutionEnterprisePolicyValue::
-                       kDisable)),
-               nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(
-      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
-
-  proto::ComposeRequest request_1;
-  request_1.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(UserVisibleFeatureKey::kCompose, request_1);
-
-  // As the feature is fully disabled by enterprise policy, logs should also be
-  // disabled.
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      optimization_guide::ModelQualityLogsUploadStatus::
-          kFeatureNotEnabledForUser,
-      1);
-
-  // Enable via the enterprise policy and check upload.
-  policies.Set(
-      policy::key::kHelpMeWriteSettings, policy::POLICY_LEVEL_MANDATORY,
-      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-      base::Value(static_cast<int>(
-          model_execution::prefs::ModelExecutionEnterprisePolicyValue::kAllow)),
-      nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kCompose),
-      static_cast<int>(optimization_guide::prefs::FeatureOptInState::kEnabled));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_TRUE(
-      ShouldFeatureBeCurrentlyEnabledForUser(UserVisibleFeatureKey::kCompose));
-
-  proto::ComposeRequest request_2;
-  request_2.mutable_generate_params()->set_user_input("a user typed this");
-  ExecuteModel(UserVisibleFeatureKey::kCompose, request_2);
-
-  // No new blocked logs samples should have been recorded.
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelQualityLogsUploaderService.UploadStatus.Compose",
-      optimization_guide::ModelQualityLogsUploadStatus::
-          kFeatureNotEnabledForUser,
-      1);
-}
-
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        EnableComposeWithoutLogging) {
   EnableSignin();
 
@@ -1117,7 +1100,7 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
+IN_PROC_BROWSER_TEST_P(ModelExecutionEnterprisePolicyBrowserTest,
                        DisableThenEnableWallpaperSearch) {
   EnableSignin();
 
@@ -1143,7 +1126,8 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
                nullptr);
   policy_provider_.UpdateChromePolicy(policies);
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
+  EXPECT_EQ(ShowEnterpriseDisabledFeatures(),
+            IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_FALSE(ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kWallpaperSearch));
 
@@ -1164,39 +1148,9 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
       UserVisibleFeatureKey::kWallpaperSearch));
 }
 
-IN_PROC_BROWSER_TEST_F(ModelExecutionEnterprisePolicyBrowserTest,
-                       EnableTabOrganizationWithoutLogging) {
-  EnableSignin();
-
-  auto* prefs = browser()->profile()->GetPrefs();
-  prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  base::RunLoop().RunUntilIdle();
-
-  // EnableWithoutLogging via the enterprise policy.
-  policy::PolicyMap policies;
-  policies.Set(policy::key::kTabOrganizerSettings,
-               policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-               policy::POLICY_SOURCE_CLOUD,
-               base::Value(static_cast<int>(
-                   model_execution::prefs::ModelExecutionEnterprisePolicyValue::
-                       kAllowWithoutLogging)),
-               nullptr);
-  policy_provider_.UpdateChromePolicy(policies);
-  prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_TRUE(ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
-  EXPECT_FALSE(ShouldFeatureBeCurrentlyAllowedForLogging(
-      proto::LogAiDataRequest::FeatureCase::kCompose));
-}
+INSTANTIATE_TEST_SUITE_P(,
+                         ModelExecutionEnterprisePolicyBrowserTest,
+                         ::testing::Bool());
 
 #endif  //  !BUILDFLAG(IS_ANDROID)
 

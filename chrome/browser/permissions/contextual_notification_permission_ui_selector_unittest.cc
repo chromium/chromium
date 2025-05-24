@@ -217,7 +217,8 @@ class ContextualNotificationPermissionUiSelectorTest : public testing::Test {
     Decision actual_decison(std::nullopt, std::nullopt);
     EXPECT_CALL(mock_callback, Run)
         .WillRepeatedly(testing::SaveArg<0>(&actual_decison));
-    contextual_selector_.SelectUiToUse(&mock_request, mock_callback.Get());
+    contextual_selector_.SelectUiToUse(/*web_contents=*/nullptr, &mock_request,
+                                       mock_callback.Get());
     task_environment_.RunUntilIdle();
     testing::Mock::VerifyAndClearExpectations(&mock_callback);
     EXPECT_EQ(quiet_ui_reason, actual_decison.quiet_ui_reason);
@@ -254,8 +255,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
          {Config::kEnableAbusiveRequestWarning, "true"},
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
          {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"},
-         {Config::kCrowdDenyHoldBackChance, "0.0"}}},
-       {features::kDisruptiveNotificationPermissionRevocation, {}}},
+         {Config::kCrowdDenyHoldBackChance, "0.0"}}}},
       {});
 
   LoadTestPreloadData();
@@ -320,8 +320,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
 TEST_F(ContextualNotificationPermissionUiSelectorTest, FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      {}, {features::kQuietNotificationPrompts,
-           features::kDisruptiveNotificationPermissionRevocation});
+      {}, {features::kQuietNotificationPrompts});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -346,13 +345,17 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, AllTriggersDisabled) {
          {Config::kEnableAbusiveRequestWarning, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
-      {features::kDisruptiveNotificationPermissionRevocation});
+      {});
 
   SetQuietUiEnabledInPrefs(true);
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
 
   for (const auto* origin_string : kAllTestingOrigins) {
+    // Disruptive behavior is always quieted.
+    if (origin_string == kTestOriginDisruptive){
+      continue;
+    }
     SCOPED_TRACE(origin_string);
     QueryAndExpectDecisionForUrl(GURL(origin_string), Decision::UseNormalUi(),
                                  Decision::ShowNoWarning());
@@ -373,7 +376,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, OnlyCrowdDenyEnabled) {
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"},
          {Config::kCrowdDenyHoldBackChance, "0.0"}}}},
-      {features::kDisruptiveNotificationPermissionRevocation});
+      {});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -391,7 +394,6 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest, OnlyCrowdDenyEnabled) {
       {kTestOriginAbusivePromptsWarn},
       {kTestOriginAbusiveContent},
       {kTestOriginAbusiveContentWarn},
-      {kTestOriginDisruptive},
   };
 
   for (const auto& test : kTestCases) {
@@ -416,7 +418,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
          {Config::kEnableAbusiveRequestWarning, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
          {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
-      {features::kDisruptiveNotificationPermissionRevocation});
+      {});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -434,7 +436,6 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
       {kTestOriginAbusivePromptsWarn},
       {kTestOriginAbusiveContent, QuietUiReason::kTriggeredDueToAbusiveContent},
       {kTestOriginAbusiveContentWarn},
-      {kTestOriginDisruptive},
   };
 
   for (const auto& test : kTestCases) {
@@ -458,7 +459,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
          {Config::kEnableAbusiveRequestWarning, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"}}}},
-      {features::kDisruptiveNotificationPermissionRevocation});
+      {});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -477,7 +478,6 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
       {kTestOriginAbusiveContent},
       {kTestOriginAbusiveContentWarn, Decision::UseNormalUi(),
        WarningReason::kAbusiveContent},
-      {kTestOriginDisruptive},
   };
 
   for (const auto& test : kTestCases) {
@@ -501,7 +501,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
          {Config::kEnableAbusiveRequestWarning, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
-      {features::kDisruptiveNotificationPermissionRevocation});
+      {});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -521,7 +521,6 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
       {kTestOriginAbusivePromptsWarn},
       {kTestOriginAbusiveContent},
       {kTestOriginAbusiveContentWarn},
-      {kTestOriginDisruptive},
   };
 
   for (const auto& test : kTestCases) {
@@ -545,7 +544,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
          {Config::kEnableAbusiveRequestWarning, "true"},
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
-      {features::kDisruptiveNotificationPermissionRevocation});
+      {});
 
   LoadTestPreloadData();
   LoadTestSafeBrowsingBlocklist();
@@ -564,7 +563,6 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
        WarningReason::kAbusiveRequests},
       {kTestOriginAbusiveContent},
       {kTestOriginAbusiveContentWarn},
-      {kTestOriginDisruptive},
   };
 
   for (const auto& test : kTestCases) {
@@ -587,8 +585,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
          {Config::kEnableAbusiveRequestBlocking, "false"},
          {Config::kEnableAbusiveRequestWarning, "false"},
          {Config::kEnableAbusiveContentTriggeredRequestBlocking, "false"},
-         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}},
-       {features::kDisruptiveNotificationPermissionRevocation, {}}},
+         {Config::kEnableAbusiveContentTriggeredRequestWarning, "false"}}}},
       {});
 
   LoadTestPreloadData();
@@ -647,8 +644,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
            {Config::kEnableAbusiveContentTriggeredRequestBlocking, "true"},
            {Config::kEnableAbusiveContentTriggeredRequestWarning, "true"},
            {Config::kEnableCrowdDenyTriggering, "true"},
-           {Config::kCrowdDenyHoldBackChance, test.holdback_chance}}},
-         {features::kDisruptiveNotificationPermissionRevocation, {}}},
+           {Config::kCrowdDenyHoldBackChance, test.holdback_chance}}}},
         {});
 
     base::HistogramTester histograms;
@@ -671,7 +667,7 @@ TEST_F(ContextualNotificationPermissionUiSelectorTest,
                                  Decision::UseNormalUi(),
                                  WarningReason::kAbusiveContent);
 
-    auto expected_bucket = static_cast<base::HistogramBase::Sample>(
+    auto expected_bucket = static_cast<base::HistogramBase::Sample32>(
         test.expected_histogram_bucket);
     histograms.ExpectBucketCount("Permissions.CrowdDeny.DidHoldbackQuietUi",
                                  expected_bucket, 1);

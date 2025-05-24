@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] a popover can be nested inside select
+  assert_true: and the outer popover should also still be showing expected true got false
+[FAIL] a modal dialog can be nested inside select
+  assert_true: the select should be showing expected true got false
+Harness: the test ran to completion.
+

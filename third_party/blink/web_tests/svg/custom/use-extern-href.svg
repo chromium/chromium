@@ -4,8 +4,8 @@
   <use y="160" xlink:href="resources/rgb.svg#R"/>
   <use y="160" xlink:href="resources/rgb.svg#G"/>
   <use y="160" xlink:href="resources/rgb.svg#B"/>
-  <!-- The following elements shall not be displayed. -->
   <use y="240" xlink:href="resources/rgb.svg"/>
-  <use y="240" xlink:href="resources/rgb.svg#MISSING"/>
-  <use y="240" xlink:href="resources/MISSING.svg#MISSING"/>
+  <!-- The following elements shall not be displayed. -->
+  <use y="320" xlink:href="resources/rgb.svg#MISSING"/>
+  <use y="400" xlink:href="resources/MISSING.svg#MISSING"/>
 </svg>

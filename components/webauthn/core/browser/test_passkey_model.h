@@ -36,10 +36,13 @@ class TestPasskeyModel : public PasskeyModel {
   GetPasskeysForRelyingPartyId(const std::string& rp_id) const override;
   bool DeletePasskey(const std::string& credential_id,
                      const base::Location& location) override;
+  bool SetPasskeyHidden(const std::string& credential_id, bool hidden) override;
   void DeleteAllPasskeys() override;
   bool UpdatePasskey(const std::string& credential_id,
                      PasskeyUpdate change,
                      bool updated_by_user) override;
+  bool UpdatePasskeyTimestamp(const std::string& credential_id,
+                              base::Time last_used_time) override;
   sync_pb::WebauthnCredentialSpecifics CreatePasskey(
       std::string_view rp_id,
       const UserEntity& user_entity,

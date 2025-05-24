@@ -33,6 +33,7 @@ goog.requireType('goog.math.Size');
  */
 goog.positioning.ViewportPosition = function(arg1, opt_arg2) {
   'use strict';
+  /** @type {!goog.math.Coordinate} */
   this.coordinate = arg1 instanceof goog.math.Coordinate ?
       arg1 :
       new goog.math.Coordinate(/** @type {number} */ (arg1), opt_arg2);

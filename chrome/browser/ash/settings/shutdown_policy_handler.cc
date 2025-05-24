@@ -23,7 +23,7 @@ ShutdownPolicyHandler::ShutdownPolicyHandler(CrosSettings* cros_settings,
           weak_factory_.GetWeakPtr()));
 }
 
-ShutdownPolicyHandler::~ShutdownPolicyHandler() {}
+ShutdownPolicyHandler::~ShutdownPolicyHandler() = default;
 
 void ShutdownPolicyHandler::NotifyDelegateWithShutdownPolicy() {
   CrosSettingsProvider::TrustedStatus status =

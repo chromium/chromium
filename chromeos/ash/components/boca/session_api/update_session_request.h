@@ -25,10 +25,11 @@ namespace ash::boca {
 using UpdateSessionCallback =
     base::OnceCallback<void(base::expected<std::unique_ptr<::boca::Session>,
                                            google_apis::ApiErrorCode> result)>;
-// This class performs the request for creating a session
+// This class performs the request for updating a session
 class UpdateSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
   UpdateSessionRequest(google_apis::RequestSender* sender,
+                       std::string url_base,
                        ::boca::UserIdentity teacher,
                        std::string session_id,
                        UpdateSessionCallback callback);

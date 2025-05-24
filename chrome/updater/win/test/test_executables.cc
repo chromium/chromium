@@ -13,7 +13,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/win/test/test_inheritable_event.h"
@@ -21,17 +21,13 @@
 
 namespace updater {
 
-// If you add another test executable here, also add it to the data_deps in
-// the "test_executables" target of updater/win/test/BUILD.gn.
-const wchar_t kTestProcessExecutableName[] = L"updater_test_process.exe";
-
 base::Process LongRunningProcess(UpdaterScope scope,
                                  const std::string& test_name,
                                  base::CommandLine* cmd) {
   base::CommandLine command_line = GetTestProcessCommandLine(scope, test_name);
 
   // This will ensure this new process will run for one minute before dying.
-  command_line.AppendSwitchASCII(updater::kTestSleepSecondsSwitch, "60");
+  command_line.AppendSwitchUTF8(updater::kTestSleepSecondsSwitch, "60");
 
   auto init_done_event = updater::CreateInheritableEvent(
       base::WaitableEvent::ResetPolicy::AUTOMATIC,
@@ -69,7 +65,7 @@ base::CommandLine GetTestProcessCommandLine(UpdaterScope scope,
     command_line.AppendSwitch(kSystemSwitch);
   }
 
-  command_line.AppendSwitchASCII(kTestName, test_name);
+  command_line.AppendSwitchUTF8(kTestName, test_name);
   return command_line;
 }
 

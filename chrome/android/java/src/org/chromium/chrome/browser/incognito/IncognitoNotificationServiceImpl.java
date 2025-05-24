@@ -66,10 +66,10 @@ public class IncognitoNotificationServiceImpl extends IncognitoNotificationServi
                     IncognitoNotificationManager.dismissIncognitoNotification();
 
                     if (BrowserStartupController.getInstance().isFullBrowserStarted()) {
-                        if (ProfileManager.getLastUsedRegularProfile().hasPrimaryOTRProfile()) {
+                        if (ProfileManager.getLastUsedRegularProfile().hasPrimaryOtrProfile()) {
                             ProfileManager.destroyWhenAppropriate(
                                     ProfileManager.getLastUsedRegularProfile()
-                                            .getPrimaryOTRProfile(/* createIfNeeded= */ false));
+                                            .getPrimaryOtrProfile(/* createIfNeeded= */ false));
                         }
                     }
                 });

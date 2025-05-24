@@ -8,8 +8,7 @@ recording and a more compact, efficient, and stable trace encoding.
 
 The Perfetto library itself lives in
 [AOSP](https://android.googlesource.com/platform/external/perfetto/) and is rolled in
-[/third_party/chrome/](https://cs.chromium.org/chromium/src/third_party/perfetto/). Progress is
-tracked on https://crbug.com/1006541.
+[/third_party/perfetto/](https://cs.chromium.org/chromium/src/third_party/perfetto/).
 
 The code in this directory connects Chrome to Perfetto's [tracing
 SDK](https://perfetto.dev/docs/instrumentation/tracing-sdk), which implements trace event macros on
@@ -21,3 +20,6 @@ For more details, see [Perfetto's documentation](https://docs.perfetto.dev), [Ty
 Chrome](https://docs.google.com/document/d/1f7tt4cb-JcA5bQFR1oXk60ncJPpkL02_Hi_Bc6MfTQk/edit#), and
 [Typed trace events in
 //base](https://docs.google.com/document/d/1UQ4Ez7B-TeowijOUuMXuoWj1amZcQ7E2abt3s4jaAEY/edit#).
+
+For a list of Chromium's tracing categories, see
+[base/trace_event/builtin_categories.h](https://cs.chromium.org/chromium/src/base/trace_event/builtin_categories.h).

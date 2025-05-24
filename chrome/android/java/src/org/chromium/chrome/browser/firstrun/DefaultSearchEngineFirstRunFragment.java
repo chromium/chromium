@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import androidx.fragment.app.Fragment;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -26,32 +30,32 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.browser_ui.widget.RadioButtonLayout;
 
 /** A {@link Fragment} that presents a set of search engines for the user to choose from. */
+@NullMarked
 public class DefaultSearchEngineFirstRunFragment extends Fragment implements FirstRunFragment {
-    @SearchEnginePromoType private int mSearchEnginePromoDialogType;
+    private @SearchEnginePromoType int mSearchEnginePromoDialogType;
     private boolean mShownRecorded;
-
-    /** Layout that displays the available search engines to the user. */
-    private RadioButtonLayout mEngineLayout;
-
-    /** The button that lets a user proceed to the next page after an engine is selected. */
-    private Button mButton;
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View rootView =
                 inflater.inflate(
                         R.layout.default_search_engine_first_run_fragment, container, false);
-        mEngineLayout = rootView.findViewById(R.id.default_search_engine_dialog_options);
-        mButton = rootView.findViewById(R.id.button_primary);
-        mButton.setEnabled(false);
+        // Layout that displays the available search engines to the user.
+        RadioButtonLayout engineLayout =
+                rootView.findViewById(R.id.default_search_engine_dialog_options);
+        // The button that lets a user proceed to the next page after an engine is selected.
+        Button button = rootView.findViewById(R.id.button_primary);
+        button.setEnabled(false);
 
         ((TextView) rootView.findViewById(R.id.footer))
                 .setText(R.string.search_engine_dialog_footer);
-        mButton.setText(R.string.search_engine_dialog_confirm_button_title);
+        button.setText(R.string.search_engine_dialog_confirm_button_title);
 
-        assert getPageDelegate().getProfileProviderSupplier().get() != null;
-        Profile profile = getPageDelegate().getProfileProviderSupplier().get().getOriginalProfile();
+        FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
+        Profile profile = delegate.getProfileProviderSupplier().get().getOriginalProfile();
 
         assert TemplateUrlServiceFactory.getForProfile(profile).isLoaded();
         mSearchEnginePromoDialogType = LocaleManager.getInstance().getSearchEnginePromoShowType();
@@ -59,8 +63,8 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
             new DefaultSearchEngineDialogHelper(
                     mSearchEnginePromoDialogType,
                     LocaleManager.getInstance(),
-                    mEngineLayout,
-                    mButton,
+                    engineLayout,
+                    button,
                     getPageDelegate()::advanceToNextPage);
         }
 
@@ -81,7 +85,12 @@ public class DefaultSearchEngineFirstRunFragment extends Fragment implements Fir
         super.onResume();
 
         if (mSearchEnginePromoDialogType == SearchEnginePromoType.DONT_SHOW) {
-            PostTask.postTask(TaskTraits.UI_DEFAULT, () -> getPageDelegate().advanceToNextPage());
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        FirstRunPageDelegate delegate = assumeNonNull(getPageDelegate());
+                        delegate.advanceToNextPage();
+                    });
         }
 
         recordShown();

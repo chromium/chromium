@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_host_test_helper.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/test/test_extension_dir.h"
 
@@ -80,13 +81,15 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiWithExtensionTest, ExtensionRegistry) {
   // Test cases.
   void (*test_cases[])(const ExtensionId& id,
                        extensions::TestExtensionRegistryObserver* observer,
-                       ExtensionService* extension_service) = {
+                       ExtensionService* extension_service,
+                       ExtensionRegistrar* extension_registrar) = {
       // "Unload extension"
       [](const ExtensionId& id,
          extensions::TestExtensionRegistryObserver* observer,
-         ExtensionService* extension_service) {
-        extension_service->DisableExtension(
-            id, disable_reason::DISABLE_USER_ACTION);
+         ExtensionService* extension_service,
+         ExtensionRegistrar* extension_registrar) {
+        extension_registrar->DisableExtension(
+            id, {disable_reason::DISABLE_USER_ACTION});
         observer->WaitForExtensionUnloaded();
       },
       // "Uninstall extension",
@@ -97,8 +100,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiWithExtensionTest, ExtensionRegistry) {
       // Confirmation is obtained via `HasExtensionPanelOptions()`.
       [](const ExtensionId& id,
          extensions::TestExtensionRegistryObserver* observer,
-         ExtensionService* extension_service) {
-        extension_service->UninstallExtension(
+         ExtensionService* extension_service,
+         ExtensionRegistrar* extension_registrar) {
+        extension_registrar->UninstallExtension(
             id, UninstallReason::UNINSTALL_REASON_FOR_TESTING, nullptr);
         observer->WaitForExtensionUninstalled();
       }};
@@ -126,7 +130,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelApiWithExtensionTest, ExtensionRegistry) {
     EXPECT_TRUE(service->HasExtensionPanelOptionsForTest(extension->id()));
     extensions::TestExtensionRegistryObserver observer(
         extensions::ExtensionRegistry::Get(profile()), extension->id());
-    test_case(extension->id(), &observer, extension_service());
+    test_case(extension->id(), &observer, extension_service(),
+              extension_registrar());
     options = service->GetOptions(*extension, tab_id);
     EXPECT_EQ("default_path.html", options.path.value());
     EXPECT_FALSE(service->HasExtensionPanelOptionsForTest(extension->id()));

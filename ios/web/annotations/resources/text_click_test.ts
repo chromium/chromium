@@ -6,10 +6,11 @@
  * @fileoverview Tests for text_click.ts.
  */
 
-import {AnnotationsTapConsumer, TextClick} from '//ios/web/annotations/resources/text_click.js';
+import type {AnnotationsTapConsumer} from '//ios/web/annotations/resources/text_click.js';
+import {TextClick} from '//ios/web/annotations/resources/text_click.js';
 import {expectEq, FakeTaskTimer, load, TestSuite} from '//ios/web/annotations/resources/text_test_utils.js';
 
-class TestTextClick extends TestSuite {
+export class TestTextClick extends TestSuite {
   // Mark:  AnnotationsTapConsumer
 
   tappedAnnotation?: HTMLElement;
@@ -36,15 +37,15 @@ class TestTextClick extends TestSuite {
         '</div>';
     load(decoratedHTML);
 
-    const annotation = document.querySelector('chrome_annotation')!;
+    const annotation =
+        document.querySelector<HTMLElement>('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
         /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
-    const event = new Event('click', {bubbles: true, cancelable: true});
-    annotation.dispatchEvent(event);
+    annotation.click();
 
     expectEq(undefined, this.tappedAnnotation, 'tappedAnnotation after click:');
     timer.moveAhead(/* ms= */ 10, /* times= */ 4);  // -> 40ms total
@@ -68,15 +69,15 @@ class TestTextClick extends TestSuite {
     outer.addEventListener('click', (event: Event) => {
       event.stopImmediatePropagation();
     });
-    const annotation = document.querySelector('chrome_annotation')!;
+    const annotation =
+        document.querySelector<HTMLElement>('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
         /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
-    const event = new Event('click', {bubbles: true, cancelable: true});
-    annotation.dispatchEvent(event);
+    annotation.click();
 
     expectEq(undefined, this.tappedAnnotation, 'tappedAnnotation after click:');
     timer.moveAhead(/* ms= */ 10, /* times= */ 10);  // -> 100ms total
@@ -99,15 +100,15 @@ class TestTextClick extends TestSuite {
     outer.addEventListener('click', (event: Event) => {
       event.preventDefault();
     });
-    const annotation = document.querySelector('chrome_annotation')!;
+    const annotation =
+        document.querySelector<HTMLElement>('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
         /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
-    const event = new Event('click', {bubbles: true, cancelable: true});
-    annotation.dispatchEvent(event);
+    annotation.click();
 
     // Without delay, this event should be cancelled:
     expectEq(
@@ -126,15 +127,15 @@ class TestTextClick extends TestSuite {
         '</div>';
     load(decoratedHTML);
 
-    const annotation = document.querySelector('chrome_annotation')!;
+    const annotation =
+        document.querySelector<HTMLElement>('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
         /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
-    const event = new Event('click', {bubbles: true, cancelable: true});
-    annotation.dispatchEvent(event);
+    annotation.click();
 
     expectEq(undefined, this.tappedAnnotation, 'tappedAnnotation after click:');
     timer.moveAhead(/* ms= */ 10, /* times= */ 2);  // -> 20ms total
@@ -157,15 +158,15 @@ class TestTextClick extends TestSuite {
         '</div>';
     load(decoratedHTML);
 
-    const annotation = document.querySelector('chrome_annotation')!;
+    const annotation =
+        document.querySelector<HTMLElement>('chrome_annotation')!;
     const timer = new FakeTaskTimer();
     const clicker = new TextClick(
         document.documentElement, this.tapConsumer, () => undefined, timer,
         /* mutationCheckDelay */ 50, annotation);
     clicker.start();
 
-    const event = new Event('click', {bubbles: true, cancelable: true});
-    annotation.dispatchEvent(event);
+    annotation.click();
 
     expectEq(undefined, this.tappedAnnotation, 'tappedAnnotation after click:');
     timer.moveAhead(/* ms= */ 10, /* times= */ 2);  // -> 20ms total
@@ -179,5 +180,3 @@ class TestTextClick extends TestSuite {
     clicker.stop();
   }
 }
-
-export {TestTextClick}

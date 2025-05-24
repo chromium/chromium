@@ -85,7 +85,7 @@ public class InfoBarUtil {
      * simultaneously showing.
      */
     public static class InfoBarMatcher extends BaseMatcher<InfoBar> {
-        private @InfoBarIdentifier int mId;
+        private final @InfoBarIdentifier int mId;
         public InfoBar mLastMatch;
 
         public InfoBarMatcher(@InfoBarIdentifier int id) {

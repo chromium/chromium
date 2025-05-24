@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Select button should not be the default form submit button.
+  assert_false: Button in select should not match :default. expected false got true
+Harness: the test ran to completion.
+

@@ -21,6 +21,10 @@
         {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\Installer\\setup.exe":
         {"exists": true},
+    "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\IwaKeyDistribution\\iwa-key-distribution.pb":
+        {"exists": true},
+    "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\IwaKeyDistribution\\manifest.json":
+        {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\PrivacySandboxAttestationsPreloaded\\manifest.json":
         {"exists": true},
     "$PROGRAM_FILES\\$CHROME_DIR\\Application\\$MINI_INSTALLER_FILE_VERSION\\PrivacySandboxAttestationsPreloaded\\privacy-sandbox-attestations.dat":
@@ -165,6 +169,9 @@
           "data": "ValueShouldNotExist"
         }
       }
+    },
+    "HKEY_LOCAL_MACHINE\\Software\\Classes\\CLSID\\$TRACING_SERVICE_CLSID": {
+      "exists": "forbidden"
     },
     "HKEY_LOCAL_MACHINE\\Software\\Classes\\Interface\\$CHROME_ELEVATOR_IID": {
       "condition": "'$CHROME_SHORT_NAME' == 'Chrome'",

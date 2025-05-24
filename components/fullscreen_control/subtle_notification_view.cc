@@ -6,8 +6,11 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/color/color_id.h"
+#include "components/fullscreen_control/fullscreen_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -31,10 +34,6 @@ const int kMiddlePaddingPx = 30;
 const int kOuterPaddingHorizPx = 40;
 const int kOuterPaddingVertPx = 8;
 
-// Partially-transparent background color.
-const SkColor kSubtleNotificationBackgroundColor =
-    SkColorSetARGB(0xcc, 0x28, 0x2c, 0x32);
-
 // Spacing around the key name.
 const int kKeyNameMarginHorizPx = 7;
 const int kKeyNameBorderPx = 1;
@@ -50,6 +49,13 @@ constexpr int kInstructionTextContext = views::style::CONTEXT_DIALOG_TITLE;
 
 // Delimiter indicating there should be a segment displayed as a keyboard key.
 constexpr char16_t kKeyNameDelimiter[] = u"|";
+
+// Returns the background color to use for the notification.
+ui::ColorId GetSubtleNotificationBackgroundColor() {
+  return base::FeatureList::IsEnabled(features::kFullscreenBubbleShowOpaque)
+             ? color::kFullscreenNotificationOpaqueBackgroundColor
+             : color::kFullscreenNotificationTransparentBackgroundColor;
+}
 
 }  // namespace
 
@@ -158,11 +164,11 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
 
   views::Label* label = new views::Label(text, kInstructionTextContext);
   label->SetEnabledColor(kForegroundColor);
-  label->SetBackgroundColor(kSubtleNotificationBackgroundColor);
+  label->SetBackgroundColor(GetSubtleNotificationBackgroundColor());
 
   if (!format_as_key) {
     DCHECK(!key_image);
-    AddChildView(label);
+    AddChildViewRaw(label);
     return;
   }
 
@@ -175,12 +181,12 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   key->SetLayoutManager(std::move(key_name_layout));
   if (key_image)
     key->AddChildView(std::move(key_image));
-  key->AddChildView(label);
+  key->AddChildViewRaw(label);
   // The key name has a border around it.
   std::unique_ptr<views::Border> border(views::CreateRoundedRectBorder(
       kKeyNameBorderPx, kKeyNameCornerRadius, kForegroundColor));
   key->SetBorder(std::move(border));
-  AddChildView(key);
+  AddChildViewRaw(key);
 }
 
 base::CallbackListSubscription
@@ -196,7 +202,7 @@ END_METADATA
 SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
   auto bubble_border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::NONE, views::BubbleBorder::NO_SHADOW);
-  bubble_border->SetColor(kSubtleNotificationBackgroundColor);
+  bubble_border->SetColor(GetSubtleNotificationBackgroundColor());
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border.get()));
   SetBorder(std::move(bubble_border));
 
@@ -204,7 +210,7 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
 
   int outer_padding_horiz = kOuterPaddingHorizPx;
   int outer_padding_vert = kOuterPaddingVertPx;
-  AddChildView(instruction_view_.get());
+  AddChildViewRaw(instruction_view_.get());
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -218,7 +224,7 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
                           base::Unretained(this)));
 }
 
-SubtleNotificationView::~SubtleNotificationView() {}
+SubtleNotificationView::~SubtleNotificationView() = default;
 
 void SubtleNotificationView::UpdateContent(
     const std::u16string& instruction_text) {

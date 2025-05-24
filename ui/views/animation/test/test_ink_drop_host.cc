@@ -47,8 +47,9 @@ class TestInkDropRipple : public SquareInkDropRipple {
   ~TestInkDropRipple() override = default;
 
   test::InkDropRippleTestApi* GetTestApi() override {
-    if (!test_api_)
+    if (!test_api_) {
       test_api_ = std::make_unique<test::SquareInkDropRippleTestApi>(this);
+    }
     return test_api_.get();
   }
 
@@ -72,8 +73,9 @@ class TestInkDropHighlight : public InkDropHighlight {
   ~TestInkDropHighlight() override = default;
 
   test::InkDropHighlightTestApi* GetTestApi() override {
-    if (!test_api_)
+    if (!test_api_) {
       test_api_ = std::make_unique<test::InkDropHighlightTestApi>(this);
+    }
     return test_api_.get();
   }
 
@@ -99,8 +101,9 @@ TestInkDropHost::TestInkDropHost(
       [](TestInkDropHost* host) -> std::unique_ptr<views::InkDropHighlight> {
         auto highlight = std::make_unique<TestInkDropHighlight>(
             host->size(), 0, gfx::PointF(), SK_ColorBLACK);
-        if (host->disable_timers_for_test_)
+        if (host->disable_timers_for_test_) {
           highlight->GetTestApi()->SetDisableAnimationTimers(true);
+        }
         host->num_ink_drop_highlights_created_++;
         return highlight;
       },
@@ -110,8 +113,9 @@ TestInkDropHost::TestInkDropHost(
         auto ripple = std::make_unique<TestInkDropRipple>(
             InkDrop::Get(host), host->size(), 0, host->size(), 0, gfx::Point(),
             SK_ColorBLACK, 0.175f);
-        if (host->disable_timers_for_test_)
+        if (host->disable_timers_for_test_) {
           ripple->GetTestApi()->SetDisableAnimationTimers(true);
+        }
         host->num_ink_drop_ripples_created_++;
         return ripple;
       },

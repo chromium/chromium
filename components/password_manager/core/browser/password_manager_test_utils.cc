@@ -4,13 +4,13 @@
 
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"

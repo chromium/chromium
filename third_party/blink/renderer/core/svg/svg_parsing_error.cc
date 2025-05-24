@@ -62,10 +62,8 @@ std::pair<const char*, const char*> MessageForStatus(SVGParseStatus status) {
     case SVGParseStatus::kParsingFailed:
       return std::make_pair("Invalid value, ", ".");
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return std::make_pair("", "");
 }
 
 bool DisableLocus(SVGParseStatus status) {

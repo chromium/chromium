@@ -4,7 +4,6 @@
 
 #include "components/policy/core/common/policy_proto_decoders.h"
 
-#include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/test/policy_builder.h"
@@ -196,10 +195,8 @@ TEST_F(PolicyProtoDecodersTest, InvalidJsonPolicy) {
   expected_policy_map_.Set(key::kManagedBookmarks, POLICY_LEVEL_MANDATORY,
                            POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
                            base::Value(invalidDummyJson), nullptr);
-  std::u16string kExpectedMessage =
-      base::JSONReader::UsingRust()
-          ? u"EOF while parsing an object at line 3 column 2"
-          : u"Line: 3, column: 3, Syntax error.";
+  const std::u16string kExpectedMessage =
+      u"EOF while parsing an object at line 3 column 2";
   expected_policy_map_.AddMessage(
       key::kManagedBookmarks, PolicyMap::MessageType::kError,
       IDS_POLICY_PROTO_PARSING_ERROR, {kExpectedMessage});

@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/http/http_content_disposition.h"
 
+#include <string>
 #include <string_view>
 
 #include "base/base64.h"
@@ -122,8 +118,7 @@ bool DecodeWord(std::string_view encoded_word,
   *is_rfc2047 = true;
   int part_index = 0;
   std::string charset;
-  base::CStringTokenizer t(encoded_word.data(),
-                           encoded_word.data() + encoded_word.size(), "?");
+  base::StringViewTokenizer t(encoded_word, "?");
   RFC2047EncodingType enc_type = Q_ENCODING;
   while (*is_rfc2047 && t.GetNext()) {
     std::string_view part = t.token_piece();
@@ -218,7 +213,7 @@ bool DecodeWord(std::string_view encoded_word,
 //
 // However we currently also allow RFC 2047 encoding and non-ASCII
 // strings. Non-ASCII strings are interpreted based on |referrer_charset|.
-bool DecodeFilenameValue(const std::string& input,
+bool DecodeFilenameValue(std::string_view input,
                          const std::string& referrer_charset,
                          std::string* output,
                          int* parse_result_flags) {
@@ -227,8 +222,8 @@ bool DecodeFilenameValue(const std::string& input,
   bool is_previous_token_rfc2047 = true;
 
   // Tokenize with whitespace characters.
-  base::StringTokenizer t(input, " \t\n\r");
-  t.set_options(base::StringTokenizer::RETURN_DELIMS);
+  base::StringViewTokenizer t(input, " \t\n\r");
+  t.set_options(base::StringViewTokenizer::RETURN_DELIMS);
   while (t.GetNext()) {
     if (t.token_is_delim()) {
       // If the previous non-delimeter token is not RFC2047-encoded,
@@ -258,10 +253,10 @@ bool DecodeFilenameValue(const std::string& input,
 // Parses the charset and value-chars out of an ext-value string.
 //
 //  ext-value     = charset  "'" [ language ] "'" value-chars
-bool ParseExtValueComponents(const std::string& input,
+bool ParseExtValueComponents(std::string_view input,
                              std::string* charset,
                              std::string* value_chars) {
-  base::StringTokenizer t(input, "'");
+  base::StringViewTokenizer t(input, "'");
   t.set_options(base::StringTokenizer::RETURN_DELIMS);
   std::string_view temp_charset;
   std::string_view temp_value;
@@ -316,7 +311,7 @@ bool ParseExtValueComponents(const std::string& input,
 //  attr-char     = ALPHA / DIGIT
 //                 / "!" / "#" / "$" / "&" / "+" / "-" / "."
 //                 / "^" / "_" / "`" / "|" / "~"
-bool DecodeExtValue(const std::string& param_value, std::string* decoded) {
+bool DecodeExtValue(std::string_view param_value, std::string* decoded) {
   if (param_value.find('"') != std::string::npos)
     return false;
 
@@ -347,10 +342,9 @@ HttpContentDisposition::HttpContentDisposition(
 
 HttpContentDisposition::~HttpContentDisposition() = default;
 
-std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
-    std::string::const_iterator begin, std::string::const_iterator end) {
+std::string_view HttpContentDisposition::ConsumeDispositionType(
+    std::string_view header) {
   DCHECK(type_ == INLINE);
-  auto header = base::MakeStringPiece(begin, end);
   size_t delimiter = header.find(';');
   std::string_view type = header.substr(0, delimiter);
   type = HttpUtil::TrimLWS(type);
@@ -359,7 +353,7 @@ std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
   // Content-Disposition header is malformed, and we treat the first bytes as
   // a parameter rather than a disposition-type.
   if (type.empty() || !HttpUtil::IsToken(type))
-    return begin;
+    return header;
 
   parse_result_flags_ |= HAS_DISPOSITION_TYPE;
 
@@ -373,7 +367,12 @@ std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
     parse_result_flags_ |= HAS_UNKNOWN_DISPOSITION_TYPE;
     type_ = ATTACHMENT;
   }
-  return begin + (type.data() + type.size() - header.data());
+
+  // Return everything in the string after the delimiter, if there was one.
+  if (delimiter == std::string_view::npos) {
+    return std::string_view();
+  }
+  return header.substr(delimiter + 1);
 }
 
 // http://tools.ietf.org/html/rfc6266
@@ -399,17 +398,15 @@ void HttpContentDisposition::Parse(const std::string& header,
   DCHECK(type_ == INLINE);
   DCHECK(filename_.empty());
 
-  std::string::const_iterator pos = header.begin();
-  std::string::const_iterator end = header.end();
-  pos = ConsumeDispositionType(pos, end);
+  std::string_view params = ConsumeDispositionType(header);
 
   std::string filename;
   std::string ext_filename;
 
-  HttpUtil::NameValuePairsIterator iter(pos, end, ';');
+  HttpUtil::NameValuePairsIterator iter(params, ';');
   while (iter.GetNext()) {
     if (filename.empty() &&
-        base::EqualsCaseInsensitiveASCII(iter.name_piece(), "filename")) {
+        base::EqualsCaseInsensitiveASCII(iter.name(), "filename")) {
       DecodeFilenameValue(iter.value(), referrer_charset, &filename,
                           &parse_result_flags_);
       if (!filename.empty()) {
@@ -417,8 +414,8 @@ void HttpContentDisposition::Parse(const std::string& header,
         if (filename[0] == '\'')
           parse_result_flags_ |= HAS_SINGLE_QUOTED_FILENAME;
       }
-    } else if (ext_filename.empty() && base::EqualsCaseInsensitiveASCII(
-                                           iter.name_piece(), "filename*")) {
+    } else if (ext_filename.empty() &&
+               base::EqualsCaseInsensitiveASCII(iter.name(), "filename*")) {
       DecodeExtValue(iter.raw_value(), &ext_filename);
       if (!ext_filename.empty())
         parse_result_flags_ |= HAS_EXT_FILENAME;

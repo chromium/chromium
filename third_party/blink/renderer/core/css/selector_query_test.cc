@@ -80,21 +80,21 @@ TEST(SelectorQueryTest, NotMatchingPseudoElement) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer()),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, "span::before", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "span::before", arena);
   CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
-  std::unique_ptr<SelectorQuery> query = SelectorQuery::Adopt(selector_list);
+  SelectorQuery* query = MakeGarbageCollected<SelectorQuery>(selector_list);
   Element* elm = query->QueryFirst(*document);
   EXPECT_EQ(nullptr, elm);
 
   selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer()),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, "span", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "span", arena);
   selector_list = CSSSelectorList::AdoptSelectorVector(selector_vector);
-  query = SelectorQuery::Adopt(selector_list);
+  query = MakeGarbageCollected<SelectorQuery>(selector_list);
   elm = query->QueryFirst(*document);
   EXPECT_NE(nullptr, elm);
 }
@@ -115,11 +115,11 @@ TEST(SelectorQueryTest, LastOfTypeNotFinishedParsing) {
   base::span<CSSSelector> selector_vector = CSSParser::ParseSelector(
       MakeGarbageCollected<CSSParserContext>(
           *document, NullURL(), true /* origin_clean */, Referrer()),
-      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr,
-      /*is_within_scope=*/false, nullptr, "p:last-of-type", arena);
+      CSSNestingType::kNone, /*parent_rule_for_nesting=*/nullptr, nullptr,
+      "p:last-of-type", arena);
   CSSSelectorList* selector_list =
       CSSSelectorList::AdoptSelectorVector(selector_vector);
-  std::unique_ptr<SelectorQuery> query = SelectorQuery::Adopt(selector_list);
+  SelectorQuery* query = MakeGarbageCollected<SelectorQuery>(selector_list);
   Element* elm = query->QueryFirst(*document);
   ASSERT_TRUE(elm);
   EXPECT_EQ("last", elm->IdForStyleResolution());

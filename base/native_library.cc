@@ -8,8 +8,8 @@ namespace base {
 
 NativeLibrary LoadNativeLibrary(const FilePath& library_path,
                                 NativeLibraryLoadError* error) {
-  return LoadNativeLibraryWithOptions(
-      library_path, NativeLibraryOptions(), error);
+  return LoadNativeLibraryWithOptions(library_path, NativeLibraryOptions(),
+                                      error);
 }
 
 }  // namespace base

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ASH_SANITIZE_CHROME_SANITIZE_UI_DELEGATE_H_
 
 #include "ash/webui/sanitize_ui/sanitize_ui_delegate.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
 namespace content {
@@ -28,12 +29,17 @@ class ChromeSanitizeUIDelegate : public SanitizeUIDelegate {
 
   virtual ProfileResetter* GetResetter();
 
+  // Sets |restart_attempt_| for testing. This helps testing as it can block
+  // to restart.
+  void SetAttemptRestartForTesting(
+      const base::RepeatingClosure& restart_attempt) override;
+
  private:
   // Callback for when the sanitize is done.
   void OnSanitizeDone();
 
   // Restarts chrome at the end of sanitize. It could be configured for tests.
-  virtual void RestartChrome();
+  base::RepeatingClosure restart_attempt_;
 
   std::unique_ptr<ProfileResetter> resetter_;
   raw_ptr<PrefService> pref_service_;

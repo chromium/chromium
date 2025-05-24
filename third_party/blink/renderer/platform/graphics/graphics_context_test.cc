@@ -29,11 +29,12 @@
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/text/text_run.h"
@@ -128,9 +129,10 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
 
   // Draw a path that gets clipped. This should destroy the opaque area, but
   // only inside the clip.
-  Path path;
-  path.MoveTo(gfx::PointF(10, 10));
-  path.AddLineTo(gfx::PointF(40, 40));
+  const Path path = PathBuilder()
+      .MoveTo(gfx::PointF(10, 10))
+      .LineTo(gfx::PointF(40, 40))
+      .Finalize();
   cc::PaintFlags flags;
   flags.setColor(transparent.Rgb());
   flags.setBlendMode(SkBlendMode::kSrcOut);

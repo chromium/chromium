@@ -4,9 +4,8 @@
 
 import("//ash/webui/projector_app/projector_app.gni")
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash, "Projector App is ash-chrome only")
+assert(is_chromeos, "Projector App is ChromeOS only")
 
 static_library("projector_app") {
   sources = [
@@ -28,10 +27,10 @@ static_library("projector_app") {
     "//ash/public/cpp",
     "//ash/strings",
     "//ash/webui/annotator",
+    "//ash/webui/annotator/resources/untrusted:resources",
     "//ash/webui/media_app_ui:buildflags",
     "//ash/webui/projector_app/mojom:projector_mojo_bindings",
     "//ash/webui/projector_app/public/mojom:projector_mojo_bindings",
-    "//ash/webui/resources:annotator_untrusted_resources",
     "//ash/webui/resources:media_app_bundle_resources",
     "//ash/webui/resources:projector_app_bundle_resources",
     "//ash/webui/resources:projector_app_untrusted_resources",

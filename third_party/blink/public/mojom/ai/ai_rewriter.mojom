@@ -4,19 +4,27 @@
 
 module blink.mojom;
 
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
 import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
 
 // The enumerations and struct follows the explainer in
 // https://github.com/explainers-by-googlers/writing-assistance-apis/blob/main/README.md
 
-// This tone option is used when creating an AIRewriter.
+// The output tone of the rewriter.
 enum AIRewriterTone {
   kAsIs,
   kMoreFormal,
   kMoreCasual,
 };
 
-// This length option is used when creating an AIRewriter.
+// The output format of the rewriter.
+enum AIRewriterFormat {
+  kAsIs,
+  kPlainText,
+  kMarkdown,
+};
+
+// The output length of the rewriter.
 enum AIRewriterLength {
   kAsIs,
   kShorter,
@@ -27,7 +35,13 @@ enum AIRewriterLength {
 struct AIRewriterCreateOptions {
   string? shared_context;
   AIRewriterTone tone;
+  AIRewriterFormat format;
   AIRewriterLength length;
+
+  // Creation fails if a model is not available for specified languages.
+  array<AILanguageCode> expected_input_languages;
+  array<AILanguageCode> expected_context_languages;
+  AILanguageCode output_language;
 };
 
 // Interface for AIRewriter that can stream the output string.
@@ -42,4 +56,8 @@ interface AIRewriter {
     string input,
     string? context,
     pending_remote<ModelStreamingResponder> pending_responder);
+
+  // Returns the usage size of `input` and `context`, or null if unable to
+  // retrieve the usage.
+  MeasureUsage(string input, string context) => (uint32? number_of_tokens);
 };

@@ -45,8 +45,7 @@ const char* ConvertMessagingSourceTypeToString(
     case MessagingEndpoint::Type::kNativeApp:
       return "NativeApp";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "<unrecognized enum value>";
+  NOTREACHED();
 }
 
 base::debug::ScopedCrashKeyString CreateExtensionIdOrNativeAppNameScopedKey(
@@ -66,10 +65,7 @@ base::debug::ScopedCrashKeyString CreateExtensionIdOrNativeAppNameScopedKey(
           endpoint.native_app_name.value_or("<base::nullopt>"));
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return base::debug::ScopedCrashKeyString(
-      GetMessagingSourceExtensionIdCrashKey(),
-      endpoint.extension_id.value_or("<unrecognized MessagingEndpoint::Type>"));
+  NOTREACHED();
 }
 
 }  // namespace

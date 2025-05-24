@@ -48,8 +48,6 @@ class TpcdMetadataComponentInstallerPolicyTest
     CHECK(!path_.empty());
   }
 
-  ~TpcdMetadataComponentInstallerPolicyTest() override = default;
-
   bool IsTpcdMetadataGrantsEnabled() { return std::get<0>(GetParam()); }
   bool IsTpcdMetadataStagingEnabled() { return std::get<1>(GetParam()); }
 

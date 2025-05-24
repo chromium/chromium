@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -41,7 +40,6 @@ public class ActionChipsProcessorUnitTest {
     private static final int MATCH_POS = 1234;
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
 
     private @Mock OmniboxActionJni mOmniboxActionJni;
     private @Mock SuggestionHost mSuggestionHost;
@@ -52,7 +50,7 @@ public class ActionChipsProcessorUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, mOmniboxActionJni);
+        OmniboxActionJni.setInstanceForTesting(mOmniboxActionJni);
 
         mProcessor = new ActionChipsProcessor(mSuggestionHost);
         mModel = new PropertyModel(ActionChipsProperties.ALL_UNIQUE_KEYS);
@@ -109,7 +107,7 @@ public class ActionChipsProcessorUnitTest {
         // click on one action, and then emit a "focus" signal. There should be NO uma records.
         populateModelForActions(actionWithHandle(1), actionWithHandle(/* handle= */ 0));
         assertEquals(2, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* result= */ null);
 
         var watcher =
                 HistogramWatcher.newBuilder()
@@ -155,10 +153,10 @@ public class ActionChipsProcessorUnitTest {
 
         // Click!
         assertEquals(1, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* result= */ null);
         mProcessor.onOmniboxSessionStateChange(false);
 
-        verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, /* used= */ true);
+        verify(mOmniboxActionJni).recordActionShown(1L, MATCH_POS, /* executed= */ true);
         histogramWatcher.assertExpected();
 
         verifyNoFollowUpRecords();
@@ -219,7 +217,7 @@ public class ActionChipsProcessorUnitTest {
 
         // Only the latest ModelList is available (previos two have been overwritten).
         assertEquals(2, mActionModel.size());
-        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* model= */ null);
+        mActionModel.get(0).model.get(ChipProperties.CLICK_HANDLER).onResult(/* result= */ null);
 
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

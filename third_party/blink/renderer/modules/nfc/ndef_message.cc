@@ -110,8 +110,7 @@ NDEFMessage* NDEFMessage::Create(const ScriptState* script_state,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static

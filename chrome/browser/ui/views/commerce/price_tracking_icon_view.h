@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_COMMERCE_PRICE_TRACKING_ICON_VIEW_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
@@ -14,6 +16,7 @@
 
 class Browser;
 class Profile;
+class ScopedWindowCallToAction;
 
 // This icon appears in the location bar when the current page qualifies for
 // price tracking. Upon clicking, it shows a bubble where the user can choose to
@@ -33,7 +36,7 @@ class PriceTrackingIconView : public PageActionIconView {
   const gfx::VectorIcon& GetVectorIcon() const override;
 
   void ForceVisibleForTesting(bool is_tracking_price);
-  const std::u16string& GetIconLabelForTesting();
+  std::u16string_view GetIconLabelForTesting() const;
   void SetOneShotTimerForTesting(base::OneShotTimer* animate_out_timer);
 
  protected:
@@ -69,6 +72,8 @@ class PriceTrackingIconView : public PageActionIconView {
   // Boolean that tracks whether we should extend the duration for which the
   // label is shown when it animates in.
   bool should_extend_label_shown_duration_ = false;
+
+  std::unique_ptr<ScopedWindowCallToAction> scoped_window_call_to_action_ptr_;
 
   base::WeakPtrFactory<PriceTrackingIconView> weak_ptr_factory_{this};
 };

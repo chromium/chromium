@@ -18,9 +18,9 @@
 #include "components/enterprise/browser/device_trust/device_trust_key_manager.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors {
 
@@ -72,9 +72,9 @@ DeviceTrustConnectorServiceFactory::BuildServiceInstanceForBrowserContext(
   // (on the login screen).
   if (context->IsOffTheRecord()) {
     bool unsupported_profile = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     unsupported_profile = !ash::ProfileHelper::IsSigninProfile(profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (unsupported_profile) {
       return nullptr;

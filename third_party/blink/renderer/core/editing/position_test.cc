@@ -82,18 +82,16 @@ TEST_F(PositionTest, editingPositionOfWithEditingIgnoresContent) {
 TEST_F(PositionTest, LastPositionInOrAfterNodeNotInFlatTree) {
   SetBodyContent("<option><select>A</select></option>");
   const Element& document_element = *GetDocument().documentElement();
-  const Element& select = *GetDocument().QuerySelector(AtomicString("select"));
+  const Element& select = *QuerySelector("select");
 
   EXPECT_EQ(Position::LastPositionInNode(document_element),
             Position::LastPositionInOrAfterNode(document_element));
   EXPECT_EQ(PositionInFlatTree::LastPositionInNode(document_element),
             PositionInFlatTree::LastPositionInOrAfterNode(document_element));
 
-  // Note: <select> isn't appeared in flat tree, because <option> doesn't
-  // take it as valid child node.
   EXPECT_EQ(Position::AfterNode(select),
             Position::LastPositionInOrAfterNode(select));
-  EXPECT_EQ(PositionInFlatTree::LastPositionInNode(select),
+  EXPECT_NE(PositionInFlatTree::LastPositionInNode(select),
             PositionInFlatTree::LastPositionInOrAfterNode(select));
 }
 

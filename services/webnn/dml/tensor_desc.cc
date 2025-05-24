@@ -11,6 +11,8 @@
 
 namespace webnn::dml {
 
+TensorDesc::TensorDesc() = default;
+
 TensorDesc::TensorDesc(DML_TENSOR_DATA_TYPE data_type,
                        std::vector<uint32_t> dimensions)
     : TensorDesc(data_type, DML_TENSOR_FLAG_NONE, std::move(dimensions)) {}

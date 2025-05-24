@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.access_loss;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Properties defined here reflect the visible state of the password access loss notification. */
+@NullMarked
 class PasswordAccessLossNotificationProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
             new PropertyModel.WritableObjectPropertyKey<>("sheet_title");

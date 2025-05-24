@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 
 namespace ui {
@@ -41,8 +42,7 @@ TouchHandleOrientation ToTouchHandleOrientation(
     case gfx::SelectionBound::EMPTY:
       return TouchHandleOrientation::UNDEFINED;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid selection bound type: " << type;
-  return TouchHandleOrientation::UNDEFINED;
+  NOTREACHED() << "Invalid selection bound type: " << type;
 }
 
 }  // namespace
@@ -172,8 +172,6 @@ void TouchSelectionController::OnViewportChanged(
 }
 
 bool TouchSelectionController::WillHandleTouchEvent(const MotionEvent& event) {
-  const bool is_down_event = event.GetAction() == MotionEvent::Action::DOWN;
-  session_metrics_recorder_.OnTouchEvent(is_down_event);
   bool handled = WillHandleTouchEventImpl(event);
   // If Action::DOWN is consumed, the rest of touch sequence should be consumed,
   // too, regardless of value of |handled|.
@@ -181,7 +179,7 @@ bool TouchSelectionController::WillHandleTouchEvent(const MotionEvent& event) {
   // Ideally we should consume until the final Action::UP/Action::CANCEL.
   // But, apparently, we can't reliably determine the final Action::CANCEL in a
   // multi-touch scenario. See https://crbug.com/653212.
-  if (is_down_event) {
+  if (event.GetAction() == MotionEvent::Action::DOWN) {
     consume_touch_sequence_ = handled;
   }
   return handled || consume_touch_sequence_;
@@ -227,17 +225,23 @@ void TouchSelectionController::OnScrollBeginEvent() {
   response_pending_input_event_ = INPUT_EVENT_TYPE_NONE;
 }
 
-void TouchSelectionController::OnMenuCommand(bool should_dismiss_handles) {
-  session_metrics_recorder_.OnMenuCommand(should_dismiss_handles);
-  if (should_dismiss_handles) {
-    HideAndDisallowShowingAutomatically();
+#if BUILDFLAG(IS_ANDROID)
+void TouchSelectionController::OnUpdateNativeViewTree(
+    gfx::NativeView parent_native_view,
+    cc::slim::Layer* parent_layer) {
+  if (insertion_handle_) {
+    insertion_handle_->OnUpdateNativeViewTree(parent_native_view, parent_layer);
+  }
+  if (start_selection_handle_) {
+    start_selection_handle_->OnUpdateNativeViewTree(parent_native_view,
+                                                    parent_layer);
+  }
+  if (end_selection_handle_) {
+    end_selection_handle_->OnUpdateNativeViewTree(parent_native_view,
+                                                  parent_layer);
   }
 }
-
-void TouchSelectionController::OnSessionEndEvent(const Event& event) {
-  session_metrics_recorder_.OnSessionEndEvent(event);
-  HideAndDisallowShowingAutomatically();
-}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void TouchSelectionController::HideHandles() {
   response_pending_input_event_ = INPUT_EVENT_TYPE_NONE;
@@ -250,7 +254,6 @@ void TouchSelectionController::HideHandles() {
 }
 
 void TouchSelectionController::HideAndDisallowShowingAutomatically() {
-  session_metrics_recorder_.ResetMetrics();
   HideHandles();
   show_touch_handles_ = false;
 }
@@ -547,6 +550,54 @@ gfx::PointF TouchSelectionController::GetSelectionEnd() const {
   return GetEndPosition();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void TouchSelectionController::HandleSwipeToMoveCursorGestureAck(
+    ui::EventType type,
+    const gfx::PointF& point,
+    const std::optional<bool>& cursor_control,
+    bool is_in_root_view) {
+  switch (type) {
+    case ui::EventType::kGestureScrollBegin: {
+      DCHECK(cursor_control.has_value());
+      if (!*cursor_control) {
+        break;
+      }
+      swipe_to_move_cursor_activated_ = true;
+      OnSwipeToMoveCursorBegin();
+      client_->OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STARTED);
+      break;
+    }
+    case ui::EventType::kGestureScrollUpdate: {
+      if (!is_in_root_view) {
+        break;
+      }
+      if (!swipe_to_move_cursor_activated_) {
+        break;
+      }
+      gfx::RectF rect = GetRectBetweenBounds();
+      // Suppress this when the input is not focused, in which case rect will be
+      // 0x0.
+      if (rect.width() != 0.f || rect.height() != 0.f) {
+        client_->OnDragUpdate(ui::TouchSelectionDraggable::Type::kNone,
+                              gfx::PointF(point.x(), rect.right_center().y()));
+      }
+      break;
+    }
+    case ui::EventType::kGestureScrollEnd: {
+      if (!swipe_to_move_cursor_activated_) {
+        break;
+      }
+      swipe_to_move_cursor_activated_ = false;
+      OnSwipeToMoveCursorEnd();
+      client_->OnSelectionEvent(ui::INSERTION_HANDLE_DRAG_STOPPED);
+      break;
+    }
+    default:
+      break;
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void TouchSelectionController::OnInsertionChanged() {
   DeactivateSelection();
 
@@ -586,7 +637,6 @@ void TouchSelectionController::OnSelectionChanged() {
 
 bool TouchSelectionController::ActivateInsertionIfNecessary() {
   DCHECK_NE(SELECTION_ACTIVE, active_status_);
-  session_metrics_recorder_.OnCursorActivationEvent();
 
   if (!insertion_handle_) {
     insertion_handle_ = std::make_unique<TouchHandle>(
@@ -615,7 +665,6 @@ void TouchSelectionController::DeactivateInsertion() {
 
 bool TouchSelectionController::ActivateSelectionIfNecessary() {
   DCHECK_NE(INSERTION_ACTIVE, active_status_);
-  session_metrics_recorder_.OnSelectionActivationEvent();
 
   if (!start_selection_handle_) {
     start_selection_handle_ =

@@ -6,11 +6,12 @@ import collections
 from typing import Generator
 import unittest
 
+# vpython-provided modules.
+import pandas  # pylint: disable=import-error
+
 from bad_machine_finder import bigquery
 from bad_machine_finder import swarming
 from bad_machine_finder import test_specs
-
-import pandas  # pylint: disable=import-error
 
 FakeRow = collections.namedtuple(
     'FakeRow', ['mixin', 'bot_id', 'total_tasks', 'failed_tasks', 'test_suite'])
@@ -26,8 +27,7 @@ class FakeQuerier(bigquery.Querier):
   def GetSeriesForQuery(self,
                         query: str) -> Generator[pandas.Series, None, None]:
     self.last_run_query = query
-    for r in self.rows:
-      yield r
+    yield from self.rows
 
 
 class QueryParsingUnittest(unittest.TestCase):
@@ -208,11 +208,17 @@ WITH
     FROM
       mixin_name_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      mixin_name_stats
   )
 SELECT
   *
 FROM
-  mixin_name_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
 
@@ -309,11 +315,17 @@ WITH
     FROM
       mixin_name_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      mixin_name_stats
   )
 SELECT
   *
 FROM
-  mixin_name_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
     # pylint: enable=line-too-long
@@ -448,12 +460,22 @@ WITH
     FROM
       nvidia_mixin_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      amd_mixin_stats
+    UNION ALL
+    SELECT
+      *
+    FROM
+      nvidia_mixin_stats
   )
 SELECT
   *
 FROM
-  amd_mixin_stats,
-  nvidia_mixin_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
 
@@ -594,12 +616,22 @@ WITH
     FROM
       nvidia_mixin_tasks t
     GROUP BY bot_id, test_suite
+  ),
+  combined_stats AS (
+    SELECT
+      *
+    FROM
+      amd_mixin_stats
+    UNION ALL
+    SELECT
+      *
+    FROM
+      nvidia_mixin_stats
   )
 SELECT
   *
 FROM
-  amd_mixin_stats,
-  nvidia_mixin_stats
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
     # pylint: enable=line-too-long

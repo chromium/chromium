@@ -11,6 +11,10 @@
 #include "base/containers/flat_map.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
+
 namespace updater {
 
 class CachedPolicyInfo;
@@ -20,7 +24,7 @@ struct PolicyValidationResult;
 using DMPolicyMap = base::flat_map<std::string, std::string>;
 
 // The policy type for Omaha policy settings.
-extern const char kGoogleUpdatePolicyType[];
+inline constexpr char kGoogleUpdatePolicyType[] = "google/machine-level-omaha";
 
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a RegisterBrowserRequest, to register the current device.
@@ -29,6 +33,7 @@ std::string GetRegisterBrowserRequestData();
 // Returns the serialized data from a DeviceManagementRequest, which wraps
 // a PolicyFetchRequest, to fetch policies for the given type.
 std::string GetPolicyFetchRequestData(
+    policy::PolicyFetchReason reason,
     const std::string& policy_type,
     const device_management_storage::CachedPolicyInfo& policy_info);
 

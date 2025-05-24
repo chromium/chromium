@@ -5,6 +5,7 @@
 #include "chrome/browser/push_messaging/push_messaging_notification_manager.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -61,7 +62,7 @@ TEST_F(PushMessagingNotificationManagerTest, IsTabVisibleViewSource) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 namespace extensions {
 
-using ContextType = ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionsPushMessagingNotificationManagerTest
     : public ExtensionServiceTestWithInstall,

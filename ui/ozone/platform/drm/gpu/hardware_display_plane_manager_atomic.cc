@@ -14,6 +14,7 @@
 #include <xf86drmMode.h>
 
 #include <memory>
+#include <sstream>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -399,7 +400,18 @@ bool HardwareDisplayPlaneManagerAtomic::Commit(
     if (!drm_->CommitProperties(atomic_property_set.get(), flags,
                                 crtcs.size(), page_flip_request)) {
       if (!test_only) {
-        PLOG(ERROR) << "Failed to commit properties for page flip.";
+        std::ostringstream ss;
+        ss << "Failed to commit properties for page flip: [";
+        for (const auto* plane : plane_list->plane_list) {
+          plane->DumpProperties(ss);
+          ss << (plane != plane_list->plane_list.back() ? ", " : "]");
+        }
+        ss << ", Current properties in scanout: [";
+        for (const auto* plane : plane_list->old_plane_list) {
+          plane->DumpProperties(ss);
+          ss << (plane != plane_list->old_plane_list.back() ? ", " : "]");
+        }
+        PLOG(ERROR) << ss.str();
       } else {
         VPLOG(2) << "Failed to commit properties for MODE_ATOMIC_TEST_ONLY.";
       }

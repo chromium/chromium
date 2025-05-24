@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -18,7 +20,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
@@ -50,8 +52,7 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
         Do([this]() {
           constexpr int kTabCountThreshold = 10;
           for (int i = 0; i < kTabCountThreshold; i++) {
-            NavigateParams params(browser(),
-                                  GURL("about:blank"),
+            NavigateParams params(browser(), GURL("about:blank"),
                                   ui::PAGE_TRANSITION_LINK);
             params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
             Navigate(&params);
@@ -59,9 +60,15 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
         }),
         WaitForShow(
             user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
-    AddDescription(steps, "TriggerMemorySaverPromo( %s )");
+    AddDescriptionPrefix(steps, "TriggerMemorySaverPromo()");
     return steps;
   }
+
+ private:
+  // Pretend to have 1GB of memory, to ensure the memory saver promo will
+  // show.
+  base::test::ScopedAmountOfPhysicalMemoryOverride
+      scoped_amount_of_physical_memory_override_{1024};
 };
 
 // Check that the memory saver mode in-product help promo is shown when
@@ -94,20 +101,19 @@ IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, PromoCustomActionClicked) {
 // Check that the performance menu item is alerted when the memory saver
 // promo is shown and the app menu button is clicked
 IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, AlertMenuItemWhenPromoShown) {
-  RunTestSequence(
-      TriggerMemorySaverPromo(),
-      // This is required because normally this would happen when the button is
-      // pressed, but pages loading in the background can cause the render view
-      // to be focused, which can cause focus to pop back to the web view while
-      // the app menu is trying to show, which can in turn cause the menu to
-      // close.
-      ActivateSurface(kBrowserViewElementId),
-      PressButton(kToolbarAppMenuButtonElementId),
-      WaitForShow(AppMenuModel::kMoreToolsMenuItem),
-      CheckViewProperty(AppMenuModel::kMoreToolsMenuItem,
-                        &views::MenuItemView::is_alerted, true),
-      SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
-      WaitForShow(ToolsMenuModel::kPerformanceMenuItem),
-      CheckViewProperty(ToolsMenuModel::kPerformanceMenuItem,
-                        &views::MenuItemView::is_alerted, true));
+  RunTestSequence(TriggerMemorySaverPromo(),
+                  // This is required because normally this would happen when
+                  // the button is pressed, but pages loading in the background
+                  // can cause the render view to be focused, which can cause
+                  // focus to pop back to the web view while the app menu is
+                  // trying to show, which can in turn cause the menu to close.
+                  ActivateSurface(kBrowserViewElementId),
+                  PressButton(kToolbarAppMenuButtonElementId),
+                  WaitForShow(AppMenuModel::kMoreToolsMenuItem),
+                  CheckViewProperty(AppMenuModel::kMoreToolsMenuItem,
+                                    &views::MenuItemView::is_alerted, true),
+                  SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
+                  WaitForShow(ToolsMenuModel::kPerformanceMenuItem),
+                  CheckViewProperty(ToolsMenuModel::kPerformanceMenuItem,
+                                    &views::MenuItemView::is_alerted, true));
 }

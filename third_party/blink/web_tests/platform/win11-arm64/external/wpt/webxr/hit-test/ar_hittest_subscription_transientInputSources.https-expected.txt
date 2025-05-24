@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+[FAIL] Ensures subscription to transient hit test works with an XRSpace from input source - no move - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensures subscription to transient hit test works with an XRSpace from input source - no move - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensures subscription to transient hit test works with an XRSpace from input source - after move - no results - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensures subscription to transient hit test works with an XRSpace from input source - after move - no results - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensures subscription to transient hit test works with an XRSpace from input source - after move - 1 result - webgl
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+[FAIL] Ensures subscription to transient hit test works with an XRSpace from input source - after move - 1 result - webgl2
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'makeXRCompatible')"
+Harness: the test ran to completion.

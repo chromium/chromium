@@ -4,9 +4,10 @@
 
 #include "components/performance_manager/test_support/test_harness_helper.h"
 
-#include "base/functional/bind.h"
-#include "base/run_loop.h"
-#include "base/test/bind.h"
+#include <utility>
+
+#include "base/check.h"
+#include "base/functional/callback.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -22,17 +23,13 @@ void PerformanceManagerTestHarnessHelper::SetUp() {
   // Allow this to be called multiple times.
   if (perf_man_.get())
     return;
-  base::RunLoop run_loop;
-  GraphImplCallback callback =
-      base::BindLambdaForTesting([&](GraphImpl* graph) {
-        graph_features_.ConfigureGraph(graph);
-        if (graph_impl_callback_)
-          std::move(graph_impl_callback_).Run(graph);
-        run_loop.Quit();
-      });
-  perf_man_ = PerformanceManagerImpl::Create(std::move(callback));
+  perf_man_ = PerformanceManagerImpl::Create();
+  GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();
+  graph_features_.ConfigureGraph(graph);
+  if (graph_impl_callback_) {
+    std::move(graph_impl_callback_).Run(graph);
+  }
   registry_ = PerformanceManagerRegistry::Create();
-  run_loop.Run();
 }
 
 void PerformanceManagerTestHarnessHelper::TearDown() {
@@ -40,11 +37,7 @@ void PerformanceManagerTestHarnessHelper::TearDown() {
   registry_->TearDown();
   registry_.reset();
 
-  base::RunLoop run_loop;
-  PerformanceManagerImpl::SetOnDestroyedCallbackForTesting(
-      run_loop.QuitClosure());
   PerformanceManagerImpl::Destroy(std::move(perf_man_));
-  run_loop.Run();
 }
 
 void PerformanceManagerTestHarnessHelper::OnWebContentsCreated(
@@ -60,6 +53,13 @@ void PerformanceManagerTestHarnessHelper::OnBrowserContextAdded(
 void PerformanceManagerTestHarnessHelper::OnBrowserContextRemoved(
     content::BrowserContext* browser_context) {
   registry_->NotifyBrowserContextRemoved(browser_context);
+}
+
+GraphFeatures& PerformanceManagerTestHarnessHelper::GetGraphFeatures() {
+  // Calling GetGraphFeatures() after the performance manager is initialized
+  // would have no effect, so it is restricted here.
+  CHECK(!perf_man_);
+  return graph_features_;
 }
 
 }  // namespace performance_manager

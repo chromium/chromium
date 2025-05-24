@@ -60,10 +60,15 @@ test(() => {
     var child2 = document.getElementById("child2");
     var child3 = document.getElementById("child3");
     var child4 = document.getElementById("child4");
-    assert_equals(parent.offsetHeight, 240);
-    assert_equals(child1.offsetHeight, 140);
+    assert_equals(parent.offsetWidth, 60);
+    assert_equals(parent.offsetHeight, 60);
+    assert_equals(child1.offsetWidth, 45);
+    assert_equals(child1.offsetHeight, 60);
+    assert_equals(child2.offsetWidth, 15);
     assert_equals(child2.offsetHeight, 40);
+    assert_equals(child3.offsetWidth, 15);
     assert_equals(child3.offsetHeight, 20);
+    assert_equals(child4.offsetWidth, 15);
     assert_equals(child4.offsetHeight, 40);
 }, "Balance, non-auto height, unused space at break after perfect break with no space loss");
 </script>

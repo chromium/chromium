@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webauthn/sheet_models.h"
 
+#include <string>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,7 +14,7 @@
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/grit/generated_resources.h"
 #include "device/fido/fido_types.h"
-#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -31,8 +33,7 @@ class TestAuthenticatorSheetModel : public AuthenticatorSheetModelBase {
       OtherMechanismButtonVisibility other_mechanism_button_visibility)
       : AuthenticatorSheetModelBase(dialog_model,
                                     other_mechanism_button_visibility) {
-    vector_illustrations_.emplace(kPasskeyUsbDarkIcon,
-                                  kPasskeyUsbDarkIcon);
+    vector_illustrations_.emplace(kPasskeyUsbDarkIcon, kPasskeyUsbDarkIcon);
   }
 
   std::u16string GetStepTitle() const override { return u"Step title"; }
@@ -107,10 +108,12 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMPasskeysOnly) {
   dialog_model->paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
   dialog_model->priority_phone_name = dialog_model->paired_phone_names.at(0);
   dialog_model->mechanisms.emplace_back(
-      Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
+      Mechanism::Credential(
+          {device::AuthenticatorType::kPhone, {0}, std::nullopt}),
       kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
   dialog_model->mechanisms.emplace_back(
-      Mechanism::Credential({device::AuthenticatorType::kPhone, {1}}),
+      Mechanism::Credential(
+          {device::AuthenticatorType::kPhone, {1}, std::nullopt}),
       kPasskeyName2, kPasskeyName2, kPasskeyPhoneIcon, base::DoNothing());
   dialog_model->mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
@@ -131,10 +134,12 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest,
   dialog_model->paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
   dialog_model->priority_phone_name = dialog_model->paired_phone_names.at(0);
   dialog_model->mechanisms.emplace_back(
-      Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
+      Mechanism::Credential(
+          {device::AuthenticatorType::kPhone, {0}, std::nullopt}),
       kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
   dialog_model->mechanisms.emplace_back(
-      Mechanism::Credential({device::AuthenticatorType::kTouchID, {1}}),
+      Mechanism::Credential(
+          {device::AuthenticatorType::kTouchID, {1}, std::nullopt}),
       kPasskeyName2, kPasskeyName2, kPasskeyAoaIcon, base::DoNothing());
   dialog_model->mechanisms.emplace_back(
       Mechanism::Transport(AuthenticatorTransport::kUsbHumanInterfaceDevice),
@@ -153,7 +158,8 @@ TEST_F(AuthenticatorMultiSourcePickerSheetModelTest, GPMMechanismAndPhones) {
   dialog_model->paired_phone_names = {base::UTF16ToUTF8(kPhoneName)};
   dialog_model->priority_phone_name = dialog_model->paired_phone_names.at(0);
   dialog_model->mechanisms.emplace_back(
-      Mechanism::Credential({device::AuthenticatorType::kPhone, {0}}),
+      Mechanism::Credential(
+          {device::AuthenticatorType::kPhone, {0}, std::nullopt}),
       kPasskeyName1, kPasskeyName1, kPasskeyPhoneIcon, base::DoNothing());
   dialog_model->mechanisms.emplace_back(Mechanism::Enclave(), u"enclave",
                                         u"enclave", kPasskeyAoaIcon,

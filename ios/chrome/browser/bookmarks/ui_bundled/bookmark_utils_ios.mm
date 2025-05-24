@@ -18,11 +18,11 @@
 #import "base/hash/hash.h"
 #import "base/i18n/message_formatter.h"
 #import "base/i18n/string_compare.h"
+#import "base/i18n/string_search.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
-#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/undo_manager_wrapper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -124,11 +125,6 @@ bool IsAccountBookmarkStorageOptedIn(syncer::SyncService* sync_service) {
   if (sync_service->GetAccountInfo().IsEmpty()) {
     return false;
   }
-  // TODO(crbug.com/40066949): Remove this after UNO phase 3. See
-  // ConsentLevel::kSync documentation for more details.
-  if (sync_service->HasSyncConsent()) {
-    return false;
-  }
   syncer::UserSelectableTypeSet selected_types =
       sync_service->GetUserSettings()->GetSelectedTypes();
   return selected_types.Has(syncer::UserSelectableType::kBookmarks);
@@ -197,16 +193,7 @@ bool bookmarkSavedIntoAccount(
     BookmarkStorageType bookmarkStorageType,
     base::WeakPtr<AuthenticationService> authenticationService,
     raw_ptr<syncer::SyncService> syncService) {
-  // TODO(crbug.com/40066949): Simplify once kSync becomes unreachable or is
-  // deleted from the codebase. See ConsentLevel::kSync documentation for
-  // details.
-  BOOL hasSyncConsent =
-      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSync);
-  BOOL savedIntoAccount =
-      (bookmarkStorageType == BookmarkStorageType::kAccount) ||
-      (hasSyncConsent && syncService->GetUserSettings()->GetSelectedTypes().Has(
-                             syncer::UserSelectableType::kBookmarks));
-  return savedIntoAccount;
+  return bookmarkStorageType == BookmarkStorageType::kAccount;
 }
 
 NSString* messageForAddingBookmarksInFolder(
@@ -246,9 +233,8 @@ NSString* messageForAddingBookmarksInFolder(
     }
   }
 
-  // The user is signed in and bookmark sync is on (either account bookmarks or
-  // the legacy sync-the-feature). It is still possible that the folder saving
-  // into is a local-only folder.
+  // The user is signed in and account bookmarks are on. It is still possible
+  // that the folder saving into is a local-only folder.
   if (model->IsLocalOnlyNode(*folder)) {
     std::u16string title = base::SysNSStringToUTF16(folderTitle);
     std::u16string pattern = l10n_util::GetStringUTF16(
@@ -294,7 +280,7 @@ MDCSnackbarMessage* UpdateBookmarkWithUndoToast(
 
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Create or update the bookmark.
   [wrapper startGroupingActions];
@@ -330,10 +316,11 @@ MDCSnackbarMessage* CreateBookmarkAtPositionWithUndoToast(
   std::u16string titleString = base::SysNSStringToUTF16(title);
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
   [wrapper startGroupingActions];
 
-  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts);
+  RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kShortcuts,
+                              profile->GetPrefs());
   base::RecordAction(base::UserMetricsAction("BookmarkAdded"));
   const BookmarkNode* node =
       model->AddNewURL(folder, folder->children().size(), titleString, url);
@@ -366,7 +353,7 @@ MDCSnackbarMessage* UpdateBookmarkPositionWithUndoToast(
 
   // Secondly, create an Undo group for all undoable actions.
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Update the bookmark.
   [wrapper startGroupingActions];
@@ -401,7 +388,7 @@ MDCSnackbarMessage* DeleteBookmarksWithUndoToast(
   DCHECK_GT(node_count, 0u);
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Delete the selected bookmarks.
   [wrapper startGroupingActions];
@@ -458,7 +445,7 @@ MDCSnackbarMessage* MoveBookmarksWithUndoToast(
   bool multiple_bookmarks_to_move = node_count > 1 || contains_a_folder;
 
   UndoManagerWrapper* wrapper =
-      [[UndoManagerWrapper alloc] initWithBrowserState:profile];
+      [[UndoManagerWrapper alloc] initWithProfile:profile];
 
   // Move the selected bookmarks.
   [wrapper startGroupingActions];
@@ -560,7 +547,7 @@ void UpdateFoldersFromNode(const BookmarkNode* folder,
 
   bookmark_utils_ios::SortFolders(&directDescendants);
 
-  auto it = base::ranges::find(*results, folder);
+  auto it = std::ranges::find(*results, folder);
   DCHECK(it != results->end());
   ++it;
   results->insert(it, directDescendants.begin(), directDescendants.end());
@@ -583,9 +570,11 @@ void SortFolders(NodeVector* vector) {
             FolderNodeComparator(collator.get()));
 }
 
-NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
-                                     const bookmarks::BookmarkModel* model,
-                                     BookmarkStorageType type) {
+NodeVector VisibleNonDescendantNodes(
+    const NodeSet& obstructions,
+    const bookmarks::BookmarkModel* model,
+    BookmarkStorageType type,
+    const std::vector<std::u16string>& search_terms) {
   NodeVector primary_nodes = PrimaryPermanentNodes(model, type);
   NodeVector filtered_primary_nodes;
   for (auto* node : primary_nodes) {
@@ -597,12 +586,22 @@ NodeVector VisibleNonDescendantNodes(const NodeSet& obstructions,
   }
 
   // Copy the results over.
-  NodeVector results = filtered_primary_nodes;
+  NodeVector inner_results = filtered_primary_nodes;
 
   // Iterate over a static copy of the filtered, root folders.
   for (auto* node : filtered_primary_nodes) {
-    UpdateFoldersFromNode(node, &results, obstructions);
+    UpdateFoldersFromNode(node, &inner_results, obstructions);
   }
+
+  if (search_terms.empty()) {
+    return inner_results;
+  }
+  NodeVector results;
+  std::copy_if(inner_results.begin(), inner_results.end(),
+               std::back_inserter(results), [search_terms](auto node) {
+                 return bookmarks::DoesBookmarkContainWords(
+                     node->GetTitle(), GURL(), search_terms);
+               });
 
   return results;
 }

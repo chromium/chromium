@@ -267,7 +267,7 @@ class UnitTest(unittest.TestCase):
     inv_data = json.dumps(
         {
             "invocation": {
-                "extended_properties": {
+                "extendedProperties": {
                     "exception_occurrences": {
                         "@type": "type.googleapis.com/build.util.lib.proto.ExceptionOccurrences",
                         "datapoints": [
@@ -290,12 +290,7 @@ class UnitTest(unittest.TestCase):
                     }
                 }
             },
-            "update_mask": {
-                "paths": [
-                    "extended_properties.exception_occurrences",
-                    "extended_properties.test_script_metrics"
-                ]
-            }
+            "updateMask": "extendedProperties.exceptionOccurrences,extendedProperties.testScriptMetrics",
         },
         sort_keys=True)
 

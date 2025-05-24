@@ -43,6 +43,21 @@ bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
   return true;
 }
 
+gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
+                                    bool is_rgb_output) {
+  // If input & output both are YUV pixel format, there should be no colorspace
+  // conversion during the process operations, leave the colorspace unchanged.
+  if (!is_rgb_output) {
+    return input_color_space;
+  }
+  // If input is a YUV format, and output is a RGB format, always set output
+  // colorspace to a RGB colorspace.
+  if (input_color_space.IsHDR()) {
+    return gfx::ColorSpace::CreateHDR10();
+  }
+  return gfx::ColorSpace::CreateSRGB();
+}
+
 // static
 std::unique_ptr<TextureSelector> TextureSelector::Create(
     const gpu::GpuPreferences& gpu_preferences,
@@ -64,18 +79,19 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
   };
 
   switch (decoder_output_format) {
+    case DXGI_FORMAT_YUY2:
     case DXGI_FORMAT_AYUV: {
       MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing "
                                  << DxgiFormatToString(decoder_output_format);
-      // AYUV output from decoder is always 8-bit 4:4:4 which we prefer to
-      // be rendered in ARGB formats to avoid chroma downsampling. For
-      // HDR contents, we should not let YUV to RGB conversion happens
-      // inside D3D11VideoDecoder, the only place for the conversion
-      // should be Gfx::ColorTransform or SwapChainPresenter. For color
-      // spaces that VP isn't able to handle the correct color conversion,
-      // the current workaround is to output a 4:2:0 YUV format and let
-      // viz handle the conversion at the expense of losing 4:4:4 chroma
-      // sampling. See https://crbug.com/343014700.
+      // YUY2/AYUV output from decoder is always 8-bit 4:2:2/4:4:4 which we
+      // prefer to be rendered in ARGB formats to avoid chroma downsampling. For
+      // HDR contents, we should not let YUV to RGB conversion happens inside
+      // D3D11VideoDecoder, the only place for the conversion should be
+      // Gfx::ColorTransform or SwapChainPresenter. For color spaces that VP
+      // isn't able to handle the correct color conversion, the current
+      // workaround is to output a 4:2:0 YUV format and let viz handle the
+      // conversion at the expense of losing 4:2:2/4:4:4 chroma sampling. See
+      // https://crbug.com/343014700.
       if (!input_color_space.IsHDR() &&
           gfx::ColorSpaceWin::CanConvertToDXGIColorSpace(input_color_space) &&
           supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
@@ -119,13 +135,13 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
                                  << DxgiFormatToString(decoder_output_format);
       // Y416/Y216/Y410/Y210 output from decoder is always 10/12-bit 4:2:2/4:4:4
       // which we prefer to be rendered in ARGB formats to avoid chroma
-      // downsampling. For HDR contents, we should not let YUV to RGB
-      // conversion happens inside D3D11VideoDecoder, the only place
-      // for the conversion should be Gfx::ColorTransform or
-      // SwapChainPresenter. For color spaces that VP isn't able to handle
-      // the correct color conversion, the current workaround is to output
-      // a 4:2:0 YUV format and let viz handle the conversion at the expense
-      // of losing 4:4:4 chroma sampling. See https://crbug.com/343014700.
+      // downsampling. For HDR contents, we should not let YUV to RGB conversion
+      // happens inside D3D11VideoDecoder, the only place for the conversion
+      // should be Gfx::ColorTransform or SwapChainPresenter. For color spaces
+      // that VP isn't able to handle the correct color conversion, the current
+      // workaround is to output a 4:2:0 YUV format and let viz handle the
+      // conversion at the expense of losing 4:2:2/4:4:4 chroma sampling. See
+      // https://crbug.com/343014700.
       if (!input_color_space.IsHDR() &&
           gfx::ColorSpaceWin::CanConvertToDXGIColorSpace(input_color_space) &&
           supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
@@ -258,9 +274,12 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
           SetDebugName(out_texture.Get(), "D3D11Decoder_CopyTextureSelector")))
     return nullptr;
 
+  gfx::ColorSpace output_color_space =
+      GetOutputColorSpace(color_space, IsRGB(pixel_format_));
+
   return std::make_unique<CopyingTexture2DWrapper>(
-      size,
-      std::make_unique<DefaultTexture2DWrapper>(size, color_space,
+      size, output_color_space,
+      std::make_unique<DefaultTexture2DWrapper>(size, output_color_space,
                                                 OutputDXGIFormat(), device),
       video_processor_proxy_, out_texture);
 }

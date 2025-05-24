@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/base_search_provider.h"
@@ -22,7 +23,7 @@ class VoiceSuggestProvider : public BaseSearchProvider {
   explicit VoiceSuggestProvider(AutocompleteProviderClient* client);
 
   void Start(const AutocompleteInput& input, bool minimal_changes) override;
-  void Stop(bool clear_cached_results, bool due_to_user_inactivity) override;
+  void Stop(AutocompleteStopReason stop_reason) override;
 
   // Adds voice suggestion to the list of reported AutocompleteMatches.
   // The voice suggestion is next converted to a proper Search suggestion

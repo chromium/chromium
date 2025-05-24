@@ -237,6 +237,16 @@ void CustomElement::EnqueueConnectedCallback(Element& element) {
     definition->EnqueueConnectedCallback(element);
 }
 
+void CustomElement::EnqueueConnectedMoveCallback(Element& element) {
+  auto* definition = DefinitionForElementWithoutCheck(element);
+  if (definition->HasConnectedMoveCallback()) {
+    definition->EnqueueConnectedMoveCallback(element);
+  } else {
+    EnqueueDisconnectedCallback(element);
+    EnqueueConnectedCallback(element);
+  }
+}
+
 void CustomElement::EnqueueDisconnectedCallback(Element& element) {
   auto* definition = DefinitionForElementWithoutCheck(element);
   if (definition->HasDisconnectedCallback())

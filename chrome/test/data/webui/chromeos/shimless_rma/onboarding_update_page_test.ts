@@ -133,7 +133,8 @@ suite('onboardingUpdatePageTest', function() {
     // Simulate all compliant hardware.
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ true, /* errorMessage= */ '', /* delayMs= */ 0);
+        /* result= */ {passResult: {}},
+        /* delayMs= */ 0);
     await flushTasks();
 
     // Verify the unqualified link isn't showing.
@@ -150,7 +151,7 @@ suite('onboardingUpdatePageTest', function() {
     const failedComponent = 'Keyboard';
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ false, /* errorMessage= */ failedComponent,
+        /* result= */ {failResult: {componentInfo: failedComponent}},
         /* delayMs= */ 0);
     await flushTasks();
 

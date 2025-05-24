@@ -55,8 +55,7 @@ void FrameContentAsText(wtf_size_t max_chars,
         (layout_view->PhysicalLocation().top + layout_view->Size().height <=
          0) ||
         (owner_layout_object && owner_layout_object->Style() &&
-         owner_layout_object->Style()->UsedVisibility() !=
-             EVisibility::kVisible)) {
+         owner_layout_object->Style()->Visibility() != EVisibility::kVisible)) {
       continue;
     }
 
@@ -68,7 +67,7 @@ void FrameContentAsText(wtf_size_t max_chars,
     if (output.length() >= max_chars - frame_separator_length)
       return;
 
-    output.Append(kFrameSeparator, frame_separator_length);
+    output.Append(base::span(kFrameSeparator));
     FrameContentAsText(max_chars, cur_local_child, output);
     if (output.length() >= max_chars)
       return;  // Filled up the buffer.

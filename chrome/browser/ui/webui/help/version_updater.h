@@ -10,14 +10,13 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <optional>
 
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
 #include "third_party/cros_system_api/dbus/update_engine/dbus-constants.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace content {
 class WebContents;
@@ -54,7 +53,7 @@ class VersionUpdater {
 
   // TODO(jhawkins): Use a delegate interface instead of multiple callback
   // types.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   typedef base::OnceCallback<void(const std::string&)> ChannelCallback;
   using EolInfoCallback =
       base::OnceCallback<void(ash::UpdateEngineClient::EolInfo eol_info)>;
@@ -85,7 +84,7 @@ class VersionUpdater {
   // Used to show or hide the promote UI elements. Mac-only.
   typedef base::RepeatingCallback<void(PromotionState)> PromoteCallback;
 
-  virtual ~VersionUpdater() {}
+  virtual ~VersionUpdater() = default;
 
   // Sub-classes must implement this method to create the respective
   // specialization. |web_contents| may be null, in which case any required UX
@@ -106,7 +105,7 @@ class VersionUpdater {
   virtual void PromoteUpdater() = 0;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   virtual void SetChannel(const std::string& channel,
                           bool is_powerwash_allowed) = 0;
   virtual void GetChannel(bool get_current_channel,
@@ -134,7 +133,7 @@ class VersionUpdater {
       int64_t update_size) = 0;
 
   // If an update is downloaded but deferred, apply the deferred update.
-  virtual void ApplyDeferredUpdate() = 0;
+  virtual void ApplyDeferredUpdateAdvanced() = 0;
 #endif
 };
 

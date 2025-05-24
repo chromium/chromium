@@ -9,11 +9,13 @@
 
 // GlobalError ---------------------------------------------------------------
 
-GlobalError::GlobalError() {}
+GlobalError::GlobalError() = default;
 
-GlobalError::~GlobalError() {}
+GlobalError::~GlobalError() = default;
 
-GlobalError::Severity GlobalError::GetSeverity() { return SEVERITY_MEDIUM; }
+GlobalError::Severity GlobalError::GetSeverity() {
+  return SEVERITY_MEDIUM;
+}
 
 ui::ImageModel GlobalError::MenuItemIcon() {
   return ui::ImageModel::FromVectorIcon(kBrowserToolsErrorIcon,
@@ -26,7 +28,9 @@ GlobalErrorWithStandardBubble::GlobalErrorWithStandardBubble() = default;
 
 GlobalErrorWithStandardBubble::~GlobalErrorWithStandardBubble() = default;
 
-bool GlobalErrorWithStandardBubble::HasBubbleView() { return true; }
+bool GlobalErrorWithStandardBubble::HasBubbleView() {
+  return true;
+}
 
 bool GlobalErrorWithStandardBubble::HasShownBubbleView() {
   return has_shown_bubble_view_;

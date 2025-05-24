@@ -12,19 +12,33 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_value_and_status_aggregator.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/buildflags/buildflags.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "components/enterprise/browser/promotion/promotion_eligibility_checker.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class PrefChangeRegistrar;
+
+namespace features {
+// If enabled, the banner on the chrome://policy page to be shown only to
+// eligible users passing through the promotion eligibility checker.
+BASE_DECLARE_FEATURE(kPolicyPagePromotionEligibilityCheckedBanner);
+}  // namespace features
+
+namespace enterprise_management {
+class GetUserEligiblePromotionsResponse;
+}  // namespace enterprise_management
 
 // The JavaScript message handler for the chrome://policy page.
 class PolicyUIHandler : public content::WebUIMessageHandler,
@@ -62,7 +76,9 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
   void HandleRestartBrowser(const base::Value::List& args);
   void HandleSetUserAffiliated(const base::Value::List& args);
   void HandleGetAppliedTestPolicies(const base::Value::List& args);
-
+  void HandleShouldShowPromotion(const base::Value::List& args);
+  void HandleSetBannerDismissed(const base::Value::List& args);
+  void HandleRecordBannerRedirected(const base::Value::List& args);
 #if !BUILDFLAG(IS_CHROMEOS)
   void HandleUploadReport(const base::Value::List& args);
 #endif
@@ -92,6 +108,15 @@ class PolicyUIHandler : public content::WebUIMessageHandler,
 #if !BUILDFLAG(IS_CHROMEOS)
   // Called when report has been uploaded, successfully or not.
   void OnReportUploaded(const std::string& callback_id);
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+  void OnPromotionEligibilityFetched(
+      const std::string& callback_id,
+      enterprise_management::GetUserEligiblePromotionsResponse response);
+
+  std::unique_ptr<enterprise_promotion::PromotionEligibilityChecker>
+      promotion_eligibility_checker_;
 #endif
 
   // Build a JSON string of all the policies.

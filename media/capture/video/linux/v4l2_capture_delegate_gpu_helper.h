@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/capture/video/video_capture_device.h"
 
 namespace media {
@@ -17,8 +16,7 @@ namespace media {
 // copy into GPU memory buffer.
 class CAPTURE_EXPORT V4L2CaptureDelegateGpuHelper {
  public:
-  explicit V4L2CaptureDelegateGpuHelper(
-      std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support = nullptr);
+  explicit V4L2CaptureDelegateGpuHelper();
 
   V4L2CaptureDelegateGpuHelper(const V4L2CaptureDelegateGpuHelper&) = delete;
   V4L2CaptureDelegateGpuHelper& operator=(const V4L2CaptureDelegateGpuHelper&) =
@@ -68,7 +66,6 @@ class CAPTURE_EXPORT V4L2CaptureDelegateGpuHelper {
 
   bool IsNV12ConvertSupported(uint32_t fourcc);
 
-  std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
   // I420 buffer used when can't directly convert video sample data into `NV12`
   // format.
   std::vector<uint8_t> i420_buffer_;

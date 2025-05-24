@@ -7,10 +7,14 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include <array>
+#include <string_view>
+
 // Canonicalizers for random bits that aren't big enough for their own files.
 
 #include <string.h>
 
+#include "url/third_party/mozilla/url_parse.h"
 #include "url/url_canon.h"
 #include "url/url_canon_internal.h"
 
@@ -88,7 +92,7 @@ const CHAR* DoRemoveURLWhitespace(const CHAR* input,
 // (basically, lower-cased). The corresponding entry will be 0 if the letter
 // is not allowed in a scheme.
 // clang-format off
-const char kSchemeCanonical[0x80] = {
+const std::array<char, 0x80> kSchemeCanonical = {
 // 00-1f: all are invalid
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
      0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -114,16 +118,17 @@ inline bool IsSchemeFirstChar(unsigned char c) {
 }
 
 template <typename CHAR, typename UCHAR>
-bool DoScheme(const CHAR* spec,
-              const Component& scheme,
+bool DoScheme(std::optional<std::basic_string_view<CHAR>> input,
               CanonOutput* output,
               Component* out_scheme) {
-  if (scheme.is_empty()) {
+  if (!input.has_value() || input->empty()) {
     // Scheme is unspecified or empty, convert to empty by appending a colon.
     *out_scheme = Component(output->length(), 0);
     output->push_back(':');
     return false;
   }
+
+  auto input_value = input.value();
 
   // The output scheme starts from the current position.
   out_scheme->begin = output->length();
@@ -134,13 +139,11 @@ bool DoScheme(const CHAR* spec,
   // FindAndCompareScheme, which could cause some security checks on
   // schemes to be incorrect.
   bool success = true;
-  size_t begin = static_cast<size_t>(scheme.begin);
-  size_t end = static_cast<size_t>(scheme.end());
-  for (size_t i = begin; i < end; i++) {
-    UCHAR ch = static_cast<UCHAR>(spec[i]);
+  for (size_t i = 0; i < input_value.length(); i++) {
+    UCHAR ch = static_cast<UCHAR>(input_value[i]);
     char replacement = 0;
     if (ch < 0x80) {
-      if (i == begin) {
+      if (i == 0) {
         // Need to do a special check for the first letter of the scheme.
         if (IsSchemeFirstChar(static_cast<unsigned char>(ch)))
           replacement = kSchemeCanonical[ch];
@@ -163,7 +166,8 @@ bool DoScheme(const CHAR* spec,
 
       // This will escape the output and also handle encoding issues.
       // Ignore the return value since we already failed.
-      AppendUTF8EscapedChar(spec, &i, end, output);
+      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
+                            output);
     }
   }
 
@@ -179,14 +183,13 @@ bool DoScheme(const CHAR* spec,
 // canonicalizing a single source string), but may be different when
 // replacing components.
 template <typename CHAR, typename UCHAR>
-bool DoUserInfo(const CHAR* username_spec,
-                const Component& username,
-                const CHAR* password_spec,
-                const Component& password,
+bool DoUserInfo(std::optional<std::basic_string_view<CHAR>> username,
+                std::optional<std::basic_string_view<CHAR>> password,
                 CanonOutput* output,
                 Component* out_username,
                 Component* out_password) {
-  if (username.is_empty() && password.is_empty()) {
+  if ((!username.has_value() || username->empty()) &&
+      (!password.has_value() || password->empty())) {
     // Common case: no user info. We strip empty username/passwords.
     *out_username = Component();
     *out_password = Component();
@@ -195,22 +198,18 @@ bool DoUserInfo(const CHAR* username_spec,
 
   // Write the username.
   out_username->begin = output->length();
-  if (username.is_nonempty()) {
+  if (username.has_value() && !username->empty()) {
     // This will escape characters not valid for the username.
-    AppendStringOfType(&username_spec[username.begin],
-                       static_cast<size_t>(username.len), CHAR_USERINFO,
-                       output);
+    AppendStringOfType(username.value(), CHAR_USERINFO, output);
   }
   out_username->len = output->length() - out_username->begin;
 
   // When there is a password, we need the separator. Note that we strip
   // empty but specified passwords.
-  if (password.is_nonempty()) {
+  if (password.has_value() && !password->empty()) {
     output->push_back(':');
     out_password->begin = output->length();
-    AppendStringOfType(&password_spec[password.begin],
-                       static_cast<size_t>(password.len), CHAR_USERINFO,
-                       output);
+    AppendStringOfType(password.value(), CHAR_USERINFO, output);
     out_password->len = output->length() - out_password->begin;
   } else {
     *out_password = Component();
@@ -252,8 +251,8 @@ bool DoPort(const CHAR* spec,
   // Convert port number back to an integer. Max port value is 5 digits, and
   // the Parsed::ExtractPort will have made sure the integer is in range.
   const int buf_size = 6;
-  char buf[buf_size];
-  WritePortInt(buf, buf_size, port_num);
+  std::array<char, buf_size> buf;
+  WritePortInt(buf.data(), buf_size, port_num);
 
   // Append the port number to the output, preceded by a colon.
   output->push_back(':');
@@ -268,7 +267,7 @@ bool DoPort(const CHAR* spec,
 // clang-format off
 //   Percent-escape all characters from the fragment percent-encode set
 //   https://url.spec.whatwg.org/#fragment-percent-encode-set
-const bool kShouldEscapeCharInFragment[0x80] = {
+const std::array<bool, 0x80> kShouldEscapeCharInFragment = {
 //  Control characters (0x00-0x1F)
     true,  true,  true,  true,  true,  true,  true,  true,
     true,  true,  true,  true,  true,  true,  true,  true,
@@ -302,15 +301,15 @@ const bool kShouldEscapeCharInFragment[0x80] = {
 // clang-format on
 
 template <typename CHAR, typename UCHAR>
-void DoCanonicalizeRef(const CHAR* spec,
-                       const Component& ref,
+void DoCanonicalizeRef(std::optional<std::basic_string_view<CHAR>> input,
                        CanonOutput* output,
                        Component* out_ref) {
-  if (!ref.is_valid()) {
+  if (!input.has_value()) {
     // Common case of no ref.
     *out_ref = Component();
     return;
   }
+  auto input_value = input.value();
 
   // Append the ref separator. Note that we need to do this even when the ref
   // is empty but present.
@@ -318,19 +317,18 @@ void DoCanonicalizeRef(const CHAR* spec,
   out_ref->begin = output->length();
 
   // Now iterate through all the characters, converting to UTF-8 and validating.
-  size_t end = static_cast<size_t>(ref.end());
-  for (size_t i = static_cast<size_t>(ref.begin); i < end; i++) {
-    UCHAR current_char = static_cast<UCHAR>(spec[i]);
+  for (size_t i = 0; i < input_value.length(); ++i) {
+    UCHAR current_char = static_cast<UCHAR>(input.value()[i]);
     if (current_char < 0x80) {
       if (kShouldEscapeCharInFragment[current_char])
-        AppendEscapedChar(static_cast<unsigned char>(spec[i]), output);
+        AppendEscapedChar(static_cast<unsigned char>(input_value[i]), output);
       else
-        output->push_back(static_cast<char>(spec[i]));
+        output->push_back(static_cast<char>(input_value[i]));
     } else {
-      AppendUTF8EscapedChar(spec, &i, end, output);
+      AppendUTF8EscapedChar(input_value.data(), &i, input_value.length(),
+                            output);
     }
   }
-
   out_ref->len = output->length() - out_ref->begin;
 }
 
@@ -360,41 +358,33 @@ char CanonicalSchemeChar(char16_t ch) {
   return kSchemeCanonical[ch];
 }
 
-bool CanonicalizeScheme(const char* spec,
-                        const Component& scheme,
+bool CanonicalizeScheme(std::optional<std::string_view> input,
                         CanonOutput* output,
                         Component* out_scheme) {
-  return DoScheme<char, unsigned char>(spec, scheme, output, out_scheme);
+  return DoScheme<char, unsigned char>(input, output, out_scheme);
 }
 
-bool CanonicalizeScheme(const char16_t* spec,
-                        const Component& scheme,
+bool CanonicalizeScheme(std::optional<std::u16string_view> input,
                         CanonOutput* output,
                         Component* out_scheme) {
-  return DoScheme<char16_t, char16_t>(spec, scheme, output, out_scheme);
+  return DoScheme<char16_t, char16_t>(input, output, out_scheme);
 }
 
-bool CanonicalizeUserInfo(const char* username_source,
-                          const Component& username,
-                          const char* password_source,
-                          const Component& password,
+bool CanonicalizeUserInfo(std::optional<std::string_view> username,
+                          std::optional<std::string_view> password,
                           CanonOutput* output,
                           Component* out_username,
                           Component* out_password) {
-  return DoUserInfo<char, unsigned char>(username_source, username,
-                                         password_source, password, output,
+  return DoUserInfo<char, unsigned char>(username, password, output,
                                          out_username, out_password);
 }
 
-bool CanonicalizeUserInfo(const char16_t* username_source,
-                          const Component& username,
-                          const char16_t* password_source,
-                          const Component& password,
+bool CanonicalizeUserInfo(std::optional<std::u16string_view> username,
+                          std::optional<std::u16string_view> password,
                           CanonOutput* output,
                           Component* out_username,
                           Component* out_password) {
-  return DoUserInfo<char16_t, char16_t>(username_source, username,
-                                        password_source, password, output,
+  return DoUserInfo<char16_t, char16_t>(username, password, output,
                                         out_username, out_password);
 }
 
@@ -416,18 +406,16 @@ bool CanonicalizePort(const char16_t* spec,
                                     out_port);
 }
 
-void CanonicalizeRef(const char* spec,
-                     const Component& ref,
+void CanonicalizeRef(std::optional<std::string_view> input,
                      CanonOutput* output,
                      Component* out_ref) {
-  DoCanonicalizeRef<char, unsigned char>(spec, ref, output, out_ref);
+  DoCanonicalizeRef<char, unsigned char>(input, output, out_ref);
 }
 
-void CanonicalizeRef(const char16_t* spec,
-                     const Component& ref,
+void CanonicalizeRef(std::optional<std::u16string_view> input,
                      CanonOutput* output,
                      Component* out_ref) {
-  DoCanonicalizeRef<char16_t, char16_t>(spec, ref, output, out_ref);
+  DoCanonicalizeRef<char16_t, char16_t>(input, output, out_ref);
 }
 
 }  // namespace url

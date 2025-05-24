@@ -10,6 +10,7 @@
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 
 #include <memory>
+#include <queue>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"

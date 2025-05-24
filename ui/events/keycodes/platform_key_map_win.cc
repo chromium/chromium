@@ -264,13 +264,13 @@ DomKey NonPrintableKeyboardCodeToDomKey(KeyboardCode key_code, HKL layout) {
 
 }  // anonymous namespace
 
-PlatformKeyMap::PlatformKeyMap() {}
+PlatformKeyMap::PlatformKeyMap() = default;
 
 PlatformKeyMap::PlatformKeyMap(HKL layout) {
   UpdateLayout(layout);
 }
 
-PlatformKeyMap::~PlatformKeyMap() {}
+PlatformKeyMap::~PlatformKeyMap() = default;
 
 // static
 PlatformKeyMap* PlatformKeyMap::GetThreadLocalPlatformKeyMap() {

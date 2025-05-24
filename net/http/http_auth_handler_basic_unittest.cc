@@ -4,8 +4,10 @@
 
 #include "net/http/http_auth_handler_basic.h"
 
+#include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -66,39 +68,31 @@ TEST(HttpAuthHandlerBasicTest, GenerateAuthToken) {
 }
 
 TEST(HttpAuthHandlerBasicTest, HandleAnotherChallenge) {
-  static const struct {
+  struct Tests {
     const char* challenge;
     HttpAuth::AuthorizationResult expected_rv;
-  } tests[] = {
-    // The handler is initialized using this challenge.  The first
-    // time HandleAnotherChallenge is called with it should cause it
-    // to treat the second challenge as a rejection since it is for
-    // the same realm.
-    {
-      "Basic realm=\"First\"",
-      HttpAuth::AUTHORIZATION_RESULT_REJECT
-    },
-
-    // A challenge for a different realm.
-    {
-      "Basic realm=\"Second\"",
-      HttpAuth::AUTHORIZATION_RESULT_DIFFERENT_REALM
-    },
-
-    // Although RFC 2617 isn't explicit about this case, if there is
-    // more than one realm directive, we pick the last one.  So this
-    // challenge should be treated as being for "First" realm.
-    {
-      "Basic realm=\"Second\",realm=\"First\"",
-      HttpAuth::AUTHORIZATION_RESULT_REJECT
-    },
-
-    // And this one should be treated as if it was for "Second."
-    {
-      "basic realm=\"First\",realm=\"Second\"",
-      HttpAuth::AUTHORIZATION_RESULT_DIFFERENT_REALM
-    }
   };
+  static const auto tests = std::to_array<Tests>({
+      // The handler is initialized using this challenge.  The first
+      // time HandleAnotherChallenge is called with it should cause it
+      // to treat the second challenge as a rejection since it is for
+      // the same realm.
+      {"Basic realm=\"First\"", HttpAuth::AUTHORIZATION_RESULT_REJECT},
+
+      // A challenge for a different realm.
+      {"Basic realm=\"Second\"",
+       HttpAuth::AUTHORIZATION_RESULT_DIFFERENT_REALM},
+
+      // Although RFC 2617 isn't explicit about this case, if there is
+      // more than one realm directive, we pick the last one.  So this
+      // challenge should be treated as being for "First" realm.
+      {"Basic realm=\"Second\",realm=\"First\"",
+       HttpAuth::AUTHORIZATION_RESULT_REJECT},
+
+      // And this one should be treated as if it was for "Second."
+      {"basic realm=\"First\",realm=\"Second\"",
+       HttpAuth::AUTHORIZATION_RESULT_DIFFERENT_REALM},
+  });
 
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   HttpAuthHandlerBasic::Factory factory;
@@ -111,9 +105,7 @@ TEST(HttpAuthHandlerBasicTest, HandleAnotherChallenge) {
                     NetLogWithSource(), host_resolver.get(), &basic));
 
   for (const auto& test : tests) {
-    std::string challenge(test.challenge);
-    HttpAuthChallengeTokenizer tok(challenge.begin(),
-                                   challenge.end());
+    HttpAuthChallengeTokenizer tok(test.challenge);
     EXPECT_EQ(test.expected_rv, basic->HandleAnotherChallenge(&tok));
   }
 }

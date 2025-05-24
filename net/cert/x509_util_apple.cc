@@ -13,6 +13,7 @@
 
 #include <string>
 
+#include "base/apple/foundation_util.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -37,9 +38,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> CertBufferFromSecCertificate(
   if (!der_data) {
     return nullptr;
   }
-  return CreateCryptoBuffer(base::make_span(
-      CFDataGetBytePtr(der_data.get()),
-      base::checked_cast<size_t>(CFDataGetLength(der_data.get()))));
+  return CreateCryptoBuffer(base::apple::CFDataToSpan(der_data.get()));
 }
 
 }  // namespace
@@ -130,8 +129,7 @@ scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
 }
 
 SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
-  SHA256HashValue sha256;
-  memset(sha256.data, 0, sizeof(sha256.data));
+  SHA256HashValue sha256 = {0};
 
   base::apple::ScopedCFTypeRef<CFDataRef> cert_data(
       SecCertificateCopyData(cert));
@@ -143,7 +141,7 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
   DCHECK_NE(CFDataGetLength(cert_data.get()), 0);
 
   CC_SHA256(CFDataGetBytePtr(cert_data.get()), CFDataGetLength(cert_data.get()),
-            sha256.data);
+            sha256.data());
 
   return sha256;
 }
@@ -166,12 +164,10 @@ base::apple::ScopedCFTypeRef<CFArrayRef> CertificateChainFromSecTrust(
     CFArrayAppendValue(chain.get(), SecTrustGetCertificateAtIndex(trust, i));
   }
   return chain;
-
 #else
   // The other logic paths should be used, this is just to make the compiler
   // happy.
-  NOTREACHED_IN_MIGRATION();
-  return base::apple::ScopedCFTypeRef<CFArrayRef>(nullptr);
+  NOTREACHED();
 #endif  // (BUILDFLAG(IS_MAC) && MAC_OS_X_VERSION_MIN_REQUIRED <
         // MAC_OS_VERSION_12_0)
         // || (BUILDFLAG(IS_IOS) && __IPHONE_OS_VERSION_MIN_REQUIRED <

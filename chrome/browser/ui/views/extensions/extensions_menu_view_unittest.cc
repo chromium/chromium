@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,7 +13,6 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -163,8 +163,9 @@ ExtensionsMenuViewUnitTest::GetPinnedExtensionViews() {
 #else
       const bool is_visible = action->GetVisible();
 #endif
-      if (is_visible)
+      if (is_visible) {
         result.push_back(action);
+      }
     }
   }
   return result;
@@ -175,7 +176,7 @@ ExtensionMenuItemView* ExtensionsMenuViewUnitTest::GetExtensionMenuItemView(
   base::flat_set<raw_ptr<ExtensionMenuItemView, CtnExperimental>> menu_items =
       extensions_menu()->extensions_menu_items_for_testing();
   auto iter =
-      base::ranges::find(menu_items, name, [](ExtensionMenuItemView* item) {
+      std::ranges::find(menu_items, name, [](ExtensionMenuItemView* item) {
         return base::UTF16ToUTF8(item->view_controller()->GetActionName());
       });
   return iter == menu_items.end() ? nullptr : *iter;
@@ -309,8 +310,9 @@ TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionRemovedWhenDisabled) {
 }
 
 TEST_F(ExtensionsMenuViewUnitTest, PinnedExtensionLayout) {
-  for (int i = 0; i < 3; i++)
+  for (int i = 0; i < 3; i++) {
     InstallExtensionAndLayout(base::StringPrintf("Test %d", i));
+  }
   for (ExtensionMenuItemView* menu_item :
        extensions_menu()->extensions_menu_items_for_testing()) {
     ClickPinButton(menu_item);
@@ -404,13 +406,14 @@ TEST_F(ExtensionsMenuViewUnitTest, ReloadExtensionFailed) {
   extension_directory.WriteManifest(kManifestWithErrors);
 
   // Reload the extension. It should fail due to the manifest errors.
-  extension_service()->ReloadExtensionWithQuietFailure(extension->id());
+  extension_registrar()->ReloadExtensionWithQuietFailure(extension->id());
   base::RunLoop().RunUntilIdle();
 
   // Since the extension is removed it's no longer visible on the toolbar or in
   // the menu.
-  for (views::View* child : extensions_container()->children())
+  for (views::View* child : extensions_container()->children()) {
     EXPECT_FALSE(views::IsViewClass<ToolbarActionView>(child));
+  }
   EXPECT_EQ(0u, extensions_menu()->extensions_menu_items_for_testing().size());
 }
 
@@ -419,7 +422,7 @@ TEST_F(ExtensionsMenuViewUnitTest, PinButtonUserActionWithAccessibility) {
   InstallExtensionAndLayout("Test Extension");
   ExtensionMenuItemView* menu_item = GetOnlyMenuItem();
   ASSERT_NE(nullptr, menu_item);
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   constexpr char kPinButtonUserAction[] = "Extensions.Toolbar.PinButtonPressed";
 
   // Verify behavior before pin, after pin, and after unpin.

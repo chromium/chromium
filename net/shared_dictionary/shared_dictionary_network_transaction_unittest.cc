@@ -94,7 +94,7 @@ class DummySyncDictionary : public SharedDictionary {
     std::unique_ptr<crypto::SecureHash> secure_hash =
         crypto::SecureHash::Create(crypto::SecureHash::SHA256);
     secure_hash->Update(data_->data(), size_);
-    secure_hash->Finish(hash_.data, sizeof(hash_.data));
+    secure_hash->Finish(hash_);
   }
 
   // SharedDictionary
@@ -135,10 +135,10 @@ class DummyAsyncDictionary : public DummySyncDictionary {
 };
 
 TransportInfo TestSpdyTransportInfo() {
-  return TransportInfo(TransportType::kDirect,
-                       IPEndPoint(IPAddress::IPv4Localhost(), 80),
-                       /*accept_ch_frame_arg=*/"",
-                       /*cert_is_issued_by_known_root=*/false, kProtoHTTP2);
+  return TransportInfo(
+      TransportType::kDirect, IPEndPoint(IPAddress::IPv4Localhost(), 80),
+      /*accept_ch_frame_arg=*/"",
+      /*cert_is_issued_by_known_root=*/false, NextProto::kProtoHTTP2);
 }
 
 static void BrotliTestTransactionHandler(const HttpRequestInfo* request,
@@ -240,9 +240,7 @@ class SharedDictionaryNetworkTransactionTest : public ::testing::Test {
 
  protected:
   std::unique_ptr<HttpTransaction> CreateNetworkTransaction() {
-    std::unique_ptr<HttpTransaction> network_transaction;
-    network_layer_->CreateTransaction(DEFAULT_PRIORITY, &network_transaction);
-    return network_transaction;
+    return network_layer_->CreateTransaction(DEFAULT_PRIORITY);
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -1257,11 +1255,14 @@ class SharedDictionaryNetworkTransactionProtocolCheckTest
           kTestTransactionHandlerWithoutAvailableDictionary;
     }
     if (IsHttp2()) {
-      mock_transaction.transport_info.negotiated_protocol = kProtoHTTP2;
+      mock_transaction.transport_info.negotiated_protocol =
+          NextProto::kProtoHTTP2;
     } else if (IsHttp3()) {
-      mock_transaction.transport_info.negotiated_protocol = kProtoQUIC;
+      mock_transaction.transport_info.negotiated_protocol =
+          NextProto::kProtoQUIC;
     } else {
-      mock_transaction.transport_info.negotiated_protocol = kProtoHTTP11;
+      mock_transaction.transport_info.negotiated_protocol =
+          NextProto::kProtoHTTP11;
     }
     return mock_transaction;
   }

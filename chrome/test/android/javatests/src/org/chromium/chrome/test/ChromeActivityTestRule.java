@@ -72,7 +72,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     // The number of ms to wait for the rendering activity to be started.
     private static final int ACTIVITY_START_TIMEOUT_MS = 1000;
 
-    private EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+    private final EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
     protected ChromeActivityTestRule(Class<T> activityClass) {
         super(activityClass);
@@ -125,6 +125,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * @return The {@link AppMenuCoordinator} for the activity.
      */
     public AppMenuCoordinator getAppMenuCoordinator() {
+        if (getActivity().getRootUiCoordinatorForTesting() == null) return null;
         return getActivity().getRootUiCoordinatorForTesting().getAppMenuCoordinatorForTesting();
     }
 
@@ -208,11 +209,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     @Override
-    public void launchActivity(Intent startIntent) {
+    public T launchActivity(Intent startIntent) {
         // Avoid relying on explicit intents, bypassing LaunchIntentDispatcher, created by null
         // startIntent launch behavior.
         assertNotNull(startIntent);
-        super.launchActivity(startIntent);
+        return super.launchActivity(startIntent);
     }
 
     /**

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 
+#include "base/auto_reset.h"
 #include "base/barrier_closure.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
@@ -138,7 +139,8 @@ DedupeOperations BuildOperationsToHaveOneAppPerInstallUrl(
     base::Value::Dict& debug_value,
     const WebAppRegistrar& registrar,
     ScopedRegistryUpdate& update,
-    base::flat_map<GURL, base::flat_set<webapps::AppId>> install_url_to_apps) {
+    const base::flat_map<GURL, base::flat_set<webapps::AppId>>&
+        install_url_to_apps) {
   DedupeOperations result;
 
   for (const auto& [install_url, app_ids] : install_url_to_apps) {

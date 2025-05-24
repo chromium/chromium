@@ -30,6 +30,10 @@ class MESSAGE_CENTER_EXPORT LockScreenController {
 
   // Returns the status of the device lock. True if locked, false otherwise.
   virtual bool IsScreenLocked() const = 0;
+
+  // Returns true if the given notification id is allowed on lock screen.
+  virtual bool IsNotificationAllowedOnLockScreen(
+      const std::string& id) const = 0;
 };
 
 }  // namespace message_center

@@ -39,8 +39,7 @@ void MojoDemuxerStreamImpl::Initialize(InitializeCallback callback) {
   } else if (stream_->type() == Type::VIDEO) {
     video_config = stream_->video_decoder_config();
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unsupported stream type: " << stream_->type();
-    return;
+    NOTREACHED() << "Unsupported stream type: " << stream_->type();
   }
 
   mojo::ScopedDataPipeConsumerHandle remote_consumer_handle;
@@ -87,9 +86,8 @@ void MojoDemuxerStreamImpl::OnBufferReady(
     } else if (stream_->type() == Type::VIDEO) {
       video_config = stream_->video_decoder_config();
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported config change encountered for type: "
-          << stream_->type();
+      NOTREACHED() << "Unsupported config change encountered for type: "
+                   << stream_->type();
     }
     std::move(callback).Run(Status::kConfigChanged, {}, audio_config,
                             video_config);

@@ -28,7 +28,7 @@ enum class CSPSourceContext {
 bool CSPSourceIsSchemeOnly(const mojom::CSPSource& source);
 
 // Check if a |url| matches with a CSP |source| matches.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 bool CheckCSPSource(const mojom::CSPSource& source,
                     const GURL& url,
                     const mojom::CSPSource& self_source,
@@ -38,19 +38,19 @@ bool CheckCSPSource(const mojom::CSPSource& source,
 
 // Compute the source intersection of |source_a| and |source_b|.
 // https://w3c.github.io/webappsec-cspee/#intersection-source-expressions
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 mojom::CSPSourcePtr CSPSourcesIntersect(const mojom::CSPSource& source_a,
                                         const mojom::CSPSource& source_b);
 
 // Check if |source_a| subsumes |source_b| according to
 // https://w3c.github.io/webappsec-cspee/#subsume-source-expressions
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 bool CSPSourceSubsumes(const mojom::CSPSource& source_a,
                        const mojom::CSPSource& source_b);
 
 // Serialize the CSPSource |source| as a string. This is used for reporting
 // violations.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
 std::string ToString(const mojom::CSPSource& source);
 
 }  // namespace network

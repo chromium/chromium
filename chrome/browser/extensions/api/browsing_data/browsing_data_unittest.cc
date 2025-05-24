@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
@@ -454,7 +457,7 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
   uint64_t expected_mask = content::BrowsingDataRemover::DATA_TYPE_CACHE |
                            content::BrowsingDataRemover::DATA_TYPE_DOWNLOADS |
                            chrome_browsing_data_remover::DATA_TYPE_HISTORY;
-  std::string json;
+  std::optional<std::string> json;
   // Scoping for the traces.
   {
     scoped_refptr<BrowsingDataSettingsFunction> settings_function =
@@ -466,16 +469,16 @@ TEST_F(BrowsingDataApiTest, BrowsingDataRemovalInputFromSettings) {
     EXPECT_TRUE(result->is_dict());
     base::Value::Dict* data_to_remove =
         result->GetDict().FindDict("dataToRemove");
-    EXPECT_TRUE(data_to_remove);
+    ASSERT_TRUE(data_to_remove);
 
-    JSONStringValueSerializer serializer(&json);
-    EXPECT_TRUE(serializer.Serialize(*data_to_remove));
+    json = base::WriteJson(*data_to_remove);
+    ASSERT_TRUE(json);
   }
   {
     auto remove_function = base::MakeRefCounted<BrowsingDataRemoveFunction>();
     SCOPED_TRACE("remove_json");
     EXPECT_FALSE(RunFunctionAndReturnSingleResult(
-        remove_function.get(), std::string("[{\"since\": 1},") + json + "]",
+        remove_function.get(), std::string("[{\"since\": 1},") + *json + "]",
         browser()->profile()));
     EXPECT_EQ(expected_mask, GetRemovalMask());
     EXPECT_EQ(UNPROTECTED_WEB, GetOriginTypeMask());

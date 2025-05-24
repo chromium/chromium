@@ -18,6 +18,7 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -27,9 +28,9 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/autofill/core/browser/filling_product.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -132,31 +133,6 @@ std::u16string GetSuggestionA11yString(const Suggestion& suggestion,
   return base::JoinString(text, u". ");
 }
 
-// Returns whether the expand subpopup icon can have its visibility updated on
-// hover/select. This method will return true when the following
-// conditions are met:
-// 1. The suggestion has children (otherwise a subpopup does not exist for it).
-// 2. A suggestion is acceptable.
-// 3. The `FillingProduct` is `FillingProduct::kAddress` (to avoid interfering
-// with `FillingProduct::kCompose` suggestions).
-// 4. The respective feature and feature param is enabled. This is currently
-// done as part of an experiment arm to understand users behaviour.
-//
-// Note that when a suggestion is not acceptable, the only
-// possible action the user can take is opening the subpopup and accepting a
-// suggestion in it, therefore the icon is always visible in this case.
-bool CanUpdateOpenSubPopupIconVisibilityOnHover(const Suggestion& suggestion) {
-  CHECK(suggestion.children.size() > 0);
-  return suggestion.is_acceptable &&
-         GetFillingProductFromSuggestionType(suggestion.type) ==
-             FillingProduct::kAddress &&
-         base::FeatureList::IsEnabled(
-             features::kAutofillGranularFillingAvailable) &&
-         features::
-             kAutofillGranularFillingAvailableWithExpandControlVisibleOnSelectionOnly
-                 .Get();
-}
-
 }  // namespace
 
 EnterExitHandler::EnterExitHandler(base::RepeatingClosure enter_callback,
@@ -206,7 +182,7 @@ PopupRowView::PopupRowView(
           controller->ShouldIgnoreMouseObservedOutsideItemBoundsCheck()),
       suggestion_is_acceptable_(
           controller && line_number < controller->GetLineCount() &&
-          controller->GetSuggestionAt(line_number).is_acceptable),
+          controller->GetSuggestionAt(line_number).IsAcceptable()),
       highlight_on_select_(
           controller && line_number < controller->GetLineCount() &&
           controller->GetSuggestionAt(line_number).highlight_on_select) {
@@ -217,8 +193,7 @@ PopupRowView::PopupRowView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   SetNotifyEnterExitOnChild(true);
   SetProperty(views::kMarginsKey, gfx::Insets::VH(0, GetHorizontalMargin()));
-  SetBackground(
-      views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
+  SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -238,15 +213,12 @@ PopupRowView::PopupRowView(
                   view->mouse_observed_outside_item_bounds_ ||
                   view->should_ignore_mouse_observed_outside_item_bounds_check_;
               if (can_select_suggestion) {
-                view->selection_delegate_->SetSelectedCell(
-                    PopupViewViews::CellIndex{view->line_number_, type},
-                    PopupCellSelectionSource::kMouse);
+                view->OnCellSelected(type, PopupCellSelectionSource::kMouse);
               }
             },
             this, type),
         /*exit_callback=*/base::BindRepeating(
-            &SelectionDelegate::SetSelectedCell,
-            base::Unretained(&selection_delegate), std::nullopt,
+            &PopupRowView::OnCellSelected, base::Unretained(this), std::nullopt,
             PopupCellSelectionSource::kMouse));
     // Setting this handler on the cell view removes its original event handler
     // (i.e. overridden methods like OnMouse*). Make sure the root view doesn't
@@ -266,7 +238,7 @@ PopupRowView::PopupRowView(
   content_view_->GetViewAccessibility().SetName(
       GetSuggestionA11yString(suggestion,
                               /*add_call_to_action_if_expandable=*/
-                              suggestion.is_acceptable),
+                              suggestion.IsAcceptable()),
       ax::mojom::NameFrom::kAttribute);
   auto [position, set_size] = ComputePositionInSet(controller_, line_number);
   content_view_->GetViewAccessibility().SetPosInSet(position);
@@ -292,19 +264,16 @@ PopupRowView::PopupRowView(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kHorizontal,
             gfx::Insets(kExpandChildSuggestionsViewHorizontalPadding)));
-    expand_child_suggestions_view_icon_ =
-        expand_child_suggestions_view_->AddChildView(
-            std::make_unique<views::ImageView>(
-                popup_cell_utils::ImageModelFromVectorIcon(
-                    popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
-                    kExpandChildSuggestionsIconWidth)));
+    expand_child_suggestions_view_->AddChildView(
+        std::make_unique<views::ImageView>(
+            popup_cell_utils::ImageModelFromVectorIcon(
+                popup_cell_utils::GetExpandableMenuIcon(suggestion.type),
+                kExpandChildSuggestionsIconWidth)));
     expand_child_suggestions_view_observer_.Observe(
         expand_child_suggestions_view_);
     control_event_handler_ = set_exit_enter_callbacks(
         CellType::kControl, *expand_child_suggestions_view_);
     layout->SetFlexForView(expand_child_suggestions_view_.get(), 0);
-
-    UpdateOpenSubPopupIconVisibility();
   }
 }
 
@@ -386,9 +355,7 @@ void PopupRowView::OnViewFocused(views::View* view) {
   // Focus may come not only from the keyboard (e.g. from devices used for
   // a11y), but for selection purposes these non-mouse sources are similar
   // enough to treat them equally as a keyboard.
-  selection_delegate_->SetSelectedCell(
-      PopupViewViews::CellIndex{line_number_, type},
-      PopupCellSelectionSource::kKeyboard);
+  OnCellSelected(type, PopupCellSelectionSource::kKeyboard);
 }
 
 void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
@@ -409,31 +376,42 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
 
   if ((new_cell == CellType::kControl && expand_child_suggestions_view_) ||
       (new_cell == CellType::kContent && !suggestion_is_acceptable_)) {
+    // TODO(crbug.com/370695550): `SetIsSelected()` must go after
+    // `NotifyAXSelection()` as the latter calls `SetPopupFocusOverride()`  that
+    // is required for a11y focus working on a non-activatable popup.  Consider
+    // moving `SetIsSelected()` into `NotifyAXSelection()` (and rename it) to
+    // hide this API complexity from clients.
     GetA11ySelectionDelegate().NotifyAXSelection(*this);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    GetViewAccessibility().SetIsSelected(true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
     content_view_->UpdateStyle(/*selected=*/highlight_on_select_);
-    content_view_->GetViewAccessibility().SetIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
-    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+    content_view_->GetViewAccessibility().SetIsSelected(true);
+    NotifyAccessibilityEventDeprecated(
+        ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else {
     // Set the selected cell to none in case an invalid choice was made (e.g.
     // selecting a control cell when none exists) or the cell was reset
     // explicitly with `std::nullopt`.
     selected_cell_ = std::nullopt;
+
+    GetViewAccessibility().SetIsSelected(false);
+    content_view_->GetViewAccessibility().SetIsSelected(false);
   }
 
-  UpdateUI();
+  UpdateBackground();
 }
 
 void PopupRowView::SetChildSuggestionsDisplayed(
     bool child_suggestions_displayed) {
   child_suggestions_displayed_ = child_suggestions_displayed;
 
-  UpdateUI();
+  UpdateBackground();
 }
 
 gfx::RectF PopupRowView::GetControlCellBounds() const {
@@ -476,12 +454,15 @@ bool PopupRowView::HandleKeyPressEvent(
 
 bool PopupRowView::IsSelectable() const {
   return controller_ && line_number_ < controller_->GetLineCount() &&
-         !controller_->GetSuggestionAt(line_number_).apply_deactivated_style;
+         !controller_->GetSuggestionAt(line_number_).HasDeactivatedStyle();
 }
 
-void PopupRowView::UpdateUI() {
-  UpdateBackground();
-  UpdateOpenSubPopupIconVisibility();
+void PopupRowView::OnCellSelected(std::optional<CellType> type,
+                                  PopupCellSelectionSource source) {
+  selection_delegate_->SetSelectedCell(
+      type ? std::make_optional(PopupViewViews::CellIndex{line_number_, *type})
+           : std::nullopt,
+      source);
 }
 
 void PopupRowView::UpdateBackground() {
@@ -501,24 +482,11 @@ void PopupRowView::UpdateBackground() {
     // is being hovered.
     return !suggestion_is_acceptable_ && selected_cell_;
   }();
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       is_highlighted ? ui::kColorDropdownBackgroundSelected
                      : ui::kColorDropdownBackground,
       ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
           views::Emphasis::kMedium)));
-}
-
-void PopupRowView::UpdateOpenSubPopupIconVisibility() {
-  if (!expand_child_suggestions_view_icon_ ||
-      line_number_ >= controller_->GetLineCount() ||
-      controller_->GetSuggestionAt(line_number_).children.size() == 0 ||
-      !CanUpdateOpenSubPopupIconVisibilityOnHover(
-          controller_->GetSuggestionAt(line_number_))) {
-    return;
-  }
-
-  expand_child_suggestions_view_icon_->SetVisible(selected_cell_ ||
-                                                  child_suggestions_displayed_);
 }
 
 bool PopupRowView::IsViewVisibleEnough() const {

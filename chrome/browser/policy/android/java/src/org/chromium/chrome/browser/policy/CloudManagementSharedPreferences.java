@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.policy;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Gets and sets preferences associated with cloud management. */
 @JNINamespace("policy::android")
+@NullMarked
 public class CloudManagementSharedPreferences {
     /**
      * Sets the "Cloud management DM token" preference.

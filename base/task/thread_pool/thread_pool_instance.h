@@ -15,7 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_runner.h"
-#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -31,8 +30,9 @@ class BrowserMainLoopTest_CreateThreadsInSingleProcess_Test;
 
 namespace base {
 
-class WorkerThreadObserver;
+class TaskTraits;
 class ThreadPoolTestHelpers;
+class WorkerThreadObserver;
 
 // Interface for a thread pool and static methods to manage the instance used
 // by the thread_pool.h API.

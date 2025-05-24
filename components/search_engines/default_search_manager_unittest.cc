@@ -11,10 +11,10 @@
 
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
-#include "components/search_engines/prepopulated_engines.h"
+#include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -26,7 +26,9 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "template_url_prepopulate_data_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "url/gurl.h"
 
 namespace {
@@ -102,15 +104,15 @@ class DefaultSearchManagerTest : public testing::Test {
     return &search_engines_test_environment_.search_engine_choice_service();
   }
 
+  TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver() {
+    return search_engines_test_environment_.prepopulate_data_resolver();
+  }
+
   std::unique_ptr<DefaultSearchManager> create_manager() {
     return std::make_unique<DefaultSearchManager>(
         pref_service(), search_engine_choice_service(),
-        DefaultSearchManager::ObserverCallback()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-            ,
-        /*for_lacros_main_profile=*/false
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    );
+        search_engines_test_environment_.prepopulate_data_resolver(),
+        DefaultSearchManager::ObserverCallback());
   }
 
  private:
@@ -135,7 +137,7 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
   data.date_created = base::Time();
   data.last_modified = base::Time();
   data.last_modified = base::Time();
-  data.created_from_play_api = true;
+  data.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
 
   manager->SetUserSelectedDefaultSearchEngine(data);
   const TemplateURLData* read_data = manager->GetDefaultSearchEngine(nullptr);
@@ -146,8 +148,7 @@ TEST_F(DefaultSearchManagerTest, ReadAndWritePref) {
 TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   auto manager = create_manager();
   std::unique_ptr<TemplateURLData> fallback_t_url_data =
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          pref_service(), search_engine_choice_service());
+      prepopulate_data_resolver().GetFallbackSearch();
   EXPECT_EQ(fallback_t_url_data->keyword(),
             TemplateURLPrepopulateData::google.keyword);
   EXPECT_EQ(fallback_t_url_data->prepopulate_id,
@@ -157,6 +158,8 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   ExpectSimilar(fallback_t_url_data.get(),
                 manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_FALLBACK, source);
+
+  base::HistogramTester histograms;
 
   // Setting a user pref overrides the pre-populated values.
   std::unique_ptr<TemplateURLData> data = GenerateDummyTemplateURLData("user");
@@ -176,6 +179,15 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserPref) {
   ExpectSimilar(new_data.get(), manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
 
+  // Check that the mirrored pref metric didn't record a mismatch.
+  // Metric is recorded once for the first search manager, and then four more
+  // times when there are two search managers.
+  histograms.ExpectBucketCount(
+      DefaultSearchManager::kDefaultSearchEngineMirroredMetric, true, 1);
+
+  histograms.ExpectBucketCount(
+      DefaultSearchManager::kDefaultSearchEngineMirroredMetric, false, 0);
+
   // Clearing the user pref should cause the default search to revert to the
   // prepopulated values.
   manager->ClearUserSelectedDefaultSearchEngine();
@@ -190,8 +202,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
   auto manager = create_manager();
 
   std::unique_ptr<TemplateURLData> fallback_t_url_data =
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          pref_service(), search_engine_choice_service());
+      prepopulate_data_resolver().GetFallbackSearch();
   EXPECT_NE(fallback_t_url_data->keyword(),
             TemplateURLPrepopulateData::google.keyword);
   EXPECT_NE(fallback_t_url_data->prepopulate_id,
@@ -205,9 +216,7 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByOverrides) {
 
   // Update the overrides:
   SetOverrides(pref_service(), true);
-  fallback_t_url_data =
-      TemplateURLPrepopulateData::GetPrepopulatedFallbackSearch(
-          pref_service(), search_engine_choice_service());
+  fallback_t_url_data = prepopulate_data_resolver().GetFallbackSearch();
 
   // Make sure DefaultSearchManager updated:
   ExpectSimilar(fallback_t_url_data.get(),
@@ -292,6 +301,13 @@ TEST_F(DefaultSearchManagerTest, DefaultSearchSetByUserAndRecommendedPolicy) {
   ExpectSimilar(user_data.get(), manager->GetDefaultSearchEngine(&source));
   EXPECT_EQ(DefaultSearchManager::FROM_USER, source);
 
+  // Check that the TemplateURLData was mirrored to the mirrored pref.
+  const base::Value* user_value = pref_service()->GetUserPrefValue(
+      DefaultSearchManager::kMirroredDefaultSearchProviderDataPrefName);
+  ASSERT_TRUE(user_value && user_value->is_dict());
+  auto turl_data = TemplateURLDataFromDictionary(user_value->GetDict());
+  ExpectSimilar(user_data.get(), turl_data.get());
+
   // Set recommended policy DSE.
   std::unique_ptr<TemplateURLData> policy_data =
       GenerateDummyTemplateURLData("policy");
@@ -369,45 +385,16 @@ TEST_F(DefaultSearchManagerTest,
   manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
   auto* result = manager->GetDefaultSearchEngine(nullptr);
   ExpectSimilar(builtin_engine, result);
-
-  // Play definitions must not be reconciled using prepopulated_id.
-  supplied_engine->created_from_play_api = true;
-  manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
-  result = manager->GetDefaultSearchEngine(nullptr);
-  ExpectSimilar(supplied_engine.get(), result);
-}
-
-TEST_F(DefaultSearchManagerTest,
-       DefaultSearchSetByPlayAPI_MergeByKeyword_FeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(switches::kTemplateUrlReconciliation);
-
-  auto manager = create_manager();
-  auto* builtin_engine = manager->GetDefaultSearchEngine(nullptr);
-
-  auto supplied_engine = GenerateDummyTemplateURLData(
-      base::UTF16ToUTF8(builtin_engine->keyword()));
-  supplied_engine->created_from_play_api = true;
-  // Needed by ExpectSimilar.
-  supplied_engine->favicon_url = builtin_engine->favicon_url;
-
-  // Verify no merge done.
-  manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
-  auto* result = manager->GetDefaultSearchEngine(nullptr);
-  ExpectSimilar(supplied_engine.get(), result);
 }
 
 TEST_F(DefaultSearchManagerTest,
        DefaultSearchSetByPlayAPI_MergeByKeyword_FeatureEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(switches::kTemplateUrlReconciliation);
-
   auto manager = create_manager();
   auto* builtin_engine = manager->GetDefaultSearchEngine(nullptr);
 
   auto supplied_engine = GenerateDummyTemplateURLData(
       base::UTF16ToUTF8(builtin_engine->keyword()));
-  supplied_engine->created_from_play_api = true;
+  supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   // Needed by ExpectSimilar.
   supplied_engine->favicon_url = builtin_engine->favicon_url;
 
@@ -416,50 +403,26 @@ TEST_F(DefaultSearchManagerTest,
   auto* result = manager->GetDefaultSearchEngine(nullptr);
 
   TemplateURLData expected_engine = *builtin_engine;
-  expected_engine.created_from_play_api = true;
+  expected_engine.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   ExpectSimilar(&expected_engine, result);
 }
 
 TEST_F(DefaultSearchManagerTest,
-       DefaultSearchSetByPlayAPI_MergeByDomainName_FeatureDisabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(switches::kTemplateUrlReconciliation);
-
-  auto manager = create_manager();
-  auto* builtin_engine = manager->GetDefaultSearchEngine(nullptr);
-
-  auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
-  supplied_engine->SetURL("https://emea.yahoo.com/search");
-  supplied_engine->created_from_play_api = true;
-  // Needed by ExpectSimilar.
-  supplied_engine->favicon_url = builtin_engine->favicon_url;
-
-  // Verify no merge done.
-  manager->SetUserSelectedDefaultSearchEngine(*supplied_engine);
-  auto* result = manager->GetDefaultSearchEngine(nullptr);
-  ExpectSimilar(supplied_engine.get(), result);
-}
-
-TEST_F(DefaultSearchManagerTest,
        DefaultSearchSetByPlayAPI_MergeByDomainName_FeatureEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(switches::kTemplateUrlReconciliation);
-
   SetOverrides(pref_service(), false);
   auto manager = create_manager();
 
   // Find the expected engine. We could fabricate one too, this is easier.
-  auto all_engines = TemplateURLPrepopulateData::GetPrepopulatedEngines(
-      pref_service(), search_engine_choice_service());
+  auto all_engines = prepopulate_data_resolver().GetPrepopulatedEngines();
   const auto& builtin_engine =
-      *base::ranges::find_if(all_engines, [](const auto& engine) {
+      *std::ranges::find_if(all_engines, [](const auto& engine) {
         GURL url(engine->url());
         return url.is_valid() && url.host_piece() == "emea.search.yahoo.com";
       });
 
   auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
   supplied_engine->SetURL("https://emea.search.yahoo.com/any_path");
-  supplied_engine->created_from_play_api = true;
+  supplied_engine->regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   // Needed by ExpectSimilar.
   supplied_engine->favicon_url = builtin_engine->favicon_url;
 
@@ -468,48 +431,6 @@ TEST_F(DefaultSearchManagerTest,
   auto* result = manager->GetDefaultSearchEngine(nullptr);
 
   TemplateURLData expected_engine = *builtin_engine;
-  expected_engine.created_from_play_api = true;
+  expected_engine.regulatory_origin = RegulatoryExtensionType::kAndroidEEA;
   ExpectSimilar(&expected_engine, result);
-}
-
-TEST_F(DefaultSearchManagerTest,
-       GetSearchEngineKeywordFromPrefsData_Direct_NonEligiblePlayKeyword) {
-  auto manager = create_manager();
-
-  auto supplied_engine = GenerateDummyTemplateURLData("searchengine.com");
-  supplied_engine->created_from_play_api = true;
-  supplied_engine->SetURL("https://de.yahoo.com");
-  manager->prefs_default_search_ = std::move(supplied_engine);
-
-  auto [keyword, is_generated] = manager->GetSearchEngineKeywordFromPrefsData();
-  ASSERT_EQ(keyword, u"searchengine.com");
-  ASSERT_FALSE(is_generated);
-}
-
-TEST_F(DefaultSearchManagerTest,
-       GetSearchEngineKeywordFromPrefsData_Direct_NonEligibleNotFromPlay) {
-  auto manager = create_manager();
-
-  auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
-  supplied_engine->created_from_play_api = false;
-  supplied_engine->SetURL("https://de.yahoo.com");
-  manager->prefs_default_search_ = std::move(supplied_engine);
-
-  auto [keyword, is_generated] = manager->GetSearchEngineKeywordFromPrefsData();
-  ASSERT_EQ(keyword, u"yahoo.com");
-  ASSERT_FALSE(is_generated);
-}
-
-TEST_F(DefaultSearchManagerTest,
-       GetSearchEngineKeywordFromPrefsData_Computed_EligibleFromPlay) {
-  auto manager = create_manager();
-
-  auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
-  supplied_engine->created_from_play_api = true;
-  supplied_engine->SetURL("https://de.yahoo.com");
-  manager->prefs_default_search_ = std::move(supplied_engine);
-
-  auto [keyword, is_generated] = manager->GetSearchEngineKeywordFromPrefsData();
-  ASSERT_EQ(keyword, u"de.yahoo.com");
-  ASSERT_TRUE(is_generated);
 }

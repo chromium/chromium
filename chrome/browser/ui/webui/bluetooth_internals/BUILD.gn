@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("bluetooth_internals") {
@@ -22,7 +21,6 @@ source_set("bluetooth_internals") {
 
   deps = [
     ":mojo_bindings",
-    "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/bluetooth_internals:resources",
     "//chrome/common",
@@ -31,7 +29,7 @@ source_set("bluetooth_internals") {
     "//ui/webui",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//ash/public/cpp",
       "//chrome/browser/ash/bluetooth",
@@ -39,6 +37,7 @@ source_set("bluetooth_internals") {
       "//chromeos/ash/services/bluetooth_config/public/mojom",
     ]
   }
+
   if (is_android) {
     deps += [
       "//components/permissions:permissions",

@@ -1,9 +1,11 @@
-    <style include="settings-shared action-link iron-flex">
+    <style include="settings-shared action-link">
       #editOptions > div {
         border-top: var(--cr-separator-line);
       }
 
       #outer {
+        display: flex;
+        flex-direction: column;
         max-height: 355px;  /** Enough height to show six entries. */
       }
 
@@ -11,7 +13,7 @@
         cursor: default;
       }
     </style>
-    <div id="outer" class="layout vertical flex list-frame">
+    <div id="outer" class="flex list-frame">
       <div id="container" class="scroll-container" scrollable>
         <iron-list items="[[startupPages_]]" scroll-target="container"
             preserve-focus risk-selection class="cr-separators">

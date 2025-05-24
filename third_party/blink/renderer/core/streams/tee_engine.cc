@@ -9,13 +9,11 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -51,9 +49,9 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
  public:
   explicit PullAlgorithm(TeeEngine* engine) : engine_(engine) {}
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int,
-                             v8::Local<v8::Value>[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int,
+                                  v8::Local<v8::Value>[]) override {
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // 13. Let pullAlgorithm be the following steps:
     //   a. If reading is true,
@@ -61,21 +59,19 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       //      i. Set readAgain to true.
       engine_->read_again_ = true;
       //      ii. Return a promise resolved with undefined.
-      return PromiseResolveWithUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
-
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
 
     //   b. Set reading to true.
     engine_->reading_ = true;
     //   c. Let readRequest be a read request with the following items:
     auto* read_request = MakeGarbageCollected<TeeReadRequest>(engine_);
     //   d. Perform ! ReadableStreamDefaultReaderRead(reader, readRequest).
-    ReadableStreamDefaultReader::Read(script_state, engine_->reader_,
-                                      read_request, exception_state);
+    ReadableStreamDefaultReader::Read(
+        script_state, engine_->reader_, read_request,
+        PassThroughException(script_state->GetIsolate()));
     //   e. Return a promise resolved with undefined.
-    return PromiseResolveWithUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {
@@ -119,7 +115,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       // 4. If canceled1 is false or canceled2 is false, resolve
       // cancelPromise with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
@@ -172,10 +168,8 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
               script_state, engine_->controller_[1], exception);
           //     iii. Resolve cancelPromise with !
           //     ReadableStreamCancel(stream, cloneResult.[[Value]]).
-          engine_->cancel_promise_->Resolve(
-              script_state,
-              ReadableStream::Cancel(script_state, engine_->stream_, exception)
-                  .V8Promise());
+          engine_->cancel_promise_->Resolve(ReadableStream::Cancel(
+              script_state, engine_->stream_, exception));
           //     iv. Return.
           return;
         } else {
@@ -231,9 +225,9 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
     DCHECK(branch == 0 || branch == 1);
   }
 
-  v8::Local<v8::Promise> Run(ScriptState* script_state,
-                             int argc,
-                             v8::Local<v8::Value> argv[]) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state,
+                                  int argc,
+                                  v8::Local<v8::Value> argv[]) override {
     // https://streams.spec.whatwg.org/#readable-stream-tee
     // This implements both cancel1Algorithm and cancel2Algorithm as they are
     // identical except for the index they operate on. Standard comments are
@@ -262,13 +256,12 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       // ii. Let cancelResult be ! ReadableStreamCancel(stream,
       //    compositeReason).
       auto cancel_result = ReadableStream::Cancel(
-                               script_state, engine_->stream_, composite_reason)
-                               .V8Promise();
+          script_state, engine_->stream_, composite_reason);
 
       // iii. Resolve cancelPromise with cancelResult.
-      engine_->cancel_promise_->Resolve(script_state, cancel_result);
+      engine_->cancel_promise_->Resolve(cancel_result);
     }
-    return engine_->cancel_promise_->V8Promise(isolate);
+    return engine_->cancel_promise_->Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -326,7 +319,8 @@ void TeeEngine::Start(ScriptState* script_state,
   DCHECK(!branch_[1]);
 
   // 12. Let cancelPromise be a new promise.
-  cancel_promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  cancel_promise_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // 13. Let pullAlgorithm be the following steps:
   // (steps are defined in PullAlgorithm::Run()).
@@ -371,35 +365,34 @@ void TeeEngine::Start(ScriptState* script_state,
     controller_[branch] = To<ReadableStreamDefaultController>(controller);
   }
 
-  class RejectFunction final : public PromiseHandler {
+  class RejectFunction final : public ThenCallable<IDLAny, RejectFunction> {
    public:
     explicit RejectFunction(TeeEngine* engine) : engine_(engine) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       // 18. Upon rejection of reader.[[closedPromise]] with reason r,
       //   a. Perform ! ReadableStreamDefaultControllerError(branch1.
       //      [[readableStreamController]], r).
-      ReadableStreamDefaultController::Error(script_state,
-                                             engine_->controller_[0], r);
+      ReadableStreamDefaultController::Error(
+          script_state, engine_->controller_[0], r.V8Value());
 
       //   b. Perform ! ReadableStreamDefaultControllerError(branch2.
       //      [[readableStreamController]], r).
-      ReadableStreamDefaultController::Error(script_state,
-                                             engine_->controller_[1], r);
+      ReadableStreamDefaultController::Error(
+          script_state, engine_->controller_[1], r.V8Value());
 
       // TODO(ricea): Implement https://github.com/whatwg/streams/pull/1045 so
       // this step can be numbered correctly.
       // If canceled1 is false or canceled2 is false, resolve |cancelPromise|
       // with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(engine_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectFunction>::Trace(visitor);
     }
 
    private:
@@ -407,11 +400,8 @@ void TeeEngine::Start(ScriptState* script_state,
   };
 
   // 19. Upon rejection of reader.[[closedPromise]] with reason r,
-  StreamThenPromise(
-      script_state->GetContext(), reader_->closed(script_state).V8Promise(),
-      nullptr,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(this)));
+  reader_->closed(script_state)
+      .Catch(script_state, MakeGarbageCollected<RejectFunction>(this));
 
   // Step "20. Return « branch1, branch2 »."
   // is performed by the caller.

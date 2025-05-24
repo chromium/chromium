@@ -36,7 +36,7 @@ std::vector<uint8_t> ReadFileContents(const base::FilePath& file_path) {
 
 class IndexingToolTest : public ::testing::Test {
  public:
-  IndexingToolTest() {}
+  IndexingToolTest() = default;
 
   IndexingToolTest(const IndexingToolTest&) = delete;
   IndexingToolTest& operator=(const IndexingToolTest&) = delete;

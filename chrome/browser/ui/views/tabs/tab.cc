@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/views/tabs/tab.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 #include <utility>
@@ -35,26 +31,31 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/browser_tab_strip_controller.h"
+#include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
-#include "chrome/browser/ui/views/tabs/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/collaboration/public/messaging/message.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -125,15 +126,15 @@ bool g_show_hover_card_on_mouse_hover = true;
 
 // Helper functions ------------------------------------------------------------
 
-// Returns the coordinate for an object of size |item_size| centered in a region
-// of size |size|, biasing towards placing any extra space ahead of the object.
+// Returns the coordinate for an object of size `item_size` centered in a region
+// of size `size`, biasing towards placing any extra space ahead of the object.
 int Center(int size, int item_size) {
   int extra_space = size - item_size;
   // Integer division below truncates, thus effectively "rounding toward zero";
   // to always place extra space ahead of the object, we want to round towards
   // positive infinity, which means we need to bias the division only when the
   // size difference is positive.  (Adding one unconditionally will stack with
-  // the truncation if |extra_space| is negative, resulting in off-by-one
+  // the truncation if `extra_space` is negative, resulting in off-by-one
   // errors.)
   if (extra_space > 0) {
     ++extra_space;
@@ -232,7 +233,7 @@ Tab::Tab(TabSlotController* controller)
   title_->SetAutoColorReadabilityEnabled(false);
   title_->SetText(CoreTabHelper::GetDefaultTitle());
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
-  // |title_| paints on top of an opaque region (the tab background) of a
+  // `title_` paints on top of an opaque region (the tab background) of a
   // non-opaque layer (the tabstrip's layer), which cannot currently be detected
   // by the subpixel-rendering opacity check.
   // TODO(crbug.com/40725997): Improve the check so that this case doen't
@@ -240,7 +241,7 @@ Tab::Tab(TabSlotController* controller)
   // onto opaque parts of a not-entirely-opaque layer.
   title_->SetSkipSubpixelRenderingOpacityCheck(true);
 
-  AddChildView(title_.get());
+  AddChildViewRaw(title_.get());
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
@@ -257,7 +258,7 @@ Tab::Tab(TabSlotController* controller)
                           base::Unretained(controller_))));
   close_button_->SetHasInkDropActionOnClick(true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   showing_close_button_ = !controller_->IsLockedForOnTask();
   close_button_->SetVisible(showing_close_button_);
 #endif
@@ -277,6 +278,16 @@ Tab::Tab(TabSlotController* controller)
   SetProperty(views::kElementIdentifierKey, kTabElementId);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTab);
+  UpdateAccessibleName();
+
+  // Tab hover cards replace tooltips for tabs.
+  SetTooltipText(std::u16string());
+
+  root_name_changed_subscription_ =
+      GetViewAccessibility().AddStringAttributeChangedCallback(
+          ax::mojom::StringAttribute::kName,
+          base::BindRepeating(&Tab::OnAXNameChanged,
+                              weak_ptr_factory_.GetWeakPtr()));
 }
 
 Tab::~Tab() {
@@ -332,8 +343,7 @@ void Tab::Layout(PassKey) {
       MaybeAdjustLeftForPinnedTab(&favicon_bounds, gfx::kFaviconSize);
     }
     icon_->EnlargeDiscardIndicatorRadius(
-        controller()->GetInactiveTabWidth() -
-                    2 * tab_style()->GetBottomCornerRadius() >=
+        width() - 2 * tab_style()->GetBottomCornerRadius() >=
                 gfx::kFaviconSize + 2 * kIncreasedDiscardIndicatorRadiusDp
             ? kIncreasedDiscardIndicatorRadiusDp
             : 0);
@@ -510,6 +520,7 @@ bool IsSelectionModifierDown(const ui::MouseEvent& event) {
 }  // namespace
 
 bool Tab::OnMousePressed(const ui::MouseEvent& event) {
+  shift_pressed_on_mouse_down_ = event.IsShiftDown();
   controller_->UpdateHoverCard(nullptr,
                                TabSlotController::HoverCardUpdateType::kEvent);
   controller_->OnMouseEventInTab(this, event);
@@ -555,6 +566,7 @@ bool Tab::OnMouseDragged(const ui::MouseEvent& event) {
 }
 
 void Tab::OnMouseReleased(const ui::MouseEvent& event) {
+  base::WeakPtr<Tab> self = weak_ptr_factory_.GetWeakPtr();
   controller_->OnMouseEventInTab(this, event);
 
   // Notify the drag helper that we're done with any potential drag operations.
@@ -563,6 +575,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
   // so, bail immediately, since our members are already dead and we shouldn't
   // do anything else except drop the tab where it is.
   if (controller_->EndDrag(END_DRAG_COMPLETE)) {
+    shift_pressed_on_mouse_down_ = false;
     return;
   }
 
@@ -571,7 +584,7 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
   // releases happen off the element).
   if (event.IsOnlyMiddleMouseButton()) {
     if (HitTestPoint(event.location())) {
-      controller_->CloseTab(this, CLOSE_TAB_FROM_MOUSE);
+      controller_->CloseTab(this, CloseTabSource::kFromMouse);
     } else if (closing_) {
       // We're animating closed and a middle mouse button was pushed on us but
       // we don't contain the mouse anymore. We assume the user is clicking
@@ -581,16 +594,23 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
       ConvertPointToTarget(this, parent(), &location_in_parent);
       Tab* closest_tab = controller_->GetTabAt(location_in_parent);
       if (closest_tab) {
-        controller_->CloseTab(closest_tab, CLOSE_TAB_FROM_MOUSE);
+        controller_->CloseTab(closest_tab, CloseTabSource::kFromMouse);
       }
     }
-  } else if (event.IsOnlyLeftMouseButton() && !event.IsShiftDown() &&
+  } else if (event.IsOnlyLeftMouseButton() &&
+             !(event.IsShiftDown() || shift_pressed_on_mouse_down_) &&
              !IsSelectionModifierDown(event)) {
     // If the tab was already selected mouse pressed doesn't change the
     // selection. Reset it now to handle the case where multiple tabs were
     // selected.
     controller_->SelectTab(this, event);
   }
+  // If the tab was closed with the animation disabled, the tab may have
+  // already been destroyed.
+  if (!self) {
+    return;
+  }
+  shift_pressed_on_mouse_down_ = false;
 }
 
 void Tab::OnMouseCaptureLost() {
@@ -598,7 +618,6 @@ void Tab::OnMouseCaptureLost() {
 }
 
 void Tab::OnMouseMoved(const ui::MouseEvent& event) {
-  tab_style_views()->SetHoverLocation(event.location());
   controller_->OnMouseEventInTab(this, event);
 
   // Linux enter/leave events are sometimes flaky, so we don't want to "miss"
@@ -637,9 +656,7 @@ void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
 #endif
 
   mouse_hovered_ = true;
-  tab_style_views()->ShowHover(TabStyle::ShowHoverStyle::kSubtle);
-  UpdateForegroundColors();
-  DeprecatedLayoutImmediately();
+  controller_->ShowHover(this, TabStyle::ShowHoverStyle::kSubtle);
   if (g_show_hover_card_on_mouse_hover) {
     controller_->UpdateHoverCard(
         this, TabSlotController::HoverCardUpdateType::kHover);
@@ -651,9 +668,7 @@ void Tab::OnMouseExited(const ui::MouseEvent& event) {
     return;
   }
   mouse_hovered_ = false;
-  tab_style_views()->HideHover(TabStyle::HideHoverStyle::kGradual);
-  UpdateForegroundColors();
-  DeprecatedLayoutImmediately();
+  controller_->HideHover(this, TabStyle::HideHoverStyle::kGradual);
 }
 
 void Tab::OnGestureEvent(ui::GestureEvent* event) {
@@ -701,24 +716,52 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
   event->SetHandled();
 }
 
-std::u16string Tab::GetTooltipText(const gfx::Point& p) const {
-  // Tab hover cards replace tooltips for tabs.
-  return std::u16string();
+void Tab::ShowHover(TabStyle::ShowHoverStyle style) {
+  tab_style_views()->ShowHover(style);
+  UpdateForegroundColors();
+  DeprecatedLayoutImmediately();
 }
 
-void Tab::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void Tab::HideHover(TabStyle::HideHoverStyle style) {
+  tab_style_views()->HideHover(style);
+  UpdateForegroundColors();
+  DeprecatedLayoutImmediately();
+}
+
+// This function updates the accessible name for the tab whenever any of the
+// parameters that influence the accessible name change. It ultimately calls
+// BrowserView::GetAccessibleTabLabel to get the updated accessible name.
+//
+// Note: If any new parameters are added or existing ones are removed that
+// affect the accessible name, ensure that the corresponding logic in
+// BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
+// consistency.
+void Tab::UpdateAccessibleName() {
   std::u16string name = controller_->GetAccessibleTabName(this);
   if (!name.empty()) {
-    node_data->SetNameChecked(name);
+    GetViewAccessibility().SetName(name);
   } else {
-    // Under some conditions, |GetAccessibleTabName| returns an empty string.
-    node_data->SetNameExplicitlyEmpty();
+    // Under some conditions, `GetAccessibleTabName` returns an empty string.
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   }
+}
+
+void Tab::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                          const std::optional<std::string>& name) {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
+}
+
+void Tab::SetGroup(std::optional<tab_groups::TabGroupId> group) {
+  TabSlotView::SetGroup(group);
+  UpdateAccessibleName();
 }
 
 gfx::Size Tab::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(tab_style()->GetStandardWidth(),
+  return gfx::Size(GetTabSizeInfo().standard_width,
                    GetLayoutConstant(TAB_HEIGHT));
 }
 
@@ -775,9 +818,10 @@ TabSlotView::ViewType Tab::GetTabSlotViewType() const {
 }
 
 TabSizeInfo Tab::GetTabSizeInfo() const {
-  return {tab_style()->GetPinnedWidth(), tab_style()->GetMinimumActiveWidth(),
+  return {tab_style()->GetPinnedWidth(split().has_value()),
+          tab_style()->GetMinimumActiveWidth(split().has_value()),
           tab_style()->GetMinimumInactiveWidth(),
-          tab_style()->GetStandardWidth()};
+          tab_style()->GetStandardWidth(split().has_value())};
 }
 
 void Tab::SetClosing(bool closing) {
@@ -802,7 +846,7 @@ std::optional<SkColor> Tab::GetGroupColor() const {
       controller_->GetGroupColorId(group().value()));
 }
 
-ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
+ui::ColorId Tab::GetAlertIndicatorColor(tabs::TabAlert state) const {
   const ui::ColorProvider* color_provider = GetColorProvider();
   if (!color_provider) {
     return gfx::kPlaceholderColor;
@@ -810,48 +854,56 @@ ui::ColorId Tab::GetAlertIndicatorColor(TabAlertState state) const {
 
   int group;
   switch (state) {
-    case TabAlertState::MEDIA_RECORDING:
-    case TabAlertState::AUDIO_RECORDING:
-    case TabAlertState::VIDEO_RECORDING:
-    case TabAlertState::DESKTOP_CAPTURING:
+    case tabs::TabAlert::MEDIA_RECORDING:
+    case tabs::TabAlert::AUDIO_RECORDING:
+    case tabs::TabAlert::VIDEO_RECORDING:
+    case tabs::TabAlert::DESKTOP_CAPTURING:
       group = 0;
       break;
-    case TabAlertState::TAB_CAPTURING:
-    case TabAlertState::PIP_PLAYING:
+    case tabs::TabAlert::TAB_CAPTURING:
+    case tabs::TabAlert::PIP_PLAYING:
+    case tabs::TabAlert::GLIC_ACCESSING:
       group = 1;
       break;
-    case TabAlertState::AUDIO_PLAYING:
-    case TabAlertState::AUDIO_MUTING:
-    case TabAlertState::BLUETOOTH_CONNECTED:
-    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-    case TabAlertState::USB_CONNECTED:
-    case TabAlertState::HID_CONNECTED:
-    case TabAlertState::SERIAL_CONNECTED:
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
+    case tabs::TabAlert::AUDIO_PLAYING:
+    case tabs::TabAlert::AUDIO_MUTING:
+    case tabs::TabAlert::BLUETOOTH_CONNECTED:
+    case tabs::TabAlert::BLUETOOTH_SCAN_ACTIVE:
+    case tabs::TabAlert::USB_CONNECTED:
+    case tabs::TabAlert::HID_CONNECTED:
+    case tabs::TabAlert::SERIAL_CONNECTED:
+    case tabs::TabAlert::VR_PRESENTING_IN_HEADSET:
       group = 2;
       break;
   }
 
-  const ui::ColorId color_ids[3][2][2] = {
-      {{kColorTabAlertMediaRecordingInactiveFrameInactive,
-        kColorTabAlertMediaRecordingInactiveFrameActive},
-       {kColorTabAlertMediaRecordingActiveFrameInactive,
-        kColorTabAlertMediaRecordingActiveFrameActive}},
-      {{kColorTabAlertPipPlayingInactiveFrameInactive,
-        kColorTabAlertPipPlayingInactiveFrameActive},
-       {kColorTabAlertPipPlayingActiveFrameInactive,
-        kColorTabAlertPipPlayingActiveFrameActive}},
-      {{kColorTabAlertAudioPlayingInactiveFrameInactive,
-        kColorTabAlertAudioPlayingInactiveFrameActive},
-       {kColorTabAlertAudioPlayingActiveFrameInactive,
-        kColorTabAlertAudioPlayingActiveFrameActive}}};
+  static constexpr std::array<std::array<std::array<ui::ColorId, 2>, 2>, 3>
+      color_ids{{{{{kColorTabAlertMediaRecordingInactiveFrameInactive,
+                    kColorTabAlertMediaRecordingInactiveFrameActive},
+                   {kColorTabAlertMediaRecordingActiveFrameInactive,
+                    kColorTabAlertMediaRecordingActiveFrameActive}}},
+                 {{{kColorTabAlertPipPlayingInactiveFrameInactive,
+                    kColorTabAlertPipPlayingInactiveFrameActive},
+                   {kColorTabAlertPipPlayingActiveFrameInactive,
+                    kColorTabAlertPipPlayingActiveFrameActive}}},
+                 {{{kColorTabAlertAudioPlayingInactiveFrameInactive,
+                    kColorTabAlertAudioPlayingInactiveFrameActive},
+                   {kColorTabAlertAudioPlayingActiveFrameInactive,
+                    kColorTabAlertAudioPlayingActiveFrameActive}}}}};
   return color_ids[group][tab_style_views()->GetApparentActiveState() ==
                           TabActive::kActive]
                   [GetWidget()->ShouldPaintAsActive()];
 }
 
 bool Tab::IsActive() const {
-  return controller_->IsActiveTab(this);
+  if (split()) {
+    return std::ranges::any_of(controller()->GetTabsInSplit(this),
+                               [this](const Tab* split_tab) {
+                                 return controller_->IsActiveTab(split_tab);
+                               });
+  } else {
+    return controller_->IsActiveTab(this);
+  }
 }
 
 void Tab::ActiveStateChanged() {
@@ -887,6 +939,39 @@ bool Tab::HasThumbnail() const {
   return data().thumbnail && data().thumbnail->has_data();
 }
 
+// This function checks for the parameters that influence the accessible name
+// change. Note: If any new parameters are added or existing ones are removed
+// that affect the accessible name, ensure that the corresponding logic in
+// BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
+// consistency.
+bool Tab::ShouldUpdateAccessibleName(TabRendererData& old_data,
+                                     TabRendererData& new_data) {
+  bool has_old_message = old_data.collaboration_messaging &&
+                         old_data.collaboration_messaging->HasMessage();
+  bool has_new_message = new_data.collaboration_messaging &&
+                         new_data.collaboration_messaging->HasMessage();
+  bool collaboration_message_changed = has_old_message != has_new_message;
+  if (!collaboration_message_changed && has_old_message) {
+    // Old and new data have both have messages, so compare the contents.
+    collaboration_message_changed =
+        (old_data.collaboration_messaging->given_name() !=
+         new_data.collaboration_messaging->given_name()) ||
+        (old_data.collaboration_messaging->collaboration_event() !=
+         new_data.collaboration_messaging->collaboration_event());
+  }
+
+  return ((old_data.network_state != new_data.network_state) ||
+          old_data.crashed_status != new_data.crashed_status ||
+          old_data.alert_state != new_data.alert_state ||
+          old_data.should_show_discard_status !=
+              new_data.should_show_discard_status ||
+          old_data.discarded_memory_savings_in_bytes !=
+              new_data.discarded_memory_savings_in_bytes ||
+          old_data.tab_resource_usage != new_data.tab_resource_usage ||
+          old_data.pinned != new_data.pinned ||
+          old_data.title != new_data.title || collaboration_message_changed);
+}
+
 void Tab::SetData(TabRendererData data) {
   DCHECK(GetWidget());
 
@@ -900,6 +985,9 @@ void Tab::SetData(TabRendererData data) {
   icon_->SetData(data_);
   icon_->SetCanPaintToLayer(controller_->CanPaintThrobberToLayer());
   UpdateTabIconNeedsAttentionBlocked();
+  if (ShouldUpdateAccessibleName(old, data_)) {
+    UpdateAccessibleName();
+  }
 
   std::u16string title = data_.title;
   if (title.empty() && !data_.should_render_empty_title) {
@@ -922,7 +1010,7 @@ void Tab::SetData(TabRendererData data) {
   if (!data_.pinned && old.pinned) {
     is_animating_from_pinned_ = true;
     // We must set this to true early, because we don't want to set
-    // |is_animating_from_pinned_| to false if we lay out before the animation
+    // `is_animating_from_pinned_` to false if we lay out before the animation
     // begins.
     set_animating(true);
   }
@@ -967,7 +1055,7 @@ void Tab::ReleaseFreezingVote() {
 
 // static
 std::u16string Tab::GetTooltipText(const std::u16string& title,
-                                   std::optional<TabAlertState> alert_state) {
+                                   std::optional<tabs::TabAlert> alert_state) {
   if (!alert_state) {
     return title;
   }
@@ -981,8 +1069,8 @@ std::u16string Tab::GetTooltipText(const std::u16string& title,
 }
 
 // static
-std::optional<TabAlertState> Tab::GetAlertStateToShow(
-    const std::vector<TabAlertState>& alert_states) {
+std::optional<tabs::TabAlert> Tab::GetAlertStateToShow(
+    const std::vector<tabs::TabAlert>& alert_states) {
   if (alert_states.empty()) {
     return std::nullopt;
   }
@@ -994,16 +1082,18 @@ void Tab::SetShouldShowDiscardIndicator(bool enabled) {
   icon_->SetShouldShowDiscardIndicator(enabled);
 }
 
+void Tab::UpdateInsets() {
+  SetBorder(views::CreateEmptyBorder(tab_style_views()->GetContentsInsets()));
+}
+
 void Tab::MaybeAdjustLeftForPinnedTab(gfx::Rect* bounds,
                                       int visual_width) const {
   if (ShouldRenderAsNormalTab()) {
     return;
   }
-  const int pinned_width = tab_style()->GetPinnedWidth();
+  const int pinned_width = GetTabSizeInfo().pinned_tab_width;
   const int ideal_delta = width() - pinned_width;
   const int ideal_x = (pinned_width - visual_width) / 2;
-  // TODO(crbug.com/40436434): This code is broken when the current width is
-  // less than the pinned width.
   bounds->set_x(
       bounds->x() +
       base::ClampRound(
@@ -1068,14 +1158,14 @@ void Tab::UpdateIconVisibility() {
                                    : kMinimumContentsWidthForCloseButtons);
 
   if (IsActive()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Hide tab close button for OnTask if locked. Only applicable for non-web
     // browser scenarios.
     showing_close_button_ = !controller_->IsLockedForOnTask();
 #else
     // Close button is shown on active tabs regardless of the size.
     showing_close_button_ = true;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     available_width -= close_button_width;
 
     showing_alert_indicator_ =
@@ -1101,7 +1191,7 @@ void Tab::UpdateIconVisibility() {
     }
 
     showing_close_button_ =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         !controller_->IsLockedForOnTask() &&
 #endif
         large_enough_for_close_button;
@@ -1129,7 +1219,7 @@ void Tab::UpdateIconVisibility() {
 }
 
 bool Tab::ShouldRenderAsNormalTab() const {
-  return !data().pinned || (width() >= (tab_style()->GetPinnedWidth() +
+  return !data().pinned || (width() >= (GetTabSizeInfo().pinned_tab_width +
                                         kPinnedTabExtraWidthToRenderAsNormal));
 }
 
@@ -1174,7 +1264,7 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
   if (!alert_indicator_button_ || !alert_indicator_button_->GetVisible()) {
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
   } else if (GetAlertStateToShow(data_.alert_state) ==
-             TabAlertState::AUDIO_PLAYING) {
+             tabs::TabAlert::AUDIO_PLAYING) {
     base::RecordAction(UserMetricsAction("CloseTab_AudioIndicator"));
   } else {
     base::RecordAction(UserMetricsAction("CloseTab_RecordingIndicator"));
@@ -1182,8 +1272,8 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
 
   const bool from_mouse = event.type() == ui::EventType::kMouseReleased &&
                           !(event.flags() & ui::EF_FROM_TOUCH);
-  controller_->CloseTab(
-      this, from_mouse ? CLOSE_TAB_FROM_MOUSE : CLOSE_TAB_FROM_TOUCH);
+  controller_->CloseTab(this, from_mouse ? CloseTabSource::kFromMouse
+                                         : CloseTabSource::kFromTouch);
 }
 
 BEGIN_METADATA(Tab)

@@ -24,12 +24,8 @@
     NSMutableArray<NSIndexPath*>* filteredOutEntriesIndexPaths;
 // YES if the table should be filtered by the next received query result.
 @property(nonatomic, assign) BOOL filterQueryResult;
-// TODO: Investigate further if this can be made private.
-// Fetches history for search text `query`. If `query` is nil or the empty
-// string, all history is fetched. If continuation is false, then the most
-// recent results are fetched, otherwise the results more recent than the
-// previous query will be returned.
-- (void)fetchHistoryForQuery:(NSString*)query continuation:(BOOL)continuation;
+// Object to manage insertion of history entries into the table view model.
+@property(nonatomic, strong) HistoryEntryInserter* entryInserter;
 // Updates header section to provide relevant information about the currently
 // displayed history entries. There should only ever be at most one item in this
 // section.
@@ -56,9 +52,6 @@
     (const std::vector<BrowsingHistoryService::HistoryEntry>&)results;
 // Checks if the loading indicator should be displayed.
 - (BOOL)shouldDisplayLoadingIndicator;
-// Displays a context menu on the cell pressed with gestureRecognizer.
-- (void)displayContextMenuInvokedByGestureRecognizer:
-    (UILongPressGestureRecognizer*)gestureRecognizer;
 
 @end
 

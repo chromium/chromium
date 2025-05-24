@@ -2,16 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("cookie_config") {
+component("cookie_config") {
+  defines = [ "IS_COMPONENTS_COOKIE_CONFIG_IMPL" ]
+
   sources = [
     "cookie_store_util.cc",
     "cookie_store_util.h",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//components/os_crypt/sync",
-    "//net",
     "//net:extras",
   ]
 }

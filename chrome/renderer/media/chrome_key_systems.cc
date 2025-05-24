@@ -12,6 +12,6 @@
 std::unique_ptr<media::KeySystemSupportRegistration> GetChromeKeySystems(
     content::RenderFrame* render_frame,
     media::GetSupportedKeySystemsCB cb) {
-  return cdm::GetSupportedKeySystemsUpdates(
-      render_frame, !chrome::IsIncognitoProcess(), std::move(cb));
+  return cdm::GetSupportedKeySystemsUpdates(render_frame, !IsIncognitoProcess(),
+                                            std::move(cb));
 }

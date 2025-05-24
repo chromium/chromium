@@ -5,51 +5,29 @@
 #include "components/account_manager_core/account.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace account_manager {
+
+// static
+AccountKey AccountKey::FromGaiaId(const GaiaId& gaia_id) {
+  return AccountKey(gaia_id.ToString(), AccountType::kGaia);
+}
 
 AccountKey::AccountKey(const std::string& id, AccountType type)
     : id_(id), account_type_(type) {
   DCHECK(!id_.empty());
 }
 
-bool AccountKey::operator<(const AccountKey& other) const {
-  return std::tie(id_, account_type_) <
-         std::tie(other.id_, other.account_type_);
-}
-
-bool AccountKey::operator==(const AccountKey& other) const {
-  return std::tie(id_, account_type_) ==
-         std::tie(other.id_, other.account_type_);
-}
-
-bool AccountKey::operator!=(const AccountKey& other) const {
-  return !(*this == other);
-}
-
-bool Account::operator<(const Account& other) const {
-  return std::tie(key, raw_email) < std::tie(other.key, other.raw_email);
-}
-
-bool Account::operator==(const Account& other) const {
-  return std::tie(key, raw_email) == std::tie(other.key, other.raw_email);
-}
-
-bool Account::operator!=(const Account& other) const {
-  return !(*this == other);
-}
-
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 std::ostream& operator<<(std::ostream& os, const AccountType& account_type) {
-  switch (account_type) {
-    case account_manager::AccountType::kGaia:
-      os << "Gaia";
-      break;
-    case account_manager::AccountType::kActiveDirectory:
-      os << "ActiveDirectory";
-      break;
-  }
+  // Currently, we only support `kGaia` account type. Should a new type be added
+  // in the future, consider removing the `CHECK_EQ()` below and handling the
+  // new type accordingly.
+  CHECK_EQ(account_type, account_manager::AccountType::kGaia);
 
+  os << "Gaia";
   return os;
 }
 

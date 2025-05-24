@@ -44,10 +44,10 @@ FakeTextCheckingCompletion::FakeTextCheckingCompletion(
     FakeTextCheckingResult* result)
     : result_(result) {}
 
-FakeTextCheckingCompletion::~FakeTextCheckingCompletion() {}
+FakeTextCheckingCompletion::~FakeTextCheckingCompletion() = default;
 
 void FakeTextCheckingCompletion::DidFinishCheckingText(
-    const blink::WebVector<blink::WebTextCheckingResult>& results) {
+    const std::vector<blink::WebTextCheckingResult>& results) {
   ++result_->completion_count_;
   result_->results_ = results;
 }
@@ -173,15 +173,17 @@ void TestingSpellCheckProvider::RequestTextCheck(
   text_check_requests_.push_back(std::make_pair(text, std::move(callback)));
 }
 
+#if BUILDFLAG(ENABLE_SPELLING_SERVICE)
 void TestingSpellCheckProvider::CheckSpelling(const std::u16string&,
                                               CheckSpellingCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestingSpellCheckProvider::FillSuggestionList(const std::u16string&,
                                                    FillSuggestionListCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
+#endif  // BUILDFLAG(ENABLE_SPELLING_SERVICE)
 
 #if BUILDFLAG(IS_WIN)
 void TestingSpellCheckProvider::InitializeDictionaries(
@@ -193,20 +195,20 @@ void TestingSpellCheckProvider::InitializeDictionaries(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 #if BUILDFLAG(IS_ANDROID)
 void TestingSpellCheckProvider::DisconnectSessionBridge() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 
 void TestingSpellCheckProvider::SetLastResults(
     const std::u16string last_request,
-    blink::WebVector<blink::WebTextCheckingResult>& last_results) {
+    std::vector<blink::WebTextCheckingResult>& last_results) {
   last_request_ = last_request;
   last_results_ = last_results;
 }
@@ -242,4 +244,4 @@ base::WeakPtr<SpellCheckProvider> TestingSpellCheckProvider::GetWeakPtr() {
 
 SpellCheckProviderTest::SpellCheckProviderTest()
     : provider_(&embedder_provider_) {}
-SpellCheckProviderTest::~SpellCheckProviderTest() {}
+SpellCheckProviderTest::~SpellCheckProviderTest() = default;

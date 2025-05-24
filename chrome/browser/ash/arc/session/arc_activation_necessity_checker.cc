@@ -6,14 +6,15 @@
 
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/session/adb_sideloading_availability_delegate.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/session/adb_sideloading_availability_delegate.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {
@@ -37,6 +38,21 @@ void ArcActivationNecessityChecker::Check(CheckCallback callback) {
 
   // Activate ARC if the package list held by ArcAppListPrefs is not up to date.
   if (!profile_->GetPrefs()->GetBoolean(arc::prefs::kArcPackagesIsUpToDate)) {
+    OnChecked(std::move(callback), true);
+    return;
+  }
+
+  const ArcManagementTransition management_transition =
+      static_cast<ArcManagementTransition>(
+          profile_->GetPrefs()->GetInteger(prefs::kArcManagementTransition));
+  // Activate ARC if a management transitioning is happening.
+  if (management_transition != ArcManagementTransition::NO_TRANSITION) {
+    OnChecked(std::move(callback), true);
+    return;
+  }
+
+  // Activate ARC if Always ON VPN is enabled.
+  if (!profile_->GetPrefs()->GetString(prefs::kAlwaysOnVpnPackage).empty()) {
     OnChecked(std::move(callback), true);
     return;
   }

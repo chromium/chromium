@@ -15,11 +15,7 @@
 #endif  // defined(KEYCODES_X_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(KEYCODES_X_IMPLEMENTATION)
 #define KEYCODES_X_EXPORT __attribute__((visibility("default")))
-#else
-#define KEYCODES_X_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

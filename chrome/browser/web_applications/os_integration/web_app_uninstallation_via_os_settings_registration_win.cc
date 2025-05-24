@@ -65,11 +65,9 @@ class UninstallationViaOsSettingsHelper {
 
     // If the current user data directory isn't default, the uninstall
     // string should have it.
-    base::FilePath default_user_data_dir;
     base::FilePath user_data_dir;
-    if (chrome::GetDefaultUserDataDirectory(&default_user_data_dir) &&
-        base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir) &&
-        default_user_data_dir != user_data_dir) {
+    if (base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir) &&
+        !chrome::IsUsingDefaultDataDirectory().value_or(true)) {
       uninstall_commandline.AppendSwitchNative(switches::kUserDataDir,
                                                user_data_dir.value());
     }

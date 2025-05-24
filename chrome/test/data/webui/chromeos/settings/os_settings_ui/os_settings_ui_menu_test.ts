@@ -5,9 +5,10 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrDrawerElement, CrSettingsPrefs, OsSettingsMenuElement, OsSettingsUiElement, Router, routes, routesMojom, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
+import type {CrDrawerElement, OsSettingsUiElement} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, Router, routes, routesMojom, setNearbyShareSettingsForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomIf, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeNearbyShareSettings} from 'chrome://webui-test/chromeos/nearby_share/shared/fake_nearby_share_settings.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -15,8 +16,6 @@ import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {TestAccountManagerBrowserProxy} from '../os_people_page/test_account_manager_browser_proxy.js';
 
 suite('<os-settings-ui> menu', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let ui: OsSettingsUiElement;
   let fakeNearbySettings: FakeNearbyShareSettings;
   let testAccountManagerBrowserProxy: TestAccountManagerBrowserProxy;
@@ -113,72 +112,6 @@ suite('<os-settings-ui> menu', () => {
     link.click();
     assertEquals('', router.getQueryParameters().toString());
   });
-
-  if (!isRevampWayfindingEnabled) {
-    test('Advanced section in menu and main page behavior', async () => {
-      ui = await createElement();
-      const drawerTemplate =
-          ui.shadowRoot!.querySelector<DomIf>('#drawerTemplate');
-      assertTrue(!!drawerTemplate);
-      drawerTemplate.if = true;
-      flush();
-
-      const main = ui.shadowRoot!.querySelector('os-settings-main');
-      assertTrue(!!main);
-      const mainPageContainer =
-          main.shadowRoot!.querySelector('main-page-container');
-      assertTrue(!!mainPageContainer);
-      const mainPageAdvancedToggle =
-          mainPageContainer.shadowRoot!.querySelector<HTMLButtonElement>(
-              '#advancedToggle');
-      assertTrue(!!mainPageAdvancedToggle);
-      const floatingMenu = ui.shadowRoot!.querySelector<OsSettingsMenuElement>(
-          '#left os-settings-menu');
-      assertTrue(!!floatingMenu);
-      const drawerMenu = ui.shadowRoot!.querySelector<OsSettingsMenuElement>(
-          '#drawer os-settings-menu');
-      assertTrue(!!drawerMenu);
-
-      // Advanced section should not be expanded
-      assertFalse(main.advancedToggleExpanded);
-      assertFalse(drawerMenu.advancedOpened);
-      assertFalse(floatingMenu.advancedOpened);
-
-      mainPageAdvancedToggle.click();
-      flush();
-
-      // Advanced section should be expanded
-      assertTrue(main.advancedToggleExpanded);
-      assertTrue(drawerMenu.advancedOpened);
-      assertTrue(floatingMenu.advancedOpened);
-
-      // Collapse 'Advanced' in the menu.
-      const advancedButton =
-          drawerMenu.shadowRoot!.querySelector<HTMLButtonElement>(
-              '#advancedButton');
-      assertTrue(!!advancedButton);
-      advancedButton.click();
-      flush();
-
-      // Collapsing it in the menu should not collapse it in the main area.
-      assertTrue(main.advancedToggleExpanded);
-      assertFalse(drawerMenu.advancedOpened);
-      assertFalse(floatingMenu.advancedOpened);
-
-      // Expand both 'Advanced's again.
-      advancedButton.click();
-      flush();
-
-      // Collapse 'Advanced' in the main area.
-      main.set('advancedToggleExpanded', false);
-      flush();
-
-      // Collapsing it in the main area should not collapse it in the menu.
-      assertTrue(drawerMenu.advancedOpened);
-      assertTrue(floatingMenu.advancedOpened);
-      assertFalse(main.advancedToggleExpanded);
-    });
-  }
 
   suite('When in kiosk mode', () => {
     setup(() => {

@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -24,15 +23,16 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/threat_details_history.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
 #include "components/safe_browsing/content/browser/web_contents_key.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
+#include "components/security_interstitials/core/unsafe_resource_locator.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_entry.h"
@@ -55,6 +55,7 @@
 
 using content::BrowserThread;
 using content::WebContents;
+using security_interstitials::UnsafeResourceLocator;
 using testing::_;
 using testing::DoAll;
 using testing::Eq;
@@ -145,7 +146,7 @@ class ThreatDetailsWrap : public ThreatDetails {
     SetShouldSendReport(true);
   }
 
-  ~ThreatDetailsWrap() override {}
+  ~ThreatDetailsWrap() override = default;
 
   void ThreatDetailsDone(WebContentsKey web_contents_key) {
     ++done_callback_count_;
@@ -211,7 +212,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   bool ReportWasSent() { return report_sent_; }
 
  private:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 
   std::string serialized_;
   bool report_sent_;
@@ -299,8 +300,9 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     resource->url = url;
     resource->threat_type = threat_type;
     resource->threat_source = threat_source;
-    resource->render_process_id = primary_main_frame_id.child_id;
-    resource->render_frame_token = primary_main_frame->GetFrameToken().value();
+    resource->rfh_locator = UnsafeResourceLocator::CreateForRenderFrameToken(
+        primary_main_frame_id.child_id,
+        primary_main_frame->GetFrameToken().value());
     resource->is_async_check = is_async_check;
   }
 
@@ -1086,17 +1088,10 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_resource = expected.add_resources();
   pb_resource->set_id(2);
   pb_resource->set_url(kDOMParentURL);
-  pb_resource->add_child_ids(3);
-
-  // TODO(lpz): The data URL is added, despite being unreportable, because it
-  // is a child of the top-level page. Consider if this should happen.
-  pb_resource = expected.add_resources();
-  pb_resource->set_id(3);
-  pb_resource->set_url(kDataURL);
 
   // This child can't be mapped to its containing iframe so its parent is unset.
   pb_resource = expected.add_resources();
-  pb_resource->set_id(4);
+  pb_resource->set_id(3);
   pb_resource->set_url(kDOMChildUrl2);
 
   expected.set_complete(false);  // Since the cache was missing.
@@ -1113,7 +1108,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_element = expected.add_dom();
   pb_element->set_id(1);
   pb_element->set_tag("SCRIPT");
-  pb_element->set_resource_id(4);
+  pb_element->set_resource_id(3);
   pb_element->add_attribute()->set_name("src");
   pb_element->mutable_attribute(0)->set_value(kDOMChildUrl2);
 
@@ -1125,8 +1120,6 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
       referrer_chain_provider_.get());
   report->StartCollection();
-
-  base::HistogramTester histograms;
 
   // Send both sets of nodes from different render frames.
   report->OnReceivedThreatDOMDetails(mojo::Remote<mojom::ThreatReporter>(),

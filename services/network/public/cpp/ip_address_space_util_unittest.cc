@@ -467,6 +467,16 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanLocal) {
                                        IPAddressSpace::kPublic));
   EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kLocal,
                                        IPAddressSpace::kUnknown));
+
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kLocal,
+                                           IPAddressSpace::kLocal));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kLocal,
+                                           IPAddressSpace::kPrivate));
+
+  EXPECT_TRUE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kLocal,
+                                          IPAddressSpace::kPublic));
+  EXPECT_TRUE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kLocal,
+                                          IPAddressSpace::kUnknown));
 }
 
 TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanPrivate) {
@@ -479,6 +489,16 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanPrivate) {
                                        IPAddressSpace::kPublic));
   EXPECT_TRUE(IsLessPublicAddressSpace(IPAddressSpace::kPrivate,
                                        IPAddressSpace::kUnknown));
+
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPrivate,
+                                           IPAddressSpace::kLocal));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPrivate,
+                                           IPAddressSpace::kPrivate));
+
+  EXPECT_TRUE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPrivate,
+                                          IPAddressSpace::kPublic));
+  EXPECT_TRUE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPrivate,
+                                          IPAddressSpace::kUnknown));
 }
 
 TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanPublic) {
@@ -490,6 +510,15 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanPublic) {
                                         IPAddressSpace::kPublic));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kPublic,
                                         IPAddressSpace::kUnknown));
+
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPublic,
+                                           IPAddressSpace::kLocal));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPublic,
+                                           IPAddressSpace::kPrivate));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPublic,
+                                           IPAddressSpace::kPublic));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kPublic,
+                                           IPAddressSpace::kUnknown));
 }
 
 TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanUnknown) {
@@ -501,6 +530,15 @@ TEST(IPAddressSpaceTest, IsLessPublicAddressSpaceThanUnknown) {
                                         IPAddressSpace::kPublic));
   EXPECT_FALSE(IsLessPublicAddressSpace(IPAddressSpace::kUnknown,
                                         IPAddressSpace::kUnknown));
+
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kUnknown,
+                                           IPAddressSpace::kLocal));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kUnknown,
+                                           IPAddressSpace::kPrivate));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kUnknown,
+                                           IPAddressSpace::kPublic));
+  EXPECT_FALSE(IsLessPublicAddressSpaceLNA(IPAddressSpace::kUnknown,
+                                           IPAddressSpace::kUnknown));
 }
 
 TEST(IPAddressSpaceUtilTest, CalculateClientAddressSpaceFileURL) {
@@ -637,6 +675,24 @@ TEST(IPAddressSpaceTest, CalculateResourceAddressSpaceOverride) {
       IPAddressSpace::kPrivate,
       CalculateResourceAddressSpace(GURL("http://foo.test"),
                                     IPEndPoint(IPAddress(8, 8, 8, 8), 8888)));
+}
+
+TEST(IPAddressSpaceTest, ParsePrivateIpFromURL) {
+  EXPECT_EQ(std::nullopt, ParsePrivateIpFromUrl(GURL("http://foo.test")));
+  EXPECT_EQ(std::nullopt, ParsePrivateIpFromUrl(GURL("http://8.8.8.8")));
+  EXPECT_EQ(IPAddress(192, 168, 1, 10),
+            ParsePrivateIpFromUrl(GURL("http://192.168.1.10")));
+  EXPECT_EQ(IPAddress(10, 168, 1, 10),
+            ParsePrivateIpFromUrl(GURL("http://10.168.1.10")));
+}
+
+TEST(IPAddressSpaceTest, IsRFC6762LocalDomain) {
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://foo.test")));
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://8.8.8.8")));
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://192.168.1.10")));
+  EXPECT_EQ(false, IsRFC6762LocalDomain(GURL("http://localhost")));
+  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local")));
+  EXPECT_EQ(true, IsRFC6762LocalDomain(GURL("http://menu.local:8000")));
 }
 
 }  // namespace

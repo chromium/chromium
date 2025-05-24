@@ -4,13 +4,13 @@
  * found in the LICENSE file.
  */
 
-var gPaymentResponse = null;
+let gPaymentResponse = null;
 
 /**
  * Launches the PaymentRequest UI
  */
 function buy() {
-  var options = {
+  const options = {
     requestShipping: true,
   };
   getPaymentResponse(options)

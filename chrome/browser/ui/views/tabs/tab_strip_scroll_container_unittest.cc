@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
+
 #include <cstddef>
 #include <memory>
+
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "fake_base_tab_strip_controller.h"
@@ -57,6 +59,8 @@ TEST_F(TabStripScrollContainerTest, AnchoredWidgetHidesOnScroll) {
   params.bounds = gfx::Rect(0, 0, 400, 400);
   params.delegate = new views::BubbleDialogDelegate(
       tab_strip_, views::BubbleBorder::Arrow::LEFT_TOP);
+  params.delegate->SetOwnedByWidget(
+      views::WidgetDelegate::OwnedByWidgetPassKey());
   std::unique_ptr<views::Widget> widget_ = CreateTestWidget(std::move(params));
   widget_->Show();
   views::Widget::ReparentNativeView(widget_->GetNativeView(),

@@ -19,11 +19,19 @@
   return nil;
 }
 
+// This method is called when -addAgent: and -removeAgent: are called on
+// a ProfileState. Automatically register/unregister self as an observer.
 - (void)setProfileState:(ProfileState*)profileState {
-  // This should only be called once!
-  DCHECK(!_profileState);
+  DCHECK(!_profileState || !profileState);
+  if (_profileState) {
+    [_profileState removeObserver:self];
+  }
+
   _profileState = profileState;
-  [profileState addObserver:self];
+
+  if (_profileState) {
+    [_profileState addObserver:self];
+  }
 }
 
 @end

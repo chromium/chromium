@@ -13,18 +13,26 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
 
   constructor() {
     super([
-      'initializeMainView', 'launchGuestProfile',
-      'openManageProfileSettingsSubPage', 'launchSelectedProfile',
-      'askOnStartupChanged', 'getNewProfileSuggestedThemeInfo',
-      'getProfileThemeInfo', 'removeProfile', 'getProfileStatistics',
-      'closeProfileStatistics', 'selectNewAccount', 'continueWithoutAccount',
-      'setProfileName', 'recordSignInPromoImpression', 'getAvailableIcons',
-      'getSwitchProfile', 'confirmProfileSwitch', 'cancelProfileSwitch',
+      'initializeMainView',
+      'launchGuestProfile',
+      'openManageProfileSettingsSubPage',
+      'launchSelectedProfile',
+      'askOnStartupChanged',
+      'getNewProfileSuggestedThemeInfo',
+      'getProfileThemeInfo',
+      'removeProfile',
+      'getProfileStatistics',
+      'closeProfileStatistics',
+      'selectNewAccount',
+      'continueWithoutAccount',
+      'setProfileName',
+      'recordSignInPromoImpression',
+      'getAvailableIcons',
+      'getSwitchProfile',
+      'confirmProfileSwitch',
+      'cancelProfileSwitch',
       'updateProfileOrder',
-      // <if expr="chromeos_lacros">
-      'getAvailableAccounts', 'openAshAccountSettingsPage',
-      'selectExistingAccountLacros', 'openDeviceGuestLinkLacros',
-      // </if>
+      'onLearnMoreClicked',
     ]);
 
     this.profileThemeInfo = {
@@ -44,10 +52,9 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       gaiaName: 'Alice',
       userName: 'Alice@gmail.com',
       avatarIcon: 'url',
+      profileCardButtonLabel: '',
       avatarBadge: '',
-      // <if expr="chromeos_lacros">
-      isPrimaryLacrosProfile: false,
-      // </if>
+      hasEnterpriseLabel: false,
     };
 
     /**
@@ -166,21 +173,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('updateProfileOrder', [fromIndex, toIndex]);
   }
 
-  // <if expr="chromeos_lacros">
-  getAvailableAccounts() {
-    this.methodCalled('getAvailableAccounts');
+  onLearnMoreClicked(): void {
+    this.methodCalled('onLearnMoreClicked');
   }
-
-  openAshAccountSettingsPage() {
-    this.methodCalled('openAshAccountSettingsPage');
-  }
-
-  selectExistingAccountLacros(profileColor: number|null, gaiaId: string) {
-    this.methodCalled('selectExistingAccountLacros', [profileColor, gaiaId]);
-  }
-
-  openDeviceGuestLinkLacros() {
-    this.methodCalled('openDeviceGuestLinkLacros');
-  }
-  // </if>
 }

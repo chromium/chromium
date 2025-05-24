@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/json/json_writer.h"
@@ -20,9 +14,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
-#include "chrome/browser/ui/webui/search_engine_choice/icon_utils.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/search_engine_choice_resources.h"
@@ -37,27 +29,23 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
-std::string GetChoiceListJSON(Profile& profile) {
+std::string GetChoiceListJSON(
+    SearchEngineChoiceDialogService& search_engine_choice_dialog_service) {
   base::Value::List choice_value_list;
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile);
-  CHECK(search_engine_choice_dialog_service);
   const TemplateURL::TemplateURLVector choices =
-      search_engine_choice_dialog_service->GetSearchEngines();
+      search_engine_choice_dialog_service.GetSearchEngines();
 
   for (const auto& choice : choices) {
     base::Value::Dict choice_value;
 
-    std::string_view icon_path =
-        GetSearchEngineGeneratedIconPath(choice->keyword());
-    if (icon_path.empty()) {
-      icon_path = "chrome://theme/IDR_DEFAULT_FAVICON";
-    }
     choice_value.Set("prepopulateId", choice->prepopulate_id());
     choice_value.Set("name", choice->short_name());
-    choice_value.Set("iconPath", icon_path);
+    choice_value.Set(
+        "iconPath", base::StrCat({"chrome://theme/",
+                                  choice->data().GetBuiltinImageResourceId()}));
     choice_value.Set("url", choice->url());
     choice_value.Set("marketingSnippet",
                      search_engines::GetMarketingSnippetString(choice->data()));
@@ -70,10 +58,15 @@ std::string GetChoiceListJSON(Profile& profile) {
 }
 }  // namespace
 
+bool SearchEngineChoiceUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return SearchEngineChoiceDialogServiceFactory::GetForProfile(profile);
+}
+
 SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, true),
       profile_(CHECK_DEREF(Profile::FromWebUI(web_ui))) {
-
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUISearchEngineChoiceHost);
@@ -117,20 +110,25 @@ SearchEngineChoiceUI::SearchEngineChoiceUI(content::WebUI* web_ui)
   source->AddResourcePath("images/right_illustration_dark.svg",
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
-  source->AddResourcePath("tangible_sync_style_shared_lit.css.js",
-                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS);
+  source->AddResourcePath("tangible_sync_style_shared.css.js",
+                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
-  source->AddString("choiceList", GetChoiceListJSON(profile_.get()));
-  source->AddBoolean("showGuestCheckbox",
-                     base::FeatureList::IsEnabled(
-                         switches::kSearchEngineChoiceGuestExperience) &&
-                         profile_->IsGuestSession());
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(&profile_.get());
+  source->AddString(
+      "choiceList",
+      GetChoiceListJSON(CHECK_DEREF(search_engine_choice_dialog_service)));
+
+  search_engines::SearchEngineChoiceService* search_engine_choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          &profile_.get());
+  source->AddBoolean(
+      "showGuestCheckbox",
+      search_engine_choice_service->IsDsePropagationAllowedForGuest());
 
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSearchEngineChoiceResources,
-                      kSearchEngineChoiceResourcesSize),
+      source, kSearchEngineChoiceResources,
       IDR_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_HTML);
 }
 

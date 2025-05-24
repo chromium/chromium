@@ -9,11 +9,12 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace policy::local_user_files {
 namespace {
-constexpr char kEmail[] = "stub-user@example.com";
+inline constexpr char kEmail[] = "stub-user@example.com";
 }
 
 // Matcher for `SetUserDataStorageWriteEnabledRequest`.
@@ -35,6 +36,8 @@ class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
   ~MockMigrationObserver();
 
   MOCK_METHOD(void, OnMigrationSucceeded, (), (override));
+
+  MOCK_METHOD(void, OnMigrationReset, (), (override));
 };
 
 // Mock implementation of MigrationNotificationManager.
@@ -45,8 +48,15 @@ class MockMigrationNotificationManager : public MigrationNotificationManager {
 
   MOCK_METHOD(void,
               ShowMigrationInfoDialog,
-              (CloudProvider, base::Time, base::OnceClosure),
+              (MigrationDestination, base::Time, base::OnceClosure),
               (override));
+
+  MOCK_METHOD(void,
+              ShowConfigurationErrorNotification,
+              (MigrationDestination),
+              (override));
+
+  MOCK_METHOD(void, ShowDeletionCompletedNotification, (), (override));
 };
 
 // Mock implementation of MigrationCoordinator, with the default behavior to
@@ -58,24 +68,51 @@ class MockMigrationCoordinator : public MigrationCoordinator {
 
   // MigrationCoordinator overrides:
   bool IsRunning() const override { return is_running_; }
-  void OnMigrationDone(
-      MigrationDoneCallback callback,
-      std::map<base::FilePath, MigrationUploadError> errors) override;
+  void OnMigrationDone(MigrationDoneCallback callback,
+                       std::map<base::FilePath, MigrationUploadError> errors,
+                       base::FilePath upload_root_path,
+                       base::FilePath error_log_path) override;
 
   // By default waits some minutes and completes the upload successfully.
   MOCK_METHOD(void,
               Run,
-              (CloudProvider cloud_provider,
-               std::vector<base::FilePath> file_paths,
-               const std::string& destination_dir,
-               MigrationDoneCallback callback),
+              (MigrationDestination,
+               std::vector<base::FilePath>,
+               const std::string&,
+               MigrationDoneCallback),
               (override));
-  MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, Cancel, (MigrationStoppedCallback callback), (override));
+
+  // Sets a callback to be invoked when Run() is called.
+  void SetRunCallback(base::RepeatingClosure run_cb);
 
  private:
   bool is_running_ = false;
+  // If set, invoked when Run() is.
+  base::RepeatingClosure run_cb_;
 
   base::WeakPtrFactory<MockMigrationCoordinator> weak_ptr_factory_{this};
+};
+
+// Mock implementation of FilesCleanupHandler. By default, cleanup succeeds
+// immediately.
+class MockCleanupHandler : public chromeos::FilesCleanupHandler {
+ public:
+  MockCleanupHandler();
+
+  MockCleanupHandler(const MockCleanupHandler&) = delete;
+  MockCleanupHandler& operator=(const MockCleanupHandler&) = delete;
+
+  ~MockCleanupHandler() override;
+
+  base::WeakPtr<MockCleanupHandler> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  MOCK_METHOD(void, Cleanup, (CleanupHandlerCallback callback), (override));
+
+ private:
+  base::WeakPtrFactory<MockCleanupHandler> weak_ptr_factory_{this};
 };
 
 }  // namespace policy::local_user_files

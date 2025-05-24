@@ -38,10 +38,8 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kBlink:
       return std::make_unique<AccessibilityTreeFormatterBlink>();
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
   }
-  return nullptr;
 }
 
 // static
@@ -55,14 +53,13 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   // using an inspection tool, e.g. chrome://accessibility.
   ui::AXTreeManager::AlwaysFailFast();
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported API type " << static_cast<std::string>(type);
-  return nullptr;
+  NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
 }
 
 // static
 std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {
-  return {ui::AXApiType::kBlink, ui::AXApiType::kAndroid};
+  return {ui::AXApiType::kBlink, ui::AXApiType::kAndroid,
+          ui::AXApiType::kAndroidExternal};
 }
 
 }  // namespace content

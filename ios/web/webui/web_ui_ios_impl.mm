@@ -31,8 +31,9 @@ std::u16string WebUIIOS::GetJavascriptCall(
   std::u16string parameters;
   std::string json;
   for (size_t i = 0; i < arg_list.size(); ++i) {
-    if (i > 0)
+    if (i > 0) {
       parameters += u',';
+    }
 
     base::JSONWriter::Write(arg_list[i], &json);
     parameters += base::UTF8ToUTF16(json);
@@ -98,8 +99,9 @@ void WebUIIOSImpl::RegisterMessageCallback(std::string_view message,
 void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
                                           std::string_view message,
                                           const base::Value::List& args) {
-  if (controller_->OverrideHandleWebUIIOSMessage(source_url, message))
+  if (controller_->OverrideHandleWebUIIOSMessage(source_url, message)) {
     return;
+  }
 
   // Look up the callback for this message.
   auto message_callback_it = message_callbacks_.find(message);

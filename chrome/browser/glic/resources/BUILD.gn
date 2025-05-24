@@ -1,0 +1,38 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/browser/glic/resources/glic_resources.gni")
+import("//tools/grit/grit_rule.gni")
+
+if (is_chrome_branded && enable_glic_internal_resources) {
+  action("check_grds") {
+    script = "compare_grds.py"
+    inputs = [
+      "browser_resources.grd",
+      "internal/browser_resources.grd",
+    ]
+
+    _stamp = "$target_gen_dir/glic_compare_grds.stamp"
+    outputs = [ _stamp ]
+    args = [
+      "--stamp",
+      rebase_path(_stamp, root_build_dir),
+    ]
+    args += rebase_path(inputs)
+  }
+}
+
+grit("browser_resources") {
+  if (is_chrome_branded && enable_glic_internal_resources) {
+    deps = [ ":check_grds" ]
+    source = "internal/browser_resources.grd"
+  } else {
+    source = "browser_resources.grd"
+  }
+  use_brotli = true
+  outputs = [
+    "glic_browser_resources.pak",
+    "grit/glic_browser_resources.h",
+  ]
+}

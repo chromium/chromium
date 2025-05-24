@@ -57,8 +57,9 @@ class UnindexedRulesetTestBuilder {
                   proto::SourceType source_type,
                   bool is_allowlist = false) {
     auto rule = testing::MakeUrlRule(url_pattern);
-    if (is_allowlist)
+    if (is_allowlist) {
       rule.set_semantics(proto::RULE_SEMANTICS_ALLOWLIST);
+    }
     rule.set_source_type(source_type);
 
     url_rules_.push_back(rule);
@@ -69,8 +70,9 @@ class UnindexedRulesetTestBuilder {
   bool AddUrlRules(int number_of_rules) {
     for (int i = 0; i < number_of_rules; ++i) {
       std::string url_pattern = "example" + base::NumberToString(i) + ".com";
-      if (!AddUrlRule(UrlPattern(url_pattern), testing::kAnyParty, i & 1))
+      if (!AddUrlRule(UrlPattern(url_pattern), testing::kAnyParty, i & 1)) {
         return false;
+      }
     }
     return true;
   }
@@ -110,11 +112,13 @@ bool IsRulesetValid(const std::string& ruleset_contents,
     return false;
   }
 
-  if (expected_url_rules.size() != read_rules.size())
+  if (expected_url_rules.size() != read_rules.size()) {
     return false;
+  }
   for (size_t i = 0, size = read_rules.size(); i != size; ++i) {
-    if (!IsEqual(expected_url_rules[i], read_rules[i]))
+    if (!IsEqual(expected_url_rules[i], read_rules[i])) {
       return false;
+    }
   }
   return true;
 }

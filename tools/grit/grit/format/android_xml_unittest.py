@@ -6,6 +6,7 @@
 """Unittest for android_xml.py."""
 
 
+import io
 import os
 import sys
 import unittest
@@ -15,6 +16,8 @@ if __name__ == '__main__':
 
 from io import StringIO
 
+from grit import constants
+from grit import grd_reader
 from grit import util
 from grit.format import android_xml
 from grit.node import message
@@ -62,7 +65,8 @@ a sledge hammer.
         """)
 
     buf = StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('android', 'en'), buf)
+    build.RcBuilder.ProcessNode(
+        root, DummyOutput('android', 'en', constants.DEFAULT_GENDER), buf)
     output = buf.getvalue()
     expected = r"""
 <?xml version="1.0" encoding="utf-8"?>
@@ -105,7 +109,8 @@ a sledge hammer."</string>
         """)
 
     buf = StringIO()
-    build.RcBuilder.ProcessNode(root, DummyOutput('android', 'en'), buf)
+    build.RcBuilder.ProcessNode(
+        root, DummyOutput('android', 'en', constants.DEFAULT_GENDER), buf)
     output = buf.getvalue()
     expected = r"""
 <?xml version="1.0" encoding="utf-8"?>
@@ -138,11 +143,100 @@ a sledge hammer."</string>
     self.assertTrue(android_xml.ShouldOutputNode(msg_world, tagged_only=False))
 
 
+  def testFormat(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US" current_release="3" base_dir=".">
+        <translations>
+          <file path="generated_resources_fr.xtb" lang="fr" />
+        </translations>
+        <outputs>
+          <output filename="contents.pak" type="data_pack" />
+        </outputs>
+        <release seq="3">
+          <messages>
+            <message name="IDS_HELLO">Hello!</message>
+            <message name="IDS_HELLO_USER">Hello <ph name="USERNAME">%s<ex>Joi</ex></ph></message>
+            <message name="IDS_PLUGIN_NOT_AUTHORIZED">Plugin <ph name="PLUGIN_NAME">%s<ex>Pluggy McPluginface</ex></ph> is not authorized.</message>
+            <message name="IDS_OPEN_IN_WINDOW">Open in a window</message>
+          </messages>
+        </release>
+      </grit>'''
+    grd = grd_reader.Parse(io.StringIO(xml),
+                           util.PathFromRoot('grit/testdata'),
+                           translate_genders=True)
+    grd.SetOutputLanguage('en')
+    grd.RunGatherers()
+    grd.InitializeIds()
+
+    expected_en_other = """<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<string name="hello">"Hello!"</string>
+<string name="hello_user">"Hello %s"</string>
+<string name="plugin_not_authorized">"Plugin %s is not authorized."</string>
+<string name="open_in_window">"Open in a window"</string>
+</resources>
+"""
+
+    # en has no gender translations, so the non-default-gendered xml data is
+    # (effectively) empty.
+    expected_en_neuter = """<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+</resources>
+"""
+    expected_en_feminine = expected_en_neuter
+    expected_en_masculine = expected_en_neuter
+
+    # The "Open in a window" string gets deduped because it is the same in 'en'
+    # and 'fr'.
+    expected_fr_other = """<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<string name="hello">"Salut!"</string>
+<string name="hello_user">"Salut %s"</string>
+<string name="plugin_not_authorized">"Le plug-in %s n\\'est pas autorisé. (OTHER)"</string>
+</resources>
+"""
+
+    # The only gendered translation in the xtb file for fr is included in the
+    # xml data, but the genderless translations are deduped.
+    expected_fr_neuter = """<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<string name="plugin_not_authorized">"Le plug-in %s n\\'est pas autorisé. (NEUTER)"</string>
+</resources>
+"""
+    expected_fr_feminine = """<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<string name="plugin_not_authorized">"Le plug-in %s n\\'est pas autorisé. (FEMININE)"</string>
+</resources>
+"""
+    expected_fr_masculine = """<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<string name="plugin_not_authorized">"Le plug-in %s n\\'est pas autorisé. (MASCULINE)"</string>
+</resources>
+"""
+
+    def format(lang, gender):
+      return ''.join(line for line in android_xml.Format(grd, lang, gender))
+
+    self.assertEqual(format('en', constants.GENDER_OTHER), expected_en_other)
+    self.assertEqual(format('en', constants.GENDER_NEUTER), expected_en_neuter)
+    self.assertEqual(format('en', constants.GENDER_FEMININE),
+                     expected_en_feminine)
+    self.assertEqual(format('en', constants.GENDER_MASCULINE),
+                     expected_en_masculine)
+    self.assertEqual(format('fr', constants.GENDER_OTHER), expected_fr_other)
+    self.assertEqual(format('fr', constants.GENDER_NEUTER), expected_fr_neuter)
+    self.assertEqual(format('fr', constants.GENDER_FEMININE),
+                     expected_fr_feminine)
+    self.assertEqual(format('fr', constants.GENDER_MASCULINE),
+                     expected_fr_masculine)
+
+
 class DummyOutput:
 
-  def __init__(self, type, language):
+  def __init__(self, type, language, gender):
     self.type = type
     self.language = language
+    self.gender = gender
 
   def GetType(self):
     return self.type
@@ -152,6 +246,9 @@ class DummyOutput:
 
   def GetOutputFilename(self):
     return 'hello.gif'
+
+  def GetGender(self):
+    return self.gender
 
 if __name__ == '__main__':
   unittest.main()

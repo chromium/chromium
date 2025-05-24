@@ -42,7 +42,7 @@ const char* ToString(ActionType type) {
     case omnibox::ActionInfo_ActionType_REVIEWS:
       return "Reviews";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 }  // namespace

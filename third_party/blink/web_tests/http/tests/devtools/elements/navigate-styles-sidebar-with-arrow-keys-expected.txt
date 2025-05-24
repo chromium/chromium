@@ -5,23 +5,34 @@ Editing: true
 
 Pressing escape to stop editing
 Editing: false
-element.style {}
+element.style {
+}
 
 Navigating with arrow keys
 Editing: false
-<style>div#foo {}
+<style>
+div#foo {
+}
 
 Editing: false
-<style>#foo {}
+<style>
+#foo {
+}
 
 Editing: false
-<style>div {}
+<style>
+div {
+}
 
 Editing: false
-user agent stylesheetdiv {}
+user agent stylesheet
+div {
+}
 
 Editing: false
-<style>div {}
+<style>
+div {
+}
 
 Typing should start editing
 Editing: true
@@ -29,7 +40,9 @@ t
 
 Pressing escape again should restore focus
 Editing: false
-<style>div {}
+<style>
+div {
+}
 
 Pressing enter should start editing selector
 Editing: true

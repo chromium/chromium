@@ -7,7 +7,7 @@
 // clang-format off
 import 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar.js';
 
-import {CrToolbarElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar.js';
+import type {CrToolbarElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 

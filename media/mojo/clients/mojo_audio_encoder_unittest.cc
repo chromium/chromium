@@ -268,10 +268,10 @@ TEST_F(MojoAudioEncoderTest, Encode) {
                                {CHANNEL_LAYOUT_DISCRETE, audio_bus->channels()},
                                options.sample_rate, audio_bus->frames());
 
-        const auto channel_data = base::make_span(
-            reinterpret_cast<const uint8_t*>(audio_bus->channel(0)),
-            base::checked_cast<size_t>(AudioBus::CalculateMemorySize(
-                /*channels=*/1, audio_bus->frames())));
+        const auto channel_data =
+            base::span(reinterpret_cast<const uint8_t*>(audio_bus->channel(0)),
+                       AudioBus::CalculateMemorySize(
+                           /*channels=*/1, audio_bus->frames()));
         auto encoded_data = base::HeapArray<uint8_t>::CopiedFrom(channel_data);
 
         EncodedAudioBuffer output(params, std::move(encoded_data),
@@ -291,9 +291,8 @@ TEST_F(MojoAudioEncoderTest, Encode) {
         EXPECT_EQ(output_number, output_count);
         EXPECT_EQ(output.params.channels(), options.channels);
         EXPECT_EQ(output.params.sample_rate(), options.sample_rate);
-        ASSERT_EQ(output.encoded_data.size(),
-                  base::checked_cast<size_t>(AudioBus::CalculateMemorySize(
-                      /*channels=*/1, kFrameCount)));
+        ASSERT_EQ(output.encoded_data.size(), AudioBus::CalculateMemorySize(
+                                                  /*channels=*/1, kFrameCount));
         const float seed = 1.0 / kInputCount * output_number;
         auto* const encoded_data =
             reinterpret_cast<const float*>(output.encoded_data.data());

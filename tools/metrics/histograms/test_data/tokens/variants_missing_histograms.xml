@@ -1,0 +1,18 @@
+<!--
+  This is a version of histograms.xml that uses TestToken that is not defined
+  at all. This is an invalid histogram definition.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="Test.Histogram.{TestToken}" units="microseconds"
+    expires_after="M85">
+  <owner>person@chromium.org</owner>
+  <summary>Summary</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

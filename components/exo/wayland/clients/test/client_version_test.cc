@@ -43,8 +43,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
-
 #include "components/exo/wayland/clients/client_helper.h"
 
 namespace exo::wayland::clients {
@@ -136,7 +136,8 @@ void RegistryHandler(void* data,
   if (globals->protocol_tested.length() == 0) {
     globals->protocols.push_back(interface);
     return;
-  } else if (strcmp(interface, globals->protocol_tested.c_str()) == 0) {
+  } else if (UNSAFE_TODO(strcmp(interface, globals->protocol_tested.c_str())) ==
+             0) {
     switch (globals->validity_type) {
       case ClientVersionTest::VersionValidityType::INVALID_NULL:
         version = 0;

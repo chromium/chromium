@@ -94,6 +94,8 @@ class ConstrainedDialogWebView : public views::WebView,
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
  private:
+  void UpdateAccessibleNameForRootView();
+
   base::WeakPtr<content::WebContents> initiator_web_contents_;
 
   // Showing a dialog should not activate, but on the Mac it does
@@ -102,6 +104,8 @@ class ConstrainedDialogWebView : public views::WebView,
   PopunderPreventer popunder_preventer_;
 
   std::unique_ptr<ConstrainedWebDialogDelegateViews> impl_;
+
+  base::WeakPtrFactory<ConstrainedDialogWebView> weak_ptr_factory_{this};
 };
 
 BEGIN_METADATA(ConstrainedDialogWebView)
@@ -133,22 +137,26 @@ class WebDialogWebContentsDelegateViews
       const input::NativeWebKeyboardEvent& event) override {
     // Forward shortcut keys in dialog to our initiator's delegate.
     // http://crbug.com/104586
-    if (!initiator_web_contents_)
+    if (!initiator_web_contents_) {
       return false;
+    }
 
     auto* delegate = initiator_web_contents_->GetDelegate();
-    if (!delegate)
+    if (!delegate) {
       return false;
+    }
     return delegate->HandleKeyboardEvent(initiator_web_contents_.get(), event);
   }
 
   void ResizeDueToAutoResize(content::WebContents* source,
                              const gfx::Size& new_size) override {
-    if (source != web_view_->GetWebContents())
+    if (source != web_view_->GetWebContents()) {
       return;
+    }
 
-    if (!initiator_web_contents_)
+    if (!initiator_web_contents_) {
       return;
+    }
 
     // views::WebView is only a delegate for a WebContents it creates itself via
     // views::WebView::GetWebContents(). ConstrainedDialogWebView's constructor
@@ -370,8 +378,15 @@ ConstrainedDialogWebView::ConstrainedDialogWebView(
                                 max_size);
   }
   SetProperty(views::kElementIdentifierKey, kConstrainedDialogWebViewElementId);
+
+  GetWebDialogDelegate()->SetTitleChangedCallback(base::BindRepeating(
+      &ConstrainedDialogWebView::UpdateAccessibleNameForRootView,
+      weak_ptr_factory_.GetWeakPtr()));
+  GetWebDialogDelegate()->SetAccessibleTitleChangedCallback(base::BindRepeating(
+      &ConstrainedDialogWebView::UpdateAccessibleNameForRootView,
+      weak_ptr_factory_.GetWeakPtr()));
 }
-ConstrainedDialogWebView::~ConstrainedDialogWebView() {}
+ConstrainedDialogWebView::~ConstrainedDialogWebView() = default;
 
 const ui::WebDialogDelegate* ConstrainedDialogWebView::GetWebDialogDelegate()
     const {
@@ -417,8 +432,9 @@ views::View* ConstrainedDialogWebView::GetInitiallyFocusedView() {
 }
 
 void ConstrainedDialogWebView::WindowClosing() {
-  if (!impl_->closed_via_webui())
+  if (!impl_->closed_via_webui()) {
     GetWebDialogDelegate()->OnDialogClosed(std::string());
+  }
 }
 
 views::Widget* ConstrainedDialogWebView::GetWidget() {
@@ -497,6 +513,12 @@ void ConstrainedDialogWebView::DocumentOnLoadCompletedInPrimaryMainFrame() {
   }
 }
 
+void ConstrainedDialogWebView::UpdateAccessibleNameForRootView() {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
+}
+
 }  // namespace
 
 ConstrainedWebDialogDelegate* ShowConstrainedWebDialog(
@@ -527,5 +549,16 @@ ConstrainedWebDialogDelegate* ShowConstrainedWebDialogWithAutoResize(
       constrained_window::GetTopLevelWebContents(web_contents);
   DCHECK(top_level_web_contents);
   constrained_window::CreateWebModalDialogViews(dialog, top_level_web_contents);
+  return dialog;
+}
+
+views::WidgetDelegate* GetConstrainedWebDialogForAccessibilityTesting(
+    content::BrowserContext* browser_context,
+    std::unique_ptr<ui::WebDialogDelegate> delegate,
+    content::WebContents* web_contents) {
+  ConstrainedDialogWebView* dialog =
+      new ConstrainedDialogWebView(browser_context, std::move(delegate),
+                                   web_contents, gfx::Size(), gfx::Size());
+  constrained_window::ShowWebModalDialogViews(dialog, web_contents);
   return dialog;
 }

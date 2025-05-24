@@ -29,7 +29,8 @@ enum class MantaStatusCode {
   // caused by a request being attempted while ChromeOS is shutting down.
   kNoIdentityManager = 10,
   kPerUserQuotaExceeded = 11,
-  kMaxValue = kPerUserQuotaExceeded,
+  kImageHasPerson = 12,
+  kMaxValue = kImageHasPerson,
 };
 
 struct MantaStatus {

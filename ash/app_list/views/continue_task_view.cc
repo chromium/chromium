@@ -23,17 +23,19 @@
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/background.h"
@@ -108,14 +110,19 @@ ContinueTaskView::ContinueTaskView(AppListViewDelegate* view_delegate,
                   : cros_tokens::kCrosSysHoverOnSubtle);
 
   if (tablet_mode) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
+
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(GetCornerRadius(/*tablet_mode=*/true)));
 
-    const ui::ColorId background_color =
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated);
-    SetBackground(views::CreateThemedSolidBackground(background_color));
+    const ui::ColorId background_color_id =
+        chromeos::features::IsSystemBlurEnabled()
+            ? cros_tokens::kCrosSysSystemBaseElevated
+            : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+    SetBackground(views::CreateSolidBackground(background_color_id));
     SetBorder(std::make_unique<views::HighlightBorder>(
         GetCornerRadius(/*tablet_mode=*/true),
         views::HighlightBorder::Type::kHighlightBorderNoShadow));
@@ -188,7 +195,7 @@ void ContinueTaskView::OnButtonPressed(const ui::Event& event) {
 
 void ContinueTaskView::UpdateIcon() {
   if (!result()) {
-    icon_->SetImage(gfx::ImageSkia());
+    icon_->SetImage(ui::ImageModel());
     return;
   }
 
@@ -204,12 +211,12 @@ void ContinueTaskView::UpdateIcon() {
     icon = result()->chip_icon();
   }
 
-  icon_->SetImage(CreateIconWithCircleBackground(
+  icon_->SetImage(ui::ImageModel::FromImageSkia(CreateIconWithCircleBackground(
       icon.size() == GetIconSize()
           ? icon
           : gfx::ImageSkiaOperations::CreateResizedImage(
                 icon, skia::ImageOperations::RESIZE_BEST, GetIconSize()),
-      GetColorProvider()->GetColor(GetIconBackgroundColorId())));
+      GetColorProvider()->GetColor(GetIconBackgroundColorId()))));
 }
 
 ui::ColorId ContinueTaskView::GetIconBackgroundColorId() const {
@@ -271,7 +278,7 @@ void ContinueTaskView::SetResult(SearchResult* result) {
 void ContinueTaskView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // May be null if the result got reset, and the task view is animating out.
   if (!result())
     return;
@@ -362,8 +369,12 @@ ContinueTaskView::TaskResultType ContinueTaskView::GetTaskResultType() {
       return TaskResultType::kLocalFile;
     case AppListSearchResultType::kZeroStateDrive:
       return TaskResultType::kDriveFile;
+    case AppListSearchResultType::kZeroStateHelpApp:
+      return TaskResultType::kHelpApp;
+    case AppListSearchResultType::kDesksAdminTemplate:
+      return TaskResultType::kDesksAdminTemplate;
     default:
-      NOTREACHED();
+      return TaskResultType::kUnknown;
   }
 }
 

@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/policy/ui_bundled/management_util.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/strings/string_split.h"
 #import "components/account_id/account_id.h"
-#import "components/policy/core/browser/webui/policy_data_utils.h"
+#import "components/policy/core/browser/policy_data_utils.h"
 #import "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "components/signin/public/identity_manager/account_info.h"
@@ -16,8 +18,12 @@
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
@@ -96,4 +102,22 @@ ManagementState GetManagementState(signin::IdentityManager* identity_manager,
       policy_connector && policy_connector->HasMachineLevelPolicies();
 
   return management_state;
+}
+
+NSString* GetManagementDescription(ManagementState management_state) {
+  if (!management_state.is_managed()) {
+    return nil;
+  }
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    if (management_state.is_profile_managed() &&
+        !management_state.is_managed_by_same_entity()) {
+      return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_ACCOUNT_MANAGED);
+    }
+    return l10n_util::GetNSString(IDS_IOS_ENTERPRISE_BROWSER_MANAGED);
+  }
+
+  return management_state.is_profile_managed()
+             ? l10n_util::GetNSString(
+                   IDS_IOS_ENTERPRISE_MANAGED_BY_YOUR_ORGANIZATION)
+             : nil;
 }

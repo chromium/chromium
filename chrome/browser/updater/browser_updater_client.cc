@@ -5,6 +5,7 @@
 #include "chrome/browser/updater/browser_updater_client.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -21,9 +22,35 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "chrome/updater/branded_constants.h"
 #include "chrome/updater/service_proxy_factory.h"
 #include "chrome/updater/update_service.h"
 #include "components/version_info/version_info.h"
+
+namespace {
+
+std::optional<updater::UpdateService::AppState>*
+GetLastKnownBrowserRegistrationStorage() {
+  static base::NoDestructor<std::optional<updater::UpdateService::AppState>>
+      storage;
+  return storage.get();
+}
+
+std::optional<updater::UpdateService::AppState>*
+GetLastKnownUpdaterRegistrationStorage() {
+  static base::NoDestructor<std::optional<updater::UpdateService::AppState>>
+      storage;
+  return storage.get();
+}
+
+std::optional<updater::UpdateService::UpdateState>*
+GetLastOnDemandUpdateStateStorage() {
+  static base::NoDestructor<std::optional<updater::UpdateService::UpdateState>>
+      storage;
+  return storage.get();
+}
+
+}  // namespace
 
 BrowserUpdaterClient::BrowserUpdaterClient(
     scoped_refptr<updater::UpdateService> update_service)
@@ -88,7 +115,13 @@ void BrowserUpdaterClient::CheckForUpdate(
   update_service_->Update(
       GetAppId(), {}, updater::UpdateService::Priority::kForeground,
       updater::UpdateService::PolicySameVersionUpdate::kNotAllowed,
-      base::BindPostTaskToCurrentDefault(version_updater_callback),
+      /*language=*/{},
+      base::BindPostTaskToCurrentDefault(
+          base::BindRepeating([](const updater::UpdateService::UpdateState&
+                                     state) {
+            *GetLastOnDemandUpdateStateStorage() = state;
+            return state;
+          }).Then(version_updater_callback)),
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BrowserUpdaterClient::UpdateCompleted, this,
                          version_updater_callback)));
@@ -101,16 +134,18 @@ void BrowserUpdaterClient::UpdateCompleted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Result of update was: " << result;
 
-  if (result != updater::UpdateService::Result::kSuccess) {
-    updater::UpdateService::UpdateState update_state;
-    update_state.state =
-        updater::UpdateService::UpdateState::State::kUpdateError;
-    update_state.error_category =
-        updater::UpdateService::ErrorCategory::kUpdateCheck;
-    update_state.error_code = static_cast<int>(result);
-
-    callback.Run(update_state);
+  if (result == updater::UpdateService::Result::kSuccess ||
+      result == updater::UpdateService::Result::kUpdateCheckFailed) {
+    // These statuses will have sent more descriptive information in the status
+    // callback, don't overwrite it.
+    return;
   }
+  updater::UpdateService::UpdateState update_state;
+  update_state.state = updater::UpdateService::UpdateState::State::kUpdateError;
+  update_state.error_category =
+      updater::UpdateService::ErrorCategory::kUpdateCheck;
+  update_state.error_code = static_cast<int>(result);
+  callback.Run(update_state);
 }
 
 void BrowserUpdaterClient::RunPeriodicTasks(base::OnceClosure callback) {
@@ -138,9 +173,20 @@ void BrowserUpdaterClient::IsBrowserRegisteredCompleted(
     base::OnceCallback<void(bool)> callback,
     const std::vector<updater::UpdateService::AppState>& apps) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::move(callback).Run(std::find_if(apps.begin(), apps.end(),
-                                       &BrowserUpdaterClient::AppMatches) !=
-                          apps.end());
+  const auto updater = std::ranges::find_if(
+      apps, [](const updater::UpdateService::AppState& state) {
+        return base::EqualsCaseInsensitiveASCII(state.app_id,
+                                                updater::kUpdaterAppId);
+      });
+  if (updater != apps.end()) {
+    *GetLastKnownUpdaterRegistrationStorage() = *updater;
+  }
+  const auto app =
+      std::ranges::find_if(apps, &BrowserUpdaterClient::AppMatches);
+  if (app != apps.end()) {
+    *GetLastKnownBrowserRegistrationStorage() = *app;
+  }
+  std::move(callback).Run(app != apps.end());
 }
 
 // User and System BrowserUpdaterClients must be kept separate - the template
@@ -185,4 +231,19 @@ scoped_refptr<BrowserUpdaterClient> BrowserUpdaterClient::Create(
   return scope == updater::UpdaterScope::kSystem
              ? GetClient<updater::UpdaterScope::kSystem>(proxy_provider)
              : GetClient<updater::UpdaterScope::kUser>(proxy_provider);
+}
+
+std::optional<updater::UpdateService::UpdateState>
+BrowserUpdaterClient::GetLastOnDemandUpdateState() {
+  return *GetLastOnDemandUpdateStateStorage();
+}
+
+std::optional<updater::UpdateService::AppState>
+BrowserUpdaterClient::GetLastKnownBrowserRegistration() {
+  return *GetLastKnownBrowserRegistrationStorage();
+}
+
+std::optional<updater::UpdateService::AppState>
+BrowserUpdaterClient::GetLastKnownUpdaterRegistration() {
+  return *GetLastKnownUpdaterRegistrationStorage();
 }

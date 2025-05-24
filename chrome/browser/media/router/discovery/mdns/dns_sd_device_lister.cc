@@ -37,7 +37,7 @@ DnsSdDeviceLister::DnsSdDeviceLister(
 {
 }
 
-DnsSdDeviceLister::~DnsSdDeviceLister() {}
+DnsSdDeviceLister::~DnsSdDeviceLister() = default;
 
 void DnsSdDeviceLister::Discover() {
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)

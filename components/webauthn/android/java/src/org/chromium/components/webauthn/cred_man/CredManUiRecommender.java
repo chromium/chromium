@@ -4,7 +4,10 @@
 
 package org.chromium.components.webauthn.cred_man;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This interface specifies whether custom UI or CredMan is recommended by the embedder. */
+@NullMarked
 public interface CredManUiRecommender {
     /**
      * Returns a recommendation on whether to use a custom UI over CredMan calls.

@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list_types.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
@@ -24,7 +25,7 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
       location_bar_view_(location_bar_view),
       widget_(nullptr),
       requested_handler_(false) {
-  set_owned_by_client();
+  set_owned_by_client(OwnedByClientPassKey());
 
   // Build URL with SessionID to ensure correct omnibox controller binding
   // without relying on mutable state subject to timing and destruction issues.
@@ -37,9 +38,9 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(LocationBarView* location_bar_view,
   // the time window of loading the URL in a separate process. Using a unique
   // session ID avoids these problems and ensures that only the omnibox
   // controller that owns this popup presenter will be selected.
-  GURL url(base::StringPrintf("%s?session_id=%d",
-                              chrome::kChromeUIOmniboxPopupURL,
-                              location_bar_view->browser()->session_id().id()));
+  const GURL url(
+      base::StringPrintf("%s?session_id=%d", chrome::kChromeUIOmniboxPopupURL,
+                         location_bar_view->browser()->session_id().id()));
   LoadInitialURL(url);
 
   location_bar_view_->AddObserver(this);
@@ -54,7 +55,7 @@ void OmniboxPopupPresenter::Show() {
   if (!widget_) {
     widget_ = new ThemeCopyingWidget(location_bar_view_->GetWidget());
 
-    views::Widget* parent_widget = location_bar_view_->GetWidget();
+    const views::Widget* parent_widget = location_bar_view_->GetWidget();
     views::Widget::InitParams params(
         views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_POPUP);
@@ -95,7 +96,7 @@ bool OmniboxPopupPresenter::IsShown() const {
 }
 
 RealboxHandler* OmniboxPopupPresenter::GetHandler() {
-  bool ready = IsHandlerReady();
+  const bool ready = IsHandlerReady();
   if (!requested_handler_) {
     // Only log on first access.
     requested_handler_ = true;
@@ -158,7 +159,14 @@ void OmniboxPopupPresenter::ReleaseWidget(bool close) {
 
     widget->RemoveObserver(this);
     if (close) {
-      widget->Close();
+      // Ensure we close `widget_` synchronously.  This is necessary as the
+      // `widget_`'s contents view has dependencies on the hosting widget's
+      // BrowserView (see `SetContentsView()` above). Since the popup widget is
+      // owned by its NativeWidget there is a risk of dangling pointers if it is
+      // not destroyed synchronously with its parent.
+      // TODO(crbug.com/40232479): Once this is migrated to CLIENT_OWNS_WIDGET
+      // this will no longer be necessary.
+      widget->CloseNow();
     }
   }
   CHECK(!views::WidgetObserver::IsInObserverList());

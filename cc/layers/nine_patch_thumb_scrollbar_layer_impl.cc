@@ -73,6 +73,7 @@ bool NinePatchThumbScrollbarLayerImpl::WillDraw(
 }
 
 void NinePatchThumbScrollbarLayerImpl::AppendQuads(
+    const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =
@@ -152,17 +153,15 @@ void NinePatchThumbScrollbarLayerImpl::AppendTrackAndButtonsQuads(
       gfx::ScaleToEnclosingRect(visible_track_quad_rect, 1.f);
 
   bool needs_blending = !contents_opaque();
-  bool premultipled_alpha = true;
-  bool flipped = false;
   gfx::PointF uv_top_left(0.f, 0.f);
   gfx::PointF uv_bottom_right(1.f, 1.f);
   viz::TextureDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
-  quad->SetNew(
-      shared_quad_state, scaled_track_quad_rect, scaled_visible_track_quad_rect,
-      needs_blending, track_resource_id, premultipled_alpha, uv_top_left,
-      uv_bottom_right, SkColors::kTransparent, flipped, nearest_neighbor,
-      /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
+  quad->SetNew(shared_quad_state, scaled_track_quad_rect,
+               scaled_visible_track_quad_rect, needs_blending,
+               track_resource_id, uv_top_left, uv_bottom_right,
+               SkColors::kTransparent, nearest_neighbor,
+               /*secure_output_only=*/false, gfx::ProtectedVideoType::kClear);
   ValidateQuadResources(quad);
 }
 

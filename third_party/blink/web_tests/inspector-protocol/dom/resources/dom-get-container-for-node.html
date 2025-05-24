@@ -11,6 +11,10 @@
   width: 100px;
 }
 
+#scroll-state-container {
+  container-type: scroll-state;
+}
+
 #unnamed-container {
   container-type: inline-size;
   width: 50px;
@@ -35,10 +39,12 @@
 <body>
 <div id="named-container">
   <div id="block-size-container">
-    <div id="unnamed-container">
-      <div id="dynamic-container">
-        <div id="style-container">
-          <div class="item"></div>
+    <div id="scroll-state-container">
+      <div id="unnamed-container">
+        <div id="dynamic-container">
+          <div id="style-container">
+            <div class="item"></div>
+          </div>
         </div>
       </div>
     </div>

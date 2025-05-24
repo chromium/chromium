@@ -5,6 +5,7 @@
 #ifndef BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_IMPL_H_
 #define BASE_TASK_SEQUENCE_MANAGER_SEQUENCE_MANAGER_IMPL_H_
 
+#include <atomic>
 #include <deque>
 #include <map>
 #include <memory>
@@ -16,6 +17,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/base_export.h"
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -123,11 +125,9 @@ class BASE_EXPORT SequenceManagerImpl
   bool GetAndClearSystemIsQuiescentBit() override;
   void SetWorkBatchSize(int work_batch_size) override;
   void EnableCrashKeys(const char* async_stack_crash_key) override;
-  const MetricRecordingSettings& GetMetricRecordingSettings() const override;
   size_t GetPendingTaskCountForTesting() const override;
   TaskQueue::Handle CreateTaskQueue(const TaskQueue::Spec& spec) override;
   std::string DescribeAllPendingTasks() const override;
-  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   void AddTaskObserver(TaskObserver* task_observer) override;
   void RemoveTaskObserver(TaskObserver* task_observer) override;
   std::optional<WakeUp> GetNextDelayedWakeUp() const override;
@@ -136,14 +136,16 @@ class BASE_EXPORT SequenceManagerImpl
   // SequencedTaskSource implementation:
   void SetRunTaskSynchronouslyAllowed(
       bool can_run_tasks_synchronously) override;
-  std::optional<SelectedTask> SelectNextTask(
-      LazyNow& lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) override;
+  using internal::SequencedTaskSource::SelectNextTask;
+  std::optional<SelectedTask> SelectNextTask(LazyNow& lazy_now,
+                                             SelectTaskOption option) override;
   void DidRunTask(LazyNow& lazy_now) override;
-  std::optional<WakeUp> GetPendingWakeUp(
-      LazyNow* lazy_now,
-      SelectTaskOption option = SelectTaskOption::kDefault) override;
-  bool HasPendingHighResolutionTasks() override;
+  using internal::SequencedTaskSource::GetPendingWakeUp;
+  std::optional<WakeUp> GetPendingWakeUp(LazyNow* lazy_now,
+                                         SelectTaskOption option) override;
+#if BUILDFLAG(IS_WIN)
+  bool NextWakeUpNeedsHighRes() override;
+#endif
   void OnBeginWork() override;
   bool OnIdle() override;
   void MaybeEmitTaskDetails(
@@ -162,7 +164,7 @@ class BASE_EXPORT SequenceManagerImpl
   scoped_refptr<SingleThreadTaskRunner> GetTaskRunner();
 
   bool IsBoundToCurrentThread() const;
-  MessagePump* GetMessagePump() const;
+  MessagePump* GetMessagePump() const override;
   bool IsType(MessagePumpType type) const;
   void SetAddQueueTimeToTasks(bool enable);
   void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed);
@@ -191,7 +193,7 @@ class BASE_EXPORT SequenceManagerImpl
     return associated_thread_;
   }
 
-  const Settings& settings() const { return settings_; }
+  const Settings& settings() const LIFETIME_BOUND { return settings_; }
 
   WeakPtr<SequenceManagerImpl> GetWeakPtr();
 
@@ -305,8 +307,6 @@ class BASE_EXPORT SequenceManagerImpl
     raw_ptr<debug::CrashKeyString> async_stack_crash_key = nullptr;
     std::array<char, static_cast<size_t>(debug::CrashKeySize::Size64)>
         async_stack_buffer = {};
-
-    std::optional<base::MetricsSubSampler> metrics_subsampler;
 
     internal::TaskQueueSelector selector;
     // RAW_PTR_EXCLUSION: Performance reasons(based on analysis of
@@ -433,7 +433,6 @@ class BASE_EXPORT SequenceManagerImpl
 
   TaskQueue::TaskTiming::TimeRecordingPolicy ShouldRecordTaskTiming(
       const internal::TaskQueueImpl* task_queue);
-  bool ShouldRecordCPUTimeForTask();
 
   // Write the async stack trace onto a crash key as whitespace-delimited hex
   // addresses.
@@ -475,12 +474,10 @@ class BASE_EXPORT SequenceManagerImpl
   const std::unique_ptr<internal::ThreadController> controller_;
   const Settings settings_;
 
-  const MetricRecordingSettings metric_recording_settings_;
-
   WorkTracker work_tracker_;
 
   // Whether to add the queue time to tasks.
-  base::subtle::Atomic32 add_queue_time_to_tasks_;
+  std::atomic<bool> add_queue_time_to_tasks_;
 
   AtomicFlagSet empty_queues_to_reload_;
 
@@ -489,7 +486,7 @@ class BASE_EXPORT SequenceManagerImpl
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }
-  const MainThreadOnly& main_thread_only() const {
+  const MainThreadOnly& main_thread_only() const LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }

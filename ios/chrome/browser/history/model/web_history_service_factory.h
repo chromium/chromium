@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_HISTORY_MODEL_WEB_HISTORY_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_HISTORY_MODEL_WEB_HISTORY_SERVICE_FACTORY_H_
 
-#import <memory>
-
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 namespace history {
 class WebHistoryService;
@@ -18,16 +17,10 @@ class WebHistoryService;
 namespace ios {
 // Singleton that owns all WebHistoryServices and associates them with
 // profiles.
-class WebHistoryServiceFactory : public BrowserStateKeyedServiceFactory {
+class WebHistoryServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static history::WebHistoryService* GetForBrowserState(ProfileIOS* profile);
-
   static history::WebHistoryService* GetForProfile(ProfileIOS* profile);
   static WebHistoryServiceFactory* GetInstance();
-
-  WebHistoryServiceFactory(const WebHistoryServiceFactory&) = delete;
-  WebHistoryServiceFactory& operator=(const WebHistoryServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<WebHistoryServiceFactory>;

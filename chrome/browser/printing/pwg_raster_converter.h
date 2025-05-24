@@ -31,7 +31,7 @@ class PwgRasterConverter {
   using ResultCallback =
       base::OnceCallback<void(base::ReadOnlySharedMemoryRegion /*region*/)>;
 
-  virtual ~PwgRasterConverter() {}
+  virtual ~PwgRasterConverter() = default;
 
   static std::unique_ptr<PwgRasterConverter> CreateDefault();
 

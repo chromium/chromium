@@ -31,6 +31,7 @@ VideoCaptureDeviceFactoryAndroid::createVideoCaptureAndroid(
 }
 
 VideoCaptureDeviceFactoryAndroid::VideoCaptureDeviceFactoryAndroid() = default;
+
 VideoCaptureDeviceFactoryAndroid::~VideoCaptureDeviceFactoryAndroid() = default;
 
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryAndroid::CreateDevice(
@@ -136,7 +137,7 @@ void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(
   // Remove old entries from |supported_formats_cache_| if necessary.
   if (supported_formats_cache_.size() > devices_info.size()) {
     base::EraseIf(supported_formats_cache_, [&devices_info](const auto& entry) {
-      return base::ranges::none_of(
+      return std::ranges::none_of(
           devices_info, [&entry](const VideoCaptureDeviceInfo& info) {
             return entry.first == info.descriptor.device_id;
           });
@@ -146,7 +147,7 @@ void VideoCaptureDeviceFactoryAndroid::GetDevicesInfo(
   // Remove old entries from |zooms_cache_| if necessary.
   if (zooms_cache_.size() > devices_info.size()) {
     base::EraseIf(zooms_cache_, [&devices_info](const auto& entry) {
-      return base::ranges::none_of(
+      return std::ranges::none_of(
           devices_info, [&entry](const VideoCaptureDeviceInfo& info) {
             return entry.first == info.descriptor.device_id;
           });

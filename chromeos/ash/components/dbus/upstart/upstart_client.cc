@@ -50,6 +50,17 @@ class UpstartClientImpl : public UpstartClient {
                                  std::move(callback)));
   }
 
+  void StartJobWithTimeout(const std::string& job,
+                           const std::vector<std::string>& upstart_env,
+                           chromeos::VoidDBusMethodCallback callback,
+                           int timeout_ms) override {
+    CallJobMethod(job, kStartMethod, upstart_env,
+                  base::BindOnce(&UpstartClientImpl::OnVoidMethod,
+                                 weak_ptr_factory_.GetWeakPtr(), job, "start",
+                                 std::move(callback)),
+                  timeout_ms);
+  }
+
   void StartJobWithErrorDetails(
       const std::string& job,
       const std::vector<std::string>& upstart_env,
@@ -97,16 +108,16 @@ class UpstartClientImpl : public UpstartClient {
   void CallJobMethod(const std::string& job,
                      const std::string& method,
                      const std::vector<std::string>& upstart_env,
-                     dbus::ObjectProxy::ResponseOrErrorCallback callback) {
+                     dbus::ObjectProxy::ResponseOrErrorCallback callback,
+                     int timeout_ms = dbus::ObjectProxy::TIMEOUT_USE_DEFAULT) {
     dbus::ObjectProxy* job_proxy = bus_->GetObjectProxy(
         kUpstartServiceName, dbus::ObjectPath(kUpstartJobsPath + job));
     dbus::MethodCall method_call(kUpstartJobInterface, method);
     dbus::MessageWriter writer(&method_call);
     writer.AppendArrayOfStrings(upstart_env);
     writer.AppendBool(true /* wait for response */);
-    job_proxy->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        std::move(callback));
+    job_proxy->CallMethodWithErrorResponse(&method_call, timeout_ms,
+                                           std::move(callback));
   }
 
   void OnVoidMethod(const std::string& job_for_logging,

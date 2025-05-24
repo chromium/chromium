@@ -9,6 +9,7 @@
 
 #include "media/audio/mac/audio_manager_mac.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -24,9 +25,9 @@
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/memory/free_deleter.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -38,6 +39,7 @@
 #include "media/audio/apple/audio_low_latency_input.h"
 #include "media/audio/apple/scoped_audio_unit.h"
 #include "media/audio/audio_device_description.h"
+#include "media/audio/audio_features.h"
 #include "media/audio/mac/audio_loopback_input_mac.h"
 #include "media/audio/mac/core_audio_util_mac.h"
 #include "media/audio/mac/screen_capture_kit_swizzler.h"
@@ -49,10 +51,6 @@
 #include "media/base/media_switches.h"
 
 namespace media {
-
-BASE_FEATURE(kMonitorOutputSampleRateChangesMac,
-             "MonitorOutputSampleRateChangesMac",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Maximum number of output streams that can be open simultaneously.
 static const int kMaxOutputStreams = 50;
@@ -671,9 +669,20 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
     const std::string& device_id) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
-    return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                           ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
-                           ChooseBufferSize(true, kLoopbackSampleRate));
+    if (IsMacCatapSystemAudioLoopbackCaptureEnabled()) {
+      AudioDeviceID default_output_device;
+      GetDefaultOutputDevice(&default_output_device);
+      const int loopback_sample_rate =
+          HardwareSampleRateForDevice(default_output_device);
+      return AudioParameters(
+          AudioParameters::AUDIO_PCM_LOW_LATENCY, ChannelLayoutConfig::Stereo(),
+          loopback_sample_rate, kCatapLoopbackFramesPerBuffer);
+
+    } else {
+      return AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                             ChannelLayoutConfig::Stereo(), kLoopbackSampleRate,
+                             kSckLoopbackFramesPerBuffer);
+    }
   }
 
   AudioDeviceID device = GetAudioDeviceIdByUId(true, device_id);
@@ -715,15 +724,14 @@ AudioParameters AudioManagerMac::GetInputStreamParameters(
     params.set_effects(AudioParameters::NOISE_SUPPRESSION);
   }
 
-  // VoiceProcessingIO cannot be used on aggregate devices, since it creates an
-  // aggregate device itself.  It also only runs in mono, but we allow upmixing
-  // to stereo since we can't claim a device works either in stereo without echo
-  // cancellation or mono with echo cancellation.
-  if ((params.channel_layout() == CHANNEL_LAYOUT_MONO ||
-       params.channel_layout() == CHANNEL_LAYOUT_STEREO) &&
-      GetDeviceTransportType(device) != kAudioDeviceTransportTypeAggregate) {
+  base::UmaHistogramBoolean(
+      "Media.Audio.Mac.NoiseSuppressionAvailable",
+      params.effects() & AudioParameters::NOISE_SUPPRESSION);
+
+  if (AUAudioInputStream::IsEchoCancellationSupported(device, params)) {
+    params.set_effects(params.effects() | AudioParameters::ECHO_CANCELLER);
     params.set_effects(params.effects() |
-                       AudioParameters::EXPERIMENTAL_ECHO_CANCELLER);
+                       AudioParameters::AUTOMATIC_GAIN_CONTROL);
   }
 
   return params;
@@ -765,7 +773,7 @@ std::string AudioManagerMac::GetAssociatedOutputDeviceID(
   return std::string();
 }
 
-const char* AudioManagerMac::GetName() {
+const std::string_view AudioManagerMac::GetName() {
   return "Mac";
 }
 
@@ -795,8 +803,7 @@ AudioOutputStream* AudioManagerMac::MakeLowLatencyOutputStream(
         base::BindPostTaskToCurrentDefault(
             base::BindRepeating(&AudioManagerMac::HandleDeviceChanges,
                                 weak_ptr_factory_.GetWeakPtr())),
-        /*monitor_sample_rate_changes=*/
-        base::FeatureList::IsEnabled(kMonitorOutputSampleRateChangesMac),
+        /*monitor_sample_rate_changes=*/true,
         /*monitor_default_input=*/false,
         /*monitor_addition_removal=*/false,
         /*monitor_sources=*/false);
@@ -879,8 +886,15 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
   DCHECK_EQ(AudioParameters::AUDIO_PCM_LOW_LATENCY, params.format());
 
   if (AudioDeviceDescription::IsLoopbackDevice(device_id)) {
-    screen_capture_kit_swizzler_ = SwizzleScreenCaptureKit();
+    if (IsMacCatapSystemAudioLoopbackCaptureEnabled()) {
+      return CreateCatapAudioInputStream(
+          params, device_id, log_callback,
+          base::BindOnce(&AudioManagerBase::ReleaseInputStream,
+                         base::Unretained(this)),
+          GetDefaultOutputDeviceID());
+    }
 
+    screen_capture_kit_swizzler_ = SwizzleScreenCaptureKit();
     return CreateSCKAudioInputStream(
         params, device_id, log_callback,
         base::BindRepeating(&AudioManagerBase::ReleaseInputStream,
@@ -894,13 +908,8 @@ AudioInputStream* AudioManagerMac::MakeLowLatencyInputStream(
     return nullptr;
   }
 
-  VoiceProcessingMode voice_processing_mode =
-      (params.effects() & AudioParameters::ECHO_CANCELLER)
-          ? VoiceProcessingMode::kEnabled
-          : VoiceProcessingMode::kDisabled;
-
-  auto* stream = new AUAudioInputStream(this, params, audio_device_id,
-                                        log_callback, voice_processing_mode);
+  auto* stream =
+      new AUAudioInputStream(this, params, audio_device_id, log_callback);
   low_latency_input_streams_.insert(stream);
   return stream;
 }

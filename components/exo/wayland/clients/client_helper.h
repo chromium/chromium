@@ -53,6 +53,16 @@
 #include <gbm.h>
 #if defined(USE_VULKAN)
 #include <vulkan/vulkan.h>
+// vulkan.h includes <X11/Xlib.h> when VK_USE_PLATFORM_XLIB_KHR is defined
+// after https://github.com/KhronosGroup/Vulkan-Headers/pull/534.
+// This defines some macros which break build, so undefine them here.
+#undef Always
+#undef Bool
+#undef False
+#undef None
+#undef Status
+#undef Success
+#undef True
 #endif  // defined(USE_GBM)
 #endif  // defined(USE_VULKAN)
 

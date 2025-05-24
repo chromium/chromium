@@ -10,13 +10,12 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/shortcut_mapping_pref_delegate.h"
 #endif
 
@@ -33,25 +32,11 @@ BASE_FEATURE(kCalculateNativeWinOcclusion,
              "CalculateNativeWinOcclusion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// If enabled, listen for screen power state change and factor into the native
-// window occlusion detection - Windows-only.
-BASE_FEATURE(kScreenPowerListenerForNativeWinOcclusion,
-             "ScreenPowerListenerForNativeWinOcclusion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Once enabled, the exact behavior is dictated by the field trial param
 // name `kApplyNativeOcclusionToCompositorType`.
 BASE_FEATURE(kApplyNativeOcclusionToCompositor,
              "ApplyNativeOcclusionToCompositor",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT
-#endif
-);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, native window occlusion tracking will always be used, even if
 // CHROME_HEADLESS is set.
@@ -61,13 +46,7 @@ BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
 
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
-    &kApplyNativeOcclusionToCompositor, "type",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    /*default=*/"throttle_and_release"
-#else
-    /*default=*/""
-#endif
-};
+    &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};
 
 // When the WindowTreeHost is occluded or hidden, resources are released and
 // the compositor is hidden. See WindowTreeHost for specifics on what this
@@ -78,9 +57,9 @@ const char kApplyNativeOcclusionToCompositorTypeThrottle[] = "throttle";
 // Release when hidden, throttle when occluded.
 const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[] =
     "throttle_and_release";
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Integrate input method specific settings to Chrome OS settings page.
 // https://crbug.com/895886.
 BASE_FEATURE(kSettingsShowsPerKeyboardSettings,
@@ -103,21 +82,6 @@ bool IsNotificationsIgnoreRequireInteractionEnabled() {
   return base::FeatureList::IsEnabled(kNotificationsIgnoreRequireInteraction);
 }
 
-BASE_FEATURE(kShortcutCustomization,
-             "ShortcutCustomization",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsShortcutCustomizationEnabled() {
-  return base::FeatureList::IsEnabled(kShortcutCustomization);
-}
-
-// Share the resource file with ash-chrome. This feature reduces the memory
-// consumption while the disk usage slightly increases.
-// https://crbug.com/1253280.
-BASE_FEATURE(kLacrosResourcesFileSharing,
-             "LacrosResourcesFileSharing",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables settings that allow users to remap the F11 and F12 keys in the
 // "Customize keyboard keys" page.
 BASE_FEATURE(kSupportF11AndF12KeyShortcuts,
@@ -139,26 +103,43 @@ bool AreF11AndF12ShortcutsEnabled() {
   }
   return base::FeatureList::IsEnabled(features::kSupportF11AndF12KeyShortcuts);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_OZONE)
 BASE_FEATURE(kOzoneBubblesUsePlatformWidgets,
              "OzoneBubblesUsePlatformWidgets",
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-             base::FEATURE_ENABLED_BY_DEFAULT
-#else
              base::FEATURE_DISABLED_BY_DEFAULT
-#endif
 );
+
+// Controls whether support for Wayland's linux-drm-syncobj is enabled.
+BASE_FEATURE(kWaylandLinuxDrmSyncobj,
+             "WaylandLinuxDrmSyncobj",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether support for Wayland's per-surface scaling is enabled.
 BASE_FEATURE(kWaylandPerSurfaceScale,
              "WaylandPerSurfaceScale",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_LINUX)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_LINUX)
+);
 
 // Controls whether Wayland text-input-v3 protocol support is enabled.
 BASE_FEATURE(kWaylandTextInputV3,
              "WaylandTextInputV3",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether support for "Large Text" accessibility setting via UI
+// scaling is enabled.
+BASE_FEATURE(kWaylandUiScale,
+             "WaylandUiScale",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls whether Wayland session management protocol is enabled.
+BASE_FEATURE(kWaylandSessionManagement,
+             "WaylandSessionManagement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_OZONE)
 
@@ -171,30 +152,17 @@ BASE_FEATURE(kOverrideDefaultOzonePlatformHintToAuto,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX)
 
+// Chrome for Linux should eventually use XInput2 key events.
+// See https://crbug.com/412608405 for context.
+BASE_FEATURE(kXInput2KeyEvents,
+             "XInput2KeyEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Update of the virtual keyboard settings UI as described in
 // https://crbug.com/876901.
 BASE_FEATURE(kInputMethodSettingsUiUpdate,
              "InputMethodSettingsUiUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables percent-based scrolling for mousewheel and keyboard initiated
-// scrolls and impulse curve animations.
-const enum base::FeatureState kWindowsScrollingPersonalityDefaultStatus =
-    base::FEATURE_DISABLED_BY_DEFAULT;
-static_assert(!BUILDFLAG(IS_MAC) ||
-                  (BUILDFLAG(IS_MAC) &&
-                   kWindowsScrollingPersonalityDefaultStatus ==
-                       base::FEATURE_DISABLED_BY_DEFAULT),
-              "Do not enable this on the Mac. The animation does not match the "
-              "system scroll animation curve to such an extent that it makes "
-              "Chromium stand out in a bad way.");
-BASE_FEATURE(kWindowsScrollingPersonality,
-             "WindowsScrollingPersonality",
-             kWindowsScrollingPersonalityDefaultStatus);
-
-bool IsPercentBasedScrollingEnabled() {
-  return base::FeatureList::IsEnabled(features::kWindowsScrollingPersonality);
-}
 
 // Uses a stylus-specific tap slop region parameter for gestures.  Stylus taps
 // tend to slip more than touch taps (presumably because the user doesn't feel
@@ -203,11 +171,6 @@ bool IsPercentBasedScrollingEnabled() {
 // touch slop.
 BASE_FEATURE(kStylusSpecificTapSlop,
              "StylusSpecificTapSlop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allows system caption style for WebVTT Captions.
-BASE_FEATURE(kSystemCaptionStyle,
-             "SystemCaptionStyle",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, the feature will query the OS for a default cursor size,
@@ -235,8 +198,8 @@ BASE_FEATURE(kSystemKeyboardLock,
 // Enables GPU rasterization for all UI drawing (where not blocklisted).
 BASE_FEATURE(kUiGpuRasterization,
              "UiGpuRasterization",
-#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || \
+    BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
@@ -258,28 +221,22 @@ BASE_FEATURE(kUiCompositorScrollWithLayers,
 #endif
 );
 
+// TODO(crbug.com/389771428): Switch the ui::Compositor to use
+// cc::PropertyTrees and layer lists rather than layer trees.
+BASE_FEATURE(kUiCompositorUsesLayerLists,
+             "UiCompositorUsesLayerLists",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables the use of a touch fling curve that is based on the behavior of
 // native apps on Windows.
 BASE_FEATURE(kExperimentalFlingAnimation,
              "ExperimentalFlingAnimation",
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) ||                                   \
-    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-     !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kClipboardFiles,
-             "ClipboardFiles",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kDragDropFiles, "DragDropFiles", base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 // Cached in Java as well, make sure defaults are updated together.
@@ -298,26 +255,12 @@ BASE_FEATURE(kFocusFollowsCursor,
              "FocusFollowsCursor",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Enables using WM_POINTER instead of WM_TOUCH for touch events.
-BASE_FEATURE(kPointerEventsForTouch,
-             "PointerEventsForTouch",
+BASE_FEATURE(kDragDropOnlySynthesizeHttpOrHttpsUrlsFromText,
+             "DragDropOnlySynthesizeHttpOrHttpsUrlsFromText",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsUsingWMPointerForTouch() {
-  return base::FeatureList::IsEnabled(kPointerEventsForTouch);
-}
-
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// This feature supersedes kNewShortcutMapping.
-BASE_FEATURE(kImprovedKeyboardShortcuts,
-             "ImprovedKeyboardShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool IsImprovedKeyboardShortcutsEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/40203434): Remove this once kDeviceI18nShortcutsEnabled
   // policy is deprecated.
   if (::ui::ShortcutMappingPrefDelegate::IsInitialized()) {
@@ -327,9 +270,7 @@ bool IsImprovedKeyboardShortcutsEnabled() {
       return instance->IsI18nShortcutPrefEnabled();
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  return base::FeatureList::IsEnabled(kImprovedKeyboardShortcuts);
+  return true;
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -349,6 +290,22 @@ BASE_FEATURE(kTouchTextEditingRedesign,
 
 bool IsTouchTextEditingRedesignEnabled() {
   return base::FeatureList::IsEnabled(kTouchTextEditingRedesign);
+}
+
+// This feature enables drag and drop using touch input devices.
+BASE_FEATURE(kTouchDragAndDrop,
+             "TouchDragAndDrop",
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
+bool IsTouchDragAndDropEnabled() {
+  static const bool touch_drag_and_drop_enabled =
+      base::FeatureList::IsEnabled(kTouchDragAndDrop);
+  return touch_drag_and_drop_enabled;
 }
 
 // Enables forced colors mode for web content.
@@ -416,7 +373,9 @@ const char kFilterNameOneEuro[] = "one_euro_filter";
 const char kPredictionTypeTimeBased[] = "time";
 const char kPredictionTypeFramesBased[] = "frames";
 const char kPredictionTypeDefaultTime[] = "3.3";
-const char kPredictionTypeDefaultFramesRatio[] = "0.5";
+const char kPredictionTypeDefaultFramesVariation1[] = "0.25";
+const char kPredictionTypeDefaultFramesVariation2[] = "0.375";
+const char kPredictionTypeDefaultFramesVariation3[] = "0.5";
 
 BASE_FEATURE(kSwipeToMoveCursor,
              "SwipeToMoveCursor",
@@ -489,34 +448,14 @@ bool IsVariableRefreshRateAlwaysOn() {
   return base::FeatureList::IsEnabled(kEnableVariableRefreshRateAlwaysOn);
 }
 
-// Enables chrome color management wayland protocol for lacros.
-BASE_FEATURE(kLacrosColorManagement,
-             "LacrosColorManagement",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsLacrosColorManagementEnabled() {
-  return base::FeatureList::IsEnabled(kLacrosColorManagement);
-}
-
 BASE_FEATURE(kBubbleMetricsApi,
              "BubbleMetricsApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_APPLE)
-// Font Smoothing was enabled by default prior to introducing this feature.
-// We want to experiment with disabling it to align with CR2023 designs.
-BASE_FEATURE(kCr2023MacFontSmoothing,
-             "Cr2023MacFontSmoothing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kUseGammaContrastRegistrySettings,
              "UseGammaContrastRegistrySettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIncreaseWindowsTextContrast,
-             "IncreaseWindowsTextContrast",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
@@ -525,15 +464,30 @@ BASE_FEATURE(kBubbleFrameViewTitleIsHeading,
 
 BASE_FEATURE(kEnableGestureBeginEndTypes,
              "EnableGestureBeginEndTypes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if !BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+);
 
 BASE_FEATURE(kUseUtf8EncodingForSvgImage,
              "UseUtf8EncodingForSvgImage",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables copy bookmark and writes url format to clipboard with empty title.
+BASE_FEATURE(kWriteBookmarkWithoutTitle,
+             "WriteBookmarkWithoutTitle",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, fullscreen window state is updated asynchronously.
 BASE_FEATURE(kAsyncFullscreenWindowState,
              "AsyncFullscreenWindowState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature flag for enabling the clipboardchange event.
+BASE_FEATURE(kClipboardChangeEvent,
+             "ClipboardChangeEvent",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

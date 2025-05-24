@@ -6,7 +6,7 @@
  * @fileoverview Fake implementation of PasspointService for testing.
  */
 import {assert} from 'chrome://resources/ash/common/assert.js';
-import {PasspointEventsListenerRemote, PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
+import type {PasspointEventsListenerRemote, PasspointServiceInterface, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
 
 export class FakePasspointService implements PasspointServiceInterface {
   private subs_: Map<string, PasspointSubscription>;

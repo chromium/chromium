@@ -44,6 +44,7 @@ class CORE_EXPORT SplitTextNodeCommand final : public SimpleEditCommand {
   void DoUnapply() override;
   void DoReapply() override;
   void InsertText1AndTrimText2();
+  String ToString() const override;
 
   Member<Text> text1_;
   Member<Text> text2_;

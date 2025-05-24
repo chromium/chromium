@@ -13,6 +13,7 @@
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_job.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -22,15 +23,18 @@ namespace net {
 // destination over a (QUIC) proxy.
 class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
  public:
-  ProxyJob(QuicSessionPool* pool,
-           quic::ParsedQuicVersion target_quic_version,
-           QuicSessionAliasKey key,
-           NetworkTrafficAnnotationTag proxy_annotation_tag,
-           const HttpUserAgentSettings* http_user_agent_settings,
-           std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
-           RequestPriority priority,
-           int cert_verify_flags,
-           const NetLogWithSource& net_log);
+  ProxyJob(
+      QuicSessionPool* pool,
+      quic::ParsedQuicVersion target_quic_version,
+      QuicSessionAliasKey key,
+      NetworkTrafficAnnotationTag proxy_annotation_tag,
+      MultiplexedSessionCreationInitiator session_creation_initiator,
+      std::optional<ConnectionManagementConfig> connection_management_config,
+      const HttpUserAgentSettings* http_user_agent_settings,
+      std::unique_ptr<CryptoClientConfigHandle> client_config_handle,
+      RequestPriority priority,
+      int cert_verify_flags,
+      const NetLogWithSource& net_log);
 
   ~ProxyJob() override;
 
@@ -73,6 +77,8 @@ class QuicSessionPool::ProxyJob : public QuicSessionPool::Job {
   quic::ParsedQuicVersion target_quic_version_;
 
   NetworkTrafficAnnotationTag proxy_annotation_tag_;
+  MultiplexedSessionCreationInitiator session_creation_initiator_;
+  std::optional<ConnectionManagementConfig> connection_management_config_;
   const int cert_verify_flags_;
   raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
   CompletionOnceCallback callback_;

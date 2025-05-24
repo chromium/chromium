@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/debug/debugger.h"
 
@@ -19,6 +15,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -60,8 +57,7 @@
 #include "base/third_party/symbolize/symbolize.h"  // nogncheck
 #endif
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
 
@@ -81,20 +77,20 @@ bool BeingDebugged() {
   static bool is_set = false;
   static bool being_debugged = false;
 
-  if (is_set)
+  if (is_set) {
     return being_debugged;
+  }
 
   // Initialize mib, which tells sysctl what info we want.  In this case,
   // we're looking for information about a specific process ID.
-  int mib[] = {
-    CTL_KERN,
-    KERN_PROC,
-    KERN_PROC_PID,
-    getpid()
+  int mib[] = {CTL_KERN,
+               KERN_PROC,
+               KERN_PROC_PID,
+               getpid()
 #if BUILDFLAG(IS_OPENBSD)
-        ,
-    sizeof(struct kinfo_proc),
-    0
+                   ,
+               sizeof(struct kinfo_proc),
+               0
 #endif
   };
 
@@ -104,8 +100,9 @@ bool BeingDebugged() {
   size_t info_size = sizeof(info);
 
 #if BUILDFLAG(IS_OPENBSD)
-  if (sysctl(mib, std::size(mib), NULL, &info_size, NULL, 0) < 0)
+  if (sysctl(mib, std::size(mib), NULL, &info_size, NULL, 0) < 0) {
     return -1;
+  }
 
   mib[5] = (info_size / sizeof(struct kinfo_proc));
 #endif
@@ -132,10 +129,12 @@ bool BeingDebugged() {
 
 void VerifyDebugger() {
 #if BUILDFLAG(ENABLE_LLDBINIT_WARNING)
-  if (Environment::Create()->HasVar("CHROMIUM_LLDBINIT_SOURCED"))
+  if (Environment::Create()->HasVar("CHROMIUM_LLDBINIT_SOURCED")) {
     return;
-  if (!BeingDebugged())
+  }
+  if (!BeingDebugged()) {
     return;
+  }
   DCHECK(false)
       << "Detected lldb without sourcing //tools/lldb/lldbinit.py. lldb may "
          "not be able to find debug symbols. Please see debug instructions for "
@@ -160,22 +159,26 @@ Process GetDebuggerProcess() {
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
   int status_fd = open("/proc/self/status", O_RDONLY);
-  if (status_fd == -1)
+  if (status_fd == -1) {
     return Process();
+  }
 
   // We assume our line will be in the first 1024 characters and that we can
   // read this much all at once.  In practice this will generally be true.
   // This simplifies and speeds up things considerably.
-  char buf[1024];
+  std::array<char, 1024> buf;
 
-  ssize_t num_read = HANDLE_EINTR(read(status_fd, buf, sizeof(buf)));
-  if (IGNORE_EINTR(close(status_fd)) < 0)
+  ssize_t num_read = HANDLE_EINTR(read(
+      status_fd, buf.data(), (buf.size() * sizeof(decltype(buf)::value_type))));
+  if (IGNORE_EINTR(close(status_fd)) < 0) {
     return Process();
+  }
 
-  if (num_read <= 0)
+  if (num_read <= 0) {
     return Process();
+  }
 
-  std::string_view status(buf, static_cast<size_t>(num_read));
+  std::string_view status(buf.data(), static_cast<size_t>(num_read));
   std::string_view tracer("TracerPid:\t");
 
   std::string_view::size_type pid_index = status.find(tracer);
@@ -188,10 +191,12 @@ Process GetDebuggerProcess() {
     return Process();
   }
 
-  std::string_view pid_str(buf + pid_index, pid_end_index - pid_index);
+  std::string_view pid_str(base::span<char>(buf).subspan(pid_index).data(),
+                           pid_end_index - pid_index);
   int pid = 0;
-  if (!StringToInt(pid_str, &pid))
+  if (!StringToInt(pid_str, &pid)) {
     return Process();
+  }
 
   return Process(pid);
 }
@@ -203,18 +208,21 @@ bool BeingDebugged() {
 void VerifyDebugger() {
 #if BUILDFLAG(ENABLE_GDBINIT_WARNING)
   // Quick check before potentially slower GetDebuggerProcess().
-  if (Environment::Create()->HasVar("CHROMIUM_GDBINIT_SOURCED"))
+  if (Environment::Create()->HasVar("CHROMIUM_GDBINIT_SOURCED")) {
     return;
+  }
 
   Process proc = GetDebuggerProcess();
-  if (!proc.IsValid())
+  if (!proc.IsValid()) {
     return;
+  }
 
   FilePath cmdline_file =
       FilePath("/proc").Append(NumberToString(proc.Handle())).Append("cmdline");
   std::string cmdline;
-  if (!ReadFileToString(cmdline_file, &cmdline))
+  if (!ReadFileToString(cmdline_file, &cmdline)) {
     return;
+  }
 
   // /proc/*/cmdline separates arguments with null bytes, but we only care about
   // the executable name, so interpret |cmdline| as a null-terminated C string
@@ -297,8 +305,9 @@ void DebugBreak() {
     DEBUG_BREAK_ASM();
 #else
     volatile int go = 0;
-    while (!go)
+    while (!go) {
       PlatformThread::Sleep(Milliseconds(100));
+    }
 #endif
   }
 }
@@ -339,5 +348,4 @@ void BreakDebuggerAsyncSafe() {
 #endif
 }
 
-}  // namespace debug
-}  // namespace base
+}  // namespace base::debug

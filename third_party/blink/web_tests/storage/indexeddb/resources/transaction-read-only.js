@@ -16,13 +16,13 @@ function prepareDatabase()
 
 function setVersionDone()
 {
-    trans = evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    trans = evalAndLog("trans = db.transaction('store', 'readonly')");
     evalAndExpectException("trans.objectStore('store').put('a', 'b')", "0", "'ReadOnlyError'");
 
-    trans = evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    trans = evalAndLog("trans = db.transaction('store', 'readonly')");
     evalAndExpectException("trans.objectStore('store').delete('x')", "0", "'ReadOnlyError'");
 
-    trans = evalAndLog("trans = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    trans = evalAndLog("trans = db.transaction('store', 'readonly')");
     cur = evalAndLog("cur = trans.objectStore('store').openCursor()");
     cur.onsuccess = gotCursor;
     cur.onerror = unexpectedErrorCallback;

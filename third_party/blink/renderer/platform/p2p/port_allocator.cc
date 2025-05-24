@@ -11,29 +11,32 @@
 
 #include "base/check.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/webrtc_overrides/environment.h"
 
 namespace blink {
 
 P2PPortAllocator::P2PPortAllocator(
-    std::unique_ptr<rtc::NetworkManager> network_manager,
-    rtc::PacketSocketFactory* socket_factory,
+    std::unique_ptr<webrtc::NetworkManager> network_manager,
+    webrtc::PacketSocketFactory* socket_factory,
     const Config& config)
-    : cricket::BasicPortAllocator(network_manager.get(), socket_factory),
+    : webrtc::BasicPortAllocator(WebRtcEnvironment(),
+                                 network_manager.get(),
+                                 socket_factory),
       network_manager_(std::move(network_manager)),
       config_(config) {
   DCHECK(network_manager_);
   DCHECK(socket_factory);
   uint32_t flags = 0;
   if (!config_.enable_multiple_routes) {
-    flags |= cricket::PORTALLOCATOR_DISABLE_ADAPTER_ENUMERATION;
+    flags |= webrtc::PORTALLOCATOR_DISABLE_ADAPTER_ENUMERATION;
   }
   if (!config_.enable_default_local_candidate) {
-    flags |= cricket::PORTALLOCATOR_DISABLE_DEFAULT_LOCAL_CANDIDATE;
+    flags |= webrtc::PORTALLOCATOR_DISABLE_DEFAULT_LOCAL_CANDIDATE;
   }
   if (!config_.enable_nonproxied_udp) {
-    flags |= cricket::PORTALLOCATOR_DISABLE_UDP |
-             cricket::PORTALLOCATOR_DISABLE_STUN |
-             cricket::PORTALLOCATOR_DISABLE_UDP_RELAY;
+    flags |= webrtc::PORTALLOCATOR_DISABLE_UDP |
+             webrtc::PORTALLOCATOR_DISABLE_STUN |
+             webrtc::PORTALLOCATOR_DISABLE_UDP_RELAY;
   }
   set_flags(flags);
   set_allow_tcp_listen(false);

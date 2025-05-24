@@ -1,0 +1,29 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=./print_preview_shared.css.js
+ * #scheme=relative
+ * #include=print-preview-shared cr-hidden-style-lit md-select-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --duplex-icon-side-padding: 8px;
+  --duplex-icon-size: 16px;
+}
+
+.md-select {
+  background-position: var(--duplex-icon-side-padding) center,
+      calc(100% - var(--md-select-side-padding)) center;
+  background-size: var(--duplex-icon-size), var(--md-arrow-width);
+  padding-inline-start: 32px;
+}
+
+:host-context([dir=rtl]) .md-select {
+  background-position-x: calc(100% - var(--duplex-icon-side-padding)),
+      var(--md-select-side-padding);
+}

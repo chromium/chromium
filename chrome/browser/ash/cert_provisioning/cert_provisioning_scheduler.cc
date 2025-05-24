@@ -446,6 +446,15 @@ void CertProvisioningSchedulerImpl::UpdateWorkerListWithExistingCerts(
       ScheduleRenewal(profile.profile_id, /*delay=*/target_time - now);
       continue;
     }
+
+    CertProvisioningWorker* worker = FindWorker(profile.profile_id);
+    if (worker) {
+      // If a valid, non-expiring certificate is found but its associated worker
+      // exists, this indicates the worker was likely restored from a previous
+      // state (deserialized) and is now redundant.
+      worker->Stop(CertProvisioningWorkerState::kSucceeded);
+      continue;
+    }
   }
 
   if (!queued_profiles_to_update_.empty()) {
@@ -509,10 +518,8 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
 
   auto worker_iter = workers_.find(profile.profile_id);
   if (worker_iter == workers_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    LOG(WARNING) << "Finished worker is not found"
+    NOTREACHED() << "Finished worker is not found"
                  << base::StringPrintf(" [cppId: %s]", process_id.c_str());
-    return;
   }
   bool recreate = false;
   switch (state) {
@@ -736,11 +743,12 @@ void CertProvisioningSchedulerImpl::UpdateFailedCertProfiles(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   FailedWorkerInfo info;
+  info.process_id = worker.GetProcessId();
   info.state_before_failure = worker.GetPreviousState();
   info.cert_profile_name = worker.GetCertProfile().name;
   info.public_key = worker.GetPublicKey();
   info.last_update_time = worker.GetLastUpdateTime();
-  info.failure_message = worker.GetFailureMessage();
+  info.failure_message = worker.GetFailureMessageWithPii();
 
   failed_cert_profiles_[worker.GetCertProfile().profile_id] = std::move(info);
 }

@@ -65,8 +65,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
         if (!mIsInitialized) {
             ContextualSearchSceneLayerJni.get()
-                    .createContextualSearchLayer(
-                            mNativePtr, ContextualSearchSceneLayer.this, resourceManager);
+                    .createContextualSearchLayer(mNativePtr, resourceManager);
             mIsInitialized = true;
         }
         mImageControl = imageControl;
@@ -160,7 +159,6 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         ContextualSearchSceneLayerJni.get()
                 .updateContextualSearchLayer(
                         mNativePtr,
-                        ContextualSearchSceneLayer.this,
                         panelShadowResourceId,
                         searchBarBackgroundColor,
                         searchContextViewId,
@@ -236,14 +234,13 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        ContextualSearchSceneLayerJni.get()
-                .setContentTree(mNativePtr, ContextualSearchSceneLayer.this, contentTree);
+        ContextualSearchSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     /** Hide the layer tree; for use if the panel is not being shown. */
     public void hideTree() {
         if (!mIsInitialized) return;
-        ContextualSearchSceneLayerJni.get().hideTree(mNativePtr, ContextualSearchSceneLayer.this);
+        ContextualSearchSceneLayerJni.get().hideTree(mNativePtr);
     }
 
     @Override
@@ -267,20 +264,14 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
         long init(ContextualSearchSceneLayer caller);
 
         void createContextualSearchLayer(
-                long nativeContextualSearchSceneLayer,
-                ContextualSearchSceneLayer caller,
-                ResourceManager resourceManager);
+                long nativeContextualSearchSceneLayer, ResourceManager resourceManager);
 
-        void setContentTree(
-                long nativeContextualSearchSceneLayer,
-                ContextualSearchSceneLayer caller,
-                SceneLayer contentTree);
+        void setContentTree(long nativeContextualSearchSceneLayer, SceneLayer contentTree);
 
-        void hideTree(long nativeContextualSearchSceneLayer, ContextualSearchSceneLayer caller);
+        void hideTree(long nativeContextualSearchSceneLayer);
 
         void updateContextualSearchLayer(
                 long nativeContextualSearchSceneLayer,
-                ContextualSearchSceneLayer caller,
                 int searchBarBackgroundResourceId,
                 int searchBarBackgroundColor,
                 int searchContextResourceId,
@@ -302,7 +293,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float layoutHeight,
                 float basePageBrightness,
                 float basePageYOffset,
-                WebContents webContents,
+                @JniType("content::WebContents*") WebContents webContents,
                 boolean searchPromoVisible,
                 float searchPromoHeight,
                 float searchPromoOpacity,
@@ -331,7 +322,7 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
                 float searchBarBorderHeight,
                 boolean quickActionIconVisible,
                 boolean thumbnailVisible,
-                String thumbnailUrl,
+                @JniType("std::string") String thumbnailUrl,
                 float customImageVisibilityPercentage,
                 int barImageSize,
                 int iconColor,

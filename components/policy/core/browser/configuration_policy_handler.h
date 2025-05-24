@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -285,10 +286,11 @@ class POLICY_EXPORT StringMappingListPolicyHandler
   // matching pref values.
   class POLICY_EXPORT MappingEntry {
    public:
-    MappingEntry(const char* policy_value, std::unique_ptr<base::Value> map);
+    MappingEntry(std::string_view policy_value,
+                 std::unique_ptr<base::Value> map);
     ~MappingEntry();
 
-    const char* enum_value;
+    std::string_view enum_value;
     std::unique_ptr<base::Value> mapped_value;
   };
 
@@ -445,6 +447,16 @@ class POLICY_EXPORT SimpleSchemaValidatingPolicyHandler
   const bool allow_mandatory_;
 };
 
+// Maps a policy to a preference path, validating the schema.
+struct POLICY_EXPORT SchemaValidatingPolicyToPreferenceMapEntry {
+  const char* const policy_name;
+  const char* const preference_path;
+  SchemaOnErrorStrategy strategy;
+  SimpleSchemaValidatingPolicyHandler::RecommendedPermission
+      recommended_permission;
+  SimpleSchemaValidatingPolicyHandler::MandatoryPermission mandatory_permission;
+};
+
 // Maps policy to pref like SimplePolicyHandler. Ensures that the root value
 // of the policy is of the correct type (that is, a string, or a list, depending
 // on the policy). Apart from that, all policy values are accepted without
@@ -575,6 +587,38 @@ class POLICY_EXPORT SimpleDeprecatingPolicyHandler
  private:
   std::unique_ptr<NamedPolicyHandler> legacy_policy_handler_;
   std::unique_ptr<NamedPolicyHandler> new_policy_handler_;
+};
+
+// A policy handler that applies a deprecated policy only if none of the new
+// ones has been set. The new policies need their own handlers.
+class POLICY_EXPORT SingleDeprecatedPolicyToMultipleNewPolicyHandler
+    : public ConfigurationPolicyHandler {
+ public:
+  SingleDeprecatedPolicyToMultipleNewPolicyHandler(
+      std::unique_ptr<NamedPolicyHandler> legacy_policy_handler,
+      std::vector<std::string> new_policy_names);
+  SingleDeprecatedPolicyToMultipleNewPolicyHandler(
+      const SingleDeprecatedPolicyToMultipleNewPolicyHandler&) = delete;
+  SingleDeprecatedPolicyToMultipleNewPolicyHandler& operator=(
+      const SingleDeprecatedPolicyToMultipleNewPolicyHandler&) = delete;
+  ~SingleDeprecatedPolicyToMultipleNewPolicyHandler() override;
+
+  // ConfigurationPolicyHandler:
+  bool CheckPolicySettings(const PolicyMap& policies,
+                           PolicyErrorMap* errors) override;
+
+  void ApplyPolicySettingsWithParameters(
+      const PolicyMap& policies,
+      const PolicyHandlerParameters& parameters,
+      PrefValueMap* prefs) override;
+
+ protected:
+  void ApplyPolicySettings(const PolicyMap& policies,
+                           PrefValueMap* prefs) override;
+
+ private:
+  std::unique_ptr<NamedPolicyHandler> legacy_policy_handler_;
+  std::vector<std::string> new_policy_names_;
 };
 
 // A schema policy handler for complex policies that only accept cloud sources.

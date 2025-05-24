@@ -12,6 +12,7 @@
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 
 class GoogleServiceAuthError;
 
@@ -49,7 +50,7 @@ class AmbientClientImpl : public ash::AmbientClient {
  private:
   void OnGetAccessToken(GetAccessTokenCallback callback,
                         base::UnguessableToken fetcher_id,
-                        const std::string& gaia_id,
+                        const GaiaId& gaia_id,
                         GoogleServiceAuthError error,
                         signin::AccessTokenInfo access_token_info);
 

@@ -300,8 +300,6 @@ class MockWindowEventTarget : public ui::WindowEventTarget {
     return S_OK;
   }
 
-  void HandleParentChanged() override {}
-
  private:
   std::vector<Event> events_;
 };

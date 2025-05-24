@@ -6,9 +6,12 @@
 #define MEDIA_CAPTURE_VIDEO_ANDROID_VIDEO_CAPTURE_DEVICE_ANDROID_H_
 
 #include <jni.h>
+
+#include <list>
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -202,8 +205,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceAndroid : public VideoCaptureDevice {
 
   // List of callbacks for photo API in flight, being served in Java side.
   base::Lock photo_callbacks_lock_;
-  std::list<std::unique_ptr<GetPhotoStateCallback>> get_photo_state_callbacks_;
-  std::list<std::unique_ptr<TakePhotoCallback>> take_photo_callbacks_;
+  int64_t nextPhotoRequestId_ = 0;
+  base::flat_map<int64_t, GetPhotoStateCallback> get_photo_state_callbacks_;
+  base::flat_map<int64_t, TakePhotoCallback> take_photo_callbacks_;
 
   const VideoCaptureDeviceDescriptor device_descriptor_;
   VideoCaptureFormat capture_format_;

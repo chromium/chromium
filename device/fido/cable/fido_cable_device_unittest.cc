@@ -100,7 +100,7 @@ class FakeCableAuthenticator {
 
     std::string ciphertext;
     aead.Seal(
-        message, fido_parsing_utils::ConvertToStringView(encryption_nonce),
+        message, base::as_string_view(encryption_nonce),
         std::string(1, base::strict_cast<uint8_t>(FidoBleDeviceCommand::kMsg)),
         &ciphertext);
     authenticator_counter_++;
@@ -121,8 +121,7 @@ class FakeCableAuthenticator {
 
     std::string ciphertext;
     aead.Open(
-        fido_parsing_utils::ConvertToStringView(message),
-        fido_parsing_utils::ConvertToStringView(encryption_nonce),
+        base::as_string_view(message), base::as_string_view(encryption_nonce),
         std::string(1, base::strict_cast<uint8_t>(FidoBleDeviceCommand::kMsg)),
         &ciphertext);
     expected_client_counter_++;
@@ -215,7 +214,7 @@ TEST_F(FidoCableDeviceTest, TestCaBleDeviceSendData) {
             FROM_HERE, base::BindOnce(std::move(*cb), true));
 
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(kCTAPFramingLength));
+            base::span(data).template subspan<kCTAPFramingLength>());
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),
                                       ConstructSerializedOutgoingFragment(
@@ -248,7 +247,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceFailOnIncorrectSessionKey) {
 
         authenticator()->SetSessionKey(kIncorrectSessionKey);
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(kCTAPFramingLength));
+            base::span(data).template subspan<kCTAPFramingLength>());
 
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),
@@ -277,7 +276,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceFailOnUnexpectedCounter) {
         authenticator()->SetAuthenticatorCounter(
             kIncorrectAuthenticatorCounter);
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(kCTAPFramingLength));
+            base::span(data).template subspan<kCTAPFramingLength>());
 
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),
@@ -309,7 +308,7 @@ TEST_F(FidoCableDeviceTest, TestCableDeviceErrorOnMaxCounter) {
 
         authenticator()->SetAuthenticatorCounter(kInvalidCounter);
         const auto authenticator_reply = authenticator()->ReplyWithSameMessage(
-            base::make_span(data).subspan(kCTAPFramingLength));
+            base::span(data).template subspan<kCTAPFramingLength>());
 
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(connection()->read_callback(),

@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.xsurface.feed;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
  * Implemented internally.
  *
  * This interface provides access to the list of recently-sent "flows" of reliability logging events
  * for verification in integration tests.
  */
+@NullMarked
 public interface ReliabilityLoggingTestUtil {
     /**
      * Return the most recent "flows" (at most 30), or lists of logged events

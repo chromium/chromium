@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ko">
+<translation id="1122068467107743258">직장</translation>
 <translation id="1275718070701477396">선택됨</translation>
 <translation id="138513070655895675">이 메뉴 항목에서 다른 결제 수단으로 변경합니다.</translation>
 <translation id="2129442648318919291">주소를 관리합니다.</translation>
@@ -20,5 +21,6 @@
 <translation id="884264119367021077">배송지 주소</translation>
 <translation id="8873105120914375071">더 빨리 결제하시겠습니까?</translation>
 <translation id="9032876013752408138">내 정보 자동 완성</translation>
+<translation id="932327136139879170">홈</translation>
 <translation id="984275831282074731">결제 수단</translation>
 </translationbundle>

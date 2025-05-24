@@ -24,6 +24,13 @@ struct ReadLaterEntry {
   string display_time_since_update;
 };
 
+// Properties associated with a window.
+struct Window {
+  bool active;
+  // Height of the window's content area, in pixels.
+  uint32 height;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -65,6 +72,9 @@ interface PageHandler {
 
   // Notify the backend that the dialog should be closed.
   CloseUI();
+
+  // Get window data for the current profile.
+  GetWindowData() => (array<Window> windows);
 };
 
 enum CurrentPageActionButtonState {

@@ -24,7 +24,7 @@ void BurnInController::Start() {
   ids_to_burn_in_iteration_.clear();
 }
 
-BurnInController::~BurnInController() {}
+BurnInController::~BurnInController() = default;
 
 void BurnInController::Stop() {
   burn_in_timer_.Stop();

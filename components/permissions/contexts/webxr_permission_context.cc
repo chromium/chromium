@@ -4,10 +4,13 @@
 
 #include "components/permissions/contexts/webxr_permission_context.h"
 
+#include <memory>
+
 #include "base/check.h"
 #include "build/build_config.h"
+#include "components/permissions/permission_request_data.h"
 #include "device/vr/buildflags/buildflags.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/permissions/android/android_permission_util.h"
@@ -27,7 +30,7 @@ WebXrPermissionContext::WebXrPermissionContext(
     ContentSettingsType content_settings_type)
     : PermissionContextBase(browser_context,
                             content_settings_type,
-                            blink::mojom::PermissionsPolicyFeature::kWebXr),
+                            network::mojom::PermissionsPolicyFeature::kWebXr),
       content_settings_type_(content_settings_type) {
   DCHECK(content_settings_type_ == ContentSettingsType::VR ||
          content_settings_type_ == ContentSettingsType::AR ||
@@ -43,17 +46,12 @@ WebXrPermissionContext::~WebXrPermissionContext() = default;
 // site permission is "Block"). The media permissions are now following the
 // approach found here.
 void WebXrPermissionContext::NotifyPermissionSet(
-    const PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool persist,
     ContentSetting content_setting,
     bool is_one_time,
     bool is_final_decision) {
-  const bool is_hands =
-      content_settings_type_ == ContentSettingsType::HAND_TRACKING;
-  DCHECK(!is_one_time || is_hands);
   DCHECK(is_final_decision);
 
   // Note that this method calls into base class implementation version of
@@ -69,36 +67,38 @@ void WebXrPermissionContext::NotifyPermissionSet(
   // non-OpenXR VR.
   const bool permission_granted =
       content_setting == ContentSetting::CONTENT_SETTING_ALLOW;
-  const bool is_ar = content_settings_type_ == ContentSettingsType::AR;
   bool is_openxr = false;
 #if BUILDFLAG(ENABLE_OPENXR)
   is_openxr = content_settings_type_ == ContentSettingsType::VR &&
               device::features::IsOpenXrEnabled();
 #endif
+  const bool is_hands =
+      content_settings_type_ == ContentSettingsType::HAND_TRACKING;
+  const bool is_ar = content_settings_type_ == ContentSettingsType::AR;
   const bool additional_permissions_needed =
       permission_granted && (is_ar || is_openxr || is_hands);
   if (!additional_permissions_needed) {
     PermissionContextBase::NotifyPermissionSet(
-        id, requesting_origin, embedding_origin, std::move(callback), persist,
-        content_setting, is_one_time, is_final_decision);
+        request_data, std::move(callback), persist, content_setting,
+        is_one_time, is_final_decision);
     return;
   }
 
   // Whether or not the user will ultimately accept the OS permissions, we want
   // to save the content_setting here if we should.
   if (persist) {
-    PermissionContextBase::UpdateContentSetting(
-        requesting_origin, embedding_origin, content_setting, is_one_time);
+    PermissionContextBase::UpdateContentSetting(request_data, content_setting,
+                                                is_one_time);
   }
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(id.global_render_frame_host_id()));
+          content::RenderFrameHost::FromID(
+              request_data.id.global_render_frame_host_id()));
   if (!web_contents) {
     // If we can't get the web contents, we don't know the state of the OS
     // permission, so assume we don't have it.
-    OnAndroidPermissionDecided(id, requesting_origin, embedding_origin,
-                               std::move(callback),
+    OnAndroidPermissionDecided(request_data, std::move(callback),
                                false /*permission_granted*/);
     return;
   }
@@ -112,16 +112,14 @@ void WebXrPermissionContext::NotifyPermissionSet(
     case PermissionRepromptState::kNoNeed:
       // We have already returned if permission was denied by the user, and this
       // indicates that we have all the OS permissions we need.
-      OnAndroidPermissionDecided(id, requesting_origin, embedding_origin,
-                                 std::move(callback),
+      OnAndroidPermissionDecided(request_data, std::move(callback),
                                  true /*permission_granted*/);
       return;
 
     case PermissionRepromptState::kCannotShow:
       // If we cannot show the info bar, then we have to assume we don't have
       // the permissions we need.
-      OnAndroidPermissionDecided(id, requesting_origin, embedding_origin,
-                                 std::move(callback),
+      OnAndroidPermissionDecided(request_data, std::move(callback),
                                  false /*permission_granted*/);
       return;
 
@@ -135,16 +133,18 @@ void WebXrPermissionContext::NotifyPermissionSet(
               permission_type, content_settings_type(),
               base::BindOnce(
                   &WebXrPermissionContext::OnAndroidPermissionDecided,
-                  weak_ptr_factory_.GetWeakPtr(), id, requesting_origin,
-                  embedding_origin, std::move(callback)));
+                  weak_ptr_factory_.GetWeakPtr(),
+                  PermissionRequestData(this, request_data.id,
+                                        request_data.user_gesture,
+                                        request_data.requesting_origin,
+                                        request_data.embedding_origin),
+                  std::move(callback)));
       return;
   }
 }
 
 void WebXrPermissionContext::OnAndroidPermissionDecided(
-    const PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
+    const PermissionRequestData& request_data,
     BrowserPermissionCallback callback,
     bool permission_granted) {
   // If we were supposed to persist the setting we've already done so in the
@@ -156,10 +156,10 @@ void WebXrPermissionContext::OnAndroidPermissionDecided(
   ContentSetting setting = permission_granted
                                ? ContentSetting::CONTENT_SETTING_ALLOW
                                : ContentSetting::CONTENT_SETTING_BLOCK;
-  PermissionContextBase::NotifyPermissionSet(
-      id, requesting_origin, embedding_origin, std::move(callback),
-      false /*persist*/, setting, /*is_one_time=*/false,
-      /*is_final_decision=*/true);
+  PermissionContextBase::NotifyPermissionSet(request_data, std::move(callback),
+                                             false /*persist*/, setting,
+                                             /*is_one_time=*/false,
+                                             /*is_final_decision=*/true);
 }
 
 void WebXrPermissionContext::UpdateTabContext(

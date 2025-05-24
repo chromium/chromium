@@ -8,6 +8,6 @@ namespace ui_devtools {
 
 PageAgent::PageAgent(DOMAgent* dom_agent) : dom_agent_(dom_agent) {}
 
-PageAgent::~PageAgent() {}
+PageAgent::~PageAgent() = default;
 
 }  // namespace ui_devtools

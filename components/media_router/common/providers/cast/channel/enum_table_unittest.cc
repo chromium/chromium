@@ -151,11 +151,11 @@ constexpr MyEnum kInvalid =
     static_cast<MyEnum>(static_cast<int>(MyEnum::kMaxValue) + 1);
 
 TEST(EnumTableDeathTest, EnumToString) {
-  EXPECT_DCHECK_DEATH(kSorted.GetString<kInvalid>());
+  EXPECT_NOTREACHED_DEATH(kSorted.GetString<kInvalid>());
 }
 
 TEST(EnumTableDeathTest, StaticEnumToString) {
-  EXPECT_DCHECK_DEATH((EnumToString<MyEnum, kInvalid>()));
+  EXPECT_NOTREACHED_DEATH((EnumToString<MyEnum, kInvalid>()));
 }
 
 enum class HugeEnum {

@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <variant>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -14,7 +15,6 @@
 #include "base/version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_app {
 
@@ -51,10 +51,10 @@ class IsolatedWebAppInstallerModel {
   };
   struct InstallationFailedDialog {};
 
-  using Dialog = absl::variant<BundleInvalidDialog,
-                               BundleAlreadyInstalledDialog,
-                               ConfirmInstallationDialog,
-                               InstallationFailedDialog>;
+  using Dialog = std::variant<BundleInvalidDialog,
+                              BundleAlreadyInstalledDialog,
+                              ConfirmInstallationDialog,
+                              InstallationFailedDialog>;
 
   explicit IsolatedWebAppInstallerModel(const IwaSourceBundleWithMode& source);
   ~IsolatedWebAppInstallerModel();

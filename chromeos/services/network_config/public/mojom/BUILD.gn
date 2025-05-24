@@ -12,15 +12,11 @@ mojom("mojom") {
     "cros_network_config.mojom",
   ]
 
-  # WebUI bindings are only needed on ChromeOS Ash.
-  if (is_chromeos_ash) {
-    webui_module_path =
-        "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
 
-    # Used by ash/webui/common/resources/network_health, which is still using
-    # JS + Closure.
-    generate_webui_js_bindings = true
-  }
+  # Used by external clients, see chromeos/resources/BUILD.gn.
+  generate_legacy_js_bindings = true
 
   public_deps = [
     ":network_types",
@@ -47,13 +43,9 @@ mojom("mojom") {
 mojom("network_types") {
   sources = [ "network_types.mojom" ]
 
-  # WebUI bindings are only needed on Ash.
-  if (is_chromeos_ash) {
-    webui_module_path =
-        "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_config/public/mojom"
 
-    # Used by ash/webui/common/resources/network_health, which is still using
-    # JS + Closure.
-    generate_webui_js_bindings = true
-  }
+  # Used by external clients, see chromeos/resources/BUILD.gn.
+  generate_legacy_js_bindings = true
 }

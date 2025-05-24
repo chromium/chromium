@@ -29,7 +29,6 @@ import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountManagerFacade.ChildAccountStatusListener;
 import org.chromium.components.signin.AccountUtils;
@@ -43,14 +42,12 @@ import java.lang.ref.WeakReference;
 @LooperMode(LooperMode.Mode.LEGACY)
 public class ChildAccountServiceTest {
     private static final Account CHILD_ACCOUNT1 =
-            AccountUtils.createAccountFromName("child.account1@gmail.com");
+            AccountUtils.createAccountFromEmail("child.account1@gmail.com");
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 
     private final FakeAccountManagerFacade mFakeFacade = spy(new FakeAccountManagerFacade());
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule public final JniMocker mocker = new JniMocker();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
@@ -64,7 +61,7 @@ public class ChildAccountServiceTest {
 
     @Before
     public void setUp() {
-        mocker.mock(ChildAccountServiceJni.TEST_HOOKS, mNativeMock);
+        ChildAccountServiceJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

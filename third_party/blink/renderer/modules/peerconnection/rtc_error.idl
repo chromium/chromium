@@ -18,7 +18,10 @@ enum RTCErrorDetailType {
     "sctp-failure",
     "sdp-syntax-error",
     "hardware-encoder-not-available",
-    "hardware-encoder-error"
+    "hardware-encoder-error",
+
+    // Deviation from specification see crbug.com/374034251
+    "no-info",
 };
 
 // https://w3c.github.io/webrtc-pc/#dfn-rtcerror

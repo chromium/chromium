@@ -21,7 +21,7 @@
 // https://dom.spec.whatwg.org/#interface-event
 
 [
-    Exposed=(Window,Worker,AudioWorklet)
+    Exposed=(Window,Worker,AudioWorklet,ShadowRealm) // TODO(crbug.com/41480387): This should be Exposed=*
 ] interface Event {
     constructor(DOMString type, optional EventInit eventInitDict = {});
     readonly attribute DOMString type;

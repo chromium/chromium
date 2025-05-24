@@ -240,7 +240,6 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
         {mojom::ContextType::kPrivilegedExtension,
          mojom::ContextType::kPrivilegedWebPage,
          mojom::ContextType::kContentScript,
-         mojom::ContextType::kLockscreenExtension,
          mojom::ContextType::kOffscreenExtension,
          mojom::ContextType::kUserScript, mojom::ContextType::kWebPage,
          mojom::ContextType::kWebUi, mojom::ContextType::kUntrustedWebUi,

@@ -4,8 +4,8 @@
 
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("management") {
   sources = [
@@ -18,17 +18,23 @@ source_set("management") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  public_deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//extensions/browser:browser_sources",
+    "//extensions/common",
+    "//extensions/common:common_constants",
+    "//extensions/common/api",
+    "//services/data_decoder/public/cpp",
+    "//url",
+  ]
+
   deps = [
     "//build:chromeos_buildflags",
     "//components/supervised_user/core/common:buildflags",
-    "//components/supervised_user/core/common:common",
+    "//components/supervised_user/core/common:features",
     "//content/public/browser",
-    "//extensions/common",
-    "//extensions/common/api",
-  ]
-
-  public_deps = [
-    "//extensions/browser:browser_sources",
-    "//services/data_decoder/public/cpp",
+    "//extensions/browser/api:extensions_api_client",
+    "//extensions/common:mojom",
   ]
 }

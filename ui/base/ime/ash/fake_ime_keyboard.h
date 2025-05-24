@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/time/time.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 
 namespace ash {
@@ -28,11 +29,16 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) FakeImeKeyboard : public ImeKeyboard {
   bool SetAutoRepeatRate(const AutoRepeatRate& rate) override;
   void SetAutoRepeatEnabled(bool enabled) override;
   bool GetAutoRepeatEnabled() override;
+  void SetSlowKeysEnabled(bool enabled) override;
+  bool IsSlowKeysEnabled() const override;
+  void SetSlowKeysDelay(base::TimeDelta delay) override;
 
   int set_current_keyboard_layout_by_name_count_;
   AutoRepeatRate last_auto_repeat_rate_;
   // TODO(yusukes): Add more variables for counting the numbers of the API calls
   bool auto_repeat_is_enabled_;
+  bool slow_keys_enabled_ = false;
+  base::TimeDelta slow_keys_delay_;
 };
 
 }  // namespace input_method

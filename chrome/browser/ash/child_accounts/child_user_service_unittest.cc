@@ -5,12 +5,14 @@
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
 
 #include "chrome/browser/ash/child_accounts/child_user_service_factory.h"
-#include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+using testing::NotNull;
 
 class ChildUserServiceTest : public testing::Test {
  protected:
@@ -21,12 +23,9 @@ class ChildUserServiceTest : public testing::Test {
   TestingProfile profile_;
 };
 
-// Tests Per-App Time Limits feature.
-using PerAppTimeLimitsTest = ChildUserServiceTest;
-
-TEST_F(PerAppTimeLimitsTest, GetAppTimeLimitInterface) {
-  EXPECT_EQ(ChildUserServiceFactory::GetForBrowserContext(profile()),
-            app_time::AppTimeLimitInterface::Get(profile()));
+TEST_F(ChildUserServiceTest, GetForBrowserContext) {
+  EXPECT_THAT(ChildUserServiceFactory::GetForBrowserContext(profile()),
+              NotNull());
 }
 
 }  // namespace ash

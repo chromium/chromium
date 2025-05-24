@@ -14,7 +14,6 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 // A form field that accepts International Bank Account Number (IBAN).
@@ -23,7 +22,7 @@ class IbanFieldParser : public FormFieldParser {
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
 
-  explicit IbanFieldParser(const AutofillField* field);
+  explicit IbanFieldParser(FieldAndMatchInfo match);
 
   IbanFieldParser(const IbanFieldParser&) = delete;
   IbanFieldParser& operator=(const IbanFieldParser&) = delete;
@@ -32,7 +31,7 @@ class IbanFieldParser : public FormFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  raw_ptr<const AutofillField> field_;
+  FieldAndMatchInfo match_;
 };
 
 }  // namespace autofill

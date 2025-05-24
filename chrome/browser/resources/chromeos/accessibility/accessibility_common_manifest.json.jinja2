@@ -6,14 +6,18 @@
   "manifest_version": 3,
   "minimum_chrome_version": "93",
   "background": {
-    "service_worker": "accessibility_common/accessibility_common_loader.ts",
+    "service_worker": "accessibility_common/mv3/accessibility_common_loader.js",
     "type": "module"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
 {% else %}
   "manifest_version": 2,
   "background": {
-    "page": "accessibility_common/background.html"
+    "page": "accessibility_common/mv2/background.html"
   },
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
 {% endif %}
   "name": "Accessibility Common",
   "version": "{{set_version}}",
@@ -21,7 +25,6 @@
 {% if is_guest_manifest == '1' %}
   "incognito": "split",
 {% endif %}
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
   "permissions": [
     "accessibilityPrivate",
     "accessibilityFeatures.read",
@@ -33,6 +36,9 @@
     "metricsPrivate",
     "settingsPrivate",
     "languageSettingsPrivate",
+{% if is_manifest_v3 == '1' %}
+    "offscreen",
+{% endif %}
     "speechRecognitionPrivate",
     "tabs",
     "videoCapture"

@@ -12,7 +12,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {ExtensionApprovalsDisabled} from './flows/extension_approvals_disabled.js';
 import {isParentAccessJellyEnabled, ParentAccessEvent} from './parent_access_app.js';
 import {getTemplate} from './parent_access_disabled.html.js';
-import {ParentAccessScreen} from './parent_access_screen.js';
+import type {ParentAccessScreen} from './parent_access_screen.js';
 import {ParentAccessParams_FlowType, ParentAccessResult} from './parent_access_ui.mojom-webui.js';
 import {getParentAccessParams, getParentAccessUiHandler} from './parent_access_ui_handler.js';
 

@@ -45,31 +45,24 @@ export class CheckupListItemElement extends CheckupListItemElementBase {
   static get properties() {
     return {
       item: Object,
-
       group: Object,
-
       first: Boolean,
-
       showDetails: Boolean,
-
       showAlreadyChanged: Boolean,
-
       showEditPasswordDialog_: Boolean,
-
       showEditPasswordDisclaimer_: Boolean,
-
       showDeletePasswordDialog_: Boolean,
     };
   }
 
-  item: chrome.passwordsPrivate.PasswordUiEntry;
-  group: chrome.passwordsPrivate.CredentialGroup;
-  first: boolean;
-  showDetails: boolean;
-  showAlreadyChanged: boolean;
-  private showEditPasswordDialog_: boolean;
-  private showEditPasswordDisclaimer_: boolean;
-  private showDeletePasswordDialog_: boolean;
+  declare item: chrome.passwordsPrivate.PasswordUiEntry;
+  declare group: chrome.passwordsPrivate.CredentialGroup;
+  declare first: boolean;
+  declare showDetails: boolean;
+  declare showAlreadyChanged: boolean;
+  declare private showEditPasswordDialog_: boolean;
+  declare private showEditPasswordDisclaimer_: boolean;
+  declare private showDeletePasswordDialog_: boolean;
 
   private getPasswordValue_(): string|undefined {
     return this.isPasswordVisible ? this.item.password : ' '.repeat(10);

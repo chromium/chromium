@@ -26,14 +26,14 @@ namespace network {
 // This function is safe to be called from any thread.
 //
 // See also blink::SecurityOrigin::isPotentiallyTrustworthy.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_IS_POTENTIALLY_TRUSTWORTHY)
 bool IsOriginPotentiallyTrustworthy(const url::Origin& origin);
 
 // Returns whether a URL is potentially trustworthy according to
 // https://www.w3.org/TR/powerful-features/#is-url-trustworthy.
 //
 // This function is safe to be called from any thread.
-COMPONENT_EXPORT(NETWORK_CPP)
+COMPONENT_EXPORT(NETWORK_CPP_IS_POTENTIALLY_TRUSTWORTHY)
 bool IsUrlPotentiallyTrustworthy(const GURL& url);
 
 // Helper class for maintaining an allowlist of origins and hostname patterns
@@ -59,7 +59,8 @@ bool IsUrlPotentiallyTrustworthy(const GURL& url);
 // this class handles marking origins as "configured as a trustworthy origin".
 //
 // Note: all methods of this class are thread-safe.
-class COMPONENT_EXPORT(NETWORK_CPP) SecureOriginAllowlist {
+class COMPONENT_EXPORT(NETWORK_CPP_IS_POTENTIALLY_TRUSTWORTHY)
+    SecureOriginAllowlist {
  public:
   static SecureOriginAllowlist& GetInstance();
 

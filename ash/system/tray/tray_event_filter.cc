@@ -5,24 +5,15 @@
 #include "ash/system/tray/tray_event_filter.h"
 
 #include "ash/bubble/bubble_event_filter.h"
-#include "ash/bubble/bubble_utils.h"
-#include "ash/capture_mode/capture_mode_util.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/tray_background_view_catalog.h"
-#include "ash/root_window_controller.h"
-#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/system/notification_center/ash_message_popup_collection.h"
 #include "ash/system/notification_center/notification_center_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "ash/system/tray/tray_bubble_base.h"
-#include "ash/system/unified/date_tray.h"
 #include "ash/system/unified/unified_system_tray.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
 #include "ui/aura/window.h"
-#include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
@@ -89,45 +80,34 @@ void TrayEventFilter::OnWindowActivated(ActivationReason reason,
     return;
   }
 
-  auto* active_status_area_widget =
-      RootWindowController::ForWindow(gained_active)
-          ->shelf()
-          ->GetStatusAreaWidget();
-  auto* open_shelf_pod_bubble =
-      active_status_area_widget->open_shelf_pod_bubble();
+  aura::Window* const bubble_window = bubble_widget_->GetNativeWindow();
 
-  if (!open_shelf_pod_bubble) {
-    return;
-  }
-
-  views::Widget* bubble_widget = open_shelf_pod_bubble->GetWidget();
-  auto* gained_active_widget =
-      views::Widget::GetWidgetForNativeView(gained_active);
-
-  if (bubble_widget == gained_active_widget) {
+  // Bail if `gained_active` is our own bubble, or on another display.
+  if (bubble_window == gained_active ||
+      bubble_window->GetRootWindow() != gained_active->GetRootWindow()) {
     return;
   }
 
   // Don't close the bubble if a transient child is gaining or losing
   // activation (i.e. b/303382616: the network info bubble is a transcient child
   // of the QS bubble and activating it should not close the QS bubble).
-  if (::wm::HasTransientAncestor(gained_active,
-                                 bubble_widget->GetNativeWindow()) ||
-      (lost_active && ::wm::HasTransientAncestor(
-                          lost_active, bubble_widget->GetNativeWindow()))) {
+  if (::wm::HasTransientAncestor(gained_active, bubble_window) ||
+      (lost_active && ::wm::HasTransientAncestor(lost_active, bubble_window))) {
     return;
   }
 
   // If the activated window is a popup notification, interacting with it
   // should not close the bubble.
   if (features::IsNotifierCollisionEnabled() &&
-      active_status_area_widget->notification_center_tray()
+      StatusAreaWidget::ForWindow(bubble_window)
+          ->notification_center_tray()
           ->popup_collection()
-          ->IsWidgetAPopupNotification(gained_active_widget)) {
+          ->IsWidgetAPopupNotification(
+              views::Widget::GetWidgetForNativeView(gained_active))) {
     return;
   }
 
-  open_shelf_pod_bubble->CloseBubbleView();
+  tray_button_->CloseBubble(TrayBackgroundView::CloseReason::kWindowActivation);
 }
 
 }  // namespace ash

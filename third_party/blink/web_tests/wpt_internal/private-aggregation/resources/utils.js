@@ -2,7 +2,7 @@
 // ../../aggregation-service/support/aggregation-service.js
 
 const NUM_CONTRIBUTIONS_SHARED_STORAGE = 20;
-const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 20;
+const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 100;
 
 const NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES = Object.freeze({
   bucket: encodeBigInt(0n, 16),
@@ -77,6 +77,18 @@ const ONE_CONTRIBUTION_HIGHER_VALUE_EXAMPLE = Object.freeze([
 ]);
 
 /**
+ * Returns an array of contributions, each of which could be passed into
+ * `privateAggregation.contributeToHistogram()`. This function constructs
+ * inputs; for the expected output payload, pass the same value of
+ * `numContributions` to `buildPayloadWithSequentialContributions()`.
+ */
+function buildArrayOfSequentialContributions(numContributions) {
+  return Array(numContributions)
+      .fill()
+      .map((_, i) => ({bucket: BigInt(i) + 1n, value: 1}));
+}
+
+/**
  * Returns a frozen payload object with contributions of the form `{bucket: i,
  * value: 1}` for i from 1 to `numContributions`, inclusive.
  */
@@ -124,30 +136,79 @@ const resetReports = url => {
  */
 const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
 
-/**
- * Polls the given `url` to retrieve reports sent there. Once the reports are
- * received, returns the list of reports. Returns null if the timeout is reached
- * before a report is available.
- */
-const pollReports = async (url, wait_for = 1, timeout = 5000 /*ms*/) => {
-  let startTime = performance.now();
-  let payloads = [];
-  while (performance.now() - startTime < timeout) {
-    const resp = await fetch(new URL(url, location.origin));
-    const payload = await resp.json();
-    if (payload.length > 0) {
-      payloads = payloads.concat(payload);
-    }
-    if (payloads.length >= wait_for) {
-      return payloads;
-    }
-    await delay(/*ms=*/ 100);
+class ReportPoller {
+  #reportPath
+  #debugReportPath
+  #fullTimeoutMs
+
+  /**
+   * @param{string} reportPath The reporting endpoint.
+   * @param{string} debugReportPath The reporting endpoint for debug reports.
+   * @param{number} fullTimeoutMs Maximum duration that `pollReportsAndAssert()`
+   *    may wait for reports to become available.
+   */
+  constructor(reportPath, debugReportPath, fullTimeoutMs) {
+    this.#reportPath = reportPath;
+    this.#debugReportPath = debugReportPath;
+    this.#fullTimeoutMs = fullTimeoutMs
   }
-  if (payloads.length > 0) {
-    return payloads;
+
+  /**
+   * Polls for regular reports and debug reports. Asserts that the numbers of
+   * reports and debug reports received match `expectedNumReports` and
+   * `expectedNumDebugReports`, respectively. In the worst case, this function
+   * takes approximately `fullTimeoutMs` rather than up to `2 * fullTimeoutMs`.
+   *
+   * @param {number} expectedNumReports A non-negative integer.
+   * @param {number} expectedNumDebugReports A non-negative integer.
+   * @returns {Object} The `reports` and `debug_reports` fields contain arrays
+   *    of reports, already parsed as JSON.
+   */
+  async pollReportsAndAssert(expectedNumReports, expectedNumDebugReports) {
+    const [reports, debugReports] = await Promise.all([
+      this.#poll(this.#reportPath, expectedNumReports || 1),
+      this.#poll(this.#debugReportPath, expectedNumDebugReports || 1),
+    ]);
+
+    assert_equals(
+        reports.length, expectedNumReports, 'Unexpected number of reports.');
+    assert_equals(
+        debugReports.length, expectedNumDebugReports,
+        'Unexpected number of debug reports.');
+
+    return {
+      reports: reports.map(JSON.parse),
+      debug_reports: debugReports.map(JSON.parse)
+    };
   }
-  return null;
-};
+
+  /**
+   * Polls `path` until `targetNumReports` responses have been retrieved or
+   * runtime exceeds `this.#fullTimeoutMs`. Guaranteed to poll at least once.
+   * Returns an array of reports parsed from JSON responses.
+   */
+  async #poll(path, targetNumReports) {
+    assert_greater_than(
+        targetNumReports, 0,
+        '#pollReports(): targetNumReports cannot be negative.');
+
+    const timeoutTime = performance.now() + this.#fullTimeoutMs;
+    const outReports = [];
+
+    do {
+      const response = await fetch(path);
+      assert_true(response.ok, '#pollReports(): fetch response should be OK.');
+      const reports = await response.json();
+      outReports.push(...reports);
+      if (outReports.length >= targetNumReports) {
+        break;
+      }
+      await delay(/*ms=*/ 100);
+    } while (performance.now() < timeoutTime);
+
+    return outReports;
+  }
+}
 
 /**
  * Verifies that a report's shared_info string is serialized JSON with the
@@ -230,7 +291,8 @@ const verifyReport =
       if (debug_key || expected_payload) {
         // A debug key cannot be set without debug mode being enabled and the
         // `expected_payload` should be undefined if debug mode is not enabled.
-        assert_true(is_debug_enabled);
+        assert_true(
+            is_debug_enabled, 'verifyReport(): Debug mode should be enabled.');
       }
 
       assert_own_property(report, 'shared_info');

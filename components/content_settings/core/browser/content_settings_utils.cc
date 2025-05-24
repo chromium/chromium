@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/content_settings/core/browser/content_settings_utils.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -32,14 +29,15 @@ struct ContentSettingsStringMapping {
   ContentSetting content_setting;
   const char* content_setting_str;
 };
-const ContentSettingsStringMapping kContentSettingsStringMapping[] = {
-    {CONTENT_SETTING_DEFAULT, "default"},
-    {CONTENT_SETTING_ALLOW, "allow"},
-    {CONTENT_SETTING_BLOCK, "block"},
-    {CONTENT_SETTING_ASK, "ask"},
-    {CONTENT_SETTING_SESSION_ONLY, "session_only"},
-    {CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, "detect_important_content"},
-};
+const auto kContentSettingsStringMapping =
+    std::to_array<ContentSettingsStringMapping>({
+        {CONTENT_SETTING_DEFAULT, "default"},
+        {CONTENT_SETTING_ALLOW, "allow"},
+        {CONTENT_SETTING_BLOCK, "block"},
+        {CONTENT_SETTING_ASK, "ask"},
+        {CONTENT_SETTING_SESSION_ONLY, "session_only"},
+        {CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, "detect_important_content"},
+    });
 static_assert(std::size(kContentSettingsStringMapping) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kContentSettingsToFromString should have "
@@ -127,7 +125,7 @@ PatternPair ParsePatternString(const std::string& pattern_str) {
 
 void GetRendererContentSettingRules(const HostContentSettingsMap* map,
                                     RendererContentSettingRules* rules) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS)
   rules->mixed_content_rules =
       map->GetSettingsForOneType(ContentSettingsType::MIXEDSCRIPT);
 #else
@@ -149,8 +147,7 @@ bool IsMorePermissive(ContentSetting a, ContentSetting b) {
     if (setting == a)
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 // Currently only mojom::SessionModel::DURABLE constraints need to be persistent
@@ -236,25 +233,11 @@ bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type) {
   return type == ContentSettingsType::FILE_SYSTEM_ACCESS_CHOOSER_DATA;
 }
 
-bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
-                                   const RuleMetaData& metadata) {
-  switch (type) {
-    case ContentSettingsType::STORAGE_ACCESS:
-    case ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS:
-      return metadata.decided_by_related_website_sets() ||
-             // TODO(b/344678400): Delete after NON_RESTORABLE_USER_SESSION is
-             // removed.
-             metadata.session_model() ==
-                 mojom::SessionModel::NON_RESTORABLE_USER_SESSION;
-    default:
-      return false;
-  }
-}
-
 const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
   static base::NoDestructor<const std::vector<ContentSettingsType>> types{{
 #if !BUILDFLAG(IS_ANDROID)
       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+      ContentSettingsType::CAPTURED_SURFACE_CONTROL,
 #endif
       ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,
@@ -262,6 +245,8 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::HAND_TRACKING,
       ContentSettingsType::SMART_CARD_DATA,
+      ContentSettingsType::AR,
+      ContentSettingsType::VR,
   }};
   return *types;
 }
@@ -270,14 +255,23 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
   static base::NoDestructor<const std::vector<ContentSettingsType>> types{{
 #if !BUILDFLAG(IS_ANDROID)
       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+      ContentSettingsType::CAPTURED_SURFACE_CONTROL,
 #endif
       ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::HAND_TRACKING,
+      ContentSettingsType::AR,
+      ContentSettingsType::VR,
   }};
   return *types;
+}
+
+bool ShouldTypeExpireActively(ContentSettingsType type) {
+  return base::FeatureList::IsEnabled(
+             content_settings::features::kActiveContentSettingExpiry) &&
+         base::Contains(GetTypesWithTemporaryGrantsInHcsm(), type);
 }
 
 }  // namespace content_settings

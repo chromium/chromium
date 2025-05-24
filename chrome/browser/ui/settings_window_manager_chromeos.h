@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_SETTINGS_WINDOW_MANAGER_CHROMEOS_H_
 
 #include <map>
-#include <string>
+#include <string_view>
 
 #include "ash/webui/settings/public/constants/setting.mojom-shared.h"
 #include "base/memory/singleton.h"
@@ -59,12 +59,12 @@ class SettingsWindowManager {
 
   // As above, but shows a settings sub-page.
   void ShowOSSettings(Profile* profile,
-                      const std::string& sub_page,
+                      std::string_view sub_page,
                       int64_t display_id = display::kInvalidDisplayId);
 
   // As above, but links to a specific setting.
   void ShowOSSettings(Profile* profile,
-                      const std::string& sub_page,
+                      std::string_view sub_page,
                       const chromeos::settings::mojom::Setting setting_id,
                       int64_t display_id = display::kInvalidDisplayId);
 

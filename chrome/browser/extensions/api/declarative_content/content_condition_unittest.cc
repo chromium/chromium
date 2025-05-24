@@ -19,7 +19,7 @@ namespace {
 
 class TestPredicate : public ContentPredicate {
  public:
-  TestPredicate() {}
+  TestPredicate() = default;
 
   TestPredicate(const TestPredicate&) = delete;
   TestPredicate& operator=(const TestPredicate&) = delete;
@@ -54,7 +54,7 @@ class TestPredicateFactoryGeneratingError : public ContentPredicateFactory {
 
 class TestPredicateFactoryGeneratingPredicate : public ContentPredicateFactory {
  public:
-  TestPredicateFactoryGeneratingPredicate() {}
+  TestPredicateFactoryGeneratingPredicate() = default;
 
   TestPredicateFactoryGeneratingPredicate(
       const TestPredicateFactoryGeneratingPredicate&) = delete;

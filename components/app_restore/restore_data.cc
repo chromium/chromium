@@ -139,7 +139,7 @@ bool RestoreData::HasAppTypeBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second,
       [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
         return data.second->browser_extra_info.app_type_browser.value_or(false);
@@ -151,7 +151,7 @@ bool RestoreData::HasBrowser() const {
   if (it == app_id_to_launch_list_.end())
     return false;
 
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       it->second,
       [](const std::pair<const int, std::unique_ptr<AppRestoreData>>& data) {
         return !data.second->browser_extra_info.app_type_browser.value_or(
@@ -330,17 +330,6 @@ RestoreData::MakeWindowIdsUniqueForDeskTemplate() {
 
   has_unique_window_ids_for_desk_template_ = true;
   return mapping;
-}
-
-void RestoreData::UpdateBrowserAppIdToLacros() {
-  auto app_launch_list_iter =
-      app_id_to_launch_list_.find(app_constants::kChromeAppId);
-  if (app_launch_list_iter == app_id_to_launch_list_.end()) {
-    return;
-  }
-  app_id_to_launch_list_[app_constants::kLacrosAppId] =
-      std::move(app_launch_list_iter->second);
-  RemoveApp(app_constants::kChromeAppId);
 }
 
 std::string RestoreData::ToString() const {

@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ash/wallpaper/wallpaper_enumerator.h"
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -36,7 +36,7 @@ void EnumerateFiles(const base::FilePath& path,
   for (base::FilePath image_path = image_enumerator.Next();
        !image_path.empty() && out->size() < kMaximumImageCount;
        image_path = image_enumerator.Next()) {
-    if (base::ranges::any_of(
+    if (std::ranges::any_of(
             trash_paths, [&image_path](const base::FilePath& trash_path) {
               // Equivalent to
               // image_path.value().starts_with(trash_path.value()).
@@ -78,8 +78,7 @@ void EnumerateLocalWallpaperFiles(
   std::vector<base::FilePath> trash_paths;
   if (file_manager::trash::IsTrashEnabledForProfile(profile)) {
     auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile);
     for (const auto& it : enabled_trash_locations) {
       base::FilePath trash_path =
           it.first.Append(it.second.relative_folder_path);

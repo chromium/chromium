@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/page_load_metrics/observers/local_network_requests_page_load_metrics_observer.h"
 
@@ -112,9 +108,9 @@ const std::map<uint16_t, internal::PortType>& GetLocalhostPortCategories() {
 }  // namespace
 
 LocalNetworkRequestsPageLoadMetricsObserver::
-    LocalNetworkRequestsPageLoadMetricsObserver() {}
+    LocalNetworkRequestsPageLoadMetricsObserver() = default;
 LocalNetworkRequestsPageLoadMetricsObserver::
-    ~LocalNetworkRequestsPageLoadMetricsObserver() {}
+    ~LocalNetworkRequestsPageLoadMetricsObserver() = default;
 
 const char* LocalNetworkRequestsPageLoadMetricsObserver::GetObserverName()
     const {

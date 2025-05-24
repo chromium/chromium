@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_mac.h"
 
+#include <variant>
+
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -52,7 +54,7 @@ void WebThemeEngineMac::PaintMacScrollBarParts(
     mojom::ColorScheme color_scheme) {
   ui::NativeTheme::ScrollbarExtraParams native_scrollbar_extra;
   const WebThemeEngine::ScrollbarExtraParams& scrollbar_extra =
-      absl::get<WebThemeEngine::ScrollbarExtraParams>(*extra_params);
+      std::get<WebThemeEngine::ScrollbarExtraParams>(*extra_params);
   native_scrollbar_extra.is_hovering = scrollbar_extra.is_hovering;
   native_scrollbar_extra.is_overlay = scrollbar_extra.is_overlay;
   native_scrollbar_extra.scale_from_dip = scrollbar_extra.scale_from_dip;

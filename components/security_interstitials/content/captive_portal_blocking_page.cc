@@ -181,8 +181,6 @@ void CaptivePortalBlockingPage::PopulateInterstitialStrings(
   load_time_data.Set("closeDetails", "");
   load_time_data.Set("explanationParagraph", "");
   load_time_data.Set("finalParagraph", "");
-  load_time_data.Set("recurrentErrorParagraph", "");
-  load_time_data.Set("show_recurrent_error_paragraph", false);
   load_time_data.Set(security_interstitials::kDisplayCheckBox, false);
 
   PopulateEnhancedProtectionMessage(load_time_data);
@@ -221,8 +219,7 @@ void CaptivePortalBlockingPage::CommandReceived(const std::string& command) {
       // Commands are for testing.
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Command " << cmd
-          << " isn't handled by the captive portal interstitial.";
+      NOTREACHED() << "Command " << cmd
+                   << " isn't handled by the captive portal interstitial.";
   }
 }

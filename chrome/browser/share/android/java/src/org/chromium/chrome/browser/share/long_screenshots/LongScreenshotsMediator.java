@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.Entr
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotSource;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ChromeDialog;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -60,7 +61,7 @@ public class LongScreenshotsMediator
     private final Activity mActivity;
     private final EntryManager mEntryManager;
     private Bitmap mFullBitmap;
-    private float mDisplayDensity;
+    private final float mDisplayDensity;
 
     // Variables for tracking drag action.
     private int mDragStartEventY;
@@ -139,8 +140,8 @@ public class LongScreenshotsMediator
             showAreaSelectionDialog(
                     Bitmap.createScaledBitmap(
                             entryBitmap,
-                            (int) (Math.round(entryBitmap.getWidth() / scale)),
-                            (int) (Math.round(entryBitmap.getHeight() / scale)),
+                            (int) Math.round(entryBitmap.getWidth() / scale),
+                            (int) Math.round(entryBitmap.getHeight() / scale),
                             true));
             mDidScaleForTesting = true;
         } else {
@@ -165,7 +166,11 @@ public class LongScreenshotsMediator
         PropertyModelChangeProcessor.create(
                 mModel, mDialogView, LongScreenshotsAreaSelectionDialogViewBinder::bind);
 
-        mDialog = new ChromeDialog(mActivity, R.style.ThemeOverlay_BrowserUI_Fullscreen);
+        mDialog =
+                new ChromeDialog(
+                        mActivity,
+                        R.style.ThemeOverlay_BrowserUI_Fullscreen,
+                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled());
         mDialog.addContentView(
                 mDialogView,
                 new LinearLayout.LayoutParams(

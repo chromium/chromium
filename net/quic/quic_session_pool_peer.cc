@@ -41,8 +41,8 @@ const quic::QuicConfig* QuicSessionPoolPeer::GetConfig(
 std::unique_ptr<QuicCryptoClientConfigHandle>
 QuicSessionPoolPeer::GetCryptoConfig(
     QuicSessionPool* factory,
-    const NetworkAnonymizationKey& network_anonymization_key) {
-  return factory->GetCryptoConfigForTesting(network_anonymization_key);
+    QuicSessionPool::QuicCryptoClientConfigKey key) {
+  return factory->GetCryptoConfigForTesting(std::move(key));
 }
 
 bool QuicSessionPoolPeer::HasActiveSession(
@@ -138,9 +138,9 @@ void QuicSessionPoolPeer::SetYieldAfterDuration(
 bool QuicSessionPoolPeer::CryptoConfigCacheIsEmpty(
     QuicSessionPool* factory,
     const quic::QuicServerId& quic_server_id,
-    const NetworkAnonymizationKey& network_anonymization_key) {
+    QuicSessionPool::QuicCryptoClientConfigKey key) {
   return factory->CryptoConfigCacheIsEmptyForTesting(quic_server_id,
-                                                     network_anonymization_key);
+                                                     std::move(key));
 }
 
 size_t QuicSessionPoolPeer::GetNumDegradingSessions(QuicSessionPool* factory) {

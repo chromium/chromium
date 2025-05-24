@@ -8,9 +8,11 @@
 #include <cstddef>
 
 #include "base/containers/flat_map.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace autofill {
+class AutofillField;
 enum class FillingProduct;
 
 namespace autofill_metrics {
@@ -50,20 +52,6 @@ struct SuggestionRankingContext {
       suggestion_rankings_difference_map;
 };
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Used by LogAutofillShowCardsFromGoogleAccountButtonEventMetric().
-enum class ShowCardsFromGoogleAccountButtonEvent {
-  // 'Show Cards from Google Account' button appeared.
-  kButtonAppeared = 0,
-  // 'Show Cards from Google Account' button appeared. Logged once per page
-  // load.
-  kButtonAppearedOnce = 1,
-  // 'Show Cards from Google Account' button clicked.
-  kButtonClicked = 2,
-  kMaxValue = kButtonClicked,
-};
-
 // Log the number of Autofill suggestions for the given
 // `filling_product`presented to the user when displaying the autofill popup.
 void LogSuggestionsCount(size_t num_suggestions,
@@ -74,15 +62,16 @@ void LogSuggestionAcceptedIndex(int index,
                                 FillingProduct filling_product,
                                 bool off_the_record);
 
-// Logs the 'Show cards from your Google Account" button events.
-void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-    ShowCardsFromGoogleAccountButtonEvent event);
-
 // Logs a `ranking_difference` for a recently-selected Autofill suggestion
 // selection, recording if the suggestion was ranked higher or lower in the new
 // ranking algorithm compared to the legacy ranking algorithm.
 void LogAutofillRankingSuggestionDifference(
     SuggestionRankingContext::RelativePosition ranking_difference);
+
+// Logs metrics related to an autofill on typing suggestion being accepted.
+void LogAddressAutofillOnTypingSuggestionAccepted(
+    FieldType field_type_used,
+    const AutofillField* autofill_trigger_field);
 
 }  // namespace autofill_metrics
 }  // namespace autofill

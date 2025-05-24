@@ -33,7 +33,7 @@ class KeyboardAccessoryButtonGroupMediator
                 KeyboardAccessoryCoordinator.TabSwitchingDelegate {
     private final PropertyModel mModel;
     private @Nullable AccessoryTabObserver mAccessoryTabObserver;
-    private Set<ViewPager.OnPageChangeListener> mPageChangeListeners = new HashSet<>();
+    private final Set<ViewPager.OnPageChangeListener> mPageChangeListeners = new HashSet<>();
 
     KeyboardAccessoryButtonGroupMediator(PropertyModel model) {
         mModel = model;

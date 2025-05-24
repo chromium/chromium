@@ -6,13 +6,14 @@
 #define ASH_STYLE_ICON_BUTTON_H_
 
 #include <optional>
+#include <variant>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/third_party/icu/icu_utf.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/controls/button/image_button.h"
 
@@ -41,8 +42,6 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   METADATA_HEADER(IconButton, views::ImageButton)
 
  public:
-  using ColorVariant = absl::variant<SkColor, ui::ColorId>;
-
   enum class Type {
     kXSmall,
     kSmall,
@@ -111,7 +110,7 @@ class ASH_EXPORT IconButton : public views::ImageButton {
     Type type_;
     raw_ptr<const gfx::VectorIcon> icon_;
     std::optional<base_icu::UChar32> character_;
-    absl::variant<int, std::u16string> accessible_name_;
+    std::variant<int, std::u16string> accessible_name_;
     bool is_togglable_;
     bool has_border_;
     std::optional<int> view_id_;
@@ -166,8 +165,8 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // color ID when the button wants to have a different background color from
   // the default one. When both color value and color ID are set, color ID takes
   // the precedence.
-  void SetBackgroundColor(ColorVariant background_color);
-  void SetBackgroundToggledColor(ColorVariant background_toggled_color);
+  void SetBackgroundColor(ui::ColorVariant background_color);
+  void SetBackgroundToggledColor(ui::ColorVariant background_toggled_color);
 
   // Sets the button's background image. The |background_image| is resized to
   // fit the button. Note, if set, |background_image| is painted on top of
@@ -177,8 +176,8 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Sets the button's icon color or toggled color with color value and color ID
   // when the button wants to have a different icon color from the default one.
   // When both color value and color ID are set, color ID takes the precedence.
-  void SetIconColor(ColorVariant icon_color);
-  void SetIconToggledColor(ColorVariant icon_toggled_color);
+  void SetIconColor(ui::ColorVariant icon_color);
+  void SetIconToggledColor(ui::ColorVariant icon_toggled_color);
 
   // Sets the size to use for the vector icon in DIPs.
   void SetIconSize(int size);
@@ -205,9 +204,6 @@ class ASH_EXPORT IconButton : public views::ImageButton {
 
   void OnEnabledStateChanged();
 
-  // Gets the background color of the icon button.
-  SkColor GetBackgroundColor() const;
-
  private:
   // For unit tests.
   friend class BluetoothFeaturePodControllerTest;
@@ -220,10 +216,9 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // and the toggle state.
   void UpdateAccessibilityProperties();
 
-  std::pair<ui::ImageModel, ui::ImageModel> VectorImages(
-      const bool is_toggled,
-      ColorVariant color_variant,
-      const int size);
+  std::pair<ui::ImageModel, ui::ImageModel> VectorImages(const bool is_toggled,
+                                                         ui::ColorVariant color,
+                                                         const int size);
 
   const Type type_;
   raw_ptr<const gfx::VectorIcon> icon_ = nullptr;
@@ -238,10 +233,10 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   bool toggled_ = false;
 
   // Background colors and icon colors.
-  ColorVariant background_color_ = gfx::kPlaceholderColor;
-  ColorVariant background_toggled_color_ = gfx::kPlaceholderColor;
-  ColorVariant icon_color_ = gfx::kPlaceholderColor;
-  ColorVariant icon_toggled_color_ = gfx::kPlaceholderColor;
+  ui::ColorVariant background_color_;
+  ui::ColorVariant background_toggled_color_;
+  ui::ColorVariant icon_color_;
+  ui::ColorVariant icon_toggled_color_;
 
   bool blurred_background_shield_enabled_ = false;
   // Note: the blurred background shield will still be null if the button type

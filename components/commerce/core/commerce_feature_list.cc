@@ -41,15 +41,21 @@ const CountryLocaleMap& GetAllowedCountryToLocaleMap() {
     CountryLocaleMap map;
 
     map[&kCommerceMerchantViewerRegionLaunched] = {{"us", {"en-us"}}};
-    map[&kCommercePriceTrackingRegionLaunched] = {{"us", {"en-us"}}};
     map[&kEnableDiscountInfoApiRegionLaunched] = {{"us", {"en-us"}}};
     map[&ntp_features::kNtpChromeCartModule] = {{"us", {"en-us"}}};
-    map[&kParcelTrackingRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kPriceAnnotationsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kPriceInsightsRegionLaunched] = {{"us", {"en-us"}}};
     map[&kProductSpecifications] = {{"us", {"en-us"}}};
     map[&kShoppingListRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPageTypesRegionLaunched] = {{"us", {"en-us"}}};
     map[&kShoppingPDPMetricsRegionLaunched] = {{"us", {"en-us"}}};
+    map[&kSubscriptionsApiRegionLaunched] = {
+        {"us", {"en", "en-gb", "en-us"}},
+        {"au", {"en", "en-au", "en-gb", "en-us"}},
+        {"ca", {"en", "en-ca", "en-gb", "en-us"}},
+        {"in", {"en", "en-gb", "en-in", "en-us"}},
+        {"jp", {"ja", "ja-jp"}}};
+    map[&kDiscountAutofillRegionLaunched] = {{"us", {"en-us"}}};
 
     return map;
   }());
@@ -108,29 +114,12 @@ const re2::RE2& GetCouponPartnerMerchantPattern() {
 
 }  // namespace
 
-namespace switches {
-// Specifies whether ChromeCart is enabled.
-const char kEnableChromeCart[] = "enable-chrome-cart";
-}  // namespace switches
-
-BASE_FEATURE(kCommerceAllowChipExpansion,
-             "CommerceAllowChipExpansion",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCommerceAllowLocalImages,
              "CommerceAllowLocalImages",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCommerceAllowOnDemandBookmarkUpdates,
              "CommerceAllowOnDemandBookmarkUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCommerceAllowOnDemandBookmarkBatchUpdates,
-             "CommerceAllowOnDemandBookmarkBatchUpdates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kCommerceAllowServerImages,
-             "CommerceAllowServerImages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCommerceMerchantViewer,
@@ -150,17 +139,17 @@ BASE_FEATURE(kCommerceLocalPDPDetection,
              "CommerceLocalPDPDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommercePriceTracking,
-             "CommercePriceTracking",
+BASE_FEATURE(kPriceAnnotations,
+             "PriceAnnotations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
-             "CommercePriceTrackingRegionLaunched",
+BASE_FEATURE(kPriceAnnotationsRegionLaunched,
+             "PriceAnnotationsRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
-BASE_FEATURE(kCommercePriceTrackingRegionLaunched,
-             "CommercePriceTrackingRegionLaunched",
+BASE_FEATURE(kPriceAnnotationsRegionLaunched,
+             "PriceAnnotationsRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -168,7 +157,7 @@ BASE_FEATURE(kPriceInsights,
              "PriceInsights",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kPriceInsightsRegionLaunched,
              "PriceInsightsRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -191,31 +180,32 @@ const base::FeatureParam<bool> kPriceInsightsShowFeedback{
 const char kPriceInsightsUseCacheParam[] = "price-insights-use-cache";
 const base::FeatureParam<bool> kPriceInsightsUseCache{
     &commerce::kPriceInsights, kPriceInsightsUseCacheParam, true};
-const char kProductSpecsMigrateToMultiSpecificsParam[] =
-    "migrate-legacy-to-multi-specifics";
-const base::FeatureParam<bool> kProductSpecsMigrateToMultiSpecifics{
-    &commerce::kProductSpecificationsMultiSpecifics,
-    kProductSpecsMigrateToMultiSpecificsParam, false};
 
-// Tonal colors for the expanded state of the price tracking chip on desktop.
-BASE_FEATURE(kPriceTrackingIconColors,
-             "PriceTrackingIconColors",
+// Discount Autofill at Checkout
+BASE_FEATURE(kDiscountAutofill,
+             "DiscountAutofill",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDiscountAutofillRegionLaunched,
+             "DiscountAutofillRegionLaunched",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Promotion in Magic Stack for Price Tracking users from other platforms.
 BASE_FEATURE(kPriceTrackingPromo,
              "PriceTrackingPromo",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// ShopCard in Magic Stack, including shopping features like price drop,
+// reviews, etc.
+BASE_FEATURE(kShopCard, "ShopCard", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Impression limits on ShopCards
+BASE_FEATURE(kShopCardImpressionLimits,
+             "ShopCardImpressionLimits",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kProductSpecifications,
              "ProductSpecifications",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Sync title (in addition to all other attributes) in
-// ProductComparisonSpecifics.
-BASE_FEATURE(kProductSpecificationsSyncTitle,
-             "ProductSpecificationsSyncTitle",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for unsupported fields becoming supported in the event of a
 // browser upgrade.
@@ -223,23 +213,30 @@ BASE_FEATURE(kProductSpecificationsClearMetadataOnNewlySupportedFields,
              "ProductSpecificationsClearMetadataOnNewlySupportedFields",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Stores Product Specifications across multiple specifics instead of one.
-BASE_FEATURE(kProductSpecificationsMultiSpecifics,
-             "ProductSpecificationsMultiSpecifics",
+BASE_FEATURE(kCompareConfirmationToast,
+             "CompareConfirmationToast",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kShoppingIconColorVariant,
-             "ShoppingIconColorVariant",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kProductSpecificationsCache,
+             "ProductSpecificationsCache",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Discount on navigation
 BASE_FEATURE(kEnableDiscountInfoApi,
              "EnableDiscountInfoApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/406555154): Clean up this flag when discount on clank launched.
 const char kDiscountOnShoppyPageParam[] = "discount-on-shoppy-page";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+const base::FeatureParam<bool> kDiscountOnShoppyPage{
+    &kEnableDiscountInfoApi, kDiscountOnShoppyPageParam, true};
+#else
 const base::FeatureParam<bool> kDiscountOnShoppyPage{
     &kEnableDiscountInfoApi, kDiscountOnShoppyPageParam, false};
+#endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -252,21 +249,42 @@ BASE_FEATURE(kEnableDiscountInfoApiRegionLaunched,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+const char kHistoryClustersBehaviorParam[] = "history-cluster-behavior";
+const char kMerchantWideBehaviorParam[] = "merchant-wide-behavior";
+const char kNonMerchantWideBehaviorParam[] = "non-merchant-wide-behavior";
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
              "DiscountDialogAutoPopupBehaviorSetting",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kHistoryClustersBehaviorParam[] = "history-cluster-behavior";
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<int> kHistoryClustersBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
-    kHistoryClustersBehaviorParam, 0};
-const char kMerchantWideBehaviorParam[] = "merchant-wide-behavior";
+    kHistoryClustersBehaviorParam, 1};
 const base::FeatureParam<int> kMerchantWideBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
     kMerchantWideBehaviorParam, 2};
-const char kNonMerchantWideBehaviorParam[] = "non-merchant-wide-behavior";
+const base::FeatureParam<int> kNonMerchantWideBehavior{
+    &commerce::kDiscountDialogAutoPopupBehaviorSetting,
+    kNonMerchantWideBehaviorParam, 0};
+#else
+BASE_FEATURE(kDiscountDialogAutoPopupBehaviorSetting,
+             "DiscountDialogAutoPopupBehaviorSetting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kHistoryClustersBehavior{
+    &commerce::kDiscountDialogAutoPopupBehaviorSetting,
+    kHistoryClustersBehaviorParam, 0};
+const base::FeatureParam<int> kMerchantWideBehavior{
+    &commerce::kDiscountDialogAutoPopupBehaviorSetting,
+    kMerchantWideBehaviorParam, 2};
 const base::FeatureParam<int> kNonMerchantWideBehavior{
     &commerce::kDiscountDialogAutoPopupBehaviorSetting,
     kNonMerchantWideBehaviorParam, 2};
+#endif
+
+BASE_FEATURE(kDiscountDialogAutoPopupCounterfactual,
+             "DiscountDialogAutoPopupCounterfactual",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDiscountsUiRefactor,
              "DiscountsUiRefactor",
@@ -291,12 +309,27 @@ BASE_FEATURE(kPriceTrackingSubscriptionServiceLocaleKey,
              "PriceTrackingSubscriptionServiceLocaleKey",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPriceTrackingSubscriptionServiceProductVersion,
+             "PriceTrackingSubscriptionServiceProductVersion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kShoppingPDPMetrics,
              "ShoppingPDPMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShoppingPDPMetricsRegionLaunched,
              "ShoppingPDPMetricsRegionLaunched",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_DECLARE_FEATURE(kSubscriptionsApi);
+BASE_DECLARE_FEATURE(kSubscriptionsApiRegionLaunched);
+
+BASE_FEATURE(kSubscriptionsApi,
+             "SubscriptionsApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSubscriptionsApiRegionLaunched,
+             "SubscriptionsApiRegionLaunched",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTrackByDefaultOnMobile,
@@ -306,7 +339,7 @@ BASE_FEATURE(kTrackByDefaultOnMobile,
 #if BUILDFLAG(IS_IOS)
 BASE_FEATURE(kPriceInsightsIos,
              "PriceInsightsIos",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPriceInsightsHighPriceIos,
              "PriceInsightsHighPrice",
@@ -334,144 +367,18 @@ BASE_FEATURE(kDiscountConsentV2,
              "DiscountConsentV2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCommerceHintAndroid,
-             "CommerceHintAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCodeBasedRBD, "CodeBasedRBD", base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kChromeCartDomBasedHeuristics,
-             "ChromeCartDomBasedHeuristics",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kParcelTracking,
-             "ParcelTracking",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kParcelTrackingRegionLaunched,
-             "ParcelTrackingRegionLaunched",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kParcelTrackingTestData,
-             "ParcelTrackingTestData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kParcelTrackingTestDataParam[] = "ParcelTrackingTestData";
-const char kParcelTrackingTestDataParamDelivered[] = "Delivered";
-const char kParcelTrackingTestDataParamInProgress[] = "InProgress";
-const char kParcelTrackingTestDataParamOutForDelivery[] = "OutForDelivery";
-
-// Params for Discount Consent V2 in the NTP Cart module.
-const char kNtpChromeCartModuleDiscountConsentNtpVariationParam[] =
-    "discount-consent-ntp-variation";
-const base::FeatureParam<int> kNtpChromeCartModuleDiscountConsentNtpVariation{
-    &commerce::kDiscountConsentV2,
-    kNtpChromeCartModuleDiscountConsentNtpVariationParam, 4};
-const char kNtpChromeCartModuleDiscountConsentReshowTimeParam[] =
-    "discount-consent-ntp-reshow-time";
-const base::FeatureParam<base::TimeDelta>
-    kNtpChromeCartModuleDiscountConsentReshowTime{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentReshowTimeParam, base::Days(28)};
-const char kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam[] =
-    "discount-consent-ntp-max-dismiss-count";
-const base::FeatureParam<int>
-    kNtpChromeCartModuleDiscountConsentMaxDismissalCount{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentMaxDismissalCountParam, 1};
-
-// String change variation params.
-const char kNtpChromeCartModuleDiscountConsentStringChangeContentParam[] =
-    "string-change-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentStringChangeContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentStringChangeContentParam, ""};
-
-const char kNtpChromeCartModuleDiscountConsentInlineShowCloseButtonParam[] =
-    "inline-card-show-button";
-const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentInlineShowCloseButton{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentStringChangeContentParam, true};
-
-// Discount consent v2 step 1 params.
-const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam[] =
-        "step-one-use-static-content";
-const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneUseStaticContentParam,
-        true};
-const char kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam[] =
-    "step-one-static-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneStaticContentParam, ""};
-const char kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCartParam[] =
-    "step-one-one-cart-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCart{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneContentOneCartParam, ""};
-const char kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCartsParam[] =
-    "step-one-two-carts-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCarts{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneContentTwoCartsParam, ""};
-const char
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCartsParam[] =
-        "step-one-three-carts-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCarts{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepOneContentThreeCartsParam,
-        ""};
-
-// Discount consent v2 step 2 params.
-const char kNtpChromeCartModuleDiscountConsentNtpStepTwoContentParam[] =
-    "step-two-content";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpStepTwoContent{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpStepTwoContentParam, ""};
-const char
-    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColorParam[] =
-        "step-two-different-color";
-const base::FeatureParam<bool>
-    kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColor{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentInlineStepTwoDifferentColorParam,
-        false};
-const char kNtpChromeCartModuleDiscountConsentNtpDialogContentTitleParam[] =
-    "dialog-content-title";
-const base::FeatureParam<std::string>
-    kNtpChromeCartModuleDiscountConsentNtpDialogContentTitle{
-        &commerce::kDiscountConsentV2,
-        kNtpChromeCartModuleDiscountConsentNtpDialogContentTitleParam, ""};
-
-const char kContextualConsentShowOnCartAndCheckoutPageParam[] =
-    "show-on-cart-and-checkout-page";
-const base::FeatureParam<bool> kContextualConsentShowOnCartAndCheckoutPage{
-    &commerce::kDiscountConsentV2,
-    kContextualConsentShowOnCartAndCheckoutPageParam, false};
-const char kContextualConsentShowOnSRPParam[] = "show-on-srp";
-const base::FeatureParam<bool> kContextualConsentShowOnSRP{
-    &commerce::kDiscountConsentV2, kContextualConsentShowOnSRPParam, false};
-
-const char kCommerceHintAndroidHeuristicsImprovementParam[] =
-    "CommerceHintAndroidHeuristicsImprovementParam";
-
-const char kCodeBasedRuleDiscountParam[] = "code-based-rbd";
-const base::FeatureParam<bool> kCodeBasedRuleDiscount{
-    &commerce::kCodeBasedRBD, kCodeBasedRuleDiscountParam, true};
-const char kCodeBasedRuleDiscountCouponDeletionTimeParam[] =
-    "coupon-deletion-time";
-const base::FeatureParam<base::TimeDelta>
-    kCodeBasedRuleDiscountCouponDeletionTime{
-        &commerce::kCodeBasedRBD, kCodeBasedRuleDiscountCouponDeletionTimeParam,
-        base::Seconds(6)};
+extern const char kShopCardArm1[] = "arm_1";
+extern const char kShopCardArm2[] = "arm_2";
+extern const char kShopCardArm3[] = "arm_3";
+extern const char kShopCardArm4[] = "arm_4";
+// Regular Tab Resumption with same impression limits as ShopCard
+// (max 3 impressions). So ShopCard variations of Tab Resumption can
+// be conclusively benchmarked against regular Tab Resumption.
+extern const char kShopCardArm5[] = "arm_5";
+extern const char kShopCardFrontPosition[] = "shop_card_front";
+extern const char kShopCardMaxImpressions[] = "max_impressions";
 
 const char kProductSpecificationsSetValidForClusteringTimeParam[] =
     "set-valid-for-clustering-time";
@@ -511,7 +418,7 @@ bool IsCouponDiscountPartnerMerchant(const GURL& url) {
 bool IsCartDiscountFeatureEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       ntp_features::kNtpChromeCartModule,
-      ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, true);
+      ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam, false);
 }
 
 bool IsCouponWithCodeEnabled() {
@@ -523,11 +430,6 @@ bool IsFakeDataEnabled() {
   return base::GetFieldTrialParamValueByFeature(
              ntp_features::kNtpChromeCartModule,
              ntp_features::kNtpChromeCartModuleDataParam) == "fake";
-}
-
-bool isContextualConsentEnabled() {
-  return kContextualConsentShowOnCartAndCheckoutPage.Get() ||
-         kContextualConsentShowOnSRP.Get();
 }
 
 bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {
@@ -590,8 +492,9 @@ bool IsNoDiscountMerchant(const GURL& url) {
           .GetNoDiscountMerchantPattern();
   // If pattern from component updater is not available, merchants are
   // considered to have no discounts by default.
-  if (!pattern_from_component)
+  if (!pattern_from_component) {
     return true;
+  }
   return RE2::PartialMatch(url.host_piece(), *pattern_from_component);
 }
 #endif

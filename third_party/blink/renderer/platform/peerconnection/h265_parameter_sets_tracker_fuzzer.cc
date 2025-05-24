@@ -16,6 +16,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   blink::test::TaskEnvironment task_environment;
   blink::H265ParameterSetsTracker h265_parameter_sets_tracker;
   h265_parameter_sets_tracker.MaybeFixBitstream(
-      rtc::ArrayView<const uint8_t>(data, size));
+      webrtc::ArrayView<const uint8_t>(data, size));
   return 0;
 }

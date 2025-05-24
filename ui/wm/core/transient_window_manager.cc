@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/transient_window_manager.h"
 
+#include <algorithm>
 #include <functional>
 
 #include "base/auto_reset.h"
@@ -11,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/client/transient_window_client.h"
 #include "ui/aura/client/transient_window_client_observer.h"
 #include "ui/aura/window.h"
@@ -30,9 +30,7 @@ namespace wm {
 
 namespace {
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager,
-                                   kPropertyKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(TransientWindowManager, kPropertyKey)
 
 // Returns true if the given `window` has a cycle in its transient window
 // hierarchy.
@@ -99,34 +97,33 @@ void TransientWindowManager::AddTransientChild(Window* child) {
   // cause infinite loops/recursion.
   CHECK(!HasTransientCycles(window_));
 
-  for (aura::client::TransientWindowClientObserver& observer :
-       TransientWindowController::Get()->observers_) {
-    observer.OnTransientChildWindowAdded(window_, child);
-  }
+  TransientWindowController::Get()->observers_.Notify(
+      &aura::client::TransientWindowClientObserver::OnTransientChildWindowAdded,
+      window_, child);
 
   // Restack |child| properly above its transient parent, if they share the same
   // parent.
   if (child->parent() == window_->parent())
     RestackTransientDescendants();
 
-  for (auto& observer : observers_)
-    observer.OnTransientChildAdded(window_, child);
-  for (auto& observer : child_manager->observers_)
-    observer.OnTransientParentChanged(window_);
+  observers_.Notify(&TransientWindowObserver::OnTransientChildAdded, window_,
+                    child);
+  child_manager->observers_.Notify(
+      &TransientWindowObserver::OnTransientParentChanged, window_);
 }
 
 void TransientWindowManager::RemoveTransientChild(Window* child) {
-  auto i = base::ranges::find(transient_children_, child);
+  auto i = std::ranges::find(transient_children_, child);
   CHECK(i != transient_children_.end(), base::NotFatalUntil::M130);
   transient_children_.erase(i);
   TransientWindowManager* child_manager = GetOrCreate(child);
   DCHECK_EQ(window_, child_manager->transient_parent_);
   child_manager->transient_parent_ = nullptr;
 
-  for (aura::client::TransientWindowClientObserver& observer :
-       TransientWindowController::Get()->observers_) {
-    observer.OnTransientChildWindowRemoved(window_, child);
-  }
+  TransientWindowController::Get()->observers_.Notify(
+      &aura::client::TransientWindowClientObserver::
+          OnTransientChildWindowRemoved,
+      window_, child);
 
   // If |child| and its former transient parent share the same parent, |child|
   // should be restacked properly so it is not among transient children of its
@@ -134,10 +131,10 @@ void TransientWindowManager::RemoveTransientChild(Window* child) {
   if (window_->parent() == child->parent())
     RestackTransientDescendants();
 
-  for (auto& observer : observers_)
-    observer.OnTransientChildRemoved(window_, child);
-  for (auto& observer : child_manager->observers_)
-    observer.OnTransientParentChanged(nullptr);
+  observers_.Notify(&TransientWindowObserver::OnTransientChildRemoved, window_,
+                    child);
+  child_manager->observers_.Notify(
+      &TransientWindowObserver::OnTransientParentChanged, nullptr);
 }
 
 bool TransientWindowManager::IsStackingTransient(
@@ -264,7 +261,7 @@ void TransientWindowManager::OnWindowStackingChanged(Window* window) {
   // Do nothing if we initiated the stacking change.
   const TransientWindowManager* transient_manager = GetIfExists(window);
   if (transient_manager && transient_manager->stacking_target_) {
-    auto window_i = base::ranges::find(window->parent()->children(), window);
+    auto window_i = std::ranges::find(window->parent()->children(), window);
     DCHECK(window_i != window->parent()->children().end());
     if (window_i != window->parent()->children().begin() &&
         (*(window_i - 1) == transient_manager->stacking_target_))

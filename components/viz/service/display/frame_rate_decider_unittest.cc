@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display/frame_rate_decider.h"
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -438,7 +434,7 @@ TEST_F(FrameRateDeciderTest, ManySinksWithMinInterval) {
   frame_rate_decider_->SetSupportedFrameIntervals(supported_intervals);
   EXPECT_EQ(display_interval_, FrameRateDecider::UnspecifiedFrameInterval());
 
-  Surface* surfaces[3];
+  std::array<Surface*, 3> surfaces;
   for (int i = 0; i < 3; ++i) {
     FrameSinkId frame_sink_id(1u, i);
     if (i == 0)
@@ -467,7 +463,7 @@ TEST_F(FrameRateDeciderTest, NoFixedIntervalSurfaces) {
   frame_rate_decider_->SetSupportedFrameIntervals(supported_intervals);
   EXPECT_EQ(display_interval_, FrameRateDecider::UnspecifiedFrameInterval());
 
-  Surface* surfaces[3];
+  std::array<Surface*, 3> surfaces;
   for (int i = 0; i < 3; ++i) {
     FrameSinkId frame_sink_id(1u, i);
     preferred_intervals_[frame_sink_id] =

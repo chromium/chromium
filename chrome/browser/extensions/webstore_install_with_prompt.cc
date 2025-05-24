@@ -32,8 +32,7 @@ WebstoreInstallWithPrompt::WebstoreInstallWithPrompt(
   set_install_source(WebstoreInstaller::INSTALL_SOURCE_OTHER);
 }
 
-WebstoreInstallWithPrompt::~WebstoreInstallWithPrompt() {
-}
+WebstoreInstallWithPrompt::~WebstoreInstallWithPrompt() = default;
 
 bool WebstoreInstallWithPrompt::CheckRequestorAlive() const {
   if (!parent_window_) {

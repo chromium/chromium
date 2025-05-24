@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -861,7 +862,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
         base::CreateDirectory(path.DirName());
       }
       base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      file.WriteAtCurrentPos(content.data(), content.size());
+      file.WriteAtCurrentPos(base::as_byte_span(content));
       paths.emplace_back(path);
     }
     return paths;
@@ -1009,7 +1010,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedDlp) {
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
@@ -1063,7 +1064,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlp) {
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
         /*result*/
-        safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
+        EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
@@ -1124,7 +1125,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
         /*result*/
-        safe_browsing::EventResultToString(safe_browsing::EventResult::WARNED),
+        EventResultToString(EventResult::WARNED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
@@ -1164,8 +1165,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileWarnDlpBypassed) {
         /*mimetype*/ DocMimeTypes(),
         /*size*/ std::string("content").size(),
         /*result*/
-        safe_browsing::EventResultToString(
-            safe_browsing::EventResult::BYPASSED),
+        EventResultToString(EventResult::BYPASSED),
         /*username*/ kUserName,
         /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
         /*scan_id*/ scan_id,
@@ -1341,7 +1341,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
+      EventResultToString(EventResult::ALLOWED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
@@ -1396,7 +1396,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileBlockedMalware) {
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id);
@@ -1457,7 +1457,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, SingleFileAllowedEncryptedd) {
       /*mimetype*/ ZipMimeTypes(),
       /*size*/ 20015,
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::ALLOWED),
+      EventResultToString(EventResult::ALLOWED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
@@ -1531,7 +1531,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
-      safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
+      EventResultToString(EventResult::BLOCKED),
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_id*/ scan_id,
@@ -1613,9 +1613,9 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
-      {safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
-       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
-       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED)},
+      {EventResultToString(EventResult::BLOCKED),
+       EventResultToString(EventResult::BLOCKED),
+       EventResultToString(EventResult::BLOCKED)},
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id, scan_id},
@@ -1680,8 +1680,8 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
       /*mimetype*/ DocMimeTypes(),
       /*size*/ std::string("content").size(),
       /*result*/
-      {safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED),
-       safe_browsing::EventResultToString(safe_browsing::EventResult::BLOCKED)},
+      {EventResultToString(EventResult::BLOCKED),
+       EventResultToString(EventResult::BLOCKED)},
       /*username*/ kUserName,
       /*profile_identifier*/ profile_->GetPath().AsUTF8Unsafe(),
       /*scan_ids*/ {scan_id, scan_id},
@@ -1745,8 +1745,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest, DirectoryTreeSomeBlocked) {
       expected_shas.push_back(
           "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73");
       expected_dlp_verdicts.push_back(response.results()[0]);
-      expected_results.push_back(safe_browsing::EventResultToString(
-          safe_browsing::EventResult::BLOCKED));
+      expected_results.push_back(EventResultToString(EventResult::BLOCKED));
       expected_scan_ids.push_back(request_token);
     }
   }
@@ -1843,12 +1842,10 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
             "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73");
         expected_dlp_verdicts.push_back(response.results()[0]);
         if (should_block) {
-          expected_results.push_back(safe_browsing::EventResultToString(
-              safe_browsing::EventResult::BLOCKED));
+          expected_results.push_back(EventResultToString(EventResult::BLOCKED));
         } else {
           ASSERT_TRUE(should_warn);
-          expected_results.push_back(safe_browsing::EventResultToString(
-              safe_browsing::EventResult::WARNED));
+          expected_results.push_back(EventResultToString(EventResult::WARNED));
         }
         expected_scan_ids.push_back(request_token);
       }
@@ -1932,8 +1929,7 @@ TEST_F(FileTransferAnalysisDelegateAuditOnlyTest,
             "ED7002B439E9AC845F22357D822BAC1444730FBDB6016D3EC9432297B9EC9F73");
         expected_dlp_verdicts.push_back(response.results()[0]);
 
-        expected_results.push_back(safe_browsing::EventResultToString(
-            safe_browsing::EventResult::BYPASSED));
+        expected_results.push_back(EventResultToString(EventResult::BYPASSED));
 
         expected_scan_ids.push_back(request_token);
       }

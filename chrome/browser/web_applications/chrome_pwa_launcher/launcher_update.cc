@@ -17,7 +17,7 @@
 
 namespace {
 
-constexpr base::FilePath::StringPieceType kOldLauncherSuffix =
+constexpr base::FilePath::StringViewType kOldLauncherSuffix =
     FILE_PATH_LITERAL("_old");
 
 // A callback invoked by |work_item| that tries to create a hardlink to

@@ -4,9 +4,10 @@
 
 #include "components/sync/test/nigori_test_utils.h"
 
+#include <algorithm>
+
 #include "base/base64.h"
 #include "base/check.h"
-#include "base/ranges/algorithm.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
@@ -188,9 +189,9 @@ sync_pb::NigoriSpecifics BuildCustomPassphraseNigoriSpecifics(
   }
 
   // Create the cryptographer, which encrypts with the key derived from
-  // |passphrase_key_params| and can decrypt with the key derived from
-  // |old_key_params| if given. |encryption_keybag| is a serialized version
-  // of this cryptographer |key_bag| encrypted with its encryption key.
+  // `passphrase_key_params` and can decrypt with the key derived from
+  // `old_key_params` if given. `encryption_keybag` is a serialized version
+  // of this cryptographer `key_bag` encrypted with its encryption key.
   auto cryptographer = CryptographerImpl::FromSingleKeyForTesting(
       passphrase_key_params.password, passphrase_key_params.derivation_params);
   if (old_key_params) {
@@ -245,7 +246,7 @@ std::unique_ptr<Cryptographer> InitCustomPassphraseCryptographerFromNigori(
   EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
 
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
-  base::ranges::for_each(
+  std::ranges::for_each(
       decrypted_keys.key(),
       [&key_bag](sync_pb::NigoriKey key) { key_bag.AddKeyFromProto(key); });
 

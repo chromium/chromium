@@ -38,7 +38,6 @@ class SafeBrowsingUnsafeResourceContainer
  private:
   explicit SafeBrowsingUnsafeResourceContainer(web::WebState* web_state);
   friend class web::WebStateUserData<SafeBrowsingUnsafeResourceContainer>;
-  WEB_STATE_USER_DATA_KEY_DECL();
 
   // The WebState whose unsafe resources are managed by this container.
   raw_ptr<web::WebState> web_state_ = nullptr;

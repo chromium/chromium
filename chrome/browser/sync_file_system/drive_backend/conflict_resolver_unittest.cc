@@ -58,7 +58,7 @@ class ConflictResolverTest : public testing::Test {
   ConflictResolverTest(const ConflictResolverTest&) = delete;
   ConflictResolverTest& operator=(const ConflictResolverTest&) = delete;
 
-  ~ConflictResolverTest() override {}
+  ~ConflictResolverTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(database_dir_.CreateUniqueTempDir());

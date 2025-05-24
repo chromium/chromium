@@ -4,6 +4,8 @@
 
 #include "components/data_sharing/test_support/mock_data_sharing_service.h"
 
+#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
+
 namespace data_sharing {
 
 MockDataSharingService::MockDataSharingService() = default;

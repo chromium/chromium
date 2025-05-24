@@ -5,16 +5,15 @@
 #include "chrome/browser/ui/extensions/extension_installed_bubble_model.h"
 
 #include "base/command_line.h"
-#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/common/extensions/api/omnibox.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
@@ -23,23 +22,22 @@
 
 using extensions::Extension;
 
-class ExtensionInstalledBubbleModelTest : public BrowserWithTestWindowTest {
+class ExtensionInstalledBubbleModelTest
+    : public extensions::ExtensionServiceTestWithInstall {
  public:
-  ExtensionInstalledBubbleModelTest() = default;
+  ExtensionInstalledBubbleModelTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        switches::kEnableExtensionsExplicitBrowserSignin);
+  }
+
   ~ExtensionInstalledBubbleModelTest() override = default;
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    extensions::LoadErrorReporter::Init(false);
-    extensions::TestExtensionSystem* extension_system =
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(profile()));
-    extension_system->CreateExtensionService(
-        base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
+    InitializeEmptyExtensionService();
+    service()->Init();
   }
 
+ protected:
   void AddOmniboxKeyword(extensions::ExtensionBuilder* builder,
                          const std::string& keyword) {
     using ManifestKeys = extensions::api::omnibox::ManifestKeys;
@@ -64,25 +62,17 @@ class ExtensionInstalledBubbleModelTest : public BrowserWithTestWindowTest {
                 .Set("description", "Invoke the page action")));
   }
 
-  extensions::ExtensionService* extension_service() {
-    return extension_service_;
-  }
-
-  const SkBitmap empty_icon_;
-
  private:
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
-      nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ExtensionInstalledBubbleModelTest, SyntheticPageActionExtension) {
   // An extension with no action info in the manifest at all gets a synthesized
   // page action.
   auto extension = extensions::ExtensionBuilder("Foo").Build();
-  extension_service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(browser()->profile(), extension.get(),
-                                      empty_icon_);
+  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
   // It should anchor to the synthesized action...
   EXPECT_TRUE(model.anchor_to_action());
@@ -101,10 +91,9 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxExtension) {
   AddOmniboxKeyword(&builder, "fookey");
   builder.AddFlags(extensions::Extension::WAS_INSTALLED_BY_DEFAULT);
   auto extension = builder.Build();
-  extension_service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(browser()->profile(), extension.get(),
-                                      empty_icon_);
+  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
   // ... should be anchored to the omnibox, not to the action ...
   EXPECT_FALSE(model.anchor_to_action());
@@ -123,10 +112,9 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
                        .SetManifestVersion(2)
                        .SetAction(extensions::ActionInfo::Type::kPage)
                        .Build();
-  extension_service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(browser()->profile(), extension.get(),
-                                      empty_icon_);
+  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
   // should anchor to that action
   EXPECT_TRUE(model.anchor_to_action());
@@ -135,6 +123,28 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
   // and have how-to-use and how-to-manage but no key binding, since it doesn't
   // have one.
   EXPECT_TRUE(model.show_how_to_use());
+  EXPECT_TRUE(model.show_how_to_manage());
+  EXPECT_FALSE(model.show_key_binding());
+}
+
+// TODO(crbug.com/405148986): Modify this test once the appropriate how to use
+// text is decided for MV3 action extensions.
+TEST_F(ExtensionInstalledBubbleModelTest, MV3ActionExtension) {
+  // An extension with a MV3 action...
+  auto extension = extensions::ExtensionBuilder("Foo")
+                       .SetManifestVersion(3)
+                       .SetAction(extensions::ActionInfo::Type::kAction)
+                       .Build();
+  registrar()->AddExtension(extension);
+
+  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
+
+  // should anchor to that action
+  EXPECT_TRUE(model.anchor_to_action());
+  EXPECT_FALSE(model.anchor_to_omnibox());
+
+  // and have how-to-manage but no how-to-use and key binding.
+  EXPECT_FALSE(model.show_how_to_use());
   EXPECT_TRUE(model.show_how_to_manage());
   EXPECT_FALSE(model.show_key_binding());
 }
@@ -149,11 +159,9 @@ TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
 
   // Note that we have to OnExtensionInstalled() here rather than just adding it
   // - hotkeys are picked up at install time, not add time.
-  extension_service()->OnExtensionInstalled(extension.get(),
-                                            syncer::StringOrdinal());
+  registrar()->OnExtensionInstalled(extension.get(), syncer::StringOrdinal());
 
-  ExtensionInstalledBubbleModel model(browser()->profile(), extension.get(),
-                                      empty_icon_);
+  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
   // Should have a how-to-use that lists the key, but *not* a how-to-manage,
   // since it crowds the UI.
@@ -174,17 +182,12 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxKeywordAndSyntheticAction) {
   AddOmniboxKeyword(&builder, "fookey");
   auto extension = builder.Build();
 
-  extension_service()->AddExtension(extension.get());
+  registrar()->AddExtension(extension);
 
-  ExtensionInstalledBubbleModel model(browser()->profile(), extension.get(),
-                                      empty_icon_);
+  ExtensionInstalledBubbleModel model(profile(), extension.get(), SkBitmap());
 
   // This extension has a synthesized action and an omnibox keyword. It should
   // have how-to-use text, and be anchored to its (synthesized) page action.
   EXPECT_TRUE(model.show_how_to_use());
   EXPECT_TRUE(model.anchor_to_action());
 }
-
-// TODO(ellyjones): Add a test for a syncable extension with a sync-eligible
-// profile, to test model.show_sign_in_promo(). Reference
-// ExtensionServiceSyncTest for an example.

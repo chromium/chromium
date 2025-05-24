@@ -43,7 +43,43 @@ message EnterpriseCompanionEvent {
   }
 }
 
+enum Architecture {
+  ARCHITECTURE_UNSPECIFIED = 0;
+  X86 = 1;
+  X86_64 = 2;
+  ARM64 = 3;
+}
+
+enum Platform {
+  PLATFORM_UNSPECIFIED = 0;
+  LINUX = 1;
+  MAC = 2;
+  WINDOWS = 3;
+}
+
+message EnterpriseCompanionMetadata {
+  // The version of the enterprise companion.
+  string app_version = 1;
+
+  // The Omaha cohort ID of the enterprise companion.
+  string omaha_cohort_id = 2;
+
+  // The build architecture of the application.
+  Architecture application_arch = 3;
+
+  // The operating system platform (e.g. Mac or Windows).
+  Platform os_platform = 4;
+
+  // The operating system version; truncated to major.minor.build on Windows,
+  // major.minor on Mac, and not transmitted on other platforms.
+  string os_version = 5;
+
+  // The operating system architecture.
+  Architecture os_arch = 6;
+}
+
 // The message to serialize and include in the log request.
 message ChromeEnterpriseCompanionAppExtension {
   repeated EnterpriseCompanionEvent event = 1;
+  EnterpriseCompanionMetadata metadata = 2;
 }

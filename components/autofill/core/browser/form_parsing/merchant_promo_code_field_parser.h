@@ -16,7 +16,6 @@
 
 namespace autofill {
 
-class AutofillField;
 class AutofillScanner;
 
 // A form field that accepts promo/gift/coupon codes during checkout on a
@@ -25,7 +24,7 @@ class MerchantPromoCodeFieldParser : public FormFieldParser {
  public:
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner* scanner);
-  explicit MerchantPromoCodeFieldParser(const AutofillField* field);
+  explicit MerchantPromoCodeFieldParser(FieldAndMatchInfo match);
 
   MerchantPromoCodeFieldParser(const MerchantPromoCodeFieldParser&) = delete;
   MerchantPromoCodeFieldParser& operator=(const MerchantPromoCodeFieldParser&) =
@@ -42,7 +41,7 @@ class MerchantPromoCodeFieldParser : public FormFieldParser {
   FRIEND_TEST_ALL_PREFIXES(MerchantPromoCodeFieldParserTest,
                            ParsePromoCodeFlagOff);
 
-  raw_ptr<const AutofillField> field_;
+  FieldAndMatchInfo match_;
 };
 
 }  // namespace autofill

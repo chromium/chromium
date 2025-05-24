@@ -6,7 +6,6 @@ import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
-import type {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -24,7 +23,7 @@ const ToolbarElementBase = WebUiListenerMixinLit(I18nMixinLit(CrLitElement));
 export interface ToolbarElement {
   $: {
     heading: SpHeadingElement,
-    pinningSelectionCard: HTMLDivElement,
+    pinningSelectionCard: HTMLElement,
   };
 }
 
@@ -52,9 +51,9 @@ export class ToolbarElement extends ToolbarElementBase {
   private handler_: CustomizeToolbarHandlerInterface;
   private listenerIds_: number[] = [];
 
-  protected actions_: Action[] = [];
-  protected categories_: Category[] = [];
-  protected resetToDefaultDisabled_: boolean = true;
+  protected accessor actions_: Action[] = [];
+  protected accessor categories_: Category[] = [];
+  protected accessor resetToDefaultDisabled_: boolean = true;
 
   constructor() {
     super();
@@ -73,6 +72,7 @@ export class ToolbarElement extends ToolbarElementBase {
         this.populateUi_.bind(this)));
 
     this.addWebUiListener('theme-changed', this.populateUi_.bind(this));
+    chrome.send('observeThemeChanges');
   }
 
   override disconnectedCallback() {
@@ -93,7 +93,7 @@ export class ToolbarElement extends ToolbarElementBase {
 
   protected onResetToDefaultClicked_() {
     this.handler_.resetToDefault();
-    const announcer = getAnnouncerInstance() as CrA11yAnnouncerElement;
+    const announcer = getAnnouncerInstance();
     announcer.announce(this.i18n('resetToDefaultButtonAnnouncement'));
   }
 

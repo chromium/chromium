@@ -5,12 +5,14 @@
 package org.chromium.components.browser_ui.util;
 
 import org.chromium.base.DiscardableReferencePool;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * A global accessor to the DiscardableReferencePool.
  *
  * This DiscardableReferencePool is created upon first access, and lives forever.
  */
+@NullMarked
 public class GlobalDiscardableReferencePool {
     static final DiscardableReferencePool INSTANCE = new DiscardableReferencePool();
 

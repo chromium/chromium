@@ -7,7 +7,7 @@
 #include "content/public/browser/web_ui.h"
 
 TopChromeWebUIController::TopChromeWebUIController(content::WebUI* contents,
-                                                     bool enable_chrome_send)
+                                                   bool enable_chrome_send)
     : MojoWebUIController(contents, enable_chrome_send) {}
 
 TopChromeWebUIController::~TopChromeWebUIController() = default;

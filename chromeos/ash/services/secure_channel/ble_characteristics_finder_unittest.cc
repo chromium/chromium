@@ -4,13 +4,14 @@
 
 #include "chromeos/ash/services/secure_channel/ble_characteristics_finder.h"
 
+#include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -88,7 +89,8 @@ std::string EidToString(const std::vector<uint8_t>& eid_value_read) {
   std::string output;
   char* string_contents_ptr =
       base::WriteInto(&output, eid_value_read.size() + 1);
-  memcpy(string_contents_ptr, eid_value_read.data(), eid_value_read.size());
+  UNSAFE_TODO(memcpy(string_contents_ptr, eid_value_read.data(),
+                     eid_value_read.size()));
   return output;
 }
 

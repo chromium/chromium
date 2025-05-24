@@ -4,7 +4,6 @@
 
 #include "ash/wm/snap_group/snap_group.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/display/display_move_window_util.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -25,7 +24,6 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
@@ -125,25 +123,7 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
   EXPECT_FALSE(ash::OverviewController::Get()->InOverviewSession());
 }
 
-class FasterSplitScreenWithNewSettingsBrowserTest
-    : public FasterSplitScreenBrowserTest {
- public:
-  FasterSplitScreenWithNewSettingsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
-  FasterSplitScreenWithNewSettingsBrowserTest(
-      const FasterSplitScreenWithNewSettingsBrowserTest&) = delete;
-  FasterSplitScreenWithNewSettingsBrowserTest& operator=(
-      const FasterSplitScreenWithNewSettingsBrowserTest&) = delete;
-  ~FasterSplitScreenWithNewSettingsBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithNewSettingsBrowserTest,
+IN_PROC_BROWSER_TEST_F(FasterSplitScreenBrowserTest,
                        SnapWindowWithNewSettings) {
   // Install the Settings App.
   ash::SystemWebAppManager::GetForTest(browser()->profile())
@@ -193,91 +173,9 @@ IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithNewSettingsBrowserTest,
 }
 
 // -----------------------------------------------------------------------------
-// FasterSplitScreenWithOldSettingsBrowserTest:
-
-class FasterSplitScreenWithOldSettingsBrowserTest
-    : public FasterSplitScreenBrowserTest {
- public:
-  FasterSplitScreenWithOldSettingsBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{ash::features::kOsSettingsRevampWayfinding});
-  }
-  FasterSplitScreenWithOldSettingsBrowserTest(
-      const FasterSplitScreenWithOldSettingsBrowserTest&) = delete;
-  FasterSplitScreenWithOldSettingsBrowserTest& operator=(
-      const FasterSplitScreenWithOldSettingsBrowserTest&) = delete;
-  ~FasterSplitScreenWithOldSettingsBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(FasterSplitScreenWithOldSettingsBrowserTest,
-                       SnapWindowWithOldSettings) {
-  // Install the Settings App.
-  ash::SystemWebAppManager::GetForTest(browser()->profile())
-      ->InstallSystemAppsForTesting();
-
-  // Create two browser windows and snap `window` to start partial overview.
-  aura::Window* window = browser()->window()->GetNativeWindow();
-  CreateBrowser(browser()->profile());
-  ash::WindowState* window_state = ash::WindowState::Get(window);
-  const ash::WindowSnapWMEvent primary_snap_event(
-      ash::WM_EVENT_SNAP_PRIMARY, ash::WindowSnapActionSource::kTest);
-  window_state->OnWMEvent(&primary_snap_event);
-  ash::WaitForOverviewEntered();
-  ASSERT_TRUE(ash::OverviewController::Get()->InOverviewSession());
-
-  // Partial overview contains the settings button.
-  auto* overview_grid =
-      ash::OverviewController::Get()->overview_session()->GetGridWithRootWindow(
-          window->GetRootWindow());
-  auto* split_view_setup_view = overview_grid->GetSplitViewSetupView();
-  ASSERT_TRUE(split_view_setup_view);
-  views::Button* settings_button = const_cast<views::Button*>(
-      views::AsViewClass<views::Button>(split_view_setup_view->GetViewByID(
-          ash::SplitViewSetupView::kSettingsButtonIDForTest)));
-  ASSERT_TRUE(settings_button);
-
-  // Setup navigation observer to wait for the OS Settings page.
-  constexpr char kOsSettingsUrl[] =
-      "chrome://os-settings/personalization?settingId=1900";
-  GURL os_settings(kOsSettingsUrl);
-  content::TestNavigationObserver navigation_observer(os_settings);
-  navigation_observer.StartWatchingNewWebContents();
-
-  // Click the overview settings button.
-  ClickButton(settings_button);
-
-  // Wait for OS Settings to open.
-  navigation_observer.Wait();
-
-  // Verify correct OS Settings page is opened.
-  Browser* settings_browser = ash::FindSystemWebAppBrowser(
-      browser()->profile(), ash::SystemWebAppType::SETTINGS);
-  ASSERT_TRUE(settings_browser);
-  ASSERT_EQ(os_settings, GetActiveUrl(settings_browser));
-}
-
-// -----------------------------------------------------------------------------
 // SnapGroupBrowserTest:
 
-class SnapGroupBrowserTest : public InProcessBrowserTest {
- public:
-  SnapGroupBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kForestFeature,
-                              ash::features::kSavedDeskUiRevamp},
-        /*disabled_features=*/{});
-  }
-  SnapGroupBrowserTest(const SnapGroupBrowserTest&) = delete;
-  SnapGroupBrowserTest& operator=(const SnapGroupBrowserTest&) = delete;
-  ~SnapGroupBrowserTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupBrowserTest = InProcessBrowserTest;
 
 // Tests that creating a snap group in a rotated display works correctly.
 // Regression test for http://335323173.

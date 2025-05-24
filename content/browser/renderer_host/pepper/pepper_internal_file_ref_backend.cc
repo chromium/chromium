@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -322,10 +323,11 @@ void PepperInternalFileRefBackend::GetMetadataComplete(
   reply_context.params.set_result(ppapi::FileErrorToPepperError(error));
 
   PP_FileInfo pp_file_info;
-  if (error == base::File::FILE_OK)
+  if (error == base::File::FILE_OK) {
     ppapi::FileInfoToPepperFileInfo(file_info, fs_type_, &pp_file_info);
-  else
-    memset(&pp_file_info, 0, sizeof(pp_file_info));
+  } else {
+    UNSAFE_TODO(memset(&pp_file_info, 0, sizeof(pp_file_info)));
+  }
 
   host_->SendReply(reply_context,
                    PpapiPluginMsg_FileRef_QueryReply(pp_file_info));
@@ -377,8 +379,7 @@ void PepperInternalFileRefBackend::ReadDirectoryComplete(
       ppapi::FileRefCreateInfo info;
       info.file_system_type = fs_type_;
       info.file_system_plugin_resource = fs_host_->pp_resource();
-      std::string path =
-          dir_path + storage::FilePathToString(base::FilePath(it.name));
+      std::string path = dir_path + storage::FilePathToString(it.name.path());
       info.internal_path = path;
       info.display_name = ppapi::GetNameForInternalFilePath(path);
       infos.push_back(info);

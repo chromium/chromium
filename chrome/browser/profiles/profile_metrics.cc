@@ -4,9 +4,11 @@
 
 #include "chrome/browser/profiles/profile_metrics.h"
 
+#include <string>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -15,10 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
-#include "components/keyed_service/core/keyed_service_factory.h"
-#include "components/keyed_service/core/refcounted_keyed_service_factory.h"
 #include "components/profile_metrics/counts.h"
 
 namespace {
@@ -35,9 +34,43 @@ enum class ProfileNetUserCounts {
   kMaxValue = PROFILE_DELETED
 };
 
-size_t GetTotalKeyedServiceCount(Profile* profile) {
-  return KeyedServiceFactory::GetServicesCount(profile) +
-         RefcountedKeyedServiceFactory::GetServicesCount(profile);
+// Count of profiles sharing a particular name.
+struct ProfileCountByName {
+  explicit ProfileCountByName(bool is_managed)
+      : managed_count(is_managed ? 1 : 0),
+        non_managed_count(is_managed ? 0 : 1) {}
+
+  ProfileCountByName(const ProfileCountByName&) = default;
+  ProfileCountByName& operator=(const ProfileCountByName&) = default;
+
+  int managed_count = 0;
+  int non_managed_count = 0;
+};
+
+base::flat_map<std::u16string, ProfileCountByName> GetProfilesByGaiaName(
+    const ProfileAttributesStorage& storage) {
+  base::flat_map<std::u16string, ProfileCountByName> profile_counts_by_name;
+  for (const auto* entry : storage.GetAllProfilesAttributes()) {
+    const std::u16string gaia_name = entry->GetGAIAGivenName();
+    if (gaia_name.empty()) {
+      continue;
+    }
+
+    const bool is_managed = entry->UserAcceptedAccountManagement();
+    auto it = profile_counts_by_name.find(gaia_name);
+    if (it == profile_counts_by_name.end()) {
+      profile_counts_by_name.emplace(gaia_name, is_managed);
+      continue;
+    }
+
+    ProfileCountByName& count = it->second;
+    if (is_managed) {
+      ++count.managed_count;
+    } else {
+      ++count.non_managed_count;
+    }
+  }
+  return profile_counts_by_name;
 }
 
 }  // namespace
@@ -144,9 +177,24 @@ void ProfileMetrics::CountProfileInformation(ProfileAttributesStorage* storage,
 }
 
 void ProfileMetrics::LogNumberOfProfiles(ProfileAttributesStorage* storage) {
+  CHECK(storage);
   profile_metrics::Counts counts;
   CountProfileInformation(storage, &counts);
   profile_metrics::LogProfileMetricsCounts(counts);
+
+  // Records whether some profiles have primary accounts with the same first
+  // name.
+  base::flat_map<std::u16string, ProfileCountByName> profile_counts_by_name =
+      GetProfilesByGaiaName(*storage);
+  for (const auto& [name, count] : profile_counts_by_name) {
+    GaiaNameShareStatus name_shared = GaiaNameShareStatus::kNotShared;
+    if (count.non_managed_count > 1) {
+      name_shared = GaiaNameShareStatus::kSharedNonManaged;
+    } else if (count.non_managed_count + count.managed_count > 1) {
+      name_shared = GaiaNameShareStatus::kSharedManaged;
+    }
+    base::UmaHistogramEnumeration("Profile.GaiaNameShareStatus", name_shared);
+  }
 }
 
 void ProfileMetrics::LogProfileAddNewUser(ProfileAdd metric) {
@@ -337,7 +385,7 @@ void ProfileMetrics::LogProfileAvatarSelection(size_t icon_index) {
       icon_name = AVATAR_GAIA;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration("Profile.Avatar", icon_name,
                                 NUM_PROFILE_AVATAR_METRICS);
@@ -361,13 +409,4 @@ void ProfileMetrics::LogProfileLaunch(Profile* profile) {
     base::RecordAction(
         base::UserMetricsAction("ManagedMode_NewManagedUserWindow"));
   }
-}
-
-void ProfileMetrics::LogSystemProfileKeyedServicesCount(Profile* profile) {
-  DCHECK(profile->IsSystemProfile());
-
-  std::string histogram_name = "Profile.KeyedService.Count.SystemProfile";
-  histogram_name += profile->IsOffTheRecord() ? "OTR-M-107" : "Original-M-107";
-  base::UmaHistogramCounts1000(histogram_name,
-                               GetTotalKeyedServiceCount(profile));
 }

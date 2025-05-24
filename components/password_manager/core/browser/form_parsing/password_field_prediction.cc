@@ -58,19 +58,14 @@ CredentialFieldType DeriveFromFieldType(FieldType type) {
   if (GroupTypeOfFieldType(type) == autofill::FieldTypeGroup::kCreditCard) {
     return CredentialFieldType::kNonCredential;
   }
-  // TODO: crbug/40925827 - Move if statement under switch case after the
-  // feature is launched.
-  if (type == autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES &&
-      base::FeatureList::IsEnabled(
-          features::kUsernameFirstFlowWithIntermediateValuesPredictions)) {
-    return CredentialFieldType::kSingleUsername;
-  }
+
   switch (type) {
     case autofill::USERNAME:
     case autofill::USERNAME_AND_EMAIL_ADDRESS:
       return CredentialFieldType::kUsername;
     case autofill::SINGLE_USERNAME:
     case autofill::SINGLE_USERNAME_FORGOT_PASSWORD:
+    case autofill::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
       return CredentialFieldType::kSingleUsername;
     case autofill::PASSWORD:
       return CredentialFieldType::kCurrentPassword;
@@ -92,12 +87,10 @@ PasswordFieldPrediction::PasswordFieldPrediction(
     autofill::FieldRendererId renderer_id,
     autofill::FieldSignature signature,
     autofill::FieldType type,
-    bool may_use_prefilled_placeholder,
     bool is_override)
     : renderer_id(renderer_id),
       signature(signature),
       type(ToSafeFieldType(type, FieldType::NO_SERVER_DATA)),
-      may_use_prefilled_placeholder(may_use_prefilled_placeholder),
       is_override(is_override) {}
 
 PasswordFieldPrediction::PasswordFieldPrediction(
@@ -167,8 +160,6 @@ FormPredictions ConvertToFormPredictions(
 
     field_predictions.emplace_back(
         field.renderer_id(), current_signature, server_type,
-        /*may_use_prefilled_placeholder=*/
-        autofill_prediction.may_use_prefilled_placeholder.value_or(false),
         /*is_override=*/autofill_prediction.is_override());
   }
 

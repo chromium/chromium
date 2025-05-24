@@ -64,10 +64,22 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
           <input id="useFrontFacing" type="checkbox">
           <label for="useFrontFacing">Enable front-facing camera</label>
+          <br/>
+          <input id="requestRawDepth" type="checkbox">
+          <label for="requestRawDepth">Request raw depth buffer</label>
+          <br/>
+          <input id="requestSmoothDepth" type="checkbox">
+          <label for="requestSmoothDepth">Request smooth depth buffer (will be requested after raw if both are requested)</label>
+          <br/>
+          <input id="matchDepthView" type="checkbox" checked>
+          <label for="matchDepthView">Align Depth and XRViews</label>
+          <br/>
         </p>
       </details>
     </header>
     <div id="text-overlay">
+      <br/>
+      <br/>
       <div id="text-info"></div>
     </div>
     <script id="vertexShader" type="x-shader/x-vertex">
@@ -89,10 +101,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       import {mat4, vec3, mat3, vec2} from '../js/cottontail/src/math/gl-matrix.js';
 
       const useFrontFacing = document.getElementById('useFrontFacing');
+      const requestRawDepth = document.getElementById('requestRawDepth');
+      const requestSmoothDepth = document.getElementById('requestSmoothDepth');
 
       // XR globals.
       let xrButton = null;
       let xrRefSpace = null;
+      let toggleDepthButton = null;
+      let requestToggleDepthActive = false;
 
       // WebGL scene globals.
       let gl = null;
@@ -127,6 +143,18 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           supportedSessionTypes: ['immersive-ar']
         });
         document.querySelector('header').appendChild(xrButton.domElement);
+
+        toggleDepthButton = new XRDeviceButton({
+          onRequestSession: ()=>{}, // Invoked when we have no session, no-op.
+          onEndSession: (session)=>{
+            requestToggleDepthActive = true;
+          },
+          textEnterXRTitle: "No Active Session",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "Tap to toggle depth active",
+          supportedSessionTypes: ['immersive-ar']
+        });
+        document.querySelector('#text-overlay').appendChild(toggleDepthButton.domElement);
       }
 
       function onRequestSession() {
@@ -146,6 +174,19 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           options.optionalFeatures.push('front-facing');
         }
 
+        options.depthSensing.matchDepthView = matchDepthView.checked;
+
+        if (requestRawDepth.checked || requestSmoothDepth.checked) {
+          options.depthSensing.depthTypeRequest = [];
+          if (requestRawDepth.checked) {
+            options.depthSensing.depthTypeRequest.push("raw");
+          }
+
+          if (requestSmoothDepth.checked) {
+            options.depthSensing.depthTypeRequest.push("smooth");
+          }
+        }
+
         navigator.xr.requestSession('immersive-ar', options).then((session) => {
             session.mode = 'immersive-ar';
             xrButton.setSession(session);
@@ -157,6 +198,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       }
 
       function onSessionStarted(session) {
+        toggleDepthButton.setSession(session);
         useFrontFacing.disabled = true;
 
         session.addEventListener('end', onSessionEnded);
@@ -190,6 +232,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function onSessionEnded(event) {
         useFrontFacing.disabled = false;
         xrButton.setSession(null);
+        toggleDepthButton.setSession(null);
       }
 
       // Helper, fetches shader source code based on the passed in ID of the <script> element.
@@ -307,6 +350,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
       function onXRFrame(t, frame) {
         const session = frame.session;
         session.requestAnimationFrame(onXRFrame);
+
+        if (requestToggleDepthActive) {
+          session.depthActive ? session.pauseDepthSensing() : session.resumeDepthSensing();
+          requestToggleDepthActive = false;
+        }
 
         const baseLayer = session.renderState.baseLayer;
 

@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
@@ -21,6 +22,18 @@ size_t MaxAdAuctionAdComponents() {
   } else {
     return kMaxAdAuctionAdComponentsDefault;
   }
+}
+
+base::TimeDelta MaxInterestGroupLifetime() {
+  return base::FeatureList::IsEnabled(features::kFledgeMaxGroupLifetimeFeature)
+             ? features::kFledgeMaxGroupLifetime.Get()
+             : base::Days(30);
+}
+
+base::TimeDelta MaxInterestGroupLifetimeForMetadata() {
+  return base::FeatureList::IsEnabled(features::kFledgeMaxGroupLifetimeFeature)
+             ? features::kFledgeMaxGroupLifetimeForMetadata.Get()
+             : base::Days(30);
 }
 
 }  // namespace blink

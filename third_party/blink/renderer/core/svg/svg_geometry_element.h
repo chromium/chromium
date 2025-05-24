@@ -35,7 +35,10 @@
 
 namespace blink {
 
+class AffineTransform;
+class DOMPointInit;
 class Path;
+class PathBuilder;
 class SVGAnimatedNumber;
 class SVGPointTearOff;
 
@@ -44,10 +47,12 @@ class SVGGeometryElement : public SVGGraphicsElement {
 
  public:
   virtual Path AsPath() const = 0;
-  bool isPointInFill(SVGPointTearOff*) const;
-  bool isPointInStroke(SVGPointTearOff*) const;
+  virtual PathBuilder AsMutablePath() const = 0;
 
-  Path ToClipPath() const;
+  bool isPointInFill(const DOMPointInit*) const;
+  bool isPointInStroke(const DOMPointInit*) const;
+
+  Path ToClipPath(const AffineTransform* clip_transform = nullptr) const;
 
   SVGAnimatedNumber* pathLength() const { return path_length_.Get(); }
 
@@ -69,7 +74,7 @@ class SVGGeometryElement : public SVGGraphicsElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   void GeometryAttributeChanged();
-  void GeometryPresentationAttributeChanged(const QualifiedName&);
+  void GeometryPresentationAttributeChanged(const SVGAnimatedPropertyBase&);
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
@@ -83,10 +88,6 @@ class SVGGeometryElement : public SVGGraphicsElement {
   Member<SVGAnimatedNumber> path_length_;
 };
 
-template <>
-inline bool IsElementOfType<const SVGGeometryElement>(const Node& node) {
-  return IsA<SVGGeometryElement>(node);
-}
 template <>
 struct DowncastTraits<SVGGeometryElement> {
   static bool AllowFrom(const Node& node) {

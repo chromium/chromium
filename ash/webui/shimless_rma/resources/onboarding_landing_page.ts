@@ -8,15 +8,19 @@ import './shimless_rma_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import type {ClickExitButtonEvent} from './events.js';
+import {CLICK_EXIT_BUTTON, createCustomEvent} from './events.js';
 import {getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_landing_page.html.js';
-import {HardwareVerificationStatusObserverReceiver, ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import type {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
+import {HardwareVerificationResult, HardwareVerificationStatusObserverReceiver} from './shimless_rma.mojom-webui.js';
 import {executeThenTransitionState, focusPageTitle} from './shimless_rma_util.js';
-import {ClickExitButtonEvent, CLICK_EXIT_BUTTON, createCustomEvent} from './events.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -70,6 +74,14 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
       },
 
       /**
+       * isSkipped is not valid until verificationInProgress is false.
+       */
+      isSkipped: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * After the Get Started button is clicked, true until the next state is
        * processed. It is set back to false by shimless_rma.ts.
        */
@@ -87,6 +99,14 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
         value: false,
       },
 
+      /**
+       * Hide the exit button if user should not exit.
+       */
+      canExit: {
+        type: Boolean,
+        value: true,
+      },
+
       verificationFailedMessage: {
         type: String,
         value: '',
@@ -97,11 +117,13 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
   allButtonsDisabled: boolean;
   getStartedButtonClicked: boolean;
   confirmExitButtonClicked: boolean;
+  canExit: boolean;
   shimlessRmaService: ShimlessRmaServiceInterface = getShimlessRmaService();
   hwVerificationObserverReceiver: HardwareVerificationStatusObserverReceiver;
   protected componentsList: string;
   protected verificationInProgress: boolean;
   protected isCompliant: boolean;
+  protected isSkipped: boolean;
   protected verificationFailedMessage: TrustedHTML;
 
   constructor() {
@@ -155,12 +177,14 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
    * Implements
    * HardwareVerificationStatusObserver.onHardwareVerificationResult()
    */
-  onHardwareVerificationResult(isCompliant: boolean, errorMessage: string): void {
-    this.isCompliant = isCompliant;
+  onHardwareVerificationResult(result: HardwareVerificationResult): void {
+    this.isCompliant = result.passResult !== undefined;
+    this.isSkipped = loadTimeData.getBoolean('hardwareValidationSkipEnabled') &&
+        result.skipResult !== undefined;
     this.verificationInProgress = false;
 
-    if (!this.isCompliant) {
-      this.componentsList = errorMessage;
+    if (!this.isSkipped && !this.isCompliant) {
+      this.componentsList = result.failResult!.componentInfo;
       this.setVerificationFailedMessage();
     }
   }

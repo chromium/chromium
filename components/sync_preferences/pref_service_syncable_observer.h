@@ -13,7 +13,7 @@ class PrefServiceSyncableObserver {
   virtual void OnIsSyncingChanged() = 0;
 
  protected:
-  virtual ~PrefServiceSyncableObserver() {}
+  virtual ~PrefServiceSyncableObserver() = default;
 };
 
 }  // namespace sync_preferences

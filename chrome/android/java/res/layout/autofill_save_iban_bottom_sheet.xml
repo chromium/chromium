@@ -79,9 +79,9 @@ found in the LICENSE file.
                     android:layout_weight="0"
                     android:gravity="center_vertical" />
 
-                <!-- IBAN label e.g., CH ••8009-->
+                <!-- IBAN value e.g., CH56 0483 5012 3456 7800 9 -->
                 <TextView
-                    android:id="@+id/autofill_save_iban_label"
+                    android:id="@+id/autofill_save_iban_value"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextAppearance.TextMedium.Primary"

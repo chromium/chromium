@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_audio_element_capturer_source.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
@@ -48,9 +49,9 @@ class HTMLAudioElementCapturerSourceTest : public testing::Test {
  public:
   HTMLAudioElementCapturerSourceTest()
       : fake_callback_(0.1, kAudioTrackSampleRate),
-        audio_source_(new blink::WebAudioSourceProviderImpl(
-            new media::NullAudioSink(
-                blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
+        audio_source_(base::MakeRefCounted<WebAudioSourceProviderImpl>(
+            base::MakeRefCounted<media::NullAudioSink>(
+                scheduler::GetSingleThreadTaskRunnerForTesting()),
             &media_log_)) {}
 
   void SetUp() final {

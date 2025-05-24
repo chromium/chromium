@@ -23,7 +23,7 @@ const tests = [
     await microtasksFinished();
 
     // No warning message is displayed.
-    const warning = attachmentBar.shadowRoot!.querySelector('#warning')!;
+    const warning = attachmentBar.shadowRoot.querySelector('#warning')!;
     chrome.test.assertFalse(warning.getAttribute('hidden') === null);
     chrome.test.succeed();
   },
@@ -37,7 +37,7 @@ const tests = [
     await microtasksFinished();
 
     // A warning message is displayed because `attachment2` is oversized.
-    const warning = attachmentBar.shadowRoot!.querySelector('#warning')!;
+    const warning = attachmentBar.shadowRoot.querySelector('#warning')!;
     chrome.test.assertEq(null, warning.getAttribute('hidden'));
     chrome.test.succeed();
   },

@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -106,7 +107,7 @@ class GuestOsShelfUtilsTest : public testing::Test {
   }
 
   void SetUp() override {
-    guest_os::GuestOsSessionTracker::GetForProfile(&testing_profile_)
+    guest_os::GuestOsSessionTrackerFactory::GetForProfile(&testing_profile_)
         ->AddGuestForTesting(
             guest_os::GuestId{guest_os::VmType::TERMINA,
                               crostini::kCrostiniDefaultVmName, container_name},

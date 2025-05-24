@@ -47,6 +47,7 @@ public class UkmTest {
         mActivityTestRule.startMainActivityOnBlankPage();
     }
 
+    // LINT.IfChange(HistoryDeleteCheck)
     // TODO(crbug.com/40117796): Move this to ukm_browsertest.cc.
     @Test
     @SmallTest
@@ -112,4 +113,5 @@ public class UkmTest {
                             "Client id:", originalClientId, UkmUtilsForTest.getClientId());
                 });
     }
+    // LINT.ThenChange(/chrome/browser/metrics/ukm_browsertest.cc:HistoryDeleteCheck)
 }

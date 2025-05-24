@@ -8,55 +8,62 @@
 #include "base/time/time.h"
 
 // The number of days a certificate is valid.
-extern const base::TimeDelta kNearbyShareCertificateValidityPeriod;
+inline constexpr base::TimeDelta kNearbyShareCertificateValidityPeriod =
+    base::Days(3);
 
 // The maximum offset for obfuscating a private certificate's not before/after
 // timestamps when converting to a public certificate.
-extern const base::TimeDelta
-    kNearbyShareMaxPrivateCertificateValidityBoundOffset;
+inline constexpr base::TimeDelta
+    kNearbyShareMaxPrivateCertificateValidityBoundOffset = base::Hours(2);
 
 // To account for clock skew between the local device and remote devices, public
 // certificates will be considered valid if the current time is within the
 // bounds [not-before - tolerance, not-after + tolerance).
-extern const base::TimeDelta
-    kNearbySharePublicCertificateValidityBoundOffsetTolerance;
+inline constexpr base::TimeDelta
+    kNearbySharePublicCertificateValidityBoundOffsetTolerance =
+        base::Minutes(30);
 
 // The number of private certificates for a given visibility to be stored and
 // rotated on the local device.
-extern const size_t kNearbyShareNumPrivateCertificates;
+inline constexpr size_t kNearbyShareNumPrivateCertificates = 3;
 
 // The number of bytes comprising the hash of the authentication token using the
 // secret key.
-extern const size_t kNearbyShareNumBytesAuthenticationTokenHash;
+inline constexpr size_t kNearbyShareNumBytesAuthenticationTokenHash = 6;
 
 // Length of key in bytes required by AES-GCM encryption.
-extern const size_t kNearbyShareNumBytesAesGcmKey;
+inline constexpr size_t kNearbyShareNumBytesAesGcmKey = 32;
 
 // Length of salt in bytes required by AES-GCM encryption.
-extern const size_t kNearbyShareNumBytesAesGcmIv;
+inline constexpr size_t kNearbyShareNumBytesAesGcmIv = 12;
 
 // Length of salt in bytes required by AES-CTR encryption.
-extern const size_t kNearbyShareNumBytesAesCtrIv;
+inline constexpr size_t kNearbyShareNumBytesAesCtrIv = 16;
 
 // The number of bytes of the AES secret key used to encrypt/decrypt the
 // metadata encryption key.
-extern const size_t kNearbyShareNumBytesSecretKey;
+inline constexpr size_t kNearbyShareNumBytesSecretKey = 32;
 
 // The number of the bytes of the AES key used to encryption personal info
 // metadata, for example, name and picture data. These bytes are broadcast in an
 // advertisement to other devices, thus the smaller byte size.
-extern const size_t kNearbyShareNumBytesMetadataEncryptionKey;
+inline constexpr size_t kNearbyShareNumBytesMetadataEncryptionKey = 14;
 
 // The number of bytes for the salt used for encryption of the metadata
 // encryption key. These bytes are broadcast in the advertisement to other
 // devices.
-extern const size_t kNearbyShareNumBytesMetadataEncryptionKeySalt;
+inline constexpr size_t kNearbyShareNumBytesMetadataEncryptionKeySalt = 2;
 
 // The number of bytes used for the hash of the metadata encryption key.
-extern const size_t kNearbyShareNumBytesMetadataEncryptionKeyTag;
+inline constexpr size_t kNearbyShareNumBytesMetadataEncryptionKeyTag = 32;
 
 // The number of bytes in a certificate's identifier.
-extern const size_t kNearbyShareNumBytesCertificateId;
+inline constexpr size_t kNearbyShareNumBytesCertificateId = 32;
+
+// The size of the random byte array used for the encryption frame's signed data
+// if a valid signature cannot be generated. This size is consistent with the
+// GmsCore implementation.
+inline constexpr size_t kNearbyShareNumBytesRandomSignature = 72;
 
 // Half of the possible 2-byte salt values.
 //
@@ -72,25 +79,27 @@ extern const size_t kNearbyShareNumBytesCertificateId;
 // device that avoids salts that you’ve seen in the past is statistically likely
 // to be the device you’re tracking. Therefore, we only use half of the
 // available 2-byte salts.
-extern const size_t kNearbyShareMaxNumMetadataEncryptionKeySalts;
+inline constexpr size_t kNearbyShareMaxNumMetadataEncryptionKeySalts = 32768;
 
 // The max number of retries allowed to generate a salt. This is a sanity check
 // that will never be hit.
-extern const size_t
-    kNearbyShareMaxNumMetadataEncryptionKeySaltGenerationRetries;
+inline constexpr size_t
+    kNearbyShareMaxNumMetadataEncryptionKeySaltGenerationRetries = 128;
 
 // The prefix prepended to the UKEY2 authentication token by the sender before
 // signing.
-extern const char kNearbyShareSenderVerificationPrefix;
+inline constexpr char kNearbyShareSenderVerificationPrefix = 0x01;
 
 // The prefix prepended to the UKEY2 authentication token by the receiver before
 // signing.
-extern const char kNearbyShareReceiverVerificationPrefix;
+inline constexpr char kNearbyShareReceiverVerificationPrefix = 0x02;
 
 // The maximum number of attempts to initialize LevelDB in Certificate Storage.
-extern const size_t kNearbyShareCertificateStorageMaxNumInitializeAttempts;
+inline constexpr size_t kNearbyShareCertificateStorageMaxNumInitializeAttempts =
+    3;
 
 // The frequency with which to download public certificates.
-extern const base::TimeDelta kNearbySharePublicCertificateDownloadPeriod;
+inline constexpr base::TimeDelta kNearbySharePublicCertificateDownloadPeriod =
+    base::Hours(12);
 
 #endif  // CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_CONSTANTS_H_

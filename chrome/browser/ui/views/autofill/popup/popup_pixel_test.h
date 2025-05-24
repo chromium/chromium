@@ -26,11 +26,6 @@
 
 namespace autofill {
 
-namespace {
-using ::testing::NiceMock;
-using ::testing::Return;
-}  // namespace
-
 using TestParameterType = std::tuple<bool, bool>;
 
 // A base class to do pixel tests for classes that derive from `PopupBaseView`.
@@ -71,9 +66,10 @@ class PopupPixelTest : public UiBrowserTest,
 
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    ON_CALL(controller(), GetWebContents()).WillByDefault(Return(web_contents));
+    ON_CALL(controller(), GetWebContents())
+        .WillByDefault(testing::Return(web_contents));
     ON_CALL(controller(), container_view())
-        .WillByDefault(Return(web_contents->GetNativeView()));
+        .WillByDefault(testing::Return(web_contents->GetNativeView()));
   }
 
   void ShowUi(const std::string& name) override {
@@ -109,7 +105,7 @@ class PopupPixelTest : public UiBrowserTest,
   raw_ptr<View>& view() { return view_; }
 
  private:
-  NiceMock<Controller> controller_;
+  testing::NiceMock<Controller> controller_;
   raw_ptr<View> view_ = nullptr;
 };
 

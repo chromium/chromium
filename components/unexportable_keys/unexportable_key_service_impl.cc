@@ -4,21 +4,20 @@
 
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
+#include <algorithm>
+#include <variant>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
 #include "crypto/unexportable_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace unexportable_keys {
-
-namespace {
 
 // Class holding either an `UnexportableKeyId` or a list of callbacks waiting
 // for the key creation.
@@ -50,7 +49,7 @@ class MaybePendingUnexportableKeyId {
   std::vector<CallbackType>& GetCallbacks();
 
   // Holds the value of its first alternative type by default.
-  absl::variant<std::vector<CallbackType>, UnexportableKeyId>
+  std::variant<std::vector<CallbackType>, UnexportableKeyId>
       key_id_or_pending_callbacks_;
 };
 
@@ -63,13 +62,13 @@ MaybePendingUnexportableKeyId::MaybePendingUnexportableKeyId(
 MaybePendingUnexportableKeyId::~MaybePendingUnexportableKeyId() = default;
 
 bool MaybePendingUnexportableKeyId::HasKeyId() {
-  return absl::holds_alternative<UnexportableKeyId>(
+  return std::holds_alternative<UnexportableKeyId>(
       key_id_or_pending_callbacks_);
 }
 
 UnexportableKeyId MaybePendingUnexportableKeyId::GetKeyId() {
   CHECK(HasKeyId());
-  return absl::get<UnexportableKeyId>(key_id_or_pending_callbacks_);
+  return std::get<UnexportableKeyId>(key_id_or_pending_callbacks_);
 }
 
 void MaybePendingUnexportableKeyId::AddCallback(CallbackType callback) {
@@ -101,10 +100,8 @@ void MaybePendingUnexportableKeyId::RunCallbacksWithFailure(
 std::vector<MaybePendingUnexportableKeyId::CallbackType>&
 MaybePendingUnexportableKeyId::GetCallbacks() {
   CHECK(!HasKeyId());
-  return absl::get<std::vector<CallbackType>>(key_id_or_pending_callbacks_);
+  return std::get<std::vector<CallbackType>>(key_id_or_pending_callbacks_);
 }
-
-}  // namespace
 
 UnexportableKeyServiceImpl::UnexportableKeyServiceImpl(
     UnexportableKeyTaskManager& task_manager)
@@ -163,13 +160,14 @@ void UnexportableKeyServiceImpl::SignSlowlyAsync(
     const UnexportableKeyId& key_id,
     base::span<const uint8_t> data,
     BackgroundTaskPriority priority,
+    size_t max_retries,
     base::OnceCallback<void(ServiceErrorOr<std::vector<uint8_t>>)> callback) {
   auto it = key_by_key_id_.find(key_id);
   if (it == key_by_key_id_.end()) {
     std::move(callback).Run(base::unexpected(ServiceError::kKeyNotFound));
     return;
   }
-  task_manager_->SignSlowlyAsync(it->second, data, priority,
+  task_manager_->SignSlowlyAsync(it->second, data, priority, max_retries,
                                  std::move(callback));
 }
 
@@ -232,15 +230,15 @@ void UnexportableKeyServiceImpl::OnKeyCreatedFromWrappedKey(
     ServiceErrorOr<scoped_refptr<RefCountedUnexportableSigningKey>>
         key_or_error) {
   if (!key_or_error.has_value()) {
-    pending_entry_it->second.RunCallbacksWithFailure(key_or_error.error());
-    key_id_by_wrapped_key_.erase(pending_entry_it);
+    auto node = key_id_by_wrapped_key_.extract(pending_entry_it);
+    node.mapped().RunCallbacksWithFailure(key_or_error.error());
     return;
   }
   scoped_refptr<RefCountedUnexportableSigningKey>& key = key_or_error.value();
   // `key` must be non-null if `key_or_error` holds a value.
   CHECK(key);
   DCHECK(
-      base::ranges::equal(pending_entry_it->first, key->key().GetWrappedKey()));
+      std::ranges::equal(pending_entry_it->first, key->key().GetWrappedKey()));
 
   UnexportableKeyId key_id = key->id();
   // A newly created key ID must be unique.

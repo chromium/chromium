@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/background_readback.h"
 
 #include "base/feature_list.h"
@@ -36,7 +31,7 @@
 
 namespace {
 bool CanUseRgbReadback(media::VideoFrame& frame) {
-  return media::IsRGB(frame.format()) && (frame.NumTextures() == 1);
+  return media::IsRGB(frame.format()) && frame.HasSharedImage();
 }
 
 SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,
@@ -49,8 +44,8 @@ SkImageInfo GetImageInfoForFrame(const media::VideoFrame& frame,
 
 gpu::raster::RasterInterface* GetSharedGpuRasterInterface() {
   auto wrapper = blink::SharedGpuContext::ContextProviderWrapper();
-  if (wrapper && wrapper->ContextProvider()) {
-    auto* raster_provider = wrapper->ContextProvider()->RasterContextProvider();
+  if (wrapper) {
+    auto* raster_provider = wrapper->ContextProvider().RasterContextProvider();
     if (raster_provider)
       return raster_provider->RasterInterface();
   }
@@ -210,22 +205,23 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToMemory(
   int rgba_stide = result->stride(media::VideoFrame::Plane::kARGB);
   DCHECK_GT(rgba_stide, 0);
 
-  auto origin = txt_frame->metadata().texture_origin_is_top_left
-                    ? kTopLeft_GrSurfaceOrigin
-                    : kBottomLeft_GrSurfaceOrigin;
-
   gfx::Point src_point;
-  gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+  auto shared_image = txt_frame->shared_image();
+  auto origin = shared_image->surface_origin();
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access =
+      shared_image->BeginRasterAccess(ri, txt_frame->acquire_sync_token(),
+                                      /*readonly=*/true);
 
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, origin,
+      shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
       texture_size, src_point, info, base::saturated_cast<GLuint>(rgba_stide),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsFrameReadCompleted,
-                    WrapWeakPersistent(this), std::move(result_cb),
-                    std::move(txt_frame), std::move(result)));
+                    WrapWeakPersistent(this), std::move(result_cb), txt_frame,
+                    std::move(result)));
+  media::WaitAndReplaceSyncTokenClient client(ri, std::move(ri_access));
+  txt_frame->UpdateReleaseSyncToken(&client);
 }
 
 void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
@@ -240,17 +236,13 @@ void BackgroundReadback::OnARGBPixelsFrameReadCompleted(
     ReadbackOnThread(std::move(txt_frame), std::move(result_cb));
     return;
   }
-  if (auto* ri = GetSharedGpuRasterInterface()) {
-    media::WaitAndReplaceSyncTokenClient client(ri);
-    txt_frame->UpdateReleaseSyncToken(&client);
-  } else {
-    success = false;
-  }
+
+  auto* ri = GetSharedGpuRasterInterface();
 
   result_frame->set_color_space(txt_frame->ColorSpace());
   result_frame->metadata().MergeMetadataFrom(txt_frame->metadata());
   result_frame->metadata().ClearTextureFrameMetadata();
-  std::move(result_cb).Run(success ? std::move(result_frame) : nullptr);
+  std::move(result_cb).Run(ri ? std::move(result_frame) : nullptr);
 }
 
 void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
@@ -260,11 +252,8 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
     base::span<uint8_t> dest_buffer,
     ReadbackDoneCallback done_cb) {
   if (dest_layout.NumPlanes() != 1) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "This method shouldn't be called on anything but RGB frames";
-    base::BindPostTaskToCurrentDefault(std::move(std::move(done_cb)))
-        .Run(false);
-    return;
   }
 
   auto* ri = GetSharedGpuRasterInterface();
@@ -277,7 +266,7 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
   uint32_t offset = dest_layout.Offset(0);
   uint32_t stride = dest_layout.Stride(0);
 
-  uint8_t* dst_pixels = dest_buffer.data() + offset;
+  uint8_t* dst_pixels = dest_buffer.subspan(offset).data();
   size_t max_bytes_written = stride * src_rect.height();
   if (stride <= 0 || max_bytes_written > dest_buffer.size()) {
     DLOG(ERROR) << "Buffer is not sufficiently large for readback";
@@ -292,16 +281,13 @@ void BackgroundReadback::ReadbackRGBTextureBackedFrameToBuffer(
 
   SkImageInfo info = GetImageInfoForFrame(*txt_frame, src_rect.size());
   gfx::Point src_point = src_rect.origin();
-  auto origin = txt_frame->metadata().texture_origin_is_top_left
-                    ? kTopLeft_GrSurfaceOrigin
-                    : kBottomLeft_GrSurfaceOrigin;
-
-  gpu::MailboxHolder mailbox_holder = txt_frame->mailbox_holder(0);
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+  auto shared_image = txt_frame->shared_image();
+  auto origin = shared_image->surface_origin();
+  ri->WaitSyncTokenCHROMIUM(txt_frame->acquire_sync_token().GetConstData());
 
   gfx::Size texture_size = txt_frame->coded_size();
   ri->ReadbackARGBPixelsAsync(
-      mailbox_holder.mailbox, mailbox_holder.texture_target, origin,
+      shared_image->mailbox(), shared_image->GetTextureTarget(), origin,
       texture_size, src_point, info, base::saturated_cast<GLuint>(stride),
       dst_pixels,
       WTF::BindOnce(&BackgroundReadback::OnARGBPixelsBufferReadCompleted,
@@ -373,8 +359,8 @@ scoped_refptr<media::VideoFrame> SyncReadbackThread::ReadbackToFrame(
     return nullptr;
 
   auto* ri = context_provider_->RasterInterface();
-  return media::ReadbackTextureBackedFrameToMemorySync(
-      *frame, ri, context_provider_->GetCapabilities(), &result_frame_pool_);
+  return media::ReadbackTextureBackedFrameToMemorySync(*frame, ri,
+                                                       &result_frame_pool_);
 }
 
 bool SyncReadbackThread::ReadbackToBuffer(
@@ -397,10 +383,10 @@ bool SyncReadbackThread::ReadbackToBuffer(
     const gfx::Size sample_size =
         media::VideoFrame::SampleSize(dest_layout.Format(), i);
     gfx::Rect plane_src_rect = PlaneRect(src_rect, sample_size);
-    uint8_t* dest_pixels = dest_buffer.data() + dest_layout.Offset(i);
-    if (!media::ReadbackTexturePlaneToMemorySync(
-            *frame, i, plane_src_rect, dest_pixels, dest_layout.Stride(i), ri,
-            context_provider_->GetCapabilities())) {
+    uint8_t* dest_pixels = dest_buffer.subspan(dest_layout.Offset(i)).data();
+    if (!media::ReadbackTexturePlaneToMemorySync(*frame, i, plane_src_rect,
+                                                 dest_pixels,
+                                                 dest_layout.Stride(i), ri)) {
       // It's possible to fail after copying some but not all planes, leaving
       // the output buffer in a corrupt state D:
       return false;

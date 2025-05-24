@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -50,12 +51,12 @@ PinStatusMessageView::TestApi::TestApi(PinStatusMessageView* view)
 
 PinStatusMessageView::TestApi::~TestApi() = default;
 
-const std::u16string&
-PinStatusMessageView::TestApi::GetPinStatusMessageContent() const {
+std::u16string_view PinStatusMessageView::TestApi::GetPinStatusMessageContent()
+    const {
   return view_->message_->GetText();
 }
 
-PinStatusMessageView::PinStatusMessageView(base::RepeatingClosure on_pin_unlock)
+PinStatusMessageView::PinStatusMessageView(OnPinUnlock on_pin_unlock)
     : on_pin_unlock_(on_pin_unlock) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -71,19 +72,21 @@ PinStatusMessageView::PinStatusMessageView(base::RepeatingClosure on_pin_unlock)
   message_->SetSubpixelRenderingEnabled(false);
   message_->SetAutoColorReadabilityEnabled(false);
   message_->SetMultiLine(true);
-  message_->SetEnabledColorId(kColorAshTextColorPrimary);
+  message_->SetEnabledColor(kColorAshTextColorPrimary);
   message_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   message_->GetViewAccessibility().SetName(
       std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  AddChildView(message_.get());
+  AddChildViewRaw(message_.get());
 }
 
 PinStatusMessageView::~PinStatusMessageView() {
   message_ = nullptr;
 }
 
-void PinStatusMessageView::SetPinInfo(base::Time available_at,
+void PinStatusMessageView::SetPinInfo(const AccountId& user,
+                                      base::Time available_at,
                                       bool is_pin_only) {
+  user_ = user;
   available_at_ = available_at;
   is_pin_only_ = is_pin_only;
   UpdateUI();
@@ -94,7 +97,7 @@ void PinStatusMessageView::SetPinInfo(base::Time available_at,
 void PinStatusMessageView::UpdateUI() {
   base::TimeDelta time_left = available_at_ - base::Time::Now();
   if (!time_left.is_positive()) {
-    on_pin_unlock_.Run();
+    on_pin_unlock_.Run(user_);
     message_->SetText(std::u16string());
     timer_.Stop();
     return;

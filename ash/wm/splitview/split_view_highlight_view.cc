@@ -62,7 +62,7 @@ SplitViewHighlightView::SplitViewHighlightView(bool is_right_or_bottom)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysPrimary, kHighlightScreenRoundRectRadius));
 
   SetBorder(std::make_unique<views::HighlightBorder>(

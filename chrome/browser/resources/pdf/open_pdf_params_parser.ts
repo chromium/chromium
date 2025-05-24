@@ -29,6 +29,8 @@ export enum ViewMode {
   XYZ = 'xyz',
 }
 
+const FRAGMENT_DIRECTIVE_DELIMITER = ':~:';
+
 type GetNamedDestinationCallback = (name: string) =>
     Promise<NamedDestinationMessageData>;
 
@@ -307,6 +309,48 @@ export class OpenPdfParamsParser {
   }
 
   /**
+   * Fetch text fragment directives that appear in the PDF URL if any.
+   *
+   * @param url that needs to be parsed.
+   * @return The text fragment directives or an empty array if they do not
+   *     exist.
+   */
+  getTextFragments(url: string): string[] {
+    // The hash of the URL object decodes the escaped characters in our
+    // fragment. So in order to keep characters such as `,` or `-` which could
+    // be part of the prefix or suffix, the fragment of the URL needs to be
+    // fetched directly from the `url` string instead of using the URL
+    // interface.
+    const hashSplit = url.split('#');
+    if (hashSplit.length !== 2) {
+      return [];
+    }
+    const hash = hashSplit[1];
+    assert(hash !== undefined);
+
+    // Handle the case of text directives included in the URL.
+    const fragmentDirectiveSplit = hash.split(FRAGMENT_DIRECTIVE_DELIMITER);
+    if (fragmentDirectiveSplit.length !== 2) {
+      return [];
+    }
+    const fragmentDirective = fragmentDirectiveSplit[1];
+    assert(fragmentDirective !== undefined);
+
+    // Loop through the directive split at character `&` in case of multiple
+    // text directives. This cannot be done with URLSearchParams since the `get`
+    // and `getAll` functions decode the parameter values which can result in a
+    // broken text fragment parse.
+    const textFragmentDirectives: string[] = [];
+    for (const param of fragmentDirective.split('&')) {
+      const [key, value] = param.split('=');
+      if (key === 'text' && value) {
+        textFragmentDirectives.push(value);
+      }
+    }
+    return textFragmentDirectives;
+  }
+
+  /**
    * Parse PDF url parameters. These parameters are mentioned in the url
    * and specify actions to be performed when opening pdf files.
    * See http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/
@@ -357,7 +401,7 @@ export class OpenPdfParamsParser {
         Object.assign(
             params,
             await this.parseNameddestViewParam_(
-                data.namedDestinationView, pageNumber!));
+                data.namedDestinationView, pageNumber));
       }
       return params;
     }

@@ -59,12 +59,11 @@ String CanonicalizeProtocol(const String& input,
   url::Component component;
   if (stripped.Is8Bit()) {
     StringUTF8Adaptor utf8(stripped);
-    result = url::CanonicalizeScheme(
-        utf8.data(), url::Component(0, utf8.size()), &canon_output, &component);
+    result =
+        url::CanonicalizeScheme(utf8.AsStringView(), &canon_output, &component);
   } else {
-    result = url::CanonicalizeScheme(stripped.Characters16(),
-                                     url::Component(0, stripped.length()),
-                                     &canon_output, &component);
+    result =
+        url::CanonicalizeScheme(stripped.View16(), &canon_output, &component);
   }
 
   if (!result) {
@@ -98,8 +97,7 @@ void CanonicalizeUsernameAndPassword(const String& username,
     StringUTF8Adaptor username_utf8(username);
     StringUTF8Adaptor password_utf8(password);
     result = url::CanonicalizeUserInfo(
-        username_utf8.data(), url::Component(0, username_utf8.size()),
-        password_utf8.data(), url::Component(0, password_utf8.size()),
+        username_utf8.AsStringView(), password_utf8.AsStringView(),
         &canon_output, &username_component, &password_component);
 
   } else {
@@ -107,10 +105,9 @@ void CanonicalizeUsernameAndPassword(const String& username,
     String password16(password);
     username16.Ensure16Bit();
     password16.Ensure16Bit();
-    result = url::CanonicalizeUserInfo(
-        username16.Characters16(), url::Component(0, username16.length()),
-        password16.Characters16(), url::Component(0, password16.length()),
-        &canon_output, &username_component, &password_component);
+    result = url::CanonicalizeUserInfo(username16.View16(), password16.View16(),
+                                       &canon_output, &username_component,
+                                       &password_component);
   }
 
   if (!result) {
@@ -135,7 +132,7 @@ String CanonicalizeHostname(const String& input,
   }
 
   bool success = false;
-  String result = SecurityOrigin::CanonicalizeHost(input, &success);
+  String result = SecurityOrigin::CanonicalizeSpecialHost(input, &success);
   if (!success) {
     exception_state.ThrowTypeError("Invalid hostname '" + input + "'.");
     return String();
@@ -259,11 +256,10 @@ String CanonicalizeSearch(const String& input,
   url::Component component;
   if (stripped.Is8Bit()) {
     StringUTF8Adaptor utf8(stripped);
-    url::CanonicalizeQuery(utf8.data(), url::Component(0, utf8.size()),
+    url::CanonicalizeQuery(utf8.AsStringView(),
                            /*converter=*/nullptr, &canon_output, &component);
   } else {
-    url::CanonicalizeQuery(stripped.Characters16(),
-                           url::Component(0, stripped.length()),
+    url::CanonicalizeQuery(stripped.View16(),
                            /*converter=*/nullptr, &canon_output, &component);
   }
 
@@ -287,12 +283,9 @@ String CanonicalizeHash(const String& input,
   url::Component component;
   if (stripped.Is8Bit()) {
     StringUTF8Adaptor utf8(stripped);
-    url::CanonicalizeRef(utf8.data(), url::Component(0, utf8.size()),
-                         &canon_output, &component);
+    url::CanonicalizeRef(utf8.AsStringView(), &canon_output, &component);
   } else {
-    url::CanonicalizeRef(stripped.Characters16(),
-                         url::Component(0, stripped.length()), &canon_output,
-                         &component);
+    url::CanonicalizeRef(stripped.View16(), &canon_output, &component);
   }
 
   return StringFromCanonOutput(canon_output, component);

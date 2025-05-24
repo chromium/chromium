@@ -13,8 +13,6 @@
 // TODO(b/263828712): Upstream and downstream changes from browser settings, and
 // consider merging the two.
 
-import '/shared/settings/prefs/prefs.js';
-
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -24,8 +22,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {castExists} from '../assert_extras.js';
 
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
-import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
+import type {LanguagesBrowserProxy} from './languages_browser_proxy.js';
+import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+import type {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
 
@@ -1118,7 +1117,7 @@ export class SettingsLanguagesElement extends SettingsLanguagesElementBase
     const result = languageCode.match(/^([^-]+)-?/)!;
     // Safety: The regex above has one non-optional capturing group.
     assert(result.length === 2);
-    return result[1]!;
+    return result[1];
   }
 
   getLanguage(languageCode: string): chrome.languageSettingsPrivate.Language

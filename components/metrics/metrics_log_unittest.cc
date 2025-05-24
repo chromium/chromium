@@ -25,7 +25,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/cpu_metrics_provider.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/environment_recorder.h"
@@ -71,7 +70,7 @@ class TestMetricsLog : public MetricsLog {
   TestMetricsLog(const TestMetricsLog&) = delete;
   TestMetricsLog& operator=(const TestMetricsLog&) = delete;
 
-  ~TestMetricsLog() override {}
+  ~TestMetricsLog() override = default;
 
   const ChromeUserMetricsExtension& uma_proto() const {
     return *MetricsLog::uma_proto();
@@ -88,7 +87,7 @@ class TestMetricsLog : public MetricsLog {
 
 // Returns the expected hardware class for a metrics log.
 std::string GetExpectedHardwareClass() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Currently, we are relying on base/ implementation for functionality on our
   // side which can be fragile if in the future someone decides to change that.
   // This replicates the logic to get the hardware class for ChromeOS and this
@@ -127,7 +126,7 @@ class MetricsLogTest : public testing::Test {
   MetricsLogTest(const MetricsLogTest&) = delete;
   MetricsLogTest& operator=(const MetricsLogTest&) = delete;
 
-  ~MetricsLogTest() override {}
+  ~MetricsLogTest() override = default;
 
  protected:
   // Check that the values in |system_values| are filled in and expected ones
@@ -221,6 +220,27 @@ TEST_F(MetricsLogTest, SessionHash) {
             log2.uma_proto()->system_profile().session_hash());
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+TEST_F(MetricsLogTest, FgBgId) {
+  MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  MetricsLog log2(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+
+  // Verify that both logs have the same fg_bg_id.
+  EXPECT_TRUE(log1.uma_proto()->system_profile().has_fg_bg_id());
+  EXPECT_TRUE(log2.uma_proto()->system_profile().has_fg_bg_id());
+  EXPECT_EQ(log1.uma_proto()->system_profile().fg_bg_id(),
+            log2.uma_proto()->system_profile().fg_bg_id());
+
+  // Verify that a log created after a call to IncrementFgBgId() will have a
+  // different `fg_bg_id` than the ones before.
+  MetricsLog::IncrementFgBgId();
+  MetricsLog log3(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
+  EXPECT_TRUE(log3.uma_proto()->system_profile().has_fg_bg_id());
+  EXPECT_NE(log1.uma_proto()->system_profile().fg_bg_id(),
+            log3.uma_proto()->system_profile().fg_bg_id());
+}
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
 TEST_F(MetricsLogTest, LogType) {
   MetricsLog log1(kClientId, kSessionId, MetricsLog::ONGOING_LOG, &client_);
   EXPECT_EQ(MetricsLog::ONGOING_LOG, log1.log_type());
@@ -282,6 +302,9 @@ TEST_F(MetricsLogTest, BasicRecord) {
   // The session hash.
   system_profile->set_session_hash(
       log.uma_proto()->system_profile().session_hash());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  system_profile->set_fg_bg_id(log.uma_proto()->system_profile().fg_bg_id());
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
   system_profile->set_is_instrumented_build(true);
@@ -298,19 +321,17 @@ TEST_F(MetricsLogTest, BasicRecord) {
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  system_profile->mutable_os()->set_name("Lacros");
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   system_profile->mutable_os()->set_name("CrOS");
 #else
   system_profile->mutable_os()->set_name(base::SysInfo::OperatingSystemName());
 #endif
   system_profile->mutable_os()->set_version(
       base::SysInfo::OperatingSystemVersion());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::KernelVersion());
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   system_profile->mutable_os()->set_kernel_version(
       base::SysInfo::OperatingSystemVersion());
 #elif BUILDFLAG(IS_ANDROID)
@@ -812,8 +833,7 @@ TEST_F(MetricsLogTest, OngoingLogStabilityMetrics) {
   delegating_provider.RegisterMetricsProvider(
       base::WrapUnique<MetricsProvider>(test_provider));
   log.RecordEnvironment(&delegating_provider);
-  log.RecordCurrentSessionData(base::TimeDelta(), base::TimeDelta(),
-                               &delegating_provider, &prefs_);
+  log.RecordCurrentSessionData(&delegating_provider, &prefs_);
 
   // The test provider should have been called upon to provide regular but not
   // initial stability metrics.

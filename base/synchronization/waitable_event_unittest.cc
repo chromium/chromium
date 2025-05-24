@@ -114,8 +114,9 @@ TEST(WaitableEventTest, WaitManyShortcut) {
   ev[0]->Signal();
   EXPECT_EQ(WaitableEvent::WaitMany(ev, 5), 0u);
 
-  for (auto* i : ev)
+  for (auto* i : ev) {
     delete i;
+  }
 }
 
 TEST(WaitableEventTest, WaitManyLeftToRight) {
@@ -150,16 +151,15 @@ TEST(WaitableEventTest, WaitManyLeftToRight) {
     EXPECT_EQ(4u, WaitableEvent::WaitMany(ev, 5));
   } while (std::next_permutation(ev, ev + 5));
 
-  for (auto* i : ev)
+  for (auto* i : ev) {
     delete i;
+  }
 }
 
 class WaitableEventSignaler : public PlatformThread::Delegate {
  public:
   WaitableEventSignaler(TimeDelta delay, WaitableEvent* event)
-      : delay_(delay),
-        event_(event) {
-  }
+      : delay_(delay), event_(event) {}
 
   void ThreadMain() override {
     PlatformThread::Sleep(delay_);
@@ -208,8 +208,9 @@ TEST(WaitableEventTest, WaitMany) {
     EXPECT_EQ(2u, index);
   }
 
-  for (auto* i : ev)
+  for (auto* i : ev) {
     delete i;
+  }
 
   PlatformThread::Join(thread);
 }

@@ -82,7 +82,7 @@ MediaQuery::MediaQuery(RestrictorType restrictor,
     : media_type_(AttemptStaticStringCreation(media_type.LowerASCII())),
       exp_node_(exp_node),
       restrictor_(restrictor),
-      has_unknown_(exp_node_ ? exp_node_->HasUnknown() : false) {}
+      has_unknown_(exp_node_ && exp_node_->HasUnknown()) {}
 
 MediaQuery::MediaQuery(const MediaQuery& o)
     : media_type_(o.media_type_),

@@ -16,12 +16,15 @@ import android.widget.TextView;
 import androidx.annotation.VisibleForTesting;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A CheckBox with a primary and descriptive text to the right.
  * The object will be inflated from {@link R.layout.checkbox_with_description).
  * TODO(crbug.com/40862238): Add CompoundButtonWithDescription to avoid duplicate code with
  * RadioButtonWithDescription.
  */
+@NullMarked
 public class CheckBoxWithDescription extends ConstraintLayout implements OnClickListener {
     private CheckBox mCheckBox;
     private TextView mPrimary;
@@ -46,21 +49,27 @@ public class CheckBoxWithDescription extends ConstraintLayout implements OnClick
         mDescription = getDescriptionTextView();
     }
 
-    /** @return CheckBox View inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return CheckBox View inside this {@link CheckBoxWithDescription}.
+     */
     private CheckBox getCheckBoxView() {
-        return (CheckBox) findViewById(R.id.checkbox);
+        return findViewById(R.id.checkbox);
     }
 
-    /** @return TextView displayed as primary inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return TextView displayed as primary inside this {@link CheckBoxWithDescription}.
+     */
     @VisibleForTesting
     TextView getPrimaryTextView() {
-        return (TextView) findViewById(R.id.primary);
+        return findViewById(R.id.primary);
     }
 
-    /** @return TextView displayed as description inside this {@link CheckBoxWithDescription}. */
+    /**
+     * @return TextView displayed as description inside this {@link CheckBoxWithDescription}.
+     */
     @VisibleForTesting
     TextView getDescriptionTextView() {
-        return (TextView) findViewById(R.id.description);
+        return findViewById(R.id.description);
     }
 
     @Override

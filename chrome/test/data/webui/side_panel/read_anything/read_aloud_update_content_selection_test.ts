@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {PauseActionSource} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {SpeechBrowserProxyImpl, SpeechController, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import {createApp, emitEvent, playFromSelectionWithMockTimer} from './common.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('ReadAloud_UpdateContentSelection', () => {
   let app: AppElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
+  let speechController: SpeechController;
 
   // root htmlTag='#document' id=1
   // ++paragraph htmlTag='p' id=2
@@ -81,28 +80,28 @@ suite('ReadAloud_UpdateContentSelection', () => {
     },
   };
 
-  setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     // Do not call the real `onConnected()`. As defined in
     // ReadAnythingAppController, onConnected creates mojo pipes to connect to
     // the rest of the Read Anything feature, which we are not testing here.
     chrome.readingMode.onConnected = () => {};
+    SpeechBrowserProxyImpl.setInstance(new TestSpeechBrowserProxy());
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
     document.onselectionchange = () => {};
     chrome.readingMode.setContentForTesting(axTree, []);
     return microtasksFinished();
   });
 
   test('inner html of container matches expected html', () => {
-    assertFalse(app.speechPlayingState.isSpeechActive);
-    assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
+    assertFalse(speechController.isSpeechActive());
+    assertFalse(speechController.hasSpeechBeenTriggered());
     // isSpeechTreeInitialized is set in updateContent
-    assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+    assertTrue(speechController.isSpeechTreeInitialized());
     // The expected HTML before any highlights are added.
     const expected = '<div><p>World</p><p>Friend!</p></div>';
     const innerHTML = app.$.container.innerHTML;
@@ -127,13 +126,13 @@ suite('ReadAloud_UpdateContentSelection', () => {
 
   suite('While Read Aloud playing', () => {
     setup(() => {
-      app.playSpeech();
-      return waitForPlayFromSelection();
+      playFromSelectionWithMockTimer(app);
+      return microtasksFinished();
     });
 
     test('inner html of container matches expected html', () => {
-      assertTrue(app.speechPlayingState.isSpeechActive);
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+      assertTrue(speechController.isSpeechActive());
+      assertTrue(speechController.isSpeechTreeInitialized());
       // The expected HTML with the current highlights.
       const expected = '<div><p><span class="parent-of-highlight">' +
           '<span class="current-read-highlight">World</span>' +
@@ -153,6 +152,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
     });
 
     test('container class correct', () => {
+      assertTrue(speechController.isSpeechActive());
       assertEquals(
           app.$.container.className,
           'user-select-disabled-when-speech-active-true');
@@ -161,14 +161,13 @@ suite('ReadAloud_UpdateContentSelection', () => {
   });
 
   suite('While Read Aloud paused', () => {
-    setup(async () => {
-      app.playSpeech();
-      await waitForPlayFromSelection();
-      app.stopSpeech(PauseActionSource.BUTTON_CLICK);
+    setup(() => {
+      playFromSelectionWithMockTimer(app);
+      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
     });
     test('inner html of container matches expected html', () => {
-      assertFalse(app.speechPlayingState.isSpeechActive);
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+      assertFalse(speechController.isSpeechActive());
+      assertTrue(speechController.isSpeechTreeInitialized());
       // The expected HTML with the current highlights.
       const expected = '<div><p><span class="parent-of-highlight">' +
           '<span class="current-read-highlight">World</span>' +

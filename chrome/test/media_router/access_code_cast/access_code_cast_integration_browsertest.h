@@ -168,7 +168,6 @@ class AccessCodeCastIntegrationBrowserTest
 
   void UpdateDeviceAddedTime(const MediaSink::Id& sink_id);
   void SetAccessCodeCastSinkServiceTaskRunner();
-  bool IsAccessCodeCastLacrosSyncEnabled();
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -204,7 +203,7 @@ class AccessCodeCastIntegrationBrowserTest
       mock_cast_socket_service_;
   raw_ptr<MockCastMediaSinkServiceImpl> impl_ = nullptr;
 
-  std::unique_ptr<TestMediaSinkService> mock_dual_media_sink_service_;
+  std::unique_ptr<DialMediaSinkServiceImpl> dial_media_sink_service_;
 
   net::Error error_;
   net::HttpStatusCode response_code_;

@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_autodetect
+  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (Autodetect proxy is not supported per user context)
+Harness: the test ran to completion.
+

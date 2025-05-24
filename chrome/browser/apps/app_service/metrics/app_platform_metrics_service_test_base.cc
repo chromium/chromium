@@ -27,6 +27,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/aura/window.h"
 
@@ -113,13 +114,6 @@ void AppPlatformMetricsServiceTestBase::SetUp() {
 
   app_platform_metrics_service_ =
       std::make_unique<AppPlatformMetricsService>(profile());
-
-  // Install a BuiltIn app before app_platform_metrics_service_ started to
-  // verify the install AppKM.
-  AddApp(AppServiceProxyFactory::GetForProfile(profile()),
-         {/*app_id=*/"bu", AppType::kBuiltIn, "", Readiness::kReady,
-          InstallReason::kSystem, InstallSource::kSystem,
-          /*should_notify_initialized=*/true});
 
   app_platform_metrics_service_->Start(
       AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache(),
@@ -220,9 +214,8 @@ void AppPlatformMetricsServiceTestBase::AddRegularUser(
       base::WrapUnique(fake_user_manager_.get()));
   AccountId account_id = AccountId::FromUserEmail(email);
   const user_manager::User* user = fake_user_manager_->AddUser(account_id);
-  fake_user_manager_->UserLoggedIn(account_id, user->username_hash(),
-                                   /*browser_restart=*/false,
-                                   /*is_child=*/false);
+  fake_user_manager_->UserLoggedIn(
+      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
   fake_user_manager_->SimulateUserProfileLoad(account_id);
 
   TestingProfile::Builder builder;

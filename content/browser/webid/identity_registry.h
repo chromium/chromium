@@ -5,8 +5,8 @@
 #ifndef CONTENT_BROWSER_WEBID_IDENTITY_REGISTRY_H_
 #define CONTENT_BROWSER_WEBID_IDENTITY_REGISTRY_H_
 
+#include "content/browser/webid/identity_registry_delegate.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/federated_identity_modal_dialog_view_delegate.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "url/gurl.h"
 
@@ -34,12 +34,11 @@ class CONTENT_EXPORT IdentityRegistry
   // registry is attached to, a |delegate| which is used to control modal dialog
   // views and an |idp_config_url| which is the URL for the IDP associated with
   // this registry. Same-origin checks happen against the origin of this URL.
-  explicit IdentityRegistry(
-      content::WebContents* web_contents,
-      base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate,
-      const GURL& idp_config_url);
+  explicit IdentityRegistry(content::WebContents* web_contents,
+                            base::WeakPtr<IdentityRegistryDelegate> delegate,
+                            const GURL& idp_config_url);
 
-  base::WeakPtr<FederatedIdentityModalDialogViewDelegate> delegate_;
+  base::WeakPtr<IdentityRegistryDelegate> delegate_;
   GURL idp_config_url_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();

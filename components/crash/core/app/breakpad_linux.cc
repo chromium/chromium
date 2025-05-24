@@ -5,6 +5,11 @@
 // For linux_syscall_support.h. This makes it safe to call embedded system
 // calls when in seccomp mode.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "components/crash/core/app/breakpad_linux.h"
 
 #include <fcntl.h>
@@ -37,7 +42,6 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -852,8 +856,8 @@ bool IsValidCrashReportId(const char* buf, size_t bytes_read,
     WriteLog(msg, sizeof(msg) - 1);
     return false;
   }
-  return base::ranges::all_of(base::span(buf, bytes_read),
-                              base::IsHexDigit<char>);
+  return std::ranges::all_of(base::span(buf, bytes_read),
+                             base::IsHexDigit<char>);
 }
 
 // |buf| should be |expected_len| + 1 characters in size and nullptr terminated.
@@ -1066,15 +1070,13 @@ void HandleCrashDump(const BreakpadInfo& info) {
 
   MimeWriter writer(temp_file_fd, mime_boundary);
   {
-    const char* product_name = "";
-    const char* version = "";
-
-    GetCrashReporterClient()->GetProductNameAndVersion(&product_name, &version);
+    crash_reporter::ProductInfo product_info;
+    GetCrashReporterClient()->GetProductInfo(&product_info);
 
     writer.AddBoundary();
-    writer.AddPairString("prod", product_name);
+    writer.AddPairString("prod", product_info.product_name.c_str());
     writer.AddBoundary();
-    writer.AddPairString("ver", version);
+    writer.AddPairString("ver", product_info.version.c_str());
     writer.AddBoundary();
     if (info.pid > 0) {
       char pid_value_buf[kUint64StringSize];

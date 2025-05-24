@@ -13,7 +13,6 @@ class Profile;
 
 namespace content {
 class WebContents;
-class NavigationHandle;
 }  // namespace content
 
 namespace web_app {
@@ -25,12 +24,14 @@ class WebAppLinkCapturingDelegate
   ~WebAppLinkCapturingDelegate() override;
 
   // apps::LinkCapturingNavigationThrottle::Delegate:
-  bool ShouldCancelThrottleCreation(content::NavigationHandle* handle) override;
+  bool ShouldCancelThrottleCreation(
+      content::NavigationThrottleRegistry& registry) override;
   std::optional<apps::LinkCapturingNavigationThrottle::LaunchCallback>
   CreateLinkCaptureLaunchClosure(Profile* profile,
                                  content::WebContents* web_contents,
                                  const GURL& url,
-                                 bool is_navigation_from_link) final;
+                                 bool is_navigation_from_link,
+                                 int redirection_chain_size) final;
 
   base::WeakPtrFactory<WebAppLinkCapturingDelegate> weak_factory_{this};
 };

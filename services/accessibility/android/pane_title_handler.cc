@@ -113,7 +113,7 @@ PaneTitleHandler::CreateIfNecessary(
   const auto& itr = event_data.int_list_properties->find(
       mojom::AccessibilityEventIntListProperty::CONTENT_CHANGE_TYPES);
   if (itr == event_data.int_list_properties->end() ||
-      base::ranges::find(
+      std::ranges::find(
           itr->second,
           static_cast<int32_t>(mojom::ContentChangeType::PANE_APPEARED)) ==
           itr->second.end()) {

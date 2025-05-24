@@ -64,13 +64,15 @@ bool RendererExtensionRegistry::Insert(
   ExtensionsRendererClient* client = ExtensionsRendererClient::Get();
 
   // SW based extensions should always have an activation token, except for
-  // incognito processes for a spanning mode extension
+  // incognito processes for a spanning mode extension. The CHECK() for all
+  // other worker based extension is performed in
+  // Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(). We can't CHECK() for
+  // IsIncognitoProcess() == false here because this may be called on renderer
+  // process initialization before the boolean for that has been set.
   bool is_incognito_spanning = client->IsIncognitoProcess() &&
                                IncognitoInfo::IsSpanningMode(extension.get());
   if (is_incognito_spanning) {
     CHECK(!base::Contains(worker_activation_tokens_, extension->id()));
-  } else {
-    CHECK(base::Contains(worker_activation_tokens_, extension->id()));
   }
 
   return extensions_.Insert(extension);
@@ -79,6 +81,7 @@ bool RendererExtensionRegistry::Insert(
 bool RendererExtensionRegistry::Remove(const ExtensionId& id) {
   DCHECK(content::RenderThread::Get());
   base::AutoLock lock(lock_);
+  worker_activation_tokens_.erase(id);
   return extensions_.Remove(id);
 }
 

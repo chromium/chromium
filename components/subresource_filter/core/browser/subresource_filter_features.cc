@@ -4,6 +4,7 @@
 
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 
+#include <algorithm>
 #include <map>
 #include <ostream>
 #include <sstream>
@@ -15,7 +16,6 @@
 #include "base/lazy_instance.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -44,7 +44,7 @@ class CommaSeparatedStrings {
   CommaSeparatedStrings& operator=(const CommaSeparatedStrings&) = delete;
 
   bool CaseInsensitiveContains(std::string_view lowercase_key) const {
-    return base::ranges::any_of(
+    return std::ranges::any_of(
         pieces_, [lowercase_key](std::string_view element) {
           return base::EqualsCaseInsensitiveASCII(element, lowercase_key);
         });
@@ -59,31 +59,33 @@ std::string TakeVariationParamOrReturnEmpty(
     std::map<std::string, std::string>* params,
     const std::string& key) {
   auto it = params->find(key);
-  if (it == params->end())
+  if (it == params->end()) {
     return std::string();
+  }
   std::string value = std::move(it->second);
   params->erase(it);
   return value;
 }
 
-mojom::ActivationLevel ParseActivationLevel(
-    const std::string_view activation_level) {
+mojom::ActivationLevel ParseActivationLevel(std::string_view activation_level) {
   if (base::EqualsCaseInsensitiveASCII(activation_level,
-                                       kActivationLevelEnabled))
+                                       kActivationLevelEnabled)) {
     return mojom::ActivationLevel::kEnabled;
-  else if (base::EqualsCaseInsensitiveASCII(activation_level,
-                                            kActivationLevelDryRun))
+  } else if (base::EqualsCaseInsensitiveASCII(activation_level,
+                                              kActivationLevelDryRun)) {
     return mojom::ActivationLevel::kDryRun;
+  }
   return mojom::ActivationLevel::kDisabled;
 }
 
-ActivationScope ParseActivationScope(const std::string_view activation_scope) {
+ActivationScope ParseActivationScope(std::string_view activation_scope) {
   if (base::EqualsCaseInsensitiveASCII(activation_scope,
-                                       kActivationScopeAllSites))
+                                       kActivationScopeAllSites)) {
     return ActivationScope::ALL_SITES;
-  else if (base::EqualsCaseInsensitiveASCII(activation_scope,
-                                            kActivationScopeActivationList))
+  } else if (base::EqualsCaseInsensitiveASCII(activation_scope,
+                                              kActivationScopeActivationList)) {
     return ActivationScope::ACTIVATION_LIST;
+  }
   return ActivationScope::NO_SITES;
 }
 
@@ -108,12 +110,13 @@ ActivationList ParseActivationList(std::string activation_lists_string) {
 // Will return a value between 0 and 1 inclusive.
 double ParsePerformanceMeasurementRate(const std::string& rate) {
   double value = 0.0;
-  if (!base::StringToDouble(rate, &value) || value < 0)
+  if (!base::StringToDouble(rate, &value) || value < 0) {
     return 0.0;
+  }
   return value < 1 ? value : 1;
 }
 
-int ParseInt(const std::string_view value) {
+int ParseInt(std::string_view value) {
   int result = 0;
   base::StringToInt(value, &result);
   return result;
@@ -187,8 +190,9 @@ std::vector<Configuration> ParseEnabledConfigurations() {
   base::GetFieldTrialParamsByFeature(kSafeBrowsingSubresourceFilter, &params);
 
   std::vector<Configuration> configs;
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter))
+  if (base::FeatureList::IsEnabled(kSafeBrowsingSubresourceFilter)) {
     configs = FillEnabledPresetConfigurations(&params);
+  }
 
   Configuration experimental_config = ParseExperimentalConfiguration(&params);
   configs.push_back(std::move(experimental_config));
@@ -217,8 +221,9 @@ std::string_view GetLexicographicallyGreatestRulesetFlavor(
   std::string_view greatest_flavor;
   for (const auto& config : configs) {
     std::string_view flavor = config.general_settings.ruleset_flavor;
-    if (flavor > greatest_flavor)
+    if (flavor > greatest_flavor) {
       greatest_flavor = flavor;
+    }
   }
   return greatest_flavor;
 }
@@ -335,10 +340,6 @@ bool Configuration::operator==(const Configuration& rhs) const {
                     config.general_settings.ruleset_flavor);
   };
   return tie(*this) == tie(rhs);
-}
-
-bool Configuration::operator!=(const Configuration& rhs) const {
-  return !(*this == rhs);
 }
 
 std::unique_ptr<base::trace_event::TracedValue>

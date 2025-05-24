@@ -56,9 +56,14 @@ class VIEWS_EXPORT DesktopNativeCursorManager : public wm::NativeCursorManager {
                      wm::NativeCursorManagerDelegate* delegate) override;
   void SetCursorSize(ui::CursorSize cursor_size,
                      wm::NativeCursorManagerDelegate* delegate) override;
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      wm::NativeCursorManagerDelegate* delegate) override;
   void SetMouseEventsEnabled(
       bool enabled,
       wm::NativeCursorManagerDelegate* delegate) override;
+  void SetCursorColor(SkColor color,
+                      wm::NativeCursorManagerDelegate* delegate) override;
 
   // The set of hosts to notify of changes in cursor state.
   using Hosts = std::set<raw_ptr<aura::WindowTreeHost, SetExperimental>>;

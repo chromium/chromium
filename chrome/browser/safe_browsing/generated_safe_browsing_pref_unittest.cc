@@ -4,7 +4,8 @@
 
 #include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -208,8 +209,8 @@ void ValidateManagedPreference(
     }
   }
 
-  EXPECT_TRUE(base::ranges::equal(pref_user_selectable_values,
-                                  test_case.expected_user_selectable_values));
+  EXPECT_TRUE(std::ranges::equal(pref_user_selectable_values,
+                                 test_case.expected_user_selectable_values));
 }
 
 }  // namespace

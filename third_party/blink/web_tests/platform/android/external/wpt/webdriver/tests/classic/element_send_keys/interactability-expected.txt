@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_document_element_is_interactable
+  assert <WebElement f.CA2FE20EDCBB87919EDBAE24CA879FC4.d.384341463A8CBC0B3459947B9C721815.e.14> == <WebElement f.CA2FE20EDCBB87919EDBAE24CA879FC4.d.384341463A8CBC0B3459947B9C721815.e.13>
+Harness: the test ran to completion.
+

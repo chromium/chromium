@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 
 #include <utility>
+
+#include "base/compiler_specific.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
@@ -68,13 +70,15 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
       if (item->is_resizable_by_user_javascript) {
         max_byte_length = base::checked_cast<size_t>(item->max_byte_length);
       }
-      ArrayBufferContents contents(big_buffer.size(), max_byte_length, 1,
-                                   ArrayBufferContents::kNotShared,
-                                   ArrayBufferContents::kDontInitialize);
+      ArrayBufferContents contents(
+          big_buffer.size(), max_byte_length, 1,
+          ArrayBufferContents::kNotShared, ArrayBufferContents::kDontInitialize,
+          ArrayBufferContents::AllocationFailureBehavior::kCrash);
       // Check if we allocated the backing store of the ArrayBufferContents
       // correctly.
       CHECK_EQ(contents.DataLength(), big_buffer.size());
-      memcpy(contents.Data(), big_buffer.data(), big_buffer.size());
+      UNSAFE_TODO(
+          memcpy(contents.Data(), big_buffer.data(), big_buffer.size()));
       array_buffer_contents_array.push_back(std::move(contents));
     }
     result.message->SetArrayBufferContentsArray(
@@ -137,9 +141,8 @@ scoped_refptr<StaticBitmapImage> ToStaticBitmapImage(
 
 scoped_refptr<StaticBitmapImage> WrapAcceleratedBitmapImage(
     AcceleratedImageInfo image) {
-  return AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
-      image.mailbox_holder, image.usage, image.image_info,
-      image.is_origin_top_left, image.supports_display_compositing,
-      image.is_overlay_candidate, std::move(image.release_callback));
+  return AcceleratedStaticBitmapImage::CreateFromExternalSharedImage(
+      std::move(image.shared_image), image.sync_token, image.size, image.format,
+      image.alpha_type, image.color_space, std::move(image.release_callback));
 }
 }  // namespace blink

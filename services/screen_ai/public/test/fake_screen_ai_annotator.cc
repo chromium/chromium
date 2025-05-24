@@ -18,6 +18,11 @@ FakeScreenAIAnnotator::FakeScreenAIAnnotator(bool create_empty_result)
 
 FakeScreenAIAnnotator::~FakeScreenAIAnnotator() = default;
 
+void FakeScreenAIAnnotator::GetMaxImageDimension(
+    GetMaxImageDimensionCallback callback) {
+  std::move(callback).Run(2048);
+}
+
 void FakeScreenAIAnnotator::PerformOcrAndReturnAXTreeUpdate(
     const ::SkBitmap& image,
     PerformOcrAndReturnAXTreeUpdateCallback callback) {

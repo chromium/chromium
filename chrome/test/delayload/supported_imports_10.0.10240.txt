@@ -1630,6 +1630,102 @@ File Type: DLL
         2000 .reloc
        B5000 .rsrc
        F1000 .text
+
+Microsoft (R) COFF/PE Dumper Version 14.31.31106.2
+Copyright (C) Microsoft Corporation.  All rights reserved.
+
+
+Dump of file D:\Windows10LTS\dlls\cryptsp.dll
+
+File Type: DLL
+
+  Section contains the following exports for CRYPTSP.dll
+
+    00000000 characteristics
+    559F3032 time date stamp Thu Jul  9 19:38:42 2015
+        0.00 version
+           1 ordinal base
+          65 number of functions
+          65 number of names
+
+    ordinal hint RVA      name
+
+          1    0 00005C50 CheckSignatureInFile
+          2    1 00002F80 CryptAcquireContextA
+          3    2 00002E20 CryptAcquireContextW
+          4    3 00001010 CryptContextAddRef
+          5    4 00002210 CryptCreateHash
+          6    5 000016B0 CryptDecrypt
+          7    6 00006050 CryptDeriveKey
+          8    7 00002420 CryptDestroyHash
+          9    8 000020E0 CryptDestroyKey
+         10    9 00006270 CryptDuplicateHash
+         11    A 00001090 CryptDuplicateKey
+         12    B 00001530 CryptEncrypt
+         13    C 00006450 CryptEnumProviderTypesA
+         14    D 00006800 CryptEnumProviderTypesW
+         15    E 000069F0 CryptEnumProvidersA
+         16    F 00006D10 CryptEnumProvidersW
+         17   10 00001C90 CryptExportKey
+         18   11 00001240 CryptGenKey
+         19   12 00002750 CryptGenRandom
+         20   13 00002BD0 CryptGetDefaultProviderA
+         21   14 00002A20 CryptGetDefaultProviderW
+         22   15 00002510 CryptGetHashParam
+         23   16 00001B80 CryptGetKeyParam
+         24   17 00004370 CryptGetProvParam
+         25   18 00004070 CryptGetUserKey
+         26   19 00002620 CryptHashData
+         27   1A 00006EF0 CryptHashSessionKey
+         28   1B 00001E50 CryptImportKey
+         29   1C 00003E00 CryptReleaseContext
+         30   1D 00001820 CryptSetHashParam
+         31   1E 00004450 CryptSetKeyParam
+         32   1F 00004550 CryptSetProvParam
+         33   20 00007050 CryptSetProviderA
+         34   21 000071A0 CryptSetProviderExA
+         35   22 00007660 CryptSetProviderExW
+         36   23 00007730 CryptSetProviderW
+         37   24 00004290 CryptSignHashA
+         38   25 00001230 CryptSignHashW
+         39   26 00001930 CryptVerifySignatureA
+         40   27 00001920 CryptVerifySignatureW
+         41   28 00002870 SystemFunction006
+         42   29 00003C20 SystemFunction007
+         43   2A 00009BB0 SystemFunction008
+         44   2B 00009C70 SystemFunction009
+         45   2C 00009C80 SystemFunction010
+         46   2D 00009CE0 SystemFunction011
+         47   2E 00009CF0 SystemFunction012
+         48   2F 00009D40 SystemFunction013
+         49   30 00009DF0 SystemFunction014
+         50   31 00009E00 SystemFunction015
+         51   32 00009D90 SystemFunction016
+         52   33 00009DE0 SystemFunction018
+         53   34 00009DF0 SystemFunction020
+         54   35 00009E00 SystemFunction021
+         55   36 00009DF0 SystemFunction022
+         56   37 00009E00 SystemFunction023
+         57   38 000041E0 SystemFunction024
+         58   39 00009E10 SystemFunction025
+         59   3A 000041E0 SystemFunction026
+         60   3B 00003D60 SystemFunction027
+         61   3C 00009B80 SystemFunction030
+         62   3D 00003F50 SystemFunction031
+         63   3E 00009E90 SystemFunction032
+         64   3F 00009E90 SystemFunction033
+         65   40 00005C50 SystemFunction035
+
+  Summary
+
+        1000 .data
+        1000 .didat
+        1000 .pdata
+        6000 .rdata
+        1000 .reloc
+        1000 .rsrc
+        B000 .text
+
 Microsoft (R) COFF/PE Dumper Version 14.36.32538.0
 Copyright (C) Microsoft Corporation.  All rights reserved.
 

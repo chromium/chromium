@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/view.h"
-
 #include <memory>
 
 #include "ui/aura/window.h"
@@ -12,6 +10,7 @@
 #include "ui/compositor/test/test_layers.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view.h"
 #include "ui/views/view_constants_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -56,7 +55,7 @@ class ViewAuraTest : public ViewsTestBase {
   ~ViewAuraTest() override = default;
 
   const View::Views& GetViewsWithLayers(Widget* widget) {
-    return widget->GetViewsWithLayers();
+    return widget->GetViewsWithLayersInZOrder();
   }
 };
 

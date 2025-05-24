@@ -137,7 +137,7 @@ class [[clang::lto_visibility_public]] OSUserManager {
   virtual bool IsDeviceDomainJoined();
 
  protected:
-  OSUserManager() {}
+  OSUserManager() = default;
 
   // Returns the storage used for the instance pointer.
   static OSUserManager** GetInstanceStorage();

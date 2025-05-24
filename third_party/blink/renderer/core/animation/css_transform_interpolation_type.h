@@ -42,7 +42,7 @@ inline bool IsTransformFunction(CSSValueID function_id) {
 
 class CSSTransformInterpolationType : public CSSInterpolationType {
  public:
-  CSSTransformInterpolationType(PropertyHandle property)
+  explicit CSSTransformInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {
     DCHECK_EQ(CssProperty().PropertyID(), CSSPropertyID::kTransform);
   }
@@ -79,7 +79,7 @@ class CSSTransformInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const override;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const override;
 };
 

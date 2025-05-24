@@ -80,7 +80,7 @@
   E(kActionWebauthn, IDC_WEBAUTHN) \
   E(kActionSharingHub, IDC_SHARING_HUB) \
   E(kActionSharingHubMenu, IDC_SHARING_HUB_MENU) \
-  E(kActionVirtualCardManualFallback, IDC_VIRTUAL_CARD_MANUAL_FALLBACK) \
+  E(kActionFilledCardInformation, IDC_FILLED_CARD_INFORMATION) \
   E(kActionSharingHubScreenshot, IDC_SHARING_HUB_SCREENSHOT) \
   E(kActionVirtualCardEnroll, IDC_VIRTUAL_CARD_ENROLL) \
   E(kActionFollow, IDC_FOLLOW) \
@@ -88,6 +88,7 @@
   E(kActionAutofillMandatoryReauth, IDC_AUTOFILL_MANDATORY_REAUTH) \
   E(kActionProfileMenuInAppMenu, IDC_PROFILE_MENU_IN_APP_MENU) \
   E(kActionPasswordsAndAutofillMenu, IDC_PASSWORDS_AND_AUTOFILL_MENU) \
+  E(kActionShowMemorySaverChip) \
   /* Page-manipulation commands that target a specified tab, which may not */ \
   /* be the active one. */ \
   E(kActionMuteTargetSite, IDC_MUTE_TARGET_SITE) \
@@ -335,6 +336,8 @@
   E(kActionContentContextExitFullscreen, IDC_CONTENT_CONTEXT_EXIT_FULLSCREEN) \
   E(kActionContentContextShowAllSavedPasswords, \
     IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS) \
+  E(kActionContentContextUsePasskeyFromAnotherDeviceTopLevel, \
+    IDC_CONTENT_CONTEXT_USE_PASSKEY_FROM_ANOTHER_DEVICE) \
   E(kActionContentContextPartialTranslate, \
     IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE) \
   /* Frame items. */ \
@@ -406,7 +409,6 @@
   E(kActionContentContextGenerateQrCode, IDC_CONTENT_CONTEXT_GENERATE_QR_CODE) \
   E(kActionContentContextSharingSubmenu, IDC_CONTENT_CONTEXT_SHARING_SUBMENU) \
   /* Context menu item to show the clipboard history menu */ \
-  E(kActionContentClipboardHistoryMenu, IDC_CONTENT_CLIPBOARD_HISTORY_MENU) \
   E(kActionContentPasteFromClipboard, IDC_CONTENT_PASTE_FROM_CLIPBOARD) \
   /* Context menu items in the status tray */ \
   E(kActionStatusTrayKeepChromeRunningInBackground, \
@@ -462,7 +464,6 @@
   E(kActionContentContextAccessibilityLabelsToggleOnce, \
     IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) \
   /* Tab Search */ \
-  E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionTabSearchClose, IDC_TAB_SEARCH_CLOSE) \
   /* Views debug commands. */ \
   E(kActionDebugToggleTabletMode, IDC_DEBUG_TOGGLE_TABLET_MODE) \
@@ -474,55 +475,39 @@
   /* Autofill context menu commands */ \
   E(kActionContentContextAutofillImprovedSuggestions, \
     IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS) \
-  E(kActionContentContextAutofillFallbackAddress, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS) \
-  E(kActionContentContextAutofillFallbackPayments, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS) \
-  E(kActionContentContextAutofillFallbackPassowords, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS) \
   E(kActionContentContextAutofillFallbackPasswordsSelectPassword, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD) \
   E(kActionContentContextAutofillFallbackPasswordsImportPasswords, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS) \
   E(kActionContentContextAutofillFallbackPasswordsSuggestPassword, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD) \
-  E(kActionContentContextAutofillFallbackPasswordsNoSavedPasswords, \
-    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS) \
+  E(kActionContentContextUsePasskeyFromAnotherDevice, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE) \
   /* Live Caption */ \
   E(kActionLiveCaption, IDC_LIVE_CAPTION) \
   /* Device API system tray icon */ \
   E(kActionDeviceSystemTrayIconFirst, IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST) \
-  E(kActionDeviceSystemTrayIconLast, IDC_DEVICE_SYSTEM_TRAY_ICON_LAST)
+  E(kActionDeviceSystemTrayIconLast, IDC_DEVICE_SYSTEM_TRAY_ICON_LAST) \
+  /*Shows the Intent Picker bubble */ \
+  E(kActionShowIntentPicker) \
+  /*Shows the File System Access bubble */ \
+  E(kActionShowFileSystemAccess) \
+  /*Toolbar pinning*/ \
+  E(kActionPinActionToToolbar) \
+  E(kActionUnpinActionFromToolbar) \
+  /*Commerce*/ \
+  E(kActionCommercePriceInsights) \
 
 #if BUILDFLAG(IS_CHROMEOS)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
   E(kToggleMultitaskMenu, IDC_TOGGLE_MULTITASK_MENU)
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-#define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
-  /* Move window to other user commands */ \
-  E(kActionVisitDesktopOfLruUser2, IDC_VISIT_DESKTOP_OF_LRU_USER_2) \
-  E(kActionVisitDesktopOfLruUser3, IDC_VISIT_DESKTOP_OF_LRU_USER_3) \
-  E(kActionVisitDesktopOfLruUser4, IDC_VISIT_DESKTOP_OF_LRU_USER_4) \
-  E(kActionVisitDesktopOfLruUser5, IDC_VISIT_DESKTOP_OF_LRU_USER_5) \
-  E(kActionVisitDesktopOfLruUserNext, IDC_VISIT_DESKTOP_OF_LRU_USER_NEXT) \
-  E(kActionVisitDesktopOfLruUserLast, IDC_VISIT_DESKTOP_OF_LRU_USER_LAST) \
-  /* Quick Answers context menu items. */ \
-  E(kActionContentContextQuickAnswersInlineAnswer, \
-    IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_ANSWER) \
-  E(kActionContentContextQuickAnswersInlineQuery, \
-    IDC_CONTENT_CONTEXT_QUICK_ANSWERS_INLINE_QUERY)
 #elif BUILDFLAG(IS_LINUX)
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
   E(kUseSystemTitleBar, IDC_USE_SYSTEM_TITLE_BAR) \
   E(kRestoreWindow, IDC_RESTORE_WINDOW)
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#define CHROME_PLATFORM_SPECIFIC_ACTION_IDS \
-  E(kRestoreWindow, IDC_RESTORE_WINDOW)
 #else
 #define CHROME_PLATFORM_SPECIFIC_ACTION_IDS
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #define CHROME_GOOGLE_BRANDED_ACTION_IDS \
@@ -542,8 +527,10 @@
   E(kActionSidePanelShowAssistant) \
   E(kActionSidePanelShowBookmarks, IDC_SHOW_BOOKMARK_SIDE_PANEL) \
   E(kActionSidePanelShowCustomizeChrome) \
+  E(kActionSidePanelShowCustomizeChromeToolbar) \
   E(kActionSidePanelShowFeed) \
   E(kActionSidePanelShowHistoryCluster) \
+  E(kActionSidePanelShowHistory) \
   E(kActionSidePanelShowLens) \
   E(kActionSidePanelShowLensOverlayResults, IDC_CONTENT_CONTEXT_LENS_OVERLAY) \
   E(kActionSidePanelShowReadAnything) \
@@ -552,11 +539,13 @@
   E(kActionSidePanelShowShoppingInsights) \
   E(kActionSidePanelShowSideSearch) \
   E(kActionSidePanelShowUserNote) \
+  E(kActionSidePanelShowMerchantTrust)
 
 #define TOOLBAR_PINNABLE_ACTION_IDS \
   E(kActionHome, IDC_HOME) \
   E(kActionForward, IDC_FORWARD) \
   E(kActionNewIncognitoWindow, IDC_NEW_INCOGNITO_WINDOW) \
+  E(kActionSendSharedTabGroupFeedback, IDC_SEND_SHARED_TAB_GROUP_FEEDBACK) \
   E(kActionShowPasswordManager, IDC_SHOW_PASSWORD_MANAGER) \
   E(kActionShowPaymentMethods, IDC_SHOW_PAYMENT_METHODS) \
   E(kActionShowAddresses, IDC_SHOW_ADDRESSES) \
@@ -577,6 +566,8 @@
   E(kActionShowPasswordsBubbleOrPage) \
   E(kActionManagePasswordsForPage, IDC_MANAGE_PASSWORDS_FOR_PAGE) \
   E(kActionCopyUrl, IDC_COPY_URL) \
+  E(kActionTabSearch, IDC_TAB_SEARCH) \
+  E(kActionSplitTab, IDC_SPLIT_TAB) \
 
 #define CHROME_ACTION_IDS \
     CHROME_COMMON_ACTION_IDS \

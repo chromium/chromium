@@ -4,6 +4,7 @@
 
 #include "components/ntp_tiles/custom_links_manager_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -11,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "components/ntp_tiles/constants.h"
 #include "components/ntp_tiles/deleted_tile_type.h"
 #include "components/ntp_tiles/metrics.h"
@@ -79,8 +79,9 @@ const std::vector<CustomLinksManager::Link>& CustomLinksManagerImpl::GetLinks()
   return current_links_;
 }
 
-bool CustomLinksManagerImpl::AddLink(const GURL& url,
-                                     const std::u16string& title) {
+bool CustomLinksManagerImpl::AddLinkTo(const GURL& url,
+                                       const std::u16string& title,
+                                       size_t pos) {
   if (!IsInitialized() || !url.is_valid() ||
       current_links_.size() == ntp_tiles::kMaxNumCustomLinks) {
     return false;
@@ -90,10 +91,17 @@ bool CustomLinksManagerImpl::AddLink(const GURL& url,
     return false;
   }
 
+  pos = std::min(pos, current_links_.size());
+
   previous_links_ = current_links_;
-  current_links_.emplace_back(Link{url, title, false});
+  current_links_.insert(current_links_.begin() + pos, Link{url, title, false});
   StoreLinks();
   return true;
+}
+
+bool CustomLinksManagerImpl::AddLink(const GURL& url,
+                                     const std::u16string& title) {
+  return AddLinkTo(url, title, current_links_.size());
 }
 
 bool CustomLinksManagerImpl::UpdateLink(const GURL& url,
@@ -225,7 +233,7 @@ void CustomLinksManagerImpl::RemoveCustomLinksForPreinstalledApps() {
 
 std::vector<CustomLinksManager::Link>::iterator
 CustomLinksManagerImpl::FindLinkWithUrl(const GURL& url) {
-  return base::ranges::find(current_links_, url, &Link::url);
+  return std::ranges::find(current_links_, url, &Link::url);
 }
 
 base::CallbackListSubscription

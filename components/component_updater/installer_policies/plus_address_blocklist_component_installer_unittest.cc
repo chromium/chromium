@@ -26,14 +26,7 @@ const base::FilePath::CharType kPlusAddressBlocklistBinaryPbFileName[] =
 }  // namespace
 
 class PlusAddressBlocklistInstallerPolicyTest : public PlatformTest {
- public:
-  PlusAddressBlocklistInstallerPolicyTest() = default;
-  PlusAddressBlocklistInstallerPolicyTest(
-      const PlusAddressBlocklistInstallerPolicyTest&) = delete;
-  PlusAddressBlocklistInstallerPolicyTest& operator=(
-      const PlusAddressBlocklistInstallerPolicyTest&) = delete;
-  ~PlusAddressBlocklistInstallerPolicyTest() override = default;
-
+ protected:
   void SetUp() override {
     PlatformTest::SetUp();
     ASSERT_TRUE(component_install_dir_.CreateUniqueTempDir());
@@ -60,20 +53,19 @@ class PlusAddressBlocklistInstallerPolicyTest : public PlatformTest {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
- protected:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir component_install_dir_;
   MockComponentUpdateService cus_;
   PlusAddressBlocklistInstallerPolicy policy_;
   base::test::ScopedFeatureList scoped_list{
-      plus_addresses::features::kPlusAddressBlocklistEnabled};
+      plus_addresses::features::kPlusAddressesEnabled};
 };
 
 TEST_F(PlusAddressBlocklistInstallerPolicyTest,
        ComponentRegistrationWhenFeatureDisabled) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndDisableFeature(
-      plus_addresses::features::kPlusAddressBlocklistEnabled);
+      plus_addresses::features::kPlusAddressesEnabled);
   EXPECT_CALL(cus_, RegisterComponent(testing::_)).Times(0);
   RegisterPlusAddressBlocklistComponent(&cus_);
   RunUntilIdle();

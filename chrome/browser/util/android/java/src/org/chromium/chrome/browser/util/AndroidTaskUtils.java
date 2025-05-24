@@ -18,10 +18,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 /** Deals with Document-related API calls. */
+@NullMarked
 public class AndroidTaskUtils {
     public static final String TAG = "DocumentUtilities";
 
@@ -39,13 +40,15 @@ public class AndroidTaskUtils {
     private static final int MAX_NUM_TASKS = 100;
 
     /**
-     * Finishes tasks other than the one with the given ID that were started with the given data
-     * in the Intent, removing those tasks from Recents and leaving a unique task with the data.
+     * Finishes tasks other than the one with the given ID that were started with the given data in
+     * the Intent, removing those tasks from Recents and leaving a unique task with the data.
+     *
      * @param data Passed in as part of the Intent's data when starting the Activity.
      * @param canonicalTaskId ID of the task will be the only one left with the ID.
      * @return Intent of one of the tasks that were finished.
      */
-    public static Intent finishOtherTasksWithData(Uri data, int canonicalTaskId) {
+    public static @Nullable Intent finishOtherTasksWithData(
+            @Nullable Uri data, int canonicalTaskId) {
         if (data == null) return null;
 
         String dataString = data.toString();
@@ -70,7 +73,8 @@ public class AndroidTaskUtils {
         return finishAndRemoveTasks(tasksToFinish);
     }
 
-    private static Intent finishAndRemoveTasks(List<ActivityManager.AppTask> tasksToFinish) {
+    private static @Nullable Intent finishAndRemoveTasks(
+            List<ActivityManager.AppTask> tasksToFinish) {
         Intent removedIntent = null;
         for (ActivityManager.AppTask task : tasksToFinish) {
             Log.d(TAG, "Removing task with duplicated data: " + task);
@@ -85,7 +89,7 @@ public class AndroidTaskUtils {
      * @param task AppTask containing information about a task.
      * @return The RecentTaskInfo associated with the task, or null if it couldn't be found.
      */
-    public static RecentTaskInfo getTaskInfoFromTask(AppTask task) {
+    public static @Nullable RecentTaskInfo getTaskInfoFromTask(AppTask task) {
         RecentTaskInfo info = null;
         try {
             info = task.getTaskInfo();
@@ -100,7 +104,7 @@ public class AndroidTaskUtils {
      * @param task Task to get the baseIntent for.
      * @return The baseIntent, or null if it couldn't be retrieved.
      */
-    public static Intent getBaseIntentFromTask(AppTask task) {
+    public static @Nullable Intent getBaseIntentFromTask(AppTask task) {
         RecentTaskInfo info = getTaskInfoFromTask(task);
         return info == null ? null : info.baseIntent;
     }
@@ -111,7 +115,7 @@ public class AndroidTaskUtils {
      * @return Fully qualified component name name or null if we were not able to
      * determine it.
      */
-    public static String getTaskComponentName(AppTask task) {
+    public static @Nullable String getTaskComponentName(AppTask task) {
         RecentTaskInfo info = getTaskInfoFromTask(task);
         if (info == null) return null;
 

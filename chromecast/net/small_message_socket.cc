@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/net/small_message_socket.h"
 
 #include <stdint.h>
@@ -37,9 +42,9 @@ constexpr size_t kMax2ByteSize = std::numeric_limits<uint16_t>::max();
 
 SmallMessageSocket::BufferWrapper::BufferWrapper() = default;
 SmallMessageSocket::BufferWrapper::~BufferWrapper() {
-  // The `data_` pointer in the base class is pointing into the buffer in the
-  // `buffer_` field. Stop pointing into the field before its buffer is freed.
-  data_ = nullptr;
+  // The base class has a reference to the buffer in the `buffer_` field. Stop
+  // pointing into the field before its buffer is freed.
+  ClearSpan();
 }
 
 void SmallMessageSocket::BufferWrapper::SetUnderlyingBuffer(
@@ -50,9 +55,7 @@ void SmallMessageSocket::BufferWrapper::SetUnderlyingBuffer(
   buffer_ = std::move(buffer);
   used_ = 0;
   capacity_ = capacity;
-
-  size_ = capacity_;
-  data_ = buffer_->data();
+  SetSpan(buffer_->first(capacity_));
 }
 
 scoped_refptr<net::IOBuffer>
@@ -61,18 +64,17 @@ SmallMessageSocket::BufferWrapper::TakeUnderlyingBuffer() {
 }
 
 void SmallMessageSocket::BufferWrapper::ClearUnderlyingBuffer() {
-  data_ = nullptr;
+  ClearSpan();
   buffer_.reset();
 }
 
 void SmallMessageSocket::BufferWrapper::DidConsume(size_t bytes) {
   CHECK(buffer_);
-  CHECK_LE(bytes, static_cast<size_t>(size_));
+  CHECK_LE(bytes, static_cast<size_t>(size()));
 
-  size_ -= bytes;
+  SetSpan(span().subspan(bytes));
   used_ += bytes;
-  data_ += bytes;
-  CHECK_EQ(data_, buffer_->data() + used_);
+  CHECK_EQ(data(), buffer_->data() + used_);
 }
 
 char* SmallMessageSocket::BufferWrapper::StartOfBuffer() const {
@@ -82,7 +84,7 @@ char* SmallMessageSocket::BufferWrapper::StartOfBuffer() const {
 
 base::span<const uint8_t> SmallMessageSocket::BufferWrapper::used_span() const {
   CHECK(buffer_);
-  return base::span(buffer_->bytes(), used_);
+  return buffer_->first(used_);
 }
 
 SmallMessageSocket::SmallMessageSocket(Delegate* delegate,
@@ -352,7 +354,7 @@ bool SmallMessageSocket::ReadSize(char* ptr,
   // unsoundly claim that the span has 6 bytes here.
   auto span = UNSAFE_TODO(base::as_bytes(base::span(ptr, 6u)));
 
-  uint16_t first_size = base::numerics::U16FromBigEndian(span.first<2u>());
+  uint16_t first_size = base::U16FromBigEndian(span.first<2u>());
   span = span.subspan(sizeof(uint16_t));
   data_offset = sizeof(uint16_t);
   if (first_size < kMax2ByteSize) {
@@ -361,7 +363,7 @@ bool SmallMessageSocket::ReadSize(char* ptr,
     if (bytes_read < sizeof(uint16_t) + sizeof(uint32_t)) {
       return false;
     }
-    uint32_t real_size = base::numerics::U32FromBigEndian(span.first<4u>());
+    uint32_t real_size = base::U32FromBigEndian(span.first<4u>());
     span = span.subspan(sizeof(uint32_t));
     data_offset += sizeof(uint32_t);
     message_size = real_size;

@@ -26,8 +26,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DECODING_IMAGE_GENERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DECODING_IMAGE_GENERATOR_H_
 
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -59,7 +60,7 @@ class PLATFORM_EXPORT DecodingImageGenerator final
       scoped_refptr<ImageFrameGenerator>,
       const SkImageInfo&,
       scoped_refptr<SegmentReader>,
-      WebVector<FrameMetadata>,
+      std::vector<FrameMetadata>,
       PaintImage::ContentId,
       bool all_data_received,
       bool can_yuv_decode,
@@ -94,7 +95,7 @@ class PLATFORM_EXPORT DecodingImageGenerator final
   DecodingImageGenerator(scoped_refptr<ImageFrameGenerator>,
                          const SkImageInfo&,
                          scoped_refptr<SegmentReader>,
-                         WebVector<FrameMetadata>,
+                         std::vector<FrameMetadata>,
                          PaintImage::ContentId,
                          bool all_data_received,
                          bool can_yuv_decode,
@@ -115,4 +116,4 @@ class PLATFORM_EXPORT DecodingImageGenerator final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DECODING_IMAGE_GENERATOR_H__
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_DECODING_IMAGE_GENERATOR_H_

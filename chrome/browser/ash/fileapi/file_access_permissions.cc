@@ -8,9 +8,9 @@
 
 namespace ash {
 
-FileAccessPermissions::FileAccessPermissions() {}
+FileAccessPermissions::FileAccessPermissions() = default;
 
-FileAccessPermissions::~FileAccessPermissions() {}
+FileAccessPermissions::~FileAccessPermissions() = default;
 
 void FileAccessPermissions::GrantAccessPermission(const url::Origin& origin,
                                                   const base::FilePath& path) {

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<title>Use counters for CSS properties</title>
+<link rel="help" href="https://crbug.com/41284884">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  function assert_used(properties_used) {
+    for (property_used of properties_used) {
+      assert_equals(internals.isCSSPropertyUseCounted(document, property_used[0]), property_used[1]);
+    }
+  }
+
+  test(() => {
+    assert_used([
+      ["border-left-color", false],
+      ["border-right-color", false],
+      ["border-top-color", false],
+      ["border-bottom-color", false],
+      ["padding-top", false],
+      ["padding-bottom", false]
+    ]);
+  }, "Initially no properties counted");
+</script>
+<style id="style_tag">
+  div { border-left-color: green; }
+</style>
+<script>
+  test(() => {
+    assert_used([
+      ["border-left-color", true],
+      ["border-right-color", false],
+      ["border-top-color", false],
+      ["border-bottom-color", false],
+      ["padding-left", false],
+      ["padding-right", false],
+      ["padding-top", false],
+      ["padding-bottom", false]
+    ]);
+  }, "Stylesheet declaration counted")
+</script>
+<div id="element" style="border-right-color: green"></div>
+<script>
+  test(() => {
+    assert_used([
+      ["border-right-color", true],
+      ["border-top-color", false],
+      ["border-bottom-color", false],
+      ["padding-left", false],
+      ["padding-right", false],
+      ["padding-top", false],
+      ["padding-bottom", false]
+    ]);
+  }, "Style attribute declaration counted");
+
+  test(() => {
+    element.style.cssText = "border-top-color: green";
+    assert_used([
+      ["border-top-color", true],
+      ["border-bottom-color", false],
+      ["padding-left", false],
+      ["padding-right", false],
+      ["padding-top", false],
+      ["padding-bottom", false]
+    ]);
+  }, "Setting style attribute text counted");
+
+  test(() => {
+    element.style.borderBottomColor = "green";
+    assert_used([
+      ["border-bottom-color", true],
+      ["padding-left", false],
+      ["padding-right", false],
+      ["padding-top", false],
+      ["padding-bottom", false]
+    ]);
+  }, "Setting style attribute declaration property value counted");
+
+  const sheet_style = style_tag.sheet.cssRules[0].style;
+
+  test(() => {
+    sheet_style.cssText = "padding-left: 10px";
+    assert_used([
+      ["padding-left", true],
+      ["padding-right", false],
+      ["padding-top", false],
+      ["padding-bottom", false]
+    ]);
+  }, "Setting style rule style text counted");
+
+  test(() => {
+    sheet_style.paddingRight = "10px";
+    assert_used([
+      ["padding-right", true],
+      ["padding-top", false],
+      ["padding-bottom", false]
+    ]);
+  }, "Setting style rule style property value counted");
+
+  const constructed_sheet = new CSSStyleSheet();
+  constructed_sheet.replaceSync("div { padding-top: 10px; }");
+  const constructed_style = constructed_sheet.cssRules[0].style;
+
+  test(() => {
+    assert_used([
+      ["padding-top", true],
+      ["padding-bottom", false]
+    ]);
+  }, "Parsed constructed sheet property counted");
+
+  test(() => {
+    constructed_style.paddintBottom = "10px";
+    assert_used([
+      ["padding-bottom", true]
+    ]);
+  }, "Setting constructed sheet style property value counted");
+
+</script>

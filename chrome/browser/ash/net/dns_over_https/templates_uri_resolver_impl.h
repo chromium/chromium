@@ -45,7 +45,8 @@ class TemplatesUriResolverImpl : public TemplatesUriResolver {
   ~TemplatesUriResolverImpl() override;
 
   // TemplatesUriResolver implementation.
-  void Update(PrefService* pref_service) override;
+  void Update(const PrefService& local_state,
+              const user_manager::User& user) override;
 
   // This function checks whether the DoH system is configured to provide
   // DoH identifiers in the DNS URL

@@ -22,7 +22,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
 
 #include <initializer_list>
+#include <iterator>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
@@ -63,7 +65,7 @@ struct KeyValuePairExtractor {
     if (IsTraceable<ValueType>::value) {
       AtomicMemzero<sizeof(ValueType), alignof(ValueType)>(&p.value);
     } else {
-      memset(static_cast<void*>(&p.value), 0, sizeof(p.value));
+      UNSAFE_TODO(memset(static_cast<void*>(&p.value), 0, sizeof(p.value)));
     }
   }
 };
@@ -128,6 +130,11 @@ class HashMap {
   HashMap(std::initializer_list<ValueType> elements);
   HashMap& operator=(std::initializer_list<ValueType> elements);
 
+  // Useful for constructing from, for example, STL and base maps.
+  template <typename It>
+    requires(std::forward_iterator<It>)
+  HashMap(It begin, It end);
+
   typedef HashTableIteratorAdapter<HashTableType, ValueType> iterator;
   typedef HashTableConstIteratorAdapter<HashTableType, ValueType>
       const_iterator;
@@ -179,8 +186,19 @@ class HashMap {
   template <typename IncomingKeyType, typename IncomingMappedType>
   AddResult insert(IncomingKeyType&&, IncomingMappedType&&);
 
+  // NOTE: You cannot continue using an iterator after erase()
+  // (no modifications are allowed during iteration). Consider erase_if()
+  // or RemoveAll().
   void erase(KeyPeekInType);
   void erase(iterator);
+
+  // Erases all elements for which pred(element) returns true.
+  //
+  // The predicate should have a signature compatible with:
+  //   bool pred(const WTF::KeyValuePair<KeyType, MappedType>&);
+  template <typename Pred>
+  void erase_if(Pred pred);
+
   void clear();
   template <typename Collection>
   void RemoveAll(const Collection& to_be_removed) {
@@ -221,14 +239,14 @@ class HashMap {
 
   struct TypeConstraints {
     constexpr TypeConstraints() {
-      static_assert(!IsStackAllocatedType<KeyArg>);
-      static_assert(!IsStackAllocatedType<MappedArg>);
+      static_assert(!IsStackAllocatedTypeV<KeyArg>);
+      static_assert(!IsStackAllocatedTypeV<MappedArg>);
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<KeyArg>::value,
+                        !IsPointerToGarbageCollectedType<KeyArg>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap HashMap.  Use HeapHashMap<> instead.");
       static_assert(Allocator::kIsGarbageCollected ||
-                        !IsPointerToGarbageCollectedType<MappedArg>::value,
+                        !IsPointerToGarbageCollectedType<MappedArg>,
                     "Cannot put raw pointers to garbage-collected classes into "
                     "an off-heap HashMap.  Use HeapHashMap<> instead.");
     }
@@ -250,18 +268,19 @@ class HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::
   DISALLOW_NEW();
 
  public:
-  typedef HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>
-      HashMapType;
-  typedef typename HashMapType::iterator::KeysIterator iterator;
-  typedef typename HashMapType::const_iterator::KeysIterator const_iterator;
+  using HashMapType =
+      HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>;
+  using iterator = HashMapType::iterator::KeysIterator;
+  using const_iterator = HashMapType::const_iterator::KeysIterator;
+  using value_type = HashMapType::KeyType;
 
   iterator begin() { return HashMapType::begin().Keys(); }
-
   iterator end() { return HashMapType::end().Keys(); }
 
   const_iterator begin() const { return HashMapType::begin().Keys(); }
-
   const_iterator end() const { return HashMapType::end().Keys(); }
+
+  wtf_size_t size() const { return HashMapType::size(); }
 
  private:
   friend class HashMap;
@@ -286,18 +305,19 @@ class HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::
   DISALLOW_NEW();
 
  public:
-  typedef HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>
-      HashMapType;
-  typedef typename HashMapType::iterator::ValuesIterator iterator;
-  typedef typename HashMapType::const_iterator::ValuesIterator const_iterator;
+  using HashMapType =
+      HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>;
+  using iterator = HashMapType::iterator::ValuesIterator;
+  using const_iterator = HashMapType::const_iterator::ValuesIterator;
+  using value_type = HashMapType::MappedType;
 
   iterator begin() { return HashMapType::begin().Values(); }
-
   iterator end() { return HashMapType::end().Values(); }
 
   const_iterator begin() const { return HashMapType::begin().Values(); }
-
   const_iterator end() const { return HashMapType::end().Values(); }
+
+  wtf_size_t size() const { return HashMapType::size(); }
 
  private:
   friend class HashMap;
@@ -362,6 +382,24 @@ auto HashMap<T, U, V, W, X>::operator=(
     std::initializer_list<ValueType> elements) -> HashMap& {
   *this = HashMap(std::move(elements));
   return *this;
+}
+
+template <typename KeyArg,
+          typename MappedArg,
+          typename KeyTraitsArg,
+          typename MappedTraitsArg,
+          typename Allocator>
+template <typename It>
+  requires(std::forward_iterator<It>)
+HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::HashMap(
+    It begin,
+    It end) {
+  if constexpr (std::random_access_iterator<It>) {
+    ReserveCapacityForSize(base::checked_cast<wtf_size_t>(end - begin));
+  }
+  for (; begin != end; ++begin) {
+    insert(begin->first, begin->second);
+  }
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
@@ -496,6 +534,12 @@ inline void HashMap<T, U, V, W, X>::erase(KeyPeekInType key) {
 }
 
 template <typename T, typename U, typename V, typename W, typename X>
+template <typename Pred>
+inline void HashMap<T, U, V, W, X>::erase_if(Pred pred) {
+  impl_.erase_if(std::forward<Pred>(pred));
+}
+
+template <typename T, typename U, typename V, typename W, typename X>
 inline void HashMap<T, U, V, W, X>::clear() {
   impl_.clear();
 }
@@ -539,57 +583,6 @@ template <typename T, typename U, typename V, typename W, typename X>
 inline bool operator!=(const HashMap<T, U, V, W, X>& a,
                        const HashMap<T, U, V, W, X>& b) {
   return !(a == b);
-}
-
-template <typename T,
-          typename U,
-          typename V,
-          typename W,
-          typename X,
-          typename Z>
-inline void CopyKeysToVector(const HashMap<T, U, V, W, X>& collection,
-                             Z& vector) {
-  typedef
-      typename HashMap<T, U, V, W, X>::const_iterator::KeysIterator iterator;
-
-  {
-    // Disallow GC during resize allocation; see crbugs 568173 and 823612.
-    // The element copy doesn't need to be in this scope because garbage
-    // collection can only remove elements from collection if its keys are
-    // WeakMembers, in which case copying them doesn't perform a heap
-    // allocation.
-    typename Z::GCForbiddenScope scope;
-    vector.resize(collection.size());
-  }
-
-  iterator it = collection.begin().Keys();
-  iterator end = collection.end().Keys();
-  for (unsigned i = 0; it != end; ++it, ++i)
-    vector[i] = *it;
-}
-
-template <typename T,
-          typename U,
-          typename V,
-          typename W,
-          typename X,
-          typename Z>
-inline void CopyValuesToVector(const HashMap<T, U, V, W, X>& collection,
-                               Z& vector) {
-  typedef
-      typename HashMap<T, U, V, W, X>::const_iterator::ValuesIterator iterator;
-
-  // Disallow GC during resize allocation and copy operations (which may also
-  // perform allocations and therefore cause elements of collection to be
-  // removed); see crbugs 568173 and 823612.
-  typename Z::GCForbiddenScope scope;
-
-  vector.resize(collection.size());
-
-  iterator it = collection.begin().Values();
-  iterator end = collection.end().Values();
-  for (unsigned i = 0; it != end; ++it, ++i)
-    vector[i] = *it;
 }
 
 }  // namespace WTF

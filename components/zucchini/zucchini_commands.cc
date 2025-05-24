@@ -43,6 +43,7 @@ constexpr char kSwitchDump[] = "dump";
 constexpr char kSwitchImpose[] = "impose";
 constexpr char kSwitchKeep[] = "keep";
 constexpr char kSwitchRaw[] = "raw";
+constexpr char kSwitchStartScanAt[] = "start-scan-at";
 
 class WrappedMappedFileReader : public zucchini::MappedFileReader {
  public:
@@ -61,15 +62,30 @@ class WrappedMappedFileReader : public zucchini::MappedFileReader {
   zucchini::status::Code status = kStatusSuccess;
 };
 
+zucchini::GenerateOptions ReadGenerateOptions(const MainParams& params) {
+  zucchini::GenerateOptions options{
+      .imposed_matches =
+          params.command_line->GetSwitchValueASCII(kSwitchImpose),
+      .is_raw = params.command_line->HasSwitch(kSwitchRaw),
+  };
+  if (params.command_line->HasSwitch(kSwitchStartScanAt)) {
+    const std::string s =
+        params.command_line->GetSwitchValueASCII(kSwitchStartScanAt);
+    std::istringstream(s) >> options.start_scan_at;
+  }
+  return options;
+}
+
 }  // namespace
 
+/******** Various Main*() functions ********/
+
 zucchini::status::Code MainGen(MainParams params) {
+  zucchini::GenerateOptions options = ReadGenerateOptions(params);
   CHECK_EQ(3U, params.file_paths->size());
-  return zucchini::Generate(
-      (*params.file_paths)[0], (*params.file_paths)[1], (*params.file_paths)[2],
-      params.command_line->HasSwitch(kSwitchKeep),
-      params.command_line->HasSwitch(kSwitchRaw),
-      params.command_line->GetSwitchValueASCII(kSwitchImpose));
+  return zucchini::Generate((*params.file_paths)[0], (*params.file_paths)[1],
+                            (*params.file_paths)[2], options,
+                            params.command_line->HasSwitch(kSwitchKeep));
 }
 
 zucchini::status::Code MainApply(MainParams params) {
@@ -99,6 +115,7 @@ zucchini::status::Code MainRead(MainParams params) {
 }
 
 zucchini::status::Code MainDetect(MainParams params) {
+  zucchini::GenerateOptions options = ReadGenerateOptions(params);
   CHECK_EQ(1U, params.file_paths->size());
   WrappedMappedFileReader input((*params.file_paths)[0]);
   if (input.status != kStatusSuccess)
@@ -106,13 +123,14 @@ zucchini::status::Code MainDetect(MainParams params) {
 
   std::vector<zucchini::ConstBufferView> sub_image_list;
   zucchini::status::Code result = zucchini::DetectAll(
-      {input.data(), input.length()}, *params.out, &sub_image_list);
+      {input.data(), input.length()}, options, *params.out, &sub_image_list);
   if (result != kStatusSuccess)
     *params.err << "Fatal error found when detecting executables." << std::endl;
   return result;
 }
 
 zucchini::status::Code MainMatch(MainParams params) {
+  zucchini::GenerateOptions options = ReadGenerateOptions(params);
   CHECK_EQ(2U, params.file_paths->size());
   WrappedMappedFileReader old_image((*params.file_paths)[0]);
   if (old_image.status != kStatusSuccess)
@@ -121,12 +139,9 @@ zucchini::status::Code MainMatch(MainParams params) {
   if (new_image.status != kStatusSuccess)
     return new_image.status;
 
-  std::string imposed_matches =
-      params.command_line->GetSwitchValueASCII(kSwitchImpose);
-  zucchini::status::Code status =
-      zucchini::MatchAll({old_image.data(), old_image.length()},
-                         {new_image.data(), new_image.length()},
-                         std::move(imposed_matches), *params.out);
+  zucchini::status::Code status = zucchini::MatchAll(
+      {old_image.data(), old_image.length()},
+      {new_image.data(), new_image.length()}, options, *params.out);
   if (status != kStatusSuccess)
     *params.err << "Fatal error found when matching executables." << std::endl;
   return status;

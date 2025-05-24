@@ -5,25 +5,37 @@
 import("//build/config/features.gni")
 
 source_set("lib") {
-  sources = [
-    "csv_password_parser_impl.cc",
-    "csv_password_parser_impl.h",
-  ]
-
-  deps = [
-    "//base",
-    "//components/password_manager/core/browser/import:csv",
-    "//mojo/public/cpp/bindings",
-  ]
+  if (!is_ios) {
+    sources = [
+      "csv_password_parser_impl.cc",
+      "csv_password_parser_impl.h",
+    ]
+    deps = [
+      "//base",
+      "//components/password_manager/core/browser/import:csv",
+      "//mojo/public/cpp/bindings",
+    ]
+  }
 
   public_deps =
       [ "//components/password_manager/services/csv_password/public/mojom" ]
+  if (is_ios) {
+    public_deps +=
+        [ "//components/password_manager/services/csv_password/ios:lib" ]
+  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-if (use_blink) {
-  source_set("service") {
+source_set("service") {
+  public_deps = [
+    "//components/password_manager/services/csv_password/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  if (is_ios) {
+    public_deps +=
+        [ "//components/password_manager/services/csv_password/ios:service" ]
+  } else {
     sources = [
       "csv_password_parser_service.cc",
       "csv_password_parser_service.h",
@@ -33,14 +45,20 @@ if (use_blink) {
       "//components/strings",
       "//content/public/browser",
     ]
-
-    public_deps = [
-      "//components/password_manager/services/csv_password/public/mojom",
-      "//mojo/public/cpp/bindings",
-    ]
-
-    configs += [ "//build/config/compiler:wexit_time_destructors" ]
   }
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("fake_password_parser_service") {
+  testonly = true
+
+  sources = [
+    "fake_password_parser_service.cc",
+    "fake_password_parser_service.h",
+  ]
+
+  deps = [ "//components/password_manager/services/csv_password/public/mojom" ]
 }
 
 source_set("unit_tests") {

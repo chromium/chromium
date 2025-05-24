@@ -39,7 +39,8 @@ content::ServiceWorkerContext* GetServiceWorkerContext(
 // Note: This class only works well when there is a *single* service worker
 // being registered. We could extend this to track multiple workers.
 class TestServiceWorkerContextObserver
-    : public content::ServiceWorkerContextObserver {
+    : public content::ServiceWorkerContextObserver,
+      public content::ServiceWorkerContextObserverSynchronous {
  public:
   explicit TestServiceWorkerContextObserver(
       content::ServiceWorkerContext* context,
@@ -58,6 +59,11 @@ class TestServiceWorkerContextObserver
   // scope to be stored.
   void WaitForRegistrationStored();
 
+  // Wait for OnStartWorkerMessageSent event is triggered, so that the observer
+  // captures the version ID of the service worker that is about to be started.
+  // Returns the version ID.
+  int64_t WaitForStartWorkerMessageSent();
+
   // Wait for OnVersionStartedRunning event is triggered, so that the observer
   // captures the running service worker version ID. Returns the version ID.
   int64_t WaitForWorkerStarted();
@@ -74,20 +80,25 @@ class TestServiceWorkerContextObserver
   // can be instantiated after the extension has already started.
   void SetRunningId(int64_t version_id) { running_version_id_ = version_id; }
 
-  // Returns the number of completed registrations for |scope|.
+  // Returns the number of completed registrations for `scope`.
   int GetCompletedCount(const GURL& scope) const;
 
  private:
   // ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& scope) override;
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override;
+                            const GURL& scope,
+                            const content::ServiceWorkerRegistrationInformation&
+                                service_worker_info) override;
   void OnVersionStartedRunning(
       int64_t version_id,
       const content::ServiceWorkerRunningInfo& running_info) override;
   void OnVersionStoppedRunning(int64_t version_id) override;
   void OnVersionActivated(int64_t version_id, const GURL& scope) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
+
+  // ServiceWorkerContextObserverSynchronous:
+  void OnStartWorkerMessageSent(int64_t version_id, const GURL& scope) override;
 
   using RegistrationsMap = std::map<GURL, int>;
 
@@ -96,6 +107,7 @@ class TestServiceWorkerContextObserver
   // Multiple events may come in so we must wait for the specific event
   // to be triggered.
   base::OnceClosure activated_quit_closure_;
+  base::OnceClosure start_message_sent_quit_closure_;
   base::OnceClosure started_quit_closure_;
   base::OnceClosure stored_quit_closure_;
   base::OnceClosure stopped_quit_closure_;
@@ -104,6 +116,7 @@ class TestServiceWorkerContextObserver
 
   std::optional<bool> registration_stored_;
   std::optional<int64_t> activated_version_id_;
+  std::optional<int64_t> start_message_sent_version_id_;
   std::optional<int64_t> running_version_id_;
   std::optional<int64_t> stopped_version_id_;
 
@@ -112,6 +125,10 @@ class TestServiceWorkerContextObserver
   base::ScopedObservation<content::ServiceWorkerContext,
                           content::ServiceWorkerContextObserver>
       scoped_observation_{this};
+
+  base::ScopedObservation<content::ServiceWorkerContext,
+                          content::ServiceWorkerContextObserverSynchronous>
+      scoped_sync_observation_{this};
 };
 
 // Observes ProcessManager::UnregisterServiceWorker.
@@ -128,7 +145,7 @@ class UnregisterWorkerObserver : public ProcessManagerObserver {
   void OnStoppedTrackingServiceWorkerInstance(
       const WorkerId& worker_id) override;
 
-  // Waits for ProcessManager::UnregisterServiceWorker for |extension_id_|.
+  // Waits for ProcessManager::UnregisterServiceWorker for `extension_id_`.
   void WaitForUnregister();
 
  private:
@@ -162,6 +179,7 @@ class TestServiceWorkerTaskQueueObserver
       const ExtensionId& extension_id);
   void WaitForOnActivateExtension(const ExtensionId& extension_id);
   bool WaitForRegistrationMismatchMitigation(const ExtensionId& extension_id);
+  void WaitForUntrackServiceWorkerState(const GURL& scope);
 
   std::optional<bool> WillRegisterServiceWorker(
       const ExtensionId& extension_id) const;
@@ -181,6 +199,7 @@ class TestServiceWorkerTaskQueueObserver
                                      bool success) override;
   void RequestedWorkerStart(const ExtensionId& extension_id) override;
   void DidStopServiceWorkerContext(const ExtensionId& extension_id) override;
+  void UntrackServiceWorkerState(const GURL& scope) override;
 
  private:
   std::map<ExtensionId, bool> activated_map_;
@@ -197,7 +216,11 @@ class TestServiceWorkerTaskQueueObserver
 
   std::set<ExtensionId> stopped_set_;
 
+  std::set<GURL> untracked_set_;
+
   base::OnceClosure quit_closure_;
+
+  base::OnceClosure untrack_quit_closure_;
 };
 
 }  // namespace service_worker_test_utils

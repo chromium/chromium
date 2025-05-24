@@ -19,9 +19,6 @@ import java.util.Arrays;
 /** Utilities for dealing with variations seeds. */
 @JNINamespace("android_webview")
 public class VariationsTestUtils {
-    // This should match the Feature definition in variations_test_utils.cc.
-    public static final String TEST_FEATURE_NAME = "WebViewTestFeature";
-
     public static void assertSeedsEqual(SeedInfo expected, SeedInfo actual) {
         Assert.assertTrue(
                 "Expected " + expected + " but got " + actual, seedsEqual(expected, actual));

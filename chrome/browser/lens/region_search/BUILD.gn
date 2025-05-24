@@ -19,6 +19,7 @@ static_library("region_search") {
     "//base",
     "//chrome/browser/image_editor",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/tab_contents",
     "//chrome/common:constants",
     "//components/lens",
     "//components/lens:buildflags",

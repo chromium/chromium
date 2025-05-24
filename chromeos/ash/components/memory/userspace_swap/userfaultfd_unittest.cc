@@ -231,10 +231,11 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFault) {
                                    mem, kPageSize));
 
   auto* uffd_ptr = uffd_.get();
-  EXPECT_CALL(*handler,
-              Pagefault(static_cast<uintptr_t>(mem),
-                        UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register for tids */ 0))
+  EXPECT_CALL(
+      *handler,
+      Pagefault(static_cast<uintptr_t>(mem),
+                UserfaultFDHandler::PagefaultFlags::kReadFault,
+                /* we didn't register for tids */ base::kInvalidThreadId))
       .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
@@ -275,10 +276,11 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultRetry) {
 
   // The first fault handle will return false, the second will return true.
   auto* uffd_ptr = uffd_.get();
-  EXPECT_CALL(*handler,
-              Pagefault(static_cast<uintptr_t>(mem),
-                        UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register for tids */ 0))
+  EXPECT_CALL(
+      *handler,
+      Pagefault(static_cast<uintptr_t>(mem),
+                UserfaultFDHandler::PagefaultFlags::kReadFault,
+                /* we didn't register for tids */ base::kInvalidThreadId))
       .WillOnce(
           Invoke([](uintptr_t fault_address, UserfaultFDHandler::PagefaultFlags,
                     base::PlatformThreadId) { return false; }))
@@ -320,7 +322,7 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultWithTid) {
   ASSERT_TRUE(uffd_->RegisterRange(UserfaultFD::RegisterMode::kRegisterMissing,
                                    mem, kPageSize));
 
-  std::atomic<int32_t> expected_tid{0};
+  std::atomic<base::PlatformThreadId> expected_tid{base::kInvalidThreadId};
 
   auto* uffd_ptr = uffd_.get();
 
@@ -343,7 +345,9 @@ TEST_F(UserfaultFDTest, SimpleZeroPageReadFaultWithTid) {
 
   base::RunLoop run_loop;
   ExecuteOffMainThread([&]() {
-    expected_tid = syscall(__NR_gettid);
+    expected_tid = base::PlatformThreadId(
+        static_cast<base::PlatformThreadId::UnderlyingType>(
+            syscall(__NR_gettid)));
     // Now generate a page fault by reading from the page, this will invoke our
     // Pagefault handler above which will zero fill the page for us and we we'll
     // validate the tid we receive against our tid.
@@ -376,7 +380,7 @@ TEST_F(UserfaultFDTest, SimpleZeroPageWriteFault) {
   EXPECT_CALL(*handler,
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kWriteFault,
-                        /* we didn't register tid */ 0))
+                        /* we didn't register tid */ base::kInvalidThreadId))
       .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
@@ -431,9 +435,9 @@ TEST_F(UserfaultFDTest, SimpleReadFaultResolveWithCopyPage) {
   EXPECT_CALL(*handler,
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register tid */ 0))
+                        /* we didn't register tid */ base::kInvalidThreadId))
       .WillOnce(Invoke([uffd_ptr, &buf](uintptr_t fault_address, uintptr_t,
-                                        uintptr_t) {
+                                        base::PlatformThreadId) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()), kPageSize);
         return true;
@@ -484,8 +488,9 @@ TEST_F(UserfaultFDTest, ReadFaultResolveWithCopyPageForMultiplePages) {
   EXPECT_CALL(*handler,
               Pagefault(static_cast<uintptr_t>(mem),
                         UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register tid */ 0))
-      .WillOnce(Invoke([&](uintptr_t fault_address, uintptr_t, uintptr_t) {
+                        /* we didn't register tid */ base::kInvalidThreadId))
+      .WillOnce(Invoke([&](uintptr_t fault_address, uintptr_t,
+                           base::PlatformThreadId) {
         HandleWithCopyRange(uffd_ptr, fault_address,
                             reinterpret_cast<uintptr_t>(buf.data()),
                             kRegionSize);
@@ -539,7 +544,7 @@ TEST_F(UserfaultFDTest,
   // We will expect one read fault for each page.
   EXPECT_CALL(*handler,
               Pagefault(_, UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register tid */ 0))
+                        /* we didn't register tid */ base::kInvalidThreadId))
       .Times(Exactly(kNumPages))  // We should be called once for each page.
       .WillRepeatedly(Invoke([&](uintptr_t fault_address,
                                  UserfaultFDHandler::PagefaultFlags,
@@ -608,7 +613,7 @@ TEST_F(UserfaultFDTest, ReadFaultRegisteredOnPartialRange) {
   // We will expect one read fault for each page in the registered region.
   EXPECT_CALL(*handler,
               Pagefault(_, UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register tid */ 0))
+                        /* we didn't register tid */ base::kInvalidThreadId))
       .Times(
           Exactly(kNumPagesRegistered))  // We should be called once for each
                                          // page we registered the other pages
@@ -691,7 +696,7 @@ TEST_F(UserfaultFDTest, WriteFaultRegisteredOnPartialRange) {
   // byte of the page as 'X' with the remainder as that character.
   EXPECT_CALL(*handler,
               Pagefault(_, UserfaultFDHandler::PagefaultFlags::kWriteFault,
-                        /* we didn't register tid */ 0))
+                        /* we didn't register tid */ base::kInvalidThreadId))
       .Times(
           Exactly(kNumPagesRegistered))  // We should be called once for each
                                          // page we registered the other pages
@@ -1056,10 +1061,11 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
   // reference that will be set to the address after remap, this allows us to
   // confirm that the Pagefault call we want is the correct one.
   auto* uffd_ptr = uffd_.get();
-  EXPECT_CALL(*handler,
-              Pagefault(Eq(ByRef(remapped_start)),
-                        UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register for tids */ 0))
+  EXPECT_CALL(
+      *handler,
+      Pagefault(Eq(ByRef(remapped_start)),
+                UserfaultFDHandler::PagefaultFlags::kReadFault,
+                /* we didn't register for tids */ base::kInvalidThreadId))
       .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {
@@ -1069,10 +1075,11 @@ TEST_F(UserfaultFDTest, RemapAndFaultAtNewAddress) {
 
   // And because the userfaultfd is attached to the VMA when it's remapped and
   // grown we also have a userfaultfd registered on the new second page.
-  EXPECT_CALL(*handler,
-              Pagefault(Eq(ByRef(second_page_start)),
-                        UserfaultFDHandler::PagefaultFlags::kReadFault,
-                        /* we didn't register for tids */ 0))
+  EXPECT_CALL(
+      *handler,
+      Pagefault(Eq(ByRef(second_page_start)),
+                UserfaultFDHandler::PagefaultFlags::kReadFault,
+                /* we didn't register for tids */ base::kInvalidThreadId))
       .WillOnce(Invoke([uffd_ptr](uintptr_t fault_address,
                                   UserfaultFDHandler::PagefaultFlags,
                                   base::PlatformThreadId) {

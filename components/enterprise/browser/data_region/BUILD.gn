@@ -1,0 +1,15 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+static_library("data_region") {
+  sources = [
+    "data_region_policy_handler.cc",
+    "data_region_policy_handler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/policy/core/browser",
+  ]
+}

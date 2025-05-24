@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="et">
+<translation id="1293272072740285747">Saate selle grupi säilitada, et lisada vahelehed hiljem, või selle kustutada, kui seda enam vaja pole.
+
+Kui te selle kustutate, kaotavad kõik kohe juurdepääsu vahelehegrupile „<ph name="TITLE_OF_GROUP" />“ ja see kustutatakse kõigist seadmetest.</translation>
+<translation id="1340839264183302272">Lahku grupist</translation>
+<translation id="1419023007528516122">See kustutab grupi jäädavalt teie seadmest.</translation>
+<translation id="1501480321619201731">Kustuta grupp</translation>
+<translation id="2677748264148917807">Lahku</translation>
+<translation id="3547352561153509682">See kustutab grupi kõikidest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>
+<translation id="381219490185664296">Kas tühistada vahelehegrupi sorteerimine?</translation>
+<translation id="4139634748112164403">Vahelehed jäävad selles seadmes avatuks, aga grupp kustutatakse jäädavalt.</translation>
+<translation id="4431937619879060901">Kaotate kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja see kustutatakse kõigist teie seadmetest</translation>
+<translation id="4460014764210899310">Tühista grupeerimine</translation>
+<translation id="4777866634702576038">Kas kustutada vahelehegrupp?</translation>
+<translation id="5094423602314093681">Kas eemaldada vahelehed ja kustutada grupp?</translation>
+<translation id="5647702255748985085">Kas soovite grupist lahkuda?</translation>
+<translation id="742664698522525515">Kas soovite grupi säilitada?</translation>
+<translation id="750886945254958667">Saate säilitada selle grupi, et lisada vahelehed hiljem, või lahkuda sellest, kui te ei soovi sellele enam juurde pääseda</translation>
+<translation id="8261506727792406068">Kustuta</translation>
+<translation id="870736955561925754">Kas sulgeda vaheleht ja kustutada grupp?</translation>
+<translation id="8804742093141782941">Säilita grupp</translation>
+<translation id="9169141410816678175">Kõik kaotavad kohe juurdepääsu vahelehegrupile „<ph name="GROUP_NAME" />“ ja see kustutatakse kõigist seadmetest</translation>
+<translation id="9216898458513705996">Vahelehegrupid jäävad selles seadmes avatuks, aga grupp kustutatakse kõikidest teistest seadmetest, mis on kontoga <ph name="USER_EMAIL" /> sisse logitud</translation>
+<translation id="94870150074703282">Kas soovite grupi kustutada?</translation>
+</translationbundle>

@@ -19,6 +19,12 @@
 // Stops Quick Delete.
 - (void)stopQuickDelete;
 
+// Dismisses the Quick Delete UI along with any other UIs that triggered it. In
+// practice, it dismisses everything on top of the BrowserViewController. On
+// dismissal completion, runs `completion` followed by actually stopping Quick
+// Delete and any others UIs, such as History or Privacy Settings.
+- (void)stopQuickDeleteForAnimationWithCompletion:(ProceduralBlock)completion;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_QUICK_DELETE_COMMANDS_H_

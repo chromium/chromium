@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [pad] Throw if beginningPadding[index] is equal to inputShape[index] on reflection mode.
+  assert_equals: expected "TypeError" but got "Error"
+[FAIL] [pad] Throw if beginningPadding[index] is greater than inputShape[index] on reflection mode.
+  assert_equals: expected "TypeError" but got "Error"
+[FAIL] [pad] Throw if endingPadding[index] is equal to inputShape[index] on reflection mode.
+  assert_equals: expected "TypeError" but got "Error"
+[FAIL] [pad] Throw if endingPadding[index] is greater than inputShape[index] on reflection mode.
+  assert_equals: expected "TypeError" but got "Error"
+Harness: the test ran to completion.
+

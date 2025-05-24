@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/extensions/install_tracker.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -32,8 +33,7 @@ InstallTracker::InstallTracker(content::BrowserContext* browser_context,
   }
 }
 
-InstallTracker::~InstallTracker() {
-}
+InstallTracker::~InstallTracker() = default;
 
 // static
 InstallTracker* InstallTracker::Get(content::BrowserContext* context) {
@@ -93,7 +93,7 @@ void InstallTracker::OnDownloadProgress(const std::string& extension_id,
   if (install_data != active_installs_.end()) {
     install_data->second.percent_downloaded = percent_downloaded;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
   }
 
   for (auto& observer : observers_) {
@@ -102,19 +102,19 @@ void InstallTracker::OnDownloadProgress(const std::string& extension_id,
   }
 }
 
-void InstallTracker::OnBeginCrxInstall(const CrxInstaller& installer,
-                                       const std::string& extension_id) {
+void InstallTracker::OnBeginCrxInstall(const std::string& extension_id) {
   for (auto& observer : observers_) {
-    observer.OnBeginCrxInstall(browser_context_, installer, extension_id);
+    observer.OnBeginCrxInstall(browser_context_, extension_id);
   }
 }
 
-void InstallTracker::OnFinishCrxInstall(const CrxInstaller& installer,
+void InstallTracker::OnFinishCrxInstall(const base::FilePath& source_file,
                                         const std::string& extension_id,
+                                        const Extension* extension,
                                         bool success) {
   for (auto& observer : observers_) {
-    observer.OnFinishCrxInstall(browser_context_, installer, extension_id,
-                                success);
+    observer.OnFinishCrxInstall(browser_context_, source_file, extension_id,
+                                extension, success);
   }
 }
 

@@ -12,6 +12,7 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -25,6 +26,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_transaction_test_util.h"
+#include "net/http/no_vary_search_cache_storage_file_operations.h"
 
 namespace net {
 
@@ -59,7 +61,6 @@ class MockDiskEntry : public disk_cache::Entry,
   void Close() override;
   std::string GetKey() const override;
   base::Time GetLastUsed() const override;
-  base::Time GetLastModified() const override;
   int32_t GetDataSize(int index) const override;
   int ReadData(int index,
                int offset,
@@ -135,7 +136,7 @@ class MockDiskEntry : public disk_cache::Entry,
   static const int kNumCacheEntryDataIndices = 3;
 
   std::string key_;
-  std::vector<char> data_[kNumCacheEntryDataIndices];
+  std::array<std::vector<char>, kNumCacheEntryDataIndices> data_;
   uint8_t in_memory_data_ = 0;
   int test_mode_;
   int max_file_size_;
@@ -253,7 +254,8 @@ class MockDiskCache : public disk_cache::Backend {
   const std::vector<std::string>& GetExternalCacheHits() const;
 
  private:
-  using EntryMap = std::map<std::string, MockDiskEntry*>;
+  using EntryMap =
+      std::map<std::string, raw_ptr<MockDiskEntry, CtnExperimental>>;
   class NotImplementedIterator;
 
   void CallbackLater(base::OnceClosure callback);
@@ -288,7 +290,9 @@ class MockHttpCache {
  public:
   MockHttpCache();
   explicit MockHttpCache(
-      std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory);
+      std::unique_ptr<HttpCache::BackendFactory> disk_cache_factory,
+      std::unique_ptr<NoVarySearchCacheStorageFileOperations> file_operations =
+          nullptr);
 
   HttpCache* http_cache() { return &http_cache_; }
 
@@ -298,8 +302,8 @@ class MockHttpCache {
   disk_cache::Backend* backend();
   MockDiskCache* disk_cache();
 
-  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY...)
-  int CreateTransaction(std::unique_ptr<HttpTransaction>* trans);
+  // Wrapper around http_cache()->CreateTransaction(DEFAULT_PRIORITY)
+  std::unique_ptr<HttpTransaction> CreateTransaction();
 
   // Wrapper to simulate cache lock timeout for new transactions.
   void SimulateCacheLockTimeout();

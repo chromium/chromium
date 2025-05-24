@@ -12,6 +12,8 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
 namespace signin {
 class IdentityManager;
@@ -19,10 +21,6 @@ class IdentityManager;
 
 namespace content {
 class StoragePartition;
-}
-
-namespace network::mojom {
-class CookieManager;
 }
 
 // Supports cookie binding for DICe profiles including:
@@ -34,7 +32,8 @@ class CookieManager;
 // as it produces circular dependency.
 class DiceBoundSessionCookieService
     : public KeyedService,
-      public BoundSessionCookieRefreshService::Observer {
+      public BoundSessionCookieRefreshService::Observer,
+      public network::mojom::DeviceBoundSessionAccessObserver {
  public:
   DiceBoundSessionCookieService(
       BoundSessionCookieRefreshService& bound_session_cookie_refresh_service,
@@ -52,12 +51,15 @@ class DiceBoundSessionCookieService
       const GURL& site,
       const base::flat_set<std::string>& bound_cookie_names) override;
 
+  // network::mojom::DeviceBoundSessionAccessObserver:
+  void OnDeviceBoundSessionAccessed(
+      const net::device_bound_sessions::SessionAccess& access) override;
+  void Clone(
+      mojo::PendingReceiver<network::mojom::DeviceBoundSessionAccessObserver>
+          observer) override;
+
  private:
-  // Delete cookies which match the given URL and cookie name.
-  static void DeleteCookie(network::mojom::CookieManager& cookie_manager,
-                           const GURL& url,
-                           const std::string& cookie_name,
-                           base::OnceClosure on_cookie_deleted);
+  void DeleteCookies(const base::flat_set<std::string>& bound_cookie_names);
   void TriggerCookieJarUpdate();
 
   const raw_ref<signin::IdentityManager> identity_manager_;
@@ -65,6 +67,8 @@ class DiceBoundSessionCookieService
   base::ScopedObservation<BoundSessionCookieRefreshService,
                           BoundSessionCookieRefreshService::Observer>
       bound_session_cookie_refresh_service_observer_{this};
+  mojo::Receiver<network::mojom::DeviceBoundSessionAccessObserver> receiver_{
+      this};
   base::WeakPtrFactory<DiceBoundSessionCookieService> weak_ptr_factory_{this};
 };
 

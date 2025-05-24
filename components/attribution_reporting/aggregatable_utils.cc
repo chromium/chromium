@@ -53,7 +53,7 @@ std::vector<NullAggregatableReport> GetNullAggregatableReports(
     std::optional<base::Time> attributed_source_time,
     GenerateNullAggregatableReportFunc generate_func) {
   // See spec
-  // https://wicg.github.io/attribution-reporting-api/#generate-null-reports.
+  // https://wicg.github.io/attribution-reporting-api/#generate-null-attribution-reports.
   mojom::SourceRegistrationTimeConfig source_registration_time_config =
       config.source_registration_time_config();
 
@@ -103,7 +103,7 @@ bool IsAggregatableValueInRange(int value) {
   return value > 0 && value <= kMaxAggregatableValue;
 }
 
-bool IsRemainingAggregatableBudgetInRange(int budget) {
+bool IsAggregatableBudgetInRange(int budget) {
   return budget >= 0 && budget <= kMaxAggregatableValue;
 }
 

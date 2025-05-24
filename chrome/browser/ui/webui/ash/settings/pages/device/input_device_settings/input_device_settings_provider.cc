@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
 
+#include <algorithm>
+#include <variant>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
@@ -15,7 +18,6 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -41,7 +43,7 @@ namespace ash::settings {
 namespace {
 
 using ActionTypeVariant =
-    absl::variant<AcceleratorAction, ::ash::mojom::StaticShortcutAction>;
+    std::variant<AcceleratorAction, ::ash::mojom::StaticShortcutAction>;
 
 constexpr double kDefaultKeyboardBrightness = 40.0;
 
@@ -113,8 +115,7 @@ mojom::ActionTypePtr GetActionType(
 }
 
 mojom::ActionTypePtr GetActionTypeFromVariant(ActionTypeVariant variant) {
-  return absl::visit([](auto&& value) { return GetActionType(value); },
-                     variant);
+  return std::visit([](auto&& value) { return GetActionType(value); }, variant);
 }
 
 template <typename T>
@@ -151,7 +152,7 @@ std::vector<T> SanitizeAndSortDeviceList(std::vector<T> devices) {
       std::move(devices));
   std::vector<T> devices_no_duplicates =
       std::move(devices_no_duplicates_set).extract();
-  base::ranges::sort(devices_no_duplicates, CompareDevices<T>);
+  std::ranges::sort(devices_no_duplicates, CompareDevices<T>);
   return devices_no_duplicates;
 }
 

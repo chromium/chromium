@@ -336,8 +336,7 @@ ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
     }
 #else   // !BUILDFLAG(IS_IOS)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
 #endif  // !BUILDFLAG(IS_IOS)
   }
 

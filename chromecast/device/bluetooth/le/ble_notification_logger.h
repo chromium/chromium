@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -42,7 +43,7 @@ class BleNotificationLogger : public GattClientManager::Observer {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  GattClientManager* const gcm_;
+  const raw_ptr<GattClientManager> gcm_;
 
   base::TimeTicks last_log_time_;
   base::OneShotTimer log_timer_;

@@ -8,6 +8,7 @@
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/updater/constants.h"
@@ -38,12 +39,16 @@ TEST(WakeTask, NotModified) {
                kExecutableSuffix})),
           @"--wake-all",
           @"--enable-logging",
-          @"--vmodule=*/components/update_client/*=2,*/chrome/updater/*=2",
+          base::SysUTF8ToNSString(
+              base::StrCat({"--vmodule=", kLoggingModuleSwitchValue})),
           @"--system",
         ],
         @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
         @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"System"
+        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"System",
+        @LAUNCH_JOBKEY_ASSOCIATEDBUNDLEIDENTIFIERS : @[
+          base::SysUTF8ToNSString(MAC_BUNDLE_IDENTIFIER_STRING),
+        ]
       };
       break;
     case UpdaterScope::kUser:
@@ -58,11 +63,15 @@ TEST(WakeTask, NotModified) {
                kExecutableSuffix})),
           @"--wake-all",
           @"--enable-logging",
-          @"--vmodule=*/components/update_client/*=2,*/chrome/updater/*=2",
+          base::SysUTF8ToNSString(
+              base::StrCat({"--vmodule=", kLoggingModuleSwitchValue})),
         ],
         @LAUNCH_JOBKEY_STARTINTERVAL : @3600,
         @LAUNCH_JOBKEY_ABANDONPROCESSGROUP : @YES,
-        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"Aqua"
+        @LAUNCH_JOBKEY_LIMITLOADTOSESSIONTYPE : @"Aqua",
+        @LAUNCH_JOBKEY_ASSOCIATEDBUNDLEIDENTIFIERS : @[
+          base::SysUTF8ToNSString(MAC_BUNDLE_IDENTIFIER_STRING),
+        ]
       };
       break;
   }

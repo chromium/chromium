@@ -28,8 +28,9 @@ bool StartupInformation::InitializeProcThreadAttributeList(
 
   SIZE_T size = 0;
   ::InitializeProcThreadAttributeList(nullptr, attribute_count, 0, &size);
-  if (size == 0)
+  if (size == 0) {
     return false;
+  }
 
   auto attribute_list = std::make_unique<char[]>(size);
   auto* attribute_list_ptr =
@@ -48,8 +49,9 @@ bool StartupInformation::InitializeProcThreadAttributeList(
 bool StartupInformation::UpdateProcThreadAttribute(DWORD_PTR attribute,
                                                    void* value,
                                                    size_t size) {
-  if (!startup_info_.lpAttributeList)
+  if (!startup_info_.lpAttributeList) {
     return false;
+  }
   return !!::UpdateProcThreadAttribute(startup_info_.lpAttributeList, 0,
                                        attribute, value, size, nullptr,
                                        nullptr);

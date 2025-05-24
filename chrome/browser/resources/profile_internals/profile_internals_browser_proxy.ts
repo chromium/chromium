@@ -26,6 +26,11 @@ export interface ProfileState {
   signedAccounts: string[];
   isLoaded: boolean;
   hasOffTheRecord: boolean;
+  profileCountry: string;
+  localeCountry: string;
+  variationsCountry: string;
+  initialKeywordsDbCountry: string;
+  updatedKeywordsDbCountry: string;
 }
 
 export interface ProfileStateElement {

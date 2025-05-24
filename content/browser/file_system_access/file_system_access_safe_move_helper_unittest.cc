@@ -104,7 +104,7 @@ class TestFileSystemBackend : public storage::TestFileSystemBackend {
 }  // namespace
 
 std::string GetHexEncodedString(const std::string& input) {
-  return base::HexEncode(base::as_bytes(base::make_span(input)));
+  return base::HexEncode(base::as_byte_span(input));
 }
 
 class FileSystemAccessSafeMoveHelperTest : public testing::Test {
@@ -210,7 +210,7 @@ class FileSystemAccessSafeMoveHelperTest : public testing::Test {
   scoped_refptr<FixedFileSystemAccessPermissionGrant> permission_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-          base::FilePath());
+          PathInfo());
 
   std::unique_ptr<FileSystemAccessSafeMoveHelper> helper_;
 };

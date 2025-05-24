@@ -34,9 +34,9 @@ class ExceptionHandler {
   static ExceptionHandler* FromV8Wrapper(v8::Isolate* isolate,
                                          v8::Local<v8::Value> value);
 
-  // Handles an exception in the given |context|. |message| is a message to
+  // Handles an exception in the given `context`. `message` is a message to
   // prefix the error message with, e.g. "Exception in response to foo".
-  // The |try_catch| is the TryCatch that caught the exception.
+  // The `try_catch` is the TryCatch that caught the exception.
   void HandleException(v8::Local<v8::Context> context,
                        const std::string& message,
                        v8::TryCatch* try_catch);
@@ -61,7 +61,7 @@ class ExceptionHandler {
                             const std::string& message);
 
  private:
-  // Returns the custom handler for the given |context|, or an empty handle if
+  // Returns the custom handler for the given `context`, or an empty handle if
   // no custom handle exists.
   v8::Local<v8::Function> GetCustomHandler(v8::Local<v8::Context> context);
 

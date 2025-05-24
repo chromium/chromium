@@ -11,9 +11,10 @@
 #include <stdint.h>
 #include <sys/socket.h>
 
-#include "ash/components/arc/bluetooth/bluetooth_type_converters.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
+#include "base/check.h"
 #include "base/posix/eintr_wrapper.h"
+#include "chromeos/ash/experiences/arc/bluetooth/bluetooth_type_converters.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluez/bluetooth_device_bluez.h"
@@ -167,12 +168,14 @@ void ArcBluezBridge::RemoveSdpRecord(uint32_t service_handle,
 void ArcBluezBridge::CloseBluetoothListeningSocket(
     BluetoothListeningSocket* ptr) {
   auto itr = listening_sockets_.find(ptr);
+  CHECK(itr != listening_sockets_.end());
   listening_sockets_.erase(itr);
 }
 
 void ArcBluezBridge::CloseBluetoothConnectingSocket(
     BluetoothConnectingSocket* ptr) {
   auto itr = connecting_sockets_.find(ptr);
+  CHECK(itr != connecting_sockets_.end());
   connecting_sockets_.erase(itr);
 }
 
@@ -466,10 +469,11 @@ void ArcBluezBridge::CreateBluetoothListenSocket(
   if (sock_wrapper) {
     std::move(callback).Run(mojom::BluetoothStatus::SUCCESS, listen_port,
                             sock_wrapper->remote.BindNewPipeAndPassReceiver());
-    sock_wrapper->remote.set_disconnect_handler(
-        base::BindOnce(&ArcBluezBridge::CloseBluetoothListeningSocket,
-                       weak_factory_.GetWeakPtr(), sock_wrapper.get()));
+    BluetoothListeningSocket* socket = sock_wrapper.get();
     listening_sockets_.insert(std::move(sock_wrapper));
+    socket->remote.set_disconnect_handler(
+        base::BindOnce(&ArcBluezBridge::CloseBluetoothListeningSocket,
+                       weak_factory_.GetWeakPtr(), socket));
   } else {
     std::move(callback).Run(
         mojom::BluetoothStatus::FAIL, /*port=*/0,
@@ -564,10 +568,11 @@ void ArcBluezBridge::CreateBluetoothConnectSocket(
 
   std::move(callback).Run(mojom::BluetoothStatus::SUCCESS,
                           sock_wrapper->remote.BindNewPipeAndPassReceiver());
-  sock_wrapper->remote.set_disconnect_handler(
-      base::BindOnce(&ArcBluezBridge::CloseBluetoothConnectingSocket,
-                     weak_factory_.GetWeakPtr(), sock_wrapper.get()));
+  BluetoothConnectingSocket* socket = sock_wrapper.get();
   connecting_sockets_.insert(std::move(sock_wrapper));
+  socket->remote.set_disconnect_handler(
+      base::BindOnce(&ArcBluezBridge::CloseBluetoothConnectingSocket,
+                     weak_factory_.GetWeakPtr(), socket));
 }
 
 }  // namespace arc

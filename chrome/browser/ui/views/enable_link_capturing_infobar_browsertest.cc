@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <tuple>
 
-#include "base/ranges/algorithm.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -21,8 +21,8 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -47,16 +47,17 @@ content::WebContents* GetActiveWebContents(Browser* browser) {
 
 class EnableLinkCapturingInfobarBrowserTest
     : public WebAppNavigationBrowserTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<
+          apps::test::LinkCapturingFeatureVersion> {
  public:
   EnableLinkCapturingInfobarBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        apps::test::GetFeaturesToEnableLinkCapturingUX(
-            /*override_captures_by_default=*/GetParam()),
-        {});
+        apps::test::GetFeaturesToEnableLinkCapturingUX(GetParam()), {});
   }
 
-  bool LinkCapturingEnabledByDefault() { return GetParam(); }
+  bool LinkCapturingEnabledByDefault() {
+    return GetParam() == apps::test::LinkCapturingFeatureVersion::kV2DefaultOn;
+  }
 
   // Returns [app_id, in_scope_url]
   std::tuple<webapps::AppId, GURL> InstallTestApp() {
@@ -89,9 +90,12 @@ class EnableLinkCapturingInfobarBrowserTest
     return {outer_app_id, inner_app_id, inner_in_scope_url};
   }
 
+  // Calling `NavigateViaLinkClick()` with `LinkTarget::BLANK` ensures that a
+  // new top level browsing context is always created, to allow navigation
+  // capturing to happen.
   void NavigateViaLinkClick(Browser* browser,
                             const GURL& url,
-                            LinkTarget link_target = LinkTarget::SELF) {
+                            LinkTarget link_target = LinkTarget::BLANK) {
     ClickLinkAndWait(GetActiveWebContents(browser), url, link_target,
                      std::string());
   }
@@ -439,8 +443,8 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   // correct item and select that.
   const auto& app_infos =
       web_app::intent_picker_bubble()->app_info_for_testing();
-  auto it = base::ranges::find(app_infos, outer_app_id,
-                               &apps::IntentPickerAppInfo::launch_name);
+  auto it = std::ranges::find(app_infos, outer_app_id,
+                              &apps::IntentPickerAppInfo::launch_name);
   ASSERT_NE(it, app_infos.end());
   size_t index = it - app_infos.begin();
 
@@ -460,12 +464,12 @@ IN_PROC_BROWSER_TEST_P(EnableLinkCapturingInfobarBrowserTest,
   EXPECT_FALSE(GetLinkCapturingInfoBar(app_browser));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         EnableLinkCapturingInfobarBrowserTest,
-                         testing::Values(true, false),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "DefaultOn" : "DefaultOff";
-                         });
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    EnableLinkCapturingInfobarBrowserTest,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOn),
+    apps::test::LinkCapturingVersionToString);
 
 }  // namespace
 }  // namespace web_app

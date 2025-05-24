@@ -31,6 +31,9 @@
 // between application.
 @property(nonatomic, readonly) NSString* hashedGaiaID;
 
+// Returns NO if the identity is in auth error and requires a reauth.
+@property(nonatomic, readonly) BOOL hasValidAuth;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_SYSTEM_IDENTITY_H_

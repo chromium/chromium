@@ -54,15 +54,16 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT),
       *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                           base::Unretained(this)));
   AddChildView(std::move(image_view));
 
   // Set bubble regarding to the type.
-  if (type == kHistoryDisclaimerBubble)
+  if (type == kHistoryDisclaimerBubble) {
     SetDialogForHistoryDisclaimerBubbleType();
-  else
+  } else {
     SetDialogForDefaultBubbleType();
+  }
 }
 
 void IncognitoClearBrowsingDataDialog::SetDialogForDefaultBubbleType() {

@@ -159,7 +159,7 @@ Node* PointerEvent::fromElement() const {
 HeapVector<Member<PointerEvent>> PointerEvent::getCoalescedEvents() {
   if (auto* local_dom_window = DynamicTo<LocalDOMWindow>(view())) {
     auto* document = local_dom_window->document();
-    if (document && !local_dom_window->isSecureContext()) {
+    if (document && !local_dom_window->IsSecureContext()) {
       UseCounter::Count(document,
                         WebFeature::kGetCoalescedEventsInInsecureContext);
     }

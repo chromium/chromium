@@ -20,7 +20,7 @@ namespace gpu {
 bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
   // When command buffer is compiled as a standalone library, the process might
   // not have a Java environment.
-  if (base::android::IsVMInitialized()) {
+  if (base::android::IsJavaAvailable()) {
     gpu_info->machine_model_name =
         base::android::BuildInfo::GetInstance()->model();
   }

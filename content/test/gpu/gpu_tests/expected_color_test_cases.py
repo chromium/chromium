@@ -3,13 +3,13 @@
 # found in the LICENSE file.
 
 import collections
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from collections.abc import Callable
+
+from telemetry.internal.browser import browser as browser_module
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import crop_actions as ca
 from gpu_tests import skia_gold_heartbeat_integration_test_base as sghitb
-
-from telemetry.internal.browser import browser as browser_module
 
 coordinate_tuple = collections.namedtuple('coordinate', ['x', 'y'])
 size_tuple = collections.namedtuple('size', ['width', 'height'])
@@ -19,10 +19,10 @@ rgba_tuple = collections.namedtuple('rgba', ['r', 'g', 'b', 'a'])
 class ExpectedColorExpectation():
   """Defines a single tested region within an image."""
   def __init__(self,
-               location: Tuple[int, int],
-               size: Tuple[int, int],
-               color: Union[Tuple[int, int, int], Tuple[int, int, int, int]],
-               tolerance: Optional[int] = None):
+               location: tuple[int, int],
+               size: tuple[int, int],
+               color: tuple[int, int, int] | tuple[int, int, int, int],
+               tolerance: int | None = None):
     """
     Args:
       location: A tuple of two ints denoting the upper left corner of the
@@ -45,6 +45,10 @@ class ExpectedColorExpectation():
     self.tolerance = tolerance
 
 
+def DoNotCaptureFullScreenshot(_) -> bool:
+  return False
+
+
 class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
   """Defines a single expected color test."""
   def __init__(  # pylint: disable=too-many-arguments
@@ -52,13 +56,13 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
       url: str,
       name: str,
       base_tolerance: int,
-      expected_colors: List[ExpectedColorExpectation],
+      expected_colors: list[ExpectedColorExpectation],
       crop_action: ca.BaseCropAction,
       *args,
-      extra_browser_args: Optional[List[str]] = None,
-      should_capture_full_screenshot_func: Optional[Callable[
-          [browser_module.Browser], bool]] = None,
-      scale_factor_overrides: Optional[Dict[str, float]] = None,
+      extra_browser_args: list[str] | None = None,
+      should_capture_full_screenshot_func: Callable[[browser_module.Browser],
+                                                    bool] | None = None,
+      scale_factor_overrides: dict[str, float] | None = None,
       **kwargs):
     """
     Args:
@@ -91,7 +95,7 @@ class ExpectedColorTestCase(sghitb.SkiaGoldHeartbeatTestCase):
 
     extra_browser_args = extra_browser_args or []
     if should_capture_full_screenshot_func is None:
-      should_capture_full_screenshot_func = lambda _: False
+      should_capture_full_screenshot_func = DoNotCaptureFullScreenshot
 
     self.url = url
     self.base_tolerance = base_tolerance
@@ -106,7 +110,7 @@ def CaptureFullScreenshotOnFuchsia(browser: browser_module.Browser) -> bool:
   return browser.platform.GetOSName() == 'fuchsia'
 
 
-def MapsTestCases() -> List[ExpectedColorTestCase]:
+def MapsTestCases() -> list[ExpectedColorTestCase]:
   class TestActionStartMapsTest(sghitb.TestAction):
 
     def Run(
@@ -190,9 +194,9 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
               'Pixel 4': 1.1025,
               'Pixel 6': 1.10375,
               # Samsung A13.
-              'SM-A135M': 1.1025,
+              'SM-A137F': 1.1025,
               # Samsung A23.
-              'SM-A235M': 1.1025,
+              'SM-A236B': 1.1025,
               # Samsung S23.
               'SM-S911U1': 1.1,
               # Motorola Moto G Power 5G.
@@ -201,7 +205,7 @@ def MapsTestCases() -> List[ExpectedColorTestCase]:
   ]
 
 
-def MediaRecorderTestCases() -> List[ExpectedColorTestCase]:
+def MediaRecorderTestCases() -> list[ExpectedColorTestCase]:
   red = (255, 0, 0)
   green = (0, 255, 0)
   blue = (0, 0, 255)
@@ -267,11 +271,4 @@ def MediaRecorderTestCases() -> List[ExpectedColorTestCase]:
           video_expected_colors,
           crop_action=ca.NonWhiteContentCropAction(),
       ),
-      ExpectedColorTestCase(
-          'content/test/data/gpu/pixel_media_recorder_from_video_element.html',
-          'MediaRecorderFromVideoElementWithOoprCanvasDisabled',
-          60,
-          video_expected_colors,
-          crop_action=ca.NonWhiteContentCropAction(),
-          extra_browser_args=['--disable-features=CanvasOopRasterization']),
   ]

@@ -11,21 +11,23 @@
 
 namespace features {
 
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioServiceOutOfProcessKillAtHang);
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kDumpOnAudioServiceHang);
-
 #if BUILDFLAG(IS_ANDROID)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioDriver);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAAudioInput);
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAAudioPerStreamDeviceSelection);
 #endif
 
-#if BUILDFLAG(IS_WIN)
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowIAudioClient3);
+#if BUILDFLAG(IS_MAC)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kMacCatapSystemAudioLoopbackCapture);
 #endif
 
 }  // namespace features
 
 namespace media {
+
+#if BUILDFLAG(IS_MAC)
+MEDIA_EXPORT bool IsMacCatapSystemAudioLoopbackCaptureEnabled();
+#endif
 
 // Returns true if system audio loopback capture is implemented for the current
 // OS.

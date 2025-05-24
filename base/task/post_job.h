@@ -17,7 +17,7 @@ namespace base {
 namespace internal {
 class JobTaskSource;
 class PooledTaskRunnerDelegate;
-}
+}  // namespace internal
 
 class TaskTraits;
 enum class TaskPriority : uint8_t;

@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "chrome/updater/app/server/posix/mojom/updater_service.mojom.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -22,6 +22,10 @@ namespace base {
 class FilePath;
 class Version;
 }  // namespace base
+
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
 
 namespace mojo {
 class IsolatedConnection;
@@ -42,7 +46,7 @@ class UpdateServiceProxyImpl
  public:
   // Create an UpdateServiceProxyImpl which is not bound to a remote. It will
   // search for and establish a connection in a background sequence.
-  UpdateServiceProxyImpl(UpdaterScope scope, const base::TimeDelta& timeout);
+  UpdateServiceProxyImpl(UpdaterScope scope, base::TimeDelta timeout);
 
   // Create an UpdateServiceProxyImpl bound to the provided Mojo remote. The
   // lifetime of the connection to the remote process is handled by
@@ -60,6 +64,7 @@ class UpdateServiceProxyImpl
       base::OnceCallback<void(base::expected<base::Version, RpcError>)>
           callback);
   void FetchPolicies(
+      policy::PolicyFetchReason reason,
       base::OnceCallback<void(base::expected<int, RpcError>)> callback);
   void RegisterApp(
       const RegistrationRequest& request,
@@ -73,6 +78,7 @@ class UpdateServiceProxyImpl
       const std::string& app_id,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -82,6 +88,7 @@ class UpdateServiceProxyImpl
       const std::string& install_data_index,
       UpdateService::Priority priority,
       UpdateService::PolicySameVersionUpdate policy_same_version_update,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -96,6 +103,7 @@ class UpdateServiceProxyImpl
       const std::string& client_install_data,
       const std::string& install_data_index,
       UpdateService::Priority priority,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>
@@ -107,6 +115,7 @@ class UpdateServiceProxyImpl
       const std::string& install_args,
       const std::string& install_data,
       const std::string& install_settings,
+      const std::string& language,
       base::RepeatingCallback<void(const UpdateService::UpdateState&)>
           state_update,
       base::OnceCallback<void(base::expected<UpdateService::Result, RpcError>)>

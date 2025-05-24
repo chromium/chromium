@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 
@@ -29,23 +25,22 @@ TEST(IdentifiableTokenBuilderTest, Empty) {
 TEST(IdentifiableTokenBuilderTest, ConstructVsAdd) {
   const char kOneByte[1] = {'a'};
   IdentifiableTokenBuilder add_token;
-  add_token.AddBytes(base::as_bytes(base::make_span(kOneByte)));
+  add_token.AddBytes(base::as_byte_span(kOneByte));
 
-  IdentifiableTokenBuilder construct_token(
-      base::as_bytes(base::make_span(kOneByte)));
+  IdentifiableTokenBuilder construct_token(base::as_byte_span(kOneByte));
   EXPECT_EQ(add_token.GetToken(), construct_token.GetToken());
 }
 
 TEST(IdentifiableTokenBuilderTest, OneByte) {
   const char kOneByte[1] = {'a'};
   IdentifiableTokenBuilder sample;
-  sample.AddBytes(base::as_bytes(base::make_span(kOneByte)));
+  sample.AddBytes(base::as_byte_span(kOneByte));
   EXPECT_EQ(IdentifiableToken(INT64_C(0x6de50a5cefa7ba0e)), sample.GetToken());
 }
 
 TEST(IdentifiableTokenBuilderTest, TwoBytesInTwoTakes) {
   const char kBytes[] = {'a', 'b'};
-  auto bytes_span = base::as_bytes(base::span<const char>(kBytes));
+  auto bytes_span = base::as_byte_span(kBytes);
   IdentifiableTokenBuilder whole_span_token(bytes_span);
   IdentifiableTokenBuilder two_parts_token;
   two_parts_token.AddBytes(bytes_span.first(1u));
@@ -56,7 +51,7 @@ TEST(IdentifiableTokenBuilderTest, TwoBytesInTwoTakes) {
 TEST(IdentifiableTokenBuilderTest, SixtySixBytesInTwoTakes) {
   constexpr size_t kSize = 66;
   std::vector<char> big_array(kSize, 'a');
-  auto bytes_span = base::as_bytes(base::span<const char>(big_array));
+  auto bytes_span = base::as_byte_span(big_array);
   IdentifiableTokenBuilder whole_span_token(bytes_span);
   IdentifiableTokenBuilder two_parts_token;
   two_parts_token.AddBytes(bytes_span.first(kSize / 2));
@@ -87,9 +82,8 @@ TEST(IdentifiableTokenBuilderTest, AddValue) {
 
 TEST(IdentifiableTokenBuilderTest, AddAtomic_AlwaysConstant) {
   const uint8_t kS1[] = {1, 2, 3, 4, 5};
-  EXPECT_EQ(
-      IdentifiableToken(INT64_C(0xfaeb0b8e769729b9)),
-      IdentifiableTokenBuilder().AddAtomic(base::make_span(kS1)).GetToken());
+  EXPECT_EQ(IdentifiableToken(INT64_C(0xfaeb0b8e769729b9)),
+            IdentifiableTokenBuilder().AddAtomic(base::span(kS1)).GetToken());
 }
 
 TEST(IdentifiableTokenBuilderTest, AddAtomic_PadSuffix) {
@@ -97,10 +91,8 @@ TEST(IdentifiableTokenBuilderTest, AddAtomic_PadSuffix) {
   const uint8_t kS1_padded[] = {5, 0, 0, 0, 0, 0, 0, 0,  // Little endian 5
                                 1, 2, 3, 4, 5, 0, 0, 0};
   EXPECT_EQ(
-      IdentifiableTokenBuilder().AddAtomic(base::make_span(kS1)).GetToken(),
-      IdentifiableTokenBuilder()
-          .AddBytes(base::make_span(kS1_padded))
-          .GetToken());
+      IdentifiableTokenBuilder().AddAtomic(base::span(kS1)).GetToken(),
+      IdentifiableTokenBuilder().AddBytes(base::span(kS1_padded)).GetToken());
 }
 
 TEST(IdentifiableTokenBuilderTest, AddAtomic_PadPrefix) {
@@ -109,13 +101,12 @@ TEST(IdentifiableTokenBuilderTest, AddAtomic_PadPrefix) {
   const uint8_t kS2_padded[] = {1, 2, 0, 0, 0, 0, 0, 0,
                                 3, 0, 0, 0, 0, 0, 0, 0,  // Little endian 3
                                 3, 4, 5, 0, 0, 0, 0, 0};
-  EXPECT_EQ(IdentifiableTokenBuilder()
-                .AddBytes(base::make_span(kS2_pre))
-                .AddAtomic(base::make_span(kS2))
-                .GetToken(),
-            IdentifiableTokenBuilder()
-                .AddBytes(base::make_span(kS2_padded))
-                .GetToken());
+  EXPECT_EQ(
+      IdentifiableTokenBuilder()
+          .AddBytes(base::span(kS2_pre))
+          .AddAtomic(base::span(kS2))
+          .GetToken(),
+      IdentifiableTokenBuilder().AddBytes(base::span(kS2_padded)).GetToken());
 }
 
 TEST(IdentifiableTokenBuilderTest, AddVsAddAtomic) {
@@ -127,26 +118,26 @@ TEST(IdentifiableTokenBuilderTest, AddVsAddAtomic) {
   // Adding buffers wth AddBytes() doesn't distinguish between the two
   // partitions, and this is intentional.
   IdentifiableTokenBuilder builder_A;
-  builder_A.AddBytes(base::make_span(kA1));
-  builder_A.AddBytes(base::make_span(kA2));
+  builder_A.AddBytes(base::span(kA1));
+  builder_A.AddBytes(base::span(kA2));
   auto token_for_A = builder_A.GetToken();
 
   IdentifiableTokenBuilder builder_B;
-  builder_B.AddBytes(base::make_span(kB1));
-  builder_B.AddBytes(base::make_span(kB2));
+  builder_B.AddBytes(base::span(kB1));
+  builder_B.AddBytes(base::span(kB2));
   auto token_for_B = builder_B.GetToken();
 
   EXPECT_EQ(token_for_A, token_for_B);
 
   // However AtomicAdd distinguishes between the two.
   IdentifiableTokenBuilder atomic_A;
-  atomic_A.AddAtomic(base::make_span(kA1));
-  atomic_A.AddAtomic(base::make_span(kA2));
+  atomic_A.AddAtomic(base::span(kA1));
+  atomic_A.AddAtomic(base::span(kA2));
   auto atomic_token_for_A = atomic_A.GetToken();
 
   IdentifiableTokenBuilder atomic_B;
-  atomic_B.AddAtomic(base::make_span(kB1));
-  atomic_B.AddAtomic(base::make_span(kB2));
+  atomic_B.AddAtomic(base::span(kB1));
+  atomic_B.AddAtomic(base::span(kB2));
   auto atomic_token_for_B = atomic_B.GetToken();
 
   EXPECT_NE(atomic_token_for_A, atomic_token_for_B);
@@ -185,11 +176,11 @@ TEST(IdentifiableTokenBuilderTest, LotsOfRandomPartitions) {
   size_t low = 0;
   for (auto high : partitions) {
     ASSERT_LE(low, high);
-    partitioned_sample.AddBytes(base::make_span(&data[low], high - low));
+    partitioned_sample.AddBytes(base::span(data).subspan(low, high - low));
     low = high;
   }
   partitioned_sample.AddBytes(
-      base::make_span(&data[low], kLargeBufferSize - low));
+      base::span(data).subspan(low, kLargeBufferSize - low));
 
   IdentifiableTokenBuilder full_buffer_sample(data);
   EXPECT_EQ(full_buffer_sample.GetToken(), partitioned_sample.GetToken());

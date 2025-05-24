@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+[FAIL] Async Function constructor is also clipped.
+  assert_equals: expected "Function|(a,b\\n) {\\nreturn '12345678901234567890123" but got "eval|(async function anonymous(a,b\\n) {\\nreturn"
+[FAIL] Generator Function constructor is also clipped.
+  assert_equals: expected "Function|(a,b\\n) {\\nreturn '12345678901234567890123" but got "eval|(function* anonymous(a,b\\n) {\\nreturn '123"
+[FAIL] AsyncGenerator Function constructor is also clipped.
+  assert_equals: expected "Function|(a,b\\n) {\\nreturn '12345678901234567890123" but got "eval|(async function* anonymous(a,b\\n) {\\nretur"
+Harness: the test ran to completion.

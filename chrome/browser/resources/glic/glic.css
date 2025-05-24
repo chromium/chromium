@@ -1,0 +1,323 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+:root {
+  color-scheme: light dark;
+  --color--secondary-container: light-dark(#C2E7FF, #004A77);
+  --color--on-surface: light-dark(#1B1C1D, #FFFFFF);
+  --color--on-secondary-container: light-dark(#004A77, #C2E7FF);
+  --color--error: light-dark(#B3261E, #F2B8B5);
+  --color--primary: light-dark(#0B57D0, #A8C7FA);
+  --color--surface: light-dark(#FFFFFF, #1B1C1D);
+  --color--on-surface-variant: light-dark(#575B5F, #A2A9B0);
+  --color--surface-container: light-dark(#F0F4F9, #282A2C);
+}
+
+html, body {
+  margin: 0;
+  height: 100%
+}
+
+body {
+  overflow: hidden;
+  user-select: none;
+}
+
+webview:not([hidden]) {
+  display: block;
+  height: 100%;
+}
+
+.dialog {
+  position: absolute;
+  left: 0;
+  right: 0;
+  font-family: Roboto, sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 20px;
+  color: var(--color--on-surface);
+}
+
+.dialog .container {
+  background: var(--color--surface-container);
+  color: var(--color--on-surface-variant);
+  padding-bottom: 14px;
+}
+
+#loadingPanel {
+  width: 100%;
+}
+
+#loadingPanel .container {
+  padding-bottom: 0px;
+  background: var(--color--surface);
+}
+
+#loadingPanel .secondline {
+  padding: 0 10px 10px;
+  display: flex;
+  justify-content: space-between;
+}
+
+#loadingPanel .p1 {
+  flex: 1;
+  height: 17px;
+  margin-right: 60px;
+  margin-top: 4px;
+  border-radius: 5px;
+}
+
+#loadingPanel .p2 {
+  height: 16px;
+  width: 76px;
+  padding: 8px 2px;
+  border-radius: 16px;
+}
+
+#loadingPanel .p3 {
+  height: 16px;
+  width: 28px;
+  padding: 8px 2px;
+  border-radius: 8px;
+}
+
+.panel .header {
+  padding: 12px 20px 12px 12px;
+  height: 24px;
+  display: flex;
+  justify-content: space-between;
+  cursor: grab;
+}
+
+#loadingPanel .header {
+  padding-bottom: 8px;
+}
+
+.panel .logo {
+  padding: 0 0 0 2px;
+}
+
+/* Adjust brightness of SVG logo */
+@media (prefers-color-scheme: light) {
+  .panel .logo {
+    filter: brightness(53.6%);
+  }
+}
+
+.panel .close-button {
+  --cr-icon-button-size: 24px;
+  --cr-icon-button-icon-size: 14px;
+  color: var(--color--on-surface-variant);
+}
+
+.dialog .notice {
+  background-color: var(--color--surface);
+  color: var(--color--on-surface);
+  border-radius: 10px;
+  padding: 12px;
+  margin: 0 14px;
+}
+
+.notice .icon {
+  color: var(--color--error);
+}
+
+.dialog p {
+  margin: 0 0 8px;
+}
+
+.dialog .headline {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 8px 0 4px;
+}
+
+/* Guest panel contains glic webview. If in the show-header state, a header
+   will also be visible. */
+#guestPanel {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.hidden {
+ display: none;
+}
+
+.outerheader {
+  background: var(--color--surface);
+  position: absolute;
+  width: 100%;
+  height: 48px;
+}
+
+#webviewHeader {
+  display: none;
+}
+
+#guestPanel.show-header #webviewHeader {
+  display: block;
+}
+
+#webviewContainer {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+#guestPanel.show-header #webviewContainer {
+  position: absolute;
+  width: 100%;
+  /* If showing a login page, the window height will always be 800px */
+  height: 752px;
+  bottom: 0;
+}
+
+.tonal-button {
+  width: 100%;
+  background-color: var(--color--secondary-container);
+  color: var(--color--on-secondary-container);
+}
+
+#debug {
+  position: absolute;
+  right: 30px;
+}
+
+cr-progress {
+  width: 80%;
+  margin: 20px 10% 0;
+  --cr-progress-active-color: #A8C7FA;
+}
+
+.placeholder {
+  background-color: #35383b;
+  background-image:
+    linear-gradient(110deg, #161617 0%,
+                            #161617 10%,
+                            #1e1f20 30%,
+                            #35383b 50%,
+                            #1e1f20 70%,
+                            #161617 90%,
+                            #161617 100%);
+  background-size: calc(200cqw);
+  background-position: center;
+  animation: 1.5s infinite linear gradient-move,
+      1.5s infinite linear pulsedark;
+}
+
+@media (prefers-color-scheme: light) {
+  .placeholder {
+    background-image:
+      linear-gradient(110deg, #CDCDCD 0%,
+                              #CDCDCD 25%,
+                              #696B6C 33%,
+                              #727676 65%,
+                              #CDCDCD 75%,
+                              #CDCDCD 100%);
+      animation: 1.5s infinite linear gradient-move,
+          1.5s infinite linear pulselight;
+  }
+}
+
+@keyframes pulselight {
+  0% {
+    opacity: 0.1;
+  }
+  22% {
+    opacity: 0.14;
+  }
+  67% {
+    opacity: 0.14;
+  }
+  80% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0.1;
+  }
+}
+
+@keyframes pulsedark {
+  0% {
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  67% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes gradient-move {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: 0 0;
+  }
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, .6);
+  width: 100%;
+  height: 100vh;
+  display: block;
+  align-content: center;
+  opacity: 1;
+  transition-property: opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+  transition-delay: 0.2s;
+}
+
+.overlay.hidden {
+  opacity: 0;
+  transition-delay: 0.2s;
+  pointer-events: none;
+}
+
+.overlay .container {
+  text-align: center;
+}
+
+.overlay .message {
+  display: inline-block;
+  font-family: Roboto, sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  color: var(--color--on-surface);
+  background-color: var(--color--surface);
+  padding: 12px;
+  margin: 0 20px;
+  border-radius: 10px;
+  opacity: 1;
+  transition-property: opacity;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+  transition-delay: 0s;
+}
+
+.overlay.hidden .message {
+  opacity: 0;
+  transition-delay: 0s
+}
+
+.overlay cr-icon {
+  color: var(--cr-fallback-color-primary);
+  width: 20px;
+  height: 20px;
+}

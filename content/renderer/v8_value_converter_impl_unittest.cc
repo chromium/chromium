@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "content/renderer/v8_value_converter_impl.h"
 
 #include <stddef.h>
@@ -1259,8 +1264,7 @@ TEST_F(V8ValueConverterImplTest, StrategyBypass) {
   std::unique_ptr<base::Value> binary_value(
       converter.FromV8Value(array_buffer, context));
   ASSERT_TRUE(binary_value);
-  base::Value reference_binary_value(
-      base::as_bytes(base::make_span(kExampleData)));
+  base::Value reference_binary_value(base::as_byte_span(kExampleData));
   EXPECT_EQ(reference_binary_value, *binary_value);
 
   v8::Local<v8::ArrayBufferView> array_buffer_view(
@@ -1269,7 +1273,7 @@ TEST_F(V8ValueConverterImplTest, StrategyBypass) {
       converter.FromV8Value(array_buffer_view, context));
   ASSERT_TRUE(binary_view_value);
   base::Value reference_binary_view_value(
-      base::as_bytes(base::make_span(kExampleData).subspan(1, 3)));
+      base::as_byte_span(kExampleData).subspan<1, 3>());
   EXPECT_EQ(reference_binary_view_value, *binary_view_value);
 
   v8::Local<v8::Number> number(v8::Number::New(isolate_, 0.0));

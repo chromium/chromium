@@ -24,8 +24,6 @@ namespace ash {
 
 namespace {
 
-const char* kCellularDevicePath = "/device/cellular1";
-
 const char* kDefaultCountry = "US";
 const char* kDefaultOperatorName = "Network Operator";
 const char* kDefaultOperatorCode = "123456";
@@ -222,7 +220,11 @@ void FakeHermesProfileClient::UpdateCellularDevice(
                     properties->service_provider().value());
   home_provider.Set(shill::kCountryProperty, kDefaultCountry);
   home_provider.Set(shill::kNetworkIdProperty, properties->mcc_mnc().value());
-  device_test->SetDeviceProperty(kCellularDevicePath,
+  const std::string cellular_device_path =
+      device_test->GetDevicePathForType(shill::kTypeCellular);
+  DCHECK(!cellular_device_path.empty());
+
+  device_test->SetDeviceProperty(cellular_device_path,
                                  shill::kHomeProviderProperty,
                                  base::Value(std::move(home_provider)), true);
 }

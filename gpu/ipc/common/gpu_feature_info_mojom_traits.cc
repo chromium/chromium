@@ -4,7 +4,8 @@
 
 #include "gpu/ipc/common/gpu_feature_info_mojom_traits.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "build/build_config.h"
 
 namespace mojo {

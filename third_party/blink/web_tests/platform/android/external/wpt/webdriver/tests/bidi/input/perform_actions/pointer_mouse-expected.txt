@@ -1,0 +1,5 @@
+This is a wdspec test.
+[FAIL] test_click_at_fractional_coordinates
+  webdriver.bidi.error.InvalidArgumentException: invalid argument (Expected integer, received float in "actions"/0/"actions"/0/"x". Expected integer, received float in "actions"/0/"actions"/0/"y".)
+Harness: the test ran to completion.
+

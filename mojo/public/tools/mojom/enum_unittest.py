@@ -69,11 +69,11 @@ class EnumTest(MojomParserTestCase):
   def testInvalidConstantReference(self):
     """Verifies that enum values cannot be assigned from the value of
     non-integral constants."""
-    with self.assertRaisesRegexp(ValueError, 'not an integer'):
+    with self.assertRaisesRegex(ValueError, 'not an integer'):
       self.ExtractTypes('const float kFoo = 1.0; enum E { kA = kFoo };')
-    with self.assertRaisesRegexp(ValueError, 'not an integer'):
+    with self.assertRaisesRegex(ValueError, 'not an integer'):
       self.ExtractTypes('const double kFoo = 1.0; enum E { kA = kFoo };')
-    with self.assertRaisesRegexp(ValueError, 'not an integer'):
+    with self.assertRaisesRegex(ValueError, 'not an integer'):
       self.ExtractTypes('const string kFoo = "lol"; enum E { kA = kFoo };')
 
   def testImportedConstantReference(self):
@@ -116,5 +116,5 @@ class EnumTest(MojomParserTestCase):
     self.ParseMojoms([a_mojom])
     a = self.LoadModule(a_mojom)
     self.assertEqual(a.interfaces[0].attributes['Attr'].mojom_name, 'kB')
-    self.assertEquals(a.interfaces[0].attributes['Attr'].value.mojom_name,
-                      'kFoo')
+    self.assertEqual(a.interfaces[0].attributes['Attr'].value.mojom_name,
+                     'kFoo')

@@ -50,6 +50,7 @@ class UI_ANDROID_EXPORT EventForwarder {
       const base::android::JavaParamRef<jobject>& motion_event,
       jlong oldest_event_time_ns,
       jlong latest_event_time_ns,
+      jlong down_time_ms,
       jint android_action,
       jint pointer_count,
       jint history_size,
@@ -64,6 +65,8 @@ class UI_ANDROID_EXPORT EventForwarder {
       jfloat touch_major_1,
       jfloat touch_minor_0,
       jfloat touch_minor_1,
+      jfloat pressure_0,
+      jfloat pressure_1,
       jfloat orientation_0,
       jfloat orientation_1,
       jfloat tilt_0,
@@ -75,7 +78,8 @@ class UI_ANDROID_EXPORT EventForwarder {
       jint android_gesture_classification,
       jint android_button_state,
       jint android_meta_state,
-      jboolean is_touch_handle_event);
+      jboolean is_touch_handle_event,
+      jboolean is_latest_event_time_resampled);
 
   void OnMouseEvent(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
@@ -116,7 +120,8 @@ class UI_ANDROID_EXPORT EventForwarder {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& motion_event,
-      jlong time_ns);
+      jlong event_time_ns,
+      jlong down_time_ms);
 
   jboolean OnKeyUp(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
@@ -160,6 +165,8 @@ class UI_ANDROID_EXPORT EventForwarder {
   void AddObserver(Observer* observer);
 
   void RemoveObserver(Observer* observer);
+
+  float GetCurrentTouchSequenceYOffset();
 
  private:
   friend class ViewAndroid;

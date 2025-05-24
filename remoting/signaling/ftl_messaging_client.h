@@ -79,7 +79,7 @@ class FtlMessagingClient final : public MessagingClient {
                       DoneCallback on_done);
 
   void OnSendMessageResponse(DoneCallback on_done,
-                             const ProtobufHttpStatus& status,
+                             const HttpStatus& status,
                              std::unique_ptr<ftl::InboxSendResponse> response);
 
   void BatchAckMessages(const ftl::BatchAckMessagesRequest& request,
@@ -87,14 +87,14 @@ class FtlMessagingClient final : public MessagingClient {
 
   void OnBatchAckMessagesResponse(
       DoneCallback on_done,
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<ftl::BatchAckMessagesResponse> response);
 
   std::unique_ptr<ScopedProtobufHttpRequest> OpenReceiveMessagesStream(
       base::OnceClosure on_channel_ready,
       const base::RepeatingCallback<
           void(std::unique_ptr<ftl::ReceiveMessagesResponse>)>& on_incoming_msg,
-      base::OnceCallback<void(const ProtobufHttpStatus&)> on_channel_closed);
+      base::OnceCallback<void(const HttpStatus&)> on_channel_closed);
 
   void RunMessageCallbacks(const ftl::InboxMessage& message);
 

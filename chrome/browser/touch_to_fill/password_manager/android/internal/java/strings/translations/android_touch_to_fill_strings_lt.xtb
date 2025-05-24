@@ -17,6 +17,7 @@
 <translation id="5441504010984421144">Prisijungimo duomenų, kuriuos galima užpildyti palietus, sąrašas atidarytas per visą ekrano aukštį.</translation>
 <translation id="5591247451101092906">Naudoti išsaugotą slaptažodį arba „passkey“?</translation>
 <translation id="5624120631404540903">Tvarkyti slaptažodžius</translation>
+<translation id="592182999816790476">Svetainei <ph name="WEBSITE" /> skirtas <ph name="USERNAME" /> slaptažodis išsaugotas</translation>
 <translation id="6560306912274274630"><ph name="USERNAME" /> prieigos raktas, naudokite ekrano užraktą.</translation>
 <translation id="7069750557362084654">{NUM_PASSWORDS,plural, =1{Naujas šios svetainės slaptažodis}one{Nauji šios svetainės slaptažodžiai}few{Nauji šios svetainės slaptažodžiai}many{Nauji šios svetainės slaptažodžiai}other{Nauji šios svetainės slaptažodžiai}}</translation>
 <translation id="7286867818472074330">Pasirinkti prieigos raktą</translation>

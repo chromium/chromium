@@ -18,6 +18,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/xr_runtime_manager.h"
 #include "device/base/features.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -137,9 +138,6 @@ VRUiHostImpl::VRUiHostImpl(
   CHECK(base::Contains(views, device::mojom::XREye::kRight,
                        &device::mojom::XRView::eye));
 
-  content::GetDeviceService().BindGeolocationConfig(
-      geolocation_config_.BindNewPipeAndPassReceiver());
-
   DesktopMediaPickerManager::Get()->AddObserver(this);
 
   VrTabHelper::SetIsContentDisplayedInHeadset(&contents, true);
@@ -255,22 +253,30 @@ void VRUiHostImpl::InitCapturingStates() {
       web_contents_->GetBrowserContext()->GetPermissionController();
   potential_capturing_.audio_capture_enabled =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::AUDIO_CAPTURE,
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::AUDIO_CAPTURE),
           web_contents_->GetPrimaryMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED;
   potential_capturing_.video_capture_enabled =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::VIDEO_CAPTURE,
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::VIDEO_CAPTURE),
           web_contents_->GetPrimaryMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED;
   potential_capturing_.location_access_enabled =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::GEOLOCATION,
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::GEOLOCATION),
           web_contents_->GetPrimaryMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED;
   potential_capturing_.midi_connected =
       permission_controller->GetPermissionStatusForCurrentDocument(
-          blink::PermissionType::MIDI_SYSEX,
+          content::PermissionDescriptorUtil::
+              CreatePermissionDescriptorForPermissionType(
+                  blink::PermissionType::MIDI_SYSEX),
           web_contents_->GetPrimaryMainFrame()) ==
       blink::mojom::PermissionStatus::GRANTED;
 
@@ -328,11 +334,12 @@ void VRUiHostImpl::PollCapturingState() {
         indicator->IsCapturingDisplay(web_contents_.get());
 
     // Bluetooth.
-    active_capturing.bluetooth_connected =
-        web_contents_->IsConnectedToBluetoothDevice();
+    active_capturing.bluetooth_connected = web_contents_->IsCapabilityActive(
+        content::WebContentsCapabilityType::kBluetoothConnected);
 
     // USB.
-    active_capturing.usb_connected = web_contents_->IsConnectedToUsbDevice();
+    active_capturing.usb_connected = web_contents_->IsCapabilityActive(
+        content::WebContentsCapabilityType::kUSB);
   }
 
   auto capturing_switched_on =

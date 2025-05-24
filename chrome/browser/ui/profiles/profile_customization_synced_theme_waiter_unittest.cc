@@ -12,6 +12,7 @@
 #include "chrome/browser/themes/theme_helper.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -68,7 +69,7 @@ class ProfileCustomizationSyncedThemeWaiterTest : public testing::Test {
  public:
   ProfileCustomizationSyncedThemeWaiterTest()
       : fake_theme_service_(theme_helper_),
-        theme_syncable_service_(nullptr, &fake_theme_service_) {}
+        theme_syncable_service_(&profile_, &fake_theme_service_) {}
 
   void SetUp() override {
     fake_theme_service_.SetThemeSyncableService(&theme_syncable_service_);
@@ -112,6 +113,7 @@ class ProfileCustomizationSyncedThemeWaiterTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<ProfileCustomizationSyncedThemeWaiter> waiter_;
 
+  TestingProfile profile_;
   syncer::TestSyncService test_sync_service_;
   FakeThemeService fake_theme_service_;
   ThemeSyncableService theme_syncable_service_;

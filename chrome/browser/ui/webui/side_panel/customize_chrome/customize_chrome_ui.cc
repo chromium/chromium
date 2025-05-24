@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 
 #include <optional>
@@ -16,13 +11,11 @@
 #include "base/rand_util.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
-#include "chrome/browser/new_tab_page/modules/new_tab_page_modules.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/background/wallpaper_search/wallpaper_search_background_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/customize_chrome/customize_chrome_utils.h"
 #include "chrome/browser/ui/webui/cr_components/customize_color_scheme_mode/customize_color_scheme_mode_handler.h"
@@ -34,7 +27,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_customize_chrome_resources.h"
@@ -50,6 +43,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 namespace {
 
@@ -72,13 +66,14 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI, kChromeThemeElementId);
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui),
+    // Enable chrome.send to notify `ThemeHandler` to observe theme changes.
+    : TopChromeWebUIController(web_ui, true),
       image_decoder_(std::make_unique<ImageDecoderImpl>()),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
-      module_id_names_(
-          ntp::MakeModuleIdNames(NewTabPageUI::IsManagedProfile(profile_),
-                                 profile_)),
+      module_id_details_(
+          ntp::MakeModuleIdDetails(NewTabPageUI::IsManagedProfile(profile_),
+                                   profile_)),
       page_factory_receiver_(this),
       id_(RandInt64()) {
   const bool wallpaper_search_enabled =
@@ -91,6 +86,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
 
+  if (!profile_->IsGuestSession()) {
+    web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
+  }
+
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Side panel strings.
       {"backButton", IDS_ACCNAME_BACK},
@@ -99,8 +98,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"appearanceHeader", IDS_NTP_CUSTOMIZE_APPEARANCE_LABEL},
       {"cardsHeader", IDS_NTP_CUSTOMIZE_MENU_MODULES_LABEL},
       {"categoriesHeader", IDS_NTP_CUSTOMIZE_THEMES_HEADER},
+      {"footerHeader", IDS_NTP_CUSTOMIZE_FOOTER_HEADER},
       {"shortcutsHeader", IDS_NTP_CUSTOMIZE_MENU_SHORTCUTS_LABEL},
       {"toolbarHeader", IDS_NTP_CUSTOMIZE_MENU_TOOLBAR_LABEL},
+      {"extensionsHeader", IDS_NTP_CUSTOMIZE_MENU_EXTENSIONS_LABEL},
       // Appearance strings.
       {"changeTheme", IDS_NTP_CUSTOMIZE_CHROME_CHANGE_THEME_LABEL},
       {"chromeWebStore", IDS_EXTENSION_WEB_STORE_TITLE},
@@ -140,6 +141,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"showShortcutsToggle", IDS_NTP_CUSTOMIZE_SHOW_SHORTCUTS_LABEL},
       // Card strings.
       {"showCardsToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_CARDS_LABEL},
+      // Footer strings.
+      {"showFooterToggleTitle", IDS_NTP_CUSTOMIZE_SHOW_FOOTER_LABEL},
       // Required by <managed-dialog>.
       {"controlledSettingPolicy", IDS_CONTROLLED_SETTING_POLICY},
       {"close", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
@@ -234,6 +237,8 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"webstoreProductivityCategoryLabel",
        IDS_NTP_WEBSTORE_PRODUCTIVITY_CATEOGRY_LABEL},
       // Customize Toolbar strings.
+      {"enterpriseEnabledLabel",
+       IDS_NTP_CUSTOMIZE_TOOLBAR_ENTERPRISE_ENABLED_LABEL},
       {"toolbarButtonA11yLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_BUTTON_A11Y_LABEL},
       {"chooseToolbarIconsLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_CHOOSE_ICONS_LABEL},
       {"resetToDefaultButtonLabel",
@@ -241,13 +246,14 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       {"resetToDefaultButtonAnnouncement",
        IDS_NTP_CUSTOMIZE_TOOLBAR_RESET_TO_DEFAULT_ANNOUNCEMENT},
       {"reorderTipLabel", IDS_NTP_CUSTOMIZE_TOOLBAR_REORDER_TIP_LABEL},
+      {"managedA11yLabel", IDS_MANAGED},
       {"newBadgeLabel", IDS_NEW_BADGE},
   };
   source->AddLocalizedStrings(kLocalizedStrings);
 
   source->AddBoolean(
       "modulesEnabled",
-      ntp::HasModulesEnabled(module_id_names_,
+      ntp::HasModulesEnabled(module_id_details_,
                              IdentityManagerFactory::GetForProfile(profile_)));
 
   source->AddBoolean("showDeviceThemeToggle",
@@ -273,19 +279,17 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
       wallpaper_search_enabled &&
           base::FeatureList::IsEnabled(
               ntp_features::kCustomizeChromeWallpaperSearchButton));
-  source->AddBoolean("toolbarCustomizationEnabled",
-                     base::FeatureList::IsEnabled(features::kToolbarPinning));
   source->AddBoolean("imageErrorDetectionEnabled",
                      base::FeatureList::IsEnabled(
                          ntp_features::kNtpBackgroundImageErrorDetection));
 
+  source->AddBoolean("footerEnabled",
+                     base::FeatureList::IsEnabled(ntp_features::kNtpFooter));
+
   webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelCustomizeChromeResources,
-                      kSidePanelCustomizeChromeResourcesSize),
+      source, kSidePanelCustomizeChromeResources,
       IDR_SIDE_PANEL_CUSTOMIZE_CHROME_CUSTOMIZE_CHROME_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(kSidePanelSharedResources);
 
   content::URLDataSource::Add(profile_,
                               std::make_unique<SanitizedImageSource>(profile_));
@@ -301,13 +305,19 @@ void CustomizeChromeUI::ScrollToSection(CustomizeChromeSection section) {
   }
 }
 
-void CustomizeChromeUI::AttachedTabStateUpdated(
-    bool is_source_tab_first_party_ntp) {
+void CustomizeChromeUI::AttachedTabStateUpdated(const GURL& url) {
   if (customize_chrome_page_handler_) {
-    customize_chrome_page_handler_->AttachedTabStateUpdated(
-        is_source_tab_first_party_ntp);
+    customize_chrome_page_handler_->AttachedTabStateUpdated(url);
   } else {
-    is_source_tab_first_party_ntp_ = is_source_tab_first_party_ntp;
+    source_tab_url_ = url;
+  }
+}
+
+void CustomizeChromeUI::UpdateThemeEditable(bool is_theme_editable) {
+  if (customize_chrome_page_handler_) {
+    customize_chrome_page_handler_->UpdateThemeEditable(is_theme_editable);
+  } else {
+    is_theme_editable_ = is_theme_editable;
   }
 }
 
@@ -392,15 +402,18 @@ void CustomizeChromeUI::CreatePageHandler(
   customize_chrome_page_handler_ = std::make_unique<CustomizeChromePageHandler>(
       std::move(pending_page_handler), std::move(pending_page),
       NtpCustomBackgroundServiceFactory::GetForProfile(profile_), web_contents_,
-      module_id_names_);
+      module_id_details_);
   if (section_.has_value()) {
     customize_chrome_page_handler_->ScrollToSection(*section_);
     section_.reset();
   }
-  if (is_source_tab_first_party_ntp_.has_value()) {
-    customize_chrome_page_handler_->AttachedTabStateUpdated(
-        is_source_tab_first_party_ntp_.value());
-    is_source_tab_first_party_ntp_.reset();
+  if (!source_tab_url_.is_empty()) {
+    customize_chrome_page_handler_->AttachedTabStateUpdated(source_tab_url_);
+  }
+  if (is_theme_editable_.has_value()) {
+    customize_chrome_page_handler_->UpdateThemeEditable(
+        is_theme_editable_.value());
+    is_theme_editable_.reset();
   }
 }
 
@@ -467,10 +480,6 @@ void CustomizeChromeUI::CreateCustomizeToolbarHandler(
     return;
   }
 
-  const raw_ptr<Browser> browser =
-      chrome::FindBrowserWithWindow(web_contents_->GetTopLevelNativeWindow());
-  CHECK(browser);
-
   customize_toolbar_handler_ = std::make_unique<CustomizeToolbarHandler>(
-      std::move(handler), std::move(client), browser);
+      std::move(handler), std::move(client), web_contents_);
 }

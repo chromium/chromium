@@ -2,13 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("apps") {
   sources = [
-    "app_info_dialog.h",
     "chrome_app_delegate.h",
     "chrome_app_window_client.h",
     "directory_access_confirmation_dialog.h",
@@ -31,17 +28,19 @@ source_set("impl") {
 
   deps = [
     ":apps",
-    "//build:chromeos_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:primitives",
+    "//chrome/browser:shell_integration",
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
     "//chrome/browser/file_system_access",
+    "//chrome/browser/lifetime:termination_notification",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiles/keep_alive",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//components/keep_alive_registry",
     "//components/version_info",
@@ -55,10 +54,6 @@ source_set("impl") {
     "//services/service_manager/public/cpp",
     "//ui/base",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash/lock_screen_apps:lock_screen_apps" ]
-  }
 
   if (is_chromeos) {
     deps += [ "//chrome/browser/chromeos/policy/dlp" ]

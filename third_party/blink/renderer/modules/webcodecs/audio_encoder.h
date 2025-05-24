@@ -81,10 +81,10 @@ class MODULES_EXPORT AudioEncoder final
   void ProcessConfigure(Request* request) override;
   void ProcessReconfigure(Request* request) override;
 
-  ParsedConfig* ParseConfig(const AudioEncoderConfig* opts,
-                            ExceptionState&) override;
+  ParsedConfig* OnNewConfigure(const AudioEncoderConfig* opts,
+                               ExceptionState&) override;
   bool VerifyCodecSupport(ParsedConfig*, String* js_error_message) override;
-
+  void OnNewEncode(InputType* input, ExceptionState& exception_state) override;
   bool CanReconfigure(ParsedConfig& original_config,
                       ParsedConfig& new_config) override;
 

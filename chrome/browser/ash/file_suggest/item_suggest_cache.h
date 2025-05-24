@@ -82,7 +82,7 @@ class ItemSuggestCache {
   virtual void MaybeUpdateCache();
 
   // Updates the cache with a json response.
-  void UpdateCacheWithJsonForTest(const std::string json_response);
+  void UpdateCacheWithJsonForTest(const std::string& json_response);
 
   static std::optional<ItemSuggestCache::Results> ConvertJsonForTest(
       const base::Value* value);
@@ -147,7 +147,7 @@ class ItemSuggestCache {
 
   void OnTokenReceived(GoogleServiceAuthError error,
                        signin::AccessTokenInfo token_info);
-  void OnSuggestionsReceived(const std::unique_ptr<std::string> json_response);
+  void OnSuggestionsReceived(std::unique_ptr<std::string> json_response);
   void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result);
   std::unique_ptr<network::SimpleURLLoader> MakeRequestLoader(
       const std::string& token);

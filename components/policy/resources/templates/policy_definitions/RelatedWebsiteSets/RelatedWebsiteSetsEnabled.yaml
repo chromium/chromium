@@ -23,7 +23,7 @@ items:
 - caption: Disable Related Website Sets
   value: false
 owners:
-- sandormajor@google.com
+- sandormajor@chromium.org
 - chrome-first-party-sets@chromium.org
 schema:
   type: boolean

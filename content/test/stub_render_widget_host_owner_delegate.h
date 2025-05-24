@@ -20,7 +20,6 @@ class StubRenderWidgetHostOwnerDelegate : public RenderWidgetHostOwnerDelegate {
   bool ShouldContributePriorityToProcess() override;
   void SetBackgroundOpaque(bool opaque) override {}
   bool IsMainFrameActive() override;
-  bool IsNeverComposited() override;
   blink::web_pref::WebPreferences GetWebkitPreferencesForWidget() override;
 };
 

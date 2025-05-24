@@ -27,8 +27,8 @@ struct CRXFileInfo {
 
   bool operator==(const CRXFileInfo& that) const;
 
-  // Only |path| and |required_format| are mandatory. |extension_id|,
-  // |expected_hash| and |expected_version| are only checked if non-empty.
+  // Only `path` and `required_format` are mandatory. `extension_id`,
+  // `expected_hash` and `expected_version` are only checked if non-empty.
   base::FilePath path;
   crx_file::VerifierFormat required_format;
   ExtensionId extension_id;

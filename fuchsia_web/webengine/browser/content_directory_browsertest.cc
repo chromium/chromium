@@ -40,8 +40,8 @@ void AddFileToPseudoDir(std::string_view data,
   ASSERT_EQ(status, ZX_OK);
 
   auto vmo_file = std::make_unique<vfs::VmoFile>(
-      std::move(contents_vmo), data.size(),
-      vfs::VmoFile::WriteMode::kReadOnly, vfs::VmoFile::DefaultSharingMode::kCloneCow);
+      std::move(contents_vmo), data.size(), vfs::VmoFile::WriteMode::kReadOnly,
+      vfs::VmoFile::DefaultSharingMode::kCloneCow);
   status = dir->AddEntry(path.value(), std::move(vmo_file));
   ASSERT_EQ(status, ZX_OK);
 }
@@ -72,9 +72,9 @@ class ScopedBindContentDirectory {
   fidl::InterfaceHandle<fuchsia::io::Directory> ServePseudoDir(
       vfs::PseudoDir* pseudo_dir) {
     fidl::InterfaceHandle<fuchsia::io::Directory> handle;
-    pseudo_dir->Serve(fuchsia::io::OpenFlags::DIRECTORY |
-                          fuchsia::io::OpenFlags::RIGHT_READABLE,
-                      handle.NewRequest().TakeChannel());
+    pseudo_dir->Serve(fuchsia_io::wire::kPermReadable,
+                      fidl::ServerEnd<fuchsia_io::Directory>(
+                          handle.NewRequest().TakeChannel()));
     return handle;
   }
 

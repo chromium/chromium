@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/user_metrics_action.h"

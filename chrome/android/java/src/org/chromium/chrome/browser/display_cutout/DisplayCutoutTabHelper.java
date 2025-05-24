@@ -8,11 +8,11 @@ import android.app.Activity;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
-import androidx.browser.trusted.TrustedWebActivityDisplayMode;
 
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,7 +34,7 @@ public class DisplayCutoutTabHelper implements UserData {
     private static final Class<DisplayCutoutTabHelper> USER_DATA_KEY = DisplayCutoutTabHelper.class;
 
     /** The tab that this object belongs to. */
-    private Tab mTab;
+    private final Tab mTab;
 
     @VisibleForTesting DisplayCutoutController mCutoutController;
 
@@ -61,6 +61,11 @@ public class DisplayCutoutTabHelper implements UserData {
 
                     mCutoutController.onActivityAttachmentChanged(window);
                 }
+
+                @Override
+                public void onContentChanged(Tab tab) {
+                    mCutoutController.onContentChanged();
+                }
             };
 
     public static DisplayCutoutTabHelper from(Tab tab) {
@@ -73,7 +78,7 @@ public class DisplayCutoutTabHelper implements UserData {
 
     @VisibleForTesting
     static class ChromeDisplayCutoutDelegate implements DisplayCutoutController.Delegate {
-        private Tab mTab;
+        private final Tab mTab;
 
         ChromeDisplayCutoutDelegate(Tab tab) {
             mTab = tab;
@@ -90,7 +95,7 @@ public class DisplayCutoutTabHelper implements UserData {
         }
 
         @Override
-        public InsetObserver getInsetObserver() {
+        public @Nullable InsetObserver getInsetObserver() {
             return mTab.getWindowAndroid().getInsetObserver();
         }
 
@@ -111,14 +116,15 @@ public class DisplayCutoutTabHelper implements UserData {
             if (!(activity instanceof BaseCustomTabActivity)) {
                 return false;
             }
+
             BaseCustomTabActivity baseCustomTabActivity = (BaseCustomTabActivity) activity;
-            return (baseCustomTabActivity.getIntentDataProvider().getTwaDisplayMode()
-                    instanceof TrustedWebActivityDisplayMode.ImmersiveMode);
+            return baseCustomTabActivity.getIntentDataProvider().getResolvedDisplayMode()
+                    == DisplayMode.FULLSCREEN;
         }
 
         @Override
         public boolean isDrawEdgeToEdgeEnabled() {
-            return EdgeToEdgeUtils.isEnabled();
+            return EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled();
         }
     }
 
@@ -140,6 +146,15 @@ public class DisplayCutoutTabHelper implements UserData {
      */
     public void setViewportFit(@WebContentsObserver.ViewportFitType int value) {
         mCutoutController.setViewportFit(value);
+    }
+
+    /**
+     * Set whether there are safe area constraint on the current web page.
+     *
+     * @param hasConstraint Whether there are safe area constraint for the page.
+     */
+    public void setSafeAreaConstraint(boolean hasConstraint) {
+        mCutoutController.setSafeAreaConstraint(hasConstraint);
     }
 
     @Override

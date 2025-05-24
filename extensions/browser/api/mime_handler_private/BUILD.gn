@@ -15,11 +15,15 @@ source_set("mime_handler_private") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//content/public/browser",
-    "//extensions/common:common_constants",
-    "//extensions/common/api",
+  public_deps = [
+    "//base",
+    "//extensions/common/api:mojom",
   ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+  deps = [
+    "//base",
+    "//extensions/browser:browser_sources",
+    "//extensions/common:common_constants",
+    "//net",
+  ]
 }

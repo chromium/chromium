@@ -21,7 +21,7 @@ import shard_util
 import test_runner_errors
 from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
-from xcode_log_parser import XcodeLogParser
+from xcode_log_parser import XcodeLogParser, Xcode16LogParser
 import xcode_util
 
 # if the current directory is in scripts, then we need to add plugin
@@ -221,8 +221,11 @@ class LaunchCommand(object):
                   (attempt, ' '.join(cmd_list)))
       output = self.launch_attempt(cmd_list)
 
-      result = XcodeLogParser.collect_test_results(outdir_attempt, output,
-                                                   clones > 1)
+      if xcode_util.using_xcode_16_or_higher():
+        result = Xcode16LogParser.collect_test_results(outdir_attempt, output)
+      else:
+        result = XcodeLogParser.collect_test_results(outdir_attempt, output,
+                                                     clones > 1)
 
       tests_selected_at_runtime = _tests_decided_at_runtime(
           self.egtests_app.test_app_path)
@@ -247,6 +250,11 @@ class LaunchCommand(object):
       tests_to_include = (
           tests_to_include
           | overall_launch_command_result.never_expected_tests())
+      # Do not retry ASan failures
+      asan_failures = overall_launch_command_result.asan_failed_tests()
+      if asan_failures:
+        LOGGER.info('Skipping retrying ASan failures.')
+        tests_to_include = tests_to_include - asan_failures
       self.egtests_app.included_tests = list(tests_to_include)
 
       # Nothing to run in retry.
@@ -409,7 +417,7 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     all_test_names = []
     for test_class in all_test_classes:
       test_class_name = test_class['name']
-      test_methods = test_class['children']
+      test_methods = test_class.get('children', [])
 
       for test_method in test_methods:
         all_test_names.append((test_class_name, test_method['name']))

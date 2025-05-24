@@ -28,19 +28,16 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_lan.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 class TcpServerSocketPort;
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 namespace base {
 class SequencedTaskRunner;
 class WaitableEvent;
 }  // namespace base
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // An implementation of the abstract Nearby Connections's class
 // api::WifiLanMedium. The implementation uses the
@@ -86,16 +83,25 @@ class WifiLanMedium : public api::WifiLanMedium,
 
  private:
   // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+  // numeric values should never be reused. Keep in sync with the
+  // NearbyConnectionsWifiLanConnectResult UMA enum defined in
+  // //tools/metrics/histograms/metadata/nearby/enums.xml.
+  //
+  // LINT.IfChange(NearbyConnectionsWifiLanConnectResult)
   enum class ConnectResult {
     kSuccess = 0,
     kCanceled = 1,
     kErrorFailedToCreateTcpSocket = 2,
     kMaxValue = kErrorFailedToCreateTcpSocket,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsWifiLanConnectResult)
 
   // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
+  // numeric values should never be reused. Keep in sync with the
+  // NearbyConnectionsWifiLanListenResult UMA enum defined in
+  // //tools/metrics/histograms/metadata/nearby/enums.xml.
+  //
+  // LINT.IfChange(NearbyConnectionsWifiLanListenResult)
   enum class ListenResult {
     kSuccess = 0,
     kCanceled = 1,
@@ -109,6 +115,7 @@ class WifiLanMedium : public api::WifiLanMedium,
     kErrorFailedToCreateFirewallHole = 9,
     kMaxValue = kErrorFailedToCreateFirewallHole,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyConnectionsWifiLanListenResult)
 
   /*==========================================================================*/
   // ConnectToService() helpers: Connect to remote server socket.
@@ -194,8 +201,6 @@ class WifiLanMedium : public api::WifiLanMedium,
       cros_network_config_;
   mojo::SharedRemote<::sharing::mojom::FirewallHoleFactory>
       firewall_hole_factory_;
-  // Unlike other remotes, mdns_manager_ must be implicitly destructed
-  // instead of destructed on the task_runner_ sequence.
   mojo::SharedRemote<::sharing::mojom::MdnsManager> mdns_manager_;
   mojo::Receiver<::sharing::mojom::MdnsObserver> mdns_observer_{this};
 
@@ -210,7 +215,6 @@ class WifiLanMedium : public api::WifiLanMedium,
       pending_listen_waitable_events_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_LAN_MEDIUM_H_

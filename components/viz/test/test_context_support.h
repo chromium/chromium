@@ -40,6 +40,7 @@ class TestContextSupport : public gpu::ContextSupport {
                    base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)>
                        callback) override;
   void SetAggressivelyFreeResources(bool aggressively_free_resources) override;
+  bool GetAggressivelyFreeResources() const;
   uint64_t ShareGroupTracingGUID() const override;
   void SetErrorMessageCallback(
       base::RepeatingCallback<void(const char*, int32_t)> callback) override;
@@ -77,6 +78,7 @@ class TestContextSupport : public gpu::ContextSupport {
  private:
   std::vector<base::OnceClosure> sync_point_callbacks_;
   bool out_of_order_callbacks_;
+  bool aggressively_free_resources_ = false;
 
   base::WeakPtrFactory<TestContextSupport> weak_ptr_factory_{this};
 };

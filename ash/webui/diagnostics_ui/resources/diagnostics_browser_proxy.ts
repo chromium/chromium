@@ -10,7 +10,7 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
-import {NavigationView} from './diagnostics_types.js';
+import type {NavigationView} from './diagnostics_types.js';
 import {getNavigationViewForPageId} from './diagnostics_utils.js';
 
 export interface DiagnosticsBrowserProxy {

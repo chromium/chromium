@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 
@@ -20,6 +21,9 @@ namespace ash::settings {
 class OSSettingsAutoScreenLockTest
     : public OSSettingsLockScreenBrowserTestBase {
  public:
+  OSSettingsAutoScreenLockTest()
+      : OSSettingsLockScreenBrowserTestBase(ash::AshAuthFactor::kGaiaPassword) {
+  }
   // Returns whether or not automatic screen lock is enabled according to
   // preferences.
   bool IsAutoScreenLockPrefEnabled() {

@@ -33,7 +33,7 @@ std::vector<std::string> StringVectorFromGURLVector(
   std::vector<std::string> ret;
   ret.reserve(gurls.size());
 
-  base::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
+  std::ranges::transform(gurls, std::back_inserter(ret), [](const GURL& gurl) {
     return gurl.possibly_invalid_spec();
   });
 
@@ -143,19 +143,21 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearCrxVerifierFormat() {
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetGroupPolicies(
-    const base::Value::Dict& group_policies) {
-  overrides_.Set(kDevOverrideKeyGroupPolicies, group_policies.Clone());
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetDictPolicies(
+    const base::Value::Dict& dict_policies) {
+  overrides_.Set(kDevOverrideKeyDictPolicies, dict_policies.Clone());
+  overrides_.Set(kDevOverrideKeyGroupPolicies, dict_policies.Clone());
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
+ExternalConstantsBuilder& ExternalConstantsBuilder::ClearDictPolicies() {
+  overrides_.Remove(kDevOverrideKeyDictPolicies);
   overrides_.Remove(kDevOverrideKeyGroupPolicies);
   return *this;
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetOverinstallTimeout(
-    const base::TimeDelta& overinstall_timeout) {
+    base::TimeDelta overinstall_timeout) {
   overrides_.Set(kDevOverrideKeyOverinstallTimeout,
                  static_cast<int>(overinstall_timeout.InSeconds()));
   return *this;
@@ -167,7 +169,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearOverinstallTimeout() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetIdleCheckPeriod(
-    const base::TimeDelta& idle_check_period) {
+    base::TimeDelta idle_check_period) {
   overrides_.Set(kDevOverrideKeyIdleCheckPeriodSeconds,
                  static_cast<int>(idle_check_period.InSeconds()));
   return *this;
@@ -179,7 +181,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearIdleCheckPeriod() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetMachineManaged(
-    const std::optional<bool>& is_managed_device) {
+    std::optional<bool> is_managed_device) {
   if (is_managed_device.has_value()) {
     overrides_.Set(kDevOverrideKeyManagedDevice, is_managed_device.value());
   }
@@ -192,14 +194,16 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearMachineManaged() {
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::SetEnableDiffUpdates(
-    bool enable_diffs) {
-  overrides_.Set(kDevOverrideKeyEnableDiffUpdates, enable_diffs);
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetCecaConnectionTimeout(
+    base::TimeDelta ceca_connection_timeout) {
+  overrides_.Set(kDevOverrideKeyCecaConnectionTimeout,
+                 static_cast<int>(ceca_connection_timeout.InSeconds()));
   return *this;
 }
 
-ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
-  overrides_.Remove(kDevOverrideKeyEnableDiffUpdates);
+ExternalConstantsBuilder&
+ExternalConstantsBuilder::ClearCecaConnectionTimeout() {
+  overrides_.Remove(kDevOverrideKeyCecaConnectionTimeout);
   return *this;
 }
 
@@ -253,8 +257,8 @@ bool ExternalConstantsBuilder::Modify() {
   if (!overrides_.contains(kDevOverrideKeyCrxVerifierFormat)) {
     SetCrxVerifierFormat(verifier->CrxVerifierFormat());
   }
-  if (!overrides_.contains(kDevOverrideKeyGroupPolicies)) {
-    SetGroupPolicies(verifier->GroupPolicies());
+  if (!overrides_.contains(kDevOverrideKeyDictPolicies)) {
+    SetDictPolicies(verifier->DictPolicies());
   }
   if (!overrides_.contains(kDevOverrideKeyOverinstallTimeout)) {
     SetOverinstallTimeout(verifier->OverinstallTimeout());
@@ -265,8 +269,8 @@ bool ExternalConstantsBuilder::Modify() {
   if (!overrides_.contains(kDevOverrideKeyManagedDevice)) {
     SetMachineManaged(verifier->IsMachineManaged());
   }
-  if (!overrides_.contains(kDevOverrideKeyEnableDiffUpdates)) {
-    SetEnableDiffUpdates(verifier->EnableDiffUpdates());
+  if (!overrides_.contains(kDevOverrideKeyCecaConnectionTimeout)) {
+    SetCecaConnectionTimeout(verifier->CecaConnectionTimeout());
   }
 
   return Overwrite();

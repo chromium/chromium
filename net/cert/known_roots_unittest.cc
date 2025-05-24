@@ -4,10 +4,10 @@
 
 #include "net/cert/known_roots.h"
 
-#include <string.h>
-
 #include <algorithm>
+#include <iterator>
 
+#include "base/containers/span.h"
 #include "net/base/hash_value.h"
 #include "net/cert/root_cert_list_generated.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,7 +20,10 @@ TEST(KnownRootsTest, RootCertDataIsSorted) {
   EXPECT_TRUE(std::is_sorted(
       std::begin(kRootCerts), std::end(kRootCerts),
       [](const RootCertData& lhs, const RootCertData& rhs) {
-        return memcmp(lhs.sha256_spki_hash, rhs.sha256_spki_hash, 32) < 0;
+        auto lhs_span = base::as_byte_span(lhs.sha256_spki_hash);
+        auto rhs_span = base::as_byte_span(rhs.sha256_spki_hash);
+        return std::lexicographical_compare(lhs_span.begin(), lhs_span.end(),
+                                            rhs_span.begin(), rhs_span.end());
       }));
 }
 

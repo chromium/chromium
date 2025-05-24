@@ -15,11 +15,7 @@
 #endif  // defined(VR_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(VR_IMPLEMENTATION)
 #define VR_EXPORT __attribute__((visibility("default")))
-#else
-#define VR_EXPORT
-#endif  // defined(VR_IMPLEMENTATION)
 #endif
 
 #else  // defined(COMPONENT_BUILD)

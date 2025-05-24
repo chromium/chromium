@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 

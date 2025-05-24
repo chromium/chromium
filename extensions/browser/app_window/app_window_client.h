@@ -26,21 +26,12 @@ class AppWindowClient {
  public:
   virtual ~AppWindowClient() {}
 
-  // Creates a new AppWindow for the app in |extension| for |context|.
+  // Creates a new AppWindow for the app in `extension` for `context`.
   // Caller takes ownership.
   virtual AppWindow* CreateAppWindow(content::BrowserContext* context,
                                      const Extension* extension) = 0;
 
-  // Creates a new AppWindow for |extension| as lock screen action handler for
-  // |action|. This should be used to create windows that will be used to handle
-  // |action| on lock screen. The method should return null window if the app
-  // was not requested to handle the action.
-  virtual AppWindow* CreateAppWindowForLockScreenAction(
-      content::BrowserContext* context,
-      const Extension* extension,
-      api::app_runtime::ActionType action) = 0;
-
-  // Creates a new extensions::NativeAppWindow for |window|.
+  // Creates a new extensions::NativeAppWindow for `window`.
   virtual std::unique_ptr<NativeAppWindow> CreateNativeAppWindow(
       AppWindow* window,
       AppWindow::CreateParams* params) = 0;

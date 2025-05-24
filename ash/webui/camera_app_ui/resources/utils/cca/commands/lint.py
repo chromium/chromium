@@ -21,9 +21,7 @@ def cmd(fix: bool, eslintrc: str) -> int:
         "eslint/bin/eslint.js",
         "js",
         "eslint_plugin",
-        ".eslintrc.js",
-        "--resolve-plugins-relative-to",
-        os.path.join(util.get_chromium_root(), "third_party/node"),
+        "eslint.config.mjs",
     ]
     if fix:
         cmd.append("--fix")

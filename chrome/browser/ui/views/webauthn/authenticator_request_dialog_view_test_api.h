@@ -7,32 +7,26 @@
 
 #include <memory>
 
-struct AuthenticatorRequestDialogModel;
 class AuthenticatorRequestDialogView;
+class AuthenticatorRequestDialogViewControllerViews;
 class AuthenticatorRequestSheetView;
-
-namespace content {
-class WebContents;
-}
 
 namespace test {
 
 class AuthenticatorRequestDialogViewTestApi {
  public:
-  // Returns a non-owning pointer to an AuthenticatorRequestDialogView for
-  // testing.
-  static AuthenticatorRequestDialogView* CreateDialogView(
-      content::WebContents* web_contents,
-      AuthenticatorRequestDialogModel* dialog_model);
-
-  // Replaces the current sheet on |dialog| with |new_sheet|.
-  static void ShowWithSheet(
-      AuthenticatorRequestDialogView* dialog,
+  // Replaces the current sheet on `controller`'s view with `new_sheet`.
+  static void SetSheetTo(
+      AuthenticatorRequestDialogViewControllerViews* controller,
       std::unique_ptr<AuthenticatorRequestSheetView> new_sheet);
 
   // Get a non-owning pointer to the current sheet.
   static AuthenticatorRequestSheetView* GetSheet(
-      AuthenticatorRequestDialogView* dialog);
+      AuthenticatorRequestDialogViewControllerViews* controller);
+
+ private:
+  static AuthenticatorRequestDialogView* GetView(
+      AuthenticatorRequestDialogViewControllerViews* controller);
 };
 
 }  // namespace test

@@ -124,7 +124,8 @@ struct CC_EXPORT TaskGraph {
     Node(scoped_refptr<Task> new_task,
          uint16_t category,
          uint16_t priority,
-         uint32_t dependencies);
+         uint32_t dependencies,
+         bool has_external_dependency = false);
     Node(const Node&) = delete;
     Node(Node&& other);
     ~Node();
@@ -136,6 +137,7 @@ struct CC_EXPORT TaskGraph {
     uint16_t category;
     uint16_t priority;
     uint32_t dependencies;
+    bool has_external_dependency;
   };
 
   struct Edge {

@@ -1,4 +1,0 @@
-Tests that the script which caused the frame to be labelled as an ad is reported via Page.getAdScriptId
-
-has adScriptId via getAdScriptId: true
-

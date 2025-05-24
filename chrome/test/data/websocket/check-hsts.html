@@ -6,14 +6,13 @@ var ws = new WebSocket(ws_url);
 
 ws.onopen = function()
 {
-  // The fact that the WebSocket connect opened successfully means that SSL was
-  // used.
-  document.title = 'PASS';
+  ws.close(1000);
 }
 
 ws.onclose = function(evt)
 {
-  if (!evt.wasClean)
-    document.title = 'FAIL';
+  // The fact that the WebSocket connect closed successfully means it opened
+  // successfully, which means that SSL was used.
+  document.title = evt.wasClean ? 'PASS': 'FAIL';
 }
 </script>

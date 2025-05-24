@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/renderer/media/audio_decoder.h"
 
 #include <stdint.h>
 
 #include <vector>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -32,17 +29,15 @@ using blink::WebAudioBus;
 namespace content {
 
 // Decode in-memory audio file data.
-bool DecodeAudioFileData(
-    blink::WebAudioBus* destination_bus,
-    const char* data, size_t data_size) {
+bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
+                         base::span<const char> data) {
   DCHECK(destination_bus);
   if (!destination_bus)
     return false;
 
 #if BUILDFLAG(ENABLE_FFMPEG)
   // Uses the FFmpeg library for audio file reading.
-  InMemoryUrlProtocol url_protocol(reinterpret_cast<const uint8_t*>(data),
-                                   data_size, false);
+  InMemoryUrlProtocol url_protocol(base::as_byte_span(data), false);
   AudioFileReader reader(&url_protocol);
 
   if (!reader.Open())
@@ -70,21 +65,22 @@ bool DecodeAudioFileData(
   destination_bus->Initialize(number_of_channels, number_of_frames,
                               file_sample_rate);
 
-  int dest_frame_offset = 0;
-  for (size_t k = 0; k < decoded_audio_packets.size(); ++k) {
-    AudioBus* packet = decoded_audio_packets[k].get();
-    int packet_length = packet->frames();
+  std::vector<base::SpanWriter<float>> dest_channels;
+  dest_channels.reserve(number_of_channels);
+  for (size_t ch = 0; ch < number_of_channels; ++ch) {
+    dest_channels.emplace_back(UNSAFE_TODO(base::span(
+        destination_bus->ChannelData(ch), destination_bus->length())));
+  }
+
+  // Append all `decoded_audio_packets`, channel per channel.
+  for (const auto& packet : decoded_audio_packets) {
     for (size_t ch = 0; ch < number_of_channels; ++ch) {
-      float* dst = destination_bus->ChannelData(ch);
-      float* src = packet->channel(ch);
-      DCHECK_LE(dest_frame_offset + packet_length, number_of_frames);
-      memcpy(dst + dest_frame_offset, src, packet_length * sizeof(*dst));
+      dest_channels[ch].Write(packet->channel_span(ch));
     }
-    dest_frame_offset += packet_length;
   }
 
   DVLOG(1) << "Decoded file data (unknown duration)-"
-           << " data: " << data << " data size: " << data_size
+           << " data: " << data << " data size: " << data.size()
            << ", decoded duration: " << (number_of_frames / file_sample_rate)
            << ", number of frames: " << number_of_frames
            << ", estimated frames (if available): "

@@ -5,6 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 #define UI_ACCESSIBILITY_PLATFORM_AUTOMATION_AUTOMATION_V8_BINDINGS_H_
 
+#include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -21,13 +22,13 @@ class AutomationTreeManagerOwner;
 // Class that creates V8 bindings for Automation. This class should contain
 // logic about converting to/from V8 values but should not contain logic about
 // accessibility.
-class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
+class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings final {
  public:
   AutomationV8Bindings(AutomationTreeManagerOwner* owner,
                        AutomationV8Router* router);
   AutomationV8Bindings(const AutomationV8Bindings&) = delete;
   AutomationV8Bindings& operator=(const AutomationV8Bindings&) = delete;
-  virtual ~AutomationV8Bindings();
+  ~AutomationV8Bindings();
 
   //
   // Methods for sending C++ events back to Javascript.
@@ -210,10 +211,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) AutomationV8Bindings {
 
   // Args: string ax_tree_id.
   void SetDesktopID(const v8::FunctionCallbackInfo<v8::Value>& args);
-
-  // Args: string ax_tree_id, int node_id
-  // Returns: JS object with a map from html attribute key to value.
-  void GetHtmlAttributes(const v8::FunctionCallbackInfo<v8::Value>& args) const;
 
   // Called when an accessibility tree is destroyed and needs to be
   // removed from our cache.

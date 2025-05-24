@@ -30,7 +30,7 @@ InfoCardTracker::InfoCardTracker(PrefService* browser_state_prefs)
   CHECK(browser_state_prefs_);
 }
 
-InfoCardTracker::~InfoCardTracker() {}
+InfoCardTracker::~InfoCardTracker() = default;
 
 void InfoCardTracker::OnTrackInfoCardCommand(
     int info_card_type,
@@ -166,8 +166,7 @@ std::string InfoCardTracker::GetHistogramForTrackingType(
     case TrackingType::kResetState:
       return histogram_prefix + kInfoCardTrackingHistogramBucketReset;
   }
-  NOTREACHED_IN_MIGRATION() << "Tracking type is not supported.";
-  return nullptr;
+  NOTREACHED() << "Tracking type is not supported.";
 }
 
 }  // namespace ios_feed

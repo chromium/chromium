@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/cert/crl_set.h"
 
 #include <algorithm>
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -70,13 +76,13 @@ std::optional<base::Value> ReadHeader(std::string_view* data) {
   const std::string_view header_bytes = data->substr(0, header_len);
   data->remove_prefix(header_len);
 
-  std::optional<base::Value> header =
-      base::JSONReader::Read(header_bytes, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!header || !header->is_dict()) {
+  std::optional<base::Value::Dict> header = base::JSONReader::ReadDict(
+      header_bytes, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!header) {
     return std::nullopt;
   }
 
-  return header;
+  return base::Value(std::move(*header));
 }
 
 // kCurrentFileVersion is the version of the CRLSet file format that we
@@ -346,9 +352,10 @@ CRLSet::Result CRLSet::CheckSerial(std::string_view serial_number,
   return GOOD;
 }
 
-bool CRLSet::IsKnownInterceptionKey(std::string_view spki_hash) const {
+bool CRLSet::IsKnownInterceptionKey(base::span<const uint8_t> spki_hash) const {
   return std::binary_search(known_interception_spkis_.begin(),
-                            known_interception_spkis_.end(), spki_hash);
+                            known_interception_spkis_.end(),
+                            base::as_string_view(spki_hash));
 }
 
 bool CRLSet::IsExpired() const {
@@ -429,8 +436,7 @@ scoped_refptr<CRLSet> CRLSet::ForTesting(
     crl_set->not_after_ = 1;
 
   if (issuer_spki) {
-    std::string spki(reinterpret_cast<const char*>(issuer_spki->data),
-                     sizeof(issuer_spki->data));
+    std::string spki(base::as_string_view(*issuer_spki));
     std::vector<std::string> serials;
     if (!serial_number.empty()) {
       serials.push_back(std::string(serial_number));

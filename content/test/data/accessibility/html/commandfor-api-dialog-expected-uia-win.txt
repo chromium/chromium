@@ -1,0 +1,23 @@
+Document
+++Group IsControlElement=false
+++++Button Name='d1 button - outside - show-modal'
+++++Button Name='d1 button - outside - unrelated action' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Button Name='d1 button - outside - custom action'
+++++Button Name='d1 button - outside - close'
+++++Button Name='d2 button - outside - show-modal'
+++++Button Name='d2 button - outside - unrelated action' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Button Name='d2 button - outside - custom action'
+++++Button Name='d2 button - outside - close'
+++++Window Window.IsModal=false
+++++++Button Name='d2 button - inside - show-modal'
+++++++Button Name='d2 button - inside - close'
+++++++Button Name='Button inside popover, with unrelated action'
+++++++Button Name='d2 button - inside - custom action'
+++++Button Name='d3 button - outside - show-modal'
+++++Button Name='d3 button - outside - unrelated action' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Button Name='d3 button - outside - custom action'
+++++Button Name='d3 button - outside - close'
+++++Button Name='d3 button - outside - show-modal'
+++++Button Name='d3 button - outside - unrelated action' ExpandCollapse.ExpandCollapseState='Collapsed'
+++++Button Name='d3 button - outside - custom action'
+++++Button Name='d3 button - outside - close'

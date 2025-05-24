@@ -16,6 +16,7 @@ export function getHtml(this: TraceReportAppElement) {
   <cr-page-selector .selected="${this.selected_}">
     <trace-report-list></trace-report-list>
     <tracing-scenarios-config></tracing-scenarios-config>
+    <trace-recorder></trace-recorder>
   </cr-page-selector>`;
   // clang-format on
 }

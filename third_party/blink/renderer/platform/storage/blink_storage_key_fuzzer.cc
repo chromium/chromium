@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
+
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -10,15 +12,16 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom-shared.h"
-#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 struct Environment {
   Environment() {
     CHECK(base::i18n::InitializeICU());
     mojo::core::Init();
     WTF::Partitions::Initialize();
+    WTF::Initialize();
   }
   // used by ICU integration.
   base::AtExitManager at_exit_manager;

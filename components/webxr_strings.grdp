@@ -13,7 +13,7 @@
       View augmented reality content
     </message>
   </if>
-  <if expr="enable_vr">
+  <if expr="enable_cardboard">
     <message name="IDS_CARDBOARD_PRODUCT_SAFETY" desc="Short text shown on the settings menu to let the user open the Cardboard product safety page.[CHAR_LIMIT=30]" formatter_data="android_java">
       Product safety
     </message>

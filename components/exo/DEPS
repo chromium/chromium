@@ -1,7 +1,6 @@
 include_rules = [
   "+ash",
   "+cc",
-  "+chromeos/crosapi/cpp/crosapi_constants.h",
   "+chromeos/ui/base",
   "+chromeos/ui/frame",
   "+components/account_id",
@@ -34,6 +33,9 @@ specific_include_rules = {
     "+components/viz/service/frame_sinks",
     "+components/viz/service/surfaces",
     "+components/viz/test",
+  ],
+  "keyboard_unittest\.cc": [
+    "+chromeos/ash/experiences/arc/overlay/arc_overlay_manager.h",
   ],
   "ui_lock_controller_unittest\.cc": [
     "+chromeos/ash/components/login/auth",

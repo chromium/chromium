@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/platform/drm/gpu/page_flip_watchdog.h"
+
 #include <cstdint>
 
+#include "ash/constants/ash_switches.h"
 #include "base/containers/ring_buffer.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,7 +14,11 @@
 
 namespace ui {
 
-PageFlipWatchdog::PageFlipWatchdog() = default;
+PageFlipWatchdog::PageFlipWatchdog() {
+  plane_assignment_flake_threshold = ash::switches::IsRevenBranding()
+                                         ? kFlexPlaneAssignmentFlakeThreshold
+                                         : kPlaneAssignmentFlakeThreshold;
+}
 
 PageFlipWatchdog::~PageFlipWatchdog() = default;
 
@@ -42,10 +48,16 @@ void PageFlipWatchdog::CrashOnFailedPlaneAssignment() {
     last_page_flip_status = page_flip_status;
   }
 
-  if (flakes >= kPlaneAssignmentFlakeThreshold) {
+  if (flakes >= plane_assignment_flake_threshold) {
+    // Experiment to find good threshold for Flex device.
+    // TODO(crbug.com/371609830): finalize this threshold
+    // upon experiment completion.
+    if (ash::switches::IsRevenBranding()) {
+      UMA_HISTOGRAM_EXACT_LINEAR("Platform.FlexPageFlipFlakes", flakes, 11);
+    }
     LOG(FATAL) << "Plane assignment has flaked " << flakes
                << " times, but the threshold is "
-               << kPlaneAssignmentFlakeThreshold
+               << plane_assignment_flake_threshold
                << ". Crashing the GPU process.";
   }
 
@@ -69,7 +81,7 @@ void PageFlipWatchdog::Disarm() {
   page_flip_status_tracker_.Clear();
 
   if (crash_gpu_timer_.IsRunning()) {
-    crash_gpu_timer_.AbandonAndStop();
+    crash_gpu_timer_.Stop();
     SYSLOG(INFO)
         << "Detected a modeset attempt after " << failed_page_flip_counter_
         << " failed page flips. Aborting GPU process self-destruct with "

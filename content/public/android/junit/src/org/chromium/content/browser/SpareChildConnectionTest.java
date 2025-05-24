@@ -48,7 +48,9 @@ public class SpareChildConnectionTest {
                     /* serviceCount= */ 3,
                     /* bindToCaller= */ false,
                     /* bindAsExternalService= */ false,
-                    /* useStrongBinding= */ false);
+                    /* useStrongBinding= */ false,
+                    /* fallbackToNextSlot= */ false,
+                    /* isSandboxedForHistograms= */ false);
 
     // The allocator used to allocate the actual connection.
     private ChildConnectionAllocator mConnectionAllocator;
@@ -65,7 +67,9 @@ public class SpareChildConnectionTest {
                 boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
-                String instanceName) {
+                String instanceName,
+                boolean independentFallback,
+                boolean isSandboxedForHistograms) {
             // We expect to create only one connection in these tests.
             assert mConnection == null;
             mConnection =
@@ -108,7 +112,9 @@ public class SpareChildConnectionTest {
                         /* serviceCount= */ 5,
                         /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
-                        /* useStrongBinding= */ false);
+                        /* useStrongBinding= */ false,
+                        /* fallbackToNextSlot= */ false,
+                        /* isSandboxedForHistograms= */ false);
         mConnectionAllocator.setConnectionFactoryForTesting(mTestConnectionFactory);
         mSpareConnection =
                 new SpareChildConnection(

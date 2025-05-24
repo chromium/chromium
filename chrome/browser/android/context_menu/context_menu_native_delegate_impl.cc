@@ -9,6 +9,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "build/android_buildflags.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -16,8 +17,13 @@
 #include "components/embedder_support/android/contextmenu/context_menu_image_format.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/gfx/android/java_bitmap.h"
+
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
+#include "chrome/browser/devtools/devtools_window.h"
+#endif
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/contextmenu/jni_headers/ContextMenuNativeDelegateImpl_jni.h"
@@ -70,8 +76,7 @@ chrome::mojom::ImageFormat ToChromeMojomImageFormat(int image_format) {
       return chrome::mojom::ImageFormat::ORIGINAL;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return chrome::mojom::ImageFormat::JPEG;
+  NOTREACHED();
 }
 
 void OnRetrieveImageForShare(
@@ -85,11 +90,9 @@ void OnRetrieveImageForShare(
     const std::vector<lens::mojom::LatencyLogPtr>) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_data = base::android::ToJavaByteArray(env, thumbnail_data);
-  auto j_extension =
-      base::android::ConvertUTF8ToJavaString(env, image_extension);
   base::android::RunObjectCallbackAndroid(
       jcallback, Java_ContextMenuNativeDelegateImpl_createImageCallbackResult(
-                     env, j_data, j_extension));
+                     env, j_data, image_extension));
 }
 
 void OnRetrieveImageForContextMenu(
@@ -114,9 +117,10 @@ ContextMenuNativeDelegateImpl::ContextMenuNativeDelegateImpl(
 void ContextMenuNativeDelegateImpl::StartDownload(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jboolean jis_link) {
+    const GURL& url,
+    jboolean jis_media) {
   DownloadControllerBase::Get()->StartContextMenuDownload(
-      *context_menu_params_, web_contents_, jis_link);
+      url, *context_menu_params_, web_contents_, jis_media);
 }
 
 void ContextMenuNativeDelegateImpl::SearchForImage(
@@ -130,6 +134,24 @@ void ContextMenuNativeDelegateImpl::SearchForImage(
 
   CoreTabHelper::FromWebContents(web_contents_)
       ->SearchByImage(render_frame_host, context_menu_params_->src_url);
+}
+
+void ContextMenuNativeDelegateImpl::InspectElement(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& obj,
+    const base::android::JavaParamRef<jobject>& jrender_frame_host,
+    jint x,
+    jint y) {
+#if BUILDFLAG(ENABLE_DEVTOOLS_FRONTEND)
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jrender_frame_host);
+  if (!render_frame_host) {
+    return;
+  }
+  DevToolsWindow::InspectElement(render_frame_host, x, y);
+#else
+  NOTREACHED();
+#endif
 }
 
 void ContextMenuNativeDelegateImpl::RetrieveImageForShare(

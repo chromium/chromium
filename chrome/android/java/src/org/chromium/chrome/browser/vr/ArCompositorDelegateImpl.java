@@ -19,9 +19,9 @@ import org.chromium.content_public.browser.WebContents;
 
 /** Concrete, Chrome-specific implementation of ArCompositorDelegate interface. */
 public class ArCompositorDelegateImpl implements ArCompositorDelegate {
-    private ChromeActivity mActivity;
-    private CompositorViewHolder mCompositorViewHolder;
-    private CompositorView mCompositorView;
+    private final ChromeActivity mActivity;
+    private final CompositorViewHolder mCompositorViewHolder;
+    private final CompositorView mCompositorView;
 
     ArCompositorDelegateImpl(WebContents webContents) {
         mActivity = ChromeActivity.fromWebContents(webContents);

@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_VIDEO_CONFERENCE_BUBBLE_RETURN_TO_APP_BUTTON_BASE_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/ash_export.h"
 #include "base/memory/raw_ptr.h"
@@ -65,7 +66,7 @@ class ASH_EXPORT ReturnToAppButtonBase : public views::Button {
   std::u16string GetPeripheralsAccessibleName() const;
 
   // Get the text displayed in `label_`.
-  std::u16string GetLabelText() const;
+  std::u16string_view GetLabelText() const;
 
  private:
   // Indicates if the running app is using camera, microphone, or screen

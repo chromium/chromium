@@ -80,23 +80,43 @@ void fct() {
   // temp = (++expected_data).data();
   temp = ++expected_data;
   // Expected rewrite:
-  // temp = (expected_data + 1).data();
+  // temp = expected_data.subspan(1).data();
   temp = expected_data + 1;
   // Expected rewrite:
-  // temp = (expected_data + index).data();
+  // temp = expected_data.subspan(index).data();
   temp = expected_data + index;
   // Expected rewrite:
-  // temp = (expected_data + offset()).data();
+  // temp = expected_data.subspan(offset()).data();
   temp = expected_data + offset();
   // Expected rewrite:
-  // temp = (expected_data + offset(2)).data();
+  // temp = expected_data.subspan(offset(2)).data();
   temp = expected_data + offset(2);
   // Expected rewrite:
-  // temp = (expected_data + offset(index)).data();
+  // temp = expected_data.subspan(offset(index)).data();
   temp = expected_data + offset(index);
 
   // Expected rewrite:
-  // base::span<char> ptr = &buf[0];
+  // temp = expected_data.subspan(1 + index + offset(index)).data();
+  temp = expected_data + 1 + index + offset(index);
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(1 + index - 3 + offset(index)).data();
+  temp = expected_data + 1 + index - 3 + offset(index);
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(index * 2).data();
+  temp = expected_data + index * 2;
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(index + 2 * 2).data();
+  temp = expected_data + index + 2 * 2;
+
+  // Expected rewrite:
+  // temp = expected_data.subspan(index + 2 * 2 + offset()).data();
+  temp = expected_data + index + 2 * 2 + offset();
+
+  // Expected rewrite:
+  // base::span<char> ptr = buf;
   char* ptr = &buf[0];
   ptr[1] = 'x';
 }
@@ -209,7 +229,7 @@ void fct() {
 
   int index = 11;
   // Expected rewrite:
-  // memcpy((buf2 + 1).data(), (buf + index).data(), 10)
+  // memcpy(buf2.subspan(1).data(), buf.subspan(index).data(), 10);
   memcpy(buf2 + 1, buf + index, 10);
 
   // Expected rewrite:
@@ -217,7 +237,7 @@ void fct() {
   int i = *buf++;
   // i = (++buf)[0]
   i = *++buf;
-  // i = ((buf + index)[0])
+  // i = (buf.subspan(index)[0])
   i = *(buf + index);
   // i = buf[0];
   i = *buf;
@@ -228,7 +248,7 @@ void fct() {
 namespace buffers_into_arrays {
 void fct() {
   // Expected rewrite:
-  // std::array<int, 4> buf = {1, 2, 3, 4};
+  // auto buf = std::to_array<int>({1, 2, 3, 4});
   int buf[] = {1, 2, 3, 4};
   int index = 0;
   buf[index] = 11;
@@ -244,7 +264,7 @@ struct B {
 
 void fct() {
   // Expected rewrite:
-  // base::span<namespace_stuff::ns1::B> ptr = new ns1::B[32];
+  // base::span<ns1::B> ptr = new ns1::B[32];
   auto* buf = new ns1::B[32];
   // However since there is no viable conversion from `B*` into
   // `base::span<ns1::B>`, the rewrite will cause compile error.

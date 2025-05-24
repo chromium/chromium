@@ -1,13 +1,10 @@
 {
   "name": "Unsupported chrome.idle.getAutoLockDelay",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "chrome.getAutoLockDelay API test on unsupported OSes",
   "background": {
-    "scripts": [
-      "test.js"
-    ],
-    "persistent": true
+    "service_worker": "test.js"
   },
   "permissions": [
     "idle"

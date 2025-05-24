@@ -6,10 +6,13 @@ package org.chromium.chrome.browser.lifecycle;
 
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Implement this interface and register in {@link ActivityLifecycleDispatcher} to receive
  * activity result methods.
  */
+@NullMarked
 public interface ActivityResultWithNativeObserver extends LifecycleObserver {
     /**
      * Called when {@link

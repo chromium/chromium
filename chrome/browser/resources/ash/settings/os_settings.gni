@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
+
 ts_definition_files = [
   "//tools/typescript/definitions/bluetooth.d.ts",
   "//tools/typescript/definitions/bluetooth_private.d.ts",
@@ -18,3 +20,8 @@ ts_definition_files = [
   "//tools/typescript/definitions/tabs.d.ts",
   "//tools/typescript/definitions/users_private.d.ts",
 ]
+
+if (is_chrome_branded) {
+  ts_definition_files +=
+      [ "//chrome/browser/resources/ash/settings/dummy.d.ts" ]
+}

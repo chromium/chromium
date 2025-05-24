@@ -9,3 +9,5 @@ console-log-short-hand-method.js:26 {foo: ƒ, boo: ƒ, gen: ƒ}
     set baz: ƒ baz(x)
     [[Prototype]]: Object
 
+
+

@@ -8,14 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/mojom/auth.mojom-shared.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_management_transition.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/command_line.h"
@@ -44,6 +36,14 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/mojom/auth.mojom-shared.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/prefs/pref_service.h"
@@ -52,6 +52,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 // Enable VLOG level 1.
@@ -132,7 +133,7 @@ mojom::AccountInfoPtr CreateAccountInfo(bool is_enforced,
   return account_info;
 }
 
-bool IsPrimaryGaiaAccount(const std::string& gaia_id) {
+bool IsPrimaryGaiaAccount(const GaiaId& gaia_id) {
   // |GetPrimaryUser| is fine because ARC is only available on the first
   // (Primary) account that participates in multi-signin.
   const user_manager::User* user =
@@ -167,8 +168,8 @@ bool IsPrimaryOrDeviceLocalAccount(
   return IsPrimaryGaiaAccount(account_info.gaia);
 }
 
-// See //ash/components/arc/mojom/auth.mojom RequestPrimaryAccount() for the
-// spec. See also go/arc-primary-account.
+// See //chromeos/ash/experiences/arc/mojom/auth.mojom RequestPrimaryAccount()
+// for the spec. See also go/arc-primary-account.
 std::string GetAccountName(Profile* profile) {
   switch (GetAccountType(profile)) {
     case mojom::ChromeAccountType::USER_ACCOUNT:
@@ -185,8 +186,7 @@ std::string GetAccountName(Profile* profile) {
     case mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT:
       return std::string();
     case mojom::ChromeAccountType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -243,7 +243,7 @@ ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
   ArcSessionManager::Get()->AddObserver(this);
   identity_manager_->AddObserver(this);
 
-  if (ash::IsAccountManagerAvailable(profile_) && AreAccountsRestricted()) {
+  if (ash::IsAccountManagerAvailable(profile_)) {
     account_apps_availability_ =
         ash::AccountAppsAvailabilityFactory::GetForProfile(profile_);
 
@@ -330,8 +330,7 @@ void ArcAuthService::OnAuthorizationResult(mojom::ArcSignInResultPtr result,
 
   // Re-auth shouldn't be triggered for non-Gaia device local accounts.
   if (!user_manager::UserManager::Get()->IsLoggedInAsUserWithGaiaAccount()) {
-    NOTREACHED_IN_MIGRATION() << "Shouldn't re-auth for non-Gaia accounts";
-    return;
+    NOTREACHED() << "Shouldn't re-auth for non-Gaia accounts";
   }
 
   const ProvisioningStatus status = GetProvisioningStatus(provisioning_result);
@@ -405,8 +404,7 @@ void ArcAuthService::ReportManagementChangeStatus(
                                    weak_ptr_factory_.GetWeakPtr()));
       break;
     case mojom::ManagementChangeStatus::INVALID_MANAGEMENT_STATE:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid status of management transition: " << status;
+      NOTREACHED() << "Invalid status of management transition: " << status;
   }
 }
 
@@ -517,10 +515,8 @@ void ArcAuthService::HandleAddAccountRequest() {
 void ArcAuthService::HandleRemoveAccountRequest(const std::string& email) {
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
-  // TODO(b/326488045) Update Settings path to kPeopleSectionPath when Settings
-  // revamp is launched.
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      profile_, chromeos::settings::mojom::kMyAccountsSubpagePath);
+      profile_, chromeos::settings::mojom::kPeopleSectionPath);
 }
 
 void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
@@ -533,33 +529,14 @@ void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
 }
 
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
-  // Should be consistent with OnAccountAvailableInArc.
-  // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
-  if (AreAccountsRestricted()) {
-    return;
-  }
-
-  UpsertAccountToArc(account_info);
-}
+    const CoreAccountInfo& account_info) {}
 
 void ArcAuthService::OnExtendedAccountInfoRemoved(
-    const AccountInfo& account_info) {
-  // Should be consistent with OnAccountUnavailableInArc.
-  // TODO(crbug.com/40798532): Remove IdentityManager::Observer implementation.
-  if (AreAccountsRestricted()) {
-    return;
-  }
-
-  DCHECK(!IsPrimaryGaiaAccount(account_info.gaia));
-
-  RemoveAccountFromArc(account_info.email);
-}
+    const AccountInfo& account_info) {}
 
 void ArcAuthService::OnAccountAvailableInArc(
     const account_manager::Account& account) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(AreAccountsRestricted());
   DCHECK(ash::IsAccountManagerAvailable(profile_));
 
   CoreAccountInfo account_info =
@@ -580,10 +557,8 @@ void ArcAuthService::OnAccountAvailableInArc(
 void ArcAuthService::OnAccountUnavailableInArc(
     const account_manager::Account& account) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(AreAccountsRestricted());
   DCHECK(ash::IsAccountManagerAvailable(profile_));
-
-  DCHECK(!IsPrimaryGaiaAccount(account.key.id()));
+  DCHECK(!IsPrimaryGaiaAccount(GaiaId(account.key.id())));
 
   RemoveAccountFromArc(account.raw_email);
 }
@@ -773,7 +748,7 @@ void ArcAuthService::DeletePendingTokenRequest(ArcFetcherBase* fetcher) {
 
   // We should not have received a call to delete a |fetcher| that was not in
   // |pending_token_requests_|.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ArcAuthService::SetURLLoaderFactoryForTesting(
@@ -817,35 +792,21 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
   VLOG(1) << "Pushing accounts to ARC "
           << (filter_primary_account ? "without primary account"
                                      : "with primary account");
-  if (AreAccountsRestricted()) {
-    VLOG(1) << "Using AccountAppsAvailability to get available accounts";
-    account_apps_availability_->GetAccountsAvailableInArc(
-        base::BindOnce(&ArcAuthService::CompleteAccountsPushToArc,
-                       weak_ptr_factory_.GetWeakPtr(), filter_primary_account));
-    return;
-  }
-
-  const std::vector<CoreAccountInfo> accounts =
-      identity_manager_->GetAccountsWithRefreshTokens();
-  for (const CoreAccountInfo& account : accounts) {
-    if (filter_primary_account && IsPrimaryGaiaAccount(account.gaia)) {
-      continue;
-    }
-
-    OnRefreshTokenUpdatedForAccount(account);
-  }
+  VLOG(1) << "Using AccountAppsAvailability to get available accounts";
+  account_apps_availability_->GetAccountsAvailableInArc(
+      base::BindOnce(&ArcAuthService::CompleteAccountsPushToArc,
+                     weak_ptr_factory_.GetWeakPtr(), filter_primary_account));
 }
 
 void ArcAuthService::CompleteAccountsPushToArc(
     bool filter_primary_account,
     const base::flat_set<account_manager::Account>& accounts) {
-  DCHECK(AreAccountsRestricted());
-
   std::vector<mojom::ArcAccountInfoPtr> arc_accounts =
       std::vector<mojom::ArcAccountInfoPtr>();
   for (const auto& account : accounts) {
     DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
-    if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id())) {
+    if (filter_primary_account &&
+        IsPrimaryGaiaAccount(GaiaId(account.key.id()))) {
       continue;
     }
 
@@ -860,7 +821,8 @@ void ArcAuthService::CompleteAccountsPushToArc(
                "OnAccountAvailableInArc";
     for (const auto& account : accounts) {
       DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
-      if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id())) {
+      if (filter_primary_account &&
+          IsPrimaryGaiaAccount(GaiaId(account.key.id()))) {
         continue;
       }
 
@@ -893,11 +855,6 @@ void ArcAuthService::OnMainAccountResolutionStatus(
 // static
 void ArcAuthService::EnsureFactoryBuilt() {
   ArcAuthServiceFactory::GetInstance();
-}
-
-bool ArcAuthService::AreAccountsRestricted() {
-  return ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled() ||
-         ash::AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled();
 }
 
 }  // namespace arc

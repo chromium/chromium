@@ -33,10 +33,6 @@ declare_args() {
 # Note: GN forbids relying on args from the same declare_args() block, so we
 # need this separate from the block above.
 declare_args() {
-  # A separate control for whether GuestView (and corresponding elements
-  # such as WebView, ExtensionOptionsView, etc) are enabled.
-  enable_guest_view = enable_extensions
-
   # A control for whether support for platform apps should be compiled into the
   # browser.
   # TODO(https://crbug.com/41407868): This doesn't belong here; extensions code

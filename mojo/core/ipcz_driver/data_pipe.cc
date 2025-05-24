@@ -24,6 +24,7 @@
 #include "base/synchronization/lock.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/ring_buffer.h"
+#include "mojo/core/ipcz_driver/validate_enum.h"
 #include "third_party/ipcz/include/ipcz/ipcz.h"
 
 namespace mojo::core::ipcz_driver {
@@ -230,7 +231,7 @@ MojoResult DataPipe::WriteData(const void* elements,
 
   FlushUpdatesFromPeer();
   const base::span<const uint8_t> input_bytes =
-      base::make_span(static_cast<const uint8_t*>(elements), num_bytes);
+      base::span(static_cast<const uint8_t*>(elements), num_bytes);
   scoped_refptr<PortalWrapper> portal;
   size_t write_size;
   {
@@ -534,6 +535,10 @@ scoped_refptr<DataPipe> DataPipe::Deserialize(
     return nullptr;
   }
 
+  if (!ValidateEnum(header.endpoint_type)) {
+    return nullptr;
+  }
+
   scoped_refptr<SharedBuffer> buffer =
       SharedBuffer::Deserialize(data.subspan(header_size), handles);
   if (!buffer) {
@@ -669,9 +674,9 @@ bool DataPipe::DeserializeRingBuffer(const RingBuffer::SerializedState& state) {
 
 DataPipe::Pair::Pair() = default;
 
-DataPipe::Pair::Pair(const Pair&) = default;
+DataPipe::Pair::Pair(Pair&&) = default;
 
-DataPipe::Pair& DataPipe::Pair::operator=(const Pair&) = default;
+DataPipe::Pair& DataPipe::Pair::operator=(Pair&&) = default;
 
 DataPipe::Pair::~Pair() = default;
 

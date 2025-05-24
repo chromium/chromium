@@ -41,13 +41,13 @@ public final class RadioButtonGroupHomepagePreference extends Preference
         private String mCustomizedText;
 
         /** Whether the RadioButtonGroup is enabled. */
-        private boolean mIsEnabled;
+        private final boolean mIsEnabled;
 
         /** Whether the option for to {@link HomepageOption#ENTRY_CHROME_NTP} is visible. */
-        private boolean mIsNtpOptionVisible;
+        private final boolean mIsNtpOptionVisible;
 
         /** Whether the option for to {@link HomepageOption#ENTRY_CUSTOM_URI} is visible. */
-        private boolean mIsCustomizedOptionVisible;
+        private final boolean mIsCustomizedOptionVisible;
 
         /**
          * Created the data structure for {@link RadioButtonGroupHomepagePreference} to communicate

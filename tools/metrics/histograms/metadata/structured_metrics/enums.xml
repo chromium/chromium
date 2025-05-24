@@ -26,25 +26,11 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="FlushedMapError">
-  <int value="0" label="DELETED_INVALID_KEY"/>
-  <int value="1" label="EVENT_SERIALIZATION_ERROR"/>
-  <int value="2" label="FAILED_TO_READ_KEY"/>
-</enum>
-
 <enum name="RecordStatus">
   <int value="0" label="OK"/>
   <int value="1" label="FLUSHED"/>
   <int value="2" label="FULL"/>
   <int value="3" label="ERROR"/>
-</enum>
-
-<enum name="StorageManagerFlushStatus">
-  <int value="0" label="SUCCESSFUL"/>
-  <int value="1" label="WRITE_ERROR"/>
-  <int value="2" label="DISK_FULL"/>
-  <int value="3" label="EVENT_SERIALIZATION_ERROR"/>
-  <int value="4" label="QUOTA_EXCEEEDED"/>
 </enum>
 
 </enums>

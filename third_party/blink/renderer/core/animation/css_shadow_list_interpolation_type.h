@@ -13,7 +13,7 @@ class ShadowList;
 
 class CSSShadowListInterpolationType : public CSSInterpolationType {
  public:
-  CSSShadowListInterpolationType(PropertyHandle property)
+  explicit CSSShadowListInterpolationType(PropertyHandle property)
       : CSSInterpolationType(property) {}
 
   InterpolationValue MaybeConvertStandardPropertyUnderlyingValue(
@@ -41,7 +41,7 @@ class CSSShadowListInterpolationType : public CSSInterpolationType {
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState*,
+                                       const StyleResolverState&,
                                        ConversionCheckers&) const final;
   PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,

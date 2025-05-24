@@ -9,6 +9,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_runner.h"
 
@@ -19,7 +20,8 @@ namespace {
 // A shareable file map with enforcement of sequence checker.
 class ShareableFileMap {
  public:
-  using FileMap = std::map<base::FilePath, ShareableFileReference*>;
+  using FileMap = std::map<base::FilePath,
+                           raw_ptr<ShareableFileReference, CtnExperimental>>;
   using iterator = FileMap::iterator;
   using key_type = FileMap::key_type;
   using value_type = FileMap::value_type;

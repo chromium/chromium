@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/base/address_tracker_linux.h"
 
 #include <errno.h>
@@ -15,6 +10,8 @@
 #include <sys/ioctl.h>
 
 #include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -29,14 +26,16 @@
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/task/current_thread.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "net/base/net_platform_api_util.h"
 #include "net/base/network_interfaces_linux.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
 namespace net::internal {
@@ -47,8 +46,8 @@ namespace {
 // may send spurious messages over rtnetlink. RTM_NEWLINK messages where
 // ifi_change == 0 and rta_type == IFLA_WIRELESS should be ignored.
 bool IgnoreWirelessChange(const struct ifinfomsg* msg, int length) {
-  for (const struct rtattr* attr = IFLA_RTA(msg); RTA_OK(attr, length);
-       attr = RTA_NEXT(attr, length)) {
+  for (const struct rtattr* attr = UNSAFE_TODO(IFLA_RTA(msg));
+       RTA_OK(attr, length); attr = UNSAFE_TODO(RTA_NEXT(attr, length))) {
     if (attr->rta_type == IFLA_WIRELESS && msg->ifi_change == 0)
       return true;
   }
@@ -67,8 +66,8 @@ bool GetAddress(const struct nlmsghdr* header,
 
   // Extract the message and update |header_length| to be the number of
   // remaining bytes.
-  const struct ifaddrmsg* msg =
-      reinterpret_cast<const struct ifaddrmsg*>(NLMSG_DATA(header));
+  const struct ifaddrmsg* msg = reinterpret_cast<const struct ifaddrmsg*>(
+      UNSAFE_TODO(NLMSG_DATA(header)));
   header_length -= NLMSG_HDRLEN;
 
   size_t address_length = 0;
@@ -95,22 +94,22 @@ bool GetAddress(const struct nlmsghdr* header,
     return false;
   }
   for (const struct rtattr* attr =
-           reinterpret_cast<const struct rtattr*>(IFA_RTA(msg));
-       RTA_OK(attr, length); attr = RTA_NEXT(attr, length)) {
+           reinterpret_cast<const struct rtattr*>(UNSAFE_TODO(IFA_RTA(msg)));
+       RTA_OK(attr, length); attr = UNSAFE_TODO(RTA_NEXT(attr, length))) {
     switch (attr->rta_type) {
       case IFA_ADDRESS:
         if (RTA_PAYLOAD(attr) < address_length) {
           LOG(ERROR) << "attr does not have enough bytes to read an address";
           return false;
         }
-        address = reinterpret_cast<uint8_t*>(RTA_DATA(attr));
+        address = reinterpret_cast<uint8_t*>(UNSAFE_TODO(RTA_DATA(attr)));
         break;
       case IFA_LOCAL:
         if (RTA_PAYLOAD(attr) < address_length) {
           LOG(ERROR) << "attr does not have enough bytes to read an address";
           return false;
         }
-        local = reinterpret_cast<uint8_t*>(RTA_DATA(attr));
+        local = reinterpret_cast<uint8_t*>(UNSAFE_TODO(RTA_DATA(attr)));
         break;
       case IFA_CACHEINFO: {
         if (RTA_PAYLOAD(attr) < sizeof(struct ifa_cacheinfo)) {
@@ -119,7 +118,8 @@ bool GetAddress(const struct nlmsghdr* header,
           return false;
         }
         const struct ifa_cacheinfo* cache_info =
-            reinterpret_cast<const struct ifa_cacheinfo*>(RTA_DATA(attr));
+            reinterpret_cast<const struct ifa_cacheinfo*>(
+                UNSAFE_TODO(RTA_DATA(attr)));
         if (really_deprecated)
           *really_deprecated = (cache_info->ifa_prefered == 0);
       } break;
@@ -144,24 +144,30 @@ T* SafelyCastNetlinkMsgData(const struct nlmsghdr* header, int length) {
   DCHECK(NLMSG_OK(header, static_cast<__u32>(length)));
   if (length <= 0 || static_cast<size_t>(length) < NLMSG_HDRLEN + sizeof(T))
     return nullptr;
-  return reinterpret_cast<const T*>(NLMSG_DATA(header));
+  return reinterpret_cast<const T*>(UNSAFE_TODO(NLMSG_DATA(header)));
 }
 
 }  // namespace
 
 // static
-char* AddressTrackerLinux::GetInterfaceName(int interface_index, char* buf) {
-  memset(buf, 0, IFNAMSIZ);
+std::string AddressTrackerLinux::GetInterfaceName(int interface_index) {
   base::ScopedFD ioctl_socket = GetSocketForIoctl();
   if (!ioctl_socket.is_valid())
-    return buf;
+    return std::string();
 
   struct ifreq ifr = {};
   ifr.ifr_ifindex = interface_index;
 
-  if (ioctl(ioctl_socket.get(), SIOCGIFNAME, &ifr) == 0)
-    strncpy(buf, ifr.ifr_name, IFNAMSIZ - 1);
-  return buf;
+  if (ioctl(ioctl_socket.get(), SIOCGIFNAME, &ifr) != 0) {
+    return std::string();
+  }
+
+  // `ifr.ifr_name` should be nul terminated, but for safety, remove the final
+  // character and return SpanMaybeWithNulToStringView(), which will ensure the
+  // returned string will fit within `ifr_name`, with a terminating null added,
+  // in a future query.
+  return std::string(SpanMaybeWithNulToStringView(
+      base::span(ifr.ifr_name).first(sizeof(ifr.ifr_name) - 1)));
 }
 
 AddressTrackerLinux::AddressTrackerLinux()
@@ -208,8 +214,8 @@ void AddressTrackerLinux::Init() {
   // https://developer.android.com/preview/privacy/mac-address),
   // so AddressTrackerLinux should not be used in later versions
   // of Android.  Chromium code doesn't need it past Android P.
-  DCHECK_LT(base::android::BuildInfo::GetInstance()->sdk_int(),
-            base::android::SDK_VERSION_P);
+  DCHECK_LT(base::android::android_info::sdk_int(),
+            base::android::android_info::SDK_VERSION_P);
 #endif
   netlink_fd_.reset(socket(AF_NETLINK, SOCK_RAW, NETLINK_ROUTE));
   if (!netlink_fd_.is_valid()) {
@@ -313,8 +319,7 @@ bool AddressTrackerLinux::IsInterfaceIgnored(int interface_index) const {
   if (ignored_interfaces_.empty())
     return false;
 
-  char buf[IFNAMSIZ] = {0};
-  const char* interface_name = get_interface_name_(interface_index, buf);
+  std::string interface_name = get_interface_name_(interface_index);
   return ignored_interfaces_.find(interface_name) != ignored_interfaces_.end();
 }
 
@@ -472,7 +477,7 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
   for (const struct nlmsghdr* header =
            reinterpret_cast<const struct nlmsghdr*>(buffer);
        length >= 0 && NLMSG_OK(header, static_cast<__u32>(length));
-       header = NLMSG_NEXT(header, length)) {
+       header = UNSAFE_TODO(NLMSG_NEXT(header, length))) {
     // The |header| pointer should never precede |buffer|.
     DCHECK_LE(buffer, reinterpret_cast<const char*>(header));
     switch (header->nlmsg_type) {
@@ -512,7 +517,10 @@ void AddressTrackerLinux::HandleMessage(const char* buffer,
           if (it == address_map_.end()) {
             address_map_.insert(it, std::pair(address, msg_copy));
             *address_changed = true;
-          } else if (memcmp(&it->second, &msg_copy, sizeof(msg_copy))) {
+            // Unfortunately, `ifaddrmsg` has no equality operator, so have to
+            // either do this, or compare every field individually.
+          } else if (base::byte_span_from_ref(it->second) !=
+                     base::byte_span_from_ref(msg_copy)) {
             it->second = msg_copy;
             *address_changed = true;
           }
@@ -617,14 +625,13 @@ void AddressTrackerLinux::OnFileCanReadWithoutBlocking() {
 }
 
 bool AddressTrackerLinux::IsTunnelInterface(int interface_index) const {
-  char buf[IFNAMSIZ] = {0};
-  return IsTunnelInterfaceName(get_interface_name_(interface_index, buf));
+  return IsTunnelInterfaceName(get_interface_name_(interface_index));
 }
 
 // static
-bool AddressTrackerLinux::IsTunnelInterfaceName(const char* name) {
+bool AddressTrackerLinux::IsTunnelInterfaceName(std::string_view name) {
   // Linux kernel drivers/net/tun.c uses "tun" name prefix.
-  return strncmp(name, "tun", 3) == 0;
+  return base::StartsWith(name, "tun");
 }
 
 void AddressTrackerLinux::UpdateCurrentConnectionType() {

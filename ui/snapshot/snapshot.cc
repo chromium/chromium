@@ -37,9 +37,12 @@ scoped_refptr<base::RefCountedMemory> EncodeImageAsJPEG(
   }
   DCHECK(!image.AsImageSkia().GetRepresentation(1.0f).is_null());
 
-  std::vector<uint8_t> result;
-  gfx::JPEG1xEncodedDataFromImage(image, 100, &result);
-  return base::RefCountedBytes::TakeVector(&result);
+  std::optional<std::vector<uint8_t>> result =
+      gfx::JPEG1xEncodedDataFromImage(image, /*quality=*/100);
+  if (!result.has_value()) {
+    return nullptr;
+  }
+  return base::MakeRefCounted<base::RefCountedBytes>(std::move(result).value());
 }
 
 void EncodeImageAndScheduleCallback(

@@ -26,13 +26,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "third_party/blink/public/mojom/scroll/scrollbar_mode.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -45,7 +41,6 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -53,6 +48,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -115,8 +111,7 @@ static bool RectsIntersectOnOrthogonalAxis(SpatialNavigationDirection direction,
     case SpatialNavigationDirection::kDown:
       return a.Right() > b.X() && a.X() < b.Right();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -177,8 +172,7 @@ static bool IsRectInDirection(SpatialNavigationDirection direction,
     case SpatialNavigationDirection::kDown:
       return Below(target_rect, cur_rect);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -343,8 +337,7 @@ bool ScrollInDirection(Node* container, SpatialNavigationDirection direction) {
       dy = pixels_per_line_step;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // TODO(crbug.com/914775): Use UserScroll() instead. UserScroll() does a
@@ -439,8 +432,7 @@ bool CanScrollInDirection(const Node* container,
               scrollable_area->GetScrollOffset().y() <
                   scrollable_area->MaximumScrollOffset().y());
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -477,8 +469,7 @@ bool CanScrollInDirection(const LocalFrame* frame,
     case SpatialNavigationDirection::kDown:
       return rect.Height() + offset.y() < size.height();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -533,7 +524,7 @@ std::pair<PhysicalOffset, PhysicalOffset> EntryAndExitPointsForDirection(
       entry_point.top = std::max(potential_rect.Y(), starting_rect.Bottom());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   switch (direction) {
@@ -564,7 +555,7 @@ std::pair<PhysicalOffset, PhysicalOffset> EntryAndExitPointsForDirection(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return {entry_point, exit_point};
 }
@@ -586,8 +577,7 @@ double ProjectedOverlap(SpatialNavigationDirection direction,
       current.Intersect(candidate);
       return current.Width();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return kMaxDistance;
+      NOTREACHED();
   }
 }
 
@@ -607,8 +597,7 @@ double Alignment(SpatialNavigationDirection direction,
     case SpatialNavigationDirection::kDown:
       return (kAlignWeight * projected_overlap) / current.Width();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return kMaxDistance;
+      NOTREACHED();
   }
 }
 
@@ -703,8 +692,7 @@ double ComputeDistanceDataForNode(SpatialNavigationDirection direction,
           (x_axis + orthogonal_bias) * kOrthogonalWeightForUpDown;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return kMaxDistance;
+      NOTREACHED();
   }
 
   // We try to formalize this distance calculation at
@@ -741,7 +729,7 @@ PhysicalRect OppositeEdge(SpatialNavigationDirection side,
       thin_rect.offset.top += 1;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return thin_rect;
@@ -783,7 +771,7 @@ PhysicalRect FirstVisibleFragment(const PhysicalRect& visibility,
     physical_fragment.Intersect(visibility);
     if (!physical_fragment.IsEmpty())
       return physical_fragment;
-    ++fragment;
+    UNSAFE_TODO(++fragment);
   }
   return visibility;
 }

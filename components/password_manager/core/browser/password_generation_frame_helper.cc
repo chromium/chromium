@@ -107,7 +107,7 @@ bool PasswordGenerationFrameHelper::IsGenerationEnabled(
   std::unique_ptr<Logger> logger;
   if (log_debug_data && password_manager_util::IsLoggingActive(client_)) {
     logger = std::make_unique<BrowserSavePasswordProgressLogger>(
-        client_->GetLogManager());
+        client_->GetCurrentLogManager());
   }
 
   GURL url = driver_->GetLastCommittedURL();
@@ -192,7 +192,7 @@ std::u16string PasswordGenerationFrameHelper::GeneratePassword(
   spec.set_max_length(target_length);
 
   if (password_manager_util::IsLoggingActive(client_)) {
-    BrowserSavePasswordProgressLogger logger(client_->GetLogManager());
+    BrowserSavePasswordProgressLogger logger(client_->GetCurrentLogManager());
     logger.LogPasswordRequirements(
         last_committed_url.DeprecatedGetOriginAsURL(), form_signature,
         field_signature, spec);

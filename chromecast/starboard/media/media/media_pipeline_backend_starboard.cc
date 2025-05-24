@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chromecast/public/graphics_types.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 
 namespace chromecast {
@@ -239,6 +240,8 @@ void MediaPipelineBackendStarboard::CreatePlayer() {
       params.video_sample_info.max_video_capabilities = "streaming=1";
     }
   }
+
+  params.drm_system = StarboardDrmWrapper::GetInstance().GetDrmSystem();
   params.output_mode = kStarboardPlayerOutputModePunchOut;
   player_ =
       starboard_->CreatePlayer(&params,
@@ -353,7 +356,7 @@ void MediaPipelineBackendStarboard::CallOnPlayerError(
     void* player,
     void* context,
     StarboardPlayerError error,
-    const char* message) {
+    std::string message) {
   static_cast<MediaPipelineBackendStarboard*>(context)->OnPlayerError(
       player, error, message);
 }

@@ -13,11 +13,12 @@
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
+#include "third_party/blink/renderer/core/paint/contoured_border_geometry.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
-#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
+#include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 
@@ -193,7 +194,7 @@ PhysicalBoxStrut BoxBackgroundPaintContext::InnerBorderOutsets(
     const PhysicalRect& dest_rect,
     const PhysicalRect& positioning_area) const {
   gfx::RectF inner_border_rect =
-      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+      ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
           positioning_box_->StyleRef(), positioning_area)
           .Rect();
   PhysicalBoxStrut outset;
@@ -211,8 +212,8 @@ SnappedAndUnsnappedOutsets BoxBackgroundPaintContext::ObscuredBorderOutsets(
     const PhysicalRect& positioning_area) const {
   const ComputedStyle& style = positioning_box_->StyleRef();
   gfx::RectF inner_border_rect =
-      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(style,
-                                                            positioning_area)
+      ContouredBorderGeometry::PixelSnappedContouredInnerBorder(
+          style, positioning_area)
           .Rect();
 
   BorderEdgeArray edges;

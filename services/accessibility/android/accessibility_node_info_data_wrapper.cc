@@ -310,6 +310,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
   // sources.
   // EditText is excluded because it can be a container (b/150827734).
   MAP_ROLE(ui::kAXAbsListViewClassname, ax::mojom::Role::kList);
+  MAP_ROLE(ui::kAXAlertDialogClassname, ax::mojom::Role::kAlertDialog);
   MAP_ROLE(ui::kAXButtonClassname, ax::mojom::Role::kButton);
   MAP_ROLE(ui::kAXCheckBoxClassname, ax::mojom::Role::kCheckBox);
   MAP_ROLE(ui::kAXCheckedTextViewClassname, ax::mojom::Role::kStaticText);

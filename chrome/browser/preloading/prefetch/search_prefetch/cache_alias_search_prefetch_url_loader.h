@@ -69,8 +69,6 @@ class CacheAliasSearchPrefetchURLLoader
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -110,21 +108,18 @@ class CacheAliasSearchPrefetchURLLoader
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
 
   // Starts the cache only request to |prefetch_url_|.
-  void StartPrefetchRequest();
+  void StartLoadCachedPrefetchResponse();
 
   // The network URLLoader that fetches the prefetch URL and its receiver.
   mojo::Remote<network::mojom::URLLoader> network_url_loader_;
   mojo::Receiver<network::mojom::URLLoaderClient> url_loader_receiver_{this};
 
-  // The request that is being prefetched.
+  // The backup of the request that a real navigation specifies.
   std::unique_ptr<network::ResourceRequest> resource_request_;
 
-  // Whether we are serving from |bdoy_content_|.
+  // Whether we are serving from disk cache. If yes, this loader can fallback to
+  // the network if the cache is not available.
   bool can_fallback_ = true;
-
-  // If the owner paused network activity, we need to propagate that if a
-  // fallback occurs.
-  bool paused_ = false;
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 

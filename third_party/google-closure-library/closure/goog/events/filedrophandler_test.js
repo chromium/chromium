@@ -296,7 +296,7 @@ testSuite({
   /** @suppress {checkTypes} suppression added to enable type checking */
   testEffectAllowedExceptionIsCaught() {
     // This bug was only affecting IE10+.
-    if (!userAgent.IE || !userAgent.isVersionOrHigher(10)) {
+    if (!userAgent.IE) {
       return;
     }
 

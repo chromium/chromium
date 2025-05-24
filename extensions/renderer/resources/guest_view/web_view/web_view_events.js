@@ -12,11 +12,13 @@ var DeclarativeWebRequestSchema =
 var GuestViewEvents = require('guestViewEvents').GuestViewEvents;
 var GuestViewInternalNatives = requireNative('guest_view_internal');
 var IdGenerator = requireNative('id_generator');
+var tagLogMessage = require('guestViewConstants').tagLogMessage;
 var WebRequestEvent = require('webRequestEvent').WebRequestEvent;
 var WebRequestSchema =
     requireNative('schema_registry').GetSchema('webRequest');
 var WebViewActionRequests =
     require('webViewActionRequests').WebViewActionRequests;
+var WebViewConstants = require('webViewConstants').WebViewConstants;
 
 var WebRequestMessageEvent = CreateEvent('webViewInternal.onMessage');
 
@@ -260,15 +262,15 @@ WebViewEvents.prototype.handleFullscreenExitEvent = function(event, eventName) {
 };
 
 WebViewEvents.prototype.handleLoadAbortEvent = function(event, eventName) {
-  var showWarningMessage = function(code, reason) {
-    var WARNING_MSG_LOAD_ABORTED = '<webview>: ' +
-        'The load has aborted with error %1: %2.';
-    window.console.warn($String.replace(
-        $String.replace(WARNING_MSG_LOAD_ABORTED, '%1', code), '%2', reason));
-  };
   var webViewEvent = this.makeDomEvent(event, eventName);
   if (this.view.dispatchEvent(webViewEvent)) {
-    showWarningMessage(event.code, event.reason);
+    window.console.warn(tagLogMessage(
+        this.view.getLogTag(),
+        $String.replace(
+        $String.replace(
+            $String.replace(
+                WebViewConstants.WARNING_MSG_LOAD_ABORTED, '%1', event.code),
+            '%2', event.reason), '%3', event.url)));
   }
 };
 

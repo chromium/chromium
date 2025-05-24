@@ -26,6 +26,7 @@
 #include "android_webview/browser/aw_http_auth_handler.h"
 #include "android_webview/browser/aw_settings.h"
 #include "android_webview/browser/aw_speech_recognition_manager_delegate.h"
+#include "android_webview/browser/aw_web_contents_delegate.h"
 #include "android_webview/browser/aw_web_contents_view_delegate.h"
 #include "android_webview/browser/cookie_manager.h"
 #include "android_webview/browser/network_service/aw_browser_context_io_thread_handle.h"
@@ -33,6 +34,8 @@
 #include "android_webview/browser/network_service/aw_proxying_restricted_cookie_manager.h"
 #include "android_webview/browser/network_service/aw_proxying_url_loader_factory.h"
 #include "android_webview/browser/network_service/aw_url_loader_throttle.h"
+#include "android_webview/browser/network_service/net_helpers.h"
+#include "android_webview/browser/prefetch/aw_prefetch_service_delegate.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_navigation_throttle.h"
 #include "android_webview/browser/safe_browsing/aw_url_checker_delegate_impl.h"
 #include "android_webview/browser/supervised_user/aw_supervised_user_throttle.h"
@@ -92,7 +95,9 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/browser/prefetch_service_delegate.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -100,14 +105,15 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/user_agent.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/android/network_library.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
@@ -116,6 +122,7 @@
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/cookie_manager.mojom-forward.h"
@@ -125,6 +132,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/resource/resource_bundle_android.h"
@@ -141,6 +149,14 @@ using AttributionReportingOsRegistrar =
     content::ContentBrowserClient::AttributionReportingOsRegistrar;
 
 namespace android_webview {
+
+AwContentBrowserClient::AfterStartupTask::AfterStartupTask() = default;
+AwContentBrowserClient::AfterStartupTask::~AfterStartupTask() = default;
+AwContentBrowserClient::AfterStartupTask::AfterStartupTask(
+    AfterStartupTask&& other) = default;
+AwContentBrowserClient::StartupInfo::StartupInfo() = default;
+AwContentBrowserClient::StartupInfo::~StartupInfo() = default;
+
 namespace {
 #if DCHECK_IS_ON()
 // A boolean value to determine if the NetworkContext has been created yet. This
@@ -155,14 +171,14 @@ bool g_check_cleartext_permitted = false;
 
 BASE_FEATURE(kWebViewOptimizeXrwNavigationFlow,
              "WebViewOptimizeXrwNavigationFlow",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A throttle which checks if the XRW origin trial is enabled for this
 // navigation, and forwards it to the proxying loader factory.
 class XrwNavigationThrottle : public content::NavigationThrottle {
  public:
-  explicit XrwNavigationThrottle(content::NavigationHandle* handle)
-      : NavigationThrottle(handle) {}
+  explicit XrwNavigationThrottle(content::NavigationThrottleRegistry& registry)
+      : NavigationThrottle(registry) {}
   ~XrwNavigationThrottle() override {
     AwProxyingURLLoaderFactory::ClearXrwResultForNavigation(
         navigation_handle()->GetNavigationId());
@@ -170,8 +186,12 @@ class XrwNavigationThrottle : public content::NavigationThrottle {
 
   ThrottleCheckResult WillStartRequest() override {
     auto* handle = navigation_handle();
+    content::OriginTrialsControllerDelegate* delegate =
+        handle->GetWebContents()
+            ->GetBrowserContext()
+            ->GetOriginTrialsControllerDelegate();
     AwProxyingURLLoaderFactory::SetXrwResultForNavigation(
-        handle->GetURL(),
+        delegate, handle->GetURL(),
         handle->IsInOutermostMainFrame()
             ? blink::mojom::ResourceType::kMainFrame
             : blink::mojom::ResourceType::kSubFrame,
@@ -186,10 +206,6 @@ class XrwNavigationThrottle : public content::NavigationThrottle {
 base::WeakPtr<AsyncCheckTracker> GetAsyncCheckTracker(
     const base::RepeatingCallback<content::WebContents*()>& wc_getter,
     content::FrameTreeNodeId frame_tree_node_id) {
-  if (!base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
-    return nullptr;
-  }
   content::WebContents* web_contents = wc_getter.Run();
   // Check whether current frame is a pre-rendered frame. WebView does not
   // support NoStatePrefetch, so we do not check for that.
@@ -217,18 +233,18 @@ std::string GetUserAgent() {
   // "Version/4.0" had been hardcoded in the legacy WebView.
   std::string product = "Version/4.0 " + GetProduct();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMobileUserAgent)) {
+          embedder_support::kUseMobileUserAgent)) {
     product += " Mobile";
   }
 
   if (base::FeatureList::IsEnabled(
           features::kWebViewReduceUAAndroidVersionDeviceModel)) {
-    return content::BuildUnifiedPlatformUAFromProductAndExtraOs(product,
-                                                                "; wv");
+    return embedder_support::BuildUnifiedPlatformUAFromProductAndExtraOs(
+        product, "; wv");
   }
 
-  return content::BuildUserAgentFromProductAndExtraOSInfo(
-      product, "; wv", content::IncludeAndroidBuildNumber::Include);
+  return embedder_support::BuildUserAgentFromProductAndExtraOSInfo(
+      product, "; wv", embedder_support::IncludeAndroidBuildNumber::Include);
 }
 
 // TODO(yirui): can use similar logic as in PrependToAcceptLanguagesIfNecessary
@@ -269,7 +285,7 @@ AwContentBrowserClient::AwContentBrowserClient(
   DCHECK(aw_feature_list_creator_);
 }
 
-AwContentBrowserClient::~AwContentBrowserClient() {}
+AwContentBrowserClient::~AwContentBrowserClient() = default;
 
 void AwContentBrowserClient::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
@@ -279,16 +295,9 @@ void AwContentBrowserClient::OnNetworkServiceCreated(
   content::GetCertVerifierServiceFactory()->SetUseChromeRootStore(
       false, base::DoNothing());
 
-  content::GetNetworkService()->SetUpHttpAuth(
-      network::mojom::HttpAuthStaticParams::New());
-  content::GetNetworkService()->ConfigureHttpAuthPrefs(
+  network_service->SetUpHttpAuth(network::mojom::HttpAuthStaticParams::New());
+  network_service->ConfigureHttpAuthPrefs(
       AwBrowserProcess::GetInstance()->CreateHttpAuthDynamicParams());
-  if (base::FeatureList::IsEnabled(features::kWebViewAsyncDns)) {
-    content::GetNetworkService()->ConfigureStubHostResolver(
-        /*insecure_dns_client_enabled=*/true, net::SecureDnsMode::kAutomatic,
-        net::DnsOverHttpsConfig(),
-        /*additional_dns_types_enabled=*/true);
-  }
 }
 
 void AwContentBrowserClient::ConfigureNetworkContextParams(
@@ -332,6 +341,63 @@ AwContentBrowserClient::CreateBrowserMainParts(bool /* is_integration_test */) {
   return std::make_unique<AwBrowserMainParts>(this);
 }
 
+bool IsStartupTaskExperimentEnabled() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  return AwBrowserMainParts::isWebViewStartupTasksExperimentEnabled() ||
+         command_line->HasSwitch(switches::kWebViewUseStartupTasksLogic);
+}
+
+void AwContentBrowserClient::PostAfterStartupTask(
+    const base::Location& from_here,
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner,
+    base::OnceClosure task) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!IsStartupTaskExperimentEnabled()) {
+    task_runner->PostTask(from_here, std::move(task));
+    return;
+  }
+
+  if (startup_info_.startup_complete) {
+    task_runner->PostTask(from_here, std::move(task));
+    return;
+  }
+
+  AfterStartupTask task_info;
+  task_info.from_here = from_here;
+  task_info.task_runner = task_runner;
+  task_info.task = std::move(task);
+  startup_info_.after_startup_tasks.push_back(std::move(task_info));
+}
+
+void AwContentBrowserClient::OnStartupComplete() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(!startup_info_.startup_complete);
+
+  startup_info_.startup_complete = true;
+  // if the native ui task execution isn't enabled already, enable it.
+  if (!startup_info_.enable_native_task_execution_callback.is_null()) {
+    std::move(startup_info_.enable_native_task_execution_callback).Run();
+  }
+
+  auto& tasks_queue = startup_info_.after_startup_tasks;
+  for (AfterStartupTask& after_startup_task : tasks_queue) {
+    after_startup_task.task_runner->PostTask(
+        after_startup_task.from_here, std::move(after_startup_task.task));
+  }
+  tasks_queue.clear();
+}
+
+void AwContentBrowserClient::OnUiTaskRunnerReady(
+    base::OnceClosure enable_native_task_execution_callback) {
+  if (!IsStartupTaskExperimentEnabled()) {
+    std::move(enable_native_task_execution_callback).Run();
+    return;
+  }
+
+  startup_info_.enable_native_task_execution_callback =
+      std::move(enable_native_task_execution_callback);
+}
+
 std::unique_ptr<content::WebContentsViewDelegate>
 AwContentBrowserClient::GetWebContentsViewDelegate(
     content::WebContents* web_contents) {
@@ -344,7 +410,7 @@ void AwContentBrowserClient::RenderProcessWillLaunch(
   // per-view access checks, and access is granted by default (see
   // AwSettings.mAllowContentUrlAccess).
   content::ChildProcessSecurityPolicy::GetInstance()->GrantRequestScheme(
-      host->GetID(), url::kContentScheme);
+      host->GetDeprecatedID(), url::kContentScheme);
 }
 
 bool AwContentBrowserClient::IsExplicitNavigation(
@@ -361,17 +427,12 @@ bool AwContentBrowserClient::IsHandledURL(const GURL& url) {
   const std::string scheme = url.scheme();
   DCHECK_EQ(scheme, base::ToLowerASCII(scheme));
   static const char* const kProtocolList[] = {
-    url::kHttpScheme,
-    url::kHttpsScheme,
+      url::kHttpScheme,         url::kHttpsScheme,
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
-    url::kWsScheme,
-    url::kWssScheme,
+      url::kWsScheme,           url::kWssScheme,
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
-    url::kDataScheme,
-    url::kBlobScheme,
-    url::kFileSystemScheme,
-    content::kChromeUIScheme,
-    url::kContentScheme,
+      url::kDataScheme,         url::kBlobScheme,    url::kFileSystemScheme,
+      content::kChromeUIScheme, url::kContentScheme,
   };
   if (scheme == url::kFileScheme) {
     // Return false for the "special" file URLs, so they can be loaded
@@ -431,15 +492,21 @@ gfx::ImageSkia AwContentBrowserClient::GetDefaultFavicon() {
 content::GeneratedCodeCacheSettings
 AwContentBrowserClient::GetGeneratedCodeCacheSettings(
     content::BrowserContext* context) {
-  // WebView limits the main HTTP cache to 20MB; we need to set a comparable
-  // limit for the code cache since the source file needs to be in the HTTP
-  // cache for the code cache entry to be used. There are two code caches that
-  // both use this value, so we pass 10MB to keep the total disk usage to
-  // roughly 2x what it was before the code cache was implemented.
-  // TODO(crbug.com/41419561): webview should have smarter cache sizing logic.
   AwBrowserContext* browser_context = static_cast<AwBrowserContext*>(context);
+  // We need to set a comparable limit for the code cache since the source file
+  // needs to be in the HTTP cache for the code cache entry to be used. There
+  // are two code caches that both use this value, so we pass half the the HTTP
+  // cache size limit to keep the total cache usage to roughly 2x the HTTP cache
+  // limit.
+  int code_cache_limit = 0.5 * GetHttpCacheSize();
+  if (base::FeatureList::IsEnabled(
+          features::kWebViewCacheSizeLimitDerivedFromAppCacheQuota)) {
+    code_cache_limit = features::kWebViewCodeCacheSizeLimitMultiplier.Get() *
+                       GetHttpCacheSize();
+  }
+
   return content::GeneratedCodeCacheSettings(
-      true, 10 * 1024 * 1024, browser_context->GetHttpCachePath());
+      true, code_cache_limit, browser_context->GetHttpCachePath());
 }
 
 void AwContentBrowserClient::AllowCertificateError(
@@ -569,21 +636,15 @@ void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
     content::PosixFileDescriptorInfo* mappings) {
   base::MemoryMappedFile::Region region;
   int fd = ui::GetMainAndroidPackFd(&region);
-  if (base::FeatureList::IsEnabled(features::kWebViewCheckPakFileDescriptors)) {
-    CHECK_GE(fd, 0);
-  }
+  CHECK_GE(fd, 0);
   mappings->ShareWithRegion(kAndroidWebViewMainPakDescriptor, fd, region);
 
   fd = ui::GetCommonResourcesPackFd(&region);
-  if (base::FeatureList::IsEnabled(features::kWebViewCheckPakFileDescriptors)) {
-    CHECK_GE(fd, 0);
-  }
+  CHECK_GE(fd, 0);
   mappings->ShareWithRegion(kAndroidWebView100PercentPakDescriptor, fd, region);
 
   fd = ui::GetLocalePackFd(&region);
-  if (base::FeatureList::IsEnabled(features::kWebViewCheckPakFileDescriptors)) {
-    CHECK_GE(fd, 0);
-  }
+  CHECK_GE(fd, 0);
   mappings->ShareWithRegion(kAndroidWebViewLocalePakDescriptor, fd, region);
 
   int crash_signal_fd =
@@ -593,73 +654,73 @@ void AwContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
   }
 }
 
-void AwContentBrowserClient::OverrideWebkitPrefs(
+void AwContentBrowserClient::OverrideWebPreferences(
     content::WebContents* web_contents,
+    content::SiteInstance& main_frame_site,
     blink::web_pref::WebPreferences* web_prefs) {
   AwSettings* aw_settings = AwSettings::FromWebContents(web_contents);
   if (aw_settings) {
     aw_settings->PopulateWebPreferences(web_prefs);
   }
+
+  AwWebContentsDelegate* delegate =
+      static_cast<AwWebContentsDelegate*>(web_contents->GetDelegate());
   web_prefs->modal_context_menu =
-      !base::FeatureList::IsEnabled(features::kWebViewImageDrag);
+      (delegate) ? delegate->isModalContextMenu() : false;
 }
 
-std::vector<std::unique_ptr<content::NavigationThrottle>>
-AwContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationHandle* navigation_handle) {
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
+void AwContentBrowserClient::CreateThrottlesForNavigation(
+    content::NavigationThrottleRegistry& registry) {
   // We allow intercepting only navigations within main frames. This
   // is used to post onPageStarted. We handle shouldOverrideUrlLoading
   // via a sync IPC.
-  if (navigation_handle->IsInMainFrame()) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  if (navigation_handle.IsInMainFrame()) {
     // MetricsNavigationThrottle requires that it runs before
     // NavigationThrottles that may delay or cancel navigations, so only
     // NavigationThrottles that don't delay or cancel navigations (e.g.
     // throttles that are only observing callbacks without affecting navigation
     // behavior) should be added before MetricsNavigationThrottle.
-    throttles.push_back(page_load_metrics::MetricsNavigationThrottle::Create(
-        navigation_handle));
+    // TODO(https://crbug.com/412524375): This assumption is fragile. This
+    // should be cared by adding an attribute flag to
+    // NavigationThrottleRegistry::AddThrottle().
+    page_load_metrics::MetricsNavigationThrottle::CreateAndAdd(registry);
   }
   // Use Synchronous mode for the navigation interceptor, since this class
   // doesn't actually call into an arbitrary client, it just posts a task to
   // call onPageStarted. shouldOverrideUrlLoading happens earlier (see
   // ContentBrowserClient::ShouldOverrideUrlLoading).
-  std::unique_ptr<content::NavigationThrottle> intercept_navigation_throttle =
-      navigation_interception::InterceptNavigationDelegate::
-          MaybeCreateThrottleFor(navigation_handle,
-                                 navigation_interception::SynchronyMode::kSync);
-  if (intercept_navigation_throttle) {
-    throttles.push_back(std::move(intercept_navigation_throttle));
-  }
+  navigation_interception::InterceptNavigationDelegate::MaybeCreateAndAdd(
+      registry, navigation_interception::SynchronyMode::kSync);
 
-  throttles.push_back(std::make_unique<PolicyBlocklistNavigationThrottle>(
-      navigation_handle,
-      AwBrowserContext::FromWebContents(navigation_handle->GetWebContents())));
+  registry.AddThrottle(std::make_unique<PolicyBlocklistNavigationThrottle>(
+      registry,
+      AwBrowserContext::FromWebContents(navigation_handle.GetWebContents())));
 
-  std::unique_ptr<AwSafeBrowsingNavigationThrottle> safe_browsing_throttle =
-      AwSafeBrowsingNavigationThrottle::MaybeCreateThrottleFor(
-          navigation_handle);
-  if (safe_browsing_throttle) {
-    throttles.push_back(std::move(safe_browsing_throttle));
-  }
+  AwSafeBrowsingNavigationThrottle::MaybeCreateAndAdd(registry);
   if (base::FeatureList::IsEnabled(kWebViewOptimizeXrwNavigationFlow)) {
-    throttles.push_back(
-        std::make_unique<XrwNavigationThrottle>(navigation_handle));
+    registry.AddThrottle(std::make_unique<XrwNavigationThrottle>(registry));
   }
 
-  if ((navigation_handle->GetNavigatingFrameType() ==
+  if ((navigation_handle.GetNavigatingFrameType() ==
            FrameType::kPrimaryMainFrame ||
-       navigation_handle->GetNavigatingFrameType() == FrameType::kSubframe) &&
-      navigation_handle->GetURL().SchemeIsHTTPOrHTTPS()) {
+       navigation_handle.GetNavigatingFrameType() == FrameType::kSubframe) &&
+      navigation_handle.GetURL().SchemeIsHTTPOrHTTPS()) {
     AwSupervisedUserUrlClassifier* urlClassifier =
         AwSupervisedUserUrlClassifier::GetInstance();
     if (urlClassifier->ShouldCreateThrottle()) {
-      throttles.push_back(std::make_unique<AwSupervisedUserThrottle>(
-          navigation_handle, urlClassifier));
+      registry.AddThrottle(
+          std::make_unique<AwSupervisedUserThrottle>(registry, urlClassifier));
     }
   }
+}
 
-  return throttles;
+std::unique_ptr<content::PrefetchServiceDelegate>
+AwContentBrowserClient::CreatePrefetchServiceDelegate(
+    content::BrowserContext* browser_context) {
+  AwBrowserContext* aw_browser_context =
+      static_cast<AwBrowserContext*>(browser_context);
+  return std::make_unique<AwPrefetchServiceDelegate>(aw_browser_context);
 }
 
 std::unique_ptr<content::DevToolsManagerDelegate>
@@ -703,7 +764,8 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
       /* hash_realtime_service */ nullptr,
       /* hash_realtime_selection */
       hash_real_time_selection,
-      /* async_check_tracker */ async_check_tracker));
+      /* async_check_tracker */ async_check_tracker,
+      /*referring_app_info=*/std::nullopt));
 
   if (request.destination == network::mojom::RequestDestination::kDocument) {
     const bool is_load_url =
@@ -718,40 +780,6 @@ AwContentBrowserClient::CreateURLLoaderThrottles(
           static_cast<AwBrowserContext*>(browser_context)));
     }
   }
-
-  return result;
-}
-
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-AwContentBrowserClient::CreateURLLoaderThrottlesForKeepAlive(
-    const network::ResourceRequest& request,
-    content::BrowserContext* browser_context,
-    const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-    content::FrameTreeNodeId frame_tree_node_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  // Set lookup mechanism based on feature flag
-  HashRealTimeSelection hash_real_time_selection =
-      (base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups))
-          ? HashRealTimeSelection::kDatabaseManager
-          : HashRealTimeSelection::kNone;
-
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> result;
-
-  result.push_back(safe_browsing::BrowserURLLoaderThrottle::Create(
-      base::BindRepeating(
-          [](AwContentBrowserClient* client) {
-            return client->GetSafeBrowsingUrlCheckerDelegate();
-          },
-          base::Unretained(this)),
-      wc_getter, frame_tree_node_id, /*navigation_id=*/std::nullopt,
-      // TODO(crbug.com/40663467): rt_lookup_service is
-      // used to perform real time URL check, which is gated by UKM opted-in.
-      // Since AW currently doesn't support UKM, this feature is not enabled.
-      /* rt_lookup_service */ nullptr,
-      /* hash_realtime_service */ nullptr,
-      /* hash_realtime_selection */
-      hash_real_time_selection,
-      /* async_check_tracker */ nullptr));
 
   return result;
 }
@@ -839,12 +867,21 @@ bool AwContentBrowserClient::ShouldOverrideUrlLoading(
   if (is_prerendering) {
     // We pass the `Sec-Purpose` header to tell the embedder that the navigation
     // is for prerendering, within the existing API surface.
-    request_headers.SetHeader("Sec-Purpose", "prefetch;prerender");
+    request_headers.SetHeader(blink::kSecPurposeHeaderName,
+                              blink::kSecPurposePrefetchPrerenderHeaderValue);
   }
 
   return client_bridge->ShouldOverrideUrlLoading(
       url, has_user_gesture, is_redirect, is_outermost_main_frame,
       request_headers, ignore_navigation);
+}
+
+bool AwContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync() {
+  // WebView allows the embedder to override navigation in such a way that
+  // might trigger reentrancy if this returned true. See comments in
+  // `ContentBrowserClient::SupportsAvoidUnnecessaryBeforeUnloadCheckSync()` for
+  // more details.
+  return false;
 }
 
 bool AwContentBrowserClient::ShouldAllowSameSiteRenderFrameHostChange(
@@ -870,11 +907,13 @@ AwContentBrowserClient::CreateLoginDelegate(
     content::WebContents* web_contents,
     content::BrowserContext* browser_context,
     const content::GlobalRequestID& request_id,
-    bool is_request_for_primary_main_frame,
+    bool is_request_for_primary_main_frame_navigation,
+    bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
-    LoginAuthRequiredCallback auth_required_callback) {
+    content::GuestPageHolder* guest,
+    content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   return std::make_unique<AwHttpAuthHandler>(auth_info, web_contents,
                                              first_auth_attempt,
                                              std::move(auth_required_callback));
@@ -892,7 +931,10 @@ bool AwContentBrowserClient::HandleExternalProtocol(
     bool has_user_gesture,
     const std::optional<url::Origin>& initiating_origin,
     content::RenderFrameHost* initiator_document,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   // Sandbox flags
   // =============
   //
@@ -912,44 +954,43 @@ bool AwContentBrowserClient::HandleExternalProtocol(
                 static_cast<AwBrowserContext*>(
                     web_contents->GetBrowserContext()));
 
+  // Pass WebContentsKey to look up AwContentsIoThreadClient in
+  // WebContentsToIoThreadClientMap later. Currently this is used only when a
+  // page is being prerendered.
+  // TODO(crbug.com/373474043): Use this even for non-prerendered pages.
+  std::optional<WebContentsKey> web_contents_key;
+  if (web_contents && web_contents->IsPrerenderedFrame(frame_tree_node_id)) {
+    web_contents_key = GetWebContentsKey(*web_contents);
+  }
+
   // We don't need to care for |security_options| as the factories constructed
   // below are used only for navigation.
   // We also don't care about retrieving cookies in this case because these will
   // be schemes unrelated to the regular network stack so it doesn't make sense
   // to look for cookies. Providing a nullopt for the cookie manager lets
   // the AwProxyingURLLoaderFactory know to skip that work.
-  if (content::BrowserThread::CurrentlyOn(content::BrowserThread::IO)) {
-    // Manages its own lifetime.
-    new android_webview::AwProxyingURLLoaderFactory(
-        std::nullopt /* cookie_manager */, nullptr /* cookie_access_policy */,
-        std::nullopt /* isolation_info*/, frame_tree_node_id,
-        std::move(receiver), mojo::NullRemote(), true /* intercept_only */,
-        std::nullopt /* security_options */,
-        nullptr /* xrw_allowlist_matcher */, std::move(browser_context_handle),
-        std::nullopt /* navigation_id */);
-  } else {
-    content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
-               content::FrameTreeNodeId frame_tree_node_id,
-               scoped_refptr<AwBrowserContextIoThreadHandle>
-                   browser_context_handle) {
-              // Manages its own lifetime.
-              new android_webview::AwProxyingURLLoaderFactory(
-                  std::nullopt /* cookie_manager */,
-                  nullptr /* cookie_access_policy */,
-                  std::nullopt /* isolation_info*/, frame_tree_node_id,
-                  std::move(receiver), mojo::NullRemote(),
-                  true /* intercept_only */,
-                  std::nullopt /* security_options */,
-                  nullptr /* xrw_allowlist_matcher */,
-                  std::move(browser_context_handle),
-                  std::nullopt /* navigation_id */);
-            },
-            std::move(receiver), frame_tree_node_id,
-            std::move(browser_context_handle)));
-  }
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
+             std::optional<WebContentsKey> web_contents_key,
+             content::FrameTreeNodeId frame_tree_node_id,
+             scoped_refptr<AwBrowserContextIoThreadHandle>
+                 browser_context_handle,
+             const net::IsolationInfo& isolation_info) {
+            // Manages its own lifetime.
+            new android_webview::AwProxyingURLLoaderFactory(
+                std::nullopt /* cookie_manager */,
+                nullptr /* cookie_access_policy */, isolation_info,
+                web_contents_key, frame_tree_node_id, std::move(receiver),
+                mojo::NullRemote(), true /* intercept_only */,
+                std::nullopt /* security_options */,
+                nullptr /* xrw_allowlist_matcher */,
+                std::move(browser_context_handle),
+                std::nullopt /* navigation_id */);
+          },
+          std::move(receiver), web_contents_key, frame_tree_node_id,
+          std::move(browser_context_handle), isolation_info));
   return false;
 }
 
@@ -1009,6 +1050,14 @@ size_t AwContentBrowserClient::GetMaxRendererProcessCountOverride() {
 
 bool AwContentBrowserClient::ShouldDisableSiteIsolation(
     content::SiteIsolationMode site_isolation_mode) {
+  // Since AW does not yet support OOPIFs, we must return true here to disable
+  // features that may trigger OOPIFs, such as origin isolation.
+  //
+  // Adding OOPIF support for AW is tracked by https://crbug.com/806404.
+  return true;
+}
+
+bool AwContentBrowserClient::ShouldDisableOriginIsolation() {
   // Since AW does not yet support OOPIFs, we must return true here to disable
   // features that may trigger OOPIFs, such as origin isolation.
   //
@@ -1113,17 +1162,27 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
           preferences.allow_universal_access_from_file_urls;
     }
 
+    // Pass WebContentsKey to look up AwContentsIoThreadClient in
+    // WebContentsToIoThreadClientMap later. Currently this is used only when a
+    // page is being prerendered.
+    // TODO(crbug.com/373474043): Use this even for non-prerendered pages.
+    std::optional<WebContentsKey> web_contents_key;
+    if (web_contents->IsPrerenderedFrame(frame->GetFrameTreeNodeId())) {
+      web_contents_key = GetWebContentsKey(*web_contents);
+    }
+
     auto xrw_allowlist_matcher =
         AwSettings::FromWebContents(web_contents)->xrw_allowlist_matcher();
 
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(
-            &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
-            cookie_access_policy, isolation_info, frame->GetFrameTreeNodeId(),
-            std::move(proxied_receiver), std::move(target_factory_remote),
-            security_options, std::move(xrw_allowlist_matcher),
-            std::move(browser_context_handle), navigation_id));
+        base::BindOnce(&AwProxyingURLLoaderFactory::CreateProxy,
+                       std::move(cookie_manager), cookie_access_policy,
+                       isolation_info, web_contents_key,
+                       frame->GetFrameTreeNodeId(), std::move(proxied_receiver),
+                       std::move(target_factory_remote), security_options,
+                       std::move(xrw_allowlist_matcher),
+                       std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
     // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
@@ -1132,7 +1191,8 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
         FROM_HERE,
         base::BindOnce(
             &AwProxyingURLLoaderFactory::CreateProxy, std::move(cookie_manager),
-            cookie_access_policy, isolation_info, content::FrameTreeNodeId(),
+            cookie_access_policy, isolation_info,
+            /*web_contents_key=*/std::nullopt, content::FrameTreeNodeId(),
             std::move(proxied_receiver), std::move(target_factory_remote),
             std::nullopt /* security_options */,
             aw_browser_context->service_worker_xrw_allowlist_matcher(),
@@ -1212,17 +1272,7 @@ blink::UserAgentMetadata AwContentBrowserClient::GetUserAgentMetadata() {
 
 content::ContentBrowserClient::WideColorGamutHeuristic
 AwContentBrowserClient::GetWideColorGamutHeuristic() {
-  if (base::FeatureList::IsEnabled(features::kWebViewWideColorGamutSupport)) {
-    return WideColorGamutHeuristic::kUseWindow;
-  }
-
-  if (display::HasForceDisplayColorProfile() &&
-      display::GetForcedDisplayColorProfile() ==
-          gfx::ColorSpace::CreateDisplayP3D65()) {
-    return WideColorGamutHeuristic::kUseWindow;
-  }
-
-  return WideColorGamutHeuristic::kNone;
+  return WideColorGamutHeuristic::kUseWindow;
 }
 
 void AwContentBrowserClient::LogWebFeatureForCurrentPage(
@@ -1264,8 +1314,7 @@ bool AwContentBrowserClient::HasErrorPage(int http_status_code) {
 
 bool AwContentBrowserClient::SuppressDifferentOriginSubframeJSDialogs(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(
-      features::kWebViewSuppressDifferentOriginSubframeJSDialogs);
+  return false;
 }
 
 bool AwContentBrowserClient::ShouldPreconnectNavigation(
@@ -1423,7 +1472,14 @@ bool AwContentBrowserClient::IsFullCookieAccessAllowed(
     content::BrowserContext* browser_context,
     content::WebContents* web_contents,
     const GURL& url,
-    const blink::StorageKey& storage_key) {
+    const blink::StorageKey& storage_key,
+    net::CookieSettingOverrides overrides) {
+  return AreThirdPartyCookiesGenerallyAllowed(browser_context, web_contents);
+}
+
+bool AwContentBrowserClient::AreThirdPartyCookiesGenerallyAllowed(
+    content::BrowserContext* browser_context,
+    content::WebContents* web_contents) {
   if (!web_contents) {
     // We do not allow third-party cookie access from service workers.
     return false;
@@ -1435,4 +1491,36 @@ bool AwContentBrowserClient::IsFullCookieAccessAllowed(
 
   return aw_settings->GetAllowThirdPartyCookies();
 }
+
+bool AwContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
+  // In WebView, we allow non-activated cross-origin paint holding, since apps
+  // currently experience this behavior and are in control of what to show.
+  // TODO(crbug.com/368087192): We can consider disabling it while monitoring
+  // for any breakages.
+  return true;
+}
+
+bool AwContentBrowserClient::IsSharedStorageAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
+  // TODO(https://crbug.com/401255068): We should have a more stringent check
+  // here before launching beyond DEV.
+  return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
+}
+
+bool AwContentBrowserClient::IsSharedStorageSelectURLAllowed(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin,
+    std::string* out_debug_message,
+    bool* out_block_is_site_setting_specific) {
+  // TODO(https://crbug.com/401255068): We should have a more stringent check
+  // here before launching beyond DEV.
+  return base::FeatureList::IsEnabled(network::features::kSharedStorageAPI);
+}
+
 }  // namespace android_webview

@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_test_fonts.h"
@@ -24,10 +25,13 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static BlinkFuzzerTestSupport test_support = BlinkFuzzerTestSupport();
   test::TaskEnvironment task_environment;
 
+  // SAFETY: Just wraps the data from libFuzzer in a span.
+  auto data_span = UNSAFE_BUFFERS(base::span(data, size));
+
   FontCachePurgePreventer font_cache_purge_preventer;
   FontDescription::VariantLigatures ligatures;
-  Font math = test::CreateTestFont(AtomicString("MathTestFont"), data, size,
-                                   kFontSize, &ligatures);
+  Font* math = test::CreateTestFont(AtomicString("MathTestFont"), data_span,
+                                    kFontSize, &ligatures);
 
   // TODO(crbug.com/1340884): This is only testing API for three characters.
   // TODO(crbug.com/1340884): Use FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION to
@@ -35,8 +39,9 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // GetGlyphPartRecords?
   for (auto character : {kNAryWhiteVerticalBarCodePoint, kLeftBraceCodePoint,
                          kOverBraceCodePoint}) {
-    if (!math.PrimaryFont()->GlyphForCharacter(character))
+    if (!math->PrimaryFont()->GlyphForCharacter(character)) {
       continue;
+    }
     StretchyOperatorShaper vertical_shaper(
         character, OpenTypeMathStretchData::StretchAxis::Vertical);
     StretchyOperatorShaper horizontal_shaper(
@@ -44,8 +49,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     for (unsigned i = 0; i < kSizeCount; i++) {
       StretchyOperatorShaper::Metrics metrics;
       float target_size = (i + 1) * (kFontSize / 2);
-      vertical_shaper.Shape(&math, target_size, &metrics);
-      horizontal_shaper.Shape(&math, target_size, &metrics);
+      vertical_shaper.Shape(math, target_size, &metrics);
+      horizontal_shaper.Shape(math, target_size, &metrics);
     }
   }
 

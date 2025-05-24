@@ -37,13 +37,6 @@ scoped_refptr<Image> ClipPathPaintImageGeneratorImpl::Paint(
       clip_path_paint_definition_->GetWorkletId());
 }
 
-gfx::RectF ClipPathPaintImageGeneratorImpl::ClipAreaRect(
-    const Node& node,
-    const gfx::RectF& reference_box,
-    float zoom) const {
-  return ClipPathPaintDefinition::ClipAreaRect(node, reference_box, zoom);
-}
-
 Animation* ClipPathPaintImageGeneratorImpl::GetAnimationIfCompositable(
     const Element* element) {
   return ClipPathPaintDefinition::GetAnimationIfCompositable(element);

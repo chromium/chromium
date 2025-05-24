@@ -2,28 +2,46 @@ Tests that Page.frameNavigated reports isSecureOrigin[Explanation] correctly
 Navigate to localhost
 {
   "securityOrigin": "http://localhost:8000",
+  "securityOriginDetails": {
+    "isLocalhost": true
+  },
   "secureContextType": "SecureLocalhost"
 }
 {
   "securityOrigin": "https://devtools.test:8443",
+  "securityOriginDetails": {
+    "isLocalhost": false
+  },
   "secureContextType": "Secure"
 }
 Navigate to URL without secure scheme
 {
   "securityOrigin": "http://devtools.test:8000",
+  "securityOriginDetails": {
+    "isLocalhost": false
+  },
   "secureContextType": "InsecureScheme"
 }
 {
   "securityOrigin": "https://devtools.test:8443",
+  "securityOriginDetails": {
+    "isLocalhost": false
+  },
   "secureContextType": "InsecureAncestor"
 }
 Navigate to URL with secure scheme
 {
   "securityOrigin": "https://localhost:8443",
+  "securityOriginDetails": {
+    "isLocalhost": true
+  },
   "secureContextType": "SecureLocalhost"
 }
 {
   "securityOrigin": "https://devtools.test:8443",
+  "securityOriginDetails": {
+    "isLocalhost": false
+  },
   "secureContextType": "Secure"
 }
 

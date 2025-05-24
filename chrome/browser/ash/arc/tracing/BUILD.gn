@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("tracing") {
   sources = [
@@ -46,13 +46,13 @@ static_library("tracing") {
 
   deps = [
     "//ash",
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/constants",
     "//base",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync:factories",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/app_restore",
     "//components/exo",
     "//components/keyed_service/core",
@@ -90,8 +90,6 @@ source_set("unit_tests") {
     ":tracing",
     "//ash",
     "//ash:test_support",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
     "//base/test:test_support",
@@ -102,6 +100,8 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/app_restore",
     "//components/exo",
     "//components/sync:test_support",

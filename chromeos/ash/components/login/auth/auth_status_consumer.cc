@@ -18,18 +18,18 @@ void AuthStatusConsumer::OnOnlinePasswordUnusable(
 }
 
 void AuthStatusConsumer::OnPasswordChangeDetectedFor(const AccountId& account) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AuthStatusConsumer::OnOldEncryptionDetected(
     std::unique_ptr<UserContext> user_context,
     bool has_incomplete_migration) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AuthStatusConsumer::OnLocalAuthenticationRequired(
     std::unique_ptr<UserContext> user_context) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace ash

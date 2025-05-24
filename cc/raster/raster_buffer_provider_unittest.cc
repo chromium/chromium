@@ -29,10 +29,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/unique_notifier.h"
 #include "cc/paint/draw_image.h"
-#include "cc/raster/bitmap_raster_buffer_provider.h"
 #include "cc/raster/gpu_raster_buffer_provider.h"
 #include "cc/raster/one_copy_raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
@@ -42,6 +40,7 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/tiles/tile_task_manager.h"
+#include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/raster_capabilities.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/platform_color.h"
@@ -53,6 +52,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/ipc/client/client_shared_image_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
 #include "url/gurl.h"
@@ -173,36 +173,37 @@ class RasterBufferProviderTest
 
   // Overridden from testing::Test:
   void SetUp() override {
-    RasterCapabilities raster_caps;
-    raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
-
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
-                context_provider_.get(), raster_caps);
+                context_provider_->SharedImageInterface(),
+                /*is_software=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
+            worker_context_provider_->SharedImageInterface(),
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             context_provider_.get(), worker_context_provider_.get(),
-            kMaxBytesPerCopyOperation, false, kMaxStagingBuffers, raster_caps);
+            kMaxBytesPerCopyOperation, false, kMaxStagingBuffers,
+            /*is_overlay_candidate=*/false);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
-        raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
+            worker_context_provider_->SharedImageInterface(),
             context_provider_.get(), worker_context_provider_.get(),
-            raster_caps, gfx::Size(), true, pending_raster_queries_.get(), 1);
+            /*is_overlay_candidate=*/false, gfx::Size(),
+            pending_raster_queries_.get(), 1);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();
-        raster_buffer_provider_ = std::make_unique<BitmapRasterBufferProvider>(
-            layer_tree_frame_sink_.get());
+        raster_buffer_provider_ =
+            std::make_unique<ZeroCopyRasterBufferProvider>(
+                layer_tree_frame_sink_.get()->shared_image_interface(),
+                /*is_software=*/true);
         break;
     }
 
@@ -212,7 +213,8 @@ class RasterBufferProviderTest
         resource_provider_.get(), context_provider_.get(),
         base::SingleThreadTaskRunner::GetCurrentDefault(), base::TimeDelta(),
         true);
-    tile_task_manager_ = TileTaskManagerImpl::Create(&task_graph_runner_);
+    tile_task_manager_ =
+        TileTaskManagerImpl::Create(&task_graph_runner_, base::DoNothing());
   }
 
   void TearDown() override {
@@ -587,12 +589,12 @@ TEST_P(RasterBufferProviderTest, MeasureGpuRasterDuration) {
   EXPECT_FALSE(has_pending_queries);
   histogram_tester.ExpectTotalCount(duration_histogram, 9);
 
-  // Only in Chrome OS, we should be measuring raster scheduling delay (and only
+  // Only in ChromeOS, we should be measuring raster scheduling delay (and only
   // for tasks that don't depend on at-raster image decodes).
-  base::HistogramBase::Count expected_delay_histogram_all_tiles_count = 0;
-  base::HistogramBase::Count expected_delay_histogram_jpeg_tiles_count = 0;
-  base::HistogramBase::Count expected_delay_histogram_webp_tiles_count = 0;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::HistogramBase::Count32 expected_delay_histogram_all_tiles_count = 0;
+  base::HistogramBase::Count32 expected_delay_histogram_jpeg_tiles_count = 0;
+  base::HistogramBase::Count32 expected_delay_histogram_webp_tiles_count = 0;
+#if BUILDFLAG(IS_CHROMEOS)
   if (GetParam() == RASTER_BUFFER_PROVIDER_TYPE_GPU) {
     expected_delay_histogram_all_tiles_count = 5;
     expected_delay_histogram_jpeg_tiles_count = 3;

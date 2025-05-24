@@ -10,7 +10,7 @@ namespace blink {
 
 String CSSFunctionValue::CustomCSSText() const {
   StringBuilder result;
-  result.Append(getValueName(value_id_));
+  result.Append(GetCSSValueNameAs<StringView>(value_id_));
   result.Append('(');
   result.Append(CSSValueList::CustomCSSText());
   result.Append(')');

@@ -168,8 +168,9 @@ void BlockedPopupTabHelper::OnManagerShuttingDown(
 void BlockedPopupTabHelper::ShowInfoBar() {
   infobars::InfoBarManager* infobar_manager =
       InfoBarManagerImpl::FromWebState(web_state_);
-  if (!popups_.size() || !infobar_manager)
+  if (!popups_.size() || !infobar_manager) {
     return;
+  }
 
   RegisterAsInfoBarManagerObserverIfNeeded(infobar_manager);
 
@@ -207,5 +208,3 @@ void BlockedPopupTabHelper::RegisterAsInfoBarManagerObserverIfNeeded(
   DCHECK(!scoped_observation_.IsObserving());
   scoped_observation_.Observe(infobar_manager);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(BlockedPopupTabHelper)

@@ -47,8 +47,9 @@ TEST_F(URLLoaderTest, Basic) {
       GetBrowserState()->GetURLLoaderFactory(),
       base::BindLambdaForTesting(
           [&](std::unique_ptr<std::string> response_body) {
-            if (response_body)
+            if (response_body) {
               result = *response_body;
+            }
             run_loop.Quit();
           }));
   run_loop.Run();

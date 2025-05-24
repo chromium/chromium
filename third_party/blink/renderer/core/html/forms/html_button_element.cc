@@ -32,12 +32,11 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/events/command_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -56,13 +55,17 @@ void HTMLButtonElement::setType(const AtomicString& type) {
 
 LayoutObject* HTMLButtonElement::CreateLayoutObject(
     const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
   // https://html.spec.whatwg.org/C/#button-layout
   EDisplay display = style.Display();
   if (display == EDisplay::kInlineGrid || display == EDisplay::kGrid ||
       display == EDisplay::kInlineFlex || display == EDisplay::kFlex ||
       display == EDisplay::kInlineLayoutCustom ||
-      display == EDisplay::kLayoutCustom)
+      display == EDisplay::kLayoutCustom) {
     return HTMLFormControlElement::CreateLayoutObject(style);
+  }
   return MakeGarbageCollected<LayoutBlockFlow>(this);
 }
 
@@ -90,13 +93,6 @@ const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
       DEFINE_STATIC_LOCAL(const AtomicString, reset, ("reset"));
       return reset;
     }
-    case Type::kSelectlist: {
-      if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
-        DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
-        return selectlist;
-      }
-      break;
-    }
   }
   NOTREACHED();
 }
@@ -119,34 +115,216 @@ void HTMLButtonElement::ParseAttribute(
       type_ = kReset;
     } else if (EqualIgnoringASCIICase(params.new_value, "button")) {
       type_ = kButton;
-    } else if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled() &&
-               EqualIgnoringASCIICase(params.new_value, "selectlist")) {
-      type_ = kSelectlist;
+    } else if (EqualIgnoringASCIICase(params.new_value, "submit")) {
+      type_ = kSubmit;
     } else {
       if (!params.new_value.IsNull()) {
         if (params.new_value.empty()) {
           UseCounter::Count(GetDocument(),
                             WebFeature::kButtonTypeAttrEmptyString);
-        } else if (!EqualIgnoringASCIICase(params.new_value, "submit")) {
+        } else {
           UseCounter::Count(GetDocument(), WebFeature::kButtonTypeAttrInvalid);
         }
       }
-      type_ = kSubmit;
+      if (RuntimeEnabledFeatures::HTMLCommandAttributesEnabled() &&
+          (FastHasAttribute(html_names::kCommandAttr) ||
+           FastHasAttribute(html_names::kCommandforAttr))) {
+        UseCounter::Count(
+            GetDocument(),
+            WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
+        type_ = kButton;
+      } else {
+        type_ = kSubmit;
+      }
     }
     UpdateWillValidateCache();
-    if (formOwner() && isConnected())
+    if (formOwner() && isConnected()) {
       formOwner()->InvalidateDefaultButtonStyle();
+    }
+  } else if (params.name == html_names::kCommandAttr ||
+             params.name == html_names::kCommandforAttr) {
+    bool has_type = FastHasAttribute(html_names::kTypeAttr);
+    bool type_is_button = EqualIgnoringASCIICase(
+        FastGetAttribute(html_names::kTypeAttr), "button");
+    if ((!has_type || !type_is_button)) {
+      UseCounter::Count(
+          GetDocument(),
+          WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
+    }
   } else {
-    if (params.name == html_names::kFormactionAttr)
+    if (params.name == html_names::kFormactionAttr) {
       LogUpdateAttributeIfIsolatedWorldAndInDocument("button", params);
+    }
     HTMLFormControlElement::ParseAttribute(params);
   }
 }
 
+Element* HTMLButtonElement::commandForElement() const {
+  if (!RuntimeEnabledFeatures::HTMLCommandAttributesEnabled()) {
+    return nullptr;
+  }
+
+  if (!IsInTreeScope() || IsDisabledFormControl() ||
+      (Form() && FastHasAttribute(html_names::kTypeAttr) && type_ == kSubmit)) {
+    return nullptr;
+  }
+
+  return GetElementAttributeResolvingReferenceTarget(
+      html_names::kCommandforAttr);
+}
+
+void HTMLButtonElement::setCommand(const AtomicString& type) {
+  setAttribute(html_names::kCommandAttr, type);
+}
+
+AtomicString HTMLButtonElement::command() const {
+  CHECK(RuntimeEnabledFeatures::HTMLCommandAttributesEnabled());
+  const AtomicString& action = FastGetAttribute(html_names::kCommandAttr);
+  CommandEventType type = GetCommandEventType(action);
+  switch (type) {
+    case CommandEventType::kNone:
+      return g_empty_atom;
+    case CommandEventType::kCustom:
+      return action;
+    default: {
+      const AtomicString& lower_action = action.LowerASCII();
+      DCHECK_EQ(GetCommandEventType(lower_action), type);
+      return lower_action;
+    }
+  }
+}
+
+CommandEventType HTMLButtonElement::GetCommandEventType(
+    const AtomicString& action) const {
+  if (action.IsNull() || action.empty()) {
+    return CommandEventType::kNone;
+  }
+
+  // Custom Invoke Action
+  if (action.StartsWith("--")) {
+    return CommandEventType::kCustom;
+  }
+
+  // Popover Cases
+  if (EqualIgnoringASCIICase(action, keywords::kTogglePopover)) {
+    return CommandEventType::kTogglePopover;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kShowPopover)) {
+    return CommandEventType::kShowPopover;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kHidePopover)) {
+    return CommandEventType::kHidePopover;
+  }
+
+  // Dialog Cases
+  if (EqualIgnoringASCIICase(action, keywords::kClose)) {
+    return CommandEventType::kClose;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kShowModal)) {
+    return CommandEventType::kShowModal;
+  }
+
+  if (RuntimeEnabledFeatures::HTMLCommandRequestCloseEnabled() &&
+      EqualIgnoringASCIICase(action, keywords::kRequestClose)) {
+    return CommandEventType::kRequestClose;
+  }
+
+  // V2 commands go below this point
+
+  if (!RuntimeEnabledFeatures::HTMLCommandActionsV2Enabled()) {
+    return CommandEventType::kNone;
+  }
+
+  // Input/Select Cases
+  if (EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
+    return CommandEventType::kShowPicker;
+  }
+
+  // Number Input Cases
+  if (EqualIgnoringASCIICase(action, keywords::kStepUp)) {
+    return CommandEventType::kStepUp;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kStepDown)) {
+    return CommandEventType::kStepDown;
+  }
+
+  // Fullscreen Cases
+  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
+    return CommandEventType::kToggleFullscreen;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
+    return CommandEventType::kRequestFullscreen;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
+    return CommandEventType::kExitFullscreen;
+  }
+
+  // Details cases
+  if (EqualIgnoringASCIICase(action, keywords::kToggle)) {
+    return CommandEventType::kToggle;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kOpen)) {
+    return CommandEventType::kOpen;
+  }
+  // CommandEventType::kClose handled above in Dialog
+
+  // Media cases
+  if (EqualIgnoringASCIICase(action, keywords::kPlayPause)) {
+    return CommandEventType::kPlayPause;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kPause)) {
+    return CommandEventType::kPause;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
+    return CommandEventType::kPlay;
+  }
+  if (EqualIgnoringASCIICase(action, keywords::kToggleMuted)) {
+    return CommandEventType::kToggleMuted;
+  }
+
+  return CommandEventType::kNone;
+}
+
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
+    bool potentialCommand = (FastHasAttribute(html_names::kCommandforAttr) ||
+                             FastHasAttribute(html_names::kCommandAttr));
     if (!IsDisabledFormControl()) {
-      if (Form() && type_ == kSubmit && !OwnerSelect()) {
+      if (Form() && RuntimeEnabledFeatures::HTMLCommandAttributesEnabled() &&
+          type_ == kButton) {
+        if (!EqualIgnoringASCIICase(FastGetAttribute(html_names::kTypeAttr),
+                                    "button")) {
+          DCHECK(type_ == kButton);
+          AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
+                            mojom::blink::ConsoleMessageLevel::kWarning,
+                            "Buttons associated with forms that include "
+                            "command or commandfor attributes are "
+                            "ambiguous, and require a type=button attribute. "
+                            "No action will be taken.");
+          return;
+        }
+      }
+
+      if (Form() && type_ == kSubmit) {
+        if (!EqualIgnoringASCIICase(FastGetAttribute(html_names::kTypeAttr),
+                                    "submit") &&
+            potentialCommand) {
+          DCHECK(type_ == kSubmit);
+          AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
+                            mojom::blink::ConsoleMessageLevel::kWarning,
+                            "Buttons associated with forms that include "
+                            "command or commandfor attributes are "
+                            "ambiguous, and require a type=button attribute. "
+                            "No action will be taken.");
+          return;
+        } else if (potentialCommand) {
+          DCHECK(FastHasAttribute(html_names::kTypeAttr));
+          AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Buttons with an explicit type=submit will always submit a form, "
+              "so command or commandfor attributes will be ignored.");
+        }
         Form()->PrepareForSubmission(&event, this);
         event.SetDefaultHandled();
         return;
@@ -154,37 +332,48 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
       if (Form() && type_ == kReset) {
         Form()->reset();
         event.SetDefaultHandled();
+        if (potentialCommand) {
+          AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Buttons with an explicit type=reset will always reset a form, "
+              "so command or commandfor attributes will be ignored.");
+        }
         return;
       }
     }
-  }
 
-  if (type_ == kSelectlist) {
-    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-    if (auto* selectlist = OwnerSelectList()) {
-      selectlist->HandleButtonEvent(event);
-    }
-  }
-
-  if (auto* select = OwnerSelect()) {
-    CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
-    // For native popups, use HTMLSelectElement's codepath. For <datalist>
-    // popover popups, use the HTMLFormControlElement popover code path.
-    if (select->IsAppearanceBaseButton()) {
-      CHECK(!event.DefaultHandled())
-          << " We shouldn't run HTMLSelectElement::DefaultEventHandler here if "
-             "the default has already been handled. event.type(): "
-          << event.type();
-      select->DefaultEventHandler(event);
-      if (event.DefaultHandled()) {
-        return;
+    // Buttons with a commandfor will dispatch a CommandEvent on the
+    // invoker, and run HandleCommandInternal to perform default logic.
+    if (auto* command_target = commandForElement()) {
+      // commandfor & popovertarget shouldn't be combined, so warn.
+      if (FastHasAttribute(html_names::kPopovertargetAttr)) {
+        AddConsoleMessage(
+            mojom::blink::ConsoleMessageSource::kOther,
+            mojom::blink::ConsoleMessageLevel::kWarning,
+            "popovertarget is ignored on elements with commandfor.");
       }
+
+      auto action =
+          GetCommandEventType(FastGetAttribute(html_names::kCommandAttr));
+      bool is_valid_builtin =
+          command_target->IsValidBuiltinCommand(*this, action);
+      bool should_dispatch =
+          is_valid_builtin || action == CommandEventType::kCustom;
+      if (should_dispatch) {
+        Event* commandEvent =
+            CommandEvent::Create(event_type_names::kCommand, command(), this);
+        command_target->DispatchEvent(*commandEvent);
+        if (is_valid_builtin && !commandEvent->defaultPrevented()) {
+          command_target->HandleCommandInternal(*this, action);
+        }
+      }
+
+      return;
     }
   }
 
-  // type=selectlist should not open the listbox when enter is pressed, which
-  // HandleKeyboardActivation would do via simulated click.
-  if (type_ != kSelectlist && HandleKeyboardActivation(event)) {
+  if (HandleKeyboardActivation(event)) {
     return;
   }
 
@@ -197,8 +386,9 @@ bool HTMLButtonElement::HasActivationBehavior() const {
 
 bool HTMLButtonElement::WillRespondToMouseClickEvents() {
   if (!IsDisabledFormControl() && Form() &&
-      (type_ == kSubmit || type_ == kReset))
+      (type_ == kSubmit || type_ == kReset)) {
     return true;
+  }
   return HTMLFormControlElement::WillRespondToMouseClickEvents();
 }
 
@@ -215,8 +405,9 @@ void HTMLButtonElement::SetActivatedSubmit(bool flag) {
 }
 
 void HTMLButtonElement::AppendToFormData(FormData& form_data) {
-  if (type_ == kSubmit && !GetName().empty() && is_activated_submit_)
+  if (type_ == kSubmit && !GetName().empty() && is_activated_submit_) {
     form_data.AppendFromElement(GetName(), Value());
+  }
 }
 
 void HTMLButtonElement::AccessKeyAction(
@@ -270,52 +461,30 @@ void HTMLButtonElement::DispatchBlurEvent(
   // The button might be the control element of a label
   // that is in :active state. In that case the control should
   // remain :active to avoid crbug.com/40934455.
-  if (!RuntimeEnabledFeatures::KeepActiveIfLabelActiveEnabled() ||
-      !HasActiveLabel()) {
+  if (!HasActiveLabel()) {
     SetActive(false);
   }
   HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
                                             source_capabilities);
 }
 
-HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
-  if (type_ != kSelectlist) {
+HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
+  if (!HTMLSelectElement::CustomizableSelectEnabled(this)) {
     return nullptr;
   }
-  for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
-    if (IsA<HTMLListboxElement>(ancestor)) {
-      // Buttons inside listboxes are excluded from triggering the listbox.
-      return nullptr;
-    }
-    if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
-      return selectlist;
+  if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
+    if (select->SlottedButton() == this) {
+      return select;
     }
   }
   return nullptr;
 }
 
-HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
-  if (!RuntimeEnabledFeatures::CustomizableSelectEnabled()) {
-    return nullptr;
+bool HTMLButtonElement::IsInertRoot() const {
+  if (OwnerSelect() && !RuntimeEnabledFeatures::CSSInertEnabled()) {
+    return true;
   }
-  if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
-    for (auto* previous_sibling = previousSibling(); previous_sibling;
-         previous_sibling = previous_sibling->previousSibling()) {
-      if (IsA<HTMLButtonElement>(previous_sibling)) {
-        // Only the first child <button> of a <select>, which is the one that
-        // gets slotted into the button slot, should get the <select> opening
-        // behavior.
-        return nullptr;
-      }
-    }
-    return select;
-  }
-  if (auto* root = ContainingShadowRoot()) {
-    if (auto* select = DynamicTo<HTMLSelectElement>(root->host())) {
-      return select;
-    }
-  }
-  return nullptr;
+  return HTMLFormControlElement::IsInertRoot();
 }
 
 }  // namespace blink

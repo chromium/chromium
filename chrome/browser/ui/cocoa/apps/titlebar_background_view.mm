@@ -53,10 +53,11 @@
   [[NSBezierPath bezierPathWithRoundedRect:roundedRect
                                    xRadius:cornerRadius
                                    yRadius:cornerRadius] addClip];
-  if ([[self window] isMainWindow] || [[self window] isKeyWindow])
+  if ([[self window] isMainWindow] || [[self window] isKeyWindow]) {
     [_color set];
-  else
+  } else {
     [_inactiveColor set];
+  }
   NSRectFill(rect);
 }
 

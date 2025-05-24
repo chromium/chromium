@@ -9,7 +9,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/time/time.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_bridge.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/browser_sync/common_controller_builder.h"
@@ -29,6 +29,7 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web_view/internal/app/application_context.h"
+#import "ios/web_view/internal/autofill/cwv_autofill_prefs.h"
 #import "ios/web_view/internal/passwords/web_view_account_password_store_factory.h"
 #import "ios/web_view/internal/passwords/web_view_profile_password_store_factory.h"
 #import "ios/web_view/internal/signin/web_view_identity_manager_factory.h"
@@ -45,13 +46,18 @@
 namespace ios_web_view {
 namespace {
 
-syncer::DataTypeSet GetDisabledTypes() {
+syncer::DataTypeSet GetDisabledTypes(PrefService* prefs) {
   syncer::DataTypeSet disabled_types = syncer::UserTypes();
   disabled_types.Remove(syncer::AUTOFILL);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_DATA);
   disabled_types.Remove(syncer::AUTOFILL_WALLET_METADATA);
   disabled_types.Remove(syncer::AUTOFILL_PROFILE);
   disabled_types.Remove(syncer::PASSWORDS);
+
+  if (prefs->GetBoolean(ios_web_view::kCWVAutofillAddressSyncEnabled)) {
+    disabled_types.Remove(syncer::CONTACT_INFO);
+  }
+
   return disabled_types;
 }
 
@@ -66,10 +72,10 @@ syncer::DataTypeController::TypeVector CreateControllers(
                                             ServiceAccessType::IMPLICIT_ACCESS);
 
   browser_sync::CommonControllerBuilder controller_builder;
+  PrefService* prefs = browser_state->GetPrefs();
 
   controller_builder.SetAutofillWebDataService(
-      web::GetUIThreadTaskRunner({}),
-      autofill_profile_web_data_service,
+      web::GetUIThreadTaskRunner({}), autofill_profile_web_data_service,
       WebViewWebDataServiceWrapperFactory::GetAutofillWebDataForAccount(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
   controller_builder.SetDeviceInfoSyncService(
@@ -83,7 +89,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS),
       WebViewAccountPasswordStoreFactory::GetForBrowserState(
           browser_state, ServiceAccessType::IMPLICIT_ACCESS));
-  controller_builder.SetPrefService(browser_state->GetPrefs());
+  controller_builder.SetPrefService(prefs);
 
   // Unused.
   controller_builder.SetBookmarkModel(nullptr);
@@ -112,7 +118,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   controller_builder.SetTemplateURLService(nullptr);
   controller_builder.SetUserEventService(nullptr);
 
-  return controller_builder.Build(GetDisabledTypes(), sync_service,
+  return controller_builder.Build(GetDisabledTypes(prefs), sync_service,
                                   version_info::Channel::STABLE);
 }
 

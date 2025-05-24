@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_KEYBOARD_ACCESSORY_ANDROID_AFFILIATED_PLUS_PROFILES_PROVIDER_H_
 
 #include "base/containers/span.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 
 namespace plus_addresses {

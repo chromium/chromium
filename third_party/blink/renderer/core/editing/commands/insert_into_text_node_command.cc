@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -72,6 +73,12 @@ void InsertIntoTextNodeCommand::DoUnapply() {
     return;
 
   node_->deleteData(offset_, text_.length(), IGNORE_EXCEPTION_FOR_TESTING);
+}
+
+String InsertIntoTextNodeCommand::ToString() const {
+  return WTF::StrCat(
+      {"InsertIntoTextNodeCommand {offset:", String::Number(offset_),
+       ", text:", text_.EncodeForDebugging(), "}"});
 }
 
 void InsertIntoTextNodeCommand::Trace(Visitor* visitor) const {

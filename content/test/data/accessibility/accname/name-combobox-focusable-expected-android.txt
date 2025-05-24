@@ -1,1 +1,1 @@
-android.widget.Spinner name='English' hint='Choose your language.'
+android.widget.Spinner interesting name='English' hint='Choose your language.'

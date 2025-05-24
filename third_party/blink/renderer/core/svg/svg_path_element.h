@@ -37,6 +37,7 @@ class SVGPathElement final : public SVGGeometryElement {
   explicit SVGPathElement(Document&);
 
   Path AsPath() const override;
+  PathBuilder AsMutablePath() const override;
   Path AttributePath() const;
 
   float getTotalLength(ExceptionState&) override;
@@ -65,7 +66,7 @@ class SVGPathElement final : public SVGGeometryElement {
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet* style) override;
+      HeapVector<CSSPropertyValue, 8>& style) override;
 
   Member<SVGAnimatedPath> path_;
 };

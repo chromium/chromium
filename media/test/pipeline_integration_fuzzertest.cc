@@ -112,11 +112,8 @@ std::string MseFuzzerVariantEnumToMimeTypeString(FuzzerVariant variant) {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 
     case SRC:
-      NOTREACHED_IN_MIGRATION() << "SRC is an invalid MSE fuzzer variant";
-      break;
+      NOTREACHED() << "SRC is an invalid MSE fuzzer variant";
   }
-
-  return "";
 }
 
 }  // namespace
@@ -198,7 +195,7 @@ class MediaSourcePipelineIntegrationFuzzerTest
 
     auto external_memory =
         std::make_unique<media::ExternalMemoryAdapterForTesting>(
-            base::make_span(data, size));
+            base::span(data, size));
     scoped_refptr<media::DecoderBuffer> buffer =
         media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
 

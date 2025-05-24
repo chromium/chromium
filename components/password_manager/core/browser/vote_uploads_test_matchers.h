@@ -29,14 +29,10 @@ HasPasswordLength() {
 }
 
 inline ::testing::Matcher<autofill::AutofillUploadContents>
-LoginFormSignatureIs(const std::string& signature) {
-  uint64_t signature_int;
-  if (!base::StringToUint64(signature, &signature_int)) {
-    signature_int = 0;
-  }
+LoginFormSignatureIs(autofill::FormSignature signature) {
   return ::testing::Property(
       "login_form_signature",
-      &autofill::AutofillUploadContents::login_form_signature, signature_int);
+      &autofill::AutofillUploadContents::login_form_signature, *signature);
 }
 
 inline ::testing::Matcher<autofill::AutofillUploadContents> PasswordsRevealedIs(
@@ -44,13 +40,6 @@ inline ::testing::Matcher<autofill::AutofillUploadContents> PasswordsRevealedIs(
   return ::testing::Property(
       "passwords_revealed",
       &autofill::AutofillUploadContents::passwords_revealed, revealed);
-}
-
-inline ::testing::Matcher<autofill::AutofillUploadContents>
-SingleUsernameDataIs(auto matcher) {
-  return ::testing::Property(
-      "single_username_data",
-      &autofill::AutofillUploadContents::single_username_data, matcher);
 }
 
 // Matchers for `AutofillUploadContents::Field`.
@@ -103,29 +92,6 @@ IsPasswordUpload(auto... matchers) {
 }
 
 }  // namespace upload_contents_matchers
-
-inline auto EqualsSingleUsernameDataVector(
-    std::vector<autofill::AutofillUploadContents::SingleUsernameData>
-        expected_data) {
-  using ::testing::Property;
-  using SingleUsernameData =
-      autofill::AutofillUploadContents::SingleUsernameData;
-  std::vector<testing::Matcher<SingleUsernameData>> matchers;
-  for (auto& expected_form : expected_data) {
-    matchers.push_back(::testing::AllOf(
-        Property("username_form_signature",
-                 &SingleUsernameData::username_form_signature,
-                 expected_form.username_form_signature()),
-        Property("username_field_signature",
-                 &SingleUsernameData::username_field_signature,
-                 expected_form.username_field_signature()),
-        Property("value_type", &SingleUsernameData::value_type,
-                 expected_form.value_type()),
-        Property("prompt_edit", &SingleUsernameData::prompt_edit,
-                 expected_form.prompt_edit())));
-  }
-  return ::testing::ElementsAreArray(matchers);
-}
 
 }  // namespace password_manager
 

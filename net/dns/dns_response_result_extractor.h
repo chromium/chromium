@@ -44,9 +44,10 @@ class NET_EXPORT_PRIVATE DnsResponseResultExtractor {
     kMultipleCnames,
     // Invalid alias chain, e.g. contains loops or disjoint aliases.
     kBadAliasChain,
-    // Not expected. Used for DCHECKs.
-    kUnexpected,
   };
+
+  static constexpr std::string_view kHasValidCnameRecordsHistogram =
+      "Net.DNS.DnsTask.HasValidCnameRecords";
 
   using ResultsOrError =
       base::expected<std::set<std::unique_ptr<HostResolverInternalResult>>,

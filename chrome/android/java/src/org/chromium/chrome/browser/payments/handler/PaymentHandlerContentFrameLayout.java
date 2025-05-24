@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
-import org.chromium.components.payments.InputProtector;
+import org.chromium.components.payments.ui.InputProtector;
 
 /** A FrameLayout implementation used to ignore user input based on an InputProtector. */
 public class PaymentHandlerContentFrameLayout extends FrameLayout {

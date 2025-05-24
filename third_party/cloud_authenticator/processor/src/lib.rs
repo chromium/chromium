@@ -118,12 +118,59 @@ pub enum Error {
     // be accepted from it.
     UnknownClient,
 
+    // This error signals that the key used to sign a request is unknown to the
+    // service, which means there is a problem with the client device's
+    // registration and it might need to re-register.
+    UnknownKey,
+
+    // This error signals that the signature attached to the request failed to
+    // verify, which is a problem that would need to be understood better.
+    SignatureVerificationFailed,
+
     // A large number of errors are not distinguished and are just strings.
     // The only exception is an error while parsing the client's request, since
     // we can include the detail of the CBOR parse error, which may be useful
     // for debugging.
     Str(&'static str),
     CBORError(cbor::Error),
+}
+
+#[derive(Default, Clone, Debug, Eq, PartialEq)]
+pub struct MetricsUpdate {
+    // Error events:
+
+    // The request was structurally invalid.
+    pub bad_request: u32,
+    // The client ID was unknown.
+    pub unknown_client: u32,
+    // The client attempted to authenticate with a UV key but no UV key was
+    // registered.
+    pub missing_uv_key: u32,
+    // The client attempted to authenticate with a non-UV key that wasn't registered.
+    pub missing_key: u32,
+    // The stored public key cannot be parsed.
+    pub cannot_parse_public_key: u32,
+    pub signature_verification_failed: u32,
+    pub error_result: u32,
+    pub missing_uv_key_with_deferred_bit: u32,
+    pub missing_uv_key_without_deferred_bit: u32,
+    pub missing_uv_key_with_hw_key_present: u32,
+    pub missing_uv_and_hw_key: u32,
+
+    // Operation events. (These are only updated if the operation was successful.)
+    pub debug_success: u32,
+    pub debug_dump: u32,
+    pub passkeys_create: u32,
+    pub passkeys_assert: u32,
+    pub passkeys_wrap_pin: u32,
+    pub device_register: u32,
+    pub device_add_uv_key: u32,
+    pub device_forget: u32,
+    pub keys_genpair: u32,
+    pub keys_wrap: u32,
+    pub recovery_key_store_wrap: u32,
+    pub recovery_key_store_wrap_as_member: u32,
+    pub recovery_key_store_rewrap: u32,
 }
 
 /// ExternalContext contains context about a client request that comes from
@@ -527,7 +574,7 @@ impl<'a, T> DirtyFlag<'a, T> {
     }
 
     /// Declare that a mutation is minor and thus shouldn't set the dirty flag.
-    fn get_mut_for_minor_change(&mut self) -> &mut T where {
+    fn get_mut_for_minor_change(&mut self) -> &mut T {
         self.minor_change = true;
         self._contents
     }
@@ -535,6 +582,7 @@ impl<'a, T> DirtyFlag<'a, T> {
 
 pub fn process_client_msg(
     state: ClientState,
+    metrics: &mut MetricsUpdate,
     mut ext_ctx: ExternalContext,
     handshake_hash: &[u8],
     client_msg: Vec<u8>,
@@ -542,32 +590,39 @@ pub fn process_client_msg(
     let mut state = state.parse()?;
 
     let Value::Map(client_msg) = cbor::parse(client_msg).map_err(Error::CBORError)? else {
+        metrics.bad_request += 1;
         return Err(Error::Str("request structure was not a map"));
     };
     let Some(Value::Bytestring(encoded_requests)) = client_msg.get(ENCODED_REQUESTS_KEY) else {
+        metrics.bad_request += 1;
         return Err(Error::Str("encoded_requests must be given"));
     };
     let Value::Array(requests) =
         cbor::parse_bytes(encoded_requests.clone()).map_err(Error::CBORError)?
     else {
+        metrics.bad_request += 1;
         return Err(Error::Str("encoded_requests must be an array"));
     };
 
     let mut auth = Authentication::None;
     if let Some(device_id) = client_msg.get(DEVICE_ID_KEY) {
         let Value::Bytestring(device_id) = device_id else {
+            metrics.bad_request += 1;
             return Err(Error::Str("device_id must be a bytestring"));
         };
         let device_id = device_id.to_vec();
         let Some(Value::String(auth_level)) = client_msg.get(AUTH_LEVEL_KEY) else {
+            metrics.bad_request += 1;
             return Err(Error::Str("auth_level must be given"));
         };
         let auth_level: AuthLevel =
             auth_level.parse().map_err(|_| Error::Str("unrecognised authentication level"))?;
         let Some(Value::Bytestring(sig)) = client_msg.get(SIG_KEY) else {
+            metrics.bad_request += 1;
             return Err(Error::Str("signature must be given"));
         };
         let Some(client) = state.get_device(&device_id) else {
+            metrics.unknown_client += 1;
             return Err(Error::UnknownClient);
         };
         let Some(Value::Map(pub_keys)) = client.get(PUB_KEYS_KEY) else {
@@ -576,9 +631,25 @@ pub fn process_client_msg(
         let Some(Value::Bytestring(pub_key)) =
             pub_keys.get(&MapKeyRef::Str(auth_level.as_str()) as &dyn MapLookupKey)
         else {
-            return Err(Error::Str("no such public key at that auth level"));
+            if auth_level == AuthLevel::UserVerification {
+                metrics.missing_uv_key += 1;
+
+                match client.get(UV_KEY_PENDING_KEY).unwrap_or(&Value::Boolean(false)) {
+                    Value::Boolean(true) => metrics.missing_uv_key_with_deferred_bit += 1,
+                    _ => metrics.missing_uv_key_without_deferred_bit += 1,
+                }
+
+                match pub_keys.get(&MapKeyRef::Str("hw") as &dyn MapLookupKey) {
+                    Some(_) => metrics.missing_uv_key_with_hw_key_present += 1,
+                    None => metrics.missing_uv_and_hw_key += 1,
+                }
+            } else {
+                metrics.missing_key += 1;
+            }
+            return Err(Error::UnknownKey);
         };
         let Some((pub_key_type, pub_key)) = spki::parse(pub_key) else {
+            metrics.cannot_parse_public_key += 1;
             return Err(Error::Str("cannot parse registered public key"));
         };
         let encoded_requests_hash = crypto::sha256(encoded_requests);
@@ -587,7 +658,8 @@ pub fn process_client_msg(
             spki::PublicKeyType::P256 => crypto::ecdsa_verify(pub_key, &signed_message, sig),
             spki::PublicKeyType::RSA => crypto::rsa_verify(pub_key, &signed_message, sig),
         } {
-            return Err(Error::Str("signature validation failed"));
+            metrics.signature_verification_failed += 1;
+            return Err(Error::SignatureVerificationFailed);
         }
         auth = Authentication::Device(
             device_id,
@@ -603,12 +675,14 @@ pub fn process_client_msg(
     let mut results = Vec::<Value>::with_capacity(requests.len());
     for request in requests {
         let Value::Map(request) = request else {
+            metrics.bad_request += 1;
             return Err(Error::Str("each request must be a map"));
         };
-        match do_request(&ext_ctx, &mut auth, &mut state_with_dirty_flag, request) {
+        match do_request(&ext_ctx, metrics, &mut auth, &mut state_with_dirty_flag, request) {
             Ok(result) => results
                 .push(Value::Map(BTreeMap::from([(MapKey::String(String::from(OK)), result)]))),
             Err(error) => {
+                metrics.error_result += 1;
                 results.push(Value::Map(BTreeMap::from([(
                     MapKey::String(String::from(ERR)),
                     error.to_cbor(),
@@ -709,6 +783,7 @@ fn debug<T>(msg: &'static str) -> Result<T, RequestError> {
 
 fn do_request(
     ext_ctx: &ExternalContext,
+    metrics: &mut MetricsUpdate,
     auth: &mut Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -717,34 +792,40 @@ fn do_request(
         return debug("request is missing cmd");
     };
     match cmd.as_str() {
-        "device/register" => do_device_register(ext_ctx, auth, state, request),
-        "device/add_uv_key" => do_device_add_uv_key(auth, state, request),
-        "device/forget" => do_device_forget(auth, state, request),
-        "debug/success" => Ok(Value::Boolean(true)),
-        "debug/dump" => do_debug_dump(ext_ctx, state, request),
-        "keys/genpair" => do_keys_genpair(auth, state, request),
-        "keys/wrap" => do_keys_wrap(auth, state, request),
-        "passkeys/assert" => passkeys::do_assert(auth, state, request),
-        "passkeys/create" => passkeys::do_create(auth, state, request),
-        "passkeys/wrap_pin" => passkeys::do_wrap_pin(auth, state, request),
+        "device/register" => do_device_register(ext_ctx, metrics, auth, state, request),
+        "device/add_uv_key" => do_device_add_uv_key(metrics, auth, state, request),
+        "device/forget" => do_device_forget(metrics, auth, state, request),
+        "debug/success" => do_debug_success(metrics),
+        "debug/dump" => do_debug_dump(ext_ctx, metrics, state, request),
+        "keys/genpair" => do_keys_genpair(metrics, auth, state, request),
+        "keys/wrap" => do_keys_wrap(metrics, auth, state, request),
+        "passkeys/assert" => passkeys::do_assert(metrics, auth, state, request),
+        "passkeys/create" => passkeys::do_create(metrics, auth, state, request),
+        "passkeys/wrap_pin" => passkeys::do_wrap_pin(metrics, auth, state, request),
         "recovery_key_store/wrap" => {
-            recovery_key_store::do_wrap(ext_ctx.current_time_epoch_millis, request)
+            recovery_key_store::do_wrap(ext_ctx.current_time_epoch_millis, metrics, request)
         }
         "recovery_key_store/wrap_as_member" => recovery_key_store::do_wrap_as_member(
+            metrics,
             auth,
             state,
             ext_ctx.current_time_epoch_millis,
             request,
         ),
-        "recovery_key_store/rewrap" => {
-            recovery_key_store::do_rewrap(auth, state, ext_ctx.current_time_epoch_millis, request)
-        }
+        "recovery_key_store/rewrap" => recovery_key_store::do_rewrap(
+            metrics,
+            auth,
+            state,
+            ext_ctx.current_time_epoch_millis,
+            request,
+        ),
         _ => debug("unknown command"),
     }
 }
 
 fn do_device_register(
     ext_ctx: &ExternalContext,
+    metrics: &mut MetricsUpdate,
     auth: &mut Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -872,10 +953,12 @@ fn do_device_register(
     if let Authentication::None = *auth {
         *auth = Authentication::NewlyRegistered(device_id.to_vec());
     }
+    metrics.device_register += 1;
     Ok(Value::Boolean(true))
 }
 
 fn do_device_add_uv_key(
+    metrics: &mut MetricsUpdate,
     auth: &mut Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -908,6 +991,7 @@ fn do_device_add_uv_key(
     match pub_keys.get(&uv) {
         Some(Value::Bytestring(existing_uv_key)) => {
             if existing_uv_key == spki {
+                metrics.device_add_uv_key += 1;
                 return Ok(Value::Boolean(true));
             } else {
                 return debug("different UV key already registered");
@@ -939,10 +1023,12 @@ fn do_device_add_uv_key(
     // Allow some subsequent commands in this request to act as if UV was asserted.
     *auth = Authentication::Device(device_id.clone(), *auth_level, OneTimeUV::Consumed, *reauth);
 
+    metrics.device_add_uv_key += 1;
     Ok(Value::Boolean(true))
 }
 
 fn do_device_forget(
+    metrics: &mut MetricsUpdate,
     _auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -955,10 +1041,12 @@ fn do_device_forget(
         return Ok(Value::Boolean(false));
     };
     entry.remove_entry();
+    metrics.device_forget += 1;
     Ok(Value::Boolean(true))
 }
 
 fn do_keys_genpair(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -976,6 +1064,7 @@ fn do_keys_genpair(
 
     let key = crypto::P256Scalar::generate();
 
+    metrics.keys_genpair += 1;
     Ok(cbor!({
         PUB_KEY: (key.compute_public_key().to_vec()),
         PRIV_KEY: (state.wrap(device_id, &key.bytes(), purpose)?),
@@ -983,6 +1072,7 @@ fn do_keys_genpair(
 }
 
 fn do_keys_wrap(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -1000,14 +1090,22 @@ fn do_keys_wrap(
     let Some(Value::String(purpose)) = request.get(PURPOSE_KEY) else {
         return debug("purpose required");
     };
+    metrics.keys_wrap += 1;
     Ok(state.wrap(device_id, key, purpose)?.into())
+}
+
+fn do_debug_success(metrics: &mut MetricsUpdate) -> Result<cbor::Value, RequestError> {
+    metrics.debug_success += 1;
+    Ok(Value::Boolean(true))
 }
 
 fn do_debug_dump(
     ext_ctx: &ExternalContext,
+    metrics: &mut MetricsUpdate,
     state: &mut DirtyFlag<ParsedState>,
     _request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
+    metrics.debug_dump += 1;
     Ok(cbor!({
         "transparent": (Value::Map(state.transparent.clone())),
         "current_time": (ext_ctx.current_time_epoch_millis),
@@ -1083,8 +1181,10 @@ mod tests {
             }])
             .to_bytes();
             let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+            let mut metrics = MetricsUpdate::default();
             let (output, StateUpdate::Major(state)) = process_client_msg(
                 ClientState::Initial,
+                &mut metrics,
                 EXTERNAL_CONTEXT.clone(),
                 TEST_HANDSHAKE_HASH.as_slice(),
                 msg,
@@ -1101,8 +1201,10 @@ mod tests {
                 KEY: SAMPLE_SECURITY_DOMAIN_SECRET,
                 PURPOSE: KEY_PURPOSE_SECURITY_DOMAIN_SECRET,
             }));
+            let mut metrics = MetricsUpdate::default();
             let (output, _state) = process_client_msg(
                 REGISTERED_STATE.clone(),
+                &mut metrics,
                 EXTERNAL_CONTEXT.clone(),
                 TEST_HANDSHAKE_HASH.as_slice(),
                 msg,
@@ -1122,8 +1224,32 @@ mod tests {
             }])
             .to_bytes();
             let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+            let mut metrics = MetricsUpdate::default();
             let (output, StateUpdate::Major(state)) = process_client_msg(
                 ClientState::Initial,
+                &mut metrics,
+                EXTERNAL_CONTEXT.clone(),
+                TEST_HANDSHAKE_HASH.as_slice(),
+                msg,
+            )
+            .unwrap() else {
+                panic!("");
+            };
+            assert_eq!(output, cbor!([{"ok": true}]));
+            ClientState::Explicit(state)
+        };
+        static ref REGISTERED_STATE_NO_KEYS: ClientState = {
+            let encoded_register = cbor!([{
+                CMD: "device/register",
+                DEVICE_ID: (TEST_DEVICE_ID.clone()),
+                PUB_KEYS: {"dummyentry": (SPKI.as_slice())},
+            }])
+            .to_bytes();
+            let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+            let mut metrics = MetricsUpdate::default();
+            let (output, StateUpdate::Major(state)) = process_client_msg(
+                ClientState::Initial,
+                &mut metrics,
                 EXTERNAL_CONTEXT.clone(),
                 TEST_HANDSHAKE_HASH.as_slice(),
                 msg,
@@ -1145,8 +1271,10 @@ mod tests {
                 },
             }));
 
+            let mut metrics = MetricsUpdate::default();
             let (output, _state) = process_client_msg(
                 REGISTERED_STATE.clone(),
+                &mut metrics,
                 EXTERNAL_CONTEXT.clone(),
                 TEST_HANDSHAKE_HASH.as_slice(),
                 msg.clone(),
@@ -1191,8 +1319,10 @@ mod tests {
             }])
             .to_bytes();
             let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+            let mut metrics = MetricsUpdate::default();
             let (output, StateUpdate::Major(state)) = process_client_msg(
                 ClientState::Initial,
+                &mut metrics,
                 EXTERNAL_CONTEXT.clone(),
                 TEST_HANDSHAKE_HASH.as_slice(),
                 msg,
@@ -1280,8 +1410,10 @@ mod tests {
     fn test_registration() {
         let msg = sign_request(cbor!({CMD: "debug/success"}));
         let device_id = vec![1, 2, 3];
+        let mut metrics = MetricsUpdate::default();
         let (output, state) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             ExternalContext {
                 client_device_identifier: device_id.clone(),
                 ..EXTERNAL_CONTEXT.clone()
@@ -1291,6 +1423,7 @@ mod tests {
         )
         .unwrap();
         assert!(is_ok(&output), "{:?}", output);
+        assert_eq!(metrics, MetricsUpdate { debug_success: 1, ..MetricsUpdate::default() });
 
         let StateUpdate::Minor(new_state) = state else {
             panic!("update from debug request was not minor");
@@ -1316,14 +1449,17 @@ mod tests {
         let msg = sign_authenticated_request(cmd, "hw", |to_be_signed| {
             RSA_KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
         });
+        let mut metrics = MetricsUpdate::default();
         let (output, _state) = process_client_msg(
             RSA_REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(is_ok(&output), "{:?}", output);
+        assert_eq!(metrics, MetricsUpdate { debug_success: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1337,14 +1473,17 @@ mod tests {
         }])
         .to_bytes();
         let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let mut metrics = MetricsUpdate::default();
         let (output, _) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert_eq!(output, cbor!([{"ok": true}]));
+        assert_eq!(metrics, MetricsUpdate { device_register: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1358,14 +1497,17 @@ mod tests {
         }])
         .to_bytes();
         let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let mut metrics = MetricsUpdate::default();
         let (output, _) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert_eq!(output, cbor!([{"err": 2}]));
+        assert_eq!(metrics, MetricsUpdate { error_result: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1379,14 +1521,17 @@ mod tests {
         }])
         .to_bytes();
         let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let mut metrics = MetricsUpdate::default();
         let (output, _) = process_client_msg(
             ClientState::Initial,
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(!is_ok(&output));
+        assert_eq!(metrics, MetricsUpdate { error_result: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1399,14 +1544,17 @@ mod tests {
         }])
         .to_bytes();
         let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let mut metrics = MetricsUpdate::default();
         let (output, _) = process_client_msg(
             ClientState::Initial,
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(!is_ok(&output));
+        assert_eq!(metrics, MetricsUpdate { error_result: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1420,14 +1568,17 @@ mod tests {
         }])
         .to_bytes();
         let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let mut metrics = MetricsUpdate::default();
         let (output, _) = process_client_msg(
             ClientState::Initial,
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(!is_ok(&output));
+        assert_eq!(metrics, MetricsUpdate { error_result: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1440,15 +1591,79 @@ mod tests {
         }])
         .to_bytes();
         let msg = cbor!({ENCODED_REQUESTS: encoded_register}).to_bytes();
+        let mut metrics = MetricsUpdate::default();
         let (output, _) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
-
         assert!(!is_ok(&output));
+        assert_eq!(metrics, MetricsUpdate { error_result: 1, ..MetricsUpdate::default() });
+    }
+
+    #[test]
+    fn test_uv_key_missing_metric() {
+        // We have observed this failure case in the wild thus we are especially
+        // interested that this metric works.
+        let Value::Map(cmd) = cbor!({CMD: "debug/success"}) else {
+            panic!("!");
+        };
+        let msg = sign_authenticated_request(cmd, "uv", |to_be_signed| {
+            KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
+        });
+        let mut metrics = MetricsUpdate::default();
+        let Err(_) = process_client_msg(
+            REGISTERED_STATE_UV_PENDING.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        ) else {
+            panic!("should have failed");
+        };
+        assert_eq!(
+            metrics,
+            MetricsUpdate {
+                missing_uv_key: 1,
+                missing_uv_key_with_deferred_bit: 1,
+                missing_uv_key_with_hw_key_present: 1,
+                ..MetricsUpdate::default()
+            }
+        );
+    }
+
+    #[test]
+    fn test_uv_key_missing_with_no_deferred_uv_and_no_hw_key_metrics() {
+        // We have observed this failure case in the wild thus we are especially
+        // interested that this metric works.
+        let Value::Map(cmd) = cbor!({CMD: "debug/success"}) else {
+            panic!("!");
+        };
+        let msg = sign_authenticated_request(cmd, "uv", |to_be_signed| {
+            KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
+        });
+        let mut metrics = MetricsUpdate::default();
+        let Err(_) = process_client_msg(
+            REGISTERED_STATE_NO_KEYS.clone(),
+            &mut metrics,
+            EXTERNAL_CONTEXT.clone(),
+            TEST_HANDSHAKE_HASH.as_slice(),
+            msg,
+        ) else {
+            panic!("should have failed");
+        };
+        assert_eq!(
+            metrics,
+            MetricsUpdate {
+                missing_uv_key: 1,
+                missing_uv_key_without_deferred_bit: 1,
+                missing_uv_and_hw_key: 1,
+                ..MetricsUpdate::default()
+            }
+        );
     }
 
     #[test]
@@ -1457,8 +1672,10 @@ mod tests {
             CMD: "device/add_uv_key",
             PUB_KEY: (SPKI.as_slice()),
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, StateUpdate::Major(state)) = process_client_msg(
             REGISTERED_STATE_UV_PENDING.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
@@ -1467,6 +1684,7 @@ mod tests {
             panic!("")
         };
         assert!(is_ok(&output));
+        assert_eq!(metrics, MetricsUpdate { device_add_uv_key: 1, ..MetricsUpdate::default() });
 
         // Doing the same command a second time is fine if the public key
         // matches.
@@ -1474,28 +1692,34 @@ mod tests {
             CMD: "device/add_uv_key",
             PUB_KEY: (SPKI.as_slice()),
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _update) = process_client_msg(
             ClientState::Explicit(state.clone()),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(is_ok(&output));
+        assert_eq!(metrics, MetricsUpdate { device_add_uv_key: 1, ..MetricsUpdate::default() });
 
         // ... but it fails if the public key is different.
         let msg = sign_request(cbor!({
             CMD: "device/add_uv_key",
             PUB_KEY: RSA_SPKI,
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _update) = process_client_msg(
             ClientState::Explicit(state.clone()),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(!is_ok(&output));
+        assert_eq!(metrics, MetricsUpdate { error_result: 1, ..MetricsUpdate::default() });
 
         // The UV key should work now.
         let Value::Map(cmd) = cbor!({CMD: "debug/success"}) else {
@@ -1504,14 +1728,17 @@ mod tests {
         let msg = sign_authenticated_request(cmd, "uv", |to_be_signed| {
             KEYPAIR.sign(to_be_signed).unwrap().as_ref().to_vec()
         });
+        let mut metrics = MetricsUpdate::default();
         let (output, _update) = process_client_msg(
             ClientState::Explicit(state),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(is_ok(&output), "{:?}", output);
+        assert_eq!(metrics, MetricsUpdate { debug_success: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1520,14 +1747,17 @@ mod tests {
             CMD: "device/forget",
             DEVICE_ID: (TEST_DEVICE_ID.clone()),
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _state) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg,
         )
         .unwrap();
         assert!(is_ok(&output), "{:?}", output);
+        assert_eq!(metrics, MetricsUpdate { device_forget: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1536,8 +1766,10 @@ mod tests {
             CMD: "keys/genpair",
             PURPOSE: "not yet used",
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _state) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg.clone(),
@@ -1550,6 +1782,7 @@ mod tests {
 
         assert!(matches!(response.get(PUB_KEY_KEY), Some(Value::Bytestring(_))));
         assert!(matches!(response.get(PRIV_KEY_KEY), Some(Value::Bytestring(_))));
+        assert_eq!(metrics, MetricsUpdate { keys_genpair: 1, ..MetricsUpdate::default() });
         // No way to use the generated key pair yet.
     }
 
@@ -1564,14 +1797,17 @@ mod tests {
                 RP_ID: "example.com",
             },
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _state) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg.clone(),
         )
         .unwrap();
         assert!(is_ok(&output), "{:?}", output);
+        assert_eq!(metrics, MetricsUpdate { passkeys_assert: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1588,14 +1824,17 @@ mod tests {
                 RP_ID: "example.com",
             },
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _state) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg.clone(),
         )
         .unwrap();
         assert!(is_ok(&output), "{:?}", output);
+        assert_eq!(metrics, MetricsUpdate { passkeys_assert: 1, ..MetricsUpdate::default() });
     }
 
     #[test]
@@ -1611,8 +1850,10 @@ mod tests {
                 RP_ID: "example.com",
             },
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _state) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg.clone(),
@@ -1621,6 +1862,7 @@ mod tests {
         assert!(!is_ok(&output));
         let error = single_error_string(&output).unwrap();
         assert!(error.contains("both wrapped and unwrapped"), "{:?}", output);
+        assert_eq!(metrics, MetricsUpdate { error_result: 1, ..MetricsUpdate::default() });
     }
 
     fn seal_aes_256_gcm(key: &[u8; 32], plaintext: &[u8], aad: &[u8]) -> Vec<u8> {
@@ -1650,8 +1892,10 @@ mod tests {
                 RP_ID: "example.com",
             },
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, state_update) = process_client_msg(
             state.clone(),
+            &mut metrics,
             EXTERNAL_CONTEXT.clone(),
             TEST_HANDSHAKE_HASH.as_slice(),
             msg.clone(),
@@ -1752,8 +1996,10 @@ mod tests {
             VAULT_HANDLE_WITHOUT_TYPE: (&vault_handle_without_type),
             WRAPPED_SECRET: (REGISTERED_STATE_WRAPPED_SECRET.clone()),
         }));
+        let mut metrics = MetricsUpdate::default();
         let (output, _) = process_client_msg(
             REGISTERED_STATE.clone(),
+            &mut metrics,
             ExternalContext { is_reauthenticated: true, ..EXTERNAL_CONTEXT.clone() },
             TEST_HANDSHAKE_HASH.as_slice(),
             msg.clone(),
@@ -1987,8 +2233,10 @@ mod tests {
             panic!("requests must be maps");
         };
         for mutated_request in mutate_request(request, authentication, configs) {
+            let mut metrics = MetricsUpdate::default();
             let (output, _state) = process_client_msg(
                 initial_state.clone(),
+                &mut metrics,
                 ExternalContext { is_reauthenticated: true, ..EXTERNAL_CONTEXT.clone() },
                 TEST_HANDSHAKE_HASH.as_slice(),
                 mutated_request.request,

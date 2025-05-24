@@ -27,7 +27,7 @@ const char kDisableAppContentVerification[] =
 const char kLoadApps[] = "load-apps";
 const char kLoadExtension[] = "load-extension";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kLoadSigninProfileTestExtension[] =
     "load-signin-profile-test-extension";
 const char kLoadGuestModeTestExtension[] = "load-guest-mode-test-extension";
@@ -42,5 +42,11 @@ const char kTraceAppSource[] = "enable-trace-app-source";
 const char kEnableCrxHashCheck[] = "enable-crx-hash-check";
 const char kAllowFutureManifestVersion[] = "allow-future-manifest-version";
 const char kExtensionTestApiOnWebPages[] = "extension-test-api-on-web-pages";
+
+const char kZeroStatePromoIphVariantParamName[] =
+    "extension-zero-state-iph-variant";
+const char kZeroStatePromoCustomActionIph[] = "custom-action-iph";
+const char kZeroStatePromoCustomUiChipIph[] = "custom-ui-chip-iph";
+const char kZeroStatePromoCustomUiPlainLinkIph[] = "custom-ui-plain-link-iph";
 
 }  // namespace extensions::switches

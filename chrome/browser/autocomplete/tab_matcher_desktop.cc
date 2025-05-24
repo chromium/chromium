@@ -27,8 +27,7 @@ class AutocompleteClientWebContentsUserData
       int last_committed_index,
       const GURL& last_committed_url,
       const TemplateURLService* template_url_service,
-      const bool keep_search_intent_params,
-      const bool normalize_search_terms) {
+      const bool keep_search_intent_params) {
     if (last_committed_url.is_valid()) {
       last_committed_entry_index_ = last_committed_index;
       // Use a blank input as the stripped URL will be reused with other inputs.
@@ -38,7 +37,7 @@ class AutocompleteClientWebContentsUserData
       // plain-text SRPs.
       last_committed_stripped_url_ = AutocompleteMatch::GURLToStrippedGURL(
           last_committed_url, AutocompleteInput(), template_url_service,
-          std::u16string(), keep_search_intent_params, normalize_search_terms);
+          std::u16string(), keep_search_intent_params);
     }
   }
 
@@ -62,7 +61,8 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(AutocompleteClientWebContentsUserData);
 }  // namespace
 
 bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
-                                         const AutocompleteInput* input) const {
+                                         const AutocompleteInput* input,
+                                         bool exclude_active_tab) const {
   const AutocompleteInput empty_input;
   if (!input)
     input = &empty_input;
@@ -74,33 +74,54 @@ bool TabMatcherDesktop::IsTabOpenWithURL(const GURL& url,
   // SRPs.
   const bool keep_search_intent_params = base::FeatureList::IsEnabled(
       omnibox::kDisambiguateTabMatchingForEntitySuggestions);
-  const bool normalize_search_terms =
-      base::FeatureList::IsEnabled(omnibox::kNormalizeSearchSuggestions);
   const GURL stripped_url = AutocompleteMatch::GURLToStrippedGURL(
       url, *input, template_url_service_, std::u16string(),
-      keep_search_intent_params, normalize_search_terms);
-  for (auto* web_contents : GetOpenWebContents()) {
+      keep_search_intent_params);
+  for (auto* web_contents : GetOpenWebContents(exclude_active_tab)) {
     if (IsStrippedURLEqualToWebContentsURL(stripped_url, web_contents,
-                                           keep_search_intent_params,
-                                           normalize_search_terms)) {
+                                           keep_search_intent_params)) {
       return true;
     }
   }
   return false;
 }
 
-std::vector<TabMatcher::TabWrapper> TabMatcherDesktop::GetOpenTabs() const {
+bool TabMatcherDesktop::IsTabOpenWithSameTitleOrSimilarURL(
+    const std::u16string& title,
+    const GURL& url,
+    const GURL::Replacements& replacements,
+    bool exclude_active_tab) const {
+  auto strip_url = [&](const GURL& url) -> GURL {
+    return AutocompleteMatch::GURLToStrippedGURL(
+        url.ReplaceComponents(replacements), AutocompleteInput(),
+        template_url_service_, std::u16string(),
+        /*keep_search_intent_params=*/false);
+  };
+
+  for (auto* web_contents : GetOpenWebContents(exclude_active_tab)) {
+    if (title == web_contents->GetTitle() ||
+        strip_url(url) == strip_url(web_contents->GetLastCommittedURL())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+std::vector<TabMatcher::TabWrapper> TabMatcherDesktop::GetOpenTabs(
+    const AutocompleteInput* input,
+    bool exclude_active_tab) const {
   std::vector<TabMatcher::TabWrapper> open_tabs;
-  for (auto* web_contents : GetOpenWebContents()) {
+  for (auto* web_contents : GetOpenWebContents(exclude_active_tab)) {
     open_tabs.emplace_back(web_contents->GetTitle(),
-                           web_contents->GetLastCommittedURL());
+                           web_contents->GetLastCommittedURL(),
+                           web_contents->GetLastActiveTime());
   }
 
   return open_tabs;
 }
 
-std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents()
-    const {
+std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents(
+    bool exclude_active_tab) const {
   Browser* active_browser = BrowserList::GetInstance()->GetLastActive();
   content::WebContents* active_tab = nullptr;
   if (active_browser)
@@ -114,8 +135,9 @@ std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents()
     }
     for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
       auto* web_contents = browser->tab_strip_model()->GetWebContentsAt(i);
-      if (web_contents != active_tab)
+      if (web_contents != active_tab || !exclude_active_tab) {
         all_tabs.push_back(web_contents);
+      }
     }
   }
   return all_tabs;
@@ -124,8 +146,7 @@ std::vector<content::WebContents*> TabMatcherDesktop::GetOpenWebContents()
 bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     const GURL& stripped_url,
     content::WebContents* web_contents,
-    const bool keep_search_intent_params,
-    const bool normalize_search_terms) const {
+    const bool keep_search_intent_params) const {
   AutocompleteClientWebContentsUserData::CreateForWebContents(web_contents);
   AutocompleteClientWebContentsUserData* user_data =
       AutocompleteClientWebContentsUserData::FromWebContents(web_contents);
@@ -135,7 +156,7 @@ bool TabMatcherDesktop::IsStrippedURLEqualToWebContentsURL(
     user_data->UpdateLastCommittedStrippedURL(
         web_contents->GetController().GetLastCommittedEntryIndex(),
         web_contents->GetLastCommittedURL(), template_url_service_,
-        keep_search_intent_params, normalize_search_terms);
+        keep_search_intent_params);
   }
   return stripped_url == user_data->GetLastCommittedStrippedURL();
 }

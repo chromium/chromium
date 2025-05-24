@@ -1,9 +1,93 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+﻿<!DOCTYPE HTML>
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<meta charset="utf-8">
+<title>Tests find for strings with Russian letters й and ё in them.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
-<script src="script-tests/find-russian.js"></script>
+
+<!-- The following text is necessary to pass a test! We should remove it. -->
+<p>Tests find for strings with Russian letters й and ё in them.</p>
+
+<script>
+function canFind(query, specimen) {
+  getSelection().empty();
+  const textNode = document.createTextNode(specimen);
+  document.body.appendChild(textNode);
+  document.execCommand('FindString', false, query);
+  const result = getSelection().rangeCount != 0;
+  getSelection().empty();
+  textNode.remove();
+  return result;
+}
+
+const letterCyrillicI = String.fromCharCode(0x0418);
+const letterCyrillicSmallI = String.fromCharCode(0x0438);
+const letterCyrillicShortI = String.fromCharCode(0x0419);
+const letterCyrillicSmallShortI = String.fromCharCode(0x0439);
+const letterCyrillicE = String.fromCharCode(0x0415);
+const letterCyrillicSmallE = String.fromCharCode(0x0435);
+const letterCyrillicYO = String.fromCharCode(0x0401);
+const letterCyrillicSmallYO = String.fromCharCode(0x0451);
+const combiningDiaeresis = String.fromCharCode(0x0308);
+const combiningBreve = String.fromCharCode(0x0306);
+
+const decomposedCyrillicShortI = letterCyrillicI + combiningBreve;
+const decomposedCyrillicSmallShortI = letterCyrillicSmallI + combiningBreve;
+const decomposedCyrillicYO = letterCyrillicE + combiningDiaeresis;
+const decomposedCyrillicSmallYO = letterCyrillicSmallE + combiningDiaeresis;
+
+test(() => {
+  assert_true(canFind(decomposedCyrillicShortI, decomposedCyrillicShortI));
+  assert_true(canFind(decomposedCyrillicSmallShortI, decomposedCyrillicSmallShortI));
+  assert_true(canFind(letterCyrillicShortI, letterCyrillicShortI));
+  assert_true(canFind(letterCyrillicSmallShortI, letterCyrillicSmallShortI));
+  assert_true(canFind('й', 'йод'));
+  assert_true(canFind('ё', 'мумиё'));
+}, 'Exact matches first as a baseline');
+
+test(() => {
+  assert_true(canFind(decomposedCyrillicYO, decomposedCyrillicYO));
+  assert_true(canFind(decomposedCyrillicSmallYO, decomposedCyrillicSmallYO));
+  assert_true(canFind(letterCyrillicShortI, decomposedCyrillicShortI));
+  assert_true(canFind(letterCyrillicSmallShortI, decomposedCyrillicSmallShortI));
+  assert_true(canFind(letterCyrillicYO, decomposedCyrillicYO));
+  assert_true(canFind(letterCyrillicSmallYO, decomposedCyrillicSmallYO));
+  assert_true(canFind(decomposedCyrillicShortI, letterCyrillicShortI));
+  assert_true(canFind(decomposedCyrillicSmallShortI, letterCyrillicSmallShortI));
+  assert_true(canFind(decomposedCyrillicYO, letterCyrillicYO));
+  assert_true(canFind(decomposedCyrillicSmallYO, letterCyrillicSmallYO));
+}, 'Composed and decomposed forms: Must be treated as equal');
+
+test(() => {
+  assert_true(canFind(letterCyrillicSmallI, letterCyrillicI));
+  assert_true(canFind(letterCyrillicSmallYO, letterCyrillicYO));
+  assert_true(canFind(letterCyrillicI, letterCyrillicSmallI));
+  assert_true(canFind(letterCyrillicYO, letterCyrillicSmallYO));
+  assert_true(canFind(decomposedCyrillicSmallShortI, letterCyrillicI));
+  assert_true(canFind(decomposedCyrillicSmallYO, letterCyrillicYO));
+  assert_true(canFind(decomposedCyrillicShortI, letterCyrillicSmallI));
+  assert_true(canFind(decomposedCyrillicYO, letterCyrillicSmallYO));
+  assert_true(canFind(letterCyrillicSmallI + letterCyrillicSmallYO, letterCyrillicSmallI + letterCyrillicYO));
+  assert_true(canFind('й', 'Йод'));
+  assert_true(canFind('ё', 'МУМИЁ'));
+  assert_true(canFind('Й', 'йод'));
+  assert_true(canFind('Ё', 'мумиё'));
+}, 'Small and capital letters: Must be treated as equal');
+
+test(() => {
+  assert_true(canFind('мумие', 'мумиё'));
+  assert_true(canFind('МУМИЕ', 'МУМИЁ'));
+  assert_true(canFind('мумиё', 'мумие'));
+  assert_true(canFind('МУМИЁ', 'МУМИЕ'));
+}, 'Е and Ё: Must be treated as equal');
+
+test(() => {
+  assert_false(canFind('зайка', 'заика'));
+  assert_false(canFind('заика', 'зайка'));
+}, 'Й and и: Must *not* be treated as equal');
+</script>
 </body>
 </html>

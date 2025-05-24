@@ -48,8 +48,9 @@ web::WebState* GetWebStateWithId(NSString* tab_id) {
   WebStateList* web_state_list = GetCurrentWebStateList();
   for (int i = 0; i < web_state_list->count(); ++i) {
     web::WebState* web_state = web_state_list->GetWebStateAt(i);
-    if ([tab_id isEqualToString:GetIdForWebState(web_state)])
+    if ([tab_id isEqualToString:GetIdForWebState(web_state)]) {
       return web_state;
+    }
   }
   return nil;
 }
@@ -96,12 +97,14 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
   __block web::WebState* webState = nullptr;
   DispatchSyncOnMainThread(^{
     webState = GetWebStateWithId(tabID);
-    if (webState)
+    if (webState) {
       web::test::LoadUrl(webState, GURL(base::SysNSStringToUTF8(URL)));
+    }
   });
 
-  if (!webState)
+  if (!webState) {
     return testing::NSErrorWithLocalizedDescription(@"No matching tab");
+  }
 
   bool success = WaitUntilConditionOrTimeout(timeout, ^bool {
     __block BOOL isLoading = NO;
@@ -111,8 +114,9 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     return !isLoading;
   });
 
-  if (success)
+  if (success) {
     return nil;
+  }
 
   return testing::NSErrorWithLocalizedDescription(@"Page load timed out");
 }
@@ -121,8 +125,9 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
   __block NSString* tabID = nil;
   DispatchSyncOnMainThread(^{
     web::WebState* webState = chrome_test_util::GetCurrentWebState();
-    if (webState)
+    if (webState) {
       tabID = GetIdForWebState(webState);
+    }
   });
 
   return tabID;
@@ -193,8 +198,9 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
   __block std::optional<base::Value> messageValue;
   DispatchSyncOnMainThread(^{
     web::WebState* webState = GetWebStateWithId(tabID);
-    if (!webState)
+    if (!webState) {
       return;
+    }
     web::WebFrame* mainFrame =
         webState->GetPageWorldWebFramesManager()->GetMainWebFrame();
     if (!mainFrame) {
@@ -224,8 +230,9 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
                                  }));
   });
 
-  if (!webStateFound)
+  if (!webStateFound) {
     return nil;
+  }
 
   bool success = WaitUntilConditionOrTimeout(timeout, ^bool {
     __block BOOL scriptExecutionComplete = NO;
@@ -235,8 +242,9 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     return scriptExecutionComplete;
   });
 
-  if (!success)
+  if (!success) {
     return nil;
+  }
 
   std::string resultAsJSON;
   base::JSONWriter::Write(*messageValue, &resultAsJSON);
@@ -255,8 +263,9 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
     webState = GetWebStateWithId(ID);
   });
 
-  if (!webState)
+  if (!webState) {
     return nil;
+  }
 
   __block UIImage* snapshot = nil;
   DispatchSyncOnMainThread(^{
@@ -274,14 +283,16 @@ void DispatchSyncOnMainThread(void (^block)(void)) {
   bool success = WaitUntilConditionOrTimeout(kSnapshotTimeout, ^bool {
     __block BOOL snapshotComplete = NO;
     DispatchSyncOnMainThread(^{
-      if (snapshot != nil)
+      if (snapshot != nil) {
         snapshotComplete = YES;
+      }
     });
     return snapshotComplete;
   });
 
-  if (!success)
+  if (!success) {
     return nil;
+  }
 
   NSData* snapshotAsPNG = UIImagePNGRepresentation(snapshot);
   return [snapshotAsPNG base64EncodedStringWithOptions:0];

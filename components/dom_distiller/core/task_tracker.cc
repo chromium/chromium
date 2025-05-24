@@ -56,7 +56,7 @@ void TaskTracker::StartDistiller(
   GURL url(entry_.pages[0]);
   DCHECK(url.is_valid());
 
-  distiller_ = factory->CreateDistillerForUrl(url);
+  distiller_ = factory->CreateDistiller();
   distiller_->DistillPage(
       url, std::move(distiller_page),
       base::BindOnce(&TaskTracker::OnDistillerFinished,

@@ -132,7 +132,7 @@ class HatsNotificationControllerTest
   HatsNotificationControllerTest& operator=(
       const HatsNotificationControllerTest&) = delete;
 
-  ~HatsNotificationControllerTest() override {}
+  ~HatsNotificationControllerTest() override = default;
 
   // BrowserWithTestWindowTest:
   void SetUp() override {
@@ -158,10 +158,14 @@ class HatsNotificationControllerTest
     auto* profile = profile_manager()->CreateTestingProfile(
         profile_name, std::move(prefs), std::u16string(), 0,
         TestingProfile::TestingFactories());
-    OnUserProfileCreated(profile_name, profile);
+    return profile;
+  }
+
+  void OnUserProfileCreated(const std::string& profile_name,
+                            Profile* profile) override {
+    BrowserWithTestWindowTest::OnUserProfileCreated(profile_name, profile);
     user_manager()->SetOwnerId(
         ProfileHelper::Get()->GetUserByProfile(profile)->GetAccountId());
-    return profile;
   }
 
   void TearDown() override {

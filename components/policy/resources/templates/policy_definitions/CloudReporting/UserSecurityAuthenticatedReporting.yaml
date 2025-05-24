@@ -1,0 +1,34 @@
+caption: Enable cloud reporting of security signals in managed profiles
+default: false
+desc: |-
+  This policy controls <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> usage of first party user authentication when reporting user security signals for a particular managed profile.
+
+  This policy is set to Enabled, first party authentication will be used when uploading security signals.
+
+  This policy is set to Disabled, or is left unset, first party authentication will not be used when uploading security signals.
+
+  User security signals reports are only uploaded when <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME">UserSecuritySignalsReporting</ph> is enabled.
+
+  This policy can only be set as cloud user policy.
+features:
+  dynamic_refresh: true
+  per_profile: true
+  cloud_only: true
+  user_only: true
+supported_on:
+- chrome.*:137-
+owners:
+- seblalancette@chromium.org
+- cbe-device-trust-eng@google.com
+example_value: true
+items:
+- caption: Enable first-party authentication when reporting user security signals
+  value: true
+- caption: Disable first-party authentication when reporting user security signals
+  value: false
+schema:
+  type: boolean
+tags:
+- admin-sharing
+- google-sharing
+type: main

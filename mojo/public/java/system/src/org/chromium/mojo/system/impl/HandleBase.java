@@ -5,12 +5,14 @@
 package org.chromium.mojo.system.impl;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Core.HandleSignalsState;
 import org.chromium.mojo.system.Handle;
 import org.chromium.mojo.system.UntypedHandle;
 
 /** Implementation of {@link Handle}. */
+@NullMarked
 abstract class HandleBase implements Handle {
     private static final String TAG = "HandleImpl";
 
@@ -114,6 +116,7 @@ abstract class HandleBase implements Handle {
      * @see java.lang.Object#finalize()
      */
     @Override
+    @SuppressWarnings("Finalize") // TODO(crbug.com/40286193): Use LifetimeAssert instead.
     protected final void finalize() throws Throwable {
         if (isValid()) {
             // This should not happen, as the user of this class should close the handle. Adding a

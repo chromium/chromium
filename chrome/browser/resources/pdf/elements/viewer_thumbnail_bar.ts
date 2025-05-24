@@ -21,6 +21,7 @@ import {getHtml} from './viewer_thumbnail_bar.html.js';
 export interface Ink2ThumbnailData {
   type: string;
   pageNumber: number;
+  isInk: boolean;
   imageData: ArrayBuffer;
   width: number;
   height: number;
@@ -55,10 +56,10 @@ export class ViewerThumbnailBarElement extends CrLitElement {
     };
   }
 
-  activePage: number = 0;
-  clockwiseRotations: number = 0;
-  docLength: number = 0;
-  protected isPluginActive_: boolean = false;
+  accessor activePage: number = 0;
+  accessor clockwiseRotations: number = 0;
+  accessor docLength: number = 0;
+  protected accessor isPluginActive_: boolean = false;
   private intersectionObserver_: IntersectionObserver|null = null;
   private pluginController_: PluginController = PluginController.getInstance();
   private tracker_: EventTracker = new EventTracker();
@@ -136,7 +137,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has('activePage')) {
-      if (this.shadowRoot!.activeElement) {
+      if (this.shadowRoot.activeElement) {
         // Changes the focus to the thumbnail of the new active page if the
         // focus was already on a thumbnail.
         this.getThumbnailForPage(this.activePage)!.focusAndScroll();
@@ -146,7 +147,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
     if (changedProperties.has('docLength')) {
       assert(this.intersectionObserver_);
       // If doc length changes, we render new thumbnails.
-      this.shadowRoot!.querySelectorAll('viewer-thumbnail')
+      this.shadowRoot.querySelectorAll('viewer-thumbnail')
           .forEach(thumbnail => this.intersectionObserver_!.observe(thumbnail));
     }
   }
@@ -161,7 +162,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
   }
 
   getThumbnailForPage(pageNumber: number): ViewerThumbnailElement|null {
-    return this.shadowRoot!.querySelector(
+    return this.shadowRoot.querySelector(
         `viewer-thumbnail:nth-child(${pageNumber})`);
   }
 
@@ -190,7 +191,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
 
     // Change focus to the thumbnail of the active page.
     const activeThumbnail =
-        this.shadowRoot!.querySelector<ViewerThumbnailElement>(
+        this.shadowRoot.querySelector<ViewerThumbnailElement>(
             'viewer-thumbnail[is-active]');
     if (activeThumbnail) {
       activeThumbnail.focus();
@@ -198,7 +199,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
     }
 
     // Otherwise change to the first thumbnail, if there is one.
-    const firstThumbnail = this.shadowRoot!.querySelector('viewer-thumbnail');
+    const firstThumbnail = this.shadowRoot.querySelector('viewer-thumbnail');
     if (!firstThumbnail) {
       return;
     }
@@ -219,7 +220,7 @@ export class ViewerThumbnailBarElement extends CrLitElement {
         // On tab, first redirect focus to the last thumbnail to focus to the
         // element after the thumbnail bar from any thumbnail.
         const lastThumbnail =
-            this.shadowRoot!.querySelector<ViewerThumbnailElement>(
+            this.shadowRoot.querySelector<ViewerThumbnailElement>(
                 'viewer-thumbnail:last-of-type');
         assert(lastThumbnail);
         lastThumbnail.focus({preventScroll: true});
@@ -243,9 +244,14 @@ export class ViewerThumbnailBarElement extends CrLitElement {
   private handleUpdateInkThumbnail_(e: CustomEvent<Ink2ThumbnailData>) {
     const data = e.detail;
     const thumbnail = this.getThumbnailForPage(data.pageNumber);
-    if (thumbnail) {
+    if (thumbnail && thumbnail.isPainted()) {
       const array = new Uint8ClampedArray(data.imageData);
-      thumbnail.ink2Image = new ImageData(array, data.width);
+      const imageData = new ImageData(array, data.width);
+      if (data.isInk) {
+        thumbnail.ink2Image = imageData;
+      } else {
+        thumbnail.image = imageData;
+      }
     }
   }
   // </if>

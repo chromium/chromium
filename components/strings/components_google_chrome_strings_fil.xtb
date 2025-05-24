@@ -10,8 +10,12 @@
 <translation id="2447485272386224171">Nagiging posible ang Chrome sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project at iba pang <ph name="BEGIN_LINK_OSS" />open source software<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo ng Chrome</translation>
 <translation id="3444832043240812445">Ipinapakita lang ng pahinang ito ang impormasyon ng iyong kamakailang mga pag-crash kung <ph name="BEGIN_LINK" />papaganahin mo ang pag-uulat ng pag-crash<ph name="END_LINK" />.</translation>
+<translation id="3512634283363927263">Nakalaan ang mga page na ito para sa paggamit ng mga developer ng Chrome, at posibleng hindi ito aktibong pinapanatili o sinusubukan. Para i-enable ang mga ito, mag-navigate papunta sa <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, i-click ang button para i-enable ang mga page sa pag-debug, at pagkatapos ay mag-navigate ulit papunta sa page na ito.</translation>
 <translation id="3875312571075912821">Pahintulutan ang Chrome na i-access ang network
           sa mga setting ng iyong firewall o antivirus.</translation>
+<translation id="4949828774841497663">Pumunta sa Applications &gt; System Settings &gt; Network, piliin ang
+          aktibong network, i-click ang button na Details... at i-deselect ang anumang proxy
+          na posibleng napili.</translation>
 <translation id="5005121315113832363">Na-block ng Chrome ang page na ito</translation>
 <translation id="6011049234605203654">Pumunta sa
           menu ng Chrome &gt;
@@ -40,9 +44,6 @@
           Mga Setting ng LAN
           at alisin sa pagkakapili ang "Gumamit ng proxy server para sa iyong LAN."</translation>
 <translation id="7230956101631259640">Isang secure na page ng Chrome ang tinitingnan mo</translation>
-<translation id="8187289872471304532">Pumunta sa
-          Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies
-          at alisin sa pagkakapili ang anumang mga napiling proxy.</translation>
 <translation id="8232971017369963250">Nagiging posible ang Chrome sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project.</translation>
 <translation id="8279509328145658601">Nagiging posible rin ang Chrome sa pamamagitan ng iba pang <ph name="BEGIN_LINK_OSS" />open source na software<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Sinusubukan ng Google Chrome na baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>

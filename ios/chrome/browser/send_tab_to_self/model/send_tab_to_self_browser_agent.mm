@@ -4,11 +4,11 @@
 
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 #import <string>
 #import <vector>
-
-#import <Foundation/Foundation.h>
 
 #import "base/check.h"
 #import "base/notreached.h"
@@ -28,13 +28,11 @@
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(SendTabToSelfBrowserAgent)
-
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
-    : browser_(browser),
-      model_(SendTabToSelfSyncServiceFactory::GetForBrowserState(
-                 browser_->GetBrowserState())
-                 ->GetSendTabToSelfModel()) {
+    : BrowserUserData(browser),
+      model_(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
+              ->GetSendTabToSelfModel()) {
   model_observation_.Observe(model_.get());
   browser_observation_.Observe(browser_.get());
 }

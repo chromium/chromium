@@ -7,13 +7,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/autofill/model/credit_card/autofill_save_card_infobar_delegate_ios.h"
 #import "ios/chrome/browser/infobars/model/overlays/infobar_overlay_util.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_overlay_responses.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_consumer.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator+consumer_support.h"
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/infobar_banner_overlay_mediator.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -21,6 +21,8 @@
 
 // The save card banner config from the request.
 @property(nonatomic, readonly) DefaultInfobarOverlayRequestConfig* config;
+// `YES` if the banner's button was pressed by the user.
+@property(nonatomic, assign) BOOL bannerButtonWasPressed;
 
 @end
 
@@ -52,6 +54,12 @@
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;
 
+  _bannerButtonWasPressed = YES;
+
+  delegate->LogSaveCreditCardInfoBarResultMetric(
+      autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kAccepted,
+      autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+
   // Display the modal (thus the ToS) if the card will be uploaded, this is a
   // legal requirement and shouldn't be changed.
   if (delegate->is_for_upload()) {
@@ -67,14 +75,37 @@
   [self dismissOverlay];
 }
 
+- (void)dismissInfobarBannerForUserInteraction:(BOOL)userInitiated {
+  autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
+      self.saveCardDelegate;
+  // Delegate may be null due to crbug.com/409220427
+  if (delegate) {
+    if (!userInitiated) {
+      // Banner is dismissed without user interaction when it times out.
+      delegate->LogSaveCreditCardInfoBarResultMetric(
+          autofill::autofill_metrics::SaveCreditCardPromptResultIOS::KTimedOut,
+          autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+    } else if (userInitiated && !_bannerButtonWasPressed) {
+      // Banner is dismissed with user interaction by swiping it up or by
+      // tapping its button. To distinguish swipe-up dismissal, the method
+      // checks if the button was pressed.
+      delegate->LogSaveCreditCardInfoBarResultMetric(
+          autofill::autofill_metrics::SaveCreditCardPromptResultIOS::kSwiped,
+          autofill::autofill_metrics::SaveCreditCardPromptOverlayType::kBanner);
+    }
+  }
+  [super dismissInfobarBannerForUserInteraction:userInitiated];
+}
+
 @end
 
 @implementation SaveCardInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
   DefaultInfobarOverlayRequestConfig* config = self.config;
-  if (!self.consumer || !config)
+  if (!self.consumer || !config) {
     return;
+  }
 
   autofill::AutofillSaveCardInfoBarDelegateIOS* delegate =
       self.saveCardDelegate;

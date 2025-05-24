@@ -318,10 +318,6 @@ bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
   return CreateSortKey(lhs) == CreateSortKey(rhs);
 }
 
-bool operator!=(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
-  return !(lhs == rhs);
-}
-
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs) {
   return CreateSortKey(lhs) < CreateSortKey(rhs);
 }

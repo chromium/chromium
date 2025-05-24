@@ -4,14 +4,15 @@
 
 #include "chrome/browser/lifetime/browser_close_manager.h"
 
+#include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <vector>
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "chrome/browser/background/background_mode_manager.h"
+#include "chrome/browser/background/extensions/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -29,6 +30,10 @@
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 #include "chrome/browser/notifications/notification_ui_manager.h"
+#endif
+
+#if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #endif
 
 namespace {
@@ -158,6 +163,7 @@ void BrowserCloseManager::CloseBrowsers() {
   // exit can restore all browsers open before exiting.
   ProfileManager::ShutdownSessionServices();
 #endif
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   if (!browser_shutdown::IsTryingToQuit()) {
     BackgroundModeManager* background_mode_manager =
         g_browser_process->background_mode_manager();
@@ -165,16 +171,20 @@ void BrowserCloseManager::CloseBrowsers() {
       background_mode_manager->SuspendBackgroundMode();
     }
   }
+#endif
 
-  // Make a copy of the BrowserList to simplify the case where we need to
-  // destroy a Browser during the loop.
-  std::vector<Browser*> browser_list_copy;
-  base::ranges::copy(*BrowserList::GetInstance(),
-                     std::back_inserter(browser_list_copy));
+#if BUILDFLAG(ENABLE_GLIC)
+  auto* glic_background_mode_manager =
+      glic::GlicBackgroundModeManager::GetInstance();
+  if (glic_background_mode_manager) {
+    glic_background_mode_manager->ExitBackgroundMode();
+  }
+#endif
 
-  bool ignore_unload_handlers = browser_shutdown::ShouldIgnoreUnloadHandlers();
-
-  for (auto* browser : browser_list_copy) {
+  BrowserList::GetInstance()->ForEachCurrentAndNewBrowser([](Browser* browser) {
+    bool ignore_unload_handlers =
+        browser_shutdown::ShouldIgnoreUnloadHandlers();
+    browser->set_force_skip_warning_user_on_close(ignore_unload_handlers);
     browser->window()->Close();
     if (ignore_unload_handlers) {
       // This path is hit during logoff/power-down. It could be the case that
@@ -183,13 +193,12 @@ void BrowserCloseManager::CloseBrowsers() {
       // current site). Since we are attempting to end the session, we will
       // force skip these warnings and manually close all the tabs to make sure
       // the browser is destroyed and cleanup can happen.
-      browser->set_force_skip_warning_user_on_close(true);
       browser->tab_strip_model()->CloseAllTabs();
       browser->window()->DestroyBrowser();
       // Destroying the browser should have removed it from the browser list.
       DCHECK(!base::Contains(*BrowserList::GetInstance(), browser));
     }
-  }
+  });
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   NotificationUIManager* notification_manager =

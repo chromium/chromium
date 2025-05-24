@@ -146,8 +146,9 @@ TEST_F(UpdateSessionTest, UpdateSessionWithEndSessionInputAndSucceed) {
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
-      std::make_unique<UpdateSessionRequest>(request_sender(), teacher,
-                                             session_id, future.GetCallback());
+      std::make_unique<UpdateSessionRequest>(request_sender(), "https://test",
+                                             teacher, session_id,
+                                             future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_session_state(
       std::make_unique<::boca::Session::SessionState>(::boca::Session::PAST));
@@ -181,8 +182,9 @@ TEST_F(UpdateSessionTest, UpdateSessionWithExendSessionInputAndSucceed) {
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
-      std::make_unique<UpdateSessionRequest>(request_sender(), teacher,
-                                             session_id, future.GetCallback());
+      std::make_unique<UpdateSessionRequest>(request_sender(), "https://test",
+                                             teacher, session_id,
+                                             future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_duration(std::make_unique<base::TimeDelta>(base::Minutes(2)));
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -216,8 +218,9 @@ TEST_F(UpdateSessionTest,
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
-      std::make_unique<UpdateSessionRequest>(request_sender(), teacher,
-                                             session_id, future.GetCallback());
+      std::make_unique<UpdateSessionRequest>(request_sender(), "https://test",
+                                             teacher, session_id,
+                                             future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_session_state(
       std::make_unique<::boca::Session::SessionState>(::boca::Session::PAST));
@@ -253,8 +256,9 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
-      std::make_unique<UpdateSessionRequest>(request_sender(), teacher,
-                                             session_id, future.GetCallback());
+      std::make_unique<UpdateSessionRequest>(request_sender(), "https://test",
+                                             teacher, session_id,
+                                             future.GetCallback());
 
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
@@ -297,7 +301,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
             http_request.relative_url);
   EXPECT_EQ("application/json", http_request.headers["Content-Type"]);
   auto* contentData =
-      "{\"sessionId\":\"sessionId\",\"studentGroupConfigs\":{\"main\":{"
+      "{\"sessionId\":\"sessionId\",\"studentGroupConfigs\":{\"accessCode\":{"
       "\"captionsConfig\":{\"captionsEnabled\":true,\"translationsEnabled\":"
       "true},\"onTaskConfig\":{\"activeBundle\":{\"contentConfigs\":[{"
       "\"faviconUrl\":\"data:image/"
@@ -305,7 +309,16 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
       "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
       "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
       "\"youtube\",\"url\":\"https://"
-      "youtube.com\"}],\"locked\":true}}}},\"teacher\":{\"gaiaId\":\"1\"}}";
+      "youtube.com\"}],\"lockToAppHome\":false,\"locked\":true}}},\"main\":{"
+      "\"captionsConfig\":{\"captionsEnabled\":true,\"translationsEnabled\":"
+      "true},\"onTaskConfig\":{\"activeBundle\":{\"contentConfigs\":[{"
+      "\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":1},\"title\":"
+      "\"google\",\"url\":\"https://google.com\"},{\"faviconUrl\":\"data:image/"
+      "123\",\"lockedNavigationOptions\":{\"navigationType\":2},\"title\":"
+      "\"youtube\",\"url\":\"https://"
+      "youtube.com\"}],\"lockToAppHome\":false,\"locked\":true}}}},\"teacher\":"
+      "{\"gaiaId\":\"1\"}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_TRUE(result.value());
@@ -324,8 +337,9 @@ TEST_F(UpdateSessionTest, UpdateSessionWithDurationAndFail) {
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
-      std::make_unique<UpdateSessionRequest>(request_sender(), teacher,
-                                             session_id, future.GetCallback());
+      std::make_unique<UpdateSessionRequest>(request_sender(), "https://test",
+                                             teacher, session_id,
+                                             future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
   request->set_duration(std::make_unique<base::TimeDelta>(base::Minutes(1)));
   request_sender()->StartRequestWithAuthRetry(std::move(request));

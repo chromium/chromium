@@ -1,14 +1,13 @@
-# This file is used as input to generate the following policy templates:
-# ADM, ADMX+ADML, MCX/plist and html documentation.
+# Every policy is defined by a yaml file in the policy_definitions directory.
+# The yaml file will be used to generate Chromium C++ code, policy templates
+# and public policy documentation.
+#
+# This file is the schema of policy yaml files. For more information about
+# adding a policy, please see
+# https://chromium.googlesource.com/chromium/src/+/HEAD/docs/enterprise/add_new_policy.md
 
-# Policy templates are user interface definitions or documents about the
-# policies that can be used to configure Chrome. Each policy is a name-value
-# pair where the value has a given type. Chrome looks up the values using the
-# names of the policies. In the user interface where the values can be set,
-# related policies might appear together in policy groups. The grouping is not
-# visible to Chrome.
-
-# As a reference for translators, non-translatable strings must be tagged using
+# Some fields below will be transalated to multiple languages. As a
+# reference for translators, non-translatable strings must be tagged using
 # <ph name="..."></ph> as described in [1]. As these tags are pruned before
 # generating the comments for .proto files, paragraphs containing such tags
 # should not be line-wrapped (use one long line per paragraph instead) to allow
@@ -17,7 +16,6 @@
 #
 # See documentation in docs/enterprise/description_guidelines.md for how product
 # names should appear in <ph> tags to ensure consistency.
-#
 #
 # Generated grd names:
 #   Each name has two parts: the second part is either CAPTION, DESC or LABEL,
@@ -34,25 +32,7 @@
 #     e.g. the name of the caption of ProxyServerDisabled:
 #       IDS_POLICY_ENUM_PROXYSERVERDISABLED_CAPTION
 
-# This field is a list of strings which describe the group of people responsible
-# for maintaining the policy and can help answer questions or solve issues with
-# the policy. The entries can be either emails of committers or file://
-# references to OWNERS files in the Chromium repository.
-# There should be at least 2 owners per policies. At least one entry must be an
-# email of the individual person or the team responsible for the policy.
-# Additionally a file:// reference to an OWNERS file can also be specified.
-owners:
-- your-ldap@chromium.org
-- file://components/policy/OWNERS
 
-# Optional field that defaults to `caption` if not set.
-# A short, one-line summary of the item it applies to. The difference from
-# caption is that label always appears next to the entry field where the value
-# of the policy can be entered. 'main' policies on Windows ignore this. Policies
-# on Mac are using this instead of caption.
-# Note: This should not end with a punctuation mark.
-label: A short one line summary that may
-  wrap to the next line
 
 # A short, one-line summary of the item it applies to. This can appear
 # both in policy or group listings or on title bars of policy-setting
@@ -61,37 +41,25 @@ label: A short one line summary that may
 caption: A short one line summary that may
   wrap to the next line
 
-# See docs/enterprise/description_guidelines.md for how product names should
-# appear in <ph> tags to ensure consistency.
-# Placeholders:
-#   The following placeholder strings are automatically substituted:
-#     $1 -> Google Chrome / Chromium
-#     $2 -> Google ChromeOS / ChromiumOS
-#     $3 -> Google Chrome Frame / Chromium Frame
-#     $6 is reserved for doc_writer
+# A multiline description of the policy.
+# See docs/enterprise/description_guidelines.md for how to write a good
+# description.
 desc: |-
-  A multiline description for your policy.
+  A multiline description of the policy.
   This is the second line.
   This is a <ph name="PLACEHOLDER">placeholder</ph>
 
-# If a platform is listed as "future_on", it means that this policy:
-# 1. will be available on that platform if chrome is on
-#    - the Canary channel
-#    - the Dev channel
-#    - an Unknown channel (e.g. locally built chrome)
-# 2. will not be available by default on that platform if chrome is on
-#   - the Beta channel
-#   - the Stable channel
-# 3. will be available (overriding 2.) if this policy's name is listed in the
-#    EnableExperimentalPolicies policy
-# Currently supported platforms:
-#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome_os`
-#   `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`.
-#   Additionally, `chrome.*` can be used as an alias for `chrome.win`,
-#   `chrome.win7`, `chrome.mac`, `chrome.linux`.
-#   Note that `chrome_frame` has been deprecated.
-future_on:
-- ios
+# This field is a list of strings which describe the group of people responsible
+# for maintaining the policy and can help answer questions or solve issues with
+# the policy. The entries can be either emails of committer(s), team or file://
+# references to OWNERS files in the Chromium repository.
+# There should be at least 2 owners per policies. At least one entry must be an
+# email of the individual person or the team responsible for the policy.
+# Please keep the owner field up to date when transferring ownership of a policy
+# to another team or person.
+owners:
+- your-ldap@chromium.org
+- file://components/policy/OWNERS
 
 # List of platforms where the policy is officially released.
 # The format of `supported_on` is `<platform>:<since_version>-<until_version>`.
@@ -100,73 +68,96 @@ future_on:
 # is optional.
 # Currently supported platforms:
 #   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome_os`
-#   `android`, `webview_android`, `ios`, `fuchsia`, `chrome_frame`.
+#   `android`, `webview_android`, `ios`.
 #   Additionally, `chrome.*` can be used as an alias for `chrome.win`,
-#   `chrome.win7`, `chrome.mac`, `chrome.linux`.
-#   Note that `chrome_frame` has been deprecated.
+#  `chrome.mac`, `chrome.linux`.
+#   Note that `chrome_frame` and `fuchsia` have been deprecated.
+# Skip the field if it's empty.
 supported_on:
 - android:106-
 - chrome.*:105-
 - chrome_os:100-1001
 
+# List of platforms where the policy is under development.
+# The format of `future_on` is `<platform>`.
+# It means that this policy can only be used on the |platform| if chrome is on
+# the Canary channel, the Dev channel or the unknown channel (local build). It
+# will be available on the Beta and Stable channels if this policy's name is
+# listed in the EnableExperimentalPolicies policy.
+# Currently supported platforms:
+#   `chrome.win`, `chrome.win7`, `chrome.mac`, `chrome.linux`, `chrome_os`
+#   `android`, `webview_android`, `ios`.
+#   Additionally, `chrome.*` can be used as an alias for `chrome.win`,
+#   `chrome.win7`, `chrome.mac`, `chrome.linux`.
+#   Note that `chrome_frame` and `fuchsia` have been deprecated.
+# Skip the field if it's empty.
+future_on:
+- ios
+
 # Optional field that is `false` by default.
-# Set to true if the policy has been deprecated.
+# Set to true if the policy has been deprecated. Must set to `true` if the
+# policy is no longer supported on any platform.
 deprecated: false
 
 # Optional field that is `false` by default.
 # Indicates that this policy is only supported as a device-level Cloud Policy.
 # In that case no entry in the UserPolicy Protobuf is generated and it is
-# assumed that it will be added to the DevicePolicy Protobuf manually. Device
-# policy only exists on ChromeOS.
+# assumed that it will be added to the DevicePolicy Protobuf manually.
+# Device policy name must begin with the prefix `Device`.
+# Device policy only exists on ChromeOS.
 device_only: false
 
 features:
   # Optional field that is `true` by default.
-  # Set to False to suppress the policy in the generated
-  # mandatory policy templates. The generated documentation for the policy
-  # will contain a suitable hint for administrators.
+  # Set to `false` tells the admin they must mark the policy as
+  # recommended and allow the user to override it with UI, a command
+  # line switch or an extension.
   can_be_mandatory: true
 
   # Optional field that is `false` by default.
-  # recommended policy templates. The generated documentation for the policy
-  # will contain a suitable hint for administrators.
+  # Set to `true` tells the admin they can mark the policy as
+  # recommended and allow the user to override it with UI, a command
+  # line switch or an extension.
   can_be_recommended: false
 
   # Whether Chrome respects the changes to the policy immediately without having
   # to restart the browser.
+  # PLEASE support `dynamic_refresh` if possible.
   dynamic_refresh: true
-
-  # Optional field that is `false` by default.
-  # Set to True if the policy is used for internal development or testing
-  # purposes and will never be used by any external administrator.
-  internal_only: false
 
   # Whether a user policy applies to every user logging into the browser or only
   # one profile.
+  # PLEASE support `per_profile` if possible.
   per_profile: true
 
   # Optional field that is `false` by default.
-  # Set to True if the policy can only be set from platform policy but does not
-  # support Admin console.
+  # Set to `true` if the policy is used for internal development or testing
+  # purposes and will never be used by any external administrator.
+  internal_only: false
+
+  # Optional field that is `false` by default.
+  # Set to `true` if the policy can only be set from platform policy but does not
+  # support Admin Console.
   platform_only: false
 
-  # Optional field that is false by default.
-  # Set to True if the policy can only be set from Admin Console but does not
-  # support any platform management tools.
+  # Optional field that is `false` by default.
+  # Set to `true` if the policy can only be set from Admin Console but does not
+  # support any platform management tools (e.g. GPO).
   cloud_only: false
 
-  # Optional field that is false by default.
-  # Set to True if the policy can only be set with a signed in managed account
-  # but does not support any other management tools.
-  # It can only be used when 'cloud_only' tag is set to true.
-  # It can only be used when 'per_profile' tag is set to true.
-  user_only: false
-
-  # Set to True if the policy is controlled by Admin Console without any user
+  # Set to `true` if the policy is controlled by Admin Console without any user
   # interface for administrator. Policy that are 'unlisted' will be hidden from
   # all documentations, policy templates and Admin Console UI.
-  # It can only be used when 'cloud_only' tag is set to true.
+  # It can only be used when 'cloud_only' tag is set to `true`.
   unlisted: false
+
+  # Optional field that is `false` by default.
+  # Set to `true` if the policy meet any of the following conditions:
+  #  1) can only be set with a signed in managed account
+  #  2) won't be overriden by values set by any browser management tools like
+  #     GPO or CEC browser management.
+  # It can only be used when 'per_profile' tag is set to `true`.
+  user_only: false
 
   # Optional field.
   # A metapolicy is a policy which affects how other policies are applied.
@@ -326,6 +317,8 @@ default: null
 # the cloud or `default_policy_level` is set. This default value handling is
 # automatically enforced by the policy stack when filling the PolicyMap
 # (specifically, by the generated function SetEnterpriseUsersDefaults).
+# This field should ONLY be used when the default enterprise behavior needs to
+# be different than regular consumer behavior.
 default_for_enterprise_users: false
 
 # Optional value which defaults to `mandatory` if not set.
@@ -392,9 +385,19 @@ max_size: 123456
 #       this tag means for their privacy and/or security.
 tags: []
 
+# Optional field that defaults to `caption` if not set.
+# A short, one-line summary of the item it applies to. Set when you want to have
+# more precise control of policy templates generation on Windows and Mac.
+# The difference from caption is that label always appears next to the entry
+# field where the value of the policy can be entered. 'main' policies on Windows
+# ignore this. Policies on Mac are using this instead of caption.
+# Note: This should not end with a punctuation mark.
+label: A short one line summary that may
+  wrap to the next line
+
 # Automatically generate proto definitions for the policy.
-# Only applies to device policies, for user policies this is always true.
+# Only applies to device policies, for user policies this is always `true`.
 # Currently only generates an entry in device_policy_proto_map. More code
 # generation is planned in the future.
-# Default setting is true.
+# Default setting is `true`.
 generate_device_proto: true

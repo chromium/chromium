@@ -58,13 +58,19 @@ goog.exportSymbol('setTimeout', setTimeout);
 
 // Rethrowing an error to the global scope kills Node immediately. Suppress
 // error rethrowing for running this test suite.
-goog.Promise.setUnhandledRejectionHandler(goog.nullFunction);
+goog.Promise.setUnhandledRejectionHandler(() => {});
 
 
 // Run the tests, exiting with a failure code if any of the tests fail.
-promisesAplusTests(goog.promise.testSuiteAdapter, function(err) {
-  'use strict';
-  if (err) {
-    process.exit(1);
-  }
-});
+promisesAplusTests(
+    goog.promise.testSuiteAdapter,
+    /**
+     * @suppress {missingProperties}
+     * @param {?} err
+     */
+    function(err) {
+      'use strict';
+      if (err) {
+        process.exit(1);
+      }
+    });

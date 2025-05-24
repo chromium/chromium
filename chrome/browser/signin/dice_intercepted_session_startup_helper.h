@@ -20,7 +20,7 @@ class WebContents;
 }
 
 namespace signin {
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 class IdentityManager;
 enum class SetAccountsInCookieResult;
 }

@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_STORAGE_SHARED_STORAGE_ASYNC_SHARED_STORAGE_DATABASE_IMPL_H_
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <vector>
 
@@ -38,11 +37,13 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
   using InitStatus = SharedStorageDatabase::InitStatus;
   using SetBehavior = SharedStorageDatabase::SetBehavior;
   using OperationResult = SharedStorageDatabase::OperationResult;
+  using BatchUpdateResult = SharedStorageDatabase::BatchUpdateResult;
   using GetResult = SharedStorageDatabase::GetResult;
   using BudgetResult = SharedStorageDatabase::BudgetResult;
   using TimeResult = SharedStorageDatabase::TimeResult;
   using MetadataResult = SharedStorageDatabase::MetadataResult;
   using EntriesResult = SharedStorageDatabase::EntriesResult;
+  using DataClearSource = SharedStorageDatabase::DataClearSource;
 
   // A callback type to check if a given StorageKey matches a storage policy.
   // Can be passed empty/null where used, which means the StorageKey will always
@@ -95,7 +96,13 @@ class AsyncSharedStorageDatabaseImpl : public AsyncSharedStorageDatabase {
               std::u16string key,
               base::OnceCallback<void(OperationResult)> callback) override;
   void Clear(url::Origin context_origin,
-             base::OnceCallback<void(OperationResult)> callback) override;
+             base::OnceCallback<void(OperationResult)> callback,
+             DataClearSource source) override;
+  void BatchUpdate(
+      url::Origin context_origin,
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      base::OnceCallback<void(BatchUpdateResult)> callback) override;
   void Length(url::Origin context_origin,
               base::OnceCallback<void(int)> callback) override;
   void Keys(url::Origin context_origin,

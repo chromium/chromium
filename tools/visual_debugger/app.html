@@ -252,7 +252,7 @@
       <option id="100pct">100%</option>
       <option id="50pct">50%</option>
       <option id="200pct">200%</option>
-      <option id="freeCam" disabled>Free Camera</option>
+      <option id="freeCam">Free Camera</option>
     </select>
   </div>
 
@@ -696,8 +696,9 @@
     const viewerScale = document.querySelector("#viewerscale");
 
     function scaleChanged() {
-      let selected = viewerScale.selectedOptions[0];
+      const selected = viewerScale.selectedOptions[0];
       if (selected.id != "freeCam") {
+        viewer.resetTranslation();
         player.setViewerScale(viewerScale.value);
         zoom = parseInt(viewerScale.value);
       }
@@ -712,8 +713,11 @@
         canvas.addEventListener('wheel', function(e) {
           e.preventDefault();
           var delta = e.deltaY;
+          const selected = viewerScale.selectedOptions[0];
 
-          viewer.zoomToMouse(currentMouseX, currentMouseY, delta);
+          if (selected.id == "freeCam") {
+            viewer.zoomToMouse(currentMouseX, currentMouseY, delta);
+          }
 
         }, {passive:false});
       }

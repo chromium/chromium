@@ -17,7 +17,7 @@ attribution_reporting_promise_test(async t => {
   };
 
   registerAttributionSrcByImg(createRedirectChain([
-    {source, cookie: attributionDebugCookie},
+    {source},
     {trigger: {event_trigger_data: [{trigger_data: '3'}]}},
     {trigger: {event_trigger_data: [{trigger_data: '4'}]}},
   ]));
@@ -49,7 +49,6 @@ attribution_reporting_promise_test(async t => {
       }],
       debug_reporting: true,
     },
-    cookie: attributionDebugCookie,
   });
 
   const payload = await pollVerboseDebugReports();

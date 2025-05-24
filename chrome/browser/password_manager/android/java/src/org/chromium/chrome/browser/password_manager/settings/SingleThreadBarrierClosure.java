@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * A Runnable which postpones running a given callback until it is itself run for a pre-defined
  * number of times. It is inspired by the native //base/barrier_closure.*. Unlike the native code,
  * SingleThreadBarrierClosure is only meant to be used on a single thread and is not thread-safe.
  */
+@NullMarked
 public final class SingleThreadBarrierClosure implements Runnable {
     /** Counts the remaining number of runs. */
     private int mRemainingRuns;

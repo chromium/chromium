@@ -88,7 +88,8 @@ class PrintingOAuth2ProfileAuthServersSyncBridgeTest : public testing::Test {
           syncer::EntityChange::CreateAdd(uri, ToEntityData(uri)));
     }
     for (const std::string& uri : deleted) {
-      data_change_list.push_back(syncer::EntityChange::CreateDelete(uri));
+      data_change_list.push_back(
+          syncer::EntityChange::CreateDelete(uri, syncer::EntityData()));
     }
     std::optional<syncer::ModelError> error =
         bridge_->ApplyIncrementalSyncChanges(

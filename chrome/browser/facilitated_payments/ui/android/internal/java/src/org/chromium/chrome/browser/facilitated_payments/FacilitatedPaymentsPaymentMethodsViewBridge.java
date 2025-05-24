@@ -6,16 +6,18 @@ package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsComponent.Delegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -28,6 +30,7 @@ import java.util.List;
  * sheet.
  */
 @JNINamespace("payments::facilitated")
+@NullMarked
 public class FacilitatedPaymentsPaymentMethodsViewBridge {
     private final FacilitatedPaymentsPaymentMethodsComponent mComponent;
 
@@ -85,13 +88,20 @@ public class FacilitatedPaymentsPaymentMethodsViewBridge {
      * BottomSheetController#requestShowContent}
      *
      * @param bankAccounts User's bank accounts which passed from facilitated payments client.
-     * @return True if shown. False if it was suppressed. Content is suppressed if higher priority
-     *     content is in the sheet, the sheet is expanded beyond the peeking state, or the browser
-     *     is in a mode that does not support showing the sheet.
      */
     @CalledByNative
-    public boolean requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
-        return mComponent.showSheet((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
+    public void requestShowContent(@JniType("std::vector") Object[] bankAccounts) {
+        mComponent.showSheetForPix((List<BankAccount>) (List<?>) Arrays.asList(bankAccounts));
+    }
+
+    /**
+     * Requests to show an eWallet FOP selector in a bottom sheet.
+     *
+     * @param ewallets User's eWallet accounts which passed from facilitated payments client.
+     */
+    @CalledByNative
+    public void requestShowContentForEwallet(@JniType("std::vector") Object[] eWallets) {
+        mComponent.showSheetForEwallet((List<Ewallet>) (List<?>) Arrays.asList(eWallets));
     }
 
     /**

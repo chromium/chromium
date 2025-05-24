@@ -36,7 +36,7 @@ typedef NS_ENUM(NSInteger, CWVNavigationResponsePolicy) {
 
 // Navigation delegate protocol for CWVWebViews.  Allows embedders to hook
 // page loading and receive events for navigation.
-@protocol CWVNavigationDelegate<NSObject>
+@protocol CWVNavigationDelegate <NSObject>
 @optional
 
 // DEPRECATED: Use `-[CWVNavigationDelegate

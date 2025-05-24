@@ -17,4 +17,9 @@ bool EmptyLockScreenController::IsScreenLocked() const {
   return false;
 }
 
+bool EmptyLockScreenController::IsNotificationAllowedOnLockScreen(
+    const std::string& id) const {
+  return false;
+}
+
 }  // namespace message_center

@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/android/policy_converter.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/json/json_reader.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
@@ -46,7 +46,7 @@ std::optional<base::Value> SplitCommaSeparatedList(
   base::Value::List as_list;
   std::vector<std::string> items_as_vector = base::SplitString(
       str_value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::ranges::for_each(items_as_vector, [&as_list](const std::string& item) {
+  std::ranges::for_each(items_as_vector, [&as_list](const std::string& item) {
     as_list.Append(base::Value(item));
   });
   return base::Value(std::move(as_list));
@@ -181,8 +181,7 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
 
     // Binary is not a valid schema type.
     case base::Value::Type::BINARY: {
-      NOTREACHED_IN_MIGRATION();
-      return base::Value();
+      NOTREACHED();
     }
 
     // Complex types have to be deserialized from JSON.
@@ -220,8 +219,7 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void PolicyConverter::SetPolicyValueForTesting(const std::string& key,

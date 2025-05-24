@@ -10,7 +10,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -30,7 +30,7 @@
 
 namespace policy {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 using ::ash::AccessibilityManager;
 using ::ash::MagnificationManager;
@@ -549,7 +549,43 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, ColorCorrectionEnabled) {
   accessibility_manager->SetColorCorrectionEnabled(false);
   EXPECT_TRUE(accessibility_manager->IsColorCorrectionEnabled());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Verifies that the FaceGaze accessibility feature can be forced off via
+// policy.
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, FaceGazeForcedOff) {
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+  PrefService* prefs = browser()->profile()->GetPrefs();
+
+  // Verify that FaceGaze is initially disabled.
+  EXPECT_FALSE(accessibility_manager->IsFaceGazeEnabled());
+
+  // Manually enable FaceGaze.
+  prefs->SetBoolean(ash::prefs::kAccessibilityFaceGazeEnabled, true);
+  EXPECT_TRUE(accessibility_manager->IsFaceGazeEnabled());
+
+  // Verify that policy overrides the manual setting.
+  PolicyMap policies;
+  policies.Set(key::kFaceGazeEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+  UpdateProviderPolicy(policies);
+  EXPECT_FALSE(accessibility_manager->IsFaceGazeEnabled());
+}
+
+// Verifies that the FaceGaze accessibility feature can be forced on via
+// policy.
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, FaceGazeForcedOn) {
+  // Verify that FaceGaze is initially disabled.
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+  EXPECT_FALSE(accessibility_manager->IsFaceGazeEnabled());
+
+  // Verify that policy overrides the manual setting.
+  PolicyMap policies;
+  policies.Set(key::kFaceGazeEnabled, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+               POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  UpdateProviderPolicy(policies);
+  EXPECT_TRUE(accessibility_manager->IsFaceGazeEnabled());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 // Tests that the UiAutomationProviderEnabled policy is respected when set, and

@@ -150,7 +150,7 @@ void AddEntriesToList(JNIEnv* env,
       AddBulkEventToEntries(env, it, entry, window, jentries);
       continue;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -221,10 +221,6 @@ TabIterator TabIterator::operator++(int) {
 bool TabIterator::operator==(TabIterator other) const {
   return current_entry_ == other.current_entry_ &&
          current_tab_ == other.current_tab_;
-}
-
-bool TabIterator::operator!=(TabIterator other) const {
-  return !(*this == other);
 }
 
 const sessions::tab_restore::Tab& TabIterator::operator*() const {
@@ -416,14 +412,9 @@ void RecentlyClosedTabsBridge::RestoreAndroidTabGroups(
     const std::map<tab_groups::TabGroupId,
                    AndroidLiveTabContextRestoreWrapper::TabGroup>& groups) {
   for (const auto& group : groups) {
-    std::string saved_tab_group_id =
-        group.second.saved_tab_group_id
-            ? group.second.saved_tab_group_id->AsLowercaseString()
-            : "";
     Java_RecentlyClosedBridge_restoreTabGroup(
-        env, bridge_, jtab_model, saved_tab_group_id,
-        group.second.visual_data.title(), (int)group.second.visual_data.color(),
-        group.second.tab_ids);
+        env, bridge_, jtab_model, group.second.visual_data.title(),
+        (int)group.second.visual_data.color(), group.second.tab_ids);
   }
 }
 

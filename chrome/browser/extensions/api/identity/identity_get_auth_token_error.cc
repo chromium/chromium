@@ -73,6 +73,8 @@ std::string IdentityGetAuthTokenError::ToString() const {
       return identity_constants::kCannotCreateWindow;
     case State::kBrowserContextShutDown:
       return identity_constants::kBrowserContextShutDown;
+    case State::kSetRemoteConsentResolutionCookiesFailed:
+      return identity_constants::kCannotSetRemoteConsentResolutionCookies;
   }
 }
 

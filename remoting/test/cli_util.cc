@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "remoting/test/cli_util.h"
 
 #include <string.h>
@@ -95,7 +100,10 @@ std::string ReadStringFromCommandLineOrStdin(const std::string& switch_name,
 
 void WaitForEnterKey(base::OnceClosure on_done) {
   base::ThreadPool::PostTaskAndReply(FROM_HERE, {base::MayBlock()},
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-result"
                                      base::BindOnce([]() { getchar(); }),
+#pragma clang diagnostic pop
                                      std::move(on_done));
 }
 

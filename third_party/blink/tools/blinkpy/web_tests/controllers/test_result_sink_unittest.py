@@ -13,8 +13,8 @@ from blinkpy.common.host_mock import MockHost
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.controllers.test_result_sink import CreateTestResultSink
 from blinkpy.web_tests.controllers.test_result_sink import TestResultSink
-from blinkpy.web_tests.models import test_failures, test_results, failure_reason
-from blinkpy.web_tests.models.typ_types import ResultType
+from blinkpy.web_tests.models import test_failures, test_results
+from blinkpy.web_tests.models.typ_types import FailureReason, ResultType
 from blinkpy.web_tests.port.driver import DriverOutput
 from blinkpy.web_tests.port.test import add_manifest_to_mock_filesystem
 from blinkpy.web_tests.port.test import TestPort
@@ -63,7 +63,7 @@ class TestCreateTestResultSink(TestResultSinkTestBase):
         response.status_code = 200
         with mock.patch.object(rs._session, 'post',
                                return_value=response) as m:
-            rs.sink(True, test_results.TestResult('test'), None)
+            rs.sink(test_results.TestResult('test'))
             self.assertTrue(m.called)
             self.assertEqual(
                 urlparse(m.call_args[0][0]).netloc, ctx['address'])
@@ -74,29 +74,32 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def setUp(self):
         super(TestResultSinkMessage, self).setUp()
-        patcher = mock.patch.object(TestResultSink, '_send')
-        self.mock_send = patcher.start()
-        self.addCleanup(patcher.stop)
-
         ctx = {'address': 'localhost:123', 'auth_token': 'super-secret'}
         self.luci_context(result_sink=ctx)
-        self.rs = CreateTestResultSink(self.port)
 
     def sink(self, expected, test_result, expectations=None):
-        self.rs.sink(expected, test_result, expectations)
-        self.assertTrue(self.mock_send.called)
-        return self.mock_send.call_args[0][0]['testResults'][0]
+        result_sink = CreateTestResultSink(self.port, expectations)
+        if expected:
+            test_result.expected = frozenset([test_result.type])
+        elif test_result.type == ResultType.Pass:
+            test_result.expected = frozenset([ResultType.Failure])
+        else:
+            test_result.expected = frozenset([ResultType.Pass])
+        with mock.patch.object(result_sink, '_send') as mock_send:
+            result_sink.sink(test_result)
+        self.assertTrue(mock_send.called)
+        return mock_send.call_args[0][0]['testResults'][0]
 
     def test_sink(self):
         tr = test_results.TestResult(test_name='test-name')
-        tr.total_run_time = 123.456
+        tr.total_run_time = 123.45678901234
         tr.type = ResultType.Crash
         sent_data = self.sink(True, tr)
 
         self.assertEqual(sent_data['testId'], 'test-name')
         self.assertEqual(sent_data['expected'], True)
         self.assertEqual(sent_data['status'], 'CRASH')
-        self.assertEqual(sent_data['duration'], '123.456s')
+        self.assertEqual(sent_data['duration'], '123.456789012s')
 
     def test_sink_with_expectations(self):
         class FakeTestExpectation(object):
@@ -122,14 +125,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_device_failed',
                 'value': 'False'
-            },
-            {
-                'key': 'web_tests_result_type',
-                'value': 'CRASH'
-            },
-            {
-                'key': 'web_tests_flag_specific_config_name',
-                'value': '',
             },
             {
                 'key': 'web_tests_base_timeout',
@@ -184,14 +179,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
                 'value': 'False'
             },
             {
-                'key': 'web_tests_result_type',
-                'value': 'CRASH'
-            },
-            {
-                'key': 'web_tests_flag_specific_config_name',
-                'value': '',
-            },
-            {
                 'key': 'web_tests_base_timeout',
                 'value': '6',
             },
@@ -231,14 +218,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_device_failed',
                 'value': 'False'
-            },
-            {
-                'key': 'web_tests_result_type',
-                'value': 'CRASH'
-            },
-            {
-                'key': 'web_tests_flag_specific_config_name',
-                'value': '',
             },
             {
                 'key': 'web_tests_base_timeout',
@@ -285,14 +264,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_device_failed',
                 'value': 'False'
-            },
-            {
-                'key': 'web_tests_result_type',
-                'value': 'CRASH'
-            },
-            {
-                'key': 'web_tests_flag_specific_config_name',
-                'value': '',
             },
             {
                 'key': 'web_tests_base_timeout',
@@ -347,14 +318,6 @@ class TestResultSinkMessage(TestResultSinkTestBase):
             {
                 'key': 'web_tests_device_failed',
                 'value': 'False'
-            },
-            {
-                'key': 'web_tests_result_type',
-                'value': 'CRASH'
-            },
-            {
-                'key': 'web_tests_flag_specific_config_name',
-                'value': '',
             },
             {
                 'key': 'web_tests_base_timeout',
@@ -522,8 +485,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
 
     def test_failure_reason(self):
         tr = test_results.TestResult(test_name='test-name')
-        tr.failure_reason = failure_reason.FailureReason(
-            'primary error message')
+        tr.failure_reason = FailureReason('primary error message')
         sent_data = self.sink(True, tr)
         self.assertDictEqual(sent_data['failureReason'], {
             'primaryErrorMessage': 'primary error message',
@@ -538,7 +500,7 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         # Test that the primary error message is truncated to 1K bytes in
         # UTF-8 encoding.
         tr = test_results.TestResult(test_name='test-name')
-        tr.failure_reason = failure_reason.FailureReason(primary_error_message)
+        tr.failure_reason = FailureReason(primary_error_message)
         sent_data = self.sink(True, tr)
 
         # Ensure truncation has left only whole unicode code points.
@@ -548,3 +510,25 @@ class TestResultSinkMessage(TestResultSinkTestBase):
         self.assertDictEqual(sent_data['failureReason'], {
             'primaryErrorMessage': (poi * 340) + '...',
         })
+
+    def test_test_id_structures(self):
+        tr = test_results.TestResult(test_name='foo/bar/baz.html')
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['testIdStructured']['fineName'], 'foo/bar')
+        self.assertTrue(
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+        self.assertIsNone(sent_data['testIdStructured']['coarseName'])
+
+        tr = test_results.TestResult(test_name='/baz.html')
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['testIdStructured']['fineName'], '')
+        self.assertTrue(
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+        self.assertIsNone(sent_data['testIdStructured']['coarseName'])
+
+        tr = test_results.TestResult(test_name='baz.html')
+        sent_data = self.sink(True, tr)
+        self.assertEqual(sent_data['testIdStructured']['fineName'], '/')
+        self.assertTrue(
+            'baz.html' in sent_data['testIdStructured']['caseNameComponents'])
+        self.assertIsNone(sent_data['testIdStructured']['coarseName'])

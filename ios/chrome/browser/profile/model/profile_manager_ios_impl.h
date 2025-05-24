@@ -10,12 +10,15 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#include "ios/chrome/browser/profile/model/profile_deleter_ios.h"
+#include "ios/chrome/browser/shared/model/profile/mutable_profile_attributes_storage_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #include "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
@@ -26,6 +29,9 @@ class PrefService;
 class ProfileManagerIOSImpl : public ProfileManagerIOS,
                               public ProfileIOS::Delegate {
  public:
+  // For ProfileIOS::Delegate methods.
+  using CreationMode = ProfileIOS::CreationMode;
+
   // Constructs the ProfileManagerIOSImpl with a pointer to the local state's
   // PrefService and with the path to the directory containing the Profiles'
   // data.
@@ -38,59 +44,72 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   ~ProfileManagerIOSImpl() override;
 
   // ProfileManagerIOS:
+  void PrepareForDestruction() override;
   void AddObserver(ProfileManagerObserverIOS* observer) override;
   void RemoveObserver(ProfileManagerObserverIOS* observer) override;
-  void LoadProfiles() override;
-  ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() override;
   ProfileIOS* GetProfileWithName(std::string_view name) override;
-  std::vector<ProfileIOS*> GetLoadedProfiles() override;
+  std::vector<ProfileIOS*> GetLoadedProfiles() const override;
+  bool HasProfileWithName(std::string_view name) const override;
+  bool CanCreateProfileWithName(std::string_view name) const override;
+  std::string ReserveNewProfileName() override;
+  bool CanDeleteProfileWithName(std::string_view name) const override;
   bool LoadProfileAsync(std::string_view name,
                         ProfileLoadedCallback initialized_callback,
                         ProfileLoadedCallback created_callback) override;
   bool CreateProfileAsync(std::string_view name,
                           ProfileLoadedCallback initialized_callback,
                           ProfileLoadedCallback created_callback) override;
-  ProfileIOS* LoadProfile(std::string_view name) override;
-  ProfileIOS* CreateProfile(std::string_view name) override;
+  void MarkProfileForDeletion(std::string_view name) override;
+  bool IsProfileMarkedForDeletion(std::string_view name) const override;
+  void PurgeProfilesMarkedForDeletion(base::OnceClosure callback) override;
   ProfileAttributesStorageIOS* GetProfileAttributesStorage() override;
 
   // ProfileIOS::Delegate:
-  void OnProfileCreationStarted(
-      ProfileIOS* profile,
-      ProfileIOS::CreationMode creation_mode) override;
+  void OnProfileCreationStarted(ProfileIOS* profile,
+                                CreationMode creation_mode) override;
   void OnProfileCreationFinished(ProfileIOS* profile,
-                                 ProfileIOS::CreationMode creation_mode,
+                                 CreationMode creation_mode,
                                  bool is_new_profile,
                                  bool success) override;
 
  private:
   class ProfileInfo;
 
-  using CreationMode = ProfileIOS::CreationMode;
-  using ProfileMap = std::map<std::string, ProfileInfo, std::less<>>;
+  // Represents how CreateOrLoadProfile(...) should behave if the profile
+  // does not exists on disk yet.
+  enum class LoadOrCreatePolicy {
+    kLoadOnly,
+    kCreateIfNecessary,
+  };
 
-  // Get the name of the last used profile, or if that's undefined, the default
-  // profile.
-  std::string GetLastUsedProfileName() const;
-
-  // Returns whether a Profile with `name` exists on disk.
-  bool ProfileWithNameExists(std::string_view name);
-
-  // Returns if creating a Profile with `name` is allowed.
-  bool CanCreateProfileWithName(std::string_view name);
-
-  // Creates or loads the Profile known by `name` using the `creation_mode`. The
-  // callbacks have the same meaning as the method CreateProfileAsync(...).
-  // Returns whether a Profile with that name already exists or it can be
-  // created.
-  bool CreateProfileWithMode(std::string_view name,
-                             CreationMode creation_mode,
-                             ProfileLoadedCallback initialized_callback,
-                             ProfileLoadedCallback created_callback);
+  // Creates or loads the profile known by `name`. Helper function used to
+  // implement both `CreateProfileAsync()` and `LoadProfileAsync()`. The
+  // callback parameters have the same meaning as those two methods. If
+  // the profile does not exists on disk and `policy` is `kLoadOnly` then
+  // the method will fail and return false, otherwise it will create the
+  // profile if necessary and always succeed.
+  bool CreateOrLoadProfile(std::string_view name,
+                           LoadOrCreatePolicy policy,
+                           ProfileLoadedCallback initialized_callback,
+                           ProfileLoadedCallback created_callback);
 
   // Final initialization of the profile.
   void DoFinalInit(ProfileIOS* profile);
   void DoFinalInitForServices(ProfileIOS* profile);
+
+  // Invoked when a profile deletion attempts complete with success or not.
+  // Will invoke `closure` after updating the ProfileAttributesStorageIOS.
+  void OnProfileDeletionComplete(base::OnceClosure closure,
+                                 const std::string& profile_name,
+                                 ProfileDeleterIOS::Result result);
+
+  // Returns a ScopedProfileKeepAliveIOS for `info` (which may be null if
+  // the profile could not be loaded).
+  ScopedProfileKeepAliveIOS CreateScopedProfileKeepAlive(ProfileInfo* info);
+
+  // Called when a ScopedProfileKeepAliveIOS is destroyed. Will unload the
+  // profile if no other ScopedProfileKeepAliveIOS reference it.
+  void MaybeUnloadProfile(std::string_view name);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -101,13 +120,27 @@ class ProfileManagerIOSImpl : public ProfileManagerIOS,
   const base::FilePath profile_data_dir_;
 
   // Holds the Profile instances that this instance has created.
-  ProfileMap profiles_map_;
+  std::map<std::string, ProfileInfo, std::less<>> profiles_map_;
+
+  // Holds the ScopedProfileKeepAliveIOS for the profiles that are loading.
+  std::map<std::string, ScopedProfileKeepAliveIOS, std::less<>>
+      loading_profiles_map_;
 
   // The owned ProfileAttributesStorageIOS instance.
-  ProfileAttributesStorageIOS profile_attributes_storage_;
+  MutableProfileAttributesStorageIOS profile_attributes_storage_;
+
+  // The owned ProfileDeleterIOS instance.
+  ProfileDeleterIOS profile_deleter_;
 
   // The list of registered observers.
   base::ObserverList<ProfileManagerObserverIOS, true> observers_;
+
+  // Record whether the manager will soon be destroyed and loading
+  // profile is now forbidden.
+  bool will_be_destroyed_ = false;
+
+  // Factory for weak pointers.
+  base::WeakPtrFactory<ProfileManagerIOSImpl> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_MANAGER_IOS_IMPL_H_

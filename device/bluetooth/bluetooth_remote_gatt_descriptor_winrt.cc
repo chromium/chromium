@@ -148,7 +148,7 @@ void BluetoothRemoteGattDescriptorWinrt::ReadRemoteDescriptor(
 }
 
 void BluetoothRemoteGattDescriptorWinrt::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (pending_read_callback_ || pending_write_callbacks_) {

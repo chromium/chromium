@@ -8,7 +8,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
@@ -16,67 +15,33 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/extensions/api/document_scan/document_scan_type_converters.h"
 #include "chrome/browser/extensions/api/document_scan/scanner_discovery_runner.h"
+#include "chrome/browser/extensions/api/document_scan/simple_scan_runner.h"
 #include "chrome/browser/extensions/api/document_scan/start_scan_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/document_scan.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/crosapi/mojom/document_scan.mojom.h"
-#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/extension.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/document_scan_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#include "extensions/common/extension_id.h"
-#endif
-
 namespace extensions {
 
 namespace {
 
-// Error messages that can be included in a response when scanning fails.
-constexpr char kNoScannersAvailableError[] = "No scanners available";
-constexpr char kUnsupportedMimeTypesError[] = "Unsupported MIME types";
-constexpr char kScanImageError[] = "Failed to scan image";
-constexpr char kVirtualPrinterUnavailableError[] =
-    "Virtual USB printer unavailable";
-
-// The name of the virtual USB printer used for testing.
-constexpr char kVirtualUSBPrinter[] = "DavieV Virtual USB Printer (USB)";
-
-// The testing MIME type.
-constexpr char kTestingMimeType[] = "testing";
-
-// The PNG MIME type.
-constexpr char kScannerImageMimeTypePng[] = "image/png";
-
-// The PNG image data URL prefix of a scanned image.
-constexpr char kPngImageDataUrlPrefix[] = "data:image/png;base64,";
-
 crosapi::mojom::DocumentScan* GetDocumentScanInterface() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // CrosapiManager is not always initialized in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {
     CHECK_IS_TEST();
     return nullptr;
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->document_scan_ash();
-#else
-  auto* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::DocumentScan>()) {
-    LOG(ERROR) << "DocumentScan service not available";
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::DocumentScan>().get();
-#endif
 }
 
 }  // namespace
@@ -125,12 +90,6 @@ DocumentScanAPIHandler* DocumentScanAPIHandler::Get(
       browser_context);
 }
 
-// static
-void DocumentScanAPIHandler::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kDocumentScanAPITrustedExtensions);
-}
-
 void DocumentScanAPIHandler::ExtensionCleanup(const ExtensionId& id) {
   const ExtensionState& state = extension_state_[id];
   for (const auto& [scanner_handle, scanner_id] : state.scanner_handles) {
@@ -164,76 +123,25 @@ void DocumentScanAPIHandler::SetDocumentScanForTesting(
 }
 
 void DocumentScanAPIHandler::SimpleScan(
+    scoped_refptr<const Extension> extension,
     const std::vector<std::string>& mime_types,
     SimpleScanCallback callback) {
-  bool should_use_virtual_usb_printer = false;
-  if (base::Contains(mime_types, kTestingMimeType)) {
-    should_use_virtual_usb_printer = true;
-  } else if (!base::Contains(mime_types, kScannerImageMimeTypePng)) {
-    std::move(callback).Run(std::nullopt, kUnsupportedMimeTypesError);
-    return;
-  }
-
-  document_scan_->GetScannerNames(
-      base::BindOnce(&DocumentScanAPIHandler::OnSimpleScanNamesReceived,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     should_use_virtual_usb_printer, std::move(callback)));
-}
-
-void DocumentScanAPIHandler::OnSimpleScanNamesReceived(
-    bool force_virtual_usb_printer,
-    SimpleScanCallback callback,
-    const std::vector<std::string>& scanner_names) {
-  if (scanner_names.empty()) {
-    std::move(callback).Run(std::nullopt, kNoScannersAvailableError);
-    return;
-  }
-
-  // TODO(pstew): Call a delegate method here to select a scanner and options.
-  // The first scanner supporting one of the requested MIME types used to be
-  // selected. The testing MIME type dictates that the virtual USB printer
-  // should be used if available. Otherwise, since all of the scanners always
-  // support PNG, select the first scanner in the list.
-
-  std::string scanner_name;
-  if (force_virtual_usb_printer) {
-    if (!base::Contains(scanner_names, kVirtualUSBPrinter)) {
-      std::move(callback).Run(std::nullopt, kVirtualPrinterUnavailableError);
-      return;
-    }
-
-    scanner_name = kVirtualUSBPrinter;
-  } else {
-    scanner_name = scanner_names[0];
-  }
-
-  document_scan_->ScanFirstPage(
-      scanner_name,
+  auto runner =
+      std::make_unique<SimpleScanRunner>(std::move(extension), document_scan_);
+  SimpleScanRunner* raw_runner = runner.get();
+  raw_runner->Start(
+      std::move(mime_types),
       base::BindOnce(&DocumentScanAPIHandler::OnSimpleScanCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(runner),
+                     std::move(callback)));
 }
 
 void DocumentScanAPIHandler::OnSimpleScanCompleted(
+    std::unique_ptr<SimpleScanRunner> runner,
     SimpleScanCallback callback,
-    crosapi::mojom::ScanFailureMode failure_mode,
-    const std::optional<std::string>& scan_data) {
-  // TODO(pstew): Enlist a delegate to display received scan in the UI and
-  // confirm that this scan should be sent to the caller. If this is a
-  // multi-page scan, provide a means for adding additional scanned images up to
-  // the requested limit.
-  if (!scan_data.has_value() ||
-      failure_mode != crosapi::mojom::ScanFailureMode::kNoFailure) {
-    std::move(callback).Run(std::nullopt, kScanImageError);
-    return;
-  }
-
-  std::string image_base64 = base::Base64Encode(scan_data.value());
-  api::document_scan::ScanResults scan_results;
-  scan_results.data_urls.push_back(kPngImageDataUrlPrefix +
-                                   std::move(image_base64));
-  scan_results.mime_type = kScannerImageMimeTypePng;
-
-  std::move(callback).Run(std::move(scan_results), std::nullopt);
+    std::optional<api::document_scan::ScanResults> scan_results,
+    std::optional<std::string> error) {
+  std::move(callback).Run(std::move(scan_results), std::move(error));
 }
 
 void DocumentScanAPIHandler::GetScannerList(
@@ -657,12 +565,13 @@ void DocumentScanAPIHandler::OnReadScanDataResponse(
 }
 
 template <>
-KeyedService*
-BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService>
+BrowserContextKeyedAPIFactory<DocumentScanAPIHandler>::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  return new DocumentScanAPIHandler(context);
+  return std::make_unique<DocumentScanAPIHandler>(context);
 }
 
 }  // namespace extensions

@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './app_content_item.js';
 import './file_handling_item.js';
 import './more_permissions_item.js';
@@ -57,10 +57,10 @@ export class AppElement extends AppElementBase {
     };
   }
 
-  protected app_: App = createDummyApp();
-  protected apps_: AppMap = {};
-  protected iconUrl_: string = '';
-  protected showSearch_: boolean = false;
+  protected accessor app_: App = createDummyApp();
+  protected accessor apps_: AppMap = {};
+  protected accessor iconUrl_: string = '';
+  protected accessor showSearch_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -89,6 +89,15 @@ export class AppElement extends AppElementBase {
       assert(result.app);
       this.app_ = result.app;
       this.hidden = false;
+
+      if (this.isIsolatedWebApp_()) {
+        // Launches an on-demand calculation of app size and data size; if one
+        // of these two values ends up being different from the last known
+        // value, informs this page via `onAppChanged`. This way we can quickly
+        // render the cached data first without waiting for disk operations to
+        // finish and then update the DOM later if necessary.
+        BrowserProxy.getInstance().handler.updateAppSize(appId);
+      }
     });
 
     BrowserProxy.getInstance().handler.getApps().then((result) => {
@@ -129,6 +138,10 @@ export class AppElement extends AppElementBase {
 
   protected shouldShowSystemNotificationsSettingsLink_(): boolean {
     return this.app_.showSystemNotificationsSettingsLink;
+  }
+
+  protected isIsolatedWebApp_(): boolean {
+    return this.app_.publisherId.startsWith('isolated-app://');
   }
 
   protected openNotificationsSystemSettings_(e: CustomEvent<{event: Event}>):

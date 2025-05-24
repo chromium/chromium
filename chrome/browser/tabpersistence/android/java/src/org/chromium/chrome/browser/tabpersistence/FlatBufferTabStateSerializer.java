@@ -12,6 +12,8 @@ import com.google.flatbuffers.FlatBufferBuilder;
 import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUserAgent;
@@ -26,6 +28,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 
 /** {@link TabStateSerializer} backed by a FlatBuffer */
+@NullMarked
 public class FlatBufferTabStateSerializer implements TabStateSerializer {
     private static final String TAG = "FBTSS";
     private static final String NULL_OPENER_APP_ID = " ";
@@ -90,13 +93,15 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         }
         TabStateFlatBufferV1.addTabGroupId(
                 fbb, TabGroupIdToken.createTabGroupIdToken(fbb, tokenHigh, tokenLow));
+        TabStateFlatBufferV1.addTabHasSensitiveContent(fbb, state.tabHasSensitiveContent);
+        TabStateFlatBufferV1.addIsPinned(fbb, state.isPinned);
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
     }
 
     @Override
-    public TabState deserialize(ByteBuffer bytes) {
+    public @Nullable TabState deserialize(ByteBuffer bytes) {
         try {
             TabStateFlatBufferV1 tabStateFlatBuffer =
                     TabStateFlatBufferV1.getRootAsTabStateFlatBufferV1(bytes);
@@ -123,6 +128,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.tabLaunchTypeAtCreation =
                     getLaunchTypeFromFlatBuffer(tabStateFlatBuffer.launchTypeAtCreation());
             state.themeColor = tabStateFlatBuffer.themeColor();
+            state.tabHasSensitiveContent = tabStateFlatBuffer.tabHasSensitiveContent();
+            state.isPinned = tabStateFlatBuffer.isPinned();
             ByteBuffer webContentsStateBuffer =
                     tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
                             ? ByteBuffer.allocateDirect(0)
@@ -177,6 +184,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_LONGPRESS_BACKGROUND;
             case TabLaunchTypeAtCreation.FROM_REPARENTING:
                 return TabLaunchType.FROM_REPARENTING;
+            case TabLaunchTypeAtCreation.FROM_REPARENTING_BACKGROUND:
+                return TabLaunchType.FROM_REPARENTING_BACKGROUND;
             case TabLaunchTypeAtCreation.FROM_LAUNCHER_SHORTCUT:
                 return TabLaunchType.FROM_LAUNCHER_SHORTCUT;
             case TabLaunchTypeAtCreation.FROM_SPECULATIVE_BACKGROUND_CREATION:
@@ -211,6 +220,16 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_SYNC_BACKGROUND;
             case TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND:
                 return TabLaunchType.FROM_RECENT_TABS_FOREGROUND;
+            case TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                return TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
+            case TabLaunchTypeAtCreation.FROM_BOOKMARK_BAR_BACKGROUND:
+                return TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND;
+            case TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_BACKGROUND:
+                return TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND;
+            case TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_FOREGROUND:
+                return TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND;
+            case TabLaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
+                return TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
@@ -277,6 +296,18 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND;
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
                 return TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND;
+            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                return TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
+            case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
+                return TabLaunchTypeAtCreation.FROM_BOOKMARK_BAR_BACKGROUND;
+            case TabLaunchType.FROM_REPARENTING_BACKGROUND:
+                return TabLaunchTypeAtCreation.FROM_REPARENTING_BACKGROUND;
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
+                return TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_BACKGROUND;
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND:
+                return TabLaunchTypeAtCreation.FROM_HISTORY_NAVIGATION_FOREGROUND;
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
+                return TabLaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:

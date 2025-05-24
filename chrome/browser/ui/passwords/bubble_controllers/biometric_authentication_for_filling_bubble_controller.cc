@@ -75,7 +75,7 @@ std::u16string BiometricAuthenticationForFillingBubbleController::GetBody()
 #elif BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_MESSAGE_WIN);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_MESSAGE_CHROMEOS);
 #else
@@ -114,8 +114,10 @@ void BiometricAuthenticationForFillingBubbleController::OnAccepted() {
 #elif BUILDFLAG(IS_WIN)
   message = l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_WIN);
+#elif BUILDFLAG(IS_CHROMEOS)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_CHROMEOS);
 #endif
-  // TODO(crbug.com/367336383): Add ChromeOS specific string.
   delegate_->AuthenticateUserWithMessage(message,
                                          std::move(on_reauth_completed));
 }
@@ -123,7 +125,9 @@ void BiometricAuthenticationForFillingBubbleController::OnAccepted() {
 void BiometricAuthenticationForFillingBubbleController::OnCanceled() {
   prefs_->SetBoolean(
       password_manager::prefs::kHasUserInteractedWithBiometricAuthPromo, true);
-  delegate_->OnBiometricAuthBeforeFillingDeclined();
+  if (delegate_) {
+    delegate_->OnBiometricAuthBeforeFillingDeclined();
+  }
 }
 
 std::u16string BiometricAuthenticationForFillingBubbleController::GetTitle()
@@ -134,7 +138,7 @@ std::u16string BiometricAuthenticationForFillingBubbleController::GetTitle()
 #elif BUILDFLAG(IS_WIN)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_TITLE_WIN);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_BIOMETRIC_AUTHENTICATION_FOR_FILLING_PROMO_TITLE_CHROMEOS);
 #else

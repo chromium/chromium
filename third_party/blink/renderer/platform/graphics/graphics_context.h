@@ -33,16 +33,16 @@
 #include "base/dcheck_is_on.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/geometry/dash_array.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
-#include "third_party/blink/renderer/platform/graphics/dash_array.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
+#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -65,13 +65,13 @@ class PaintPreviewTracker;
 
 namespace blink {
 
+class ContouredRect;
 class FloatRoundedRect;
 class KURL;
 class PaintController;
 class Path;
 class StrokeData;
 class StyledStrokeData;
-struct TextRunPaintInfo;
 
 // Tiling parameters for the DrawImageTiled() method.
 struct ImageTilingInfo {
@@ -310,14 +310,17 @@ class PLATFORM_EXPORT GraphicsContext {
   void FillRoundedRect(const FloatRoundedRect&,
                        const Color&,
                        const AutoDarkMode& auto_dark_mode);
+  void FillContouredRect(const ContouredRect&,
+                         const Color&,
+                         const AutoDarkMode& auto_dark_mode);
   void FillDRRect(const FloatRoundedRect&,
                   const FloatRoundedRect&,
                   const Color&,
                   const AutoDarkMode& auto_dark_mode);
-  void FillRectWithRoundedHole(const gfx::RectF&,
-                               const FloatRoundedRect& rounded_hole_rect,
-                               const Color&,
-                               const AutoDarkMode& auto_dark_mode);
+  void FillRectWithContouredHole(const gfx::RectF&,
+                                 const ContouredRect& contoured_hole_rect,
+                                 const Color&,
+                                 const AutoDarkMode& auto_dark_mode);
 
   void StrokeRect(const gfx::RectF&,
                   const AutoDarkMode& auto_dark_mode);
@@ -373,16 +376,16 @@ class PLATFORM_EXPORT GraphicsContext {
 
   void Clip(const gfx::Rect& rect) { ClipRect(gfx::RectToSkRect(rect)); }
   void Clip(const gfx::RectF& rect) { ClipRect(gfx::RectFToSkRect(rect)); }
-  void ClipRoundedRect(const FloatRoundedRect&,
-                       SkClipOp = SkClipOp::kIntersect,
-                       AntiAliasingMode = kAntiAliased);
+  void ClipContouredRect(const ContouredRect&,
+                         SkClipOp = SkClipOp::kIntersect,
+                         AntiAliasingMode = kAntiAliased);
   void ClipOut(const gfx::Rect& rect) {
     ClipRect(gfx::RectToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
   void ClipOut(const gfx::RectF& rect) {
     ClipRect(gfx::RectFToSkRect(rect), kNotAntiAliased, SkClipOp::kDifference);
   }
-  void ClipOutRoundedRect(const FloatRoundedRect&);
+  void ClipOutContouredRect(const ContouredRect&);
   void ClipPath(const SkPath&,
                 AntiAliasingMode = kNotAntiAliased,
                 SkClipOp = SkClipOp::kIntersect);
@@ -403,22 +406,15 @@ class PLATFORM_EXPORT GraphicsContext {
                 const AutoDarkMode& auto_dark_mode);
 
   void DrawEmphasisMarks(const Font&,
-                         const TextRunPaintInfo&,
-                         const AtomicString& mark,
-                         const gfx::PointF&,
-                         const AutoDarkMode& auto_dark_mode);
-  void DrawEmphasisMarks(const Font&,
                          const TextFragmentPaintInfo&,
                          const AtomicString& mark,
                          const gfx::PointF&,
                          const AutoDarkMode& auto_dark_mode);
 
-  void DrawBidiText(
-      const Font&,
-      const TextRunPaintInfo&,
-      const gfx::PointF&,
-      const AutoDarkMode& auto_dark_mode,
-      Font::CustomFontNotReadyAction = Font::kDoNotPaintIfFontNotReady);
+  void DrawBidiText(const Font&,
+                    const TextRun&,
+                    const gfx::PointF&,
+                    const AutoDarkMode& auto_dark_mode);
 
   // BeginLayer()/EndLayer() behave like Save()/Restore() for CTM and clip
   // states. Apply opacity, blend mode, filter when the layer is composited on
@@ -473,8 +469,12 @@ class PLATFORM_EXPORT GraphicsContext {
   SkSamplingOptions ComputeSamplingOptions(Image& image,
                                            const gfx::RectF& dest,
                                            const gfx::RectF& src) const {
+    cc::PaintFlags::ScalingOperation scale =
+        (dest.width() > src.width() && dest.height() > src.height())
+            ? cc::PaintFlags::ScalingOperation::kUpscale
+            : cc::PaintFlags::ScalingOperation::kUnknown;
     return cc::PaintFlags::FilterQualityToSkSamplingOptions(
-        ComputeFilterQuality(image, dest, src));
+        ComputeFilterQuality(image, dest, src), scale);
   }
 
   // Sets target URL of a clickable area.
@@ -510,13 +510,6 @@ class PLATFORM_EXPORT GraphicsContext {
     RealizePaintSave();
     return paint_state_;
   }
-
-  template <typename TextPaintInfo>
-  void DrawEmphasisMarksInternal(const Font&,
-                                 const TextPaintInfo&,
-                                 const AtomicString& mark,
-                                 const gfx::PointF&,
-                                 const AutoDarkMode& auto_dark_mode);
 
   template <typename DrawTextFunc>
   void DrawTextPasses(const DrawTextFunc&);

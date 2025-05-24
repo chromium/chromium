@@ -42,11 +42,11 @@ class SettingsSyncProcessor {
   // Initializes this with the initial state of sync.
   void Init(const base::Value::Dict& initial_state);
 
-  // Sends |changes| to sync.
+  // Sends `changes` to sync.
   std::optional<syncer::ModelError> SendChanges(
       const value_store::ValueStoreChangeList& changes);
 
-  // Informs this that |changes| have been receieved from sync. No action will
+  // Informs this that `changes` have been received from sync. No action will
   // be taken, but this must be notified for internal bookkeeping.
   void NotifyChanges(const value_store::ValueStoreChangeList& changes);
 

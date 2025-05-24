@@ -29,7 +29,7 @@ void AmbientAnimationShieldController::OnColorModeChanged(
   bool shield_is_active = parent_view_->Contains(shield_view_.get());
   if (dark_mode_enabled && !shield_is_active) {
     DVLOG(4) << "Adding dark mode shield";
-    parent_view_->AddChildView(shield_view_.get());
+    parent_view_->AddChildViewRaw(shield_view_.get());
   } else if (!dark_mode_enabled && shield_is_active) {
     DVLOG(4) << "Removing dark mode shield";
     parent_view_->RemoveChildView(shield_view_.get());

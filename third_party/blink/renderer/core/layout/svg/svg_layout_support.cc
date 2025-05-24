@@ -36,7 +36,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
-#include "third_party/blink/renderer/platform/graphics/stroke_data.h"
+#include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -86,7 +86,7 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
   DCHECK(!object.IsSVGRoot());
 
   // Return early for any cases where we don't actually paint
-  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible &&
+  if (object.StyleRef().Visibility() != EVisibility::kVisible &&
       !object.EnclosingLayer()->HasVisibleContent()) {
     return gfx::RectF();
   }

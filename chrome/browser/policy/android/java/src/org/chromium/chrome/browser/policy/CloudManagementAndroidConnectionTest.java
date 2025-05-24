@@ -40,12 +40,12 @@ public final class CloudManagementAndroidConnectionTest {
     @Test
     @SmallTest
     public void testGetClientId_Generated() {
-        Assert.assertEquals(CloudManagementSharedPreferences.readClientId(), "");
+        Assert.assertEquals("", CloudManagementSharedPreferences.readClientId());
 
         CloudManagementAndroidConnection connection =
                 CloudManagementAndroidConnection.getInstance();
-        Assert.assertEquals(connection.getClientId(), GSERVICES_ANDROID_ID);
-        Assert.assertEquals(CloudManagementSharedPreferences.readClientId(), GSERVICES_ANDROID_ID);
+        Assert.assertEquals(GSERVICES_ANDROID_ID, connection.getClientId());
+        Assert.assertEquals(GSERVICES_ANDROID_ID, CloudManagementSharedPreferences.readClientId());
     }
 
     @Test
@@ -55,6 +55,6 @@ public final class CloudManagementAndroidConnectionTest {
 
         CloudManagementAndroidConnection connection =
                 CloudManagementAndroidConnection.getInstance();
-        Assert.assertEquals(connection.getClientId(), SAVED_CLIENT_ID);
+        Assert.assertEquals(SAVED_CLIENT_ID, connection.getClientId());
     }
 }

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "cc/paint/discardable_image_map.h"
 
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <memory>
 
@@ -19,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "cc/base/region.h"
 #include "cc/paint/paint_flags.h"
@@ -59,6 +56,7 @@ namespace cc {
 namespace {
 using ::testing::_;
 using ::testing::Contains;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::FieldsAre;
@@ -70,12 +68,15 @@ using Rects = absl::InlinedVector<gfx::Rect, 1>;
 
 struct PositionScaleDrawImage {
   PaintImage image;
-  gfx::Rect image_rect;
+  DiscardableImageMap::Rects image_rects;
   SkSize scale;
 
   friend void PrintTo(const PositionScaleDrawImage& img, std::ostream* os) {
-    *os << "image: <paint image> image_rect: " << img.image_rect.ToString()
-        << " scale: " << gfx::SkSizeToSizeF(img.scale).ToString();
+    *os << "image: " << img.image.ToString() << " rects: ";
+    for (const gfx::Rect& rect : img.image_rects) {
+      *os << rect.ToString() << " ";
+    }
+    *os << "scale: " << gfx::SkSizeToSizeF(img.scale).ToString();
   }
 };
 
@@ -108,10 +109,9 @@ class DiscardableImageMapTest : public testing::Test {
     image_map.images_rtree_->Search(rect, &results);
     for (const DrawImage* image : results) {
       auto image_id = image->paint_image().stable_id();
-      position_draw_images.push_back(PositionScaleDrawImage{
-          image->paint_image(),
-          ImageRectsToRegion(image_map.GetRectsForImage(image_id)).bounds(),
-          image->scale()});
+      position_draw_images.emplace_back(image->paint_image(),
+                                        image_map.GetRectsForImage(image_id),
+                                        image->scale());
     }
 
     EXPECT_EQ(draw_images.size(), position_draw_images.size());
@@ -130,8 +130,10 @@ class DiscardableImageMapTest : public testing::Test {
       const std::vector<PositionScaleDrawImage>& images) {
     std::vector<gfx::Rect> result;
     for (auto& image : images) {
-      result.push_back(image.image_rect);
-      result.back().Inset(1);
+      for (gfx::Rect rect : image.image_rects) {
+        rect.Inset(1);
+        result.push_back(rect);
+      }
     }
     return result;
   }
@@ -152,7 +154,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectTest) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
@@ -222,7 +224,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectNonZeroLayer) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
@@ -322,7 +324,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectOnePixelQuery) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
   for (int y = 0; y < 4; ++y) {
     for (int x = 0; x < 4; ++x) {
       if ((x + y) & 1) {
@@ -627,7 +629,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInShader) {
   // |---|---|---|---|
   // | x |   | x |   |
   // |---|---|---|---|
-  PaintImage discardable_image[4][4];
+  std::array<std::array<PaintImage, 4>, 4> discardable_image;
 
   // Skia doesn't allow shader instantiation with non-invertible local
   // transforms, so we can't let the scale drop all the way to 0.
@@ -818,10 +820,11 @@ TEST_F(DiscardableImageMapTest, GathersPaintWorklets) {
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
+  DiscardableImageMap::PaintWorkletInputs paint_worklet_inputs;
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap(), nullptr,
+                                                &paint_worklet_inputs);
 
-  const auto& paint_worklet_inputs = image_map->paint_worklet_inputs();
   ASSERT_EQ(paint_worklet_inputs.size(), 1u);
   EXPECT_EQ(paint_worklet_inputs[0].first, input);
 
@@ -1015,9 +1018,10 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
   content_layer_client.add_draw_image(sync_image, gfx::Point(20, 20));
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
+  DiscardableImageMap::DecodingModeMap decode_hints;
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
-  auto decode_hints = image_map->TakeDecodingModeMap();
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap(),
+                                                &decode_hints);
   EXPECT_EQ(decode_hints.size(), 3u);
   EXPECT_TRUE(base::Contains(decode_hints, 1));
   EXPECT_TRUE(base::Contains(decode_hints, 2));
@@ -1025,9 +1029,6 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsBasic) {
   EXPECT_EQ(decode_hints[1], PaintImage::DecodingMode::kUnspecified);
   EXPECT_EQ(decode_hints[2], PaintImage::DecodingMode::kAsync);
   EXPECT_EQ(decode_hints[3], PaintImage::DecodingMode::kSync);
-
-  decode_hints = image_map->TakeDecodingModeMap();
-  EXPECT_EQ(decode_hints.size(), 0u);
 }
 
 TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
@@ -1081,10 +1082,11 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
   content_layer_client.add_draw_image(sync_image3, gfx::Point(50, 50));
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
+  DiscardableImageMap::DecodingModeMap decode_hints;
   scoped_refptr<DiscardableImageMap> image_map =
-      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap(),
+                                                &decode_hints);
 
-  auto decode_hints = image_map->TakeDecodingModeMap();
   EXPECT_EQ(decode_hints.size(), 3u);
   EXPECT_TRUE(base::Contains(decode_hints, 1));
   EXPECT_TRUE(base::Contains(decode_hints, 2));
@@ -1095,9 +1097,6 @@ TEST_F(DiscardableImageMapTest, DecodingModeHintsDuplicates) {
   EXPECT_EQ(decode_hints[2], PaintImage::DecodingMode::kSync);
   // 3 was async and sync, so the result should be sync
   EXPECT_EQ(decode_hints[3], PaintImage::DecodingMode::kSync);
-
-  decode_hints = image_map->TakeDecodingModeMap();
-  EXPECT_EQ(decode_hints.size(), 0u);
 }
 
 TEST_F(DiscardableImageMapTest, TracksImageRegions) {
@@ -1176,25 +1175,31 @@ TEST_F(DiscardableImageMapTest, ImagesUnderDrawScrollingContentsOp) {
 
   scoped_refptr<DiscardableImageMap> image_map =
       display_list->GenerateDiscardableImageMap(scroll_offsets);
-  // The image rect is the union of the two appearances of image1.
+  SkSize expected_scale = SkSize::Make(1, 1);
   EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
-              UnorderedElementsAre(
-                  FieldsAre(ImageIsSame(image1), gfx::Rect(-1, -1, 202, 502),
-                            SkSize::Make(1, 1)),
-                  FieldsAre(ImageIsSame(image1), gfx::Rect(-1, -1, 202, 502),
-                            SkSize::Make(1, 1))));
+              ElementsAre(FieldsAre(ImageIsSame(image1),
+                                    ElementsAre(gfx::Rect(-1, -1, 102, 202),
+                                                gfx::Rect(99, 299, 102, 202)),
+                                    expected_scale),
+                          FieldsAre(ImageIsSame(image1),
+                                    ElementsAre(gfx::Rect(-1, -1, 102, 202),
+                                                gfx::Rect(99, 299, 102, 202)),
+                                    expected_scale)));
 
   // The first scroller scrolls to make both images invisible.
   scroll_offsets[scroll_element_id1] = gfx::PointF(200, 100);
   // The second scroller scrolls to make both images visible.
   scroll_offsets[scroll_element_id2] = gfx::PointF(0, 250);
   image_map = display_list->GenerateDiscardableImageMap(scroll_offsets);
-  EXPECT_THAT(GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
-              UnorderedElementsAre(
-                  FieldsAre(ImageIsSame(image1), gfx::Rect(99, 299, 102, 52),
-                            SkSize::Make(1, 1)),
-                  FieldsAre(ImageIsSame(image2), gfx::Rect(199, 399, 102, 102),
-                            SkSize::Make(1, 1))));
+  EXPECT_THAT(
+      GetDiscardableImagesInRect(*image_map, gfx::Rect(1000, 1000)),
+      ElementsAre(
+          FieldsAre(ImageIsSame(image1),
+                    ElementsAre(gfx::Rect(), gfx::Rect(99, 299, 102, 52)),
+                    expected_scale),
+          FieldsAre(ImageIsSame(image2),
+                    ElementsAre(gfx::Rect(), gfx::Rect(199, 399, 102, 102)),
+                    expected_scale)));
 }
 
 #if BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
@@ -1292,6 +1297,51 @@ TEST_F(DiscardableImageMapTest,
     // height, the image should not get stretched.
     EXPECT_THAT(image_out.scale.height(), FloatNear(2.f, kScaleTolerance));
   }
+}
+
+TEST_F(DiscardableImageMapTest, PreserveImageQuality) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPreserveDiscardableImageMapQuality);
+
+  scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
+  PaintFlags paint;
+  gfx::Rect visible_rect(200, 200);
+  display_list->StartPaint();
+
+  PaintImage low_quality_image = CreateDiscardablePaintImage(gfx::Size(25, 25));
+  SkSamplingOptions low_quality_sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(
+          PaintFlags::FilterQuality::kLow));
+  display_list->push<DrawImageOp>(low_quality_image, 0.f, 0.f,
+                                  low_quality_sampling, nullptr);
+
+  PaintImage medium_quality_image =
+      CreateDiscardablePaintImage(gfx::Size(25, 25));
+  SkSamplingOptions medium_quality_sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(
+          PaintFlags::FilterQuality::kMedium));
+  display_list->push<DrawImageOp>(medium_quality_image, 0.f, 0.f,
+                                  medium_quality_sampling, nullptr);
+
+  PaintImage high_quality_image =
+      CreateDiscardablePaintImage(gfx::Size(25, 25));
+  SkSamplingOptions high_quality_sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(
+          PaintFlags::FilterQuality::kHigh));
+  display_list->push<DrawImageOp>(high_quality_image, 0.f, 0.f,
+                                  high_quality_sampling, nullptr);
+  display_list->EndPaintOfUnpaired(visible_rect);
+  display_list->Finalize();
+
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+  std::vector<const DrawImage*> images =
+      image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 200, 200));
+  EXPECT_EQ(3u, images.size());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow, images[0]->filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kMedium, images[1]->filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kHigh, images[2]->filter_quality());
 }
 
 #endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE)

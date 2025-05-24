@@ -4,12 +4,15 @@
 
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 
 namespace autofill::autofill_metrics {
@@ -27,14 +30,11 @@ SuggestionRankingContext::GetRelativePositionEnum(size_t legacy_index,
                                                   size_t new_index) {
   // A lower index means that the suggestion was ranked higher.
   if (new_index < legacy_index) {
-    return autofill_metrics::SuggestionRankingContext::RelativePosition::
-        kRankedHigher;
+    return SuggestionRankingContext::RelativePosition::kRankedHigher;
   } else if (new_index > legacy_index) {
-    return autofill_metrics::SuggestionRankingContext::RelativePosition::
-        kRankedLower;
+    return SuggestionRankingContext::RelativePosition::kRankedLower;
   }
-  return autofill_metrics::SuggestionRankingContext::RelativePosition::
-      kRankedSame;
+  return SuggestionRankingContext::RelativePosition::kRankedSame;
 }
 
 bool SuggestionRankingContext::RankingsAreDifferent() const {
@@ -62,8 +62,9 @@ void LogSuggestionsCount(size_t num_suggestions,
     case FillingProduct::kPassword:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
-    case FillingProduct::kStandaloneCvc:
+    case FillingProduct::kAutofillAi:
+    case FillingProduct::kLoyaltyCard:
+    case FillingProduct::kIdentityCredential:
       NOTREACHED();
   }
 }
@@ -76,7 +77,6 @@ void LogSuggestionAcceptedIndex(int index,
 
   switch (filling_product) {
     case FillingProduct::kCreditCard:
-    case FillingProduct::kStandaloneCvc:
       base::UmaHistogramSparse("Autofill.SuggestionAcceptedIndex.CreditCard",
                                uma_index);
       break;
@@ -94,10 +94,12 @@ void LogSuggestionAcceptedIndex(int index,
                                uma_index);
       break;
     case FillingProduct::kIban:
+    case FillingProduct::kLoyaltyCard:
     case FillingProduct::kCompose:
     case FillingProduct::kPlusAddresses:
-    case FillingProduct::kPredictionImprovements:
+    case FillingProduct::kAutofillAi:
     case FillingProduct::kMerchantPromoCode:
+    case FillingProduct::kIdentityCredential:
       // It is NOTREACHED because all other types should be handled separately.
       NOTREACHED();
   }
@@ -108,18 +110,31 @@ void LogSuggestionAcceptedIndex(int index,
                             off_the_record);
 }
 
-void LogAutofillShowCardsFromGoogleAccountButtonEventMetric(
-    ShowCardsFromGoogleAccountButtonEvent event) {
-  base::UmaHistogramEnumeration(
-      "Autofill.ButterForPayments.ShowCardsFromGoogleAccountButtonEvents",
-      event);
-}
-
 void LogAutofillRankingSuggestionDifference(
     SuggestionRankingContext::RelativePosition ranking_difference) {
   base::UmaHistogramEnumeration(
       "Autofill.SuggestionAccepted.SuggestionRankingDifference.CreditCard",
       ranking_difference);
+}
+
+void LogAddressAutofillOnTypingSuggestionAccepted(
+    FieldType field_type_used,
+    const AutofillField* autofill_trigger_field) {
+  // TODO(crbug.com/381994105): Consider deleting this metric in favor or
+  // Autofill.AddressSuggestionOnTypingAcceptance.PerFieldType.
+  base::UmaHistogramEnumeration(
+      "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
+      field_type_used, FieldType::MAX_VALID_FIELD_TYPE);
+  base::UmaHistogramBoolean(
+      "Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication",
+      autofill_trigger_field &&
+          autofill_trigger_field->Type().GetStorableType() >
+              FieldType::EMPTY_TYPE);
+  if (autofill_trigger_field) {
+    base::UmaHistogramCounts100(
+        "Autofill.AddressSuggestionOnTypingAcceptance.NumberOfCharactersTyped",
+        autofill_trigger_field->value().length());
+  }
 }
 
 }  // namespace autofill::autofill_metrics

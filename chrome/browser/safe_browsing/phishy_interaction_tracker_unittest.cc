@@ -18,7 +18,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -28,6 +28,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/test/base/scoped_testing_local_state.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::WebContents;
 
@@ -68,7 +72,7 @@ class MockSafeBrowsingUIManager : public safe_browsing::SafeBrowsingUIManager {
   }
 
  protected:
-  ~MockSafeBrowsingUIManager() override {}
+  ~MockSafeBrowsingUIManager() override = default;
 };
 
 }  // namespace
@@ -82,6 +86,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     browser_process_ = TestingBrowserProcess::GetGlobal();
+
     sb_service_ =
         base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
     sb_service_->SetUseTestUrlLoaderFactory(true);
@@ -96,12 +101,6 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
         base::WrapUnique(new PhishyInteractionTracker(web_contents()));
     phishy_interaction_tracker_->SetUIManagerForTesting(ui_manager_.get());
     phishy_interaction_tracker_->HandlePageChanged();
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Local state is needed to construct ProxyConfigService, which is a
-    // dependency of PingManager on ChromeOS.
-    TestingBrowserProcess::GetGlobal()->SetLocalState(profile()->GetPrefs());
-#endif
   }
 
   void TearDown() override {
@@ -113,9 +112,6 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
         FROM_HERE, phishy_interaction_tracker_.release());
     ui_manager_.reset();
     phishy_interaction_tracker_.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
-#endif
     base::RunLoop().RunUntilIdle();
     ChromeRenderViewHostTestHarness::TearDown();
   }
@@ -211,6 +207,14 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
 
  protected:
   raw_ptr<TestingBrowserProcess> browser_process_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Local state is needed to construct ProxyConfigService, which is a
+  // dependency of PingManager on ChromeOS.
+  ScopedTestingLocalState scoped_testing_local_state_{
+      TestingBrowserProcess::GetGlobal()};
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   scoped_refptr<safe_browsing::TestSafeBrowsingService> sb_service_;
   std::unique_ptr<PhishyInteractionTracker> phishy_interaction_tracker_;
   scoped_refptr<MockSafeBrowsingUIManager> ui_manager_;

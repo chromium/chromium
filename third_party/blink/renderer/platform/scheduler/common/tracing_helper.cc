@@ -11,11 +11,19 @@ namespace scheduler {
 
 using perfetto::protos::pbzero::RendererMainThreadTaskExecution;
 
-double TimeDeltaToMilliseconds(const base::TimeDelta& value) {
-  return value.InMillisecondsF();
+perfetto::NamedTrack MakeNamedTrack(perfetto::StaticString name,
+                                    const void* ptr,
+                                    perfetto::Track parent) {
+  return perfetto::NamedTrack(name, reinterpret_cast<uintptr_t>(ptr), parent);
 }
 
-const char* YesNoStateToString(bool is_yes) {
+perfetto::CounterTrack MakeCounterTrack(perfetto::StaticString name,
+                                        const void* ptr,
+                                        perfetto::Track parent) {
+  return perfetto::CounterTrack(name, reinterpret_cast<uintptr_t>(ptr), parent);
+}
+
+perfetto::StaticString YesNoStateToString(bool is_yes) {
   if (is_yes) {
     return "yes";
   } else {
@@ -213,6 +221,8 @@ RendererMainThreadTaskExecution::TaskType TaskTypeToProto(TaskType task_type) {
     case TaskType::kInternalPostMessageForwarding:
       return RendererMainThreadTaskExecution::
           TASK_TYPE_INTERNAL_POST_MESSAGE_FORWARDING;
+    case TaskType::kInternalAutofill:
+      return RendererMainThreadTaskExecution::TASK_TYPE_INTERNAL_AUTOFILL;
   }
 }
 

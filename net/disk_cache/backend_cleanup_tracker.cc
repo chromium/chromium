@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
@@ -21,7 +22,9 @@ namespace disk_cache {
 
 namespace {
 
-using TrackerMap = std::unordered_map<base::FilePath, BackendCleanupTracker*>;
+using TrackerMap =
+    std::unordered_map<base::FilePath,
+                       raw_ptr<BackendCleanupTracker, CtnExperimental>>;
 struct AllBackendCleanupTrackers {
   TrackerMap map;
 

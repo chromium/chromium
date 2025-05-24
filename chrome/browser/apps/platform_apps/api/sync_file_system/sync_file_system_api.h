@@ -23,34 +23,14 @@ class FileSystemContext;
 namespace chrome_apps {
 namespace api {
 
-class SyncFileSystemDeleteFileSystemFunction : public ExtensionFunction {
- public:
-  // TODO(kinuko,calvinlo): Uncomment this or delete this class when
-  // we decide if we want to revive this function.
-  // DECLARE_EXTENSION_FUNCTION("syncFileSystem.deleteFileSystem",
-  //                            SYNCFILESYSTEM_DELETEFILESYSTEM)
-
- protected:
-  ~SyncFileSystemDeleteFileSystemFunction() override {}
-  ResponseAction Run() override;
-
- private:
-  void DidDeleteFileSystem(base::File::Error error);
-};
-
 class SyncFileSystemGetFileStatusFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("syncFileSystem.getFileStatus",
                              SYNCFILESYSTEM_GETFILESYNCSTATUS)
 
  protected:
-  ~SyncFileSystemGetFileStatusFunction() override {}
+  ~SyncFileSystemGetFileStatusFunction() override = default;
   ResponseAction Run() override;
-
- private:
-  void DidGetFileStatus(
-      const ::sync_file_system::SyncStatusCode sync_service_status,
-      const ::sync_file_system::SyncFileStatus sync_file_status);
 };
 
 class SyncFileSystemGetFileStatusesFunction : public ExtensionFunction {
@@ -62,23 +42,6 @@ class SyncFileSystemGetFileStatusesFunction : public ExtensionFunction {
  protected:
   ~SyncFileSystemGetFileStatusesFunction() override;
   ResponseAction Run() override;
-
- private:
-  typedef std::pair<::sync_file_system::SyncStatusCode,
-                    ::sync_file_system::SyncFileStatus>
-      FileStatusPair;
-  typedef std::map<storage::FileSystemURL,
-                   FileStatusPair,
-                   storage::FileSystemURL::Comparator>
-      URLToStatusMap;
-
-  void DidGetFileStatus(const storage::FileSystemURL& file_system_url,
-                        ::sync_file_system::SyncStatusCode sync_status_code,
-                        ::sync_file_system::SyncFileStatus sync_file_statuses);
-
-  unsigned int num_expected_results_;
-  unsigned int num_results_received_;
-  URLToStatusMap file_sync_statuses_;
 };
 
 class SyncFileSystemGetUsageAndQuotaFunction : public ExtensionFunction {
@@ -87,7 +50,7 @@ class SyncFileSystemGetUsageAndQuotaFunction : public ExtensionFunction {
                              SYNCFILESYSTEM_GETUSAGEANDQUOTA)
 
  protected:
-  ~SyncFileSystemGetUsageAndQuotaFunction() override {}
+  ~SyncFileSystemGetUsageAndQuotaFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -102,7 +65,7 @@ class SyncFileSystemRequestFileSystemFunction : public ExtensionFunction {
                              SYNCFILESYSTEM_REQUESTFILESYSTEM)
 
  protected:
-  ~SyncFileSystemRequestFileSystemFunction() override {}
+  ~SyncFileSystemRequestFileSystemFunction() override = default;
   ResponseAction Run() override;
 
  private:
@@ -123,7 +86,7 @@ class SyncFileSystemSetConflictResolutionPolicyFunction
                              SYNCFILESYSTEM_SETCONFLICTRESOLUTIONPOLICY)
 
  protected:
-  ~SyncFileSystemSetConflictResolutionPolicyFunction() override {}
+  ~SyncFileSystemSetConflictResolutionPolicyFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -134,7 +97,7 @@ class SyncFileSystemGetConflictResolutionPolicyFunction
                              SYNCFILESYSTEM_GETCONFLICTRESOLUTIONPOLICY)
 
  protected:
-  ~SyncFileSystemGetConflictResolutionPolicyFunction() override {}
+  ~SyncFileSystemGetConflictResolutionPolicyFunction() override = default;
   ResponseAction Run() override;
 };
 
@@ -144,7 +107,7 @@ class SyncFileSystemGetServiceStatusFunction : public ExtensionFunction {
                              SYNCFILESYSTEM_GETSERVICESTATUS)
 
  protected:
-  ~SyncFileSystemGetServiceStatusFunction() override {}
+  ~SyncFileSystemGetServiceStatusFunction() override = default;
   ResponseAction Run() override;
 };
 

@@ -70,11 +70,14 @@ void DataURLToFaviconUsage(const GURL& link_url,
       data.empty())
     return;
 
-  favicon_base::FaviconUsageData usage;
-  if (!importer::ReencodeFavicon(
-          reinterpret_cast<const unsigned char*>(&data[0]),
-          data.size(), &usage.png_data))
+  std::optional<std::vector<uint8_t>> png_data =
+      importer::ReencodeFavicon(base::as_byte_span(data));
+  if (!png_data) {
     return;  // Unable to decode.
+  }
+
+  favicon_base::FaviconUsageData usage;
+  usage.png_data = std::move(png_data).value();
 
   // We need to make up a URL for the favicon. We use a version of the page's
   // URL so that we can be sure it will not collide.
@@ -109,7 +112,7 @@ void ImportBookmarksFile(
     base::RepeatingCallback<bool(const GURL&)> valid_url_callback,
     const base::FilePath& file_path,
     std::vector<ImportedBookmarkEntry>* bookmarks,
-    std::vector<importer::SearchEngineInfo>* search_engines,
+    std::vector<user_data_importer::SearchEngineInfo>* search_engines,
     favicon_base::FaviconUsageDataList* favicons) {
   std::string content;
   base::ReadFileToString(file_path, &content);
@@ -178,7 +181,7 @@ void ImportBookmarksFile(
     if (is_bookmark && post_data.empty() &&
         CanImportURLAsSearchEngine(url, &search_engine_url) &&
             !shortcut.empty()) {
-      importer::SearchEngineInfo search_engine_info;
+      user_data_importer::SearchEngineInfo search_engine_info;
       search_engine_info.url.assign(base::UTF8ToUTF16(search_engine_url));
       search_engine_info.keyword = shortcut;
       search_engine_info.display_name = title;
@@ -193,8 +196,7 @@ void ImportBookmarksFile(
         post_data.empty() &&
         (valid_url_callback.is_null() || valid_url_callback.Run(url))) {
       if (toolbar_folder_index > path.size() && !path.empty()) {
-        NOTREACHED_IN_MIGRATION();  // error in parsing.
-        break;
+        NOTREACHED();  // error in parsing.
       }
 
       ImportedBookmarkEntry entry;

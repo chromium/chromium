@@ -14,8 +14,8 @@ class ServiceDiscoveryClientMacFactory {
   static scoped_refptr<ServiceDiscoverySharedClient> CreateInstance();
 
  private:
-  ServiceDiscoveryClientMacFactory() {}
-  virtual ~ServiceDiscoveryClientMacFactory() {}
+  ServiceDiscoveryClientMacFactory() = default;
+  virtual ~ServiceDiscoveryClientMacFactory() = default;
 };
 
 }  // namespace local_discovery

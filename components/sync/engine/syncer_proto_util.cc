@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "components/sync/engine/net/server_connection_manager.h"
@@ -52,8 +51,7 @@ SyncerError ServerConnectionErrorAsSyncerError(
           static_cast<net::HttpStatusCode>(http_status_code));
     case HttpResponse::SERVER_CONNECTION_OK:
     case HttpResponse::NONE:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerError::Success();
+      NOTREACHED();
   }
 }
 
@@ -82,8 +80,7 @@ SyncProtocolErrorType PBErrorTypeToSyncProtocolErrorType(
       return ENCRYPTION_OBSOLETE;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_ERROR;
+  NOTREACHED();
 }
 
 ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
@@ -94,11 +91,10 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
       return UNKNOWN_ACTION;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_ACTION;
+  NOTREACHED();
 }
 
-// Returns true iff |message| is an initial GetUpdates request.
+// Returns true iff `message` is an initial GetUpdates request.
 bool IsVeryFirstGetUpdates(const ClientToServerMessage& message) {
   if (!message.has_get_updates()) {
     return false;
@@ -112,7 +108,7 @@ bool IsVeryFirstGetUpdates(const ClientToServerMessage& message) {
   return true;
 }
 
-// Returns true iff |message| should contain a store birthday.
+// Returns true iff `message` should contain a store birthday.
 bool IsBirthdayRequired(const ClientToServerMessage& message) {
   if (message.has_clear_server_data()) {
     return false;
@@ -203,12 +199,6 @@ void ProcessClientCommand(const sync_pb::ClientCommand& command,
       cycle->context()->set_poll_interval(interval);
       cycle->delegate()->OnReceivedPollIntervalUpdate(interval);
     }
-  }
-
-  if (command.has_gu_retry_delay_seconds() &&
-      !base::FeatureList::IsEnabled(syncer::kSyncIgnoreGetUpdatesRetryDelay)) {
-    cycle->delegate()->OnReceivedGuRetryDelay(
-        base::Seconds(command.gu_retry_delay_seconds()));
   }
 
   if (command.custom_nudge_delays_size() > 0) {
@@ -341,7 +331,7 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
     case CONFLICT:
     case INVALID_MESSAGE:
       // These error types should not be used at this stage.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (should_report_success) {
@@ -381,7 +371,7 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
       sync_protocol_error.action = DISABLE_SYNC_ON_CLIENT;
     }
   } else {
-    // Legacy server implementation. Compute the error based on |error_code|.
+    // Legacy server implementation. Compute the error based on `error_code`.
     sync_protocol_error = ErrorCodeToSyncProtocolError(response.error_code());
   }
 
@@ -445,8 +435,9 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
     return false;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Sync.PostedClientToServerMessageLatency",
-                             base::Time::Now() - start_time);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Sync.PostedClientToServerMessageLatency",
+      base::Time::Now() - start_time);
 
   // The error can be specified in 2 different fields, so consider both of them.
   sync_pb::SyncEnums::ErrorType error_type =
@@ -455,6 +446,16 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
   if (error_type != sync_pb::SyncEnums::SUCCESS) {
     base::UmaHistogramSparse("Sync.PostedClientToServerMessageError2",
                              error_type);
+  }
+  if (response->has_error() &&
+      response->error().error_type() == sync_pb::SyncEnums::PARTIAL_FAILURE) {
+    DataTypeSet error_data_types = GetDataTypeSetFromSpecificsFieldNumberList(
+        response->error().error_data_type_ids());
+    for (DataType data_type : error_data_types) {
+      base::UmaHistogramEnumeration(
+          "Sync.PostedClientToServerMessagePartialErrorDataType",
+          DataTypeHistogramValue(data_type));
+    }
   }
 
   return true;

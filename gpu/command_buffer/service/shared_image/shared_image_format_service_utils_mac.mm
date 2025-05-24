@@ -14,6 +14,7 @@
 
 #if BUILDFLAG(SKIA_USE_METAL)
 #include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypesUtils.h"
 #endif
 
 namespace gpu {
@@ -76,8 +77,7 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   MTLPixelFormat mtl_pixel_format = MTLPixelFormatInvalid;
   if (format.is_single_plane()) {
     if (format == viz::SinglePlaneFormat::kR_8 ||
-        format == viz::SinglePlaneFormat::kALPHA_8 ||
-        format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+        format == viz::SinglePlaneFormat::kALPHA_8) {
       mtl_pixel_format = MTLPixelFormatR8Unorm;
     } else if (format == viz::SinglePlaneFormat::kRG_88) {
       mtl_pixel_format = MTLPixelFormatRG8Unorm;
@@ -85,6 +85,8 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
       mtl_pixel_format = MTLPixelFormatRGBA8Unorm;
     } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       mtl_pixel_format = MTLPixelFormatBGRA8Unorm;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+      mtl_pixel_format = MTLPixelFormatRGBA16Float;
     } else {
       DLOG(ERROR) << "Invalid Metal pixel format:" << format.ToString();
     }

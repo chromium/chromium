@@ -7,5 +7,5 @@ source_set("autofill_message") {
     "save_card_message_with_links.h",
     "save_card_message_with_links.mm",
   ]
-  deps = [ "//url:url" ]
+  deps = [ "//url" ]
 }

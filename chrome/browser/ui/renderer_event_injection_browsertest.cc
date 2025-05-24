@@ -5,7 +5,6 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -37,13 +36,13 @@ class RendererEventInjectionTest
     : public InProcessBrowserTest,
       public ::testing::WithParamInterface<const char*> {
  public:
-  RendererEventInjectionTest() {}
+  RendererEventInjectionTest() = default;
 
   RendererEventInjectionTest(const RendererEventInjectionTest&) = delete;
   RendererEventInjectionTest& operator=(const RendererEventInjectionTest&) =
       delete;
 
-  ~RendererEventInjectionTest() override {}
+  ~RendererEventInjectionTest() override = default;
 
   // InProcessBrowserTest:
   void SetUp() override {
@@ -54,9 +53,9 @@ class RendererEventInjectionTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kDisableRendererBackgrounding);
-    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
+    command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
     // kHostWindowBounds is unique to ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitchASCII(switches::kHostWindowBounds, GetParam());
 #endif
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
@@ -86,7 +85,8 @@ class TouchEventObserver
 
  private:
   // content::RenderWidgetHost::InputEventObserver:
-  void OnInputEvent(const blink::WebInputEvent& event) override {
+  void OnInputEvent(const content::RenderWidgetHost& widget,
+                    const blink::WebInputEvent& event) override {
     if (blink::WebInputEvent::IsTouchEventType(event.GetType())) {
       const blink::WebTouchEvent& web_touch =
           static_cast<const blink::WebTouchEvent&>(event);
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_P(RendererEventInjectionTest, TestRootTransform) {
   rwh->RemoveInputEventObserver(&touch_observer);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This configures the display in various interesting ways for ChromeOS. In
 // particular, it tests rotation "/r" and a scale factor of 2 "*2".
 INSTANTIATE_TEST_SUITE_P(

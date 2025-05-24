@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -167,13 +166,11 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     container->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         kVerticalMarginUsernameMailDp));
-    AddChildView(container);
-    const bool is_jelly = chromeos::features::IsJellyrollEnabled();
+    AddChildViewRaw(container);
     username_label_ =
         container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
             display_username, nullptr,
-            is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
-                     : kColorAshTextColorPrimary,
+            static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface),
             gfx::FontList({login_views_utils::kGoogleSansFont},
                           gfx::Font::FontStyle::NORMAL, kFontSizeUsername,
                           gfx::Font::Weight::MEDIUM),
@@ -181,8 +178,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
     email_label_ =
         container->AddChildView(login_views_utils::CreateThemedBubbleLabel(
             email, nullptr,
-            is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
-                     : kColorAshTextColorSecondary));
+            static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)));
   }
 
   // Add a warning text if the user is managed.
@@ -233,7 +229,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
                             base::Unretained(this)),
         this);
     remove_user_button_->SetID(kRemoveUserButtonIdForTest);
-    AddChildView(remove_user_button_.get());
+    AddChildViewRaw(remove_user_button_.get());
 
     // Traps the focus on the remove user button.
     focus_search_ = std::make_unique<TrappedFocusSearch>(remove_user_button_);
@@ -246,6 +242,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   UpdateAccessibleName();
   UpdateAccessibleDescription();
+  GetViewAccessibility().SetIsModal(true);
 }
 
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
@@ -264,11 +261,6 @@ void LoginRemoveAccountDialog::RequestFocus() {
 
 bool LoginRemoveAccountDialog::HasFocus() const {
   return remove_user_button_ && remove_user_button_->HasFocus();
-}
-
-void LoginRemoveAccountDialog::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }
 
 views::FocusTraversable* LoginRemoveAccountDialog::GetPaneFocusTraversable() {
@@ -329,7 +321,8 @@ void LoginRemoveAccountDialog::UpdateAccessibleDescription() {
           base::StrCat({email_label_->GetText(), u" ",
                         management_disclosure_label_->GetText()}));
     } else {
-      GetViewAccessibility().SetDescription(email_label_->GetText());
+      GetViewAccessibility().SetDescription(
+          std::u16string(email_label_->GetText()));
     }
   }
 }
@@ -339,9 +332,9 @@ void LoginRemoveAccountDialog::UpdateAccessibleName() {
     GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_LOGIN_POD_REMOVE_ACCOUNT_ACCESSIBLE_NAME));
   } else {
-    std::u16string accessible_name = username_label_->GetText();
+    std::u16string_view accessible_name = username_label_->GetText();
     if (!accessible_name.empty()) {
-      GetViewAccessibility().SetName(accessible_name);
+      GetViewAccessibility().SetName(std::u16string(accessible_name));
     } else {
       GetViewAccessibility().SetName(
           std::u16string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);

@@ -5,16 +5,9 @@
 #include "ash/webui/common/shortcut_input_key_strings.h"
 
 #include "ash/shell.h"
-#include "build/branding_buildflags.h"
-#include "build/buildflag.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/events/ash/keyboard_capability.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -49,8 +42,12 @@ void AddShortcutInputKeyStrings(content::WebUIDataSource* html_source) {
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH},
       {"iconLabelBrowserSearch",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH},
+      {"iconLabelCameraAccessToggle",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CAMERA_ACCESS_TOGGLE},
       {"iconLabelContextMenu",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU},
+      {"iconLabelDoNotDisturb",
+       IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_DO_NOT_DISTURB},
       {"iconLabelEnableOrToggleDictation",
        IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_ENABLE_OR_TOGGLE_DICTATION},
       {"iconLabelEmojiPicker",
@@ -102,18 +99,14 @@ void AddShortcutInputKeyStrings(content::WebUIDataSource* html_source) {
       {"inputKeyPlaceholder", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER},
   };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
-    html_source->AddLocalizedString("iconLabelRightAlt",
-                                    IDS_KEYBOARD_RIGHT_ALT_LABEL);
+  if (features::IsModifierSplitEnabled()) {
+    html_source->AddLocalizedString("iconLabelQuickInsert",
+                                    IDS_KEYBOARD_QUICK_INSERT_LABEL);
   } else {
     html_source->AddLocalizedString(
-        "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
+        "iconLabelQuickInsert",
+        IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
   }
-#else
-  html_source->AddLocalizedString(
-      "iconLabelRightAlt", IDS_SHORTCUT_CUSTOMIZATION_INPUT_KEY_PLACEHOLDER);
-#endif
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
   html_source->UseStringsJs();

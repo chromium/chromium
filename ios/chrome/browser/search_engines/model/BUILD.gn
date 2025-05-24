@@ -8,6 +8,8 @@ import("//rlz/buildflags/buildflags.gni")
 
 source_set("model") {
   sources = [
+    "ios_search_engine_choice_service_client.h",
+    "ios_search_engine_choice_service_client.mm",
     "search_engine_choice_service_factory.h",
     "search_engine_choice_service_factory.mm",
     "search_engine_java_script_feature.h",
@@ -20,6 +22,8 @@ source_set("model") {
     "search_engine_tab_helper_factory.mm",
     "template_url_fetcher_factory.cc",
     "template_url_fetcher_factory.h",
+    "template_url_prepopulate_data_resolver_factory.h",
+    "template_url_prepopulate_data_resolver_factory.mm",
     "template_url_service_client_impl.cc",
     "template_url_service_client_impl.h",
     "template_url_service_factory.h",
@@ -34,8 +38,6 @@ source_set("model") {
     "//components/favicon/ios",
     "//components/google/core/common",
     "//components/history/core/browser",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/omnibox/browser",
     "//components/prefs",
     "//components/search",
@@ -44,10 +46,12 @@ source_set("model") {
     "//components/version_info",
     "//ios/chrome/browser/google/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
@@ -86,6 +90,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "extension_search_engine_data_updater_unittest.mm",
+    "ios_search_engine_choice_service_client_unittest.mm",
     "search_engine_js_unittest.mm",
     "search_engine_tab_helper_unittest.mm",
     "search_engines_util_unittest.cc",
@@ -94,7 +99,7 @@ source_set("unit_tests") {
     ":extension_search_engine_data_updater",
     ":model",
     ":search_engines_util",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//components/country_codes",
     "//components/favicon/core",
@@ -102,9 +107,10 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//components/search_engines:test_support",
     "//ios/chrome/browser/favicon/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/signin/model:signin_util_internal",
     "//ios/chrome/browser/web/model:web_internal",
     "//ios/chrome/common/app_group",
     "//ios/chrome/test:test_support",
@@ -124,8 +130,8 @@ source_set("template_url_service_factory") {
   sources = [ "template_url_service_factory.h" ]
   deps = [
     "//base",
-    "//components/keyed_service/ios",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
 
@@ -165,7 +171,7 @@ source_set("eg_app_support+eg2") {
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",
     "//testing/gmock",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 

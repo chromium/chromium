@@ -22,10 +22,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class WallpaperSearchBrowserTest : public InProcessBrowserTest {
  public:
@@ -46,7 +46,7 @@ class WallpaperSearchBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // PRE_ simulates a browser restart.
 IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
                        PRE_EnablingWallpaperSearchEnables) {
@@ -69,9 +69,9 @@ IN_PROC_BROWSER_TEST_F(WallpaperSearchBrowserTest,
   EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class WallpaperSearchServiceBrowserChromeAshTest
     : public WallpaperSearchBrowserTest,
       public ::testing::WithParamInterface<bool> {
@@ -110,4 +110,4 @@ IN_PROC_BROWSER_TEST_P(WallpaperSearchServiceBrowserChromeAshTest,
   EXPECT_TRUE(keyed_service->ShouldFeatureBeCurrentlyEnabledForUser(
       optimization_guide::UserVisibleFeatureKey::kWallpaperSearch));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

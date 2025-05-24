@@ -21,6 +21,10 @@ namespace autofill {
 
 class AutofillProfile;
 
+// Returns true if the given `specifics` is valid.
+bool IsAutofillProfileSpecificsValid(
+    const sync_pb::AutofillProfileSpecifics& specifics);
+
 // Converts the given `entry` into a syncer EntityData with equivalent
 // autofill profile specifics. Returns nullptr if `entry` is invalid.
 // Shortens all string fields to AutofillTable::kMaxDataLength.
@@ -28,9 +32,10 @@ class AutofillProfile;
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromAutofillProfile(
     const AutofillProfile& entry);
 
-// Converts the given autofill profile |specifics| into an equivalent
-// AutofillProfile. Returns nullptr if |specifics| is invalid.
-std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
+// Converts the given autofill profile `specifics` into an equivalent
+// AutofillProfile. `specifics` must be valid, as determined by
+// `IsAutofillProfileSpecificsValid()`.
+AutofillProfile CreateAutofillProfileFromValidSpecifics(
     const sync_pb::AutofillProfileSpecifics& specifics);
 
 // Returns the storage key for given |entry|, to be used for storing in the

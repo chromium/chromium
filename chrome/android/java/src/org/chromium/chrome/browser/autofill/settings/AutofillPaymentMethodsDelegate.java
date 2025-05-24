@@ -9,15 +9,17 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /**
  * Delegate that allows for calling native payment related methods.
  *
- * This class owns the native object, so cleanup must be called by the Java side to avoid
- * leaking memory.
+ * <p>This class owns the native object, so cleanup must be called by the Java side to avoid leaking
+ * memory.
  */
 @JNINamespace("autofill")
+@NullMarked
 class AutofillPaymentMethodsDelegate {
     private long mNativeAutofillPaymentMethodsDelegate;
 

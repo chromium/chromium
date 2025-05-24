@@ -131,13 +131,11 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
 
   AudioOutputIPC* GetIpcForTesting() { return ipc_.get(); }
 
- protected:
-  // Magic required by ref_counted.h to avoid any code deleting the object
+ private:
+  // Required by ref_counted.h to avoid any code deleting the object
   // accidentally while there are references to it.
-  friend class base::RefCountedThreadSafe<AudioOutputDevice>;
   ~AudioOutputDevice() override;
 
- private:
   enum StartupState {
     IDLE,                       // Authorization not requested.
     AUTHORIZATION_REQUESTED,    // Sent (possibly completed) device

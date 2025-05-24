@@ -10,10 +10,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
-#include "ui/ozone/platform/wayland/host/wayland_cursor_shape.h"
-#include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
 
 namespace ui {
+
+class WaylandCursorShape;
 
 // Allows tests to get and override internal implementation details of
 // WaylandConnection.
@@ -26,7 +26,7 @@ class WaylandConnectionTestApi {
 
   void SetCursorShape(std::unique_ptr<WaylandCursorShape> obj);
 
-  void SetZcrCursorShapes(std::unique_ptr<WaylandZcrCursorShapes> obj);
+  void EnableLinuxDrmSyncobj();
 
   // Sets up a sync callback via wl_display.sync and waits until it's received.
   // Requests are handled in-order and events are delivered in-order, thus sync

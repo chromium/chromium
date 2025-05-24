@@ -35,10 +35,10 @@ public class ConnectivityDetectorTest implements ConnectivityDetector.Observer {
     private ConnectivityDetector mConnectivityDetector;
     private @ConnectivityDetector.ConnectionState int mConnectionState =
             ConnectivityDetector.ConnectionState.NONE;
-    private Semaphore mSemaphore = new Semaphore(0);
+    private final Semaphore mSemaphore = new Semaphore(0);
     // This test focuses on testing ConnectivityDetector functionalities, including http probes.
     // So don't skip http probes here.
-    private ConnectivityDetectorDelegateStub mConnectivityDetectorDelegate =
+    private final ConnectivityDetectorDelegateStub mConnectivityDetectorDelegate =
             new ConnectivityDetectorDelegateStub(
                     ConnectivityDetector.ConnectionState.NO_INTERNET, /* skipHttpProbes= */ false);
 

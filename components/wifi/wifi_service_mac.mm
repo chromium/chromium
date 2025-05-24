@@ -5,8 +5,8 @@
 #include "components/wifi/wifi_service.h"
 
 #import <CoreWLAN/CoreWLAN.h>
-#import <netinet/in.h>
 #import <SystemConfiguration/SystemConfiguration.h>
+#import <netinet/in.h>
 
 #include <map>
 #include <memory>
@@ -15,6 +15,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
@@ -353,22 +354,15 @@ void WiFiServiceMac::GetKeyFromSystem(const std::string& network_guid,
                                       std::string* error) {
   static const char kAirPortServiceName[] = "AirPort";
 
-  UInt32 password_length = 0;
-  void* password_data = nullptr;
-  crypto::AppleKeychain keychain;
-  OSStatus status = keychain.FindGenericPassword(
-      strlen(kAirPortServiceName), kAirPortServiceName, network_guid.length(),
-      network_guid.c_str(), &password_length, &password_data, /*item=*/nullptr);
-  if (status != errSecSuccess) {
+  auto keychain = crypto::AppleKeychain::DefaultKeychain();
+  auto password =
+      keychain->FindGenericPassword(kAirPortServiceName, network_guid);
+  if (!password.has_value()) {
     *error = kErrorNotFound;
     return;
   }
 
-  if (password_data) {
-    *key_data = std::string(reinterpret_cast<char*>(password_data),
-                            password_length);
-    keychain.ItemFreeContent(password_data);
-  }
+  key_data->assign(base::as_string_view(*password));
 }
 
 void WiFiServiceMac::SetEventObservers(
@@ -439,7 +433,7 @@ std::string WiFiServiceMac::GetNetworkConnectionState(
 
   // Check whether WiFi network is reachable.
   struct sockaddr_in local_wifi_address;
-  bzero(&local_wifi_address, sizeof(local_wifi_address));
+  UNSAFE_TODO(bzero(&local_wifi_address, sizeof(local_wifi_address)));
   local_wifi_address.sin_len = sizeof(local_wifi_address);
   local_wifi_address.sin_family = AF_INET;
   local_wifi_address.sin_addr.s_addr = htonl(IN_LINKLOCALNETNUM);

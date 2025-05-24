@@ -20,14 +20,17 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
-import {Route, Router, routes} from '../router.js';
+import type {LanguagesBrowserProxy} from '../os_languages_page/languages_browser_proxy.js';
+import {LanguagesBrowserProxyImpl} from '../os_languages_page/languages_browser_proxy.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './select_to_speak_subpage.html.js';
-import {SelectToSpeakSubpageBrowserProxy, SelectToSpeakSubpageBrowserProxyImpl} from './select_to_speak_subpage_browser_proxy.js';
+import type {SelectToSpeakSubpageBrowserProxy} from './select_to_speak_subpage_browser_proxy.js';
+import {SelectToSpeakSubpageBrowserProxyImpl} from './select_to_speak_subpage_browser_proxy.js';
 
 /**
  * Constant used as the value for a menu option representing the current device
@@ -212,18 +215,6 @@ export class SettingsSelectToSpeakSubpageElement extends
               loadTimeData.getString('selectToSpeakLearnMoreUrl');
         },
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kSelectToSpeakWordHighlight,
-          Setting.kSelectToSpeakBackgroundShading,
-          Setting.kSelectToSpeakNavigationControls,
-        ]),
-      },
     };
   }
 
@@ -239,9 +230,17 @@ export class SettingsSelectToSpeakSubpageElement extends
     ];
   }
 
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kSelectToSpeakWordHighlight,
+    Setting.kSelectToSpeakBackgroundShading,
+    Setting.kSelectToSpeakNavigationControls,
+  ]);
+
   private langBrowserProxy_: LanguagesBrowserProxy;
   private enhancedNetworkVoicesVirtualPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
+  private readonly highlightColorOptions_: DropdownMenuOptionList;
   private isPreviewing_: boolean;
   private languageFilterVirtualPref_: chrome.settingsPrivate.PrefObject<string>;
   private languagesMenuOptions_: DropdownMenuOptionList;

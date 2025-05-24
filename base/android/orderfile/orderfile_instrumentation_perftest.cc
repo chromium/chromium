@@ -31,8 +31,9 @@ void RunBenchmark(int iterations, int addresses_count, int threads) {
     }
   };
   if (threads != 1) {
-    for (int i = 0; i < threads - 1; ++i)
+    for (int i = 0; i < threads - 1; ++i) {
       std::thread(iterate).detach();
+    }
   }
   auto tick = base::TimeTicks::Now();
   iterate();

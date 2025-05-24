@@ -8,7 +8,7 @@
 #include <set>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/coral_util.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace ash {
 
@@ -22,12 +22,23 @@ class ASH_EXPORT CoralItemRemover {
   CoralItemRemover& operator=(const CoralItemRemover&) = delete;
   ~CoralItemRemover();
 
-  // Records the coral_util::ContentItem to be removed for the current session.
-  void RemoveItem(const coral_util::ContentItem& item);
+  // Records the coral::mojom::EntityPtr to be removed for the current
+  // session.
+  void RemoveItem(const coral::mojom::EntityPtr& item);
+
+  // Records the coral::mojom::Entity to be removed for the current session.
+  void RemoveItem(const coral::mojom::Entity& item);
+
+  // Records the identifier to be removed for the current session.
+  void RemoveItem(const std::string& item_identifier);
 
   // Erases from the ContentItem list any items which have been removed by the
   // user. The list is mutated in place.
-  void FilterRemovedItems(std::vector<coral_util::ContentItem>* content_items);
+  void FilterRemovedItems(std::vector<coral::mojom::EntityPtr>* content_items);
+
+  const std::set<std::string>& RemovedContentItemsForTest() const {
+    return removed_content_items_;
+  }
 
  private:
   // Stores the unique identifier for content items that should be filtered for

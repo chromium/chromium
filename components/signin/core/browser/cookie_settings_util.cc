@@ -4,6 +4,8 @@
 
 #include "components/signin/core/browser/cookie_settings_util.h"
 
+#include <optional>
+
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "net/cookies/cookie_constants.h"
@@ -19,19 +21,32 @@ namespace signin {
 
 bool SettingsAllowSigninCookies(
     const content_settings::CookieSettings* cookie_settings) {
+#if BUILDFLAG(IS_IOS)
+  // There is no way for users to set the cookies content setting in iOS so
+  // sign-in cookies will always be allowed.
+  return true;
+#else
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   GURL google_url = GaiaUrls::GetInstance()->google_url();
   return cookie_settings &&
          cookie_settings->IsFullCookieAccessAllowed(
              gaia_url, net::SiteForCookies::FromUrl(gaia_url),
-             url::Origin::Create(gaia_url), net::CookieSettingOverrides()) &&
+             url::Origin::Create(gaia_url), net::CookieSettingOverrides(),
+             /*cookie_partition_key=*/std::nullopt) &&
          cookie_settings->IsFullCookieAccessAllowed(
              google_url, net::SiteForCookies::FromUrl(google_url),
-             url::Origin::Create(google_url), net::CookieSettingOverrides());
+             url::Origin::Create(google_url), net::CookieSettingOverrides(),
+             /*cookie_partition_key=*/std::nullopt);
+#endif
 }
 
 bool SettingsDeleteSigninCookiesOnExit(
     const content_settings::CookieSettings* cookie_settings) {
+#if BUILDFLAG(IS_IOS)
+  // There is no way for users to set the cookies content setting in iOS so
+  // sign-in cookies will not be deleted.
+  return false;
+#else
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
   GURL google_url = GaiaUrls::GetInstance()->google_url();
   ContentSettingsForOneType settings = cookie_settings->GetCookieSettings();
@@ -43,6 +58,7 @@ bool SettingsDeleteSigninCookiesOnExit(
          cookie_settings->ShouldDeleteCookieOnExit(
              settings, "." + google_url.host(),
              net::CookieSourceScheme::kSecure);
+#endif
 }
 
 }  // namespace signin

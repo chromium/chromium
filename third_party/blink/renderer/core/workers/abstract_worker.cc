@@ -30,10 +30,16 @@
 
 #include "third_party/blink/renderer/core/workers/abstract_worker.h"
 
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -64,9 +70,12 @@ KURL AbstractWorker::ResolveURL(ExecutionContext* execution_context,
     return KURL();
   }
 
-  if (ContentSecurityPolicy* csp =
-          execution_context->GetContentSecurityPolicy()) {
+  ContentSecurityPolicy* csp = execution_context->GetContentSecurityPolicy();
+  if (csp &&
+      !base::FeatureList::IsEnabled(features::kNoThrowForCSPBlockedWorker)) {
     if (!csp->AllowWorkerContextFromSource(script_url)) {
+      UseCounter::Count(execution_context,
+                        WebFeature::kCSPBlockedWorkerCreation);
       exception_state.ThrowSecurityError(
           "Access to the script at '" + script_url.ElidedString() +
           "' is denied by the document's Content Security Policy.");
@@ -75,6 +84,39 @@ KURL AbstractWorker::ResolveURL(ExecutionContext* execution_context,
   }
 
   return script_url;
+}
+
+bool AbstractWorker::CheckAllowedByCSPForNoThrow(const KURL& script_url) {
+  ContentSecurityPolicy* csp =
+      GetExecutionContext()->GetContentSecurityPolicy();
+  if (csp &&
+      base::FeatureList::IsEnabled(features::kNoThrowForCSPBlockedWorker)) {
+    if (!csp->AllowWorkerContextFromSource(script_url)) {
+      UseCounter::Count(GetExecutionContext(),
+                        WebFeature::kCSPBlockedWorkerCreation);
+      // In the spec, CSP check is part of fetch and should result in network
+      // error and trigger error event asynchronously. See
+      // https://www.w3.org/TR/CSP3/#fetch-integration.
+      // Therefore, we dispatch an error event asynchronously.
+      // This function is called during worker creation, if we dispatch an error
+      // event immediately, the worker object has not been returned to the
+      // script yet for it to have a chance to register an event handler.
+      // Therefore, post a task to fire error event later so that the script
+      // have a chance to register an event handler.
+      GetExecutionContext()
+          ->GetTaskRunner(TaskType::kInternalLoading)
+          ->PostTask(FROM_HERE,
+                     WTF::BindOnce(&AbstractWorker::DispatchErrorEvent,
+                                   WrapWeakPersistent(this)));
+      return false;
+    }
+  }
+  return true;
+}
+
+void AbstractWorker::DispatchErrorEvent() {
+  DCHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
+  DispatchEvent(*Event::CreateCancelable(event_type_names::kError));
 }
 
 void AbstractWorker::Trace(Visitor* visitor) const {

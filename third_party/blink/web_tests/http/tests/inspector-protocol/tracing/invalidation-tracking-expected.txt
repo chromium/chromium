@@ -1,13 +1,6 @@
 Tests the data of invalidation tracking trace events
 Recording started
 Tracing complete
-Recording started
-Tracing complete
-Recording started
-Tracing complete
-ScheduleStyleInvalidationTracking
-Object: {
-}
 StyleRecalcInvalidationTracking
 Array: [
 	{
@@ -66,10 +59,45 @@ Array: [
 		tid: number
 		ts: number
 	}
+	{
+		args: {
+			data: {
+				extraData: string
+				frame: string
+				nodeId: number
+				nodeName: string
+				reason: string
+				subtree: boolean
+			}
+		}
+		cat: string
+		name: string
+		ph: string
+		pid: number
+		s: string
+		tid: number
+		ts: number
+	}
+	{
+		args: {
+			data: {
+				extraData: string
+				frame: string
+				nodeId: number
+				nodeName: string
+				reason: string
+				subtree: boolean
+			}
+		}
+		cat: string
+		name: string
+		ph: string
+		pid: number
+		s: string
+		tid: number
+		ts: number
+	}
 ]
-StyleInvalidatorInvalidationTracking
-Object: {
-}
 LayoutInvalidationTracking
 Object: {
 	args: {
@@ -78,6 +106,15 @@ Object: {
 			nodeId: number
 			nodeName: string
 			reason: string
+			stackTrace: [
+				{
+					columnNumber: number
+					functionName: string
+					lineNumber: number
+					scriptId: string
+					url: string
+				}
+			]
 		}
 	}
 	cat: string
@@ -88,6 +125,8 @@ Object: {
 	tid: number
 	ts: number
 }
+Number of StyleResolver::ResolveStyle events:
+6
 Style recalc initiator:
 forceLayout
 Layout initiator:

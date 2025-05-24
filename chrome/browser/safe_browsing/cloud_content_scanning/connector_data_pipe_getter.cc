@@ -64,6 +64,9 @@ bool ConnectorDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
   void* mapped = mmap(nullptr, static_cast<size_t>(file_len), PROT_READ,
                       MAP_SHARED, file_.GetPlatformFile(), 0);
   if (mapped == MAP_FAILED) {
+    LOG(ERROR) << "Upload failure: The creation of a memory mapped file with "
+                  "MAP_SHARED failed for file "
+               << file_.GetPlatformFile();
     // Retry with MAP_PRIVATE mode.
     // Some file systems do not support MAP_SHARED. Here, it is acceptable to
     // use MAP_PRIVATE instead. Note: For MAP_PRIVATE, it is unspecified whether
@@ -73,9 +76,9 @@ bool ConnectorDataPipeGetter::InternalMemoryMappedFile::DoInitialize() {
                   MAP_PRIVATE, file_.GetPlatformFile(), 0);
   }
   if (mapped == MAP_FAILED) {
-    DPLOG(ERROR) << "Upload failure: The creation of a memory mapped file "
-                    "failed for file "
-                 << file_.GetPlatformFile();
+    LOG(ERROR) << "Upload failure: The creation of a memory mapped file with "
+                  "MAP_PRIVATE failed for file "
+               << file_.GetPlatformFile();
     return false;
   }
   length_ = static_cast<size_t>(file_len);
@@ -101,7 +104,8 @@ void ConnectorDataPipeGetter::InternalMemoryMappedFile::CloseHandles() {
 std::unique_ptr<ConnectorDataPipeGetter>
 ConnectorDataPipeGetter::CreateMultipartPipeGetter(const std::string& boundary,
                                                    const std::string& metadata,
-                                                   base::File file) {
+                                                   base::File file,
+                                                   bool is_obfuscated) {
   if (!file.IsValid()) {
     return nullptr;
   }
@@ -111,8 +115,8 @@ ConnectorDataPipeGetter::CreateMultipartPipeGetter(const std::string& boundary,
     return nullptr;
   }
 
-  return std::make_unique<ConnectorDataPipeGetter>(boundary, metadata,
-                                                   std::move(mm_file));
+  return std::make_unique<ConnectorDataPipeGetter>(
+      boundary, metadata, std::move(mm_file), is_obfuscated);
 }
 
 // static
@@ -136,7 +140,8 @@ ConnectorDataPipeGetter::CreateMultipartPipeGetter(
 
 // static
 std::unique_ptr<ConnectorDataPipeGetter>
-ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file) {
+ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file,
+                                                   bool is_obfuscated) {
   if (!file.IsValid()) {
     return nullptr;
   }
@@ -146,9 +151,9 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File file) {
     return nullptr;
   }
 
-  return std::make_unique<ConnectorDataPipeGetter>(/*boundary*/ std::string(),
-                                                   /*metadata*/ std::string(),
-                                                   std::move(mm_file));
+  return std::make_unique<ConnectorDataPipeGetter>(
+      /*boundary*/ std::string(),
+      /*metadata*/ std::string(), std::move(mm_file), is_obfuscated);
 }
 
 // static
@@ -170,7 +175,8 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(
 ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
-    std::unique_ptr<InternalMemoryMappedFile> file)
+    std::unique_ptr<InternalMemoryMappedFile> file,
+    bool is_obfuscated)
     : ConnectorDataPipeGetter(boundary,
                               metadata,
                               std::move(file),
@@ -178,7 +184,7 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
   file_data_pipe_ = true;
   CHECK(file_->IsValid());
 
-  if (enterprise_obfuscation::IsFileObfuscationEnabled()) {
+  if (is_obfuscated) {
     deobfuscator_ =
         std::make_unique<enterprise_obfuscation::DownloadObfuscator>();
   }

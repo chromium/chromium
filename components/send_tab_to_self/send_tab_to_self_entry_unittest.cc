@@ -4,6 +4,7 @@
 
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 
+#include <array>
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
@@ -109,7 +110,7 @@ TEST(SendTabToSelfEntry, IsExpired) {
 
 // Tests that the send tab to self entry rejects strings that are not utf8.
 TEST(SendTabToSelfEntry, InvalidStrings) {
-  const char16_t term[1] = {u'\uFDD1'};
+  const std::array<char16_t, 1> term = {u'\uFDD1'};
   std::string invalid_utf8;
   base::UTF16ToUTF8(&term[0], 1, &invalid_utf8);
 

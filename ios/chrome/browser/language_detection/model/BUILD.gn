@@ -11,17 +11,13 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
     "//components/language_detection/core/browser:language_detection_model_service",
     "//components/language_detection/ios/browser",
     "//components/optimization_guide/core:features",
     "//components/prefs",
     "//components/translate/core/common",
-    "//components/translate/core/common",
     "//ios/chrome/browser/optimization_guide/model",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }

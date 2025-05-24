@@ -4,28 +4,15 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<style include="md-select support-tool-shared">
+<style include="md-select support-tool-shared cr-shared-style">
   .md-select {
+    --md-select-text-color: var(--cr-primary-text-color);
     margin-bottom: 5px;
     width: 248px;
   }
 
   #description {
-    /*TODO(b/222669536): Style the description better when UX reviewer of mocks
-    gives their input.*/
-    background-color: var(--cr-input-background-color);
-    border: none;
-    border-radius: var(--cr-input-border-radius, 4px);
-    caret-color: var(--cr-input-focus-color);
-    color: var(--cr-input-color);
-    display: block;
-    font-family: inherit;
     height: 120px;
-    outline: none;
-    padding-bottom: 8px;
-    padding-inline-start: 10px;
-    padding-top: 8px;
-    resize: none;
     width: 520px;
   }
 </style>
@@ -41,13 +28,13 @@ found in the LICENSE file.
 <select class="md-select" value="{{selectedEmail_::change}}"
     aria-labelledby="email-title">
   <template is="dom-repeat" items="[[emails_]]">
-    <option value="[[item]]">[[item]]</option>
+    <option class="md-select" value="[[item]]">[[item]]</option>
   </template>
 </select>
 <div id="description-title" class="support-tool-title" aria-hidden="true">
   $i18n{describeIssueText}
 </div>
-<textarea id="description" class="support-tool-text" spellcheck="true"
+<cr-textarea id="description" spellcheck="true"
     value="{{issueDescription_::input}}" aria-labelledby="description-title"
     placeholder="$i18n{issueDescriptionPlaceholder}">
-</textarea>
+</cr-textarea>

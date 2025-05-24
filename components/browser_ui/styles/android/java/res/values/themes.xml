@@ -34,20 +34,6 @@ found in the LICENSE file.
         <item name="android:textColorHint">@color/default_text_color_hint_list</item>
     </style>
 
-    <!-- Add a persistent back button toolbar to automotive -->
-    <style name="ThemeOverlay.BrowserUI.Automotive.PersistentBackButtonToolbar" parent="">
-        <item name="windowActionBar">true</item>
-        <item name="windowNoTitle">false</item>
-        <item name="actionBarStyle">@style/ActionBarWithBackButton</item>
-        <item name="actionBarTheme">@style/DarkModeActionBarTheme</item>
-    </style>
-
-    <!-- Black action bar with back button -->
-    <style name="ActionBarWithBackButton">
-        <item name="displayOptions">homeAsUp</item>
-        <item name="homeAsUpIndicator">@drawable/ic_arrow_back_24dp</item>
-    </style>
-
     <style name="DarkModeActionBarTheme">
         <item name="background">@android:color/black</item>
         <item name="colorControlNormal">@android:color/white</item>
@@ -58,14 +44,19 @@ found in the LICENSE file.
     <!-- TODO(sinansahin): See if we can pass the baseline dark theme to the incognito NTP instead.
          -->
     <style name="ThemeOverlay.BrowserUI.Switch.Incognito" parent="">
-        <item name="colorSurface">@color/baseline_neutral_10</item>
+        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
         <item name="colorOnSurface">@color/baseline_neutral_90</item>
         <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
+        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>
         <item name="colorPrimary">@color/baseline_primary_80</item>
         <item name="colorOnPrimary">@color/baseline_primary_20</item>
         <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
         <item name="colorOutline">@color/baseline_neutral_variant_60</item>
-        <item name="colorSurfaceContainerHighest">@color/default_bg_color_dark_elev_5_baseline</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
     </style>
 </resources>

@@ -16,8 +16,8 @@
 //! recovery key store, also called Vault internally.
 
 use crate::{
-    debug, get_secret_from_request, pin, Authentication, DirtyFlag, ParsedState, Reauth,
-    RequestError, COUNTER_ID_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
+    debug, get_secret_from_request, pin, Authentication, DirtyFlag, MetricsUpdate, ParsedState,
+    Reauth, RequestError, COUNTER_ID_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY, WRAPPED_PIN_DATA_KEY,
 };
 use alloc::collections::BTreeMap;
 use alloc::string::String;
@@ -124,7 +124,11 @@ mod xml {
 
     fn is_name_char(c: u8) -> bool {
         // https://www.w3.org/TR/xml/#NT-NameChar
-        if is_name_start(c) { true } else { matches!(c, b'-' | b'.' | b'0'..=b'9') }
+        if is_name_start(c) {
+            true
+        } else {
+            matches!(c, b'-' | b'.' | b'0'..=b'9')
+        }
     }
 
     struct Parser<'a> {
@@ -609,7 +613,11 @@ mod x509 {
             year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)
         }
         fn days_in_year(year: u16) -> u16 {
-            if is_leap_year(year) { 366 } else { 365 }
+            if is_leap_year(year) {
+                366
+            } else {
+                365
+            }
         }
         const DAYS_IN_MONTH: [u8; 12] = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
         const DAYS_BEFORE_MONTH: [u16; 12] =
@@ -726,6 +734,7 @@ mod key_distribution {
     use alloc::string::String;
     use alloc::vec;
     use alloc::vec::Vec;
+    use base64::Engine;
 
     #[cfg(feature = "chromium_integration_test")]
     use super::TEST_ROOT_CERTIFICATE;
@@ -778,7 +787,8 @@ mod key_distribution {
         else {
             return Err("missing <certificate>");
         };
-        let leaf_cert_der = base64::decode(leaf_cert_der_b64)
+        let leaf_cert_der = base64::engine::general_purpose::STANDARD
+            .decode(leaf_cert_der_b64)
             .map_err(|_| "failed to base64-decode <certificate>")?;
         let leaf_cert = x509::parse(&leaf_cert_der).ok_or("failed to parse <certificate>")?;
         let (leaf_key_type, leaf_key) =
@@ -790,7 +800,9 @@ mod key_distribution {
         let Some(xml::Element::Single(xml::Value::String(sig_b64))) = sig_value.get("value") else {
             return Err("missing <value>");
         };
-        let sig = base64::decode(sig_b64).map_err(|_| "failed to base64-decode <value>")?;
+        let sig = base64::engine::general_purpose::STANDARD
+            .decode(sig_b64)
+            .map_err(|_| "failed to base64-decode <value>")?;
 
         // The public key from <certificate> should only be trusted if it chains
         // up to `ROOT_CERTIFICATE`.
@@ -849,7 +861,9 @@ mod key_distribution {
                 let xml::Value::String(cert_der_b64) = cert_value else {
                     return Err("unexpected object in <cert>");
                 };
-                base64::decode(cert_der_b64).map_err(|_| "failed to base64-decode <cert>")
+                base64::engine::general_purpose::STANDARD
+                    .decode(cert_der_b64)
+                    .map_err(|_| "failed to base64-decode <cert>")
             })
             .collect::<Result<Vec<Vec<u8>>, &'static str>>()?;
 
@@ -906,7 +920,9 @@ mod key_distribution {
                 let xml::Value::String(cert_der_b64) = cert_value else {
                     return Err("non-string in intermediates list");
                 };
-                base64::decode(cert_der_b64).map_err(|_| "failed to base64-decode <intermediate>")
+                base64::engine::general_purpose::STANDARD
+                    .decode(cert_der_b64)
+                    .map_err(|_| "failed to base64-decode <intermediate>")
             })
             .collect::<Result<Vec<Vec<u8>>, &'static str>>()?;
 
@@ -1075,10 +1091,8 @@ mod key_distribution {
 
         #[test]
         fn test_get_public_keys_expired() {
-            assert!(
-                get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, 1, SAMPLE_COHORT_SELECTOR)
-                    .is_err()
-            )
+            assert!(get_cohort_key(SAMPLE_CERTS_XML, SAMPLE_SIG_XML, 1, SAMPLE_COHORT_SELECTOR)
+                .is_err())
         }
 
         #[test]
@@ -1518,6 +1532,7 @@ map_keys! {
 /// enclave in order to support `do_wrap_as_member`, below.
 pub(crate) fn do_wrap(
     current_time_epoch_millis: i64,
+    metrics: &mut MetricsUpdate,
     request: BTreeMap<MapKey, Value>,
 ) -> Result<cbor::Value, RequestError> {
     let Some(Value::Bytestring(pin_hash)) = request.get(PIN_HASH_KEY) else {
@@ -1532,6 +1547,7 @@ pub(crate) fn do_wrap(
     let wrapped =
         wrap(pin_hash, cert_xml, sig_xml, Parameters::random(), current_time_epoch_millis)
             .map_err(RequestError::Debug)?;
+    metrics.recovery_key_store_wrap += 1;
     Ok(wrapped.into())
 }
 
@@ -1540,6 +1556,7 @@ pub(crate) fn do_wrap(
 /// allows a new PIN to be a member of the domain, thus the client must have
 /// done user verification or else reauthenticated very recently.
 pub(crate) fn do_wrap_as_member(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     current_time_epoch_millis: i64,
@@ -1575,10 +1592,12 @@ pub(crate) fn do_wrap_as_member(
     // use the new PIN immediately, without reregistering with the enclave.
     state.get_mut().set_pin_state(device_id, super::PINState { attempts: 0 })?;
 
+    metrics.recovery_key_store_wrap_as_member += 1;
     include_security_domain_member_fields(wrapped, &security_domain_secret)
 }
 
 pub(crate) fn do_rewrap(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     current_time_epoch_millis: i64,
@@ -1608,6 +1627,7 @@ pub(crate) fn do_rewrap(
     )
     .map_err(RequestError::Debug)?;
     enforce_cert_highwater(state, device_id, wrapped.serial)?;
+    metrics.recovery_key_store_rewrap += 1;
     include_security_domain_member_fields(wrapped, &security_domain_secret)
 }
 
@@ -1618,16 +1638,14 @@ mod tests {
     #[test]
     fn test_wrap() {
         let pin_hash = [1u8; 32];
-        assert!(
-            wrap(
-                &pin_hash,
-                SAMPLE_CERTS_XML,
-                SAMPLE_SIG_XML,
-                Parameters::random(),
-                SAMPLE_VALIDATION_EPOCH_MILLIS
-            )
-            .is_ok()
-        );
+        assert!(wrap(
+            &pin_hash,
+            SAMPLE_CERTS_XML,
+            SAMPLE_SIG_XML,
+            Parameters::random(),
+            SAMPLE_VALIDATION_EPOCH_MILLIS
+        )
+        .is_ok());
     }
 }
 

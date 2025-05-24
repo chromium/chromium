@@ -120,6 +120,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:compile_size_trybot",
+)
+
+build_recipe(
     name = "recipe:chrome_build/build_perf",
     bootstrappable = True,
 )
@@ -154,6 +158,11 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium/autosharder",
+    bootstrappable = True,
+)
+
+build_recipe(
+    name = "recipe:chromium/autosharder_test",
     bootstrappable = True,
 )
 
@@ -269,10 +278,6 @@ build_recipe(
 )
 
 build_recipe(
-    name = "recipe:cronet",
-)
-
-build_recipe(
     name = "recipe:flakiness/reproducer",
 )
 
@@ -325,10 +330,6 @@ build_recipe(
 
 build_recipe(
     name = "recipe:tricium_oilpan",
-)
-
-build_recipe(
-    name = "recipe:tricium_simple",
 )
 
 build_recipe(

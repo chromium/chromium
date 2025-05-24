@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {CloseReason, ComposeState, OpenMetadata} from 'chrome-untrusted://compose/compose.mojom-webui.js';
+import type {CloseReason, ComposeState, InputMode, OpenMetadata} from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeUntrustedDialogCallbackRouter, StyleModifier, UserFeedback} from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import type {ComposeApiProxy} from 'chrome-untrusted://compose/compose_api_proxy.js';
 import {ComposeStatus} from 'chrome-untrusted://compose/compose_enums.mojom-webui.js';
@@ -105,8 +105,8 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
     this.methodCalled('closeUi', reason);
   }
 
-  compose(input: string, edited: boolean): void {
-    this.methodCalled('compose', {input, edited});
+  compose(input: string, mode: InputMode, edited: boolean): void {
+    this.methodCalled('compose', {input, mode, edited});
   }
 
   rewrite(style: StyleModifier): void {
@@ -188,8 +188,8 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   setUndoResponseWithUndoAndRedo(
       undoAvailable: boolean, redoAvailable: boolean) {
     this.undoResponse_ = Object.assign(getDefaultUndoRedoComposeState());
-    this !.undoResponse_!.response!.undoAvailable = undoAvailable;
-    this !.undoResponse_!.response!.redoAvailable = redoAvailable;
+    this.undoResponse_!.response!.undoAvailable = undoAvailable;
+    this.undoResponse_!.response!.redoAvailable = redoAvailable;
   }
 
   setResponseBeforeError(state: ComposeState|null) {
@@ -203,8 +203,8 @@ export class TestComposeApiProxy extends TestBrowserProxy implements
   setRedoResponseWithUndoAndRedo(
       undoAvailable: boolean, redoAvailable: boolean) {
     this.redoResponse_ = Object.assign(getDefaultUndoRedoComposeState());
-    this !.redoResponse_!.response!.undoAvailable = undoAvailable;
-    this !.redoResponse_!.response!.redoAvailable = redoAvailable;
+    this.redoResponse_!.response!.undoAvailable = undoAvailable;
+    this.redoResponse_!.response!.redoAvailable = redoAvailable;
   }
 
   showUi() {

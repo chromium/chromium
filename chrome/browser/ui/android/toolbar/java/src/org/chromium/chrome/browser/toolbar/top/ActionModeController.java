@@ -15,19 +15,22 @@ import android.util.IntProperty;
 import androidx.appcompat.app.ActionBar;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
 
 /**
  * This class controls the how toolbar animates while the action mode bar is being shown. It also
  * manages a {@link ToolbarActionModeCallback}.
  */
+@NullMarked
 public class ActionModeController {
     private static final int SLIDE_DURATION_MS = 200;
 
-    private ToolbarActionModeCallback mToolbarActionModeCallback;
-    private ObjectAnimator mCurrentAnimation;
+    private final ToolbarActionModeCallback mToolbarActionModeCallback;
+    private @Nullable ObjectAnimator mCurrentAnimation;
     private boolean mShowingActionMode;
-    private ObservableSupplier<Integer> mTabStripHeightSupplier;
+    private final ObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Context mContext;
     private final ActionBarDelegate mActionBarDelegate;
 

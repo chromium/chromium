@@ -53,6 +53,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "-t",
           "Release",
           "external/wpt/webrtc",
@@ -60,8 +61,7 @@
           "external/wpt/webrtc-extensions",
           "external/wpt/webrtc-priority",
           "external/wpt/webrtc-stats",
-          "external/wpt/webrtc-svc",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+          "external/wpt/webrtc-svc"
         ],
         "merge": {
           "args": [
@@ -92,7 +92,7 @@
           "crashtest",
           "print-reftest",
           "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/chrome.filter",
-          "--test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/headless_shell.filter",
+          "--inverted-test-launcher-filter-file=../../third_party/blink/web_tests/TestLists/content_shell.filter",
           "-t",
           "Release",
           "external/wpt/webrtc",

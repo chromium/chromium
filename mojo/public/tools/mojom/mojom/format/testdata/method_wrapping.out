@@ -55,4 +55,9 @@ interface Foo {
   GetDebugLogsChangeHandler()
       => (pending_remote<DebugLogsChangeHandler>? handler,
           bool initial_toggle_value);
+
+  WithResult() => result<Foo, Bar>;
+
+  WithResultLong(uint64 a, uint64 b, uint64 c, uint64 d, uint64 e)
+      => result<Foo, Bar>;
 };

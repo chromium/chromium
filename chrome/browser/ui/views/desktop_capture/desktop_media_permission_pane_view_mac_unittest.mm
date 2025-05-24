@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac.h"
+
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::test::TaskEnvironment;

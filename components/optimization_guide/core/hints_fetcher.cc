@@ -49,8 +49,7 @@ std::string GetStringNameForRequestContext(
   switch (request_context) {
     case proto::RequestContext::CONTEXT_UNSPECIFIED:
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS:
-      NOTREACHED_IN_MIGRATION();
-      return "Unknown";
+      NOTREACHED();
     case proto::RequestContext::CONTEXT_PAGE_NAVIGATION:
       return "PageNavigation";
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_GOOGLE_SRP:
@@ -69,9 +68,14 @@ std::string GetStringNameForRequestContext(
       return "NonPersonalizedPageInsightsHub";
     case proto::RequestContext::CONTEXT_SHOPPING:
       return "Shopping";
+    case proto::RequestContext::CONTEXT_SHOP_CARD:
+      return "ShopCard";
+    case proto::RequestContext::CONTEXT_GLIC_ZERO_STATE_SUGGESTIONS:
+      return "GlicZeroStateSuggestions";
+    case proto::RequestContext::CONTEXT_GLIC_PAGE_CONTEXT:
+      return "GlicPageContext";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void RecordRequestStatusHistogram(proto::RequestContext request_context,
@@ -384,7 +388,7 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
         get_hints_response->hints_size());
     base::TimeDelta fetch_latency =
         base::TimeTicks::Now() - hints_fetch_start_time_;
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency",
         fetch_latency);
     base::UmaHistogramMediumTimes(

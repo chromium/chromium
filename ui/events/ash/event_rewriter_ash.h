@@ -61,16 +61,8 @@ class EventRewriterAsh : public EventRewriter {
           key(input_key),
           key_code(input_key_code) {}
 
-    friend bool operator==(const MutableKeyState& lhs,
-                           const MutableKeyState& rhs) {
-      return lhs.flags == rhs.flags && lhs.code == rhs.code &&
-             lhs.key == rhs.key && lhs.key_code == rhs.key_code;
-    }
-
-    friend bool operator!=(const MutableKeyState& lhs,
-                           const MutableKeyState& rhs) {
-      return !(lhs == rhs);
-    }
+    friend bool operator==(const MutableKeyState&,
+                           const MutableKeyState&) = default;
 
     int flags = 0;
     DomCode code = DomCode::NONE;

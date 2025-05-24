@@ -73,6 +73,9 @@ found in the LICENSE file.
     <!-- Misc -->
     <dimen name="default_ripple_background_border_size">0dp</dimen>
     <dimen name="popup_bg_corner_radius">4dp</dimen>
+    <!-- These should be used for Menus with 24dp corner radius. -->
+    <dimen name="popup_bg_corner_radius_24dp">24dp</dimen>
+    <dimen name="popup_bg_padding">4dp</dimen>
 
     <!--
          Fallback values if the corresponding com.android.internal.R dimensions
@@ -84,19 +87,6 @@ found in the LICENSE file.
 
     <!-- Elevation levels -->
     <dimen name="default_elevation_0">0dp</dimen>
-    <dimen name="default_elevation_1">1dp</dimen>
-    <dimen name="default_elevation_2">3dp</dimen>
-    <dimen name="default_elevation_3">6dp</dimen>
-    <dimen name="default_elevation_4">8dp</dimen>
-    <dimen name="default_elevation_5">12dp</dimen>
-    <dimen name="default_elevation_6">67dp</dimen>
-    <!-- TODO(crbug.com/40782657): Remove once dynamic color is ready for all cards -->
-    <dimen name="card_elevation">@dimen/default_elevation_1</dimen>
-
-    <dimen name="toast_elevation">@dimen/default_elevation_4</dimen>
-
-    <!-- Arbitrary shadow length for elevation levels -->
-    <dimen name="default_shadow_length_elev_2">6dp</dimen>
 
     <dimen name="default_list_row_padding">16dp</dimen>
 
@@ -110,9 +100,17 @@ found in the LICENSE file.
     <dimen name="list_menu_item_start_icon_end_margin">16dp</dimen>
     <dimen name="list_menu_item_horizontal_padding">12dp</dimen>
     <dimen name="list_menu_item_text_size">14sp</dimen>
-    <dimen name="list_menu_elevation">@dimen/default_elevation_2</dimen>
+    <dimen name="list_menu_elevation">3dp</dimen>
     <dimen name="list_menu_item_min_height">48dp</dimen>
 
     <!-- Automotive -->
     <item name="automotive_ui_scale_factor" format="float" type="dimen">1.34</item>
+
+    <!-- Immersive Android XR -->
+    <item name="xr_ui_scale_factor" format="float" type="dimen">1.16</item>
+
+    <!-- Clickable span focus background dimensions -->
+    <dimen name="span_background_border_radius">4dp</dimen>
+    <dimen name="span_background_border_width">2dp</dimen>
+    <dimen name="span_background_horizontal_padding">4dp</dimen>
 </resources>

@@ -40,7 +40,6 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
-  std::u16string GetAccessibleNameForTray() override;
   std::u16string GetAccessibleNameForBubble() override;
   void HandleLocaleChange() override {}
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
@@ -135,6 +134,9 @@ class ASH_EXPORT FocusModeTray : public TrayBackgroundView,
   // mainly used to prevent resetting the focus session when using
   // multi-displays during the ending moment.
   void CloseBubbleAndMaybeReset(bool should_reset);
+
+  // Updates the tray's accessible name in the Views accessibility cache.
+  void UpdateAccessibleName();
 
   // This is used to track the current session snapshot, if any.
   std::optional<FocusModeSession::Snapshot> session_snapshot_;

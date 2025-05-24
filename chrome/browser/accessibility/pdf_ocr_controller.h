@@ -8,20 +8,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/callback_list.h"
 #else
 #include "base/scoped_observation.h"
-#include "ui/accessibility/ax_mode_observer.h"
+#include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #endif
 
 class Profile;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace ash {
 struct AccessibilityStatusEventDetails;
 }
@@ -40,7 +40,7 @@ class PdfOcrControllerFactory;
 // Observes changes in assitive technologies and updates the accessibility
 // mode of WebContents when the feature is needed.
 class PdfOcrController : public KeyedService
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     ,
                          public ui::AXModeObserver
 #endif
@@ -66,15 +66,16 @@ class PdfOcrController : public KeyedService
 
   void Activate();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // ui::AXModeObserver:
   void OnAXModeAdded(ui::AXMode mode) override;
+  void OnAssistiveTechChanged(ui::AssistiveTech assistive_tech) override;
 #endif
 
  private:
   friend class PdfOcrControllerFactory;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnAccessibilityStatusEvent(
       const ash::AccessibilityStatusEventDetails& details);
 #endif
@@ -93,7 +94,7 @@ class PdfOcrController : public KeyedService
   // profile and then destroyed before the profile gets destroyed.
   raw_ptr<Profile> profile_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Observes spoken feedback and select to speak.
   base::CallbackListSubscription accessibility_status_subscription_;
 #else

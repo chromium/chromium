@@ -70,9 +70,9 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg == "check-layout-object-methods") {
       options_.check_layout_object_methods = true;
     } else if (arg == "raw-ref-template-as-trivial-member") {
-      options_.raw_ref_template_as_trivial_member = true;
+      // TODO(crbug.com/394919686): Remove once plugin is rolled and GN updated.
     } else if (arg == "raw-span-template-as-trivial-member") {
-      options_.raw_span_template_as_trivial_member = true;
+      // TODO(crbug.com/394919686): Remove once plugin is rolled and GN updated.
     } else if (arg == "check-stack-allocated") {
       options_.check_stack_allocated = true;
     } else if (arg == "check-ptrs-to-non-string-literals") {
@@ -94,7 +94,7 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
     } else if (arg == "enable-match-profiling") {
       options_.enable_match_profiling = true;
     } else if (arg == "span-ctor-from-string-literal") {
-      options_.span_ctor_from_string_literal = true;
+      // TODO(crbug.com/394919686): Remove once plugin is rolled and GN updated.
     } else {
       llvm::errs() << "Unknown clang plugin argument: " << arg << "\n";
       return false;

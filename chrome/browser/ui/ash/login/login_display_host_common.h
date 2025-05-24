@@ -37,7 +37,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
                                public BrowserListObserver,
                                public SigninUI {
  public:
-  LoginDisplayHostCommon();
+  explicit LoginDisplayHostCommon(bool update_geolocation_usage_allowed);
 
   LoginDisplayHostCommon(const LoginDisplayHostCommon&) = delete;
   LoginDisplayHostCommon& operator=(const LoginDisplayHostCommon&) = delete;
@@ -67,6 +67,7 @@ class LoginDisplayHostCommon : public LoginDisplayHost,
   GetQuickStartBootstrapController() final;
   // Most of the accelerators are handled in a same way, but not all.
   bool HandleAccelerator(LoginAcceleratorAction action) override;
+  void SkipPostLoginScreensForDemoMode() override;
 
   // SigninUI:
   void SetAuthSessionForOnboarding(const UserContext& user_context) final;

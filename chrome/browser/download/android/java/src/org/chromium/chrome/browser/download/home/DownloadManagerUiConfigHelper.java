@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.download.home;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Helper class to build default or base {@link DownloadManagerUiConfig.Builder} instances. */
+@NullMarked
 public class DownloadManagerUiConfigHelper {
     private DownloadManagerUiConfigHelper() {}
 

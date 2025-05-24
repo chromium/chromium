@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://print/print_preview.js';
+
 import type {PrintPreviewDestinationSelectElement} from 'chrome://print/print_preview.js';
 import {Destination, DestinationOrigin, getSelectDropdownBackground, IconsetMap} from 'chrome://print/print_preview.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
-import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {selectOption} from './print_preview_test_utils.js';
 
 suite('DestinationSelectTest', function() {
   let destinationSelect: PrintPreviewDestinationSelectElement;
 
-  let recentDestinationList: Destination[] = [];
+  const recentDestinationList: Destination[] = [
+    new Destination('ID1', DestinationOrigin.LOCAL, 'One'),
+    new Destination(
+        'ID4', DestinationOrigin.LOCAL, 'Four', {isEnterprisePrinter: true}),
+  ];
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -21,22 +27,10 @@ suite('DestinationSelectTest', function() {
     destinationSelect.disabled = false;
     destinationSelect.loaded = false;
     destinationSelect.noDestinations = false;
-    populateRecentDestinationList();
     destinationSelect.recentDestinationList = recentDestinationList;
 
     document.body.appendChild(destinationSelect);
-    return waitAfterNextRender(destinationSelect);
   });
-
-  // Create three different destinations and use them to populate
-  // |recentDestinationList|.
-  function populateRecentDestinationList() {
-    recentDestinationList = [
-      new Destination('ID1', DestinationOrigin.LOCAL, 'One'),
-      new Destination(
-          'ID4', DestinationOrigin.LOCAL, 'Four', {isEnterprisePrinter: true}),
-    ];
-  }
 
   function compareIcon(selectEl: HTMLSelectElement, expectedIcon: string) {
     const icon =
@@ -47,28 +41,51 @@ suite('DestinationSelectTest', function() {
     assertEquals(expected, icon);
   }
 
-  test('change icon', function() {
-    populateRecentDestinationList();
+  test('change icon', async function() {
     destinationSelect.recentDestinationList = recentDestinationList;
 
     const destination = recentDestinationList[0]!;
     destinationSelect.destination = destination;
     destinationSelect.updateDestination();
     destinationSelect.loaded = true;
+    await microtasksFinished();
     const selectEl =
-        destinationSelect.shadowRoot!.querySelector<HTMLSelectElement>(
+        destinationSelect.shadowRoot.querySelector<HTMLSelectElement>(
             '.md-select')!;
     compareIcon(selectEl, 'print');
 
     // Select a destination with the enterprise printer icon.
-    return selectOption(destinationSelect, `ID4/local/`).then(() => {
-      const enterpriseIcon = 'business';
+    await selectOption(destinationSelect, `ID4/local/`);
+    const enterpriseIcon = 'business';
+    compareIcon(selectEl, enterpriseIcon);
 
-      compareIcon(selectEl, enterpriseIcon);
+    // Update destination.
+    destinationSelect.destination = recentDestinationList[1]!;
+    await microtasksFinished();
+    compareIcon(selectEl, enterpriseIcon);
+  });
 
-      // Update destination.
-      destinationSelect.destination = recentDestinationList[1]!;
-      compareIcon(selectEl, enterpriseIcon);
-    });
+  test('ShowsSelectedDestination', async function() {
+    const select = destinationSelect.shadowRoot.querySelector('select');
+    assertTrue(!!select);
+
+    const destination = recentDestinationList[0]!;
+    destinationSelect.loaded = true;
+    destinationSelect.destination = destination;
+    destinationSelect.updateDestination();
+    await microtasksFinished();
+
+    assertEquals(destination.key, select.value);
+    assertEquals(destination.key, destinationSelect.selectedValue);
+
+    const newDestination =
+        new Destination('ID2', DestinationOrigin.LOCAL, 'Two');
+    destinationSelect.recentDestinationList = [newDestination];
+    destinationSelect.destination = newDestination;
+    destinationSelect.updateDestination();
+    await microtasksFinished();
+
+    assertEquals(newDestination.key, select.value);
+    assertEquals(newDestination.key, destinationSelect.selectedValue);
   });
 });

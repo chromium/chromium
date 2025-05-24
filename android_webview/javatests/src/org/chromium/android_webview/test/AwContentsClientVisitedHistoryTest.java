@@ -50,7 +50,7 @@ public class AwContentsClientVisitedHistoryTest extends AwParameterizedTest {
 
     private static class VisitedHistoryTestAwContentsClient extends TestAwContentsClient {
 
-        private GetVisitedHistoryHelper mGetVisitedHistoryHelper;
+        private final GetVisitedHistoryHelper mGetVisitedHistoryHelper;
 
         public VisitedHistoryTestAwContentsClient() {
             mGetVisitedHistoryHelper = new GetVisitedHistoryHelper();
@@ -66,7 +66,7 @@ public class AwContentsClientVisitedHistoryTest extends AwParameterizedTest {
         }
     }
 
-    private VisitedHistoryTestAwContentsClient mContentsClient =
+    private final VisitedHistoryTestAwContentsClient mContentsClient =
             new VisitedHistoryTestAwContentsClient();
 
     public AwContentsClientVisitedHistoryTest(AwSettingsMutation param) {

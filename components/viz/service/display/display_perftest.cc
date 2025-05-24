@@ -18,6 +18,7 @@
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/service/display/aggregated_frame.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/occlusion_culler.h"
 #include "components/viz/service/display/overlay_processor_interface.h"
 #include "components/viz/service/display/overlay_processor_stub.h"
@@ -70,8 +71,12 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     DCHECK(!occlusion_culler_);
 
     overlay_processor_ = std::make_unique<OverlayProcessorStub>();
+    display_resource_provider_ =
+        std::make_unique<DisplayResourceProviderSkia>();
     occlusion_culler_ = std::make_unique<OcclusionCuller>(
-        overlay_processor_.get(), RendererSettings::OcclusionCullerSettings());
+        overlay_processor_.get(), display_resource_provider_.get(),
+        RendererSettings::OcclusionCullerSettings());
+    occlusion_culler_->UpdateDeviceScaleFactor(kDeviceScaleFactor);
   }
 
   // Create an arbitrary SharedQuadState for the given |render_pass|.
@@ -98,11 +103,9 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                    int quad_width) {
     bool needs_blending = false;
     ResourceId resource_id(1);
-    bool premultiplied_alpha = true;
     gfx::PointF uv_top_left(0, 0);
     gfx::PointF uv_bottom_right(1, 1);
     SkColor4f background_color = SkColors::kRed;
-    bool y_flipped = false;
     bool nearest_neighbor = true;
 
     int x_left = shared_quad_state->visible_quad_layer_rect.x();
@@ -117,8 +120,8 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                          ->CreateAndAppendDrawQuad<TextureDrawQuad>();
         gfx::Rect rect(i, j, quad_width, quad_height);
         quad->SetNew(shared_quad_state, rect, rect, needs_blending, resource_id,
-                     premultiplied_alpha, uv_top_left, uv_bottom_right,
-                     background_color, y_flipped, nearest_neighbor,
+                     uv_top_left, uv_bottom_right, background_color,
+                     nearest_neighbor,
                      /*secure_output=*/false, gfx::ProtectedVideoType::kClear);
         j += quad_height;
       }
@@ -139,7 +142,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
 
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -178,7 +181,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     CreateIsolatedSharedQuadStates(shared_quad_state_count, quad_count);
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -226,7 +229,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
                                            percentage_overlap, quad_count);
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -271,7 +274,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
     CreateAdjacentSharedQuadStates(shared_quad_state_count, quad_count);
     timer_.Reset();
     do {
-      occlusion_culler_->RemoveOverdrawQuads(&frame_, kDeviceScaleFactor);
+      occlusion_culler_->RemoveOverdrawQuads(&frame_);
       timer_.NextLap();
     } while (!timer_.HasTimeLimitExpired());
 
@@ -305,6 +308,7 @@ class RemoveOverdrawQuadPerfTest : public testing::Test {
  private:
   AggregatedFrame frame_;
   base::LapTimer timer_;
+  std::unique_ptr<DisplayResourceProvider> display_resource_provider_;
   std::unique_ptr<OverlayProcessorInterface> overlay_processor_;
   std::unique_ptr<OcclusionCuller> occlusion_culler_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

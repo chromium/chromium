@@ -14,7 +14,6 @@
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sharing_message/ios_push/sharing_ios_push_sender.h"
@@ -39,12 +38,14 @@
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_handler_registry_impl.h"
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
+#import "ios/chrome/browser/sync/model/glue/sync_start_util.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
 namespace {
+
 // Removes old encryption info with empty authorized_entity to avoid DCHECK.
 // See http://crbug/987591
 void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
@@ -62,23 +63,10 @@ void CleanEncryptionInfoWithoutAuthorizedEntity(gcm::GCMDriver* gcm_driver) {
 }  // namespace
 
 // static
-SharingService* IOSSharingServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SharingService* IOSSharingServiceFactory::GetForProfile(ProfileIOS* profile) {
   CHECK(!profile->IsOffTheRecord());
-  return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(profile, true));
-}
-
-// static
-SharingService* IOSSharingServiceFactory::GetForProfileIfExists(
-    ProfileIOS* profile) {
-  return static_cast<SharingService*>(
-      GetInstance()->GetServiceForBrowserState(profile, false));
+  return GetInstance()->GetServiceForProfileAs<SharingService>(profile,
+                                                               /*create=*/true);
 }
 
 // static
@@ -88,9 +76,9 @@ IOSSharingServiceFactory* IOSSharingServiceFactory::GetInstance() {
 }
 
 IOSSharingServiceFactory::IOSSharingServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "SharingService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("SharingService",
+                                    ServiceCreation::kCreateWithProfile,
+                                    TestingCreation::kNoServiceForTests) {
   DependsOn(IOSChromeInstanceIDProfileServiceFactory::GetInstance());
   DependsOn(DeviceInfoSyncServiceFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
@@ -109,38 +97,34 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(chrome_browser_state);
+      SyncServiceFactory::GetForProfile(profile);
 
   if (!sync_service) {
     return nullptr;
   }
 
   syncer::DeviceInfoSyncService* device_info_sync_service =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(chrome_browser_state);
+      DeviceInfoSyncServiceFactory::GetForProfile(profile);
   auto sync_prefs = std::make_unique<SharingSyncPreference>(
-      chrome_browser_state->GetPrefs(), device_info_sync_service);
+      profile->GetPrefs(), device_info_sync_service);
 
   auto vapid_key_manager =
       std::make_unique<VapidKeyManager>(sync_prefs.get(), sync_service);
 
   instance_id::InstanceIDProfileService* instance_id_service =
-      IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
-          chrome_browser_state);
+      IOSChromeInstanceIDProfileServiceFactory::GetForProfile(profile);
   auto sharing_device_registration =
       std::make_unique<IOSSharingDeviceRegistrationImpl>(
-          chrome_browser_state->GetPrefs(), sync_prefs.get(),
-          vapid_key_manager.get(), instance_id_service->driver(), sync_service);
+          profile->GetPrefs(), sync_prefs.get(), vapid_key_manager.get(),
+          instance_id_service->driver(), sync_service);
 
   SharingMessageBridge* message_bridge =
-      IOSSharingMessageBridgeFactory::GetForBrowserState(chrome_browser_state);
+      IOSSharingMessageBridgeFactory::GetForProfile(profile);
   gcm::GCMDriver* gcm_driver =
-      IOSChromeGCMProfileServiceFactory::GetForBrowserState(
-          chrome_browser_state)
-          ->driver();
+      IOSChromeGCMProfileServiceFactory::GetForProfile(profile)->driver();
   CleanEncryptionInfoWithoutAuthorizedEntity(gcm_driver);
   syncer::DeviceInfoTracker* device_info_tracker =
       device_info_sync_service->GetDeviceInfoTracker();
@@ -149,7 +133,8 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   auto fcm_sender = std::make_unique<SharingFCMSender>(
       /*web_push_sender=*/nullptr, message_bridge, sync_prefs.get(),
       vapid_key_manager.get(), gcm_driver, device_info_tracker,
-      local_device_info_provider, sync_service);
+      local_device_info_provider, sync_service,
+      ios::sync_start_util::GetFlareForSyncableService(profile));
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
@@ -173,11 +158,11 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());
 
   favicon::FaviconService* favicon_service =
-      ios::FaviconServiceFactory::GetForBrowserState(
-          chrome_browser_state, ServiceAccessType::IMPLICIT_ACCESS);
+      ios::FaviconServiceFactory::GetForProfile(
+          profile, ServiceAccessType::IMPLICIT_ACCESS);
 
   send_tab_to_self::SendTabToSelfModel* send_tab_model =
-      SendTabToSelfSyncServiceFactory::GetForBrowserState(chrome_browser_state)
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
 
   return std::make_unique<SharingService>(
@@ -186,8 +171,4 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       std::move(device_source), std::move(handler_registry),
       std::move(fcm_handler), sync_service, favicon_service, send_tab_model,
       std::move(task_runner));
-}
-
-bool IOSSharingServiceFactory::ServiceIsCreatedWithBrowserState() const {
-  return true;
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
@@ -15,6 +16,10 @@ class SettingsFocusTest : public WebUIMochaFocusTest {
 
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, AnimatedPages) {
   RunTest("settings/settings_animated_pages_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsFocusTest, AutofillSectionFocus) {
+  RunTest("settings/autofill_section_focus_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, PaymentsSectionInteractive) {
@@ -58,18 +63,19 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, Menu) {
   RunTest("settings/settings_menu_interactive_ui_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsFocusTest, ReviewNotificationPermissionsFocus) {
-  RunTest("settings/review_notification_permissions_interactive_ui_test.js",
-          "mocha.run()");
-}
+#if BUILDFLAG(ENABLE_GLIC)
+class SettingsGlicPageFocusTest : public SettingsFocusTest {
+ public:
+  SettingsGlicPageFocusTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlic, features::kTabstripComboButton}, {});
+  }
 
-class SettingsUnusedSitePermissionsFocusTest : public SettingsFocusTest {
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      content_settings::features::kSafetyCheckUnusedSitePermissions};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(SettingsUnusedSitePermissionsFocusTest, All) {
-  RunTest("settings/unused_site_permissions_interactive_ui_test.js",
-          "mocha.run()");
+IN_PROC_BROWSER_TEST_F(SettingsGlicPageFocusTest, GlicPageFocus) {
+  RunTest("settings/glic_page_focus_test.js", "mocha.run()");
 }
+#endif

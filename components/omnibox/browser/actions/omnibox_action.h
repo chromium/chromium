@@ -16,10 +16,10 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/search_engines/template_url.h"
-#include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
@@ -92,6 +92,18 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
     // means that the embedder successfully opened Journeys, and the caller can
     // early exit. If this returns false, the caller should open the WebUI.
     virtual bool OpenJourneys(const std::string& query);
+
+    // Opens the lens overlay. If `show` is true, the overlay UI is presented
+    // and if it's false then lens is used to contextualize without showing UI.
+    virtual void OpenLensOverlay(bool show) = 0;
+
+    // Passes the contextual search request to Lens to handle fulfillment. Lens
+    // uses the destination URL to grab the query and keep any additional
+    // params that are attached to the URL.
+    virtual void IssueContextualSearchRequest(
+        const GURL& destination_url,
+        AutocompleteMatchType::Type match_type,
+        bool is_zero_prefix_suggestion) = 0;
   };
 
   // ExecutionContext provides the necessary structure for Action
@@ -121,8 +133,7 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
                                 bool destination_url_entered_with_http_scheme,
                                 const std::u16string&,
                                 const AutocompleteMatch&,
-                                const AutocompleteMatch&,
-                                IDNA2008DeviationCharacter)>;
+                                const AutocompleteMatch&)>;
 
     ExecutionContext(Client& client,
                      OpenUrlCallback callback,
@@ -162,6 +173,9 @@ class OmniboxAction : public base::RefCountedThreadSafe<OmniboxAction> {
   // Returns the vector icon to represent this Action.
   virtual const gfx::VectorIcon& GetVectorIcon() const;
 #endif
+
+  // Returns a custom (non vector icon) image for the action.
+  virtual gfx::Image GetIconImage() const;
 
   // Estimates RAM usage in bytes for this Action.
   virtual size_t EstimateMemoryUsage() const;

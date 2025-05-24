@@ -16,12 +16,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality.h"
+#include "components/autofill/core/browser/data_quality/addresses/profile_token_quality_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/profile_token_quality.h"
-#include "components/autofill/core/browser/profile_token_quality_test_api.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -71,6 +71,10 @@ INSTANTIATE_TEST_SUITE_P(
 // Tests reading/writing name, email, company, address and phone number
 // information.
 TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillSupportPhoneticNameForJP,
+                             features::kAutofillSupportLastNamePrefix},
+                            {});
   AutofillProfile home_profile = CreateAutofillProfile();
 
   home_profile.SetRawInfoWithVerificationStatus(NAME_FIRST, u"John",
@@ -78,6 +82,12 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
 
   home_profile.SetRawInfoWithVerificationStatus(NAME_MIDDLE, u"Q.",
                                                 VerificationStatus::kObserved);
+
+  home_profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST_CORE, u"Agent 007 Smith", VerificationStatus::kParsed);
+
+  home_profile.SetRawInfoWithVerificationStatus(NAME_LAST_PREFIX, u"von",
+                                                VerificationStatus::kParsed);
 
   home_profile.SetRawInfoWithVerificationStatus(NAME_LAST_FIRST, u"Agent",
                                                 VerificationStatus::kParsed);
@@ -88,11 +98,20 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(NAME_LAST_SECOND, u"Smith",
                                                 VerificationStatus::kParsed);
 
-  home_profile.SetRawInfoWithVerificationStatus(NAME_LAST, u"Agent 007 Smith",
-                                                VerificationStatus::kParsed);
+  home_profile.SetRawInfoWithVerificationStatus(
+      NAME_LAST, u"von Agent 007 Smith", VerificationStatus::kParsed);
 
   home_profile.SetRawInfoWithVerificationStatus(
-      NAME_FULL, u"John Q. Agent 007 Smith", VerificationStatus::kObserved);
+      NAME_FULL, u"John Q. von Agent 007 Smith", VerificationStatus::kObserved);
+
+  // Phonetic names in Hiragana. They should be saved and later returned without
+  // any changes.
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"あおい", VerificationStatus::kParsed);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FAMILY_NAME, u"やまもと", VerificationStatus::kParsed);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FULL_NAME, u"やまもと あおい", VerificationStatus::kParsed);
 
   home_profile.SetRawInfo(EMAIL_ADDRESS, u"js@smith.xyz");
   home_profile.SetRawInfo(COMPANY_NAME, u"Google");
@@ -124,7 +143,7 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
   home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"ZIP",
                                                 VerificationStatus::kObserved);
 
-  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"DE",
+  home_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_COUNTRY, u"ZA",
                                                 VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_HOUSE_NUMBER, u"House Number",
@@ -147,7 +166,12 @@ TEST_P(AddressAutofillTableProfileTest, AutofillProfile) {
                                                 VerificationStatus::kObserved);
   home_profile.SetRawInfoWithVerificationStatus(
       ADDRESS_HOME_ADMIN_LEVEL2, u"Oxaca", VerificationStatus::kObserved);
-
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FULL_NAME, u"やまだ たろう", VerificationStatus::kObserved);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_GIVEN_NAME, u"たろう", VerificationStatus::kObserved);
+  home_profile.SetRawInfoWithVerificationStatus(
+      ALTERNATIVE_FAMILY_NAME, u"やまだ", VerificationStatus::kObserved);
   home_profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
   home_profile.set_language_code("en");
 
@@ -257,36 +281,44 @@ TEST_P(AddressAutofillTableProfileTest, ProfileTokenQuality) {
 
 // Tests that last use dates are persisted, if present.
 TEST_P(AddressAutofillTableProfileTest, UseDates) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillTrackMultipleUseDates};
   AutofillProfile profile = CreateAutofillProfile();
   // Since the table stores time_ts, microseconds get lost in conversion.
   const base::Time initial_use_date =
-      base::Time::FromTimeT(profile.use_date().ToTimeT());
-  ASSERT_FALSE(profile.use_date(2).has_value());
-  ASSERT_FALSE(profile.use_date(3).has_value());
+      base::Time::FromTimeT(profile.usage_history().use_date().ToTimeT());
+  ASSERT_FALSE(profile.usage_history().use_date(2).has_value());
+  ASSERT_FALSE(profile.usage_history().use_date(3).has_value());
 
   table_.AddAutofillProfile(profile);
   profile = *table_.GetAutofillProfile(profile.guid());
-  EXPECT_EQ(profile.use_date(1), initial_use_date);
-  EXPECT_FALSE(profile.use_date(2).has_value());
-  EXPECT_FALSE(profile.use_date(3).has_value());
+  EXPECT_EQ(profile.usage_history().use_date(1), initial_use_date);
+  EXPECT_FALSE(profile.usage_history().use_date(2).has_value());
+  EXPECT_FALSE(profile.usage_history().use_date(3).has_value());
 
-  profile.RecordUseDate(initial_use_date + base::Days(1));
-  profile.RecordUseDate(initial_use_date + base::Days(2));
+  profile.usage_history().RecordUseDate(initial_use_date + base::Days(1));
+  profile.usage_history().RecordUseDate(initial_use_date + base::Days(2));
   table_.UpdateAutofillProfile(profile);
   profile = *table_.GetAutofillProfile(profile.guid());
-  EXPECT_EQ(profile.use_date(1), initial_use_date + base::Days(2));
-  EXPECT_EQ(profile.use_date(2), initial_use_date + base::Days(1));
-  EXPECT_EQ(profile.use_date(3), initial_use_date);
+  EXPECT_EQ(profile.usage_history().use_date(1),
+            initial_use_date + base::Days(2));
+  EXPECT_EQ(profile.usage_history().use_date(2),
+            initial_use_date + base::Days(1));
+  EXPECT_EQ(profile.usage_history().use_date(3), initial_use_date);
 }
 
 TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures({features::kAutofillSupportPhoneticNameForJP,
+                             features::kAutofillSupportLastNamePrefix},
+                            {});
   // Add a profile to the db.
   AutofillProfile profile = CreateAutofillProfile();
   profile.SetRawInfo(NAME_FIRST, u"John");
   profile.SetRawInfo(NAME_MIDDLE, u"Q.");
-  profile.SetRawInfo(NAME_LAST, u"Smith");
+  profile.SetRawInfo(NAME_LAST_PREFIX, u"von");
+  profile.SetRawInfo(NAME_LAST_CORE, u"Agent 007 Smith");
+  profile.SetRawInfo(NAME_LAST_FIRST, u"Agent");
+  profile.SetRawInfo(NAME_LAST_CONJUNCTION, u"007");
+  profile.SetRawInfo(NAME_LAST_SECOND, u"Smith");
   profile.SetRawInfo(EMAIL_ADDRESS, u"js@example.com");
   profile.SetRawInfo(COMPANY_NAME, u"Google");
   profile.SetRawInfo(ADDRESS_HOME_LINE1, u"1234 Apple Way");
@@ -299,6 +331,9 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   profile.SetRawInfo(ADDRESS_HOME_LANDMARK, u"Landmark");
   profile.SetRawInfo(ADDRESS_HOME_BETWEEN_STREETS, u"Marcos y Oliva");
   profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"18181234567");
+  profile.SetRawInfo(ALTERNATIVE_FULL_NAME, u"やまだ たろう");
+  profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"たろう");
+  profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"やまだ");
   profile.set_language_code("en");
   profile.FinalizeAfterImport();
   table_.AddAutofillProfile(profile);
@@ -318,6 +353,31 @@ TEST_P(AddressAutofillTableProfileTest, UpdateAutofillProfile) {
   db_profile = table_.GetAutofillProfile(profile.guid());
   ASSERT_TRUE(db_profile);
   EXPECT_EQ(profile, *db_profile);
+}
+
+TEST_P(AddressAutofillTableProfileTest,
+       AutofillJpProfileWithAlternativeNameConversion) {
+  base::test::ScopedFeatureList features{
+      features::kAutofillSupportPhoneticNameForJP};
+  AutofillProfile profile = CreateAutofillProfile();
+
+  // Phonetic names in Katakana. They should be saved and later returned in
+  // Hiragana.
+  profile.SetRawInfo(ALTERNATIVE_GIVEN_NAME, u"アオイ");
+  profile.SetRawInfo(ALTERNATIVE_FAMILY_NAME, u"ヤマモト");
+  profile.SetRawInfo(ALTERNATIVE_FULL_NAME, u"ヤマモト アオイ");
+
+  // Add the profile to the table.
+  EXPECT_TRUE(table_.AddAutofillProfile(profile));
+
+  std::optional<AutofillProfile> db_profile =
+      table_.GetAutofillProfile(profile.guid());
+  ASSERT_TRUE(db_profile);
+
+  // Verify that alternative names were converted to Hiragana.
+  EXPECT_EQ(db_profile->GetRawInfo(ALTERNATIVE_GIVEN_NAME), u"あおい");
+  EXPECT_EQ(db_profile->GetRawInfo(ALTERNATIVE_FAMILY_NAME), u"やまもと");
+  EXPECT_EQ(db_profile->GetRawInfo(ALTERNATIVE_FULL_NAME), u"やまもと あおい");
 }
 
 }  // namespace autofill

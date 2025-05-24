@@ -5,8 +5,8 @@
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
   <style id="sheet">
-    @function --favorite-color(): color {
-      @return red;
+    @function --favorite-color() returns <color> {
+      result: red;
     }
   </style>
 </head>
@@ -15,7 +15,7 @@
   <script>
     test((t) => {
       assert_equals(getComputedStyle(subject).color, "rgb(255, 0, 0)");
-      sheet.innerText = "@function --favorite-color(): color { @return green; }";
+      sheet.innerText = "@function --favorite-color() returns <color> { result: green; }";
       assert_equals(getComputedStyle(subject).color, "rgb(0, 128, 0)");
       sheet.innerText = "";
       assert_equals(getComputedStyle(subject).color, "rgb(0, 0, 0)");

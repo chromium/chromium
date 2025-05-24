@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.test.transit.page;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+
 /** The app menu shown when pressing ("...") in an Incognito Tab showing a web page. */
 public class IncognitoWebPageAppMenuFacility extends PageAppMenuFacility<WebPageStation> {
     @Override
@@ -12,6 +14,12 @@ public class IncognitoWebPageAppMenuFacility extends PageAppMenuFacility<WebPage
         mNewIncognitoTab =
                 declareMenuItemToStation(
                         items, NEW_INCOGNITO_TAB_ID, this::createIncognitoNewTabPageStation);
+        if (ChromeFeatureList.sTabGroupParityBottomSheetAndroid.isEnabled()) {
+            mAddToGroup =
+                    declareMenuItemToFacility(
+                            items, ADD_TO_GROUP_ID, this::createTabGroupListBottomSheetFacility);
+        }
+        mNewWindow = declarePossibleMenuItem(items, NEW_WINDOW_ID, this::handleOpenNewWindow);
 
         declareStubMenuItem(items, HISTORY_ID);
         declareAbsentMenuItem(items, DELETE_BROWSING_DATA_ID);
@@ -24,7 +32,7 @@ public class IncognitoWebPageAppMenuFacility extends PageAppMenuFacility<WebPage
         declarePossibleStubMenuItem(items, TRANSLATE_ID);
 
         // None of these should exist.
-        declareAbsentMenuItem(items, ADD_TO_HOME_SCREEN__UNIVERSAL_INSTALL__ID);
+        declareAbsentMenuItem(items, ADD_TO_HOME_SCREEN_UNIVERSAL_INSTALL_ID);
         declareAbsentMenuItem(items, OPEN_WEBAPK_ID);
 
         declarePossibleStubMenuItem(items, DESKTOP_SITE_ID);

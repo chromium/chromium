@@ -23,6 +23,6 @@ dictionary CanvasSmpteSt2086Metadata {
 
 dictionary CanvasHighDynamicRangeOptions {
   CanvasHighDynamicRangeMode mode = "default";
-
+  DOMString? agtm;
   CanvasSmpteSt2086Metadata smpteSt2086Metadata;
 };

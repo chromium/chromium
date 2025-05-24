@@ -59,14 +59,22 @@ buildflag_header("media_buildflags") {
     "ENABLE_PLATFORM_IAMF_AUDIO=$enable_platform_iamf_audio",
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
-    "PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT=$platform_has_optional_hevc_support",
+    "PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT=$platform_has_optional_hevc_decode_support",
+    "PLATFORM_HAS_OPTIONAL_HEVC_ENCODE_SUPPORT=$platform_has_optional_hevc_encode_support",
     "USE_ARC_PROTECTED_MEDIA=$use_arc_protected_media",
-    "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
     "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
     "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_CRAS=$use_cras",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
+    "ENABLE_GPU_CHANNEL_MEDIA_CAPTURE=$enable_gpu_channel_media_capture",
+    "USE_OPENSLES=$media_use_opensles",
   ]
+
+  if (use_linux_video_acceleration) {
+    flags += [ "USE_LINUX_VIDEO_ACCELERATION=true" ]
+  } else {
+    flags += [ "USE_LINUX_VIDEO_ACCELERATION=false" ]
+  }
 
   if (enable_library_cdms) {
     flags += [
@@ -292,8 +300,8 @@ test("media_perftests") {
     "//testing:run_perf_test",
   ]
 
-  if (enable_av1_decoder &&
-      ((is_chromeos && (use_v4l2_codec || use_vaapi)) || is_win)) {
+  if (enable_av1_decoder && ((is_chromeos && (use_v4l2_codec || use_vaapi)) ||
+                             is_win || is_android)) {
     data_deps += [ "//media/gpu/test/:video_encode_accelerator_tests" ]
   }
 }
@@ -345,7 +353,6 @@ component("shared_memory_support") {
   }
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//media:media_buildflags",
     "//ui/gfx/geometry",
   ]

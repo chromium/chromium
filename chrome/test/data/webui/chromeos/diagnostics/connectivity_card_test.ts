@@ -5,9 +5,9 @@
 import 'chrome://diagnostics/connectivity_card.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
+import type {ConnectivityCardElement} from 'chrome://diagnostics/connectivity_card.js';
 import {DiagnosticsNetworkIconElement} from 'chrome://diagnostics/diagnostics_network_icon.js';
-import {CellularNetwork, EthernetNetwork, WiFiNetwork} from 'chrome://diagnostics/diagnostics_types.js';
+import type {CellularNetwork, EthernetNetwork, WiFiNetwork} from 'chrome://diagnostics/diagnostics_types.js';
 import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {FakeSystemRoutineController} from 'chrome://diagnostics/fake_system_routine_controller.js';

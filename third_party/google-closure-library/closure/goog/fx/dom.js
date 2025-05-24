@@ -75,7 +75,7 @@ goog.inherits(goog.fx.dom.PredefinedEffect, goog.fx.Animation);
  * Called to update the style of the element.
  * @protected
  */
-goog.fx.dom.PredefinedEffect.prototype.updateStyle = goog.nullFunction;
+goog.fx.dom.PredefinedEffect.prototype.updateStyle = function() {};
 
 
 /**

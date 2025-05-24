@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/google/google_brand.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -30,15 +29,13 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chromeos/ash/components/network/managed_network_configuration_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
@@ -54,21 +51,23 @@ ResetRequestOriginFromString(const std::string& request_origin) {
   static const char kOriginUserClick[] = "userclick";
   static const char kOriginTriggeredReset[] = "triggeredreset";
 
-  if (request_origin == kOriginUserClick)
+  if (request_origin == kOriginUserClick) {
     return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_USER_CLICK;
+  }
   if (request_origin == kOriginTriggeredReset) {
     return reset_report::ChromeResetReport::
         RESET_REQUEST_ORIGIN_TRIGGERED_RESET;
   }
-  if (!request_origin.empty())
-    NOTREACHED_IN_MIGRATION();
+  if (!request_origin.empty()) {
+    NOTREACHED();
+  }
 
   return reset_report::ChromeResetReport::RESET_REQUEST_ORIGIN_UNKNOWN;
 }
 
 }  // namespace
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 const char ResetSettingsHandler::kCctResetSettingsHash[] = "cct";
 
@@ -77,15 +76,16 @@ void ResetSettingsHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(ash::settings::prefs::kSanitizeCompleted,
                                 false);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 bool ResetSettingsHandler::ShouldShowResetProfileBanner(Profile* profile) {
   const base::Time reset_time = chrome_prefs::GetResetTime(profile);
 
   // If there is no reset time, do not show the banner.
-  if (reset_time.is_null())
+  if (reset_time.is_null()) {
     return false;
+  }
 
   // Otherwise, only show the banner if it has been less than |kBannerShowTime|
   // since reset.
@@ -98,7 +98,7 @@ ResetSettingsHandler::ResetSettingsHandler(Profile* profile)
     : profile_(profile),
       resetter_(std::make_unique<ProfileResetter>(profile_)) {}
 
-ResetSettingsHandler::~ResetSettingsHandler() {}
+ResetSettingsHandler::~ResetSettingsHandler() = default;
 
 void ResetSettingsHandler::OnJavascriptDisallowed() {
   callback_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -130,16 +130,12 @@ void ResetSettingsHandler::RegisterMessages() {
       base::BindRepeating(
           &ResetSettingsHandler::HandleGetTriggeredResetToolName,
           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterMessageCallback(
-      "performSanitizeSettings",
-      base::BindRepeating(&ResetSettingsHandler::SanitizeSettings,
-                          base::Unretained(this)));
+#if BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "onShowSanitizeDialog",
       base::BindRepeating(&ResetSettingsHandler::OnShowSanitizeDialog,
                           base::Unretained(this)));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ResetSettingsHandler::HandleResetProfileSettings(
@@ -204,8 +200,9 @@ void ResetSettingsHandler::OnShowResetProfileDialog(
 
 void ResetSettingsHandler::OnHideResetProfileDialog(
     const base::Value::List& args) {
-  if (!GetResetter()->IsActive())
+  if (!GetResetter()->IsActive()) {
     setting_snapshot_.reset();
+  }
 }
 
 void ResetSettingsHandler::OnHideResetProfileBanner(
@@ -227,8 +224,9 @@ void ResetSettingsHandler::ResetProfile(
 }
 
 ProfileResetter* ResetSettingsHandler::GetResetter() {
-  if (!resetter_)
+  if (!resetter_) {
     resetter_ = std::make_unique<ProfileResetter>(profile_);
+  }
   return resetter_.get();
 }
 
@@ -264,7 +262,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
   ResolveJavascriptCallback(callback_id, string_value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ResetSettingsHandler::OnShowSanitizeDialog(const base::Value::List& args) {
   // TODO(b/357057195) move sanitize functionality functions out of
   // ResetSettingsHandler and only leave the UI parts for ResetSettingsHandler.
@@ -275,30 +273,6 @@ void ResetSettingsHandler::OnShowSanitizeDialog(const base::Value::List& args) {
                                  ash::SystemWebAppType::OS_SANITIZE, params);
   }
 }
-
-void ResetSettingsHandler::SanitizeSettings(const base::Value::List& args) {
-  ProfileResetter::ResettableFlags to_sanitize =
-      ProfileResetter::DEFAULT_SEARCH_ENGINE | ProfileResetter::HOMEPAGE |
-      ProfileResetter::CONTENT_SETTINGS | ProfileResetter::EXTENSIONS |
-      ProfileResetter::STARTUP_PAGES | ProfileResetter::PINNED_TABS |
-      ProfileResetter::SHORTCUTS | ProfileResetter::NTP_CUSTOMIZATIONS |
-      ProfileResetter::LANGUAGES | ProfileResetter::DNS_CONFIGURATIONS;
-  // TODO(b/319446147): get send_feedback flag and pass it down
-  GetResetter()->ResetSettings(
-      to_sanitize, nullptr,
-      base::BindOnce(&ResetSettingsHandler::OnSanitizeDone,
-                     callback_weak_ptr_factory_.GetWeakPtr()));
-
-  base::RecordAction(base::UserMetricsAction("Sanitize"));
-}
-
-void ResetSettingsHandler::OnSanitizeDone() {
-  setting_snapshot_.reset();
-  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
-  prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, true);
-  prefs->CommitPendingWrite();
-  chrome::AttemptRestart();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace settings

@@ -73,11 +73,6 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
   PasswordChangesOrError RemoveLoginsCreatedBetween(
       const base::Location& location,
       base::Time delete_begin,
-      base::Time delete_end);
-  PasswordChangesOrError RemoveLoginsByURLAndTime(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion);
   PasswordStoreChangeList DisableAutoSignInForOrigins(
@@ -112,6 +107,8 @@ class LoginDatabaseAsyncHelper : public PasswordStoreSync {
       UpdateCredentialError* error) override;
   void NotifyCredentialsChanged(
       const PasswordStoreChangeList& changes) override;
+  void AddDeletionsHaveSyncedCallback(
+      base::OnceCallback<void(bool)> sync_completion);
   void NotifyDeletionsHaveSynced(bool success) override;
   void NotifyUnsyncedCredentialsWillBeDeleted(
       std::vector<PasswordForm> unsynced_credentials) override;

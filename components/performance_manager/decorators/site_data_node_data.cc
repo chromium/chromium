@@ -168,13 +168,13 @@ bool SiteDataNodeData::ShouldRecordFeatureUsageEvent(FeatureType feature_type) {
     return false;
   }
   CHECK(!loaded_idle_time_.is_null());
-  return heuristics.IsOutsideLoadingGracePeriod(
-             page_node_, feature_type,
-             base::TimeTicks::Now() - loaded_idle_time_) &&
+  const base::TimeTicks now = base::TimeTicks::Now();
+  return heuristics.IsOutsideLoadingGracePeriod(page_node_, feature_type,
+                                                now - loaded_idle_time_) &&
          heuristics.IsInBackground(page_node_) &&
          heuristics.IsOutsideBackgroundingGracePeriod(
              page_node_, feature_type,
-             page_node_->GetTimeSinceLastVisibilityChange());
+             now - page_node_->GetLastVisibilityChangeTime());
 }
 
 void SiteDataNodeData::MaybeNotifyBackgroundFeatureUsage(

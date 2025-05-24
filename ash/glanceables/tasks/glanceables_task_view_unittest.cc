@@ -10,7 +10,6 @@
 
 #include "ash/api/tasks/tasks_client.h"
 #include "ash/api/tasks/tasks_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/system/time/calendar_unittest_utils.h"
@@ -18,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -45,14 +43,8 @@ namespace ash {
 class GlanceablesTaskViewTest : public AshTestBase {
  public:
   GlanceablesTaskViewTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
-        /*disabled_features=*/{});
     glanceables_util::SetIsNetworkConnectedForTest(true);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(GlanceablesTaskViewTest, FormatsDueDate) {

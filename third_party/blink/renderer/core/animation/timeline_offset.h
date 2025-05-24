@@ -13,6 +13,7 @@ namespace blink {
 
 class Document;
 class Element;
+class ExceptionState;
 class CSSValue;
 
 struct TimelineOffset {
@@ -64,6 +65,26 @@ struct TimelineOffset {
   static Length ResolveLength(Element* element, const CSSValue* value);
 
   String ToString() const;
+};
+
+struct TimelineOffsetOrAuto {
+  TimelineOffsetOrAuto() : is_auto(true), timeline_offset(std::nullopt) {}
+  explicit TimelineOffsetOrAuto(std::optional<TimelineOffset> offset)
+      : is_auto(false), timeline_offset(offset) {}
+  bool IsAuto() const { return is_auto; }
+  std::optional<TimelineOffset> GetTimelineOffset() const {
+    return timeline_offset;
+  }
+
+  static TimelineOffsetOrAuto Create(
+      Element* element,
+      const V8UnionStringOrTimelineRangeOffset* range_offset,
+      double default_percent,
+      ExceptionState& exception_state);
+
+ private:
+  bool is_auto;
+  std::optional<TimelineOffset> timeline_offset;
 };
 
 }  // namespace blink

@@ -232,7 +232,8 @@ TEST_F(ExtendedDesktopTest, SystemModal) {
   EXPECT_EQ(root_windows[0], Shell::GetRootWindowForNewWindows());
 
   // Open system modal. Make sure it's on 2nd root window and active.
-  auto delegate = std::make_unique<views::WidgetDelegateView>();
+  auto delegate = std::make_unique<views::WidgetDelegateView>(
+      views::WidgetDelegateView::CreatePassKey());
   delegate->SetModalType(ui::mojom::ModalType::kSystem);
   views::Widget* modal_widget = views::Widget::CreateWindowWithContext(
       delegate.release(), GetContext(), gfx::Rect(1200, 100, 100, 100));
@@ -830,7 +831,7 @@ TEST_F(ExtendedDesktopTest, KeyEventsOnLockScreen) {
   views::Widget* lock_widget = CreateTestWidget(
       display::Screen::GetScreen()->GetPrimaryDisplay().bounds());
   views::Textfield* textfield = new views::Textfield;
-  lock_widget->client_view()->AddChildView(textfield);
+  lock_widget->client_view()->AddChildViewRaw(textfield);
 
   Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                       kShellWindowId_LockScreenContainer)

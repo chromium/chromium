@@ -8,10 +8,12 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/binding_set.h>
 #include <lib/inspect/cpp/vmo/types.h>
+
 #include <memory>
 #include <set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromecast_buildflags.h"
 #include "fuchsia_web/webengine/browser/cookie_manager_impl.h"
 #include "fuchsia_web/webengine/web_engine_export.h"
@@ -98,7 +100,7 @@ class WEB_ENGINE_EXPORT ContextImpl final : public fuchsia::web::Context {
   std::unique_ptr<content::BrowserContext> const browser_context_;
 
   // Reference to the class managing the DevTools remote debugging service.
-  WebEngineDevToolsController* const devtools_controller_;
+  const raw_ptr<WebEngineDevToolsController> devtools_controller_;
 
   // Inspect node & properties for this browsing context.
   inspect::Node inspect_node_;

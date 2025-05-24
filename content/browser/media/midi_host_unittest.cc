@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -133,14 +134,15 @@ class MidiSessionClientForTesting : public midi::mojom::MidiSessionClient {
 
 class MidiHostTest : public testing::Test {
  public:
-  MidiHostTest() : data_(kNoteOn, kNoteOn + std::size(kNoteOn)), port_id_(0) {
+  MidiHostTest() : data_(base::ToVector(kNoteOn)), port_id_(0) {
     browser_context_ = std::make_unique<TestBrowserContext>();
     rph_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
     std::unique_ptr<FakeMidiManagerFactory> factory =
         std::make_unique<FakeMidiManagerFactory>();
     factory_ = factory->GetWeakPtr();
     service_ = std::make_unique<midi::MidiService>(std::move(factory));
-    host_ = std::make_unique<MidiHostForTesting>(rph_->GetID(), service_.get());
+    host_ = std::make_unique<MidiHostForTesting>(rph_->GetDeprecatedID(),
+                                                 service_.get());
     mojo::PendingRemote<midi::mojom::MidiSessionClient> client_remote;
     mojo::MakeSelfOwnedReceiver(std::make_unique<MidiSessionClientForTesting>(),
                                 client_remote.InitWithNewPipeAndPassReceiver());

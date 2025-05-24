@@ -98,8 +98,8 @@ SXG_LOAD_METRIC_VARIABLE(Load, "DocumentTiming.NavigationToLoadEventFired")
 
 }  // namespace internal
 
-SignedExchangePageLoadMetricsObserver::SignedExchangePageLoadMetricsObserver() {
-}
+SignedExchangePageLoadMetricsObserver::SignedExchangePageLoadMetricsObserver() =
+    default;
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 SignedExchangePageLoadMetricsObserver::OnFencedFramesStart(

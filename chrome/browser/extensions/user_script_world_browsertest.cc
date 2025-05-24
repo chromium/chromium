@@ -7,7 +7,6 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -15,6 +14,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/script_executor.h"
 #include "extensions/common/extension_builder.h"
@@ -97,7 +97,7 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
             blink::mojom::UserActivationOption::kDoNotActivate,
             blink::mojom::PromiseResultOption::kAwait)),
         ScriptExecutor::SPECIFIED_FRAMES, {ExtensionApiFrameIdMap::kTopFrameId},
-        ScriptExecutor::DONT_MATCH_ABOUT_BLANK,
+        mojom::MatchOriginAsFallbackBehavior::kNever,
         mojom::RunLocation::kDocumentIdle, ScriptExecutor::DEFAULT_PROCESS,
         GURL() /* webview_src */, base::BindLambdaForTesting(on_complete));
     run_loop.Run();
@@ -139,7 +139,7 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
             .SetManifestVersion(3)
             .AddHostPermission(host_permission)
             .Build();
-    extension_service()->AddExtension(extension.get());
+    extension_registrar()->AddExtension(extension);
     EXPECT_TRUE(
         extension_registry()->enabled_extensions().GetByID(extension->id()));
     return extension.get();
@@ -158,8 +158,10 @@ class UserScriptWorldBrowserTest : public ExtensionApiTest {
                                     std::optional<std::string> csp,
                                     bool enable_messaging) {
     RendererStartupHelperFactory::GetForBrowserContext(profile())
-        ->SetUserScriptWorldProperties(extension, std::move(world_id),
-                                       std::move(csp), enable_messaging);
+        ->SetUserScriptWorldProperties(
+            extension,
+            mojom::UserScriptWorldInfo::New(extension.id(), std::move(world_id),
+                                            std::move(csp), enable_messaging));
   }
 
   // Clears associated user script world properties in the renderer(s).

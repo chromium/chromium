@@ -42,7 +42,7 @@ CachedPolicyKeyLoader::CachedPolicyKeyLoader(
       account_id_(account_id),
       user_policy_key_dir_(user_policy_key_dir) {}
 
-CachedPolicyKeyLoader::~CachedPolicyKeyLoader() {}
+CachedPolicyKeyLoader::~CachedPolicyKeyLoader() = default;
 
 void CachedPolicyKeyLoader::EnsurePolicyKeyLoaded(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

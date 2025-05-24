@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
 import '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -38,12 +38,12 @@ export class PrivateStateTokensListItemElement extends CrLitElement {
     };
   }
 
-  expanded: boolean = false;
-  issuerOrigin: string = '';
-  numTokens: number = 0;
-  redemptions: Redemption[] = [];
-  index: number = -1;
-  metadata: Metadata = nullMetadataObj;
+  accessor expanded: boolean = false;
+  accessor issuerOrigin: string = '';
+  accessor numTokens: number = 0;
+  accessor redemptions: Redemption[] = [];
+  accessor index: number = -1;
+  accessor metadata: Metadata = nullMetadataObj;
 
   protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
     this.expanded = e.detail.value;

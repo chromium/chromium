@@ -140,7 +140,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         self._builders = options.builders
 
         build_resolver = BuildResolver(
-            self._tool,
+            self._tool.web,
             self.git_cl,
             self._io_pool,
             can_trigger_jobs=(options.trigger_jobs and not self._dry_run))

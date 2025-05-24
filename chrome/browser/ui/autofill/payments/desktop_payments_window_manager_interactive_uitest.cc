@@ -22,13 +22,15 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/payments/bnpl_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -43,7 +45,7 @@ class TestContentAutofillClientForWindowManagerTest
   explicit TestContentAutofillClientForWindowManagerTest(
       content::WebContents* web_contents)
       : TestContentAutofillClient(web_contents) {
-    GetPaymentsAutofillClient()->set_test_payments_network_interface(
+    GetPaymentsAutofillClient()->set_payments_network_interface(
         std::make_unique<payments::TestPaymentsNetworkInterface>(
             nullptr, nullptr, nullptr));
     GetPaymentsAutofillClient()->set_payments_window_manager(
@@ -55,7 +57,12 @@ class TestContentAutofillClientForWindowManagerTest
 
 namespace payments {
 
-constexpr std::string_view kVcn3dsTestUrl = "https://site.example/";
+constexpr std::string_view kTestUrl = "https://site.example/";
+constexpr std::string_view kBnplInitialUrl = "https://www.bnplinitialurl.com/";
+constexpr std::string_view kBnplSuccessUrlPrefix =
+    "https://www.bnplsuccess.com/";
+constexpr std::string_view kBnplFailureUrlPrefix =
+    "https://www.bnplfailure.com/";
 constexpr std::string_view kTestContextToken = "Test context token";
 constexpr std::string_view kVcn3dsFlowEventsHistogramName =
     "Autofill.Vcn3ds.FlowEvents";
@@ -74,13 +81,13 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
 
   void ShowUi(const std::string& name) override {
     if (name.find("Vcn3ds") != std::string::npos) {
-      client()->set_last_committed_primary_main_frame_url(GURL(kVcn3dsTestUrl));
+      client()->set_last_committed_primary_main_frame_url(GURL(kTestUrl));
 
       PaymentsWindowManager::Vcn3dsContext context;
       context.card = test::GetVirtualCard();
       context.context_token = kTestContextToken;
       Vcn3dsChallengeOptionMetadata metadata;
-      metadata.url_to_open = GURL(kVcn3dsTestUrl);
+      metadata.url_to_open = GURL(kTestUrl);
       metadata.success_query_param_name = "token";
       metadata.failure_query_param_name = "failure";
       context.challenge_option.vcn_3ds_metadata = std::move(metadata);
@@ -94,8 +101,16 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
                 set_authentication_response(std::move(authentication_response));
               });
       window_manager().InitVcn3dsAuthentication(std::move(context));
+    } else if (name.find("Bnpl") != std::string::npos) {
+      PaymentsWindowManager::BnplContext context;
+      context.issuer_id = BnplIssuer::IssuerId::kBnplAffirm;
+      context.success_url_prefix = GURL(kBnplSuccessUrlPrefix);
+      context.failure_url_prefix = GURL(kBnplFailureUrlPrefix);
+      context.initial_url = GURL(kBnplInitialUrl);
+      context.completion_callback = bnpl_popup_closed_callback_.Get();
+      window_manager().InitBnplFlow(std::move(context));
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -122,11 +137,15 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
     std::string test_name =
         testing::UnitTest::GetInstance()->current_test_info()->name();
     if (test_name.find("Vcn3ds") != std::string::npos) {
-      if (popup_web_contents->GetVisibleURL() != GURL(kVcn3dsTestUrl)) {
+      if (popup_web_contents->GetVisibleURL() != GURL(kTestUrl)) {
+        return false;
+      }
+    } else if (test_name.find("Bnpl") != std::string::npos) {
+      if (popup_web_contents->GetVisibleURL() != GURL(kBnplInitialUrl)) {
         return false;
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return true;
@@ -153,9 +172,18 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
         ->GetActiveWebContents();
   }
 
-  void ClosePopup() {
-    GetPopupWebContents()->Close();
-    base::RunLoop().RunUntilIdle();
+  void ClosePopupAndWait() {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&content::WebContents::Close,
+                                  GetPopupWebContents()->GetWeakPtr()));
+    WaitForPopupClose();
+  }
+
+  void WaitForPopupClose() {
+    base::RunLoop run_loop;
+    base::RepeatingClosure popup_closed_closure = run_loop.QuitClosure();
+    test_api(window_manager()).SetPopupClosedClosure(popup_closed_closure);
+    run_loop.Run();
   }
 
   TestContentAutofillClientForWindowManagerTest* client() {
@@ -181,6 +209,8 @@ class DesktopPaymentsWindowManagerInteractiveUiTest : public UiBrowserTest {
   base::MockCallback<
       PaymentsWindowManager::OnVcn3dsAuthenticationCompleteCallback>
       authentication_complete_callback_;
+  base::MockCallback<PaymentsWindowManager::OnBnplPopupClosedCallback>
+      bnpl_popup_closed_callback_;
 
  private:
   TestAutofillClientInjector<TestContentAutofillClientForWindowManagerTest>
@@ -232,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   context.completion_callback = authentication_complete_callback_.Get();
   context.user_consent_already_given = true;
   Vcn3dsChallengeOptionMetadata metadata;
-  metadata.url_to_open = GURL(kVcn3dsTestUrl);
+  metadata.url_to_open = GURL(kTestUrl);
   metadata.failure_query_param_name = "failure";
   context.challenge_option.vcn_3ds_metadata = std::move(metadata);
   window_manager().InitVcn3dsAuthentication(std::move(context));
@@ -250,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   context.completion_callback = authentication_complete_callback_.Get();
   context.user_consent_already_given = true;
   Vcn3dsChallengeOptionMetadata metadata;
-  metadata.url_to_open = GURL(kVcn3dsTestUrl);
+  metadata.url_to_open = GURL(kTestUrl);
   metadata.success_query_param_name = "token";
   context.challenge_option.vcn_3ds_metadata = std::move(metadata);
   window_manager().InitVcn3dsAuthentication(std::move(context));
@@ -296,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
   EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was successful and an UnmaskCardRequest was triggered
@@ -304,11 +334,11 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   auto* autofill_client = client();
   EXPECT_TRUE(autofill_client->GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           autofill_client->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          autofill_client->GetPaymentsAutofillClient()
+              ->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_TRUE(unmask_request.has_value());
   EXPECT_EQ(unmask_request->card,
             test_api(window_manager()).GetVcn3dsContext()->card);
@@ -319,7 +349,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   // Simulate a response for the UnmaskCardRequest and ensure the callback is
   // run with the correct information.
-  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
+  UnmaskResponseDetails response_details;
   response_details.with_real_pan("1111222233334444");
   response_details.with_dcvv("123");
   response_details.expiration_month = "01";
@@ -334,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ASSERT_TRUE(unmask_request->selected_challenge_option.has_value());
   EXPECT_EQ(
       unmask_request->selected_challenge_option->vcn_3ds_metadata->url_to_open,
-      kVcn3dsTestUrl);
+      kTestUrl);
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
   ASSERT_TRUE(response.has_value());
@@ -372,11 +402,11 @@ IN_PROC_BROWSER_TEST_F(
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
 
   // Simulate a response for the UnmaskCardRequest and ensure the callback is
   // run with the correct information.
-  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
+  UnmaskResponseDetails response_details;
   response_details.with_real_pan("1111222233334444");
   response_details.with_dcvv("123");
   response_details.expiration_month = "01";
@@ -411,7 +441,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
 
   histogram_tester_.ExpectTotalCount(kVcn3dsSuccessLatencyHistogramName, 1);
   histogram_tester_.ExpectTotalCount(kVcn3dsFailureLatencyHistogramName, 0);
@@ -435,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
 
   histogram_tester_.ExpectTotalCount(kVcn3dsSuccessLatencyHistogramName, 0);
   histogram_tester_.ExpectTotalCount(kVcn3dsFailureLatencyHistogramName, 1);
@@ -459,19 +489,17 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  ClosePopup();
+  WaitForPopupClose();
   EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was successful and an UnmaskCardRequest was triggered
   // with the correct fields set, and the progress dialog was shown.
   EXPECT_TRUE(
       client()->GetPaymentsAutofillClient()->autofill_progress_dialog_shown());
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_TRUE(unmask_request.has_value());
   EXPECT_EQ(unmask_request->card,
             test_api(window_manager()).GetVcn3dsContext()->card);
@@ -485,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   test_api(window_manager())
       .OnVcn3dsAuthenticationResponseReceived(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-          PaymentsNetworkInterface::UnmaskResponseDetails());
+          UnmaskResponseDetails());
 
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
@@ -513,14 +541,14 @@ IN_PROC_BROWSER_TEST_F(
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  ClosePopup();
+  WaitForPopupClose();
 
   // Simulate a response for the UnmaskCardRequest and ensure the callback is
   // run with the correct information.
   test_api(window_manager())
       .OnVcn3dsAuthenticationResponseReceived(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-          PaymentsNetworkInterface::UnmaskResponseDetails());
+          UnmaskResponseDetails());
 
   histogram_tester_.ExpectBucketCount(
       kVcn3dsFlowEventsHistogramName,
@@ -548,16 +576,14 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_FALSE(unmask_request.has_value());
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
@@ -588,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
 
   histogram_tester_.ExpectBucketCount(
       kVcn3dsFlowEventsHistogramName,
@@ -605,16 +631,15 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   ShowUi("Vcn3ds_ConsentAlreadyGiven");
   EXPECT_TRUE(VerifyUi());
 
-  ClosePopup();
+  ClosePopupAndWait();
+
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_FALSE(unmask_request.has_value());
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
@@ -635,7 +660,7 @@ IN_PROC_BROWSER_TEST_F(
   ShowUi("Vcn3ds_ConsentAlreadyGiven");
   EXPECT_TRUE(VerifyUi());
 
-  ClosePopup();
+  ClosePopupAndWait();
 
   histogram_tester_.ExpectBucketCount(
       kVcn3dsFlowEventsHistogramName,
@@ -661,16 +686,15 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  ClosePopup();
+  ClosePopupAndWait();
+
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_FALSE(unmask_request.has_value());
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
@@ -700,7 +724,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
   EXPECT_FALSE(test_api(window_manager()).NoOngoingFlow());
 
   EXPECT_TRUE(
@@ -738,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 
-  base::RunLoop().RunUntilIdle();
+  WaitForPopupClose();
 
   test_api(window_manager()).OnVcn3dsAuthenticationProgressDialogCancelled();
 
@@ -750,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(
       autofill_metrics::Vcn3dsFlowEvent::kProgressDialogCancelled, 1);
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Tests that if a VCN 3DS flow is ongoing, and the original tab is set active,
 // the payments window manager popup's web contents are re-activated.
 IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
@@ -769,7 +793,238 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
                   ->tab_strip_model()
                   ->GetActiveWebContents() == GetPopupWebContents());
 }
-#endif  // #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // #if BUILDFLAG(IS_LINUX)
+
+// Test that the BNPL pop-up is shown correctly, and on close the completion
+// callback is triggered with a success result if the flow was successful.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Success) {
+  ShowUi("Bnpl_Affirm");
+  EXPECT_TRUE(VerifyUi());
+
+  GURL success_url =
+      GURL(std::string(kBnplSuccessUrlPrefix) + "testqueryparam?param1=true");
+  EXPECT_CALL(
+      bnpl_popup_closed_callback_,
+      Run(PaymentsWindowManager::BnplFlowResult::kSuccess, success_url));
+
+  // Navigate to the URL that denotes success inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(success_url, content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(
+      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
+  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+}
+
+// Test that the PopupWindowShown histogram is logged if the BNPL pop-up is
+// shown.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_PopupWindowShownLogged) {
+  ShowUi("Bnpl_Affirm");
+
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/"Autofill.Bnpl.PopupWindowShown.Affirm",
+      /*sample=*/true, /*expected_bucket_count=*/1);
+}
+
+// Test that the BNPL PopupWindowResult histogram logs a success result if the
+// pop-up flow was successful.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Success_PopupWindowResultLogged) {
+  ShowUi("Bnpl_Affirm");
+
+  // Navigate to the URL that denotes success inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL(std::string(kBnplSuccessUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/"Autofill.Bnpl.PopupWindowResult.Affirm",
+      /*sample=*/PaymentsWindowManager::BnplFlowResult::kSuccess,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Success_PopupWindowLatencyLogged) {
+  ShowUi("Bnpl_Affirm");
+
+  // Navigate to the URL that denotes success inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL(std::string(kBnplSuccessUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.Success", 1);
+}
+
+// Test that the BNPL pop-up is shown correctly, and on close the completion
+// callback is triggered with a failure result if the flow was a failure.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Failure) {
+  ShowUi("Bnpl_Affirm");
+  EXPECT_TRUE(VerifyUi());
+
+  GURL failure_url =
+      GURL(std::string(kBnplFailureUrlPrefix) + "testqueryparam?param1=true");
+  EXPECT_CALL(
+      bnpl_popup_closed_callback_,
+      Run(PaymentsWindowManager::BnplFlowResult::kFailure, failure_url));
+
+  // Navigate to the URL that denotes failure inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(failure_url, content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(
+      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
+  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+}
+
+// Test that the BNPL PopupWindowResult histogram logs a failure result if the
+// pop-up flow was a failure.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Failure_PopupWindowResultLogged) {
+  ShowUi("Bnpl_Affirm");
+
+  // Navigate to the URL that denotes failure inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL(std::string(kBnplFailureUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/"Autofill.Bnpl.PopupWindowResult.Affirm",
+      /*sample=*/PaymentsWindowManager::BnplFlowResult::kFailure,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_Failure_PopupWindowLatencyLogged) {
+  ShowUi("Bnpl_Affirm");
+
+  // Navigate to the URL that denotes success inside of the BNPL pop-up.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(GURL(std::string(kBnplFailureUrlPrefix) +
+                                  "testqueryparam?param1=true"),
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  WaitForPopupClose();
+
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.Failure", 1);
+}
+
+// Test that the BNPL pop-up is shown correctly, and on close the completion
+// callback is triggered with a "user closed" result if the flow was closed by
+// the user.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_UserClosedPopup) {
+  ShowUi("Bnpl_Affirm");
+  EXPECT_TRUE(VerifyUi());
+
+  EXPECT_CALL(bnpl_popup_closed_callback_,
+              Run(PaymentsWindowManager::BnplFlowResult::kUserClosed,
+                  GURL(kBnplInitialUrl)));
+
+  ClosePopupAndWait();
+
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(
+      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
+  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+}
+
+// Test that the PopupWindowResult histogram logs a "user closed" result if the
+// pop-up flow was closed by the user.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_UserClosedPopup_PopupWindowResultLogged) {
+  ShowUi("Bnpl_Affirm");
+  ClosePopupAndWait();
+
+  histogram_tester_.ExpectUniqueSample(
+      /*name=*/"Autofill.Bnpl.PopupWindowResult.Affirm",
+      /*sample=*/PaymentsWindowManager::BnplFlowResult::kUserClosed,
+      /*expected_bucket_count=*/1);
+}
+
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_UserClosedPopup_PopupWindowLatencyLogged) {
+  ShowUi("Bnpl_Affirm");
+  ClosePopupAndWait();
+
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.Bnpl.PopupWindowLatency.Affirm.UserClosed", 1);
+}
+
+// Test that the BNPL pop-up is shown correctly, and on close the completion
+// callback is triggered with a "user closed" result if the flow was closed and
+// the URL contained the success URL prefix, but the success URL prefix was not
+// its prefix.
+IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
+                       InvokeUi_Bnpl_UrlIsNotAPrefix) {
+  ShowUi("Bnpl_Affirm");
+  EXPECT_TRUE(VerifyUi());
+
+  GURL success_url_with_different_prefix =
+      GURL("somestring" + std::string(kBnplSuccessUrlPrefix));
+  EXPECT_CALL(bnpl_popup_closed_callback_,
+              Run(PaymentsWindowManager::BnplFlowResult::kUserClosed,
+                  success_url_with_different_prefix));
+
+  // Navigate to the URL that denotes the BNPL pop-up has not completed yet.
+  GetPopupWebContents()->OpenURL(
+      content::OpenURLParams(success_url_with_different_prefix,
+                             content::Referrer(),
+                             WindowOpenDisposition::CURRENT_TAB,
+                             ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
+                             /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
+
+  ClosePopupAndWait();
+
+  EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
+  EXPECT_TRUE(
+      test_api(window_manager()).GetMostRecentUrlNavigation().is_empty());
+  EXPECT_FALSE(test_api(window_manager()).GetBnplContext().has_value());
+}
 
 // Integration test using Kombucha to ensure that the consent dialog creates a
 // new pop-up when the ok button is clicked, and cancels the flow when the
@@ -825,7 +1080,7 @@ class PaymentsWindowUserConsentDialogIntegrationTest
       context.card = test::GetVirtualCard();
       context.context_token = kTestContextToken;
       Vcn3dsChallengeOptionMetadata metadata;
-      metadata.url_to_open = GURL(kVcn3dsTestUrl);
+      metadata.url_to_open = GURL(kTestUrl);
       metadata.success_query_param_name = "token";
       metadata.failure_query_param_name = "failure";
       context.challenge_option.vcn_3ds_metadata = std::move(metadata);
@@ -875,11 +1130,11 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kOkButtonElementId),
           AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId, []() {
             EXPECT_EQ(BrowserList::GetInstance()->size(), 2U);
-          }))));
+          })));
 }
 
 // Tests that the VCN 3DS consent dialog accepted histogram bucket is logged to
@@ -892,7 +1147,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       TriggerDialogAndWaitForShow(views::DialogClientView::kOkButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kOkButtonElementId),
           AfterHide(
               PaymentsWindowUserConsentDialogView::kTopViewId,
@@ -906,7 +1161,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
                        kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
                        autofill_metrics::Vcn3dsFlowEvent::
                            kUserConsentDialogAccepted) == 1;
-          }))));
+          })));
 }
 
 // Ensures the UI can be shown, and verifies that cancelling the dialog runs the
@@ -918,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
           views::DialogClientView::kCancelButtonElementId),
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
-      InSameContext(Steps(
+      InSameContext(
           PressButton(views::DialogClientView::kCancelButtonElementId),
           AfterHide(PaymentsWindowUserConsentDialogView::kTopViewId, [this]() {
             EXPECT_FALSE(
@@ -928,7 +1183,7 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
                 response = authentication_response();
             ASSERT_TRUE(response.has_value());
             EXPECT_FALSE(response->card.has_value());
-          }))));
+          })));
 }
 
 // Tests that the VCN 3DS consent dialog declined histogram bucket is logged to
@@ -941,17 +1196,17 @@ IN_PROC_BROWSER_TEST_F(PaymentsWindowUserConsentDialogIntegrationTest,
       // TriggerDialogAndWaitForShow() changes the context, so the same context
       // must be used.
       InSameContext(
-          Steps(PressButton(views::DialogClientView::kCancelButtonElementId),
-                Check([this]() {
-                  return histogram_tester_.GetBucketCount(
-                             kVcn3dsFlowEventsHistogramName,
-                             autofill_metrics::Vcn3dsFlowEvent::
-                                 kUserConsentDialogDeclined) == 1 &&
-                         histogram_tester_.GetBucketCount(
-                             kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
-                             autofill_metrics::Vcn3dsFlowEvent::
-                                 kUserConsentDialogDeclined) == 1;
-                }))));
+          PressButton(views::DialogClientView::kCancelButtonElementId),
+          Check([this]() {
+            return histogram_tester_.GetBucketCount(
+                       kVcn3dsFlowEventsHistogramName,
+                       autofill_metrics::Vcn3dsFlowEvent::
+                           kUserConsentDialogDeclined) == 1 &&
+                   histogram_tester_.GetBucketCount(
+                       kVcn3dsFlowEventsConsentNotGivenYetHistogramName,
+                       autofill_metrics::Vcn3dsFlowEvent::
+                           kUserConsentDialogDeclined) == 1;
+          })));
 }
 
 }  // namespace payments

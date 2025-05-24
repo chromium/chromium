@@ -26,7 +26,7 @@ class StubLayerTreeViewDelegate : public LayerTreeViewDelegate {
   }
   void UpdateCompositorScrollState(
       const cc::CompositorCommitData& commit_data) override {}
-  void BeginMainFrame(base::TimeTicks frame_time) override {}
+  void BeginMainFrame(const viz::BeginFrameArgs& args) override {}
   void OnDeferMainFrameUpdatesChanged(bool) override {}
   void OnDeferCommitsChanged(
       bool defer_status,

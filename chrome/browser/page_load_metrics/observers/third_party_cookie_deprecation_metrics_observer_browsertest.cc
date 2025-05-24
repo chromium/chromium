@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "base/files/file_util.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/net/storage_test_utils.h"
+#include "chrome/browser/page_load_metrics/observers/third_party_cookie_deprecation_page_load_metrics_observer.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
@@ -213,6 +215,10 @@ const Allow3PCMechanismBrowserTestCase kAllowMechanismTestCases[] = {
                 kAllowBy3PCDMetadataSourceCriticalSector,
         .expected_web_feature_histogram_sample =
             WebFeature::kThirdPartyCookieDeprecation_AllowBy3PCDMetadata,
+    },
+    {
+        .expected_web_feature_histogram_sample =
+            WebFeature::kThirdPartyCookieBlocked,
     }};
 
 }  // namespace
@@ -337,12 +343,11 @@ class ThirdPartyCookieDeprecationObserverBaseBrowserTest
 
 class ThirdPartyCookieDeprecationObserverBrowserTest
     : public ThirdPartyCookieDeprecationObserverBaseBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   ThirdPartyCookieDeprecationObserverBrowserTest()
       : is_experiment_cookies_disabled_(std::get<0>(GetParam())),
         is_client_eligible_(std::get<1>(GetParam())) {}
-
   ThirdPartyCookieDeprecationObserverBrowserTest(
       const ThirdPartyCookieDeprecationObserverBrowserTest&) = delete;
   ThirdPartyCookieDeprecationObserverBrowserTest& operator=(
@@ -355,14 +360,22 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
     subresource_filter::SubresourceFilterBrowserTest::SetUp();
   }
 
-  void SetUpThirdPartyCookieExperiment() {
+  virtual void SetUpThirdPartyCookieExperiment() {
     // Experiment feature param requests 3PCs blocked.
-    scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{features::kCookieDeprecationFacilitatedTesting,
-          {{tpcd::experiment::kDisable3PCookiesName,
-            is_experiment_cookies_disabled_ ? "true" : "false"}}},
-         {subresource_filter::kTPCDAdHeuristicSubframeRequestTagging, {}}},
-        {content_settings::features::kTrackingProtection3pcd});
+    std::vector<base::test::FeatureRefAndParams> enabled_features = {
+        {features::kCookieDeprecationFacilitatedTesting,
+         {{tpcd::experiment::kDisable3PCookiesName,
+           base::ToString(is_experiment_cookies_disabled_)}}},
+        {subresource_filter::kTPCDAdHeuristicSubframeRequestTagging, {}}};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        content_settings::features::kTrackingProtection3pcd};
+    if (std::get<2>(GetParam())) {
+      enabled_features.push_back({network::features::kGetCookiesOnSet, {}});
+    } else {
+      disabled_features.push_back(network::features::kGetCookiesOnSet);
+    }
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
 
   void SetUpThirdPartyCookieExperimentWithClientState() {
@@ -400,7 +413,9 @@ class ThirdPartyCookieDeprecationObserverBrowserTest
 
 INSTANTIATE_TEST_SUITE_P(,
                          ThirdPartyCookieDeprecationObserverBrowserTest,
-                         testing::Combine(testing::Bool(), testing::Bool()));
+                         testing::Combine(testing::Bool(),
+                                          testing::Bool(),
+                                          testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ThirdPartyCookieDeprecationObserverBrowserTest,
                        FirstPartyCookiesReadAndWrite) {
@@ -1200,8 +1215,9 @@ class ThirdPartyCookieDeprecationObserverSSABrowserTest
   void SetCrossSiteCookieOnHost(const std::string& host) {
     GURL host_url = GetURL(host);
     std::string cookie = base::StrCat({"cross-site=", host});
-    content::SetCookie(browser()->profile(), host_url,
-                       base::StrCat({cookie, ";SameSite=None;Secure"}));
+    ASSERT_TRUE(
+        content::SetCookie(browser()->profile(), host_url,
+                           base::StrCat({cookie, ";SameSite=None;Secure"})));
     ASSERT_THAT(content::GetCookies(browser()->profile(), host_url),
                 testing::HasSubstr(cookie));
   }

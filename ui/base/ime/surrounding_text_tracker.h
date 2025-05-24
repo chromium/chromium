@@ -8,10 +8,10 @@
 #include <deque>
 #include <string>
 #include <string_view>
+#include <variant>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/range/range.h"
 

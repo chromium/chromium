@@ -8,6 +8,7 @@ import './cra/cra-button.js';
 import './cra/cra-dialog.js';
 import './cra/cra-icon.js';
 import './cra/cra-icon-button.js';
+import './language-picker.js';
 import './settings-row.js';
 import './speaker-label-consent-dialog.js';
 import './spoken-message.js';
@@ -29,20 +30,31 @@ import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
+import {LanguageCode} from '../core/soda/language_info.js';
 import {
   settings,
   SpeakerLabelEnableState,
   SummaryEnableState,
   TranscriptionEnableState,
 } from '../core/state/settings.js';
+import {
+  enableTranscription,
+  setTranscriptionLanguage,
+  toggleTranscriptionEnabled,
+} from '../core/state/transcription.js';
 import {HELP_URL} from '../core/url_constants.js';
 import {
+  assert,
   assertExhaustive,
+  assertExists,
   assertInstanceof,
   assertNotReached,
 } from '../core/utils/assert.js';
+import {stopPropagation} from '../core/utils/event_handler.js';
 
 import {CraDialog} from './cra/cra-dialog.js';
+import {CraIconButton} from './cra/cra-icon-button.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {SpeakerLabelConsentDialog} from './speaker-label-consent-dialog.js';
 import {TranscriptionConsentDialog} from './transcription-consent-dialog.js';
 
@@ -127,6 +139,14 @@ export class SettingsMenu extends ReactiveLitElement {
       }
     }
 
+    language-picker {
+      background: var(--cros-sys-surface1);
+
+      @container style(--dark-theme: 1) {
+        background: var(--cros-sys-app_base);
+      }
+    }
+
     settings-row cra-button md-circular-progress {
       --md-circular-progress-active-indicator-color: var(--cros-sys-disabled);
 
@@ -152,9 +172,14 @@ export class SettingsMenu extends ReactiveLitElement {
 
   private readonly dialog = createRef<CraDialog>();
 
+  private readonly subpageButton = createRef<CraIconButton>();
+
   private readonly summaryDownloadRequested = signal(false);
 
-  private readonly downloadPerfCollected = signal(false);
+  private readonly shouldShowLanguagePicker =
+    this.platformHandler.isMultipleLanguageAvailable();
+
+  private readonly transcriptionLanguageExpanded = signal(false);
 
   private readonly transcriptionConsentDialog =
     createRef<TranscriptionConsentDialog>();
@@ -162,19 +187,9 @@ export class SettingsMenu extends ReactiveLitElement {
   private readonly speakerLabelConsentDialog =
     createRef<SpeakerLabelConsentDialog>();
 
-  override updated(): void {
-    if (this.summaryDownloadRequested.value &&
-      !this.downloadPerfCollected.value &&
-      this.platformHandler.summaryModelLoader.state.value.kind === 'installed'
-    ) {
-      // TODO: b/367263595 - Collect perf in PlatformHandler instead.
-      this.platformHandler.perfLogger.finish('summaryModelDownload');
-      this.downloadPerfCollected.value = true;
-    }
-  }
-
   show(): void {
     this.dialog.value?.show();
+    this.transcriptionLanguageExpanded.value = false;
   }
 
   private get summaryEnabled() {
@@ -186,9 +201,7 @@ export class SettingsMenu extends ReactiveLitElement {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
     this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
-    this.platformHandler.summaryModelLoader.download();
-    // The settings download both the model for summary and title suggestion.
-    this.platformHandler.titleSuggestionModelLoader.download();
+    this.platformHandler.downloadGenAiModel();
     this.summaryDownloadRequested.value = true;
   }
 
@@ -200,25 +213,98 @@ export class SettingsMenu extends ReactiveLitElement {
     });
   }
 
+  private renderSummaryModelDownloadStatus() {
+    const state = this.platformHandler.getGenAiModelState().kind;
+    switch (state) {
+      case 'unavailable':
+        return assertNotReached(
+          'Summary model unavailable but the setting is rendered.',
+        );
+      case 'notInstalled':
+        return nothing;
+      case 'needsReboot':
+        return html`
+          <spoken-message
+            slot="status"
+            role="status"
+            aria-live="polite"
+          >
+            ${i18n.genAiNeedsRebootStatusMessage}
+          </spoken-message>
+        `;
+      case 'error':
+        return html`
+          <spoken-message
+            slot="status"
+            role="status"
+            aria-live="polite"
+          >
+            ${i18n.genAiDownloadErrorStatusMessage}
+          </spoken-message>
+        `;
+      case 'installed':
+        if (!this.summaryDownloadRequested.value) {
+          return nothing;
+        }
+        return html`
+          <spoken-message
+            slot="status"
+            role="status"
+            aria-live="polite"
+          >
+            ${i18n.genAiDownloadFinishedStatusMessage}
+          </spoken-message>
+        `;
+      case 'installing':
+        return html`
+          <spoken-message slot="status" role="status" aria-live="polite">
+            ${i18n.genAiDownloadStartedStatusMessage}
+          </spoken-message>
+        `;
+      default:
+        return assertExhaustive(state);
+    }
+  }
+
   private renderSummaryModelDescriptionAndAction() {
-    const state = this.platformHandler.summaryModelLoader.state.value;
+    const state = this.platformHandler.getGenAiModelState();
+    const downloadButton = html`
+      <cra-button
+        slot="action"
+        button-style="secondary"
+        .label=${i18n.settingsOptionsGenAiDownloadButton}
+        @click=${this.onDownloadSummaryClick}
+        aria-label=${i18n.settingsOptionsGenAiDownloadButtonAriaLabel}
+      ></cra-button>
+    `;
     if (state.kind === 'notInstalled') {
       // Shows the "download" button when the summary model is not installed,
       // even if it's already enabled by user. This shouldn't happen in normal
       // case, but might happen if DLC is cleared manually by any mean.
       return html`
         <span slot="description">
-          ${i18n.settingsOptionsSummaryDescription}
-          <a href=${HELP_URL} target="_blank">
-            ${i18n.settingsOptionsSummaryLearnMoreLink}
+          ${i18n.settingsOptionsGenAiDescription}
+          <a
+            href=${HELP_URL}
+            target="_blank"
+            @click=${stopPropagation}
+            aria-label=${i18n.settingsOptionsGenAiLearnMoreLinkAriaLabel}
+          >
+            ${i18n.settingsOptionsGenAiLearnMoreLink}
           </a>
         </span>
-        <cra-button
-          slot="action"
-          button-style="secondary"
-          .label=${i18n.settingsOptionsSummaryDownloadButton}
-          @click=${this.onDownloadSummaryClick}
-        ></cra-button>
+        ${downloadButton}
+      `;
+    }
+
+    if (state.kind === 'error') {
+      // Shows the "download" button when summary model fails to download so
+      // that users can try download again later.
+      return html`
+        <span slot="description" class="error">
+          ${i18n.settingsOptionsGenAiErrorDescription}
+        </span>
+        ${downloadButton}
       `;
     }
 
@@ -227,29 +313,29 @@ export class SettingsMenu extends ReactiveLitElement {
         slot="action"
         .selected=${this.summaryEnabled}
         @change=${this.onSummaryToggle}
-        aria-label=${i18n.settingsOptionsSummaryLabel}
+        aria-label=${i18n.settingsOptionsGenAiLabel}
       >
       </cros-switch>
     `;
     if (!this.summaryEnabled) {
       return summaryToggle;
     }
-    const downloadedStatus =
-      html`<spoken-message slot="status" role="status" aria-live="polite">
-        ${i18n.summaryDownloadFinishedStatusMessage}
-      </spoken-message>`;
 
     switch (state.kind) {
       case 'unavailable':
         return assertNotReached(
           'Summary model unavailable but the setting is rendered.',
         );
-      case 'error':
-        // TODO: b/344784638 - Render error state.
-        return nothing;
+      case 'needsReboot':
+        return html`
+          <span slot="description" class="error">
+            ${i18n.settingsOptionsGenAiNeedsRebootDescription}
+          </span>
+          ${downloadButton}
+        `;
       case 'installing': {
         const progressDescription =
-          i18n.settingsOptionsSummaryDownloadingProgressDescription(
+          i18n.settingsOptionsGenAiDownloadingProgressDescription(
             state.progress,
           );
         return html`
@@ -257,36 +343,69 @@ export class SettingsMenu extends ReactiveLitElement {
           <cra-button
             slot="action"
             button-style="secondary"
-            .label=${i18n.settingsOptionsSummaryDownloadingButton}
+            .label=${i18n.settingsOptionsGenAiDownloadingButton}
             disabled
           >
             <md-circular-progress indeterminate slot="leading-icon">
             </md-circular-progress>
           </cra-button>
-          <spoken-message slot="status" role="status" aria-live="polite">
-            ${i18n.summaryDownloadStartedStatusMessage}
-          </spoken-message>
         `;
       }
       case 'installed':
-        return [
-          summaryToggle,
-          this.summaryDownloadRequested.value ? downloadedStatus : nothing,
-        ];
+        return summaryToggle;
       default:
         assertExhaustive(state.kind);
     }
   }
 
   private renderSummaryModelSettings() {
-    if (this.platformHandler.summaryModelLoader.state.value.kind ===
-        'unavailable') {
+    if (this.platformHandler.getGenAiModelState().kind === 'unavailable') {
       return nothing;
     }
     return html`
       <settings-row>
-        <span slot="label">${i18n.settingsOptionsSummaryLabel}</span>
+        <span slot="label">${i18n.settingsOptionsGenAiLabel}</span>
         ${this.renderSummaryModelDescriptionAndAction()}
+        ${this.renderSummaryModelDownloadStatus()}}
+      </settings-row>
+    `;
+  }
+
+  private onLanguagePickerExpand() {
+    assert(!this.transcriptionLanguageExpanded.value);
+    this.transcriptionLanguageExpanded.value = true;
+  }
+
+  private renderTranscriptLanguageSettings() {
+    if (!this.shouldShowLanguagePicker) {
+      return nothing;
+    }
+    let description = i18n.settingsOptionsTranscriptionLanguageDescription;
+    const selectedLanguage = this.platformHandler.getSelectedLanguage();
+    if (selectedLanguage !== null) {
+      const langPackInfo =
+        this.platformHandler.getLangPackInfo(selectedLanguage);
+      // Shows selected language regardless of its state. The state will be
+      // shown in the subpage or in the transcript view when recording.
+      description = langPackInfo.displayName;
+    }
+    return html`
+      <settings-row>
+        <span slot="label">
+          ${i18n.settingsOptionsTranscriptionLanguageLabel}
+        </span>
+        <span slot="description">${description}</span>
+        <cra-icon-button
+          buttonstyle="floating"
+          size="small"
+          slot="action"
+          shape="circle"
+          aria-label=${i18n.settingsOptionsLanguageSubpageButtonAriaLabel}
+          @click=${this.onLanguagePickerExpand}
+          ${ref(this.subpageButton)}
+        >
+          <cra-icon slot="icon" name="chevron_right"></cra-icon>
+        </cra-icon-button>
       </settings-row>
     `;
   }
@@ -339,12 +458,20 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderTranscriptionDetailSettings() {
-    if (!this.transcriptionEnabled ||
-        this.platformHandler.sodaState.value.kind === 'notInstalled') {
+    if (!this.transcriptionEnabled) {
       return nothing;
+    }
+
+    if (!this.shouldShowLanguagePicker) {
+      const defaultLang = LanguageCode.EN_US;
+      const sodaState = this.platformHandler.getSodaState(defaultLang).value;
+      if (sodaState.kind !== 'installed' && sodaState.kind !== 'installing') {
+        return nothing;
+      }
     }
     return [
       this.renderSpeakerLabelSettings(),
+      this.renderTranscriptLanguageSettings(),
       this.renderSummaryModelSettings(),
     ];
   }
@@ -355,51 +482,24 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private onTranscriptionToggle() {
-    // TODO(pihsun): This is the same as in toggleTranscriptionEnabled in
-    // record-page.ts, consider how to centralize the logic for all
-    // transcription enable/available state transitions.
-    switch (settings.value.transcriptionEnabled) {
-      case TranscriptionEnableState.ENABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.DISABLED;
-        });
-        return;
-      case TranscriptionEnableState.DISABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-        });
-        return;
-      case TranscriptionEnableState.UNKNOWN:
-      case TranscriptionEnableState.DISABLED_FIRST:
-        this.transcriptionConsentDialog.value?.show();
-        // This force the switch to be re-rendered so it'll catch the "live"
-        // value and set selected back to false.
-        this.requestUpdate();
-        return;
-      default:
-        assertExhaustive(settings.value.transcriptionEnabled);
+    if (!toggleTranscriptionEnabled()) {
+      this.transcriptionConsentDialog.value?.show();
+      // This force the switch to be re-rendered so it'll catch the "live"
+      // value and set selected back to false.
+      this.requestUpdate();
     }
   }
 
-  private onInstallSodaClick() {
-    // TODO(pihsun): This is the same as in toggleTranscriptionEnabled in
-    // record-page.ts, consider how to centralize the logic for all
-    // transcription enable/available state transitions.
-    switch (settings.value.transcriptionEnabled) {
-      case TranscriptionEnableState.ENABLED:
-      case TranscriptionEnableState.DISABLED:
-        settings.mutate((s) => {
-          s.transcriptionEnabled = TranscriptionEnableState.ENABLED;
-        });
-        this.platformHandler.installSoda();
-        return;
-      case TranscriptionEnableState.UNKNOWN:
-      case TranscriptionEnableState.DISABLED_FIRST:
-        this.transcriptionConsentDialog.value?.show();
-        return;
-      default:
-        assertExhaustive(settings.value.transcriptionEnabled);
-    }
+  private renderTranscriptionToggle() {
+    return html`
+      <cros-switch
+        slot="action"
+        .selected=${live(this.transcriptionEnabled)}
+        @change=${this.onTranscriptionToggle}
+        aria-label=${i18n.settingsOptionsTranscriptionLabel}
+      >
+      </cros-switch>
+    `;
   }
 
   private get transcriptionEnabled() {
@@ -409,30 +509,43 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderTranscriptionDescriptionAndAction() {
-    const sodaState = this.platformHandler.sodaState.value;
+    const defaultLang = LanguageCode.EN_US;
+    const sodaState = this.platformHandler.getSodaState(defaultLang).value;
+    const onInstallSodaClick = () => {
+      if (!enableTranscription()) {
+        this.transcriptionConsentDialog.value?.show();
+        return;
+      }
+      setTranscriptionLanguage(defaultLang);
+    };
+    const downloadButton = html`
+      <cra-button
+        slot="action"
+        button-style="secondary"
+        .label=${i18n.settingsOptionsTranscriptionDownloadButton}
+        @click=${onInstallSodaClick}
+        aria-label=${i18n.settingsOptionsTranscriptionDownloadButtonAriaLabel}
+      ></cra-button>
+    `;
     if (sodaState.kind === 'notInstalled') {
       // Shows the "download" button when SODA is not installed, even if it's
       // already enabled by user. This shouldn't happen in normal case, but
       // might happen if DLC is cleared manually by any mean.
+      return downloadButton;
+    }
+
+    if (sodaState.kind === 'error') {
+      // Shows the "download" button when SODA fails to install so that users
+      // try download again later.
       return html`
-        <cra-button
-          slot="action"
-          button-style="secondary"
-          .label=${i18n.settingsOptionsTranscriptionDownloadButton}
-          @click=${this.onInstallSodaClick}
-        ></cra-button>
+        <span slot="description" class="error">
+          ${i18n.settingsOptionsTranscriptionErrorDescription}
+        </span>
+        ${downloadButton}
       `;
     }
 
-    const transcriptionToggle = html`
-      <cros-switch
-        slot="action"
-        .selected=${live(this.transcriptionEnabled)}
-        @change=${this.onTranscriptionToggle}
-        aria-label=${i18n.settingsOptionsTranscriptionLabel}
-      >
-      </cros-switch>
-    `;
+    const transcriptionToggle = this.renderTranscriptionToggle();
     if (!this.transcriptionEnabled) {
       return transcriptionToggle;
     }
@@ -442,9 +555,13 @@ export class SettingsMenu extends ReactiveLitElement {
         return assertNotReached(
           'SODA unavailable but the setting is rendered.',
         );
-      case 'error':
-        // TODO: b/344784638 - Render error state.
-        return nothing;
+      case 'needsReboot':
+        return html`
+          <span slot="description" class="error">
+            ${i18n.settingsOptionsTranscriptionNeedsRebootDescription}
+          </span>
+          ${downloadButton}
+        `;
       case 'installing': {
         const progressDescription =
           i18n.settingsOptionsTranscriptionDownloadingProgressDescription(
@@ -471,9 +588,12 @@ export class SettingsMenu extends ReactiveLitElement {
   }
 
   private renderTranscriptionSection() {
-    if (this.platformHandler.sodaState.value.kind === 'unavailable') {
+    if (!this.platformHandler.isSodaAvailable()) {
       return nothing;
     }
+    const renderTranscriptionRow = this.shouldShowLanguagePicker ?
+      this.renderTranscriptionToggle() :
+      this.renderTranscriptionDescriptionAndAction();
     return html`
       <div class="section">
         <h3 class="title">${i18n.settingsSectionTranscriptionSummaryHeader}</h3>
@@ -482,7 +602,7 @@ export class SettingsMenu extends ReactiveLitElement {
             <span slot="label">
               ${i18n.settingsOptionsTranscriptionLabel}
             </span>
-            ${this.renderTranscriptionDescriptionAndAction()}
+            ${renderTranscriptionRow}
           </settings-row>
           ${this.renderTranscriptionDetailSettings()}
         </div>
@@ -531,36 +651,57 @@ export class SettingsMenu extends ReactiveLitElement {
     `;
   }
 
+  private onSubpageCloseClick() {
+    assert(this.transcriptionLanguageExpanded.value);
+    this.transcriptionLanguageExpanded.value = false;
+    this.updateComplete.then(() => {
+      const subpageButton = assertExists(this.subpageButton.value);
+      subpageButton.updateComplete.then(() => {
+        subpageButton.focus();
+      });
+    });
+  }
+
+  private renderSettingsBody(): RenderResult {
+    if (this.transcriptionLanguageExpanded.value) {
+      return html`
+        <language-picker @close=${this.onSubpageCloseClick}></language-picker>
+      `;
+    }
+    return html`
+      <div id="body">
+        <div class="section">
+          <h3 class="title">${i18n.settingsSectionGeneralHeader}</h3>
+          <div class="body">
+            ${this.renderDoNotDisturbSettingsRow()}
+            ${this.renderKeepScreenOnSettingsRow()}
+          </div>
+        </div>
+        ${this.renderTranscriptionSection()}
+      </div>
+    `;
+  }
+
   override render(): RenderResult {
     // TODO: b/354109582 - Implement actual functionality of keep screen on.
     return html`<cra-dialog
         ${ref(this.dialog)}
         aria-label=${i18n.settingsHeader}
       >
-        <div slot="content">
-          <div id="header">
-            <h2 id="dialog-label">${i18n.settingsHeader}</h2>
-            <cra-icon-button
-              buttonstyle="floating"
-              size="small"
-              shape="circle"
-              @click=${this.onCloseClick}
-              aria-label=${i18n.closeDialogButtonTooltip}
-            >
-              <cra-icon slot="icon" name="close"></cra-icon>
-            </cra-icon-button>
-          </div>
-          <div id="body">
-            <div class="section">
-              <h3 class="title">${i18n.settingsSectionGeneralHeader}</h3>
-              <div class="body">
-                ${this.renderDoNotDisturbSettingsRow()}
-                ${this.renderKeepScreenOnSettingsRow()}
-              </div>
-            </div>
-            ${this.renderTranscriptionSection()}
-          </div>
+        <div id="header" slot="headline">
+          <h2 id="dialog-label">${i18n.settingsHeader}</h2>
+          <cra-icon-button
+            buttonstyle="floating"
+            size="small"
+            shape="circle"
+            @click=${this.onCloseClick}
+            aria-label=${i18n.closeDialogButtonTooltip}
+            ${withTooltip()}
+          >
+            <cra-icon slot="icon" name="close"></cra-icon>
+          </cra-icon-button>
         </div>
+        <div slot="content">${this.renderSettingsBody()}</div>
       </cra-dialog>
       <transcription-consent-dialog ${ref(this.transcriptionConsentDialog)}>
       </transcription-consent-dialog>

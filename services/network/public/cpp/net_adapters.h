@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 
@@ -51,10 +52,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   char* buffer() { return buffer_.data(); }
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
 
-  // Equivalent of buffer(), but allows the class to satisfy the requirements
-  // of std::ranges::contiguous_range, and hence allows a span, for example,
-  // to be implicitly constructed from a it.
+  // Satisfy the requirements of `std::ranges::contiguous_range`. This allows
+  // implicit conversion to a `base::span`.
   char* data() { return buffer_.data(); }
+  auto begin() { return buffer_.begin(); }
+  auto end() { return buffer_.end(); }
 
  private:
   friend class base::RefCountedThreadSafe<NetToMojoPendingBuffer>;
@@ -67,7 +69,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoPendingBuffer
   // `buffer_` is not a raw_span<...> for performance reasons (also, pointee
   // would never be protected under BackupRefPtr, because the pointer comes
   // either from using `mmap`, MapViewOfFile or base::AllocPages directly).
-  base::span<char> buffer_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<char> buffer_;
 };
 
 // Net side of a Net -> Mojo copy. The data will be read from the network and
@@ -79,7 +82,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) NetToMojoIOBuffer
   // will be offset by that many bytes.
   explicit NetToMojoIOBuffer(
       scoped_refptr<NetToMojoPendingBuffer> pending_buffer,
-      int offset = 0);
+      size_t offset = 0);
 
   NetToMojoIOBuffer(const NetToMojoIOBuffer&) = delete;
   NetToMojoIOBuffer& operator=(const NetToMojoIOBuffer&) = delete;
@@ -121,8 +124,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) MojoToNetPendingBuffer
   const char* buffer() const { return buffer_.data(); }
   uint32_t size() const { return static_cast<uint32_t>(buffer_.size()); }
 
-  // Equivalent of buffer(), allows conversion to span.
-  const char* data() { return buffer_.data(); }
+  // Satisfy the requirements of `std::ranges::contiguous_range`. This allows
+  // implicit conversion to a `base::span`.
+  const char* data() const { return buffer_.data(); }
+  auto begin() const { return buffer_.begin(); }
+  auto end() const { return buffer_.end(); }
 
  private:
   friend class base::RefCountedThreadSafe<MojoToNetPendingBuffer>;

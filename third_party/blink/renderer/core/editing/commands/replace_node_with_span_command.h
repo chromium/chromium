@@ -51,6 +51,7 @@ class ReplaceNodeWithSpanCommand final : public SimpleEditCommand {
  private:
   void DoApply(EditingState*) override;
   void DoUnapply() override;
+  String ToString() const override;
 
   Member<HTMLElement> element_to_replace_;
   Member<HTMLSpanElement> span_element_;

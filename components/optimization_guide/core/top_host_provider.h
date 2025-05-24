@@ -19,7 +19,7 @@ class TopHostProvider {
   virtual std::vector<std::string> GetTopHosts() = 0;
 
  protected:
-  TopHostProvider() {}
+  TopHostProvider() = default;
 };
 
 }  // namespace optimization_guide

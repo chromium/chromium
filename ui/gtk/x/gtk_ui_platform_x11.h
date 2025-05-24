@@ -10,11 +10,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gtk/gtk_ui_platform.h"
 
-using GdkDisplay = struct _GdkDisplay;
-
 namespace gtk {
-
-class GtkEventLoopX11;
 
 // GtkUiPlatform implementation for desktop Linux X11 backends.
 class GtkUiPlatformX11 : public GtkUiPlatform {
@@ -25,11 +21,7 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
   ~GtkUiPlatformX11() override;
 
   // GtkUiPlatform:
-  void OnInitialized(GtkWidget* widget) override;
-  GdkKeymap* GetGdkKeymap() override;
-  GdkModifierType GetGdkKeyEventState(const ui::KeyEvent& key_event) override;
-  int GetGdkKeyEventGroup(const ui::KeyEvent& key_event) override;
-  GdkWindow* GetGdkWindow(gfx::AcceleratedWidget window_id) override;
+  void OnInitialized() override;
   bool SetGtkWidgetTransientFor(GtkWidget* widget,
                                 gfx::AcceleratedWidget parent) override;
   void ClearTransientFor(gfx::AcceleratedWidget parent) override;
@@ -37,13 +29,10 @@ class GtkUiPlatformX11 : public GtkUiPlatform {
   std::unique_ptr<ui::LinuxInputMethodContext> CreateInputMethodContext(
       ui::LinuxInputMethodContextDelegate* delegate) const override;
   bool IncludeFontScaleInDeviceScale() const override;
+  bool IncludeScaleInCursorSize() const override;
 
  private:
-  GdkDisplay* GetGdkDisplay();
-
   const raw_ref<x11::Connection> connection_;
-  raw_ptr<GdkDisplay> display_ = nullptr;
-  std::unique_ptr<GtkEventLoopX11> event_loop_;
 };
 
 }  // namespace gtk

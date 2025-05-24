@@ -6,9 +6,6 @@
 #define COMPONENTS_PAYMENTS_CORE_FEATURES_H_
 
 #include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
-#include "build/blink_buildflags.h"
-#include "build/build_config.h"
 
 namespace payments {
 namespace features {
@@ -46,43 +43,8 @@ BASE_DECLARE_FEATURE(kGPayAppDynamicUpdate);
 // credential store APIs, or if it can only rely on the user-profile database.
 BASE_DECLARE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs);
 
-#if !BUILDFLAG(IS_ANDROID)
-// Desktop only, if enabled the Task Manager will show the PaymentHandler
-// window.
-BASE_DECLARE_FEATURE(kPaymentHandlerWindowInTaskManager);
-#endif
-
-// If enabled, the web-app manifest for already-installed service-worker apps
-// will always be refetched for every Payment Request, in order to potentially
-// refresh the icon for the app.
-BASE_DECLARE_FEATURE(kPaymentHandlerAlwaysRefreshIcon);
-
-// If enabled, the payment method manifest fetch for Payment Handler must go via
-// a Link header with rel="payment-method-manifest".
-BASE_DECLARE_FEATURE(kPaymentHandlerRequireLinkHeader);
-
-#if BUILDFLAG(USE_BLINK)
-// Controls how network and issuer icons (when enabled) are presented in SPC UX.
-extern const base::FeatureParam<std::string>
-    kSecurePaymentConfirmationNetworkAndIssuerIconsOptions;
-
-// Defines the supported UX treatments for displaying the network and issuer
-// icons in SPC UX.
-enum class SecurePaymentConfirmationNetworkAndIssuerIconsTreatment {
-  // Issuer and network icons should not be shown.
-  kNone,
-  // Issuer and network icons should be shown inline with the dialog title text.
-  kInline,
-  // Issuer and network icons should be shown as rows in the SPC transaction
-  // data 'table'.
-  kRows
-};
-
-// Retrieve the current UX treatment for network and issuer icons for SPC, based
-// on the feature flags set.
-SecurePaymentConfirmationNetworkAndIssuerIconsTreatment
-GetNetworkAndIssuerIconsTreatment();
-#endif
+// Used to enable the refreshed fallback flow for Secure Payment Confirmation.
+BASE_DECLARE_FEATURE(kSecurePaymentConfirmationFallback);
 
 }  // namespace features
 }  // namespace payments

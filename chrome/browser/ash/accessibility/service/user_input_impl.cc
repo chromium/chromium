@@ -79,7 +79,7 @@ void UserInputImpl::SendSyntheticMouseEvent(
           flags |= ui::EF_FORWARD_MOUSE_BUTTON;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
       // If no mouse button is provided, use kLeft.
@@ -95,7 +95,8 @@ void UserInputImpl::SendSyntheticMouseEvent(
   }
 
   AccessibilityManager::Get()->SendSyntheticMouseEvent(
-      type, flags, changed_button_flags, mouse_event->point);
+      type, flags, changed_button_flags, mouse_event->point,
+      /*use_rewriters=*/false);
 }
 
 }  // namespace ash

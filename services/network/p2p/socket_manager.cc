@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/p2p/socket_manager.h"
 
 #include <stddef.h>
@@ -80,10 +75,6 @@ bool HasLocalTld(const std::string& host_name) {
   return EndsWith(host_name, kLocalTld, base::CompareCase::INSENSITIVE_ASCII);
 }
 
-net::DnsQueryType FamilyToDnsQueryType(int family) {
-  return net::AddressFamilyToDnsQueryType(net::ToAddressFamily(family));
-}
-
 }  // namespace
 
 DefaultLocalAddresses::DefaultLocalAddresses() = default;
@@ -97,7 +88,7 @@ class P2PSocketManager::DnsRequest {
       : resolver_(host_resolver), enable_mdns_(enable_mdns) {}
 
   void Resolve(const std::string& host_name,
-               std::optional<int> family,
+               std::optional<net::AddressFamily> family,
                const net::NetworkAnonymizationKey& network_anonymization_key,
                DoneCallback done_callback) {
     DCHECK(!done_callback.is_null());
@@ -128,7 +119,7 @@ class P2PSocketManager::DnsRequest {
 #endif  // ENABLE_MDNS
     }
     if (family.has_value()) {
-      parameters.dns_query_type = FamilyToDnsQueryType(family.value());
+      parameters.dns_query_type = net::AddressFamilyToDnsQueryType(*family);
     }
     request_ = resolver_->CreateRequest(host, network_anonymization_key,
                                         net::NetLogWithSource(), parameters);
@@ -256,23 +247,22 @@ void P2PSocketManager::DumpPacket(base::span<const uint8_t> packet,
 
   size_t rtp_packet_pos = 0;
   size_t rtp_packet_size = packet.size();
-  if (!cricket::UnwrapTurnPacket(packet.data(), packet.size(), &rtp_packet_pos,
-                                 &rtp_packet_size)) {
+  if (!webrtc::UnwrapTurnPacket(packet.data(), packet.size(), &rtp_packet_pos,
+                                &rtp_packet_size)) {
     return;
   }
 
   auto rtp_packet = packet.subspan(rtp_packet_pos, rtp_packet_size);
 
   size_t header_size = 0;
-  bool valid = cricket::ValidateRtpHeader(rtp_packet.data(), rtp_packet.size(),
-                                          &header_size);
+  bool valid = webrtc::ValidateRtpHeader(rtp_packet.data(), rtp_packet.size(),
+                                         &header_size);
   if (!valid) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
-  std::vector<uint8_t> header_buffer(rtp_packet.data(),
-                                     rtp_packet.data() + header_size);
+  std::vector<uint8_t> header_buffer(rtp_packet.begin(),
+                                     rtp_packet.begin() + header_size);
   trusted_socket_manager_client_->DumpPacket(header_buffer, rtp_packet.size(),
                                              incoming);
 }
@@ -393,24 +383,7 @@ void P2PSocketManager::StartNetworkNotifications(
 
 void P2PSocketManager::GetHostAddress(
     const std::string& host_name,
-    bool enable_mdns,
-    mojom::P2PSocketManager::GetHostAddressCallback callback) {
-  DoGetHostAddress(host_name, /*address_family=*/std::nullopt, enable_mdns,
-                   std::move(callback));
-}
-
-void P2PSocketManager::GetHostAddressWithFamily(
-    const std::string& host_name,
-    int address_family,
-    bool enable_mdns,
-    mojom::P2PSocketManager::GetHostAddressCallback callback) {
-  DoGetHostAddress(host_name, std::make_optional(address_family), enable_mdns,
-                   std::move(callback));
-}
-
-void P2PSocketManager::DoGetHostAddress(
-    const std::string& host_name,
-    std::optional<int> address_family,
+    std::optional<net::AddressFamily> address_family,
     bool enable_mdns,
     mojom::P2PSocketManager::GetHostAddressCallback callback) {
   auto request = std::make_unique<DnsRequest>(

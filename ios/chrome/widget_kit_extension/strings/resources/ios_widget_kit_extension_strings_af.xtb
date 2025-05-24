@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
+<translation id="1149198577555059081">Soek of tik URL</translation>
 <translation id="1324575488877808473">Maak Chrome oop om jou werwe wat die meeste besoek word hier te sien.</translation>
 <translation id="2513892053093488070">Stemsoektog</translation>
 <translation id="2535710892645968259">Spring van jou sluitskerm af in die Chrome-dinosourusspeletjie in.</translation>
@@ -15,11 +16,11 @@
 <translation id="405442954313519726">Soek of navigeer in 'n nuwe oortjie in Incognito-modus met jou stem of met 'n QR-kode.</translation>
 <translation id="4557098988773644458">Spring in Chrome-dinosourusspeletjie in</translation>
 <translation id="4678859075583681103">Begin ’n nuwe soektog of maak die werwe wat jy die meeste besoek van jou iPhone se tuisblad af oop.</translation>
-<translation id="4954445889641385956">Soek iets of tik URL in</translation>
 <translation id="4962772945748414465">Maak WEBSITE_PLACEHOLDER oop</translation>
 <translation id="5234725349196694896">Soek in Chrome met jou gunstelingsoekenjin.</translation>
 <translation id="5277852985315196237">Soek iets of tik URL in</translation>
 <translation id="529497070985873480">Chrome-dinosourusspeletjie</translation>
+<translation id="5325847452011598583">Geen rekening nie</translation>
 <translation id="5683557219437283801">Stemsoektog</translation>
 <translation id="6179961764474023795">Kitshandelinge</translation>
 <translation id="6330929932864892436">Soek iets of voer URL in</translation>
@@ -39,7 +40,9 @@ tik URL in</translation>
 <translation id="8104498668011127805">Spring in Chrome-dinosourusspeletjie in</translation>
 <translation id="8150601371542319992">Lens</translation>
 <translation id="8171952085734471362">Incognito-soektog</translation>
+<translation id="8310150944719146950">Rekening</translation>
 <translation id="8564942608461410346">Soek in Chrome met jou gunstelingsoekenjin.</translation>
+<translation id="8858765528951093286">Die rekening wat met die legstuk gebruik is, is verwyder. Tik op Wysig Legstuk om ’n ander rekening te kies.</translation>
 <translation id="9175676375569833962">Deursoek
 wagwoorde</translation>
 </translationbundle>

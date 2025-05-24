@@ -16,6 +16,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ash/login/demo_mode/demo_mode_idle_handler.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/component_updater/ash/component_manager_ash.h"
@@ -24,8 +25,6 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/app_window/app_window_registry.h"
-
-class PrefRegistrySimple;
 
 namespace base {
 class OneShotTimer;
@@ -44,7 +43,8 @@ class DemoComponents;
 // started and the state of demo mode resources.
 class DemoSession : public session_manager::SessionManagerObserver,
                     public user_manager::UserManager::UserSessionStateObserver,
-                    public chromeos::PowerManagerClient::Observer {
+                    public chromeos::PowerManagerClient::Observer,
+                    public DemoModeIdleHandler::Observer {
  public:
   // Type of demo mode configuration.
   // Warning: DemoModeConfig is stored in local state. Existing entries should
@@ -88,14 +88,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
     // Update kMaxValue to the last value.
     kMaxValue = kAppListQuery
   };
-
-  // The list of countries that Demo Mode supports, ie the countries we have
-  // created OUs and admin users for in the admin console.
-  // Sorted by country code except US is first.
-  static constexpr char kSupportedCountries[][3] = {
-      "US", "AT", "AU", "BE", "BR", "CA", "DE", "DK", "ES",
-      "FI", "FR", "GB", "IE", "IN", "IT", "JP", "LU", "MX",
-      "NL", "NO", "NZ", "PL", "PT", "SE", "ZA"};
 
   static constexpr char kCountryNotSelectedId[] = "N/A";
 
@@ -154,8 +146,6 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // `selected`: Whether the country is currently selected.
   static base::Value::List GetCountryList();
 
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
-
   // Records the launch of an app in Demo mode from the specified source.
   static void RecordAppLaunchSource(AppLaunchSource source);
 
@@ -194,9 +184,17 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // if the splash screen is already removed or never shown.
   void RemoveSplashScreen();
 
+  DemoModeIdleHandler* GetIdleHandlerForTest() const;
+
+  // Gets blocking task runner for test to ensure blocking tasks get flushed.
+  scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunnerForTest();
+
  private:
   DemoSession();
   ~DemoSession() override;
+
+  // DemoModeIdleHandler::Observer:
+  void OnLocalFilesCleanupCompleted() override;
 
   void OnDemoAppComponentLoaded();
 
@@ -206,7 +204,7 @@ class DemoSession : public session_manager::SessionManagerObserver,
   GetSortedCountryCodeAndNamePairList();
 
   // Installs resources for Demo Mode from the offline demo mode resources, such
-  // as apps and media.
+  // as photos and other media.
   void InstallDemoResources();
 
   // Find image path then show the splash screen.
@@ -240,6 +238,9 @@ class DemoSession : public session_manager::SessionManagerObserver,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
 
+  base::ScopedObservation<DemoModeIdleHandler, DemoModeIdleHandler::Observer>
+      idle_handler_observation_{this};
+
   // The fallback timer that ensures the splash screen is removed in case the
   // screensaver app takes an extra long time to be shown.
   std::unique_ptr<base::OneShotTimer> remove_splash_screen_fallback_timer_;
@@ -251,6 +252,14 @@ class DemoSession : public session_manager::SessionManagerObserver,
 
   // Keep track of which app has been installed in demo mode.
   std::set<std::string> installed_app_;
+
+  // Handle device idle action for demo mode. Affect both MGS and demo account
+  // sessions. Constructed while demo app is available.
+  std::unique_ptr<DemoModeIdleHandler> idle_handler_;
+
+  // Task runner for file cleanup and re-install demo mode resource at the end
+  // of shopper sessions.
+  scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::WeakPtrFactory<DemoSession> weak_ptr_factory_{this};
 };

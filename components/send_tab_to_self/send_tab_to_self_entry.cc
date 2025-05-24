@@ -48,7 +48,7 @@ SendTabToSelfEntry::SendTabToSelfEntry(
   DCHECK(url_.is_valid());
 }
 
-SendTabToSelfEntry::~SendTabToSelfEntry() {}
+SendTabToSelfEntry::~SendTabToSelfEntry() = default;
 
 SendTabToSelfEntry::SendTabToSelfEntry(const SendTabToSelfEntry&) = default;
 

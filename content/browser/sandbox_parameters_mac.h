@@ -13,7 +13,7 @@ class FilePath;
 }
 
 namespace sandbox {
-class SandboxCompiler;
+class SandboxSerializer;
 namespace mojom {
 enum class Sandbox;
 }  // namespace mojom
@@ -26,7 +26,7 @@ namespace content {
 CONTENT_EXPORT bool SetupSandboxParameters(
     sandbox::mojom::Sandbox sandbox_type,
     const base::CommandLine& command_line,
-    sandbox::SandboxCompiler* compiler);
+    sandbox::SandboxSerializer* serializer);
 
 // Expands the SandboxType::kNetwork policy to allow reading files from
 // the specified |path|, which stores TLS certificates used by the browser

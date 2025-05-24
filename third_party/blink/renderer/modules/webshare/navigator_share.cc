@@ -10,8 +10,8 @@
 
 #include "base/files/safe_base_name.h"
 #include "build/build_config.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -50,8 +50,7 @@ constexpr uint32_t kMaxUrlLength = 16U * 1024;
 String ErrorToString(mojom::blink::ShareError error) {
   switch (error) {
     case mojom::blink::ShareError::OK:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::ShareError::INTERNAL_ERROR:
       return "Share failed";
     case mojom::blink::ShareError::PERMISSION_DENIED:
@@ -59,8 +58,7 @@ String ErrorToString(mojom::blink::ShareError error) {
     case mojom::blink::ShareError::CANCELED:
       return "Share canceled";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 bool HasFiles(const ShareData& data) {
@@ -203,7 +201,7 @@ bool NavigatorShare::canShare(ScriptState* script_state,
 
   if (!ExecutionContext::From(script_state)
            ->IsFeatureEnabled(
-               mojom::blink::PermissionsPolicyFeature::kWebShare)) {
+               network::mojom::PermissionsPolicyFeature::kWebShare)) {
     return false;
   }
 
@@ -235,7 +233,7 @@ ScriptPromise<IDLUndefined> NavigatorShare::share(
       ExecutionContext::From(script_state);
 
   if (!execution_context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kWebShare)) {
+          network::mojom::PermissionsPolicyFeature::kWebShare)) {
     window->CountUse(WebFeature::kWebSharePolicyDisallow);
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Permission denied");

@@ -5,7 +5,6 @@
 #ifndef CC_METRICS_FRAME_SEQUENCE_TRACKER_H_
 #define CC_METRICS_FRAME_SEQUENCE_TRACKER_H_
 
-#include <deque>
 #include <memory>
 #include <sstream>
 

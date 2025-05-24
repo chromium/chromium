@@ -4,29 +4,33 @@
 
 package org.chromium.components.autofill;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.CollectionUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Autofill address information.
- * The creation and/or modification of an AutofillProfile is assumed to involve the user (e.g.
- * data reviewed by the user in the {@link
+ * Autofill address information. The creation and/or modification of an AutofillProfile is assumed
+ * to involve the user (e.g. data reviewed by the user in the {@link
  * org.chromium.chrome.browser.autofill.settings.AddressEditor}), therefore all new values gain
  * {@link VerificationStatus.USER_VERIFIED} status.
  */
 @JNINamespace("autofill")
+@SuppressWarnings("UnusedMethod") // Some of private getters are unused, but exist for completeness.
+@NullMarked
 public class AutofillProfile {
     private String mGUID;
     private @RecordType int mRecordType;
-    private Map<Integer, ValueWithStatus> mFields;
-    private String mLabel;
+    private final Map<Integer, ValueWithStatus> mFields;
+    private @Nullable String mLabel;
     private String mLanguageCode;
 
     @VisibleForTesting
@@ -56,6 +60,7 @@ public class AutofillProfile {
         private String mGUID = "";
         private @RecordType int mRecordType = RecordType.LOCAL_OR_SYNCABLE;
         private ValueWithStatus mFullName = ValueWithStatus.EMPTY;
+        private ValueWithStatus mAlternativeFullName = ValueWithStatus.EMPTY;
         private ValueWithStatus mCompanyName = ValueWithStatus.EMPTY;
         private ValueWithStatus mStreetAddress = ValueWithStatus.EMPTY;
         private ValueWithStatus mRegion = ValueWithStatus.EMPTY;
@@ -66,7 +71,6 @@ public class AutofillProfile {
         private ValueWithStatus mCountryCode = ValueWithStatus.EMPTY;
         private ValueWithStatus mPhoneNumber = ValueWithStatus.EMPTY;
         private ValueWithStatus mEmailAddress = ValueWithStatus.EMPTY;
-        private String mLabel = "";
         private String mLanguageCode = "";
 
         public Builder setGUID(String guid) {
@@ -86,6 +90,17 @@ public class AutofillProfile {
 
         public Builder setFullName(String fullName, @VerificationStatus int status) {
             mFullName = new ValueWithStatus(fullName, status);
+            return this;
+        }
+
+        public Builder setAlternativeFullName(String alternativeFullName) {
+            mAlternativeFullName =
+                    new ValueWithStatus(alternativeFullName, VerificationStatus.USER_VERIFIED);
+            return this;
+        }
+
+        public Builder setAlternativeFullName(String alternativeFullName, @VerificationStatus int status) {
+            mAlternativeFullName = new ValueWithStatus(alternativeFullName, status);
             return this;
         }
 
@@ -191,11 +206,6 @@ public class AutofillProfile {
             return this;
         }
 
-        public Builder setLabel(String label) {
-            mLabel = label;
-            return this;
-        }
-
         public Builder setLanguageCode(String languageCode) {
             mLanguageCode = languageCode;
             return this;
@@ -206,6 +216,7 @@ public class AutofillProfile {
                     mGUID,
                     mRecordType,
                     mFullName,
+                    mAlternativeFullName,
                     mCompanyName,
                     mStreetAddress,
                     mRegion,
@@ -239,6 +250,7 @@ public class AutofillProfile {
             String guid,
             @RecordType int recordType,
             ValueWithStatus fullName,
+            ValueWithStatus alternativeFullName,
             ValueWithStatus companyName,
             ValueWithStatus streetAddress,
             ValueWithStatus region,
@@ -252,6 +264,7 @@ public class AutofillProfile {
             String languageCode) {
         this(guid, recordType, languageCode);
         mFields.put(FieldType.NAME_FULL, fullName);
+        mFields.put(FieldType.ALTERNATIVE_FULL_NAME, alternativeFullName);
         mFields.put(FieldType.COMPANY_NAME, companyName);
         mFields.put(FieldType.ADDRESS_HOME_STREET_ADDRESS, streetAddress);
         mFields.put(FieldType.ADDRESS_HOME_STATE, region);
@@ -277,7 +290,7 @@ public class AutofillProfile {
 
     @CalledByNative
     private @JniType("std::vector<int32_t>") int[] getFieldTypes() {
-        return mFields.keySet().stream().mapToInt(i -> i).toArray();
+        return CollectionUtil.integerCollectionToIntArray(mFields.keySet());
     }
 
     @CalledByNative
@@ -290,10 +303,20 @@ public class AutofillProfile {
         return mRecordType;
     }
 
-    public String getLabel() {
+    public @Nullable String getLabel() {
         return mLabel;
     }
 
+    /**
+     * Returns the field value that corresponds to the provided {@code fieldType}. Returns an empty
+     * string if the profile doesn't contain the specified field type.
+     *
+     * <p>Note: make sure you're requesting the correct field type by looking at the field type
+     * descriptions in the components/autofill/core/browser/field_types.h.
+     *
+     * @return the field value corresponding to the {@code fieldType}, or empty string if the
+     *     profile doesn't have that field.
+     */
     @CalledByNative
     public @JniType("std::u16string") String getInfo(@FieldType int fieldType) {
         if (!mFields.containsKey(fieldType)) {
@@ -311,104 +334,9 @@ public class AutofillProfile {
         return mFields.get(fieldType).getStatus();
     }
 
-    public String getFullName() {
-        return getInfo(FieldType.NAME_FULL);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getFullNameStatus() {
-        return getInfoStatus(FieldType.NAME_FULL);
-    }
-
-    public String getCompanyName() {
-        return getInfo(FieldType.COMPANY_NAME);
-    }
-
-    @VerificationStatus
-    int getCompanyNameStatus() {
-        return getInfoStatus(FieldType.COMPANY_NAME);
-    }
-
-    public String getStreetAddress() {
-        return getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getStreetAddressStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_STREET_ADDRESS);
-    }
-
-    public String getRegion() {
-        return getInfo(FieldType.ADDRESS_HOME_STATE);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getRegionStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_STATE);
-    }
-
-    public String getLocality() {
-        return getInfo(FieldType.ADDRESS_HOME_CITY);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getLocalityStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_CITY);
-    }
-
-    public String getDependentLocality() {
-        return getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
-    }
-
-    private @VerificationStatus int getDependentLocalityStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY);
-    }
-
-    public String getPostalCode() {
-        return getInfo(FieldType.ADDRESS_HOME_ZIP);
-    }
-
-    @VisibleForTesting
-    @VerificationStatus
-    public int getPostalCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_ZIP);
-    }
-
-    public String getSortingCode() {
-        return getInfo(FieldType.ADDRESS_HOME_SORTING_CODE);
-    }
-
-    private @VerificationStatus int getSortingCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_SORTING_CODE);
-    }
-
     @CalledByNative
-    public @JniType("std::string") String getCountryCode() {
+    private @JniType("std::string") String getCountryCode() {
         return getInfo(FieldType.ADDRESS_HOME_COUNTRY);
-    }
-
-    private @VerificationStatus int getCountryCodeStatus() {
-        return getInfoStatus(FieldType.ADDRESS_HOME_COUNTRY);
-    }
-
-    public String getPhoneNumber() {
-        return getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER);
-    }
-
-    private @VerificationStatus int getPhoneNumberStatus() {
-        return getInfoStatus(FieldType.PHONE_HOME_WHOLE_NUMBER);
-    }
-
-    public String getEmailAddress() {
-        return getInfo(FieldType.EMAIL_ADDRESS);
-    }
-
-    private @VerificationStatus int getEmailAddressStatus() {
-        return getInfoStatus(FieldType.EMAIL_ADDRESS);
     }
 
     @CalledByNative
@@ -443,6 +371,10 @@ public class AutofillProfile {
 
     public void setFullName(String fullName) {
         setInfo(FieldType.NAME_FULL, fullName);
+    }
+
+    public void setAlternativeFullName(String alternativeFullName) {
+        setInfo(FieldType.ALTERNATIVE_FULL_NAME, alternativeFullName);
     }
 
     public void setCompanyName(String companyName) {
@@ -491,7 +423,7 @@ public class AutofillProfile {
 
     /** Used by ArrayAdapter in credit card settings. */
     @Override
-    public String toString() {
+    public @Nullable String toString() {
         return mLabel;
     }
 }

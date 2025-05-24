@@ -37,6 +37,7 @@ class GURL;
 @class FormSuggestion;
 
 @protocol PasswordSuggestionBottomSheetConsumer;
+@protocol PasswordSuggestionBottomSheetPresenter;
 @protocol ReauthenticationProtocol;
 
 // This mediator fetches a list suggestions to display in the bottom sheet.
@@ -60,7 +61,9 @@ class GURL;
               accountPasswordStore
     sharedURLLoaderFactory:
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
-         engagementTracker:(feature_engagement::Tracker*)engagementTracker;
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                 presenter:
+                     (id<PasswordSuggestionBottomSheetPresenter>)presenter;
 
 // Disconnects the mediator.
 - (void)disconnect;
@@ -85,8 +88,13 @@ class GURL;
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion;
 
-// Notify that the bottom sheet is getting dismissed.
-- (void)dismiss;
+// Handler called to perform operations (e.g. increment the dismiss count) when
+// the sheet was dismissed without using any password action.
+- (void)onDismissWithoutAnyPasswordAction;
+
+// Refocuses the login field that was blurred to show this bottom sheet, if
+// deemded needed.
+- (void)refocus;
 
 // Set vector of credentials that is used for testing.
 - (void)setCredentialsForTesting:

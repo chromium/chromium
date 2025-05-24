@@ -101,7 +101,7 @@ class MEDIA_EXPORT MediaLog {
     DCHECK(!status.is_ok());
     std::unique_ptr<MediaLogRecord> record =
         CreateRecord(MediaLogRecord::Type::kMediaStatus);
-    base::Value serialized = MediaSerialize(status);
+    base::Value serialized = MediaSerialize(status.data_);
     DCHECK(serialized.is_dict());
     if (DCHECK_IS_ON() && DLOG_IS_ON(ERROR) && ShouldLogToDebugConsole()) {
       EmitConsoleErrorLog(serialized.GetDict().Clone());
@@ -180,6 +180,8 @@ class MEDIA_EXPORT MediaLog {
   void InvalidateLog();
 
   struct ParentLogRecord : base::RefCountedThreadSafe<ParentLogRecord> {
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     explicit ParentLogRecord(MediaLog* log);
 
     ParentLogRecord(const ParentLogRecord&) = delete;

@@ -55,16 +55,19 @@ class CONTENT_EXPORT AudioOutputAuthorizationHandler {
   AudioOutputAuthorizationHandler& operator=(
       const AudioOutputAuthorizationHandler&) = delete;
 
-  ~AudioOutputAuthorizationHandler();
+  // Make it virtual for testing purpose.
+  virtual ~AudioOutputAuthorizationHandler();
 
   // Checks authorization of the device with the hashed id |device_id| for the
   // given render frame id, or uses |session_id| for authorization. Looks up
   // device id (if |session_id| is used for device selection) and default
-  // device parameters. This function will always call |cb|.
-  void RequestDeviceAuthorization(int render_frame_id,
-                                  const base::UnguessableToken& session_id,
-                                  const std::string& device_id,
-                                  AuthorizationCompletedCallback cb) const;
+  // device parameters. This function will always call |cb|. Make it virtual
+  // for testing purpose.
+  virtual void RequestDeviceAuthorization(
+      int render_frame_id,
+      const base::UnguessableToken& session_id,
+      const std::string& device_id,
+      AuthorizationCompletedCallback cb) const;
 
   // Calling this method will make the checks for permission from the user
   // always return |override_value|.

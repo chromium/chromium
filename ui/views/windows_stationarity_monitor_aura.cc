@@ -4,10 +4,10 @@
 
 #include "ui/views/windows_stationarity_monitor_aura.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"

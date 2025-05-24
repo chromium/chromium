@@ -23,7 +23,6 @@ Environment* env = new Environment();
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::string str = std::string(reinterpret_cast<const char*>(data), size);
-  std::size_t data_hash = std::hash<std::string>()(str);
 
   const uint8_t* ivf_payload = nullptr;
   media::IvfParser ivf_parser;
@@ -33,7 +32,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (!ivf_parser.Initialize(data, size, &ivf_file_header))
     return 0;
 
-  media::Vp9Parser vp9_parser(data_hash % 2 == 1);
+  media::Vp9Parser vp9_parser;
   // Parse until the end of stream/unsupported stream/error in stream is found.
   while (ivf_parser.ParseNextFrame(&ivf_frame_header, &ivf_payload)) {
     media::Vp9FrameHeader vp9_frame_header;

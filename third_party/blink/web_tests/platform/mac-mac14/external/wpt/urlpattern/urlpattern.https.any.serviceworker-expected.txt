@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+Found 7 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Pattern: [{"protocol":"http","port":"80 "}] Inputs: [{"protocol":"http","port":"80"}]
+  Failed to construct 'URLPattern': Invalid port pattern '80 '. Invalid port pattern '80 '.
+[FAIL] Pattern: [{"hostname":"bad#hostname"}] Inputs: undefined
+  Failed to construct 'URLPattern': Invalid hostname pattern 'bad#hostname'. Invalid hostname pattern 'bad#hostname'.
+[FAIL] Pattern: [{"hostname":"bad%hostname"}] Inputs: undefined
+  Failed to construct 'URLPattern': Invalid hostname pattern 'bad%hostname'. Invalid hostname pattern 'bad%hostname'.
+[FAIL] Pattern: [{"hostname":"bad/hostname"}] Inputs: undefined
+  Failed to construct 'URLPattern': Invalid hostname pattern 'bad/hostname'. Invalid hostname pattern 'bad/hostname'.
+[FAIL] Pattern: [{"hostname":"bad\\nhostname"}] Inputs: undefined
+  Failed to construct 'URLPattern': Invalid hostname pattern 'bad\nhostname'. Invalid hostname pattern 'bad\nhostname'.
+[FAIL] Pattern: [{"hostname":"bad\\rhostname"}] Inputs: undefined
+  Failed to construct 'URLPattern': Invalid hostname pattern 'bad\rhostname'. Invalid hostname pattern 'bad\rhostname'.
+[FAIL] Pattern: [{"hostname":"bad\\thostname"}] Inputs: undefined
+  Failed to construct 'URLPattern': Invalid hostname pattern 'bad	hostname'. Invalid hostname pattern 'bad	hostname'.
+Harness: the test ran to completion.
+

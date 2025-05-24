@@ -5763,7 +5763,7 @@ xsltCleanupSourceDoc(xmlDocPtr doc) {
     void **psviPtr;
 
     while (1) {
-        xsltClearSourceNodeFlags(cur, XSLT_SOURCE_NODE_MASK);
+        xsltClearSourceNodeExtraData(cur);
         psviPtr = xsltGetPSVIPtr(cur);
         if (psviPtr)
             *psviPtr = NULL;
@@ -5772,7 +5772,7 @@ xsltCleanupSourceDoc(xmlDocPtr doc) {
             xmlAttrPtr prop = cur->properties;
 
             while (prop) {
-                prop->atype &= ~(XSLT_SOURCE_NODE_MASK << 27);
+                prop->extra = 0;
                 prop->psvi = NULL;
                 prop = prop->next;
             }

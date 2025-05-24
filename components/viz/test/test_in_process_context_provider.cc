@@ -68,7 +68,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
   if (type_ == TestContextType::kGLES2) {
     attribs.enable_gles2_interface = true;
     attribs.enable_raster_interface = false;
-    attribs.enable_oop_rasterization = false;
+    attribs.enable_gpu_rasterization = false;
 
     gles2_context_ = std::make_unique<gpu::GLInProcessContext>();
     auto result = gles2_context_->Initialize(
@@ -82,7 +82,7 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
 
     attribs.enable_gles2_interface = false;
     attribs.enable_raster_interface = true;
-    attribs.enable_oop_rasterization = is_gpu_raster;
+    attribs.enable_gpu_rasterization = is_gpu_raster;
 
     raster_context_ = std::make_unique<gpu::RasterInProcessContext>();
     auto result = raster_context_->Initialize(

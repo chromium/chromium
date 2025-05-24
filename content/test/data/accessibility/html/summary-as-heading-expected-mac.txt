@@ -1,0 +1,9 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXRoleDescription='details'
+++++AXDisclosureTriangle AXExpanded=0 AXRoleDescription='disclosure triangle' AXTitle='details tag' AXValue=5
+++++++AXStaticText AXRoleDescription='text' AXValue='details tag'
+++AXGroup AXRoleDescription='details'
+++++AXDisclosureTriangle AXExpanded=1 AXRoleDescription='disclosure triangle' AXTitle='details tag open' AXValue=5
+++++++AXStaticText AXRoleDescription='text' AXValue='details tag open'
+++++AXGroup AXRoleDescription='group'
+++++++AXStaticText AXRoleDescription='text' AXValue='The details tag with open specifies that the details should be visible (open) to the user.'

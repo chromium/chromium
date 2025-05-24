@@ -6,11 +6,11 @@
 
 #include <string>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/base/device_id_helper.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -22,16 +22,16 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kEphemeralUserDeviceIDPrefix[] = "t_";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
 std::string GetSigninScopedDeviceIdForProfile(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // UserManager may not exist in unit_tests.
   if (!user_manager::UserManager::IsInitialized())
     return std::string();
@@ -52,7 +52,7 @@ std::string GetSigninScopedDeviceIdForProfile(Profile* profile) {
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 std::string GenerateSigninScopedDeviceId(bool for_ephemeral) {
   static base::NoDestructor<std::string> cached_device_id;
@@ -104,4 +104,4 @@ void MigrateSigninScopedDeviceId(Profile* profile) {
                                  std::string());
 }
 
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)

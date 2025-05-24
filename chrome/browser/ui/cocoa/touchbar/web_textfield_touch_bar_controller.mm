@@ -20,7 +20,7 @@
 
 + (WebTextfieldTouchBarController*)controllerForWindow:(NSWindow*)window {
   BrowserView* browser_view =
-      BrowserView::GetBrowserViewForNativeWindow(window);
+      BrowserView::GetBrowserViewForNativeWindow(gfx::NativeWindow(window));
   if (!browser_view) {
     return nil;
   }

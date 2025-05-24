@@ -33,16 +33,16 @@ suite('MojoTimestampElementTest', function() {
     assertEquals(time.textContent, rendered);
   };
 
-  test('epoch', async () => {
+  test('epoch', () => {
     testTime('0', 'epoch');
   });
 
-  test('nearEpoch', async () => {
+  test('nearEpoch', () => {
     testTime('1', 'Mon, 01 Jan 1601 00:00:00 GMT');
     testTime('1000000', 'Mon, 01 Jan 1601 00:00:01 GMT');
   });
 
-  test('aroundNow', async () => {
+  test('aroundNow', () => {
     testTime('13348693565232806', 'Tue, 02 Jan 2024 18:26:05 GMT');
   });
 });
@@ -68,11 +68,11 @@ suite('MojoTimedeltaElementTest', function() {
     assertEquals(time.textContent, rendered);
   };
 
-  test('zero', async () => {
+  test('zero', () => {
     testDuration('0', '0 microseconds');
   });
 
-  test('nonZero', async () => {
+  test('nonZero', () => {
     testDuration('213', '213 microseconds');
     testDuration('123456123456123456', '123456123456123456 microseconds');
   });
@@ -106,7 +106,7 @@ suite('ValueDisplayElementTest', function() {
     assertEquals(span.textContent, s);
   };
 
-  test('null', async () => {
+  test('null', () => {
     v.nullValue = 1;
     valueElement.configure(v);
     const span = valueElement.$('#value');
@@ -116,7 +116,7 @@ suite('ValueDisplayElementTest', function() {
     assertType('');
   });
 
-  test('trueBool', async () => {
+  test('trueBool', () => {
     v.boolValue = true;
     valueElement.configure(v);
     const span = valueElement.$('#value');
@@ -126,7 +126,7 @@ suite('ValueDisplayElementTest', function() {
     assertType('');
   });
 
-  test('falseBool', async () => {
+  test('falseBool', () => {
     v.boolValue = false;
     valueElement.configure(v);
     const span = valueElement.$('#value');
@@ -136,14 +136,14 @@ suite('ValueDisplayElementTest', function() {
     assertType('');
   });
 
-  test('int', async () => {
+  test('int', () => {
     v.intValue = 867;
     valueElement.configure(v);
     assertValue('867');
     assertType('(int)');
   });
 
-  test('string', async () => {
+  test('string', () => {
     v.stringValue = 'all the small things';
     valueElement.configure(v);
     assertValue('all the small things');
@@ -155,7 +155,7 @@ suite('ValueDisplayElementTest', function() {
     assertType('(string)');
   });
 
-  test('stringTimestamp', async () => {
+  test('stringTimestamp', () => {
     v.stringValue = '12345';
     valueElement.configure(v, timestampLogicalFn);
     assertValue('12345');
@@ -168,7 +168,7 @@ suite('ValueDisplayElementTest', function() {
     assertEquals(mojoTs.getAttribute('ts'), '12345');
   });
 
-  test('list', async () => {
+  test('list', () => {
     v.listValue = {} as ListValue;
     v.listValue.storage = [1, 2, 3, 4].map((x) => {
       const v: Value = {} as Value;
@@ -181,7 +181,7 @@ suite('ValueDisplayElementTest', function() {
     assertType('(list)');
   });
 
-  test('dictionary', async () => {
+  test('dictionary', () => {
     v.dictionaryValue = {} as DictionaryValue;
     const v1: Value = {} as Value;
     v1.intValue = 10;
@@ -193,7 +193,7 @@ suite('ValueDisplayElementTest', function() {
     assertType('(dictionary)');
   });
 
-  test('binary', async () => {
+  test('binary', () => {
     v.binaryValue = [10, 20, 30, 40];
     valueElement.configure(v);
     assertValue('[10,20,30,40]');
@@ -253,7 +253,7 @@ suite('PrefDisplayElementTest', function() {
     return value;
   };
 
-  test('basicStringPref', async () => {
+  test('basicStringPref', () => {
     v.stringValue = 'this is a string';
     prefDisplay.configure('foo', v);
     assertName('foo');
@@ -263,7 +263,7 @@ suite('PrefDisplayElementTest', function() {
     assertEquals(getLogicalValueElementOrFail().children.length, 0);
   });
 
-  test('basicIntPref', async () => {
+  test('basicIntPref', () => {
     v.intValue = 100;
     prefDisplay.configure('some.int', v);
     assertName('some.int');
@@ -273,7 +273,7 @@ suite('PrefDisplayElementTest', function() {
     assertEquals(getLogicalValueElementOrFail().children.length, 0);
   });
 
-  test('logicalStringPref', async () => {
+  test('logicalStringPref', () => {
     v.stringValue = '12345';
     prefDisplay.configure('some.timestamp', v, timestampLogicalFn);
     assertName('some.timestamp');

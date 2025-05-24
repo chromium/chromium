@@ -4,6 +4,10 @@
 
 #include "cast_starboard_api_adapter_impl.h"
 
+#include "base/at_exit.h"
+#include "base/functional/bind.h"
+#include "base/logging.h"
+
 // TODO(b/333961720): remove all the macros in this file and split the impl into
 // two different classes: one for SB 15+, one for older versions of starboard.
 // Only include the relevant one in the BUILD.gn file.
@@ -14,27 +18,42 @@
 #endif  // SB_API_VERSION >= 15
 
 namespace chromecast {
+
 namespace {
-CastStarboardApiAdapterImpl* GetImpl() {
-  static CastStarboardApiAdapterImpl* starboard_adapter =
-      new CastStarboardApiAdapterImpl();
-  return starboard_adapter;
-}
+
+CastStarboardApiAdapterImpl* g_instance = nullptr;
+base::Lock g_instance_mutex;
+
 }  // namespace
 
 CastStarboardApiAdapter* CastStarboardApiAdapter::GetInstance() {
-  return GetImpl();
+  base::AutoLock lock(g_instance_mutex);
+  if (!g_instance) {
+    // The instance is assigned by the class's constructor.
+    new CastStarboardApiAdapterImpl();
+
+    // We use an AtExitManager as a signal that the runtime is shutting down.
+    // Note that this callback is not guaranteed to run after all other cast
+    // code has been shut down. For example, the media_thread_ in
+    // CastContentBrowserClient is sometimes destructed after AtExitManager runs
+    // its callbacks (meaning StarboardApiWrapperBase or other media code may
+    // still be subscribed).
+    //
+    // base::Unretained is safe because the AtExitManager is responsible for
+    // deleting g_instance.
+    base::AtExitManager::RegisterTask(base::BindOnce(
+        &CastStarboardApiAdapterImpl::Release, base::Unretained(g_instance)));
+  }
+
+  return g_instance;
 }
 
-#if SB_API_VERSION >= 15
-CastStarboardApiAdapterImpl::CastStarboardApiAdapterImpl()
-    : init_f_(init_p_.get_future()), initialized_(false) {}
-#else   // SB_API_VERSION >=15
-CastStarboardApiAdapterImpl::CastStarboardApiAdapterImpl()
-    : initialized_(false) {}
-#endif  // SB_API_VERSION >= 15
+CastStarboardApiAdapterImpl::CastStarboardApiAdapterImpl() {
+  CHECK(!g_instance);
+  g_instance = this;
+}
 
-CastStarboardApiAdapterImpl::~CastStarboardApiAdapterImpl() {}
+CastStarboardApiAdapterImpl::~CastStarboardApiAdapterImpl() = default;
 
 SbEglNativeDisplayType CastStarboardApiAdapterImpl::GetEglNativeDisplayType() {
   return SB_EGL_DEFAULT_DISPLAY;
@@ -42,74 +61,147 @@ SbEglNativeDisplayType CastStarboardApiAdapterImpl::GetEglNativeDisplayType() {
 
 // static
 void CastStarboardApiAdapterImpl::SbEventHandle(const SbEvent* event) {
-  GetImpl()->SbEventHandleInternal(event);
+  g_instance->SbEventHandleInternal(event);
 }
 
-#if SB_API_VERSION >= 15
 void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
   // If multiple instances of Starboard become supported, |event->window| may
   // need to be checked here for some types before propagating.
   switch (event->type) {
     case kSbEventTypeStart:
-      init_p_.set_value(true);
+      LOG(INFO) << "Received kSbEventTypeStart event";
+      starboard_started_.Signal();
       break;
-    default:
+    case kSbEventTypeStop:
+      LOG(INFO) << "Received kSbEventTypeStop event";
+      starboard_stopped_.Signal();
+      break;
+    default: {
+      base::AutoLock autolock(lock_);
       for (const auto p : subscribers_) {
-        p.second(p.first, event);
+        if (p.second) {
+          p.second(p.first, event);
+        }
       }
       break;
+    }
   }
 }
-#else   // SB_API_VERSION >=15
-void CastStarboardApiAdapterImpl::SbEventHandleInternal(const SbEvent* event) {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  for (const auto p : subscribers_) {
-    p.second(p.first, event);
-  }
-}
-#endif  // SB_API_VERSION >= 15
 
+void CastStarboardApiAdapterImpl::EnsureInitialized() {
+  LOG(INFO) << "CastStarboardApiAdapterImpl::EnsureInitialized";
+
+  bool need_to_start_starboard = false;
+  {
+    base::AutoLock autolock(lock_);
+    CHECK(!released_) << "Starboard should not be re-initialized after the the "
+                         "AtExitManager has run.";
+    if (!initialized_) {
+      need_to_start_starboard = true;
+    }
+    initialized_ = true;
+  }
+
+  if (need_to_start_starboard) {
+    LOG(INFO) << "Starting starboard";
 #if SB_API_VERSION >= 15
-bool CastStarboardApiAdapterImpl::EnsureInitialized() {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  if (initialized_) {
-    return true;
-  }
-
-  sb_main_ = std::make_unique<std::thread>(
-      &SbRunStarboardMain, /*argc=*/0, /*argv=*/nullptr,
-      &CastStarboardApiAdapterImpl::SbEventHandle);
-  sb_main_->detach();
-  initialized_ = init_f_.get();
-  return initialized_;
-}
+    sb_main_ = std::make_unique<std::thread>(
+        &SbRunStarboardMain, /*argc=*/0, /*argv=*/nullptr,
+        &CastStarboardApiAdapterImpl::SbEventHandle);
+    sb_main_->detach();
 #else   // SB_API_VERSION >=15
-bool CastStarboardApiAdapterImpl::EnsureInitialized() {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  if (initialized_) {
-    return true;
+    CastStarboardApiInitialize(/*argc=*/0, /*argv=*/nullptr,
+                               &CastStarboardApiAdapterImpl::SbEventHandle);
+#endif  // SB_API_VERSION >= 15
   }
 
-  CastStarboardApiInitialize(/*argc=*/0, /*argv=*/nullptr,
-                             &CastStarboardApiAdapterImpl::SbEventHandle);
-  initialized_ = true;
-  return true;
+  // If starboard was started earlier, this will return immediately. Regardless
+  // of whether we start starboard in this function call, we still need to call
+  // this (e.g. if another thread started starboard but starboard has not yet
+  // sent the kSbEventTypeStart event).
+  starboard_started_.Wait();
 }
+
+void CastStarboardApiAdapterImpl::Release() {
+  LOG(INFO) << "CastStarboardApiAdapterImpl::Release";
+  bool need_to_stop_starboard = false;
+  {
+    base::AutoLock autolock(lock_);
+    released_ = true;
+
+    if (!subscribers_.empty()) {
+      LOG(WARNING) << "Not stopping Starboard yet, because there are still "
+                   << subscribers_.size() << " subscribers.";
+      return;
+    }
+
+    if (initialized_) {
+      need_to_stop_starboard = true;
+    }
+    initialized_ = false;
+  }
+
+  if (need_to_stop_starboard) {
+    if (!starboard_stopped_.IsSignaled()) {
+      LOG(INFO) << "Stopping Starboard";
+#if SB_API_VERSION >= 15
+      SbSystemRequestStop(0);
+#else   // SB_API_VERSION >=15
+      CastStarboardApiFinalize();
 #endif  // SB_API_VERSION >= 15
+    }
+    LOG(INFO) << "Waiting for starboard to stop.";
+    starboard_stopped_.Wait();
+    LOG(INFO) << "Done waiting for starboard to stop.";
+  } else {
+    LOG(WARNING)
+        << "CastStarboardApiAdapterImpl was not initialized before being "
+           "released.";
+  }
+
+  base::AutoLock lock(g_instance_mutex);
+  LOG(INFO) << "Destroying CastStarboardApiAdapterImpl instance.";
+  delete g_instance;
+  g_instance = nullptr;
+}
 
 void CastStarboardApiAdapterImpl::Subscribe(void* context,
                                             CastStarboardApiAdapterImplCB cb) {
-  std::lock_guard<decltype(lock_)> lock(lock_);
+  LOG(INFO) << "CastStarboardApiAdapterImpl::Subscribe, context=" << context;
+  EnsureInitialized();
+
+  base::AutoLock autolock(lock_);
   subscribers_.insert({context, cb});
 }
 
 void CastStarboardApiAdapterImpl::Unsubscribe(void* context) {
-  std::lock_guard<decltype(lock_)> lock(lock_);
-  subscribers_.erase(context);
+  LOG(INFO) << "CastStarboardApiAdapterImpl::Unsubscribe, context=" << context;
+
+  bool do_release = false;
+  {
+    base::AutoLock autolock(lock_);
+    subscribers_.erase(context);
+    if (released_ && subscribers_.empty()) {
+      do_release = true;
+    }
+
+    LOG(INFO) << "After Unsubscribe, there are " << subscribers_.size()
+              << " remaining subscribers";
+  }
+
+  // Release() must be called while lock_ is not held.
+  if (do_release) {
+    LOG(INFO) << "The last subscriber unsubscribed after Release(). Retrying "
+                 "Release().";
+    Release();
+  }
 }
 
 SbWindow CastStarboardApiAdapterImpl::GetWindow(
     const SbWindowOptions* options) {
+  EnsureInitialized();
+
+  base::AutoLock autolock(lock_);
   if (!SbWindowIsValid(window_)) {
     window_ = SbWindowCreate(options);
   }

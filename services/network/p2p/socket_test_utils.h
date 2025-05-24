@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef SERVICES_NETWORK_P2P_SOCKET_TEST_UTILS_H_
 #define SERVICES_NETWORK_P2P_SOCKET_TEST_UTILS_H_
 
@@ -15,9 +10,11 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -33,6 +30,7 @@
 #include "services/network/public/mojom/p2p.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/rtc_base/time_utils.h"
 
 namespace network {
 
@@ -67,7 +65,7 @@ class FakeSocket : public net::StreamSocket {
   ~FakeSocket() override;
 
   void set_async_write(bool async_write) { async_write_ = async_write; }
-  void AppendInputData(const char* data, int data_size);
+  void AppendInputData(std::string_view data);
   int input_pos() const { return input_pos_; }
   bool read_pending() const { return read_pending_; }
   void SetPeerAddress(const net::IPEndPoint& peer_address);
@@ -183,13 +181,12 @@ MATCHER_P(MatchMessage, type, "") {
 MATCHER_P2(MatchSendPacketMetrics, rtc_packet_id, test_start_time, "") {
   return arg.rtc_packet_id == rtc_packet_id &&
          arg.send_time_ms >= test_start_time &&
-         arg.send_time_ms <= rtc::TimeMillis();
+         arg.send_time_ms <= webrtc::TimeMillis();
 }
 
 // Creates a GMock matcher that matches `base::span` to `std::vector`.
 MATCHER_P(SpanEq, expected, "") {
-  std::vector<uint8_t> result(arg.data(), arg.data() + arg.size());
-  return result == expected;
+  return arg == base::as_byte_span(expected);
 }
 
 }  // namespace network

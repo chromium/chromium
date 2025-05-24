@@ -15,7 +15,7 @@ BooleanDisablingPolicyHandler::BooleanDisablingPolicyHandler(
     : TypeCheckingPolicyHandler(policy_name, base::Value::Type::BOOLEAN),
       pref_path_(pref_path) {}
 
-BooleanDisablingPolicyHandler::~BooleanDisablingPolicyHandler() {}
+BooleanDisablingPolicyHandler::~BooleanDisablingPolicyHandler() = default;
 
 void BooleanDisablingPolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,

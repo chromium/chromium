@@ -56,7 +56,9 @@ struct EncoderStatusTraits {
     kOutOfMemoryError = 19,
     // No hardware encoder is available.
     kEncoderAccelerationSupportMissing = 20,
-    kMaxValue = kEncoderAccelerationSupportMissing,
+    // The system ran out of platform encoders.
+    kOutOfPlatformEncoders = 21,
+    kMaxValue = kOutOfPlatformEncoders,
   };
   static constexpr StatusGroupType Group() { return "EncoderStatus"; }
 };

@@ -5,15 +5,30 @@
 #include "chrome/browser/optimization_guide/model_execution/chrome_on_device_model_service_controller.h"
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "content/public/browser/service_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace optimization_guide {
 
 namespace {
 
 ChromeOnDeviceModelServiceController* g_instance = nullptr;
+
+void LaunchService(
+    mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+        pending_receiver) {
+  CHECK(features::CanLaunchOnDeviceModelService());
+  content::ServiceProcessHost::Launch<
+      on_device_model::mojom::OnDeviceModelService>(
+      std::move(pending_receiver),
+      content::ServiceProcessHost::Options()
+          .WithDisplayName("On-Device Model Service")
+          .Pass());
+}
 
 }  // namespace
 
@@ -23,7 +38,8 @@ ChromeOnDeviceModelServiceController::ChromeOnDeviceModelServiceController(
     : OnDeviceModelServiceController(
           std::make_unique<OnDeviceModelAccessController>(
               *g_browser_process->local_state()),
-          std::move(on_device_component_state_manager)) {
+          std::move(on_device_component_state_manager),
+          base::BindRepeating(&LaunchService)) {
   CHECK_EQ(nullptr, g_instance);
   g_instance = this;
 }
@@ -39,19 +55,15 @@ ChromeOnDeviceModelServiceController::~ChromeOnDeviceModelServiceController() {
   g_instance = nullptr;
 }
 
-void ChromeOnDeviceModelServiceController::LaunchService() {
-  CHECK(features::CanLaunchOnDeviceModelService());
-  if (service_remote_) {
-    return;
+void ChromeOnDeviceModelServiceController::
+    RegisterPerformanceClassSyntheticTrial(
+        OnDeviceModelPerformanceClass perf_class) {
+  if (perf_class != OnDeviceModelPerformanceClass::kUnknown) {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "SyntheticOnDeviceModelPerformanceClass",
+        SyntheticTrialGroupForPerformanceClass(perf_class),
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
-  auto receiver = service_remote_.BindNewPipeAndPassReceiver();
-  service_remote_.reset_on_disconnect();
-  service_remote_.reset_on_idle_timeout(base::TimeDelta());
-  content::ServiceProcessHost::Launch<
-      on_device_model::mojom::OnDeviceModelService>(
-      std::move(receiver), content::ServiceProcessHost::Options()
-                               .WithDisplayName("On-Device Model Service")
-                               .Pass());
 }
 
 }  // namespace optimization_guide

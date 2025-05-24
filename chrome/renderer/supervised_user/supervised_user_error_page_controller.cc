@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/renderer/supervised_user/supervised_user_error_page_controller_delegate.h"
 #include "content/public/renderer/render_frame.h"
@@ -53,7 +54,8 @@ SupervisedUserErrorPageController::SupervisedUserErrorPageController(
     content::RenderFrame* render_frame)
     : delegate_(delegate), render_frame_(render_frame) {}
 
-SupervisedUserErrorPageController::~SupervisedUserErrorPageController() {}
+SupervisedUserErrorPageController::~SupervisedUserErrorPageController() =
+    default;
 
 void SupervisedUserErrorPageController::GoBack() {
   if (delegate_)
@@ -79,9 +81,9 @@ void SupervisedUserErrorPageController::RequestUrlAccessLocal() {
 }
 
 void SupervisedUserErrorPageController::OnRequestUrlAccessRemote(bool success) {
-  std::string result = success ? "true" : "false";
+  std::string result = base::ToString(success);
   std::string is_outermost_main_frame =
-      render_frame_->GetWebFrame()->IsOutermostMainFrame() ? "true" : "false";
+      base::ToString(render_frame_->GetWebFrame()->IsOutermostMainFrame());
   std::string js =
       base::StringPrintf("setRequestStatus(%s, %s)", result.c_str(),
                          is_outermost_main_frame.c_str());

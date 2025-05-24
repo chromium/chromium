@@ -25,8 +25,6 @@ ENABLE_DIRECT_COMPOSITION_VIDEO_OVERLAYS =\
     '--enable-direct-composition-video-overlays'
 ENABLE_DIRECT_COMPOSITION_VP_SCALING = '--disable_vp_scaling=0'
 ENABLE_DXVA_VIDEO_DECODER = '--enable-features=DXVAVideoDecoding'
-ENABLE_PLATFORM_HEVC_ENCODER_SUPPORT =\
-    '--enable-features=PlatformHEVCEncoderSupport'
 ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES =\
     '--enable-experimental-web-platform-features'
 ENABLE_GPU_BENCHMARKING = '--enable-gpu-benchmarking'

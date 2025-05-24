@@ -109,7 +109,7 @@ suite('CrPolicyIndicatorMixin', function() {
             indicator.indicatorType, indicator.indicatorSourceName));
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('primary-user controlled indicator', function() {
     indicator.indicatorType = CrPolicyIndicatorType.PRIMARY_USER;
     indicator.indicatorSourceName = 'user@example.com';

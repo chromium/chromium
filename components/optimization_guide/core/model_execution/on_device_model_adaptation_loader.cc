@@ -17,7 +17,9 @@
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -98,6 +100,11 @@ OnDeviceModelAdaptationMetadata::OnDeviceModelAdaptationMetadata(
     const OnDeviceModelAdaptationMetadata&) = default;
 OnDeviceModelAdaptationMetadata::~OnDeviceModelAdaptationMetadata() = default;
 
+bool OnDeviceModelAdaptationMetadata::operator==(
+    const OnDeviceModelAdaptationMetadata& other) const {
+  return version_ == other.version_ && asset_paths_ == other.asset_paths_;
+}
+
 OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     ModelBasedCapabilityKey feature,
     OptimizationGuideModelProvider* model_provider,
@@ -106,12 +113,14 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
     PrefService* local_state,
     OnLoadFn on_load_fn)
     : feature_(feature),
-      on_load_fn_(on_load_fn),
-      local_state_(local_state),
+      target_(
+          *features::internal::GetOptimizationTargetForCapability(feature_)),
       model_provider_(model_provider),
+      on_device_component_state_manager_(on_device_component_state_manager),
+      local_state_(local_state),
+      on_load_fn_(on_load_fn),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})) {
-  CHECK(features::internal::IsOnDeviceModelAdaptationEnabled(feature_));
   if (!on_device_component_state_manager) {
     return;
   }
@@ -124,37 +133,41 @@ OnDeviceModelAdaptationLoader::OnDeviceModelAdaptationLoader(
 }
 
 OnDeviceModelAdaptationLoader::~OnDeviceModelAdaptationLoader() {
-  if (registered_with_model_provider_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        features::internal::GetOptimizationTargetForModelAdaptation(feature_),
-        this);
+  Unregister();
+}
+
+void OnDeviceModelAdaptationLoader::Unregister() {
+  if (registered_spec_) {
+    model_provider_->RemoveObserverForOptimizationTargetModel(target_, this);
+    registered_spec_.reset();
   }
 }
 
 void OnDeviceModelAdaptationLoader::StateChanged(
     const OnDeviceModelComponentState* state) {
+  MaybeRegisterModelDownload(
+      state, WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_));
+}
+
+void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
+    const OnDeviceModelComponentState* state,
+    bool was_feature_recently_used) {
   CHECK(model_provider_);
-  if (registered_with_model_provider_) {
-    model_provider_->RemoveObserverForOptimizationTargetModel(
-        features::internal::GetOptimizationTargetForModelAdaptation(feature_),
-        this);
-    registered_with_model_provider_ = false;
-  }
-  base_model_spec_ = std::nullopt;
-  on_load_fn_.Run(nullptr);
   if (!state) {
+    Unregister();
+    on_load_fn_.Run(nullptr);
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
     return;
   }
-  base_model_spec_ = state->GetBaseModelSpec();
+  auto spec = state->GetBaseModelSpec();
+  if (registered_spec_ == spec) {
+    return;
+  }
+  Unregister();
+  on_load_fn_.Run(nullptr);
   if (!switches::GetOnDeviceModelExecutionOverride()) {
-    if (!base_model_spec_) {
-      RecordAdaptationModelAvailability(
-          feature_, OnDeviceModelAdaptationAvailability::kBaseModelSpecInvalid);
-      return;
-    }
-    if (!WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_)) {
+    if (!was_feature_recently_used) {
       RecordAdaptationModelAvailability(
           feature_,
           OnDeviceModelAdaptationAvailability::kFeatureNotRecentlyUsed);
@@ -162,29 +175,42 @@ void OnDeviceModelAdaptationLoader::StateChanged(
     }
   }
 
+  registered_spec_ = state->GetBaseModelSpec();
   proto::Any any_metadata;
   any_metadata.set_type_url(
       "type.googleapis.com/"
       "google.internal.chrome.optimizationguide.v1.OnDeviceBaseModelMetadata");
-  proto::OnDeviceBaseModelMetadata model_metadata;
-  if (base_model_spec_) {
-    model_metadata.set_base_model_version(base_model_spec_->model_version);
-    model_metadata.set_base_model_name(base_model_spec_->model_name);
+  {
+    proto::OnDeviceBaseModelMetadata model_metadata;
+    model_metadata.set_base_model_version(registered_spec_->model_version);
+    model_metadata.set_base_model_name(registered_spec_->model_name);
+    *model_metadata.mutable_supported_performance_hints() = {
+        registered_spec_->supported_performance_hints.begin(),
+        registered_spec_->supported_performance_hints.end()};
+    model_metadata.SerializeToString(any_metadata.mutable_value());
   }
-  model_metadata.SerializeToString(any_metadata.mutable_value());
 
-  model_provider_->AddObserverForOptimizationTargetModel(
-      features::internal::GetOptimizationTargetForModelAdaptation(feature_),
-      any_metadata, this);
-  registered_with_model_provider_ = true;
+  model_provider_->AddObserverForOptimizationTargetModel(target_, any_metadata,
+                                                         this);
+}
+
+void OnDeviceModelAdaptationLoader::OnDeviceEligibleFeatureFirstUsed(
+    ModelBasedCapabilityKey feature) {
+  if (feature != feature_) {
+    return;
+  }
+  if (!on_device_component_state_manager_) {
+    return;
+  }
+  MaybeRegisterModelDownload(
+      on_device_component_state_manager_->GetState(),
+      WasOnDeviceEligibleFeatureRecentlyUsed(feature_, *local_state_));
 }
 
 void OnDeviceModelAdaptationLoader::OnModelUpdated(
     proto::OptimizationTarget optimization_target,
     base::optional_ref<const ModelInfo> model_info) {
-  CHECK_EQ(
-      optimization_target,
-      features::internal::GetOptimizationTargetForModelAdaptation(feature_));
+  CHECK_EQ(optimization_target, target_);
   on_load_fn_.Run(nullptr);
   auto result = ProcessModelUpdate(model_info);
   if (!result.has_value()) {
@@ -232,14 +258,14 @@ OnDeviceModelAdaptationLoader::ProcessModelUpdate(
   }
   // Check for incompatibility when base model override is not specified
   if (!switches::GetOnDeviceModelExecutionOverride()) {
-    if (!base_model_spec_) {
+    if (!registered_spec_) {
       return base::unexpected(
           OnDeviceModelAdaptationAvailability::kBaseModelUnavailable);
     }
     if (supported_model_spec->base_model_name() !=
-            base_model_spec_->model_name ||
+            registered_spec_->model_name ||
         supported_model_spec->base_model_version() !=
-            base_model_spec_->model_version) {
+            registered_spec_->model_version) {
       return base::unexpected(
           OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible);
     }

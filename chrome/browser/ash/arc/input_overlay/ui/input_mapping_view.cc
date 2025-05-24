@@ -76,28 +76,6 @@ void InputMappingView::SetDisplayMode(const DisplayMode mode) {
   current_display_mode_ = mode;
 }
 
-void InputMappingView::ProcessPressedEvent(const ui::LocatedEvent& event) {
-  auto event_location = event.root_location();
-  for (views::View* const child : children()) {
-    if (auto* action_view = views::AsViewClass<ActionView>(child)) {
-      for (arc::input_overlay::ActionLabel* action_label :
-           action_view->labels()) {
-        if (!action_label->HasFocus()) {
-          continue;
-        }
-        if (auto bounds = action_label->GetBoundsInScreen();
-            !bounds.Contains(event_location)) {
-          action_label->ClearFocus();
-          controller_->AddEditMessage(
-              l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS),
-              MessageType::kInfo);
-          break;
-        }
-      }
-    }
-  }
-}
-
 void InputMappingView::SortChildren() {
   std::vector<ActionView*> left, right;
   const float aspect_ratio = (float)width() / height();
@@ -116,39 +94,20 @@ void InputMappingView::SortChildren() {
   std::sort(right.begin(), right.end(), CompareActionViewPosition);
 
   for (auto* child : left) {
-    AddChildView(child);
+    AddChildViewRaw(child);
   }
   for (auto* child : right) {
-    AddChildView(child);
+    AddChildViewRaw(child);
   }
 }
 
 void InputMappingView::OnActionAddedInternal(Action& action) {
-  // No add function for pre-beta version.
-  DCHECK(IsBeta());
-
   if (auto view = action.CreateView(controller_)) {
     AddChildView(std::move(view))->SetDisplayMode(current_display_mode_);
   }
 }
 
-void InputMappingView::OnMouseEvent(ui::MouseEvent* event) {
-  if (event->type() == ui::EventType::kMousePressed) {
-    ProcessPressedEvent(*event);
-  }
-}
-
-void InputMappingView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() == ui::EventType::kGestureTap ||
-      event->type() == ui::EventType::kGestureTapDown) {
-    ProcessPressedEvent(*event);
-  }
-}
-
 void InputMappingView::OnActionAdded(Action& action) {
-  // No add function for pre-beta version.
-  DCHECK(IsBeta());
-
   OnActionAddedInternal(action);
   // A new button options menu corresponding to the action is
   // added when the action is newly added.
@@ -156,9 +115,6 @@ void InputMappingView::OnActionAdded(Action& action) {
 }
 
 void InputMappingView::OnActionRemoved(const Action& action) {
-  // No remove function for pre-beta version.
-  DCHECK(IsBeta());
-
   for (views::View* const child : children()) {
     if (auto* action_view = views::AsViewClass<ActionView>(child);
         action_view->action() == &action) {
@@ -180,17 +136,11 @@ void InputMappingView::OnActionNewStateRemoved(const Action& action) {
 
 void InputMappingView::OnActionTypeChanged(Action* action, Action* new_action) {
   // No action type change function for pre-beta version.
-  DCHECK(IsBeta());
   OnActionRemoved(*action);
   OnActionAddedInternal(*new_action);
 }
 
 void InputMappingView::OnActionInputBindingUpdated(const Action& action) {
-  // Action is updated in another function already for pre-beta version.
-  if (!IsBeta()) {
-    return;
-  }
-
   for (views::View* const child : children()) {
     if (auto* action_view = views::AsViewClass<ActionView>(child);
         action_view->action() == &action) {
@@ -201,10 +151,6 @@ void InputMappingView::OnActionInputBindingUpdated(const Action& action) {
 }
 
 void InputMappingView::OnContentBoundsSizeChanged() {
-  if (!IsBeta()) {
-    return;
-  }
-
   for (views::View* const child : children()) {
     if (auto* child_view = views::AsViewClass<ActionView>(child)) {
       child_view->OnContentBoundsSizeChanged();

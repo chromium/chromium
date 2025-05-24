@@ -10,8 +10,23 @@
 namespace bookmarks {
 
 struct UrlLoadStats;
+struct UserFolderLoadStats;
 
 namespace metrics {
+
+// LINT.IfChange(BookmarksExistInStorageType)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Used to know in which storages permanent nodes have bookmarks.
+enum class BookmarksExistInStorageType {
+  kLocalOnly = 0,
+  kAccountOnly = 1,
+  kLocalAndAccount = 2,
+
+  kMaxValue = kLocalAndAccount,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/bookmarks/enums.xml:BookmarksExistInStorageType)
 
 // Enum for folder categories, reported through UMA. Present in enums.xml as
 // BookmarkFolderType. New values should be added at the end and things should
@@ -57,8 +72,11 @@ enum class StorageFileForUma {
 };
 
 // Records when a bookmark is added by the user.
+// `ancestor_user_folder_depth` is the count of user-generated folders which
+// are ancestors of this bookmark.
 void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
-                            StorageStateForUma storage_state);
+                            StorageStateForUma storage_state,
+                            int ancestor_user_folder_depth);
 
 // Records when a bookmark folder is added by the user.
 void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent,
@@ -68,10 +86,14 @@ void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent,
 void RecordBookmarkRemoved(BookmarkEditSource source);
 
 // Records when a bookmark is opened by the user.
+// `ancestor_user_folder_depth` is the count of user-generated folders which
+// are ancestors of this bookmark.
 void RecordBookmarkOpened(base::Time now,
                           base::Time date_last_used,
                           base::Time date_added,
-                          StorageStateForUma storage_state);
+                          StorageStateForUma storage_state,
+                          bool is_url_bookmark,
+                          int ancestor_user_folder_depth);
 
 // Records when a bookmark or bookmark folder is moved to a different parent
 // folder.
@@ -97,6 +119,10 @@ void RecordTitleEdit(BookmarkEditSource source);
 // Records the metrics derived from `stats`. Recording happens on profile load.
 void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats);
 
+// Records the user-generated folder metrics derived from `stats`. Recording
+// happens on profile load.
+void RecordUserFolderLoadStatsOnProfileLoad(const UserFolderLoadStats& stats);
+
 // Records when a bookmark node is cloned. `num_cloned` is the number of
 // bookmarks that were selected.
 void RecordCloneBookmarkNode(int num_cloned);
@@ -108,6 +134,13 @@ void RecordAverageNodeSizeAtStartup(size_t size_in_bytes);
 // JSON file representing local-or-syncable bookmarks.
 void RecordIdsReassignedOnProfileLoad(StorageFileForUma storage_file,
                                       bool ids_reassigned);
+
+// Records the storage type of the permanent nodes. If `bookmark_bar_only` is
+// set, only records considering the bookmark bar, otherwise consider all
+// permanent nodes (without the Managed nodes).
+void RecordBookmarksExistInStorageType(
+    bool bookmark_bar_only,
+    BookmarksExistInStorageType storage_type);
 
 }  // namespace metrics
 

@@ -18,7 +18,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_path_override.h"
-#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/test/fake_environment.h"
@@ -33,6 +32,7 @@
 #endif
 
 class Profile;
+class SkBitmap;
 
 #if BUILDFLAG(IS_WIN)
 class ShellLinkItem;
@@ -150,14 +150,23 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
   // === Shortcuts ===
   // -------------------------------
 
-  // Reads the icon color for a specific shortcut that has been created.
-  // For Mac and Win, the shortcut_dir field is mandatory. For all other OSes,
-  // this can be an empty base::FilePath().
-  // For ChromeOS and Linux, the size_px field is mandatory to prevent erroneous
-  // results. For all other OSes, the field can be skipped. The default value of
-  // size_px is usually filled up with kLauncherIconSize (see
-  // chrome/browser/web_applications/web_app_icon_generator.h for more
+  // Reads the icon  for a specific shortcut that has been created.
+  // `shortcut_dir` is optional, and will default to the most likely place on
+  // each platform. For ChromeOS and Linux, the size_px field is mandatory to
+  // prevent erroneous results. For all other OSes, the field can be skipped.
+  // The default value of size_px is usually filled up with kLauncherIconSize
+  // (see chrome/browser/web_applications/web_app_icon_generator.h for more
   // information), which is 128.
+  // TODO(https://crbug.com/385198125): Have a better respect for all parameters
+  // across platforms, or unify this better.
+  std::optional<SkBitmap> GetShortcutIcon(
+      Profile* profile,
+      std::optional<base::FilePath> shortcut_dir,
+      const webapps::AppId& app_id,
+      const std::string& app_name,
+      SquareSizePx suggested_size_px = icon_size::k128);
+
+  // Similar to above but just reads the color in the top left corner.
   std::optional<SkColor> GetShortcutIconTopLeftColor(
       Profile* profile,
       base::FilePath shortcut_dir,
@@ -165,8 +174,8 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
       const std::string& app_name,
       SquareSizePx size_px = icon_size::k128);
 
-  // Gets the current shortcut path based on a shortcut directory, app_id and
-  // app_name. This should only be run on Windows, Mac and Linux.
+  // Gets the current shortcut path based on a shortcut directory, app_id
+  // and app_name. This should only be run on Windows, Mac and Linux.
   base::FilePath GetShortcutPath(Profile* profile,
                                  base::FilePath shortcut_dir,
                                  const webapps::AppId& app_id,
@@ -261,13 +270,6 @@ class OsIntegrationTestOverrideImpl : public OsIntegrationTestOverride {
 
   explicit OsIntegrationTestOverrideImpl(const base::FilePath& base_path);
   ~OsIntegrationTestOverrideImpl() override;
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  // Reads an icon file (.ico/.png/.icns) and returns the color at the
-  // top left position (0,0).
-  SkColor GetIconTopLeftColorFromShortcutFile(
-      const base::FilePath& shortcut_path);
-#endif
 
 #if BUILDFLAG(IS_WIN)
   SkColor ReadColorFromShortcutMenuIcoFile(const base::FilePath& file_path);

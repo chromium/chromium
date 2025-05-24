@@ -13,9 +13,11 @@ import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 
 /** This class inflates the layout for the Autofill save IBAN bottom sheet. */
+@NullMarked
 /*package*/ class AutofillSaveIbanBottomSheetView {
     /** The view that contains all other views. */
     final ViewGroup mContentView;
@@ -32,8 +34,8 @@ import org.chromium.chrome.R;
     /** The text that describes what a save IBAN does. */
     final TextView mDescription;
 
-    /** The obfuscated value for IBAN. */
-    final TextView mIbanLabel;
+    /** The IBAN value. */
+    final TextView mIbanValue;
 
     /** The nickname input by the user. */
     EditText mNickname;
@@ -56,7 +58,7 @@ import org.chromium.chrome.R;
         mLogoIcon = mContentView.findViewById(R.id.autofill_save_iban_google_pay_icon);
         mTitle = mContentView.findViewById(R.id.autofill_save_iban_title_text);
         mDescription = mContentView.findViewById(R.id.autofill_save_iban_description_text);
-        mIbanLabel = mContentView.findViewById(R.id.autofill_save_iban_label);
+        mIbanValue = mContentView.findViewById(R.id.autofill_save_iban_value);
         mNickname = mContentView.findViewById(R.id.autofill_save_iban_nickname_input);
         mAcceptButton = mContentView.findViewById(R.id.autofill_save_iban_confirm_button);
         mCancelButton = mContentView.findViewById(R.id.autofill_save_iban_cancel_button);

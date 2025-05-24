@@ -5,9 +5,8 @@
 #ifndef CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 #define CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 
-#include <map>
-
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/agent_scheduling_group.mojom.h"
@@ -22,6 +21,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
@@ -136,10 +136,13 @@ class CONTENT_EXPORT AgentSchedulingGroup
 #endif
 
   // Map of registered RenderFrames.
-  std::map<blink::LocalFrameToken, RenderFrameImpl*> listener_map_;
+  absl::flat_hash_map<blink::LocalFrameToken,
+                      raw_ptr<RenderFrameImpl, CtnExperimental>>
+      listener_map_;
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  std::map<int32_t, RenderFrameImpl*> routing_id_map_;
+  absl::flat_hash_map<int32_t, raw_ptr<RenderFrameImpl, CtnExperimental>>
+      routing_id_map_;
 #endif
 
   // A dedicated scheduler for this AgentSchedulingGroup.

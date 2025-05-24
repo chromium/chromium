@@ -17,6 +17,27 @@ AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
   return autofill_error_dialog_context;
 }
 
+AutofillErrorDialogContext
+AutofillErrorDialogContext::WithCardInfoRetrievalPermanentOrTemporaryError(
+    bool is_permanent_error) {
+  AutofillErrorDialogContext autofill_error_dialog_context;
+  autofill_error_dialog_context.type =
+      is_permanent_error
+          ? AutofillErrorDialogType::kCardInfoRetrievalPermanentError
+          : AutofillErrorDialogType::kCardInfoRetrievalTemporaryError;
+  return autofill_error_dialog_context;
+}
+
+AutofillErrorDialogContext
+AutofillErrorDialogContext::WithBnplPermanentOrTemporaryError(
+    bool is_permanent_error) {
+  AutofillErrorDialogContext autofill_error_dialog_context;
+  autofill_error_dialog_context.type =
+      is_permanent_error ? AutofillErrorDialogType::kBnplPermanentError
+                         : AutofillErrorDialogType::kBnplTemporaryError;
+  return autofill_error_dialog_context;
+}
+
 AutofillErrorDialogContext::AutofillErrorDialogContext() = default;
 
 AutofillErrorDialogContext::AutofillErrorDialogContext(

@@ -7,11 +7,11 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,8 +33,6 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
             extensions::ExtensionSystem::Get(profile()));
     extension_system->CreateExtensionService(
         base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-    extension_service_ =
-        extensions::ExtensionSystem::Get(profile())->extension_service();
   }
 
   void TearDown() override {
@@ -47,8 +45,9 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
                Browser* test_browser = nullptr) {
     ExtensionInstalledWaiter::SetGivingUpCallbackForTesting(base::BindRepeating(
         &ExtensionInstalledWaiterTest::GivingUp, base::Unretained(this)));
-    if (!test_browser)
+    if (!test_browser) {
       test_browser = browser();
+    }
     ExtensionInstalledWaiter::WaitForInstall(
         extension, test_browser,
         base::BindOnce(&ExtensionInstalledWaiterTest::Done,
@@ -66,18 +65,14 @@ class ExtensionInstalledWaiterTest : public BrowserWithTestWindowTest {
     return extensions::ExtensionBuilder(name).Build();
   }
 
-  extensions::ExtensionService* extension_service() {
-    return extension_service_;
+  extensions::ExtensionRegistrar* extension_registrar() {
+    return extensions::ExtensionRegistrar::Get(profile());
   }
-
- private:
-  raw_ptr<extensions::ExtensionService, DanglingUntriaged> extension_service_ =
-      nullptr;
 };
 
 TEST_F(ExtensionInstalledWaiterTest, ExtensionIsAlreadyInstalled) {
   auto extension = MakeExtensionNamed("foo");
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   WaitFor(extension);
   EXPECT_EQ(1, done_called_);
@@ -89,7 +84,7 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionInstall) {
   WaitFor(extension);
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(extension.get());
+  extension_registrar()->AddExtension(extension);
 
   // ExtensionInstalledWaiter must *not* call the done callback on the same
   // runloop cycle as the extension installation, to allow all the other
@@ -108,11 +103,11 @@ TEST_F(ExtensionInstalledWaiterTest, NotTheExtensionYouAreLookingFor) {
   WaitFor(foo);
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(bar.get());
+  extension_registrar()->AddExtension(bar);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(foo.get());
+  extension_registrar()->AddExtension(foo);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(1, done_called_);
 }
@@ -123,8 +118,8 @@ TEST_F(ExtensionInstalledWaiterTest, ExtensionUninstalledWhileWaiting) {
   WaitFor(extension);
   EXPECT_EQ(0, done_called_);
 
-  extension_service()->AddExtension(extension.get());
-  extension_service()->UnloadExtension(
+  extension_registrar()->AddExtension(extension);
+  extension_registrar()->RemoveExtension(
       extension->id(), extensions::UnloadedExtensionReason::UNINSTALL);
   EXPECT_EQ(1, giving_up_called_);
 

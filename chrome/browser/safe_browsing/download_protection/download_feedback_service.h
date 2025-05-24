@@ -10,7 +10,7 @@
 
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
@@ -31,6 +31,8 @@ class DownloadFeedback;
 // Tracks active DownloadFeedback objects, provides interface for storing ping
 // data for malicious downloads.
 // Lives on the UI thread.
+// TODO(crbug.com/397407934): Download feedback is not supported on Android yet,
+// but it will be.
 class DownloadFeedbackService {
  public:
   DownloadFeedbackService(

@@ -11,6 +11,7 @@
 #include <set>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 
@@ -18,7 +19,7 @@ namespace storage_monitor {
 
 class StorageInfo;
 
-class MediaStorageUtil {
+class COMPONENT_EXPORT(STORAGE_MONITOR) MediaStorageUtil {
  public:
   typedef std::set<std::string /*device id*/> DeviceIdSet;
 

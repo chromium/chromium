@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -56,19 +55,17 @@ class OmniboxPedalImplementationsTest : public testing::Test {
     InitPedals();
   }
 
-  void OnAutocompleteAccept(
-      const GURL& destination_url,
-      TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
-      ui::PageTransition transition,
-      AutocompleteMatchType::Type match_type,
-      base::TimeTicks match_selection_timestamp,
-      bool destination_url_entered_without_scheme,
-      bool destination_url_entered_with_http_scheme,
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname) {
+  void OnAutocompleteAccept(const GURL& destination_url,
+                            TemplateURLRef::PostContent* post_content,
+                            WindowOpenDisposition disposition,
+                            ui::PageTransition transition,
+                            AutocompleteMatchType::Type match_type,
+                            base::TimeTicks match_selection_timestamp,
+                            bool destination_url_entered_without_scheme,
+                            bool destination_url_entered_with_http_scheme,
+                            const std::u16string& text,
+                            const AutocompleteMatch& match,
+                            const AutocompleteMatch& alternative_nav_match) {
     last_destination_url_ = destination_url;
   }
 
@@ -17953,7 +17950,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
           sequence.ResetLinks();
           return pedal.second->IsConceptMatch(sequence);
         };
-        auto iter = base::ranges::find_if(pedals, is_match);
+        auto iter = std::ranges::find_if(pedals, is_match);
         EXPECT_NE(iter, pedals.end()) << "Pedal not found for: " << expression;
         EXPECT_EQ(iter->second.get(), canonical_pedal)
             << "Found wrong Pedal for: " << expression;

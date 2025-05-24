@@ -52,8 +52,7 @@ void AudioCapturer::OnCaptureStarted() {}
 void AudioCapturer::Capture(const media::AudioBus* audio_source,
                             base::TimeTicks audio_capture_time,
                             const media::AudioGlitchInfo& glitch_info,
-                            double volume,
-                            bool key_pressed) {
+                            double volume) {
   // This is called on a worker thread created by the `audio_capturer_` (See
   // `media::AudioDeviceThread`. The given `audio_source` wraps audio data in a
   // shared memory with the audio service. Calling `audio_capturer_->Stop()`
@@ -80,10 +79,8 @@ void AudioCapturer::Capture(const media::AudioBus* audio_source,
   auto wrapping_audio_bus =
       media::AudioBus::CreateWrapper(backing_audio_bus->channels());
   wrapping_audio_bus->set_frames(backing_audio_bus->frames());
-  for (int channel = 0; channel < backing_audio_bus->channels(); ++channel) {
-    wrapping_audio_bus->SetChannelData(channel,
-                                       backing_audio_bus->channel(channel));
-  }
+  wrapping_audio_bus->SetAllChannels(backing_audio_bus->AllChannels());
+
   // Keep `backing_audio_bus` alive as long as `wrapping_audio_bus` by
   // transferring its ownership to the `wrapping_audio_bus`'s deleter callback.
   wrapping_audio_bus->SetWrappedDataDeleter(

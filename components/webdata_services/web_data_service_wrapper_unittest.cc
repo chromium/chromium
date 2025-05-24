@@ -49,7 +49,8 @@ class WebDataServiceWrapperTest : public testing::Test {
     return std::make_unique<WebDataServiceWrapper>(
         scoped_temp_dir_.GetPath(), "en_US",
         task_environment_.GetMainThreadTaskRunner(), base::DoNothing(),
-        os_crypt_.get());
+        os_crypt_.get(),
+        /*use_in_memory_autofill_account_database=*/false);
   }
 
   base::test::TaskEnvironment task_environment_{

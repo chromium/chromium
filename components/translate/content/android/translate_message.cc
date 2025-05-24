@@ -26,6 +26,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/language_detection/core/constants.h"
 #include "components/messages/android/message_enums.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/translate/core/browser/language_state.h"
@@ -33,7 +34,6 @@
 #include "components/translate/core/browser/translate_metrics_logger.h"
 #include "components/translate/core/browser/translate_ui_delegate.h"
 #include "components/translate/core/browser/translate_ui_languages_manager.h"
-#include "components/translate/core/common/translate_constants.h"
 #include "components/translate/core/common/translate_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -287,8 +287,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   bridge_->ShowMessage(env, std::move(title), std::move(description),
@@ -343,8 +342,7 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
       base::debug::DumpWithoutCrashing();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -371,8 +369,7 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
       // These dismiss reasons should not be possible for a TranslateMessage,
       // since clicking the primary or secondary buttons doesn't dismiss the
       // message.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     default:
       break;
@@ -477,7 +474,8 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
       static_cast<int>(OverflowMenuItemId::kInvalid);
 
   if (!ui_delegate_->IsIncognito() &&
-      ui_languages_manager_->GetSourceLanguageCode() != kUnknownLanguageCode) {
+      ui_languages_manager_->GetSourceLanguageCode() !=
+          language_detection::kUnknownLanguageCode) {
     // "Always translate pages in <source language>".
     CHECK_GT(std::extent<decltype(titles)>::value, item_count);
     titles[item_count] = l10n_util::GetStringFUTF16(
@@ -488,7 +486,8 @@ TranslateMessage::BuildOverflowMenu(JNIEnv* env) {
         static_cast<int>(OverflowMenuItemId::kToggleAlwaysTranslateLanguage);
   }
 
-  if (ui_languages_manager_->GetSourceLanguageCode() != kUnknownLanguageCode) {
+  if (ui_languages_manager_->GetSourceLanguageCode() !=
+      language_detection::kUnknownLanguageCode) {
     // "Never translate pages in <source language>".
     CHECK_GT(std::extent<decltype(titles)>::value, item_count);
     titles[item_count] = l10n_util::GetStringFUTF16(
@@ -567,8 +566,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return nullptr;
   }
@@ -589,7 +587,8 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
     case OverflowMenuItemId::kChangeTargetLanguage: {
       ReportCompactInfobarEvent(InfobarEvent::INFOBAR_MORE_LANGUAGES);
       const std::string skip_language_codes[] = {
-          ui_languages_manager_->GetTargetLanguageCode(), kUnknownLanguageCode};
+          ui_languages_manager_->GetTargetLanguageCode(),
+          language_detection::kUnknownLanguageCode};
       std::vector<std::string> content_language_codes;
       ui_delegate_->GetContentLanguagesCodes(&content_language_codes);
       return ConstructLanguagePickerMenu(
@@ -641,8 +640,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return nullptr;

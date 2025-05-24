@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -23,11 +22,11 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
-#include "components/autofill/core/browser/browser_autofill_manager.h"
-#include "components/autofill/core/browser/form_data_importer.h"
-#include "components/autofill/core/browser/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/form_data_importer.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
-#include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -43,7 +42,7 @@ namespace {
 class TestAutofillManager : public autofill::BrowserAutofillManager {
  public:
   explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
-      : BrowserAutofillManager(driver, "en-US") {}
+      : BrowserAutofillManager(driver) {}
 
   [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
       int min_num_awaited_calls) {
@@ -254,8 +253,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 // Tests that the custom tab bar is visible in fullscreen mode.
-// TODO(crbug.com/40855995): Flaky on linux-wayland-rel and linux-lacros-rel
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/40855995): Flaky on linux-wayland-rel.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CustomTabBarIsVisibleInFullscreen \
   DISABLED_CustomTabBarIsVisibleInFullscreen
 #else
@@ -436,17 +435,12 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Tests that GetWindowMask is supported for lacros in chromeos.
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
                        BrowserFrameWindowMask) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserNonClientFrameView* frame_view = browser_view->frame()->GetFrameView();
   SkPath path;
   frame_view->GetWindowMask(frame_view->bounds().size(), &path);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  EXPECT_FALSE(path.isEmpty());
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(path.isEmpty());
-#endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

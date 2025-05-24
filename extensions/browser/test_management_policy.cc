@@ -44,16 +44,18 @@ std::string TestManagementPolicyProvider::GetDebugPolicyProviderName() const {
 
 bool TestManagementPolicyProvider::UserMayLoad(const Extension* extension,
                                                std::u16string* error) const {
-  if (error && !may_load_)
+  if (error && !may_load_) {
     *error = error_message_;
+  }
   return may_load_;
 }
 
 bool TestManagementPolicyProvider::UserMayModifySettings(
     const Extension* extension,
     std::u16string* error) const {
-  if (error && !may_modify_status_)
+  if (error && !may_modify_status_) {
     *error = error_message_;
+  }
   return may_modify_status_;
 }
 
@@ -61,28 +63,28 @@ bool TestManagementPolicyProvider::ExtensionMayModifySettings(
     const Extension* source_extension,
     const Extension* extension,
     std::u16string* error) const {
-  if (error && !may_modify_status_)
+  if (error && !may_modify_status_) {
     *error = error_message_;
+  }
   return may_modify_status_;
 }
 
 bool TestManagementPolicyProvider::MustRemainEnabled(
     const Extension* extension,
     std::u16string* error) const {
-  if (error && must_remain_enabled_)
+  if (error && must_remain_enabled_) {
     *error = error_message_;
+  }
   return must_remain_enabled_;
 }
 
 bool TestManagementPolicyProvider::MustRemainDisabled(
     const Extension* extension,
-    disable_reason::DisableReason* reason,
-    std::u16string* error) const {
+    disable_reason::DisableReason* reason) const {
   if (must_remain_disabled_) {
-    if (error)
-      *error = error_message_;
-    if (reason)
+    if (reason) {
       *reason = disable_reason_;
+    }
   }
   return must_remain_disabled_;
 }
@@ -90,8 +92,9 @@ bool TestManagementPolicyProvider::MustRemainDisabled(
 bool TestManagementPolicyProvider::MustRemainInstalled(
     const Extension* extension,
     std::u16string* error) const {
-  if (error && must_remain_installed_)
+  if (error && must_remain_installed_) {
     *error = error_message_;
+  }
   return must_remain_installed_;
 }
 

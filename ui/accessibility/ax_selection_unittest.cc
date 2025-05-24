@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_selection.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/test_single_ax_tree_manager.h"
 
 // Helper macro for testing selection values and maintain
@@ -130,9 +131,9 @@ TEST(AXSelectionTest, UnignoredSelection) {
       test_ax_tree_manager.GetTree()->GetUnignoredSelection();
 
   EXPECT_EQ(kInvalidAXNodeID, unignored_selection.anchor_object_id);
-  EXPECT_EQ(-1, unignored_selection.anchor_offset);
+  EXPECT_EQ(ax::mojom::kNoSelectionOffset, unignored_selection.anchor_offset);
   EXPECT_EQ(kInvalidAXNodeID, unignored_selection.focus_object_id);
-  EXPECT_EQ(-1, unignored_selection.focus_offset);
+  EXPECT_EQ(ax::mojom::kNoSelectionOffset, unignored_selection.focus_offset);
   struct SelectionData {
     int32_t anchor_id;
     int32_t anchor_offset;

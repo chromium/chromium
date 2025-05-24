@@ -4,14 +4,15 @@
 
 package org.chromium.chrome.browser.browserservices.ui.controller;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A Delegate for the {@link CurrentPageVerifier} that provides implementation specific to
  * Trusted Web Activities, WebAPKs or A2HS as appropriate.
  */
+@NullMarked
 public interface Verifier {
     /**
      * Checks whether the given URL is verified.
@@ -54,8 +55,7 @@ public interface Verifier {
      * The last result can really be anything other than https://www.example.com/webapp/ - just
      * something to signify we aren't on the verified scope.
      */
-    @Nullable
-    String getVerifiedScope(String url);
+    @Nullable String getVerifiedScope(String url);
 
     /**
      * Whether a navigation to the given URL should stay within Chrome even if there are other apps

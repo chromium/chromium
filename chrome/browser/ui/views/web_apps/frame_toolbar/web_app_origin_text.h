@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FRAME_TOOLBAR_WEB_APP_ORIGIN_TEXT_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -51,7 +52,7 @@ class WebAppOriginText : public views::View,
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
 
-  const std::u16string& GetLabelTextForTesting();
+  std::u16string_view GetLabelTextForTesting() const;
 
  private:
   friend class WebAppFrameToolbarTestHelper;

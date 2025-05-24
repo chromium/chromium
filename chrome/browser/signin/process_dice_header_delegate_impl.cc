@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -16,8 +17,8 @@
 #include "chrome/browser/signin/dice_web_signin_interceptor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -45,45 +46,42 @@ void AttemptChromeSignin(CoreAccountId account_id,
                          signin_metrics::AccessPoint access_point) {
   CHECK(!account_id.empty());
 
-  // For the non-ExplicitBrowserSignin equivalent counterpart, the code takes
-  // care of in `SigninManager::UpdateUnconsentedPrimaryAccount()`.
-  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    return;
-  }
-
   // Do not sign in if the access point is unknown.
-  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN) {
+  if (access_point == signin_metrics::AccessPoint::kUnknown) {
     return;
   }
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(&profile);
-  if (access_point == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      AccountInfo account_info =
-          identity_manager->FindExtendedAccountInfoByAccountId(account_id);
-      // If the user did not choose the signin choice, do not proceed with a
-      // sign in from a Web Signin.
-      if (SigninPrefs(*profile.GetPrefs())
-              .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
-          ChromeSigninUserChoice::kSignin) {
-        return;
-      }
+  if (access_point == signin_metrics::AccessPoint::kWebSignin) {
+    AccountInfo account_info =
+        identity_manager->FindExtendedAccountInfoByAccountId(account_id);
 
-      // Proceed with the access point as the choice remembered.
-      access_point =
-          signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED;
+    // When automation is enabled, automatically promote web sign in to Chrome
+    // sign in.
+    const bool auto_accept_signin =
+        base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kBrowserSigninAutoAccept);
+
+    // If the user did not choose the signin choice, do not proceed with a
+    // sign in from a Web Signin.
+    if (!auto_accept_signin &&
+        SigninPrefs(*profile.GetPrefs())
+                .GetChromeSigninInterceptionUserChoice(account_info.gaia) !=
+            ChromeSigninUserChoice::kSignin) {
+      return;
     }
+
+    // Proceed with the access point as the choice remembered.
+    access_point = signin_metrics::AccessPoint::kSigninChoiceRemembered;
   }
 
   // This access point should only be used as a result of a non Uno flow.
-  CHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER,
-           access_point);
+  CHECK_NE(signin_metrics::AccessPoint::kDesktopSigninManager, access_point);
 
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    base::UmaHistogramEnumeration(
-        "Signin.SigninManager.SigninAccessPoint", access_point,
-        signin_metrics::AccessPoint::ACCESS_POINT_MAX);
+    base::UmaHistogramEnumeration("Signin.SigninManager.SigninAccessPoint",
+                                  access_point);
     identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
         account_id, signin::ConsentLevel::kSignin, access_point);
   }
@@ -96,7 +94,7 @@ std::unique_ptr<ProcessDiceHeaderDelegateImpl>
 ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   bool is_sync_signin_tab = false;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::kUnknown;
   signin_metrics::PromoAction promo_action =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   GURL redirect_url;
@@ -121,7 +119,7 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
     on_signin_header_received = tab_helper->GetOnSigninHeaderReceived();
 
   } else {
-    access_point = signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+    access_point = signin_metrics::AccessPoint::kWebSignin;
   }
 
   // If there is no active `DiceTabHelper`, default to the in-browser error

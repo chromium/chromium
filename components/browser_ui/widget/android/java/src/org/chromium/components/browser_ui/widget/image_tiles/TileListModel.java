@@ -4,6 +4,7 @@
 
 package org.chromium.components.browser_ui.widget.image_tiles;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -12,6 +13,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * This includes (1) a {@link ListModel} implementation and (2) exposing a
  * {@link PropertyModel} for shared item properties and general list information.
  */
+@NullMarked
 class TileListModel extends ListModel<ImageTile> {
     private final PropertyModel mListProperties = new PropertyModel(TileListProperties.ALL_KEYS);
 

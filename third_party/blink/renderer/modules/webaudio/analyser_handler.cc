@@ -20,7 +20,7 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 }  // namespace
 
 AnalyserHandler::AnalyserHandler(AudioNode& node, float sample_rate)
-    : AudioHandler(kNodeTypeAnalyser, node, sample_rate),
+    : AudioHandler(NodeType::kNodeTypeAnalyser, node, sample_rate),
       analyser_(
           node.context()->GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddInput();

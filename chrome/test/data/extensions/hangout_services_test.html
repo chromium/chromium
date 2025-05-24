@@ -35,17 +35,6 @@ function populateSources(devices) {
   }
 }
 
-//
-// Manual tests.
-//
-
-function manualTestChooseDesktopMedia() {
-  chooseDesktopMedia(function(results) {
-      alert('Cancel ID: ' + results.cancelId +
-            ', stream ID: ' + results.streamId);
-    });
-}
-
 // Browser test scaffolding. Starts the test run from a browser
 // test. Sets the document title to 'success' or 'failure' when the
 // test completes.
@@ -71,8 +60,5 @@ Run all automated tests manually (empty results indicate success):
 <input type="submit" value="Run"
        onclick="runAllTests(function(results) { alert('Results:\n' +
        results); });"><br/>
-Manually test choosing desktop media:
-<input type="submit" value="Choose Media"
-       onclick="manualTestChooseDesktopMedia();"><br/>
 </body>
 </html>

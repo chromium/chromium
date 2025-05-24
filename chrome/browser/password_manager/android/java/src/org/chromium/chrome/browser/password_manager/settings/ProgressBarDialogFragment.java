@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 package org.chromium.chrome.browser.password_manager.settings;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -15,15 +17,18 @@ import androidx.fragment.app.DialogFragment;
 //import org.chromium.chrome.R;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.components.browser_ui.widget.MaterialProgressBar;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Shows the dialog that informs the user about the progress of preparing passwords for export and
  * allows the user to cancel that operation.
  */
+@NullMarked
 public class ProgressBarDialogFragment extends DialogFragment {
     // This handler is used to perform the user-triggered cancellation of the password preparation.
     private DialogInterface.OnClickListener mHandler;
 
+    @Initializer
     public void setCancelProgressHandler(DialogInterface.OnClickListener handler) {
         mHandler = handler;
     }
@@ -34,7 +39,7 @@ public class ProgressBarDialogFragment extends DialogFragment {
      * allow to signal its own progress.
      */
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View dialog =
                 getActivity().getLayoutInflater().inflate(R.layout.passwords_progress_dialog, null);
         MaterialProgressBar bar = dialog.findViewById(R.id.passwords_progress_bar);
@@ -51,7 +56,7 @@ public class ProgressBarDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // If there is a |savedInstanceState|, then the dialog is being recreated
         // by Android and will lack the necessary click handler. Dismiss

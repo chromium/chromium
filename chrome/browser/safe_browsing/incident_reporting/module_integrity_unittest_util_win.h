@@ -14,7 +14,7 @@ namespace safe_browsing {
 // The test dlls used by module_integrity_verifier_win_unittest.cc and
 // environment_data_collection_win_unittest.cc.  The tests assume there exists
 // at least one entry.
-constexpr auto kTestDllNames = std::to_array({
+inline constexpr auto kTestDllNames = std::to_array({
     L"verifier_test_dll_1.dll",
     L"verifier_test_dll_2.dll",
 });

@@ -8,15 +8,16 @@
 
 #include "base/check_is_test.h"
 #include "base/memory/singleton.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/values_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ChromePrefModelAssociatorClient::ChromePrefModelAssociatorClient() = default;
 
@@ -41,7 +42,7 @@ base::Value ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     // Case: Neither value has expected type.
     return base::Value();
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (pref_name == ash::prefs::kTimeOfLastSessionActivation) {
     std::optional<base::Time> local_time = base::ValueToTime(local_value);
     std::optional<base::Time> server_time = base::ValueToTime(server_value);
@@ -59,7 +60,7 @@ base::Value ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     // Case: Neither value has expected type.
     return base::Value();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return base::Value();
 }
 

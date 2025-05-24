@@ -42,7 +42,7 @@ enum IDBCursorDirection {
   [CachedAttribute=isKeyDirty, CallWith=ScriptState] readonly attribute any key;
   [CachedAttribute=isPrimaryKeyDirty, CallWith=ScriptState]
   readonly attribute any primaryKey;
-  [SameObject] readonly attribute IDBRequest request;
+  [SameObject, SaveSameObject] readonly attribute IDBRequest request;
 
   [RaisesException] void advance([EnforceRange] unsigned long count);
 

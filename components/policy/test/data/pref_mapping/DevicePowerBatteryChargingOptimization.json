@@ -1,0 +1,147 @@
+
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "note": "Test for DevicePowerBatteryChargingOptimization and DevicePowerAdaptiveChargingEnabled policy.",
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default value when no policies are set. DevicePowerAdaptiveChargingEnabled has a default_for_enterprise_users, so when DevicePowerAdaptiveChargingEnabled unset, the pref will be overriden by default_for_enterprise_users",
+        "policies": {},
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": false
+          },
+          "power.charge_limit_enabled": {
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "note":"Check when DevicePowerBatteryChargingOptimization is unset, DevicePowerAdaptiveChargingEnabled can still set adaptive charging",
+        "policies": {
+          "DevicePowerAdaptiveChargingEnabled": false
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {
+          "DevicePowerAdaptiveChargingEnabled": true
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": true
+          }
+        }
+      },
+      {
+        "note":"Check that DevicePowerBatteryChargingOptimization sets the preference correctly (Standard).",
+        "policies": {
+          "DevicePowerBatteryChargingOptimization": 1
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": false
+          },
+          "power.charge_limit_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "DevicePowerBatteryChargingOptimization overrides DevicePowerAdaptiveChargingEnabled.",
+        "policies": {
+          "DevicePowerBatteryChargingOptimization": 1,
+          "DevicePowerAdaptiveChargingEnabled": true
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": false
+          },
+          "power.charge_limit_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Check that DevicePowerBatteryChargingOptimization sets the preference correctly (Adaptive).",
+        "policies": {
+          "DevicePowerBatteryChargingOptimization": 2
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": true
+          },
+          "power.charge_limit_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "DevicePowerBatteryChargingOptimization overrides DevicePowerAdaptiveChargingEnabled.",
+        "policies": {
+          "DevicePowerBatteryChargingOptimization": 2,
+          "DevicePowerAdaptiveChargingEnabled": false
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": true
+          },
+          "power.charge_limit_enabled": {
+            "location": "local_state",
+            "value": false
+          }
+        }
+      },
+      {
+        "note": "Check that DevicePowerBatteryChargingOptimization sets the preference correctly (Limited).",
+        "policies": {
+          "DevicePowerBatteryChargingOptimization": 3
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": false
+          },
+          "power.charge_limit_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "note": "DevicePowerBatteryChargingOptimization overrides DevicePowerAdaptiveChargingEnabled.",
+        "policies": {
+          "DevicePowerBatteryChargingOptimization": 3,
+          "DevicePowerAdaptiveChargingEnabled": true
+        },
+        "prefs": {
+          "power.adaptive_charging_enabled": {
+            "location": "user_profile",
+            "value": false
+          },
+          "power.charge_limit_enabled": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      }
+    ]
+  }
+]

@@ -20,6 +20,8 @@ namespace media {
 class MediaFoundationCdmProxy
     : public base::RefCountedThreadSafe<MediaFoundationCdmProxy> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // Used by MediaFoundationProtectionManager to get
   // ABI::Windows::Media::Protection::IMediaProtectionPMPServer to implement
   // ABI::Windows::Media::Protection::IMediaProtectionManager::get_Properties

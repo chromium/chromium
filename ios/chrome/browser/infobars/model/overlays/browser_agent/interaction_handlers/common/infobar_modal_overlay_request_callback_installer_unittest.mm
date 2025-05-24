@@ -11,7 +11,6 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 

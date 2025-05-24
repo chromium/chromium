@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.download.settings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.DownloadDialogBridge;
 import org.chromium.chrome.browser.download.settings.DownloadDirectoryAdapter.DownloadLocationHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** Profile aware helper to access and set the default download directory. */
+@NullMarked
 public class DownloadLocationHelperImpl implements DownloadLocationHelper {
     private final Profile mProfile;
 
@@ -22,7 +25,7 @@ public class DownloadLocationHelperImpl implements DownloadLocationHelper {
     }
 
     @Override
-    public void setDownloadAndSaveFileDefaultDirectory(String directory) {
+    public void setDownloadAndSaveFileDefaultDirectory(@Nullable String directory) {
         DownloadDialogBridge.setDownloadAndSaveFileDefaultDirectory(mProfile, directory);
     }
 }

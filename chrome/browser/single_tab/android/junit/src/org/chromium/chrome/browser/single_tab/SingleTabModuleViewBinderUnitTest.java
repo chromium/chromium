@@ -56,7 +56,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class SingleTabModuleViewBinderUnitTest {
     private static final String TEST_TITLE = "test";
     private static final String TEST_URL = "www.foo.com";
-    private final int mTabId = 1;
+    private static final int TAB_ID = 1;
     private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
 
     private Activity mActivity;

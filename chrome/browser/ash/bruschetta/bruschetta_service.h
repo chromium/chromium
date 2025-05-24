@@ -36,9 +36,6 @@ class BruschettaService : public KeyedService,
   explicit BruschettaService(Profile* profile);
   ~BruschettaService() override;
 
-  // Helper method to get the service instance for the given profile.
-  static BruschettaService* GetForProfile(Profile* profile);
-
   // Register an existing bruschetta instance with the terminal app.
   void RegisterWithTerminal(const guest_os::GuestId& guest_id);
 

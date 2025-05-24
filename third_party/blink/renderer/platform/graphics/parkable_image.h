@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PARKABLE_IMAGE_H_
 
+#include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/synchronization/lock.h"
@@ -75,9 +76,6 @@ class PLATFORM_EXPORT ParkableImageImpl final
   void UnlockData() EXCLUSIVE_LOCKS_REQUIRED(lock_);
   size_t size() const;
 
-  // Returns a ROBufferSegmentReader, wrapping the internal RWBuffer.
-  scoped_refptr<SegmentReader> GetROBufferSegmentReader() LOCKS_EXCLUDED(lock_);
-
   bool is_frozen() const { return !frozen_time_.is_null(); }
 
   bool ShouldReschedule() const LOCKS_EXCLUDED(lock_) {
@@ -103,10 +101,9 @@ class PLATFORM_EXPORT ParkableImageImpl final
       LOCKS_EXCLUDED(lock_);
 
   // Writes the data referred to by |on_disk_metadata| from disk into the
-  // provided |buffer|. |capacity| is the size of the provided buffer.
+  // provided |buffer|.
   static size_t ReadFromDiskIntoBuffer(DiskDataMetadata* on_disk_metadata,
-                                       void* buffer,
-                                       size_t capacity);
+                                       base::span<uint8_t> buffer);
 
   // Attempt to discard the data. This should only be called after we've written
   // the data to disk. Fails if the image can not be parked at the time this is

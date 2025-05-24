@@ -653,6 +653,10 @@ TEST_F(ContextHostResolverTest, ResolveFromCache) {
   ASSERT_TRUE(request->GetStaleInfo());
   EXPECT_EQ(0, request->GetStaleInfo().value().network_changes);
   EXPECT_FALSE(request->GetStaleInfo().value().is_stale());
+
+  // Explicitly free `resolver` so that we trigger destructor while `clock`
+  // is still alive. This will prevent use after free in `HostCache` destructor.
+  resolver.reset();
 }
 
 TEST_F(ContextHostResolverTest, ResultsAddedToCache) {

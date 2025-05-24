@@ -89,6 +89,7 @@ class NET_EXPORT ClientSocketHandle : public StreamSocketHandle {
       ClientSocketPool::RespectLimits respect_limits,
       CompletionOnceCallback callback,
       const ClientSocketPool::ProxyAuthCallback& proxy_auth_callback,
+      bool fail_if_alias_requires_proxy_override,
       ClientSocketPool* pool,
       const NetLogWithSource& net_log);
 

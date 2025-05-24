@@ -12,7 +12,7 @@ interface Position {
 }
 
 suite('DragAndDropManager test', () => {
-  let listContainer: HTMLDivElement;
+  let listContainer: HTMLElement;
   let listElements: CustomizeButtonRowElement[];
   let dragAndDropManager: DragAndDropManager;
   let numOnDropCallbackCalls: number;
@@ -25,7 +25,7 @@ suite('DragAndDropManager test', () => {
     lastOnDropCallbackValues = undefined;
   });
 
-  teardown(async () => {
+  teardown(() => {
     if (dragAndDropManager) {
       dragAndDropManager.destroy();
     }
@@ -260,7 +260,7 @@ suite('DragAndDropManager test', () => {
     assertEquals(0, lastOnDropCallbackValues.destinationIndex);
   });
 
-  test('DataTransfer set/get', async () => {
+  test('DataTransfer set/get', () => {
     const dragEventProps: DragEventInit = {
       bubbles: true,
       cancelable: true,

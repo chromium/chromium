@@ -230,7 +230,7 @@ CELTMode *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error)
 #ifdef CUSTOM_MODES
    CELTMode *mode=NULL;
    int res;
-   opus_val16 *window;
+   celt_coef *window;
    opus_int16 *logN;
    int LM;
    int arch = opus_select_arch();
@@ -370,7 +370,7 @@ CELTMode *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error)
    if (mode->allocVectors==NULL)
       goto failure;
 
-   window = (opus_val16*)opus_alloc(mode->overlap*sizeof(opus_val16));
+   window = (celt_coef*)opus_alloc(mode->overlap*sizeof(*window));
    if (window==NULL)
       goto failure;
 
@@ -378,8 +378,13 @@ CELTMode *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error)
    for (i=0;i<mode->overlap;i++)
       window[i] = Q15ONE*sin(.5*M_PI* sin(.5*M_PI*(i+.5)/mode->overlap) * sin(.5*M_PI*(i+.5)/mode->overlap));
 #else
+# ifdef ENABLE_QEXT
+   for (i=0;i<mode->overlap;i++)
+      window[i] = MIN32(2147483647, 2147483648*sin(.5*M_PI* sin(.5*M_PI*(i+.5)/mode->overlap) * sin(.5*M_PI*(i+.5)/mode->overlap)));
+# else
    for (i=0;i<mode->overlap;i++)
       window[i] = MIN32(32767,floor(.5+32768.*sin(.5*M_PI* sin(.5*M_PI*(i+.5)/mode->overlap) * sin(.5*M_PI*(i+.5)/mode->overlap))));
+# endif
 #endif
    mode->window = window;
 

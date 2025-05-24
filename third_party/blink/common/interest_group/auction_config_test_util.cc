@@ -4,6 +4,8 @@
 
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
 
+#include <optional>
+
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
 #include "url/gurl.h"
@@ -49,7 +51,11 @@ AuctionConfig CreateFullAuctionConfig() {
       AuctionConfig::MaybePromiseJson::FromValue("[4]");
   non_shared_params.seller_signals =
       AuctionConfig::MaybePromiseJson::FromValue("[5]");
+  non_shared_params.seller_tkv_signals =
+      AuctionConfig::MaybePromiseJson::FromValue("[6]");
   non_shared_params.seller_timeout = base::Seconds(6);
+  non_shared_params.execution_mode =
+      InterestGroup::ExecutionMode::kGroupedByOriginMode;
 
   std::optional<base::flat_map<url::Origin, std::string>> per_buyer_signals;
   per_buyer_signals.emplace();
@@ -57,6 +63,9 @@ AuctionConfig CreateFullAuctionConfig() {
   non_shared_params.per_buyer_signals =
       blink::AuctionConfig::MaybePromisePerBuyerSignals::FromValue(
           std::move(per_buyer_signals));
+
+  non_shared_params.per_buyer_tkv_signals[buyer] =
+      AuctionConfig::MaybePromiseJson::FromValue("[8]");
 
   AuctionConfig::BuyerTimeouts buyer_timeouts;
   buyer_timeouts.per_buyer_timeouts.emplace();
@@ -164,6 +173,8 @@ AuctionConfig CreateFullAuctionConfig() {
 
   auction_config.aggregation_coordinator_origin =
       url::Origin::Create(GURL("https://example.com"));
+
+  auction_config.send_creative_scanning_metadata = true;
 
   return auction_config;
 }

@@ -11,6 +11,7 @@
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/icu/source/common/unicode/uidna.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
@@ -32,9 +33,8 @@ namespace {
 // 1. Use the up-to-date Unicode data.
 // 2. Define a case folding/mapping with the up-to-date Unicode data as
 //    in IDNA 2003.
-// 3. If `use_idna_non_transitional` is true, use non-transitional mechanism for
-//    4 deviation characters (sharp-s, final sigma, ZWJ and ZWNJ) per
-//    url.spec.whatwg.org.
+// 3. Use non-transitional mechanism for 4 deviation characters (sharp-s, final
+//    sigma, ZWJ and ZWNJ) per url.spec.whatwg.org.
 // 4. Continue to allow symbols and punctuations.
 // 5. Apply new BiDi check rules more permissive than the IDNA 2003 BiDI rules.
 // 6. Do not apply STD3 rules
@@ -44,35 +44,24 @@ namespace {
 // http://goo.gl/3XBhqw ).
 // See http://http://unicode.org/reports/tr46/ and references therein
 // for more details.
-UIDNA* CreateIDNA(bool use_idna_non_transitional) {
+UIDNA* CreateIDNA() {
   uint32_t options = UIDNA_CHECK_BIDI;
-  if (use_idna_non_transitional) {
-    // Use non-transitional processing if enabled. See
-    // https://url.spec.whatwg.org/#idna for details.
-    options |=
-        UIDNA_NONTRANSITIONAL_TO_ASCII | UIDNA_NONTRANSITIONAL_TO_UNICODE;
-  }
+  // Use non-transitional processing, see https://url.spec.whatwg.org/#idna.
+  options |= UIDNA_NONTRANSITIONAL_TO_ASCII | UIDNA_NONTRANSITIONAL_TO_UNICODE;
   UErrorCode err = U_ZERO_ERROR;
   UIDNA* idna = uidna_openUTS46(options, &err);
   if (U_FAILURE(err)) {
-    CHECK(false) << "failed to open UTS46 data with error: " << u_errorName(err)
+    NOTREACHED() << "failed to open UTS46 data with error: " << u_errorName(err)
                  << ". If you see this error message in a test environment "
                  << "your test environment likely lacks the required data "
                  << "tables for libicu. See https://crbug.com/778929.";
-    idna = nullptr;
   }
   return idna;
 }
 
 UIDNA* GetUIDNA() {
-  // This logic results in having two UIDNA instances in tests. This is okay.
-  if (IsUsingIDNA2008NonTransitional()) {
-    static UIDNA* uidna = CreateIDNA(/*use_idna_non_transitional=*/true);
-    return uidna;
-  } else {
-    static UIDNA* uidna = CreateIDNA(/*use_idna_non_transitional=*/false);
-    return uidna;
-  }
+  static UIDNA* uidna = CreateIDNA();
+  return uidna;
 }
 
 }  // namespace

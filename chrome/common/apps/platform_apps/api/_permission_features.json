@@ -25,20 +25,22 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_extension"],
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
-      "0962FDCCF4987E36619F5BDA0A8ED4CE78E6AC34"  // Mercury V-Launcher
+      "0962FDCCF4987E36619F5BDA0A8ED4CE78E6AC34",  // Mercury V-Launcher
+      "24E3AE98CC15530D49F8E4D996673D01C8206063",  // Codimite V-Launcher Prod
+      "EA6971BE428F16A26DD9F77C280F81AE46BA79E7"   // Codimite V-Launcher QA
     ]
   }],
   "firstRunPrivate": {

@@ -1,0 +1,21 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='up' restriction=disabled controlsIds=genericContainer
+++++++button name='prev' restriction=disabled controlsIds=genericContainer
+++++++button focusable name='next' controlsIds=genericContainer
+++++++button name='down' restriction=disabled controlsIds=genericContainer
+++++++genericContainer focusable
+++++++++genericContainer
+++++++++++staticText name='One'
+++++++++++++inlineTextBox name='One'
+++++++++genericContainer
+++++++++++staticText name='Two'
+++++++++++++inlineTextBox name='Two'
+++++++++genericContainer
+++++++++++staticText name='Three'
+++++++++++++inlineTextBox name='Three'
+++++++tabList horizontal setSize=3 controlsIds=genericContainer
+++++++++tab focusable setSize=3 posInSet=1 selected=true detailsIds=genericContainer
+++++++++tab focusable setSize=3 posInSet=2 selected=false detailsIds=genericContainer
+++++++++tab focusable setSize=3 posInSet=3 selected=false detailsIds=genericContainer

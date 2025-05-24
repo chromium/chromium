@@ -1,0 +1,19 @@
+Name: ml_dtypes
+Short Name: ml_dtypes
+URL: https://github.com/jax-ml/ml_dtypes
+Version: 57e857e85df34d463f2c778810dc4b876750c5e0
+Date: 2025-05-07
+License: Apache-2.0
+License File: src/LICENSE
+Security Critical: Yes
+Shipped: yes
+CPEPrefix: unknown
+
+Description:
+ml_dtypes is a stand-alone implementation of several NumPy dtype extensions used
+in machine learning libraries.
+
+Local Modifications:
+Only a portion of the upstream library is copied here, namely the include
+headers which serve as glue code between TFLite and Eigen. See also update.sh
+in this directory.

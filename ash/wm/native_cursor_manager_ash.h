@@ -6,6 +6,7 @@
 #define ASH_WM_NATIVE_CURSOR_MANAGER_ASH_H_
 
 #include "ash/ash_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/display/display.h"
 #include "ui/wm/core/cursor_loader.h"
 #include "ui/wm/core/native_cursor_manager.h"
@@ -39,6 +40,9 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
                   ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetCursor(gfx::NativeCursor cursor,
                  ::wm::NativeCursorManagerDelegate* delegate) override;
+  void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetVisibility(bool visible,
                      ::wm::NativeCursorManagerDelegate* delegate) override;
   void SetCursorSize(ui::CursorSize cursor_size,
@@ -46,6 +50,8 @@ class ASH_EXPORT NativeCursorManagerAsh : public ::wm::NativeCursorManager {
   void SetMouseEventsEnabled(
       bool enabled,
       ::wm::NativeCursorManagerDelegate* delegate) override;
+  void SetCursorColor(SkColor color,
+                      ::wm::NativeCursorManagerDelegate* delegate) override;
 
  private:
   friend class CursorManagerTestApi;

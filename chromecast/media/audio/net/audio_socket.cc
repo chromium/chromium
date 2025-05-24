@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "chromecast/media/audio/net/audio_socket.h"
 
 #include <cstring>
@@ -43,7 +48,7 @@ bool GetMetaDataPaddingBytes(const char* data,
   padding_bytes =
       // NOTE: This cast may convert large unsigned values to negative values.
       // We check for and reject negative values below.
-      static_cast<int32_t>(base::numerics::U32FromBigEndian(
+      static_cast<int32_t>(base::U32FromBigEndian(
           base::as_bytes(
               // TODO(crbug.com/402847551): This span construction is unsound as
               // we can't know that the size is right, the function should be
@@ -149,7 +154,7 @@ void AudioSocket::PrepareAudioBuffer(net::IOBuffer* audio_buffer,
   auto buffer = base::as_writable_bytes(audio_buffer->span());
 
   buffer.first<sizeof(uint16_t)>().copy_from(
-      base::numerics::U16ToBigEndian(payload_size));
+      base::U16ToBigEndian(payload_size));
   buffer = buffer.subspan(sizeof(uint16_t));
 
   buffer.first<sizeof(uint16_t)>().copy_from(
@@ -172,7 +177,7 @@ bool AudioSocket::SendAudioBuffer(scoped_refptr<net::IOBuffer> audio_buffer,
 
 bool AudioSocket::SendPreparedAudioBuffer(
     scoped_refptr<net::IOBuffer> audio_buffer) {
-  uint16_t payload_size = base::numerics::U16FromBigEndian(
+  uint16_t payload_size = base::U16FromBigEndian(
       base::as_bytes(base::as_bytes(audio_buffer->span()).first<2>()));
   DCHECK_GE(payload_size, kAudioHeaderSize);
   return SendBuffer(0, std::move(audio_buffer),
@@ -265,8 +270,8 @@ void AudioSocket::OnSendUnblocked() {
   base::flat_map<int, scoped_refptr<net::IOBuffer>> pending;
   pending_writes_.swap(pending);
   for (auto& m : pending) {
-    uint16_t message_size = base::numerics::U16FromBigEndian(
-        base::as_bytes(m.second->span().first<2u>()));
+    uint16_t message_size =
+        base::U16FromBigEndian(base::as_bytes(m.second->span().first<2u>()));
     SendBufferToSocket(m.first, std::move(m.second),
                        sizeof(uint16_t) + message_size);
   }

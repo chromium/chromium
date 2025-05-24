@@ -6,14 +6,8 @@ import '//components/autofill/ios/form_util/resources/create_fill_namespace.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {findChildText} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
-
-// Extends the Element to add the ability to access its properties
-// via the [] notation.
-declare interface IndexableElement extends Element {
-  [key: symbol]: number;
-}
+import {gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 declare interface AutofillFormFieldData {
   name: string;
@@ -37,6 +31,7 @@ declare interface AutofillFormFieldData {
   identifier?: string;
   name_attribute?: string;
   id_attribute?: string;
+  pattern_attribute?: string;
 }
 
 declare interface AutofillFormData {
@@ -45,7 +40,7 @@ declare interface AutofillFormData {
   origin: string;
   action: string;
   fields: AutofillFormFieldData[];
-  frame_id: string;
+  host_frame: string;
   child_frames?: FrameTokenWithPredecessor[];
   name_attribute?: string;
   id_attribute?: string;
@@ -56,16 +51,11 @@ declare interface FrameTokenWithPredecessor {
   predecessor: number;
 }
 
-/**
- * Maps elements using their unique ID
+/*
+ Name of the html attribute used for storing the remote frame token assigned to
+ the current html document.
  */
-const elementMap = new Map();
-
-/**
- * Stores the next available ID for forms and fields. By convention, 0 means
- * null, so we start at 1 and increment from there.
- */
-document[gCrWeb.fill.ID_SYMBOL] = 1;
+const REMOTE_FRAME_TOKEN_ATTRIBUTE = '__gChrome_remoteFrameToken';
 
 /**
  * Acquires the specified DOM `attribute` from the DOM `element` and returns
@@ -105,7 +95,7 @@ function autoComplete(element: fillConstants.FormControlElement|null): boolean {
   if (getLowerCaseAttribute(element, 'autocomplete') === 'off') {
     return false;
   }
-  if (getLowerCaseAttribute(element.form, 'autocomplete') == 'off') {
+  if (getLowerCaseAttribute(element.form, 'autocomplete') === 'off') {
     return false;
   }
   return true;
@@ -117,7 +107,7 @@ function autoComplete(element: fillConstants.FormControlElement|null): boolean {
  * @param element An element to check if it can be autocompleted.
  * @return true if autocomplete dropdown should be suggested.
  */
-gCrWeb.fill.shouldAutocomplete = function(
+gCrWebLegacy.fill.shouldAutocomplete = function(
     element: fillConstants.FormControlElement|null): boolean {
   if (!autoComplete(element)) {
     return false;
@@ -191,7 +181,7 @@ function setInputElementAngularValue(
  *     element's value is changed.
  * @return Whether the value has been set successfully.
  */
-gCrWeb.fill.setInputElementValue = function(
+gCrWebLegacy.fill.setInputElementValue = function(
     value: string, input: HTMLInputElement|null,
     callback: Function|undefined = undefined): boolean {
   if (!input) {
@@ -340,7 +330,7 @@ function sanitizeValueForInputElement(
   // chromium/src/third_party/WebKit/Source/core/html/). Currently only
   // TextFieldInputType is relevant and sanitizeValue() for other types of
   // input elements has not been implemented.
-  if (gCrWeb.common.isTextField(element)) {
+  if (isTextField(element)) {
     return sanitizeValueForTextFieldInputType(
         proposedValue, element as HTMLInputElement);
   }
@@ -500,11 +490,11 @@ function absoluteURL(doc: Document, relativeURL: string): string {
  * function GetCanonicalActionForForm.
  * @return Canonical action.
  */
-gCrWeb.fill.getCanonicalActionForForm = function(
+gCrWebLegacy.fill.getCanonicalActionForForm = function(
     formElement: HTMLFormElement): string {
   const rawAction = formElement.getAttribute('action') || '';
   const absoluteUrl = absoluteURL(formElement.ownerDocument, rawAction);
-  return gCrWeb.common.removeQueryAndReferenceFromURL(absoluteUrl);
+  return removeQueryAndReferenceFromURL(absoluteUrl);
 };
 
 declare interface OptionFieldStrings {
@@ -527,7 +517,7 @@ declare interface OptionFieldStrings {
  * @param field A field that will contain the extracted option
  *     information.
  */
-gCrWeb.fill.getOptionStringsFromElement = function(
+gCrWebLegacy.fill.getOptionStringsFromElement = function(
     selectElement: HTMLSelectElement, field: OptionFieldStrings): void {
   field.option_values = [];
   // Protect against custom implementation of Array.toJSON in host pages.
@@ -559,10 +549,10 @@ gCrWeb.fill.getOptionStringsFromElement = function(
  * @param element An element to examine.
  * @return The value for `element`.
  */
-gCrWeb.fill.value = function(
+gCrWebLegacy.fill.value = function(
     element: fillConstants.FormControlElement|HTMLOptionElement): string {
   let value = element.value;
-  if (gCrWeb.fill.isSelectElement(element)) {
+  if (gCrWebLegacy.fill.isSelectElement(element)) {
     const selectElement = element as HTMLSelectElement;
     if (selectElement.options.length > 0 && selectElement.selectedIndex === 0 &&
         selectElement.options[0]!.disabled &&
@@ -632,7 +622,7 @@ function coalesceTextByIdList(
  * or the value of the aria-label attribute, with priority given to the
  * aria-labelledby text.
  */
-gCrWeb.fill.getAriaLabel = function(element: Element): string {
+gCrWebLegacy.fill.getAriaLabel = function(element: Element): string {
   let label = coalesceTextByIdList(element, 'aria-labelledby');
   if (!label) {
     label = element.getAttribute('aria-label') || '';
@@ -643,7 +633,7 @@ gCrWeb.fill.getAriaLabel = function(element: Element): string {
 /**
  * Returns the coalesced text referenced by the aria-describedby attribute.
  */
-gCrWeb.fill.getAriaDescription = function(element: Element): string {
+gCrWebLegacy.fill.getAriaDescription = function(element: Element): string {
   return coalesceTextByIdList(element, 'aria-describedby');
 };
 
@@ -658,13 +648,13 @@ gCrWeb.fill.getAriaDescription = function(element: Element): string {
  * @param element An element to examine.
  * @return Whether the element is inside a <form> or <fieldset>.
  */
-gCrWeb.fill.isElementInsideFormOrFieldSet = function(
+gCrWebLegacy.fill.isElementInsideFormOrFieldSet = function(
     element: fillConstants.FormControlElement): boolean {
   let parentNode = element.parentNode;
   while (parentNode) {
     if ((parentNode.nodeType === Node.ELEMENT_NODE) &&
-        (gCrWeb.fill.hasTagName(parentNode, 'form') ||
-         gCrWeb.fill.hasTagName(parentNode, 'fieldset'))) {
+        (gCrWebLegacy.fill.hasTagName(parentNode, 'form') ||
+         gCrWebLegacy.fill.hasTagName(parentNode, 'fieldset'))) {
       return true;
     }
     parentNode = parentNode.parentNode;
@@ -674,43 +664,52 @@ gCrWeb.fill.isElementInsideFormOrFieldSet = function(
 
 /**
  * @param element Form or form input element.
+ * @return Unique stable ID converted to string..
  */
-gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
+gCrWebLegacy.fill.getUniqueID = function(element: any): string {
+  // `setUniqueIDIfNeeded` is only available in the isolated content world.
+  // Check before invoking it as this script is injected into the page content
+  // world as well.
+  if (gCrWebLegacy.fill.setUniqueIDIfNeeded) {
+    gCrWebLegacy.fill.setUniqueIDIfNeeded(element);
+  }
+
   try {
-    const uniqueID = gCrWeb.fill.ID_SYMBOL;
-    if (typeof element[uniqueID] === 'undefined') {
-      const elementID = document[uniqueID]!++;
-      element[uniqueID] = elementID;
+    const uniqueIDSymbol = gCrWebLegacy.fill.ID_SYMBOL;
+    if (typeof element[uniqueIDSymbol] !== 'undefined' &&
+        !isNaN(element[uniqueIDSymbol]!)) {
+      return element[uniqueIDSymbol].toString();
+    } else {
+      // Use the fallback value stored in the DOM. This will happen when the
+      // script is running in the page content world. JavaScript properties are
+      // not shared across content worlds. This means that `element[uniqueID]`
+      // will not have value in the page content world because it was set in the
+      // isolated content world.
+      const valueInDOM =
+          element.getAttribute(fillConstants.UNIQUE_ID_ATTRIBUTE);
 
-      if (gCrWeb.autofill_form_features
-              .isAutofillIsolatedContentWorldEnabled()) {
-        //  Store a copy of the ID in the DOM. gCrWeb.fill.getUniqueID will use
-        //  the DOM copy when running in the page content world.
-        element.setAttribute(
-            fillConstants.UNIQUE_ID_ATTRIBUTE, elementID.toString());
-      }
-
-      // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
-      // is deprecated.
-      elementMap.set(
-          elementID, window.WeakRef ? new WeakRef(element) : element);
+      // Check that there is a valid integer ID stored in the DOM. If not,
+      // return the fallback value.
+      return isNaN(parseInt(valueInDOM)) ? fillConstants.RENDERER_ID_NOT_SET :
+                                           valueInDOM;
     }
   } catch (e) {
+    return fillConstants.RENDERER_ID_NOT_SET;
   }
 };
 
-/**
- * @param id Unique ID.
- * @return element Form or form input element.
- */
-gCrWeb.fill.getElementByUniqueID = function(id: number): Element | null {
-  try {
-    // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14 is
-    // deprecated.
-    return window.WeakRef ? elementMap.get(id).deref() : elementMap.get(id);
-  } catch (e) {
-    return null;
-  }
-};
+function setRemoteFrameToken(token: string) {
+  document.documentElement.setAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE, token);
+}
 
-export {AutofillFormFieldData, AutofillFormData, FrameTokenWithPredecessor};
+function getRemoteFrameToken(): string|null {
+  return document.documentElement.getAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE);
+}
+
+export {
+  AutofillFormFieldData,
+  AutofillFormData,
+  FrameTokenWithPredecessor,
+  setRemoteFrameToken,
+  getRemoteFrameToken,
+};

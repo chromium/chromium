@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] defaultbutton: When the listbox is closed, all arrow keys should open the listbox.
+  assert_true: Arrow left should open the listbox. expected true got false
+[FAIL] defaultbutton: When the listbox is closed, the enter key should submit the form or do nothing.
+  assert_false: Enter should not open the listbox when outside a form. expected false got true
+[FAIL] defaultbutton: When the listbox is open, the enter key should commit the selected option.
+  assert_equals: The selected option should receive initial focus. expected Element node <option class="two">two</option> but got Element node <select id="defaultbutton">\n    <option class="one">one</...
+[FAIL] defaultbutton: When the listbox is open, the tab key should close the listbox.
+  assert_equals: The first option should be focused when opening the listbox. expected Element node <option class="one">one</option> but got Element node <select id="defaultbutton">\n    <option class="one">one</...
+[FAIL] custombutton: When the listbox is closed, all arrow keys should open the listbox.
+  assert_true: Arrow left should open the listbox. expected true got false
+[FAIL] custombutton: When the listbox is closed, the enter key should submit the form or do nothing.
+  assert_false: Enter should not open the listbox when outside a form. expected false got true
+[FAIL] custombutton: When the listbox is open, the enter key should commit the selected option.
+  assert_equals: The selected option should receive initial focus. expected Element node <option class="two">two</option> but got Element node <select id="custombutton">\n    custom button\n    <option ...
+[FAIL] custombutton: When the listbox is open, the tab key should close the listbox.
+  assert_equals: The first option should be focused when opening the listbox. expected Element node <option class="one">one</option> but got Element node <select id="custombutton">\n    custom button\n    <option ...
+Harness: the test ran to completion.
+

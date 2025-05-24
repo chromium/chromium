@@ -112,4 +112,5 @@ TEST(FileInfoTest, Backslashes) {
   }
 }
 
+#undef FPL
 }  // namespace ui

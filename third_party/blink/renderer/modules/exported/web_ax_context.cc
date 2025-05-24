@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace blink {
@@ -48,22 +47,6 @@ void WebAXContext::ResetSerializer() {
     return;
   }
   private_->GetAXObjectCache().ResetSerializer();
-}
-
-bool WebAXContext::SerializeEntireTree(
-    size_t max_node_count,
-    base::TimeDelta timeout,
-    ui::AXTreeUpdate* response,
-    std::set<ui::AXSerializationErrorFlag>* out_error) {
-  CHECK(HasActiveDocument());
-  CHECK(HasAXObjectCache());
-  CHECK(private_->GetDocument()->ExistingAXObjectCache());
-
-  UpdateAXForAllDocuments();
-
-  ScopedFreezeAXCache freeze(private_->GetAXObjectCache());
-  return private_->GetAXObjectCache().SerializeEntireTree(
-      max_node_count, timeout, response, out_error);
 }
 
 void WebAXContext::GetImagesToAnnotate(ui::AXTreeUpdate& updates,

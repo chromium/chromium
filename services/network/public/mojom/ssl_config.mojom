@@ -4,8 +4,6 @@
 
 module network.mojom;
 
-import "services/network/public/mojom/optional_bool.mojom";
-
 enum SSLVersion {
   kTLS12,
   kTLS13,
@@ -18,7 +16,6 @@ struct SSLConfig {
   bool rev_checking_required_local_anchors = false;
 
   bool sha1_local_anchors_enabled = false;
-  bool symantec_enforcement_disabled = false;
 
   // SSL 2.0/3.0 and TLS 1.0/1.1 are not supported. Note these lines must be
   // kept in sync with net/ssl/ssl_config.cc.
@@ -40,9 +37,8 @@ struct SSLConfig {
   // canonicalized according to the rules used by GURL.
   array<string> client_cert_pooling_policy;
 
-  // If specified, controls whether post-quantum key agreement is allowed
-  // in TLS connections. If kUnset, this is determined by feature flags.
-  OptionalBool post_quantum_override = kUnset;
+  // Controls whether post-quantum key agreement in TLS connections is allowed.
+  bool post_quantum_key_agreement_enabled = true;
 
   // If false, disables TLS Encrypted ClientHello (ECH). If true, the feature
   // may be enabled or disabled, depending on feature flags.

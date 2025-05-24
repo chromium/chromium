@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] <a target=_blank">.click()
+  assert_true: popup should have user activation expected true got false
+[FAIL] <area target=_blank">.click()
+  assert_true: popup should have user activation expected true got false
+Harness: the test ran to completion.
+

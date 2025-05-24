@@ -71,7 +71,7 @@ public class PaymentRequestContactDetailsAndFreeShippingTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
 
@@ -117,7 +117,7 @@ public class PaymentRequestContactDetailsAndFreeShippingTest {
                         .build();
 
         // Start and complete the Payment Request.
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: '" + BOBPAY_TEST + "'}]);",
                 mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(

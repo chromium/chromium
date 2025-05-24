@@ -9,6 +9,8 @@
 #include <string>
 #include <string_view>
 
+#include "google_apis/gaia/gaia_id.h"
+
 namespace signin {
 
 // Represents the hash of the Gaia ID of a signed-in user. This is useful for
@@ -18,7 +20,7 @@ namespace signin {
 // be treated as a PII.
 class GaiaIdHash {
  public:
-  static GaiaIdHash FromGaiaId(std::string_view gaia_id);
+  static GaiaIdHash FromGaiaId(const GaiaId& gaia_id);
   // |gaia_id_hash| is a string representing the binary hash of the gaia id. If
   // the input isn't of length crypto::kSHA256Length, it returns an invalid
   // GaiaIdHash object.

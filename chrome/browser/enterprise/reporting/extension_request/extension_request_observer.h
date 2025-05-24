@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_OBSERVER_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_EXTENSION_REQUEST_EXTENSION_REQUEST_OBSERVER_H_
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_notification.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -48,8 +50,9 @@ class ExtensionRequestObserver
   void RemoveExtensionsFromPendingList(
       const std::vector<std::string>& extension_ids);
 
-  std::unique_ptr<ExtensionRequestNotification>
-      notifications_[ExtensionRequestNotification::kNumberOfTypes];
+  std::array<std::unique_ptr<ExtensionRequestNotification>,
+             ExtensionRequestNotification::kNumberOfTypes>
+      notifications_;
 
   raw_ptr<Profile> profile_;
 

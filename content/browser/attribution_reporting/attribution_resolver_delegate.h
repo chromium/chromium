@@ -25,7 +25,8 @@ namespace attribution_reporting {
 class AttributionScopesData;
 class EventLevelEpsilon;
 class EventReportWindows;
-class TriggerSpecs;
+class MaxEventLevelReports;
+class TriggerDataSet;
 }  // namespace attribution_reporting
 
 namespace base {
@@ -57,7 +58,8 @@ class CONTENT_EXPORT AttributionResolverDelegate {
       delete;
 
   AttributionResolverDelegate(AttributionResolverDelegate&&) = delete;
-  AttributionResolverDelegate& operator=(AttributionResolverDelegate&&) = delete;
+  AttributionResolverDelegate& operator=(AttributionResolverDelegate&&) =
+      delete;
 
   // Returns the time an event-level report should be sent for a given trigger
   // time and its corresponding source.
@@ -102,6 +104,10 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // Must be positive.
   virtual base::TimeDelta GetDeleteExpiredRateLimitsFrequency() const = 0;
 
+  // Returns the maximum frequency at which to delete expired OS registrations.
+  // Must be positive.
+  virtual base::TimeDelta GetDeleteExpiredOsRegistrationsFrequency() const = 0;
+
   // Returns a new report ID.
   virtual base::Uuid NewReportID() const = 0;
 
@@ -119,14 +125,6 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // ordering on their conversion metadata bits.
   virtual void ShuffleReports(std::vector<AttributionReport>& reports) = 0;
 
-  // Returns the rate used to determine whether to randomize the response to a
-  // source with the given trigger specs, as implemented by
-  // `GetRandomizedResponse()`. Must be in the range [0, 1] and remain constant
-  // for the lifetime of the delegate for calls with identical inputs.
-  virtual std::optional<double> GetRandomizedResponseRate(
-      const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) const = 0;
-
   using GetRandomizedResponseResult =
       base::expected<attribution_reporting::RandomizedResponseData,
                      attribution_reporting::RandomizedResponseError>;
@@ -136,7 +134,9 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // limit.
   virtual GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
-      const attribution_reporting::TriggerSpecs&,
+      const attribution_reporting::TriggerDataSet&,
+      const attribution_reporting::EventReportWindows&,
+      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon,
       const std::optional<attribution_reporting::AttributionScopesData>&) = 0;
 

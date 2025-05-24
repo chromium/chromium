@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {DomIf} from 'chrome://new-tab-page/new_tab_page.js';
 import type {BackgroundImage, Theme} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {NtpBackgroundImageSource} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -49,7 +48,7 @@ export function installMock<T extends object>(
   installer = installer ||
       (clazz as unknown as {setInstance: Installer<T>}).setInstance;
   const mock = TestMock.fromClass(clazz);
-  installer!(mock);
+  installer(mock);
   return mock;
 }
 
@@ -67,7 +66,7 @@ export function createBackgroundImage(url: string): BackgroundImage {
   };
 }
 
-export function createTheme(isDark: boolean = false): Theme {
+export function createTheme({isDark = false, isBaseline = true} = {}): Theme {
   const mostVisited = {
     backgroundColor: {value: 0xff00ff00},
     isDark,
@@ -82,7 +81,7 @@ export function createTheme(isDark: boolean = false): Theme {
     dailyRefreshEnabled: false,
     backgroundImageCollectionId: '',
     logoColor: null,
-    isBaseline: true,
+    isBaseline: isBaseline,
     isDark,
     mostVisited: mostVisited,
     textColor: {value: 0xff0000ff},
@@ -90,17 +89,12 @@ export function createTheme(isDark: boolean = false): Theme {
   };
 }
 
-export async function initNullModule(): Promise<null> {
-  return null;
+export function initNullModule(): Promise<null> {
+  return Promise.resolve(null);
 }
 
 export function createElement(): HTMLElement {
   return document.createElement('div');
-}
-
-export function render(element: HTMLElement) {
-  element.shadowRoot!.querySelectorAll<DomIf>('dom-if').forEach(
-      tmpl => tmpl.render());
 }
 
 export function capture(

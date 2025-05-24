@@ -10,75 +10,37 @@
 
 #include "third_party/jni_zero/jni_zero_internal.h"
 
-
-// Forward declarations (methods).
-
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M_00024zHpGqF(
+// Forward Declarations.
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M_00024zHpGqF(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_MFxD5gzE(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_N_Mts1shVs(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MHC2XaYW(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MPl4TY3m(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MbcaLfAT(
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_MFxD5gzE(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jboolean Java_J_N_Mts1shVs(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MHC2XaYW(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MPl4TY3m(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MbcaLfAT(
     JNIEnv* env,
     jclass jcaller,
-    jclass __arrayClazz);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MrxydxEH(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MaQxW6t6(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M8wEusw1(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MpVxNDSC(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M7jE3q3_00024(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MHY_1jLL4(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MF8oFFVb(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_Mq7V3oMs(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MRdQpdMz(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M6SdcGCv(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_Mnt3ot24(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_Mepwik1_1(
+    jobject __arrayClazz);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MrxydxEH(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MaQxW6t6(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M8wEusw1(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MpVxNDSC(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M7jE3q3_00024(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MHY_1jLL4(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MF8oFFVb(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_Mq7V3oMs(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_MRdQpdMz(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M6SdcGCv(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_Mnt3ot24(JNIEnv* env, jclass jcaller);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_Mepwik1_1(
     JNIEnv* env,
     jclass jcaller,
     jobject stringToReverse);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M5Naw4MO(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject strs);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M3btId9A(
-    JNIEnv* env,
-    jclass jcaller,
-    jobject strs);
-JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M3dkhKZM(
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M5Naw4MO(JNIEnv* env, jclass jcaller, jobject strs);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M3btId9A(JNIEnv* env, jclass jcaller, jobject strs);
+JNI_ZERO_BOUNDARY_EXPORT jobject Java_J_N_M3dkhKZM(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -97,7 +59,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_M3dkhKZM(
     jobject floats,
     jboolean zbool,
     jobject bools);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
+JNI_ZERO_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     JNIEnv* env,
     jclass jcaller,
     jobject clazz,
@@ -118,5 +80,6 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_MomokuWo(
     jobject view,
     jobject context,
     jobject convertedObjects);
+
 
 #endif  // TEMP_DIR_HEADER_

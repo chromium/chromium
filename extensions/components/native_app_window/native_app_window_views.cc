@@ -46,21 +46,18 @@ void NativeAppWindowViews::Init(
       create_params.GetContentMaximumSize(gfx::Insets()));
   Observe(app_window_->web_contents());
 
-  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
-  // through WidgetDelegate::DeleteDelegate(). It's not clear to me how this
-  // ends up destructed, but the below preserves a previous DialogDelegate
-  // override that did not end with a direct `delete this;`.
-  SetOwnedByWidget(false);
-  RegisterDeleteDelegateCallback(base::BindOnce(
-      [](NativeAppWindowViews* dialog) {
-        dialog->widget_->RemoveObserver(dialog);
-        dialog->app_window_->OnNativeClose();
-      },
-      this));
+  // TODO(pbos): It's not clear to me how this ends up destructed.
+  RegisterDeleteDelegateCallback(RegisterDeleteCallbackPassKey(),
+                                 base::BindOnce(
+                                     [](NativeAppWindowViews* dialog) {
+                                       dialog->widget_->RemoveObserver(dialog);
+                                       dialog->app_window_->OnNativeClose();
+                                     },
+                                     this));
   web_view_ = AddChildView(std::make_unique<views::WebView>(nullptr));
   web_view_->SetWebContents(app_window_->web_contents());
 
-  SetCanMinimize(!app_window_->show_on_lock_screen());
+  SetCanMinimize(true);
   SetCanMaximize(GetCanMaximizeWindow());
   // Intentionally the same as maximize.
   SetCanFullscreen(GetCanMaximizeWindow());
@@ -274,11 +271,6 @@ void NativeAppWindowViews::RenderFrameCreated(
 
   if (app_window_->requested_alpha_enabled() && CanHaveAlphaEnabled()) {
     render_frame_host->GetView()->SetBackgroundColor(SK_ColorTRANSPARENT);
-  } else if (app_window_->show_on_lock_screen()) {
-    // When shown on the lock screen, app windows will be shown on top of black
-    // background - to avoid a white flash while launching the app window,
-    // initialize it with black background color.
-    render_frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
   }
 
   if (frameless_) {

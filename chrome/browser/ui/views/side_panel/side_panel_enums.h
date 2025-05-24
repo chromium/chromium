@@ -12,7 +12,6 @@
 enum class SidePanelOpenTrigger {
   kToolbarButton = 0,
   kMinValue = kToolbarButton,
-  kLensContextMenu = 1,
   kSideSearchPageAction = 2,
   kNotesInPageContextMenu = 3,
   kComboboxSelected = 4,
@@ -32,7 +31,8 @@ enum class SidePanelOpenTrigger {
   kExtension = 18,
   kNewTabPage = 19,
   kReadingListToast = 20,
-  kMaxValue = kReadingListToast,
+  kNewTabFooter = 21,
+  kMaxValue = kNewTabFooter,
 };
 
 enum class SidePanelContentState {

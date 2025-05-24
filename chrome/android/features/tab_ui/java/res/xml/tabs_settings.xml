@@ -18,16 +18,11 @@ found in the LICENSE file.
         android:key="auto_open_synced_tab_groups_switch"
         android:summary="@string/auto_open_synced_tab_groups_summary"/>
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="show_tab_group_creation_dialog_switch"
-        android:summary="@string/tab_group_creation_dialog_show_setting_text"/>
-    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="share_titles_and_urls_with_os_switch"
         android:summary="@string/share_titles_and_urls_with_os_setting_text"
-        android:visibility="invisible"
         app:allowDividerBelow="false"/>
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="share_titles_and_urls_with_os_learn_more"
         android:summary="@string/share_titles_and_urls_with_os_learn_more_setting_text"
-        android:visibility="invisible"
         app:allowDividerBelow="true"/>
 </PreferenceScreen>

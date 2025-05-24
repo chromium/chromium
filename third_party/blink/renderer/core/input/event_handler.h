@@ -45,7 +45,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/page/event_with_hit_test_results.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
-#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace ui {
@@ -84,6 +83,14 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   void Trace(Visitor*) const;
 
   void Clear();
+
+  void NodeChildrenWillBeRemoved(ContainerNode& container) {
+    mouse_event_manager_->NodeChildrenWillBeRemoved(container);
+  }
+  void NodeWillBeRemoved(Node& node) {
+    mouse_event_manager_->NodeWillBeRemoved(node);
+    pointer_event_manager_->NodeWillBeRemoved(node);
+  }
 
   void UpdateSelectionForMouseDrag();
   void StartMiddleClickAutoscroll(LayoutObject*);
@@ -208,7 +215,7 @@ class CORE_EXPORT EventHandler final : public GarbageCollected<EventHandler> {
   // Returns whether pointerId is active or not
   bool IsPointerEventActive(PointerId);
 
-  void SetPointerCapture(PointerId, Element*, bool explicit_capture = false);
+  void SetPointerCapture(PointerId, Element*);
   void ReleasePointerCapture(PointerId, Element*);
   void ReleaseMousePointerCapture();
   bool HasPointerCapture(PointerId, const Element*) const;

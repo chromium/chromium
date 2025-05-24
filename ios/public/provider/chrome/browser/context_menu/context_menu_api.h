@@ -15,6 +15,7 @@
 #import "ios/web/public/ui/context_menu_params.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
 
+@protocol EnhancedCalendarCommands;
 @protocol MiniMapCommands;
 @protocol UnitConversionCommands;
 
@@ -33,8 +34,7 @@ namespace web {
 class WebState;
 }  // namespace web
 
-namespace ios {
-namespace provider {
+namespace ios::provider {
 
 // Returns the elements to add to the context menu, with their title. If no
 // elements needs to be added, returns nil.
@@ -43,7 +43,8 @@ ElementsToAddToContextMenu* GetContextMenuElementsToAdd(
     web::ContextMenuParams params,
     UIViewController* presenting_view_controller,
     id<MiniMapCommands> mini_map_handler,
-    id<UnitConversionCommands> unit_conversion_handler);
+    id<UnitConversionCommands> unit_conversion_handler,
+    id<EnhancedCalendarCommands> enhanced_calendar_handler);
 
 // Returns set of `NSTextCheckingType` representing the intent types that
 // can be handled by the provider, for the given `web_state`.
@@ -78,7 +79,6 @@ std::optional<std::vector<web::TextAnnotation>> ExtractTextAnnotationFromText(
 // Returns the context menu title with styling.
 NSString* StyledContextMenuStringForString(NSString* string);
 
-}  // namespace provider
-}  // namespace ios
+}  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_CONTEXT_MENU_CONTEXT_MENU_API_H_

@@ -51,12 +51,33 @@ GpuServiceFactory::~GpuServiceFactory() {}
 void GpuServiceFactory::RunMediaService(
     mojo::PendingReceiver<media::mojom::MediaService> receiver) {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-  // This service will host audio/video decoders, and if these decoding
-  // operations are blocked, user may hear audio glitch or see video
-  // freezing, hence "user blocking".
   scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
-  if (media::IsDedicatedMediaServiceThreadEnabled(
-          gpu_info_.gl_implementation_parts.angle)) {
+  const bool use_dedicated_media_service_thread = [&]() {
+#if BUILDFLAG(IS_WIN)
+    bool is_dawn_d3d_enabled = false;
+    // On Windows, check if we are using the Graphite D3D backend. There
+    // is rendering performance impact caused by lock contention on the
+    // D3D11 API lock, and Dawn mitigate this by batching API calls under
+    // the lock.
+    if (media_gpu_channel_manager_) {
+      if (auto shared_context_state =
+              media_gpu_channel_manager_->GetSharedContextState()) {
+        is_dawn_d3d_enabled = shared_context_state->IsGraphiteDawnD3D();
+      }
+    }
+    if (!is_dawn_d3d_enabled) {
+      return false;
+    }
+#endif
+
+    return media::IsDedicatedMediaServiceThreadEnabled(
+        gpu_info_.gl_implementation_parts.angle);
+  }();
+
+  if (use_dedicated_media_service_thread) {
+    // This service will host audio/video decoders, and if these decoding
+    // operations are blocked, user may hear audio glitch or see video
+    // freezing, hence "user blocking".
     if (base::FeatureList::IsEnabled(
             media::kUseSequencedTaskRunnerForMediaService)) {
       task_runner = base::ThreadPool::CreateSequencedTaskRunner(

@@ -10,7 +10,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -21,31 +20,55 @@ import android.provider.OpenableColumns;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.shadows.ShadowParcelFileDescriptor;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(
+        manifest = Config.NONE,
+        shadows = {PdfContentProviderUnitTest.CustomShadowParcelFileDescriptor.class})
 public class PdfContentProviderUnitTest {
     private static final String TEST_FILE_PATH = "/proc/5202/fd/344";
     private static final String TEST_FILE_NAME = "test_pdf.pdf";
+
+    /**
+     * A custom shadow is required to override {@link adoptFd(int)} which calls {@code setFdInt}.
+     * {@code setFdInt} changed from a silent no-op, to a {@link RuntimeException} in robolectric
+     * 4.14.1.
+     */
+    @Implements(ParcelFileDescriptor.class)
+    public static class CustomShadowParcelFileDescriptor extends ShadowParcelFileDescriptor {
+        @Implementation
+        protected static ParcelFileDescriptor adoptFd(int fd) {
+            FileDescriptor fdesc = new FileDescriptor();
+
+            return new ParcelFileDescriptor(fdesc);
+        }
+    }
+
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private PdfContentProvider mProvider;
     @Mock private Context mContext;
 
     @Before
     public void setUp() throws IOException {
-        MockitoAnnotations.initMocks(this);
         mProvider = new PdfContentProvider();
         ContextUtils.initApplicationContextForTests(mContext);
         // Mock the package name for generating the URI
@@ -158,8 +181,7 @@ public class PdfContentProviderUnitTest {
             outputStream.write(1234);
             return tempFile;
         } catch (IOException e) {
-            fail("Cannot create temporary file.");
+            throw new AssertionError("Cannot create temporary file.", e);
         }
-        return null;
     }
 }

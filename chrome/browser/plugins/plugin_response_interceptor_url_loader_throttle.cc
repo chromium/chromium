@@ -205,6 +205,10 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
             response_head->headers->raw_headers());
   }
 
+  // `client_side_content_decoding_types` must be cleared to prevent the
+  // renderer from mistakenly decoding the `payload`.
+  response_head->client_side_content_decoding_types.clear();
+
   auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
   transferrable_loader->url = GURL(
       extensions::Extension::GetBaseURLFromExtensionId(extension_id).spec() +

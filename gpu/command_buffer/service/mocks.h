@@ -114,7 +114,6 @@ class MockDecoderClient : public DecoderClient {
   MOCK_METHOD(void, OnFenceSyncRelease, (uint64_t release));
   MOCK_METHOD(void, OnDescheduleUntilFinished, ());
   MOCK_METHOD(void, OnRescheduleAfterFinished, ());
-  MOCK_METHOD(void, OnSwapBuffers, (uint64_t swap_id, uint32_t flags));
   MOCK_METHOD(void, ScheduleGrContextCleanup, ());
   MOCK_METHOD(void, SetActiveURL, (GURL url));
   MOCK_METHOD(void, HandleReturnData, (base::span<const uint8_t> data));

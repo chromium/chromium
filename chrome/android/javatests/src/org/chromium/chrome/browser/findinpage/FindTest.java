@@ -37,9 +37,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.test.util.KeyUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -49,7 +47,6 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
-import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 
@@ -83,7 +80,10 @@ public class FindTest {
                             .getActivity()
                             .getTabModelSelector()
                             .getModel(true)
-                            .closeTabs(TabClosureParams.closeAllTabs().build());
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeAllTabs().build(),
+                                    /* allowDialog= */ false);
                 });
     }
 
@@ -450,39 +450,13 @@ public class FindTest {
     }
 
     /**
-     * Verify Find in page toolbar is not dismissed when device back key is pressed with the
-     * presence of IME. First back key should dismiss IME and second back key should dismiss Find in
-     * page toolbar.
+     * Verify Find in page toolbar is dismissed when device back key is pressed when IME is not
+     * present. First back key press itself will dismiss Find in page toolbar.
      */
     @Test
     @MediumTest
     @Feature({"FindInPage"})
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisabledTest(message = "crbug.com/353950491")
     public void testBackKeyDoesNotDismissFindWhenImeIsPresent() {
-        sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
-        findInPageFromMenu();
-        final TextView findQueryText = getFindQueryText();
-        KeyUtils.singleKeyEventView(
-                InstrumentationRegistry.getInstrumentation(), findQueryText, KeyEvent.KEYCODE_A);
-        waitForIME(true);
-        // IME is present at this moment, so IME will consume BACK key.
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-        waitForIME(false);
-        waitForFindInPageVisibility(true);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-        waitForFindInPageVisibility(false);
-    }
-
-    /**
-     * Same with {@link #testBackKeyDoesNotDismissFindWhenImeIsPresent()}, but with predictive back
-     * gesture enabled.
-     */
-    @Test
-    @MediumTest
-    @Feature({"FindInPage"})
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    public void testBackKeyDoesNotDismissFindWhenImeIsPresent_BackRefactored() {
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(FILEPATH));
         findInPageFromMenu();
         final TextView findQueryText = getFindQueryText();
@@ -504,26 +478,8 @@ public class FindTest {
     @Test
     @MediumTest
     @Feature({"FindInPage"})
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisabledTest(message = "crbug.com/353950491")
-    public void testBackKeyDismissesFind() {
-        loadTestAndVerifyFindInPage("pitts", "1/7");
-        waitForIME(true);
-        // Hide IME by clicking next button from find tool bar.
-        TouchCommon.singleClickView(
-                sActivityTestRule.getActivity().findViewById(R.id.find_next_button));
-        waitForIME(false);
-        InstrumentationRegistry.getInstrumentation().sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-        waitForFindInPageVisibility(false);
-    }
-
-    /** Same with {@link #testBackKeyDismissesFind()} but with predictive back gesture enabled. */
-    @Test
-    @MediumTest
-    @Feature({"FindInPage"})
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @DisabledTest(message = "https://crbug.com/1458344")
-    public void testBackKeyDismissesFind_BackRefactored() {
+    public void testBackKeyDismissesFind() {
         loadTestAndVerifyFindInPage("pitts", "1/7");
         waitForIME(true);
         // Hide IME by clicking next button from find tool bar.

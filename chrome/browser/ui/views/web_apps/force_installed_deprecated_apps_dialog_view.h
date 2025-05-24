@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_DEPRECATED_APPS_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_DEPRECATED_APPS_DIALOG_VIEW_H_
 
-#include <string>
-
 #include "base/functional/callback_forward.h"
 #include "extensions/common/extension_id.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -32,8 +30,8 @@ class ForceInstalledDeprecatedAppsDialogView : public views::BoxLayoutView {
                                   content::WebContents* web_contents);
 
  private:
-  ForceInstalledDeprecatedAppsDialogView(const std::u16string& app_name,
-                                         content::WebContents* web_contents);
+  explicit ForceInstalledDeprecatedAppsDialogView(
+      content::WebContents* web_contents);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEB_APPS_FORCE_INSTALLED_DEPRECATED_APPS_DIALOG_VIEW_H_

@@ -6,8 +6,8 @@
 #define MEDIA_MOJO_SERVICES_VIDEO_DECODE_PERF_HISTORY_H_
 
 #include <stdint.h>
+
 #include <memory>
-#include <queue>
 
 #include "base/functional/callback.h"
 #include "base/metrics/field_trial_params.h"

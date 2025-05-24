@@ -212,22 +212,22 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
   auto target_list = GetTargetList(buffer);
 
   if (target_list.ContainsText()) {
-    available_types.push_back(kMimeTypeText);
+    available_types.push_back(kMimeTypePlainText);
   }
   if (target_list.ContainsFormat(ClipboardFormatType::HtmlType())) {
-    available_types.push_back(kMimeTypeHTML);
+    available_types.push_back(kMimeTypeHtml);
   }
   if (target_list.ContainsFormat(ClipboardFormatType::SvgType())) {
     available_types.push_back(kMimeTypeSvg);
   }
   if (target_list.ContainsFormat(ClipboardFormatType::RtfType())) {
-    available_types.push_back(kMimeTypeRTF);
+    available_types.push_back(kMimeTypeRtf);
   }
   if (target_list.ContainsFormat(ClipboardFormatType::PngType())) {
-    available_types.push_back(kMimeTypePNG);
+    available_types.push_back(kMimeTypePng);
   }
   if (target_list.ContainsFormat(ClipboardFormatType::FilenamesType())) {
-    available_types.push_back(kMimeTypeURIList);
+    available_types.push_back(kMimeTypeUriList);
   }
   if (target_list.ContainsFormat(
           ClipboardFormatType::DataTransferCustomType())) {

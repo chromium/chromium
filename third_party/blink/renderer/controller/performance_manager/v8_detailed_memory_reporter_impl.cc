@@ -107,7 +107,7 @@ v8::MeasureMemoryExecution ToV8MeasureMemoryExecution(
     case V8DetailedMemoryReporterImpl::Mode::LAZY:
       return v8::MeasureMemoryExecution::kLazy;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ExecutionContextToken ToExecutionContextToken(WorkerToken token) {

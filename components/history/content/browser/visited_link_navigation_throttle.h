@@ -8,10 +8,6 @@
 #include "components/history/core/browser/history_service_observer.h"
 #include "content/public/browser/navigation_throttle.h"
 
-namespace content {
-class NavigationHandle;
-}
-
 namespace history {
 class HistoryService;
 }
@@ -31,7 +27,8 @@ class HistoryService;
 class VisitedLinkNavigationThrottle : public content::NavigationThrottle,
                                       public history::HistoryServiceObserver {
  public:
-  VisitedLinkNavigationThrottle(content::NavigationHandle* navigation_handle,
+  VisitedLinkNavigationThrottle(
+      content::NavigationThrottleRegistry& registry,
                                 history::HistoryService* history_service);
   ~VisitedLinkNavigationThrottle() override;
 

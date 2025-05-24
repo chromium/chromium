@@ -49,8 +49,9 @@ void WebuiLoadTimer::DidStartNavigation(
 void WebuiLoadTimer::DOMContentLoaded(
     content::RenderFrameHost* render_frame_host) {
   // See comment in DocumentOnLoadCompletedInPrimaryMainFrame.
-  if (!timer_ || !render_frame_host->IsInPrimaryMainFrame())
+  if (!timer_ || !render_frame_host->IsInPrimaryMainFrame()) {
     return;
+  }
   CallUmaHistogramTimes(document_initial_load_uma_id_, timer_->Elapsed());
 }
 
@@ -58,8 +59,9 @@ void WebuiLoadTimer::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // The WebContents could have been created for a child RenderFrameHost so it
   // would never receive a DidStartNavigation with the main frame, however it
   // will receive this callback.
-  if (!timer_)
+  if (!timer_) {
     return;
+  }
   CallUmaHistogramTimes(document_load_completed_uma_id_, timer_->Elapsed());
   timer_.reset();
 }

@@ -1,0 +1,132 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+assert(!is_android)
+
+source_set("actor") {
+  friend = [
+    ":unit_tests",
+    ":browser_tests",
+  ]
+  public = [
+    "actor_coordinator.h",
+    "actor_keyed_service.h",
+    "actor_keyed_service_factory.h",
+    "actor_task.h",
+  ]
+
+  sources = [
+    "actor_coordinator.cc",
+    "actor_features.cc",
+    "actor_features.h",
+    "actor_keyed_service.cc",
+    "actor_keyed_service_factory.cc",
+    "actor_task.cc",
+    "site_policy.cc",
+    "site_policy.h",
+    "tools/history_tool.cc",
+    "tools/history_tool.h",
+    "tools/navigate_tool.cc",
+    "tools/navigate_tool.h",
+    "tools/page_tool.cc",
+    "tools/page_tool.h",
+    "tools/tool.cc",
+    "tools/tool.h",
+    "tools/tool_callbacks.cc",
+    "tools/tool_callbacks.h",
+    "tools/tool_controller.cc",
+    "tools/tool_controller.h",
+    "tools/tool_invocation.cc",
+    "tools/tool_invocation.h",
+    "tools/wait_tool.cc",
+    "tools/wait_tool.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/optimization_guide:optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/common",
+    "//components/safe_browsing:buildflags",
+    "//components/variations/service:service",
+    "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "actor_test_util.cc",
+    "actor_test_util.h",
+  ]
+
+  deps = [ ":actor" ]
+
+  public_deps = [
+    "//base",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "actor_keyed_service_unittest.cc",
+    "site_policy_unittest.cc",
+  ]
+  deps = [
+    ":actor",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/test:test_support",
+    "//testing/gtest",
+  ]
+  if (enable_glic) {
+    sources += [ "actor_coordinator_unittest.cc" ]
+  }
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "site_policy_browsertest.cc" ]
+  deps = [
+    ":actor",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/ui:ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/zoom:zoom",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/optimization_guide/core:bloomfilter",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/common:features",
+    "//testing/gtest",
+  ]
+
+  if (enable_glic) {
+    sources += [
+      "actor_coordinator_browsertest.cc",
+      "tools/tools_browsertest.cc",
+    ]
+    deps += [ "//chrome/browser/glic:glic" ]
+  }
+}

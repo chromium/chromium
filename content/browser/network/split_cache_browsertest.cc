@@ -432,8 +432,6 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
 enum class SplitCacheTestCase {
   kEnabledTripleKeyed,
   kEnabledTriplePlusCrossSiteMainFrameNavBool,
-  kEnabledTriplePlusMainFrameNavInitiator,
-  kEnabledTriplePlusNavInitiator
 };
 
 const struct {
@@ -441,11 +439,7 @@ const struct {
   base::test::FeatureRef feature;
 } kTestCaseToFeatureMapping[] = {
     {SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean},
-    {SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-     net::features::kSplitCacheByMainFrameNavigationInitiator},
-    {SplitCacheTestCase::kEnabledTriplePlusNavInitiator,
-     net::features::kSplitCacheByNavigationInitiator}};
+     net::features::kSplitCacheByCrossSiteMainFrameNavigationBoolean}};
 
 class SplitCacheContentBrowserTestEnabled
     : public SplitCacheContentBrowserTest,
@@ -469,45 +463,15 @@ INSTANTIATE_TEST_SUITE_P(
     SplitCacheContentBrowserTestEnabled,
     testing::ValuesIn(
         {SplitCacheTestCase::kEnabledTripleKeyed,
-         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool,
-         SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator,
-         SplitCacheTestCase::kEnabledTriplePlusNavInitiator}),
+         SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool}),
     [](const testing::TestParamInfo<SplitCacheTestCase>& info) {
       switch (info.param) {
         case SplitCacheTestCase::kEnabledTripleKeyed:
           return "SplitCacheEnabledTripleKeyed";
         case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
           return "SplitCacheEnabledTriplePlusCrossSiteMainFrameNavigationBool";
-        case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-          return "SplitCacheEnabledTriplePlusMainFrameNavigationInitiator";
-        case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-          return "SplitCacheEnabledTriplePlusNavigationInitiator";
       }
     });
-
-class SplitCacheContentBrowserTestPlzDedicatedWorker
-    : public SplitCacheContentBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  SplitCacheContentBrowserTestPlzDedicatedWorker() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-    enabled_features.push_back(net::features::kSplitCacheByNetworkIsolationKey);
-
-    // When the test parameter is true, we test the split cache with
-    // PlzDedicatedWorker enabled.
-    if (GetParam()) {
-      enabled_features.push_back(blink::features::kPlzDedicatedWorker);
-    } else {
-      disabled_features.push_back(blink::features::kPlzDedicatedWorker);
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
 
 class SplitCacheContentBrowserTestDisabled
     : public SplitCacheContentBrowserTest {
@@ -731,37 +695,18 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
   EXPECT_TRUE(
       NavigationResourceCached(GenURL("d.com", "/title1.html"), GURL(), false));
 
-  bool expect_first_subframe_navigation_cached;
-  switch (GetParam()) {
-    case SplitCacheTestCase::kEnabledTripleKeyed:
-    case SplitCacheTestCase::kEnabledTriplePlusCrossSiteMainFrameNavBool:
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-      // The 'is-subframe-document-resource' boolean prevents this resource from
-      // sharing a cache partition with the earlier top-level navigation, even
-      // in cases where the initiator is same-origin with the page being loaded.
-      expect_first_subframe_navigation_cached = false;
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      // If the initiator is same-site with the resource being loaded then the
-      // subframe navigation can share a cache partition with the top-level
-      // navigation.
-      expect_first_subframe_navigation_cached = true;
-      break;
-  }
   // Navigate to a subframe with the same top frame origin as in an earlier
   // navigation and same url as already navigated to earlier in a main frame
   // navigation.
+  // The 'is-subframe-document-resource' boolean prevents this resource from
+  // sharing a cache partition with the earlier top-level navigation, even
+  // in cases where the initiator is same-origin with the page being loaded.
   EXPECT_FALSE(NavigationResourceCached(
       GenURL("a.com", "/navigation_controller/page_with_iframe.html"),
       GenURL("a.com", "/title1.html"),
-      expect_first_subframe_navigation_cached));
+      false));
 
-  // page_with_iframe.html is not added to the cache due to the request not
-  // having a Max-Age header like the other requests and due to the embedded
-  // test server not correctly handling requests with the If-None-Match and ETag
-  // headers, but the a.com/title1.html subframe should have been. For more info
-  // see: https://crbug.com/360903556
-  EXPECT_FALSE(NavigationResourceCached(
+  EXPECT_TRUE(NavigationResourceCached(
       GenURL("a.com", "/navigation_controller/page_with_iframe.html"),
       GenURL("a.com", "/title1.html"), true));
 
@@ -877,13 +822,6 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
       EXPECT_FALSE(evil_com_initiator_first_navigation_result);
       EXPECT_TRUE(evil2_com_initiator_navigation_result);
       break;
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      // If we are keying on initiator then these two cross-site navigations
-      // should be in separate cache partitions.
-      EXPECT_FALSE(evil_com_initiator_first_navigation_result);
-      EXPECT_FALSE(evil2_com_initiator_navigation_result);
-      break;
   }
 }
 
@@ -924,14 +862,6 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
       // Using the cross-site navigation boolean, the first of these should not
       // be in the cache because it's cross-site, but a subsequent cross-site
       // navigation from a different initiator should result in a cache hit.
-      EXPECT_FALSE(a_example_com_initiator_first_navigation_result);
-      EXPECT_TRUE(b_example_com_initiator_navigation_result);
-      break;
-    case SplitCacheTestCase::kEnabledTriplePlusMainFrameNavInitiator:
-    case SplitCacheTestCase::kEnabledTriplePlusNavInitiator:
-      // If we are keying on initiator then these two cross-origin but same-site
-      // navigations should share a cache partition since the cache key
-      // incorporates the site instead of the origin.
       EXPECT_FALSE(a_example_com_initiator_first_navigation_result);
       EXPECT_TRUE(b_example_com_initiator_navigation_result);
       break;
@@ -1035,7 +965,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
   EXPECT_EQ(size1, size2);
 }
 
-IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestPlzDedicatedWorker,
+IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
                        DedicatedWorkers) {
   // Load 3p.com/script from a.com's worker. The first time it's loaded from the
   // network and the second it's cached.
@@ -1081,7 +1011,7 @@ IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestPlzDedicatedWorker,
 
 // https://crbug.com/1218723 started flaking after Field Trial Testing Config
 // was enabled for content_browsertests.
-IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestPlzDedicatedWorker,
+IN_PROC_BROWSER_TEST_P(SplitCacheContentBrowserTestEnabled,
                        DISABLED_DedicatedWorkersScripts) {
   // Load a.com's worker. The first time the worker script is loaded from the
   // network and the second it's cached.
@@ -1150,10 +1080,6 @@ IN_PROC_BROWSER_TEST_F(SplitCacheContentBrowserTestDisabled, DedicatedWorkers) {
       GenURL("f.com", "/title1.html"), GenURL("e.com", "/title1.html"),
       GenURL("e.com", "/worker.js")));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SplitCacheContentBrowserTestPlzDedicatedWorker,
-                         ::testing::Values(true, false));
 
 class SplitCacheByIncludeCredentialsTest : public ContentBrowserTest {
  public:

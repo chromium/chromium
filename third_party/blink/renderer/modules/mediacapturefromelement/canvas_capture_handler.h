@@ -74,8 +74,8 @@ class MODULES_EXPORT CanvasCaptureHandler {
   // Functions called by VideoCapturerSource implementation.
   void StartVideoCapture(
       const media::VideoCaptureParams& params,
-      const VideoCaptureDeliverFrameCB& new_frame_callback,
-      const VideoCapturerSource::RunningCallback& running_callback);
+      VideoCaptureDeliverFrameCB new_frame_callback,
+      VideoCapturerSource::VideoCaptureRunningCallbackCB running_callback);
   void RequestRefreshFrame();
   void StopVideoCapture();
   void SetCanDiscardAlpha(bool can_discard_alpha) {

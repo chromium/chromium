@@ -23,40 +23,33 @@ bool FlatlandSysmemNativePixmap::AreDmaBufFdsValid() const {
 }
 
 int FlatlandSysmemNativePixmap::GetDmaBufFd(size_t plane) const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 uint32_t FlatlandSysmemNativePixmap::GetDmaBufPitch(size_t plane) const {
-  NOTREACHED_IN_MIGRATION();
-  return 0u;
+  NOTREACHED();
 }
 
 size_t FlatlandSysmemNativePixmap::GetDmaBufOffset(size_t plane) const {
-  NOTREACHED_IN_MIGRATION();
-  return 0u;
+  NOTREACHED();
 }
 
 size_t FlatlandSysmemNativePixmap::GetDmaBufPlaneSize(size_t plane) const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 size_t FlatlandSysmemNativePixmap::GetNumberOfPlanes() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool FlatlandSysmemNativePixmap::SupportsZeroCopyWebGPUImport() const {
-  NOTREACHED_IN_MIGRATION();
   // TODO(crbug.com/40217759): Figure out how to import multi-planar pixmap into
   // WebGPU without copy.
-  return false;
+  NOTREACHED();
 }
 
 uint64_t FlatlandSysmemNativePixmap::GetBufferFormatModifier() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 gfx::BufferFormat FlatlandSysmemNativePixmap::GetBufferFormat() const {
@@ -76,8 +69,7 @@ bool FlatlandSysmemNativePixmap::ScheduleOverlayPlane(
     const gfx::OverlayPlaneData& overlay_plane_data,
     std::vector<gfx::GpuFence> acquire_fences,
     std::vector<gfx::GpuFence> release_fences) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 gfx::NativePixmapHandle FlatlandSysmemNativePixmap::ExportHandle() const {

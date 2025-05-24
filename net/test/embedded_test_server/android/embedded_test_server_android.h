@@ -10,6 +10,7 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -48,6 +49,13 @@ class EmbeddedTestServerAndroid {
       const base::android::JavaParamRef<jstring>& jhostname,
       const base::android::JavaParamRef<jstring>& jrelative_url) const;
 
+  std::vector<std::string> GetRequestHeadersForUrl(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& jrelative_url);
+  int GetRequestCountForUrl(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jstring>& jrelative_url);
+
   void AddDefaultHandlers(
       JNIEnv* jenv,
       const base::android::JavaParamRef<jstring>& jdirectory_path);
@@ -81,10 +89,35 @@ class EmbeddedTestServerAndroid {
   void AcceptedSocket(const void* socket_id);
   void ReadFromSocket(const void* socket_id);
 
+  void MonitorResourceRequest(const net::test_server::HttpRequest& request);
+
   JavaObjectWeakGlobalRef weak_java_server_;
 
   EmbeddedTestServer test_server_;
   ConnectionListener connection_listener_;
+
+  // Headers and counts of requests sent to the server. Keyed by path (not by
+  // full URL) because the host part of the requests is translated ("a.test" to
+  // "127.0.0.1") before the server handles them.
+  // This is accessed from the UI thread and `EmbeddedTestServer::io_thread_`,
+  // so it's guarded by the lock.
+  struct RequestInfoByPath {
+    RequestInfoByPath();
+    ~RequestInfoByPath();
+
+    // Movable and copyable.
+    RequestInfoByPath(RequestInfoByPath&& other);
+    RequestInfoByPath& operator=(RequestInfoByPath&& other);
+    RequestInfoByPath(const RequestInfoByPath& other);
+    RequestInfoByPath& operator=(const RequestInfoByPath& other);
+
+    // Headers of requests sent for the path.
+    net::test_server::HttpRequest::HeaderMap headers;
+    // Counts of requests.
+    size_t count = 0;
+  };
+  std::map<std::string, RequestInfoByPath> requests_by_path_ GUARDED_BY(lock_);
+  base::Lock lock_;
 };
 
 }  // namespace net::test_server

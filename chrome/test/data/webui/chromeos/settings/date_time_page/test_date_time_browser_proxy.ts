@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote, DateTimePageRemote} from 'chrome://os-settings/os_settings.js';
+import type {DateTimeBrowserProxy, DateTimePageRemote} from 'chrome://os-settings/os_settings.js';
+import {DateTimePageCallbackRouter, DateTimePageHandlerRemote} from 'chrome://os-settings/os_settings.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 export interface ProxyOptions {

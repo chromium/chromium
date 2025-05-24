@@ -75,11 +75,12 @@ const int32_t kMaxFileSizeBytes = 150 * 1024;
 // optional string. The string will be present if the status is SUCCESS.
 base::expected<std::string, ImportResults::Status> ReadFileToString(
     const base::FilePath& path) {
-  int64_t file_size;
+  std::optional<int64_t> file_size = base::GetFileSize(path);
 
-  if (GetFileSize(path, &file_size)) {
-    base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
-    if (file_size > kMaxFileSizeBytes) {
+  if (file_size.has_value()) {
+    base::UmaHistogramCounts1M("PasswordManager.ImportFileSize",
+                               file_size.value());
+    if (file_size.value() > kMaxFileSizeBytes) {
       return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
     }
   }
@@ -92,6 +93,17 @@ base::expected<std::string, ImportResults::Status> ReadFileToString(
   return std::move(contents);
 }
 
+base::expected<std::string, ImportResults::Status> ValidateString(
+    std::string string) {
+  int64_t file_size = string.size();
+  base::UmaHistogramCounts1M("PasswordManager.ImportFileSize", file_size);
+  if (file_size > kMaxFileSizeBytes) {
+    return base::unexpected(ImportResults::Status::MAX_FILE_SIZE);
+  }
+
+  return std::move(string);
+}
+
 ImportEntry::Status GetConflictType(
     password_manager::PasswordForm::Store target_store) {
   switch (target_store) {
@@ -102,9 +114,8 @@ ImportEntry::Status GetConflictType(
     case PasswordForm::Store::kNotSet:
       return ImportEntry::Status::UNKNOWN_ERROR;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ImportEntry::Status::UNKNOWN_ERROR;
 }
 
 ImportEntry CreateFailedImportEntry(const CredentialUIEntry& credential,
@@ -199,7 +210,7 @@ std::optional<CredentialUIEntry> GetConflictingCredential(
       // Check if `local_credential` has matching `signon_realm`, but different
       // `password`.
       if (local_credential.password != imported_credential.password &&
-          base::ranges::any_of(
+          std::ranges::any_of(
               local_credential.facets,
               [&imported_credential](const CredentialFacet& facet) {
                 return facet.signon_realm ==
@@ -220,7 +231,7 @@ std::vector<PasswordForm> GetMatchingPasswordForms(
   // forms with different `signon_realm`.
   CHECK(presenter);
   std::vector<PasswordForm> results;
-  base::ranges::copy_if(
+  std::ranges::copy_if(
       presenter->GetCorrespondingPasswordForms(credential),
       std::back_inserter(results), [&](const PasswordForm& form) {
         return form.signon_realm == credential.GetFirstSignonRealm() &&
@@ -446,6 +457,19 @@ void PasswordImporter::ParseCSVPasswordsInSandbox(
     state_ = kNotStarted;
     std::move(results_callback).Run(std::move(results));
   }
+}
+
+void PasswordImporter::Import(std::string csv_data,
+                              password_manager::PasswordForm::Store to_store,
+                              ImportResultsCallback results_callback) {
+  // Posting with USER_VISIBLE priority, because the result of the import is
+  // visible to the user in the password settings page.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
+      base::BindOnce(&ValidateString, std::move(csv_data)),
+      base::BindOnce(&PasswordImporter::ParseCSVPasswordsInSandbox,
+                     weak_ptr_factory_.GetWeakPtr(), to_store,
+                     std::move(results_callback)));
 }
 
 void PasswordImporter::Import(const base::FilePath& path,

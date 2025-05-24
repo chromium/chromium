@@ -12,6 +12,7 @@
 #include "components/device_signals/core/browser/crowdstrike_client.h"
 #include "components/device_signals/core/browser/metrics_utils.h"
 #include "components/device_signals/core/browser/signals_types.h"
+#include "components/device_signals/core/browser/user_permission_service.h"
 #include "components/device_signals/core/common/common_types.h"
 
 namespace device_signals {
@@ -30,9 +31,14 @@ AgentSignalsCollector::AgentSignalsCollector(
 AgentSignalsCollector::~AgentSignalsCollector() = default;
 
 void AgentSignalsCollector::GetAgentSignal(
+    UserPermission permission,
     const SignalsAggregationRequest& request,
     SignalsAggregationResponse& response,
     base::OnceClosure done_closure) {
+  if (permission != UserPermission::kGranted) {
+    std::move(done_closure).Run();
+    return;
+  }
   crowdstrike_client_->GetIdentifiers(
       base::BindOnce(&AgentSignalsCollector::OnCrowdStrikeSignalCollected,
                      weak_factory_.GetWeakPtr(), base::TimeTicks::Now(),

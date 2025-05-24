@@ -167,26 +167,25 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(ProfileManagementWebContentsLifetimeHelper);
 }  // namespace
 
 // static
-std::unique_ptr<ProfileManagementNavigationThrottle>
-ProfileManagementNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void ProfileManagementNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   if ((!base::FeatureList::IsEnabled(features::kThirdPartyProfileManagement) &&
        !base::FeatureList::IsEnabled(
            features::kEnableProfileTokenManagement)) ||
       !g_browser_process->local_state() ||
       !profiles::IsProfileCreationAllowed()) {
-    return nullptr;
+    return;
   }
 
   // The throttle is created for all requests since it intercepts specific HTTP
   // responses.
-  return std::make_unique<ProfileManagementNavigationThrottle>(
-      navigation_handle);
+  registry.AddThrottle(
+      std::make_unique<ProfileManagementNavigationThrottle>(registry));
 }
 
 ProfileManagementNavigationThrottle::ProfileManagementNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 ProfileManagementNavigationThrottle::~ProfileManagementNavigationThrottle() =
     default;

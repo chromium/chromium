@@ -25,13 +25,14 @@
 
 #include "third_party/blink/renderer/core/html/track/loadable_text_track.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_text_track_kind.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/track/html_track_element.h"
 
 namespace blink {
 
 LoadableTextTrack::LoadableTextTrack(HTMLTrackElement* track)
-    : TextTrack(SubtitlesKeyword(),
+    : TextTrack(V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles),
                 g_empty_atom,
                 g_empty_atom,
                 *track,

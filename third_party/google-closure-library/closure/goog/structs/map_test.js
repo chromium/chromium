@@ -359,47 +359,52 @@ testSuite({
         'Should not contain the removed keys', '135', googIter.join(m, ''));
   },
 
-  testMutatedIterator() {
+  testMutatedIteratorSetChange() {
     const message = 'The map has changed since the iterator was created';
 
-    let m = new StructsMap;
-    m.set('a', 1);
-    m.set('b', 2);
-    m.set('c', 3);
-    m.set('d', 4);
-
-    let iter = m.getValueIterator();
-    m.set('e', 5);
-    let ex =
+    const map = new StructsMap();
+    map.set('a', 1);
+    map.set('b', 2);
+    map.set('c', 3);
+    map.set('d', 4);
+    const iter = map.getValueIterator();
+    map.set('e', 5);
+    const ex =
         assertThrows('Expected an exception since the map has changed', () => {
-          iter.nextValueOrThrow();
+          iter.next();
         });
     assertEquals(message, ex.message);
+  },
 
-    m = new StructsMap;
-    m.set('a', 1);
-    m.set('b', 2);
-    m.set('c', 3);
-    m.set('d', 4);
+  testMutatedIteratorRemovalChange() {
+    const message = 'The map has changed since the iterator was created';
+    const map = new StructsMap();
+    map.set('a', 1);
+    map.set('b', 2);
+    map.set('c', 3);
+    map.set('d', 4);
 
-    iter = m.getValueIterator();
-    m.remove('d');
-    ex = assertThrows('Expected an exception since the map has changed', () => {
-      iter.nextValueOrThrow();
-    });
+    const iter = map.getValueIterator();
+    map.remove('d');
+    const ex =
+        assertThrows('Expected an exception since the map has changed', () => {
+          iter.next();
+        });
     assertEquals(message, ex.message);
+  },
 
-    m = new StructsMap;
-    m.set('a', 1);
-    m.set('b', 2);
-    m.set('c', 3);
-    m.set('d', 4);
+  testMutatedIteratorChangeExistingKeyOk() {
+    const map = new StructsMap();
+    map.set('a', 1);
+    map.set('b', 2);
+    map.set('c', 3);
+    map.set('d', 4);
 
-    iter = m.getValueIterator();
-    m.set('d', 5);
-    iter.nextValueOrThrow();
+    const iter = map.getValueIterator();
+    map.set('d', 5);
+    iter.next();
     // Changing an existing value is OK.
-    iter.nextValueOrThrow();
+    iter.next();
   },
 
   testTranspose() {

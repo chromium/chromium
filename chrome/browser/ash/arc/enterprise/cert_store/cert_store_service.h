@@ -15,7 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/arc_cert_installer.h"
-#include "chrome/services/keymanagement/public/mojom/cert_store_types.mojom.h"
+#include "chromeos/ash/services/keymanagement/public/mojom/cert_store_types.mojom.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -29,14 +29,6 @@ namespace arc {
 class CertStoreService : public KeyedService,
                          public net::CertDatabase::Observer {
  public:
-  // Returns singleton instance for the given BrowserContext,
-  // or nullptr if the browser |context| is not allowed to use ARC.
-  static CertStoreService* GetForBrowserContext(
-      content::BrowserContext* context);
-
-  // Return the factory instance for this class.
-  static BrowserContextKeyedServiceFactory* GetFactory();
-
   explicit CertStoreService(content::BrowserContext* context);
 
   // This constructor is public only for testing.
@@ -60,8 +52,6 @@ class CertStoreService : public KeyedService,
     certificate_cache_.set_required_cert_names_for_testing(
         std::set<std::string>(cert_names.begin(), cert_names.end()));
   }
-
-  static void EnsureFactoryBuilt();
 
  private:
   using BuildAllowedCertDescriptionsCallback =

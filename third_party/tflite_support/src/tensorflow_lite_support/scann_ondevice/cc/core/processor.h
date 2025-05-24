@@ -19,7 +19,7 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "Eigen/Core"  // from @eigen
+#include "Eigen/Core"  // from @eigen_archive
 #include "tensorflow_lite_support/scann_ondevice/cc/core/serialized_searcher.pb.h"
 #include "tensorflow_lite_support/scann_ondevice/cc/core/top_n_amortized_constant.h"
 

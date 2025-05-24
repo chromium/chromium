@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
@@ -113,7 +114,7 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
   FakeCertificateImporter(const FakeCertificateImporter&) = delete;
   FakeCertificateImporter& operator=(const FakeCertificateImporter&) = delete;
 
-  ~FakeCertificateImporter() override {}
+  ~FakeCertificateImporter() override = default;
 
   void SetExpectedONCClientCertificates(
       const std::vector<OncParsedCertificates::ClientCertificate>&
@@ -137,7 +138,7 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
     // imported, only ImportClientCertificaates should be called.
     // ImportAllCertificatesUserInitiated should never be called from
     // UserNetworkConfigurationUpdater.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ImportClientCertificates(

@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
@@ -20,6 +19,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.url.GURL;
@@ -34,6 +35,7 @@ import java.util.List;
  * thread due to the C++ base::CancelableTaskTracker class
  * requirement.
  */
+@NullMarked
 public class FaviconHelper {
     private long mNativeFaviconHelper;
 
@@ -62,10 +64,10 @@ public class FaviconHelper {
 
     /** Helper for generating default favicons and sharing the same icon between multiple views. */
     public static class DefaultFaviconHelper {
-        private Bitmap mChromeDarkBitmap;
-        private Bitmap mChromeLightBitmap;
-        private Bitmap mDefaultDarkBitmap;
-        private Bitmap mDefaultLightBitmap;
+        private @Nullable Bitmap mChromeDarkBitmap;
+        private @Nullable Bitmap mChromeLightBitmap;
+        private @Nullable Bitmap mDefaultDarkBitmap;
+        private @Nullable Bitmap mDefaultLightBitmap;
 
         private int getResourceId(GURL url) {
             return UrlUtilities.isInternalScheme(url)
@@ -224,7 +226,7 @@ public class FaviconHelper {
      */
     public boolean getComposedFaviconImage(
             Profile profile,
-            @NonNull List<GURL> urls,
+            List<GURL> urls,
             int desiredSizeInPixel,
             ComposedFaviconImageCallback composedFaviconImageCallback) {
         assert mNativeFaviconHelper != 0;

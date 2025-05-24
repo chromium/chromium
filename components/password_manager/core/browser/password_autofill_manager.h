@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/check_deref.h"
@@ -14,18 +15,20 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/filling_product.h"
+#include "base/timer/timer.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/integrators/password_manager/password_manager_delegate.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/password_cross_domain_confirmation_popup_controller.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/gfx/image/image.h"
 
 namespace favicon_base {
@@ -44,7 +47,8 @@ class PasswordManualFallbackMetricsRecorder;
 class PasswordSuggestionGenerator;
 
 // This class is responsible for filling password forms.
-class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
+class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate,
+                                public autofill::PasswordManagerDelegate {
  public:
   PasswordAutofillManager(PasswordManagerDriver* password_manager_driver,
                           autofill::AutofillClient* autofill_client,
@@ -55,8 +59,16 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
 
   ~PasswordAutofillManager() override;
 
+  // PasswordManagerDelegate:
+#if BUILDFLAG(IS_ANDROID)
+  void ShowKeyboardReplacingSurface(
+      const autofill::PasswordSuggestionRequest& request) override;
+#endif  // BUILDFLAG(IS_ANDROID)
+  void ShowSuggestions(
+      const autofill::TriggeringField& triggering_field) override;
+
   // AutofillSuggestionDelegate implementation.
-  absl::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
+  std::variant<autofill::AutofillDriver*, PasswordManagerDriver*> GetDriver()
       override;
   void OnSuggestionsShown(
       base::span<const autofill::Suggestion> suggestions) override;
@@ -85,6 +97,7 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
       base::i18n::TextDirection text_direction,
       const std::u16string& typed_username,
       ShowWebAuthnCredentials show_webauthn_credentials,
+      ShowIdentityCredentials show_identity_credentials,
       const gfx::RectF& bounds);
 
   // If there are relevant credentials for the current frame show them and
@@ -106,17 +119,10 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Called when main frame navigates. Not called for in-page navigations.
   void DidNavigateMainFrame();
 
-  // Called if no suggestions were found. Assumed to be mutually exclusive with
-  // |OnAddPasswordFillData|.
-  void OnNoCredentialsFound();
-
   PasswordManualFallbackMetricsRecorder&
   GetPasswordManualFallbackMetricsRecorder() {
     return CHECK_DEREF(manual_fallback_metrics_recorder_.get());
   }
-
-  // A public version of FillSuggestion(), only for use in tests.
-  bool FillSuggestionForTest(const std::u16string& username);
 
   // A public version of PreviewSuggestion(), only for use in tests.
   bool PreviewSuggestionForTest(const std::u16string& username);
@@ -127,6 +133,9 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   inline PasswordSuggestionFlow* manual_fallback_flow() {
     return manual_fallback_flow_.get();
   }
+
+  // If there is a popup waiting to be displayed with a delay, this cancels it.
+  void FocusedInputChanged();
 
   base::WeakPtr<PasswordAutofillManager> GetWeakPtr();
 
@@ -140,11 +149,10 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Validates and forwards the given objects to the autofill client.
   void UpdatePopup(std::vector<autofill::Suggestion> suggestions);
 
-  // Attempts to find and fill the suggestions with the user name |username| and
-  // the `type` indicating the store (account-stored or local).
-  // Returns true if it was successful.
-  bool FillSuggestion(const std::u16string& username,
-                      autofill::SuggestionType type);
+  // Fills `password_and_metadata` suggestion by passing username and password
+  // to the password manager driver.
+  void FillSuggestion(
+      const autofill::PasswordAndMetadata& password_and_metadata);
 
   // Attempts to find and preview the suggestions with the user name |username|
   // and the `type` indicating the store (account-stored or
@@ -152,18 +160,16 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   bool PreviewSuggestion(const std::u16string& username,
                          autofill::SuggestionType type);
 
-  // If one of the login mappings in |fill_data| matches |current_username| and
+  // If one of the login mappings in `fill_data_` matches `current_username` and
   // `type` (indicating whether a credential is stored in account
-  // or locally), return true and assign the password and the original signon
-  // realm to |password_and_meta_data|. Note that if the credential comes from
-  // the same realm as the one we're filling to, the |realm| field will be left
-  // empty, as this is the behavior of |PasswordFormFillData|.
-  // Otherwise, returns false and leaves |password_and_meta_data| untouched.
-  bool GetPasswordAndMetadataForUsername(
+  // or locally), returns the matching password credential. Otherwise, returns
+  // `nullptr`. Note that if the credential comes from the same realm as
+  // the one we're filling to, the `realm` field will be left empty, as this is
+  // the behavior of `PasswordFormFillData`. This function uses the fact that
+  // `FindBestMatches` returns only one credential per <username, type> pair.
+  const autofill::PasswordAndMetadata* GetPasswordAndMetadataForUsername(
       const std::u16string& current_username,
-      autofill::SuggestionType type,
-      const autofill::PasswordFormFillData& fill_data,
-      autofill::PasswordAndMetadata* password_and_meta_data);
+      autofill::SuggestionType type);
 
   // Makes a request to the favicon service for the icon of |url|.
   void RequestFavicon(const GURL& url);
@@ -188,9 +194,14 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // Called when the biometric reauth that guards password filling completes.
   // `type` identifies the suggestion that was selected for
   // filling.
-  void OnBiometricReauthCompleted(const std::u16string& username_value,
-                                  autofill::SuggestionType type,
-                                  bool auth_succeded);
+  void OnBiometricReauthCompleted(
+      const autofill::PasswordAndMetadata& password_and_metadata,
+      bool auth_succeded);
+
+  // Fills the password credential suggestion. Triggers authentication if
+  // needed.
+  void OnPasswordCredentialSuggestionAccepted(
+      const autofill::PasswordAndMetadata& password_and_metadata);
 
   // Cancels an ongoing biometric re-authentication. Usually, because
   // the filling scope has changed or because |this| is being destroyed.
@@ -198,6 +209,15 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
 
   // Hides the popup.
   void HidePopup();
+
+  // Completion of `OnShowPasswordSuggestions`, which can sometimes be deferred.
+  void ContinueShowingPasswordSuggestions(
+      autofill::FieldRendererId element_id,
+      base::i18n::TextDirection text_direction,
+      const std::u16string& typed_username,
+      ShowWebAuthnCredentials show_webauthn_credentials,
+      ShowIdentityCredentials show_identity_credentials,
+      const gfx::RectF& bounds);
 
   std::unique_ptr<autofill::PasswordFormFillData> fill_data_;
 
@@ -240,6 +260,17 @@ class PasswordAutofillManager : public autofill::AutofillSuggestionDelegate {
   // `manual_fallback_flow_` and dies when `manual_fallback_flow_` dies.
   std::unique_ptr<PasswordManualFallbackMetricsRecorder>
       manual_fallback_metrics_recorder_;
+
+  // This timer is used to delay showing the suggestions popup if passkey
+  // suggestions are allowed but the passkey list has not yet arrived.
+  base::OneShotTimer wait_for_passkeys_timer_;
+
+  // Stores the controller of warning popup UI on cross domain filling.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<PasswordCrossDomainConfirmationPopupController>
+      cross_domain_confirmation_controller_;
+#endif
 
   base::WeakPtrFactory<PasswordAutofillManager> weak_ptr_factory_{this};
 };

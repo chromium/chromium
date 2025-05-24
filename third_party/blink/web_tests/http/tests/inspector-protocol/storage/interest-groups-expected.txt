@@ -34,9 +34,25 @@ interestGroupAuctionNetworkRequestCreated {
         [0] : 1
     ]
     requestId : <string>
+    type : bidderTrustedSignals
+    url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
+}
+interestGroupAuctionNetworkRequestCreated {
+    auctions : [
+        [0] : 1
+    ]
+    requestId : <string>
     type : sellerJs
     url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
 }
+interestGroupAuctionNetworkRequestCreated {
+    auctions : [
+        [0] : 1
+    ]
+    requestId : <string>
+    type : sellerTrustedSignals
+    url : https://a.test:8443/inspector-protocol/resources/fledge_scoring_signals.js.php
+}
 interestGroupAccessed {
     accessTime : <number>
     name : 0
@@ -57,6 +73,7 @@ interestGroupDetails {
     name : 0
     ownerOrigin : https://a.test:8443
     priority : 0
+    trustedBiddingSignalsURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -78,6 +95,7 @@ interestGroupDetails {
     name : 1
     ownerOrigin : https://a.test:8443
     priority : 0
+    trustedBiddingSignalsURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -99,6 +117,7 @@ interestGroupDetails {
     name : 0
     ownerOrigin : https://a.test:8443
     priority : 0
+    trustedBiddingSignalsURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -120,6 +139,7 @@ interestGroupDetails {
     name : 1
     ownerOrigin : https://a.test:8443
     priority : 0
+    trustedBiddingSignalsURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -142,6 +162,7 @@ interestGroupDetails {
     name : 0
     ownerOrigin : https://a.test:8443
     priority : 0
+    trustedBiddingSignalsURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -164,6 +185,7 @@ interestGroupDetails {
     name : 1
     ownerOrigin : https://a.test:8443
     priority : 0
+    trustedBiddingSignalsURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
 }
 interestGroupAccessed {
     accessTime : <number>
@@ -185,6 +207,7 @@ interestGroupDetails {
     name : 1
     ownerOrigin : https://a.test:8443
     priority : 0
+    trustedBiddingSignalsURL : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
 }
 Stop Tracking IG Events
 Logged IG events:
@@ -221,8 +244,24 @@ interestGroupAuctionNetworkRequestCreated {
         [0] : 2
     ]
     requestId : <string>
+    type : bidderTrustedSignals
+    url : https://a.test:8443/inspector-protocol/resources/fledge_bidding_signals.js.php
+}
+interestGroupAuctionNetworkRequestCreated {
+    auctions : [
+        [0] : 2
+    ]
+    requestId : <string>
     type : sellerJs
     url : https://a.test:8443/inspector-protocol/resources/fledge_decision_logic.js.php
+}
+interestGroupAuctionNetworkRequestCreated {
+    auctions : [
+        [0] : 2
+    ]
+    requestId : <string>
+    type : sellerTrustedSignals
+    url : https://a.test:8443/inspector-protocol/resources/fledge_scoring_signals.js.php
 }
 Stop Tracking Auction Events
 Logged IG events:

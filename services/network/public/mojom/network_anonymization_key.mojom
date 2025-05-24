@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/network_isolation_partition.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
 
 // Used to represent an empty `net::NetworkAnonymizationKey`.
@@ -16,6 +17,8 @@ struct NonEmptyNetworkAnonymizationKey {
   bool is_cross_site;
 
   mojo_base.mojom.UnguessableToken? nonce;
+
+  NetworkIsolationPartition network_isolation_partition;
 };
 
 // Mapped to `net::NetworkAnonymizationKey`.

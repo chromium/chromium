@@ -93,6 +93,12 @@ static const char kWatchTimeAudioVideoMediaFoundationAll[] =
 static const char kWatchTimeAudioVideoMediaFoundationEme[] =
     "Media.WatchTime.AudioVideo.MediaFoundation.Eme";
 
+// Automatic picture in picture for media playback watch time metrics.
+static const char kWatchTimeAudioVideoAutoPipMediaPlayback[] =
+    "Media.WatchTime.AudioVideo.AutoPipMediaPlayback";
+static const char kWatchTimeAudioAutoPipMediaPlayback[] =
+    "Media.WatchTime.Audio.AutoPipMediaPlayback";
+
 const char kWatchTimeUnderflowCount[] = "UnderflowCount";
 
 const char kMeanTimeBetweenRebuffersAudioSrc[] =
@@ -136,6 +142,8 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
   switch (key) {
     case WatchTimeKey::kAudioAll:
       return kWatchTimeAudioAll;
+    case WatchTimeKey::kAudioAutoPipMediaPlayback:
+      return kWatchTimeAudioAutoPipMediaPlayback;
     case WatchTimeKey::kAudioMse:
       return kWatchTimeAudioMse;
     case WatchTimeKey::kAudioEme:
@@ -168,6 +176,8 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
       return kWatchTimeAudioBackgroundEmbeddedExperience;
     case WatchTimeKey::kAudioVideoAll:
       return kWatchTimeAudioVideoAll;
+    case WatchTimeKey::kAudioVideoAutoPipMediaPlayback:
+      return kWatchTimeAudioVideoAutoPipMediaPlayback;
     case WatchTimeKey::kAudioVideoMse:
       return kWatchTimeAudioVideoMse;
     case WatchTimeKey::kAudioVideoEme:
@@ -221,6 +231,9 @@ std::string_view ConvertWatchTimeKeyToStringForUma(WatchTimeKey key) {
     // The following keys are not reported to UMA and thus have no conversion.
     // We don't report keys to UMA that we don't have a strong use case for
     // since UMA requires us to break out each state manually (ac, inline, etc).
+    case WatchTimeKey::kAudioDisplayFullscreen:
+    case WatchTimeKey::kAudioDisplayInline:
+    case WatchTimeKey::kAudioDisplayPictureInPicture:
     case WatchTimeKey::kAudioVideoMutedBattery:
     case WatchTimeKey::kAudioVideoMutedAc:
     case WatchTimeKey::kAudioVideoMutedEmbeddedExperience:

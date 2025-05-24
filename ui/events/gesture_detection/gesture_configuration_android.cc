@@ -19,8 +19,8 @@ namespace {
 // gesture detection pipeline used a fixed value of 24 as the gesture bounds.
 // We relax that value somewhat, but not by much; there's a fairly small window
 // within which gesture bounds are useful for features like touch adjustment.
-const float kMinGestureBoundsLengthDips = 20.f;
-const float kMaxGestureBoundsLengthDips = 32.f;
+constexpr float kMinGestureBoundsLengthDips = 20.f;
+constexpr float kMaxGestureBoundsLengthDips = 32.f;
 
 class GestureConfigurationAndroid : public GestureConfiguration {
  public:
@@ -28,8 +28,7 @@ class GestureConfigurationAndroid : public GestureConfiguration {
   GestureConfigurationAndroid& operator=(const GestureConfigurationAndroid&) =
       delete;
 
-  ~GestureConfigurationAndroid() override {
-  }
+  ~GestureConfigurationAndroid() override = default;
 
   static GestureConfigurationAndroid* GetInstance() {
     return base::Singleton<GestureConfigurationAndroid>::get();
@@ -42,15 +41,8 @@ class GestureConfigurationAndroid : public GestureConfiguration {
     // TODO(jdduke): Enable this on Android M after the implicit conflict with
     // stylus selection is resolved.
     set_stylus_scale_enabled(false);
-#if defined(USE_AURA)
-    set_gesture_begin_end_types_enabled(true);
-#else
-    if (base::FeatureList::IsEnabled(features::kEnableGestureBeginEndTypes)) {
-      set_gesture_begin_end_types_enabled(true);
-    } else {
-      set_gesture_begin_end_types_enabled(false);
-    }
-#endif
+    set_gesture_begin_end_types_enabled(
+        base::FeatureList::IsEnabled(features::kEnableGestureBeginEndTypes));
     set_long_press_time_in_ms(ViewConfiguration::GetLongPressTimeoutInMs());
     set_max_distance_between_taps_for_double_tap(
         ViewConfiguration::GetDoubleTapSlopInDips());

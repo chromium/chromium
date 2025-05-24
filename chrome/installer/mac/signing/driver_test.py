@@ -181,7 +181,7 @@ class TestCommandLine(unittest.TestCase):
             '--identity',
             'G',
             '--notarize',
-            'nowait',
+            'wait-nostaple',
             '--notary-arg=--key',
             '--notary-arg',
             '/path/to/key',
@@ -192,7 +192,8 @@ class TestCommandLine(unittest.TestCase):
         ])
         self.assertEquals(1, sign_all.call_count)
         config = sign_all.call_args.args[1]
-        self.assertEquals(model.NotarizeAndStapleLevel.NOWAIT, config.notarize)
+        self.assertEquals(model.NotarizeAndStapleLevel.WAIT_NOSTAPLE,
+                          config.notarize)
         self.assertEquals(
             ['--key', '/path/to/key', '--key-id=KeyId', '--issuer', 'Issuer'],
             config.invoker.notarizer.notary_args)

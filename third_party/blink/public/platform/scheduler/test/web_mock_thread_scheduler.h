@@ -48,7 +48,6 @@ class WebMockThreadScheduler : public WebThreadScheduler {
   MOCK_METHOD0(Shutdown, void());
   MOCK_METHOD0(VirtualTimePaused, void());
   MOCK_METHOD0(VirtualTimeResumed, void());
-  MOCK_METHOD1(SetRendererProcessType, void(WebRendererProcessType));
 };
 
 }  // namespace scheduler

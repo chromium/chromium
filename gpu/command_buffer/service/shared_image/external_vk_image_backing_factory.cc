@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -11,6 +12,7 @@
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -129,36 +131,41 @@ bool IsFormatSupported(viz::SharedImageFormat format,
   }
 
   // ALPHA_8 is only used by UI and should never need GL/Vulkan interop.
-  // LUMINANCE_8 is only used with GL ES2 contexts and shouldn't be relevant for
-  // devices that support Vulkan.
-  if (format == viz::SinglePlaneFormat::kALPHA_8 ||
-      format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+  if (format == viz::SinglePlaneFormat::kALPHA_8) {
     return false;
   }
 
   return true;
 }
 
-}  // namespace
-
-constexpr SharedImageUsageSet kSupportedUsage =
+SharedImageUsageSet SupportedUsage() {
+  SharedImageUsageSet supported_usage =
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DAWN)
-    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+      SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+      SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
 #endif
-    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
-    SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
-    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
-    SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
-    SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_CPU_WRITE;
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+      SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
+      SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
+      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_VIDEO_DECODE |
+      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
+      SHARED_IMAGE_USAGE_CPU_WRITE_ONLY;
+
+#if BUILDFLAG(IS_FUCHSIA)
+  supported_usage |= SHARED_IMAGE_USAGE_SCANOUT;
+#endif
+
+  return supported_usage;
+}
+
+}  // namespace
 
 ExternalVkImageBackingFactory::ExternalVkImageBackingFactory(
     scoped_refptr<SharedContextState> context_state)
-    : SharedImageBackingFactory(kSupportedUsage),
+    : SharedImageBackingFactory(SupportedUsage()),
       context_state_(std::move(context_state)),
       command_pool_(context_state_->vk_context_provider()
                         ->GetDeviceQueue()
@@ -225,7 +232,9 @@ ExternalVkImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
+  DCHECK(!is_thread_safe);
   CHECK(CanImportGpuMemoryBuffer(handle.type));
   return ExternalVkImageBacking::CreateFromGMB(
       context_state_, command_pool_.get(), mailbox, std::move(handle), format,
@@ -256,8 +265,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
 #else
   // A CPU mappable backing of this type can only be requested for OZONE
   // platforms.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_OZONE)
 }
 
@@ -282,7 +290,7 @@ bool ExternalVkImageBackingFactory::IsSupported(
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE)) {
+    if (usage.Has(SHARED_IMAGE_USAGE_CPU_WRITE_ONLY)) {
       // Only CPU writable when the client provides a NativePixmap.
       return false;
     }

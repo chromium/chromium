@@ -11,6 +11,7 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.R;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -31,12 +32,13 @@ import java.util.List;
  * The MVC pattern Mediator for the Follow Management activity.
  * Design doc here: https://docs.google.com/document/d/1D-ZfhGv9GFLXHYKzAqsaw-LiVhsENRTJC5ZMaZ9z0sQ
  */
+@NullMarked
 class FollowManagementMediator {
     private static final String TAG = "FollowManagementMdtr";
-    private ModelList mModelList;
-    private Observer mObserver;
-    private Context mContext;
-    private WebFeedFaviconFetcher mFaviconFetcher;
+    private final ModelList mModelList;
+    private final Observer mObserver;
+    private final Context mContext;
+    private final WebFeedFaviconFetcher mFaviconFetcher;
 
     public interface Observer {
         /** An operation failed because there is no network connection. */
@@ -77,10 +79,8 @@ class FollowManagementMediator {
     // When we get the list of followed pages, add them to the recycler view.
     @VisibleForTesting
     void fillRecyclerView(List<WebFeedMetadata> followedWebFeeds) {
-        String updatesUnavailable =
-                mContext.getResources().getString(R.string.follow_manage_updates_unavailable);
-        String waitingForContent =
-                mContext.getResources().getString(R.string.follow_manage_waiting_for_content);
+        String updatesUnavailable = mContext.getString(R.string.follow_manage_updates_unavailable);
+        String waitingForContent = mContext.getString(R.string.follow_manage_waiting_for_content);
 
         // Remove the loading UI from the recycler view before showing the results.
         mModelList.clear();

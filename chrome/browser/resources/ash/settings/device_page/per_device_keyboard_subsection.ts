@@ -8,7 +8,6 @@
  * per-device-keyboard subsection settings in system settings.
  */
 
-import '../icons.html.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
@@ -22,27 +21,29 @@ import '../os_settings_page/os_settings_subpage.js';
 import './input_device_settings_shared.css.js';
 import './per_device_app_installed_row.js';
 import './per_device_install_row.js';
-import './per_device_keyboard_remap_keys.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsSliderElement} from '../controls/settings_slider.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsSliderElement} from '../controls/settings_slider.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {KeyboardAmbientLightSensorObserverReceiver, KeyboardBrightnessObserverReceiver, LidStateObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
-import {Route, Router, routes} from '../router.js';
+import type {PersonalizationHubBrowserProxy} from '../personalization_page/personalization_hub_browser_proxy.js';
+import {PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {CompanionAppState, InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings, MetaKey, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface, Keyboard, KeyboardPolicies, KeyboardSettings} from './input_device_settings_types.js';
+import {CompanionAppState, MetaKey, ModifierKey, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_keyboard_subsection.html.js';
 
@@ -129,17 +130,6 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         value: '',
       },
 
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kKeyboardFunctionKeys,
-          Setting.kKeyboardRemapKeys,
-        ]),
-      },
-
       keyboardIndex: {
         type: Number,
       },
@@ -199,6 +189,12 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       this.attemptDeepLink();
     }
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kKeyboardFunctionKeys,
+    Setting.kKeyboardRemapKeys,
+  ]);
 
   protected keyboard: Keyboard;
   protected keyboardPolicies: KeyboardPolicies;
@@ -261,11 +257,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
           (await this.inputDeviceSettingsProvider.hasAmbientLightSensor())
               ?.hasAmbientLightSensor;
 
-      if (this.hasKeyboardBacklight) {
-        const crSlider = this.shadowRoot!
-                             .querySelector<SettingsSliderElement>(
-                                 '#keyboardBrightnessSlider')!.shadowRoot!
-                             .querySelector('cr-slider');
+      if (this.hasKeyboardBacklight && this.isChromeOsKeyboard()) {
+        const crSlider =
+            this.shadowRoot!.querySelector('#keyboardBrightnessSlider')
+                ?.shadowRoot!.querySelector('cr-slider');
         if (crSlider) {
           // Set key press increment value to be 10.
           crSlider.setAttribute('key-press-slider-increment', '10');
@@ -391,8 +386,7 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       return 0;
     }
 
-    return Object
-        .values(this.keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo)
+    return Object.values(this.keyboard.settings.sixPackKeyRemappings)
         .filter(
             (modifier: SixPackShortcutModifier) =>
                 modifier !== SixPackShortcutModifier.kSearch)

@@ -9,7 +9,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="@dimen/bookmark_minimum_dialog_size_tablet" >
+    android:minHeight="@dimen/bookmark_minimum_dialog_size_tablet"
+    android:background="@macro/default_bg_color" >
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -39,7 +40,8 @@
         android:layout_height="0dp"
         android:layout_marginStart="4dp"
         android:clipToPadding="true"
-        android:scrollbars="vertical" />
+        android:scrollbars="vertical"
+        android:background="@null" />
 
     <LinearLayout
         android:id="@+id/button_container"

@@ -1,0 +1,27 @@
+From cb5dd219d0a51493c335d05c7468121794954b09 Mon Sep 17 00:00:00 2001
+From: Victor Hugo Vianna Silva <victorvianna@google.com>
+Date: Wed, 22 Jan 2025 18:52:28 +0000
+Subject: [PATCH] Remove absl debugging include
+
+This include is not allowed by GN. It can be removed
+because it's not used.
+
+---
+ third_party/mediapipe/src/mediapipe/gpu/gl_context.cc | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
+index 05cbe856af0d2..3daf2ddfe8cd1 100644
+--- a/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
++++ b/third_party/mediapipe/src/mediapipe/gpu/gl_context.cc
+@@ -40,7 +40,6 @@
+ #include "mediapipe/gpu/gpu_buffer_format.h"
+
+ #ifndef __EMSCRIPTEN__
+-#include "absl/debugging/leak_check.h"
+ #include "mediapipe/gpu/gl_thread_collector.h"
+ #endif
+
+--
+2.48.1.262.g85cc9f2d1e-goog
+

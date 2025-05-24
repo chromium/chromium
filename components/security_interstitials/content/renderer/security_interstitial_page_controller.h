@@ -52,6 +52,9 @@ class SecurityInterstitialPageController
   void OpenWhitepaper();
   void ReportPhishingError();
   void OpenEnhancedProtectionSettings();
+#if BUILDFLAG(IS_ANDROID)
+  void OpenAdvancedProtectionSettings();
+#endif  // BUILDFLAG(IS_ANDROID)
 
   void SendCommand(security_interstitials::SecurityInterstitialCommand command);
 

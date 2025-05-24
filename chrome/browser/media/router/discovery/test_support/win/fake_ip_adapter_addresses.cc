@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/discovery/test_support/win/fake_ip_adapter_addresses.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace media_router {
 
@@ -25,8 +26,8 @@ FakeIpAdapterAddresses::FakeIpAdapterAddresses(
            static_cast<size_t>(MAX_ADAPTER_ADDRESS_LENGTH));
 
   value_.PhysicalAddressLength = physical_address.size();
-  memcpy(value_.PhysicalAddress, physical_address.data(),
-         physical_address.size());
+  UNSAFE_TODO(memcpy(value_.PhysicalAddress, physical_address.data(),
+                     physical_address.size()));
 }
 
 FakeIpAdapterAddresses::FakeIpAdapterAddresses(

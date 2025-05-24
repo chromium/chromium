@@ -173,4 +173,14 @@ WebDialogDelegate::FrameKind WebDialogDelegate::GetWebDialogFrameKind() const {
   return frame_kind_;
 }
 
+void WebDialogDelegate::SetTitleChangedCallback(
+    base::RepeatingCallback<void()> callback) {
+  title_changed_callback_ = std::move(callback);
+}
+
+void WebDialogDelegate::SetAccessibleTitleChangedCallback(
+    base::RepeatingCallback<void()> callback) {
+  accessible_title_changed_callback_ = std::move(callback);
+}
+
 }  // namespace ui

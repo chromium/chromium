@@ -5,8 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_COMPUTED_STYLE_INITIAL_VALUES_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
+#include "third_party/blink/renderer/core/style/gap_data_list.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 {% for include in includes %}
 #include "{{include}}"
 {% endfor %}
@@ -39,9 +44,13 @@ class ComputedStyleInitialValues{
   }
   static StyleImage* InitialBorderImageSource() { return nullptr; }
   static float InitialBorderWidth() { return 3; }
-  static uint16_t InitialColumnRuleWidth() {
-    return 3;
+  static GapDataList<int> InitialColumnRuleWidth() {
+    return GapDataList<int>::DefaultGapWidthDataList();
   }
+  static GapDataList<int> InitialRowRuleWidth() {
+    return GapDataList<int>::DefaultGapWidthDataList();
+  }
+
 
   // Grid properties.
   static wtf_size_t InitialGridAutoRepeatInsertionPoint() { return 0; }
@@ -84,6 +93,13 @@ class ComputedStyleInitialValues{
     return InitialFilterInternal();
   }
 
+  static TextEmphasisPosition InitialTextEmphasisPosition() {
+    if (RuntimeEnabledFeatures::TextEmphasisPositionAutoEnabled()) {
+      return TextEmphasisPosition::kAuto;
+    }
+    return TextEmphasisPosition::kOverRight;
+  }
+
   // Generated methods below.
 {% for property in properties if
     'initial' not in property.computed_style_custom_functions %}
@@ -115,7 +131,7 @@ class ComputedStyleInitialValues{
 {% endfor %}
 
  private:
-  static const FilterOperations& InitialFilterInternal() {
+  CORE_EXPORT static const FilterOperations& InitialFilterInternal() {
     DEFINE_STATIC_LOCAL(const Persistent<FilterOperationsWrapper>, ops,
         (MakeGarbageCollected<FilterOperationsWrapper>()));
     return ops->Operations();

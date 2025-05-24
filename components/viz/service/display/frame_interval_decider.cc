@@ -7,55 +7,18 @@
 #include <inttypes.h>
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/overloaded.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/traced_value.h"
 #include "components/viz/common/quads/frame_interval_inputs.h"
 #include "components/viz/service/surfaces/surface.h"
 #include "components/viz/service/surfaces/surface_manager.h"
 
 namespace viz {
-
-namespace {
-
-std::unique_ptr<base::trace_event::TracedValue>
-FrameIntervalMatcherInputsTracedValue(
-    const FrameIntervalMatcher::Inputs& inputs) {
-  auto traced_value = std::make_unique<base::trace_event::TracedValue>();
-
-  for (const auto& [frame_sink_id, interval_inputs] : inputs.inputs_map) {
-    auto frame_sink_scope = traced_value->BeginDictionaryScopedWithCopiedName(
-        frame_sink_id.ToString());
-    traced_value->SetInteger("time_diff_us",
-                             static_cast<int>((inputs.aggregated_frame_time -
-                                               interval_inputs.frame_time)
-                                                  .InMicroseconds()));
-    traced_value->SetBoolean("has_input", interval_inputs.has_input);
-    traced_value->SetBoolean(
-        "only_content",
-        interval_inputs.has_only_content_frame_interval_updates);
-
-    int index = 0;
-    for (const ContentFrameIntervalInfo& content_info :
-         interval_inputs.content_interval_info) {
-      auto content_info_scope =
-          traced_value->BeginDictionaryScopedWithCopiedName(
-              base::StringPrintf("content_info_%d", index));
-      traced_value->SetString(
-          "type", ContentFrameIntervalTypeToString(content_info.type));
-      traced_value->SetInteger(
-          "interval_us",
-          static_cast<int>(content_info.frame_interval.InMicroseconds()));
-      traced_value->SetInteger("duplicate_count", content_info.duplicate_count);
-      index++;
-    }
-  }
-
-  return traced_value;
-}
-}  // namespace
 
 FrameIntervalDecider::ScopedAggregate::ScopedAggregate(
     FrameIntervalDecider& decider,
@@ -84,18 +47,16 @@ FrameIntervalDecider::~FrameIntervalDecider() = default;
 void FrameIntervalDecider::UpdateSettings(
     Settings settings,
     std::vector<std::unique_ptr<FrameIntervalMatcher>> matchers) {
-  absl::visit(base::Overloaded(
-                  [](const absl::monostate& monostate) {},
-                  [](const FixedIntervalSettings& fixed_interval_settings) {
-                    CHECK(!fixed_interval_settings.supported_intervals.empty());
-                    CHECK(fixed_interval_settings.supported_intervals.contains(
-                        fixed_interval_settings.default_interval));
-                  },
-                  [](const ContinuousRangeSettings& continuous_range_settings) {
-                    CHECK_LE(continuous_range_settings.min_interval,
-                             continuous_range_settings.max_interval);
-                  }),
-              settings.interval_settings);
+  std::visit(base::Overloaded(
+                 [](const std::monostate& monostate) {},
+                 [](const FixedIntervalSettings& fixed_interval_settings) {
+                   CHECK(!fixed_interval_settings.supported_intervals.empty());
+                 },
+                 [](const ContinuousRangeSettings& continuous_range_settings) {
+                   CHECK_LE(continuous_range_settings.min_interval,
+                            continuous_range_settings.max_interval);
+                 }),
+             settings.interval_settings);
 
   settings_ = std::move(settings);
   matchers_ = std::move(matchers);
@@ -111,13 +72,12 @@ FrameIntervalDecider::WrapAggregate(SurfaceManager& surface_manager,
 void FrameIntervalDecider::Decide(
     base::TimeTicks frame_time,
     base::flat_map<FrameSinkId, FrameIntervalInputs> inputs_map) {
-  FrameIntervalMatcher::Inputs matcher_inputs(settings_);
+  FrameIntervalMatcher::Inputs matcher_inputs(settings_, frame_id_++);
   matcher_inputs.aggregated_frame_time = frame_time;
   matcher_inputs.inputs_map = std::move(inputs_map);
 
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
-                      "FrameIntervalMatcherInputs", "inputs",
-                      FrameIntervalMatcherInputsTracedValue(matcher_inputs));
+                      "FrameIntervalMatcherInputs", "inputs", matcher_inputs);
 
   // Run through matchers in order and use the first non-null result.
   std::optional<Result> match_result;
@@ -130,18 +90,32 @@ void FrameIntervalDecider::Decide(
     }
   }
 
+  if (base::ShouldRecordSubsampledMetric(0.001)) {
+    base::UmaHistogramEnumeration("Viz.FrameIntervalDecider.ResultMatcherType",
+                                  matcher_type);
+    if (match_result &&
+        std::holds_alternative<ResultInterval>(match_result.value())) {
+      base::UmaHistogramCustomTimes(
+          "Viz.FrameIntervalDecider.ResultTimeDelta",
+          std::get<ResultInterval>(match_result.value()).interval,
+          base::Milliseconds(0), base::Milliseconds(500), 50);
+    }
+  }
+
   // If nothing matched, use the default.
   if (!match_result) {
-    match_result = absl::visit(
+    match_result = std::visit(
         base::Overloaded(
-            [](const absl::monostate& monostate) -> Result {
+            [](const std::monostate& monostate) -> Result {
               return FrameIntervalClass::kDefault;
             },
             [](const FixedIntervalSettings& fixed_interval_settings) -> Result {
-              return fixed_interval_settings.default_interval;
+              return ResultInterval{fixed_interval_settings.default_interval};
             },
             [](const ContinuousRangeSettings& continuous_range_settings)
-                -> Result { return continuous_range_settings.min_interval; }),
+                -> Result {
+              return ResultInterval{continuous_range_settings.default_interval};
+            }),
         settings_.interval_settings);
   }
 
@@ -153,11 +127,11 @@ void FrameIntervalDecider::Decide(
 
   // Same as above but using epsilon comparison for frame interval.
   if (current_result_ && match_result &&
-      absl::holds_alternative<base::TimeDelta>(current_result_.value()) &&
-      absl::holds_alternative<base::TimeDelta>(match_result.value()) &&
+      std::holds_alternative<ResultInterval>(current_result_.value()) &&
+      std::holds_alternative<ResultInterval>(match_result.value()) &&
       FrameIntervalMatcher::AreAlmostEqual(
-          absl::get<base::TimeDelta>(current_result_.value()),
-          absl::get<base::TimeDelta>(match_result.value()),
+          std::get<ResultInterval>(current_result_.value()).interval,
+          std::get<ResultInterval>(match_result.value()).interval,
           settings_.epsilon)) {
     current_result_frame_time_ = frame_time;
     return;
@@ -189,24 +163,23 @@ bool FrameIntervalDecider::MayDecreaseFrameInterval(
   if (!from || !to) {
     return true;
   }
-  return absl::visit(
+  return std::visit(
       base::Overloaded(
           [&](FrameIntervalClass from_frame_interval_class) {
-            if (!absl::holds_alternative<FrameIntervalClass>(to.value())) {
+            if (!std::holds_alternative<FrameIntervalClass>(to.value())) {
               return true;
             }
             FrameIntervalClass to_frame_interval_class =
-                absl::get<FrameIntervalClass>(to.value());
+                std::get<FrameIntervalClass>(to.value());
             return static_cast<int>(from_frame_interval_class) >
                    static_cast<int>(to_frame_interval_class);
           },
-          [&](base::TimeDelta from_interval) {
-            if (!absl::holds_alternative<base::TimeDelta>(to.value())) {
+          [&](ResultInterval from_interval) {
+            if (!std::holds_alternative<ResultInterval>(to.value())) {
               return true;
             }
-            base::TimeDelta to_interval =
-                absl::get<base::TimeDelta>(to.value());
-            return from_interval > to_interval;
+            ResultInterval to_interval = std::get<ResultInterval>(to.value());
+            return from_interval.interval > to_interval.interval;
           }),
       from.value());
 }

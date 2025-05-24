@@ -7,9 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-
 #include "base/scoped_observation.h"
+#include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
 // Objective-C protocol mirroring
 // policy::ChromeBrowserCloudManagementController::Observer.

@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -46,9 +45,8 @@ const char* TypeToString(blink::mojom::MediaStreamType type) {
     case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
       return "DISPLAY_AUDIO_CAPTURE";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "INVALID";
 }
 
 std::string GetOpenLogString(const base::UnguessableToken& session_id,

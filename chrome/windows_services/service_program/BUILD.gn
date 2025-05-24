@@ -1,0 +1,211 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/toolchain/win/midl.gni")
+
+config("classic_com") {
+  # This macro is used in <wrl/module.h>. Since only the COM functionality is
+  # used here (while WinRT isn't being used), define this macro to optimize
+  # compilation of <wrl/module.h> for COM-only.
+  defines = [ "__WRL_CLASSIC_COM_STRICT__" ]
+}
+
+config("winver") {
+  # <wrl/module.h> will try to use RuntimeObject.lib symbols when targeting
+  # Windows 8.1 and up. Target Windows 8.0 to avoid this extra dependency.
+  # Note that "//build/config/win:winver" must be removed from each target's
+  # `configs` when adding this; even if this is added to a target's
+  # `public_configs`.
+  defines = [
+    "NTDDI_VERSION=NTDDI_WIN8",
+
+    # See //build/config/win/BUILD.gn for why not to use _WIN32_WINNT_WIN8.
+    "_WIN32_WINNT=0x0602",
+    "WINVER=0x0602",
+  ]
+}
+
+# A source set for services that do not wish to run a crashpad handler.
+source_set("service_program_without_crashpad") {
+  public_deps = [ ":service_program_main" ]
+  sources = [
+    "crashpad_handler.h",
+    "crashpad_handler_stub.cc",
+  ]
+}
+
+# A source set for services that expect to run a crashpad handler.
+source_set("service_program_with_crashpad") {
+  public_deps = [ ":service_program_main" ]
+  sources = [
+    "crashpad_handler.cc",
+    "crashpad_handler.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/common:non_code_constants",
+    "//components/crash/core/app:run_as_crashpad_handler",
+    "//content/public/common:static_switches",
+  ]
+}
+
+source_set("service_program_main") {
+  visibility = [
+    ":service_program_with_crashpad",
+    ":service_program_without_crashpad",
+  ]
+  public = [ "service_program_main.h" ]
+  sources = [
+    "crashpad_handler.h",
+    "service_program_main.cc",
+  ]
+  deps = [
+    ":delegate",
+    ":lib",
+    "//base",
+    "//chrome/install_static:install_static_util",
+  ]
+}
+
+source_set("constants") {
+  public = [ "switches.h" ]
+}
+
+source_set("common") {
+  public = [
+    "get_calling_process.h",
+    "scoped_client_impersonation.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "get_calling_process.cc",
+    "scoped_client_impersonation.cc",
+  ]
+  libs = [ "rpcrt4.lib" ]
+}
+
+source_set("crash_integration") {
+  public = [
+    "crash_reporting.h",
+    "is_running_unattended.h",
+    "user_crash_state.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "crash_reporting.cc",
+    "is_running_unattended.cc",
+    "user_crash_state.cc",
+  ]
+  deps = [
+    ":common",
+    ":constants",
+    "//base/version_info:channel",
+    "//chrome/common:version_header",
+    "//chrome/install_static:install_static_util",
+    "//chrome/installer/util:constants",
+    "//components/crash/core/app",
+    "//components/crash/core/common",
+  ]
+}
+
+source_set("lib") {
+  public = [
+    "logging_support.h",
+    "process_wrl_module.h",
+    "service.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "logging_support.cc",
+    "process_wrl_module.cc",
+    "service.cc",
+  ]
+  configs -= [ "//build/config/win:winver" ]
+  configs += [
+    ":classic_com",
+    ":winver",
+  ]
+  deps = [
+    ":common",
+    ":constants",
+    ":delegate",
+    "//chrome/install_static:install_static_util",
+  ]
+  visibility = [
+    ":service_program_main",
+    "//chrome/elevation_service:elevation_service_unittests",
+    "//chrome/updater:base",
+    "//chrome/windows_services/elevated_tracing_service:elevated_tracing_service_unittests",
+    "//chrome/windows_services/service_program/test_support:unit_tests",
+  ]
+}
+
+# Implementations of ServiceDelegate will need to include wrl/module.h, so they
+# must include `//chrome/windows_services/service_program:classic_com` and
+# `//chrome/windows_services/service_program:winver` in their own configs (and,
+# as described above, remove `//build/config/win:winver`).
+source_set("delegate") {
+  public = [
+    "factory_and_clsid.h",
+    "service_delegate.h",
+  ]
+  public_deps = [ "//base" ]
+  sources = [
+    "factory_and_clsid.cc",
+    "service_delegate.cc",
+  ]
+}
+
+midl("test_service_idl") {
+  testonly = true
+  sources = [ "test_service_idl.idl" ]
+  writes_tlb = true
+}
+
+executable("test_service") {
+  testonly = true
+  sources = [
+    "test_service.cc",
+    "test_service.rc",
+  ]
+  deps = [
+    ":common",
+    ":crash_integration",
+    ":delegate",
+    ":service_program_with_crashpad",
+    ":test_service_idl",
+    "//base",
+    "//build/win:default_exe_manifest",
+    "//chrome/common:version_header",
+    "//chrome/common/win:eventlog_provider",
+    "//components/crash/core/app",
+    "//components/crash/core/app:crash_export_thunks",
+  ]
+  configs -= [
+    "//build/config/win:console",
+    "//build/config/win:winver",
+  ]
+  configs += [
+    ":classic_com",
+    ":winver",
+    "//build/config/win:windowed",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "service_unittest.cc" ]
+  deps = [
+    ":test_service_idl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common:non_code_constants",
+    "//chrome/windows_services/service_program/test_support",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/crashpad/crashpad/client",
+  ]
+  data_deps = [ ":test_service" ]
+}

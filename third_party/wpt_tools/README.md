@@ -38,7 +38,7 @@ for self-signed CA. By default, WPTServe generates these files using the
 "openssl" command, but we check in pre-generated files to avoid "openssl"
 dependency.
 
-These certificates will expire in January 2025. Here is an instruction to
+These certificates will expire in February 2033. Here is an instruction to
 re-generate them:
 
 1. Make sure the following commands are in $PATH.
@@ -49,13 +49,10 @@ re-generate them:
  - sed
 2. Run update_certs.py
 3. Look at the "Not After" date in the output of the command, and update
-  "January 2025" in this document and expiration_date in wptserve.py to new
+  "February 2033" in this document and expiration_date in wptserve.py to new
   expiration date.
-4. Update certs/127.0.0.1.sxg.\*.
-  Please refer to
-  //third_party/blink/web_tests/http/tests/loading/sxg/resources/README.md
-5. git commit
-6. git cl upload, etc.
+4. git commit
+5. git cl upload, etc.
 
 Rolling in WPT
 ==============
@@ -72,11 +69,11 @@ When rolling in new versions of WPT support, make note of the revision you want
 to roll to.  You can then call "./checkout.sh REVISION clone" which will
 pull in all the code.
 
-It is also important to update the hashes in the 'Version:' fields of
-//third_party/wpt_tools/README.chromium. While you're in this file, look at the
-"Local Modifications" section which lists ways in which Chromium has diverged
-from WPT. Make sure these modifications are persisted when reviewing the changes
-being made.
+It is also important to update the hash in the `Revision` field of
+`//third_party/wpt_tools/README.chromium`. While you're in this file, look at
+the "Local Modifications" section which lists ways in which Chromium has
+diverged from WPT. Make sure these modifications are persisted when reviewing
+the changes being made.
 
 You can examine what's pulled in and update WPTIncludeList if some new files are
 required to run the updated version.

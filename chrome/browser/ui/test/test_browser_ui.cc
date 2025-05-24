@@ -8,7 +8,6 @@
 #include "base/test/gtest_util.h"
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -20,10 +19,7 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "content/public/common/content_switches.h"
 #include "ui/base/test/skia_gold_matching_algorithm.h"
 #include "ui/compositor/compositor.h"
@@ -37,9 +33,7 @@
 #endif
 
 // TODO(crbug.com/40625383) support Mac for pixel tests.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define SUPPORTS_PIXEL_TEST
 #endif
 
@@ -97,8 +91,6 @@ class ScopedMouseDisabler {
 }  // namespace
 
 TestBrowserUi::TestBrowserUi() {
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
 #if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
   // TODO(crbug.com/40262522): Make these pass with x64 win magic numbers.
   SetPixelMatchAlgorithm(
@@ -181,10 +173,11 @@ void TestBrowserUi::ShowAndVerifyUi() {
 #endif  // BUILDFLAG(IS_WIN)
   ShowUi(NameFromTestCase());
   ASSERT_TRUE(VerifyUi());
-  if (IsInteractiveUi())
+  if (IsInteractiveUi()) {
     WaitForUserDismissal();
-  else
+  } else {
     DismissUi();
+  }
 }
 
 bool TestBrowserUi::IsInteractiveUi() const {

@@ -61,9 +61,9 @@ def do_delayed_imports(paths):
 
 def get_parser_install():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--path", dest="dest", action="store", default=None,
+    parser.add_argument("--path", dest="dest",
                         help="Root path to use for emulator tooling")
-    parser.add_argument("--reinstall", action="store_true", default=False,
+    parser.add_argument("--reinstall", action="store_true",
                         help="Force reinstall even if the emulator already exists")
     parser.add_argument("--prompt", action="store_true",
                         help="Enable confirmation prompts")
@@ -74,7 +74,7 @@ def get_parser_install():
 
 def get_parser_start():
     parser = get_parser_install()
-    parser.add_argument("--device-serial", action="store", default=None,
+    parser.add_argument("--device-serial",
                         help="Device serial number for Android emulator, if not emulator-5554")
     return parser
 
@@ -288,8 +288,8 @@ def install(logger, dest=None, reinstall=False, prompt=True):
 
         if new_install:
             packages = ["platform-tools",
-                        "build-tools;35.0.0",
-                        "platforms;android-35",
+                        "build-tools;36.0.0",
+                        "platforms;android-36",
                         "emulator"]
 
             install_android_packages(logger, paths, packages, prompt=prompt)

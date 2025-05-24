@@ -66,7 +66,7 @@ export class FileSystemSiteListElement extends FileSystemSiteListElementBase {
     };
   }
 
-  private allowedGrants_: OriginFileSystemGrants[];
+  declare private allowedGrants_: OriginFileSystemGrants[];
 
   override connectedCallback() {
     super.connectedCallback();

@@ -27,11 +27,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/gfx/codec/png_codec.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/screen_manager.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace {
 
 // A callback that holds the last frame captured by a webrtc::DesktopCapturer.
@@ -63,14 +58,6 @@ class FrameHolder : public webrtc::DesktopCapturer::Callback {
 // Captures and returns a snapshot of the screen, or an empty bitmap in case of
 // error.
 SkBitmap CaptureScreen() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::ScreenManager>()) {
-    LOG(WARNING) << "crosapi must be available to CreateScreenCapturer.";
-    return SkBitmap();
-  }
-#endif
-
   std::unique_ptr<webrtc::DesktopCapturer> capturer =
       content::desktop_capture::CreateScreenCapturer();
   if (!capturer) {
@@ -114,11 +101,14 @@ base::FilePath SaveDesktopSnapshot() {
 base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
   // Take the snapshot and encode it.
   SkBitmap screen = CaptureScreen();
-  if (screen.drawsNothing())
+  if (screen.drawsNothing()) {
     return base::FilePath();
+  }
 
-  std::vector<unsigned char> encoded;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(CaptureScreen(), false, &encoded)) {
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(CaptureScreen(),
+                                        /*discard_transparency=*/false);
+  if (!encoded) {
     LOG(ERROR) << "Failed to PNG encode screen snapshot.";
     return base::FilePath();
   }
@@ -146,10 +136,7 @@ base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
   }
 
   // Write it to disk.
-  const int to_write = base::checked_cast<int>(encoded.size());
-  int written =
-      file.WriteAtCurrentPos(reinterpret_cast<char*>(encoded.data()), to_write);
-  if (written != to_write) {
+  if (!file.WriteAtCurrentPosAndCheck(encoded.value())) {
     LOG(ERROR) << "Failed to write entire snapshot to file";
     return base::FilePath();
   }

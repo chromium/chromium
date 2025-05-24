@@ -30,8 +30,6 @@ void PopulateAppRegistryCache(AccountId account_id,
   // chromeAppId returns kExtension in the real Apps cache.
   deltas.push_back(MakeApp(app_constants::kChromeAppId, "Ash Chrome Browser",
                            apps::AppType::kChromeApp));
-  deltas.push_back(MakeApp(app_constants::kLacrosAppId, "Lacros Chrome Browser",
-                           apps::AppType::kStandaloneBrowser));
   deltas.push_back(
       MakeApp(kTestChromeAppId, "Test Chrome App", apps::AppType::kChromeApp));
   deltas.push_back(MakeApp(kTestArcAppId, "Arc app", apps::AppType::kArc));
@@ -43,8 +41,6 @@ void PopulateAppRegistryCache(AccountId account_id,
       MakeApp(kTestSwaAppId, "Test System Web App 1", apps::AppType::kWeb));
   deltas.push_back(MakeApp(kTestUnsupportedAppId, "Test Supported App 1",
                            apps::AppType::kPluginVm));
-  deltas.push_back(MakeApp(kTestLacrosChromeAppId, "Test Chrome App",
-                           apps::AppType::kStandaloneBrowserChromeApp));
 
   cache->OnAppsForTesting(std::move(deltas), apps::AppType::kUnknown,
                           /*should_notify_initialized=*/false);
@@ -62,16 +58,6 @@ void PopulateAdminTestAppRegistryCache(AccountId account_id,
                               apps::AppType::kChromeApp));
   cache->OnAppsForTesting(std::move(ash_delta), apps::AppType::kChromeApp,
                           /*should_notify_initialized=*/true);
-
-  std::vector<apps::AppPtr> lacros_delta;
-
-  lacros_delta.push_back(MakeApp(app_constants::kLacrosAppId,
-                                 "Lacros Chrome Browser",
-                                 apps::AppType::kStandaloneBrowser));
-  cache->OnAppsForTesting(std::move(lacros_delta),
-                          apps::AppType::kStandaloneBrowser,
-                          /*should_notify_initialized=*/true);
-
   cache->SetAccountId(account_id);
 }
 

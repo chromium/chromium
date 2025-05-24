@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -50,6 +51,7 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer {
       scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner,
       int port,
       const base::FilePath& active_port_output_directory = base::FilePath());
+
 
   // Returns a list of attached UiDevToolsClient name + URL
   using NameUrlPair = std::pair<std::string, std::string>;
@@ -127,7 +129,8 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer {
   void OnClose(int connection_id);
 
   using ClientsList = std::vector<std::unique_ptr<UiDevToolsClient>>;
-  using ConnectionsMap = std::map<uint32_t, UiDevToolsClient*>;
+  using ConnectionsMap =
+      std::map<uint32_t, raw_ptr<UiDevToolsClient, CtnExperimental>>;
   ClientsList clients_ GUARDED_BY_CONTEXT(main_sequence_);
   ConnectionsMap connections_ GUARDED_BY_CONTEXT(main_sequence_);
 

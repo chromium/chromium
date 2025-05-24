@@ -18,6 +18,14 @@
 #include "partition_alloc/partition_alloc_base/memory/page_size.h"
 #include "partition_alloc/partition_alloc_check.h"
 
+// This ".h" file is not a header, but a source file meant to be included only
+// once, exclusively from one of the allocator_shim*.cc files. See the top-level
+// check.
+//
+// A possible alternative: rename this file to .inc, at the expense of losing
+// syntax highlighting in text editors.
+//
+// NOLINTNEXTLINE(google-build-namespaces)
 namespace {
 
 PA_ALWAYS_INLINE size_t GetCachedPageSize() {
@@ -103,6 +111,42 @@ PA_ALWAYS_INLINE void ShimCppDelete(void* address) {
 #endif
   return chain_head->free_function(address, context);
 }
+
+#if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
+PA_ALWAYS_INLINE void ShimCppDeleteWithSize(void* address, size_t size) {
+  const allocator_shim::AllocatorDispatch* const chain_head =
+      allocator_shim::internal::GetChainHead();
+  void* context = nullptr;
+#if PA_BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  context = malloc_default_zone();
+#endif
+  return chain_head->free_with_size_function(address, size, context);
+}
+
+PA_ALWAYS_INLINE void ShimCppDeleteWithAlignment(void* address,
+                                                 size_t alignment) {
+  const allocator_shim::AllocatorDispatch* const chain_head =
+      allocator_shim::internal::GetChainHead();
+  void* context = nullptr;
+#if PA_BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  context = malloc_default_zone();
+#endif
+  return chain_head->free_with_alignment_function(address, alignment, context);
+}
+
+PA_ALWAYS_INLINE void ShimCppDeleteWithSizeAndAlignment(void* address,
+                                                        size_t size,
+                                                        size_t alignment) {
+  const allocator_shim::AllocatorDispatch* const chain_head =
+      allocator_shim::internal::GetChainHead();
+  void* context = nullptr;
+#if PA_BUILDFLAG(IS_APPLE) && !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  context = malloc_default_zone();
+#endif
+  return chain_head->free_with_size_and_alignment_function(address, size,
+                                                           alignment, context);
+}
+#endif  // PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC)
 
 PA_ALWAYS_INLINE void* ShimMalloc(size_t size, void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head =
@@ -205,6 +249,12 @@ PA_ALWAYS_INLINE void ShimFree(void* address, void* context) {
   return chain_head->free_function(address, context);
 }
 
+PA_ALWAYS_INLINE void ShimFreeWithSize(void* ptr, size_t size, void* context) {
+  const allocator_shim::AllocatorDispatch* const chain_head =
+      allocator_shim::internal::GetChainHead();
+  return chain_head->free_with_size_function(ptr, size, context);
+}
+
 PA_ALWAYS_INLINE size_t ShimGetSizeEstimate(const void* address,
                                             void* context) {
   const allocator_shim::AllocatorDispatch* const chain_head =
@@ -241,14 +291,6 @@ PA_ALWAYS_INLINE void ShimBatchFree(void** to_be_freed,
   const allocator_shim::AllocatorDispatch* const chain_head =
       allocator_shim::internal::GetChainHead();
   return chain_head->batch_free_function(to_be_freed, num_to_be_freed, context);
-}
-
-PA_ALWAYS_INLINE void ShimFreeDefiniteSize(void* ptr,
-                                           size_t size,
-                                           void* context) {
-  const allocator_shim::AllocatorDispatch* const chain_head =
-      allocator_shim::internal::GetChainHead();
-  return chain_head->free_definite_size_function(ptr, size, context);
 }
 
 PA_ALWAYS_INLINE void ShimTryFreeDefault(void* ptr, void* context) {

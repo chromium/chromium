@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/media/cache_util.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <string>
 
 #include "base/format_macros.h"
@@ -51,7 +47,7 @@ static WebURLResponse CreateResponse(const GRFUTestCase& test) {
 TEST(CacheUtilTest, GetReasonsForUncacheability) {
   enum { kNoReasons = 0 };
 
-  const GRFUTestCase tests[] = {
+  const auto tests = std::to_array<GRFUTestCase>({
       {WebURLResponse::kHTTPVersion_1_1, 206, "ETag: 'fooblort'", kNoReasons},
       {WebURLResponse::kHTTPVersion_1_1, 206, "",
        kNoStrongValidatorOnPartialResponse},
@@ -73,7 +69,7 @@ TEST(CacheUtilTest, GetReasonsForUncacheability) {
        kNoStore},
       {WebURLResponse::kHTTPVersion_1_1, 200,
        "cache-control: no-cache\ncache-control: no-store", kNoCache | kNoStore},
-  };
+  });
   for (size_t i = 0; i < std::size(tests); ++i) {
     SCOPED_TRACE(base::StringPrintf("case: %" PRIuS
                                     ", version: %d, code: %d, headers: %s",

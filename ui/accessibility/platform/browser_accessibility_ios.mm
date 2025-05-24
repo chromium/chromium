@@ -24,12 +24,7 @@ BrowserAccessibilityIOS::BrowserAccessibilityIOS(
     AXNode* node)
     : BrowserAccessibility(manager, node) {}
 
-BrowserAccessibilityIOS::~BrowserAccessibilityIOS() {
-  if (platform_node_) {
-    // `Destroy()` also deletes the object.
-    platform_node_.ExtractAsDangling()->Destroy();
-  }
-}
+BrowserAccessibilityIOS::~BrowserAccessibilityIOS() = default;
 
 void BrowserAccessibilityIOS::OnDataChanged() {
   BrowserAccessibility::OnDataChanged();
@@ -38,7 +33,7 @@ void BrowserAccessibilityIOS::OnDataChanged() {
     // TODO(crbug.com/336611337): Investigate why this needs to be called
     // unconditionally rather than just for children changes.
     [base::apple::ObjCCastStrict<AXPlatformNodeUIKitElement>(
-        platform_node_->GetNativeViewAccessible()) childrenChanged];
+        platform_node_->GetNativeViewAccessible().Get()) childrenChanged];
     return;
   }
 
@@ -134,11 +129,12 @@ BrowserAccessibility* BrowserAccessibilityIOS::PlatformGetPreviousSibling()
 }
 
 gfx::NativeViewAccessible BrowserAccessibilityIOS::GetNativeViewAccessible() {
-  return platform_node_ ? platform_node_->GetNativeViewAccessible() : nullptr;
+  return platform_node_ ? platform_node_->GetNativeViewAccessible()
+                        : gfx::NativeViewAccessible();
 }
 
 AXPlatformNode* BrowserAccessibilityIOS::GetAXPlatformNode() const {
-  return platform_node_;
+  return platform_node_.get();
 }
 
 float BrowserAccessibilityIOS::GetDeviceScaleFactor() const {
@@ -147,9 +143,8 @@ float BrowserAccessibilityIOS::GetDeviceScaleFactor() const {
 
 void BrowserAccessibilityIOS::CreatePlatformNode() {
   CHECK(!platform_node_);
-  platform_node_ =
-      static_cast<AXPlatformNodeIOS*>(AXPlatformNode::Create(this));
-  platform_node_->SetIOSDelegate(this);
+  platform_node_ = AXPlatformNode::Create(*this);
+  platform_node()->SetIOSDelegate(this);
 }
 
 }  // namespace ui

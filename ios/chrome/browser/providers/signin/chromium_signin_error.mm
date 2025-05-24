@@ -45,8 +45,7 @@ SigninErrorCategory GetSigninErrorCategory(NSError* error) {
       return SigninErrorCategory::kNetworkError;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SigninErrorCategory::kUnknownError;
+  NOTREACHED();
 }
 
 }  // namespace provider

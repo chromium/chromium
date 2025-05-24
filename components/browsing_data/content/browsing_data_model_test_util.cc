@@ -4,6 +4,8 @@
 
 #include "components/browsing_data/content/browsing_data_model_test_util.h"
 
+#include <variant>
+
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -139,6 +141,17 @@ std::string DataKeyDebugStringVisitor::operator()<
   return debug_string.str();
 }
 
+template <>
+std::string
+DataKeyDebugStringVisitor::operator()<net::device_bound_sessions::SessionKey>(
+    const net::device_bound_sessions::SessionKey& session_key) {
+  std::stringstream debug_string;
+  debug_string << "net::device_bound_sessions::SessionKey: ";
+  debug_string << "{site: " << session_key.site;
+  debug_string << " id: " << session_key.id.value() << "}";
+  return debug_string.str();
+}
+
 struct DataOwnerDebugStringVisitor {
   template <class T>
   std::string operator()(const T& data_owner);
@@ -181,10 +194,10 @@ bool BrowsingDataEntry::operator==(const BrowsingDataEntry& other) const {
 std::string BrowsingDataEntry::ToDebugString() const {
   std::stringstream debug_string;
   debug_string << "Data Owner: ";
-  debug_string << absl::visit(DataOwnerDebugStringVisitor(), data_owner);
+  debug_string << std::visit(DataOwnerDebugStringVisitor(), data_owner);
 
   debug_string << " Data Key: ";
-  debug_string << absl::visit(DataKeyDebugStringVisitor(), data_key);
+  debug_string << std::visit(DataKeyDebugStringVisitor(), data_key);
 
   debug_string << " Storage Types: ";
   debug_string << data_details.storage_types.ToEnumBitmask();

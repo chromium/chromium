@@ -4,6 +4,8 @@
 
 #include "ash/capture_mode/capture_mode_test_util.h"
 
+#include <algorithm>
+
 #include "ash/accessibility/a11y_feature_type.h"
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
@@ -31,7 +33,6 @@
 #include "base/files/safe_base_name.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -207,7 +208,7 @@ bool IsLayerStackedRightBelow(ui::Layer* layer, ui::Layer* sibling) {
   DCHECK_EQ(layer->parent(), sibling->parent());
   const auto& children = layer->parent()->children();
   const int sibling_index =
-      base::ranges::find(children, sibling) - children.begin();
+      std::ranges::find(children, sibling) - children.begin();
   return sibling_index > 0 && children[sibling_index - 1] == layer;
 }
 
@@ -417,7 +418,7 @@ void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
   auto* controller = CaptureModeController::Get();
   ASSERT_TRUE(controller->IsActive());
   ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
-  event_generator->set_current_screen_location(region_in_screen.origin());
+  event_generator->MoveMouseTo(region_in_screen.origin());
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(region_in_screen.bottom_right());
   if (release_mouse) {

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "chrome/updater/activity_impl_util_posix.h"
 #include "chrome/updater/updater_branding.h"
@@ -27,7 +27,7 @@ std::vector<base::FilePath> ReadHomeDirsFromPasswd() {
   // /etc/passwd contains one line for each user account, with seven
   // fields delimited by colons.
   std::vector<base::FilePath> home_dirs;
-  base::ranges::transform(
+  std::ranges::transform(
       base::SplitString(passwd_contents, "\n",
                         base::WhitespaceHandling::TRIM_WHITESPACE,
                         base::SplitResult::SPLIT_WANT_NONEMPTY),
@@ -41,7 +41,7 @@ std::vector<base::FilePath> ReadHomeDirsFromPasswd() {
                                    : base::FilePath();
       });
   // Remove invalid paths
-  base::ranges::remove(home_dirs, base::FilePath());
+  std::erase(home_dirs, base::FilePath());
   return home_dirs;
 }
 }  // namespace
@@ -64,10 +64,10 @@ std::vector<base::FilePath> GetHomeDirPaths(UpdaterScope scope) {
 
 base::FilePath GetActiveFile(const base::FilePath& home_dir,
                              const std::string& id) {
-  return home_dir.AppendASCII(".local")
-      .AppendASCII(COMPANY_SHORTNAME_STRING)
-      .AppendASCII(PRODUCT_FULLNAME_STRING)
-      .AppendASCII("Actives")
-      .AppendASCII(id);
+  return home_dir.Append(".local")
+      .Append(COMPANY_SHORTNAME_STRING)
+      .Append(PRODUCT_FULLNAME_STRING)
+      .Append("Actives")
+      .Append(id);
 }
 }  // namespace updater

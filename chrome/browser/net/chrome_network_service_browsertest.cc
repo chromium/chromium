@@ -5,7 +5,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -20,7 +19,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/cookie_config/cookie_store_util.h"
-#include "components/os_crypt/async/common/encryptor_features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
@@ -85,23 +83,15 @@ void FlushCookies(network::mojom::CookieManager* cookie_manager) {
 // See |NetworkServiceBrowserTest| for content's version of tests.
 class ChromeNetworkServiceBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<
-          std::tuple</*kNetworkServiceInProcess*/ bool,
-                     /*kProtectEncryptionKey*/ bool>> {
+      public ::testing::WithParamInterface</*kNetworkServiceInProcess*/ bool> {
  public:
   ChromeNetworkServiceBrowserTest() {
     // Verify that cookie encryption works both in-process and out of process.
-    if (std::get<0>(GetParam())) {
+    if (GetParam()) {
       content::ForceInProcessNetworkService();
     } else {
       content::ForceOutOfProcessNetworkService();
     }
-#if BUILDFLAG(IS_WIN)
-    // Key protection only supported on Windows.
-    scoped_feature_list_.InitWithFeatureState(
-        os_crypt_async::features::kProtectEncryptionKey,
-        std::get<1>(GetParam()));
-#endif  // BUILDFLAG(IS_WIN)
   }
 
   ChromeNetworkServiceBrowserTest(const ChromeNetworkServiceBrowserTest&) =
@@ -142,10 +132,6 @@ class ChromeNetworkServiceBrowserTest
         std::move(context_params));
     return network_context;
   }
-
-#if BUILDFLAG(IS_WIN)
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest,
@@ -200,50 +186,25 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserTest, EncryptedCookies) {
   ASSERT_TRUE(cookies.empty());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ChromeNetworkServiceBrowserTest,
-    ::testing::Combine(testing::Bool(),
-                       testing::Values(false
-#if BUILDFLAG(IS_WIN)
-                                       ,
-                                       true
-#endif
-                                       )),
-    [](const auto& info) {
-      return base::StrCat(
-          {std::get<0>(info.param) ? "InProcess_" : "OutOfProcess_",
-           std::get<1>(info.param) ? "ProtectOn" : "ProtectOff"});
-    });
+INSTANTIATE_TEST_SUITE_P(,
+                         ChromeNetworkServiceBrowserTest,
+                         testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "InProcess" : "OutOfProcess";
+                         });
 
 #if BUILDFLAG(IS_WIN)
-class ChromeNetworkServiceBrowserCookieLockTest
-    : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class ChromeNetworkServiceBrowserCookieLockTest : public InProcessBrowserTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kLockProfileCookieDatabase, ShouldBeLocked());
-
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- protected:
-  const bool& ShouldBeLocked() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// This test verifies that if the kLockProfileCookieDatabase feature is enabled,
-// then the cookie store cannot be opened once sqlite has an exclusive lock on
-// the file.
-IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserCookieLockTest,
+// This test verifies that the cookie store cannot be opened once sqlite has an
+// exclusive lock on the file.
+IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceBrowserCookieLockTest,
                        CookiesAreLocked) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
@@ -259,16 +220,9 @@ IN_PROC_BROWSER_TEST_P(ChromeNetworkServiceBrowserCookieLockTest,
     base::File cookie_file(
         cookie_filename,
         base::File::Flags::FLAG_OPEN_ALWAYS | base::File::Flags::FLAG_READ);
-    EXPECT_EQ(ShouldBeLocked(), !cookie_file.IsValid());
+    EXPECT_FALSE(cookie_file.IsValid());
   }
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ChromeNetworkServiceBrowserCookieLockTest,
-                         ::testing::Bool(),
-                         [](const auto& info) {
-                           return info.param ? "Locked" : "NotLocked";
-                         });
 
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -341,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkServiceMigrationBrowserTest,
   EXPECT_FALSE(
       base::FeatureList::IsEnabled(features::kTriggerNetworkDataMigration));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/setcookie.html")));
+      browser(), embedded_test_server()->GetURL("/set_cookie_header.html")));
   ASSERT_NO_FATAL_FAILURE(VerifyCookiePresent());
   EXPECT_TRUE(base::PathExists(GetOldCookieLocation()));
   EXPECT_FALSE(base::PathExists(GetNewCookieLocation()));

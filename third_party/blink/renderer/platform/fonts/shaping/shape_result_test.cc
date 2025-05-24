@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include <array>
 
 #include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
 namespace blink {
@@ -28,12 +25,12 @@ namespace {
 class FontsHolder : public GarbageCollected<FontsHolder> {
  public:
   void Trace(Visitor* visitor) const {
-    for (const Font& font : fonts) {
-      font.Trace(visitor);
+    for (const Font* font : fonts) {
+      font->Trace(visitor);
     }
   }
 
-  Font fonts[3];
+  std::array<Member<Font>, 3> fonts;
 };
 }  // namespace
 
@@ -81,14 +78,11 @@ class ShapeResultTest : public FontTestBase {
   }
 
   ShapeResult* CreateShapeResult(TextDirection direction) const {
-    return MakeGarbageCollected<ShapeResult>(direction == TextDirection::kLtr
-                                                 ? GetFont(kLatinFont)
-                                                 : GetFont(kArabicFont),
-                                             0, 0, direction);
+    return MakeGarbageCollected<ShapeResult>(0, 0, direction);
   }
 
   const Font* GetFont(FontType type) const {
-    return fonts_holder->fonts + static_cast<size_t>(type);
+    return UNSAFE_TODO(fonts_holder->fonts[static_cast<size_t>(type)]);
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
@@ -98,14 +92,15 @@ class ShapeResultTest : public FontTestBase {
 
 void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
   const unsigned num_ranges = 4;
-  ShapeResult::ShapeRange ranges[num_ranges] = {
+  std::array<ShapeResult::ShapeRange, num_ranges> ranges = {{
       {0, 10, CreateShapeResult(TextDirection::kLtr)},
       {10, 20, CreateShapeResult(TextDirection::kLtr)},
       {20, 30, CreateShapeResult(TextDirection::kLtr)},
-      {30, 38, CreateShapeResult(TextDirection::kLtr)}};
+      {30, 38, CreateShapeResult(TextDirection::kLtr)},
+  }};
   result->CopyRanges(&ranges[0], num_ranges);
 
-  Vector<ShapeResultTestGlyphInfo> glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*ranges[i].target, &glyphs[i]);
   EXPECT_EQ(glyphs[0].size(), 10u);
@@ -113,12 +108,12 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
   EXPECT_EQ(glyphs[2].size(), 10u);
   EXPECT_EQ(glyphs[3].size(), 8u);
 
-  ShapeResult* reference[num_ranges];
+  std::array<ShapeResult*, num_ranges> reference;
   reference[0] = result->SubRange(0, 10);
   reference[1] = result->SubRange(10, 20);
   reference[2] = result->SubRange(20, 30);
   reference[3] = result->SubRange(30, 38);
-  Vector<ShapeResultTestGlyphInfo> reference_glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> reference_glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*reference[i], &reference_glyphs[i]);
   EXPECT_EQ(reference_glyphs[0].size(), 10u);
@@ -134,14 +129,15 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
 
 void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
   const unsigned num_ranges = 4;
-  ShapeResult::ShapeRange ranges[num_ranges] = {
+  std::array<ShapeResult::ShapeRange, num_ranges> ranges = {{
       {0, 4, CreateShapeResult(TextDirection::kRtl)},
       {4, 7, CreateShapeResult(TextDirection::kRtl)},
       {7, 10, CreateShapeResult(TextDirection::kRtl)},
-      {10, 15, CreateShapeResult(TextDirection::kRtl)}};
+      {10, 15, CreateShapeResult(TextDirection::kRtl)},
+  }};
   result->CopyRanges(&ranges[0], num_ranges);
 
-  Vector<ShapeResultTestGlyphInfo> glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*ranges[i].target, &glyphs[i]);
   EXPECT_EQ(glyphs[0].size(), 4u);
@@ -149,12 +145,12 @@ void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
   EXPECT_EQ(glyphs[2].size(), 3u);
   EXPECT_EQ(glyphs[3].size(), 5u);
 
-  ShapeResult* reference[num_ranges];
+  std::array<ShapeResult*, num_ranges> reference;
   reference[0] = result->SubRange(0, 4);
   reference[1] = result->SubRange(4, 7);
   reference[2] = result->SubRange(7, 10);
   reference[3] = result->SubRange(10, 17);
-  Vector<ShapeResultTestGlyphInfo> reference_glyphs[num_ranges];
+  std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> reference_glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
     ComputeGlyphResults(*reference[i], &reference_glyphs[i]);
   EXPECT_EQ(reference_glyphs[0].size(), 4u);
@@ -190,8 +186,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRun) {
 
   // Combine four separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
   shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
   shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
@@ -207,19 +202,19 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   HarfBuzzShaper shaper_c(string.Substring(7, 32));
   HarfBuzzShaper shaper_d(string.Substring(32, 34));
 
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kLatinFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 5u, result);
   shaper_b.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
   shaper_c.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 25u, result);
   shaper_d.Shape(GetFont(kLatinFont), direction)->CopyRange(0u, 2u, result);
 
-  ShapeResult::ShapeRange ranges[] = {
+  auto ranges = std::to_array<ShapeResult::ShapeRange>({
       {4, 17, CreateShapeResult(TextDirection::kLtr)},
       {20, 23, CreateShapeResult(TextDirection::kLtr)},
-      {25, 31, CreateShapeResult(TextDirection::kLtr)}};
+      {25, 31, CreateShapeResult(TextDirection::kLtr)},
+  });
   result->CopyRanges(&ranges[0], 3);
-  Vector<ShapeResultTestGlyphInfo> glyphs[3];
+  std::array<Vector<ShapeResultTestGlyphInfo>, 3> glyphs;
   ComputeGlyphResults(*ranges[0].target, &glyphs[0]);
   ComputeGlyphResults(*ranges[1].target, &glyphs[1]);
   ComputeGlyphResults(*ranges[2].target, &glyphs[2]);
@@ -227,11 +222,11 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
   EXPECT_EQ(glyphs[1].size(), 3u);
   EXPECT_EQ(glyphs[2].size(), 6u);
 
-  ShapeResult* reference[3];
+  std::array<ShapeResult*, 3> reference;
   reference[0] = result->SubRange(4, 17);
   reference[1] = result->SubRange(20, 23);
   reference[2] = result->SubRange(25, 31);
-  Vector<ShapeResultTestGlyphInfo> reference_glyphs[3];
+  std::array<Vector<ShapeResultTestGlyphInfo>, 3> reference_glyphs;
   ComputeGlyphResults(*reference[0], &reference_glyphs[0]);
   ComputeGlyphResults(*reference[1], &reference_glyphs[1]);
   ComputeGlyphResults(*reference[2], &reference_glyphs[2]);
@@ -272,8 +267,7 @@ TEST_F(ShapeResultTest, CopyRangeArabicMultiRun) {
 
   // Combine three separate results into a single one to ensure we have a result
   // with multiple runs.
-  ShapeResult* result =
-      MakeGarbageCollected<ShapeResult>(GetFont(kArabicFont), 0, 0, direction);
+  ShapeResult* result = MakeGarbageCollected<ShapeResult>(0, 0, direction);
   shaper_a.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 2u, result);
   shaper_b.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 7u, result);
   shaper_c.Shape(GetFont(kArabicFont), direction)->CopyRange(0u, 8u, result);
@@ -454,6 +448,26 @@ TEST_F(ShapeResultTest, DISABLED_ComputeInkBoundsWithNonZeroOffset) {
   const auto* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
   ASSERT_TRUE(HasNonZeroGlyphOffsets(*result));
   EXPECT_FALSE(result->ComputeInkBounds().IsEmpty());
+}
+
+TEST_F(ShapeResultTest, LetterSpacingNotAppliedForCursiveScripts) {
+  // خطية النصية
+  String string(
+      u"\u062E\u0637\u0651\u064E\u064A\u0651\u064E\u0020"
+      u"\u0627\u0644\u0646\u0651\u064E\u0635\u0651\u064E");
+
+  HarfBuzzShaper shaper(string);
+  auto* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
+
+  // Letter spacing should not be applied.
+  ShapeResultSpacing<String> spacing(string);
+  FontDescription font_description;
+  font_description.SetLetterSpacing(5);
+  font_description.SetWordSpacing(20);
+  spacing.SetSpacing(font_description);
+  result->ApplySpacing(spacing);
+  EXPECT_FALSE(spacing.IsLetterSpacingAppliedForTesting());
+  EXPECT_TRUE(spacing.IsWordSpacingAppliedForTesting());
 }
 
 // Tests for CaretPositionForOffset
@@ -684,6 +698,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(caret_position_for_offset_test_data));
 
 TEST_P(CaretPositionForOffsetTest, CaretPositionForOffsets) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   const auto& test_data = GetParam();
   String text_string(test_data.string);
   HarfBuzzShaper shaper(text_string);
@@ -720,15 +736,19 @@ struct CaretOffsetForPositionTestData {
     {u"0123456789",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  6,  7,  13, 14, 20, 21, 26, 27, 33,
       34, 40, 41, 47, 48, 53, 54, 60, 61, 67},
      {0,  0,  1,  1,  2,  2,  3,  3,  4,  4,
       5,  5,  6,  6,  7,  7,  8,  8,  9,  9},
+// clang-format on
 #else
+     // clang-format off
      {1,  6,  7,  13, 14, 20, 21, 27, 28, 34,
       35, 41, 42, 48, 49, 55, 56, 62, 63, 69},
      {0,  0,  1,  1,  2,  2,  3,  3,  4,  4,
       5,  5,  6,  6,  7,  7,  8,  8,  9,  9},
+// clang-format on
 #endif
      ShapeResultTest::kLatinFont,
      kOnlyFullGlyphs,
@@ -738,15 +758,19 @@ struct CaretOffsetForPositionTestData {
     {u"0123456789",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  6,  7,  13, 14, 20, 21, 26, 27, 33,
       34, 40, 41, 47, 48, 53, 54, 60, 61, 67},
      {9,  9,  8,  8,  7,  7,  6,  6,  5,  5,
       4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1,  7,  8,  14, 15, 21, 22, 28, 29, 35,
       36, 42, 43, 49, 50, 56, 57, 63, 64, 69},
      {9,  9,  8,  8,  7,  7,  6,  6,  5,  5,
       4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #endif
      ShapeResultTest::kLatinFont,
      kOnlyFullGlyphs,
@@ -756,15 +780,19 @@ struct CaretOffsetForPositionTestData {
     {u"0ff1fff23ff",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  6,  7,  10, 11, 15, 16, 21, 22, 25, 26,
       30, 31, 34, 35, 41, 42, 47, 48, 51, 52, 56},
      {0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5,
       5,  6,  6,  7,  7,  8,  8,  9,  9,  10, 10},
+// clang-format on
 #else
+     // clang-format off
      {1,  6,  7,  10, 11, 14, 15, 21, 22, 25, 26,
       29, 30, 33, 34, 40, 41, 47, 48, 51, 52, 55},
      {0,  0,  1,  1,  2,  2,  3,  3,  4,  4,  5,
       5,  6,  6,  7,  7,  8,  8,  9,  9, 10, 10},
+// clang-format on
 #endif
      ShapeResultTest::kLatinFont,
      kOnlyFullGlyphs,
@@ -774,15 +802,19 @@ struct CaretOffsetForPositionTestData {
     {u"0ff1fff23ff",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  4,  5,  8,  9,  15, 16, 21, 22, 25, 26,
       30, 31, 34, 35, 41, 42, 45, 46, 49, 50, 56},
      {10, 10, 9,  9,  8,  8,  7,  7,  6,  6,  5,
       5,  4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1,  4,  5,  8,  9,  15, 16, 22, 23, 26, 27,
       30, 31, 34, 35, 41, 42, 45, 46, 49, 50, 55},
      {10, 10, 9,  9,  8,  8,  7,  7,  6,  6,  5,
       5,  4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #endif
      ShapeResultTest::kLatinFont,
      kOnlyFullGlyphs,
@@ -792,14 +824,20 @@ struct CaretOffsetForPositionTestData {
     {u"مَ1مَمَ2مَمَمَ3",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1, 5, 6, 12, 13, 19, 20, 24, 25, 31, 32, 37, 38, 42, 43, 48, 49, 55},
      {0, 0, 2, 2,  3,  3,  5,  5,  7,  7,  8,  8,  10, 10, 12, 12, 14, 14},
+// clang-format on
 #elif BUILDFLAG(IS_WIN)
+     // clang-format off
      {1, 5, 6, 12, 13, 18, 19, 23, 24, 30, 31, 36, 37, 41, 42, 46, 47, 53},
      {0, 0, 2, 2,  3,  3,  5,  5,  7,  7,  8,  8,  10, 10, 12, 12, 14, 14},
+// clang-format on
 #else
+     // clang-format off
      {1, 5, 6, 12, 13, 19, 20, 25, 26, 32, 33, 39, 40, 44, 45, 50, 51, 57},
      {0, 0, 2, 2,  3,  3,  5,  5,  7,  7,  8,  8,  10, 10, 12, 12, 14, 14},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kOnlyFullGlyphs,
@@ -809,20 +847,26 @@ struct CaretOffsetForPositionTestData {
     {u"مَ1مَمَ2مَمَمَ3",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  2,  3,  9,  10, 15, 16, 21, 22, 27,
       28, 34, 35, 40, 41, 45, 46, 51, 52, 55},
      {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
       8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+// clang-format on
 #elif BUILDFLAG(IS_WIN)
+     // clang-format off
      {1,  3,  4,  9,  10, 16, 17, 21, 22, 27,
       28, 34, 35, 39, 40, 44, 45, 50, 51, 53},
      {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
       8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+// clang-format on
 #else
+     // clang-format off
      {1,  3,  4,  9,  10, 16, 17, 23, 24, 29,
       30, 36, 37, 42, 43, 48, 49, 54, 55, 57},
      {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
       8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kIncludePartialGlyphs,
@@ -832,20 +876,26 @@ struct CaretOffsetForPositionTestData {
     {u"مَ1مَمَ2مَمَمَ3",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  2,  3,  9,  10, 15, 16, 21, 22, 27,
       28, 34, 35, 40, 41, 45, 46, 51, 52, 55},
      {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
       8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+// clang-format on
 #elif BUILDFLAG(IS_WIN)
+     // clang-format off
      {1,  3,  4,  9,  10, 16, 17, 21, 22, 27,
       28, 34, 35, 39, 40, 44, 45, 50, 51, 54},
      {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
       8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+// clang-format on
 #else
+     // clang-format off
      {1,  3,  4,  9,  10, 16, 17, 23, 24, 29,
       30, 36, 37, 42, 43, 48, 49, 54, 55, 57},
      {0,  0,  2,  2,  3,  3,  5,  5,  7,  7,
       8,  8,  10, 10, 12, 12, 14, 14, 15, 15},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kIncludePartialGlyphs,
@@ -855,14 +905,20 @@ struct CaretOffsetForPositionTestData {
     {u"مَ1مَمَ2مَمَمَ3",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  6,  7,  13, 14, 18, 19, 23, 24, 30, 31, 36, 37, 42, 43, 49, 50, 55},
      {14, 14, 12, 12, 10, 10, 8,  8,  7,  7,  5,  5,  3,  3,  2,  2,  0,  0},
+// clang-format on
 #elif BUILDFLAG(IS_WIN)
+     // clang-format off
      {1,  7,  8,  13, 14, 18, 19, 23, 24, 30, 31, 36, 37, 41, 42, 48, 49, 53},
      {14, 14, 12, 12, 10, 10, 8,  8,  7,  7,  5,  5,  3,  3,  2,  2,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1,  7,  8,  14, 15, 19, 20, 25, 26, 32, 33, 39, 40, 45, 46, 52, 53, 57},
      {14, 14, 12, 12, 10, 10, 8,  8,  7,  7,  5,  5,  3,  3,  2,  2,  0,  0},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kOnlyFullGlyphs,
@@ -872,20 +928,26 @@ struct CaretOffsetForPositionTestData {
     {u"مَ1مَمَ2مَمَمَ3",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  3,  4,  10, 11, 15, 16, 20, 21, 27,
       28, 33, 34, 39, 40, 45, 46, 52, 53, 55},
      {15, 15, 14, 14, 12, 12, 10, 10, 8,  8,
       7,  7,  5,  5,  3,  3,  2,  2,  0,  0},
+// clang-format on
 #elif BUILDFLAG(IS_WIN)
+     // clang-format off
      {1,  3,  4,  10, 11, 15, 16, 20, 21, 26,
       27, 33, 34, 38, 39, 44, 45, 51, 52, 53},
      {15, 15, 14, 14, 12, 12, 10, 10, 8,  8,
       7,  7,  5,  5,  3,  3,  2,  2,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1,  3,  4,  10, 11, 16, 17, 22, 23, 28,
       29, 35, 36, 42, 43, 48, 49, 55, 56, 57},
      {15, 15, 14, 14, 12, 12, 10, 10, 8,  8,
       7,  7,  5,  5,  3,  3,  2,  2,  0, 0},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kIncludePartialGlyphs,
@@ -895,11 +957,15 @@ struct CaretOffsetForPositionTestData {
     {u"あ1あمَ2あمَあ",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {0, 11, 12, 18, 19, 30, 31, 36, 37, 43, 44, 55, 56, 61, 62, 73},
      {0, 0,  1,  1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9},
+// clang-format on
 #else
+     // clang-format off
      {1, 11, 12, 18, 19, 30, 31, 36, 37, 43, 44, 55, 56, 61, 62, 73},
      {0, 0,  1,  1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kOnlyFullGlyphs,
@@ -909,11 +975,15 @@ struct CaretOffsetForPositionTestData {
     {u"あ1あمَ2あمَあ",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1, 6, 7, 15, 16, 24, 25, 33, 34, 40, 41, 49, 50, 58, 59, 67, 68, 73},
      {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
+// clang-format on
 #else
+     // clang-format off
      {1, 6, 7, 15, 16, 25, 26, 34, 35, 40, 41, 50, 51, 59, 60, 68, 69, 73},
      {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kIncludePartialGlyphs,
@@ -923,11 +993,15 @@ struct CaretOffsetForPositionTestData {
     {u"あ1あمَ2あمَあ",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1, 6, 7, 15, 16, 24, 25, 33, 34, 40, 41, 49, 50, 58, 59, 67, 68, 73},
      {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
+// clang-format on
 #else
+     // clang-format off
      {1, 6, 7, 15, 16, 25, 26, 34, 35, 40, 41, 50, 51, 59, 60, 68, 69, 73},
      {0, 0, 1, 1,  2,  2,  3,  3,  5,  5,  6,  6,  7,  7,  9,  9,  10, 10},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kIncludePartialGlyphs,
@@ -937,11 +1011,15 @@ struct CaretOffsetForPositionTestData {
     {u"あ1あمَ2あمَあ",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1, 12, 13, 17, 18, 29, 30, 36, 37, 42, 43, 54, 55, 61, 62, 73},
      {9, 9,  7,  7,  6,  6,  5,  5,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1, 12, 13, 18, 19, 30, 31, 37, 38, 43, 44, 55, 56, 62, 63, 74},
      {9, 9,  7,  7,  6,  6,  5,  5,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kOnlyFullGlyphs,
@@ -951,11 +1029,15 @@ struct CaretOffsetForPositionTestData {
     {u"あ1あمَ2あمَあ",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  6,  7, 14, 15, 23, 24, 33, 34, 39, 40, 48, 49, 58, 59, 67, 68, 73},
      {10, 10, 9, 9,  7,  7,  6,  6,  5,  5,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1,  6,  7, 15, 16, 24, 25, 33, 34, 40, 41, 49, 50, 58, 59, 68, 69, 73},
      {10, 10, 9, 9,  7,  7,  6,  6,  5,  5,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #endif
      ShapeResultTest::kArabicFont,
      kIncludePartialGlyphs,
@@ -965,11 +1047,15 @@ struct CaretOffsetForPositionTestData {
     {u"楽しいドライブ、0",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1, 11, 12, 23, 24, 35, 36, 47, 48, 59, 60, 71, 72, 83, 84, 95, 96, 103},
      {0, 0,  1,  1,  2,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7,  8,  8},
+// clang-format on
 #else
+     // clang-format off
      {1, 11, 12, 23, 24, 35, 36, 47, 48, 59, 60, 71, 72, 83, 84, 95, 96, 102},
      {0, 0,  1,  1,  2,  2,  3,  3,  4,  4,  5,  5,  6,  6,  7,  7,  8,  8},
+// clang-format on
 #endif
      ShapeResultTest::kCJKFont,
      kOnlyFullGlyphs,
@@ -979,15 +1065,19 @@ struct CaretOffsetForPositionTestData {
     {u"楽しいドライブ、0",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  6,  7,  18, 19, 30, 31, 42, 43,  54,
       55, 66, 67, 78, 79, 90, 91, 99, 100, 103},
      {0,  0,  1,  1,  2,  2,  3,  3,  4,   4,
       5,  5,  6,  6,  7,  7,  8,  8,  9,   9},
+// clang-format on
 #else
+     // clang-format off
      {1,  6,  7,  18, 19, 30, 31, 42, 43,  54,
       55, 66, 67, 78, 79, 90, 91, 99, 100, 102},
      {0,  0,  1,  1,  2,  2,  3,  3,  4,   4,
       5,  5,  6,  6,  7,  7,  8,  8,  9,   9},
+// clang-format on
 #endif
      ShapeResultTest::kCJKFont,
      kIncludePartialGlyphs,
@@ -997,13 +1087,17 @@ struct CaretOffsetForPositionTestData {
     {u"楽しいドライブ、0",
      TextDirection::kLtr,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  6,  7,  18, 19, 30, 31, 42, 43,  54,
       55, 66, 67, 78, 79, 90, 91, 99, 100, 103},
      {0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9},
+// clang-format on
 #else
+     // clang-format off
      {1,  6,  7,  18, 19, 30, 31, 42, 43,  54,
       55, 66, 67, 78, 79, 90, 91, 99, 100, 102},
      {0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9},
+// clang-format on
 #endif
      ShapeResultTest::kCJKFont,
      kIncludePartialGlyphs,
@@ -1013,11 +1107,15 @@ struct CaretOffsetForPositionTestData {
     {u"楽しいドライブ、0",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1, 7, 8, 19, 20, 31, 32, 43, 44, 55, 56, 67, 68, 79, 80, 91, 92, 103},
      {8, 8, 7, 7,  6,  6,  5,  5,  4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1, 7, 8, 19, 20, 31, 32, 43, 44, 55, 56, 67, 68, 79, 80, 91, 92, 102},
      {8, 8, 7, 7,  6,  6,  5,  5,  4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #endif
      ShapeResultTest::kCJKFont,
      kOnlyFullGlyphs,
@@ -1027,15 +1125,19 @@ struct CaretOffsetForPositionTestData {
     {u"楽しいドライブ、0",
      TextDirection::kRtl,
 #if BUILDFLAG(IS_APPLE)
+     // clang-format off
      {1,  3,  4,  13, 14, 25, 26, 37, 38, 49,
       50, 61, 62, 73, 74, 85, 86, 97, 98, 103},
      {9,  9,  8,  8,  7,  7,  6,  6,  5,  5,
       4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #else
+     // clang-format off
      {1,  3,  4,  13, 14, 25, 26, 37, 38, 49,
       50, 61, 62, 73, 74, 85, 86, 97, 98, 102},
      {9,  9,  8,  8,  7,  7,  6,  6,  5,  5,
       4,  4,  3,  3,  2,  2,  1,  1,  0,  0},
+// clang-format on
 #endif
      ShapeResultTest::kCJKFont,
      kIncludePartialGlyphs,
@@ -1050,6 +1152,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(caret_offset_for_position_test_data));
 
 TEST_P(CaretOffsetForPositionTest, OffsetForPositions) {
+  ScopedNoFontAntialiasingForTest disable_no_font_antialiasing_for_test(false);
+
   const auto& test_data = GetParam();
   String text_string(test_data.string);
   HarfBuzzShaper shaper(text_string);

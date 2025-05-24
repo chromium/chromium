@@ -30,7 +30,7 @@ namespace system_logs {
 
 class ConnectedInputDevicesLogSourceTest : public ::testing::Test {
  public:
-  ConnectedInputDevicesLogSourceTest() {}
+  ConnectedInputDevicesLogSourceTest() = default;
   ConnectedInputDevicesLogSourceTest(
       const ConnectedInputDevicesLogSourceTest&) = delete;
   ConnectedInputDevicesLogSourceTest& operator=(

@@ -217,5 +217,41 @@ TEST(TaskGraphWorkQueueTest, TestTaskWithDifferentPriority) {
   }
 }
 
+TEST(TaskGraphWorkQueueTest, ExternalDependency) {
+  TaskGraphWorkQueue work_queue;
+  NamespaceToken token = work_queue.GenerateNamespaceToken();
+
+  // Create a graph where task has an external dependency
+  TaskGraph graph;
+  scoped_refptr<FakeTaskImpl> task(new FakeTaskImpl());
+
+  uint16_t category = 5u;
+  uint16_t priority = 7u;
+
+  graph.nodes.emplace_back(task, category, priority, 1u /*dependencies*/,
+                           true /*has_external_dependency*/);
+  work_queue.ScheduleTasks(token, &graph);
+  auto* task_namespace = work_queue.GetNamespaceForToken(token);
+  EXPECT_FALSE(TaskGraphWorkQueue::DependencyMismatch(&graph));
+  EXPECT_FALSE(work_queue.HasReadyToRunTasks());
+  EXPECT_FALSE(work_queue.HasFinishedRunningTasksInAllNamespaces());
+  EXPECT_TRUE(
+      TaskGraphWorkQueue::HasTasksBlockedOnExternalDependencyInNamespace(
+          task_namespace));
+
+  // Complete external dependency; `task` should be ready to run.
+  work_queue.ExternalDependencyCompletedForTask(token, task);
+  EXPECT_FALSE(TaskGraphWorkQueue::DependencyMismatch(&graph));
+  EXPECT_TRUE(work_queue.HasReadyToRunTasks());
+  EXPECT_FALSE(
+      TaskGraphWorkQueue::HasTasksBlockedOnExternalDependencyInNamespace(
+          task_namespace));
+  TaskGraphWorkQueue::PrioritizedTask prioritized_dependency_task =
+      work_queue.GetNextTaskToRun(category);
+  EXPECT_EQ(prioritized_dependency_task.task.get(), task.get());
+
+  work_queue.CompleteTask(std::move(prioritized_dependency_task));
+}
+
 }  // namespace
 }  // namespace cc

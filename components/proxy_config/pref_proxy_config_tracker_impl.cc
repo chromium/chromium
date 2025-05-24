@@ -290,13 +290,6 @@ ProxyPrefs::ConfigState PrefProxyConfigTrackerImpl::ReadPrefConfig(
   if (pref->IsExtensionControlled()) {
     return ProxyPrefs::CONFIG_EXTENSION;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (pref->IsStandaloneBrowserControlled()) {
-    // The proxy config is controlled by an extension active in the Lacros
-    // primary profile.
-    return ProxyPrefs::CONFIG_EXTENSION;
-  }
-#endif
   return ProxyPrefs::CONFIG_OTHER_PRECEDE;
 }
 
@@ -420,9 +413,7 @@ bool PrefProxyConfigTrackerImpl::PrefConfigToNetConfig(
       // Fall through to NOTREACHED().
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown proxy mode, falling back to system settings.";
-  return false;
+  NOTREACHED() << "Unknown proxy mode, falling back to system settings.";
 }
 
 void PrefProxyConfigTrackerImpl::OnProxyPrefChanged() {

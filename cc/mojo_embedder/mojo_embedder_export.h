@@ -15,11 +15,7 @@
 #endif  // defined(CC_MOJO_EMBEDDER_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CC_MOJO_EMBEDDER_IMPLEMENTATION)
 #define CC_MOJO_EMBEDDER_EXPORT __attribute__((visibility("default")))
-#else
-#define CC_MOJO_EMBEDDER_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

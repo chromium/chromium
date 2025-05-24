@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!-- Tests that pinch-zooming on a subscroller renders properly. -->
+<meta name="fuzzy" content="0-10;0-30" />
+<meta charset="utf-8" />
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/testharness.js"></script>
+
+<style>
+  .scrollable {
+    height: 200px;
+    overflow: scroll;
+    position: fixed;
+    width: 200px;
+  }
+
+  .content {
+    height: 400px;
+    width: 400px;
+  }
+</style>
+
+<div class="scrollable" id="subscroller">
+  <div class="content"></div>
+</div>
+
+<script>
+  window.onload = async () => {
+    if (window.testRunner) {
+      testRunner.waitUntilDone();
+      const subscrollerRect = document
+        .getElementById("subscroller")
+        .getBoundingClientRect();
+      await pinchBy(2, subscrollerRect.left, subscrollerRect.top,
+                    SPEED_INSTANT, GestureSourceType.MOUSE_INPUT);
+      testRunner.notifyDone();
+    }
+  };
+</script>

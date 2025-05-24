@@ -39,13 +39,8 @@ class WebMeasureMemorySecurityChecker {
   // Creates a WebMeasureMemorySecurityChecker for production use.
   static std::unique_ptr<WebMeasureMemorySecurityChecker> Create();
 
-  // Invokes |measure_memory_callback| with |frame| as a parameter on the PM
-  // sequence if |frame| is allowed to call WebMeasureMemory,
-  // |bad_message_callback| otherwise.
-  virtual void CheckMeasureMemoryIsAllowed(
-      const FrameNode* frame,
-      MeasureMemoryCallback measure_memory_callback,
-      mojo::ReportBadMessageCallback bad_message_callback) const = 0;
+  // Returns true if `frame` is allowed to call WebMeasureMemory.
+  virtual bool IsMeasureMemoryAllowed(const FrameNode* frame) const = 0;
 };
 
 // Implements mojom::DocumentCoordinationUnit::OnWebMemoryMeasurementRequest to

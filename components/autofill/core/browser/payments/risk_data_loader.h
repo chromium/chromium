@@ -18,7 +18,7 @@ class RiskDataLoader {
       base::OnceCallback<void(const std::string&)> callback) = 0;
 
  protected:
-  virtual ~RiskDataLoader() {}
+  virtual ~RiskDataLoader() = default;
 };
 
 }  // namespace autofill

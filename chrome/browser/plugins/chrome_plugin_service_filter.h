@@ -22,7 +22,7 @@
 class Profile;
 
 namespace content {
-class WebContents;
+class RenderFrameHost;
 }
 
 // This class must be created (by calling the |GetInstance| method) on the UI
@@ -41,11 +41,11 @@ class ChromePluginServiceFilter : public content::PluginServiceFilter,
   void AuthorizePlugin(int render_process_id,
                        const base::FilePath& plugin_path);
 
-  // Authorizes all plugins for a given WebContents. If |load_blocked| is true,
-  // then the renderer is told to load the plugin with given |identifier| (or
-  // pllugins if |identifier| is empty).
-  // This method can only be called on the UI thread.
-  void AuthorizeAllPlugins(content::WebContents* web_contents,
+  // Authorizes all plugins for a given RenderFrameHost and its children. If
+  // |load_blocked| is true, then the renderer is told to load the plugin with
+  // given |identifier| (or pllugins if |identifier| is empty). This method can
+  // only be called on the UI thread.
+  void AuthorizeAllPlugins(content::RenderFrameHost* main_render_frame_host,
                            bool load_blocked,
                            const std::string& identifier);
 

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_action_runner.h"
+
 #include <stddef.h>
 
 #include <map>
@@ -11,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
@@ -33,6 +35,8 @@
 #include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -87,9 +91,10 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override;
 
+  void TearDown() override;
+
   // The associated ExtensionActionRunner.
-  raw_ptr<ExtensionActionRunner, DanglingUntriaged> extension_action_runner_ =
-      nullptr;
+  raw_ptr<ExtensionActionRunner> extension_action_runner_ = nullptr;
 
   // The map of observed executions, keyed by extension id.
   std::map<ExtensionId, int> extension_executions_;
@@ -189,14 +194,18 @@ void ExtensionActionRunnerUnitTest::SetUp() {
   DCHECK(extension_action_runner_);
 }
 
+void ExtensionActionRunnerUnitTest::TearDown() {
+  extension_action_runner_ = nullptr;
+  ChromeRenderViewHostTestHarness::TearDown();
+}
+
 // TODO(crbug.com/40883928): Split the test by need for refresh or not to
 // confirm the blocked actions are running as expected. Tests that when an
 // extension is granted permissions (independent of page reload) the extension
 // is allowed to run.
 TEST_F(ExtensionActionRunnerUnitTest, GrantTabPermissions) {
   ActiveTabPermissionGranter* active_tab_permission_granter =
-      TabHelper::FromWebContents(web_contents())
-          ->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents());
   ASSERT_TRUE(active_tab_permission_granter);
 
   const Extension* extension = AddExtension();
@@ -248,7 +257,7 @@ TEST_F(ExtensionActionRunnerUnitTest, RequestPermissionAndExecute) {
   EXPECT_FALSE(RequiresUserConsent(extension));
 
   // Reloading and same-origin navigations shouldn't clear those permissions,
-  // and we shouldn't require user constent again.
+  // and we shouldn't require user consent again.
   content::NavigationSimulator::Reload(web_contents());
   EXPECT_FALSE(RequiresUserConsent(extension));
   NavigateAndCommit(GURL("https://www.google.com/foo"));
@@ -331,8 +340,7 @@ TEST_F(ExtensionActionRunnerUnitTest, ActiveScriptsUseActiveTabPermissions) {
   NavigateAndCommit(GURL("https://www.google.com"));
 
   ActiveTabPermissionGranter* active_tab_permission_granter =
-      TabHelper::FromWebContents(web_contents())
-          ->active_tab_permission_granter();
+      ActiveTabPermissionGranter::FromWebContents(web_contents());
   ASSERT_TRUE(active_tab_permission_granter);
   // Grant the extension active tab permissions. This normally happens, e.g.,
   // if the user clicks on a browser action.
@@ -355,7 +363,7 @@ TEST_F(ExtensionActionRunnerUnitTest, ActiveScriptsUseActiveTabPermissions) {
   NavigateAndCommit(GURL("https://yahoo.com"));
   EXPECT_TRUE(RequiresUserConsent(extension));
 
-  // Back to the original origin should also re-require constent.
+  // Back to the original origin should also re-require consent.
   NavigateAndCommit(GURL("https://www.google.com"));
   EXPECT_TRUE(RequiresUserConsent(extension));
 

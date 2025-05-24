@@ -100,6 +100,10 @@ HTMLMediaElement* MediaElementAudioSourceNode::mediaElement() const {
   return media_element_.Get();
 }
 
+void MediaElementAudioSourceNode::ConnectToDestinationReady() {
+  media_element_->ConnectToDestinationReady();
+}
+
 void MediaElementAudioSourceNode::SetFormat(uint32_t number_of_channels,
                                             float sample_rate) {
   GetMediaElementAudioSourceHandler().SetFormat(number_of_channels,
@@ -124,7 +128,7 @@ void MediaElementAudioSourceNode::ReportWillBeDestroyed() {
 
 bool MediaElementAudioSourceNode::HasPendingActivity() const {
   // The node stays alive as long as the context is running.
-  return context()->ContextState() == BaseAudioContext::kRunning;
+  return context()->ContextState() == V8AudioContextState::Enum::kRunning;
 }
 
 void MediaElementAudioSourceNode::Trace(Visitor* visitor) const {

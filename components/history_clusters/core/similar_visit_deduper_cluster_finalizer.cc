@@ -4,10 +4,10 @@
 
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
 
+#include <algorithm>
 #include <unordered_map>
 
 #include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/similar_visit.h"
@@ -31,29 +31,24 @@ void SimilarVisitDeduperClusterFinalizer::FinalizeCluster(
     similar_visit_to_canonical_visits[SimilarVisit(visit)] = &visit;
   }
 
-  cluster.visits.erase(
-      base::ranges::remove_if(
-          cluster.visits,
-          [&](auto& visit) {
-            // We are guaranteed to find a matching canonical visit, due to our
-            // prepass above.
-            auto it =
-                similar_visit_to_canonical_visits.find(SimilarVisit(visit));
-            CHECK(it != similar_visit_to_canonical_visits.end(),
-                  base::NotFatalUntil::M130);
-            history::ClusterVisit* canonical_visit = it->second;
+  auto to_remove = std::ranges::remove_if(cluster.visits, [&](auto& visit) {
+    // We are guaranteed to find a matching canonical visit, due to our
+    // prepass above.
+    auto it = similar_visit_to_canonical_visits.find(SimilarVisit(visit));
+    CHECK(it != similar_visit_to_canonical_visits.end(),
+          base::NotFatalUntil::M130);
+    history::ClusterVisit* canonical_visit = it->second;
 
-            // If a DIFFERENT visit is the canonical visit for this key, merge
-            // this visit in, and mark this visit as to be removed.
-            if (&visit != canonical_visit) {
-              MergeDuplicateVisitIntoCanonicalVisit(std::move(visit),
-                                                    *canonical_visit);
-              return true;
-            }
+    // If a DIFFERENT visit is the canonical visit for this key, merge
+    // this visit in, and mark this visit as to be removed.
+    if (&visit != canonical_visit) {
+      MergeDuplicateVisitIntoCanonicalVisit(std::move(visit), *canonical_visit);
+      return true;
+    }
 
-            return false;
-          }),
-      cluster.visits.end());
+    return false;
+  });
+  cluster.visits.erase(to_remove.begin(), to_remove.end());
 }
 
 }  // namespace history_clusters

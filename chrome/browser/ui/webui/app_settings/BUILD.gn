@@ -1,0 +1,49 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux)
+
+source_set("app_settings") {
+  sources = [
+    "web_app_settings_navigation_throttle.h",
+    "web_app_settings_ui.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/webui/app_management",
+    "//chrome/browser/web_applications",
+    "//chrome/common",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/webui",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "web_app_settings_navigation_throttle.cc",
+    "web_app_settings_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":app_settings",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/app_settings:resources",
+    "//chrome/browser/resources/app_settings:resources_grit",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/proto",
+    "//chrome/common",
+    "//chrome/common:chrome_features",
+    "//components/strings:components_strings",
+    "//content/public/browser",
+    "//ui/gfx",
+    "//ui/webui",
+  ]
+}

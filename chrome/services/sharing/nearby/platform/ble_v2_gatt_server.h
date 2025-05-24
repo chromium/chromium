@@ -54,7 +54,6 @@ class BleV2GattServer : public ::nearby::api::ble_v2::GattServer,
   BleV2GattServer& operator=(const BleV2GattServer&) = delete;
 
   // nearby::api::ble_v2::GattServer:
-  BluetoothAdapter& GetBlePeripheral() override;
   std::optional<api::ble_v2::GattCharacteristic> CreateCharacteristic(
       const Uuid& service_uuid,
       const Uuid& characteristic_uuid,

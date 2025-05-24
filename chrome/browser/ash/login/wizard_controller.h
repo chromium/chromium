@@ -324,15 +324,15 @@ class WizardController : public OobeUI::Observer {
   void ShowAssistantOptInFlowScreen();
   void ShowMultiDeviceSetupScreen();
   void ShowGestureNavigationScreen();
-  void ShowPinSetupScreen();
+  void ShowPinSetupScreenAsSecondaryFactor();
+  void ShowPinSetupScreenAsMainFactor();
+  void ShowPinSetupScreenForRecovery();
   void ShowMarketingOptInScreen();
   void ShowPackagedLicenseScreen();
   void ShowEduCoexistenceLoginScreen();
   void ShowParentalHandoffScreen();
   void ShowOsInstallScreen();
   void ShowOsTrialScreen();
-  void ShowLacrosDataMigrationScreen();
-  void ShowLacrosDataBackwardMigrationScreen();
   void ShowConsolidatedConsentScreen();
   void ShowCryptohomeRecoverySetupScreen();
   void ShowAuthenticationSetupScreen();
@@ -577,6 +577,9 @@ class WizardController : public OobeUI::Observer {
   void MaybeAbortQuickStartFlow(
       quick_start::QuickStartController::AbortFlowReason reason);
 
+  // Tries to enable pre-consent metrics.
+  void MaybeEnablePreConsentMetrics();
+
   std::unique_ptr<policy::AutoEnrollmentController> auto_enrollment_controller_;
   std::unique_ptr<ChoobeFlowController> choobe_flow_controller_;
   std::unique_ptr<quick_start::QuickStartController> quickstart_controller_;
@@ -584,7 +587,8 @@ class WizardController : public OobeUI::Observer {
 
   // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.
   // So it should be safe to store the pointers.
-  base::flat_map<BaseScreen*, BaseScreen*> previous_screens_;
+  base::flat_map<BaseScreen*, raw_ptr<BaseScreen, CtnExperimental>>
+      previous_screens_;
 
   raw_ptr<WizardContext> wizard_context_;
 

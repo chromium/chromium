@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/apple/dispatch_source_mach.h"
+#include "base/apple/dispatch_source.h"
 #include "base/apple/scoped_mach_port.h"
 #include "base/no_destructor.h"
 #include "base/process/port_provider_mac.h"
@@ -82,7 +82,7 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
   base::apple::ScopedMachReceiveRight notification_port_;
 
   // Dispatch source for |notification_port_|.
-  std::unique_ptr<base::apple::DispatchSourceMach> notification_source_;
+  std::unique_ptr<base::apple::DispatchSource> notification_source_;
 };
 
 }  // namespace content

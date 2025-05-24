@@ -350,6 +350,7 @@ static_library("opus") {
     "src/silk/typedef.h",
     "src/src/analysis.c",
     "src/src/analysis.h",
+    "src/src/extensions.c",
     "src/src/mapping_matrix.c",
     "src/src/mapping_matrix.h",
     "src/src/mlp.c",

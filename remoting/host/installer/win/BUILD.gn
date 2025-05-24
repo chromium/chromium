@@ -3,8 +3,13 @@
 # found in the LICENSE file.
 
 import("//remoting/build/config/remoting_build.gni")
+import("//remoting/host/installer/credits.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
 import("//remoting/host/installer/win/wix_path.gni")
+
+remoting_credits("credits") {
+  gn_target = "//remoting/host/installer/win:remoting_me2me_host_archive"
+}
 
 action("remoting_me2me_host_archive") {
   script = "//remoting/host/installer/build-installer-archive.py"
@@ -15,9 +20,10 @@ action("remoting_me2me_host_archive") {
   ]
 
   deps = [
+    ":credits",
     "//remoting/host:remoting_native_messaging_manifests",
     "//remoting/host:remoting_start_host",
-    "//remoting/host/installer:credits",
+    "//remoting/host/crash:crash_tools",
     "//remoting/host/it2me:remote_assistance_host",
     "//remoting/host/it2me:remote_assistance_host_uiaccess",
     "//remoting/host/remote_open_url",
@@ -62,6 +68,7 @@ action("remoting_me2me_host_archive") {
     "$root_out_dir/remote_security_key.exe",
     "$root_out_dir/remote_webauthn.exe",
     "$root_out_dir/remoting_core.dll",
+    "$root_out_dir/remoting_crashpad_handler.exe",
     "$root_out_dir/remoting_desktop.exe",
     "$root_out_dir/remoting_host.exe",
     "$root_out_dir/remoting_native_messaging_host.exe",
@@ -94,6 +101,7 @@ action("remoting_me2me_host_archive") {
     "files/remote_security_key.exe",
     "files/remote_webauthn.exe",
     "files/remoting_core.dll",
+    "files/remoting_crashpad_handler.exe",
     "files/remoting_desktop.exe",
     "files/remoting_host.exe",
     "files/remoting_native_messaging_host.exe",

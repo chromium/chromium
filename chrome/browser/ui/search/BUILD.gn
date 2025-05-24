@@ -1,0 +1,167 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/args.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("search") {
+  sources = [
+    "instant_controller.h",
+    "new_tab_page_navigation_throttle.h",
+    "ntp_user_data_logger.h",
+    "ntp_user_data_types.h",
+    "omnibox_utils.h",
+    "search_ipc_router.h",
+    "search_ipc_router_policy_impl.h",
+    "search_tab_helper.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/ui/omnibox",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//chrome/common",
+    "//chrome/common/search:mojo_bindings",
+    "//components/ntp_tiles",
+    "//components/omnibox/common",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "instant_controller.cc",
+    "new_tab_page_navigation_throttle.cc",
+    "search_ipc_router.cc",
+    "search_ipc_router_policy_impl.cc",
+
+    # The three files below cause circular dependencies against //c/b:b or //c/b/ui:ui.
+    "ntp_user_data_logger.cc",
+    "omnibox_utils.cc",
+    "search_tab_helper.cc",
+  ]
+  deps = [
+    ":search",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/search/background",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/browser/ui/user_education",
+    "//chrome/common",
+    "//components/bookmarks/browser",
+    "//components/feature_engagement/public:feature_constants",
+    "//components/navigation_metrics",
+    "//components/profile_metrics",
+    "//components/search",
+    "//components/vector_icons",
+    "//content/public/browser",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "instant_test_base.cc",
+    "instant_test_base.h",
+    "new_tab_page_navigation_throttle_browsertest.cc",
+    "third_party_ntp_browsertest.cc",
+  ]
+
+  public_deps = [ "//net:test_support" ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/tab_contents",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/network_session_configurator/common",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//url",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "instant_extended_interactive_uitest.cc",
+      "instant_test_base.cc",
+      "instant_test_base.h",
+      "third_party_ntp_uitest.cc",
+    ]
+
+    public_deps = [ "//net:test_support" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search",
+      "//chrome/browser/search_engines",
+      "//chrome/browser/ui/omnibox",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/network_session_configurator/common",
+      "//components/omnibox/browser",
+      "//components/search_engines",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//url",
+    ]
+  }
+}
+
+# TODO(crbug.com/418180294): Build ntp_test_utils.cc|h from this BUILD.gn
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "ntp_user_data_logger_unittest.cc",
+    "search_ipc_router_policy_unittest.cc",
+    "search_ipc_router_unittest.cc",
+  ]
+  deps = [
+    ":search",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/common",
+    "//chrome/common:non_code_constants",
+    "//chrome/test:test_support",
+    "//components/favicon_base",
+    "//components/ntp_tiles",
+    "//components/omnibox/common",
+    "//components/search",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//ipc",
+    "//ipc:message_support",
+    "//ipc:test_sink",
+    "//ui/base:types",
+    "//url",
+  ]
+}

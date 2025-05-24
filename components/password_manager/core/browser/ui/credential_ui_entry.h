@@ -184,7 +184,6 @@ struct CredentialUIEntry {
 std::string CreateSortKey(const CredentialUIEntry& credential);
 
 bool operator==(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
-bool operator!=(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 bool operator<(const CredentialUIEntry& lhs, const CredentialUIEntry& rhs);
 
 // Returns true when the credential is either leaked or phished.

@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//mojo/public/tools/bindings/mojom.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
@@ -16,15 +18,14 @@ source_set("public") {
     "data_sharing_sdk_delegate.h",
     "data_sharing_service.h",
     "data_sharing_ui_delegate.h",
-    "features.cc",
-    "features.h",
-    "group_data.cc",
-    "group_data.h",
-    "service_status.cc",
-    "service_status.h",
+    "share_url_interception_context.cc",
+    "share_url_interception_context.h",
   ]
 
   public_deps = [
+    ":features",
+    ":group_data",
+    ":logger",
     "//base",
     "//components/data_sharing/public/protocol",
     "//components/keyed_service/core",
@@ -34,13 +35,73 @@ source_set("public") {
   ]
 }
 
+source_set("logger") {
+  sources = [
+    "logger.cc",
+    "logger.h",
+    "logger_utils.h",
+  ]
+  public_deps = [ ":logger_interfaces" ]
+}
+
+mojom("logger_interfaces") {
+  generate_java = true
+
+  sources = [ "logger_common.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+static_library("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+    "server_environment.h",
+    "switches.h",
+  ]
+
+  public_deps = [ "//base" ]
+}
+
+static_library("group_data") {
+  sources = [
+    "data_sharing_utils.cc",
+    "data_sharing_utils.h",
+    "group_data.cc",
+    "group_data.h",
+  ]
+
+  public_deps = [
+    ":features",
+    "//base",
+    "//components/data_sharing/public/protocol",
+    "//google_apis",
+    "//net",
+    "//url",
+  ]
+
+  deps = [ "//components/url_formatter:url_formatter" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/data_sharing:unit_tests" ]
+
+  sources = [ "data_sharing_utils_unittest.cc" ]
+
+  deps = [
+    ":group_data",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
 if (is_android) {
   android_library("public_java") {
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkLoader.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
-      "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkUtils.java",
-      "android/java/src/org/chromium/components/data_sharing/DataSharingRequestType.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegate.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingSDKDelegateProtoResponseCallback.java",
       "android/java/src/org/chromium/components/data_sharing/DataSharingService.java",
@@ -48,20 +109,25 @@ if (is_android) {
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
-      "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
       "android/java/src/org/chromium/components/data_sharing/SharedDataPreview.java",
-      "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
-      "android/java/src/org/chromium/components/data_sharing/configs/AvatarConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
+      "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingAvatarBitmapConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingCreateUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingJoinUiConfig.java",
       "android/java/src/org/chromium/components/data_sharing/configs/DataSharingManageUiConfig.java",
-      "android/java/src/org/chromium/components/data_sharing/configs/GroupMemberConfig.java",
-      "android/java/src/org/chromium/components/data_sharing/configs/MemberPickerConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingPreviewDataConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingPreviewDetailsConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingRuntimeDataConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingStringConfig.java",
+      "android/java/src/org/chromium/components/data_sharing/configs/DataSharingUiConfig.java",
     ]
 
     deps = [
+      ":logger_java",
       "//base:base_java",
       "//components/data_sharing/public/protocol:proto_java",
+      "//components/signin/public/android:java",
       "//components/sync/protocol:protocol_java",
       "//net/android:net_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
@@ -73,23 +139,45 @@ if (is_android) {
     srcjar_deps = [ ":enums_java" ]
   }
 
+  android_library("logger_java") {
+    sources =
+        [ "android/java/src/org/chromium/components/data_sharing/Logger.java" ]
+    public_deps = [ ":logger_interfaces_java" ]
+  }
+
   java_cpp_enum("enums_java") {
     sources = [
       "data_sharing_network_loader.h",
       "data_sharing_service.h",
+      "data_sharing_utils.h",
       "group_data.h",
-      "service_status.h",
+      "server_environment.h",
     ]
   }
 
   generate_jni("jni_headers") {
+    visibility = [ ":*" ]
+
     sources = [
       "android/java/src/org/chromium/components/data_sharing/DataSharingNetworkResult.java",
       "android/java/src/org/chromium/components/data_sharing/GroupData.java",
       "android/java/src/org/chromium/components/data_sharing/GroupMember.java",
       "android/java/src/org/chromium/components/data_sharing/GroupToken.java",
-      "android/java/src/org/chromium/components/data_sharing/ServiceStatus.java",
-      "android/java/src/org/chromium/components/data_sharing/SharedEntity.java",
+      "android/java/src/org/chromium/components/data_sharing/SharedTabGroupPreview.java",
+      "android/java/src/org/chromium/components/data_sharing/TabPreview.java",
+    ]
+  }
+
+  static_library("android_utils") {
+    sources = [
+      "android/conversion_utils.cc",
+      "android/conversion_utils.h",
+    ]
+
+    deps = [
+      ":jni_headers",
+      ":public",
+      "//base",
     ]
   }
 }

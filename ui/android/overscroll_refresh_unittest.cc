@@ -76,7 +76,7 @@ class OverscrollRefreshTest : public OverscrollRefreshHandler,
     EXPECT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
     EXPECT_FALSE(effect.IsActive());
     EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
-    effect.OnOverscrolled(ob);
+    effect.OnOverscrolled(ob, -scroll_delta);
     EXPECT_EQ(started, GetAndResetPullStarted());
     EXPECT_EQ(!started, GetAndResetPullReset());
   }
@@ -107,7 +107,7 @@ TEST_F(OverscrollRefreshTest, TriggerPullToRefresh) {
   EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
 
   // The unconsumed, overscrolling scroll will trigger the effect.
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_up);
   EXPECT_TRUE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_TRUE(GetAndResetPullStarted());
@@ -146,10 +146,11 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialYOffsetIsNotZero) {
 
   effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
                         overflow_y_hidden);
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -169,10 +170,11 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfOverflowYHidden) {
   effect.OnFrameUpdated(viewport, zero_offset, content_size, overflow_y_hidden);
   effect.OnScrollBegin(kStartPos);
 
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -187,11 +189,12 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollDownward) {
 
   // A downward initial scroll will prevent activation, even if the subsequent
   // scroll overscrolls upward.
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, -10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
 
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -202,17 +205,18 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollDownward) {
 TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollOrTouchConsumed) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   ASSERT_TRUE(effect.IsAwaitingScrollUpdateAck());
 
   // Consumption of the initial touchmove or scroll should prevent future
   // activation.
   effect.Reset();
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 500)));
@@ -224,9 +228,10 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollOrTouchConsumed) {
 TEST_F(OverscrollRefreshTest, NotTriggeredIfFlungDownward) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   ASSERT_TRUE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   ASSERT_TRUE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullStarted());
 
@@ -239,9 +244,10 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfFlungDownward) {
 TEST_F(OverscrollRefreshTest, NotTriggeredIfReleasedWithoutActivation) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   ASSERT_TRUE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   ASSERT_TRUE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullStarted());
 
@@ -255,9 +261,10 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfReleasedWithoutActivation) {
 TEST_F(OverscrollRefreshTest, NotTriggeredIfReset) {
   OverscrollRefresh effect(this, kDefaultEdgeWidth);
   effect.OnScrollBegin(kStartPos);
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, 10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, 10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   ASSERT_TRUE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   ASSERT_TRUE(effect.IsActive());
   EXPECT_TRUE(GetAndResetPullStarted());
 
@@ -292,7 +299,7 @@ TEST_F(OverscrollRefreshTest, TriggerPullFromBottomEdge) {
   EXPECT_TRUE(effect.IsAwaitingScrollUpdateAck());
 
   // The unconsumed, overscrolling scroll will trigger the effect.
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_down);
   EXPECT_TRUE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_TRUE(GetAndResetPullStarted());
@@ -331,10 +338,11 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfInitialScrollNotFromBottom) {
 
   effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
                         overflow_y_hidden);
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, -10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -500)));
@@ -356,10 +364,11 @@ TEST_F(OverscrollRefreshTest, NotTriggeredIfContentSizeEqualsToViewport) {
 
   effect.OnFrameUpdated(viewport, gfx::PointF(), content_size,
                         overflow_y_hidden);
-  ASSERT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -10)));
+  gfx::Vector2dF scroll_delta = gfx::Vector2dF(0, -10);
+  ASSERT_FALSE(effect.WillHandleScrollUpdate(scroll_delta));
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
-  effect.OnOverscrolled(cc::OverscrollBehavior());
+  effect.OnOverscrolled(cc::OverscrollBehavior(), -scroll_delta);
   EXPECT_FALSE(effect.IsActive());
   EXPECT_FALSE(effect.IsAwaitingScrollUpdateAck());
   EXPECT_FALSE(effect.WillHandleScrollUpdate(gfx::Vector2dF(0, -500)));

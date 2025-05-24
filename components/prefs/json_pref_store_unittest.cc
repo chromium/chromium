@@ -93,14 +93,14 @@ class InterceptingPrefFilter : public PrefFilter {
   OnWriteCallbackPair on_write_callback_pair_;
 };
 
-InterceptingPrefFilter::InterceptingPrefFilter() {}
+InterceptingPrefFilter::InterceptingPrefFilter() = default;
 
 InterceptingPrefFilter::InterceptingPrefFilter(
     OnWriteCallbackPair callback_pair) {
   on_write_callback_pair_ = std::move(callback_pair);
 }
 
-InterceptingPrefFilter::~InterceptingPrefFilter() {}
+InterceptingPrefFilter::~InterceptingPrefFilter() = default;
 
 void InterceptingPrefFilter::FilterOnLoad(
     PostFilterOnLoadCallback post_filter_on_load_callback,

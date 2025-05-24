@@ -1,0 +1,37 @@
+<!--
+@BLINK-ALLOW:details*
+-->
+<html>
+<head><style>
+#anchor1 {
+  anchor-name: --anchor-1;
+  position: absolute;
+}
+
+#anchor2 {
+  anchor-name: --anchor-2;
+  position: absolute;
+}
+
+p {
+  position: absolute;
+  position-anchor: --anchor-1;
+  bottom: anchor(top);
+}
+
+</style></head>
+<body>
+  <button id="anchor1">anchor1</button>
+  <button id="anchor2">anchor2</button>
+  <div>
+    <p>target</p>
+  </div>
+</body>
+</html>
+<script>
+  // Change the anchor of the target from anchor1 to anchor2. We expect
+  // detailsId to be set on anchor2 only.
+  let el2 = document.querySelector('p');
+  document.querySelector('p').style["bottom"]="";
+  document.querySelector('p').style["position-anchor"]="--anchor-2";
+</script>

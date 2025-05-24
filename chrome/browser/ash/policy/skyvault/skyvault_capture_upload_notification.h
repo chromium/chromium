@@ -14,7 +14,8 @@ namespace policy::skyvault {
 // progress of an uploaded capture item.
 class SkyvaultCaptureUploadNotification {
  public:
-  explicit SkyvaultCaptureUploadNotification(const base::FilePath& filename);
+  explicit SkyvaultCaptureUploadNotification(const base::FilePath& filename,
+                                             bool for_video = false);
   SkyvaultCaptureUploadNotification(const SkyvaultCaptureUploadNotification&) =
       delete;
   SkyvaultCaptureUploadNotification& operator=(

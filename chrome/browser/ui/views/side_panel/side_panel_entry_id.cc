@@ -10,7 +10,7 @@
     return #entry_id;
 std::string SidePanelEntryIdToString(SidePanelEntryId id) {
   switch (id) { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_TO_STRING_CASE_STATEMENT) }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #undef SIDE_PANEL_TO_STRING_CASE_STATEMENT
 
@@ -20,7 +20,7 @@ std::string SidePanelEntryIdToString(SidePanelEntryId id) {
     return histogram_name;
 std::string SidePanelEntryIdToHistogramName(SidePanelEntryId id) {
   switch (id) { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_HISTOGRAM_NAME_CASE_STATEMENT) }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #undef SIDE_PANEL_HISTOGRAM_NAME_CASE_STATEMENT
 
@@ -31,6 +31,6 @@ std::string SidePanelEntryIdToHistogramName(SidePanelEntryId id) {
 std::optional<actions::ActionId> SidePanelEntryIdToActionId(
     SidePanelEntryId id) {
   switch (id) { SIDE_PANEL_ENTRY_IDS(SIDE_PANEL_ACTION_ID_CASE_STATEMENT) }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #undef SIDE_PANEL_ACTION_ID_CASE_STATEMENT

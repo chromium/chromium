@@ -84,9 +84,7 @@ class ShapingLineBreakerPerfTest : public testing::Test {
                base::Milliseconds(kTimeLimitMillis),
                kTimeCheckInterval) {}
 
-  void SetUp() override {
-    font_description.SetComputedSize(12.0);
-  }
+  void SetUp() override { font_description.SetComputedSize(12.0); }
 
   void TearDown() override {}
 
@@ -96,7 +94,7 @@ class ShapingLineBreakerPerfTest : public testing::Test {
 };
 
 TEST_F(ShapingLineBreakerPerfTest, ShapeLatinText) {
-  Font font(font_description);
+  Font* font = MakeGarbageCollected<Font>(font_description);
 
   // "My Brother's Keeper?"
   // By William Arthur Dunkerley (John Oxenham)
@@ -157,8 +155,8 @@ TEST_F(ShapingLineBreakerPerfTest, ShapeLatinText) {
   TextDirection direction = TextDirection::kLtr;
 
   HarfBuzzShaper shaper(string);
-  const ShapeResult* reference_result = shaper.Shape(&font, direction);
-  HarfBuzzShapingLineBreaker reference_breaker(&shaper, &font, reference_result,
+  const ShapeResult* reference_result = shaper.Shape(font, direction);
+  HarfBuzzShapingLineBreaker reference_breaker(&shaper, font, reference_result,
                                                &break_iterator, nullptr);
 
   LayoutUnit available_width_px(500);
@@ -167,8 +165,8 @@ TEST_F(ShapingLineBreakerPerfTest, ShapeLatinText) {
 
   timer_.Reset();
   do {
-    const ShapeResult* result = shaper.Shape(&font, direction);
-    HarfBuzzShapingLineBreaker breaker(&shaper, &font, result, &break_iterator,
+    const ShapeResult* result = shaper.Shape(font, direction);
+    HarfBuzzShapingLineBreaker breaker(&shaper, font, result, &break_iterator,
                                        nullptr);
 
     LayoutUnit width = ShapeText(&breaker, available_width_px, len);

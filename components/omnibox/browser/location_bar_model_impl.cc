@@ -40,7 +40,7 @@ LocationBarModelImpl::LocationBarModelImpl(LocationBarModelDelegate* delegate,
   DCHECK(delegate_);
 }
 
-LocationBarModelImpl::~LocationBarModelImpl() {}
+LocationBarModelImpl::~LocationBarModelImpl() = default;
 
 // LocationBarModelImpl Implementation.
 std::u16string LocationBarModelImpl::GetFormattedFullURL() const {
@@ -98,7 +98,10 @@ std::u16string LocationBarModelImpl::GetFormattedURL(
   // url_formatter parses everything past blob: as path, not domain, so swap
   // the url here to be just origin.
   if (url.SchemeIsBlob()) {
-    url = url::Origin::Create(url).GetURL();
+    url::Origin origin = url::Origin::Create(url);
+    if (!origin.host().empty()) {
+      url = origin.GetURL();
+    }
   }
 #endif  // BUILDFLAG(IS_IOS)
 
@@ -209,7 +212,6 @@ const gfx::VectorIcon& LocationBarModelImpl::GetVectorIcon() const {
 
   return location_bar_model::GetSecurityVectorIcon(
       GetSecurityLevel(),
-      delegate_->ShouldUseUpdatedConnectionSecurityIndicators(),
       delegate_->GetVisibleSecurityState()->malicious_content_status);
 }
 
@@ -276,9 +278,4 @@ bool LocationBarModelImpl::IsOfflinePage() const {
 
 bool LocationBarModelImpl::ShouldPreventElision() const {
   return delegate_->ShouldPreventElision();
-}
-
-bool LocationBarModelImpl::ShouldUseUpdatedConnectionSecurityIndicators()
-    const {
-  return delegate_->ShouldUseUpdatedConnectionSecurityIndicators();
 }

@@ -55,7 +55,7 @@ base::span<int> fct5() {
   // base::span<int> var1 = new int[1024];
   base::span<int> var1 = new int[1024];
   int offset = 1;
-  return var1 + offset;
+  return var1.subspan(offset);
 }
 
 // Expected rewrite:
@@ -66,8 +66,11 @@ base::span<char> fct6() {
   // base::span<int> var1 = new int[1024];
   base::span<int> var1 = new int[1024];
   int offset = 1;
-  // No rewrite here for now.
-  return reinterpret_cast<char*>(var1 + offset);
+  // Expected rewrite:
+  // return reinterpret_cast<char*>(var1.subspan(offset));
+  // As-is, this code doesn't compile because we don't yet handle
+  // adapting these reinterpret_cast expressions for spans.
+  return reinterpret_cast<char*>(var1.subspan(offset));
 }
 
 // Function return type not rewritten since not used.
@@ -78,8 +81,8 @@ int* fct7() {
   base::span<int> var1 = new int[1024];
   int offset = 1;
   // Expected rewrite:
-  // return (var1 + offset).data();
-  return (var1 + offset).data();
+  // return var1.subspan(offset).data();
+  return var1.subspan(offset).data();
 }
 
 // Function return type not rewritten since not used.
@@ -90,8 +93,10 @@ char* fct8() {
   base::span<int> var1 = new int[1024];
   int offset = 1;
   // Expected rewrite:
-  // return (reinterpret_cast<char*>(var1) + offset).data();
-  return (reinterpret_cast<char*>(var1) + offset).data();
+  // return reinterpret_cast<char*>(var1).subspan(offset).data();
+  // As-is, this code doesn't compile because we don't yet handle
+  // adapting these reinterpret_cast expressions for spans.
+  return reinterpret_cast<char*>(var1).subspan(offset).data();
 }
 
 void usage() {

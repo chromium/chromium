@@ -76,9 +76,12 @@ class CAPTURE_MODE_EXPORT CameraVideoFrameHandler
     // the camera device.
     virtual void OnCameraVideoFrame(scoped_refptr<media::VideoFrame> frame) = 0;
 
-    // Called when the handler received a fatal error in `OnError()` or the mojo
+    // Called when the handler receives a fatal error in `OnError()` or the mojo
     // remote to the `VideoSource` gets disconnected.
     virtual void OnFatalErrorOrDisconnection() = 0;
+
+    // Called when the handler receives an error in `OnError()`.
+    virtual void OnError(media::VideoCaptureError error) {}
 
    protected:
     virtual ~Delegate() = default;

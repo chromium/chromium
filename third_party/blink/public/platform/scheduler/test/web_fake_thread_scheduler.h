@@ -30,7 +30,6 @@ class WebFakeThreadScheduler : public WebThreadScheduler {
   void ResumeTimersForAndroidWebView() override;
 #endif
   void Shutdown() override;
-  void SetRendererProcessType(WebRendererProcessType type) override;
 };
 
 }  // namespace scheduler

@@ -88,7 +88,7 @@ BackgroundLoaderOffliner::BackgroundLoaderOffliner(
   }
 }
 
-BackgroundLoaderOffliner::~BackgroundLoaderOffliner() {}
+BackgroundLoaderOffliner::~BackgroundLoaderOffliner() = default;
 
 // static
 BackgroundLoaderOffliner* BackgroundLoaderOffliner::FromWebContents(
@@ -250,7 +250,7 @@ void BackgroundLoaderOffliner::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  if (pending_request_) {
+  if (pending_request_ && completion_callback_) {
     SavePageRequest request(*pending_request_.get());
     switch (status) {
       case base::TERMINATION_STATUS_OOM:
@@ -352,8 +352,7 @@ void BackgroundLoaderOffliner::StartSnapshot() {
         break;
       default:
         // We should've already checked for Success before entering here.
-        NOTREACHED_IN_MIGRATION();
-        status = Offliner::RequestStatus::LOADING_FAILED;
+        NOTREACHED();
     }
 
     std::move(completion_callback_).Run(request, status);

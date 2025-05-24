@@ -104,8 +104,7 @@ public class IdentityErrorCardPreference extends Preference
 
         ImageView image = (ImageView) card.findViewById(R.id.signin_settings_card_icon);
         image.setContentDescription(
-                context.getResources()
-                        .getString(R.string.accessibility_account_management_row_account_error));
+                context.getString(R.string.accessibility_account_management_row_account_error));
         image.setImageDrawable(AppCompatResources.getDrawable(context, R.drawable.ic_error));
 
         TextView error = card.findViewById(R.id.signin_settings_card_description);

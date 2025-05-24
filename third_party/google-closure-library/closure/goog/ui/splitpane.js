@@ -36,7 +36,6 @@ goog.require('goog.math.Rect');
 goog.require('goog.math.Size');
 goog.require('goog.style');
 goog.require('goog.ui.Component');
-goog.require('goog.userAgent');
 goog.requireType('goog.events.Event');
 goog.requireType('goog.fx.DragEvent');
 
@@ -796,12 +795,6 @@ goog.ui.SplitPane.prototype.handleDragStart_ = function(e) {
   if (!this.iframeOverlay_) {
     // Create the overlay.
     var cssStyles = 'position: relative';
-
-    if (goog.userAgent.IE && !goog.userAgent.isVersionOrHigher('10')) {
-      // IE doesn't look at this div unless it has a background, so we'll
-      // put one on, but make it opaque.
-      cssStyles += ';background-color: #000;filter: Alpha(Opacity=0)';
-    }
     this.iframeOverlay_ = this.getDomHelper().createDom(
         goog.dom.TagName.DIV, {'style': cssStyles});
 

@@ -39,50 +39,50 @@
 </style>
 <div id="container">
   <template is="dom-if" restamp
-      if="[[shouldShowBatteryTypeInfo_(device, BatteryType.LEFT_BUD)]]">
+      if="[[shouldShowBatteryTypeInfo_(device, BatteryTypeEnum_.LEFT_BUD)]]">
     <div id="leftBudContainer" class="battery-container">
       <div class="image-wrapper">
-        <img src="[[getImageSrc_(device, BatteryType.LEFT_BUD)]]"
+        <img src="[[getImageSrc_(device, BatteryTypeEnum_.LEFT_BUD)]]"
             alt="Left bud device image">
       </div>
       <span id="leftBudLabel">
-        [[getBatteryTypeString_(device, BatteryType.LEFT_BUD)]]
+        [[getBatteryTypeString_(device, BatteryTypeEnum_.LEFT_BUD)]]
       </span>
       <bluetooth-battery-icon-percentage
         device="[[device]]"
-        battery-type="[[BatteryType.LEFT_BUD]]">
+        battery-type="[[BatteryTypeEnum_.LEFT_BUD]]">
       </bluetooth-battery-icon-percentage>
     </div>
   </template>
   <template is="dom-if" restamp
-      if="[[shouldShowBatteryTypeInfo_(device, BatteryType.CASE)]]">
+      if="[[shouldShowBatteryTypeInfo_(device, BatteryTypeEnum_.CASE)]]">
     <div id="caseContainer" class="battery-container">
       <div class="image-wrapper">
-        <img src="[[getImageSrc_(device, BatteryType.CASE)]]"
+        <img src="[[getImageSrc_(device, BatteryTypeEnum_.CASE)]]"
             alt="Case device image">
       </div>
       <span id="caseLabel">
-        [[getBatteryTypeString_(device, BatteryType.CASE)]]
+        [[getBatteryTypeString_(device, BatteryTypeEnum_.CASE)]]
       </span>
       <bluetooth-battery-icon-percentage
         device="[[device]]"
-        battery-type="[[BatteryType.CASE]]">
+        battery-type="[[BatteryTypeEnum_.CASE]]">
       </bluetooth-battery-icon-percentage>
     </div>
   </template>
   <template is="dom-if" restamp
-      if="[[shouldShowBatteryTypeInfo_(device, BatteryType.RIGHT_BUD)]]">
+      if="[[shouldShowBatteryTypeInfo_(device, BatteryTypeEnum_.RIGHT_BUD)]]">
     <div id="rightBudContainer" class="battery-container">
       <div class="image-wrapper">
-        <img src="[[getImageSrc_(device, BatteryType.RIGHT_BUD)]]"
+        <img src="[[getImageSrc_(device, BatteryTypeEnum_.RIGHT_BUD)]]"
             alt="Right bud device image">
       </div>
       <span id="rightBudLabel">
-        [[getBatteryTypeString_(device, BatteryType.RIGHT_BUD)]]
+        [[getBatteryTypeString_(device, BatteryTypeEnum_.RIGHT_BUD)]]
       </span>
       <bluetooth-battery-icon-percentage
         device="[[device]]"
-        battery-type="[[BatteryType.RIGHT_BUD]]">
+        battery-type="[[BatteryTypeEnum_.RIGHT_BUD]]">
       </bluetooth-battery-icon-percentage>
     </div>
   </template>
@@ -90,7 +90,7 @@
       if="[[shouldShowDefaultInfo_(device)]]">
     <div id="defaultContainer" class="battery-container">
       <div class="image-wrapper">
-        <img src="[[getImageSrc_(device, BatteryType.DEFAULT)]]"
+        <img src="[[getImageSrc_(device, BatteryTypeEnum_.DEFAULT)]]"
             alt="Default device image">
       </div>
       <template is="dom-if" restamp
@@ -103,7 +103,7 @@
         if="[[!isDeviceNotConnected_(device)]]">
         <bluetooth-battery-icon-percentage
           device="[[device]]"
-          battery-type="[[BatteryType.DEFAULT]]">
+          battery-type="[[BatteryTypeEnum_.DEFAULT]]">
         </bluetooth-battery-icon-percentage>
       </template>
     </div>

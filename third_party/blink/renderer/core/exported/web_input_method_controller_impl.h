@@ -37,12 +37,12 @@ class CORE_EXPORT WebInputMethodControllerImpl
 
   // WebInputMethodController overrides.
   bool SetComposition(const WebString& text,
-                      const WebVector<ui::ImeTextSpan>& ime_text_spans,
+                      const std::vector<ui::ImeTextSpan>& ime_text_spans,
                       const WebRange& replacement_range,
                       int selection_start,
                       int selection_end) override;
   bool CommitText(const WebString& text,
-                  const WebVector<ui::ImeTextSpan>& ime_text_spans,
+                  const std::vector<ui::ImeTextSpan>& ime_text_spans,
                   const WebRange& replacement_range,
                   int relative_caret_position) override;
   bool FinishComposingText(
@@ -51,7 +51,7 @@ class CORE_EXPORT WebInputMethodControllerImpl
   int ComputeWebTextInputNextPreviousFlags() override;
   WebTextInputType TextInputType() override;
   WebRange CompositionRange() const override;
-  bool GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) override;
+  bool GetCompositionCharacterBounds(std::vector<gfx::Rect>& bounds) override;
 
   WebRange GetSelectionOffsets() const override;
 

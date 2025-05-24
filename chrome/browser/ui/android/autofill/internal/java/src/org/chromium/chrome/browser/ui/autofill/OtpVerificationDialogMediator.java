@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.DELAY_BETWEEN_CONFIRMATION_SHOWN_AND_DISMISSAL_MS;
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.EDIT_TEXT;
 import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogProperties.OTP_ERROR_MESSAGE;
@@ -14,6 +15,8 @@ import static org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogPrope
 
 import android.os.Handler;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.autofill.OtpVerificationDialogCoordinator.Delegate;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -22,12 +25,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Optional;
 
+@NullMarked
 class OtpVerificationDialogMediator
         implements ModalDialogProperties.Controller, OtpVerificationDialogProperties.ViewDelegate {
     private final ModalDialogManager mModalDialogManager;
-    private PropertyModel mModalDialogModel;
-    private Delegate mDelegate;
-    private PropertyModel mOtpVerificationDialogModel;
+    private final PropertyModel mModalDialogModel;
+    private final Delegate mDelegate;
+    private @Nullable PropertyModel mOtpVerificationDialogModel;
 
     OtpVerificationDialogMediator(
             ModalDialogManager modalDialogManager,
@@ -45,6 +49,7 @@ class OtpVerificationDialogMediator
 
     @Override
     public void onClick(PropertyModel model, int buttonType) {
+        assumeNonNull(mOtpVerificationDialogModel);
         switch (buttonType) {
             case ModalDialogProperties.ButtonType.POSITIVE:
                 Optional<CharSequence> editTextOptional =
@@ -64,6 +69,7 @@ class OtpVerificationDialogMediator
 
     @Override
     public void onTextChanged(CharSequence s) {
+        assumeNonNull(mOtpVerificationDialogModel);
         mModalDialogModel.set(
                 ModalDialogProperties.POSITIVE_BUTTON_DISABLED,
                 s.length() != mOtpVerificationDialogModel.get(OTP_LENGTH));
@@ -95,6 +101,7 @@ class OtpVerificationDialogMediator
 
     /** Clear the text in the Edit Text field. */
     void clearEditText() {
+        assumeNonNull(mOtpVerificationDialogModel);
         mOtpVerificationDialogModel.set(EDIT_TEXT, Optional.empty());
     }
 
@@ -103,12 +110,14 @@ class OtpVerificationDialogMediator
      * the accept button.
      */
     void showProgressBarOverlay() {
+        assumeNonNull(mOtpVerificationDialogModel);
         mOtpVerificationDialogModel.set(SHOW_PROGRESS_BAR_OVERLAY, true);
         mModalDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
     }
 
     /** Show an error message for the submitted otp. */
     void showOtpErrorMessage(Optional<String> errorMessage) {
+        assumeNonNull(mOtpVerificationDialogModel);
         mOtpVerificationDialogModel.set(SHOW_PROGRESS_BAR_OVERLAY, false);
         mOtpVerificationDialogModel.set(OTP_ERROR_MESSAGE, errorMessage);
         mModalDialogModel.set(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
@@ -119,9 +128,10 @@ class OtpVerificationDialogMediator
      * server returns a success response after the user clicked the accept button.
      *
      * @param confirmationMessage The confirmation message that gets shown on successful server
-     * response.
+     *     response.
      */
     void showConfirmationAndDismissDialog(String confirmationMessage) {
+        assumeNonNull(mOtpVerificationDialogModel);
         mOtpVerificationDialogModel.set(SHOW_CONFIRMATION, confirmationMessage);
         new Handler()
                 .postDelayed(

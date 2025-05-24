@@ -17,6 +17,7 @@
 #import "components/optimization_guide/core/optimization_guide_test_util.h"
 #import "components/optimization_guide/core/optimization_hints_component_update_listener.h"
 #import "components/optimization_guide/core/test_hints_component_creator.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "components/ukm/test_ukm_recorder.h"
@@ -24,8 +25,10 @@
 #import "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_test_utils.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -84,7 +87,7 @@ class OptimizationGuideServiceTest : public PlatformTest {
     PlatformTest::SetUp();
     auto testing_prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(testing_prefs->registry());
+    RegisterProfilePrefs(testing_prefs->registry());
 
     std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(
@@ -101,19 +104,27 @@ class OptimizationGuideServiceTest : public PlatformTest {
     }
     scoped_feature_list_.InitWithFeatures(enabled_features, {});
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        tab_groups::TabGroupSyncServiceFactory::GetInstance(),
+        base::BindOnce(
+            [](web::BrowserState* context) -> std::unique_ptr<KeyedService> {
+              // Creates a FakeTabGroupSyncService, as the real implementation
+              // registers some optimization types.
+              return std::make_unique<tab_groups::FakeTabGroupSyncService>();
+            }));
     builder.SetPrefService(std::move(testing_prefs));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
     optimization_guide_service_ =
-        OptimizationGuideServiceFactory::GetForProfile(browser_state_.get());
+        OptimizationGuideServiceFactory::GetForProfile(profile_.get());
   }
 
-  void CreateOTRBrowserState() {
-    browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-        {TestChromeBrowserState::TestingFactory{
+  void CreateOTRProfile() {
+    profile_->CreateOffTheRecordProfileWithTestingFactories(
+        {TestProfileIOS::TestingFactory{
             OptimizationGuideServiceFactory::GetInstance(),
             OptimizationGuideServiceFactory::GetDefaultFactory()}});
   }
@@ -210,12 +221,13 @@ class OptimizationGuideServiceTest : public PlatformTest {
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
-  TestChromeBrowserState* browser_state() { return browser_state_.get(); }
+  TestProfileIOS* profile() { return profile_.get(); }
 
  protected:
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   optimization_guide::testing::TestHintsComponentCreator
@@ -242,10 +254,11 @@ TEST_F(OptimizationGuideServiceTest,
   histogram_tester()->ExpectTotalCount("OptimizationGuide.LoadedHint.Result",
                                        0);
 
-  // Navigate away so UKM get recorded.
+  // Navigate away.
   context_and_data = NavigationContextAndData(kHintsURL);
   SimulateNavigation(&context_and_data);
 
+  // Expect that no UKM is recorded.
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::OptimizationGuide::kEntryName);
   EXPECT_EQ(0u, entries.size());
@@ -439,7 +452,7 @@ TEST_F(OptimizationGuideServiceTest, CheckForBlocklistFilter) {
   PushHintsComponentAndWaitForCompletion();
 
   OptimizationGuideService* ogks =
-      OptimizationGuideServiceFactory::GetForProfile(browser_state());
+      OptimizationGuideServiceFactory::GetForProfile(profile());
 
   {
     base::HistogramTester histogram_tester;
@@ -508,15 +521,14 @@ TEST_F(OptimizationGuideServiceTest, IncognitoCanStillReadFromComponentHints) {
   // both incognito and regular browsers.
   PushHintsComponentAndWaitForCompletion();
 
-  // Set up incognito browser state and incognito OptimizationGuideService
+  // Set up incognito profile and incognito OptimizationGuideService
   // consumer.
-  CreateOTRBrowserState();
-  ChromeBrowserState* otr_browser_state =
-      browser_state_->GetOffTheRecordChromeBrowserState();
+  CreateOTRProfile();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
 
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideService* otr_ogs =
-      OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(otr_profile);
   otr_ogs->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
   // Wait until initialization has stabilized.
   RunUntilIdle();
@@ -539,13 +551,12 @@ TEST_F(OptimizationGuideServiceTest, IncognitoStillProcessesBloomFilter) {
 
   // Set up incognito browser and incognito OptimizationGuideService
   // consumer.
-  CreateOTRBrowserState();
-  ChromeBrowserState* otr_browser_state =
-      browser_state_->GetOffTheRecordChromeBrowserState();
+  CreateOTRProfile();
+  ProfileIOS* otr_profile = profile_->GetOffTheRecordProfile();
 
   // Instantiate off the record Optimization Guide Service.
   OptimizationGuideService* otr_ogs =
-      OptimizationGuideServiceFactory::GetForProfile(otr_browser_state);
+      OptimizationGuideServiceFactory::GetForProfile(otr_profile);
   base::HistogramTester histogram_tester;
 
   // Register an optimization type with an optimization filter.

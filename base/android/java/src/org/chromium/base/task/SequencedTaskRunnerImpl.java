@@ -4,14 +4,17 @@
 
 package org.chromium.base.task;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Implementation of the abstract class {@link SequencedTaskRunner}. Uses AsyncTasks until
  * native APIs are available.
  */
+@NullMarked
 public class SequencedTaskRunnerImpl extends TaskRunnerImpl implements SequencedTaskRunner {
-    private AtomicInteger mPendingTasks = new AtomicInteger();
+    private final AtomicInteger mPendingTasks = new AtomicInteger();
 
     private volatile boolean mReadyToCreateNativeTaskRunner;
 

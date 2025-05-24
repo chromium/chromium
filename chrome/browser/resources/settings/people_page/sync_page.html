@@ -1,4 +1,4 @@
-    <style include="cr-shared-style settings-shared iron-flex">
+    <style include="cr-shared-style settings-shared">
       #sync-separator {
         border-bottom: var(--cr-separator-line);
       }
@@ -139,15 +139,6 @@
               on-click="onSyncAdvancedClick_">
           </cr-link-row>
 
-<if expr="chromeos_lacros">
-          <cr-link-row id="os-sync-device-row" class="hr"
-              label="$i18n{syncAdvancedDevicePageTitle}"
-              hidden="[[!showSyncSettingsRevamp_]]"
-              on-click="onOsSyncSettingsLinkClick_"
-              external>
-          </cr-link-row>
-</if>
-
           <template is="dom-if" if="[[!enableLinkedServicesSetting_]]">
             <cr-link-row class="hr" id="activityControlsLinkRowV1"
                 label="$i18n{personalizeGoogleServicesTitle}"
@@ -187,8 +178,6 @@
 
           <cr-link-row id="syncDashboardLink" class="hr"
               label="$i18n{manageSyncedDataTitle}"
-              sub-label="[[getManageSyncedDataSubtitle_(
-                      showSyncSettingsRevamp_)]]"
               on-click="onSyncDashboardLinkClick_"
               hidden="[[syncStatus.supervisedUser]]" external>
           </cr-link-row>
@@ -229,14 +218,13 @@
       </h2>
     </div>
     <settings-personalization-options class="list-frame" prefs="{{prefs}}"
-        page-visibility="[[pageVisibility]]" sync-status="[[syncStatus]]"
-        focus-config="[[focusConfig]]">
+        page-visibility="[[pageVisibility]]" sync-status="[[syncStatus]]">
     </settings-personalization-options>
 
 <if expr="not chromeos_ash">
     <template is="dom-if" if="[[showSetupCancelDialog_]]" restamp>
       <cr-dialog id="setupCancelDialog" on-close="onSetupCancelDialogClose_"
-          ignore-popstate>
+          ignore-popstate show-on-attach>
         <div slot="title">$i18n{syncSetupCancelDialogTitle}</div>
         <div slot="body">$i18n{syncSetupCancelDialogBody}</div>
         <div slot="button-container">

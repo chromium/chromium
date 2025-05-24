@@ -142,6 +142,15 @@ const char* ProtoEnumToString(
     sync_pb::UserEventSpecifics::FlocIdComputed::EventTrigger trigger);
 
 const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState
+        card_info_retrieval_enrollment_state);
+
+const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::CardBenefitSource
+        card_benefit_source);
+
+
+const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState
         virtual_card_enrollment_state);
 

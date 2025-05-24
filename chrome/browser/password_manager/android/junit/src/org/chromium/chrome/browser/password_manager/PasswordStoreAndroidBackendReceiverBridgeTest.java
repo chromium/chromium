@@ -16,12 +16,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult;
 import org.chromium.components.password_manager.core.browser.proto.ListAffiliatedPasswordsResult.AffiliatedPassword;
 import org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult;
@@ -51,7 +51,7 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
     private static final long sFakeNativePointer = 4;
     private static final int sTestJobId = 1337;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock
     private PasswordStoreAndroidBackendReceiverBridgeImpl.Natives mBackendReceiverBridgeJniMock;
@@ -60,9 +60,7 @@ public class PasswordStoreAndroidBackendReceiverBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(
-                PasswordStoreAndroidBackendReceiverBridgeImplJni.TEST_HOOKS,
+        PasswordStoreAndroidBackendReceiverBridgeImplJni.setInstanceForTesting(
                 mBackendReceiverBridgeJniMock);
         mBackendReceiverBridge =
                 new PasswordStoreAndroidBackendReceiverBridgeImpl(sFakeNativePointer);

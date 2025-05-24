@@ -5,9 +5,9 @@
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -111,6 +111,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
       eolAdminMessage_: {type: String},
       eolMessage_: {type: String},
       showMonitoredNetworkPrivacyDisclosure_: {type: Boolean},
+      showWindowsNoticeForDeskSync_: {type: Boolean},
+      showCookiesNoticeForDeskSync_: {type: Boolean},
       // </if>
 
       subtitle_: {type: String},
@@ -124,35 +126,39 @@ export class ManagementUiElement extends ManagementUiElementBase {
     };
   }
 
-  protected applications_: Application[]|null = null;
-  protected browserReportingInfo_: BrowserReportingData[]|null = null;
-  protected profileReportingInfo_: BrowserReportingData[]|null = null;
-  protected extensions_: Extension[]|null = null;
-  protected managedWebsites_: string[]|null = null;
-  protected managedWebsitesSubtitle_: string = '';
+  protected accessor applications_: Application[]|null = null;
+  protected accessor browserReportingInfo_: BrowserReportingData[]|null = null;
+  protected accessor profileReportingInfo_: BrowserReportingData[]|null = null;
+  protected accessor extensions_: Extension[]|null = null;
+  protected accessor managedWebsites_: string[]|null = null;
+  protected accessor managedWebsitesSubtitle_: string = '';
 
   // <if expr="is_chromeos">
-  protected deviceReportingInfo_: DeviceReportingResponse[]|null = null;
-  protected localTrustRoots_: string = '';
-  protected filesUploadToCloud_: string = '';
-  protected customerLogo_: string = '';
-  protected managementOverview_: string = '';
-  protected pluginVmDataCollectionEnabled_: boolean = false;
-  protected eolAdminMessage_: string = '';
-  protected eolMessage_: string = '';
-  protected showMonitoredNetworkPrivacyDisclosure_: boolean = false;
+  protected accessor deviceReportingInfo_: DeviceReportingResponse[]|null =
+      null;
+  protected accessor localTrustRoots_: string = '';
+  protected accessor filesUploadToCloud_: string = '';
+  protected accessor customerLogo_: string = '';
+  protected accessor managementOverview_: string = '';
+  protected accessor pluginVmDataCollectionEnabled_: boolean = false;
+  protected accessor eolAdminMessage_: string = '';
+  protected accessor eolMessage_: string = '';
+  protected accessor showMonitoredNetworkPrivacyDisclosure_: boolean = false;
+  protected accessor showWindowsNoticeForDeskSync_: boolean = false;
+  protected accessor showCookiesNoticeForDeskSync_: boolean = false;
   // </if>
 
-  protected subtitle_: string = '';
+  protected accessor subtitle_: string = '';
 
   // <if expr="not chromeos_ash">
-  protected managementNoticeHtml_: TrustedHTML = window.trustedTypes!.emptyHTML;
+  protected accessor managementNoticeHtml_: TrustedHTML =
+      window.trustedTypes!.emptyHTML;
   // </if>
 
-  protected managed_: boolean = false;
-  protected applicationReportingSubtitle_: string = '';
-  protected extensionReportingSubtitle_: string = '';
-  protected threatProtectionInfo_: ThreatProtectionInfo|null = null;
+  protected accessor managed_: boolean = false;
+  protected accessor applicationReportingSubtitle_: string = '';
+  protected accessor extensionReportingSubtitle_: string = '';
+  protected accessor threatProtectionInfo_: ThreatProtectionInfo|null = null;
   private browserProxy_: ManagementBrowserProxy =
       ManagementBrowserProxyImpl.getInstance();
 
@@ -301,6 +307,14 @@ export class ManagementUiElement extends ManagementUiElementBase {
         pluginVmDataCollectionEnabled => {
           this.pluginVmDataCollectionEnabled_ = pluginVmDataCollectionEnabled;
         });
+  }
+
+  /**
+   * @return Whether Desk sync section should be shown.
+   */
+  protected showDeskSyncSection_(): boolean {
+    return this.showWindowsNoticeForDeskSync_ ||
+        this.showCookiesNoticeForDeskSync_;
   }
 
   /**
@@ -472,6 +486,8 @@ export class ManagementUiElement extends ManagementUiElementBase {
       this.eolMessage_ = data.eolMessage;
       this.showMonitoredNetworkPrivacyDisclosure_ =
           data.showMonitoredNetworkPrivacyDisclosure;
+      this.showWindowsNoticeForDeskSync_ = data.showWindowsNoticeForDeskSync;
+      this.showCookiesNoticeForDeskSync_ = data.showCookiesNoticeForDeskSync;
       try {
         // Sanitizing the message could throw an error if it contains non
         // supported markup.

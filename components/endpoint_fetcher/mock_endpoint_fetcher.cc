@@ -14,6 +14,8 @@
 #include "components/endpoint_fetcher/mock_endpoint_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
+namespace endpoint_fetcher {
+
 MockEndpointFetcher::MockEndpointFetcher()
     : EndpointFetcher(TRAFFIC_ANNOTATION_FOR_TESTS) {}
 MockEndpointFetcher::~MockEndpointFetcher() = default;
@@ -49,3 +51,5 @@ void MockEndpointFetcher::SetFetchResponse(
         std::move(endpoint_fetcher_callback).Run(std::move(response));
       });
 }
+
+}  // namespace endpoint_fetcher

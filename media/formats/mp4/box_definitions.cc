@@ -25,6 +25,7 @@
 #include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "media/formats/common/opus_constants.h"
+#include "media/formats/mp4/box_constants.h"
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/media_buildflags.h"
@@ -505,7 +506,10 @@ TrackHeader::TrackHeader()
       alternate_group(-1),
       volume(-1),
       width(0),
-      height(0) {}
+      height(0) {
+  std::copy(std::begin(kDisplayIdentityMatrix),
+            std::end(kDisplayIdentityMatrix), display_matrix);
+}
 TrackHeader::TrackHeader(const TrackHeader& other) = default;
 TrackHeader::~TrackHeader() = default;
 FourCC TrackHeader::BoxType() const { return FOURCC_TKHD; }
@@ -742,7 +746,7 @@ bool AVCDecoderConfigurationRecord::ParseInternal(BufferReader* reader,
 
   if (profile_indication == 100 || profile_indication == 110 ||
       profile_indication == 122 || profile_indication == 144) {
-    if (!ParseREXT(reader, media_log)) {
+    if (!reader->HasBytes(4) || !ParseREXT(reader, media_log)) {
       DVLOG(2) << __func__ << ": avcC REXT is missing or invalid";
       chroma_format = 0;
       bit_depth_luma_minus8 = 0;

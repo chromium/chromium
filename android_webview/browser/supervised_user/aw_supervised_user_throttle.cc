@@ -11,17 +11,17 @@
 namespace android_webview {
 
 // static
-std::unique_ptr<AwSupervisedUserThrottle> AwSupervisedUserThrottle::Create(
-    content::NavigationHandle* navigation_handle,
+void AwSupervisedUserThrottle::CreateAndAdd(
+    content::NavigationThrottleRegistry& registry,
     AwSupervisedUserUrlClassifier* url_classifier) {
-  return base::WrapUnique<AwSupervisedUserThrottle>(
-      new AwSupervisedUserThrottle(navigation_handle, url_classifier));
+  registry.AddThrottle(base::WrapUnique<AwSupervisedUserThrottle>(
+      new AwSupervisedUserThrottle(registry, url_classifier)));
 }
 
 AwSupervisedUserThrottle::AwSupervisedUserThrottle(
-    content::NavigationHandle* navigation_handle,
+    content::NavigationThrottleRegistry& registry,
     AwSupervisedUserUrlClassifier* url_classifier)
-    : NavigationThrottle(navigation_handle), url_classifier_(url_classifier) {
+    : NavigationThrottle(registry), url_classifier_(url_classifier) {
   DCHECK(url_classifier_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }

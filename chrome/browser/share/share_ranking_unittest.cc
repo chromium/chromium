@@ -435,4 +435,17 @@ TEST_F(ShareRankingTest, ClearClearsDatabase) {
   EXPECT_EQ(post_entries.targets().at(2), "ccc");
 }
 
+// Regression test for https://crbug.com/374693651
+TEST_F(ShareRankingTest, TooFewTiles) {
+  ConfigureDefaultInitialRanking();
+
+  FakeShareHistory history;
+  history.set_history({{"iii", 10}, {"aaa", 2}, {"ccc", 1}});
+
+  auto ranking =
+      RankSync(&history, {"aaa", "ccc", "eee", "ggg", "iii"}, "type", 1, 1);
+  ASSERT_TRUE(ranking);
+  EXPECT_EQ(*ranking, std::vector<std::string>({"$more"}));
+}
+
 }  // namespace sharing

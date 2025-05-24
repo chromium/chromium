@@ -24,6 +24,12 @@ testSuite({
     stubs.reset();
   },
 
+  testConstructor_throwsOnBadToken() {
+    assertThrows(() => new (/** @type {?} */ (SafeScript))(''));
+    assertThrows(
+        () => new (/** @type {?} */ (SafeScript.EMPTY)).constructor(''));
+  },
+
   testSafeScript() {
     const script = 'var string = \'hello\';';
     const safeScript = SafeScript.fromConstant(Const.from(script));

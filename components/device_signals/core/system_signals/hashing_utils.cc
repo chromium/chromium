@@ -8,14 +8,14 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/page_size.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "crypto/secure_hash.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 
 namespace device_signals {
 
@@ -28,22 +28,21 @@ std::optional<std::string> HashFile(const base::FilePath& file_path) {
     return std::nullopt;
   }
 
-  auto secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::Algorithm::SHA256);
-  std::vector<char> buffer(base::GetPageSize());
+  crypto::hash::Hasher hash(crypto::hash::HashKind::kSha256);
+  auto buffer = base::HeapArray<uint8_t>::Uninit(base::GetPageSize());
 
   std::optional<size_t> bytes_read;
   do {
-    bytes_read = file.ReadAtCurrentPos(base::as_writable_byte_span(buffer));
+    bytes_read = file.ReadAtCurrentPos(buffer.as_span());
     if (!bytes_read.has_value()) {
       return std::nullopt;
     }
-    secure_hash->Update(buffer.data(), bytes_read.value());
+    hash.Update(buffer.first(*bytes_read));
   } while (bytes_read.value() > 0);
 
-  std::string hash(crypto::kSHA256Length, 0);
-  secure_hash->Finish(std::data(hash), hash.size());
-  return hash;
+  std::string result(crypto::hash::kSha256Size, 0);
+  hash.Finish(base::as_writable_byte_span(result));
+  return result;
 }
 
 }  // namespace device_signals

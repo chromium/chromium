@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/sync/sync_appsync_optin_client.h"
+
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -24,6 +25,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -123,7 +125,8 @@ class SyncAppsyncOptinClientTest : public testing::Test {
     tmp_dir_path_ = test_daemon_dir_.GetPath().Append("test@test.com-hash");
     base::CreateDirectory(tmp_dir_path_);
 
-    auto account_id = AccountId::FromUserEmailGaiaId("test@test.com", "1");
+    auto account_id =
+        AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("1"));
     auto* test_user = RegisterUser(account_id);
     LoginUser(test_user);
     CoreAccountInfo account_info;

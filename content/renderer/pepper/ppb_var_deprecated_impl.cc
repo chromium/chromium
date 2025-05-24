@@ -349,8 +349,7 @@ PP_Var CallDeprecated(PP_Var var,
 
 PP_Var Construct(PP_Var var, uint32_t argc, PP_Var* argv, PP_Var* exception) {
   // Deprecated.
-  NOTREACHED_IN_MIGRATION();
-  return PP_MakeUndefined();
+  NOTREACHED();
 }
 
 bool IsInstanceOfDeprecated(PP_Var var,

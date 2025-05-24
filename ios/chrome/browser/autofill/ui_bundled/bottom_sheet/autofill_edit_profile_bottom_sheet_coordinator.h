@@ -7,9 +7,17 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
+@protocol AutofillEditProfileBottomSheetHandler;
+
 // Coordinator for showing the bottomsheet view for editing an address during
 // the save flow.
 @interface AutofillEditProfileBottomSheetCoordinator : ChromeCoordinator
+
+- (instancetype)
+    initWithBaseViewController:(UIViewController*)viewController
+                       browser:(Browser*)browser
+                       handler:
+                           (id<AutofillEditProfileBottomSheetHandler>)handler;
 
 @end
 

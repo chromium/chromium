@@ -256,10 +256,7 @@ class HttpStreamFactory::JobController
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
-  // Returns the first quic::ParsedQuicVersion that has been advertised in
-  // |advertised_versions| and is supported, following the order of
-  // |advertised_versions|.  If no mutually supported version is found,
-  // quic::ParsedQuicVersion::Unsupported() will be returned.
+  // Just calls QuicContext::SelectQuicVersion().
   quic::ParsedQuicVersion SelectQuicVersion(
       const quic::ParsedQuicVersionVector& advertised_versions);
 
@@ -298,17 +295,15 @@ class HttpStreamFactory::JobController
   // Call site of Start() should destroy the current HttpStreamRequest and
   // switch to the HttpStreamPool. `this` will be destroyed when `request_` is
   // destroyed.
-  void SwitchToHttpStreamPool(quic::ParsedQuicVersion quic_version);
+  void SwitchToHttpStreamPool();
 
   // Called when `this` asked the HttpStreamPool to handle a preconnect and
   // the preconnect completed. Used to notify the factory of completion.
   void OnPoolPreconnectsComplete(int rv);
 
   // Used to call HttpStreamRequest::OnSwitchesToHttpStreamPool() later.
-  void CallOnSwitchesToHttpStreamPool(
-      HttpStreamKey stream_key,
-      AlternativeServiceInfo alternative_service_info,
-      quic::ParsedQuicVersion quic_version);
+  void CallOnSwitchesToHttpStreamPool(HttpStreamPoolRequestInfo request_info,
+                                      base::TimeTicks post_task_time);
 
   const raw_ptr<HttpStreamFactory> factory_;
   const raw_ptr<HttpNetworkSession> session_;
@@ -391,6 +386,9 @@ class HttpStreamFactory::JobController
   // At the point where a Job is irrevocably tied to |request_|, we set this.
   // It will be nulled when the |request_| is finished.
   raw_ptr<Job> bound_job_ = nullptr;
+
+  // Keeps track of the connection keepalive info.
+  std::optional<ConnectionManagementConfig> management_config_;
 
   State next_state_ = STATE_RESOLVE_PROXY;
   std::unique_ptr<ProxyResolutionRequest> proxy_resolve_request_;

@@ -6,7 +6,7 @@
 
 namespace sessions {
 
-const base::FilePath::StringPieceType kSessionsDirectory =
+const base::FilePath::StringViewType kSessionsDirectory =
     FILE_PATH_LITERAL("Sessions");
 
 const base::FilePath::CharType kTabSessionFileNamePrefix[] =
@@ -20,14 +20,14 @@ const base::FilePath::CharType kAppSessionFileNamePrefix[] =
 
 const base::FilePath::CharType kTimestampSeparator[] = FILE_PATH_LITERAL("_");
 
-const base::FilePath::StringPieceType kLegacyCurrentTabSessionFileName =
+const base::FilePath::StringViewType kLegacyCurrentTabSessionFileName =
     FILE_PATH_LITERAL("Current Tabs");
-const base::FilePath::StringPieceType kLegacyLastTabSessionFileName =
+const base::FilePath::StringViewType kLegacyLastTabSessionFileName =
     FILE_PATH_LITERAL("Last Tabs");
 
-const base::FilePath::StringPieceType kLegacyCurrentSessionFileName =
+const base::FilePath::StringViewType kLegacyCurrentSessionFileName =
     FILE_PATH_LITERAL("Current Session");
-const base::FilePath::StringPieceType kLegacyLastSessionFileName =
+const base::FilePath::StringViewType kLegacyLastSessionFileName =
     FILE_PATH_LITERAL("Last Session");
 
 const int gMaxPersistNavigationCount = 6;

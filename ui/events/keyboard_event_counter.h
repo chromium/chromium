@@ -6,6 +6,7 @@
 #define UI_EVENTS_KEYBOARD_EVENT_COUNTER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <atomic>
 #include <set>

@@ -16,8 +16,9 @@ AppWindowShelfController::AppWindowShelfController(ChromeShelfController* owner)
   if (ash::Shell::HasInstance() && ash::Shell::Get()->GetPrimaryRootWindow()) {
     activation_client_ =
         wm::GetActivationClient(ash::Shell::Get()->GetPrimaryRootWindow());
-    if (activation_client_)
+    if (activation_client_) {
       activation_client_->AddObserver(this);
+    }
   }
   owner->shelf_model()->AddObserver(this);
 }
@@ -25,8 +26,9 @@ AppWindowShelfController::AppWindowShelfController(ChromeShelfController* owner)
 AppWindowShelfController::~AppWindowShelfController() {
   owner()->shelf_model()->RemoveObserver(this);
 
-  if (activation_client_)
+  if (activation_client_) {
     activation_client_->RemoveObserver(this);
+  }
 }
 
 void AppWindowShelfController::OnWindowActivated(
@@ -36,14 +38,16 @@ void AppWindowShelfController::OnWindowActivated(
   // Make the newly active window the active (first) entry in the controller.
   AppWindowShelfItemController* new_controller =
       ControllerForWindow(new_active);
-  if (new_controller)
+  if (new_controller) {
     new_controller->SetActiveWindow(new_active);
+  }
 
   // Mark the old active window's shelf item as running (if different).
   AppWindowShelfItemController* old_controller =
       ControllerForWindow(old_active);
-  if (old_controller && old_controller != new_controller)
+  if (old_controller && old_controller != new_controller) {
     owner_->SetItemStatus(old_controller->shelf_id(), ash::STATUS_RUNNING);
+  }
 }
 
 void AppWindowShelfController::ShelfItemDelegateChanged(

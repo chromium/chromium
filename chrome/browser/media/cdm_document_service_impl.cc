@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -25,18 +24,10 @@
 #include "content/public/browser/render_frame_host.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "chromeos/ash/components/settings/cros_settings_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/content_protection.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/media/platform_verification_chromeos.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/components/settings/cros_settings_names.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -172,26 +163,7 @@ void CdmDocumentServiceImpl::ChallengePlatform(
     std::move(callback).Run(false, std::string(), std::string(), std::string());
     return;
   }
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service &&
-      lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() &&
-      lacros_service
-              ->GetInterfaceVersion<crosapi::mojom::ContentProtection>() >=
-          static_cast<int>(crosapi::mojom::ContentProtection::
-                               kChallengePlatformMinVersion)) {
-    lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
-        ->ChallengePlatform(
-            service_id, challenge,
-            base::BindOnce(&CdmDocumentServiceImpl::OnPlatformChallenged,
-                           weak_factory_.GetWeakPtr(), std::move(callback)));
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!platform_verification_flow_)
     platform_verification_flow_ =
         base::MakeRefCounted<ash::attestation::PlatformVerificationFlow>();
@@ -204,10 +176,10 @@ void CdmDocumentServiceImpl::ChallengePlatform(
 #else
   // Not supported, so return failure.
   std::move(callback).Run(false, std::string(), std::string(), std::string());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void CdmDocumentServiceImpl::OnPlatformChallenged(
     ChallengePlatformCallback callback,
     PlatformVerificationResult result,
@@ -232,22 +204,7 @@ void CdmDocumentServiceImpl::OnPlatformChallenged(
   std::move(callback).Run(true, signed_data, signature,
                           platform_key_certificate);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void CdmDocumentServiceImpl::OnPlatformChallenged(
-    ChallengePlatformCallback callback,
-    crosapi::mojom::ChallengePlatformResultPtr result) {
-  if (!result) {
-    LOG(ERROR) << "Platform verification failed.";
-    std::move(callback).Run(false, "", "", "");
-    return;
-  }
-  std::move(callback).Run(true, std::move(result->signed_data),
-                          std::move(result->signed_data_signature),
-                          std::move(result->platform_key_certificate));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void CdmDocumentServiceImpl::GetStorageId(uint32_t version,
                                           GetStorageIdCallback callback) {
@@ -297,25 +254,10 @@ void CdmDocumentServiceImpl::IsVerifiedAccessEnabled(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service &&
-      lacros_service->IsAvailable<crosapi::mojom::ContentProtection>() &&
-      lacros_service
-              ->GetInterfaceVersion<crosapi::mojom::ContentProtection>() >=
-          static_cast<int>(crosapi::mojom::ContentProtection::
-                               kIsVerifiedAccessEnabledMinVersion)) {
-    lacros_service->GetRemote<crosapi::mojom::ContentProtection>()
-        ->IsVerifiedAccessEnabled(std::move(callback));
-  } else {
-    std::move(callback).Run(false);
-  }
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
   bool enabled_for_device = false;
   ash::CrosSettings::Get()->GetBoolean(
       ash::kAttestationForContentProtectionEnabled, &enabled_for_device);
   std::move(callback).Run(enabled_for_device);
-#endif  // else BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

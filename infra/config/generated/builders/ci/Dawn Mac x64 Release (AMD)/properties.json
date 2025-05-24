@@ -77,7 +77,8 @@
           "builder": "mac-dawn-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Mac x64 Release (AMD)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {
@@ -88,6 +89,7 @@
     ]
   },
   "builder_group": "chromium.dawn",
+  "dawn_ref": "refs/heads/main",
   "gardener_rotations": [
     "dawn"
   ],

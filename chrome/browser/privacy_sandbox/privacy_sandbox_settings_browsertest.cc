@@ -40,6 +40,7 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
 
@@ -130,11 +131,8 @@ constexpr char kRunAdAuctionAndNavigateFencedFrameScript[] = R"(
 
 // Print more readable logs for PrivacySandboxSettingsEventReportingBrowserTest.
 auto describe_params = [](const auto& info) {
-  auto [is_feature_on, attestation_status] = info.param;
-  return base::StrCat({is_feature_on ? "FencedFrameM120Feature_On"
-                                     : "FencedFrameM120Feature_Off",
-                       "_AttestedFor_",
-                       ConvertAttestedApiStatusToString(attestation_status)});
+  return base::StrCat(
+      {"AttestedFor_", ConvertAttestedApiStatusToString(info.param)});
 };
 
 auto console_error_filter =
@@ -396,13 +394,9 @@ class PrivacySandboxSettingsAttestationsBrowserTestBase
 
 class PrivacySandboxSettingsEventReportingBrowserTest
     : public PrivacySandboxSettingsAttestationsBrowserTestBase,
-      public testing::WithParamInterface<std::tuple<bool, AttestedApiStatus>> {
+      public testing::WithParamInterface<AttestedApiStatus> {
  public:
-  PrivacySandboxSettingsEventReportingBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kFencedFramesReportingAttestationsChanges,
-        IsAttributionReportingAcceptedForPostImpressionBeacons());
-  }
+  PrivacySandboxSettingsEventReportingBrowserTest() = default;
 
   void FinishSetUp() override {
     // Do not start the https server at this point to allow the tests to set up
@@ -423,32 +417,17 @@ class PrivacySandboxSettingsEventReportingBrowserTest
         base::BindRepeating(console_error_filter));
   }
 
-  bool IsAttributionReportingAcceptedForPostImpressionBeacons() {
-    // Feature on: For post-impression reporting beacons, their destinations
-    // are enrolled if attested for Protected Audience or Attribution Reporting.
-    // Feature off: For post-impression reporting beacons, their destinations
-    // are enrolled if and only if attested for Protected Audience.
-    return std::get<0>(GetParam());
-  }
-
   AttestedApiStatus GetReportingDestinationAttestationStatus() {
-    return std::get<1>(GetParam());
+    return GetParam();
   }
 
-  bool IsReportingDestinationEnrolled(bool is_post_impression_reporting) {
+  bool IsReportingDestinationEnrolled() {
     return GetReportingDestinationAttestationStatus() ==
-               AttestedApiStatus::kProtectedAudience ||
-           (is_post_impression_reporting &&
-            IsAttributionReportingAcceptedForPostImpressionBeacons() &&
-            (GetReportingDestinationAttestationStatus() ==
-             AttestedApiStatus::kAttributionReporting));
+           AttestedApiStatus::kProtectedAudience;
   }
 
  protected:
   std::unique_ptr<content::WebContentsConsoleObserver> console_error_observer_;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
@@ -505,12 +484,9 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
       ExecJs(fenced_frame_rfh,
              content::JsReplace("window.open($1, '_blank');", navigation_url)));
 
-  if (IsReportingDestinationEnrolled(/*is_post_impression_reporting=*/true)) {
+  if (IsReportingDestinationEnrolled()) {
     // The automatic beacon destination is considered enrolled if attested for
-    // either:
-    // 1. Protected Audience
-    // 2. Attritbution Reporting from M120.
-    // Verify the automatic beacon was sent and has the correct data.
+    // Protected Audience.
     response.WaitForRequest();
     EXPECT_EQ(response.http_request()->content, kBeaconMessage);
   } else {
@@ -523,9 +499,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
       EXPECT_EQ(console_error_observer_->messages().size(), 1u);
       EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
                                  "Protected Audience"));
-      EXPECT_EQ(base::Contains(console_error_observer_->GetMessageAt(0u),
-                               "Attribution Reporting"),
-                IsAttributionReportingAcceptedForPostImpressionBeacons());
     }
 
     // Verify the automatic beacon was not sent.
@@ -582,12 +555,9 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
     )",
                                                   kEventType, kBeaconMessage)));
 
-  if (IsReportingDestinationEnrolled(/*is_post_impression_reporting=*/true)) {
+  if (IsReportingDestinationEnrolled()) {
     // The reportEvent beacon destination is considered enrolled if attested for
-    // either:
-    // 1. Protected Audience
-    // 2. Attritbution Reporting from M120.
-    // Verify the automatic beacon was sent and has the correct data.
+    // Protected Audience.
     response.WaitForRequest();
     EXPECT_EQ(response.http_request()->content, kBeaconMessage);
   } else {
@@ -600,9 +570,6 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
       EXPECT_EQ(console_error_observer_->messages().size(), 1u);
       EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
                                  "Protected Audience"));
-      EXPECT_EQ(base::Contains(console_error_observer_->GetMessageAt(0u),
-                               "Attribution Reporting"),
-                IsAttributionReportingAcceptedForPostImpressionBeacons());
     }
 
     // Verify the reportEvent beacon was not sent.
@@ -660,10 +627,9 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
                                 fenced_frame_url,
                                 "/interest_group/decision_logic.js", ""));
 
-  if (IsReportingDestinationEnrolled(/*is_post_impression_reporting=*/true)) {
-    // The custom url destination is considered enrolled if attested for either:
-    // 1. Protected Audience
-    // 2. Attritbution Reporting from M120.
+  if (IsReportingDestinationEnrolled()) {
+    // The custom url destination is considered enrolled if attested for
+    // Protected Audience.
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
@@ -763,7 +729,7 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
                                 fenced_frame_url,
                                 "/interest_group/decision_logic.js", ""));
 
-  if (IsReportingDestinationEnrolled(/*is_post_impression_reporting=*/false)) {
+  if (IsReportingDestinationEnrolled()) {
     // For beacons from `reportWin()`, the reporting destination is considered
     // enrolled if and only if it is attested for Protected Audience.
     ASSERT_EQ(auction_result.ExtractString(), "success");
@@ -778,7 +744,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
               net::test_server::HttpMethod::METHOD_GET);
   } else {
     // Verify the console messages states to require Protected Audience only.
-    // Note that two console messages are sent due to debug and normal reporting
+    // Note that two console messages are sent due to debug and normal
+    // reporting.
     ASSERT_TRUE(console_error_observer_->Wait());
     EXPECT_EQ(console_error_observer_->messages().size(), 2u);
     EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
@@ -857,10 +824,9 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
                  "/interest_group/decision_logic_report_to_seller_signals.js",
                  seller_report_to_url));
 
-  if (IsReportingDestinationEnrolled(/*is_post_impression_reporting=*/false)) {
+  if (IsReportingDestinationEnrolled()) {
     // For beacons from `reportResult()`, the reporting destination is
-    // considered
-    // enrolled if and only if it is attested for Protected Audience.
+    // considered enrolled if and only if it is attested for Protected Audience.
     ASSERT_EQ(auction_result.ExtractString(), "success");
 
     observer.Wait();
@@ -873,7 +839,8 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
               net::test_server::HttpMethod::METHOD_GET);
   } else {
     // Verify the console message states to require Protected Audience only.
-    // Note that two console messages are sent due to debug and normal reporting
+    // Note that two console messages are sent due to debug and normal
+    // reporting.
     ASSERT_TRUE(console_error_observer_->Wait());
     EXPECT_EQ(console_error_observer_->messages().size(), 2u);
     EXPECT_TRUE(base::Contains(console_error_observer_->GetMessageAt(0u),
@@ -896,10 +863,9 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxSettingsEventReportingBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     PrivacySandboxSettingsEventReportingBrowserTest,
     PrivacySandboxSettingsEventReportingBrowserTest,
-    testing::Combine(testing::Bool(),
-                     testing::Values(AttestedApiStatus::kProtectedAudience,
-                                     AttestedApiStatus::kAttributionReporting,
-                                     AttestedApiStatus::kNone)),
+    testing::Values(AttestedApiStatus::kProtectedAudience,
+                    AttestedApiStatus::kAttributionReporting,
+                    AttestedApiStatus::kNone),
     describe_params);
 
 class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
@@ -908,7 +874,7 @@ class PrivacySandboxSettingsAttestProtectedAudienceBrowserTest
   PrivacySandboxSettingsAttestProtectedAudienceBrowserTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {blink::features::kInterestGroupStorage,
+        {network::features::kInterestGroupStorage,
          blink::features::kAdInterestGroupAPI, blink::features::kFledge,
          blink::features::kFledgeBiddingAndAuctionServer,
          blink::features::kFencedFrames,
@@ -961,7 +927,7 @@ class
         /*disabled_features=*/{});
   }
 
-  size_t GetTotalSampleCount(const std::string& histogram_name) {
+  size_t GetTotalSampleCount(std::string_view histogram_name) {
     auto buckets = histogram_tester_.GetAllSamples(histogram_name);
     size_t count = 0;
     for (const auto& bucket : buckets) {
@@ -984,9 +950,9 @@ class
     auto histogram_observer = std::make_unique<
         base::StatisticsRecorder::ScopedHistogramSampleObserver>(
         histogram_name,
-        base::BindLambdaForTesting([&](const char* histogram_name,
+        base::BindLambdaForTesting([&](std::string_view histogram_name,
                                        uint64_t name_hash,
-                                       base::HistogramBase::Sample sample) {
+                                       base::HistogramBase::Sample32 sample) {
           if (GetTotalSampleCount(histogram_name) >= expected_sample_count) {
             run_loop.Quit();
           }

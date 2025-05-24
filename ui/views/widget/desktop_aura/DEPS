@@ -1,5 +1,5 @@
 specific_include_rules = {
-  "desktop_window_tree_host_lacros.*": [
-    "+chromeos/ui/base",
-  ],
+  "desktop_screen_win_headless\.cc": [
+    "+components/headless/screen_info"
+  ]
 }

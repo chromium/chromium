@@ -8,9 +8,9 @@
 #include <optional>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_input_node.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
+#include "third_party/blink/renderer/platform/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -122,6 +122,10 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
   bool IsParentNGFrameSet() const { return box_->Parent()->IsFrameSet(); }
   bool IsParentGrid() const { return box_->Parent()->IsLayoutGrid(); }
 
+  // Returns true if this node should pass its percentage resolution block-size
+  // to its children. Typically only quirks-mode, auto block-size, block nodes.
+  bool UseParentPercentageResolutionBlockSizeForChildren() const;
+
   // Return true if this block node establishes an inline formatting context.
   // This will only be the case if there is actual inline content. Empty nodes
   // or nodes consisting purely of block-level, floats, and/or out-of-flow
@@ -131,11 +135,10 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
 
   bool IsInlineLevel() const;
   bool IsAtomicInlineLevel() const;
-  bool HasAspectRatio() const;
   bool IsInTopOrViewTransitionLayer() const;
 
   // Returns the aspect ratio of a replaced element.
-  LogicalSize GetAspectRatio() const;
+  LogicalSize GetReplacedAspectRatio() const;
 
   // Returns the transform to apply to a child (e.g. for scrollable-overflow).
   std::optional<gfx::Transform> GetTransformForChildFragment(
@@ -183,6 +186,10 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
     return BlockNode(DynamicTo<LayoutBlock>(box_->GetScrollMarkerGroup()));
   }
 
+  // Search for scroll markers in `scroller` and attach them to this scroll
+  // marker group. Any existing scroll markers will first be removed.
+  void PopulateScrollMarkerGroup(const BlockNode& scroller) const;
+
   // Populate with scroll markers (and relayout if necessary)
   // the::scroll-marker-group associated with this node, if any.
   void HandleScrollMarkerGroup() const;
@@ -201,9 +208,8 @@ class CORE_EXPORT BlockNode : public LayoutInputNode {
       bool use_first_line_style,
       BaselineAlgorithmType baseline_algorithm_type);
 
-  // Write the inline-size and number of columns in a multicol container to
-  // legacy.
-  void StoreColumnSizeAndCount(LayoutUnit inline_size, int count);
+  // Write the number of columns in a multicol container to legacy.
+  void StoreColumnCount(int count);
 
   bool ShouldApplyLayoutContainment() const {
     return box_->ShouldApplyLayoutContainment();

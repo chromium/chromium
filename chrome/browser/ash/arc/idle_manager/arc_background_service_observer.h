@@ -12,7 +12,7 @@
 
 namespace arc {
 
-constexpr char kArcBackgroundServiceObserverName[] =
+inline constexpr char kArcBackgroundServiceObserverName[] =
     "ArcBackgroundServiceObserver";
 
 // This class observes ARC app background services state and sets the state to

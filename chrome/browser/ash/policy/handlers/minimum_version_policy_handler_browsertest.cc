@@ -68,6 +68,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -90,7 +91,7 @@ constexpr base::TimeDelta kLongWarning = base::Days(kLongWarningInDays);
 constexpr base::TimeDelta kVeryLongWarning = base::Days(kVeryLongWarningInDays);
 const char kPublicSessionId[] = "demo@example.com";
 const char kManagedUserId[] = "user@example.com";
-const char kManagedUserGaiaId[] = "11111";
+const GaiaId::Literal kManagedUserGaiaId("11111");
 const char kUpdateRequiredNotificationId[] = "policy.update_required";
 const char kWifiServicePath[] = "/service/wifi2";
 const char kCellularServicePath[] = "/service/cellular1";
@@ -762,7 +763,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionNoUsersLoginTest,
 
 class MinimumVersionPolicyPresentTest : public MinimumVersionPolicyTestBase {
  public:
-  MinimumVersionPolicyPresentTest() {}
+  MinimumVersionPolicyPresentTest() = default;
   ~MinimumVersionPolicyPresentTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -807,7 +808,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionExistingUserTest, DeadlineReached) {
 
 class MinimumVersionBeforeLoginHost : public MinimumVersionExistingUserTest {
  public:
-  MinimumVersionBeforeLoginHost() {}
+  MinimumVersionBeforeLoginHost() = default;
   ~MinimumVersionBeforeLoginHost() override = default;
 
   bool SetUpUserDataDirectory() override {
@@ -838,7 +839,7 @@ IN_PROC_BROWSER_TEST_F(MinimumVersionBeforeLoginHost, DeadlineReached) {
 class MinimumVersionPublicSessionAutoLoginTest
     : public MinimumVersionExistingUserTest {
  public:
-  MinimumVersionPublicSessionAutoLoginTest() {}
+  MinimumVersionPublicSessionAutoLoginTest() = default;
   ~MinimumVersionPublicSessionAutoLoginTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -969,7 +970,7 @@ class MinimumVersionPolicyChildUser : public MinimumVersionPolicyTestBase {
  private:
   const ash::LoginManagerMixin::TestUserInfo child_user{
       AccountId::FromUserEmailGaiaId(ash::test::kTestEmail,
-                                     ash::test::kTestGaiaId)};
+                                     GaiaId(ash::test::kTestGaiaId))};
   ash::UserPolicyMixin user_policy_mixin_{&mixin_host_, child_user.account_id};
   FakeGaiaMixin fake_gaia_{&mixin_host_};
   ash::LoginManagerMixin login_manager_{&mixin_host_, {}, &fake_gaia_};

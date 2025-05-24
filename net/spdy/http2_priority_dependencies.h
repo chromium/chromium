@@ -5,13 +5,14 @@
 #ifndef NET_SPDY_HTTP2_PRIORITY_DEPENDENCIES_H_
 #define NET_SPDY_HTTP2_PRIORITY_DEPENDENCIES_H_
 
+#include <array>
 #include <list>
 #include <map>
 #include <utility>
 #include <vector>
 
 #include "net/base/net_export.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 
 namespace net {
 
@@ -69,7 +70,7 @@ class NET_EXPORT_PRIVATE Http2PriorityDependencies {
   using IdList = std::list<std::pair<spdy::SpdyStreamId, spdy::SpdyPriority>>;
   using EntryMap = std::map<spdy::SpdyStreamId, IdList::iterator>;
 
-  IdList id_priority_lists_[spdy::kV3LowestPriority + 1];
+  std::array<IdList, spdy::kV3LowestPriority + 1> id_priority_lists_;
 
   // Tracks the location of an id anywhere in the above vector of lists.
   // Iterators to list elements remain valid until those particular elements

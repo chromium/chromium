@@ -8,6 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 
 /** Exposes general configuration info about the display style for a given reference View. */
+@NullMarked
 public class UiConfig {
     public static final int NARROW_DISPLAY_STYLE_MAX_WIDTH_DP = 320;
     public static final int WIDE_DISPLAY_STYLE_MIN_WIDTH_DP = 600;

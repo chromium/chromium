@@ -17,6 +17,7 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
@@ -49,6 +50,16 @@ std::map<uint64_t, builders::EntryDecoder> CreateTestingDecodeMap() {
             {kTestMetricsHash, kTestMetrics},
         }}},
   };
+}
+
+MATCHER_P2(MatchesDownsamplingRate,
+           event_hash,
+           standard_rate,
+           "Matches a downsampling rate stored on a UKM report") {
+  return testing::ExplainMatchResult(event_hash, arg.event_hash(),
+                                     result_listener) &&
+         testing::ExplainMatchResult(standard_rate, arg.standard_rate(),
+                                     result_listener);
 }
 
 // Helper class for testing UkmRecorderImpl observers.
@@ -546,7 +557,8 @@ TEST(UkmRecorderImplTest, WebDXFeaturesSampling) {
   // Enable recording, consent to MSBB, and set 1-in-2 sampling.
   impl.EnableRecording();
   impl.UpdateRecording({MSBB});
-  impl.SetWebDXFeaturesSamplingForTesting(/*rate=*/2);
+  const int downsampling_rate = 2;
+  impl.SetWebDXFeaturesSamplingForTesting(downsampling_rate);
   impl.SetSamplingSeedForTesting(0);
 
   // Create a sampled-in source and sampled-out source. Note that generally,
@@ -581,6 +593,16 @@ TEST(UkmRecorderImplTest, WebDXFeaturesSampling) {
   EXPECT_TRUE(
       impl.webdx_features().at(kSampledInSourceId).Contains(kWebDXFeature2));
   EXPECT_FALSE(base::Contains(impl.webdx_features(), kSampledOutSourceId));
+
+  // Verify that the downsampling rate for web feature is populated on the
+  // report alongside the recorded web features.
+  Report report;
+  impl.StoreRecordingsInReport(&report);
+
+  EXPECT_THAT(report.downsampling_rates(),
+              testing::Contains(MatchesDownsamplingRate(
+                  base::HashMetricName(kWebFeatureSamplingKeyword),
+                  downsampling_rate)));
 }
 
 }  // namespace ukm

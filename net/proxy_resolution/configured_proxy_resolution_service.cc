@@ -22,7 +22,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_info_source_list.h"
 #include "net/base/network_anonymization_key.h"
@@ -255,8 +254,7 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
 #elif BUILDFLAG(IS_APPLE)
     return std::make_unique<ProxyResolverFactoryApple>();
 #else
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
 #endif
   }
 
@@ -539,9 +537,7 @@ class ConfiguredProxyResolutionService::InitProxyResolver {
           rv = DoCreateResolverComplete(rv);
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "bad state: " << static_cast<int>(state);
-          rv = ERR_UNEXPECTED;
-          break;
+          NOTREACHED() << "bad state: " << static_cast<int>(state);
       }
     } while (rv != ERR_IO_PENDING && next_state_ != State::kNone);
     return rv;
@@ -1432,9 +1428,7 @@ void ConfiguredProxyResolutionService::OnProxyConfigChanged(
   switch (availability) {
     case ProxyConfigService::CONFIG_PENDING:
       // ProxyConfigService implementors should never pass CONFIG_PENDING.
-      NOTREACHED_IN_MIGRATION()
-          << "Proxy config change with CONFIG_PENDING availability!";
-      return;
+      NOTREACHED() << "Proxy config change with CONFIG_PENDING availability!";
     case ProxyConfigService::CONFIG_VALID:
       effective_config = config;
       break;

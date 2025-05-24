@@ -51,8 +51,7 @@ class TpcdTrialBrowserTest : public PlatformBrowserTest {
 
   void SetUp() override {
     features_.InitWithFeaturesAndParameters(
-        {{::features::kPersistentOriginTrials, {}},
-         {net::features::kTpcdTrialSettings, {}},
+        {{net::features::kTpcdTrialSettings, {}},
          {content_settings::features::kTrackingProtection3pcd, {}}},
         {});
 

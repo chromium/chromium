@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 #include "components/metrics/structured/event.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
@@ -22,8 +21,8 @@ using RecordingDelegate = StructuredMetricsClient::RecordingDelegate;
 
 // Singleton to record structured metrics on Chrome.
 //
-// This class unifies all platform (currently lacros/ash chrome) specific
-// recorder implementations under a common API.
+// This class unifies all platform (currently only ChromeOS) specific recorder
+// implementations under a common API.
 //
 // This class delegates to a Recorder that will be created on ctor.
 // |Initialize()| should be called ASAP. When |Initialize()| should be called is
@@ -41,11 +40,6 @@ class ChromeStructuredMetricsDelegate : public RecordingDelegate {
   // Initializes the recorder. If this is called more than once, this operation
   // will no-op. This must be called before any recording is done or the record
   // operations will no-op.
-  //
-  // For Ash Chrome, this should be called after Crosapi is initialized.
-  //
-  // For Lacros Chrome, this should be called after LacrosService has been
-  // created. This should also be called on the main thread (UI).
   void Initialize();
 
   // RecordingDelegate:
@@ -57,7 +51,6 @@ class ChromeStructuredMetricsDelegate : public RecordingDelegate {
   ~ChromeStructuredMetricsDelegate() override;
 
   friend class base::NoDestructor<ChromeStructuredMetricsDelegate>;
-  friend class LacrosStructuredMetricsDelegateTest;
 
   std::unique_ptr<RecordingDelegate> delegate_;
   bool is_initialized_ = false;

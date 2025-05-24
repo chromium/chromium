@@ -8,13 +8,8 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
-import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
-import org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps.WebappSplashController;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -22,13 +17,10 @@ import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LaunchMetrics;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 
-import javax.inject.Inject;
-
 /**
- * Coordinator shared between webapp activity and WebAPK activity components.
- * Add methods here if other components need to communicate with either of these components.
+ * Coordinator shared between webapp activity and WebAPK activity components. Add methods here if
+ * other components need to communicate with either of these components.
  */
-@ActivityScope
 public class WebappActivityCoordinator
         implements InflationObserver, PauseResumeWithNativeObserver, StartStopWithNativeObserver {
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
@@ -36,26 +28,15 @@ public class WebappActivityCoordinator
     private final Activity mActivity;
     private final WebappDeferredStartupWithStorageHandler mDeferredStartupWithStorageHandler;
 
-    // Whether the current page is within the webapp's scope.
-
-    @Inject
     public WebappActivityCoordinator(
-            SharedActivityCoordinator sharedActivityCoordinator,
-            Activity activity,
             BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityTabProvider activityTabProvider,
-            CurrentPageVerifier currentPageVerifier,
-            WebappSplashController splashController,
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            WebappActionsNotificationManager actionsNotificationManager,
+            Activity activity,
+            WebappDeferredStartupWithStorageHandler webappDeferredStartupWithStorageHandler,
             ActivityLifecycleDispatcher lifecycleDispatcher) {
-        // We don't need to do anything with |sharedActivityCoordinator|, |splashController| or
-        // |actionsNotificationManager|. We just need to resolve it so that it starts working.
-
         mIntentDataProvider = intentDataProvider;
         mWebappInfo = WebappInfo.create(mIntentDataProvider);
         mActivity = activity;
-        mDeferredStartupWithStorageHandler = deferredStartupWithStorageHandler;
+        mDeferredStartupWithStorageHandler = webappDeferredStartupWithStorageHandler;
 
         mDeferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {
@@ -73,6 +54,8 @@ public class WebappActivityCoordinator
         // avoid a violation.
         WebappRegistry.getInstance();
         WebappRegistry.warmUpSharedPrefsForId(mWebappInfo.id());
+
+        LaunchMetrics.recordHomeScreenLaunchIntoStandaloneActivity(mWebappInfo);
     }
 
     /** Invoked to add deferred startup tasks to queue. */
@@ -81,9 +64,7 @@ public class WebappActivityCoordinator
     }
 
     @Override
-    public void onPreInflationStartup() {
-        LaunchMetrics.recordHomeScreenLaunchIntoStandaloneActivity(mWebappInfo);
-    }
+    public void onPreInflationStartup() {}
 
     @Override
     public void onPostInflationStartup() {}

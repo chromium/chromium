@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "media/base/media_serializers.h"
 #include "media/base/media_serializers_base.h"
 #include "media/formats/hls/playlist.h"
 #include "media/formats/hls/source_string.h"
@@ -72,7 +73,7 @@ class PlaylistTestBuilder {
 
     if (!result.has_value()) {
       EXPECT_TRUE(result.has_value())
-          << MediaSerialize(std::move(result).error())
+          << MediaSerializeForTesting(std::move(result).error())
           << "\nFrom: " << from.ToString();
       return nullptr;
     } else {

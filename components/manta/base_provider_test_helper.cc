@@ -12,6 +12,8 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
+using endpoint_fetcher::EndpointFetcher;
+
 namespace manta {
 
 namespace {

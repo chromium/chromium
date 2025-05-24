@@ -4,23 +4,15 @@
 
 #include "chrome/browser/apps/app_service/publishers/arc_apps.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
+#include <utility>
+#include <variant>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_app_instance.h"
-#include "ash/components/arc/test/fake_file_system_instance.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -41,7 +33,6 @@
 #include "chrome/browser/ash/arc/fileapi/arc_file_system_bridge.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
@@ -49,10 +40,22 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/intent_helper/intent_constants.h"
-#include "components/arc/intent_helper/intent_filter.h"
-#include "components/arc/test/fake_intent_helper_instance.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_constants.h"
+#include "chromeos/ash/experiences/arc/intent_helper/intent_filter.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
+#include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
+#include "chromeos/ash/experiences/arc/test/fake_intent_helper_instance.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -66,7 +69,6 @@
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace {
 
@@ -82,7 +84,7 @@ std::vector<arc::IntentFilter> CreateFilterList(
     filter_authorities.emplace_back(authority, 0);
   }
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back("/", arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back("/", arc::PatternType::kPrefix);
 
   auto filter = arc::IntentFilter(package_name, {arc::kIntentActionView},
                                   std::move(filter_authorities),
@@ -526,6 +528,32 @@ TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksByDefault) {
                         GURL("https://www.example.com/foo")));
 }
 
+// Verifies that a call to set the default supported links preference from the
+// ARC system is ignored if the policy ArcOpenLinksInBrowserByDefault for
+// a managed profile is set to true.
+TEST_F(ArcAppsPublisherManagedProfileTest, SetSupportedLinksDisabledByPolicy) {
+  constexpr char kTestAuthority[] = "www.example.com";
+  const auto& fake_apps = arc_test()->fake_apps();
+  std::string package_name = fake_apps[0]->package_name;
+  std::string app_id = ArcAppListPrefs::GetAppId(fake_apps[0]->package_name,
+                                                 fake_apps[0]->activity);
+  arc_test()->app_instance()->SendRefreshAppList(fake_apps);
+  profile()->GetPrefs()->SetBoolean(arc::prefs::kArcOpenLinksInBrowserByDefault,
+                                    true);
+
+  // Update intent filters and supported links for the app, as if it was just
+  // installed.
+  intent_helper()->OnIntentFiltersUpdatedForPackage(
+      package_name, CreateFilterList(package_name, {kTestAuthority}));
+  VerifyIntentFilters(app_id, {kTestAuthority});
+  intent_helper()->OnSupportedLinksChanged(
+      CreateSupportedLinks(package_name), {},
+      arc::mojom::SupportedLinkChangeSource::kArcSystem);
+
+  ASSERT_EQ(std::nullopt, preferred_apps().FindPreferredAppForUrl(
+                              GURL("https://www.example.com/foo")));
+}
+
 TEST_F(ArcAppsPublisherManagedProfileTest,
        SetSupportedLinksIgnoresWorkspaceInstall) {
   constexpr char kTestAuthority[] = "drive.google.com";
@@ -657,10 +685,10 @@ TEST_F(ArcAppsPublisherTest, PublishPermission) {
   EXPECT_EQ(result.size(), 2ul);
 
   // Sort permissions by permission type.
-  base::ranges::sort(result, std::less<>(), &apps::Permission::permission_type);
+  std::ranges::sort(result, std::less<>(), &apps::Permission::permission_type);
 
   EXPECT_EQ(result[0]->permission_type, apps::PermissionType::kCamera);
-  EXPECT_EQ(absl::get<apps::TriState>(result[0]->value), apps::TriState::kAsk);
+  EXPECT_EQ(std::get<apps::TriState>(result[0]->value), apps::TriState::kAsk);
   EXPECT_FALSE(result[0]->is_managed);
   EXPECT_EQ(result[0]->details, std::nullopt);
 
@@ -1058,8 +1086,7 @@ TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities1;
   filter_authorities1.emplace_back(kTestUrl.host(), 0);
   std::vector<arc::IntentFilter::PatternMatcher> patterns;
-  patterns.emplace_back(kTestUrl.path(),
-                        arc::mojom::PatternType::PATTERN_PREFIX);
+  patterns.emplace_back(kTestUrl.path(), arc::PatternType::kPrefix);
 
   auto filter = arc::IntentFilter(package_name, {arc::kIntentActionView},
                                   std::move(filter_authorities1),
@@ -1069,12 +1096,11 @@ TEST_F(ArcAppsPublisherTest, OnlyValidFilterIsPublished) {
 
   std::vector<arc::IntentFilter::AuthorityEntry> filter_authorities2;
   filter_authorities2.emplace_back(kTestUrl.host(), 0);
-  int invalid_pattern_type =
-      static_cast<int>(arc::mojom::PatternType::kMaxValue) + 1;
+  constexpr arc::PatternType kInvalidPatternType =
+      static_cast<arc::PatternType>(5);
+  ASSERT_FALSE(arc::IsKnownPatternType(kInvalidPatternType));
   std::vector<arc::IntentFilter::PatternMatcher> invalid_pattern;
-  invalid_pattern.emplace_back(
-      kTestUrl.path(),
-      static_cast<arc::mojom::PatternType>(invalid_pattern_type));
+  invalid_pattern.emplace_back(kTestUrl.path(), kInvalidPatternType);
 
   auto invalid_filter = arc::IntentFilter(
       package_name, {arc::kIntentActionView}, std::move(filter_authorities2),

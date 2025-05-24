@@ -11,6 +11,7 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/accessibility/public/mojom/automation.mojom.h"
 #include "services/accessibility/public/mojom/automation_client.mojom.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 
 namespace ash {
 
@@ -51,7 +52,11 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
       const gfx::Point& mouse_location,
       const std::vector<ui::AXEvent>& events) override;
   void DispatchAccessibilityLocationChange(
-      const ui::AXLocationChanges& details) override;
+      const ui::AXTreeID& tree_id,
+      const ui::AXLocationChange& details) override;
+  void DispatchAccessibilityScrollChange(
+      const ui::AXTreeID& tree_id,
+      const ui::AXScrollChange& details) override;
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override;
   void DispatchActionResult(const ui::AXActionData& data,
                             bool result,

@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "net/cert/x509_util_nss.h"
 
 #include <cert.h>  // Must be included before certdb.h
@@ -138,7 +143,7 @@ std::string GetDefaultNickname(CERTCertificate* nss_cert, CertType type) {
 base::span<const uint8_t> SECItemAsSpan(const SECItem& item) {
   // SAFETY: item is an NSS SECItem struct that represents an array of bytes
   // pointed to by `data` of length `len`.
-  return UNSAFE_BUFFERS(base::make_span(item.data, item.len));
+  return UNSAFE_BUFFERS(base::span(item.data, item.len));
 }
 
 base::span<const uint8_t> CERTCertificateAsSpan(
@@ -433,13 +438,12 @@ bool GetValidityTimes(CERTCertificate* cert,
 }
 
 SHA256HashValue CalculateFingerprint256(CERTCertificate* cert) {
-  SHA256HashValue sha256;
-  memset(sha256.data, 0, sizeof(sha256.data));
+  SHA256HashValue sha256 = {0};
 
   DCHECK(cert->derCert.data);
   DCHECK_NE(0U, cert->derCert.len);
 
-  SECStatus rv = HASH_HashBuf(HASH_AlgSHA256, sha256.data, cert->derCert.data,
+  SECStatus rv = HASH_HashBuf(HASH_AlgSHA256, sha256.data(), cert->derCert.data,
                               cert->derCert.len);
   DCHECK_EQ(SECSuccess, rv);
 

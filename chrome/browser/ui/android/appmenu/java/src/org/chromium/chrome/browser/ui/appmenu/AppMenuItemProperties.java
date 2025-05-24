@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.ui.appmenu;
 
 import android.graphics.drawable.Drawable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -16,6 +18,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
  * {@link PropertyKey} list for app menu, most keys are set by {@link AppMenuPropertiesDelegate},
  * but HIGHLIGHTED and CLICK_HANDLER will be set by {@link AppMenuHandler}.
  */
+@NullMarked
 public class AppMenuItemProperties {
     /** The ID of the menu item. */
     public static final WritableIntPropertyKey MENU_ITEM_ID =
@@ -72,7 +75,7 @@ public class AppMenuItemProperties {
             new WritableBooleanPropertyKey("SUPPORT_ENTER_ANIMATION");
 
     /** The click handler for the menu item. */
-    public static final WritableObjectPropertyKey<AppMenuClickHandler> CLICK_HANDLER =
+    public static final WritableObjectPropertyKey<@Nullable AppMenuClickHandler> CLICK_HANDLER =
             new WritableObjectPropertyKey<>(/* skipEquality= */ true, "CLICK_HANDLER");
 
     /**
@@ -83,14 +86,33 @@ public class AppMenuItemProperties {
             new WritableBooleanPropertyKey("MENU_ICON_AT_START");
 
     /**
-     * The sub menu for the menu item, this is used for the menu item which has sub menu items. ex.
-     * icon row. The {link ModelList} here do not need a view type since this diverges from other,
-     * non sub-menu-items that use AppMenuItemProperties.
-     *
-     * <p>A SUBMENU should not have a SUBMENU (don't support nesting).
+     * Additional icons associated with a particular menu item. Only certain menu item types support
+     * additional icons (e.g. icon rows). The number of supported icons also depends on the menu
+     * item type.
      */
-    public static final WritableObjectPropertyKey<ModelList> SUBMENU =
-            new WritableObjectPropertyKey<>("SUBMENU");
+    public static final WritableObjectPropertyKey<ModelList> ADDITIONAL_ICONS =
+            new WritableObjectPropertyKey<>("ADDITIONAL_ICONS");
+
+    /**
+     * A generic key for non-standard data types.
+     *
+     * <p>TODO(crbug.com/40145539): Remove this super hacky key.
+     */
+    public static final WritableObjectPropertyKey<Object> CUSTOM_ITEM_DATA =
+            new WritableObjectPropertyKey<>("CUSTOM_ITEM_DATA");
+
+    public static final PropertyKey[] ALL_ICON_KEYS =
+            new PropertyKey[] {
+                MENU_ITEM_ID,
+                TITLE,
+                TITLE_CONDENSED,
+                CHECKABLE,
+                CHECKED,
+                ICON,
+                ENABLED,
+                HIGHLIGHTED,
+                CLICK_HANDLER
+            };
 
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -109,6 +131,7 @@ public class AppMenuItemProperties {
                 SUPPORT_ENTER_ANIMATION,
                 CLICK_HANDLER,
                 MENU_ICON_AT_START,
-                SUBMENU
+                ADDITIONAL_ICONS,
+                CUSTOM_ITEM_DATA
             };
 }

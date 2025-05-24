@@ -87,7 +87,7 @@ void TestRasterInterface::GetQueryObjectui64vEXT(GLuint id,
                   "base::TimeDelta()::InMicroseconds() to be int64_t");
     *params = std::numeric_limits<int64_t>::max();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -102,48 +102,45 @@ gpu::SyncToken TestRasterInterface::ScheduleImageDecode(
 
 GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
     const gpu::Mailbox& mailbox) {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 GLuint TestRasterInterface::CreateAndConsumeForGpuRaster(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image) {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void TestRasterInterface::DeleteGpuRasterTexture(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestRasterInterface::BeginGpuRaster() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestRasterInterface::EndGpuRaster() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestRasterInterface::BeginSharedImageAccessDirectCHROMIUM(GLuint texture,
                                                                GLenum mode) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestRasterInterface::EndSharedImageAccessDirectCHROMIUM(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestRasterInterface::InitializeDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestRasterInterface::UnlockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool TestRasterInterface::LockDiscardableTextureCHROMIUM(GLuint texture) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TestRasterInterface::GenSyncTokenCHROMIUM(GLbyte* sync_token) {

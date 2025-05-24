@@ -13,6 +13,7 @@
 
 #include "base/bits.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/strcat.h"
@@ -27,6 +28,7 @@
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/supported_tensors.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -36,6 +38,8 @@ namespace webnn::dml {
 using Microsoft::WRL::ComPtr;
 
 namespace {
+
+ContextImplDml::BackendForTesting* g_backend_for_testing = nullptr;
 
 void HandleTensorCreationFailure(
     const std::string& error_message,
@@ -73,6 +77,11 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kFloat16, OperandDataType::kFloat32,
       OperandDataType::kInt8, OperandDataType::kInt32, OperandDataType::kInt64};
 
+  static constexpr SupportedDataTypes kInts4To32{
+      OperandDataType::kInt4,  OperandDataType::kUint4,
+      OperandDataType::kInt8,  OperandDataType::kUint8,
+      OperandDataType::kInt32, OperandDataType::kUint32};
+
   static constexpr SupportedDataTypes kInts8To32{
       OperandDataType::kInt8, OperandDataType::kUint8, OperandDataType::kInt32,
       OperandDataType::kUint32};
@@ -84,335 +93,485 @@ ContextProperties ContextImplDml::GetProperties(
       OperandDataType::kInt32, OperandDataType::kUint32,
       OperandDataType::kInt64, OperandDataType::kUint64};
 
+  // The element count will not exceed `UINT_MAX / sizeof(DataType)` when the
+  // tensor byte length is `UINT_MAX` (DML element count limit).
+  static constexpr uint64_t kTensorByteLengthLimit =
+      std::numeric_limits<uint32_t>::max();
+
+  // In general DirectML supports up to 8D tensors.
+  static constexpr SupportedRanks kMaxRank = SupportedRanks::UpTo(8);
+
   // TODO: crbug.com/345271830 - specify data types for all parameters.
   ContextProperties properties(
       /*input_operand_layout=*/InputOperandLayout::kNchw, Resample2DAxes::kAny,
-      {/*input=*/SupportedDataTypes::All(),
-       /*constant=*/SupportedDataTypes::All(),
+      BatchNormalizationAxis::kAny,
+      /*tensor_byte_length_limit=*/kTensorByteLengthLimit,
+      {/*input=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
+       /*constant=*/DataTypeConstraint::kAllDataTypesAtLeast8bits,
 
-       /*arg_min_max_input=*/SupportedDataTypes::All(),
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_argmax_operator_desc#tensor-support
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_argmin_operator_desc#tensor-support
+       /*arg_min_max_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*arg_min_max_output=*/DataTypeConstraint::kInt32To64,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_batch_normalization_operator_desc#tensor-support
-       /*batch_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*batch_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*batch_normalization_mean=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cast_operator_desc#tensor-support
-       /*cast_input=*/SupportedDataTypes::All(),
+       /*cast_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_clip_operator_desc#tensor-support
-       /*clamp_input=*/kFloat16To32Ints8To32,
+       /*clamp_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_join_operator_desc#tensor-support
-       /*concat_inputs=*/kFloat16To32Ints8To32,
+       /*concat_inputs=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_convolution_operator_desc#tensor-support
-       /*conv2d_input=*/DataTypeConstraint::kFloat16To32,
-       /*conv_transpose2d_input=*/DataTypeConstraint::kFloat16To32,
+       /*conv2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
+       /*conv2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
+       /*conv_transpose2d_input=*/{DataTypeConstraint::kFloat16To32, {3, 5}},
+       /*conv_transpose2d_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
 
-       // CumulativeSum is not implemented.
-       /*cumulative_sum_input=*/{},
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_cumulative_summation_operator_desc#tensor-support
+       /*cumulative_sum_input=*/{kFloat16To32Ints32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_dequantize_linear_operator_desc#tensor-support
-       /*dequantize_linear_input=*/kInts8To32,
-       /*dequantize_linear_scale=*/DataTypeConstraint::kFloat32,
+       /*dequantize_linear_input=*/{kInts8To32, kMaxRank},
+       /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat32, kMaxRank},
+       /*dequantize_linear_zero_point=*/{kInts8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_add_operator_desc#tensor-support
-       /*add_input=*/kFloat16To32Ints32,
+       /*add_input=*/{kFloat16To32Ints32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_subtract_operator_desc#tensor-support
-       /*sub_input=*/kFloat16To32Ints32,
+       /*sub_input=*/{kFloat16To32Ints32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_multiply_operator_desc#tensor-support
-       /*mul_input=*/kFloat16To32Ints32,
+       /*mul_input=*/{kFloat16To32Ints32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_divide_operator_desc#tensor-support
-       /*div_input=*/kFloat16To32Ints32,
+       /*div_input=*/{kFloat16To32Ints32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_max_operator_desc#tensor-support
-       /*max_input=*/kFloat16To32Ints8To32,
+       /*max_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_min_operator_desc#tensor-support
-       /*min_input=*/kFloat16To32Ints8To32,
+       /*min_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_pow_operator_desc#tensor-support
-       /*pow_input=*/kFloat16To32Ints8To32,
+       /*pow_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_equals_operator_desc#tensor-support
-       /*equal_input=*/kFloat16To32Ints8To32,
+       /*equal_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_greater_than_operator_desc#tensor-support
-       /*greater_input=*/kFloat16To32Ints8To32,
+       /*greater_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_greater_than_or_equal_operator_desc#tensor-support
-       /*greater_or_equal_input=*/kFloat16To32Ints8To32,
+       /*greater_or_equal_input=*/
+       {kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_less_than_operator_desc#tensor-support
-       /*lesser_input=*/kFloat16To32Ints8To32,
+       /*lesser_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_less_than_or_equal_operator_desc#tensor-support
-       /*lesser_or_equal_input=*/kFloat16To32Ints8To32,
+       /*lesser_or_equal_input=*/
+       {kFloat16To32Ints8To32, kMaxRank},
+
+       // NotEqual is emulated by DML_OPERATOR_ELEMENT_WISE_LOGICAL_EQUALS and
+       // DML_OPERATOR_ELEMENT_WISE_LOGICAL_NOT.
+       /*not_equal_input=*/{kUint8To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_and_operator_desc#tensor-support
+       /*logical_and_input=*/{kUint8To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_or_operator_desc#tensor-support
+       /*logical_or_input=*/{kUint8To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_xor_operator_desc#tensor-support
+       /*logical_xor_input=*/{kUint8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_logical_not_operator_desc#tensor-support
-       /*logical_not_input=*/kUint8To32,
+       /*logical_not_input=*/{kUint8To32, kMaxRank},
 
        /*logical_output=*/kUint8To32,
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_abs_operator_desc#tensor-support
-       /*abs_input=*/DataTypeConstraint::kFloat16To32Int8To32,
+       /*abs_input=*/
+       {DataTypeConstraint::kFloat16To32Int8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_ceil_operator_desc#tensor-support
-       /*ceil_input=*/DataTypeConstraint::kFloat16To32,
+       /*ceil_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_cos_operator_desc#tensor-support
-       /*cos_input=*/DataTypeConstraint::kFloat16To32,
+       /*cos_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_erf_operator_desc#tensor-support
-       /*erf_input=*/DataTypeConstraint::kFloat16To32,
+       /*erf_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_exp_operator_desc#tensor-support
-       /*exp_input=*/DataTypeConstraint::kFloat16To32,
+       /*exp_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_floor_operator_desc#tensor-support
-       /*floor_input=*/DataTypeConstraint::kFloat16To32,
+       /*floor_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_identity_operator_desc#tensor-support
-       /*identity_input=*/kFloat16To32Ints8To32,
+       /*identity_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_log_operator_desc#tensor-support
-       /*log_input=*/DataTypeConstraint::kFloat16To32,
+       /*log_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // Neg is emulated by DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC, so the
        // data type limits is set based on the spec.
        // DML_ELEMENT_WISE_NEGATE_OPERATOR_DESC introduced in feature level 5.0
        // also supports int64.
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_negate_operator_desc#tensor-support
-       /*neg_input=*/DataTypeConstraint::kFloat16To32Int8To32,
+       /*neg_input=*/
+       {DataTypeConstraint::kFloat16To32Int8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_recip_operator_desc#tensor-support
-       /*reciprocal_input=*/DataTypeConstraint::kFloat16To32,
+       /*reciprocal_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sign_operator_desc#tensor-support
-       /*sign_input=*/DataTypeConstraint::kFloat16To32Int8To32,
+       /*sign_input=*/
+       {DataTypeConstraint::kFloat16To32Int8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sin_operator_desc#tensor-support
-       /*sin_input=*/DataTypeConstraint::kFloat16To32,
+       /*sin_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_sqrt_operator_desc#tensor-support
-       /*sqrt_input=*/DataTypeConstraint::kFloat16To32,
+       /*sqrt_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_tan_operator_desc#tensor-support
-       /*tan_input=*/DataTypeConstraint::kFloat16To32,
+       /*tan_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_elu_operator_desc
-       /*elu_input=*/DataTypeConstraint::kFloat16To32,
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_elu_operator_desc#tensor-support
+       /*elu_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // Expand is emulated by identity.
-       /*expand_input=*/kFloat16To32Ints8To32,
+       /*expand_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_operator_desc#tensor-support
-       /*gather_input=*/kFloat16To32Ints8To32,
-       /*gather_indices=*/kGatherScatterIndicesSupportedDataTypes,
+       /*gather_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*gather_indices=*/{kGatherScatterIndicesSupportedDataTypes, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_elements_operator_desc#tensor-support
-       /*gather_elements_input=*/kFloat16To32Ints8To32,
-       /*gather_elements_indices=*/kGatherScatterIndicesSupportedDataTypes,
+       /*gather_elements_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*gather_elements_indices=*/
+       {kGatherScatterIndicesSupportedDataTypes, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gather_nd_operator_desc#tensor-support
-       /*gather_nd_input=*/kFloat16To32Ints8To32,
-       /*gather_nd_indices=*/kGatherScatterIndicesSupportedDataTypes,
+       /*gather_nd_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*gather_nd_indices=*/
+       {kGatherScatterIndicesSupportedDataTypes, kMaxRank},
 
        // Gelu is emulated when the feature level is less than 5.1.
-       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
-       /*gelu_input=*/DataTypeConstraint::kFloat16To32,
+       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc#availability
+       /*gelu_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gemm_operator_desc#tensor-support
-       /*gemm_input=*/DataTypeConstraint::kFloat16To32,
+       /*gemm_a=*/{DataTypeConstraint::kFloat16To32, {2, 4}},
+       /*gemm_c=*/{DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(2)},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_gru_operator_desc#tensor-support
-       /*gru_input=*/DataTypeConstraint::kFloat16To32,
-       /*gru_cell_input=*/DataTypeConstraint::kFloat16To32,
+       /*gru_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*gru_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*gru_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_hard_sigmoid_operator_desc
-       /*hard_sigmoid_input=*/DataTypeConstraint::kFloat16To32,
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_hard_sigmoid_operator_desc#tensor-support
+       /*hard_sigmoid_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // HardSwish is emulated when the feature level is less than 6.2.
-       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_hard_swish_operator_desc
-       /*hard_swish_input=*/DataTypeConstraint::kFloat16To32,
+       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_hard_swish_operator_desc#tensor-support
+       /*hard_swish_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_mean_variance_normalization1_operator_desc#tensor-support
-       /*instance_normalization_input=*/DataTypeConstraint::kFloat16To32,
-       /*layer_normalization_input=*/DataTypeConstraint::kFloat16To32,
+       /*instance_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*instance_normalization_scale=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*layer_normalization_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_leaky_relu_operator_desc
-       /*leaky_relu_input=*/DataTypeConstraint::kFloat16To32,
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_leaky_relu_operator_desc#tensor-support
+       /*leaky_relu_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_linear_operator_desc#tensor-support
-       /*linear_input=*/DataTypeConstraint::kFloat16To32,
+       /*linear_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lstm_operator_desc#tensor-support
-       /*lstm_input=*/DataTypeConstraint::kFloat16To32,
-       /*lstm_cell_input=*/DataTypeConstraint::kFloat16To32,
+       /*lstm_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(3)},
+       /*lstm_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_cell_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(2)},
+       /*lstm_cell_bias=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
 
-       // Matmul is emulated by gemm.
-       /*matmul_input=*/DataTypeConstraint::kFloat16To32,
+       // Matmul is emulated by gemm however inputs are flattened to support
+       // ranks greater than 4.
+       /*matmul_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_padding_operator_desc#tensor-support
-       /*pad_input=*/kFloat16To32Ints8To32,
+       /*pad_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_average_pooling_operator_desc
-       /*average_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_average_pooling_operator_desc#tensor-support
+       /*average_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {4, 5}},
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lp_pooling_operator_desc
-       /*l2_pool2d_input=*/DataTypeConstraint::kFloat16To32,
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_lp_pooling_operator_desc#tensor-support
+       /*l2_pool2d_input=*/{DataTypeConstraint::kFloat16To32, {4, 5}},
 
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling_operator_desc
-       /*max_pool2d_input=*/kFloat16To32Ints8,
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_max_pooling_operator_desc#tensor-support
+       /*max_pool2d_input=*/{kFloat16To32Ints8, {4, 5}},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_parameterized_relu_operator_desc#tensor-support
-       /*prelu_input=*/DataTypeConstraint::kFloat16To32,
+       /*prelu_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_quantize_linear_operator_desc#tensor-support
-       /*quantize_linear_input=*/DataTypeConstraint::kFloat32,
-       /*quantize_linear_zero_point=*/DataTypeConstraint::kInts8,
+       /*quantize_linear_input=*/{DataTypeConstraint::kFloat32, kMaxRank},
+       /*quantize_linear_zero_point=*/{DataTypeConstraint::kInts8, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_reduce_operator_desc#tensor-support-according-to-function
-       /*reduce_l1_input=*/DataTypeConstraint::kFloat16To32,
-       /*reduce_l2_input=*/DataTypeConstraint::kFloat16To32,
-       /*reduce_log_sum_input=*/DataTypeConstraint::kFloat16To32,
-       /*reduce_log_sum_exp_input=*/DataTypeConstraint::kFloat16To32,
-       /*reduce_max_input=*/kFloat16To32Ints8To32,
-       /*reduce_mean_input=*/DataTypeConstraint::kFloat16To32,
-       /*reduce_min_input=*/kFloat16To32Ints8To32,
-       /*reduce_product_input=*/DataTypeConstraint::kFloat16To32,
-       /*reduce_sum_input=*/kFloat16To32Ints32,
-       /*reduce_sum_square_input=*/DataTypeConstraint::kFloat16To32,
-
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_relu_operator_desc
-       /*relu_input=*/DataTypeConstraint::kFloat16To32,
-
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_resample_operator_desc#tensor-support
-       /*resample2d_input=*/DataTypeConstraint::kFloat16To32,
-
-       // Reshape is emulated by identity.
-       /*reshape_input=*/kFloat16To32Ints8To32,
-
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_nd_operator_desc#tensor-support
-       /*scatter_nd_input=*/kFloat16To32Ints8To32,
-       /*scatter_nd_indices=*/kGatherScatterIndicesSupportedDataTypes,
-
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
-       /*sigmoid_input=*/DataTypeConstraint::kFloat16To32,
-
-       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_slice_operator_desc#tensor-support
-       /*slice_input=*/kFloat16To32Ints8To32,
-
-       // Softmax is emulated when the feature level is less than 5.1.
-       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_softmax1_operator_desc
-       /*softmax_input=*/DataTypeConstraint::kFloat16To32,
+       /*reduce_l1_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*reduce_l2_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*reduce_log_sum_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*reduce_log_sum_exp_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*reduce_max_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*reduce_mean_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*reduce_min_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*reduce_product_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+       /*reduce_sum_input=*/{kFloat16To32Ints32, kMaxRank},
+       /*reduce_sum_square_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_relu_operator_desc#tensor-support
-       /*softplus_input=*/DataTypeConstraint::kFloat16To32,
+       /*relu_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_resample_operator_desc#tensor-support
+       /*resample2d_input=*/
+       {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(4)},
+
+       // Reshape is emulated by identity.
+       /*reshape_input=*/{kFloat16To32Ints8To32, kMaxRank},
+
+       // Reverse is emulated by slice.
+       /*reverse_input=*/{kFloat16To32Ints8To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_operator_desc#tensor-support
+       /*scatter_elements_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*scatter_elements_indices=*/
+       {kGatherScatterIndicesSupportedDataTypes, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_scatter_nd_operator_desc#tensor-support
+       /*scatter_nd_input=*/{kFloat16To32Ints8To32, kMaxRank},
+       /*scatter_nd_indices=*/
+       {kGatherScatterIndicesSupportedDataTypes, kMaxRank},
+       /*scatter_nd_updates=*/{kFloat16To32Ints8To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_sigmoid_operator_desc#tensor-support
+       /*sigmoid_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_slice_operator_desc#tensor-support
+       /*slice_input=*/{kFloat16To32Ints8To32, kMaxRank},
+
+       // Softmax is emulated when the feature level is less than 5.1.
+       // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_softmax1_operator_desc#availability
+       /*softmax_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
+
+       // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_relu_operator_desc#tensor-support
+       /*softplus_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_softsign_operator_desc#tensor-support
-       /*softsign_input=*/DataTypeConstraint::kFloat16To32,
+       /*softsign_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_split_operator_desc#tensor-support
-       /*split_input=*/kFloat16To32Ints8To32,
+       /*split_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_activation_tanh_operator_desc#tensor-support
-       /*tanh_input=*/DataTypeConstraint::kFloat16To32,
+       /*tanh_input=*/
+       {DataTypeConstraint::kFloat16To32, kMaxRank},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_tile_operator_desc#tensor-support
-       /*tile_input=*/SupportedDataTypes::All(),
+       /*tile_input=*/
+       {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
 
        // Transpose is emulated by identity.
-       /*transpose_input=*/kFloat16To32Ints8To32,
+       /*transpose_input=*/{kFloat16To32Ints8To32, kMaxRank},
 
        // Triangular is emulated by DML_FILL_VALUE_CONSTANT_OPERATOR_DESC,
        // DML_ELEMENT_WISE_MULTIPLY_OPERATOR_DESC,
        // DML_ELEMENT_WISE_BIT_AND_OPERATOR_DESC,
        // DML_ELEMENT_WISE_IDENTITY_OPERATOR_DESC and DML_SLICE_OPERATOR_DESC
-       // when the feature level is less than 5.1, so the data type limit is set
-       // based on these ops.
+       // when the feature level is less than 5.1, or for ranks higher than 4
+       // so the data type limit is set based on these ops.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_diagonal_matrix1_operator_desc#tensor-support
-       /*triangular_input=*/kFloat16To32Ints32,
+       /*triangular_input=*/{kFloat16To32Ints32, {2, 8}},
 
        // https://learn.microsoft.com/en-us/windows/win32/api/directml/ns-directml-dml_element_wise_if_operator_desc
-       /*where_condition=*/DataTypeConstraint::kUint8,
-       /*where_value=*/kFloat16To32Ints8To32});
+       /*where_condition=*/{DataTypeConstraint::kUint8, kMaxRank},
+       /*where_value=*/{kFloat16To32Ints8To32, kMaxRank}});
 
   if (feature_level >= DML_FEATURE_LEVEL_4_1) {
-    properties.data_type_limits.concat_inputs = SupportedDataTypes::All();
-    properties.data_type_limits.add_input =
+    properties.data_type_limits.concat_inputs.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.add_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.sub_input =
+    properties.data_type_limits.sub_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.mul_input =
+    properties.data_type_limits.mul_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.equal_input = SupportedDataTypes::All();
-    properties.data_type_limits.greater_input = SupportedDataTypes::All();
-    properties.data_type_limits.greater_or_equal_input =
-        SupportedDataTypes::All();
-    properties.data_type_limits.lesser_input = SupportedDataTypes::All();
-    properties.data_type_limits.lesser_or_equal_input =
-        SupportedDataTypes::All();
-    properties.data_type_limits.abs_input = kFloat16To32Int8To64;
-    properties.data_type_limits.identity_input = SupportedDataTypes::All();
-    properties.data_type_limits.expand_input = SupportedDataTypes::All();
-    properties.data_type_limits.gather_input = SupportedDataTypes::All();
-    properties.data_type_limits.gather_elements_input =
-        SupportedDataTypes::All();
-    properties.data_type_limits.gather_nd_input = SupportedDataTypes::All();
-    properties.data_type_limits.reshape_input = SupportedDataTypes::All();
-    properties.data_type_limits.scatter_nd_input = SupportedDataTypes::All();
-    properties.data_type_limits.sign_input =
+    properties.data_type_limits.equal_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.greater_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.greater_or_equal_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.lesser_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.lesser_or_equal_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.abs_input.data_types = kFloat16To32Int8To64;
+    properties.data_type_limits.identity_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.expand_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.gather_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.gather_elements_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.gather_nd_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.not_equal_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reshape_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reverse_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.scatter_elements_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.scatter_nd_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.scatter_nd_updates.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.sign_input.data_types =
         DataTypeConstraint::kFloat16To32Int8To64;
-    properties.data_type_limits.slice_input = SupportedDataTypes::All();
-    properties.data_type_limits.split_input = SupportedDataTypes::All();
-    properties.data_type_limits.transpose_input = SupportedDataTypes::All();
-    properties.data_type_limits.triangular_input =
+    properties.data_type_limits.slice_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.split_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.transpose_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.triangular_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_0) {
-    properties.data_type_limits.clamp_input = SupportedDataTypes::All();
-    properties.data_type_limits.max_input = SupportedDataTypes::All();
-    properties.data_type_limits.min_input = SupportedDataTypes::All();
-    properties.data_type_limits.pad_input = SupportedDataTypes::All(),
-    properties.data_type_limits.reduce_l1_input =
+    properties.data_type_limits.clamp_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.cumulative_sum_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.reduce_max_input = SupportedDataTypes::All();
-    properties.data_type_limits.reduce_min_input = SupportedDataTypes::All();
-    properties.data_type_limits.reduce_sum_input =
+    properties.data_type_limits.max_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.min_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.pad_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reduce_l1_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.reduce_sum_square_input =
+    properties.data_type_limits.reduce_max_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reduce_min_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.reduce_sum_input.data_types =
         DataTypeConstraint::kFloat16To32Ints32To64;
-    properties.data_type_limits.where_value = SupportedDataTypes::All();
-    properties.data_type_limits.max_pool2d_input = SupportedDataTypes::All();
+    properties.data_type_limits.reduce_sum_square_input.data_types =
+        DataTypeConstraint::kFloat16To32Ints32To64;
+    properties.data_type_limits.where_value.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.max_pool2d_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_5_1) {
-    properties.data_type_limits.add_input = SupportedDataTypes::All();
-    properties.data_type_limits.sub_input = SupportedDataTypes::All();
-    properties.data_type_limits.mul_input = SupportedDataTypes::All();
-    properties.data_type_limits.div_input = kFloat16To32Ints8To32;
-    properties.data_type_limits.prelu_input =
+    properties.data_type_limits.add_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.sub_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.mul_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.div_input.data_types = kFloat16To32Ints8To32;
+    properties.data_type_limits.prelu_input.data_types =
         DataTypeConstraint::kFloat16To32Int8To32;
-    properties.data_type_limits.relu_input =
+    properties.data_type_limits.relu_input.data_types =
         DataTypeConstraint::kFloat16To32Int8To32;
-    properties.data_type_limits.triangular_input = SupportedDataTypes::All();
+    properties.data_type_limits.resample2d_input.ranks =
+        SupportedRanks::UpTo(4);
+    properties.data_type_limits.triangular_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_0) {
-    properties.data_type_limits.div_input = SupportedDataTypes::All();
-    properties.data_type_limits.dequantize_linear_scale =
+    properties.data_type_limits.div_input.data_types =
+        DataTypeConstraint::kAllDataTypesAtLeast8bits;
+    properties.data_type_limits.dequantize_linear_scale.data_types =
         DataTypeConstraint::kFloat16To32;
-    properties.data_type_limits.quantize_linear_input =
+    properties.data_type_limits.quantize_linear_input.data_types =
         DataTypeConstraint::kFloat16To32;
   }
 
   if (feature_level >= DML_FEATURE_LEVEL_6_2) {
-    properties.data_type_limits.resample2d_input = kFloat16To32Ints8;
+    properties.data_type_limits.resample2d_input.data_types = kFloat16To32Ints8;
+  }
+
+  if (feature_level >= DML_FEATURE_LEVEL_6_3) {
+    properties.data_type_limits.input = SupportedDataTypes::All();
+    properties.data_type_limits.constant = SupportedDataTypes::All();
+    properties.data_type_limits.dequantize_linear_input.data_types = kInts4To32;
+    properties.data_type_limits.dequantize_linear_zero_point.data_types =
+        kInts4To32;
+    properties.data_type_limits.quantize_linear_zero_point.data_types =
+        DataTypeConstraint::kInts4ToInts8;
   }
 
   return properties;
@@ -442,24 +601,46 @@ base::WeakPtr<WebNNContextImpl> ContextImplDml::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+// static
+void ContextImplDml::SetBackendForTesting(
+    BackendForTesting* backend_for_testing) {
+  g_backend_for_testing = backend_for_testing;
+}
+
 void ContextImplDml::CreateGraphImpl(
+    mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-    base::flat_map<uint64_t, std::unique_ptr<WebNNConstantOperand>>
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
+    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
     WebNNContextImpl::CreateGraphImplCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateGraphImpl(std::move(receiver), this,
+                                           std::move(compute_resource_info),
+                                           std::move(callback));
+    return;
+  }
+
   GraphImplDml::CreateAndBuild(
-      adapter_, weak_factory_.GetWeakPtr(), std::move(graph_info),
-      std::move(compute_resource_info), std::move(constant_operands),
+      std::move(receiver), adapter_, weak_factory_.GetWeakPtr(),
+      std::move(graph_info), std::move(compute_resource_info),
+      std::move(constant_operands), std::move(constant_tensor_operands),
       std::move(callback),
       gpu_feature_info_->IsWorkaroundEnabled(
-          gpu::DML_EXECUTION_DISABLE_META_COMMANDS));
+          gpu::DISABLE_DML_META_COMMANDS_FOR_GPU));
 }
 
 void ContextImplDml::CreateTensorImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNTensor> receiver,
     mojom::TensorInfoPtr tensor_info,
     CreateTensorImplCallback callback) {
+  if (g_backend_for_testing) {
+    g_backend_for_testing->CreateTensorImpl(
+        this, std::move(receiver), std::move(tensor_info), std::move(callback));
+    return;
+  }
+
   // DML requires resources to be in multiple of 4 bytes.
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   constexpr uint64_t kDMLBufferAlignment = 4ull;
@@ -483,7 +664,8 @@ void ContextImplDml::CreateTensorImpl(
   if (adapter_->IsUMA()) {
     // Create a buffer configured with memory properties based on
     // usage.
-    if (tensor_info->usage.Has(MLTensorUsageFlags::kWrite)) {
+    if (tensor_info->usage.Has(MLTensorUsageFlags::kWrite) ||
+        tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
       // Upload buffer is used when the buffer mostly CPU writes but
       // could also CPU read. A upload buffer provides less bandwidth for CPU
       // reads in favor of GPU writes being optimal.
@@ -603,7 +785,7 @@ void ContextImplDml::OnReadbackComplete(
     return;
   }
 
-  mojo_base::BigBuffer dst_buffer(base::make_span(
+  mojo_base::BigBuffer dst_buffer(base::span(
       static_cast<const uint8_t*>(mapped_download_data), read_byte_size));
 
   download_buffer->Unmap(0, nullptr);
@@ -712,7 +894,7 @@ HRESULT ContextImplDml::StartRecordingIfNecessary() {
 }
 
 void ContextImplDml::HandleRecordingError(std::string_view error_message,
-                                       HRESULT hr) {
+                                          HRESULT hr) {
   command_recorder_.reset();
   HandleContextLostOrCrash(error_message, hr);
 }
@@ -753,6 +935,20 @@ void ContextImplDml::HandleContextLostOrCrash(std::string_view message_for_log,
 
   OnLost(base::StrCat({"WebNN context is lost due to ", message_for_promise}));
   CHECK(hr == E_OUTOFMEMORY || hr == DXGI_ERROR_DEVICE_RESET);
+}
+
+CommandQueue* ContextImplDml::GetCommandQueue() const {
+  return adapter_->command_queue();
+}
+
+void ContextImplDml::RemoveDeviceForTesting() {
+  CHECK_IS_TEST();
+
+  ComPtr<ID3D12Device5> d3d12_device_5;
+  CHECK_EQ(
+      adapter_->d3d12_device()->QueryInterface(IID_PPV_ARGS(&d3d12_device_5)),
+      S_OK);
+  d3d12_device_5->RemoveDevice();
 }
 
 }  // namespace webnn::dml

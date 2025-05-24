@@ -8,11 +8,13 @@
  */
 
 import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
-
 import './bluetooth_base_page.js';
+
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {getTemplate} from './bluetooth_spinner_page.html.js';
-import {ButtonBarState, ButtonState} from './bluetooth_types.js';
+import type {ButtonBarState} from './bluetooth_types.js';
+import {ButtonState} from './bluetooth_types.js';
 
 export class SettingsBluetoothSpinnerPageElement extends PolymerElement {
   static get is() {

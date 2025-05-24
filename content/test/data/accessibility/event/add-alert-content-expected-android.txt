@@ -1,1 +1,1 @@
-TYPE_ANNOUNCEMENT - [Foo]
+TYPE_ANNOUNCEMENT - [First alert]

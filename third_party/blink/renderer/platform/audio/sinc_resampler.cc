@@ -187,6 +187,8 @@ class BufferSourceProvider final : public AudioSourceProvider {
     source_ += frames_to_copy;
   }
 
+  void SetClient(AudioSourceProviderClient*) override {}
+
  private:
   raw_ptr<const float, AllowPtrArithmetic> source_;
   int source_frames_available_;

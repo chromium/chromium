@@ -10,8 +10,6 @@
 
 goog.provide('goog.ui.ContainerRenderer');
 
-goog.forwardDeclare('goog.ui.Container');
-goog.forwardDeclare('goog.ui.Container.Orientation');
 goog.require('goog.a11y.aria');
 goog.require('goog.asserts');
 goog.require('goog.dom.NodeType');
@@ -21,6 +19,8 @@ goog.require('goog.string');
 goog.require('goog.style');
 goog.require('goog.ui.registry');
 goog.require('goog.userAgent');
+goog.requireType('goog.ui.Container');
+goog.requireType('goog.ui.Container.Orientation');
 goog.requireType('goog.ui.Control');
 
 
@@ -115,6 +115,7 @@ goog.ui.ContainerRenderer.prototype.getAriaRole = function() {
  * valid tab index can receive focus.
  * @param {Element} element Element whose tab index is to be changed.
  * @param {boolean} enable Whether to add or remove the element's tab index.
+ * @suppress {strictMissingProperties}
  */
 goog.ui.ContainerRenderer.prototype.enableTabIndex = function(element, enable) {
   'use strict';
@@ -357,6 +358,7 @@ goog.ui.ContainerRenderer.prototype.getCssClass = function() {
  *     returned.
  * @return {!Array<string>} Array of CSS class names applicable to the
  *     container.
+ * @suppress {missingRequire} TODO(user): fix this
  */
 goog.ui.ContainerRenderer.prototype.getClassNames = function(container) {
   'use strict';

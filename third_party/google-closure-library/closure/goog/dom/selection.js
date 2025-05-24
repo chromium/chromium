@@ -27,6 +27,7 @@ goog.require('goog.string');
 goog.dom.selection.setStart = function(textfield, pos) {
   'use strict';
   if (goog.dom.selection.useSelectionProperties_(textfield)) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     textfield.selectionStart = pos;
   }
 };
@@ -201,6 +202,7 @@ goog.dom.selection.getEndPoints_ = function(textfield, getOnlyStart) {
 goog.dom.selection.setEnd = function(textfield, pos) {
   'use strict';
   if (goog.dom.selection.useSelectionProperties_(textfield)) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     textfield.selectionEnd = pos;
   }
 };
@@ -227,9 +229,10 @@ goog.dom.selection.setCursorPosition = function(textfield, pos) {
   'use strict';
   if (goog.dom.selection.useSelectionProperties_(textfield)) {
     // Mozilla directly supports this
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     textfield.selectionStart = pos;
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     textfield.selectionEnd = pos;
-
   }
 };
 
@@ -245,8 +248,8 @@ goog.dom.selection.setText = function(textfield, text) {
   if (goog.dom.selection.useSelectionProperties_(textfield)) {
     var value = textfield.value;
     var oldSelectionStart = textfield.selectionStart;
-    var before = value.substr(0, oldSelectionStart);
-    var after = value.substr(textfield.selectionEnd);
+    var before = value.slice(0, oldSelectionStart);
+    var after = value.slice(textfield.selectionEnd);
     textfield.value = before + text + after;
     textfield.selectionStart = oldSelectionStart;
     textfield.selectionEnd = oldSelectionStart + text.length;

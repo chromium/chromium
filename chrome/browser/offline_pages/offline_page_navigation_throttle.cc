@@ -22,8 +22,8 @@ void RecordWhetherNavigationWasCanceled(bool was_navigation_canceled) {
 }  // namespace
 
 OfflinePageNavigationThrottle::OfflinePageNavigationThrottle(
-    content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle) {}
+    content::NavigationThrottleRegistry& registry)
+    : content::NavigationThrottle(registry) {}
 
 OfflinePageNavigationThrottle::~OfflinePageNavigationThrottle() = default;
 
@@ -37,19 +37,20 @@ const char* OfflinePageNavigationThrottle::GetNameForLogging() {
 }
 
 // static
-std::unique_ptr<content::NavigationThrottle>
-OfflinePageNavigationThrottle::MaybeCreateThrottleFor(
-    content::NavigationHandle* navigation_handle) {
+void OfflinePageNavigationThrottle::MaybeCreateAndAdd(
+    content::NavigationThrottleRegistry& registry) {
   // Checks if the request was initiated by the renderer and if it contains the
   // "X-Chrome-offline" header. There is no legitimate reason for a renderer to
   // make a request with this header, so we can cancel these types of requests.
-  if (navigation_handle->IsRendererInitiated() &&
-      navigation_handle->GetRequestHeaders().HasHeader(kOfflinePageHeader)) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  if (navigation_handle.IsRendererInitiated() &&
+      navigation_handle.GetRequestHeaders().HasHeader(kOfflinePageHeader)) {
     RecordWhetherNavigationWasCanceled(true);
-    return std::make_unique<OfflinePageNavigationThrottle>(navigation_handle);
+    registry.AddThrottle(
+        std::make_unique<OfflinePageNavigationThrottle>(registry));
+    return;
   }
   RecordWhetherNavigationWasCanceled(false);
-  return nullptr;
 }
 
 }  // namespace offline_pages

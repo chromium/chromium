@@ -7,11 +7,11 @@
 #include <algorithm>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
@@ -58,8 +58,9 @@ ScrollBarThumb::~ScrollBarThumb() = default;
 
 gfx::Size ScrollBarThumb::CalculatePreferredSize(
     const SizeBounds& /*available_size*/) const {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return gfx::Size();
+  }
   return GetNativeTheme()->GetPartSize(
       GetNativeThemePart(), GetNativeThemeState(), GetNativeThemeParams());
 }
@@ -180,8 +181,9 @@ int ScrollBarViews::GetVerticalScrollBarWidth(const ui::NativeTheme* theme) {
 
 void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   gfx::Rect bounds = GetTrackBounds();
-  if (bounds.IsEmpty())
+  if (bounds.IsEmpty()) {
     return;
+  }
 
   ui::NativeTheme::ScrollbarTrackExtraParams scrollbar_track;
   scrollbar_track.track_x = bounds.x();

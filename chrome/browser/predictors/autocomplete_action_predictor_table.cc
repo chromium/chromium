@@ -44,7 +44,7 @@ bool StepAndInitializeRow(
 
   row->id = statement->ColumnString(0);
   row->user_text = statement->ColumnString16(1);
-  row->url = GURL(statement->ColumnString(2));
+  row->url = GURL(statement->ColumnStringView(2));
   row->number_of_hits = statement->ColumnInt(3);
   row->number_of_misses = statement->ColumnInt(4);
   return true;

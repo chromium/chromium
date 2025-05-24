@@ -15,9 +15,7 @@
 
 namespace content {
 
-bool LibraryLoaded(JNIEnv* env,
-                   jclass clazz,
-                   base::android::LibraryProcessType library_process_type) {
+bool LibraryLoaded(base::android::LibraryProcessType library_process_type) {
   // Android's main browser loop is custom so we set the browser name here as
   // early as possible if this is the browser process or main webview process.
   if (library_process_type ==
@@ -27,8 +25,6 @@ bool LibraryLoaded(JNIEnv* env,
     base::CurrentProcess::GetInstance().SetProcessType(
         base::CurrentProcessType::PROCESS_BROWSER);
   }
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventBrowserProcessSortIndex);
 
   // Tracing itself can only be enabled after mojo is initialized, we do so in
   // ContentMainRunnerImpl::Initialize.

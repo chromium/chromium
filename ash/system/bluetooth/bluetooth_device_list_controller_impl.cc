@@ -8,7 +8,8 @@
 #include "ash/system/bluetooth/bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/bluetooth_device_list_item_view.h"
 #include "base/check.h"
-#include "ui/gfx/paint_vector_icon.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -65,8 +66,9 @@ void BluetoothDeviceListControllerImpl::UpdateDeviceList(
   // view from this map when the corresponding device is found in |connected| or
   // |previously_connected|. Before returning, any view remaining in
   // |previous_views| is no longer needed and is deleted.
-  base::flat_map<std::string, BluetoothDeviceListItemView*> previous_views =
-      std::move(device_id_to_view_map_);
+  base::flat_map<std::string,
+                 raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>
+      previous_views = std::move(device_id_to_view_map_);
   device_id_to_view_map_.clear();
 
   // Since we re-use views when possible, we need to re-order them to match the
@@ -130,7 +132,7 @@ BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
     size_t index) {
   if (!sub_header) {
     sub_header = bluetooth_detailed_view_->AddDeviceListSubHeader(
-        gfx::kNoneIcon, text_id);
+        gfx::VectorIcon::EmptyIcon(), text_id);
   }
   bluetooth_detailed_view_->device_list()->ReorderChildView(sub_header, index);
   return sub_header;
@@ -138,7 +140,9 @@ BluetoothDeviceListControllerImpl::CreateSubHeaderIfMissingAndReorder(
 
 size_t BluetoothDeviceListControllerImpl::CreateViewsIfMissingAndReorder(
     const PairedBluetoothDevicePropertiesPtrs& device_property_list,
-    base::flat_map<std::string, BluetoothDeviceListItemView*>* previous_views,
+    base::flat_map<std::string,
+                   raw_ptr<BluetoothDeviceListItemView, CtnExperimental>>*
+        previous_views,
     size_t index) {
   DCHECK(previous_views);
 

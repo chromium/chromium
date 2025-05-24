@@ -4,9 +4,7 @@
 
 #include "crypto/unexportable_key.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "crypto/fake_apple_keychain_v2.h"
-#include "crypto/features.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,9 +27,6 @@ class UnexportableKeyMacTest : public testing::Test {
  protected:
   ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kTestKeychainAccessGroup};
-
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kEnableMacUnexportableKeys};
 };
 
 TEST_F(UnexportableKeyMacTest, SecureEnclaveAvailability) {

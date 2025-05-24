@@ -36,7 +36,6 @@ int GetMaxRequestsPerDay(NetworkRequestType request_type) {
     case NetworkRequestType::kFollowWebFeed:
     case NetworkRequestType::kSingleWebFeedListContents:
     case NetworkRequestType::kQueryWebFeed:
-    case NetworkRequestType::kSupervisedFeed:
       return -1;
   }
 }

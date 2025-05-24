@@ -12,7 +12,7 @@
 #include "components/affiliations/core/browser/mock_affiliation_source.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_http_client.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/plus_address_service_impl.h"
 #include "components/plus_addresses/plus_address_test_environment.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -36,7 +36,7 @@ using ::testing::UnorderedElementsAreArray;
 class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
  protected:
   PlusAddressAffiliationSourceAdapterTest() {
-    service_ = std::make_unique<PlusAddressService>(
+    service_ = std::make_unique<PlusAddressServiceImpl>(
         &plus_environment_.pref_service(),
         plus_environment_.identity_env().identity_manager(),
         &plus_environment_.setting_service(),
@@ -74,7 +74,7 @@ class PlusAddressAffiliationSourceAdapterTest : public testing::Test {
   test::PlusAddressTestEnvironment plus_environment_;
   testing::StrictMock<MockAffiliationSourceObserver> mock_source_observer_;
   std::unique_ptr<PlusAddressAffiliationSourceAdapter> adapter_;
-  std::unique_ptr<PlusAddressService> service_;
+  std::unique_ptr<PlusAddressServiceImpl> service_;
 };
 
 // Verifies that no facets are returned when no plus addresses are registered.

@@ -24,11 +24,11 @@ build_webui_tests("build_webui_tests") {
     "page_size_select_test.ts",
     "resolution_select_test.ts",
     "scan_done_section_test.ts",
+    "scan_preview_test.ts",
+    "scan_to_select_test.ts",
     "scanner_select_test.ts",
     "scanning_app_test.ts",
     "scanning_app_test_utils.ts",
-    "scan_preview_test.ts",
-    "scan_to_select_test.ts",
     "source_select_test.ts",
     "test_scanning_browser_proxy.ts",
   ]

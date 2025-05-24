@@ -6,7 +6,6 @@
 import type {SettingsCategoryDefaultRadioGroupElement} from 'chrome://settings/lazy_load.js';
 import {ContentSetting, DefaultSettingSource, ContentSettingsTypes, SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertEquals, assertNotEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
-//import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
@@ -76,11 +75,9 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
       expectedEnabledContentSetting: ContentSetting) {
     proxy.reset();
     proxy.setPrefs(prefs);
-    let whenChanged = eventToPromise(
-        'selected-changed', element.$.settingsCategoryDefaultRadioGroup);
     element.set('category', expectedCategory);
     let category = await proxy.whenCalled('getDefaultValueForContentType');
-    await whenChanged;
+    await microtasksFinished();
     let categoryEnabled = element.$.enabledRadioOption.checked;
     assertEquals(expectedCategory, category);
     assertEquals(expectedEnabled, categoryEnabled);
@@ -93,12 +90,15 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     element.shadowRoot!.querySelector<HTMLElement>(
                            oppositeRadioButton)!.click();
 
-    whenChanged = eventToPromise(
-        'selected-changed', element.$.settingsCategoryDefaultRadioGroup);
+    let whenChanged =
+        eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
+    let selectedChangedEventPromise =
+        eventToPromise('selected-changed', element);
     let setting;
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
     await whenChanged;
+    await selectedChangedEventPromise;
     assertEquals(expectedCategory, category);
     const oppositeSetting =
         expectedEnabled ? ContentSetting.BLOCK : expectedEnabledContentSetting;
@@ -112,12 +112,14 @@ suite('SettingsCategoryDefaultRadioGroup', function() {
     const initialRadioButton =
         expectedEnabled ? '#enabledRadioOption' : '#disabledRadioOption';
     element.shadowRoot!.querySelector<HTMLElement>(initialRadioButton)!.click();
-    whenChanged = eventToPromise(
-        'selected-changed', element.$.settingsCategoryDefaultRadioGroup);
+    whenChanged =
+        eventToPromise('change', element.$.settingsCategoryDefaultRadioGroup);
+    selectedChangedEventPromise = eventToPromise('selected-changed', element);
 
     [category, setting] =
         await proxy.whenCalled('setDefaultValueForContentType');
     await whenChanged;
+    await selectedChangedEventPromise;
     assertEquals(expectedCategory, category);
     const initialSetting =
         expectedEnabled ? expectedEnabledContentSetting : ContentSetting.BLOCK;

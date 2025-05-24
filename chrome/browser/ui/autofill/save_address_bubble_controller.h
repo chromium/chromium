@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/image_model.h"
@@ -44,6 +44,8 @@ class SaveAddressBubbleController : public content::WebContentsObserver {
   virtual std::u16string GetProfileEmail() const;
   virtual std::u16string GetProfilePhone() const;
   virtual std::u16string GetOkButtonLabel() const;
+  const AutofillProfile& GetAutofillProfile() const { return address_profile_; }
+
   // The value returned by the cancel button callback depends on whether
   // the address is to be saved into user's account. Different values are needed
   // to have different logic for the popup reappearence eligibility.

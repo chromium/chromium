@@ -54,12 +54,12 @@ class WebFrame;
 // http://www.w3.org/TR/2012/WD-webmessaging-20120313/#terminology
 class BLINK_EXPORT WebDOMMessageEvent : public WebDOMEvent {
  public:
-  WebDOMMessageEvent(
-      const WebSerializedScriptValue& message_data,
-      const WebString& origin = WebString(),
-      const WebFrame* source_frame = nullptr,
-      const WebDocument& target_document = WebDocument(),
-      WebVector<MessagePortChannel> ports = WebVector<MessagePortChannel>());
+  WebDOMMessageEvent(const WebSerializedScriptValue& message_data,
+                     const WebString& origin = WebString(),
+                     const WebFrame* source_frame = nullptr,
+                     const WebDocument& target_document = WebDocument(),
+                     std::vector<MessagePortChannel> ports =
+                         std::vector<MessagePortChannel>());
   WebDOMMessageEvent() = default;
 
   WebString Origin() const;

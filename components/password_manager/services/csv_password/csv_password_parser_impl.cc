@@ -18,10 +18,10 @@ CSVPasswordParserImpl::CSVPasswordParserImpl(
 
 CSVPasswordParserImpl::~CSVPasswordParserImpl() = default;
 
-void CSVPasswordParserImpl::ParseCSV(const std::string& raw_json,
+void CSVPasswordParserImpl::ParseCSV(const std::string& raw_csv,
                                      ParseCSVCallback callback) {
   mojom::CSVPasswordSequencePtr result = nullptr;
-  CSVPasswordSequence seq(raw_json);
+  CSVPasswordSequence seq(raw_csv);
   if (seq.result() == CSVPassword::Status::kOK) {
     result = mojom::CSVPasswordSequence::New();
     for (const auto& pwd : seq)

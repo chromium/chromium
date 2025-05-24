@@ -45,6 +45,34 @@ typedef void (^CRUTaskResultCallback)(NSString* _Nullable,
                                       NSString* _Nullable,
                                       NSError* _Nullable);
 
+@class CRURegistrationWorkItem;  // break circular reference
+/***
+ * CRUNextTaskCallback is similar to CRUTaskResultCallback, but it is run
+ * synchronously by the work queue and may return a new work item to perform
+ * next, preempting any other queued task. The current work item (that has just
+ * completed or failed its task) is provided to the callback to make it easier
+ * to avoid dependency cycles.
+ *
+ * Parameters:
+ *  CRURegistrationWorkItem* -- the work item that just completed, which
+ *      contained this block as its `onDone` callback.
+ *  NSString* -- all stdout content, nil if the process never launched.
+ *  NSString* -- all stderr content. nil if the process never launched.
+ *  NSError* -- return value of the process.
+ *      * nil: the process ran and returned zero
+ *      * error domain is CRUReturnCodeErrorDomain: process ran and returned
+ *      nonzero; error code
+ *          is the return value. NSData* arguments will be nonnil.
+ *      * any other error domain: the task could not be launched; this is the
+ *      error from NSTask or
+ *          is in CRURegistrationErrorDomain. NSData* elements will be nil.
+ */
+typedef CRURegistrationWorkItem* _Nullable (^CRUNextTaskCallback)(
+    CRURegistrationWorkItem*,
+    NSString* _Nullable,
+    NSString* _Nullable,
+    NSError* _Nullable);
+
 /**
  * CRUAsyncTaskRunner runs an NSTask and asynchronously accumulates its stdout
  * and stderr streams into NSMutableData buffers.
@@ -96,6 +124,14 @@ typedef void (^CRUTaskResultCallback)(NSString* _Nullable,
  * _not_ responsible for cycling the task queue.
  */
 @property(nonatomic, copy) CRUTaskResultCallback resultCallback;
+
+/**
+ * Handler invoked synchronously with the task results, which has the
+ * opportunity to preempt the next task or edit this CRURegistrationWorkItem
+ * (for example, to change `resultCallback`) before `resultCallback` is
+ * asynchronously invoked.
+ */
+@property(nonatomic, copy) CRUNextTaskCallback onDone;
 
 @end
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_BUTTON_H_
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
@@ -37,7 +38,7 @@ class ExtensionsMenuButton : public HoverButton,
   // HoverButton:
   void AddedToWidget() override;
 
-  const std::u16string& label_text_for_testing() const {
+  std::u16string_view label_text_for_testing() const {
     return label()->GetText();
   }
 

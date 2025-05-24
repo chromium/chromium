@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   };
 
   QuotaTemporaryStorageEvictor(QuotaEvictionHandler* quota_eviction_handler,
-                               int64_t interval_ms);
+                               base::TimeDelta interval);
 
   QuotaTemporaryStorageEvictor(const QuotaTemporaryStorageEvictor&) = delete;
   QuotaTemporaryStorageEvictor& operator=(const QuotaTemporaryStorageEvictor&) =
@@ -75,7 +75,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
  private:
   friend class QuotaTemporaryStorageEvictorTest;
 
-  void StartEvictionTimerWithDelay(int64_t delay_ms);
+  void StartEvictionTimerWithDelay(base::TimeDelta delay);
   void ConsiderEviction();
   void OnEvictedExpiredBuckets(blink::mojom::QuotaStatusCode status);
   void OnGotEvictionRoundInfo(blink::mojom::QuotaStatusCode status,
@@ -99,7 +99,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTemporaryStorageEvictor {
   EvictionRoundStatistics round_statistics_;
   base::Time time_of_end_of_last_nonskipped_round_;
 
-  int64_t interval_ms_;
+  base::TimeDelta interval_;
   bool timer_disabled_for_testing_ = false;
   base::RepeatingClosure on_round_finished_for_testing_;
 

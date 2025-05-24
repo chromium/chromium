@@ -20,6 +20,7 @@
 #include "ash/style/rounded_container.h"
 #include "ash/style/switch.h"
 #include "ash/style/system_textfield.h"
+#include "ash/style/tab_slider_button.h"
 #include "ash/system/focus_mode/focus_mode_chip_carousel.h"
 #include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_countdown_view.h"
@@ -28,6 +29,8 @@
 #include "ash/system/focus_mode/focus_mode_task_test_utils.h"
 #include "ash/system/focus_mode/focus_mode_task_view.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
+#include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/tray/fake_detailed_view_delegate.h"
 #include "ash/system/tray/hover_highlight_view.h"
@@ -35,10 +38,10 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/test/ash_test_base.h"
+#include "base/containers/contains.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
@@ -66,8 +69,7 @@ constexpr base::TimeDelta kStartAnimationDelay = base::Milliseconds(300);
 class FocusModeDetailedViewTest : public AshTestBase {
  public:
   FocusModeDetailedViewTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scoped_feature_(features::kFocusMode) {}
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~FocusModeDetailedViewTest() override = default;
 
   // AshTestBase:
@@ -208,10 +210,15 @@ class FocusModeDetailedViewTest : public AshTestBase {
     return focus_mode_detailed_view_->task_view_container_;
   }
 
+  FocusModeSoundsView* GetSoundsView() {
+    return static_cast<FocusModeSoundsView*>(
+        focus_mode_detailed_view_->GetViewByID(
+            FocusModeDetailedView::ViewId::kSoundView));
+  }
+
   FakeDetailedViewDelegate detailed_view_delegate_;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<FocusModeDetailedView> focus_mode_detailed_view_ = nullptr;
 };
@@ -369,6 +376,24 @@ TEST_F(FocusModeDetailedViewTest, ToggleRow) {
 
   LeftClickOn(GetToggleRowButton());
   validate_labels(/*active=*/false, "Toggle off session again");
+}
+
+// Use a touch event to start focus mode after editing the timer.
+// https://crbug.com/371635929
+TEST_F(FocusModeDetailedViewTest, TapButtonAfterTimerChange) {
+  // Enter '11' into the timer field.
+  SystemTextfield* timer_textfield = GetTimerSettingTextfield();
+  LeftClickOn(timer_textfield);
+  ASSERT_TRUE(timer_textfield->IsActive());
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_DELETE);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1);
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_1);
+  EXPECT_EQ(u"11", timer_textfield->GetText());
+
+  // Tap on the start button.
+  GestureTapOn(GetToggleRowButton());
+
+  EXPECT_EQ(FocusModeController::Get()->session_duration().InMinutes(), 11);
 }
 
 // Tests how the textfield for the timer setting view handles valid and invalid
@@ -651,9 +676,10 @@ TEST_F(FocusModeDetailedViewTest,
   auto pod = controller->CreateTile();
 
   auto* timer_textfield = GetTimerSettingTextfield();
-  auto textfield_text_before_increment = timer_textfield->GetText();
+  std::u16string textfield_text_before_increment(timer_textfield->GetText());
   LeftClickOn(GetTimerSettingIncrementButton());
-  auto textfield_text_after_increment = timer_textfield->GetText();
+  std::u16string_view textfield_text_after_increment =
+      timer_textfield->GetText();
   ASSERT_NE(textfield_text_before_increment, textfield_text_after_increment);
   EXPECT_EQ(base::StrCat({textfield_text_after_increment, u" min"}),
             pod->sub_label()->GetText());
@@ -918,8 +944,7 @@ TEST_F(FocusModeDetailedViewTest,
 
   ASSERT_TRUE(hover_highlight_view);
   ASSERT_TRUE(right_view);
-  ASSERT_TRUE(std::string(right_view->GetClassName()).find("Button") !=
-              std::string::npos);
+  ASSERT_TRUE(base::Contains(right_view->GetClassName(), "Button"));
 
   hover_highlight_view->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kClick);
@@ -964,6 +989,76 @@ TEST_F(FocusModeDetailedViewWithLotsOfTasksTest, LimitTasks) {
   EXPECT_TRUE(chip_carousel->HasTasks());
   EXPECT_EQ(chip_carousel->GetTaskCountForTesting(), 5);
   EXPECT_TRUE(chip_carousel->GetVisible());
+}
+
+// Tests that deselecting and re-selecting a task added through the focus panel
+// works and has the newly added task data.
+TEST_F(FocusModeDetailedViewTest, ReselectAddedTask) {
+  // Verify the starting state where we have one pre-populated task.
+  auto* task_view = GetTaskView();
+  auto* chip_carousel = task_view->chip_carousel_for_testing();
+  EXPECT_TRUE(chip_carousel->HasTasks());
+  EXPECT_TRUE(chip_carousel->GetVisible());
+  EXPECT_EQ(chip_carousel->GetTaskCountForTesting(), 1);
+
+  // Verify a new task is added.
+  std::u16string new_task_title = u"my task title";
+  task_view->CommitTextfieldContents(new_task_title);
+  AdvanceClock(base::Milliseconds(10));
+  EXPECT_FALSE(chip_carousel->GetVisible());
+  EXPECT_EQ(chip_carousel->GetTaskCountForTesting(), 2);
+
+  // Simulate a task being removed. Then verify that we are able to select the
+  // task that was added.
+  task_view->OnClearTask();
+  auto* controller = FocusModeController::Get();
+  EXPECT_FALSE(controller->HasSelectedTask());
+  EXPECT_TRUE(chip_carousel->GetVisible());
+  views::View* scroll_contents =
+      chip_carousel->GetScrollViewForTesting()->contents();
+  LeftClickOn(scroll_contents->GetChildrenInZOrder()[0]);
+  EXPECT_TRUE(controller->HasSelectedTask());
+  EXPECT_EQ(controller->tasks_model().selected_task()->title,
+            base::UTF16ToUTF8(new_task_title));
+}
+
+// Tests that the sounds view toggle buttons are visible and function correctly.
+// Regression test for crbug.com/402456595
+TEST_F(FocusModeDetailedViewTest, SoundsViewFunctionality) {
+  // Verify that the sounds view is present.
+  FocusModeSoundsView* sounds_view = GetSoundsView();
+  EXPECT_TRUE(sounds_view->GetVisible());
+  EXPECT_THAT(sounds_view->soundscape_views(),
+              testing::Pair(testing::NotNull(), testing::NotNull()));
+  EXPECT_THAT(sounds_view->youtube_music_views(),
+              testing::Pair(testing::NotNull(), testing::NotNull()));
+
+  TabSliderButton* soundscapes_button = sounds_view->soundscape_views().first;
+  SoundSectionView* soundscapes_section =
+      sounds_view->soundscape_views().second;
+  ash::TabSliderButton* ytm_button = sounds_view->youtube_music_views().first;
+  SoundSectionView* ytm_section = sounds_view->youtube_music_views().second;
+
+  // Check that the tab slider buttons are both showing (i.e. non-zero width),
+  // and that the soundscapes section view is shown by default.
+  EXPECT_TRUE(soundscapes_button->GetVisible());
+  EXPECT_TRUE(ytm_button->GetVisible());
+  EXPECT_GT(soundscapes_button->width(), 0);
+  EXPECT_GT(ytm_button->width(), 0);
+  EXPECT_TRUE(soundscapes_section->GetVisible());
+  EXPECT_FALSE(ytm_section->GetVisible());
+
+  // Click on the ytm button to switch to the ytm section view.
+  ScrollToBottom();
+  LeftClickOn(ytm_button);
+  EXPECT_FALSE(soundscapes_section->GetVisible());
+  EXPECT_TRUE(ytm_section->GetVisible());
+
+  // Click on the soundscapes button to switch back to the soundscapes section
+  // view.
+  LeftClickOn(soundscapes_button);
+  EXPECT_TRUE(soundscapes_section->GetVisible());
+  EXPECT_FALSE(ytm_section->GetVisible());
 }
 
 }  // namespace ash

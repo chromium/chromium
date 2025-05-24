@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -250,9 +251,10 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   WindowEventManager& window_event_manager() { return window_event_manager_; }
 
-  // Indicates if the connection was able to successfully sync with the
-  // window manager.
-  bool synced_with_wm() const { return synced_with_wm_; }
+  // Indicates if the connection is able to sync with the WM, either because the
+  // WM is on an allowlist or the connection successfully synced with the WM to
+  // test support experimentally.
+  bool CanSyncWithWm() const;
 
   // Returns the underlying socket's FD if the connection is valid, or -1
   // otherwise.
@@ -343,7 +345,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
     SendEventRequest send_event{false, target, mask};
     base::span(send_event.event).copy_from(event_bytes);
-    base::ranges::copy(event_bytes, send_event.event.begin());
+    std::ranges::copy(event_bytes, send_event.event.begin());
     return XProto::SendEvent(send_event);
   }
 
@@ -376,7 +378,7 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
     size_t byte_len = response->value_len * response->format / 8u;
     value->resize(response->value_len);
     if (byte_len > 0u) {
-      memcpy(value->data(), response->value->bytes(), byte_len);
+      UNSAFE_TODO(memcpy(value->data(), response->value->bytes(), byte_len));
     }
     if (out_type) {
       *out_type = response->type;
@@ -448,6 +450,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   std::string GetWmName() const;
 
   bool WmSupportsHint(Atom atom) const;
+
+  const std::map<std::string, std::string> GetXResources();
 
   // The viz compositor thread hangs a PlatformEventSource off the connection so
   // that it gets destroyed at the appropriate time.
@@ -601,6 +605,8 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
 
   std::unique_ptr<PropertyCache> root_props_;
   std::unique_ptr<PropertyCache> wm_props_;
+
+  std::map<std::string, std::string> xresources_;
 };
 
 // Grab/release the X server connection within a scope. This can help avoid race

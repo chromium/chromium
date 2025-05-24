@@ -31,6 +31,7 @@ media::mojom::CdmService& GetCdmService(BrowserContext* browser_context,
 // the `site`. Instances are started lazily as needed. The CDM located at
 // `cdm_path` is loaded in the sandboxed process to be used by the service.
 media::mojom::MediaFoundationService& GetMediaFoundationService(
+    const media::CdmType& cdm_type,
     BrowserContext* browser_context,
     const GURL& site,
     const base::FilePath& cdm_path);

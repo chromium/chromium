@@ -29,8 +29,8 @@ function assertFailsWhenDeleted(fn) {
 }
 testSuite({
   setUpPage() {
-    // This test has a tendency to timeout on external Travis testing
-    // infrastructure. Up to 5s from 1s.
+    // This test has a tendency to timeout on external testing infrastructure.
+    // Up to 5s from 1s.
     TestCase.getActiveTestCase().promiseTimeout = 5000;
   },
 

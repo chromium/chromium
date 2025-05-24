@@ -193,7 +193,7 @@ int g_condition = false;
 
 base::RunLoop run_loop;
 base::ThreadPool::PostTask(FROM_HERE, {}, base::BindOnce(
-    [] (base::OnceClosure closure) {
+    [] (base::OnceClosure quit_closure) {
         g_condition = true;
         std::move(quit_closure).Run();
     }, run_loop.QuitClosure()));

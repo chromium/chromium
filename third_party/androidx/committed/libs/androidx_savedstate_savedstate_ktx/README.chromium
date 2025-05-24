@@ -1,0 +1,16 @@
+Name: SavedState Kotlin Extensions
+Short Name: savedstate-ktx
+URL: https://developer.android.com/jetpack/androidx/releases/savedstate#1.4.0-SNAPSHOT
+Version: 1.4.0-SNAPSHOT
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Kotlin extensions for 'savedstate' artifact
+
+Local Modifications:
+No modifications.

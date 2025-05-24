@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {MetricsReporting, PrivacyPageBrowserProxy, ResolverOption, SecureDnsMode, SecureDnsSetting, SecureDnsUiManagementMode} from 'chrome://os-settings/os_settings.js';
+import type {MetricsReporting, PrivacyPageBrowserProxy, ResolverOption, SecureDnsSetting} from 'chrome://os-settings/os_settings.js';
+import {SecureDnsMode, SecureDnsUiManagementMode} from 'chrome://os-settings/os_settings.js';
 import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -21,7 +22,6 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     super([
       'getMetricsReporting',
       'setMetricsReportingEnabled',
-      'showManageSslCertificates',
       'setBlockAutoplayEnabled',
       'getSecureDnsResolverList',
       'getSecureDnsSetting',
@@ -37,9 +37,12 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     this.secureDnsSetting = {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
       dohWithIdentifiersActive: false,
       configForDisplay: '',
+      dohDomainConfigSet: false,
     };
 
     this.resolverList_ = [{name: 'Custom', value: 'custom', policy: ''}];
@@ -52,10 +55,6 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
 
   setMetricsReportingEnabled(enabled: boolean) {
     this.methodCalled('setMetricsReportingEnabled', enabled);
-  }
-
-  showManageSslCertificates() {
-    this.methodCalled('showManageSslCertificates');
   }
 
   setBlockAutoplayEnabled(enabled: boolean) {

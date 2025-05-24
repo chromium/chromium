@@ -43,7 +43,7 @@ std::optional<policy::CloudPolicyClient::MacAddress> ParseMacAddress(
     }
 
     if (!base::HexStringToSpan(mac_address_string.substr(string_idx, 2),
-                               parsed_mac_address_span.subspan(span_idx, 1))) {
+                               parsed_mac_address_span.subspan(span_idx, 1u))) {
       return std::nullopt;
     }
   }

@@ -252,13 +252,24 @@ class CRYPTO_EXPORT VirtualUnexportableKeyProvider {
 CRYPTO_EXPORT std::unique_ptr<UnexportableKeyProvider>
 GetUnexportableKeyProvider(UnexportableKeyProvider::Config config);
 
+// GetMicrosoftSoftwareUnexportableKeyProvider returns an
+// |UnexportableKeyProvider| that is backed by the Microsoft Software Key
+// Storage Provider. Keys stored in this fashion are available to both the
+// software that created them, and any software running locally with
+// administrative privileges.
+// Microsoft Software keys are less secure than TPM backed keys, so
+// |GetUnexportableKeyProvider| should be preferred, but they are more widely
+// available.
+CRYPTO_EXPORT std::unique_ptr<UnexportableKeyProvider>
+GetMicrosoftSoftwareUnexportableKeyProvider();
+
 // GetVirtualUnexportableKeyProvider_DO_NOT_USE_METRICS_ONLY returns a
 // |VirtualUnexportableKeyProvider| for the current platform, or nullptr if
 // there isn't one. This should currently only be used for metrics gathering.
 CRYPTO_EXPORT std::unique_ptr<VirtualUnexportableKeyProvider>
 GetVirtualUnexportableKeyProvider_DO_NOT_USE_METRICS_ONLY();
 
-// `GetSoftwareUnsecureUnexportableKeyProvider()` returns a mock software
+// `GetSoftwareUnsecureUnexportableKeyProvider()` returns a fake software
 // implementation of `UnexportableKeyProvider` that can be used on platforms
 // that do not have a native secure implementation.
 // This should be used for development purposes only since these keys are not

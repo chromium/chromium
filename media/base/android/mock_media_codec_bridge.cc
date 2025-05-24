@@ -4,6 +4,7 @@
 
 #include "media/base/android/mock_media_codec_bridge.h"
 
+#include "base/strings/stringprintf.h"
 #include "media/base/subsample_entry.h"
 
 using ::testing::_;
@@ -49,6 +50,10 @@ std::string MockMediaCodecBridge::GetName() {
   return name_;
 }
 
+bool MockMediaCodecBridge::IsSoftwareCodec() {
+  return is_software_codec_;
+}
+
 CodecType MockMediaCodecBridge::GetCodecType() const {
   return codec_type_;
 }
@@ -68,7 +73,7 @@ MockMediaCodecBridge::CreateMockVideoDecoder(const VideoCodecConfig& config) {
       config.codec_type == CodecType::kSoftware ? "android" : "google",
       GetCodecName(config.codec).c_str(),
       config.codec_type == CodecType::kSecure ? ".secure" : "");
-
+  bridge->is_software_codec_ = config.codec_type == CodecType::kSoftware;
   return bridge;
 }
 

@@ -9,10 +9,11 @@
 #ifndef COMPONENTS_WEBDATA_COMMON_WEB_DATA_REQUEST_MANAGER_H__
 #define COMPONENTS_WEBDATA_COMMON_WEB_DATA_REQUEST_MANAGER_H__
 
+#include <atomic>
 #include <map>
 #include <memory>
 
-#include "base/atomicops.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -22,7 +23,6 @@
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "components/webdata/common/web_database_service.h"
 
-class WebDataServiceConsumer;
 class WebDataRequestManager;
 
 //////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ class WebDataRequest {
 
   // Private constructor called for WebDataRequestManager::NewRequest.
   WebDataRequest(WebDataRequestManager* manager,
-                 WebDataServiceConsumer* consumer,
+                 WebDataServiceRequestCallback consumer,
                  WebDataServiceBase::Handle handle);
 
   // Retrieves the manager set in the constructor, if the request is still
@@ -60,8 +60,8 @@ class WebDataRequest {
   // change between calls.
   WebDataRequestManager* GetManager();
 
-  // Retrieves the |consumer_| set in the constructor.
-  WebDataServiceConsumer* GetConsumer();
+  // Retrieves and resets the |consumer_| set in the constructor.
+  WebDataServiceRequestCallback ExtractConsumer() &&;
 
   // Retrieves the original task runner of the request.  This may be null if the
   // original task was not posted as a sequenced task.
@@ -77,10 +77,10 @@ class WebDataRequest {
   // The manager associated with this request. This is stored as a raw (untyped)
   // pointer value because it does double duty as the flag indicating whether or
   // not this request is active (non-nullptr => active).
-  base::subtle::AtomicWord atomic_manager_;
+  std::atomic<WebDataRequestManager*> atomic_manager_;
 
   // The originator of the service request.
-  base::WeakPtr<WebDataServiceConsumer> consumer_;
+  WebDataServiceRequestCallback consumer_;
 
   // Identifier for this request.
   const WebDataServiceBase::Handle handle_;
@@ -103,9 +103,8 @@ class WebDataRequestManager
   WebDataRequestManager& operator=(const WebDataRequestManager&) = delete;
 
   // Factory function to create a new WebDataRequest.
-  // Retrieves a WeakPtr to the |consumer| so that |consumer| does not have to
-  // outlive the WebDataRequestManager.
-  std::unique_ptr<WebDataRequest> NewRequest(WebDataServiceConsumer* consumer);
+  std::unique_ptr<WebDataRequest> NewRequest(
+      WebDataServiceRequestCallback consumer);
 
   // Cancel any pending request.
   void CancelRequest(WebDataServiceBase::Handle h);
@@ -130,7 +129,8 @@ class WebDataRequestManager
   // Next handle to be used for requests. Incremented for each use.
   WebDataServiceBase::Handle next_request_handle_;
 
-  std::map<WebDataServiceBase::Handle, WebDataRequest*> pending_requests_;
+  std::map<WebDataServiceBase::Handle, raw_ptr<WebDataRequest, CtnExperimental>>
+      pending_requests_;
 };
 
 #endif  // COMPONENTS_WEBDATA_COMMON_WEB_DATA_REQUEST_MANAGER_H__

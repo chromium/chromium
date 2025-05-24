@@ -52,15 +52,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXSystemCaretWin
   bool ShouldIgnoreHoveredStateForTesting() override;
   AXPlatformNodeId GetUniqueId() const override;
 
-  static void AXPlatformNodeWinDeleter(AXPlatformNodeWin* ptr);
-
-  using deleter = std::integral_constant<
-      decltype(AXSystemCaretWin::AXPlatformNodeWinDeleter)*,
-      AXSystemCaretWin::AXPlatformNodeWinDeleter>;
-  std::unique_ptr<AXPlatformNodeWin, deleter> caret_;
-  gfx::AcceleratedWidget event_target_;
-  AXNodeData data_;
   const AXUniqueId unique_id_{AXUniqueId::Create()};
+  gfx::AcceleratedWidget event_target_;
+  AXPlatformNode::Pointer caret_;
+  AXNodeData data_;
 
   friend class AXPlatformNodeWin;
 };

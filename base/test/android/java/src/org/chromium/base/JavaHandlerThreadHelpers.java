@@ -11,9 +11,12 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeUnchecked;
 import org.jni_zero.JNINamespace;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @JNINamespace("base::android")
+@NullMarked
 class JavaHandlerThreadHelpers {
     private static class TestException extends Exception {}
 

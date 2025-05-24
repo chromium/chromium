@@ -565,8 +565,7 @@ TEST_F(WebAppIconManagerTest, OverwriteIcons) {
          path = enumerator_any.Next()) {
       EXPECT_TRUE(path.MatchesExtension(FILE_PATH_LITERAL(".png")));
 
-      SkBitmap bitmap;
-      EXPECT_TRUE(ReadBitmap(&file_utils(), path, &bitmap));
+      SkBitmap bitmap = ReadBitmap(&file_utils(), path);
       EXPECT_FALSE(bitmap.empty());
       EXPECT_EQ(bitmap.width(), bitmap.height());
       EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
@@ -590,8 +589,7 @@ TEST_F(WebAppIconManagerTest, OverwriteIcons) {
          path = enumerator_maskable.Next()) {
       EXPECT_TRUE(path.MatchesExtension(FILE_PATH_LITERAL(".png")));
 
-      SkBitmap bitmap;
-      EXPECT_TRUE(ReadBitmap(&file_utils(), path, &bitmap));
+      SkBitmap bitmap = ReadBitmap(&file_utils(), path);
       EXPECT_FALSE(bitmap.empty());
       EXPECT_EQ(bitmap.width(), bitmap.height());
       EXPECT_EQ(SK_ColorBLUE, bitmap.getColor(0, 0));
@@ -1085,10 +1083,10 @@ TEST_F(WebAppIconManagerTest, FindSmallest) {
 }
 
 TEST_F(WebAppIconManagerTest, DeleteData_Success) {
-  const webapps::AppId app1_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, GURL("https://example.com/"));
-  const webapps::AppId app2_id =
-      GenerateAppId(/*manifest_id=*/std::nullopt, GURL("https://example.org/"));
+  const webapps::AppId app1_id = GenerateAppId(
+      /*manifest_id_path=*/std::nullopt, GURL("https://example.com/"));
+  const webapps::AppId app2_id = GenerateAppId(
+      /*manifest_id_path=*/std::nullopt, GURL("https://example.org/"));
 
   const std::vector<int> sizes_px{icon_size::k128};
   const std::vector<SkColor> colors{SK_ColorMAGENTA};

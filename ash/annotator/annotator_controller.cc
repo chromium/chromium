@@ -72,6 +72,7 @@ void SetAnnotationTrayVisibility(aura::Window* root, bool visible) {
 
 AnnotatorController::AnnotatorController() {
   annotation_source_watcher_ = std::make_unique<AnnotationSourceWatcher>(this);
+  UpdateAnnotationTrayAccessibleName(/*is_annotator_enabled=*/true);
 }
 
 AnnotatorController::~AnnotatorController() {
@@ -79,6 +80,7 @@ AnnotatorController::~AnnotatorController() {
   annotations_overlay_controller_.reset();
   client_ = nullptr;
   current_root_ = nullptr;
+  UpdateAnnotationTrayAccessibleName(/*is_annotator_enabled=*/false);
 }
 
 void AnnotatorController::SetAnnotatorTool(const AnnotatorTool& tool) {
@@ -93,6 +95,7 @@ void AnnotatorController::ResetTools() {
     ToggleAnnotatorCanvas();
     annotator_enabled_ = false;
     client_->Clear();
+    UpdateAnnotationTrayAccessibleName(/*is_annotator_enabled=*/false);
   }
 }
 
@@ -133,6 +136,7 @@ void AnnotatorController::EnableAnnotatorTool() {
   if (!annotator_enabled_ && annotations_overlay_controller_) {
     ToggleAnnotatorCanvas();
     annotator_enabled_ = !annotator_enabled_;
+    UpdateAnnotationTrayAccessibleName(annotator_enabled_);
     // TODO(b/342104047): Decouple from projector metrics.
     RecordToolbarMetrics(ProjectorToolbar::kMarkerTool);
   }
@@ -153,6 +157,13 @@ void AnnotatorController::CreateAnnotationOverlayForWindow(
   annotations_overlay_controller_ =
       std::make_unique<AnnotationsOverlayController>(window,
                                                      partial_region_bounds);
+}
+
+void AnnotatorController::UpdateAnnotationTrayAccessibleName(
+    bool is_annotator_enabled) {
+  if (auto* annotation_tray = GetAnnotationTrayForRoot(current_root_)) {
+    annotation_tray->UpdateAccessibleName(is_annotator_enabled);
+  }
 }
 
 void AnnotatorController::SetToolClient(AnnotatorClient* client) {

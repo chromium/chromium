@@ -249,7 +249,7 @@ TEST_F(PropertyTreeBuilderTest,
   host_impl()->active_tree()->SetOpacityMutated(root->element_id(), 0.f);
   host_impl()->active_tree()->SetOpacityMutated(render_surface1->element_id(),
                                                 1.f);
-  ImplOf(render_surface1)->set_visible_layer_rect(gfx::Rect());
+  ImplOf(render_surface1)->SetVisibleLayerRectForTesting(gfx::Rect());
   UpdateActiveTreeDrawProperties();
 
   EXPECT_FALSE(GetEffectNode(ImplOf(render_surface1))->is_drawn);
@@ -442,7 +442,7 @@ TEST_F(PropertyTreeBuilderTest, VisibleRectWithScalingClippingAndFilters) {
 TEST_F(PropertyTreeBuilderTest, TextureLayerSnapping) {
   auto root = Layer::Create();
   host()->SetRootLayer(root);
-  auto child = TextureLayer::CreateForMailbox(nullptr);
+  auto child = TextureLayer::Create(nullptr);
   root->AddChild(child);
 
   root->SetBounds(gfx::Size(100, 100));

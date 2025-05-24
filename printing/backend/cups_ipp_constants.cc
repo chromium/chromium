@@ -33,6 +33,7 @@ constexpr char kIppMedia[] = CUPS_MEDIA;
 constexpr char kIppMediaCol[] = "media-col";  // PWG 5100.7
 constexpr char kIppDuplex[] = CUPS_SIDES;
 constexpr char kIppResolution[] = "printer-resolution";  // RFC 8011
+constexpr char kIppPrintQuality[] = "print-quality";     // RFC 8011
 
 // collation values
 constexpr char kCollated[] = "separate-documents-collated-copies";
@@ -67,6 +68,9 @@ constexpr char kIppClientPatches[] = "client-patches";
 constexpr char kIppClientStringVersion[] = "client-string-version";
 constexpr char kIppClientType[] = "client-type";
 constexpr char kIppClientVersion[] = "client-version";
+
+// printer attributes
+constexpr char kIppPrintScaling[] = "print-scaling";  // PWG 5100.16
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -12,7 +12,7 @@
  */
 function buyWithMethods(methods) {
   try {
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         methods, {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
           shippingOptions: [{

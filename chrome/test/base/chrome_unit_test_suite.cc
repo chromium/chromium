@@ -11,7 +11,6 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
@@ -38,12 +37,9 @@
 #include "ui/gl/test/gl_surface_test_support.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/dbus/constants/dbus_paths.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chromeos/dbus/constants/dbus_paths.h"
 #include "crypto/nss_util_internal.h"
 #endif
 
@@ -52,8 +48,11 @@
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/common/initialize_extensions_client.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_paths.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -74,7 +73,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   void OnTestStart(const testing::TestInfo& test_info) override {
     TestingBrowserProcess::CreateInstance();
     // Make sure the loaded locale is "en-US".
-    if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocaleForTesting() !=
+    if (ui::ResourceBundle::GetSharedInstance().GetLoadedLocale() !=
         kDefaultLocale) {
       // Linux uses environment to determine locale.
       std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -104,10 +103,10 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
           << "Use content::ScopedAccessibilityModeOverride or otherwise ensure "
              "that accessibility is disabled at the end of your test.";
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     arc::ClearArcAllowedCheckForTesting();
     crypto::ResetTokenManagerForTesting();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
     web_app::SetTrustedWebBundleIdsForTesting({});
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -166,17 +165,16 @@ void ChromeUnitTestSuite::InitializeProviders() {
                                           chrome::DIR_INTERNAL_PLUGINS,
                                           chrome::DIR_USER_DATA);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::RegisterPathProvider();
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
+  ash::RegisterPathProvider();
   chromeos::dbus_paths::RegisterPathProvider();
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::RegisterPathProvider();
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   EnsureExtensionsClientInitialized();
 #endif
 

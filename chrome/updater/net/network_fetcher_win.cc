@@ -154,6 +154,7 @@ void NetworkFetcher::PostRequestComplete(int response_code) {
   // this is best effort only.
   std::wstring x_cup_server_proof;
   std::wstring etag;
+  std::wstring cookie;
   int x_retry_after_sec = -1;
   winhttp_network_fetcher_->QueryHeaderString(
       base::SysUTF8ToWide(
@@ -161,15 +162,18 @@ void NetworkFetcher::PostRequestComplete(int response_code) {
       &x_cup_server_proof);
   winhttp_network_fetcher_->QueryHeaderString(
       base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderEtag), &etag);
+  winhttp_network_fetcher_->QueryHeaderString(
+      base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderCookie),
+      &cookie);
   winhttp_network_fetcher_->QueryHeaderInt(
       base::SysUTF8ToWide(update_client::NetworkFetcher::kHeaderXRetryAfter),
       &x_retry_after_sec);
 
   std::move(post_request_complete_callback_)
-      .Run(std::make_unique<std::string>(
-               winhttp_network_fetcher_->GetResponseBody()),
+      .Run(winhttp_network_fetcher_->GetResponseBody(),
            winhttp_network_fetcher_->GetNetError(), base::SysWideToUTF8(etag),
-           base::SysWideToUTF8(x_cup_server_proof), x_retry_after_sec);
+           base::SysWideToUTF8(x_cup_server_proof), base::SysWideToUTF8(cookie),
+           x_retry_after_sec);
 }
 
 void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {

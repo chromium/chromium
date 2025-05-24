@@ -5,6 +5,8 @@
 #ifndef BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 #define BASE_TASK_THREAD_POOL_THREAD_GROUP_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <optional>
 #include <string>
@@ -12,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -207,13 +210,15 @@ class BASE_EXPORT ThreadGroup {
   class ThreadGroupWorkerDelegate;
 
  protected:
+  static constexpr size_t kMaxNumberOfWorkers = 256;
+
   ThreadGroup(std::string_view histogram_label,
               std::string_view thread_group_label,
               ThreadType thread_type_hint,
               TrackedRef<TaskTracker> task_tracker,
               TrackedRef<Delegate> delegate);
 
-  void StartImpl(
+  void StartImplLockRequired(
       size_t max_tasks,
       size_t max_best_effort_tasks,
       TimeDelta suggested_reclaim_time,
@@ -221,8 +226,8 @@ class BASE_EXPORT ThreadGroup {
       WorkerThreadObserver* worker_thread_observer,
       WorkerEnvironment worker_environment,
       bool synchronous_thread_start_for_testing = false,
-      std::optional<TimeDelta> may_block_threshold =
-          std::optional<TimeDelta>());
+      std::optional<TimeDelta> may_block_threshold = std::optional<TimeDelta>())
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Derived classes must implement a ScopedCommandsExecutor that derives from
   // this to perform operations at the end of a scope, when all locks have been
@@ -396,8 +401,12 @@ class BASE_EXPORT ThreadGroup {
     ~InitializedInStart();
 
 #if DCHECK_IS_ON()
-    // Set after all members of this struct are set.
+    // Set after all members of this struct are set to ensure
+    // `InitializedInStart` is read-only after initialization.
     bool initialized = false;
+    // Set to ensure Start() is only called once and that `ThreadGroup`
+    // operations only occur after it is called.
+    bool start_called = false;
 #endif
 
     // Initial value of |max_tasks_|.
@@ -405,7 +414,6 @@ class BASE_EXPORT ThreadGroup {
 
     // Suggested reclaim time for workers.
     TimeDelta suggested_reclaim_time;
-    bool no_worker_reclaim = false;
 
     // Environment to be initialized per worker.
     WorkerEnvironment worker_environment = WorkerEnvironment::NONE;
@@ -422,19 +430,15 @@ class BASE_EXPORT ThreadGroup {
     // The period between calls to AdjustMaxTasks() when the thread group is at
     // capacity.
     TimeDelta blocked_workers_poll_period;
-
-    // The max number of workers that a ThreadGroupSemaphore will create in any
-    // one EnsureEnoughWorkers() call.
-    int max_num_workers_created = 2;
   } initialized_in_start_;
 
-  InitializedInStart& in_start() {
+  InitializedInStart& in_start() LIFETIME_BOUND {
 #if DCHECK_IS_ON()
     DCHECK(!initialized_in_start_.initialized);
 #endif
     return initialized_in_start_;
   }
-  const InitializedInStart& after_start() const {
+  const InitializedInStart& after_start() const LIFETIME_BOUND {
 #if DCHECK_IS_ON()
     DCHECK(initialized_in_start_.initialized);
 #endif

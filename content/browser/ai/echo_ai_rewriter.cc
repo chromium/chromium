@@ -16,11 +16,14 @@ void EchoAIRewriter::Rewrite(
         pending_responder) {
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        "Model not available in Chromium\n" + input,
-                        /*current_tokens=*/std::nullopt);
-  responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                        std::nullopt, /*current_tokens=*/std::nullopt);
+  responder->OnStreaming("Model not available in Chromium\n" + input);
+  responder->OnCompletion(/*context_info=*/nullptr);
+}
+
+void EchoAIRewriter::MeasureUsage(const std::string& input,
+                                  const std::string& context,
+                                  MeasureUsageCallback callback) {
+  std::move(callback).Run(input.size() + context.size());
 }
 
 }  // namespace content

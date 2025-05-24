@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.creator;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /** Interface to create a web contents*/
+@NullMarked
 public interface WebContentsCreator {
     // create a web contents;
     WebContents createWebContents();

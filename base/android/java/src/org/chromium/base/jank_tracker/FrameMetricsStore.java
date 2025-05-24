@@ -8,6 +8,7 @@ import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import java.util.List;
 /**
  * This class stores relevant metrics from FrameMetrics between the calls to UMA reporting methods.
  */
+@NullMarked
 public class FrameMetricsStore {
     private final ThreadChecker mThreadChecker = new ThreadChecker();
     // An arbitrary value from which to create a trace event async track. The only risk if this

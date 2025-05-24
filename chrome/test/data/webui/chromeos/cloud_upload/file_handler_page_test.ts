@@ -4,20 +4,22 @@
 
 import 'chrome://cloud-upload/file_handler_page.js';
 
-import {DialogTask, UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import type {DialogTask} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
+import {UserAction} from 'chrome://cloud-upload/cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from 'chrome://cloud-upload/cloud_upload_browser_proxy.js';
-import {AccordionTopCardElement} from 'chrome://cloud-upload/file_handler_card.js';
-import {FileHandlerPageElement} from 'chrome://cloud-upload/file_handler_page.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {AccordionTopCardElement} from 'chrome://cloud-upload/file_handler_card.js';
+import type {FileHandlerPageElement} from 'chrome://cloud-upload/file_handler_page.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';
+import type {ProxyOptions} from './cloud_upload_test_browser_proxy.js';
+import {CloudUploadTestBrowserProxy} from './cloud_upload_test_browser_proxy.js';
 
 suite('<file-handler-page>', () => {
   /* Holds the <file-handler-page> app. */
-  let container: HTMLDivElement;
+  let container: HTMLElement;
   /* The <file-handler-page> app. */
   let fileHandlerPageApp: FileHandlerPageElement;
   /* The BrowserProxy element to make assertions on when mojo methods are
@@ -44,8 +46,7 @@ suite('<file-handler-page>', () => {
     });
 
     // Creates and attaches the <file-handler-page> element to the DOM tree.
-    fileHandlerPageApp =
-        document.createElement('file-handler-page') as FileHandlerPageElement;
+    fileHandlerPageApp = document.createElement('file-handler-page');
     container.appendChild(fileHandlerPageApp);
     await fileHandlerPageApp.initDynamicContent;
   }

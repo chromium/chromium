@@ -5,6 +5,9 @@
 #ifndef CONTENT_BROWSER_ANDROID_JAVASCRIPT_INJECTOR_H_
 #define CONTENT_BROWSER_ANDROID_JAVASCRIPT_INJECTOR_H_
 
+#include <string>
+#include <vector>
+
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
@@ -34,12 +37,16 @@ class JavascriptInjector : public WebContentsUserData<JavascriptInjector> {
                           const base::android::JavaParamRef<jobject>& obj,
                           jboolean allow);
 
-  void AddInterface(
+  // See GinJavaBridgeDispatcherHost::AddNamedObject more information.
+  // Note that an interface will not be injected if the origin allow list
+  // is ill-formed. Will return all bad origin rules.
+  std::vector<std::string> AddInterface(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& /* obj */,
       const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jstring>& name,
-      const base::android::JavaParamRef<jclass>& safe_annotation_clazz);
+      const base::android::JavaParamRef<jclass>& safe_annotation_clazz,
+      std::vector<std::string> origin_allow_list_rules);
 
   void RemoveInterface(JNIEnv* env,
                        const base::android::JavaParamRef<jobject>& /* obj */,

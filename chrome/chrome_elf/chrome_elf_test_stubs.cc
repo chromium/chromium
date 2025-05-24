@@ -42,6 +42,10 @@ bool GetUserDataDirectoryThunk(wchar_t* user_data_dir,
   return !user_data_dir_path.empty();
 }
 
+bool IsTemporaryUserDataDirectoryCreatedForHeadless() {
+  return false;
+}
+
 void SetMetricsClientId(const char* client_id) {}
 
 //------------------------------------------------------------------------------

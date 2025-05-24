@@ -1,0 +1,41 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "whats_new_detail_view_action_handler.h",
+    "whats_new_instructions_view_controller.h",
+    "whats_new_instructions_view_controller.mm",
+    "whats_new_mediator_consumer.h",
+    "whats_new_screenshot_view_controller.h",
+    "whats_new_screenshot_view_controller.mm",
+    "whats_new_table_view_action_handler.h",
+    "whats_new_table_view_controller.h",
+    "whats_new_table_view_controller.mm",
+    "whats_new_table_view_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/price_insights/model:feature",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/whats_new/ui/cells",
+    "//ios/chrome/browser/whats_new/ui/data_source:whats_new_item",
+    "//ios/chrome/browser/whats_new/ui/strings",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/instruction_view",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ui/base",
+    "//url",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/batched_proxy_ipc_sender.h"
 
 #include "base/memory/safe_ref.h"
+#include "base/trace_event/trace_event.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/common/content_export.h"
@@ -14,9 +15,14 @@
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom.h"
 
 namespace content {
+
+using perfetto::protos::pbzero::ChromeTrackEvent;
+
 BatchedProxyIPCSender::BatchedProxyIPCSender(
-    base::SafeRef<RenderFrameProxyHost> root_proxy)
-    : root_proxy_host_(root_proxy) {
+    base::SafeRef<RenderFrameProxyHost> root_proxy,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token)
+    : root_proxy_host_(root_proxy),
+      navigation_metrics_token_(navigation_metrics_token) {
   DCHECK(!root_proxy->frame_tree_node()->parent());
 }
 
@@ -56,12 +62,14 @@ void BatchedProxyIPCSender::AddNewChildProxyCreationTask(
 }
 
 void BatchedProxyIPCSender::CreateAllProxies() {
+  TRACE_EVENT("navigation", "BatchedProxyIPCSender::CreateAllProxies",
+              ChromeTrackEvent::kRenderFrameProxyHost, *root_proxy_host_);
   if (create_remote_children_params_.empty()) {
     return;
   }
 
   root_proxy_host_->GetAssociatedRemoteFrame()->CreateRemoteChildren(
-      std::move(create_remote_children_params_));
+      std::move(create_remote_children_params_), navigation_metrics_token_);
 
   for (const auto& proxy_host : proxy_hosts_) {
     proxy_host->SetRenderFrameProxyCreated(true);

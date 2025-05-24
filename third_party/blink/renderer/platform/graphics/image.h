@@ -31,7 +31,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink-forward.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_context_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
@@ -105,19 +105,19 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
   virtual bool IsBitmapImage() const { return false; }
   virtual bool IsStaticBitmapImage() const { return false; }
 
-  virtual bool CurrentFrameKnownToBeOpaque() = 0;
+  virtual bool IsOpaque() = 0;
 
-  virtual bool CurrentFrameIsComplete() { return false; }
-  virtual bool CurrentFrameIsLazyDecoded() { return false; }
+  virtual bool FirstFrameIsComplete() { return false; }
+  virtual bool IsLazyDecoded() { return false; }
   virtual size_t FrameCount() { return 0; }
   virtual bool IsTextureBacked() const { return false; }
 
-  // Derived classes should override this if they can assure that the current
-  // image frame contains only resources from its own security origin.
-  virtual bool CurrentFrameHasSingleSecurityOrigin() const { return false; }
+  // Derived classes should override this if they can assure that the image
+  // contains only resources from its own security origin.
+  virtual bool HasSingleSecurityOrigin() const { return false; }
 
   static Image* NullImage();
-  bool IsNull() const { return Size().IsEmpty(); }
+  bool IsNull() const { return this == NullImage(); }
 
   virtual bool HasIntrinsicSize() const { return true; }
 
@@ -277,19 +277,18 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
         return PaintImage::DecodingMode::kAsync;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return PaintImage::DecodingMode::kUnspecified;
+    NOTREACHED();
   }
 
   virtual PaintImage PaintImageForCurrentFrame() = 0;
 
   // Most image types have the default orientation. Only bitmap derived image
   // types need to override this method.
-  virtual ImageOrientation CurrentFrameOrientation() const {
+  virtual ImageOrientation Orientation() const {
     return ImageOrientationEnum::kDefault;
   }
   bool HasDefaultOrientation() const {
-    return CurrentFrameOrientation() == ImageOrientationEnum::kDefault;
+    return Orientation() == ImageOrientationEnum::kDefault;
   }
 
   // Correct the src rect (rotate and maybe translate it) to account for a
@@ -304,6 +303,13 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
     kClampImageToSourceRect,
     kDoNotClampImageToSourceRect
   };
+
+  static SkCanvas::SrcRectConstraint ToSkiaRectConstraint(
+      Image::ImageClampingMode clamp_mode) {
+    return clamp_mode == Image::kClampImageToSourceRect
+               ? SkCanvas::kStrict_SrcRectConstraint
+               : SkCanvas::kFast_SrcRectConstraint;
+  }
 
   virtual void Draw(cc::PaintCanvas*,
                     const cc::PaintFlags&,

@@ -679,7 +679,6 @@ GLint GetProgramResourceLocation(GLuint program,
                                  const char* name) override;
 void MemoryBarrierEXT(GLbitfield barriers) override;
 void MemoryBarrierByRegion(GLbitfield barriers) override;
-void SwapBuffers(GLuint64 swap_id, GLbitfield flags) override;
 GLuint GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                    GLsizei count,
                                    GLenum type,
@@ -710,11 +709,6 @@ void* MapTexSubImage2DCHROMIUM(GLenum target,
                                GLenum type,
                                GLenum access) override;
 void UnmapTexSubImage2DCHROMIUM(const void* mem) override;
-void ResizeCHROMIUM(GLuint width,
-                    GLuint height,
-                    GLfloat scale_factor,
-                    GLcolorSpace color_space,
-                    GLboolean alpha) override;
 const GLchar* GetRequestableExtensionsCHROMIUM() override;
 void RequestExtensionCHROMIUM(const char* extension) override;
 void GetProgramInfoCHROMIUM(GLuint program,
@@ -835,7 +829,6 @@ void CopySharedImageINTERNAL(GLint xoffset,
                              GLint y,
                              GLsizei width,
                              GLsizei height,
-                             GLboolean unpack_flip_y,
                              const GLbyte* mailboxes) override;
 void CopySharedImageToTextureINTERNAL(GLuint texture,
                                       GLenum target,
@@ -845,7 +838,7 @@ void CopySharedImageToTextureINTERNAL(GLuint texture,
                                       GLint src_y,
                                       GLsizei width,
                                       GLsizei height,
-                                      GLboolean flip_y,
+                                      GLboolean is_dst_origin_top_left,
                                       const GLbyte* src_mailbox) override;
 GLboolean ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                           const void* dst_color_space,

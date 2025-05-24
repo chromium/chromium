@@ -10,6 +10,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/webui/webui_util_desktop.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -61,7 +64,9 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   void ShowContextMenuAtPoint(
       gfx::Point point,
       std::unique_ptr<ui::MenuModel> menu_model,
-      base::RepeatingClosure on_menu_closed_callback) override {}
+      base::RepeatingClosure on_menu_closed_callback) override {
+    menu_model_ = std::move(menu_model);
+  }
   void CloseContextMenu() override {}
   void ShowEditDialogForGroupAtPoint(gfx::Point point,
                                      gfx::Rect rect,
@@ -72,6 +77,11 @@ class StubTabStripUIEmbedder : public TabStripUIEmbedder {
   SkColor GetColorProviderColor(ui::ColorId id) const override {
     return SK_ColorWHITE;
   }
+
+  std::unique_ptr<ui::MenuModel> menu_model() { return std::move(menu_model_); }
+
+ private:
+  std::unique_ptr<ui::MenuModel> menu_model_;
 };
 
 class MockPage : public tab_strip::mojom::Page {
@@ -142,6 +152,7 @@ class TabStripPageHandlerTest : public BrowserWithTestWindowTest {
 
   TabStripPageHandler* handler() { return handler_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
+  StubTabStripUIEmbedder* embedder() { return &stub_embedder_; }
 
   void ExpectVisualData(const tab_groups::TabGroupVisualData& visual_data,
                         const tab_strip::mojom::TabGroupVisualData& tab_group) {
@@ -203,20 +214,12 @@ TEST_F(TabStripPageHandlerTest, GetGroupVisualData) {
       browser()->tab_strip_model()->AddToNewGroup({0});
   const tab_groups::TabGroupVisualData group1_visuals(
       u"Group 1", tab_groups::TabGroupColorId::kGreen);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group1)
-      ->SetVisualData(group1_visuals);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(group1, group1_visuals);
   tab_groups::TabGroupId group2 =
       browser()->tab_strip_model()->AddToNewGroup({1});
   const tab_groups::TabGroupVisualData group2_visuals(
       u"Group 2", tab_groups::TabGroupColorId::kCyan);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group2)
-      ->SetVisualData(group2_visuals);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(group2, group2_visuals);
 
   tab_strip::mojom::PageHandler::GetGroupVisualDataCallback callback =
       base::BindLambdaForTesting(
@@ -237,11 +240,8 @@ TEST_F(TabStripPageHandlerTest, GroupVisualDataChangedEvent) {
       browser()->tab_strip_model()->AddToNewGroup({0});
   const tab_groups::TabGroupVisualData new_visual_data(
       u"My new title", tab_groups::TabGroupColorId::kGreen);
-  browser()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(expected_group_id)
-      ->SetVisualData(new_visual_data);
+  browser()->tab_strip_model()->ChangeTabGroupVisuals(expected_group_id,
+                                                      new_visual_data);
 
   EXPECT_CALL(
       page_,
@@ -389,11 +389,8 @@ TEST_F(TabStripPageHandlerTest, MoveGroupAcrossWindows) {
   // Create some visual data to make sure it gets transferred.
   const tab_groups::TabGroupVisualData visual_data(
       u"My group", tab_groups::TabGroupColorId::kGreen);
-  new_browser.get()
-      ->tab_strip_model()
-      ->group_model()
-      ->GetTabGroup(group_id)
-      ->SetVisualData(visual_data);
+  new_browser.get()->tab_strip_model()->ChangeTabGroupVisuals(group_id,
+                                                              visual_data);
 
   content::WebContents* moved_contents1 =
       new_browser.get()->tab_strip_model()->GetWebContentsAt(0);
@@ -426,6 +423,38 @@ TEST_F(TabStripPageHandlerTest, MoveGroupAcrossWindows) {
           ->visual_data();
   ASSERT_EQ(visual_data.title(), new_visual_data->title());
   ASSERT_EQ(visual_data.color(), new_visual_data->color());
+}
+
+TEST_F(TabStripPageHandlerTest, NoopMoveGroupAcrossWindowsBreaksContiguity) {
+  AddTab(browser(), GURL("http://foo"));
+  AddTab(browser(), GURL("http://foo"));
+  browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Create a new window with the same profile, and add a group to it.
+  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
+  std::unique_ptr<Browser> new_browser =
+      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+  AddTab(new_browser.get(), GURL("http://foo"));
+  AddTab(new_browser.get(), GURL("http://foo"));
+  tab_groups::TabGroupId group_id =
+      new_browser.get()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  // Create some visual data to make sure it gets transferred.
+  const tab_groups::TabGroupVisualData visual_data(
+      u"My group", tab_groups::TabGroupColorId::kGreen);
+  new_browser.get()->tab_strip_model()->ChangeTabGroupVisuals(group_id,
+                                                              visual_data);
+
+  web_ui()->ClearTrackedCalls();
+
+  int new_index = 1;
+  handler()->MoveGroup(group_id.ToString(), new_index);
+
+  ASSERT_EQ(2, new_browser.get()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+
+  // Close all tabs before destructing.
+  new_browser.get()->tab_strip_model()->CloseAllTabs();
 }
 
 TEST_F(TabStripPageHandlerTest, MoveGroupAcrossProfiles) {
@@ -505,6 +534,31 @@ TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindows) {
                      1);
 
   ASSERT_EQ(moved_contents, browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  // Close all tabs before destructing.
+  new_browser.get()->tab_strip_model()->CloseAllTabs();
+}
+
+TEST_F(TabStripPageHandlerTest, MoveTabAcrossWindowsInBetweenGroup) {
+  AddTab(browser(), GURL("http://foo"));
+  AddTab(browser(), GURL("http://foo"));
+  tab_groups::TabGroupId group_id =
+      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+
+  std::unique_ptr<BrowserWindow> new_window(CreateBrowserWindow());
+  std::unique_ptr<Browser> new_browser =
+      CreateBrowser(profile(), browser()->type(), false, new_window.get());
+  AddTab(new_browser.get(), GURL("http://foo"));
+  content::WebContents* moved_contents =
+      new_browser.get()->tab_strip_model()->GetWebContentsAt(0);
+
+  handler()->MoveTab(extensions::ExtensionTabUtil::GetTabId(
+                         new_browser->tab_strip_model()->GetWebContentsAt(0)),
+                     1);
+
+  ASSERT_EQ(moved_contents, browser()->tab_strip_model()->GetWebContentsAt(1));
+  ASSERT_EQ(group_id,
+            browser()->tab_strip_model()->GetTabAtIndex(1)->GetGroup());
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();
@@ -716,4 +770,33 @@ TEST_F(TabStripPageHandlerTest, OnThemeChanged) {
   webui::GetNativeThemeDeprecated(web_ui()->GetWebContents())
       ->NotifyOnNativeThemeUpdated();
   EXPECT_CALL(page_, ThemeChanged());
+}
+
+TEST_F(TabStripPageHandlerTest, BookmarkAllTabs) {
+  BookmarkModelFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(), BookmarkModelFactory::GetDefaultFactory());
+  bookmarks::test::WaitForBookmarkModelToLoad(
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile()));
+
+  // Assert that the bookmark all tabs menu item exists.
+  tab_strip::mojom::PageHandler* page_handler = handler();
+  page_handler->ShowBackgroundContextMenu(0, 0);
+  std::unique_ptr<ui::MenuModel> menu_model = embedder()->menu_model();
+  int bookmark_all_tabs_index = -1;
+  for (size_t i = 0; i < menu_model->GetItemCount(); i++) {
+    if (IDC_BOOKMARK_ALL_TABS == menu_model->GetCommandIdAt(i)) {
+      bookmark_all_tabs_index = i;
+    }
+  }
+  ASSERT_GE(bookmark_all_tabs_index, 0);
+
+  // Add one tab. Bookmark all tabs should be disabled.
+  AddTab(browser(), GURL("http://foo"));
+  page_handler->ShowBackgroundContextMenu(0, 0);
+  EXPECT_FALSE(embedder()->menu_model()->IsEnabledAt(bookmark_all_tabs_index));
+
+  // Add a second tab. Bookmark all tabs should be enabled.
+  AddTab(browser(), GURL("http://bar"));
+  page_handler->ShowBackgroundContextMenu(0, 0);
+  EXPECT_TRUE(embedder()->menu_model()->IsEnabledAt(bookmark_all_tabs_index));
 }

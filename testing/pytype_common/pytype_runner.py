@@ -13,8 +13,8 @@ import typing
 CHROMIUM_SRC_DIR = os.path.realpath(
     os.path.join(os.path.abspath(os.path.dirname(__file__)), '..', '..'))
 
+# //build/util imports.
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'build', 'util'))
-
 from lib.results import result_sink
 from lib.results import result_types
 

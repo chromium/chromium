@@ -42,6 +42,7 @@ namespace web {
 WebStateContentDownloadTask::WebStateContentDownloadTask(
     WebState* web_state,
     const GURL& original_url,
+    NSString* originating_host,
     NSString* http_method,
     const std::string& content_disposition,
     int64_t total_bytes,
@@ -50,6 +51,7 @@ WebStateContentDownloadTask::WebStateContentDownloadTask(
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : DownloadTaskImpl(web_state,
                        original_url,
+                       originating_host,
                        http_method,
                        content_disposition,
                        total_bytes,

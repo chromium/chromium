@@ -34,7 +34,7 @@ class MockBytesConsumer : public BytesConsumer {
   MockBytesConsumer() = default;
   ~MockBytesConsumer() override = default;
 
-  MOCK_METHOD2(BeginRead, Result(const char**, size_t*));
+  MOCK_METHOD1(BeginRead, Result(base::span<const char>&));
   MOCK_METHOD1(EndRead, Result(size_t));
   MOCK_METHOD1(SetClient, void(Client*));
   MOCK_METHOD0(ClearClient, void());
@@ -115,7 +115,7 @@ TEST_F(BytesUploaderTest, ReadEmpty) {
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(*mock_bytes_consumer, SetClient(_));
-    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_))
         .WillOnce(Return(BytesConsumer::Result::kDone));
     EXPECT_CALL(*mock_bytes_consumer, Cancel());
     EXPECT_CALL(get_size_callback, Run(net::OK, 0u));
@@ -150,10 +150,9 @@ TEST_F(BytesUploaderTest, ReadSmall) {
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(*mock_bytes_consumer, SetClient(_));
-    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
-        .WillOnce(Invoke([](const char** buffer, size_t* size) {
-          *size = 6;
-          *buffer = "foobar";
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_))
+        .WillOnce(Invoke([](base::span<const char>& buffer) {
+          buffer = base::span_from_cstring("foobar");
           return BytesConsumer::Result::kOk;
         }));
     EXPECT_CALL(*mock_bytes_consumer, EndRead(6u))
@@ -194,19 +193,17 @@ TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
     EXPECT_CALL(checkpoint, Call(1));
     EXPECT_CALL(checkpoint, Call(2));
     EXPECT_CALL(*mock_bytes_consumer, SetClient(_));
-    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
-        .WillOnce(Invoke([](const char** buffer, size_t* size) {
-          *size = 12;
-          *buffer = "foobarFOOBAR";
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_))
+        .WillOnce(Invoke([](base::span<const char>& buffer) {
+          buffer = base::span_from_cstring("foobarFOOBAR");
           return BytesConsumer::Result::kOk;
         }));
     EXPECT_CALL(*mock_bytes_consumer, EndRead(10u))
         .WillOnce(Return(BytesConsumer::Result::kOk));
 
-    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
-        .WillOnce(Invoke([](const char** buffer, size_t* size) {
-          *size = 2;
-          *buffer = "AR";
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_))
+        .WillOnce(Invoke([](base::span<const char>& buffer) {
+          buffer = base::span_from_cstring("AR");
           return BytesConsumer::Result::kOk;
         }));
     EXPECT_CALL(*mock_bytes_consumer, EndRead(0u))
@@ -214,10 +211,9 @@ TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
 
     EXPECT_CALL(checkpoint, Call(3));
     EXPECT_CALL(checkpoint, Call(4));
-    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_, _))
-        .WillOnce(Invoke([](const char** buffer, size_t* size) {
-          *size = 2;
-          *buffer = "AR";
+    EXPECT_CALL(*mock_bytes_consumer, BeginRead(_))
+        .WillOnce(Invoke([](base::span<const char>& buffer) {
+          buffer = base::span_from_cstring("AR");
           return BytesConsumer::Result::kOk;
         }));
     EXPECT_CALL(*mock_bytes_consumer, EndRead(2u))

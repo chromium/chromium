@@ -22,7 +22,7 @@ namespace browsing_data {
 
 class HistoryNoticeUtilsTest : public ::testing::Test {
  public:
-  HistoryNoticeUtilsTest() {}
+  HistoryNoticeUtilsTest() = default;
 
   void SetUp() override {
     sync_service_ = std::make_unique<syncer::TestSyncService>();

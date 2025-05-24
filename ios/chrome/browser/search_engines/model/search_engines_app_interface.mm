@@ -14,10 +14,9 @@
 
 + (NSString*)defaultSearchEngine {
   // Get the default Search Engine.
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   const TemplateURL* default_provider = service->GetDefaultSearchProvider();
   DCHECK(default_provider);
   return base::SysUTF16ToNSString(default_provider->short_name());
@@ -28,10 +27,9 @@
       base::SysNSStringToUTF16(defaultSearchEngine);
   // Set the search engine back to the default in case the test fails before
   // cleaning it up.
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
       service->GetTemplateURLs();
 
@@ -45,10 +43,9 @@
 + (void)addSearchEngineWithName:(NSString*)name
                             URL:(NSString*)URL
                      setDefault:(BOOL)setDefault {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   TemplateURLService* url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   TemplateURLData data;
   data.SetShortName(base::SysNSStringToUTF16(name));
   data.SetURL(base::SysNSStringToUTF8(URL));
@@ -59,10 +56,9 @@
 }
 
 + (void)removeSearchEngineWithName:(NSString*)name {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   TemplateURLService* url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   std::vector<raw_ptr<TemplateURL, VectorExperimental>> urls =
       url_service->GetTemplateURLs();
   std::u16string utfName = base::SysNSStringToUTF16(name);

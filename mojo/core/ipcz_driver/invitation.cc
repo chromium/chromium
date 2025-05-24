@@ -2,18 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/ipcz_driver/invitation.h"
 
-#include <string.h>
-
 #include <algorithm>
+#include <array>
 #include <cstdint>
+#include <string>
 
+#include "base/numerics/byte_conversions.h"
 #include "build/build_config.h"
 #include "mojo/core/ipcz_api.h"
 #include "mojo/core/ipcz_driver/base_shared_memory_service.h"
@@ -63,8 +59,7 @@ size_t GetAttachmentIndex(base::span<const uint8_t> name) {
   }
 
   // Otherwise interpret the first 4 bytes as an integer.
-  uint32_t index;
-  memcpy(&index, name.data(), sizeof(uint32_t));
+  uint32_t index = base::U32FromLittleEndian(name.first<4u>());
   if (index < Invitation::kMaxAttachments) {
     // The resulting index is small enough to fit within the normal index range,
     // so assume case (b) above:
@@ -90,7 +85,7 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
     base::Process remote_process = base::Process(),
     MojoProcessErrorHandler error_handler = nullptr,
     uintptr_t error_handler_context = 0,
-    bool is_remote_process_untrusted = false) {
+    Transport::ProcessTrust remote_process_trust = Transport::ProcessTrust{}) {
   CHECK_EQ(endpoint.num_platform_handles, 1u);
   auto handle =
       PlatformHandle::FromMojoPlatformHandle(&endpoint.platform_handles[0]);
@@ -100,7 +95,7 @@ IpczDriverHandle CreateTransportForMojoEndpoint(
 
   auto transport = base::MakeRefCounted<Transport>(
       endpoint_types, PlatformChannelEndpoint(std::move(handle)),
-      std::move(remote_process), is_remote_process_untrusted);
+      std::move(remote_process), remote_process_trust);
   transport->SetErrorHandler(error_handler, error_handler_context);
   transport->set_leak_channel_on_shutdown(options.leak_channel_on_shutdown);
   transport->set_is_peer_trusted(options.is_peer_trusted);
@@ -268,15 +263,21 @@ MojoResult Invitation::Send(
   // bit essentially means that the remote process is especially untrustworthy
   // (e.g. a Chrome renderer) and should be subject to additional constraints
   // regarding what types of objects can be transferred to it.
-  const bool is_remote_process_untrusted =
-      options &&
-      (options->flags & MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS) != 0;
+  Transport::ProcessTrust remote_process_trust{};
+#if BUILDFLAG(IS_WIN)
+  if (options &&
+      (options->flags & MOJO_SEND_INVITATION_FLAG_UNTRUSTED_PROCESS) != 0) {
+    remote_process_trust = Transport::ProcessTrust::kUntrusted;
+  } else {
+    remote_process_trust = Transport::ProcessTrust::kTrusted;
+  }
+#endif
 
   const bool is_peer_elevated =
       options && (options->flags & MOJO_SEND_INVITATION_FLAG_ELEVATED);
 #if !BUILDFLAG(IS_WIN)
   // For now, the concept of an elevated process is only meaningful on Windows.
-  DCHECK(!is_peer_elevated);
+  CHECK(!is_peer_elevated);
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -296,7 +297,7 @@ MojoResult Invitation::Send(
       *transport_endpoint,
       {.is_peer_trusted = is_peer_elevated, .is_trusted_by_peer = true},
       std::move(remote_process), error_handler, error_handler_context,
-      is_remote_process_untrusted);
+      remote_process_trust);
   if (transport == IPCZ_INVALID_DRIVER_HANDLE) {
     return MOJO_RESULT_INVALID_ARGUMENT;
   }
@@ -308,9 +309,10 @@ MojoResult Invitation::Send(
   // Note that we reserve the first initial portal for internal use, hence the
   // additional (kMaxAttachments + 1) portal here. Portals corresponding to
   // application-provided attachments begin at index 1.
-  IpczHandle portals[kMaxAttachments + 1];
-  IpczResult result = GetIpczAPI().ConnectNode(
-      GetIpczNode(), transport, num_attachments_ + 1, flags, nullptr, portals);
+  std::array<IpczHandle, kMaxAttachments + 1> portals;
+  IpczResult result =
+      GetIpczAPI().ConnectNode(GetIpczNode(), transport, num_attachments_ + 1,
+                               flags, nullptr, portals.data());
   if (result != IPCZ_RESULT_OK) {
     return result;
   }
@@ -397,7 +399,7 @@ MojoHandle Invitation::Accept(
   // Note that we reserve the first portal slot for internal use, hence an
   // the additional (kMaxAttachments + 1) portal here. Portals corresponding to
   // application-provided attachments begin at index 1.
-  IpczHandle portals[kMaxAttachments + 1];
+  std::array<IpczHandle, kMaxAttachments + 1> portals;
   IpczDriverHandle transport = CreateTransportForMojoEndpoint(
       {.source = is_isolated ? Transport::kBroker : Transport::kNonBroker,
        .destination = Transport::kBroker},
@@ -426,8 +428,9 @@ MojoHandle Invitation::Accept(
         std::move(remote_process));
   }
 
-  IpczResult result = GetIpczAPI().ConnectNode(
-      GetIpczNode(), transport, kMaxAttachments + 1, flags, nullptr, portals);
+  IpczResult result =
+      GetIpczAPI().ConnectNode(GetIpczNode(), transport, kMaxAttachments + 1,
+                               flags, nullptr, portals.data());
   CHECK_EQ(result, IPCZ_RESULT_OK);
 
   BaseSharedMemoryService::CreateClient(ScopedIpczHandle(portals[0]));

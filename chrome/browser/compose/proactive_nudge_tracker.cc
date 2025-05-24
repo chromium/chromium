@@ -244,7 +244,7 @@ void ProactiveNudgeTracker::OnAfterFocusOnFormField(
   ResetState();
 }
 
-void ProactiveNudgeTracker::OnAfterTextFieldDidChange(
+void ProactiveNudgeTracker::OnAfterTextFieldValueChanged(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
@@ -592,7 +592,7 @@ void ProactiveNudgeTracker::CollectTrainingData(
                                 engagement);
   training_labels.output_metric =
       std::make_pair("Compose.ProactiveNudge.DerivedEngagement",
-                     static_cast<base::HistogramBase::Sample>(engagement));
+                     static_cast<base::HistogramBase::Sample32>(engagement));
   ukm::SourceId source =
       state_ ? state_->signals.ukm_source_id : ukm::kInvalidSourceId;
   segmentation_service_->CollectTrainingData(

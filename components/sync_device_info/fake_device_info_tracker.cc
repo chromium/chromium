@@ -4,13 +4,13 @@
 
 #include "components/sync_device_info/fake_device_info_tracker.h"
 
+#include <algorithm>
 #include <map>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -69,7 +69,7 @@ FakeDeviceInfoTracker::CountActiveDevicesByType() const {
 }
 
 void FakeDeviceInfoTracker::ForcePulseForTest() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FakeDeviceInfoTracker::IsRecentLocalCacheGuid(
@@ -99,14 +99,14 @@ void FakeDeviceInfoTracker::Add(std::unique_ptr<DeviceInfo> device) {
 }
 
 void FakeDeviceInfoTracker::Remove(const DeviceInfo* device) {
-  const auto remove_it = base::ranges::remove(devices_, device);
-  CHECK(remove_it != devices_.end());
-  devices_.erase(remove_it);
+  const auto to_remove = std::ranges::remove(devices_, device);
+  CHECK(!to_remove.empty());
+  devices_.erase(to_remove.begin(), to_remove.end());
 }
 
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
                                     const DeviceInfo* new_device) {
-  auto it = base::ranges::find(devices_, old_device);
+  auto it = std::ranges::find(devices_, old_device);
   CHECK(devices_.end() != it, base::NotFatalUntil::M130)
       << "Tracker doesn't contain device";
   *it = new_device;

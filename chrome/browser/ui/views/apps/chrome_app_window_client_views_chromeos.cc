@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
-
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura_ash.h"
 
 // static

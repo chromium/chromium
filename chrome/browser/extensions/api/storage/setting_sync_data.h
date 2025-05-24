@@ -26,7 +26,7 @@ class SettingSyncData {
   // Creates from a sync change.
   explicit SettingSyncData(const syncer::SyncChange& sync_change);
 
-  // Creates from sync data. |change_type| will be std::nullopt.
+  // Creates from sync data. `change_type` will be std::nullopt.
   explicit SettingSyncData(const syncer::SyncData& sync_data);
 
   // Creates explicitly.
@@ -55,7 +55,7 @@ class SettingSyncData {
   base::Value ExtractValue();
 
  private:
-  // Populates the extension ID, key, and value from |sync_data|. This will be
+  // Populates the extension ID, key, and value from `sync_data`. This will be
   // either an extension or app settings data type.
   void ExtractSyncData(const syncer::SyncData& sync_data);
 

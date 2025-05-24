@@ -4,8 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/atomic_uint32.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 AtomicUint32::AtomicUint32(std::uint32_t initial_value)
     : value_(initial_value) {}
@@ -20,5 +19,4 @@ void AtomicUint32::Set(std::uint32_t value) {
   value_ = value;
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

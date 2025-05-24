@@ -21,6 +21,7 @@
 #include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_mac.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -135,9 +136,9 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
                                        CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
 
-  if (notification_str == "AXDrawerCreated") {
-    // The drawer created event is used as an end-of-test signal because it
-    // is used for an obsolete OS feature that will never occur in tests.
+  if (notification_str == "AXApplicationDeactivated") {
+    // The application deactivated event is used as an end-of-test signal
+    // because it never occurs in tests.
     has_seen_end_of_test_sentinel_ = true;
     if (end_of_test_loop_runner_) {
       end_of_test_loop_runner_->Quit();
@@ -145,12 +146,17 @@ void AXEventRecorderMac::EventReceived(AXUIElementRef element,
     return;
   }
 
+  if (only_web_events_ && !IsWebContent(element, manager_)) {
+    return;
+  }
+
   auto formatter = AXTreeFormatterMac();
   formatter.SetPropertyFilters(property_filters_,
                                AXTreeFormatter::kFiltersDefaultSet);
 
+  gfx::NativeViewAccessible element_accessible((__bridge id)element);
   std::string element_str =
-      formatter.FormatTree(formatter.BuildNode((__bridge id)element));
+      formatter.FormatTree(formatter.BuildNode(element_accessible));
 
   // Element dumps contain a new line character at the end, remove it.
   if (!element_str.empty() && element_str.back() == '\n') {

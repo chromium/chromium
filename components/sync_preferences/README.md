@@ -30,7 +30,14 @@ Making a pref syncable requires a few things:
   * Specify the matching pref type (browser or OS, priority or not).
   * Consider whether your pref is particularly privacy-sensitive, and if so,
     point this out to the reviewer. The most common case of this is when a pref
-    records URLs or other history-like data.
+    records URLs or other history-like data. Such prefs should be marked with
+    `PrefSensitivity::kSensitiveRequiresHistory`.
+    * [For priority prefs only] There exists functionality to exempt the
+       priority pref from any sync user toggle, i.e. pref is synced even with
+       sync toggle for preferences turned off, via
+       `PrefSensitivity::kExemptFromUserControlWhileSignedIn`. This should be
+       extremely rare, reach out to chrome-sync-dev@google.com if you really
+       think the pref needs this exemption.
 * Add an entry to the `SyncablePref` enum in
   tools/metrics/histograms/metadata/sync/enums.xml.
 
@@ -40,12 +47,15 @@ Making a pref syncable requires a few things:
   **responsibility of the code reviewer** to ensure that new syncable prefs
   don't have undue privacy impact. In particular:
 * If the pref contains URLs (example: site permissions), it **must** be marked
-  as `is_history_opt_in_required = true`, and it will only be synced if the
-  user has opted in to history sync (in addition to preferences sync).
+  with `PrefSensitivity::kSensitiveRequiresHistory`, and it will only be synced
+  if the user has opted in to history sync (in addition to preferences sync).
 * If the pref is marked as "priority" (`syncer::PRIORITY_PREFERENCES` or
   `syncer::OS_PRIORITY_PREFERENCES`), then it will not be encrypted. Carefully
   consider if it actually needs to be "priority". (The most common reason for
   this is when the pref needs to be consumed on the server side.)
+* Marking pref with `PrefSensitivity::kExemptFromUserControlWhileSignedIn`
+  decouples the pref from sync user toggles. Carefully consider/discuss if this
+  is desired. Note that this is only available for priority prefs.
 * In any other cases that are unclear or questionable, reach out to
   chrome-privacy-core@google.com, or to rainhard@ directly.
 

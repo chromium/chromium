@@ -5,6 +5,7 @@
 #include "chrome/app/android/chrome_main_delegate_android.h"
 
 #include <memory>
+#include <variant>
 
 #include "base/android/jni_android.h"
 #include "base/base_paths_android.h"
@@ -87,7 +88,7 @@ void ChromeMainDelegateAndroid::SecureDataDirectory() {
   }
 }
 
-absl::variant<int, content::MainFunctionParams>
+std::variant<int, content::MainFunctionParams>
 ChromeMainDelegateAndroid::RunProcess(
     const std::string& process_type,
     content::MainFunctionParams main_function_params) {

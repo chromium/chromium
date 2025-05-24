@@ -13,13 +13,12 @@ import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 // </if>
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/controls/cr_policy_pref_indicator.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/js/action_link.js';
 import 'chrome://resources/cr_elements/action_link.css.js';
-import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../controls/controlled_radio_button.js';
 import '../controls/settings_radio_group.js';
@@ -67,14 +66,6 @@ export class SettingsSpellCheckPageElement extends
 
   static get properties() {
     return {
-      /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       /**
        * Read-only reference to the languages model provided by the
        * 'settings-languages' instance.
@@ -125,11 +116,14 @@ export class SettingsSpellCheckPageElement extends
   }
   // </if>
 
-  languages?: LanguagesModel;
-  languageHelper: LanguageHelper;
-  private spellCheckLanguages_: Array<LanguageState|SpellCheckLanguageState>;
-  private hideSpellCheckLanguages_: boolean;
-  private focusConfig_: FocusConfig;
+  declare languages?: LanguagesModel;
+  declare languageHelper: LanguageHelper;
+  // <if expr="not is_macosx">
+  declare private spellCheckLanguages_:
+      Array<LanguageState|SpellCheckLanguageState>;
+  // </if>
+  declare private hideSpellCheckLanguages_: boolean;
+  declare private focusConfig_: FocusConfig;
   private languageSettingsMetricsProxy_: LanguageSettingsMetricsProxy =
       LanguageSettingsMetricsProxyImpl.getInstance();
 

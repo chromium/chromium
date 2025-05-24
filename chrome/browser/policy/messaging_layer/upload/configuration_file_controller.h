@@ -21,10 +21,10 @@
 namespace reporting {
 
 // Used to let the server know that the feature is disabled on the client side.
-static constexpr int32_t kFeatureDisabled = -1;
+inline constexpr int32_t kFeatureDisabled = -1;
 // Used to let the server know that there is something wrong with the
 // configuration file.
-static constexpr int32_t kConfigurationFileCorrupted = -2;
+inline constexpr int32_t kConfigurationFileCorrupted = -2;
 
 BASE_DECLARE_FEATURE(kReportingConfigurationFileTestSignature);
 class ConfigurationFileControllerTest;

@@ -15,11 +15,10 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace feature_engagement {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ConfigurationProvider;
 #endif
 
@@ -45,6 +44,9 @@ struct Comparator {
   Comparator(ComparatorType type, uint32_t value);
   ~Comparator();
 
+  friend bool operator==(const Comparator&, const Comparator&) = default;
+  friend auto operator<=>(const Comparator&, const Comparator&) = default;
+
   // Returns true if the |v| meets the this criteria based on the current
   // |type| and |value|.
   bool MeetsCriteria(uint32_t v) const;
@@ -53,8 +55,6 @@ struct Comparator {
   uint32_t value;
 };
 
-bool operator==(const Comparator& lhs, const Comparator& rhs);
-bool operator<(const Comparator& lhs, const Comparator& rhs);
 std::ostream& operator<<(std::ostream& os, const Comparator& comparator);
 
 // A EventConfig contains all the information about how many times
@@ -68,6 +68,9 @@ struct EventConfig {
               uint32_t window,
               uint32_t storage);
   ~EventConfig();
+
+  friend bool operator==(const EventConfig&, const EventConfig&) = default;
+  friend auto operator<=>(const EventConfig&, const EventConfig&) = default;
 
   // The identifier of the event.
   std::string name;
@@ -83,9 +86,6 @@ struct EventConfig {
   uint32_t storage;
 };
 
-bool operator==(const EventConfig& lhs, const EventConfig& rhs);
-bool operator!=(const EventConfig& lhs, const EventConfig& rhs);
-bool operator<(const EventConfig& lhs, const EventConfig& rhs);
 std::ostream& operator<<(std::ostream& os, const EventConfig& event_config);
 
 // A SessionRateImpact describes which features the |session_rate| of a given
@@ -104,6 +104,9 @@ struct SessionRateImpact {
   SessionRateImpact(const SessionRateImpact& other);
   ~SessionRateImpact();
 
+  friend bool operator==(const SessionRateImpact&,
+                         const SessionRateImpact&) = default;
+
   // Describes which features are impacted.
   Type type;
 
@@ -112,7 +115,6 @@ struct SessionRateImpact {
   std::optional<std::vector<std::string>> affected_features;
 };
 
-bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs);
 std::ostream& operator<<(std::ostream& os, const SessionRateImpact& impact);
 
 // BlockedBy describes which features the |blocked_by| of a given
@@ -131,6 +133,8 @@ struct BlockedBy {
   BlockedBy(const BlockedBy& other);
   ~BlockedBy();
 
+  friend bool operator==(const BlockedBy&, const BlockedBy&) = default;
+
   // Describes which features are impacted.
   Type type{Type::ALL};
 
@@ -139,7 +143,6 @@ struct BlockedBy {
   std::optional<std::vector<std::string>> affected_features;
 };
 
-bool operator==(const BlockedBy& lhs, const BlockedBy& rhs);
 std::ostream& operator<<(std::ostream& os, const BlockedBy& impact);
 
 // Blocking describes which features the |blocking| of a given FeatureConfig
@@ -155,11 +158,12 @@ struct Blocking {
   Blocking(const Blocking& other);
   ~Blocking();
 
+  friend bool operator==(const Blocking&, const Blocking&) = default;
+
   // Describes which features are impacted.
   Type type{Type::ALL};
 };
 
-bool operator==(const Blocking& lhs, const Blocking& rhs);
 std::ostream& operator<<(std::ostream& os, const Blocking& impact);
 
 // A SnoozeParams describes the parameters for snoozable options of in-product
@@ -174,9 +178,10 @@ struct SnoozeParams {
   SnoozeParams();
   SnoozeParams(const SnoozeParams& other);
   ~SnoozeParams();
+
+  friend bool operator==(const SnoozeParams&, const SnoozeParams&) = default;
 };
 
-bool operator==(const SnoozeParams& lhs, const SnoozeParams& rhs);
 std::ostream& operator<<(std::ostream& os, const SnoozeParams& impact);
 
 // A FeatureConfig contains all the configuration for a given feature.
@@ -242,6 +247,8 @@ struct GroupConfig {
   GroupConfig(const GroupConfig& other);
   ~GroupConfig();
 
+  friend bool operator==(const GroupConfig&, const GroupConfig&) = default;
+
   // Whether the group configuration has been successfully parsed.
   bool valid{false};
 
@@ -259,7 +266,6 @@ struct GroupConfig {
   std::set<EventConfig> event_configs;
 };
 
-bool operator==(const GroupConfig& lhs, const GroupConfig& rhs);
 std::ostream& operator<<(std::ostream& os, const GroupConfig& feature_config);
 
 // A Configuration contains the current set of runtime configurations.
@@ -309,7 +315,7 @@ class Configuration {
   // Returns the list of the names of all registered groups.
   virtual const std::vector<std::string> GetRegisteredGroups() const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Updates the config of a specific feature. The new config will replace the
   // existing cofig.
   virtual void UpdateConfig(const base::Feature& feature,

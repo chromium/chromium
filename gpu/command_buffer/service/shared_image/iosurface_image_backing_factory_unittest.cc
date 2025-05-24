@@ -12,11 +12,11 @@
 #include <dawn/native/DawnNative.h>
 #include <dawn/webgpu_cpp.h>
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/ranges/algorithm.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -323,10 +323,10 @@ class IOSurfaceImageBackingFactoryDawnTest
     wgpu::Texture dst_texture(dst_scoped_access->texture());
 
     wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
-    wgpu::ImageCopyTexture copy_src;
+    wgpu::TexelCopyTextureInfo copy_src;
     copy_src.texture = src_texture;
 
-    wgpu::ImageCopyTexture copy_dst;
+    wgpu::TexelCopyTextureInfo copy_dst;
     copy_dst.texture = dst_texture;
 
     wgpu::Extent3D copy_size;
@@ -343,8 +343,8 @@ class IOSurfaceImageBackingFactoryDawnTest
     return std::make_pair(std::move(src_rep), std::move(src_scoped_access));
   }
 
-  static constexpr WGPUInstanceDescriptor instance_desc_ = {
-      .features =
+  static constexpr wgpu::InstanceDescriptor instance_desc_ = {
+      .capabilities =
           {
               .timedWaitAnyEnable = true,
           },
@@ -694,8 +694,7 @@ TEST_P(IOSurfaceImageBackingFactoryDawnTest, Dawn_SamplingVideoTexture) {
     gfx::Size plane_size = format.GetPlaneSize(plane_index, size);
     auto info =
         SkImageInfo::Make(gfx::SizeToSkISize(plane_size),
-                          viz::ToClosestSkColorType(
-                              /*gpu_compositing=*/true, format, plane_index),
+                          viz::ToClosestSkColorType(format, plane_index),
                           alpha_type, color_space.ToSkColorSpace());
     pixmaps[plane_index] =
         SkPixmap(info, plane_datas[plane_index].data(), info.minRowBytes());
@@ -823,10 +822,7 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
     return GetDawnBackendType() == wgpu::BackendType::Vulkan;
   }
 #else
-  wgpu::BackendType GetDawnBackendType() const {
-    NOTREACHED_IN_MIGRATION();
-    return wgpu::BackendType::Undefined;
-  }
+  wgpu::BackendType GetDawnBackendType() const { NOTREACHED(); }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 
  protected:
@@ -1350,7 +1346,7 @@ class IOSurfaceImageBackingFactoryGMBTest
 
     auto backing = backing_factory_->CreateSharedImage(
         mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-        "TestLabel", std::move(handle));
+        "TestLabel", /*is_thread_safe=*/false, std::move(handle));
 
     if (!should_succeed) {
       return nullptr;
@@ -1504,6 +1500,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   shared_image.reset();
 }
 
+#if BUILDFLAG(SKIA_USE_DAWN)
 // Tests that multiple representations created from Graphite's Dawn device use
 // the same wgpu::Texture for accesses created with the same usage.
 TEST_P(IOSurfaceImageBackingFactoryGMBTest,
@@ -1784,9 +1781,9 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest,
 
   wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
 
-  wgpu::ImageCopyTexture copy_src;
+  wgpu::TexelCopyTextureInfo copy_src;
   copy_src.texture = texture_1;
-  wgpu::ImageCopyTexture copy_dst;
+  wgpu::TexelCopyTextureInfo copy_dst;
   copy_dst.texture = dst_texture;
   wgpu::Extent3D copy_size;
   copy_size.width = size.width();
@@ -1806,6 +1803,7 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest,
   queue.Submit(1, &commands);
   EXPECT_FALSE(context_provider->GetResetStatus());
 }
+#endif  // #if BUILDFLAG(SKIA_USE_DAWN)
 
 const auto kScanoutFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,

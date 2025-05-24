@@ -14,8 +14,11 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/activity_log_private.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

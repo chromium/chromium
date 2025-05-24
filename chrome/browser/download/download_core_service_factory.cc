@@ -49,13 +49,11 @@ DownloadCoreServiceFactory::DownloadCoreServiceFactory()
 
 DownloadCoreServiceFactory::~DownloadCoreServiceFactory() = default;
 
-KeyedService* DownloadCoreServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+DownloadCoreServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  DownloadCoreService* service =
-      new DownloadCoreServiceImpl(static_cast<Profile*>(profile));
-
   // No need for initialization; initialization can be done on first
   // use of service.
-
-  return service;
+  return std::make_unique<DownloadCoreServiceImpl>(
+      static_cast<Profile*>(profile));
 }

@@ -2,13 +2,21 @@
 # Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Unit tests for test_filter.py.
+
+Example usage:
+  vpython3 test_filter_test.py
+"""
 
 import argparse
 import os
+from pathlib import Path
 import sys
 import tempfile
 import unittest
 
+build_android_path = Path(__file__).parents[2]
+sys.path.append(str(build_android_path))
 from pylib.utils import test_filter
 
 class ParseFilterFileTest(unittest.TestCase):

@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/drive/service/drive_service_interface.h"
@@ -175,6 +175,7 @@ class DriveServiceOnWorker : public drive::DriveServiceInterface {
       google_apis::drive::UploadRangeCallback callback) override;
   google_apis::CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,

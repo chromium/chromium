@@ -1532,10 +1532,12 @@ TEST_F(InputMethodManagerImplTest, AllowedInputMethodsAndExtensions) {
 
 class InputMethodManagerImplKioskTest : public InputMethodManagerImplTest {
  public:
-  void LogIn(const std::string& email) override {
+  std::optional<std::string> GetDefaultProfileName() override {
+    return "test@kiosk-apps.device-local.localhost";
+  }
+
+  void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     chromeos::SetUpFakeKioskSession(email);
-    ash_test_helper()->test_session_controller_client()->AddUserSession(
-        email, user_manager::UserType::kKioskApp);
   }
 };
 
@@ -1572,7 +1574,8 @@ TEST_F(InputMethodManagerImplTest, SetLoginDefaultWithAllowedInputMethods) {
   EXPECT_TRUE(manager_->GetActiveIMEState()->SetAllowedInputMethods(allowed));
   EXPECT_TRUE(manager_->GetActiveIMEState()->ReplaceEnabledInputMethods(
       manager_->GetActiveIMEState()->GetAllowedInputMethodIds()));
-  manager_->GetActiveIMEState()->SetInputMethodLoginDefault();
+  manager_->GetActiveIMEState()->SetInputMethodLoginDefault(
+      /*is_in_oobe_context=*/false);
   EXPECT_THAT(manager_->GetActiveIMEState()->GetEnabledInputMethodIds(),
               testing::ElementsAre(ImeIdFromEngineId("xkb:us::eng"),
                                    ImeIdFromEngineId("xkb:de::ger"),
@@ -1712,24 +1715,7 @@ TEST_F(InputMethodManagerImplTest, TestAddRemoveArcInputMethods) {
   EXPECT_TRUE(result.empty());
 }
 
-// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
-class InputMethodManagerImplPositionalTest : public InputMethodManagerImplTest {
- public:
-  InputMethodManagerImplPositionalTest() = default;
-  ~InputMethodManagerImplPositionalTest() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        ::features::kImprovedKeyboardShortcuts);
-
-    InputMethodManagerImplTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(InputMethodManagerImplPositionalTest, ValidatePositionalShortcutLayout) {
+TEST_F(InputMethodManagerImplTest, ValidatePositionalShortcutLayout) {
   // Initialize with one positional (US) and one non-positional (US-dvorak)
   // layout.
   std::string us_id = ImeIdFromEngineId("xkb:us::eng");

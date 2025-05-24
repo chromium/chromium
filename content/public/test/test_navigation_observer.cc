@@ -115,18 +115,11 @@ TestNavigationObserver::~TestNavigationObserver() = default;
 
 void TestNavigationObserver::Wait() {
   was_event_consumed_ = false;
-  TRACE_EVENT1("test", "TestNavigationObserver::Wait", "params",
-               [&](perfetto::TracedValue ctx) {
-                 // TODO(crbug.com/40751990): Replace this with passing more
-                 // parameters to TRACE_EVENT directly when available.
-                 auto dict = std::move(ctx).WriteDictionary();
-                 dict.Add("wait_event", wait_event_);
-                 dict.Add("ignore_uncommitted_navigations",
-                          ignore_uncommitted_navigations_);
-                 dict.Add("expected_target_url", expected_target_url_);
-                 dict.Add("expected_initial_url", expected_initial_url_);
-                 dict.Add("expected_target_error", expected_target_error_);
-               });
+  TRACE_EVENT("test", "TestNavigationObserver::Wait", "wait_event", wait_event_,
+              "ignore_uncommitted_navigations", ignore_uncommitted_navigations_,
+              "expected_target_url", expected_target_url_,
+              "expected_initial_url", expected_initial_url_,
+              "expected_target_error", expected_target_error_);
   message_loop_runner_->Run();
 }
 
@@ -148,6 +141,12 @@ void TestNavigationObserver::StopWatchingNewWebContents() {
 void TestNavigationObserver::WatchExistingWebContents() {
   for (auto* web_contents : WebContentsImpl::GetAllWebContents())
     RegisterAsObserver(web_contents);
+}
+
+void TestNavigationObserver::WatchWebContents(
+    content::WebContents* web_contents) {
+  CHECK(web_contents);
+  RegisterAsObserver(web_contents);
 }
 
 void TestNavigationObserver::RegisterAsObserver(WebContents* web_contents) {

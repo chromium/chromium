@@ -12,13 +12,20 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "google_apis/gaia/gaia_id.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Profile;
+
+namespace signin {
+class GaiaIdHash;
+}  // namespace signin
 
 namespace syncer {
 class SyncSetupInProgressHandle;
@@ -61,26 +68,46 @@ class SyncServiceImplHarness {
 
   signin::GaiaIdHash GetGaiaIdHashForPrimaryAccount() const;
 
-  // Signs in to a primary account without actually enabling sync the feature.
+  // Returns GaiaId for the default test account. This method can be used when
+  // the account is not signed in.
+  GaiaId GetGaiaIdForDefaultTestAccount() const;
+
+  // Signs in to a primary account with without actually enabling sync the
+  // feature.
+  // TODO(crbug.com/41496149): Remove parameter `consent_level` because it is
+  // rather misleading: it isn't realistic to complete the sign-in flow with
+  // `signin::ConsentLevel::kSync` without also closing the sync confirmation
+  // dialog or opening settings from it (advanced flow), both of which make
+  // additional state changes in SyncService. This becomes obvious in Live tests
+  // using real Gaia and Sync servers.
   [[nodiscard]] bool SignInPrimaryAccount(
       signin::ConsentLevel consent_level = signin::ConsentLevel::kSignin);
 
   // This is similar to click the reset button on chrome.google.com/sync.
   void ResetSyncForPrimaryAccount();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Signs out of the primary account. ChromeOS doesn't have the concept of
   // sign-out, so this only exists on other platforms.
   void SignOutPrimaryAccount();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // The underlying implementation for mimic-ing persistent auth errors isn't
   // implemented on Android, see https://crbug.com/1373448.
 #if !BUILDFLAG(IS_ANDROID)
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.
+  // TODO(crbug.com/401470426): Replace the usages with
+  // Enter/ExitSignInPendingStateForPrimaryAccount().
   void EnterSyncPausedStateForPrimaryAccount();
   bool ExitSyncPausedStateForPrimaryAccount();
+
+  // Enters the "Sign-in pending" state and waits until the sync transport
+  // layer is paused. Returns true if successful.
+  bool EnterSignInPendingStateForPrimaryAccount();
+  // Exits the "Sign-in pending" state and waits until the sync transport layer
+  // is active. Returns true if successful.
+  bool ExitSignInPendingStateForPrimaryAccount();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // Enables and configures sync for all available datatypes. Returns true only
@@ -142,6 +169,10 @@ class SyncServiceImplHarness {
   // successful.
   [[nodiscard]] bool AwaitSyncTransportActive();
 
+  // Blocks the caller until the sync transport layer is paused. Returns true if
+  // successful.
+  [[nodiscard]] bool AwaitSyncTransportPaused();
+
   // Blocks the caller until invalidations are enabled or disabled.
   [[nodiscard]] bool AwaitInvalidationsStatus(bool expected_status);
 
@@ -168,6 +199,18 @@ class SyncServiceImplHarness {
 
   // Returns a snapshot of the current sync session.
   syncer::SyncCycleSnapshot GetLastCycleSnapshot() const;
+
+  // Returns the datatypes which have local changes that have not yet been
+  // synced with the server.
+  absl::flat_hash_map<syncer::DataType, size_t> GetTypesWithUnsyncedDataAndWait(
+      syncer::DataTypeSet requested_types) const;
+
+  // Retrieves the LocalDataDescription for the specified |data_type|.
+  // it assumes the service will provide a unique description for this specific
+  // type. Returns this description, or default value (empty value) if the
+  // service misbehaves and returns a response that cannot be interpreted.
+  syncer::LocalDataDescription GetLocalDataDescriptionAndWait(
+      syncer::DataType data_type);
 
  private:
   SyncServiceImplHarness(Profile* profile,

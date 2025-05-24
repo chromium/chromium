@@ -8,3 +8,15 @@ include_rules = [
   "+third_party/blink/renderer/modules/credentialmanagement",
   "+third_party/blink/renderer/modules/modules_export.h",
 ]
+
+specific_include_rules = {
+  "credential_manager_type_converters.cc": [
+    "+third_party/boringssl/src/include",
+  ],
+  "credential_manager_type_converters_unittest.cc": [
+    "+device/fido/fido_constants.h",
+  ],
+  ".*test\.cc": [
+    "+components/ukm/test_ukm_recorder.h",
+  ],
+}

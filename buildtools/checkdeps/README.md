@@ -53,7 +53,7 @@ applied is arbitrary.
 
 ```
 specific_include_rules = {
-  ".*_(unit|browser|api)test\.cc": [
+  ".*_(unit|browser|api)test\\.cc": [
     "+libraries/testsupport",
   ],
 }
@@ -64,10 +64,10 @@ following regular expressions may be useful:
 
 ```
 specific_include_rules = {
-  '.*UnitTest\.java': [
+  '.*UnitTest\\.java': [
     # Rules for unit tests.
   ],
-  '.*(?<!Unit)Test\.java': [
+  '.*(?<!Unit)Test\\.java': [
     # Rules for instrumentation tests.
   ],
 }
@@ -75,8 +75,9 @@ specific_include_rules = {
 
 You can optionally ignore the rules inherited from parent directories, similar
 to "set noparent" in OWNERS files. For example, adding `noparent = True` in
-//ash/components/DEPS will cause rules from //ash/DEPS to be ignored, thereby
-forcing each //ash/component/foo to explicitly declare foo's dependencies.
+//chromeos/ash/components/DEPS will cause rules from //chromeos/ash/DEPS
+to be ignored, thereby forcing each //ash/component/foo to explicitly declare
+foo's dependencies.
 
 ```
 noparent = True
@@ -99,3 +100,20 @@ directory and then take away permissions from sub-parts, or the reverse.
 Note that all directory separators must be `/` slashes (Unix-style) and not
 backslashes. All directories should be relative to the source root and use
 only lowercase.
+
+# Reviews
+
+`DEPS` files can be used to require a review when someone adds an
+`include_rules` entry on a directory. To do so, use:
+
+```
+new_usages_require_review = True
+```
+
+For example, if `//foo/bar/DEPS` sets `new_usages_require_review=True`, then:
+
+1) `include_rules` for `//foo` will not allow includes for files in `//foo/bar`
+2) A `PRESUBMIT.py` check will enforce that an `OWNER` of `//foo/bar` must +1
+   the change that adds the `include_rules` entry.
+
+This behavior was the default until fall 2024, when it was switch to opt-in.

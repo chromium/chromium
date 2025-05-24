@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
@@ -102,7 +103,7 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest,
 }
 
 // Other platforms do not have a `WebAppProvider` in guest sessions.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(IsolatedWebAppUpdateApplyWaiterTest,
        NoProfileKeepAliveWhenOffTheRecord) {
   // In ChromeOS guest sessions, the profile is both a guest profile and off the
@@ -131,7 +132,7 @@ TEST_F(IsolatedWebAppUpdateApplyWaiterTest,
   EXPECT_THAT(keep_alive, NotNull());
   EXPECT_THAT(profile_keep_alive, IsNull());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace web_app

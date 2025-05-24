@@ -14,8 +14,9 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
-#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/http_status.h"
 #include "remoting/base/session_authz_service_client.h"
+#include "remoting/protocol/authenticator.h"
 
 namespace remoting {
 namespace internal {
@@ -28,12 +29,17 @@ namespace protocol {
 // service.
 class SessionAuthzReauthorizer {
  public:
+  using OnReauthorizationFailedCallback =
+      base::OnceCallback<void(HttpStatus::Code,
+                              const Authenticator::RejectionDetails&)>;
+
   // |service_client| must outlive |this|.
-  SessionAuthzReauthorizer(SessionAuthzServiceClient* service_client,
-                           std::string_view session_id,
-                           std::string_view session_reauth_token,
-                           base::TimeDelta session_reauth_token_lifetime,
-                           base::OnceClosure on_reauthorization_failed);
+  SessionAuthzReauthorizer(
+      SessionAuthzServiceClient* service_client,
+      std::string_view session_id,
+      std::string_view session_reauth_token,
+      base::TimeDelta session_reauth_token_lifetime,
+      OnReauthorizationFailedCallback on_reauthorization_failed);
   ~SessionAuthzReauthorizer();
 
   SessionAuthzReauthorizer(const SessionAuthzReauthorizer&) = delete;
@@ -51,16 +57,18 @@ class SessionAuthzReauthorizer {
   void ScheduleNextReauth();
   void Reauthorize();
   void OnReauthorizeResult(
-      const ProtobufHttpStatus& status,
+      const HttpStatus& status,
       std::unique_ptr<internal::ReauthorizeHostResponseStruct> response);
-  void NotifyReauthorizationFailed();
+  void NotifyReauthorizationFailed(
+      HttpStatus::Code error_code,
+      const Authenticator::RejectionDetails& details);
 
   raw_ptr<SessionAuthzServiceClient> service_client_;
   std::string session_id_;
   std::string session_reauth_token_;
   base::TimeTicks token_expire_time_;
   base::OneShotTimer reauthorize_timer_;
-  base::OnceClosure on_reauthorization_failed_;
+  OnReauthorizationFailedCallback on_reauthorization_failed_;
 
   // Non-null iff there is an ongoing retry attempt.
   std::unique_ptr<net::BackoffEntry> backoff_entry_;

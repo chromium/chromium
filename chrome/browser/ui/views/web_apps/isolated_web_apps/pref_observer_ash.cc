@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
-
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/web_apps/isolated_web_apps/pref_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -40,6 +39,19 @@ class IsolatedWebAppsEnabledPrefObserverAsh
     }
 
     // Runs callback once asynchronously to match the Lacros behavior.
+    //
+    // When this file (pref_observer_ash.cc) was originally created, there used
+    // to be a companion one called pref_observer_lacros.cc. The lacros file is
+    // long deleted by now due to Lacros sunsetting.
+    //
+    // In the Lacros implementation, the callback was run once, and was run
+    // asynchronously, immediately after the observation started but before any
+    // pref change happened.
+    //
+    // As a result, in pref_observer_ash.cc, we match this behavior for Ash.
+    // This is also due to the fact that this behavior is expected downstream
+    // through the downstream OS-agnostic `IsolatedWebAppsEnabledPrefObserver`
+    // class.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&IsolatedWebAppsEnabledPrefObserverAsh::RunCallback,

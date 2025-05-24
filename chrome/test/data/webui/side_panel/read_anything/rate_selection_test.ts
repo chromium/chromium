@@ -3,37 +3,37 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {ReadAloudSettingsChange, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {getItemsInMenu, stubAnimationFrame, suppressInnocuousErrors} from './common.js';
+import {getItemsInMenu, mockMetrics, stubAnimationFrame} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
 suite('RateSelection', () => {
   let toolbar: ReadAnythingToolbarElement;
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
   let rateButton: CrIconButtonElement;
   let rateEmitted: boolean;
+  let metrics: TestMetricsBrowserProxy;
 
-  setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
+    metrics = mockMetrics();
 
     toolbar = document.createElement('read-anything-toolbar');
     document.body.appendChild(toolbar);
-    flush();
+
+    await microtasksFinished();
     rateButton =
-        toolbar.shadowRoot!.querySelector<CrIconButtonElement>('#rate')!;
+        toolbar.shadowRoot.querySelector<CrIconButtonElement>('#rate')!;
     rateEmitted = false;
     document.addEventListener(ToolbarEvent.RATE, () => {
       rateEmitted = true;
@@ -49,11 +49,11 @@ suite('RateSelection', () => {
     assertFalse(toolbar.$.rateMenu.get().open);
   });
 
-  test('menu button opens menu', () => {
+  test('menu button opens menu', async () => {
     stubAnimationFrame();
 
     rateButton.click();
-    flush();
+    await microtasksFinished();
 
     assertTrue(toolbar.$.rateMenu.get().open);
   });
@@ -65,25 +65,30 @@ suite('RateSelection', () => {
       options = getItemsInMenu(toolbar.$.rateMenu);
     });
 
-    test('displays options in increasing order with multiple options', () => {
-      assertGT(options.length, 0);
+    test(
+        'displays options in increasing order with multiple options',
+        async () => {
+          assertGT(options.length, 0);
 
-      let previousRate = -1;
-      options.forEach((option) => {
-        option.click();
-        const newRate = chrome.readingMode.speechRate;
-        assertGT(newRate, previousRate);
-        assertTrue(rateEmitted);
-        previousRate = newRate;
-        rateEmitted = false;
-      });
-    });
+          let previousRate = -1;
 
-    test('on option click', () => {
+          for (const option of options) {
+            option.click();
+            await microtasksFinished();
+            const newRate = chrome.readingMode.speechRate;
+            assertGT(newRate, previousRate);
+            assertTrue(rateEmitted);
+            previousRate = newRate;
+            rateEmitted = false;
+          }
+        });
+
+    test('on option click', async () => {
       assertTrue(toolbar.rateOptions.length >= 1);
       const rateValue = toolbar.rateOptions[0];
       const menuOption = options[0]!;
       menuOption.click();
+      await microtasksFinished();
 
       // updates rate
       assertEquals(rateValue, chrome.readingMode.speechRate);
@@ -91,6 +96,9 @@ suite('RateSelection', () => {
 
       // updates icon on toolbar
       assertEquals('voice-rate:' + rateValue, rateButton.ironIcon);
+      assertEquals(
+          ReadAloudSettingsChange.VOICE_SPEED_CHANGE,
+          await metrics.whenCalled('recordVoiceSpeed'));
 
       // closes menu
       assertFalse(toolbar.$.rateMenu.get().open);

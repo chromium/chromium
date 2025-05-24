@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_util.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_notification_result.h"
 
 namespace safe_browsing {
@@ -43,10 +44,9 @@ const char* GetUserActionString(TailoredSecurityOutcome outcome, bool enable) {
       return enable ? kTailoredSecurityEnabledDialogSettingsButtonClicked
                     : kTailoredSecurityDisabledDialogSettingsButtonClicked;
     default:
-      CHECK(false) << "Attempted to get a user action string for an "
+      NOTREACHED() << "Attempted to get a user action string for an "
                       "unsupported outcome: "
                    << static_cast<int>(outcome);
-      return "";
   }
 }
 

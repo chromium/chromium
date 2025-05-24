@@ -19,12 +19,13 @@ std::unique_ptr<OverlayResponse> CreateConfirmResponse(
     size_t confirm_button_row_index,
     std::unique_ptr<OverlayResponse> response) {
   AlertResponse* alert_response = response->GetInfo<AlertResponse>();
-  if (!alert_response)
+  if (!alert_response) {
     return nullptr;
+  }
   return OverlayResponse::CreateWithInfo<ConfirmationOverlayResponse>(
       alert_response->tapped_button_row_index() == confirm_button_row_index);
 }
-}
+}  // namespace
 
 alert_overlays::ResponseConverter GetConfirmationResponseConverter(
     size_t confirm_button_row_index) {

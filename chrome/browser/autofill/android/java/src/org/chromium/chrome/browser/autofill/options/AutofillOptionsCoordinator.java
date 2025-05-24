@@ -15,6 +15,7 @@ import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.AutofillFeatures;
@@ -28,6 +29,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  *   ... a model keeping track of the settings state, and
  *   ... a mediator to ensure the settings UI is consistent with prefs.
  */
+@NullMarked
 public class AutofillOptionsCoordinator {
     final AutofillOptionsFragment mFragment;
     final AutofillOptionsMediator mMediator;
@@ -130,6 +132,9 @@ public class AutofillOptionsCoordinator {
                 .with(
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         getString(R.string.autofill_options_confirm_restart))
+                .with(
+                        ModalDialogProperties.BUTTON_STYLES,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                 .with(
                         ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         getString(R.string.autofill_options_undo_toggle_change))

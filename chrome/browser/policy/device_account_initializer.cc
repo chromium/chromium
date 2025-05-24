@@ -139,11 +139,6 @@ void DeviceAccountInitializer::Stop() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-void DeviceAccountInitializer::OnPolicyFetched(CloudPolicyClient* client) {}
-
-void DeviceAccountInitializer::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {}
-
 void DeviceAccountInitializer::OnClientError(CloudPolicyClient* client) {
   if (!handling_request_)
     return;

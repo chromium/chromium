@@ -28,11 +28,13 @@ UkmMetricsTable::MetricsRow GetMetricsRowWithQuery(sql::Statement& statement) {
   row.url_id = UrlId::FromUnsafeValue(statement.ColumnInt64(3));
   row.event_id = MetricsRowEventId::FromUnsafeValue(statement.ColumnInt64(4));
   uint64_t event_hash = 0;
-  if (base::HexStringToUInt64(statement.ColumnString(5), &event_hash))
+  if (base::HexStringToUInt64(statement.ColumnStringView(5), &event_hash)) {
     row.event_hash = UkmEventHash::FromUnsafeValue(event_hash);
+  }
   uint64_t metric_hash = 0;
-  if (base::HexStringToUInt64(statement.ColumnString(6), &metric_hash))
+  if (base::HexStringToUInt64(statement.ColumnStringView(6), &metric_hash)) {
     row.metric_hash = UkmMetricHash::FromUnsafeValue(metric_hash);
+  }
   row.metric_value = statement.ColumnInt64(7);
   return row;
 }
@@ -45,7 +47,7 @@ UmaMetricEntry GetUmaMetricsRowWithQuery(sql::Statement& statement) {
   row.time = statement.ColumnTime(1);
   row.type = static_cast<proto::SignalType>(statement.ColumnInt64(3));
   uint64_t metric_hash = 0;
-  if (base::HexStringToUInt64(statement.ColumnString(4), &metric_hash)) {
+  if (base::HexStringToUInt64(statement.ColumnStringView(4), &metric_hash)) {
     row.name_hash = metric_hash;
   }
   row.value = statement.ColumnInt64(5);
@@ -103,7 +105,7 @@ void AssertUrlsInTable(sql::Database& db, const std::vector<UrlMatcher>& urls) {
   while (statement.Step()) {
     actual_rows.emplace_back(
         UrlMatcher{.url_id = static_cast<UrlId>(statement.ColumnInt64(0)),
-                   .url = GURL(statement.ColumnString(1))});
+                   .url = GURL(statement.ColumnStringView(1))});
   }
 
   EXPECT_THAT(actual_rows, UnorderedElementsAreArray(urls));

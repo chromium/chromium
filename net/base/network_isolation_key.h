@@ -11,6 +11,7 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_partition.h"
 #include "net/base/schemeful_site.h"
 
 namespace network::mojom {
@@ -33,6 +34,8 @@ namespace net {
 // cache. The key has the following properties:
 // `top_frame_site` -> the schemeful site of the top level page.
 // `frame_site ` -> the schemeful site of the frame.
+// `network_isolation_partition` -> an extra partition for the HTTP cache for
+// special use cases.
 class NET_EXPORT NetworkIsolationKey {
  public:
   // Full constructor.  When a request is initiated by the top frame, it must
@@ -40,13 +43,17 @@ class NET_EXPORT NetworkIsolationKey {
   NetworkIsolationKey(
       const SchemefulSite& top_frame_site,
       const SchemefulSite& frame_site,
-      const std::optional<base::UnguessableToken>& nonce = std::nullopt);
+      const std::optional<base::UnguessableToken>& nonce = std::nullopt,
+      NetworkIsolationPartition network_isolation_partition =
+          NetworkIsolationPartition::kGeneral);
 
   // Alternative constructor that takes ownership of arguments, to save copies.
   NetworkIsolationKey(
       SchemefulSite&& top_frame_site,
       SchemefulSite&& frame_site,
-      std::optional<base::UnguessableToken>&& nonce = std::nullopt);
+      std::optional<base::UnguessableToken>&& nonce = std::nullopt,
+      NetworkIsolationPartition network_isolation_partition =
+          NetworkIsolationPartition::kGeneral);
 
   // Construct an empty key.
   NetworkIsolationKey();
@@ -72,8 +79,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Compare keys for equality, true if all enabled fields are equal.
   bool operator==(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, nonce_) ==
-           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
+    return std::tie(top_frame_site_, frame_site_, nonce_,
+                    network_isolation_partition_) ==
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_,
+                    other.network_isolation_partition_);
   }
 
   // Compare keys for inequality, true if any enabled field varies.
@@ -83,8 +92,10 @@ class NET_EXPORT NetworkIsolationKey {
 
   // Provide an ordering for keys based on all enabled fields.
   bool operator<(const NetworkIsolationKey& other) const {
-    return std::tie(top_frame_site_, frame_site_, nonce_) <
-           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_);
+    return std::tie(top_frame_site_, frame_site_, nonce_,
+                    network_isolation_partition_) <
+           std::tie(other.top_frame_site_, other.frame_site_, other.nonce_,
+                    other.network_isolation_partition_);
   }
 
   // Returns the string representation of the key for use in string-keyed disk
@@ -151,6 +162,10 @@ class NET_EXPORT NetworkIsolationKey {
     return nonce_;
   }
 
+  NetworkIsolationPartition GetNetworkIsolationPartition() const {
+    return network_isolation_partition_;
+  }
+
   // Returns true if all parts of the key are empty.
   bool IsEmpty() const;
 
@@ -167,6 +182,12 @@ class NET_EXPORT NetworkIsolationKey {
   // Having a nonce is a way to force a transient opaque `NetworkIsolationKey`
   // for non-opaque origins.
   std::optional<base::UnguessableToken> nonce_;
+
+  // The network isolation partition for this NIK. This will be kGeneral
+  // except for specific use cases that require isolation from all other
+  // use cases.
+  NetworkIsolationPartition network_isolation_partition_ =
+      NetworkIsolationPartition::kGeneral;
 };
 
 NET_EXPORT std::ostream& operator<<(std::ostream& os,

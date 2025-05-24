@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/containers/heap_array.h"
@@ -524,15 +525,10 @@ TEST_F(BufferManagerTest, BindBufferConflicts) {
 
   {
     // Except for ELEMENT_ARRAY_BUFFER, a buffer can switch to any targets.
-    const GLenum kTargets[] = {
-      GL_ARRAY_BUFFER,
-      GL_COPY_READ_BUFFER,
-      GL_COPY_WRITE_BUFFER,
-      GL_PIXEL_PACK_BUFFER,
-      GL_PIXEL_UNPACK_BUFFER,
-      GL_TRANSFORM_FEEDBACK_BUFFER,
-      GL_UNIFORM_BUFFER
-    };
+    const auto kTargets = std::to_array<GLenum>(
+        {GL_ARRAY_BUFFER, GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER,
+         GL_PIXEL_PACK_BUFFER, GL_PIXEL_UNPACK_BUFFER,
+         GL_TRANSFORM_FEEDBACK_BUFFER, GL_UNIFORM_BUFFER});
     for (size_t ii = 0; ii < std::size(kTargets); ++ii) {
       client_id++;
       service_id++;
@@ -551,15 +547,10 @@ TEST_F(BufferManagerTest, BindBufferConflicts) {
   {
     // Once a buffer is bound to non ELEMENT_ARRAY_BUFFER target, it can't be
     // bound to ELEMENT_ARRAY_BUFFER target.
-    const GLenum kTargets[] = {
-      GL_ARRAY_BUFFER,
-      GL_COPY_READ_BUFFER,
-      GL_COPY_WRITE_BUFFER,
-      GL_PIXEL_PACK_BUFFER,
-      GL_PIXEL_UNPACK_BUFFER,
-      GL_TRANSFORM_FEEDBACK_BUFFER,
-      GL_UNIFORM_BUFFER
-    };
+    const auto kTargets = std::to_array<GLenum>(
+        {GL_ARRAY_BUFFER, GL_COPY_READ_BUFFER, GL_COPY_WRITE_BUFFER,
+         GL_PIXEL_PACK_BUFFER, GL_PIXEL_UNPACK_BUFFER,
+         GL_TRANSFORM_FEEDBACK_BUFFER, GL_UNIFORM_BUFFER});
     for (size_t ii = 0; ii < std::size(kTargets); ++ii) {
       client_id++;
       service_id++;

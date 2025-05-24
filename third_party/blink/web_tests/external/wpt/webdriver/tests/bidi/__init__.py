@@ -1,10 +1,12 @@
 from typing import Any, Callable, Dict, List, Mapping
 from webdriver.bidi.modules.script import ContextTarget
+from webdriver.bidi.undefined import UNDEFINED
 
 
 # Compares 2 objects recursively.
 # Actual value can have more keys as part of the forwards-compat design.
-# Expected value can be a callable delegate, asserting the value.
+# Expected value can be a value, a callable delegate, asserting the value, or UNDEFINED.
+# If expected value is UNDEFINED, the actual value should not be present.
 def recursive_compare(expected: Any, actual: Any) -> None:
     if callable(expected):
         expected(actual)
@@ -17,11 +19,19 @@ def recursive_compare(expected: Any, actual: Any) -> None:
         return
 
     if isinstance(actual, Dict) and isinstance(expected, Dict):
+
+        # Expected keys with UNDEFINED values should not be present.
+        unexpected_keys = {key: value for key, value in expected.items() if
+                             value is UNDEFINED}.keys()
+        assert not (unexpected_keys & actual.keys()), \
+            f"Keys should not be present: {unexpected_keys & actual.keys()}"
+
+        expected_keys = expected.keys() - unexpected_keys
         # Actual Mapping can have more keys as part of the forwards-compat design.
         assert (
-            expected.keys() <= actual.keys()
-        ), f"Key set should be present: {set(expected.keys()) - set(actual.keys())}"
-        for key in expected.keys():
+            expected_keys <= actual.keys()
+        ), f"Key set should be present: {set(expected_keys) - set(actual.keys())}"
+        for key in expected_keys:
             recursive_compare(expected[key], actual[key])
         return
 
@@ -56,6 +66,14 @@ def any_list(actual: Any) -> None:
 def any_list_or_null(actual: Any) -> None:
     if actual is not None:
         any_list(actual)
+
+
+def any_positive_int(actual):
+    def _(actual: Any) -> None:
+        any_int(actual)
+        assert actual > 0
+
+    return _
 
 
 def any_string(actual: Any) -> None:
@@ -114,7 +132,7 @@ def assert_handle(obj: Mapping[str, Any], should_contain_handle: bool) -> None:
         assert "handle" not in obj, f"Result should not contain `handle`. Actual: {obj}"
 
 
-async def create_console_api_message(bidi_session, context: str, text: str):
+async def create_console_api_message(bidi_session, context: Any, text: str):
     await bidi_session.script.call_function(
         function_declaration="""(text) => console.log(text)""",
         arguments=[{"type": "string", "value": text}],
@@ -124,7 +142,7 @@ async def create_console_api_message(bidi_session, context: str, text: str):
     return text
 
 
-async def get_device_pixel_ratio(bidi_session, context: str) -> float:
+async def get_device_pixel_ratio(bidi_session, context: Any) -> float:
     result = await bidi_session.script.call_function(
         function_declaration="""() => {
         return window.devicePixelRatio;
@@ -149,7 +167,7 @@ async def get_element_dimensions(bidi_session, context, element):
     return remote_mapping_to_dict(result["value"])
 
 
-async def get_viewport_dimensions(bidi_session, context: str,
+async def get_viewport_dimensions(bidi_session, context: Any,
       with_scrollbar: bool = True, quirk_mode: bool = False):
     if with_scrollbar:
         expression = """
@@ -180,7 +198,7 @@ async def get_viewport_dimensions(bidi_session, context: str,
     return remote_mapping_to_dict(result["value"])
 
 
-async def get_document_dimensions(bidi_session, context: str):
+async def get_document_dimensions(bidi_session, context: Any):
     expression = """
         ({
           height: document.documentElement.scrollHeight,
@@ -196,9 +214,20 @@ async def get_document_dimensions(bidi_session, context: str):
     return remote_mapping_to_dict(result["value"])
 
 
+async def get_context_origin(bidi_session, context: Mapping[str, Any]) -> str:
+    result = await bidi_session.script.call_function(
+        function_declaration="""() => {
+          return window.location.origin;
+        }""",
+        target=ContextTarget(context["context"]),
+        await_promise=False)
+    return result["value"]
+
+
 def remote_mapping_to_dict(js_object) -> Dict:
     obj = {}
     for key, value in js_object:
-        obj[key] = value["value"]
+        if value["type"] != "null":
+            obj[key] = value["value"]
 
     return obj

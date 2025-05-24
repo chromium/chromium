@@ -7,8 +7,9 @@
  */
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {getRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
+import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Prefix used in references to form elements that have no 'id' or 'name'
@@ -26,7 +27,16 @@ const kNamelessFieldIDPrefix = 'gChrome~field~';
  * programmatically.
  * If the map is null, the source of changed is not track.
  */
-const wasEditedByUser: WeakMap<any, any>|null = null;
+const wasEditedByUser: WeakMap<any, any> = new WeakMap();
+
+/**
+ * Registry that tracks the forms that were submitted during the frame's
+ * lifetime. Elements that are garbage collected will be removed from the
+ * registry so this can't memory leak. In the worst case the registry will get
+ * as big as the number of submitted forms that aren't yet deleted and we don't
+ * expect a lot of those.
+ */
+const formSubmissionRegistry: WeakSet<any> = new WeakSet();
 
 /**
  * Based on Element::isFormControlElement() (WebKit)
@@ -282,7 +292,7 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
     return null;
   }
   for (const form of document.forms) {
-    if (identifier.toString() === gCrWeb.fill.getUniqueID(form)) {
+    if (identifier.toString() === gCrWebLegacy.fill.getUniqueID(form)) {
       return form;
     }
   }
@@ -291,23 +301,64 @@ function getFormElementFromRendererId(identifier: number): HTMLFormElement|
 
 /**
  * Returns whether the last `input` or `change` event on `element` was
- * triggered by a user action (was "trusted").
+ * triggered by a user action (was "trusted"). Returns true by default if the
+ * feature to fix the user edited bit isn't enabled which is the status quo.
  * TODO(crbug.com/40941928): Match Blink's behavior so that only a 'reset' event
  * makes an edited field unedited.
  */
 function fieldWasEditedByUser(element: Element) {
-  if (wasEditedByUser === null) {
-    // Input event sources is not tracked.
-    // Return true to preserve previous behavior.
-    return true;
-  }
-  if (!wasEditedByUser.has(element)) {
-    return false;
-  }
-  return wasEditedByUser.get(element);
+  return !gCrWebLegacy.autofill_form_features
+              .isAutofillCorrectUserEditedBitInParsedField() ||
+      (wasEditedByUser.get(element) ?? false);
 }
 
-gCrWeb.form = {
+/**
+ * @param originalURL A string containing a URL (absolute, relative...)
+ * @return A string containing a full URL (absolute with scheme)
+ */
+function getFullyQualifiedUrl(originalURL: string): string {
+  // A dummy anchor (never added to the document) is used to obtain the
+  // fully-qualified URL of `originalURL`.
+  const anchor = document.createElement('a');
+  anchor.href = originalURL;
+  return anchor.href;
+}
+
+// Send the form data to the browser.
+function formSubmitted(
+    form: HTMLFormElement,
+    messageHandler: string,
+    programmaticSubmission: boolean,
+    includeRemoteFrameToken: boolean = false,
+    ): void {
+  if (gCrWebLegacy.autofill_form_features
+          .isAutofillDedupeFormSubmissionEnabled()) {
+    // Handle deduping when the feature allows it.
+    if (formSubmissionRegistry.has(form)) {
+      // Do not double submit the same form.
+      return;
+    }
+    formSubmissionRegistry.add(form);
+  }
+
+  // Default URL for action is the document's URL.
+  const action = form.getAttribute('action') || document.URL;
+
+  const message = {
+    command: 'form.submit',
+    frameID: gCrWeb.getFrameId(),
+    formName: gCrWebLegacy.form.getFormIdentifier(form),
+    href: getFullyQualifiedUrl(action),
+    formData: gCrWebLegacy.fill.autofillSubmissionData(form),
+    remoteFrameToken: includeRemoteFrameToken ? getRemoteFrameToken() :
+                                                undefined,
+    programmaticSubmission: programmaticSubmission,
+  };
+
+  sendWebKitMessage(messageHandler, message);
+}
+
+gCrWebLegacy.form = {
   wasEditedByUser,
   isFormControlElement,
   getFormControlElements,
@@ -318,4 +369,5 @@ gCrWeb.form = {
   getFormElementFromIdentifier,
   getFormElementFromRendererId,
   fieldWasEditedByUser,
+  formSubmitted,
 };

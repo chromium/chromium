@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
-#include "chrome/browser/browser_process.h"
 #include "components/crx_file/id_util.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 

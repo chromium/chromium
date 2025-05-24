@@ -15,11 +15,7 @@
 #endif  // defined(CHROMEOS_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(CHROMEOS_IMPLEMENTATION) || defined(IS_CHROMEOS_SYSTEM_IMPL)
 #define CHROMEOS_EXPORT __attribute__((visibility("default")))
-#else
-#define CHROMEOS_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

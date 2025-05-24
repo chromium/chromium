@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+    <title>Test Page for &lt;select&gt; elements</title>
+  </head>
+  <body>
+    <p>
+      <label for="plainSelect">Plain Select:</label>
+      <select id="plainSelect">
+        <option>alpha</option>
+        <option>beta</option>
+        <option>gamma</option>
+        <option value="last">omega</option>
+        <option disabled>disabledOption</option>
+      </select>
+      <script>
+        let select_event_log = [];
+        let log_handler = e => select_event_log.push(`${e.type}`);
+        document.getElementById('plainSelect').addEventListener('change', log_handler);
+        document.getElementById('plainSelect').addEventListener('input', log_handler);
+      </script>
+    </p>
+
+    <p>
+    <label for="groupedSelect">Grouped Select:</label>
+    <select id="groupedSelect">
+      <optgroup label="Greek">
+        <option>alpha</option>
+        <option>beta</option>
+        <option>gamma</option>
+      </optgroup>
+      <optgroup label="Latin">
+        <option>a</option>
+        <option>b</option>
+        <option>c</option>
+      </optgroup>
+      <optgroup label="Disabled" disabled>
+        <option>foobar</option>
+      </optgroup>
+    </select>
+    </p>
+
+    <p>
+      <label for="disabledSelect">Disabled Select:</label>
+      <select id="disabledSelect" disabled>
+        <option>alpha</option>
+        <option>beta</option>
+        <option>gamma</option>
+      </select>
+    </p>
+
+    <p>
+      <label for="nonOptionsSelect">Select With non-&lt;option&gt; Children:</label>
+      <select id="nonOptionsSelect">
+        <option>alpha</option>
+        <hr />
+        <span value="beta">beta</span>
+        <button value="gamma">gamma</button>
+        <option>delta</option>
+        <button value="epsilon">epsilon</button>
+        <option>epsilon</option>
+      </select>
+    </p>
+
+    <p>
+      <label for="listboxSelect">Listbox Select:</label>
+      <select id="listboxSelect" size="5" multiple>
+        <option>alpha</option>
+        <option>beta</option>
+        <option>gamma</option>
+        <option>delta</option>
+        <option>epsilon</option>
+      </select>
+    </p>
+
+    <p>
+      <label for="eventListenerSelect">Select with event listeners:</label>
+      <select id="eventListenerSelect">
+        <option>alpha</option>
+        <option>beta</option>
+        <option>gamma</option>
+      </select>
+    </p>
+
+  </body>
+</html>

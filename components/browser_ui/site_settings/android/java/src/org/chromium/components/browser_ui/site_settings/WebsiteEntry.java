@@ -4,15 +4,23 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
 import java.io.Serializable;
 
 /** Used by {@link WebsiteRowPreference} to display various information about one or multiple sites. */
+@NullMarked
 public interface WebsiteEntry extends Serializable {
     /** @return the title to display in a {@link WebsiteRowPreference}. */
     String getTitleForPreferenceRow();
+
+    /**
+     * @return the domain and registry associated with the entry.
+     */
+    String getDomainAndRegistry();
 
     /** @return the URL for fetching a favicon. */
     GURL getFaviconUrl();
@@ -38,7 +46,7 @@ public interface WebsiteEntry extends Serializable {
      * @return the owner of the RWS and null if the {@link WebsiteEntry} is not part of the RWS
      *     (related website sets).
      */
-    String getRwsOwner();
+    @Nullable String getRwsOwner();
 
     /**
      * @return the size of the RWS and 0 if the {@link WebsiteEntry} is not part of the RWS (related

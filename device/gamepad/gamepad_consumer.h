@@ -7,7 +7,6 @@
 
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/public/cpp/gamepad.h"
-#include "device/gamepad/public/mojom/gamepad.mojom-forward.h"
 
 namespace device {
 
@@ -19,7 +18,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadConsumer {
   virtual void OnGamepadConnected(uint32_t index, const Gamepad& gamepad) = 0;
   virtual void OnGamepadDisconnected(uint32_t index,
                                      const Gamepad& gamepad) = 0;
-  virtual void OnGamepadChanged(const mojom::GamepadChanges& change);
 };
 
 }  // namespace device

@@ -703,7 +703,6 @@ virtual GLint GetProgramResourceLocation(GLuint program,
                                          const char* name) = 0;
 virtual void MemoryBarrierEXT(GLbitfield barriers) = 0;
 virtual void MemoryBarrierByRegion(GLbitfield barriers) = 0;
-virtual void SwapBuffers(GLuint64 swap_id, GLbitfield flags = 0) = 0;
 virtual GLuint GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                            GLsizei count,
                                            GLenum type,
@@ -734,11 +733,6 @@ virtual void* MapTexSubImage2DCHROMIUM(GLenum target,
                                        GLenum type,
                                        GLenum access) = 0;
 virtual void UnmapTexSubImage2DCHROMIUM(const void* mem) = 0;
-virtual void ResizeCHROMIUM(GLuint width,
-                            GLuint height,
-                            GLfloat scale_factor,
-                            GLcolorSpace color_space,
-                            GLboolean alpha) = 0;
 virtual const GLchar* GetRequestableExtensionsCHROMIUM() = 0;
 virtual void RequestExtensionCHROMIUM(const char* extension) = 0;
 virtual void GetProgramInfoCHROMIUM(GLuint program,
@@ -863,7 +857,6 @@ virtual void CopySharedImageINTERNAL(GLint xoffset,
                                      GLint y,
                                      GLsizei width,
                                      GLsizei height,
-                                     GLboolean unpack_flip_y,
                                      const GLbyte* mailboxes) = 0;
 virtual void CopySharedImageToTextureINTERNAL(GLuint texture,
                                               GLenum target,
@@ -873,7 +866,7 @@ virtual void CopySharedImageToTextureINTERNAL(GLuint texture,
                                               GLint src_y,
                                               GLsizei width,
                                               GLsizei height,
-                                              GLboolean flip_y,
+                                              GLboolean is_dst_origin_top_left,
                                               const GLbyte* src_mailbox) = 0;
 virtual GLboolean ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                                   const void* dst_color_space,

@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/to_string.h"
 #include "content/browser/payments/payment_app_provider_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/public/common/content_features.h"
@@ -84,7 +85,7 @@ void OnResponseForCanMakePayment(
     response_type << response->response_type;
     std::map<std::string, std::string> data = {
         {"Type", response_type.str()},
-        {"Can Make Payment", response->can_make_payment ? "true" : "false"}};
+        {"Can Make Payment", base::ToString(response->can_make_payment)}};
     dev_tools->LogBackgroundServiceEvent(
         registration_id, blink::StorageKey::CreateFirstParty(sw_origin),
         DevToolsBackgroundService::kPaymentHandler, "Can make payment response",
@@ -107,7 +108,7 @@ void OnResponseForAbortPayment(base::WeakPtr<PaymentAppProviderImpl> provider,
         registration_id, blink::StorageKey::CreateFirstParty(sw_origin),
         DevToolsBackgroundService::kPaymentHandler, "Abort payment response",
         /*instance_id=*/payment_request_id,
-        {{"Payment Aborted", payment_aborted ? "true" : "false"}});
+        {{"Payment Aborted", base::ToString(payment_aborted)}});
   }
 
   std::move(callback).Run(payment_aborted);

@@ -50,7 +50,7 @@ class ContentPredicate {
 // https://developer.chrome.com/extensions/declarativeContent#rules,
 // ContentPredicateFactories are directly responsible for creating individual
 // predicates from the { hostEquals: 'www.google.com', schemes: ['https'] } and
-// ["input[type='password']"] JSON entities encoded in |value|.
+// ["input[type='password']"] JSON entities encoded in `value`.
 class ContentPredicateFactory {
  public:
   ContentPredicateFactory(const ContentPredicateFactory&) = delete;
@@ -58,8 +58,8 @@ class ContentPredicateFactory {
 
   virtual ~ContentPredicateFactory();
 
-  // Creates a new predicate from |value|, as specified in the declarative
-  // API. Sets *|error| and returns null if creation failed for any reason.
+  // Creates a new predicate from `value`, as specified in the declarative
+  // API. Sets *`error` and returns null if creation failed for any reason.
   virtual std::unique_ptr<const ContentPredicate> CreatePredicate(
       const Extension* extension,
       const base::Value& value,

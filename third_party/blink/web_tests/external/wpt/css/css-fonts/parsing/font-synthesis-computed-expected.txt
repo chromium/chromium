@@ -1,4 +1,6 @@
 This is a testharness.js-based test.
+[FAIL] Property font-synthesis value 'oblique-only'
+  assert_true: 'oblique-only' is a supported value for font-synthesis. expected true got false
 [FAIL] Property font-synthesis value 'position'
   assert_true: 'position' is a supported value for font-synthesis. expected true got false
 [FAIL] Property font-synthesis value 'small-caps position'
@@ -7,9 +9,21 @@ This is a testharness.js-based test.
   assert_true: 'style position' is a supported value for font-synthesis. expected true got false
 [FAIL] Property font-synthesis value 'style small-caps position'
   assert_true: 'style small-caps position' is a supported value for font-synthesis. expected true got false
+[FAIL] Property font-synthesis value 'oblique-only small-caps'
+  assert_true: 'oblique-only small-caps' is a supported value for font-synthesis. expected true got false
+[FAIL] Property font-synthesis value 'oblique-only position'
+  assert_true: 'oblique-only position' is a supported value for font-synthesis. expected true got false
+[FAIL] Property font-synthesis value 'oblique-only small-caps position'
+  assert_true: 'oblique-only small-caps position' is a supported value for font-synthesis. expected true got false
+[FAIL] Property font-synthesis value 'weight oblique-only'
+  assert_true: 'weight oblique-only' is a supported value for font-synthesis. expected true got false
 [FAIL] Property font-synthesis value 'weight position'
   assert_true: 'weight position' is a supported value for font-synthesis. expected true got false
 [FAIL] Property font-synthesis value 'weight style small-caps position'
   assert_true: 'weight style small-caps position' is a supported value for font-synthesis. expected true got false
+[FAIL] Property font-synthesis value 'weight oblique-only small-caps'
+  assert_true: 'weight oblique-only small-caps' is a supported value for font-synthesis. expected true got false
+[FAIL] Property font-synthesis value 'weight oblique-only small-caps position'
+  assert_true: 'weight oblique-only small-caps position' is a supported value for font-synthesis. expected true got false
 Harness: the test ran to completion.
 

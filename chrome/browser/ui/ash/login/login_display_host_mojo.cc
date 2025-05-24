@@ -32,6 +32,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/syslog_logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -62,7 +63,6 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
@@ -150,7 +150,7 @@ bool IsLazyWebUILoadingEnabled() {
         ash::prefs::kLoginScreenWebUILazyLoading);
   }
 
-  return base::FeatureList::IsEnabled(features::kEnableLazyLoginWebUILoading);
+  return true;
 }
 
 void UpdatePinAuthAvailability(const AccountId& account_id) {
@@ -167,20 +167,10 @@ void UpdatePinAuthAvailability(const AccountId& account_id) {
             if (!LoginScreen::Get() || !LoginScreen::Get()->GetModel()) {
               return;
             }
-            if (!features::IsAllowPinTimeoutSetupEnabled()) {
-              available_at = std::nullopt;
-            }
             LoginScreen::Get()->GetModel()->SetPinEnabledForUser(
                 account_id, can_authenticate, available_at);
           },
           account_id));
-}
-
-void UpdateChallengeResponseAuthAvailability(const AccountId& account_id) {
-  const bool enable_challenge_response =
-      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
-  LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
-      account_id, enable_challenge_response);
 }
 
 LoginDisplayHostMojo* g_login_display_host_mojo = nullptr;
@@ -194,8 +184,11 @@ LoginDisplayHostMojo::AuthState::AuthState(
 
 LoginDisplayHostMojo::AuthState::~AuthState() = default;
 
-LoginDisplayHostMojo::LoginDisplayHostMojo(DisplayedScreen displayed_screen)
-    : user_selection_screen_(
+LoginDisplayHostMojo::LoginDisplayHostMojo(
+    DisplayedScreen displayed_screen,
+    bool update_geolocation_usage_allowed)
+    : LoginDisplayHostCommon(update_geolocation_usage_allowed),
+      user_selection_screen_(
           std::make_unique<ChromeUserSelectionScreen>(displayed_screen)),
       auth_performer_(UserDataAuthClient::Get()),
       system_info_updater_(std::make_unique<MojoSystemInfoDispatcher>()) {
@@ -278,14 +271,9 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
     // availability for any users who can use them.
     for (const user_manager::User* user : users) {
       if (!user->IsDeviceLocalAccount()) {
-        if (features::IsAllowPasswordlessSetupEnabled()) {
-          // Pref-based PIN is irrelvent on the Login screen, so it is ok to
-          // check only Cryptohome PIN here.
-          UpdateAuthFactorsAvailability(user);
-        } else {
-          UpdatePinAuthAvailability(user->GetAccountId());
-          UpdateChallengeResponseAuthAvailability(user->GetAccountId());
-        }
+        // Pref-based PIN is irrelvent on the Login screen, so it is ok to
+        // check only Cryptohome PIN here.
+        UpdateAuthFactorsAvailability(user);
       }
     }
   }
@@ -335,6 +323,8 @@ void LoginDisplayHostMojo::UseAlternativeAuthentication(
   // so mark the flow as reauth:
   if (GetWizardContext()->knowledge_factor_setup.auth_setup_flow ==
       WizardContext::AuthChangeFlow::kInitialSetup) {
+    SYSLOG(INFO) << "(LOGIN)AuthChangeFlow::kInitialSetup changing to "
+                 << "kReauthentication";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kReauthentication;
   }
@@ -343,6 +333,8 @@ void LoginDisplayHostMojo::UseAlternativeAuthentication(
   if (online_password_mismatch &&
       (GetWizardContext()->knowledge_factor_setup.auth_setup_flow ==
        WizardContext::AuthChangeFlow::kReauthentication)) {
+    SYSLOG(INFO) << "(LOGIN) AuthChangeFlow::kReauthentication changing to "
+                 << "kRecovery due to online_password_mismatch";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kRecovery;
   }
@@ -373,11 +365,6 @@ void LoginDisplayHostMojo::OnLocalAuthenticationCompleted(
   }
   existing_user_controller_->ResumeAfterLocalAuthentication(
       std::move(user_context));
-}
-
-void LoginDisplayHostMojo::StartBrowserDataMigration() {
-  DCHECK(GetOobeUI());
-  wizard_controller_->AdvanceToScreen(LacrosDataMigrationScreenView::kScreenId);
 }
 
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
@@ -470,7 +457,7 @@ void LoginDisplayHostMojo::OnStartUserAdding() {
 
   SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/true);
   existing_user_controller_->Init(
-      user_manager::UserManager::Get()->GetUsersAllowedForMultiProfile());
+      user_manager::UserManager::Get()->GetUsersAllowedForMultiUserSignIn());
 }
 
 void LoginDisplayHostMojo::CancelUserAdding() {
@@ -514,10 +501,13 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
 
   CreateExistingUserController();
 
-  ScheduleStartAuthHubInLoginMode();
+  if (ash::features::IsAuthPanelUsingAuthHub()) {
+    ScheduleStartAuthHubInLoginMode();
+  }
 
   // Load the UI.
-  existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
+  existing_user_controller_->Init(
+      user_manager::UserManager::Get()->GetPersistedUsers());
 
   user_selection_screen_->InitEasyUnlock();
 
@@ -567,9 +557,13 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
       WizardContext::KnowledgeFactorSetup();
 
   if (prefilled_account.is_valid()) {
+    SYSLOG(INFO) << "(LOGIN) Prefilled account is valid, setting "
+                 << "auth_setup_flow to kReauthentication";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kReauthentication;
   } else {
+    SYSLOG(INFO) << "(LOGIN) Prefilled account is not valid, setting "
+                 << "auth_setup_flow to kInitialSetup";
     GetWizardContext()->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kInitialSetup;
   }
@@ -579,6 +573,7 @@ void LoginDisplayHostMojo::ShowGaiaDialog(const AccountId& prefilled_account) {
 
 void LoginDisplayHostMojo::StartUserRecovery(
     const AccountId& account_to_recover) {
+  SYSLOG(INFO) << "(LOGIN) LoginDisplayHostMojo::StartUserRecovery";
   GetWizardContext()->knowledge_factor_setup =
       WizardContext::KnowledgeFactorSetup();
 
@@ -760,11 +755,6 @@ void LoginDisplayHostMojo::HandleAuthenticateUserWithPasswordOrPin(
                                              ->GetCurrentInputMethod()
                                              .id());
 
-  if (account_id.GetAccountType() == AccountType::ACTIVE_DIRECTORY) {
-    LOG(FATAL) << "Incorrect Active Directory user type "
-               << user_context.GetUserType();
-  }
-
   existing_user_controller_->Login(user_context, SigninSpecifics());
 }
 
@@ -803,11 +793,6 @@ void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
     MaybeUpdateOfflineLoginLinkVisibility(account_id);
   }
   focused_pod_account_id_ = account_id;
-}
-
-bool LoginDisplayHostMojo::HandleFocusLockScreenApps(bool reverse) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
 }
 
 void LoginDisplayHostMojo::HandleFocusOobeDialog() {
@@ -949,6 +934,7 @@ void LoginDisplayHostMojo::ShowDialog() {
   EnsureOobeDialogLoaded();
   ObserveOobeUI();
   dialog_->Show();
+  Shell::UpdateAccessibilityForStatusAreaWidget();
 }
 
 void LoginDisplayHostMojo::ShowFullScreen() {
@@ -967,6 +953,8 @@ void LoginDisplayHostMojo::HideDialog() {
   // with hidden error screens).
   StopObservingOobeUI();
   dialog_->Hide();
+  Shell::UpdateAccessibilityForStatusAreaWidget();
+
   // Hide the current screen of the `WizardController` to force `Show()` to be
   // called on the first screen when the dialog reopens.
   GetWizardController()->HideCurrentScreen();
@@ -1059,33 +1047,27 @@ void LoginDisplayHostMojo::UpdateAuthFactorsAvailability(
           user->GetAccountId());
   auth_performer_.StartAuthSession(
       std::move(user_context), ephemeral, ash::AuthSessionIntent::kDecrypt,
-      base::BindOnce([](bool user_exists,
-                        std::unique_ptr<UserContext> user_context,
-                        std::optional<AuthenticationError> error) {
-        if (error.has_value()) {
-          LOG(ERROR) << "Failed to start auth session, code "
-                     << error->get_cryptohome_error();
-          return;
-        }
-        const auto& factors_data = user_context->GetAuthFactorsData();
-        cryptohome::AuthFactorsSet available_factors;
-        if (factors_data.FindAnyPasswordFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kPassword);
-        }
-        auto* pin_factor = factors_data.FindPinFactor();
-        if (pin_factor && !pin_factor->GetPinStatus().IsLockedFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kPin);
-        }
-        if (factors_data.FindSmartCardFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kSmartCard);
-        }
-        cryptohome::PinLockAvailability pin_available_at = std::nullopt;
-        if (pin_factor && pin_factor->GetPinStatus().IsLockedFactor()) {
-          pin_available_at = pin_factor->GetPinStatus().AvailableAt();
-        }
-        LoginScreen::Get()->GetModel()->SetAuthFactorsForUser(
-            user_context->GetAccountId(), available_factors, pin_available_at);
-      }));
+      base::BindOnce(&LoginDisplayHostMojo::OnAuthSessionStarted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LoginDisplayHostMojo::OnAuthSessionStarted(
+    bool user_exists,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to start auth session, code "
+               << error->get_cryptohome_error();
+    return;
+  }
+  // We always pass false to `is_pin_disabled_by_policy` here because the
+  // policy only controls whether the pin can be used to unlock the lock
+  // screen and not the login screen.
+  login::SetAuthFactorsForUser(
+      user_context->GetAccountId(), user_context->GetAuthFactorsData(),
+      /*is_pin_disabled_by_policy=*/false, LoginScreen::Get()->GetModel());
+  auth_performer_.InvalidateAuthSession(std::move(user_context),
+                                        base::DoNothing());
 }
 
 }  // namespace ash

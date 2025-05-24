@@ -43,8 +43,7 @@ bool NotificationCallback(base::CommandLine command_line,
                           const base::FilePath& current_directory) {
   // This is never called in this test, but would signal that the singleton
   // notification was successfully handled.
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 // The ProcessSingleton kills hung browsers with no visible windows without user
@@ -163,11 +162,11 @@ class ProcessSingletonTest : public base::MultiProcessTest {
 
     // Drop the process finder notification timeout to one second for testing.
     old_notification_timeout_ =
-        chrome::SetNotificationTimeoutForTesting(base::Seconds(1));
+        SetNotificationTimeoutForTesting(base::Seconds(1));
   }
 
   void TearDown() override {
-    chrome::SetNotificationTimeoutForTesting(old_notification_timeout_);
+    SetNotificationTimeoutForTesting(old_notification_timeout_);
 
     if (browser_victim_.IsValid()) {
       EXPECT_TRUE(::SetEvent(continue_event_.Get()));

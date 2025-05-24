@@ -22,7 +22,7 @@
 
 // Class which conforms to CRWWebStateDelegate protocol, but does not implement
 // any optional methods.
-@interface TestEmptyWebStateDelegate : NSObject<CRWWebStateDelegate>
+@interface TestEmptyWebStateDelegate : NSObject <CRWWebStateDelegate>
 @end
 
 @implementation TestEmptyWebStateDelegate
@@ -43,9 +43,7 @@ class WebStateDelegateBridgeTest : public PlatformTest {
     empty_delegate_bridge_.reset(new WebStateDelegateBridge(empty_delegate_));
   }
 
-  void TearDown() override {
-    PlatformTest::TearDown();
-  }
+  void TearDown() override { PlatformTest::TearDown(); }
 
   CRWFakeWebStateDelegate* delegate_;
   id empty_delegate_;

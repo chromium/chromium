@@ -1,0 +1,8 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN focusable actions='{DEFAULT}' value='Option 1'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN focusable selected label='Option 1' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option 2' actions='{DEFAULT}'
+++++++++++UNKNOWN hidden focusable label='Option 3' actions='{DEFAULT}'

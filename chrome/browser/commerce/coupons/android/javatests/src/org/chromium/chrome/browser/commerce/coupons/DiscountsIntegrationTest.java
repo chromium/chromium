@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
@@ -29,6 +30,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -37,6 +39,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.DiscountInfo;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.DiscountInfoCallback;
@@ -73,6 +77,7 @@ public class DiscountsIntegrationTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ShoppingService mMockShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
 
     private EmbeddedTestServer mTestServer;
     private GURL mTestPageWithDiscounts;
@@ -81,6 +86,9 @@ public class DiscountsIntegrationTest {
     public void setUp() {
         ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         doReturn(true).when(mMockShoppingService).isDiscountEligibleToShowOnNavigation();
+
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isDiscountInfoApiEnabled(anyLong());
 
         mTestServer = sEmbeddedTestServerRule.getServer();
         mTestPageWithDiscounts = new GURL(mTestServer.getURL(TEST_PAGE_URL_WITH_DISCOUNTS));
@@ -96,7 +104,7 @@ public class DiscountsIntegrationTest {
                             discountInfoList.add(
                                     new DiscountInfo(
                                             0, 0, "en-US", "detail", "terms", "value", "code", 123,
-                                            false, 10, 123));
+                                            false, true, 10, 123));
                             DiscountInfoCallback callback = invocation.getArgument(1);
                             callback.onResult(invocation.getArgument(0), discountInfoList);
                             return null;
@@ -110,7 +118,7 @@ public class DiscountsIntegrationTest {
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
-                        withContentDescription(R.string.discount_icon_expanded_text)));
+                        withContentDescription(R.string.discount_container_title)));
     }
 
     @Test
@@ -135,16 +143,18 @@ public class DiscountsIntegrationTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/402808581")
+    // TODO(402808581): Fix test and add integration tests for price tracking and price insights.
     public void testDiscountsContextualPageActionOnClickOpenBottomSheet() {
         mActivityTestRule.loadUrl(mTestPageWithDiscounts);
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
-                        withContentDescription(R.string.discount_icon_expanded_text)));
+                        withContentDescription(R.string.discount_container_title)));
         onView(
                         allOf(
                                 withId(R.id.optional_toolbar_button),
-                                withContentDescription(R.string.discount_icon_expanded_text)))
+                                withContentDescription(R.string.discount_container_title)))
                 .perform(click());
         ViewUtils.waitForVisibleView(withId(R.id.commerce_bottom_sheet_content_container));
     }

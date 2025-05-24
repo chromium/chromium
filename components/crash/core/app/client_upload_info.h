@@ -5,23 +5,17 @@
 #ifndef COMPONENTS_CRASH_CORE_APP_CLIENT_UPLOAD_INFO_H_
 #define COMPONENTS_CRASH_CORE_APP_CLIENT_UPLOAD_INFO_H_
 
-#include <string>
-
-#include "build/build_config.h"
+#include "components/crash/core/app/crash_reporter_client.h"
 
 namespace crash_reporter {
 
 // Returns whether the user has consented to collecting stats.
+// This may block. Use a task with base::MayBlock() to call this function.
 bool GetClientCollectStatsConsent();
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 // Returns a textual description of the product type, version and channel
 // to include in crash reports.
-// TODO(https://crbug.com/986178): Implement this for other platforms.
-void GetClientProductNameAndVersion(std::string* product,
-                                    std::string* version,
-                                    std::string* channel);
-#endif
+void GetClientProductInfo(ProductInfo* product_info);
 
 }  // namespace crash_reporter
 

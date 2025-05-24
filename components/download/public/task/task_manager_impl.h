@@ -6,8 +6,10 @@
 #define COMPONENTS_DOWNLOAD_PUBLIC_TASK_TASK_MANAGER_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 
+#include "base/component_export.h"
 #include "components/download/public/task/task_manager.h"
 #include "components/download/public/task/task_scheduler.h"
 
@@ -20,7 +22,8 @@ using TaskFinishedCallback = base::OnceCallback<void(bool)>;
 // independently of each other as long as they have different |task_type|.
 // Scheduling another task of same |task_type| before the task is started will
 // overwrite the params of the scheduled task.
-class TaskManagerImpl : public TaskManager {
+class COMPONENT_EXPORT(COMPONENTS_DOWNLOAD_PUBLIC_TASK) TaskManagerImpl
+    : public TaskManager {
  public:
   explicit TaskManagerImpl(std::unique_ptr<TaskScheduler> task_scheduler);
 

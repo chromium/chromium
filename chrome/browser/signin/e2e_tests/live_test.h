@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_SIGNIN_E2E_TESTS_LIVE_TEST_H_
 #define CHROME_BROWSER_SIGNIN_E2E_TESTS_LIVE_TEST_H_
 
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 
 namespace signin {
 namespace test {
@@ -18,12 +18,10 @@ class LiveTest : public InProcessBrowserTest {
   void TearDown() override;
   void PostRunTestOnMainThread() override;
 
-  const TestAccountsUtil* GetTestAccountsUtil() const {
-    return &test_accounts_;
-  }
+  const TestAccountsConfig* GetTestAccounts() const { return &test_accounts_; }
 
  private:
-  TestAccountsUtil test_accounts_;
+  TestAccountsConfig test_accounts_;
   bool skip_test_ = false;
 };
 

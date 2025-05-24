@@ -20,7 +20,6 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
@@ -521,7 +520,7 @@ TEST_F(MessageCenterImplTest, PopupTimersControllerRestartOnUpdate) {
   popup_timers_controller->OnNotificationDisplayed("id1", DISPLAY_SOURCE_POPUP);
   ASSERT_EQ(popup_timers_controller->timer_finished(), 0);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const int dismiss_time =
       popup_timers_controller->GetNotificationTimeoutDefault();
 #else
@@ -1096,7 +1095,7 @@ TEST_F(MessageCenterImplTest, RemoveAllNotifications) {
   EXPECT_TRUE(NotificationsContain(notifications, "id2"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(MessageCenterImplTest, RemoveAllNotificationsWithPinned) {
   NotifierId notifier_id1(NotifierType::APPLICATION, "app1");
   NotifierId notifier_id2(NotifierType::APPLICATION, "app2");
@@ -1602,6 +1601,23 @@ TEST_F(MessageCenterImplTest, ClickAndCancelOnLockScreen) {
   EXPECT_FALSE(lock_screen_controller()->IsScreenLocked());
 }
 
+TEST_F(MessageCenterImplTest,
+       AllowClickOnLockScreenIfNotificationAllowedOnLockScreen) {
+  lock_screen_controller()->set_is_screen_locked(true);
+  lock_screen_controller()->set_is_notification_allowed_on_lock_screen(true);
+
+  TestAddObserver observer(message_center());
+  std::string id("n");
+
+  std::unique_ptr<Notification> notification = CreateSimpleNotification(id);
+  message_center()->AddNotification(std::move(notification));
+  message_center()->ClickOnNotification(id);
+
+  EXPECT_EQ("Click_", GetDelegate(id)->log());
+  EXPECT_FALSE(lock_screen_controller()->HasPendingCallback());
+  EXPECT_TRUE(lock_screen_controller()->IsScreenLocked());
+}
+
 TEST_F(MessageCenterImplTest, ButtonClickOnLockScreen) {
   lock_screen_controller()->set_is_screen_locked(true);
 
@@ -1623,6 +1639,23 @@ TEST_F(MessageCenterImplTest, ButtonClickOnLockScreen) {
   EXPECT_FALSE(lock_screen_controller()->IsScreenLocked());
 }
 
+TEST_F(MessageCenterImplTest,
+       ButtonClickOnLockScreenIfNotificationAllowedOnLockScreen) {
+  lock_screen_controller()->set_is_screen_locked(true);
+  lock_screen_controller()->set_is_notification_allowed_on_lock_screen(true);
+
+  TestAddObserver observer(message_center());
+  std::string id("n");
+
+  std::unique_ptr<Notification> notification = CreateSimpleNotification(id);
+  message_center()->AddNotification(std::move(notification));
+  message_center()->ClickOnNotificationButton(id, 1);
+
+  EXPECT_EQ("ButtonClick_1_", GetDelegate(id)->log());
+  EXPECT_FALSE(lock_screen_controller()->HasPendingCallback());
+  EXPECT_TRUE(lock_screen_controller()->IsScreenLocked());
+}
+
 TEST_F(MessageCenterImplTest, ButtonClickWithReplyOnLockScreen) {
   lock_screen_controller()->set_is_screen_locked(true);
 
@@ -1642,6 +1675,23 @@ TEST_F(MessageCenterImplTest, ButtonClickWithReplyOnLockScreen) {
   EXPECT_EQ("ReplyButtonClick_1_REPLYTEXT_", GetDelegate(id)->log());
   EXPECT_FALSE(lock_screen_controller()->HasPendingCallback());
   EXPECT_FALSE(lock_screen_controller()->IsScreenLocked());
+}
+
+TEST_F(MessageCenterImplTest,
+       ButtonClickWithReplyOnLockIfNotificationAllowedOnLockScreen) {
+  lock_screen_controller()->set_is_screen_locked(true);
+  lock_screen_controller()->set_is_notification_allowed_on_lock_screen(true);
+
+  TestAddObserver observer(message_center());
+  std::string id("n");
+
+  std::unique_ptr<Notification> notification = CreateSimpleNotification(id);
+  message_center()->AddNotification(std::move(notification));
+  message_center()->ClickOnNotificationButtonWithReply(id, 1, u"REPLYTEXT");
+
+  EXPECT_EQ("ReplyButtonClick_1_REPLYTEXT_", GetDelegate(id)->log());
+  EXPECT_FALSE(lock_screen_controller()->HasPendingCallback());
+  EXPECT_TRUE(lock_screen_controller()->IsScreenLocked());
 }
 
 }  // namespace internal

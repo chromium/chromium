@@ -37,3 +37,32 @@ export function $$<E extends Element = Element>(
 export function $$(element: Element, selector: string) {
   return element.shadowRoot!.querySelector(selector);
 }
+
+/**
+ * @param uuid The UUID to validate.
+ * @returns Whether the UUID is a valid lowercase UUID.
+ */
+export function isValidLowercaseUuid(uuid: string): boolean {
+  if (uuid.length !== 36) {
+    return false;
+  }
+
+  for (let i = 0; i < uuid.length; i++) {
+    const char = uuid.charAt(i);
+
+    // Check for hyphens.
+    if (i === 8 || i === 13 || i === 18 || i === 23) {
+      if (char !== '-') {
+        return false;
+      }
+      continue;
+    }
+
+    // Check that all other characters are lowercase hex digits.
+    if ((char < '0' || char > '9') && (char < 'a' || char > 'f')) {
+      return false;
+    }
+  }
+
+  return true;
+}

@@ -16,10 +16,14 @@
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
+#include "components/optimization_guide/core/optimization_guide_on_device_capability_provider.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "ios/chrome/browser/download/model/background_service/background_download_service_factory.h"
 #include "url/gurl.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
+#include "components/optimization_guide/core/optimization_guide_model_executor.h"
 
 namespace leveldb_proto {
 class ProtoDatabaseProvider;
@@ -30,12 +34,17 @@ class SharedURLLoaderFactory;
 }  // namespace network
 
 namespace optimization_guide {
-class TabUrlProvider;
-class TopHostProvider;
+class HintsManager;
+class ModelExecutionManager;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+class OnDeviceModelAvailabilityObserver;
+class OnDeviceModelComponentStateManager;
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 class OptimizationGuideStore;
 class OptimizationTargetModelObserver;
 class PredictionManager;
-class HintsManager;
+class TabUrlProvider;
+class TopHostProvider;
 }  // namespace optimization_guide
 
 namespace signin {
@@ -46,6 +55,7 @@ class BrowserList;
 class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
 class PrefService;
+class TabResumptionMediatorProxy;
 
 // A BrowserState keyed service that is used to own the underlying Optimization
 // Guide components. This is a rough copy of the OptimizationGuideKeyedService
@@ -57,6 +67,10 @@ class PrefService;
 class OptimizationGuideService
     : public KeyedService,
       public optimization_guide::OptimizationGuideDecider,
+      public optimization_guide::OptimizationGuideModelExecutor,
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+      public optimization_guide::OptimizationGuideOnDeviceCapabilityProvider,
+#endif
       public optimization_guide::OptimizationGuideModelProvider {
  public:
   // BackgroundDownloadService is only available once the profile is fully
@@ -80,7 +94,7 @@ class OptimizationGuideService
   OptimizationGuideService(const OptimizationGuideService&) = delete;
   OptimizationGuideService& operator=(const OptimizationGuideService&) = delete;
 
-  // Some initialization parts must be done once the browser_state is fully
+  // Some initialization parts must be done once the profile is fully
   // initialized.
   void DoFinalInit(download::BackgroundDownloadService*
                        background_download_service = nullptr);
@@ -97,6 +111,39 @@ class OptimizationGuideService
       const GURL& url,
       optimization_guide::proto::OptimizationType optimization_type,
       optimization_guide::OptimizationMetadata* optimization_metadata) override;
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  // optimization_guide::OptimizationGuideModelExecutor implementation:
+  void AddOnDeviceModelAvailabilityChangeObserver(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
+  void RemoveOnDeviceModelAvailabilityChangeObserver(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      optimization_guide::OnDeviceModelAvailabilityObserver* observer) override;
+
+  // optimization_guide::OptimizationGuideOnDeviceCapabilityProvider
+  // implementation:
+  optimization_guide::OnDeviceModelEligibilityReason
+  GetOnDeviceModelEligibility(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
+  std::optional<optimization_guide::SamplingParamsConfig>
+  GetSamplingParamsConfig(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
+  std::optional<const optimization_guide::proto::Any> GetFeatureMetadata(
+      optimization_guide::ModelBasedCapabilityKey feature) override;
+
+#endif
+
+  std::unique_ptr<Session> StartSession(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const std::optional<optimization_guide::SessionConfigParams>&
+          config_params) override;
+  void ExecuteModel(
+      optimization_guide::ModelBasedCapabilityKey feature,
+      const google::protobuf::MessageLite& request_metadata,
+      const std::optional<base::TimeDelta>& execution_timeout,
+      optimization_guide::OptimizationGuideModelExecutionResultCallback
+          callback) override;
 
   // optimization_guide::OptimizationGuideModelProvider implementation:
   void AddObserverForOptimizationTargetModel(
@@ -133,10 +180,14 @@ class OptimizationGuideService
       optimization_guide::proto::OptimizationType optimization_type,
       const std::optional<optimization_guide::OptimizationMetadata>& metadata);
 
+  // Returns an error message describing a given error code.
+  std::string ResponseForErrorCode(int error_code);
+
  private:
   friend class OptimizationGuideServiceTest;
   friend class OptimizationGuideTabHelper;
   friend class OptimizationGuideTestAppInterfaceWrapper;
+  friend class TabResumptionMediatorProxy;
 
   // Notifies `hints_manager_` that the navigation associated with
   // `navigation_data` has started or redirected.
@@ -182,10 +233,25 @@ class OptimizationGuideService
   // prediction models.
   std::unique_ptr<optimization_guide::PredictionManager> prediction_manager_;
 
-  // The PrefService of the browser state this service is linked to.
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  // Manages the state of the on-device model.
+  scoped_refptr<optimization_guide::OnDeviceModelComponentStateManager>
+      on_device_model_state_manager_;
+
+  // Downloads other model assets for on-device execution.
+  std::unique_ptr<optimization_guide::OnDeviceAssetManager>
+      on_device_asset_manager_;
+
+#endif
+
+  // Manages the model execution. Not created for off the record profiles.
+  std::unique_ptr<optimization_guide::ModelExecutionManager>
+      model_execution_manager_;
+
+  // The PrefService of the profile this service is linked to.
   const raw_ptr<PrefService> pref_service_ = nullptr;
 
-  // Whether the service is linked to an incognito browser state.
+  // Whether the service is linked to an incognito profile.
   const bool off_the_record_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);

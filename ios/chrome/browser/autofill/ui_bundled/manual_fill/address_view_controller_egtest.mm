@@ -4,13 +4,14 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#import "components/autofill/core/browser/autofill_test_utils.h"
+#import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/settings/autofill/autofill_settings_constants.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -98,10 +99,10 @@ id<GREYMatcher> ChipButton(std::u16string title) {
 }
 
 // Matcher for the overflow menu button shown in the address cells.
-id<GREYMatcher> OverflowMenuButton() {
-  return grey_allOf(
-      grey_accessibilityID(manual_fill::kExpandedManualFillOverflowMenuID),
-      grey_interactable(), nullptr);
+id<GREYMatcher> OverflowMenuButton(NSInteger cell_index) {
+  return grey_allOf(grey_accessibilityID([ManualFillUtil
+                        expandedManualFillOverflowMenuID:cell_index]),
+                    grey_interactable(), nullptr);
 }
 
 // Matcher for the "Edit" action made available by the overflow menu button.
@@ -179,7 +180,7 @@ void CheckChipButtonsOfExampleProfile() {
 
 // Opens the address manual fill view when there are no saved addresses and
 // verifies that the address view controller is visible afterwards. Only useful
-// when the `kIOSKeyboardAccessoryUpgrade` feature is enabled.
+// when the Keyboard Accessory Upgrade feature is enabled.
 void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Tap the button to open the expanded manual fill view.
   [[EarlGrey selectElementWithMatcher:AddressManualFillViewButton()]
@@ -217,28 +218,33 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [ChromeEarlGrey waitForWebStateContainingText:"Profile form"];
 
   // Set up histogram tester.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
 
   // Clean up histogram tester.
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
-  [super tearDown];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
   if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
+  }
+  if ([self isRunningTest:@selector
+            (testDoNotEditHomeWorkAddressFromOverflowMenu)]) {
+    config.features_enabled.push_back(
+        autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
 
   return config;
@@ -278,6 +284,13 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 // Tests that the saved address chip buttons are all visible in the address
 // table view controller, and that they have the right accessibility label.
 - (void)testAddressChipButtonsAreAllVisible {
+  // TODO(crbug.com/385172448): Make this test work on all platforms.
+  if ([ChromeEarlGrey isIPadIdiom] &&
+      [AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"The keyboard accessory can't show all the buttons "
+                           @"at once on some tablets.");
+  }
+
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
@@ -553,10 +566,10 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   OpenAddressManualFillView();
 
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_sufficientlyVisible()];
   } else {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_notVisible()];
   }
 }
@@ -578,7 +591,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   OpenAddressManualFillView();
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -594,6 +607,8 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       performAction:grey_tap()];
 
   // Tap the "Done" button to dismiss the view.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:NavigationBarDoneButton()];
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       performAction:grey_tap()];
 
@@ -602,6 +617,35 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
       assertWithMatcher:grey_notVisible()];
 
   // TODO(crbug.com/332956674): Check that the updated suggestion is visible.
+}
+
+// Tests the "Edit" action of the overflow menu button does not display the
+// address's details for Home and Work profiles.
+- (void)testDoNotEditHomeWorkAddressFromOverflowMenu {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+  [AutofillAppInterface clearProfilesStore];
+  [AutofillAppInterface saveExampleHomeWorkAccountProfile];
+
+  // Bring up the keyboard
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  [ChromeEarlGrey waitForKeyboardToAppear];
+
+  // Open the address manual fill view.
+  OpenAddressManualFillView();
+
+  // Tap the overflow menu button and select the "Edit" action.
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
+      performAction:grey_tap()];
+
+  // Check that the address details page is not opened.
+  [[EarlGrey selectElementWithMatcher:AddressDetailsPage()]
+      assertWithMatcher:grey_notVisible()];
 }
 
 #pragma mark - Private
@@ -654,7 +698,7 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 @end
 
-// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgrade
+// Rerun all the tests in this file but with Keyboard Accessory Upgrade
 // disabled. This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
 @interface AddressViewControllerKeyboardAccessoryUpgradeDisabledTestCase

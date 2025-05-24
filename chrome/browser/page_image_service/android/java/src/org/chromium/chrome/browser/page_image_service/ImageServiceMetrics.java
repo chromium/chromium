@@ -7,9 +7,11 @@ package org.chromium.chrome.browser.page_image_service;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.page_image_service.mojom.ClientId.EnumType;
 
 /** Allows java access to the native ImageService. */
+@NullMarked
 public class ImageServiceMetrics {
     static final String HISTOGRAM_SALIENT_IMAGE_URL_FETCH_RESULT_PREFIX =
             "PageImageService.Android.SalientImageUrlFetchResult.";

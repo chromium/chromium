@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::phonehub {
+
 namespace {
 constexpr auto kLatencyDelta = base::Milliseconds(500u);
 }  // namespace

@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/ozone.gni")
+import("//build/config/ui.gni")
 import("//testing/test.gni")
 
 source_set("headless") {
@@ -27,6 +28,10 @@ source_set("headless") {
       "//ui/gl",
       "//ui/ozone",
     ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/chrome_elf:chrome_elf_main_include" ]
   }
 }
 
@@ -106,6 +111,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//content/test:test_support",
       "//pdf",
+      "//testing/gmock",
       "//testing/gtest",
     ]
 
@@ -127,6 +133,13 @@ if (!is_android) {
       ]
     }
 
+    if (use_aura && is_win) {
+      deps += [
+        "//ui/aura",
+        "//ui/aura:test_support",
+      ]
+    }
+
     if (use_ozone && is_linux) {
       deps += [ "//ui/ozone" ]
     }
@@ -134,6 +147,7 @@ if (!is_android) {
     data = [
       "test/data/",
       "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/inspector-protocol-test.js",
+      "//third_party/blink/web_tests/http/tests/inspector-protocol/resources/http-interceptor.js",
     ]
   }
 }

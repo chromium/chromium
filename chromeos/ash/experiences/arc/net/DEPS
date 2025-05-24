@@ -1,0 +1,7 @@
+include_rules = [
+  "+ash/shell.h",
+  "+chromeos/ash/components/login",
+  "+components/device_event_log",
+  "+components/user_manager",
+  "+dbus",
+]

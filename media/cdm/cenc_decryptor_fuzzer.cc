@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
-#include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/subsample_entry.h"
 
@@ -46,12 +45,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
   }
 
   const uint8_t clear_bytes = data[0];
-  data = data.subspan(1);
-
-  static std::unique_ptr<crypto::SymmetricKey> key =
-      crypto::SymmetricKey::Import(
-          crypto::SymmetricKey::AES,
-          std::string(std::begin(kKey), std::end(kKey)));
+  data = data.subspan<1>();
 
   // |clear_bytes| is used to determine how much of the buffer is "clear".
   // Since the code checks SubsampleEntries, use |clear_bytes| as the actual
@@ -70,6 +64,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
   encrypted_buffer->set_decrypt_config(media::DecryptConfig::CreateCencConfig(
       "key_id", std::string(base::as_string_view(kIv)), subsamples));
 
-  media::DecryptCencBuffer(*encrypted_buffer, *key);
+  media::DecryptCencBuffer(*encrypted_buffer, kKey);
   return 0;
 }

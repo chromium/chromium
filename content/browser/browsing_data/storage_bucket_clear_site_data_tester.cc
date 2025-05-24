@@ -16,7 +16,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
 
@@ -32,7 +31,7 @@ void StorageBucketClearSiteDataTester::CreateBucketForTesting(
         callback) {
   storage_partition_impl_->GetQuotaManagerProxy()
       ->CreateBucketForTesting(  // IN-TEST
-          storage_key, bucket_name, blink::mojom::StorageType::kTemporary,
+          storage_key, bucket_name,
           base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
 }
 
@@ -41,7 +40,7 @@ void StorageBucketClearSiteDataTester::GetBucketsForStorageKey(
     base::OnceCallback<
         void(storage::QuotaErrorOr<std::set<storage::BucketInfo>>)> callback) {
   storage_partition_impl_->GetQuotaManagerProxy()->GetBucketsForStorageKey(
-      storage_key, blink::mojom::StorageType::kTemporary,
+      storage_key,
       /*delete_expired=*/false, base::SequencedTaskRunner::GetCurrentDefault(),
       std::move(callback));
 }

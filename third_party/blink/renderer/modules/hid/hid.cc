@@ -6,7 +6,8 @@
 
 #include <utility>
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "services/device/public/cpp/device_features.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -34,25 +35,6 @@ const char kContextGone[] = "Script context has shut down.";
 const char kFeaturePolicyBlocked[] =
     "Access to the feature \"hid\" is disallowed by permissions policy.";
 
-bool IsContextSupported(ExecutionContext* context) {
-  // Since WebHID on Web Workers is in the process of being implemented, we
-  // check here if the runtime flag for the appropriate worker is enabled.
-  // TODO(https://crbug.com/365932453): Remove this check once the feature has
-  // shipped.
-  if (!context) {
-    return false;
-  }
-
-  DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope() ||
-         context->IsServiceWorkerGlobalScope());
-  DCHECK(!context->IsDedicatedWorkerGlobalScope() ||
-         RuntimeEnabledFeatures::WebHIDOnDedicatedWorkersEnabled());
-  DCHECK(!context->IsServiceWorkerGlobalScope() ||
-         RuntimeEnabledFeatures::WebHIDOnServiceWorkersEnabled());
-
-  return true;
-}
-
 // Carries out basic checks for the web-exposed APIs, to make sure the minimum
 // requirements for them to be served are met. Returns true if any conditions
 // fail to be met, generating an appropriate exception as well. Otherwise,
@@ -60,7 +42,7 @@ bool IsContextSupported(ExecutionContext* context) {
 bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
                                ExecutionContext* context,
                                ExceptionState* exception_state) {
-  if (!IsContextSupported(context)) {
+  if (!context) {
     if (exception_state) {
       exception_state->ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                          kContextGone);
@@ -93,7 +75,7 @@ bool ShouldBlockHidServiceCall(LocalDOMWindow* window,
     return true;
   }
 
-  if (!context->IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature::kHid,
+  if (!context->IsFeatureEnabled(network::mojom::PermissionsPolicyFeature::kHid,
                                  ReportOptions::kReportOnFailure)) {
     if (exception_state) {
       exception_state->ThrowSecurityError(kFeaturePolicyBlocked);
@@ -128,11 +110,14 @@ HID::HID(NavigatorBase& navigator)
     : Supplement<NavigatorBase>(navigator),
       service_(navigator.GetExecutionContext()),
       receiver_(this, navigator.GetExecutionContext()) {
-  auto* context = GetExecutionContext();
-  if (context) {
-    feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
-        SchedulingPolicy::Feature::kWebHID,
-        {SchedulingPolicy::DisableBackForwardCache()});
+  if (!base::FeatureList::IsEnabled(
+          features::kWebHidAttributeAllowsBackForwardCache)) {
+    auto* context = GetExecutionContext();
+    if (context) {
+      feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
+          SchedulingPolicy::Feature::kWebHID,
+          {SchedulingPolicy::DisableBackForwardCache()});
+    }
   }
 }
 
@@ -359,8 +344,6 @@ void HID::EnsureServiceConnection() {
 
   if (service_.is_bound())
     return;
-
-  DCHECK(IsContextSupported(GetExecutionContext()));
 
   auto task_runner =
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);

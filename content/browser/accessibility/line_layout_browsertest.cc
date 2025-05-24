@@ -9,6 +9,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -23,8 +24,9 @@ class AccessibilityLineLayoutBrowserTest : public ContentBrowserTest {
 
  protected:
   ui::BrowserAccessibility* FindButton(ui::BrowserAccessibility* node) {
-    if (node->GetRole() == ax::mojom::Role::kButton)
+    if (node->GetRole() == ax::mojom::Role::kButton) {
       return node;
+    }
     for (unsigned i = 0; i < node->PlatformChildCount(); i++) {
       if (ui::BrowserAccessibility* button =
               FindButton(node->PlatformGetChild(i))) {
@@ -59,9 +61,10 @@ class AccessibilityLineLayoutBrowserTest : public ContentBrowserTest {
     }
 
     for (auto it = node->InternalChildrenBegin();
-         it != node->InternalChildrenEnd(); ++it)
+         it != node->InternalChildrenEnd(); ++it) {
       line_link_count +=
           CountNextPreviousOnLineLinks(it.get(), do_not_count_inline_text);
+    }
 
     return line_link_count;
   }
@@ -74,8 +77,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
+
   GURL url(embedded_test_server()->GetURL("/accessibility/lines/lines.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -111,22 +115,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
 // immediately; we can wait for them but without the aforementioned fix the
 // updated tree isn't processed to create the Next/PreviousOnLine links.)
 #if !BUILDFLAG(IS_ANDROID)
-// TODO(crbug.com/41488668): Disabled on chromeos due to failing on
-// linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NestedLayoutNGInlineFormattingContext \
-  DISABLED_NestedLayoutNGInlineFormattingContext
-#else
-#define MAYBE_NestedLayoutNGInlineFormattingContext \
-  NestedLayoutNGInlineFormattingContext
-#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
-                       MAYBE_NestedLayoutNGInlineFormattingContext) {
+                       NestedLayoutNGInlineFormattingContext) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                         ui::kAXModeComplete,
                                          ax::mojom::Event::kLoadComplete);
+  ScopedAccessibilityModeOverride complete_mode(ui::kAXModeComplete);
   GURL url(embedded_test_server()->GetURL(
       "/accessibility/lines/lines-inline-nested.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -138,7 +133,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
       web_contents->GetRootBrowserAccessibilityManager();
 
   AccessibilityNotificationWaiter waiter2(shell()->web_contents(),
-                                          ui::kAXModeComplete,
                                           ax::mojom::Event::kTreeChanged);
   manager->LoadInlineTextBoxes(*manager->GetBrowserAccessibilityRoot());
   ASSERT_TRUE(waiter2.WaitForNotification());
@@ -147,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityLineLayoutBrowserTest,
   //   before <-> inside <-> after
   int line_link_count = CountNextPreviousOnLineLinks(
       manager->GetBrowserAccessibilityRoot(), true);
-  ASSERT_EQ(line_link_count, 4);
+  ASSERT_EQ(line_link_count, 2);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

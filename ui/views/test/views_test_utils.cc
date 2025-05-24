@@ -27,10 +27,12 @@ void RunScheduledLayout(View* view) {
     return;
   }
   View* parent_view = view;
-  while (parent_view->parent())
+  while (parent_view->parent()) {
     parent_view = parent_view->parent();
-  if (parent_view->needs_layout())
+  }
+  if (parent_view->needs_layout()) {
     parent_view->DeprecatedLayoutImmediately();
+  }
 }
 
 bool IsOzoneBubblesUsingPlatformWidgets() {

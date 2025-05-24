@@ -1,0 +1,56 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+source_set("tab_model") {
+  public = [
+    "android_live_tab_context.h",
+    "tab_list_interface.h",
+    "tab_model.h",
+    "tab_model_jni_bridge.h",
+    "tab_model_list.h",
+    "tab_model_list_observer.h",
+    "tab_model_observer.h",
+    "tab_model_observer_jni_bridge.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/flags:chrome_browser_flags_enums_srcjar",
+    "//chrome/browser/flags:flags_android",
+    "//components/omnibox/browser:location_bar",
+    "//components/sessions",
+    "//components/sync_sessions",
+    "//components/tab_groups",
+    "//components/tabs:public",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "android_live_tab_context.cc",
+    "android_live_tab_context_wrapper.cc",
+    "android_live_tab_context_wrapper.h",
+    "tab_model.cc",
+    "tab_model_jni_bridge.cc",
+    "tab_model_list.cc",
+    "tab_model_observer.cc",
+    "tab_model_observer_jni_bridge.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":tab_model",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui:browser_navigator_params_headers",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/base:types",
+  ]
+}

@@ -10,12 +10,17 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/loader/resource/link_dictionary_resource.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
 RelList::RelList(Element* element)
     : DOMTokenList(*element, html_names::kRelAttr) {}
+
+RelList::RelList(Element* element, const QualifiedName& attr)
+    : DOMTokenList(*element, attr) {}
 
 static HashSet<AtomicString>& SupportedTokensLink() {
   // There is a use counter for <link rel="monetization"> but the feature is
@@ -70,7 +75,8 @@ bool RelList::ValidateTokenValue(const AtomicString& token_value,
     }
   } else if ((GetElement().HasTagName(html_names::kATag) ||
               GetElement().HasTagName(html_names::kAreaTag) ||
-              GetElement().HasTagName(html_names::kFormTag)) &&
+              GetElement().HasTagName(html_names::kFormTag) ||
+              GetElement().HasTagName(svg_names::kATag)) &&
              SupportedTokensAnchorAndAreaAndForm().Contains(token_value)) {
     return true;
   }

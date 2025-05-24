@@ -9,17 +9,18 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/address_data_manager.h"
-#include "components/autofill/core/browser/autofill_form_test_utils.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/foundations/test_autofill_driver.h"
+#include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/touch_to_fill/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_autofill_driver.h"
-#include "components/autofill/core/browser/test_browser_autofill_manager.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "components/autofill/core/browser/ui/touch_to_fill_delegate.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,14 +47,30 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
               ((base::WeakPtr<TouchToFillDelegate>),
-               (base::span<const autofill::CreditCard>),
                (base::span<const autofill::Suggestion>)),
               (override));
 };
 
+class MockCreditCardAccessManager : public CreditCardAccessManager {
+ public:
+  explicit MockCreditCardAccessManager(BrowserAutofillManager* bam);
+  ~MockCreditCardAccessManager() override;
+  MOCK_METHOD(void,
+              FetchCreditCard,
+              (const CreditCard* card,
+               OnCreditCardFetchedCallback on_credit_card_fetched),
+              (override));
+};
+
+class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {
+ public:
+  explicit TestBrowserAutofillManager(AutofillDriver* driver);
+  void Reset() override;
+};
+
 class AutofillMetricsBaseTest {
  public:
-  explicit AutofillMetricsBaseTest(bool is_in_any_main_frame = true);
+  AutofillMetricsBaseTest();
   virtual ~AutofillMetricsBaseTest();
 
  protected:
@@ -67,18 +84,22 @@ class AutofillMetricsBaseTest {
   void RecreateProfile();
 
   // Removes all existing credit cards and then invokes CreateCreditCards to
-  // create the cards.
+  // create the cards. `include_cvc_in_cards` will set a CVC value on each card
+  // created for non-iOS platforms.
   // TODO(crbug.com/40770602): Migrate this to a params builder pattern or
   // something.
   void RecreateCreditCards(bool include_local_credit_card,
                            bool include_masked_server_credit_card,
-                           bool masked_card_is_enrolled_for_virtual_card);
+                           bool masked_card_is_enrolled_for_virtual_card,
+                           bool include_cvc_in_cards = true);
 
   // Creates a local, masked server, and/or virtual credit card, according to
-  // the parameters.
+  // the parameters. `include_cvc_in_cards` will set a CVC value on each card
+  // created for non-iOS platforms.
   void CreateCreditCards(bool include_local_credit_card,
                          bool include_masked_server_credit_card,
-                         bool masked_card_is_enrolled_for_virtual_card);
+                         bool masked_card_is_enrolled_for_virtual_card,
+                         bool include_cvc_in_cards = true);
 
   // Creates a local card and then a duplicate server card with the same
   // credentials/info.
@@ -111,30 +132,29 @@ class AutofillMetricsBaseTest {
 
   // Convenience wrapper for `EmulateUserChangedTextFieldTo` that appends
   // '_changed' to the fields value.
-  void SimulateUserChangedTextField(FormData& form,
-                                    const FormFieldData& field,
-                                    base::TimeTicks timestamp = {}) {
-    SimulateUserChangedTextFieldTo(form, field.global_id(),
-                                   field.value() + u"_changed", timestamp);
+  void SimulateUserChangedField(FormData& form,
+                                const FormFieldData& field,
+                                base::TimeTicks timestamp = {}) {
+    SimulateUserChangedFieldTo(form, field.global_id(),
+                               field.value() + u"_changed", timestamp);
   }
 
   // TODO(crbug.com/40100455): Remove this overload.
-  void SimulateUserChangedTextFieldTo(FormData& form,
-                                      const FormFieldData& field,
-                                      const std::u16string& new_value,
-                                      base::TimeTicks timestamp = {}) {
-    SimulateUserChangedTextFieldTo(form, field.global_id(), new_value,
-                                   timestamp);
+  void SimulateUserChangedFieldTo(FormData& form,
+                                  const FormFieldData& field,
+                                  const std::u16string& new_value,
+                                  base::TimeTicks timestamp = {}) {
+    SimulateUserChangedFieldTo(form, field.global_id(), new_value, timestamp);
   }
 
   // Emulates that the user manually changed a field by resetting the
   // `is_autofilled` field attribute, settings the field's value to `new_value`
   // and notifying the `AutofillManager` of the change that is emulated to have
   // happened at `timestamp`.
-  void SimulateUserChangedTextFieldTo(FormData& form,
-                                      const FieldGlobalId& field_id,
-                                      const std::u16string& new_value,
-                                      base::TimeTicks timestamp = {}) {
+  void SimulateUserChangedFieldTo(FormData& form,
+                                  const FieldGlobalId& field_id,
+                                  const std::u16string& new_value,
+                                  base::TimeTicks timestamp = {}) {
     // TODO(crbug.com/40100455): Remove const_cast.
     FormFieldData& field = const_cast<FormFieldData&>(
         CHECK_DEREF(form.FindFieldByGlobalId(field_id)));
@@ -142,16 +162,13 @@ class AutofillMetricsBaseTest {
     ASSERT_NE(field.value(), new_value);
     field.set_is_autofilled(false);
     field.set_value(new_value);
-    autofill_manager().OnTextFieldDidChange(form, field.global_id(), timestamp);
-  }
-
-  // TODO(crbug.com/40240189): Remove this method once the metrics are fixed.
-  void SimulateUserChangedTextFieldWithoutActuallyChangingTheValue(
-      const FormData& form,
-      FormFieldData& field,
-      base::TimeTicks timestamp = {}) {
-    field.set_is_autofilled(false);
-    autofill_manager().OnTextFieldDidChange(form, field.global_id(), timestamp);
+    if (field.IsSelectElement()) {
+      autofill_manager().OnSelectControlSelectionChanged(form,
+                                                         field.global_id());
+    } else {
+      autofill_manager().OnTextFieldValueChanged(form, field.global_id(),
+                                                 timestamp);
+    }
   }
 
   void FillAutofillFormData(const FormData& form,
@@ -165,25 +182,15 @@ class AutofillMetricsBaseTest {
 
   void SubmitForm(const FormData& form) {
     autofill_manager().OnFormSubmitted(
-        form, /*known_success=*/false,
-        mojom::SubmissionSource::FORM_SUBMISSION);
+        form, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
-  // Mocks a credit card fetching was completed. This mock starts from the
-  // BrowserAutofillManager. Use these if your test does not depends on
-  // OnDidGetRealPan but just need to mock the card fetching result (so that
-  // you don't need to branch on what auth method was used).
-  void OnCreditCardFetchingSuccessful(const FormData& form,
-                                      const FormFieldData& field,
-                                      AutofillTriggerSource trigger_source,
-                                      const std::u16string& real_pan,
-                                      bool is_virtual_card = false);
-  void OnCreditCardFetchingFailed(const FormData& form,
-                                  const FormFieldData& field,
-                                  AutofillTriggerSource trigger_source);
+  static CreditCard BuildCard(const std::u16string& real_pan,
+                              bool is_virtual_card = false);
 
   FormData GetAndAddSeenForm(const test::FormDescription& form_description) {
     FormData form = test::GetFormData(form_description);
+    autofill_driver().SetLocalFrameToken(form.host_frame());
     autofill_manager().AddSeenForm(form,
                                    test::GetHeuristicTypes(form_description),
                                    test::GetServerTypes(form_description));
@@ -194,20 +201,23 @@ class AutofillMetricsBaseTest {
       const FormData& form,
       size_t field_index = 0,
       SuggestionType suggestion_type = SuggestionType::kAddressEntry) {
-    autofill_manager().DidShowSuggestions({suggestion_type}, form,
-                                          form.fields()[field_index]);
+    Suggestion suggestion(suggestion_type);
+    autofill_manager().DidShowSuggestions(
+        {suggestion}, form, form.fields()[field_index].global_id(), {});
   }
 
-  void FillTestProfile(const FormData& form) {
-    FillProfileByGUID(form, kTestProfileId);
+  void FillTestProfile(const FormData& form, size_t field_index = 0) {
+    FillProfileByGUID(form, kTestProfileId, field_index);
   }
 
   void FillProfileByGUID(const FormData& form,
-                         const std::string& profile_guid) {
-    autofill_manager().FillOrPreviewProfileForm(
-        mojom::ActionPersistence::kFill, form, form.fields().front(),
-        *personal_data().address_data_manager().GetProfileByGUID(profile_guid),
-        {.trigger_source = AutofillTriggerSource::kPopup});
+                         const std::string& profile_guid,
+                         size_t field_index = 0) {
+    autofill_manager().FillOrPreviewForm(
+        mojom::ActionPersistence::kFill, form,
+        form.fields()[field_index].global_id(),
+        personal_data().address_data_manager().GetProfileByGUID(profile_guid),
+        AutofillTriggerSource::kPopup);
   }
 
   void UndoAutofill(const FormData& form) {
@@ -217,13 +227,12 @@ class AutofillMetricsBaseTest {
 
   [[nodiscard]] FormData CreateEmptyForm() {
     FormData form;
-    form.set_host_frame(test::MakeLocalFrameToken());
+    form.set_host_frame(autofill_driver_->GetFrameToken());
     form.set_renderer_id(test::MakeFormRendererId());
     form.set_name(u"TestForm");
     form.set_url(GURL("https://example.com/form.html"));
     form.set_action(GURL("https://example.com/submit.html"));
-    form.set_main_frame_origin(
-        url::Origin::Create(autofill_client_->form_origin()));
+    form.set_main_frame_origin(url::Origin::Create(autofill_driver_->url()));
     return form;
   }
 
@@ -232,6 +241,10 @@ class AutofillMetricsBaseTest {
     form.set_fields(std::move(fields));
     return form;
   }
+
+  TestAutofillClient& autofill_client() { return *autofill_client_; }
+
+  TestAutofillDriver& autofill_driver() { return *autofill_driver_; }
 
   TestBrowserAutofillManager& autofill_manager() {
     return static_cast<TestBrowserAutofillManager&>(
@@ -242,12 +255,17 @@ class AutofillMetricsBaseTest {
     return *test_api(autofill_manager()).external_delegate();
   }
 
+  MockCreditCardAccessManager& credit_card_access_manager() {
+    return static_cast<MockCreditCardAccessManager&>(
+        autofill_manager().GetCreditCardAccessManager());
+  }
+
   TestPersonalDataManager& personal_data() {
-    return *autofill_client_->GetPersonalDataManager();
+    return autofill_client_->GetPersonalDataManager();
   }
 
   ukm::TestUkmRecorder& test_ukm_recorder() {
-    return *autofill_client_->GetTestUkmRecorder();
+    return *autofill_client_->GetUkmRecorder();
   }
 
   MockPaymentsAutofillClient& payments_autofill_client() {
@@ -255,7 +273,6 @@ class AutofillMetricsBaseTest {
         *autofill_client_->GetPaymentsAutofillClient());
   }
 
-  const bool is_in_any_main_frame_ = true;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
@@ -265,8 +282,6 @@ class AutofillMetricsBaseTest {
 
  private:
   void CreateTestAutofillProfiles();
-
-  CreditCard credit_card_ = test::WithCvc(test::GetMaskedServerCard());
 };
 
 }  // namespace autofill::autofill_metrics

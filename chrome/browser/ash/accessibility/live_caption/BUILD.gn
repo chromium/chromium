@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("live_caption") {
   sources = [
@@ -49,34 +49,4 @@ source_set("browser_tests") {
     "//components/live_caption",
     "//components/live_caption:constants",
   ]
-}
-
-if (!is_chromeos_device) {
-  source_set("interactive_ui_tests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources = [ "live_caption_ui_remote_driver_browsertest.cc" ]
-
-    deps = [
-      "//ash/constants",
-      "//base",
-      "//base/test:test_support",
-      "//chrome/browser",
-      "//chrome/browser/profiles:profile",
-      "//chrome/browser/ui",
-      "//chrome/test:test_support_ui",
-      "//components/live_caption",
-      "//components/live_caption:constants",
-      "//components/soda",
-      "//content/test:test_support",
-      "//mojo/public/cpp/bindings",
-      "//testing/gmock",
-      "//testing/gtest",
-      "//ui/events",
-      "//ui/gfx",
-      "//ui/views",
-    ]
-  }
 }

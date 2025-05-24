@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
-import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,11 +30,10 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.TestActivity;
 
-/** Unit tests for {@link TabGroupRowView}. */
+/** Unit tests for {@link TabGroupFaviconQuarter}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabGroupFaviconQuarterUnitTest {
     private static final int PLUS_COUNT = 123;
@@ -57,7 +55,7 @@ public class TabGroupFaviconQuarterUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         ConstraintLayout parent = new ConstraintLayout(mActivity, null);
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         inflater.inflate(R.layout.tab_group_favicon_quarter, parent, true);
@@ -68,7 +66,6 @@ public class TabGroupFaviconQuarterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetCorner() {
         ConstraintLayout.LayoutParams params;
 
@@ -102,7 +99,6 @@ public class TabGroupFaviconQuarterUnitTest {
     }
 
     @Test
-    @SmallTest
     public void testSetImage() {
         mTabGroupFaviconQuarter.setImage(mDrawable);
         assertEquals(View.VISIBLE, mImageView.getVisibility());
@@ -111,11 +107,10 @@ public class TabGroupFaviconQuarterUnitTest {
         assertTrue(TextUtils.isEmpty(mTextView.getText()));
         assertEquals(
                 mBackground.getColor().getDefaultColor(),
-                ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_0));
+                SemanticColorUtils.getColorSurfaceBright(mActivity));
     }
 
     @Test
-    @SmallTest
     public void testSetPlusCount() {
         mTabGroupFaviconQuarter.setPlusCount(PLUS_COUNT);
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
@@ -124,11 +119,10 @@ public class TabGroupFaviconQuarterUnitTest {
         assertEquals("+123", mTextView.getText());
         assertEquals(
                 mBackground.getColor().getDefaultColor(),
-                ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_1));
+                SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
     }
 
     @Test
-    @SmallTest
     public void testClear() {
         mTabGroupFaviconQuarter.clear();
         assertEquals(View.INVISIBLE, mImageView.getVisibility());
@@ -137,6 +131,6 @@ public class TabGroupFaviconQuarterUnitTest {
         assertTrue(TextUtils.isEmpty(mTextView.getText()));
         assertEquals(
                 mBackground.getColor().getDefaultColor(),
-                ChromeColors.getSurfaceColor(mActivity, R.dimen.default_elevation_1));
+                SemanticColorUtils.getColorSurfaceContainerLow(mActivity));
     }
 }

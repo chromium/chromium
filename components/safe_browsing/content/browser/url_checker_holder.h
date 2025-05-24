@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "components/safe_browsing/core/browser/referring_app_info.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -83,7 +84,8 @@ class UrlCheckerHolder final {
       hash_realtime_utils::HashRealTimeSelection hash_realtime_selection,
       bool is_async_check,
       bool check_allowlist_before_hash_database,
-      SessionID tab_id);
+      SessionID tab_id,
+      std::optional<internal::ReferringAppInfo> referring_app_info);
 
   ~UrlCheckerHolder();
 
@@ -149,6 +151,7 @@ class UrlCheckerHolder final {
   bool is_async_check_ = false;
   bool check_allowlist_before_hash_database_ = false;
   SessionID tab_id_;
+  std::optional<internal::ReferringAppInfo> referring_app_info_;
   base::WeakPtrFactory<UrlCheckerHolder> weak_factory_{this};
 };
 

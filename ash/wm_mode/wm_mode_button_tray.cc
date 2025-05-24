@@ -19,6 +19,7 @@
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 
 namespace ash {
@@ -38,7 +39,10 @@ WmModeButtonTray::WmModeButtonTray(Shelf* shelf)
   SetCallback(base::BindRepeating(
       [](const ui::Event& event) { WmModeController::Get()->Toggle(); }));
 
-  image_view_->SetTooltipText(GetAccessibleNameForTray());
+  // TODO(crbug.com/252558235): Localize once approved.
+  GetViewAccessibility().SetName(u"WM Mode");
+  image_view_->SetTooltipText(u"WM Mode");
+
   image_view_->SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
   image_view_->SetPreferredSize(gfx::Size(kTrayItemSize, kTrayItemSize));
@@ -66,11 +70,6 @@ void WmModeButtonTray::OnThemeChanged() {
 
 void WmModeButtonTray::UpdateAfterLoginStatusChange() {
   UpdateButtonVisibility();
-}
-
-std::u16string WmModeButtonTray::GetAccessibleNameForTray() {
-  // TODO(crbug.com/1366034): Localize once approved.
-  return u"WM Mode";
 }
 
 void WmModeButtonTray::OnSessionStateChanged(

@@ -1,5 +1,5 @@
 // META: title=validation tests for WebNN API argMin/Max operations
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -70,12 +70,17 @@ function runTests(operatorName, tests) {
       const builder = new MLGraphBuilder(context);
       const input = builder.input('input', test.input);
       const axis = test.axis;
+      if (!context.opSupportLimits()[operatorName].input.dataTypes.includes(test.input.dataType)){
+        assert_throws_js(
+          TypeError, () => builder[operatorName](input, axis, test.options));
+        return;
+      }
       if (test.options && test.options.outputDataType !== undefined) {
         if (context.opSupportLimits()[operatorName].output.dataTypes.includes(
           test.options.outputDataType)) {
           const output = builder[operatorName](input, axis, test.options);
-          assert_equals(output.dataType(), test.options.outputDataType);
-          assert_array_equals(output.shape(), test.output.shape);
+          assert_equals(output.dataType, test.options.outputDataType);
+          assert_array_equals(output.shape, test.output.shape);
         } else {
           assert_throws_js(
             TypeError, () => builder[operatorName](input, axis, test.options));
@@ -84,8 +89,8 @@ function runTests(operatorName, tests) {
       }
       if (test.output) {
         const output = builder[operatorName](input, axis, test.options);
-        assert_equals(output.dataType(), 'int32');
-        assert_array_equals(output.shape(), test.output.shape);
+        assert_equals(output.dataType, 'int32');
+        assert_array_equals(output.shape, test.output.shape);
       } else {
         const regrexp = /\[arg_min_max_1_\!\]/;
         assert_throws_with_label(

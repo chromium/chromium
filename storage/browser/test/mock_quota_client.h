@@ -23,7 +23,6 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace storage {
 
@@ -31,10 +30,9 @@ class QuotaManagerProxy;
 
 // Default StorageKey data that the QuotaDatabase does not know about yet,
 // and is to be fetched during QuotaDatabase bootstrapping via
-// QuotaClient::GetStorageKeysForType.
+// QuotaClient::GetDefaultStorageKeys.
 struct UnmigratedStorageKeyData {
   const char* origin;
-  blink::mojom::StorageType type;
   int64_t usage;
 };
 
@@ -67,18 +65,15 @@ class MockQuotaClient : public mojom::QuotaClient {
   // QuotaClient.
   void GetBucketUsage(const BucketLocator& bucket,
                       GetBucketUsageCallback callback) override;
-  void GetStorageKeysForType(blink::mojom::StorageType type,
-                             GetStorageKeysForTypeCallback callback) override;
+  void GetDefaultStorageKeys(GetDefaultStorageKeysCallback callback) override;
   void DeleteBucketData(const BucketLocator& bucket,
                         DeleteBucketDataCallback callback) override;
-  void PerformStorageCleanup(blink::mojom::StorageType type,
-                             PerformStorageCleanupCallback callback) override;
+  void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
 
  private:
   void RunGetBucketUsage(const BucketLocator& bucket,
                          GetBucketUsageCallback callback);
-  void RunGetStorageKeysForType(blink::mojom::StorageType type,
-                                GetStorageKeysForTypeCallback callback);
+  void RunGetDefaultStorageKeys(GetDefaultStorageKeysCallback callback);
   void RunDeleteBucketData(const BucketLocator& bucket,
                            DeleteBucketDataCallback callback);
 
@@ -86,8 +81,7 @@ class MockQuotaClient : public mojom::QuotaClient {
   const QuotaClientType client_type_;
 
   std::map<BucketLocator, int64_t, CompareBucketLocators> bucket_data_;
-  std::map<std::pair<blink::StorageKey, blink::mojom::StorageType>, int64_t>
-      unmigrated_storage_key_data_;
+  std::map<blink::StorageKey, int64_t> unmigrated_storage_key_data_;
   std::set<BucketLocator> error_buckets_;
 
   int mock_time_counter_ = 0;

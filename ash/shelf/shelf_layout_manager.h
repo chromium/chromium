@@ -273,6 +273,7 @@ class ASH_EXPORT ShelfLayoutManager : public AppListControllerObserver,
   // ShellObserver:
   void OnUserWorkAreaInsetsChanged(aura::Window* root_window) override;
   void OnPinnedStateChanged(aura::Window* pinned_window) override;
+  void OnRootWindowWillShutdown(aura::Window* root_window) override;
   void OnShellDestroying() override;
 
   // SplitViewObserver:

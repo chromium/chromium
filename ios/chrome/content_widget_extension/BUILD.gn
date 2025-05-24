@@ -36,9 +36,9 @@ repack_locales("packed_resources") {
   input_locales = platform_pak_locales
   output_locales = locales_as_apple_outputs
 
-  source_patterns = [ "$root_gen_dir/ios/content_widget_extension/ios_content_widget_extension_${branding_path_product}_strings_" ]
+  source_patterns = [ "$root_gen_dir/ios/content_widget_extension/ios_content_widget_extension_branded_strings_" ]
 
-  deps = [ "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_branded_strings" ]
+  deps = [ "//ios/chrome/content_widget_extension/strings" ]
 }
 
 generate_localizable_strings("system_strings") {

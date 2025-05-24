@@ -47,8 +47,8 @@ enum class AcceleratorKeyInputType : uint8_t {
   kMisc,
   kFunction,
   kAssistant,
-  kRightAlt,
-  kMaxValue = kRightAlt,
+  kQuickInsert,
+  kMaxValue = kQuickInsert,
 };
 
 // Returns the string of a DomKey for a given KeyboardCode. A keyboard code

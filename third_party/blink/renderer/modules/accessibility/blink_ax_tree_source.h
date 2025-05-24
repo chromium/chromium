@@ -8,20 +8,19 @@
 #include <stdint.h>
 
 #include <optional>
-#include <set>
 #include <string>
 
 #include "third_party/blink/public/web/web_ax_object.h"
-#include "third_party/blink/public/web/web_document.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/ax_tree_source.h"
+
+namespace ui {
+struct AXTreeData;
+}
 
 namespace blink {
 
@@ -33,14 +32,11 @@ class MODULES_EXPORT BlinkAXTreeSource
  public:
   // Pass truncate_inline_textboxes_ if inline textboxes should be removed
   // from the serialized tree, even if they are already available in the cache.
-  explicit BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
-                             bool truncate_inline_textboxes);
+  explicit BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache);
   ~BlinkAXTreeSource() override;
 
-  static BlinkAXTreeSource* Create(AXObjectCacheImpl& ax_object_cache,
-                                   bool truncate_inline_textboxes = false) {
-    return MakeGarbageCollected<BlinkAXTreeSource>(ax_object_cache,
-                                                   truncate_inline_textboxes);
+  static BlinkAXTreeSource* Create(AXObjectCacheImpl& ax_object_cache) {
+    return MakeGarbageCollected<BlinkAXTreeSource>(ax_object_cache);
   }
 
   // AXTreeSource implementation.
@@ -97,8 +93,6 @@ class MODULES_EXPORT BlinkAXTreeSource
   // Used to ensure that the tutor message that explains to screen reader users
   // how to turn on automatic image labels is provided only once.
   mutable std::optional<int32_t> first_unlabeled_image_id_ = std::nullopt;
-
-  const bool truncate_inline_textboxes_;
 };
 
 }  // namespace blink

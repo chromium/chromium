@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/md_select.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 import './site_favicon.js';
 import './dialogs/password_preview_item.js';
 
@@ -40,8 +40,7 @@ enum DialogState {
 }
 
 /**
- * Should be kept in sync with
- * |password_manager::metrics_util::PasswordsImportDesktopInteractions|.
+ * Should be kept in sync with PasswordsImportDesktopInteractions in enums.xml.
  * These values are persisted to logs. Entries should not be renumbered and
  * numeric values should never be reused.
  */
@@ -80,7 +79,22 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   static get properties() {
     return {
-      dialogState_: Number,
+      isUserSyncingPasswords: {
+        type: Boolean,
+        value: false,
+      },
+
+      isAccountStoreUser: {
+        type: Boolean,
+        value: false,
+      },
+
+      accountEmail: String,
+
+      dialogState_: {
+        type: Number,
+        value: DialogState.NO_DIALOG,
+      },
 
       dialogStateEnum_: {
         type: Object,
@@ -96,7 +110,11 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
       selectedStoreOption_: String,
 
-      results_: Object,
+      results_: {
+        type: Object,
+        value: null,
+      },
+
       successDescription_: String,
       failedImportsSummary_: String,
       rowsWithUnknownErrorsSummary_: String,
@@ -133,24 +151,24 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     ];
   }
 
-  isUserSyncingPasswords: boolean;
-  isAccountStoreUser: boolean;
-  accountEmail: string;
+  declare isUserSyncingPasswords: boolean;
+  declare isAccountStoreUser: boolean;
+  declare accountEmail: string;
 
-  private dialogState_: DialogState = DialogState.NO_DIALOG;
+  declare private dialogState_: DialogState;
   // Refers both to syncing users with sync enabled for passwords and account
   // store users who choose to import passwords to their account.
   private passwordsSavedToAccount_: boolean;
-  private selectedStoreOption_: string;
-  private bannerDescription_: string;
-  private results_: chrome.passwordsPrivate.ImportResults|null = null;
-  private conflicts_: chrome.passwordsPrivate.ImportEntry[];
-  private conflictsSelectedForReplace_: number[];
-  private successDescription_: string;
-  private conflictsDialogTitle_: string;
-  private failedImportsSummary_: string;
-  private rowsWithUnknownErrorsSummary_: string;
-  private showRowsWithUnknownErrorsSummary_: boolean;
+  declare private selectedStoreOption_: string;
+  declare private bannerDescription_: string;
+  declare private results_: chrome.passwordsPrivate.ImportResults|null;
+  declare private conflicts_: chrome.passwordsPrivate.ImportEntry[];
+  declare private conflictsSelectedForReplace_: number[];
+  declare private successDescription_: string;
+  declare private conflictsDialogTitle_: string;
+  declare private failedImportsSummary_: string;
+  declare private rowsWithUnknownErrorsSummary_: string;
+  declare private showRowsWithUnknownErrorsSummary_: boolean;
   private passwordManager_: PasswordManagerProxy =
       PasswordManagerImpl.getInstance();
 
@@ -171,21 +189,13 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
-      PasswordManagerImpl.getInstance().isAccountStoreDefault().then(
-          isAccountStoreDefault => {
-            this.selectedStoreOption_ = isAccountStoreDefault ?
-                chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT :
-                chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
-          });
+      this.selectedStoreOption_ =
+          chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
     }
   }
 
   private updatePasswordsSavedToAccount_() {
-    if (this.isUserSyncingPasswords) {
-      this.passwordsSavedToAccount_ = true;
-    } else {
-      this.passwordsSavedToAccount_ = false;
-    }
+    this.passwordsSavedToAccount_ = this.isUserSyncingPasswords;
   }
 
   private isState_(state: DialogState): boolean {

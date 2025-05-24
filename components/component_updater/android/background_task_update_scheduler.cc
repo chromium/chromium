@@ -31,8 +31,8 @@ BackgroundTaskUpdateScheduler::BackgroundTaskUpdateScheduler() {
 BackgroundTaskUpdateScheduler::~BackgroundTaskUpdateScheduler() = default;
 
 void BackgroundTaskUpdateScheduler::Schedule(
-    const base::TimeDelta& initial_delay,
-    const base::TimeDelta& delay,
+    base::TimeDelta initial_delay,
+    base::TimeDelta delay,
     const UserTask& user_task,
     const OnStopTaskCallback& on_stop) {
   user_task_ = user_task;

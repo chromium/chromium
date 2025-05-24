@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/audio_hash.h"
 
@@ -29,7 +25,7 @@ void AudioHash::Update(const AudioBus* audio_bus, int frames) {
   // Use uint32_t to ensure overflow is a defined operation.
   for (uint32_t ch = 0; ch < static_cast<uint32_t>(audio_bus->channels());
        ++ch) {
-    const float* channel = audio_bus->channel(ch);
+    auto channel = audio_bus->channel_span(ch);
     for (uint32_t i = 0; i < static_cast<uint32_t>(frames); ++i) {
       const uint32_t kSampleIndex = sample_count_ + i;
       const uint32_t kHashIndex =

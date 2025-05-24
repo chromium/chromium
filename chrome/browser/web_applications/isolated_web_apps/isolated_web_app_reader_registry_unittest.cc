@@ -7,16 +7,17 @@
 #include <memory>
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_validator.h"
+#include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_reader.h"
 #include "chrome/browser/web_applications/test/signed_web_bundle_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
@@ -36,8 +38,8 @@
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
-#include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
 #include "components/web_package/test_support/mock_web_bundle_parser_factory.h"
+#include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -53,6 +55,7 @@ namespace {
 
 using base::test::ErrorIs;
 using base::test::HasValue;
+using base::test::RunOnceCallback;
 using testing::ElementsAre;
 using testing::Field;
 using testing::HasSubstr;
@@ -68,30 +71,6 @@ constexpr uint8_t kEd25519Signature[64] = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 0, 7, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 7, 0, 0};
-
-class FakeIsolatedWebAppValidator : public IsolatedWebAppValidator {
- public:
-  explicit FakeIsolatedWebAppValidator(
-      base::expected<void, std::string> integrity_block_validation_result)
-      : integrity_block_validation_result_(integrity_block_validation_result) {}
-
-  base::expected<void, std::string> ValidateIntegrityBlock(
-      const web_package::SignedWebBundleId& web_bundle_id,
-      const web_package::SignedWebBundleIntegrityBlock& integrity_block,
-      bool dev_mode,
-      const IsolatedWebAppTrustChecker& trust_checker) override {
-    return integrity_block_validation_result_;
-  }
-
-  void set_integrity_block_validation_result(
-      base::expected<void, std::string> integrity_block_validation_result) {
-    integrity_block_validation_result_ =
-        std::move(integrity_block_validation_result);
-  }
-
- private:
-  base::expected<void, std::string> integrity_block_validation_result_;
-};
 
 }  // namespace
 
@@ -122,10 +101,10 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
 
     auto signature_info_ed25519 =
         web_package::mojom::SignatureInfoEd25519::New();
-    signature_info_ed25519->public_key = web_package::Ed25519PublicKey::Create(
-        base::make_span(kEd25519PublicKey));
-    signature_info_ed25519->signature = web_package::Ed25519Signature::Create(
-        base::make_span(kEd25519Signature));
+    signature_info_ed25519->public_key =
+        web_package::Ed25519PublicKey::Create(base::span(kEd25519PublicKey));
+    signature_info_ed25519->signature =
+        web_package::Ed25519Signature::Create(base::span(kEd25519Signature));
 
     web_package::mojom::BundleIntegrityBlockSignatureStackEntryPtr
         signature_stack_entry =
@@ -146,15 +125,7 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
 
     registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
         *profile_,
-        std::make_unique<IsolatedWebAppResponseReaderFactory>(
-            *profile_,
-            std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
-            base::BindRepeating(
-                []() -> std::unique_ptr<
-                         web_package::SignedWebBundleSignatureVerifier> {
-                  return std::make_unique<
-                      web_package::test::FakeSignatureVerifier>(std::nullopt);
-                })));
+        std::make_unique<IsolatedWebAppResponseReaderFactory>(*profile_));
 
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(
@@ -165,6 +136,8 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
         base::BindRepeating(
             &web_package::MockWebBundleParserFactory::AddReceiver,
             base::Unretained(parser_factory_.get())));
+
+    AddTrustedWebBundleIdForTesting(kWebBundleId);
   }
 
   void TearDown() override {
@@ -211,12 +184,22 @@ class IsolatedWebAppReaderRegistryTest : public ::testing::Test {
   web_package::mojom::BundleIntegrityBlockPtr integrity_block_;
   web_package::mojom::BundleMetadataPtr metadata_;
   web_package::mojom::BundleResponsePtr response_;
+  testing::StrictMock<web_package::test::MockSignatureVerifier>
+      signature_verifier_;
+  base::AutoReset<web_package::SignedWebBundleSignatureVerifier*>
+      reset_signature_verifier_ =
+          web_app::SignedWebBundleReader::SetSignatureVerifierForTesting(
+              &signature_verifier_);
 };
 
 using ReadResult =
     base::expected<IsolatedWebAppResponseReader::Response, ReadResponseError>;
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
@@ -252,6 +235,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSingleRequest) {
 
 TEST_F(IsolatedWebAppReaderRegistryTest,
        ReadResponseWhenBundleIsNoLongerTrusted) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
@@ -283,6 +270,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 
 TEST_F(IsolatedWebAppReaderRegistryTest,
        TestSingleRequestWithQueryAndFragment) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   network::ResourceRequest resource_request;
   resource_request.url = kUrl.Resolve("/?bar=baz#foo");
 
@@ -306,26 +297,16 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
-  auto validator = std::make_unique<FakeIsolatedWebAppValidator>(base::ok());
-  auto* validator_ref = validator.get();
-
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_,
-      std::make_unique<IsolatedWebAppResponseReaderFactory>(
-          *profile_, std::move(validator),
-          base::BindRepeating(
-              []() -> std::unique_ptr<
-                       web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<
-                    web_package::test::FakeSignatureVerifier>(std::nullopt);
-              })));
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
   // First, simulate a successful parsing of the integrity block, and read a
   // response.
-  validator_ref->set_integrity_block_validation_result(base::ok());
   {
     base::test::TestFuture<ReadResult> read_response_future;
     registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
@@ -339,10 +320,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
     EXPECT_EQ(response.head()->response_code, 200);
   }
 
-  // Now, make all further attempts to parse an integrity block return with an
-  // error.
-  validator_ref->set_integrity_block_validation_result(
-      base::unexpected("some error"));
   {
     // A request to the already opened bundle should still succeed.
     base::test::TestFuture<ReadResult> read_response_future;
@@ -354,21 +331,12 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
                          read_response_future.Take());
     EXPECT_EQ(response.head()->response_code, 200);
   }
-  {
-    // A request to the same bundle, but this time with a different `dev_mode`
-    // flag, should not succeed. This verifies that the cache is partitioned by
-    // `dev_mode`.
-    base::test::TestFuture<ReadResult> read_response_future;
-    registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/true, kWebBundleId,
-                            resource_request,
-                            read_response_future.GetCallback());
-    FulfillIntegrityBlock();
-    EXPECT_THAT(read_response_future.Take(),
-                testing::Not(base::test::HasValue()));
-  }
 
-  // Now, clear the cache - requests should all fail now.
+  // Now revoke trust for this bundle and clear the cache. New requests will
+  // fail from now on.
+  SetTrustedWebBundleIdsForTesting({});
   base::test::TestFuture<void> close_future;
+
   registry_->ClearCacheForPath(web_bundle_path_, close_future.GetCallback());
   EXPECT_TRUE(close_future.Wait());
   {
@@ -377,6 +345,7 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
                             resource_request,
                             read_response_future.GetCallback());
     FulfillIntegrityBlock();
+    FulfillMetadata();
     EXPECT_THAT(read_response_future.Take(),
                 testing::Not(base::test::HasValue()));
   }
@@ -384,6 +353,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestMixedDevModeAndProdModeRequests) {
 
 TEST_F(IsolatedWebAppReaderRegistryTest,
        TestReadingResponseAfterSignedWebBundleReaderIsDeleted) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
@@ -414,6 +387,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest,
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestRequestToNonExistingResponse) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
@@ -446,21 +423,11 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
-  size_t num_signature_verifications = 0;
-
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_,
-      std::make_unique<IsolatedWebAppResponseReaderFactory>(
-          *profile_, std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
-          base::BindLambdaForTesting(
-              [&]() -> std::unique_ptr<
-                        web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<
-                    web_package::test::FakeSignatureVerifier>(
-                    std::nullopt, base::BindLambdaForTesting([&]() {
-                      ++num_signature_verifications;
-                    }));
-              })));
+// signatures only verified once per session even for multiple calls
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
 
   // Verify that the cache cleanup timer has not yet started.
   EXPECT_FALSE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
@@ -488,12 +455,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
     EXPECT_EQ(response.head()->response_code, 200);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(num_signature_verifications, 0ul);
-#else
-  EXPECT_EQ(num_signature_verifications, 1ul);
-#endif
-
   // Verify that the cache cleanup timer has started.
   EXPECT_TRUE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
 
@@ -511,12 +472,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
                          read_response_future.Take());
     EXPECT_EQ(response.head()->response_code, 200);
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(num_signature_verifications, 0ul);
-#else
-  EXPECT_EQ(num_signature_verifications, 1ul);
-#endif
 
   // Verify that the cache cleanup timer is still running.
   EXPECT_TRUE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
@@ -545,14 +500,6 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestSignedWebBundleReaderLifetime) {
                          read_response_future.Take());
     EXPECT_EQ(response.head()->response_code, 200);
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(num_signature_verifications, 0ul);
-#else
-  // Signatures should not have been verified again, since we only verify them
-  // once per session per file path.
-  EXPECT_EQ(num_signature_verifications, 1ul);
-#endif
 
   // Verify that the cache cleanup timer has started again.
   EXPECT_TRUE(registry_->reader_cache_.IsCleanupTimerRunningForTesting());
@@ -606,35 +553,32 @@ INSTANTIATE_TEST_SUITE_P(
             UnusableSwbnFileError::Error::kIntegrityBlockParserFormatError)));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidIntegrityBlockContents) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_,
-      std::make_unique<IsolatedWebAppResponseReaderFactory>(
-          *profile_,
-          std::make_unique<FakeIsolatedWebAppValidator>(
-              base::unexpected("test error")),
-          base::BindRepeating(
-              []() -> std::unique_ptr<
-                       web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<
-                    web_package::test::FakeSignatureVerifier>(std::nullopt);
-              })));
-
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
                           resource_request, read_response_future.GetCallback());
 
-  FulfillIntegrityBlock();
+  auto integrity_block = integrity_block_->Clone();
+  // Simulate a failed validation by returning a different ID.
+  integrity_block->attributes =
+      web_package::test::GetAttributesForSignedWebBundleId(
+          web_package::test::GetDefaultEcdsaP256WebBundleId().id());
+  parser_factory_->RunIntegrityBlockCallback(std::move(integrity_block));
+  FulfillMetadata();
 
   ReadResult result = read_response_future.Take();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().type, ReadResponseError::Type::kOtherError);
-  EXPECT_EQ(result.error().message,
-            "Failed to validate integrity block: test error");
+  EXPECT_THAT(result.error().message,
+              testing::HasSubstr("Failed to validate integrity block"));
 
   histogram_tester.ExpectBucketCount(
       ToErrorHistogramName("WebApp.Isolated.SwbnFileUsability"),
@@ -647,21 +591,14 @@ class IsolatedWebAppReaderRegistrySignatureVerificationErrorTest
 
 TEST_P(IsolatedWebAppReaderRegistrySignatureVerificationErrorTest,
        SignatureVerificationError) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::unexpected(GetParam())));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
-
-  registry_ = std::make_unique<IsolatedWebAppReaderRegistry>(
-      *profile_,
-      std::make_unique<IsolatedWebAppResponseReaderFactory>(
-          *profile_, std::make_unique<FakeIsolatedWebAppValidator>(base::ok()),
-          base::BindRepeating(
-              []() -> std::unique_ptr<
-                       web_package::SignedWebBundleSignatureVerifier> {
-                return std::make_unique<
-                    web_package::test::FakeSignatureVerifier>(GetParam());
-              })));
 
   base::test::TestFuture<ReadResult> read_response_future;
   registry_->ReadResponse(web_bundle_path_, /*dev_mode=*/false, kWebBundleId,
@@ -709,6 +646,10 @@ class IsolatedWebAppReaderRegistryMetadataParserErrorTest
 
 TEST_P(IsolatedWebAppReaderRegistryMetadataParserErrorTest,
        TestMetadataParserError) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
@@ -750,6 +691,10 @@ INSTANTIATE_TEST_SUITE_P(
             UnusableSwbnFileError::Error::kMetadataParserFormatError)));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
@@ -779,6 +724,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataPrimaryUrl) {
 }
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestInvalidMetadataInvalidExchange) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
@@ -813,6 +762,10 @@ class IsolatedWebAppReaderRegistryResponseHeadParserErrorTest
 
 TEST_P(IsolatedWebAppReaderRegistryResponseHeadParserErrorTest,
        TestResponseHeadParserError) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   base::HistogramTester histogram_tester;
 
   network::ResourceRequest resource_request;
@@ -857,6 +810,10 @@ INSTANTIATE_TEST_SUITE_P(
                            kResponseHeadParserFormatError)));
 
 TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   using ReaderCacheState = IsolatedWebAppReaderRegistry::ReaderCacheState;
   base::HistogramTester histogram_tester;
 
@@ -939,6 +896,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, TestConcurrentRequests) {
 // Check that we can close the cached reader that keeps
 // the signed web bundle file opened.
 TEST_F(IsolatedWebAppReaderRegistryTest, Close) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
@@ -972,6 +933,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, Close) {
 // Check the case when the close request is coming while the reader
 // is being created.
 TEST_F(IsolatedWebAppReaderRegistryTest, CloseOnArrival) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   network::ResourceRequest resource_request;
   resource_request.url = kUrl;
 
@@ -1004,6 +969,10 @@ TEST_F(IsolatedWebAppReaderRegistryTest, CloseEmpty) {
 
 // Reopen of the closed file should work.
 TEST_F(IsolatedWebAppReaderRegistryTest, OpenCloseOpen) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_CALL(signature_verifier_, VerifySignatures)
+      .WillOnce(RunOnceCallback<2>(base::ok()));
+#endif
   // Open the signed web bundle for the first time.
   {
     network::ResourceRequest resource_request;

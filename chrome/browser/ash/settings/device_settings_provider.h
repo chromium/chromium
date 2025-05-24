@@ -32,7 +32,7 @@ class ChromeDeviceSettingsProto;
 
 namespace ash {
 
-constexpr char kAllowlistCOILFallbackHistogram[] =
+inline constexpr char kAllowlistCOILFallbackHistogram[] =
     "Login.AllowlistCOILFallback";
 
 // CrosSettingsProvider implementation that works with device settings.

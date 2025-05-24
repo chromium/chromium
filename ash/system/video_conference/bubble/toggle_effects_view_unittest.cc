@@ -21,7 +21,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 
@@ -43,14 +42,9 @@ class ToggleEffectsViewTest
 
   // AshTestBase:
   void SetUp() override {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kFeatureManagementVideoConference,
-        chromeos::features::kJelly};
-    if (IsVcDlcUiEnabled()) {
-      enabled_features.push_back(features::kVcDlcUi);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kFeatureManagementVideoConference, true},
+         {features::kVcDlcUi, IsVcDlcUiEnabled()}});
 
     if (IsVcDlcUiEnabled()) {
       DlcserviceClient::InitializeFake();

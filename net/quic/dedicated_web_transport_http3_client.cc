@@ -28,6 +28,7 @@
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
+#include "net/third_party/quiche/src/quiche/web_transport/web_transport_headers.h"
 #include "net/url_request/url_request_context.h"
 #include "url/scheme_host_port.h"
 
@@ -308,8 +309,7 @@ void RecordNegotiatedHttpDatagramSupport(quic::HttpDatagramSupport support) {
       negotiated = NegotiatedHttpDatagramVersion::kRfc;
       break;
     case quic::HttpDatagramSupport::kRfcAndDraft04:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration(
       "Net.WebTransport.NegotiatedHttpDatagramVersion", negotiated);
@@ -366,6 +366,7 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
     : url_(url),
       origin_(origin),
       anonymization_key_(anonymization_key),
+      application_protocols_(parameters.application_protocols),
       context_(context),
       visitor_(visitor),
       quic_context_(context->quic_context()),
@@ -405,8 +406,7 @@ DedicatedWebTransportHttp3Client::~DedicatedWebTransportHttp3Client() {
 void DedicatedWebTransportHttp3Client::Connect() {
   if (state_ != WebTransportState::NEW ||
       next_connect_state_ != CONNECT_STATE_NONE) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   TransitionToState(WebTransportState::CONNECTING);
@@ -430,6 +430,14 @@ void DedicatedWebTransportHttp3Client::Close(
     session()->CloseSession(close_info->code, close_info->reason);
   } else {
     session()->CloseSession(0, "");
+  }
+}
+
+void DedicatedWebTransportHttp3Client::CloseIfNonceMatches(
+    base::UnguessableToken nonce) {
+  if (anonymization_key_.GetNonce() == nonce) {
+    SetErrorIfNecessary(ERR_NETWORK_ACCESS_REVOKED);
+    TransitionToState(WebTransportState::FAILED);
   }
 }
 
@@ -481,9 +489,7 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
         rv = DoConfirmConnection();
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid state reached: " << connect_state;
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "Invalid state reached: " << connect_state;
     }
   } while (rv == OK && next_connect_state_ != CONNECT_STATE_NONE);
 
@@ -620,7 +626,7 @@ void DedicatedWebTransportHttp3Client::CreateConnection() {
       kQuicYieldAfterPacketsRead,
       quic::QuicTime::Delta::FromMilliseconds(
           kQuicYieldAfterDurationMilliseconds),
-      quic_context_->params()->report_ecn, net_log_);
+      net_log_);
 
   event_logger_ = std::make_unique<QuicEventLogger>(session_.get(), net_log_);
   connection_->set_debug_visitor(event_logger_.get());
@@ -744,6 +750,14 @@ int DedicatedWebTransportHttp3Client::DoSendRequest() {
   headers[":protocol"] = "webtransport";
   headers["sec-webtransport-http3-draft02"] = "1";
   headers["origin"] = origin_.Serialize();
+  if (!application_protocols_.empty()) {
+    absl::StatusOr<std::string> protocols_header =
+        webtransport::SerializeSubprotocolRequestHeader(application_protocols_);
+    if (protocols_header.ok()) {
+      headers[webtransport::kSubprotocolRequestHeader] =
+          *std::move(protocols_header);
+    }
+  }
   stream->WriteHeaders(std::move(headers), /*fin=*/false, nullptr);
 
   web_transport_session_ = stream->web_transport();
@@ -815,8 +829,7 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid state reached: " << next_state;
-      break;
+      NOTREACHED() << "Invalid state reached: " << next_state;
   }
 }
 

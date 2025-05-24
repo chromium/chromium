@@ -31,9 +31,6 @@ class RendererClient;
 // implementation.
 //
 // All methods are pass-through except Initialize() and SetCdm().
-//
-// The caller must guarantee that DecryptingRenderer will never be initialized
-// with a |media_resource| of type MediaResource::Type::URL.
 class MEDIA_EXPORT DecryptingRenderer : public Renderer {
  public:
   DecryptingRenderer(
@@ -61,12 +58,9 @@ class MEDIA_EXPORT DecryptingRenderer : public Renderer {
   void SetPlaybackRate(double playback_rate) override;
   void SetVolume(float volume) override;
   base::TimeDelta GetMediaTime() override;
-  void OnSelectedVideoTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
-  void OnEnabledAudioTracksChanged(
-      const std::vector<DemuxerStream*>& enabled_tracks,
-      base::OnceClosure change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       std::vector<DemuxerStream*> enabled_tracks,
+                       base::OnceClosure change_completed_cb) override;
   RendererType GetRendererType() override;
 
   bool HasDecryptingMediaResourceForTesting() const;

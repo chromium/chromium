@@ -13,8 +13,7 @@ std::unique_ptr<StatusTray> StatusTray::Create() {
   return std::make_unique<StatusTrayMac>();
 }
 
-StatusTrayMac::StatusTrayMac() {
-}
+StatusTrayMac::StatusTrayMac() = default;
 
 std::unique_ptr<StatusIcon> StatusTrayMac::CreatePlatformStatusIcon(
     StatusIconType type,

@@ -36,5 +36,17 @@ blink::mojom::ModelStreamingResponseStatus AIUtils::ConvertModelExecutionError(
       return blink::mojom::ModelStreamingResponseStatus::kErrorDisabled;
     case ModelExecutionError::kCancelled:
       return blink::mojom::ModelStreamingResponseStatus::kErrorCancelled;
+    case ModelExecutionError::kResponseLowQuality:
+      return blink::mojom::ModelStreamingResponseStatus::
+          kErrorResponseLowQuality;
   }
+}
+
+// static
+int64_t AIUtils::NormalizeModelDownloadProgress(int64_t bytes_so_far,
+                                                int64_t total_bytes) {
+  double raw_progress_fraction =
+      bytes_so_far / static_cast<double>(total_bytes);
+
+  return raw_progress_fraction * AIUtils::kNormalizedDownloadProgressMax;
 }

@@ -15,7 +15,7 @@ class FindResultsTest : public EditingTestBase {
   static Vector<UChar> MakeBuffer(const UChar (&literal)[N]) {
     Vector<UChar> buffer;
     buffer.reserve(N);
-    buffer.Append(literal, N);
+    buffer.AppendSpan(base::span(literal));
     for (auto& ch : buffer) {
       if (ch == '_') {
         ch = 0;
@@ -60,6 +60,19 @@ TEST_F(FindResultsTest, MultipleCorpora) {
 
   Vector<unsigned> offsets = ResultOffsets(results);
   EXPECT_EQ((Vector<unsigned>{0u, 4u, 6u, 10u}), offsets);
+}
+
+TEST_F(FindResultsTest, AnIteratorReachesToEnd) {
+  Vector<UChar> buffer0 = MakeBuffer(u"foo fo__o");
+  Vector<UChar> buffer1 = MakeBuffer(u"foo __foo");
+  Vector<Vector<UChar>> extra_buffers = {buffer1};
+  String query(u"foo");
+  FindBuffer* find_buffer = nullptr;
+  FindResults results(find_buffer, &main_searcher_, buffer0, &extra_buffers,
+                      query, FindOptions());
+
+  Vector<unsigned> offsets = ResultOffsets(results);
+  EXPECT_EQ((Vector<unsigned>{0u, 4u, 6u}), offsets);
 }
 
 }  // namespace blink

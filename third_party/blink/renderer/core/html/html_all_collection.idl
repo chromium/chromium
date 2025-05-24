@@ -33,5 +33,9 @@
     readonly attribute unsigned long length;
     getter Element? (unsigned long index);
     [ImplementedAs=NamedGetter] getter (HTMLCollection or Element)? namedItem(DOMString name);
+
+    // `nameOrIndex` is a `DOMString` in the spec IDL, but taking `any` allows
+    // us to use v8's array index checker/converter, which is much faster than
+    // the WTF equivalent.
     [CallWith=Isolate, RaisesException] (HTMLCollection or Element)? item(optional any nameOrIndex);
 };

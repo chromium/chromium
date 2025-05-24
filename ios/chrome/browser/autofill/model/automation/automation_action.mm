@@ -10,7 +10,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/values.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_constants.h"
-#import "ios/chrome/browser/ui/infobars/infobar_constants.h"
+#import "ios/chrome/browser/infobars/ui_bundled/infobar_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -181,7 +181,6 @@
 // A shared flow across many actions, this waits for the target element to be
 // visible, scrolls it into view, then taps on it.
 - (void)tapOnTarget:(ElementSelector*)selector {
-
   // Wait for the element to be visible on the page.
   [ChromeEarlGrey waitForWebStateContainingElement:selector];
 

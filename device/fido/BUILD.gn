@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
@@ -11,6 +10,10 @@ component("fido") {
   # related authentication functions, with a limited amount of dependencies,
   # making it possible to build these on any platform, including iOS.
   sources = [
+    "attestation_object.cc",
+    "attestation_object.h",
+    "attestation_statement.cc",
+    "attestation_statement.h",
     "attested_credential_data.cc",
     "attested_credential_data.h",
     "authenticator_data.cc",
@@ -24,8 +27,12 @@ component("fido") {
     "fido_parsing_utils.cc",
     "fido_parsing_utils.h",
     "fido_types.h",
+    "opaque_attestation_statement.cc",
+    "opaque_attestation_statement.h",
     "p256_public_key.cc",
     "p256_public_key.h",
+    "prf_input.cc",
+    "prf_input.h",
     "public_key.cc",
     "public_key.h",
     "rsa_public_key.cc",
@@ -46,10 +53,6 @@ component("fido") {
 
   if (use_blink) {
     sources += [
-      "attestation_object.cc",
-      "attestation_object.h",
-      "attestation_statement.cc",
-      "attestation_statement.h",
       "authenticator_selection_criteria.cc",
       "authenticator_selection_criteria.h",
       "cable/cable_discovery_data.cc",
@@ -70,10 +73,6 @@ component("fido") {
       "json_request.cc",
       "json_request.h",
       "network_context_factory.h",
-      "opaque_attestation_statement.cc",
-      "opaque_attestation_statement.h",
-      "prf_input.cc",
-      "prf_input.h",
       "public_key_credential_descriptor.cc",
       "public_key_credential_descriptor.h",
       "public_key_credential_params.cc",
@@ -85,7 +84,6 @@ component("fido") {
     ]
 
     deps += [
-      "//build:chromeos_buildflags",
       "//components/apdu",
       "//components/trusted_vault",
       "//device/base",
@@ -105,10 +103,6 @@ component("fido") {
     # Android implementation of FIDO is delegated to GMSCore.
     if (!is_android) {
       sources += [
-        "aoa/android_accessory_device.cc",
-        "aoa/android_accessory_device.h",
-        "aoa/android_accessory_discovery.cc",
-        "aoa/android_accessory_discovery.h",
         "appid_exclude_probe_task.cc",
         "appid_exclude_probe_task.h",
         "attestation_statement_formats.cc",
@@ -163,6 +157,9 @@ component("fido") {
         "device_operation.h",
         "device_response_converter.cc",
         "device_response_converter.h",
+        "enclave/attestation.cc",
+        "enclave/attestation.h",
+        "enclave/attestation_report.h",
         "enclave/constants.cc",
         "enclave/constants.h",
         "enclave/enclave_authenticator.cc",
@@ -179,20 +176,6 @@ component("fido") {
         "enclave/transact.h",
         "enclave/types.cc",
         "enclave/types.h",
-        "enclave/verify/amd.cc",
-        "enclave/verify/amd.h",
-        "enclave/verify/attestation_report.cc",
-        "enclave/verify/attestation_report.h",
-        "enclave/verify/claim.cc",
-        "enclave/verify/claim.h",
-        "enclave/verify/endorsement.cc",
-        "enclave/verify/endorsement.h",
-        "enclave/verify/rekor.cc",
-        "enclave/verify/rekor.h",
-        "enclave/verify/utils.cc",
-        "enclave/verify/utils.h",
-        "enclave/verify/verifier.cc",
-        "enclave/verify/verifier.h",
         "fido_authenticator.cc",
         "fido_authenticator.h",
         "fido_device.cc",
@@ -258,7 +241,7 @@ component("fido") {
 
       deps += [
         "//components/sync/protocol:protocol",
-        "//device/fido/enclave/verify/proto:proto",
+        "//device/fido/enclave/proto:proto",
         "//services/device/public/cpp/hid",
         "//services/device/public/cpp/usb",
         "//services/device/public/mojom",
@@ -269,8 +252,6 @@ component("fido") {
 
     if (is_mac) {
       sources += [
-        "enclave/icloud_recovery_key_mac.h",
-        "enclave/icloud_recovery_key_mac.mm",
         "mac/authenticator.h",
         "mac/authenticator.mm",
         "mac/authenticator_config.h",
@@ -497,8 +478,6 @@ if (use_blink) {
 
     if (!is_android) {
       sources += [
-        "enclave/verify/test_utils.cc",
-        "enclave/verify/test_utils.h",
         "multiple_virtual_fido_device_factory.cc",
         "multiple_virtual_fido_device_factory.h",
         "virtual_fido_device_discovery.cc",

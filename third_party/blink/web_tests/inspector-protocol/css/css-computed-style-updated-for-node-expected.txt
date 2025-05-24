@@ -1,0 +1,4 @@
+Test CSS.trackComputedStyleUpdatesForNode method and CSS.computedStyleUpdated event
+Updated element on the page
+Received event for the tracked node
+

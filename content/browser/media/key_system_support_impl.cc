@@ -8,6 +8,7 @@
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/render_frame_host.h"
 
 namespace content {
@@ -19,8 +20,8 @@ namespace {
 bool IsValidKeySystemCapabilities(KeySystemCapabilities capabilities) {
   for (const auto& entry : capabilities) {
     auto& capability = entry.second;
-    if (!capability.sw_secure_capability.has_value() &&
-        !capability.hw_secure_capability.has_value()) {
+    if (!capability.sw_cdm_capability_or_status.has_value() &&
+        !capability.hw_cdm_capability_or_status.has_value()) {
       return false;
     }
   }
@@ -50,19 +51,40 @@ void KeySystemSupportImpl::SetGetKeySystemCapabilitiesUpdateCbForTesting(
 
 void KeySystemSupportImpl::Bind(
     mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
-  key_system_support_receivers_.Add(this, std::move(receiver));
+  // Only one receiver is allowed. This is not expected to happen. Renderers
+  // are expected to maintain one connection per RenderFrame.
+  if (key_system_support_receiver_.is_bound()) {
+    DVLOG(3) << __func__ << ": "
+             << std::string(media::mojom::KeySystemSupport::Name_)
+             << " receiver already bound";
+    //  Simply let the pending_receiver go out of scope here. Its destructor
+    //  will close the message pipe handle it holds. The remote end will
+    //  eventually detect the pipe closure, typically as a connection error.
+    return;
+  }
+
+  key_system_support_receiver_.Bind(std::move(receiver));
 }
 
-void KeySystemSupportImpl::AddObserver(
+void KeySystemSupportImpl::SetObserver(
     mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer) {
   DVLOG(3) << __func__;
 
-  auto id = observer_remotes_.Add(std::move(observer));
+  // Only one observer is allowed. This is not expected to happen. Renderers
+  // are expected to maintain one connection per RenderFrame.
+  if (observer_remote_.is_bound()) {
+    mojo::ReportBadMessage(
+        std::string(media::mojom::KeySystemSupportObserver::Name_) +
+        "::SetObserver observer already bound");
+    return;
+  }
+
+  observer_remote_.Bind(std::move(observer));
 
   // If `key_system_support_` is already available, notify the new observer
   // immediately. All observers will be notified if there are updates later.
   if (key_system_capabilities_.has_value()) {
-    observer_remotes_.Get(id)->OnKeySystemSupportUpdated(
+    observer_remote_->OnKeySystemSupportUpdated(
         key_system_capabilities_.value());
     return;
   }
@@ -82,7 +104,10 @@ void KeySystemSupportImpl::InitializePermissions() {
   auto* web_contents = WebContentsImpl::FromRenderFrameHostImpl(
       static_cast<RenderFrameHostImpl*>(&render_frame_host()));
   is_protected_content_allowed_ =
-      web_contents->GetRendererPrefs().enable_encrypted_media;
+      web_contents
+          ->GetRendererPrefs(static_cast<RenderViewHostImpl*>(
+              render_frame_host().GetRenderViewHost()))
+          .enable_encrypted_media;
 
 // Initialize permissions for platforms that supports
 // PROTECTED_MEDIA_IDENTIFIER.
@@ -94,7 +119,9 @@ void KeySystemSupportImpl::InitializePermissions() {
       ->RequestPermissionFromCurrentDocument(
           &render_frame_host(),
           PermissionRequestDescription(
-              blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER,
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::PROTECTED_MEDIA_IDENTIFIER),
               render_frame_host().HasTransientUserActivation()),
           base::BindOnce(&KeySystemSupportImpl::
                              OnProtectedMediaIdentifierPermissionInitialized,
@@ -218,8 +245,7 @@ void KeySystemSupportImpl::OnKeySystemCapabilitiesUpdated(
   // TODO(b/345822323): Filter out non permitted key systems.
   key_system_capabilities_ = std::move(key_system_capabilities);
 
-  for (auto& observer : observer_remotes_)
-    observer->OnKeySystemSupportUpdated(key_system_capabilities_.value());
+  observer_remote_->OnKeySystemSupportUpdated(key_system_capabilities_.value());
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(KeySystemSupportImpl);

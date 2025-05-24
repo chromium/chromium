@@ -19,11 +19,10 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/buildflags.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"
@@ -31,6 +30,7 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/safe_browsing/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -193,13 +193,15 @@ class BrowserProcessImpl : public BrowserProcess,
   void SetApplicationLocale(const std::string& actual_locale) override;
   DownloadStatusUpdater* download_status_updater() override;
   DownloadRequestLimiter* download_request_limiter() override;
-  BackgroundModeManager* background_mode_manager() override;
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  BackgroundModeManager* background_mode_manager() override;
   void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) override;
 #endif
   StatusTray* status_tray() override;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
+#endif
   subresource_filter::RulesetService* subresource_filter_ruleset_service()
       override;
   subresource_filter::RulesetService*
@@ -207,9 +209,7 @@ class BrowserProcessImpl : public BrowserProcess,
 
   StartupData* startup_data() override;
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   void StartAutoupdateTimer() override;
 #endif
 
@@ -224,8 +224,8 @@ class BrowserProcessImpl : public BrowserProcess,
   resource_coordinator::ResourceCoordinatorParts* resource_coordinator_parts()
       override;
 
-#if !BUILDFLAG(IS_ANDROID)
   SerialPolicyAllowedPorts* serial_policy_allowed_ports() override;
+#if !BUILDFLAG(IS_ANDROID)
   HidSystemTrayIcon* hid_system_tray_icon() override;
   UsbSystemTrayIcon* usb_system_tray_icon() override;
 #endif
@@ -240,6 +240,7 @@ class BrowserProcessImpl : public BrowserProcess,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
   GlobalFeatures* GetFeatures() override;
+  void CreateGlobalFeaturesForTesting() override;
 
  private:
   using WebRtcEventLogManager = webrtc_event_logging::WebRtcEventLogManager;
@@ -258,7 +259,9 @@ class BrowserProcessImpl : public BrowserProcess,
   void CreateNotificationUIManager();
   void CreatePrintPreviewDialogController();
   void CreateBackgroundPrintingManager();
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   void CreateSafeBrowsingService();
+#endif
   void CreateSubresourceFilterRulesetService();
   void CreateFingerprintingProtectionRulesetService();
   void CreateOptimizationGuideService();
@@ -269,6 +272,9 @@ class BrowserProcessImpl : public BrowserProcess,
 
   void ApplyDefaultBrowserPolicy();
 
+  // ApplicationLocaleStorage callback
+  void OnLocaleChanged(const std::string& new_locale);
+
   // Methods called to control our lifetime. The browser process can be "pinned"
   // to make sure it keeps running.
   void Pin();
@@ -276,8 +282,12 @@ class BrowserProcessImpl : public BrowserProcess,
 
   const raw_ptr<StartupData> startup_data_;
 
+  // Must be destroyed after |browser_policy_connector_|.
+  std::unique_ptr<gcm::GCMDriver> gcm_driver_;
+
   // Must be destroyed after |local_state_|.
   // Must be destroyed after |profile_manager_|.
+  // Must be destroyed before |gcm_driver_|.
   std::unique_ptr<policy::ChromeBrowserPolicyConnector> const
       browser_policy_connector_;
 
@@ -291,13 +301,14 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<signin::ActivePrimaryAccountsMetricsRecorder>
       active_primary_accounts_metrics_recorder_;
 
-  // |metrics_services_manager_| owns this.
-  raw_ptr<ChromeMetricsServicesManagerClient, AcrossTasksDanglingUntriaged>
-      metrics_services_manager_client_ = nullptr;
-
-  // Must be destroyed before |local_state_|.
+  // Must be destroyed before |local_state_| and after
+  // |metrics_services_manager_client_|.
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
+
+  // |metrics_services_manager_| owns this.
+  raw_ptr<ChromeMetricsServicesManagerClient> metrics_services_manager_client_ =
+      nullptr;
 
 #if BUILDFLAG(IS_ANDROID)
   // Must be destroyed before |local_state_|.
@@ -368,8 +379,10 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<BackgroundModeManager> background_mode_manager_;
 #endif
 
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   bool created_safe_browsing_service_ = false;
   scoped_refptr<safe_browsing::SafeBrowsingService> safe_browsing_service_;
+#endif
 
   bool created_subresource_filter_ruleset_service_ = false;
   std::unique_ptr<subresource_filter::RulesetService>
@@ -388,7 +401,7 @@ class BrowserProcessImpl : public BrowserProcess,
   std::unique_ptr<printing::PrintJobManager> print_job_manager_;
 #endif
 
-  std::string locale_;
+  base::CallbackListSubscription on_locale_changed_callback_subscription_;
 
   // Download status updates (like a changing application icon on dock/taskbar)
   // are global per-application. DownloadStatusUpdater does no work in the ctor
@@ -403,9 +416,7 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<BatteryMetrics> battery_metrics_;
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
   base::RepeatingTimer autoupdate_timer_;
 
   // Gets called by autoupdate timer to see if browser needs restart and can be
@@ -414,8 +425,7 @@ class BrowserProcessImpl : public BrowserProcess,
   bool IsRunningInBackground() const;
   void OnPendingRestartResult(bool is_update_pending_restart);
   void RestartBackgroundInstance();
-#endif  // BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) ||
-        // BUILDFLAG(IS_CHROMEOS_LACROS))
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
   // component updater is normally not used under ChromeOS due
   // to concerns over integrity of data shared between profiles,
@@ -447,19 +457,17 @@ class BrowserProcessImpl : public BrowserProcess,
 
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
 
-  std::unique_ptr<gcm::GCMDriver> gcm_driver_;
-
   std::unique_ptr<resource_coordinator::ResourceCoordinatorParts>
       resource_coordinator_parts_;
 
   std::unique_ptr<SecureOriginPrefsObserver> secure_origin_prefs_observer_;
   std::unique_ptr<SiteIsolationPrefsObserver> site_isolation_prefs_observer_;
 
+  std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
 #if !BUILDFLAG(IS_ANDROID)
   // Called to signal the process' main message loop to exit.
   base::OnceClosure quit_closure_;
 
-  std::unique_ptr<SerialPolicyAllowedPorts> serial_policy_allowed_ports_;
   std::unique_ptr<HidSystemTrayIcon> hid_system_tray_icon_;
   std::unique_ptr<UsbSystemTrayIcon> usb_system_tray_icon_;
 

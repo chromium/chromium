@@ -5,9 +5,8 @@
 #ifndef CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_
 #define CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_CONTROLLER_QUICK_ANSWERS_CONTROLLER_H_
 
+#include <memory>
 #include <string>
-
-#include "ui/gfx/geometry/rect.h"
 
 namespace quick_answers {
 class QuickAnswersClient;

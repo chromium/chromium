@@ -23,8 +23,7 @@ bool CanChangeToUrlForHistoryApi(const KURL& url,
   // host, or port components, then return false."
   if (url.Protocol() != document_url.Protocol() ||
       url.User() != document_url.User() || url.Pass() != document_url.Pass() ||
-      url.HostView() != document_url.HostView() ||
-      url.Port() != document_url.Port()) {
+      url.Host() != document_url.Host() || url.Port() != document_url.Port()) {
     return false;
   }
 

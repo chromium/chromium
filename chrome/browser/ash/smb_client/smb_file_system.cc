@@ -23,16 +23,14 @@ SmbFileSystem::~SmbFileSystem() = default;
 
 AbortCallback SmbFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::GetMetadata(
     const base::FilePath& entry_path,
     ProvidedFileSystemInterface::MetadataFieldMask fields,
     ProvidedFileSystemInterface::GetMetadataCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::GetActions(
@@ -48,29 +46,25 @@ AbortCallback SmbFileSystem::ExecuteAction(
     const std::vector<base::FilePath>& entry_paths,
     const std::string& action_id,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::ReadDirectory(
     const base::FilePath& directory_path,
     storage::AsyncFileUtil::ReadDirectoryCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::OpenFile(const base::FilePath& file_path,
                                       file_system_provider::OpenFileMode mode,
                                       OpenFileCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::CloseFile(
     int file_handle,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::ReadFile(int file_handle,
@@ -78,55 +72,48 @@ AbortCallback SmbFileSystem::ReadFile(int file_handle,
                                       int64_t offset,
                                       int length,
                                       ReadChunkReceivedCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::CreateDirectory(
     const base::FilePath& directory_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::CreateFile(
     const base::FilePath& file_path,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::DeleteEntry(
     const base::FilePath& entry_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::CopyEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::MoveEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::Truncate(
     const base::FilePath& file_path,
     int64_t length,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::WriteFile(
@@ -135,15 +122,13 @@ AbortCallback SmbFileSystem::WriteFile(
     int64_t offset,
     int length,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::FlushFile(
     int file_handle,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 AbortCallback SmbFileSystem::AddWatcher(
@@ -154,9 +139,7 @@ AbortCallback SmbFileSystem::AddWatcher(
     storage::AsyncFileUtil::StatusCallback callback,
     storage::WatcherManager::NotificationCallback notification_callback) {
   // Watchers are not supported.
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
-  return base::DoNothing();
+  NOTREACHED();
 }
 
 void SmbFileSystem::RemoveWatcher(
@@ -165,8 +148,7 @@ void SmbFileSystem::RemoveWatcher(
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
   // Watchers are not supported.
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(base::File::FILE_ERROR_INVALID_OPERATION);
+  NOTREACHED();
 }
 
 const file_system_provider::ProvidedFileSystemInfo&
@@ -176,29 +158,26 @@ SmbFileSystem::GetFileSystemInfo() const {
 
 file_system_provider::OperationRequestManager*
 SmbFileSystem::GetRequestManager() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 file_system_provider::Watchers* SmbFileSystem::GetWatchers() {
   // Watchers are not supported.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const file_system_provider::OpenedFiles& SmbFileSystem::GetOpenedFiles() const {
-  NOTREACHED_IN_MIGRATION();
-  return opened_files_;
+  NOTREACHED();
 }
 
 void SmbFileSystem::AddObserver(
     file_system_provider::ProvidedFileSystemObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SmbFileSystem::RemoveObserver(
     file_system_provider::ProvidedFileSystemObserver* observer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SmbFileSystem::SmbFileSystem::Notify(
@@ -209,11 +188,11 @@ void SmbFileSystem::SmbFileSystem::Notify(
         changes,
     const std::string& tag,
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SmbFileSystem::Configure(storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 base::WeakPtr<file_system_provider::ProvidedFileSystemInterface>
@@ -223,8 +202,7 @@ SmbFileSystem::GetWeakPtr() {
 
 std::unique_ptr<file_system_provider::ScopedUserInteraction>
 SmbFileSystem::StartUserInteraction() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace ash::smb_client

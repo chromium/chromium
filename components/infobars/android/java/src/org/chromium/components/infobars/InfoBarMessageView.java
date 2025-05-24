@@ -10,15 +10,17 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
- * Handles the additional message view responsibilities needed for InfoBars.
- *   - Makes the full text view clickable if there is just a single link.
+ * Handles the additional message view responsibilities needed for InfoBars. - Makes the full text
+ * view clickable if there is just a single link.
  */
+@NullMarked
 public class InfoBarMessageView extends TextViewWithClickableSpans {
     private boolean mExternalOnClickListenerSet;
-    private long mMotionEventDownTime;
 
     public InfoBarMessageView(Context context) {
         super(context);
@@ -49,7 +51,7 @@ public class InfoBarMessageView extends TextViewWithClickableSpans {
     }
 
     @Override
-    public final void setOnClickListener(OnClickListener l) {
+    public final void setOnClickListener(@Nullable OnClickListener l) {
         super.setOnClickListener(l);
         if (l != null) mExternalOnClickListenerSet = true;
     }

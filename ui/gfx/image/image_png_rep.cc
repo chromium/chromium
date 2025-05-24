@@ -28,8 +28,8 @@ gfx::Size ImagePNGRep::Size() const {
   // The only way to get the width and height of a raw PNG stream, at least
   // using the gfx::PNGCodec API, is to decode the whole thing.
   CHECK(raw_data.get());
-  SkBitmap bitmap;
-  if (!gfx::PNGCodec::Decode(raw_data->data(), raw_data->size(), &bitmap)) {
+  SkBitmap bitmap = gfx::PNGCodec::Decode(*raw_data);
+  if (bitmap.isNull()) {
     LOG(ERROR) << "Unable to decode PNG.";
     return gfx::Size(0, 0);
   }

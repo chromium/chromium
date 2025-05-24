@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_controller_impl.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
@@ -11,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check.h"
@@ -22,13 +22,15 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_data.h"
+#include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -47,6 +49,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/ozone/public/input_controller.h"
@@ -69,19 +72,42 @@ std::optional<KioskApp> WebAppById(const WebKioskAppManager& manager,
 
 std::optional<KioskApp> ChromeAppById(const KioskChromeAppManager& manager,
                                       std::string_view chrome_app_id) {
-  KioskChromeAppManager::App manager_app;
-  if (!manager.GetApp(std::string(chrome_app_id), &manager_app)) {
+  auto manager_app = manager.GetApp(std::string(chrome_app_id));
+  if (!manager_app.has_value()) {
     return std::nullopt;
   }
   return KioskApp(
-      KioskAppId::ForChromeApp(chrome_app_id, manager_app.account_id),
-      manager_app.name, manager_app.icon);
+      KioskAppId::ForChromeApp(chrome_app_id, manager_app->account_id),
+      manager_app->name, manager_app->icon);
+}
+
+std::optional<KioskApp> IsolatedWebAppById(const KioskIwaManager& manager,
+                                           const AccountId& account_id) {
+  const KioskIwaData* app_data = manager.GetApp(account_id);
+
+  if (!app_data) {
+    return std::nullopt;
+  }
+
+  return KioskApp(KioskAppId::ForIsolatedWebApp(account_id), app_data->name(),
+                  app_data->icon());
+}
+
+std::optional<KioskApp> ArcvmAppById(const KioskArcvmAppManager& manager,
+                                     const AccountId& account_id) {
+  const KioskArcvmAppData* data = manager.GetAppByAccountId(account_id);
+  if (!data) {
+    return std::nullopt;
+  }
+  return KioskApp(KioskAppId::ForArcvmApp(account_id), data->name(),
+                  data->icon());
 }
 
 KioskApp EmptyKioskApp(const KioskAppId& app_id) {
   switch (app_id.type) {
     case KioskAppType::kChromeApp:
     case KioskAppType::kIsolatedWebApp:
+    case KioskAppType::kArcvmApp:
       return KioskApp{app_id,
                       /*name=*/"",
                       /*icon=*/gfx::ImageSkia(),
@@ -98,7 +124,11 @@ KioskApp EmptyKioskApp(const KioskAppId& app_id) {
 }  // namespace
 
 KioskControllerImpl::KioskControllerImpl(
-    user_manager::UserManager* user_manager) {
+    PrefService& local_state,
+    user_manager::UserManager* user_manager)
+    : local_state_(local_state),
+      iwa_manager_(local_state),
+      arcvm_app_manager_(&local_state) {
   user_manager_observation_.Observe(user_manager);
 }
 
@@ -108,9 +138,7 @@ std::vector<KioskApp> KioskControllerImpl::GetApps() const {
   std::vector<KioskApp> apps;
   AppendWebApps(apps);
   AppendChromeApps(apps);
-  if (ash::features::IsIsolatedWebAppKioskEnabled()) {
-    AppendIsolatedWebApps(apps);
-  }
+  AppendIsolatedWebApps(apps);
   return apps;
 }
 
@@ -124,8 +152,9 @@ std::optional<KioskApp> KioskControllerImpl::GetAppById(
     case KioskAppType::kChromeApp:
       return ChromeAppById(chrome_app_manager_, app_id.app_id.value());
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/359774056): add IsolatedWebAppById.
-      return EmptyKioskApp(app_id);
+      return IsolatedWebAppById(iwa_manager_, app_id.account_id);
+    case KioskAppType::kArcvmApp:
+      return ArcvmAppById(arcvm_app_manager_, app_id.account_id);
   }
 }
 
@@ -135,10 +164,23 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
   if (const auto& web_account_id = web_app_manager_.GetAutoLaunchAccountId();
       web_account_id.is_valid()) {
     return WebAppById(web_app_manager_, web_account_id);
-  } else if (std::string chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
-             !chrome_app_id.empty()) {
+  }
+
+  if (const auto& chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
+      !chrome_app_id.empty()) {
     return ChromeAppById(chrome_app_manager_, chrome_app_id);
   }
+
+  if (const auto& iwa_account_id = iwa_manager_.GetAutoLaunchAccountId();
+      iwa_account_id.has_value()) {
+    return IsolatedWebAppById(iwa_manager_, *iwa_account_id);
+  }
+
+  if (const auto& arc_account_id = arcvm_app_manager_.GetAutoLaunchAccountId();
+      arc_account_id.is_valid()) {
+    return ArcvmAppById(arcvm_app_manager_, arc_account_id);
+  }
+
   return std::nullopt;
 }
 
@@ -151,7 +193,7 @@ void KioskControllerImpl::InitializeKioskSystemSession(
   CHECK(!system_session_.has_value())
       << "KioskSystemSession is already initialized";
 
-  system_session_.emplace(profile, kiosk_app_id, app_name);
+  system_session_.emplace(local_state_.get(), profile, kiosk_app_id, app_name);
 
   switch (kiosk_app_id.type) {
     case KioskAppType::kWebApp:
@@ -161,9 +203,13 @@ void KioskControllerImpl::InitializeKioskSystemSession(
       chrome_app_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361017701): add iwa_manager_.OnKioskSessionStarted.
-      NOTIMPLEMENTED();
+      iwa_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
+    case KioskAppType::kArcvmApp:
+      // TODO(crbug.com/418950414): Add background for Kiosk system session not
+      // getting created for ARCVM Kiosk. We might need Kiosk system session
+      // for ARCVM kiosk.
+      NOTREACHED();
   }
 }
 
@@ -196,6 +242,14 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
 void KioskControllerImpl::StartSessionAfterCrash(const KioskAppId& app,
                                                  Profile* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ash::switches::kPreventKioskAutolaunchForTesting)) {
+    LOG(WARNING) << "Skipping to launch " << app << " for "
+                 << profile->GetPath() << " due to --"
+                 << ash::switches::kPreventKioskAutolaunchForTesting
+                 << " flag.";
+    return;
+  }
   crash_recovery_launcher_ =
       std::make_unique<CrashRecoveryLauncher>(CHECK_DEREF(profile), app);
   crash_recovery_launcher_->Start(
@@ -277,9 +331,9 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
   // device-local account list here to extract the kiosk_app_id.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
-  const auto account = base::ranges::find(device_local_accounts,
-                                          kiosk_app_account_id.GetUserEmail(),
-                                          &policy::DeviceLocalAccount::user_id);
+  const auto account = std::ranges::find(device_local_accounts,
+                                         kiosk_app_account_id.GetUserEmail(),
+                                         &policy::DeviceLocalAccount::user_id);
   std::string kiosk_app_id;
   if (account != device_local_accounts.end()) {
     kiosk_app_id = account->kiosk_app_id;
@@ -291,6 +345,13 @@ void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitch(::switches::kForceAppMode);
+
+  // Disables installation of preinstalled apps in kiosk sessions as
+  // `UserManager::Observer::OnUserLoggedIn` is called before `Profile` creation
+  // and `WebAppProvider::Start`.
+  // TODO(crbug.com/385072112): Replace cmd line switch with proper filtering.
+  command_line->AppendSwitch(::switches::kDisableDefaultApps);
+
   // This happens in Web kiosks.
   if (!kiosk_app_id.empty()) {
     command_line->AppendSwitchASCII(::switches::kAppId, kiosk_app_id);

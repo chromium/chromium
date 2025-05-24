@@ -14,11 +14,11 @@
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
-#include "components/autofill/core/browser/data_model/payments_metadata.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/payments_metadata.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
@@ -33,6 +33,7 @@ using autofill::CreditCard;
 using autofill::CreditCardCloudTokenData;
 using autofill::PaymentsAutofillTable;
 using autofill::PaymentsCustomerData;
+using autofill::PaymentsDataManager;
 using autofill::PaymentsMetadata;
 using autofill::PersonalDataManager;
 using autofill::ServerCvc;
@@ -58,9 +59,9 @@ bool ListsMatch(int profile_a,
                 const std::vector<Item*>& list_a,
                 int profile_b,
                 const std::vector<Item*>& list_b) {
-  std::map<std::string, Item> list_a_map;
-  for (Item* item : list_a) {
-    list_a_map[item->server_id()] = *item;
+  std::map<std::string, const Item*> list_a_map;
+  for (const Item* item : list_a) {
+    list_a_map[item->server_id()] = item;
   }
 
   // This seems to be a transient state that will eventually be rectified by
@@ -72,16 +73,18 @@ bool ListsMatch(int profile_a,
     return false;
   }
 
-  for (Item* item : list_b) {
+  for (const Item* item : list_b) {
     if (!list_a_map.count(item->server_id())) {
       DVLOG(1) << "GUID " << item->server_id() << " not found in profile "
                << profile_b << ".";
       return false;
     }
-    Item* expected_item = &list_a_map[item->server_id()];
+    const Item* expected_item = list_a_map[item->server_id()];
     if (expected_item->Compare(*item) != 0 ||
-        expected_item->use_count() != item->use_count() ||
-        expected_item->use_date() != item->use_date()) {
+        expected_item->usage_history().use_count() !=
+            item->usage_history().use_count() ||
+        expected_item->usage_history().use_date() !=
+            item->usage_history().use_date()) {
       DVLOG(1) << "Mismatch in profile with server_id " << item->server_id()
                << ".";
       return false;
@@ -169,9 +172,9 @@ bool ListsMatch(int profile_a,
 
 bool WalletDataAndMetadataMatch(
     int profile_a,
-    const std::vector<CreditCard*>& server_cards_a,
+    const std::vector<const CreditCard*>& server_cards_a,
     int profile_b,
-    const std::vector<CreditCard*>& server_cards_b) {
+    const std::vector<const CreditCard*>& server_cards_b) {
   if (!ListsMatch(profile_a, server_cards_a, profile_b, server_cards_b)) {
     LogLists(server_cards_a, server_cards_b);
     return false;
@@ -246,6 +249,11 @@ void GetDataTypeStateOnDBSequence(syncer::DataType data_type,
 }  // namespace
 
 namespace wallet_helper {
+
+PaymentsDataManager* GetPaymentsDataManager(int index) {
+  PersonalDataManager* pdm = GetPersonalDataManager(index);
+  return pdm ? &pdm->payments_data_manager() : nullptr;
+}
 
 PersonalDataManager* GetPersonalDataManager(int index) {
   return autofill::PersonalDataManagerFactory::GetForBrowserContext(
@@ -479,7 +487,7 @@ void ExpectDefaultWalletCredentialValues(const CreditCard& card) {
   EXPECT_EQ(kDefaultCardCvc, card.cvc());
 }
 
-std::vector<CreditCard*> GetServerCreditCards(int profile) {
+std::vector<const CreditCard*> GetServerCreditCards(int profile) {
   WaitForPDMToRefresh(profile);
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
   return pdm->payments_data_manager().GetServerCreditCards();
@@ -489,21 +497,13 @@ std::vector<CreditCard*> GetServerCreditCards(int profile) {
 
 AutofillWalletChecker::AutofillWalletChecker(int profile_a, int profile_b)
     : profile_a_(profile_a), profile_b_(profile_b) {
-  wallet_helper::GetPersonalDataManager(profile_a_)
-      ->payments_data_manager()
-      .AddObserver(this);
-  wallet_helper::GetPersonalDataManager(profile_b_)
-      ->payments_data_manager()
-      .AddObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_a_)->AddObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_b_)->AddObserver(this);
 }
 
 AutofillWalletChecker::~AutofillWalletChecker() {
-  wallet_helper::GetPersonalDataManager(profile_a_)
-      ->payments_data_manager()
-      .RemoveObserver(this);
-  wallet_helper::GetPersonalDataManager(profile_b_)
-      ->payments_data_manager()
-      .RemoveObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_a_)->RemoveObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_b_)->RemoveObserver(this);
 }
 
 bool AutofillWalletChecker::Wait() {
@@ -517,13 +517,13 @@ bool AutofillWalletChecker::Wait() {
 
 bool AutofillWalletChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for matching autofill wallet cards and addresses";
-  autofill::PersonalDataManager* pdm_a =
-      wallet_helper::GetPersonalDataManager(profile_a_);
-  autofill::PersonalDataManager* pdm_b =
-      wallet_helper::GetPersonalDataManager(profile_b_);
-  return WalletDataAndMetadataMatch(
-      profile_a_, pdm_a->payments_data_manager().GetServerCreditCards(),
-      profile_b_, pdm_b->payments_data_manager().GetServerCreditCards());
+  autofill::PaymentsDataManager* paydm_a =
+      wallet_helper::GetPaymentsDataManager(profile_a_);
+  autofill::PaymentsDataManager* paydm_b =
+      wallet_helper::GetPaymentsDataManager(profile_b_);
+  return WalletDataAndMetadataMatch(profile_a_, paydm_a->GetServerCreditCards(),
+                                    profile_b_,
+                                    paydm_b->GetServerCreditCards());
 }
 
 void AutofillWalletChecker::OnPaymentsDataChanged() {
@@ -534,21 +534,13 @@ AutofillWalletMetadataSizeChecker::AutofillWalletMetadataSizeChecker(
     int profile_a,
     int profile_b)
     : profile_a_(profile_a), profile_b_(profile_b) {
-  wallet_helper::GetPersonalDataManager(profile_a_)
-      ->payments_data_manager()
-      .AddObserver(this);
-  wallet_helper::GetPersonalDataManager(profile_b_)
-      ->payments_data_manager()
-      .AddObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_a_)->AddObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_b_)->AddObserver(this);
 }
 
 AutofillWalletMetadataSizeChecker::~AutofillWalletMetadataSizeChecker() {
-  wallet_helper::GetPersonalDataManager(profile_a_)
-      ->payments_data_manager()
-      .RemoveObserver(this);
-  wallet_helper::GetPersonalDataManager(profile_b_)
-      ->payments_data_manager()
-      .RemoveObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_a_)->RemoveObserver(this);
+  wallet_helper::GetPaymentsDataManager(profile_b_)->RemoveObserver(this);
 }
 
 bool AutofillWalletMetadataSizeChecker::IsExitConditionSatisfied(

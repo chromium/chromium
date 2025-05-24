@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import '../shared_style.css.js';
 import './share_password_dialog_header.js';
 
@@ -23,7 +24,7 @@ export class SharePasswordLoadingDialogElement extends PolymerElement {
     return {dialogTitle: {type: String}};
   }
 
-  dialogTitle: string;
+  declare dialogTitle: string;
 }
 
 declare global {

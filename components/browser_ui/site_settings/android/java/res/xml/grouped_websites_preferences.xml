@@ -25,6 +25,11 @@ found in the LICENSE file.
     <PreferenceCategory
         android:key="related_sites"
         android:title="@string/website_settings_related_sites" />
+    <org.chromium.components.browser_ui.settings.ButtonPreference
+        android:key="related_sites_delete_data_button"
+        android:title="@string/site_settings_rws_delete_button_label"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="true" />
     <PreferenceCategory
         android:key="sites_in_group" />
     <org.chromium.components.browser_ui.settings.ButtonPreference

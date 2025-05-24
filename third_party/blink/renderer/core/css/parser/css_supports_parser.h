@@ -35,7 +35,7 @@ class CORE_EXPORT CSSSupportsParser {
  private:
   friend class CSSSupportsParserTest;
 
-  CSSSupportsParser(CSSParserImpl& parser) : parser_(parser) {}
+  explicit CSSSupportsParser(CSSParserImpl& parser) : parser_(parser) {}
 
   // Parsing functions follow, as defined by:
   // https://drafts.csswg.org/css-conditional-3/#typedef-supports-condition
@@ -61,6 +61,9 @@ class CORE_EXPORT CSSSupportsParser {
 
   // <supports-font-format-fn> = font-format( <font-format> )
   bool ConsumeFontFormatFn(CSSParserTokenStream& stream);
+
+  // <supports-at-rule-fn> = at-rule( <at-rule> [ ; <descriptor> : <value> ]? )
+  bool ConsumeAtRuleFn(CSSParserTokenStream& stream);
 
   // <supports-decl> = ( <declaration> )
   bool ConsumeSupportsDecl(CSSParserTokenStream&);

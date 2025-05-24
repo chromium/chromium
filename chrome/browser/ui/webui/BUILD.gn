@@ -2,14 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/common/features.gni")
 import("//chromeos/dbus/config/use_real_dbus_clients.gni")
-import("//components/metrics/generate_allowlist_from_histograms_file.gni")
+import("//components/safe_browsing/buildflags.gni")
+import("//components/signin/features.gni")
 import("//extensions/buildflags/buildflags.gni")
+import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 
 generate_allowlist_from_histograms_file("webui_url_hashes") {
   namespace = "webui_metrics"
-  input_xml_file = "//tools/metrics/histograms/enums.xml"
+  input_xml_file = "//tools/metrics/histograms/metadata/ui/enums.xml"
   tag = "enum"
   output_file = "webui_url_hashes.h"
   allow_list_name = "WebUIUrlHashes"
@@ -25,9 +27,21 @@ source_set("configs") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (!is_android) {
+    public_deps = [
+      "//chrome/browser/ui/tabs/tab_group_home",
+      "//chrome/browser/ui/webui/commerce",
+    ]
+  }
+
   deps = [
     ":webui",
+    "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/about",
+    "//chrome/browser/ui/webui/accessibility",
+    "//chrome/browser/ui/webui/autofill_and_password_manager_internals",
+    "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -38,44 +52,53 @@ source_set("configs") {
     "//third_party/abseil-cpp:absl",
   ]
 
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/webui/access_code_cast",
+      "//chrome/browser/ui/webui/app_service_internals",
+      "//chrome/browser/ui/webui/infobar_internals",
+      "//chrome/browser/ui/webui/new_tab_footer",
+      "//chrome/browser/ui/webui/privacy_sandbox",
+    ]
+
+    if (!is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/app_home" ]
+    }
+  }
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//chrome/browser/ui/webui/safe_browsing" ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui/signin",
+    ]
+
+    if (!is_chromeos) {
+      deps += [
+        "//chrome/browser/ui/webui/app_settings",
+        "//chrome/browser/ui/webui/signin:profile",
+        "//chrome/browser/ui/webui/whats_new",
+      ]
+    }
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ui/webui/ash/config",
+      "//chromeos/constants",
     ]
   }
 
-  # Includes Ash Chrome and Lacros Chrome
-  if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+  if (enable_dice_support) {
+    deps += [ "//chrome/browser/ui/webui/signin/signout_confirmation:signout_confirmation" ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/webui/ash/config" ]
-  }
-}
-
-source_set("webui_util") {
-  sources = [
-    "webui_util.cc",
-    "webui_util.h",
-  ]
-
-  public_deps = [
-    "//base",
-    "//ui/base",
-  ]
-
-  deps = [
-    "//build:chromeos_buildflags",
-    "//content/public/browser",
-    "//content/public/common",
-    "//services/network/public/mojom",
-    "//ui/resources",
-  ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
+  if (enable_glic) {
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 
@@ -83,6 +106,8 @@ source_set("webui") {
   sources = [
     "constrained_web_dialog_ui.cc",
     "constrained_web_dialog_ui.h",
+    "current_channel_logo.cc",
+    "current_channel_logo.h",
   ]
 
   sources += get_target_outputs(":webui_url_hashes")
@@ -94,10 +119,24 @@ source_set("webui") {
     "//chrome/common",
     "//extensions/buildflags",
   ]
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     deps += [ "//chrome/browser/extensions" ]
   }
   if (!is_android) {
     deps += [ "//ui/web_dialogs" ]
+  }
+}
+
+if (!is_android) {
+  source_set("webui_util") {
+    sources = [
+      "webui_embedding_context.cc",
+      "webui_embedding_context.h",
+    ]
+
+    deps = [
+      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/tabs:tabs_public",
+    ]
   }
 }

@@ -18,7 +18,7 @@ class ToolbarActionsBarBubbleViewsTest;
 namespace views {
 class ImageButton;
 class Label;
-}
+}  // namespace views
 
 class ToolbarActionsBarBubbleViews : public views::BubbleDialogDelegateView,
                                      public views::WidgetObserver {

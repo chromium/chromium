@@ -14,6 +14,6 @@ MockUserCloudPolicyStore::MockUserCloudPolicyStore()
                            base::FilePath(),
                            scoped_refptr<base::SequencedTaskRunner>()) {}
 
-MockUserCloudPolicyStore::~MockUserCloudPolicyStore() {}
+MockUserCloudPolicyStore::~MockUserCloudPolicyStore() = default;
 
 }  // namespace policy

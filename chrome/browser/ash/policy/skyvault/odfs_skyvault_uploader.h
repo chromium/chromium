@@ -12,13 +12,16 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
+#include "services/network/public/cpp/network_connection_tracker.h"
 
 namespace ash::cloud_upload {
 
 using policy::local_user_files::MigrationUploadError;
+using policy::local_user_files::UploadTrigger;
 
 // Uploads the file to Microsoft OneDrive and calls the `upload_callback_` with
 // the result of the file upload, which is when `OdfsSkyvaultUploader` goes out
@@ -30,15 +33,8 @@ class OdfsSkyvaultUploader
  public:
   using UploadDoneCallback =
       base::OnceCallback<void(storage::FileSystemURL,
-                              std::optional<MigrationUploadError>)>;
-  // Type of the file to be uploaded to OneDrive whether it's a downloaded file
-  // or a screencapture file, ...etc.
-  enum class FileType {
-    kDownload = 0,
-    kScreenCapture = 1,
-    kMigration = 2,
-    kMaxValue = kMigration,
-  };
+                              std::optional<MigrationUploadError>,
+                              base::FilePath upload_root_path)>;
 
   // Uploads the file at `path` to the OneDrive root directory.
   //
@@ -55,20 +51,15 @@ class OdfsSkyvaultUploader
   static base::WeakPtr<OdfsSkyvaultUploader> Upload(
       Profile* profile,
       const base::FilePath& path,
-      FileType file_type,
+      UploadTrigger trigger,
       base::RepeatingCallback<void(int64_t)> progress_callback,
       base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback,
       std::optional<const gfx::Image> thumbnail = std::nullopt);
 
-  // Uploads the file at `file_system_url` to OneDrive, placing it at the
-  // specified `target_path`.
+  // Uploads the file to OneDrive, placing it in the device-unique folder at the
+  // specified relative path.
   //
-  // Upon completion, invokes `upload_callback` with the following:
-  // * `MigrationUploadError error` - Indicates the type of error encountered
-  // during the upload, if any. See the `MigrationUploadError` enum for possible
-  // values.
-  // * `storage::FileSystemURL url` - The URL of the uploaded file on OneDrive.
-  // This will be empty if the upload failed.
+  // Invokes `upload_callback` upon completion.
   //
   // Optionally, periodically invokes the `progress_callback` during the upload
   // to provide progress updates in bytes transferred.
@@ -76,16 +67,17 @@ class OdfsSkyvaultUploader
   // Returns a weak pointer to the `OdfsSkyvaultUploader` object. This can be
   // used to cancel the upload before it completes.
   //
-  // Example: Uploading "example.txt" with a `target_path` of "Documents/Files"
-  // results in
-  // "<ODFS ROOT>/Documents/Files/example.txt" on OneDrive.
+  // Example: Uploading "example.txt" with a `relative_source_path` of
+  // "Documents/Files" and `upload_root` "ChromeOS Device 123" results in
+  // "<ODFS ROOT>/ChromeOS Device 123/Documents/Files/example.txt" on OneDrive.
   static base::WeakPtr<OdfsSkyvaultUploader> Upload(
       Profile* profile,
       const base::FilePath& path,
-      FileType file_type,
+      const base::FilePath& relative_source_path,
+      const std::string& upload_root,
+      UploadTrigger trigger,
       base::RepeatingCallback<void(int64_t)> progress_callback,
-      UploadDoneCallback upload_callback,
-      const base::FilePath& target_path);
+      UploadDoneCallback upload_callback);
 
   OdfsSkyvaultUploader(const OdfsSkyvaultUploader&) = delete;
   OdfsSkyvaultUploader& operator=(const OdfsSkyvaultUploader&) = delete;
@@ -94,13 +86,13 @@ class OdfsSkyvaultUploader
   base::WeakPtr<OdfsSkyvaultUploader> GetWeakPtr();
 
   // Should cancel the whole upload, if possible.
-  void Cancel();
+  virtual void Cancel();
 
  protected:
   OdfsSkyvaultUploader(Profile* profile,
                        int64_t id,
                        const storage::FileSystemURL& file_system_url,
-                       FileType file_type,
+                       UploadTrigger trigger,
                        base::RepeatingCallback<void(int64_t)> progress_callback,
                        std::optional<const gfx::Image> thumbnail);
   ~OdfsSkyvaultUploader() override;
@@ -113,16 +105,20 @@ class OdfsSkyvaultUploader
   virtual void RequestSignIn(
       base::OnceCallback<void(base::File::Error)> on_sign_in_cb);
 
-  raw_ptr<Profile> profile_;
-
- private:
-  friend base::RefCounted<OdfsSkyvaultUploader>;
-
   // Starts the upload flow.
-  void Run(UploadDoneCallback upload_callback);
+  virtual void Run(UploadDoneCallback upload_callback);
 
   void OnEndUpload(storage::FileSystemURL url,
                    std::optional<MigrationUploadError> error = std::nullopt);
+
+  raw_ptr<Profile> profile_;
+
+  // Absolute path to the device's upload root folder on Drive. This is
+  // populated when the upload is about to start.
+  base::FilePath upload_root_path_;
+
+ private:
+  friend base::RefCounted<OdfsSkyvaultUploader>;
 
   void GetODFSMetadataAndStartIOTask();
 
@@ -132,6 +128,9 @@ class OdfsSkyvaultUploader
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;
+
+  // Translates the status error into a MigrationUploadError.
+  void ProcessError(const ::file_manager::io_task::ProgressStatus& status);
 
   // Called when the mount response is received.
   void OnMountResponse(base::File::Error result);
@@ -152,8 +151,8 @@ class OdfsSkyvaultUploader
   // The url of the file to be uploaded.
   storage::FileSystemURL file_system_url_;
 
-  // The type of the file to be uploaded.
-  FileType file_type_;
+  // The event or action that initiated the file upload.
+  const UploadTrigger trigger_;
 
   // Progress callback repeatedly run with progress updates.
   base::RepeatingCallback<void(int64_t)> progress_callback_;
@@ -178,31 +177,68 @@ class OdfsSkyvaultUploader
 // - uploads file to a dedicated folder on OneDrive, and not to root
 // - invokes different sign-in process, that ensures only one notification is
 // TODO(aidazolic): Fix the instantiation.
-class OdfsMigrationUploader : public OdfsSkyvaultUploader {
+class OdfsMigrationUploader
+    : public OdfsSkyvaultUploader,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver {
  public:
+  using FactoryCallback =
+      base::RepeatingCallback<scoped_refptr<OdfsMigrationUploader>(
+          Profile*,
+          int64_t,
+          const storage::FileSystemURL&,
+          const base::FilePath&)>;
   static scoped_refptr<OdfsMigrationUploader> Create(
       Profile* profile,
       int64_t id,
       const storage::FileSystemURL& file_system_url,
-      const base::FilePath& target_path);
+      const base::FilePath& relative_source_path,
+      const std::string& upload_root);
 
- private:
+  // Sets a testing factory function, allowing the injection of mock
+  // OdfsMigrationUploader objects into the migration upload process.
+  static void SetFactoryForTesting(FactoryCallback factory);
+
+ protected:
   OdfsMigrationUploader(Profile* profile,
                         int64_t id,
                         const storage::FileSystemURL& file_system_url,
-                        const base::FilePath& target_path);
+                        const base::FilePath& relative_source_path,
+                        const std::string& upload_root);
   ~OdfsMigrationUploader() override;
 
+ private:
   // OdfsSkyvaultUploader:
+  void Run(UploadDoneCallback upload_callback) override;
   base::FilePath GetDestinationFolderPath(
       file_system_provider::ProvidedFileSystemInterface* file_system) override;
   void RequestSignIn(
       base::OnceCallback<void(base::File::Error)> on_sign_in_cb) override;
 
-  // Path in OneDrive to upload the file to.
-  base::FilePath target_path_;
+  // network::NetworkConnectionTracker::NetworkConnectionObserver:
+  void OnConnectionChanged(network::mojom::ConnectionType type) override;
+
+  // Starts the upload process after establishing network connection.
+  void RunInternal();
+
+  // Called when waiting for connection times out.
+  void OnReconnectionTimeout();
+
+  // Indicates whether there was no connection on starting the task.
+  bool waiting_for_connection_ = false;
+  // Time at which we started waiting for connection. Used for UMA.
+  std::optional<base::Time> connection_wait_start_time_;
+  // Ensures that we don't wait for connection indefinitely
+  base::OneShotTimer reconnection_timer_;
+
+  UploadDoneCallback upload_callback_;
+  // Part of the source path relative to MyFiles
+  const base::FilePath relative_source_path_;
+  // The name of the device-unique upload root folder on Drive
+  const std::string upload_root_;
 
   base::CallbackListSubscription subscription_;
+
+  base::WeakPtrFactory<OdfsMigrationUploader> weak_ptr_factory_{this};
 };
 
 }  // namespace ash::cloud_upload

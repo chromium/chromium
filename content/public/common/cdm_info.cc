@@ -17,7 +17,7 @@ std::string GetCdmInfoRobustnessName(CdmInfo::Robustness robustness) {
     case CdmInfo::Robustness::kSoftwareSecure:
       return "Software Secure";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace content

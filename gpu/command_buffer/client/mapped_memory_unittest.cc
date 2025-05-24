@@ -12,6 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <list>
 #include <memory>
 
@@ -201,7 +202,7 @@ TEST_F(MappedMemoryManagerTest, FreePendingToken) {
   CHECK(kAllocCount * kSize == kBufferSize * 2);
 
   // Allocate several buffers across multiple chunks.
-  void *pointers[kAllocCount];
+  std::array<void*, kAllocCount> pointers;
   for (unsigned int i = 0; i < kAllocCount; ++i) {
     int32_t id = -1;
     unsigned int offset = 0xFFFFFFFFu;

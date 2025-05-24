@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser.profiles;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Provider of the appropriate Profiles for the given application context. */
+@NullMarked
 public interface ProfileProvider {
     /** Return the original profile. */
-    @NonNull
     Profile getOriginalProfile();
 
     /**
@@ -20,8 +22,7 @@ public interface ProfileProvider {
      *     already exist. If false is passed and the profile has not yet been created, this will
      *     return null.
      */
-    @Nullable
-    Profile getOffTheRecordProfile(boolean createIfNeeded);
+    @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded);
 
     /** Return whether the OffTheRecord has been created. */
     boolean hasOffTheRecordProfile();
@@ -36,7 +37,7 @@ public interface ProfileProvider {
                 incognito
                         ? profileProvider.getOffTheRecordProfile(true)
                         : profileProvider.getOriginalProfile();
-        if (incognito != profile.isOffTheRecord()) {
+        if (incognito != assumeNonNull(profile).isOffTheRecord()) {
             throw new IllegalStateException("Incognito mismatch");
         }
         return profile;

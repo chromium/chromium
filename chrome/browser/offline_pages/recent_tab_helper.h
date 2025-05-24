@@ -15,7 +15,6 @@
 #include "components/offline_pages/core/snapshot_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;
@@ -56,7 +55,7 @@ class RecentTabHelper
   // Default implementation lives in .cc file, while tests provide an override.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual std::unique_ptr<OfflinePageArchiver> CreatePageArchiver(
         content::WebContents* web_contents) = 0;
     // There is no expectations that tab_id is always present.

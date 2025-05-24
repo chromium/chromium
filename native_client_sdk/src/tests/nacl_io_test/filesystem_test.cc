@@ -377,7 +377,7 @@ TEST(FilesystemTest, DISABLED_DevUrandom) {
   const int kSampleBatchSize = 1000;
   const int kTotalSamples = kSampleBatches * kSampleBatchSize;
 
-  int byte_count[256] = {0};
+  int byte_count[256] = {};
 
   unsigned char buffer[kSampleBatchSize];
   for (int batch = 0; batch < kSampleBatches; ++batch) {

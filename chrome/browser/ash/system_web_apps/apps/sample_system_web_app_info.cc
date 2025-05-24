@@ -15,8 +15,20 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
+SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
+    : ash::SystemWebAppDelegate(
+          ash::SystemWebAppType::SAMPLE,
+          "Sample",
+          GURL("chrome://sample-system-web-app/pwa.html"),
+          profile,
+          ash::OriginTrialsMap(
+              {{ash::GetOrigin("chrome://sample-system-web-app"),
+                {"Frobulate"}},
+               {ash::GetOrigin("chrome-untrusted://sample-system-web-app"),
+                {"Frobulate"}}})) {}
+
 std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForSampleSystemWebApp() {
+SampleSystemAppDelegate::GetWebAppInfo() const {
   GURL start_url = GURL(ash::kChromeUISampleSystemWebAppURL);
   auto info =
       web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
@@ -65,23 +77,6 @@ CreateWebAppInfoForSampleSystemWebApp() {
   return info;
 }
 
-SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
-    : ash::SystemWebAppDelegate(
-          ash::SystemWebAppType::SAMPLE,
-          "Sample",
-          GURL("chrome://sample-system-web-app/pwa.html"),
-          profile,
-          ash::OriginTrialsMap(
-              {{ash::GetOrigin("chrome://sample-system-web-app"),
-                {"Frobulate"}},
-               {ash::GetOrigin("chrome-untrusted://sample-system-web-app"),
-                {"Frobulate"}}})) {}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-SampleSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForSampleSystemWebApp();
-}
-
 bool SampleSystemAppDelegate::ShouldCaptureNavigations() const {
   return true;
 }
@@ -90,8 +85,9 @@ bool SampleSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
   return true;
 }
 
-Browser* SampleSystemAppDelegate::GetWindowForLaunch(Profile* profile,
-                                                     const GURL& url) const {
+ash::BrowserDelegate* SampleSystemAppDelegate::GetWindowForLaunch(
+    Profile* profile,
+    const GURL& url) const {
   return nullptr;
 }
 

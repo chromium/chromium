@@ -6,30 +6,32 @@
 
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/android/gurl_android.h"
+#include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/features/keyboard_accessory/internal/jni/AutofillKeyboardAccessoryViewBridge_jni.h"
-#include "url/gurl.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -56,11 +58,13 @@ bool AutofillKeyboardAccessoryViewImpl::Initialize() {
     return false;
   }
   ui::ViewAndroid* view_android = controller_->container_view();
-  if (!view_android)
+  if (!view_android) {
     return false;
+  }
   ui::WindowAndroid* window_android = view_android->GetWindowAndroid();
-  if (!window_android)
+  if (!window_android) {
     return false;  // The window might not be attached (yet or anymore).
+  }
   Java_AutofillKeyboardAccessoryViewBridge_init(
       base::android::AttachCurrentThread(), java_object_,
       reinterpret_cast<intptr_t>(this), window_android->GetJavaObject());
@@ -92,7 +96,9 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
     }
 
     std::u16string label = suggestion.main_text.value;
-    std::u16string sublabel = suggestion.minor_text.value;
+    std::u16string sublabel = base::JoinString(
+        base::ToVector(suggestion.minor_texts, &Suggestion::Text::value), u" ");
+
     if (std::vector<std::vector<autofill::Suggestion::Text>> suggestion_labels =
             controller_->GetSuggestionLabelsAt(i);
         !suggestion_labels.empty()) {
@@ -112,18 +118,20 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
     }
 
     auto* custom_icon_url =
-        absl::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
+        std::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
     java_suggestions.push_back(
         Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestion(
             env, label, sublabel, android_icon_id,
             base::to_underlying(suggestion.type),
             controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
-            suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
+            suggestion.iph_metadata.feature
+                ? suggestion.iph_metadata.feature->name
+                : "",
             suggestion.iph_description_text,
             custom_icon_url
                 ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
                 : url::GURLAndroid::EmptyGURL(env),
-            suggestion.apply_deactivated_style));
+            suggestion.HasDeactivatedStyle()));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_,
                                                 std::move(java_suggestions));

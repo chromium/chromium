@@ -67,7 +67,7 @@ class DebugLogsManagerTest : public testing::Test {
     bluez::BluezDBusManager::Shutdown();
   }
 
-  void InitFlossFakes() {
+  void InitFlossFakes(bool powered) {
     std::unique_ptr<floss::FlossDBusManagerSetter> floss_setter =
         floss::FlossDBusManager::GetSetterForTesting();
     floss_setter->SetFlossManagerClient(
@@ -77,7 +77,7 @@ class DebugLogsManagerTest : public testing::Test {
     floss_setter->SetFlossLoggingClient(
         std::make_unique<floss::FakeFlossLoggingClient>());
 
-    GetFakeManagerClient()->SetDefaultEnabled(true);
+    GetFakeManagerClient()->SetDefaultEnabled(powered);
   }
 
   void EnableDebugFlag() { is_debug_toggle_flag_enabled_ = true; }
@@ -124,7 +124,7 @@ class DebugLogsManagerTest : public testing::Test {
         floss::FlossDBusManager::Get()->GetLoggingClient());
   }
 
-  void InitializeAdapter(bool powered) {
+  void InitializeAdapter() {
     adapter_ = floss::BluetoothAdapterFloss::CreateAdapter();
 
     base::RunLoop run_loop;
@@ -138,7 +138,9 @@ class DebugLogsManagerTest : public testing::Test {
   }
 
   void SimulatePowered(bool powered) {
-    adapter_->NotifyAdapterPoweredChanged(powered);
+    GetFakeManagerClient()->SetAdapterEnabled(
+        GetFakeManagerClient()->GetDefaultAdapter(), powered,
+        base::DoNothing());
   }
 
   bool IsDebugEnabled() {
@@ -260,8 +262,8 @@ TEST_F(DebugLogsManagerTest, RetryUponSetVerboseLogsFailure) {
 TEST_F(DebugLogsManagerTest, CheckFlossUpdatesOnPowerOn) {
   base::test::SingleThreadTaskEnvironment task_environment;
 
-  InitFlossFakes();
-  InitializeAdapter(/*powered=*/false);
+  InitFlossFakes(/*powered=*/false);
+  InitializeAdapter();
 
   EnableDebugFlag();
   EnableFlossFlag();
@@ -278,6 +280,24 @@ TEST_F(DebugLogsManagerTest, CheckFlossUpdatesOnPowerOn) {
   SimulatePowered(/*powered=*/true);
   EXPECT_EQ(GetFakeFlossLoggingClient()->GetDebugEnabledForTesting(), true);
   SimulatePowered(/*powered=*/false);
+}
+
+TEST_F(DebugLogsManagerTest, CheckFlossAlreadyPoweredOn) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  InitFlossFakes(/*powered=*/true);
+  InitializeAdapter();
+
+  EnableDebugFlag();
+  EnableFlossFlag();
+  InitFeatures();
+
+  // Since we're already powered, debug logging should be set even without the
+  // AdapterPoweredChanged event.
+  EXPECT_EQ(GetFakeFlossLoggingClient()->GetDebugEnabledForTesting(), false);
+  InstantiateDebugManager(kTestGooglerEmail);
+  EXPECT_EQ(GetFakeFlossLoggingClient()->GetDebugEnabledForTesting(), true);
+  EXPECT_EQ(IsDebugEnabled(), true);
 }
 
 }  // namespace bluetooth

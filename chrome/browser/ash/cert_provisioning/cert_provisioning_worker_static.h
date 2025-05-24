@@ -53,6 +53,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   void MarkWorkerForReset() override;
   bool IsWaiting() const override;
   bool IsWorkerMarkedForReset() const override;
+  const std::string& GetProcessId() const override;
   const CertProfile& GetCertProfile() const override;
   const std::vector<uint8_t>& GetPublicKey() const override;
   CertProvisioningWorkerState GetState() const override;
@@ -60,7 +61,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   base::Time GetLastUpdateTime() const override;
   const std::optional<BackendServerError>& GetLastBackendServerError()
       const override;
-  std::string GetFailureMessage() const override;
+  std::string GetFailureMessageWithPii() const override;
 
  private:
   friend class CertProvisioningSerializer;
@@ -72,8 +73,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
                                 chromeos::platform_keys::Status status);
 
   void GenerateKeyForVa();
-  void OnGenerateKeyForVaDone(base::TimeTicks start_time,
-                              const attestation::TpmChallengeKeyResult& result);
+  void OnGenerateKeyForVaDone(const attestation::TpmChallengeKeyResult& result);
 
   void StartCsr();
   void OnStartCsrDone(policy::DeviceManagementStatus status,
@@ -88,7 +88,6 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
 
   void BuildVaChallengeResponse();
   void OnBuildVaChallengeResponseDone(
-      base::TimeTicks start_time,
       const attestation::TpmChallengeKeyResult& result);
 
   void RegisterKey();
@@ -100,8 +99,7 @@ class CertProvisioningWorkerStatic : public CertProvisioningWorker {
   void OnMarkKeyDone(chromeos::platform_keys::Status status);
 
   void SignCsr();
-  void OnSignCsrDone(base::TimeTicks start_time,
-                     std::vector<uint8_t> signature,
+  void OnSignCsrDone(std::vector<uint8_t> signature,
                      chromeos::platform_keys::Status status);
 
   void FinishCsr();

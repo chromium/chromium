@@ -6,8 +6,8 @@
 
 #import "base/files/file_path.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
 #import "ios/chrome/browser/download/model/vcard_tab_helper_delegate.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/apple/url_conversions.h"
 
@@ -22,7 +22,8 @@ VcardTabHelper::~VcardTabHelper() {
 }
 
 void VcardTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
-  DCHECK_EQ(task->GetMimeType(), kVcardMimeType);
+  DCHECK(task->GetMimeType() == kVcardMimeType ||
+         task->GetMimeType() == kXVcardMimeType);
   web::DownloadTask* task_ptr = task.get();
 
   // Add the task to the set of unfinished tasks before calling
@@ -36,8 +37,9 @@ void VcardTabHelper::Download(std::unique_ptr<web::DownloadTask> task) {
 void VcardTabHelper::OnDownloadUpdated(web::DownloadTask* updated_task) {
   auto iterator = tasks_.find(updated_task);
   DCHECK(iterator != tasks_.end());
-  if (!updated_task->IsDone())
+  if (!updated_task->IsDone()) {
     return;
+  }
 
   // Extract the std::unique_ptr<> from the std::set<>.
   auto node = tasks_.extract(iterator);
@@ -57,5 +59,3 @@ void VcardTabHelper::OnDownloadDataRead(std::unique_ptr<web::DownloadTask> task,
   DCHECK(task);
   [delegate_ openVcardFromData:data];
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(VcardTabHelper)

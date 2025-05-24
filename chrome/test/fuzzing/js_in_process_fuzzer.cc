@@ -83,13 +83,18 @@ void JsInProcessFuzzer::SetUpOnMainThread() {
 
 base::CommandLine::StringVector
 JsInProcessFuzzer::GetChromiumCommandLineArguments() {
+#if BUILDFLAG(IS_FUZZILLI)
+  char template_str[] = "/tmp/fuzzilli_tmp/XXXXXX";
+  char* path_dir = mkdtemp(template_str);
+  std::string user_data_dir = "--user-data-dir=" + std::string(path_dir);
+#endif
   return {
       FILE_PATH_LITERAL("--js-flags='--jit-fuzzing --allow-natives-syntax "
                         "--expose-gc --fuzzing --future --harmony'"),
 #if BUILDFLAG(IS_FUZZILLI)
       // This was caused by some issues with disks filling up fast, because
       // Fuzzilli restarts the binary very frequently.
-      FILE_PATH_LITERAL("--user-data-dir=/tmp/fuzzilli_tmp"),
+      user_data_dir,
 #endif
   };
 }

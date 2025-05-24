@@ -30,7 +30,7 @@ const UChar32 kOverBraceCodePoint = 0x23DE;
 const UChar32 kVerticalArrow = 0x295C;
 const UChar32 kHorizontalArrow = 0x295A;
 PLATFORM_EXPORT void retrieveGlyphForStretchyOperators(
-    const blink::Font operatorsWoff,
+    const blink::Font* operatorsWoff,
     Vector<UChar32>& verticalGlyphs,
     Vector<UChar32>& horizontalGlyphs);
 

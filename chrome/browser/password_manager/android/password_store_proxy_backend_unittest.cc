@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -76,11 +77,11 @@ bool FilterNoUrl(const GURL& gurl) {
 }
 
 MATCHER_P(PasswordChangesAre, expectations, "") {
-  if (absl::holds_alternative<PasswordStoreBackendError>(arg)) {
+  if (std::holds_alternative<PasswordStoreBackendError>(arg)) {
     return false;
   }
 
-  auto changes = absl::get<PasswordChanges>(arg);
+  auto changes = std::get<PasswordChanges>(arg);
   if (!changes.has_value()) {
     return false;
   }
@@ -285,8 +286,9 @@ TEST_F(PasswordStoreProxyBackendBaseTest, BuiltInBackendClearedOnSyncInit) {
   EnablePasswordSync();
 
   EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
-  EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync(
-                                      _, base::Time(), base::Time::Max(), _));
+  EXPECT_CALL(built_in_backend(),
+              RemoveLoginsCreatedBetweenAsync(_, base::Time(),
+                                              base::Time::Max(), _, _));
   proxy_backend().OnSyncServiceInitialized(sync_service());
 }
 
@@ -338,8 +340,8 @@ TEST_F(PasswordStoreProxyBackendBaseTest,
 
   EXPECT_CALL(android_backend(), OnSyncServiceInitialized(sync_service()));
   EXPECT_CALL(built_in_backend(), RemoveLoginsCreatedBetweenAsync(
-                                      _, base::Time(), base::Time::Max(), _))
-      .WillOnce(base::test::RunOnceCallback<3>(change_list));
+                                      _, base::Time(), base::Time::Max(), _, _))
+      .WillOnce(base::test::RunOnceCallback<4>(change_list));
   proxy_backend().OnSyncServiceInitialized(sync_service());
 
   histogram_tester.ExpectTotalCount(kStatusMetric, 1);
@@ -393,7 +395,7 @@ class PasswordStoreProxyBackendTest
       // The login DB should be cleared for healthy syncing users.
       EXPECT_CALL(built_in_backend(),
                   RemoveLoginsCreatedBetweenAsync(_, base::Time(),
-                                                  base::Time::Max(), _));
+                                                  base::Time::Max(), _, _));
     }
 
     EXPECT_CALL(android_backend(), InitBackend);
@@ -525,35 +527,6 @@ TEST_P(PasswordStoreProxyBackendTest, UseBothBackendsToRemoveLoginAsyncIfUPM) {
 }
 
 TEST_P(PasswordStoreProxyBackendTest,
-       UseBothBackendsToRemoveLoginsByURLAndTimeAsyncIfUPM) {
-  base::Time kStart = base::Time::FromTimeT(111111);
-  base::Time kEnd = base::Time::FromTimeT(22222222);
-  base::MockCallback<PasswordChangesOrErrorReply> mock_reply;
-  PasswordForm form = CreateTestForm();
-  PasswordStoreChangeList change_list;
-  change_list.push_back(PasswordStoreChange(Type::REMOVE, form));
-  EXPECT_CALL(mock_reply,
-              Run(VariantWith<PasswordChanges>(Optional(change_list))));
-
-  EXPECT_CALL(main_backend(),
-              RemoveLoginsByURLAndTimeAsync(_, _, Eq(kStart), Eq(kEnd), _, _))
-      .WillOnce(WithArg<5>(
-          Invoke([&change_list](PasswordChangesOrErrorReply reply) -> void {
-            std::move(reply).Run(change_list);
-          })));
-
-  // The shadow backend should only be called to remove logins if the main
-  // backend is the android backend, to ensure the login db passwords are
-  // also removed.
-  EXPECT_CALL(shadow_backend(),
-              RemoveLoginsByURLAndTimeAsync(_, _, Eq(kStart), Eq(kEnd), _, _))
-      .Times(GetParam().android_is_main_backend ? 1 : 0);
-  proxy_backend().RemoveLoginsByURLAndTimeAsync(
-      FROM_HERE, base::BindRepeating(&FilterNoUrl), kStart, kEnd,
-      base::NullCallback(), mock_reply.Get());
-}
-
-TEST_P(PasswordStoreProxyBackendTest,
        UseBothBackendsToRemoveLoginsCreatedBetweenAsyncIfUPM) {
   base::Time kStart = base::Time::FromTimeT(111111);
   base::Time kEnd = base::Time::FromTimeT(22222222);
@@ -564,16 +537,16 @@ TEST_P(PasswordStoreProxyBackendTest,
               Run(VariantWith<PasswordChanges>(Optional(change_list))));
 
   EXPECT_CALL(main_backend(),
-              RemoveLoginsCreatedBetweenAsync(_, Eq(kStart), Eq(kEnd), _))
-      .WillOnce(WithArg<3>(
+              RemoveLoginsCreatedBetweenAsync(_, Eq(kStart), Eq(kEnd), _, _))
+      .WillOnce(WithArg<4>(
           Invoke([&change_list](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(change_list);
           })));
   EXPECT_CALL(shadow_backend(),
-              RemoveLoginsCreatedBetweenAsync(_, Eq(kStart), Eq(kEnd), _))
+              RemoveLoginsCreatedBetweenAsync(_, Eq(kStart), Eq(kEnd), _, _))
       .Times(GetParam().android_is_main_backend ? 1 : 0);
-  proxy_backend().RemoveLoginsCreatedBetweenAsync(FROM_HERE, kStart, kEnd,
-                                                  mock_reply.Get());
+  proxy_backend().RemoveLoginsCreatedBetweenAsync(
+      FROM_HERE, kStart, kEnd, base::NullCallback(), mock_reply.Get());
 }
 
 TEST_P(PasswordStoreProxyBackendTest,

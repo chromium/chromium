@@ -22,7 +22,7 @@ class CORE_EXPORT SizesAttributeParser {
  public:
   SizesAttributeParser(MediaValues*,
                        const String&,
-                       const ExecutionContext*,
+                       ExecutionContext*,
                        const HTMLImageElement* = nullptr);
 
   bool IsAuto();
@@ -36,7 +36,7 @@ class CORE_EXPORT SizesAttributeParser {
   float EffectiveSizeDefaultValue();
 
   MediaValues* media_values_{};
-  const ExecutionContext* execution_context_{};
+  ExecutionContext* execution_context_{};
   float size_{};
   bool size_was_set_{};
   bool is_valid_{};

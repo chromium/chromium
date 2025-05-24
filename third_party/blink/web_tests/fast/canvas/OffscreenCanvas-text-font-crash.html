@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<iframe id="target"></iframe>
+<script>
+promise_test(async () => {
+  await new Promise(resolve => { window.onload = resolve; });
+  const offscreen = new target.contentWindow.OffscreenCanvas(100, 100);
+  const context = offscreen.getContext('2d');
+  target.remove();
+  context.fontKerning = 'normal';
+  // Pass if no crash.
+}, 'crbug.com/401422727: Don\'t crash by font operations in a detached frame');
+</script>

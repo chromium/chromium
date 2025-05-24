@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("internal_debug_pages_disabled") {
+  sources = [
+    "internal_debug_pages_disabled_ui.cc",
+    "internal_debug_pages_disabled_ui.h",
+  ]
+
+  public_deps = [ "//content/public/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common",
+    "//components/resources",
+    "//components/strings",
+    "//components/webui/chrome_urls",
+    "//content/public/common",
+    "//ui/base",
+    "//ui/webui",
+    "//url",
+  ]
+}

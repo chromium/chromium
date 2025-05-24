@@ -108,21 +108,21 @@ InterpolationValue CSSFontSizeInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSFontSizeInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  DCHECK(state);
-
   InterpolableValue* result = InterpolableLength::MaybeConvertCSSValue(value);
   if (result)
     return InterpolationValue(result);
 
-  if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
-    return MaybeConvertKeyword(identifier_value->GetValueID(), *state,
+  if (const auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
+    return MaybeConvertKeyword(identifier_value->GetValueID(), state,
                                conversion_checkers);
   }
 
-  if (auto* system_font = DynamicTo<cssvalue::CSSPendingSystemFontValue>(value))
-    return ConvertFontSize(system_font->ResolveFontSize(&state->GetDocument()));
+  if (const auto* system_font =
+          DynamicTo<cssvalue::CSSPendingSystemFontValue>(value)) {
+    return ConvertFontSize(system_font->ResolveFontSize(&state.GetDocument()));
+  }
 
   return nullptr;
 }

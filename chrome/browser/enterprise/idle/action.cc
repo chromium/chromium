@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/idle/action.h"
 
+#include <algorithm>
 #include <cstring>
 #include <utility>
 
@@ -12,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
@@ -31,7 +31,6 @@
 #else
 #include "chrome/browser/enterprise/idle/dialog_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/idle_bubble.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
@@ -45,7 +44,7 @@ namespace {
 bool ProfileHasBrowsers(const Profile* profile) {
   DCHECK(profile);
   profile = profile->GetOriginalProfile();
-  return base::ranges::any_of(
+  return std::ranges::any_of(
       *BrowserList::GetInstance(), [profile](Browser* browser) {
         return browser->profile()->GetOriginalProfile() == profile;
       });
@@ -57,7 +56,7 @@ class ShowDialogAction : public Action {
  public:
   explicit ShowDialogAction(base::flat_set<ActionType> action_types)
       : Action(static_cast<int>(ActionType::kShowDialog)),
-        action_types_(action_types) {}
+        action_types_(std::move(action_types)) {}
 
   void Run(Profile* profile, Continuation continuation) override {
     base::TimeDelta timeout =
@@ -79,9 +78,7 @@ class ShowDialogAction : public Action {
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
-    NOTREACHED_IN_MIGRATION();  // Should only be called in
-                                // ActionFactory::Build().
-    return false;
+    NOTREACHED();  // Should only be called in ActionFactory::Build().
   }
 
  private:
@@ -176,7 +173,7 @@ class ClearBrowsingDataAction : public Action,
       base::flat_set<ActionType> action_types,
       content::BrowsingDataRemover* browsing_data_remover_for_testing)
       : Action(static_cast<int>(ActionType::kClearBrowsingHistory)),
-        action_types_(action_types),
+        action_types_(std::move(action_types)),
         browsing_data_remover_for_testing_(browsing_data_remover_for_testing) {}
 
   ~ClearBrowsingDataAction() override = default;
@@ -322,10 +319,10 @@ class ShowBubbleAction : public Action {
         action_types_(std::move(action_types)) {}
 
   void Run(Profile* profile, Continuation continuation) override {
-    Browser* browser = chrome::FindBrowserWithActiveWindow();
+    Browser* browser = BrowserList::GetInstance()->GetLastActive();
     profile->GetPrefs()->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup,
                                     true);
-    if (browser && browser->profile() == profile &&
+    if (browser && browser->IsActive() && browser->profile() == profile &&
         !base::Contains(action_types_, ActionType::kCloseBrowsers)) {
       // A browser for this profile has focus. Show the bubble there.
       ShowIdleBubble(
@@ -415,7 +412,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
 
       default:
         // TODO(crbug.com/40222234): Perform validation in the `PolicyHandler`.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -426,7 +423,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  bool needs_dialog = base::ranges::any_of(actions, [profile](const auto& a) {
+  bool needs_dialog = std::ranges::any_of(actions, [profile](const auto& a) {
     return a->ShouldNotifyUserOfPendingDestructiveAction(profile);
   });
   if (needs_dialog) {

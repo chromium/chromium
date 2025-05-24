@@ -9,7 +9,7 @@
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
@@ -25,7 +25,6 @@ import '../icons.html.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
@@ -74,30 +73,26 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      plusAddressIcon_: {
-        type: String,
+      userEligibleForAutofillAi_: {
+        type: Boolean,
         value() {
-          // <if expr="_google_chrome">
-          return 'settings-internal:plus-address-logo-medium';
-          // </if>
-          // <if expr="not _google_chrome">
-          return 'settings:email';
-          // </if>
+          return loadTimeData.getBoolean('userEligibleForAutofillAi');
         },
       },
 
-      autofillPredictionImprovementsEnabled_: {
+      autofillAiAvailable_: {
         type: Boolean,
         value() {
-          return loadTimeData.getBoolean(
-              'autofillPredictionImprovementsEnabled');
+          return loadTimeData.getBoolean('showAutofillAiControl');
         },
       },
     };
   }
 
-  private passkeyFilter_: string;
-  private focusConfig_: Map<string, string>;
+  declare private passkeyFilter_: string;
+  declare private userEligibleForAutofillAi_: boolean;
+  declare private autofillAiAvailable_: boolean;
+  declare private focusConfig_: Map<string, string>;
 
   /**
    * Shows the manage addresses sub page.
@@ -122,16 +117,11 @@ export class SettingsAutofillPageElement extends
         PasswordManagerPage.PASSWORDS);
   }
 
-  private onPlusAddressClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('plusAddressManagementUrl'));
-  }
-
   /**
-   * Shows the prediction improvements settings sub page.
+   * Shows the Autofill AI settings sub page.
    */
-  private onAutofillPredictionImprovementsClick_() {
-    Router.getInstance().navigateTo(routes.AUTOFILL_PREDICTION_IMPROVEMENTS);
+  private onAutofillAiClick_() {
+    Router.getInstance().navigateTo(routes.AUTOFILL_AI);
   }
 
   /**

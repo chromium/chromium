@@ -14,11 +14,9 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_registry_cache.h"
 #include "chrome/browser/ash/app_list/app_list_test_util.h"
 #include "chrome/browser/ash/app_list/chrome_app_list_item.h"
-#include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/test/test_utils.h"
@@ -50,8 +48,8 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
   void CreateBuilder(bool guest_mode) {
     ResetBuilder();  // Destroy any existing builder in the correct order.
     scoped_feature_list_.InitAndEnableFeature(ash::features::kPromiseIcons);
-    testing_profile()->SetGuestSession(guest_mode);
-    app_service_test_.SetUp(profile());
+    SetGuestSessionOnProfile(guest_mode);
+    app_service_test_.SetUp(GetAppServiceProfile());
     model_updater_ = std::make_unique<FakeAppListModelUpdater>(
         /*profile=*/nullptr, /*reorder_delegate=*/nullptr);
     controller_ = std::make_unique<test::TestAppListControllerDelegate>();
@@ -63,8 +61,8 @@ class AppServicePromiseAppModelBuilderTest : public app_list::AppListTestBase {
         base::BindRepeating(
             &AppServicePromiseAppModelBuilderTest::InitAppPosition,
             weak_ptr_factory_.GetWeakPtr()));
-    builder_->Initialize(nullptr, profile(), model_updater_.get());
-    cache_ = apps::AppServiceProxyFactory::GetForProfile(profile())
+    builder_->Initialize(nullptr, GetAppServiceProfile(), model_updater_.get());
+    cache_ = apps::AppServiceProxyFactory::GetForProfile(GetAppServiceProfile())
                  ->PromiseAppRegistryCache();
   }
 

@@ -18,18 +18,22 @@
 #include "net/base/isolation_info.h"
 #include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_source.h"
+#include "net/socket/socket_tag.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/cpp/fetch_retry_options.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/mojom/accept_ch_frame_observer.mojom.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -49,6 +53,8 @@ namespace network {
 //
 // Note: Please revise EqualsForTesting accordingly on any updates to this
 // struct.
+//
+// LINT.IfChange(ResourceRequest)
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // Typemapped to network.mojom.TrustedUrlRequestParams, see comments there
   // for details of each field.
@@ -58,7 +64,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   struct COMPONENT_EXPORT(NETWORK_CPP_BASE) TrustedParams {
     TrustedParams();
     ~TrustedParams();
-    // TODO(altimin): Make this move-only to avoid cloning mojo interfaces.
+    // TODO(crbug.com/332706093): Make this move-only to avoid cloning mojo
+    // interfaces.
     TrustedParams(const TrustedParams& params);
     TrustedParams& operator=(const TrustedParams& other);
     TrustedParams(TrustedParams&& other);
@@ -76,6 +83,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer;
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+    mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer;
     mojom::ClientSecurityStatePtr client_security_state;
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
     mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>
@@ -171,6 +180,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   mojom::RedirectMode redirect_mode = mojom::RedirectMode::kFollow;
   // Exposed as Request.integrity in Service Workers
   std::string fetch_integrity;
+  // Used to populate `Accept-Signatures`
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+  std::vector<std::string> expected_public_keys;
   mojom::RequestDestination destination = mojom::RequestDestination::kEmpty;
   mojom::RequestDestination original_destination =
       mojom::RequestDestination::kEmpty;
@@ -189,8 +201,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   bool upgrade_if_insecure = false;
   bool is_revalidating = false;
   std::optional<base::UnguessableToken> throttling_profile_id;
-  net::HttpRequestHeaders custom_proxy_pre_cache_headers;
-  net::HttpRequestHeaders custom_proxy_post_cache_headers;
   std::optional<base::UnguessableToken> fetch_window_id;
   std::optional<std::string> devtools_request_id;
   std::optional<std::string> devtools_stack_id;
@@ -207,12 +217,22 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // If not null, the network service will not advertise any stream types
   // (via Accept-Encoding) that are not listed. Also, it will not attempt
   // decoding any non-listed stream types.
-  std::optional<std::vector<net::SourceStream::SourceType>>
+  std::optional<std::vector<net::SourceStreamType>>
       devtools_accepted_stream_types;
   std::optional<net::NetLogSource> net_log_create_info;
   std::optional<net::NetLogSource> net_log_reference_info;
+
+  // Used internally by the network service. Should not be modified by external
+  // callers, which should pass in address space of the request initiator via
+  // the ClientSecurityState includde either in URLLoaderFactoryParams or
+  // ResourceRequest::TrustedParams.
+  //
+  // See
+  // https://source.chromium.org/chromium/chromium/src/+/main:services/network/public/mojom/url_request.mojom
+  // for more details.
   mojom::IPAddressSpace target_ip_address_space =
       mojom::IPAddressSpace::kUnknown;
+
   net::StorageAccessApiStatus storage_access_api_status =
       net::StorageAccessApiStatus::kNone;
   network::mojom::AttributionSupport attribution_reporting_support =
@@ -221,9 +241,22 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
       mojom::AttributionReportingEligibility::kUnset;
   bool shared_dictionary_writer_enabled = false;
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
+  std::optional<base::UnguessableToken> keepalive_token;
   bool is_ad_tagged = false;
+  bool client_side_content_decoding_enabled = false;
   std::optional<base::UnguessableToken> prefetch_token;
+  net::SocketTag socket_tag;
+
+  // Whether this request is allowed to register device bound sessions
+  // or accept challenges for device bound sessions (e.g. due to an
+  // origin trial).
+  bool allows_device_bound_session_registration = false;
+
+  std::optional<network::PermissionsPolicy> permissions_policy;
+
+  std::optional<network::FetchRetryOptions> fetch_retry_options;
 };
+// LINT.ThenChange(//services/network/prefetch_matches.cc)
 
 // This does not accept |kDefault| referrer policy.
 COMPONENT_EXPORT(NETWORK_CPP_BASE)

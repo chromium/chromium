@@ -139,9 +139,10 @@ void MediaControlPopupMenuElement::SetIsWanted(bool wanted) {
     if (event_listener_)
       event_listener_->StopListening();
     if (popoverOpen()) {
-      HidePopoverInternal(HidePopoverFocusBehavior::kNone,
-                          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
-                          nullptr);
+      HidePopoverInternal(
+          /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
+          HidePopoverTransitionBehavior::kNoEventsNoWaiting,
+          /*exception_state=*/nullptr);
     }
   }
 }

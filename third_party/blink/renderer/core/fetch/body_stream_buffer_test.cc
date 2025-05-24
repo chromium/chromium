@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
 
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -181,12 +177,8 @@ TEST_F(BodyStreamBufferTest, TeeFromHandleMadeFromStream) {
 
   auto* underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(scope.GetScriptState());
-  auto* chunk1 = DOMUint8Array::Create(2);
-  chunk1->Data()[0] = 0x41;
-  chunk1->Data()[1] = 0x42;
-  auto* chunk2 = DOMUint8Array::Create(2);
-  chunk2->Data()[0] = 0x55;
-  chunk2->Data()[1] = 0x58;
+  auto* chunk1 = DOMUint8Array::Create(std::array<uint8_t, 2>{0x41, 0x42});
+  auto* chunk2 = DOMUint8Array::Create(std::array<uint8_t, 2>{0x55, 0x58});
 
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       scope.GetScriptState(), underlying_source, 0);
@@ -426,8 +418,7 @@ TEST_F(BodyStreamBufferTest, LoadBodyStreamBufferAsArrayBuffer) {
   EXPECT_TRUE(buffer->IsStreamLocked());
   EXPECT_TRUE(buffer->IsStreamDisturbed());
   ASSERT_TRUE(array_buffer);
-  EXPECT_EQ("hello", String(static_cast<const char*>(array_buffer->Data()),
-                            array_buffer->ByteLength()));
+  EXPECT_EQ("hello", String(array_buffer->ByteSpan()));
 }
 
 class BodyStreamBufferBlobTest : public BodyStreamBufferTest {
@@ -636,7 +627,7 @@ TEST_F(BodyStreamBufferTest, SourceShouldBeCanceledWhenCanceled) {
   ScriptValue reason(scope.GetIsolate(),
                      V8String(scope.GetIsolate(), "reason"));
   EXPECT_FALSE(consumer->IsCancelled());
-  buffer->Cancel(reason.V8Value(), ASSERT_NO_EXCEPTION);
+  buffer->Cancel(reason.V8Value());
   EXPECT_TRUE(consumer->IsCancelled());
 }
 
@@ -811,7 +802,7 @@ TEST_F(BodyStreamBufferTest,
 TEST_F(BodyStreamBufferTest, CachedMetadataHandler) {
   V8TestingScope scope;
   Persistent<BodyStreamBuffer> buffer;
-  WeakPersistent<ScriptCachedMetadataHandler> weak_handler;
+  WeakPersistent<CachedMetadataHandler> weak_handler;
   {
     BytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
         scope.GetDocument().GetTaskRunner(TaskType::kNetworking));

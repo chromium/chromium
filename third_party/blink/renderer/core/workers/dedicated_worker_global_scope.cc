@@ -40,7 +40,6 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "net/storage_access_api/status.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
@@ -302,7 +301,6 @@ void DedicatedWorkerGlobalScope::FetchAndRunClassicScript(
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
     const v8_inspector::V8StackTraceId& stack_id) {
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   DCHECK(!IsContextPaused());
   TRACE_EVENT("blink.worker",
               "DedicatedWorkerGlobalScope::FetchAndRunClassicScript",
@@ -351,15 +349,12 @@ void DedicatedWorkerGlobalScope::FetchAndRunModuleScript(
     std::unique_ptr<PolicyContainer> policy_container,
     const FetchClientSettingsObjectSnapshot& outside_settings_object,
     WorkerResourceTimingNotifier& outside_resource_timing_notifier,
-    network::mojom::CredentialsMode credentials_mode,
-    RejectCoepUnsafeNone reject_coep_unsafe_none) {
+    network::mojom::CredentialsMode credentials_mode) {
   TRACE_EVENT("blink.worker",
               "DedicatedWorkerGlobalScope::FetchAndRunModuleScript",
               "module_url_record", module_url_record);
   // TODO(crbug.com/1177199): SetPolicyContainer once we passed down policy
   // container from DedicatedWorkerHost
-
-  reject_coep_unsafe_none_ = reject_coep_unsafe_none;
 
   if (worker_main_script_load_params) {
     SetWorkerMainScriptLoadingParametersForModules(
@@ -385,13 +380,9 @@ void DedicatedWorkerGlobalScope::FetchAndRunModuleScript(
 }
 
 bool DedicatedWorkerGlobalScope::IsOffMainThreadScriptFetchDisabled() {
-  // The top-level dedicated worker script is loaded on the main thread when the
-  // script type is classic and PlzDedicatedWorker (off-the-main-thread script
-  // fetch) is disabled.
-  // TODO(https://crbug.com/835717): Remove this function after dedicated
+  // TODO(https://crbug.com/835717): Remove this function now that dedicated
   // workers support off-the-main-thread script fetch by default.
-  return GetScriptType() == mojom::blink::ScriptType::kClassic &&
-         !base::FeatureList::IsEnabled(features::kPlzDedicatedWorker);
+  return false;
 }
 
 const String DedicatedWorkerGlobalScope::name() const {
@@ -400,11 +391,11 @@ const String DedicatedWorkerGlobalScope::name() const {
 
 void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
                                              const ScriptValue& message,
-                                             HeapVector<ScriptValue>& transfer,
+                                             HeapVector<ScriptObject> transfer,
                                              ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
   if (!transfer.empty())
-    options->setTransfer(transfer);
+    options->setTransfer(std::move(transfer));
   postMessage(script_state, message, options, exception_state);
 }
 
@@ -452,7 +443,6 @@ void DedicatedWorkerGlobalScope::postMessage(ScriptState* script_state,
 void DedicatedWorkerGlobalScope::DidReceiveResponseForClassicScript(
     WorkerClassicScriptLoader* classic_script_loader) {
   DCHECK(IsContextThread());
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   probe::DidReceiveScriptResponse(this, classic_script_loader->Identifier());
 }
 
@@ -461,7 +451,6 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
     WorkerClassicScriptLoader* classic_script_loader,
     const v8_inspector::V8StackTraceId& stack_id) {
   DCHECK(IsContextThread());
-  DCHECK(base::FeatureList::IsEnabled(features::kPlzDedicatedWorker));
   TRACE_EVENT("blink.worker",
               "DedicatedWorkerGlobalScope::DidFetchClassicScript");
   TRACE_EVENT_NESTABLE_ASYNC_END0(
@@ -542,11 +531,8 @@ DedicatedWorkerObjectProxy& DedicatedWorkerGlobalScope::WorkerObjectProxy()
 
 void DedicatedWorkerGlobalScope::UpdateBackForwardCacheDisablingFeatures(
     BlockingDetails details) {
-  // `back_forward_cache_controller_host_` might not be bound when non-
-  // PlzDedicatedWorker is used. Non-PlzDedicatedWorker will be removed in near
-  // future.
-  // TODO(hajimehoshi): Remove this 'if' branch after non-PlzDedicatedWorker is
-  // removed.
+  // TODO(crbug.com/40093136): Remove this 'if' branch now that
+  // PlzDedicatedWorker has been removed.
   if (!back_forward_cache_controller_host_.is_bound()) {
     return;
   }

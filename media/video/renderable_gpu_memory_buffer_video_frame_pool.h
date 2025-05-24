@@ -24,6 +24,7 @@ class Size;
 namespace gpu {
 class ClientSharedImage;
 class GpuMemoryBufferManager;
+struct SharedImageCapabilities;
 class SharedImageInterface;
 struct SyncToken;
 }  // namespace gpu
@@ -45,40 +46,23 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
   // chosen for testing.
   class Context {
    public:
-    // Allocate a GpuMemoryBuffer.
-    virtual std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-        const gfx::Size& size,
-        gfx::BufferFormat format,
-        gfx::BufferUsage usage) = 0;
-
-    // Create a SharedImage representation with format `si_format` of a
-    // GpuMemoryBuffer allocated by this interface.
+    // Create a Mappable SharedImage with format `si_format` and `buffer_usage`
+    // provided to this interface.
     // Return a ClientSharedImage pointer. Populate `sync_token`.
-    virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
-        gfx::GpuMemoryBuffer* gpu_memory_buffer,
-        const viz::SharedImageFormat& si_format,
-        const gfx::ColorSpace& color_space,
-        GrSurfaceOrigin surface_origin,
-        SkAlphaType alpha_type,
-        gpu::SharedImageUsageSet usage,
-        gpu::SyncToken& sync_token) = 0;
-
-    // Used to create a Mappable shared image.
     virtual scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
         const gfx::Size& size,
         gfx::BufferUsage buffer_usage,
         const viz::SharedImageFormat& si_format,
         const gfx::ColorSpace& color_space,
-        GrSurfaceOrigin surface_origin,
-        SkAlphaType alpha_type,
         gpu::SharedImageUsageSet usage,
         gpu::SyncToken& sync_token) = 0;
 
     // Destroy a SharedImage created by this interface.
     virtual void DestroySharedImage(
         const gpu::SyncToken& sync_token,
-        scoped_refptr<gpu::ClientSharedImage> shared_image,
-        const bool is_mappable_si_enabled) = 0;
+        scoped_refptr<gpu::ClientSharedImage> shared_image) = 0;
+
+    virtual const gpu::SharedImageCapabilities& GetCapabilities() = 0;
 
     virtual ~Context() = default;
   };
@@ -96,10 +80,6 @@ class MEDIA_EXPORT RenderableGpuMemoryBufferVideoFramePool {
   virtual scoped_refptr<VideoFrame> MaybeCreateVideoFrame(
       const gfx::Size& coded_size,
       const gfx::ColorSpace& color_space) = 0;
-
-  // Returns whether MappableSI is enabled for
-  // RenderableGpuMemoryBufferVideoFramePool. This method is only used by tests.
-  virtual bool IsMappableSIEnabledForTesting() const = 0;
 
   virtual ~RenderableGpuMemoryBufferVideoFramePool() = default;
 };

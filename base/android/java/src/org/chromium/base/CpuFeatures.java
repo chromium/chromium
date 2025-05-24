@@ -7,6 +7,8 @@ package org.chromium.base;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 // The only purpose of this class is to allow sending CPU properties
 // from the browser process to sandboxed renderer processes. This is
 // needed because sandboxed processes cannot, on ARM, query the kernel
@@ -20,6 +22,7 @@ import org.jni_zero.NativeMethods;
 // library. The exact CPU features bits are never used in Java so
 // there is no point in duplicating their definitions here.
 //
+@NullMarked
 @JNINamespace("base::android")
 public abstract class CpuFeatures {
     /** Return the number of CPU Cores on the device. */

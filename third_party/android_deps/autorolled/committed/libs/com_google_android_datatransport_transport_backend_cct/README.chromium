@@ -1,0 +1,15 @@
+Name: transport-backend-cct
+Short Name: transport-backend-cct
+URL: https://developers.google.com/android/guides/setup
+Version: 4.0.0
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Datatransport transport backend cct pulled in via gradle.
+
+Local Modifications:
+No modifications.

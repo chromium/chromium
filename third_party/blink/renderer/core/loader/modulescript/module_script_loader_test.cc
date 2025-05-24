@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
 
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -59,17 +60,21 @@ class TestModuleScriptLoaderClient final
     visitor->Trace(module_script_);
   }
 
-  void NotifyNewSingleModuleFinished(ModuleScript* module_script) override {
+  void NotifyNewSingleModuleFinished(ModuleScript* module_script,
+                                     ModuleImportPhase import_phase) override {
     was_notify_finished_ = true;
     module_script_ = module_script;
+    import_phase_ = import_phase;
   }
 
   bool WasNotifyFinished() const { return was_notify_finished_; }
   ModuleScript* GetModuleScript() { return module_script_.Get(); }
+  ModuleImportPhase GetModuleImportPhase() const { return import_phase_; }
 
  private:
   bool was_notify_finished_ = false;
   Member<ModuleScript> module_script_;
+  ModuleImportPhase import_phase_;
 };
 
 class ModuleScriptLoaderTestModulator final : public DummyModulator {
@@ -131,7 +136,13 @@ class ModuleScriptLoaderTest : public PageTestBase {
                             TestModuleScriptLoaderClient*);
   void TestFetchInvalidURL(ModuleScriptCustomFetchType,
                            TestModuleScriptLoaderClient*);
-  void TestFetchURL(ModuleScriptCustomFetchType, TestModuleScriptLoaderClient*);
+  void TestFetchURL(
+      ModuleScriptCustomFetchType,
+      TestModuleScriptLoaderClient*,
+      const char*,
+      const char*,
+      const char*,
+      ModuleImportPhase import_phase = ModuleImportPhase::kEvaluation);
   void TestFetchDataURLJSONModule(ModuleScriptCustomFetchType custom_fetch_type,
                                   TestModuleScriptLoaderClient* client);
   void TestFetchDataURLInvalidJSONModule(
@@ -237,10 +248,11 @@ void ModuleScriptLoaderTest::TestFetchDataURL(
     TestModuleScriptLoaderClient* client) {
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
   KURL url("data:text/javascript,export default 'grapes';");
-  ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
-      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
-      custom_fetch_type, registry, client);
+  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
+                                url, ModuleType::kJavaScriptOrWasm),
+                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
+                            GetModulator(), custom_fetch_type, registry,
+                            client);
 }
 
 void ModuleScriptLoaderTest::TestFetchDataURLJSONModule(
@@ -417,10 +429,11 @@ void ModuleScriptLoaderTest::TestInvalidSpecifier(
     TestModuleScriptLoaderClient* client) {
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
   KURL url("data:text/javascript,import 'invalid';export default 'grapes';");
-  ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
-      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
-      custom_fetch_type, registry, client);
+  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
+                                url, ModuleType::kJavaScriptOrWasm),
+                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
+                            GetModulator(), custom_fetch_type, registry,
+                            client);
 }
 
 TEST_F(ModuleScriptLoaderTest, InvalidSpecifier) {
@@ -461,10 +474,11 @@ void ModuleScriptLoaderTest::TestFetchInvalidURL(
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
   KURL url;
   EXPECT_FALSE(url.IsValid());
-  ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
-      fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
-      custom_fetch_type, registry, client);
+  ModuleScriptLoader::Fetch(ModuleScriptFetchRequest::CreateForTest(
+                                url, ModuleType::kJavaScriptOrWasm),
+                            fetcher_, ModuleGraphLevel::kTopLevelModuleFetch,
+                            GetModulator(), custom_fetch_type, registry,
+                            client);
 }
 
 TEST_F(ModuleScriptLoaderTest, FetchInvalidURL) {
@@ -496,15 +510,20 @@ TEST_F(ModuleScriptLoaderTest, FetchInvalidURL_OnWorklet) {
 
 void ModuleScriptLoaderTest::TestFetchURL(
     ModuleScriptCustomFetchType custom_fetch_type,
-    TestModuleScriptLoaderClient* client) {
-  KURL url("https://example.test/module.js");
+    TestModuleScriptLoaderClient* client,
+    const char* url_string,
+    const char* module_name,
+    const char* mime_type,
+    ModuleImportPhase import_phase) {
+  KURL url(url_string);
   url_test_helpers::RegisterMockedURLLoad(
-      url, test::CoreTestDataPath("module.js"), "text/javascript",
+      url, test::CoreTestDataPath(module_name), WebString(mime_type),
       platform_->GetURLLoaderMockFactory());
 
   auto* registry = MakeGarbageCollected<ModuleScriptLoaderRegistry>();
   ModuleScriptLoader::Fetch(
-      ModuleScriptFetchRequest::CreateForTest(url, ModuleType::kJavaScript),
+      ModuleScriptFetchRequest::CreateForTest(
+          url, ModuleType::kJavaScriptOrWasm, import_phase),
       fetcher_, ModuleGraphLevel::kTopLevelModuleFetch, GetModulator(),
       custom_fetch_type, registry, client);
 }
@@ -513,7 +532,9 @@ TEST_F(ModuleScriptLoaderTest, FetchURL) {
   InitializeForDocument();
   TestModuleScriptLoaderClient* client =
       MakeGarbageCollected<TestModuleScriptLoaderClient>();
-  TestFetchURL(ModuleScriptCustomFetchType::kNone, client);
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/module.js", "module.js",
+               "text/javascript");
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleScriptLoader unexpectedly finished synchronously.";
@@ -530,7 +551,9 @@ TEST_F(ModuleScriptLoaderTest, FetchURL_OnWorklet) {
   InitializeForWorklet();
   TestModuleScriptLoaderClient* client =
       MakeGarbageCollected<TestModuleScriptLoaderClient>();
-  TestFetchURL(ModuleScriptCustomFetchType::kWorkletAddModule, client);
+  TestFetchURL(ModuleScriptCustomFetchType::kWorkletAddModule, client,
+               "https://example.test/module.js", "module.js",
+               "text/javascript");
 
   EXPECT_FALSE(client->WasNotifyFinished())
       << "ModuleScriptLoader unexpectedly finished synchronously.";
@@ -539,6 +562,79 @@ TEST_F(ModuleScriptLoaderTest, FetchURL_OnWorklet) {
 
   EXPECT_TRUE(client->WasNotifyFinished());
   EXPECT_TRUE(client->GetModuleScript());
+}
+
+TEST_F(ModuleScriptLoaderTest, FetchWasmURL) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kJavaScriptSourcePhaseImports},
+      /*disabled_features =*/{});
+  InitializeForDocument();
+  TestModuleScriptLoaderClient* client =
+      MakeGarbageCollected<TestModuleScriptLoaderClient>();
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/exported-names.wasm",
+               "exported-names.wasm", "application/wasm");
+
+  EXPECT_FALSE(client->WasNotifyFinished())
+      << "ModuleScriptLoader unexpectedly finished synchronously.";
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client->WasNotifyFinished(); }));
+  ModuleScript* module_script = client->GetModuleScript();
+  EXPECT_TRUE(module_script);
+  EXPECT_TRUE(module_script->IsWasmModuleRecord());
+}
+
+TEST_F(ModuleScriptLoaderTest, FetchWasmURLWrongMimeType) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kJavaScriptSourcePhaseImports},
+      /*disabled_features =*/{});
+  InitializeForDocument();
+  TestModuleScriptLoaderClient* client =
+      MakeGarbageCollected<TestModuleScriptLoaderClient>();
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/exported-names.wasm",
+               "exported-names.wasm", "text/javascript",
+               ModuleImportPhase::kSource);
+
+  EXPECT_FALSE(client->WasNotifyFinished())
+      << "ModuleScriptLoader unexpectedly finished synchronously.";
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client->WasNotifyFinished(); }));
+  ModuleScript* module_script = client->GetModuleScript();
+  EXPECT_TRUE(module_script);
+  EXPECT_TRUE(module_script->HasParseError());
+  EXPECT_EQ(client->GetModuleImportPhase(), ModuleImportPhase::kSource);
+}
+
+TEST_F(ModuleScriptLoaderTest, FetchWasmURLInvalidModule) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kJavaScriptSourcePhaseImports},
+      /*disabled_features =*/{});
+  InitializeForDocument();
+  TestModuleScriptLoaderClient* client =
+      MakeGarbageCollected<TestModuleScriptLoaderClient>();
+  TestFetchURL(ModuleScriptCustomFetchType::kNone, client,
+               "https://example.test/invalid-module.wasm",
+               "invalid-module.wasm", "application/wasm",
+               ModuleImportPhase::kSource);
+
+  EXPECT_FALSE(client->WasNotifyFinished())
+      << "ModuleScriptLoader unexpectedly finished synchronously.";
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return client->WasNotifyFinished(); }));
+  ModuleScript* module_script = client->GetModuleScript();
+  EXPECT_TRUE(module_script);
+  EXPECT_TRUE(module_script->HasParseError());
+  EXPECT_EQ(client->GetModuleImportPhase(), ModuleImportPhase::kSource);
 }
 
 }  // namespace blink

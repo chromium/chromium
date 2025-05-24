@@ -257,10 +257,11 @@ void RecordCapability(size_t& call_count,
                       base::Value::Dict capability) {
   ++call_count;
   base::Value::Dict* capabilities = capability.FindDict(kSettingCapabilities);
-  if (capabilities)
+  if (capabilities) {
     capability_out = std::move(*capabilities);
-  else
+  } else {
     capability_out.clear();
+  }
 }
 
 // Used as a callback to StartPrint in tests.
@@ -293,7 +294,7 @@ std::string RefCountedMemoryToString(
 // Fake PwgRasterConverter used in the tests.
 class FakePwgRasterConverter : public PwgRasterConverter {
  public:
-  FakePwgRasterConverter() {}
+  FakePwgRasterConverter() = default;
 
   FakePwgRasterConverter(const FakePwgRasterConverter&) = delete;
   FakePwgRasterConverter& operator=(const FakePwgRasterConverter&) = delete;
@@ -421,16 +422,18 @@ class FakePrinterProviderAPI : public PrinterProviderAPI {
 
   const PrinterProviderPrintJob* GetNextPendingPrintJob() const {
     EXPECT_GT(pending_print_count(), 0u);
-    if (pending_print_count() == 0)
+    if (pending_print_count() == 0) {
       return nullptr;
+    }
     return &pending_print_requests_.front().job;
   }
 
   void TriggerNextPrintCallback(const std::string& result) {
     ASSERT_GT(pending_print_count(), 0u);
     base::Value result_value;
-    if (result != kPrintRequestSuccess)
+    if (result != kPrintRequestSuccess) {
       result_value = base::Value(result);
+    }
     std::move(pending_print_requests_.front().callback).Run(result_value);
     pending_print_requests_.pop();
   }

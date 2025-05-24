@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MALL_SYSTEM_WEB_APP_INFO_H_
 #define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MALL_SYSTEM_WEB_APP_INFO_H_
 
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 
 class MallSystemAppDelegate : public ash::SystemWebAppDelegate {
  public:
@@ -16,6 +16,7 @@ class MallSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool IsAppEnabled() const override;
   std::vector<std::string> GetAppIdsToUninstallAndReplace() const override;
   bool ShouldCaptureNavigations() const override;
+  gfx::Size GetMinimumWindowSize() const override;
 };
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_MALL_SYSTEM_WEB_APP_INFO_H_

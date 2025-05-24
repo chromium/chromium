@@ -21,8 +21,7 @@ void UpdateProfileAttributesWhenSignout(Profile* profile,
                                         ProfileManager* profile_manager);
 
 // Returns the device DM token if the user is affiliated. For most of platforms,
-// this means DM token for CBCM. For Lacros, it means the DM token used for
-// device management from Ash.
+// this means DM token for CBCM.
 // The function is used as `CloudPolicyClient::DeviceDMTokenCallback()`.
 std::string GetDeviceDMTokenIfAffiliated(
     const std::vector<std::string>& user_affiliation_ids);

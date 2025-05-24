@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "media/gpu/chromeos/image_processor.h"
 
 #include <sys/mman.h>
@@ -22,8 +23,8 @@
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/test_shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -231,12 +232,11 @@ YuvSubsampling ToYuvSubsampling(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUY2:
       return YuvSubsampling::kYuv422;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid format " << format;
-      return YuvSubsampling::kYuv444;
+      NOTREACHED() << "Invalid format " << format;
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
   switch (format) {
     case PIXEL_FORMAT_NV12:
@@ -246,7 +246,7 @@ bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
       return false;
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(USE_V4L2_CODEC)
 bool SupportsNecessaryGLExtension() {
@@ -274,14 +274,16 @@ bool SupportsNecessaryGLExtension() {
   return ret;
 }
 
-scoped_refptr<VideoFrame> CreateNV12Frame(const gfx::Size& size,
-                                          VideoFrame::StorageType type) {
+scoped_refptr<VideoFrame> CreateNV12Frame(
+    const gfx::Size& size,
+    VideoFrame::StorageType type,
+    gpu::TestSharedImageInterface* test_sii) {
   const gfx::Rect visible_rect(size);
   constexpr base::TimeDelta kNullTimestamp;
   if (type == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    return CreateGpuMemoryBufferVideoFrame(
+    return CreateMappableVideoFrame(
         VideoPixelFormat::PIXEL_FORMAT_NV12, size, visible_rect, size,
-        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
+        kNullTimestamp, gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, test_sii);
   } else {
     DCHECK(type == VideoFrame::STORAGE_DMABUFS);
     return CreatePlatformVideoFrame(VideoPixelFormat::PIXEL_FORMAT_NV12, size,
@@ -299,7 +301,8 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
             base::bits::AlignUp(static_cast<unsigned int>(size.height()),
                                 MM21_TILE_HEIGHT));
 
-  scoped_refptr<VideoFrame> ret = CreateNV12Frame(size, type);
+  scoped_refptr<VideoFrame> ret =
+      CreateNV12Frame(size, type, /*test_sii=*/nullptr);
   if (!ret) {
     LOG(ERROR) << "Failed to create MM21 frame";
     return nullptr;
@@ -536,7 +539,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_MemToMem) {
   EXPECT_TRUE(ip_client->WaitForFrameProcessors());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // We don't yet have the function to create Dmabuf-backed VideoFrame on
 // platforms except ChromeOS. So MemToDmabuf test is limited on ChromeOS.
 TEST_P(ImageProcessorParamTest, ConvertOneTime_DmabufToMem) {
@@ -629,7 +632,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
   EXPECT_EQ(ip_client->GetNumOfProcessedImages(), 1u);
   EXPECT_TRUE(ip_client->WaitForFrameProcessors());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 INSTANTIATE_TEST_SUITE_P(
     PixelFormatConversionToNV12,
@@ -684,7 +687,7 @@ INSTANTIATE_TEST_SUITE_P(NV12CroppingAndScaling,
                          ::testing::Values(std::make_tuple(kNV12Image360PIn480P,
                                                            kNV12Image270P)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(hiroh): Add more tests.
 // MEM->DMABUF (V4L2VideoEncodeAccelerator),
 #endif
@@ -738,11 +741,13 @@ TEST(ImageProcessorBackendTest, CompareLibYUVAndGLBackendsForMM21Image) {
   scoped_refptr<VideoFrame> input_frame =
       CreateRandomMM21Frame(kTestImageSize, VideoFrame::STORAGE_DMABUFS);
   ASSERT_TRUE(input_frame) << "Error creating input frame";
-  scoped_refptr<VideoFrame> gl_output_frame =
-      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+
+  auto test_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  scoped_refptr<VideoFrame> gl_output_frame = CreateNV12Frame(
+      kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii.get());
   ASSERT_TRUE(gl_output_frame) << "Error creating GL output frame";
-  scoped_refptr<VideoFrame> libyuv_output_frame =
-      CreateNV12Frame(kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER);
+  scoped_refptr<VideoFrame> libyuv_output_frame = CreateNV12Frame(
+      kTestImageSize, VideoFrame::STORAGE_GPU_MEMORY_BUFFER, test_sii.get());
   ASSERT_TRUE(libyuv_output_frame) << "Error creating LibYUV output frame";
 
   int outstanding_processors = 2;

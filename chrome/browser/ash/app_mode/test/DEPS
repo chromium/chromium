@@ -1,0 +1,25 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+include_rules = [
+  "+components/web_package/signed_web_bundles",
+  "+components/web_package/test_support/signed_web_bundles",
+  "+chrome/browser/extensions/extension_special_storage_policy.h",
+  "+chrome/browser/extensions/scoped_test_mv2_enabler.h",
+  "+chrome/browser/signin",
+  "+chrome/browser/ash/accessibility/accessibility_manager.h",
+  "+chrome/browser/device_identity",
+  "+chrome/browser/ui/browser_navigator.h",
+  "+chrome/browser/ui/browser_navigator_params.h",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/test",
+  "+chrome/browser/ui/views/frame",
+  "+chrome/browser/ui/webui/ash/login/app_launch_splash_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/error_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/gaia_screen_handler.h",
+  "+chrome/browser/ui/webui/ash/login/oobe_ui.h",
+  "+chrome/browser/web_applications/isolated_web_apps",
+  "+chrome/common/url_constants.h",
+  "+extensions/components/native_app_window/native_app_window_views.h",
+]

@@ -20,12 +20,17 @@ gfx::Rect NativeWidgetPrivate::ConstrainBoundsToDisplayWorkArea(
   gfx::Rect new_bounds(bounds);
   gfx::Rect work_area =
       display::Screen::GetScreen()->GetDisplayMatching(bounds).work_area();
-  if (!work_area.IsEmpty())
+  if (!work_area.IsEmpty()) {
     new_bounds.AdjustToFit(work_area);
+  }
   return new_bounds;
 }
 
+void NativeWidgetPrivate::ClientDestroyedWidget() {}
+
 void NativeWidgetPrivate::PaintAsActiveChanged() {}
+
+void NativeWidgetPrivate::ShowWindowControlsMenu(const gfx::Point& point) {}
 
 void NativeWidgetPrivate::ShowEmojiPanel() {
   ui::ShowEmojiPanel();

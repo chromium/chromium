@@ -9,7 +9,11 @@ import android.os.Bundle;
 
 import androidx.fragment.app.DialogFragment;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** Class to create a dialog in the Password check view. */
+@NullMarked
 public class PasswordCheckDialogFragment extends DialogFragment {
     /**
      * This interface combines handling the clicks on the buttons and the general dismissal of the
@@ -28,7 +32,7 @@ public class PasswordCheckDialogFragment extends DialogFragment {
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
             dismiss();

@@ -14,6 +14,7 @@
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "base/profiler/module_cache.h"
+#include "base/profiler/register_context_registers.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -50,9 +51,19 @@ uintptr_t DecodeFrame(uintptr_t frame_pointer, uintptr_t* return_address) {
 
 namespace base {
 
-FramePointerUnwinder::FramePointerUnwinder() = default;
+FramePointerUnwinder::FramePointerUnwinder(
+    CanUnwindFromDelegate can_unwind_from_delegate,
+    bool is_system_unwinder)
+    : can_unwind_from_delegate_(can_unwind_from_delegate),
+      is_system_unwinder_(is_system_unwinder) {}
+
+FramePointerUnwinder::~FramePointerUnwinder() = default;
 
 bool FramePointerUnwinder::CanUnwindFrom(const Frame& current_frame) const {
+  if (can_unwind_from_delegate_) {
+    return can_unwind_from_delegate_.Run(current_frame);
+  }
+
   return current_frame.module && current_frame.module->IsNative();
 }
 
@@ -79,8 +90,9 @@ UnwindResult FramePointerUnwinder::TryUnwind(
            ClampAdd(next_frame, sizeof(uintptr_t) * 2) <= stack_top &&
            (next_frame & align_mask) == 0;
   };
-  if (!is_fp_valid(next_frame))
+  if (!is_fp_valid(next_frame)) {
     return UnwindResult::kAborted;
+  }
 
   for (;;) {
     if (!stack->back().module) {
@@ -98,16 +110,19 @@ UnwindResult FramePointerUnwinder::TryUnwind(
     frame_lower_bound = frame + 1;
     // If `next_frame` is 0, we've hit the root and `retaddr` isn't useful.
     // Bail without recording the frame.
-    if (next_frame == 0)
-      return UnwindResult::kCompleted;
+    if (next_frame == 0) {
+      return is_system_unwinder_ ? UnwindResult::kCompleted
+                                 : UnwindResult::kUnrecognizedFrame;
+    }
     const ModuleCache::Module* module =
         module_cache()->GetModuleForAddress(retaddr);
     // V8 doesn't conform to the x86_64 ABI re: stack alignment. For V8 frames,
     // let the V8 unwinder determine whether the FP is valid or not.
     bool is_non_native_module = module && !module->IsNative();
     // If the FP doesn't look correct, don't record this frame.
-    if (!is_non_native_module && !is_fp_valid(next_frame))
+    if (!is_non_native_module && !is_fp_valid(next_frame)) {
       return UnwindResult::kAborted;
+    }
 
     RegisterContextFramePointer(thread_context) = next_frame;
     RegisterContextInstructionPointer(thread_context) = retaddr;

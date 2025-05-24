@@ -7,6 +7,7 @@ module ash.settings.mojom;
 // Icon types associated with a settings search result.
 enum SearchResultIcon {
   kA11y,
+  kAlwaysShowScrollbars,
   kAndroid,
   kAppsGrid,
   kAppsParentalControls,
@@ -30,6 +31,7 @@ enum SearchResultIcon {
   kDisplay,
   kDockedMagnifier,
   kEthernet,
+  kFaceGaze,
   kFingerprint,
   kFirmwareUpdates,
   kFolder,
@@ -38,6 +40,7 @@ enum SearchResultIcon {
   kGeolocation,
   kGoogleDrive,
   kGooglePlay,
+  kGraduation,
   kHearing,
   kHelp,
   kHelpMeRead,

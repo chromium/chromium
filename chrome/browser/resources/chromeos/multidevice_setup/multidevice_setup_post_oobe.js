@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/ash/common/cr_elements/cros_color_overrides.css.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';

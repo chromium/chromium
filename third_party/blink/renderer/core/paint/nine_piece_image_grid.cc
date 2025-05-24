@@ -28,7 +28,7 @@ float ComputeEdgeSlice(const Length& slice, float slice_scale, float maximum) {
   // If the slice is a <number> (stored as a fixed Length), scale it by the
   // slice scale to get to the same space as the image.
   if (slice.IsFixed()) {
-    resolved = slice.Value() * slice_scale;
+    resolved = slice.Pixels() * slice_scale;
   } else {
     DCHECK(slice.IsPercent());
     resolved = FloatValueForLength(slice, maximum);
@@ -233,8 +233,7 @@ void NinePieceImageGrid::SetDrawInfoCorner(NinePieceDrawInfo& draw_info,
                              right_.width, bottom_.width));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -313,8 +312,7 @@ void NinePieceImageGrid::SetDrawInfoEdge(NinePieceDrawInfo& draw_info,
                         horizontal_tile_rule_);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

@@ -24,9 +24,14 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
+#include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "content/public/test/browser_test.h"
 
 namespace privacy_sandbox {
+
+using ::privacy_sandbox_test_util::PrivacySandboxSettingsTestPeer;
+using Status = PrivacySandboxSettingsTestPeer::Status;
+
 class PrivacySandboxAttestationsBrowserTestBase
     : public MixinBasedInProcessBrowserTest {
  public:
@@ -106,7 +111,7 @@ IN_PROC_BROWSER_TEST_F(
                   .IsValid());
   EXPECT_EQ(PrivacySandboxAttestations::GetInstance()->GetVersionForTesting(),
             version);
-  EXPECT_TRUE(PrivacySandboxSettingsImpl::IsAllowed(
+  EXPECT_TRUE(PrivacySandboxSettingsTestPeer::IsAllowed(
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(GURL(site)),
           PrivacySandboxAttestationsGatedAPI::kTopics)));
@@ -122,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
                        DifferentHistogramAfterAttestationsFileCheck) {
   std::string site = "https://example.com";
-  EXPECT_FALSE(PrivacySandboxSettingsImpl::IsAllowed(
+  EXPECT_FALSE(PrivacySandboxSettingsTestPeer::IsAllowed(
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(GURL(site)),
           PrivacySandboxAttestationsGatedAPI::kTopics)));
@@ -130,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   // The attestation component has not yet checked the attestations file.
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 1);
   histogram_tester().ExpectBucketCount(
-      kAttestationStatusUMA,
-      PrivacySandboxSettingsImpl::Status::kAttestationsFileNotYetChecked, 1);
+      kAttestationStatusUMA, Status::kAttestationsFileNotYetChecked, 1);
 
   base::RunLoop run_loop;
   PrivacySandboxAttestations::GetInstance()
@@ -146,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   run_loop.Run();
 
   // Check attestation again.
-  EXPECT_FALSE(PrivacySandboxSettingsImpl::IsAllowed(
+  EXPECT_FALSE(PrivacySandboxSettingsTestPeer::IsAllowed(
       PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(GURL(site)),
           PrivacySandboxAttestationsGatedAPI::kTopics)));
@@ -154,27 +158,13 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   // It should record in a different histogram bucket because the file check has
   // completed but no file was found.
   histogram_tester().ExpectTotalCount(kAttestationStatusUMA, 2);
-  histogram_tester().ExpectBucketCount(
-      kAttestationStatusUMA,
-      PrivacySandboxSettingsImpl::Status::kAttestationsFileNotPresent, 1);
+  histogram_tester().ExpectBucketCount(kAttestationStatusUMA,
+                                       Status::kAttestationsFileNotPresent, 1);
 }
 
-class PrivacySandboxAttestationPreInstallBrowserTest
-    : public PrivacySandboxAttestationsBrowserTestBase,
-      public base::test::WithFeatureOverride {
- public:
-  PrivacySandboxAttestationPreInstallBrowserTest()
-      : base::test::WithFeatureOverride(
-            kPrivacySandboxAttestationsLoadPreInstalledComponent) {}
-
-  ~PrivacySandboxAttestationPreInstallBrowserTest() override = default;
-};
-
-// If there is no attestation list in user directory and feature
-// "PrivacySandboxAttestationsLoadPreInstalledComponent" is enabled, the
-// pre-installed version should be used. This test verifies there is a
-// pre-installed attestation list shipped with Chromium.
-IN_PROC_BROWSER_TEST_P(PrivacySandboxAttestationPreInstallBrowserTest,
+// This test verifies there is a copy of pre-installed attestation list in the
+// pre-installed component directory.
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTestBase,
                        PreinstalledAttestationListPresent) {
   base::RunLoop run_loop;
   PrivacySandboxAttestations::GetInstance()
@@ -187,46 +177,25 @@ IN_PROC_BROWSER_TEST_P(PrivacySandboxAttestationPreInstallBrowserTest,
   RegisterPrivacySandboxAttestationsComponent(
       g_browser_process->component_updater());
 
-  if (IsParamFeatureEnabled()) {
-    // Wait until the attestations parsing is done.
-    run_loop.Run();
+  // Wait until the attestations parsing is done.
+  run_loop.Run();
 
-    EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
-                    ->GetVersionForTesting()
-                    .IsValid());
+  EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
+                  ->GetVersionForTesting()
+                  .IsValid());
 
-    // Make an attestation check to verify the data point is recorded to the
-    // correct histogram bucket.
-    PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-        net::SchemefulSite(GURL("https://example.com")),
-        PrivacySandboxAttestationsGatedAPI::kTopics);
-    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
-    histogram_tester().ExpectBucketCount(kAttestationsFileSource,
-                                         FileSource::kPreInstalled, 1);
-  } else {
-    // If feature off, the attestation component should not parse the
-    // pre-installed file. Since there is no downloaded attestation file, the
-    // attestations component ends up with no attestation map.
-    ASSERT_TRUE(base::test::RunUntil([]() {
-      return PrivacySandboxAttestations::GetInstance()
-          ->attestations_file_checked();
-    }));
-
-    ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()
-                     ->GetVersionForTesting()
-                     .IsValid());
-    PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-        net::SchemefulSite(GURL("https://example.com")),
-        PrivacySandboxAttestationsGatedAPI::kTopics);
-    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
-  }
+  // Make an attestation check to verify the data point is recorded to the
+  // correct histogram bucket.
+  PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+      net::SchemefulSite(GURL("https://example.com")),
+      PrivacySandboxAttestationsGatedAPI::kTopics);
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kPreInstalled, 1);
 }
 
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PrivacySandboxAttestationPreInstallBrowserTest);
-
 class PrivacySandboxAttestationPreInstallInteractionWithDownloadTest
-    : public PrivacySandboxAttestationPreInstallBrowserTest {
+    : public PrivacySandboxAttestationsBrowserTest {
  public:
   PrivacySandboxAttestationPreInstallInteractionWithDownloadTest() = default;
 
@@ -245,7 +214,7 @@ class PrivacySandboxAttestationPreInstallInteractionWithDownloadTest
 // 1. if feature off, select the pre-installed attestation list, but not parse
 // it.
 // 2. if feature on, select and parse the pre-installed attestation list.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     PrivacySandboxAttestationPreInstallInteractionWithDownloadTest,
     BothPreinstalledAndDownloadedAttestationsAvailable) {
   // Override the pre-install component directories that have the pre-installed
@@ -285,44 +254,23 @@ IN_PROC_BROWSER_TEST_P(
   RegisterPrivacySandboxAttestationsComponent(
       g_browser_process->component_updater());
 
-  if (IsParamFeatureEnabled()) {
-    // Component installer selects the pre-installed attestation list. Wait
-    // until the attestations parsing is done.
-    run_loop.Run();
+  // Component installer selects the pre-installed attestation list. Wait until
+  // the attestations parsing is done.
+  run_loop.Run();
 
-    EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
-                    ->GetVersionForTesting()
-                    .IsValid());
+  EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
+                  ->GetVersionForTesting()
+                  .IsValid());
 
-    // Make an attestation check to verify the data point is recorded to the
-    // correct histogram bucket.
-    ASSERT_TRUE(PrivacySandboxSettingsImpl::IsAllowed(
-        PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-            net::SchemefulSite(GURL("https://example.com")),
-            PrivacySandboxAttestationsGatedAPI::kTopics)));
-    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
-    histogram_tester().ExpectBucketCount(kAttestationsFileSource,
-                                         FileSource::kPreInstalled, 1);
-  } else {
-    // If feature off, the component installer still selects the pre-installed
-    // attestation list. But it will not parse it.
-    ASSERT_TRUE(base::test::RunUntil([]() {
-      return PrivacySandboxAttestations::GetInstance()
-          ->attestations_file_checked();
-    }));
-
-    // The attestations component ends up with no attestation map.
-    ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()
-                     ->GetVersionForTesting()
-                     .IsValid());
-    PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-        net::SchemefulSite(GURL("https://example.com")),
-        PrivacySandboxAttestationsGatedAPI::kTopics);
-    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
-  }
+  // Make an attestation check to verify the data point is recorded to the
+  // correct histogram bucket.
+  ASSERT_TRUE(PrivacySandboxSettingsTestPeer::IsAllowed(
+      PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+          net::SchemefulSite(GURL("https://example.com")),
+          PrivacySandboxAttestationsGatedAPI::kTopics)));
+  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                       FileSource::kPreInstalled, 1);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PrivacySandboxAttestationPreInstallInteractionWithDownloadTest);
 
 }  // namespace privacy_sandbox

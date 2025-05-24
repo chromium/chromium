@@ -10,7 +10,6 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/crosapi/mojom/suggestion_service.mojom.h"
 
 class Profile;
 
@@ -31,8 +30,6 @@ class ASH_EXPORT BirchRecentTabsProvider : public BirchDataProvider {
   // Once subscribed, this is called when the session sync service notifies of
   // foreign sessions changed.
   void OnForeignSessionsChanged();
-
-  void OnTabsRetrieved(std::vector<crosapi::mojom::TabSuggestionItemPtr> items);
 
  private:
   raw_ptr<Profile> profile_ = nullptr;

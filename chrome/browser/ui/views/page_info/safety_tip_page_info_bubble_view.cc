@@ -91,7 +91,7 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
   auto header_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_SAFETY_TIP_ILLUSTRATION_LIGHT),
       *bundle.GetImageSkiaNamed(IDR_SAFETY_TIP_ILLUSTRATION_DARK),
-      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+      base::BindRepeating(&views::BubbleDialogDelegate::background_color,
                           base::Unretained(this)));
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
 
@@ -133,7 +133,7 @@ SafetyTipPageInfoBubbleView::SafetyTipPageInfoBubbleView(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_BUTTON_LEAVE_SITE);
 }
 
-SafetyTipPageInfoBubbleView::~SafetyTipPageInfoBubbleView() {}
+SafetyTipPageInfoBubbleView::~SafetyTipPageInfoBubbleView() = default;
 
 void SafetyTipPageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
@@ -230,12 +230,13 @@ void ShowSafetyTipDialog(
     const GURL& suggested_url,
     base::OnceCallback<void(SafetyTipInteraction)> close_callback) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPageInfoAnchorConfiguration(
-          browser, bubble_anchor_util::kLocationBar);
+          browser, bubble_anchor_util::Anchor::kLocationBar);
   gfx::Rect anchor_rect =
       configuration.anchor_view
           ? gfx::Rect()

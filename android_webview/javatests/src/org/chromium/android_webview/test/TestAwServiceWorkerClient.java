@@ -4,8 +4,8 @@
 
 package org.chromium.android_webview.test;
 
-import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
 import org.chromium.android_webview.AwServiceWorkerClient;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 
@@ -17,7 +17,7 @@ public class TestAwServiceWorkerClient extends AwServiceWorkerClient {
 
     /** Helper class to wait for callbacks on the TestAwServiceWorkerClient. */
     public static class ShouldInterceptRequestHelper extends CallbackHelper {
-        private List<AwWebResourceRequest> mInterceptedRequests =
+        private final List<AwWebResourceRequest> mInterceptedRequests =
                 new ArrayList<AwWebResourceRequest>();
 
         public void notifyCalled(AwWebResourceRequest request) {
@@ -30,7 +30,7 @@ public class TestAwServiceWorkerClient extends AwServiceWorkerClient {
         }
     }
 
-    private ShouldInterceptRequestHelper mShouldInterceptRequestHelper;
+    private final ShouldInterceptRequestHelper mShouldInterceptRequestHelper;
 
     public ShouldInterceptRequestHelper getShouldInterceptRequestHelper() {
         return mShouldInterceptRequestHelper;

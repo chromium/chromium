@@ -8,7 +8,7 @@
 
 namespace policy {
 
-ComponentCloudPolicyService::Delegate::~Delegate() {}
+ComponentCloudPolicyService::Delegate::~Delegate() = default;
 
 ComponentCloudPolicyService::ComponentCloudPolicyService(
     const std::string& policy_type,
@@ -19,7 +19,7 @@ ComponentCloudPolicyService::ComponentCloudPolicyService(
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : policy_installed_(true), weak_ptr_factory_(this) {}
 
-ComponentCloudPolicyService::~ComponentCloudPolicyService() {}
+ComponentCloudPolicyService::~ComponentCloudPolicyService() = default;
 
 // static
 bool ComponentCloudPolicyService::SupportsDomain(PolicyDomain domain) {
@@ -43,10 +43,5 @@ void ComponentCloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {}
 void ComponentCloudPolicyService::OnStoreError(CloudPolicyStore* store) {}
 
 void ComponentCloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {}
-
-void ComponentCloudPolicyService::OnRegistrationStateChanged(
-    CloudPolicyClient* client) {}
-
-void ComponentCloudPolicyService::OnClientError(CloudPolicyClient* client) {}
 
 }  // namespace policy

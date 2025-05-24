@@ -9,7 +9,6 @@
 
 #include "chrome/installer/util/set_reg_value_work_item.h"
 
-#include "base/debug/alias.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,7 +48,7 @@ void BinaryDataToString(const std::vector<uint8_t>& binary_data,
 
 }  // namespace
 
-SetRegValueWorkItem::~SetRegValueWorkItem() {}
+SetRegValueWorkItem::~SetRegValueWorkItem() = default;
 
 SetRegValueWorkItem::SetRegValueWorkItem(HKEY predefined_root,
                                          const std::wstring& key_path,
@@ -157,13 +156,6 @@ bool SetRegValueWorkItem::DoImpl() {
     if (!size) {
       previous_type_ = type;
     } else {
-      // TODO(crbug.com/40706274): Remove after bug is resolved.
-      DEBUG_ALIAS_FOR_CSTR(key_path_copy, base::WideToUTF8(key_path_).c_str(),
-                           255);
-      DEBUG_ALIAS_FOR_CSTR(value_name_copy,
-                           base::WideToUTF8(value_name_).c_str(), 200);
-      base::debug::Alias(&size);
-      base::debug::Alias(&type);
       previous_value_.resize(size);
       result = key.ReadValue(value_name_.c_str(), &previous_value_[0], &size,
                              &previous_type_);
@@ -242,7 +234,7 @@ void SetRegValueWorkItem::RollbackImpl() {
                             previous_type_);
     VLOG(1) << "rollback: restoring " << value_name_ << " error: " << result;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   status_ = VALUE_ROLL_BACK;

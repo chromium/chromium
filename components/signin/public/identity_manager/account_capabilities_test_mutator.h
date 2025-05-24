@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_TEST_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_TEST_MUTATOR_H_
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 
@@ -15,7 +18,8 @@ class AccountCapabilitiesTestMutator {
   explicit AccountCapabilitiesTestMutator(AccountCapabilities* capabilities);
 
   // Exposes the full list of supported capabilities for tests.
-  static const std::vector<std::string>& GetSupportedAccountCapabilityNames();
+  static base::span<const std::string_view>
+  GetSupportedAccountCapabilityNames();
 
   // Exposes setters for the supported capabilities.
   // Please keep this list alphabetically sorted.
@@ -27,6 +31,7 @@ class AccountCapabilitiesTestMutator {
   void set_can_fetch_family_member_info(bool value);
   void set_can_toggle_auto_updates(bool value);
   void set_can_use_chrome_ip_protection(bool value);
+  void set_can_use_copyeditor_feature(bool value);
   void set_can_use_devtools_generative_ai_features(bool value);
   void set_can_use_edu_features(bool value);
   void set_can_use_manta_service(bool value);
@@ -36,6 +41,12 @@ class AccountCapabilitiesTestMutator {
       bool value);
   void set_is_subject_to_enterprise_policies(bool value);
   void set_is_subject_to_parental_controls(bool value);
+  void set_can_use_speaker_label_in_recorder_app(bool value);
+  void set_can_use_generative_ai_in_recorder_app(bool value);
+  void set_can_use_generative_ai_photo_editing(bool value);
+#if BUILDFLAG(IS_CHROMEOS)
+  void set_can_use_chromeos_generative_ai(bool value);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Modifies all supported capabilities at once.
   void SetAllSupportedCapabilities(bool value);

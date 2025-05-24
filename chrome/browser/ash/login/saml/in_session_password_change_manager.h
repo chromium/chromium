@@ -63,8 +63,7 @@ class RecheckPasswordExpiryTask {
 // response from dialogs, and callbacks from subsystems.
 // This singleton is scoped to the primary user session - it will exist for as
 // long as the primary user session exists  (but only if the primary user's
-// InSessionPasswordChange policy is enabled and the kInSessionPasswordChange
-// feature is enabled).
+// InSessionPasswordChange policy is enabled).
 class InSessionPasswordChangeManager
     : public SessionActivationObserver,
       public PasswordSyncTokenFetcher::Consumer {

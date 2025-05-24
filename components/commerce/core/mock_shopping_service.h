@@ -41,6 +41,10 @@ class MockShoppingService : public commerce::ShoppingService {
               (const GURL& url, commerce::ProductInfoCallback callback),
               (override));
   MOCK_METHOD(void,
+              GetProductInfoForUrls,
+              (const std::vector<GURL>& url, ProductInfoBatchCallback callback),
+              (override));
+  MOCK_METHOD(void,
               GetPriceInsightsInfoForUrl,
               (const GURL& url, commerce::PriceInsightsInfoCallback callback),
               (override));
@@ -115,26 +119,9 @@ class MockShoppingService : public commerce::ShoppingService {
               WaitForReady,
               (base::OnceCallback<void(ShoppingService*)>),
               (override));
-  MOCK_METHOD(bool, IsMerchantViewerEnabled, (), (override));
-  MOCK_METHOD(bool, IsPriceInsightsEligible, (), (override));
-  MOCK_METHOD(bool, IsDiscountEligibleToShowOnNavigation, (), (override));
-  MOCK_METHOD(bool, IsParcelTrackingEligible, (), (override));
   MOCK_METHOD(void,
               GetDiscountInfoForUrl,
               (const GURL& url, DiscountInfoCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              GetAllParcelStatuses,
-              (GetParcelStatusCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              StopTrackingParcel,
-              (const std::string& tracking_id,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-  MOCK_METHOD(void,
-              StopTrackingAllParcels,
-              (base::OnceCallback<void(bool)> callback),
               (override));
   MOCK_METHOD(void,
               GetProductSpecificationsForUrls,
@@ -146,11 +133,6 @@ class MockShoppingService : public commerce::ShoppingService {
               (),
               (override));
   MOCK_METHOD(ClusterManager*, GetClusterManager, (), (override));
-  MOCK_METHOD(void,
-              QueryHistoryForUrl,
-              (const GURL& url,
-               history::HistoryService::QueryURLCallback callback),
-              (override));
 
   // Make this mock permissive for all features but default to providing empty
   // data for all accessors of shopping data.
@@ -175,23 +157,14 @@ class MockShoppingService : public commerce::ShoppingService {
       std::vector<CommerceSubscription> subscriptions);
   void SetIsShoppingListEligible(bool enabled);
   void SetIsReady(bool ready);
-  void SetIsMerchantViewerEnabled(bool is_enabled);
   void SetGetAllPriceTrackedBookmarksCallbackValue(
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
   void SetGetAllShoppingBookmarksValue(
       std::vector<const bookmarks::BookmarkNode*> bookmarks);
-  void SetIsPriceInsightsEligible(bool is_eligible);
-  void SetIsDiscountEligibleToShowOnNavigation(bool is_eligible);
   void SetResponseForGetDiscountInfoForUrl(
       const std::vector<DiscountInfo>& infos);
-  void SetIsParcelTrackingEligible(bool is_eligible);
-  void SetGetAllParcelStatusesCallbackValue(
-      std::vector<ParcelTrackingStatus> parcels);
   void SetResponseForGetProductSpecificationsForUrls(
       ProductSpecifications specs);
-  // TODO(b/362316113): Remove once history service is passed through handler
-  // constructor.
-  void SetQueryHistoryForUrlCallbackValue(history::QueryURLResult result);
 
  private:
   std::unique_ptr<MockProductSpecificationsService>

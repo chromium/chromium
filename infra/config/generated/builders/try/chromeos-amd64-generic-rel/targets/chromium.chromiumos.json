@@ -1,0 +1,7 @@
+{
+  "chromeos-amd64-generic-rel": {
+    "additional_compile_targets": [
+      "chromiumos_preflight"
+    ]
+  }
+}

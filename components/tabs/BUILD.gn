@@ -1,0 +1,67 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("public") {
+  sources = [
+    "public/pinned_tab_collection.h",
+    "public/split_tab_collection.h",
+    "public/split_tab_data.h",
+    "public/split_tab_id.h",
+    "public/split_tab_visual_data.h",
+    "public/supports_handles.h",
+    "public/tab_collection.h",
+    "public/tab_group.h",
+    "public/tab_group_tab_collection.h",
+    "public/tab_interface.h",
+    "public/tab_strip_collection.h",
+    "public/unpinned_tab_collection.h",
+  ]
+
+  # TODO(crbug.com/404296389): Move to the non-public target and refactor
+  # tab_collection.h to only require a forward declaration for testing.
+  sources += [ "public/tab_collection_storage.h" ]
+
+  public_deps = [
+    "//base",
+    "//components/tab_groups",
+  ]
+  deps = [ "//ui/gfx/range" ]
+}
+
+source_set("tabs") {
+  sources = [
+    "pinned_tab_collection.cc",
+    "split_tab_collection.cc",
+    "split_tab_data.cc",
+    "split_tab_visual_data.cc",
+    "tab_collection.cc",
+    "tab_collection_storage.cc",
+    "tab_group.cc",
+    "tab_group_tab_collection.cc",
+    "tab_strip_collection.cc",
+    "unpinned_tab_collection.cc",
+  ]
+  deps = [ ":public" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  # Move unit tests for tab collections here once decoupled from
+  # chrome/browser/ui/tabs/. Specifically:
+  # TODO(crbug.com/415963447): tab_collection_unittest.cc
+  # TODO(crbug.com/415965103): tab_collection_storage_unittest.cc
+  # TODO(crbug.com/415965106): tab_iterator_unittest.cc
+  sources = [ "public/supports_handles_unittest.cc" ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    ":public",
+    ":tabs",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx/range",
+  ]
+}

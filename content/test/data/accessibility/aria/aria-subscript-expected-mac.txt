@@ -9,7 +9,7 @@ AXWebArea
 ++++AXGroup AXSubrole=AXSubscriptStyleGroup
 ++++++AXStaticText AXValue=' '
 ++++++AXGroup AXSubrole=AXDeleteStyleGroup
-++++++++AXGroup AXDescription='3'
+++++++++AXGroup
 ++++++++++AXGroup
 ++++++++++++AXStaticText AXValue='3'
 ++++++AXStaticText AXValue=' '

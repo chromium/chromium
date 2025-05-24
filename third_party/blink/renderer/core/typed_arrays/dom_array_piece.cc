@@ -34,8 +34,7 @@ DOMArrayPiece::DOMArrayPiece(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  InitNull();
+  NOTREACHED();
 }
 
 bool DOMArrayPiece::IsNull() const {
@@ -77,7 +76,7 @@ void DOMArrayPiece::InitWithArrayBuffer(DOMArrayBuffer* buffer) {
 void DOMArrayPiece::InitWithArrayBufferView(DOMArrayBufferView* buffer) {
   if (buffer) {
     InitWithData(buffer->ByteSpan());
-    is_detached_ = buffer->buffer() ? buffer->buffer()->IsDetached() : true;
+    is_detached_ = !buffer->buffer() || buffer->buffer()->IsDetached();
   } else {
     InitNull();
   }

@@ -5,6 +5,7 @@
 #include "components/sync/test/single_type_mock_server.h"
 
 #include "components/sync/base/time.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
@@ -69,10 +70,10 @@ sync_pb::SyncEntity SingleTypeMockServer::UpdateFromServer(
     int64_t version_offset,
     const ClientTagHash& tag_hash,
     const sync_pb::EntitySpecifics& specifics,
-    const std::string& collaboration_id) {
+    const CollaborationMetadata& collaboration_metadata) {
   sync_pb::SyncEntity entity =
       UpdateFromServer(version_offset, tag_hash, specifics);
-  entity.mutable_collaboration()->set_collaboration_id(collaboration_id);
+  *entity.mutable_collaboration() = collaboration_metadata.ToRemoteProto();
   return entity;
 }
 

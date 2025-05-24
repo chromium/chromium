@@ -49,9 +49,8 @@ VideoDecoderType MojoMediaClient::GetDecoderImplementationType() {
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
 void MojoMediaClient::NotifyDecoderSupportKnown(
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-    base::OnceCallback<
-        void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) {
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+    base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb) {
   std::move(cb).Run(std::move(oop_video_decoder));
 }
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -62,7 +61,7 @@ std::unique_ptr<VideoDecoder> MojoMediaClient::CreateVideoDecoder(
     mojom::CommandBufferIdPtr command_buffer_id,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
+    mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder) {
   return nullptr;
 }
 

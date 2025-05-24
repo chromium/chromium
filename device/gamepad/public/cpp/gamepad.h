@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <limits>
 #include <string>
+#include <type_traits>
 
 #include "base/component_export.h"
 

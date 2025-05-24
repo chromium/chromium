@@ -4,15 +4,7 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 
-#include "build/chromeos_buildflags.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_lacros.h"
-#endif
 
 namespace policy {
 
@@ -25,16 +17,9 @@ DlpContentObserver* DlpContentObserver::Get() {
   if (g_dlp_content_observer)
     return g_dlp_content_observer;
 
-    // Initializes DlpContentManager(Ash/Lacros) if needed.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* manager = new DlpContentManagerAsh();
   manager->Init();
   g_dlp_content_observer = manager;
-#else
-  auto* manager = new DlpContentManagerLacros();
-  manager->Init();
-  g_dlp_content_observer = manager;
-#endif
   return g_dlp_content_observer;
 }
 

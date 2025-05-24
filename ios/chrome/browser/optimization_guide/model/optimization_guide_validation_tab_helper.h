@@ -39,8 +39,6 @@ class OptimizationGuideValidationTabHelper
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
-  WEB_STATE_USER_DATA_KEY_DECL();
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<OptimizationGuideValidationTabHelper> weak_factory_{

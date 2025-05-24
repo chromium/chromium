@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {DialogTask, MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
+import type {DialogTask} from './cloud_upload.mojom-webui.js';
+import {MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
-import {AccordionTopCardElement, BaseCardElement, CloudProviderCardElement, CloudProviderType, FileHandlerCardElement, LocalHandlerCardElement} from './file_handler_card.js';
+import type {BaseCardElement, FileHandlerCardElement} from './file_handler_card.js';
+import {AccordionTopCardElement, CloudProviderCardElement, CloudProviderType, LocalHandlerCardElement} from './file_handler_card.js';
 import {getTemplate} from './file_handler_page.html.js';
 
 /**
@@ -57,7 +59,7 @@ export class FileHandlerPageElement extends HTMLElement {
 
   // Initialises the scrollable content styles and add document event listeners.
   connectedCallback(): void {
-    const contentElement = this.$<HTMLElement>('#content')!;
+    const contentElement = this.$<HTMLElement>('#content');
     window.requestAnimationFrame(() => {
       this.updateContentFade(contentElement);
     });
@@ -140,7 +142,7 @@ export class FileHandlerPageElement extends HTMLElement {
 
       // For each local file task, create a clickable label.
       for (let i = 0; i < localTasks.length; ++i) {
-        const task = localTasks[i]!;
+        const task = localTasks[i];
         assert(task);
         const localHandlerCard = new LocalHandlerCardElement();
         localHandlerCard.setParameters(task.position, task.title);
@@ -148,7 +150,7 @@ export class FileHandlerPageElement extends HTMLElement {
         localHandlerCard.id = this.toStringId(task.position);
         if (i === localTasks.length - 1) {
           // Round bottom for last card.
-          localHandlerCard.$('#container')!.classList.add('round-bottom');
+          localHandlerCard.$('#container').classList.add('round-bottom');
         }
         this.addLocalHandlerCard(localHandlerCard);
       }
@@ -164,12 +166,12 @@ export class FileHandlerPageElement extends HTMLElement {
   addCloudProviderCard(providerCard: CloudProviderCardElement) {
     this.cloudProviderCards.push(providerCard);
     this.cards.push(providerCard);
-    this.$<HTMLDivElement>('#content').appendChild(providerCard);
+    this.$<HTMLElement>('#content').appendChild(providerCard);
     providerCard.addEventListener('click', () => this.selectCard(providerCard));
   }
 
   addTopAccordionCard(topCard: AccordionTopCardElement) {
-    this.$<HTMLDivElement>('#content').appendChild(topCard);
+    this.$<HTMLElement>('#content').appendChild(topCard);
     this.cards.push(topCard);
     topCard.addEventListener('click', () => {
       const expanded = topCard.toggleExpandedState();
@@ -185,7 +187,7 @@ export class FileHandlerPageElement extends HTMLElement {
           }
         }
       }
-      const contentElement = this.$<HTMLDivElement>('#content')!;
+      const contentElement = this.$<HTMLElement>('#content');
       if (expanded) {
         window.requestAnimationFrame(() => {
           // Scroll so that the top of the accordion aligns to where the top of
@@ -204,7 +206,7 @@ export class FileHandlerPageElement extends HTMLElement {
     localHandlerCard.hide();
     this.localHandlerCards.push(localHandlerCard);
     this.cards.push(localHandlerCard);
-    this.$<HTMLDivElement>('#content').appendChild(localHandlerCard);
+    this.$<HTMLElement>('#content').appendChild(localHandlerCard);
     localHandlerCard.addEventListener(
         'click', () => this.selectCard(localHandlerCard));
   }
@@ -290,7 +292,7 @@ export class FileHandlerPageElement extends HTMLElement {
 
     // If no card is focused, select the first one.
     if (selectedIndex === -1) {
-      this.cards[0]!.focus();
+      this.cards[0].focus();
       return;
     }
 
@@ -299,7 +301,7 @@ export class FileHandlerPageElement extends HTMLElement {
         this.cards[newSelectedIndex]?.style.display === 'none') {
       return;
     }
-    this.cards[newSelectedIndex]!.focus();
+    this.cards[newSelectedIndex].focus();
   }
 
   // Invoked when the open file button is clicked. If the user previously

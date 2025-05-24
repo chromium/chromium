@@ -35,8 +35,7 @@ class PlusAddressDataChange;
 //
 // It mirrors a subset of `PlusAddressTable`'s API and is responsible for
 // posting tasks from the UI sequence to the DB sequence, invoking the relevant
-// function on `PlusAddressTable`. For read operations, results are returned to
-// a `WebDataServiceConsumer`, who must live on the UI sequence.
+// function on `PlusAddressTable`.
 //
 // Owned by `WebDataServiceWrapper`.
 class PlusAddressWebDataService : public WebDataServiceBase {
@@ -61,11 +60,8 @@ class PlusAddressWebDataService : public WebDataServiceBase {
 
   // `PlusAddressTable`'s API, for the subset of functions needed on the UI
   // sequence.
-  void GetPlusProfiles(WebDataServiceConsumer* consumer);
+  void GetPlusProfiles(WebDataServiceRequestCallback consumer);
   void AddOrUpdatePlusProfile(const PlusProfile& profile);
-  // TODO(b/322147254): Once the sync integration is complete, this shouldn't
-  // be necessary on the UI sequence anymore either.
-  void ClearPlusProfiles();
 
   // Returns a controller delegate for the `sync_bridge` owned this service.
   std::unique_ptr<syncer::DataTypeControllerDelegate>

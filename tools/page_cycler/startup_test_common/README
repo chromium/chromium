@@ -1,4 +1,0 @@
-This directory is meant to override the common/ directory in order to allow
-page cycler data to be used for startup tests. It works primarily by
-substituting head.js for a version that doesn't redirect to the next page in the
-suite and instead only performs a consle.log() when the page has loaded.

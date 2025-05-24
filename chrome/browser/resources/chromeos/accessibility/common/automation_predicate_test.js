@@ -7,16 +7,6 @@ GEN_INCLUDE(['testing/common_e2e_test_base.js']);
 /** Test fixture for automation_predicate.js. */
 AccessibilityExtensionAutomationPredicateTest =
     class extends CommonE2ETestBase {
-  /**@override */
-  async setUpDeferred() {
-    await super.setUpDeferred();
-    await Promise.all([
-      await importModule(
-          'AutomationPredicate', '/common/automation_predicate.js'),
-      await importModule(
-          'createMockNode', '/common/testing/test_node_generator.js'),
-    ]);
-  }
 };
 
 AX_TEST_F(

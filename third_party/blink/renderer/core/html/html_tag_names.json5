@@ -303,12 +303,6 @@
       constructorNeedsCreateElementFlags: true,
     },
     {
-      name: "listbox",
-      interfaceName: "HTMLListboxElement",
-      runtimeEnabled: "HTMLSelectListElement",
-      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
-    },
-    {
       name: "listing",
       interfaceName: "HTMLPreElement",
     },
@@ -323,6 +317,24 @@
     },
     "marquee",
     "menu",
+    {
+      name: "menubar",
+      interfaceName: "HTMLMenuBarElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html",
+      runtimeEnabled: "MenuElements",
+    },
+    {
+      name: "menuitem",
+      interfaceName: "HTMLMenuItemElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html",
+      runtimeEnabled: "MenuElements",
+    },
+    {
+      name: "menulist",
+      interfaceName: "HTMLMenuListElement",
+      interfaceHeaderDir: "third_party/blink/renderer/core/html",
+      runtimeEnabled: "MenuElements",
+    },
     {
       name: "meta",
       constructorNeedsCreateElementFlags: true,
@@ -448,16 +460,10 @@
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
-      name: "selectedoption",
-      interfaceName: "HTMLSelectedOptionElement",
+      name: "selectedcontent",
+      interfaceName: "HTMLSelectedContentElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
       runtimeEnabled: "CustomizableSelect",
-    },
-    {
-      name: "selectlist",
-      interfaceName: "HTMLSelectListElement",
-      runtimeEnabled: "HTMLSelectListElement",
-      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
       name: "slot",

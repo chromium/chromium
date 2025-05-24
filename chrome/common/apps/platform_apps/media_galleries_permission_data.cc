@@ -10,7 +10,7 @@
 
 namespace chrome_apps {
 
-MediaGalleriesPermissionData::MediaGalleriesPermissionData() {}
+MediaGalleriesPermissionData::MediaGalleriesPermissionData() = default;
 
 bool MediaGalleriesPermissionData::Check(
     const extensions::APIPermission::CheckParam* param) const {
@@ -45,16 +45,6 @@ bool MediaGalleriesPermissionData::FromValue(const base::Value* value) {
     return true;
   }
   return false;
-}
-
-bool MediaGalleriesPermissionData::operator<(
-    const MediaGalleriesPermissionData& rhs) const {
-  return permission_ < rhs.permission_;
-}
-
-bool MediaGalleriesPermissionData::operator==(
-    const MediaGalleriesPermissionData& rhs) const {
-  return permission_ == rhs.permission_;
 }
 
 }  // namespace chrome_apps

@@ -9,12 +9,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments_data_manager.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
-#include "components/autofill/core/browser/test_personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
+#include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/device_reauth/device_authenticator.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,9 @@
 namespace autofill::payments {
 
 using autofill_metrics::MandatoryReauthOfferOptInDecision;
+#if BUILDFLAG(IS_ANDROID)
+using device_reauth::BiometricStatus;
+#endif
 
 class MandatoryReauthManagerTest : public testing::Test {
  public:
@@ -35,15 +39,13 @@ class MandatoryReauthManagerTest : public testing::Test {
         mock_device_authenticator =
             std::make_unique<device_reauth::MockDeviceAuthenticator>();
 
-    ON_CALL(*mock_device_authenticator,
-            CanAuthenticateWithBiometricOrScreenLock)
-        .WillByDefault(testing::Return(true));
-
     autofill_client_->SetDeviceAuthenticator(
         std::move(mock_device_authenticator));
     mandatory_reauth_manager_ =
         std::make_unique<MandatoryReauthManager>(autofill_client_.get());
-    autofill_client_->GetPersonalDataManager()->SetPrefService(
+    SetUpAuthentication(/*biometrics_available=*/true,
+                        /*screen_lock_available=*/true);
+    autofill_client_->GetPersonalDataManager().SetPrefService(
         autofill_client_->GetPrefs());
     test::SetCreditCardInfo(&server_card_, "Test User", "1111" /* Visa */,
                             test::NextMonth().c_str(), test::NextYear().c_str(),
@@ -62,6 +64,25 @@ class MandatoryReauthManagerTest : public testing::Test {
         "Autofill.PaymentMethods.MandatoryReauth.CheckoutFlow."
         "ReauthOfferOptInDecision2",
         opt_in_decision, 1);
+  }
+
+  void SetUpAuthentication(bool biometrics_available,
+                           bool screen_lock_available) {
+#if BUILDFLAG(IS_ANDROID)
+    BiometricStatus biometric_status = BiometricStatus::kUnavailable;
+    if (biometrics_available) {
+      biometric_status = BiometricStatus::kBiometricsAvailable;
+    } else if (screen_lock_available) {
+      biometric_status = BiometricStatus::kOnlyLskfAvailable;
+    }
+    ON_CALL(device_authenticator(), GetBiometricAvailabilityStatus)
+        .WillByDefault(testing::Return(biometric_status));
+#else
+    ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
+        .WillByDefault(testing::Return(biometrics_available));
+    ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
+        .WillByDefault(testing::Return(screen_lock_available));
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -92,28 +113,24 @@ TEST_F(MandatoryReauthManagerTest, AuthenticateWithMessage) {
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_Biometric) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/true,
+                      /*screen_lock_available=*/true);
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
             MandatoryReauthAuthenticationMethod::kBiometric);
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_ScreenLock) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/true);
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
             MandatoryReauthAuthenticationMethod::kScreenLock);
 }
 
 TEST_F(MandatoryReauthManagerTest, GetAuthenticationMethod_UnsupportedMethod) {
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/false);
 
   EXPECT_EQ(mandatory_reauth_manager_->GetAuthenticationMethod(),
             MandatoryReauthAuthenticationMethod::kUnsupportedMethod);
@@ -131,7 +148,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_TRUE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -144,7 +161,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_LocalCard) {
 // record mode.
 TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_Incognito) {
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   autofill_client_->set_is_off_the_record(true);
@@ -202,7 +219,7 @@ TEST_F(MandatoryReauthManagerTest, ShouldOfferOptin_UserAlreadyMadeDecision) {
   mandatory_reauth_manager_->OnUserCancelledOptInPrompt();
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -223,11 +240,11 @@ TEST_F(MandatoryReauthManagerTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/false);
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   EXPECT_FALSE(mandatory_reauth_manager_->ShouldOfferOptin(
@@ -252,7 +269,7 @@ TEST_F(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   // 'card_identifier_if_non_interactive_authentication_flow_completed' is not
@@ -278,7 +295,7 @@ TEST_F(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   autofill_client_->GetPersonalDataManager()
-      ->payments_data_manager()
+      .payments_data_manager()
       .AddCreditCard(local_card_);
 
   // Test that if the last filled card is the matching local card, we offer
@@ -408,8 +425,8 @@ class MandatoryReauthManagerOptInFlowTest
     MandatoryReauthManagerTest::SetUp();
     mandatory_reauth_manager_->SetDeviceAuthenticatorPtrForTesting(
         std::make_unique<device_reauth::MockDeviceAuthenticator>());
-    ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-        .WillByDefault(testing::Return(true));
+    SetUpAuthentication(/*biometrics_available=*/true,
+                        /*screen_lock_available=*/true);
   }
 
   std::string GetOptInSource() {
@@ -457,8 +474,8 @@ class MandatoryReauthManagerOptInFlowTest
 TEST_P(MandatoryReauthManagerOptInFlowTest,
        StartDeviceAuthentication_Biometric) {
   base::HistogramTester histogram_tester;
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/true,
+                      /*screen_lock_available=*/true);
 
   EXPECT_CALL(device_authenticator(), AuthenticateWithMessage);
   mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
@@ -474,10 +491,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest,
        StartDeviceAuthentication_ScreenLock) {
   base::HistogramTester histogram_tester;
 
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(true));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/true);
 
   mandatory_reauth_manager_->StartDeviceAuthentication(GetParam(),
                                                        base::DoNothing());
@@ -492,10 +507,8 @@ TEST_P(MandatoryReauthManagerOptInFlowTest,
 TEST_P(MandatoryReauthManagerOptInFlowTest,
        StartDeviceAuthentication_Unsupported) {
   base::HistogramTester histogram_tester;
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometrics)
-      .WillByDefault(testing::Return(false));
-  ON_CALL(device_authenticator(), CanAuthenticateWithBiometricOrScreenLock)
-      .WillByDefault(testing::Return(false));
+  SetUpAuthentication(/*biometrics_available=*/false,
+                      /*screen_lock_available=*/false);
 
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
   EXPECT_CALL(callback, Run(true));

@@ -15,11 +15,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
 import org.chromium.components.background_task_scheduler.TaskInfo;
@@ -28,25 +28,21 @@ import org.chromium.components.background_task_scheduler.TaskInfo;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NotificationTriggerSchedulerTest {
-    @Rule public JniMocker mocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private NotificationTriggerScheduler.Natives mNativeMock;
     @Mock private BackgroundTaskScheduler mTaskScheduler;
     @Captor private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
-
-    private NotificationTriggerScheduler.Clock mClock;
 
     private NotificationTriggerScheduler mTriggerScheduler;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         BackgroundTaskSchedulerFactory.setSchedulerForTesting(mTaskScheduler);
-        mocker.mock(NotificationTriggerSchedulerJni.TEST_HOOKS, mNativeMock);
+        NotificationTriggerSchedulerJni.setInstanceForTesting(mNativeMock);
         doReturn(true).when(mTaskScheduler).schedule(any(), mTaskInfoCaptor.capture());
 
-        mClock = () -> 1415926535;
-        mTriggerScheduler = new NotificationTriggerScheduler(mClock);
+        mTriggerScheduler = new NotificationTriggerScheduler();
     }
 
     @Test

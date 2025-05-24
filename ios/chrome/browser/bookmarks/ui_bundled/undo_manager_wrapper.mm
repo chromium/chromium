@@ -23,7 +23,7 @@
 @synthesize hasUndoManagerChanged = _hasUndoManagerChanged;
 @synthesize undoManager = _undoManager;
 
-- (instancetype)initWithBrowserState:(ProfileIOS*)profile {
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
     _undoManager =

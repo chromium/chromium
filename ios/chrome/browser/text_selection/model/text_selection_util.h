@@ -32,4 +32,8 @@ bool IsExpKitTextClassifierEntityEnabled();
 // Flag used only for confidence threshold (confidence_score_threshold)
 BASE_DECLARE_FEATURE(kEnableExpKitTextClassifier);
 
+// Command line parameter to force annotating a pages. A domain passed via this
+// parameter will ignore IsEntitySelectionAllowedForURL result.
+extern const char kForceAllowDomainForEntitySelection[];
+
 #endif  // IOS_CHROME_BROWSER_TEXT_SELECTION_MODEL_TEXT_SELECTION_UTIL_H_

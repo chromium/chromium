@@ -10,6 +10,8 @@ import android.view.MenuItem;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.LifecycleObserver;
 
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckChangePasswordHelper;
 import org.chromium.chrome.browser.password_check.helper.PasswordCheckIconHelper;
@@ -23,6 +25,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * Creates the PasswordCheckComponentUi. This class is responsible for managing the UI for the check
  * of the leaked password.
  */
+@NullMarked
 class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObserver {
     private final Profile mProfile;
     private final PasswordCheckFragmentView mFragmentView;
@@ -95,6 +98,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
     }
 
     @Override
+    @Initializer
     public void onStartFragment() {
         // In the rare case of a restarted activity, don't recreate the model and mediator.
         if (mModel == null) {
@@ -115,6 +119,7 @@ class PasswordCheckCoordinator implements PasswordCheckComponentUi, LifecycleObs
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void onDestroyFragment() {
         mMediator.stopCheck();
         if (mFragmentView.getActivity() == null || mFragmentView.getActivity().isFinishing()) {

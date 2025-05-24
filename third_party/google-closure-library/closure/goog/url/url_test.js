@@ -70,6 +70,8 @@ const resolveWithTestChecks = function(urlStr, baseStr = undefined) {
     assertEquals(nativeResolve.pathname, packageResolve.pathname);
     assertEquals(nativeResolve.search, packageResolve.search);
     assertEquals(nativeResolve.hash, packageResolve.hash);
+    assertEquals(nativeResolve.href, packageResolve.href);
+    assertEquals(nativeResolve.toString(), packageResolve.toString());
   }
   if (packageThrow) {
     throw packageThrow;
@@ -92,6 +94,8 @@ testSuite({
       assertEquals('/', url.pathname);
       assertEquals('', url.search);
       assertEquals('', url.hash);
+      assertEquals('http://www.google.com/', url.toString());
+      assertEquals('http://www.google.com/', url.href);
     },
 
     testWithPort() {
@@ -106,6 +110,8 @@ testSuite({
       assertEquals('/', url.pathname);
       assertEquals('', url.search);
       assertEquals('', url.hash);
+      assertEquals('http://www.google.com:8080/', url.toString());
+      assertEquals('http://www.google.com:8080/', url.href);
     },
 
     testWithPath() {
@@ -120,6 +126,8 @@ testSuite({
       assertEquals('/search', url.pathname);
       assertEquals('', url.search);
       assertEquals('', url.hash);
+      assertEquals('http://www.google.com/search', url.toString());
+      assertEquals('http://www.google.com/search', url.href);
     },
 
     testWithQueryData() {
@@ -134,6 +142,8 @@ testSuite({
       assertEquals('/path', url.pathname);
       assertEquals('?a=b&b=c', url.search);
       assertEquals('', url.hash);
+      assertEquals('http://www.google.com/path?a=b&b=c', url.toString());
+      assertEquals('http://www.google.com/path?a=b&b=c', url.href);
     },
 
     testComplex() {
@@ -149,6 +159,10 @@ testSuite({
       assertEquals('/path', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('#fragmento', url.hash);
+      assertEquals(
+          'http://www.google.com:8080/path?q=query#fragmento', url.toString());
+      assertEquals(
+          'http://www.google.com:8080/path?q=query#fragmento', url.href);
     },
 
     testWithNewline() {
@@ -162,6 +176,10 @@ testSuite({
       assertEquals('/path', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('#fragmento', url.hash);
+      assertEquals(
+          'http://www.google.com:8080/path?q=query#fragmento', url.toString());
+      assertEquals(
+          'http://www.google.com:8080/path?q=query#fragmento', url.href);
     },
 
     testWithRelativeParam() {
@@ -175,6 +193,10 @@ testSuite({
       assertEquals('/path', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('#fragmento', url.hash);
+      assertEquals(
+          'http://www.google.com:8080/path?q=query#fragmento', url.toString());
+      assertEquals(
+          'http://www.google.com:8080/path?q=query#fragmento', url.href);
     },
 
     testWithRelativeParamThatIsAbsolute() {
@@ -192,6 +214,9 @@ testSuite({
       assertEquals('/path', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('#fragmento', url.hash);
+      assertEquals(
+          'https://docs.google.com/path?q=query#fragmento', url.toString());
+      assertEquals('https://docs.google.com/path?q=query#fragmento', url.href);
     },
 
     testWithBaseThatHasRelativeParts() {
@@ -206,6 +231,9 @@ testSuite({
       assertEquals('/path1', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('#fragmento', url.hash);
+      assertEquals(
+          'https://docs.google.com/path1?q=query#fragmento', url.toString());
+      assertEquals('https://docs.google.com/path1?q=query#fragmento', url.href);
     },
 
     testWithBaseThatHasRelativePartsAndOnlySearchRelative() {
@@ -220,6 +248,8 @@ testSuite({
       assertEquals('/path', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('', url.hash);
+      assertEquals('https://google.com/path?q=query', url.toString());
+      assertEquals('https://google.com/path?q=query', url.href);
     },
 
     testWithBaseThatHasRelativePartsAndOnlyHashRelative() {
@@ -235,6 +265,8 @@ testSuite({
       // And so is the query
       assertEquals('?query=q', url.search);
       assertEquals('#query', url.hash);
+      assertEquals('https://google.com/path?query=q#query', url.toString());
+      assertEquals('https://google.com/path?query=q#query', url.href);
     },
 
     testWithBaseAndNoIndicatorsInRelative() {
@@ -249,6 +281,8 @@ testSuite({
       assertEquals('/query', url.pathname);
       assertEquals('', url.search);
       assertEquals('', url.hash);
+      assertEquals('https://google.com/query', url.toString());
+      assertEquals('https://google.com/query', url.href);
     },
 
     testResolvesRelativeToRelativePath() {
@@ -262,6 +296,8 @@ testSuite({
       assertEquals('/new', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('', url.hash);
+      assertEquals('https://google.com/new?q=query', url.toString());
+      assertEquals('https://google.com/new?q=query', url.href);
     },
 
     testResolvesRelativeToRelativePathBackslash() {
@@ -275,6 +311,8 @@ testSuite({
       assertEquals('/new', url.pathname);
       assertEquals('?q=query', url.search);
       assertEquals('', url.hash);
+      assertEquals('https://google.com/new?q=query', url.toString());
+      assertEquals('https://google.com/new?q=query', url.href);
     },
 
     testResolvesTwoDots() {
@@ -289,6 +327,8 @@ testSuite({
       // "after" that to be removed - search and hash
       assertEquals(url.search, '');
       assertEquals(url.hash, '');
+      assertEquals('https://google.com/maps/', url.toString());
+      assertEquals('https://google.com/maps/', url.href);
     },
 
     testResolvesTwoDotsNoBasePath() {
@@ -302,6 +342,8 @@ testSuite({
       // "after" that to be removed - search and hash
       assertEquals(url.search, '');
       assertEquals(url.hash, '');
+      assertEquals('https://google.com/', url.toString());
+      assertEquals('https://google.com/', url.href);
     },
 
     testResolvesTwoDotsShortBasePath() {
@@ -316,6 +358,7 @@ testSuite({
       // "after" that to be removed - search and hash
       assertEquals(url.search, '');
       assertEquals(url.hash, '');
+      assertEquals('https://google.com/', url.toString());
     },
 
     testResolvesDot() {
@@ -329,6 +372,8 @@ testSuite({
       // "after" that to be removed - search and hash
       assertEquals(url.search, '');
       assertEquals(url.hash, '');
+      assertEquals('https://google.com/maps/search/', url.toString());
+      assertEquals('https://google.com/maps/search/', url.href);
     },
 
     testResolvesDotNoBasePath() {
@@ -341,6 +386,8 @@ testSuite({
       // "after" that to be removed - search and hash
       assertEquals(url.search, '');
       assertEquals(url.hash, '');
+      assertEquals('https://google.com/', url.toString());
+      assertEquals('https://google.com/', url.href);
     },
 
     testResolvesDotShortBasePath() {
@@ -354,6 +401,8 @@ testSuite({
       // "after" that to be removed - search and hash
       assertEquals(url.search, '');
       assertEquals(url.hash, '');
+      assertEquals('https://google.com/', url.toString());
+      assertEquals('https://google.com/', url.href);
     },
 
     testResolvesEmptyString() {
@@ -365,11 +414,16 @@ testSuite({
       if (!userAgent.isEdge()) {
         assertEquals(url.pathname, '/maps/search/new');
         assertEquals(url.search, '?hl=de');
+        assertEquals(
+            'https://google.com/maps/search/new?hl=de', url.toString());
+        assertEquals('https://google.com/maps/search/new?hl=de', url.href);
       } else {
         // Edge is weird here and instead follows the same conventions for '.'
         // it removes one chunk of path and every part after it.
         assertEquals(url.pathname, '/maps/search/');
         assertEquals(url.search, '');
+        assertEquals('https://google.com/maps/search/', url.toString());
+        assertEquals('https://google.com/maps/search/', url.href);
       }
       assertEquals(url.hash, '');
     },

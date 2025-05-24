@@ -9,8 +9,8 @@
 
 #include "base/logging.h"
 #include "base/process/process_handle.h"  // For ProcessId.
-#include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/experiences/arc/process/arc_process.h"
 #include "content/public/common/content_constants.h"  // For kLowestRendererOomScore.
 
 namespace arc {

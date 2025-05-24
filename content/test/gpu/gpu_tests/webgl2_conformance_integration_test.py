@@ -5,12 +5,13 @@
 
 import os
 import sys
-from typing import Any, List, Set
+from typing import Any
 import unittest
 
 from gpu_tests import common_typing as ct
 from gpu_tests import gpu_integration_test
 from gpu_tests import webgl_conformance_integration_test_base
+from gpu_tests.util import host_information
 
 
 class WebGL2ConformanceIntegrationTest(
@@ -20,10 +21,21 @@ class WebGL2ConformanceIntegrationTest(
   def Name(cls) -> str:
     return 'webgl2_conformance'
 
-  def _GetSerialGlobs(self) -> Set[str]:
-    return super()._GetSerialGlobs() | set()
+  def _GetSerialGlobs(self) -> set[str]:
+    serial_globs = super()._GetSerialGlobs()
+    # Serialize tests which allocate a large amount of memory on lower memory
+    # machines to avoid flakes.
+    # Should apply to all non-remote platforms, but we cannot distinguish
+    # between Linux test machines and hosts at this point in the test harness.
+    if host_information.IsWindows() or host_information.IsMac():
+      gigabyte = 1_000_000_000
+      if host_information.GetSystemMemoryBytes() < 16 * gigabyte:
+        serial_globs |= {
+            'conformance2/wasm/*16gb*',
+        }
+    return serial_globs
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     return super()._GetSerialTests() | set()
 
   @classmethod
@@ -32,7 +44,7 @@ class WebGL2ConformanceIntegrationTest(
     assert cls._webgl_version == 2
 
   @classmethod
-  def _GetExtensionList(cls) -> List[str]:
+  def _GetExtensionList(cls) -> list[str]:
     return [
         'EXT_clip_control',
         'EXT_color_buffer_float',
@@ -77,7 +89,7 @@ class WebGL2ConformanceIntegrationTest(
     ]
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'webgl2_conformance_expectations.txt')

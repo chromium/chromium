@@ -4,15 +4,25 @@
 
 #include "services/webnn/public/cpp/operand_descriptor.h"
 
+#include <algorithm>
 #include <numeric>
 
+#include "base/containers/to_vector.h"
 #include "base/numerics/checked_math.h"
-#include "base/ranges/algorithm.h"
+#include "base/types/expected_macros.h"
+#include "services/webnn/public/cpp/context_properties.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 
 namespace webnn {
 
-// static
-base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
+namespace {
+
+#define ASSIGN_OR_RETURN_ERROR_WITH_LABEL_IF_ERROR(lhs, rexpr, label) \
+  ASSIGN_OR_RETURN(lhs, rexpr, [&label](std::string error) {          \
+    return ErrorWithLabel(label, error);                              \
+  });
+
+base::expected<uint64_t, std::string> ValidateAndGetByteLength(
     OperandDataType data_type,
     base::span<const uint32_t> shape) {
   // TODO(crbug.com/329482489): Specify the max rank of an operand. Consider
@@ -25,17 +35,28 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
 
   // Enforce dimension range according to
   // https://www.w3.org/TR/webnn/#valid-dimension.
-  if (base::ranges::any_of(shape, [](uint32_t dimension) {
+  if (std::ranges::any_of(shape, [](uint32_t dimension) {
         return !base::CheckedNumeric<int32_t>(dimension).IsValid();
       })) {
     return base::unexpected(
         "Invalid descriptor: All dimensions must be in the range of int32_t.");
   }
 
-  base::CheckedNumeric<size_t> checked_number_of_bytes = std::accumulate(
-      shape.begin(), shape.end(),
-      base::CheckedNumeric<size_t>(GetBytesPerElement(data_type)),
-      std::multiplies());
+  base::CheckedNumeric<size_t> checked_number_of_elements =
+      std::accumulate(shape.begin(), shape.end(),
+                      base::CheckedNumeric<size_t>(1), std::multiplies());
+  if (!checked_number_of_elements.IsValid()) {
+    return base::unexpected(
+        "Invalid descriptor: The number of elements is too large.");
+  }
+
+  // Since the data stored in memory are in 8-bits bytes, here we need to make
+  // up an integer multiple of 8 to calculate the `checked_number_of_bytes`.
+  base::CheckedNumeric<uint64_t> checked_number_of_bytes =
+      (checked_number_of_elements.Cast<uint64_t>() *
+           OperandDescriptor::GetBitsPerElement(data_type) +
+       7) /
+      8;
 
   size_t number_of_bytes;
   if (!checked_number_of_bytes.AssignIfValid(&number_of_bytes)) {
@@ -49,37 +70,66 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
         "Invalid descriptor: All dimensions should be positive.");
   }
 
-  return OperandDescriptor(data_type,
-                           std::vector<uint32_t>(shape.begin(), shape.end()));
+  return number_of_bytes;
+}
+
+}  // namespace
+
+// static
+base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
+    const ContextProperties& context_properties,
+    OperandDataType data_type,
+    base::span<const uint32_t> shape,
+    std::string_view label) {
+  ASSIGN_OR_RETURN_ERROR_WITH_LABEL_IF_ERROR(
+      uint64_t byte_length, ValidateAndGetByteLength(data_type, shape), label);
+
+  if (byte_length > context_properties.tensor_byte_length_limit) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedTensorSizeError(
+                   byte_length, context_properties.tensor_byte_length_limit)));
+  }
+  return OperandDescriptor(data_type, base::ToVector(shape));
+}
+
+// static
+base::expected<OperandDescriptor, std::string>
+OperandDescriptor::CreateForDeserialization(OperandDataType data_type,
+                                            base::span<const uint32_t> shape) {
+  RETURN_IF_ERROR(ValidateAndGetByteLength(data_type, shape));
+
+  return OperandDescriptor(data_type, base::ToVector(shape));
 }
 
 // static
 OperandDescriptor OperandDescriptor::UnsafeCreateForTesting(
     OperandDataType data_type,
     base::span<const uint32_t> shape) {
-  return OperandDescriptor(data_type,
-                           std::vector<uint32_t>(shape.begin(), shape.end()));
+  return OperandDescriptor(data_type, base::ToVector(shape));
 }
 
 // static
-size_t OperandDescriptor::GetBytesPerElement(OperandDataType data_type) {
+size_t OperandDescriptor::GetBitsPerElement(OperandDataType data_type) {
   switch (data_type) {
     case OperandDataType::kFloat32:
-      return sizeof(float);
+      return sizeof(float) * 8;
     case OperandDataType::kFloat16:
-      return sizeof(uint16_t);
+      return sizeof(uint16_t) * 8;
     case OperandDataType::kInt32:
-      return sizeof(int32_t);
+      return sizeof(int32_t) * 8;
     case OperandDataType::kUint32:
-      return sizeof(uint32_t);
+      return sizeof(uint32_t) * 8;
     case OperandDataType::kInt64:
-      return sizeof(int64_t);
+      return sizeof(int64_t) * 8;
     case OperandDataType::kUint64:
-      return sizeof(uint64_t);
+      return sizeof(uint64_t) * 8;
     case OperandDataType::kInt8:
-      return sizeof(int8_t);
+      return sizeof(int8_t) * 8;
     case OperandDataType::kUint8:
-      return sizeof(uint8_t);
+      return sizeof(uint8_t) * 8;
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4:
+      return 4;
   }
 }
 
@@ -102,14 +152,18 @@ size_t OperandDescriptor::PackedByteLength() const {
   // Overflow checks are not needed here because this same calculation is
   // performed with overflow checking in `Create()`. `this` would not exist if
   // those checks failed.
-  return std::accumulate(shape_.begin(), shape_.end(),
-                         GetBytesPerElement(data_type_), std::multiplies());
+  base::CheckedNumeric<uint64_t> checked_number_of_bytes =
+      (base::CheckedNumeric<uint64_t>(GetBitsPerElement(data_type_)) *
+           NumberOfElements() +
+       7) /
+      8;
+  return checked_number_of_bytes.ValueOrDie<size_t>();
 }
 
 size_t OperandDescriptor::NumberOfElements() const {
   // See `PackedByteLength()` for why overflow checks are not needed here.
-  // Note that NumberOfElements() <= PackedByteLength().
-  return std::accumulate(shape_.begin(), shape_.end(), 1, std::multiplies());
+  return std::accumulate(shape_.begin(), shape_.end(), static_cast<size_t>(1),
+                         std::multiplies());
 }
 
 }  // namespace webnn

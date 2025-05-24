@@ -229,28 +229,16 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
   const AccountId account_id1 = AccountId::FromUserEmail(kUserEmail1);
   const AccountId account_id2 = AccountId::FromUserEmail(kUserEmail2);
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service1 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service1->registry(), /*country=*/"",
-                                true);
-
-  std::unique_ptr<TestingPrefServiceSimple> pref_service2 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service2->registry(), /*country=*/"",
-                                true);
+  auto pref_service1 = TestPrefServiceProvider::CreateUserPrefServiceSimple();
+  auto pref_service2 = TestPrefServiceProvider::CreateUserPrefServiceSimple();
 
   pref_service1->SetInteger(data_.pref_name, static_cast<int>(modifier_key_));
   pref_service2->SetInteger(data_.pref_name, static_cast<int>(modifier_key_));
 
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id1, std::move(pref_service1));
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id2, std::move(pref_service2));
-
   ResetHistogramTester();
 
   // Sign into first account and verify the metric is emitted.
-  SimulateUserLogin(account_id1);
+  SimulateUserLogin({}, account_id1, std::move(pref_service1));
   if (modifier_key_ != data_.default_modifier_key) {
     histogram_tester_->ExpectUniqueSample(data_.started_metric_name,
                                           static_cast<int>(modifier_key_), 1);
@@ -260,7 +248,7 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
   }
 
   // Sign into second account and verify the metric is emitted.
-  SimulateUserLogin(account_id2);
+  SimulateUserLogin({}, account_id2, std::move(pref_service2));
   if (modifier_key_ != data_.default_modifier_key) {
     histogram_tester_->ExpectUniqueSample(data_.started_metric_name,
                                           static_cast<int>(modifier_key_), 2);
@@ -269,8 +257,9 @@ TEST_P(KeyboardModifierMetricsRecorderPrefStartedTest, InitializeTest) {
                                           static_cast<int>(modifier_key_), 0);
   }
 
-  // Sign back into the first account and verify no more metrics are emitted.
-  SimulateUserLogin(account_id1);
+  // Switchnig back into the first account and verify no more metrics are
+  // emitted.
+  SwitchActiveUser(account_id1);
   if (modifier_key_ != data_.default_modifier_key) {
     histogram_tester_->ExpectUniqueSample(data_.started_metric_name,
                                           static_cast<int>(modifier_key_), 2);
@@ -371,30 +360,18 @@ TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
   const AccountId account_id1 = AccountId::FromUserEmail(kUserEmail1);
   const AccountId account_id2 = AccountId::FromUserEmail(kUserEmail2);
 
-  std::unique_ptr<TestingPrefServiceSimple> pref_service1 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service1->registry(), /*country=*/"",
-                                true);
-
-  std::unique_ptr<TestingPrefServiceSimple> pref_service2 =
-      std::make_unique<TestingPrefServiceSimple>();
-  ash::RegisterUserProfilePrefs(pref_service2->registry(), /*country=*/"",
-                                true);
+  auto pref_service1 = TestPrefServiceProvider::CreateUserPrefServiceSimple();
+  auto pref_service2 = TestPrefServiceProvider::CreateUserPrefServiceSimple();
 
   for (const auto& [pref, remapping] : data_.modifier_remappings) {
     pref_service1->SetInteger(pref, static_cast<int>(remapping));
     pref_service2->SetInteger(pref, static_cast<int>(remapping));
   }
 
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id1, std::move(pref_service1));
-  ash_test_helper()->test_session_controller_client()->SetUserPrefService(
-      account_id2, std::move(pref_service2));
-
   ResetHistogramTester();
 
   // Sign into first account and verify the metric is emitted.
-  SimulateUserLogin(account_id1);
+  SimulateUserLogin({}, account_id1, std::move(pref_service1));
   if (data_.expected_value.has_value()) {
     histogram_tester_->ExpectUniqueSample(
         "ChromeOS.Settings.Keyboard.Modifiers.Hash",
@@ -405,7 +382,8 @@ TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
   }
 
   // Sign into second account and verify the metric is emitted.
-  SimulateUserLogin(account_id2);
+  SimulateUserLogin({}, account_id2, std::move(pref_service2));
+
   if (data_.expected_value.has_value()) {
     histogram_tester_->ExpectUniqueSample(
         "ChromeOS.Settings.Keyboard.Modifiers.Hash",
@@ -417,8 +395,9 @@ TEST_P(KeyboardModifierMetricsRecorderHashTest, HashTest) {
 
   ResetHistogramTester();
 
-  // Sign back into first  account and verify the metric is not emitted again.
-  SimulateUserLogin(account_id1);
+  // Switching back into first  account and verify the metric is not emitted
+  // again.
+  SwitchActiveUser(account_id1);
   histogram_tester_->ExpectTotalCount(
       "ChromeOS.Settings.Keyboard.Modifiers.Hash", 0);
 }

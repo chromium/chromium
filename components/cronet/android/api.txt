@@ -266,6 +266,7 @@ public abstract class org.chromium.net.ExperimentalCronetEngine extends org.chro
   public org.chromium.net.BidirectionalStream$Builder newBidirectionalStreamBuilder(java.lang.String, org.chromium.net.BidirectionalStream$Callback, java.util.concurrent.Executor);
   public org.chromium.net.ExperimentalCronetEngine();
   public org.chromium.net.UrlRequest$Builder newUrlRequestBuilder(java.lang.String, org.chromium.net.UrlRequest$Callback, java.util.concurrent.Executor);
+  public static boolean shouldOverrideWithHttpEngine(android.content.Context);
   public static final int CONNECTION_METRIC_UNKNOWN;
   public static final int EFFECTIVE_CONNECTION_TYPE_2G;
   public static final int EFFECTIVE_CONNECTION_TYPE_3G;
@@ -639,4 +640,4 @@ public class org.chromium.net.apihelpers.UrlRequestCallbacks {
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<java.lang.String, org.chromium.net.apihelpers.StringCronetCallback> forStringBody(org.chromium.net.apihelpers.RedirectHandler);
   public static org.chromium.net.apihelpers.UrlRequestCallbacks$CallbackAndResponseFuturePair<org.json.JSONObject, org.chromium.net.apihelpers.JsonCronetCallback> forJsonBody(org.chromium.net.apihelpers.RedirectHandler);
 }
-Stamp: cb35e30967e9173c96d74488370558c1
+Stamp: ded30b9fbe22dff6cc175cd483aa1e4b

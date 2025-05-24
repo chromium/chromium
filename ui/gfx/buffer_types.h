@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <tuple>
-
 namespace gfx {
 
 // The format needs to be taken into account when mapping a buffer into the
@@ -75,7 +73,7 @@ struct BufferUsageAndFormat {
       : usage(usage), format(format) {}
 
   bool operator==(const BufferUsageAndFormat& other) const {
-    return std::tie(usage, format) == std::tie(other.usage, other.format);
+    return usage == other.usage && format == other.format;
   }
 
   BufferUsage usage;

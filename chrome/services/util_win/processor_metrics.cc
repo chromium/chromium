@@ -7,21 +7,17 @@
 #include <objbase.h>
 
 #include <sysinfoapi.h>
-#include <wbemidl.h>
-#include <winbase.h>
 #include <wrl/client.h>
 
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_variant.h"
-#include "base/win/windows_version.h"
+#include "base/win/wbemidl_shim.h"
 #include "base/win/wmi.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -155,27 +151,28 @@ void RecordEnclaveAvailability() {
   RecordEnclaveAvailabilityInternal("VBSBasic", ENCLAVE_TYPE_VBS_BASIC);
 }
 
-void RecordProcessorMetrics() {
+void RecordProcessorMetricsImpl() {
   // These metrics do not require a WMI connection.
   RecordCetAvailability();
   RecordEnclaveAvailability();
 
-  {
+  if (base::win::ScopedCOMInitializer scoped_com_initializer(
+          base::win::ScopedCOMInitializer::kMTA);
+      scoped_com_initializer.Succeeded()) {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
     ComPtr<IWbemServices> wmi_services;
-    if (!base::win::CreateLocalWmiConnection(true, &wmi_services)) {
-      return;
+    if (base::win::CreateLocalWmiConnection(true, &wmi_services)) {
+      RecordProcessorMetricsFromWMI(wmi_services);
+      RecordHypervStatusFromWMI(wmi_services);
     }
-    RecordProcessorMetricsFromWMI(wmi_services);
-    RecordHypervStatusFromWMI(wmi_services);
   }
 }
 
 }  // namespace
 
 void RecordProcessorMetricsForTesting() {
-  RecordProcessorMetrics();
+  RecordProcessorMetricsImpl();
 }
 
 ProcessorMetricsImpl::ProcessorMetricsImpl(
@@ -186,9 +183,6 @@ ProcessorMetricsImpl::~ProcessorMetricsImpl() = default;
 
 void ProcessorMetricsImpl::RecordProcessorMetrics(
     RecordProcessorMetricsCallback callback) {
-  // TODO(sebmarchand): Check if we should move the ScopedCOMInitializer to the
-  // ProcessorMetrics class.
-  base::win::ScopedCOMInitializer scoped_com_initializer;
-  ::RecordProcessorMetrics();
+  RecordProcessorMetricsImpl();
   std::move(callback).Run();
 }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/search_engines/template_url_table_model.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <tuple>
@@ -13,10 +14,10 @@
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_compare.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -38,6 +39,8 @@ namespace {
 class OrderByManagedAndAlphabetically {
  public:
   OrderByManagedAndAlphabetically();
+  OrderByManagedAndAlphabetically(const OrderByManagedAndAlphabetically& other)
+      : collator_(other.collator_->clone()) {}
 
   bool operator()(const TemplateURL* lhs, const TemplateURL* rhs) const;
 
@@ -64,14 +67,15 @@ bool OrderByManagedAndAlphabetically::operator()(const TemplateURL* lhs,
                                                  const TemplateURL* rhs) const {
   auto get_sort_key = [this](const TemplateURL* engine) {
     return std::make_tuple(
-        // Enterprise site search engines are shown before other engines.
-        engine->created_by_policy() !=
-            TemplateURLData::CreatedByPolicy::kSiteSearch,
+        // Enterprise search engines are shown before other engines.
+        !engine->CreatedByNonDefaultSearchProviderPolicy(),
         // Try to compare short names ignoring case and diacriticals.
         collator_ ? GetShortNameSortKey(engine->short_name()) : std::string(),
         // If a collator is not available, fallback to regular string
         // comparison.
-        engine->short_name());
+        engine->short_name(),
+        // If short name is the same, fallback to keyword.
+        engine->keyword());
   };
   return get_sort_key(lhs) < get_sort_key(rhs);
 }
@@ -115,8 +119,11 @@ void TemplateURLTableModel::Reload() {
   for (TemplateURL* template_url : urls) {
     // Don't include the expanded set of starter pack keywords if the expansion
     // feature flag is not enabled.
-    if (!OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
-        template_url->starter_pack_id() > TemplateURLStarterPackData::kTabs) {
+    if ((template_url->starter_pack_id() ==
+             TemplateURLStarterPackData::kGemini &&
+         !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) ||
+        (template_url->starter_pack_id() == TemplateURLStarterPackData::kPage &&
+         !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page)) {
       continue;
     }
 
@@ -133,8 +140,8 @@ void TemplateURLTableModel::Reload() {
     }
   }
 
-  base::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
-  base::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
+  std::ranges::sort(active_entries, OrderByManagedAndAlphabetically());
+  std::ranges::sort(other_entries, OrderByManagedAndAlphabetically());
 
   last_search_engine_index_ = default_entries.size();
   last_active_engine_index_ = last_search_engine_index_ + active_entries.size();
@@ -153,8 +160,9 @@ void TemplateURLTableModel::Reload() {
   std::move(extension_entries.begin(), extension_entries.end(),
             std::back_inserter(entries_));
 
-  if (observer_)
+  if (observer_) {
     observer_->OnModelChanged();
+  }
 }
 
 size_t TemplateURLTableModel::RowCount() {
@@ -170,9 +178,10 @@ std::u16string TemplateURLTableModel::GetText(size_t row, int col_id) {
     // since those should always be displayed LTR. Please refer to
     // http://crbug.com/6726 for more information.
     base::i18n::AdjustStringForLocaleDirection(&url_short_name);
-    return (template_url_service_->GetDefaultSearchProvider() == url) ?
-        l10n_util::GetStringFUTF16(IDS_SEARCH_ENGINES_EDITOR_DEFAULT_ENGINE,
-                                   url_short_name) : url_short_name;
+    return (template_url_service_->GetDefaultSearchProvider() == url)
+               ? l10n_util::GetStringFUTF16(
+                     IDS_SEARCH_ENGINES_EDITOR_DEFAULT_ENGINE, url_short_name)
+               : url_short_name;
   }
 
   DCHECK_EQ(IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN, col_id);
@@ -182,14 +191,6 @@ std::u16string TemplateURLTableModel::GetText(size_t row, int col_id) {
 
 void TemplateURLTableModel::SetObserver(ui::TableModelObserver* observer) {
   observer_ = observer;
-}
-
-std::u16string TemplateURLTableModel::GetKeywordToDisplay(size_t row) {
-  std::u16string keyword =
-      GetText(row, IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN);
-  return template_url_service_->FeaturedOverridesNonFeatured(entries_[row])
-             ? base::JoinString({keyword, std::u16string(keyword, 1)}, u", ")
-             : keyword;
 }
 
 void TemplateURLTableModel::Remove(size_t index) {
@@ -240,8 +241,9 @@ TemplateURL* TemplateURLTableModel::GetTemplateURL(size_t index) {
 std::optional<size_t> TemplateURLTableModel::IndexOfTemplateURL(
     const TemplateURL* template_url) {
   for (auto i = entries_.begin(); i != entries_.end(); ++i) {
-    if (*i == template_url)
+    if (*i == template_url) {
       return static_cast<size_t>(i - entries_.begin());
+    }
   }
   return std::nullopt;
 }
@@ -254,8 +256,9 @@ void TemplateURLTableModel::MakeDefaultTemplateURL(
   TemplateURL* keyword = GetTemplateURL(index);
   const TemplateURL* current_default =
       template_url_service_->GetDefaultSearchProvider();
-  if (current_default == keyword)
+  if (current_default == keyword) {
     return;
+  }
 
   template_url_service_->SetUserSelectedDefaultSearchProvider(keyword,
                                                               choice_location);

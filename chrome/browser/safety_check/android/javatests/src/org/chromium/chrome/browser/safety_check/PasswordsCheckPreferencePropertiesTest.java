@@ -111,8 +111,8 @@ public class PasswordsCheckPreferencePropertiesTest {
                 });
     }
 
-    private PasswordCheckResult mPasswordCheckResult;
-    private @PasswordsState int mExpectedPasswordsState;
+    private final PasswordCheckResult mPasswordCheckResult;
+    private final @PasswordsState int mExpectedPasswordsState;
 
     public PasswordsCheckPreferencePropertiesTest(
             PasswordCheckResult passwordCheckResult, @PasswordsState int expectedPasswordsState) {

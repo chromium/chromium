@@ -13,10 +13,10 @@
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/manta/features.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -71,7 +71,7 @@ gfx::Size VcBackgroundUISystemAppDelegate::GetMinimumWindowSize() const {
 }
 
 gfx::Rect VcBackgroundUISystemAppDelegate::GetDefaultBounds(
-    Browser* browser) const {
+    BrowserDelegate*) const {
   gfx::Rect bounds =
       display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize({826, 608});

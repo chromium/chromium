@@ -9,7 +9,7 @@
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/browser/autofill_data_util.h"
+#include "components/autofill/core/browser/data_quality/autofill_data_util.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "url/android/gurl_android.h"
 
@@ -52,7 +52,6 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutAutofillProfile(
   const autofill::AutofillCountry country(country_code, locale);
   return Java_FastCheckoutAutofillProfile_Constructor(
       env, ConvertUTF8ToJavaString(env, profile.guid()),
-      /*isLocal=*/true,
       ConvertUTF16ToJavaString(env,
                                profile.GetInfo(autofill::NAME_FULL, locale)),
       ConvertUTF16ToJavaString(env, profile.GetRawInfo(autofill::COMPANY_NAME)),
@@ -75,7 +74,8 @@ base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutAutofillProfile(
           env, profile.GetRawInfo(autofill::PHONE_HOME_WHOLE_NUMBER)),
       ConvertUTF16ToJavaString(env,
                                profile.GetRawInfo(autofill::EMAIL_ADDRESS)),
-      ConvertUTF8ToJavaString(env, profile.language_code()));
+      ConvertUTF8ToJavaString(env, profile.language_code()),
+      static_cast<jint>(profile.record_type()));
 }
 
 base::android::ScopedJavaLocalRef<jobject> CreateFastCheckoutCreditCard(

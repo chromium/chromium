@@ -13,7 +13,6 @@
 #include "base/numerics/ranges.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_flags.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -36,7 +35,6 @@ constexpr base::TimeDelta kScrollThumbHideTimeout = base::Milliseconds(500);
 // How long for the scrollbar to fade away?
 constexpr base::TimeDelta kScrollThumbFadeDuration = base::Milliseconds(240);
 // Opacity values from go/semantic-color-system for "Scrollbar".
-constexpr float kDefaultOpacity = 0.38f;
 constexpr float kActiveOpacity = 1.0f;
 
 // The active state is when the thumb is hovered or pressed.
@@ -75,7 +73,7 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
   }
 
   int GetThumbThickness() const {
-    if (!chromeos::features::IsJellyrollEnabled() || ShouldPaintAsActive()) {
+    if (ShouldPaintAsActive()) {
       return kScrollThumbThicknessDp;
     }
     return kScrollThumbThicknessDp - kScrollThumbThicknessHoverInsets;
@@ -100,25 +98,22 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
     // Can be nullptr in tests.
     auto* color_provider = GetColorProvider();
 
-    const bool is_jellyroll_enabled = chromeos::features::IsJellyrollEnabled();
-    if (is_jellyroll_enabled) {
-      // Paint outline.
-      cc::PaintFlags stroke_flags;
-      stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
-      if (color_provider) {
-        stroke_flags.setColor(
-            color_provider->GetColor(cros_tokens::kCrosSysScrollbarBorder));
-      }
-      stroke_flags.setStrokeWidth(kScrollThumbOutlineTickness);
-      stroke_flags.setAntiAlias(true);
-
-      gfx::RectF border_bounds = local_bounds;
-      border_bounds.Inset(kScrollThumbOutlineTickness / 2.0f);
-
-      DrawFullyRoundedRect(canvas, border_bounds, stroke_flags);
-
-      thumb_bounds.Inset(kScrollThumbOutlineTickness);
+    // Paint outline.
+    cc::PaintFlags stroke_flags;
+    stroke_flags.setStyle(cc::PaintFlags::kStroke_Style);
+    if (color_provider) {
+      stroke_flags.setColor(
+          color_provider->GetColor(cros_tokens::kCrosSysScrollbarBorder));
     }
+    stroke_flags.setStrokeWidth(kScrollThumbOutlineTickness);
+    stroke_flags.setAntiAlias(true);
+
+    gfx::RectF border_bounds = local_bounds;
+    border_bounds.Inset(kScrollThumbOutlineTickness / 2.0f);
+
+    DrawFullyRoundedRect(canvas, border_bounds, stroke_flags);
+
+    thumb_bounds.Inset(kScrollThumbOutlineTickness);
 
     // Paint thumb.
     cc::PaintFlags fill_flags;
@@ -126,10 +121,8 @@ class RoundedScrollBar::Thumb : public views::BaseScrollBarThumb {
     fill_flags.setAntiAlias(true);
     if (color_provider) {
       fill_flags.setColor(color_provider->GetColor(
-          is_jellyroll_enabled
-              ? (ShouldPaintAsActive() ? cros_tokens::kCrosSysScrollbarHover
-                                       : cros_tokens::kCrosSysScrollbar)
-              : static_cast<ui::ColorId>(kColorAshScrollBarColor)));
+          ShouldPaintAsActive() ? cros_tokens::kCrosSysScrollbarHover
+                                : cros_tokens::kCrosSysScrollbar));
     }
 
     DrawFullyRoundedRect(canvas, thumb_bounds, fill_flags);
@@ -244,10 +237,7 @@ void RoundedScrollBar::ShowScrollbar() {
     hide_scrollbar_timer_.Reset();
   }
 
-  const float target_opacity = (chromeos::features::IsJellyrollEnabled() ||
-                                thumb_->ShouldPaintAsActive())
-                                   ? kActiveOpacity
-                                   : kDefaultOpacity;
+  const float target_opacity = kActiveOpacity;
   if (base::IsApproximatelyEqual(thumb_->layer()->GetTargetOpacity(),
                                  target_opacity,
                                  std::numeric_limits<float>::epsilon())) {
@@ -275,8 +265,7 @@ void RoundedScrollBar::OnThumbStateChanged(
     views::Button::ButtonState old_state) {
   // Update the scroll bar track and thumb bounds as needed. This won't
   // re-layout the scroll contents since the scroll bar overlaps the contents.
-  if (chromeos::features::IsJellyrollEnabled() &&
-      IsActiveState(old_state) != thumb_->ShouldPaintAsActive()) {
+  if (IsActiveState(old_state) != thumb_->ShouldPaintAsActive()) {
     PreferredSizeChanged();
   }
 

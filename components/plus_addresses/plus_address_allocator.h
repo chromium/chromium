@@ -28,11 +28,11 @@ class PlusAddressAllocator {
   static constexpr int kMaxPlusAddressRefreshesPerOrigin = 10;
 
   enum class AllocationMode {
-    // The requested plus address can be any (unused) plus address, regardless
-    // of whether it has been shown to the user before.
+    // The requested plus address should be the first one that's available for
+    // use.
     kAny = 0,
-    // The requested plus address should be one that the user has never seen
-    // before.
+    // The requested plus address should be the next one in the preallocation
+    // queue.
     kNewPlusAddress = 1
   };
 

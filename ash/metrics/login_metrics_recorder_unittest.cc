@@ -82,34 +82,6 @@ class LoginMetricsRecorderTest : public LoginTestBase {
 
 }  // namespace
 
-// Verifies that click on the note action button is recorded correctly.
-TEST_F(LoginMetricsRecorderTest, NoteActionButtonClick) {
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::LOCKED);
-
-  auto* contents = new LockContentsView(
-      mojom::TrayActionState::kAvailable, LockScreen::ScreenType::kLock,
-      DataDispatcher(),
-      std::make_unique<FakeLoginDetachableBaseModel>(DataDispatcher()));
-  SetUserCount(1);
-  std::unique_ptr<views::Widget> widget = CreateWidgetWithContent(contents);
-
-  LockContentsViewTestApi test_api(contents);
-  EXPECT_TRUE(test_api.note_action()->GetVisible());
-
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(
-      test_api.note_action()->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 1);
-  histogram_tester_->ExpectBucketCount(
-      kUserClicksOnLockHistogramName,
-      static_cast<int>(LoginMetricsRecorder::LockScreenUserClickTarget::
-                           kTrayActionNoteButton),
-      1);
-}
-
 // Verifies that user click events on the lock screen is recorded correctly.
 TEST_F(LoginMetricsRecorderTest, RecordUserClickEventOnLockScreen) {
   GetSessionControllerClient()->SetSessionState(
@@ -141,18 +113,10 @@ TEST_F(LoginMetricsRecorderTest, RecordUserClickEventOnLockScreen) {
       LoginMetricsRecorder::LockScreenUserClickTarget::kSignOutButton, 1);
   histogram_tester_->ExpectTotalCount(kUserClicksOnLoginHistogramName, 0);
 
-  metrics_recorder()->RecordUserShelfButtonClick(
-      LoginMetricsRecorder::ShelfButtonClickTarget::kCloseNoteButton);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 4);
-  ExpectBucketCount(
-      kUserClicksOnLockHistogramName,
-      LoginMetricsRecorder::LockScreenUserClickTarget::kCloseNoteButton, 1);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLoginHistogramName, 0);
-
   // Clicks on tray elements visible during lock should be recorded.
   metrics_recorder()->RecordUserTrayClick(
       LoginMetricsRecorder::TrayClickTarget::kSystemTray);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 5);
+  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 4);
   ExpectBucketCount(
       kUserClicksOnLockHistogramName,
       LoginMetricsRecorder::LockScreenUserClickTarget::kSystemTray, 1);
@@ -160,7 +124,7 @@ TEST_F(LoginMetricsRecorderTest, RecordUserClickEventOnLockScreen) {
 
   metrics_recorder()->RecordUserTrayClick(
       LoginMetricsRecorder::TrayClickTarget::kVirtualKeyboardTray);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 6);
+  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 5);
   ExpectBucketCount(
       kUserClicksOnLockHistogramName,
       LoginMetricsRecorder::LockScreenUserClickTarget::kVirtualKeyboardTray, 1);
@@ -168,7 +132,7 @@ TEST_F(LoginMetricsRecorderTest, RecordUserClickEventOnLockScreen) {
 
   metrics_recorder()->RecordUserTrayClick(
       LoginMetricsRecorder::TrayClickTarget::kImeTray);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 7);
+  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 6);
   ExpectBucketCount(kUserClicksOnLockHistogramName,
                     LoginMetricsRecorder::LockScreenUserClickTarget::kImeTray,
                     1);
@@ -176,19 +140,10 @@ TEST_F(LoginMetricsRecorderTest, RecordUserClickEventOnLockScreen) {
 
   metrics_recorder()->RecordUserTrayClick(
       LoginMetricsRecorder::TrayClickTarget::kNotificationTray);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 8);
+  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 7);
   ExpectBucketCount(
       kUserClicksOnLockHistogramName,
       LoginMetricsRecorder::LockScreenUserClickTarget::kNotificationTray, 1);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLoginHistogramName, 0);
-
-  metrics_recorder()->RecordUserTrayClick(
-      LoginMetricsRecorder::TrayClickTarget::kTrayActionNoteButton);
-  histogram_tester_->ExpectTotalCount(kUserClicksOnLockHistogramName, 9);
-  ExpectBucketCount(
-      kUserClicksOnLockHistogramName,
-      LoginMetricsRecorder::LockScreenUserClickTarget::kTrayActionNoteButton,
-      1);
   histogram_tester_->ExpectTotalCount(kUserClicksOnLoginHistogramName, 0);
 }
 

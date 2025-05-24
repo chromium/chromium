@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sessions/core/session_types.h"
@@ -126,6 +127,23 @@ class ForeignSessionsMatchChecker : public MultiClientStatusChangeChecker {
  private:
   const int profile_index_;
   const int foreign_profile_index_;
+};
+
+// Checker to block until the SESSIONS entities on the FakeServer match the
+// given matcher.
+class SessionEntitiesChecker
+    : public fake_server::FakeServerMatchStatusChecker {
+ public:
+  using Matcher = testing::Matcher<std::vector<sync_pb::SessionSpecifics>>;
+
+  explicit SessionEntitiesChecker(const Matcher& matcher);
+  ~SessionEntitiesChecker() override;
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const Matcher matcher_;
 };
 
 }  // namespace sessions_helper

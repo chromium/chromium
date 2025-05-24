@@ -45,9 +45,9 @@ sync_pb::WebAppIconInfo AppIconInfoToSyncProto(const apps::IconInfo& icon_info);
 content::proto::ImageResource AppImageResourceToProto(
     const blink::Manifest::ImageResource& image_resource);
 
-RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode);
+RunOnOsLoginMode ToRunOnOsLoginMode(proto::WebApp::RunOnOsLoginMode mode);
 
-WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
+proto::WebApp::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
     RunOnOsLoginMode mode);
 
 std::optional<blink::SafeUrlPattern> ToUrlPattern(

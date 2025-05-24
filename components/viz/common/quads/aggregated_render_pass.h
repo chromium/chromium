@@ -59,7 +59,7 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
               const gfx::Transform& transform_to_root_target,
               const cc::FilterOperations& filters,
               const cc::FilterOperations& backdrop_filters,
-              const std::optional<gfx::RRectF>& backdrop_filter_bounds,
+              const std::optional<SkPath>& backdrop_filter_bounds,
               gfx::ContentColorUsage color_usage,
               bool has_transparent_background,
               bool cache_render_pass,
@@ -100,9 +100,6 @@ class VIZ_COMMON_EXPORT AggregatedRenderPass : public RenderPassInternal {
 
   // The type of color content present in this RenderPass.
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
-
-  // Indicates current RenderPass is a color conversion pass.
-  bool is_color_conversion_pass = false;
 
   // |true| if this render pass, prior to aggregation, was the root pass of a
   // surface's resolved frame.

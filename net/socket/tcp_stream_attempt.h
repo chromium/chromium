@@ -5,8 +5,11 @@
 #ifndef NET_SOCKET_TCP_STREAM_ATTEMPT_H_
 #define NET_SOCKET_TCP_STREAM_ATTEMPT_H_
 
+#include <string_view>
+
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/values.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/socket/stream_attempt.h"
@@ -24,6 +27,7 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   TcpStreamAttempt(const StreamAttemptParams* params,
                    IPEndPoint ip_endpoint,
+                   perfetto::Track track,
                    const NetLogWithSource* = nullptr);
 
   TcpStreamAttempt(const TcpStreamAttempt&) = delete;
@@ -33,21 +37,27 @@ class NET_EXPORT_PRIVATE TcpStreamAttempt final : public StreamAttempt {
 
   LoadState GetLoadState() const override;
 
+  base::Value::Dict GetInfoAsValue() const override;
+
  private:
   enum class State {
     kNone,
     kConnecting,
   };
 
+  static std::string_view StateToString(State state);
+
   // StreamAttempt methods:
   int StartInternal() override;
   base::Value::Dict GetNetLogStartParams() override;
 
-  void HandleCompletion();
+  void HandleCompletion(int rv);
 
   void OnIOComplete(int rv);
 
   void OnTimeout();
+
+  void MaybeRecordConnectEnd(int rv);
 
   State next_state_ = State::kNone;
   base::OneShotTimer timeout_timer_;

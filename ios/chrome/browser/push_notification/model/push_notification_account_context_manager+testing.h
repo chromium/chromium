@@ -5,11 +5,13 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_ACCOUNT_CONTEXT_MANAGER_TESTING_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_ACCOUNT_CONTEXT_MANAGER_TESTING_H_
 
+class GaiaId;
+
 @interface PushNotificationAccountContextManager (Testing)
 
 // Returns the number of times `gaiaID` has been signed into Chrome across
-// BrowserStates.
-- (NSUInteger)registrationCountForAccount:(const std::string&)gaiaID;
+// Profiles.
+- (NSUInteger)registrationCountForAccount:(const GaiaId&)gaiaID;
 
 @end
 

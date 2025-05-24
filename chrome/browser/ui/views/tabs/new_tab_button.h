@@ -9,7 +9,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/image_button.h"
@@ -61,7 +60,7 @@ class NewTabButton : public views::ImageButton,
   // Returns the radius to use for the button corners.
   virtual int GetCornerRadius() const;
 
-  // Returns the path for the given |origin|.  If |extend_to_top| is
+  // Returns the path for the given `origin`.  If `extend_to_top` is
   // true, the path is extended vertically to y = 0.
   virtual SkPath GetBorderPath(const gfx::Point& origin,
                                bool extend_to_top) const;
@@ -93,7 +92,7 @@ class NewTabButton : public views::ImageButton,
   // circle to make the button appear circular. Then we paint the
   // foreground image with PaintIcon.
   //
-  // Paints the fill region of the button into |canvas|.
+  // Paints the fill region of the button into `canvas`.
   void PaintFill(gfx::Canvas* canvas) const;
 
   // Tab strip that contains this button.

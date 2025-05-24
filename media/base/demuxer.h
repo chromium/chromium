@@ -26,14 +26,18 @@ namespace media {
 
 class MediaTracks;
 
+// WARNING: These values are reported to metrics. Entries should not be
+// renumbered and numeric values should not be reused. When adding new entries,
+// also update media::mojom::RendererType & tools/metrics/histograms/enums.xml.
 enum class DemuxerType {
-  kMockDemuxer,
-  kFFmpegDemuxer,
-  kChunkDemuxer,
-  kMediaUrlDemuxer,
-  kFrameInjectingDemuxer,
-  kStreamProviderDemuxer,
-  kManifestDemuxer,
+  kUnknownDemuxer = 0,
+  kMockDemuxer = 1,
+  kFFmpegDemuxer = 2,
+  kChunkDemuxer = 3,
+  // kMediaUrlDemuxer = 4,     // Deprecated
+  kFrameInjectingDemuxer = 5,
+  kStreamProviderDemuxer = 6,
+  kManifestDemuxer = 7,
 };
 
 class MEDIA_EXPORT DemuxerHost {
@@ -79,12 +83,6 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   // Called once the demuxer has finished enabling or disabling tracks.
   using TrackChangeCB =
       base::OnceCallback<void(const std::vector<DemuxerStream*>&)>;
-
-  enum DemuxerTypes {
-    kChunkDemuxer,
-    kFFmpegDemuxer,
-    kMediaUrlDemuxer,
-  };
 
   Demuxer();
 
@@ -175,15 +173,17 @@ class MEDIA_EXPORT Demuxer : public MediaResource {
   // all tracks should be disabled. |change_completed_cb| is fired after the
   // demuxer streams are disabled, however this callback should then notify
   // the appropriate renderer in order for tracks to be switched fully.
-  virtual void OnEnabledAudioTracksChanged(
-      const std::vector<MediaTrack::Id>& track_ids,
-      base::TimeDelta curr_time,
-      TrackChangeCB change_completed_cb) = 0;
 
-  virtual void OnSelectedVideoTrackChanged(
-      const std::vector<MediaTrack::Id>& track_ids,
-      base::TimeDelta curr_time,
-      TrackChangeCB change_completed_cb) = 0;
+  // TODO(crbug.com/41393620): No more than one video track may be enabled at
+  // once, per the VideoTrack w3c spec. Due to our renderer implementation, only
+  // one audio track is supported, but this restriction isn't necessarily a
+  // permanent one. We should either decide to always stick with one audio
+  // track and switch `track_ids` to an std::optional container, or to support
+  // multiple audio tracks.
+  virtual void OnTracksChanged(DemuxerStream::Type track_type,
+                               const std::vector<MediaTrack::Id>& track_ids,
+                               base::TimeDelta curr_time,
+                               TrackChangeCB change_completed_cb) = 0;
 
   // Allows a demuxer to change behavior based on the playback rate, including
   // but not limited to changing the amount of buffer space.

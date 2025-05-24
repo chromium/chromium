@@ -28,8 +28,10 @@ struct CONTENT_EXPORT WebContentsMediaCaptureId {
         main_render_frame_id(main_render_frame_id),
         disable_local_echo(disable_local_echo) {}
 
-  bool operator<(const WebContentsMediaCaptureId& other) const;
-  bool operator==(const WebContentsMediaCaptureId& other) const;
+  friend bool operator==(const WebContentsMediaCaptureId&,
+                         const WebContentsMediaCaptureId&) = default;
+  friend auto operator<=>(const WebContentsMediaCaptureId&,
+                          const WebContentsMediaCaptureId&) = default;
 
   // Return true if render_process_id or main_render_frame_id is invalid.
   bool is_null() const;

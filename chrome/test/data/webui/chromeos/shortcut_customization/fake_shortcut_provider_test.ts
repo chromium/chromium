@@ -6,8 +6,10 @@ import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {FakeShortcutProvider} from 'chrome://shortcut-customization/js/fake_shortcut_provider.js';
-import {Accelerator, AcceleratorConfigResult, AcceleratorSource, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
-import {AcceleratorResultData, AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
+import type {Accelerator, MojoAcceleratorConfig, MojoLayoutInfo} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorConfigResult, AcceleratorSource} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import type {AcceleratorResultData} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
+import {AcceleratorsUpdatedObserverRemote, PolicyUpdatedObserverRemote} from 'chrome://shortcut-customization/mojom-webui/shortcut_customization.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('fakeShortcutProviderTest', function() {
@@ -40,7 +42,7 @@ suite('fakeShortcutProviderTest', function() {
 
   function getProvider(): FakeShortcutProvider {
     assertTrue(!!provider);
-    return provider as FakeShortcutProvider;
+    return provider;
   }
   test('GetAcceleratorsEmpty', () => {
     const expected = {};
@@ -77,8 +79,7 @@ suite('fakeShortcutProviderTest', function() {
   test('ObserveAcceleratorsUpdated', () => {
     // Set the expected value to be returned when `onAcceleratorsUpdated()` is
     // called.
-    getProvider().setFakeAcceleratorsUpdated(
-        [fakeAcceleratorConfig as MojoAcceleratorConfig]);
+    getProvider().setFakeAcceleratorsUpdated([fakeAcceleratorConfig]);
 
     const remote = new FakeAcceleratorsUpdatedRemote();
     getProvider().addObserver(remote);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <grit latest_public_release="0" current_release="1"
-      output_all_resource_defines="false" source_lang_id="en" enc_check="möl">
+      source_lang_id="en" enc_check="möl">
   <outputs>
     <output filename="values-af/browser_ui_strings.xml" lang="af" type="android" />
     <output filename="values-am/browser_ui_strings.xml" lang="am" type="android" />
@@ -220,6 +220,9 @@
       <message name="IDS_LEARN_MORE" desc="Generic label for menu item to learn more about a feature. [CHAR_LIMIT=32]">
         Learn more
       </message>
+      <message name="IDS_LEARN_MORE_ABOUT_SETTING" desc="Learn more lable combined with a setting title.">
+        Learn more about <ph name="SETTING_TITLE">%1$s<ex>protected content</ex></ph>
+      </message>
       <message name="IDS_MORE" desc="Generic label for a button to show more items or options. [CHAR_LIMIT=20]">
         More
       </message>
@@ -338,6 +341,9 @@
       <message name="IDS_ACCESSIBILITY_TOOLBAR_MULTI_SELECT" desc="Accessibility announcement to inform users about more items selected.">
         <ph name="ITEM_COUNT">%1$s<ex>3</ex></ph> selected
       </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_EXIT_SELECT" desc="Accessibility announcement to inform users that they have just exited selection mode.">
+        Exited selection mode
+      </message>
       <message name="IDS_ACCESSIBILITY_CANCEL_SELECTION" desc="Content description for the cancel selection button that deselects the selected items in a selectable list view.">
         Cancel selection
       </message>
@@ -363,8 +369,8 @@
         This page is dangerous
       </message>
 
-      <message name="IDS_CONCAT_TWO_STRINGS_WITH_PERIODS" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a period and a whitespace after the first string, and a period after the second string. For example: '1 compromised password. 2 weak passwords.'">
-        <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>.
+      <message name="IDS_CONCAT_TWO_STRINGS_WITH_COMMA" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a comma and a whitespace in between the other strings. For example: '1 compromised password, 2 weak passwords'">
+        <ph name="TYPE_1">%1$s<ex>2 compromised passwords</ex></ph>, <ph name="TYPE_2">%2$s<ex>7 weak passwords</ex></ph>
       </message>
 
       <!-- Certificate viewer -->
@@ -453,15 +459,6 @@
       </message>
       <message name="IDS_PAGE_INFO_DOMAIN_HIDDEN" desc="Message to display in the page info bubble when the domain is hidden.">
         This content is from <ph name="DOMAIN_NAME">%1$s<ex>google.com</ex></ph>, delivered by Google.
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_TITLE" desc="Label used at top of dialog which clears stored information displayed in page info (ie permissions, cookies, eventually history).">
-        Forget this site?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_MESSAGE" desc="Message used in dialog which deletes stored information displayed in page info.">
-        Are you sure you want to reset permissions, and delete cookies and site data?
-      </message>
-      <message name="IDS_PAGE_INFO_FORGET_SITE_CONFIRMATION_BUTTON" desc="Confirmation button in dialog which clears stored information displayed in page info.">
-        Forget
       </message>
       <message name="IDS_PAGE_INFO_HISTORY_TITLE" desc="Label used in the Page Info dialog above the history list.">
         History
@@ -555,11 +552,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TODAY_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed. Used for the Today's variation.">
         Chrome will block cookies again today
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
-        {DAYS, plural,
-          =1 {Chrome will block cookies again tomorrow}
-          other {# days until Chrome blocks cookies again}}
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TRACKING_PROTECTION_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
         {DAYS, plural,
           =1 {Chrome will block cookies again tomorrow}
@@ -580,16 +572,13 @@
         You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Page Info UI if cookies were allowed by the user and they won't be automatically blocked again the future.">
-        You allowed third-party cookies for this site
+        You allowed third-party cookies on this site
+      </message>
+      <message name="IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info third-party cookies subpage if the user is visiting a site on their third-party cookies allow list." formatter_data="android_java">
+        This means site features should work as expected, but you may have less browsing protection. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="Label shown on a dialog that allows users to turn off third-party cookie blocking for a specific site.">
         Site not working?
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
-        Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the Page Info UI explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future.">
-        Try allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TRACKING_PROTECTION" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
         Try temporarily allowing third-party cookies, which means less browsing protection but site features are more likely to work as expected.
@@ -615,20 +604,17 @@
       <message name="IDS_PAGE_INFO_COOKIES_THIRD_PARTY_COOKIES_LABEL" desc="The label used in the Page Info dialog to label a toggle button that when enabled allows third-party cookies and when disabled blocks third-party cookies.">
         Third-party cookies
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE" desc="The header label of Tracking Protection page.">
-        Tracking Protection
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view. Contains a link to the Tracking Protection settings page.">
-        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view for when a site has a TPCD grant. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view for when a site has a TPCD grant. Contains a link to the Tracking Protection settings page.">
-        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view if all cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
+        You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view if all cookies are blocked. Contains a link to the Tracking Protection settings page.">
-        You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
-      </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view in incognito mode when cookies are blocked. Contains a link to the Tracking Protection settings page.">
-        Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view in incognito mode when cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SUBTITLE_COOKIES_LIMITED" desc="Description text in the Page Info dialog to indicate that third-party cookies are limited on this site.">
         Third-party cookies limited
@@ -676,6 +662,9 @@
       <message name="IDS_ACCESSIBILITY_TOOLBAR_VIEW_SITE_INFO" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to view site information'.">
         View site information
       </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_EXIT_HUB_SEARCH" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to exit hub search'.">
+        Exit hub search
+      </message>
 
       <!-- Media Capture and Streams -->
       <message name="IDS_VIDEO_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a WebRTC video call is in progress.">
@@ -711,6 +700,12 @@
       <message name="IDS_NOTIFICATION_CATEGORY_WEBRTC_CAM_AND_MIC" desc="Label for notifications shown when media is being recorded from a camera or microphone, within a list of notification categories. [CHAR_LIMIT=32]">
         Camera and microphone use
       </message>
+      <message name="IDS_TAB_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when tab capture is in progress.">
+        Sharing a tab
+      </message>
+      <message name="IDS_WINDOW_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when window capture is in progress.">
+        Sharing a window
+      </message>
       <message name="IDS_SCREEN_CAPTURE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when screen capture is in progress.">
         Sharing your screen
       </message>
@@ -737,6 +732,17 @@
         Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://webusb.github.io/arduino/demos/console/</ex></ph>
       </message>
       <message name="IDS_USB_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
+        Tap to return to the site
+      </message>
+
+      <!-- Serial port -->
+      <message name="IDS_CONNECTED_TO_SERIAL_PORT_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a serial port.">
+        Connected to a serial port
+      </message>
+      <message name="IDS_SERIAL_NOTIFICATION_CONTENT_TEXT" desc="Url of the current tab. The notification will display this text for the user to identify the tab to return to.">
+        Tap to return to <ph name="URL_OF_THE_CURRENT_TAB">%1$s<ex>https://googlechromelabs.github.io/serial-terminal/</ex></ph>
+      </message>
+      <message name="IDS_SERIAL_NOTIFICATION_CONTENT_TEXT_INCOGNITO" desc="The notification will display this text for the user to return to the Incognito tab which has created the notification.">
         Tap to return to the site
       </message>
 
@@ -926,8 +932,11 @@
       <message name="IDS_IMMERSIVE_FULLSCREEN_GESTURE_NAVIGATION_MODE_API_NOTIFICATION" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit when the system gesture navigation mode is on.">
         Drag from top and swipe from the left or right edge to exit full screen.
       </message>
-      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION_AUTOMOTIVE" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
-        Press the back button to exit full screen.
+      <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION_DESKTOP" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit when is on desktop.">
+        Drag from top or press Esc key to exit full screen.
+      </message>
+      <message name="IDS_IMMERSIVE_FULLSCREEN_AUTOMOTIVE_TOOLBAR_IMPROVEMENTS" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit by swiping left.">
+        Drag from the side of the screen to exit full screen.
       </message>
 
       <!-- WebApk name/icon report abuse dialog -->
@@ -980,14 +989,8 @@
       <message name="IDS_PREFS_ACCESSIBILITY" desc="Title of Accessibility settings, which allows the user to change webpage font sizes. [CHAR_LIMIT=32]">
         Accessibility
       </message>
-      <message name="IDS_FONT_SIZE" desc="Title for font size preference.">
-        Text scaling
-      </message>
       <message name="IDS_FONT_SIZE_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font size.">
         Text scaling set to <ph name="TEXT_SCALING">%1$s<ex>100%</ex></ph>
-      </message>
-      <message name="IDS_FONT_SIZE_PREVIEW_TEXT" desc="Preview text for font-size slider.">
-        Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.
       </message>
       <message name="IDS_FORCE_ENABLE_ZOOM_TITLE" desc="Title of preference that allows the user to zoom in on any webpage, even if the page tries to disable zooming.">
         Force enable zoom
@@ -998,14 +1001,20 @@
       <message name="IDS_READER_FOR_ACCESSIBILITY_TITLE" desc="Title of preference that allows the user to use simplified view on any articles, even if the page is mobile-friendly. Simplified view is the new user-facing name for Reader Mode, which extracts the content of an article and removes clutter from a web page and puts the result in a easier-to-read format.">
         Simplified view for web pages
       </message>
-      <message name="IDS_ZOOM_INFO_PREFERENCE_TITLE" translateable="false" desc="Summary of preference that allows the user to view the set zoom levels for all websites.">
-        Saved zoom levels
+      <message name="IDS_ZOOM_INFO_PREFERENCE_TITLE" desc="Summary of preference that allows the user to view the set zoom levels for all websites.">
+        Saved zoom for sites
       </message>
       <message name="IDS_READER_FOR_ACCESSIBILITY_SUMMARY" desc="Summary of preference that allows the user to use simplified view on any supported articles, even if the page is mobile-friendly.">
         Get notified when an article can be shown in simplified view
       </message>
       <message name="IDS_ACCESSIBILITY_CAPTIONS_TITLE" desc="Title of the preference that allows the user to update caption settings.">
         Captions
+      </message>
+      <message name="IDS_JUMP_START_OMNIBOX_TITLE" desc="When this preference is enabled, Chrome start-up time is reduced, and the user is taken directly to an active Omnibox">
+        Jump-start Omnibox
+      </message>
+      <message name="IDS_JUMP_START_OMNIBOX_SUMMARY" desc="When this preference is enabled, Chrome start-up time is reduced, and the user is taken directly to an active Omnibox">
+        Launch Chrome with the Omnibox focused, reducing start-up time on low-end devices.
       </message>
 
       <!-- Text Size Contrast -->
@@ -1088,14 +1097,8 @@
       <message name="IDS_TAB_RESUMPTION_MODULE_SEE_MORE" desc="Text of a link shown beside the title of the module. Clicking the link launches the &quot;Recent tabs&quot; page.">
         See more
       </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_DOMAIN_URL_AND_DEVICE_NAME" desc="The domain URL and device name shown on the tab resumption module.">
-        <ph name="DOMAIN_URL">%1$s<ex>wikipedia.org</ex></ph> <ph name="SEPARATOR1">•</ph> <ph name="DEVICE_NAME">%2$s<ex>My Pixel 7</ex></ph>
-      </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_OTHER_DEVICES_NAME" desc="The name of feature to show suggested tabs from other devices in the tab resumption module, to appear, e.g., on the Settings page to toggle the feature.">
-        Tabs from other devices
-      </message>
-      <message name="IDS_TAB_RESUMPTION_MODULE_DEFAULT_REASON" desc="The string for a default reason why a Tab is chosen to show on the tab resumption module.">
-        You visited <ph name="RECENCY">%1$s<ex>1 hr ago</ex></ph>
+      <message name="IDS_ACCESSIBILITY_TAB_RESUMPTION_MODULE_SEE_MORE" is_accessibility_with_no_ui="true" desc="Accessibility label of the see more button of the module.">
+        See more recent tabs
       </message>
 
       <message name="IDS_ACCESSIBILITY_EXPANDED" is_accessibility_with_no_ui="true" desc="Content description when the search resumption module is expanded.">
@@ -1122,8 +1125,8 @@
       </message>
 
       <!-- Magic stack strings -->
-      <message name="IDS_HOME_MODULES_CONTEXT_MENU_CUSTOMIZE" desc="The context menu item to show the customize homepage settings.">
-        Customize
+      <message name="IDS_HOME_MODULES_CONTEXT_MENU_MORE_SETTINGS" desc="The context menu item to show more settings to customize the new tab page.">
+        More settings
       </message>
       <message name="IDS_HOME_MODULES_CONFIGURATION" desc="The title for the configuration page which customizes the home modules settings.">
         New tab page cards
@@ -1137,6 +1140,38 @@
         {TILE_COUNT, plural,
          =1 {Hide continue with this tab card}
          other {Hide continue with these tabs card}}
+      </message>
+
+      <!-- Auxiliary search Magic Stack strings -->
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_NAME" desc="Name of the auxiliary search module on NTP.">
+        View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTEXT_MENU_HIDE" desc="The string that is going to be part of the context menu item string to hide the auxiliary search card.">
+        Hide View tabs in your app list
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT" desc="Content of the auxiliary search module on NTP for a device with this feature enabled by default..">
+        Chrome now shares your recent tabs with your device. You’ll see them in your device’s app list and search results. You can turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_SHORT" desc="Content of the auxiliary search module on NTP for a device with this feature enabled by default..">
+        Chrome now shows your recent tabs in your device's app list and search results. You can turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_DEFAULT_OFF" desc="Content of the auxiliary search module on NTP for a device with this feature disabled by default.">
+        Let Chrome share your recent tabs with your device to see them in your device's app list and search results. You can turn this on or off in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_CONTENT_DEFAULT_OFF_SHORT" desc="Content of the auxiliary search module on NTP for a device with this feature disabled by default.">
+        Let Chrome show your recent tabs in your device’s app list and search results. You can turn this off anytime in Chrome settings.
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GO_TO_SETTINGS" desc="The text shown on the Go to settings button on the auxiliary search module on NTP.">
+        Go to settings
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_GOT_IT" desc="The text shown on the Got it button on the auxiliary search module on NTP.">
+        Got it
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_NO_THANKS" desc="The text shown on the No thanks button on the auxiliary search module on NTP.">
+        No thanks
+      </message>
+      <message name="IDS_AUXILIARY_SEARCH_MODULE_BUTTON_TURN_ON" desc="The text shown on the Turn on button on the auxiliary search module on NTP.">
+        Turn on
       </message>
 
       <!-- Educational tip module strings -->
@@ -1176,9 +1211,53 @@
       <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_DESCRIPTION" desc="Description of the quick delete promo in the educational tip module on NTP.">
         You can delete some or all of your history, cookies, site data and more
       </message>
-
-      <message name="IDS_GO_TO_OS_SETTINGS" desc="When the user clicks on this text button, Chrome sends them to the device OS Settings. One use is the text button shown below the text 'Get alerts for price drops?', which takes the user to the Android notification settings. Another use is in the primary button of the dialog prompting the user to create a device lock, which takes the user to the Android security settings.">
-        Go to Settings
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_TITLE" desc="Title of the default browser section's bottom sheet in the educational tip module on NTP.">
+        Use Chrome By Default
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_DESCRIPTION" desc="Description of the default browser section's bottom sheet in the educational tip module on NTP.">
+        You can now use Chrome anytime you browse or tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_FIRST_STEP" desc="The first step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        On your phone, open Settings
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP" desc="The second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Apps  > Default apps
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP_ACCESSIBILITY" desc="Accessibility string that describes the second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Apps then tap Default apps
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP" desc="The third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Browser app > Chrome
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP_ACCESSIBILITY" desc="Accessibility string that describes the third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Browser app then tap Chrome
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_BUTTON" desc="The name of the button in the bottom sheet of the default browser section within the educational tip module on the NTP">
+        Settings
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_CLOSED" desc="Accessibility string that describes that the default browser bottom sheet has closed.">
+        Default browser bottom sheet closed
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="Accessibility string that describes the default browser bottom sheet.">
+        Default browser bottom sheet
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_ACCESSIBILITY_OPENED_FULL" desc="Accessibility string that describes that the default browser bottom sheet has fully opened.">
+        Default browser bottom sheet opened at full height
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_TITLE" desc="Title of the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Browse across devices
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_DESCRIPTION" desc="Description of the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Get your history on all your devices, so you can easily pick up where you left off
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_TURN_ON" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Turn on
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_LETS_GO" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Let’s go
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_HISTORY_SYNC_BUTTON_CONTINUE" desc="Text on the clickable button on the history sync promo that invites users to turn on history sync in the educational tip module on NTP.">
+        Continue
       </message>
 
       <!-- Safety Hub Magic Stack strings -->
@@ -1210,6 +1289,52 @@
       </message>
       <message name="IDS_IPH_DRAG_AND_DROP_CONTENT" desc="This text shows on the in-product help dialog for drag-and-drop. It gives instructions on how to drag and drop to create a group.">
         To group tabs, touch &amp; hold a tab. Then, drag it onto another tab.
+      </message>
+
+      <!-- Action confirmation dialog strings -->
+      <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
+        Don&apos;t ask again
+      </message>
+
+      <!-- New Tab Page Customization strings -->
+      <message name="IDS_NTP_CUSTOMIZATION_TITLE" desc="Title of the new tab page customization bottom sheet">
+        Customize your new tab page
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_SUBTITLE" desc="Subtitle of the new tab page customization bottom sheet">
+        Quickly get to what matters to you
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_SETTINGS_TITLE" desc="Open setting page for feed section customization when clicked">
+        Discover feed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page customization main bottom sheet is fully opened.">
+        Customize your new tab page bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_NTP_CARDS_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page cards bottom sheet is fully opened.">
+        New tab page cards bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the feed bottom sheet is fully opened.">
+        Discover feed bottom sheet opened at full height
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_CLOSED" desc="Accessibility string that describes a new tab page customization bottom sheet is closed">
+        Customize your new tab page bottom sheet closed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_LIST_ITEMS_TITLE" desc="Title of the list items in the new tab page customization discover feed bottom sheet">
+        Manage your feed
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_NTP_CARDS_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the new tab page cards bottom sheet.">
+        New tab page cards bottom sheet
+      </message>
+      <message name="IDS_NTP_CUSTOMIZATION_FEED_BOTTOM_SHEET" desc="Accessibility string to announce the currently displaying bottom sheet is the feed bottom sheet.">
+        Discover feed bottom sheet
+      </message>
+
+      <!-- What's New page strings -->
+      <!-- TODO(crbug.com/390190615): Make the strings translateable. -->
+      <message name="IDS_WHATS_NEW_PAGE_TITLE" translateable="false" desc="Title of the what's new page.">
+        What&apos;s New
+      </message>
+      <message name="IDS_WHATS_NEW_PAGE_DESCRIPTION" translateable="false" desc="Description of the what's new page.">
+        What&apos;s New in Chrome
       </message>
     </messages>
   </release>

@@ -3,3 +3,6 @@ include_rules = [
   "+ios/chrome/browser/web_state_list/model",
 ]
 
+specific_include_rules = {
+  "tab_group.mm": [ "+ios/chrome/browser/saved_tab_groups/ui" ]
+}

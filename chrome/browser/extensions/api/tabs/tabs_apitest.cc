@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_apitest.h"
-
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +33,7 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:
@@ -183,12 +183,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
 }
 
 // TODO(crbug.com/40254426): Move to tabs_interactive_test.cc
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/40890826): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
-#endif
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, LastAccessed) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/last_accessed")) << message_;
@@ -252,7 +250,8 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 // https://crbug.com/1450747 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/381214152): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
 #else
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
@@ -263,7 +262,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
 }
 
 // https://crbug.com/1450933 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/381277829): Flaky on ASAN and MSAN builds.
+#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
@@ -292,8 +292,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
       << message_;
 }
 
-// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40803947): Fix flakiness on Linux then reenable.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CaptureVisibleDisabled DISABLED_CaptureVisibleDisabled
 #else
 #define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
@@ -323,7 +323,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, OnUpdated) {
+// TODO(crbug.com/378027647) Failing on ChromeOS and Linux
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_OnUpdated DISABLED_OnUpdated
+#else
+#define MAYBE_OnUpdated OnUpdated
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, MAYBE_OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
 }
 
@@ -497,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
       OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
   std::string args = base::StringPrintf(
       R"({"isIncognito": %s, "windowId": %d})",
-      is_incognito_enabled ? "true" : "false",
+      base::ToString(is_incognito_enabled),
       extensions::ExtensionTabUtil::GetWindowId(incognito_browser));
 
   EXPECT_TRUE(RunExtensionTest("tabs/basics/incognito",

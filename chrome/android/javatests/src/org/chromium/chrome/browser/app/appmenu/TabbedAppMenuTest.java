@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.content.res.Configuration;
-import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
@@ -26,7 +24,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -34,25 +33,15 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteMetricsDelegate;
 import org.chromium.chrome.browser.sync.FakeSyncServiceImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
@@ -60,30 +49,25 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.signin.test.util.TestAccounts;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeoutException;
 
 /** Tests tabbed mode app menu popup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-        message = "crbug.com/354278364")
 public class TabbedAppMenuTest {
     private static final int RENDER_TEST_REVISION = 2;
 
@@ -92,9 +76,11 @@ public class TabbedAppMenuTest {
 
     private static final String TEST_URL = UrlUtils.encodeHtmlDataUri("<html>foo</html>");
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
@@ -106,17 +92,14 @@ public class TabbedAppMenuTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
 
-    @Rule public final JniMocker mJniMocker = new JniMocker();
-
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     private AppMenuHandler mAppMenuHandler;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         // Prevent "GmsCore outdated" error from being exposed in bots with old version.
-        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                 .thenReturn(false);
 
@@ -127,7 +110,7 @@ public class TabbedAppMenuTest {
 
         CompositorAnimationHandler.setTestingMode(true);
 
-        mActivityTestRule.startMainActivityWithURL(TEST_URL);
+        mActivityTestRule.startOnUrl(TEST_URL);
 
         AppMenuTestSupport.overrideOnOptionItemSelectedListener(
                 mActivityTestRule.getAppMenuCoordinator(), unused -> {});
@@ -135,9 +118,6 @@ public class TabbedAppMenuTest {
 
         showAppMenuAndAssertMenuShown();
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> getListView().setSelection(0));
-        CriteriaHelper.pollInstrumentationThread(
-                () -> Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0)));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -154,21 +134,6 @@ public class TabbedAppMenuTest {
                             ContentSettingsType.REQUEST_DESKTOP_SITE,
                             false);
                 });
-    }
-
-    /** Verify opening a new tab from the menu. */
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    public void testMenuNewTab() {
-        final int tabCountBefore = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                (ChromeTabbedActivity) mActivityTestRule.getActivity());
-        final int tabCountAfter = mActivityTestRule.getActivity().getCurrentTabModel().getCount();
-        Assert.assertTrue(
-                "Expected: " + (tabCountBefore + 1) + " Got: " + tabCountAfter,
-                tabCountBefore + 1 == tabCountAfter);
     }
 
     /**
@@ -220,83 +185,22 @@ public class TabbedAppMenuTest {
 
     /**
      * Test that hitting ENTER on the top item actually triggers the top item. Catches regressions
-     * for https://crbug.com/191239 for shrunken menus.
+     * for https://crbug.com/191239 for shrunken menus in landscape.
      */
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    public void testKeyboardMenuEnterOnTopItemLandscape() {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+    public void testKeyboardMenuEnterOnTopItem() {
         showAppMenuAndAssertMenuShown();
         moveToBoundary(true, false);
         assertEquals(0, getCurrentFocusedRow());
         hitEnterAndAssertAppMenuDismissed();
-    }
-
-    /** Test that hitting ENTER on the top item doesn't crash Chrome. */
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    public void testKeyboardMenuEnterOnTopItemPortrait() {
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
-        showAppMenuAndAssertMenuShown();
-        moveToBoundary(true, false);
-        assertEquals(0, getCurrentFocusedRow());
-        hitEnterAndAssertAppMenuDismissed();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    public void testHideMenuOnToggleOverview() throws TimeoutException {
-        // App menu is shown during setup.
-        Assert.assertTrue("App menu should be showing.", mAppMenuHandler.isAppMenuShowing());
-        Assert.assertFalse(
-                "Overview shouldn't be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, false);
-
-        Assert.assertTrue(
-                "Overview should be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-        Assert.assertFalse("App menu shouldn't be showing.", mAppMenuHandler.isAppMenuShowing());
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(
-                            "App menu should be allowed to show.",
-                            AppMenuTestSupport.shouldShowAppMenu(
-                                    mActivityTestRule.getAppMenuCoordinator()));
-                });
-        showAppMenuAndAssertMenuShown();
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
-        Assert.assertFalse(
-                "Overview shouldn't be showing.",
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-        CriteriaHelper.pollUiThread(
-                () -> !mAppMenuHandler.isAppMenuShowing(), "App menu shouldn't be showing.");
     }
 
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testBookmarkMenuItem() throws IOException {
         PropertyModel bookmarkStarPropertyModel =
                 AppMenuTestSupport.getMenuItemPropertyModel(
@@ -332,18 +236,7 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
-    public void testDividerLineMenuItem() throws IOException {
-        int firstDividerLineIndex =
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
-        Assert.assertTrue("No divider line found.", firstDividerLineIndex != -1);
-        mRenderTestRule.render(getListView().getChildAt(firstDividerLineIndex), "divider_line");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main", "RenderTest"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testRequestDesktopSiteMenuItem_checkbox() throws IOException {
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
         boolean isRequestDesktopSite =
@@ -352,8 +245,7 @@ public class TabbedAppMenuTest {
 
         int requestDesktopSiteIndex =
                 AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(),
-                        R.id.request_desktop_site_row_menu_id);
+                        mActivityTestRule.getAppMenuCoordinator(), R.id.request_desktop_site_id);
         Assert.assertNotEquals("No request desktop site row found.", -1, requestDesktopSiteIndex);
 
         Callable<Boolean> isVisible =
@@ -407,64 +299,6 @@ public class TabbedAppMenuTest {
 
     @Test
     @LargeTest
-    @Feature({"Browser", "Main", "QuickDelete", "RenderTest"})
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
-    public void testQuickDeleteMenu_Shown() throws IOException {
-        showAppMenuAndAssertMenuShown();
-        int quickDeletePosition =
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id);
-        mRenderTestRule.render(getListView().getChildAt(quickDeletePosition), "quick_delete");
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Browser", "Main", "QuickDelete"})
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
-    public void testQuickDeleteMenu_entryFromMenuItemHistogram() throws IOException {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        QuickDeleteMetricsDelegate.HISTOGRAM_NAME,
-                        QuickDeleteMetricsDelegate.QuickDeleteAction.MENU_ITEM_CLICKED);
-
-        MenuUtils.invokeCustomMenuActionSync(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                R.id.quick_delete_menu_id);
-
-        histogramWatcher.assertExpected();
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main", "QuickDelete"})
-    @EnableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
-    public void testQuickDeleteMenu_NotShownInIncognito() {
-        // Hide first any shown app menu as it can interfere with this test.
-        hitEnterAndAssertAppMenuDismissed();
-
-        mActivityTestRule.newIncognitoTabFromMenu();
-        showAppMenuAndAssertMenuShown();
-        assertEquals(
-                -1,
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main", "QuickDelete"})
-    @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
-    public void testQuickDeleteMenu_NotShown() throws IOException {
-        showAppMenuAndAssertMenuShown();
-        assertEquals(
-                -1,
-                AppMenuTestSupport.findIndexOfMenuItemById(
-                        mActivityTestRule.getAppMenuCoordinator(), R.id.quick_delete_menu_id));
-    }
-
-    @Test
-    @LargeTest
     @Feature({"Browser", "Main", "RenderTest"})
     public void testSettingsMenuItem_NoBadgeShownForNotSignedInUsers() throws IOException {
         View view = getSettingsMenuItemView();
@@ -489,7 +323,7 @@ public class TabbedAppMenuTest {
         // Fake an identity error.
         fakeSyncService.setRequiresClientUpgrade(true);
         // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         showAppMenuAndAssertMenuShown();
         View view = getSettingsMenuItemView();
@@ -506,53 +340,12 @@ public class TabbedAppMenuTest {
     public void testSettingsMenuItem_NoBadgeShownForSignedInUsersIfNoError() throws IOException {
         ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
         // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSignin();
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         showAppMenuAndAssertMenuShown();
         View view = getSettingsMenuItemView();
         Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
         mRenderTestRule.render(view, "settings_menu_item_signed_in_user_no_error");
-    }
-
-    @Test
-    @LargeTest
-    @Feature({"Browser", "Main", "RenderTest"})
-    public void testSettingsMenuItem_BadgeShownForSyncingUsersOnSyncError() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
-        FakeSyncServiceImpl fakeSyncService =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            FakeSyncServiceImpl fakeSyncServiceImpl = new FakeSyncServiceImpl();
-                            SyncServiceFactory.setInstanceForTesting(fakeSyncServiceImpl);
-                            return fakeSyncServiceImpl;
-                        });
-        // Fake an identity error.
-        fakeSyncService.setRequiresClientUpgrade(true);
-        // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        showAppMenuAndAssertMenuShown();
-        View view = getSettingsMenuItemView();
-        assertEquals(
-                "Content description should mention an error.",
-                view.findViewById(R.id.menu_item_text).getContentDescription(),
-                mActivityTestRule.getActivity().getString(R.string.menu_settings_account_error));
-        mRenderTestRule.render(view, "settings_menu_item_syncing_user_sync_error");
-    }
-
-    @Test
-    @LargeTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_22W30)
-    @Feature({"Browser", "Main", "RenderTest"})
-    public void testSettingsMenuItem_NoBadgeShownForSyncingUsersIfNoError() throws IOException {
-        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuHandler.hideAppMenu());
-        // Sign in and wait for sync machinery to be active.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        showAppMenuAndAssertMenuShown();
-        View view = getSettingsMenuItemView();
-        Assert.assertNull(view.findViewById(R.id.menu_item_text).getContentDescription());
-        mRenderTestRule.render(view, "settings_menu_item_syncing_user_no_error");
     }
 
     private void showAppMenuAndAssertMenuShown() {
@@ -561,6 +354,13 @@ public class TabbedAppMenuTest {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
                     Assert.assertTrue(mAppMenuHandler.isAppMenuShowing());
+                });
+
+        // Make sure the menu is ready to be selected.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    getListView().setSelection(0);
+                    Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0));
                 });
     }
 

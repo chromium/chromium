@@ -8,13 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/model/update_model.h"
-#include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/default_clock.h"
@@ -23,21 +20,26 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/extended_updates/extended_updates_notification.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
-#include "chrome/browser/ash/settings/device_settings_test_helper.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -57,15 +59,15 @@ constexpr char kTimeFarPast[] = "2023-12-25";
 constexpr char kTimeFuture[] = "2024-04-30";
 constexpr char kTimeFarFuture[] = "2025-05-15";
 
-constexpr char kGaiaId[] = "1234";
+constexpr GaiaId::Literal kGaiaId("1234");
 
 constexpr char kFirstAppName[] = "kFirstAppName";
 constexpr char kSecondAppName[] = "kSecondAppName";
 
-class ExtendedUpdatesControllerTest : public AshTestBase {
+class ExtendedUpdatesControllerTest : public ChromeAshTestBase {
  public:
   ExtendedUpdatesControllerTest()
-      : AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
+      : ChromeAshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
             std::make_unique<content::BrowserTaskEnvironment>())),
         fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {}
@@ -75,12 +77,16 @@ class ExtendedUpdatesControllerTest : public AshTestBase {
   ~ExtendedUpdatesControllerTest() override = default;
 
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     ExtendedUpdatesController::ResetInstanceForTesting();
 
     test_clock_.SetNow(GetTime(kTimeNow));
     controller()->SetClockForTesting(&test_clock_);
+
+    subscription_ = FakeOwnerSettingsService::SetUpTestingFactory(
+        cros_settings_.device_settings(),
+        ash::OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil());
 
     ASSERT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile(
@@ -103,7 +109,9 @@ class ExtendedUpdatesControllerTest : public AshTestBase {
   void TearDown() override {
     controller()->SetClockForTesting(base::DefaultClock::GetInstance());
 
-    AshTestBase::TearDown();
+    subscription_ = {};
+
+    ChromeAshTestBase::TearDown();
   }
 
  protected:
@@ -171,10 +179,11 @@ class ExtendedUpdatesControllerTest : public AshTestBase {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
+  base::CallbackListSubscription subscription_;
   TestingProfileManager profile_manager_;
   base::test::ScopedFeatureList feature_list_{
       features::kExtendedUpdatesOptInFeature};
-  ScopedDeviceSettingsTestHelper device_settings_helper_;
+  ScopedTestDeviceSettingsService device_settings_service_;
   ScopedTestingCrosSettings cros_settings_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
   std::unique_ptr<NotificationDisplayServiceTester>

@@ -11,8 +11,7 @@
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // This class sets a MutablePhoneModel by observing info provided by the
 // BrowserTabsModelProvider.
@@ -46,7 +45,6 @@ class BrowserTabsModelController
   raw_ptr<MutablePhoneModel, DanglingUntriaged> mutable_phone_model_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_MODEL_CONTROLLER_H_

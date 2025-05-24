@@ -4,10 +4,10 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/util/process_version.gni")
 import("//chrome/browser/downgrade/buildflags.gni")
 import("//chrome/common/features.gni")
+import("//components/cdm/common/playready.gni")
 import("//components/nacl/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/signin/features.gni")
@@ -60,6 +60,7 @@ buildflag_header("buildflags") {
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
     "ENABLE_DOWNGRADE_PROCESSING=$enable_downgrade_processing",
+    "ENABLE_GLIC=$enable_glic",
     "ENABLE_HANGOUT_SERVICES_EXTENSION=$enable_hangout_services_extension",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",
     "ENABLE_SESSION_SERVICE=$enable_session_service",
@@ -75,10 +76,7 @@ source_set("channel_info") {
     "channel_info.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
-  deps = [
-    "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//build:branding_buildflags" ]
   public_deps = [
     "//base",
     "//components/version_info",
@@ -92,11 +90,9 @@ source_set("channel_info") {
   } else if (is_android) {
     sources += [ "channel_info_android.cc" ]
     public_deps += [ "//components/version_info/android:channel_getter" ]
-  } else if (is_chromeos_ash) {
+  } else if (is_chromeos) {
     sources += [ "channel_info_chromeos.cc" ]
     deps += [ "//chromeos/ash/components/channel" ]
-  } else if (is_chromeos_lacros) {
-    sources += [ "channel_info_lacros.cc" ]
   } else if (is_posix) {
     sources += [ "channel_info_posix.cc" ]
   }
@@ -176,7 +172,6 @@ static_library("common_lib") {
   ]
 
   public_deps = [
-    ":available_offline_content_mojom",
     ":buildflags",
     ":channel_info",
     ":ini_parser",
@@ -207,7 +202,6 @@ static_library("common_lib") {
     "//components/embedder_support/origin_trials",
     "//components/error_page/common",
     "//components/favicon_base",
-    "//components/flags_ui:switches",
     "//components/gcm_driver/common",
     "//components/language_detection/content/common",
     "//components/metrics",
@@ -228,6 +222,7 @@ static_library("common_lib") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_search_api",
+    "//components/sampling_profiler",
     "//components/services/app_service",
     "//components/services/heap_profiling/public/cpp",
     "//components/strings",
@@ -238,6 +233,7 @@ static_library("common_lib") {
     "//components/variations",
     "//components/variations/net",
     "//components/visitedlink/common",
+    "//components/webui/flags:switches",
     "//google_apis",
     "//gpu/command_buffer/service",
     "//gpu/config",
@@ -264,7 +260,7 @@ static_library("common_lib") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
+    "//components/cdm/common:buildflags",
     "//components/crash/core/app",
     "//components/google/core/common",
     "//components/heap_profiling/in_process",
@@ -275,9 +271,10 @@ static_library("common_lib") {
     "//components/no_state_prefetch/common:mojo_bindings",
     "//components/page_load_metrics/common:common",
     "//components/pdf/common:constants",
+    "//components/pdf/common:util",
   ]
 
-  if (is_android || enable_library_cdms) {
+  if (is_android || enable_library_cdms || enable_playready) {
     public_deps += [ "//components/cdm/common" ]
   }
 
@@ -288,6 +285,7 @@ static_library("common_lib") {
   if (enable_extensions_core) {
     public_deps += [
       "//chrome/common/extensions",
+      "//extensions:extensions_resources",
       "//extensions/common",
       "//extensions/common:common_constants",
       "//extensions/common:core_api_provider",
@@ -314,7 +312,6 @@ static_library("common_lib") {
       public_deps += [
         "//chrome/common/extensions/api",
         "//chrome/common/extensions/api:extensions_features",
-        "//extensions:extensions_resources",
         "//extensions/common/api",
         "//extensions/strings",
         "//services/device/public/cpp/usb",
@@ -331,16 +328,13 @@ static_library("common_lib") {
     public_deps += [ ":app_mode_app_support" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     assert(enable_extensions)
     public_deps += [ "//ash/keyboard/ui" ]
-    deps += [ "//ash/constants" ]
-  } else if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
-
-  if (is_chromeos) {
-    deps += [ "//chrome/common/chromeos/extensions" ]
+    deps += [
+      "//ash/constants",
+      "//chrome/common/chromeos/extensions",
+    ]
   }
 
   if (enable_nacl) {
@@ -365,8 +359,11 @@ static_library("common_lib") {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
     sources += [
-      "accessibility/read_anything_constants.cc",
-      "accessibility/read_anything_constants.h",
+      "actor/action_result.cc",
+      "actor/action_result.h",
+      "actor/actor_logging.h",
+      "read_anything/read_anything_util.cc",
+      "read_anything/read_anything_util.h",
     ]
   }
 
@@ -475,7 +472,6 @@ static_library("non_code_constants") {
     "chrome_constants.h",
     "chrome_switches.cc",
     "chrome_switches.h",
-    "env_vars.cc",
     "env_vars.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -484,7 +480,6 @@ static_library("non_code_constants") {
     ":buildflags",
     ":version_header",
     "//base",
-    "//build:chromeos_buildflags",
     "//ppapi/buildflags",
   ]
 
@@ -512,7 +507,6 @@ component("chrome_features") {
     ":buildflags",
     ":non_code_constants",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/offline_pages/buildflags",
     "//device/vr/buildflags",
     "//extensions/buildflags",
@@ -537,6 +531,7 @@ static_library("url_constants") {
 
   public_deps = [
     ":buildflags",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//components/signin/public/base:signin_buildflags",
@@ -576,7 +571,9 @@ static_library("constants") {
     ":non_code_constants",
     "//components/compose:buildflags",
     "//components/signin/public/base:signin_buildflags",
+    "//content/public/common:buildflags",
     "//content/public/common:result_codes",
+    "//pdf:buildflags",
     "//rlz/buildflags",
     "//third_party/widevine/cdm:buildflags",
   ]
@@ -612,18 +609,7 @@ static_library("constants") {
     # implemented in //ui/base, so we need that dependency.
     deps += [ "//ui/base" ]
   }
-  if (is_chromeos_lacros) {
-    sources += [
-      "chrome_paths_lacros.cc",
-      "chrome_paths_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/cpp:crosapi_constants",
-      "//chromeos/lacros:lacros_paths",
-      "//chromeos/startup",
-    ]
-    public_deps += [ "//chromeos/crosapi/mojom" ]
-  } else if (is_linux || is_chromeos) {
+  if (is_linux || is_chromeos) {
     sources += [ "chrome_paths_linux.cc" ]
     deps += [ ":channel_info" ]
   }
@@ -662,7 +648,7 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  if (enable_extensions) {
+  if (enable_extensions_core) {
     sources += [
       "extensions/extension_test_util.cc",
       "extensions/extension_test_util.h",
@@ -699,7 +685,6 @@ mojom("mojo_bindings") {
     "chrome_render_frame.mojom",
     "google_accounts_private_api_extension.mojom",
     "media/webrtc_logging.mojom",
-    "metrics.mojom",
     "net/net_error_page_support.mojom",
     "net_benchmarking.mojom",
     "network_diagnostics.mojom",
@@ -715,6 +700,8 @@ mojom("mojo_bindings") {
 
   if (is_android) {
     sources += [ "sandbox_status_extension_android.mojom" ]
+  } else {
+    sources += [ "actor.mojom" ]
   }
 
   if (is_mac) {
@@ -742,6 +729,16 @@ mojom("mojo_bindings") {
       "conflicts/module_event_sink_win.mojom",
       "font_prewarmer.mojom",
     ]
+  }
+
+  if (enable_ppapi) {
+    sources += [ "ppapi_metrics.mojom" ]
+  }
+
+  enabled_features = []
+
+  if (enable_glic) {
+    enabled_features += [ "enable_glic" ]
   }
 
   public_deps = [
@@ -777,8 +774,6 @@ mojom("mojo_bindings") {
 
   component_deps = [ "//content/public/common" ]
 
-  enabled_features = []
-
   if (enable_offline_pages) {
     sources += [ "mhtml_page_notifier.mojom" ]
     deps += [ "//third_party/blink/public/mojom:mojom_mhtml_load_result" ]
@@ -796,11 +791,6 @@ mojom("mojo_bindings") {
 
 mojom("supervised_user_commands_mojom") {
   sources = [ "supervised_user_commands.mojom" ]
-}
-
-mojom("available_offline_content_mojom") {
-  sources = [ "available_offline_content.mojom" ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }
 
 mojom("offline_page_auto_fetcher_mojom") {

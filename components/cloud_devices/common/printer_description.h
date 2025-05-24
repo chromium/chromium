@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/description_items.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -86,10 +85,8 @@ class RangeVendorCapability {
 
   RangeVendorCapability& operator=(RangeVendorCapability&& other);
 
-  bool operator==(const RangeVendorCapability& other) const;
-  bool operator!=(const RangeVendorCapability& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const RangeVendorCapability&,
+                         const RangeVendorCapability&) = default;
 
   bool IsValid() const;
   bool LoadFrom(const base::Value::Dict& dict);
@@ -109,10 +106,8 @@ struct SelectVendorCapabilityOption {
   ~SelectVendorCapabilityOption();
 
   bool IsValid() const;
-  bool operator==(const SelectVendorCapabilityOption& other) const;
-  bool operator!=(const SelectVendorCapabilityOption& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const SelectVendorCapabilityOption&,
+                         const SelectVendorCapabilityOption&) = default;
 
   std::string value;
   std::string display_name;
@@ -141,10 +136,8 @@ class TypedValueVendorCapability {
 
   TypedValueVendorCapability& operator=(TypedValueVendorCapability&& other);
 
-  bool operator==(const TypedValueVendorCapability& other) const;
-  bool operator!=(const TypedValueVendorCapability& other) const {
-    return !(*this == other);
-  }
+  friend bool operator==(const TypedValueVendorCapability&,
+                         const TypedValueVendorCapability&) = default;
 
   bool IsValid() const;
   bool LoadFrom(const base::Value::Dict& dict);
@@ -182,9 +175,6 @@ class VendorCapability {
   ~VendorCapability();
 
   bool operator==(const VendorCapability& other) const;
-  bool operator!=(const VendorCapability& other) const {
-    return !(*this == other);
-  }
 
   bool IsValid() const;
   bool LoadFrom(const base::Value::Dict& dict);
@@ -210,8 +200,7 @@ struct VendorItem {
   VendorItem(const std::string& id, const std::string& value);
 
   bool IsValid() const;
-  bool operator==(const VendorItem& other) const;
-  bool operator!=(const VendorItem& other) const { return !(*this == other); }
+  friend bool operator==(const VendorItem&, const VendorItem&) = default;
 
   std::string id;
   std::string value;
@@ -230,8 +219,7 @@ struct Color {
   explicit Color(ColorType type);
 
   bool IsValid() const;
-  bool operator==(const Color& other) const;
-  bool operator!=(const Color& other) const { return !(*this == other); }
+  friend bool operator==(const Color&, const Color&) = default;
 
   ColorType type;
   std::string vendor_id;
@@ -250,24 +238,14 @@ enum class OrientationType {
   AUTO_ORIENTATION,
 };
 
-enum class MarginsType {
-  NO_MARGINS,
-  STANDARD_MARGINS,
-  CUSTOM_MARGINS,
-};
-
+// This deviates from the CDD#Margins now as the type field has been removed.
+// TODO(316999874, 308709702): update the spec to reflect this change.
 struct Margins {
   Margins();
-  Margins(MarginsType type,
-          int32_t top_um,
-          int32_t right_um,
-          int32_t bottom_um,
-          int32_t left_um);
+  Margins(int32_t top_um, int32_t right_um, int32_t bottom_um, int32_t left_um);
 
   bool operator==(const Margins& other) const;
-  bool operator!=(const Margins& other) const { return !(*this == other); }
 
-  MarginsType type;
   int32_t top_um;
   int32_t right_um;
   int32_t bottom_um;
@@ -279,19 +257,20 @@ struct Dpi {
   Dpi(int32_t horizontal, int32_t vertical);
 
   bool IsValid() const;
-  bool operator==(const Dpi& other) const;
-  bool operator!=(const Dpi& other) const { return !(*this == other); }
+  friend bool operator==(const Dpi&, const Dpi&) = default;
 
   int32_t horizontal;
   int32_t vertical;
 };
 
+// This deviates from the CDD#Margins now as the values field have been renamed.
+// TODO(316999874, 308709702): update the spec to reflect this change.
 enum class FitToPageType {
-  NO_FITTING,
-  FIT_TO_PAGE,
-  GROW_TO_PAGE,
-  SHRINK_TO_PAGE,
-  FILL_PAGE,
+  AUTO,
+  AUTO_FIT,
+  FILL,
+  FIT,
+  NONE,
 };
 
 enum class MediaSize {
@@ -481,7 +460,6 @@ struct Media {
 
   bool IsValid() const;
   bool operator==(const Media& other) const;
-  bool operator!=(const Media& other) const { return !(*this == other); }
 
   MediaSize size_name;
   gfx::Size size_um;
@@ -560,8 +538,7 @@ struct Interval {
   Interval(int32_t start, int32_t end);
   explicit Interval(int32_t start);
 
-  bool operator==(const Interval& other) const;
-  bool operator!=(const Interval& other) const { return !(*this == other); }
+  friend bool operator==(const Interval&, const Interval&) = default;
 
   int32_t start;
   int32_t end;
@@ -574,8 +551,7 @@ struct MediaType {
   MediaType(const std::string& vendor_id,
             const std::string& custom_display_name);
 
-  bool operator==(const MediaType& other) const;
-  bool operator!=(const MediaType& other) const { return !(*this == other); }
+  friend bool operator==(const MediaType&, const MediaType&) = default;
 
   bool IsValid() const;
 

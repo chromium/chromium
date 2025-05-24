@@ -4,11 +4,11 @@
 
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 
-#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "base/values.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -21,7 +21,7 @@ namespace policy {
 DefaultGeolocationPolicyHandler::DefaultGeolocationPolicyHandler()
     : IntRangePolicyHandlerBase(key::kDefaultGeolocationSetting, 1, 3, false) {}
 
-DefaultGeolocationPolicyHandler::~DefaultGeolocationPolicyHandler() {}
+DefaultGeolocationPolicyHandler::~DefaultGeolocationPolicyHandler() = default;
 
 bool DefaultGeolocationPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,

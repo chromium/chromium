@@ -174,7 +174,7 @@ class EventModelImplTest : public ::testing::Test {
 
 class LoadFailingEventModelImplTest : public EventModelImplTest {
  public:
-  LoadFailingEventModelImplTest() {}
+  LoadFailingEventModelImplTest() = default;
 
   std::unique_ptr<TestInMemoryEventStore> CreateStore() override {
     return std::make_unique<TestInMemoryEventStore>(

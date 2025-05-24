@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FORM_DATA_BYTES_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FORM_DATA_BYTES_CONSUMER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -25,7 +26,7 @@ class FormDataBytesConsumer final : public BytesConsumer {
   explicit CORE_EXPORT FormDataBytesConsumer(DOMArrayBuffer*);
   explicit CORE_EXPORT FormDataBytesConsumer(DOMArrayBufferView*);
   explicit CORE_EXPORT FormDataBytesConsumer(SegmentedBuffer&&);
-  CORE_EXPORT FormDataBytesConsumer(const void* data, wtf_size_t);
+  explicit CORE_EXPORT FormDataBytesConsumer(base::span<const uint8_t>);
   CORE_EXPORT FormDataBytesConsumer(ExecutionContext*,
                                     scoped_refptr<EncodedFormData>);
   CORE_EXPORT FormDataBytesConsumer(ExecutionContext*,
@@ -33,8 +34,8 @@ class FormDataBytesConsumer final : public BytesConsumer {
                                     BytesConsumer* consumer_for_testing);
 
   // BytesConsumer implementation
-  Result BeginRead(const char** buffer, size_t* available) override {
-    return impl_->BeginRead(buffer, available);
+  Result BeginRead(base::span<const char>& buffer) override {
+    return impl_->BeginRead(buffer);
   }
   Result EndRead(size_t read_size) override {
     return impl_->EndRead(read_size);

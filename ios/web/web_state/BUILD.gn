@@ -20,7 +20,6 @@ source_set("web_state") {
     "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//ios/web/public/session",
@@ -29,9 +28,9 @@ source_set("web_state") {
     "//ios/web/public/webui",
     "//ios/web/security",
     "//ios/web/session",
+    "//ios/web/util",
     "//ios/web/web_state/ui",
     "//ios/web/web_state/ui:crw_web_view_navigation_proxy",
-    "//ios/web/web_view:util",
     "//ios/web/webui",
     "//net",
     "//ui/gfx",
@@ -42,9 +41,6 @@ source_set("web_state") {
   }
 
   sources = [
-    "global_web_state_event_tracker.h",
-    "global_web_state_event_tracker.mm",
-    "global_web_state_observer.mm",
     "web_state.mm",
     "web_state_delegate.mm",
     "web_state_delegate_bridge.mm",
@@ -59,6 +55,12 @@ source_set("web_state") {
     "web_state_observer_bridge.mm",
     "web_state_policy_decider.mm",
     "web_state_policy_decider_bridge.mm",
+
+    # TODO(crbug.com/41353925): delete those files when no longer needed.
+    "deprecated/global_web_state_event_tracker.h",
+    "deprecated/global_web_state_event_tracker.mm",
+    "deprecated/global_web_state_observer.h",
+    "deprecated/global_web_state_observer.mm",
   ]
 
   frameworks = [ "QuartzCore.framework" ]

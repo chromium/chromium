@@ -25,7 +25,6 @@ class SSLErrorAssistantComponentInstallerPolicy
       const SSLErrorAssistantComponentInstallerPolicy&) = delete;
   SSLErrorAssistantComponentInstallerPolicy& operator=(
       const SSLErrorAssistantComponentInstallerPolicy&) = delete;
-  ~SSLErrorAssistantComponentInstallerPolicy() override = default;
 
  private:
   // ComponentInstallerPolicy methods:

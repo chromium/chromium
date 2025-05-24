@@ -125,7 +125,7 @@ TEST_F(TrustTokenRequestRedemptionHelperTest, RejectsIfTooManyIssuers) {
   mojom::TrustTokenOperationStatus result =
       ExecuteBeginOperationAndWaitForResult(&helper, request.get());
 
-  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kResourceLimited);
+  EXPECT_EQ(result, mojom::TrustTokenOperationStatus::kSiteIssuerLimit);
 }
 
 // Check that redemption fails if its key commitment request fails.

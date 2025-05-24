@@ -29,13 +29,15 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
   SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(0, dialog_insets.left(),
                                                        trailing_vertical_space,
                                                        dialog_insets.right())));
-  if (menu_controller)
+  if (menu_controller) {
     set_context_menu_controller(menu_controller);
+  }
 
   checkbox_ = AddChildView(std::make_unique<views::Checkbox>(
       pref_info.GetGalleryDisplayName(), views::Button::PressedCallback()));
-  if (menu_controller)
+  if (menu_controller) {
     checkbox_->set_context_menu_controller(menu_controller);
+  }
   checkbox_->SetElideBehavior(gfx::ELIDE_MIDDLE);
   std::u16string tooltip_text = pref_info.GetGalleryTooltip();
   checkbox_->SetTooltipText(tooltip_text);
@@ -43,11 +45,12 @@ MediaGalleryCheckboxView::MediaGalleryCheckboxView(
   std::u16string details = pref_info.GetGalleryAdditionalDetails();
   secondary_text_ = AddChildView(std::make_unique<views::Label>(
       details, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
-  if (menu_controller)
+  if (menu_controller) {
     secondary_text_->set_context_menu_controller(menu_controller);
+  }
   secondary_text_->SetVisible(details.length() > 0);
   secondary_text_->SetElideBehavior(gfx::ELIDE_HEAD);
-  secondary_text_->SetTooltipText(tooltip_text);
+  secondary_text_->SetCustomTooltipText(tooltip_text);
   secondary_text_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       0, provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL),
       0, 0)));
@@ -57,8 +60,9 @@ MediaGalleryCheckboxView::~MediaGalleryCheckboxView() = default;
 
 void MediaGalleryCheckboxView::Layout(PassKey) {
   LayoutSuperclass<views::BoxLayoutView>(this);
-  if (GetPreferredSize().width() <= GetLocalBounds().width())
+  if (GetPreferredSize().width() <= GetLocalBounds().width()) {
     return;
+  }
 
   // If box layout doesn't fit, do custom layout. The secondary text should take
   // up at most half of the space and the checkbox can take up whatever is left.
@@ -67,8 +71,9 @@ void MediaGalleryCheckboxView::Layout(PassKey) {
       secondary_text_
           ->GetPreferredSize(views::SizeBounds(secondary_text_->width(), {}))
           .width();
-  if (!secondary_text_->GetVisible())
+  if (!secondary_text_->GetVisible()) {
     secondary_text_width = 0;
+  }
 
   gfx::Rect area = GetContentsBounds();
 

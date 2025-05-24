@@ -51,8 +51,8 @@ export class KeyValuePairViewerElement extends CrLitElement {
     };
   }
 
-  loading: boolean = false;
-  entries: KeyValuePairEntry[] = [];
+  accessor loading: boolean = false;
+  accessor entries: KeyValuePairEntry[] = [];
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -74,7 +74,7 @@ export class KeyValuePairViewerElement extends CrLitElement {
   }
 
   protected onExpandAllClick_() {
-    const entries = this.shadowRoot!.querySelectorAll<KeyValuePairEntryElement>(
+    const entries = this.shadowRoot.querySelectorAll<KeyValuePairEntryElement>(
         'key-value-pair-entry[collapsed]');
     for (const entry of entries) {
       entry.collapsed = false;
@@ -82,7 +82,7 @@ export class KeyValuePairViewerElement extends CrLitElement {
   }
 
   protected onCollapseAllClick_() {
-    const entries = this.shadowRoot!.querySelectorAll<KeyValuePairEntryElement>(
+    const entries = this.shadowRoot.querySelectorAll<KeyValuePairEntryElement>(
         'key-value-pair-entry:not([collapsed])');
     for (const entry of entries) {
       entry.collapsed = true;

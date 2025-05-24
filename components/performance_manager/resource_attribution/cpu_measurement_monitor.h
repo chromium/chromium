@@ -7,7 +7,7 @@
 
 #include <map>
 #include <optional>
-#include <vector>
+#include <set>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -20,7 +20,6 @@
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/graph/worker_node.h"
-#include "components/performance_manager/public/resource_attribution/attribution_helpers.h"
 #include "components/performance_manager/public/resource_attribution/cpu_measurement_delegate.h"
 #include "components/performance_manager/public/resource_attribution/origin_in_browsing_instance_context.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
@@ -31,6 +30,8 @@
 
 namespace resource_attribution {
 
+class ScopedCPUTimeResult;
+
 // Periodically collect CPU usage from process nodes.
 //
 // Note: this can't store measurements in NodeAttachedData because the final CPU
@@ -38,10 +39,10 @@ namespace resource_attribution {
 // graph. So this is not a decorator as defined in
 // components/performance_manager/README.md
 class CPUMeasurementMonitor
-    : public FrameNode::ObserverDefaultImpl,
-      public PageNode::ObserverDefaultImpl,
-      public ProcessNode::ObserverDefaultImpl,
-      public WorkerNode::ObserverDefaultImpl,
+    : public FrameNodeObserver,
+      public PageNodeObserver,
+      public ProcessNodeObserver,
+      public WorkerNodeObserver,
       public performance_manager::NodeDataDescriberDefaultImpl {
  public:
   CPUMeasurementMonitor();
@@ -98,23 +99,32 @@ class CPUMeasurementMonitor
   void RecordMemoryMetrics();
 
   // FrameNode::Observer:
-  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeAdded(
+      const FrameNode* frame_node,
+      const FrameNode* pending_parent_frame_node,
+      const PageNode* pending_page_node,
+      const ProcessNode* pending_process_node,
+      const FrameNode* pending_parent_or_outer_document_or_embedder) override;
   void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
   void OnOriginChanged(
       const FrameNode* frame_node,
       const std::optional<url::Origin>& previous_value) override;
 
   // PageNode::Observer:
+  void OnPageNodeAdded(const PageNode* page_node) override;
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
 
   // ProcessNode::Observer:
+  void OnProcessNodeAdded(const ProcessNode* process_node) override;
   void OnProcessLifetimeChange(const ProcessNode* process_node) override;
   void OnBeforeProcessNodeRemoved(const ProcessNode* process_node) override;
   void OnPriorityChanged(const ProcessNode* process_node,
                          base::TaskPriority previous_value) override;
 
   // WorkerNode::Observer:
-  void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
+  void OnBeforeWorkerNodeAdded(
+      const WorkerNode* worker_node,
+      const ProcessNode* pending_process_node) override;
   void OnBeforeWorkerNodeRemoved(const WorkerNode* worker_node) override;
   void OnBeforeClientFrameAdded(const WorkerNode* worker_node,
                                 const FrameNode* client_frame_node) override;
@@ -136,68 +146,33 @@ class CPUMeasurementMonitor
 
  private:
   friend class CPUMeasurementMonitorTest;
-
-  // Ref-counted class which holds a `ResourceContext` and `CPUTimeResult`.
-  //
-  // If the context is an `OriginInBrowsingInstanceContext`, the
-  // constructor/destructor maintain a non-owning pointer to `this` in
-  // `origin_in_browsing_instance_weak_results_`, allowing
-  // `GetOrCreateResultForContext()` to reuse a result that is still referenced
-  // by `dead_context_results_`.
-  class ScopedCPUTimeResult : public base::RefCounted<ScopedCPUTimeResult> {
-   public:
-    ScopedCPUTimeResult(CPUMeasurementMonitor* monitor,
-                        const ResourceContext& context,
-                        const CPUTimeResult& result);
-
-    ScopedCPUTimeResult(const ScopedCPUTimeResult&) = delete;
-    ScopedCPUTimeResult& operator=(const ScopedCPUTimeResult&) = delete;
-
-    CPUTimeResult& result() { return result_; }
-    const ResourceContext& context() const { return context_; }
-    size_t EstimateMemoryUsage() const;
-
-   private:
-    friend class base::RefCounted<ScopedCPUTimeResult>;
-
-    ~ScopedCPUTimeResult();
-
-    const raw_ptr<CPUMeasurementMonitor> monitor_;
-    const ResourceContext context_;
-    CPUTimeResult result_;
-  };
-
-  using ScopedCPUTimeResultPtr = scoped_refptr<ScopedCPUTimeResult>;
+  friend class ScopedCPUTimeResult;
 
   // Creates a CPUMeasurementData to track the CPU usage of `process_node`.
   void MonitorCPUUsage(const ProcessNode* process_node);
 
   // Updates the CPU measurement for all ProcessNodes being monitored using
   // MeasureAndDistributeCPUUsage(). Adds the estimated CPU usage of each frame
-  // and worker since the last time the process was measured to
-  // `measurement_results_`.
+  // and worker since the last time the process was measured to a
+  // ScopedCPUTimeResult.
   void UpdateAllCPUMeasurements();
 
   // Updates the CPU measurement for `process_node` using
   // MeasureAndDistributeCPUUsage(). Adds the estimated CPU usage of each frame
-  // and worker since the last time the process was measured to
-  // `measurement_results_`. `graph_change` is the event that triggered the
-  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
-  // change.
+  // and worker since the last time the process was measured to a
+  // ScopedCPUTimeResult. `graph_change` is the event that triggered the
+  // measurement or NoGraphChange if it wasn't triggered due to a graph change.
   void UpdateCPUMeasurements(const ProcessNode* process_node,
                              GraphChange graph_change = NoGraphChange());
 
-  // Retrieves the existing `CPUTimeResult` for `context`, or creates one if it
-  // doesn't exist. If a new result is created, it is initialized with
-  // `init_result` and the second element of the returned pair is true.
-  std::pair<CPUTimeResult&, bool> GetOrCreateResultForContext(
-      const ResourceContext& context,
-      const CPUTimeResult& init_result);
+  // Retrieves the `CPUTimeResult` for `context`. If no result exists, returns a
+  // reference to a null pointer, which the caller must initialize.
+  scoped_refptr<ScopedCPUTimeResult>& GetResultPtr(
+      const ResourceContext& context);
 
-  // Adds the new measurements in `measurement_deltas` to
-  // `measurement_results_`. `graph_change` is the event that triggered the
-  // measurement or NoGraphChange if it wasn't triggered due to a graph topology
-  // change.
+  // Adds the new measurements in `measurement_deltas` to ScopedCPUTimeResults.
+  // `graph_change` is the event that triggered the measurement or NoGraphChange
+  // if it wasn't triggered due to a graph change.
   void ApplyMeasurementDeltas(
       const std::map<ResourceContext, CPUTimeResult>& measurement_deltas,
       GraphChange graph_change = NoGraphChange());
@@ -218,18 +193,14 @@ class CPUMeasurementMonitor
   void ApplyOverlappingDelta(const ResourceContext& context,
                              const CPUTimeResult& delta);
 
-  // Moves the measurements for `contexts` from `measurement_results_` to
-  // `dead_context_results_`.
-  void SaveFinalMeasurements(const std::vector<ResourceContext>& contexts);
+  // Moves `result_ptr` into `dead_context_results_`. `result_ptr` is passed by
+  // move to ensure the caller drops its reference to the live result.
+  void SaveFinalMeasurement(scoped_refptr<ScopedCPUTimeResult>&& result_ptr);
 
   // Returns all `OriginInBrowsingInstanceContext`s associated with live frame
   // or worker contexts.
   std::set<OriginInBrowsingInstanceContext>
   GetLiveOriginInBrowsingInstanceContexts();
-
-  // Returns description of the most recent measurement of `context` for
-  // NodeDataDescriber, or an empty dict if there is none.
-  base::Value::Dict DescribeContextData(const ResourceContext& context) const;
 
   // Measures the CPU usage of `process_node`, calculates the change in CPU
   // usage over the period (`last_measurement_time_` ... now], and allocates
@@ -243,16 +214,18 @@ class CPUMeasurementMonitor
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // A map from live resource contexts to the estimated CPU usage of each,
-  // updated whenever UpdateCPUMeasurements() is called.
-  std::map<ResourceContext, ScopedCPUTimeResultPtr> measurement_results_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // A map from `OriginInBrowsingInstanceContext`s to the estimated CPU usage of
+  // each, updated whenever UpdateCPUMeasurements() is called. An
+  // `OriginInBrowsingInstanceContext` is considered live as long as it's in
+  // this map. Results for other context types are held in NodeInlineData in
+  // live PM nodes.
+  std::map<OriginInBrowsingInstanceContext, scoped_refptr<ScopedCPUTimeResult>>
+      origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // A map of non-owning pointers to all `ScopedCPUTimeResult` instances
   // associated with `OriginInBrowsingInstanceContext`.
   std::map<OriginInBrowsingInstanceContext, raw_ptr<ScopedCPUTimeResult>>
-      origin_in_browsing_instance_weak_results_
-          GUARDED_BY_CONTEXT(sequence_checker_);
+      weak_origin_results_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU time results for dead contexts retained by ScopedResourceUsageQuery.
   //
@@ -267,18 +240,20 @@ class CPUMeasurementMonitor
     // Move-only.
     DeadContextResults(DeadContextResults&&);
     DeadContextResults& operator=(DeadContextResults&&);
+    DeadContextResults(const DeadContextResults&) = delete;
+    DeadContextResults& operator=(const DeadContextResults&) = delete;
 
     // Results for dead contexts to report in the next measurement for this
     // query.
     //
     // When a context dies, its result is added to the `to_report` set of all
     // live queries.
-    std::set<ScopedCPUTimeResultPtr> to_report;
+    std::set<scoped_refptr<ScopedCPUTimeResult>> to_report;
 
     // Results kept alive until the next measurement for this query, in case the
     // associated context is revived. If a context is revived while this set has
-    // a reference to its last result, `GetOrCreateResultForContext()` will
-    // retrieve it instead of creating a new one.
+    // a reference to its last result, GetResultPtr() will retrieve it instead
+    // of creating a new one.
     //
     // When a measurement for a query contains a result for a dead
     // `OriginInBrowsingInstanceContext`, the result is kept in the `kept_alive`
@@ -286,7 +261,7 @@ class CPUMeasurementMonitor
     // consecutive measurements for a query contain a result for a given
     // context, the cumulative CPU usage isn't reset between the two
     // measurements, even if the context was transiently dead.
-    std::set<ScopedCPUTimeResultPtr> kept_alive;
+    std::set<scoped_refptr<ScopedCPUTimeResult>> kept_alive;
   };
   std::map<internal::QueryId, DeadContextResults> dead_context_results_
       GUARDED_BY_CONTEXT(sequence_checker_);
@@ -299,6 +274,35 @@ class CPUMeasurementMonitor
   // Graph being monitored. This will be only be set if StartMonitoring() was
   // called and StopMonitoring() was not.
   raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
+};
+
+// Ref-counted class which holds a `ResourceContext` and `CPUTimeResult`.
+//
+// If the context is an `OriginInBrowsingInstanceContext`, the constructor and
+// destructor maintain a non-owning pointer to `this` in `weak_origin_results_`,
+// allowing GetOriginInBrowsingInstanceResultPtr() to reuse a result that is
+// still referenced by `dead_context_results_`.
+class ScopedCPUTimeResult : public base::RefCounted<ScopedCPUTimeResult> {
+ public:
+  ScopedCPUTimeResult(CPUMeasurementMonitor* monitor,
+                      const ResourceContext& context,
+                      const CPUTimeResult& result);
+
+  ScopedCPUTimeResult(const ScopedCPUTimeResult&) = delete;
+  ScopedCPUTimeResult& operator=(const ScopedCPUTimeResult&) = delete;
+
+  CPUTimeResult& result() { return result_; }
+  const ResourceContext& context() const { return context_; }
+  size_t EstimateMemoryUsage() const;
+
+ private:
+  friend class base::RefCounted<ScopedCPUTimeResult>;
+
+  ~ScopedCPUTimeResult();
+
+  const raw_ptr<CPUMeasurementMonitor> monitor_;
+  const ResourceContext context_;
+  CPUTimeResult result_;
 };
 
 }  // namespace resource_attribution

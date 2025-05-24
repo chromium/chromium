@@ -15,7 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/compose/proto/compose_optimization_guide.pb.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -170,10 +170,10 @@ class ProactiveNudgeTracker : public autofill::AutofillManager::Observer {
                                     const autofill::FieldGlobalId& field,
                                     const std::u16string& selection,
                                     const gfx::Rect& caret_bounds) override;
-  void OnAfterTextFieldDidChange(autofill::AutofillManager& manager,
-                                 autofill::FormGlobalId form,
-                                 autofill::FieldGlobalId field,
-                                 const std::u16string& text_value) override;
+  void OnAfterTextFieldValueChanged(autofill::AutofillManager& manager,
+                                    autofill::FormGlobalId form,
+                                    autofill::FieldGlobalId field,
+                                    const std::u16string& text_value) override;
 
  private:
   class EngagementTracker;

@@ -25,8 +25,8 @@ enum class IntelGpuGeneration;
 // Set GPU feature status if GPU is blocked.
 GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoWithNoGpu();
 
-// Set GPU feature status for SwiftShader.
-GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoForSwiftShader();
+// Set GPU feature status for software GL implementations.
+GPU_EXPORT GpuFeatureInfo ComputeGpuFeatureInfoForSoftwareGL();
 
 // This function should only be called from the GPU process, or the Browser
 // process while using in-process GPU. This function is safe to call at any
@@ -100,6 +100,11 @@ GPU_EXPORT std::string DirectMLFeatureLevelToString(
 GPU_EXPORT std::string D3DFeatureLevelToString(uint32_t d3d_feature_level);
 GPU_EXPORT std::string VulkanVersionToString(uint32_t vulkan_version);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+GPU_EXPORT void TrySetNonSoftwareDevicePreferenceForTesting(
+    gl::GpuPreference gpu_preference);
+#endif
 
 }  // namespace gpu
 

@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {DocumentMetadata} from '../constants.js';
@@ -37,10 +38,11 @@ export class ViewerPropertiesDialogElement extends CrLitElement {
       documentMetadata: {type: Object},
       fileName: {type: String},
       pageCount: {type: Number},
+      strings: {type: Object},
     };
   }
 
-  documentMetadata: DocumentMetadata = {
+  accessor documentMetadata: DocumentMetadata = {
     author: '',
     canSerializeDocument: false,
     creationDate: '',
@@ -55,12 +57,17 @@ export class ViewerPropertiesDialogElement extends CrLitElement {
     title: '',
     version: '',
   };
-  fileName: string = '';
-  pageCount: number = 0;
+  accessor fileName: string = '';
+  accessor pageCount: number = 0;
+  accessor strings: {[key: string]: string}|undefined;
 
-  protected getFastWebViewValue_(
-      yesLabel: string, noLabel: string, linearized: boolean): string {
-    return linearized ? yesLabel : noLabel;
+  protected getFastWebViewValue_(): string {
+    if (!this.strings) {
+      return '';
+    }
+    return loadTimeData.getString(
+        this.documentMetadata.linearized ? 'propertiesFastWebViewYes' :
+                                           'propertiesFastWebViewNo');
   }
 
   protected getOrPlaceholder_(value: string): string {

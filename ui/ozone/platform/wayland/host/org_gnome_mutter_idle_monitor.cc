@@ -79,8 +79,7 @@ std::optional<base::TimeDelta> OrgGnomeMutterIdleMonitor::GetIdleTime() const {
       return std::nullopt;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 }
 

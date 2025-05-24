@@ -4,10 +4,13 @@
 
 #include "content/browser/web_package/mock_signed_exchange_handler.h"
 
+#include <string.h>
+
 #include <memory>
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/sequenced_task_runner.h"
@@ -156,8 +159,8 @@ class PrefixStrippingSourceStream : public net::SourceStream {
     bool maybe_incorrect_eof = bytes_read.empty() && MayHaveMoreBytes();
     if (remaining_prefix_to_strip_.empty() && !maybe_incorrect_eof) {
       // Source and destination may overlap - need to use `memmove`.
-      memmove(pending_read->dest_buffer->data(), bytes_read.data(),
-              bytes_read.size());
+      UNSAFE_TODO(memmove(pending_read->dest_buffer->data(), bytes_read.data(),
+                          bytes_read.size()));
       return bytes_read.size();
     }
 
@@ -253,8 +256,7 @@ std::unique_ptr<SignedExchangeHandler> MockSignedExchangeHandlerFactory::Create(
           params, std::move(body), std::move(headers_callback));
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace content

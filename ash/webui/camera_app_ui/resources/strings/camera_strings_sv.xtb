@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR-kod</translation>
 <translation id="2244252133441425811">Aktivera FPS-väljare för video</translation>
 <translation id="2271433936731426666">Aktivera ögonblicksvideo i full storlek</translation>
-<translation id="2281736597583450397">Få skarpare detaljer med förbättrad zoom</translation>
 <translation id="2320741269052147773">Panorera åt vänster</translation>
 <translation id="2360840973209616515">Kameraappen hanteras av administratören.
         Kontakta administratören för mer information.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Zooma ut</translation>
 <translation id="5976160379964388480">Övriga</translation>
 <translation id="6073451960410192870">Sluta spela in</translation>
-<translation id="6165508094623778733">Läs mer</translation>
 <translation id="6197807149213783179">Spara metadata</translation>
 <translation id="6233780560267770709">Tre gånger tre</translation>
 <translation id="6243827288366940320">Gyllene snittet</translation>
@@ -122,7 +120,6 @@
 Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild eller exempelvideo och beskriver problemet. (Till exempel: fotot är för mörkt eller motivet är inte i fokus.)</translation>
 <translation id="6519884562954018934">Gå med i <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Dela</translation>
-<translation id="6586509689874700895">Tryck först på <ph name="BUTTON_NAME" /> för att zooma in. När du har tagit ett foto ser du förbättrade detaljer.</translation>
 <translation id="659539649712855529">Kopierade <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Visa alla upplösningar</translation>
 <translation id="6631515515009660915">Spegling av</translation>
@@ -168,7 +165,6 @@ Om din feedback handlar om bild- eller videokvalitet bifogar du en exempelbild e
 <translation id="8609951387004618906">Öppna <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Aktivera eller inaktivera Ljud av för mikrofonen. Ljud av aktiverat för mikrofonen</translation>
-<translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8730621377337864115">Klart</translation>
 <translation id="8732462232047530626">Förhandsgranska metadata</translation>
 <translation id="874854738381978209">Wifi-nätverk hittades.</translation>

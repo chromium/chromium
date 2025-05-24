@@ -10,6 +10,7 @@
 #include "base/memory/raw_ref.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 
 class GURL;
@@ -45,15 +46,18 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryAccessChecker final {
   bool CheckAllowedToWriteAndReport(const GURL& dictionary_url,
                                     const net::SiteForCookies& site_for_cookies,
                                     const net::IsolationInfo& isolation_info);
-  bool CheckAllowedToReadAndReport(const GURL& target_resource_url,
-                                   const net::SiteForCookies& site_for_cookies,
-                                   const net::IsolationInfo& isolation_info);
+  bool CheckAllowedToReadAndReport(
+      const GURL& target_resource_url,
+      const net::SiteForCookies& site_for_cookies,
+      const net::IsolationInfo& isolation_info,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key);
 
  private:
   bool IsAllowedToUseSharedDictionary(
       const GURL& url,
       const net::SiteForCookies& site_for_cookies,
-      const net::IsolationInfo& isolation_info);
+      const net::IsolationInfo& isolation_info,
+      base::optional_ref<const net::CookiePartitionKey> cookie_partition_key);
 
   const raw_ref<NetworkContext> context_;
   mojo::Remote<mojom::SharedDictionaryAccessObserver>

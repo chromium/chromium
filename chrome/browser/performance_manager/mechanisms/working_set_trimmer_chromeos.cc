@@ -7,9 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/memory/arc_memory_bridge.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -24,7 +21,7 @@
 #include "chrome/browser/ash/arc/vmm/arcvm_working_set_trim_executor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "components/performance_manager/public/features.h"
+#include "chromeos/ash/experiences/arc/memory/arc_memory_bridge.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -78,13 +75,9 @@ bool WorkingSetTrimmerChromeOS::PlatformSupportsWorkingSetTrim() {
 
 void WorkingSetTrimmerChromeOS::TrimWorkingSet(base::ProcessId pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (base::FeatureList::IsEnabled(features::kRunOnMainThreadSync)) {
-    // Main thread is not allowed to block.
-    base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                               base::BindOnce(&ReclaimWorkingSet, pid));
-  } else {
-    ReclaimWorkingSet(pid);
-  }
+  // Main thread is not allowed to block.
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             base::BindOnce(&ReclaimWorkingSet, pid));
 }
 
 void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(

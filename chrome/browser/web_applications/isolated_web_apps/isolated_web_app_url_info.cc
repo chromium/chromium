@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -98,18 +99,18 @@ void IsolatedWebAppUrlInfo::CreateFromIsolatedWebAppSource(
     const IwaSource& source,
     base::OnceCallback<void(base::expected<IsolatedWebAppUrlInfo, std::string>)>
         callback) {
-  absl::visit(base::Overloaded{
-                  [&](const IwaSourceBundle& bundle) {
-                    GetSignedWebBundleIdByPath(bundle.path(),
-                                               std::move(callback));
-                  },
-                  [&](const IwaSourceProxy&) {
-                    std::move(callback).Run(
-                        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-                            web_package::SignedWebBundleId::
-                                CreateRandomForProxyMode()));
-                  }},
-              source.variant());
+  std::visit(
+      base::Overloaded{[&](const IwaSourceBundle& bundle) {
+                         GetSignedWebBundleIdByPath(bundle.path(),
+                                                    std::move(callback));
+                       },
+                       [&](const IwaSourceProxy&) {
+                         std::move(callback).Run(
+                             IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
+                                 web_package::SignedWebBundleId::
+                                     CreateRandomForProxyMode()));
+                       }},
+      source.variant());
 }
 
 IsolatedWebAppUrlInfo::IsolatedWebAppUrlInfo(

@@ -23,8 +23,9 @@ NoStatePrefetchClient::~NoStatePrefetchClient() = default;
 
 bool NoStatePrefetchClient::IsPrefetchOnly() {
   blink::WebFrame* main_frame = GetWebView()->MainFrame();
-  if (!main_frame->IsWebLocalFrame())
+  if (!main_frame->IsWebLocalFrame()) {
     return false;
+  }
   return NoStatePrefetchHelper::IsPrefetching(
       content::RenderFrame::FromWebFrame(main_frame->ToWebLocalFrame()));
 }

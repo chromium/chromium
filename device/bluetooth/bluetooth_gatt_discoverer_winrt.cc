@@ -14,6 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/win/post_async_results.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/base/features.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_winrt.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
@@ -21,6 +22,7 @@ namespace device {
 
 namespace {
 
+using ABI::Windows::Devices::Bluetooth::BluetoothCacheMode_Uncached;
 using ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice;
 using ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice3;
 using ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
@@ -177,6 +179,7 @@ BluetoothGattDiscovererWinrt::BluetoothGattDiscovererWinrt(
 BluetoothGattDiscovererWinrt::~BluetoothGattDiscovererWinrt() = default;
 
 void BluetoothGattDiscovererWinrt::StartGattDiscovery(
+    bool allow_cache,
     GattDiscoveryCallback callback) {
   callback_ = std::move(callback);
   ComPtr<IBluetoothLEDevice3> ble_device_3;
@@ -189,13 +192,26 @@ void BluetoothGattDiscovererWinrt::StartGattDiscovery(
   }
 
   ComPtr<IAsyncOperation<GattDeviceServicesResult*>> get_gatt_services_op;
-  if (service_uuid_.has_value()) {
-    hr = ble_device_3->GetGattServicesForUuidAsync(
-        BluetoothUUID::GetCanonicalValueAsGUID(
-            service_uuid_->canonical_value()),
-        &get_gatt_services_op);
+  if (!allow_cache && base::FeatureList::IsEnabled(
+                          features::kUncachedGattDiscoveryForGattConnection)) {
+    if (service_uuid_.has_value()) {
+      hr = ble_device_3->GetGattServicesForUuidWithCacheModeAsync(
+          BluetoothUUID::GetCanonicalValueAsGUID(
+              service_uuid_->canonical_value()),
+          BluetoothCacheMode_Uncached, &get_gatt_services_op);
+    } else {
+      hr = ble_device_3->GetGattServicesWithCacheModeAsync(
+          BluetoothCacheMode_Uncached, &get_gatt_services_op);
+    }
   } else {
-    hr = ble_device_3->GetGattServicesAsync(&get_gatt_services_op);
+    if (service_uuid_.has_value()) {
+      hr = ble_device_3->GetGattServicesForUuidAsync(
+          BluetoothUUID::GetCanonicalValueAsGUID(
+              service_uuid_->canonical_value()),
+          &get_gatt_services_op);
+    } else {
+      hr = ble_device_3->GetGattServicesAsync(&get_gatt_services_op);
+    }
   }
   if (FAILED(hr)) {
     BLUETOOTH_LOG(DEBUG) << "BluetoothLEDevice::GetGattServicesAsync failed: "

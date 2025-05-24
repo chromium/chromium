@@ -7,7 +7,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -29,20 +28,24 @@ class Unzipper;
 // Installs a CRX. `callback` is posted to the sequence InstallOperation was
 // called on. If `crx_cache` is provided, `crx_file` is placed into the cache,
 // regardless of whether the install is successful or not. Otherwise, `crx_file`
-// is deleted.
-void InstallOperation(
-    std::optional<scoped_refptr<CrxCache>> crx_cache,
+// is deleted. Returns a cancellation callback.
+base::OnceClosure InstallOperation(
+    scoped_refptr<CrxCache> crx_cache,
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
     const std::string& id,
+    const std::string& file_hash,
     const std::vector<uint8_t>& pk_hash,
     scoped_refptr<CrxInstaller> installer,
     std::unique_ptr<CrxInstaller::InstallParams> install_params,
-    const std::string& next_fp,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
-    base::OnceCallback<void(const CrxInstaller::Result&)> callback,
+    base::RepeatingCallback<void(ComponentState)> state_tracker,
     CrxInstaller::ProgressCallback progress_callback,
-    const base::FilePath& crx_file);
+    base::OnceCallback<void(const CrxInstaller::Result&)>
+        install_result_callback,
+    const base::FilePath& crx_file,
+    base::OnceCallback<void(base::expected<base::FilePath, CategorizedError>)>
+        callback);
 
 }  // namespace update_client
 

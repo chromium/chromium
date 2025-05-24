@@ -55,8 +55,8 @@ class ProcessesEventRouter : public task_manager::TaskManagerObserver {
   // It helps to avoid collecting data if no one is interested in it.
   bool HasEventListeners(const std::string& event_name) const;
 
-  // Returns true if the task with the given |id| should be reported as created
-  // or removed. |out_child_process_host_id| will be filled with the valid ID of
+  // Returns true if the task with the given `id` should be reported as created
+  // or removed. `out_child_process_host_id` will be filled with the valid ID of
   // the process to report in the event.
   bool ShouldReportOnCreatedOrOnExited(task_manager::TaskId id,
                                        int* out_child_process_host_id) const;
@@ -124,7 +124,7 @@ class ProcessesGetProcessIdForTabFunction : public ExtensionFunction {
                              PROCESSES_GETPROCESSIDFORTAB)
 
  private:
-  ~ProcessesGetProcessIdForTabFunction() override {}
+  ~ProcessesGetProcessIdForTabFunction() override = default;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,14 +141,14 @@ class ProcessesTerminateFunction : public ExtensionFunction {
   DECLARE_EXTENSION_FUNCTION("processes.terminate", PROCESSES_TERMINATE)
 
  private:
-  ~ProcessesTerminateFunction() override {}
+  ~ProcessesTerminateFunction() override = default;
 
   // Functions to get the process handle on the IO thread and post it back to
   // the UI thread from processing.
   base::ProcessHandle GetProcessHandleOnIO(int child_process_host_id) const;
   void OnProcessHandleOnUI(base::ProcessHandle handle);
 
-  // Terminates the process with |handle| if it's valid and is allowed to be
+  // Terminates the process with `handle` if it's valid and is allowed to be
   // terminated. Returns the response value of this extension function to be
   // sent.
   ExtensionFunction::ResponseValue TerminateIfAllowed(
@@ -186,7 +186,7 @@ class ProcessesGetProcessInfoFunction
 
   // Since we don't report optional process data like CPU usage in the results
   // of this function, the only background calculations we want to watch is
-  // memory usage (which will be requested only when |include_memory_| is true).
+  // memory usage (which will be requested only when `include_memory_` is true).
   // This function will be called by either OnTasksRefreshed() or
   // OnTasksRefreshedWithBackgroundCalculations() depending on whether memory is
   // requested.

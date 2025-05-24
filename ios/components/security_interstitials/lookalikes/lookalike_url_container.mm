@@ -8,8 +8,6 @@
 #import "components/lookalikes/core/lookalike_url_util.h"
 #import "ios/web/public/web_state.h"
 
-WEB_STATE_USER_DATA_KEY_IMPL(LookalikeUrlContainer)
-
 LookalikeUrlContainer::LookalikeUrlContainer(web::WebState* web_state) {}
 
 LookalikeUrlContainer::LookalikeUrlContainer(LookalikeUrlContainer&& other) =

@@ -50,6 +50,8 @@ class ProductSpecificationsPageActionController
   void OnIconClicked();
   bool IsInRecommendedSet();
   std::u16string GetProductSpecificationsLabel(bool is_added);
+  std::u16string GetComparisonSetName();
+  GURL GetComparisonTableURL();
 
  private:
   void HandleProductInfoResponse(const GURL& url,
@@ -67,6 +69,9 @@ class ProductSpecificationsPageActionController
 
   // The product group that current page can be added to if available.
   std::optional<ProductGroup> product_group_for_page_;
+
+  // The UUID of the comparison table the page was most recently added to.
+  std::optional<base::Uuid> most_recent_comparison_table_uuid_for_page_;
 
   // A bool to indicate whether the product has been added to the recommended
   // product specifications set. Please note that this will be false for pages

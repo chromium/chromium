@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 import("//third_party/protobuf/proto_library.gni")
 
-# coremltools is used to support webnn on macOS.
+# coremltools is used to support WebNN on macOS.
 
 proto_library("modelformat_proto") {
   visibility = [ "//services/webnn/*" ]

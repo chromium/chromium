@@ -21,6 +21,9 @@ void A::Trace(Visitor* visitor) const {
     case TD:
       static_cast<const D*>(this)->TraceAfterDispatch(visitor);
       break;
+    case TE:
+      static_cast<const E*>(this)->TraceAfterDispatch(visitor);
+      break;
   }
 }
 
@@ -36,8 +39,11 @@ void A::FinalizeGarbageCollectedObject()
         static_cast<C*>(this)->~C();
         break;
     case TD:
-        // Missing static_cast<D*>(this)->~D();
-        break;
+      // Missing static_cast<D*>(this)->~D();
+      break;
+    case TE:
+      static_cast<E*>(this)->~E();
+      break;
     }
 }
 
@@ -54,5 +60,14 @@ void C::TraceAfterDispatch(Visitor* visitor) const {
 void D::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(m_a);
   Abstract::TraceAfterDispatch(visitor);
+}
+
+void E::TraceAfterDispatch(Visitor* visitor) const {
+  visitor->Trace(m_a);
+  A::TraceAfterDispatch(visitor);
+}
+
+void E::FinalizeGarbageCollectedObject() {
+  A::FinalizeGarbageCollectedObject();
 }
 }

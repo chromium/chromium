@@ -637,17 +637,17 @@ TEST_F(UnsentLogStoreTest, UnsentLogMetadataMetrics) {
 
   // Prepare 4 logs.
   const char kFooText[] = "foo";
-  const base::HistogramBase::Count kFooSampleCount = 3;
+  const base::HistogramBase::Count32 kFooSampleCount = 3;
 
   // The |foobar_log| whose compressed size is over 1kb will be staged first, so
   // the persisted_size_in_kb shall be reduced by 1kb afterwards.
   std::string foobar_log = GenerateLogWithMinCompressedSize(1024);
-  const base::HistogramBase::Count kFooBarSampleCount = 5;
+  const base::HistogramBase::Count32 kFooBarSampleCount = 5;
 
   // The |oversize_log| shall not be persisted.
   std::string oversize_log =
       GenerateLogWithMinCompressedSize(kLogByteLimit * 10 + 1);
-  const base::HistogramBase::Count kOversizeLogSampleCount = 50;
+  const base::HistogramBase::Count32 kOversizeLogSampleCount = 50;
 
   // The log without the SampleCount will not be counted to metrics.
   const char kNoSampleLog[] = "no sample log";

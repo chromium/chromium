@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -1045,20 +1047,26 @@ class MultipartUploadNewFileDelegate : public MultipartUploadRequestBase {
  public:
   // |parent_resource_id| should be the resource id of the parent directory.
   // |title| should be set.
+  // `converted_mime_type` is the desired MIME type of the file after uploading.
+  // This should only be set if it is expected that Drive will convert the
+  // uploaded file into another format such as Google Docs:
+  // https://developers.google.com/drive/api/guides/manage-uploads#import-docs
   // See also the comments of MultipartUploadRequestBase for more details
   // about the other parameters.
-  MultipartUploadNewFileDelegate(base::SequencedTaskRunner* task_runner,
-                                 const std::string& title,
-                                 const std::string& parent_resource_id,
-                                 const std::string& content_type,
-                                 int64_t content_length,
-                                 const base::Time& modified_date,
-                                 const base::Time& last_viewed_by_me_date,
-                                 const base::FilePath& local_file_path,
-                                 const Properties& properties,
-                                 const DriveApiUrlGenerator& url_generator,
-                                 FileResourceCallback callback,
-                                 ProgressCallback progress_callback);
+  MultipartUploadNewFileDelegate(
+      base::SequencedTaskRunner* task_runner,
+      const std::string& title,
+      const std::string& parent_resource_id,
+      const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
+      int64_t content_length,
+      const base::Time& modified_date,
+      const base::Time& last_viewed_by_me_date,
+      const base::FilePath& local_file_path,
+      const Properties& properties,
+      const DriveApiUrlGenerator& url_generator,
+      FileResourceCallback callback,
+      ProgressCallback progress_callback);
 
   MultipartUploadNewFileDelegate(const MultipartUploadNewFileDelegate&) =
       delete;
@@ -1074,6 +1082,7 @@ class MultipartUploadNewFileDelegate : public MultipartUploadRequestBase {
 
  private:
   const bool has_modified_date_;
+  const bool convert_;
   const DriveApiUrlGenerator url_generator_;
 };
 

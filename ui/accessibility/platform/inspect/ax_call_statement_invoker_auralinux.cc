@@ -9,6 +9,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_call_statement_invoker_auralinux.h"
 
+#include <variant>
+
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_auralinux.h"
@@ -21,14 +23,14 @@ std::string AXCallStatementInvokerAuraLinux::ToString(
   if (optional.HasValue()) {
     Target value = *optional;
 
-    if (absl::holds_alternative<const AtspiAccessible*>(value)) {
+    if (std::holds_alternative<const AtspiAccessible*>(value)) {
       return "Object";
     }
-    if (absl::holds_alternative<std::string>(value)) {
-      return absl::get<std::string>(value);
+    if (std::holds_alternative<std::string>(value)) {
+      return std::get<std::string>(value);
     }
-    if (absl::holds_alternative<int>(value)) {
-      return base::NumberToString(absl::get<int>(value));
+    if (std::holds_alternative<int>(value)) {
+      return base::NumberToString(std::get<int>(value));
     }
   }
   return optional.StateToString();
@@ -119,9 +121,8 @@ AXOptionalObject AXCallStatementInvokerAuraLinux::Invoke(
 AXOptionalObject AXCallStatementInvokerAuraLinux::InvokeFor(
     const Target target,
     const AXPropertyNode& property_node) const {
-  if (absl::holds_alternative<const AtspiAccessible*>(target)) {
-    const AtspiAccessible* AXElement =
-        absl::get<const AtspiAccessible*>(target);
+  if (std::holds_alternative<const AtspiAccessible*>(target)) {
+    const AtspiAccessible* AXElement = std::get<const AtspiAccessible*>(target);
     return InvokeForAXElement(AXElement, property_node);
   }
 
@@ -328,7 +329,7 @@ AXOptionalObject AXCallStatementInvokerAuraLinux::InvokeForAXElement(
 }
 
 bool AXCallStatementInvokerAuraLinux::IsAtspiAndNotNull(Target target) const {
-  auto** atspi_ptr = absl::get_if<const AtspiAccessible*>(&target);
+  auto** atspi_ptr = std::get_if<const AtspiAccessible*>(&target);
   return atspi_ptr && *atspi_ptr;
 }
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/native_theme/native_theme_win.h"
+
 #include <cmath>
 
 #include "base/time/time.h"

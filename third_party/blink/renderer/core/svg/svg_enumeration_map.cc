@@ -9,11 +9,10 @@
 namespace blink {
 
 uint16_t SVGEnumerationMap::ValueFromName(const String& name) const {
-  for (const Entry& entry : *this) {
-    if (name == entry.name)
-      return entry.value;
-  }
-  return 0;
+  auto it = std::ranges::find(entries_, name);
+  return it != entries_.end()
+             ? static_cast<uint16_t>(1 + std::distance(entries_.begin(), it))
+             : 0;
 }
 
 }  // namespace blink

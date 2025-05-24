@@ -6,12 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_COLOR_MIX_VALUE_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+
+class CSSLengthResolver;
+class CSSPrimitiveValue;
+
 namespace cssvalue {
 
 // This is a class for storing the result of parsing the color-mix function
@@ -33,7 +36,7 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
         color_interpolation_space_(color_interpolation_space),
         hue_interpolation_method_(hue_interpolation_method) {}
 
-  String CustomCSSText() const;
+  WTF::String CustomCSSText() const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
@@ -68,6 +71,11 @@ class CORE_EXPORT CSSColorMixValue : public CSSValue {
     return NormalizePercentages(Percentage1(), Percentage2(), mix_amount,
                                 alpha_multiplier, length_resolver);
   }
+
+  // https://drafts.csswg.org/css-color-5/#serial-color-mix
+  static std::pair<const CSSPrimitiveValue*, const CSSPrimitiveValue*>
+  PercentageValuesForSerialization(const CSSPrimitiveValue* p1,
+                                   const CSSPrimitiveValue* p2);
 
  private:
   Member<const CSSValue> color1_;

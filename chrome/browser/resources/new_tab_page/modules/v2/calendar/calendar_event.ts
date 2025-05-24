@@ -64,16 +64,26 @@ export class CalendarEventElement extends CalendarEventElementBase {
     };
   }
 
-  doubleBooked: boolean;
-  event: CalendarEvent;
-  expanded: boolean;
-  index: number;
-  moduleName: string;
+  accessor doubleBooked: boolean = false;
+  accessor event: CalendarEvent = {
+    title: '',
+    startTime: {internalValue: BigInt(0)},
+    endTime: {internalValue: BigInt(0)},
+    url: {url: ''},
+    attachments: [],
+    location: null,
+    conferenceUrl: null,
+    isAccepted: false,
+    hasOtherAttendee: false,
+  };
+  accessor expanded: boolean = false;
+  accessor index: number = -1;
+  accessor moduleName: string = '';
 
-  protected attachmentListClass_: string;
-  protected formattedStartTime_: string;
-  protected intersectionObserver_: IntersectionObserver;
-  protected timeStatus_: string;
+  protected accessor attachmentListClass_: string = '';
+  protected accessor formattedStartTime_: string = '';
+  protected intersectionObserver_: IntersectionObserver|null = null;
+  protected accessor timeStatus_: string = '';
 
   override updated(changedProperties: PropertyValues<this>) {
     if ((changedProperties.has('event') || changedProperties.has('expanded')) &&
@@ -139,13 +149,19 @@ export class CalendarEventElement extends CalendarEventElementBase {
         'modulesCalendarInXHr', Math.round(hoursUntilMeeting).toString());
   }
 
+  protected isAttachmentDisabled_(index: number): boolean {
+    return !this.event.attachments[index].resourceUrl?.url;
+  }
+
   protected openAttachment_(e: Event) {
     this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
     recordCalendarAction(CalendarAction.ATTACHMENT_CLICKED, this.moduleName);
     const currentTarget = e.currentTarget as HTMLElement;
     const index = Number(currentTarget.dataset['index']);
-    WindowProxy.getInstance().navigate(
-        this.event.attachments[index]!.resourceUrl.url);
+    const resourceUrl = this.event.attachments[index].resourceUrl?.url;
+    if (resourceUrl) {
+      WindowProxy.getInstance().navigate(resourceUrl);
+    }
   }
 
   protected openVideoConference_() {
@@ -187,10 +203,10 @@ export class CalendarEventElement extends CalendarEventElementBase {
       return;
     }
     const scrollableRight =
-        (attachmentList!.scrollWidth - attachmentList!.scrollLeft -
-         kAttachmentScrollFadeBuffer) > attachmentList!.clientWidth;
+        (attachmentList.scrollWidth - attachmentList.scrollLeft -
+         kAttachmentScrollFadeBuffer) > attachmentList.clientWidth;
     const scrollableLeft =
-        attachmentList!.scrollLeft - kAttachmentScrollFadeBuffer > 0;
+        attachmentList.scrollLeft - kAttachmentScrollFadeBuffer > 0;
 
     if (scrollableRight && scrollableLeft) {
       this.attachmentListClass_ = 'scrollable';

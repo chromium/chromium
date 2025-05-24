@@ -1,0 +1,173 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  srcjar_deps = [
+    ":jni_headers",
+    "//components/plus_addresses:plus_address_java_enums",
+  ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContent.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationDelegate.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediator.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBinder.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/autofill/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/plus_addresses/resources/strings:strings_grd",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_java",
+    "//url:gurl_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.plus_addresses"
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/color/refresh_plus_address_icon_tint_list.xml",
+    "java/res/drawable/proposed_plus_address_background.xml",
+    "java/res/layout/all_plus_addresses_bottom_sheet.xml",
+    "java/res/layout/plus_address_creation_error_state.xml",
+    "java/res/layout/plus_address_creation_normal_state.xml",
+    "java/res/layout/plus_address_creation_prompt.xml",
+    "java/res/layout/plus_profile_info_view.xml",
+    "java/res/values-night/colors.xml",
+    "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
+  ]
+  deps = [
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/widget/android:java_resources",
+  ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationErrorStateInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationNormalStateInfo.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridge.java",
+    "java/src/org/chromium/chrome/browser/ui/plus_addresses/PlusProfile.java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetModuleTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetViewTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationBottomSheetContentTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationCoordinatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationMediatorTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationModuleTest.java",
+    "junit/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationViewBridgeTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/autofill/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/layouts/glue:java",
+    "//chrome/test/android:chrome_java_test_support_common",
+    "//components/browser_ui/bottomsheet/android:factory_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/widget/android:java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.plus_addresses"
+
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/ui/plus_addresses/AllPlusAddressesBottomSheetRenderTest.java",
+    "javatests/src/org/chromium/chrome/browser/ui/plus_addresses/PlusAddressCreationRenderTest.java",
+  ]
+
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/autofill/android:java",
+    "//chrome/browser/autofill/test:test_support_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
+    "//chrome/browser/util:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/autofill/android:autofill_java_resources",
+    "//components/autofill/android:autofill_payments_java_resources",
+    "//components/autofill/android:main_autofill_java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/bottomsheet/android:java_resources",
+    "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/bottomsheet/android/test:java",
+    "//components/strings:components_strings_grd",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/hamcrest:hamcrest_library_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/accessibility:ax_base_java",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
+  ]
+}

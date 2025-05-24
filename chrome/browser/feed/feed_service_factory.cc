@@ -19,6 +19,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
@@ -28,6 +29,7 @@
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/v2/public/feed_service.h"
 #include "components/offline_pages/core/offline_page_feature.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/service/variations_service_utils.h"
 #include "components/version_info/version_info.h"
@@ -142,9 +144,16 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
         "FeedUserSettings", group);
   }
   const Experiments& GetExperiments() const override { return experiments_; }
+  const std::string& GetFeedLaunchCuiMetadata() const override {
+    return feed_launch_cui_metadata_;
+  }
+  void SetFeedLaunchCuiMetadata(const std::string& metadata) override {
+    feed_launch_cui_metadata_ = metadata;
+  }
 
  private:
   Experiments experiments_;
+  std::string feed_launch_cui_metadata_;
 };
 
 // static
@@ -187,6 +196,11 @@ FeedServiceFactory::FeedServiceFactory()
   DependsOn(HistoryServiceFactory::GetInstance());
   DependsOn(background_task::BackgroundTaskSchedulerFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
+
+#if BUILDFLAG(IS_ANDROID)
+  DependsOn(
+      regional_capabilities::RegionalCapabilitiesServiceFactory::GetInstance());
+#endif
 }
 
 FeedServiceFactory::~FeedServiceFactory() = default;
@@ -215,11 +229,12 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
   feed::ChromeInfo chrome_info;
   chrome_info.version = base::Version({CHROME_VERSION});
   chrome_info.channel = chrome::GetChannel();
-  TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(profile);
 #if BUILDFLAG(IS_ANDROID)
+  regional_capabilities::RegionalCapabilitiesService* regional_capabilities =
+      regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
+          profile);
   chrome_info.is_new_tab_search_engine_url_android_enabled =
-      template_url_service->IsEeaChoiceCountry();
+      regional_capabilities->IsInEeaCountry();
 #else
   chrome_info.is_new_tab_search_engine_url_android_enabled = false;
 #endif
@@ -244,7 +259,8 @@ FeedServiceFactory::BuildServiceInstanceForBrowserContext(
       HistoryServiceFactory::GetForProfile(profile,
                                            ServiceAccessType::IMPLICIT_ACCESS),
       storage_partition->GetURLLoaderFactoryForBrowserProcess(),
-      background_task_runner, api_key, chrome_info, template_url_service);
+      background_task_runner, api_key, chrome_info,
+      TemplateURLServiceFactory::GetForProfile(profile));
 }
 
 bool FeedServiceFactory::ServiceIsNULLWhileTesting() const {

@@ -616,7 +616,7 @@ goog.debug.getStacktraceHelper_ = function(fn, visited) {
       }
 
       if (argDesc.length > 40) {
-        argDesc = argDesc.substr(0, 40) + '...';
+        argDesc = argDesc.slice(0, 40) + '...';
       }
       sb.push(argDesc);
     }

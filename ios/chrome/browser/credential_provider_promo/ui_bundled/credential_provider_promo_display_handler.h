@@ -5,8 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_PROMO_UI_BUNDLED_CREDENTIAL_PROVIDER_PROMO_DISPLAY_HANDLER_H_
 #define IOS_CHROME_BROWSER_CREDENTIAL_PROVIDER_PROMO_UI_BUNDLED_CREDENTIAL_PROVIDER_PROMO_DISPLAY_HANDLER_H_
 
-#import "ios/chrome/browser/ui/promos_manager/standard_promo_display_handler.h"
-
+#import "ios/chrome/browser/promos_manager/ui_bundled/standard_promo_display_handler.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
 @protocol CredentialProviderPromoCommands;

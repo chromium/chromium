@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"
@@ -234,7 +235,6 @@ TEST_F(PreloadingDataImplTest, PreloadingAttemptPrecisionAndRecall) {
   for (const auto& [predictor, preloading_type, url] : attempts) {
     preloading_data->AddPreloadingAttempt(
         predictor, preloading_type, PreloadingData::GetSameURLMatcher(url),
-        /*planned_max_preloading_type=*/std::nullopt,
         GetWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 

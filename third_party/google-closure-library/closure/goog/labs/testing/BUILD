@@ -6,10 +6,12 @@ licenses(["notice"])
 
 closure_js_library(
     name = "assertthat",
+    testonly = True,
     srcs = [
         "assertthat.js",
         "matchererror.js",
     ],
+    lenient = True,
     deps = [
         ":matcher",
         "//closure/goog/debug:error",
@@ -28,23 +30,24 @@ alias(
 
 closure_js_library(
     name = "environment",
+    testonly = True,
     srcs = ["environment.js"],
+    lenient = True,
     deps = [
-        "//closure/goog/array",
-        "//closure/goog/asserts",
+        ":environmentbase",
         "//closure/goog/debug:console",
-        "//closure/goog/promise:thenable",
         "//closure/goog/testing:jsunit",
         "//closure/goog/testing:mockclock",
         "//closure/goog/testing:mockcontrol",
         "//closure/goog/testing:propertyreplacer",
-        "//closure/goog/testing:testcase",
     ],
 )
 
 closure_js_library(
     name = "json_fuzzing",
+    testonly = True,
     srcs = ["json_fuzzing.js"],
+    lenient = True,
     deps = [
         "//closure/goog/string",
         "//closure/goog/testing:pseudorandom",
@@ -58,11 +61,14 @@ alias(
 
 closure_js_library(
     name = "matcher",
+    testonly = True,
     srcs = ["matcher.js"],
+    lenient = True,
 )
 
 closure_js_library(
     name = "matchers",
+    testonly = True,
     srcs = [
         "decoratormatcher.js",
         "dictionarymatcher.js",
@@ -72,12 +78,25 @@ closure_js_library(
         "objectmatcher.js",
         "stringmatcher.js",
     ],
+    lenient = True,
     deps = [
         ":matcher",
         "//closure/goog/array",
         "//closure/goog/asserts",
         "//closure/goog/object",
         "//closure/goog/string",
+    ],
+)
+
+closure_js_library(
+    name = "environmentbase",
+    testonly = True,
+    srcs = ["environmentbase.js"],
+    lenient = True,
+    deps = [
+        "//closure/goog/asserts",
+        "//closure/goog/promise",
+        "//closure/goog/testing:testcase",
     ],
 )
 

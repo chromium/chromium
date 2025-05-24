@@ -8,11 +8,9 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 
-namespace autofill {
-class AutofillPopupViewDelegate;
-}
-
 class GURL;
+
+class PasswordCrossDomainConfirmationPopupControllerInterface;
 
 // This interface is used by `PasswordCrossDomainConfirmationPopupController`
 // to manage the cross domain password usage confirmation popup. The popup
@@ -26,14 +24,15 @@ class PasswordCrossDomainConfirmationPopupView {
   // Creates the popup view and shows it. Returns a `WeakPtr` because its
   // lifetime is controlled by its hosting widget.
   // `domain` is the domain of the current web site the popup is triggered on.
-  // `password_origin` is the name of the place where the password was
+  // `password_hostname` is the name of the place where the password was
   // originally created, it can be the domain of the web site or the name of
   // the Android application. In general, it should give the user a good
   // understanding of where the password comes from.
   static base::WeakPtr<PasswordCrossDomainConfirmationPopupView> Show(
-      base::WeakPtr<autofill::AutofillPopupViewDelegate> delegate,
+      base::WeakPtr<PasswordCrossDomainConfirmationPopupControllerInterface>
+          controller,
       const GURL& domain,
-      const std::u16string& password_origin,
+      const std::u16string& password_hostname,
       base::OnceClosure confirmation_callback,
       base::OnceClosure cancel_callback);
 

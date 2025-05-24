@@ -1,1 +1,2 @@
+CONSOLE WARNING: While navigator.cookieEnabled does return true for this 378604901.
 If this page appears without a crash, the test has passed.

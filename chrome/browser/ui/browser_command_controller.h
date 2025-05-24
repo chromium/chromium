@@ -8,12 +8,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/command_updater_delegate.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_section.h"
+#include "chrome/common/buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
@@ -66,6 +66,9 @@ class BrowserCommandController : public CommandUpdater,
   void LockedFullscreenStateChanged();
 #endif
   void PrintingStateChanged();
+#if BUILDFLAG(ENABLE_GLIC)
+  void GlicWindowActivationChanged(bool active);
+#endif
   void LoadingStateChanged(bool is_loading, bool force);
   void FindBarVisibilityChanged();
   void ExtensionStateChanged();
@@ -75,13 +78,12 @@ class BrowserCommandController : public CommandUpdater,
   // Overriden from CommandUpdater:
   bool SupportsCommand(int id) const override;
   bool IsCommandEnabled(int id) const override;
-  bool ExecuteCommand(
-      int id,
-      base::TimeTicks time_stamp = base::TimeTicks::Now()) override;
-  bool ExecuteCommandWithDisposition(
-      int id,
-      WindowOpenDisposition disposition,
-      base::TimeTicks time_stamp = base::TimeTicks::Now()) override;
+  using CommandUpdater::ExecuteCommand;
+  bool ExecuteCommand(int id, base::TimeTicks time_stamp) override;
+  using CommandUpdater::ExecuteCommandWithDisposition;
+  bool ExecuteCommandWithDisposition(int id,
+                                     WindowOpenDisposition disposition,
+                                     base::TimeTicks time_stamp) override;
   void AddCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(int id, CommandObserver* observer) override;
   void RemoveCommandObserver(CommandObserver* observer) override;
@@ -97,7 +99,7 @@ class BrowserCommandController : public CommandUpdater,
       Profile* profile);
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   friend class BrowserCommandControllerBrowserTestLockedFullscreen;
 #endif
 
@@ -173,6 +175,11 @@ class BrowserCommandController : public CommandUpdater,
   // Updates the printing command state.
   void UpdatePrintingState();
 
+#if BUILDFLAG(ENABLE_GLIC)
+  // Updates the Glic command state.
+  void UpdateGlicState();
+#endif
+
   // Updates the SHOW_SYNC_SETUP menu entry.
   void OnSigninAllowedPrefChange();
 
@@ -206,6 +213,9 @@ class BrowserCommandController : public CommandUpdater,
   // Updates commands that depend on the state of the tab strip model.
   void UpdateCommandsForTabStripStateChanged();
 
+  // Updates commands that depend on the enabled state of glic.
+  void UpdateCommandsForEnableGlicChanged();
+
   // Returns the relevant action for the current browser for a given
   // `action_id`.
   actions::ActionItem* FindAction(actions::ActionId action_id);
@@ -231,6 +241,7 @@ class BrowserCommandController : public CommandUpdater,
 
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;
+  std::unique_ptr<base::CallbackListSubscription> glic_enabling_subscription_;
 
   // In locked fullscreen mode disallow enabling/disabling commands.
   bool is_locked_fullscreen_ = false;
@@ -239,6 +250,10 @@ class BrowserCommandController : public CommandUpdater,
   // display.
   CustomizeChromeSection customize_chrome_section_ =
       CustomizeChromeSection::kUnspecified;
+
+  // Callback subscription for listening to changes to the Glic window
+  // activation changes.
+  base::CallbackListSubscription glic_window_activation_subscription_;
 };
 
 }  // namespace chrome

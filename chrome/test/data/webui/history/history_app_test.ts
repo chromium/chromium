@@ -197,7 +197,8 @@ suite('HistoryAppTest', function() {
         lastUrlVisitTimestamp: 1000,
       },
     }));
-    const removeVisitsArg = await browserService.whenCalled('removeVisits');
+    const removeVisitsArg =
+        await browserService.handler.whenCalled('removeVisits');
     assertEquals(1, removeVisitsArg.length);
     assertEquals('http://google.com', removeVisitsArg[0].url);
     assertEquals(1, removeVisitsArg[0].timestamps.length);
@@ -442,5 +443,21 @@ suite('HistoryAppTest', function() {
     element.$.historyEmbeddingsDisclaimerLink.dispatchEvent(
         new MouseEvent('auxclick'));
     assertTrue(historyEmbeddingsElement.forceSuppressLogging);
+  });
+
+  test('SetsDateTimeFormatForEmbeddings', async () => {
+    await forceHistoryEmbeddingsElement();
+    const historyEmbeddingsElement =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddingsElement);
+    assertFalse(historyEmbeddingsElement.showRelativeTimes);
+
+    element.$.router.selectedPage = 'grouped';
+    await flushTasks();
+    assertTrue(historyEmbeddingsElement.showRelativeTimes);
+
+    element.$.router.selectedPage = 'history';
+    await flushTasks();
+    assertFalse(historyEmbeddingsElement.showRelativeTimes);
   });
 });

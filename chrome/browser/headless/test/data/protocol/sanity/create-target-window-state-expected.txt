@@ -1,0 +1,5 @@
+Tests Target.createTarget() window state handling.
+Expected: normal, actual: normal
+Expected: minimized, actual: minimized
+Expected: maximized, actual: maximized
+Expected: fullscreen, actual: fullscreen

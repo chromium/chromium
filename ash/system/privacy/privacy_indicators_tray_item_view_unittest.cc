@@ -24,6 +24,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -106,7 +107,7 @@ class PrivacyIndicatorsTrayItemViewTest
   ~PrivacyIndicatorsTrayItemViewTest() override = default;
 
   std::u16string GetTooltipText() {
-    return privacy_indicators_view()->GetTooltipText(gfx::Point());
+    return privacy_indicators_view()->GetRenderedTooltipText(gfx::Point());
   }
 
   views::BoxLayout* GetLayoutManager(
@@ -347,12 +348,104 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipText) {
   UpdateCameraAndMicrophoneUsage(
       /*is_camera_used=*/false,
       /*is_microphone_used=*/false);
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
   EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
                                    /*screen_share_status=*/std::u16string()),
             GetTooltipText());
 
   privacy_indicators_view()->UpdateScreenShareStatus(
       /*is_screen_sharing=*/true);
+  EXPECT_EQ(GetExpectedTooltipText(
+                /*cam_mic_status=*/std::u16string(),
+                /*screen_share_status=*/l10n_util::GetStringUTF16(
+                    IDS_ASH_STATUS_TRAY_SCREEN_SHARE_TITLE)),
+            GetTooltipText());
+}
+
+TEST_F(PrivacyIndicatorsTrayItemViewTest, TooltipTextAccessibility) {
+  ui::AXNodeData data;
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/false);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
+                                       IDS_PRIVACY_INDICATORS_STATUS_CAMERA),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/true);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
+                                       IDS_PRIVACY_INDICATORS_STATUS_MIC),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/true,
+      /*is_microphone_used=*/true);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(
+      GetExpectedTooltipText(/*cam_mic_status=*/l10n_util::GetStringUTF16(
+                                 IDS_PRIVACY_INDICATORS_STATUS_CAMERA_AND_MIC),
+                             /*screen_share_status=*/std::u16string()),
+      GetTooltipText());
+
+  data = ui::AXNodeData();
+  UpdateCameraAndMicrophoneUsage(
+      /*is_camera_used=*/false,
+      /*is_microphone_used=*/false);
+  task_environment()->FastForwardBy(
+      ash::PrivacyIndicatorsController::kPrivacyIndicatorsMinimumHoldDuration);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
+  EXPECT_EQ(GetExpectedTooltipText(/*cam_mic_status=*/std::u16string(),
+                                   /*screen_share_status=*/std::u16string()),
+            GetTooltipText());
+
+  data = ui::AXNodeData();
+  privacy_indicators_view()->UpdateScreenShareStatus(
+      /*is_screen_sharing=*/true);
+  privacy_indicators_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_NE(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetTooltipText());
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kDescription),
+            GetTooltipText());
   EXPECT_EQ(GetExpectedTooltipText(
                 /*cam_mic_status=*/std::u16string(),
                 /*screen_share_status=*/l10n_util::GetStringUTF16(
@@ -650,8 +743,14 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, MultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 }
 
+// TODO(crbug.com/402479687): Re-enable test when flakiness is fixed.
+#if BUILDFLAG(IS_LINUX) || defined(MEMORY_SANITIZER)
+#define MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess DISABLED_HidingDelayTimerEnabledWithMultipleAppsAccess
+#else
+#define MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess HidingDelayTimerEnabledWithMultipleAppsAccess
+#endif
 TEST_F(PrivacyIndicatorsTrayItemViewTest,
-       HidingDelayTimerEnabledWithMultipleAppsAccess) {
+       MAYBE_HidingDelayTimerEnabledWithMultipleAppsAccess) {
   EXPECT_FALSE(privacy_indicators_view()->GetVisible());
 
   UpdateCameraAndMicrophoneUsage(
@@ -735,7 +834,13 @@ TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowTypeMetrics) {
       PrivacyIndicatorsTrayItemView::Type::kAllUsed);
 }
 
-TEST_F(PrivacyIndicatorsTrayItemViewTest, RecordShowPerSessionMetrics) {
+// TODO(crbug.com/373996845): Re-enable test.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_RecordShowPerSessionMetrics DISABLED_RecordShowPerSessionMetrics
+#else
+#define MAYBE_RecordShowPerSessionMetrics RecordShowPerSessionMetrics
+#endif
+TEST_F(PrivacyIndicatorsTrayItemViewTest, MAYBE_RecordShowPerSessionMetrics) {
   // Set up 2 displays. Note that only one instance should be recorded for the
   // primary display when session changes.
   UpdateDisplay("100x200,300x400");

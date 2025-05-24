@@ -584,7 +584,7 @@ goog.ui.editor.DefaultToolbar.colorUpdateFromValue_ = function(button, color) {
       // IE returns a number that, converted to hex, is a BGR color.
       // Convert from decimal to BGR to RGB.
       const hex = '000000' + value.toString(16);
-      const bgr = hex.substr(hex.length - 6, 6);
+      const bgr = hex.slice(-6);
       value =
           '#' + bgr.substring(4, 6) + bgr.substring(2, 4) + bgr.substring(0, 2);
     }

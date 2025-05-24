@@ -30,10 +30,10 @@ TEST_F(DrawingRecorderTest, Nothing) {
   }
   EXPECT_THAT(GetPersistentData().GetDisplayItemList(),
               ElementsAre(IsSameId(client.Id(), kForegroundType)));
-  EXPECT_TRUE(
-      To<DrawingDisplayItem>(GetPersistentData().GetDisplayItemList()[0])
-          .GetPaintRecord()
-          .empty());
+  EXPECT_TRUE(To<DrawingDisplayItem>(
+                  UNSAFE_TODO(GetPersistentData().GetDisplayItemList()[0]))
+                  .GetPaintRecord()
+                  .empty());
 }
 
 TEST_F(DrawingRecorderTest, Rect) {

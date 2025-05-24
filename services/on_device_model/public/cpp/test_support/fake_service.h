@@ -5,12 +5,18 @@
 #define SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_TEST_SUPPORT_FAKE_SERVICE_H_
 
 #include <cstdint>
+#include <memory>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
+#include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
 
@@ -44,7 +50,7 @@ struct FakeOnDeviceServiceSettings final {
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;
 
-  mojom::LoadModelResult load_model_result = mojom::LoadModelResult::kSuccess;
+  std::optional<ServiceDisconnectReason> service_disconnect_reason;
 
   bool drop_connection_request = false;
 
@@ -58,10 +64,6 @@ struct FakeOnDeviceServiceSettings final {
     model_execute_result = result;
   }
 
-  void set_load_model_result(mojom::LoadModelResult result) {
-    load_model_result = result;
-  }
-
   void set_drop_connection_request(bool value) {
     drop_connection_request = value;
   }
@@ -70,39 +72,47 @@ struct FakeOnDeviceServiceSettings final {
 class FakeOnDeviceSession final : public mojom::Session {
  public:
   explicit FakeOnDeviceSession(FakeOnDeviceServiceSettings* settings,
-                               const std::string& adaptation_model_weight,
-                               FakeOnDeviceModel* model);
+                               FakeOnDeviceModel* model,
+                               mojom::SessionParamsPtr params);
   ~FakeOnDeviceSession() override;
 
   // mojom::Session:
-  void AddContext(mojom::InputOptionsPtr input,
-                  mojo::PendingRemote<mojom::ContextClient> client) override;
+  void Append(mojom::AppendOptionsPtr options,
+              mojo::PendingRemote<mojom::ContextClient> client) override;
 
-  void Execute(
-      mojom::InputOptionsPtr input,
+  void Generate(
+      mojom::GenerateOptionsPtr input,
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
 
-  void GetSizeInTokensDeprecated(const std::string& text,
-                       GetSizeInTokensCallback callback) override;
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
 
   void Score(const std::string& text, ScoreCallback callback) override;
 
+  void GetProbabilitiesBlocking(
+      const std::string& text,
+      GetProbabilitiesBlockingCallback callback) override;
+
   void Clone(
       mojo::PendingReceiver<on_device_model::mojom::Session> session) override;
 
- private:
-  void ExecuteImpl(mojom::InputOptionsPtr input,
-                   mojo::PendingRemote<mojom::StreamingResponder> response);
+  void SetPriority(mojom::Priority priority) override;
 
-  void AddContextInternal(mojom::InputOptionsPtr input,
-                          mojo::PendingRemote<mojom::ContextClient> client);
+ private:
+  void GenerateImpl(mojom::GenerateOptionsPtr options,
+                    mojo::PendingRemote<mojom::StreamingResponder> response);
+  void AppendImpl(mojom::AppendOptionsPtr options,
+                  mojo::Remote<mojom::ContextClient> client);
+  void CloneImpl(
+      mojo::PendingReceiver<on_device_model::mojom::Session> session);
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   std::string adaptation_model_weight_;
-  std::vector<mojom::InputOptionsPtr> context_;
+  std::vector<mojom::AppendOptionsPtr> context_;
   raw_ptr<FakeOnDeviceModel> model_;
+  mojom::SessionParamsPtr params_;
+  on_device_model::mojom::Priority priority_ =
+      on_device_model::mojom::Priority::kForeground;
 
   base::WeakPtrFactory<FakeOnDeviceSession> weak_factory_{this};
 };
@@ -110,14 +120,18 @@ class FakeOnDeviceSession final : public mojom::Session {
 class FakeOnDeviceModel : public mojom::OnDeviceModel {
  public:
   struct Data {
+    std::string base_weight = "";
     std::string adaptation_model_weight = "";
+    std::string cache_weight = "";
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,
-                             Data&& data);
+                             Data&& data,
+                             ml::ModelPerformanceHint performance_hint);
   ~FakeOnDeviceModel() override;
 
   // mojom::OnDeviceModel:
-  void StartSession(mojo::PendingReceiver<mojom::Session> session) override;
+  void StartSession(mojo::PendingReceiver<mojom::Session> session,
+                    mojom::SessionParamsPtr params) override;
 
   void DetectLanguage(const std::string& text,
                       DetectLanguageCallback callback) override;
@@ -133,28 +147,42 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
       mojo::PendingReceiver<on_device_model::mojom::Session> receiver,
       std::unique_ptr<FakeOnDeviceSession> session);
 
+  const Data& data() const { return data_; }
+
+  ml::ModelPerformanceHint performance_hint() const {
+    return performance_hint_;
+  }
+
  private:
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   Data data_;
+  ml::ModelPerformanceHint performance_hint_;
 
   mojo::UniqueReceiverSet<mojom::Session> receivers_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_adaptation_receivers_;
 };
 
-class FakeTsModel final : public on_device_model::mojom::TextSafetyModel {
+class FakeTsModel final : public mojom::TextSafetyModel,
+                          public mojom::TextSafetySession {
  public:
-  explicit FakeTsModel(on_device_model::mojom::TextSafetyModelParamsPtr params);
+  explicit FakeTsModel(mojom::TextSafetyModelParamsPtr params);
   ~FakeTsModel() override;
 
   // on_device_model::mojom::TextSafetyModel
+  void StartSession(
+      mojo::PendingReceiver<mojom::TextSafetySession> session) override;
+
+  // on_device_model::mojom::TextSafetySession
   void ClassifyTextSafety(const std::string& text,
                           ClassifyTextSafetyCallback callback) override;
   void DetectLanguage(const std::string& text,
                       DetectLanguageCallback callback) override;
+  void Clone(mojo::PendingReceiver<mojom::TextSafetySession> session) override;
 
  private:
   bool has_safety_model_ = false;
   bool has_language_model_ = false;
+  mojo::ReceiverSet<mojom::TextSafetySession> sessions_;
 };
 
 // TsHolder holds a single TsModel. Its operations may block.
@@ -173,9 +201,7 @@ class FakeTsHolder final {
 
 class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
  public:
-  FakeOnDeviceModelService(
-      mojo::PendingReceiver<mojom::OnDeviceModelService> receiver,
-      FakeOnDeviceServiceSettings* settings);
+  explicit FakeOnDeviceModelService(FakeOnDeviceServiceSettings* settings);
   ~FakeOnDeviceModelService() override;
 
   size_t on_device_model_receiver_count() const {
@@ -187,6 +213,8 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
   void LoadModel(mojom::LoadModelParamsPtr params,
                  mojo::PendingReceiver<mojom::OnDeviceModel> model,
                  LoadModelCallback callback) override;
+  void GetCapabilities(ModelFile model_file,
+                       GetCapabilitiesCallback callback) override;
   void LoadTextSafetyModel(
       mojom::TextSafetyModelParamsPtr params,
       mojo::PendingReceiver<mojom::TextSafetyModel> model) override;
@@ -195,8 +223,48 @@ class FakeOnDeviceModelService : public mojom::OnDeviceModelService {
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   FakeTsHolder ts_holder_;
-  mojo::Receiver<mojom::OnDeviceModelService> receiver_;
   mojo::UniqueReceiverSet<mojom::OnDeviceModel> model_receivers_;
+};
+
+class FakeServiceLauncher final {
+ public:
+  explicit FakeServiceLauncher(
+      on_device_model::FakeOnDeviceServiceSettings* settings);
+  ~FakeServiceLauncher();
+
+  // Provides a launcher for using with ServiceClient.
+  auto LaunchFn() {
+    return base::BindRepeating(&FakeServiceLauncher::LaunchService,
+                               weak_ptr_factory_.GetWeakPtr());
+  }
+
+  void clear_did_launch_service() { did_launch_service_ = false; }
+
+  bool did_launch_service() const { return did_launch_service_; }
+
+  bool is_service_running() const { return services_.size() > 0; }
+
+  size_t on_device_model_receiver_count() const {
+    size_t total = 0;
+    for (const auto& [_, context] : services_.GetAllContexts()) {
+      total += (*context)->on_device_model_receiver_count();
+    }
+    return total;
+  }
+
+  void CrashService() { services_.Clear(); }
+
+ private:
+  void LaunchService(
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>
+          pending_receiver);
+
+  raw_ptr<on_device_model::FakeOnDeviceServiceSettings> settings_;
+  mojo::UniqueReceiverSet<mojom::OnDeviceModelService,
+                          FakeOnDeviceModelService*>
+      services_;
+  bool did_launch_service_;
+  base::WeakPtrFactory<FakeServiceLauncher> weak_ptr_factory_;
 };
 
 }  // namespace on_device_model

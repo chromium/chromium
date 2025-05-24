@@ -40,7 +40,8 @@ class BrowserFrameMac : public views::NativeWidgetMac,
   void OnWindowFullscreenTransitionComplete() override;
 
   // Overridden from NativeBrowserFrame:
-  views::Widget::InitParams GetWidgetParams() override;
+  views::Widget::InitParams GetWidgetParams(
+      views::Widget::InitParams::Ownership ownership) override;
   bool UseCustomFrame() const override;
   bool UsesNativeSystemMenu() const override;
   bool ShouldSaveWindowPlacement() const override;

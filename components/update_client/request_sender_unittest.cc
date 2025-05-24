@@ -143,11 +143,11 @@ TEST_P(RequestSenderTest, RequestSendSuccess) {
   EXPECT_EQ(0, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
 
   // Check the response post conditions.
   EXPECT_EQ(0, error_);
-  EXPECT_EQ(419ul, response_.size());
+  EXPECT_EQ(434ul, response_.size());
 
   // Check the interactivity header value.
   const auto extra_request_headers =
@@ -181,8 +181,8 @@ TEST_F(RequestSenderTest, RequestSendSuccessWithFallback) {
   EXPECT_EQ(1, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(1).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(1));
   EXPECT_EQ(0, error_);
 }
 
@@ -211,8 +211,8 @@ TEST_F(RequestSenderTest, RequestSendFailed) {
   EXPECT_EQ(1, post_interceptor_->GetHitCountForURL(GURL(kUrl2)))
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(1).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(1));
   EXPECT_EQ(403, error_);
 }
 
@@ -250,7 +250,7 @@ TEST_F(RequestSenderTest, RequestSendCupError) {
   EXPECT_EQ(1, post_interceptor_->GetCount())
       << post_interceptor_->GetRequestsAsString();
 
-  EXPECT_STREQ("test", post_interceptor_->GetRequestBody(0).c_str());
+  EXPECT_EQ("test", post_interceptor_->GetRequestBody(0));
   EXPECT_EQ(-10000, error_);
   EXPECT_TRUE(response_.empty());
 }

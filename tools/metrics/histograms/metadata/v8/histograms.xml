@@ -22,6 +22,12 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="V8WasmSeparateAsmAndWasm">
+  <variant name=".asm" summary="This histogram contains results for asm.js."/>
+  <variant name=".wasm"
+      summary="This histogram contains results for wasm modules."/>
+</variants>
+
 <histogram name="V8.ArrayBufferLargeAllocations" units="MB"
     expires_after="M120">
   <owner>gdeepti@chromium.org</owner>
@@ -41,7 +47,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.AsmjsInstantiateResult" enum="AsmJsInstantiateResult"
-    expires_after="2025-02-09">
+    expires_after="2025-10-19">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -57,7 +63,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CFIPageSizeMismatch" enum="BooleanOccurred"
-    expires_after="2025-06-01">
+    expires_after="2026-06-01">
   <owner>sroettger@google.com</owner>
   <owner>v8-security@google.com</owner>
   <summary>
@@ -70,15 +76,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CodeCacheRejectReason" enum="V8CodeCacheRejectReason"
-    expires_after="M77">
-  <owner>yangguo@chromium.org</owner>
+    expires_after="2025-10-16">
+  <owner>marja@chromium.org</owner>
+  <owner>v8-runtime@chromium.org</owner>
   <summary>
     Reason code data has been rejected when attempting to deserialize.
   </summary>
 </histogram>
 
 <histogram name="V8.CompileBackgroundMicroSeconds.Cumulative.Interactive"
-    units="microseconds" expires_after="2025-02-10">
+    units="microseconds" expires_after="2025-06-22">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -133,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileForegroundMicroSeconds.Cumulative.Interactive"
-    units="microseconds" expires_after="2025-02-10">
+    units="microseconds" expires_after="2025-06-22">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -145,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileLazyMicroSeconds" units="microseconds"
-    expires_after="2025-9-10">
+    expires_after="2025-11-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -161,7 +168,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileMicroSeconds" units="microseconds"
-    expires_after="M136">
+    expires_after="2025-10-12">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -176,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScript.CacheBehaviour" enum="V8CacheBehaviour"
-    expires_after="2025-9-10">
+    expires_after="2025-09-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -187,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds" units="microseconds"
-    expires_after="M136">
+    expires_after="2025-10-12">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -202,7 +209,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.BackgroundThread"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-09-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -237,7 +244,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ConsumeCache.Failed"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-09-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -256,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.IsolateCacheHit"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-09-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -275,7 +282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.CacheTooCold"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-11-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -294,7 +301,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.InlineScript"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-11-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -313,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.Other"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-11-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -332,7 +339,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.NoCache.ScriptTooSmall"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-11-09">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -351,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.ProduceCache"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-09-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -367,7 +374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileScriptMicroSeconds.StreamingFinalization"
-    units="microseconds" expires_after="2025-9-10">
+    units="microseconds" expires_after="2025-09-10">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -385,7 +392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.CompileSerializeMicroSeconds" units="microseconds"
-    expires_after="2025-9-10">
+    expires_after="2025-11-09">
   <owner>jgruber@chromium.org</owner>
   <owner>leszeks@chromium.org</owner>
   <summary>
@@ -400,10 +407,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.DebugPauseToPausedEventMilliSeconds" units="ms"
-    expires_after="M136">
-  <owner>bmeurer@chromium.org</owner>
-  <owner>szuend@chromium.org</owner>
-  <owner>chrome-devtools@google.com</owner>
+    expires_after="M145">
+  <owner>bmeurer@google.com</owner>
+  <owner>szuend@google.com</owner>
   <summary>
     Duration beginning when V8 stops execution due to a breakpoint/exception
     until the &quot;Debugger.paused&quot; CDP event is sent by the V8 inspector.
@@ -423,7 +429,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExecuteMicroSeconds" units="microseconds"
-    expires_after="M136">
+    expires_after="M145">
   <owner>cbruni@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -433,7 +439,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExecuteMicroSeconds.Cumulative.Interactive"
-    units="microseconds" expires_after="2025-02-10">
+    units="microseconds" expires_after="2025-11-02">
   <owner>marja@chromium.org</owner>
   <owner>v8-runtime@google.com</owner>
   <summary>
@@ -445,7 +451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.ExternalPointerTableCompactionOutcome"
-    enum="V8ExternalPointerTableCompactionOutcome" expires_after="2025-06-30">
+    enum="V8ExternalPointerTableCompactionOutcome" expires_after="2026-06-30">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -460,638 +466,1020 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionRate.Full" units="%"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.CollectionRate.Full" units="%"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The percentage of managed JavaScript memory that survived after a full
-    garbage collection of the unified heap. Reported at the end of the garbage
-    collection cycle.
+    The percentage of managed JavaScript memory that survived after a {Priority}
+    full garbage collection of the unified heap. Reported at the end of the
+    garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionRate.Full.Cpp" units="%"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.CollectionRate.Full.Cpp" units="%"
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The percentage of managed C++ memory that survived after a garbage
-    collection of the managed C++ heap. Reported at the end of the garbage
-    collection cycle.
+    The percentage of managed C++ memory that survived after a {Priority}
+    garbage collection of the managed C++ heap. Reported at the end of the
+    garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionRate.Young" units="%"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.CollectionRate.Young" units="%"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The percentage of managed JavaScript memory that survived after a young
-    generation garbage collection of the JavaScript heap. Reported at the end of
-    the garbage collection cycle.
+    The percentage of managed JavaScript memory that survived after a {Priority}
+    young generation garbage collection of the JavaScript heap. Reported at the
+    end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionWeight.Full" units="s/ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.CollectionWeight.Full" units="s/ms"
+    expires_after="M142">
   <owner>etiennep@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of a full garbage collection of the unified heap,
+    Overall duration of a {Priority} full garbage collection of the unified
+    heap, normalized by the wall time since the last mark compact cycle.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.CollectionWeight.Full.Cpp" units="s/ms"
+    expires_after="M142">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of a {Priority} garbage collection of the managed C++ heap,
     normalized by the wall time since the last mark compact cycle. Reported at
     the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionWeight.Full.Cpp" units="s/ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.CollectionWeight.MainThread.Full"
+    units="s/ms" expires_after="M142">
   <owner>etiennep@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of garbage collection of the managed C++ heap, normalized
-    by the wall time since the last mark compact cycle. Reported at the end of
-    the garbage collection cycle.
+    Overall duration of a {Priority} full garbage collection of the unified heap
+    on the main thread only, normalized by the wall time since the last mark
+    compact cycle. This histogram ignores concurrent garbage collection.
+    Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionWeight.MainThread.Full" units="s/ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.CollectionWeight.MainThread.Full.Cpp"
+    units="s/ms" expires_after="M142">
   <owner>etiennep@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of a full garbage collection of the unified heap on the
-    main thread only, normalized by the wall time since the last mark compact
-    cycle. This histogram ignores concurrent garbage collection. Reported at the
-    end of the garbage collection cycle.
+    Overall duration of a {Priority} garbage collection of the managed C++ heap
+    on the main thread only, normalized by the wall time since the last mark
+    compact cycle. This histogram ignores concurrent garbage collection.
+    Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.CollectionWeight.MainThread.Full.Cpp" units="s/ms"
-    expires_after="M136">
-  <owner>etiennep@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of garbage collection of the managed C++ heap on the main
-    thread only, normalized by the wall time since the last mark compact cycle.
-    This histogram ignores concurrent garbage collection. Reported at the end of
-    the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Efficiency.Full" units="KB/ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Efficiency.Full" units="KB/ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The speed at which a full garbage collection of the unified heap reclaims
-    unused memory. Reported at the end of the garbage collection cycle.
+    The speed at which a {Priority} full garbage collection of the unified heap
+    reclaims unused memory. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Efficiency.Full.Cpp" units="KB/ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Efficiency.Full.Cpp" units="KB/ms"
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The speed at which garbage collection of the managed C++ heap reclaims
-    unused memory. Reported at the end of the garbage collection cycle.
+    The speed at which a {Priority} garbage collection of the managed C++ heap
+    reclaims unused memory. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Efficiency.MainThread.Full" units="KB/ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Efficiency.MainThread.Full"
+    units="KB/ms" expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The speed at which a full garbage collection of the unified heap reclaims
-    unused memory on the main thread only. This histogram ignores concurrent
-    garbage collection. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Efficiency.MainThread.Full.Cpp" units="KB/ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    The speed at which garbage collection of the managed C++ heap reclaims
-    unused memory on the main thread only. This histogram ignores concurrent
-    garbage collection. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Efficiency.MainThread.Young" units="KB/ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    The speed at which a young generation garbage collection of the JavaScript
-    heap reclaims unused memory on the main thread only. This histogram ignores
+    The speed at which a {Priority} full garbage collection of the unified heap
+    reclaims unused memory on the main thread only. This histogram ignores
     concurrent garbage collection. Reported at the end of the garbage collection
     cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Efficiency.Young" units="KB/ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
+<histogram name="V8.GC.Cycle{Priority}.Efficiency.MainThread.Full.Cpp"
+    units="KB/ms" expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    The speed at which a young generation garbage collection of the JavaScript
-    heap reclaims unused memory. Reported at the end of the garbage collection
+    The speed at which a {Priority} garbage collection of the managed C++ heap
+    reclaims unused memory on the main thread only. This histogram ignores
+    concurrent garbage collection. Reported at the end of the garbage collection
     cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Full" units="ms" expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Efficiency.MainThread.Young"
+    units="KB/ms" expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of a full garbage collection of the unified heap. Reported
-    at the end of the garbage collection cycle.
+    The speed at which a {Priority} young generation garbage collection of the
+    JavaScript heap reclaims unused memory on the main thread only. This
+    histogram ignores concurrent garbage collection. Reported at the end of the
+    garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Full.Compact" units="ms" expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Efficiency.Young" units="KB/ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Time spent on compaction during a full garbage collection of the unified
-    heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Compact.Cpp" units="ms" expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on compaction during a whole garbage collection of the managed
-    C++ heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Cpp" units="ms" expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of a whole garbage collection of the managed C++ heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Mark" units="ms" expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on marking during a full garbage collection of the unified heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Mark.Cpp" units="ms" expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on marking during a whole garbage collection of the managed C++
-    heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Sweep" units="ms" expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on sweeping during a full garbage collection of the unified heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Sweep.Cpp" units="ms" expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on sweeping during a whole garbage collection of the managed C++
-    heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Weak" units="ms" expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on weakness handling during a full garbage collection of the
-    unified heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Full.Weak.Cpp" units="ms" expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on weakness handling during a whole garbage collection of the
-    managed C++ heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full" units="ms" expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Main-thread only duration of a full garbage collection of the unified heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic" units="ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall main thread duration of the atomic pause of a garbage collection of
-    the unified heap. There is only a single atomic pause event per cycle but it
-    may cover several sub-events. Reported at the end of the garbage collection
-    cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Compact" units="ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of compaction on the main thread during the atomic pause of
-    a garbage collection of the unified heap. There is only a single atomic
-    pause compaction event per cycle but it may cover several sub-events.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Compact.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of compaction on the main thread during the atomic pause of
-    a garbage collection of the managed C++ heap. There is only a single atomic
-    pause compaction event per cycle but it may cover several sub-events.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall main thread duration of the atomic pause of a garbage collection of
-    the managed C++ heap. There is only a single atomic pause event per cycle
-    but it may cover several sub-events. Reported at the end of the garbage
+    The speed at which a {Priority} young generation garbage collection of the
+    JavaScript heap reclaims unused memory. Reported at the end of the garbage
     collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Mark" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Full" units="ms" expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of marking on the main thread during the atomic pause of a
-    garbage collection of the unified heap. There is only a single atomic pause
-    marking event per cycle but it may cover several sub-events. Reported at the
-    end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of marking on the main thread during the atomic pause of a
-    garbage collection of the managed C++ heap. There is only a single atomic
-    pause marking event per cycle but it may cover several sub-events. Reported
-    at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Sweep" units="ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of sweeping on the main thread during the atomic pasue of a
-    garbage collection of the unified heap. There is only a single atomic pause
-    sweeping event per cycle but it may cover several sub-events. Reported at
-    the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Sweep.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of sweeping on the main thread during the atomic pasue of a
-    garbage collection of the managed C++ heap. There is only a single atomic
-    pause sweeping event per cycle but it may cover several sub-events. Reported
-    at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Weak" units="ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of weakness handling on the main thread during the atomic
-    pause of a garbage collection of the unified heap. There is only a single
-    atomic pause weakness handling event per cycle but it may cover several
-    sub-events. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Atomic.Weak.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of weakness handling on the main thread during the atomic
-    pause of a garbage collection of the managed C++ heap. There is only a
-    single atomic pause weakness handling event per cycle but it may cover
-    several sub-events. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Compact" units="ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on compaction on the main thread during a full garbage collection
-    of the unified heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Compact.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on compaction on the main thread during a whole garbage
-    collection of the cpp heap. Reported at the end of the garbage collection
-    cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Main thread only duration of a whole garbage collection of the managed C++
+    Overall duration of a {Priority} full garbage collection of the unified
     heap. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Incremental.Mark" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Full.Compact" units="ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of incremental marking steps on the main thread during a
-    full garbage collection of the unified heap. Reported at the end of the
-    garbage collection cycle.
+    Time spent on compaction during a {Priority} full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Incremental.Mark.Cpp" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Full.Compact.Cpp" units="ms"
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of incremental marking steps on the main thread during a
-    full garbage collection of the managed C++ heap. Reported at the end of the
-    garbage collection cycle.
+    Time spent on compaction during a whole {Priority} garbage collection of the
+    managed C++ heap. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Incremental.Mark.StartStop"
-    units="ms" expires_after="M136">
-  <owner>etiennep@chromium.org</owner>
+<histogram name="V8.GC.Cycle{Priority}.Full.Cpp" units="ms"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Wall time duration of incremental marking during a full garbage collection
+    Overall duration of a whole {Priority} garbage collection of the managed C++
+    heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Full.Mark" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on marking during a {Priority} full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Full.Mark.Cpp" units="ms"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on marking during a whole {Priority} garbage collection of the
+    managed C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Full.Sweep" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on sweeping during a {Priority} full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Full.Sweep.Cpp" units="ms"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on sweeping during a whole {Priority} garbage collection of the
+    managed C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Full.Weak" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on weakness handling during a {Priority} full garbage collection
     of the unified heap. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Incremental.Sweep" units="ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Overall duration of incremental sweeping steps on the main thread during a
-    full garbage collection of the unified heap. Reported at the end of the
-    garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Incremental.Sweep.Cpp" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Full.Weak.Cpp" units="ms"
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of incremental sweeping steps on the main thread during a
-    full garbage collection of the managed C++ heap. Reported at the end of the
-    garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Mark" units="ms"
-    expires_after="M136">
-  <owner>nikolaos@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on marking on the main thread during a full garbage collection of
-    the unified heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.MainThread.Full.Mark.Cpp" units="ms"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Time spent on marking on the main thread during a whole garbage collection
+    Time spent on weakness handling during a whole {Priority} garbage collection
     of the managed C++ heap. Reported at the end of the garbage collection
     cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Sweep" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full" units="ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Time spent on sweeping on the main thread during a full garbage collection
-    of the unified heap. Reported at the end of the garbage collection cycle.
+    Main-thread only duration of a {Priority} full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Sweep.Cpp" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall main thread duration of the atomic pause of a {Priority} garbage
+    collection of the unified heap. There is only a single atomic pause event
+    per cycle but it may cover several sub-events. Reported at the end of the
+    garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Compact"
+    units="ms" expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of compaction on the main thread during the atomic pause of
+    a {Priority} garbage collection of the unified heap. There is only a single
+    atomic pause compaction event per cycle but it may cover several sub-events.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Compact.Cpp"
+    units="ms" expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Time spent on sweeping on the main thread during a whole garbage collection
-    of the managed C++ heap. Reported at the end of the garbage collection
-    cycle.
+    Overall duration of compaction on the main thread during the atomic pause of
+    a {Priority} garbage collection of the managed C++ heap. There is only a
+    single atomic pause compaction event per cycle but it may cover several
+    sub-events. Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Weak" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Cpp" units="ms"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall main thread duration of the atomic pause of a {Priority} garbage
+    collection of the managed C++ heap. There is only a single atomic pause
+    event per cycle but it may cover several sub-events. Reported at the end of
+    the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Mark" units="ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Time spent on weakness handling on the main thread during a full garbage
+    Overall duration of marking on the main thread during the atomic pause of a
+    {Priority} garbage collection of the unified heap. There is only a single
+    atomic pause marking event per cycle but it may cover several sub-events.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Mark.Cpp"
+    units="ms" expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of marking on the main thread during the atomic pause of a
+    {Priority} garbage collection of the managed C++ heap. There is only a
+    single atomic pause marking event per cycle but it may cover several
+    sub-events. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Sweep" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of sweeping on the main thread during the atomic pasue of a
+    {Priority} garbage collection of the unified heap. There is only a single
+    atomic pause sweeping event per cycle but it may cover several sub-events.
+    Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Sweep.Cpp"
+    units="ms" expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of sweeping on the main thread during the atomic pasue of a
+    {Priority} garbage collection of the managed C++ heap. There is only a
+    single atomic pause sweeping event per cycle but it may cover several
+    sub-events. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Weak" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of weakness handling on the main thread during the atomic
+    pause of a {Priority} garbage collection of the unified heap. There is only
+    a single atomic pause weakness handling event per cycle but it may cover
+    several sub-events. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Atomic.Weak.Cpp"
+    units="ms" expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of weakness handling on the main thread during the atomic
+    pause of a {Priority} garbage collection of the managed C++ heap. There is
+    only a single atomic pause weakness handling event per cycle but it may
+    cover several sub-events. Reported at the end of the garbage collection
+    cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Compact" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on compaction on the main thread during a {Priority} full garbage
     collection of the unified heap. Reported at the end of the garbage
     collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Full.Weak.Cpp" units="ms"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Compact.Cpp" units="ms"
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Time spent on weakness handling on the main thread during a whole garbage
+    Time spent on compaction on the main thread during a whole {Priority}
+    garbage collection of the cpp heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Cpp" units="ms"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Main thread only duration of a whole {Priority} garbage collection of the
+    managed C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Incremental.Mark"
+    units="ms" expires_after="2025-10-05">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of incremental marking steps on the main thread during a
+    {Priority} full garbage collection of the unified heap. Reported at the end
+    of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Incremental.Mark.Cpp"
+    units="ms" expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of incremental marking steps on the main thread during a
+    {Priority} full garbage collection of the managed C++ heap. Reported at the
+    end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram
+    name="V8.GC.Cycle{Priority}.MainThread.Full.Incremental.Mark.StartStop"
+    units="ms" expires_after="M142">
+  <owner>etiennep@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Wall time duration of incremental marking during a {Priority} full garbage
+    collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Incremental.Sweep"
+    units="ms" expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of incremental sweeping steps on the main thread during a
+    {Priority} full garbage collection of the unified heap. Reported at the end
+    of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Incremental.Sweep.Cpp"
+    units="ms" expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of incremental sweeping steps on the main thread during a
+    {Priority} full garbage collection of the managed C++ heap. Reported at the
+    end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Mark" units="ms"
+    expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on marking on the main thread during a {Priority} full garbage
+    collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Mark.Cpp" units="ms"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on marking on the main thread during a whole {Priority} garbage
     collection of the managed C++ heap. Reported at the end of the garbage
     collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.MainThread.Young" units="ms" expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Sweep" units="ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Main-thread only duration of a young generation garbage collection of the
-    JavaScript heap. Reported at the end of the garbage collection cycle.
+    Time spent on sweeping on the main thread during a {Priority} full garbage
+    collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Memory.Freed.Full" units="KB" expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Sweep.Cpp" units="ms"
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Amount of allocated memory freed by a full garbage collection of the unified
-    heap. Reported at the end of the garbage collection cycle.
+    Time spent on sweeping on the main thread during a whole {Priority} garbage
+    collection of the managed C++ heap. Reported at the end of the garbage
+    collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Memory.Freed.Full.Cpp" units="KB"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Amount of allocated memory freed by a garbage collection of the managed C++
-    heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Objects.After.Full" units="KB"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Amount of used memory after a full garbage collection of the unified heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Objects.After.Full.Cpp" units="KB"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Amount of used memory after a garbage collection of the managed C++ heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Objects.Before.Full" units="KB"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Amount of used memory before a full garbage collection of the unified heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Objects.Before.Full.Cpp" units="KB"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Amount of used memory before a garbage collection of the managed C++ heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Objects.Freed.Full" units="KB"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Amount of used memory freed by a full garbage collection of the unified
-    heap. Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Objects.Freed.Full.Cpp" units="KB"
-    expires_after="M136">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>v8-memory-sheriffs@google.com</owner>
-  <summary>
-    Amount of used memory freed by a garbage collection of the managed C++ heap.
-    Reported at the end of the garbage collection cycle.
-  </summary>
-</histogram>
-
-<histogram name="V8.GC.Cycle.Reason.Full" enum="GarbageCollectionReason"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Weak" units="ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Reason a full garbage collection was started in V8. Reported at the end of
-    the garbage collection cycle.
+    Time spent on weakness handling on the main thread during a {Priority} full
+    garbage collection of the unified heap. Reported at the end of the garbage
+    collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Reason.Young" enum="GarbageCollectionReason"
-    expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Full.Weak.Cpp" units="ms"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent on weakness handling on the main thread during a whole {Priority}
+    garbage collection of the managed C++ heap. Reported at the end of the
+    garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.MainThread.Young" units="ms"
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Reason a young generation garbage collection was started in V8. Reported at
+    Main-thread only duration of a {Priority} young generation garbage
+    collection of the JavaScript heap. Reported at the end of the garbage
+    collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Memory.Freed.Full" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of allocated memory freed by a {Priority} full garbage collection of
+    the unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Memory.Freed.Full.Cpp" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of allocated memory freed by a {Priority} garbage collection of the
+    managed C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Objects.After.Full" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory after a {Priority} full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Objects.After.Full.Cpp" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory after a {Priority} garbage collection of the managed
+    C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Objects.Before.Full" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory before a {Priority} full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Objects.Before.Full.Cpp" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory before a {Priority} garbage collection of the managed
+    C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Objects.Freed.Full" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory freed by a {Priority} full garbage collection of the
+    unified heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Objects.Freed.Full.Cpp" units="KB"
+    expires_after="M142">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Amount of used memory freed by a {Priority} garbage collection of the
+    managed C++ heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Reason.Full"
+    enum="GarbageCollectionReason" expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Reason a {Priority} full garbage collection was started in V8. Reported at
     the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
-<histogram name="V8.GC.Cycle.Young" units="ms" expires_after="M136">
+<histogram name="V8.GC.Cycle{Priority}.Reason.Young"
+    enum="GarbageCollectionReason" expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
-    Overall duration of a young generation garbage collection of the JavaScript
-    heap. Reported at the end of the garbage collection cycle.
+    Reason a {Priority} young generation garbage collection was started in V8.
+    Reported at the end of the garbage collection cycle.
   </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
+</histogram>
+
+<histogram name="V8.GC.Cycle{Priority}.Young" units="ms" expires_after="M142">
+  <owner>nikolaos@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Overall duration of a {Priority} young generation garbage collection of the
+    JavaScript heap. Reported at the end of the garbage collection cycle.
+  </summary>
+  <token key="Priority">
+    <variant name="" summary="(aggregated across all priorities)"/>
+    <variant name=".BestEffort" summary="best effort"/>
+    <variant name=".UserBlocking" summary="user blocking"/>
+    <variant name=".UserVisible" summary="user visible"/>
+  </token>
 </histogram>
 
 <histogram
     name="V8.GC.Event.MainThread.Full.Finalize.{Incrementality}.{Mode}{Visibility}"
-    units="ms" expires_after="M136">
+    units="ms" expires_after="M142">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1116,7 +1504,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Mark" units="ms"
-    expires_after="M136">
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1126,7 +1514,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Mark.Cpp" units="ms"
-    expires_after="M136">
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1136,7 +1524,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Sweep" units="ms"
-    expires_after="M136">
+    expires_after="M142">
   <owner>nikolaos@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1146,7 +1534,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.Event.MainThread.Full.Incremental.Sweep.Cpp" units="ms"
-    expires_after="M136">
+    expires_after="M142">
   <owner>omerkatz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1156,7 +1544,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GC.TimeToCollectionOnBackground" units="microseconds"
-    expires_after="M136">
+    expires_after="M142">
   <owner>dinfuehr@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1172,8 +1560,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.GC.TimeToGlobalSafepoint" units="microseconds"
+    expires_after="M142">
+  <owner>dinfuehr@chromium.org</owner>
+  <owner>v8-memory-sheriffs@google.com</owner>
+  <summary>
+    Time spent in stopping worker isolates and other threads to reach a
+    safepoint. This is reported each time a safepoint is reached.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
 <histogram name="V8.GC.TimeToSafepoint" units="microseconds"
-    expires_after="M136">
+    expires_after="M142">
   <owner>dinfuehr@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1237,19 +1641,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCIncrementalMarkingReason" enum="GarbageCollectionReason"
-    expires_after="M136">
+    expires_after="M142">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason an incremental marking was started in V8.</summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarkingStart" units="ms" expires_after="M136">
+<histogram name="V8.GCIncrementalMarkingStart" units="ms" expires_after="M142">
   <owner>hpayer@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Time spent in starting incremental marking.</summary>
 </histogram>
 
-<histogram name="V8.GCIncrementalMarkingSum" units="ms" expires_after="M136">
+<histogram name="V8.GCIncrementalMarkingSum" units="ms" expires_after="M142">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>
@@ -1259,14 +1663,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.GCMarkCompactReason" enum="GarbageCollectionReason"
-    expires_after="M136">
+    expires_after="M142">
   <owner>mlippautz@chromium.org</owner>
   <owner>v8-memory-sheriffs@google.com</owner>
   <summary>Reason a mark-compact garbage collection was started in V8.</summary>
 </histogram>
 
 <histogram name="V8.JSDispatchTableEntriesCount" units="count"
-    expires_after="2025-06-30">
+    expires_after="2025-08-31">
   <owner>saelo@chromium.org</owner>
   <owner>olivf@chromium.org</owner>
   <summary>
@@ -1280,7 +1684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LiftoffBailoutReasons" enum="LiftoffBailoutReason"
-    expires_after="2025-01-19">
+    expires_after="2025-09-28">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1293,7 +1697,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LocalWindowProxy.CreateContextTime" units="ms"
-    expires_after="2025-02-16">
+    expires_after="2025-08-24">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1303,7 +1707,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.LocalWindowProxy.InitializeTime" units="ms"
-    expires_after="2025-02-16">
+    expires_after="2025-10-26">
   <owner>nidhijaju@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -1314,7 +1718,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizeExecute" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1326,7 +1730,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizeFinalize" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1338,7 +1742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizePrepare" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1350,7 +1754,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.MaglevOptimizeTotalTime" units="microseconds"
-    expires_after="2025-03-01">
+    expires_after="2026-03-01">
   <owner>leszeks@chromium.org</owner>
   <owner>v8-runtime@chromium.org</owner>
   <summary>
@@ -1418,16 +1822,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.MemoryHeapSampleTotalCommitted" units="KB"
+<histogram name="V8.MemoryHeapSampleTotalCommitted{V8SpecialApps}" units="KB"
     expires_after="2023-08-27">
   <owner>hpayer@chromium.org</owner>
   <summary>
     The total size of committed memory used by V8 after each GC in KB.
+    {V8SpecialApps}
   </summary>
+  <token key="V8SpecialApps">
+    <variant name=""/>
+    <variant name=".calendar" summary="Custom histogram for Calendar"/>
+    <variant name=".docs" summary="Custom histogram for Google Docs and Drive"/>
+    <variant name=".gmail" summary="Custom histogram for GMail"/>
+    <variant name=".inbox" summary="Custom histogram for Inbox"/>
+    <variant name=".plus" summary="Custom histogram for Google+"/>
+    <variant name=".top10"
+        summary="Custom histogram for Alexa's Top10 non-Google sites"/>
+    <variant name=".youtube" summary="Custom histogram for Youtube"/>
+  </token>
 </histogram>
 
 <histogram name="V8.ProduceCodeCacheMicroseconds" units="microseconds"
-    expires_after="2025-02-02">
+    expires_after="2025-10-12">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -1440,7 +1856,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.RegExpBacktracks" units="backtracks"
-    expires_after="2025-01-01">
+    expires_after="2026-01-01">
   <owner>jgruber@chromium.org</owner>
   <owner>pthier@chromium.org</owner>
   <summary>
@@ -1449,7 +1865,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedCodePointersCount" units="count"
-    expires_after="2025-06-30">
+    expires_after="2026-06-30">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1463,7 +1879,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedCppHeapPointersCount" units="count"
-    expires_after="2025-06-30">
+    expires_after="2026-06-30">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1478,7 +1894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedExternalPointersCount" units="count"
-    expires_after="2025-06-30">
+    expires_after="2026-06-30">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1493,7 +1909,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxedTrustedPointersCount" units="count"
-    expires_after="2025-06-30">
+    expires_after="2026-06-30">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1508,7 +1924,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxMode" enum="V8SandboxMode"
-    expires_after="2025-06-30">
+    expires_after="2025-11-02">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1529,7 +1945,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.SandboxReservationSizeGB" units="GB"
-    expires_after="2025-06-30">
+    expires_after="2025-11-02">
   <owner>saelo@chromium.org</owner>
   <owner>ishell@chromium.org</owner>
   <summary>
@@ -1639,7 +2055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeExecute" units="microseconds"
-    expires_after="2025-01-26">
+    expires_after="2025-10-05">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1651,7 +2067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeFinalize" units="microseconds"
-    expires_after="2025-01-26">
+    expires_after="2025-10-05">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1663,7 +2079,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementExecute"
-    units="microseconds" expires_after="2025-01-26">
+    units="microseconds" expires_after="2025-10-05">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1676,7 +2092,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementFinalize"
-    units="microseconds" expires_after="2025-01-26">
+    units="microseconds" expires_after="2025-10-05">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1689,7 +2105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementPrepare"
-    units="microseconds" expires_after="2025-01-26">
+    units="microseconds" expires_after="2025-10-05">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1702,7 +2118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeForOnStackReplacementTotalTime"
-    units="microseconds" expires_after="2025-01-26">
+    units="microseconds" expires_after="2025-10-05">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1727,7 +2143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizePrepare" units="microseconds"
-    expires_after="2025-01-26">
+    expires_after="2025-10-05">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1739,7 +2155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalBackground" units="microseconds"
-    expires_after="2025-01-19">
+    expires_after="2025-09-28">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1751,7 +2167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalForeground" units="microseconds"
-    expires_after="2025-01-19">
+    expires_after="2025-09-28">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1763,7 +2179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.TurboFanOptimizeTotalTime" units="microseconds"
-    expires_after="2025-01-19">
+    expires_after="2025-09-28">
   <owner>tebbi@chromium.org</owner>
   <owner>mslekova@chromium.org</owner>
   <summary>
@@ -1775,7 +2191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.UnhandledExceptionCountInMainThread" enum="BooleanOccurred"
-    expires_after="2025-02-10">
+    expires_after="2025-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
@@ -1790,7 +2206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.UnhandledExceptionCountInWorker" enum="BooleanOccurred"
-    expires_after="2025-01-05">
+    expires_after="2025-12-01">
   <owner>chikamune@chromium.org</owner>
   <owner>sisidovski@chromium.org</owner>
   <owner>hiroshige@chromium.org</owner>
@@ -1804,7 +2220,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmCacheCount" units="count" expires_after="2025-02-10">
+<histogram name="V8.WasmCacheCount" units="count" expires_after="2025-10-05">
   <owner>ahaas@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -1818,7 +2234,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCodeCaching" enum="WasmCodeCaching"
-    expires_after="2025-02-09">
+    expires_after="2025-06-15">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>
@@ -1830,8 +2246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCompilationMethod" enum="WasmCompilationMethod"
-    expires_after="2025-02-10">
-  <owner>ahaas@chromium.org</owner>
+    expires_after="2026-01-15">
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
   <summary>
@@ -1841,8 +2256,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmCompileFunctionMicroSeconds" units="microseconds"
-    expires_after="2025-03-09">
+<histogram name="V8.WasmCompileFunctionMicroSeconds{V8WasmSeparateAsmAndWasm}"
+    units="microseconds" expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1855,12 +2270,15 @@ chromium-metrics-reviews@google.com.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {V8WasmSeparateAsmAndWasm}
   </summary>
+  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="V8.WasmCompileHugeFunctionMilliSeconds" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-10-05">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -1872,7 +2290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCompileHugeFunctionPeakMemoryBytes" units="bytes"
-    expires_after="2025-01-26">
+    expires_after="2025-10-05">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -1884,7 +2302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmCompileModuleAsyncMicroSeconds" units="microseconds"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1896,8 +2314,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmCompileModuleMicroSeconds" units="microseconds"
-    expires_after="2025-03-09">
+<histogram name="V8.WasmCompileModuleMicroSeconds{V8WasmSeparateAsmAndWasm}"
+    units="microseconds" expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1910,12 +2328,15 @@ chromium-metrics-reviews@google.com.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {V8WasmSeparateAsmAndWasm}
   </summary>
+  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="V8.WasmCompileModuleStreamingMicroSeconds"
-    units="microseconds" expires_after="2025-03-09">
+    units="microseconds" expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1929,8 +2350,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="V8.WasmDeoptsExecutedCount" units="deopts"
+    expires_after="2025-12-01">
+  <owner>mliedtke@chromium.org</owner>
+  <owner>dlehmann@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    The number of deopts executed by the wasm engine so far. As a baseline, a 0
+    sample is added for each function that gets tiered-up with Turbofan if the
+    function contains at least one deopt-point, meaning functions which can
+    never deopt (or weren't tiered up), do not appear in this histogram at all.
+    At each deopt a sample is added, so if there were 2 deopts in total, there
+    will be one sample for 0 (for the initial tier-up), one for 1 and one for 2
+    deopts. If an optimized function is served from cache, it does not add a new
+    0 sample.
+  </summary>
+</histogram>
+
+<histogram name="V8.WasmDeoptsPerFunction" units="deopts"
+    expires_after="2025-12-01">
+  <owner>mliedtke@chromium.org</owner>
+  <owner>dlehmann@chromium.org</owner>
+  <owner>ecmziegler@chromium.org</owner>
+  <owner>wasm-v8@google.com</owner>
+  <summary>
+    The number of deopts executed per function (meaning each function has a
+    separate counter). Similarly to V8.WasmDeoptsExecutedCount, this will add a
+    sample for each deoptimization of each function.
+  </summary>
+</histogram>
+
 <histogram name="V8.WasmDeserializationTimeMilliSeconds" units="ms"
-    expires_after="2025-02-09">
+    expires_after="2025-10-19">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
@@ -1943,7 +2395,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmEngineMetadataSizeKiB" units="KB"
-    expires_after="2025-07-01">
+    expires_after="2025-11-02">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>evih@chromium.org</owner>
@@ -1955,7 +2407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmFinishModuleStreamingMicroSeconds" units="microseconds"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>bbudge@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
@@ -1970,28 +2422,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmFlushedLiftoffCodeSizeBytes" units="bytes"
-    expires_after="2025-07-01">
-  <owner>evih@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    The amount of executable Liftoff code that was flushed. Recorded on
-    emergency GCs for allocations and on memory pressure.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmFlushedLiftoffMetadataSizeBytes" units="bytes"
-    expires_after="2025-07-01">
-  <owner>evih@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    The amount of Liftoff metadata that was flushed. Recorded on emergency GCs
-    for allocations and on memory pressure.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmFunctionsPerModule" units="functions"
-    expires_after="2025-03-09">
+<histogram name="V8.WasmFunctionsPerModule{V8WasmSeparateAsmAndWasm}"
+    units="functions" expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -1999,11 +2431,15 @@ chromium-metrics-reviews@google.com.
   <summary>
     Function count per WebAssembly module. Recorded for each WebAssembly module
     which is decoded for validation, compilation, or deserialization.
+    {V8WasmSeparateAsmAndWasm}
   </summary>
+  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="V8.WasmHugeFunctionSizeBytes" units="bytes"
-    expires_after="2025-03-09">
+<histogram name="V8.WasmHugeFunctionSizeBytes{V8WasmSeparateAsmAndWasm}"
+    units="bytes" expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -2012,11 +2448,16 @@ chromium-metrics-reviews@google.com.
     Size of a huge WebAssembly function in bytes. A function is considered huge
     if it is larger than 100kB. Recorded on each compilation of a single
     function, either synchronous, asynchronous, or lazily.
+    {V8WasmSeparateAsmAndWasm}
   </summary>
+  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="V8.WasmInstantiateModuleMicroSeconds" units="microseconds"
-    expires_after="2025-03-09">
+<histogram
+    name="V8.WasmInstantiateModuleMicroSeconds{V8WasmSeparateAsmAndWasm}"
+    units="microseconds" expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -2029,12 +2470,15 @@ chromium-metrics-reviews@google.com.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {V8WasmSeparateAsmAndWasm}
   </summary>
+  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="V8.WasmLazyCompileTimeMicroSeconds" units="microseconds"
-    expires_after="2025-09-01">
+    expires_after="2025-11-02">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -2059,7 +2503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmMemoryProtectionKeysSupport" enum="BooleanSupported"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>clemensb@chromium.org</owner>
   <owner>jkummerow@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
@@ -2075,7 +2519,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleCodeSizeKiB" units="KB"
-    expires_after="2025-01-19">
+    expires_after="2025-07-27">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -2086,7 +2530,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleCodeSizeMiB" units="MB"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -2098,7 +2542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleCodeSizePercentFreed" units="%"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -2111,7 +2555,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleMetadataSizeKiB" units="KB"
-    expires_after="2025-07-01">
+    expires_after="2025-11-02">
   <owner>ecmziegler@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>evih@chromium.org</owner>
@@ -2123,7 +2567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleNumberOfCodeGCsTriggered" units="gcs"
-    expires_after="2025-03-02">
+    expires_after="2025-11-09">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -2135,7 +2579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModuleNumberOfCodeSpaces" units="spaces"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
@@ -2146,8 +2590,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmModuleSizeBytes" units="bytes"
-    expires_after="2025-02-09">
+<histogram name="V8.WasmModuleSizeBytes{V8WasmSeparateAsmAndWasm}"
+    units="bytes" expires_after="2025-10-19">
   <owner>ecmziegler@chromium.org</owner>
   <owner>adamk@chromium.org</owner>
   <owner>ahaas@chromium.org</owner>
@@ -2155,12 +2599,15 @@ chromium-metrics-reviews@google.com.
   <summary>
     Size of the wire bytes of a WebAssembly module. Recorded for each
     WebAssembly module which is decoded for validation, compilation, or
-    deserialization.
+    deserialization. {V8WasmSeparateAsmAndWasm}
   </summary>
+  <token key="V8WasmSeparateAsmAndWasm" variants="V8WasmSeparateAsmAndWasm">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="V8.WasmModulesPerEngine" units="count"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -2171,7 +2618,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmModulesPerIsolate" units="count"
-    expires_after="2025-03-09">
+    expires_after="2025-11-16">
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
   <owner>wasm-v8@google.com</owner>
@@ -2181,64 +2628,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmNumLazyCompilations120Sec" units="count"
-    expires_after="2024-11-10">
-  <owner>ahaas@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    Number of functions that get compiled lazily in 120 seconds after the first
-    instantiation of a WebAssembly module. Recorded 120 seconds after calling
-    the start function of the WebAssembly module during the first instantiation
-    of a WebAssembly module.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmNumLazyCompilations20Sec" units="count"
-    expires_after="2024-12-08">
-  <owner>ahaas@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    Number of functions that get compiled lazily in 20 seconds after the first
-    instantiation of a WebAssembly module. Recorded 20 seconds after calling the
-    start function of the WebAssembly module during the first instantiation of a
-    WebAssembly module.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmNumLazyCompilations5Sec" units="count"
-    expires_after="2024-12-08">
-  <owner>ahaas@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    Number of functions that get compiled lazily in 5 seconds after the first
-    instantiation of a WebAssembly module. Recorded 5 seconds after calling the
-    start function of the WebAssembly module during the first instantiation of a
-    WebAssembly module.
-  </summary>
-</histogram>
-
-<histogram name="V8.WasmNumLazyCompilations60Sec" units="count"
-    expires_after="2024-12-08">
-  <owner>ahaas@chromium.org</owner>
-  <owner>clemensb@chromium.org</owner>
-  <owner>ecmziegler@chromium.org</owner>
-  <owner>wasm-v8@google.com</owner>
-  <summary>
-    Number of functions that get compiled lazily in 60 seconds after the first
-    instantiation of a WebAssembly module. Recorded 60 seconds after calling the
-    start function of the WebAssembly module during the first instantiation of a
-    WebAssembly module.
-  </summary>
-</histogram>
-
 <histogram name="V8.WasmSerializationTimeMilliSeconds" units="ms"
-    expires_after="2025-02-09">
+    expires_after="2025-10-19">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>ecmziegler@chromium.org</owner>
@@ -2251,7 +2642,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="V8.WasmStreamingInputType" enum="WasmStreamingInputType"
-    expires_after="2025-02-10">
+    expires_after="2026-02-10">
   <owner>ahaas@chromium.org</owner>
   <owner>clemensb@chromium.org</owner>
   <owner>wasm-runtime@google.com</owner>

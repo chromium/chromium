@@ -114,6 +114,10 @@ inline constexpr char kProxyBypassList[] = "proxy-bypass-list";
 // affects HTTP and HTTPS requests.
 inline constexpr char kProxyServer[] = "proxy-server";
 
+// Headless screen info in the format: {0,0 800x600}{800,0 600x800}.
+// See //components/headless/screen_info/README.md for more details.
+inline constexpr char kScreenInfo[] = "screen-info";
+
 // A string used to override the default user agent with a custom one.
 inline constexpr char kUserAgent[] = "user-agent";
 
@@ -126,6 +130,7 @@ inline constexpr char kUserDataDir[] = "user-data-dir";
 inline constexpr char kVersion[] = "version";
 
 // Sets the initial window size. Provided as string in the format "800,600".
+// This also defines the headless screen size in lieu of --screen-info.
 inline constexpr char kWindowSize[] = "window-size";
 
 // No! Please don't just add your switches at the end of the list.

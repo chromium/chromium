@@ -13,15 +13,17 @@
 namespace blink {
 
 CSSHSL::CSSHSL(const Color& input_color) {
-  double h, s, l;
-  input_color.GetHSL(h, s, l);
-  h_ = CSSUnitValue::Create(h * 360, CSSPrimitiveValue::UnitType::kDegrees);
-  s_ = CSSUnitValue::Create(s * 100, CSSPrimitiveValue::UnitType::kPercentage);
-  l_ = CSSUnitValue::Create(l * 100, CSSPrimitiveValue::UnitType::kPercentage);
+  Color hsl_color = input_color;
+  hsl_color.ConvertToColorSpace(Color::ColorSpace::kHSL);
 
-  double a = input_color.Alpha();
-  alpha_ =
-      CSSUnitValue::Create(a * 100, CSSPrimitiveValue::UnitType::kPercentage);
+  h_ = CSSUnitValue::Create(hsl_color.Param0(),
+                            CSSPrimitiveValue::UnitType::kDegrees);
+  s_ = CSSUnitValue::Create(hsl_color.Param1() * 100.0,
+                            CSSPrimitiveValue::UnitType::kPercentage);
+  l_ = CSSUnitValue::Create(hsl_color.Param2() * 100.0,
+                            CSSPrimitiveValue::UnitType::kPercentage);
+  alpha_ = CSSUnitValue::Create(hsl_color.Alpha() * 100.0,
+                                CSSPrimitiveValue::UnitType::kPercentage);
 }
 
 CSSHSL::CSSHSL(CSSNumericValue* h,

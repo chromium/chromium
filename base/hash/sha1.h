@@ -37,7 +37,7 @@ BASE_EXPORT std::string SHA1HashString(std::string_view str);
 
 // These functions allow streaming SHA-1 operations.
 BASE_EXPORT void SHA1Init(SHA1Context& context);
-BASE_EXPORT void SHA1Update(const std::string_view data, SHA1Context& context);
+BASE_EXPORT void SHA1Update(std::string_view data, SHA1Context& context);
 BASE_EXPORT void SHA1Final(SHA1Context& context, SHA1Digest& digest);
 }  // namespace base
 

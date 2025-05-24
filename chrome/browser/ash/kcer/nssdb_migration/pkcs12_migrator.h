@@ -7,9 +7,9 @@
 
 #include <memory>
 
-#include "ash/components/kcer/kcer.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "chromeos/ash/components/kcer/kcer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "net/cert/scoped_nss_types.h"
 
@@ -19,7 +19,8 @@ class BrowserContext;
 
 namespace kcer {
 
-const char kKcerPkcs12MigrationUma[] = "Ash.KcerPkcs12Migration.Events";
+inline constexpr char kKcerPkcs12MigrationUma[] =
+    "Ash.KcerPkcs12Migration.Events";
 
 // Used for UMA counters, the entries should not be re-numbered or re-used.
 enum class KcerPkcs12MigrationEvent {

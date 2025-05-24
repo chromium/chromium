@@ -38,8 +38,8 @@ export function setUp() {
   passwordDialog = document.querySelector('xf-password-dialog')!;
 
   // Get its sub-elements.
-  dialog = passwordDialog.shadowRoot!.querySelector('#password-dialog') as
-      CrDialogElement;
+  dialog = passwordDialog.shadowRoot!.querySelector<CrDialogElement>(
+      '#password-dialog')!;
   name = passwordDialog.shadowRoot!.querySelector('#name')!;
   input = passwordDialog.shadowRoot!.querySelector('#input')!;
   cancel = passwordDialog.shadowRoot!.querySelector('#cancel')!;
@@ -93,7 +93,7 @@ export async function testPasswordDialogIsModal(done: () => void) {
 
   // Dispatch the keyboard event to the <cr-input> inner <input> element.
   const inputElement =
-      input.shadowRoot!.querySelector('input') as HTMLInputElement;
+      input.shadowRoot!.querySelector<HTMLInputElement>('input')!;
   assertEquals(inputElement.value, 'password');
   assert(inputElement.dispatchEvent(keyEvent));
 

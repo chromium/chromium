@@ -21,7 +21,6 @@ struct AddressSuggestionStrikeDatabaseTraits {
   static constexpr std::string_view kName = "AddressSuggestion";
   // This value is now meaningless, since precedence is taken by the
   // parameterized `AddressSuggestionStrikeDatabase::GetMaxStrikesLimit`.
-  // TODO(crbug.com/41460687): Change to launched parameterization.
   static constexpr size_t kMaxStrikeLimit = 3;
   static constexpr size_t kMaxStrikeEntities = 300;
   // Strikes in this database do not expire.
@@ -31,9 +30,9 @@ struct AddressSuggestionStrikeDatabaseTraits {
       std::nullopt;
   static constexpr bool kUniqueIdRequired = true;
 
-  static std::string OriginFromId(const std::string& id) {
+  static std::string HostFromId(const std::string& id) {
     // AddressSuggestionStrikeDatabase keys have the following format:
-    // form_signature | field_signature | '-' | origin (| is concatenation).
+    // form_signature | field_signature | '-' | host (| is concatenation).
     // Since the signatures cannot contain dashes, we just return everything
     // that comes after the first dash, which is the separator we added.
     size_t first_dash = id.find_first_of("-");
@@ -55,9 +54,6 @@ class AddressSuggestionStrikeDatabase
   static std::string GetId(FormSignature form_signature,
                            FieldSignature field_signature,
                            const GURL& url);
-
-  // TODO(crbug.com/41460687): Remove.
-  int GetMaxStrikesLimit() const override;
 };
 
 }  // namespace autofill

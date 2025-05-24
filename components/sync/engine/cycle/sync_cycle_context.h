@@ -18,6 +18,7 @@
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/data_type_registry.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
+#include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {
 

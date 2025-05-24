@@ -77,7 +77,7 @@ class HotspotTrayViewTest : public AshTestBase {
   }
 
   std::u16string GetTooltip() {
-    return hotspot_tray_view_->GetTooltipText(gfx::Point());
+    return hotspot_tray_view_->GetRenderedTooltipText(gfx::Point());
   }
 
   std::u16string GetAccessibleNameString() {

@@ -33,8 +33,8 @@ namespace {
 void TruncateString(std::string* data) {
   const size_t kMaxLength = 200;
   if (data->length() > kMaxLength) {
-    data->resize(kMaxLength);
-    data->replace(kMaxLength - 3, 3, "...");
+    base::TruncateUTF8ToByteSize(*data, kMaxLength - 3, data);
+    data->append("...");
   }
 }
 
@@ -76,7 +76,7 @@ bool IsVLogOn(int vlog_level) {
   return Log::is_vlog_on_func(vlog_level);
 }
 
-std::string PrettyPrintValue(const base::Value& value) {
+std::string PrettyPrintValue(base::ValueView value) {
   std::string json;
   base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);

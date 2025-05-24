@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
 
 /** Interface for the color picker related UI. */
+@NullMarked
 public interface ColorPicker {
     /** Return the inflated container view for the color picker component. */
     ColorPickerContainer getContainerView();

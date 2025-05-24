@@ -1,6 +1,10 @@
 // Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+#include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
+#include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -42,13 +46,15 @@ class SafeWidgetDestroyedWaiter : public views::WidgetObserver {
   // views::WidgetObserver:
   void OnWidgetDestroyed(views::Widget* widget) override {
     observation_.Reset();
-    if (!quit_closure_.is_null())
+    if (!quit_closure_.is_null()) {
       std::move(quit_closure_).Run();
+    }
   }
 
   void Wait() {
-    if (!observation_.IsObserving())
+    if (!observation_.IsObserving()) {
       return;
+    }
     DCHECK(quit_closure_.is_null());
     quit_closure_ = run_loop_.QuitClosure();
     run_loop_.Run();
@@ -211,6 +217,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
 // since such class computes the hover card state.
 IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
                        WidgetUpdatedWhenHoveringBetweenActionViews) {
+  // Bypass install verification to allow testing the behavior of
+  // force-installed extensions.
+  extensions::ScopedInstallVerifierBypassForTest install_verifier_bypass;
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install four extensions with different policy and site access permissions
@@ -350,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
   ASSERT_TRUE(action);
   int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
   action->SetTitle(tab_id, "Action title");
-  extensions::ExtensionActionAPI::Get(profile())->NotifyChange(
+  extensions::ExtensionActionDispatcher::Get(profile())->NotifyChange(
       action, web_contents, profile());
 
   // Verify hover card is still visible.

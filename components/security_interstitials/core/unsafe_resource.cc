@@ -32,7 +32,9 @@ UnsafeResource::UnsafeResource(const UnsafeResource& other) = default;
 
 UnsafeResource::~UnsafeResource() = default;
 
-bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck() const {
+// static
+bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck(
+    safe_browsing::SBThreatType threat_type) {
   using enum safe_browsing::SBThreatType;
   switch (threat_type) {
     // Client-side phishing detection interstitials never block the main

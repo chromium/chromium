@@ -21,11 +21,8 @@ import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptReq
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
@@ -37,10 +34,7 @@ import java.util.Map;
 @Batch(Batch.PER_CLASS)
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-@CommandLineFlags.Add({
-    "origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=",
-    "enable-features=PersistentOriginTrials"
-})
+@CommandLineFlags.Add({"origin-trial-public-key=dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA="})
 public class AwPersistentOriginTrialTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -94,18 +88,15 @@ public class AwPersistentOriginTrialTest extends AwParameterizedTest {
     @SmallTest
     public void testCriticalHeaderCausesRetry() throws Throwable {
         final String requestUrl = "https://example.com/";
-        var headers =
+        Map<String, String> headers =
                 Map.of(
                         ORIGIN_TRIAL_HEADER,
                         PERSISTENT_TRIAL_TOKEN,
                         CRITICAL_ORIGIN_TRIAL_HEADER,
                         PERSISTENT_TRIAL_NAME);
-        var body =
-                new ByteArrayInputStream(
-                        "<!DOCTYPE html><html><body>Hello, World".getBytes(StandardCharsets.UTF_8));
-        var responseInfo =
-                new WebResourceResponseInfo("text/html", "utf-8", body, 200, "OK", headers);
-        mInterceptRequestHelper.setReturnValueForUrl(requestUrl, responseInfo);
+
+        mInterceptRequestHelper.enqueueHtmlResponseForUrl(
+                requestUrl, "<!DOCTYPE html><html><body>Hello, World", headers);
 
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 mContentsClient.getOnPageFinishedHelper();

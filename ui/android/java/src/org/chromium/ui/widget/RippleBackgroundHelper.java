@@ -11,25 +11,26 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.InsetDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.util.StateSet;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
 
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 
 /**
  * A helper class to create and maintain a background drawable with customized background color,
  * ripple color, and corner radius.
  */
+@NullMarked
 public class RippleBackgroundHelper {
     private static final int[] STATE_SET_PRESSED = {android.R.attr.state_pressed};
     private static final int[] STATE_SET_SELECTED = {android.R.attr.state_selected};
@@ -41,10 +42,10 @@ public class RippleBackgroundHelper {
 
     private @Nullable ColorStateList mBackgroundColorList;
     private @Nullable ColorStateList mStateLayerColorList;
-
     private GradientDrawable mBackgroundGradient;
     private GradientDrawable mStateLayerGradient;
-    private LayerDrawable mBackgroundLayerDrawable;
+
+    private @Nullable LayerDrawable mBackgroundLayerDrawable;
 
     /**
      * @param view The {@link View} on which background will be applied.
@@ -202,6 +203,7 @@ public class RippleBackgroundHelper {
      * @param verticalInset The vertical inset of the background drawable.
      * @return The {@link GradientDrawable}/{@link LayerDrawable} to be used as ripple background.
      */
+    @EnsuresNonNull({"mBackgroundGradient", "mStateLayerGradient"})
     private Drawable createBackgroundDrawable(
             ColorStateList rippleColorList,
             ColorStateList borderColorList,
@@ -230,39 +232,6 @@ public class RippleBackgroundHelper {
     }
 
     /**
-     * This initializes all members with new drawables needed to display/update a ripple effect.
-     *
-     * @param rippleColorList A {@link ColorStateList} that is used for the ripple effect.
-     * @param borderColorList A {@link ColorStateList} that is used for the border.
-     * @param borderSize The border width in pixels.
-     * @param cornerRadius The corner radius in pixels.
-     * @param verticalInset The vertical inset of the background drawable.
-     * @return The {@link GradientDrawable}/{@link LayerDrawable} to be used as ripple background.
-     */
-    private Drawable createBackgroundDrawable(
-            ColorStateList rippleColorList,
-            ColorStateList borderColorList,
-            @Px int borderSize,
-            @Px int cornerRadius,
-            @Px int verticalInset) {
-        return createBackgroundDrawable(
-                rippleColorList,
-                borderColorList,
-                borderSize,
-                new float[] {
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius,
-                    cornerRadius
-                },
-                verticalInset);
-    }
-
-    /**
      * @param drawable The {@link Drawable} that needs to be wrapped with insets.
      * @param verticalInset The vertical inset for the specified drawable.
      * @return A {@link Drawable} that wraps the specified drawable with the specified inset.
@@ -274,17 +243,12 @@ public class RippleBackgroundHelper {
 
     /**
      * @param color The {@link ColorStateList} to be set as the background color on the background
-     *              drawable.
+     *     drawable.
      */
-    public void setBackgroundColor(ColorStateList color) {
+    public void setBackgroundColor(@Nullable ColorStateList color) {
         if (color == mBackgroundColorList) return;
 
         mBackgroundColorList = color;
-        // This works around an issue before Android O where the drawable is drawn in the wrong
-        // default state.
-        if (VERSION.SDK_INT < VERSION_CODES.O) {
-            mBackgroundLayerDrawable.setDrawable(/* index= */ 0, mBackgroundGradient);
-        }
         mBackgroundGradient.setColor(color);
     }
 
@@ -296,11 +260,6 @@ public class RippleBackgroundHelper {
         if (color == mStateLayerColorList) return;
 
         mStateLayerColorList = color;
-        // This works around an issue before Android O where the drawable is drawn in the wrong
-        // default state.
-        if (VERSION.SDK_INT < VERSION_CODES.O) {
-            mBackgroundLayerDrawable.setDrawable(/* index= */ 1, mStateLayerGradient);
-        }
         mStateLayerGradient.setColor(color);
     }
 

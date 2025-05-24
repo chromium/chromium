@@ -7,16 +7,12 @@
 #include <memory>
 #include <utility>
 
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
-#include "privacy_sandbox_notice_constants.h"
-#include "privacy_sandbox_notice_storage.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tracking_protection_onboarding.h"
 
@@ -58,7 +54,6 @@ class TrackingProtectionOnboardingTest : public testing::Test {
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<TrackingProtectionOnboarding>
       tracking_protection_onboarding_service_;
-  base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -86,20 +81,6 @@ INSTANTIATE_TEST_SUITE_P(
                   TrackingProtectionOnboarding::OnboardingStatus::kEligible),
         std::pair(TrackingProtectionOnboardingStatus::kOnboarded,
                   TrackingProtectionOnboarding::OnboardingStatus::kOnboarded)));
-
-class TrackingProtectionOnboardingStartupStateTest
-    : public TrackingProtectionOnboardingTest {
- protected:
-  base::HistogramTester histogram_tester_;
-};
-
-TEST_F(TrackingProtectionOnboardingStartupStateTest,
-       OnboardingStartupStateIneligible) {
-  // Onboarding startup state starts as ineligible
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.OnboardingStartup.State",
-      TrackingProtectionOnboarding::OnboardingStartupState::kIneligible, 1);
-}
 
 class TrackingProtectionSilentOnboardingTest
     : public TrackingProtectionOnboardingTest {};
@@ -131,20 +112,6 @@ INSTANTIATE_TEST_SUITE_P(
         std::pair(
             TrackingProtectionOnboardingStatus::kOnboarded,
             TrackingProtectionOnboarding::SilentOnboardingStatus::kOnboarded)));
-
-class TrackingProtectionSilentOnboardingStartupStateTest
-    : public TrackingProtectionOnboardingTest {
- protected:
-  base::HistogramTester histogram_tester_;
-};
-
-TEST_F(TrackingProtectionSilentOnboardingStartupStateTest,
-       StartupStateIneligible) {
-  // Silent onboarding startup state starts as ineligible
-  histogram_tester_.ExpectBucketCount(
-      "PrivacySandbox.TrackingProtection.SilentOnboardingStartup.State",
-      TrackingProtectionOnboarding::OnboardingStartupState::kIneligible, 1);
-}
 
 }  // namespace
 }  // namespace privacy_sandbox

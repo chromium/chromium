@@ -9,64 +9,40 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.metrics.ChangeMetricsReportingStateCalledFrom;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 /** Provides first run related utility functions. */
+@NullMarked
 public class FirstRunUtils {
     private static final int DEFAULT_SKIP_TOS_EXIT_DELAY_MS = 1000;
 
     private static boolean sDisableDelayOnExitFreForTest;
 
     /**
-     * Synchronizes first run native and Java preferences.
-     * Must be called after native initialization.
+     * Synchronizes first run native and Java preferences. Must be called after native
+     * initialization.
      */
     public static void cacheFirstRunPrefs() {
-        SharedPreferencesManager javaPrefs = ChromeSharedPreferences.getInstance();
-        // Set both Java and native prefs if any of the three indicators indicate ToS has been
-        // accepted. This needed because:
-        //   - Old versions only set native pref, so this syncs Java pref.
-        //   - Backup & restore does not restore native pref, so this needs to update it.
-        //   - checkAnyUserHasSeenToS() may be true which needs to sync its state to the prefs.
-        boolean javaPrefValue =
-                javaPrefs.readBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
-        boolean nativePrefValue = isFirstRunEulaAccepted();
-        boolean isFirstRunComplete = FirstRunStatus.getFirstRunFlowComplete();
-        if (javaPrefValue || nativePrefValue || isFirstRunComplete) {
-            if (!javaPrefValue) {
-                javaPrefs.writeBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
-            }
-            if (!nativePrefValue) {
-                setEulaAccepted();
-            }
+        // Backup and restore does not restore native pref, so this needs to update it. Note that
+        // these prefs are slightly different, the eula is set when the ToS is accepted (early in
+        // the FRE), while the FRE flow is only complete at the end.
+        if (FirstRunStatus.getFirstRunFlowComplete() && !isFirstRunEulaAccepted()) {
+            setEulaAccepted();
         }
     }
 
     /**
-     * @return Whether the user has accepted Chrome Terms of Service.
-     */
-    public static boolean didAcceptTermsOfService() {
-        // Note: Does not check FirstRunUtils.isFirstRunEulaAccepted() because this may be called
-        // before native is initialized.
-        return ChromeSharedPreferences.getInstance()
-                .readBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, false);
-    }
-
-    /**
      * Sets the EULA/Terms of Services state as "ACCEPTED".
+     *
      * @param allowMetricsAndCrashUploading True if the user allows to upload crash dumps and
-     *         collect stats.
+     *     collect stats.
      */
     static void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {
         UmaSessionStats.changeMetricsReportingConsent(
                 allowMetricsAndCrashUploading, ChangeMetricsReportingStateCalledFrom.UI_FIRST_RUN);
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
         setEulaAccepted();
     }
 

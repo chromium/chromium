@@ -8,10 +8,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewProperties;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -30,6 +31,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /** A class that handles model and view creation for the clipboard suggestions. */
+@NullMarked
 public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     /**
      * @param context An Android context.
@@ -37,14 +39,14 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param imageSupplier Supplier used to retrieve suggestion icons and images.
      */
     public ClipboardSuggestionProcessor(
-            @NonNull Context context,
-            @NonNull SuggestionHost suggestionHost,
-            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
+            Context context,
+            SuggestionHost suggestionHost,
+            Optional<OmniboxImageSupplier> imageSupplier) {
         super(context, suggestionHost, imageSupplier);
     }
 
     @Override
-    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         return suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_URL
                 || suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_TEXT
                 || suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE;
@@ -56,14 +58,17 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public @NonNull PropertyModel createModel() {
+    public PropertyModel createModel() {
         return new PropertyModel(SuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
+            AutocompleteInput input,
+            AutocompleteMatch suggestion,
+            PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
 
         model.set(SuggestionViewProperties.IS_SEARCH_SUGGESTION, suggestion.isSearchSuggestion());
         model.set(
@@ -86,9 +91,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param showContent Whether the contents should be shown.
      */
     private void setupContentField(
-            @NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model,
-            boolean showContent) {
+            AutocompleteMatch suggestion, PropertyModel model, boolean showContent) {
         String displayText = showContent ? suggestion.getDisplayText() : "";
         model.set(SuggestionViewProperties.TEXT_LINE_2_TEXT, new SuggestionSpannable(displayText));
 
@@ -111,9 +114,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param showContent Whether the contents should be shown.
      */
     private void updateSuggestionIcon(
-            @NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model,
-            boolean showContent) {
+            AutocompleteMatch suggestion, PropertyModel model, boolean showContent) {
         if (!showContent) {
             setOmniboxDrawableState(model, getFallbackIcon(suggestion));
             return;
@@ -159,9 +160,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param showContent Whether the contents should be shown.
      */
     private void updateActionButton(
-            @NonNull AutocompleteMatch suggestion,
-            @NonNull PropertyModel model,
-            boolean showContent) {
+            AutocompleteMatch suggestion, PropertyModel model, boolean showContent) {
         int icon =
                 showContent ? R.drawable.ic_visibility_off_black : R.drawable.ic_visibility_black;
         String iconString =
@@ -191,7 +190,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    protected void onSuggestionClicked(@NonNull AutocompleteMatch suggestion, int position) {
+    protected void onSuggestionClicked(AutocompleteMatch suggestion, int position) {
         if (!suggestion.getUrl().isEmpty()) {
             super.onSuggestionClicked(suggestion, position);
             return;
@@ -213,8 +212,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
     // TODO(crbug.com/40177279): Make revealButtonClickHandler and concealButtonClickHandler
     // private.
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void revealButtonClickHandler(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model) {
+    public void revealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Reveal");
         if (suggestion.getUrl().isEmpty()) {
             suggestion.updateWithClipboardContent(
@@ -231,8 +229,7 @@ public class ClipboardSuggestionProcessor extends BaseSuggestionViewProcessor {
      * @param model Model representing current suggestion.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public void concealButtonClickHandler(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model) {
+    public void concealButtonClickHandler(AutocompleteMatch suggestion, PropertyModel model) {
         RecordUserAction.record("Omnibox.ClipboardSuggestion.Conceal");
         setupContentField(suggestion, model, /* showContent= */ false);
     }

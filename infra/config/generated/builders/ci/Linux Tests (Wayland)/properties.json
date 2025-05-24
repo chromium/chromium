@@ -24,6 +24,7 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
+                  "checkout_mutter",
                   "use_clang_coverage"
                 ],
                 "config": "chromium"

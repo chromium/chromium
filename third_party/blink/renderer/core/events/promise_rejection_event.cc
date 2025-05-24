@@ -15,10 +15,10 @@ PromiseRejectionEvent::PromiseRejectionEvent(
     ScriptState* script_state,
     const AtomicString& type,
     const PromiseRejectionEventInit* initializer)
-    : Event(type, initializer), world_(&script_state->World()) {
-  DCHECK(initializer->hasPromise());
-  promise_.Reset(script_state->GetIsolate(),
-                 initializer->promise().V8Promise());
+    : Event(type, initializer),
+      world_(&script_state->World()),
+      promise_(script_state->GetIsolate(),
+               initializer->promise().Unwrap().V8Promise()) {
   if (initializer->hasReason()) {
     reason_.Reset(script_state->GetIsolate(), initializer->reason().V8Value());
   }
@@ -26,15 +26,13 @@ PromiseRejectionEvent::PromiseRejectionEvent(
 
 PromiseRejectionEvent::~PromiseRejectionEvent() = default;
 
-ScriptPromise<IDLAny> PromiseRejectionEvent::promise(
-    ScriptState* script_state) const {
+ScriptObject PromiseRejectionEvent::promise(ScriptState* script_state) const {
   // Return null when the promise is accessed by a different world than the
   // world that created the promise.
   if (!CanBeDispatchedInWorld(script_state->World())) {
-    return EmptyPromise();
+    return ScriptObject::CreateNull(script_state->GetIsolate());
   }
-  return ScriptPromise<IDLAny>::FromV8Promise(
-      script_state->GetIsolate(), promise_.Get(script_state->GetIsolate()));
+  return ScriptObject(script_state->GetIsolate(), promise_.Get(script_state));
 }
 
 ScriptValue PromiseRejectionEvent::reason(ScriptState* script_state) const {

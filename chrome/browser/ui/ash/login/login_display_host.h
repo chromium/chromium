@@ -245,6 +245,10 @@ class LoginDisplayHost {
   virtual base::WeakPtr<ash::quick_start::TargetDeviceBootstrapController>
   GetQuickStartBootstrapController() = 0;
 
+  // Skips any screens that may normally be shown after login (registration,
+  // Terms of Service, user image selection) for demo mode.
+  virtual void SkipPostLoginScreensForDemoMode() = 0;
+
  protected:
   LoginDisplayHost();
   virtual ~LoginDisplayHost();

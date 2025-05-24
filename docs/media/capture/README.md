@@ -215,7 +215,7 @@ less ./out/Default/chrome_debug.log | grep 'UMP'
 [11460:25180:0817/133550.922:VERBOSE1:webrtc_logging.cc(35)] UMP::StartAudioTrack({track=[id: 9803bb62-5cdc-4279-b58e-fd1193d7ecd8, enabled: 1]}, {is_pending=1})
 [11460:25180:0817/133550.922:VERBOSE1:webrtc_logging.cc(35)] UMP::StartAudioTrack(source: {session_id=4FF8214D8180F02B8A9206564C59C03D}, {is_local_source=1}, {device=[id: default, group_id: def1842e91c7bc3d9c2be5618262afa5413975edb13d4a33c266224daed0a478, name: Default - Microphone (Realtek(R) Audio)]})
 [11460:25180:0817/133551.330:VERBOSE1:webrtc_logging.cc(35)] UMP::OnTrackStarted({session_id=4FF8214D8180F02B8A9206564C59C03D}, {result=OK})
-[11460:25180:0817/133551.330:VERBOSE1:webrtc_logging.cc(35)] UMP::UMP::OnCreateNativeTracksCompleted({request_id=0}, {label=b24a1017-a129-4465-b1fa-f4d9c553d956})
+[11460:25180:0817/133551.330:VERBOSE1:webrtc_logging.cc(35)] UMP::OnCreateNativeTracksCompleted({request_id=0}, {label=b24a1017-a129-4465-b1fa-f4d9c553d956})
 [11460:25180:0817/133551.330:VERBOSE1:webrtc_logging.cc(35)] UMP::GetUserMediaRequestSucceeded({request_id=0})
 [11460:25180:0817/133551.331:VERBOSE1:webrtc_logging.cc(35)] UMP::DelayedGetUserMediaRequestSucceeded({request_id=0}, {result=OK})
 [11460:25180:0817/133553.114:VERBOSE1:webrtc_logging.cc(35)] UMP::OnDeviceStopped({session_id=4FF8214D8180F02B8A9206564C59C03D}, {device_id=default})

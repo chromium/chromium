@@ -156,7 +156,7 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
 
@@ -314,10 +314,6 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   friend class ConditionEventListener;
 };
 
-template <>
-inline bool IsElementOfType<const SVGSMILElement>(const Node& node) {
-  return IsA<SVGSMILElement>(node);
-}
 template <>
 struct DowncastTraits<SVGSMILElement> {
   static bool AllowFrom(const Node& node) {

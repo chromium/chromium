@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/fragmentation">
+<style>
+  #container {
+    overflow: hidden;
+    columns: 3;
+    column-fill: auto;
+    gap: 0;
+    orphans: 1;
+    widows: 1;
+    width: 420px;
+    height: 100px;
+    border: 15px solid;
+    line-height: 20px;
+    background: yellow;
+  }
+  .snapContainer {
+    scroll-snap-type: both mandatory;
+  }
+  .snappingColumns::column {
+    scroll-snap-align: start;
+  }
+</style>
+<div id="container">
+  First column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Second column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Third column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Fourth column<br>
+  <br>
+  <br>
+  <br>
+  <br>
+  Fifth column<br>
+</div>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  // requested offset, expected snapped offset, expected unsnapped offset
+  const offsets = [
+    [ 0, 0, 0 ],
+    [ 70, 0, 70 ],
+    [ 71, 140, 71 ],
+    [ 69, 0, 69 ],
+    [ 140, 140, 140 ],
+    [ 210, 140, 210 ],
+    [ 211, 280, 211 ],
+    [ 280, 280, 280 ],
+    [ 351, 280, 280 ],
+    [ 1000, 280, 280 ],
+    [ 10, 0, 10 ],
+  ];
+
+  function testOffsets(with_snapping) {
+    const expectation_idx = with_snapping ? 1 : 2;
+    for (const test of offsets) {
+      container.scrollLeft = test[0];
+      assert_equals(container.scrollLeft,
+                    test[expectation_idx], "offset " + test[0]);
+    }
+  }
+
+  function workAroundBug372749727() {
+    // TODO(crbug.com/372749727): Changing ::column style doesn't trigger
+    // relayout when needed, so force it for now.
+    container.style.padding = "1px";
+    document.body.offsetTop;
+    container.style.padding = "0";
+  }
+
+  // Test with snapping
+  container.className = "snapContainer snappingColumns";
+  workAroundBug372749727();
+  test(()=> { testOffsets(true); }, "scroll snapping");
+
+  // Remove scroll-snap-align on columns, keep snap container.
+  container.className = "snapContainer";
+  workAroundBug372749727();
+  test(()=> { testOffsets(false); }, "no snapping columns");
+
+  // Keep scroll-snap-align on columns, but remove snap container.
+  container.className = "snappingColumns";
+  workAroundBug372749727();
+  test(()=> { testOffsets(false); }, "no snapping container");
+</script>

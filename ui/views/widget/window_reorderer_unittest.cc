@@ -29,8 +29,9 @@ void SetWindowAndLayerName(aura::Window* window, const std::string& name) {
 std::string ChildWindowNamesAsString(const aura::Window& parent) {
   std::string names;
   for (const aura::Window* child : parent.children()) {
-    if (!names.empty())
+    if (!names.empty()) {
       names += " ";
+    }
     names += child->GetName();
   }
   return names;

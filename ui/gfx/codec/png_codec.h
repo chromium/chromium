@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "ui/gfx/codec/codec_export.h"
 
 class SkBitmap;
@@ -83,76 +84,90 @@ class CODEC_EXPORT PNGCodec {
   PNGCodec(const PNGCodec&) = delete;
   PNGCodec& operator=(const PNGCodec&) = delete;
 
-  // Encodes the given raw 'input' data, with each pixel being represented as
-  // given in 'format'. The encoded PNG data will be written into the supplied
-  // vector and true will be returned on success. On failure (false), the
-  // contents of the output buffer are undefined.
+  // Encodes the given raw `input` data, with each pixel being represented as
+  // given in `format`.
+  //
+  // Returns the encoded data on success, or std::nullopt on failure.
   //
   // size: dimensions of the image
-  // row_byte_width: the width in bytes of each row. This may be greater than
-  //   w * bytes_per_pixel if there is extra padding at the end of each row
-  //   (often, each row is padded to the next machine word).
+  //
+  // row_byte_width: the width in bytes of each row. This may be greater than `w
+  // * bytes_per_pixel` if there is extra padding at the end of each row (often,
+  // each row is padded to the next machine word).
+  //
   // discard_transparency: when true, and when the input data format includes
-  //   alpha values, these alpha values will be discarded and only RGB will be
-  //   written to the resulting file. Otherwise, alpha values in the input
-  //   will be preserved.
+  // alpha values, these alpha values will be discarded and only RGB will be
+  // written to the resulting file. Otherwise, alpha values in the input will be
+  // preserved.
+  //
   // comments: comments to be written in the png's metadata.
-  static bool Encode(const unsigned char* input,
-                     ColorFormat format,
-                     const Size& size,
-                     int row_byte_width,
-                     bool discard_transparency,
-                     const std::vector<Comment>& comments,
-                     std::vector<unsigned char>* output);
+  //
+  // TODO(https://crbug.com/371929522): This is a dangerous call, as it takes an
+  // unsafe raw pointer and cannot be spanified. Most callers are actually
+  // calling this with an SkBitmap that doesn't qualify for the other two
+  // SkBitmap calls below. This method (and the two SkBitmap methods below)
+  // should be removed, and a more general SkBitmap encoding method should be
+  // added.
+  static std::optional<std::vector<uint8_t>> Encode(
+      const unsigned char* input,
+      ColorFormat format,
+      const Size& size,
+      int row_byte_width,
+      bool discard_transparency,
+      const std::vector<Comment>& comments);
 
-  // Call PNGCodec::Encode on the supplied SkBitmap |input|, which is assumed to
-  // be kN32_SkColorType, 32 bits per pixel. The params |discard_transparency|
-  // and |output| are passed directly to Encode; refer to Encode for more
-  // information.
-  static bool EncodeBGRASkBitmap(const SkBitmap& input,
-                                 bool discard_transparency,
-                                 std::vector<unsigned char>* output);
+  // Call `PNGCodec::Encode` on the supplied SkBitmap `input`, which is assumed
+  // to be `kN32_SkColorType`, 32 bits per pixel. The params
+  // `discard_transparency` and `output` are passed directly to Encode(); refer
+  // to Encode() for more information.
+  static std::optional<std::vector<uint8_t>> EncodeBGRASkBitmap(
+      const SkBitmap& input,
+      bool discard_transparency);
 
-  // Call PNGCodec::Encode on the supplied SkBitmap |input|. The difference
+  // Call `PNGCodec::Encode` on the supplied SkBitmap `input`. The difference
   // between this and the previous method is that this restricts compression to
   // zlib q1, which is just rle encoding.
-  static bool FastEncodeBGRASkBitmap(const SkBitmap& input,
-                                     bool discard_transparency,
-                                     std::vector<unsigned char>* output);
+  static std::optional<std::vector<uint8_t>> FastEncodeBGRASkBitmap(
+      const SkBitmap& input,
+      bool discard_transparency);
 
-  // Call PNGCodec::Encode on the supplied SkBitmap |input|, which is assumed to
-  // be kAlpha_8_SkColorType, 8 bits per pixel. The bitmap is encoded as a
-  // grayscale PNG with alpha used for color intensity. The |output| param is
-  // passed directly to Encode; refer to Encode for more information.
-  static bool EncodeA8SkBitmap(const SkBitmap& input,
-                               std::vector<unsigned char>* output);
-
-  // Decodes the PNG data contained in input of length input_size. The
-  // decoded data will be placed in *output with the dimensions in *w and *h
-  // on success (returns true). This data will be written in the 'format'
-  // format. On failure, the values of these output variables are undefined.
+  // Decodes the PNG data contained in `input`.
+  //
+  // Returns the decoded data on success, or std::nullopt on failure. The output
+  // data will be written in the format specified by the `format` parameter.
   //
   // This function may not support all PNG types, and it hasn't been tested
   // with a large number of images, so assume a new format may not work. It's
   // really designed to be able to read in something written by Encode() above.
-  static bool Decode(const unsigned char* input,
-                     size_t input_size,
-                     ColorFormat format,
-                     std::vector<unsigned char>* output,
-                     int* w,
-                     int* h);
-
-  // Decodes the PNG data directly into the passed in SkBitmap. This is
-  // significantly faster than the vector<unsigned char> version of Decode()
-  // above when dealing with PNG files that are >500K, which a lot of theme
-  // images are. (There are a lot of themes that have a NTP image of about ~1
-  // megabyte, and those require a 7-10 megabyte side buffer.)
   //
-  // Returns true if data is non-null and can be decoded as a png, false
-  // otherwise.
-  static bool Decode(const unsigned char* input,
-                     size_t input_size,
-                     SkBitmap* bitmap);
+  // TODO(https://crbug.com/371926662): There are few callers; remove.
+  struct CODEC_EXPORT DecodeOutput {
+    DecodeOutput();
+
+    // Move-only type to intentionally prevent large copies.
+    DecodeOutput(const DecodeOutput& other) = delete;
+    DecodeOutput& operator=(const DecodeOutput& other) = delete;
+    DecodeOutput(DecodeOutput&& other);
+    DecodeOutput& operator=(DecodeOutput&& other);
+
+    ~DecodeOutput();
+
+    std::vector<uint8_t> output;
+    int width = 0;
+    int height = 0;
+  };
+  static std::optional<DecodeOutput> Decode(base::span<const uint8_t> input,
+                                            ColorFormat format);
+
+  // Decodes the PNG data directly into an SkBitmap. This is significantly
+  // faster than the vector<uint8_t> version of Decode() above when dealing with
+  // PNG files that are >500K, which a lot of theme images are. (There are a lot
+  // of themes that have a NTP image of about ~1 megabyte, and those require a
+  // 7-10 megabyte side buffer.)
+  //
+  // Returns a valid SkBitmap if the data can be decoded as a PNG, and a null
+  // SkBitmap otherwise.
+  static SkBitmap Decode(base::span<const uint8_t> input);
 };
 
 }  // namespace gfx

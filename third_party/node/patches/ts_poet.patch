@@ -1,0 +1,13 @@
+diff --git a/node_modules/ts-poet/build/Code.js b/node_modules/ts-poet/build/Code.js
+index 4d62ea0..444389b 100644
+--- a/node_modules/ts-poet/build/Code.js
++++ b/node_modules/ts-poet/build/Code.js
+@@ -9,7 +9,7 @@ const Import_1 = require("./Import");
+ const is_plain_object_1 = require("./is-plain-object");
+ const ConditionalOutput_1 = require("./ConditionalOutput");
+ const index_1 = require("./index");
+-const dprint_node_1 = __importDefault(require("dprint-node"));
++
+ class Code extends Node_1.Node {
+     constructor(literals, placeholders) {
+         super();

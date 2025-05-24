@@ -104,7 +104,7 @@ TaskContinuationView::TaskChipsView::~TaskChipsView() = default;
 void TaskContinuationView::TaskChipsView::AddTaskChip(views::View* task_chip) {
   size_t view_size = task_chips_.view_size();
   task_chips_.Add(task_chip, view_size);
-  AddChildView(task_chip);
+  AddChildViewRaw(task_chip);
 }
 
 // views::View:

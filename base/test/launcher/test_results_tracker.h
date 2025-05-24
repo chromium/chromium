@@ -96,7 +96,7 @@ class TestResultsTracker {
 
   // Map where keys are test result statuses, and values are sets of tests
   // which finished with that status.
-  typedef std::map<TestResult::Status, std::set<std::string> > TestStatusMap;
+  typedef std::map<TestResult::Status, std::set<std::string>> TestStatusMap;
 
   // Returns a test status map (see above) for current test iteration.
   TestStatusMap GetTestStatusMapForCurrentIteration() const;
@@ -119,9 +119,11 @@ class TestResultsTracker {
                            SaveSummaryAsJSONWithOutTimestampInResult);
   FRIEND_TEST_ALL_PREFIXES(TestResultsTrackerTest,
                            SaveSummaryAsJSONWithTimestampInResult);
+  FRIEND_TEST_ALL_PREFIXES(TestResultsTrackerTest,
+                           SaveSummaryAsJSONWithSubTestResult);
   void GetTestStatusForIteration(int iteration, TestStatusMap* map) const;
 
-  template<typename InputIterator>
+  template <typename InputIterator>
   void PrintTests(InputIterator first,
                   InputIterator last,
                   const std::string& description) const;
@@ -149,8 +151,7 @@ class TestResultsTracker {
   };
 
   struct CodeLocation {
-    CodeLocation(const std::string& f, int l) : file(f), line(l) {
-    }
+    CodeLocation(const std::string& f, int l) : file(f), line(l) {}
 
     std::string file;
     int line;

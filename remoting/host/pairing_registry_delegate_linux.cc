@@ -5,6 +5,8 @@
 #include "remoting/host/pairing_registry_delegate_linux.h"
 
 #include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/files/file_enumerator.h"
@@ -13,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -115,9 +118,8 @@ bool PairingRegistryDelegateLinux::Save(
     return false;
   }
 
-  std::string pairing_json;
-  JSONStringValueSerializer serializer(&pairing_json);
-  if (!serializer.Serialize(pairing.ToValue())) {
+  std::optional<std::string> pairing_json = base::WriteJson(pairing.ToValue());
+  if (!pairing_json.has_value()) {
     LOG(ERROR) << "Failed to serialize pairing data for "
                << pairing.client_id();
     return false;
@@ -126,7 +128,7 @@ bool PairingRegistryDelegateLinux::Save(
   base::FilePath pairing_file = registry_path.Append(
       base::StringPrintf(kPairingFilenameFormat, pairing.client_id().c_str()));
   if (!base::ImportantFileWriter::WriteFileAtomically(pairing_file,
-                                                      pairing_json)) {
+                                                      *pairing_json)) {
     LOG(ERROR) << "Could not save pairing data for " << pairing.client_id();
     return false;
   }

@@ -44,6 +44,7 @@ goog.inherits(goog.editor.plugins.UndoRedoState, goog.events.EventTarget);
 /**
  * Event type for events indicating that this state has completed an undo or
  * redo operation.
+ * @const
  */
 goog.editor.plugins.UndoRedoState.ACTION_COMPLETED = 'action_completed';
 

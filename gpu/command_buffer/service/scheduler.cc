@@ -10,7 +10,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/hash/md5_constexpr.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -24,12 +23,13 @@
 namespace gpu {
 namespace {
 uint64_t GetTaskFlowId(uint32_t sequence_id, uint32_t order_num) {
-  // Xor with a mask to ensure that the flow id does not collide with non-gpu
-  // tasks.
-  static constexpr uint64_t kMask = base::MD5Hash64Constexpr("gpu::Scheduler");
-  return kMask ^ (sequence_id) ^ (static_cast<uint64_t>(order_num) << 32);
+  // Xor with a mask to reduce likelihood of flow id collision with non-surface
+  // tasks. First 64-bits of SHA256 hash of "SurfaceControl::Transaction",
+  // interpreted as a big-endian integer. Python snippet:
+  // hashlib.sha256(b'gpu::Scheduler').hexdigest()[:16]
+  static constexpr uint64_t kMask = 0x03af62470b040902;
+  return kMask ^ (sequence_id) ^ (uint64_t{order_num} << 32);
 }
-
 }  // namespace
 
 Scheduler::Task::Task(SequenceId sequence_id,
@@ -72,7 +72,7 @@ Scheduler::ScopedSetSequencePriority::ScopedSetSequencePriority(
     Scheduler* scheduler,
     SequenceId sequence_id,
     SchedulingPriority priority)
-    : scheduler_(scheduler), sequence_id_(sequence_id), priority_(priority) {
+    : scheduler_(scheduler), sequence_id_(sequence_id) {
   scheduler_->SetSequencePriority(sequence_id, priority);
 }
 Scheduler::ScopedSetSequencePriority::~ScopedSetSequencePriority() {
@@ -112,8 +112,6 @@ Scheduler::Sequence::Sequence(
     CommandBufferNamespace namespace_id,
     CommandBufferId command_buffer_id)
     : TaskGraph::Sequence(&scheduler->task_graph_,
-                          base::BindRepeating(&Sequence::OnFrontTaskUnblocked,
-                                              base::Unretained(this)),
                           task_runner,
                           namespace_id,
                           command_buffer_id),
@@ -178,29 +176,16 @@ void Scheduler::Sequence::UpdateRunningPriority() {
 
 void Scheduler::Sequence::ContinueTask(base::OnceClosure task_closure) {
   DCHECK_EQ(running_state_, RUNNING);
+  TRACE_EVENT_WITH_FLOW0(
+      "gpu,toplevel.flow", "Scheduler::ContinueTask",
+      GetTaskFlowId(sequence_id_.value(), order_data_->current_order_num()),
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   TaskGraph::Sequence::ContinueTask(std::move(task_closure));
-}
-
-uint32_t Scheduler::Sequence::AddTask(
-    base::OnceClosure task_closure,
-    std::vector<SyncToken> wait_fences,
-    const SyncToken& release,
-    TaskGraph::ReportingCallback report_callback) {
-  uint32_t order_num = TaskGraph::Sequence::AddTask(
-      std::move(task_closure), std::move(wait_fences), release,
-      std::move(report_callback));
-
-  TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::ScheduleTask",
-                         GetTaskFlowId(sequence_id_.value(), order_num),
-                         TRACE_EVENT_FLAG_FLOW_OUT);
-  return order_num;
 }
 
 uint32_t Scheduler::Sequence::BeginTask(base::OnceClosure* task_closure) {
   DCHECK_EQ(running_state_, SCHEDULED);
-
   running_state_ = RUNNING;
-
   return TaskGraph::Sequence::BeginTask(task_closure);
 }
 
@@ -210,7 +195,10 @@ void Scheduler::Sequence::FinishTask() {
   TaskGraph::Sequence::FinishTask();
 }
 
-void Scheduler::Sequence::OnFrontTaskUnblocked() {
+void Scheduler::Sequence::OnFrontTaskUnblocked(uint32_t order_num) {
+  TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::SequenceUnblocked",
+                         GetTaskFlowId(sequence_id_.value(), order_num),
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   scheduler_->TryScheduleSequence(this);
 }
 
@@ -330,15 +318,21 @@ void Scheduler::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
+  uint32_t order_num;
   if (task.task_callback) {
-    sequence->AddTask(std::move(task.task_callback),
-                      std::move(task.sync_token_fences), task.release,
-                      std::move(task.report_callback));
+    order_num = sequence->AddTask(
+        std::move(task.task_callback), std::move(task.sync_token_fences),
+        task.release, std::move(task.report_callback));
   } else {
-    sequence->AddTask(std::move(task.task_closure),
-                      std::move(task.sync_token_fences), task.release,
-                      std::move(task.report_callback));
+    order_num = sequence->AddTask(
+        std::move(task.task_closure), std::move(task.sync_token_fences),
+        task.release, std::move(task.report_callback));
   }
+
+  TRACE_EVENT_WITH_FLOW0(
+      "gpu,toplevel.flow", "Scheduler::ScheduleTask",
+      GetTaskFlowId(sequence->sequence_id().value(), order_num),
+      TRACE_EVENT_FLAG_FLOW_OUT);
 
   TryScheduleSequence(sequence);
 }
@@ -653,12 +647,9 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
   }
 
   base::OnceClosure task_closure;
-  uint32_t order_num = sequence->BeginTask(&task_closure);
-  SyncToken release = sequence->current_task_release();
-
-  TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::RunNextTask",
-                         GetTaskFlowId(sequence_id.value(), order_num),
-                         TRACE_EVENT_FLAG_FLOW_IN);
+  const uint32_t order_num = sequence->BeginTask(&task_closure);
+  const SyncToken release = sequence->current_task_release();
+  const uint64_t task_flow_id = GetTaskFlowId(sequence_id.value(), order_num);
 
   // Begin/FinishProcessingOrderNumber must be called with the lock released
   // because they can renter the scheduler in Enable/DisableSequence.
@@ -671,6 +662,11 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
   base::TimeDelta blocked_time;
   {
     base::AutoUnlock auto_unlock(lock());
+
+    TRACE_EVENT_WITH_FLOW0(
+        "gpu,toplevel.flow", "Scheduler::RunTask", task_flow_id,
+        TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+
     order_data->BeginProcessingOrderNumber(order_num);
 
     std::move(task_closure).Run();
@@ -682,6 +678,9 @@ void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
       }
 
       order_data->FinishProcessingOrderNumber(order_num);
+
+      TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "Scheduler::FinishTask",
+                             task_flow_id, TRACE_EVENT_FLAG_FLOW_IN);
     }
   }
 

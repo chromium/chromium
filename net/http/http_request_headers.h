@@ -19,7 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
-#include "net/filter/source_stream.h"
+#include "net/filter/source_stream_type.h"
 #include "net/log/net_log_capture_mode.h"
 #include "url/gurl.h"
 
@@ -35,6 +35,8 @@ class NET_EXPORT HttpRequestHeaders {
     // constexpr.
     HeaderKeyValuePair(std::string_view key, const char* value)
         : HeaderKeyValuePair(key, std::string_view(value)) {}
+
+    bool operator==(const HeaderKeyValuePair& other) const = default;
 
     std::string key;
     std::string value;
@@ -100,7 +102,6 @@ class NET_EXPORT HttpRequestHeaders {
   static const char kProxyConnection[];
   static const char kRange[];
   static const char kReferer[];
-  static const char kSecFetchStorageAccess[];
   static const char kTransferEncoding[];
   static const char kUserAgent[];
 
@@ -197,7 +198,7 @@ class NET_EXPORT HttpRequestHeaders {
   // it does not exist. "br" is appended only when `enable_brotli` is true.
   void SetAcceptEncodingIfMissing(
       const GURL& url,
-      const std::optional<base::flat_set<SourceStream::SourceType>>&
+      const std::optional<base::flat_set<SourceStreamType>>&
           accepted_stream_types,
       bool enable_brotli,
       bool enable_zstd);

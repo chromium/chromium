@@ -1,9 +1,40 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML>
 <html>
 <head>
-<script src="../../resources/js-test.js"></script>
+<title>Tests find for strings with soft hyphens in them.</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 </head>
 <body>
-<script src="script-tests/find-soft-hyphen.js"></script>
+<script>
+function canFind(query, specimen) {
+  getSelection().empty();
+  const textNode = document.createTextNode(specimen);
+  document.body.appendChild(textNode);
+  document.execCommand("FindString", false, query);
+  const result = getSelection().rangeCount != 0;
+  getSelection().empty();
+  textNode.remove();
+  return result;
+}
+
+const hyphen= String.fromCharCode(0x2010);
+const softHyphen = String.fromCharCode(0x00AD);
+
+test(() => {
+  assert_true(canFind("ab", `a${softHyphen}b`));
+  assert_true(canFind("ab", `a${softHyphen + softHyphen}b`));
+  assert_true(canFind("a\u0300b", `a${softHyphen}b`));
+  assert_true(canFind("ab", `a${softHyphen}\u0300b`));
+  assert_true(canFind("ab", `a\u0300${softHyphen}b`));
+  assert_true(canFind(`a${softHyphen}b`, `a${softHyphen}b`));
+  assert_true(canFind(`a${softHyphen}b`, "ab"));
+}, 'Find soft hyphens');
+
+test(() => {
+  assert_false(canFind(`a${hyphen}b`, `a${softHyphen}b`));
+  assert_false(canFind("a-b", `a${softHyphen}b`));
+}, 'Soft hyphen doesn\'t match hyphen and hyphen-minus.');
+</script>
 </body>
 </html>

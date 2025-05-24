@@ -487,25 +487,9 @@ void MediaEngagementContentsObserver::ReadyToCommitNavigation(
                                                : handle->GetRenderFrameHost()
                                                      ->GetOutermostMainFrame()
                                                      ->GetLastCommittedURL());
-  MediaEngagementScore score = service_->CreateEngagementScore(origin);
-  bool has_high_engagement = score.high_score();
-
-  if (base::FeatureList::IsEnabled(media::kMediaEngagementHTTPSOnly))
-    DCHECK(!has_high_engagement || (origin.scheme() == url::kHttpsScheme));
-
-  // If the preloaded feature flag is enabled and the number of visits is less
-  // than the number of visits required to have an MEI score we should check the
-  // global data.
-  if (!has_high_engagement &&
-      score.visits() < MediaEngagementScore::GetScoreMinVisits() &&
-      base::FeatureList::IsEnabled(media::kPreloadMediaEngagementData)) {
-    has_high_engagement =
-        MediaEngagementPreloadedList::GetInstance()->CheckOriginIsPresent(
-            origin);
-  }
 
   // If we have high media engagement then we should send that to Blink.
-  if (has_high_engagement) {
+  if (service_->HasHighEngagement(origin)) {
     SendEngagementLevelToFrame(url::Origin::Create(handle->GetURL()),
                                handle->GetRenderFrameHost());
   }
@@ -522,10 +506,10 @@ content::WebContents* MediaEngagementContentsObserver::GetOpener() const {
     if (index == TabStripModel::kNoTab)
       continue;
 
-    // Whether or not the |opener| is null, this is the right tab strip.
-    const tabs::TabModel* tab =
+    // Whether or not the `opener` is null, this is the right tab strip.
+    const tabs::TabInterface* tab =
         browser->tab_strip_model()->GetOpenerOfTabAt(index);
-    return tab ? tab->contents() : nullptr;
+    return tab ? tab->GetContents() : nullptr;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

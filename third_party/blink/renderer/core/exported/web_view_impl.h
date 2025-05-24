@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_VIEW_IMPL_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/debug/stack_trace.h"
 #include "base/gtest_prod_util.h"
@@ -43,7 +44,6 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -57,7 +57,6 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_navigation_policy.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -130,7 +129,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
-      const BrowsingContextGroupInfo& browsing_context_group_info,
+      const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
 
@@ -230,7 +229,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
   const web_pref::WebPreferences& GetWebPreferences() override;
   void SetHistoryListFromNavigation(
-      int32_t history_offset,
+      int32_t history_index,
       std::optional<int32_t> history_length) override;
   void IncreaseHistoryListFromNavigation() override;
   int32_t HistoryBackListCount() const override;
@@ -307,8 +306,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       const blink::web_pref::WebPreferences& preferences) override;
   void UpdateRendererPreferences(
       const RendererPreferences& preferences) override;
-  void SetHistoryOffsetAndLength(int32_t history_offset,
-                                 int32_t history_length) override;
+  void SetHistoryIndexAndLength(int32_t history_index,
+                                int32_t history_length) override;
   void SetPageBaseBackgroundColor(std::optional<SkColor> color) override;
   void CreateRemoteMainFrame(
       const RemoteFrameToken& frame_token,
@@ -316,11 +315,12 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       mojom::blink::FrameReplicationStatePtr replicated_state,
       bool is_loading,
       const base::UnguessableToken& devtools_frame_token,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token,
       mojom::blink::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       mojom::blink::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
   void UpdatePageBrowsingContextGroup(
-      const BrowsingContextGroupInfo& browsing_context_group_info) override;
+      const base::UnguessableToken& browsing_context_group_token) override;
   void SetPageAttributionSupport(
       network::mojom::AttributionSupport support) override;
   void UpdateColorProviders(
@@ -517,6 +517,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // changed.
   void DidUpdateBrowserControls();
 
+  void DidUpdateMaxSafeAreaInsets(const gfx::InsetsF& max_safe_area_insets);
+
   void AddAutoplayFlags(int32_t) override;
   void ClearAutoplayFlags() override;
   int32_t AutoplayFlagsForTest() const override;
@@ -628,6 +630,9 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // words, after the frame has painted something.
   void DidFirstVisuallyNonEmptyPaint();
 
+  // Caleld once the first contentful paint happens on the main frame.
+  void OnFirstContentfulPaint();
+
   scheduler::WebAgentGroupScheduler& GetWebAgentGroupScheduler();
 
   // Returns true if the page supports app-region: drag/no-drag.
@@ -699,6 +704,10 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // browser.
   void DoDeferredCloseWindowSoon();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  void UpdateUseOverlayScrollbar(bool use_overlay_scrollbar);
+#endif
+
   WebViewImpl(
       WebViewClient*,
       mojom::blink::PageVisibilityState visibility,
@@ -712,7 +721,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
-      const BrowsingContextGroupInfo& browsing_context_group_info,
+      const base::UnguessableToken& browsing_context_group_token,
       const ColorProviderColorMaps* color_provider_colors,
       blink::mojom::PartitionedPopinParamsPtr partitioned_popin_params);
   ~WebViewImpl() override;
@@ -876,10 +885,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   float compositor_device_scale_factor_override_ = 0.f;
   gfx::Transform device_emulation_transform_;
 
-  // The offset of the current item in the history list.
-  // The initial value is -1 since the offset should be lower than
-  // |history_list_length_| to count the back/forward history list.
-  int32_t history_list_offset_ = -1;
+  // The index of the current item in the history list.
+  int32_t history_list_index_ = -1;
 
   // The RenderView's current impression of the history length.  This includes
   // any items that have committed in this process, but because of cross-process
@@ -961,7 +968,7 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   // Handle to the local main frame host. Only valid when the MainFrame is
   // local. It is ok to use WTF::Unretained(this) for callbacks made on this
   // interface because the callbacks will be associated with the lifecycle
-  // of this AssociatedRemote and the lifetiime of the main LocalFrame.
+  // of this AssociatedRemote and the lifetime of the main LocalFrame.
   mojo::AssociatedRemote<mojom::blink::LocalMainFrameHost>
       local_main_frame_host_remote_;
 

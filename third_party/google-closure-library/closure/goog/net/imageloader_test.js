@@ -80,7 +80,7 @@ function makeLoaderSynchronous(loader) {
   };
 
   // Make listen() a no-op.
-  loader.handler_.listen = goog.nullFunction;
+  loader.handler_.listen = () => {};
 }
 
 testSuite({

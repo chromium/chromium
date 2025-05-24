@@ -29,9 +29,12 @@ class AppsIntentPickerDelegate {
  public:
   virtual ~AppsIntentPickerDelegate() = default;
   virtual bool ShouldShowIntentPickerWithApps() = 0;
+  // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual void FindAllAppsForUrl(const GURL& url,
                                  IntentPickerAppsCallback apps_callback) = 0;
+  // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual bool IsPreferredAppForSupportedLinks(const std::string& app_id) = 0;
+  // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual void LoadSingleAppIcon(PickerEntryType entry_type,
                                  const std::string& app_id,
                                  int size_in_dep,
@@ -40,6 +43,7 @@ class AppsIntentPickerDelegate {
   // Omnibox.
   virtual void RecordIntentPickerIconEvent(
       apps::IntentPickerIconEvent event) = 0;
+  // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual bool ShouldLaunchAppDirectly(const GURL& url,
                                        const std::string& app_name,
                                        PickerEntryType entry_type) = 0;
@@ -47,8 +51,10 @@ class AppsIntentPickerDelegate {
                                    IntentPickerCloseReason close_reason,
                                    bool should_persist,
                                    bool should_launch_app) = 0;
+  // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual void PersistIntentPreferencesForApp(PickerEntryType entry_type,
                                               const std::string& app_id) = 0;
+  // Will CHECK-fail if `ShouldShowIntentPickerWithApps()` returns `false`.
   virtual void LaunchApp(content::WebContents* web_contents,
                          const GURL& url,
                          const std::string& launch_name,

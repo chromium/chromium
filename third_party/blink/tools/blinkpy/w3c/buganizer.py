@@ -131,11 +131,12 @@ class BuganizerClient:
     def __init__(self, service=None, web: Optional[Web] = None):
         self._web = web or Web()
         self._service = service
+        self.http = None
         if self._service is not None:
             return
 
-        http = ServiceAccountHttp(BUGANIZER_SCOPES)
-        http.timeout = 30
+        self.http = ServiceAccountHttp(BUGANIZER_SCOPES)
+        self.http.timeout = 30
         http_exception = None
         for attempt in range(MAX_DISCOVERY_RETRIES):
             try:
@@ -143,7 +144,7 @@ class BuganizerClient:
                     'issuetracker',
                     'v1',
                     discoveryServiceUrl=_DISCOVERY_URI,
-                    http=http)
+                    http=self.http)
                 break
             except http_client.HTTPException as e:
                 logging.error('Attempt #%d: %s', attempt + 1, e)
@@ -167,25 +168,36 @@ class BuganizerClient:
                      query_string,
                      limit: int = MAX_PAGE_SIZE) -> List[BuganizerIssue]:
         """Makes a request to the issue tracker to get list of issues by query"""
-        # TODO(crbug.com/333112144) : Use nextPageToken in response to support
-        # more than 500 issues
-        request = self._service.issues().list(query=query_string,
-                                              pageSize=min(
-                                                  MAX_PAGE_SIZE, limit),
-                                              view='FULL')
-        try:
-            response = self._ExecuteRequest(request)
+        return list(self._GetIssueListGenerator(query_string, limit))
+
+    def _GetIssueListGenerator(self, query_string, limit: int = MAX_PAGE_SIZE):
+        """Helper generator for GetIssueList."""
+        page_token = None
+        remaining_limit = limit
+        while remaining_limit > 0:
+            request = self._service.issues().list(query=query_string,
+                                                  pageSize=min(
+                                                      MAX_PAGE_SIZE,
+                                                      remaining_limit),
+                                                  view='FULL',
+                                                  pageToken=page_token)
+            try:
+                response = self._ExecuteRequest(request)
+            except Exception as e:
+                raise BuganizerError(f'failed to get issue list: {e}') from e
             logging.debug('[BuganizerClient] GetIssueList response: %s',
                           response)
             if not response:
-                return []
-            issues = [
-                BuganizerIssue.from_payload(issue_payload)
-                for issue_payload in response.get('issues', [])
-            ]
-            return issues
-        except Exception as e:
-            raise BuganizerError(f'failed to get issue list: {e}') from e
+                return
+
+            issues = response.get('issues', [])[:remaining_limit]
+            for issue_payload in issues:
+                yield BuganizerIssue.from_payload(issue_payload)
+            remaining_limit -= len(issues)
+
+            page_token = response.get('nextPageToken')
+            if not page_token or not issues:
+                return
 
     def GetIssueComments(self, issue_id: IssueID):
         """Makes a request to the issue tracker to get all the comments."""
@@ -218,11 +230,17 @@ class BuganizerClient:
                 'error: %s', str(e))
             return {'error': str(e)}
 
-    def NewComment(self, issue_id: IssueID, comment: str):
+    def NewComment(self,
+                   issue_id: IssueID,
+                   comment: str,
+                   use_markdown: bool = False):
         """Makes a request to the issue tracker to add a comment."""
         new_comment_request = {'issueComment': {'comment': comment}}
+        if use_markdown:
+            new_comment_request['issueComment']['formattingMode'] = 'MARKDOWN'
         request = self._service.issues().modify(issueId=str(
-            self._ResolveID(issue_id)), body=new_comment_request)
+            self._ResolveID(issue_id)),
+                                                body=new_comment_request)
         try:
             return self._ExecuteRequest(request)
         except Exception as e:
@@ -279,10 +297,12 @@ class BuganizerClient:
             The response if there was one, or else None.
         """
         response = request.execute(num_retries=MAX_REQUEST_RETRIES,
-                                   http=ServiceAccountHttp(BUGANIZER_SCOPES))
+                                   http=self.http)
         return response
 
-    def NewIssue(self, issue: BuganizerIssue) -> BuganizerIssue:
+    def NewIssue(self,
+                 issue: BuganizerIssue,
+                 use_markdown: bool = False) -> BuganizerIssue:
         """File a new bug with the `CreateIssue` RPC [0].
 
         [0]: ///depot/google3/google/devtools/issuetracker/v1/issuetracker_service.proto
@@ -306,6 +326,9 @@ class BuganizerClient:
                 'comment': issue.description,
             },
         }
+
+        if use_markdown:
+            new_issue['issueComment']['formattingMode'] = 'MARKDOWN'
 
         logging.warning('[BuganizerClient] PostIssue request: %s', new_issue)
         request = self._service.issues().create(body=new_issue)

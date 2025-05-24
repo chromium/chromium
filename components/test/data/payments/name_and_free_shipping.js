@@ -10,7 +10,7 @@
  */
 function buy() {
   try {
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{supportedMethods: 'basic-card', data: {supportedNetworks: ['visa']}}],
         {
           total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},

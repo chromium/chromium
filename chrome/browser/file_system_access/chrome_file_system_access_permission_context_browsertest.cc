@@ -269,8 +269,6 @@ class FileSystemChromeAppTest : public extensions::PlatformAppBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(b/276433834): Implement an end-to-end test for getDirectoryPicker in
-// Chrome apps.
 IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
                        FileSystemAccessPermissionRequestManagerExists) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -319,10 +317,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
 
   // Initialize file permission grant.
   const url::Origin kTestOrigin = extension->origin();
-  const base::FilePath kTestPath =
-      base::FilePath(FILE_PATH_LITERAL("/foo/bar"));
+  const content::PathInfo kTestPathInfo(FILE_PATH_LITERAL("/foo/bar"));
   auto grant = permission_context.GetReadPermissionGrant(
-      kTestOrigin, kTestPath,
+      kTestOrigin, kTestPathInfo,
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
       ChromeFileSystemAccessPermissionContext::UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), content::PermissionStatus::GRANTED);
@@ -341,11 +338,12 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
       content::FileSystemAccessPermissionGrant::PermissionRequestOutcome>
       future;
   auto* rfh = web_contents->GetPrimaryMainFrame();
-  grant->RequestPermission(content::GlobalRenderFrameHostId(
-                               rfh->GetProcess()->GetID(), rfh->GetRoutingID()),
-                           content::FileSystemAccessPermissionGrant::
-                               UserActivationState::kNotRequired,
-                           future.GetCallback());
+  grant->RequestPermission(
+      content::GlobalRenderFrameHostId(rfh->GetProcess()->GetDeprecatedID(),
+                                       rfh->GetRoutingID()),
+      content::FileSystemAccessPermissionGrant::UserActivationState::
+          kNotRequired,
+      future.GetCallback());
   auto result = future.Get();
   EXPECT_NE(result, content::FileSystemAccessPermissionGrant::
                         PermissionRequestOutcome::kGrantedByRestorePrompt);

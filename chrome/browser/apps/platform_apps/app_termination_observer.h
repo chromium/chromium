@@ -11,8 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class BrowserContextKeyedServiceFactory;
-
 namespace content {
 class BrowserContext;
 }
@@ -27,8 +25,6 @@ class AppTerminationObserver : public KeyedService {
   AppTerminationObserver(const AppTerminationObserver&) = delete;
   AppTerminationObserver& operator=(const AppTerminationObserver&) = delete;
   ~AppTerminationObserver() override;
-
-  static BrowserContextKeyedServiceFactory* GetFactoryInstance();
 
   // KeyedService:
   void Shutdown() override;

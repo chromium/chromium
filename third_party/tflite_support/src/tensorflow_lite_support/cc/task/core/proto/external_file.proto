@@ -50,6 +50,9 @@ message FileDescriptorMeta {
   // File descriptor as returned by open(2).
   optional int32 fd = 1;
 
+  // HANDLE to the file, represented as a uint64. Used exclusively on Windows.
+  optional uint64 handle = 4;
+
   // Optional length of the mapped memory. If not specified, the actual file
   // size is used at runtime.
   //

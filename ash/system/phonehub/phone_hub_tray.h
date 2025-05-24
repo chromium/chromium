@@ -24,9 +24,9 @@
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -71,7 +71,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
@@ -132,6 +131,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, EcheIconActivatesCallback);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, AccessibleNames);
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;

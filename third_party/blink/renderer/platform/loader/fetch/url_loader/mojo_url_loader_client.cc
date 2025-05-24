@@ -202,8 +202,7 @@ class MojoURLLoaderClient::BodyBuffer final
           writable_watcher_.ArmOrNotify();
           return;
         default:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
       }
       // We've sent |bytes_sent| bytes, update the current offset in the
       // frontmost chunk.
@@ -465,7 +464,7 @@ void MojoURLLoaderClient::StoreAndDispatch(
     deferred_messages_.emplace_back(std::move(message));
     FlushDeferredMessages();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -481,7 +480,7 @@ void MojoURLLoaderClient::FlushDeferredMessages() {
   if (freeze_mode_ != LoaderFreezeMode::kNone) {
     return;
   }
-  WebVector<std::unique_ptr<DeferredMessage>> messages;
+  Vector<std::unique_ptr<DeferredMessage>> messages;
   messages.swap(deferred_messages_);
   bool has_completion_message = false;
   base::WeakPtr<MojoURLLoaderClient> weak_this = weak_factory_.GetWeakPtr();

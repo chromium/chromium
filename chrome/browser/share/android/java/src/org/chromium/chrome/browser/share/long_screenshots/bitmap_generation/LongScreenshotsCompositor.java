@@ -27,7 +27,7 @@ import org.chromium.url.GURL;
  */
 public class LongScreenshotsCompositor {
     private PlayerCompositorDelegate mDelegate;
-    private Callback<Integer> mCompositorCallback;
+    private final Callback<Integer> mCompositorCallback;
     private Size mContentSize;
     private Point mScrollOffset;
 

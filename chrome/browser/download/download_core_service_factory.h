@@ -23,7 +23,7 @@ class DownloadCoreServiceFactory : public ProfileKeyedServiceFactory {
 
  protected:
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 
  private:

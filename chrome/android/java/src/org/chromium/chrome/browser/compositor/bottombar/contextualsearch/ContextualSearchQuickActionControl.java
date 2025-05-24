@@ -40,7 +40,7 @@ import java.util.List;
  * number or launching Maps for a street address.
  */
 public class ContextualSearchQuickActionControl extends ViewResourceInflater {
-    private Context mContext;
+    private final Context mContext;
     private String mQuickActionUri;
     private int mQuickActionCategory;
     private int mToolbarBackgroundColor;
@@ -286,15 +286,12 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
             if (mQuickActionCategory != QuickActionCategory.PHONE) {
                 // Use the default app's name to construct the caption.
                 mCaption =
-                        mContext.getResources()
-                                .getString(
-                                        getDefaultAppCaptionId(mQuickActionCategory),
-                                        defaultActivityResolveInfo.loadLabel(packageManager));
+                        mContext.getString(
+                                getDefaultAppCaptionId(mQuickActionCategory),
+                                defaultActivityResolveInfo.loadLabel(packageManager));
             } else {
                 // The caption for phone numbers does not use the app's name.
-                mCaption =
-                        mContext.getResources()
-                                .getString(getDefaultAppCaptionId(mQuickActionCategory));
+                mCaption = mContext.getString(getDefaultAppCaptionId(mQuickActionCategory));
             }
         } else if (mQuickActionCategory == QuickActionCategory.WEBSITE) {
             // If there is not a default app handler for a URL, open the quick action
@@ -319,12 +316,10 @@ public class ContextualSearchQuickActionControl extends ViewResourceInflater {
                     DrawableCompat.setTint(iconDrawable, mToolbarBackgroundColor);
                 }
             }
-            mCaption =
-                    mContext.getResources().getString(getFallbackCaptionId(mQuickActionCategory));
+            mCaption = mContext.getString(getFallbackCaptionId(mQuickActionCategory));
         } else {
             iconResId = getIconResId(mQuickActionCategory);
-            mCaption =
-                    mContext.getResources().getString(getFallbackCaptionId(mQuickActionCategory));
+            mCaption = mContext.getString(getFallbackCaptionId(mQuickActionCategory));
         }
 
         inflate();

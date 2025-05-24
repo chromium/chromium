@@ -9,11 +9,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/proto/strike_data.pb.h"
+#include "components/autofill/core/browser/strike_databases/strike_database_base.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 
@@ -111,7 +114,7 @@ void StrikeDatabaseIntegratorBase::ClearAllStrikes() {
 }
 
 size_t StrikeDatabaseIntegratorBase::CountEntries() const {
-  return base::ranges::count_if(GetStrikeCache(), [&](const auto& entry) {
+  return std::ranges::count_if(GetStrikeCache(), [&](const auto& entry) {
     return strike_database_->GetPrefixFromKey(entry.first) ==
            GetProjectPrefix();
   });
@@ -142,18 +145,14 @@ void StrikeDatabaseIntegratorBase::LimitNumberOfStoredEntries() {
   if (entries.size() <= maximum_size) {
     return;
   }
-  size_t elements_to_delete = entries.size() - maximum_size;
-
-  std::vector<std::string> keys_to_delete;
 
   // Sort by timestamp.
-  std::sort(entries.begin(), entries.end(),
-            [](auto& a, auto& b) { return a.second < b.second; });
-
-  for (size_t i = 0; i < elements_to_delete; i++) {
-    keys_to_delete.push_back(entries.at(i).first);
-  }
-
+  std::ranges::sort(entries,
+                    [](auto& a, auto& b) { return a.second < b.second; });
+  const size_t elements_to_delete = entries.size() - maximum_size;
+  const std::vector<std::string> keys_to_delete =
+      base::ToVector(base::span(entries).first(elements_to_delete),
+                     &std::pair<std::string, int64_t>::first);
   ClearStrikesForKeys(keys_to_delete);
 }
 
@@ -247,7 +246,7 @@ void StrikeDatabaseIntegratorBase::ClearStrikesForKeys(
 
 std::string StrikeDatabaseIntegratorBase::GetIdFromKey(
     const std::string& key) const {
-  std::string prefix = GetProjectPrefix() + kKeyDeliminator;
+  std::string prefix = GetProjectPrefix() + StrikeDatabaseBase::kKeyDeliminator;
   if (!key.starts_with(prefix)) {
     return std::string();
   }
@@ -262,7 +261,8 @@ base::TimeDelta StrikeDatabaseIntegratorBase::GetEntryAge(
 }
 
 std::string StrikeDatabaseIntegratorBase::GetKey(const std::string& id) const {
-  return GetProjectPrefix() + kKeyDeliminator + id;
+  return base::StrCat(
+      {GetProjectPrefix(), StrikeDatabaseBase::kKeyDeliminator, id});
 }
 
 std::optional<size_t> StrikeDatabaseIntegratorBase::GetMaximumEntries() const {

@@ -9,15 +9,14 @@ namespace blink {
 String ModuleScriptCreationParams::ModuleTypeToString(
     const ModuleType module_type) {
   switch (module_type) {
-    case ModuleType::kJavaScript:
-      return "JavaScript";
+    case ModuleType::kJavaScriptOrWasm:
+      return "JavaScript-or-Wasm";
     case ModuleType::kJSON:
       return "JSON";
     case ModuleType::kCSS:
       return "CSS";
     case ModuleType::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <vector>
 
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -50,7 +50,7 @@ void RemoveSessionCookiesForProfile(Profile* profile) {
 
 static void JNI_ProfileManagerUtils_FlushPersistentDataForAllProfiles(
     JNIEnv* env) {
-  base::ranges::for_each(
+  std::ranges::for_each(
       g_browser_process->profile_manager()->GetLoadedProfiles(),
       CommitPendingWritesForProfile);
 
@@ -60,7 +60,7 @@ static void JNI_ProfileManagerUtils_FlushPersistentDataForAllProfiles(
 
 static void JNI_ProfileManagerUtils_RemoveSessionCookiesForAllProfiles(
     JNIEnv* env) {
-  base::ranges::for_each(
+  std::ranges::for_each(
       g_browser_process->profile_manager()->GetLoadedProfiles(),
       RemoveSessionCookiesForProfile);
 }

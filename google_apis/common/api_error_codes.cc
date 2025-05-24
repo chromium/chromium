@@ -87,6 +87,9 @@ std::string ApiErrorCodeToString(ApiErrorCode error) {
 
     case DRIVE_RESPONSE_TOO_LARGE:
       return "DRIVE_RESPONSE_TOO_LARGE";
+
+    case YOUTUBE_MUSIC_UPDATE_REQUIRED:
+      return "YOUTUBE_MUSIC_UPDATE_REQUIRED";
   }
 
   return "UNKNOWN_ERROR_" + base::NumberToString(error);

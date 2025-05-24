@@ -96,12 +96,8 @@ struct BitSet32 {
     return popcnt(value & ~(0xffffffffUL >> n));
   }
 
-  inline bool operator==(const BitSet32& other) const {
-    return value == other.value;
-  }
-  inline bool operator!=(const BitSet32& other) const {
-    return value != other.value;
-  }
+  friend bool operator==(const BitSet32&, const BitSet32&) = default;
+
   inline BitSet32 operator&(const BitSet32& other) const {
     return BitSet32(value & other.value);
   }

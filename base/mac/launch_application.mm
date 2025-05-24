@@ -4,6 +4,8 @@
 
 #import "base/mac/launch_application.h"
 
+#include <variant>
+
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/command_line.h"
@@ -34,7 +36,7 @@ void LogLaunchResult(LaunchResult result) {
 
 NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
   if (const CommandLine* command_line =
-          absl::get_if<CommandLine>(&command_line_args)) {
+          std::get_if<CommandLine>(&command_line_args)) {
     const auto& argv = command_line->argv();
     size_t argc = argv.size();
     DCHECK_GT(argc, 0lu);
@@ -50,7 +52,7 @@ NSArray* CommandLineArgsToArgsArray(const CommandLineArgs& command_line_args) {
   }
 
   if (const std::vector<std::string>* string_vector =
-          absl::get_if<std::vector<std::string>>(&command_line_args)) {
+          std::get_if<std::vector<std::string>>(&command_line_args)) {
     NSMutableArray* args_array =
         [NSMutableArray arrayWithCapacity:string_vector->size()];
     for (const auto& arg : *string_vector) {

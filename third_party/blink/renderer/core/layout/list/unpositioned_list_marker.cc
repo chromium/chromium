@@ -134,7 +134,7 @@ void UnpositionedListMarker::AddToBoxWithoutLineBoxes(
   // When there are no line boxes, marker is top-aligned to the list item.
   // https://github.com/w3c/csswg-drafts/issues/2417
   LogicalSize marker_size =
-      marker_physical_fragment.Size().ConvertToLogical(space.GetWritingMode());
+      ToLogicalSize(marker_physical_fragment.Size(), space.GetWritingMode());
   LogicalOffset offset(InlineOffset(marker_size.inline_size), LayoutUnit());
 
   DCHECK(container_builder);

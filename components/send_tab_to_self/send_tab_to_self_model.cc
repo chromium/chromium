@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
+
 #include "base/observer_list.h"
 
 namespace send_tab_to_self {
 
-SendTabToSelfModel::SendTabToSelfModel() {}
+SendTabToSelfModel::SendTabToSelfModel() = default;
 
-SendTabToSelfModel::~SendTabToSelfModel() {}
+SendTabToSelfModel::~SendTabToSelfModel() = default;
 
 // Observer methods.
 void SendTabToSelfModel::AddObserver(SendTabToSelfModelObserver* observer) {

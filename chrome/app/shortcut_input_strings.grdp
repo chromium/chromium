@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shortcut input specific strings (included from generated_resources.grd). -->
+<grit-part>
+<message name="IDS_TYPE_A_SHORTCUT" desc="The prompt to the user to enter and save a keyboard shortcut.">
+    Type a shortcut
+  </message>
+  <message name="IDS_SHORTCUT_SET" desc="Text used to notify screen readers when a shortcut is successfully set.">
+    Shortcut set: <ph name="IDS_SHORT_SET_COMMAND">$1<ex>Ctrl + S</ex></ph>
+  </message>
+  <message name="IDS_SHORTCUT_NOT_SET" desc="The label to indicate that an extension has no shortcut set for a given command.">
+    Not set
+  </message>
+  <if expr="is_macosx">
+    <message name="IDS_SHORTCUT_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Command key.">
+      Include Ctrl, Alt, or ⌘
+    </message>
+  </if>
+  <if expr="is_chromeos">
+    <message name="IDS_SHORTCUT_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control, Alt, or Search key.">
+      Include Ctrl, Alt, or Search
+    </message>
+  </if>
+  <if expr="is_macosx or is_chromeos">
+    <message name="IDS_SHORTCUT_TOO_MANY_MODIFIERS" desc="Error message explaining not to use so many modifiers in a shortcut.">
+      Invalid combination
+    </message>
+  </if>
+  <if expr="not is_macosx and not is_chromeos">
+    <message name="IDS_SHORTCUT_INCLUDE_START_MODIFIER" desc="Error message explaining that shortcuts must start with either the Control key or the Alt key.">
+      Include either Ctrl or Alt
+    </message>
+    <message name="IDS_SHORTCUT_TOO_MANY_MODIFIERS" desc="Error message explaining not to use both Ctrl and Alt in a shortcut.">
+      Use either Ctrl or Alt
+    </message>
+  </if>
+  <message name="IDS_SHORTCUT_NEED_CHARACTER" desc="Error message explaining that a shortcut needs a character. This is only shown if a valid modifier is already entered.">
+    Type a letter
+  </message>
+</grit-part>

@@ -93,6 +93,19 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   uint64_t GetNSViewId() const override;
 #endif  // BUILDFLAG(IS_MAC)
 
+#if BUILDFLAG(IS_ANDROID)
+  bool IsTouchSequencePotentiallyActiveOnViz() override;
+
+  void RequestInputBackForDragAndDrop(
+      blink::mojom::DragDataPtr drag_data,
+      const url::Origin& source_origin,
+      blink::DragOperationsMask drag_operations_mask,
+      SkBitmap bitmap,
+      gfx::Vector2d cursor_offset_in_dip,
+      gfx::Rect drag_obj_rect_in_dip,
+      blink::mojom::DragEventSourceInfoPtr event_info) override {}
+#endif
+
   // Notified in response to a CommitPending where there is no content for
   // TakeFallbackContentFrom to use.
   void ClearFallbackSurfaceForCommitPending() override;
@@ -160,7 +173,8 @@ class TestRenderWidgetHostView : public RenderWidgetHostViewBase,
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;
   std::optional<DisplayFeature> GetDisplayFeature() override;
-  void SetDisplayFeatureForTesting(
+  void DisableDisplayFeatureOverrideForEmulation() override;
+  void OverrideDisplayFeatureForEmulation(
       const DisplayFeature* display_feature) override;
   void NotifyHostAndDelegateOnWasShown(
       blink::mojom::RecordContentToVisibleTimeRequestPtr) override;
@@ -287,7 +301,9 @@ class TestRenderViewHost : public RenderViewHostImpl,
   bool CreateRenderView(
       const std::optional<blink::FrameToken>& opener_frame_token,
       int proxy_route_id,
-      bool window_was_created_with_opener) override;
+      bool window_was_created_with_opener,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token)
+      override;
   bool IsTestRenderViewHost() const override;
 
   // RenderViewHostTester implementation.

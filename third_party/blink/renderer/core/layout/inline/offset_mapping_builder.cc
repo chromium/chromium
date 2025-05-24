@@ -103,8 +103,7 @@ void OffsetMappingBuilder::AppendCollapsedMapping(unsigned length) {
   if (!current_layout_object_)
     return;
 
-  if (has_open_unit_ &&
-      mapping_units_.back().GetType() == OffsetMappingUnitType::kCollapsed) {
+  if (has_open_unit_ && mapping_units_.back().IsCollapsed()) {
     DCHECK_EQ(mapping_units_.back().GetLayoutObject(), current_layout_object_);
     DCHECK_EQ(mapping_units_.back().DOMEnd(), dom_start);
     mapping_units_.back().dom_end_ += length;
@@ -212,8 +211,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
   for (auto& unit : base::Reversed(mapping_units_)) {
     if (unit.text_content_end_ < offset) {
       // There are no collapsed unit.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     if (unit.text_content_start_ != offset ||
         unit.text_content_end_ != offset ||
@@ -222,7 +220,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
       ++unit.text_content_end_;
       continue;
     }
-    DCHECK_EQ(unit.type_, OffsetMappingUnitType::kCollapsed);
+    DCHECK(unit.IsCollapsed());
     const unsigned original_dom_end = unit.dom_end_;
     unit.type_ = OffsetMappingUnitType::kIdentity;
     unit.dom_end_ = unit.dom_start_ + 1;
@@ -238,8 +236,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
                           unit.text_content_end_, unit.text_content_end_));
     return;
   }
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 bool OffsetMappingBuilder::SetDestinationString(const String& string) {

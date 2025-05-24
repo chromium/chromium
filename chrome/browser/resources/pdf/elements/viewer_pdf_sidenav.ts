@@ -9,6 +9,7 @@ import './viewer_thumbnail_bar.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -57,20 +58,20 @@ export class ViewerPdfSidenavElement extends CrLitElement {
       bookmarks: {type: Array},
       clockwiseRotations: {type: Number},
       docLength: {type: Number},
-      pdfCr23Enabled: {type: Boolean},
+      strings: {type: Object},
       selectedTab_: {type: Number},
       tabs_: {type: Array},
     };
   }
 
-  activePage: number = 0;
-  attachments: Attachment[] = [];
-  bookmarks: Bookmark[] = [];
-  clockwiseRotations: number = 0;
-  docLength: number = 0;
-  pdfCr23Enabled: boolean = false;
-  private selectedTab_: number = 0;
-  protected tabs_: Tab[] = [];
+  accessor activePage: number = 0;
+  accessor attachments: Attachment[] = [];
+  accessor bookmarks: Bookmark[] = [];
+  accessor clockwiseRotations: number = 0;
+  accessor docLength: number = 0;
+  accessor strings: {[key: string]: string}|undefined;
+  private accessor selectedTab_: number = 0;
+  protected accessor tabs_: Tab[] = [];
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -81,32 +82,29 @@ export class ViewerPdfSidenavElement extends CrLitElement {
     }
   }
 
-  private iconsetName_(): string {
-    return this.pdfCr23Enabled ? 'pdf-cr23' : 'pdf';
-  }
-
   private computeTabs_(): Tab[] {
     const tabs = [
       {
         id: TabId.THUMBNAIL,
-        icon: this.iconsetName_() + ':thumbnails',
-        title: '$i18n{tooltipThumbnails}',
+        icon: 'pdf:thumbnails',
+        title: this.strings ? loadTimeData.getString('tooltipThumbnails') : '',
       },
     ];
 
     if (this.bookmarks.length > 0) {
       tabs.push({
         id: TabId.OUTLINE,
-        icon: this.iconsetName_() + ':doc-outline',
-        title: '$i18n{tooltipDocumentOutline}',
+        icon: 'pdf:doc-outline',
+        title: this.strings ? loadTimeData.getString('tooltipDocumentOutline') :
+                              '',
       });
     }
 
     if (this.attachments.length > 0) {
       tabs.push({
         id: TabId.ATTACHMENT,
-        icon: this.iconsetName_() + ':attach-file',
-        title: '$i18n{tooltipAttachments}',
+        icon: 'pdf:attach-file',
+        title: this.strings ? loadTimeData.getString('tooltipAttachments') : '',
       });
     }
     return tabs;

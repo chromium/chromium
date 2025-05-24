@@ -1,0 +1,247 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "libm"
+  epoch = "0.2"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/libm_helper.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/acos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/acosf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/acosh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/acoshf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/aarch64.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/i586.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/wasm32.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/x86.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/x86/detect.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/arch/x86/fma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/asin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/asinf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/asinh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/asinhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/atan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/atan2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/atan2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/atanf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/atanh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/atanhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/cbrt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/cbrtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/ceil.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/copysign.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/copysignf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/copysignf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/copysignf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/cos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/cosf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/cosh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/coshf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/erf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/erff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/exp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/exp10.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/exp10f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/exp2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/exp2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/expf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/expm1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/expm1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/expo2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fabs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fabsf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fabsf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fabsf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fdim.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fdimf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fdimf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fdimf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/floor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/floorf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/floorf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/floorf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fmin_fmax.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fminimum_fmaximum.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fminimum_fmaximum_num.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fmod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fmodf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fmodf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/fmodf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/frexp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/frexpf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/ceil.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/copysign.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fabs.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fdim.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/floor.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fma_wide.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmax.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmaximum.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmaximum_num.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fminimum.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fminimum_num.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/fmod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/rint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/round.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/scalbn.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/sqrt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/generic/trunc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/hypot.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/hypotf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/ilogb.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/ilogbf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/j0.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/j0f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/j1.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/j1f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/jn.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/jnf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_cos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_cosf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_expo2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_expo2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_sin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_sinf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_tan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/k_tanf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/ldexp.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/ldexpf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/ldexpf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/ldexpf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/lgamma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/lgamma_r.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/lgammaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/lgammaf_r.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/log.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/log10.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/log10f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/log1p.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/log1pf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/log2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/log2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/logf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/modf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/modff.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/nextafter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/nextafterf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/pow.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/powf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/rem_pio2.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/rem_pio2_large.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/rem_pio2f.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/remainder.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/remainderf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/remquo.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/remquof.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/rint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/round.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/roundeven.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/roundf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/roundf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/roundf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/scalbn.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/scalbnf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/scalbnf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/scalbnf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sincos.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sincosf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sinf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sinh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sinhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sqrt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sqrtf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sqrtf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/sqrtf16.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/big.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/big/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/env.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/feature_detect.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/float_traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/hex_float.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/int_traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/macros.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/support/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/tan.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/tanf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/tanh.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/tanhf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/tgamma.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/tgammaf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/trunc.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/truncf.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/truncf128.rs",
+    "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/math/truncf16.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_authors = "Jorge Aparicio <jorge@japaric.io>"
+  cargo_pkg_name = "libm"
+  cargo_pkg_description = "libm in pure Rust"
+  cargo_pkg_version = "0.2.15"
+
+  allow_unsafe = true
+
+  features = [
+    "arch",
+    "default",
+  ]
+  build_root = "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/build.rs"
+  build_sources =
+      [ "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/build.rs" ]
+  build_script_inputs = [ "//third_party/rust/chromium_crates_io/vendor/libm-v0_2/src/../configure.rs" ]
+
+  # Only for usage from third-party crates. Add the crate to
+  # //third_party/rust/chromium_crates_io/Cargo.toml to use
+  # it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
+}

@@ -6,12 +6,11 @@
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_USER_TUNING_PERFORMANCE_DETECTION_MANAGER_H_
 
 #include <map>
+#include <optional>
 #include <vector>
 
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -71,12 +70,9 @@ class PerformanceDetectionManager {
                                  ActionableTabsObserver* new_observer);
   void RemoveActionableTabsObserver(ActionableTabsObserver* o);
 
-  // Discards all eligible pages in `tabs` and runs `post_discard_cb`
-  // after the discard finishes. `post_discard_cb` must be valid to
-  // run on the UI sequence.
-  void DiscardTabs(ActionableTabsResult tabs,
-                   base::OnceCallback<void(bool)> post_discard_cb =
-                       base::OnceCallback<void(bool)>());
+  // Discards all eligible pages in `tabs`. Returns true if at least 1 tab was
+  // discarded.
+  bool DiscardTabs(ActionableTabsResult tabs);
 
   void ForceTabCpuDataRefresh();
 
@@ -114,9 +110,8 @@ class PerformanceDetectionManager {
   base::flat_map<ResourceType, ActionableTabsResult> actionable_tabs_;
   base::flat_map<ResourceType, HealthLevel> current_health_status_;
 
-  base::OneShotTimer one_minute_discard_timer_;
-  base::OneShotTimer two_minute_discard_timer_;
-  base::OneShotTimer four_minute_discard_timer_;
+  std::optional<HealthLevel> health_level_before_discard_;
+  base::OneShotTimer discard_timer_;
 
   base::WeakPtrFactory<PerformanceDetectionManager> weak_ptr_factory_{this};
 };

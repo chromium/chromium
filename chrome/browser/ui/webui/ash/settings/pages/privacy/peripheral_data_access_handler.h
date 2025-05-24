@@ -9,13 +9,15 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
+class Profile;
+
 namespace ash::settings {
 
 class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
  public:
   static bool GetPrefState();
 
-  PeripheralDataAccessHandler();
+  explicit PeripheralDataAccessHandler(Profile* profile);
   ~PeripheralDataAccessHandler() override;
 
   PeripheralDataAccessHandler(const PeripheralDataAccessHandler&) = delete;
@@ -38,7 +40,7 @@ class PeripheralDataAccessHandler : public ::settings::SettingsPageUIHandler {
   void OnPeripheralDataAccessProtectionChanged();
 
   void OnFilePathChecked(const std::string& callback_id,
-      bool is_thunderbolt_supported);
+                         bool is_thunderbolt_supported);
 
   void OnLocalStatePrefChanged();
 

@@ -9,12 +9,15 @@
 #include <optional>
 #include <vector>
 
+#include "ash/birch/coral_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_prefs.h"
+#include "ash/public/cpp/ime_controller.h"
+#include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
@@ -33,7 +36,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
@@ -41,7 +43,7 @@
 #include "chrome/browser/ash/input_method/input_method_syncer.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
@@ -56,12 +58,12 @@
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_enterprise_policy_enums.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "chromeos/ash/components/standalone_browser/lacros_selection.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/ash/components/timezone/timezone_resolver.h"
 #include "chromeos/components/disks/disks_prefs.h"
@@ -114,10 +116,6 @@ const char* const kCopyToKnownUserPrefs[] = {
     ::prefs::kUse24HourClock,
     prefs::kDarkModeEnabled};
 
-bool AreScrollSettingsAllowed() {
-  return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
-}
-
 }  // namespace
 
 Preferences::Preferences()
@@ -155,15 +153,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       ::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       enterprise_management::SystemTimezoneProto::USERS_DECIDE);
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
-  registry->RegisterIntegerPref(
-      ::prefs::kLacrosLaunchSwitch,
-      static_cast<int>(
-          ash::standalone_browser::LacrosAvailability::kUserChoice));
-  registry->RegisterIntegerPref(
-      ::prefs::kLacrosSelection,
-      static_cast<int>(
-          ash::standalone_browser::LacrosSelectionPolicy::kUserChoice));
-  registry->RegisterStringPref(::prefs::kLacrosDataBackwardMigrationMode, "");
   registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
   registry->RegisterBooleanPref(
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
@@ -190,7 +179,6 @@ void Preferences::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   // Some classes register their own prefs.
   input_method::InputMethodSyncer::RegisterProfilePrefs(registry);
-  crosapi::browser_util::RegisterProfilePrefs(registry);
   ::drive::DriveIntegrationService::RegisterProfilePrefs(registry);
 
   std::string hardware_keyboard_id;
@@ -215,6 +203,9 @@ void Preferences::RegisterProfilePrefs(
   // and it should not carry over to sessions were neither of these is set.
   registry->RegisterBooleanPref(::prefs::kUnifiedDesktopEnabledByDefault, false,
                                 PrefRegistry::NO_REGISTRATION_FLAGS);
+  registry->RegisterBooleanPref(::prefs::kAllowExcludeDisplayInMirrorMode,
+                                false, PrefRegistry::NO_REGISTRATION_FLAGS);
+
   // TODO(anasalazar): Finish moving this to ash.
   registry->RegisterBooleanPref(
       prefs::kNaturalScroll,
@@ -280,6 +271,8 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterStringPref(::prefs::kLanguageCurrentInputMethod, "");
   registry->RegisterStringPref(::prefs::kLanguagePreviousInputMethod, "");
   registry->RegisterListPref(::prefs::kLanguageAllowedInputMethods);
+  registry->RegisterBooleanPref(
+      ::prefs::kLanguageAllowedInputMethodsForceEnabled, false);
   registry->RegisterListPref(::prefs::kAllowedLanguages);
   registry->RegisterStringPref(::prefs::kLanguagePreloadEngines,
                                hardware_keyboard_id);
@@ -289,16 +282,25 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kAssistPredictiveWritingEnabled, true);
   registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnabled, true);
   registry->RegisterBooleanPref(prefs::kEmojiSuggestionEnterpriseAllowed, true);
+  registry->RegisterIntegerPref(
+      prefs::kHmwManagedSettings,
+      base::to_underlying(chromeos::editor_menu::EditorEnterprisePolicy::
+                              kAllowedWithModelImprovement));
   registry->RegisterBooleanPref(prefs::kOrcaEnabled, true);
   registry->RegisterBooleanPref(prefs::kOrcaFeedbackEnabled, true);
   registry->RegisterBooleanPref(prefs::kManagedOrcaEnabled, true);
+  registry->RegisterBooleanPref(prefs::kLobsterEnabled, true);
+  registry->RegisterIntegerPref(
+      prefs::kLobsterEnterprisePolicySettings,
+      base::to_underlying(
+          ash::LobsterEnterprisePolicyValue::kAllowedWithModelImprovement));
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardAutocorrectAllowed, true);
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed, true);
   registry->RegisterIntegerPref(
       prefs::kOrcaConsentStatus,
-      base::to_underlying(input_method::ConsentStatus::kUnset));
+      base::to_underlying(chromeos::editor_menu::EditorConsentStatus::kUnset));
   registry->RegisterIntegerPref(prefs::kOrcaConsentWindowDismissCount, 0);
   registry->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled, true);
   registry->RegisterDictionaryPref(prefs::kEmojiPickerHistory);
@@ -372,9 +374,6 @@ void Preferences::RegisterProfilePrefs(
 
   // Don't sync the note-taking app; it may not be installed on other devices.
   registry->RegisterStringPref(::prefs::kNoteTakingAppId, std::string());
-  registry->RegisterBooleanPref(::prefs::kRestoreLastLockScreenNote, true);
-  registry->RegisterDictionaryPref(
-      ::prefs::kNoteTakingAppsLockScreenToastShown);
 
   registry->RegisterBooleanPref(::prefs::kLockScreenAutoStartOnlineReauth,
                                 false);
@@ -512,11 +511,6 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterBooleanPref(::prefs::kHatsPeripheralsIsSelected, false);
 
-  registry->RegisterBooleanPref(::prefs::kHatsPrivacyHubPostLaunchIsSelected,
-                                false);
-
-  registry->RegisterInt64Pref(::prefs::kHatsPrivacyHubPostLaunchCycleEndTs, 0);
-
   // Personalization HaTS survey prefs for avatar, screensaver, and wallpaper
   // features.
   registry->RegisterInt64Pref(
@@ -602,7 +596,6 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kMagicBoostEnabled, true);
 
   registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
-  registry->RegisterBooleanPref(prefs::kHmrFeedbackAllowed, true);
   registry->RegisterIntegerPref(prefs::kHmrManagedSettings, 0);
 
   registry->RegisterIntegerPref(
@@ -610,6 +603,12 @@ void Preferences::RegisterProfilePrefs(
       base::to_underlying(chromeos::HMRConsentStatus::kUnset));
 
   registry->RegisterIntegerPref(prefs::kHMRConsentWindowDismissCount, 0);
+
+  registry->RegisterIntegerPref(prefs::kGenAIPhotoEditingSettings, 0);
+
+  registry->RegisterIntegerPref(
+      prefs::kGenAISmartGroupingSettings,
+      base::to_underlying(coral_util::GenAISmartGroupingSettings::kAllowed));
 
   registry->RegisterBooleanPref(
       prefs::kLauncherResultEverLaunched, false,
@@ -678,8 +677,12 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterIntegerPref(
       ::prefs::kSkyVaultMigrationState,
-      static_cast<int>(policy::local_user_files::LocalFilesMigrationManager::
-                           State::kUninitialized));
+      static_cast<int>(policy::local_user_files::State::kUninitialized));
+  registry->RegisterIntegerPref(::prefs::kSkyVaultMigrationRetryCount, 0);
+  registry->RegisterTimePref(::prefs::kSkyVaultMigrationScheduledStartTime,
+                             base::Time());
+  registry->RegisterTimePref(::prefs::kSkyVaultMigrationStartTime,
+                             base::Time());
 }
 
 void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
@@ -733,6 +736,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
                               callback);
   allowed_input_methods_.Init(::prefs::kLanguageAllowedInputMethods, prefs,
                               callback);
+  allowed_input_methods_force_enabled_.Init(
+      ::prefs::kLanguageAllowedInputMethodsForceEnabled, prefs, callback);
   allowed_languages_.Init(::prefs::kAllowedLanguages, prefs, callback);
   preferred_languages_.Init(language::prefs::kPreferredLanguages, prefs,
                             callback);
@@ -769,18 +774,11 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
 
   // Re-enable OTA update when feature flag is disabled by owner.
   auto* update_engine_client = UpdateEngineClient::Get();
-  if (user_manager::UserManager::Get()->IsCurrentUserOwner() &&
-      !features::IsConsumerAutoUpdateToggleAllowed()) {
-    // Write into the platform will signal back so pref gets synced.
-    update_engine_client->ToggleFeature(
-        update_engine::kFeatureConsumerAutoUpdate, true);
-  } else {
-    // Otherwise, trigger a read + sync with signal.
-    update_engine_client->IsFeatureEnabled(
-        update_engine::kFeatureConsumerAutoUpdate,
-        base::BindOnce(&Preferences::OnIsConsumerAutoUpdateEnabled,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  // Trigger a read + sync with signal.
+  update_engine_client->IsFeatureEnabled(
+      update_engine::kFeatureConsumerAutoUpdate,
+      base::BindOnce(&Preferences::OnIsConsumerAutoUpdateEnabled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void Preferences::Init(Profile* profile, const user_manager::User* user) {
@@ -995,12 +993,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = mouse_sensitivity_.GetValue();
     if (user_is_active) {
       mouse_settings.SetSensitivity(sensitivity_int);
-
-      // With the flag off, also set scroll sensitivity (legacy fallback).
-      // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!AreScrollSettingsAllowed()) {
-        mouse_settings.SetScrollSensitivity(sensitivity_int);
-      }
     }
     ReportSensitivityPrefApplication(reason, "Mouse.PointerSensitivity.Changed",
                                      "Mouse.PointerSensitivity.Started",
@@ -1008,11 +1000,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kMouseScrollSensitivity) {
-    // With the flag off, use to normal sensitivity (legacy fallback).
-    // TODO(https://crbug.com/836258): Remove check when flag is removed.
-    const int sensitivity_int = AreScrollSettingsAllowed()
-                                    ? mouse_scroll_sensitivity_.GetValue()
-                                    : mouse_sensitivity_.GetValue();
+    const int sensitivity_int = mouse_scroll_sensitivity_.GetValue();
     if (user_is_active) {
       mouse_settings.SetScrollSensitivity(sensitivity_int);
     }
@@ -1032,12 +1020,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     const int sensitivity_int = touchpad_sensitivity_.GetValue();
     if (user_is_active) {
       touchpad_settings.SetSensitivity(sensitivity_int);
-
-      // With the flag off, also set scroll sensitivity (legacy fallback).
-      // TODO(https://crbug.com/836258): Remove check when flag is removed.
-      if (!AreScrollSettingsAllowed()) {
-        touchpad_settings.SetScrollSensitivity(sensitivity_int);
-      }
     }
     ReportSensitivityPrefApplication(
         reason, "Touchpad.PointerSensitivity.Changed",
@@ -1045,11 +1027,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
   if (reason != REASON_PREF_CHANGED ||
       pref_name == prefs::kTouchpadScrollSensitivity) {
-    // With the flag off, use normal sensitivity (legacy fallback).
-    // TODO(https://crbug.com/836258): Remove check when flag is removed.
-    const int sensitivity_int = AreScrollSettingsAllowed()
-                                    ? touchpad_scroll_sensitivity_.GetValue()
-                                    : touchpad_sensitivity_.GetValue();
+    const int sensitivity_int = touchpad_scroll_sensitivity_.GetValue();
     if (user_is_active) {
       touchpad_settings.SetScrollSensitivity(sensitivity_int);
     }
@@ -1200,23 +1178,35 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   }
 
   if (reason != REASON_PREF_CHANGED ||
-      pref_name == ::prefs::kLanguageAllowedInputMethods) {
+      pref_name == ::prefs::kLanguageAllowedInputMethods ||
+      pref_name == ::prefs::kLanguageAllowedInputMethodsForceEnabled) {
     const std::vector<std::string> allowed_input_methods =
         allowed_input_methods_.GetValue();
+    const bool allowed_input_methods_force_enabled =
+        allowed_input_methods_force_enabled_.GetValue();
 
-    bool managed_by_policy =
+    const bool allowed_by_policy =
         ime_state_->SetAllowedInputMethods(allowed_input_methods);
-    bool success = ime_state_->ReplaceEnabledInputMethods(
-        ime_state_->GetEnabledInputMethodIds());
+    const std::vector<std::string>& method_ids =
+        (allowed_by_policy && allowed_input_methods_force_enabled)
+            ? ime_state_->GetAllowedInputMethodIds()
+            : ime_state_->GetEnabledInputMethodIds();
+    const bool success = ime_state_->ReplaceEnabledInputMethods(method_ids);
     if (!success) {
       const std::vector<std::string> fallback = {
           ime_state_->GetAllowedFallBackKeyboardLayout()};
       ime_state_->ReplaceEnabledInputMethods(fallback);
     }
 
-    if (managed_by_policy) {
+    if (allowed_by_policy) {
       preload_engines_.SetValue(
           base::JoinString(ime_state_->GetEnabledInputMethodIds(), ","));
+    }
+    if (ImeController::Get()) {  // Can be null in tests.
+      ImeController::Get()->SetImesManagedByPolicy(
+          success && allowed_input_methods_force_enabled);
+    } else {
+      CHECK_IS_TEST();
     }
   }
   if (reason != REASON_PREF_CHANGED ||
@@ -1271,27 +1261,28 @@ void Preferences::ApplyPreferences(ApplyReason reason,
   if (reason == REASON_INITIALIZATION ||
       (pref_name == ash::prefs::kUserGeolocationAccessLevel &&
        reason == REASON_PREF_CHANGED)) {
-    const auto user_geolocation_access_level =
+    GeolocationAccessLevel geo_access_level =
         static_cast<GeolocationAccessLevel>(
-            prefs_->GetInteger(ash::prefs::kUserGeolocationAccessLevel));
+            prefs_->GetInteger(prefs::kUserGeolocationAccessLevel));
 
-    // Notify `SimpleGeolocationProvider` of the user geolocation permission
-    // change.
-    SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
-        user_geolocation_access_level);
+    // System Geolocation setting is controlled by the primary user only.
+    if (user_is_primary_) {
+      SimpleGeolocationProvider::GetInstance()->SetGeolocationAccessLevel(
+          geo_access_level);
+    }
 
     // Log-in screen follows the owner's geolocation setting.
     if (user_is_owner) {
-      GeolocationAccessLevel access_level;
+      GeolocationAccessLevel login_geo_access_level;
       if (SimpleGeolocationProvider::GetInstance()
               ->IsGeolocationUsageAllowedForSystem()) {
-        access_level = GeolocationAccessLevel::kAllowed;
+        login_geo_access_level = GeolocationAccessLevel::kAllowed;
       } else {
-        access_level = GeolocationAccessLevel::kDisallowed;
+        login_geo_access_level = GeolocationAccessLevel::kDisallowed;
       }
       g_browser_process->local_state()->SetInteger(
           ash::prefs::kDeviceGeolocationAllowed,
-          static_cast<int>(access_level));
+          static_cast<int>(login_geo_access_level));
     }
   }
 

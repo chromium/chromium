@@ -14,9 +14,9 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_service.h"
 
-constexpr base::TimeDelta kSafetyHubMenuNotificationMinNotificationDuration =
-    base::Days(3);
-constexpr int kSafetyHubMenuNotificationMinImpressionCount = 5;
+inline constexpr base::TimeDelta
+    kSafetyHubMenuNotificationMinNotificationDuration = base::Days(3);
+inline constexpr int kSafetyHubMenuNotificationMinImpressionCount = 5;
 
 // Class that represents the notifications of Safety Hub that are shown in the
 // Chrome menu.

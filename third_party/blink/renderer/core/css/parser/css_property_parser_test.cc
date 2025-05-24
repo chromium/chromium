@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -35,8 +36,8 @@ static int ComputeNumberOfTracks(const CSSValueList* value_list) {
     }
     if (auto* repeat_value =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(*value)) {
-      number_of_tracks +=
-          repeat_value->Repetitions() * ComputeNumberOfTracks(repeat_value);
+      number_of_tracks += *repeat_value->GetRepetitionsIfKnown() *
+                          ComputeNumberOfTracks(repeat_value);
       continue;
     }
     ++number_of_tracks;
@@ -231,7 +232,8 @@ static int GetGridPositionInteger(const CSSValue& value) {
   DCHECK_EQ(list.length(), static_cast<size_t>(1));
   const auto& primitive_value = To<CSSPrimitiveValue>(list.Item(0));
   DCHECK(primitive_value.IsNumber());
-  return primitive_value.ComputeInteger(CSSToLengthConversionData());
+  return primitive_value.ComputeInteger(
+      CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit1) {
@@ -879,7 +881,8 @@ TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
 }
 
 TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {
-  TestImageSetParsingFailure("image-set(linear-gradient(red) 1x)");
+  TestImageSetParsing("image-set(linear-gradient(red) 1x)",
+                      "image-set(linear-gradient(red) 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetAddCalcMissingUnit1) {
@@ -947,14 +950,14 @@ TEST(CSSPropertyParserTest, UALightDarkBackgroundImage) {
   }
 }
 
-TEST(CSSPropertyParserTest, UAAppearanceAutoBaseSelectSerialization) {
-  auto* ua_context = MakeGarbageCollected<CSSParserContext>(
-      kUASheetMode, SecureContextMode::kInsecureContext);
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundColor,
-      "-internal-appearance-auto-base-select(red, blue)", ua_context);
+TEST(CSSPropertyParserTest, UAAutoBaseSerialization) {
+  // Note: we're not using CSSParser::ParseSingleValue, because it expects
+  // arbitrary function substitution to already have happened.
+  const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
+      "color:-internal-auto-base(red, blue)", kUASheetMode);
+  const CSSValue* value = set->GetPropertyCSSValue(CSSPropertyID::kColor);
   ASSERT_TRUE(value);
-  EXPECT_EQ("-internal-appearance-auto-base-select(red, blue)",
+  EXPECT_EQ("-internal-auto-base(red, blue)",
             value->CssText());
 }
 

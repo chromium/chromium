@@ -17,12 +17,12 @@
 
 class StartupHelperBrowserTest : public InProcessBrowserTest {
  public:
-  StartupHelperBrowserTest() {}
+  StartupHelperBrowserTest() = default;
 
   StartupHelperBrowserTest(const StartupHelperBrowserTest&) = delete;
   StartupHelperBrowserTest& operator=(const StartupHelperBrowserTest&) = delete;
 
-  ~StartupHelperBrowserTest() override {}
+  ~StartupHelperBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kNoStartupWindow);

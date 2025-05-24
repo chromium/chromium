@@ -37,7 +37,7 @@ public final class MainActivityTest {
     private static final String BROWSER_PACKAGE_NAME = "com.android.chrome";
 
     private PackageManager mPackageManager;
-    private TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
+    private final TestBrowserInstaller mBrowserInstaller = new TestBrowserInstaller();
 
     @Before
     public void setUp() {
@@ -274,7 +274,9 @@ public final class MainActivityTest {
      */
     private void assertTabbedBrowserLaunched(
             Intent intent, String browserPackageName, String expectedStartUrl) {
-        Assert.assertEquals(browserPackageName, intent.getPackage());
+        Assert.assertEquals(browserPackageName, intent.getComponent().getPackageName());
+        Assert.assertEquals(
+                TestBrowserInstaller.COMPONENT_CLASS, intent.getComponent().getClassName());
         Assert.assertEquals(Intent.ACTION_VIEW, intent.getAction());
         Assert.assertEquals(expectedStartUrl, intent.getDataString());
     }
@@ -285,7 +287,7 @@ public final class MainActivityTest {
      */
     private void assertWebApkLaunched(Intent intent, String expectedStartUrl) {
         Assert.assertEquals(BROWSER_PACKAGE_NAME, intent.getPackage());
-        Assert.assertEquals(HostBrowserLauncher.ACTION_START_WEBAPK, intent.getAction());
+        Assert.assertEquals(HostBrowserUtils.ACTION_START_WEBAPK, intent.getAction());
         Assert.assertEquals(expectedStartUrl, intent.getStringExtra(WebApkConstants.EXTRA_URL));
     }
 }

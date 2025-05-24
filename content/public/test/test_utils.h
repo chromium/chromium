@@ -86,12 +86,10 @@ bool AreAllSitesIsolatedForTesting();
 bool IsOriginAgentClusterEnabledForOrigin(SiteInstance* site_instance,
                                           const url::Origin& origin);
 
-// Returns true if default SiteInstances are enabled. Typically used in a test
-// to mark expectations specific to default SiteInstances.
-bool AreDefaultSiteInstancesEnabled();
-
 // Returns true if the process model only allows a SiteInstance to contain
 // a single site.
+// TODO(crbug.com/390571607, yangsharon): Rename this function and use for
+// default SiteInstanceGroups.
 bool AreStrictSiteInstancesEnabled();
 
 // Returns true if a test needs to register an origin for isolation to ensure
@@ -466,6 +464,15 @@ class ScopedContentBrowserClientSetting final {
  private:
   const raw_ptr<ContentBrowserClient> old_client_;
 };
+
+// Blocks the current execution until the frame submitted via the browser's
+// compositor is presented on the screen.
+void WaitForBrowserCompositorFramePresented(WebContents* web_contents);
+
+// Forces the browser to submit a compositor frame, even if nothing has changed
+// in the viewport. Use `WaitForBrowserCompositorFramePresented()` to wait for
+// the frame's presentation.
+void ForceNewCompositorFrameFromBrowser(WebContents* web_contents);
 
 }  // namespace content
 

@@ -37,17 +37,12 @@
             number-of-items="[[historyData_.length]]"
             index="[[index]]"
             focus-row-index="[[index]]"
-            iron-list-tab-index="[[tabIndex]]"
+            list-tab-index="[[tabIndex]]"
             last-focused="{{lastFocused_}}"
             list-blurred="{{listBlurred_}}">
         </history-item>
       </template>
     </iron-list>
-
-    <iron-scroll-threshold id="scroll-threshold"
-        lower-threshold="500" on-lower-threshold="onScrollToBottom_"
-        scroll-target="[[scrollTarget]]">
-    </iron-scroll-threshold>
 
     <cr-lazy-render id="dialog">
       <template>

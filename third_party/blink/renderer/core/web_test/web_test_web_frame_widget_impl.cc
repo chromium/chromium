@@ -97,7 +97,7 @@ void WebTestWebFrameWidgetImpl::WillBeginMainFrame() {
   WebFrameWidgetImpl::WillBeginMainFrame();
 }
 
-void WebTestWebFrameWidgetImpl::ScheduleAnimation() {
+void WebTestWebFrameWidgetImpl::ScheduleAnimation(bool urgent) {
   ScheduleAnimationInternal(GetTestRunner()->animation_requires_raster());
 }
 
@@ -136,7 +136,7 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
   // When using threaded compositing, have the WeFrameWidgetImpl normally
   // schedule a request for a frame, as we use the compositor's scheduler.
   if (Thread::CompositorThread()) {
-    WebFrameWidgetImpl::ScheduleAnimation();
+    WebFrameWidgetImpl::ScheduleAnimation(/*urgent=*/false);
     return;
   }
 
@@ -345,9 +345,10 @@ void WebTestWebFrameWidgetImpl::AnimateNow() {
 }
 
 void WebTestWebFrameWidgetImpl::RequestDecode(
-    const PaintImage& image,
-    base::OnceCallback<void(bool)> callback) {
-  WebFrameWidgetImpl::RequestDecode(image, std::move(callback));
+    const cc::DrawImage& image,
+    base::OnceCallback<void(bool)> callback,
+    bool speculative) {
+  WebFrameWidgetImpl::RequestDecode(image, std::move(callback), speculative);
 
   // In web tests the request does not actually cause a commit, because the
   // compositor is scheduled by the test runner to avoid flakiness. So for this

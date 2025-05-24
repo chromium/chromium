@@ -36,7 +36,7 @@ MATCHER_P3(IsBucketBetween, lower_bound, upper_bound, count, "") {
 // Builder for instances of NTPTileImpression that uses sensible defaults.
 class Builder {
  public:
-  Builder() {}
+  Builder() = default;
 
   Builder& WithIndex(int index) {
     impression_.index = index;

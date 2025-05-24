@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/editing/commands/insert_into_text_node_command.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_line_break_command.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_node_before_command.h"
+#include "third_party/blink/renderer/core/editing/commands/insert_node_list_before_command.h"
 #include "third_party/blink/renderer/core/editing/commands/insert_paragraph_separator_command.h"
 #include "third_party/blink/renderer/core/editing/commands/merge_identical_elements_command.h"
 #include "third_party/blink/renderer/core/editing/commands/remove_css_property_command.h"
@@ -347,6 +348,20 @@ void CompositeEditCommand::InsertNodeAfter(Node* insert_child,
   }
 }
 
+void CompositeEditCommand::InsertNodeListAfter(Node& insert_first_child,
+                                               Node& ref_child,
+                                               EditingState* editing_state) {
+  ContainerNode* parent = ref_child.parentNode();
+  ABORT_EDITING_COMMAND_IF(!parent);
+  ABORT_EDITING_COMMAND_IF(GetDocument().body() == &ref_child);
+  ABORT_EDITING_COMMAND_IF(!IsEditable(*parent) && parent->InActiveDocument());
+  DCHECK(!parent->IsShadowRoot()) << parent;
+  ApplyCommandToComposite(
+      MakeGarbageCollected<InsertNodeListBeforeCommand>(
+          insert_first_child, *parent, ref_child.nextSibling()),
+      editing_state);
+}
+
 void CompositeEditCommand::InsertNodeAt(Node* insert_child,
                                         const Position& editing_position,
                                         EditingState* editing_state) {
@@ -631,8 +646,7 @@ Position CompositeEditCommand::PositionOutsideTabSpan(const Position& pos) {
 
   switch (pos.AnchorType()) {
     case PositionAnchorType::kAfterChildren:
-      NOTREACHED_IN_MIGRATION();
-      return pos;
+      NOTREACHED();
     case PositionAnchorType::kOffsetInAnchor:
       break;
     case PositionAnchorType::kBeforeAnchor:
@@ -1477,9 +1491,11 @@ void CompositeEditCommand::MoveParagraphs(
           ComparePositions(visible_start, start_of_paragraph_to_move) >= 0;
       bool end_in_paragraph =
           ComparePositions(visible_end, end_of_paragraph_to_move) <= 0;
-
       const TextIteratorBehavior behavior =
-          TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
+          RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()
+              ? TextIteratorBehavior::
+                    AllVisiblePositionsIncludingShadowRootRangeLengthBehavior()
+              : TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior();
 
       start_index = 0;
       if (start_in_paragraph) {
@@ -1516,6 +1532,12 @@ void CompositeEditCommand::MoveParagraphs(
   // the end and before the start are treated as though they were rendered.
   Position start = MostForwardCaretPosition(start_candidate);
   Position end = MostBackwardCaretPosition(end_candidate);
+  if (RuntimeEnabledFeatures::
+          AvoidNormalizingVisiblePositionsWhenStartEqualsEndEnabled() &&
+      start_candidate == end_candidate) {
+    start = start_candidate;
+    end = end_candidate;
+  }
   if (end < start)
     end = start;
 
@@ -1556,14 +1578,33 @@ void CompositeEditCommand::MoveParagraphs(
 
   DCHECK(!GetDocument().NeedsLayoutTreeUpdate());
 
-  const VisibleSelection& selection_to_delete = CreateVisibleSelection(
-      SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build());
-  SetEndingSelection(
-      SelectionForUndoStep::From(selection_to_delete.AsSelection()));
+  if (RuntimeEnabledFeatures::
+          RemoveSelectionCanonicalizationInMoveParagraphEnabled()) {
+    SetEndingSelection(SelectionForUndoStep::From(
+        SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build()));
+  } else {
+    const VisibleSelection& selection_to_delete = CreateVisibleSelection(
+        SelectionInDOMTree::Builder().Collapse(start).Extend(end).Build());
+    SetEndingSelection(
+        SelectionForUndoStep::From(selection_to_delete.AsSelection()));
+  }
+
+  if (RuntimeEnabledFeatures::
+          PartialCompletionNotAllowedInMoveParagraphsEnabled()) {
+    const VisibleSelection& destination_selection = CreateVisibleSelection(
+        SelectionInDOMTree::Builder()
+            .Collapse(destination.ToPositionWithAffinity())
+            .Build());
+    if (!destination_selection.RootEditableElement() ||
+        !EndingVisibleSelection().RootEditableElement()) {
+      return;
+    }
+  }
   if (!DeleteSelection(
           editing_state,
-          DeleteSelectionOptions::Builder().SetSanitizeMarkup(true).Build()))
+          DeleteSelectionOptions::Builder().SetSanitizeMarkup(true).Build())) {
     return;
+  }
 
   DCHECK(destination.DeepEquivalent().IsConnected()) << destination;
   CleanupAfterDeletion(editing_state, destination);
@@ -1600,12 +1641,18 @@ void CompositeEditCommand::MoveParagraphs(
 
   // TextIterator::rangeLength requires clean layout.
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-
-  destination_index = TextIterator::RangeLength(
-      Position::FirstPositionInNode(*GetDocument().documentElement()),
-      destination.ToParentAnchoredPosition(),
-      TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior());
-
+  if (RuntimeEnabledFeatures::EnterInOpenShadowRootsEnabled()) {
+    destination_index = TextIterator::RangeLength(
+        Position::FirstPositionInNode(*GetDocument().documentElement()),
+        destination.ToParentAnchoredPosition(),
+        TextIteratorBehavior::
+            AllVisiblePositionsIncludingShadowRootRangeLengthBehavior());
+  } else {
+    destination_index = TextIterator::RangeLength(
+        Position::FirstPositionInNode(*GetDocument().documentElement()),
+        destination.ToParentAnchoredPosition(),
+        TextIteratorBehavior::AllVisiblePositionsRangeLengthBehavior());
+  }
   const VisibleSelection& destination_selection =
       CreateVisibleSelection(SelectionInDOMTree::Builder()
                                  .Collapse(destination.ToPositionWithAffinity())

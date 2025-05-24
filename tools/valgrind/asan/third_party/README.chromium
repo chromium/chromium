@@ -1,5 +1,5 @@
 Name: asan_symbolize.py
-License: Apache-2.0 WITH LLVM-exception
+License: NCSA, Apache-with-LLVM-Exception, MIT
 License File: LICENSE.TXT
 Version: a81e45b8bcb8eb274ad73357e10e2cdf8a314a8c
 Revision: a81e45b8bcb8eb274ad73357e10e2cdf8a314a8c

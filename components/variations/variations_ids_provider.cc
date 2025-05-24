@@ -22,11 +22,6 @@
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_features.h"
 
-// TODO: remove this feature flag after milestone 110.
-BASE_FEATURE(kSendLowEntropySourceVariationIDInAnyContext,
-             "SendLowEntropySourceVariationIDInAnyContext",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 namespace variations {
 namespace {
 
@@ -536,18 +531,13 @@ VariationsIdsProvider::GetAllVariationIds() {
   // The entropy source value is used for retrospective A/A tests to validate
   // that there's no existing bias between two randomized groups of clients for
   // a later A/B study.
-  base::UmaHistogramBoolean("Variations.Headers.HasLowEntropySourceValue",
-                            low_entropy_source_value_.has_value());
   if (low_entropy_source_value_.has_value()) {
     int source_value = low_entropy_source_value_.value() +
                        kLowEntropySourceVariationIdRangeMin;
     DCHECK_GE(source_value, kLowEntropySourceVariationIdRangeMin);
     DCHECK_LE(source_value, kLowEntropySourceVariationIdRangeMax);
-    auto context = base::FeatureList::IsEnabled(
-                       kSendLowEntropySourceVariationIDInAnyContext)
-                       ? GOOGLE_WEB_PROPERTIES_ANY_CONTEXT
-                       : GOOGLE_WEB_PROPERTIES_FIRST_PARTY;
-    all_variation_ids_set.insert(VariationIDEntry(source_value, context));
+    all_variation_ids_set.insert(
+        VariationIDEntry(source_value, GOOGLE_WEB_PROPERTIES_ANY_CONTEXT));
   }
 
   return all_variation_ids_set;

@@ -8,10 +8,13 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/blocklist.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 class ExtensionPrefs;
-class ExtensionService;
+class ExtensionRegistrar;
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -28,7 +31,7 @@ class ExtensionTelemetryServiceVerdictHandler {
  public:
   ExtensionTelemetryServiceVerdictHandler(ExtensionPrefs* extension_prefs,
                                           ExtensionRegistry* registry,
-                                          ExtensionService* extension_service);
+                                          ExtensionRegistrar* registrar);
   ExtensionTelemetryServiceVerdictHandler(
       const ExtensionTelemetryServiceVerdictHandler&) = delete;
   ExtensionTelemetryServiceVerdictHandler& operator=(
@@ -40,7 +43,7 @@ class ExtensionTelemetryServiceVerdictHandler {
   // possible that the action is already performed for a verdict, in this case,
   // nothing is done.
   //
-  // |state_map| represents the converted blocklist states from verdicts. For
+  // `state_map` represents the converted blocklist states from verdicts. For
   // each state, the following action is performed:
   // MALWARE - Unloads the extension and adds it to the Extension Telemetry
   // service malware blocklist.
@@ -52,7 +55,7 @@ class ExtensionTelemetryServiceVerdictHandler {
  private:
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistry> registry_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  raw_ptr<ExtensionRegistrar> registrar_ = nullptr;
 };
 
 }  // namespace extensions

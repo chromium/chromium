@@ -15,6 +15,7 @@ namespace ash {
 class ProfilePrefsAuthPolicyConnectorFactory
     : public BrowserContextKeyedServiceFactory {
  public:
+  ProfilePrefsAuthPolicyConnectorFactory();
   static ProfilePrefsAuthPolicyConnector* GetForProfile(Profile* profile);
   static ProfilePrefsAuthPolicyConnectorFactory* GetInstance();
 
@@ -27,11 +28,10 @@ class ProfilePrefsAuthPolicyConnectorFactory
   friend struct base::DefaultSingletonTraits<
       ProfilePrefsAuthPolicyConnectorFactory>;
 
-  ProfilePrefsAuthPolicyConnectorFactory();
   ~ProfilePrefsAuthPolicyConnectorFactory() override;
 
   // BrowserContextKeyedServiceFactory methods:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;

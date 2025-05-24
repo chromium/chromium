@@ -1,4 +1,5 @@
 // META: script=/resources/testdriver.js
+// META: script=/resources/testdriver-vendor.js
 // META: script=/common/utils.js
 // META: script=/common/subset-tests.js
 // META: script=resources/fledge-util.sub.js
@@ -168,15 +169,14 @@ subsetTest(promise_test, async test => {
      window.fence.reportEvent({eventType: "beacon",
                                eventData: status,
                                destination: ["buyer"]});`);
-  await joinInterestGroup(
-      test, uuid,
-      { biddingLogicURL:
-          createBiddingScriptURL({
-              generateBid:
-                  'if (interestGroup.componentAds !== undefined) throw "unexpected componentAds"',
-              reportWin:
-                  `registerAdBeacon({beacon: "${createBidderBeaconURL(uuid)}"});` }),
-        ads: [{renderUrl: renderURL}]});
+  await joinInterestGroup(test, uuid, {
+    biddingLogicURL: createBiddingScriptURL({
+      generateBid:
+          'if (interestGroup.componentAds !== undefined) throw "unexpected componentAds"',
+      reportWin: `registerAdBeacon({beacon: "${createBidderBeaconURL(uuid)}"});`
+    }),
+    ads: [{renderURL: renderURL}]
+  });
   await runBasicFledgeAuctionAndNavigate(
       test, uuid,
       {decisionLogicURL: createDecisionScriptURL(

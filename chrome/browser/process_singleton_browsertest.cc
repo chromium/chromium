@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -127,7 +129,7 @@ class ChromeStarter : public base::RefCountedThreadSafe<ChromeStarter> {
  private:
   friend class base::RefCountedThreadSafe<ChromeStarter>;
 
-  ~ChromeStarter() {}
+  ~ChromeStarter() = default;
 
   base::TimeDelta timeout_;
   base::FilePath user_data_dir_;
@@ -205,8 +207,8 @@ class ProcessSingletonTest : public InProcessBrowserTest {
 
   // The idea is to start chrome from multiple threads all at once.
   static const size_t kNbThreads = 5;
-  scoped_refptr<ChromeStarter> chrome_starters_[kNbThreads];
-  std::unique_ptr<base::Thread> chrome_starter_threads_[kNbThreads];
+  std::array<scoped_refptr<ChromeStarter>, kNbThreads> chrome_starters_;
+  std::array<std::unique_ptr<base::Thread>, kNbThreads> chrome_starter_threads_;
 
   // The event that will get all threads to wake up simultaneously and try
   // to start a chrome process at the same time.
@@ -312,10 +314,9 @@ IN_PROC_BROWSER_TEST_F(ProcessSingletonTest, MAYBE_StartupRaceCondition) {
         // exit code, which we also allow, though it would be ideal if that
         // never happened.
         // TODO(mattm): investigate why PROFILE_IN_USE occurs sometimes.
-        EXPECT_THAT(
-            chrome_starters_[starter_index]->exit_code_,
-            AnyOf(Eq(chrome::RESULT_CODE_PROFILE_IN_USE),
-                  Eq(chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED)));
+        EXPECT_THAT(chrome_starters_[starter_index]->exit_code_,
+                    AnyOf(Eq(CHROME_RESULT_CODE_PROFILE_IN_USE),
+                          Eq(CHROME_RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED)));
       } else {
         // But we let the last loop turn finish so that we can properly
         // kill all remaining processes. Starting with this one...

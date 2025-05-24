@@ -27,7 +27,7 @@ namespace language {
 
 class IOSLanguageDetectionTabHelperTest : public PlatformTest {
  public:
-  IOSLanguageDetectionTabHelperTest() {}
+  IOSLanguageDetectionTabHelperTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();

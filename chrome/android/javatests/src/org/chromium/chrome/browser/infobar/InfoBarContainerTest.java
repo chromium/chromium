@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.infobar;
 
+
 import android.graphics.Rect;
 import android.graphics.Region;
 import android.view.ViewGroup;
@@ -30,12 +31,16 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.RequiresRestart;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.ui.messages.infobar.SimpleConfirmInfoBarBuilder;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -45,6 +50,7 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -66,7 +72,7 @@ public class InfoBarContainerTest {
     // URL takes longer to load for batch tests where the activity is reused across rests
     private static final long EXTENDED_LOAD_TIMEOUT = 10L;
     private static final String MESSAGE_TEXT = "Ding dong. Woof. Translate french? Bears!";
-    private static EmbeddedTestServer sTestServer = sActivityTestRule.getTestServer();
+    private static final EmbeddedTestServer sTestServer = sActivityTestRule.getTestServer();
 
     private static final class TestListener implements SimpleConfirmInfoBarBuilder.Listener {
         public final CallbackHelper dismissedCallback = new CallbackHelper();
@@ -249,6 +255,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/387250786
     public void testQuickAddOneAndDismiss() throws Exception {
         final TestListener infobarListener = addInfoBarToCurrentTab(false);
         Assert.assertEquals(1, sActivityTestRule.getInfoBars().size());
@@ -277,8 +284,16 @@ public class InfoBarContainerTest {
                     infoBar.onCloseButtonClicked();
                     sActivityTestRule
                             .getActivity()
-                            .getTabModelSelector()
-                            .closeTab(sActivityTestRule.getActivity().getActivityTab());
+                            .getCurrentTabModel()
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(
+                                                    sActivityTestRule
+                                                            .getActivity()
+                                                            .getActivityTab())
+                                            .allowUndo(false)
+                                            .build(),
+                                    /* allowDialog= */ false);
                 });
 
         infobarListener.dismissedCallback.waitForCallback(0, 1);
@@ -293,6 +308,7 @@ public class InfoBarContainerTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/40300011
     public void testCloseButton() throws Exception {
         sActivityTestRule.loadUrl(
                 sTestServer.getURL("/chrome/test/data/android/click_listener.html"));
@@ -323,6 +339,7 @@ public class InfoBarContainerTest {
     @MediumTest
     @Feature({"Browser"})
     @RequiresRestart("crbug.com/1242720")
+    @DisableFeatures(ChromeFeatureList.FLOATING_SNACKBAR)
     public void testAddAndDismissSurfaceFlingerOverlays() throws Exception {
         final ViewGroup decorView =
                 (ViewGroup) sActivityTestRule.getActivity().getWindow().getDecorView();
@@ -442,7 +459,7 @@ public class InfoBarContainerTest {
                 () -> {
                     infoBarContainer
                             .getContainerViewForTesting()
-                            .onControlsOffsetChanged(-100, 100, 0, 0, false, false);
+                            .onControlsOffsetChanged(-100, 100, false, 0, 0, false, false, false);
                 });
         Assert.assertNotEquals(
                 0,

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
+
 #include <memory>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_view.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +35,6 @@ class TestAutofillProgressDialogView : public AutofillProgressDialogView {
 
 class AutofillProgressDialogControllerImplTest : public testing::Test {
  public:
-
   base::WeakPtr<AutofillProgressDialogView> CreateDialogView() {
     if (!view_) {
       view_ = std::make_unique<TestAutofillProgressDialogView>();

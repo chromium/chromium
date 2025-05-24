@@ -113,11 +113,11 @@ void ConnectionHandlerImpl::SendMessage(
 
   {
     io::CodedOutputStream coded_output_stream(output_stream_.get());
-    DVLOG(1) << "Writing proto of size " << message.ByteSize();
+    DVLOG(1) << "Writing proto of size " << message.ByteSizeLong();
     int tag = GetMCSProtoTag(message);
     DCHECK_NE(tag, -1);
     coded_output_stream.WriteRaw(&tag, 1);
-    coded_output_stream.WriteVarint32(message.ByteSize());
+    coded_output_stream.WriteVarint32(message.ByteSizeLong());
     message.SerializeToCodedStream(&coded_output_stream);
   }
 
@@ -139,7 +139,7 @@ void ConnectionHandlerImpl::Login(
     io::CodedOutputStream coded_output_stream(output_stream_.get());
     coded_output_stream.WriteRaw(version_byte, 1);
     coded_output_stream.WriteRaw(login_request_tag, 1);
-    coded_output_stream.WriteVarint32(login_request.ByteSize());
+    coded_output_stream.WriteVarint32(login_request.ByteSizeLong());
     login_request.SerializeToCodedStream(&coded_output_stream);
   }
 

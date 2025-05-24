@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 
 class ExtensionInstallPrompt;
 class Profile;

@@ -9,7 +9,6 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -18,6 +17,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.LoggingParameters;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.SurfaceHeaderOffsetObserver;
@@ -26,6 +27,7 @@ import org.chromium.url.GURL;
 
 /** Provides activity, darkmode and logging context for a single surface. */
 @JNINamespace("feed::android")
+@NullMarked
 public class FeedSurfaceScopeDependencyProviderImpl
         implements org.chromium.chrome.browser.xsurface.feed.FeedSurfaceScopeDependencyProvider,
                 ScrollListener {
@@ -33,14 +35,14 @@ public class FeedSurfaceScopeDependencyProviderImpl
         public boolean success;
         public int statusCode;
         public String[] headerNameAndValues;
-        public @Nullable byte[] rawData;
+        public byte @Nullable [] rawData;
 
         @CalledByNative("NetworkResponse")
         public NetworkResponse(
                 boolean success,
                 int statusCode,
                 String[] headerNameAndValues,
-                @Nullable byte[] rawData) {
+                byte @Nullable [] rawData) {
             this.success = success;
             this.statusCode = statusCode;
             this.headerNameAndValues = headerNameAndValues;
@@ -136,7 +138,7 @@ public class FeedSurfaceScopeDependencyProviderImpl
                 GURL url,
                 String method,
                 String[] headerNameAndValues,
-                byte[] postData,
+                byte @Nullable [] postData,
                 Callback<NetworkResponse> callback);
     }
 }

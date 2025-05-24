@@ -9,7 +9,6 @@
 
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/memory/weak_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -311,6 +310,13 @@ class InteractiveAshTest
   // instrumented WebUI identified by `element_id` and have a display style of
   // `none`, indicating that the element is not visible.
   InteractiveTestApi::MultiStep WaitForElementDisplayNone(
+      const ui::ElementIdentifier& element_id,
+      WebContentsInteractionTestUtil::DeepQuery element);
+
+  // Waits for an element identified by `query` to both exist in the DOM of an
+  // instrumented WebUI identified by `element_id` and not to have a display
+  // style of `none`, indicating that the element is visible.
+  InteractiveTestApi::MultiStep WaitForElementDisplayNotNone(
       const ui::ElementIdentifier& element_id,
       WebContentsInteractionTestUtil::DeepQuery element);
 

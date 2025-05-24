@@ -52,7 +52,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, Append) {
 
   Vector<char> chunk(8, 'x');
 
-  chunks->Append(base::make_span(chunk));
+  chunks->Append(base::span(chunk));
 
   EXPECT_EQ(chunks->GetSize(), chunk.size());
   EXPECT_EQ(8u, chunks->GetSize());
@@ -69,7 +69,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendChunkWithInternalChunkSize) {
 
   Vector<char> chunk(kSegmentSize, 'y');
 
-  chunks->Append(base::make_span(chunk));
+  chunks->Append(base::span(chunk));
 
   EXPECT_EQ(chunks->GetSize(), chunk.size());
   ASSERT_EQ(chunks->GetView().size(), 1u);
@@ -85,7 +85,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendLargeChunk) {
 
   Vector<char> chunk(kSegmentSize * 2 + 2, 'y');
 
-  chunks->Append(base::make_span(chunk));
+  chunks->Append(base::span(chunk));
 
   EXPECT_EQ(chunks->GetSize(), chunk.size());
   ASSERT_EQ(chunks->GetView().size(), 3u);
@@ -111,7 +111,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   // This will grow over time.
   Vector<char> expected;
 
-  chunks->Append(base::make_span(chunk1));
+  chunks->Append(base::span(chunk1));
   expected.AppendVector(chunk1);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
@@ -119,7 +119,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(chunks->GetView()[0].size(), 8u);
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
-  chunks->Append(base::make_span(chunk2));
+  chunks->Append(base::span(chunk2));
   expected.AppendVector(chunk2);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
@@ -127,7 +127,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(chunks->GetView()[0].size(), 12u);
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
-  chunks->Append(base::make_span(chunk3));
+  chunks->Append(base::span(chunk3));
   expected.AppendVector(chunk3);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
@@ -135,7 +135,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(chunks->GetView()[0].size(), 12u);
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
-  chunks->Append(base::make_span(chunk4));
+  chunks->Append(base::span(chunk4));
   expected.AppendVector(chunk4);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
@@ -145,7 +145,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(chunks->GetView()[2].size(), kSegmentSize);
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
-  chunks->Append(base::make_span(chunk5));
+  chunks->Append(base::span(chunk5));
   expected.AppendVector(chunk5);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
@@ -156,7 +156,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, AppendRepeatedly) {
   ASSERT_EQ(chunks->GetView()[3].size(), 6u);
   ASSERT_EQ(Flatten(chunks->GetView()), expected);
 
-  chunks->Append(base::make_span(chunk6));
+  chunks->Append(base::span(chunk6));
   expected.AppendVector(chunk6);
 
   EXPECT_EQ(chunks->GetSize(), expected.size());
@@ -184,7 +184,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, ClearAndAppend) {
   ASSERT_EQ(chunks->GetView().size(), 0u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 0u);
 
-  chunks->Append(base::make_span(chunk1));
+  chunks->Append(base::span(chunk1));
 
   EXPECT_EQ(chunks->GetSize(), 8u);
   ASSERT_EQ(chunks->GetView().size(), 1u);
@@ -197,7 +197,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, ClearAndAppend) {
   ASSERT_EQ(chunks->GetView().size(), 0u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 1u);
 
-  chunks->Append(base::make_span(chunk2));
+  chunks->Append(base::span(chunk2));
 
   EXPECT_EQ(chunks->GetSize(), 3u);
   ASSERT_EQ(chunks->GetView().size(), 1u);
@@ -223,7 +223,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, ClearTimer) {
   ASSERT_EQ(chunks->GetView().size(), 0u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 0u);
 
-  chunks->Append(base::make_span(chunk1));
+  chunks->Append(base::span(chunk1));
 
   ASSERT_EQ(chunks->GetView().size(), 4u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 0u);
@@ -236,7 +236,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, ClearTimer) {
   ASSERT_EQ(chunks->GetView().size(), 0u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 4u);
 
-  chunks->Append(base::make_span(chunk2));
+  chunks->Append(base::span(chunk2));
 
   ASSERT_EQ(chunks->GetView().size(), 3u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 1u);
@@ -257,7 +257,7 @@ TEST_F(WebSocketMessageChunkAccumulatorTest, ClearTimer) {
   ASSERT_EQ(chunks->GetView().size(), 0u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 3u);
 
-  chunks->Append(base::make_span(chunk3));
+  chunks->Append(base::span(chunk3));
 
   ASSERT_EQ(chunks->GetView().size(), 1u);
   EXPECT_EQ(chunks->GetPoolSizeForTesting(), 2u);

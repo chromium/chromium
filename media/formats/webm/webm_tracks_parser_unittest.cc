@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/formats/webm/webm_tracks_parser.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/logging.h"
@@ -187,7 +183,7 @@ TEST_F(WebMTracksParserTest, PrecisionCapping) {
     base::TimeDelta expected_result;
   };
 
-  const CappingCases kCappingCases[] = {
+  const auto kCappingCases = std::to_array<CappingCases>({
       {kOneMsInNs, -1, kNoTimestamp},
       {kOneMsInNs, 0, kNoTimestamp},
       {kOneMsInNs, 1, kNoTimestamp},
@@ -208,7 +204,7 @@ TEST_F(WebMTracksParserTest, PrecisionCapping) {
       {1, 2000, base::Microseconds(2)},
 
       {64, 1792, base::Microseconds(1)},
-  };
+  });
 
   auto parser = std::make_unique<WebMTracksParser>(&media_log_);
   ;

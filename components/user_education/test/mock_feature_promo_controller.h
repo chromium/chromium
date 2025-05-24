@@ -7,10 +7,10 @@
 
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_data.h"
-#include "components/user_education/common/feature_promo_specification.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
+#include "components/user_education/common/user_education_data.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace user_education::test {
@@ -25,12 +25,9 @@ class MockFeaturePromoController : public FeaturePromoController {
               CanShowPromo,
               (const FeaturePromoParams&),
               (const, override));
-  MOCK_METHOD(FeaturePromoResult,
-              MaybeShowPromo,
-              (FeaturePromoParams),
-              (override));
-  MOCK_METHOD(bool, MaybeShowStartupPromo, (FeaturePromoParams), (override));
-  MOCK_METHOD(FeaturePromoResult,
+  MOCK_METHOD(void, MaybeShowPromo, (FeaturePromoParams), (override));
+  MOCK_METHOD(void, MaybeShowStartupPromo, (FeaturePromoParams), (override));
+  MOCK_METHOD(void,
               MaybeShowPromoForDemoPage,
               (FeaturePromoParams),
               (override));

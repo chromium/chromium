@@ -134,8 +134,7 @@ class FlossRenameBluetoothDeviceInteractiveUiTest
   FlossRenameBluetoothDeviceInteractiveUiTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{floss::features::kFlossEnabled},
-        /*disabled_features=*/{
-            floss::features::kFlossIsAvailabilityCheckNeeded});
+        /*disabled_features=*/{});
   }
 };
 

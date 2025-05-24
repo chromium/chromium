@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "cc/scheduler/scheduler.h"
 
 #include <stddef.h>
@@ -26,7 +31,9 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
+#include "cc/metrics/dropped_frame_counter.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/test/fake_compositor_frame_reporting_controller.h"
 #include "cc/test/scheduler_test_common.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -195,7 +202,6 @@ class FakeSchedulerClient : public SchedulerClient,
     last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
     return DrawResult::kSuccess;
   }
-  void ScheduledActionUpdateDisplayTree() override { NOTIMPLEMENTED(); }
   void ScheduledActionCommit() override {
     EXPECT_FALSE(inside_action_);
     base::AutoReset<bool> mark_inside(&inside_action_, true);
@@ -370,7 +376,8 @@ class SchedulerTest : public testing::Test {
  public:
   SchedulerTest()
       : task_runner_(base::MakeRefCounted<SchedulerTestTaskRunner>()),
-        fake_external_begin_frame_source_(nullptr) {}
+        fake_external_begin_frame_source_(nullptr),
+        tracker_collection_(false, &dropped_counter) {}
 
   ~SchedulerTest() override { client_->set_scheduler(nullptr); }
 
@@ -407,6 +414,9 @@ class SchedulerTest : public testing::Test {
     fake_compositor_timing_history_ = fake_compositor_timing_history.get();
     reporting_controller =
         std::make_unique<FakeCompositorFrameReportingController>();
+    reporting_controller->SetFrameSorter(&frame_sorter);
+    reporting_controller->SetFrameSequenceTrackerCollection(
+        &tracker_collection_);
     reporting_controller->SetDroppedFrameCounter(&dropped_counter);
 
     scheduler_ = std::make_unique<TestScheduler>(
@@ -578,6 +588,19 @@ class SchedulerTest : public testing::Test {
     fake_compositor_timing_history_->SetDrawDurationEstimate(base::TimeDelta());
   }
 
+  void SendTestBeginFrameAfterInterval(base::TimeDelta interval,
+                                       uint64_t source_id,
+                                       uint64_t sequence_number) {
+    scheduler_->SetNeedsRedraw();
+    task_runner_->AdvanceMockTickClock(interval);
+    viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, source_id, sequence_number,
+        task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+        viz::BeginFrameArgs::NORMAL);
+    fake_external_begin_frame_source_->TestOnBeginFrame(args);
+    EXPECT_EQ(client_->frame_interval(), interval);
+  }
+
   void AdvanceAndMissOneFrame();
   void CheckMainFrameNotSkippedAfterLateCommit();
   void ImplFrameNotSkippedAfterLateAck();
@@ -597,6 +620,12 @@ class SchedulerTest : public testing::Test {
   std::unique_ptr<TestScheduler> scheduler_;
   raw_ptr<FakeCompositorTimingHistory> fake_compositor_timing_history_;
   DroppedFrameCounter dropped_counter;
+  FrameSequenceTrackerCollection tracker_collection_;
+  FrameSorter frame_sorter;
+  // Since CFRC destructor cleans up the FrameSorter's
+  // registered observers (in this case, DFC and FSTC)
+  // it needs to be declared last so that it will be
+  // cleaned up first.
   std::unique_ptr<CompositorFrameReportingController> reporting_controller;
 };
 
@@ -859,10 +888,7 @@ class SchedulerClientThatsetNeedsDrawInsideDraw : public FakeSchedulerClient {
     return FakeSchedulerClient::ScheduledActionDrawIfPossible();
   }
 
-  DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED_IN_MIGRATION();
-    return DrawResult::kSuccess;
-  }
+  DrawResult ScheduledActionDrawForced() override { NOTREACHED(); }
 
  private:
   bool request_redraws_;
@@ -966,10 +992,7 @@ class SchedulerClientThatSetNeedsBeginMainFrameInsideDraw
     return FakeSchedulerClient::ScheduledActionDrawIfPossible();
   }
 
-  DrawResult ScheduledActionDrawForced() override {
-    NOTREACHED_IN_MIGRATION();
-    return DrawResult::kSuccess;
-  }
+  DrawResult ScheduledActionDrawForced() override { NOTREACHED(); }
 
   void SetNeedsBeginMainFrameOnNextDraw() {
     set_needs_commit_on_next_draw_ = true;
@@ -1566,6 +1589,78 @@ TEST_F(SchedulerTest, FrameIntervalUpdated) {
       viz::BeginFrameArgs::NORMAL);
   fake_external_begin_frame_source_->TestOnBeginFrame(args4);
   EXPECT_EQ(client_->frame_interval(), interval);
+}
+
+TEST_F(SchedulerTest, BeginMainFrameThrottling) {
+  // Verify that the SchedulerClient gets updates when the begin frame interval
+  // changes.
+  SetUpScheduler(EXTERNAL_BFS);
+  constexpr uint64_t kSourceId = viz::BeginFrameArgs::kStartingSourceId;
+  uint64_t sequence_number = viz::BeginFrameArgs::kStartingFrameNumber;
+
+  // No throttling at 60Hz.
+  base::TimeDelta interval = base::Hertz(60);
+  scheduler_->SetNeedsRedraw();
+  task_runner_->AdvanceMockTickClock(interval);
+  viz::BeginFrameArgs args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+      task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  fake_external_begin_frame_source_->TestOnBeginFrame(args);
+  EXPECT_EQ(client_->frame_interval(), interval);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kThrottleMainFrameTo60Hz);
+
+    // No throttling when the feature is disabled.
+    interval = base::Hertz(240);
+    scheduler_->SetNeedsRedraw();
+    task_runner_->AdvanceMockTickClock(interval);
+    args = viz::BeginFrameArgs::Create(
+        BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+        task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+        viz::BeginFrameArgs::NORMAL);
+    fake_external_begin_frame_source_->TestOnBeginFrame(args);
+    EXPECT_EQ(client_->frame_interval(), interval);
+    EXPECT_TRUE(
+        scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+  }
+
+  // Enable the feature for the rest of the test.
+  base::test::ScopedFeatureList feature_list{
+      features::kThrottleMainFrameTo60Hz};
+
+  // Throttling at 120fps.
+  interval = base::Hertz(120);
+  scheduler_->SetNeedsRedraw();
+  task_runner_->AdvanceMockTickClock(interval);
+  args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+      task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  fake_external_begin_frame_source_->TestOnBeginFrame(args);
+  EXPECT_EQ(client_->frame_interval(), interval);
+  constexpr float kSlackFactor = .9;
+  EXPECT_NEAR(scheduler_->state_machine()
+                  .MainFrameThrottledInterval()
+                  .InMillisecondsF(),
+              (base::Hertz(60) * kSlackFactor).InMillisecondsF(), 1e-2);
+
+  // Not at 90Hz.
+  interval = base::Hertz(90);
+  scheduler_->SetNeedsRedraw();
+  task_runner_->AdvanceMockTickClock(interval);
+  args = viz::BeginFrameArgs::Create(
+      BEGINFRAME_FROM_HERE, kSourceId, sequence_number++,
+      task_runner_->NowTicks(), task_runner_->NowTicks() + interval, interval,
+      viz::BeginFrameArgs::NORMAL);
+  fake_external_begin_frame_source_->TestOnBeginFrame(args);
+  EXPECT_EQ(client_->frame_interval(), interval);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
 }
 
 TEST_F(SchedulerTest, MainFrameNotSkippedAfterLateCommit) {
@@ -4038,20 +4133,54 @@ TEST_F(SchedulerTest,
   EXPECT_ACTIONS("WillBeginImplFrame");
 }
 
-class WarmUpCompositorSchedulerTest : public SchedulerTest {
- public:
-  WarmUpCompositorSchedulerTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kWarmUpCompositor);
-  }
+TEST_F(SchedulerTest, ProactiveThrottling) {
+  // Verify that the SchedulerClient gets updates when the begin frame interval
+  // changes.
+  SetUpScheduler(EXTERNAL_BFS);
+  constexpr uint64_t kSourceId = viz::BeginFrameArgs::kStartingSourceId;
+  uint64_t sequence_number = viz::BeginFrameArgs::kStartingFrameNumber;
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+  // Enable the proactive throttling feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kRenderThrottleFrameRate,
+      {{"render-throttled-frame-interval-hz", "30"}});
+  base::TimeDelta throttled_interval =
+      base::Hertz(features::kRenderThrottledFrameIntervalHz.Get());
+
+  // No throttling by default.
+  base::TimeDelta interval = base::Hertz(120);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+
+  scheduler_->SetShouldThrottleFrameRate(true);
+
+  // Throttling at 60fps.
+  interval = base::Hertz(60);
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_EQ(scheduler_->state_machine().MainFrameThrottledInterval(),
+            throttled_interval);
+
+  // Not at 10fps.
+  interval = base::Hertz(10);
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+
+  // Not throttling after stopping the throttle.
+  scheduler_->SetShouldThrottleFrameRate(false);
+  interval = base::Hertz(60);
+  SendTestBeginFrameAfterInterval(interval, kSourceId, sequence_number++);
+  EXPECT_TRUE(
+      scheduler_->state_machine().MainFrameThrottledInterval().is_zero());
+}
 
 // Tests that `SetShouldWarmUp()` will start initial `LayerTreeFrameSink`
 // creation even if invisible.
-TEST_F(WarmUpCompositorSchedulerTest,
-       SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
+TEST_F(SchedulerTest, SetShouldWarmUpWillStartLayerTreeFrameSinkCreation) {
   SetUpSchedulerWithNoLayerTreeFrameSink(EXTERNAL_BFS);
   scheduler_->SetVisible(false);
 

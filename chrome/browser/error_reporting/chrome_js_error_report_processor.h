@@ -20,6 +20,7 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"
+#include "components/crash/core/app/client_upload_info.h"
 
 namespace base {
 class Process;
@@ -116,7 +117,7 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   std::optional<JavaScriptErrorReport> CheckConsentAndRedact(
       JavaScriptErrorReport error_report);
 
-  PlatformInfo GetPlatformInfo();
+  crash_reporter::ProductInfo GetProductInfo();
 
   void SendReport(const GURL& url,
                   const std::string& body,

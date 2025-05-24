@@ -25,8 +25,7 @@ OptimizationGuideValidationTabHelper::OptimizationGuideValidationTabHelper(
 
   if (OptimizationGuideService* optimization_guide_service =
           OptimizationGuideServiceFactory::GetForProfile(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))) {
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState()))) {
     optimization_guide_service->RegisterOptimizationTypes(
         {optimization_guide::proto::METADATA_FETCH_VALIDATION,
          optimization_guide::proto::BLOOM_FILTER_VALIDATION});
@@ -45,17 +44,20 @@ void OptimizationGuideValidationTabHelper::DidFinishNavigation(
       optimization_guide::features::kOptimizationGuideMetadataValidation));
 
   // Ignore non-committed navigations such as Downloads, etc.
-  if (!navigation_context->HasCommitted())
+  if (!navigation_context->HasCommitted()) {
     return;
+  }
 
-  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS())
+  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   OptimizationGuideService* optimization_guide_service =
       OptimizationGuideServiceFactory::GetForProfile(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
-  if (!optimization_guide_service)
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
+  if (!optimization_guide_service) {
     return;
+  }
 
   // Async.
   optimization_guide_service->CanApplyOptimization(
@@ -86,8 +88,9 @@ void OptimizationGuideValidationTabHelper::
   DCHECK(base::FeatureList::IsEnabled(
       optimization_guide::features::kOptimizationGuideMetadataValidation));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (decision != optimization_guide::OptimizationGuideDecision::kTrue)
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
     return;
+  }
 
   auto expected_metadata =
       optimization_guide::features::ShouldMetadataValidationFetchHostKeyed()
@@ -100,5 +103,3 @@ void OptimizationGuideValidationTabHelper::
       "OptimizationGuide.MetadataFetchValidation.Result",
       string_metadata && string_metadata->value() == expected_metadata);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(OptimizationGuideValidationTabHelper)

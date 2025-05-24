@@ -519,7 +519,7 @@ TEST_F(TailoredSecurityServiceTest, NotifiesSyncForDisabled) {
   tailored_security_service()->SetNotifySyncUserCallback(
       run_loop.QuitClosure());
   SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION,
-                       /*is_esb_enabled_in_sync=*/true);
+                       /*is_esb_enabled_by_account_integration=*/true);
   prefs()->SetTime(prefs::kAccountTailoredSecurityUpdateTimestamp,
                    base::Time::Now());
   run_loop.Run();
@@ -528,82 +528,33 @@ TEST_F(TailoredSecurityServiceTest, NotifiesSyncForDisabled) {
 }
 
 TEST_F(TailoredSecurityServiceTest,
-       RetryEnabledTimestampUpdateCallbackSetsStateToRetryNeeded) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {safe_browsing::kTailoredSecurityRetryForSyncUsers}, {});
-  {
-    tailored_security_service()->SetExpectedURL(
-        GURL(kQueryTailoredSecurityServiceUrl));
-    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
+       RetryLogicTimestampUpdateCallbackSetsStateToRetryNeeded) {
+  tailored_security_service()->SetExpectedURL(
+      GURL(kQueryTailoredSecurityServiceUrl));
+  tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
 
-    EXPECT_NE(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              TailoredSecurityRetryState::RETRY_NEEDED);
+  EXPECT_NE(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            TailoredSecurityRetryState::RETRY_NEEDED);
 
-    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
+  tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
 
-    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              TailoredSecurityRetryState::RETRY_NEEDED);
-  }
-}
-
-TEST_F(TailoredSecurityServiceTest, RetryDisabledStateRemainsUnset) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {}, {safe_browsing::kTailoredSecurityRetryForSyncUsers});
-  {
-    tailored_security_service()->SetExpectedURL(
-        GURL(kQueryTailoredSecurityServiceUrl));
-    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
-
-    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              TailoredSecurityRetryState::UNSET);
-
-    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
-
-    EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
-              TailoredSecurityRetryState::UNSET);
-  }
+  EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
+            TailoredSecurityRetryState::RETRY_NEEDED);
 }
 
 TEST_F(TailoredSecurityServiceTest,
-       RetryEnabledTimestampUpdateCallbackRecordsStartTime) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {safe_browsing::kTailoredSecurityRetryForSyncUsers}, {});
-  {
-    tailored_security_service()->SetExpectedURL(
-        GURL(kQueryTailoredSecurityServiceUrl));
-    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
+       RetryLogicTimestampUpdateCallbackRecordsStartTime) {
+  tailored_security_service()->SetExpectedURL(
+      GURL(kQueryTailoredSecurityServiceUrl));
+  tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
 
-    EXPECT_NE(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
-              base::Time::Now());
+  EXPECT_NE(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
+            base::Time::Now());
 
-    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
+  tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
 
-    EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
-              base::Time::Now());
-  }
-}
-
-TEST_F(TailoredSecurityServiceTest,
-       RetryDisabledTimestampUpdateCallbackDoesNotRecordStartTime) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {}, {safe_browsing::kTailoredSecurityRetryForSyncUsers});
-  {
-    tailored_security_service()->SetExpectedURL(
-        GURL(kQueryTailoredSecurityServiceUrl));
-    tailored_security_service()->SetExpectedTailoredSecurityServiceValue(true);
-
-    EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
-              base::Time());
-
-    tailored_security_service()->TailoredSecurityTimestampUpdateCallback();
-
-    EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
-              base::Time());
-  }
+  EXPECT_EQ(prefs()->GetTime(prefs::kTailoredSecuritySyncFlowLastRunTime),
+            base::Time::Now());
 }
 
 TEST_F(TailoredSecurityServiceTest,

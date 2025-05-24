@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.xsurface;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import java.util.Map;
  *
  * Models after a RecyclerView.Adapter.
  */
+@NullMarked
 public interface ListContentManager {
     /** Returns whether the item at index is a native view or not. */
     default boolean isNativeView(int index) {
@@ -31,8 +33,7 @@ public interface ListContentManager {
     }
 
     /** Returns map of values which should go in the context of an external view. */
-    @Nullable
-    default Map<String, Object> getContextValues(int index) {
+    default @Nullable Map<String, Object> getContextValues(int index) {
         return null;
     }
 
@@ -42,7 +43,7 @@ public interface ListContentManager {
      * View should not be attached to parent. {@link bindNativeView} will
      * be called later to attach more information to the view.
      */
-    default View getNativeView(int viewType, ViewGroup parent) {
+    default @Nullable View getNativeView(int viewType, ViewGroup parent) {
         return null;
     }
 

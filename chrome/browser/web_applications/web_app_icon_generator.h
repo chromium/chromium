@@ -15,7 +15,6 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/image/image_skia.h"
-#include "url/gurl.h"
 
 namespace web_app {
 
@@ -39,14 +38,14 @@ enum {
 }  // namespace icon_size
 
 #if BUILDFLAG(IS_MAC)
-constexpr int kInstallIconSize = icon_size::k96;
-constexpr int kLauncherIconSize = icon_size::k256;
+inline constexpr int kInstallIconSize = icon_size::k96;
+inline constexpr int kLauncherIconSize = icon_size::k256;
 #elif BUILDFLAG(IS_CHROMEOS)
-constexpr int kInstallIconSize = icon_size::k96;
-constexpr int kLauncherIconSize = icon_size::k128;
+inline constexpr int kInstallIconSize = icon_size::k96;
+inline constexpr int kLauncherIconSize = icon_size::k128;
 #else
-constexpr int kInstallIconSize = icon_size::k48;
-constexpr int kLauncherIconSize = icon_size::k128;
+inline constexpr int kInstallIconSize = icon_size::k48;
+inline constexpr int kLauncherIconSize = icon_size::k128;
 #endif
 
 using SizeToBitmap = std::map<SquareSizePx, SkBitmap>;

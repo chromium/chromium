@@ -22,11 +22,11 @@ namespace {
 // Type of notification expected in test.
 enum NotificationType {
   // Default value.
-  NONE,
+  kNone,
   // OnInitialConnectionType() notification.
   INITIAL,
   // OnNetworkChanged() notification.
-  NETWORK_CHANGED,
+  kNetworkChanged,
 };
 
 class TestNetworkChangeManagerClient
@@ -36,7 +36,7 @@ class TestNetworkChangeManagerClient
       NetworkChangeManager* network_change_manager)
       : num_network_changed_(0),
         run_loop_(std::make_unique<base::RunLoop>()),
-        notification_type_to_wait_(NONE),
+        notification_type_to_wait_(kNone),
         connection_type_(mojom::ConnectionType::CONNECTION_UNKNOWN) {
     mojo::Remote<mojom::NetworkChangeManager> manager;
     network_change_manager->AddReceiver(manager.BindNewPipeAndPassReceiver());
@@ -63,8 +63,9 @@ class TestNetworkChangeManagerClient
   void OnNetworkChanged(mojom::ConnectionType type) override {
     num_network_changed_++;
     connection_type_ = type;
-    if (notification_type_to_wait_ == NETWORK_CHANGED)
+    if (notification_type_to_wait_ == kNetworkChanged) {
       run_loop_->Quit();
+    }
   }
 
   // Returns the number of OnNetworkChanged() notifications.
@@ -125,7 +126,7 @@ class NetworkChangeManagerTest : public testing::Test {
 TEST_F(NetworkChangeManagerTest, ClientNotified) {
   // Simulate a new network change.
   SimulateNetworkChange(net::NetworkChangeNotifier::CONNECTION_3G);
-  network_change_manager_client()->WaitForNotification(NETWORK_CHANGED);
+  network_change_manager_client()->WaitForNotification(kNetworkChanged);
   EXPECT_EQ(mojom::ConnectionType::CONNECTION_3G,
             network_change_manager_client()->connection_type());
   base::RunLoop().RunUntilIdle();
@@ -140,8 +141,8 @@ TEST_F(NetworkChangeManagerTest, OneClientPipeBroken) {
   // Simulate a network change.
   SimulateNetworkChange(net::NetworkChangeNotifier::CONNECTION_WIFI);
 
-  network_change_manager_client()->WaitForNotification(NETWORK_CHANGED);
-  network_change_manager_client2->WaitForNotification(NETWORK_CHANGED);
+  network_change_manager_client()->WaitForNotification(kNetworkChanged);
+  network_change_manager_client2->WaitForNotification(kNetworkChanged);
   EXPECT_EQ(mojom::ConnectionType::CONNECTION_WIFI,
             network_change_manager_client2->connection_type());
   base::RunLoop().RunUntilIdle();
@@ -159,7 +160,7 @@ TEST_F(NetworkChangeManagerTest, OneClientPipeBroken) {
   // notified.
   SimulateNetworkChange(net::NetworkChangeNotifier::CONNECTION_2G);
 
-  network_change_manager_client()->WaitForNotification(NETWORK_CHANGED);
+  network_change_manager_client()->WaitForNotification(kNetworkChanged);
   EXPECT_EQ(mojom::ConnectionType::CONNECTION_2G,
             network_change_manager_client()->connection_type());
   EXPECT_EQ(2u, network_change_manager_client()->num_network_changed());
@@ -169,7 +170,7 @@ TEST_F(NetworkChangeManagerTest, NewClientReceivesCurrentType) {
   // Simulate a network change.
   SimulateNetworkChange(net::NetworkChangeNotifier::CONNECTION_BLUETOOTH);
 
-  network_change_manager_client()->WaitForNotification(NETWORK_CHANGED);
+  network_change_manager_client()->WaitForNotification(kNetworkChanged);
   EXPECT_EQ(mojom::ConnectionType::CONNECTION_BLUETOOTH,
             network_change_manager_client()->connection_type());
   base::RunLoop().RunUntilIdle();

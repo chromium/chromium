@@ -11,18 +11,31 @@ namespace disk_cache {
 
 // Short rules helping to think about data upgrades within Simple Cache:
 //   * ALL changes of on-disk data format, backward-compatible or not,
-//     forward-compatible or not, require updating the |kSimpleVersion|.
+//     forward-compatible or not, require updating the `kSimpleVersion`.
+//   * Update `kSimpleIndexFileVersion`, `kSimpleSparseEntryVersion` or
+//     `kSimpleEntryVersionOnDisk` which corresponds to the upgraded format.
 //   * All cache Upgrades are performed on backend start, must be finished
 //     before the new backend starts processing any incoming operations.
 //   * If the Upgrade is not implemented for transition from
-//     |kSimpleVersion - 1| then the whole cache directory will be cleared.
+//     `kSimpleVersion - 1` then the whole cache directory will be cleared.
 //   * Dropping cache data on disk or some of its parts can be a valid way to
 //     Upgrade.
-const uint32_t kLastCompatSparseVersion = 7;
+//
+// Use `kSimpleVersion` for the fake index file.
 const uint32_t kSimpleVersion = 9;
 
+// The version of the index file. Must be updated iff the index format changes.
+const uint32_t kSimpleIndexFileVersion = 9;
+
+// Minimum version to support upgrade for the index file.
+const uint32_t kMinSimpleIndexFileVersionSupported = 8;
+
+// The version of the sparse entry file. Must be updated iff the sparse file
+// format changes.
+const uint32_t kSimpleSparseEntryVersion = 9;
+
 // The version of the entry file(s) as written to disk. Must be updated iff the
-// entry format changes with the overall backend version update.
+// entry format changes.
 const uint32_t kSimpleEntryVersionOnDisk = 5;
 
 }  // namespace disk_cache

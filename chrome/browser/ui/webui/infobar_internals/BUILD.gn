@@ -1,0 +1,53 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojo_bindings") {
+  sources = [ "infobar_internals.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+}
+
+source_set("infobar_internals") {
+  sources = [ "infobar_internals_ui.h" ]
+
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
+
+  deps = [
+    "//chrome/browser/ui/webui/infobar_internals:mojo_bindings",
+    "//chrome/common",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "infobar_internals_handler.cc",
+    "infobar_internals_handler.h",
+    "infobar_internals_ui.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":infobar_internals",
+    ":mojo_bindings",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/resources/infobar_internals:resources",
+    "//content/public/browser",
+  ]
+
+  if (is_win && is_chrome_branded) {
+    deps += [
+      "//chrome/browser/win/installer_downloader:controller",
+      "//chrome/browser/win/installer_downloader:prefs",
+    ]
+  }
+}

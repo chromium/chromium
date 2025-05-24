@@ -4,15 +4,22 @@
 
 #include "components/omnibox/browser/open_tab_provider.h"
 
+#include <algorithm>
+
 #include "base/i18n/case_conversion.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/omnibox/browser/suggestion_group_util.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/browser_ui/util/android/url_constants.h"
+#endif
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
 #include "components/omnibox/browser/keyword_provider.h"
+#include "components/omnibox/browser/match_compare.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/scoring_functor.h"
 #include "components/omnibox/browser/tab_matcher.h"
@@ -20,14 +27,33 @@
 #include "components/search_engines/template_url.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
+#include "content/public/common/url_constants.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace {
 
-int Score(const query_parser::QueryNodeVector& input_query_nodes,
-          const std::u16string& title,
-          const GURL& url) {
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+
+int Score(const AutocompleteInput& input,
+          const query_parser::QueryNodeVector& input_query_nodes,
+          const TabMatcher::TabWrapper tab) {
+// For Hub Search, remove both ZPS and search suggestions that involve open
+// chrome prefixed tabs.
+#if BUILDFLAG(IS_ANDROID)
+  if (input.current_page_classification() ==
+          ::metrics::OmniboxEventProto::ANDROID_HUB &&
+      (tab.url.SchemeIs(browser_ui::kChromeUINativeScheme) ||
+       tab.url.SchemeIs(content::kChromeUIScheme))) {
+    return 0;
+  }
+#endif
+
+  if ((input.IsZeroSuggest() || input.text().empty()) && is_android) {
+    return omnibox::kOpenTabMatchZeroSuggestRelevance +
+           tab.last_shown_time.InSecondsFSinceUnixEpoch();
+  }
   // TODO(crbug.com/40211187): The bookmark provider also uses on `query_parser`
   // and
   //  `ScoringFunctor` to compute its scores. However, it uses normalized match
@@ -36,20 +62,20 @@ int Score(const query_parser::QueryNodeVector& input_query_nodes,
   //  should either verify it's unnecessary here, or do likewise here.
 
   // Extract query words from the title.
-  const std::u16string lower_title = base::i18n::ToLower(title);
+  const std::u16string lower_title = base::i18n::ToLower(tab.title);
   query_parser::QueryWordVector title_words;
   query_parser::QueryParser::ExtractQueryWords(lower_title, &title_words);
 
   // Extract query words from the URL.
   const std::u16string lower_url =
-      base::i18n::ToLower(base::UTF8ToUTF16(url.spec()));
+      base::i18n::ToLower(base::UTF8ToUTF16(tab.url.spec()));
   query_parser::QueryWordVector url_words;
   query_parser::QueryParser::ExtractQueryWords(lower_url, &url_words);
 
   // Every input term must be included in either (or both) the title or URL.
   query_parser::Snippet::MatchPositions title_matches;
   query_parser::Snippet::MatchPositions url_matches;
-  if (!base::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
+  if (!std::ranges::all_of(input_query_nodes, [&](const auto& query_node) {
         // Using local vars so to not short circuit adding URL matches when
         // title matches are found.
         const bool has_title_match =
@@ -80,6 +106,17 @@ int Score(const query_parser::QueryNodeVector& input_query_nodes,
   return normalized_factors * kMaxScore;
 }
 
+bool ShouldRunProvider(AutocompleteProviderClient* client,
+                       const AutocompleteInput& input,
+                       const AutocompleteInput& adjusted_input) {
+  bool zps_or_empty = input.IsZeroSuggest() || input.text().empty();
+  if (is_android) {
+    return !zps_or_empty || !client->IsIncognitoProfile();
+  } else {
+    return !zps_or_empty;
+  }
+}
+
 }  // namespace
 
 OpenTabProvider::OpenTabProvider(AutocompleteProviderClient* client)
@@ -91,16 +128,13 @@ OpenTabProvider::~OpenTabProvider() = default;
 void OpenTabProvider::Start(const AutocompleteInput& input,
                             bool minimal_changes) {
   matches_.clear();
-  if (input.IsZeroSuggest() || input.text().empty()) {
-    return;
-  }
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto [adjusted_input, template_url] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client_->GetTemplateURLService());
-  if (adjusted_input.text().empty()) {
+      AdjustInputForStarterPackKeyword(input, client_->GetTemplateURLService());
+
+  if (!ShouldRunProvider(client_, input, adjusted_input)) {
     return;
   }
 
@@ -115,12 +149,12 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
       &input_query_nodes);
 
   // Perform basic substring matching on the query terms.
-  for (auto& open_tab : client_->GetTabMatcher().GetOpenTabs()) {
+  for (auto& open_tab : client_->GetTabMatcher().GetOpenTabs(&input)) {
     const GURL& url = open_tab.url;
     if (!url.is_valid()) {
       continue;
     }
-    int score = Score(input_query_nodes, open_tab.title, url);
+    int score = Score(input, input_query_nodes, open_tab);
     if (score > 0) {
       matches_.push_back(CreateOpenTabMatch(adjusted_input, open_tab.title, url,
                                             score, template_url));
@@ -186,6 +220,13 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   if (input.InKeywordMode()) {
     match.from_keyword = true;
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (input.current_page_classification() ==
+      ::metrics::OmniboxEventProto::ANDROID_HUB) {
+    match.suggestion_group_id = omnibox::GROUP_MOBILE_OPEN_TABS;
+  }
+#endif
 
   return match;
 }

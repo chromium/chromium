@@ -12,6 +12,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -46,7 +48,8 @@ struct UserInfo;
 // detachable base state should be set or retrieved.
 class ASH_EXPORT DetachableBaseHandler
     : public HammerdClient::Observer,
-      public chromeos::PowerManagerClient::Observer {
+      public chromeos::PowerManagerClient::Observer,
+      public SessionObserver {
  public:
   // |local_state| - PrefService of Local state. May be null in tests.
   explicit DetachableBaseHandler(PrefService* local_state);
@@ -61,9 +64,6 @@ class ASH_EXPORT DetachableBaseHandler
 
   void AddObserver(DetachableBaseObserver* observer);
   void RemoveObserver(DetachableBaseObserver* observer);
-
-  // Removes the detachable base data associated with a user from local state.
-  void RemoveUserData(const UserInfo& user);
 
   // Gets the detachable base pairing state.
   DetachableBasePairingStatus GetPairingStatus() const;
@@ -98,6 +98,9 @@ class ASH_EXPORT DetachableBaseHandler
   // chromeos::PowerManagerClient::Observer:
   void TabletModeEventReceived(chromeos::PowerManagerClient::TabletMode mode,
                                base::TimeTicks timestamp) override;
+
+  // ash::SessionObserver:
+  void OnUserToBeRemoved(const AccountId& account_id) override;
 
  private:
   // Identifier for a detachable base device - HEX encoded string created from
@@ -140,10 +143,12 @@ class ASH_EXPORT DetachableBaseHandler
       DetachableBasePairingStatus::kNone;
 
   base::ScopedObservation<HammerdClient, HammerdClient::Observer>
-      hammerd_observation_;
+      hammerd_observation_{this};
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>
-      power_manager_observation_;
+      power_manager_observation_{this};
+  base::ScopedObservation<SessionController, SessionObserver>
+      session_observation_{this};
 
   // In-memory map from a user account ID to last used device set for user using
   // SetPairedBaseAsLastUsedByUser().

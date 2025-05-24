@@ -251,6 +251,14 @@ void LoginPerformer::LoginAsWebKioskAccount(
           web_app_account_id));
 }
 
+void LoginPerformer::LoginAsIwaKioskAccount(const AccountId& iwa_account_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureAuthenticator();
+  authenticator_->LoginAsIwaKioskAccount(
+      iwa_account_id,
+      user_manager::UserManager::Get()->IsEphemeralAccountId(iwa_account_id));
+}
+
 void LoginPerformer::LoginAuthenticated(
     std::unique_ptr<UserContext> user_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

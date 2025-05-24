@@ -94,21 +94,15 @@ class BASE_EXPORT CPU final {
   bool has_avx512_f() const { return has_avx512_f_; }
   bool has_avx512_bw() const { return has_avx512_bw_; }
   bool has_avx512_vnni() const { return has_avx512_vnni_; }
+  // NOTE: This does not include 256-bit PCLMUL, which is
+  // a separate feature flag.
+  bool has_pclmul() const { return has_pclmul_; }
 #endif
   bool has_aesni() const { return has_aesni_; }
   bool has_non_stop_time_stamp_counter() const {
     return has_non_stop_time_stamp_counter_;
   }
   bool is_running_in_vm() const { return is_running_in_vm_; }
-
-#if defined(ARCH_CPU_ARM_FAMILY)
-  // The cpuinfo values for ARM cores are from the MIDR_EL1 register, a
-  // bitfield whose format is described in the core-specific manuals. E.g.,
-  // ARM Cortex-A57:
-  // https://developer.arm.com/documentation/ddi0488/h/system-control/aarch64-register-descriptions/main-id-register--el1.
-  uint8_t implementer() const { return implementer_; }
-  uint32_t part_number() const { return part_number_; }
-#endif
 
   // Armv8.5-A extensions for control flow and memory safety.
 #if defined(ARCH_CPU_ARM_FAMILY)
@@ -133,8 +127,7 @@ class BASE_EXPORT CPU final {
 
  private:
   // Query the processor for CPUID information.
-  void Initialize(bool requires_branding);
-  explicit CPU(bool requires_branding);
+  void Initialize();
 
   int signature_ = 0;  // raw form of type, family, model, and stepping
   int type_ = 0;       // process type
@@ -143,10 +136,6 @@ class BASE_EXPORT CPU final {
   int stepping_ = 0;   // processor revision number
   int ext_model_ = 0;
   int ext_family_ = 0;
-#if defined(ARCH_CPU_ARM_FAMILY)
-  uint32_t part_number_ = 0;  // ARM MIDR part number
-  uint8_t implementer_ = 0;   // ARM MIDR implementer identifier
-#endif
 #if defined(ARCH_CPU_X86_FAMILY)
   bool has_mmx_ = false;
   bool has_sse_ = false;
@@ -163,6 +152,7 @@ class BASE_EXPORT CPU final {
   bool has_avx512_f_ = false;
   bool has_avx512_bw_ = false;
   bool has_avx512_vnni_ = false;
+  bool has_pclmul_ = false;
 #endif
   bool has_aesni_ = false;
 #if defined(ARCH_CPU_ARM_FAMILY)

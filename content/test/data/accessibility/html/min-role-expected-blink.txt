@@ -7,7 +7,7 @@ rootWebArea
 ++++++group
 ++++++++staticText name='Draggable'
 ++++++++++inlineTextBox name='Draggable'
-++++++genericContainer name='Tabindex=0'
+++++++genericContainer
 ++++++++staticText name='Tabindex=0'
 ++++++++++inlineTextBox name='Tabindex=0'
 ++++++genericContainer

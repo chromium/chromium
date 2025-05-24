@@ -15,8 +15,8 @@ Text here
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV class='indicator'",
-      "position": [0, 8],
-      "bounds": [150, 142]
+      "position": [8, 8],
+      "bounds": [142, 142]
     }
   ],
   "transforms": [

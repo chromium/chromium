@@ -143,7 +143,7 @@ def UpdatePostMove(from_path, to_path):
        'bar' -> ('bar', '')
        '' -> ('', '')
     """
-    parts = re.split(r"[/\\]", path, 1)
+    parts = re.split(r"[/\\]", path, maxsplit=1)
     if len(parts) == 2:
       return (parts[0], parts[1])
     else:

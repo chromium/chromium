@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/controller/memory_usage_monitor_posix.h"
 
 #include <fcntl.h>
@@ -15,6 +10,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 
@@ -27,7 +23,7 @@ bool ReadFileContents(int fd, base::span<char> contents) {
   ssize_t res = read(fd, contents.data(), contents.size() - 1);
   if (res <= 0)
     return false;
-  contents.data()[res] = '\0';
+  contents[res] = '\0';
   return true;
 }
 
@@ -70,25 +66,28 @@ bool MemoryUsageMonitorPosix::CalculateProcessMemoryFootprint(
   char line[kMaxLineSize];
   if (!ReadFileContents(statm_fd, line))
     return false;
-  int num_scanned = sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
-                           &vm_size_pages, &resident_pages, &shared_pages);
+  int num_scanned =
+      UNSAFE_TODO(sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
+                         &vm_size_pages, &resident_pages, &shared_pages));
   if (num_scanned != 3)
     return false;
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
   if (!ReadFileContents(status_fd, line))
     return false;
-  char* swap_line = strstr(line, "VmSwap");
+  char* swap_line = UNSAFE_TODO(strstr(line, "VmSwap"));
   if (!swap_line)
     return false;
-  num_scanned = sscanf(swap_line, "VmSwap: %" SCNu64 " kB", swap_footprint);
+  num_scanned =
+      UNSAFE_TODO(sscanf(swap_line, "VmSwap: %" SCNu64 " kB", swap_footprint));
   if (num_scanned != 1)
     return false;
 
-  char* hwm_line = strstr(line, "VmHWM");
+  char* hwm_line = UNSAFE_TODO(strstr(line, "VmHWM"));
   if (!hwm_line)
     return false;
-  num_scanned = sscanf(hwm_line, "VmHWM: %" SCNu64 " kB", vm_hwm_size);
+  num_scanned =
+      UNSAFE_TODO(sscanf(hwm_line, "VmHWM: %" SCNu64 " kB", vm_hwm_size));
   if (num_scanned != 1)
     return false;
 

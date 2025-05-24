@@ -146,19 +146,4 @@ std::unique_ptr<CertVerifier> CertVerifier::CreateDefault(
           CreateDefaultWithoutCaching(std::move(cert_net_fetcher))));
 }
 
-bool operator==(const CertVerifier::Config& lhs,
-                const CertVerifier::Config& rhs) {
-  return std::tie(
-             lhs.enable_rev_checking, lhs.require_rev_checking_local_anchors,
-             lhs.enable_sha1_local_anchors, lhs.disable_symantec_enforcement) ==
-         std::tie(
-             rhs.enable_rev_checking, rhs.require_rev_checking_local_anchors,
-             rhs.enable_sha1_local_anchors, rhs.disable_symantec_enforcement);
-}
-
-bool operator!=(const CertVerifier::Config& lhs,
-                const CertVerifier::Config& rhs) {
-  return !(lhs == rhs);
-}
-
 }  // namespace net

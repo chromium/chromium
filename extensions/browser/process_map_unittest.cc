@@ -64,6 +64,7 @@ TEST(ExtensionProcessMapTest, Test) {
   // Test behavior when empty.
   EXPECT_FALSE(map.Contains("a", 1));
   EXPECT_FALSE(map.Remove(1));
+  EXPECT_FALSE(map.ExtensionHasProcess("a"));
   EXPECT_EQ(0u, map.size());
 
   // Test insertion and behavior with one item.
@@ -71,6 +72,8 @@ TEST(ExtensionProcessMapTest, Test) {
   EXPECT_TRUE(map.Contains("a", 1));
   EXPECT_FALSE(map.Contains("a", 2));
   EXPECT_FALSE(map.Contains("b", 1));
+  EXPECT_TRUE(map.ExtensionHasProcess("a"));
+  EXPECT_FALSE(map.ExtensionHasProcess("b"));
   EXPECT_EQ(1u, map.size());
 
   // Test inserting a duplicate item.
@@ -93,6 +96,9 @@ TEST(ExtensionProcessMapTest, Test) {
   EXPECT_FALSE(map.Contains("b", 2));
   EXPECT_FALSE(map.Contains("a", 5));
   EXPECT_FALSE(map.Contains("c", 3));
+
+  EXPECT_TRUE(map.ExtensionHasProcess("a"));
+  EXPECT_TRUE(map.ExtensionHasProcess("b"));
 
   // At this point we have {a,1}, {a,2}, {b,3}, and {b,4} in the map. Test
   // removal of these processes.
@@ -149,32 +155,18 @@ TEST(ExtensionProcessMapTest, GetMostLikelyContextType) {
   EXPECT_EQ(extensions::mojom::ContextType::kPrivilegedExtension,
             map.GetMostLikelyContextType(extension.get(), 4, &extension_url));
 
-  map.set_is_lock_screen_context(true);
-
   map.Insert("d", 5);
   extension =
-      CreateExtensionWithFlags(extensions::TypeToCreate::kPlatformApp, "d");
-  EXPECT_EQ(extensions::mojom::ContextType::kLockscreenExtension,
-            map.GetMostLikelyContextType(extension.get(), 5, &extension_url));
+      CreateExtensionWithFlags(extensions::TypeToCreate::kHostedApp, "d");
+  EXPECT_EQ(extensions::mojom::ContextType::kPrivilegedWebPage,
+            map.GetMostLikelyContextType(extension.get(), 5, &web_url));
 
   map.Insert("e", 6);
-  extension =
-      CreateExtensionWithFlags(extensions::TypeToCreate::kExtension, "e");
-  EXPECT_EQ(extensions::mojom::ContextType::kLockscreenExtension,
-            map.GetMostLikelyContextType(extension.get(), 6, &extension_url));
-
-  map.Insert("f", 7);
-  extension =
-      CreateExtensionWithFlags(extensions::TypeToCreate::kHostedApp, "f");
-  EXPECT_EQ(extensions::mojom::ContextType::kPrivilegedWebPage,
-            map.GetMostLikelyContextType(extension.get(), 7, &web_url));
-
-  map.Insert("g", 8);
   EXPECT_EQ(extensions::mojom::ContextType::kUntrustedWebUi,
-            map.GetMostLikelyContextType(/*extension=*/nullptr, 8,
+            map.GetMostLikelyContextType(/*extension=*/nullptr, 6,
                                          &untrusted_webui_url));
 
-  map.Insert("h", 9);
+  map.Insert("f", 7);
   EXPECT_EQ(extensions::mojom::ContextType::kWebPage,
-            map.GetMostLikelyContextType(/*extension=*/nullptr, 9, &web_url));
+            map.GetMostLikelyContextType(/*extension=*/nullptr, 7, &web_url));
 }

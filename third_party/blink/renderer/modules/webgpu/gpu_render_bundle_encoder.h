@@ -35,7 +35,7 @@ class GPURenderBundleEncoder : public DawnObject<wgpu::RenderBundleEncoder>,
   GPURenderBundleEncoder(const GPURenderBundleEncoder&) = delete;
   GPURenderBundleEncoder& operator=(const GPURenderBundleEncoder&) = delete;
 
-  // gpu_render_bundle_encoder.idl
+  // gpu_render_bundle_encoder.idl {{{
   void setBindGroup(uint32_t index, DawnObject<wgpu::BindGroup>* bindGroup) {
     GetHandle().SetBindGroup(
         index, bindGroup ? bindGroup->GetHandle() : wgpu::BindGroup(nullptr), 0,
@@ -62,7 +62,6 @@ class GPURenderBundleEncoder : public DawnObject<wgpu::RenderBundleEncoder>,
   void setPipeline(const DawnObject<wgpu::RenderPipeline>* pipeline) {
     GetHandle().SetPipeline(pipeline->GetHandle());
   }
-
   void setIndexBuffer(const DawnObject<wgpu::Buffer>* buffer,
                       const V8GPUIndexFormat& format,
                       uint64_t offset) {
@@ -112,10 +111,10 @@ class GPURenderBundleEncoder : public DawnObject<wgpu::RenderBundleEncoder>,
     GetHandle().DrawIndexedIndirect(indirectBuffer->GetHandle(),
                                     indirectOffset);
   }
-
   GPURenderBundle* finish(const GPURenderBundleDescriptor* webgpu_desc);
+  // }}} End of WebIDL binding implementation.
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }

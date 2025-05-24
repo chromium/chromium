@@ -41,8 +41,8 @@ class SingleSampleMetricsFactoryImpl : public base::SingleSampleMetricsFactory {
   // base::SingleSampleMetricsFactory:
   std::unique_ptr<base::SingleSampleMetric> CreateCustomCountsMetric(
       const std::string& histogram_name,
-      base::HistogramBase::Sample min,
-      base::HistogramBase::Sample max,
+      base::HistogramBase::Sample32 min,
+      base::HistogramBase::Sample32 max,
       uint32_t bucket_count) override;
 
   // Providers live forever in production, but tests should be kind and clean up
@@ -54,8 +54,8 @@ class SingleSampleMetricsFactoryImpl : public base::SingleSampleMetricsFactory {
   // Creates a single sample metric.
   std::unique_ptr<base::SingleSampleMetric> CreateMetric(
       const std::string& histogram_name,
-      base::HistogramBase::Sample min,
-      base::HistogramBase::Sample max,
+      base::HistogramBase::Sample32 min,
+      base::HistogramBase::Sample32 max,
       uint32_t bucket_count,
       int32_t flags);
 

@@ -40,10 +40,6 @@
 #include "third_party/cros_system_api/constants/crash_reporter.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/build_time.h"
-#endif
-
 namespace crash_reporter {
 
 namespace {
@@ -147,7 +143,7 @@ bool PlatformCrashpadInitialization(
   DCHECK(exe_path.empty());
 
   crashpad::CrashpadClient client;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::string crash_loop_before =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kCrashLoopBefore);
@@ -184,38 +180,29 @@ bool PlatformCrashpadInitialization(
     url = std::string();
 #endif
 
-    std::string product_name, product_version, channel;
-    crash_reporter_client->GetProductNameAndVersion(&product_name,
-                                                    &product_version, &channel);
+    ProductInfo product_info;
+    crash_reporter_client->GetProductInfo(&product_info);
 
     std::map<std::string, std::string> annotations;
-    annotations["prod"] = product_name;
-    annotations["ver"] = product_version;
+    annotations["prod"] = product_info.product_name;
+    annotations["ver"] = product_info.version;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Empty means stable.
     const bool allow_empty_channel = true;
-    if (channel == "extended") {
+    if (product_info.channel == "extended") {
       // Extended stable reports as stable (empty string) with an extra bool.
-      channel.clear();
+      product_info.channel.clear();
       annotations["extended_stable_channel"] = "true";
     }
 #else
     const bool allow_empty_channel = false;
 #endif
-    if (allow_empty_channel || !channel.empty()) {
-      annotations["channel"] = channel;
+    if (allow_empty_channel || !product_info.channel.empty()) {
+      annotations["channel"] = product_info.channel;
     }
 
     annotations["plat"] = std::string("Linux");
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // "build_time_millis" is used on LaCros chrome to determine when to stop
-    // sending crash reports (from outdated versions of the browser).
-    int64_t build_time =
-        (base::GetBuildTime() - base::Time::UnixEpoch()).InMilliseconds();
-    annotations["build_time_millis"] = base::NumberToString(build_time);
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_DEVICE)
     // Chromium OS: save board and builder path for 'tast symbolize'.

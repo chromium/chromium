@@ -94,8 +94,6 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
       const std::optional<GURL>& new_url) override;
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // network::mojom::URLLoaderClient for the network load:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -227,10 +225,10 @@ class CONTENT_EXPORT ServiceWorkerUpdatedScriptLoader final
   scoped_refptr<net::IOBuffer> data_to_send_;
 
   // Length of |data_to_send_| in bytes.
-  int data_length_ = 0;
+  size_t data_length_ = 0;
 
   // Length of data in |data_to_send_| already sent to |client_|.
-  int bytes_sent_to_client_ = 0;
+  size_t bytes_sent_to_client_ = 0;
 
   // Run this to notify ServiceWorkerCacheWriter that the observer completed
   // its work. net::OK means all |data_to_send_| has been sent to |client_|.

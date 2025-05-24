@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
-import type {QueryState} from './externs.js';
 
 // All valid pages.
 // TODO(crbug.com/40069898): Change this to an enum and use that type for holding
@@ -45,9 +44,9 @@ export class HistoryRouterElement extends PolymerElement {
     };
   }
 
-  lastSelectedTab: number;
-  selectedPage: string;
-  queryState: QueryState;
+  declare lastSelectedTab: number;
+  declare selectedPage: string;
+  declare queryState: QueryState;
   timeRangeStart?: Date;
 
   private eventTracker_: EventTracker = new EventTracker();

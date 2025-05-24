@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for ui/android/ui_android_feature_map.cc state */
 @JNINamespace("ui")
+@NullMarked
 public class UiAndroidFeatureMap extends FeatureMap {
     private static final UiAndroidFeatureMap sInstance = new UiAndroidFeatureMap();
 

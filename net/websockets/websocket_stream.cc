@@ -26,6 +26,8 @@
 #include "net/base/net_errors.h"
 #include "net/base/request_priority.h"
 #include "net/base/url_util.h"
+#include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
@@ -139,8 +141,18 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
     url_request_->SetExtraRequestHeaders(headers);
     url_request_->set_initiator(origin);
     url_request_->set_site_for_cookies(site_for_cookies);
-    url_request_->set_storage_access_api_status(storage_access_api_status);
     url_request_->set_isolation_info(isolation_info);
+
+    CHECK(!url_request_->cookie_setting_overrides().Has(
+        CookieSettingOverride::kStorageAccessGrantEligible));
+    if (cookie_util::ShouldAddInitialStorageAccessApiOverride(
+            url.SchemeIsWSOrWSS() ? ChangeWebSocketSchemeToHttpScheme(url)
+                                  : url,
+            storage_access_api_status, url_request_->initiator(),
+            /*emit_metrics=*/true, /*credentials_mode_include=*/true)) {
+      url_request_->cookie_setting_overrides().Put(
+          CookieSettingOverride::kStorageAccessGrantEligible);
+    }
 
     auto create_helper = std::make_unique<WebSocketHandshakeStreamCreateHelper>(
         connect_delegate_.get(), requested_subprotocols, this);
@@ -500,7 +512,7 @@ void Delegate::OnSSLCertificateError(URLRequest* request,
 }
 
 void Delegate::OnReadCompleted(URLRequest* request, int bytes_read) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

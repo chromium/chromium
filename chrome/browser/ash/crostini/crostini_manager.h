@@ -21,6 +21,7 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/crostini/baguette_installer.h"
 #include "chrome/browser/ash/crostini/crostini_low_disk_notification.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_types.mojom-forward.h"
@@ -171,6 +172,9 @@ class CrostiniManager : public KeyedService,
  public:
   using CrostiniResultCallback =
       base::OnceCallback<void(CrostiniResult result)>;
+  using BaguetteImageCallback =
+      base::OnceCallback<void(std::optional<base::ScopedFD> fd,
+                              CrostiniResult result)>;
   using ExportLxdContainerResultCallback =
       base::OnceCallback<void(CrostiniResult result,
                               uint64_t container_size,
@@ -236,6 +240,9 @@ class CrostiniManager : public KeyedService,
   // Installs termina using the DLC service.
   void InstallTermina(CrostiniResultCallback callback);
 
+  // Installs baguette using GS downloader or local file.
+  void InstallBaguette(BaguetteImageCallback callback);
+
   // Try to cancel a previous InstallTermina call. This is done on a best-effort
   // basis. The callback passed to InstallTermina is still run upon completion.
   void CancelInstallTermina();
@@ -255,6 +262,8 @@ class CrostiniManager : public KeyedService,
       // the image itself. The image name should match the
       // name of the VM that it will be used for.
       const std::string& vm_name,
+      // We may already have a disk image to use that has been downloaded.
+      std::optional<base::ScopedFD> disk_image,
       // The storage location for the disk image
       vm_tools::concierge::StorageLocation storage_location,
       // The logical size of the disk image, in bytes
@@ -291,6 +300,12 @@ class CrostiniManager : public KeyedService,
   // |callback| is called immediately if the arguments are bad, or after LXD has
   // been started.
   void StartLxd(std::string vm_name, CrostiniResultCallback callback);
+
+  // Wrapper for ConciergeClient::SetUpVmUser
+  // |callback| is called immediately if the arguments are bad.
+  void SetUpBaguetteUser(std::string vm_name,
+                         std::optional<std::string> container_username,
+                         CrostiniResultCallback callback);
 
   // Checks the arguments for creating an Lxd container via
   // CiceroneClient::CreateLxdContainer. |callback| is called immediately if the
@@ -333,6 +348,15 @@ class CrostiniManager : public KeyedService,
                        std::string user_id_hash,
                        base::FilePath export_path,
                        bool force,
+                       CrostiniResultCallback callback);
+
+  // Checks the arguments for exporting a vm disk image via
+  // ConciergeClient::ImportDiskImage. |callback| is called immedaitely if the
+  // arguments are bad, or after the method call finishes.
+  // using DiskImageCallback = base::OnceCallback<void(CrostiniResult result)>;
+  void ImportDiskImage(guest_os::GuestId vm_id,
+                       std::string user_id_hash,
+                       base::FilePath import_path,
                        CrostiniResultCallback callback);
 
   // Checks the arguments for exporting an Lxd container via
@@ -681,9 +705,10 @@ class CrostiniManager : public KeyedService,
 
   // Callback for ConciergeClient::StopVm. Called after the Concierge
   // service method finishes.
-  void OnStopVm(std::string vm_name,
-                CrostiniResultCallback callback,
-                std::optional<vm_tools::concierge::StopVmResponse> response);
+  void OnStopVm(
+      std::string vm_name,
+      CrostiniResultCallback callback,
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Callback for ConciergeClient::GetVmEnterpriseReportingInfo.
   // Currently used to report the Termina kernel version for enterprise
@@ -698,11 +723,22 @@ class CrostiniManager : public KeyedService,
                   CrostiniResultCallback callback,
                   std::optional<vm_tools::cicerone::StartLxdResponse> response);
 
+  // Callback for ConciergeClient::SetUpVmUser.
+  void OnSetUpBaguetteUser(
+      CrostiniResultCallback callback,
+      std::optional<vm_tools::concierge::SetUpVmUserResponse> response);
+
   // Callback for ConciergeClient::ExportDiskImage. Called after the Concierge
   // service method finishes.
   void OnExportDiskImage(
       guest_os::GuestId vm_id,
       std::optional<vm_tools::concierge::ExportDiskImageResponse> response);
+
+  // Callback for ConciergeClient::ImportDiskImage. Called after the Concierge
+  // service method finishes.
+  void OnImportDiskImage(
+      guest_os::GuestId vm_id,
+      std::optional<vm_tools::concierge::ImportDiskImageResponse> response);
 
   // Callback for CiceroneClient::CreateLxdContainer. May indicate the container
   // is still being created, in which case we will wait for an
@@ -750,7 +786,7 @@ class CrostiniManager : public KeyedService,
   // Callback for CiceroneClient::CancelExportDiskImage.
   void OnCancelDiskImageOp(
       const guest_os::GuestId& key,
-      std::optional<vm_tools::concierge::CancelDiskImageResponse> response);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
 
   // Callback for CiceroneClient::CancelExportLxdContainer.
   void OnCancelExportLxdContainer(
@@ -842,7 +878,7 @@ class CrostiniManager : public KeyedService,
 
   // Tries to query Concierge for the type of disk the named VM has then emits a
   // metric logging the type. Mostly happens async and best-effort.
-  void EmitVmDiskTypeMetric(const std::string vm_name);
+  void EmitVmDiskTypeMetric(const std::string& vm_name);
 
   // Runs things that should happened whenever a container shutdowns e.g.
   // triggering observers.
@@ -966,8 +1002,10 @@ class CrostiniManager : public KeyedService,
       upgrade_available_notification_;
 
   TerminaInstaller termina_installer_;
+  BaguetteInstaller baguette_installer_;
 
   bool install_termina_never_completes_for_testing_ = false;
+  bool install_baguette_never_completes_for_testing_ = false;
 
   std::unique_ptr<CrostiniSshfs> crostini_sshfs_;
 

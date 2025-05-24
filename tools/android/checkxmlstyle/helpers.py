@@ -46,7 +46,7 @@ INCLUDED_GRD_PATHS = [
 ]
 # TODO(lazzzis): Check color references in java source files.
 COLOR_REFERENCE_PATTERN = re.compile(
-    '''
+r'''
     @color/   # starts with '@color'
     ([\w|_]+)   # color name is only composed of numbers, letters and underscore
 ''', re.VERBOSE)
@@ -65,4 +65,4 @@ COLOR_STATE_LIST_DIRS = {
 
 KNOWN_STYLE_ATTRIBUTE = re.compile(
     r' (android:theme|android:textAppearance|style)=\"(.*)\"')
-STYLE_REF_PREFIX = re.compile('^(@style|\?attr|\?android:attr)/')
+STYLE_REF_PREFIX = re.compile(r'^(@style|\?attr|\?android:attr)/')

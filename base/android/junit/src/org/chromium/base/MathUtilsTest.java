@@ -48,14 +48,14 @@ public class MathUtilsTest {
     public void testClampLong() {
         long min = 1L;
         long max = 9L;
-        Assert.assertEquals(CLAMP_FAILURE, 4, MathUtils.clamp(4, min, max), EPSILON);
-        Assert.assertEquals(CLAMP_FAILURE, 4, MathUtils.clamp(4, max, min), EPSILON);
+        Assert.assertEquals(CLAMP_FAILURE, 4, (float) MathUtils.clamp(4, min, max), EPSILON);
+        Assert.assertEquals(CLAMP_FAILURE, 4, (float) MathUtils.clamp(4, max, min), EPSILON);
 
-        Assert.assertEquals(CLAMP_FAILURE, 1, MathUtils.clamp(-1, min, max), EPSILON);
-        Assert.assertEquals(CLAMP_FAILURE, 1, MathUtils.clamp(0, max, min), EPSILON);
+        Assert.assertEquals(CLAMP_FAILURE, 1, (float) MathUtils.clamp(-1, min, max), EPSILON);
+        Assert.assertEquals(CLAMP_FAILURE, 1, (float) MathUtils.clamp(0, max, min), EPSILON);
 
-        Assert.assertEquals(CLAMP_FAILURE, 9, MathUtils.clamp(10, min, max), EPSILON);
-        Assert.assertEquals(CLAMP_FAILURE, 9, MathUtils.clamp(30, max, min), EPSILON);
+        Assert.assertEquals(CLAMP_FAILURE, 9, (float) MathUtils.clamp(10, min, max), EPSILON);
+        Assert.assertEquals(CLAMP_FAILURE, 9, (float) MathUtils.clamp(30, max, min), EPSILON);
     }
 
     @Test

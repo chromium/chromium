@@ -4,13 +4,19 @@
 
 #include "chrome/browser/extensions/extension_error_controller.h"
 
-#include "chrome/browser/extensions/extension_error_ui_default.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
+#include "chrome/browser/extensions/extension_error_controller_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/common/extension_set.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/extension_error_ui_android.h"
+#else
+#include "chrome/browser/extensions/extension_error_ui_desktop.h"
+#endif
 
 namespace extensions {
 
@@ -18,7 +24,11 @@ namespace {
 
 ExtensionErrorUI* CreateDefaultExtensionErrorUI(
     ExtensionErrorUI::Delegate* delegate) {
-  return new ExtensionErrorUIDefault(delegate);
+#if BUILDFLAG(IS_ANDROID)
+  return new ExtensionErrorUIAndroid(delegate);
+#else
+  return new ExtensionErrorUIDesktop(delegate);
+#endif
 }
 
 ExtensionErrorController::UICreateMethod g_create_ui =
@@ -26,12 +36,16 @@ ExtensionErrorController::UICreateMethod g_create_ui =
 }  // namespace
 
 ExtensionErrorController::ExtensionErrorController(
-    content::BrowserContext* context,
-    bool is_first_run)
-    : browser_context_(context),
-      is_first_run_(is_first_run) {}
+    content::BrowserContext* context)
+    : browser_context_(context), is_first_run_(false) {}
 
-ExtensionErrorController::~ExtensionErrorController() {}
+ExtensionErrorController::~ExtensionErrorController() = default;
+
+// static
+ExtensionErrorController* ExtensionErrorController::Get(
+    content::BrowserContext* browser_context) {
+  return ExtensionErrorControllerFactory::GetForBrowserContext(browser_context);
+}
 
 void ExtensionErrorController::ShowErrorIfNeeded() {
   if (error_ui_.get()) {
@@ -115,8 +129,9 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
 
   ExtensionSystem* system = ExtensionSystem::Get(browser_context_);
   ManagementPolicy* management_policy = system->management_policy();
+
   PendingExtensionManager* pending_extension_manager =
-      system->extension_service()->pending_extension_manager();
+      PendingExtensionManager::Get(browser_context_);
   // We only show the error UI for the enabled set. This means that an
   // extension that is blocked while browser is not running will never
   // be displayed in the UI.
@@ -135,10 +150,9 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
     // Extensions disabled by policy. Note: this no longer includes blocklisted
     // extensions. We use similar triggering logic for the dialog, but the
     // strings will be different.
-    if (!management_policy->UserMayLoad(extension,
-                                        nullptr /*=ignore error */)) {
-      if (!prefs->IsBlocklistedExtensionAcknowledged(extension->id()))
-        blocklisted_extensions_.Insert(extension);
+    if (!management_policy->UserMayLoad(extension) &&
+        !prefs->IsBlocklistedExtensionAcknowledged(extension->id())) {
+      blocklisted_extensions_.Insert(extension);
     }
   }
 }

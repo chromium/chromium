@@ -111,7 +111,7 @@ class MemoryUsageVisitor {
              const google::protobuf::RepeatedField<F>& fields) {
     memory_usage_ += fields.SpaceUsedExcludingSelf();
     // Arithmetic fields (integers, floats & bool) don't allocate, so no point
-    // in iterating over |fields|.
+    // in iterating over `fields`.
   }
 
   // RepeatedField<std::string>

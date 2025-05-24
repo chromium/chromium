@@ -16,7 +16,8 @@
 #include "components/gcm_driver/gcm_internals_constants.h"
 #include "components/gcm_driver/gcm_internals_helper.h"
 #include "components/gcm_driver/gcm_profile_service.h"
-#include "components/grit/dev_ui_components_resources.h"
+#include "components/grit/gcm_internals_resources.h"
+#include "components/grit/gcm_internals_resources_map.h"
 #include "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -81,8 +82,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 void GcmInternalsUIMessageHandler::RequestAllInfo(
     const base::Value::List& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bool clear_logs = args[0].GetBool();
 
@@ -106,8 +106,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bool recording = args[0].GetBool();
 
@@ -160,11 +159,8 @@ GCMInternalsUI::GCMInternalsUI(web::WebUIIOS* web_ui, const std::string& host)
   html_source->UseStringsJs();
 
   // Add required resources.
-  html_source->AddResourcePath(gcm_driver::kGcmInternalsCSS,
-                               IDR_GCM_DRIVER_GCM_INTERNALS_CSS);
-  html_source->AddResourcePath(gcm_driver::kGcmInternalsJS,
-                               IDR_GCM_DRIVER_GCM_INTERNALS_JS);
-  html_source->SetDefaultResource(IDR_GCM_DRIVER_GCM_INTERNALS_HTML);
+  html_source->AddResourcePaths(kGcmInternalsResources);
+  html_source->AddResourcePath("", IDR_GCM_INTERNALS_GCM_INTERNALS_HTML);
 
   web::WebUIIOSDataSource::Add(ProfileIOS::FromWebUIIOS(web_ui), html_source);
 

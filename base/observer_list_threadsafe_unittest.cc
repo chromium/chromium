@@ -44,13 +44,13 @@ class Foo {
 
 class Adder : public Foo {
  public:
-  explicit Adder(int scaler) : total(0), scaler_(scaler) {}
+  explicit Adder(int scaler) : scaler_(scaler) {}
   ~Adder() override = default;
 
   void Observe(int x) override { total += x * scaler_; }
   int GetValue() const override { return total; }
 
-  int total;
+  int total = 0;
 
  private:
   int scaler_;
@@ -59,7 +59,7 @@ class Adder : public Foo {
 class AddInObserve : public Foo {
  public:
   explicit AddInObserve(ObserverListThreadSafe<Foo>* observer_list)
-      : observer_list(observer_list), to_add_() {}
+      : observer_list(observer_list) {}
 
   void SetToAdd(Foo* to_add) { to_add_ = to_add; }
 
@@ -91,7 +91,7 @@ class AddRemoveThread : public Foo {
             {},
             SingleThreadTaskRunnerThreadMode::DEDICATED)),
         removal_task_runner_(std::move(removal_task_runner)),
-        in_list_(false),
+
         start_(Time::Now()),
         do_notifies_(notify) {
     task_runner_->PostTask(
@@ -160,11 +160,11 @@ class AddRemoveThread : public Foo {
   // Optional task runner used to remove observers. This will be the main task
   // runner of a different AddRemoveThread.
   scoped_refptr<SingleThreadTaskRunner> removal_task_runner_;
-  bool in_list_;  // Are we currently registered for notifications.
-                  // in_list_ is only used on |this| thread.
+  bool in_list_ = false;  // Are we currently registered for notifications.
+                          // in_list_ is only used on |this| thread.
   Time start_;    // The time we started the test.
 
-  bool do_notifies_;    // Whether these threads should do notifications.
+  bool do_notifies_;  // Whether these threads should do notifications.
 
   base::WeakPtrFactory<Self> weak_factory_{this};
 };
@@ -309,23 +309,29 @@ static void ThreadSafeObserverHarness(int num_threads,
   using TestThread = AddRemoveThread<RemovePolicy>;
   std::vector<std::unique_ptr<TestThread>> threaded_observers;
   threaded_observers.reserve(num_threads);
-  scoped_refptr<SingleThreadTaskRunner> removal_task_runner;
-  for (int index = 0; index < num_threads; index++) {
-    auto add_remove_thread =
-        std::make_unique<TestThread>(observer_list.get(), cross_thread_notifies,
-                                     std::move(removal_task_runner));
-    if (cross_thread_removes) {
+  if (cross_thread_removes) {
+    scoped_refptr<SingleThreadTaskRunner> removal_task_runner;
+    for (int index = 0; index < num_threads; ++index) {
+      auto add_remove_thread = std::make_unique<TestThread>(
+          observer_list.get(), cross_thread_notifies,
+          std::move(removal_task_runner));
       // Save the task runner to pass to the next thread.
       removal_task_runner = add_remove_thread->task_runner();
+      threaded_observers.push_back(std::move(add_remove_thread));
     }
-    threaded_observers.push_back(std::move(add_remove_thread));
+  } else {
+    for (int index = 0; index < num_threads; ++index) {
+      threaded_observers.push_back(std::make_unique<TestThread>(
+          observer_list.get(), cross_thread_notifies, nullptr));
+    }
   }
   ASSERT_EQ(static_cast<size_t>(num_threads), threaded_observers.size());
 
   Time start = Time::Now();
   while (true) {
-    if ((Time::Now() - start).InMilliseconds() > kThreadRunTime)
+    if ((Time::Now() - start).InMilliseconds() > kThreadRunTime) {
       break;
+    }
 
     observer_list->Notify(FROM_HERE, &Foo::Observe, 10);
 

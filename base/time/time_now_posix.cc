@@ -26,6 +26,13 @@
 #error "This implementation is for POSIX platforms other than Fuchsia or Mac."
 #endif
 
+// NaCl doesn't support CLOCK_MONOTONIC_COARSE.
+#if BUILDFLAG(IS_NACL)
+#define TIMETICKS_LOW_RESOLUTION_CLOCK CLOCK_MONOTONIC
+#else
+#define TIMETICKS_LOW_RESOLUTION_CLOCK CLOCK_MONOTONIC_COARSE
+#endif
+
 namespace {
 
 int64_t ConvertTimespecToMicros(const struct timespec& ts) {
@@ -59,8 +66,9 @@ int64_t ClockNow(clockid_t clk_id) {
 std::optional<int64_t> MaybeClockNow(clockid_t clk_id) {
   struct timespec ts;
   int res = clock_gettime(clk_id, &ts);
-  if (res == 0)
+  if (res == 0) {
     return ConvertTimespecToMicros(ts);
+  }
   return std::nullopt;
 }
 
@@ -102,9 +110,14 @@ TimeTicks TimeTicksNowIgnoringOverride() {
 
 std::optional<TimeTicks> MaybeTimeTicksNowIgnoringOverride() {
   std::optional<int64_t> now = MaybeClockNow(CLOCK_MONOTONIC);
-  if (now.has_value())
+  if (now.has_value()) {
     return TimeTicks() + Microseconds(now.value());
+  }
   return std::nullopt;
+}
+
+TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
+  return TimeTicks() + Microseconds(ClockNow(TIMETICKS_LOW_RESOLUTION_CLOCK));
 }
 }  // namespace subtle
 

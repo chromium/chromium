@@ -9,6 +9,7 @@ import "third_party/blink/public/mojom/css/preferred_contrast.mojom";
 import "third_party/blink/public/mojom/v8_cache_options.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "skia/public/mojom/skcolor.mojom";
 
 enum PointerType {
   kPointerNone                              = 1,             // 1 << 0
@@ -119,6 +120,7 @@ struct WebPreferences {
   int32 minimum_font_size;
   int32 minimum_logical_font_size;
   string default_encoding;
+  bool always_show_context_menu_on_touch;
   bool context_menu_on_mouse_up;
   bool javascript_enabled;
   bool web_security_enabled;
@@ -139,7 +141,6 @@ struct WebPreferences {
   // 'Save-Data: on'.
   bool data_saver_enabled;
   bool local_storage_enabled;
-  bool databases_enabled;
   bool tabs_to_links;
   bool disable_ipc_flooding_protection;
   bool hyperlink_auditing_enabled;
@@ -423,6 +424,10 @@ struct WebPreferences {
   // Forced colors are disabled for sites in the `kPageColorsBlockList` pref.
   bool is_forced_colors_disabled;
 
+  // Holds the browser's theme color to be used to render root non-overlay
+  // Fluent scrollbars. Stored from an SkColor as ARGB.
+  skia.mojom.SkColor? root_scrollbar_theme_color;
+
   // The preferred color scheme set by the user's browser settings. The variable
   // follows the browser's color mode setting unless a browser theme (custom or
   // not) is defined, in which case the color scheme is set to the default
@@ -474,6 +479,11 @@ struct WebPreferences {
   // default value depends on the platform.
   bool touch_drag_drop_enabled;
 
+  // Whether the end of a drag fires a contextmenu event and possibly shows a
+  // context-menu (depends on how the event is handled). Follows
+  // `touch_drag_drop_enabled` in Windows.
+  bool touch_dragend_context_menu = false;
+
   // Controls whether WebXR's immersive-ar is allowed.
   bool webxr_immersive_ar_allowed;
 
@@ -487,4 +497,13 @@ struct WebPreferences {
   // Whether modal context menu is used. A modal context menu meaning it is
   // blocking user's access to the background web content.
   bool modal_context_menu = true;
+
+  // Whether the safe-area-insets should be changed dynamically based on
+  // browser controls shown ratio. This value is used in web settings only
+  // when feature DynamicSafeAreaInsets is enabled.
+  bool dynamic_safe_area_insets_enabled = false;
+
+  // Whether PaymentRequest is enabled. Controlled by WebView settings on
+  // WebView and by `kWebPayments` feature flag everywhere.
+  bool payment_request_enabled = false;
 };

@@ -18,7 +18,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/gpu/buildflags.h"
 #include "media/gpu/video_frame_mapper.h"
 #include "media/gpu/video_frame_mapper_factory.h"
@@ -172,7 +171,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   // Copies to |frame| in this function so that |video_frame| stays alive until
   // in the end of function.
   auto frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which
@@ -195,7 +194,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
         frame->format(), frame->storage_type());
     ASSERT_TRUE(video_frame_mapper_) << "Failed to create VideoFrameMapper";
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   switch (output_format_) {
     case OutputFormat::kPNG:
       WriteVideoFramePNG(frame, file_path);
@@ -216,12 +215,12 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame), PROT_READ);
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";
@@ -235,19 +234,16 @@ void VideoFrameFileWriter::WriteVideoFramePNG(
   }
 
   // Convert the ARGB frame to PNG.
-  std::vector<uint8_t> png_output;
-  const bool png_encode_status = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> png_output = gfx::PNGCodec::Encode(
       argb_out_frame->visible_data(VideoFrame::Plane::kARGB),
       gfx::PNGCodec::FORMAT_BGRA, argb_out_frame->visible_rect().size(),
       argb_out_frame->stride(VideoFrame::Plane::kARGB),
-      true, /* discard_transparency */
-      std::vector<gfx::PNGCodec::Comment>(), &png_output);
-  ASSERT_TRUE(png_encode_status);
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
 
   // Write the PNG data to file.
   base::FilePath file_path(
       output_folder_.Append(filename).AddExtension(FILE_PATH_LITERAL(".png")));
-  ASSERT_TRUE(base::WriteFile(file_path, png_output));
+  ASSERT_TRUE(base::WriteFile(file_path, png_output.value()));
 }
 
 void VideoFrameFileWriter::WriteVideoFrameYUV(
@@ -256,12 +252,12 @@ void VideoFrameFileWriter::WriteVideoFrameYUV(
   DCHECK_CALLED_ON_VALID_SEQUENCE(writer_thread_sequence_checker_);
 
   auto mapped_frame = video_frame;
-#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   if (video_frame->storage_type() == VideoFrame::STORAGE_DMABUFS) {
     CHECK(video_frame_mapper_);
     mapped_frame = video_frame_mapper_->Map(std::move(video_frame), PROT_READ);
   }
-#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
+#endif  // BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 
   if (!mapped_frame) {
     LOG(ERROR) << "Failed to map video frame";

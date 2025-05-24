@@ -4,11 +4,12 @@
 
 package org.chromium.chrome.browser.tab;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.Origin;
 
@@ -17,13 +18,14 @@ import java.nio.ByteBuffer;
 /**
  * Bridge into native serialization, deserialization, and management of {@link WebContentsState}.
  */
+@NullMarked
 public class WebContentsStateBridge {
     /**
      * Creates a WebContents from the buffer.
      * @param isHidden Whether or not the tab initially starts hidden.
      * @return Pointer A WebContents object.
      */
-    public static WebContents restoreContentsFromByteBuffer(
+    public static @Nullable WebContents restoreContentsFromByteBuffer(
             WebContentsState webContentsState, boolean isHidden) {
         return WebContentsStateBridge.restoreContentsFromByteBuffer(
                 webContentsState, isHidden, /* noRenderer= */ false);
@@ -36,7 +38,7 @@ public class WebContentsStateBridge {
      *     may not be created.
      * @return Pointer A WebContents object.
      */
-    public static WebContents restoreContentsFromByteBuffer(
+    public static @Nullable WebContents restoreContentsFromByteBuffer(
             WebContentsState webContentsState, boolean isHidden, boolean noRenderer) {
         return WebContentsStateBridgeJni.get()
                 .restoreContentsFromByteBuffer(
@@ -72,10 +74,10 @@ public class WebContentsStateBridge {
      * @param isIncognito Whether or not the state is meant to be incognito (e.g. encrypted).
      * @return ByteBuffer that represents a state representing a single pending URL.
      */
-    public static ByteBuffer createSingleNavigationStateAsByteBuffer(
-            String title,
+    public static @Nullable ByteBuffer createSingleNavigationStateAsByteBuffer(
+            @Nullable String title,
             String url,
-            String referrerUrl,
+            @Nullable String referrerUrl,
             int referrerPolicy,
             @Nullable Origin initiatorOrigin,
             boolean isIncognito) {
@@ -97,11 +99,11 @@ public class WebContentsStateBridge {
      *     encrypted).
      * @return ByteBuffer that represents a state with the pending navigation attached.
      */
-    public static WebContentsState appendPendingNavigation(
+    public static @Nullable WebContentsState appendPendingNavigation(
             WebContentsState webContentsState,
-            String title,
+            @Nullable String title,
             String url,
-            String referrerUrl,
+            @Nullable String referrerUrl,
             int referrerPolicy,
             @Nullable Origin initiatorOrigin,
             boolean isOffTheRecord) {
@@ -125,18 +127,18 @@ public class WebContentsStateBridge {
      * @param webContents WebContents to pickle.
      * @return ByteBuffer containing the state of the WebContents.
      */
-    public static ByteBuffer getContentsStateAsByteBuffer(WebContents webContents) {
+    public static @Nullable ByteBuffer getContentsStateAsByteBuffer(WebContents webContents) {
         return WebContentsStateBridgeJni.get().getContentsStateAsByteBuffer(webContents);
     }
 
     /** @return Title currently being displayed in the saved state's current entry. */
-    public static String getDisplayTitleFromState(WebContentsState contentsState) {
+    public static @Nullable String getDisplayTitleFromState(WebContentsState contentsState) {
         return WebContentsStateBridgeJni.get()
                 .getDisplayTitleFromByteBuffer(contentsState.buffer(), contentsState.version());
     }
 
     /** @return URL currently being displayed in the saved state's current entry. */
-    public static String getVirtualUrlFromState(WebContentsState contentsState) {
+    public static @Nullable String getVirtualUrlFromState(WebContentsState contentsState) {
         return WebContentsStateBridgeJni.get()
                 .getVirtualUrlFromByteBuffer(contentsState.buffer(), contentsState.version());
     }
@@ -152,36 +154,37 @@ public class WebContentsStateBridge {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        WebContents restoreContentsFromByteBuffer(
+        @Nullable WebContents restoreContentsFromByteBuffer(
                 ByteBuffer buffer,
                 int savedStateVersion,
                 boolean initiallyHidden,
                 boolean noRenderer);
 
-        ByteBuffer getContentsStateAsByteBuffer(WebContents webcontents);
+        @Nullable ByteBuffer getContentsStateAsByteBuffer(WebContents webcontents);
 
-        ByteBuffer deleteNavigationEntries(ByteBuffer state, int saveStateVersion, long predicate);
+        @Nullable ByteBuffer deleteNavigationEntries(
+                ByteBuffer state, int saveStateVersion, long predicate);
 
-        ByteBuffer createSingleNavigationStateAsByteBuffer(
-                String title,
+        @Nullable ByteBuffer createSingleNavigationStateAsByteBuffer(
+                @Nullable String title,
                 String url,
-                String referrerUrl,
+                @Nullable String referrerUrl,
                 int referrerPolicy,
-                Origin initiatorOrigin,
+                @Nullable Origin initiatorOrigin,
                 boolean isIncognito);
 
-        ByteBuffer appendPendingNavigation(
+        @Nullable ByteBuffer appendPendingNavigation(
                 ByteBuffer buffer,
                 int savedStateVersion,
-                String title,
+                @Nullable String title,
                 String url,
-                String referrerUrl,
+                @Nullable String referrerUrl,
                 int referrerPolicy,
-                Origin initiatorOrigin,
+                @Nullable Origin initiatorOrigin,
                 boolean isIncognito);
 
-        String getDisplayTitleFromByteBuffer(ByteBuffer state, int savedStateVersion);
+        @Nullable String getDisplayTitleFromByteBuffer(ByteBuffer state, int savedStateVersion);
 
-        String getVirtualUrlFromByteBuffer(ByteBuffer state, int savedStateVersion);
+        @Nullable String getVirtualUrlFromByteBuffer(ByteBuffer state, int savedStateVersion);
     }
 }

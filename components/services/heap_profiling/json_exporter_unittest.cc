@@ -293,7 +293,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
 TEST(ProfilingJsonExporterTest, MAYBE_MemoryMaps) {
   ExportParams params;
   params.maps = memory_instrumentation::OSMetrics::GetProcessMemoryMaps(
-      base::Process::Current().Pid());
+      base::Process::Current().Handle());
   ASSERT_GT(params.maps.size(), 2u);
 
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);

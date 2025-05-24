@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -55,14 +56,14 @@ class SolidRoundRectPainterWithShadow : public Painter {
  public:
   SolidRoundRectPainterWithShadow(SkColor bg_color,
                                   SkColor stroke_color,
-                                  float radius,
+                                  const gfx::RoundedCornersF& corner_radii,
                                   const gfx::Insets& insets,
                                   SkBlendMode blend_mode,
                                   bool antialias,
                                   bool has_shadow)
       : bg_color_(bg_color),
         stroke_color_(stroke_color),
-        radius_(radius),
+        corner_radii_(corner_radii),
         insets_(insets),
         blend_mode_(blend_mode),
         antialias_(antialias),
@@ -80,7 +81,9 @@ class SolidRoundRectPainterWithShadow : public Painter {
   void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
     gfx::ScopedCanvas scoped_canvas(canvas);
     const float scale = canvas->UndoDeviceScaleFactor();
-    float scaled_radius = radius_ * scale;
+    // Taking one of the radiuses and using it. |DrawRoundRect()| doesn't
+    // support setting radii separately.
+    float scaled_radius = corner_radii_.upper_left() * scale;
 
     gfx::Rect inset_rect(size);
     inset_rect.Inset(insets_);
@@ -124,7 +127,7 @@ class SolidRoundRectPainterWithShadow : public Painter {
  private:
   const SkColor bg_color_;
   const SkColor stroke_color_;
-  const float radius_;
+  const gfx::RoundedCornersF corner_radii_;
   const gfx::Insets insets_;
   const SkBlendMode blend_mode_;
   const bool antialias_;
@@ -149,8 +152,8 @@ class FabButton : public views::MdTextButton {
         ExamplesColorIds::kColorButtonBackgroundFab);
     SetBackground(CreateBackgroundFromPainter(
         std::make_unique<SolidRoundRectPainterWithShadow>(
-            bg_color, SK_ColorTRANSPARENT, GetCornerRadiusValue(),
-            gfx::Insets(), SkBlendMode::kSrcOver, true, use_shadow_)));
+            bg_color, SK_ColorTRANSPARENT, GetCornerRadii(), gfx::Insets(),
+            SkBlendMode::kSrcOver, true, use_shadow_)));
   }
 
   void OnHoverChanged() {
@@ -256,13 +259,13 @@ void ButtonExample::CreateExampleView(View* container) {
 
 void ButtonExample::LabelButtonPressed(LabelButton* label_button,
                                        const ui::Event& event) {
-  PrintStatus("Label Button Pressed! count: %d", ++count_);
+  PrintStatus(base::StringPrintf("Label Button Pressed! count: %d", ++count_));
   if (event.IsControlDown()) {
     if (event.IsShiftDown()) {
-      label_button->SetText(
-          label_button->GetText().empty()
-              ? kLongText
-              : label_button->GetText().length() > 50 ? kLabelButton : u"");
+      label_button->SetText(label_button->GetText().empty() ? kLongText
+                            : label_button->GetText().length() > 50
+                                ? kLabelButton
+                                : u"");
     } else if (event.IsAltDown()) {
       label_button->SetImageModel(
           Button::STATE_NORMAL,
@@ -286,11 +289,11 @@ void ButtonExample::LabelButtonPressed(LabelButton* label_button,
     label_button->SetIsDefault(!label_button->GetIsDefault());
   }
   example_view()->GetLayoutManager()->Layout(example_view());
-  PrintViewHierarchy(example_view());
+  LOG(ERROR) << '\n' << PrintViewHierarchy(example_view());
 }
 
 void ButtonExample::ImageButtonPressed() {
-  PrintStatus("Image Button Pressed! count: %d", ++count_);
+  PrintStatus(base::StringPrintf("Image Button Pressed! count: %d", ++count_));
 }
 
 }  // namespace views::examples

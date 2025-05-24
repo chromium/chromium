@@ -8,5 +8,6 @@
     Exposed=Window,
     ImplementedAs=LockManager
 ] partial interface Navigator {
+    [RaisesException]
     readonly attribute LockManager locks;
 };

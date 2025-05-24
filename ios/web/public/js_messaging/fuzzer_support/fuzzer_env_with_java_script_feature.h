@@ -5,6 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_FUZZER_SUPPORT_FUZZER_ENV_WITH_JAVA_SCRIPT_FEATURE_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_FUZZER_SUPPORT_FUZZER_ENV_WITH_JAVA_SCRIPT_FEATURE_H_
 
+#import "base/memory/raw_ptr.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 #include "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/test/fuzzer_env_with_web_state.h"
@@ -25,7 +26,7 @@ class FuzzerEnvWithJavaScriptFeature : public FuzzerEnvWithWebState {
   void InvokeScriptMessageReceived(const web::ScriptMessage& message);
 
  private:
-  JavaScriptFeature* feature_;
+  raw_ptr<JavaScriptFeature> feature_;
 };
 
 }  // namespace web

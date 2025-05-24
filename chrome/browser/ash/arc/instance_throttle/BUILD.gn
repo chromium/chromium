@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("instance_throttle") {
   sources = [
@@ -31,10 +31,10 @@ static_library("instance_throttle") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/boot_phase_monitor",
     "//chrome/browser/ash/arc/idle_manager",
     "//chrome/browser/ash/arc/session",
@@ -45,6 +45,7 @@ static_library("instance_throttle") {
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/throttle",
+    "//chromeos/ash/experiences/arc",
     "//chromeos/ui/base",
     "//components/exo",
     "//ui/aura",
@@ -74,9 +75,6 @@ source_set("unit_tests") {
 
   deps = [
     ":instance_throttle",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_list/arc",
@@ -84,13 +82,15 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/idle_manager:test_support",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
-    "//chrome/browser/ash/arc/util",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/throttle",
-    "//components/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
     "//services/device/public/cpp:test_support",

@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+[FAIL] Button with id missing-in-form should reflect type correctly
+  assert_equals: type of missing-in-form should be button expected "button" but got "submit"
+[FAIL] Button with id missing-in-form-command-only should reflect type correctly
+  assert_equals: type of missing-in-form-command-only should be button expected "button" but got "submit"
+[FAIL] Button with id missing-in-form-commandfor-only should reflect type correctly
+  assert_equals: type of missing-in-form-commandfor-only should be button expected "button" but got "submit"
+[FAIL] Button with id missing-attr-form should reflect type correctly
+  assert_equals: type of missing-attr-form should be button expected "button" but got "submit"
+[FAIL] Button with id missing-attr-form-command-only should reflect type correctly
+  assert_equals: type of missing-attr-form-command-only should be button expected "button" but got "submit"
+[FAIL] Button with id missing-attr-form-commandfor-only should reflect type correctly
+  assert_equals: type of missing-attr-form-commandfor-only should be button expected "button" but got "submit"
+[FAIL] Button with id missing-outside-form should reflect type correctly
+  assert_equals: type of missing-outside-form should be button expected "button" but got "submit"
+[FAIL] Button with id missing-outside-form-command-only should reflect type correctly
+  assert_equals: type of missing-outside-form-command-only should be button expected "button" but got "submit"
+[FAIL] Button with id missing-outside-form-commandfor-only should reflect type correctly
+  assert_equals: type of missing-outside-form-commandfor-only should be button expected "button" but got "submit"
+Harness: the test ran to completion.
+

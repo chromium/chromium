@@ -31,7 +31,6 @@ attribution_reporting_promise_test(async t => {
     source,
     method: 'variant',
     reportingOrigin,
-    cookie: attributionDebugCookie,
   });
 
   await waitForSourceToBeRegistered(source.source_event_id, reportingOrigin);

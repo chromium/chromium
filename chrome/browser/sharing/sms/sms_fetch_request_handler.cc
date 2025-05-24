@@ -8,7 +8,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -33,7 +32,7 @@ namespace {
 static constexpr base::TimeDelta kNotificationDelay = base::Seconds(1);
 
 bool DoesMatchOriginList(const std::vector<std::u16string>& origins,
-                         const content::OriginList& origin_list) {
+                         const content::SmsFetcher::OriginList& origin_list) {
   if (origins.size() != origin_list.size())
     return false;
 
@@ -70,9 +69,7 @@ void SmsFetchRequestHandler::OnMessage(
       device ? device->client_name() : message.sender_device_name();
 
   // Empty client_name means that the message is from an unsupported version of
-  // Chrome.
-  base::UmaHistogramBoolean("Sharing.SmsFetcherClientNameIsEmpty",
-                            client_name.empty());
+  // Chrome. This is rare in practice.
   if (client_name.empty())
     return;
 
@@ -95,28 +92,24 @@ void SmsFetchRequestHandler::RemoveRequest(Request* request) {
 }
 
 void SmsFetchRequestHandler::AskUserPermission(
-    const content::OriginList& origin_list,
+    const content::SmsFetcher::OriginList& origin_list,
     const std::string& one_time_code,
     const std::string& client_name) {
   JNIEnv* env = base::android::AttachCurrentThread();
   DCHECK(origin_list.size() == 1 || origin_list.size() == 2);
 
   base::android::ScopedJavaLocalRef<jstring> embedded_origin;
-  base::android::ScopedJavaLocalRef<jstring> top_origin;
+  std::u16string top_origin;
   if (origin_list.size() == 2) {
     embedded_origin = base::android::ConvertUTF16ToJavaString(
         env,
         url_formatter::FormatOriginForSecurityDisplay(
             origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-    top_origin = base::android::ConvertUTF16ToJavaString(
-        env,
-        url_formatter::FormatOriginForSecurityDisplay(
-            origin_list[1], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+    top_origin = url_formatter::FormatOriginForSecurityDisplay(
+        origin_list[1], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   } else {
-    top_origin = base::android::ConvertUTF16ToJavaString(
-        env,
-        url_formatter::FormatOriginForSecurityDisplay(
-            origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
+    top_origin = url_formatter::FormatOriginForSecurityDisplay(
+        origin_list[0], url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
   }
 
   // If there is a notification from a previous request on screen this will
@@ -131,7 +124,7 @@ void SmsFetchRequestHandler::AskUserPermission(
 }
 
 void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
-                                       jstring j_top_origin,
+                                       std::u16string top_origin,
                                        jstring j_embedded_origin) {
   std::vector<std::u16string> origins;
   if (j_embedded_origin) {
@@ -139,8 +132,6 @@ void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
         base::android::ConvertJavaStringToUTF16(env, j_embedded_origin);
     origins.push_back(embedded_origin);
   }
-  std::u16string top_origin =
-      base::android::ConvertJavaStringToUTF16(env, j_top_origin);
   origins.push_back(top_origin);
   auto* request = GetRequest(origins);
   DCHECK(request);
@@ -148,7 +139,7 @@ void SmsFetchRequestHandler::OnConfirm(JNIEnv* env,
 }
 
 void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
-                                       jstring j_top_origin,
+                                       std::u16string top_origin,
                                        jstring j_embedded_origin) {
   std::vector<std::u16string> origins;
   if (j_embedded_origin) {
@@ -156,8 +147,6 @@ void SmsFetchRequestHandler::OnDismiss(JNIEnv* env,
         base::android::ConvertJavaStringToUTF16(env, j_embedded_origin);
     origins.push_back(embedded_origin);
   }
-  std::u16string top_origin =
-      base::android::ConvertJavaStringToUTF16(env, j_top_origin);
   origins.push_back(top_origin);
   auto* request = GetRequest(origins);
   DCHECK(request);
@@ -202,7 +191,7 @@ SmsFetchRequestHandler::Request::~Request() {
 }
 
 void SmsFetchRequestHandler::Request::OnReceive(
-    const content::OriginList& origin_list,
+    const content::SmsFetcher::OriginList& origin_list,
     const std::string& one_time_code,
     content::SmsFetcher::UserConsent consent_requirement) {
   DCHECK(origin_list_ == origin_list);

@@ -34,13 +34,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink-forward.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/permissions_policy/policy_disposition.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
@@ -50,13 +49,12 @@
 #include "third_party/blink/renderer/platform/feature_context.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap_observer_list.h"
-#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
-#include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/use_counter_and_console_logger.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "v8/include/v8-callbacks.h"
@@ -135,8 +133,7 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // in common.
 class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
                                      public MojoBindingContext,
-                                     public ConsoleLogger,
-                                     public UseCounter,
+                                     public UseCounterAndConsoleLogger,
                                      public FeatureContext {
  public:
   ExecutionContext(const ExecutionContext&) = delete;
@@ -352,9 +349,9 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // Report-To endpoints, via ReportPermissionsPolicyViolation(), if the feature
   // is disabled. The optional ConsoleMessage will be sent to the console if
   // present, or else a default message will be used instead.
-  bool IsFeatureEnabled(mojom::blink::PermissionsPolicyFeature) const;
+  bool IsFeatureEnabled(network::mojom::PermissionsPolicyFeature) const;
   bool IsFeatureEnabled(
-      mojom::blink::PermissionsPolicyFeature,
+      network::mojom::PermissionsPolicyFeature,
       ReportOptions report_option = ReportOptions::kDoNotReport,
       const String& message = g_empty_string);
 
@@ -377,10 +374,17 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // to both remain const qualified and output console message, needs
   // to call |frame_->Console().AddMessage()| directly.
   virtual void ReportPermissionsPolicyViolation(
-      mojom::blink::PermissionsPolicyFeature,
+      network::mojom::PermissionsPolicyFeature,
       mojom::blink::PolicyDisposition,
-      const std::optional<String>& reporting_endpoint,
+      const String& reporting_endpoint,
       const String& message = g_empty_string) const {}
+  virtual void ReportPotentialPermissionsPolicyViolation(
+      network::mojom::PermissionsPolicyFeature,
+      mojom::blink::PolicyDisposition,
+      const String& reporting_endpoint,
+      const String& message = g_empty_string,
+      const String& allow_attribute = g_empty_string,
+      const String& src_attribute = g_empty_string) const {}
   virtual void ReportDocumentPolicyViolation(
       mojom::blink::DocumentPolicyFeature,
       mojom::blink::PolicyDisposition,
@@ -439,10 +443,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // ExecutionContext subclasses are usually the V8 global object, which means
   // they are also a ScriptWrappable. This casts the ExecutionContext to a
   // ScriptWrappable if possible.
-  virtual ScriptWrappable* ToScriptWrappable() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  virtual ScriptWrappable* ToScriptWrappable() { NOTREACHED(); }
 
   bool has_filed_shared_array_buffer_creation_issue() const {
     return has_filed_shared_array_buffer_creation_issue_;
@@ -545,7 +546,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   Member<RuntimeFeatureStateOverrideContext>
       runtime_feature_state_override_context_;
 
-  bool require_safe_types_ = false;
+  bool require_trusted_types_ = false;
 };
 
 }  // namespace blink

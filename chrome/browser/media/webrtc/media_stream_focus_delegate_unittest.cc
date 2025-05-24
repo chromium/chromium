@@ -59,7 +59,7 @@ class MediaStreamFocusDelegateTest : public BrowserWithTestWindowTest {
         content::DesktopMediaID::TYPE_WEB_CONTENTS,
         content::DesktopMediaID::kNullId,
         content::WebContentsMediaCaptureId(
-            tab->GetPrimaryMainFrame()->GetProcess()->GetID(),
+            tab->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
             tab->GetPrimaryMainFrame()->GetRoutingID()));
   }
 

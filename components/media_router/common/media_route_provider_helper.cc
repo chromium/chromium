@@ -32,9 +32,7 @@ const char* ProviderIdToString(mojom::MediaRouteProviderId provider_id) {
       return kTest;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown provider_id " << static_cast<int>(provider_id);
-  return "Unknown provider_id";
+  NOTREACHED() << "Unknown provider_id " << static_cast<int>(provider_id);
 }
 
 std::optional<mojom::MediaRouteProviderId> ProviderIdFromString(

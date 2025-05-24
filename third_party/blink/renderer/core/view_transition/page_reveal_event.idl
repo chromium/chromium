@@ -8,5 +8,5 @@
   RuntimeEnabled=PageRevealEvent
 ] interface PageRevealEvent : Event {
   constructor(DOMString type, optional PageRevealEventInit eventInitDict = {});
-  [RuntimeEnabled=ViewTransitionOnNavigation] readonly attribute ViewTransition? viewTransition;
+  readonly attribute ViewTransition? viewTransition;
 };

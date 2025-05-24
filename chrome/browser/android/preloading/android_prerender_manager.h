@@ -6,9 +6,12 @@
 #define CHROME_BROWSER_ANDROID_PRELOADING_ANDROID_PRERENDER_MANAGER_H_
 
 #include "base/android/jni_weak_ref.h"
+#include "base/containers/flat_map.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "url/android/gurl_android.h"
 
+// This object is owned through a Java-side singletone object, and the object
+// can be shared by multiple tabs (WebContents).
 class AndroidPrerenderManager {
  public:
   AndroidPrerenderManager(JNIEnv* env, jobject obj);
@@ -28,7 +31,9 @@ class AndroidPrerenderManager {
       const base::android::JavaParamRef<jobject>& j_web_contents);
 
  private:
-  base::WeakPtr<content::PrerenderHandle> prerender_handle_;
+  base::flat_map<raw_ptr<content::WebContents>,
+                 base::WeakPtr<content::PrerenderHandle>>
+      prerender_handle_map_;
 };
 
 #endif  // CHROME_BROWSER_ANDROID_PRELOADING_ANDROID_PRERENDER_MANAGER_H_

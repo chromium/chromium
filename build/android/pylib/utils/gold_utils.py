@@ -12,6 +12,12 @@ import time
 
 from devil.utils import cmd_helper
 from pylib.base.output_manager import Datatype
+from pathlib import Path
+import sys
+
+build_android_path = Path(__file__).parents[2]
+sys.path.append(str(build_android_path))
+
 from pylib.constants import host_paths
 from pylib.utils import repo_utils
 

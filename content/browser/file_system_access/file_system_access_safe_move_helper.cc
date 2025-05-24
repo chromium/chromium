@@ -13,7 +13,6 @@
 #include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/services/quarantine/quarantine.h"
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
@@ -325,7 +324,7 @@ void FileSystemAccessSafeMoveHelper::DidFileDoQuarantine(
   // On ChromeOS on the other hand anything that isn't in the sandboxed file
   // system is also uniquely identifiable by its FileSystemURL::path(), and
   // thus we accept all other FileSystemURL types.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(target_url.type() != storage::kFileSystemTypeTemporary &&
          target_url.type() != storage::kFileSystemTypePersistent)
       << target_url.type();

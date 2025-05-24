@@ -35,8 +35,7 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
         return MojomMode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS;
 #endif
     }
-    NOTREACHED_IN_MIGRATION() << "Unknown mode " << static_cast<int>(mode);
-    return printing::mojom::PdfRenderSettings_Mode::NORMAL;
+    NOTREACHED() << "Unknown mode " << static_cast<int>(mode);
   }
 
   static bool FromMojom(printing::mojom::PdfRenderSettings_Mode input,
@@ -66,8 +65,7 @@ struct EnumTraits<printing::mojom::PdfRenderSettings_Mode,
         return true;
 #endif
     }
-    NOTREACHED_IN_MIGRATION() << "Unknown mode " << static_cast<int>(input);
-    return false;
+    NOTREACHED() << "Unknown mode " << static_cast<int>(input);
   }
 };
 

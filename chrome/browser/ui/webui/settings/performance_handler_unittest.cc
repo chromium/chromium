@@ -24,7 +24,8 @@ class PerformanceHandlerTest : public BrowserWithTestWindowTest {
   PerformanceHandlerTest() = default;
 
   void SetUp() override {
-    web_contents_ = content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+    web_contents_ =
+        content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->set_web_contents(web_contents_.get());
     handler_ = std::make_unique<PerformanceHandler>();

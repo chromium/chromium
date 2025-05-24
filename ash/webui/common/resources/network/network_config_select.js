@@ -13,59 +13,80 @@ import './cr_policy_network_indicator_mojo.js';
 import './network_shared.css.js';
 
 import {assertNotReached} from '//resources/ash/common/assert.js';
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {NetworkCertificate} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_behavior.js';
+import {microTask, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrPolicyNetworkBehaviorMojo} from './cr_policy_network_behavior_mojo.js';
-import {NetworkConfigElementBehavior} from './network_config_element_behavior.js';
+import {CrPolicyNetworkBehaviorMojo, CrPolicyNetworkBehaviorMojoInterface} from './cr_policy_network_behavior_mojo.js';
+import {NetworkConfigElementBehavior, NetworkConfigElementBehaviorInterface} from './network_config_element_behavior.js';
 import {getTemplate} from './network_config_select.html.js';
 import {OncMojo} from './onc_mojo.js';
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-config-select',
+// Type aliases for js-webui to ts-webui migration
+/** @typedef {*} NetworkCertificate */
 
-  behaviors: [
-    I18nBehavior,
-    CrPolicyNetworkBehaviorMojo,
-    NetworkConfigElementBehavior,
-  ],
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {I18nBehaviorInterface}
+ * @implements {CrPolicyNetworkBehaviorMojoInterface}
+ * @implements {NetworkConfigElementBehaviorInterface}
+ */
+const NetworkConfigSelectElementBase = mixinBehaviors(
+    [
+      I18nBehavior,
+      CrPolicyNetworkBehaviorMojo,
+      NetworkConfigElementBehavior,
+    ],
+    PolymerElement);
 
-  properties: {
-    label: String,
+/** @polymer */
+class NetworkConfigSelectElement extends NetworkConfigSelectElementBase {
+  static get is() {
+    return 'network-config-select';
+  }
 
-    /** Set to true if |items| is a list of certificates. */
-    certList: Boolean,
+  static get template() {
+    return getTemplate();
+  }
 
-    /**
-     * Set true if the dropdown list should allow only device-wide
-     * certificates.
-     * Note: only used when |items| is a list of certificates.
-     */
-    deviceCertsOnly: Boolean,
+  static get properties() {
+    return {
+      label: String,
 
-    /**
-     * Array of item values to select from.
-     * @type {!Array<string|number>}
-     */
-    items: Array,
+      /** Set to true if |items| is a list of certificates. */
+      certList: Boolean,
 
-    /** Select item key, used for converting enums to strings */
-    key: String,
+      /**
+       * Set true if the dropdown list should allow only device-wide
+       * certificates.
+       * Note: only used when |items| is a list of certificates.
+       */
+      deviceCertsOnly: Boolean,
 
-    /** Prefix used to look up ONC property names. */
-    oncPrefix: {
-      type: String,
-      value: '',
-    },
-  },
+      /**
+       * Array of item values to select from.
+       * @type {!Array<string|number>}
+       */
+      items: Array,
 
-  observers: ['updateSelected_(items, value)'],
+      /** Select item key, used for converting enums to strings */
+      key: String,
+
+      /** Prefix used to look up ONC property names. */
+      oncPrefix: {
+        type: String,
+        value: '',
+      },
+    };
+  }
+
+  static get observers() {
+    return ['updateSelected_(items, value)'];
+  }
 
   focus() {
-    this.$$('select').focus();
-  },
+    this.shadowRoot.querySelector('select').focus();
+  }
 
   /**
    * Ensure that the <select> value is updated when |items| or |value| changes.
@@ -73,13 +94,13 @@ Polymer({
    */
   updateSelected_() {
     // Wait for the dom-repeat to populate the <option> entries.
-    this.async(function() {
-      const select = this.$$('select');
+    microTask.run(function() {
+      const select = this.shadowRoot.querySelector('select');
       if (select.value !== this.value) {
         select.value = this.value;
       }
-    });
-  },
+    }.bind(this));
+  }
 
   /**
    * Returns a localized label for |item|. If |this.key| is set, |item| is
@@ -112,7 +133,7 @@ Polymer({
     // All selectable values should be localized.
     assertNotReached('ONC value not found: ' + oncValue);
     return value;
-  },
+  }
 
   /**
    * @param {string|number|!NetworkCertificate}
@@ -125,7 +146,7 @@ Polymer({
       return /** @type {NetworkCertificate}*/ (item).hash;
     }
     return /** @type {string|number}*/ (item);
-  },
+  }
 
   /**
    * @param {string|!NetworkCertificate} item
@@ -142,7 +163,7 @@ Polymer({
       return !!cert.hash;
     }
     return true;
-  },
+  }
 
   /**
    * @param {!NetworkCertificate} certificate
@@ -160,22 +181,26 @@ Polymer({
           'networkCertificateName', certificate.issuedBy, certificate.issuedTo);
     }
     return certificate.issuedBy;
-  },
+  }
 
   /**
    * Only use the `prefilledValue` when it is also listed in the `items`.
+   * @return {boolean}
    */
   isPrefilledValueValid() {
     if (this.prefilledValue === undefined || this.prefilledValue === null) {
       return false;
     }
     return this.items.includes(this.prefilledValue);
-  },
+  }
 
   /**
    * Disable the whole item if the prefilled value is used.
    */
   extraSetupForPrefilledValue() {
     this.disabled = true;
-  },
-});
+  }
+}
+
+customElements.define(
+    NetworkConfigSelectElement.is, NetworkConfigSelectElement);

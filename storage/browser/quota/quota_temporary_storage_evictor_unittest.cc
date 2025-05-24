@@ -25,8 +25,6 @@
 #include "storage/browser/quota/quota_temporary_storage_evictor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::blink::mojom::StorageType;
-
 namespace storage {
 
 class QuotaTemporaryStorageEvictorTest;
@@ -165,9 +163,8 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   void SetUp() override {
     quota_eviction_handler_ = std::make_unique<MockQuotaEvictionHandler>();
 
-    // Run multiple evictions in a single RunUntilIdle() when interval_ms == 0
     temporary_storage_evictor_ = std::make_unique<QuotaTemporaryStorageEvictor>(
-        quota_eviction_handler_.get(), 0);
+        quota_eviction_handler_.get(), base::TimeDelta());
   }
 
   void TearDown() override {
@@ -205,7 +202,7 @@ class QuotaTemporaryStorageEvictorTest : public testing::Test {
   BucketLocator CreateBucket(const std::string& url, bool is_default) {
     return BucketLocator(bucket_id_generator_.GenerateNextId(),
                          blink::StorageKey::CreateFromStringForTesting(url),
-                         blink::mojom::StorageType::kTemporary, is_default);
+                         is_default);
   }
 
   EvictionBucket CreateEvictionBucket(const std::string& url,
@@ -422,92 +419,6 @@ TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest) {
   EXPECT_EQ(1, statistics().num_evicted_buckets);
   EXPECT_EQ(1, statistics().num_eviction_rounds -
                    statistics().num_skipped_eviction_rounds);
-}
-
-// Legacy test to verify eviction still works as expected when the
-// kNewQuotaEvictionRoutine feature is not enabled.
-TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionTest_Rollback) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kNewQuotaEvictionRoutine);
-
-  const int64_t a_size = 400;
-  const int64_t b_size = 150;
-  const int64_t c_size = 120;
-  const int64_t d_size = 292;
-  const int64_t initial_total_size = a_size + b_size + c_size + d_size;
-  const int64_t e_size = 275;
-
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.d.com", /*is_default=*/false), d_size);
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.c.com", /*is_default=*/false), c_size);
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.b.com", /*is_default=*/false), b_size);
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.a.com", /*is_default=*/false), a_size);
-  quota_eviction_handler()->SetPoolSize(1000);
-  quota_eviction_handler()->set_available_space(1000000000);
-  quota_eviction_handler()->set_task_for_get_usage_and_quota(
-      base::BindRepeating(
-          &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
-          weak_factory_.GetWeakPtr(),
-          std::make_pair(CreateBucket("http://www.e.com", /*is_default=*/false),
-                         e_size),
-          std::nullopt, initial_total_size - d_size,
-          initial_total_size - d_size + e_size - c_size));
-  EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
-  temporary_storage_evictor()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(initial_total_size - d_size + e_size - c_size - b_size,
-            quota_eviction_handler()->GetUsage());
-  EXPECT_EQ(5, num_get_usage_and_quota_for_eviction());
-
-  EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(3, statistics().num_evicted_buckets);
-  EXPECT_EQ(2, statistics().num_eviction_rounds);
-  EXPECT_EQ(0, statistics().num_skipped_eviction_rounds);
-  EXPECT_EQ(2U, quota_eviction_handler()->get_evict_expired_buckets_count());
-}
-
-// Legacy test to verify eviction still works as expected when the
-// kNewQuotaEvictionRoutine feature is not enabled.
-TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionSkippedTest_Rollback) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(features::kNewQuotaEvictionRoutine);
-
-  const int64_t a_size = 400;
-  const int64_t b_size = 150;
-  const int64_t c_size = 120;
-  const int64_t d_size = 292;
-  const int64_t initial_total_size = a_size + b_size + c_size + d_size;
-
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.d.com", /*is_default=*/true), d_size);
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.c.com", /*is_default=*/true), c_size);
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.b.com", /*is_default=*/true), b_size);
-  quota_eviction_handler()->AddBucket(
-      CreateBucket("http://www.a.com", /*is_default=*/true), a_size);
-  quota_eviction_handler()->SetPoolSize(1000);
-  quota_eviction_handler()->set_available_space(1000000000);
-  quota_eviction_handler()->set_task_for_get_usage_and_quota(
-      base::BindRepeating(
-          &QuotaTemporaryStorageEvictorTest::TaskForRepeatedEvictionTest,
-          weak_factory_.GetWeakPtr(), std::make_pair(std::nullopt, 0),
-          std::nullopt, initial_total_size - d_size,
-          initial_total_size - d_size));
-  EXPECT_EQ(initial_total_size, quota_eviction_handler()->GetUsage());
-  // disable_timer_for_testing();
-  temporary_storage_evictor()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(initial_total_size - d_size, quota_eviction_handler()->GetUsage());
-  EXPECT_EQ(4, num_get_usage_and_quota_for_eviction());
-
-  EXPECT_EQ(0, statistics().num_errors_on_getting_usage_and_quota);
-  EXPECT_EQ(1, statistics().num_evicted_buckets);
-  EXPECT_EQ(3, statistics().num_eviction_rounds);
-  EXPECT_EQ(2, statistics().num_skipped_eviction_rounds);
 }
 
 TEST_F(QuotaTemporaryStorageEvictorTest, RepeatedEvictionWithAccessBucketTest) {

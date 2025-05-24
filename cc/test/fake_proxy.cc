@@ -32,7 +32,13 @@ bool FakeProxy::IsDeferringCommits() const {
 
 bool FakeProxy::CommitRequested() const { return false; }
 
-void FakeProxy::QueueImageDecode(int request_id, const PaintImage& image) {}
+void FakeProxy::QueueImageDecode(int request_id,
+                                 const DrawImage& image,
+                                 bool speculative) {}
+
+bool FakeProxy::SpeculativeDecodeRequestInFlight() const {
+  return false;
+}
 
 void FakeProxy::SetMutator(std::unique_ptr<LayerTreeMutator> mutator) {}
 

@@ -57,8 +57,6 @@ public class PermissionNavigationTest {
     /**
      * Check that modal permission prompts and queued permission requests are removed upon
      * navigation.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest

@@ -42,7 +42,6 @@ class SnapshotBrowserAgent : public BrowserObserver,
 
  private:
   friend class BrowserUserData<SnapshotBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SnapshotBrowserAgent(Browser* browser);
 
@@ -71,8 +70,6 @@ class SnapshotBrowserAgent : public BrowserObserver,
   std::vector<SnapshotID> GetSnapshotIDs();
 
   __strong SnapshotStorageWrapper* snapshot_storage_;
-
-  raw_ptr<Browser> browser_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_

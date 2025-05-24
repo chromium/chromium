@@ -23,7 +23,7 @@ class NigoriStorage {
 
   virtual ~NigoriStorage() = default;
 
-  // Should atomically persist |data|.
+  // Should atomically persist `data`.
   virtual void StoreData(const sync_pb::NigoriLocalData& data) = 0;
 
   // Returns previously stored NigoriLocalData. In case error occurs or no data

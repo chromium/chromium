@@ -1,0 +1,6 @@
+monorail: {
+  component: "Chromium > Blink > PrivateAggregation"
+}
+buganizer_public: {
+  component_id: 1456725
+}

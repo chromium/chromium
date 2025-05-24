@@ -285,7 +285,7 @@ StatisticsProviderImpl::StatisticsProviderImpl()
 
 StatisticsProviderImpl::StatisticsProviderImpl(StatisticsSources sources)
     : sources_(std::move(sources)),
-      load_statistics_started_(false),
+      loading_state_(LoadingState::kNotStarted),
       oem_manifest_loaded_(false),
       statistics_loaded_(base::WaitableEvent::ResetPolicy::MANUAL,
                          base::WaitableEvent::InitialState::NOT_SIGNALED) {}
@@ -294,8 +294,8 @@ StatisticsProviderImpl::~StatisticsProviderImpl() = default;
 
 void StatisticsProviderImpl::StartLoadingMachineStatistics(
     bool load_oem_manifest) {
-  CHECK(!load_statistics_started_);
-  load_statistics_started_ = true;
+  CHECK(!HasLoadingStarted());
+  loading_state_ = LoadingState::kStarted;
 
   VLOG(1) << "Started loading statistics. Load OEM Manifest: "
           << load_oem_manifest;
@@ -409,6 +409,11 @@ StatisticsProvider::VpdStatus StatisticsProviderImpl::GetVpdStatus() const {
   return vpd_status_;
 }
 
+StatisticsProvider::LoadingState StatisticsProviderImpl::GetLoadingState()
+    const {
+  return loading_state_;
+}
+
 void StatisticsProviderImpl::SignalStatisticsLoaded() {
   decltype(statistics_loaded_callbacks_) local_statistics_loaded_callbacks;
 
@@ -433,7 +438,7 @@ void StatisticsProviderImpl::SignalStatisticsLoaded() {
 
 bool StatisticsProviderImpl::WaitForStatisticsLoaded(
     std::string_view statistic_name) {
-  CHECK(load_statistics_started_);
+  CHECK(HasLoadingStarted());
   if (statistics_loaded_.IsSignaled()) {
     RecordStatisticsRequestLoadingTimeMetric(
         statistic_name,
@@ -556,6 +561,7 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
   LoadRegionsFile(sources_.cros_regions_filepath,
                   it != machine_info_.end() ? it->second : "");
 
+  loading_state_ = LoadingState::kFinished;
   SignalStatisticsLoaded();
 }
 
@@ -722,6 +728,10 @@ std::optional<std::string_view> StatisticsProviderImpl::GetRegionalInformation(
   }
 
   return std::nullopt;
+}
+
+bool StatisticsProviderImpl::HasLoadingStarted() const {
+  return loading_state_ != LoadingState::kNotStarted;
 }
 
 }  // namespace ash::system

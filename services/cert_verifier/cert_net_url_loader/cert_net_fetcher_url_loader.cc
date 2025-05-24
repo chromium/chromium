@@ -58,6 +58,7 @@
 
 #include "services/cert_verifier/cert_net_url_loader/cert_net_fetcher_url_loader.h"
 
+#include <algorithm>
 #include <memory>
 #include <tuple>
 #include <utility>
@@ -72,7 +73,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_math.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -253,14 +253,14 @@ class CertNetFetcherURLLoader::RequestCore
 
   void OnJobCompleted(Job* job,
                       net::Error error,
-                      const std::string* response_body) {
+                      base::span<const uint8_t> response_body) {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
     DCHECK_EQ(job_, job);
     job_ = nullptr;
 
     error_ = error;
-    bytes_ = base::ToVector(base::as_byte_span(*response_body));
+    bytes_ = base::ToVector(response_body);
     completion_event_.Signal();
   }
 
@@ -385,18 +385,18 @@ class Job {
                          const network::mojom::URLResponseHead& response_head);
 
   // Callback for when |url_loader_| has finished.
-  void OnUrlLoaderCompleted(std::unique_ptr<std::string> response_body);
+  void OnUrlLoaderCompleted(std::optional<std::string> response_body);
 
   // Called when the Job has completed. The job may finish in response to a
   // timeout, an invalid URL, or the SimpleURLLoader completing.
   // This will delete the Job after calling |CompleteAndClearRequests()|.
   void OnJobCompleted(net::Error error,
-                      std::unique_ptr<std::string> response_body);
+                      std::optional<std::string> response_body);
 
   // Calls r->OnJobCompleted() for each RequestCore |r| currently attached
   // to this job, and then clears |requests_|.
   void CompleteAndClearRequests(net::Error error,
-                                std::unique_ptr<std::string> response_body);
+                                std::optional<std::string> response_body);
 
   // Cancels a request with a specified error code and calls
   // OnUrlRequestCompleted().
@@ -469,7 +469,7 @@ void Job::AttachRequest(
 void Job::DetachRequest(CertNetFetcherURLLoader::RequestCore* request) {
   std::unique_ptr<Job> delete_this;
 
-  auto it = base::ranges::find(requests_, request);
+  auto it = std::ranges::find(requests_, request);
   CHECK(it != requests_.end(), base::NotFatalUntil::M130);
   requests_.erase(it);
 
@@ -549,7 +549,7 @@ void Job::Cancel() {
   // Reset the SimpleURLLoader.
   url_loader_.reset();
   // Signal attached requests that they've been completed.
-  CompleteAndClearRequests(net::ERR_ABORTED, nullptr);
+  CompleteAndClearRequests(net::ERR_ABORTED, std::nullopt);
 }
 
 void Job::OnReceivedRedirect(
@@ -572,13 +572,13 @@ void Job::OnResponseStarted(
   }
 }
 
-void Job::OnUrlLoaderCompleted(std::unique_ptr<std::string> response_body) {
+void Job::OnUrlLoaderCompleted(std::optional<std::string> response_body) {
   net::Error error = static_cast<net::Error>(url_loader_->NetError());
   OnJobCompleted(error, std::move(response_body));
 }
 
 void Job::OnJobCompleted(net::Error error,
-                         std::unique_ptr<std::string> response_body) {
+                         std::optional<std::string> response_body) {
   // Reset the SimpleURLLoader.
   url_loader_.reset();
 
@@ -587,18 +587,19 @@ void Job::OnJobCompleted(net::Error error,
 }
 
 void Job::CompleteAndClearRequests(net::Error error,
-                                   std::unique_ptr<std::string> response_body) {
+                                   std::optional<std::string> response_body) {
   for (const auto& request : requests_) {
-    std::string empty_str;
     request->OnJobCompleted(this, error,
-                            response_body ? response_body.get() : &empty_str);
+                            response_body.has_value()
+                                ? base::as_byte_span(*response_body)
+                                : base::span<uint8_t>());
   }
 
   requests_.clear();
 }
 
 void Job::FailRequest(net::Error error) {
-  OnJobCompleted(error, nullptr);
+  OnJobCompleted(error, std::nullopt);
 }
 
 }  // namespace

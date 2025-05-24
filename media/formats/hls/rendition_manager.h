@@ -5,7 +5,6 @@
 #ifndef MEDIA_FORMATS_HLS_RENDITION_MANAGER_H_
 #define MEDIA_FORMATS_HLS_RENDITION_MANAGER_H_
 
-#include <deque>
 #include <optional>
 #include <set>
 #include <string>
@@ -22,16 +21,15 @@
 #include "media/base/demuxer.h"
 #include "media/base/limits.h"
 #include "media/base/media_export.h"
+#include "media/formats/hls/rendition_group.h"
 #include "media/formats/hls/types.h"
+#include "media/formats/hls/variant_stream.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace media::hls {
 
 class MultivariantPlaylist;
-class VariantStream;
-class AudioRendition;
-class AudioRenditionGroup;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -44,16 +42,13 @@ enum class AdaptationReason {
   kMaxValue = kNetworkDowngrade,
 };
 
-// Class responsible for tracking playability state of all variants and
-// renditions in a multivariant playlist. It will always select a preferred
-// variant, and then from within that variant, select an optional audio-override
-// rendition. The selection depends on user preference, network speed, frame
-// drops, underflow events, and player resolution.
+// Manages the rendition selection algorithm based on user preference, network
+// speed, frame drops, underflow events, and player resolution. Any time one of
+// these changes might affect the selected renditions, an update callback is
+// fired with the new selections. In the future, this may be extended from the
+// present {primary, optional<extra>} rendition set to include subtitles.
 class MEDIA_EXPORT RenditionManager {
  public:
-  using VariantID = base::IdType32<VariantStream>;
-  using RenditionID = base::IdType32<AudioRendition>;
-
   // We want to ask if a codec string is supported, but also if it contains
   // audio, video, or both types of content, allowing us to sort our variants
   // into groups.
@@ -64,12 +59,6 @@ class MEDIA_EXPORT RenditionManager {
     kSupportedVideoOnly,
   };
 
-  // A SelectableOption consists of an ID representing either a variant or a
-  // rendition, as well as a string that should be displayed to a user in a menu
-  // for selecting a preferred rendition or variant.
-  template <typename T>
-  using SelectableOption = std::tuple<T, std::string>;
-
   // Callback used to query whether the given MIME+codec string is supported,
   // and what types of content we can expect.
   // The first argument is the name of the container, ie "video/mp4" or
@@ -79,14 +68,17 @@ class MEDIA_EXPORT RenditionManager {
       base::RepeatingCallback<CodecSupportType(std::string_view,
                                                base::span<const std::string>)>;
 
-  // The VariantStream ptr can be null if there is not supposed to be a change
-  // in the URI of the primary variant when this callback is run.
-  // The AudioRendition ptr can be null if there is no audio override rendition
-  // selected.
-  using SelectedCB = base::RepeatingCallback<
-      void(AdaptationReason, const VariantStream*, const AudioRendition*)>;
+  // Callbacks for handling rendition/track changes.
+  using SelectedCB = base::RepeatingCallback<void(
+      AdaptationReason,
+      const VariantStream*,
+      std::optional<RenditionGroup::RenditionTrack>,
+      std::optional<RenditionGroup::RenditionTrack>)>;
+
   using SelectedCallonce =
-      base::OnceCallback<void(const VariantStream*, const AudioRendition*)>;
+      base::OnceCallback<void(const VariantStream*,
+                              std::optional<RenditionGroup::RenditionTrack>,
+                              std::optional<RenditionGroup::RenditionTrack>)>;
 
   ~RenditionManager();
   RenditionManager(scoped_refptr<MultivariantPlaylist> playlist,
@@ -96,101 +88,48 @@ class MEDIA_EXPORT RenditionManager {
   void UpdatePlayerResolution(const gfx::Size& resolution);
   void UpdateNetworkSpeed(uint64_t network_bps);
 
-  // After initialization, is there anything to select?
-  bool HasAnyVariants() const;
-
-  std::vector<SelectableOption<VariantID>> GetSelectableVariants() const;
-  std::vector<SelectableOption<RenditionID>> GetSelectableAudioRenditions()
-      const;
-
   // Uses player state and user preferences to trigger `on_variant_selected`
   // calls with preferred playback uris.
   void Reselect(SelectedCallonce callback);
 
-  // Set preferred variants. A nullopt means that no preference is set, and
-  // automatic selection can take place.
-  void SetPreferredAudioRendition(std::optional<RenditionID> rendition_index);
-  void SetPreferredVariant(std::optional<VariantID> variant_index);
+  // A nullopt means that no preference is set, and automatic selection will
+  // take over.
+  void SetPreferredExtraRendition(std::optional<MediaTrack::Id> track_id);
+  void SetPreferredPrimaryRendition(std::optional<MediaTrack::Id> track_id);
+
+  bool HasSelectableVariants() const { return !selectable_variants_.empty(); }
+
+  std::vector<MediaTrack> GetSelectablePrimaryRenditions() const;
+  std::vector<MediaTrack> GetSelectableExtraRenditions() const;
 
  private:
-  struct UpdatedSelections {
-    ~UpdatedSelections();
-    UpdatedSelections();
-    UpdatedSelections(const UpdatedSelections&);
-    std::optional<VariantID> variant;
-    std::optional<RenditionID> audio_rendition;
-  };
+  const VariantStream* SelectBestVariant() const;
 
-  struct VariantStatistics {
-    ~VariantStatistics();
-    VariantStatistics(const VariantStatistics&);
-    VariantStatistics(const VariantStream*, const AudioRenditionGroup*);
-
-    raw_ptr<const VariantStream> stream;
-    raw_ptr<const AudioRenditionGroup> audio_rendition_group;
-    base::flat_set<RenditionID> audio_renditions;
-  };
-
-  // Called during construction. This creates the per-variant statistics
-  // trackers and all the maps where variants can reference IDs.
-  void InitializeVariantMaps(IsTypeSupportedCallback callback);
-
-  // Helper for `Reselect()` which computes what the best rendition and variant
-  // are, so that they can be compared to what is currently selected and a diff
-  // can be returned.
-  UpdatedSelections GetUpdatedSelectionIds();
-
-  // Runs the variant selection algorithm, which tries to select the highest
-  // bitrate variant which isn't precluded by some combination of player
-  // resolution and network speed.
-  std::optional<VariantID> SelectBestVariant();
-
-  // Given the selected variant, select the best audio rendition that could be
-  // used as an audio-override rendition. It first tries to use any
-  // user-selected rendition, but if it's not available, tries to find the most
-  // similar rendition to the user's selection. If there is no user selection,
-  // it uses defaults and autoselect tags to determine which rendition to pick.
-  std::optional<RenditionID> SelectBestRendition(VariantID,
-                                                 std::optional<RenditionID>);
-
-  // Backwards lookup of RenditionID from `selectable_renditions_`. This map is
-  // usually so small that an iteration is not significantly slow.
-  std::optional<RenditionID> LookupRendition(const AudioRendition* rendition);
-
-  // Selects the best rendition based with an optionally given language, and a
-  // flag stating whether only renditions tagged with "AUTOSELECT=TRUE" may be
-  // selected. The premise here is to prefer renditions in order of:
-  //  - variant->Default (guaranteed autoselect always) if language is null
-  //  - variant->Default if language matches
-  //  - any rendition with matching language and matching selectability
-  //  - the default rendition if no renditions languages match
-  //  - any rendition with matching selectability
-  //  - nothing
-  std::optional<RenditionManager::RenditionID> SelectRenditionBasedOnLanguage(
-      const VariantStatistics& variant,
-      std::optional<std::string> maybe_language,
-      bool only_autoselect);
-
-  // The playlist owns all VariantStream and VideoRendition instances, which is
+  // The playlist owns all VariantStream and Rendition instances, which is
   // what allows us to store raw_ptr references to those throughout the rest
   // of the member variables here.
   scoped_refptr<MultivariantPlaylist> playlist_;
 
   // Fired whenever a variant or rendition changes.
-  SelectedCB on_variant_selected_;
+  SelectedCB reselect_cb_;
 
-  base::flat_map<VariantID, VariantStatistics> selectable_variants_;
-  base::flat_map<RenditionID, raw_ptr<const AudioRendition>>
-      selectable_renditions_;
+  // A sorted list of variants from {least -> most} preferrential.
+  std::vector<raw_ptr<const VariantStream>> selectable_variants_;
+  std::vector<MediaTrack> selectable_variant_tracks_;
 
-  std::optional<VariantID> selected_variant_;
-  std::optional<VariantID> preferred_variant_;
+  // The currently selected variant stream.
+  raw_ptr<const VariantStream> active_variant_ = nullptr;
 
-  std::optional<RenditionID> selected_audio_rendition_;
-  std::optional<RenditionID> preferred_audio_rendition_;
+  // User selection preferences. The selection algorithm attempts to respect
+  // the choice here even if underlying conditions change.
+  std::optional<RenditionGroup::RenditionTrack> preferred_extra_rendition_;
 
-  VariantID::Generator variant_id_gen_;
-  RenditionID::Generator rendition_id_gen_;
+  // The actively selected renditions.
+  std::optional<RenditionGroup::RenditionTrack> selected_primary_;
+  std::optional<RenditionGroup::RenditionTrack> selected_extra_;
+
+  // This selection of variants are entirely audio.
+  bool audio_only_ = false;
 
   // Playback qualities not tied to a specific variant.
   gfx::Size player_resolution_ = {limits::kMaxDimension, limits::kMaxDimension};

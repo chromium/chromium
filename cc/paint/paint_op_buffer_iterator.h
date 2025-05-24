@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef CC_PAINT_PAINT_OP_BUFFER_ITERATOR_H_
 #define CC_PAINT_PAINT_OP_BUFFER_ITERATOR_H_
 
 #include <iterator>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/alias.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace cc {
 
@@ -44,7 +40,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::Iterator
   const PaintOp& operator*() const { return *get(); }
   Iterator begin() const { return Iterator(*buffer_); }
   Iterator end() const {
-    return Iterator(*buffer_, buffer_->data_.get() + buffer_->used_,
+    return Iterator(*buffer_,
+                    UNSAFE_TODO(buffer_->data_.get() + buffer_->used_),
                     buffer_->used_);
   }
   bool operator==(const Iterator& other) const {
@@ -56,7 +53,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::Iterator
   Iterator& operator++() {
     DCHECK(*this);
     const PaintOp& op = **this;
-    ptr_ += op.AlignedSize();
+    UNSAFE_TODO(ptr_ += op.AlignedSize());
     op_offset_ += op.AlignedSize();
 
     CHECK_LE(op_offset_, buffer_->used_);
@@ -93,7 +90,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator
       return;
     }
     op_offset_ = offsets[0];
-    ptr_ += op_offset_;
+    UNSAFE_TODO(ptr_ += op_offset_);
   }
 
   const PaintOp* get() const { return reinterpret_cast<const PaintOp*>(ptr_); }
@@ -101,7 +98,8 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator
   const PaintOp& operator*() const { return *get(); }
   OffsetIterator begin() const { return OffsetIterator(*buffer_, *offsets_); }
   OffsetIterator end() const {
-    return OffsetIterator(*buffer_, buffer_->data_.get() + buffer_->used_,
+    return OffsetIterator(*buffer_,
+                          UNSAFE_TODO(buffer_->data_.get() + buffer_->used_),
                           buffer_->used_, *offsets_);
   }
   bool operator==(const OffsetIterator& other) const {
@@ -126,7 +124,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::OffsetIterator
     CHECK_LT(target_offset, buffer_->used_);
 
     // Advance the iterator to the target offset.
-    ptr_ += (target_offset - op_offset_);
+    UNSAFE_TODO(ptr_ += (target_offset - op_offset_));
     op_offset_ = target_offset;
 
     DCHECK(!*this || (*this)->type <=
@@ -172,19 +170,19 @@ class CC_PAINT_EXPORT PaintOpBuffer::CompositeIterator
   CompositeIterator(CompositeIterator&& other);
 
   const PaintOp* get() const {
-    return absl::visit([](const auto& iter) { return iter.get(); }, iter_);
+    return std::visit([](const auto& iter) { return iter.get(); }, iter_);
   }
   const PaintOp* operator->() const { return get(); }
   const PaintOp& operator*() const { return *get(); }
   CompositeIterator begin() const {
-    return absl::holds_alternative<Iterator>(iter_)
-               ? CompositeIterator(absl::get<Iterator>(iter_).begin())
-               : CompositeIterator(absl::get<OffsetIterator>(iter_).begin());
+    return std::holds_alternative<Iterator>(iter_)
+               ? CompositeIterator(std::get<Iterator>(iter_).begin())
+               : CompositeIterator(std::get<OffsetIterator>(iter_).begin());
   }
   CompositeIterator end() const {
-    return absl::holds_alternative<Iterator>(iter_)
-               ? CompositeIterator(absl::get<Iterator>(iter_).end())
-               : CompositeIterator(absl::get<OffsetIterator>(iter_).end());
+    return std::holds_alternative<Iterator>(iter_)
+               ? CompositeIterator(std::get<Iterator>(iter_).end())
+               : CompositeIterator(std::get<OffsetIterator>(iter_).end());
   }
   bool operator==(const CompositeIterator& other) const {
     return iter_ == other.iter_;
@@ -193,7 +191,7 @@ class CC_PAINT_EXPORT PaintOpBuffer::CompositeIterator
     return !(*this == other);
   }
   CompositeIterator& operator++() {
-    absl::visit([](auto& iter) { ++iter; }, iter_);
+    std::visit([](auto& iter) { ++iter; }, iter_);
     return *this;
   }
   CompositeIterator operator++(int) {
@@ -202,14 +200,14 @@ class CC_PAINT_EXPORT PaintOpBuffer::CompositeIterator
     return original;
   }
   explicit operator bool() const {
-    return absl::visit([](const auto& iter) { return !!iter; }, iter_);
+    return std::visit([](const auto& iter) { return !!iter; }, iter_);
   }
 
  private:
   explicit CompositeIterator(OffsetIterator iter) : iter_(std::move(iter)) {}
   explicit CompositeIterator(Iterator iter) : iter_(std::move(iter)) {}
 
-  absl::variant<Iterator, OffsetIterator> iter_;
+  std::variant<Iterator, OffsetIterator> iter_;
 };
 
 class CC_PAINT_EXPORT PaintOpBuffer::PlaybackFoldingIterator

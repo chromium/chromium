@@ -29,11 +29,7 @@ namespace {
 
 class FocusModePolicyTest : public policy::PolicyTest {
  public:
-  FocusModePolicyTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kFocusMode, features::kFocusModeYTM},
-        /*disabled_features=*/{});
-  }
+  FocusModePolicyTest() = default;
   ~FocusModePolicyTest() override = default;
 
  protected:
@@ -78,8 +74,6 @@ class FocusModePolicyTest : public policy::PolicyTest {
   UnifiedSystemTray* GetPrimaryUnifiedSystemTray() {
     return GetPrimaryShelf()->GetStatusAreaWidget()->unified_system_tray();
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FocusModePolicyTest, FocusModeSounds_Enabled) {

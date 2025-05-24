@@ -1,0 +1,41 @@
+caption: Settings for Gemini integration
+desc: |-
+  This setting allows Gemini app integrations.
+
+  0/unset = Gemini integration will be available for users.
+
+  1 = Gemini integration will not be available for users.
+
+  If the policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
+
+  For more information, please check the Enterprise Release Notes (https://support.google.com/chrome/a/answer/7679408).
+owners:
+- salg@google.com
+- ssid@chromium.org
+- file://components/policy/OWNERS
+example_value: 1
+future_on:
+- android
+- chrome.linux
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: Allow Gemini integrations.
+  name: Allowed
+  value: 0
+- caption: Do not allow Gemini integrations.
+  name: Disabled
+  value: 1
+default: 0
+supported_on:
+- chrome.win:137-
+- chrome.mac:137-
+tags: []

@@ -25,8 +25,9 @@
   if (applicationGroup) {
     NSUserDefaults* defaults =
         [[NSUserDefaults alloc] initWithSuiteName:applicationGroup];
-    if (defaults)
+    if (defaults) {
       return defaults;
+    }
   }
 
   // On a device, the entitlements should always provide an application group to
@@ -48,6 +49,28 @@
       [chromeURL URLByAppendingPathComponent:@"ContentWidgetFavicons"
                                  isDirectory:YES];
   return contentWidgetFaviconsURL;
+}
+
++ (NSURL*)widgetsAvatarFolder {
+  NSString* applicationGroup = [AppGroupHelper applicationGroup];
+  if (!applicationGroup) {
+    return nil;
+  }
+  NSURL* groupURL = [[NSFileManager defaultManager]
+      containerURLForSecurityApplicationGroupIdentifier:applicationGroup];
+  NSURL* chromeURL = [groupURL URLByAppendingPathComponent:@"Chrome"
+                                               isDirectory:YES];
+  NSURL* pictureDataURL = [chromeURL URLByAppendingPathComponent:@"AvatarData"
+                                                     isDirectory:YES];
+
+  // Create shared folder if it doesn't exist.
+  if (![[NSFileManager defaultManager] createDirectoryAtPath:pictureDataURL.path
+                                 withIntermediateDirectories:YES
+                                                  attributes:nil
+                                                       error:nil]) {
+    return nil;
+  }
+  return pictureDataURL;
 }
 
 @end

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
-
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
+#include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chromeos/ash/components/dbus/biod/fake_biod_client.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,6 +45,17 @@ constexpr char kCheckmarkAssetUrl[] =
 
 int kMaxAllowedFingerprints = 3;
 
+PasswordSelectionScreen* GetPasswordSelectionScreen() {
+  return static_cast<PasswordSelectionScreen*>(
+      WizardController::default_controller()->screen_manager()->GetScreen(
+          PasswordSelectionScreenView::kScreenId));
+}
+
+FingerprintSetupScreen* GetScreen() {
+  return WizardController::default_controller()
+      ->GetScreen<FingerprintSetupScreen>();
+}
+
 }  // namespace
 
 class FingerprintSetupTest : public OobeBaseTest {
@@ -59,47 +72,56 @@ class FingerprintSetupTest : public OobeBaseTest {
         /*override_quick_unlock=*/true);
     test_api_->EnableFingerprintByPolicy(quick_unlock::Purpose::kUnlock);
 
-    // Override the screen exit callback with our own method.
-    FingerprintSetupScreen* fingerprint_screen =
-        WizardController::default_controller()
-            ->GetScreen<FingerprintSetupScreen>();
-    original_callback_ = fingerprint_screen->get_exit_callback_for_testing();
-    fingerprint_screen->set_exit_callback_for_testing(
-        base::BindRepeating(&FingerprintSetupTest::OnFingerprintSetupScreenExit,
-                            base::Unretained(this)));
+    // Set it up so that we capture the exit result.
+    original_callback_ = GetScreen()->get_exit_callback_for_testing();
+    GetScreen()->set_exit_callback_for_testing(
+        base::BindLambdaForTesting([&](FingerprintSetupScreen::Result result) {
+          // Save the result and trigger the original callback. This ensures
+          // that metrics are properly recorded after the screen exits.
+          std::move(screen_exit_result_waiter_.GetRepeatingCallback())
+              .Run(result);
+          original_callback_.Run(result);
+        }));
+
+    // In the normal flow, PasswordSelection leads to FingerprintSetup. This
+    // is used for stopping the flow immediately before it.
+    password_selection_callback_ =
+        GetPasswordSelectionScreen()->get_exit_callback_for_testing();
+    GetPasswordSelectionScreen()->set_exit_callback_for_testing(
+        password_selection_result_waiter_.GetRepeatingCallback());
 
     OobeBaseTest::SetUpOnMainThread();
   }
 
   void ShowFingerprintScreen() {
     PerformLogin();
-    WizardController::default_controller()->AdvanceToScreen(
-        FingerprintSetupScreenView::kScreenId);
+    ProceedToFingerprintScreen();
     OobeScreenWaiter(FingerprintSetupScreenView::kScreenId).Wait();
   }
 
+  // This method can be used to login and block the system immediately before
+  // showing the FingerprintSetupScreen. Any preparation steps can be triggered
+  // before invoking `ProceedToFingerprintScreen`.
   void PerformLogin() {
-    OobeScreenExitWaiter signin_screen_exit_waiter(GetFirstSigninScreen());
+    // Login and skip all screens until the FingerprintSetupScreen.
+    auto* context =
+        LoginDisplayHost::default_host()->GetWizardContextForTesting();
+    context->skip_post_login_screens_for_tests = true;
     login_manager_.LoginAsNewRegularUser();
-    signin_screen_exit_waiter.Wait();
+
+    // About to show the FingerprintSetup screen.
+    ASSERT_TRUE(password_selection_result_waiter_.Wait());
+    context->skip_post_login_screens_for_tests = false;
   }
 
-  void WaitForScreenExit() {
-    if (screen_exit_)
-      return;
-    base::RunLoop run_loop;
-    screen_exit_callback_ = run_loop.QuitClosure();
-    run_loop.Run();
+  void ProceedToFingerprintScreen() {
+    // Unblock the PasswordSelectionScreen to show the FingerprintSetupScreen.
+    // We don't explicitly wait for the screen to be shown because it might be
+    // intentionally skipped, setting only its exit result.
+    password_selection_callback_.Run(password_selection_result_waiter_.Take());
   }
 
-  void OnFingerprintSetupScreenExit(Result result) {
-    screen_exit_ = true;
-    screen_result_ = result;
-    original_callback_.Run(result);
-    if (screen_exit_callback_) {
-      std::move(screen_exit_callback_).Run();
-    }
-  }
+  void WaitForScreenExit() { ASSERT_TRUE(screen_exit_result_waiter_.Wait()); }
 
   void EnrollFingerprint(int percent_complete) {
     base::RunLoop().RunUntilIdle();
@@ -126,7 +148,7 @@ class FingerprintSetupTest : public OobeBaseTest {
   }
 
   void ExpectResult(Result result) {
-    EXPECT_EQ(screen_result_.value(), result);
+    EXPECT_EQ(screen_exit_result_waiter_.Get(), result);
     histogram_tester_.ExpectTotalCount(
         "OOBE.StepCompletionTimeByExitReason.Fingerprint-setup.Done",
         result == Result::DONE);
@@ -139,11 +161,15 @@ class FingerprintSetupTest : public OobeBaseTest {
   }
 
  private:
-  bool screen_exit_ = false;
-  std::optional<Result> screen_result_;
-  base::HistogramTester histogram_tester_;
   FingerprintSetupScreen::ScreenExitCallback original_callback_;
-  base::RepeatingClosure screen_exit_callback_;
+  base::test::TestFuture<FingerprintSetupScreen::Result>
+      screen_exit_result_waiter_;
+
+  PasswordSelectionScreen::ScreenExitCallback password_selection_callback_;
+  base::test::TestFuture<PasswordSelectionScreen::Result>
+      password_selection_result_waiter_;
+
+  base::HistogramTester histogram_tester_;
   LoginManagerMixin login_manager_{&mixin_host_};
   std::unique_ptr<quick_unlock::TestApi> test_api_;
 };
@@ -211,8 +237,7 @@ IN_PROC_BROWSER_TEST_F(FingerprintSetupTest, FingerprintDisabled) {
   auto test_api = std::make_unique<quick_unlock::TestApi>(
       /*override_quick_unlock=*/true);
 
-  WizardController::default_controller()->AdvanceToScreen(
-      FingerprintSetupScreenView::kScreenId);
+  ProceedToFingerprintScreen();
 
   WaitForScreenExit();
   ExpectResult(FingerprintSetupScreen::Result::NOT_APPLICABLE);

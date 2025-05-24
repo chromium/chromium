@@ -27,7 +27,7 @@ class ShellTestBaseAura : public ExtensionsTest {
   void SetUp() override;
   void TearDown() override;
 
-  // Initializes |app_window| for testing.
+  // Initializes `app_window` for testing.
   void InitAppWindow(AppWindow* app_window, const gfx::Rect& bounds = {});
 
  private:

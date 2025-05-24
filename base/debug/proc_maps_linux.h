@@ -7,22 +7,28 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/base_export.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
 
 // Describes a region of mapped memory and the path of the file mapped.
-struct MappedMemoryRegion {
+struct BASE_EXPORT MappedMemoryRegion {
   enum Permission {
     READ = 1 << 0,
     WRITE = 1 << 1,
     EXECUTE = 1 << 2,
     PRIVATE = 1 << 3,  // If set, region is private, otherwise it is shared.
   };
+
+  MappedMemoryRegion();
+  MappedMemoryRegion(const MappedMemoryRegion&);
+  MappedMemoryRegion(MappedMemoryRegion&&) noexcept;
+  MappedMemoryRegion& operator=(MappedMemoryRegion&);
+  MappedMemoryRegion& operator=(MappedMemoryRegion&&) noexcept;
 
   // The address range [start,end) of mapped memory.
   uintptr_t start;
@@ -36,6 +42,13 @@ struct MappedMemoryRegion {
 
   // Bitmask of read/write/execute/private/shared permissions.
   uint8_t permissions;
+
+  // Major and minor device numbers for the region.
+  uint8_t dev_major;
+  uint8_t dev_minor;
+
+  // Inode for the region.
+  long inode;
 
   // Name of the file mapped into memory.
   //
@@ -88,7 +101,24 @@ BASE_EXPORT bool ReadProcMaps(std::string* proc_maps);
 BASE_EXPORT bool ParseProcMaps(const std::string& input,
                                std::vector<MappedMemoryRegion>* regions);
 
-}  // namespace debug
-}  // namespace base
+struct SmapsRollup {
+  size_t rss = 0;
+  size_t pss = 0;
+  size_t pss_anon = 0;
+  size_t pss_file = 0;
+  size_t pss_shmem = 0;
+  size_t private_dirty = 0;
+  size_t swap = 0;
+  size_t swap_pss = 0;
+};
+
+// Attempts to read /proc/self/smaps_rollup. Returns nullopt on error.
+BASE_EXPORT std::optional<SmapsRollup> ReadAndParseSmapsRollup();
+
+// |smaps_rollup| should be the result of reading /proc/*/smaps_rollup.
+BASE_EXPORT std::optional<SmapsRollup> ParseSmapsRollupForTesting(
+    const std::string& smaps_rollup);
+
+}  // namespace base::debug
 
 #endif  // BASE_DEBUG_PROC_MAPS_LINUX_H_

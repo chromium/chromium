@@ -19,17 +19,23 @@
 class Browser;
 struct NavigateParams;
 
-namespace bookmarks {
-class BookmarkNode;
-}
-
 namespace content {
 class BrowserContext;
 class NavigationHandle;
-}
+}  // namespace content
+
+namespace bookmarks {
+class BookmarkNode;
+
+enum OpenAllBookmarksContext {
+  kNone = 0,     // Open all bookmarks as separate tabs.
+  kInGroup = 1,  // Open all bookmarks in a tab group.
+  kInSplit = 2,  // Open all bookmarks in a split tab.
+  kMaxValue = kInSplit,
+};
+}  // namespace bookmarks
 
 namespace chrome {
-
 // Wraps bookmark navigations to support view testing.
 class BookmarkNavigationWrapper {
  public:
@@ -57,7 +63,8 @@ extern size_t kNumBookmarkUrlsBeforePrompting;
 // the user first. Returns immediately, opening the bookmarks
 // asynchronously if prompting the user. `browser` is the browser from
 // which the bookmarks were opened. Its window is used as the anchor for
-// the dialog (if shown).
+// the dialog (if shown). `context` can optionally open the bookmarks into a
+// tab group or split view.
 // `launch_action` represents the location and time of the bookmark launch
 // action for callsites that support it.
 // TODO(crbug.com/40914589): This should be made non-optional once all callsites
@@ -67,7 +74,8 @@ void OpenAllIfAllowed(
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
     WindowOpenDisposition initial_disposition,
-    bool add_to_group,
+    bookmarks::OpenAllBookmarksContext context =
+        bookmarks::OpenAllBookmarksContext::kNone,
     page_load_metrics::NavigationHandleUserData::InitiatorLocation
         navigation_type = page_load_metrics::NavigationHandleUserData::
             InitiatorLocation::kOther,
@@ -102,8 +110,7 @@ bool HasBookmarkURLs(const std::vector<raw_ptr<const bookmarks::BookmarkNode,
 // in |selection| with incognito mode.
 bool HasBookmarkURLsAllowedInIncognitoMode(
     const std::vector<
-        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection,
-    content::BrowserContext* browser_context);
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& selection);
 
 // Populates |folder_data| with all tab items and sub-folders for any open tab
 // groups.

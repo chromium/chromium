@@ -41,6 +41,8 @@ enum class NearbyHttpError {
 // numeric values should never be reused. This enum should be kept in sync with
 // the NearbyHttpResult enum in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyHttpResult)
 enum class NearbyHttpResult {
   kSuccess = 0,
   kTimeout = 1,
@@ -53,6 +55,7 @@ enum class NearbyHttpResult {
   kHttpErrorUnknown = 8,
   kMaxValue = kHttpErrorUnknown
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyHttpResult)
 
 class NearbyHttpStatus {
  public:

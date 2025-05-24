@@ -1,0 +1,92 @@
+Tests frameStartedNavigating events when navigation is initiated by cdp command
+
+Navigation
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 0>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 1>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?1
+    }
+    sessionId : <string>
+}
+
+Fragment navigation
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 2>
+        navigationType : sameDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?1#some_fragment
+    }
+    sessionId : <string>
+}
+
+Reload
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 3>
+        navigationType : reload
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?1#some_fragment
+    }
+    sessionId : <string>
+}
+
+Reload ignoring cache
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 4>
+        navigationType : reloadBypassingCache
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?1#some_fragment
+    }
+    sessionId : <string>
+}
+
+History traversal
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 5>
+        navigationType : historyDifferentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 6>
+        navigationType : historyDifferentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?1
+    }
+    sessionId : <string>
+}
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 7>
+        navigationType : historySameDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?1#some_fragment
+    }
+    sessionId : <string>
+}
+

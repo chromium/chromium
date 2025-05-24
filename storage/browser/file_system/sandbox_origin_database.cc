@@ -10,6 +10,7 @@
 #include <set>
 #include <utility>
 
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -114,6 +115,7 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
         LOG(WARNING) << "Repairing SandboxOriginDatabase completed.";
         return true;
       }
+      DropDatabase();
       UMA_HISTOGRAM_ENUMERATION(kSandboxOriginDatabaseRepairHistogramLabel,
                                 SandboxOriginRepairResult::DB_REPAIR_FAILED,
                                 SandboxOriginRepairResult::DB_REPAIR_MAX);
@@ -143,20 +145,29 @@ bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
 
   // See if the repaired entries match with what we have on disk.
   std::set<base::FilePath> directories;
-  base::FileEnumerator file_enum(file_system_directory_, false /* recursive */,
-                                 base::FileEnumerator::DIRECTORIES);
+  base::FileEnumerator file_enum(
+      file_system_directory_, false /* recursive */,
+      base::FileEnumerator::DIRECTORIES, {},
+      base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
+      base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
   base::FilePath path_each;
   while (!(path_each = file_enum.Next()).empty())
     directories.insert(path_each.BaseName());
+  if (file_enum.GetError() != base::File::FILE_OK) {
+    return false;
+  }
   auto db_dir_itr = directories.find(base::FilePath(kOriginDatabaseName));
-  // Make sure we have the database file in its directory and therefore we are
-  // working on the correct path.
-  CHECK(db_dir_itr != directories.end(), base::NotFatalUntil::M130);
+  if (db_dir_itr == directories.end()) {
+    // It should not be possible to be in this state given that both directory
+    // enumeration and database repair/init supposedly succeeded.
+    // TODO(crbug.com/417696367): convert this back to a CHECK.
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
   directories.erase(db_dir_itr);
 
   std::vector<OriginRecord> origins;
   if (!ListAllOrigins(&origins)) {
-    DropDatabase();
     return false;
   }
 
@@ -165,7 +176,6 @@ bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
     auto dir_itr = directories.find(record.path);
     if (dir_itr == directories.end()) {
       if (!RemovePathForOrigin(record.origin)) {
-        DropDatabase();
         return false;
       }
     } else {
@@ -176,7 +186,6 @@ bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
   // Delete any directories not listed in the origins database.
   for (const base::FilePath& dir : directories) {
     if (!base::DeletePathRecursively(file_system_directory_.Append(dir))) {
-      DropDatabase();
       return false;
     }
   }

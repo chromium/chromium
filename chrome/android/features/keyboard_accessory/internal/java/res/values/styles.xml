@@ -9,4 +9,22 @@ found in the LICENSE file.
     <style name="TextAppearance.DividerText" parent="TextAppearance.TextLarge.Secondary">
         <item name="android:textColor">@color/baseline_neutral_70</item>
     </style>
+    <style name="KeyboardAccessoryChip" parent="AssistiveChip">
+        <item name="iconWidth">
+            @dimen/keyboard_accessory_bar_item_icon_width
+        </item>
+    </style>
+    <style name="KeyboardAccessoryLargeChip" parent="KeyboardAccessoryChip">
+        <item name="verticalInset">2dp</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardChip" parent="KeyboardAccessoryChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
+    <style name="KeyboardAccessoryLoyaltyCardLargeChip" parent="KeyboardAccessoryLargeChip">
+        <item name="iconWidth">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="iconHeight">@dimen/keyboard_accessory_suggestion_icon_size</item>
+        <item name="useRoundedIcon">true</item>
+    </style>
 </resources>

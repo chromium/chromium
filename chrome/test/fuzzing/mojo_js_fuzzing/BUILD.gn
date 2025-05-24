@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/fuzzing/in_process_fuzzer.gni")
+import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
+import("//third_party/blink/renderer/bindings/bindings.gni")
+
+group("test") {
+  testonly = true
+}
+
+renderer_ipc_fuzzing_enabled =
+    fuzzing_engine_supports_custom_main && is_linux && enable_mojom_fuzzer
+
+if (renderer_ipc_fuzzing_enabled && !is_msan) {
+  action("mojo_js_grammar_generator") {
+    testonly = true
+    script =
+        "//chrome/test/fuzzing/mojo_js_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(
+          "${root_gen_dir}/chrome/test/fuzzing/renderer_fuzzing/interfaces.json",
+          root_build_dir),
+      "-r",
+      rebase_path("${root_build_dir}", root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/mojo_js.txt", root_build_dir),
+    ]
+    deps = [ "//chrome/test/fuzzing/renderer_fuzzing:renderer_in_process_mojolpm_fuzzer_generator" ]
+    outputs = [
+      "${target_gen_dir}/mojo_js.txt",
+      "${root_build_dir}/mojo_js_in_process_fuzzer.html",
+    ]
+  }
+
+  domatolpm_fuzzer("mojo_js_fuzzer_grammar") {
+    template_file = "//chrome/test/fuzzing/mojo_js_fuzzing/template.js"
+    grammars = [ "mojo_js_fuzzer:${target_gen_dir}/mojo_js.txt" ]
+    deps = [ ":mojo_js_grammar_generator" ]
+  }
+
+  in_process_fuzzer("mojo_js_in_process_fuzzer") {
+    sources = [ "mojo_js_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "symbolizer_path=/dev/null" ]
+
+    deps = [
+      ":mojo_js_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+    data = [ "$root_gen_dir/" ]
+  }
+}

@@ -10,9 +10,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for state of Payments feature flags. */
 @JNINamespace("payments::android")
+@NullMarked
 public class PaymentFeatureMap extends FeatureMap {
     private static final PaymentFeatureMap sInstance = new PaymentFeatureMap();
 

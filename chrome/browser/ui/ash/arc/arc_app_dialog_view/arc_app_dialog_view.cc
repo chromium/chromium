@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -26,6 +25,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -39,6 +39,16 @@ const int kArcAppIconSize = 64;
 const int kIconSourceSize = 48;
 
 using ArcAppConfirmCallback = base::OnceCallback<void(bool accept)>;
+
+std::unique_ptr<ArcAppListPrefs::AppInfo> GetArcAppInfo(
+    Profile* profile,
+    const std::string& app_id) {
+  ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
+  DCHECK(arc_prefs);
+  return arc_prefs->GetApp(app_id);
+}
+
+}  // namespace
 
 class ArcAppDialogView : public views::DialogDelegateView,
                          public AppIconLoaderDelegate {
@@ -107,7 +117,7 @@ ArcAppDialogView::ArcAppDialogView(Profile* profile,
   SetCancelCallback(base::BindOnce(&ArcAppDialogView::OnDialogCancelled,
                                    base::Unretained(this)));
 
-  ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
+  views::LayoutProvider* provider = views::LayoutProvider::Get();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal,
@@ -196,21 +206,11 @@ void ArcAppDialogView::OnAppImageUpdated(
   DCHECK_EQ(image.width(), kIconSourceSize);
   DCHECK_EQ(image.height(), kIconSourceSize);
   icon_view_->SetImageSize(image.size());
-  icon_view_->SetImage(image);
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(image));
 }
 
 BEGIN_METADATA(ArcAppDialogView)
 END_METADATA
-
-std::unique_ptr<ArcAppListPrefs::AppInfo> GetArcAppInfo(
-    Profile* profile,
-    const std::string& app_id) {
-  ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(arc_prefs);
-  return arc_prefs->GetApp(app_id);
-}
-
-}  // namespace
 
 void ShowUsbScanDeviceListPermissionDialog(Profile* profile,
                                            const std::string& app_id,

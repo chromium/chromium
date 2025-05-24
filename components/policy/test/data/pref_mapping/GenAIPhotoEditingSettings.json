@@ -1,0 +1,16 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.gen_ai_photo_editing_settings",
+      "default_for_enterprise_users": 1,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
+  }
+]

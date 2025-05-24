@@ -28,6 +28,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="2329392777730037872"><ph name="URL" /> kunne ikke åbnes i klienten.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2366718077645204424">Værten kunne ikke nås. Dette skyldes sandsynligvis konfigurationen af det netværk, du bruger.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="2504109125669302160">Giv tilladelsen "Tilgængelighed" til <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Der er oprettet forbindelse til <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Vil du dele denne computer, så en anden bruger kan se og styre den?</translation>
@@ -39,6 +40,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="2758123043070977469">Der opstod et problem med godkendelse. Log ind igen.</translation>
 <translation id="2803375539583399270">Angiv pinkode</translation>
 <translation id="2919669478609886916">Du deler i øjeblikket denne maskine med en anden bruger. Vil du fortsætte med at dele?</translation>
+<translation id="2929683002824598593">Del enhed</translation>
 <translation id="2939145106548231838">Godkend over for host</translation>
 <translation id="3027681561976217984">Tryk</translation>
 <translation id="3106379468611574572">Fjerncomputeren svarer ikke på anmodninger om oprettelse af forbindelse. Kontrollér, at den er online, og prøv igen.</translation>
@@ -91,6 +93,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="4987330545941822761">Chrome Fjernskrivebord kan ikke identificere den browser, der skal åbne webadresser lokalt. Vælg den på listen nedenfor.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Er du sikker på, at du vil deaktivere fjernforbindelserne til <ph name="HOSTNAME" />?</translation>
+<translation id="5095424396646120601">Rapportering af nedbrud</translation>
 <translation id="5170982930780719864">Ugyldigt host-id.</translation>
 <translation id="5204575267916639804">Ofte stillede spørgsmål</translation>
 <translation id="5222676887888702881">Log ud</translation>
@@ -116,10 +119,12 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="6178645564515549384">Indbygget beskedhost til ekstern hjælp</translation>
 <translation id="618120821413932081">Opdater opløsningen for fjernskrivebordet, så det stemmer overens med vinduet</translation>
 <translation id="6223301979382383752">Åbn indstillingerne for skærmoptagelse</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> har anmodet om tilladelse til at se din skærm og styre dit tastatur og din mus. Vil du dele din enhed?</translation>
 <translation id="6284412385303060032">Hosten, der kører på loginskærmen for konsollen, er lukket ned for at understøtte curtain mode ved at skifte til en host, der kører i en brugerspecifik session.</translation>
 <translation id="6542902059648396432">Rapportér et problem…</translation>
 <translation id="6583902294974160967">Support</translation>
 <translation id="6612717000975622067">Send Ctrl-Alt-Del</translation>
+<translation id="6625262630437221505">{0,plural, =1{Hvis du ikke foretager dig noget, begynder din enhed automatisk at dele om # sekund.}one{Hvis du ikke foretager dig noget, begynder din enhed automatisk at dele om # sekund.}other{Hvis du ikke foretager dig noget, begynder din enhed automatisk at dele om # sekunder.}}</translation>
 <translation id="6654753848497929428">Del</translation>
 <translation id="677755392401385740">Host er startet for bruger: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Hjælpeapp til at åbne en webadresse i <ph name="PRODUCT_NAME" />-klienten</translation>
@@ -133,6 +138,7 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7067321367069083429">Skærmen fungerer som touchskærm</translation>
 <translation id="7116737094673640201">Velkommen til Chrome Fjernskrivebord</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
+<translation id="7298392173540380852">Copyright 2025 Udviklerne af Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="7312846573060934304">Hosten er offline.</translation>
 <translation id="7319983568955948908">Stop deling</translation>
 <translation id="7359298090707901886">Den valgte browser kan ikke bruges til at åbne webadresser på den lokale maskine.</translation>
@@ -149,7 +155,6 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="7693372326588366043">Opdater listen over værter</translation>
 <translation id="7714222945760997814">Rapportér dette</translation>
 <translation id="7868137160098754906">Angiv din pinkode til fjerncomputeren.</translation>
-<translation id="7881455334687220899">Copyright 2024 Udviklerne af Chromium. Alle rettigheder forbeholdes.</translation>
 <translation id="7895403300744144251">Sikkerhedspolitikkerne på fjerncomputeren tillader ikke forbindelser fra din konto.</translation>
 <translation id="7936528439960309876">Fastgør til højre</translation>
 <translation id="7970576581263377361">Godkendelse mislykkedes. Log ind på Chromium igen.</translation>
@@ -181,7 +186,6 @@ Hvis "<ph name="SERVICE_SCRIPT_NAME" />" allerede er markeret, skal du fjerne ma
 <translation id="8747048596626351634">Sessionen gik ned eller kunne ikke startes. Hvis ~/.chrome-remote-desktop-session findes på fjerncomputeren, skal du sørge for, at den starter en proces, der er længe åben i forgrunden, f.eks. et computermiljø eller en vinduesadministrator.</translation>
 <translation id="8804164990146287819">Privatlivspolitik</translation>
 <translation id="8906511416443321782">Der kræves adgang til mikrofonen for at optage lyd og caste lyden til klienten Chrome Fjernskrivebord.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="9111855907838866522">Du har forbindelse til din fjernenhed. Åbn menuen ved at trykke på skærmen med fire fingre.</translation>
 <translation id="9126115402994542723">Bed ikke om en pinkode igen, når der oprettes forbindelse til denne host fra denne enhed.</translation>
 <translation id="916856682307586697">Start XSessions standardsession</translation>

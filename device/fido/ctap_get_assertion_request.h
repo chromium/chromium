@@ -116,6 +116,11 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   CtapGetAssertionRequest& operator=(CtapGetAssertionRequest&& other);
   ~CtapGetAssertionRequest();
 
+  // This can be constructed with an empty ClientDataJson, but it must be
+  // provided before dispatching any authenticators into a RequestHandler that
+  // uses this request.
+  void SetClientDataJson(std::string client_data_json);
+
   std::string rp_id;
   std::string client_data_json;
   std::array<uint8_t, kClientDataHashLength> client_data_hash;

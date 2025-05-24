@@ -11,6 +11,8 @@ import android.view.ViewStructure;
 
 import androidx.appcompat.widget.AppCompatEditText;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /**
@@ -19,8 +21,9 @@ import org.chromium.url.GURL;
  * Note that for password fields the hint text is expected to be set in XML so that it is available
  * during inflation.
  */
+@NullMarked
 public class AlertDialogEditText extends AppCompatEditText {
-    private GURL mUrl;
+    private @Nullable GURL mUrl;
 
     public AlertDialogEditText(Context context, AttributeSet attrs) {
         super(context, attrs);

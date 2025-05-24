@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -372,6 +373,59 @@ TEST(CSSParserTokenStreamTest, SavePointRestoreWithoutLookahead) {
 
   // We should have restored to the beginning.
   EXPECT_EQ("a", stream.Peek().Value());
+}
+
+TEST(CSSParserTokenStreamTest, IsAttrTainted) {
+  StringView str("url(https://example.com/404.png), red");
+  Vector<std::pair<wtf_size_t, wtf_size_t>> tainted_ranges(
+      {std::make_pair(0, 32)});
+  CSSParserTokenStream stream(str, &tainted_ranges);
+  EXPECT_TRUE(stream.IsAttrTainted(0, 32));
+  EXPECT_TRUE(stream.IsAttrTainted(0, 33));
+  EXPECT_TRUE(stream.IsAttrTainted(0, 37));
+  EXPECT_TRUE(stream.IsAttrTainted(0, 38));
+  EXPECT_FALSE(stream.IsAttrTainted(35, 38));
+  EXPECT_FALSE(stream.IsAttrTainted(32, 38));
+
+  Vector<std::pair<wtf_size_t, wtf_size_t>> tainted_ranges2(
+      {std::make_pair(4, 32)});
+  CSSParserTokenStream stream2(str, &tainted_ranges2);
+  EXPECT_TRUE(stream2.IsAttrTainted(0, 32));
+  EXPECT_FALSE(stream2.IsAttrTainted(0, 0));
+  EXPECT_FALSE(stream2.IsAttrTainted(2, 3));
+  EXPECT_FALSE(stream2.IsAttrTainted(2, 4));
+}
+
+TEST(CSSParserTokenStreamTest, IsAttrTaintedMultipleRanges) {
+  StringView str("url(https://example.com/404.png), 10px, red, auto, blue");
+  Vector<std::pair<wtf_size_t, wtf_size_t>> tainted_ranges(
+      {std::make_pair(0, 32), std::make_pair(40, 43), std::make_pair(51, 55)});
+  CSSParserTokenStream stream(str, &tainted_ranges);
+  EXPECT_TRUE(stream.IsAttrTainted(0, 32));
+  EXPECT_TRUE(stream.IsAttrTainted(0, 33));
+  EXPECT_TRUE(stream.IsAttrTainted(0, 37));
+  EXPECT_TRUE(stream.IsAttrTainted(0, 38));
+  EXPECT_TRUE(stream.IsAttrTainted(32, 41));
+  EXPECT_TRUE(stream.IsAttrTainted(51, 52));
+  EXPECT_FALSE(stream.IsAttrTainted(35, 38));
+  EXPECT_FALSE(stream.IsAttrTainted(32, 38));
+  EXPECT_FALSE(stream.IsAttrTainted(43, 51));
+  EXPECT_FALSE(stream.IsAttrTainted(51, 51));
+  EXPECT_FALSE(stream.IsAttrTainted(55, 55));
+}
+
+TEST(CSSParserTokenStreamTest, IsAttrTaintedNoRanges) {
+  StringView str("url(https://example.com/404.png), red");
+  Vector<std::pair<wtf_size_t, wtf_size_t>> tainted_ranges;
+  CSSParserTokenStream stream(str, &tainted_ranges);
+  EXPECT_FALSE(stream.IsAttrTainted(0, 32));
+  EXPECT_FALSE(stream.IsAttrTainted(0, 33));
+  EXPECT_FALSE(stream.IsAttrTainted(0, 37));
+  EXPECT_FALSE(stream.IsAttrTainted(0, 38));
+  EXPECT_FALSE(stream.IsAttrTainted(2, 3));
+  EXPECT_FALSE(stream.IsAttrTainted(2, 4));
+  EXPECT_FALSE(stream.IsAttrTainted(35, 38));
+  EXPECT_FALSE(stream.IsAttrTainted(32, 38));
 }
 
 namespace {

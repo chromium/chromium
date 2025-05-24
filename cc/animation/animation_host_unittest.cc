@@ -151,14 +151,14 @@ TEST_F(AnimationHostTest, ImplOnlyScrollAnimationUpdateTargetIfDetached) {
 
   time += base::Seconds(0.1);
   EXPECT_TRUE(host_impl_->ImplOnlyScrollAnimationUpdateTarget(
-      scroll_delta, max_scroll_offset, time, base::TimeDelta()));
+      scroll_delta, max_scroll_offset, time, base::TimeDelta(), element_id_));
 
   // Detach all animations from layers and timelines.
   host_impl_->ClearMutators();
 
   time += base::Seconds(0.1);
   EXPECT_FALSE(host_impl_->ImplOnlyScrollAnimationUpdateTarget(
-      scroll_delta, max_scroll_offset, time, base::TimeDelta()));
+      scroll_delta, max_scroll_offset, time, base::TimeDelta(), element_id_));
 }
 
 // Tests that verify interaction of AnimationHost with LayerTreeMutator.
@@ -320,7 +320,7 @@ void SetScrollOffset(PropertyTrees* property_trees,
   TransformNode* transform_node =
       property_trees->transform_tree_mutable().FindNodeFromElementId(
           element_id);
-  transform_node->scroll_offset = offset;
+  transform_node->SetScrollOffset(offset, DamageReason::kUntracked);
   transform_node->needs_local_transform_update = true;
 }
 

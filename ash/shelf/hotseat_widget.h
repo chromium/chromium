@@ -22,11 +22,11 @@ class ScopedWindowTargeter;
 }
 
 namespace ash {
-class FocusCycler;
 class ScrollableShelfView;
 class Shelf;
 class ShelfView;
 class HotseatTransitionAnimator;
+class HotseatWidgetDelegateView;
 
 // The hotseat widget is part of the shelf and hosts app shortcuts.
 class ASH_EXPORT HotseatWidget : public ShelfComponent,
@@ -108,6 +108,8 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   // hotseat background.
   void UpdateTranslucentBackground();
 
+  void InitializeAccessibilityProperties();
+
   // Calculates the hotseat y position for |hotseat_target_state| in screen
   // coordinates.
   int CalculateHotseatYInScreen(HotseatState hotseat_target_state) const;
@@ -134,9 +136,6 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   }
 
   gfx::Size GetTranslucentBackgroundSize() const;
-
-  // Sets the focus cycler and adds the hotseat to the cycle.
-  void SetFocusCycler(FocusCycler* focus_cycler);
 
   bool IsShowingShelfMenu() const;
 
@@ -196,8 +195,6 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
   bool CalculateShelfOverflow(bool use_target_bounds) const;
 
  private:
-  class DelegateView;
-
   struct LayoutInputs {
     gfx::Rect bounds;
     float shelf_view_opacity = 0.0f;
@@ -259,7 +256,7 @@ class ASH_EXPORT HotseatWidget : public ShelfComponent,
 
   // The contents view of this widget. Contains |shelf_view_| and the background
   // of the hotseat.
-  raw_ptr<DelegateView> delegate_view_ = nullptr;
+  raw_ptr<HotseatWidgetDelegateView> delegate_view_ = nullptr;
 
   // Whether the widget is currently extended because the user has manually
   // dragged it. This will be reset with any visible shelf configuration change.

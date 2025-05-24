@@ -4,6 +4,8 @@
 
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
 #include "ash/public/cpp/system/scoped_nudge_pause.h"
@@ -12,7 +14,6 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/style/system_toast_style.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/nudge_constants.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -83,7 +84,7 @@ AnchoredNudge* GetShownNudge(const std::string& id) {
   return GetAnchoredNudgeManager()->GetShownNudgeForTest(id);
 }
 
-const std::u16string& GetNudgeBodyText(const std::string& id) {
+std::u16string_view GetNudgeBodyText(const std::string& id) {
   return GetAnchoredNudgeManager()->GetNudgeBodyTextForTest(id);
 }
 

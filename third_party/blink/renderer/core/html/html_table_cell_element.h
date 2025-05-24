@@ -35,7 +35,6 @@ class CORE_EXPORT HTMLTableCellElement final : public HTMLTablePartElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-
   HTMLTableCellElement(const QualifiedName&, Document&);
 
   int cellIndex() const;
@@ -59,17 +58,13 @@ class CORE_EXPORT HTMLTableCellElement final : public HTMLTablePartElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
   const CSSPropertyValueSet* AdditionalPresentationAttributeStyle() override;
 
   bool IsURLAttribute(const Attribute&) const override;
   bool HasLegalLinkAttribute(const QualifiedName&) const override;
 };
 
-template <>
-inline bool IsElementOfType<const HTMLTableCellElement>(const Node& node) {
-  return IsA<HTMLTableCellElement>(node);
-}
 template <>
 struct DowncastTraits<HTMLTableCellElement> {
   static bool AllowFrom(const Node& node) {

@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -56,8 +57,9 @@ class RenderFrameProxyHost;
 // assume that new proxies will start to be created from the root.
 class CONTENT_EXPORT BatchedProxyIPCSender {
  public:
-  explicit BatchedProxyIPCSender(
-      base::SafeRef<RenderFrameProxyHost> root_proxy);
+  BatchedProxyIPCSender(
+      base::SafeRef<RenderFrameProxyHost> root_proxy,
+      const std::optional<base::UnguessableToken>& navigation_metrics_token);
   ~BatchedProxyIPCSender();
 
   // Creates a new node in `create_remote_children_params_` with all the
@@ -104,8 +106,17 @@ class CONTENT_EXPORT BatchedProxyIPCSender {
   // Maps the `RenderFrameProxyHost`'s `GlobalRoutingID` to the node in
   // `create_remote_children_params_` with the params to create the
   // corresponding proxy.
-  std::map<GlobalRoutingID, blink::mojom::CreateRemoteChildParams*>
+  std::map<GlobalRoutingID,
+           raw_ptr<blink::mojom::CreateRemoteChildParams, CtnExperimental>>
       proxy_to_child_params_;
+
+  // If this class is used to create proxies for a navigation, this token
+  // identifies the navigation for metrics purposes. It needs to be sent to the
+  // renderer in the proxy creation IPC so that the renderer can record
+  // appropriate navigation-related trace events and metrics. In non-navigation
+  // cases like creating proxies for new subframes, this should be left as
+  // nullopt.
+  std::optional<base::UnguessableToken> navigation_metrics_token_;
 };
 
 }  // namespace content

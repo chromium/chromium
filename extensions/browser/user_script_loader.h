@@ -59,7 +59,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
     virtual void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) = 0;
   };
 
-  // Parses the includes out of |script| and returns them in |includes|.
+  // Parses the includes out of `script` and returns them in `includes`.
   static bool ParseMetadataHeader(std::string_view script_text,
                                   UserScript* script);
 
@@ -71,11 +71,11 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   ~UserScriptLoader() override;
 
-  // Add |scripts| to the set of scripts managed by this loader. If provided,
-  // |callback| is called when |scripts| have been loaded.
+  // Add `scripts` to the set of scripts managed by this loader. If provided,
+  // `callback` is called when `scripts` have been loaded.
   void AddScripts(UserScriptList scripts, ScriptsLoadedCallback callback);
 
-  // Add |scripts| to the set of scripts managed by this loader.
+  // Add `scripts` to the set of scripts managed by this loader.
   // The fetch of the content of the script starts URL request
   // to the associated render specified by
   // |render_process_id, render_frame_id|.
@@ -86,10 +86,10 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
                           int render_frame_id,
                           ScriptsLoadedCallback callback);
 
-  // Removes scripts with ids specified in |scripts| from the set of scripts
-  // managed by this loader and calls |callback| once these scripts have been
+  // Removes scripts with ids specified in `scripts` from the set of scripts
+  // managed by this loader and calls `callback` once these scripts have been
   // removed, if specified.
-  // TODO(lazyboy): Likely we can make |scripts| a std::vector, but
+  // TODO(lazyboy): Likely we can make `scripts` a std::vector, but
   // WebViewContentScriptManager makes this non-trivial.
   void RemoveScripts(const std::set<std::string>& script_ids,
                      ScriptsLoadedCallback callback);
@@ -111,7 +111,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   void RemoveObserver(Observer* observer);
 
   // Manually attempts a load for this loader, and optionally adds a callback to
-  // |queued_load_callbacks_|, to be called when the next load has completed.
+  // `queued_load_callbacks_`, to be called when the next load has completed.
   // Only used for tests which manually trigger loads.
   void StartLoadForTesting(ScriptsLoadedCallback callback);
 
@@ -140,9 +140,9 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   // set of scripts to be loaded.
   bool ScriptsMayHaveChanged() const;
 
-  // Attempts to initiate a load. |callback| is added to
-  // |queued_load_callbacks_|, to be called when the next load completes. If no
-  // scripts will be changed then |callback| will be called immediately.
+  // Attempts to initiate a load. `callback` is added to
+  // `queued_load_callbacks_`, to be called when the next load completes. If no
+  // scripts will be changed then `callback` will be called immediately.
   void AttemptLoad(ScriptsLoadedCallback callback);
 
   // Initiates procedure to start loading scripts on the file thread.
@@ -172,7 +172,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
       const base::ReadOnlySharedMemoryRegion& shared_memory);
 
   bool is_loading() const {
-    // |loaded_scripts_| is reset when loading.
+    // `loaded_scripts_` is reset when loading.
     return !loaded_scripts_.has_value();
   }
 
@@ -209,7 +209,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
 
   // A list of callbacks associated with script updates that are queued for the
   // next script load (if one is already in progress). These callbacks are moved
-  // to |loading_callbacks_| once a new script load starts.
+  // to `loading_callbacks_` once a new script load starts.
   std::list<ScriptsLoadedCallback> queued_load_callbacks_;
 
   // A list of callbacks associated with script updates that will be applied in

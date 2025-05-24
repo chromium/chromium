@@ -6,28 +6,22 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 assert(is_chromeos)
 
-# Network interfaces are currently used only by Ash and CrOS services.
-# There's on-going work in Lacros which will probably depend on these
-# in the future.
-if (is_chromeos_ash) {
-  mojom("mojom") {
-    sources = [
-      "network_diagnostics.mojom",
-      "network_health.mojom",
-    ]
+mojom("mojom") {
+  sources = [
+    "network_diagnostics.mojom",
+    "network_health.mojom",
+  ]
 
-    public_deps = [
-      ":types",
-      "//mojo/public/mojom/base",
-    ]
+  public_deps = [
+    ":types",
+    "//mojo/public/mojom/base",
+  ]
 
-    webui_module_path =
-        "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
 
-    # Used by ash/webui/common/resources/network_health, which is still using
-    # JS + Closure.
-    generate_webui_js_bindings = true
-  }
+  # Used by external clients, see chromeos/resources/BUILD.gn.
+  generate_legacy_js_bindings = true
 }
 
 mojom("types") {
@@ -38,14 +32,9 @@ mojom("types") {
     "//url/mojom:url_mojom_gurl",
   ]
 
-  # WebUI bindings only needed on ChromeOS Ash (dependency of the mojom target
-  # above). Only build them on that platform since they're using deprecated JS.
-  if (is_chromeos_ash) {
-    webui_module_path =
-        "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
+  webui_module_path =
+      "chrome://resources/mojo/chromeos/services/network_health/public/mojom"
 
-    # Used by ash/webui/common/resources/network_health, which is still using
-    # JS + Closure.
-    generate_webui_js_bindings = true
-  }
+  # Used by external clients, see chromeos/resources/BUILD.gn.
+  generate_legacy_js_bindings = true
 }

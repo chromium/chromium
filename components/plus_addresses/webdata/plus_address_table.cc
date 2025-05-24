@@ -71,7 +71,8 @@ bool GetDataTypeState(sql::Database& db,
   // persisted yet and `Step()` will fail. Don't treat this as an error, but
   // fallback to the default state instead.
   if (data_type_state_query.Step() &&
-      !data_type_state.ParseFromString(data_type_state_query.ColumnString(0))) {
+      !data_type_state.ParseFromString(
+          data_type_state_query.ColumnStringView(0))) {
     return false;
   }
   metadata_batch.SetDataTypeState(data_type_state);
@@ -89,7 +90,7 @@ bool AddEntityMetadata(sql::Database& db,
   entity_query.BindInt(0, syncer::DataTypeToStableIdentifier(data_type));
   while (entity_query.Step()) {
     auto entity_metadata = std::make_unique<sync_pb::EntityMetadata>();
-    if (!entity_metadata->ParseFromString(entity_query.ColumnString(1))) {
+    if (!entity_metadata->ParseFromString(entity_query.ColumnStringView(1))) {
       return false;
     }
     metadata_batch.AddMetadata(entity_query.ColumnString(0),

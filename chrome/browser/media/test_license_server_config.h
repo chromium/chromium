@@ -18,12 +18,12 @@ class CommandLine;
 // Class used to start a test license server.
 class TestLicenseServerConfig {
  public:
-  TestLicenseServerConfig() {}
+  TestLicenseServerConfig() = default;
 
   TestLicenseServerConfig(const TestLicenseServerConfig&) = delete;
   TestLicenseServerConfig& operator=(const TestLicenseServerConfig&) = delete;
 
-  virtual ~TestLicenseServerConfig() {}
+  virtual ~TestLicenseServerConfig() = default;
 
   // Returns a string containing the URL and port the server is listening to.
   // This URL is directly used by the Web app to request a license, example:

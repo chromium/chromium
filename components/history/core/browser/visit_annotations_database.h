@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_VISIT_ANNOTATIONS_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_VISIT_ANNOTATIONS_DATABASE_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -159,7 +160,7 @@ class VisitAnnotationsDatabase {
   // the serialized format is already being synced, the implementation of these
   // functions should not be changed.
   static std::vector<VisitContentModelAnnotations::Category>
-  GetCategoriesFromStringColumn(const std::string& column_value);
+  GetCategoriesFromStringColumn(std::string_view column_value);
 
   // Serializes a vector of strings into a string separated by null character
   // that can be stored in the db. As the serialized format is already being
@@ -171,7 +172,7 @@ class VisitAnnotationsDatabase {
   // of strings. As the serialized format is already being synced, the
   // implementation of these functions should not be changed.
   static std::vector<std::string> DeserializeFromStringColumn(
-      const std::string& column_value);
+      std::string_view column_value);
 
  protected:
   // Returns the database for the functions in this interface.
@@ -183,72 +184,6 @@ class VisitAnnotationsDatabase {
 
   // Deletes all the annotations tables, returning true on success.
   bool DropVisitAnnotationsTables();
-
-  // Called by the derived classes to migrate the older visits table's
-  // floc_allowed (for historical reasons named "publicly_routable" in the
-  // schema) column to the content_annotations table, from a BOOLEAN filed to
-  // a bit masking INTEGER filed.
-  bool MigrateFlocAllowedToAnnotationsTable();
-
-  // Replaces `cluster_visits` with `context_annotations`. Besides the name
-  // change, the new table drops 2 columns: cluster_visit_id (obsolete) and
-  // url_id (redundant); and renames 1 column:
-  // cluster_visit_context_signal_bitmask to context_annotation_flags.
-  bool MigrateReplaceClusterVisitsTable();
-
-  // Called by the derived classes to migrate the older content_annotations
-  // table which don't have entities column yet.
-  bool MigrateContentAnnotationsWithoutEntitiesColumn();
-
-  // Called by the derived classes to migrate the older content_annotations
-  // table by adding a related searches column.
-  bool MigrateContentAnnotationsAddRelatedSearchesColumn();
-
-  // Called by the derived classes to migrate the older content_annotations
-  // table by adding a visibility score column.
-  bool MigrateContentAnnotationsAddVisibilityScore();
-
-  // Called by the derived classes to migrate the older context_annotations
-  // table by adding a total foreground duration column.
-  bool MigrateContextAnnotationsAddTotalForegroundDuration();
-
-  // Called by the derived classes to migrate the older content_annotations
-  // table by adding the search_normalized_url and search_terms columns.
-  bool MigrateContentAnnotationsAddSearchMetadata();
-
-  // Called by the derived classes to migrate the older content_annotations
-  // table by adding the alternative_title column.
-  bool MigrateContentAnnotationsAddAlternativeTitle();
-
-  // Called by the derived classes to delete the 'clusters' and
-  // 'clusters_and_visits' tables so they can be recreated with updated columns.
-  bool MigrateClustersAddColumns();
-
-  // Called by the derived classes to migrate the older context_annotations
-  // table by adding various columns that are (for now) needed by Sync:
-  // In context_annotations:
-  // * browser_type
-  // * window_id and tab_id
-  // * task_id, root_task_id, and parent_task_id
-  // * response_code
-  // In content_annotations:
-  // * page_language
-  // * password_state
-  bool MigrateAnnotationsAddColumnsForSync();
-
-  // Called by the derived classes to migrate the older clusters table by adding
-  // a triggerability calculated column.
-  bool MigrateClustersAddTriggerabilityCalculated();
-
-  // Called by the derived classes to migrate the older clusters table which
-  // aren't ready to accommodate Sync. It sets `id` to AUTOINCREMENT, and
-  // ensures the existence of the `originator_cache_guid` and
-  // `originator_cluster_id` columns.
-  bool MigrateClustersAutoincrementIdAndAddOriginatorColumns();
-
-  // Called by the derived classes to migrate the older content_annotations
-  // table by adding the has_url_keyed_image column.
-  bool MigrateContentAnnotationsAddHasUrlKeyedImage();
 
   // Called by the derived class to migrate the older clusters_and_visits table
   // by adding the interaction_state column.

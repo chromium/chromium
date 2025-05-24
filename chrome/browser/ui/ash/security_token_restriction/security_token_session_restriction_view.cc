@@ -11,7 +11,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -25,7 +24,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -48,8 +46,7 @@ std::u16string GetTitle(
       // Intentionally falling through to NOTREACHED().
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string GetButtonLabel(
@@ -65,8 +62,7 @@ std::u16string GetButtonLabel(
       // Intentionally falling through to NOTREACHED().
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string GetDialogText(
@@ -101,8 +97,7 @@ std::u16string GetDialogText(
     case ash::login::SecurityTokenSessionController::Behavior::kIgnore:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 }  // namespace

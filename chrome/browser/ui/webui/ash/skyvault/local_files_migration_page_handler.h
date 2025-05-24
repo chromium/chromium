@@ -21,14 +21,8 @@ class Profile;
 
 namespace policy::local_user_files {
 
-// Actions a user can take in the migration dialog.
-enum class UserAction {
-  kDismiss,
-  kUploadNow,
-};
-
 // Callback invoked when the user interacts with the dialog.
-using UserActionCallback = base::OnceCallback<void(UserAction)>;
+using DialogActionCallback = base::OnceCallback<void(DialogAction)>;
 
 // Handles communication and logic for the Local Files Migration WebUI page.
 class LocalFilesMigrationPageHandler : public mojom::PageHandler {
@@ -36,9 +30,9 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
   LocalFilesMigrationPageHandler(
       content::WebUI* web_ui,
       Profile* profile,
-      CloudProvider cloud_provider,
+      MigrationDestination destination,
       base::Time migration_start_time,
-      UserActionCallback callback,
+      DialogActionCallback callback,
       mojo::PendingRemote<mojom::Page> page,
       mojo::PendingReceiver<mojom::PageHandler> receiver);
 
@@ -52,8 +46,8 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
   // mojom::PageHandler implementation:
   // Fetches initial information to display in the dialog.
   void GetInitialDialogInfo(GetInitialDialogInfoCallback callback) override;
-  // Closes the dialog and initiates the file upload immediately.
-  void UploadNow() override;
+  // Closes the dialog and initiates the file upload/deletion immediately.
+  void UploadOrDeleteNow() override;
   // Closes the dialog without initiating the upload.
   void Close() override;
 
@@ -63,10 +57,10 @@ class LocalFilesMigrationPageHandler : public mojom::PageHandler {
 
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebUI> web_ui_;
-  CloudProvider cloud_provider_;
+  MigrationDestination destination_;
   base::Time migration_start_time_;
   base::WallClockTimer ui_update_timer_;
-  UserActionCallback callback_;
+  DialogActionCallback callback_;
 
   // Mojo communication
   mojo::Receiver<PageHandler> receiver_;

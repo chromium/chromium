@@ -49,7 +49,7 @@ public class UnownedUserDataKeyTest {
     }
 
     private static class TestUnownedUserData implements UnownedUserData {
-        private List<UnownedUserDataHost> mDetachedHosts = new ArrayList<>();
+        private final List<UnownedUserDataHost> mDetachedHosts = new ArrayList<>();
 
         public boolean informOnDetachment = true;
 
@@ -124,6 +124,7 @@ public class UnownedUserDataKeyTest {
         mHost2 = null;
     }
 
+    @SuppressWarnings({"SelfAssertion", "JUnitIncompatibleType"})
     @Test
     public void testKeyEquality() {
         assertEquals(Foo.KEY, Foo.KEY);

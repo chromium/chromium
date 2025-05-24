@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
 
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -127,7 +126,7 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
     auto feature_name =
         GetDefaultFeatureNameMap(is_isolated_context).at(feature);
 
-    const PermissionsPolicy::Allowlist allowlist =
+    const network::PermissionsPolicy::Allowlist allowlist =
         GetPolicy()->GetAllowlistForFeature(feature_name);
     const auto& allowed_origins = allowlist.AllowedOrigins();
     if (allowed_origins.empty()) {

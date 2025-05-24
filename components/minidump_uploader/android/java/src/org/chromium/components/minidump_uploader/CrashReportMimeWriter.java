@@ -7,6 +7,8 @@ package org.chromium.components.minidump_uploader;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Map;
 
 /** Rewrites minidumps into MIME messages for uploading. */
 @JNINamespace("minidump_uploader")
+@NullMarked
 public class CrashReportMimeWriter {
     private static final String MINIDUMP_KEY = "upload_file_minidump";
 

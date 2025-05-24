@@ -17,7 +17,6 @@
 #include "components/tpcd/metadata/browser/parser.h"
 #include "components/tpcd/metadata/common/manager_base.h"
 #include "net/base/features.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 using PatternSourcePredicate = base::RepeatingCallback<bool(
     const ContentSettingsPattern& primary_pattern,
@@ -37,7 +36,7 @@ class Manager : public common::ManagerBase, public Parser::Observer {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Used to update downstream isolated services with a fresh copy to the
     // grants.
@@ -77,7 +76,7 @@ class Manager : public common::ManagerBase, public Parser::Observer {
   class RandGenerator {
    public:
     RandGenerator() = default;
-    virtual ~RandGenerator() {}
+    virtual ~RandGenerator() = default;
 
     RandGenerator(const RandGenerator&) = delete;
     RandGenerator& operator=(const RandGenerator&) = delete;

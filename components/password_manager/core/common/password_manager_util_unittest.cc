@@ -80,42 +80,53 @@ TEST(PasswordsManagerUtilTest,
 
 // Test that a valid username field is considered as such.
 TEST(PasswordsManagerUtilTest, CanFieldBeConsideredAsSingleUsername_Valid) {
-  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
-                                                   /*id=*/u"username1",
-                                                   /*label=*/u"username"));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"username",
+      /*id=*/u"username1",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
 }
 
 // Test that a field with a too short id and name attribute isn't considered as
 // a valid username.
 TEST(PasswordsManagerUtilTest,
      CanFieldBeConsideredAsSingleUsername_IdAndNameTooShort) {
-  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"u",
-                                                    /*id=*/u"u",
-                                                    /*label=*/u"username"));
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"u",
+      /*id=*/u"u",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
 
   // Verify that the rule only applies if the 2 attributes are too short.
-  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"u",
-                                                   /*id=*/u"username1",
-                                                   /*label=*/u"username"));
-  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
-                                                   /*id=*/u"u",
-                                                   /*label=*/u"username"));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"u",
+      /*id=*/u"username1",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+  EXPECT_TRUE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"username",
+      /*id=*/u"u",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
 }
 
 // Test that a field that looks like a search field isn't considered as a valid
 // username.
 TEST(PasswordsManagerUtilTest,
      CanFieldBeConsideredAsSingleUsername_IsSearchField) {
-  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(/*name=*/constants::kSearch,
-                                                    /*id=*/u"username1",
-                                                    /*label=*/u"username"));
-  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
-                                                    /*id=*/constants::kSearch,
-                                                    /*label=*/u"username"));
-  EXPECT_FALSE(
-      CanFieldBeConsideredAsSingleUsername(/*name=*/u"username",
-                                           /*id=*/u"username1",
-                                           /*label=*/constants::kSearch));
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/constants::kSearch,
+      /*id=*/u"username1",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"username",
+      /*id=*/constants::kSearch,
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputText));
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"username",
+      /*id=*/u"username1",
+      /*label=*/constants::kSearch,
+      autofill::mojom::FormControlType::kInputText));
+  EXPECT_FALSE(CanFieldBeConsideredAsSingleUsername(
+      /*name=*/u"username",
+      /*id=*/u"username1",
+      /*label=*/u"username", autofill::mojom::FormControlType::kInputSearch));
 }
 
 // Tests that a field that looks like an OTP is considered as such.

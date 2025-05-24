@@ -44,9 +44,26 @@ class SoftNavigationHeuristicsTest : public testing::Test {
     LocalDOMWindow* window = LocalDOMWindow::From(script_state);
 
     SoftNavigationHeuristics* heuristics =
-        SoftNavigationHeuristics::From(*window);
+        window->GetSoftNavigationHeuristics();
 
     return heuristics;
+  }
+
+  Node* CreateNodeForTest() {
+    ScriptState* script_state = GetScriptStateForTest();
+    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+    Document* document = window->document();
+    return document->CreateRawElement(html_names::kDivTag);
+  }
+
+  void ReportPaintRectForTest(SoftNavigationHeuristics* heuristics,
+                              Node* node) {
+    ScriptState* script_state = GetScriptStateForTest();
+    LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+    LocalFrame* frame = window->GetFrame();
+    gfx::RectF rect{1000, 1000};
+    heuristics->RecordPaint(frame, rect, node);
+    return heuristics->OnPaintFinished();
   }
 
   ScriptState* GetScriptStateForTest() {
@@ -125,7 +142,6 @@ TEST_F(SoftNavigationHeuristicsTest,
         tracker->MaybeCreateTaskScopeForCallback(GetScriptStateForTest(),
                                                  nullptr);
   }
-  ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
 
 TEST_F(SoftNavigationHeuristicsTest, ResetHeuristicOnSetBecameEmpty) {
@@ -236,7 +252,7 @@ TEST_F(SoftNavigationHeuristicsTest, EventAfterSoftNavDetection) {
   {
     std::optional<TaskScope> task_scope =
         tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
-    heuristics->ModifiedDOM();
+    heuristics->ModifiedDOM(CreateNodeForTest());
   }
 
   // Simulate default action link navigation after the click event.
@@ -311,31 +327,54 @@ TEST_F(SoftNavigationHeuristicsTest, SoftNavigationEmittedOnlyOnce) {
   scheduler::TaskAttributionInfo* task_state = nullptr;
   SoftNavigationContext* context = nullptr;
 
+  Node* node1 = CreateNodeForTest();
+  Node* node2 = CreateNodeForTest();
+
+  // Simulate an event listener that starts a soft-nav
   {
     auto* event =
         CreateEvent(SoftNavigationHeuristics::EventScope::Type::kClick);
     std::optional<SoftNavigationHeuristics::EventScope> event_scope(
         heuristics->MaybeCreateEventScopeForEvent(*event));
-    {
-      std::optional<TaskScope> task_scope =
-          tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
-      task_state = tracker->RunningTask();
-      ASSERT_TRUE(task_state);
-      context = task_state->GetSoftNavigationContext();
-      ASSERT_TRUE(context);
+    std::optional<TaskScope> task_scope =
+        tracker->MaybeCreateTaskScopeForCallback(script_state, nullptr);
+    task_state = tracker->RunningTask();
+    ASSERT_TRUE(task_state);
+    context = task_state->GetSoftNavigationContext();
+    ASSERT_TRUE(context);
 
-      heuristics->SameDocumentNavigationCommitted("foo.html", context);
-      heuristics->ModifiedDOM();
-    }
+    EXPECT_FALSE(context->SatisfiesSoftNavNonPaintCriteria());
+    heuristics->SameDocumentNavigationCommitted("foo.html", context);
+    heuristics->ModifiedDOM(node1);
+    EXPECT_FALSE(context->SatisfiesSoftNavNonPaintCriteria());
   }
-  EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
+  EXPECT_TRUE(context->SatisfiesSoftNavNonPaintCriteria());
+  EXPECT_FALSE(context->SatisfiesSoftNavPaintCriteria(1));
 
+  // Simulate a paint in a separate task.
+  {
+    ReportPaintRectForTest(heuristics, node1);
+    EXPECT_TRUE(context->SatisfiesSoftNavPaintCriteria(1));
+    EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
+  }
+
+  // Simulate another task for the same context, which does a second soft-nav
   {
     std::optional<TaskScope> task_scope =
         tracker->MaybeCreateTaskScopeForCallback(script_state, task_state);
+    EXPECT_EQ(tracker->RunningTask()->GetSoftNavigationContext(), context);
     heuristics->SameDocumentNavigationCommitted("bar.html", context);
-    heuristics->ModifiedDOM();
+    heuristics->ModifiedDOM(node2);
   }
+
+  // And another paint
+  {
+    ReportPaintRectForTest(heuristics, node2);
+  }
+
+  // Should still just have one single soft-nav because a single context
+  // with a single Interaction should only emit once, even if it e.g. navigates
+  // twice (i.e. client-side redirects).
   EXPECT_EQ(heuristics->SoftNavigationCount(), 1u);
 }
 

@@ -34,7 +34,7 @@ namespace mirroring {
 
 class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
  public:
-  virtual ~RtpStreamClient() {}
+  virtual ~RtpStreamClient() = default;
 
   // Called when error happened during streaming.
   virtual void OnError(const std::string& message) = 0;
@@ -45,7 +45,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
   // The VEA is necessary for hardware encoding.
   virtual void CreateVideoEncodeAccelerator(
       media::cast::ReceiveVideoEncodeAcceleratorCallback callback) = 0;
-
 };
 
 // Receives video frames and submits the data to media::cast::VideoSender. It

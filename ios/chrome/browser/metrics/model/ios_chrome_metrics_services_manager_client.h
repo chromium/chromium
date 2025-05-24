@@ -16,7 +16,7 @@ class PrefService;
 namespace metrics {
 class EnabledStateProvider;
 class MetricsStateManager;
-}
+}  // namespace metrics
 
 namespace variations {
 class SyntheticTrialRegistry;
@@ -53,7 +53,7 @@ class IOSChromeMetricsServicesManagerClient
   class IOSChromeEnabledStateProvider;
 
   // Static helper for `IsOffTheRecordSessionActive()`, suitable for binding
-  // into callbacks. `true` if any browser states have any incognito WebStates
+  // into callbacks. `true` if any profiles have any incognito WebStates
   // in any Browser.
   static bool AreIncognitoTabsPresent();
 

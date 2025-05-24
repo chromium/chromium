@@ -21,6 +21,9 @@
 <translation id="4622039161600275920">Kjo faqe është bllokuar nga Chromium</translation>
 <translation id="48558539577516920">Lejo Chromium të qaset në rrjet, në cilësimet e murit mbrojtës ose
       të antivirusit.</translation>
+<translation id="4949828774841497663">Shko te Aplikacionet &gt; Cilësimet e sistemit &gt; Rrjeti, zgjidh
+          rrjetin aktiv, kliko te butoni "Detajet..." , dhe hiq përzgjedhjen e çdo proxy
+          që mund të jetë zgjedhur.</translation>
 <translation id="580822234363523061">Shko te
           menyja e Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -29,6 +32,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           dhe sigurohu që konfigurimi yt të jetë i caktuar në "pa përfaqësues" ose "direkt".</translation>
+<translation id="648062525172759633">Këto faqe synohen të përdoren nga zhvilluesit e Chromium dhe mund të mos mirëmbahen apo testohen në mënyrë aktive. Për t'i aktivizuar ato, navigo te <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliko butonin për të aktivizuar faqet e korrigjimit dhe më pas navigo përsëri te kjo faqe.</translation>
 <translation id="6549378540556750549">Chromium është mundësuar po ashtu nga <ph name="BEGIN_LINK_OSS" />softuerë të tjerë me burim të hapur<ph name="END_LINK_OSS" />.</translation>
 <translation id="6613594504749178791">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Chromium.</translation>
 <translation id="691026815377248078">Chromium i nevojitet leje te Bluetooth-i për të vazhduar me çiftimin. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -41,7 +45,6 @@
           dhe anulo zgjedhjen e "<ph name="NO_PREFETCH_DESCRIPTION" />."
           Nëse kjo nuk e zgjidh këtë problem, rekomandojmë ta zgjedhësh përsëri këtë opsion
           për një veprimtari më të mirë funksionimi.</translation>
-<translation id="8187289872471304532">Shko te Aplikacionet &gt; Preferencat e sistemit &gt; Rrjeti &gt; Të përparuara &gt; Përfaqësuesit dhe anulo zgjedhjen për çdo përfaqësues që është zgjedhur.</translation>
 <translation id="8597726643333341451">Po shikon një faqe të sigurt të Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium nuk u mbyll si duhet.</translation>
 </translationbundle>

@@ -242,6 +242,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Seed Load Timed Out"/>
   <int value="8" label="Seed Load Interrupted"/>
   <int value="9" label="Seed Load Other Failure"/>
+  <int value="10" label="Seed Exceeds Uncompressed Size Limit"/>
 </enum>
 
 <enum name="VariationsSeedStoreResult">
@@ -283,6 +284,17 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Unloadable safe seed">No seed used</int>
   <int value="12" label="Null seed used">No seed used</int>
 </enum>
+
+<!-- LINT.IfChange(VariationsStateEncryptionStatus) -->
+
+<enum name="VariationsStateEncryptionStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Input empty"/>
+  <int value="2" label="Hpke setup failure"/>
+  <int value="3" label="Hpke seal failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/variations/net/variations_command_line.h:VariationsStateEncryptionStatus) -->
 
 </enums>
 

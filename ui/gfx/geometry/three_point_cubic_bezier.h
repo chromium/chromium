@@ -5,12 +5,12 @@
 #ifndef UI_GFX_GEOMETRY_THREE_POINT_CUBIC_BEZIER_H_
 #define UI_GFX_GEOMETRY_THREE_POINT_CUBIC_BEZIER_H_
 
+#include "base/component_export.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
-#include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {
 
-class GEOMETRY_EXPORT ThreePointCubicBezier {
+class COMPONENT_EXPORT(GEOMETRY) ThreePointCubicBezier {
  public:
   // Creates a curve composed of two cubic curves sharing a common midpoint. The
   // curve runs through the (0,0), the midpoint, and (1,1). |p1x|, |p1y|, |p2x|,

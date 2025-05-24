@@ -14,7 +14,9 @@ extern "C" {
 
 int g_native_library_exported_value = 0;
 
-int NativeLibraryTestIncrement() { return ++g_static_value; }
+int NativeLibraryTestIncrement() {
+  return ++g_static_value;
+}
 
 void NativeLibraryResetCounter() {
   g_static_value = 0;

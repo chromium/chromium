@@ -21,9 +21,24 @@ enum MapCoordinatesMode {
   // position.
   kIgnoreScrollOffset = 1 << 5,
 
+  // Ignore scroll origin *and* scroll offset (which can be non-zero for some
+  // scrollers, like RTL and flippd-blocks writing modes).
+  kIgnoreScrollOriginAndOffset = 1 << 6,
+
   // If the local root frame has a remote frame parent, apply the transformation
-  // from the local root frame to the remote main frame.
-  kApplyRemoteMainFrameTransform = 1 << 6,
+  // from the local root frame to the remote main frame. The coordinates are
+  // relative to the remote main frame document, i.e., (0, 0) maps to where the
+  // remote main frame's content starts.
+  kApplyRemoteMainFrameTransform = 1 << 7,
+
+  // If the local root frame has a remote frame parent, apply the transformation
+  // from the local root frame to the viewport, i.e., (0, 0) maps to the origin
+  // of the window rendering the remote main Document.
+  //
+  // NOTE: This is guaranteed to provide a correct value only if the iframe is
+  // onscreen. This is because we don't sync scroll updates from the main
+  // frame's root scroller. See kSkipUnnecessaryRemoteFrameGeometryPropagation.
+  kApplyRemoteViewportTransform = 1 << 8,
 };
 typedef unsigned MapCoordinatesFlags;
 

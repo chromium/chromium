@@ -35,7 +35,7 @@ class UpdateView {
     kOptOutInfo = 5,
   };
 
-  virtual ~UpdateView() {}
+  virtual ~UpdateView() = default;
 
   // Shows the contents of the screen.
   virtual void Show(bool is_opt_out_enabled) = 0;

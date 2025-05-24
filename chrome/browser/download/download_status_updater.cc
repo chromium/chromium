@@ -10,7 +10,6 @@
 
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -53,10 +52,9 @@ const char WasInProgressData::kKey[] =
 
 }  // anonymous namespace
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 DownloadStatusUpdater::DownloadStatusUpdater() = default;
+
 DownloadStatusUpdater::~DownloadStatusUpdater() = default;
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool DownloadStatusUpdater::GetProgress(float* progress,
                                         int* download_count) const {
@@ -162,8 +160,8 @@ void DownloadStatusUpdater::UpdateProfileKeepAlive(
   // Do we still need to hold a keepalive?
   content::DownloadManager::DownloadVector items;
   manager->GetAllDownloads(&items);
-  auto items_it = base::ranges::find(items, download::DownloadItem::IN_PROGRESS,
-                                     &download::DownloadItem::GetState);
+  auto items_it = std::ranges::find(items, download::DownloadItem::IN_PROGRESS,
+                                    &download::DownloadItem::GetState);
   bool should_keep_alive = (items_it != items.end());
 
   if (should_keep_alive == already_has_keep_alive) {
@@ -180,7 +178,7 @@ void DownloadStatusUpdater::UpdateProfileKeepAlive(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 void DownloadStatusUpdater::UpdateAppIconDownloadProgress(
     download::DownloadItem* download) {
   // TODO(avi): Implement for Android?

@@ -6,10 +6,10 @@
       }
 
       /**
-       * Additional payment method lists should be the continuation of the
-       * previous list.
+       * Add a separator line between consecutive non-empty payment method
+       * lists to display as a continuation of the previous list.
        */
-      .list-separator {
+      .vertical-list:has(.payment-method) ~ .vertical-list:has(.payment-method) {
         border-top: var(--cr-separator-line);
         width: 100%;
       }
@@ -22,13 +22,18 @@
           </settings-credit-card-list-entry>
         </template>
       </div>
-      <div class="list-separator" hidden$="[[!showCreditCardIbanSeparator_]]">
-      </div>
       <div class="vertical-list list-with-header" role="rowgroup">
         <template is="dom-repeat" items="[[ibans]]">
           <settings-iban-list-entry id="[[getIbanId_(index)]]"
               class="payment-method" iban="[[item]]">
           </settings-iban-list-entry>
+        </template>
+      </div>
+      <div class="vertical-list list-with-header" role="rowgroup">
+        <template is="dom-repeat" items="[[payOverTimeIssuers]]">
+          <settings-pay-over-time-issuer-list-entry class="payment-method"
+              pay-over-time-issuer="[[item]]">
+          </settings-pay-over-time-issuer-list-entry>
         </template>
       </div>
     </div>

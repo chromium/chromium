@@ -40,7 +40,7 @@ public class ArchiveTest extends AwParameterizedTest {
     private static final String TEST_PAGE =
             UrlUtils.encodeHtmlDataUri("<html><head></head><body>test</body></html>");
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestContainerView;
 
     public ArchiveTest(AwSettingsMutation param) {

@@ -5,10 +5,12 @@
 #ifndef CONTENT_BROWSER_INTEREST_GROUP_STORAGE_INTEREST_GROUP_H_
 #define CONTENT_BROWSER_INTEREST_GROUP_STORAGE_INTEREST_GROUP_H_
 
+#include <map>
 #include <optional>
 #include <vector>
 
 #include "base/time/time.h"
+#include "content/browser/interest_group/for_debugging_only_report_util.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -46,24 +48,10 @@ struct CONTENT_EXPORT StorageInterestGroup {
   base::Time last_k_anon_updated;
 };
 
-enum class DebugReportCooldownType {
-  kShortCooldown = 0,
-  kRestrictedCooldown = 1,
-
-  kMaxValue = kRestrictedCooldown,
-};
-
-struct CONTENT_EXPORT DebugReportCooldown {
-  base::Time starting_time;
-  DebugReportCooldownType type;
-
-  bool operator==(const DebugReportCooldown& other) const = default;
-};
-
 struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
   DebugReportLockoutAndCooldowns();
   DebugReportLockoutAndCooldowns(
-      std::optional<base::Time> last_report_sent_time,
+      std::optional<DebugReportLockout> lockout,
       std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map);
   DebugReportLockoutAndCooldowns(DebugReportLockoutAndCooldowns&);
   DebugReportLockoutAndCooldowns& operator=(DebugReportLockoutAndCooldowns&&) =
@@ -71,17 +59,12 @@ struct CONTENT_EXPORT DebugReportLockoutAndCooldowns {
   DebugReportLockoutAndCooldowns(DebugReportLockoutAndCooldowns&&);
   ~DebugReportLockoutAndCooldowns();
 
-  // The last time a forDebuggingOnly report was sent.
-  std::optional<base::Time> last_report_sent_time;
+  // The lockout of sending forDebuggingOnly reports.
+  std::optional<DebugReportLockout> lockout;
   // The key is an ad tech origin, and value is its cooldown of sending
   // forDebuggingOnly reports.
-  std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map = {};
+  std::map<url::Origin, DebugReportCooldown> debug_report_cooldown_map;
 };
-
-// Converts forDebuggingOnly API's cooldown type to its actual cooldown
-// duration.
-CONTENT_EXPORT std::optional<base::TimeDelta>
-ConvertDebugReportCooldownTypeToDuration(DebugReportCooldownType type);
 
 }  // namespace content
 

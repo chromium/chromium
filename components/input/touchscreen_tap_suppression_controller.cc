@@ -14,7 +14,8 @@ TouchscreenTapSuppressionController::TouchscreenTapSuppressionController(
     const TapSuppressionController::Config& config)
     : TapSuppressionController(config) {}
 
-TouchscreenTapSuppressionController::~TouchscreenTapSuppressionController() {}
+TouchscreenTapSuppressionController::~TouchscreenTapSuppressionController() =
+    default;
 
 bool TouchscreenTapSuppressionController::FilterTapEvent(
     const GestureEventWithLatencyInfo& event) {

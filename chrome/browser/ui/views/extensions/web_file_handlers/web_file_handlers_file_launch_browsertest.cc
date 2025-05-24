@@ -13,39 +13,29 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/file_handlers/web_file_handlers_permission_handler.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/views/extensions/web_file_handlers/web_file_handlers_file_launch_dialog.h"
-#include "chrome/test/base/chrome_test_utils.h"
-#include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
-#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "extensions/common/web_file_handler_constants.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
-#include "net/base/filename_util.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/display/types/display_constants.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -54,8 +44,8 @@ namespace {
 
 // Write file to disk.
 base::FilePath WriteFile(const base::FilePath& directory,
-                         const std::string_view name,
-                         const std::string_view content) {
+                         std::string_view name,
+                         std::string_view content) {
   const base::FilePath path = directory.Append(std::string_view(name));
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::WriteFile(path, content);
@@ -67,11 +57,6 @@ base::FilePath WriteFile(const base::FilePath& directory,
 class WebFileHandlersFileLaunchBrowserTest
     : public extensions::ExtensionBrowserTest {
  public:
-  WebFileHandlersFileLaunchBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionWebFileHandlers);
-  }
-
   // Verify that the launch result matches expectations.
   void VerifyLaunchResult(base::RepeatingClosure quit_closure,
                           apps::LaunchResult::State expected,
@@ -234,9 +219,8 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Set the checkbox to checked.
-    // TODO: handle return value.
-    std::ignore =
-        extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
+    auto resetter = extensions::WebFileHandlersPermissionHandler::
+        SetRememberSelectionForTesting(true);
 
     // Run the first time.
     {
@@ -287,9 +271,8 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Set the checkbox to checked.
-    // TODO: handle return value.
-    std::ignore =
-        extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
+    auto resetter = extensions::WebFileHandlersPermissionHandler::
+        SetRememberSelectionForTesting(true);
 
     // Launch for the first time.
     {
@@ -338,9 +321,8 @@ class WebFileHandlersFileLaunchBrowserTest
     views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                          "WebFileHandlersFileLaunchDialogView");
     // Set the checkbox to checked.
-    // TODO: handle return value.
-    std::ignore =
-        extensions::file_handlers::SetDefaultRememberSelectionForTesting(true);
+    auto resetter = extensions::WebFileHandlersPermissionHandler::
+        SetRememberSelectionForTesting(true);
 
     // Launch for the first time.
     {
@@ -406,8 +388,7 @@ class WebFileHandlersFileLaunchBrowserTest
           WriteFile(scoped_temp_dir.GetPath(), name, content);
 
       // Add file(s) to intent.
-      int64_t file_size = 0;
-      base::GetFileSize(file_path, &file_size);
+      int64_t file_size = base::GetFileSize(file_path).value_or(0);
 
       // Create a virtual file in the file system, as required by AppService.
       scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -447,8 +428,7 @@ class WebFileHandlersFileLaunchBrowserTest
         WriteFile(scoped_temp_dir.GetPath(), "a.csv", "1,2,3");
 
     // Add file(s) to intent.
-    int64_t file_size = 0;
-    base::GetFileSize(file_path, &file_size);
+    int64_t file_size = base::GetFileSize(file_path).value_or(0);
 
     // Create a virtual file in the file system, as required by AppService.
     scoped_refptr<storage::FileSystemContext> file_system_context =
@@ -469,8 +449,6 @@ class WebFileHandlersFileLaunchBrowserTest
 
  private:
   extensions::TestExtensionDir extension_dir_;
-
-  base::test::ScopedFeatureList feature_list_;
 
   // Basic manifest for web file handlers.
   static constexpr char const kManifest[] = R"({

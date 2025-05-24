@@ -11,9 +11,9 @@
 #include "ui/gfx/geometry/rect.h"
 
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
-                                       chromeos::AppType)
+                                       SkColor)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
-                                       chromeos::WindowPinType)
+                                       chromeos::AppType)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(COMPONENT_EXPORT(CHROMEOS_UI_BASE),
                                        chromeos::WindowStateType)
 
@@ -42,8 +42,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kHideShelfWhenFullscreenKey, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImmersiveImpliedByFullscreen, true)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kImmersiveIsActive, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect,
-                                   kImmersiveTopContainerBoundsInScreen,
-                                   nullptr)
+                                   kImmersiveTopContainerBoundsInScreen)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsGameKey, false)
 
@@ -55,9 +54,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSupportsFloatedStateKey, true)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kWindowManagerManagesOpacityKey, false)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string,
-                                   kWindowOverviewTitleKey,
-                                   nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::u16string, kWindowOverviewTitleKey)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(WindowStateType,
                              kWindowStateTypeKey,

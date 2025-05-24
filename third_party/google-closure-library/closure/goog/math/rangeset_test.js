@@ -633,6 +633,9 @@ testSuite({
     assertTrue(r.isEmpty());
   },
 
+  /**
+   * @suppress {visibility} suppression added to enable type checking
+   */
   testIter() {
     const r = new RangeSet();
 
@@ -656,5 +659,16 @@ testSuite({
               r.ranges_[i], testRange);
           i++;
         });
+
+    i = 0;
+    for (const testRange of r) {
+      assertRangesEqual(
+          'Iterated set values should match the originals.', r.ranges_[i],
+          testRange);
+      assertNotEquals(
+          'Iterated range should not be a reference to the original.',
+          r.ranges_[i], testRange);
+      i++;
+    }
   },
 });

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
 #define IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
 
+#include <Foundation/Foundation.h>
+
 #include <memory>
 #include <string>
 
@@ -37,6 +39,9 @@ struct UpgradeRecommendedDetails;
 // `OmahaService` is created on.
 class OmahaServiceObserver : public base::CheckedObserver {
  public:
+  // Called when the Omaha service has successfully started.
+  virtual void OnServiceStarted(OmahaService* omaha_service) {}
+
   // Called whenever the Omaha Service determines a change in
   // `UpgradeRecommendedDetails`.
   virtual void UpgradeRecommendedDetailsChanged(
@@ -67,6 +72,16 @@ class OmahaService {
   static void Start(std::unique_ptr<network::PendingSharedURLLoaderFactory>
                         pending_url_loader_factory,
                     const UpgradeRecommendedCallback& callback);
+
+  // Returns `true` if the Omaha service is available and has been
+  // successfully started for this build variant. Returns `false` if
+  // the Omaha service is unavailable or not started.
+  //
+  // Clients should always check if the Omaha service was started by
+  // calling this method before invoking `CheckNow()`. Calling methods on
+  // an unstarted or unavailable Omaha service may result in undefined behavior
+  // or crashes.
+  static bool HasStarted();
 
   OmahaService(const OmahaService&) = delete;
   OmahaService& operator=(const OmahaService&) = delete;
@@ -113,6 +128,7 @@ class OmahaService {
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceInternalTest,
                            PingMessageTestWithProfileData);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ResyncTimerAfterSystemSuspend);
 
   // For the singleton:
   friend class base::NoDestructor<OmahaService>;
@@ -129,8 +145,9 @@ class OmahaService {
   void StartInternal(
       const scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // Stops the service in preparation for browser shutdown.
-  void StopInternal();
+  // Resyncs the timer if device sleep has caused it to get out of
+  // sync with `next_tries_time_`.
+  void ResyncTimerIfNeeded();
 
   // URL loader completion callback.
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
@@ -263,6 +280,11 @@ class OmahaService {
 
   // If a scheduled ping was canceled.
   bool scheduled_ping_canceled_ = false;
+
+  // An opaque handle to the applicationWillEnterForeground
+  // notification registration. Used to cancel the registration and to
+  // prevent registering multiple times.
+  id foreground_notification_registration_handle_;
 
   // Called to notify that upgrade is recommended.
   UpgradeRecommendedCallback upgrade_recommended_callback_;

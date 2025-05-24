@@ -23,14 +23,18 @@ void VerifyTableDoesntHaveDuplicates(
 
   for (const auto& e : table) {
     int modifiers = 0;
-    if (e.command_key)
+    if (e.command_key) {
       modifiers |= ui::EF_COMMAND_DOWN;
-    if (e.shift_key)
+    }
+    if (e.shift_key) {
       modifiers |= ui::EF_SHIFT_DOWN;
-    if (e.cntrl_key)
+    }
+    if (e.cntrl_key) {
       modifiers |= ui::EF_CONTROL_DOWN;
-    if (e.opt_key)
+    }
+    if (e.opt_key) {
       modifiers |= ui::EF_ALT_DOWN;
+    }
 
     for (const auto& accelerator_entry : accelerators) {
       unichar character;
@@ -55,8 +59,9 @@ void VerifyTableDoesntHaveDuplicates(
 // have any modifiers, and thus cannot be interpreted as macOS
 // keyEquivalents.
 TEST(AcceleratorTableTest, CheckMacOSAccelerators) {
-  for (const auto& entry : GetAcceleratorList())
+  for (const auto& entry : GetAcceleratorList()) {
     EXPECT_EQ(0, entry.modifiers);
+  }
 }
 
 // Verifies that we're not processing any duplicate accelerators in

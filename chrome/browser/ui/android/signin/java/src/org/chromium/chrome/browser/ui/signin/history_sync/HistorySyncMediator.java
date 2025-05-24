@@ -4,18 +4,19 @@
 
 package org.chromium.chrome.browser.ui.signin.history_sync;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
@@ -29,6 +30,7 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.SignInStateObserver {
     private final PropertyModel mModel;
     private final String mAccountEmail;
@@ -36,6 +38,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     private final SigninManager mSigninManager;
     private final SyncService mSyncService;
     private final ProfileDataCache mProfileDataCache;
+    private final HistorySyncConfig mConfig;
     private final @SigninAccessPoint int mAccessPoint;
     private final boolean mShouldSignOutOnDecline;
     private final HistorySyncHelper mHistorySyncHelper;
@@ -44,6 +47,7 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
             Context context,
             HistorySyncCoordinator.HistorySyncDelegate delegate,
             Profile profile,
+            HistorySyncConfig config,
             @SigninAccessPoint int accessPoint,
             boolean showEmailInFooter,
             boolean shouldSignOutOnDecline,
@@ -52,16 +56,18 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         mDelegate = delegate;
         mShouldSignOutOnDecline = shouldSignOutOnDecline;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(context);
-        mSigninManager = IdentityServicesProvider.get().getSigninManager(profile);
-        mSyncService = SyncServiceFactory.getForProfile(profile);
+        mSigninManager = assumeNonNull(IdentityServicesProvider.get().getSigninManager(profile));
+        mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(profile));
         mHistorySyncHelper = HistorySyncHelper.getForProfile(profile);
         mProfileDataCache.addObserver(this);
         mSigninManager.addSignInStateObserver(this);
+        mConfig = config;
         mAccountEmail =
-                CoreAccountInfo.getEmailFrom(
-                        mSigninManager
-                                .getIdentityManager()
-                                .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
+                assumeNonNull(
+                        CoreAccountInfo.getEmailFrom(
+                                mSigninManager
+                                        .getIdentityManager()
+                                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN)));
         // The history sync screen should never be created when the user is signed out.
         assert mAccountEmail != null;
         DisplayableProfileData profileData =
@@ -76,6 +82,8 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
                         profileData,
                         this::onAcceptClicked,
                         this::onDeclineClicked,
+                        mConfig.titleId,
+                        mConfig.subtitleId,
                         footerString,
                         mUseLandscapeLayout);
     }
@@ -95,8 +103,8 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
     @Override
     public void onSignedOut() {
         RecordHistogram.recordEnumeratedHistogram(
-                "Signin.HistorySyncOptIn.Aborted", mAccessPoint, SigninAccessPoint.MAX);
-        mDelegate.dismissHistorySync();
+                "Signin.HistorySyncOptIn.Aborted", mAccessPoint, SigninAccessPoint.MAX_VALUE);
+        mDelegate.dismissHistorySync(/* isHistorySyncAccepted= */ false);
     }
 
     void destroy() {
@@ -114,23 +122,22 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         switch (syncButtonType) {
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
-                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
+                mDelegate.recordHistorySyncOptIn(
                         mAccessPoint, SyncButtonClicked.HISTORY_SYNC_OPT_IN_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
-                SigninMetricsUtils.logHistorySyncAcceptButtonClicked(
+                mDelegate.recordHistorySyncOptIn(
                         mAccessPoint, SyncButtonClicked.HISTORY_SYNC_OPT_IN_NOT_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNSUPPORTED:
             case ScreenMode.PENDING:
                 throw new IllegalStateException("Unrecognized restriction status.");
         }
-        mDelegate.maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_ACCEPTED);
 
         mSyncService.setSelectedType(UserSelectableType.HISTORY, /* isTypeOn= */ true);
         mSyncService.setSelectedType(UserSelectableType.TABS, /* isTypeOn= */ true);
         mHistorySyncHelper.clearHistorySyncDeclinedPrefs();
-        mDelegate.dismissHistorySync();
+        mDelegate.dismissHistorySync(/* isHistorySyncAccepted= */ true);
     }
 
     private void onDeclineClicked(View view) {
@@ -139,25 +146,24 @@ class HistorySyncMediator implements ProfileDataCache.Observer, SigninManager.Si
         switch (syncButtonType) {
             case ScreenMode.RESTRICTED:
             case ScreenMode.DEADLINED:
-                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
+                mDelegate.recordHistorySyncOptIn(
                         mAccessPoint, SyncButtonClicked.HISTORY_SYNC_CANCEL_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNRESTRICTED:
-                SigninMetricsUtils.logHistorySyncDeclineButtonClicked(
+                mDelegate.recordHistorySyncOptIn(
                         mAccessPoint, SyncButtonClicked.HISTORY_SYNC_CANCEL_NOT_EQUAL_WEIGHTED);
                 break;
             case ScreenMode.UNSUPPORTED:
             case ScreenMode.PENDING:
                 throw new IllegalStateException("Unrecognized restriction status.");
         }
-        mDelegate.maybeRecordFreProgress(MobileFreProgress.HISTORY_SYNC_DISMISSED);
 
         if (mShouldSignOutOnDecline) {
             mSigninManager.signOut(
                     SignoutReason.USER_DECLINED_HISTORY_SYNC_AFTER_DEDICATED_SIGN_IN);
         }
         mHistorySyncHelper.recordHistorySyncDeclinedPrefs();
-        mDelegate.dismissHistorySync();
+        mDelegate.dismissHistorySync(/* isHistorySyncAccepted= */ false);
     }
 
     /**

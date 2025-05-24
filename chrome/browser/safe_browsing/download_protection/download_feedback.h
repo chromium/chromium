@@ -38,7 +38,7 @@ class DownloadFeedback {
   // The URL where the browser sends download feedback requests.
   static const char kSbFeedbackURL[];
 
-  virtual ~DownloadFeedback() {}
+  virtual ~DownloadFeedback() = default;
 
   // Makes the passed |factory| the factory used to instantiate
   // a DownloadFeedback. Useful for tests.
@@ -63,7 +63,7 @@ class DownloadFeedback {
 
 class DownloadFeedbackFactory {
  public:
-  virtual ~DownloadFeedbackFactory() {}
+  virtual ~DownloadFeedbackFactory() = default;
 
   virtual std::unique_ptr<DownloadFeedback> CreateDownloadFeedback(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

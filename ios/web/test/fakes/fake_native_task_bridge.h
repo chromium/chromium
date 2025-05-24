@@ -18,7 +18,7 @@
 @property(nonatomic, readwrite, strong) WKDownload* download;
 @property(nonatomic, readwrite, strong) NSProgress* progress;
 @property(nonatomic, readwrite, strong) NSURLResponse* response;
-@property(nonatomic, readwrite, strong) NSString* suggestedFilename;
+@property(nonatomic, readwrite, copy) NSString* suggestedFilename;
 
 @end
 

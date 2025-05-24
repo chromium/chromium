@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -62,6 +63,10 @@ bool InsertLineBreakCommand::ShouldUseBreakElement(
   // the input element, and in that case we need to check the input element's
   // parent's layoutObject.
   Position p(insertion_pos.ParentAnchoredEquivalent());
+  if (auto* text_control = EnclosingTextControl(p)) {
+    return RuntimeEnabledFeatures::TextareaLineEndingsAsBrEnabled() &&
+           IsA<HTMLTextAreaElement>(text_control);
+  }
   return IsRichlyEditablePosition(p) && p.AnchorNode()->GetLayoutObject() &&
          p.AnchorNode()->GetLayoutObject()->Style()->ShouldCollapseBreaks();
 }

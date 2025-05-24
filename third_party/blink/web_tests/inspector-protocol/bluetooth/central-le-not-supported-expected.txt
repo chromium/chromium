@@ -1,0 +1,3 @@
+Tests that Bluetooth is unavailable when low-energy is not supported.
+false
+

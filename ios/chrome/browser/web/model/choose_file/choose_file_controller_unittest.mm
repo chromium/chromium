@@ -20,7 +20,7 @@ class ChooseFileControllerTest : public PlatformTest {
     PlatformTest::SetUp();
     web_state_ = std::make_unique<web::FakeWebState>();
     event_ = std::make_unique<ChooseFileEvent>(
-        false, std::vector<std::string>{}, std::vector<std::string>{},
+        false, false, std::vector<std::string>{}, std::vector<std::string>{},
         web_state_.get());
     controller_ = std::make_unique<FakeChooseFileController>(*event_);
   }
@@ -75,6 +75,7 @@ TEST_F(ChooseFileControllerTest, SubmitSelectionExpired) {
 TEST_F(ChooseFileControllerTest, GetChooseFileEvent) {
   const ChooseFileEvent event = controller_->GetChooseFileEvent();
   EXPECT_EQ(event_->allow_multiple_files, event.allow_multiple_files);
+  EXPECT_EQ(event_->has_selected_file, event.has_selected_file);
   EXPECT_EQ(event_->accept_file_extensions, event.accept_file_extensions);
   EXPECT_EQ(event_->accept_mime_types, event.accept_mime_types);
   EXPECT_EQ(event_->web_state.get(), event.web_state.get());

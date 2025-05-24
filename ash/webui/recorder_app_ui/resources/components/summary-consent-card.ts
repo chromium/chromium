@@ -72,10 +72,7 @@ export class SummaryConsentCard extends ReactiveLitElement {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
     this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
-    this.platformHandler.summaryModelLoader.download();
-    // TODO: b/367285755 - Include title suggestion model when reporting the
-    // download progress.
-    this.platformHandler.titleSuggestionModelLoader.download();
+    this.platformHandler.downloadGenAiModel();
   }
 
   private onDisableClick() {
@@ -88,17 +85,19 @@ export class SummaryConsentCard extends ReactiveLitElement {
     return html`<div id="container">
       <cra-icon name="summarize_auto"></cra-icon>
       <div id="main" role="dialog" aria-labelledby="header">
-        <span id="header">${i18n.summaryDownloadModelHeader}</span>
-        <span id="description">${i18n.summaryDownloadModelDescription}</span>
+        <span id="header">${i18n.summaryDownloadGenAiModelHeader}</span>
+        <span id="description">
+          ${i18n.summaryDownloadGenAiModelDescription}
+        </span>
         <div id="actions">
           <cra-button
-            .label=${i18n.summaryDownloadModelDisableButton}
+            .label=${i18n.summaryDownloadGenAiModelDisableButton}
             button-style="floating"
             @click=${this.onDisableClick}
           >
           </cra-button>
           <cra-button
-            .label=${i18n.summaryDownloadModelDownloadButton}
+            .label=${i18n.summaryDownloadGenAiModelDownloadButton}
             @click=${this.onDownloadClick}
           >
           </cra-button>

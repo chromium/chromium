@@ -29,22 +29,22 @@
     Exposed=Window
 ] interface SVGFEConvolveMatrixElement : SVGElement {
     // Edge Mode Values
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_EDGEMODE_UNKNOWN = 0;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_EDGEMODE_DUPLICATE = 1;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_EDGEMODE_WRAP = 2;
-    [MeasureAs=SVG1DOMFilter] const unsigned short SVG_EDGEMODE_NONE = 3;
+    const unsigned short SVG_EDGEMODE_UNKNOWN = 0;
+    const unsigned short SVG_EDGEMODE_DUPLICATE = 1;
+    const unsigned short SVG_EDGEMODE_WRAP = 2;
+    const unsigned short SVG_EDGEMODE_NONE = 3;
 
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedInteger orderX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedInteger orderY;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumberList kernelMatrix;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber divisor;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber bias;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedInteger targetX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedInteger targetY;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedEnumeration edgeMode;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber kernelUnitLengthX;
-    [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber kernelUnitLengthY;
+    readonly attribute SVGAnimatedString in1;
+    readonly attribute SVGAnimatedInteger orderX;
+    readonly attribute SVGAnimatedInteger orderY;
+    readonly attribute SVGAnimatedNumberList kernelMatrix;
+    readonly attribute SVGAnimatedNumber divisor;
+    readonly attribute SVGAnimatedNumber bias;
+    readonly attribute SVGAnimatedInteger targetX;
+    readonly attribute SVGAnimatedInteger targetY;
+    readonly attribute SVGAnimatedEnumeration edgeMode;
+    readonly attribute SVGAnimatedNumber kernelUnitLengthX;
+    readonly attribute SVGAnimatedNumber kernelUnitLengthY;
     [Measure] readonly attribute SVGAnimatedBoolean preserveAlpha;
 };
 

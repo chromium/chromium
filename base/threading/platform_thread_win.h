@@ -5,11 +5,9 @@
 #ifndef BASE_THREADING_PLATFORM_THREAD_WIN_H_
 #define BASE_THREADING_PLATFORM_THREAD_WIN_H_
 
-#include "base/win/windows_types.h"
-
-#include "base/threading/platform_thread.h"
-
 #include "base/base_export.h"
+#include "base/threading/platform_thread.h"
+#include "base/win/windows_types.h"
 
 namespace base {
 namespace internal {
@@ -19,8 +17,6 @@ namespace internal {
 BASE_EXPORT void AssertMemoryPriority(HANDLE thread, int memory_priority);
 
 }  // namespace internal
-
-BASE_EXPORT void InitializePlatformThreadFeatures();
 
 }  // namespace base
 

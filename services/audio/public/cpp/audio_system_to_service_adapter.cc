@@ -66,7 +66,7 @@ const char* GetTraceEvent(Action action) {
     case kGetInputDeviceInfo:
       return "AudioSystemToServiceAdapter::GetInputDeviceInfo";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 OnAudioParamsCallback WrapGetStreamParametersReply(

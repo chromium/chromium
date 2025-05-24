@@ -8,14 +8,12 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "base/memory/raw_ptr.h"
 
 class GURL;
 
 namespace ash {
 
 class GlanceablesTestNewWindowDelegateImpl;
-class TestNewWindowDelegateProvider;
 
 // Convenient tests helper to check the last opened URL via `NewWindowDelegate`.
 class ASH_EXPORT GlanceablesTestNewWindowDelegate {
@@ -30,8 +28,7 @@ class ASH_EXPORT GlanceablesTestNewWindowDelegate {
   GURL GetLastOpenedUrl() const;
 
  private:
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
-  raw_ptr<GlanceablesTestNewWindowDelegateImpl> new_window_delegate_ = nullptr;
+  std::unique_ptr<GlanceablesTestNewWindowDelegateImpl> new_window_delegate_;
 };
 
 }  // namespace ash

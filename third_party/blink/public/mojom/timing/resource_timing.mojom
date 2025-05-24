@@ -125,9 +125,18 @@ struct ResourceTimingInfo {
   // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
   string content_type;
 
+  // Holds the string corresponding to |contentEncoding| in
+  // PerformanceResourceTiming (https://w3c.github.io/resource-timing/).
+  string content_encoding;
+
   // Holds the source type of ServiceWorker static routing API. It keeps track
   // of |matchedSourceType| and |finalSourceType|. This is a proposed field in
   // https://github.com/WICG/service-worker-static-routing-api, not in the
   // resource-timing standard yet.
   network.mojom.ServiceWorkerRouterInfo? service_worker_router_info;
+
+  // Holds where the source of the resource, when it was fetched via
+  // ServiceWorker. This is |kUnspecified| if the response is not from
+  // ServiceWorker.
+  network.mojom.FetchResponseSource service_worker_response_source;
 };

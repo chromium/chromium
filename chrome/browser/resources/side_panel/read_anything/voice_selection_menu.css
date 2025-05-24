@@ -4,7 +4,10 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//read-anything-side-panel.top-chrome/shared/sp_shared_style_lit.css.js
  * #scheme=relative
+ * #include=sp-shared-style-lit
  * #css_wrapper_metadata_end */
 
 cr-icon {
@@ -25,6 +28,12 @@ cr-icon-button.active {
   background-color: var(--cr-active-background-color);
 }
 
+.spinner {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
+
 #voiceSelectionMenu::part(dialog) {
   min-width: 304px;
   width: fit-content;
@@ -34,6 +43,11 @@ cr-action-menu::part(dialog) {
   max-height: calc(90% - 36px);
   /* Prevent jank due to overscrolling from the dialog */
   overscroll-behavior: contain;
+}
+
+.clickable-false {
+  pointer-events: none;
+  opacity: var(--cr-disabled-opacity);
 }
 
 .dropdown-voice-selection-button {
@@ -57,7 +71,8 @@ cr-action-menu::part(dialog) {
   margin: 0;
 }
 
-.lang-group-title, .download-message {
+.lang-group-title,
+.notification {
   color: var(--color-sys-on-surface-subtle);
   display: grid;
   font-size: 12px;
@@ -65,21 +80,23 @@ cr-action-menu::part(dialog) {
   padding-left: 20px;
 }
 
+.error-message {
+  white-space: normal;
+}
+
 .voice-name {
   font-size: 13px;
   font-weight: 500;
+  min-width: 200px;
   max-width: 100%;
   overflow: hidden;
   padding-inline-end: 16px;
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.item-invisible-true {
+.item-hidden-true {
   visibility: hidden;
-}
-
-.menu-divider {
-  border-top: 1px solid var(--color-side-panel-dialog-divider);
 }
 
 .language-menu-button {

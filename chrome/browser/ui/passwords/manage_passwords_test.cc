@@ -12,6 +12,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_change_service.h"
+#include "chrome/browser/password_manager/password_change_service_factory.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,11 +25,14 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
+#include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/form_saver_impl.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/mock_password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -65,6 +72,8 @@ ManagePasswordsTest::~ManagePasswordsTest() = default;
 
 void ManagePasswordsTest::SetUpOnMainThread() {
   InteractiveBrowserTest::SetUpOnMainThread();
+  mock_optimization_service_ =
+      std::make_unique<testing::NiceMock<MockOptimizationGuideKeyedService>>();
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/empty.html");
 
@@ -73,8 +82,12 @@ void ManagePasswordsTest::SetUpOnMainThread() {
   password_form_.username_value = kTestUsername;
   password_form_.password_value = u"test_password";
   password_form_.match_type = password_manager::PasswordForm::MatchType::kExact;
-
   ASSERT_TRUE(AddTabAtIndex(0, test_url, ui::PAGE_TRANSITION_TYPED));
+}
+
+void ManagePasswordsTest::TearDownOnMainThread() {
+  mock_optimization_service_ = nullptr;
+  InteractiveBrowserTest::TearDownOnMainThread();
 }
 
 void ManagePasswordsTest::SetUpInProcessBrowserTestFixture() {
@@ -128,6 +141,39 @@ void ManagePasswordsTest::SetupManagingPasswords(
                                                        federated_form};
   GetController()->OnPasswordAutofilled(
       forms, embedded_test_server()->GetOrigin(), {});
+}
+
+void ManagePasswordsTest::SetupPasswordChange() {
+  affiliations::MockAffiliationService mock_affiliation_service;
+  PasswordChangeServiceFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindLambdaForTesting([this, &mock_affiliation_service](
+                                     content::BrowserContext* context)
+                                     -> std::unique_ptr<KeyedService> {
+        auto feature_manager =
+            std::make_unique<password_manager::MockPasswordFeatureManager>();
+        ON_CALL(*feature_manager.get(), IsGenerationEnabled)
+            .WillByDefault(testing::Return(true));
+        return std::make_unique<ChromePasswordChangeService>(
+            &mock_affiliation_service, mock_optimization_service_.get(),
+            std::move(feature_manager));
+      }));
+  mock_optimization_service_.reset();
+
+  const GURL kUrl = GURL("https://example.com/");
+  ON_CALL(mock_affiliation_service, GetChangePasswordURL(kUrl))
+      .WillByDefault(testing::Return(embedded_test_server()->GetURL(
+          "/password/update_form_empty_fields.html")));
+  GetController()->OnCredentialLeak(password_manager::LeakedPasswordDetails(
+      password_manager::CreateLeakType(
+          password_manager::IsSaved(true), password_manager::IsReused(false),
+          password_manager::IsSyncing(true),
+          password_manager::HasChangePasswordUrl(true)),
+      kUrl, u"new_username", u"new_password",
+      /*in_account_store=*/true));
+  static_cast<PasswordsModelDelegate*>(GetController())
+      ->GetPasswordChangeDelegate()
+      ->StartPasswordChangeFlow();
 }
 
 void ManagePasswordsTest::SetupPendingPassword() {

@@ -9,6 +9,7 @@
 
 #include "components/metrics/file_metrics_provider.h"
 
+#include <array>
 #include <memory>
 
 #include "base/files/file_path.h"
@@ -79,8 +80,9 @@ class HistogramFlattenerDeltaRecorder : public base::HistogramFlattener {
   void RecordDelta(const base::HistogramBase& histogram,
                    const base::HistogramSamples& snapshot) override {
     // Only remember locally created histograms; they have exactly 2 chars.
-    if (strlen(histogram.histogram_name()) == 2)
-      recorded_delta_histogram_names_.push_back(histogram.histogram_name());
+    if (histogram.histogram_name().length() == 2) {
+      recorded_delta_histogram_names_.emplace_back(histogram.histogram_name());
+    }
   }
 
   std::vector<std::string> GetRecordedDeltaHistogramNames() {
@@ -327,7 +329,7 @@ class FileMetricsProviderTest : public testing::TestWithParam<bool> {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<TestFileMetricsProvider> provider_;
-  base::HistogramBase* created_histograms_[kMaxCreateHistograms];
+  std::array<base::HistogramBase*, kMaxCreateHistograms> created_histograms_;
 
   raw_ptr<const FileMetricsProvider::FilterAction, AllowPtrArithmetic>
       filter_actions_ = nullptr;

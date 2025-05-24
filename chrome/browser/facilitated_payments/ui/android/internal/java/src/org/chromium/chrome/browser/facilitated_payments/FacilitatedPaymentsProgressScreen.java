@@ -8,9 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyModel;
 
 // This class is used to show a progress spinner.
+@NullMarked
 public class FacilitatedPaymentsProgressScreen implements FacilitatedPaymentsSequenceView {
     private View mView;
 

@@ -53,7 +53,7 @@ namespace usb {
     long productId;
   };
 
-  [noinline_doc] dictionary EndpointDescriptor {
+  dictionary EndpointDescriptor {
     // Endpoint address.
     long address;
     // Transfer type.
@@ -72,7 +72,7 @@ namespace usb {
     ArrayBuffer extra_data;
   };
 
-  [noinline_doc] dictionary InterfaceDescriptor {
+  dictionary InterfaceDescriptor {
     // The interface number.
     long interfaceNumber;
     // The interface alternate setting number (defaults to <code>0</code).
@@ -91,7 +91,7 @@ namespace usb {
     ArrayBuffer extra_data;
   };
 
-  [noinline_doc] dictionary ConfigDescriptor {
+  dictionary ConfigDescriptor {
     // Is this the active configuration?
     boolean active;
     // The configuration number.
@@ -184,7 +184,7 @@ namespace usb {
     ArrayBuffer? data;
   };
 
-  [noinline_doc] dictionary DeviceFilter {
+  dictionary DeviceFilter {
     // Device vendor ID.
     long? vendorId;
     // Device product ID, checked only if the vendor ID matches.

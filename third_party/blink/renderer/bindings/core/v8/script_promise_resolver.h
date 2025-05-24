@@ -32,6 +32,7 @@ namespace blink {
 
 template <typename IDLResolvedType>
 class ScriptPromiseResolver;
+class SourceLocation;
 
 // This class wraps v8::Promise::Resolver for easier use in blink.
 //
@@ -89,7 +90,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
     if (!PrepareToResolveOrReject<kRejecting>()) {
       return;
     }
-    ResolveOrReject<IDLType, BlinkType>(value);
+    ResolveOrReject<IDLType, BlinkType>(std::move(value));
   }
 
   // These are shorthand helpers for rejecting the promise with a common type.
@@ -187,7 +188,8 @@ class CORE_EXPORT ScriptPromiseResolverBase
       v8::MicrotasksScope microtasks_scope(
           isolate, ToMicrotaskQueue(script_state_.Get()),
           v8::MicrotasksScope::kDoNotRunMicrotasks);
-      value_.Reset(isolate, ToV8Traits<IDLType>::ToV8(script_state_, value));
+      value_.Reset(isolate,
+                   ToV8Traits<IDLType>::ToV8(script_state_, std::move(value)));
     }
     NotifyResolveOrReject();
   }
@@ -218,7 +220,7 @@ class CORE_EXPORT ScriptPromiseResolverBase
   Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Value> value_;
   const ExceptionContext exception_context_;
-  String script_url_;
+  std::unique_ptr<SourceLocation> source_location_;
 
 #if DCHECK_IS_ON()
   bool suppress_detach_check_ = false;
@@ -251,7 +253,7 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
     if (!PrepareToResolveOrReject<kResolving>()) {
       return;
     }
-    ResolveOrReject<IDLResolvedType, BlinkType>(value);
+    ResolveOrReject<IDLResolvedType, BlinkType>(std::move(value));
   }
 
   // This Resolve() variant completely ignores the ScriptState given in the
@@ -263,7 +265,7 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
     if (!PrepareToResolveOrReject<kResolving>()) {
       return;
     }
-    ResolveOrReject<IDLResolvedType, BlinkType>(value);
+    ResolveOrReject<IDLResolvedType, BlinkType>(std::move(value));
   }
 
   // This Resolve() method allows a Promise expecting to be resolved with a
@@ -277,6 +279,27 @@ class ScriptPromiseResolver final : public ScriptPromiseResolverBase {
     }
     ResolveOrReject<IDLResolvedType, IDLResolvedType*>(
         MakeGarbageCollected<IDLResolvedType>(value));
+  }
+
+  // This Resolve() method allows a Promise expecting to be resolved with an
+  // enum type to be resolved with an enum value of that type rather than having
+  // to explicitly construct the enum type.
+  template <typename T = IDLResolvedType>
+    requires std::derived_from<IDLResolvedType, bindings::EnumerationBase>
+  void Resolve(T::Enum value) {
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    ResolveOrReject<IDLResolvedType>(T(value));
+  }
+
+  // A promise may be resolved with another promise if they are the same type.
+  void Resolve(ScriptPromise<IDLResolvedType> promise) {
+    if (!PrepareToResolveOrReject<kResolving>()) {
+      return;
+    }
+    value_.Reset(script_state_->GetIsolate(), promise.V8Promise());
+    NotifyResolveOrReject();
   }
 
   // Many IDL-exposed promises with a type other than undefined nevertheless

@@ -12,6 +12,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +82,7 @@ class CertificateWatcherTest : public testing::Test {
   }
 
   void TouchFileTask(const char* filename) {
-    std::string testWriteString = std::to_string(rand());
+    std::string testWriteString = base::NumberToString(rand());
     base::FilePath path = temp_dir_.GetPath().AppendASCII(filename);
 
     if (base::PathExists(path)) {

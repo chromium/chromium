@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.url.GURL;
@@ -21,6 +22,7 @@ import org.chromium.url.GURL;
  * FaviconHelper.getLocalFaviconImageForURL. Its reference will be released after the callback
  * has been called.
  */
+@NullMarked
 public class FaviconLoader {
     /** Loads a favicon or creates a fallback icon. */
     public static void loadFavicon(

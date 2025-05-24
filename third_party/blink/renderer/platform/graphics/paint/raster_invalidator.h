@@ -46,6 +46,10 @@ class PLATFORM_EXPORT RasterInvalidator
                 const gfx::Size& layer_bounds,
                 const PropertyTreeState& layer_state);
 
+  // Updates information for paint chunks after raster-inducing scrolls that
+  // not need repaint or PaintArtifactCompositor update.
+  void UpdateForRasterInducingScroll(const PaintChunkSubset&);
+
   // Called when we repainted PaintArtifact but a ContentLayerClientImpl doesn't
   // have anything changed. We just need to let |old_paint_artifact_| point to
   // the real old one.
@@ -127,8 +131,6 @@ class PLATFORM_EXPORT RasterInvalidator
                              DisplayItemClientId client_id,
                              PaintInvalidationReason reason,
                              ClientIsOldOrNew old_or_new) {
-    if (rect.IsEmpty())
-      return;
     callback_.InvalidateRect(rect);
     if (tracking_)
       TrackRasterInvalidation(rect, client_id, reason, old_or_new);
@@ -152,6 +154,11 @@ class PLATFORM_EXPORT RasterInvalidator
   Rect ClipByLayerBounds(const Rect& r) const {
     return IntersectRects(r, Rect(gfx::Rect(layer_bounds_)));
   }
+
+  void PopulatePaintChunksInfo(const PaintChunkSubset&,
+                               const gfx::Vector2dF& layer_offset,
+                               const PropertyTreeState& layer_state,
+                               Vector<PaintChunkInfo>&);
 
   Callback& callback_;
   gfx::Vector2dF layer_offset_;

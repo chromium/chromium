@@ -14,13 +14,14 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/ash/components/memory/elf_sections.h"
 
 namespace ash {
 
 BASE_FEATURE(kCrOSLockMainProgramText,
              "CrOSLockMainProgramText",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 // The maximum number of bytes that the browser will attempt to lock.
 const base::FeatureParam<int> kCrOSLockMainProgramTextMaxSize{
     &kCrOSLockMainProgramText, "CrOSLockMainProgramTextMaxSize",

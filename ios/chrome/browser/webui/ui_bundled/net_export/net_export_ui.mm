@@ -15,7 +15,8 @@
 #import "base/scoped_observation.h"
 #import "base/strings/string_util.h"
 #import "base/values.h"
-#import "components/grit/dev_ui_components_resources.h"
+#import "components/grit/net_export_resources.h"
+#import "components/grit/net_export_resources_map.h"
 #import "components/net_log/net_export_file_writer.h"
 #import "components/net_log/net_export_ui_constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -39,9 +40,8 @@ web::WebUIIOSDataSource* CreateNetExportHTMLSource() {
       web::WebUIIOSDataSource::Create(kChromeUINetExportHost);
 
   source->UseStringsJs();
-  source->AddResourcePath(net_log::kNetExportUICSS, IDR_NET_LOG_NET_EXPORT_CSS);
-  source->AddResourcePath(net_log::kNetExportUIJS, IDR_NET_LOG_NET_EXPORT_JS);
-  source->SetDefaultResource(IDR_NET_LOG_NET_EXPORT_HTML);
+  source->AddResourcePaths(kNetExportResources);
+  source->AddResourcePath("", IDR_NET_EXPORT_NET_EXPORT_HTML);
   return source;
 }
 
@@ -75,8 +75,7 @@ class NetExportMessageHandler
   // Send NetLog data via email.
   void SendEmail(const base::FilePath& file_to_send);
 
-  void NotifyUIWithState(
-      const base::Value::Dict& file_writer_state);
+  void NotifyUIWithState(const base::Value::Dict& file_writer_state);
 
   // Cache of GetApplicationContext()->GetNetExportFileWriter().
   // This is owned by the ApplicationContext.
@@ -170,8 +169,9 @@ void NetExportMessageHandler::OnNewState(const base::Value::Dict& state) {
 }
 
 void NetExportMessageHandler::SendEmail(const base::FilePath& file_to_send) {
-  if (file_to_send.empty())
+  if (file_to_send.empty()) {
     return;
+  }
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   NSString* subject = @"net_internals_log";

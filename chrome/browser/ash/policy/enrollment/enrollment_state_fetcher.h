@@ -41,9 +41,8 @@ class ServerBackedStateKeysBroker;
 // state from the DMServer.
 //
 // The operation is aborted with state kNoEnrollment:
-//   * we are running on a ChromeOS Flex device, or
-//   * when RLZ brand code or serial number are missing, or
-//   * when the embargo date is present and has not yet passed.
+//   * when device ownership is taken or unknown,
+//   * when RLZ brand code or serial number are missing
 // All these values are retrieved using StatisticsProvider, which can be faked
 // using `FakeStatisticsProvider` in tests.
 //
@@ -55,18 +54,26 @@ class ServerBackedStateKeysBroker;
 // enrollment state or error. In case we retrieved state or determined lack
 // thereof, additional details are stored as a dictionary under key
 // `prefs::kServerBackedDeviceState` in `local_state`, which can contain entries
-// with the following keys:
-//  * kDeviceStateMode,
-//  * kDeviceStateManagementDomain,
-//  * kDeviceStateDisabledMessage,
-//  * kDeviceStateLicenseType,
-//  * kDeviceStatePackagedLicense,
-//  * kDeviceStateAssignedUpgradeType.
-//
-// TODO(b/265923216): Document possible values for the dict entries above.
-// TODO(b/265923216): Return the above values as part of the `report_result`
-// callback. The caller will then be responsible for setting prefs or using
-// these values otherwise.
+// with the following keys and values:
+//  * kDeviceStateMode:
+//    * kNoEnrollment,
+//    * kEnrollment, or
+//    * kDisabled;
+//  * kDeviceStateManagementDomain:
+//    * domain name or email address of the device owner;
+//  * kDeviceStateDisabledMessage:
+//    * message shown to the user in case the device is disabled;
+//  * kDeviceStateLicenseType:
+//    * empty string,
+//    * kDeviceStateLicenseTypeEnterprise,
+//    * kDeviceStateLicenseTypeEducation, or
+//    * kDeviceStateLicenseTypeTerminal;
+//  * kDeviceStatePackagedLicense:
+//    * whether the device has a packaged license (true) or not (false);
+//  * kDeviceStateAssignedUpgradeType:
+//    * empty string,
+//    * kDeviceStateAssignedUpgradeTypeChromeEnterprise, or
+//    * kDeviceStateAssignedUpgradeTypeKiosk.
 class EnrollmentStateFetcher {
  public:
   using RlweClient = private_membership::rlwe::PrivateMembershipRlweClient;

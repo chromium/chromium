@@ -17,7 +17,39 @@
 #include <libxml/xmlmemory.h>
 
 #include "private/error.h"
+#include "private/globals.h"
 #include "private/string.h"
+
+/**
+ * xmlIsCatastrophicError:
+ * @level:  error level
+ * @code:  error code
+ *
+ * Returns true if an error is catastrophic.
+ */
+int
+xmlIsCatastrophicError(int level, int code) {
+    int fatal = 0;
+
+    if (level != XML_ERR_FATAL)
+        return(0);
+
+    switch (code) {
+        case XML_ERR_NO_MEMORY:
+        /* case XML_ERR_RESOURCE_LIMIT: */
+        case XML_ERR_SYSTEM:
+        case XML_ERR_ARGUMENT:
+        case XML_ERR_INTERNAL_ERROR:
+            fatal = 1;
+            break;
+        default:
+            if ((code >= 1500) && (code <= 1599))
+                fatal = 1;
+            break;
+    }
+
+    return(fatal);
+}
 
 /************************************************************************
  *									*
@@ -200,24 +232,6 @@ xmlGenericErrorDefaultFunc(void *ctx ATTRIBUTE_UNUSED, const char *msg, ...) {
     va_start(args, msg);
     vfprintf((FILE *)xmlGenericErrorContext, msg, args);
     va_end(args);
-}
-
-/**
- * initGenericErrorDefaultFunc:
- * @handler:  the handler
- *
- * DEPRECATED: Use xmlSetGenericErrorFunc.
- *
- * Set or reset (if NULL) the default handler for generic errors
- * to the builtin error function.
- */
-void
-initGenericErrorDefaultFunc(xmlGenericErrorFunc * handler)
-{
-    if (handler == NULL)
-        xmlGenericError = xmlGenericErrorDefaultFunc;
-    else
-        xmlGenericError = (*handler);
 }
 
 /**
@@ -635,7 +649,7 @@ void
 xmlRaiseMemoryError(xmlStructuredErrorFunc schannel, xmlGenericErrorFunc channel,
                     void *data, int domain, xmlError *error)
 {
-    xmlError *lastError = &xmlLastError;
+    xmlError *lastError = xmlGetLastErrorInternal();
 
     xmlResetLastError();
     lastError->domain = domain;
@@ -694,16 +708,14 @@ xmlVRaiseError(xmlStructuredErrorFunc schannel,
 {
     xmlParserCtxtPtr ctxt = NULL;
     /* xmlLastError is a macro retrieving the per-thread global. */
-    xmlErrorPtr lastError = &xmlLastError;
+    xmlErrorPtr lastError = xmlGetLastErrorInternal();
     xmlErrorPtr to = lastError;
 
     if (code == XML_ERR_OK)
         return(0);
 #ifdef FUZZING_BUILD_MODE_UNSAFE_FOR_PRODUCTION
-    if (code == XML_ERR_INTERNAL_ERROR) {
-        fprintf(stderr, "Unexpected error: %d\n", code);
-        abort();
-    }
+    if (code == XML_ERR_INTERNAL_ERROR)
+        xmlAbort("Unexpected error: %d\n", code);
 #endif
     if ((xmlGetWarningsDefaultValue == 0) && (level == XML_ERR_WARNING))
         return(0);
@@ -746,12 +758,12 @@ xmlVRaiseError(xmlStructuredErrorFunc schannel,
 }
 
 /**
- * __xmlRaiseError:
+ * xmlRaiseError:
  * @schannel: the structured callback channel
  * @channel: the old callback channel
  * @data: the callback data
  * @ctx: the parser context or NULL
- * @nod: the node or NULL
+ * @node: the node or NULL
  * @domain: the domain for the error
  * @code: the code for the error
  * @level: the xmlErrorLevel for the error
@@ -772,12 +784,12 @@ xmlVRaiseError(xmlStructuredErrorFunc schannel,
  * Returns 0 on success, -1 if a memory allocation failed.
  */
 int
-__xmlRaiseError(xmlStructuredErrorFunc schannel,
-                xmlGenericErrorFunc channel, void *data, void *ctx,
-                xmlNode *node, int domain, int code, xmlErrorLevel level,
-                const char *file, int line, const char *str1,
-                const char *str2, const char *str3, int int1, int col,
-                const char *msg, ...)
+xmlRaiseError(xmlStructuredErrorFunc schannel,
+              xmlGenericErrorFunc channel, void *data, void *ctx,
+              xmlNode *node, int domain, int code, xmlErrorLevel level,
+              const char *file, int line, const char *str1,
+              const char *str2, const char *str3, int int1, int col,
+              const char *msg, ...)
 {
     va_list ap;
     int res;
@@ -921,9 +933,11 @@ xmlParserValidityWarning(void *ctx, const char *msg ATTRIBUTE_UNUSED, ...)
 const xmlError *
 xmlGetLastError(void)
 {
-    if (xmlLastError.code == XML_ERR_OK)
-        return (NULL);
-    return (&xmlLastError);
+    const xmlError *error = xmlGetLastErrorInternal();
+
+    if (error->code == XML_ERR_OK)
+        return(NULL);
+    return(error);
 }
 
 /**
@@ -962,49 +976,10 @@ xmlResetError(xmlErrorPtr err)
 void
 xmlResetLastError(void)
 {
-    if (xmlLastError.code == XML_ERR_OK)
-        return;
-    xmlResetError(&xmlLastError);
-}
+    xmlError *error = xmlGetLastErrorInternal();
 
-/**
- * xmlCtxtGetLastError:
- * @ctx:  an XML parser context
- *
- * Get the last parsing error registered.
- *
- * Returns NULL if no error occurred or a pointer to the error
- */
-const xmlError *
-xmlCtxtGetLastError(void *ctx)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-
-    if (ctxt == NULL)
-        return (NULL);
-    if (ctxt->lastError.code == XML_ERR_OK)
-        return (NULL);
-    return (&ctxt->lastError);
-}
-
-/**
- * xmlCtxtResetLastError:
- * @ctx:  an XML parser context
- *
- * Cleanup the last global error registered. For parsing error
- * this does not change the well-formedness result.
- */
-void
-xmlCtxtResetLastError(void *ctx)
-{
-    xmlParserCtxtPtr ctxt = (xmlParserCtxtPtr) ctx;
-
-    if (ctxt == NULL)
-        return;
-    ctxt->errNo = XML_ERR_OK;
-    if (ctxt->lastError.code == XML_ERR_OK)
-        return;
-    xmlResetError(&ctxt->lastError);
+    if (error->code != XML_ERR_OK)
+        xmlResetError(error);
 }
 
 /**
@@ -1365,4 +1340,50 @@ xmlErrString(xmlParserErrors code) {
     }
 
     return(errmsg);
+}
+
+/**
+ * xmlVPrintErrorMessage:
+ * @fmt:  printf format string
+ * @ap:  arguments
+ *
+ * Prints to stderr.
+ */
+void
+xmlVPrintErrorMessage(const char *fmt, va_list ap) {
+    vfprintf(stderr, fmt, ap);
+}
+
+/**
+ * xmlPrintErrorMessage:
+ * @fmt:  printf format string
+ * @...:  arguments
+ *
+ * Prints to stderr.
+ */
+void
+xmlPrintErrorMessage(const char *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+    xmlVPrintErrorMessage(fmt, ap);
+    va_end(ap);
+}
+
+/**
+ * xmlAbort:
+ * @fmt:  printf format string
+ * @...:  arguments
+ *
+ * Print message to stderr and abort.
+ */
+void
+xmlAbort(const char *fmt, ...) {
+    va_list ap;
+
+    va_start(ap, fmt);
+    xmlVPrintErrorMessage(fmt, ap);
+    va_end(ap);
+
+    abort();
 }

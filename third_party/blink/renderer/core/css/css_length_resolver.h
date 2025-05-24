@@ -19,6 +19,8 @@
 
 namespace blink {
 
+class Element;
+
 class CORE_EXPORT CSSLengthResolver {
  public:
   explicit CSSLengthResolver(float zoom) : zoom_(zoom) {}
@@ -66,6 +68,10 @@ class CORE_EXPORT CSSLengthResolver {
   // https://drafts.csswg.org/css-anchor-position-1/
   virtual void ReferenceAnchor() const = 0;
 
+  // Called when sibling-index() or sibling-count() functions are evaluated.
+  // Used so that we can mark the resulting style as not cacheable in the MPC.
+  virtual void ReferenceSibling() const = 0;
+
   // The AnchorEvaluator used to evaluate anchor()/anchor-size() queries.
   virtual AnchorEvaluator* GetAnchorEvaluator() const { return nullptr; }
   virtual const ScopedCSSName* GetPositionAnchor() const { return nullptr; }
@@ -81,6 +87,8 @@ class CORE_EXPORT CSSLengthResolver {
   }
 
   double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;
+
+  virtual const Element* GetElement() const = 0;
 
  private:
   bool IsHorizontalWritingMode() const {

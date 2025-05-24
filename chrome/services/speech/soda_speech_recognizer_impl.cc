@@ -98,6 +98,15 @@ void SodaSpeechRecognizerImpl::StopCapture() {
                                 FSMEventArgs(EVENT_STOP_CAPTURE)));
 }
 
+void SodaSpeechRecognizerImpl::UpdateRecognitionContext(
+    const media::SpeechRecognitionRecognitionContext& recognition_context) {
+  FSMEventArgs event_args(EVENT_UPDATE_RECOGNITION_CONTEXT);
+  event_args.recognition_context = recognition_context;
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SodaSpeechRecognizerImpl::DispatchEvent,
+                                weak_ptr_factory_.GetWeakPtr(), event_args));
+}
+
 void SodaSpeechRecognizerImpl::OnSpeechRecognitionRecognitionEvent(
     const media::SpeechRecognitionResult& recognition_result,
     OnSpeechRecognitionRecognitionEventCallback reply) {
@@ -374,7 +383,7 @@ SodaSpeechRecognizerImpl::FSMState SodaSpeechRecognizerImpl::ProcessFinalResult(
     const FSMEventArgs& event_args) {
   const std::vector<media::mojom::WebSpeechRecognitionResultPtr>& results =
       event_args.engine_results;
-  if (base::ranges::any_of(results, [](const auto& result) {
+  if (std::ranges::any_of(results, [](const auto& result) {
         return !result->hypotheses.empty();
       })) {
     session_client_->ResultRetrieved(mojo::Clone(results));
@@ -382,6 +391,15 @@ SodaSpeechRecognizerImpl::FSMState SodaSpeechRecognizerImpl::ProcessFinalResult(
 
   session_client_->Ended();
   return STATE_ENDED;
+}
+
+SodaSpeechRecognizerImpl::FSMState
+SodaSpeechRecognizerImpl::UpdateRecognitionContext(
+    const FSMEventArgs& event_args) {
+  CHECK(speech_recognition_recognizer_.is_bound());
+  speech_recognition_recognizer_->UpdateRecognitionContext(
+      event_args.recognition_context);
+  return state_;
 }
 
 SodaSpeechRecognizerImpl::FSMState SodaSpeechRecognizerImpl::DoNothing(

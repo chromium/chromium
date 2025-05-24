@@ -27,7 +27,7 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
   // instances.
   WebrtcDecodingInfoHandler(
       std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory,
-      rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory);
+      webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory);
   // Not copyable or movable.
   WebrtcDecodingInfoHandler(const WebrtcDecodingInfoHandler&) = delete;
   WebrtcDecodingInfoHandler& operator=(const WebrtcDecodingInfoHandler&) =
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
 
  private:
   std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory_;
-  rtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory_;
+  webrtc::scoped_refptr<webrtc::AudioDecoderFactory> audio_decoder_factory_;
   // List of supported audio codecs.
   HashSet<String> supported_audio_codecs_;
 };

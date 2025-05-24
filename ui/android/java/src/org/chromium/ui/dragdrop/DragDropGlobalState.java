@@ -8,11 +8,10 @@ import android.os.SystemClock;
 import android.view.DragEvent;
 import android.view.View.DragShadowBuilder;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Drag-Drop objects to be shared across instances. General usage:
@@ -25,6 +24,7 @@ import org.chromium.base.ResettersForTesting;
  * <li>When drag ends, client that starts the drag need to do {@link #clear(TrackerToken)} to reset
  *     the global state.
  */
+@NullMarked
 public class DragDropGlobalState {
     private static final String TAG = "DnDGlobalState";
     private @Nullable static GlobalStateHolder sGlobalStateHolder;
@@ -57,7 +57,7 @@ public class DragDropGlobalState {
      */
     public static TrackerToken store(
             int dragSourceInstanceId,
-            @NonNull DropDataAndroid dropData,
+            DropDataAndroid dropData,
             @Nullable DragShadowBuilder dragShadowBuilder) {
         if (sGlobalStateHolder != null) {
             Log.w(
@@ -88,7 +88,7 @@ public class DragDropGlobalState {
     }
 
     /** Get the global state using DragEvent with {@link DragEvent#ACTION_DROP}. */
-    public static @Nullable DragDropGlobalState getState(@NonNull DragEvent dropEvent) {
+    public static @Nullable DragDropGlobalState getState(DragEvent dropEvent) {
         if (sGlobalStateHolder == null || dropEvent.getAction() != DragEvent.ACTION_DROP) {
             return null;
         }
@@ -99,7 +99,7 @@ public class DragDropGlobalState {
      * Return the drag shadow builder during this drag and drop process, if provided to the
      * DragDropGlobalState.
      */
-    public static DragShadowBuilder getDragShadowBuilder() {
+    public static @Nullable DragShadowBuilder getDragShadowBuilder() {
         if (sGlobalStateHolder == null) return null;
         return sGlobalStateHolder.mDragShadowBuilder;
     }
@@ -108,16 +108,16 @@ public class DragDropGlobalState {
      * Tokens are released when startDragAndDrop fails or by listeners on drag end event. If a
      * caller fails to release token, sHolder is not cleared and the next build call will fail.
      */
-    public static void clear(@NonNull TrackerToken token) {
+    public static void clear(TrackerToken token) {
         assert sGlobalStateHolder == null || sGlobalStateHolder.mToken.equals(token)
                 : "Token mismatch.";
         sGlobalStateHolder = null;
     }
 
     private final int mDragSourceInstanceId;
-    private final @NonNull DropDataAndroid mDropData;
+    private final DropDataAndroid mDropData;
 
-    DragDropGlobalState(int dragSourceInstanceId, @NonNull DropDataAndroid dropData) {
+    DragDropGlobalState(int dragSourceInstanceId, DropDataAndroid dropData) {
         mDragSourceInstanceId = dragSourceInstanceId;
         mDropData = dropData;
     }
@@ -133,11 +133,10 @@ public class DragDropGlobalState {
     }
 
     /** Return the {@link DropDataAndroid} held by the global state. */
-    public @NonNull DropDataAndroid getData() {
+    public DropDataAndroid getData() {
         return mDropData;
     }
 
-    @NonNull
     @Override
     public String toString() {
         return "DragDropGlobalState" + " sourceId:" + mDragSourceInstanceId;

@@ -20,6 +20,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_promo/signin_promo_types.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_mediator.h"
@@ -43,8 +44,10 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -232,6 +235,16 @@ enum class PresentedState {
       showSnackbarMessage:[self.mediator addBookmarkWithTitle:title
                                                           URL:bookmarkedURL
                                                    editAction:editAction]];
+
+  // Show non-modal sign-in promo for bookmarks if the feature is enabled.
+  if (IsNonModalSignInPromoEnabled()) {
+    id<NonModalSignInPromoCommands> nonModalSignInPromoHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                           NonModalSignInPromoCommands);
+    [nonModalSignInPromoHandler
+        showNonModalSignInPromoWithType:SignInPromoType::kBookmark];
+  }
+
   default_browser::NotifyBookmarkAddOrEdit(
       feature_engagement::TrackerFactory::GetForProfile(
           _currentBrowserState.get()));
@@ -359,7 +372,6 @@ enum class PresentedState {
 
   __weak __typeof(self) weakSelf = self;
   ProceduralBlock completion = ^{
-    [weakSelf bookmarkBrowserDismissed];
     if (!openUrlsAfterDismissal) {
       return;
     }
@@ -574,14 +586,13 @@ enum class PresentedState {
 
 #pragma mark - BookmarksCommands
 
-- (void)bookmarkWithWebState:(web::WebState*)webState {
+- (void)addBookmarkForWebState:(web::WebState*)webState {
   GURL URL = webState->GetLastCommittedURL();
   NSString* title = tab_util::GetTabTitle(webState);
-  [self createOrEditBookmarkWithURL:[[URLWithTitle alloc] initWithURL:URL
-                                                                title:title]];
+  [self addOrEditBookmark:[[URLWithTitle alloc] initWithURL:URL title:title]];
 }
 
-- (void)bulkCreateBookmarksWithURLs:(NSArray<NSURL*>*)URLs {
+- (void)addBookmarks:(NSArray<NSURL*>*)URLs {
   if (!_bookmarkModel->loaded()) {
     return;
   }
@@ -598,7 +609,7 @@ enum class PresentedState {
                                                        viewAction:viewAction]];
 }
 
-- (void)createOrEditBookmarkWithURL:(URLWithTitle*)URLWithTitle {
+- (void)addOrEditBookmark:(URLWithTitle*)URLWithTitle {
   DCHECK(URLWithTitle) << [self description];
   NSString* title = URLWithTitle.title;
   GURL URL = URLWithTitle.URL;
@@ -615,7 +626,7 @@ enum class PresentedState {
   }
 }
 
-- (void)bookmarkWithFolderChooser:(NSArray<URLWithTitle*>*)URLs {
+- (void)addBookmarksAndShowFolderChooser:(NSArray<URLWithTitle*>*)URLs {
   DCHECK(URLs.count > 0) << "URLs are missing " << [self description];
 
   if (!_bookmarkModel->loaded()) {
@@ -626,7 +637,7 @@ enum class PresentedState {
   [self presentFolderChooser];
 }
 
-- (void)openToExternalBookmark:(GURL)URL {
+- (void)showBookmarkInBookmarksUI:(GURL)URL {
   if (!_bookmarkModel->loaded()) {
     return;
   }

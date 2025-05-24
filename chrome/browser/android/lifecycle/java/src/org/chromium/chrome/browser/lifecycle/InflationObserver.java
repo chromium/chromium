@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.lifecycle;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Implement this interface and register in {@link ActivityLifecycleDispatcher} to receive
  * inflation-related events.
  */
+@NullMarked
 public interface InflationObserver extends LifecycleObserver {
     /**
      * Called immediately before the view hierarchy is inflated.

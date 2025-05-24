@@ -7,6 +7,7 @@
 
 #include "base/observer_list_types.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
+#include "components/performance_manager/public/graph/node_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 class GURL;
@@ -68,6 +69,9 @@ class ExecutionContext {
 
   // Returns the graph to which this ExecutionContext belongs.
   virtual Graph* GetGraph() const = 0;
+
+  // Returns the state of this node.
+  virtual NodeState GetNodeState() const = 0;
 
   // Returns the final post-redirect committed URL associated with this
   // ExecutionContext. This is the URL of the HTML document (not the javascript)

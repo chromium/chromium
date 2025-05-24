@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <algorithm>
+#include <array>
 #include <string>
 #include <vector>
 
@@ -14,7 +16,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -134,7 +135,6 @@ class AutocompleteActionPredictorTest : public testing::Test {
         std::make_unique<content::test::PreloadingPredictionUkmEntryBuilder>(
             chrome_preloading_predictor::kOmniboxDirectURLInput);
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
 
     predictor_ = std::make_unique<AutocompleteActionPredictor>(profile_.get());
     profile_->BlockUntilHistoryProcessesPendingRequests();
@@ -335,7 +335,7 @@ class AutocompleteActionPredictorTest : public testing::Test {
   std::unique_ptr<WebContents> web_contents_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
-  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
+  base::ScopedMockElapsedTimersForTest test_timer_;
 };
 
 
@@ -599,7 +599,9 @@ TEST_F(AutocompleteActionPredictorTest,
   auto test = [this](const std::u16string& user_text,
                      bool should_be_registered) {
     predictor()->RegisterTransitionalMatches(user_text, AutocompleteResult());
-    bool registered = base::Contains(*transitional_matches(), user_text);
+    bool registered = base::Contains(
+        *transitional_matches(), user_text,
+        &AutocompleteActionPredictor::TransitionalMatch::user_text);
     EXPECT_EQ(registered, should_be_registered);
   };
 
@@ -626,9 +628,12 @@ TEST_F(AutocompleteActionPredictorTest,
     const std::string kPrefix = "http://b/";
     return GURL(kPrefix + std::string(size - kPrefix.size(), 'c'));
   };
-  GURL urls[] = {test_url(10), test_url(maximum_string_length()),
-                 test_url(maximum_string_length() + 1),
-                 test_url(maximum_string_length() * 10)};
+  auto urls = std::to_array<GURL>({
+      test_url(10),
+      test_url(maximum_string_length()),
+      test_url(maximum_string_length() + 1),
+      test_url(maximum_string_length() * 10),
+  });
   ACMatches matches;
   for (const auto& url : urls) {
     AutocompleteMatch match;
@@ -639,7 +644,9 @@ TEST_F(AutocompleteActionPredictorTest,
   result.AppendMatches(matches);
   std::u16string user_text = u"google";
   predictor()->RegisterTransitionalMatches(user_text, result);
-  auto it = base::ranges::find(*transitional_matches(), user_text);
+  auto it = std::ranges::find(
+      *transitional_matches(), user_text,
+      &AutocompleteActionPredictor::TransitionalMatch::user_text);
   ASSERT_NE(it, transitional_matches()->end());
   EXPECT_THAT(it->urls, ::testing::ElementsAre(urls[0], urls[1]));
 }

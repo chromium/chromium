@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.metrics;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.blink.mojom.DisplayMode;
@@ -104,9 +105,10 @@ public class LaunchMetrics {
 
     /**
      * Records metrics about the state of the homepage on launch.
+     *
      * @param showHomeButton Whether the home button is shown.
      * @param homepageIsNtp Whether the homepage is set to the NTP.
-     * @param homepageUrl The homepage GURL.
+     * @param homepageGurl The homepage GURL.
      */
     public static void recordHomePageLaunchMetrics(
             boolean showHomeButton, boolean homepageIsNtp, GURL homepageGurl) {
@@ -138,7 +140,7 @@ public class LaunchMetrics {
     interface Natives {
         void recordLaunch(
                 boolean isShortcut,
-                String url,
+                @JniType("std::string") String url,
                 int source,
                 @DisplayMode.EnumType int displayMode,
                 WebContents webContents);

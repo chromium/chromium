@@ -15,9 +15,10 @@
 #include <linux/if.h>
 #include <linux/sockios.h>
 #include <linux/wireless.h>
-#include <set>
 #include <sys/ioctl.h>
 #include <sys/types.h>
+
+#include <set>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -33,13 +34,14 @@
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/net_platform_api_util.h"
 #include "net/base/network_interfaces_posix.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include <string_view>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "net/android/network_library.h"
 #include "net/base/network_interfaces_getifaddrs.h"
 #endif
@@ -85,14 +87,17 @@ namespace internal {
 // Gets the connection type for interface |ifname| by checking for wireless
 // or ethtool extensions.
 NetworkChangeNotifier::ConnectionType GetInterfaceConnectionType(
-    const std::string& ifname) {
+    std::string_view ifname) {
   base::ScopedFD s = GetSocketForIoctl();
   if (!s.is_valid())
     return NetworkChangeNotifier::CONNECTION_UNKNOWN;
 
   // Test wireless extensions for CONNECTION_WIFI
   struct iwreq pwrq = {};
-  strncpy(pwrq.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
+
+  // This should never CHECK, since `ifname` came from a call to
+  // GetInterfaceName(), which never returns anything longer than will fit.
+  CopyStringAndNulToSpan(ifname, base::span(pwrq.ifr_name));
   if (ioctl(s.get(), SIOCGIWNAME, &pwrq) != -1)
     return NetworkChangeNotifier::CONNECTION_WIFI;
 
@@ -102,7 +107,7 @@ NetworkChangeNotifier::ConnectionType GetInterfaceConnectionType(
   ecmd.cmd = ETHTOOL_GSET;
   struct ifreq ifr = {};
   ifr.ifr_data = &ecmd;
-  strncpy(ifr.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
+  CopyStringAndNulToSpan(ifname, base::span(ifr.ifr_name));
   if (ioctl(s.get(), SIOCETHTOOL, &ifr) != -1)
     return NetworkChangeNotifier::CONNECTION_ETHERNET;
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -115,13 +120,15 @@ std::string GetInterfaceSSID(const std::string& ifname) {
   if (!ioctl_socket.is_valid())
     return std::string();
   struct iwreq wreq = {};
-  strncpy(wreq.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
+  // This should never CHECK, since `ifname` came from a call to
+  // GetInterfaceName(), which never returns anything longer than will fit.
+  CopyStringAndNulToSpan(ifname, base::span(wreq.ifr_name));
 
-  char ssid[IW_ESSID_MAX_SIZE + 1] = {0};
+  char ssid[IW_ESSID_MAX_SIZE + 1] = {};
   wreq.u.essid.pointer = ssid;
   wreq.u.essid.length = IW_ESSID_MAX_SIZE;
   if (ioctl(ioctl_socket.get(), SIOCGIWESSID, &wreq) != -1)
-    return ssid;
+    return std::string(SpanMaybeWithNulToStringView(ssid));
   return std::string();
 }
 
@@ -166,8 +173,7 @@ bool GetNetworkListImpl(
         ifnames.find(it.second.ifa_index);
     std::string ifname;
     if (itname == ifnames.end()) {
-      char buffer[IFNAMSIZ] = {0};
-      ifname.assign(get_interface_name(it.second.ifa_index, buffer));
+      ifname = get_interface_name(it.second.ifa_index);
       // Ignore addresses whose interface name can't be retrieved.
       if (ifname.empty())
         continue;
@@ -184,9 +190,8 @@ bool GetNetworkListImpl(
     NetworkChangeNotifier::ConnectionType type =
         GetInterfaceConnectionType(ifname);
 
-    networks->push_back(
-        NetworkInterface(ifname, ifname, it.second.ifa_index, type, it.first,
-                         it.second.ifa_prefixlen, ip_attributes));
+    networks->emplace_back(ifname, ifname, it.second.ifa_index, type, it.first,
+                           it.second.ifa_prefixlen, ip_attributes);
   }
 
   return true;
@@ -226,16 +231,15 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   // On Android 11 RTM_GETLINK (used by AddressTrackerLinux) no longer works as
   // per https://developer.android.com/preview/privacy/mac-address so instead
   // use getifaddrs() which is supported since Android N.
-  base::android::BuildInfo* build_info =
-      base::android::BuildInfo::GetInstance();
-  if (build_info->sdk_int() >= base::android::SDK_VERSION_NOUGAT) {
+  if (__builtin_available(android 24, *)) {
     // Some Samsung devices with MediaTek processors are with
     // a buggy getifaddrs() implementation,
     // so use a Chromium's own implementation to workaround.
     // See https://crbug.com/1240237 for more context.
     bool use_alternative_getifaddrs =
-        std::string_view(build_info->brand()) == "samsung" &&
-        std::string_view(build_info->hardware()).starts_with("mt");
+        std::string_view(base::android::android_info::brand()) == "samsung" &&
+        std::string_view(base::android::android_info::hardware())
+            .starts_with("mt");
     bool ret = internal::GetNetworkListUsingGetifaddrs(
         networks, policy, use_alternative_getifaddrs);
     // Use GetInterfaceConnectionType() to sharpen up interface types.

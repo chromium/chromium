@@ -48,18 +48,9 @@ class SendTabToSelfToolbarBubbleView : public views::BubbleDialogDelegateView {
   FRIEND_TEST_ALL_PREFIXES(SendTabToSelfToolbarBubbleViewTest,
                            ButtonNavigatesToPage);
 
-
   void OpenInNewTab();
 
   void Timeout();
-
-  void LogNotificationOpened();
-  void LogNotificationDismissed();
-
-  // The button that owns |this|.
-  // TODO(b/361445261): Update this to PinnedActionToolbarButton after
-  // ToolbarPinning is fully launched.
-  raw_ptr<View> toolbar_button_;
 
   base::OnceCallback<void(NavigateParams*)> navigate_callback_;
 

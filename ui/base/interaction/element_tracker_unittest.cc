@@ -923,6 +923,16 @@ TEST(SafeElementReferenceTest, ElementHidden) {
   EXPECT_EQ(nullptr, ref.get());
 }
 
+TEST(SafeElementReferenceTest, GetAs) {
+  test::TestElement e1(kElementIdentifier1, kElementContext1);
+  e1.Show();
+  SafeElementReference ref(&e1);
+  EXPECT_EQ(&e1, ref.get_as<test::TestElement>());
+  EXPECT_EQ(nullptr, ref.get_as<test::TestElementOtherFramework>());
+  e1.Hide();
+  EXPECT_EQ(nullptr, ref.get_as<test::TestElement>());
+}
+
 TEST(SafeElementReferenceTest, MoveConstructor) {
   test::TestElement e1(kElementIdentifier1, kElementContext1);
   e1.Show();

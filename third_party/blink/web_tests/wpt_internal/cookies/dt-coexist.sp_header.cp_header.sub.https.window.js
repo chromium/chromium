@@ -14,6 +14,11 @@
 // Step 8 (window) Cleanup.
 
 async_test(t => {
+    // The first token in the header was generated via the following command:
+    // tools/origin_trials/generate_token.py https://web-platform.test:8444 DisableThirdPartyStoragePartitioning3 --expire-timestamp=2000000000
+    // The second token in the header was generated via the following command:
+    // tools/origin_trials/generate_token.py https://web-platform.test:8444 TopLevelTpcd --expire-timestamp=2000000000
+
     // Step 1
     window.addEventListener("message", t.step_func(e => {
         if (e.data.type == "SetData") {

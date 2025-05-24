@@ -25,12 +25,13 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_convolve_matrix.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -140,17 +141,18 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   SkIPoint target = SkIPoint::Make(target_offset_.x(), target_offset_.y());
   SkTileMode tile_mode = ToSkiaTileMode(edge_mode_);
   bool convolve_alpha = !preserve_alpha_;
-  auto kernel = std::make_unique<SkScalar[]>(num_elements);
-  for (int i = 0; i < num_elements; ++i)
+  std::vector<SkScalar> kernel(num_elements);
+  for (int i = 0; i < num_elements; ++i) {
     kernel[i] = SkFloatToScalar(kernel_matrix_[num_elements - 1 - i]);
+  }
   std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<MatrixConvolutionPaintFilter>(
-      kernel_size, kernel.get(), gain, bias, target, tile_mode, convolve_alpha,
+      kernel_size, kernel, gain, bias, target, tile_mode, convolve_alpha,
       std::move(input), base::OptionalToPtr(crop_rect));
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const FEConvolveMatrix::EdgeModeType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const FEConvolveMatrix::EdgeModeType& type) {
   switch (type) {
     case FEConvolveMatrix::EDGEMODE_UNKNOWN:
       ts << "UNKNOWN";
@@ -168,8 +170,9 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-WTF::TextStream& FEConvolveMatrix::ExternalRepresentation(WTF::TextStream& ts,
-                                                          int indent) const {
+StringBuilder& FEConvolveMatrix::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feConvolveMatrix";
   FilterEffect::ExternalRepresentation(ts);

@@ -9,15 +9,18 @@ import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
 /** Grabs a list of all granted permissions. */
+@NullMarked
 class PermissionFeedbackSource implements FeedbackSource {
     PermissionFeedbackSource() {}
 
     @Override
-    public Map<String, String> getFeedback() {
+    public @Nullable Map<String, String> getFeedback() {
         String grantedPermissions = "";
         String notGrantedPermission = "";
 

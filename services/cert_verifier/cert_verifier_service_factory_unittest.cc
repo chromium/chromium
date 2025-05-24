@@ -19,8 +19,8 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "crypto/ec_private_key.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -136,9 +136,8 @@ void UpdateCRLSetWithTestFile(
       &crl_set_bytes));
 
   base::RunLoop update_run_loop;
-  cv_service_factory_impl->UpdateCRLSet(
-      base::as_bytes(base::make_span(crl_set_bytes)),
-      update_run_loop.QuitClosure());
+  cv_service_factory_impl->UpdateCRLSet(base::as_byte_span(crl_set_bytes),
+                                        update_run_loop.QuitClosure());
   update_run_loop.Run();
 }
 
@@ -152,6 +151,16 @@ void EnableChromeRootStoreIfOptional(CertVerifierServiceFactoryImpl* factory) {
   }
 #endif
 }
+
+#if BUILDFLAG(IS_CT_SUPPORTED)
+std::string Sha256AsByteString(std::string_view str) {
+  return std::string(base::as_string_view(crypto::hash::Sha256(str)));
+}
+
+std::string Sha256AsByteString(base::span<const uint8_t> str) {
+  return std::string(base::as_string_view(crypto::hash::Sha256(str)));
+}
+#endif
 
 }  // namespace
 
@@ -483,7 +492,7 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithUpdatedRootStore) {
   net::SHA256HashValue root_hash =
       net::X509Certificate::CalculateFingerprint256(root->GetCertBuffer());
   EXPECT_EQ(info_ptr->root_cert_info[0]->sha256hash_hex,
-            base::HexEncode(root_hash.data));
+            base::HexEncode(root_hash));
   EXPECT_TRUE(net::x509_util::CryptoBufferEqual(
       net::x509_util::CreateCryptoBuffer(info_ptr->root_cert_info[0]->cert)
           .get(),
@@ -601,8 +610,8 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithVersionConstraintMet) {
 
 TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
   base::test::TaskEnvironment task_environment;
-  std::vector<net::ChromeRootStoreData::Anchor> anchors =
-      net::CompiledChromeRootStoreAnchors();
+  net::ChromeRootStoreData root_store_data =
+      net::ChromeRootStoreData::CreateFromCompiledRootStore();
 
   mojo::Remote<mojom::CertVerifierServiceFactory> cv_service_factory_remote;
   CertVerifierServiceFactoryImpl cv_service_factory_impl(
@@ -618,7 +627,8 @@ TEST(CertVerifierServiceFactoryTest, RootStoreInfoWithCompiledRootStore) {
   // In cases where the compiled Chrome Root Store has roots with version
   // constraints, there might be less trusted roots depending on what version #
   // the test is running at.
-  EXPECT_LE(info_ptr->root_cert_info.size(), anchors.size());
+  EXPECT_LE(info_ptr->root_cert_info.size(),
+            root_store_data.trust_anchors().size());
   EXPECT_GT(info_ptr->root_cert_info.size(), static_cast<std::size_t>(0));
 }
 
@@ -635,16 +645,12 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
   EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 0u);
   EXPECT_FALSE(cv_service_factory_impl.get_impl_params().ct_policy_enforcer);
 
-  auto log1_private_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> log1_spki;
-  ASSERT_TRUE(log1_private_key->ExportPublicKey(&log1_spki));
-  const std::string log1_id =
-      crypto::SHA256HashString(std::string(log1_spki.begin(), log1_spki.end()));
-  auto log2_private_key = crypto::ECPrivateKey::Create();
-  std::vector<uint8_t> log2_spki;
-  ASSERT_TRUE(log2_private_key->ExportPublicKey(&log2_spki));
-  const std::string log2_id =
-      crypto::SHA256HashString(std::string(log2_spki.begin(), log2_spki.end()));
+  auto log1_spki =
+      crypto::keypair::PrivateKey::GenerateEcP256().ToSubjectPublicKeyInfo();
+  const auto log1_id = Sha256AsByteString(log1_spki);
+  auto log2_spki =
+      crypto::keypair::PrivateKey::GenerateEcP256().ToSubjectPublicKeyInfo();
+  const auto log2_id = Sha256AsByteString(log2_spki);
   const std::string kLog1Operator = "log operator";
   const std::string kLog2Operator = "log2 operator";
   const std::string kLog3Operator = "log3 operator";
@@ -654,7 +660,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
     std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
     {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(log1_spki.begin(), log1_spki.end());
+      log_info->public_key = std::string(base::as_string_view(log1_spki));
       log_info->id = log1_id;
       log_info->name = "log name";
       log_info->current_operator = kLog1Operator;
@@ -662,7 +668,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
     }
     {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
-      log_info->public_key = std::string(log2_spki.begin(), log2_spki.end());
+      log_info->public_key = std::string(base::as_string_view(log2_spki));
       log_info->id = log2_id;
       log_info->name = "log2 name";
       log_info->current_operator = kLog2Operator;
@@ -678,11 +684,9 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
 
     ASSERT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 2u);
     EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[0]->key_id(),
-              crypto::SHA256HashString(
-                  std::string(log1_spki.begin(), log1_spki.end())));
+              log1_id);
     EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[1]->key_id(),
-              crypto::SHA256HashString(
-                  std::string(log2_spki.begin(), log2_spki.end())));
+              log2_id);
 
     net::CTPolicyEnforcer* request_enforcer =
         cv_service_factory_impl.get_impl_params().ct_policy_enforcer.get();
@@ -691,10 +695,12 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
         reinterpret_cast<certificate_transparency::ChromeCTPolicyEnforcer*>(
             request_enforcer);
 
-    std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-        operator_history = policy_enforcer->operator_history_for_testing();
-    EXPECT_EQ(operator_history[log1_id].current_operator_, kLog1Operator);
-    EXPECT_EQ(operator_history[log2_id].current_operator_, kLog2Operator);
+    std::map<std::string, certificate_transparency::LogInfo> log_info =
+        policy_enforcer->log_info_for_testing();
+    EXPECT_EQ(log_info[log1_id].operator_history.current_operator,
+              kLog1Operator);
+    EXPECT_EQ(log_info[log2_id].operator_history.current_operator,
+              kLog2Operator);
   }
 
   // Test a 2nd log list update.
@@ -709,7 +715,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
       log_list_mojo.push_back(std::move(log_info));
     }
     const std::string log3_public_key = "bad public key";
-    const std::string log3_id = crypto::SHA256HashString(log3_public_key);
+    const std::string log3_id = Sha256AsByteString(log3_public_key);
     {
       network::mojom::CTLogInfoPtr log_info = network::mojom::CTLogInfo::New();
       log_info->public_key = log3_public_key;
@@ -729,8 +735,7 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
     // The log with the bad key should have been ignored.
     ASSERT_EQ(cv_service_factory_impl.get_impl_params().ct_logs.size(), 1u);
     EXPECT_EQ(cv_service_factory_impl.get_impl_params().ct_logs[0]->key_id(),
-              crypto::SHA256HashString(
-                  std::string(log1_spki.begin(), log1_spki.end())));
+              log1_id);
 
     net::CTPolicyEnforcer* request_enforcer =
         cv_service_factory_impl.get_impl_params().ct_policy_enforcer.get();
@@ -740,10 +745,12 @@ TEST(CertVerifierServiceFactoryTest, UpdateCtLogList) {
             request_enforcer);
 
     // CTPolicyEnforcer doesn't parse the key, so it accepts both logs.
-    std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-        operator_history = policy_enforcer->operator_history_for_testing();
-    EXPECT_EQ(operator_history[log1_id].current_operator_, kLog1Operator);
-    EXPECT_EQ(operator_history[log3_id].current_operator_, kLog3Operator);
+    std::map<std::string, certificate_transparency::LogInfo> log_info =
+        policy_enforcer->log_info_for_testing();
+    EXPECT_EQ(log_info[log1_id].operator_history.current_operator,
+              kLog1Operator);
+    EXPECT_EQ(log_info[log3_id].operator_history.current_operator,
+              kLog3Operator);
   }
 }
 
@@ -801,22 +808,22 @@ TEST(CertVerifierServiceFactoryTest, CTPolicyEnforcerConfig) {
       std::is_sorted(policy_enforcer->disqualified_logs_for_testing().begin(),
                      policy_enforcer->disqualified_logs_for_testing().end()));
 
-  EXPECT_THAT(policy_enforcer->disqualified_logs_for_testing(),
-              ::testing::UnorderedElementsAre(
-                  ::testing::Pair(crypto::SHA256HashString("AAAA"),
-                                  base::Time::FromTimeT(0)),
-                  ::testing::Pair(crypto::SHA256HashString("BBBB"),
-                                  base::Time::FromTimeT(1)),
-                  ::testing::Pair(crypto::SHA256HashString("CCCC"),
-                                  base::Time::FromTimeT(2))));
+  EXPECT_THAT(
+      policy_enforcer->disqualified_logs_for_testing(),
+      ::testing::UnorderedElementsAre(
+          ::testing::Pair(Sha256AsByteString("AAAA"), base::Time::FromTimeT(0)),
+          ::testing::Pair(Sha256AsByteString("BBBB"), base::Time::FromTimeT(1)),
+          ::testing::Pair(Sha256AsByteString("CCCC"),
+                          base::Time::FromTimeT(2))));
 
-  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-      operator_history = policy_enforcer->operator_history_for_testing();
+  std::map<std::string, certificate_transparency::LogInfo> log_info =
+      policy_enforcer->log_info_for_testing();
 
   for (auto log : policy_enforcer->disqualified_logs_for_testing()) {
-    EXPECT_EQ(operator_history[log.first].current_operator_,
+    EXPECT_EQ(log_info[log.first].operator_history.current_operator,
               "Not Google Either");
-    EXPECT_TRUE(operator_history[log.first].previous_operators_.empty());
+    EXPECT_TRUE(
+        log_info[log.first].operator_history.previous_operators.empty());
   }
 }
 
@@ -867,24 +874,24 @@ TEST(CertVerifierServiceFactoryTest,
       reinterpret_cast<certificate_transparency::ChromeCTPolicyEnforcer*>(
           request_enforcer);
 
-  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
-      operator_history = policy_enforcer->operator_history_for_testing();
+  std::map<std::string, certificate_transparency::LogInfo> log_info_map =
+      policy_enforcer->log_info_for_testing();
 
-  EXPECT_EQ(
-      operator_history[crypto::SHA256HashString("0000")].current_operator_,
-      "Forever Operator");
-  EXPECT_TRUE(operator_history[crypto::SHA256HashString("0000")]
-                  .previous_operators_.empty());
+  EXPECT_EQ(log_info_map[Sha256AsByteString("0000")]
+                .operator_history.current_operator,
+            "Forever Operator");
+  EXPECT_TRUE(log_info_map[Sha256AsByteString("0000")]
+                  .operator_history.previous_operators.empty());
 
-  EXPECT_EQ(
-      operator_history[crypto::SHA256HashString("AAAA")].current_operator_,
-      "Changed Operator");
-  EXPECT_THAT(
-      operator_history[crypto::SHA256HashString("AAAA")].previous_operators_,
-      ::testing::ElementsAre(
-          ::testing::Pair("Operator 0", base::Time::FromTimeT(0)),
-          ::testing::Pair("Operator 1", base::Time::FromTimeT(1)),
-          ::testing::Pair("Operator 2", base::Time::FromTimeT(2))));
+  EXPECT_EQ(log_info_map[Sha256AsByteString("AAAA")]
+                .operator_history.current_operator,
+            "Changed Operator");
+  EXPECT_THAT(log_info_map[Sha256AsByteString("AAAA")]
+                  .operator_history.previous_operators,
+              ::testing::ElementsAre(
+                  ::testing::Pair("Operator 0", base::Time::FromTimeT(0)),
+                  ::testing::Pair("Operator 1", base::Time::FromTimeT(1)),
+                  ::testing::Pair("Operator 2", base::Time::FromTimeT(2))));
 }
 #endif
 
@@ -1213,9 +1220,8 @@ TEST_F(CertVerifierServiceFactoryBuiltinVerifierTest, BadCRLSetIgnored) {
     std::string crl_set_bytes(1000, '\xff');
 
     base::RunLoop update_run_loop;
-    cv_service_factory_impl.UpdateCRLSet(
-        base::as_bytes(base::make_span(crl_set_bytes)),
-        update_run_loop.QuitClosure());
+    cv_service_factory_impl.UpdateCRLSet(base::as_byte_span(crl_set_bytes),
+                                         update_run_loop.QuitClosure());
     update_run_loop.Run();
   }
 

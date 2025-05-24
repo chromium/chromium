@@ -185,6 +185,4 @@ void ChildFrameRegistrar::RemoveFrameID(const std::string& frame_id) {
   }
 }
 
-WEB_STATE_USER_DATA_KEY_IMPL(ChildFrameRegistrar)
-
 }  // namespace autofill

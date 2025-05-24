@@ -1,0 +1,92 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module lens.mojom;
+
+import "chrome/browser/lens/core/mojom/page_content_type.mojom";
+import "url/mojom/url.mojom";
+
+// Factory method for creating a new WebUI page handler for lens side panel.
+interface LensSidePanelPageHandlerFactory {
+  // The side panel WebUI calls this method when the page is first initialized.
+  CreateSidePanelPageHandler(
+      pending_receiver<LensSidePanelPageHandler> handler,
+      pending_remote<LensSidePanelPage> page);
+};
+
+// Browser-side handler for requests from Side PanelWebUI page.
+// (TypeScript -> C++)
+interface LensSidePanelPageHandler {
+  // Pops the most recent search query from the history stack to load in the
+  // side panel.
+  PopAndLoadQueryFromHistory();
+
+  // Gets whether the current searchbox is contextual.
+  GetIsContextualSearchbox() => (bool is_contextual_searchbox);
+
+  // Called when the WebUI received a message from its child <iframe> to scroll
+  // to the text fragment or PDF page number of the latest contextualized local
+  // file:// URL being tracked on the browser. If the latest contextualized
+  // local file:// URL is not open on the main tab, then it opens in a new tab.
+  OnScrollToMessage(array<string> text_fragments, uint32 pdf_page_number);
+
+  // Request the browser to open the feedback dialog.
+  RequestSendFeedback();
+};
+
+// Enumerates the semantic events that can be logged by the Lens Overlay.
+// LINT.IfChange(SidePanelResultStatus)
+enum SidePanelResultStatus {
+  // The result status is unknown or uninitialized. Should not be logged.
+  kUnknown = 0,
+  // The result frame was shown in the side panel.
+  kResultShown = 1,
+  // The error page was shown due to the user being offline when the side panel
+  // attempted to load.
+  kErrorPageShownOffline = 2,
+  // The error page was shown due to the initial full image query failing due to
+  // error.
+  kErrorPageShownStartQueryError = 3,
+  // The error page was shown because page was protected.
+  kErrorPageShownProtected = 4,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlaySidePanelResultStatus)
+
+// Side Panel WebUI page handler for request from Browser side.
+// (C++ -> TypeScript)
+interface LensSidePanelPage {
+  // Load a provided URL into the side panel results iframe.
+  LoadResultsInFrame(url.mojom.Url results_url);
+
+  // Sets whether the results frame is currently loading. This cannot be done
+  // from the renderer because the results iframe is cross-origin. This prevents
+  // load events on the iframe from triggering reliably on every navigation.
+  // Instead, we listen for the start of the navigations in the browser and set
+  // the loading state appropriately.
+  SetIsLoadingResults(bool is_loading);
+
+  // Sets the progress of the page content upload. `progress` is a percentage
+  // value between 0 and 1.
+  SetPageContentUploadProgress(float progress);
+
+  // Sets visibility for back arrow next to the searchbox.
+  SetBackArrowVisible(bool visible);
+
+  // Sets whether to show a full error page in the side panel WebUI. This is
+  // used when the user opens the side panel in an offline state or the full
+  // image request times out. The error type is denoted by `status`.
+  SetShowErrorPage(
+      bool should_show_error_page, SidePanelResultStatus status);
+
+  // Suppress the ghost loader when no bytes are returned for the page.
+  SuppressGhostLoader();
+
+  // Notifies the side panel that the page content type has changed.
+  // `new_page_content_type` is the new type of the page.
+  PageContentTypeChanged(PageContentType new_page_content_type);
+
+  // Shows a toast with the `message` provided in the side panel. This is
+  // anchored to the bottom of the page. This text is provided by the browser.
+  ShowToast(string message);
+};

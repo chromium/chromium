@@ -9,11 +9,11 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -207,10 +207,8 @@ class ReferrerPolicyTest : public InProcessBrowserTest {
         std::string("/referrer_policy/referrer-policy-start.html?") +
         "policy=" + content::ReferrerPolicyToString(referrer_policy) +
         "&redirect=" + redirect_url.spec() + "&link=" +
-        ((button == blink::WebMouseEvent::Button::kNoButton &&
-          renderer_or_browser_initiated == RENDERER_INITIATED)
-             ? "false"
-             : "true") +
+        base::ToString(!(button == blink::WebMouseEvent::Button::kNoButton &&
+                         renderer_or_browser_initiated == RENDERER_INITIATED)) +
         "&target=" + (link_type == LINK_WITH_TARGET_BLANK ? "_blank" : "");
 
     auto* start_test_server = start_protocol == START_ON_HTTPS
@@ -411,13 +409,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsMiddleClickTargetBlankOrigin) {
 }
 
 // Context menu, from HTTP to HTTP.
-// TODO(crbug.com/40804570): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ContextMenuOrigin DISABLED_ContextMenuOrigin
-#else
-#define MAYBE_ContextMenuOrigin ContextMenuOrigin
-#endif
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuOrigin) {
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, ContextMenuOrigin) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(
@@ -427,8 +419,8 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuOrigin) {
 }
 
 // Context menu, from HTTPS to HTTP.
-// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40803947): Fix flakiness on Linux then reenable.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_HttpsContextMenuOrigin DISABLED_HttpsContextMenuOrigin
 #else
 #define MAYBE_HttpsContextMenuOrigin HttpsContextMenuOrigin
@@ -536,8 +528,8 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest,
 }
 
 // Context menu, from HTTP to HTTP via server redirect.
-// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40803947): Fix flakiness on Linux then reenable.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ContextMenuRedirect DISABLED_ContextMenuRedirect
 #else
 #define MAYBE_ContextMenuRedirect ContextMenuRedirect
@@ -553,13 +545,7 @@ IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_ContextMenuRedirect) {
 }
 
 // Context menu, from HTTPS to HTTP via server redirect.
-// TODO(crbug.com/40804570): Flaky on Lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HttpsContextMenuRedirect DISABLED_HttpsContextMenuRedirect
-#else
-#define MAYBE_HttpsContextMenuRedirect HttpsContextMenuRedirect
-#endif
-IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, MAYBE_HttpsContextMenuRedirect) {
+IN_PROC_BROWSER_TEST_F(ReferrerPolicyTest, HttpsContextMenuRedirect) {
   ContextMenuNotificationObserver context_menu_observer(
       IDC_CONTENT_CONTEXT_OPENLINKNEWTAB);
   RunReferrerTest(network::mojom::ReferrerPolicy::kOrigin, START_ON_HTTPS,

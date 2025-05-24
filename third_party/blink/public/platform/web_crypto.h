@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_CRYPTO_H_
 
 #include <string_view>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
@@ -40,7 +41,6 @@
 #include "third_party/blink/public/platform/web_crypto_key.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/platform/web_vector.h"
 
 #if INSIDE_BLINK
 #include "base/memory/scoped_refptr.h"
@@ -159,7 +159,7 @@ class WebCrypto {
   // Inputs
   // -----------------------
   //
-  //   * Data buffers are transfered as WebVectors. Implementations are free
+  //   * Data buffers are transferred as std::vectors. Implementations are free
   //     to re-use or transfer their storage.
   //
   //   * All WebCryptoKeys are guaranteeed to be !IsNull().
@@ -188,7 +188,7 @@ class WebCrypto {
   virtual void Encrypt(
       const WebCryptoAlgorithm&,
       const WebCryptoKey&,
-      WebVector<unsigned char> data,
+      std::vector<unsigned char> data,
       WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
@@ -196,14 +196,14 @@ class WebCrypto {
   virtual void Decrypt(
       const WebCryptoAlgorithm&,
       const WebCryptoKey&,
-      WebVector<unsigned char> data,
+      std::vector<unsigned char> data,
       WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
   }
   virtual void Sign(const WebCryptoAlgorithm&,
                     const WebCryptoKey&,
-                    WebVector<unsigned char> data,
+                    std::vector<unsigned char> data,
                     WebCryptoResult result,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
@@ -211,14 +211,14 @@ class WebCrypto {
   virtual void VerifySignature(
       const WebCryptoAlgorithm&,
       const WebCryptoKey&,
-      WebVector<unsigned char> signature,
-      WebVector<unsigned char> data,
+      std::vector<unsigned char> signature,
+      std::vector<unsigned char> data,
       WebCryptoResult result,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
   }
   virtual void Digest(const WebCryptoAlgorithm&,
-                      WebVector<unsigned char> data,
+                      std::vector<unsigned char> data,
                       WebCryptoResult result,
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     result.CompleteWithError(kWebCryptoErrorTypeNotSupported, "");
@@ -233,7 +233,7 @@ class WebCrypto {
   }
   virtual void ImportKey(
       WebCryptoKeyFormat,
-      WebVector<unsigned char> key_data,
+      std::vector<unsigned char> key_data,
       const WebCryptoAlgorithm&,
       bool extractable,
       WebCryptoKeyUsageMask,
@@ -259,7 +259,7 @@ class WebCrypto {
   }
   virtual void UnwrapKey(
       WebCryptoKeyFormat,
-      WebVector<unsigned char> wrapped_key,
+      std::vector<unsigned char> wrapped_key,
       const WebCryptoKey&,
       const WebCryptoAlgorithm& unwrap_algorithm,
       const WebCryptoAlgorithm& unwrapped_key_algorithm,
@@ -335,16 +335,15 @@ class WebCrypto {
                                       WebCryptoKeyType,
                                       bool extractable,
                                       WebCryptoKeyUsageMask,
-                                      const unsigned char* key_data,
-                                      unsigned key_data_size,
+                                      base::span<const unsigned char> key_data,
                                       WebCryptoKey&) {
     return false;
   }
 
-  // Writes the key data into the given WebVector.
+  // Writes the key data into the given std::vector.
   // Returns true on success.
   virtual bool SerializeKeyForClone(const WebCryptoKey&,
-                                    WebVector<unsigned char>&) {
+                                    std::vector<unsigned char>&) {
     return false;
   }
 

@@ -6,7 +6,7 @@ module emoji_picker.mojom;
 
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
-import "ui/gfx/geometry/mojom/geometry.mojom";
+import "chromeos/ash/components/emoji/tenor_types.mojom";
 
 // Capture any relevant enabled features from the system.
 enum Feature {
@@ -29,43 +29,12 @@ enum Feature {
   EMOJI_PICKER_MOJO_SEARCH = 6,
 };
 
-// The below structs are used to represent the Response format from the Tenor
-// search and featured API endpoints which contains just enough information for
-// the frontend to display GIFs.
-// https://developers.google.com/tenor/guides/endpoints#response-format-search
-// https://developers.google.com/tenor/guides/endpoints#response-format-featured
-
-enum Status {
-  kHttpOk, // 200 OK
-  kNetError, // No internet connection
-  kHttpError, // Every other HTTP response status code
-};
-
 // Different categories within the emoji picker
 enum Category {
   kEmojis,
   kSymbols,
   kEmoticons,
   kGifs,
-};
-
-struct TenorGifResponse {
-  string next;
-  array<GifResponse> results;
-};
-
-struct GifResponse {
-  string id;
-  string content_description;
-  GifUrls url;
-  gfx.mojom.Size preview_size;
-  gfx.mojom.Size full_size;
-};
-
-struct GifUrls {
-  url.mojom.Url full;
-  url.mojom.Url preview;
-  url.mojom.Url preview_image;
 };
 
 struct EmojiVariant {
@@ -111,23 +80,23 @@ interface PageHandler {
 
   // Returns a list of GIF categories from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#categories).
-  GetCategories() => (Status status, array<string> gif_categories);
+  GetCategories() => (tenor.mojom.Status status, array<string> gif_categories);
 
   // Returns a list of the current global featured GIFs from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#base-url-featured).
-  GetFeaturedGifs(string? pos) => (Status status,
-                                   TenorGifResponse featured_gifs);
+  GetFeaturedGifs(string? pos) => (tenor.mojom.Status status,
+                                   tenor.mojom.PaginatedGifResponses featured_gifs);
 
   // Returns a list of the most relevant GIFs for a given search set of search
   // terms or categories from the Tenor API
   // (https://developers.google.com/tenor/guides/endpoints#base-url-search).
-  SearchGifs(string query, string? pos) => (Status status,
-                                            TenorGifResponse search_gifs);
+  SearchGifs(string query, string? pos) => (tenor.mojom.Status status,
+                                            tenor.mojom.PaginatedGifResponses search_gifs);
 
   // Returns a list of GIFs for the specified IDs
   // (https://developers.google.com/tenor/guides/endpoints#posts).
-  GetGifsByIds(array<string> ids) => (Status status,
-                                      array<GifResponse> selected_gifs);
+  GetGifsByIds(array<string> ids) => (tenor.mojom.Status status,
+                                      array<tenor.mojom.GifResponse> selected_gifs);
 
   // Send a signal that emoji UI is fully loaded for metrics.
   OnUiFullyLoaded();

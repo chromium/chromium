@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] ShadowRoot doesn't have importNode or createElement[NS]
+  assert_equals: expected (undefined) undefined but got (function) function "function createElement() { [native code] }"
+[FAIL] attachShadow() does not recognize a registry member
+  FAIL
+Harness: the test ran to completion.
+

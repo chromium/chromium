@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://settings/strings.m.js';
+import 'chrome://certificate-manager/strings.m.js';
 import 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_list.js';
 import 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_entry.js';
 
 import type {CertificateProvisioningActionEventDetail} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
 import {CertificateProvisioningViewDetailsActionEvent} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_types.js';
-import type {CertificateProvisioningBrowserProxy, CertificateProvisioningProcess} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
+import type {CertificateProvisioningProcess} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
 import {CertificateProvisioningBrowserProxyImpl} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_browser_proxy.js';
 import type {CertificateProvisioningDetailsDialogElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_details_dialog.js';
 import type {CertificateProvisioningEntryElement} from 'chrome://resources/cr_components/certificate_manager/certificate_provisioning_entry.js';
@@ -16,50 +16,32 @@ import type {CertificateProvisioningListElement} from 'chrome://resources/cr_com
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {TestCertificateProvisioningBrowserProxy} from './test_certificate_provisioning_browser_proxy.js';
 
-/**
- * A test version of CertificateProvisioningBrowserProxy.
- * Provides helper methods for allowing tests to know when a method was called,
- * as well as specifying mock responses.
- */
-class TestCertificateProvisioningBrowserProxy extends TestBrowserProxy
-    implements CertificateProvisioningBrowserProxy {
-  constructor() {
-    super([
-      'refreshCertificateProvisioningProcesses',
-      'triggerCertificateProvisioningProcessUpdate',
-      'triggerCertificateProvisioningProcessReset',
-    ]);
-  }
-
-  refreshCertificateProvisioningProcesses() {
-    this.methodCalled('refreshCertificateProvisioningProcesses');
-  }
-
-  triggerCertificateProvisioningProcessUpdate(certProfileId: string) {
-    this.methodCalled(
-        'triggerCertificateProvisioningProcessUpdate', certProfileId);
-  }
-  triggerCertificateProvisioningProcessReset(certProfileId: string) {
-    this.methodCalled(
-        'triggerCertificateProvisioningProcessReset', certProfileId);
-  }
-}
+const PROCESS_ID = 'dummyProcessId';
+const PROFILE_ID = 'dummyProfileId';
+const PROFILE_NAME = 'Dummy Profile Name';
+const PUBLIC_KEY = 'dummyPublicKey';
+const STATE_ID = 8;
+const STATE_NAME_1 = 'dummyStateName';
+const STATE_NAME_2 = 'dummyStateName2';
+const TIME_SINCE_LAST_UPDATE = 'dummyTimeSinceLastUpdate';
+const LAST_UNSUCCESSFUL_MESSAGE = 'dummyLastUnsuccessfulMessage';
 
 function createSampleCertificateProvisioningProcess(isUpdated: boolean):
     CertificateProvisioningProcess {
   return {
-    certProfileId: 'dummyProfileId',
-    certProfileName: 'Dummy Profile Name',
+    processId: PROCESS_ID,
+    certProfileId: PROFILE_ID,
+    certProfileName: PROFILE_NAME,
     isDeviceWide: true,
-    publicKey: 'dummyPublicKey',
-    stateId: 8,
-    status: isUpdated ? 'dummyStateName2' : 'dummyStateName',
-    timeSinceLastUpdate: 'dummyTimeSinceLastUpdate',
-    lastUnsuccessfulMessage: 'dummyLastUnsuccessfulMessage',
+    publicKey: PUBLIC_KEY,
+    stateId: STATE_ID,
+    status: isUpdated ? STATE_NAME_2 : STATE_NAME_1,
+    timeSinceLastUpdate: TIME_SINCE_LAST_UPDATE,
+    lastUnsuccessfulMessage: LAST_UNSUCCESSFUL_MESSAGE,
   };
 }
 
@@ -168,8 +150,8 @@ suite('CertificateManagerProvisioningTests', function() {
               certProvisioningList.shadowRoot!.querySelector(dialogId);
           assertTrue(!!dialog);
           const whenDialogClosed = eventToPromise('close', dialog);
-          dialog.$.dialog.shadowRoot!.querySelector<HTMLElement>(
-                                         '#close')!.click();
+          dialog.$.dialog.shadowRoot.querySelector<HTMLElement>(
+                                        '#close')!.click();
           return whenDialogClosed;
         })
         .then(() => {
@@ -238,6 +220,43 @@ suite('DetailsDialogTests', function() {
     assertTrue(dialog.$.dialog.open);
   });
 
+  test('SeeDetails', function() {
+    const certProfileName =
+        dialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#certProfileName')!.innerText;
+    assertEquals(certProfileName, PROFILE_NAME);
+
+    const certProfileId =
+        dialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#certProfileId')!.innerText;
+    assertEquals(certProfileId, PROFILE_ID);
+
+    const processId =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#processId')!.innerText;
+    assertEquals(processId, PROCESS_ID);
+
+    const status =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#status')!.innerText;
+    assertEquals(status, STATE_NAME_1);
+
+    const timeSinceLastUpdate =
+        dialog.shadowRoot!.querySelector<HTMLElement>(
+                              '#timeSinceLastUpdate')!.innerText;
+    assertEquals(timeSinceLastUpdate, TIME_SINCE_LAST_UPDATE);
+
+    dialog.shadowRoot!.querySelector<HTMLElement>('#advancedInfo')!.click();
+
+    // Not entirely clear why the advanced info fields have extra formatting
+    // around them, but that's how it already has been for years.
+    const stateId =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#stateId')!.innerText;
+    assertEquals(stateId, '\n          ' + STATE_ID + '\n        ');
+
+    const publicKey =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#publicKey')!.innerText;
+    assertEquals(publicKey, '\n          ' + PUBLIC_KEY + '\n        ');
+  });
+
   test('RefreshProcess', async function() {
     // Simulate clicking 'Refresh'.
     dialog.$.refresh.click();
@@ -259,13 +278,13 @@ suite('DetailsDialogTests', function() {
     await browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
 
     // Check the status of dialog.model.
-    assertEquals(dialog.model.status, 'dummyStateName');
+    assertEquals(dialog.model.status, STATE_NAME_1);
     webUIListenerCallback(
         'certificate-provisioning-processes-changed',
         [createSampleCertificateProvisioningProcess(true)]);
     flush();
     // Check if the status of dialog.model is updated accordingly.
-    assertEquals(dialog.model.status, 'dummyStateName2');
+    assertEquals(dialog.model.status, STATE_NAME_2);
   });
 
   /**

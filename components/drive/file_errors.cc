@@ -49,10 +49,8 @@ std::string FileErrorToString(FileError error) {
 #undef PRINT
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected FileError "
-      << static_cast<std::underlying_type_t<FileError>>(error);
-  return "";
+  NOTREACHED() << "Unexpected FileError "
+               << static_cast<std::underlying_type_t<FileError>>(error);
 }
 
 bool IsFileErrorOk(FileError error) {
@@ -145,8 +143,7 @@ base::File::Error FileErrorToBaseFileError(FileError error) {
       return base::File::FILE_ERROR_FAILED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return base::File::FILE_ERROR_FAILED;
+  NOTREACHED();
 }
 
 FileError GDataToFileError(google_apis::ApiErrorCode status) {

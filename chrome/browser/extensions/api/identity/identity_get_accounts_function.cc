@@ -16,14 +16,13 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace extensions {
 
-IdentityGetAccountsFunction::IdentityGetAccountsFunction() {
-}
+IdentityGetAccountsFunction::IdentityGetAccountsFunction() = default;
 
-IdentityGetAccountsFunction::~IdentityGetAccountsFunction() {
-}
+IdentityGetAccountsFunction::~IdentityGetAccountsFunction() = default;
 
 ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
   if (browser_context()->IsOffTheRecord()) {
@@ -53,7 +52,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
           signin::ConsentLevel::kSync)) {
     account_info.id =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
-            .gaia;
+            .gaia.ToString();
     infos.Append(base::Value(account_info.ToValue()));
   }
 
@@ -64,7 +63,7 @@ ExtensionFunction::ResponseAction IdentityGetAccountsFunction::Run() {
       if (account.account_id ==
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSync))
         continue;
-      account_info.id = account.gaia;
+      account_info.id = account.gaia.ToString();
       infos.Append(base::Value(account_info.ToValue()));
     }
   }

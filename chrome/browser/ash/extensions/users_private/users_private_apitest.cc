@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -9,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
+#include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/extensions/users_private/users_private_delegate.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
@@ -82,7 +84,7 @@ class TestPrefsUtil : public PrefsUtil {
     if (value.is_string())
       email = value.GetString();
 
-    auto iter = base::ranges::find(user_list_, email);
+    auto iter = std::ranges::find(user_list_, email);
     if (iter != user_list_.end())
       user_list_.erase(iter);
 
@@ -154,6 +156,12 @@ class UsersPrivateApiTest : public ExtensionApiTest {
         profile(),
         base::BindRepeating(&UsersPrivateApiTest::GetUsersPrivateDelegate));
     content::RunAllPendingInMessageLoop();
+
+    auto* owner_settings_service =
+        ash::OwnerSettingsServiceAshFactory::GetForBrowserContext(profile());
+    base::test::TestFuture<bool> future;
+    owner_settings_service->IsOwnerAsync(future.GetCallback());
+    ASSERT_TRUE(future.Get());
   }
 
  protected:

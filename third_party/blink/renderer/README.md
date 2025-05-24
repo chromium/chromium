@@ -145,7 +145,7 @@ The types above could only be used at the boundary to interoperate
 with `//base`, `//services`, `//third_party/blink/common` and other
 Chromium-side or third-party code. It is also allowed to use local variables
 of these types when convenient, as long as the result is not stored
-in a member variable.
+in a member variable (with exceptions described below).
 For example, calling an utility function on an `std::string` which came
 from `//net` and then converting to `WTF::String` to store in a field
 is allowed.
@@ -160,11 +160,26 @@ Exceptions to this rule:
   also runs in the browser process, and should use STL and base instead of WTF.
   - Selected types in `public/platform` and `public/web`,
   whole purpose of which is conversion between WTF and STL,
-  for example `WebString` or `WebVector`.
+  for example `WebString`.
+  - A member variable that only interacts with the data outside of the blink
+  boundary.
 
 To prevent use of random types, we control allowed types by allow listing them
 in DEPS and a [presubmit
 script](../tools/blinkpy/presubmit/audit_non_blink_usage.py).
+
+We also have a
+[clang plugin](../../../tools/clang/plugins/BlinkDataMemberTypeChecker.h) to
+check for discouraged types used for blink member variables. We can use the
+following code to allow the third exception above:
+```
+#include "third_party/blink/renderer/platform/allow_discouraged_type.h"
+
+class Cls {
+  ...
+  std::vector<int> foo_ ALLOW_DISCOURAGED_TYPE("Matches WebBar API");
+};
+```
 
 ### Mojo
 

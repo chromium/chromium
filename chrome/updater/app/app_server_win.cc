@@ -51,7 +51,7 @@ namespace updater {
 namespace {
 
 std::wstring GetCOMGroup(const std::wstring& prefix, UpdaterScope scope) {
-  return base::StrCat({prefix, base::ASCIIToWide(UpdaterScopeToString(scope))});
+  return base::StrCat({prefix, base::UTF8ToWide(UpdaterScopeToString(scope))});
 }
 
 std::wstring COMGroup(UpdaterScope scope) {
@@ -120,11 +120,11 @@ bool CreateClientStateMedium() {
 // Google\Update. And add a "pv" registry value under the
 // UPDATER_KEY\Clients\{GoogleUpdateAppId}.
 // Finally, update the registry value for the "UninstallCmdLine".
-bool SwapGoogleUpdate(UpdaterScope scope,
-                      const base::FilePath& updater_path,
-                      const base::FilePath& temp_path,
-                      HKEY root,
-                      WorkItemList* list) {
+bool AddSwapGoogleUpdateWorkItems(UpdaterScope scope,
+                                  const base::FilePath& updater_path,
+                                  const base::FilePath& temp_path,
+                                  HKEY root,
+                                  WorkItemList* list) {
   CHECK(list);
 
   const std::optional<base::FilePath> target_path =
@@ -132,6 +132,21 @@ bool SwapGoogleUpdate(UpdaterScope scope,
   if (!target_path || !base::CreateDirectory(target_path->DirName())) {
     return false;
   }
+
+  WorkItem* stop_google_update_processes = list->AddCallbackWorkItem(
+      base::BindOnce(
+          [](UpdaterScope scope, const base::FilePath& target_path,
+             const CallbackWorkItem& /*work_item*/) {
+            const base::ScopedClosureRunner reset_shutdown_event(
+                SignalShutdownEvent(scope));
+            StopProcessesUnderPath(target_path.DirName(), base::Seconds(45));
+            return true;
+          },
+          scope, *target_path),
+      base::DoNothing());
+  stop_google_update_processes->set_best_effort(true);
+  stop_google_update_processes->set_rollback_enabled(false);
+
   list->AddCopyTreeWorkItem(updater_path, *target_path, temp_path,
                             WorkItem::ALWAYS);
 
@@ -149,9 +164,9 @@ bool SwapGoogleUpdate(UpdaterScope scope,
   list->AddSetRegValueWorkItem(
       root, GetAppClientStateKey(kLegacyGoogleUpdateAppID), KEY_WOW64_32KEY,
       kRegValuePV, kUpdaterVersionUtf16, true);
-  list->AddSetRegValueWorkItem(
-      root, google_update_appid_key, KEY_WOW64_32KEY, kRegValueName,
-      base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
+  list->AddSetRegValueWorkItem(root, google_update_appid_key, KEY_WOW64_32KEY,
+                               kRegValueName,
+                               base::UTF8ToWide(PRODUCT_FULLNAME_STRING), true);
   list->AddSetRegValueWorkItem(
       root, UPDATER_KEY, KEY_WOW64_32KEY, kRegValueUninstallCmdLine,
       [scope, &updater_path] {
@@ -213,19 +228,6 @@ bool UninstallGoogleUpdate(UpdaterScope scope) {
 
 }  // namespace
 
-HRESULT IsCOMCallerAllowed() {
-  if (!IsSystemInstall()) {
-    return S_OK;
-  }
-
-  ASSIGN_OR_RETURN(const bool result, IsCOMCallerAdmin(), [](HRESULT error) {
-    LOG(ERROR) << "IsCOMCallerAdmin failed: " << std::hex << error;
-    return error;
-  });
-
-  return result ? S_OK : E_ACCESSDENIED;
-}
-
 scoped_refptr<App> MakeAppServer() {
   return GetAppServerWinInstance();
 }
@@ -239,8 +241,7 @@ scoped_refptr<AppServerWin> GetAppServerWinInstance() {
 
 AppServerWin::AppServerWin() = default;
 AppServerWin::~AppServerWin() {
-  NOTREACHED_IN_MIGRATION();  // The instance of this class is a leaky
-                              // singleton.
+  NOTREACHED();  // The instance of this class is a leaky singleton.
 }
 
 void AppServerWin::PostRpcTask(base::OnceClosure task) {
@@ -343,7 +344,9 @@ void AppServerWin::UninstallSelf() {
 }
 
 bool AppServerWin::SwapInNewVersion() {
-  std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
+  if (IsSystemInstall(updater_scope()) && !CreateClientStateMedium()) {
+    return false;
+  }
 
   const std::optional<base::FilePath> versioned_directory =
       GetVersionedInstallDirectory(updater_scope());
@@ -354,8 +357,11 @@ bool AppServerWin::SwapInNewVersion() {
   const base::FilePath updater_path =
       versioned_directory->Append(GetExecutableRelativePath());
 
-  if (IsSystemInstall(updater_scope()) && !CreateClientStateMedium()) {
-    return false;
+  std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
+  if (IsSystemInstall(updater_scope())) {
+    AddComServiceWorkItems(updater_path, false, list.get());
+  } else {
+    AddComServerWorkItems(updater_path, false, list.get());
   }
 
   std::optional<base::ScopedTempDir> temp_dir = CreateSecureTempDir();
@@ -363,24 +369,10 @@ bool AppServerWin::SwapInNewVersion() {
     return false;
   }
 
-  if (!SwapGoogleUpdate(updater_scope(), updater_path, temp_dir->GetPath(),
-                        UpdaterScopeToHKeyRoot(updater_scope()), list.get())) {
+  if (!AddSwapGoogleUpdateWorkItems(
+          updater_scope(), updater_path, temp_dir->GetPath(),
+          UpdaterScopeToHKeyRoot(updater_scope()), list.get())) {
     return false;
-  }
-
-  if (IsSystemInstall(updater_scope())) {
-    AddComServiceWorkItems(updater_path, false, list.get());
-  } else {
-    AddComServerWorkItems(updater_path, false, list.get());
-  }
-
-  const base::ScopedClosureRunner reset_shutdown_event(
-      SignalShutdownEvent(updater_scope()));
-
-  std::optional<base::FilePath> target =
-      GetGoogleUpdateExePath(updater_scope());
-  if (target) {
-    StopProcessesUnderPath(target->DirName(), base::Seconds(45));
   }
 
   if (!list->Do()) {

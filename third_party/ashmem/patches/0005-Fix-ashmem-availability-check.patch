@@ -1,0 +1,39 @@
+From ad36ee583a7e6300716b061ddae433fd9da9793d Mon Sep 17 00:00:00 2001
+From: Sam Maier <smaier@chromium.org>
+Date: Tue, 22 Apr 2025 11:33:56 -0400
+Subject: [PATCH] Fix ashmem availability check
+
+---
+ third_party/ashmem/ashmem-dev.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/third_party/ashmem/ashmem-dev.c b/third_party/ashmem/ashmem-dev.c
+index 6bb4977bab28d..4a3e31f6910f4 100644
+--- a/third_party/ashmem/ashmem-dev.c
++++ b/third_party/ashmem/ashmem-dev.c
+@@ -44,13 +44,6 @@
+  * https://bugs.chromium.org/p/chromium/issues/detail?id=392191#c17
+  */
+ 
+-/* Weak symbol import */
+-void __system_property_read_callback(
+-    const prop_info* info,
+-    void (*callback)(
+-        void* cookie, const char* name, const char* value, uint32_t serial),
+-    void* cookie) __attribute__((weak));
+-
+ /* Callback used with __system_property_read_callback. */
+ static void prop_read_int(void* cookie,
+                           const char* name,
+@@ -63,7 +56,7 @@ static void prop_read_int(void* cookie,
+ 
+ static int system_property_get_int(const char* name) {
+   int result = 0;
+-  if (__system_property_read_callback) {
++  if (__builtin_available(android 26, *)) {
+     const prop_info* info = __system_property_find(name);
+     if (info)
+       __system_property_read_callback(info, &prop_read_int, &result);
+-- 
+2.49.0.805.g082f7c87e0-goog
+

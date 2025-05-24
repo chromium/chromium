@@ -11,12 +11,27 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.sync.SyncService;
 
 /** Wrapper for utilities in password_manager_util. */
+@NullMarked
 public class PasswordManagerUtilBridge {
+
+    /**
+     * Checks whether all the conditions to communicate with the password storage in GMS Core are
+     * met. The password manager functionality (saving/filling/management) is only available if
+     * those conditions are met.
+     *
+     * @return whether password manager functionality is available.
+     */
+    public static boolean isPasswordManagerAvailable(PrefService prefService) {
+        return PasswordManagerUtilBridgeJni.get()
+                .isPasswordManagerAvailable(prefService, isInternalBackendPresent());
+    }
 
     /**
      * There are 2 cases when this check returns true: 1) if the user is using UPM and everything
@@ -51,7 +66,7 @@ public class PasswordManagerUtilBridge {
      *     functionality.
      */
     public static boolean isGmsCoreUpdateRequired(
-            PrefService prefService, SyncService syncService) {
+            PrefService prefService, @Nullable SyncService syncService) {
         return PasswordManagerUtilBridgeJni.get().isGmsCoreUpdateRequired(prefService, syncService);
     }
 
@@ -67,6 +82,18 @@ public class PasswordManagerUtilBridge {
     }
 
     /**
+     * Checks whether Google Play Services is installed and whether Play Store is installed so that
+     * the user can be redirected to the store to update Google Play Services if needed.
+     *
+     * @return true if both Google Play Services and Google Play Store are installed.
+     */
+    @CalledByNative
+    public static boolean isGooglePlayServicesUpdatable() {
+        return PackageUtils.isPackageInstalled("com.google.android.gms")
+                && PasswordManagerUtilBridge.isPlayStoreAppPresent();
+    }
+
+    /**
      * Returns whether Chrome's internal backend is available and the minimum GMS Core requirements
      * for UPM are met.
      */
@@ -76,11 +103,18 @@ public class PasswordManagerUtilBridge {
 
     public static @PasswordAccessLossWarningType int getPasswordAccessLossWarningType(
             PrefService prefService) {
+        // The warning should not be shown on builds without UPM.
+        if (!isInternalBackendPresent()) {
+            return PasswordAccessLossWarningType.NONE;
+        }
         return PasswordManagerUtilBridgeJni.get().getPasswordAccessLossWarningType(prefService);
     }
 
     @NativeMethods
     public interface Natives {
+        boolean isPasswordManagerAvailable(
+                @JniType("PrefService*") PrefService prefService, boolean isInternalBackendPresent);
+
         boolean shouldUseUpmWiring(
                 @JniType("syncer::SyncService*") SyncService syncService,
                 @JniType("PrefService*") PrefService prefService);
@@ -89,7 +123,7 @@ public class PasswordManagerUtilBridge {
 
         boolean isGmsCoreUpdateRequired(
                 @JniType("PrefService*") PrefService prefService,
-                @JniType("syncer::SyncService*") SyncService syncService);
+                @JniType("syncer::SyncService*") @Nullable SyncService syncService);
 
         boolean areMinUpmRequirementsMet();
 

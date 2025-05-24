@@ -51,6 +51,11 @@ class CORE_EXPORT StyleBaseData : public GarbageCollected<StyleBaseData> {
   std::unique_ptr<CSSBitset> important_set_;
 };
 
+template <>
+struct ThreadingTrait<StyleBaseData> {
+  static constexpr ThreadAffinity kAffinity = kMainThreadOnly;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_BASE_DATA_H_

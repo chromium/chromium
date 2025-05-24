@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/storage/storage_pressure_bubble_view.h"
 
+#include "base/auto_reset.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -41,19 +42,16 @@ void RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue value) {
 
 }  // namespace
 
-namespace chrome {
-
 // static
 void ShowStoragePressureBubble(const url::Origin& origin) {
   StoragePressureBubbleView::ShowBubble(origin);
 }
 
-}  // namespace chrome
-
 void StoragePressureBubbleView::ShowBubble(const url::Origin& origin) {
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   StoragePressureBubbleView* bubble = new StoragePressureBubbleView(
       BrowserView::GetBrowserViewForBrowser(browser)
@@ -83,18 +81,27 @@ StoragePressureBubbleView::StoragePressureBubbleView(views::View* anchor_view,
 }
 
 StoragePressureBubbleView::~StoragePressureBubbleView() {
+  CHECK(!in_accept_);
   if (ignored_) {
     RecordBubbleHistogramValue(StoragePressureBubbleHistogramValue::kIgnored);
   }
 }
 
 void StoragePressureBubbleView::OnDialogAccepted() {
+  base::AutoReset reset_in_accept(&in_accept_, true);
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+
   ignored_ = false;
   RecordBubbleHistogramValue(
       StoragePressureBubbleHistogramValue::kOpenedAllSites);
   // TODO(ellyjones): What is this doing here? The widget's about to close
   // anyway?
   GetWidget()->Close();
+
+  CHECK(weak_this);
+  CHECK(browser_);
+  CHECK(browser_->profile());
+
   const GURL all_sites_gurl(kAllSitesContentSettingsUrl);
   NavigateParams params(browser_, all_sites_gurl,
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);

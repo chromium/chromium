@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/legacy/v4l2_video_decode_accelerator.h"
 
 #include <dlfcn.h>
@@ -14,12 +19,13 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 
+#include <algorithm>
+
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -78,7 +84,7 @@ namespace {
 bool IsVp9KSVCStream(uint32_t input_format_fourcc,
                      const DecoderBuffer& decoder_buffer) {
   return input_format_fourcc == V4L2_PIX_FMT_VP9 &&
-         decoder_buffer.has_side_data() &&
+         decoder_buffer.side_data() &&
          !decoder_buffer.side_data()->spatial_layers.empty();
 }
 
@@ -188,16 +194,12 @@ bool V4L2VideoDecodeAccelerator::Initialize(const Config& config,
   }
 
   if (config.is_encrypted()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Encrypted streams are not supported for this VDA";
-    return false;
+    NOTREACHED() << "Encrypted streams are not supported for this VDA";
   }
 
   if (config.output_mode != Config::OutputMode::kAllocate &&
       config.output_mode != Config::OutputMode::kImport) {
-    NOTREACHED_IN_MIGRATION()
-        << "Only ALLOCATE and IMPORT OutputModes are supported";
-    return false;
+    NOTREACHED() << "Only ALLOCATE and IMPORT OutputModes are supported";
   }
 
   client_ptr_factory_.reset(new base::WeakPtrFactory<Client>(client));
@@ -450,7 +452,7 @@ void V4L2VideoDecodeAccelerator::AssignPictureBuffersTask(
         // duplicates FD's, when a NativePixmap-based FrameResource is
         // available.
         native_pixmap =
-            frame->CreateGpuMemoryBufferHandle().native_pixmap_handle;
+            frame->CreateGpuMemoryBufferHandle().native_pixmap_handle();
       }
 
       ImportBufferForPictureTask(output_record.picture_id,
@@ -482,7 +484,7 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPicture(
       base::BindOnce(
           &V4L2VideoDecodeAccelerator::ImportBufferForPictureForImportTask,
           base::Unretained(this), picture_buffer_id, pixel_format,
-          std::move(gpu_memory_buffer_handle.native_pixmap_handle)));
+          std::move(gpu_memory_buffer_handle).native_pixmap_handle()));
 }
 
 void V4L2VideoDecodeAccelerator::ImportBufferForPictureForImportTask(
@@ -521,8 +523,8 @@ void V4L2VideoDecodeAccelerator::ImportBufferForPictureTask(
   if (IsDestroyPending())
     return;
 
-  const auto iter = base::ranges::find(output_buffer_map_, picture_buffer_id,
-                                       &OutputRecord::picture_id);
+  const auto iter = std::ranges::find(output_buffer_map_, picture_buffer_id,
+                                      &OutputRecord::picture_id);
   if (iter == output_buffer_map_.end()) {
     // It's possible that we've already posted a DismissPictureBuffer for this
     // picture, but it has not yet executed when this ImportBufferForPicture was
@@ -760,7 +762,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     return;
   }
 
-  if (decoder_current_bitstream_buffer_ == NULL) {
+  if (decoder_current_bitstream_buffer_ == nullptr) {
     if (decoder_input_queue_.empty()) {
       // We're waiting for a new buffer -- exit without scheduling a new task.
       return;
@@ -778,7 +780,8 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     if (buffer) {
       DVLOGF(4) << "reading input_id="
                 << decoder_current_bitstream_buffer_->input_id
-                << ", addr=" << buffer->data() << ", size=" << buffer->size();
+                << ", addr=" << base::span(*buffer).data()
+                << ", size=" << buffer->size();
     } else {
       DCHECK_EQ(decoder_current_bitstream_buffer_->input_id, kFlushBufferId);
       DVLOGF(4) << "reading input_id=kFlushBufferId";
@@ -797,7 +800,7 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
         current_input_buffer_->GetTimeStamp().tv_sec != kFlushBufferId)
       schedule_task = FlushInputFrame();
 
-    if (schedule_task && AppendToInputFrame(NULL, 0) && FlushInputFrame()) {
+    if (schedule_task && AppendToInputFrame(nullptr, 0) && FlushInputFrame()) {
       VLOGF(2) << "enqueued flush buffer";
       schedule_task = true;
     } else {
@@ -814,10 +817,10 @@ void V4L2VideoDecodeAccelerator::DecodeBufferTask() {
     schedule_task = true;
   } else {
     // This is a buffer queued from the client, with actual contents.  Decode.
-    const uint8_t* const data =
-        buffer->data() + decoder_current_bitstream_buffer_->bytes_used;
-    const size_t data_size =
-        buffer->size() - decoder_current_bitstream_buffer_->bytes_used;
+    auto buffer_span = base::span(*buffer).subspan(
+        decoder_current_bitstream_buffer_->bytes_used);
+    const uint8_t* const data = buffer_span.data();
+    const size_t data_size = buffer_span.size();
 
     if (!frame_splitter_->AdvanceFrameFragment(data, data_size,
                                                &decoded_size)) {
@@ -866,8 +869,9 @@ void V4L2VideoDecodeAccelerator::ScheduleDecodeBufferTaskIfNeeded() {
 
   // If we're behind on tasks, schedule another one.
   int buffers_to_decode = decoder_input_queue_.size();
-  if (decoder_current_bitstream_buffer_ != NULL)
+  if (decoder_current_bitstream_buffer_ != nullptr) {
     buffers_to_decode++;
+  }
   if (decoder_decode_buffer_tasks_scheduled_ < buffers_to_decode) {
     decoder_decode_buffer_tasks_scheduled_++;
     decoder_thread_.task_runner()->PostTask(
@@ -950,7 +954,7 @@ bool V4L2VideoDecodeAccelerator::AppendToInputFrame(const void* data,
 
   // Try to get an available input buffer.
   if (!current_input_buffer_) {
-    DCHECK(decoder_current_bitstream_buffer_ != NULL);
+    DCHECK(decoder_current_bitstream_buffer_ != nullptr);
     DCHECK(input_queue_);
 
     // See if we can get more free buffers from HW.
@@ -968,7 +972,7 @@ bool V4L2VideoDecodeAccelerator::AppendToInputFrame(const void* data,
     current_input_buffer_->SetTimeStamp(timestamp);
   }
 
-  DCHECK(data != NULL || size == 0);
+  DCHECK(data != nullptr || size == 0);
   if (size == 0) {
     // If we asked for an empty buffer, return now.  We return only after
     // getting the next input buffer, since we might actually want an empty
@@ -1372,7 +1376,7 @@ bool V4L2VideoDecodeAccelerator::EnqueueOutputRecord(
       ret = std::move(buffer).QueueDMABuf(output_record.output_frame);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (!ret) {

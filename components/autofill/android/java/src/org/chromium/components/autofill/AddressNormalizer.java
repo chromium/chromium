@@ -10,9 +10,11 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** A class used to normalize addresses. */
 @JNINamespace("autofill")
+@NullMarked
 public class AddressNormalizer {
     /** Callback for normalized addresses. */
     public interface NormalizedAddressRequestDelegate {

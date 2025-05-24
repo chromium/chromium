@@ -6,6 +6,9 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_MOCK_MIRRORING_ACTIVITY_H_
 
 #include "chrome/browser/media/router/providers/cast/mirroring_activity.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media_router {
@@ -18,7 +21,7 @@ class MockMirroringActivity : public MirroringActivity {
                         OnSourceChangedCallback on_source_changed);
   ~MockMirroringActivity() override;
 
-  MOCK_METHOD(void, CreateMojoBindings, (mojom::MediaRouter * media_router));
+  MOCK_METHOD(void, BindChannelToServiceReceiver, ());
   MOCK_METHOD(void, OnSessionSet, (const CastSession& session));
   MOCK_METHOD(void,
               SendStopSessionMessageToClients,
@@ -31,6 +34,10 @@ class MockMirroringActivity : public MirroringActivity {
   MOCK_METHOD(void, Seek, (base::TimeDelta time));
   MOCK_METHOD(void, NextTrack, ());
   MOCK_METHOD(void, PreviousTrack, ());
+
+ private:
+  mojo::Remote<mojom::Logger> logger_;
+  mojo::Remote<mojom::Debugger> debugger_;
 };
 
 }  // namespace media_router

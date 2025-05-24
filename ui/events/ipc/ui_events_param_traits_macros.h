@@ -6,7 +6,10 @@
 #define UI_EVENTS_IPC_UI_EVENTS_PARAM_TRAITS_MACROS_H_
 
 #include "base/component_export.h"
-#include "ipc/ipc_message_macros.h"
+#include "base/pickle.h"
+#include "ipc/ipc_message_utils.h"
+#include "ipc/ipc_param_traits.h"
+#include "ipc/param_traits_macros.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/scroll_types.h"
 

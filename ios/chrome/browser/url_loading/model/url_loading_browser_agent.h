@@ -47,7 +47,6 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
  private:
   friend class BrowserUserData<UrlLoadingBrowserAgent>;
   friend class FakeUrlLoadingBrowserAgent;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit UrlLoadingBrowserAgent(Browser* browser);
 
@@ -73,7 +72,6 @@ class UrlLoadingBrowserAgent : public BrowserUserData<UrlLoadingBrowserAgent> {
                            std::optional<void*> hint);
 
   __weak id<URLLoadingDelegate> delegate_;
-  raw_ptr<Browser> browser_;
   raw_ptr<UrlLoadingNotifierBrowserAgent> notifier_ = nullptr;
   raw_ptr<UrlLoadingBrowserAgent> incognito_loader_ = nullptr;
   raw_ptr<SceneUrlLoadingService> scene_service_ = nullptr;

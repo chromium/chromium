@@ -300,7 +300,7 @@ std::vector<mojom::HidReportDescriptionPtr> CreateReportDescriptions(
   auto report_items = preparsed_data.GetReportItems(report_type);
 
   // Sort items by |report_id| and |bit_index|.
-  base::ranges::sort(report_items, [](const auto& a, const auto& b) {
+  std::ranges::sort(report_items, [](const auto& a, const auto& b) {
     if (a.report_id < b.report_id)
       return true;
     if (a.report_id == b.report_id)
@@ -453,8 +453,7 @@ uint16_t HidServiceWin::PreparsedData::GetReportByteLength(
       report_length = GetCaps().FeatureReportByteLength;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   // Whether or not the device includes report IDs in its reports the size
   // of the report ID is included in the value provided by Windows. This

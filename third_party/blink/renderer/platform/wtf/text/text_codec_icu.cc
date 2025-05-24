@@ -323,7 +323,7 @@ void TextCodecICU::CreateICUConverter() const {
   DCHECK(!converter_icu_);
 
 #if defined(USING_SYSTEM_ICU)
-  const char* name = encoding_.GetName();
+  const AtomicString& name = encoding_.GetName();
   needs_gbk_fallbacks_ =
       name[0] == 'G' && name[1] == 'B' && name[2] == 'K' && !name[3];
 #endif
@@ -426,7 +426,8 @@ String TextCodecICU::Decode(base::span<const uint8_t> data,
     int uchars_decoded =
         DecodeToBuffer(buffer, buffer_limit, source, source_limit, offsets,
                        flush != FlushBehavior::kDoNotFlush, err);
-    result.Append(buffer, uchars_decoded);
+    result.Append(
+        base::span(buffer).first(static_cast<size_t>(uchars_decoded)));
   } while (err == U_BUFFER_OVERFLOW_ERROR);
 
   if (U_FAILURE(err)) {
@@ -443,21 +444,21 @@ String TextCodecICU::Decode(base::span<const uint8_t> data,
   // Chrome's copy of ICU does not have the issue described below.
   return result.ToString();
 #else
-  String resultString = result.ToString();
+  String result_string = result.ToString();
 
   // <http://bugs.webkit.org/show_bug.cgi?id=17014>
   // Simplified Chinese pages use the code A3A0 to mean "full-width space", but
   // ICU decodes it as U+E5E5.
-  if (!strcmp(encoding_.GetName(), "GBK")) {
+  if (encoding_.GetName() != "GBK") {
     if (EqualIgnoringASCIICase(encoding_.GetName(), "gb18030"))
-      resultString.Replace(0xE5E5, kIdeographicSpaceCharacter);
+      result_string.Replace(0xE5E5, kIdeographicSpaceCharacter);
     // Make GBK compliant to the encoding spec and align with GB18030
-    resultString.Replace(0x01F9, 0xE7C8);
+    result_string.Replace(0x01F9, 0xE7C8);
     // FIXME: Once https://www.w3.org/Bugs/Public/show_bug.cgi?id=28740#c3
     // is resolved, add U+1E3F => 0xE7C7.
   }
 
-  return resultString;
+  return result_string;
 #endif
 }
 
@@ -488,10 +489,7 @@ static void FormatEscapedEntityCallback(const void* context,
   if (reason == UCNV_UNASSIGNED) {
     *err = U_ZERO_ERROR;
 
-    UnencodableReplacementArray entity;
-    uint32_t entity_len =
-        TextCodec::GetUnencodableReplacement(code_point, handling, entity);
-    String entity_u(entity, entity_len);
+    String entity_u(TextCodec::GetUnencodableReplacement(code_point, handling));
     entity_u.Ensure16Bit();
     const UChar* entity_u_pointers[2] = {
         entity_u.Characters16(), entity_u.Characters16() + entity_u.length(),
@@ -640,7 +638,7 @@ static void NotReachedEntityCallback(const void* context,
                                      UChar32 code_point,
                                      UConverterCallbackReason reason,
                                      UErrorCode* err) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 class TextCodecInput final {

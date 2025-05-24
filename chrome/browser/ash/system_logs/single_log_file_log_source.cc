@@ -61,8 +61,7 @@ base::FilePath::StringType GetLogFileSourceRelativeFilePathValue(
     case SupportedSource::kPowerdPrevious:
       return "power_manager/powerd.PREVIOUS";
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::FilePath::StringType();
+  NOTREACHED();
 }
 
 // Returns the inode value of file at |path|, or 0 if it doesn't exist or is
@@ -97,7 +96,7 @@ SingleLogFileLogSource::SingleLogFileLogSource(SupportedSource source_type)
       file_cursor_position_(0),
       file_inode_(0) {}
 
-SingleLogFileLogSource::~SingleLogFileLogSource() {}
+SingleLogFileLogSource::~SingleLogFileLogSource() = default;
 
 // static
 void SingleLogFileLogSource::SetChromeStartTimeForTesting(

@@ -355,7 +355,7 @@ public class HistogramWatcher implements AutoCloseable {
         if (expectedExtraRecords == null) {
             expectedExtraRecords = 0;
         }
-        if (!allowAnyNumberOfExtraRecords && actualExtraRecords > expectedExtraRecords
+        if ((!allowAnyNumberOfExtraRecords && actualExtraRecords > expectedExtraRecords)
                 || actualExtraRecords < expectedExtraRecords) {
             // Expected |extraRecordsExpected| records with any value, found |extraActualRecords|.
             unexpected = true;

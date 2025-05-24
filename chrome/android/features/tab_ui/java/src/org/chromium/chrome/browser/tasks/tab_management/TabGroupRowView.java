@@ -12,20 +12,25 @@ import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.Space;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.Nullable;
+import androidx.annotation.PluralsRes;
 import androidx.annotation.StringRes;
-import androidx.core.util.Pair;
 
-import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
+import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -33,16 +38,53 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.time.Clock;
+import java.util.Objects;
 
 /** Displays a horizontal row for a single tab group. */
+@NullMarked
 public class TabGroupRowView extends LinearLayout {
+
+    /** Represents the title data for the tab group row. */
+    public static class TabGroupRowViewTitleData {
+        public final @Nullable String title;
+        public final int numTabs;
+        public final @PluralsRes int rowAccessibilityTextResId;
+
+        /**
+         * @param title The title string to display. If empty, a default title will be used.
+         * @param numTabs The number of tabs in the group.
+         * @param rowAccessibilityTextResId The resource ID for the accessibility string that
+         *     describes the row.
+         */
+        public TabGroupRowViewTitleData(
+                @Nullable String title, int numTabs, @PluralsRes int rowAccessibilityTextResId) {
+            this.title = title;
+            this.numTabs = numTabs;
+            this.rowAccessibilityTextResId = rowAccessibilityTextResId;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof TabGroupRowViewTitleData that)) return false;
+            return numTabs == that.numTabs
+                    && rowAccessibilityTextResId == that.rowAccessibilityTextResId
+                    && Objects.equals(title, that.title);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(title, numTabs, rowAccessibilityTextResId);
+        }
+    }
+
     private TabGroupFaviconCluster mTabGroupFaviconCluster;
     private View mColorView;
     private TextView mTitleTextView;
     private TextView mSubtitleTextView;
+    private Space mTextSpace;
     private FrameLayout mImageTilesContainer;
     private ListMenuButton mListMenuButton;
-    private TabGroupTimeAgoResolver mTimeAgoResolver;
 
     /** Constructor for inflation. */
     public TabGroupRowView(Context context, @Nullable AttributeSet attrs) {
@@ -55,10 +97,22 @@ public class TabGroupRowView extends LinearLayout {
         mTabGroupFaviconCluster = findViewById(R.id.tab_group_favicon_cluster);
         mColorView = findViewById(R.id.tab_group_color);
         mTitleTextView = findViewById(R.id.tab_group_title);
+        mTextSpace = findViewById(R.id.tab_group_text_space);
         mSubtitleTextView = findViewById(R.id.tab_group_subtitle);
         mImageTilesContainer = findViewById(R.id.image_tiles_container);
-        mListMenuButton = findViewById(R.id.more);
-        mTimeAgoResolver = new TabGroupTimeAgoResolver(getResources(), Clock.systemUTC());
+        mListMenuButton = findViewById(R.id.tab_group_menu);
+    }
+
+    void setupForContainment() {
+        Resources res = getContext().getResources();
+        ViewGroup.LayoutParams params = getLayoutParams();
+        params.height = res.getDimensionPixelSize(R.dimen.tab_group_row_height_containment);
+        setLayoutParams(params);
+        FrameLayout.MarginLayoutParams clusterParams =
+                (FrameLayout.MarginLayoutParams) mTabGroupFaviconCluster.getLayoutParams();
+        clusterParams.setMarginStart(
+                res.getDimensionPixelSize(R.dimen.tab_group_list_first_element_margin_containment));
+        mTabGroupFaviconCluster.setLayoutParams(clusterParams);
     }
 
     void updateCornersForClusterData(ClusterData clusterData) {
@@ -69,10 +123,10 @@ public class TabGroupRowView extends LinearLayout {
         mImageTilesContainer.setVisibility(isShared ? View.VISIBLE : View.GONE);
     }
 
-    void setTitleData(Pair<String, Integer> titleData) {
-        String title = titleData.first;
+    void setTitleData(TabGroupRowViewTitleData titleData) {
+        String title = titleData.title;
         if (TextUtils.isEmpty(title)) {
-            title = TabGroupTitleEditor.getDefaultTitle(getContext(), titleData.second);
+            title = TabGroupTitleUtils.getDefaultTitle(getContext(), titleData.numTabs);
         }
         mTitleTextView.setText(title);
         Resources resources = getResources();
@@ -82,17 +136,26 @@ public class TabGroupRowView extends LinearLayout {
         // Note that the subtitle will also be read for the row, as it just loops over visible text
         // children.
         mTitleTextView.setContentDescription(
-                resources.getString(R.string.tab_group_row_accessibility_text, title));
+                resources.getQuantityString(
+                        titleData.rowAccessibilityTextResId,
+                        titleData.numTabs,
+                        title,
+                        titleData.numTabs));
     }
 
-    void setCreationMillis(long creationMillis) {
-        mSubtitleTextView.setText(mTimeAgoResolver.resolveTimeAgoText(creationMillis));
+    void setTimestampEvent(TabGroupTimeAgo event) {
+        mSubtitleTextView.setVisibility(VISIBLE);
+        mTextSpace.setVisibility(VISIBLE);
+        TabGroupTimeAgoTextResolver timeAgoResolver =
+                new TabGroupTimeAgoTextResolver(getResources(), Clock.systemUTC());
+        mSubtitleTextView.setText(
+                timeAgoResolver.resolveTimeAgoText(event.timestampMs, event.eventType));
     }
 
     void setColorIndex(@TabGroupColorId int colorIndex) {
         @ColorInt
         int color =
-                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
                         getContext(), colorIndex, /* isIncognito= */ false);
         GradientDrawable drawable = (GradientDrawable) mColorView.getBackground();
         drawable.setColor(color);
@@ -102,12 +165,18 @@ public class TabGroupRowView extends LinearLayout {
             @Nullable Runnable openRunnable,
             @Nullable Runnable deleteRunnable,
             @Nullable Runnable leaveRunnable) {
-        setOnClickListener(openRunnable == null ? null : v -> openRunnable.run());
         mListMenuButton.setDelegate(() -> getListMenu(openRunnable, deleteRunnable, leaveRunnable));
+        boolean shouldMenuBeVisible =
+                openRunnable != null || deleteRunnable != null || leaveRunnable != null;
+        mListMenuButton.setVisibility(shouldMenuBeVisible ? VISIBLE : GONE);
     }
 
-    void setGetImageTileContainerCallback(Callback<FrameLayout> getImageTileContainerCallback) {
-        getImageTileContainerCallback.onResult(mImageTilesContainer);
+    void setSharedImageTilesView(@Nullable SharedImageTilesView sharedImageTilesView) {
+        mImageTilesContainer.removeAllViews();
+        if (sharedImageTilesView != null) {
+            TabUiUtils.attachSharedImageTilesViewToFrameLayout(
+                    sharedImageTilesView, mImageTilesContainer);
+        }
     }
 
     private ListMenu getListMenu(
@@ -145,7 +214,7 @@ public class TabGroupRowView extends LinearLayout {
         }
     }
 
-    void setTimeAgoResolverForTesting(TabGroupTimeAgoResolver timeAgoResolver) {
-        mTimeAgoResolver = timeAgoResolver;
+    public void setRowClickRunnable(@Nullable Runnable runnable) {
+        setOnClickListener(runnable == null ? null : v -> runnable.run());
     }
 }

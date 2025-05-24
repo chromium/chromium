@@ -54,7 +54,7 @@ std::optional<SignedExchangeEnvelope> GenerateHeaderAndParse(
       cbor::Writer::Write(cbor::Value(std::move(response_cbor_map)));
   return SignedExchangeEnvelope::Parse(
       version, signed_exchange_utils::URLWithRawString(fallback_url), signature,
-      base::make_span(serialized->data(), serialized->size()),
+      base::span(serialized->data(), serialized->size()),
       nullptr /* devtools_proxy */);
 }
 
@@ -77,7 +77,7 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
             signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes);
   signed_exchange_prologue::BeforeFallbackUrl prologue_a =
       signed_exchange_prologue::BeforeFallbackUrl::Parse(
-          base::make_span(
+          base::span(
               contents_bytes,
               signed_exchange_prologue::BeforeFallbackUrl::kEncodedSizeInBytes),
           nullptr /* devtools_proxy */);
@@ -86,10 +86,10 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
                 prologue_a.ComputeFallbackUrlAndAfterLength());
   signed_exchange_prologue::FallbackUrlAndAfter prologue_b =
       signed_exchange_prologue::FallbackUrlAndAfter::Parse(
-          base::make_span(contents_bytes +
-                              signed_exchange_prologue::BeforeFallbackUrl::
-                                  kEncodedSizeInBytes,
-                          prologue_a.ComputeFallbackUrlAndAfterLength()),
+          base::span(contents_bytes +
+                         signed_exchange_prologue::BeforeFallbackUrl::
+                             kEncodedSizeInBytes,
+                     prologue_a.ComputeFallbackUrlAndAfterLength()),
           prologue_a, nullptr /* devtools_proxy */);
 
   size_t signature_header_field_offset =
@@ -99,9 +99,9 @@ TEST_P(SignedExchangeEnvelopeTest, ParseGoldenFile) {
       contents.data() + signature_header_field_offset,
       prologue_b.signature_header_field_length());
   const auto cbor_bytes =
-      base::make_span(contents_bytes + signature_header_field_offset +
-                          prologue_b.signature_header_field_length(),
-                      prologue_b.cbor_header_length());
+      base::span(contents_bytes + signature_header_field_offset +
+                     prologue_b.signature_header_field_length(),
+                 prologue_b.cbor_header_length());
   const std::optional<SignedExchangeEnvelope> envelope =
       SignedExchangeEnvelope::Parse(
           SignedExchangeVersion::kB3, prologue_b.fallback_url(),

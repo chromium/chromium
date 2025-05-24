@@ -10,11 +10,12 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+class SidePanelEntryScope;
 class SidePanelRegistry;
 
 namespace content {
@@ -62,6 +63,7 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
    public:
     virtual void Activate(bool active) {}
     virtual void OnSidePanelControllerDestroyed() = 0;
+    virtual void OnTabWillDetach() = 0;
   };
   ReadAnythingSidePanelController(tabs::TabInterface* tab,
                                   SidePanelRegistry* side_panel_registry);
@@ -90,7 +92,7 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
 
  private:
   // Creates the container view and all its child views for side panel entry.
-  std::unique_ptr<views::View> CreateContainerView();
+  std::unique_ptr<views::View> CreateContainerView(SidePanelEntryScope& scope);
 
   // Decides whether the active page is distillable.
   bool IsActivePageDistillable() const;

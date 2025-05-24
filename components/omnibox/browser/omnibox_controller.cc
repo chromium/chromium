@@ -6,9 +6,11 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/omnibox_client.h"
@@ -16,17 +18,20 @@
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
-#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/page_classification_functions.h"
+#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "ui/gfx/geometry/rect.h"
 
-OmniboxController::OmniboxController(OmniboxView* view,
-                                     std::unique_ptr<OmniboxClient> client)
+OmniboxController::OmniboxController(
+    OmniboxView* view,
+    std::unique_ptr<OmniboxClient> client,
+    base::TimeDelta autocomplete_stop_timer_duration)
     : client_(std::move(client)),
       autocomplete_controller_(std::make_unique<AutocompleteController>(
           client_->CreateAutocompleteProviderClient(),
-          AutocompleteClassifier::DefaultOmniboxProviders())),
+          AutocompleteClassifier::DefaultOmniboxProviders(),
+          autocomplete_stop_timer_duration)),
       edit_model_(std::make_unique<OmniboxEditModel>(
           /*omnibox_controller=*/this,
           view)) {
@@ -42,16 +47,9 @@ OmniboxController::OmniboxController(OmniboxView* view,
   if (auto* emitter = client_->GetAutocompleteControllerEmitter()) {
     autocomplete_controller_->AddObserver(emitter);
   }
-
-  if (PrefService* prefs = client_->GetPrefs()) {
-    pref_change_registrar_.Init(prefs);
-    pref_change_registrar_.Add(
-        omnibox::kSuggestionGroupVisibility,
-        base::BindRepeating(
-            &OmniboxController::OnSuggestionGroupVisibilityPrefChanged,
-            base::Unretained(this)));
-  }
 }
+
+constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
 
 OmniboxController::~OmniboxController() = default;
 
@@ -67,35 +65,28 @@ void OmniboxController::StartAutocomplete(
 
 void OmniboxController::StopAutocomplete(bool clear_result) const {
   TRACE_EVENT0("omnibox", "OmniboxController::StopAutocomplete");
-  autocomplete_controller_->Stop(clear_result);
+  autocomplete_controller_->Stop(clear_result
+                                     ? AutocompleteStopReason::kClobbered
+                                     : AutocompleteStopReason::kInteraction);
 }
 
 void OmniboxController::StartZeroSuggestPrefetch() {
   TRACE_EVENT0("omnibox", "OmniboxController::StartZeroSuggestPrefetch");
   auto page_classification =
       client_->GetPageClassification(/*is_prefetch=*/true);
-  if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
-          page_classification)) {
-    return;
-  }
-
-  const bool is_ntp_page = omnibox::IsNTPPage(page_classification);
-  const bool interaction_clobber_focus_type = base::FeatureList::IsEnabled(
-      omnibox::kOmniboxOnClobberFocusTypeOnContent);
 
   GURL current_url = client_->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
 
-  if (is_ntp_page || interaction_clobber_focus_type) {
+  if (omnibox::IsNTPPage(page_classification) || !is_ios) {
     text.clear();
   }
 
   AutocompleteInput input(text, page_classification,
                           client_->GetSchemeClassifier());
   input.set_current_url(current_url);
-  input.set_focus_type(interaction_clobber_focus_type && !is_ntp_page
-                           ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
-                           : metrics::OmniboxFocusType::INTERACTION_FOCUS);
+  input.set_current_title(client_->GetTitle());
+  input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
   autocomplete_controller_->StartPrefetch(input);
 }
 
@@ -112,11 +103,10 @@ void OmniboxController::OnResultChanged(AutocompleteController* controller,
       edit_model_->OnCurrentMatchChanged();
     } else {
       edit_model_->OnPopupResultChanged();
-      edit_model_->OnPopupDataChanged(std::u16string(),
-                                      /*is_temporary_text=*/false,
-                                      std::u16string(), std::u16string(),
-                                      std::u16string(), std::u16string(), false,
-                                      std::u16string(), AutocompleteMatch());
+      edit_model_->OnPopupDataChanged(
+          std::u16string(),
+          /*is_temporary_text=*/false, std::u16string(), std::u16string(),
+          std::u16string(), false, std::u16string(), AutocompleteMatch());
     }
   } else {
     edit_model_->OnPopupResultChanged();
@@ -172,7 +162,7 @@ bool OmniboxController::IsSuggestionHidden(
     const AutocompleteMatch& match) const {
   if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
       match.from_keyword) {
-    TemplateURL* turl =
+    const TemplateURL* turl =
         match.GetTemplateURL(client_->GetTemplateURLService(), false);
     if (turl &&
         turl->starter_pack_id() == TemplateURLStarterPackData::kGemini) {
@@ -182,34 +172,12 @@ bool OmniboxController::IsSuggestionHidden(
   return false;
 }
 
-bool OmniboxController::IsSuggestionGroupHidden(
-    omnibox::GroupId suggestion_group_id) const {
-  const PrefService* prefs = client_->GetPrefs();
-  return prefs && autocomplete_controller_->result().IsSuggestionGroupHidden(
-                      prefs, suggestion_group_id);
-}
-
-void OmniboxController::SetSuggestionGroupHidden(
-    omnibox::GroupId suggestion_group_id,
-    bool hidden) const {
-  if (PrefService* prefs = client_->GetPrefs()) {
-    autocomplete_controller_->result().SetSuggestionGroupHidden(
-        prefs, suggestion_group_id, hidden);
-  }
-}
-
 void OmniboxController::SetRichSuggestionBitmap(int result_index,
+                                                const GURL& icon_url,
                                                 const SkBitmap& bitmap) {
-  edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
-}
-
-void OmniboxController::OnSuggestionGroupVisibilityPrefChanged() {
-  for (size_t i = 0; i < autocomplete_controller_->result().size(); ++i) {
-    const AutocompleteMatch& match =
-        autocomplete_controller_->result().match_at(i);
-    bool suggestion_group_hidden =
-        match.suggestion_group_id.has_value() &&
-        IsSuggestionGroupHidden(match.suggestion_group_id.value());
-    edit_model_->SetPopupSuggestionGroupVisibility(i, suggestion_group_hidden);
+  if (!icon_url.is_empty()) {
+    edit_model_->SetIconBitmap(icon_url, bitmap);
+  } else {
+    edit_model_->SetPopupRichSuggestionBitmap(result_index, bitmap);
   }
 }

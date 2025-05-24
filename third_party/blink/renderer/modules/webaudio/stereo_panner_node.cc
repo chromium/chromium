@@ -27,14 +27,15 @@ constexpr float kMaxPanValue = 1.0f;
 
 StereoPannerNode::StereoPannerNode(BaseAudioContext& context)
     : AudioNode(context),
-      pan_(AudioParam::Create(context,
-                              Uuid(),
-                              AudioParamHandler::kParamTypeStereoPannerPan,
-                              kDefaultPanValue,
-                              AudioParamHandler::AutomationRate::kAudio,
-                              AudioParamHandler::AutomationRateMode::kVariable,
-                              kMinPanValue,
-                              kMaxPanValue)) {
+      pan_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::AudioParamType::kParamTypeStereoPannerPan,
+          kDefaultPanValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable,
+          kMinPanValue,
+          kMaxPanValue)) {
   SetHandler(StereoPannerHandler::Create(*this, context.sampleRate(),
                                          pan_->Handler()));
 }

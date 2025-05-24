@@ -7,7 +7,7 @@
 // clang-format off
 import 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar.js';
 
-import {CrToolbarElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar.js';
+import type {CrToolbarElement} from 'chrome://resources/ash/common/cr_elements/cr_toolbar/cr_toolbar.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getTrustedHtml} from 'chrome://webui-test/trusted_html.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';

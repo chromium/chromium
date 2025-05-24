@@ -30,6 +30,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
@@ -129,6 +130,12 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   static void ResetCachedFeaturesForTesting();
   static void FlushPreloadScannerThreadForTesting();
 
+  bool HasPendingPreloads();
+
+  // Start pausing the parser while waiting for the performance.mark() call.
+  void NotifyParserPauseByUserTiming() override;
+  void NotifyParserResumeByUserTiming() override;
+
  protected:
   void insert(const String&) final;
   void Append(const String&) override;
@@ -153,7 +160,9 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void PrepareToStopParsing() final;
   void StopParsing() final;
   ALWAYS_INLINE bool IsPaused() const {
-    return IsWaitingForScripts() || task_runner_state_->WaitingForStylesheets();
+    return IsWaitingForScripts() ||
+           task_runner_state_->WaitingForStylesheets() ||
+           is_waiting_for_user_timing_;
   }
   bool IsWaitingForScripts() const final;
   bool IsExecutingScript() const final;
@@ -227,7 +236,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   // resources using the resulting PreloadRequests and |preloader_|.
   void ScanAndPreload(HTMLPreloadScanner*);
   void ProcessPreloadData(std::unique_ptr<PendingPreloadData> preload_data);
-  void FetchQueuedPreloads();
+  void MaybeFetchQueuedPreloads();
   std::string GetPreloadHistogramSuffix();
   void FinishAppend();
   void ScanInBackground(const String& source);
@@ -238,8 +247,6 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
       scoped_refptr<PendingPreloads> pending_preloads,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<PendingPreloadData> preload_data);
-
-  bool HasPendingPreloads();
 
   // Returns true if the data should be processed (tokenizer pumped) now. If
   // this returns false, SchedulePumpTokenizer() should be called. This is
@@ -255,6 +262,11 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
                              int tokens_parsed) const;
 
   bool ShouldSkipPreloadScan();
+
+  // Check if preloads are allowed considering the presence of a preloader,
+  // the presence of queued preloads and the presence of meta CSP tags in the
+  // HTML document.
+  bool AllowPreloading();
 
   HTMLInputStream input_;
   const HTMLParserOptions options_;
@@ -297,6 +309,18 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
 
   // Cached result of ShouldSkipPreloadScan()
   bool should_skip_preload_scan_ = false;
+
+  // Counts how many CSP meta tags have been seen (but not necessarily processed
+  // yet). This is used to compare the number of seen tags with the number of
+  // processed CSP tags in order to decide if resources can be preloaded.
+  int seen_csp_meta_tags_ = 0;
+
+  // TODO(crbug.com/416543903): If true, it pauses the parser until the
+  // performance.mark() as a resuming signal is called.
+  bool is_waiting_for_user_timing_ = false;
+  base::TimeTicks time_waiting_for_user_timing_;
+
+  base::MetricsSubSampler metrics_sub_sampler_;
 };
 
 }  // namespace blink

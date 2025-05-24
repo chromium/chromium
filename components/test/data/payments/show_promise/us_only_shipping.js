@@ -13,7 +13,7 @@ function buy(supportedMethods) {
     print('supportedMethods required');
     return;
   }
-  var detailsForUSAddress = {
+  const detailsForUSAddress = {
     shippingOptions: [{
       id: '1',
       label: 'Free shipping',
@@ -22,10 +22,10 @@ function buy(supportedMethods) {
     }],
   };
 
-  var detailsForNonUSAddress = {error: 'Cannot ship outside of US.'};
+  const detailsForNonUSAddress = {error: 'Cannot ship outside of US.'};
 
   try {
-    var request = new PaymentRequest(
+    const request = new PaymentRequest(
         [{supportedMethods}], {
           total: {
             label: 'PENDING TOTAL',

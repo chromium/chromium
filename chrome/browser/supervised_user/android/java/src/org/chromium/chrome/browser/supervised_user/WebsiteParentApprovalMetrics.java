@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.supervised_user;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
+@NullMarked
 class WebsiteParentApprovalMetrics {
     // Histogram name
     static final String WEB_APPOVAL_OUTCOME_NAME = "FamilyLinkUser.LocalWebApprovalOutcome";

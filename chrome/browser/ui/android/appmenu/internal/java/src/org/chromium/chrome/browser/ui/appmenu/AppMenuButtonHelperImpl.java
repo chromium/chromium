@@ -13,7 +13,11 @@ import android.view.View.AccessibilityDelegate;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 
+import androidx.annotation.IdRes;
+
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * A helper class for a menu button to decide when to show the app menu and forward touch
@@ -22,11 +26,12 @@ import org.chromium.base.metrics.RecordUserAction;
  * Simply construct this class and pass the class instance to a menu button as TouchListener.
  * Then this class will handle everything regarding showing app menu for you.
  */
+@NullMarked
 class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuButtonHelper {
     private final AppMenuHandlerImpl mMenuHandler;
-    private Runnable mOnAppMenuShownListener;
+    private @Nullable Runnable mOnAppMenuShownListener;
     private boolean mIsTouchEventsBeingProcessed;
-    private Runnable mOnClickRunnable;
+    private @Nullable Runnable mOnClickRunnable;
 
     /**
      * @param menuHandler MenuHandler implementation that can show and get the app menu.
@@ -50,6 +55,11 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
     @Override
     public boolean onEnterKeyPress(View view) {
         return showAppMenu(view, false);
+    }
+
+    @Override
+    public void highlightMenuItemOnShow(@IdRes int menuItemId) {
+        mMenuHandler.setMenuHighlight(menuItemId);
     }
 
     @Override
@@ -98,7 +108,7 @@ class AppMenuButtonHelperImpl extends AccessibilityDelegate implements AppMenuBu
     // AccessibilityDelegate overrides
 
     @Override
-    public boolean performAccessibilityAction(View host, int action, Bundle args) {
+    public boolean performAccessibilityAction(View host, int action, @Nullable Bundle args) {
         if (action == AccessibilityNodeInfo.ACTION_CLICK) {
             if (!mMenuHandler.isAppMenuShowing()) {
                 showAppMenu(host, false);

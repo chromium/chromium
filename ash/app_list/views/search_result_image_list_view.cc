@@ -89,7 +89,7 @@ SearchResultImageListView::SearchResultImageListView(
       l10n_util::GetStringUTF16(IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_IMAGES)));
   title_label_->SetBackgroundColor(SK_ColorTRANSPARENT);
   title_label_->SetAutoColorReadabilityEnabled(false);
-  title_label_->SetEnabledColorId(kColorAshTextColorSecondary);
+  title_label_->SetEnabledColor(kColorAshTextColorSecondary);
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label_->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
       kPreferredTitleTopMargins, kPreferredTitleHorizontalMargins,
@@ -100,7 +100,7 @@ SearchResultImageListView::SearchResultImageListView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
   GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_SEARCH_RESULT_CATEGORY_LABEL_ACCESSIBLE_NAME,
-      title_label_->GetText()));
+      std::u16string(title_label_->GetText())));
 
   image_view_container_ =
       AddChildView(std::make_unique<views::FlexLayoutView>());
@@ -160,12 +160,12 @@ SearchResultImageListView::SearchResultImageListView(
       content_label->SetAllowCharacterBreak(true);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton1,
                                             *content_label);
-      content_label->SetEnabledColorId(cros_tokens::kColorPrimary);
+      content_label->SetEnabledColor(cros_tokens::kColorPrimary);
     } else {
       content_label->SetElideBehavior(gfx::ElideBehavior::ELIDE_MIDDLE);
       TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2,
                                             *content_label);
-      content_label->SetEnabledColorId(cros_tokens::kTextColorSecondary);
+      content_label->SetEnabledColor(cros_tokens::kTextColorSecondary);
     }
 
     metadata_content_labels_.push_back(content_label.get());
@@ -269,7 +269,7 @@ int SearchResultImageListView::DoUpdate() {
                                    notifier_results);
   }
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kChildrenChanged, false);
+  NotifyAccessibilityEventDeprecated(ax::mojom::Event::kChildrenChanged, false);
   return num_results;
 }
 

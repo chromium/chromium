@@ -5,10 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_H_
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_H_
 
+#import <memory>
+
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+
+class PushNotificationClientManager;
 
 // This is a KeyedService that encapsulates the push notification functionality
 // that is coupled with a user profile.
@@ -16,12 +20,17 @@ class PushNotificationProfileService
     : public KeyedService,
       public signin::IdentityManager::Observer {
  public:
-  PushNotificationProfileService(signin::IdentityManager* identity_manager,
-                                 base::FilePath profile_state_path);
+  PushNotificationProfileService(
+      signin::IdentityManager* identity_manager,
+      std::unique_ptr<PushNotificationClientManager> client_manager,
+      base::FilePath profile_state_path);
   ~PushNotificationProfileService() override;
 
   // KeyedService
   void Shutdown() override;
+
+  // Returns PushNotificationProfileService's PushNotificationClientManager.
+  PushNotificationClientManager* GetPushNotificationClientManager();
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -31,6 +40,10 @@ class PushNotificationProfileService
   // This object notifies the PushNotificationProfileService of the signin and
   // signout events.
   const raw_ptr<signin::IdentityManager> identity_manager_;
+
+  // The PushNotificationClientManager manages all interactions between the
+  // system and push notification enabled features.
+  std::unique_ptr<PushNotificationClientManager> client_manager_;
 
   // The path of the profile with which the PushNotificationProfileService
   // instance is associated.

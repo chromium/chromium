@@ -4,6 +4,7 @@
 
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
 
+#include <algorithm>
 #include <functional>
 #include <limits>
 #include <memory>
@@ -13,7 +14,6 @@
 
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
@@ -99,8 +99,9 @@ std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
       launcher_render_process_id, launcher_render_frame_id);
   // Guests inside <webview> do not support cross-process navigation and so we
   // do not allow guests to prerender content.
-  if (guest_view::GuestViewBase::IsGuest(rfh))
+  if (guest_view::GuestViewBase::IsGuest(rfh)) {
     return std::nullopt;
+  }
 #endif
 
   // Check if the launcher is itself an unswapped prerender.
@@ -125,28 +126,32 @@ std::optional<int> NoStatePrefetchLinkManager::OnStartLinkTrigger(
 
   triggers_.push_back(std::move(trigger));
 
-  if (!no_state_prefetch_contents)
+  if (!no_state_prefetch_contents) {
     StartLinkTriggers();
+  }
 
   // Check if the trigger we added is still at the end of the list. It
   // may have been discarded by StartLinkTriggers().
-  if (!triggers_.empty() && triggers_.back().get() == trigger_ptr)
+  if (!triggers_.empty() && triggers_.back().get() == trigger_ptr) {
     return trigger_ptr->link_trigger_id;
+  }
   return std::nullopt;
 }
 
 void NoStatePrefetchLinkManager::OnCancelLinkTrigger(int link_trigger_id) {
   LinkTrigger* trigger = FindByLinkTriggerId(link_trigger_id);
-  if (!trigger)
+  if (!trigger) {
     return;
+  }
   CancelLinkTrigger(trigger);
   StartLinkTriggers();
 }
 
 void NoStatePrefetchLinkManager::OnAbandonLinkTrigger(int link_trigger_id) {
   LinkTrigger* trigger = FindByLinkTriggerId(link_trigger_id);
-  if (!trigger)
+  if (!trigger) {
     return;
+  }
 
   if (!trigger->handle) {
     RemoveLinkTrigger(trigger);
@@ -160,8 +165,9 @@ void NoStatePrefetchLinkManager::OnAbandonLinkTrigger(int link_trigger_id) {
   // If the prefetcher is not running, remove it from the list so it does not
   // leak. If it is running, it will send a cancel event when it stops which
   // will remove it.
-  if (!trigger->handle->IsPrefetching())
+  if (!trigger->handle->IsPrefetching()) {
     RemoveLinkTrigger(trigger);
+  }
 }
 
 bool NoStatePrefetchLinkManager::IsEmpty() const {
@@ -174,15 +180,16 @@ bool NoStatePrefetchLinkManager::TriggerIsRunningForTesting(
 }
 
 size_t NoStatePrefetchLinkManager::CountRunningTriggers() const {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       triggers_, [](const std::unique_ptr<LinkTrigger>& trigger) {
         return trigger->handle && trigger->handle->IsPrefetching();
       });
 }
 
 void NoStatePrefetchLinkManager::StartLinkTriggers() {
-  if (has_shutdown_)
+  if (has_shutdown_) {
     return;
+  }
 
   size_t total_started_trigger_count = 0;
   std::list<LinkTrigger*> abandoned_triggers;
@@ -195,8 +202,9 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
   for (auto it = triggers_.begin(); it != triggers_.end(); ++it) {
     std::unique_ptr<LinkTrigger>& trigger = *it;
     // Skip triggers launched by a trigger.
-    if (trigger->deferred_launcher)
+    if (trigger->deferred_launcher) {
       continue;
+    }
     if (!trigger->handle) {
       pending_triggers.push_back(it);
     } else {
@@ -251,8 +259,9 @@ void NoStatePrefetchLinkManager::StartLinkTriggers() {
         total_started_trigger_count >= triggers_.size()) {
       // The system is already at its prerender concurrency limit. Try removing
       // an abandoned trigger, if one exists, to make room.
-      if (abandoned_triggers.empty())
+      if (abandoned_triggers.empty()) {
         return;
+      }
 
       CancelLinkTrigger(abandoned_triggers.front());
       --total_started_trigger_count;
@@ -289,8 +298,9 @@ NoStatePrefetchLinkManager::FindByNoStatePrefetchHandle(
     NoStatePrefetchHandle* no_state_prefetch_handle) {
   DCHECK(no_state_prefetch_handle);
   for (auto& trigger : triggers_) {
-    if (trigger->handle.get() == no_state_prefetch_handle)
+    if (trigger->handle.get() == no_state_prefetch_handle) {
       return trigger.get();
+    }
   }
   return nullptr;
 }
@@ -298,8 +308,9 @@ NoStatePrefetchLinkManager::FindByNoStatePrefetchHandle(
 NoStatePrefetchLinkManager::LinkTrigger*
 NoStatePrefetchLinkManager::FindByLinkTriggerId(int link_trigger_id) {
   for (auto& trigger : triggers_) {
-    if (trigger->link_trigger_id == link_trigger_id)
+    if (trigger->link_trigger_id == link_trigger_id) {
       return trigger.get();
+    }
   }
   return nullptr;
 }
@@ -314,7 +325,7 @@ void NoStatePrefetchLinkManager::RemoveLinkTrigger(LinkTrigger* trigger) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NoStatePrefetchLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
@@ -324,12 +335,13 @@ void NoStatePrefetchLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
       std::unique_ptr<NoStatePrefetchHandle> own_handle =
           std::move(trigger->handle);
       triggers_.erase(it);
-      if (own_handle)
+      if (own_handle) {
         own_handle->OnCancel();
+      }
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NoStatePrefetchLinkManager::Shutdown() {
@@ -339,8 +351,9 @@ void NoStatePrefetchLinkManager::Shutdown() {
 void NoStatePrefetchLinkManager::OnPrefetchStop(
     NoStatePrefetchHandle* no_state_prefetch_handle) {
   LinkTrigger* trigger = FindByNoStatePrefetchHandle(no_state_prefetch_handle);
-  if (!trigger)
+  if (!trigger) {
     return;
+  }
   RemoveLinkTrigger(trigger);
   StartLinkTriggers();
 }

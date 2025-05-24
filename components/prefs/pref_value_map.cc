@@ -14,9 +14,9 @@
 
 #include "base/values.h"
 
-PrefValueMap::PrefValueMap() {}
+PrefValueMap::PrefValueMap() = default;
 
-PrefValueMap::~PrefValueMap() {}
+PrefValueMap::~PrefValueMap() = default;
 
 bool PrefValueMap::GetValue(std::string_view key,
                             const base::Value** value) const {

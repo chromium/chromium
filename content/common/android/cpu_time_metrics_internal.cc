@@ -62,8 +62,7 @@ ProcessTypeForUma CurrentProcessType() {
     return ProcessTypeForUma::kGpu;
   if (process_type == switches::kPpapiPluginProcess)
     return ProcessTypeForUma::kPpapiPlugin;
-  NOTREACHED_IN_MIGRATION() << "Unexpected process type: " << process_type;
-  return ProcessTypeForUma::kUnknown;
+  NOTREACHED() << "Unexpected process type: " << process_type;
 }
 
 const char* GetPerThreadHistogramNameForProcessType(ProcessTypeForUma type) {

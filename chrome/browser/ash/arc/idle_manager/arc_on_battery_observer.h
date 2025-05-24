@@ -10,7 +10,7 @@
 
 namespace arc {
 
-constexpr char kArcOnBatteryObserverName[] = "ArcOnBatteryObserver";
+inline constexpr char kArcOnBatteryObserverName[] = "ArcOnBatteryObserver";
 
 // Listens ARC power events and lifts CPU throttling when needed.
 class ArcOnBatteryObserver : public ash::ThrottleObserver,

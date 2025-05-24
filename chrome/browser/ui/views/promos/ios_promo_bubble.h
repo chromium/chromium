@@ -5,16 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_
 
-// #include "chrome/browser/promos/promos_types.h"
-#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/promos/ios_promo_constants.h"
+#include <memory>
 
 namespace views {
-class PageActionIconView;
+class BubbleDialogDelegate;
 class View;
 }  // namespace views
 
-class Browser;
+namespace IOSPromoConstants {
+struct IOSPromoTypeConfigs;
+}  // namespace IOSPromoConstants
+
+class PageActionIconView;
+class Profile;
 
 enum class IOSPromoType;
 
@@ -26,6 +29,15 @@ class IOSPromoBubble {
   static IOSPromoConstants::IOSPromoTypeConfigs SetUpBubble(
       IOSPromoType promo_type);
 
+  static views::BubbleDialogDelegate* ios_promo_delegate_;
+  static IOSPromoType current_promo_type_;
+
+  class IOSPromoBubbleDelegate;
+
+  static std::unique_ptr<views::View> CreateFooter(
+      IOSPromoBubble::IOSPromoBubbleDelegate* bubble_delegate,
+      const IOSPromoConstants::IOSPromoTypeConfigs& ios_promo_config);
+
  public:
   IOSPromoBubble(const IOSPromoBubble&) = delete;
   IOSPromoBubble& operator=(const IOSPromoBubble&) = delete;
@@ -34,11 +46,15 @@ class IOSPromoBubble {
   // to the feature icon.
   static void ShowPromoBubble(views::View* anchor_view,
                               PageActionIconView* highlighted_button,
-                              Browser* browser,
+                              Profile* profile,
                               IOSPromoType promo_type);
 
   // Hide closes the bubble.
   static void Hide();
+
+  // Returns true if the bubble is currently being shown and is of type
+  // `promo_type`.
+  static bool IsPromoTypeVisible(IOSPromoType promo_type);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_BUBBLE_H_

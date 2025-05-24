@@ -5,8 +5,8 @@
 #ifndef UI_GFX_SHADOW_UTIL_H_
 #define UI_GFX_SHADOW_UTIL_H_
 
+#include "base/component_export.h"
 #include "build/build_config.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/shadow_value.h"
 
@@ -24,7 +24,7 @@ enum class ShadowStyle {
 
 // A struct that describes a vector of shadows and their depiction as an image
 // suitable for ninebox tiling.
-struct GFX_EXPORT ShadowDetails {
+struct COMPONENT_EXPORT(GFX) ShadowDetails {
   ShadowDetails(const gfx::ShadowValues& values,
                 const gfx::ImageSkia& nine_patch_image);
   ShadowDetails(const ShadowDetails& other);

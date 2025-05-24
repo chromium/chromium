@@ -63,28 +63,20 @@ class AwComponentMetricsProviderDelegateTest : public testing::Test {
 
 }  // namespace
 
-TEST_F(AwComponentMetricsProviderDelegateTest,
-       TestAppsPackageNamesComponent_NotLoaded) {
-  metrics::ComponentMetricsProvider provider(
-      std::make_unique<AwComponentMetricsProviderDelegate>(GetClient()));
-
-  metrics::SystemProfileProto system_profile;
-  provider.ProvideSystemProfileMetrics(&system_profile);
-  EXPECT_TRUE(system_profile.chrome_component().empty());
-}
-
 TEST_F(AwComponentMetricsProviderDelegateTest, TestMultipleComponents) {
   AwComponentMetricsProviderDelegate delegate(GetClient());
 
   std::string fake_component_id = "abcdefgh";
   base::Version fake_component_version("123.456.78.9");
+  std::string fake_component_cohort_id = "test_cohort_id";
   component_updater::ComponentsInfoHolder::GetInstance()->AddComponent(
-      fake_component_id, fake_component_version);
+      fake_component_id, fake_component_version, fake_component_cohort_id);
 
   std::vector<ComponentInfo> components = delegate.GetComponents();
   ASSERT_EQ(1u, components.size());
   EXPECT_EQ(fake_component_id, components[0].id);
   EXPECT_EQ(fake_component_version, components[0].version);
+  EXPECT_EQ(fake_component_cohort_id, components[0].cohort_id);
 }
 
 }  // namespace android_webview

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2chromium.h>
@@ -13,6 +9,7 @@
 #include <GLES2/gl2extchromium.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -128,8 +125,7 @@ uint32_t BufferFormatToFourCC(gfx::BufferFormat format) {
     case gfx::BufferFormat::P010:
       return libyuv::FOURCC_ANY;
   }
-  NOTREACHED_IN_MIGRATION();
-  return libyuv::FOURCC_ANY;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -151,7 +147,7 @@ TEST_P(GpuMemoryBufferTest, MapUnmap) {
   ASSERT_NE(nullptr, buffer->memory(0));
   ASSERT_NE(0, buffer->stride(0));
   constexpr uint8_t color_rgba[] = {127u, 0u, 0u, 255u};
-  constexpr uint8_t color_bgra[] = {0u, 0u, 127u, 255u};
+  constexpr auto color_bgra = std::to_array<uint8_t>({0u, 0u, 127u, 255u});
 
   const size_t num_planes = NumberOfPlanesForLinearBufferFormat(buffer_format);
   for (size_t plane = 0; plane < num_planes; ++plane) {
@@ -167,12 +163,12 @@ TEST_P(GpuMemoryBufferTest, MapUnmap) {
   const uint8_t* data = static_cast<uint8_t*>(buffer->memory(0));
   const int stride = buffer->stride(0);
   // libyuv defines the formats as word-order.
-  uint8_t argb[kImageWidth * kImageHeight * 4] = {};
+  std::array<uint8_t, kImageWidth * kImageHeight * 4> argb = {};
   const int result = libyuv::ConvertToARGB(
-      data, stride * kImageWidth, argb, kImageWidth /* dst_stride_argb */,
-      0 /* crop_x */, 0 /* crop_y */, kImageWidth, kImageHeight,
-      kImageWidth /* rop_width */, kImageHeight /* crop_height */,
-      libyuv::kRotate0, libyuv_fourcc);
+      data, stride * kImageWidth, argb.data(),
+      kImageWidth /* dst_stride_argb */, 0 /* crop_x */, 0 /* crop_y */,
+      kImageWidth, kImageHeight, kImageWidth /* rop_width */,
+      kImageHeight /* crop_height */, libyuv::kRotate0, libyuv_fourcc);
 
   constexpr int max_error = 2;
   ASSERT_EQ(result, 0) << gfx::BufferFormatToString(buffer_format);

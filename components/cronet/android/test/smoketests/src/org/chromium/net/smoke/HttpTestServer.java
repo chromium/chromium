@@ -37,8 +37,8 @@ public class HttpTestServer implements TestSupport.TestServer {
     private static final int PORT = 8080;
 
     private Channel mServerChannel;
-    private ConditionVariable mStartBlock = new ConditionVariable();
-    private ConditionVariable mShutdownBlock = new ConditionVariable();
+    private final ConditionVariable mStartBlock = new ConditionVariable();
+    private final ConditionVariable mShutdownBlock = new ConditionVariable();
 
     @Override
     public boolean start() {

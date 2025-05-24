@@ -8,13 +8,11 @@ import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './oobe_icons.html.js';
 import './common_styles/oobe_common_styles.css.js';
 
-import {GaiaButton} from './gaia_button.js';
-
 import {assert} from '//resources/js/assert.js';
-
-import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {GaiaButton} from './gaia_button.js';
 import {getTemplate} from './notification_card.html.js';
 
 class NotificationCard extends PolymerElement {

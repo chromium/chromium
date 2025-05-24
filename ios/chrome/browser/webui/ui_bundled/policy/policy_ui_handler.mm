@@ -40,8 +40,8 @@
 #import "components/strings/grit/components_strings.h"
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/policy/model/policy_conversions_client_ios.h"
+#import "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
@@ -131,8 +131,9 @@ void PolicyUIHandler::RegisterMessages() {
         machine_status_provider_.get());
   }
 
-  if (!machine_status_provider_)
+  if (!machine_status_provider_) {
     machine_status_provider_ = std::make_unique<policy::PolicyStatusProvider>();
+  }
 
   GetPolicyService()->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
 

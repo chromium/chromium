@@ -118,7 +118,7 @@ void DrmWindow::SchedulePageFlip(
 
   last_submitted_planes_ = DrmOverlayPlane::Clone(planes);
 
-  if (!controller_) {
+  if (!controller_ || !controller_->GetDrmDevice()->has_master()) {
     std::move(submission_callback)
         .Run(gfx::SwapResult::SWAP_ACK,
              /*release_fence=*/gfx::GpuFenceHandle());

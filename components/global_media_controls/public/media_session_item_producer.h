@@ -97,6 +97,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
       const std::string& id,
       base::RepeatingCallback<void(bool)> callback);
 
+  // Sets `is_id_blocked_callback_` to be used for checking if a request id is
+  // blocked.
+  void SetIsIdBlockedCallback(
+      base::RepeatingCallback<bool(const std::string&)> callback);
+
   // Called when a media session item is associated with a presentation request
   // as to show the origin associated with the request rather than that for the
   // top frame.
@@ -235,6 +240,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
 
   // Keeps track of all the items we're currently observing.
   MediaItemUIObserverSet item_ui_observer_set_;
+
+  // Checks if the given id should always be blocked (i.e. notification hidden).
+  base::RepeatingCallback<bool(const std::string&)> is_id_blocked_callback_;
 
   // Stores a Session for each media session keyed by its |request_id| in string
   // format.

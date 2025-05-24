@@ -124,7 +124,7 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
     void AddSink(webrtc::AudioTrackSinkInterface* sink) override;
     void RemoveSink(webrtc::AudioTrackSinkInterface* sink) override;
     bool GetSignalLevel(int* level) override;
-    rtc::scoped_refptr<webrtc::AudioProcessorInterface> GetAudioProcessor()
+    webrtc::scoped_refptr<webrtc::AudioProcessorInterface> GetAudioProcessor()
         override;
     webrtc::AudioSourceInterface* GetSource() const override;
 
@@ -163,10 +163,10 @@ class PLATFORM_EXPORT WebRtcAudioSink : public WebMediaStreamAudioSink {
     // receive the audio data.
     Vector<webrtc::AudioTrackSinkInterface*> sinks_;
 
-    // Used for getting capture timestamps referenced on the rtc::TimeMicros()
-    // clock. See the comment at the implementation of UpdateTimestampAligner()
-    // for more details.
-    rtc::TimestampAligner timestamp_aligner_;
+    // Used for getting capture timestamps referenced on the
+    // webrtc::TimeMicros() clock. See the comment at the implementation of
+    // UpdateTimestampAligner() for more details.
+    webrtc::TimestampAligner timestamp_aligner_;
   };
 
   template <typename>

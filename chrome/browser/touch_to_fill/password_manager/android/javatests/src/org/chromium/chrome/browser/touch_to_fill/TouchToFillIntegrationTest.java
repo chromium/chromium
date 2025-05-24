@@ -15,12 +15,17 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
@@ -30,12 +35,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.GetLoginMatchType;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
@@ -74,14 +83,12 @@ public class TouchToFillIntegrationTest {
 
     @Mock private BottomSheetFocusHelper mMockFocusHelper;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private BottomSheetController mBottomSheetController;
-
-    public TouchToFillIntegrationTest() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Before
     public void setUp() throws InterruptedException {
@@ -127,6 +134,26 @@ public class TouchToFillIntegrationTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(sdk_equals = 34)
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFill.showCredentials(
+                            sExampleUrl,
+                            true,
+                            Collections.emptyList(),
+                            Collections.singletonList(sAna),
+                            /* triggerSubmission= */ false,
+                            /* managePasskeysHidesPasswords= */ false,
+                            /* showHybridPasskeyOption= */ false,
+                            /* showCredManEntry= */ false);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        assert singleMouseClickView(getCredentials());
+    }
+
+    @Test
+    @MediumTest
     public void testClickingSuggestionsTriggersCallback() {
         runOnUiThreadBlocking(
                 () -> {
@@ -135,7 +162,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -159,7 +186,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.singletonList(sCam),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -183,7 +210,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -207,7 +234,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -230,7 +257,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
@@ -262,7 +289,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ true,
                             /* showCredManEntry= */ false);
@@ -288,7 +315,8 @@ public class TouchToFillIntegrationTest {
     @Test
     @MediumTest
     @SuppressLint("SetTextI18n")
-    public void testDismissedIfUnableToShow() throws Exception {
+    @Features.EnableFeatures(ChromeFeatureList.PASSWORD_FORM_GROUPED_AFFILIATIONS)
+    public void testShowsAfterPreviousSheetDismissal() throws Exception {
         BottomSheetContent otherBottomSheetContent =
                 runOnUiThreadBlocking(
                         () -> {
@@ -328,23 +356,32 @@ public class TouchToFillIntegrationTest {
                                         }
 
                                         @Override
-                                        public int getSheetContentDescriptionStringId() {
-                                            return 0;
+                                        public @NonNull String getSheetContentDescription(
+                                                Context context) {
+                                            return "";
                                         }
 
                                         @Override
-                                        public int getSheetHalfHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetHalfHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetFullHeightAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetFullHeightAccessibilityStringId() {
+                                            return Resources.ID_NULL;
                                         }
 
                                         @Override
-                                        public int getSheetClosedAccessibilityStringId() {
-                                            return 0;
+                                        public @StringRes int
+                                                getSheetClosedAccessibilityStringId() {
+                                            return Resources.ID_NULL;
+                                        }
+
+                                        @Override
+                                        public int getPeekHeight() {
+                                            return HeightMode.DEFAULT;
                                         }
                                     };
                             mBottomSheetController.requestShowContent(
@@ -354,6 +391,7 @@ public class TouchToFillIntegrationTest {
         pollUiThread(() -> getBottomSheetState() == SheetState.PEEK);
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
+        // Show TTF.
         runOnUiThreadBlocking(
                 () -> {
                     mTouchToFill.showCredentials(
@@ -361,21 +399,25 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Arrays.asList(sAna, sBob),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ false);
                 });
-        waitForEvent(mMockBridge).onDismissed();
-        verify(mMockBridge, never()).onCredentialSelected(any());
+        // Other sheet content is still displayed.
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
+        // Hide other bottom sheet content.
         runOnUiThreadBlocking(
-                () -> {
-                    mBottomSheetController.hideContent(
-                            otherBottomSheetContent, /* animate= */ false);
-                });
-        pollUiThread(() -> getBottomSheetState() == BottomSheetController.SheetState.HIDDEN);
+                () ->
+                        mBottomSheetController.hideContent(
+                                otherBottomSheetContent, /* animate= */ false));
+
+        // Wait for TTF to open.
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        // Click on the credential and verify that the credential was selected.
+        TouchCommon.singleClickView(getCredentials().getChildAt(1));
+        waitForEvent(mMockBridge).onCredentialSelected(sAna);
     }
 
     @Test
@@ -388,7 +430,7 @@ public class TouchToFillIntegrationTest {
                             true,
                             Collections.emptyList(),
                             Collections.singletonList(sAna),
-                            /* submitCredential= */ false,
+                            /* triggerSubmission= */ false,
                             /* managePasskeysHidesPasswords= */ false,
                             /* showHybridPasskeyOption= */ false,
                             /* showCredManEntry= */ true);

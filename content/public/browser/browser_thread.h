@@ -105,35 +105,6 @@ class CONTENT_EXPORT BrowserThread {
   BrowserThread(const BrowserThread&) = delete;
   BrowserThread& operator=(const BrowserThread&) = delete;
 
-  // Delete/ReleaseSoon() helpers allow future deletion of an owned object on
-  // its associated thread. If you already have a task runner bound to a
-  // BrowserThread you should use its SequencedTaskRunner::DeleteSoon() member
-  // method.
-  // TODO(crbug.com/40108370): Get rid of the last few callers to these in favor
-  // of an explicit call to GetUIThreadTaskRunner({})->DeleteSoon(...).
-
-  template <class T>
-  static bool DeleteSoon(ID identifier,
-                         const base::Location& from_here,
-                         const T* object) {
-    return GetTaskRunnerForThread(identifier)->DeleteSoon(from_here, object);
-  }
-
-  template <class T>
-  static bool DeleteSoon(ID identifier,
-                         const base::Location& from_here,
-                         std::unique_ptr<T> object) {
-    return DeleteSoon(identifier, from_here, object.release());
-  }
-
-  template <class T>
-  static void ReleaseSoon(ID identifier,
-                          const base::Location& from_here,
-                          scoped_refptr<T>&& object) {
-    GetTaskRunnerForThread(identifier)
-        ->ReleaseSoon(from_here, std::move(object));
-  }
-
   // Posts a |task| to run at BEST_EFFORT priority using an arbitrary
   // |task_runner| for which we do not control the priority.
   //
@@ -173,7 +144,7 @@ class CONTENT_EXPORT BrowserThread {
       if (CurrentlyOn(thread)) {
         delete x;
       } else {
-        if (!DeleteSoon(thread, FROM_HERE, x)) {
+        if (!GetTaskRunnerForThread(thread)->DeleteSoon(FROM_HERE, x)) {
 #if defined(UNIT_TEST)
           // Only logged under unit testing because leaks at shutdown
           // are acceptable under normal circumstances.

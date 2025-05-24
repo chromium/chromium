@@ -59,13 +59,7 @@ class InactiveUserNotificationBlockerTest
   }
 
  protected:
-  const std::string GetDefaultUserId() { return "user0@tray"; }
-
-  void AddUserSession(const std::string& email) {
-    GetSessionControllerClient()->AddUserSession(email);
-  }
-
-  void SwitchActiveUser(const std::string& email) {
+  void SwitchActiveUser(std::string_view email) {
     const AccountId account_id(AccountId::FromUserEmail(email));
     GetSessionControllerClient()->SwitchActiveUser(account_id);
   }
@@ -77,7 +71,7 @@ class InactiveUserNotificationBlockerTest
   }
 
   bool ShouldShowAsPopup(const message_center::NotifierId& notifier_id,
-                         const std::string& profile_id) {
+                         std::string_view profile_id) {
     message_center::NotifierId id_with_profile = notifier_id;
     id_with_profile.profile_id = profile_id;
 
@@ -93,7 +87,7 @@ class InactiveUserNotificationBlockerTest
   }
 
   bool ShouldShow(const message_center::NotifierId& notifier_id,
-                  const std::string& profile_id) {
+                  std::string_view profile_id) {
     message_center::NotifierId id_with_profile = notifier_id;
     id_with_profile.profile_id = profile_id;
 
@@ -135,32 +129,34 @@ TEST_F(InactiveUserNotificationBlockerTest, Basic) {
   EXPECT_TRUE(ShouldShow(random_system_notifier, kEmptyUserId));
 
   // Login triggers blocking state change.
-  SimulateUserLogin(GetDefaultUserId());
+  SimulateUserLogin({kDefaultUserEmail});
   EXPECT_EQ(1, GetStateChangedCountAndReset());
 
   // Notifications for a single user session are not blocked.
-  EXPECT_TRUE(ShouldShow(ash_system_notifier, GetDefaultUserId()));
-  EXPECT_TRUE(ShouldShow(notifier_id, GetDefaultUserId()));
-  EXPECT_TRUE(ShouldShow(random_system_notifier, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShow(ash_system_notifier, kDefaultUserEmail));
+  EXPECT_TRUE(ShouldShow(notifier_id, kDefaultUserEmail));
+  EXPECT_TRUE(ShouldShow(random_system_notifier, kDefaultUserEmail));
 
   // Notifications from a user other than the active one (in this case, default)
   // are generally blocked unless they're ash system notifications.
-  AddUserSession("user1@tray");
-  EXPECT_EQ(0, GetStateChangedCountAndReset());
-  const std::string kInvalidUserId("invalid");
+  SimulateUserLogin({"user1@tray"});
+  SwitchActiveUser(kDefaultUserEmail);
+
+  EXPECT_EQ(2, GetStateChangedCountAndReset());
+  const std::string_view kInvalidUserId("invalid");
   EXPECT_FALSE(ShouldShowAsPopup(notifier_id, kInvalidUserId));
   EXPECT_TRUE(ShouldShowAsPopup(ash_system_notifier, kEmptyUserId));
   EXPECT_FALSE(ShouldShowAsPopup(random_system_notifier, kInvalidUserId));
-  EXPECT_TRUE(ShouldShowAsPopup(notifier_id, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShowAsPopup(notifier_id, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShowAsPopup(notifier_id, "user1@tray"));
-  EXPECT_TRUE(ShouldShowAsPopup(random_system_notifier, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShowAsPopup(random_system_notifier, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShowAsPopup(random_system_notifier, "user1@tray"));
   EXPECT_FALSE(ShouldShow(notifier_id, kInvalidUserId));
   EXPECT_TRUE(ShouldShow(ash_system_notifier, kEmptyUserId));
   EXPECT_FALSE(ShouldShow(random_system_notifier, kInvalidUserId));
-  EXPECT_TRUE(ShouldShow(notifier_id, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShow(notifier_id, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShow(notifier_id, "user1@tray"));
-  EXPECT_TRUE(ShouldShow(random_system_notifier, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShow(random_system_notifier, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShow(random_system_notifier, "user1@tray"));
 
   // Activate the second user and make sure the original/default user's
@@ -169,34 +165,34 @@ TEST_F(InactiveUserNotificationBlockerTest, Basic) {
   EXPECT_FALSE(ShouldShowAsPopup(notifier_id, kInvalidUserId));
   EXPECT_TRUE(ShouldShowAsPopup(ash_system_notifier, kEmptyUserId));
   EXPECT_FALSE(ShouldShowAsPopup(random_system_notifier, kInvalidUserId));
-  EXPECT_FALSE(ShouldShowAsPopup(notifier_id, GetDefaultUserId()));
+  EXPECT_FALSE(ShouldShowAsPopup(notifier_id, kDefaultUserEmail));
   EXPECT_TRUE(ShouldShowAsPopup(notifier_id, "user1@tray"));
-  EXPECT_FALSE(ShouldShowAsPopup(random_system_notifier, GetDefaultUserId()));
+  EXPECT_FALSE(ShouldShowAsPopup(random_system_notifier, kDefaultUserEmail));
   EXPECT_TRUE(ShouldShowAsPopup(random_system_notifier, "user1@tray"));
   EXPECT_FALSE(ShouldShow(notifier_id, kInvalidUserId));
   EXPECT_TRUE(ShouldShow(ash_system_notifier, kEmptyUserId));
   EXPECT_FALSE(ShouldShow(random_system_notifier, kInvalidUserId));
-  EXPECT_FALSE(ShouldShow(notifier_id, GetDefaultUserId()));
+  EXPECT_FALSE(ShouldShow(notifier_id, kDefaultUserEmail));
   EXPECT_TRUE(ShouldShow(notifier_id, "user1@tray"));
-  EXPECT_FALSE(ShouldShow(random_system_notifier, GetDefaultUserId()));
+  EXPECT_FALSE(ShouldShow(random_system_notifier, kDefaultUserEmail));
   EXPECT_TRUE(ShouldShow(random_system_notifier, "user1@tray"));
 
   // Switch back and verify the active user's notifications are once again
   // shown.
-  SwitchActiveUser(GetDefaultUserId());
+  SwitchActiveUser(kDefaultUserEmail);
   EXPECT_FALSE(ShouldShowAsPopup(notifier_id, kInvalidUserId));
   EXPECT_TRUE(ShouldShowAsPopup(ash_system_notifier, kEmptyUserId));
   EXPECT_FALSE(ShouldShowAsPopup(random_system_notifier, kInvalidUserId));
-  EXPECT_TRUE(ShouldShowAsPopup(notifier_id, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShowAsPopup(notifier_id, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShowAsPopup(notifier_id, "user1@tray"));
-  EXPECT_TRUE(ShouldShowAsPopup(random_system_notifier, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShowAsPopup(random_system_notifier, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShowAsPopup(random_system_notifier, "user1@tray"));
   EXPECT_FALSE(ShouldShow(notifier_id, kInvalidUserId));
   EXPECT_TRUE(ShouldShow(ash_system_notifier, kEmptyUserId));
   EXPECT_FALSE(ShouldShow(random_system_notifier, kInvalidUserId));
-  EXPECT_TRUE(ShouldShow(notifier_id, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShow(notifier_id, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShow(notifier_id, "user1@tray"));
-  EXPECT_TRUE(ShouldShow(random_system_notifier, GetDefaultUserId()));
+  EXPECT_TRUE(ShouldShow(random_system_notifier, kDefaultUserEmail));
   EXPECT_FALSE(ShouldShow(random_system_notifier, "user1@tray"));
 }
 

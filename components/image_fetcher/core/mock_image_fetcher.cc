@@ -10,8 +10,8 @@
 
 namespace image_fetcher {
 
-MockImageFetcher::MockImageFetcher() {}
-MockImageFetcher::~MockImageFetcher() {}
+MockImageFetcher::MockImageFetcher() = default;
+MockImageFetcher::~MockImageFetcher() = default;
 
 void MockImageFetcher::FetchImageAndData(
     const GURL& image_url,

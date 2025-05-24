@@ -9,6 +9,7 @@
 
 #include "net/server/http_server.h"
 
+#include <array>
 #include <string_view>
 #include <utility>
 
@@ -252,7 +253,7 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
   read_buf->DidRead(rv);
 
   // Handles http requests or websocket messages.
-  while (read_buf->GetSize() > 0) {
+  while (!read_buf->readable_bytes().empty()) {
     if (connection->web_socket()) {
       std::string message;
       WebSocketParseResult result = connection->web_socket()->Read(&message);
@@ -278,8 +279,9 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
     // request body.
     HttpServerRequestInfo request;
     size_t pos = 0;
-    if (!ParseHeaders(read_buf->StartOfBuffer(), read_buf->GetSize(),
-                      &request, &pos)) {
+    if (!ParseHeaders(
+            reinterpret_cast<const char*>(read_buf->readable_bytes().data()),
+            read_buf->readable_bytes().size(), &request, &pos)) {
       // An error has occured. Close the connection.
       Close(connection->id());
       return ERR_CONNECTION_CLOSED;
@@ -318,9 +320,11 @@ int HttpServer::HandleReadResult(HttpConnection* connection, int rv) {
         return ERR_CONNECTION_CLOSED;
       }
 
-      if (read_buf->GetSize() - pos < content_length)
+      if (read_buf->readable_bytes().size() - pos < content_length) {
         break;  // Not enough data was received yet.
-      request.data.assign(read_buf->StartOfBuffer() + pos, content_length);
+      }
+      request.data = base::as_string_view(
+          read_buf->readable_bytes().subspan(pos, content_length));
       pos += content_length;
     }
 
@@ -417,7 +421,7 @@ enum HeaderParseStates {
 // from QUICHE, if it doesn't increase the binary size too much.
 
 // State transition table
-constexpr int kParserState[MAX_STATES][MAX_INPUTS] = {
+constexpr std::array<std::array<int, MAX_INPUTS>, MAX_STATES> kParserState = {{
     /* METHOD    */ {ST_URL, ST_ERR, ST_ERR, ST_ERR, ST_METHOD},
     /* URL       */ {ST_PROTO, ST_ERR, ST_ERR, ST_URL, ST_URL},
     /* PROTOCOL  */ {ST_ERR, ST_HEADER, ST_NAME, ST_ERR, ST_PROTO},
@@ -426,7 +430,8 @@ constexpr int kParserState[MAX_STATES][MAX_INPUTS] = {
     /* SEPARATOR */ {ST_SEPARATOR, ST_ERR, ST_ERR, ST_VALUE, ST_ERR},
     /* VALUE     */ {ST_VALUE, ST_HEADER, ST_NAME, ST_VALUE, ST_VALUE},
     /* DONE      */ {ST_ERR, ST_ERR, ST_DONE, ST_ERR, ST_ERR},
-    /* ERR       */ {ST_ERR, ST_ERR, ST_ERR, ST_ERR, ST_ERR}};
+    /* ERR       */ {ST_ERR, ST_ERR, ST_ERR, ST_ERR, ST_ERR},
+}};
 
 // Convert an input character to the parser's input token.
 int CharToInputType(char ch) {

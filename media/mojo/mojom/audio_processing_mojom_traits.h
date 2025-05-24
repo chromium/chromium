@@ -45,25 +45,12 @@ struct StructTraits<media::mojom::AudioProcessingSettingsDataView,
   static bool noise_suppression(const media::AudioProcessingSettings& s) {
     return s.noise_suppression;
   }
-  static bool transient_noise_suppression(
-      const media::AudioProcessingSettings& s) {
-    return s.transient_noise_suppression;
-  }
   static bool automatic_gain_control(const media::AudioProcessingSettings& s) {
     return s.automatic_gain_control;
-  }
-  static bool high_pass_filter(const media::AudioProcessingSettings& s) {
-    return s.high_pass_filter;
   }
   static bool multi_channel_capture_processing(
       const media::AudioProcessingSettings& s) {
     return s.multi_channel_capture_processing;
-  }
-  static bool stereo_mirroring(const media::AudioProcessingSettings& s) {
-    return s.stereo_mirroring;
-  }
-  static bool force_apm_creation(const media::AudioProcessingSettings& s) {
-    return s.force_apm_creation;
   }
   static bool Read(media::mojom::AudioProcessingSettingsDataView input,
                    media::AudioProcessingSettings* out_settings);

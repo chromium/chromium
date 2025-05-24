@@ -9,12 +9,14 @@
 
 #include "base/android/build_info.h"
 #include "base/feature_list.h"
+#include "base/types/expected.h"
 #include "content/public/browser/android/android_overlay_provider.h"
 #include "content/public/browser/service_process_host.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/cdm_capability.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/eme_constants.h"
 #include "media/base/encryption_scheme.h"
@@ -82,7 +84,8 @@ void DetermineKeySystemSupport(const std::string& key_system,
                                bool is_secure,
                                media::CdmCapabilityCB cdm_capability_cb,
                                bool webm_supported,
-                               bool mp4_supported) {
+                               bool mp4_supported,
+                               base::Version version) {
   const std::vector<media::VideoCodecProfile> kAllProfiles = {};
   media::CdmCapability capability;
 
@@ -139,7 +142,9 @@ void DetermineKeySystemSupport(const std::string& key_system,
     // once they exist.
     DVLOG(1) << "Key system " << key_system
              << " not supported as no hardware secure video codecs available.";
-    std::move(cdm_capability_cb).Run(std::nullopt);
+    std::move(cdm_capability_cb)
+        .Run(base::unexpected(
+            media::CdmCapabilityQueryStatus::kNoSupportedVideoCodec));
     return;
   }
 
@@ -177,7 +182,9 @@ void DetermineKeySystemSupport(const std::string& key_system,
     capability.session_types.insert(media::CdmSessionType::kPersistentLicense);
   }
 
-  std::move(cdm_capability_cb).Run(capability);
+  capability.version = version;
+
+  std::move(cdm_capability_cb).Run(std::move(capability));
 }
 
 // Used to determine if `key_system` is supported, and if it is whether WebM and
@@ -210,7 +217,7 @@ class CheckCdmCompatibility {
 
     DVLOG(1) << __func__ << " calling IsKeySystemSupported for " << key_system_;
     media_drm_service_->IsKeySystemSupported(
-        key_system_,
+        key_system_, is_secure_,
         base::BindOnce(&CheckCdmCompatibility::VerifyKeySystemSupport,
                        base::Unretained(this)));
   }
@@ -221,7 +228,21 @@ class CheckCdmCompatibility {
       media::mojom::MediaDrmSupportResultPtr key_system_support_result) {
     if (key_system_support_result.is_null()) {
       DVLOG(1) << "Key system " << key_system_ << " not supported.";
-      std::move(cdm_capability_cb_).Run(std::nullopt);
+      std::move(cdm_capability_cb_)
+          .Run(base::unexpected(
+              media::CdmCapabilityQueryStatus::kUnsupportedKeySystem));
+      delete this;
+      return;
+    }
+
+    auto version = key_system_support_result->key_system_version;
+    if (!version) {
+      // `version` is null which means that querying the version failed to set
+      // the security level (if enabled). This means that the device does not
+      // support this robustness, so fail the query.
+      std::move(cdm_capability_cb_)
+          .Run(base::unexpected(
+              media::CdmCapabilityQueryStatus::kNoMediaDrmSupport));
       delete this;
       return;
     }
@@ -229,7 +250,8 @@ class CheckCdmCompatibility {
     DetermineKeySystemSupport(
         key_system_, is_secure_, std::move(cdm_capability_cb_),
         key_system_support_result->key_system_supports_video_webm,
-        key_system_support_result->key_system_supports_video_mp4);
+        key_system_support_result->key_system_supports_video_mp4,
+        version.value());
     delete this;
   }
 
@@ -237,7 +259,11 @@ class CheckCdmCompatibility {
   // is not supported.
   void OnServiceClosed() {
     DVLOG(1) << "IsKeySystemSupported failed for " << key_system_;
-    std::move(cdm_capability_cb_).Run(std::nullopt);
+    if (cdm_capability_cb_) {
+      std::move(cdm_capability_cb_)
+          .Run(base::unexpected(
+              media::CdmCapabilityQueryStatus::kDisconnectionError));
+    }
     delete this;
   }
 
@@ -264,7 +290,9 @@ void GetAndroidCdmCapability(const std::string& key_system,
     if (!are_overlay_supported || !overlay_fullscreen_video) {
       DVLOG(1) << "Hardware secure codecs not supported for key system"
                << key_system << ".";
-      std::move(cdm_capability_cb).Run(std::nullopt);
+      std::move(cdm_capability_cb)
+          .Run(base::unexpected(media::CdmCapabilityQueryStatus::
+                                    kHardwareSecureCodecNotSupported));
       return;
     }
   }
@@ -284,7 +312,27 @@ void GetAndroidCdmCapability(const std::string& key_system,
 
   // Multiple processes are not allowed, so call MediaDrmBridge directly.
   if (!MediaDrmBridge::IsKeySystemSupported(key_system)) {
-    std::move(cdm_capability_cb).Run(std::nullopt);
+    std::move(cdm_capability_cb)
+        .Run(base::unexpected(
+            media::CdmCapabilityQueryStatus::kUnsupportedKeySystem));
+    return;
+  }
+
+  auto security_level = media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT;
+  if (base::FeatureList::IsEnabled(
+          media::kUseSecurityLevelWhenCheckingMediaDrmVersion)) {
+    security_level = is_secure ? media::MediaDrmBridge::SECURITY_LEVEL_1
+                               : media::MediaDrmBridge::SECURITY_LEVEL_3;
+  }
+  auto version = MediaDrmBridge::GetVersion(key_system, security_level);
+  if (!version.has_value() &&
+      version.error() ==
+          media::CreateCdmStatus::kAndroidFailedL1SecurityLevel) {
+    // Failed to determine version as `security_level` not supported. Currently
+    // only checking for L1.
+    std::move(cdm_capability_cb)
+        .Run(base::unexpected(
+            media::CdmCapabilityQueryStatus::kUnsupportedKeySystem));
     return;
   }
 
@@ -293,7 +341,8 @@ void GetAndroidCdmCapability(const std::string& key_system,
   bool mp4_supported =
       MediaDrmBridge::IsKeySystemSupportedWithType(key_system, "video/mp4");
   DetermineKeySystemSupport(key_system, is_secure, std::move(cdm_capability_cb),
-                            webm_supported, mp4_supported);
+                            webm_supported, mp4_supported,
+                            version.value_or(base::Version()));
 }
 
 }  // namespace content

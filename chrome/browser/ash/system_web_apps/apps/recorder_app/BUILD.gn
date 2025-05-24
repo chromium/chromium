@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("recorder_app") {
   sources = [
@@ -25,16 +25,17 @@ static_library("recorder_app") {
     "//ash/constants",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/ash/system_web_apps/types",
     "//chrome/browser/feedback",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chromeos/ash/experiences/system_web_apps/types",
     "//chromeos/strings",
     "//components/consent_auditor",
     "//components/feedback",
     "//components/signin/public/identity_manager",
     "//components/soda",
     "//components/soda:utils",
+    "//components/variations/service",
     "//url",
   ]
 }

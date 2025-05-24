@@ -32,11 +32,13 @@ void SetCurrentDialog(base::WeakPtr<AccessCodeCastDialog> dialog) {
   // Keeps track of the dialog that is currently being displayed.
   static base::NoDestructor<base::WeakPtr<AccessCodeCastDialog>>
       current_instance;
-  if (*current_instance)
+  if (*current_instance) {
     // Closing the dialog will cause the dialog to delete itself.
     (*current_instance)->CloseDialogWidget();
-  if (dialog)
+  }
+  if (dialog) {
     *current_instance = std::move(dialog);
+  }
 }
 
 void UpdateDialogPosition(views::Widget* widget,
@@ -80,8 +82,9 @@ void UpdateDialogPosition(views::Widget* widget,
             dialog_host->GetHostView());
     const gfx::Rect work_area = display.work_area();
 
-    if (!work_area.Contains(display_rect))
+    if (!work_area.Contains(display_rect)) {
       display_rect.AdjustToFit(work_area);
+    }
     position = display_rect.origin();
   }
 
@@ -135,8 +138,9 @@ void AccessCodeCastDialog::ShowWebDialog(AccessCodeCastDialogMode dialog_mode) {
   // ensures that a |MediaRouteStarter| is passed in, if |media_route_starter_|
   // is nullptr, it means that |ShowWebDialog| was already called.
   DCHECK(media_route_starter_) << "Cannot show dialog more than once!";
-  if (!media_route_starter_)
+  if (!media_route_starter_) {
     return;
+  }
 
   auto extra_params = CreateParams(dialog_mode);
 
@@ -213,8 +217,9 @@ base::WeakPtr<AccessCodeCastDialog> AccessCodeCastDialog::GetWeakPtr() {
 // views::WidgetObserver:
 void AccessCodeCastDialog::OnWidgetActivationChanged(views::Widget* widget,
                                                      bool active) {
-  if (block_widget_activation_changed_for_test_)
+  if (block_widget_activation_changed_for_test_) {
     return;
+  }
   DCHECK(dialog_widget_)
       << "dialog_widget_ must be set exactly once during dialog setup";
   // Close the dialog only if it is no longer active and it isn't already
@@ -264,8 +269,9 @@ gfx::NativeView AccessCodeCastDialog::GetParentView() {
     views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
         web_contents_->GetTopLevelNativeWindow());
     DCHECK(widget) << "Could not find a parent widget!";
-    if (widget)
+    if (widget) {
       parent = widget->GetNativeView();
+    }
   }
 
   return parent;

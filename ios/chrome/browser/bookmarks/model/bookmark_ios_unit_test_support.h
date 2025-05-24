@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
-#include "ios/chrome/browser/shared/model/profile/test/test_profile_ios_forward.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
@@ -18,6 +17,7 @@
 class Browser;
 class GURL;
 class PrefService;
+class TestProfileIOS;
 
 namespace bookmarks {
 class BookmarkNode;

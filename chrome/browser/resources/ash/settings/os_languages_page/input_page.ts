@@ -26,29 +26,33 @@ import '../os_settings_page/os_settings_animated_pages.js';
 import 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {MetaKey, ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import type {ShortcutLabelProperties} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
+import {MetaKey} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {AcceleratorAction} from '../mojom-webui/accelerator_actions.mojom-webui.js';
-import {AcceleratorFetcher, AcceleratorFetcherInterface, AcceleratorFetcherObserverReceiver} from '../mojom-webui/accelerator_fetcher.mojom-webui.js';
-import {StandardAcceleratorProperties} from '../mojom-webui/accelerator_info.mojom-webui.js';
+import type {AcceleratorFetcherInterface} from '../mojom-webui/accelerator_fetcher.mojom-webui.js';
+import {AcceleratorFetcher, AcceleratorFetcherObserverReceiver} from '../mojom-webui/accelerator_fetcher.mojom-webui.js';
+import type {StandardAcceleratorProperties} from '../mojom-webui/accelerator_info.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {hasOptionsPageInSettings} from './input_method_util.js';
 import {getTemplate} from './input_page.html.js';
 import {InputsShortcutReminderState, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
-import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
+import type {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 const OsSettingsInputPageElementBase =
     RouteOriginMixin(PrefsMixin(I18nMixin(DeepLinkingMixin(PolymerElement))));
@@ -230,7 +234,7 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
         this.metaKey_ = metaKey;
       });
 
-      this.acceleratorFetcher!.observeAcceleratorChanges(
+      this.acceleratorFetcher.observeAcceleratorChanges(
           [
             AcceleratorAction.kSwitchToLastUsedIme,
             AcceleratorAction.kSwitchToNextIme,
@@ -305,6 +309,30 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
     const allowedInputMethodsPref =
         this.getPref('settings.language.allowed_input_methods');
     return !!allowedInputMethodsPref && allowedInputMethodsPref.value.length;
+  }
+
+  private inputMethodsEnabledByPolicy_(): boolean {
+    const allowedInputMethodsForceEnabled =
+        this.getPref('settings.language.allowed_input_methods_force_enabled');
+    return !!allowedInputMethodsForceEnabled &&
+        allowedInputMethodsForceEnabled.value;
+  }
+
+  private addInputMethodButtonDisabled_(): boolean {
+    // Disable if all input methods are enabled by policy.
+    if (this.inputMethodsEnabledByPolicy_()) {
+      return true;
+    }
+    // Disable if all allowed input methods are already enabled.
+    if (this.languages &&
+        !this.languages.inputMethods!.supported
+             .filter(
+                 inputMethod =>
+                     !this.languageHelper.isInputMethodEnabled(inputMethod.id))
+             .some(inputMethod => !inputMethod.isProhibitedByPolicy)) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -451,6 +479,10 @@ export class OsSettingsInputPageElement extends OsSettingsInputPageElementBase {
 
   private disableRemoveInputMethod_(
       targetInputMethod: chrome.languageSettingsPrivate.InputMethod): boolean {
+    if (this.inputMethodsEnabledByPolicy_()) {
+      return true;
+    }
+
     // Third-party IMEs can always be removed.
     if (!this.languageHelper.isComponentIme(targetInputMethod)) {
       return false;

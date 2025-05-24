@@ -1,3 +1,9 @@
+include_rules = [
+"+cc/layers/texture_layer_client.h",
+"+components/viz/common/resources/shared_image_format.h",
+"+components/viz/common/resources/shared_image_format_utils.h",
+]
+
 specific_include_rules = {
     "predefined_color_space.h": [
         "+ui/gfx/hdr_metadata.h",

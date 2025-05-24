@@ -68,11 +68,11 @@ void LinkFragment::RecalculateFont() {
   const bool should_be_underlined =
       InvokeOnFragments(&LinkFragment::IsUnderlined, this);
 
-  // If the style differs from the current one, update.
-  if ((font_list().GetFontStyle() & gfx::Font::UNDERLINE) !=
-      should_be_underlined) {
-    InvokeOnFragments(
-        [should_be_underlined](LinkFragment* fragment) {
+  InvokeOnFragments(
+      [should_be_underlined](LinkFragment* fragment) {
+        // If the style differs from the current one, update.
+        if (!!(fragment->font_list().GetFontStyle() & gfx::Font::UNDERLINE) !=
+            should_be_underlined) {
           const int style = fragment->font_list().GetFontStyle();
           const int intended_style = should_be_underlined
                                          ? (style | gfx::Font::UNDERLINE)
@@ -80,11 +80,11 @@ void LinkFragment::RecalculateFont() {
           fragment->Label::SetFontList(
               fragment->font_list().DeriveWithStyle(intended_style));
           fragment->SchedulePaint();
-          views::FocusRing::Get(fragment)->SchedulePaint();
-          return false;
-        },
-        this);
-  }
+        }
+        views::FocusRing::Get(fragment)->SchedulePaint();
+        return false;
+      },
+      this);
 }
 
 BEGIN_METADATA(LinkFragment)

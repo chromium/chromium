@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/apple/swift_source_set.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/extension_repack.gni")
@@ -30,9 +31,10 @@ source_set("credential_provider") {
 
   deps = [
     ":account_verification_provider",
+    ":font_provider",
     ":metrics_util",
-    ":passkey_keychain_util",
-    ":passkey_util",
+    ":passkey_keychain_provider_bridge",
+    ":passkey_request_details",
     ":reauthentication_handler",
     ":system_strings",
     "//base",
@@ -45,10 +47,12 @@ source_set("credential_provider") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/reauthentication",
+    "//ios/chrome/common/ui/util",
     "//ios/chrome/credential_provider_extension/resources",
     "//ios/chrome/credential_provider_extension/ui",
     "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
     "//ios/chrome/credential_provider_extension/ui:feature_flags",
+    "//ios/components/credential_provider_extension:password_util",
   ]
 
   frameworks = [
@@ -79,6 +83,8 @@ source_set("unit_tests") {
     ":passkey_util",
     "//base",
     "//base/test:test_support",
+    "//components/sync/protocol",
+    "//components/webauthn/core/browser:passkey_model",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/credential_provider",
     "//testing/gtest",
@@ -112,19 +118,25 @@ source_set("passkey_util") {
     "//base",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
-    "//ios/chrome/common/credential_provider:ui",
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/credential_provider",
   ]
-  frameworks = [ "Foundation.framework" ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
 }
 
-source_set("passkey_keychain_util") {
+source_set("passkey_keychain_provider_bridge") {
   sources = [
-    "passkey_keychain_util.h",
-    "passkey_keychain_util.mm",
+    "passkey_keychain_provider_bridge.h",
+    "passkey_keychain_provider_bridge.mm",
   ]
   deps = [
     ":passkey_keychain_provider",
+    ":passkey_util",
     "//base",
+    "//components/sync/protocol",
     "//ios/chrome/credential_provider_extension/ui:credential_response_handler",
   ]
   frameworks = [ "Foundation.framework" ]
@@ -153,6 +165,66 @@ source_set("metrics_util") {
     "//base",
     "//ios/chrome/common/app_group",
   ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("favicon_util") {
+  sources = [
+    "favicon_util.h",
+    "favicon_util.mm",
+  ]
+  deps = [
+    "//ios/chrome/common/app_group",
+    "//ios/chrome/common/ui/favicon",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("passkey_request_details") {
+  sources = [
+    "passkey_request_details.h",
+    "passkey_request_details.mm",
+  ]
+  deps = [
+    ":passkey_util",
+    ":passkey_util_swift",
+    "//base",
+    "//components/webauthn/core/browser:passkey_model",
+    "//ios/chrome/common/credential_provider:ui",
+    "//ios/chrome/credential_provider_extension/ui:feature_flags",
+  ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
+}
+
+swift_source_set("passkey_util_swift") {
+  sources = [ "passkey_util.swift" ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "CryptoKit.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("font_provider") {
+  public_deps = [ ":font_provider_header" ]
+  deps = [ ios_font_provider_target ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("font_provider_header") {
+  sources = [ "font_provider.h" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("font_provider_implementation") {
+  sources = [ "font_provider.mm" ]
+  deps = [ ":font_provider_header" ]
+  assert_no_deps = [ "//ios/chrome/browser/*" ]
   frameworks = [ "Foundation.framework" ]
 }
 

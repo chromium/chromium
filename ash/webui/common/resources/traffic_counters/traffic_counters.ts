@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/ash/common/network/network_shared.css.js';
-import '//resources/ash/common/i18n_behavior.js';
-import '//resources/ash/common/network/onc_mojo.js';
+import '../network/network_shared.css.js';
+import '../i18n_behavior.js';
+import '../network/onc_mojo.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
-import {TrafficCounter} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {TrafficCounter} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {OncMojo} from '../network/onc_mojo.js';
@@ -216,9 +216,9 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
   }
 
   private countersToString_(counters: TrafficCounter[]): string {
-    // '\t' describes the number of white space characters to use as white space
+    // '4' describes the number of white space characters to use as white space
     // while forming the JSON string.
-    return JSON.stringify(counters, replacer, '\t');
+    return JSON.stringify(counters, replacer, 4);
   }
 
   private lastResetTimeString_(network: Network): string {

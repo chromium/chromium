@@ -6,6 +6,7 @@
 
 #include <wayland-util.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 
@@ -25,8 +26,8 @@ wl_resource* LookUpResource(Server* server, const ResourceKey& key) {
 
   auto find_closure = [](struct wl_resource* resource, void* data) {
     IteratorData* iterator_data = static_cast<IteratorData*>(data);
-    if (strcmp(wl_resource_get_class(resource),
-               iterator_data->key->class_name.c_str()) == 0 &&
+    if (UNSAFE_TODO(strcmp(wl_resource_get_class(resource),
+                           iterator_data->key->class_name.c_str())) == 0 &&
         wl_resource_get_id(resource) == iterator_data->key->id) {
       iterator_data->result = resource;
       return WL_ITERATOR_STOP;

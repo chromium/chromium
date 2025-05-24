@@ -50,7 +50,7 @@ int AudioBufferQueue::PeekFrames(int frames,
 void AudioBufferQueue::SeekFrames(int frames) {
   // Perform seek only if we have enough bytes in the queue.
   CHECK_LE(frames, frames_);
-  int taken = InternalRead(frames, true, 0, 0, NULL);
+  int taken = InternalRead(frames, true, 0, 0, nullptr);
   DCHECK_EQ(taken, frames);
 }
 

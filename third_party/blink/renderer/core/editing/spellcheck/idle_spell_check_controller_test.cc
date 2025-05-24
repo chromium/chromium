@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
 
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -45,7 +47,7 @@ class IdleSpellCheckControllerTest : public SpellCheckTestBase {
         break;
       case State::kInHotModeInvocation:
       case State::kInColdModeInvocation:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 };
@@ -146,11 +148,10 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
       "<menu style=\"all: initial\">1127</menu>"
       "<object><optgroup></optgroup></object>"
       "</div>");
-  auto* html_object_element = To<HTMLObjectElement>(
-      GetDocument().QuerySelector(AtomicString("object")));
+  auto* html_object_element = To<HTMLObjectElement>(QuerySelector("object"));
   html_object_element->RenderFallbackContent(
       HTMLObjectElement::ErrorEventPolicy::kDispatch);
-  GetDocument().QuerySelector(AtomicString("div"))->Focus();
+  QuerySelector("div")->Focus();
   UpdateAllLifecyclePhasesForTest();
 
   // Advance to cold mode invocation
@@ -159,6 +160,37 @@ TEST_F(IdleSpellCheckControllerTest, ColdModeRangeCrossesShadow) {
   ASSERT_EQ(State::kColdModeRequested, IdleChecker().GetState());
 
   // Shouldn't crash
+  IdleChecker().ForceInvocationForTesting();
+  EXPECT_EQ(State::kInactive, IdleChecker().GetState());
+}
+
+TEST_F(IdleSpellCheckControllerTest,
+       HotModeRangeDoesNotIncludeVisiblePosition) {
+  SetBodyContent(
+      "<form contenteditable='true'>"
+      "<h2 contenteditable='true'>"
+      "<select contenteditable='true'>"
+      "<optgroup contenteditable='true'><option "
+      "contenteditable='true'>hello</option></optgroup>"
+      "<animateColor></animateColor>"
+      "</select>"
+      "</h2>"
+      "<pre contenteditable='true'>"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "aaaaaaaaaaaaaaaaa</pre></form>");
+  auto* option_element = QuerySelector("option");
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(option_element, 1))
+          .Build(),
+      SetSelectionOptions());
+  UpdateAllLifecyclePhasesForTest();
+  TransitTo(State::kHotModeRequested);
+  IdleChecker().RespondToChangedContents();
+  // Should not crash
   IdleChecker().ForceInvocationForTesting();
   EXPECT_EQ(State::kInactive, IdleChecker().GetState());
 }

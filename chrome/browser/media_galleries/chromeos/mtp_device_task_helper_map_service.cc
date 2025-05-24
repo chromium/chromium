@@ -41,8 +41,9 @@ void MTPDeviceTaskHelperMapService::DestroyDeviceTaskHelper(
   const MTPDeviceTaskHelperKey key =
       GetMTPDeviceTaskHelperKey(storage_name, read_only);
   TaskHelperMap::iterator it = task_helper_map_.find(key);
-  if (it == task_helper_map_.end())
+  if (it == task_helper_map_.end()) {
     return;
+  }
   delete it->second;
   task_helper_map_.erase(it);
 }
@@ -67,8 +68,6 @@ MTPDeviceTaskHelperMapService::GetMTPDeviceTaskHelperKey(
          storage_name;
 }
 
-MTPDeviceTaskHelperMapService::MTPDeviceTaskHelperMapService() {
-}
+MTPDeviceTaskHelperMapService::MTPDeviceTaskHelperMapService() = default;
 
-MTPDeviceTaskHelperMapService::~MTPDeviceTaskHelperMapService() {
-}
+MTPDeviceTaskHelperMapService::~MTPDeviceTaskHelperMapService() = default;

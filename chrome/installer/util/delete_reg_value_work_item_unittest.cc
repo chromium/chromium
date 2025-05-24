@@ -29,7 +29,7 @@ class DeleteRegValueWorkItemTest : public testing::Test {
       delete;
 
  protected:
-  DeleteRegValueWorkItemTest() {}
+  DeleteRegValueWorkItemTest() = default;
 
   void SetUp() override {
     ASSERT_NO_FATAL_FAILURE(

@@ -12,7 +12,7 @@
 namespace base {
 class TaskRunner;
 class Time;
-}
+}  // namespace base
 
 namespace net {
 class URLRequestContextGetter;

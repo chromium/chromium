@@ -8,6 +8,7 @@ import android.content.Context;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.feedback.FeedbackSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Feedback Source around relevant user and UI settings for auto dark mode. */
+@NullMarked
 public class AutoDarkFeedbackSource implements FeedbackSource {
     @VisibleForTesting static final String AUTO_DARK_FEEDBACK_KEY = "auto_dark_web_content_enabled";
     @VisibleForTesting static final String ENABLED_VALUE = "Enabled";

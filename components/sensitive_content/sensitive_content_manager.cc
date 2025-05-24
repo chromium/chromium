@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
-#include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/integrators/password_form_classification.h"
 #include "components/password_manager/content/browser/password_form_classification_util.h"
 #include "components/sensitive_content/features.h"
 #include "components/sensitive_content/sensitive_content_client.h"
@@ -150,7 +150,7 @@ void SensitiveContentManager::OnAutofillManagerStateChanged(
     // If needed, the time complexity can be further improved here by exploiting
     // that fields from the same frame are next to each other in the set.
     std::erase_if(sensitive_fields_,
-                  [local_frame_token](autofill::FieldGlobalId field_id) {
+                  [local_frame_token](const autofill::FieldGlobalId& field_id) {
                     return field_id.frame_token == local_frame_token;
                   });
     std::erase_if(latency_until_sensitive_timer_,

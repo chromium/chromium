@@ -165,24 +165,30 @@ float AverageLagTracker::LagForUnfinishedFrame(
 }
 
 void AverageLagTracker::CalculateAndReportAverageLagUma(bool send_anyway) {
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40236436): re-enable DCHECK and remove early-out
   // once bugs are fixed.
-  // DCHECK(!frame_lag_infos_.empty());
+  DCHECK(!frame_lag_infos_.empty());
+#endif
   if (frame_lag_infos_.empty()) {
     return;
   }
   const LagAreaInFrame& frame_lag = frame_lag_infos_.front();
 
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40236436): re-enable DCHECKs once bugs are fixed.
-  // DCHECK_GE(frame_lag.lag_area, 0.f);
-  // DCHECK_GE(frame_lag.lag_area_no_prediction, 0.f);
+  DCHECK_GE(frame_lag.lag_area, 0.f);
+  DCHECK_GE(frame_lag.lag_area_no_prediction, 0.f);
+#endif
   accumulated_lag_ += frame_lag.lag_area;
   accumulated_lag_no_prediction_ += frame_lag.lag_area_no_prediction;
 
+#if BUILDFLAG(IS_ANDROID)
   if (is_begin_) {
     // TODO(crbug.com/40236436): re-enable DCHECK once bugs are fixed.
-    // DCHECK_EQ(accumulated_lag_, accumulated_lag_no_prediction_);
+    DCHECK_EQ(accumulated_lag_, accumulated_lag_no_prediction_);
   }
+#endif
 
   // |send_anyway| is true when we are flush all remaining frames on next
   // |kScrollbegin|. Otherwise record UMA when it's kScrollbegin, or when

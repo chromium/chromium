@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/sessions/core/mock_tab_restore_service.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,6 +112,13 @@ class MockOptGuideDecider
       const std::string& gpc_title = "example_gpc_title",
       const std::vector<std::vector<std::string>>& product_categories = {});
 
+  void AddPriceSummaryToPriceTrackingResponse(
+      OptimizationMetadata* out_meta,
+      const PriceSummary_ProductOfferCondition condition,
+      const int64_t lowest_price,
+      const int64_t highest_price,
+      const std::string& country_code);
+
   void AddPriceUpdateToPriceTrackingResponse(OptimizationMetadata* out_meta,
                                              const std::string& currency_code,
                                              const int64_t current_price,
@@ -170,7 +178,7 @@ class MockWebWrapper : public WebWrapper {
 
   ~MockWebWrapper() override;
 
-  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTitle, (), (override));
   MOCK_METHOD(bool, IsFirstLoadForNavigationFinished, (), (override));
   MOCK_METHOD(bool, IsOffTheRecord, (), (override));
@@ -268,6 +276,8 @@ class ShoppingServiceTestBase : public testing::Test {
   void SetProductSpecificationsServerProxy(
       std::unique_ptr<ProductSpecificationsServerProxy> proxy_ptr);
 
+  MockTabRestoreService* GetMockTabRestoreService();
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -290,6 +300,8 @@ class ShoppingServiceTestBase : public testing::Test {
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 
   std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
+
+  std::unique_ptr<MockTabRestoreService> tab_restore_service_;
 
   std::unique_ptr<ShoppingService> shopping_service_;
 };

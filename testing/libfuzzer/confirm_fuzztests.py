@@ -56,7 +56,15 @@ def main():
   if process_result.returncode == 0:
     test_list = process_result.stdout.decode('utf-8')
 
-    actual_tests = set(re.findall('Fuzz test: (.*)', test_list))
+    actual_tests = re.findall('Fuzz test: (.*)', test_list)
+    # Gardeners may disable fuzztests by changing the names of the fuzztest
+    # in code to start with DISABLED_. We don't want gardeners to need to
+    # change gn files correspondingly, so strip such prefixes when checking
+    # that the test lists match.
+    actual_tests = {
+        test.replace('DISABLED_', '').replace('FLAKY_', '')
+        for test in actual_tests
+    }
 
     if expected_tests != actual_tests:
       print('Unexpected fuzztests found in this binary.\nFuzztest binary: ' +

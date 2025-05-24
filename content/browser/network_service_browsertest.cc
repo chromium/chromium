@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/network/network_service.h"
+
 #include <array>
+#include <optional>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
@@ -28,7 +31,6 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/os_crypt/async/common/encryptor_features.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -75,7 +77,6 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/test/udp_socket_test_util.h"
 #include "sql/database.h"
-#include "sql/sql_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -94,6 +95,7 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/rand_util.h"
 #include "content/browser/network/network_service_process_tracker_win.h"
+#include "content/common/features.h"
 #include "sandbox/policy/features.h"
 #endif
 
@@ -353,6 +355,49 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN)
+class NetworkServiceSkipGrantAccessBrowserTest
+    : public NetworkServiceBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSkipGrantAccessToDataPathIfAlreadySet};
+};
+
+IN_PROC_BROWSER_TEST_F(NetworkServiceSkipGrantAccessBrowserTest,
+                       HttpCacheWrittenToDisk) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Create network context with cache pointing to the temp cache dir.
+  mojo::Remote<network::mojom::NetworkContext> network_context;
+  network::mojom::NetworkContextParamsPtr context_params =
+      network::mojom::NetworkContextParams::New();
+  context_params->cert_verifier_params = GetCertVerifierParams(
+      cert_verifier::mojom::CertVerifierCreationParams::New());
+  context_params->file_paths = network::mojom::NetworkContextFilePaths::New();
+  context_params->file_paths->http_cache_directory = GetCacheDirectory();
+  CreateNetworkContextInNetworkService(
+      network_context.BindNewPipeAndPassReceiver(), std::move(context_params));
+
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      network::mojom::URLLoaderFactoryParams::New();
+  params->process_id = network::mojom::kBrowserProcessId;
+  params->automatically_assign_isolation_info = true;
+  params->is_orb_enabled = false;
+  params->is_trusted = true;
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
+  network_context->CreateURLLoaderFactory(
+      loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+  // Load a URL and check the cache index size.
+  LoadURL(embedded_test_server()->GetURL("/cachetime"), loader_factory.get());
+
+  FlushNetworkServiceInstanceForTesting();
+  disk_cache::FlushCacheThreadForTesting();
+
+  EXPECT_GT(base::ComputeDirectorySize(GetCacheIndexDirectory()), 0);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 class NetworkConnectionObserver
     : public network::NetworkConnectionTracker::NetworkConnectionObserver {
@@ -546,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest, FactoryOverride) {
     }
     void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
         override {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     bool has_received_preflight() const { return has_received_preflight_; }
@@ -838,6 +883,35 @@ CreateNetworkContextForPaths(network::mojom::NetworkContextFilePathsPtr paths,
   context_params->enable_encrypted_cookies = false;
   context_params->http_cache_enabled = true;
   context_params->file_paths->http_cache_directory = cache_path;
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/377940976): Remove this once the background sequence runner
+  // can be fully drained of tasks during network context shutdown.
+  {
+    base::RunLoop run_loop;
+    // The remote for the test network service needs to stay alive until the
+    // RunLoop has finished.
+    std::optional<mojo::Remote<network::mojom::NetworkServiceTest>>
+        maybe_network_service_test;
+    if (content::IsOutOfProcessNetworkService()) {
+      maybe_network_service_test.emplace();
+      GetNetworkService()->BindTestInterfaceForTesting(
+          maybe_network_service_test->BindNewPipeAndPassReceiver());
+      (*maybe_network_service_test)
+          ->DisableExclusiveCookieDatabaseLockingForTesting(
+              run_loop.QuitClosure());
+    } else {
+      content::GetNetworkTaskRunner()->PostTaskAndReply(
+          FROM_HERE, base::BindOnce([]() {
+            network::NetworkService::GetNetworkServiceForTesting()
+                ->disable_exclusive_cookie_database_locking_for_testing();
+          }),
+          run_loop.QuitClosure());
+    }
+    run_loop.Run();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   mojo::PendingRemote<network::mojom::NetworkContext> network_context;
   content::CreateNetworkContextInNetworkService(
       network_context.InitWithNewPipeAndPassReceiver(),
@@ -905,11 +979,6 @@ static const base::FilePath::CharType kNetworkSubpath[] =
 class MAYBE_NetworkServiceDataMigrationBrowserTest : public ContentBrowserTest {
  public:
   MAYBE_NetworkServiceDataMigrationBrowserTest() {
-    // Migration only supports non-WAL sqlite databases. If this feature is
-    // switched on by default before migration has been completed then the code
-    // in MaybeGrantSandboxAccessToNetworkContextData will need to be updated.
-    EXPECT_FALSE(
-        base::FeatureList::IsEnabled(sql::features::kEnableWALModeByDefault));
 #if BUILDFLAG(IS_WIN)
     // On Windows, the network sandbox needs to be disabled. This is because the
     // code that performs the migration on Windows DCHECKs if network sandbox is
@@ -1759,9 +1828,9 @@ class NetworkServiceBoundedNetLogBrowserTest
     log_file_read.GetInfo(&file_info);
 
     // The max size is only a rough bound, so let's make sure the final file is
-    // within a reasonable range from our max. Let's say 10%.
-    const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.1;
-    const int64_t kMaxSizeLower = kMaxSizeBytes * 0.9;
+    // within a reasonable range from our max. Let's say 15%.
+    const int64_t kMaxSizeUpper = kMaxSizeBytes * 1.15;
+    const int64_t kMaxSizeLower = kMaxSizeBytes * 0.85;
 
     // Some devices don't always finish flushing the file to disk before
     // control is returned to the test, meaning that if we were to immediately
@@ -1838,17 +1907,7 @@ class TestCookieEncryptionProvider
   mojo::Receiver<network::mojom::CookieEncryptionProvider> receiver_{this};
 };
 
-class NetworkServiceCookieEncryptionBrowserTest
-    : public ContentBrowserTest,
-      public testing::WithParamInterface</*kProtectEncryptionKey*/ bool> {
- public:
-#if BUILDFLAG(IS_WIN)
-  NetworkServiceCookieEncryptionBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        os_crypt_async::features::kProtectEncryptionKey, GetParam());
-  }
-#endif  // BUILDFLAG(IS_WIN)
-
+class NetworkServiceCookieEncryptionBrowserTest : public ContentBrowserTest {
  protected:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -1873,17 +1932,12 @@ class NetworkServiceCookieEncryptionBrowserTest
 
     const std::vector<uint8_t> key_;
   };
-
-#if BUILDFLAG(IS_WIN)
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 // This test verifies that when a cookie encryption provider is set when
 // creating a network context, then it results in a call to the GetEncryptor
 // method on the CookieEncryptionProvider.
-IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
+IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
                        CookieEncryptionProvider) {
   const auto data_path =
       shell()->web_contents()->GetBrowserContext()->GetPath();
@@ -1973,24 +2027,12 @@ IN_PROC_BROWSER_TEST_P(NetworkServiceCookieEncryptionBrowserTest,
       it += key_data.size();
     }
 
-    // If kProtectEncryptionKey is enabled, no instances of the key should be
-    // present in the full memory dump of the network service process.
-    EXPECT_EQ(GetParam() ? 0u : 1u, occurrences);
+    // No instances of the key should be present in the full memory dump of the
+    // network service process as it's encrypted.
+    EXPECT_EQ(0u, occurrences);
   }
 #endif  // BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER) && defined(NDEBUG)
 }
-
-INSTANTIATE_TEST_SUITE_P(,
-                         NetworkServiceCookieEncryptionBrowserTest,
-                         ::testing::Values(false
-#if BUILDFLAG(IS_WIN)
-                                           ,
-                                           true
-#endif
-                                           ),
-                         [](const auto& info) {
-                           return info.param ? "ProtectOn" : "ProtectOff";
-                         });
 
 #if BUILDFLAG(IS_WIN)
 class NetworkServiceCodeIntegrityTest : public NetworkServiceBrowserTest {

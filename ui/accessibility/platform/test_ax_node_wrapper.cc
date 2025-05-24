@@ -15,7 +15,6 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_table_info.h"
-#include "ui/accessibility/ax_tree_observer.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace ui {
@@ -23,7 +22,7 @@ namespace ui {
 namespace {
 
 // A global map from AXNodes to TestAXNodeWrappers.
-std::map<AXNodeID, TestAXNodeWrapper*> g_node_id_to_wrapper_map;
+std::map<AXNodeID, std::unique_ptr<TestAXNodeWrapper>> g_node_id_to_wrapper_map;
 
 // A global coordinate offset.
 gfx::Vector2d g_offset;
@@ -52,22 +51,6 @@ bool g_is_web_content = false;
 // ID.
 std::map<AXNodeID, AXNodeID> g_hit_test_result;
 
-// A simple implementation of AXTreeObserver to catch when AXNodes are
-// deleted so we can delete their wrappers.
-class TestAXTreeObserver : public AXTreeObserver {
- private:
-  void OnNodeDeleted(AXTree* tree, int32_t node_id) override {
-    const auto iter = g_node_id_to_wrapper_map.find(node_id);
-    if (iter != g_node_id_to_wrapper_map.end()) {
-      TestAXNodeWrapper* wrapper = iter->second;
-      delete wrapper;
-      g_node_id_to_wrapper_map.erase(node_id);
-    }
-  }
-};
-
-TestAXTreeObserver g_ax_tree_observer;
-
 }  // namespace
 
 // static
@@ -75,14 +58,21 @@ TestAXNodeWrapper* TestAXNodeWrapper::GetOrCreate(AXTree* tree, AXNode* node) {
   if (!tree || !node)
     return nullptr;
 
-  if (!tree->HasObserver(&g_ax_tree_observer))
-    tree->AddObserver(&g_ax_tree_observer);
   auto iter = g_node_id_to_wrapper_map.find(node->id());
-  if (iter != g_node_id_to_wrapper_map.end())
-    return iter->second;
-  TestAXNodeWrapper* wrapper = new TestAXNodeWrapper(tree, node);
-  g_node_id_to_wrapper_map[node->id()] = wrapper;
-  return wrapper;
+  if (iter != g_node_id_to_wrapper_map.end()) {
+    if (iter->second->node_) {
+      return iter->second.get();
+    } else {
+      // The underlying node has been deleted, so create a new one below.
+      g_node_id_to_wrapper_map.erase(iter);
+    }
+  }
+
+  auto wrapper =
+      std::unique_ptr<TestAXNodeWrapper>(new TestAXNodeWrapper(tree, node));
+  TestAXNodeWrapper* ptr = wrapper.get();
+  g_node_id_to_wrapper_map[node->id()] = std::move(wrapper);
+  return ptr;
 }
 
 // static
@@ -134,9 +124,7 @@ void TestAXNodeWrapper::ResetGlobalState() {
   g_offset.set_y(0);
 }
 
-TestAXNodeWrapper::~TestAXNodeWrapper() {
-  platform_node_.ExtractAsDangling()->Destroy();
-}
+TestAXNodeWrapper::~TestAXNodeWrapper() = default;
 
 const AXNodeData& TestAXNodeWrapper::GetData() const {
   return node_->data();
@@ -147,6 +135,11 @@ const AXTreeData& TestAXNodeWrapper::GetTreeData() const {
 }
 
 const AXSelection TestAXNodeWrapper::GetUnignoredSelection() const {
+  if (!node_) {
+    // If node is not set, this means this is being shut down and the tree is
+    // gone.
+    return AXSelection();
+  }
   return tree_->GetUnignoredSelection();
 }
 
@@ -170,11 +163,15 @@ gfx::NativeViewAccessible TestAXNodeWrapper::GetNativeViewAccessible() {
 }
 
 gfx::NativeViewAccessible TestAXNodeWrapper::GetParent() const {
+  if (!node_) {
+    // Node may be null if it was just deleted.
+    return gfx::NativeViewAccessible();
+  }
   TestAXNodeWrapper* parent_wrapper =
       GetOrCreate(tree_, node_->GetUnignoredParent());
-  return parent_wrapper ?
-      parent_wrapper->ax_platform_node()->GetNativeViewAccessible() :
-      nullptr;
+  return parent_wrapper
+             ? parent_wrapper->ax_platform_node()->GetNativeViewAccessible()
+             : gfx::NativeViewAccessible();
 }
 
 size_t TestAXNodeWrapper::GetChildCount() const {
@@ -183,9 +180,9 @@ size_t TestAXNodeWrapper::GetChildCount() const {
 
 gfx::NativeViewAccessible TestAXNodeWrapper::ChildAtIndex(size_t index) const {
   TestAXNodeWrapper* child_wrapper = InternalGetChild(index);
-  return child_wrapper ?
-      child_wrapper->ax_platform_node()->GetNativeViewAccessible() :
-      nullptr;
+  return child_wrapper
+             ? child_wrapper->ax_platform_node()->GetNativeViewAccessible()
+             : gfx::NativeViewAccessible();
 }
 
 gfx::Rect TestAXNodeWrapper::GetBoundsRect(
@@ -320,7 +317,7 @@ gfx::NativeViewAccessible TestAXNodeWrapper::HitTestSync(
           screen_physical_pixel_x / g_scale_factor,
           screen_physical_pixel_y / g_scale_factor);
   return wrapper ? wrapper->ax_platform_node()->GetNativeViewAccessible()
-                 : nullptr;
+                 : gfx::NativeViewAccessible();
 }
 
 gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() const {
@@ -331,7 +328,7 @@ gfx::NativeViewAccessible TestAXNodeWrapper::GetFocus() const {
         ->ax_platform_node()
         ->GetNativeViewAccessible();
   }
-  return nullptr;
+  return gfx::NativeViewAccessible();
 }
 
 bool TestAXNodeWrapper::IsMinimized() const {
@@ -849,8 +846,7 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForImageAnnotationStatus(
       return std::u16string();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string TestAXNodeWrapper::GetStyleNameAttributeAsLocalizedString()
@@ -896,12 +892,13 @@ TestAXNodeWrapper::TestAXNodeWrapper(AXTree* tree, AXNode* node)
     : tree_(tree),
       node_(node),
       unique_id_(AXUniqueId::Create()),
-      platform_node_(AXPlatformNode::Create(this)) {
+      platform_node_(AXPlatformNode::Create(*this)) {
 #if BUILDFLAG(IS_WIN)
   native_event_target_ = gfx::kMockAcceleratedWidget;
 #else
   native_event_target_ = gfx::kNullAcceleratedWidget;
 #endif
+  observation_.Observe(tree);
 }
 
 bool TestAXNodeWrapper::IsOrderedSetItem() const {
@@ -1030,6 +1027,15 @@ AXOffscreenResult TestAXNodeWrapper::DetermineOffscreenResult(
   }
 
   return AXOffscreenResult::kOnscreen;
+}
+
+void TestAXNodeWrapper::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
+  // Set the node to be nullptr, otherwise we would hold a reference to a node
+  // that no longer exists.
+  if (node_ && node_->id() == node->id()) {
+    node_ = nullptr;
+    platform_node_ = nullptr;
+  }
 }
 
 }  // namespace ui

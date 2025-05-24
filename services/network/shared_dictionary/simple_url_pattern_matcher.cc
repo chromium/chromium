@@ -4,17 +4,18 @@
 
 #include "services/network/shared_dictionary/simple_url_pattern_matcher.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
 
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
 #include "components/url_pattern/url_pattern_util.h"
+#include "third_party/abseil-cpp/absl/status/status.h"
 #include "third_party/liburlpattern/constructor_string_parser.h"
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -127,9 +128,9 @@ SimpleUrlPatternMatcher::Component::Create(
     std::optional<std::string_view> pattern,
     liburlpattern::EncodeCallback encode_callback,
     const liburlpattern::Options& options) {
-  absl::StatusOr<liburlpattern::Pattern> parse_result =
+  base::expected<liburlpattern::Pattern, absl::Status> parse_result =
       liburlpattern::Parse(pattern.value_or("*"), encode_callback, options);
-  if (!parse_result.ok()) {
+  if (!parse_result.has_value()) {
     return base::unexpected("Failed to parse pattern");
   }
   if (parse_result->HasRegexGroups()) {
@@ -202,21 +203,22 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   bool protocol_matches_a_special_scheme_flag = false;
   absl::Status result = constructor_string_parser.Parse(
       [&protocol_component, &protocol_matches_a_special_scheme_flag](
-          std::string_view protocol_string) -> absl::StatusOr<bool> {
+          std::string_view protocol_string)
+          -> base::expected<bool, absl::Status> {
         // Spec: Let protocol component be the result of compiling a component
         // given protocol string, canonicalize a protocol, and default options.
         auto component_result = Component::Create(
             protocol_string, url_pattern::ProtocolEncodeCallback,
             kDefaultOptions);
         if (!component_result.has_value()) {
-          return absl::InvalidArgumentError(
-              base::StrCat({component_result.error(), " for protocol"}));
+          return base::unexpected(absl::InvalidArgumentError(
+              base::StrCat({component_result.error(), " for protocol"})));
         }
         protocol_component = std::move(component_result.value());
         // Spec: If the result of running protocol component matches a special
         // scheme given protocol component is true, then set parser’s protocol
         // matches a special scheme flag to true.
-        protocol_matches_a_special_scheme_flag = base::ranges::any_of(
+        protocol_matches_a_special_scheme_flag = std::ranges::any_of(
             url::GetStandardSchemes(),
             [&protocol_component](const std::string& scheme) {
               return protocol_component->Match(scheme);
@@ -430,10 +432,10 @@ SimpleUrlPatternMatcher::CreateFromPatternInit(
     }
     protocol_component = std::move(protocol_component_result.value());
     protocol_matches_a_special_scheme_flag =
-        base::ranges::any_of(url::GetStandardSchemes(),
-                             [&protocol_component](const std::string& scheme) {
-                               return protocol_component->Match(scheme);
-                             });
+        std::ranges::any_of(url::GetStandardSchemes(),
+                            [&protocol_component](const std::string& scheme) {
+                              return protocol_component->Match(scheme);
+                            });
   }
 
 #define MAYBE_COMPILE_PATTERN(type, callback, options)                       \

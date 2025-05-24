@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//printing/buildflags/buildflags.gni")
 
-enable_service = use_cups && is_chromeos_ash
+enable_service = use_cups && is_chromeos
 
 source_set("ipp_parser") {
   sources = [ "ipp_parser.h" ]

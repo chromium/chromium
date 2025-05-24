@@ -9,7 +9,7 @@
  */
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -29,8 +29,8 @@ export class AutoTabGroupsResultsActionsElement extends CrLitElement {
     };
   }
 
-  multipleOrganizations: boolean = false;
-  showClear: boolean = false;
+  accessor multipleOrganizations: boolean = false;
+  accessor showClear: boolean = false;
 
   static override get styles() {
     return getCss();

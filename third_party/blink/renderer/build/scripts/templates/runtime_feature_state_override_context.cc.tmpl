@@ -4,9 +4,10 @@
 {{source_files_for_generated_file(template_file, input_files)}}
 
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/origin_trial_state/origin_trial_state_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_state_host.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -54,14 +55,14 @@ void RuntimeFeatureStateOverrideContext::Set{{feature.name}}ForceEnabled() {
 {% if feature in origin_trial_controlled_features %}
 bool RuntimeFeatureStateOverrideContext::
     Set{{feature.name}}Enabled(const WTF::Vector<WTF::String>& tokens) {
-{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning2' %}
+{% if (feature.name)|string == 'DisableThirdPartyStoragePartitioning3' %}
   UseCounter::Count(use_counter_,
-                          WebFeature::kDisableThirdPartyStoragePartitioning2);
+                          WebFeature::kDisableThirdPartyStoragePartitioning3);
   // If the base::Feature for the deprecation trial is disabled, we should
   // not send any overrides to the browser, so we return false immediately,
   // skipping any mojom messaging.
   if(!base::FeatureList::IsEnabled(
-    blink::features::kDisableThirdPartyStoragePartitioningDeprecationTrial2)){
+    blink::features::kDisableThirdPartyStoragePartitioning3DeprecationTrial)){
     return false;
   }
 {% endif %}

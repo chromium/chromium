@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.contextualsearch;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
@@ -18,24 +18,24 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Builds a Search Request URL to be used to populate the content of the Bottom Sheet in response
- * to a particular Contextual Search.
- * The URL has a low-priority version to help with server overload, and helps manage the
- * fall-back to normal when that is needed after the low-priority version fails.
- * The URL building includes triggering of feature one-boxes on the SERP like a translation
+ * Builds a Search Request URL to be used to populate the content of the Bottom Sheet in response to
+ * a particular Contextual Search. The URL has a low-priority version to help with server overload,
+ * and helps manage the fall-back to normal when that is needed after the low-priority version
+ * fails. The URL building includes triggering of feature one-boxes on the SERP like a translation
  * One-box or a knowledge panel.
  */
+@NullMarked
 class ContextualSearchRequest {
     private final boolean mWasPrefetch;
     private final Profile mProfile;
 
-    private Uri mLowPriorityUri;
+    private @Nullable Uri mLowPriorityUri;
     private Uri mNormalPriorityUri;
 
     private boolean mIsLowPriority;
     private boolean mHasFailedLowPriorityLoad;
     private boolean mIsTranslationForced;
-    private boolean mIsFullSearchUrlProvided;
+    private final boolean mIsFullSearchUrlProvided;
 
     private static final String GWS_NORMAL_PRIORITY_SEARCH_PATH = "search";
     private static final String GWS_LOW_PRIORITY_SEARCH_PATH = "s";
@@ -83,7 +83,7 @@ class ContextualSearchRequest {
      * @param profile The Profile associated with this request.
      * @param searchUrlFull The URI for the full search to present in the overlay.
      */
-    ContextualSearchRequest(Profile profile, @NonNull Uri searchUrlFull) {
+    ContextualSearchRequest(Profile profile, Uri searchUrlFull) {
         this(profile, null, null, null, false, searchUrlFull.toString(), null);
     }
 
@@ -106,7 +106,7 @@ class ContextualSearchRequest {
      */
     ContextualSearchRequest(
             Profile profile,
-            String searchTerm,
+            @Nullable String searchTerm,
             @Nullable String alternateTerm,
             @Nullable String mid,
             boolean isLowPriorityEnabled,
@@ -183,12 +183,12 @@ class ContextualSearchRequest {
     }
 
     /**
-     * Returns the formatted Search URL, replacing the ctxs param with the ctxr param, so that
-     * the SearchBox will becomes visible, while preserving the Answers Mode.
+     * Returns the formatted Search URL, replacing the ctxs param with the ctxr param, so that the
+     * SearchBox will becomes visible, while preserving the Answers Mode.
      *
      * @return The formatted Search URL.
      */
-    String getSearchUrlForPromotion() {
+    @Nullable String getSearchUrlForPromotion() {
         setNormalPriority();
         String searchUrl = getSearchUrl();
 
@@ -255,7 +255,7 @@ class ContextualSearchRequest {
      *     parameters conditionally set.
      */
     protected Uri getUriTemplate(
-            String query,
+            @Nullable String query,
             @Nullable String alternateTerm,
             @Nullable String mid,
             boolean shouldPrefetch) {

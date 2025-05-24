@@ -7,10 +7,10 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -76,6 +76,7 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
   cancelButton.accessibilityIdentifier = kEditProfileBottomSheetCancelButton;
 
   self.navigationItem.leftBarButtonItem = cancelButton;
+
   self.navigationController.navigationBar.prefersLargeTitles = NO;
   switch (_editSheetMode) {
     case AutofillSaveProfilePromptMode::kNewProfile:
@@ -95,6 +96,7 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
   }
 
   self.tableView.allowsSelectionDuringEditing = YES;
+  self.view.accessibilityIdentifier = kEditProfileBottomSheetViewIdentfier;
 
   [self loadModel];
 }
@@ -131,10 +133,8 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
 - (void)setUpBottomSheetDetents {
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
-  presentationController.detents = @[
-    [UISheetPresentationControllerDetent mediumDetent],
-    [UISheetPresentationControllerDetent largeDetent]
-  ];
+  presentationController.detents =
+      @[ [UISheetPresentationControllerDetent largeDetent] ];
   presentationController.selectedDetentIdentifier =
       UISheetPresentationControllerDetentIdentifierLarge;
 }

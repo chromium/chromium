@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_DIAGNOSTICS_DIAGNOSTICS_WRITER_H_
 
 #include <memory>
+#include <string>
+#include <string_view>
 
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 
@@ -53,8 +55,8 @@ class DiagnosticsWriter : public DiagnosticsModel::Observer {
   // followed by the exact error code and the id. Name and extra strings must be
   // UTF8 encoded, as they are user-facing strings.
   bool WriteResult(bool success,
-                   const std::string& id,
-                   const std::string& name,
+                   std::string_view id,
+                   std::string_view name,
                    int outcome_code,
                    const std::string& extra);
 

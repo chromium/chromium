@@ -37,6 +37,7 @@ class GURL;
                         (id<ManualFillContentInjector>)contentInjector
                         menuActions:(NSArray<UIAction*>*)menuActions
         cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+          isAddressManualFallbackUI:(BOOL)isAddressManualFallbackUI
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithType:(NSInteger)type NS_UNAVAILABLE;
@@ -58,7 +59,8 @@ class GURL;
 - (void)setUpWithPlusAddress:(ManualFillPlusAddress*)plusAddress
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
                     menuActions:(NSArray<UIAction*>*)menuActions
-    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel;
+    cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
+      isAddressManualFallbackUI:(BOOL)isAddressManualFallbackUI;
 
 // Configures the cell for the passed favicon attributes.
 - (void)configureWithFaviconAttributes:(FaviconAttributes*)attributes;

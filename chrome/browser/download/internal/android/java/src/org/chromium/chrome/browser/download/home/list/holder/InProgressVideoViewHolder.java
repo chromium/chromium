@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
 import org.chromium.chrome.browser.download.internal.R;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A {@link RecyclerView.ViewHolder} specifically meant to display an in-progress video {@code
  * OfflineItem}.
  */
+@NullMarked
 public class InProgressVideoViewHolder extends InProgressViewHolder {
     private final TextView mTitle;
 

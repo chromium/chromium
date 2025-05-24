@@ -30,7 +30,7 @@ const test::UIPath kResetButtonPath = {kErrorId, "resetButton"};
 
 class InstallAttributesErrorScreenTest : public OobeBaseTest {
  public:
-  InstallAttributesErrorScreenTest() {}
+  InstallAttributesErrorScreenTest() = default;
 
   void ShowInstallAttributesErrorScreen() {
     WizardController::default_controller()->AdvanceToScreen(

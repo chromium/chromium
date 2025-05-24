@@ -94,7 +94,7 @@ goog.style.transition.isSupported = goog.functions.cacheReturnValue(function() {
   // Since IE would allow any attribute, we need to explicitly check the
   // browser version here instead.
   if (goog.userAgent.IE) {
-    return goog.userAgent.isVersionOrHigher('10.0');
+    return true;
   }
 
   // We create a test element with style=-vendor-transition

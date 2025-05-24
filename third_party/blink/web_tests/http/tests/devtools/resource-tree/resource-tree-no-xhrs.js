@@ -5,6 +5,8 @@
 import {TestRunner} from 'test_runner';
 import {NetworkTestRunner} from 'network_test_runner';
 
+import * as SDK from 'devtools/core/sdk/sdk.js';
+
 (async function() {
   TestRunner.addResult(
       `Tests that XHRs are not added to resourceTreeModel. https://bugs.webkit.org/show_bug.cgi?id=60321\n`);
@@ -13,7 +15,7 @@ import {NetworkTestRunner} from 'network_test_runner';
   NetworkTestRunner.makeSimpleXHR('GET', 'resources/resource.php', false, step2);
 
   function step2() {
-    var resource = TestRunner.resourceTreeModel.resourceForURL(
+    var resource = SDK.ResourceTreeModel.ResourceTreeModel.resourceForURL(
         'http://127.0.0.1:8000/devtools/resource-tree/resources/resource.php');
     TestRunner.assertTrue(!resource, 'XHR resource should not be added to resourceTreeModel.');
     TestRunner.completeTest();

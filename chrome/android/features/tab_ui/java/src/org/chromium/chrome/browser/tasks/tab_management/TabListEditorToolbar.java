@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.ViewGroup;
@@ -15,6 +18,8 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
@@ -26,26 +31,26 @@ import java.util.Collections;
 import java.util.List;
 
 /** Handles toolbar functionality for TabListEditor. */
-class TabListEditorToolbar extends SelectableListToolbar<Integer> {
-    private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
-    private Context mContext;
+@NullMarked
+class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelectionId> {
+    private static final List<TabListEditorItemSelectionId> sEmptyIntegerList =
+            Collections.emptyList();
     private ChromeImageButton mMenuButton;
     private TabListEditorActionViewLayout mActionViewLayout;
     @ColorInt private int mBackgroundColor;
     @StringRes private int mBackButtonAccessibilityString;
-    private RelatedTabCountProvider mRelatedTabCountProvider;
+    private @Nullable RelatedTabCountProvider mRelatedTabCountProvider;
 
     public interface RelatedTabCountProvider {
         /**
-         * @param tabIds the selected items.
-         * @returns the count of tabs including related tabs.
+         * @param itemIds the selected items.
+         * @return the count of tabs including related tabs.
          */
-        int getRelatedTabCount(List<Integer> tabIds);
+        int getRelatedTabCount(List<TabListEditorItemSelectionId> itemIds);
     }
 
     public TabListEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
         mBackButtonAccessibilityString = R.string.accessibility_tab_selection_editor_back_button;
     }
 
@@ -85,7 +90,7 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> selectedItems) {
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> selectedItems) {
         super.onSelectionStateChange(selectedItems);
 
         if (mRelatedTabCountProvider == null) return;
@@ -106,9 +111,10 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     }
 
     @Override
-    protected void showSelectionView(List<Integer> selectedItems, boolean wasSelectionEnabled) {
+    protected void showSelectionView(
+            List<TabListEditorItemSelectionId> selectedItems, boolean wasSelectionEnabled) {
         super.showSelectionView(selectedItems, wasSelectionEnabled);
-        if (mBackgroundColor != 0) {
+        if (mBackgroundColor != Color.TRANSPARENT) {
             setBackgroundColor(mBackgroundColor);
         }
     }
@@ -132,17 +138,19 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
      * @param tint New {@link ColorStateList} to use.
      */
     public void setButtonTint(ColorStateList tint) {
-        TintedDrawable navigation = (TintedDrawable) getNavigationIcon();
+        TintedDrawable navigation = (TintedDrawable) assumeNonNull(getNavigationIcon());
         navigation.setTint(tint);
         ImageViewCompat.setImageTintList(mMenuButton, tint);
     }
 
     /**
      * Update the toolbar background color.
+     *
      * @param backgroundColor The new color to use.
      */
     public void setToolbarBackgroundColor(@ColorInt int backgroundColor) {
         mBackgroundColor = backgroundColor;
+        setBackgroundColor(mBackgroundColor);
     }
 
     /**

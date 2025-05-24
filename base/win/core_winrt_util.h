@@ -29,8 +29,9 @@ BASE_EXPORT HRESULT RoActivateInstance(HSTRING class_id,
 template <typename InterfaceType, wchar_t const* runtime_class_id>
 HRESULT GetActivationFactory(InterfaceType** factory) {
   ScopedHString class_id_hstring = ScopedHString::Create(runtime_class_id);
-  if (!class_id_hstring.is_valid())
+  if (!class_id_hstring.is_valid()) {
     return E_FAIL;
+  }
 
   return base::win::RoGetActivationFactory(class_id_hstring.get(),
                                            IID_PPV_ARGS(factory));

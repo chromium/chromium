@@ -6,6 +6,7 @@ module media.mojom;
 
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/version.mojom";
 
 struct VideoCodecInfo {
   // Array of VideoCodecProfiles supported. If no profiles for a
@@ -32,11 +33,34 @@ struct CdmCapability {
 
   array<EncryptionScheme> encryption_schemes;
   array<CdmSessionType> session_types;
+  mojo_base.mojom.Version version;
 };
 
+// See media::CdmCapabilityQueryStatus
+enum CdmCapabilityQueryStatus {
+  kSuccess = 0,
+  kUnknown = 1,
+  kHardwareSecureCodecNotSupported = 2,
+  kNoSupportedVideoCodec = 3,
+  kNoSupportedEncryptionScheme = 4,
+  kUnsupportedKeySystem = 5,
+  kMediaFoundationCdmNotSupported = 6,
+  kDisconnectionError = 7,
+  kMediaFoundationGetCdmFactoryFailed = 8,
+  kCreateDummyMediaFoundationCdmFailed = 9,
+  kUnexpectedEmptyCapability = 10,
+  kNoMediaDrmSupport = 11,
+  kMediaFoundationGetExtendedDRMTypeSupportFailed = 12,
+};
+
+// TODO(crbug.com/40841428): Ideally, this should be replaced by a
+// base::expected<T, E> where T is CdmCapability and E is a
+// CdmCapabilityQueryStatus.
 struct KeySystemCapability {
   CdmCapability? sw_secure_capability;
   CdmCapability? hw_secure_capability;
+  CdmCapabilityQueryStatus? sw_secure_capability_query_status;
+  CdmCapabilityQueryStatus? hw_secure_capability_query_status;
 };
 
 // Process-wide observer used by the renderer to observe key system support
@@ -50,10 +74,10 @@ interface KeySystemSupportObserver {
 // Browser process singleton that a renderer process can use to subscribe to
 // key system updates.
 interface KeySystemSupport {
-  // Adds an observer to observe key system support updates. KeySystemSupport
+  // Sets an observer to observe key system support updates. KeySystemSupport
   // implementation is in the browser process, as it maintains the list of
   // registered CDMs, and hardware secure support check also needs to run in the
   // browser process because the render process is sandboxed. KeySystemSupport
   // clients run in the renderer process.
-  AddObserver(pending_remote<KeySystemSupportObserver> observer);
+  SetObserver(pending_remote<KeySystemSupportObserver> observer);
 };

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.hats;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
@@ -15,7 +16,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,19 +34,21 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.InMemorySharedPreferences;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.ui.hats.SurveyConfig.RequestedBrowserType;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = ShadowPostTask.class)
@@ -58,7 +60,6 @@ public class SurveyClientUnitTest {
     private TestSurveyUtils.TestSurveyController mSurveyController;
 
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -66,12 +67,13 @@ public class SurveyClientUnitTest {
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private PrivacyPreferencesManager mPrivacyPreferencesManager;
+    @Mock private TabModelSelector mTabModelSelector;
     @Captor private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverCaptor;
 
     @Before
     public void setup() {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
 
@@ -93,14 +95,15 @@ public class SurveyClientUnitTest {
                         task.run();
                     }
                 });
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
     }
 
     @Test
     public void createThroughFactory() {
         SurveyConfig config = newSurveyConfigWithoutPsd();
         SurveyClient client =
-                SurveyClientFactory.getInstance().createClient(config, mSurveyUiDelegate, mProfile);
+                SurveyClientFactory.getInstance()
+                        .createClient(config, mSurveyUiDelegate, mProfile, mTabModelSelector);
 
         if (!(client instanceof SurveyClientImpl)) {
             throw new AssertionError(
@@ -120,7 +123,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -147,7 +151,48 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
+        client.showSurvey(mActivity, mLifecycleDispatcher);
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(
+                "No survey download should be requested.",
+                mSurveyController.hasSurveyDownloadInQueue());
+    }
+
+    @Test
+    public void doNotDownloadRegularSurveyInIncognito() {
+        doReturn(true).when(mTabModelSelector).isIncognitoSelected();
+
+        SurveyConfig config = newSurveyConfigWithoutPsd();
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier,
+                        mProfile,
+                        mTabModelSelector);
+        client.showSurvey(mActivity, mLifecycleDispatcher);
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(
+                "No survey download should be requested.",
+                mSurveyController.hasSurveyDownloadInQueue());
+    }
+
+    @Test
+    public void doNotDownloadIncognitoSurveyInRegular() {
+        SurveyConfig config = newSurveyConfigWithoutPsd(RequestedBrowserType.INCOGNITO);
+        SurveyClientImpl client =
+                new SurveyClientImpl(
+                        config,
+                        mSurveyUiDelegate,
+                        mSurveyController,
+                        mCrashUploadPermissionSupplier,
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -166,14 +211,17 @@ public class SurveyClientUnitTest {
                         probability,
                         false,
                         new String[0],
-                        new String[0]);
+                        new String[0],
+                        Optional.empty(),
+                        SurveyConfig.RequestedBrowserType.REGULAR);
         SurveyClientImpl client =
                 new SurveyClientImpl(
                         config,
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -191,7 +239,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
 
         mCrashUploadPermissionSupplier.set(false);
@@ -217,7 +266,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
 
         mCrashUploadPermissionSupplier.set(true);
@@ -243,7 +293,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
 
         mCrashUploadPermissionSupplier.set(false);
@@ -268,7 +319,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -287,7 +339,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -305,7 +358,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
 
@@ -323,7 +377,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
@@ -353,7 +408,8 @@ public class SurveyClientUnitTest {
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
+                        mProfile,
+                        mTabModelSelector);
         client.showSurvey(mActivity, mLifecycleDispatcher);
         ShadowLooper.idleMainLooper();
         mSurveyController.simulateDownloadFinished(TEST_TRIGGER_ID, true);
@@ -378,21 +434,24 @@ public class SurveyClientUnitTest {
                         1.0f,
                         false,
                         new String[] {"bitField"},
-                        new String[] {"stringField"});
+                        new String[] {"stringField"},
+                        Optional.empty(),
+                        SurveyConfig.RequestedBrowserType.REGULAR);
         SurveyClientImpl client =
                 new SurveyClientImpl(
                         config,
                         mSurveyUiDelegate,
                         mSurveyController,
                         mCrashUploadPermissionSupplier,
-                        mProfile);
-        Assert.assertThrows(
+                        mProfile,
+                        mTabModelSelector);
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
                     client.showSurvey(mActivity, mLifecycleDispatcher);
                 });
-        Assert.assertThrows(
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
@@ -403,7 +462,7 @@ public class SurveyClientUnitTest {
         stringValues.clear();
         bitValues.clear();
         bitValues.put("bitField", true);
-        Assert.assertThrows(
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
@@ -414,7 +473,7 @@ public class SurveyClientUnitTest {
         stringValues.clear();
         bitValues.clear();
         stringValues.put("stringField", "value");
-        Assert.assertThrows(
+        assertThrows(
                 "Expected PSD(s) are missing.",
                 AssertionError.class,
                 () -> {
@@ -426,7 +485,7 @@ public class SurveyClientUnitTest {
         bitValues.clear();
         stringValues.put("stringField", "value");
         stringValues.put("stringField2", "value2");
-        Assert.assertThrows(
+        assertThrows(
                 "Extra string PSDs were provided.",
                 AssertionError.class,
                 () -> {
@@ -443,7 +502,18 @@ public class SurveyClientUnitTest {
     }
 
     private SurveyConfig newSurveyConfigWithoutPsd() {
+        return newSurveyConfigWithoutPsd(RequestedBrowserType.REGULAR);
+    }
+
+    private SurveyConfig newSurveyConfigWithoutPsd(@RequestedBrowserType int requestedBrowserType) {
         return new SurveyConfig(
-                TEST_SURVEY_TRIGGER, TEST_TRIGGER_ID, 1.0f, false, new String[0], new String[0]);
+                TEST_SURVEY_TRIGGER,
+                TEST_TRIGGER_ID,
+                1.0f,
+                false,
+                new String[0],
+                new String[0],
+                Optional.empty(),
+                requestedBrowserType);
     }
 }

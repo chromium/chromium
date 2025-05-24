@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/work_id_provider.h"
@@ -72,7 +73,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void SetTaskExecutionAllowedInNativeNestedLoop(bool allowed) override;
   bool IsTaskExecutionAllowed() const override;
   MessagePump* GetBoundMessagePump() const override;
-  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   void AttachToMessagePump() override;
 #endif
@@ -127,10 +127,6 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
 
     bool can_change_batch_size = true;
 
-    // While Now() is less than |yield_to_native_after_batch| we will request a
-    // yield to the MessagePump after |work_batch_size| work items.
-    base::TimeTicks yield_to_native_after_batch = base::TimeTicks();
-
     // The time after which the runloop should quit.
     TimeTicks quit_runloop_after = TimeTicks::Max();
 
@@ -159,12 +155,12 @@ class BASE_EXPORT ThreadControllerWithMessagePumpImpl
   void InitializeSingleThreadTaskRunnerCurrentDefaultHandle()
       EXCLUSIVE_LOCKS_REQUIRED(task_runner_lock_);
 
-  MainThreadOnly& main_thread_only() {
+  MainThreadOnly& main_thread_only() LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }
 
-  const MainThreadOnly& main_thread_only() const {
+  const MainThreadOnly& main_thread_only() const LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }

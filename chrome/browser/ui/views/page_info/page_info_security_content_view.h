@@ -45,6 +45,9 @@ class PageInfoSecurityContentView : public views::View, public PageInfoUI {
   // The views that shows the status of the site's identity check.
   raw_ptr<SecurityInformationView> security_view_ = nullptr;
 
+  // The view that shows the QWAC status of the site, if it is a 1-QWAC.
+  raw_ptr<SecurityInformationView> one_qwac_view_ = nullptr;
+
   // The certificate provided by the site, if one exists.
   scoped_refptr<net::X509Certificate> certificate_;
 

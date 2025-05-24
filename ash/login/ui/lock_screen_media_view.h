@@ -50,7 +50,6 @@ class ASH_EXPORT LockScreenMediaView
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // media_session::mojom::MediaControllerObserver:
   void MediaSessionInfoChanged(

@@ -91,27 +91,6 @@ export class SettingsSecurityPageElement extends
   static get properties() {
     return {
       /**
-       * Preferences state.
-       */
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
-      // <if expr="chrome_root_store_cert_management_ui">
-      /**
-       * Whether we should show the new cert management UI.
-       */
-      enableCertManagementUIV2_: {
-        type: Boolean,
-        readOnly: true,
-        value: function() {
-          return loadTimeData.getBoolean('enableCertManagementUIV2');
-        },
-      },
-      // </if>
-
-      /**
        * Whether the secure DNS setting should be displayed.
        */
       showSecureDnsSetting_: {
@@ -183,7 +162,8 @@ export class SettingsSecurityPageElement extends
           // The phones subpage is linked from the security keys subpage, if
           // it exists. Thus the phones subpage is only linked from this page
           // if the security keys subpage is disabled.
-          return !loadTimeData.getBoolean('enableSecurityKeysSubpage');
+          return !loadTimeData.getBoolean('enableSecurityKeysSubpage') &&
+              loadTimeData.getBoolean('enableSecurityKeysManagePhones');
         },
       },
       // </if>
@@ -239,27 +219,28 @@ export class SettingsSecurityPageElement extends
       },
     };
   }
-  // <if expr="chrome_root_store_cert_management_ui">
-  private enableCertManagementUIV2_: boolean;
-  // </if>
-  private showSecureDnsSetting_: boolean;
+  declare private showSecureDnsSetting_: boolean;
 
   // <if expr="is_chromeos">
-  private showSecureDnsSettingLink_: boolean;
+  declare private showSecureDnsSettingLink_: boolean;
   // </if>
 
-  private enableSecurityKeysSubpage_: boolean;
-  focusConfig: FocusConfig;
-  private showDisableSafebrowsingDialog_: boolean;
-  private enableHashPrefixRealTimeLookups_: boolean;
-  private enableHttpsFirstModeNewSettings_: boolean;
-  private lastFocusTime_: number|undefined;
-  private totalTimeInFocus_: number;
-  private lastInteraction_: SecurityPageInteraction;
-  private safeBrowsingStateOnOpen_: SafeBrowsingSetting;
-  private isRouteSecurity_: boolean;
+  declare private enableSecurityKeysSubpage_: boolean;
+  // <if expr="is_win">
+  declare private enableSecurityKeysPhonesSubpage_: boolean;
+  // </if>
+  declare focusConfig: FocusConfig;
+  declare private showDisableSafebrowsingDialog_: boolean;
+  declare private enableHashPrefixRealTimeLookups_: boolean;
+  declare private httpsFirstModeUncheckedValues_: HttpsFirstModeSetting[];
+  declare private enableHttpsFirstModeNewSettings_: boolean;
+  declare private lastFocusTime_: number|undefined;
+  declare private totalTimeInFocus_: number;
+  declare private lastInteraction_: SecurityPageInteraction;
+  declare private safeBrowsingStateOnOpen_: SafeBrowsingSetting;
+  declare private isRouteSecurity_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
-  private hideExtendedReportingRadioButton_: boolean;
+  declare private hideExtendedReportingRadioButton_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -268,17 +249,6 @@ export class SettingsSecurityPageElement extends
 
   private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
     assert(!oldConfig);
-    // TODO(crbug.com/40928765): fix this for new cert management UI.
-    // <if expr="use_nss_certs">
-    if (routes.CERTIFICATES) {
-      this.focusConfig.set(routes.CERTIFICATES.path, () => {
-        const toFocus = this.shadowRoot!.querySelector<HTMLElement>(
-            '#manageCertificatesLinkRow');
-        assert(toFocus);
-        focusWithoutInk(toFocus);
-      });
-    }
-    // </if>
 
     if (routes.SECURITY_KEYS) {
       this.focusConfig.set(routes.SECURITY_KEYS.path, () => {
@@ -451,7 +421,6 @@ export class SettingsSecurityPageElement extends
         SafeBrowsingSetting.STANDARD;
   }
 
-
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(
         this.enableHashPrefixRealTimeLookups_ ?
@@ -516,26 +485,10 @@ export class SettingsSecurityPageElement extends
   }
 
   private onManageCertificatesClick_() {
-    // <if expr="use_nss_certs">
-    Router.getInstance().navigateTo(routes.CERTIFICATES);
-    // </if>
-    // <if expr="is_win or is_macosx">
-    this.browserProxy_.showManageSslCertificates();
-    // </if>
-    this.metricsBrowserProxy_.recordSettingsPageHistogram(
-        PrivacyElementInteractions.MANAGE_CERTIFICATES);
-  }
-
-  private onNewManageCertificatesClick_() {
     this.metricsBrowserProxy_.recordSettingsPageHistogram(
         PrivacyElementInteractions.MANAGE_CERTIFICATES);
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('certManagementV2URL'));
-  }
-
-  private onChromeCertificatesClick_() {
-    OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   }
 
   private onAdvancedProtectionProgramLinkClick_() {

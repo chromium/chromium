@@ -55,13 +55,8 @@ class CardViewControllerTest : public LegacyChromeTableViewControllerTest {
 // 2. "No card items present" message is removed once there are card items to be
 // shown in the view.
 TEST_F(CardViewControllerTest, CheckNoDataItemsMessageRemoved) {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
-    // TODO(crbug.com/327838014): Fails on iPad.
-    return;
-  }
-
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgrade);
+  scoped_feature_list.InitAndEnableFeature(kIOSKeyboardAccessoryUpgradeForIPad);
 
   CardViewController* card_view_controller =
       base::apple::ObjCCastStrict<CardViewController>(controller());

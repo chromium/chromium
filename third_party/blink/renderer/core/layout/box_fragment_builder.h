@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/flex/devtools_flex_info.h"
 #include "third_party/blink/renderer/core/layout/fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/frame_set_layout_data.h"
+#include "third_party/blink/renderer/core/layout/gap_fragment_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/fragment_geometry.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/table/table_borders.h"
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -99,6 +101,52 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return *initial_fragment_geometry_;
   }
 
+  // Set up text box trimming state, based on the constraint space and computed
+  // style. To be called by all algorithms that implement text box trimming.
+  void SetInitialTextBoxTrim();
+
+  bool ShouldTextBoxTrimStart() const {
+    return should_text_box_trim_node_start_ ||
+           should_text_box_trim_fragmentainer_start_;
+  }
+
+  bool ShouldTextBoxTrimEnd() const {
+    return should_text_box_trim_node_end_ ||
+           should_text_box_trim_fragmentainer_end_;
+  }
+
+  bool ShouldTextBoxTrim() const {
+    return ShouldTextBoxTrimStart() || ShouldTextBoxTrimEnd();
+  }
+
+  void ClearShouldTextBoxTrimEnd() {
+    should_text_box_trim_node_end_ = false;
+    should_text_box_trim_fragmentainer_end_ = false;
+  }
+
+  void ClearShouldTextBoxTrimNodeStart() {
+    should_text_box_trim_node_start_ = false;
+  }
+  bool ShouldTextBoxTrimNodeStart() const {
+    return should_text_box_trim_node_start_;
+  }
+  void SetShouldTextBoxTrimNodeEnd(bool b) {
+    should_text_box_trim_node_end_ = b;
+  }
+  bool ShouldTextBoxTrimNodeEnd() const {
+    return should_text_box_trim_node_end_;
+  }
+
+  void ClearShouldTextBoxTrimFragmentainerStart() {
+    should_text_box_trim_fragmentainer_start_ = false;
+  }
+  bool ShouldTextBoxTrimFragmentainerStart() const {
+    return should_text_box_trim_fragmentainer_start_;
+  }
+  bool ShouldTextBoxTrimFragmentainerEnd() const {
+    return should_text_box_trim_fragmentainer_end_;
+  }
+
   const BlockBreakToken* PreviousBreakToken() const {
     return To<BlockBreakToken>(previous_break_token_);
   }
@@ -152,6 +200,20 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     return size_.block_size;
   }
 
+  LogicalSize SizeForAnchorQueries() const {
+    // TODO(layout-dev): This isn't great. But sometimes anchor queries are
+    // evaluated in the middle of layout of an OOF container. This happens when
+    // the OOF container is a multicol container, and column layout gets
+    // interrupted by a column spanner. We should probably provide the multicol
+    // block size we have at the point of being interrupted by the spanner,
+    // rather than using 0.
+    LogicalSize logical_size(InlineSize(), LayoutUnit());
+    if (HasBlockSize()) {
+      logical_size.block_size = FragmentBlockSize();
+    }
+    return logical_size;
+  }
+
   void SetIntrinsicBlockSize(LayoutUnit intrinsic_block_size) {
     intrinsic_block_size_ = intrinsic_block_size;
   }
@@ -177,7 +239,10 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   BoxStrut ExcludedSidesTruncated(const BoxStrut& strut) const {
     // Note that this only truncates along the block axis for now. When it comes
     // to the inline axis, BoxStrut has inline_start/inline_end, whereas
-    // LogicalBoxSides has line_left/line_right, so it's a bit more work.
+    // LineLogicalBoxSides has line_left/line_right, so it's a bit more work.
+    //
+    // TODO(layout-dev): It's rather straight-forward to fix the above now, if
+    // we want to, since we have a "well-behaving" LogicalBoxSides struct.
     return BoxStrut(
         strut.inline_start, strut.inline_end,
         sides_to_include_.block_start ? strut.block_start : LayoutUnit(),
@@ -361,6 +426,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   // Set how much to adjust |consumed_block_size_| for legacy write-back. See
   // BlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
   void SetConsumedBlockSizeLegacyAdjustment(LayoutUnit adjustment) {
+    DCHECK(!RuntimeEnabledFeatures::LayoutBoxVisualLocationEnabled());
     EnsureBreakTokenData()->consumed_block_size_legacy_adjustment = adjustment;
   }
 
@@ -541,8 +607,11 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     mathml_paint_info_ = mathml_paint_info;
   }
 
-  void SetSidesToInclude(LogicalBoxSides sides_to_include) {
+  void SetSidesToInclude(LineLogicalBoxSides sides_to_include) {
     sides_to_include_ = sides_to_include;
+  }
+  void SetSidesToInclude(LogicalBoxSides sides_to_include) {
+    sides_to_include_ = LineLogicalBoxSides(sides_to_include, Direction());
   }
 
   void SetCustomLayoutData(
@@ -574,12 +643,18 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
     use_last_baseline_for_inline_baseline_ = true;
   }
 
+  void SetGapGeometry(const GapGeometry* gap_geometry) {
+    gap_geometry_ = gap_geometry;
+  }
+
+  const GapGeometry* GetGapGeometry() const { return gap_geometry_; }
+
   void SetTableGridRect(const LogicalRect& table_grid_rect) {
     table_grid_rect_ = table_grid_rect;
   }
 
   void SetTableColumnGeometries(
-      const TableFragmentData::ColumnGeometries& table_column_geometries) {
+      const TableColumnGeometries& table_column_geometries) {
     table_column_geometries_ = table_column_geometries;
   }
 
@@ -588,7 +663,7 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   }
 
   void SetTableCollapsedBordersGeometry(
-      std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
+      std::unique_ptr<CollapsedTableBordersGeometry>
           table_collapsed_borders_geometry) {
     table_collapsed_borders_geometry_ =
         std::move(table_collapsed_borders_geometry);
@@ -620,8 +695,8 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   void TransferFrameSetLayoutData(std::unique_ptr<FrameSetLayoutData> data) {
     frame_set_layout_data_ = std::move(data);
   }
-  void SetReadingFlowElements(HeapVector<Member<Element>>&& elements) {
-    reading_flow_elements_ = std::move(elements);
+  void SetReadingFlowNodes(HeapVector<Member<blink::Node>>&& nodes) {
+    reading_flow_nodes_ = std::move(nodes);
   }
 
   const GridLayoutData& GetGridLayoutData() const {
@@ -733,6 +808,17 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   bool is_truncated_by_fragmentation_line = false;
   bool use_last_baseline_for_inline_baseline_ = false;
   bool has_moved_children_in_block_direction_ = false;
+
+  // Whether the `text-box-trim` is effective for block-start/end edges of a
+  // node.
+  bool should_text_box_trim_node_start_ = false;
+  bool should_text_box_trim_node_end_ = false;
+
+  // Whether the `text-box-trim` is effective for block-start/end edges of a
+  // fragmentainer.
+  bool should_text_box_trim_fragmentainer_start_ = false;
+  bool should_text_box_trim_fragmentainer_end_ = false;
+
   LayoutUnit block_offset_for_additional_columns_;
 
   LayoutUnit block_size_for_fragmentation_;
@@ -750,11 +836,13 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::optional<LayoutUnit> last_baseline_;
   LayoutUnit math_italic_correction_;
 
+  const GapGeometry* gap_geometry_ = nullptr;
+
   // Table specific types.
   std::optional<LogicalRect> table_grid_rect_;
-  TableFragmentData::ColumnGeometries table_column_geometries_;
+  TableColumnGeometries table_column_geometries_;
   const TableBorders* table_collapsed_borders_ = nullptr;
-  std::unique_ptr<TableFragmentData::CollapsedBordersGeometry>
+  std::unique_ptr<CollapsedTableBordersGeometry>
       table_collapsed_borders_geometry_;
   std::optional<wtf_size_t> table_column_count_;
 
@@ -771,9 +859,9 @@ class CORE_EXPORT BoxFragmentBuilder final : public FragmentBuilder {
   std::unique_ptr<DevtoolsFlexInfo> flex_layout_data_;
   std::unique_ptr<FrameSetLayoutData> frame_set_layout_data_;
 
-  HeapVector<Member<Element>> reading_flow_elements_;
+  HeapVector<Member<blink::Node>> reading_flow_nodes_;
 
-  LogicalBoxSides sides_to_include_;
+  LineLogicalBoxSides sides_to_include_;
 
   scoped_refptr<SerializedScriptValue> custom_layout_data_;
 

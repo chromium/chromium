@@ -4,6 +4,9 @@ importScripts('/resources/testharness.js');
 importScripts('/common/utils.js');
 importScripts('/common/dispatcher/dispatcher.js');
 
+// Only used by some tests.
+importScripts('/compute-pressure/resources/sync-pressure-observer.js');
+
 function send_message(message) {
   return new Promise((resolve, reject) => {
     const id = token();
@@ -40,8 +43,8 @@ function remove_virtual_pressure_source(source) {
   return send_message({command: 'remove', params: [source]});
 }
 
-function update_virtual_pressure_source(source, state) {
-  return send_message({command: 'update', params: [source, state]});
+function update_virtual_pressure_source(source, state, estimate) {
+  return send_message({command: 'update', params: [source, state, estimate]});
 }
 
 const uuid = new URLSearchParams(location.search).get('uuid');

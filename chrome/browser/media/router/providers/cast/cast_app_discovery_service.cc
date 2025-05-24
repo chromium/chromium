@@ -170,8 +170,9 @@ void CastAppDiscoveryServiceImpl::OnSinkAddedOrUpdated(
   // Any queries that currently contains this sink should be updated.
   UpdateSinkQueries(availability_tracker_.GetSupportedSources(sink_id));
 
-  for (const std::string& app_id : availability_tracker_.GetRegisteredApps())
+  for (const std::string& app_id : availability_tracker_.GetRegisteredApps()) {
     RequestAppAvailability(socket, app_id, sink);
+  }
 }
 
 void CastAppDiscoveryServiceImpl::OnSinkRemoved(const MediaSinkInternal& sink) {
@@ -217,8 +218,9 @@ void CastAppDiscoveryServiceImpl::UpdateSinkQueries(
   for (const auto& source : sources) {
     const MediaSource::Id& source_id = source.source_id();
     auto it = sink_queries_.find(source_id);
-    if (it == sink_queries_.end())
+    if (it == sink_queries_.end()) {
       continue;
+    }
     base::flat_set<MediaSink::Id> sink_ids =
         availability_tracker_.GetAvailableSinks(source);
     it->second->Notify(source_id, GetSinksByIds(sink_ids));
@@ -230,8 +232,9 @@ std::vector<MediaSinkInternal> CastAppDiscoveryServiceImpl::GetSinksByIds(
   std::vector<MediaSinkInternal> sinks;
   for (const auto& sink_id : sink_ids) {
     const MediaSinkInternal* sink = media_sink_service_->GetSinkById(sink_id);
-    if (sink)
+    if (sink) {
       sinks.push_back(*sink);
+    }
   }
   return sinks;
 }

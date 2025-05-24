@@ -8,54 +8,66 @@ import android.content.Context;
 import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.State;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
 /** Coordinator for building a commerce bottom sheet content. */
+@NullMarked
 public class CommerceBottomSheetContentCoordinator implements CommerceBottomSheetContentController {
     private static final long CONTENT_PROVIDER_TIMEOUT_MS = 200;
 
-    /** Supported content types, the content is prioritized based on this order. */
-    @IntDef({ContentType.PRICE_TRACKING, ContentType.DISCOUNTS, ContentType.PRICE_INSIGHTS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ContentType {
-        int PRICE_TRACKING = 0;
-        int DISCOUNTS = 1;
-        int PRICE_INSIGHTS = 2;
-    }
-
-    private List<CommerceBottomSheetContentProvider> mContentProviders = new ArrayList<>();
+    private final List<CommerceBottomSheetContentProvider> mContentProviders = new ArrayList<>();
     private final CommerceBottomSheetContentMediator mMediator;
-    private RecyclerView mContenRecyclerView;
-    private View mCommerceBottomSheetContentContainer;
-    private ModelList mModelList;
+    private final RecyclerView mContentRecyclerView;
+    private final View mCommerceBottomSheetContentContainer;
+    private final ModelList mModelList;
+    private @Nullable Long mSheetOpenTimeMs;
 
-    private final Context mContext;
-    private CallbackController mCallbackController;
+    @MonotonicNonNull private CallbackController mCallbackController;
     private final Handler mHandler = new Handler(Looper.getMainLooper());
+    private final Supplier<ScrimManager> mScrimManagerSupplier;
 
     public CommerceBottomSheetContentCoordinator(
-            Context context, @NonNull BottomSheetController bottomSheetController) {
-        mContext = context;
+            Context context,
+            BottomSheetController bottomSheetController,
+            final Supplier<ScrimManager> scrimSupplier,
+            List<Supplier<CommerceBottomSheetContentProvider>> contentProviderSuppliers) {
         mModelList = new ModelList();
-        SimpleRecyclerViewAdapter adapter = new SimpleRecyclerViewAdapter(mModelList);
+
+        mScrimManagerSupplier = scrimSupplier;
+        SimpleRecyclerViewAdapter adapter =
+                new SimpleRecyclerViewAdapter(mModelList) {
+                    @Override
+                    public void onViewRecycled(ViewHolder holder) {
+                        super.onViewRecycled(holder);
+                        ((ViewGroup) holder.itemView.findViewById(R.id.content_view_container))
+                                .removeAllViews();
+                    }
+                };
         adapter.registerType(
                 0,
                 new LayoutViewBuilder(R.layout.commerce_bottom_sheet_content_item_container),
@@ -65,26 +77,64 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                 LayoutInflater.from(context)
                         .inflate(
                                 R.layout.commerce_bottom_sheet_content_container, /* root= */ null);
-        mContenRecyclerView =
+        mContentRecyclerView =
                 mCommerceBottomSheetContentContainer.findViewById(
                         R.id.commerce_content_recycler_view);
-        mContenRecyclerView.setAdapter(adapter);
-        mContenRecyclerView.addItemDecoration(
+        mContentRecyclerView.setAdapter(adapter);
+        mContentRecyclerView.addItemDecoration(
                 new ItemDecoration() {
                     @Override
                     public void getItemOffsets(
-                            @NonNull Rect outRect,
-                            @NonNull View view,
-                            @NonNull RecyclerView parent,
-                            @NonNull State state) {
+                            Rect outRect, View view, RecyclerView parent, State state) {
                         if (parent.getChildAdapterPosition(view) != 0) {
                             outRect.top =
-                                    mContext.getResources()
+                                    context.getResources()
                                             .getDimensionPixelOffset(
                                                     R.dimen.content_item_container_top_offset);
                         }
                     }
                 });
+
+        bottomSheetController.addObserver(
+                new EmptyBottomSheetObserver() {
+                    @Nullable PropertyModel mScrimModel;
+
+                    @Override
+                    public void onSheetStateChanged(int newState, int reason) {
+                        if (mSheetOpenTimeMs == null) {
+                            mSheetOpenTimeMs = SystemClock.elapsedRealtime();
+                        }
+                        if (newState == SheetState.FULL) {
+                            mContentRecyclerView.setNestedScrollingEnabled(true);
+                            if (mScrimModel != null && !mMediator.isContentWrappingContent()) {
+                                mScrimModel = bottomSheetController.createScrimParams();
+                                mScrimManagerSupplier.get().showScrim(mScrimModel);
+                            }
+                        } else if (newState == SheetState.HALF) {
+                            mContentRecyclerView.setNestedScrollingEnabled(false);
+                        } else if (newState == SheetState.HIDDEN) {
+                            if (mSheetOpenTimeMs != null) {
+                                Long durationMs = SystemClock.elapsedRealtime() - mSheetOpenTimeMs;
+                                RecordHistogram.recordTimesHistogram(
+                                        "Commerce.BottomSheet.BrowsingTime", durationMs);
+                            }
+                            mSheetOpenTimeMs = null;
+                        }
+                    }
+
+                    @Override
+                    public void onSheetClosed(int reason) {
+                        if (mScrimModel != null) {
+                            mScrimManagerSupplier.get().hideScrim(mScrimModel, true);
+                        }
+                        mMediator.onBottomSheetClosed();
+                        for (CommerceBottomSheetContentProvider provider : mContentProviders) {
+                            provider.hideContentView();
+                        }
+                    }
+                });
+
+        initContentProviders(contentProviderSuppliers);
 
         mMediator =
                 new CommerceBottomSheetContentMediator(
@@ -92,9 +142,10 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                         mContentProviders.size(),
                         bottomSheetController,
                         mCommerceBottomSheetContentContainer);
-        initContentProviders();
     }
 
+    @SuppressWarnings(
+            "NullAway") // CallbackController#makeCancelable returns Callback<PropertyModel>
     @Override
     public void requestShowContent() {
         mCallbackController = new CallbackController();
@@ -110,12 +161,18 @@ public class CommerceBottomSheetContentCoordinator implements CommerceBottomShee
                 CONTENT_PROVIDER_TIMEOUT_MS);
     }
 
-    private void initContentProviders() {
-        // TODO(b/362360807): Instantiate all the CommerceBottomSheetContentProvider here.
+    private void initContentProviders(
+            List<Supplier<CommerceBottomSheetContentProvider>> contentProviderSuppliers) {
+        for (Supplier<CommerceBottomSheetContentProvider> contentProviderSupplier :
+                contentProviderSuppliers) {
+            if (contentProviderSupplier.get() != null) {
+                mContentProviders.add(contentProviderSupplier.get());
+            }
+        }
     }
 
     public RecyclerView getRecyclerViewForTesting() {
-        return mContenRecyclerView;
+        return mContentRecyclerView;
     }
 
     public ModelList getModelListForTesting() {

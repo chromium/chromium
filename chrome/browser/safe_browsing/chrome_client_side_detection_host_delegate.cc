@@ -146,4 +146,18 @@ ChromeClientSideDetectionHostDelegate::GetUserPopulation() {
   return ::safe_browsing::GetUserPopulationForProfile(profile);
 }
 
+void ChromeClientSideDetectionHostDelegate::GetInnerText(
+    HostInnerTextCallback callback) {
+  content_extraction::GetInnerText(
+      *web_contents_->GetPrimaryMainFrame(), std::nullopt,
+      base::BindOnce(&ChromeClientSideDetectionHostDelegate::OnInnerTextResult,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ChromeClientSideDetectionHostDelegate::OnInnerTextResult(
+    HostInnerTextCallback callback,
+    std::unique_ptr<content_extraction::InnerTextResult> result) {
+  std::move(callback).Run(result ? result->inner_text : "");
+}
+
 }  // namespace safe_browsing

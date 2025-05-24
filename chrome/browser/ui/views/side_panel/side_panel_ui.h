@@ -18,14 +18,14 @@ class WebContents;
 class SidePanelUI {
  public:
   // Open side panel with entry_id.
-  virtual void Show(
-      SidePanelEntryId entry_id,
-      std::optional<SidePanelOpenTrigger> open_trigger = std::nullopt) = 0;
+  virtual void Show(SidePanelEntryId entry_id,
+                    std::optional<SidePanelOpenTrigger> open_trigger) = 0;
+  void Show(SidePanelEntryId entry_id) { Show(entry_id, std::nullopt); }
 
   // Open side panel with entry key.
-  virtual void Show(
-      SidePanelEntryKey entry_key,
-      std::optional<SidePanelOpenTrigger> open_trigger = std::nullopt) = 0;
+  virtual void Show(SidePanelEntryKey entry_key,
+                    std::optional<SidePanelOpenTrigger> open_trigger) = 0;
+  void Show(SidePanelEntryKey entry_key) { Show(entry_key, std::nullopt); }
 
   // Close the side panel.
   virtual void Close() = 0;
@@ -45,6 +45,10 @@ class SidePanelUI {
 
   // Get the current entry id if the side panel is open.
   virtual std::optional<SidePanelEntryId> GetCurrentEntryId() const = 0;
+
+  // Returns the current entries default width. Returns nullopt if this value is
+  // not set or if the side panel is closed.
+  virtual int GetCurrentEntryDefaultContentWidth() const = 0;
 
   // Return whether any entry is being shown in the side panel.
   // Note: this returns false if `entry` is current loading but not actually

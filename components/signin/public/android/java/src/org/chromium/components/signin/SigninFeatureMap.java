@@ -8,24 +8,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.FeatureMap;
-import org.chromium.base.cached_flags.CachedFlag;
-
-import java.util.List;
+import org.chromium.build.annotations.NullMarked;
 
 /** Java accessor for base/android/feature_map.h state. */
 @JNINamespace("signin")
+@NullMarked
 public final class SigninFeatureMap extends FeatureMap {
     private static final SigninFeatureMap sInstance = new SigninFeatureMap();
-
-    public static final CachedFlag sDontFallbackToDefaultImplementationInAccountManagerFacade =
-            new CachedFlag(
-                    sInstance,
-                    SigninFeatures
-                            .DONT_FALLBACK_TO_DEFAULT_IMPLEMENTATION_IN_ACCOUNT_MANAGER_FACADE,
-                    true);
-
-    public static final List<CachedFlag> sCachedFlags =
-            List.of(sDontFallbackToDefaultImplementationInAccountManagerFacade);
 
     // Do not instantiate this class.
     private SigninFeatureMap() {}

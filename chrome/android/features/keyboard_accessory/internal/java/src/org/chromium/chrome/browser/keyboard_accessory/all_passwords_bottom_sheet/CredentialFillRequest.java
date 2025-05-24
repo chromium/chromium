@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class holds the data used to pass a fill request. */
+@NullMarked
 class CredentialFillRequest {
     private final Credential mCredential;
     private final boolean mRequestsToFillPassword;

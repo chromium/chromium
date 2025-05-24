@@ -1,0 +1,32 @@
+[package]
+name = "temporal_capi"
+description = "C interface to temporal_rs"
+edition.workspace = true
+version.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+include = [
+    "bindings/**/*",
+    "src/**/*",
+    "tests/**/*",
+    "Cargo.toml",
+    "LICENSE-Apache",
+    "LICENSE-MIT",
+    "README.md"
+]
+
+[dependencies]
+diplomat = "0.11.0"
+diplomat-runtime = "0.11.0"
+num-traits.workspace = true
+temporal_rs = { workspace = true, default-features = false }
+icu_calendar = { version = "2.0.0", default-features = false }
+icu_locale = { version = "2.0.0" }
+
+[features]
+compiled_data = ["temporal_rs/compiled_data"]
+
+[package.metadata.docs.rs]
+all-features = true

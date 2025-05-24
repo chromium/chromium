@@ -1,0 +1,564 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="AdsHeuristicCookieOverride">
+  <int value="0" label="kNone"/>
+  <int value="1" label="kNotAd"/>
+  <int value="2" label="kAny"/>
+  <int value="3" label="kSkipHeuristics"/>
+  <int value="4" label="kSkipMetadata"/>
+  <int value="5" label="kSkipSupport"/>
+  <int value="6" label="kSkipTopLevelSupport"/>
+</enum>
+
+<enum name="AggregationServiceObserverReportStatus">
+  <int value="0" label="Sent"/>
+  <int value="1" label="Failed to assemble"/>
+  <int value="2" label="Failed to send"/>
+</enum>
+
+<enum name="AntiFingerprintingBlockListResult">
+  <summary>
+    The possible results from checking a network resource URL against the
+    anti-fingerprinting blocklist.
+  </summary>
+  <int value="0" label="Third-party resource Blocked"/>
+  <int value="1" label="Third-party resource Allowed"/>
+  <int value="2" label="First-party resource Allowed"/>
+</enum>
+
+<enum name="ClearOnExitSyncEvent">
+  <int value="0" label="Profile startup, sync is disabled"/>
+  <int value="1" label="Profile startup, sync is paused"/>
+  <int value="2" label="Profile startup, sync is active"/>
+  <int value="3" label="Re-login to a sync paused account"/>
+  <int value="4" label="Logout of a sync paused account"/>
+  <int value="5"
+      label="Profile shutdown, sync is active, started paused, consent change"/>
+  <int value="6"
+      label="Profile shutdown, sync is active, started paused, no consent
+             change"/>
+  <int value="7"
+      label="Profile shutdown, sync is active, started active, consent change"/>
+  <int value="8"
+      label="Profile shutdown, sync is active, started active, no consent
+             change"/>
+  <int value="9" label="Profile shutdown, sync is paused"/>
+</enum>
+
+<enum name="ConsentAuditorFeature">
+  <int value="0" label="CHROME_SYNC"/>
+  <int value="1" label="PLAY_STORE"/>
+  <int value="2" label="BACKUP_AND_RESTORE"/>
+  <int value="3" label="GOOGLE_LOCATION_SERVICE"/>
+</enum>
+
+<!-- LINT.IfChange(ContentSettingPatternScope) -->
+
+<enum name="ContentSettingPatternScope">
+  <int value="0" label="Origin scoped"/>
+  <int value="1" label="With domain wildcard"/>
+  <int value="2" label="With port wildcard"/>
+  <int value="3" label="With scheme wildcard"/>
+  <int value="4" label="With scheme and port wildcard"/>
+  <int value="5" label="With domain and port wildcard"/>
+  <int value="6" label="With domain and scheme wildcard"/>
+  <int value="7" label="With domain and scheme and port wildcard"/>
+  <int value="8" label="Full wildcard"/>
+  <int value="9" label="File path"/>
+  <int value="10" label="Custom scope"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/content_settings/core/common/content_settings_pattern.h:Scope) -->
+
+<!-- LINT.IfChange(CookieControlsMode) -->
+
+<enum name="CookieControlsMode">
+  <int value="0" label="Off"/>
+  <int value="1" label="BlockThirdParty"/>
+  <int value="2" label="IncognitoOnly"/>
+  <int value="3" label="Limited"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/content_settings/core/browser/cookie_settings.h:CookieControlsMode, //chrome/browser/resources/settings/site_settings/constants.ts:CookieControlsMode) -->
+
+<enum name="CookieDeprecationFacilitatedTestingProfileEligibility">
+  <int value="0" label="Eligible"/>
+  <int value="1" label="Ineligible: 3P Cookies blocked"/>
+  <int value="2" label="Ineligible: Has not seen Ads API GA notice"/>
+  <int value="3" label="Ineligible: New user"/>
+  <int value="4" label="Ineligible: Enterprise user"/>
+  <int value="5" label="Ineligible: PWA or TWA installed on Android"/>
+  <int value="6" label="Eligible: Forced via kForceEligibleForTesting"/>
+</enum>
+
+<enum name="DeleteBrowsingDataAction">
+  <int value="0" label="CBD dialog"/>
+  <int value="1" label="Clear on exit"/>
+  <int value="2" label="Close Incognito tabs"/>
+  <int value="3" label="Cookies in use dialog"/>
+  <int value="4" label="Site settings page"/>
+  <int value="5" label="History Page Entries"/>
+  <int value="6" label="Quick delete"/>
+  <int value="7" label="Page info permission reset"/>
+  <int value="8" label="RWS delete all data"/>
+</enum>
+
+<!--LINT.IfChange(DeleteBrowsingDataDialogAction) -->
+
+<enum name="DeleteBrowsingDataDialogAction">
+  <int value="0" label="Browsing History Toggled On"/>
+  <int value="1" label="Browsing History Toggled Off"/>
+  <int value="2" label="Tabs Toggled On"/>
+  <int value="3" label="Tabs Toggled Off"/>
+  <int value="4" label="Site Data Toggled On"/>
+  <int value="5" label="Site Data Toggled Off"/>
+  <int value="6" label="Cache Toggled On"/>
+  <int value="7" label="Cache Toggled Off"/>
+  <int value="8" label="Passwords Toggled On"/>
+  <int value="9" label="Passwords Toggled Off"/>
+  <int value="10" label="Autofill Toggled On"/>
+  <int value="11" label="Autofill Toggled Off"/>
+  <int value="12" label="Confirm data type selection changes"/>
+  <int value="13" label="Cancel data type selection changes"/>
+  <int value="14" label="Sign out footer link opened"/>
+  <int value="15" label="Last 15 Minutes selected"/>
+  <int value="16" label="Last Hour selected"/>
+  <int value="17" label="Last day selected"/>
+  <int value="18" label="Last week selected"/>
+  <int value="19" label="Last four weeks selected"/>
+  <int value="20" label="Older than 30 days selected"/>
+  <int value="21" label="All time selected"/>
+  <int value="22" label="Browsing data row selected"/>
+  <int value="23" label="Search history link opened"/>
+  <int value="24" label="My Activity link opened"/>
+  <int value="25" label="Deletion selected"/>
+  <int value="26" label="Cancel selected"/>
+  <int value="27" label="Dialog dismissed implicitly"/>
+  <int value="28" label="Menu item entry point (i.e. three dot menu) selected"/>
+  <int value="29" label="History page entry point selected"/>
+  <int value="30" label="Privacy page entry point selected"/>
+  <int value="31" label="Keyboard entry point selected"/>
+</enum>
+
+<!--LINT.ThenChange(//components/browsing_data/core/browsing_data_utils.h:DeleteBrowsingDataDialogAction) -->
+
+<enum name="DIPSDeletionAction">
+  <int value="0" label="Disallowed"/>
+  <int value="1" label="ExceptedAs1p"/>
+  <int value="2" label="ExceptedAs3p"/>
+  <int value="3" label="Enforced"/>
+  <int value="4" label="Ignored: Due to empty site."/>
+  <int value="5" label="Excepted"/>
+</enum>
+
+<enum name="DIPSDirectNavigationSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Omnibar"/>
+  <int value="2" label="Bookmark"/>
+</enum>
+
+<enum name="DIPSErrorCode">
+  <int value="0" label="No DIPSDatabase::Read error was encountered"/>
+  <int value="1"
+      label="DIPSDatabase::Read Error: A range in the db has an open-range
+             (NULL, end]."/>
+  <int value="2"
+      label="DIPSDatabase::Read Error: A range in the db has an open-range
+             [start, NULL)."/>
+  <int value="3"
+      label="DIPSDatabase::Read Error: `bounce_times` doesn't fully contain
+             `stateful_bounce_times`."/>
+  <int value="4"
+      label="DIPSDatabase::Read Error: A query was made for an empty `site`;
+             db has an entry with an empty `site`."/>
+  <int value="5"
+      label="DIPSDatabase::Read Error: A query was made for an empty `site`;
+             db does not have an entry with an empty `site`."/>
+  <int value="6" label="No DIPSDatabase::Write error was encountered"/>
+  <int value="7" label="DIPSDatabase::Write Error: `site` is empty."/>
+</enum>
+
+<enum name="DIPSRedirectCategory">
+  <int value="0" label="No cookies accessed; no previous site engagement"/>
+  <int value="1" label="Cookies only read; no previous site engagement"/>
+  <int value="2" label="Cookies only written; no previous site engagement"/>
+  <int value="3" label="Cookies read and written; no previous site engagement"/>
+  <int value="4" label="No cookies accessed; site has previous engagement"/>
+  <int value="5" label="Cookies only read; site has previous engagement"/>
+  <int value="6" label="Cookies only written; site has previous engagement"/>
+  <int value="7"
+      label="Cookies read and written; site has previous engagement"/>
+  <int value="8" label="Unknown cookie access; no previous site engagement"/>
+  <int value="9" label="Unknown cookie access; site has previous engagement"/>
+</enum>
+
+<enum name="DIPSRedirectType">
+  <int value="0" label="Client redirect"/>
+  <int value="1" label="Server redirect"/>
+</enum>
+
+<!-- LINT.IfChange(PrivacySandboxActSurveyStatus) -->
+
+<enum name="PrivacySandboxActSurveyStatus">
+  <int value="0" label="Survey was successfully launched"/>
+  <int value="1" label="Feature not enabled"/>
+  <int value="2" label="Failed to fetch HaTS service"/>
+  <int value="3" label="Failed to launch survey"/>
+  <int value="4" label="Not in Incognito profile"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/privacy_sandbox/incognito/privacy_sandbox_incognito_survey_service.h:PrivacySandboxActSurveyStatus) -->
+
+<enum name="PrivacySandboxAggregationServiceKeyFetcherStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Download error"/>
+  <int value="2" label="Json parse error"/>
+  <int value="3" label="Invalid key error"/>
+  <int value="4" label="Expired key error"/>
+</enum>
+
+<enum name="PrivacySandboxAggregationServiceReportAssemblerStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Public key fetch error"/>
+  <int value="2" label="Assembly error"/>
+  <int value="3" label="Too many requests error"/>
+</enum>
+
+<enum name="PrivacySandboxAggregationServiceReportSenderStatus">
+  <int value="0" label="Ok"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="Server error"/>
+</enum>
+
+<enum name="PrivacySandboxAggregationServiceStorageSqlInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to open DB in memory"/>
+  <int value="2" label="Failed to open DB file"/>
+  <int value="3" label="Failed to create directory"/>
+  <int value="4" label="Failed to initialize schema"/>
+</enum>
+
+<enum name="PrivacySandboxApiAllowed">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Restricted"/>
+  <int value="2" label="Incognito profile"/>
+  <int value="3" label="Apis disabled"/>
+  <int value="4" label="Site data access blocked"/>
+  <int value="5" label="Mismatched Consent"/>
+  <int value="6" label="Attestation failed"/>
+  <int value="7"
+      label="Deprecated. Component installer has not yet checked the
+             attestations file, or attestations file not present"/>
+  <int value="8" label="Attestations downloaded, not yet loaded"/>
+  <int value="9" label="Attestations file corrupt"/>
+  <int value="10" label="Protected Audience joining blocked due to top frame"/>
+  <int value="11"
+      label="Disabled by third-party cookie deprecation experiment"/>
+  <int value="12"
+      label="Component installer has not yet checked the attestations file"/>
+  <int value="13" label="Attestations file not present"/>
+</enum>
+
+<enum name="PrivacySandboxAttestationLoadAPKAssetStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Fail to open the attestations list from APK assets"/>
+  <int value="2"
+      label="Fail to create a memory mapped file of the attestations list
+             from APK assets"/>
+  <int value="3" label="Fail to parse the content of the attestations list"/>
+</enum>
+
+<enum name="PrivacySandboxAttestationParsingStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="NotNewerVersion"/>
+  <int value="2" label="FileNotExist"/>
+  <int value="3" label="SentinelFilePresent"/>
+  <int value="4" label="CannotCreateSentinel"/>
+  <int value="5" label="CannotRemoveSentinel"/>
+  <int value="6" label="CannotParseFile"/>
+</enum>
+
+<enum name="PrivacySandboxAttestationsFileSource">
+  <int value="0" label="Pre-installed"/>
+  <int value="1" label="Downloaded"/>
+</enum>
+
+<!-- LINT.IfChange(PrivacySandboxCctAdsNoticeSurveyFailures) -->
+
+<enum name="PrivacySandboxCctAdsNoticeSurveyFailures">
+  <int value="0" label="Feature not enabled"/>
+  <int value="1" label="App ID mismatch"/>
+  <int value="2" label="No notice interaction found"/>
+  <int value="3" label="Invalid prompt type found"/>
+  <int value="4" label="Failed to find survey config for EEA accepted"/>
+  <int value="5" label="Failed to find survey config for EEA declined"/>
+  <int value="6" label="Failed to find survey config for EEA control"/>
+  <int value="7" label="Failed to find survey config for ROW acknowledged"/>
+  <int value="8" label="Failed to find survey config for ROW control"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxCctAdsNoticeSurveyFailures) -->
+
+<!-- LINT.IfChange(PrivacySandboxDialogCallbackState) -->
+
+<enum name="PrivacySandboxDialogCallbackState">
+  <int value="0" label="SingleActionCallbackDNE"/>
+  <int value="1" label="MultiActionCallbackDNE"/>
+  <int value="2" label="CallbackUnknownBeforeShown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h:PrivacySandboxDialogCallbackState) -->
+
+<!-- LINT.IfChange(PrivacySandboxNoticeAction) -->
+
+<enum name="PrivacySandboxNoticeAction">
+  <int value="0" label="NotSet"/>
+  <int value="1" label="Ack"/>
+  <int value="2" label="Closed"/>
+  <int value="3" label="LearnMore"/>
+  <int value="4" label="OptIn"/>
+  <int value="5" label="OptOut"/>
+  <int value="6" label="Other"/>
+  <int value="7" label="Settings"/>
+  <int value="8" label="UnknownActionPreMigration"/>
+  <int value="9" label="TimedOut"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeActionTaken) -->
+
+<!-- LINT.IfChange(PrivacySandboxNoticeActionBehavior) -->
+
+<enum name="PrivacySandboxNoticeActionBehavior">
+  <int value="0" label="Success"/>
+  <int value="1" label="ActionBeforeShown"/>
+  <int value="2" label="DuplicateActionTaken"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/notice/notice_storage.h:NoticeActionBehavior) -->
+
+<!-- LINT.IfChange(PrivacySandboxNoticeEvent) -->
+
+<enum name="PrivacySandboxNoticeEvent">
+  <int value="0" label="Ack"/>
+  <int value="1" label="Closed"/>
+  <int value="2" label="OptIn"/>
+  <int value="3" label="OptOut"/>
+  <int value="4" label="Settings"/>
+  <int value="5" label="Shown"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/notice/notice.mojom:PrivacySandboxNoticeEvent) -->
+
+<enum name="PrivacySandboxPrimaryAccountUserGroups">
+  <int value="0" label="NotSet"/>
+  <int value="1" label="SignedOut"/>
+  <int value="2" label="SignedInCapabilityFalse"/>
+  <int value="3" label="SignedInCapabilityTrue"/>
+  <int value="4" label="SignedInCapabilityUnknown"/>
+</enum>
+
+<!-- LINT.IfChange(PrivacySandboxPrimaryAccountUserGroups) -->
+
+<enum name="PrivacySandboxPrivateAggregationBudgeterBudgetValidityStatus2">
+  <int value="0" label="Valid"/>
+  <int value="1" label="Valid but empty; no budget data stored"/>
+  <int value="2"
+      label="Valid but contains an entry with a stale entry, i.e. a window
+             from over a day ago"/>
+  <int value="3" label="Contains a value with a timestamp in the future"/>
+  <int value="4"
+      label="Contains a value with a value that exceeds the budget limit"/>
+  <int value="5"
+      label="Contains an entry with a timestamp that is not rounded to a
+             minute"/>
+  <int value="6" label="Contains budget data that spans more than a day"/>
+  <int value="7" label="Contains an entry with a nonpositive budget value"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:PrimaryAccountUserGroups) -->
+
+<enum name="PrivacySandboxPrivateAggregationBudgeterRequestResult3">
+  <int value="0" label="Approved"/>
+  <int value="1" label="Insufficient budget left in 10-min scope"/>
+  <int value="2" label="Insufficient budget left in daily scope"/>
+  <int value="3" label="Requested more than total budget"/>
+  <int value="4" label="Too many pending calls"/>
+  <int value="5" label="Storage initialization failed"/>
+  <int value="6" label="Bad values on disk"/>
+</enum>
+
+<enum name="PrivacySandboxPrivateAggregationBudgetStorageInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to open DB in memory"/>
+  <int value="2" label="Failed to open DB file"/>
+  <int value="3" label="Failed to create directory"/>
+</enum>
+
+<enum name="PrivacySandboxPrivateAggregationHostFilteringIdStatus">
+  <int value="0" label="No filtering ID, default max bytes"/>
+  <int value="1" label="Filtering ID provided, default max bytes"/>
+  <int value="2" label="No filtering ID, custom max bytes"/>
+  <int value="3" label="Filtering ID provided, custom max bytes"/>
+</enum>
+
+<enum name="PrivacySandboxPrivateAggregationHostPipeResult">
+  <int value="0" label="Report success"/>
+  <int value="1"
+      label="Report success but truncated due to too many contributions"/>
+  <int value="2" label="No report, but no error"/>
+  <int value="3" label="API disabled in settings"/>
+  <int value="4" label="Enable debug mode called multiple times"/>
+  <int value="5" label="Negative value"/>
+  <int value="6" label="Filtering ID invalid"/>
+  <int value="7" label="Necessary feature not enabled"/>
+</enum>
+
+<enum name="PrivacySandboxPrivateAggregationHostTimeoutResult">
+  <int value="0" label="Occurred before remote disconnection"/>
+  <int value="1" label="Occurred after remote disconnection"/>
+  <int value="2" label="Canceled due to error"/>
+  <int value="3" label="Still scheduled on shutdown"/>
+</enum>
+
+<enum name="PrivacySandboxPrivateAggregationManagerRequestResult">
+  <int value="0" label="Sent with contributions"/>
+  <int value="1" label="Sent without contributions"/>
+  <int value="2" label="Sent but contributions cleared due to budget denial"/>
+  <int value="3" label="Not sent"/>
+</enum>
+
+<!-- LINT.IfChange(PrivacySandboxPrivateAggregationTruncationResult) -->
+
+<enum name="PrivacySandboxPrivateAggregationTruncationResult">
+  <int value="0" label="No truncation occurred"/>
+  <int value="1"
+      label="Truncation occurred with the unconditional contributions alone
+             exceeding the limit"/>
+  <int value="2"
+      label="Truncation occurred but the unconditional contributions alone
+             did not exceed the limit"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/private_aggregation/private_aggregation_pending_contributions.h:TruncationResult) -->
+
+<!-- LINT.IfChange(PrivacySandboxPromptSuppressionReason) -->
+
+<enum name="PrivacySandboxPromptSuppressionReason">
+<!-- Used as a bitfield so values must be ascending powers of 2 -->
+
+  <int value="0" label="None"/>
+  <int value="1" label="3PC_Blocked"/>
+  <int value="2" label="CapabilityFalse"/>
+  <int value="4" label="ManagedDevice"/>
+  <int value="8" label="NoticeShownBefore"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/privacy_sandbox/privacy_sandbox_service.h:FakeNoticePromptSuppressionReason) -->
+
+<!-- LINT.IfChange(PrivacySandboxSentimentSurveyStatus) -->
+
+<enum name="PrivacySandboxSentimentSurveyStatus">
+  <int value="0" label="Survey was successfully launched"/>
+  <int value="1" label="Feature not enabled"/>
+  <int value="2" label="Failed to fetch HaTS service"/>
+  <int value="3" label="Failed to launch survey"/>
+  <int value="4" label="Failed to find survey config"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/privacy_sandbox/privacy_sandbox_survey_service.h:PrivacySandboxSentimentSurveyStatus) -->
+
+<enum name="PrivacySandboxStorageActivityType">
+  <int value="0" label="Received kOther (partial CCT or unknown) type"/>
+  <int value="1" label="Received kTabbed (BrowserApp) type"/>
+  <int value="2" label="Received kAGSACustomTab type"/>
+  <int value="3" label="Received kNonAGSACustomTab type"/>
+  <int value="4" label="Received kTrustedWebActivity type"/>
+  <int value="5" label="Received kWebapp type"/>
+  <int value="6" label="Received kWebApk type"/>
+  <int value="7" label="Received kPreFirstTab type"/>
+</enum>
+
+<enum name="PrivacySandboxStorageUserSegmentByRecentActivity">
+  <int value="0" label="kHasOther"/>
+  <int value="1" label="kHasBrowserApp"/>
+  <int value="2" label="kHasAGSACCT"/>
+  <int value="3" label="kHasNonAGSACCT"/>
+  <int value="4" label="kHasPWA"/>
+  <int value="5" label="kHasTWA"/>
+  <int value="6" label="kHasWebapp"/>
+  <int value="7" label="kHasPreFirstTab"/>
+</enum>
+
+<!-- LINT.IfChange(PrivacySandboxSurveyTypesEnums) -->
+
+<enum name="PrivacySandboxSurveyTypes">
+  <int value="0" label="Unknown Survey"/>
+  <int value="1" label="Sentiment Survey"/>
+  <int value="2" label="Accepted EEA Survey"/>
+  <int value="3" label="Declined EEA Survey"/>
+  <int value="4" label="Control EEA Survey"/>
+  <int value="5" label="Acknowledged ROW Survey"/>
+  <int value="6" label="Control ROW Survey"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyController.java:PrivacySandboxSurveyTypes) -->
+
+<enum name="QuickDeleteAction">
+  <int value="0" label="Entry from menu item clicked"/>
+  <int value="1" label="Delete button on dialog clicked"/>
+  <int value="2" label="Cancel button on dialog clicked"/>
+  <int value="3"
+      label="Dialog dismissed due to reasons other than Cancel or Delete"/>
+  <int value="4" label="Entry from tab switcher menu item clicked"/>
+  <int value="5" label="More options button on dialog clicked"/>
+  <int value="6" label="My activity link on dialog clicked"/>
+  <int value="7" label="Search history link on dialog clicked"/>
+  <int value="8" label="last 15 minutes deletion time range selected"/>
+  <int value="9" label="last hour minutes deletion time range selected"/>
+  <int value="10" label="last day minutes deletion time range selected"/>
+  <int value="11" label="last week minutes deletion time range selected"/>
+  <int value="12" label="last four weeks deletion time range selected"/>
+  <int value="13" label="All time deletion time range selected"/>
+</enum>
+
+<enum name="SecCookieDeprecationHeaderStatus">
+  <int value="0" label="kSet"/>
+  <int value="1" label="kNoLabel"/>
+  <int value="2" label="kNoCookie"/>
+</enum>
+
+<enum name="ThirdPartySiteDataAccessType">
+  <int value="0" label="Any blocked third-party site data accesses"/>
+  <int value="1" label="Any allowed third-party site data accesses"/>
+  <int value="2" label="No third-party site data accesses"/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

@@ -120,11 +120,11 @@ array: Array(300)
     length: 300
     [[Prototype]]: Array(0)
 func: function() {return a + b;}
-    arguments: null
-    caller: null
     length: 0
     name: 
     prototype: Object
+    arguments: null
+    caller: null
     [[FunctionLocation]]: Object
     [[Prototype]]: function () { [native code] }
 Page reloaded.
@@ -242,11 +242,11 @@ array: Array(300)
     length: 300
     [[Prototype]]: Array(0)
 func: function() {return a + b;}
-    arguments: null
-    caller: null
     length: 0
     name: 
     prototype: Object
+    arguments: null
+    caller: null
     [[FunctionLocation]]: Object
     [[Prototype]]: function () { [native code] }
 

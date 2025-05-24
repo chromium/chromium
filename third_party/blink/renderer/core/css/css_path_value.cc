@@ -15,7 +15,7 @@ namespace blink {
 
 namespace cssvalue {
 
-CSSPathValue::CSSPathValue(scoped_refptr<StylePath> style_path,
+CSSPathValue::CSSPathValue(StylePath* style_path,
                            PathSerializationFormat serialization_format)
     : CSSValue(kPathClass),
       serialization_format_(serialization_format),
@@ -26,7 +26,8 @@ CSSPathValue::CSSPathValue(scoped_refptr<StylePath> style_path,
 CSSPathValue::CSSPathValue(SVGPathByteStream path_byte_stream,
                            WindRule wind_rule,
                            PathSerializationFormat serialization_format)
-    : CSSPathValue(StylePath::Create(std::move(path_byte_stream), wind_rule),
+    : CSSPathValue(MakeGarbageCollected<StylePath>(std::move(path_byte_stream),
+                                                   wind_rule),
                    serialization_format) {}
 
 namespace {
@@ -58,7 +59,12 @@ bool CSSPathValue::Equals(const CSSPathValue& other) const {
   return ByteStream() == other.ByteStream();
 }
 
+unsigned CSSPathValue::CustomHash() const {
+  return ByteStream().Hash();
+}
+
 void CSSPathValue::TraceAfterDispatch(blink::Visitor* visitor) const {
+  visitor->Trace(style_path_);
   CSSValue::TraceAfterDispatch(visitor);
 }
 

@@ -19,15 +19,6 @@ struct TabSizeInfo {
   int standard_width;
 };
 
-// Sizing info global to the tabstrip.
-struct TabLayoutConstants {
-  // The height of tabs.
-  int tab_height;
-
-  // The amount adjacent tabs overlap each other.
-  int tab_overlap;
-};
-
 // Inactive tabs have a smaller minimum width than the active tab. Layout has
 // different behavior when inactive tabs are smaller than the active tab
 // than it does when they are the same size.

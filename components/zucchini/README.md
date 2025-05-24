@@ -220,6 +220,7 @@ Name | Format | Description
 --- | --- | ---
 header | PatchElementHeader | The header.
 equivalences | EquivalenceList | List of equivalences.
+extra_data | ExtraDataSource | Extra data.
 raw_deltas | RawDeltaList | List of raw deltas.
 reference_deltas | ReferenceDeltaList | List of reference deltas.
 pool_count | uint32 | Number of pools.
@@ -247,6 +248,13 @@ Name | Format | Description
 src_skip | Buffer<varint32> | Src offset for each equivalence, delta encoded.
 dst_skip | Buffer<varuint32> | Dst offset for each equivalence, delta encoded.
 copy_count | Buffer<varuint32> | Length for each equivalence.
+
+**ExtraDataSource**
+Source for extra data.
+
+Name | Format | Description
+--- | --- | ---
+extra_data | Buffer<varuint32> | Vector of extra data.
 
 **RawDeltaList**
 Encodes a list of raw delta units, with ascending copy offsets.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChromeVoxSubpageBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import type {ChromeVoxSubpageBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
@@ -32,31 +32,37 @@ export class TestChromeVoxSubpageBrowserProxy extends TestBrowserProxy
     const voices = [
       {
         name: 'Chrome OS US English',
+        displayName: 'Chrome OS US English',
         remote: false,
         extensionId: 'gjjabgpgjpampikjhjpfhneeoapjbjaf',
       },
       {
         name: 'Chrome OS हिन्दी',
+        displayName: 'Chrome OS हिन्दी',
         remote: false,
         extensionId: 'gjjabgpgjpampikjhjpfhneeoapjbjaf',
       },
       {
         name: 'default-coolnet',
+        displayName: 'default-coolnet',
         remote: false,
         extensionId: 'abcdefghijklmnop',
       },
       {
         name: 'bnm',
+        displayName: 'bnm',
         remote: false,
         extensionId: 'abcdefghijklmnop',
       },
       {
         name: 'bnx',
+        displayName: 'bnx',
         remote: true,
         extensionId: 'abcdefghijklmnop',
       },
       {
         name: 'eSpeak Turkish',
+        displayName: 'eSpeak Turkish',
         remote: false,
         extensionId: 'dakbfdmgjiabojdgbiljlhgjbokobjpg',
       },

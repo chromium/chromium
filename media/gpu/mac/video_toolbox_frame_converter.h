@@ -80,7 +80,6 @@ class VideoToolboxFrameConverter
   raw_ptr<gpu::CommandBufferStub> stub_ = nullptr;
   gpu::SequenceId wait_sequence_id_;
   raw_ptr<gpu::SharedImageStub> sis_ = nullptr;
-  bool texture_rectangle_ = false;
 };
 
 }  // namespace media

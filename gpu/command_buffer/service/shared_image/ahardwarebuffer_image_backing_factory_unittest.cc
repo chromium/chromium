@@ -13,6 +13,7 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
@@ -42,6 +43,7 @@
 #include <dawn/native/DawnNative.h>
 #include <dawn/native/OpenGLBackend.h>
 #include <dawn/webgpu_cpp.h>
+#include <dawn/webgpu_cpp_print.h>
 #endif
 
 namespace gpu {
@@ -71,7 +73,8 @@ class AHardwareBufferImageBackingFactoryTest
     ASSERT_NO_FATAL_FAILURE(InitializeContext(GrContextType()));
 
     backing_factory_ = std::make_unique<AHardwareBufferImageBackingFactory>(
-        context_state_->feature_info(), gpu_preferences_);
+        context_state_->feature_info(), gpu_preferences_,
+        context_state_->vk_context_provider());
   }
 };
 
@@ -229,7 +232,7 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
 
   wgpu::RequestAdapterOptions adapter_options;
   adapter_options.backendType = wgpu::BackendType::OpenGLES;
-  adapter_options.compatibilityMode = true;
+  adapter_options.featureLevel = wgpu::FeatureLevel::Compatibility;
 
   dawn::native::opengl::RequestAdapterOptionsGetGLProc
       adapter_options_get_gl_proc = {};
@@ -249,7 +252,26 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, ProduceDawnOpenGLES) {
   }
   wgpu::Adapter adapter = wgpu::Adapter(adapters[0].Get());
 
+  std::array<wgpu::FeatureName, 3> required_features = {
+      // We need to request internal usage to be able to do operations with
+      // internal methods that would need specific usages.
+      wgpu::FeatureName::DawnInternalUsages,
+
+      // AHardwareBuffers are imported directly into Dawn and SyncFDs are used
+      // to synchronize them.
+      wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
+      wgpu::FeatureName::SharedFenceSyncFD};
+  for (const wgpu::FeatureName& required_feature : required_features) {
+    if (!adapter.HasFeature(required_feature)) {
+      GTEST_SKIP() << "Required Dawn feature " << required_feature
+                   << " is not available.";
+    }
+  }
+
   wgpu::DeviceDescriptor device_descriptor;
+  device_descriptor.requiredFeatureCount = required_features.size();
+  device_descriptor.requiredFeatures = required_features.data();
+
   wgpu::Device device = adapter.CreateDevice(&device_descriptor);
 
   auto dawn_representation = shared_image_representation_factory_.ProduceDawn(
@@ -300,9 +322,8 @@ TEST_P(AHardwareBufferImageBackingFactoryTest, InitialData) {
   SkAlphaType alpha_type = kPremul_SkAlphaType;
   gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-  auto image_info =
-      SkImageInfo::Make(gfx::SizeToSkISize(size),
-                        viz::ToClosestSkColorType(true, format), alpha_type);
+  auto image_info = SkImageInfo::Make(
+      gfx::SizeToSkISize(size), viz::ToClosestSkColorType(format), alpha_type);
   SkBitmap expected_bitmap;
   expected_bitmap.allocPixels(image_info);
 

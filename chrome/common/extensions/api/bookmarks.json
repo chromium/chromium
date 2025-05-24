@@ -20,6 +20,24 @@
     },
     "types": [
       {
+        "id": "FolderType",
+        "type": "string",
+        "enum": [{
+          "name": "bookmarks-bar",
+          "description": "The folder whose contents is displayed at the top of the browser window."
+        }, {
+          "name": "other",
+          "description": "Bookmarks which are displayed in the full list of bookmarks on all platforms."
+        }, {
+          "name": "mobile",
+          "description": "Bookmarks generally available on the user's mobile devices, but modifiable by extension or in the bookmarks manager."
+        }, {
+          "name": "managed",
+          "description": "A top-level folder that may be present if the system administrator or the custodian of a supervised user has configured bookmarks."
+        }],
+        "description": "Indicates the type of folder."
+      },
+      {
         "id": "BookmarkTreeNodeUnmodifiable",
         "type": "string",
         "enum": ["managed"],
@@ -70,10 +88,19 @@
             "optional": true,
             "description": "When the contents of this folder last changed, in milliseconds since the epoch."
           },
+          "folderType": {
+            "$ref": "FolderType",
+            "optional": true,
+            "description": "If present, this is a folder that is added by the browser and that cannot be modified by the user or the extension. Child nodes may be modified, if this node does not have the <code>unmodifiable</code> property set. Omitted if the node can be modified by the user and the extension (default).<p>There may be zero, one or multiple nodes of each folder type. A folder may be added or removed by the browser, but not via the extensions API."
+          },
           "unmodifiable": {
             "$ref": "BookmarkTreeNodeUnmodifiable",
             "optional": true,
             "description": "Indicates the reason why this node is unmodifiable. The <var>managed</var> value indicates that this node was configured by the system administrator or by the custodian of a supervised user. Omitted if the node can be modified by the user and the extension (default)."
+          },
+          "syncing": {
+            "type": "boolean",
+            "description": "Whether this node is synced with the user's remote account storage by the browser. This can be used to distinguish between account and local-only versions of the same $(ref:FolderType). The value of this property may change for an existing node, for example as a result of user action.<p>Note: this reflects whether the node is saved to the browser's built-in account provider. It is possible that a node could be synced via a third-party, even if this value is false.</p><p>For managed nodes (nodes where <code>unmodifiable</code> is set to <code>true</code>), this property will always be <code>false</code>.</p>"
           },
           "children": {
             "type": "array",
@@ -86,7 +113,6 @@
       {
         "id": "CreateDetails",
         "description": "Object passed to the create() function.",
-        "inline_doc": true,
         "type": "object",
         "properties": {
           "parentId": {

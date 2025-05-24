@@ -9,14 +9,20 @@
 
 namespace env_vars {
 
-extern const char kHeadless[];
-extern const char kLogFileName[];
-extern const char kMetroConnected[];
-extern const char kSessionLogDir[];
-extern const char kShowRestart[];
-extern const char kRestartInfo[];
-extern const char kRtlLocale[];
-extern const char kLtrLocale[];
+// We call running in unattended mode (for automated testing) "headless".
+// This mode can be enabled using this variable or by the kNoErrorDialogs
+// switch.
+inline constexpr char kHeadless[] = "CHROME_HEADLESS";
+
+// The name of the log file.
+inline constexpr char kLogFileName[] = "CHROME_LOG_FILE";
+
+// Flag indicating if metro viewer is connected to browser instance.
+// As of now there is only one metro viewer instance per browser.
+inline constexpr char kMetroConnected[] = "CHROME_METRO_CONNECTED";
+
+// The name of the session log directory when logged in to ChromeOS.
+inline constexpr char kSessionLogDir[] = "CHROMEOS_SESSION_LOG_DIR";
 
 }  // namespace env_vars
 

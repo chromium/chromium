@@ -47,9 +47,9 @@ export class CrDrawerElement extends CrLitElement {
     };
   }
 
-  heading: string = '';
-  align: 'ltr'|'rtl' = 'ltr';
-  protected show_: boolean = false;
+  accessor heading: string = '';
+  accessor align: 'ltr'|'rtl' = 'ltr';
+  protected accessor show_: boolean = false;
 
   get open(): boolean {
     return this.$.dialog.open;
@@ -87,7 +87,7 @@ export class CrDrawerElement extends CrLitElement {
    * is up to the owner of this component to differentiate between close and
    * cancel.
    */
-  private async dismiss_(cancel: boolean) {
+  private dismiss_(cancel: boolean) {
     if (!this.open) {
       return;
     }

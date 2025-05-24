@@ -11,6 +11,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -78,7 +79,7 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   void StartNextValue();
 
   // Called when unwrapping of all values is complete.
-  void OnLoadComplete(DOMExceptionCode exception_code);
+  void OnLoadComplete(FileErrorCode error_code);
 
   Member<FileReaderLoader> loader_;
 
@@ -109,6 +110,9 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   // call to DidFinishLoading() or to DidFail().
   bool file_reader_loading_ = false;
 #endif  // DCHECK_IS_ON()
+
+  // The last time that this object started loading a wrapped blob.
+  base::TimeTicks start_loading_time_;
 };
 
 }  // namespace blink

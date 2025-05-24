@@ -98,12 +98,11 @@ class CORE_EXPORT FragmentItemsBuilder {
   //
   // When |stop_at_dirty| is true, this function checks reusability of previous
   // items and stops copying before the first dirty line.
-  AddPreviousItemsResult AddPreviousItems(
-      const PhysicalBoxFragment& container,
-      const FragmentItems& items,
-      BoxFragmentBuilder* container_builder = nullptr,
-      const FragmentItem* end_item = nullptr,
-      wtf_size_t max_lines = 0);
+  AddPreviousItemsResult AddPreviousItems(const PhysicalBoxFragment& container,
+                                          const FragmentItems& items,
+                                          const FragmentItem& end_item,
+                                          BoxFragmentBuilder* container_builder,
+                                          wtf_size_t max_lines = 0);
 
   struct ItemWithOffset {
     DISALLOW_NEW();

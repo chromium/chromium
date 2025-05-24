@@ -13,19 +13,19 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_result.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/common/extensions/api/notifications.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
@@ -53,14 +53,13 @@ NotifierStateTracker::NotifierStateTracker(Profile* profile)
           base::Unretained(prefs::kMessageCenterDisabledExtensionIds),
           base::Unretained(&disabled_extension_ids_)));
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
 #endif
 }
 
-NotifierStateTracker::~NotifierStateTracker() {
-}
+NotifierStateTracker::~NotifierStateTracker() = default;
 
 bool NotifierStateTracker::IsNotifierEnabled(
     const NotifierId& notifier_id) const {
@@ -71,14 +70,16 @@ bool NotifierStateTracker::IsNotifierEnabled(
     case message_center::NotifierType::WEB_PAGE:
       return profile_->GetPermissionController()
                  ->GetPermissionResultForOriginWithoutContext(
-                     blink::PermissionType::NOTIFICATIONS,
+                     content::PermissionDescriptorUtil::
+                         CreatePermissionDescriptorForPermissionType(
+                             blink::PermissionType::NOTIFICATIONS),
                      url::Origin::Create(notifier_id.url))
                  .status == blink::mojom::PermissionStatus::GRANTED;
     case message_center::NotifierType::SYSTEM_COMPONENT:
       // We do not disable system component notifications.
       return true;
     case message_center::NotifierType::ARC_APPLICATION:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // TODO(hriono): Ask Android if the application's notifications are
       // enabled.
       return true;
@@ -86,15 +87,14 @@ bool NotifierStateTracker::IsNotifierEnabled(
       break;
 #endif
     case message_center::NotifierType::CROSTINI_APPLICATION:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // Disabling Crostini notifications is not supported yet.
       return true;
 #else
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 #endif
     case message_center::NotifierType::PHONE_HUB:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // PhoneHub notifications are controlled in their own settings.
       return true;
 #else
@@ -102,8 +102,7 @@ bool NotifierStateTracker::IsNotifierEnabled(
 #endif
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void NotifierStateTracker::SetNotifierEnabled(
@@ -116,17 +115,17 @@ void NotifierStateTracker::SetNotifierEnabled(
   base::Value id;
   switch (notifier_id.type) {
     case message_center::NotifierType::APPLICATION:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
       pref_name = prefs::kMessageCenterDisabledExtensionIds;
       add_new_item = !enabled;
       id = base::Value(notifier_id.id);
       FirePermissionLevelChangedEvent(notifier_id, enabled);
-#else
-      NOTREACHED_IN_MIGRATION();
-#endif
       break;
+#else
+      NOTREACHED();
+#endif
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   DCHECK(pref_name != nullptr);
 
@@ -153,7 +152,7 @@ void NotifierStateTracker::OnStringListPrefChanged(
   }
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void NotifierStateTracker::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,

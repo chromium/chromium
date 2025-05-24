@@ -26,15 +26,14 @@ class TestUnderlyingSource final : public UnderlyingSourceBase {
   void Error(ScriptValue value) { Controller()->Error(value.V8Value()); }
   double DesiredSize() { return Controller()->DesiredSize(); }
 
-  ScriptPromiseUntyped Start(ScriptState* script_state,
-                             ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Start(ScriptState* script_state) override {
     DCHECK(!is_start_called_);
     is_start_called_ = true;
     return ToResolvedUndefinedPromise(script_state);
   }
-  ScriptPromiseUntyped Cancel(ScriptState* script_state,
-                              ScriptValue reason,
-                              ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel(ScriptState* script_state,
+                                     ScriptValue reason,
+                                     ExceptionState&) override {
     DCHECK(!is_cancelled_);
     DCHECK(!is_cancelled_with_undefined_);
     DCHECK(!is_cancelled_with_null_);

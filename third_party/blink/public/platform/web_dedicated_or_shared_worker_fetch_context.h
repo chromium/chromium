@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -23,8 +24,6 @@
 namespace blink {
 
 class WebString;
-template <typename T>
-class WebVector;
 class WebServiceWorkerProviderContext;
 
 // Worker fetch context for dedicated worker or shared worker.
@@ -60,20 +59,13 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
           pending_fallback_factory,
       CrossVariantMojoReceiver<mojom::SubresourceLoaderUpdaterInterfaceBase>
           pending_subresource_loader_updater,
-      const WebVector<WebString>& cors_exempt_header_list,
+      const std::vector<WebString>& cors_exempt_header_list,
       mojo::PendingRemote<mojom::ResourceLoadInfoNotifier>
           pending_resource_load_info_notifier);
 
-  // Clones this fetch context for a nested worker.
-  // For non-PlzDedicatedWorker. This will be removed once PlzDedicatedWorker is
-  // enabled by default.
-  virtual scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
-  CloneForNestedWorkerDeprecated(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
-
-  // For PlzDedicatedWorker. The cloned fetch context does not inherit some
-  // fields (e.g., blink::WebServiceWorkerProviderContext) from this fetch
-  // context, and instead that takes values passed from the browser process.
+  // The cloned fetch context does not inherit some fields (e.g.,
+  // blink::WebServiceWorkerProviderContext) from this fetch context, and
+  // instead that takes values passed from the browser process.
   virtual scoped_refptr<WebDedicatedOrSharedWorkerFetchContext>
   CloneForNestedWorker(
       WebServiceWorkerProviderContext* service_worker_provider_context,
@@ -99,6 +91,9 @@ class BLINK_PLATFORM_EXPORT WebDedicatedOrSharedWorkerFetchContext
       const net::SiteForCookies& site_for_cookies) = 0;
   virtual void set_top_frame_origin(
       const blink::WebSecurityOrigin& top_frame_origin) = 0;
+
+  // TODO(crbug.com/324939068): remove the code when the feature launched.
+  virtual void set_container_is_shared_worker(bool is_sharedworker) = 0;
 
   using RewriteURLFunction = WebURL (*)(std::string_view, bool);
   static void InstallRewriteURLFunction(RewriteURLFunction rewrite_url);

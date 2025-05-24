@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/keyed_service/core/dependency_graph.h"
 
 #include <stddef.h>
@@ -19,7 +14,6 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 
 namespace {
 
@@ -115,7 +109,7 @@ bool DependencyGraph::BuildConstructionOrder() {
       it++;
       edges.erase(temp);
 
-      bool has_incoming_edges = base::ranges::any_of(
+      bool has_incoming_edges = std::ranges::any_of(
           edges, [dest](const auto& edge) { return edge.second == dest; });
 
       if (!has_incoming_edges)

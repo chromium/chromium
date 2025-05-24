@@ -276,7 +276,8 @@ class InstanceRegistry {
   // might be changed, and the instance id should be removed from
   // `window_to_instance_ids_`. `states_` can't be used to check window, because
   // some instances might be in `deltas_pending_`.
-  std::map<const base::UnguessableToken, aura::Window*> instance_id_to_window_;
+  std::map<const base::UnguessableToken, raw_ptr<aura::Window, CtnExperimental>>
+      instance_id_to_window_;
 
   // Maps from app id to instances.
   std::map<const std::string,

@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include <array>
 #include <memory>
 #include <numeric>
 #include <optional>
@@ -134,12 +130,12 @@ TEST(AXGeneratedTreeTest, TestTreeGeneratorNoPermutations) {
   int tree_size = 3;
   TreeGenerator generator(tree_size, false);
   // clang-format off
-  const char* EXPECTED_TREES[] = {
+  auto EXPECTED_TREES = std::to_array<const char *>({
     "(1)",
     "(1 (2))",
     "(1 (2 3))",
     "(1 (2 (3)))",
-  };
+  });
   // clang-format on
 
   int n = generator.UniqueTreeCount();
@@ -158,7 +154,7 @@ TEST(AXGeneratedTreeTest, TestGeneratingTreesWithIgnoredNodes) {
   int tree_size = 3;
   TreeGenerator generator(tree_size, false);
   // clang-format off
-  const char* EXPECTED_TREES[] = {
+  auto EXPECTED_TREES = std::to_array<const char *>({
       "(1)",
       "(1 (2))",
       "(1 (2x))",
@@ -170,7 +166,7 @@ TEST(AXGeneratedTreeTest, TestGeneratingTreesWithIgnoredNodes) {
       "(1 (2x (3)))",
       "(1 (2 (3x)))",
       "(1 (2x (3x)))",
-  };
+  });
   // clang-format on
 
   int n = generator.UniqueTreeCount();
@@ -195,7 +191,7 @@ TEST(AXGeneratedTreeTest, TestTreeGeneratorWithPermutations) {
   int tree_size = 3;
   TreeGenerator generator(tree_size, true);
   // clang-format off
-  const char* EXPECTED_TREES[] = {
+  auto EXPECTED_TREES = std::to_array<const char *>({
     "(1)",
     "(1 (2))",
     "(2 (1))",
@@ -211,7 +207,7 @@ TEST(AXGeneratedTreeTest, TestTreeGeneratorWithPermutations) {
     "(1 (3 (2)))",
     "(2 (3 (1)))",
     "(3 (2 (1)))",
-  };
+  });
   // clang-format on
 
   int n = generator.UniqueTreeCount();

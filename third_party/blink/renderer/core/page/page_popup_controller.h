@@ -61,7 +61,9 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
 
   static PagePopupController* From(Page&);
 
-  void setValueAndClosePopup(int num_value, const WTF::String& string_value);
+  void setValueAndClosePopup(int num_value,
+                             const WTF::String& string_value,
+                             bool is_keyboard_event);
   void setValue(const WTF::String&);
   void closePopup();
   WTF::String localizeNumberString(const WTF::String&);
@@ -81,7 +83,7 @@ class PagePopupController : public ScriptWrappable, public Supplement<Page> {
   // menu list. The bounds are only sent to the tree if children_updated is
   // true.
   void setMenuListOptionsBoundsInAXTree(
-      HeapVector<Member<DOMRect>>& options_bounds,
+      const HeapVector<Member<DOMRect>>& options_bounds,
       bool children_updated);
 
  private:

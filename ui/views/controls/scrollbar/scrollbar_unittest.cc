@@ -7,7 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -43,8 +43,9 @@ class TestScrollBarController : public ScrollBarController {
     last_is_page = is_page;
     last_is_positive = is_positive;
 
-    if (is_page)
+    if (is_page) {
       return 20;
+    }
     return 10;
   }
 
@@ -114,7 +115,6 @@ class ScrollBarViewsTest : public ViewsTestBase {
   }
 
   UniqueWidgetPtr widget_;
-
 
   // Keep track of the size of the track. This is how we can tell when we
   // scroll to the middle.
@@ -247,7 +247,7 @@ TEST_F(ScrollBarViewsTest, RightClickOpensMenu) {
   scrollbar()->set_context_menu_controller(scrollbar());
   // Disabled on Mac because Mac's native menu is synchronous.
   scrollbar()->ShowContextMenu(scrollbar()->GetBoundsInScreen().CenterPoint(),
-                               ui::MENU_SOURCE_MOUSE);
+                               ui::mojom::MenuSourceType::kMouse);
   EXPECT_NE(nullptr, scrollbar()->menu_model_);
   EXPECT_NE(nullptr, scrollbar()->menu_runner_);
 }

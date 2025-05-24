@@ -27,8 +27,7 @@ const char* LogMessageToString(LogMessage message) {
     // Clean up.
 #undef AUTOFILL_TEMPLATE
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* LogMessageValue(LogMessage message) {
@@ -48,8 +47,7 @@ const char* LogMessageValue(LogMessage message) {
     // Clean up.
 #undef AUTOFILL_TEMPLATE
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 LogBuffer& operator<<(LogBuffer& buf, LogMessage message) {

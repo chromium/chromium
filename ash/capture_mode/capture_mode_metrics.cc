@@ -51,8 +51,14 @@ constexpr char kConsecutiveScreenshotRootWord[] = "ConsecutiveScreenshots";
 constexpr char kQuickActionRootWord[] = "QuickAction";
 constexpr char kScreenshotsPerDayRootWord[] = "ScreenshotsPerDay";
 constexpr char kScreenshotsPerWeekRootWord[] = "ScreenshotsPerWeek";
+constexpr char kSearchButtonPressedRootWord[] = "SearchButtonPressed";
+constexpr char kSearchButtonShownRootWord[] = "SearchButtonShown";
 constexpr char kSwitchesFromInitialModeRootWord[] =
     "SwitchesFromInitialCaptureMode";
+constexpr char kSearchResultsPanelEntryPointHistogramRootWord[] =
+    "SearchResultsPanelEntryPoint";
+constexpr char kSearchResultsPanelShown[] = "SearchResultsPanelShown";
+constexpr char kSearchResultClickedRootWord[] = "SearchResultClicked";
 
 void RecordCaptureModeRecordingDurationInternal(
     const std::string& histogram_name,
@@ -77,6 +83,21 @@ void MaybeRecordCaptureModeEducationNudgeActions() {
       NudgeCatalogName::kCaptureModeEducationShortcutTutorial);
   nudge_manager->MaybeRecordNudgeAction(
       NudgeCatalogName::kCaptureModeEducationQuickSettingsNudge);
+}
+
+std::string BuildHistogramNameInternal(const char* root_word,
+                                       const char* client_metric_component,
+                                       bool append_ui_mode_suffix) {
+  std::string histogram_name(kCaptureModeMetricCommonPrefix);
+  if (client_metric_component) {
+    histogram_name.append(client_metric_component);
+  }
+  histogram_name.append(root_word);
+  if (append_ui_mode_suffix) {
+    histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
+                                                         : ".ClamshellMode");
+  }
+  return histogram_name;
 }
 
 }  // namespace
@@ -145,7 +166,7 @@ void RecordCaptureModeRecordingDuration(base::TimeDelta recording_duration,
 }
 
 void RecordVideoFileSizeKB(bool is_gif,
-                           const CaptureModeBehavior* behavior,
+                           const char* client_metric_component,
                            int size_in_kb) {
   if (!Shell::HasInstance()) {
     // This function can be called asynchronously after the `Shell` instance had
@@ -159,9 +180,10 @@ void RecordVideoFileSizeKB(bool is_gif,
   }
 
   base::UmaHistogramMemoryKB(
-      BuildHistogramName(is_gif ? kGifRecordingFileSizeRootWord
-                                : kScreenRecordingFileSizeRootWord,
-                         behavior, /*append_ui_mode_suffix=*/true),
+      BuildHistogramNameInternal(is_gif ? kGifRecordingFileSizeRootWord
+                                        : kScreenRecordingFileSizeRootWord,
+                                 client_metric_component,
+                                 /*append_ui_mode_suffix=*/true),
       size_in_kb);
 }
 
@@ -314,19 +336,50 @@ void RecordRecordingStartsWithDemoTools(bool demo_tools_enabled,
       demo_tools_enabled);
 }
 
+void RecordSearchButtonPressed() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchButtonPressedRootWord,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordSearchButtonShown() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchButtonShownRootWord,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordSearchResultsPanelEntryType(const CaptureModeBehavior* behavior) {
+  base::UmaHistogramEnumeration(
+      BuildHistogramName(kSearchResultsPanelEntryPointHistogramRootWord,
+                         /*behavior=*/nullptr,
+                         /*append_ui_mode_suffix=*/true),
+      behavior->behavior_type() == BehaviorType::kSunfish
+          ? SearchResultsPanelEntryType::kSunfishRegionSelection
+          : SearchResultsPanelEntryType::kDefaultSearchButton);
+}
+
+void RecordSearchResultsPanelShown() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchResultsPanelShown,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordSearchResultClicked() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchResultClickedRootWord,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
 std::string BuildHistogramName(const char* const root_word,
                                const CaptureModeBehavior* behavior,
                                bool append_ui_mode_suffix) {
-  std::string histogram_name(kCaptureModeMetricCommonPrefix);
-  if (behavior) {
-    histogram_name.append(behavior->GetClientMetricComponent());
-  }
-  histogram_name.append(root_word);
-  if (append_ui_mode_suffix) {
-    histogram_name.append(Shell::Get()->IsInTabletMode() ? ".TabletMode"
-                                                         : ".ClamshellMode");
-  }
-  return histogram_name;
+  return BuildHistogramNameInternal(
+      root_word, behavior ? behavior->GetClientMetricComponent() : nullptr,
+      append_ui_mode_suffix);
 }
 
 }  // namespace ash

@@ -53,6 +53,8 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void Clear();
   void TriggerOnLoginsRetainedForAndroid(
       const std::vector<PasswordForm>& password_forms);
+  void ReturnErrorOnRequest(
+      PasswordStoreBackendError password_store_backend_error);
 
   const PasswordMap& stored_passwords() const { return stored_passwords_; }
   IsAccountStore is_account_store() const { return is_account_store_; }
@@ -69,8 +71,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void GetAllLoginsWithAffiliationAndBrandingAsync(
       LoginsOrErrorReply callback) override;
   void GetAutofillableLoginsAsync(LoginsOrErrorReply callback) override;
-  void GetAllLoginsForAccountAsync(std::string account,
-                                   LoginsOrErrorReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsOrErrorReply callback,
       bool include_psl,
@@ -84,17 +84,11 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void RemoveLoginAsync(const base::Location& location,
                         const PasswordForm& form,
                         PasswordChangesOrErrorReply callback) override;
-  void RemoveLoginsByURLAndTimeAsync(
-      const base::Location& location,
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> sync_completion,
-      PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsCreatedBetweenAsync(
       const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
+      base::OnceCallback<void(bool)> sync_completion,
       PasswordChangesOrErrorReply callback) override;
   void DisableAutoSignInForOriginsAsync(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
@@ -103,8 +97,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   std::unique_ptr<syncer::DataTypeControllerDelegate>
   CreateSyncControllerDelegate() override;
   void OnSyncServiceInitialized(syncer::SyncService* sync_service) override;
-  void RecordAddLoginAsyncCalledFromTheStore() override;
-  void RecordUpdateLoginAsyncCalledFromTheStore() override;
   base::WeakPtr<PasswordStoreBackend> AsWeakPtr() override;
 
   // Returns the task runner. Defaults to
@@ -123,10 +115,6 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   void DisableAutoSignInForOriginsInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
   PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
-  PasswordStoreChangeList RemoveLoginsByURLAndTimeInternal(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end);
   PasswordStoreChangeList RemoveLoginsCreatedBetweenInternal(
       base::Time delete_begin,
       base::Time delete_end);
@@ -138,6 +126,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   PasswordMap stored_passwords_;
   PasswordStoreBackend::RemoteChangesReceived remote_form_changes_received_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::optional<PasswordStoreBackendError> password_store_backend_error_;
   base::WeakPtrFactory<FakePasswordStoreBackend> weak_ptr_factory_{this};
 };
 

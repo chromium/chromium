@@ -20,6 +20,18 @@ enum class OmniboxActionId {
   ACTION_IN_SUGGEST,
   TAB_SWITCH,
   ANSWER_ACTION,
+  EXTENSION_ACTION,
+
+  // Takeover actions added to matches that are fulfilled via lens controller.
+  CONTEXTUAL_SEARCH_FULFILLMENT,
+
+  // Actions that enter @page scope for direct query or with lens selection.
+  CONTEXTUAL_SEARCH_ASK_ABOUT_PAGE,  // Obsolete
+  CONTEXTUAL_SEARCH_SELECT_REGION,   // Obsolete
+
+  // An action to open lens with contextual search side panel ready.
+  CONTEXTUAL_SEARCH_OPEN_LENS,
+
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
   LAST

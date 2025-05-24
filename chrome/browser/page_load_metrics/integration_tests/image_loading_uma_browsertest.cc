@@ -4,6 +4,7 @@
 
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -195,7 +196,15 @@ IN_PROC_BROWSER_TEST_F(ImageLoadingUMATest, ImageWithWidthAttribute) {
                                       0);
 }
 
-IN_PROC_BROWSER_TEST_F(ImageLoadingUMATest, ImageWithCorrectSizesAttribute) {
+// TODO(crbug.com/40916617): Flaky on linux-win-cross-rel.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ImageWithCorrectSizesAttribute \
+  DISABLED_ImageWithCorrectSizesAttribute
+#else
+#define MAYBE_ImageWithCorrectSizesAttribute ImageWithCorrectSizesAttribute
+#endif
+IN_PROC_BROWSER_TEST_F(ImageLoadingUMATest,
+                       MAYBE_ImageWithCorrectSizesAttribute) {
   run_test(R"HTML(
     <!doctype html>
     <html>

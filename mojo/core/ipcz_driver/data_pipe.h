@@ -41,6 +41,9 @@ class DataPipe : public Object<DataPipe> {
   enum class EndpointType : uint32_t {
     kProducer,
     kConsumer,
+    // For ValidateEnum().
+    kMinValue = kProducer,
+    kMaxValue = kConsumer,
   };
 
   struct Config {
@@ -96,8 +99,12 @@ class DataPipe : public Object<DataPipe> {
   // could not be allocated.
   struct Pair {
     Pair();
-    Pair(const Pair&);
-    Pair& operator=(const Pair&);
+
+    // Move-only type to avoid ref-chrun on unintentional copy.
+    Pair(const Pair&) = delete;
+    Pair(Pair&&);
+    Pair& operator=(const Pair&) = delete;
+    Pair& operator=(Pair&&);
     ~Pair();
 
     scoped_refptr<DataPipe> consumer;

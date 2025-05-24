@@ -103,8 +103,7 @@ PP_VideoProfile PP_FromMediaVideoProfile(media::VideoCodecProfile profile) {
     case media::VP9PROFILE_PROFILE0:
       return PP_VIDEOPROFILE_VP9_ANY;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return static_cast<PP_VideoProfile>(-1);
+      NOTREACHED();
   }
 }
 
@@ -271,8 +270,9 @@ int32_t PepperVideoEncoderHost::OnHostMsgInitialize(
       media::VideoEncodeAccelerator::kDefaultFramerate,
       media::VideoEncodeAccelerator::Config::StorageType::kShmem,
       media::VideoEncodeAccelerator::Config::ContentType::kDisplay);
-  if (encoder_->Initialize(config, this))
+  if (encoder_->Initialize(config, this).is_ok()) {
     return PP_OK_COMPLETIONPENDING;
+  }
 
   initialize_reply_context_ = ppapi::host::ReplyMessageContext();
   Close();
@@ -454,8 +454,7 @@ void PepperVideoEncoderHost::AllocateVideoFrames() {
   // Frames have already been allocated.
   if (buffer_manager_.number_of_buffers() > 0) {
     SendGetFramesErrorReply(PP_ERROR_FAILED);
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   base::CheckedNumeric<uint32_t> size =

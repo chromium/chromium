@@ -10,9 +10,10 @@
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/autofill/core/browser/browser_autofill_manager.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
@@ -23,11 +24,11 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -61,16 +62,17 @@ bool ShouldShowMenuActionsInManualFallback(CreditCard::RecordType record_type) {
 // `personal_data_manager` and dereferences them before returning them.
 std::vector<CreditCard> FetchCards(
     const autofill::PersonalDataManager& personal_data_manager) {
-  std::vector<CreditCard*> fetched_cards =
-      personal_data_manager.payments_data_manager().GetCreditCardsToSuggest();
+  std::vector<const CreditCard*> fetched_cards =
+      autofill::GetCreditCardsToSuggest(
+          personal_data_manager.payments_data_manager());
   std::vector<CreditCard> cards;
   cards.reserve(fetched_cards.size());
 
   // Make copies of the received `fetched_cards` to not make any assumption over
   // their lifetime and make sure that the CreditCard objects stay valid
   // throughout the lifetime of this class.
-  base::ranges::transform(fetched_cards, std::back_inserter(cards),
-                          [](const CreditCard* card) { return *card; });
+  std::ranges::transform(fetched_cards, std::back_inserter(cards),
+                         [](const CreditCard* card) { return *card; });
 
   return cards;
 }
@@ -128,8 +130,9 @@ std::vector<CreditCard> FetchCards(
 - (std::optional<const CreditCard>)findCreditCardfromGUID:(NSString*)GUID {
   for (const CreditCard& card : _cards) {
     NSString* cppGUID = base::SysUTF8ToNSString(card.guid());
-    if ([cppGUID isEqualToString:GUID])
+    if ([cppGUID isEqualToString:GUID]) {
       return card;
+    }
   }
   return std::nullopt;
 }
@@ -168,10 +171,8 @@ std::vector<CreditCard> FetchCards(
   // enrolled to have one.
   for (const CreditCard& card : _cards) {
     // Virtual cards are ordered directly before their original card.
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableVirtualCards) &&
-        card.virtual_card_enrollment_state() ==
-            CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+    if (card.virtual_card_enrollment_state() ==
+        CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       CreditCard virtualCard = CreditCard::CreateVirtualCard(card);
       cardsToPresent.push_back(virtualCard);
     }
@@ -298,9 +299,9 @@ std::vector<CreditCard> FetchCards(
       _personalDataManager->payments_data_manager().GetCardArtURL(creditCard);
   if (IsKeyboardAccessoryUpgradeEnabled() && !cardArtURL.is_empty() &&
       cardArtURL.is_valid()) {
-    gfx::Image* image = _personalDataManager->payments_data_manager()
-                            .GetCreditCardArtImageForUrl(cardArtURL);
-    if (image) {
+    if (const gfx::Image* const image =
+            _personalDataManager->payments_data_manager()
+                .GetCachedCardArtImageForUrl(cardArtURL)) {
       return image->ToUIImage();
     }
   }
@@ -324,24 +325,19 @@ std::vector<CreditCard> FetchCards(
       initWithCreditCard:card
                     icon:[self iconForCreditCard:card]];
   NSString* fillValue;
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableVirtualCards)) {
-    switch (fieldType) {
-      case PaymentFieldType::kCardNumber:
-        fillValue = manualFillCreditCard.number;
-        break;
-      case PaymentFieldType::kExpirationMonth:
-        fillValue = manualFillCreditCard.expirationMonth;
-        break;
-      case PaymentFieldType::kExpirationYear:
-        fillValue = manualFillCreditCard.expirationYear;
-        break;
-      case PaymentFieldType::kCVC:
-        fillValue = manualFillCreditCard.CVC;
-        break;
-    }
-  } else {
-    fillValue = manualFillCreditCard.number;
+  switch (fieldType) {
+    case PaymentFieldType::kCardNumber:
+      fillValue = manualFillCreditCard.number;
+      break;
+    case PaymentFieldType::kExpirationMonth:
+      fillValue = manualFillCreditCard.expirationMonth;
+      break;
+    case PaymentFieldType::kExpirationYear:
+      fillValue = manualFillCreditCard.expirationYear;
+      break;
+    case PaymentFieldType::kCVC:
+      fillValue = manualFillCreditCard.CVC;
+      break;
   }
 
   // Don't replace the locked card with the unlocked one, so the user will
@@ -349,10 +345,6 @@ std::vector<CreditCard> FetchCards(
   [self.contentInjector userDidPickContent:fillValue
                              passwordField:NO
                              requiresHTTPS:YES];
-}
-
-- (void)onFullCardRequestFailed {
-  // This is called on user cancelling, so there's nothing to do here.
 }
 
 @end

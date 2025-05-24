@@ -10,7 +10,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -113,13 +113,15 @@ std::u16string CardUnmaskOtpInputDialogViews::GetWindowTitle() const {
 }
 
 void CardUnmaskOtpInputDialogViews::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 bool CardUnmaskOtpInputDialogViews::Accept() {
   if (controller_) {
-    controller_->OnOkButtonClicked(otp_input_textfield_->GetText());
+    controller_->OnOkButtonClicked(
+        std::u16string(otp_input_textfield_->GetText()));
   }
   ShowPendingState();
   return false;
@@ -133,8 +135,9 @@ views::View* CardUnmaskOtpInputDialogViews::GetInitiallyFocusedView() {
 void CardUnmaskOtpInputDialogViews::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
-  if (otp_input_textfield_->GetInvalid())
+  if (otp_input_textfield_->GetInvalid()) {
     HideInvalidState();
+  }
 
   SetButtonEnabled(
       ui::mojom::DialogButton::kOk,
@@ -247,7 +250,7 @@ void CardUnmaskOtpInputDialogViews::CreateHiddenProgressView() {
       views::Builder<views::Label>()
           .SetText(controller_ ? controller_->GetProgressLabel() : u"")
           .SetMultiLine(true)
-          .SetEnabledColorId(ui::kColorThrobber)
+          .SetEnabledColor(ui::kColorThrobber)
           .Build());
 }
 

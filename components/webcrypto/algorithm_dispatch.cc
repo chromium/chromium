@@ -314,7 +314,7 @@ Status DeriveKey(const blink::WebCryptoAlgorithm& algorithm,
 }
 
 bool SerializeKeyForClone(const blink::WebCryptoKey& key,
-                          blink::WebVector<uint8_t>* key_data) {
+                          std::vector<uint8_t>* key_data) {
   const AlgorithmImplementation* impl = nullptr;
   Status status = GetAlgorithmImplementation(key.Algorithm().Id(), &impl);
   if (status.IsError())

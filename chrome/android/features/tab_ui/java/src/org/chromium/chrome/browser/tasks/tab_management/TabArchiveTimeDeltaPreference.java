@@ -14,19 +14,23 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout;
 
 /** A group of radio buttons to manage the archive time delta preference. */
+@NullMarked
 public class TabArchiveTimeDeltaPreference extends Preference
         implements RadioGroup.OnCheckedChangeListener {
     // The time delta options.
-    private static final int[] ARCHIVE_TIME_DELTA_DAYS_OPTS = new int[] {0, 7, 14, 30};
+    private static final int[] ARCHIVE_TIME_DELTA_DAYS_OPTS = new int[] {0, 7, 14, 21};
     private static final String TIME_DELTA_HISTOGRAM = "Tabs.ArchiveSettings.TimeDeltaPreference";
 
-    private RadioButtonWithDescription[] mRadioButtons = new RadioButtonWithDescription[4];
+    private final RadioButtonWithDescription[] mRadioButtons = new RadioButtonWithDescription[4];
     private TabArchiveSettings mTabArchiveSettings;
 
     public TabArchiveTimeDeltaPreference(Context context, AttributeSet attrs) {
@@ -38,6 +42,7 @@ public class TabArchiveTimeDeltaPreference extends Preference
     /**
      * @param tabArchiveSettings The class to manage archive settings.
      */
+    @Initializer
     public void initialize(TabArchiveSettings tabArchiveSettings) {
         mTabArchiveSettings = tabArchiveSettings;
     }
@@ -130,7 +135,7 @@ public class TabArchiveTimeDeltaPreference extends Preference
 
     // Testing specific methods.
 
-    public RadioButtonWithDescription getCheckedRadioButtonForTesting() {
+    public @Nullable RadioButtonWithDescription getCheckedRadioButtonForTesting() {
         for (RadioButtonWithDescription button : mRadioButtons) {
             if (button.isChecked()) return button;
         }

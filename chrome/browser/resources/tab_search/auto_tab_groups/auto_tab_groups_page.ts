@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
-import '../strings.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '/strings.m.js';
 import './auto_tab_groups_failure.js';
 import './auto_tab_groups_in_progress.js';
 import './auto_tab_groups_not_started.js';
@@ -46,28 +46,27 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   static override get properties() {
     return {
+      availableHeight: {type: Number},
+      showBackButton: {type: Boolean},
+
       state_: {type: Number},
       session_: {type: Object},
-      availableHeight_: {type: Number},
       showFRE_: {type: Boolean},
-      multiTabOrganization_: {type: Boolean},
-      declutterEnabled_: {type: Boolean},
       modelStrategy_: {type: Number, notify: true},
     };
   }
 
+  accessor availableHeight: number = 0;
+  accessor showBackButton: boolean = false;
+
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
-  private state_: TabOrganizationState = TabOrganizationState.kInitializing;
-  protected availableHeight_: number = 0;
-  protected session_: TabOrganizationSession|null = null;
-  protected showFRE_: boolean =
+  private accessor state_: TabOrganizationState =
+      TabOrganizationState.kInitializing;
+  protected accessor session_: TabOrganizationSession|null = null;
+  protected accessor showFRE_: boolean =
       loadTimeData.getBoolean('showTabOrganizationFRE');
-  protected multiTabOrganization_: boolean =
-      loadTimeData.getBoolean('multiTabOrganizationEnabled');
-  protected declutterEnabled_: boolean =
-      loadTimeData.getBoolean('declutterEnabled');
-  protected modelStrategy_: TabOrganizationModelStrategy =
+  protected accessor modelStrategy_: TabOrganizationModelStrategy =
       TabOrganizationModelStrategy.kTopic;
   private documentVisibilityChangedListener_: () => void;
   private futureState_: TabOrganizationState|null = null;
@@ -118,43 +117,28 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     document.removeEventListener(
         'visibilitychange', this.documentVisibilityChangedListener_);
 
-    if (!this.session_) {
+    if (!this.session_ || this.session_.organizations.length === 0) {
       return;
     }
-    if (this.multiTabOrganization_) {
-      this.session_.organizations.forEach((organization: TabOrganization) => {
-        this.apiProxy_.rejectTabOrganization(
-            this.session_!.sessionId, organization.organizationId);
-      });
-    } else {
+    this.session_.organizations.forEach((organization: TabOrganization) => {
       this.apiProxy_.rejectTabOrganization(
-          this.session_.sessionId,
-          this.session_.organizations[0]!.organizationId);
+          this.session_!.sessionId, organization.organizationId);
+    });
+  }
+
+  override focus() {
+    if (this.showBackButton) {
+      const backButton = this.shadowRoot.querySelector('cr-icon-button')!;
+      backButton.focus();
+    } else {
+      super.focus();
     }
   }
 
   private onVisible_() {
-    this.updateAvailableHeight_();
     // When the UI goes from not shown to shown, bypass any state change
     // animations.
     this.classList.toggle('changed-state', false);
-  }
-
-  // TODO(emshack): Consider moving the available height calculation into
-  // app.ts and reusing across both tab search and tab organization.
-  private updateAvailableHeight_() {
-    this.apiProxy_.getProfileData().then(({profileData}) => {
-      // In rare cases there is no browser window. I suspect this happens during
-      // browser shutdown.
-      if (!profileData.windows) {
-        return;
-      }
-      // TODO(crbug.com/c/1349350): Determine why no active window is reported
-      // in some cases on ChromeOS and Linux.
-      const activeWindow = profileData.windows.find((t) => t.active);
-      this.availableHeight_ =
-          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
-    });
   }
 
   private setShowFre_(show: boolean) {
@@ -251,7 +235,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   protected onBackClick_() {
     if (this.session_ && this.state_ !== TabOrganizationState.kNotStarted) {
-      this.apiProxy_.rejectSession(this.session_!.sessionId);
+      this.apiProxy_.rejectSession(this.session_.sessionId);
     } else {
       this.fire('back-click');
     }
@@ -297,27 +281,18 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     if (!this.session_) {
       return;
     }
-    // Multi organization feedback is per-session, single organization feedback
-    // is per-organization.
-    let organizationId = -1;
-    if (!this.multiTabOrganization_) {
-      organizationId = this.session_.organizations[0]!.organizationId;
-    }
     switch (event.detail.value) {
       case CrFeedbackOption.UNSPECIFIED:
         this.apiProxy_.setUserFeedback(
-            this.session_!.sessionId, organizationId,
-            UserFeedback.kUserFeedBackUnspecified);
+            this.session_.sessionId, UserFeedback.kUserFeedBackUnspecified);
         break;
       case CrFeedbackOption.THUMBS_UP:
         this.apiProxy_.setUserFeedback(
-            this.session_!.sessionId, organizationId,
-            UserFeedback.kUserFeedBackPositive);
+            this.session_.sessionId, UserFeedback.kUserFeedBackPositive);
         break;
       case CrFeedbackOption.THUMBS_DOWN:
         this.apiProxy_.setUserFeedback(
-            this.session_!.sessionId, organizationId,
-            UserFeedback.kUserFeedBackNegative);
+            this.session_.sessionId, UserFeedback.kUserFeedBackNegative);
         break;
     }
     if (event.detail.value === CrFeedbackOption.THUMBS_DOWN) {
@@ -331,6 +306,10 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     this.apiProxy_.setTabOrganizationModelStrategy(event.detail.value);
   }
 
+  protected onUserInstructionInputChange_(event: CustomEvent<{value: string}>) {
+    this.apiProxy_.setTabOrganizationUserInstruction(event.detail.value);
+  }
+
   protected getSessionError_(): TabOrganizationError {
     return this.session_?.error || TabOrganizationError.kNone;
   }
@@ -339,11 +318,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     if (!this.session_) {
       return [];
     }
-    if (this.multiTabOrganization_) {
-      return this.session_.organizations;
-    } else {
-      return this.session_.organizations.slice(0, 1);
-    }
+    return this.session_.organizations;
   }
 
   private missingActiveTab_(): boolean {
@@ -352,7 +327,8 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     }
 
     const id = this.session_.activeTabId;
-    if (id === -1) {
+    // Id 0 is a sentinel value that indicates 'no tab'.
+    if (id === 0) {
       return false;
     }
     let foundTab = false;
@@ -390,15 +366,13 @@ export class AutoTabGroupsPageElement extends CrLitElement {
   private getSuccessTitle_(): string {
     if (this.missingActiveTab_()) {
       return loadTimeData.getString('successMissingActiveTabTitle');
-    } else if (this.multiTabOrganization_) {
+    } else {
       if (this.getOrganizations_().length > 1) {
         return loadTimeData.getStringF(
             'successTitleMulti', this.getOrganizations_().length);
       } else {
         return loadTimeData.getString('successTitleSingle');
       }
-    } else {
-      return loadTimeData.getString('successTitle');
     }
   }
 
@@ -411,6 +385,10 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       default:
         return '';
     }
+  }
+
+  protected getBackButtonAriaLabel_(): string {
+    return loadTimeData.getStringF('backButtonAriaLabel', this.getTitle_());
   }
 }
 

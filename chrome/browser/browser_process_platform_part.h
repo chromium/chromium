@@ -6,16 +6,12 @@
 #define CHROME_BROWSER_BROWSER_PROCESS_PLATFORM_PART_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 // Include the appropriate BrowserProcessPlatformPart based on the platform.
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/browser_process_platform_part_android.h"  // IWYU pragma: export
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/browser_process_platform_part_ash.h"  // IWYU pragma: export
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process_platform_part_chromeos.h"  // IWYU pragma: export
-class BrowserProcessPlatformPart : public BrowserProcessPlatformPartChromeOS {};
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/browser/browser_process_platform_part_mac.h"  // IWYU pragma: export
 #else

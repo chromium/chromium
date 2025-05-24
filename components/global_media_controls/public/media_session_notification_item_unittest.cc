@@ -45,7 +45,8 @@ class MediaSessionNotificationItemTest : public testing::Test {
     session_info->is_controllable = true;
     item_ = std::make_unique<MediaSessionNotificationItem>(
         &delegate_, kRequestId, std::string(), source_id_,
-        controller_.CreateMediaControllerRemote(), std::move(session_info));
+        controller_.CreateMediaControllerRemote(), std::move(session_info),
+        /*always_hidden=*/false);
     item_->SetView(&view_);
   }
 
@@ -587,6 +588,18 @@ TEST_F(MediaSessionNotificationItemTest, ShouldShowNotification) {
           /* is_encrypted_media */ false);
   item().MediaSessionInfoChanged(mojo::Clone(session_info));
   EXPECT_TRUE(item().ShouldShowNotification());
+
+  // Check always hidden item.
+  media_session::test::TestMediaController controller2;
+  auto session_info2 = media_session::mojom::MediaSessionInfo::New();
+  session_info2->is_controllable = true;
+  auto item2 = std::make_unique<MediaSessionNotificationItem>(
+      &delegate(), kRequestId, std::string(),
+      /*source_id=*/base::UnguessableToken::Create(),
+      controller2.CreateMediaControllerRemote(), std::move(session_info2),
+      /*always_hidden=*/true);
+  item2->SetView(&view());
+  EXPECT_FALSE(item2->ShouldShowNotification());
 }
 
 }  // namespace global_media_controls

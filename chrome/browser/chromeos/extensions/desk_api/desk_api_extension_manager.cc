@@ -9,12 +9,10 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
@@ -31,57 +29,6 @@ namespace {
 
 // Tag in the manifest to be replaced.
 constexpr char kDomainsTag[] = "\"$DOMAIN_LIST\"";
-
-class DeskApiExtensionManagerFactory : public ProfileKeyedServiceFactory {
- public:
-  DeskApiExtensionManagerFactory();
-  DeskApiExtensionManagerFactory(const DeskApiExtensionManagerFactory&) =
-      delete;
-  DeskApiExtensionManagerFactory& operator=(
-      const DeskApiExtensionManagerFactory&) = delete;
-  ~DeskApiExtensionManagerFactory() override;
-
-  // Returns an instance of `DeskApiExtensionManager` for the
-  // given profile.
-  DeskApiExtensionManager* GetForProfile(Profile* profile);
-
- private:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override;
-};
-
-DeskApiExtensionManagerFactory::DeskApiExtensionManagerFactory()
-    : ProfileKeyedServiceFactory(
-          "DeskApiExtensionManager",
-          ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
-              .Build()) {}
-
-DeskApiExtensionManagerFactory::~DeskApiExtensionManagerFactory() = default;
-
-DeskApiExtensionManager* DeskApiExtensionManagerFactory::GetForProfile(
-    Profile* profile) {
-  DCHECK(profile);
-  return static_cast<DeskApiExtensionManager*>(
-      GetServiceForBrowserContext(profile, true));
-}
-
-KeyedService* DeskApiExtensionManagerFactory::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
-  auto* const profile = Profile::FromBrowserContext(context);
-  auto* const component_loader = ::extensions::ExtensionSystem::Get(profile)
-                                     ->extension_service()
-                                     ->component_loader();
-  return new DeskApiExtensionManager(
-      component_loader, profile,
-      std::make_unique<DeskApiExtensionManager::Delegate>());
-}
 
 }  // namespace
 
@@ -112,13 +59,6 @@ bool DeskApiExtensionManager::Delegate::IsExtensionInstalled(
   return component_loader->Exists(extension_misc::kDeskApiExtensionId);
 }
 
-// static
-DeskApiExtensionManager* DeskApiExtensionManager::GetForProfile(
-    Profile* profile) {
-  return static_cast<DeskApiExtensionManagerFactory*>(GetFactory())
-      ->GetForProfile(profile);
-}
-
 DeskApiExtensionManager::DeskApiExtensionManager(
     ComponentLoader* component_loader,
     Profile* profile,
@@ -130,12 +70,6 @@ DeskApiExtensionManager::DeskApiExtensionManager(
 }
 
 DeskApiExtensionManager::~DeskApiExtensionManager() = default;
-
-// static
-BrowserContextKeyedServiceFactory* DeskApiExtensionManager::GetFactory() {
-  static base::NoDestructor<DeskApiExtensionManagerFactory> g_factory;
-  return g_factory.get();
-}
 
 void DeskApiExtensionManager::Init() {
   LoadOrUnloadExtension();
@@ -201,9 +135,9 @@ std::string DeskApiExtensionManager::GetManifest() const {
 
   const std::string domain_list = base::JoinString(domains, ",");
 
-  std::string manifest_contents(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-          IDR_DESK_API_MANIFEST));
+  std::string manifest_contents =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_DESK_API_MANIFEST);
   DCHECK(manifest_contents.find(kDomainsTag) != std::string::npos);
   base::ReplaceFirstSubstringAfterOffset(&manifest_contents, 0, kDomainsTag,
                                          domain_list);
@@ -232,11 +166,6 @@ void DeskApiExtensionManager::RemoveExtensionIfInstalled() {
   if (delegate_->IsExtensionInstalled(component_loader_)) {
     delegate_->UninstallExtension(component_loader_);
   }
-}
-
-// static
-void DeskApiExtensionManager::EnsureFactoryBuilt() {
-  DeskApiExtensionManager::GetFactory();
 }
 
 }  // namespace chromeos

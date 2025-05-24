@@ -13,7 +13,7 @@ ArcPackageInstallPriorityHandler::ArcPackageInstallPriorityHandler(
     Profile* profile)
     : profile_(profile) {}
 
-ArcPackageInstallPriorityHandler::~ArcPackageInstallPriorityHandler() {}
+ArcPackageInstallPriorityHandler::~ArcPackageInstallPriorityHandler() = default;
 
 void ArcPackageInstallPriorityHandler::Shutdown() {
   profile_ = nullptr;

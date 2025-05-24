@@ -12,6 +12,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include <optional>
 
+#include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -21,14 +22,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/apps/apk_web_app_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
 
@@ -58,9 +51,7 @@ std::optional<webapps::AppId> GetWebAppId(content::RenderFrameHost* rfh) {
 
   return app_id;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Obtains the Android package name of the Trusted Web Activity that invoked
 // this browser, if any.
 std::string FetchTwaPackageName(content::RenderFrameHost* rfh) {
@@ -80,7 +71,7 @@ std::string FetchTwaPackageName(content::RenderFrameHost* rfh) {
 
   return twa_package_name.has_value() ? twa_package_name.value() : "";
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -88,55 +79,17 @@ namespace payments {
 
 TwaPackageHelper::TwaPackageHelper(
     content::RenderFrameHost* render_frame_host) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   twa_package_name_ = FetchTwaPackageName(render_frame_host);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  std::optional<webapps::AppId> app_id = GetWebAppId(render_frame_host);
-  if (!lacros_service || !app_id.has_value()) {
-    on_twa_package_name_ready_.Signal();
-    return;
-  }
-  lacros_service->GetRemote<crosapi::mojom::WebAppService>()
-      ->GetAssociatedAndroidPackage(
-          *app_id,
-          base::BindOnce(&TwaPackageHelper::OnGetAssociatedAndroidPackage,
-                         weak_ptr_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TwaPackageHelper::~TwaPackageHelper() = default;
 
 void TwaPackageHelper::GetTwaPackageName(
     GetTwaPackageNameCallback callback) const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  on_twa_package_name_ready_.Post(
-      FROM_HERE,
-      base::BindOnce(&TwaPackageHelper::GetCachedTwaPackageName,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-#else
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), twa_package_name_));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TwaPackageHelper::OnGetAssociatedAndroidPackage(
-    crosapi::mojom::WebAppAndroidPackagePtr package) {
-  if (package) {
-    twa_package_name_ = package->package_name;
-  }
-
-  on_twa_package_name_ready_.Signal();
-}
-
-void TwaPackageHelper::GetCachedTwaPackageName(
-    GetTwaPackageNameCallback callback) const {
-  DCHECK(on_twa_package_name_ready_.is_signaled());
-  std::move(callback).Run(twa_package_name_);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace payments

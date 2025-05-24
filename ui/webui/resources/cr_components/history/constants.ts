@@ -14,15 +14,22 @@ export enum HistoryResultType {
 }
 
 /**
- * Histogram buckts for UMA tracking of Embeddings-related UMA actions. They
+ * Histogram buckets for UMA tracking of Embeddings-related UMA actions. They
  * are defined here rather than in the history_embeddings component, because
  * History component itself needs to call this to provide a proper comparison
  * for users that don't have Embeddings enabled.
  */
 export enum HistoryEmbeddingsUserActions {
   NON_EMPTY_QUERY_HISTORY_SEARCH = 0,
+
   // Intermediate values are omitted because they are never used from WebUI.
-  END = 4,
+  // This is a total count, not the "last" usable enum value. It should be
+  // updated to `HistoryEmbeddingsUserActions::kMaxValue + 1` if that changes.
+  // See related comment in
+  // chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h
+
+  // HistoryEmbeddingsUserActions::kMaxValue = 6
+  END = 7,
 }
 
 // Unclicked query results that live for less than this amount of milliseconds

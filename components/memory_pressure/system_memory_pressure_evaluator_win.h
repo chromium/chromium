@@ -29,24 +29,17 @@ class SystemMemoryPressureEvaluator
   using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
 
   // The memory sampling period, currently 5s.
-  static const base::TimeDelta kMemorySamplingPeriod;
+  static constexpr base::TimeDelta kDefaultPeriod = base::Seconds(5);
 
   // Constants governing the polling and hysteresis behaviour of the observer.
   // The time which should pass between 2 successive moderate memory pressure
   // signals, in milliseconds.
   static const base::TimeDelta kModeratePressureCooldown;
 
-  // Constants governing the memory pressure level detection.
-
-  // The amount of total system memory beyond which a system is considered to be
-  // a large-memory system.
-  static const int kLargeMemoryThresholdMb;
-  // Default minimum free memory thresholds for small-memory systems, in MB.
-  static const int kSmallMemoryDefaultModerateThresholdMb;
-  static const int kSmallMemoryDefaultCriticalThresholdMb;
-  // Default minimum free memory thresholds for large-memory systems, in MB.
-  static const int kLargeMemoryDefaultModerateThresholdMb;
-  static const int kLargeMemoryDefaultCriticalThresholdMb;
+  // Available physical memory threshold to dispatch moderate/critical memory
+  // pressure, in MB.
+  static const int kPhysicalMemoryDefaultModerateThresholdMb;
+  static const int kPhysicalMemoryDefaultCriticalThresholdMb;
 
   // Default constructor. Will choose thresholds automatically based on the
   // actual amount of system memory.
@@ -75,10 +68,6 @@ class SystemMemoryPressureEvaluator
  protected:
   // Internals are exposed for unittests.
 
-  // Automatically infers threshold values based on system memory. This invokes
-  // GetMemoryStatus so it can be mocked in unittests.
-  void InferThresholds();
-
   // Starts observing the memory fill level. Calls to StartObserving should
   // always be matched with calls to StopObserving.
   void StartObserving();
@@ -105,11 +94,14 @@ class SystemMemoryPressureEvaluator
   // thread.
   virtual bool GetSystemMemoryStatus(MEMORYSTATUSEX* mem_status);
 
+  // Records histograms about committed memory based on `mem_status`.
+  static void RecordCommitHistograms(const MEMORYSTATUSEX& mem_status);
+
  private:
   // Threshold amounts of available memory that trigger pressure levels. See
   // memory_pressure_monitor.cc for a discussion of reasonable values for these.
-  int moderate_threshold_mb_;
-  int critical_threshold_mb_;
+  const int moderate_threshold_mb_;
+  const int critical_threshold_mb_;
 
   // A periodic timer to check for memory pressure changes.
   base::RepeatingTimer timer_;

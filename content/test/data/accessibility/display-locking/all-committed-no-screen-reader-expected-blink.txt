@@ -1,0 +1,27 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer ignored
+++++++++genericContainer
+++++++++++staticText name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
+++++++++++++inlineTextBox name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
+++++++++genericContainer offscreen
+++++++++++genericContainer offscreen
+++++++++++++staticText offscreen name='child text will be in AX tree but without layout'
+++++++++++++++inlineTextBox offscreen name='child text will be in AX tree but without layout'
+++++++++++genericContainer offscreen
+++++++++++++staticText offscreen name='nested activatable locked element will be in AX tree but without layout'
+++++++++++++++inlineTextBox offscreen name='nested activatable locked element will be in AX tree but without layout'
+++++++++staticText offscreen name='normal text 1'
+++++++++++inlineTextBox offscreen name='normal text 1'
+++++++++genericContainer offscreen
+++++++++staticText offscreen name='normal text 2'
+++++++++++inlineTextBox offscreen name='normal text 2'
+++++++++genericContainer offscreen
+++++++++++staticText offscreen name='nested non-activatable locked element will not be in AX tree'
+++++++++++++inlineTextBox offscreen name='nested non-activatable locked element will not be in AX tree'
+++++++++staticText offscreen name='normal text 3'
+++++++++++inlineTextBox offscreen name='normal text 3'
+++++++++genericContainer offscreen
+++++++++++staticText offscreen name='doneCommitting'
+++++++++++++inlineTextBox offscreen name='doneCommitting'

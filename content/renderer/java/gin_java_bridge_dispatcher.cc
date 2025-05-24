@@ -4,6 +4,8 @@
 
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
 
+#include <utility>
+
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
@@ -11,9 +13,11 @@
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/renderer/java/gin_java_bridge_object.h"
+#include "net/base/scheme_host_port_matcher.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -40,26 +44,40 @@ void GinJavaBridgeDispatcher::DidClearWindowObject() {
     // deleted after its wrapper will be collected.
     // On the browser side, we ignore wrapper deletion events for named objects,
     // as they are only removed upon embedder's request (RemoveNamedObject).
-    if (objects_.Lookup(iter->second))
-      objects_.Remove(iter->second);
-    GinJavaBridgeObject* object = GinJavaBridgeObject::InjectNamed(
-        render_frame()->GetWebFrame(), weak_ptr_factory_.GetWeakPtr(),
-        iter->first, iter->second);
-    if (object) {
-      objects_.AddWithID(object, iter->second);
-    } else {
-      GetRemoteObjectHost()->ObjectWrapperDeleted(iter->second);
+    if (objects_.Lookup(iter->second.object_id)) {
+      objects_.Remove(iter->second.object_id);
+    }
+
+    // We will always receive an allowlist of origins. Only inject
+    // if the origin matches one of the rules.
+    url::Origin security_origin = url::Origin(
+        render_frame()->GetWebFrame()->GetDocument().GetSecurityOrigin());
+    bool should_inject =
+        iter->second.matcher.Includes(security_origin.GetURL());
+
+    if (should_inject) {
+      GinJavaBridgeObject* object = GinJavaBridgeObject::InjectNamed(
+          render_frame()->GetWebFrame(), weak_ptr_factory_.GetWeakPtr(),
+          iter->first, iter->second.object_id);
+      if (object) {
+        objects_.AddWithID(object, iter->second.object_id);
+      } else {
+        GetRemoteObjectHost()->ObjectWrapperDeleted(iter->second.object_id);
+      }
     }
   }
 }
 
 void GinJavaBridgeDispatcher::AddNamedObject(const std::string& name,
-                                             ObjectID object_id) {
+                                             ObjectID object_id,
+                                             const std::string& matcher) {
   // We should already have received the `remote_` via the SetHost method.
   CHECK(remote_);
   // Added objects only become available after page reload, so here they
   // are only added into the internal map.
-  named_objects_.insert(std::make_pair(name, object_id));
+  named_objects_.insert(std::make_pair(
+      name, NamedObject{object_id,
+                        net::SchemeHostPortMatcher::FromRawString(matcher)}));
 }
 
 void GinJavaBridgeDispatcher::RemoveNamedObject(const std::string& name) {

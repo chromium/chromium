@@ -23,6 +23,9 @@ message LensOverlayClientLogs {
     OMNIBOX_BUTTON = 4;
     TOOLBAR_BUTTON = 5;
     FIND_IN_PAGE = 6;
+    OMNIBOX_PAGE_ACTION = 7;
+    OMNIBOX_CONTEXTUAL_SUGGESTION = 8;
+    HOMEWORK_ACTION_CHIP = 9;
   }
 
   // The Lens Overlay entry point used to access lens.
@@ -30,4 +33,9 @@ message LensOverlayClientLogs {
 
   // A unique identifier for associating events logged by lens asynchronously.
   optional uint64 paella_id = 3;
+
+  // Whether the user has disabled metrics collection.
+  optional bool metrics_collection_disabled = 5;
+
+  reserved 4;
 }

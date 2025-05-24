@@ -136,11 +136,6 @@ class PLATFORM_EXPORT MainThreadTaskQueue
   static base::sequence_manager::QueueName NameForQueueType(
       QueueType queue_type);
 
-  // Returns true if task queues of the given queue type can be created on a
-  // per-frame basis, and false if they are only created on a shared basis for
-  // the entire main thread.
-  static bool IsPerFrameTaskQueue(QueueType);
-
   using QueueTraitsKeyType = int;
 
   // QueueTraits represent the deferrable, throttleable, pausable, and freezable

@@ -6,17 +6,19 @@ import './margin_control.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {Coordinate2d} from '../data/coordinate2d.js';
 import type {Margins, MarginsSetting} from '../data/margins.js';
 import {CustomMarginsOrientation, MarginsType} from '../data/margins.js';
 import type {MeasurementSystem} from '../data/measurement_system.js';
-import type {Size} from '../data/size.js';
+import {Size} from '../data/size.js';
 import {State} from '../data/state.js';
 
 import type {PrintPreviewMarginControlElement} from './margin_control.js';
-import {getTemplate} from './margin_control_container.html.js';
+import {getCss} from './margin_control_container.css.js';
+import {getHtml} from './margin_control_container.html.js';
 import {SettingsMixin} from './settings_mixin.js';
 
 export const MARGIN_KEY_MAP:
@@ -31,7 +33,7 @@ const MINIMUM_DISTANCE: number = 72;  // 1 inch
 
 
 const PrintPreviewMarginControlContainerElementBase =
-    SettingsMixin(PolymerElement);
+    SettingsMixin(CrLitElement);
 
 export class PrintPreviewMarginControlContainerElement extends
     PrintPreviewMarginControlContainerElementBase {
@@ -39,72 +41,27 @@ export class PrintPreviewMarginControlContainerElement extends
     return 'print-preview-margin-control-container';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      pageSize: {
-        type: Object,
-        notify: true,
-      },
-
-      documentMargins: {
-        type: Object,
-        notify: true,
-      },
-
-      previewLoaded: Boolean,
-
-      measurementSystem: Object,
-
-      state: {
-        type: Number,
-        observer: 'onStateChanged_',
-      },
-
-      scaleTransform_: {
-        type: Number,
-        notify: true,
-        value: 0,
-      },
-
-      translateTransform_: {
-        type: Object,
-        notify: true,
-        value: new Coordinate2d(0, 0),
-      },
-
-      clipSize_: {
-        type: Object,
-        notify: true,
-        value: null,
-      },
-
-      available_: {
-        type: Boolean,
-        notify: true,
-        computed: 'computeAvailable_(previewLoaded, settings.margins.value)',
-        observer: 'onAvailableChange_',
-      },
-
-      invisible_: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: true,
-      },
-
-      marginSides_: {
-        type: Array,
-        notify: true,
-        value: [
-          CustomMarginsOrientation.TOP,
-          CustomMarginsOrientation.RIGHT,
-          CustomMarginsOrientation.BOTTOM,
-          CustomMarginsOrientation.LEFT,
-        ],
-      },
+      pageSize: {type: Object},
+      documentMargins: {type: Object},
+      previewLoaded: {type: Boolean},
+      measurementSystem: {type: Object},
+      state: {type: Number},
+      scaleTransform_: {type: Number},
+      translateTransform_: {type: Object},
+      clipSize_: {type: Object},
+      available_: {type: Boolean},
+      invisible_: {type: Boolean},
+      marginSides_: {type: Array},
 
       /**
        * String attribute used to set cursor appearance. Possible values:
@@ -114,42 +71,72 @@ export class PrintPreviewMarginControlContainerElement extends
        */
       dragging_: {
         type: String,
-        reflectToAttribute: true,
-        value: '',
+        reflect: true,
       },
     };
   }
 
-  static get observers() {
-    return [
-      'onMarginSettingsChange_(settings.customMargins.value)',
-      'onMediaSizeOrLayoutChange_(' +
-          'settings.mediaSize.value, settings.layout.value)',
-
-    ];
-  }
-
-  pageSize: Size;
-  documentMargins: Margins;
-  previewLoaded: boolean;
-  measurementSystem: MeasurementSystem|null;
-  state: State;
-  private available_: boolean;
-  private invisible_: boolean;
-  private clipSize_: Size;
-  private scaleTransform_: number;
-  private translateTransform_: Coordinate2d;
-  private dragging_: string;
-  private marginSides_: CustomMarginsOrientation[];
-
+  accessor pageSize: Size = new Size(612, 792);
+  accessor documentMargins: Margins|null = null;
+  accessor previewLoaded: boolean = false;
+  accessor measurementSystem: MeasurementSystem|null = null;
+  accessor state: State = State.NOT_READY;
+  private accessor available_: boolean = false;
+  protected accessor invisible_: boolean = true;
+  protected accessor clipSize_: Size = new Size(0, 0);
+  protected accessor scaleTransform_: number = 0;
+  protected accessor translateTransform_: Coordinate2d = new Coordinate2d(0, 0);
+  private accessor dragging_: ''|'dragging-horizontal'|'dragging-vertical' = '';
+  protected accessor marginSides_: CustomMarginsOrientation[] = [
+    CustomMarginsOrientation.TOP,
+    CustomMarginsOrientation.RIGHT,
+    CustomMarginsOrientation.BOTTOM,
+    CustomMarginsOrientation.LEFT,
+  ];
   private pointerStartPositionInPixels_: Coordinate2d = new Coordinate2d(0, 0);
   private marginStartPositionInPixels_: Coordinate2d|null = null;
   private resetMargins_: boolean|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   private textboxFocused_: boolean = false;
 
+  override connectedCallback() {
+    super.connectedCallback();
+
+    this.addSettingObserver(
+        'customMargins.value', this.onMarginSettingsChange_.bind(this));
+    this.onMarginSettingsChange_();
+
+    this.addSettingObserver(
+        'mediaSize.value', this.onMediaSizeOrLayoutChange_.bind(this));
+    this.addSettingObserver(
+        'layout.value', this.onMediaSizeOrLayoutChange_.bind(this));
+
+    this.addSettingObserver('margins.value', () => {
+      this.available_ = this.computeAvailable_();
+    });
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedProperties.has('state')) {
+      this.onStateChanged_();
+    }
+
+    if (changedProperties.has('previewLoaded')) {
+      this.available_ = this.computeAvailable_();
+    }
+
+    if (changedPrivateProperties.has('available_')) {
+      this.onAvailableChange_();
+    }
+  }
+
   private computeAvailable_(): boolean {
-    return this.previewLoaded && !!this.clipSize_ &&
+    return this.previewLoaded &&
         ((this.getSettingValue('margins') as MarginsType) ===
          MarginsType.CUSTOM) &&
         !!this.pageSize;
@@ -160,6 +147,7 @@ export class PrintPreviewMarginControlContainerElement extends
       // Set the custom margins values to the current document margins if the
       // custom margins were reset.
       const newMargins: Partial<MarginsSetting> = {};
+      assert(this.documentMargins);
       for (const side of Object.values(CustomMarginsOrientation)) {
         const key = MARGIN_KEY_MAP.get(side)!;
         newMargins[key] = this.documentMargins.get(side);
@@ -177,7 +165,7 @@ export class PrintPreviewMarginControlContainerElement extends
       // settings. It sets custom margins empty by default.
       return;
     }
-    this.shadowRoot!.querySelectorAll('print-preview-margin-control')
+    this.shadowRoot.querySelectorAll('print-preview-margin-control')
         .forEach(control => {
           const key = MARGIN_KEY_MAP.get(control.side)!;
           const newValue = margins[key] || 0;
@@ -211,7 +199,7 @@ export class PrintPreviewMarginControlContainerElement extends
   /**
    * @return Whether the controls should be disabled.
    */
-  private controlsDisabled_(): boolean {
+  protected controlsDisabled_(): boolean {
     return this.state !== State.READY || this.invisible_;
   }
 
@@ -297,7 +285,6 @@ export class PrintPreviewMarginControlContainerElement extends
     const posInPts = this.posInPixelsToPts_(control, posInPixels);
     this.moveControlWithConstraints_(control, posInPts);
     this.setMargin_(control.side, posInPts);
-    this.updateClippingMask(this.clipSize_);
     this.eventTracker_.remove(control, 'pointercancel');
     this.eventTracker_.remove(control, 'pointerup');
     this.eventTracker_.remove(control, 'pointermove');
@@ -326,7 +313,7 @@ export class PrintPreviewMarginControlContainerElement extends
   /**
    * @param e Contains information about what control fired the event.
    */
-  private onTextFocus_(e: Event) {
+  protected onTextFocus_(e: Event) {
     this.textboxFocused_ = true;
     const control = e.target as PrintPreviewMarginControlElement;
 
@@ -417,7 +404,7 @@ export class PrintPreviewMarginControlContainerElement extends
   /**
    * @param e Event containing the new textbox value.
    */
-  private onTextChange_(e: CustomEvent<number>) {
+  protected onTextChange_(e: CustomEvent<number>) {
     const control = e.target as PrintPreviewMarginControlElement;
     control.invalid = false;
     const clippedValue = this.clipAndRoundValue_(control.side, e.detail);
@@ -429,7 +416,7 @@ export class PrintPreviewMarginControlContainerElement extends
    * @param e Event fired when a control's text field is blurred. Contains
    *     information about whether the control is in an invalid state.
    */
-  private onTextBlur_(e: CustomEvent<boolean>) {
+  protected onTextBlur_(e: CustomEvent<boolean>) {
     const control = e.target as PrintPreviewMarginControlElement;
     control.setTextboxValue(control.getPositionInPts());
     if (e.detail /* detail is true if the control is in an invalid state */) {
@@ -441,7 +428,7 @@ export class PrintPreviewMarginControlContainerElement extends
   /**
    * @param e Fired when pointerdown occurs on a margin control.
    */
-  private onPointerDown_(e: PointerEvent) {
+  protected onPointerDown_(e: PointerEvent) {
     const control = e.target as PrintPreviewMarginControlElement;
     if (!control.shouldDrag(e)) {
       return;
@@ -475,7 +462,7 @@ export class PrintPreviewMarginControlContainerElement extends
   /**
    * Set display:none after the opacity transition for the controls is done.
    */
-  private onTransitionEnd_() {
+  protected onTransitionEnd_() {
     if (this.invisible_) {
       this.style.display = 'none';
     }
@@ -507,13 +494,12 @@ export class PrintPreviewMarginControlContainerElement extends
    * @param clipSize Size to clip the margin controls to.
    */
   updateClippingMask(clipSize: Size) {
-    if (!clipSize) {
-      return;
-    }
     this.clipSize_ = clipSize;
-    this.notifyPath('clipSize_');
   }
 }
+
+export type MarginControlContainerElement =
+    PrintPreviewMarginControlContainerElement;
 
 declare global {
   interface HTMLElementTagNameMap {

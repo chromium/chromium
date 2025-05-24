@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_OUTPUT_PRESENTER_GL_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_OUTPUT_PRESENTER_GL_H_
 
-#include <memory>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
@@ -36,8 +33,7 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
                gfx::FrameData data) final;
   void ScheduleOverlayPlane(
       const OutputPresenter::OverlayPlaneCandidate& overlay_plane_candidate,
-      ScopedOverlayAccess* access,
-      std::unique_ptr<gfx::GpuFence> acquire_fence) final;
+      ScopedOverlayAccess* access) final;
   void SetVSyncDisplayID(int64_t display_id) final;
 
 #if BUILDFLAG(IS_APPLE)

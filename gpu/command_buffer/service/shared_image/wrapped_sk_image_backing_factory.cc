@@ -44,6 +44,7 @@ SharedImageUsageSet GetSupportedUsage(const SharedContextState* context_state) {
   constexpr SharedImageUsageSet kGraphiteDawnFallbackUsage =
       SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
       SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
+      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
       // NOTE: In this case, it is also possible to support raster-over-GLES2.
       SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
@@ -81,7 +82,7 @@ WrappedSkImageBackingFactory::WrappedSkImageBackingFactory(
     scoped_refptr<SharedContextState> context_state)
     : SharedImageBackingFactory(GetSupportedUsage(context_state.get())),
       context_state_(std::move(context_state)),
-      use_graphite_(context_state_->graphite_context()),
+      use_graphite_(context_state_->graphite_shared_context()),
       is_drdc_enabled_(
           features::IsDrDcEnabled() &&
           !context_state_->feature_info()->workarounds().disable_drdc),
@@ -156,20 +157,6 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   return backing;
 }
 
-std::unique_ptr<SharedImageBacking>
-WrappedSkImageBackingFactory::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    gfx::GpuMemoryBufferHandle handle) {
-  NOTREACHED();
-}
-
 bool WrappedSkImageBackingFactory::IsSupported(
     SharedImageUsageSet usage,
     viz::SharedImageFormat format,
@@ -202,11 +189,7 @@ bool WrappedSkImageBackingFactory::IsSupported(
     }
   }
 
-  if (format == viz::SinglePlaneFormat::kLUMINANCE_8) {
-    // WrappedSkImage does not support LUMINANCE_8. See
-    // https://crbug.com/1252502 for details.
-    return false;
-  } else if (format == viz::SinglePlaneFormat::kALPHA_8) {
+  if (format == viz::SinglePlaneFormat::kALPHA_8) {
     // For ALPHA8 skia will pick format depending on context version and
     // extensions available and we'll have to match that format when we record
     // DDLs. To avoid matching logic here, fallback to other backings (e.g
@@ -244,8 +227,15 @@ bool WrappedSkImageBackingFactory::IsSupported(
   if (context_state_->gr_context()) {
     // Check that skia-ganesh can create the required backend textures.
     for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-      SkColorType color_type =
-          viz::ToClosestSkColorType(/*gpu_compositing=*/true, format, plane);
+      SkColorType color_type = viz::ToClosestSkColorType(format, plane);
+      // For ALPHA8 skia will pick format depending on context version and
+      // extensions available and we'll have to match that format when we record
+      // DDLs. To avoid matching logic here, fallback to other backings (e.g
+      // GLTextureImageBacking) where we control what format was used.
+      if (color_type == kAlpha_8_SkColorType &&
+          context_state_->feature_info()->workarounds().r8_egl_images_broken) {
+        return false;
+      }
       auto backend_format = context_state_->gr_context()->defaultBackendFormat(
           color_type, GrRenderable::kYes);
       if (!backend_format.isValid()) {

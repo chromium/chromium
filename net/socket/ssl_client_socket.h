@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/cert_verifier.h"
@@ -39,6 +40,15 @@ class TransportSecurityState;
 //
 class NET_EXPORT SSLClientSocket : public SSLSocket {
  public:
+  // Records some histograms based on the result of the SSL handshake.
+  static void RecordSSLConnectResult(
+      SSLClientSocket* ssl_socket,
+      int result,
+      bool is_ech_capable,
+      bool ech_enabled,
+      const std::optional<std::vector<uint8_t>>& ech_retry_configs,
+      const LoadTimingInfo::ConnectTiming& connect_timing);
+
   SSLClientSocket();
 
   // Called in response to |ERR_ECH_NOT_NEGOTIATED| in Connect(), to determine
@@ -56,33 +66,10 @@ class NET_EXPORT SSLClientSocket : public SSLSocket {
   // once https://crbug.com/458365 is resolved.
   static void SetSSLKeyLogger(std::unique_ptr<SSLKeyLogger> logger);
 
- protected:
-  void set_signed_cert_timestamps_received(
-      bool signed_cert_timestamps_received) {
-    signed_cert_timestamps_received_ = signed_cert_timestamps_received;
-  }
-
-  void set_stapled_ocsp_response_received(bool stapled_ocsp_response_received) {
-    stapled_ocsp_response_received_ = stapled_ocsp_response_received;
-  }
-
   // Serialize |next_protos| in the wire format for ALPN: protocols are listed
   // in order, each prefixed by a one-byte length.
   static std::vector<uint8_t> SerializeNextProtos(
       const NextProtoVector& next_protos);
-
- private:
-  FRIEND_TEST_ALL_PREFIXES(SSLClientSocket, SerializeNextProtos);
-  // For signed_cert_timestamps_received_ and stapled_ocsp_response_received_.
-  FRIEND_TEST_ALL_PREFIXES(SSLClientSocketVersionTest,
-                           ConnectSignedCertTimestampsTLSExtension);
-  FRIEND_TEST_ALL_PREFIXES(SSLClientSocketVersionTest,
-                           ConnectSignedCertTimestampsEnablesOCSP);
-
-  // True if SCTs were received via a TLS extension.
-  bool signed_cert_timestamps_received_ = false;
-  // True if a stapled OCSP response was received.
-  bool stapled_ocsp_response_received_ = false;
 };
 
 // Shared state and configuration across multiple SSLClientSockets.

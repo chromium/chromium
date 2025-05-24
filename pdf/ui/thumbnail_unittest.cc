@@ -6,6 +6,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace chrome_pdf {
 
@@ -16,15 +17,21 @@ constexpr float kDeviceToPixelHigh = 2;
 
 struct BestFitSizeParams {
   float device_pixel_ratio;
-  gfx::Size page_size;
+  gfx::SizeF page_size;
   gfx::Size expected_thumbnail_size;
 };
 
 void TestBestFitSize(const BestFitSizeParams& params) {
   Thumbnail thumbnail(params.page_size, params.device_pixel_ratio);
   EXPECT_EQ(thumbnail.image_size(), params.expected_thumbnail_size)
-      << "Failed for page of size of " << params.page_size.ToString()
+      << "Failed for ctor with page of size of " << params.page_size.ToString()
       << " and device to pixel ratio of " << params.device_pixel_ratio;
+  EXPECT_EQ(Thumbnail::CalculateImageSize(params.page_size,
+                                          params.device_pixel_ratio),
+            params.expected_thumbnail_size)
+      << "Failed for CalculateImageSize() with page of size of "
+      << params.page_size.ToString() << " and device to pixel ratio of "
+      << params.device_pixel_ratio;
 }
 
 TEST(ThumbnailTest, CalculateBestFitSizeNormal) {
@@ -45,8 +52,26 @@ TEST(ThumbnailTest, CalculateBestFitSizeNormal) {
       {kDeviceToPixelHigh, {50, 1500}, {46, 1399}},   // Super tall
   };
 
-  for (const auto& params : kBestFitSizeTestParams)
+  for (const auto& params : kBestFitSizeTestParams) {
     TestBestFitSize(params);
+  }
+}
+
+TEST(ThumbnailTest, CalculateBestFitSizeFractional) {
+  static constexpr BestFitSizeParams kBestFitSizeTestParams[] = {
+      // ANSI Letter-ish
+      {kDeviceToPixelLow, {611.976f, 791.968f}, {108, 140}},
+      // ISO 216 A4
+      {kDeviceToPixelLow, {595.35f, 841.995f}, {108, 152}},
+      // ANSI Letter-ish
+      {kDeviceToPixelHigh, {611.976f, 791.968f}, {216, 280}},
+      // ISO 216 A4
+      {kDeviceToPixelHigh, {595.35f, 841.995f}, {214, 303}},
+  };
+
+  for (const auto& params : kBestFitSizeTestParams) {
+    TestBestFitSize(params);
+  }
 }
 
 TEST(ThumbnailTest, CalculateBestFitSizeLargeAspectRatio) {
@@ -63,8 +88,9 @@ TEST(ThumbnailTest, CalculateBestFitSizeLargeAspectRatio) {
       {kDeviceToPixelHigh, {1, 9999999}, {3, 17701}},  // Very tall
   };
 
-  for (const auto& params : kBestFitSizeTestParams)
+  for (const auto& params : kBestFitSizeTestParams) {
     TestBestFitSize(params);
+  }
 }
 
 TEST(ThumbnailTest, CalculateBestFitSizeNoOverflow) {
@@ -73,8 +99,9 @@ TEST(ThumbnailTest, CalculateBestFitSizeNoOverflow) {
       {kDeviceToPixelHigh, {9999999, 9999999}, {255, 255}},  // Very large
   };
 
-  for (const auto& params : kBestFitSizeTestParams)
+  for (const auto& params : kBestFitSizeTestParams) {
     TestBestFitSize(params);
+  }
 }
 
 }  // namespace

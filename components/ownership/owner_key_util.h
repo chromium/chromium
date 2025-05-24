@@ -109,7 +109,7 @@ class OWNERSHIP_EXPORT OwnerKeyUtil
   virtual bool IsPublicKeyPresent() = 0;
 
  protected:
-  virtual ~OwnerKeyUtil() {}
+  virtual ~OwnerKeyUtil() = default;
 
  private:
   friend class base::RefCountedThreadSafe<OwnerKeyUtil>;

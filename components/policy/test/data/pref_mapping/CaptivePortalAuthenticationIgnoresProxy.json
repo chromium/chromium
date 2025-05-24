@@ -1,38 +1,15 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "default_for_enterprise_users=false",
-        "policies": {},
-        "prefs": {
-          "proxy.captive_portal_ignores_proxy": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "CaptivePortalAuthenticationIgnoresProxy": false
-        },
-        "prefs": {
-          "proxy.captive_portal_ignores_proxy": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "CaptivePortalAuthenticationIgnoresProxy": true
-        },
-        "prefs": {
-          "proxy.captive_portal_ignores_proxy": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "proxy.captive_portal_ignores_proxy",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

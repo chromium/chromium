@@ -22,14 +22,14 @@ blink_python_runner("make_generated_permissions_policy_helper") {
 
   inputs = scripts_for_json5_files + [
              "../../renderer/build/scripts/make_policy_helper_public.py",
-             "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+             "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
              "../../renderer/build/scripts/templates/policy_helper_public.cc.tmpl",
            ]
   outputs = [ "$root_gen_dir/third_party/blink/public/common/permissions_policy/policy_helper_public.cc" ]
 
   args = [
     rebase_path(
-        "../../renderer/core/permissions_policy/permissions_policy_features.json5",
+        "//services/network/public/cpp/permissions_policy/permissions_policy_features.json5",
         root_build_dir),
     "--output_dir",
     rebase_path(
@@ -87,7 +87,6 @@ buildflag_header("buildflags") {
   flags = [
     "RTC_USE_H264=$rtc_use_h264",
     "RTC_USE_H265=$rtc_use_h265",
-    "ENABLE_RUST_CRASH=$enable_rust_crash",
   ]
 }
 
@@ -97,6 +96,10 @@ source_set("common_export") {
     "//third_party/blink/public/common/*",
   ]
   sources = [ "common_export.h" ]
+}
+
+source_set("preloading_headers") {
+  sources = [ "navigation/preloading_headers.h" ]
 }
 
 source_set("headers") {
@@ -143,9 +146,9 @@ source_set("headers") {
     "fenced_frame/redacted_fenced_frame_config_mojom_traits.h",
     "fetch/fetch_api_request_headers_map.h",
     "fetch/fetch_api_request_headers_mojom_traits.h",
+    "fingerprinting_protection/canvas_noise_token.h",
     "forcedark/forcedark_switches.h",
     "frame/delegated_capability_request_token.h",
-    "frame/fenced_frame_permissions_policies.h",
     "frame/fenced_frame_sandbox_flags.h",
     "frame/frame_ad_evidence.h",
     "frame/frame_owner_element_type.h",
@@ -213,10 +216,6 @@ source_set("headers") {
     "manifest/manifest.h",
     "manifest/manifest_icon_selector.h",
     "manifest/manifest_util.h",
-    "media/display_type.h",
-    "media/video_capture.h",
-    "media/watch_time_component.h",
-    "media/watch_time_reporter.h",
     "mediastream/media_device_id.h",
     "mediastream/media_devices.h",
     "mediastream/media_devices_mojom_traits.h",
@@ -236,7 +235,6 @@ source_set("headers") {
     "messaging/web_message_port.h",
     "metrics/accept_language_and_content_language_usage.h",
     "metrics/document_update_reason.h",
-    "metrics/form_element_pii_type.h",
     "mime_util/mime_util.h",
     "navigation/impression.h",
     "navigation/navigation_params.h",
@@ -255,8 +253,6 @@ source_set("headers") {
     "origin_trials/trial_token.h",
     "origin_trials/trial_token_result.h",
     "origin_trials/trial_token_validator.h",
-    "page/browsing_context_group_info.h",
-    "page/browsing_context_group_info_mojom_traits.h",
     "page/color_provider_color_maps.h",
     "page/color_provider_color_maps_mojom_traits.h",
     "page/content_to_visible_time_reporter.h",
@@ -268,15 +264,12 @@ source_set("headers") {
     "page_state/page_state.h",
     "page_state/page_state_serialization.h",
     "peerconnection/webrtc_ip_handling_policy.h",
+    "peerconnection/webrtc_ip_handling_url_entry.h",
     "performance/largest_contentful_paint_type.h",
-    "performance/performance_scenarios.h",
     "performance/performance_timeline_constants.h",
     "permissions/permission_utils.h",
     "permissions_policy/document_policy.h",
     "permissions_policy/document_policy_features.h",
-    "permissions_policy/permissions_policy.h",
-    "permissions_policy/permissions_policy_declaration.h",
-    "permissions_policy/permissions_policy_features.h",
     "permissions_policy/policy_helper_public.h",
     "permissions_policy/policy_value.h",
     "renderer_preferences/renderer_preferences.h",
@@ -289,6 +282,7 @@ source_set("headers") {
     "security/protocol_handler_security_level.h",
     "security/security_style.h",
     "security_context/insecure_request_policy.h",
+    "service_worker/extended_service_worker_status_code.h",
     "service_worker/service_worker_loader_helpers.h",
     "service_worker/service_worker_router_rule.h",
     "service_worker/service_worker_scope_match.h",
@@ -297,7 +291,6 @@ source_set("headers") {
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_types.h",
     "shared_storage/module_script_downloader.h",
-    "shared_storage/shared_storage_mojom_traits.h",
     "shared_storage/shared_storage_utils.h",
     "sms/webotp_constants.h",
     "sms/webotp_service_outcome.h",
@@ -310,10 +303,14 @@ source_set("headers") {
     "use_counter/use_counter_feature_tracker.h",
     "user_agent/user_agent_brand_version_type.h",
     "user_agent/user_agent_metadata.h",
+    "view_source/rendering_preferences.h",
     "web_cache/web_cache_resource_type_stats.h",
     "web_package/signed_exchange_consts.h",
     "web_package/web_package_request_matcher.h",
     "web_preferences/web_preferences.h",
+    "webid/federated_auth_request_mojom_traits.h",
+    "webid/login_status_account.h",
+    "webid/login_status_options.h",
     "widget/constants.h",
     "widget/device_emulation_params.h",
     "widget/visual_properties.h",
@@ -325,10 +322,12 @@ source_set("headers") {
   public_deps = [
     ":make_generated_permissions_policy_helper",
     ":make_runtime_feature_state_contexts_headers",
+    ":preloading_headers",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network/public/cpp:cpp",
+    "//services/network/public/mojom:mojom_permissions_policy",
     "//skia",
     "//skia/public/mojom:shared_typemap_traits",
     "//third_party/blink/public:runtime_features_for_public",
@@ -337,7 +336,7 @@ source_set("headers") {
     "//third_party/blink/public/mojom:mojom_modules_headers",
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_headers",
-    "//third_party/blink/public/mojom/origin_trial_feature",
+    "//third_party/blink/public/mojom/origin_trials:origin_trial_feature",
     "//third_party/liburlpattern",
     "//ui/base/mojom:ui_base_types",
     "//ui/display/mojom",
@@ -351,6 +350,7 @@ source_set("headers") {
     ":common_export",
     "//base",
     "//cc",
+    "//components/content_settings/core/common",
     "//components/shared_highlighting/core/common",
     "//components/viz/common",
     "//gpu/command_buffer/common",

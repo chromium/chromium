@@ -6,30 +6,15 @@
  * @fileoverview 'settings-device-page' is the settings page for device and
  * peripheral settings.
  */
-import '/shared/settings/prefs/prefs.js';
 import 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './audio.js';
-import './display.js';
-import './graphics_tablet_subpage.js';
-import './keyboard.js';
-import './per_device_keyboard.js';
-import './per_device_keyboard_remap_keys.js';
-import './per_device_mouse.js';
-import './per_device_pointing_stick.js';
-import './per_device_touchpad.js';
-import './pointers.js';
-import './power.js';
-import './storage.js';
-import './storage_external.js';
-import './stylus.js';
+import '../os_printing_page/printing_settings_card.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../os_settings_page/settings_card.js';
 import '../settings_shared.css.js';
-import '../os_printing_page/printing_settings_card.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -37,22 +22,24 @@ import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {isExternalStorageEnabled, isInputDeviceSettingsSplitEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isExternalStorageEnabled, isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {PrefsState} from '../common/types.js';
-import {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
+import type {PrefsState} from '../common/types.js';
+import type {KeyboardPolicies, MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {GraphicsTabletSettingsObserverReceiver, KeyboardSettingsObserverReceiver, MouseSettingsObserverReceiver, PointingStickSettingsObserverReceiver, TouchpadSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {ACCESSIBILITY_COMMON_IME_ID} from '../os_languages_page/languages.js';
-import {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
-import {Route, Router, routes} from '../router.js';
+import type {LanguageHelper, LanguagesModel} from '../os_languages_page/languages_types.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './device_page.html.js';
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
+import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {GraphicsTablet, InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
-import {SettingsPerDeviceKeyboardRemapKeysElement} from './per_device_keyboard_remap_keys.js';
+import type {GraphicsTablet, InputDeviceSettingsProviderInterface, Keyboard, Mouse, PointingStick, Touchpad} from './input_device_settings_types.js';
+import type {SettingsPerDeviceKeyboardRemapKeysElement} from './per_device_keyboard_remap_keys.js';
 
 const SettingsDevicePageElementBase =
     RouteOriginMixin(I18nMixin(WebUiListenerMixin(PolymerElement)));
@@ -128,27 +115,6 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         readOnly: true,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
-      /**
-       * Whether storage management info should be hidden.
-       */
-      hideStorageInfo_: {
-        type: Boolean,
-        value() {
-          // TODO(crbug.com/40587075): Show an explanatory message instead.
-          return loadTimeData.valueExists('isDemoSession') &&
-              loadTimeData.getBoolean('isDemoSession');
-        },
-        readOnly: true,
-      },
-
       isExternalStorageEnabled_: {
         type: Boolean,
         value() {
@@ -199,35 +165,6 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         computed: 'computeInputMethodDisplayName_(' +
             'languages.inputMethods.currentId, languageHelper)',
       },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              mouse: 'os-settings:device-mouse',
-              touchpad: 'os-settings:device-touchpad',
-              pointingStick: 'os-settings:device-pointing-stick',
-              keyboardAndInputs: 'os-settings:device-keyboard',
-              stylus: 'os-settings:device-stylus',
-              tablet: 'os-settings:device-tablet',
-              display: 'os-settings:device-display',
-              audio: 'os-settings:device-audio',
-            };
-          }
-
-          return {
-            mouse: '',
-            touchpad: '',
-            pointingStick: '',
-            keyboardAndInputs: '',
-            stylus: '',
-            tablet: '',
-            display: '',
-            audio: '',
-          };
-        },
-      },
     };
   }
 
@@ -255,11 +192,13 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private browserProxy_: DevicePageBrowserProxy;
   private hasMouse_: boolean;
   private hasPointingStick_: boolean;
+  private hasStylus_: boolean;
   private hasTouchpad_: boolean;
   private hasHapticTouchpad_: boolean;
+  private inputMethodDisplayName_: string;
   private isDeviceSettingsSplitEnabled_: boolean;
+  private isExternalStorageEnabled_: boolean;
   private isPeripheralCustomizationEnabled: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private pointingStickSettingsObserverReceiver:
       PointingStickSettingsObserverReceiver;
   private keyboardSettingsObserverReceiver: KeyboardSettingsObserverReceiver;
@@ -268,7 +207,6 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
   private mouseSettingsObserverReceiver: MouseSettingsObserverReceiver;
   private graphicsTabletSettingsObserverReceiver:
       GraphicsTabletSettingsObserverReceiver;
-  private rowIcons_: Record<string, string>;
   private section_: Section;
 
   constructor() {
@@ -344,11 +282,6 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
         routes.CUSTOMIZE_TABLET_BUTTONS, '#customizeTabletButtonsSubpage');
     this.addFocusConfig(
         routes.CUSTOMIZE_PEN_BUTTONS, '#customizePenButtonsSubpage');
-
-    if (!this.isRevampWayfindingEnabled_) {
-      this.addFocusConfig(routes.STORAGE, '#storageRow');
-      this.addFocusConfig(routes.POWER, '#powerRow');
-    }
   }
 
   private observePointingStickSettings(): void {
@@ -645,14 +578,9 @@ export class SettingsDevicePageElement extends SettingsDevicePageElementBase {
 
   /**
    * Computes the display name for the currently configured input method. This
-   * should be displayed as a sublabel under the Keyboard and inputs row, only
-   * when OsSettingsRevampWayfinding is enabled.
+   * should be displayed as a sublabel under the Keyboard and inputs row.
    */
   private computeInputMethodDisplayName_(): string {
-    if (!this.isRevampWayfindingEnabled_) {
-      return '';
-    }
-
     const id = this.languages?.inputMethods?.currentId;
     if (!id || !this.languageHelper) {
       return '';

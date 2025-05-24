@@ -8,7 +8,7 @@ import("//services/screen_ai/buildflags/features.gni")
 import("//testing/test.gni")
 
 assert(enable_pdf)
-assert(is_chromeos_ash)
+assert(is_chromeos)
 assert(enable_screen_ai_service)
 
 source_set("lib") {

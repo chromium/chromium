@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
 class PrefService;
@@ -29,19 +28,40 @@ namespace switches {
 
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kCctSignInPrompt);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kHistoryPageHistorySyncPromo);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kHistoryPagePromoCtaStringVariation);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kHistoryOptInEducationalTip);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<int> kHistoryOptInEducationalTipVariation;
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kSkipCheckForAccountManagementOnSignin);
 
-// Feature flag to hide signin promo in settings page.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kHideSettingsSignInPromo);
+BASE_DECLARE_FEATURE(kUnoForAuto);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kUseConsentLevelSigninForLegacyAccountEmailPref);
+BASE_DECLARE_FEATURE(kUseHostedDomainForManagementCheckOnSignin);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(
-    kDontFallbackToDefaultImplementationInAccountManagerFacade);
+BASE_DECLARE_FEATURE(kMakeAccountsAvailableInIdentityManager);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kFullscreenSignInPromoUseDate);
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableHistorySyncOptin);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kClearTokenService[];
@@ -76,117 +96,113 @@ BASE_DECLARE_FEATURE(kEnableChromeRefreshTokenBinding);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsChromeRefreshTokenBindingEnabled(const PrefService* profile_prefs);
-#endif
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kForceDisableExtendedSyncPromos);
+BASE_DECLARE_FEATURE(kBoundSessionCredentialsKillSwitch);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kUseIssueTokenToFetchAccessTokens);
+#endif
+
+// Enables a separate account-scoped storage for preferences.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableHistorySyncOptinExpansionPill);
+
+enum class HistorySyncOptinExpansionPillOption {
+  kBrowseAcrossDevices,
+  kSyncHistory,
+  kSeeTabsFromOtherDevices,
+  kBrowseAcrossDevicesNewProfileMenuPromoVariant,
+};
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<HistorySyncOptinExpansionPillOption>
+    kHistorySyncOptinExpansionPillOption;
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kForceFreDefaultBrowserStep[];
-#endif
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kForceStartupSigninPromo);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kRestoreSignedInAccountAndSettingsFromBackup);
-#endif
-
-// Used for the launch of the UNO model on Desktop Phase 0.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kExplicitBrowserSigninUIOnDesktop);
-// Param to control whether the bubbles are dismissible by pressing on the
-// avatar button.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<bool>
-    kInterceptBubblesDismissibleByAvatarButton;
+BASE_DECLARE_FEATURE(kInterceptBubblesDismissibleByAvatarButton);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsExplicitBrowserSigninUIOnDesktopEnabled();
-
-// Requires `kExplicitBrowserSigninUIOnDesktop`.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kImprovedSigninUIOnDesktop);
+BASE_DECLARE_FEATURE(kEnableSnackbarInSettings);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-bool IsImprovedSigninUIOnDesktopEnabled();
-
-// Controls the view mode for (history) sync screen.
-#if BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kMinorModeRestrictionsForHistorySyncOptIn);
+BASE_DECLARE_FEATURE(kEnableImprovedGuestProfileMenu);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<int> kMinorModeRestrictionsFetchDeadlineMs;
-#endif
+BASE_DECLARE_FEATURE(kEnablePendingModePasswordsPromo);
 
 #if BUILDFLAG(IS_IOS)
-// The feature that authorizes clear-cut to send log when UMA is enabled.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableClearCut);
 
+// Features to enable identities in auth error (stale token).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
+BASE_DECLARE_FEATURE(kEnableIdentityInAuthError);
+
+// Show the error badge on the identity disc in the NTP.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableErrorBadgeOnIdentityDisc);
+
+// Features to enable using the ASWebAuthenticationSession to add accounts to
+// device.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableASWebAuthenticationSession);
 #endif
 
-// Pre-connectes the network socket for the Account Capabilities fetch, after
-// receiving the signin response header from Gaia.
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kPreconnectAccountCapabilitiesPostSignin);
-#endif
+BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
 
-#if BUILDFLAG(IS_IOS)
-// This flag enables IdentityManager to load all accounts when having no primary
-// accounts. And it makes IdentityManager reloads AccountInfo when an update
-// notification is sent by ChromeAccountManagerService. The data are reloaded
-// from ChromeAccountManagerService instead of contacting Gaia server.
+// Enables users to perform an explicit signin upon installing an extension.
+// After this, syncing for extensions will be enabled when in transport mode
+// (when a user is signed in but has not turned on full sync).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kAlwaysLoadDeviceAccounts);
-#endif
+BASE_DECLARE_FEATURE(kEnableExtensionsExplicitBrowserSignin);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// This gates the new single-model approach where account bookmarks are stored
+// in separate permanent folders in BookmarkModel. The flag controls whether
+// BOOKMARKS datatype is enabled in the transport mode.
+// TODO(crbug.com/40943550): Remove this.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kBatchUploadDesktop);
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
+
+// Returns if the current browser supports an explicit sign in (signs the user
+// into transport mode, as defined above) for extension access points (e.g. the
+// `ExtensionInstalledBubbleView`).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsExtensionsExplicitBrowserSigninEnabled();
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kDeferWebSigninTrackerCreation);
 
 }  // namespace switches
 
 // TODO(crbug.com/337879458): Move switches below into the switches namespace.
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kStableDeviceId);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kShowEnterpriseDialogForAllManagedAccountsSignin);
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kDisallowManagedProfileSignout);
-
-#if BUILDFLAG(ENABLE_MIRROR) && !BUILDFLAG(IS_IOS)
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kVerifyRequestInitiatorForMirrorHeaders);
-#endif  // BUILDFLAG(ENABLE_MIRROR) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilesReordering);
 
+#if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kOutlineSilhouetteIcon);
+BASE_DECLARE_FEATURE(kIgnoreMirrorHeadersInBackgoundTabs);
+#endif
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kForceSigninFlowInProfilePicker);
-// Default value is false, and the URL used would be /AccountChooser.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const base::FeatureParam<bool>
-    kForceSigninReauthInProfilePickerUseAddSession;
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+BASE_DECLARE_FEATURE(kNonDefaultGaiaOriginCheck);
 
 #endif  // COMPONENTS_SIGNIN_PUBLIC_BASE_SIGNIN_SWITCHES_H_

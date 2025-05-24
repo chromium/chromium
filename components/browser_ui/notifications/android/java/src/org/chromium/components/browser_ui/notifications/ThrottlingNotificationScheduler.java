@@ -8,7 +8,8 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.PriorityQueue;
@@ -24,6 +25,7 @@ import java.util.PriorityQueue;
  * TODO(qinmin): convert all notification code to use this class instead of directly sending
  * notifications to the NotificationManager.
  */
+@NullMarked
 public class ThrottlingNotificationScheduler {
     // To avoid notification updates being throttled by Android, using 350 ms as the interval
     // so that no more than 3 updates are posted per second.
@@ -86,8 +88,7 @@ public class ThrottlingNotificationScheduler {
                         taskId,
                         PendingNotificationTask.Priority.HIGH,
                         () -> {
-                            BaseNotificationManagerProxyFactory.create(
-                                            ContextUtils.getApplicationContext())
+                            BaseNotificationManagerProxyFactory.create()
                                     .notify(notificationWrapper);
                         });
         addPendingNotificationTask(task);
@@ -109,8 +110,7 @@ public class ThrottlingNotificationScheduler {
     public void cancelPendingNotification(String tag, int id) {
         Pair<String, Integer> taskId = Pair.create(tag, Integer.valueOf(id));
         removePendingNotificationTask(taskId);
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
-                .cancel(tag, id);
+        BaseNotificationManagerProxyFactory.create().cancel(tag, id);
     }
 
     /** Clear the pending task queue. */
@@ -124,7 +124,7 @@ public class ThrottlingNotificationScheduler {
      * Removes a pending task from the task queue and return it.
      * @param taskId ID of the task.
      */
-    private PendingNotificationTask removePendingNotificationTask(Object taskId) {
+    private @Nullable PendingNotificationTask removePendingNotificationTask(Object taskId) {
         Iterator<PendingNotificationTask> iter = mPendingNotificationTasks.iterator();
         while (iter.hasNext()) {
             PendingNotificationTask task = iter.next();

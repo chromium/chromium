@@ -70,7 +70,7 @@ public class AwHttpAuthHandlerTest {
         try {
             thread.join();
         } catch (InterruptedException e) {
-            Assert.fail("Background thread interrupted");
+            throw new AssertionError("Background thread interrupted", e);
         }
     }
 }

@@ -6,7 +6,9 @@
 #define UI_SURFACE_TRANSPORT_DIB_H_
 
 #include <stddef.h>
+
 #include <memory>
+#include <utility>
 
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -55,7 +57,8 @@ class SURFACE_EXPORT TransportDIB {
   bool Map();
 
   // Return a pointer to the shared memory.
-  void* memory() const;
+  void* memory() { return const_cast<void*>(std::as_const(*this).memory()); }
+  const void* memory() const;
 
   // Return the maximum size of the shared memory. This is not the amount of
   // data which is valid, you have to know that via other means, this is simply

@@ -33,6 +33,7 @@ class UserPermissionServiceAsh : public UserPermissionServiceImpl {
   // UserPermissionService:
   bool ShouldCollectConsent() const override;
   UserPermission CanCollectSignals() const override;
+  UserPermission CanCollectReportSignals() const override;
 };
 
 }  // namespace device_signals

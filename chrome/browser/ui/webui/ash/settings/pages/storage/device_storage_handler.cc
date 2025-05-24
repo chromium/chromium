@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/ash/settings/pages/storage/device_storage_handler.h"
 
 #include <algorithm>
@@ -16,7 +11,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
@@ -33,6 +27,7 @@
 #include "chromeos/ash/components/dbus/cryptohome/UserDataAuth.pb.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/disks/disk.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,7 +42,7 @@ using disks::DiskMountManager;
 
 constexpr char kIsExternalStorageEnabled[] = "isExternalStorageEnabled";
 // Dummy UUID for testing. The UUID is taken from
-// ash/components/arc/volume_mounter/arc_volume_mounter_bridge.cc.
+// chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.cc.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 
 const char* CalculationTypeToEventName(SizeCalculator::CalculationType x) {
@@ -69,8 +64,7 @@ const char* CalculationTypeToEventName(SizeCalculator::CalculationType x) {
     case SizeCalculator::CalculationType::kSystem:
       return "storage-system-size-changed";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -87,8 +81,7 @@ StorageHandler::StorageHandler(Profile* profile,
       crostini_size_calculator_(profile),
       other_users_size_calculator_(),
       profile_(profile),
-      source_name_(html_source->GetSource()),
-      special_volume_path_pattern_("[a-z]+://.*") {}
+      source_name_(html_source->GetSource()) {}
 
 StorageHandler::~StorageHandler() {
   StopObservingEvents();
@@ -123,9 +116,7 @@ void StorageHandler::RegisterMessages() {
 }
 
 void StorageHandler::OnJavascriptAllowed() {
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
-    arc_observation_.Observe(arc::ArcSessionManager::Get());
-  }
+  arc_observation_.Observe(arc::ArcSessionManager::Get());
 
   // Start observing mount/unmount events to update the connected device list.
   DiskMountManager::GetInstance()->AddObserver(this);
@@ -145,10 +136,8 @@ void StorageHandler::OnJavascriptDisallowed() {
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
-    DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
-    arc_observation_.Reset();
-  }
+  DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
+  arc_observation_.Reset();
 
   StopObservingEvents();
 }
@@ -236,7 +225,7 @@ void StorageHandler::UpdateExternalStorages() {
   base::Value::List devices;
   for (const auto& mount_point :
        DiskMountManager::GetInstance()->mount_points()) {
-    if (!IsEligibleForAndroidStorage(mount_point.source_path)) {
+    if (!IsEligibleForAndroidStorage(mount_point)) {
       continue;
     }
 
@@ -271,12 +260,12 @@ void StorageHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
 void StorageHandler::OnMountEvent(
     DiskMountManager::MountEvent event,
     MountError error_code,
-    const DiskMountManager::MountPoint& mount_info) {
+    const DiskMountManager::MountPoint& mount_point) {
   if (error_code != MountError::kSuccess) {
     return;
   }
 
-  if (!IsEligibleForAndroidStorage(mount_info.source_path)) {
+  if (!IsEligibleForAndroidStorage(mount_point)) {
     return;
   }
 
@@ -313,8 +302,7 @@ void StorageHandler::OnSizeCalculated(
       UpdateStorageItem(calculation_type);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected calculation type: " << item_index;
+      NOTREACHED() << "Unexpected calculation type: " << item_index;
   }
   UpdateSystemSizeItem();
 }
@@ -453,11 +441,13 @@ void StorageHandler::UpdateSystemSizeItem() {
       base::Value(message));
 }
 
-bool StorageHandler::IsEligibleForAndroidStorage(std::string source_path) {
-  // Android's StorageManager volume concept relies on assumption that it is
-  // local filesystem. Hence, special volumes like DriveFS should not be
-  // listed on the Settings.
-  return !RE2::FullMatch(source_path, special_volume_path_pattern_);
+bool StorageHandler::IsEligibleForAndroidStorage(
+    const MountPoint& mount_point) {
+  // Android's StorageManager volume concept relies on the assumption that it is
+  // a local filesystem. Hence, special volumes like DriveFS and mounted
+  // archives should not be listed on the "External storage preferences"
+  // settings page.
+  return mount_point.mount_type == MountType::kDevice;
 }
 
 }  // namespace ash::settings

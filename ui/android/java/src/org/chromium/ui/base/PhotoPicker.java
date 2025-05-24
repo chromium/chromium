@@ -4,10 +4,13 @@
 
 package org.chromium.ui.base;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * An interface for the custom image file picker.
  * See {@link SelectFileDialog}.
  */
+@NullMarked
 public interface PhotoPicker {
     /**
      * Called after use of the PhotoPicker results in an external intent.

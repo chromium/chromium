@@ -115,11 +115,6 @@ int WebappsIconUtils::GetIdealIconSizeForIconType(
   }
 }
 
-bool WebappsIconUtils::DoesAndroidSupportMaskableIcons() {
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-         base::android::SDK_VERSION_OREO;
-}
-
 void WebappsIconUtils::FinalizeLauncherIconInBackground(
     const SkBitmap& bitmap,
     const GURL& url,
@@ -186,7 +181,7 @@ SkBitmap WebappsIconUtils::GenerateAdaptiveIconBitmap(const SkBitmap& bitmap) {
 }
 
 int WebappsIconUtils::GetIdealIconCornerRadiusPxForPromptUI() {
-  return Java_WebappsIconUtils_getIdealIconCornerRadiusPxForPromptUI(
+  return Java_WebappsIconUtils_getIdealIconCornerRadiusPxForPromptUi(
       base::android::AttachCurrentThread());
 }
 

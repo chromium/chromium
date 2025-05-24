@@ -1,0 +1,42 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./print_preview_shared.css.js
+ * #import=./print_preview_vars.css.js
+ * #scheme=relative
+ * #include=print-preview-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  /* Width = 3 digits + space + cr-input-padding-end/start */
+  --cr-input-width: calc(4em + 16px);
+}
+
+#sectionTitle {
+  align-self: baseline;
+}
+
+cr-input {
+  margin-inline-end: 16px;
+  min-height: var(--print-preview-row-height);
+  overflow: hidden;
+}
+
+.input-wrapper {
+  align-items: center;
+  display: flex;
+}
+
+:host([input-valid]) cr-input {
+  --cr-input-error-display: none;
+}
+
+span[slot=suffix] {
+  max-width: calc(100% - 5em);
+  min-height: var(--print-preview-row-height);
+  overflow: hidden;
+  word-wrap: break-word;
+}

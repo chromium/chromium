@@ -94,7 +94,7 @@ std::optional<Decision> GetDecisionBasedOnSiteReputation(
     case CrowdDenyPreloadData::SiteReputation::DISRUPTIVE_BEHAVIOR: {
       DCHECK(!site_reputation->warning_only());
 
-      if (!Config::IsDisruptiveBehaviorRequestBlockingEnabled())
+      if (!base::FeatureList::IsEnabled(features::kQuietNotificationPrompts))
         return std::nullopt;
       return Decision(QuietUiReason::kTriggeredDueToDisruptiveBehavior,
                       Decision::ShowNoWarning());
@@ -104,8 +104,7 @@ std::optional<Decision> GetDecisionBasedOnSiteReputation(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 // Roll the dice to decide whether to use the normal UI even when the preload
@@ -134,6 +133,7 @@ ContextualNotificationPermissionUiSelector::
     ContextualNotificationPermissionUiSelector() = default;
 
 void ContextualNotificationPermissionUiSelector::SelectUiToUse(
+    content::WebContents* web_contents,
     permissions::PermissionRequest* request,
     DecisionMadeCallback callback) {
   callback_ = std::move(callback);

@@ -53,14 +53,14 @@ TestMediaSource::TestMediaSource(const std::string& filename,
       initial_append_size_(initial_append_size),
       initial_sequence_mode_(initial_sequence_mode),
       mimetype_(mimetype),
-      chunk_demuxer_(new ChunkDemuxer(
+      owned_chunk_demuxer_(std::make_unique<ChunkDemuxer>(
           base::BindOnce(&TestMediaSource::DemuxerOpened,
                          base::Unretained(this)),
           base::DoNothing(),
           base::BindRepeating(&TestMediaSource::OnEncryptedMediaInitData,
                               base::Unretained(this)),
           &media_log_)),
-      owned_chunk_demuxer_(chunk_demuxer_) {
+      chunk_demuxer_(owned_chunk_demuxer_.get()) {
   file_data_ = ReadTestDataFile(filename);
 
   if (initial_append_size_ == kAppendWholeFile)
@@ -87,14 +87,14 @@ TestMediaSource::TestMediaSource(scoped_refptr<DecoderBuffer> data,
       initial_append_size_(initial_append_size),
       initial_sequence_mode_(initial_sequence_mode),
       mimetype_(mimetype),
-      chunk_demuxer_(new ChunkDemuxer(
+      owned_chunk_demuxer_(std::make_unique<ChunkDemuxer>(
           base::BindOnce(&TestMediaSource::DemuxerOpened,
                          base::Unretained(this)),
           base::DoNothing(),
           base::BindRepeating(&TestMediaSource::OnEncryptedMediaInitData,
                               base::Unretained(this)),
           &media_log_)),
-      owned_chunk_demuxer_(chunk_demuxer_) {
+      chunk_demuxer_(owned_chunk_demuxer_.get()) {
   if (initial_append_size_ == kAppendWholeFile)
     initial_append_size_ = file_data_->size();
 
@@ -148,7 +148,7 @@ void TestMediaSource::AppendData(size_t size) {
   // expectations verified later in this method after RunSegmentParserLoop()
   // call(s) are completed.
   ASSERT_TRUE(chunk_demuxer_->AppendToParseBuffer(
-      kSourceId, file_data_->AsSpan().subspan(current_position_, size)));
+      kSourceId, (*file_data_).subspan(current_position_, size)));
 
   // Note that large StreamParser::kMaxPendingBytesPerParse makes these just 1
   // iteration frequently.

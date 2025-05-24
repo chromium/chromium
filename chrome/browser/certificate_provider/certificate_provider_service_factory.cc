@@ -335,11 +335,13 @@ bool CertificateProviderServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }
 
-KeyedService* CertificateProviderServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CertificateProviderServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  CertificateProviderService* const service = new CertificateProviderService();
+  std::unique_ptr<CertificateProviderService> service =
+      std::make_unique<CertificateProviderService>();
   service->SetDelegate(std::make_unique<DefaultDelegate>(
-      service,
+      service.get(),
       extensions::ExtensionRegistryFactory::GetForBrowserContext(context),
       extensions::EventRouterFactory::GetForBrowserContext(context)));
   return service;

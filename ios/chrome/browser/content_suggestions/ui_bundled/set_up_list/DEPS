@@ -1,0 +1,4 @@
+include_rules = [
+  "+ios/chrome/browser/first_run/ui_bundled/default_browser",
+  "+ios/chrome/browser/push_notification/ui_bundled/notifications_alert_presenter.h",
+]

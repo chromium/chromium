@@ -5,6 +5,7 @@
 #include "components/viz/service/display_embedder/skia_output_device_dawn.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
@@ -68,7 +69,7 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
     base::PassKey<SkiaOutputDeviceDawn>)
     : SkiaOutputDevice(
           /*gr_context=*/nullptr,
-          context_state->graphite_context(),
+          context_state->graphite_shared_context(),
           memory_tracker,
           did_swap_buffer_complete_callback),
       context_state_(std::move(context_state)) {
@@ -120,10 +121,10 @@ bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
       gpu::GpuSurfaceLookup::GetInstance()->AcquireJavaSurface(surface_handle);
   // Should only reach here if surface control is disabled. In which case
   // browser should not be sending ScopedJavaSurfaceControl variant.
-  CHECK(absl::holds_alternative<gl::ScopedJavaSurface>(
+  CHECK(std::holds_alternative<gl::ScopedJavaSurface>(
       surface_record.surface_variant));
   auto& scoped_java_surface =
-      absl::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
+      std::get<gl::ScopedJavaSurface>(surface_record.surface_variant);
   android_native_window_ = gl::ScopedANativeWindow(scoped_java_surface);
 
   wgpu::SurfaceSourceAndroidNativeWindow android_native_window_desc;

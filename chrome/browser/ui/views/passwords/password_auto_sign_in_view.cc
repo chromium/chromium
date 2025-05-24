@@ -21,6 +21,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -93,3 +94,6 @@ void PasswordAutoSignInView::OnTimer() {
 base::TimeDelta PasswordAutoSignInView::GetTimeout() {
   return base::Seconds(PasswordAutoSignInView::auto_signin_toast_timeout_);
 }
+
+BEGIN_METADATA(PasswordAutoSignInView)
+END_METADATA

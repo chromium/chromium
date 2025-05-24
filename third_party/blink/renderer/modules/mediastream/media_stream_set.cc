@@ -28,11 +28,11 @@ ScreenDetailed* FindScreenDetailedByDisplayId(
     return nullptr;
   }
 
-  auto screen_iterator = base::ranges::find_if(
-      screen_details->screens(),
-      [display_id](const ScreenDetailed* screen_detailed) {
-        return *display_id == screen_detailed->DisplayId();
-      });
+  auto screen_iterator =
+      std::ranges::find_if(screen_details->screens(),
+                           [display_id](const ScreenDetailed* screen_detailed) {
+                             return *display_id == screen_detailed->DisplayId();
+                           });
 
   return (screen_iterator != screen_details->screens().end()) ? *screen_iterator
                                                               : nullptr;
@@ -42,7 +42,7 @@ ScreenDetailed* FindScreenDetailedByDisplayId(
 
 MediaStreamSet* MediaStreamSet::Create(
     ExecutionContext* context,
-    const MediaStreamDescriptorVector& stream_descriptors,
+    const GCedMediaStreamDescriptorVector& stream_descriptors,
     UserMediaRequestType request_type,
     MediaStreamSetInitializedCallback callback) {
   DCHECK(IsMainThread());
@@ -53,7 +53,7 @@ MediaStreamSet* MediaStreamSet::Create(
 
 MediaStreamSet::MediaStreamSet(
     ExecutionContext* context,
-    const MediaStreamDescriptorVector& stream_descriptors,
+    const GCedMediaStreamDescriptorVector& stream_descriptors,
     UserMediaRequestType request_type,
     MediaStreamSetInitializedCallback callback)
     : ExecutionContextClient(context),
@@ -95,7 +95,7 @@ void MediaStreamSet::Trace(Visitor* visitor) const {
 
 void MediaStreamSet::InitializeGetAllScreensMediaStreams(
     ExecutionContext* context,
-    const MediaStreamDescriptorVector& stream_descriptors) {
+    const GCedMediaStreamDescriptorVector& stream_descriptors) {
   DCHECK(IsMainThread());
 
   LocalDOMWindow* const window = To<LocalDOMWindow>(context);

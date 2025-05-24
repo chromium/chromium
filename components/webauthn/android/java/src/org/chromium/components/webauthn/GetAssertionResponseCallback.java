@@ -4,12 +4,18 @@
 
 package org.chromium.components.webauthn;
 
+import org.chromium.blink.mojom.CredentialInfo;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
- * Callback interface for receiving a response from a request to produce a
- * signed assertion from an authenticator.
+ * Callback interface for receiving a response from a request to produce a signed assertion from an
+ * authenticator, or a username/password `CredentialInfo` in some cases.
  */
+@NullMarked
 public interface GetAssertionResponseCallback {
-    public void onSignResponse(int status, GetAssertionAuthenticatorResponse response);
+    public void onSignResponse(
+            @Nullable GetAssertionAuthenticatorResponse assertionResponse,
+            @Nullable CredentialInfo passwordCredential);
 }

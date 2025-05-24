@@ -1,0 +1,21 @@
+@starting-style with custom property
+Dumping matched rules: 
+*> div* {    regular
+    padding: 10px; @[3:8-3:22]
+    transition: color 1s ease, background-color 1s ease; @[4:8-4:60]
+    display: inline-block; @[5:8-5:30]
+    padding-top: 10px; @[undefined-undefined]
+    padding-right: 10px; @[undefined-undefined]
+    padding-bottom: 10px; @[undefined-undefined]
+    padding-left: 10px; @[undefined-undefined]
+    transition-behavior: normal, normal; @[undefined-undefined]
+    transition-duration: 1s, 1s; @[undefined-undefined]
+    transition-timing-function: ease, ease; @[undefined-undefined]
+    transition-delay: 0s, 0s; @[undefined-undefined]
+    transition-property: color, background-color; @[undefined-undefined]
+    display: inline-block; @[undefined-undefined]
+}
+Dumping inherited rules: 
+*body* {    regular
+}
+

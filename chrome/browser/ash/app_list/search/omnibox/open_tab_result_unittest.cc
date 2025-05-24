@@ -7,8 +7,8 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
@@ -76,9 +76,8 @@ class OpenTabResultTest : public testing::Test {
     TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
     return std::make_unique<OpenTabResult>(
         /*profile=*/nullptr, app_list_controller_delegate_.get(),
-        crosapi::CreateResult(match, /*controller=*/nullptr,
-                              favicon_cache_.get(),
-                              /*bookmark_model=*/nullptr, AutocompleteInput()),
+        CreateResult(match, /*controller=*/nullptr, favicon_cache_.get(),
+                     /*bookmark_model=*/nullptr, AutocompleteInput()),
         tokenized_query);
   }
 

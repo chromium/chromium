@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!--
+This file cannot be upstreamed to WPT until:
+* `unload` event handling matches what the specification expects. The current
+  specification expects that the unload event handler is never fired, and the
+  test passes whether or not it is fired.
+* `pageshow` and `pagehide` behaviors during prerendering is clearly defined
+  in the specification. This test just checks current behaviors.
+  (https://crbug.com/1222551)
+-->
+<title>unload event handlers</title>
+<meta name="timeout" content="long">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script src="resources/unload-utils.js"></script>
+<script>
+promise_test(async t => {
+  const uid = token();
+  const gotMessages = waitChannelMessage('load same-origin-frame2', uid);
+  const url =
+      `resources/unload-on-prerender-same-origin-subframe-navigation.html?uid=${uid}`;
+  window.open(url, '_blank', 'noopener');
+  const result = await gotMessages;
+
+  const expected = [
+    'load start',
+    'load prerendering',
+    'load same-origin-frame1',
+    "pagehide same-origin-frame1 in prerendering",
+    'load same-origin-frame2',
+  ];
+  assert_array_equals(result, expected, 'gotMessages');
+}, 'unload on same origin subframe navigation');
+</script>

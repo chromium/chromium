@@ -24,7 +24,6 @@ items:
   value: 1
 owners:
 - youkichihosoi@chromium.org
-- mhasank@chromium.org
 - arc-commercial@google.com
 schema:
   enum:

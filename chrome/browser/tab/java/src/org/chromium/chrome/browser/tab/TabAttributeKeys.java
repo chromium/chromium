@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab;
 
 import androidx.annotation.StringDef;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -18,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
     TabAttributeKeys.ENTER_FULLSCREEN
 })
 @Retention(RetentionPolicy.SOURCE)
+@NullMarked
 public @interface TabAttributeKeys {
     /** Whether the tab should be grouped with its parent tab. True by default. */
     String GROUPED_WITH_PARENT = "isTabGroupedWithParent";

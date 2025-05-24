@@ -63,17 +63,23 @@ void AddSupervisionMetricsRecorder::RecordAddSupervisionEnrollment(
   }
 }
 
-void AddSupervisionMetricsRecorder::SetClockForTesting(
-    const base::TickClock* tick_clock) {
-  clock_ = tick_clock;
-}
-
 AddSupervisionMetricsRecorder::AddSupervisionMetricsRecorder()
-    : clock_(base::DefaultTickClock::GetInstance()) {}
+    : clock_(*base::DefaultTickClock::GetInstance()) {}
 
 void AddSupervisionMetricsRecorder::RecordUserTime(
     const char* metric_name) const {
   DCHECK(!start_time_.is_null()) << "start_time_ has not been initialized.";
   base::TimeDelta duration = clock_->NowTicks() - start_time_;
   base::UmaHistogramLongTimes(metric_name, duration);
+}
+
+AddSupervisionMetricsRecorder::ScopedClockForTesting::ScopedClockForTesting(
+    AddSupervisionMetricsRecorder& recorder,
+    const base::TickClock& clock)
+    : recorder_(recorder), original_clock_(recorder.clock_) {
+  recorder.clock_ = clock;
+}
+
+AddSupervisionMetricsRecorder::ScopedClockForTesting::~ScopedClockForTesting() {
+  recorder_->clock_ = original_clock_;
 }

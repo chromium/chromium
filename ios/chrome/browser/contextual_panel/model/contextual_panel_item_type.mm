@@ -12,5 +12,7 @@ std::string StringForItemType(ContextualPanelItemType item_type) {
       return "SamplePanelItem";
     case ContextualPanelItemType::PriceInsightsItem:
       return "PriceInsightsItem";
+    case ContextualPanelItemType::ReaderModeItem:
+      return "ReaderModeItem";
   }
 }

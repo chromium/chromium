@@ -52,42 +52,41 @@ class TabSyncUtilTest : public PlatformTest {};
 
 // Tests the -GetLastActiveDistantTab method.
 TEST_F(TabSyncUtilTest, GetLastActiveDistantTab) {
-  auto synced_sessions =
-      std::make_unique<synced_sessions::FakeSyncedSessions>();
+  synced_sessions::FakeSyncedSessions synced_sessions;
   LastActiveDistantTab no_session =
-      GetLastActiveDistantTab(synced_sessions.get(), base::Hours(6));
+      GetLastActiveDistantTab(synced_sessions, base::Hours(6));
   EXPECT_EQ(no_session.tab, nullptr);
 
-  synced_sessions->AddSession(
+  synced_sessions.AddSession(
       CreateDistantSession(20, base::Time::Now() - base::Hours(4), 3));
   LastActiveDistantTab one_session =
-      GetLastActiveDistantTab(synced_sessions.get(), base::Hours(7));
+      GetLastActiveDistantTab(synced_sessions, base::Hours(7));
   EXPECT_EQ(one_session.tab->tab_id, SessionID::FromSerializedValue(3));
 
-  synced_sessions->AddSession(
+  synced_sessions.AddSession(
       CreateDistantSession(30, base::Time::Now() - base::Hours(6), 6));
   LastActiveDistantTab two_sessions =
-      GetLastActiveDistantTab(synced_sessions.get(), base::Hours(7));
+      GetLastActiveDistantTab(synced_sessions, base::Hours(7));
   EXPECT_EQ(two_sessions.tab->tab_id, SessionID::FromSerializedValue(3));
 
-  synced_sessions->AddSession(
+  synced_sessions.AddSession(
       CreateDistantSession(23, base::Time::Now() - base::Hours(1), 2));
   LastActiveDistantTab three_sessions =
-      GetLastActiveDistantTab(synced_sessions.get(), base::Hours(7));
+      GetLastActiveDistantTab(synced_sessions, base::Hours(7));
   EXPECT_EQ(three_sessions.tab->tab_id, SessionID::FromSerializedValue(2));
 
-  synced_sessions->AddSession(
+  synced_sessions.AddSession(
       CreateDistantSession(52, base::Time::Now() - base::Hours(2), 5));
   LastActiveDistantTab four_sessions =
-      GetLastActiveDistantTab(synced_sessions.get(), base::Hours(7));
+      GetLastActiveDistantTab(synced_sessions, base::Hours(7));
   EXPECT_EQ(four_sessions.tab->tab_id, SessionID::FromSerializedValue(2));
 
   LastActiveDistantTab four_sessions_other_threshold =
-      GetLastActiveDistantTab(synced_sessions.get(), base::Hours(3));
+      GetLastActiveDistantTab(synced_sessions, base::Hours(3));
   EXPECT_EQ(four_sessions_other_threshold.tab->tab_id,
             SessionID::FromSerializedValue(2));
 
   LastActiveDistantTab four_sessions_invalid_threshold =
-      GetLastActiveDistantTab(synced_sessions.get(), base::Minutes(2));
+      GetLastActiveDistantTab(synced_sessions, base::Minutes(2));
   EXPECT_EQ(four_sessions_invalid_threshold.tab, nullptr);
 }

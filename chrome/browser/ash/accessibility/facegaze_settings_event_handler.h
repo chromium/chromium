@@ -17,6 +17,9 @@ namespace ash {
 // Settings.
 class FaceGazeSettingsEventHandler {
  public:
+  // Tells the settings page in ChromeOS whether the FaceGaze disable dialog was
+  // accepted or rejected.
+  virtual void HandleDisableDialogResult(bool accepted) = 0;
   // Sends gesture info to the Settings in ChromeOS.
   virtual void HandleSendGestureInfoToSettings(
       const std::vector<ash::FaceGazeGestureInfo>& gesture_info) = 0;

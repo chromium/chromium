@@ -36,7 +36,7 @@ class SessionsHierarchy {
   // Creates and returns a human-readable string version of this object's data.
   std::string ToString() const;
 
-  // Returns true when this object and |other| have equivalent data.
+  // Returns true when this object and `other` have equivalent data.
   //
   // Two SessionHierarchy objects A and B have equivalent data iff:
   // 1) A and B contain the same number of Windows, and

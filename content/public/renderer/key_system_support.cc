@@ -60,7 +60,7 @@ ObserveKeySystemSupportUpdate(content::RenderFrame* render_frame,
       key_system_support_registration =
           std::make_unique<KeySystemSupportObserverImpl>(
               std::move(cb), observer_remote.InitWithNewPipeAndPassReceiver());
-  key_system_support->AddObserver(std::move(observer_remote));
+  key_system_support->SetObserver(std::move(observer_remote));
 
   return key_system_support_registration;
 }

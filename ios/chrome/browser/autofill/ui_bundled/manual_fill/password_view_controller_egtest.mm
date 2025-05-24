@@ -8,21 +8,21 @@
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/browser/password_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/google_services/manage_sync_settings_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_details/password_details_table_view_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_manager_egtest_utils.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/password_settings_app_interface.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/passwords_table_view_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
-#import "ios/chrome/browser/ui/settings/password/password_manager_egtest_utils.h"
-#import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
-#import "ios/chrome/browser/ui/settings/password/passwords_table_view_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -85,10 +85,10 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 }
 
 // Matcher for the overflow menu button shown in the password cells.
-id<GREYMatcher> OverflowMenuButton() {
-  return grey_allOf(
-      grey_accessibilityID(manual_fill::kExpandedManualFillOverflowMenuID),
-      grey_interactable(), nullptr);
+id<GREYMatcher> OverflowMenuButton(NSInteger cell_index) {
+  return grey_allOf(grey_accessibilityID([ManualFillUtil
+                        expandedManualFillOverflowMenuID:cell_index]),
+                    grey_interactable(), nullptr);
 }
 
 // Matcher for the "Edit" action made available by the overflow menu button.
@@ -250,29 +250,29 @@ void CheckKeyboardIsUpAndNotCovered() {
                                     ReauthenticationResult::kSuccess];
 
   // Set up histogram tester.
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Cannot setup histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilePasswordStore];
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
   // Clean up histogram tester.
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
-  GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                @"Failed to release histogram tester.");
-  [super tearDown];
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface releaseHistogramTester]);
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
 
   if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
-    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_enabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   } else {
-    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
+    config.features_disabled.push_back(kIOSKeyboardAccessoryUpgradeForIPad);
   }
 
   return config;
@@ -347,11 +347,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the passwords view controller contains the "Manage Passwords..."
 // and "Manage Settings..." actions.
 - (void)testPasswordsViewControllerContainsManageActions {
-  // TODO(crbug.com/40857537): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -392,11 +387,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the Password Manager is dismissed when local authentication fails
 // after tapping "Manage Passwords...".
 - (void)testManagePasswordsActionWithFailedAuthDismissesPasswordManager {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   CheckPasswordManagerUIDismissesAfterFailedAuthentication(
       manual_fill::ManagePasswordsMatcher());
 
@@ -484,7 +474,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Select Password..." action works in incognito mode.
-- (void)testSelectPasswordActionInIncognito {
+// TODO(crbug.com/363017975): Re-enable test
+- (void)DISABLED_testSelectPasswordActionInIncognito {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadLoginPage];
@@ -499,11 +490,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that returning from "Manage Settings..." leaves the keyboard and the
 // icons in the right state.
 - (void)testPasswordsStateAfterPresentingManageSettings {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
@@ -555,11 +541,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the "Select Password..." action works.
 - (void)testSelectPasswordActionOpensOtherPasswordList {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -592,11 +573,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests that the other password list can be dismissed with a swipe down.
 - (void)testClosingOtherPasswordListViaSwipeDown {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   [self openOtherPasswords];
 
   [[EarlGrey
@@ -654,11 +630,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests that the "Select Password..." UI is dismissed after failed local
 // authentication.
 - (void)testOtherPasswordListUIDismissedAfterFailedAuth {
-  // TODO(crbug.com/363172305): Re-enable when flake fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Test flaky failing on iPad.")
-  }
-
   // Setup failed authentication.
   [PasswordSettingsAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kFailure];
@@ -821,11 +792,16 @@ void CheckKeyboardIsUpAndNotCovered() {
   // icon is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::PasswordTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
-      assertWithMatcher:grey_interactable()];
-  // Verify the interaction status of the password icon.
-  [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
-      assertWithMatcher:grey_userInteractionEnabled()];
+
+  // Icons are not present when the Keyboard Accessory Upgrade feature is
+  // enabled.
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
+        assertWithMatcher:grey_interactable()];
+    // Verify the interaction status of the password icon.
+    [[EarlGrey selectElementWithMatcher:manual_fill::PasswordIconMatcher()]
+        assertWithMatcher:grey_userInteractionEnabled()];
+  }
 }
 
 // Tests that the Password View Controller is dismissed when tapping the
@@ -1002,8 +978,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 // Tests password generation on manual fallback.
 - (void)testPasswordGenerationOnManualFallback {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   [self loadLoginPage];
 
@@ -1029,11 +1004,10 @@ void CheckKeyboardIsUpAndNotCovered() {
   [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
-// Tests password generation on manual fallback for signed in not syncing users.
-- (void)testPasswordGenerationOnManualFallbackSignedInNotSyncingAccount {
+// Tests password generation on manual fallback for signed in users.
+- (void)testPasswordGenerationOnManualFallbackSignedInAccount {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   [self loadLoginPage];
 
@@ -1053,12 +1027,19 @@ void CheckKeyboardIsUpAndNotCovered() {
       performAction:grey_tap()];
 }
 
-// Tests password generation on manual fallback not showing for signed in not
-// syncing users with Passwords toggle in account settings disbaled.
-- (void)testPasswordGenerationFallbackSignedInNotSyncingPasswordsDisabled {
+// Tests password generation on manual fallback not showing for signed in users
+// with Passwords toggle in account settings disabled.
+// TODO(crbug.com/371189341): Test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPasswordGenerationFallbackSignedInPasswordsDisabled \
+  testPasswordGenerationFallbackSignedInPasswordsDisabled
+#else
+#define MAYBE_testPasswordGenerationFallbackSignedInPasswordsDisabled \
+  DISABLED_testPasswordGenerationFallbackSignedInPasswordsDisabled
+#endif
+- (void)MAYBE_testPasswordGenerationFallbackSignedInPasswordsDisabled {
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Disable Passwords toggle in account settings.
   [ChromeEarlGreyUI openSettingsMenu];
@@ -1083,24 +1064,30 @@ void CheckKeyboardIsUpAndNotCovered() {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests password generation on manual fallback not showing for signed in not
-// syncing users with encryption error.
-- (void)testPasswordGenerationFallbackSignedInNotSyncingEncryptionError {
+// Tests password generation on manual fallback not showing for signed in users
+// with encryption error.
+// TODO(crbug.com/371189341): Test fails on device.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testPasswordGenerationFallbackSignedInEncryptionError \
+  testPasswordGenerationFallbackSignedInEncryptionError
+#else
+#define MAYBE_testPasswordGenerationFallbackSignedInEncryptionError \
+  DISABLED_testPasswordGenerationFallbackSignedInEncryptionError
+#endif
+- (void)MAYBE_testPasswordGenerationFallbackSignedInEncryptionError {
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
 
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
-  [ChromeEarlGrey waitForSyncEngineInitialized:YES
-                                   syncTimeout:base::Seconds(10)];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
 
   // Verify encryption error is showing in in account settings.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
   // Verify the error section is showing.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSString(
-                     IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_BUTTON))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kSyncErrorButtonIdentifier)]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
@@ -1142,10 +1129,10 @@ void CheckKeyboardIsUpAndNotCovered() {
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_sufficientlyVisible()];
   } else {
-    [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+    [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
         assertWithMatcher:grey_notVisible()];
   }
 }
@@ -1178,7 +1165,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   OpenPasswordManualFillView(/*has_suggestions=*/true);
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -1213,7 +1200,7 @@ void CheckKeyboardIsUpAndNotCovered() {
   [self openOtherPasswords];
 
   // Tap the overflow menu button and select the "Edit" action.
-  [[EarlGrey selectElementWithMatcher:OverflowMenuButton()]
+  [[EarlGrey selectElementWithMatcher:OverflowMenuButton(/*cell_index=*/0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:OverflowMenuEditAction()]
       performAction:grey_tap()];
@@ -1381,7 +1368,7 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 @end
 
-// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgrade
+// Rerun all the tests in this file but with kIOSKeyboardAccessoryUpgradeForIPad
 // disabled. This will be removed once that feature launches fully, but ensures
 // regressions aren't introduced in the meantime.
 @interface PasswordViewControllerKeyboardAccessoryUpgradeDisabledTestCase

@@ -33,10 +33,12 @@ UiCredential MakeUiCredential(
     std::string_view username,
     std::string_view password,
     std::string_view origin = kExampleSite,
+    std::string_view display_name = kExampleSite,
     password_manager_util::GetLoginMatchType match_type =
         password_manager_util::GetLoginMatchType::kExact) {
   return UiCredential(base::UTF8ToUTF16(username), base::UTF8ToUTF16(password),
-                      Origin::Create(GURL(origin)), match_type, base::Time());
+                      Origin::Create(GURL(origin)), std::string(display_name),
+                      match_type, base::Time());
 }
 
 }  // namespace
@@ -93,20 +95,24 @@ TEST_F(CredentialCacheTest, StoresCredentialsSortedByAplhabetAndOrigins) {
           // Affiliation based matches are first class citizens and should be
           // treated as a first-party credential.
           MakeUiCredential(
-              "Cesar", "V3V1V", kExampleSite,
+              "Cesar", "V3V1V", kExampleSite, kExampleSite,
               password_manager_util::GetLoginMatchType::kAffiliated),
           MakeUiCredential("Dora", "PakudC"),
 
           // Alphabetical entries of PSL-match https://accounts.example.com:
           MakeUiCredential("Elfi", "a65ddm", kExampleSiteSubdomain,
+                           kExampleSiteSubdomain,
                            password_manager_util::GetLoginMatchType::kPSL),
           MakeUiCredential("Greg", "5fnd1m", kExampleSiteSubdomain,
+                           kExampleSiteSubdomain,
                            password_manager_util::GetLoginMatchType::kPSL),
 
           // Alphabetical entries of PSL-match https://m.example.com:
           MakeUiCredential("Alf", "R4nd50m", kExampleSiteMobile,
+                           kExampleSiteMobile,
                            password_manager_util::GetLoginMatchType::kPSL),
           MakeUiCredential("Rolf", "A4nd0m", kExampleSiteMobile,
+                           kExampleSiteMobile,
                            password_manager_util::GetLoginMatchType::kPSL)));
 }
 

@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import androidx.annotation.CallSuper;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -18,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * corresponding external service to a data structure that the TabGridMessageCardProvider
  * understands.
  */
+@NullMarked
 public class MessageService {
     @IntDef({
         MessageType.IPH,
@@ -115,8 +118,14 @@ public class MessageService {
         this.mMessageType = mMessageType;
     }
 
+    @CallSuper
+    public void destroy() {
+        mObservers.clear();
+    }
+
     /**
      * Add a {@link MessageObserver} to be notified when message from external service is changes.
+     *
      * @param observer a {@link MessageObserver} to add.
      */
     public void addObserver(MessageObserver observer) {
@@ -161,6 +170,6 @@ public class MessageService {
         RecordHistogram.recordEnumeratedHistogram(
                 String.format("GridTabSwitcher.%s.DisableReason", messageType),
                 reason,
-                MessageDisableReason.MAX_VALUE + 1);
+                MessageDisableReason.MAX_VALUE);
     }
 }

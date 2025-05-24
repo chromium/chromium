@@ -122,7 +122,6 @@ DlpFileDestination DTEndpointToFileDestination(
     case ui::EndpointType::kPluginVm:
       return DlpFileDestination(data_controls::Component::kPluginVm);
 
-    case ui::EndpointType::kLacros:
     case ui::EndpointType::kDefault:
     case ui::EndpointType::kClipboardHistory:
     case ui::EndpointType::kBorealis:
@@ -178,7 +177,7 @@ DlpFilesController::FolderRecursionDelegate::~FolderRecursionDelegate() =
     default;
 
 void DlpFilesController::FolderRecursionDelegate::Run() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DlpFilesController::FolderRecursionDelegate::RunRecursively() {

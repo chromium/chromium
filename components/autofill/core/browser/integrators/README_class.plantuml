@@ -1,0 +1,46 @@
+' Copyright 2025 The Chromium Authors
+' Use of this source code is governed by a BSD-style license that can be
+' found in the LICENSE file.
+
+/'
+ ' This class diagram is used in the README of this directory.
+ ' Generated diagrams are by default located in
+ ' `out/components/autofill/core/browser/integrators/README_class/*`.
+ '
+ ' The diagram describes how the `BrowserAutofillManager` uses different
+ ' delegates to composite suggestions from various sources into the autofill
+ ' dropdown.
+ '/
+@startuml
+interface "TouchToFillDelegate" as ttfd
+interface "FastCheckoutDelegate" as fcod
+interface "PasswordManagerDelegate" as pmd
+interface "AutofillSuggestionDelegate" as asd
+class "AutofillExternalDelegate" as aed
+class "PasswordAutofillManager" as pam
+class "BrowserAutofillManager" as bam {
+  + set_fast_checkout_delegate
+  + set_touch_to_fill_delegate
+  # fast_checkout_delegate
+  # client().GetPasswordManagerDelegate()
+  # touch_to_fill_delegate
+}
+
+'The BrowserAutofillManager has numerous delegates to different components.
+pmd "1" -* "1" bam
+bam "1" *- "1" ttfd
+bam "1" *-- "1" fcod
+aed "1" ---o "1" bam
+
+'Pwd Autofill manager and external delegate implement the same interface.
+'Eventually, the pam should not implement the aed anymore but purely communicate
+'with the bam.
+pam . aed
+asd <|.. (pam, aed)
+
+'Each delegate is implemented by a respective impl class in its component.
+pam  ..|> pmd
+ttfd <|.. TouchToFillDelegateImpl
+fcod <|.. FastCheckoutDelegateImpl
+
+@enduml

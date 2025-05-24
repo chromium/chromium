@@ -4,7 +4,10 @@
 
 package org.chromium.components.signin;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Hook for AccountEmailDomainDisplayability */
+@NullMarked
 public interface AccountEmailDomainDisplayabilityDelegate {
     boolean checkIfDisplayableEmailAddress(String email);
 }

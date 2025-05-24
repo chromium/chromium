@@ -12,12 +12,13 @@ import android.view.InputDevice;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.DefaultBrowserInfo;
+import org.chromium.chrome.browser.DefaultBrowserInfoUmaRecorder;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.tab.Tab;
@@ -80,7 +81,7 @@ public class UmaSessionStats {
         if (connectedDevices.contains(InputDevice.SOURCE_MOUSE)) {
             UmaSessionStatsJni.get().recordPageLoadedWithMouse();
         }
-        if (EdgeToEdgeUtils.isLegacyWebsiteOptInEnabled()
+        if (EdgeToEdgeUtils.isChromeEdgeToEdgeFeatureEnabled()
                 && EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab)) {
             UmaSessionStatsJni.get().recordPageLoadedWithToEdge();
         }
@@ -155,7 +156,7 @@ public class UmaSessionStats {
         UmaSessionStatsJni.get().umaResumeSession(sNativeUmaSessionStats, UmaSessionStats.this);
         updatePreferences();
         updateMetricsServiceState();
-        DefaultBrowserInfo.logDefaultBrowserStats();
+        DefaultBrowserInfoUmaRecorder.logDefaultBrowserStats();
     }
 
     private static void ensureNativeInitialized() {
@@ -312,8 +313,8 @@ public class UmaSessionStats {
         void registerExternalExperiment(int[] experimentIds, boolean overrideExistingIds);
 
         void registerSyntheticFieldTrial(
-                String trialName,
-                String groupName,
+                @JniType("std::string") String trialName,
+                @JniType("std::string") String groupName,
                 @SyntheticTrialAnnotationMode int annotationMode);
 
         void recordTabCountPerLoad(int numTabsOpen);

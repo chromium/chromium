@@ -10,20 +10,20 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/permissions/system/media_authorization_wrapper_mac.h"
-#include "chrome/common/chrome_features.h"
 #include "media/base/media_switches.h"
 #include "ui/base/cocoa/permissions_utils.h"
 
 namespace system_permission_settings {
 
 namespace {
+
+std::optional<bool> g_is_screen_capture_allowed_for_testing = std::nullopt;
 
 bool UsingFakeMediaDevices() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -110,9 +110,8 @@ void RequestSystemMediaCapturePermission(AVMediaType media_type,
 }
 
 bool IsScreenCaptureAllowed() {
-  if (!base::FeatureList::IsEnabled(
-          features::kMacSystemScreenCapturePermissionCheck)) {
-    return true;
+  if (g_is_screen_capture_allowed_for_testing) {
+    return g_is_screen_capture_allowed_for_testing.value();
   }
 
   return ui::IsScreenCaptureAllowed();
@@ -145,6 +144,10 @@ void SetMediaAuthorizationWrapperForTesting(
     MediaAuthorizationWrapper* wrapper) {
   CHECK(!g_media_authorization_wrapper_for_tests);
   g_media_authorization_wrapper_for_tests = wrapper;
+}
+
+void SetIsScreenCaptureAllowedForTesting(bool is_screen_capture_allowed) {
+  g_is_screen_capture_allowed_for_testing = is_screen_capture_allowed;
 }
 
 }  // namespace system_permission_settings

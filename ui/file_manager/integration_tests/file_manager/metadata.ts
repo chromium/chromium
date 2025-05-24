@@ -22,7 +22,7 @@ function equal1PercentMargin(value: number, desiredValue: number): boolean {
   const result =
       value === desiredValue || (minValue <= value && value <= maxValue);
   if (!result) {
-    console.log(
+    console.info(
         'min value: ' + minValue + ' got value: ' + value +
         ' max value: ' + maxValue);
   }
@@ -195,7 +195,7 @@ export async function metadataLargeDrive() {
   // Open Files app on Drive.
   const appId =
       await remoteCall.setupAndWaitUntilReady(RootPath.DRIVE, entries, entries);
-  console.log(' remoteCall.setupAndWaitUntilReady finished!');
+  console.info(' remoteCall.setupAndWaitUntilReady finished!');
 
   // Navigate only 1 folder deep,which is slightly different from
   // metadataDrive test.

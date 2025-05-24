@@ -1,3 +1,0 @@
-# TODO(crbug.com/40142821) Enable all tests on lacros.
--WindowSizerTest.DefaultSizeCase
--WindowSizerTest.PersistedBoundsCase

@@ -58,8 +58,10 @@ class CRYPTO_EXPORT FakeAppleKeychainV2 : public AppleKeychainV2 {
       CFStringRef entitlement,
       CFErrorRef* error) override;
 #endif  // !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_IOS_TVOS)
   BOOL LAContextCanEvaluatePolicy(LAPolicy policy,
                                   NSError* __autoreleasing* error) override;
+#endif  // !BUILDFLAG(IS_IOS_TVOS)
 
  private:
   bool is_secure_enclave_available_ = true;

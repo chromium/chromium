@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/models/menu_model.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #endif
 
@@ -21,7 +21,7 @@ TestRenderViewContextMenu::TestRenderViewContextMenu(
     content::ContextMenuParams params)
     : RenderViewContextMenu(render_frame_host, params) {}
 
-TestRenderViewContextMenu::~TestRenderViewContextMenu() {}
+TestRenderViewContextMenu::~TestRenderViewContextMenu() = default;
 
 // static
 std::unique_ptr<TestRenderViewContextMenu> TestRenderViewContextMenu::Create(

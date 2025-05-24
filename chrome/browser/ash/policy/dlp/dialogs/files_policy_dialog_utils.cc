@@ -50,11 +50,9 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
           kEnterpriseConnectorsScanFailed;
     }
 
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Enterprise connector result representing a blocked transfer "
            "without a tag but with an unexpected final result value.";
-
-    return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
   }
 
   DCHECK(result.tag() == enterprise_connectors::kDlpTag ||
@@ -68,11 +66,8 @@ FilesPolicyDialog::BlockReason GetEnterpriseConnectorsBlockReason(
     return FilesPolicyDialog::BlockReason::kEnterpriseConnectorsMalware;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Enterprise connector result representing a blocked transfer "
-         "with an unexpected tag.";
-
-  return FilesPolicyDialog::BlockReason::kEnterpriseConnectors;
+  NOTREACHED() << "Enterprise connector result representing a blocked transfer "
+                  "with an unexpected tag.";
 }
 
 policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
@@ -85,7 +80,7 @@ policy::FilesPolicyDialog::Info GetDialogInfoForEnterpriseConnectorsBlockReason(
 
   // Find the first valid delegate, since every delegate contains the same copy
   // of custom messaging settings.
-  auto delegate = base::ranges::find_if(
+  auto delegate = std::ranges::find_if(
       file_transfer_analysis_delegates,
       [](const std::unique_ptr<
           enterprise_connectors::FileTransferAnalysisDelegate>& delegate) {

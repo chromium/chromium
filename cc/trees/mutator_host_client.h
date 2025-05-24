@@ -68,7 +68,7 @@ class MutatorHostClient : public ProtectedSequenceSynchronizer {
                                    ElementListType list_type,
                                    float maximum_scale) = 0;
 
-  virtual void ScrollOffsetAnimationFinished() = 0;
+  virtual void ScrollOffsetAnimationFinished(ElementId element_id) = 0;
 
   virtual void NotifyAnimationWorkletStateChange(
       AnimationWorkletMutationState state,

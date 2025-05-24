@@ -4,10 +4,13 @@
 
 package org.chromium.content_public.common;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Container that holds together a referrer URL along with the referrer policy set on the
  * originating frame. This corresponds to native content/public/common/referrer.h.
  */
+@NullMarked
 public class Referrer {
     private final String mUrl;
     private final int mPolicy;

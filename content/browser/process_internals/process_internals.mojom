@@ -53,6 +53,9 @@ struct SiteInstanceInfo {
   // Specifies whether this SiteInstance is for a PDF.
   bool is_pdf;
 
+  // Specifies whether this SiteInstance has JavaScript optimizers enabled.
+  bool are_javascript_optimizers_enabled;
+
   // If this SiteInstance uses a non-default StoragePartition, this specifies a
   // string representation of that StoragePartition.
   string? storage_partition;

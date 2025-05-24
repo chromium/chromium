@@ -13,6 +13,7 @@
 #include "base/observer_list_types.h"
 
 struct CoreAccountInfo;
+class GaiaId;
 
 namespace trusted_vault {
 
@@ -69,7 +70,7 @@ class TrustedVaultClient {
   // as Web interactions. Implementations are free to completely ignore these
   // keys, so callers may not assume that later calls to FetchKeys() would
   // necessarily return the keys passed here.
-  virtual void StoreKeys(const std::string& gaia_id,
+  virtual void StoreKeys(const GaiaId& gaia_id,
                          const std::vector<std::vector<uint8_t>>& keys,
                          int last_key_version) = 0;
 
@@ -86,7 +87,7 @@ class TrustedVaultClient {
   // surfaced by GetIsRecoverabilityDegraded(). |method_type_hint| is an opaque
   // value provided server-side that may be used for related future
   // interactions with the server.
-  virtual void AddTrustedRecoveryMethod(const std::string& gaia_id,
+  virtual void AddTrustedRecoveryMethod(const GaiaId& gaia_id,
                                         const std::vector<uint8_t>& public_key,
                                         int method_type_hint,
                                         base::OnceClosure cb) = 0;

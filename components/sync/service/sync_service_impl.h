@@ -33,7 +33,8 @@
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
-#include "components/sync/service/data_type_status_table.h"
+#include "components/sync/service/local_data_migration_item_queue.h"
+#include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -54,7 +55,6 @@ class SharedURLLoaderFactory;
 namespace syncer {
 
 class BackendMigrator;
-class SyncAuthManager;
 class SyncFeatureStatusForMigrationsRecorder;
 class SyncPrefsPolicyHandler;
 
@@ -66,8 +66,8 @@ class SyncServiceAndroidBridge;
 // You should not need to know about SyncServiceImpl directly.
 class SyncServiceImpl : public SyncService,
                         public SyncEngineHost,
-                        public SyncPrefObserver,
                         public DataTypeManagerObserver,
+                        public SyncAuthManager::Delegate,
                         public SyncServiceCrypto::Delegate,
                         public SyncUserSettingsImpl::Delegate,
                         public signin::IdentityManager::Observer {
@@ -110,7 +110,6 @@ class SyncServiceImpl : public SyncService,
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() override;
 #endif  // BUILDFLAG(IS_ANDROID)
-  void SetSyncFeatureRequested() override;
   SyncUserSettings* GetUserSettings() override;
   const SyncUserSettings* GetUserSettings() const override;
   DisableReasonSet GetDisableReasons() const override;
@@ -121,11 +120,13 @@ class SyncServiceImpl : public SyncService,
   bool HasSyncConsent() const override;
   GoogleServiceAuthError GetAuthError() const override;
   base::Time GetAuthErrorTime() const override;
+  bool HasCachedPersistentAuthErrorForMetrics() const override;
   bool RequiresClientUpgrade() const override;
   std::unique_ptr<SyncSetupInProgressHandle> GetSetupInProgressHandle()
       override;
   bool IsSetupInProgress() const override;
   DataTypeSet GetPreferredDataTypes() const override;
+  DataTypeSet GetDataTypesForTransportOnlyMode() const override;
   DataTypeSet GetActiveDataTypes() const override;
   DataTypeSet GetTypesWithPendingDownloadForInitialSync() const override;
   void OnDataTypeRequestsSyncStartup(DataType type) override;
@@ -140,7 +141,7 @@ class SyncServiceImpl : public SyncService,
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
   base::Time GetLastSyncedTimeForDebugging() const override;
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
-  base::Value::List GetTypeStatusMapForDebugging() const override;
+  TypeStatusMapForDebugging GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
@@ -154,12 +155,19 @@ class SyncServiceImpl : public SyncService,
   DataTypeDownloadStatus GetDownloadStatusFor(DataType type) const override;
   void GetTypesWithUnsyncedData(
       DataTypeSet requested_types,
-      base::OnceCallback<void(DataTypeSet)> callback) const override;
+      base::OnceCallback<void(absl::flat_hash_map<DataType, size_t>)> callback)
+      const override;
   void GetLocalDataDescriptions(
       DataTypeSet types,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
+  void TriggerLocalDataMigrationForItems(
+      std::map<DataType, std::vector<LocalDataItemModel::DataId>> items)
+      override;
+  void SelectTypeAndMigrateLocalDataItemsWhenActive(
+      DataType data_type,
+      std::vector<LocalDataItemModel::DataId> items) override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -177,6 +185,10 @@ class SyncServiceImpl : public SyncService,
   void OnConfigureDone(const DataTypeManager::ConfigureResult& result) override;
   void OnConfigureStart() override;
 
+  // SyncAuthManager::Delegate implementation.
+  void SyncAuthAccountStateChanged() override;
+  void SyncAuthCredentialsChanged() override;
+
   // SyncServiceCrypto::Delegate implementation.
   void CryptoStateChanged() override;
   void CryptoRequiredUserActionChanged() override;
@@ -190,6 +202,13 @@ class SyncServiceImpl : public SyncService,
   bool IsCustomPassphraseAllowed() const override;
   SyncPrefs::SyncAccountState GetSyncAccountStateForPrefs() const override;
   CoreAccountInfo GetSyncAccountInfoForPrefs() const override;
+  void OnSyncClientDisabledByPolicyChanged() override;
+  void OnSelectedTypesChanged() override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnSyncFeatureDisabledViaDashboardCleared() override;
+#else   // BUILDFLAG(IS_CHROMEOS)
+  void OnInitialSyncFeatureSetupCompleted() override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // IdentityManager::Observer implementation.
   void OnAccountsCookieDeletedByUserAction() override;
@@ -198,6 +217,8 @@ class SyncServiceImpl : public SyncService,
       const GoogleServiceAuthError& error) override;
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
   // Similar to above but with a callback that will be invoked on completion.
   void OnAccountsInCookieUpdatedWithCallback(
@@ -208,14 +229,6 @@ class SyncServiceImpl : public SyncService,
   // accounts from cookie jar.
   bool HasCookieJarMismatch(
       const std::vector<gaia::ListedAccount>& cookie_jar_accounts);
-
-  // SyncPrefObserver implementation.
-  void OnSyncManagedPrefChange(bool is_sync_managed) override;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnFirstSetupCompletePrefChange(
-      bool is_initial_sync_feature_setup_complete) override;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnSelectedTypesPrefChange() override;
 
   // KeyedService implementation.  This must be called exactly
   // once (before this object is destroyed).
@@ -243,7 +256,7 @@ class SyncServiceImpl : public SyncService,
                                   create_http_post_provider_factory_cb);
 
   DataTypeSet GetRegisteredDataTypesForTest() const;
-  bool HasAnyDatatypeErrorForTest(DataTypeSet types) const;
+  bool HasAnyModelErrorForTest(DataTypeSet types) const;
 
   void GetThrottledDataTypesForTest(
       base::OnceCallback<void(DataTypeSet)> cb) const;
@@ -255,6 +268,8 @@ class SyncServiceImpl : public SyncService,
 
   // Simulates data type error reported by the bridge.
   void ReportDataTypeErrorForTest(DataType type);
+
+  size_t GetQueuedLocalDataMigrationItemCountForTest() const;
 
  private:
   enum UnrecoverableErrorReason {
@@ -290,27 +305,21 @@ class SyncServiceImpl : public SyncService,
 
   void StopAndClear(ResetEngineReason reset_engine_reason);
 
-  // Callbacks for SyncAuthManager.
-  void AccountStateChanged();
-  void CredentialsChanged();
-
   bool IsEngineAllowedToRun() const;
 
-  // Reconfigures the data type manager with the latest enabled types.
+  // Configures the data type manager with the latest enabled types.
   // Note: Does not initialize the engine if it is not already initialized.
   // If a Sync setup is currently in progress (i.e. a settings UI is open), then
-  // the reconfiguration will only happen if |bypass_setup_in_progress_check| is
+  // the reconfiguration will only happen if `bypass_setup_in_progress_check` is
   // set to true.
-  void ReconfigureDatatypeManager(bool bypass_setup_in_progress_check);
-
-  // Helper to install and configure a data type manager.
-  void ConfigureDataTypeManager(ConfigureReason reason);
+  void ConfigureDataTypeManager(ConfigureReason reason,
+                                bool bypass_setup_in_progress_check);
 
   bool UseTransportOnlyMode() const;
 
   void UpdateDataTypesForInvalidations();
 
-  // Shuts down and destroys the engine. |reset_reason| specifies the reason for
+  // Shuts down and destroys the engine. `reset_reason` specifies the reason for
   // the shutdown, and dictates if sync metadata should be kept or not.
   // If the engine is still allowed to run (per IsEngineAllowedToRun()), it will
   // soon start up again (possibly in transport-only mode).
@@ -347,12 +356,14 @@ class SyncServiceImpl : public SyncService,
   // Tell the sync server that this client has disabled sync.
   void RemoveClientFromServer() const;
 
-  // Records per type histograms for estimated memory usage and number of
-  // entities.
-  void RecordMemoryUsageAndCountsHistograms();
+  // Records histograms about the history opt-in state.
+  void RecordHistoryOptInStateOnSigninHistograms(
+      signin_metrics::AccessPoint access_point,
+      signin::ConsentLevel consent_level);
 
-  // True if setup has been completed at least once and is not in progress.
-  bool CanConfigureDataTypes(bool bypass_setup_in_progress_check) const;
+  // Computes the enum value that should be propagated via ConfigureContext.
+  PreviouslySyncingGaiaIdInfoForMetrics
+  DeterminePreviouslySyncingGaiaIdInfoForMetrics() const;
 
   // Called when a SetupInProgressHandle issued by this instance is destroyed.
   void OnSetupInProgressHandleDestroyed();
@@ -370,9 +381,6 @@ class SyncServiceImpl : public SyncService,
   // Exercises SyncClient to register synthetic field trials for trusted vault
   // passphrase type.
   void RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
-
-  // Returns the types that have a non-null DataTypeLocalDataBatchUploader.
-  DataTypeSet GetDataTypesWithLocalDataBatchUploader() const;
 
   // The actual implementation of GetLocalDataDescriptions(), where some code
   // paths can be synchronous. GetLocalDataDescriptions() posts a task before
@@ -395,6 +403,9 @@ class SyncServiceImpl : public SyncService,
   // email address and sign-out upon error.
   // May be null (if local Sync is enabled).
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // The user-configurable knobs. Non-null between Initialize() and Shutdown().
   std::unique_ptr<SyncUserSettingsImpl> user_settings_;
@@ -465,13 +476,11 @@ class SyncServiceImpl : public SyncService,
 
   std::unique_ptr<BackendMigrator> migrator_;
 
-  // This is the last |SyncProtocolError| we received from the server that had
+  std::set<UserActionableError> encountered_user_actionable_errors_;
+
+  // This is the last `SyncProtocolError` we received from the server that had
   // an action set on it.
   SyncProtocolError last_actionable_error_;
-
-  // Tracks the set of failed data types (those that encounter an error
-  // or must delay loading for some reason).
-  DataTypeStatusTable::TypeErrorMap data_type_error_map_;
 
   CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
 
@@ -500,8 +509,7 @@ class SyncServiceImpl : public SyncService,
 
   std::unique_ptr<SyncFeatureStatusForMigrationsRecorder> sync_status_recorder_;
 
-  base::ScopedObservation<SyncPrefs, SyncPrefObserver> sync_prefs_observation_{
-      this};
+  std::unique_ptr<LocalDataMigrationItemQueue> local_data_migration_item_queue_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this SyncService on

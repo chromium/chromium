@@ -16,7 +16,10 @@
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/management_policy.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace content {
 class BrowserContext;
@@ -47,13 +50,13 @@ class InstallVerifier : public KeyedService,
 
   ~InstallVerifier() override;
 
-  // Convenience method to return the InstallVerifier for a given |context|.
+  // Convenience method to return the InstallVerifier for a given `context`.
   static InstallVerifier* Get(content::BrowserContext* context);
 
   // Returns whether install verification should be enforced.
   static bool ShouldEnforce();
 
-  // Returns whether |extension| is of a type that needs verification.
+  // Returns whether `extension` is of a type that needs verification.
   static bool NeedsVerification(const Extension& extension,
                                 content::BrowserContext* context);
 
@@ -68,11 +71,11 @@ class InstallVerifier : public KeyedService,
   // Returns the timestamp of our InstallSignature, if we have one.
   base::Time SignatureTimestamp();
 
-  // Returns true if |id| is either verified or our stored signature explicitly
+  // Returns true if `id` is either verified or our stored signature explicitly
   // tells us that it was invalid when we asked the server about it.
   bool IsKnownId(const std::string& id) const;
 
-  // Returns whether the given |id| is considered invalid by our verified
+  // Returns whether the given `id` is considered invalid by our verified
   // signature.
   bool IsInvalid(const std::string& id) const;
 
@@ -83,7 +86,7 @@ class InstallVerifier : public KeyedService,
   void VerifyAllExtensions();
 
   // Call this to add a set of ids that will immediately be considered allowed,
-  // and kick off an aysnchronous request to Add.
+  // and kick off an asynchronous request to Add.
   void AddProvisional(const ExtensionIdSet& ids);
 
   // Removes an id or set of ids from the verified list.
@@ -96,8 +99,7 @@ class InstallVerifier : public KeyedService,
   // ManagementPolicy::Provider interface.
   std::string GetDebugPolicyProviderName() const override;
   bool MustRemainDisabled(const Extension* extension,
-                          disable_reason::DisableReason* reason,
-                          std::u16string* error) const override;
+                          disable_reason::DisableReason* reason) const override;
 
  private:
   // We keep a list of operations to the current set of extensions.
@@ -128,7 +130,7 @@ class InstallVerifier : public KeyedService,
   // there are unknown extensions which need to be verified.
   void MaybeBootstrapSelf();
 
-  // Try adding a new set of |ids| to the list of verified ids.
+  // Try adding a new set of `ids` to the list of verified ids.
   void AddMany(const ExtensionIdSet& ids, OperationType type);
 
   // Record the result of the verification for the histograms, and notify the
@@ -138,19 +140,19 @@ class InstallVerifier : public KeyedService,
   // Removes any no-longer-installed ids, requesting a new signature if needed.
   void GarbageCollect();
 
-  // Returns whether the given |id| is included in our verified signature.
+  // Returns whether the given `id` is included in our verified signature.
   bool IsVerified(const std::string& id) const;
 
-  // Returns true if the extension with |id| was installed later than the
+  // Returns true if the extension with `id` was installed later than the
   // timestamp of our signature.
   bool WasInstalledAfterSignature(const std::string& id) const;
 
   // Begins the process of fetching a new signature, based on applying the
   // operation at the head of the queue to the current set of ids in
-  // |signature_| (if any) and then sending a request to sign that.
+  // `signature_` (if any) and then sending a request to sign that.
   void BeginFetch();
 
-  // Saves the current value of |signature_| to the prefs;
+  // Saves the current value of `signature_` to the prefs;
   void SaveToPrefs();
 
   // Called with the result of a signature request, or NULL on failure.
@@ -164,7 +166,7 @@ class InstallVerifier : public KeyedService,
   // Have we finished our bootstrap check yet?
   bool bootstrap_check_complete_;
 
-  // This is the most up-to-date signature, read out of |prefs_| during
+  // This is the most up-to-date signature, read out of `prefs_` during
   // initialization and updated anytime we get new id's added.
   std::unique_ptr<InstallSignature> signature_;
 

@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
@@ -22,7 +23,19 @@
 
 namespace metrics::structured {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Controls the minimum number of logs to be stored.
+constexpr size_t kMinLogQueueCount = 10;
+
+// Controls the minimum size of all logs that can be stored in bytes.
+constexpr size_t kMinLogQueueSizeBytes = 300 * 1024 * 1024;  // 300 KiB
+
+// Controls the maximum size of a single log in bytes.
+constexpr size_t kMaxLogSizeBytes = 1024 * 1024 * 1024;  // 1 MiB
+
+// Controls the upload interval.
+constexpr base::TimeDelta kUploadInterval = base::Minutes(10);
+
+#if BUILDFLAG(IS_CHROMEOS)
 StructuredMetricsService::ServiceIOHelper::ServiceIOHelper(
     scoped_refptr<StructuredMetricsRecorder> recorder)
     : recorder_(std::move(recorder)) {}
@@ -35,7 +48,7 @@ StructuredMetricsService::ServiceIOHelper::ProvideEvents() {
   recorder_->ProvideEventMetrics(uma_proto);
   return uma_proto;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 StructuredMetricsService::StructuredMetricsService(
     MetricsServiceClient* client,
@@ -45,14 +58,13 @@ StructuredMetricsService::StructuredMetricsService(
       // This service is only enabled if both structured metrics and the service
       // flags are enabled.
       structured_metrics_enabled_(
-          base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics) &&
-          base::FeatureList::IsEnabled(kEnabledStructuredMetricsService)),
+          base::FeatureList::IsEnabled(metrics::features::kStructuredMetrics)),
       client_(client) {
   CHECK(client_);
   CHECK(local_state);
   CHECK(recorder_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT, base::MayBlock(),
        // Blocking because the works being done isn't to expensive.
@@ -68,7 +80,7 @@ StructuredMetricsService::StructuredMetricsService(
     return;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Because of construction order of the recorder and service, the service
   // needs to be set on the storage manager after it is created.
   if (base::FeatureList::IsEnabled(kEventStorageManager)) {
@@ -95,9 +107,9 @@ StructuredMetricsService::StructuredMetricsService(
       base::BindRepeating(&StructuredMetricsService::GetUploadTimeInterval,
                           base::Unretained(this));
 
-  const bool fast_startup_for_test = client->ShouldStartUpFastForTesting();
+  const bool fast_startup = client->ShouldStartUpFast();
   scheduler_ = std::make_unique<StructuredMetricsScheduler>(
-      rotate_callback, get_upload_interval_callback, fast_startup_for_test);
+      rotate_callback, get_upload_interval_callback, fast_startup);
 }
 
 StructuredMetricsService::~StructuredMetricsService() {
@@ -109,7 +121,7 @@ StructuredMetricsService::~StructuredMetricsService() {
     Flush(metrics::MetricsLogsEventManager::CreateReason::kServiceShutdown);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Because of construction order of the recorder and service, the delegate
   // must be unset here to avoid dangling pointers.
   if (base::FeatureList::IsEnabled(kEventStorageManager)) {
@@ -196,7 +208,7 @@ void StructuredMetricsService::Purge() {
 }
 
 base::TimeDelta StructuredMetricsService::GetUploadTimeInterval() {
-  return base::Seconds(GetUploadInterval());
+  return kUploadInterval;
 }
 
 void StructuredMetricsService::RotateLogsAndSend() {
@@ -230,14 +242,14 @@ void StructuredMetricsService::CreateLogs(
 // disk and must be accessed from an IO sequence.
 // Other platforms (Windows, Mac, and Linux), the events are stored only
 // in-memory and thus a blocking function isn't needed.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   BuildAndStoreLog(reason, notify_scheduler);
 #else
   BuildAndStoreLogSync(reason, notify_scheduler);
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void StructuredMetricsService::BuildAndStoreLog(
     metrics::MetricsLogsEventManager::CreateReason reason,
     bool notify_scheduler) {
@@ -318,7 +330,7 @@ void StructuredMetricsService::SetRecorderForTest(
     scoped_refptr<StructuredMetricsRecorder> recorder) {
   recorder_ = std::move(recorder);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Reset the |io_helper_| with the new recorder.
   io_helper_.emplace(task_runner_, recorder_);
 #endif
@@ -389,9 +401,9 @@ std::string StructuredMetricsService::SerializeLog(
 UnsentLogStore::UnsentLogStoreLimits
 StructuredMetricsService::GetLogStoreLimits() {
   return UnsentLogStore::UnsentLogStoreLimits{
-      .min_log_count = static_cast<size_t>(kMinLogQueueCount.Get()),
-      .min_queue_size_bytes = static_cast<size_t>(kMinLogQueueSizeBytes.Get()),
-      .max_log_size_bytes = static_cast<size_t>(kMaxLogSizeBytes.Get()),
+      .min_log_count = kMinLogQueueCount,
+      .min_queue_size_bytes = kMinLogQueueSizeBytes,
+      .max_log_size_bytes = kMaxLogSizeBytes,
   };
 }
 

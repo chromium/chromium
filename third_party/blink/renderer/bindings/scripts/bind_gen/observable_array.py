@@ -86,8 +86,7 @@ const WrapperTypeInfo ${class_name}::wrapper_type_info_body_{
     kDOMWrappersTag,
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     WrapperTypeInfo::kObjectClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlObservableArray,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 // static
@@ -163,7 +162,6 @@ def make_attribute_set_function(cg_context):
                                 arg_decls=[
                                     "ScriptState* script_state",
                                     "v8::Local<v8::Value> v8_value",
-                                    "ExceptionState& exception_state",
                                 ],
                                 return_type="void")
 
@@ -171,7 +169,6 @@ def make_attribute_set_function(cg_context):
                               arg_decls=[
                                   "ScriptState* script_state",
                                   "v8::Local<v8::Value> v8_value",
-                                  "ExceptionState& exception_state",
                               ],
                               return_type="void",
                               class_name=cg_context.class_name)
@@ -180,14 +177,13 @@ def make_attribute_set_function(cg_context):
     body = func_def.body
     body.add_template_vars({
         "script_state": "script_state",
-        "v8_value": "v8_value",
-        "exception_state": "exception_state",
+        "v8_value": "v8_value"
     })
     bind_local_vars(body, cg_context)
 
     body.append(
         TextNode("Handler::PerformAttributeSet("
-                 "${script_state}, *this, ${v8_value}, ${exception_state});"))
+                 "${script_state}, *this, ${v8_value});"))
 
     return func_decl, func_def
 
@@ -434,9 +430,6 @@ def generate_observable_array(observable_array_identifier):
     ])
 
     # Assemble the parts.
-    header_node.accumulator.add_class_decls([
-        "ExceptionState",
-    ])
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
         "third_party/blink/renderer/bindings/core/v8/idl_types.h",
@@ -484,18 +477,14 @@ def generate_observable_array(observable_array_identifier):
                  "ScriptState* script_state, "
                  "{}& observable_array, "
                  "size_type index, "
-                 "value_type& value, "
-                 "ExceptionState& exception_state);".format(
-                     cg_context.class_name)))
+                 "value_type& value);".format(cg_context.class_name)))
     class_def.public_section.append(
         TextNode("using DeleteAlgorithmCallback = "
                  "void (*)("
                  "GarbageCollectedMixin* platform_object, "
                  "ScriptState* script_state, "
                  "{}& observable_array, "
-                 "size_type index, "
-                 "ExceptionState& exception_state);".format(
-                     cg_context.class_name)))
+                 "size_type index);".format(cg_context.class_name)))
     class_def.public_section.append(EmptyNode())
 
     class_def.private_section.append(wrapper_type_info_var_def)

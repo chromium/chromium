@@ -213,11 +213,9 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "is_linux", {}, 'linux-foo', {})  # Must match exactly.
     AssertExpr(False, "is_linux", {}, 'foollinux', {})
     AssertExpr(False, "is_linux", {'chromeos_ash': True}, 'chromeos', {})
-    AssertExpr(False, "is_linux", {'chromeos_lacros': True}, 'chromeos', {})
     # `is_chromeos` is not used with GRIT and is thus ignored.
     AssertExpr(True, "is_linux", {'is_chromeos': True}, 'linux', {})
     AssertExpr(True, "is_chromeos", {'chromeos_ash': True}, 'chromeos', {})
-    AssertExpr(True, "is_chromeos", {'chromeos_lacros': True}, 'chromeos', {})
     AssertExpr(False, "is_chromeos", {}, 'linux', {})
     AssertExpr(False, "is_fuchsia", {}, 'linux', {})
     AssertExpr(False, "is_linux", {}, 'win32', {})
@@ -231,7 +229,6 @@ class NodeUnittest(unittest.TestCase):
     AssertExpr(False, "is_ios", {}, 'darwin', {})
     AssertExpr(True, "is_posix", {}, 'linux', {})
     AssertExpr(True, "is_posix", {'chromeos_ash': True}, 'chromeos', {})
-    AssertExpr(True, "is_posix", {'chromeos_lacros': True}, 'chromeos', {})
     AssertExpr(True, "is_posix", {}, 'darwin', {})
     AssertExpr(True, "is_posix", {}, 'android', {})
     AssertExpr(True, "is_posix", {}, 'ios', {})
@@ -296,19 +293,9 @@ class NodeUnittest(unittest.TestCase):
 
     # Test invalid chromeos configurations.
     AssertThrows("is_chromeos", {}, 'chromeos',
-                 'The chromeos target must be either ash or lacros')
-    AssertThrows("is_chromeos", {
-        'chromeos_ash': True,
-        'chromeos_lacros': True
-    }, 'chromeos', 'The chromeos target must be either ash or lacros')
+                 'The chromeos target must be ash')
     AssertThrows("is_linux", {'chromeos_ash': True}, 'linux',
-                 'Non-chromeos targets cannot be ash or lacros')
-    AssertThrows("is_linux", {'chromeos_lacros': True}, 'linux',
-                 'Non-chromeos targets cannot be ash or lacros')
-    AssertThrows("is_linux", {
-        'chromeos_ash': True,
-        'chromeos_lacros': True
-    }, 'linux', 'Non-chromeos targets cannot be ash or lacros')
+                 'Non-chromeos targets cannot be ash')
 
 
 if __name__ == '__main__':

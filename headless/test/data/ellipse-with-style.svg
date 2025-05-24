@@ -1,0 +1,13 @@
+<svg width="90pt" height="100pt" xmlns="http://www.w3.org/2000/svg">
+  <style>
+  @page {
+    size: 90pt 100pt;
+    margin: 0;
+  }
+  svg {
+    width: 90pt;
+    height: 100pt;
+  }
+  </style>
+  <ellipse rx="45pt" ry="50pt" cx="45pt" cy="50pt" fill="red" />
+</svg>

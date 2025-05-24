@@ -6,10 +6,9 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "content/browser/accessibility/accessibility_browsertest.h"
-#include "content/public/browser/browser_accessibility_state.h"
-#include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -23,13 +22,13 @@ class AccessibilityMetricsBrowserTest : public AccessibilityBrowserTest {
 IN_PROC_BROWSER_TEST_F(AccessibilityMetricsBrowserTest, EventProcessingTime) {
   // Make two changes to the accessibility mode so that two distinct calls are
   // made to RenderAccessibility::SetMode.
-  LoadSampleParagraph(ui::kAXModeBasic);
+  SetInitialAccessibilityMode(ui::kAXModeBasic);
+
+  LoadSampleParagraph();
 
   auto* const web_contents = shell()->web_contents();
   AccessibilityNotificationWaiter waiter(web_contents);
-  auto mode =
-      BrowserAccessibilityState::GetInstance()->CreateScopedModeForWebContents(
-          web_contents, ui::kAXModeComplete);
+  ScopedAccessibilityModeOverride complete(ui::kAXModeComplete);
   ASSERT_TRUE(waiter.WaitForNotification(/*all_frames=*/true));
 
   // There should be at least one recording to the "first" histogram, and at

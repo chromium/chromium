@@ -93,5 +93,3 @@ const IOSContentRecordTaskId* IOSTaskTabHelper::GetContextRecordTaskId(
   return result != ios_content_record_task_id_map_.end() ? &result->second
                                                          : nullptr;
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(IOSTaskTabHelper)

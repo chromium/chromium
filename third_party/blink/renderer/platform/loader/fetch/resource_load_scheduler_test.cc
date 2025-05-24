@@ -7,12 +7,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loading_behavior_observer.h"
@@ -28,9 +28,7 @@ class MockClient final : public GarbageCollected<MockClient>,
                          public ResourceLoadSchedulerClient {
  public:
   // A delegate that can be used to determine the order clients were run in.
-  class MockClientDelegate {
-    DISALLOW_NEW();
-
+  class MockClientDelegate : public GarbageCollected<MockClientDelegate> {
    public:
     MockClientDelegate() = default;
     ~MockClientDelegate() = default;
@@ -63,6 +61,7 @@ class MockClient final : public GarbageCollected<MockClient>,
   void Trace(Visitor* visitor) const override {
     ResourceLoadSchedulerClient::Trace(visitor);
     visitor->Trace(console_logger_);
+    visitor->Trace(delegate_);
   }
 
  private:
@@ -72,7 +71,7 @@ class MockClient final : public GarbageCollected<MockClient>,
   // there is no benefit to using a raw_ptr, only cost.
   // TODO(crbug.com/348793154): Remove once clang plugin no longer enforces
   // those.
-  RAW_PTR_EXCLUSION MockClientDelegate* delegate_;
+  Member<MockClientDelegate> delegate_;
   bool was_run_ = false;
 };
 
@@ -128,8 +127,6 @@ class ResourceLoadSchedulerTest : public testing::Test {
         *MakeGarbageCollected<DetachableConsoleLogger>(console_logger_),
         loading_observer_behavior_.Get());
     Scheduler()->SetOutstandingLimitForTesting(1);
-    feature_list_.InitAndDisableFeature(
-        features::kDelayLowPriorityRequestsAccordingToNetworkState);
   }
   void TearDown() override { Scheduler()->Shutdown(); }
 
@@ -148,7 +145,6 @@ class ResourceLoadSchedulerTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   Persistent<MockConsoleLogger> console_logger_;
   Persistent<LoadingBehaviorObserverImpl> loading_observer_behavior_;
   Persistent<ResourceLoadScheduler> scheduler_;
@@ -487,13 +483,14 @@ TEST_F(ResourceLoadSchedulerTest, AllowedRequestsRunInPriorityOrder) {
       scheduler::SchedulingLifecycleState::kStopped);
   Scheduler()->SetOutstandingLimitForTesting(0);
 
-  MockClient::MockClientDelegate delegate;
+  MockClient::MockClientDelegate* delegate =
+      MakeGarbageCollected<MockClient::MockClientDelegate>();
   // Push two requests.
   MockClient* client1 = MakeGarbageCollected<MockClient>();
   MockClient* client2 = MakeGarbageCollected<MockClient>();
 
-  client1->SetDelegate(&delegate);
-  client2->SetDelegate(&delegate);
+  client1->SetDelegate(delegate);
+  client2->SetDelegate(delegate);
 
   ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
   Scheduler()->Request(client1, ThrottleOption::kStoppable,
@@ -523,7 +520,7 @@ TEST_F(ResourceLoadSchedulerTest, AllowedRequestsRunInPriorityOrder) {
   EXPECT_TRUE(Release(id2));
 
   // Verify high priority request ran first.
-  auto& order = delegate.client_order();
+  auto& order = delegate->client_order();
   EXPECT_EQ(order[0], client2);
   EXPECT_EQ(order[1], client1);
 }
@@ -771,109 +768,6 @@ TEST_F(ResourceLoadSchedulerTest, ConsoleMessage) {
   // Reset the reference to ensure scheduler won't keep a reference to the
   // destroyed clock.
   Scheduler()->SetClockForTesting(nullptr);
-}
-
-TEST_F(ResourceLoadSchedulerTest, ConsiderNetworkStateInTigtMode) {
-  const base::FieldTrialParams network_params = {
-      {features::kMaxNumOfThrottleableRequestsInTightMode.name, "2"},
-      {features::kHttpRttThreshold.name, "3600ms"},
-      {features::kCostReductionOfMultiplexedRequests.name, "0.5"}};
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kDelayLowPriorityRequestsAccordingToNetworkState,
-        network_params}},
-      {});
-
-  Scheduler()->SetOutstandingLimitForTesting(2, 5);
-
-  // Sets the RTT.
-  Scheduler()->SetHttpRttForTesting(base::Milliseconds(1000));
-
-  // Push 2 requests, 1 non-multiplexed request and the other is multiplexed.
-  MockClient* client1 = MakeGarbageCollected<MockClient>();
-  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
-  Scheduler()->Request(client1, ThrottleOption::kThrottleable,
-                       ResourceLoadPriority::kHigh, 0 /* intra_priority */,
-                       &id1);
-  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
-
-  MockClient* client2 = MakeGarbageCollected<MockClient>();
-  ResourceLoadScheduler::ClientId id2 = ResourceLoadScheduler::kInvalidClientId;
-  Scheduler()->Request(client2, ThrottleOption::kThrottleable,
-                       ResourceLoadPriority::kLow, 5 /* intra_priority */,
-                       &id2);
-  Scheduler()->SetConnectionInfo(id2, net::HttpConnectionInfo::kHTTP2);
-  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id2);
-
-  EXPECT_TRUE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-
-  // Continue to push another non-multiplexed request, because there is
-  // already a multiplexed request, which is`id2`, the newly added one can
-  // still be handled without being delayed.
-  MockClient* client3 = MakeGarbageCollected<MockClient>();
-  ResourceLoadScheduler::ClientId id3 = ResourceLoadScheduler::kInvalidClientId;
-  Scheduler()->Request(client3, ThrottleOption::kThrottleable,
-                       ResourceLoadPriority::kLow, 10 /* intra_priority */,
-                       &id3);
-  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id3);
-
-  EXPECT_TRUE(client3->WasRun());
-
-  EXPECT_TRUE(Release(id3));
-  EXPECT_TRUE(Release(id2));
-  EXPECT_TRUE(Release(id1));
-}
-
-TEST_F(ResourceLoadSchedulerTest,
-       ConsiderNetworkStateInTigtModeWithPoorConnection) {
-  const base::FieldTrialParams network_params = {
-      {features::kMaxNumOfThrottleableRequestsInTightMode.name, "2"},
-      {features::kHttpRttThreshold.name, "3600ms"},
-      {features::kCostReductionOfMultiplexedRequests.name, "0.5"}};
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{features::kDelayLowPriorityRequestsAccordingToNetworkState,
-        network_params}},
-      {});
-
-  Scheduler()->SetOutstandingLimitForTesting(2, 1024);
-
-  // Sets the RTT as a slow connection.
-  Scheduler()->SetHttpRttForTesting(base::Milliseconds(5000));
-
-  // Push three requests.
-  MockClient* client1 = MakeGarbageCollected<MockClient>();
-  ResourceLoadScheduler::ClientId id1 = ResourceLoadScheduler::kInvalidClientId;
-  Scheduler()->Request(client1, ThrottleOption::kThrottleable,
-                       ResourceLoadPriority::kHigh, 0 /* intra_priority */,
-                       &id1);
-  EXPECT_NE(ResourceLoadScheduler::kInvalidClientId, id1);
-
-  MockClient* client2 = MakeGarbageCollected<MockClient>();
-  ResourceLoadScheduler::ClientId id2 = ResourceLoadScheduler::kInvalidClientId;
-  Scheduler()->Request(client2, ThrottleOption::kThrottleable,
-                       ResourceLoadPriority::kLow, 5 /* intra_priority */,
-                       &id2);
-  Scheduler()->SetConnectionInfo(id2, net::HttpConnectionInfo::kHTTP2);
-
-  // This request will not run, because we are experiencing a slow connection.
-  MockClient* client3 = MakeGarbageCollected<MockClient>();
-  ResourceLoadScheduler::ClientId id3 = ResourceLoadScheduler::kInvalidClientId;
-  Scheduler()->Request(client3, ThrottleOption::kThrottleable,
-                       ResourceLoadPriority::kLow, 5 /* intra_priority */,
-                       &id3);
-  Scheduler()->SetConnectionInfo(id3, net::HttpConnectionInfo::kHTTP2);
-
-  EXPECT_TRUE(client1->WasRun());
-  EXPECT_TRUE(client2->WasRun());
-  EXPECT_FALSE(client3->WasRun());
-
-  EXPECT_TRUE(Release(id3));
-  EXPECT_TRUE(Release(id2));
-  EXPECT_TRUE(Release(id1));
 }
 
 }  // namespace

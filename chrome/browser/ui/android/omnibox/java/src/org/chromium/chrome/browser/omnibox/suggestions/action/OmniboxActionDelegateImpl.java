@@ -8,15 +8,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -24,20 +22,21 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import java.util.function.Consumer;
 
 /** Handle the events related to {@link OmniboxAction}. */
+@NullMarked
 public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
-    private final @NonNull Context mContext;
-    private final @NonNull Consumer<String> mOpenUrlInExistingTabElseNewTabCb;
-    private final @NonNull Runnable mOpenIncognitoTabCb;
-    private final @NonNull Runnable mOpenPasswordSettingsCb;
-    private final @NonNull Supplier<Tab> mTabSupplier;
+    private final Context mContext;
+    private final Consumer<String> mOpenUrlInExistingTabElseNewTabCb;
+    private final Runnable mOpenIncognitoTabCb;
+    private final Runnable mOpenPasswordSettingsCb;
+    private final Supplier<Tab> mTabSupplier;
     private final @Nullable Runnable mOpenQuickDeleteCb;
 
     public OmniboxActionDelegateImpl(
-            @NonNull Context context,
-            @NonNull Supplier<Tab> tabSupplier,
-            @NonNull Consumer<String> openUrlInExistingTabElseNewTabCb,
-            @NonNull Runnable openIncognitoTabCb,
-            @NonNull Runnable openPasswordSettingsCb,
+            Context context,
+            Supplier<Tab> tabSupplier,
+            Consumer<String> openUrlInExistingTabElseNewTabCb,
+            Runnable openIncognitoTabCb,
+            Runnable openPasswordSettingsCb,
             @Nullable Runnable openQuickDeleteCb) {
         mContext = context;
         mTabSupplier = tabSupplier;
@@ -49,10 +48,10 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public void handleClearBrowsingData() {
-        if (QuickDeleteController.isQuickDeleteEnabled() && mOpenQuickDeleteCb != null) {
+        if (mOpenQuickDeleteCb != null) {
             mOpenQuickDeleteCb.run();
         } else {
-            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+            openSettingsPage(SettingsFragment.CLEAR_BROWSING_DATA);
         }
     }
 
@@ -68,7 +67,7 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
 
     @Override
     public void openSettingsPage(@SettingsFragment int fragment) {
-        SettingsLauncherFactory.createSettingsLauncher().launchSettingsActivity(mContext, fragment);
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(mContext, fragment);
     }
 
     @Override
@@ -88,9 +87,9 @@ public class OmniboxActionDelegateImpl implements OmniboxActionDelegate {
     }
 
     @Override
-    public boolean startActivity(@NonNull Intent intent) {
+    public boolean startActivity(Intent intent) {
         try {
-            if (IntentUtils.intentTargetsSelf(mContext, intent)) {
+            if (IntentUtils.intentTargetsSelf(intent)) {
                 IntentUtils.addTrustedIntentExtras(intent);
             }
             mContext.startActivity(intent);

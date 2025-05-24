@@ -1,0 +1,224 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+  schedule: [cron: "40 1 * * *"]
+
+permissions:
+  contents: read
+
+jobs:
+  pre_ci:
+    uses: dtolnay/.github/.github/workflows/pre_ci.yml@master
+
+  test:
+    name: ${{matrix.name || format('Rust {0}', matrix.rust)}}
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ${{matrix.os}}-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        rust: [nightly, beta, stable, 1.82.0, 1.80.0, 1.77.0, 1.74.0, 1.73.0]
+        os: [ubuntu]
+        cc: ['']
+        flags: ['']
+        include:
+          - name: Cargo on macOS
+            rust: nightly
+            os: macos
+          - name: Cargo on Windows (msvc)
+            rust: nightly-x86_64-pc-windows-msvc
+            os: windows
+            flags: /EHsc
+          - name: Clang
+            rust: nightly
+            cc: clang++
+            os: ubuntu
+            flags: -std=c++20 -Werror -Wall
+          - name: C++14
+            rust: nightly
+            os: ubuntu
+            flags: -std=c++14 -Werror -Wall
+          - name: C++17
+            rust: nightly
+            os: ubuntu
+            flags: -std=c++17 -Werror -Wall
+          - name: C++20
+            rust: nightly
+            os: ubuntu
+            flags: -std=c++20 -Werror -Wall
+    env:
+      CXX: ${{matrix.cc}}
+      CXXFLAGS: ${{matrix.flags}}
+      RUSTFLAGS: --cfg deny_warnings -Dwarnings
+    timeout-minutes: 45
+    steps:
+      - name: Enable symlinks (windows)
+        if: matrix.os == 'windows'
+        run: git config --global core.symlinks true
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{matrix.rust}}
+          components: rust-src
+      - name: Determine test suite subset
+        # Our Windows and macOS jobs are the longest running, so exclude the
+        # relatively slow compiletest from them to speed up end-to-end CI time,
+        # except during cron builds when no human is presumably waiting on the
+        # build. The extra coverage is not particularly valuable and we can
+        # still ensure the test is kept passing on the basis of the scheduled
+        # builds.
+        run: |
+          echo RUSTFLAGS=$RUSTFLAGS >> $GITHUB_ENV
+          echo exclude=--exclude cxx-test-suite ${{matrix.rust == '1.73.0' && '--exclude cxxbridge-cmd' || ''}} >> $GITHUB_OUTPUT
+        env:
+          RUSTFLAGS: ${{env.RUSTFLAGS}} ${{matrix.os != 'ubuntu' && github.event_name != 'schedule' && '--cfg skip_ui_tests' || ''}}
+        id: testsuite
+        shell: bash
+      - name: Ignore macOS linker warning
+        run: echo RUSTFLAGS=${RUSTFLAGS}\ -Alinker_messages >> $GITHUB_ENV
+        if: matrix.os == 'macos'
+      - run: cargo run --manifest-path demo/Cargo.toml
+      - run: cargo test --workspace ${{steps.testsuite.outputs.exclude}}
+        if: matrix.rust != '1.74.0' && matrix.rust != '1.73.0'
+      - run: cargo check --no-default-features --features alloc
+        env:
+          RUSTFLAGS: --cfg compile_error_if_std ${{env.RUSTFLAGS}}
+      - run: cargo check --no-default-features
+        env:
+          RUSTFLAGS: --cfg compile_error_if_alloc --cfg cxx_experimental_no_alloc ${{env.RUSTFLAGS}}
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu' && matrix.rust == 'nightly' && matrix.cc == '' && matrix.flags == '' && always()
+        with:
+          name: Cargo.lock
+          path: Cargo.lock
+        continue-on-error: true
+
+  reindeer:
+    name: Reindeer
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rust-src
+      - uses: dtolnay/install@reindeer
+      - run: reindeer buckify
+        working-directory: third-party
+      - name: Check reindeer-generated BUCK file up to date
+        run: git diff --exit-code
+
+  bazel:
+    name: Bazel on ${{matrix.os == 'ubuntu' && 'Linux' || matrix.os == 'macos' && 'macOS' || matrix.os == 'windows' && 'Windows' || '???'}}
+    runs-on: ${{matrix.os}}-latest
+    if: github.event_name != 'pull_request'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu, macos, windows]
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install lld
+        run: sudo apt-get install lld
+        if: matrix.os == 'ubuntu'
+      - name: Set bazelrc for Windows
+        run: echo "startup --output_user_root=D:/bzl" > user.bazelrc
+        if: matrix.os == 'windows'
+      - run: bazel --version
+      - run: bazel run demo --verbose_failures --noshow_progress ${{matrix.os == 'macos' && '--xcode_version_config=tools/bazel:github_actions_xcodes' || ''}}
+      - run: bazel test ... --verbose_failures --noshow_progress ${{matrix.os == 'macos' && '--xcode_version_config=tools/bazel:github_actions_xcodes' || ''}}
+      - name: Check MODULE.bazel.lock up to date
+        run: git diff --exit-code
+      - run: bazel run //third-party:vendor
+        if: matrix.os == 'ubuntu' || matrix.os == 'macos'
+      - name: Check third-party/bazel up to date
+        run: git diff --exit-code
+        if: matrix.os == 'ubuntu' || matrix.os == 'macos'
+
+  minimal:
+    name: Minimal versions
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - run: cargo generate-lockfile -Z minimal-versions
+      - run: cargo check --locked --workspace
+
+  doc:
+    name: Documentation
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUSTDOCFLAGS: -Dwarnings
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: rust-src
+      - uses: dtolnay/install@cargo-docs-rs
+      - run: cargo docs-rs
+      - run: cargo docs-rs -p cxx-build
+      - run: cargo docs-rs -p cxx-gen
+      - run: cargo docs-rs -p cxxbridge-flags
+      - run: cargo docs-rs -p cxxbridge-macro
+
+  clippy:
+    name: Clippy
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    env:
+      RUSTFLAGS: -Dwarnings
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+        with:
+          components: clippy, rust-src
+      - run: cargo clippy --workspace --tests --exclude demo -- -Dclippy::all -Dclippy::pedantic
+      - run: cargo clippy --manifest-path demo/Cargo.toml -- -Dclippy::all
+
+  clang-tidy:
+    name: Clang Tidy
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install clang-tidy
+        run: sudo apt-get install clang-tidy-18
+      - name: Run clang-tidy
+        run: clang-tidy-18 src/cxx.cc --warnings-as-errors=*
+
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm install
+        working-directory: book
+      - run: npx eslint
+        working-directory: book
+
+  outdated:
+    name: Outdated
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: dtolnay/install@cargo-outdated
+      - run: cargo outdated --workspace --exit-code 1

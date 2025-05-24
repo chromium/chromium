@@ -10,7 +10,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import '../settings_shared.css.js';
 import '../i18n_setup.js';
 
@@ -78,10 +78,10 @@ export class SettingsSecurityKeysResetDialogElement extends
     };
   }
 
-  private errorCode_: number;
-  private complete_: boolean;
-  private shown_: ResetDialogPage;
-  private title_: string;
+  declare private errorCode_: number;
+  declare private complete_: boolean;
+  declare private shown_: ResetDialogPage;
+  declare private title_: string;
   private browserProxy_: SecurityKeysResetBrowserProxy =
       SecurityKeysResetBrowserProxyImpl.getInstance();
 

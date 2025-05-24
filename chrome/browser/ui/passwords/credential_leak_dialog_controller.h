@@ -8,7 +8,6 @@
 #include <string>
 
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
-#include "ui/gfx/range/range.h"
 
 // An interface used by the credential leak dialog for setting and retrieving
 // the state.
@@ -49,4 +48,4 @@ class CredentialLeakDialogController : public PasswordBaseDialogController {
   virtual bool ShouldShowCancelButton() const = 0;
 };
 
-#endif  //  CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_PASSWORDS_CREDENTIAL_LEAK_DIALOG_CONTROLLER_H_

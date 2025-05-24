@@ -4,17 +4,19 @@
 
 #include "chrome/browser/ui/ash/game_dashboard/chrome_game_dashboard_delegate.h"
 
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/compat_mode/arc_resize_lock_manager.h"
-#include "ash/components/arc/compat_mode/compat_mode_button_controller.h"
-#include "ash/components/arc/session/connection_holder.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chromeos/ash/components/growth/campaigns_constants.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
+#include "chromeos/ash/experiences/arc/compat_mode/compat_mode_button_controller.h"
+#include "chromeos/ash/experiences/arc/session/connection_holder.h"
 #include "components/user_manager/user_manager.h"
 
 ChromeGameDashboardDelegate::ChromeGameDashboardDelegate() = default;
@@ -23,17 +25,6 @@ ChromeGameDashboardDelegate::~ChromeGameDashboardDelegate() = default;
 
 void ChromeGameDashboardDelegate::GetIsGame(const std::string& app_id,
                                             IsGameCallback callback) {
-  if (arc::GetArcAndroidSdkVersionAsInt() <= arc::kArcVersionP) {
-    // Android sends a list of `arc::mojom::AppInfo` objects to Chrome, and is
-    // stored in `ArcAppListPrefs`. crrev.com/c/4419690 extended the AppInfo
-    // object to include the `app_category` field. Since ARC-P was frozen, that
-    // change was never ported to it. This delegate cannot determine whether
-    // the given `app-id`'s category on devices running ARC P. Assume the app is
-    // not a game.
-    std::move(callback).Run(/*is_game=*/false);
-    return;
-  }
-
   // Get the app category from ArcAppListPrefs.
   auto* profile = ProfileManager::GetPrimaryUserProfile();
   CHECK(profile);
@@ -81,6 +72,12 @@ std::string ChromeGameDashboardDelegate::GetArcAppName(
 
 void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
     aura::Window* window) {
+  auto* campaigns_manager = growth::CampaignsManager::Get();
+  if (campaigns_manager) {
+    campaigns_manager->RecordEvent(
+        growth::kGrowthCampaignsEventGameWindowOpened);
+  }
+
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   CHECK(user_manager);
   if (user_manager->GetActiveUser() != user_manager->GetPrimaryUser()) {

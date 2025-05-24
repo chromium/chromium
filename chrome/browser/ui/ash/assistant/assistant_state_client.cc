@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -15,6 +14,7 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -49,8 +49,9 @@ void AssistantStateClient::NotifyLocaleChanged() {
 }
 
 void AssistantStateClient::ActiveUserChanged(user_manager::User* active_user) {
-  if (!active_user)
+  if (!active_user) {
     return;
+  }
 
   active_user->AddProfileCreatedObserver(
       base::BindOnce(&AssistantStateClient::SetProfileByUser,
@@ -69,14 +70,16 @@ void AssistantStateClient::SetProfileByUser(const user_manager::User* user) {
 }
 
 void AssistantStateClient::SetProfile(Profile* profile) {
-  if (profile_ == profile)
+  if (profile_ == profile) {
     return;
+  }
 
   profile_ = profile;
   pref_change_registrar_.reset();
 
-  if (!profile_)
+  if (!profile_) {
     return;
+  }
 
   PrefService* prefs = profile->GetPrefs();
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();

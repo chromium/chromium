@@ -45,6 +45,12 @@ swarming.pool_realm(
 )
 
 swarming.task_triggerers(
+    builder_realm = "try",
+    pool_realm = "pools/tests",
+    groups = ["chromium-swarming-dev-led-access"],
+)
+
+swarming.task_triggerers(
     builder_realm = "@root",
     pool_realm = "@root",
     groups = ["mdb/chrome-troopers"],

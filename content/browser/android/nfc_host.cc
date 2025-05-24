@@ -11,6 +11,7 @@
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/permission_controller.h"
+#include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/mojom/nfc.mojom.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -60,9 +61,11 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
 
   if (render_frame_host->GetBrowserContext()
           ->GetPermissionController()
-          ->GetPermissionStatusForCurrentDocument(blink::PermissionType::NFC,
-                                                  render_frame_host) !=
-      blink::mojom::PermissionStatus::GRANTED) {
+          ->GetPermissionStatusForCurrentDocument(
+              content::PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      blink::PermissionType::NFC),
+              render_frame_host) != blink::mojom::PermissionStatus::GRANTED) {
     return;
   }
 

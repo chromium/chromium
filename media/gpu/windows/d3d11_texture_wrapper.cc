@@ -16,6 +16,7 @@
 #include "gpu/command_buffer/service/dxgi_shared_handle_manager.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/ipc/service/gpu_channel_shared_image_interface.h"
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "media/base/media_switches.h"
@@ -60,8 +61,7 @@ viz::SharedImageFormat DXGIFormatToMultiPlanarSharedImageFormat(
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return viz::SinglePlaneFormat::kRGBA_F16;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return viz::SinglePlaneFormat::kBGRA_8888;
+      NOTREACHED();
   }
 }
 
@@ -73,11 +73,11 @@ Texture2DWrapper::~Texture2DWrapper() = default;
 
 DefaultTexture2DWrapper::DefaultTexture2DWrapper(
     const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
+    const gfx::ColorSpace& output_color_space,
     DXGI_FORMAT dxgi_format,
     ComD3D11Device device)
     : size_(size),
-      color_space_(color_space),
+      output_color_space_(output_color_space),
       dxgi_format_(dxgi_format),
       video_device_(std::move(device)) {}
 
@@ -116,7 +116,7 @@ D3D11Status DefaultTexture2DWrapper::ProcessTexture(
 
   // TODO(hitawala): Possibly optimize this method as input and stored color
   // spaces should be same.
-  CHECK_EQ(input_color_space, color_space_);
+  CHECK_EQ(input_color_space, output_color_space_);
 
   return D3D11Status::Codes::kOk;
 }
@@ -148,7 +148,7 @@ D3D11Status DefaultTexture2DWrapper::Init(
                      weak_factory_.GetWeakPtr()));
   gpu_resources_ = base::SequenceBound<GpuResources>(
       std::move(gpu_task_runner), std::move(on_error_cb),
-      std::move(get_helper_cb), size_, color_space_, dxgi_format_,
+      std::move(get_helper_cb), size_, output_color_space_, dxgi_format_,
       video_device_, texture, array_slice, std::move(picture_buffer),
       std::move(gpu_resource_init_cb));
   return D3D11Status::Codes::kOk;
@@ -201,13 +201,14 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
+  HRESULT hr = S_OK;
   scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
   D3D11_TEXTURE2D_DESC desc = {};
   texture->GetDesc(&desc);
   // Create shared handle for shareable output texture.
   if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
     ComDXGIResource1 dxgi_resource;
-    HRESULT hr = texture.As(&dxgi_resource);
+    hr = texture.As(&dxgi_resource);
     if (FAILED(hr)) {
       DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
                   << std::hex << hr;
@@ -235,15 +236,22 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
             ->CreateAnonymousSharedHandleState(
                 base::win::ScopedHandle(shared_handle), texture);
   }
+
+  Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
+  hr = video_device.As(&multi_threaded);
+  CHECK_EQ(hr, S_OK);
+
+  // When |video_device| has multi-thread protection turned on, SkiaGraphite
+  // is ensured to be enabled. However we don't need to enable locking on the
+  // shared image if media service runs on main thread.
   const bool is_thread_safe =
+      multi_threaded->GetMultithreadProtected() &&
       IsDedicatedMediaServiceThreadEnabled(gl::ANGLEImplementation::kD3D11);
 
   gpu::SharedImageInfo si_info{
       DXGIFormatToMultiPlanarSharedImageFormat(dxgi_format),
       size,
       color_space,
-      kTopLeft_GrSurfaceOrigin,
-      kPremul_SkAlphaType,
       usage,
       "VideoTexture"};
   scoped_refptr<gpu::GpuChannelSharedImageInterface>

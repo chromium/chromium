@@ -76,6 +76,7 @@ class CC_EXPORT PropertyTree {
 
 #if DCHECK_IS_ON()
   bool operator==(const PropertyTree<T>& other) const;
+  std::string ToString() const;
 #endif
 
   int Insert(const T& tree_node, int parent_id);
@@ -253,6 +254,16 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
     nodes_affected_by_outer_viewport_bounds_delta_ = std::move(nodes);
   }
 
+  void NeedTransformUpdateForSafeAreaInsetBottom();
+
+  void AddNodeAffectedBySafeAreaInsetBottom(int node_id);
+
+  bool HasNodesAffectedBySafeAreaBottom() const;
+
+  const std::vector<int>& nodes_affected_by_safe_area_bottom() const {
+    return nodes_affected_by_safe_area_inset_bottom_;
+  }
+
   const std::vector<StickyPositionNodeData>& sticky_position_data() const {
     return sticky_position_data_;
   }
@@ -340,6 +351,7 @@ class CC_EXPORT TransformTree final : public PropertyTree<TransformNode> {
   float device_scale_factor_;
   float device_transform_scale_factor_;
   std::vector<int> nodes_affected_by_outer_viewport_bounds_delta_;
+  std::vector<int> nodes_affected_by_safe_area_inset_bottom_;
   std::vector<TransformCachedNodeData> cached_data_;
   std::vector<StickyPositionNodeData> sticky_position_data_;
   std::vector<AnchorPositionScrollData> anchor_position_scroll_data_;
@@ -605,7 +617,13 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
       synced_offset->set_clobber_active_value();
   }
 
+  // Sets the painting cull rect of scrolling contents of a scroll. If set, the
+  // painting of scrolling contents in this cull rect is guaranteed to be
+  // complete. It's in the space of `transform_id` of the corresponding scroll
+  // node. If not set or after ClearScrollingContentsCullRect is called, the
+  // cull rect is supposed to always cover all scrolling contents.
   void SetScrollingContentsCullRect(ElementId id, const gfx::Rect& cull_rect);
+  void ClearScrollingContentsCullRect(ElementId id);
   const gfx::Rect* ScrollingContentsCullRect(ElementId id) const;
 
   SyncedScrollOffset* GetOrCreateSyncedScrollOffsetForTesting(ElementId id);
@@ -650,16 +668,22 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   bool ShouldRealizeScrollsOnMain(const ScrollNode& node) const;
 
   // Reports reasons for blocking scroll updates on main-thread repaint.
-  // Returns bitfield of values from MainThreadScrollingReason.
   uint32_t GetMainThreadRepaintReasons(const ScrollNode& node) const;
+
+  using SyncedScrollOffsetMap =
+      base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
+
+  const SyncedScrollOffsetMap& synced_scroll_offset_map() const {
+    return synced_scroll_offset_map_;
+  }
+  SyncedScrollOffsetMap& synced_scroll_offset_map() {
+    return synced_scroll_offset_map_;
+  }
 
  private:
   // ScrollTree doesn't use the needs_update flag.
   using PropertyTree::needs_update;
   using PropertyTree::set_needs_update;
-
-  using SyncedScrollOffsetMap =
-      base::flat_map<ElementId, scoped_refptr<SyncedScrollOffset>>;
 
   int currently_scrolling_node_id_ = kInvalidPropertyNodeId;
 
@@ -730,7 +754,7 @@ struct DrawTransforms {
 
 struct DrawTransformData {
   int update_number = kInvalidUpdateNumber;
-  int target_id = kInvalidPropertyNodeId;
+  int effect_id = kInvalidPropertyNodeId;
 
   // TODO(sunxd): Move screen space transforms here if it can improve
   // performance.
@@ -830,6 +854,7 @@ class CC_EXPORT PropertyTrees final {
   void MaximumAnimationScaleChanged(ElementId element_id, float maximum_scale);
   void SetInnerViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
   void SetOuterViewportContainerBoundsDelta(gfx::Vector2dF bounds_delta);
+  void SetTransformDeltaBySafeAreaInsetBottom(float);
   void UpdateChangeTracking();
   void GetChangedNodes(std::vector<int>& effect_nodes,
                        std::vector<int>& transform_nodes) const;
@@ -849,6 +874,10 @@ class CC_EXPORT PropertyTrees final {
   }
   gfx::Vector2dF outer_viewport_container_bounds_delta() const {
     return outer_viewport_container_bounds_delta_.Read(synchronizer());
+  }
+
+  float transform_delta_by_safe_area_inset_bottom() const {
+    return transform_delta_by_safe_area_inset_bottom_.Read(synchronizer());
   }
 
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
@@ -910,6 +939,7 @@ class CC_EXPORT PropertyTrees final {
       inner_viewport_container_bounds_delta_;
   ProtectedSequenceReadable<gfx::Vector2dF>
       outer_viewport_container_bounds_delta_;
+  ProtectedSequenceReadable<float> transform_delta_by_safe_area_inset_bottom_;
 
   const AnimationScaleData& GetAnimationScaleData(int transform_id);
 

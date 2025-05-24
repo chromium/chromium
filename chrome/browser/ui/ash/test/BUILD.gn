@@ -3,9 +3,8 @@
 # found in the LICENSE file.
 
 import("//build/chromeos/crosier_tests.gni")
-import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 if (is_chromeos_device) {
   crosier_tests("integration_tests") {
@@ -34,6 +33,7 @@ source_set("browser_tests") {
     "annotator_client_impl_browsertest.cc",
     "event_latency_metrics_browsertest.cc",
     "feature_discovery_duration_reporter_browsertest.cc",
+    "first_web_contents_profiler_ash_browsertest.cc",
   ]
 
   deps = [
@@ -48,6 +48,8 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/app_restore:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/profiles",
@@ -77,6 +79,7 @@ source_set("unit_tests") {
   sources = [ "accelerator_metadata_unittest.cc" ]
 
   deps = [
+    "//ash:test_support",
     "//ash/webui/shortcut_customization_ui/backend",
     "//base",
     "//build:branding_buildflags",

@@ -18,7 +18,7 @@
 #include "base/rand_util.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/paint/display_item_list.h"
@@ -26,7 +26,6 @@
 #include "cc/paint/paint_recorder.h"
 #include "cc/raster/raster_source.h"
 #include "components/viz/client/client_resource_provider.h"
-#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
@@ -44,71 +43,54 @@
 
 namespace cc {
 
-// Subclass for InUsePoolResource that holds ownership of a gpu-rastered backing
-// and does cleanup of the backing when destroyed.
-class GpuRasterBufferProvider::GpuRasterBacking
-    : public ResourcePool::GpuBacking {
- public:
-  ~GpuRasterBacking() override {
-    if (!shared_image) {
-      return;
-    }
-    auto* sii = worker_context_provider->SharedImageInterface();
-    if (returned_sync_token.HasData())
-      sii->DestroySharedImage(returned_sync_token, std::move(shared_image));
-    else if (mailbox_sync_token.HasData())
-      sii->DestroySharedImage(mailbox_sync_token, std::move(shared_image));
-  }
-
-  void OnMemoryDump(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
-      uint64_t tracing_process_id,
-      int importance) const override {
-    if (!shared_image) {
-      return;
-    }
-
-    auto tracing_guid = shared_image->GetGUIDForTracing();
-    pmd->CreateSharedGlobalAllocatorDump(tracing_guid);
-    pmd->AddOwnershipEdge(buffer_dump_guid, tracing_guid, importance);
-  }
-
-  // The context used to clean up the mailbox
-  raw_ptr<viz::RasterContextProvider> worker_context_provider = nullptr;
-};
-
 GpuRasterBufferProvider::RasterBufferImpl::RasterBufferImpl(
     GpuRasterBufferProvider* client,
     const ResourcePool::InUsePoolResource& in_use_resource,
-    GpuRasterBacking* backing,
     bool resource_has_previous_content,
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates)
     : client_(client),
-      backing_(backing),
-      resource_size_(in_use_resource.size()),
-      shared_image_format_(in_use_resource.format()),
-      color_space_(in_use_resource.color_space()),
       resource_has_previous_content_(resource_has_previous_content),
       depends_on_at_raster_decodes_(depends_on_at_raster_decodes),
       depends_on_hardware_accelerated_jpeg_candidates_(
           depends_on_hardware_accelerated_jpeg_candidates),
       depends_on_hardware_accelerated_webp_candidates_(
           depends_on_hardware_accelerated_webp_candidates) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Only do this in Chrome OS because:
+  if (!in_use_resource.backing()) {
+    auto backing = std::make_unique<ResourcePool::Backing>(
+        in_use_resource.size(), in_use_resource.format(),
+        in_use_resource.color_space());
+    backing->is_using_raw_draw =
+        !client_->tile_overlay_candidate_ && client_->is_using_raw_draw_;
+    in_use_resource.set_backing(std::move(backing));
+  }
+  backing_ = in_use_resource.backing();
+  if (!backing_->shared_image()) {
+    // The backing's SharedImage will be created on a worker thread during the
+    // execution of this raster; to avoid data races during taking of memory
+    // dumps on the compositor thread, mark the backing's SharedImage as
+    // unavailable for access on the compositor thread for the duration of the
+    // raster.
+    backing_->can_access_shared_image_on_compositor_thread = false;
+  }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Only do this in ChromeOS because:
   //   1) We will use this timestamp to measure raster scheduling delay and we
   //      only need to collect that data to assess the impact of hardware
-  //      acceleration of image decodes which works only on Chrome OS.
+  //      acceleration of image decodes which works only on ChromeOS.
   //   2) We use CLOCK_MONOTONIC in that OS to get timestamps, so we can assert
   //      certain assumptions.
   creation_time_ = base::TimeTicks::Now();
 #endif
 }
 
-GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() = default;
+GpuRasterBufferProvider::RasterBufferImpl::~RasterBufferImpl() {
+  // This raster task is complete, so if the backing's SharedImage was created
+  // on a worker thread during the raster work that has now happened.
+  backing_->can_access_shared_image_on_compositor_thread = true;
+}
 
 void GpuRasterBufferProvider::RasterBufferImpl::Playback(
     const RasterSource* raster_source,
@@ -122,13 +104,9 @@ void GpuRasterBufferProvider::RasterBufferImpl::Playback(
 
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       client_->worker_context_provider_, url.possibly_invalid_spec().c_str());
-  gpu::raster::RasterInterface* ri =
-      client_->worker_context_provider_->RasterInterface();
   PlaybackOnWorkerThread(raster_source, raster_full_rect, raster_dirty_rect,
                          new_content_id, transform, playback_settings, url);
 
-  backing_->mailbox_sync_token =
-      viz::ClientResourceProvider::GenerateSyncTokenHelper(ri);
   backing_->returned_sync_token = gpu::SyncToken();
 }
 
@@ -138,17 +116,17 @@ bool GpuRasterBufferProvider::RasterBufferImpl::
 }
 
 GpuRasterBufferProvider::GpuRasterBufferProvider(
+    scoped_refptr<gpu::SharedImageInterface> sii,
     viz::RasterContextProvider* compositor_context_provider,
     viz::RasterContextProvider* worker_context_provider,
-    const RasterCapabilities& raster_caps,
+    bool is_overlay_candidate,
     const gfx::Size& max_tile_size,
-    bool unpremultiply_and_dither_low_bit_depth_tiles,
     RasterQueryQueue* const pending_raster_queries,
     float raster_metric_probability)
-    : compositor_context_provider_(compositor_context_provider),
+    : sii_(sii),
+      compositor_context_provider_(compositor_context_provider),
       worker_context_provider_(worker_context_provider),
-      tile_format_(raster_caps.tile_format),
-      tile_overlay_candidate_(raster_caps.tile_overlay_candidate),
+      tile_overlay_candidate_(is_overlay_candidate),
       max_tile_size_(max_tile_size),
       pending_raster_queries_(pending_raster_queries),
       raster_metric_probability_(raster_metric_probability),
@@ -167,13 +145,9 @@ GpuRasterBufferProvider::GpuRasterBufferProvider(
         worker_context_provider->ContextCapabilities().using_vulkan_context;
 
     // On Android, DMSAA on vulkan backend launch is controlled by
-    // kUseDMSAAForTiles whereas GL backend launch is controlled by
-    // kUseDMSAAForTilesAndroidGL.
-    is_using_dmsaa_ =
-        (base::FeatureList::IsEnabled(features::kUseDMSAAForTiles) &&
-         is_using_vulkan) ||
-        (base::FeatureList::IsEnabled(features::kUseDMSAAForTilesAndroidGL) &&
-         !is_using_vulkan);
+    // kUseDMSAAForTiles.
+    is_using_dmsaa_ = !is_using_vulkan ||
+                      base::FeatureList::IsEnabled(features::kUseDMSAAForTiles);
   }
 #endif
 }
@@ -187,20 +161,10 @@ std::unique_ptr<RasterBuffer> GpuRasterBufferProvider::AcquireBufferForRaster(
     bool depends_on_at_raster_decodes,
     bool depends_on_hardware_accelerated_jpeg_candidates,
     bool depends_on_hardware_accelerated_webp_candidates) {
-  if (!resource.gpu_backing()) {
-    auto backing = std::make_unique<GpuRasterBacking>();
-    backing->worker_context_provider = worker_context_provider_;
-    backing->overlay_candidate = tile_overlay_candidate_;
-    backing->is_using_raw_draw =
-        !backing->overlay_candidate && is_using_raw_draw_;
-    resource.set_gpu_backing(std::move(backing));
-  }
-  GpuRasterBacking* backing =
-      static_cast<GpuRasterBacking*>(resource.gpu_backing());
   bool resource_has_previous_content =
       resource_content_id && resource_content_id == previous_content_id;
   return std::make_unique<RasterBufferImpl>(
-      this, resource, backing, resource_has_previous_content,
+      this, resource, resource_has_previous_content,
       depends_on_at_raster_decodes,
       depends_on_hardware_accelerated_jpeg_candidates,
       depends_on_hardware_accelerated_webp_candidates);
@@ -210,18 +174,10 @@ void GpuRasterBufferProvider::Flush() {
   compositor_context_provider_->ContextSupport()->FlushPendingWork();
 }
 
-viz::SharedImageFormat GpuRasterBufferProvider::GetFormat() const {
-  return tile_format_;
-}
-
-bool GpuRasterBufferProvider::IsResourcePremultiplied() const {
-  return !ShouldUnpremultiplyAndDitherResource(GetFormat());
-}
-
 bool GpuRasterBufferProvider::IsResourceReadyToDraw(
     const ResourcePool::InUsePoolResource& resource) {
   FlushIfNeeded();
-  const gpu::SyncToken& sync_token = resource.gpu_backing()->mailbox_sync_token;
+  const gpu::SyncToken& sync_token = resource.backing()->mailbox_sync_token;
   // This SyncToken() should have been set by calling OrderingBarrier() before
   // calling this.
   DCHECK(sync_token.HasData());
@@ -242,8 +198,7 @@ uint64_t GpuRasterBufferProvider::SetReadyToDrawCallback(
   FlushIfNeeded();
   gpu::SyncToken latest_sync_token;
   for (const auto* in_use : resources) {
-    const gpu::SyncToken& sync_token =
-        in_use->gpu_backing()->mailbox_sync_token;
+    const gpu::SyncToken& sync_token = in_use->backing()->mailbox_sync_token;
     if (sync_token.release_count() > latest_sync_token.release_count())
       latest_sync_token = sync_token;
   }
@@ -319,13 +274,13 @@ void GpuRasterBufferProvider::RasterBufferImpl::PlaybackOnWorkerThreadInternal(
       << "Why are we rastering a tile that's not dirty?";
 
   if (measure_raster_metric) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Use a query to detect when the GPU side is ready to start issuing raster
     // work to the driver. We will use the resulting timestamp to measure raster
-    // scheduling delay. We only care about this in Chrome OS because we will
+    // scheduling delay. We only care about this in ChromeOS because we will
     // use this timestamp to measure raster scheduling delay and we only need to
     // collect that data to assess the impact of hardware acceleration of image
-    // decodes which work only in Chrome OS. Furthermore, we don't count raster
+    // decodes which work only in ChromeOS. Furthermore, we don't count raster
     // work that depends on at-raster image decodes. This is because we want the
     // delay to always include image decoding and uploading time, and at-raster
     // decodes should be relatively rare.
@@ -368,31 +323,30 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   gpu::raster::RasterInterface* ri =
       client_->worker_context_provider_->RasterInterface();
   bool mailbox_needs_clear = false;
-  if (!backing_->shared_image) {
+  std::unique_ptr<gpu::RasterScopedAccess> ri_access;
+  if (!backing_->shared_image()) {
     DCHECK(!backing_->returned_sync_token.HasData());
-    auto* sii = client_->worker_context_provider_->SharedImageInterface();
+    auto* sii = client_->sii_.get();
 
     // This SharedImage will serve as the destination of the raster defined by
     // `raster_source` before being sent off to the display compositor.
     gpu::SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                                      gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                      gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-    if (backing_->overlay_candidate) {
+    if (client_->tile_overlay_candidate_) {
       flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      if (features::IsDelegatedCompositingEnabled())
-        flags |= gpu::SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING;
     } else if (client_->is_using_raw_draw_) {
       flags |= gpu::SHARED_IMAGE_USAGE_RAW_DRAW;
     }
-    backing_->shared_image =
-        sii->CreateSharedImage({shared_image_format_, resource_size_,
-                                color_space_, flags, "GpuRasterTile"},
-                               gpu::kNullSurfaceHandle);
-    CHECK(backing_->shared_image);
+    backing_->CreateSharedImage(sii, flags, "GpuRasterTile");
     mailbox_needs_clear = true;
-    ri->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+    ri_access = backing_->shared_image()->BeginRasterAccess(
+        ri, sii->GenUnverifiedSyncToken(),
+        /*readonly=*/false);
   } else {
-    ri->WaitSyncTokenCHROMIUM(backing_->returned_sync_token.GetConstData());
+    ri_access = backing_->shared_image()->BeginRasterAccess(
+        ri, backing_->returned_sync_token,
+        /*readonly=*/false);
   }
 
   // Assume legacy MSAA if sample count is positive.
@@ -413,14 +367,14 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
   // support LCD text, so disable LCD text for Raw Draw backings.
   // TODO(penghuang): remove it when sktext::gpu::Slug can be serialized.
   bool is_raw_draw_backing =
-      client_->is_using_raw_draw_ && !backing_->overlay_candidate;
+      client_->is_using_raw_draw_ && !client_->tile_overlay_candidate_;
   bool use_lcd_text = playback_settings.use_lcd_text && !is_raw_draw_backing;
 
   ri->BeginRasterCHROMIUM(
       raster_source->background_color(), mailbox_needs_clear,
       playback_settings.msaa_sample_count, msaa_mode, use_lcd_text,
-      playback_settings.visible, color_space_, playback_settings.hdr_headroom,
-      backing_->shared_image->mailbox().name);
+      playback_settings.visible, backing_->color_space(),
+      playback_settings.hdr_headroom, backing_->shared_image()->mailbox().name);
 
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.InvScale(raster_source->recording_scale_factor());
@@ -437,15 +391,8 @@ void GpuRasterBufferProvider::RasterBufferImpl::RasterizeSource(
       playback_settings.raster_inducing_scroll_offsets,
       const_cast<RasterSource*>(raster_source)->max_op_size_hint());
   ri->EndRasterCHROMIUM();
-
-  // TODO(ericrk): Handle unpremultiply+dither for 4444 cases.
-  // https://crbug.com/789153
-}
-
-bool GpuRasterBufferProvider::ShouldUnpremultiplyAndDitherResource(
-    viz::SharedImageFormat format) const {
-  // TODO(crbug.com/40042400): Re-enable for OOPR.
-  return false;
+  backing_->mailbox_sync_token =
+      gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 
 }  // namespace cc

@@ -117,7 +117,7 @@ RankerManager::RankerManager(Profile* profile) {
   AddRanker(std::make_unique<AnswerRanker>());
 }
 
-RankerManager::~RankerManager() {}
+RankerManager::~RankerManager() = default;
 
 void RankerManager::Start(const std::u16string& query,
                           const CategoriesList& categories) {

@@ -19,6 +19,11 @@ struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
     return resource_id.local_id();
   }
 
+  static bool for_subframe_snapshot(
+      const viz::ViewTransitionElementResourceId& resource_id) {
+    return resource_id.for_subframe_snapshot();
+  }
+
   static std::optional<blink::ViewTransitionToken> transition_token(
       const viz::ViewTransitionElementResourceId& resource_id) {
     if (resource_id.IsValid()) {
@@ -34,8 +39,8 @@ struct StructTraits<viz::mojom::ViewTransitionElementResourceIdDataView,
       return false;
     }
     if (transition_token) {
-      *out = viz::ViewTransitionElementResourceId(*transition_token,
-                                                  data.local_id());
+      *out = viz::ViewTransitionElementResourceId(
+          *transition_token, data.local_id(), data.for_subframe_snapshot());
     } else {
       *out = viz::ViewTransitionElementResourceId();
     }

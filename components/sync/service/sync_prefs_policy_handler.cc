@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/gaia_id_hash.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"

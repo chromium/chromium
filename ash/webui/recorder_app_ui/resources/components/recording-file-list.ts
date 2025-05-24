@@ -49,6 +49,7 @@ import {
 import {isObjectEmpty} from '../core/utils/utils.js';
 
 import {CraMenu} from './cra/cra-menu.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {RecordingFileListItem} from './recording-file-list-item.js';
 
 interface RecordingSearchResult {
@@ -96,6 +97,12 @@ interface InlinePlayingItemInfo {
 export class RecordingFileList extends ReactiveLitElement {
   static override styles = css`
     :host {
+      --container-padding-horizontal: 32px;
+
+      @container style(--small-viewport: 1) {
+        --container-padding-horizontal: 24px;
+      }
+
       background-color: var(--cros-sys-app_base_shaded);
       border-radius: 16px;
       display: flex;
@@ -109,12 +116,17 @@ export class RecordingFileList extends ReactiveLitElement {
       box-sizing: border-box;
       display: flex;
       flex-flow: row;
-      height: 80px;
-      padding: 20px 16px 8px 32px;
+      padding: 20px 16px 8px var(--container-padding-horizontal);
 
-      & > span {
+      @container style(--small-viewport: 1) {
+        padding: 12px 12px 0 var(--container-padding-horizontal);
+      }
+
+
+      & > h1 {
         flex: 1;
         font: var(--cros-display-7-font);
+        margin: 0;
       }
     }
 
@@ -134,7 +146,7 @@ export class RecordingFileList extends ReactiveLitElement {
     .section-heading {
       color: var(--cros-sys-on_surface);
       font: var(--cros-title-1-font);
-      margin: 16px 32px 0;
+      margin: 16px var(--container-padding-horizontal) 0;
     }
 
     .illustration-container {
@@ -232,7 +244,7 @@ export class RecordingFileList extends ReactiveLitElement {
       >
       </cra-menu-item>
       <cra-menu-item
-        headline=${i18n.recordingListSortByNameOption}
+        headline=${i18n.recordingListSortByTitleOption}
         ?checked=${settings.value.recordingSortType === RecordingSortType.NAME}
         data-role="menuitemradio"
         @cros-menu-item-triggered=${() => {
@@ -256,7 +268,7 @@ export class RecordingFileList extends ReactiveLitElement {
       selected: this.sortMenuOpened.value,
     };
     return html`<div id="header">
-        <span>${i18n.recordingListHeader}</span>
+        <h1>${i18n.recordingListHeader}</h1>
         <recording-search-box
           aria-label=${i18n.mainSearchLandmarkAriaLabel}
           role="search"
@@ -269,6 +281,7 @@ export class RecordingFileList extends ReactiveLitElement {
           class="with-toggle-style ${classMap(classes)}"
           @click=${this.toggleSortMenu}
           aria-label=${i18n.recordingListSortButtonTooltip}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
         </cra-icon-button>
@@ -411,7 +424,7 @@ export class RecordingFileList extends ReactiveLitElement {
       (item) => {
         switch (item.kind) {
           case 'header':
-            return html`<div class="section-heading">${item.label}</div>`;
+            return html`<h2 class="section-heading">${item.label}</h2>`;
           case 'recording': {
             const {recording, searchHighlight} = item;
             const [playing, progress] = (() => {

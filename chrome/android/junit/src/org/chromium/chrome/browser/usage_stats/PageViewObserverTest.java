@@ -20,13 +20,15 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -61,6 +63,7 @@ public final class PageViewObserverTest {
     private static final String STARTING_FQDN = "www.one.com";
     private static final String DIFFERENT_FQDN = "www.two.com";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Activity mActivity;
     @Mock private ObservableSupplier<Tab> mTabSupplier;
     @Mock private Tab mTab;
@@ -78,7 +81,7 @@ public final class PageViewObserverTest {
     private UserDataHost mDestroyedUserDataHost;
     private WeakReference<Activity> mActivityRef;
 
-    private class MockTabViewManager implements TabViewManager {
+    private static class MockTabViewManager implements TabViewManager {
         private TabViewProvider mTabViewProvider;
 
         @Override
@@ -99,7 +102,6 @@ public final class PageViewObserverTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
 
         mUserDataHost = new UserDataHost();
         mUserDataHostTab2 = new UserDataHost();
@@ -286,7 +288,7 @@ public final class PageViewObserverTest {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         changeTab(mTab2);
 
-        assertEquals(SuspendedTab.from(mTab2, mTabContentManagerSupplier).getFqdn(), STARTING_FQDN);
+        assertEquals(STARTING_FQDN, SuspendedTab.from(mTab2, mTabContentManagerSupplier).getFqdn());
     }
 
     // TODO(pnoland): add test for platform reporting once the System API is available in Q.
@@ -313,7 +315,7 @@ public final class PageViewObserverTest {
         updateUrl(mTab, DIFFERENT_URL, observer);
 
         SuspendedTab suspendedTab = SuspendedTab.from(mTab, mTabContentManagerSupplier);
-        assertEquals(suspendedTab.getFqdn(), DIFFERENT_FQDN);
+        assertEquals(DIFFERENT_FQDN, suspendedTab.getFqdn());
     }
 
     @Test

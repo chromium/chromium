@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] setSinkId on default audio output should always work
+  promise_test: Unhandled rejection with value: object "AbortError: The operation could not be performed and was aborted"
+[FAIL] setSinkId fails with NotFoundError on made up deviceid
+  promise_rejects_dom: function "function() { throw e; }" threw object "AbortError: The operation could not be performed and was aborted" that is not a DOMException NotFoundError: property "code" is equal to 20, expected 8
+[FAIL] setSinkId() with output device ID exposed by selectAudioOutput() should resolve
+  promise_test: Unhandled rejection with value: object "NotAllowedError: Permission denied to select audio output."
+Harness: the test ran to completion.
+

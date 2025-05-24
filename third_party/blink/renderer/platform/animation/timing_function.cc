@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
 
 #include <algorithm>
+
 #include "base/notreached.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
 
@@ -103,8 +105,7 @@ CubicBezierTimingFunction* CubicBezierTimingFunction::Preset(
     case EaseType::EASE_IN_OUT:
       return ease_in_out;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -119,13 +120,13 @@ String CubicBezierTimingFunction::ToString() const {
     case CubicBezierTimingFunction::EaseType::EASE_IN_OUT:
       return "ease-in-out";
     case CubicBezierTimingFunction::EaseType::CUSTOM:
-      return "cubic-bezier(" + String::NumberToStringECMAScript(X1()) + ", " +
-             String::NumberToStringECMAScript(Y1()) + ", " +
-             String::NumberToStringECMAScript(X2()) + ", " +
-             String::NumberToStringECMAScript(Y2()) + ")";
+      return WTF::StrCat({"cubic-bezier(",
+                          String::NumberToStringECMAScript(X1()), ", ",
+                          String::NumberToStringECMAScript(Y1()), ", ",
+                          String::NumberToStringECMAScript(X2()), ", ",
+                          String::NumberToStringECMAScript(Y2()), ")"});
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -247,8 +248,7 @@ scoped_refptr<TimingFunction> CreateCompositorTimingFunctionFromCC(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -300,9 +300,8 @@ bool operator==(const TimingFunction& lhs, const TimingFunction& rhs) {
       return (step == rhs);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 // No need to define specific operator!= as they can all come via this function.

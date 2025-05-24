@@ -161,7 +161,7 @@ function startOobe(): void {
   } else {
     // Add refresh color if D/L mode updated for the dynamic illustrations
     const lightDarkMQL = window.matchMedia('(prefers-color-scheme: light)');
-    lightDarkMQL.addEventListener('change', async () => {
+    lightDarkMQL.addEventListener('change', () => {
       const updater = ColorChangeUpdater.forDocument();
       updater.refreshColorsCss();
     });

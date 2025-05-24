@@ -22,11 +22,11 @@
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include <sys/socket.h>
 #include <sys/types.h>
+
 #include "base/posix/eintr_wrapper.h"
 #endif
 
-namespace base {
-namespace tracing {
+namespace base::tracing {
 namespace {
 
 class TaskDestination {
@@ -75,7 +75,7 @@ class PosterThread : public base::SimpleThread {
         weak_ptr_(weak_ptr),
         n_(n),
         sequence_number_(sequence_number) {}
-  ~PosterThread() override {}
+  ~PosterThread() override = default;
 
   // base::SimpleThread overrides.
   void BeforeStart() override {}
@@ -85,7 +85,7 @@ class PosterThread : public base::SimpleThread {
     for (int i = 0; i < n_; ++i) {
       auto weak_ptr = weak_ptr_;
       auto sequence_number = sequence_number_;
-      task_runner_->PostTask([weak_ptr, i, sequence_number]() {
+      task_runner_->PostTask([weak_ptr, i, sequence_number] {
         weak_ptr->TestTask(i, sequence_number);
       });
     }
@@ -170,24 +170,23 @@ TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
 
   base::RunLoop run_loop;
 
-  task_runner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        // The 1st add operation posts a task.
-        task_runner()->AddFileDescriptorWatch(fd.get(), [&]() {
-          run_callback_1 = true;
-          ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
-          run_loop.Quit();
-        });
-        // Remove so the 2nd add operation can succeed.
-        task_runner()->RemoveFileDescriptorWatch(fd.get());
+  task_runner()->PostTask([&] {
+    // The 1st add operation posts a task.
+    task_runner()->AddFileDescriptorWatch(fd.get(), [&] {
+      run_callback_1 = true;
+      ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
+      run_loop.Quit();
+    });
+    // Remove so the 2nd add operation can succeed.
+    task_runner()->RemoveFileDescriptorWatch(fd.get());
 
-        // Simulate FD reuse. The 2nd add operation also posts a task.
-        task_runner()->AddFileDescriptorWatch(fd.get(), [&]() {
-          run_callback_2 = true;
-          ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
-          run_loop.Quit();
-        });
-      }));
+    // Simulate FD reuse. The 2nd add operation also posts a task.
+    task_runner()->AddFileDescriptorWatch(fd.get(), [&] {
+      run_callback_2 = true;
+      ASSERT_EQ(data_size, HANDLE_EINTR(read(fd.get(), &data, data_size)));
+      run_loop.Quit();
+    });
+  });
 
   // Make all posted tasks run.
   run_loop.Run();
@@ -196,14 +195,12 @@ TEST_F(PerfettoTaskRunnerTest, FileDescriptorReuse) {
   ASSERT_TRUE(run_callback_2);
   ASSERT_EQ(data, data_value);
 
-  task_runner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&]() {
-        // Cleanup the FD watcher.
-        task_runner()->RemoveFileDescriptorWatch(fd.get());
-      }));
+  task_runner()->PostTask([&] {
+    // Cleanup the FD watcher.
+    task_runner()->RemoveFileDescriptorWatch(fd.get());
+  });
   task_environment().RunUntilIdle();
 }
 #endif
 }  // namespace
-}  // namespace tracing
-}  // namespace base
+}  // namespace base::tracing

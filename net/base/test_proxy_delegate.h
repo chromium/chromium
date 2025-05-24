@@ -14,6 +14,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_delegate.h"
 #include "net/base/proxy_server.h"
+#include "net/proxy_resolution/proxy_list.h"
 
 class GURL;
 
@@ -32,6 +33,9 @@ class TestProxyDelegate : public ProxyDelegate {
   // hasn't been set will result in a crash.
   void set_proxy_chain(const ProxyChain& proxy_chain);
   ProxyChain proxy_chain() const;
+  // Allow setting the proxy list directly, rather than via `set_proxy_chain()`.
+  void set_proxy_list(const ProxyList& proxy_list);
+  ProxyList proxy_list() const;
 
   // Setter for the name of a header to add to the tunnel request. The value of
   // the header will be based on the `OnBeforeTunnelRequest()` `proxy_chain` and
@@ -86,9 +90,14 @@ class TestProxyDelegate : public ProxyDelegate {
       const HttpResponseHeaders& response_headers) override;
   void SetProxyResolutionService(
       ProxyResolutionService* proxy_resolution_service) override;
+  bool AliasRequiresProxyOverride(
+      const std::string scheme,
+      const std::vector<std::string>& dns_aliases,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override;
 
  private:
   std::optional<ProxyChain> proxy_chain_;
+  std::optional<ProxyList> proxy_list_;
   std::optional<std::string> extra_header_name_;
 
   size_t on_before_tunnel_request_call_count_ = 0;

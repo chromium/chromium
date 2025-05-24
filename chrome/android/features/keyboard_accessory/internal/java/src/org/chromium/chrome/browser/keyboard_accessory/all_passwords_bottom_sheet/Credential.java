@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_shee
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * This class holds the data used to represent a selectable credential in the
  * AllPasswordsBottomSheet.
  */
+@NullMarked
 class Credential {
     private final String mUsername;
     private final String mPassword;

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/apps/app_service/webapk/webapk_metrics.h"
 
-#include "ash/components/arc/mojom/webapk.mojom.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/ash/experiences/arc/mojom/webapk.mojom.h"
 
 namespace apps {
 

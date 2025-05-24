@@ -9,7 +9,7 @@ const viewer = document.body.querySelector('pdf-viewer')!;
 async function ensurePropertiesDialogOpen() {
   chrome.test.assertFalse(!!getPropertiesDialog());
   const whenOpen = eventToPromise('cr-dialog-open', viewer);
-  const toolbar = viewer.shadowRoot!.querySelector('viewer-toolbar')!;
+  const toolbar = viewer.shadowRoot.querySelector('viewer-toolbar')!;
   toolbar.dispatchEvent(new CustomEvent('properties-click'));
   await whenOpen;
   chrome.test.assertTrue(!!getPropertiesDialog());
@@ -25,13 +25,13 @@ async function ensurePropertiesDialogClose() {
 }
 
 function getPropertiesDialog() {
-  return viewer.shadowRoot!.querySelector('viewer-properties-dialog')!;
+  return viewer.shadowRoot.querySelector('viewer-properties-dialog')!;
 }
 
 function assertField(field: string, expectedValue: string) {
   const actualValue =
-      getPropertiesDialog().shadowRoot!.querySelector<HTMLElement>(
-                                           `#${field}`)!.textContent!.trim();
+      getPropertiesDialog().shadowRoot.querySelector<HTMLElement>(
+                                          `#${field}`)!.textContent!.trim();
   chrome.test.assertEq(expectedValue, actualValue);
 }
 

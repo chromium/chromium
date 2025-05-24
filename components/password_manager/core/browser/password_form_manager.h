@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <variant>
 #include <vector>
 
 #include "base/containers/lru_cache.h"
@@ -34,7 +35,6 @@
 #include "components/password_manager/core/browser/password_save_manager.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class ElapsedTimer;
@@ -42,12 +42,13 @@ class ElapsedTimer;
 
 namespace password_manager {
 
+class PasswordFormManagerObserver;
 class PasswordFormMetricsRecorder;
 class PasswordManagerClient;
 class PasswordManagerDriver;
 struct PossibleUsernameData;
 
-using FormOrDigest = absl::variant<autofill::FormData, PasswordFormDigest>;
+using FormOrDigest = std::variant<autofill::FormData, PasswordFormDigest>;
 
 // This class helps with filling the observed form and with saving/updating the
 // stored information about it.
@@ -139,6 +140,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void ProcessServerPredictions(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
+  // Stores model predictions in the `parser_`.
+  void ProcessModelPredictions(
+      const base::flat_map<autofill::FieldRendererId, autofill::FieldType>&
+          predictions);
+
   // Sends fill data to the renderer. If no server predictions exist, it
   // schedules to fill when they become available (or the wait times out).
   void Fill();
@@ -164,7 +170,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // the |observed_form()|.
   bool ObservedFormHasField(int driver_id,
                             autofill::FieldRendererId field_id) const;
-
   // PasswordFormManagerForUI:
   const GURL& GetURL() const override;
   base::span<const PasswordForm> GetBestMatches() const override;
@@ -251,11 +256,15 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Returns a pointer to the observed form if possible or nullptr otherwise.
   const autofill::FormData* observed_form() const {
-    return absl::get_if<autofill::FormData>(&observed_form_or_digest_);
+    return std::get_if<autofill::FormData>(&observed_form_or_digest_);
   }
 
   // Saves username value from |pending_credentials_| to votes uploader.
   void SaveSuggestedUsernameValueToVotesUploader();
+
+  // Returns true if WebAuthn credential filling is enabled and there are
+  // credentials available to use.
+  bool WebAuthnCredentialsAvailable() const;
 
 #if defined(UNIT_TEST)
   static void set_wait_for_server_predictions_for_filling(bool value) {
@@ -270,6 +279,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return votes_uploader_.has_value() ? &votes_uploader_.value() : nullptr;
   }
 #endif
+
+  void SetObserver(base::WeakPtr<PasswordFormManagerObserver> observer);
+  void ResetObserver();
 
  protected:
   // Constructor for Credentials API.
@@ -325,16 +337,17 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Returns a mutable pointer to the observed form if possible or nullptr
   // otherwise.
   autofill::FormData* mutable_observed_form() {
-    return absl::get_if<autofill::FormData>(&observed_form_or_digest_);
+    return std::get_if<autofill::FormData>(&observed_form_or_digest_);
   }
 
   // Returns a pointer to the observed digest if possible or nullptr otherwise.
   const PasswordFormDigest* observed_digest() const {
-    return absl::get_if<PasswordFormDigest>(&observed_form_or_digest_);
+    return std::get_if<PasswordFormDigest>(&observed_form_or_digest_);
   }
 
-  // Calculates FillingAssistance metric for |parsed_submitted_form|.
-  void CalculateFillingAssistanceMetric(
+  // Calculates FillingAssistance and ClassificationCorrectness metrics for
+  // |parsed_submitted_form|.
+  void CalculateFillingAssistanceAndCorrectnessMetrics(
       const PasswordForm& parsed_submitted_form);
 
   // Calculates SubmittedPasswordFormFrame metric value (main frame, iframe,
@@ -364,9 +377,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const base::LRUCache<PossibleUsernameFieldIdentifier,
                            PossibleUsernameData>& possible_usernames);
 
-  // Updates the predictions stored in `parser_` with predictions relevant for
-  // `observed_form_or_digest_`.
-  void UpdatePredictionsForObservedForm(
+  // Updates the server predictions stored in `parser_` with predictions
+  // relevant for `observed_form_or_digest_`.
+  void UpdateServerPredictionsForObservedForm(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
   // Creates a timer to wait for server side predictions. On timeout (or on
@@ -376,10 +389,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Sends fill data to the renderer immediately regardless of whether server
   // predictions are available.
   void FillNow();
-
-  // Returns true if WebAuthn credential filling is enabled and there are
-  // credentials available to use.
-  bool WebAuthnCredentialsAvailable() const;
 
   // Checks if `best_candidate` has better signal than the username
   // found inside the password form.
@@ -402,11 +411,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Returns non-empty, lower case stored usernames based on `GetBestMatches()`.
   base::flat_set<std::u16string> GetStoredUsernames() const;
 
-  // Records provisional save failure using current |client_| and
-  // |main_frame_url_|.
-  void RecordProvisionalSaveFailure(
-      PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
-      const GURL& form_origin);
+  std::unique_ptr<FormFetcher> CreateFormFetcher();
 
   // The client which implements embedder-specific PasswordManager operations.
   const raw_ptr<PasswordManagerClient> client_;
@@ -490,6 +495,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // For generating timing metrics on retrieving server-side predictions.
   std::unique_ptr<base::ElapsedTimer> server_side_predictions_timer_;
+
+  base::WeakPtr<PasswordFormManagerObserver> form_parsed_observer_;
 };
 
 // Returns whether `form_data` differs from the form observed by `form_manager`

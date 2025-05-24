@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/trace_event/typed_macros.h"
@@ -125,8 +124,7 @@ DispositionHandlingInfo GetDispositionHandlingInfo(EventType type) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return Info(RT_NONE);
+  NOTREACHED();
 }
 
 int GetGestureTypeIndex(EventType type) {

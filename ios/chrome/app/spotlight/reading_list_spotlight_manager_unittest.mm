@@ -13,7 +13,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/single_thread_task_runner.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/task_environment.h"
 #import "components/favicon/core/large_icon_service_impl.h"
 #import "components/favicon/core/test/mock_favicon_service.h"
 #import "components/reading_list/core/reading_list_model.h"
@@ -24,6 +23,7 @@
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -76,16 +76,15 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
     initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
         GURL(kTestURL2), kTestTitle2, base::Time::Now()));
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    model_ = ReadingListModelFactory::GetInstance()->GetForBrowserState(
-        browser_state_.get());
+    model_ = ReadingListModelFactory::GetForProfile(profile_.get());
 
     CreateMockLargeIconService();
     spotlightInterface_ = [[FakeSpotlightInterface alloc] init];
@@ -114,8 +113,8 @@ class ReadingListSpotlightManagerTest : public PlatformTest {
         });
   }
 
-  base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> profile_;
   testing::StrictMock<favicon::MockFaviconService> mock_favicon_service_;
   std::unique_ptr<favicon::LargeIconServiceImpl> large_icon_service_;
   base::CancelableTaskTracker cancelable_task_tracker_;

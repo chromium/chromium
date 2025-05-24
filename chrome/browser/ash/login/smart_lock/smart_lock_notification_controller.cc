@@ -8,6 +8,7 @@
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -57,7 +58,7 @@ SmartLockNotificationController::SmartLockNotificationController(
     Profile* profile)
     : profile_(profile) {}
 
-SmartLockNotificationController::~SmartLockNotificationController() {}
+SmartLockNotificationController::~SmartLockNotificationController() = default;
 
 void SmartLockNotificationController::ShowChromebookAddedNotification() {
   message_center::RichNotificationData rich_notification_data;
@@ -109,7 +110,7 @@ void SmartLockNotificationController::ShowPairingChangeNotification() {
 void SmartLockNotificationController::ShowPairingChangeAppliedNotification(
     const std::string& phone_name) {
   // Remove the pairing change notification if it is still being shown.
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kEasyUnlockPairingChangeNotifierId);
 
   message_center::RichNotificationData rich_notification_data;
@@ -136,7 +137,7 @@ void SmartLockNotificationController::ShowPairingChangeAppliedNotification(
 void SmartLockNotificationController::ShowNotification(
     std::unique_ptr<message_center::Notification> notification) {
   notification->SetSystemPriority();
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -157,8 +158,8 @@ SmartLockNotificationController::NotificationDelegate::NotificationDelegate(
     : notification_id_(notification_id),
       notification_controller_(notification_controller) {}
 
-SmartLockNotificationController::NotificationDelegate::~NotificationDelegate() {
-}
+SmartLockNotificationController::NotificationDelegate::~NotificationDelegate() =
+    default;
 
 void SmartLockNotificationController::NotificationDelegate::Click(
     const std::optional<int>& button_index,

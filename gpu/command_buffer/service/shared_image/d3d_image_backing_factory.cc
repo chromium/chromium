@@ -6,6 +6,8 @@
 
 #include <d3d11_1.h>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -169,7 +171,9 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
-    SHARED_IMAGE_USAGE_RASTER_DELEGATED_COMPOSITING;
+    SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER;
+
+const char* kD3DImageBackingLabel = "D3DImageBacking";
 
 }  // anonymous namespace
 
@@ -185,6 +189,16 @@ D3DImageBackingFactory::D3DImageBackingFactory(
       gl_format_caps_(gl_format_caps),
       use_update_subresource1_(UseUpdateSubresource1(workarounds)) {
   CHECK(angle_d3d11_device_);
+
+  UINT format_support;
+  HRESULT hr =
+      d3d11_device_->CheckFormatSupport(DXGI_FORMAT_NV12, &format_support);
+  constexpr auto kRequiredUsage = D3D11_FORMAT_SUPPORT_TEXTURE2D |
+                                  D3D11_FORMAT_SUPPORT_SHADER_SAMPLE |
+                                  D3D11_FORMAT_SUPPORT_RENDER_TARGET;
+  bool has_required_format_support =
+      (format_support & kRequiredUsage) == kRequiredUsage;
+  d3d11_supports_nv12_ = SUCCEEDED(hr) && has_required_format_support;
 }
 
 D3DImageBackingFactory::~D3DImageBackingFactory() = default;
@@ -206,15 +220,16 @@ D3DImageBackingFactory::SwapChainBackings::operator=(
 
 // static
 bool D3DImageBackingFactory::IsD3DSharedImageSupported(
+    ID3D11Device* d3d11_device,
     const GpuPreferences& gpu_preferences) {
   // Only supported for passthrough command decoder.
-  if (!gpu_preferences.use_passthrough_cmd_decoder ||
-      !gl::PassthroughCommandDecoderSupported()) {
+  if (!gpu_preferences.use_passthrough_cmd_decoder) {
     return false;
   }
 
-  // D3D11 device will be null if ANGLE is using the D3D9 backend.
-  if (!gl::QueryD3D11DeviceObjectFromANGLE()) {
+  // D3D11 device will be null if ANGLE is using the D3D9 backend or
+  // when we're running with Graphite on D3D12.
+  if (!d3d11_device) {
     return false;
   }
 
@@ -249,22 +264,6 @@ bool D3DImageBackingFactory::ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
   DCHECK(d3d11_texture);
 
   return ClearD3D11TextureToColor(d3d11_texture, color);
-}
-
-// static
-std::unique_ptr<SharedImageBacking> CreateFromD3D12Resource(
-    const Mailbox& mailbox,
-    uint32_t size,
-    SharedImageUsageSet usage,
-    std::string debug_label,
-    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource) {
-  DCHECK(usage &
-         (SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-          SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER));
-
-  auto backing = D3DImageBacking::CreateFromD3D12Resource(
-      mailbox, size, usage, std::move(debug_label), std::move(d3d12_resource));
-  return backing;
 }
 
 D3DImageBackingFactory::SwapChainBackings
@@ -327,6 +326,8 @@ D3DImageBackingFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                << hr;
     return {nullptr, nullptr};
   }
+
+  gl::LabelSwapChainAndBuffers(swap_chain.Get(), kD3DImageBackingLabel);
 
   if (gl::DXGIWaitableSwapChainEnabled()) {
     Microsoft::WRL::ComPtr<IDXGISwapChain3> swap_chain3;
@@ -416,6 +417,11 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
   DCHECK(!is_thread_safe);
+
+  if (usage.Has(SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
+    return CreateSharedBufferD3D12(mailbox, size, color_space, surface_origin,
+                                   alpha_type, usage, debug_label);
+  }
 
   // Without D3D11, we cannot do shared images. This will happen if we're
   // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
@@ -508,8 +514,19 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
   HRESULT hr = d3d11_device_->CreateTexture2D(
       &desc, initial_data.pSysMem ? &initial_data : nullptr, &d3d11_texture);
-  if (FAILED(hr)) {
-    LOG(ERROR) << "CreateTexture2D failed with error " << std::hex << hr;
+  if (!SUCCEEDED(hr)) {
+    LOG(ERROR) << "CreateTexture2D failed with size " << size.ToString()
+               << " error " << std::hex << hr;
+    if (format == viz::MultiPlaneFormat::kNV12) {
+      // Set crash keys for the size, error code.
+      SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 size",
+                                size.ToString());
+      SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
+                                base::NumberToString(hr));
+      // DumpWithoutCrashing to get crash reports for cases where d3d11 device
+      // does not support NV12 textures.
+      base::debug::DumpWithoutCrashing();
+    }
     return nullptr;
   }
 
@@ -547,7 +564,10 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     // If this trips, it means we're claiming support for SCANOUT when DComp
     // textures is not supported by the system, or an incompatible texture was
     // created above.
-    CHECK(DCompTextureIsSupported(desc));
+    if (!DCompTextureIsSupported(desc)) {
+      LOG(ERROR) << "Composition texture not supported for scanout usage";
+      return nullptr;
+    }
 
     Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device =
         gl::GetDirectCompositionDevice();
@@ -601,6 +621,7 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     SkAlphaType alpha_type,
     SharedImageUsageSet usage,
     std::string debug_label,
+    bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
   // Windows does not support external sampler.
   CHECK(!format.PrefersExternalSampler());
@@ -613,20 +634,24 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
 
-  if (handle.type != gfx::DXGI_SHARED_HANDLE || !handle.dxgi_handle.IsValid()) {
+  if (handle.type != gfx::DXGI_SHARED_HANDLE) {
     LOG(ERROR) << "Invalid handle with type: " << handle.type;
     return nullptr;
   }
 
-  if (!handle.dxgi_token.has_value()) {
-    LOG(ERROR) << "Missing token for DXGI handle";
+  gfx::DXGIHandle dxgi_handle = std::move(handle).dxgi_handle();
+  // This shouldn't happen as the GpuMemoryBufferHandle constructor that takes a
+  // DXGIHandle asserts the handle is valid. However, it is currently possible
+  // for code to set the type to DXGI_SHARED_HANDLE directly but never actually
+  // set the handle. Make this an eventual CHECK() but handle this gracefully
+  // for now just in case.
+  CHECK(dxgi_handle.IsValid(), base::NotFatalUntil::M138);
+  if (!dxgi_handle.IsValid()) {
     return nullptr;
   }
-
   scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state =
       dxgi_shared_handle_manager_->GetOrCreateSharedHandleState(
-          std::move(handle.dxgi_token.value()), std::move(handle.dxgi_handle),
-          d3d11_device_);
+          dxgi_handle.token(), dxgi_handle.TakeBufferHandle(), d3d11_device_);
   if (!dxgi_shared_handle_state) {
     LOG(ERROR) << "Failed to retrieve matching DXGI shared handle state";
     return nullptr;
@@ -665,6 +690,116 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   return backing;
 }
 
+std::unique_ptr<SharedImageBacking>
+D3DImageBackingFactory::CreateSharedBufferD3D12(
+    const Mailbox& mailbox,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    SharedImageUsageSet usage,
+    std::string debug_label) {
+  if (!d3d12_device_) {
+    // Lazily create a D3D12 Device by acquiring the DXGI adapter of the
+    // existing D3D11 device.
+    Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+    HRESULT hr = d3d11_device_.As(&dxgi_device);
+    CHECK_EQ(hr, S_OK);
+
+    Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+    hr = dxgi_device->GetAdapter(&dxgi_adapter);
+    CHECK_EQ(hr, S_OK);
+
+    hr = D3D12CreateDevice(dxgi_adapter.Get(), D3D_FEATURE_LEVEL_11_0,
+                           IID_PPV_ARGS(&d3d12_device_));
+
+    if (FAILED(hr)) {
+      LOG(ERROR) << "Failed to create a D3D12 device."
+                 << logging::SystemErrorCodeToString(hr);
+      return nullptr;
+    }
+  }
+
+  if (size.height() != 1) {
+    LOG(ERROR) << "Height must be 1 when creating a shared buffer.";
+    return nullptr;
+  }
+
+  if (color_space != gfx::ColorSpace()) {
+    LOG(ERROR) << "Color spaces are not supported for buffer-backed shared "
+                  "images. Only gfx::ColorSpace() is accepted.";
+    return nullptr;
+  }
+
+  if (surface_origin != kTopLeft_GrSurfaceOrigin) {
+    LOG(ERROR) << "Surface origin is not supported for buffer-backed shared "
+                  "images. Only kkTopLeft_GrSurfaceOrigin is accepted.";
+  }
+
+  if (alpha_type != kUnknown_SkAlphaType) {
+    LOG(ERROR) << "Alpha type is not supported for buffer-backed shared "
+                  "images. Only kUnknown_SkAlphaType is accepted.";
+  }
+
+  // The passed usages AND-ed with the compliment of the OR-d valid usages
+  // should be zero.
+  if (usage &
+      ~(SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+        SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER)) {
+    LOG(ERROR) << "Only shared image usages SHARED_IMAGE_USAGE_WEBGPU_READ, "
+                  "SHARED_IMAGE_USAGE_WEBGPU_WRITE, and "
+                  "SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER are allowed when "
+                  "creating a buffer-backed shared image.";
+  }
+
+  D3D12_HEAP_PROPERTIES heap_properties;
+  heap_properties.Type = D3D12_HEAP_TYPE_DEFAULT,
+  heap_properties.CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN;
+  heap_properties.MemoryPoolPreference = D3D12_MEMORY_POOL_UNKNOWN;
+  heap_properties.CreationNodeMask = 1;
+  heap_properties.VisibleNodeMask = 1;
+
+  D3D12_RESOURCE_DESC desc;
+  desc.Dimension = D3D12_RESOURCE_DIMENSION_BUFFER;
+  desc.Alignment = 0;
+  desc.Width = size.width();
+  desc.Height = 1;
+  desc.DepthOrArraySize = 1;
+  desc.MipLevels = 1;
+  desc.Format = DXGI_FORMAT_UNKNOWN;
+  desc.SampleDesc = {1, 0};
+  desc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
+  desc.Flags = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
+
+  Microsoft::WRL::ComPtr<ID3D12Resource> resource;
+  HRESULT hr = d3d12_device_->CreateCommittedResource(
+      &heap_properties, D3D12_HEAP_FLAG_NONE, &desc,
+      D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nullptr, IID_PPV_ARGS(&resource));
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to create D3D12 resource: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  debug_label = "D3DSharedBuffer_" + debug_label;
+  hr = resource->SetPrivateData(WKPDID_D3DDebugObjectName, debug_label.length(),
+                                debug_label.c_str());
+
+  if (FAILED(hr)) {
+    LOG(ERROR) << "Failed to set resource debug name: "
+               << logging::SystemErrorCodeToString(hr);
+    return nullptr;
+  }
+
+  auto backing = D3DImageBacking::CreateFromD3D12Resource(
+      mailbox, size, usage, std::move(debug_label), std::move(resource));
+
+  // CreateCommittedResource will zero the resource for us, which means we can
+  // set it as cleared.
+  backing->SetCleared();
+  return backing;
+}
+
 bool D3DImageBackingFactory::SupportsBGRA8UnormStorage() {
   if (!supports_bgra8unorm_storage_.has_value()) {
     D3D11_FEATURE_DATA_FORMAT_SUPPORT bgra8UnormSupport = {};
@@ -685,6 +820,71 @@ bool D3DImageBackingFactory::SupportsBGRA8UnormStorage() {
   return supports_bgra8unorm_storage_.value();
 }
 
+bool D3DImageBackingFactory::CanCreateNV12Texture(const gfx::Size& size) {
+  // Without D3D11, we cannot do shared images. This will happen if we're
+  // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
+  // decoder in tests.
+  if (!d3d11_device_) {
+    LOG(ERROR) << "D3D11 device is not supported!";
+    return false;
+  }
+
+  UINT format_support;
+  DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
+  HRESULT hr = d3d11_device_->CheckFormatSupport(dxgi_format, &format_support);
+  constexpr auto kRequiredUsage = D3D11_FORMAT_SUPPORT_TEXTURE2D |
+                                  D3D11_FORMAT_SUPPORT_SHADER_SAMPLE |
+                                  D3D11_FORMAT_SUPPORT_RENDER_TARGET;
+  bool has_required_format_support =
+      (format_support & kRequiredUsage) == kRequiredUsage;
+  if (!SUCCEEDED(hr) || !has_required_format_support) {
+    // Set crash keys for the format support, error code.
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "d3d11 format support",
+                              base::NumberToString(format_support));
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
+                              base::NumberToString(hr));
+    // DumpWithoutCrashing to get crash reports for cases where d3d11 device
+    // does not support NV12 textures.
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+
+  D3D11_TEXTURE2D_DESC desc;
+  desc.Width = size.width();
+  desc.Height = size.height();
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = dxgi_format;
+  desc.SampleDesc.Count = 1;
+  desc.SampleDesc.Quality = 0;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  desc.CPUAccessFlags = 0;
+  desc.MiscFlags = 0;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &d3d11_texture);
+  if (!SUCCEEDED(hr)) {
+    LOG(ERROR) << "CanCreateNV12Texture failed with size " << size.ToString()
+               << " error " << std::hex << hr;
+    // Set crash keys for the size, error code.
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 size",
+                              size.ToString());
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
+                              base::NumberToString(hr));
+    // DumpWithoutCrashing to get crash reports for cases where d3d11 device
+    // does not support NV12 textures.
+    base::debug::DumpWithoutCrashing();
+
+    min_nv12_size_unsupported_ =
+        std::min(size.GetArea(), min_nv12_size_unsupported_);
+    return false;
+  }
+
+  max_nv12_size_supported_ = std::max(size.GetArea(), max_nv12_size_supported_);
+  return true;
+}
+
 bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          viz::SharedImageFormat format,
                                          const gfx::Size& size,
@@ -698,6 +898,8 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
 
   const bool is_scanout = usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   const bool is_video_decode = usage.Has(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
+  const bool is_buffer =
+      usage.Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER);
   if (is_scanout) {
     if (is_video_decode || gmb_type == gfx::DXGI_SHARED_HANDLE) {
       // Video decode and video frames via GMBs are handled specially in
@@ -711,7 +913,8 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
   }
 
   if (gmb_type == gfx::EMPTY_BUFFER) {
-    if (GetDXGIFormatForCreateTexture(format) == DXGI_FORMAT_UNKNOWN) {
+    if (GetDXGIFormatForCreateTexture(format) == DXGI_FORMAT_UNKNOWN &&
+        !is_buffer) {
       return false;
     }
   } else if (gmb_type == gfx::DXGI_SHARED_HANDLE) {
@@ -720,6 +923,26 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     }
   } else {
     return false;
+  }
+
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    // Return early if d3d11 cannot support nv12 formats.
+    if (!d3d11_supports_nv12_) {
+      return false;
+    }
+    // We know current size is within `max_nv12_size_supported_` and nv12
+    // creation is supported for `max_nv12_size_supported_`.
+    if (size.GetArea() <= max_nv12_size_supported_) {
+      return true;
+    }
+    // We know current size is larger than `min_nv12_size_unsupported_` and nv12
+    // creation is unsupported for `min_nv12_size_unsupported_`.
+    if (size.GetArea() >= min_nv12_size_unsupported_) {
+      return false;
+    }
+    if (!CanCreateNV12Texture(size)) {
+      return false;
+    }
   }
 
   return true;

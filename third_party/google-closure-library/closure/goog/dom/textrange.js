@@ -347,7 +347,10 @@ goog.dom.TextRange.prototype.isReversed = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.dom.TextRange.prototype.containsRange = function(
     otherRange, opt_allowPartial) {
   'use strict';
@@ -356,6 +359,7 @@ goog.dom.TextRange.prototype.containsRange = function(
     return this.getBrowserRangeWrapper_().containsRange(
         otherRange.getBrowserRangeWrapper_(), opt_allowPartial);
   } else if (otherRangeType == goog.dom.RangeType.CONTROL) {
+    /** @suppress {strictMissingProperties} Added to tighten compiler checks */
     var elements = otherRange.getElements();
     var fn = opt_allowPartial ? goog.array.some : goog.array.every;
     return fn(
@@ -449,7 +453,10 @@ goog.dom.TextRange.prototype.getValidHtml = function() {
 };
 
 
-/** @override */
+/**
+ * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
+ */
 goog.dom.TextRange.prototype.getPastableHtml = function() {
   'use strict';
   // TODO(robbyw): Get any attributes the table or tr has.

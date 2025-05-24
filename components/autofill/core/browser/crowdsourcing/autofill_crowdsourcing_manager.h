@@ -31,7 +31,6 @@ class PrefService;
 namespace autofill {
 
 class AutofillClient;
-class LogManager;
 
 inline constexpr size_t kMaxQueryGetSize = 10240;  // 10 KiB
 
@@ -46,8 +45,6 @@ struct ScopedActiveAutofillExperiments {
 class AutofillCrowdsourcingManager {
  public:
   // Names of UMA metrics recorded in this class.
-  static constexpr char kUmaApiUrlIsTooLong[] =
-      "Autofill.Query.ApiUrlIsTooLong";
   static constexpr char kUmaGetUrlLength[] = "Autofill.Query.GetUrlLength";
   static constexpr char kUmaMethod[] = "Autofill.Query.Method";
   static constexpr char kUmaWasInCache[] = "Autofill.Query.WasInCache";
@@ -56,8 +53,7 @@ class AutofillCrowdsourcingManager {
   // `channel` determines the value for the the Google-API-key HTTP header and
   // whether raw metadata uploading is enabled.
   AutofillCrowdsourcingManager(AutofillClient* client,
-                          version_info::Channel channel,
-                          LogManager* log_manager);
+                               version_info::Channel channel);
 
   virtual ~AutofillCrowdsourcingManager();
 
@@ -79,7 +75,8 @@ class AutofillCrowdsourcingManager {
   // Returns true if a query is made.
   // TODO: crbug.com/40100455 - Make the return type `void`.
   virtual bool StartQueryRequest(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms,
+      const std::vector<raw_ptr<const FormStructure, VectorExperimental>>&
+          forms,
       std::optional<net::IsolationInfo> isolation_info,
       base::OnceCallback<void(std::optional<QueryResponse>)> callback);
 
@@ -106,9 +103,7 @@ class AutofillCrowdsourcingManager {
   static int GetMaxServerAttempts();
 
  protected:
-  AutofillCrowdsourcingManager(AutofillClient* client,
-                               const std::string& api_key,
-                               LogManager* log_manager);
+  AutofillCrowdsourcingManager(AutofillClient* client, std::string api_key);
 
   // Gets the length of the payload from request data. Used to simulate
   // different payload sizes when testing without the need for data. Do not use
@@ -161,9 +156,6 @@ class AutofillCrowdsourcingManager {
 
   // Callback function to retrieve API key.
   const std::string api_key_;
-
-  // Access to leave log messages for chrome://autofill-internals, may be null.
-  const raw_ptr<LogManager> log_manager_;
 
   // The autofill server URL root: scheme://host[:port]/path excluding the
   // final path component for the request and the query params.

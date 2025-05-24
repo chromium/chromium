@@ -9,9 +9,11 @@ import android.content.Context;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 
@@ -19,10 +21,11 @@ import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
 // TODO(b/286003870): Delete the class when all the methods are migrated to
 // ProcessScopeDependencyProviderImpl
 @JNINamespace("feed::android")
+@NullMarked
 public class FeedProcessScopeDependencyProvider implements ProcessScopeDependencyProvider {
-    private static final String FEED_SPLIT_NAME = "feedv2";
+    private static final String FEED_SPLIT_NAME = "google3";
 
-    private ImageFetchClient mImageFetchClient;
+    private final ImageFetchClient mImageFetchClient;
 
     public FeedProcessScopeDependencyProvider() {
         mImageFetchClient = new FeedImageFetchClient();
@@ -43,6 +46,11 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         return FeedProcessScopeDependencyProviderJni.get().getExperimentIds();
     }
 
+    @Override
+    public byte[] getFeedLaunchCuiMetadata() {
+        return FeedProcessScopeDependencyProviderJni.get().getFeedLaunchCuiMetadata();
+    }
+
     public static Context createFeedContext(Context context) {
         return BundleUtils.createContextForInflation(context, FEED_SPLIT_NAME);
     }
@@ -52,6 +60,9 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     public interface Natives {
         int[] getExperimentIds();
 
+        byte[] getFeedLaunchCuiMetadata();
+
+        @JniType("std::string")
         String getSessionId();
 
         void processViewAction(byte[] actionData, byte[] loggingParameters);

@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/messaging_layer/upload/file_upload_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 #include "chrome/browser/policy/messaging_layer/upload/server_uploader.h"
@@ -27,16 +26,16 @@ namespace reporting {
 namespace {
 
 FileUploadJob::Delegate::SmartPtr CreateFileUploadDelegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return FileUploadJob::Delegate::SmartPtr(
       new FileUploadDelegate(),
       base::OnTaskRunnerDeleter(::content::GetUIThreadTaskRunner({})));
-#else   // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // !BUILDFLAG(IS_CHROMEOS)
   // No file uploads for all other configurations.
   return FileUploadJob::Delegate::SmartPtr(
       nullptr, base::OnTaskRunnerDeleter(
                    base::SequencedTaskRunner::GetCurrentDefault()));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 }  // namespace
 
